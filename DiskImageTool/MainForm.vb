@@ -369,6 +369,8 @@ Public Class MainForm
         Dim OSNameFound As Boolean = False
         Dim OSNameMatched As Boolean = False
 
+        LabelCurrentImage.Text = System.IO.Path.GetFileName(_Disk.FilePath)
+
         If _BootstrapTypes.ContainsKey(BootstrapChecksum) Then
             OSNameList = Split(_BootstrapTypes.Item(BootstrapChecksum).OSName, ",").ToList
             OSNameFound = True
@@ -467,6 +469,7 @@ Public Class MainForm
 
         If ComboCleared And ComboGroups.Items.Count > 0 Then
             ComboGroups.SelectedIndex = 0
+            LabelDropMessage.Visible = False
         End If
     End Sub
     Private Function GetFileDataFromFile(File As DiskImage.DirectoryEntry, FilePath As String) As FileData
@@ -587,9 +590,36 @@ Public Class MainForm
             LblInvalidImage.Visible = True
         End If
     End Sub
+    Private Sub SaveChanges()
+        For Counter = 0 To ComboGroups.Items.Count - 1
+            Dim Item As ComboGroup = ComboGroups.Items(Counter)
+            If Item.Modified Then
+                If Item.Disk IsNot Nothing Then
+                    Dim BackupPath As String = Item.Disk.FilePath & ".bak"
+                    System.IO.File.Copy(Item.Disk.FilePath, BackupPath, True)
+                    Item.Disk.SaveFile(Item.Disk.FilePath)
+                    Item.Disk = Nothing
+                End If
+                Item.Modified = False
+            End If
+        Next
+        _SuppressEvent = True
+        ComboGroups.Items(ComboGroups.SelectedIndex) = ComboGroups.Items(ComboGroups.SelectedIndex)
+        _SuppressEvent = False
+        PopulateSummary()
+        BtnSave.Enabled = False
+    End Sub
+    Private Sub StartFileDrop(e As DragEventArgs)
+        If _InternalDrop Then
+            Exit Sub
+        End If
+        If e.Data.GetDataPresent(DataFormats.FileDrop) Then
+            e.Effect = DragDropEffects.Copy
+        End If
+    End Sub
     Private Sub Button1_Click(sender As Object, e As EventArgs) Handles Button1.Click
-        For counter = 0 To ComboGroups.Items.Count - 1
-            ComboGroups.SelectedIndex = counter
+        For Counter = 0 To ComboGroups.Items.Count - 1
+            ComboGroups.SelectedIndex = Counter
             Debug.Print(ComboGroups.Text)
             Application.DoEvents()
         Next
@@ -598,12 +628,7 @@ Public Class MainForm
         ProcessFileDrop(e.Data.GetData(DataFormats.FileDrop))
     End Sub
     Private Sub ComboGroups_DragEnter(sender As Object, e As DragEventArgs) Handles ComboGroups.DragEnter
-        If _InternalDrop Then
-            Exit Sub
-        End If
-        If e.Data.GetDataPresent(DataFormats.FileDrop) Then
-            e.Effect = DragDropEffects.Copy
-        End If
+        StartFileDrop(e)
     End Sub
     Private Sub ComboGroups_SelectedIndexChanged(sender As Object, e As EventArgs) Handles ComboGroups.SelectedIndexChanged
         If _SuppressEvent Then
@@ -616,23 +641,13 @@ Public Class MainForm
         ProcessFileDrop(e.Data.GetData(DataFormats.FileDrop))
     End Sub
     Private Sub ListViewFiles_DragEnter(sender As Object, e As DragEventArgs) Handles ListViewFiles.DragEnter
-        If _InternalDrop Then
-            Exit Sub
-        End If
-        If e.Data.GetDataPresent(DataFormats.FileDrop) Then
-            e.Effect = DragDropEffects.Copy
-        End If
+        StartFileDrop(e)
     End Sub
     Private Sub ListViewSummary_DragDrop(sender As Object, e As DragEventArgs) Handles ListViewSummary.DragDrop
         ProcessFileDrop(e.Data.GetData(DataFormats.FileDrop))
     End Sub
     Private Sub ListViewSummary_DragEnter(sender As Object, e As DragEventArgs) Handles ListViewSummary.DragEnter
-        If _InternalDrop Then
-            Exit Sub
-        End If
-        If e.Data.GetDataPresent(DataFormats.FileDrop) Then
-            e.Effect = DragDropEffects.Copy
-        End If
+        StartFileDrop(e)
     End Sub
 
     Private Sub ListViewHashes_DragDrop(sender As Object, e As DragEventArgs) Handles ListViewHashes.DragDrop
@@ -640,12 +655,7 @@ Public Class MainForm
     End Sub
 
     Private Sub ListViewHashes_DragEnter(sender As Object, e As DragEventArgs) Handles ListViewHashes.DragEnter
-        If _InternalDrop Then
-            Exit Sub
-        End If
-        If e.Data.GetDataPresent(DataFormats.FileDrop) Then
-            e.Effect = DragDropEffects.Copy
-        End If
+        StartFileDrop(e)
     End Sub
 
     Private Sub ListViewFiles_ItemDrag(sender As Object, e As ItemDragEventArgs) Handles ListViewFiles.ItemDrag
@@ -661,6 +671,22 @@ Public Class MainForm
 
     Private Sub ButtonOEMID_Click(sender As Object, e As EventArgs) Handles ButtonOEMID.Click
         ChangeOEMID()
+    End Sub
+
+    Private Sub LabelDropMessage_Click(sender As Object, e As EventArgs) Handles LabelDropMessage.Click
+
+    End Sub
+
+    Private Sub LabelDropMessage_DragDrop(sender As Object, e As DragEventArgs) Handles LabelDropMessage.DragDrop
+        ProcessFileDrop(e.Data.GetData(DataFormats.FileDrop))
+    End Sub
+
+    Private Sub LabelDropMessage_DragEnter(sender As Object, e As DragEventArgs) Handles LabelDropMessage.DragEnter
+        StartFileDrop(e)
+    End Sub
+
+    Private Sub BtnSave_Click(sender As Object, e As EventArgs) Handles BtnSave.Click
+        SaveChanges
     End Sub
 End Class
 

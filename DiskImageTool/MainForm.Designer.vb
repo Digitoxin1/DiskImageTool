@@ -43,6 +43,9 @@ Partial Class MainForm
         Me.ButtonDisplayBootSector = New System.Windows.Forms.Button()
         Me.Button1 = New System.Windows.Forms.Button()
         Me.BtnSave = New System.Windows.Forms.Button()
+        Me.Label1 = New System.Windows.Forms.Label()
+        Me.LabelCurrentImage = New System.Windows.Forms.Label()
+        Me.LabelDropMessage = New System.Windows.Forms.Label()
         FileName = CType(New System.Windows.Forms.ColumnHeader(), System.Windows.Forms.ColumnHeader)
         FileExt = CType(New System.Windows.Forms.ColumnHeader(), System.Windows.Forms.ColumnHeader)
         FileSize = CType(New System.Windows.Forms.ColumnHeader(), System.Windows.Forms.ColumnHeader)
@@ -121,9 +124,9 @@ Partial Class MainForm
         Me.ListViewFiles.Columns.AddRange(New System.Windows.Forms.ColumnHeader() {FileName, FileExt, FileSize, FileLastWriteDate, FileStartingCluster, FileAttrib, FileCRC32})
         Me.ListViewFiles.FullRowSelect = True
         Me.ListViewFiles.HideSelection = False
-        Me.ListViewFiles.Location = New System.Drawing.Point(320, 40)
+        Me.ListViewFiles.Location = New System.Drawing.Point(320, 61)
         Me.ListViewFiles.Name = "ListViewFiles"
-        Me.ListViewFiles.Size = New System.Drawing.Size(615, 471)
+        Me.ListViewFiles.Size = New System.Drawing.Size(615, 452)
         Me.ListViewFiles.TabIndex = 2
         Me.ListViewFiles.UseCompatibleStateImageBehavior = False
         Me.ListViewFiles.View = System.Windows.Forms.View.Details
@@ -136,11 +139,11 @@ Partial Class MainForm
         Me.ListViewSummary.Columns.AddRange(New System.Windows.Forms.ColumnHeader() {SummaryName, SummaryValue})
         Me.ListViewSummary.HeaderStyle = System.Windows.Forms.ColumnHeaderStyle.None
         Me.ListViewSummary.HideSelection = False
-        Me.ListViewSummary.Location = New System.Drawing.Point(12, 12)
+        Me.ListViewSummary.Location = New System.Drawing.Point(12, 33)
         Me.ListViewSummary.MultiSelect = False
         Me.ListViewSummary.Name = "ListViewSummary"
         Me.ListViewSummary.ShowGroups = False
-        Me.ListViewSummary.Size = New System.Drawing.Size(302, 208)
+        Me.ListViewSummary.Size = New System.Drawing.Size(302, 189)
         Me.ListViewSummary.TabIndex = 0
         Me.ListViewSummary.UseCompatibleStateImageBehavior = False
         Me.ListViewSummary.View = System.Windows.Forms.View.Details
@@ -151,8 +154,9 @@ Partial Class MainForm
         Me.ComboGroups.Anchor = CType(((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Left) _
             Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
         Me.ComboGroups.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList
+        Me.ComboGroups.DropDownWidth = 523
         Me.ComboGroups.FormattingEnabled = True
-        Me.ComboGroups.Location = New System.Drawing.Point(320, 13)
+        Me.ComboGroups.Location = New System.Drawing.Point(320, 33)
         Me.ComboGroups.Name = "ComboGroups"
         Me.ComboGroups.Size = New System.Drawing.Size(523, 21)
         Me.ComboGroups.Sorted = True
@@ -165,7 +169,7 @@ Partial Class MainForm
         Me.LblInvalidImage.BackColor = System.Drawing.SystemColors.Window
         Me.LblInvalidImage.Font = New System.Drawing.Font("Microsoft Sans Serif", 18.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.LblInvalidImage.ForeColor = System.Drawing.Color.Red
-        Me.LblInvalidImage.Location = New System.Drawing.Point(550, 261)
+        Me.LblInvalidImage.Location = New System.Drawing.Point(86, 113)
         Me.LblInvalidImage.Name = "LblInvalidImage"
         Me.LblInvalidImage.Size = New System.Drawing.Size(155, 29)
         Me.LblInvalidImage.TabIndex = 3
@@ -181,7 +185,7 @@ Partial Class MainForm
         Me.ListViewHashes.Font = New System.Drawing.Font("Microsoft Sans Serif", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.ListViewHashes.HeaderStyle = System.Windows.Forms.ColumnHeaderStyle.Nonclickable
         Me.ListViewHashes.HideSelection = False
-        Me.ListViewHashes.Location = New System.Drawing.Point(12, 226)
+        Me.ListViewHashes.Location = New System.Drawing.Point(12, 228)
         Me.ListViewHashes.MultiSelect = False
         Me.ListViewHashes.Name = "ListViewHashes"
         Me.ListViewHashes.Scrollable = False
@@ -199,7 +203,7 @@ Partial Class MainForm
         Me.Panel1.Controls.Add(Me.ButtonOEMID)
         Me.Panel1.Controls.Add(Me.ButtonDisplayBootSector)
         Me.Panel1.Controls.Add(Me.Button1)
-        Me.Panel1.Location = New System.Drawing.Point(12, 333)
+        Me.Panel1.Location = New System.Drawing.Point(12, 335)
         Me.Panel1.Name = "Panel1"
         Me.Panel1.Size = New System.Drawing.Size(302, 178)
         Me.Panel1.TabIndex = 2
@@ -228,28 +232,64 @@ Partial Class MainForm
         '
         'Button1
         '
-        Me.Button1.Location = New System.Drawing.Point(25, 100)
+        Me.Button1.Location = New System.Drawing.Point(3, 150)
         Me.Button1.Name = "Button1"
-        Me.Button1.Size = New System.Drawing.Size(88, 40)
+        Me.Button1.Size = New System.Drawing.Size(110, 23)
         Me.Button1.TabIndex = 0
-        Me.Button1.Text = "Button1"
+        Me.Button1.Text = "Load All"
         Me.Button1.UseVisualStyleBackColor = True
+        Me.Button1.Visible = False
         '
         'BtnSave
         '
         Me.BtnSave.Enabled = False
-        Me.BtnSave.Location = New System.Drawing.Point(849, 12)
+        Me.BtnSave.Location = New System.Drawing.Point(849, 32)
         Me.BtnSave.Name = "BtnSave"
         Me.BtnSave.Size = New System.Drawing.Size(86, 23)
         Me.BtnSave.TabIndex = 2
         Me.BtnSave.Text = "Save Changes"
         Me.BtnSave.UseVisualStyleBackColor = True
         '
+        'Label1
+        '
+        Me.Label1.AutoSize = True
+        Me.Label1.Location = New System.Drawing.Point(12, 9)
+        Me.Label1.Name = "Label1"
+        Me.Label1.Size = New System.Drawing.Size(76, 13)
+        Me.Label1.TabIndex = 0
+        Me.Label1.Text = "Current Image:"
+        '
+        'LabelCurrentImage
+        '
+        Me.LabelCurrentImage.AutoEllipsis = True
+        Me.LabelCurrentImage.ForeColor = System.Drawing.Color.MediumBlue
+        Me.LabelCurrentImage.Location = New System.Drawing.Point(87, 9)
+        Me.LabelCurrentImage.Name = "LabelCurrentImage"
+        Me.LabelCurrentImage.Size = New System.Drawing.Size(848, 13)
+        Me.LabelCurrentImage.TabIndex = 1
+        '
+        'LabelDropMessage
+        '
+        Me.LabelDropMessage.AllowDrop = True
+        Me.LabelDropMessage.Anchor = System.Windows.Forms.AnchorStyles.None
+        Me.LabelDropMessage.AutoSize = True
+        Me.LabelDropMessage.BackColor = System.Drawing.SystemColors.Window
+        Me.LabelDropMessage.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.75!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.LabelDropMessage.Location = New System.Drawing.Point(516, 279)
+        Me.LabelDropMessage.Name = "LabelDropMessage"
+        Me.LabelDropMessage.Size = New System.Drawing.Size(222, 16)
+        Me.LabelDropMessage.TabIndex = 2
+        Me.LabelDropMessage.Text = "Drag && Drop Disk Images Here"
+        Me.LabelDropMessage.TextAlign = System.Drawing.ContentAlignment.MiddleCenter
+        '
         'MainForm
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
-        Me.ClientSize = New System.Drawing.Size(947, 523)
+        Me.ClientSize = New System.Drawing.Size(947, 525)
+        Me.Controls.Add(Me.LabelDropMessage)
+        Me.Controls.Add(Me.LabelCurrentImage)
+        Me.Controls.Add(Me.Label1)
         Me.Controls.Add(Me.BtnSave)
         Me.Controls.Add(Me.Panel1)
         Me.Controls.Add(Me.ListViewHashes)
@@ -277,4 +317,7 @@ Partial Class MainForm
     Friend WithEvents ButtonDisplayBootSector As Button
     Friend WithEvents ButtonOEMID As Button
     Friend WithEvents BtnSave As Button
+    Friend WithEvents Label1 As Label
+    Friend WithEvents LabelCurrentImage As Label
+    Friend WithEvents LabelDropMessage As Label
 End Class
