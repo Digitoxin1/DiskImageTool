@@ -102,7 +102,7 @@ Partial Class OEMIDForm
         Me.MaximizeBox = False
         Me.MinimizeBox = False
         Me.Name = "OEMIDForm"
-        Me.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen
+        Me.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent
         Me.Text = "Change OEM ID"
         Me.ResumeLayout(False)
         Me.PerformLayout()

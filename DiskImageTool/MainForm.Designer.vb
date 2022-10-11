@@ -33,19 +33,24 @@ Partial Class MainForm
         Dim SummaryValue As System.Windows.Forms.ColumnHeader
         Dim HashName As System.Windows.Forms.ColumnHeader
         Dim HashValue As System.Windows.Forms.ColumnHeader
+        Dim ColumnHeader1 As System.Windows.Forms.ColumnHeader
         Me.ListViewFiles = New System.Windows.Forms.ListView()
         Me.ListViewSummary = New System.Windows.Forms.ListView()
         Me.ComboGroups = New System.Windows.Forms.ComboBox()
         Me.LblInvalidImage = New System.Windows.Forms.Label()
         Me.ListViewHashes = New System.Windows.Forms.ListView()
         Me.Panel1 = New System.Windows.Forms.Panel()
-        Me.ButtonOEMID = New System.Windows.Forms.Button()
+        Me.FlowLayoutPanel1 = New System.Windows.Forms.FlowLayoutPanel()
         Me.ButtonDisplayBootSector = New System.Windows.Forms.Button()
+        Me.ButtonOEMID = New System.Windows.Forms.Button()
+        Me.BtnClearCreated = New System.Windows.Forms.Button()
+        Me.BtnClearLastAccessed = New System.Windows.Forms.Button()
         Me.Button1 = New System.Windows.Forms.Button()
         Me.BtnSave = New System.Windows.Forms.Button()
         Me.Label1 = New System.Windows.Forms.Label()
         Me.LabelCurrentImage = New System.Windows.Forms.Label()
         Me.LabelDropMessage = New System.Windows.Forms.Label()
+        Me.CBCheckAll = New System.Windows.Forms.CheckBox()
         FileName = CType(New System.Windows.Forms.ColumnHeader(), System.Windows.Forms.ColumnHeader)
         FileExt = CType(New System.Windows.Forms.ColumnHeader(), System.Windows.Forms.ColumnHeader)
         FileSize = CType(New System.Windows.Forms.ColumnHeader(), System.Windows.Forms.ColumnHeader)
@@ -57,7 +62,9 @@ Partial Class MainForm
         SummaryValue = CType(New System.Windows.Forms.ColumnHeader(), System.Windows.Forms.ColumnHeader)
         HashName = CType(New System.Windows.Forms.ColumnHeader(), System.Windows.Forms.ColumnHeader)
         HashValue = CType(New System.Windows.Forms.ColumnHeader(), System.Windows.Forms.ColumnHeader)
+        ColumnHeader1 = CType(New System.Windows.Forms.ColumnHeader(), System.Windows.Forms.ColumnHeader)
         Me.Panel1.SuspendLayout()
+        Me.FlowLayoutPanel1.SuspendLayout()
         Me.SuspendLayout()
         '
         'FileName
@@ -114,6 +121,11 @@ Partial Class MainForm
         '
         HashValue.Width = -1
         '
+        'ColumnHeader1
+        '
+        ColumnHeader1.Text = ""
+        ColumnHeader1.Width = 23
+        '
         'ListViewFiles
         '
         Me.ListViewFiles.AllowDrop = True
@@ -121,13 +133,13 @@ Partial Class MainForm
             Or System.Windows.Forms.AnchorStyles.Left) _
             Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
         Me.ListViewFiles.CheckBoxes = True
-        Me.ListViewFiles.Columns.AddRange(New System.Windows.Forms.ColumnHeader() {FileName, FileExt, FileSize, FileLastWriteDate, FileStartingCluster, FileAttrib, FileCRC32})
+        Me.ListViewFiles.Columns.AddRange(New System.Windows.Forms.ColumnHeader() {ColumnHeader1, FileName, FileExt, FileSize, FileLastWriteDate, FileStartingCluster, FileAttrib, FileCRC32})
         Me.ListViewFiles.FullRowSelect = True
         Me.ListViewFiles.HideSelection = False
         Me.ListViewFiles.Location = New System.Drawing.Point(320, 61)
         Me.ListViewFiles.Name = "ListViewFiles"
-        Me.ListViewFiles.Size = New System.Drawing.Size(615, 452)
-        Me.ListViewFiles.TabIndex = 2
+        Me.ListViewFiles.Size = New System.Drawing.Size(642, 452)
+        Me.ListViewFiles.TabIndex = 14
         Me.ListViewFiles.UseCompatibleStateImageBehavior = False
         Me.ListViewFiles.View = System.Windows.Forms.View.Details
         '
@@ -144,7 +156,7 @@ Partial Class MainForm
         Me.ListViewSummary.Name = "ListViewSummary"
         Me.ListViewSummary.ShowGroups = False
         Me.ListViewSummary.Size = New System.Drawing.Size(302, 189)
-        Me.ListViewSummary.TabIndex = 0
+        Me.ListViewSummary.TabIndex = 2
         Me.ListViewSummary.UseCompatibleStateImageBehavior = False
         Me.ListViewSummary.View = System.Windows.Forms.View.Details
         '
@@ -158,13 +170,12 @@ Partial Class MainForm
         Me.ComboGroups.FormattingEnabled = True
         Me.ComboGroups.Location = New System.Drawing.Point(320, 33)
         Me.ComboGroups.Name = "ComboGroups"
-        Me.ComboGroups.Size = New System.Drawing.Size(523, 21)
+        Me.ComboGroups.Size = New System.Drawing.Size(550, 21)
         Me.ComboGroups.Sorted = True
-        Me.ComboGroups.TabIndex = 1
+        Me.ComboGroups.TabIndex = 11
         '
         'LblInvalidImage
         '
-        Me.LblInvalidImage.Anchor = System.Windows.Forms.AnchorStyles.None
         Me.LblInvalidImage.AutoSize = True
         Me.LblInvalidImage.BackColor = System.Drawing.SystemColors.Window
         Me.LblInvalidImage.Font = New System.Drawing.Font("Microsoft Sans Serif", 18.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
@@ -190,7 +201,7 @@ Partial Class MainForm
         Me.ListViewHashes.Name = "ListViewHashes"
         Me.ListViewHashes.Scrollable = False
         Me.ListViewHashes.Size = New System.Drawing.Size(302, 101)
-        Me.ListViewHashes.TabIndex = 1
+        Me.ListViewHashes.TabIndex = 4
         Me.ListViewHashes.TileSize = New System.Drawing.Size(295, 30)
         Me.ListViewHashes.UseCompatibleStateImageBehavior = False
         Me.ListViewHashes.View = System.Windows.Forms.View.Tile
@@ -200,53 +211,86 @@ Partial Class MainForm
         Me.Panel1.Anchor = CType((System.Windows.Forms.AnchorStyles.Bottom Or System.Windows.Forms.AnchorStyles.Left), System.Windows.Forms.AnchorStyles)
         Me.Panel1.BackColor = System.Drawing.SystemColors.Window
         Me.Panel1.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle
-        Me.Panel1.Controls.Add(Me.ButtonOEMID)
-        Me.Panel1.Controls.Add(Me.ButtonDisplayBootSector)
-        Me.Panel1.Controls.Add(Me.Button1)
+        Me.Panel1.Controls.Add(Me.FlowLayoutPanel1)
         Me.Panel1.Location = New System.Drawing.Point(12, 335)
         Me.Panel1.Name = "Panel1"
         Me.Panel1.Size = New System.Drawing.Size(302, 178)
-        Me.Panel1.TabIndex = 2
+        Me.Panel1.TabIndex = 5
         '
-        'ButtonOEMID
+        'FlowLayoutPanel1
         '
-        Me.ButtonOEMID.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink
-        Me.ButtonOEMID.Location = New System.Drawing.Point(3, 32)
-        Me.ButtonOEMID.Name = "ButtonOEMID"
-        Me.ButtonOEMID.Size = New System.Drawing.Size(110, 23)
-        Me.ButtonOEMID.TabIndex = 1
-        Me.ButtonOEMID.Text = "Change OEM ID"
-        Me.ButtonOEMID.UseVisualStyleBackColor = True
-        Me.ButtonOEMID.Visible = False
+        Me.FlowLayoutPanel1.Anchor = CType((((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Bottom) _
+            Or System.Windows.Forms.AnchorStyles.Left) _
+            Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
+        Me.FlowLayoutPanel1.Controls.Add(Me.ButtonDisplayBootSector)
+        Me.FlowLayoutPanel1.Controls.Add(Me.ButtonOEMID)
+        Me.FlowLayoutPanel1.Controls.Add(Me.BtnClearCreated)
+        Me.FlowLayoutPanel1.Controls.Add(Me.BtnClearLastAccessed)
+        Me.FlowLayoutPanel1.Controls.Add(Me.Button1)
+        Me.FlowLayoutPanel1.FlowDirection = System.Windows.Forms.FlowDirection.TopDown
+        Me.FlowLayoutPanel1.Location = New System.Drawing.Point(84, 3)
+        Me.FlowLayoutPanel1.Name = "FlowLayoutPanel1"
+        Me.FlowLayoutPanel1.Size = New System.Drawing.Size(133, 170)
+        Me.FlowLayoutPanel1.TabIndex = 6
         '
         'ButtonDisplayBootSector
         '
         Me.ButtonDisplayBootSector.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink
         Me.ButtonDisplayBootSector.Location = New System.Drawing.Point(3, 3)
         Me.ButtonDisplayBootSector.Name = "ButtonDisplayBootSector"
-        Me.ButtonDisplayBootSector.Size = New System.Drawing.Size(110, 23)
-        Me.ButtonDisplayBootSector.TabIndex = 0
+        Me.ButtonDisplayBootSector.Size = New System.Drawing.Size(126, 23)
+        Me.ButtonDisplayBootSector.TabIndex = 7
         Me.ButtonDisplayBootSector.Text = "Display Boot Sector"
         Me.ButtonDisplayBootSector.UseVisualStyleBackColor = True
-        Me.ButtonDisplayBootSector.Visible = False
+        '
+        'ButtonOEMID
+        '
+        Me.ButtonOEMID.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink
+        Me.ButtonOEMID.Location = New System.Drawing.Point(3, 32)
+        Me.ButtonOEMID.Name = "ButtonOEMID"
+        Me.ButtonOEMID.Size = New System.Drawing.Size(126, 23)
+        Me.ButtonOEMID.TabIndex = 8
+        Me.ButtonOEMID.Text = "Change OEM ID"
+        Me.ButtonOEMID.UseVisualStyleBackColor = True
+        '
+        'BtnClearCreated
+        '
+        Me.BtnClearCreated.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink
+        Me.BtnClearCreated.Location = New System.Drawing.Point(3, 61)
+        Me.BtnClearCreated.Name = "BtnClearCreated"
+        Me.BtnClearCreated.Size = New System.Drawing.Size(126, 23)
+        Me.BtnClearCreated.TabIndex = 9
+        Me.BtnClearCreated.Text = "Clear Creation Date"
+        Me.BtnClearCreated.UseVisualStyleBackColor = True
+        '
+        'BtnClearLastAccessed
+        '
+        Me.BtnClearLastAccessed.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink
+        Me.BtnClearLastAccessed.Location = New System.Drawing.Point(3, 90)
+        Me.BtnClearLastAccessed.Name = "BtnClearLastAccessed"
+        Me.BtnClearLastAccessed.Size = New System.Drawing.Size(126, 23)
+        Me.BtnClearLastAccessed.TabIndex = 10
+        Me.BtnClearLastAccessed.Text = "Clear Last Access Date"
+        Me.BtnClearLastAccessed.UseVisualStyleBackColor = True
         '
         'Button1
         '
-        Me.Button1.Location = New System.Drawing.Point(3, 150)
+        Me.Button1.Location = New System.Drawing.Point(3, 119)
         Me.Button1.Name = "Button1"
-        Me.Button1.Size = New System.Drawing.Size(110, 23)
-        Me.Button1.TabIndex = 0
+        Me.Button1.Size = New System.Drawing.Size(126, 23)
+        Me.Button1.TabIndex = 11
         Me.Button1.Text = "Load All"
         Me.Button1.UseVisualStyleBackColor = True
         Me.Button1.Visible = False
         '
         'BtnSave
         '
+        Me.BtnSave.Anchor = CType((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
         Me.BtnSave.Enabled = False
-        Me.BtnSave.Location = New System.Drawing.Point(849, 32)
+        Me.BtnSave.Location = New System.Drawing.Point(876, 32)
         Me.BtnSave.Name = "BtnSave"
         Me.BtnSave.Size = New System.Drawing.Size(86, 23)
-        Me.BtnSave.TabIndex = 2
+        Me.BtnSave.TabIndex = 12
         Me.BtnSave.Text = "Save Changes"
         Me.BtnSave.UseVisualStyleBackColor = True
         '
@@ -275,18 +319,28 @@ Partial Class MainForm
         Me.LabelDropMessage.AutoSize = True
         Me.LabelDropMessage.BackColor = System.Drawing.SystemColors.Window
         Me.LabelDropMessage.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.75!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.LabelDropMessage.Location = New System.Drawing.Point(516, 279)
+        Me.LabelDropMessage.Location = New System.Drawing.Point(530, 279)
         Me.LabelDropMessage.Name = "LabelDropMessage"
         Me.LabelDropMessage.Size = New System.Drawing.Size(222, 16)
-        Me.LabelDropMessage.TabIndex = 2
+        Me.LabelDropMessage.TabIndex = 15
         Me.LabelDropMessage.Text = "Drag && Drop Disk Images Here"
         Me.LabelDropMessage.TextAlign = System.Drawing.ContentAlignment.MiddleCenter
+        '
+        'CBCheckAll
+        '
+        Me.CBCheckAll.AutoSize = True
+        Me.CBCheckAll.Location = New System.Drawing.Point(326, 68)
+        Me.CBCheckAll.Name = "CBCheckAll"
+        Me.CBCheckAll.Size = New System.Drawing.Size(15, 14)
+        Me.CBCheckAll.TabIndex = 13
+        Me.CBCheckAll.UseVisualStyleBackColor = True
         '
         'MainForm
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
-        Me.ClientSize = New System.Drawing.Size(947, 525)
+        Me.ClientSize = New System.Drawing.Size(974, 525)
+        Me.Controls.Add(Me.CBCheckAll)
         Me.Controls.Add(Me.LabelDropMessage)
         Me.Controls.Add(Me.LabelCurrentImage)
         Me.Controls.Add(Me.Label1)
@@ -302,6 +356,7 @@ Partial Class MainForm
         Me.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen
         Me.Text = "Disk Image Tool"
         Me.Panel1.ResumeLayout(False)
+        Me.FlowLayoutPanel1.ResumeLayout(False)
         Me.ResumeLayout(False)
         Me.PerformLayout()
 
@@ -313,11 +368,15 @@ Partial Class MainForm
     Friend WithEvents LblInvalidImage As Label
     Friend WithEvents ListViewHashes As ListView
     Friend WithEvents Panel1 As Panel
-    Friend WithEvents Button1 As Button
-    Friend WithEvents ButtonDisplayBootSector As Button
-    Friend WithEvents ButtonOEMID As Button
     Friend WithEvents BtnSave As Button
     Friend WithEvents Label1 As Label
     Friend WithEvents LabelCurrentImage As Label
     Friend WithEvents LabelDropMessage As Label
+    Friend WithEvents FlowLayoutPanel1 As FlowLayoutPanel
+    Friend WithEvents ButtonOEMID As Button
+    Friend WithEvents ButtonDisplayBootSector As Button
+    Friend WithEvents Button1 As Button
+    Friend WithEvents BtnClearCreated As Button
+    Friend WithEvents CBCheckAll As CheckBox
+    Friend WithEvents BtnClearLastAccessed As Button
 End Class

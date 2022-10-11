@@ -85,7 +85,7 @@ Partial Class HexViewForm
         Me.MinimumSize = New System.Drawing.Size(716, 480)
         Me.Name = "HexViewForm"
         Me.ShowIcon = False
-        Me.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen
+        Me.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent
         Me.Text = "Hex Viewer"
         Me.ResumeLayout(False)
 

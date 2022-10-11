@@ -17,6 +17,12 @@ Public Class MainForm
         _FileHashTable = New Dictionary(Of UInteger, FileData)
         _InternalDrop = False
         _BootstrapTypes = InitBootstrapTypes()
+        FlowLayoutPanel1.Visible = False
+        BtnClearCreated.Enabled = False
+        BtnClearCreated.Visible = False
+        BtnClearLastAccessed.Enabled = False
+        BtnClearLastAccessed.Visible = False
+        CBCheckAll.Visible = False
     End Sub
 
     Private Function InitBootstrapTypes() As Dictionary(Of UInteger, BootstrapType)
@@ -129,7 +135,7 @@ Public Class MainForm
         Return Result
     End Function
 
-    Private Function ChangeOEMID()
+    Private Function ChangeOEMID() As Boolean
         Dim frmOEMID As New OEMIDForm(_Disk, _BootstrapTypes)
         Dim Result As Boolean
 
@@ -138,14 +144,61 @@ Public Class MainForm
         Result = frmOEMID.Result
 
         If Result Then
-            Dim Item As ComboGroup = ComboGroups.SelectedItem
-            Item.Modified = True
-            Item.Disk = _Disk
-            _SuppressEvent = True
-            ComboGroups.Items(ComboGroups.SelectedIndex) = ComboGroups.Items(ComboGroups.SelectedIndex)
-            _SuppressEvent = False
-            PopulateSummary()
-            BtnSave.Enabled = True
+            ComboItemSetModified(False)
+        End If
+
+        Return Result
+    End Function
+
+    Private Sub ComboItemSetModified(FullRefresh As Boolean)
+        Dim Item As ComboFileItem = ComboGroups.SelectedItem
+        Item.Modified = True
+        Item.Disk = _Disk
+        _SuppressEvent = True
+        ComboGroups.Items(ComboGroups.SelectedIndex) = ComboGroups.Items(ComboGroups.SelectedIndex)
+        _SuppressEvent = False
+        If FullRefresh Then
+            PopulateDetails()
+        End If
+        PopulateSummary()
+        BtnSave.Enabled = True
+    End Sub
+
+    Private Function ClearCreatedDate() As Boolean
+        Dim Result As Boolean = False
+
+        For Each Item As ListViewItem In ListViewFiles.CheckedItems
+            Dim FileData = _FileHashTable(Item.GetHashCode)
+            If FileData.HasCreated Then
+                Dim File = _Disk.GetDirectoryEntryByOffset(FileData.Offset)
+                File.ClearCreationDate()
+                Item.SubItems.Item("FileCreateDate").Text = ""
+                Result = True
+            End If
+        Next
+
+        If Result Then
+            ComboItemSetModified(False)
+        End If
+
+        Return Result
+    End Function
+
+    Private Function ClearLastAccessedDate() As Boolean
+        Dim Result As Boolean = False
+
+        For Each Item As ListViewItem In ListViewFiles.CheckedItems
+            Dim FileData = _FileHashTable(Item.GetHashCode)
+            If FileData.HasLastAccessed Then
+                Dim File = _Disk.GetDirectoryEntryByOffset(FileData.Offset)
+                File.ClearLastAccessDate()
+                Item.SubItems.Item("FileLastAccessDate").Text = ""
+                Result = True
+            End If
+        Next
+
+        If Result Then
+            ComboItemSetModified(False)
         End If
 
         Return Result
@@ -207,7 +260,9 @@ Public Class MainForm
             & IIf(File.IsDirectory, "D ", "- ") _
             & IIf(File.IsVolumeName, "V ", "- ")
 
-        Dim Item = New ListViewItem(Encoding.UTF8.GetString(File.FileName).Trim, Group)
+        Dim Item = New ListViewItem("", Group)
+        Item.SubItems.Add(Encoding.UTF8.GetString(File.FileName).Trim)
+
         If File.IsDeleted Then
             Item.ForeColor = Color.Gray
         ElseIf File.IsVolumeName Then
@@ -311,19 +366,20 @@ Public Class MainForm
     End Function
 
     Private Sub InitializeButtons()
-        ButtonDisplayBootSector.Visible = True
-        ButtonOEMID.Visible = True
+        FlowLayoutPanel1.Visible = True
+        BtnClearCreated.Enabled = False
+        BtnClearLastAccessed.Enabled = False
     End Sub
 
     Private Sub InitializeColumns()
         If Not ListViewFiles.Columns.ContainsKey("FileCreateDate") Then
-            ListViewAddColumn("FileCreateDate", "Created", 0, 7)
+            ListViewAddColumn("FileCreateDate", "Created", 0, 8)
         End If
         If Not ListViewFiles.Columns.ContainsKey("FileLastAccessDate") Then
-            ListViewAddColumn("FileLastAccessDate", "Last Accessed", 0, 8)
+            ListViewAddColumn("FileLastAccessDate", "Last Accessed", 0, 9)
         End If
         If Not ListViewFiles.Columns.ContainsKey("FileLFN") Then
-            ListViewAddColumn("FileLFN", "Long File Name", 0, 9)
+            ListViewAddColumn("FileLFN", "Long File Name", 0, 10)
         End If
     End Sub
     Private Sub ListViewAddColumn(Name As String, Text As String, Width As Integer, Index As Integer)
@@ -360,6 +416,32 @@ Public Class MainForm
             Return sBuilder.ToString
         End Using
     End Function
+
+    Private Sub PopulateDetails()
+        ListViewFiles.Items.Clear()
+
+        Dim Response As ProcessFilesResponse = ProcessFiles(_Disk.Directory, "")
+
+        If Not Response.HasCreated Then
+            ListViewFiles.Columns.RemoveByKey("FileCreateDate")
+        Else
+            ListViewFiles.Columns.Item("FileCreateDate").Width = 140
+        End If
+        If Not Response.HasLastAccessed Then
+            ListViewFiles.Columns.RemoveByKey("FileLastAccessDate")
+        Else
+            ListViewFiles.Columns.Item("FileLastAccessDate").Width = 90
+        End If
+        If Not Response.HasLFN Then
+            ListViewFiles.Columns.RemoveByKey("FileLFN")
+        Else
+            ListViewFiles.Columns.Item("FileLFN").Width = 200
+        End If
+        _VolumeLabel = Response.VolumeLabel
+        BtnClearCreated.Visible = (Response.HasCreated)
+        BtnClearLastAccessed.Visible = (Response.HasLastAccessed)
+        CBCheckAll.Checked = False
+    End Sub
 
     Private Sub PopulateSummary()
         Dim BootstrapChecksum = Crc32.ComputeChecksum(_Disk.BootSector.BootStrapCode)
@@ -451,7 +533,7 @@ Public Class MainForm
                         ComboGroups.Items.Clear()
                         ComboCleared = True
                     End If
-                    Index = ComboGroups.Items.Add(New ComboGroup(PathName, FileName))
+                    Index = ComboGroups.Items.Add(New ComboFileItem(PathName, FileName))
                 Next
             Else
                 Dim Ext As String = UCase(System.IO.Path.GetExtension(FilePath))
@@ -462,7 +544,7 @@ Public Class MainForm
                         ComboGroups.Items.Clear()
                         ComboCleared = True
                     End If
-                    Index = ComboGroups.Items.Add(New ComboGroup(PathName, FileName))
+                    Index = ComboGroups.Items.Add(New ComboFileItem(PathName, FileName))
                 End If
             End If
         Next
@@ -477,6 +559,8 @@ Public Class MainForm
         With Response
             .FilePath = FilePath
             .Offset = File.Offset
+            .HasCreated = File.HasCreationDate
+            .HasLastAccessed = File.HasLastAccessDate
         End With
 
         Return Response
@@ -550,61 +634,67 @@ Public Class MainForm
 
         Return Response
     End Function
-    Private Sub ProcessImage(Group As ComboGroup)
-        Dim FilePath As String = System.IO.Path.Combine(Group.Path, Group.File)
-        Dim Response As ProcessFilesResponse
+    Private Sub ProcessImage(Item As ComboFileItem)
+        Dim FilePath As String = System.IO.Path.Combine(Item.Path, Item.File)
 
         _FileHashTable.Clear()
-        ListViewSummary.Items.Clear()
-        ListViewFiles.Items.Clear()
         InitializeColumns()
         InitializeButtons()
 
-        If Group.Disk IsNot Nothing Then
-            _Disk = Group.Disk
+        If Item.Disk IsNot Nothing Then
+            _Disk = Item.Disk
         Else
             _Disk = New DiskImage.Disk(FilePath)
         End If
         If _Disk.IsValidImage Then
-            Response = ProcessFiles(_Disk.Directory, "")
-            If Not Response.HasCreated Then
-                ListViewFiles.Columns.RemoveByKey("FileCreateDate")
-            Else
-                ListViewFiles.Columns.Item("FileCreateDate").Width = 140
-            End If
-            If Not Response.HasLastAccessed Then
-                ListViewFiles.Columns.RemoveByKey("FileLastAccessDate")
-            Else
-                ListViewFiles.Columns.Item("FileLastAccessDate").Width = 90
-            End If
-            If Not Response.HasLFN Then
-                ListViewFiles.Columns.RemoveByKey("FileLFN")
-            Else
-                ListViewFiles.Columns.Item("FileLFN").Width = 200
-            End If
-            _VolumeLabel = Response.VolumeLabel
+            PopulateDetails()
             PopulateSummary()
             LblInvalidImage.Visible = False
+            CBCheckAll.Visible = True
         Else
             _VolumeLabel = ""
+            ListViewSummary.Items.Clear()
+            ListViewFiles.Items.Clear()
             LblInvalidImage.Visible = True
+            BtnClearCreated.Visible = False
+            BtnClearLastAccessed.Visible = False
+            CBCheckAll.Visible = False
         End If
     End Sub
+    Private Sub RefreshButtons()
+        Dim CreatedEnabled As Boolean = False
+        Dim LastAccessEnabled As Boolean = False
+
+        For Each Item As ListViewItem In ListViewFiles.CheckedItems
+            Dim FileData = _FileHashTable(Item.GetHashCode)
+            If FileData.HasCreated Then
+                CreatedEnabled = True
+            End If
+            If FileData.HasLastAccessed Then
+                LastAccessEnabled = True
+            End If
+            If CreatedEnabled And LastAccessEnabled Then
+                Exit For
+            End If
+        Next
+        BtnClearCreated.Enabled = CreatedEnabled
+        BtnClearLastAccessed.Enabled = LastAccessEnabled
+    End Sub
     Private Sub SaveChanges()
+        _SuppressEvent = True
         For Counter = 0 To ComboGroups.Items.Count - 1
-            Dim Item As ComboGroup = ComboGroups.Items(Counter)
+            Dim Item As ComboFileItem = ComboGroups.Items(Counter)
             If Item.Modified Then
                 If Item.Disk IsNot Nothing Then
                     Dim BackupPath As String = Item.Disk.FilePath & ".bak"
                     System.IO.File.Copy(Item.Disk.FilePath, BackupPath, True)
                     Item.Disk.SaveFile(Item.Disk.FilePath)
                     Item.Disk = Nothing
+                    Item.Modified = False
+                    ComboGroups.Items(Counter) = ComboGroups.Items(Counter)
                 End If
-                Item.Modified = False
             End If
         Next
-        _SuppressEvent = True
-        ComboGroups.Items(ComboGroups.SelectedIndex) = ComboGroups.Items(ComboGroups.SelectedIndex)
         _SuppressEvent = False
         PopulateSummary()
         BtnSave.Enabled = False
@@ -617,7 +707,7 @@ Public Class MainForm
             e.Effect = DragDropEffects.Copy
         End If
     End Sub
-    Private Sub Button1_Click(sender As Object, e As EventArgs) Handles Button1.Click
+    Private Sub Button1_Click(sender As Object, e As EventArgs)
         For Counter = 0 To ComboGroups.Items.Count - 1
             ComboGroups.SelectedIndex = Counter
             Debug.Print(ComboGroups.Text)
@@ -673,10 +763,6 @@ Public Class MainForm
         ChangeOEMID()
     End Sub
 
-    Private Sub LabelDropMessage_Click(sender As Object, e As EventArgs) Handles LabelDropMessage.Click
-
-    End Sub
-
     Private Sub LabelDropMessage_DragDrop(sender As Object, e As DragEventArgs) Handles LabelDropMessage.DragDrop
         ProcessFileDrop(e.Data.GetData(DataFormats.FileDrop))
     End Sub
@@ -688,9 +774,49 @@ Public Class MainForm
     Private Sub BtnSave_Click(sender As Object, e As EventArgs) Handles BtnSave.Click
         SaveChanges
     End Sub
+
+    Private Sub ListViewFiles_ColumnWidthChanging(sender As Object, e As ColumnWidthChangingEventArgs) Handles ListViewFiles.ColumnWidthChanging
+        If e.ColumnIndex = 0 Then
+            e.NewWidth = Me.ListViewFiles.Columns(e.ColumnIndex).Width
+            e.Cancel = True
+        End If
+    End Sub
+
+    Private Sub CBCheckAll_CheckedChanged(sender As Object, e As EventArgs) Handles CBCheckAll.CheckedChanged
+        _SuppressEvent = True
+        For Each Item As ListViewItem In ListViewFiles.Items
+            Item.Checked = CBCheckAll.Checked
+        Next
+        _SuppressEvent = False
+        RefreshButtons()
+    End Sub
+
+    Private Sub ListViewFiles_ItemChecked(sender As Object, e As ItemCheckedEventArgs) Handles ListViewFiles.ItemChecked
+        If _SuppressEvent Then
+            Exit Sub
+        End If
+
+        RefreshButtons()
+    End Sub
+
+    Private Sub BtnClearCreated_Click(sender As Object, e As EventArgs) Handles BtnClearCreated.Click
+        Dim Msg As String = "Are you sure you wish to clear the Creation Date for all selected files?"
+        If MsgBox(Msg, MsgBoxStyle.Question + MsgBoxStyle.YesNo + MsgBoxStyle.DefaultButton2) = MsgBoxResult.Yes Then
+            ClearCreatedDate()
+            BtnClearCreated.Enabled = False
+        End If
+    End Sub
+
+    Private Sub BtnClearLastAccessed_Click(sender As Object, e As EventArgs) Handles BtnClearLastAccessed.Click
+        Dim Msg As String = "Are you sure you wish to clear the Last Access Date for all selected files?"
+        If MsgBox(Msg, MsgBoxStyle.Question + MsgBoxStyle.YesNo + MsgBoxStyle.DefaultButton2) = MsgBoxResult.Yes Then
+            ClearLastAccessedDate()
+            BtnClearLastAccessed.Enabled = False
+        End If
+    End Sub
 End Class
 
-Public Class ComboGroup
+Public Class ComboFileItem
     Private _Path As String
     Private _File As String
     Private _Modified As Boolean
@@ -753,6 +879,8 @@ End Structure
 Public Structure FileData
     Dim FilePath As String
     Dim Offset As UInteger
+    Dim HasCreated As Boolean
+    Dim HasLastAccessed As Boolean
 End Structure
 
 Public Structure BootstrapType
