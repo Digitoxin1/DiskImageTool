@@ -106,6 +106,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="BootSector.vb" />
+    <Compile Include="ComboFileItem.vb" />
     <Compile Include="CRC32.vb" />
     <Compile Include="Directory.vb" />
     <Compile Include="DirectoryEntry.vb" />

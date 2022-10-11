@@ -47,10 +47,12 @@ Partial Class MainForm
         Me.BtnClearLastAccessed = New System.Windows.Forms.Button()
         Me.Button1 = New System.Windows.Forms.Button()
         Me.BtnSave = New System.Windows.Forms.Button()
-        Me.Label1 = New System.Windows.Forms.Label()
-        Me.LabelCurrentImage = New System.Windows.Forms.Label()
         Me.LabelDropMessage = New System.Windows.Forms.Label()
         Me.CBCheckAll = New System.Windows.Forms.CheckBox()
+        Me.BtnScan = New System.Windows.Forms.Button()
+        Me.BtnFilters = New System.Windows.Forms.Button()
+        Me.ListFilters = New System.Windows.Forms.CheckedListBox()
+        Me.LblFilterMessage = New System.Windows.Forms.Label()
         FileName = CType(New System.Windows.Forms.ColumnHeader(), System.Windows.Forms.ColumnHeader)
         FileExt = CType(New System.Windows.Forms.ColumnHeader(), System.Windows.Forms.ColumnHeader)
         FileSize = CType(New System.Windows.Forms.ColumnHeader(), System.Windows.Forms.ColumnHeader)
@@ -136,10 +138,10 @@ Partial Class MainForm
         Me.ListViewFiles.Columns.AddRange(New System.Windows.Forms.ColumnHeader() {ColumnHeader1, FileName, FileExt, FileSize, FileLastWriteDate, FileStartingCluster, FileAttrib, FileCRC32})
         Me.ListViewFiles.FullRowSelect = True
         Me.ListViewFiles.HideSelection = False
-        Me.ListViewFiles.Location = New System.Drawing.Point(320, 61)
+        Me.ListViewFiles.Location = New System.Drawing.Point(320, 41)
         Me.ListViewFiles.Name = "ListViewFiles"
-        Me.ListViewFiles.Size = New System.Drawing.Size(642, 452)
-        Me.ListViewFiles.TabIndex = 14
+        Me.ListViewFiles.Size = New System.Drawing.Size(642, 472)
+        Me.ListViewFiles.TabIndex = 10
         Me.ListViewFiles.UseCompatibleStateImageBehavior = False
         Me.ListViewFiles.View = System.Windows.Forms.View.Details
         '
@@ -151,12 +153,12 @@ Partial Class MainForm
         Me.ListViewSummary.Columns.AddRange(New System.Windows.Forms.ColumnHeader() {SummaryName, SummaryValue})
         Me.ListViewSummary.HeaderStyle = System.Windows.Forms.ColumnHeaderStyle.None
         Me.ListViewSummary.HideSelection = False
-        Me.ListViewSummary.Location = New System.Drawing.Point(12, 33)
+        Me.ListViewSummary.Location = New System.Drawing.Point(12, 41)
         Me.ListViewSummary.MultiSelect = False
         Me.ListViewSummary.Name = "ListViewSummary"
         Me.ListViewSummary.ShowGroups = False
         Me.ListViewSummary.Size = New System.Drawing.Size(302, 189)
-        Me.ListViewSummary.TabIndex = 2
+        Me.ListViewSummary.TabIndex = 5
         Me.ListViewSummary.UseCompatibleStateImageBehavior = False
         Me.ListViewSummary.View = System.Windows.Forms.View.Details
         '
@@ -168,22 +170,23 @@ Partial Class MainForm
         Me.ComboGroups.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList
         Me.ComboGroups.DropDownWidth = 523
         Me.ComboGroups.FormattingEnabled = True
-        Me.ComboGroups.Location = New System.Drawing.Point(320, 33)
+        Me.ComboGroups.Location = New System.Drawing.Point(320, 12)
         Me.ComboGroups.Name = "ComboGroups"
         Me.ComboGroups.Size = New System.Drawing.Size(550, 21)
         Me.ComboGroups.Sorted = True
-        Me.ComboGroups.TabIndex = 11
+        Me.ComboGroups.TabIndex = 3
         '
         'LblInvalidImage
         '
+        Me.LblInvalidImage.Anchor = System.Windows.Forms.AnchorStyles.None
         Me.LblInvalidImage.AutoSize = True
         Me.LblInvalidImage.BackColor = System.Drawing.SystemColors.Window
         Me.LblInvalidImage.Font = New System.Drawing.Font("Microsoft Sans Serif", 18.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.LblInvalidImage.ForeColor = System.Drawing.Color.Red
-        Me.LblInvalidImage.Location = New System.Drawing.Point(86, 113)
+        Me.LblInvalidImage.Location = New System.Drawing.Point(86, 121)
         Me.LblInvalidImage.Name = "LblInvalidImage"
         Me.LblInvalidImage.Size = New System.Drawing.Size(155, 29)
-        Me.LblInvalidImage.TabIndex = 3
+        Me.LblInvalidImage.TabIndex = 6
         Me.LblInvalidImage.Text = "Invalid Image"
         Me.LblInvalidImage.TextAlign = System.Drawing.ContentAlignment.MiddleCenter
         Me.LblInvalidImage.Visible = False
@@ -196,12 +199,12 @@ Partial Class MainForm
         Me.ListViewHashes.Font = New System.Drawing.Font("Microsoft Sans Serif", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.ListViewHashes.HeaderStyle = System.Windows.Forms.ColumnHeaderStyle.Nonclickable
         Me.ListViewHashes.HideSelection = False
-        Me.ListViewHashes.Location = New System.Drawing.Point(12, 228)
+        Me.ListViewHashes.Location = New System.Drawing.Point(12, 236)
         Me.ListViewHashes.MultiSelect = False
         Me.ListViewHashes.Name = "ListViewHashes"
         Me.ListViewHashes.Scrollable = False
         Me.ListViewHashes.Size = New System.Drawing.Size(302, 101)
-        Me.ListViewHashes.TabIndex = 4
+        Me.ListViewHashes.TabIndex = 7
         Me.ListViewHashes.TileSize = New System.Drawing.Size(295, 30)
         Me.ListViewHashes.UseCompatibleStateImageBehavior = False
         Me.ListViewHashes.View = System.Windows.Forms.View.Tile
@@ -212,10 +215,10 @@ Partial Class MainForm
         Me.Panel1.BackColor = System.Drawing.SystemColors.Window
         Me.Panel1.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle
         Me.Panel1.Controls.Add(Me.FlowLayoutPanel1)
-        Me.Panel1.Location = New System.Drawing.Point(12, 335)
+        Me.Panel1.Location = New System.Drawing.Point(12, 343)
         Me.Panel1.Name = "Panel1"
-        Me.Panel1.Size = New System.Drawing.Size(302, 178)
-        Me.Panel1.TabIndex = 5
+        Me.Panel1.Size = New System.Drawing.Size(302, 170)
+        Me.Panel1.TabIndex = 8
         '
         'FlowLayoutPanel1
         '
@@ -230,8 +233,8 @@ Partial Class MainForm
         Me.FlowLayoutPanel1.FlowDirection = System.Windows.Forms.FlowDirection.TopDown
         Me.FlowLayoutPanel1.Location = New System.Drawing.Point(84, 3)
         Me.FlowLayoutPanel1.Name = "FlowLayoutPanel1"
-        Me.FlowLayoutPanel1.Size = New System.Drawing.Size(133, 170)
-        Me.FlowLayoutPanel1.TabIndex = 6
+        Me.FlowLayoutPanel1.Size = New System.Drawing.Size(133, 162)
+        Me.FlowLayoutPanel1.TabIndex = 0
         '
         'ButtonDisplayBootSector
         '
@@ -239,7 +242,7 @@ Partial Class MainForm
         Me.ButtonDisplayBootSector.Location = New System.Drawing.Point(3, 3)
         Me.ButtonDisplayBootSector.Name = "ButtonDisplayBootSector"
         Me.ButtonDisplayBootSector.Size = New System.Drawing.Size(126, 23)
-        Me.ButtonDisplayBootSector.TabIndex = 7
+        Me.ButtonDisplayBootSector.TabIndex = 0
         Me.ButtonDisplayBootSector.Text = "Display Boot Sector"
         Me.ButtonDisplayBootSector.UseVisualStyleBackColor = True
         '
@@ -249,7 +252,7 @@ Partial Class MainForm
         Me.ButtonOEMID.Location = New System.Drawing.Point(3, 32)
         Me.ButtonOEMID.Name = "ButtonOEMID"
         Me.ButtonOEMID.Size = New System.Drawing.Size(126, 23)
-        Me.ButtonOEMID.TabIndex = 8
+        Me.ButtonOEMID.TabIndex = 1
         Me.ButtonOEMID.Text = "Change OEM ID"
         Me.ButtonOEMID.UseVisualStyleBackColor = True
         '
@@ -259,7 +262,7 @@ Partial Class MainForm
         Me.BtnClearCreated.Location = New System.Drawing.Point(3, 61)
         Me.BtnClearCreated.Name = "BtnClearCreated"
         Me.BtnClearCreated.Size = New System.Drawing.Size(126, 23)
-        Me.BtnClearCreated.TabIndex = 9
+        Me.BtnClearCreated.TabIndex = 2
         Me.BtnClearCreated.Text = "Clear Creation Date"
         Me.BtnClearCreated.UseVisualStyleBackColor = True
         '
@@ -269,7 +272,7 @@ Partial Class MainForm
         Me.BtnClearLastAccessed.Location = New System.Drawing.Point(3, 90)
         Me.BtnClearLastAccessed.Name = "BtnClearLastAccessed"
         Me.BtnClearLastAccessed.Size = New System.Drawing.Size(126, 23)
-        Me.BtnClearLastAccessed.TabIndex = 10
+        Me.BtnClearLastAccessed.TabIndex = 3
         Me.BtnClearLastAccessed.Text = "Clear Last Access Date"
         Me.BtnClearLastAccessed.UseVisualStyleBackColor = True
         '
@@ -278,7 +281,7 @@ Partial Class MainForm
         Me.Button1.Location = New System.Drawing.Point(3, 119)
         Me.Button1.Name = "Button1"
         Me.Button1.Size = New System.Drawing.Size(126, 23)
-        Me.Button1.TabIndex = 11
+        Me.Button1.TabIndex = 4
         Me.Button1.Text = "Load All"
         Me.Button1.UseVisualStyleBackColor = True
         Me.Button1.Visible = False
@@ -287,30 +290,12 @@ Partial Class MainForm
         '
         Me.BtnSave.Anchor = CType((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
         Me.BtnSave.Enabled = False
-        Me.BtnSave.Location = New System.Drawing.Point(876, 32)
+        Me.BtnSave.Location = New System.Drawing.Point(876, 11)
         Me.BtnSave.Name = "BtnSave"
         Me.BtnSave.Size = New System.Drawing.Size(86, 23)
-        Me.BtnSave.TabIndex = 12
+        Me.BtnSave.TabIndex = 4
         Me.BtnSave.Text = "Save Changes"
         Me.BtnSave.UseVisualStyleBackColor = True
-        '
-        'Label1
-        '
-        Me.Label1.AutoSize = True
-        Me.Label1.Location = New System.Drawing.Point(12, 9)
-        Me.Label1.Name = "Label1"
-        Me.Label1.Size = New System.Drawing.Size(76, 13)
-        Me.Label1.TabIndex = 0
-        Me.Label1.Text = "Current Image:"
-        '
-        'LabelCurrentImage
-        '
-        Me.LabelCurrentImage.AutoEllipsis = True
-        Me.LabelCurrentImage.ForeColor = System.Drawing.Color.MediumBlue
-        Me.LabelCurrentImage.Location = New System.Drawing.Point(87, 9)
-        Me.LabelCurrentImage.Name = "LabelCurrentImage"
-        Me.LabelCurrentImage.Size = New System.Drawing.Size(848, 13)
-        Me.LabelCurrentImage.TabIndex = 1
         '
         'LabelDropMessage
         '
@@ -322,28 +307,66 @@ Partial Class MainForm
         Me.LabelDropMessage.Location = New System.Drawing.Point(530, 279)
         Me.LabelDropMessage.Name = "LabelDropMessage"
         Me.LabelDropMessage.Size = New System.Drawing.Size(222, 16)
-        Me.LabelDropMessage.TabIndex = 15
+        Me.LabelDropMessage.TabIndex = 11
         Me.LabelDropMessage.Text = "Drag && Drop Disk Images Here"
         Me.LabelDropMessage.TextAlign = System.Drawing.ContentAlignment.MiddleCenter
         '
         'CBCheckAll
         '
         Me.CBCheckAll.AutoSize = True
-        Me.CBCheckAll.Location = New System.Drawing.Point(326, 68)
+        Me.CBCheckAll.Location = New System.Drawing.Point(326, 48)
         Me.CBCheckAll.Name = "CBCheckAll"
         Me.CBCheckAll.Size = New System.Drawing.Size(15, 14)
-        Me.CBCheckAll.TabIndex = 13
+        Me.CBCheckAll.TabIndex = 9
         Me.CBCheckAll.UseVisualStyleBackColor = True
+        '
+        'BtnScan
+        '
+        Me.BtnScan.Location = New System.Drawing.Point(12, 11)
+        Me.BtnScan.Name = "BtnScan"
+        Me.BtnScan.Size = New System.Drawing.Size(86, 23)
+        Me.BtnScan.TabIndex = 0
+        Me.BtnScan.Text = "Scan Images"
+        Me.BtnScan.UseVisualStyleBackColor = True
+        '
+        'BtnFilters
+        '
+        Me.BtnFilters.Location = New System.Drawing.Point(104, 11)
+        Me.BtnFilters.Name = "BtnFilters"
+        Me.BtnFilters.Size = New System.Drawing.Size(86, 23)
+        Me.BtnFilters.TabIndex = 1
+        Me.BtnFilters.Text = "Filters"
+        Me.BtnFilters.UseVisualStyleBackColor = True
+        '
+        'ListFilters
+        '
+        Me.ListFilters.FormattingEnabled = True
+        Me.ListFilters.Location = New System.Drawing.Point(104, 34)
+        Me.ListFilters.Name = "ListFilters"
+        Me.ListFilters.Size = New System.Drawing.Size(137, 94)
+        Me.ListFilters.TabIndex = 2
+        Me.ListFilters.Visible = False
+        '
+        'LblFilterMessage
+        '
+        Me.LblFilterMessage.AutoSize = True
+        Me.LblFilterMessage.Location = New System.Drawing.Point(196, 16)
+        Me.LblFilterMessage.Name = "LblFilterMessage"
+        Me.LblFilterMessage.Size = New System.Drawing.Size(90, 13)
+        Me.LblFilterMessage.TabIndex = 12
+        Me.LblFilterMessage.Text = "Scanning... 100%"
         '
         'MainForm
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
         Me.ClientSize = New System.Drawing.Size(974, 525)
+        Me.Controls.Add(Me.LblFilterMessage)
+        Me.Controls.Add(Me.ListFilters)
+        Me.Controls.Add(Me.BtnFilters)
+        Me.Controls.Add(Me.BtnScan)
         Me.Controls.Add(Me.CBCheckAll)
         Me.Controls.Add(Me.LabelDropMessage)
-        Me.Controls.Add(Me.LabelCurrentImage)
-        Me.Controls.Add(Me.Label1)
         Me.Controls.Add(Me.BtnSave)
         Me.Controls.Add(Me.Panel1)
         Me.Controls.Add(Me.ListViewHashes)
@@ -369,8 +392,6 @@ Partial Class MainForm
     Friend WithEvents ListViewHashes As ListView
     Friend WithEvents Panel1 As Panel
     Friend WithEvents BtnSave As Button
-    Friend WithEvents Label1 As Label
-    Friend WithEvents LabelCurrentImage As Label
     Friend WithEvents LabelDropMessage As Label
     Friend WithEvents FlowLayoutPanel1 As FlowLayoutPanel
     Friend WithEvents ButtonOEMID As Button
@@ -379,4 +400,8 @@ Partial Class MainForm
     Friend WithEvents BtnClearCreated As Button
     Friend WithEvents CBCheckAll As CheckBox
     Friend WithEvents BtnClearLastAccessed As Button
+    Friend WithEvents BtnScan As Button
+    Friend WithEvents BtnFilters As Button
+    Friend WithEvents ListFilters As CheckedListBox
+    Friend WithEvents LblFilterMessage As Label
 End Class

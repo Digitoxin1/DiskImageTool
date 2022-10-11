@@ -17,7 +17,7 @@ Public Class OEMIDForm
         txtCurrentOEMID.Text = OSNameString
 
         If BootstrapTypes.ContainsKey(BootstrapChecksum) Then
-            Dim OSNameList As List(Of String) = Split(BootstrapTypes.Item(BootstrapChecksum).OSName, ",").ToList
+            Dim OSNameList As List(Of String) = BootstrapTypes.Item(BootstrapChecksum).OSNames
             For Each OSName In OSNameList
                 Dim Index = CboOEMID.Items.Add(OSName)
                 If OSName = OSNameString Then
