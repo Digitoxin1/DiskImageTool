@@ -349,7 +349,7 @@ Partial Class MainForm
         Me.ListFilters.FormattingEnabled = True
         Me.ListFilters.Location = New System.Drawing.Point(104, 34)
         Me.ListFilters.Name = "ListFilters"
-        Me.ListFilters.Size = New System.Drawing.Size(182, 79)
+        Me.ListFilters.Size = New System.Drawing.Size(197, 79)
         Me.ListFilters.TabIndex = 2
         Me.ListFilters.Visible = False
         '
@@ -377,7 +377,7 @@ Partial Class MainForm
         Me.ToolStripFileName.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text
         Me.ToolStripFileName.Margin = New System.Windows.Forms.Padding(2, 3, 2, 2)
         Me.ToolStripFileName.Name = "ToolStripFileName"
-        Me.ToolStripFileName.Size = New System.Drawing.Size(779, 19)
+        Me.ToolStripFileName.Size = New System.Drawing.Size(810, 19)
         Me.ToolStripFileName.Spring = True
         Me.ToolStripFileName.Text = "File Name"
         Me.ToolStripFileName.TextAlign = System.Drawing.ContentAlignment.MiddleLeft
