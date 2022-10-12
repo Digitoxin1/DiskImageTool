@@ -2,7 +2,7 @@
     Public Class BootSector
         Private Enum BootSectorOffset As UInteger
             Code = 0
-            OSName = 3
+            OEMID = 3
             BytesPerSector = 11
             SectorsPerCluster = 13
             ReservedSectors = 14
@@ -27,7 +27,7 @@
 
         Private Enum BootSectorSize As UInteger
             Code = 3
-            OSName = 8
+            OEMID = 8
             VolumeLabel = 11
             FileSystemType = 8
             BootStrapCode = 448
@@ -188,12 +188,12 @@
             End Set
         End Property
 
-        Public Property OSName() As Byte()
+        Public Property OEMID() As Byte()
             Get
-                Return _Parent.GetBytes(BootSectorOffset.OSName, BootSectorSize.OSName)
+                Return _Parent.GetBytes(BootSectorOffset.OEMID, BootSectorSize.OEMID)
             End Get
             Set
-                _Parent.SetBytes(Value, BootSectorOffset.OSName, BootSectorSize.OSName, 0)
+                _Parent.SetBytes(Value, BootSectorOffset.OEMID, BootSectorSize.OEMID, 0)
             End Set
         End Property
 

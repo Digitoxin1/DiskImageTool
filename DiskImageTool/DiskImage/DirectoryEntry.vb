@@ -59,7 +59,7 @@ Namespace DiskImage
             LFNFilePart3 = 4
         End Enum
 
-        Private ReadOnly InvalidChars() As Byte = {&H22, &H2B, &H2C, &H2F, &H3A, &H3B, &H3C, &H3D, &H3E, &H3F, &H5B, &H5C, &H5D, &H7C}
+        Private ReadOnly InvalidChars() As Byte = {&H22, &H2B, &H2C, &H2E, &H2F, &H3A, &H3B, &H3C, &H3D, &H3E, &H3F, &H5B, &H5C, &H5D, &H7C, &H7F}
         Private ReadOnly _FatChain As List(Of UInteger)
         Private ReadOnly _Offset As UInteger
         Private ReadOnly _Parent As Disk
@@ -294,15 +294,27 @@ Namespace DiskImage
             Return CreationDate <> 0 Or CreationTime <> 0 Or CreationMillisecond <> 0
         End Function
 
+        Public Function HasInvalidAttributes() As Boolean
+            Return (Attributes > 63)
+        End Function
+
         Public Function HasInvalidExtension() As Boolean
             Dim Result As Boolean = False
             Dim LocalExtension = Extension
+            Dim VolumeName As Boolean = IsVolumeName()
+            Dim C As Byte
 
             For Counter = 0 To UBound(LocalExtension)
-                If LocalExtension(Counter) < &H20 Then
+                C = LocalExtension(Counter)
+                If VolumeName And (C = &H0) Then
+                    Result = False
+                ElseIf C < &H20 Then
                     Result = True
                     Exit For
-                ElseIf InvalidChars.Contains(LocalExtension(Counter)) Then
+                ElseIf Not VolumeName And C > &H60 And C < &H7B Then
+                    Result = True
+                    Exit For
+                ElseIf Not VolumeName And InvalidChars.Contains(C) Then
                     Result = True
                     Exit For
                 End If
@@ -314,15 +326,23 @@ Namespace DiskImage
         Public Function HasInvalidFilename() As Boolean
             Dim Result As Boolean = False
             Dim LocalFileName = FileName
+            Dim VolumeName As Boolean = IsVolumeName()
+            Dim C As Byte
 
-            If LocalFileName(0) = &H20 Then
+            If Not VolumeName And LocalFileName(0) = &H20 Then
                 Result = True
             Else
                 For Counter = 0 To UBound(LocalFileName)
-                    If LocalFileName(Counter) < &H20 Then
+                    C = LocalFileName(Counter)
+                    If VolumeName And (C = &H0 Or (Counter = 1 And C = &H3)) Then
+                        Result = False
+                    ElseIf C < &H20 Then
                         Result = True
                         Exit For
-                    ElseIf InvalidChars.Contains(LocalFileName(Counter)) Then
+                    ElseIf Not VolumeName And C > &H60 And C < &H7B Then
+                        Result = True
+                        Exit For
+                    ElseIf Not VolumeName And InvalidChars.Contains(C) Then
                         Result = True
                         Exit For
                     End If
@@ -333,34 +353,15 @@ Namespace DiskImage
         End Function
 
         Public Function HasInvalidFileSize() As Boolean
-            Dim Result As Boolean
+            Dim SectorCount As UInteger
 
-            Select Case _Parent.BootSector.MediaDescriptor
-                Case &HF0
-                    If _Parent.BootSector.SectorsPerTrack = 36 Then
-                        Result = (FileSize > 2949120)
-                    Else
-                        Result = (FileSize > 1474560)
-                    End If
-                Case &HF9
-                    If _Parent.BootSector.SectorsPerTrack = 15 Then
-                        Result = (FileSize > 1228800)
-                    Else
-                        Result = (FileSize > 737280)
-                    End If
-                Case &HFC
-                    Result = (FileSize > 184320)
-                Case &HFD
-                    Result = (FileSize > 368640)
-                Case &HFE
-                    Result = (FileSize > 163840)
-                Case &HFF
-                    Result = (FileSize > 327680)
-                Case Else
-                    Result = (FileSize > 2949120)
-            End Select
+            If _Parent.BootSector.SmallNumberOfSectors > 0 Then
+                SectorCount = _Parent.BootSector.SmallNumberOfSectors
+            Else
+                SectorCount = _Parent.BootSector.LargeNumberOfSectors
+            End If
 
-            Return Result
+            Return FileSize > SectorCount * _Parent.BootSector.BytesPerSector
         End Function
 
         Public Function HasLastAccessDate() As Boolean

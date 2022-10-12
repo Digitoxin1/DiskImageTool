@@ -53,6 +53,10 @@ Partial Class MainForm
         Me.BtnFilters = New System.Windows.Forms.Button()
         Me.ListFilters = New System.Windows.Forms.CheckedListBox()
         Me.LblFilterMessage = New System.Windows.Forms.Label()
+        Me.StatusStrip1 = New System.Windows.Forms.StatusStrip()
+        Me.ToolStripFileName = New System.Windows.Forms.ToolStripStatusLabel()
+        Me.ToolStripFileCount = New System.Windows.Forms.ToolStripStatusLabel()
+        Me.ToolStripModified = New System.Windows.Forms.ToolStripStatusLabel()
         FileName = CType(New System.Windows.Forms.ColumnHeader(), System.Windows.Forms.ColumnHeader)
         FileExt = CType(New System.Windows.Forms.ColumnHeader(), System.Windows.Forms.ColumnHeader)
         FileSize = CType(New System.Windows.Forms.ColumnHeader(), System.Windows.Forms.ColumnHeader)
@@ -67,6 +71,7 @@ Partial Class MainForm
         ColumnHeader1 = CType(New System.Windows.Forms.ColumnHeader(), System.Windows.Forms.ColumnHeader)
         Me.Panel1.SuspendLayout()
         Me.FlowLayoutPanel1.SuspendLayout()
+        Me.StatusStrip1.SuspendLayout()
         Me.SuspendLayout()
         '
         'FileName
@@ -88,7 +93,7 @@ Partial Class MainForm
         'FileLastWriteDate
         '
         FileLastWriteDate.Text = "Last Written"
-        FileLastWriteDate.Width = 140
+        FileLastWriteDate.Width = 120
         '
         'FileStartingCluster
         '
@@ -98,7 +103,7 @@ Partial Class MainForm
         'FileAttrib
         '
         FileAttrib.Text = "Attrib"
-        FileAttrib.Width = 70
+        FileAttrib.Width = 75
         '
         'FileCRC32
         '
@@ -140,7 +145,7 @@ Partial Class MainForm
         Me.ListViewFiles.HideSelection = False
         Me.ListViewFiles.Location = New System.Drawing.Point(320, 41)
         Me.ListViewFiles.Name = "ListViewFiles"
-        Me.ListViewFiles.Size = New System.Drawing.Size(642, 472)
+        Me.ListViewFiles.Size = New System.Drawing.Size(642, 481)
         Me.ListViewFiles.TabIndex = 10
         Me.ListViewFiles.UseCompatibleStateImageBehavior = False
         Me.ListViewFiles.View = System.Windows.Forms.View.Details
@@ -157,7 +162,7 @@ Partial Class MainForm
         Me.ListViewSummary.MultiSelect = False
         Me.ListViewSummary.Name = "ListViewSummary"
         Me.ListViewSummary.ShowGroups = False
-        Me.ListViewSummary.Size = New System.Drawing.Size(302, 189)
+        Me.ListViewSummary.Size = New System.Drawing.Size(302, 211)
         Me.ListViewSummary.TabIndex = 5
         Me.ListViewSummary.UseCompatibleStateImageBehavior = False
         Me.ListViewSummary.View = System.Windows.Forms.View.Details
@@ -183,7 +188,7 @@ Partial Class MainForm
         Me.LblInvalidImage.BackColor = System.Drawing.SystemColors.Window
         Me.LblInvalidImage.Font = New System.Drawing.Font("Microsoft Sans Serif", 18.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.LblInvalidImage.ForeColor = System.Drawing.Color.Red
-        Me.LblInvalidImage.Location = New System.Drawing.Point(86, 121)
+        Me.LblInvalidImage.Location = New System.Drawing.Point(86, 132)
         Me.LblInvalidImage.Name = "LblInvalidImage"
         Me.LblInvalidImage.Size = New System.Drawing.Size(155, 29)
         Me.LblInvalidImage.TabIndex = 6
@@ -199,7 +204,7 @@ Partial Class MainForm
         Me.ListViewHashes.Font = New System.Drawing.Font("Microsoft Sans Serif", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.ListViewHashes.HeaderStyle = System.Windows.Forms.ColumnHeaderStyle.Nonclickable
         Me.ListViewHashes.HideSelection = False
-        Me.ListViewHashes.Location = New System.Drawing.Point(12, 236)
+        Me.ListViewHashes.Location = New System.Drawing.Point(12, 258)
         Me.ListViewHashes.MultiSelect = False
         Me.ListViewHashes.Name = "ListViewHashes"
         Me.ListViewHashes.Scrollable = False
@@ -215,9 +220,9 @@ Partial Class MainForm
         Me.Panel1.BackColor = System.Drawing.SystemColors.Window
         Me.Panel1.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle
         Me.Panel1.Controls.Add(Me.FlowLayoutPanel1)
-        Me.Panel1.Location = New System.Drawing.Point(12, 343)
+        Me.Panel1.Location = New System.Drawing.Point(12, 365)
         Me.Panel1.Name = "Panel1"
-        Me.Panel1.Size = New System.Drawing.Size(302, 170)
+        Me.Panel1.Size = New System.Drawing.Size(302, 157)
         Me.Panel1.TabIndex = 8
         '
         'FlowLayoutPanel1
@@ -233,7 +238,7 @@ Partial Class MainForm
         Me.FlowLayoutPanel1.FlowDirection = System.Windows.Forms.FlowDirection.TopDown
         Me.FlowLayoutPanel1.Location = New System.Drawing.Point(84, 3)
         Me.FlowLayoutPanel1.Name = "FlowLayoutPanel1"
-        Me.FlowLayoutPanel1.Size = New System.Drawing.Size(133, 162)
+        Me.FlowLayoutPanel1.Size = New System.Drawing.Size(133, 149)
         Me.FlowLayoutPanel1.TabIndex = 0
         '
         'ButtonDisplayBootSector
@@ -304,11 +309,11 @@ Partial Class MainForm
         Me.LabelDropMessage.AutoSize = True
         Me.LabelDropMessage.BackColor = System.Drawing.SystemColors.Window
         Me.LabelDropMessage.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.75!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.LabelDropMessage.Location = New System.Drawing.Point(530, 279)
+        Me.LabelDropMessage.Location = New System.Drawing.Point(504, 273)
         Me.LabelDropMessage.Name = "LabelDropMessage"
-        Me.LabelDropMessage.Size = New System.Drawing.Size(222, 16)
+        Me.LabelDropMessage.Size = New System.Drawing.Size(274, 16)
         Me.LabelDropMessage.TabIndex = 11
-        Me.LabelDropMessage.Text = "Drag && Drop Disk Images Here"
+        Me.LabelDropMessage.Text = "Drag && Drop Floppy Disk Images Here"
         Me.LabelDropMessage.TextAlign = System.Drawing.ContentAlignment.MiddleCenter
         '
         'CBCheckAll
@@ -340,10 +345,11 @@ Partial Class MainForm
         '
         'ListFilters
         '
+        Me.ListFilters.CheckOnClick = True
         Me.ListFilters.FormattingEnabled = True
         Me.ListFilters.Location = New System.Drawing.Point(104, 34)
         Me.ListFilters.Name = "ListFilters"
-        Me.ListFilters.Size = New System.Drawing.Size(137, 94)
+        Me.ListFilters.Size = New System.Drawing.Size(182, 79)
         Me.ListFilters.TabIndex = 2
         Me.ListFilters.Visible = False
         '
@@ -355,12 +361,52 @@ Partial Class MainForm
         Me.LblFilterMessage.Size = New System.Drawing.Size(90, 13)
         Me.LblFilterMessage.TabIndex = 12
         Me.LblFilterMessage.Text = "Scanning... 100%"
+        Me.LblFilterMessage.UseMnemonic = False
+        '
+        'StatusStrip1
+        '
+        Me.StatusStrip1.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.ToolStripFileName, Me.ToolStripFileCount, Me.ToolStripModified})
+        Me.StatusStrip1.Location = New System.Drawing.Point(0, 523)
+        Me.StatusStrip1.Name = "StatusStrip1"
+        Me.StatusStrip1.Size = New System.Drawing.Size(974, 24)
+        Me.StatusStrip1.TabIndex = 13
+        Me.StatusStrip1.Text = "StatusStrip1"
+        '
+        'ToolStripFileName
+        '
+        Me.ToolStripFileName.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text
+        Me.ToolStripFileName.Margin = New System.Windows.Forms.Padding(2, 3, 2, 2)
+        Me.ToolStripFileName.Name = "ToolStripFileName"
+        Me.ToolStripFileName.Size = New System.Drawing.Size(779, 19)
+        Me.ToolStripFileName.Spring = True
+        Me.ToolStripFileName.Text = "File Name"
+        Me.ToolStripFileName.TextAlign = System.Drawing.ContentAlignment.MiddleLeft
+        '
+        'ToolStripFileCount
+        '
+        Me.ToolStripFileCount.BorderSides = System.Windows.Forms.ToolStripStatusLabelBorderSides.Left
+        Me.ToolStripFileCount.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text
+        Me.ToolStripFileCount.Margin = New System.Windows.Forms.Padding(2, 3, 2, 2)
+        Me.ToolStripFileCount.Name = "ToolStripFileCount"
+        Me.ToolStripFileCount.Size = New System.Drawing.Size(43, 19)
+        Me.ToolStripFileCount.Text = "0 Files"
+        Me.ToolStripFileCount.TextAlign = System.Drawing.ContentAlignment.MiddleRight
+        '
+        'ToolStripModified
+        '
+        Me.ToolStripModified.BorderSides = System.Windows.Forms.ToolStripStatusLabelBorderSides.Left
+        Me.ToolStripModified.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text
+        Me.ToolStripModified.Margin = New System.Windows.Forms.Padding(2, 3, 2, 2)
+        Me.ToolStripModified.Name = "ToolStripModified"
+        Me.ToolStripModified.Size = New System.Drawing.Size(94, 19)
+        Me.ToolStripModified.Text = "0 Files Modified"
         '
         'MainForm
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
-        Me.ClientSize = New System.Drawing.Size(974, 525)
+        Me.ClientSize = New System.Drawing.Size(974, 547)
+        Me.Controls.Add(Me.StatusStrip1)
         Me.Controls.Add(Me.LblFilterMessage)
         Me.Controls.Add(Me.ListFilters)
         Me.Controls.Add(Me.BtnFilters)
@@ -380,6 +426,8 @@ Partial Class MainForm
         Me.Text = "Disk Image Tool"
         Me.Panel1.ResumeLayout(False)
         Me.FlowLayoutPanel1.ResumeLayout(False)
+        Me.StatusStrip1.ResumeLayout(False)
+        Me.StatusStrip1.PerformLayout()
         Me.ResumeLayout(False)
         Me.PerformLayout()
 
@@ -404,4 +452,8 @@ Partial Class MainForm
     Friend WithEvents BtnFilters As Button
     Friend WithEvents ListFilters As CheckedListBox
     Friend WithEvents LblFilterMessage As Label
+    Friend WithEvents StatusStrip1 As StatusStrip
+    Friend WithEvents ToolStripFileCount As ToolStripStatusLabel
+    Friend WithEvents ToolStripFileName As ToolStripStatusLabel
+    Friend WithEvents ToolStripModified As ToolStripStatusLabel
 End Class

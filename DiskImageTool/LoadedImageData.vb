@@ -1,4 +1,4 @@
-﻿Public Class ComboFileItem
+﻿Public Class LoadedImageData
     Private _Path As String
     Private _File As String
     Private _Modified As Boolean
@@ -10,6 +10,26 @@
     Private _HasCreated As Boolean
     Private _HasLastAccessed As Boolean
     Private _HasLongFileNames As Boolean
+    Public Property HasInvalidDirectoryEntries As Boolean
+        Get
+            Return _HasInvalidDirectoryEntries
+        End Get
+        Set
+            _HasInvalidDirectoryEntries = Value
+        End Set
+    End Property
+
+    Private _ComboIndex As Integer
+    Private _HasInvalidDirectoryEntries As Boolean
+
+    Public Property ComboIndex As Integer
+        Get
+            Return _ComboIndex
+        End Get
+        Set
+            _ComboIndex = Value
+        End Set
+    End Property
 
     Public Property HasLongFileNames As Boolean
         Get
@@ -122,6 +142,8 @@
         _HasLastAccessed = False
         _HasLongFileNames = False
         _Disk = Nothing
+        _HasInvalidDirectoryEntries = False
+        _ComboIndex = -1
     End Sub
     Public Overrides Function ToString() As String
         Return _File & IIf(_Modified, " *", "")

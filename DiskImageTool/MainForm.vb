@@ -1,22 +1,16 @@
 ﻿Imports System.Security.Cryptography
 Imports System.Text
-Public Enum FilterTypes
-    UnknownOEMID = 1
-    MismatchedOEMID = 2
-    HasCreated = 4
-    HasLastAccessed = 8
-    HasInvalidImage = 16
-    HasLongFileNames = 32
-End Enum
 
 Public Class MainForm
     Private ReadOnly _FileHashTable As Dictionary(Of UInteger, FileData)
+    Private ReadOnly _LoadedImageList As List(Of LoadedImageData)
+    Private ReadOnly _OEMIDDictionary As Dictionary(Of UInteger, OEMIDList)
     Private _Disk As DiskImage.Disk
     Private _VolumeLabel As String = ""
-    Private _InternalDrop As Boolean
-    Private ReadOnly _BootstrapTypes As Dictionary(Of UInteger, BootstrapType)
+    Private _InternalDrop As Boolean = False
     Private _SuppressEvent As Boolean = False
-    Private _CachedListItems As List(Of ComboFileItem)
+    Private _FiltersApplied As Boolean = False
+    Private _ModifiedCount As Integer = 0
 
     Public Sub New()
         ' This call is required by the designer.
@@ -24,8 +18,8 @@ Public Class MainForm
 
         ' Add any initialization after the InitializeComponent() call.
         _FileHashTable = New Dictionary(Of UInteger, FileData)
-        _InternalDrop = False
-        _BootstrapTypes = InitBootstrapTypes()
+        _LoadedImageList = New List(Of LoadedImageData)
+        _OEMIDDictionary = GetOEMIDDictionary()
         FlowLayoutPanel1.Visible = False
         BtnClearCreated.Enabled = False
         BtnClearCreated.Visible = False
@@ -35,151 +29,55 @@ Public Class MainForm
         BtnFilters.Enabled = False
         CBCheckAll.Visible = False
         LblFilterMessage.Visible = False
+        ToolStripFileCount.Visible = False
+        ToolStripFileName.Visible = False
+        ToolStripModified.Visible = False
     End Sub
-
-    Private Function InitBootstrapTypes() As Dictionary(Of UInteger, BootstrapType)
-        Dim Result As New Dictionary(Of UInteger, BootstrapType)
-        With Result
-            .Add(&HC6CE8A87&, GetBootstrapType("..DOS4.0", "English"))
-            .Add(&H62084C99&, GetBootstrapType("688AS EA", "English"))
-            .Add(&H231A83E&, GetBootstrapType("ALF  2.0", "English"))
-            .Add(&HB4140C43&, GetBootstrapType("ALF  3.0", "English"))
-            .Add(&H7096EE00&, GetBootstrapType("ALF  3.0", "English"))
-            .Add(&HE981E850&, GetBootstrapType("ALF  3.0", "English"))
-            .Add(&H20AE7ABE&, GetBootstrapType("C ZDS3.3", "English"))
-            .Add(&HD7FB8823&, GetBootstrapType("CH-FOR15", "English"))
-            .Add(&HC91B0027&, GetBootstrapType("CH-FOR16", "English"))
-            .Add(&H69C11AA5&, GetBootstrapType("CH-FOR18", "English"))
-            .Add(&HCE2D6ECF&, GetBootstrapType("CMAST2.0", "English"))
-            .Add(&H6E55822D&, GetBootstrapType("FORMATQM", "English"))
-            .Add(&H5EB98F7B&, GetBootstrapType("IBM  2.0", "English"))
-            .Add(&H58BB4185&, GetBootstrapType("IBM  3.0", "English"))
-            .Add(&H440CF965&, GetBootstrapType("IBM  3.1", "English"))
-            .Add(&H148EBE9E&, GetBootstrapType("IBM  3.1", "English"))
-            .Add(&H3CD5390D&, GetBootstrapType("IBM  3.1", "English"))
-            .Add(&H7AD69436&, GetBootstrapType("IBM  3.2,IBMMS3.2", "English"))
-            .Add(&H66660092&, GetBootstrapType("IBM  3.2", "English"))
-            .Add(&HA6003920&, GetBootstrapType("IBM  3.2", "English"))
-            .Add(&H96B7BEAA&, GetBootstrapType("IBM  3.2", "German"))
-            .Add(&H18BA4260&, GetBootstrapType("IBM  3.3", "English"))
-            .Add(&HA813EDA9&, GetBootstrapType("IBM  3.3", "English"))
-            .Add(&HFC1650BE&, GetBootstrapType("IBM  3.3", "English"))
-            .Add(&HE7E28CB3&, GetBootstrapType("IBM  3.3", "English"))
-            .Add(&HBBB8D363&, GetBootstrapType("IBM  3.3", "English"))
-            .Add(&HD5A08E3B&, GetBootstrapType("IBM  3.3,KEY DISK,MSDOS3.3", "English"))
-            .Add(&H50EC1B86&, GetBootstrapType("IBM  3.3", "French"))
-            .Add(&HC63EA411&, GetBootstrapType("IBM  3.3", "French"))
-            .Add(&H55957DBE&, GetBootstrapType("IBM  3.3", "German"))
-            .Add(&H90E549B9&, GetBootstrapType("IBM  3.3", "German"))
-            .Add(&HFD8B56C&, GetBootstrapType("IBM  3.3", "German"))
-            .Add(&HCA5FCC71&, GetBootstrapType("IBM  4.0,IBMMS4.0", "English"))
-            .Add(&H47E20088&, GetBootstrapType("IBM  4.1,IBM 4.01", "English"))
-            .Add(&H3F6176DF&, GetBootstrapType("IBM  5.0", "English"))
-            .Add(&HA157CE&, GetBootstrapType("IBM  5.0", "English"))
-            .Add(&H42705487&, GetBootstrapType("IBM  5.0", "French"))
-            .Add(&H1E9133C3&, GetBootstrapType("IBM  5.0", "German"))
-            .Add(&HC5584353&, GetBootstrapType("IBM 10.2", "English"))
-            .Add(&H19410C4&, GetBootstrapType("IBM 20.0", "English"))
-            .Add(&HDC004D1A&, GetBootstrapType("IBM 20.0", "English"))
-            .Add(&H4495837A&, GetBootstrapType("IBM PNCI", "English"))
-            .Add(&H4E1A74D4&, GetBootstrapType("IBM PNCI", "English"))
-            .Add(&HFA938DDA&, GetBootstrapType("IBM PNCI", "English"))
-            .Add(&HC53FAC5A&, GetBootstrapType("KEY DISK", "English"))
-            .Add(&HF47AF861&, GetBootstrapType("LHX TWO ", "English"))
-            .Add(&H8CD8F888&, GetBootstrapType("MagicISO", "English"))
-            .Add(&H9B0E679E&, GetBootstrapType("MSC 3.1 ", "English"))
-            .Add(&HEB85220D&, GetBootstrapType("MSDMF3.2", "English"))
-            .Add(&H2D34342E&, GetBootstrapType("MSDOS3.2", "English"))
-            .Add(&H63DCC6E5&, GetBootstrapType("MSDOS3.2", "English"))
-            .Add(&H58FAE0BA&, GetBootstrapType("MSDOS3.2", "English"))
-            .Add(&HD7CDA53E&, GetBootstrapType("MSDOS3.2", "English"))
-            .Add(&H7186F853&, GetBootstrapType("MSDOS3.2", "French"))
-            .Add(&H461FE7DE&, GetBootstrapType("MSDOS3.2", "French"))
-            .Add(&H6EA1666A&, GetBootstrapType("MSDOS3.2", "German"))
-            .Add(&HB3C42CAD&, GetBootstrapType("MSDOS3.3,INSIGNIA,I93 1.00", "English"))
-            .Add(&H17120C24&, GetBootstrapType("MSDOS3.3", "English"))
-            .Add(&H5045D72B&, GetBootstrapType("MSDOS3.3", "English"))
-            .Add(&HF8BD5277&, GetBootstrapType("MSDOS3.3", "French"))
-            .Add(&HBA7919EB&, GetBootstrapType("MSDOS3.3", "German"))
-            .Add(&HDB11BCE5&, GetBootstrapType("MSDOS4.0", "English"))
-            .Add(&H70386805&, GetBootstrapType("MSDOS4.0", "English"))
-            .Add(&H4767DBA2&, GetBootstrapType("MSDOS4.0", "French"))
-            .Add(&HFE944220&, GetBootstrapType("MSDOS5.0,MSDBL6.0,MSDSP6.0", "English"))
-            .Add(&H93282B6B&, GetBootstrapType("MSDOS5.0", "English"))
-            .Add(&HD3C0FBEF&, GetBootstrapType("MSDOS5.0", "French"))
-            .Add(&H7E3C7397&, GetBootstrapType("MSDOS5.0", "French"))
-            .Add(&H5D696A06&, GetBootstrapType("MSDOS5.0", "German"))
-            .Add(&HDC98D56D&, GetBootstrapType("MSDOS5.0", "Italian"))
-            .Add(&HEEB2E10D&, GetBootstrapType("MSDOS5.0", "Spanish"))
-            .Add(&H6A18BCFC&, GetBootstrapType("MSDOS5.0", "Spanish"))
-            .Add(&H1D1B49D&, GetBootstrapType("MSDOS6.0", "English"))
-            .Add(&HA975B7F6&, GetBootstrapType("MSWIN4.0", "English"))
-            .Add(&H342A7190&, GetBootstrapType("NECIS3.3", "English"))
-            .Add(&H3E12D96&, GetBootstrapType("NWDOS7.0", "German"))
-            .Add(&H74259F76&, GetBootstrapType("Olivetti", "English"))
-            .Add(&HABF90357&, GetBootstrapType("PC Tools,UBI-SOFT", "English"))
-            .Add(&H373BC7C4&, GetBootstrapType("PC Tools", "English"))
-            .Add(&H4CEA4F0B&, GetBootstrapType("PC Tools", "English"))
-            .Add(&H61AEADE2&, GetBootstrapType("PC Tools", "French"))
-            .Add(&H23318A0D&, GetBootstrapType("PCFormat", "English"))
-            .Add(&HDE92B409&, GetBootstrapType("PCFormat", "English"))
-            .Add(&H10739392&, GetBootstrapType("PCFormat", "English"))
-            .Add(&H8BE98DEC&, GetBootstrapType("ProCopy ", "English"))
-            .Add(&H6D055CC4&, GetBootstrapType("PSA  3.1", "English"))
-            .Add(&HD2318C04&, GetBootstrapType("PSA  3.2", "English"))
-            .Add(&HFBF4FA19&, GetBootstrapType("PSA  3.2", "English"))
-            .Add(&HE32BB64C&, GetBootstrapType("S.BERMAN", "English"))
-            .Add(&H7BC949F3&, GetBootstrapType("T V2.11 ", "English"))
-            .Add(&HC1C6ECB8&, GetBootstrapType("T V4.00 ", "English"))
-            .Add(&H577983D2&, GetBootstrapType("TAN  3.2", "English"))
-            .Add(&H847631E8&, GetBootstrapType("TAN  3.3", "English"))
-            .Add(&HC82880D8&, GetBootstrapType("TAN  3.3", "English"))
-            .Add(&H69B1B489&, GetBootstrapType("Tandy557", "English"))
-            .Add(&HA26247F1&, GetBootstrapType("TracerST", "English"))
-            .Add(&HCA33CAD&, GetBootstrapType("VGACPY51", "English"))
-            .Add(&H1F29F8C6&, GetBootstrapType("VGACP625", "English"))
-            .Add(&HB9067457&, GetBootstrapType("WINIMAGE", "English"))
-            .Add(&H78E72263&, GetBootstrapType("WINIMAGE", "English"))
-            .Add(&HCB438B3C&, GetBootstrapType("XTF-BOOT", "English"))
-            .Add(&H7E03A60A&, GetBootstrapType("XTREEWIN", "English"))
-        End With
-
-        Return Result
-    End Function
-
-    Private Function IsFiltered(File As ComboFileItem, AppliedFilters As FilterTypes) As Boolean
+    Private Function IsFiltered(ImageData As LoadedImageData, AppliedFilters As FilterTypes) As Boolean
         If (AppliedFilters And FilterTypes.HasInvalidImage) > 0 Then
-            If Not File.IsValidImage Then
+            If Not ImageData.IsValidImage Then
                 Return False
             End If
         End If
 
         If (AppliedFilters And FilterTypes.HasCreated) > 0 Then
-            If File.IsValidImage And File.HasCreated Then
+            If ImageData.IsValidImage And ImageData.HasCreated Then
                 Return False
             End If
         End If
 
         If (AppliedFilters And FilterTypes.HasLastAccessed) > 0 Then
-            If File.IsValidImage And File.HasLastAccessed Then
+            If ImageData.IsValidImage And ImageData.HasLastAccessed Then
                 Return False
             End If
         End If
 
         If (AppliedFilters And FilterTypes.MismatchedOEMID) > 0 Then
-            If File.IsValidImage And File.OEMIDFound And Not File.OEMIDMatched Then
+            If ImageData.IsValidImage And ImageData.OEMIDFound And Not ImageData.OEMIDMatched Then
                 Return False
             End If
         End If
 
         If (AppliedFilters And FilterTypes.UnknownOEMID) > 0 Then
-            If File.IsValidImage And Not File.OEMIDFound Then
+            If ImageData.IsValidImage And Not ImageData.OEMIDFound Then
                 Return False
             End If
         End If
 
         If (AppliedFilters And FilterTypes.HasLongFileNames) > 0 Then
-            If File.IsValidImage And File.HasLongFileNames Then
+            If ImageData.IsValidImage And ImageData.HasLongFileNames Then
+                Return False
+            End If
+        End If
+
+        If (AppliedFilters And FilterTypes.HasInvalidDirectoryEntries) > 0 Then
+            If ImageData.IsValidImage And ImageData.HasInvalidDirectoryEntries Then
+                Return False
+            End If
+        End If
+
+        If (AppliedFilters And FilterTypes.ModifiedFiles) > 0 Then
+            If ImageData.Modified Then
                 Return False
             End If
         End If
@@ -190,24 +88,27 @@ Public Class MainForm
     Private Sub ApplyFilters(e As ItemCheckEventArgs)
         Dim Count As Integer = ListFilters.CheckedItems.Count
         Dim IsChecked As Boolean
+        Dim Index As Integer = -1
+        Dim CurrentChecked As Boolean = False
 
-        If e.NewValue = CheckState.Checked And e.CurrentValue = CheckState.Unchecked Then
-            Count += 1
-        ElseIf e.NewValue = CheckState.Unchecked And e.CurrentValue = CheckState.Checked Then
-            Count -= 1
+        If e IsNot Nothing Then
+            If e.NewValue = CheckState.Checked And e.CurrentValue = CheckState.Unchecked Then
+                Count += 1
+            ElseIf e.NewValue = CheckState.Unchecked And e.CurrentValue = CheckState.Checked Then
+                Count -= 1
+            End If
+            Index = e.Index
+            CurrentChecked = (e.NewValue = CheckState.Checked)
         End If
 
         If Count > 0 Then
             Me.Cursor = Cursors.WaitCursor
 
-            If _CachedListItems Is Nothing Then
-                CacheComboGroups()
-            End If
             ComboGroups.Items.Clear()
             Dim AppliedFilters As FilterTypes = 0
             For Counter = 0 To ListFilters.Items.Count - 1
-                If Counter = e.Index Then
-                    IsChecked = (e.NewValue = CheckState.Checked)
+                If Counter = Index Then
+                    IsChecked = CurrentChecked
                 Else
                     IsChecked = ListFilters.GetItemChecked(Counter)
                 End If
@@ -216,9 +117,11 @@ Public Class MainForm
                     AppliedFilters += Item.ID
                 End If
             Next
-            For Each File In _CachedListItems
-                If Not IsFiltered(File, AppliedFilters) Then
-                    ComboGroups.Items.Add(File)
+            For Each ImageData In _LoadedImageList
+                If Not IsFiltered(ImageData, AppliedFilters) Then
+                    ImageData.ComboIndex = ComboGroups.Items.Add(ImageData)
+                Else
+                    ImageData.ComboIndex = -1
                 End If
             Next
             If ComboGroups.Items.Count > 0 Then
@@ -226,44 +129,50 @@ Public Class MainForm
             End If
             BtnFilters.BackColor = Color.LightGreen
 
-            LblFilterMessage.Text = ComboGroups.Items.Count & " of " & _CachedListItems.Count & " files"
-            LblFilterMessage.Visible = True
+            ToolStripFileCount.Text = ComboGroups.Items.Count & " of " & _LoadedImageList.Count & " File" & IIf(_LoadedImageList.Count <> 1, "s", "")
+
+            _FiltersApplied = True
 
             Me.Cursor = Cursors.Default
         Else
-            If _CachedListItems IsNot Nothing Then
-                RestoreComboGroups()
+            If _FiltersApplied Then
+                ClearFilters()
             End If
-            BtnFilters.BackColor = SystemColors.Control
-            BtnFilters.UseVisualStyleBackColor = True
         End If
     End Sub
 
-    Private Sub CacheComboGroups()
-        _CachedListItems = New List(Of ComboFileItem)
-        For Counter = 0 To ComboGroups.Items.Count - 1
-            _CachedListItems.Add(ComboGroups.Items(Counter))
-        Next
-    End Sub
-
-    Private Sub RestoreComboGroups()
+    Private Sub ClearFilters()
         Me.Cursor = Cursors.WaitCursor
 
         ComboGroups.Items.Clear()
-        For Each File In _CachedListItems
-            ComboGroups.Items.Add(File)
+        For Each ImageData In _LoadedImageList
+            ImageData.ComboIndex = ComboGroups.Items.Add(ImageData)
         Next
-        _CachedListItems = Nothing
         If ComboGroups.Items.Count > 0 Then
             ComboGroups.SelectedIndex = 0
         End If
-        LblFilterMessage.Visible = False
+
+        ResetFilterButton()
 
         Me.Cursor = Cursors.Default
     End Sub
 
+    Private Sub ResetFilters()
+        BtnFilters.Enabled = False
+        ListFilters.Items.Clear()
+    End Sub
+
+    Private Sub ResetFilterButton()
+        _FiltersApplied = False
+
+        BtnFilters.BackColor = SystemColors.Control
+        BtnFilters.UseVisualStyleBackColor = True
+        ToolStripFileCount.Text = _LoadedImageList.Count & " File" & IIf(_LoadedImageList.Count <> 1, "s", "")
+        ToolStripFileCount.Visible = True
+    End Sub
+
     Private Function ChangeOEMID() As Boolean
-        Dim frmOEMID As New OEMIDForm(_Disk, _BootstrapTypes)
+        Dim frmOEMID As New OEMIDForm(_Disk, _OEMIDDictionary)
         Dim Result As Boolean
 
         frmOEMID.ShowDialog()
@@ -278,9 +187,15 @@ Public Class MainForm
     End Function
 
     Private Sub ComboItemSetModified(FullRefresh As Boolean)
-        Dim Item As ComboFileItem = ComboGroups.SelectedItem
-        Item.Modified = True
-        Item.Disk = _Disk
+        Dim ImageData As LoadedImageData = ComboGroups.SelectedItem
+        If Not ImageData.Modified Then
+            ImageData.Modified = True
+            _ModifiedCount += 1
+            ToolStripModified.Text = _ModifiedCount & " File" & IIf(_ModifiedCount <> 1, "s", "") & " Modified"
+            ToolStripModified.Visible = True
+            RefreshModifiedFilter()
+        End If
+        ImageData.Disk = _Disk
         _SuppressEvent = True
         ComboGroups.Items(ComboGroups.SelectedIndex) = ComboGroups.Items(ComboGroups.SelectedIndex)
         _SuppressEvent = False
@@ -331,16 +246,6 @@ Public Class MainForm
         Return Result
     End Function
 
-    Private Function GetBootstrapType(OSName As String, Language As String) As BootstrapType
-        Dim BootstrapType As New BootstrapType
-        With BootstrapType
-            .OSNames = Split(OSName, ",").ToList
-            .Language = Language
-        End With
-
-        Return BootstrapType
-    End Function
-
     Private Sub DragDropSelectedFiles()
         If ListViewFiles.SelectedItems.Count = 0 Then
             Exit Sub
@@ -376,13 +281,15 @@ Public Class MainForm
         End If
     End Sub
 
-    Private Function ExpandedDateToString(D As DiskImage.ExpandedDate, IncludeTime As Boolean) As String
+    Private Function ExpandedDateToString(D As DiskImage.ExpandedDate, IncludeTime As Boolean, IncludeMilliseconds As Boolean) As String
         Dim Response As String = Format(D.Year, "0000") & "-" & Format(D.Month, "00") & "-" & Format(D.Day, "00")
         If IncludeTime Then
-            Response &= "  " & Format(D.Hour12, "00") _
+            Response &= "  " & Format(D.Hour, "00") _
                 & ":" & Format(D.Minute, "00") _
-                & ":" & Format(D.Second, "00") _
-                & " " & IIf(D.IsPM, "PM", "AM")
+                & ":" & Format(D.Second, "00")
+        End If
+        If IncludeMilliseconds Then
+            Response &= Format(D.Milliseconds / 1000, ".000")
         End If
 
         Return Response
@@ -398,51 +305,90 @@ Public Class MainForm
             & IIf(File.IsDirectory, "D ", "- ") _
             & IIf(File.IsVolumeName, "V ", "- ")
 
-        Dim Item = New ListViewItem("", Group)
-        Item.SubItems.Add(Encoding.UTF8.GetString(File.FileName).Trim)
+        Dim Item = New ListViewItem("", Group) With {
+            .UseItemStyleForSubItems = False
+        }
 
         If File.IsDeleted Then
             Item.ForeColor = Color.Gray
         ElseIf File.IsVolumeName Then
             Item.ForeColor = Color.Green
-        ElseIf File.HasInvalidFilename Or File.HasInvalidExtension Or File.HasInvalidFileSize Then
-            Item.ForeColor = Color.Red
         ElseIf File.IsDirectory Then
             Item.ForeColor = Color.Blue
         End If
-        Item.SubItems.Add(Encoding.UTF8.GetString(File.Extension).Trim)
-        If File.HasInvalidFileSize Then
-            Item.SubItems.Add("Invalid")
+
+        SI = Item.SubItems.Add(Encoding.UTF8.GetString(File.FileName).Trim)
+        If Not File.IsDeleted And File.HasInvalidFilename Then
+            SI.ForeColor = Color.Red
         Else
-            Item.SubItems.Add(Format(File.FileSize, "N0"))
+            SI.ForeColor = Item.ForeColor
         End If
 
-        Item.SubItems.Add(ExpandedDateToString(File.GetLastWriteDate, True))
+        SI = Item.SubItems.Add(Encoding.UTF8.GetString(File.Extension).Trim)
+        If Not File.IsDeleted And File.HasInvalidExtension Then
+            SI.ForeColor = Color.Red
+        Else
+            SI.ForeColor = Item.ForeColor
+        End If
 
-        Item.SubItems.Add(Format(File.StartingCluster, "N0"))
-        Item.SubItems.Add(Attrib)
+        If Not File.IsDeleted And File.HasInvalidFileSize Then
+            SI = Item.SubItems.Add("Invalid")
+            SI.ForeColor = Color.Red
+        Else
+            SI = Item.SubItems.Add(Format(File.FileSize, "N0"))
+            SI.ForeColor = Item.ForeColor
+        End If
+
+        SI = Item.SubItems.Add(ExpandedDateToString(File.GetLastWriteDate, True, False))
+        If File.GetLastWriteDate.IsValidDate Or File.IsDeleted Then
+            SI.ForeColor = Item.ForeColor
+        Else
+            SI.ForeColor = Color.Red
+        End If
+
+        SI = Item.SubItems.Add(Format(File.StartingCluster, "N0"))
+        SI.ForeColor = Item.ForeColor
+
+        SI = Item.SubItems.Add(Attrib)
+        If Not File.IsDeleted And File.HasInvalidAttributes Then
+            SI.ForeColor = Color.Red
+        Else
+            SI.ForeColor = Item.ForeColor
+        End If
 
         If Not File.IsDeleted And Not File.IsDirectory And Not File.IsVolumeName And Not File.HasInvalidFileSize Then
-            Item.SubItems.Add(Crc32.ComputeChecksum(File.GetContent).ToString("X8"))
+            SI = Item.SubItems.Add(Crc32.ComputeChecksum(File.GetContent).ToString("X8"))
         Else
-            Item.SubItems.Add("")
+            SI = Item.SubItems.Add("")
         End If
+        SI.ForeColor = Item.ForeColor
 
         If File.HasCreationDate Then
-            SI = Item.SubItems.Add(ExpandedDateToString(File.GetCreationDate, True))
+            SI = Item.SubItems.Add(ExpandedDateToString(File.GetCreationDate, True, True))
+            If File.GetCreationDate.IsValidDate Or File.IsDeleted Then
+                SI.ForeColor = Item.ForeColor
+            Else
+                SI.ForeColor = Color.Red
+            End If
         Else
             SI = Item.SubItems.Add("")
         End If
         SI.Name = "FileCreateDate"
 
         If File.HasLastAccessDate Then
-            SI = Item.SubItems.Add(ExpandedDateToString(File.GetLastAccessDate, False))
+            SI = Item.SubItems.Add(ExpandedDateToString(File.GetLastAccessDate, False, False))
+            If File.GetLastAccessDate.IsValidDate Or File.IsDeleted Then
+                SI.ForeColor = Item.ForeColor
+            Else
+                SI.ForeColor = Color.Red
+            End If
         Else
             SI = Item.SubItems.Add("")
         End If
         SI.Name = "FileLastAccessDate"
 
         SI = Item.SubItems.Add(LFNFileName)
+        SI.ForeColor = Item.ForeColor
         SI.Name = "FileLFN"
 
         Return Item
@@ -472,6 +418,8 @@ Public Class MainForm
             Case &HF0
                 If SectorsPerTrack = 36 Then
                     Return "2.88M Floppy"
+                ElseIf SectorsPerTrack = 21 Then
+                    Return "DMF Floppy"
                 Else
                     Return "1.44M Floppy"
                 End If
@@ -549,6 +497,7 @@ Public Class MainForm
     End Function
 
     Private Sub PopulateDetails()
+        ListViewFiles.BeginUpdate()
         ListViewFiles.Items.Clear()
 
         Dim Response As ProcessFilesResponse = ProcessFiles(_Disk.Directory, "", False)
@@ -568,15 +517,17 @@ Public Class MainForm
         Else
             ListViewFiles.Columns.Item("FileLFN").Width = 200
         End If
+        ListViewFiles.EndUpdate()
+
         _VolumeLabel = Response.VolumeLabel
         BtnClearCreated.Visible = (Response.HasCreated)
         BtnClearLastAccessed.Visible = (Response.HasLastAccessed)
         CBCheckAll.Checked = False
     End Sub
 
-    Private Function FindOEMMatch(Checksum As UInteger) As BootstrapType
-        If _BootstrapTypes.ContainsKey(Checksum) Then
-            Return _BootstrapTypes.Item(Checksum)
+    Private Function FindOEMMatch(Checksum As UInteger) As OEMIDList
+        If _OEMIDDictionary.ContainsKey(Checksum) Then
+            Return _OEMIDDictionary.Item(Checksum)
         Else
             Return Nothing
         End If
@@ -585,21 +536,23 @@ Public Class MainForm
     Private Sub PopulateSummary()
         Dim BootstrapChecksum = Crc32.ComputeChecksum(_Disk.BootSector.BootStrapCode)
         Dim ForeColor As Color
-        Dim OSNameString As String = Encoding.UTF8.GetString(_Disk.BootSector.OSName)
-        Dim OSNameMatched As Boolean = False
+        Dim OEMIDString As String = Encoding.UTF8.GetString(_Disk.BootSector.OEMID)
+        Dim OEMIDMatched As Boolean = False
 
         Me.Text = "Disk Image Tool - " & System.IO.Path.GetFileName(_Disk.FilePath)
+        ToolStripFileName.Text = System.IO.Path.GetFileName(_Disk.FilePath)
+        ToolStripFileName.Visible = True
 
         Dim BootstrapType = FindOEMMatch(BootstrapChecksum)
         If BootstrapType IsNot Nothing Then
-            OSNameMatched = BootstrapType.OSNames.Contains(OSNameString)
+            OEMIDMatched = BootstrapType.OEMIDList.Contains(OEMIDString)
         End If
 
         With ListViewSummary.Items
             .Clear()
             .Add(GetListViewSummaryItem("Modified:", IIf(_Disk.Modified, "Yes", "No"), IIf(_Disk.Modified, Color.Blue, SystemColors.WindowText)))
             If BootstrapType IsNot Nothing Then
-                If Not OSNameMatched Then
+                If Not OEMIDMatched Then
                     ForeColor = Color.Red
                 Else
                     ForeColor = Color.Green
@@ -607,9 +560,9 @@ Public Class MainForm
             Else
                 ForeColor = SystemColors.WindowText
             End If
-            .Add(GetListViewSummaryItem("OEM ID:", OSNameString, ForeColor))
+            .Add(GetListViewSummaryItem("OEM ID:", OEMIDString, ForeColor))
             If BootstrapType IsNot Nothing Then
-                .Add(GetListViewSummaryItem("Language:", _BootstrapTypes.Item(BootstrapChecksum).Language))
+                .Add(GetListViewSummaryItem("Language:", _OEMIDDictionary.Item(BootstrapChecksum).Language))
             End If
             .Add(GetListViewSummaryItem("Media Type:", GetMediaType(_Disk.BootSector.MediaDescriptor, _Disk.BootSector.SectorsPerTrack)))
             If _VolumeLabel <> "" Then
@@ -623,16 +576,16 @@ Public Class MainForm
             .Add(GetListViewSummaryItem("Sectors Per Cluster:", _Disk.BootSector.SectorsPerCluster))
             .Add(GetListViewSummaryItem("Sectors Per Track:", _Disk.BootSector.SectorsPerTrack))
             If BootstrapType IsNot Nothing Then
-                If Not OSNameMatched Then
-                    For Each OSName In BootstrapType.OSNames
-                        .Add(GetListViewSummaryItem("Detected OEM ID:", OSName))
+                If Not OEMIDMatched Then
+                    For Each OEMID In BootstrapType.OEMIDList
+                        .Add(GetListViewSummaryItem("Detected OEM ID:", OEMID))
                     Next
-                    'If Strings.Right(OSNameString, 3) <> "IHC" Then
-                    'System.IO.File.AppendAllText("D:\exceptions.txt", BootstrapChecksum.ToString("X8") & "  " & OSNameString & "  " & _BootstrapTypes.Item(BootstrapChecksum).OSName & "  " & DiskImage.FilePath & vbCrLf)
+                    'If Strings.Right(OEMIDString, 3) <> "IHC" Then
+                    'System.IO.File.AppendAllText("D:\exceptions.txt", BootstrapChecksum.ToString("X8") & "  " & OEMIDString & "  " & _BootstrapTypes.Item(BootstrapChecksum).OEMID & "  " & DiskImage.FilePath & vbCrLf)
                     'End If
                 End If
                 'Else
-                'System.IO.File.AppendAllText("D:\missing.txt", BootstrapChecksum.ToString("X8") & "  " & OSNameString & "  " & DiskImage.FilePath & vbCrLf)
+                'System.IO.File.AppendAllText("D:\missing.txt", BootstrapChecksum.ToString("X8") & "  " & OEMIDString & "  " & DiskImage.FilePath & vbCrLf)
             End If
         End With
         With ListViewHashes.Items
@@ -643,10 +596,9 @@ Public Class MainForm
         End With
     End Sub
     Private Sub ProcessFileDrop(Files() As String)
+        Dim AllowedExtensions = {".img", ".ima"}
         Dim FilePath As String
         Dim FileInfo As System.IO.FileInfo
-        Dim FileList As New List(Of String)
-        Dim Index As UInteger
         Dim PathName As String
         Dim FileName As String
         Dim ComboCleared As Boolean = False
@@ -660,16 +612,21 @@ Public Class MainForm
             If (FAttributes And System.IO.FileAttributes.Directory) > 0 Then
                 Dim DirectoryInfo As New System.IO.DirectoryInfo(FilePath)
                 For Each FileInfo In DirectoryInfo.GetFiles("*.im*", System.IO.SearchOption.AllDirectories)
-                    PathName = System.IO.Path.GetDirectoryName(FilePath)
-                    If Not PathName.EndsWith("\") Then
-                        PathName &= "\"
+                    If AllowedExtensions.Contains(FileInfo.Extension.ToLower) Then
+                        PathName = System.IO.Path.GetDirectoryName(FilePath)
+                        If Not PathName.EndsWith("\") Then
+                            PathName &= "\"
+                        End If
+                        FileName = Strings.Right(FileInfo.FullName, Len(FileInfo.FullName) - Len(PathName))
+                        If Not ComboCleared Then
+                            ComboGroups.Items.Clear()
+                            _LoadedImageList.Clear()
+                            ComboCleared = True
+                        End If
+                        Dim ImageData As New LoadedImageData(PathName, FileName)
+                        ImageData.ComboIndex = ComboGroups.Items.Add(ImageData)
+                        _LoadedImageList.Add(ImageData)
                     End If
-                    FileName = Strings.Right(FileInfo.FullName, Len(FileInfo.FullName) - Len(PathName))
-                    If Not ComboCleared Then
-                        ComboGroups.Items.Clear()
-                        ComboCleared = True
-                    End If
-                    Index = ComboGroups.Items.Add(New ComboFileItem(PathName, FileName))
                 Next
             Else
                 Dim Ext As String = UCase(System.IO.Path.GetExtension(FilePath))
@@ -678,9 +635,12 @@ Public Class MainForm
                     FileName = System.IO.Path.GetFileName(FilePath)
                     If Not ComboCleared Then
                         ComboGroups.Items.Clear()
+                        _LoadedImageList.Clear()
                         ComboCleared = True
                     End If
-                    Index = ComboGroups.Items.Add(New ComboFileItem(PathName, FileName))
+                    Dim ImageData As New LoadedImageData(PathName, FileName)
+                    ImageData.ComboIndex = ComboGroups.Items.Add(ImageData)
+                    _LoadedImageList.Add(ImageData)
                 End If
             End If
         Next
@@ -689,11 +649,10 @@ Public Class MainForm
             ComboGroups.SelectedIndex = 0
             LabelDropMessage.Visible = False
             BtnScan.Enabled = True
-            BtnFilters.BackColor = SystemColors.Control
-            BtnFilters.UseVisualStyleBackColor = True
-            BtnFilters.Enabled = False
-            ListFilters.Items.Clear()
-            _CachedListItems = Nothing
+            ResetFilters()
+            ResetFilterButton()
+            ToolStripModified.Visible = False
+            _ModifiedCount = 0
         End If
 
         Me.Cursor = Cursors.Default
@@ -720,6 +679,7 @@ Public Class MainForm
             .HasCreated = False
             .HasLFN = False
             .HasLastAccessed = False
+            .HasInvalidDirectoryEntries = False
         End With
 
         If Not ScanOnly Then
@@ -749,14 +709,36 @@ Public Class MainForm
                         ListViewFiles.Items.Add(item)
                     End If
 
+                    If Not Response.HasInvalidDirectoryEntries Then
+                        If Not File.IsDeleted Then
+                            If File.HasInvalidFilename Or File.HasInvalidExtension Or File.HasInvalidFileSize Or File.HasInvalidAttributes Or Not File.GetLastWriteDate.IsValidDate Then
+                                Response.HasInvalidDirectoryEntries = True
+                            End If
+                        End If
+                    End If
+
                     If Not Response.HasCreated Then
                         If File.HasCreationDate Then
                             Response.HasCreated = True
+                            If Not Response.HasInvalidDirectoryEntries Then
+                                If Not File.IsDeleted Then
+                                    If Not File.GetCreationDate.IsValidDate Then
+                                        Response.HasInvalidDirectoryEntries = True
+                                    End If
+                                End If
+                            End If
                         End If
                     End If
                     If Not Response.HasLastAccessed Then
                         If File.HasLastAccessDate Then
                             Response.HasLastAccessed = True
+                            If Not Response.HasInvalidDirectoryEntries Then
+                                If Not File.IsDeleted Then
+                                    If Not File.GetLastAccessDate.IsValidDate Then
+                                        Response.HasInvalidDirectoryEntries = True
+                                    End If
+                                End If
+                            End If
                         End If
                     End If
 
@@ -778,6 +760,7 @@ Public Class MainForm
                         Response.HasLastAccessed = Response.HasLastAccessed Or SubResponse.HasLastAccessed
                         Response.HasCreated = Response.HasCreated Or SubResponse.HasCreated
                         Response.HasLFN = Response.HasLFN Or SubResponse.HasLFN
+                        Response.HasInvalidDirectoryEntries = Response.HasInvalidDirectoryEntries Or SubResponse.HasInvalidDirectoryEntries
                     End If
                 End If
             End If
@@ -785,7 +768,7 @@ Public Class MainForm
 
         Return Response
     End Function
-    Private Sub ProcessImage(Item As ComboFileItem)
+    Private Sub ProcessImage(Item As LoadedImageData)
         _FileHashTable.Clear()
         InitializeColumns()
         InitializeButtons()
@@ -832,40 +815,79 @@ Public Class MainForm
     End Sub
     Private Sub SaveChanges()
         _SuppressEvent = True
-        For Counter = 0 To ComboGroups.Items.Count - 1
-            Dim Item As ComboFileItem = ComboGroups.Items(Counter)
-            If Item.Modified Then
-                If Item.Disk IsNot Nothing Then
-                    Dim BackupPath As String = Item.Disk.FilePath & ".bak"
-                    System.IO.File.Copy(Item.Disk.FilePath, BackupPath, True)
-                    Item.Disk.SaveFile(Item.Disk.FilePath)
-                    Item.Disk = Nothing
-                    Item.Modified = False
-                    ComboGroups.Items(Counter) = ComboGroups.Items(Counter)
+        For Each ImageData In _LoadedImageList
+            If ImageData.Modified Then
+                If ImageData.Disk IsNot Nothing Then
+                    Dim BackupPath As String = ImageData.Disk.FilePath & ".bak"
+                    System.IO.File.Copy(ImageData.Disk.FilePath, BackupPath, True)
+                    ImageData.Disk.SaveFile(ImageData.Disk.FilePath)
+                    ImageData.Disk = Nothing
+                    ImageData.Modified = False
+                    _ModifiedCount -= 1
+                    ToolStripModified.Text = _ModifiedCount & " File" & IIf(_ModifiedCount <> 1, "s", "") & " Modified"
+                    ToolStripModified.Visible = (_ModifiedCount > 0)
+                    If ImageData.ComboIndex > -1 Then
+                        ComboGroups.Items(ImageData.ComboIndex) = ComboGroups.Items(ImageData.ComboIndex)
+                    End If
                 End If
             End If
         Next
         _SuppressEvent = False
         PopulateSummary()
+        RefreshModifiedFilter()
         BtnSave.Enabled = False
     End Sub
+
+    Private Sub RefreshModifiedFilter()
+        Dim Item As ComboFileType
+        Dim Index As Integer = -1
+        Dim FilterApplied As Boolean = False
+
+        For Counter = 0 To ListFilters.Items.Count - 1
+            Item = ListFilters.Items(Counter)
+            If Item.ID = FilterTypes.ModifiedFiles Then
+                Index = Counter
+                Exit For
+            End If
+        Next
+
+        If _ModifiedCount > 0 Then
+            If Index = -1 Then
+                ListFilters.Items.Insert(0, New ComboFileType(FilterTypes.ModifiedFiles, _ModifiedCount))
+            Else
+                Item = ListFilters.Items(Index)
+                Item.Count = _ModifiedCount
+            End If
+        Else
+            If Index > -1 Then
+                FilterApplied = ListFilters.GetItemChecked(Index)
+                ListFilters.Items.RemoveAt(Index)
+            End If
+        End If
+
+        ListFilters.Height = Math.Max(3, ListFilters.Items.Count) * 15 + 4
+        BtnFilters.Enabled = (ListFilters.Items.Count > 0)
+
+        If FilterApplied Then
+            ApplyFilters(Nothing)
+        End If
+    End Sub
     Private Sub ScanImages()
-        Dim HasMismatchedOEMID As Boolean = False
-        Dim HasunknownOEMID As Boolean = False
-        Dim HasCreated As Boolean = False
-        Dim HasLastAccessed As Boolean = False
-        Dim HasInvalidImage As Boolean = False
-        Dim HasLongFileNames As Boolean = False
+        Dim Disk As DiskImage.Disk
+        Dim MismatchedOEMIDCount As Integer = 0
+        Dim UnknownOEMIDCount As Integer = 0
+        Dim CreatedCount As Integer = 0
+        Dim LastAccessedCount As Integer = 0
+        Dim InvalidImageCount As Integer = 0
+        Dim LongFileNameCount As Integer = 0
+        Dim InvalidDirectoryEntryCount As Integer = 0
 
         Me.Cursor = Cursors.WaitCursor
 
         BtnScan.Enabled = False
-        BtnFilters.Enabled = False
-        ListFilters.Items.Clear()
-        BtnFilters.BackColor = SystemColors.Control
-        BtnFilters.UseVisualStyleBackColor = True
-        If _CachedListItems IsNot Nothing Then
-            RestoreComboGroups()
+        ResetFilters()
+        If _FiltersApplied Then
+            ClearFilters()
         End If
 
         LblFilterMessage.Visible = True
@@ -875,67 +897,82 @@ Public Class MainForm
                 LblFilterMessage.Text = "Scanning... " & Int(Percentage) & "%"
                 Application.DoEvents()
             End If
-            Dim Item As ComboFileItem = ComboGroups.Items(Counter)
+            Dim Item As LoadedImageData = ComboGroups.Items(Counter)
             Dim FilePath As String = System.IO.Path.Combine(Item.Path, Item.File)
-            Dim Disk = New DiskImage.Disk(FilePath)
+            If Item.Disk IsNot Nothing Then
+                Disk = Item.Disk
+            Else
+                Disk = New DiskImage.Disk(FilePath)
+            End If
             If Disk.IsValidImage Then
                 Item.IsValidImage = True
                 Dim BootstrapChecksum = Crc32.ComputeChecksum(Disk.BootSector.BootStrapCode)
-                Dim OSNameString As String = Encoding.UTF8.GetString(Disk.BootSector.OSName)
+                Dim OEMIDString As String = Encoding.UTF8.GetString(Disk.BootSector.OEMID)
 
                 Dim BootstrapType = FindOEMMatch(BootstrapChecksum)
                 If BootstrapType IsNot Nothing Then
                     Item.OEMIDFound = True
-                    Item.OEMIDMatched = BootstrapType.OSNames.Contains(OSNameString)
+                    Item.OEMIDMatched = BootstrapType.OEMIDList.Contains(OEMIDString)
                     If Not Item.OEMIDMatched Then
-                        HasMismatchedOEMID = True
+                        MismatchedOEMIDCount += 1
                     End If
                 Else
                     Item.OEMIDFound = False
                     Item.OEMIDMatched = False
-                    HasunknownOEMID = True
+                    UnknownOEMIDCount += 1
                 End If
 
                 Dim Response As ProcessFilesResponse = ProcessFiles(Disk.Directory, "", True)
                 Item.HasCreated = Response.HasCreated
                 If Item.HasCreated Then
-                    HasCreated = True
+                    CreatedCount += 1
                 End If
                 Item.HasLastAccessed = Response.HasLastAccessed
                 If Item.HasLastAccessed Then
-                    HasLastAccessed = True
+                    LastAccessedCount += 1
                 End If
                 Item.HasLongFileNames = Response.HasLFN
                 If Item.HasLongFileNames Then
-                    HasLongFileNames = True
+                    LongFileNameCount += 1
+                End If
+                Item.HasInvalidDirectoryEntries = Response.HasInvalidDirectoryEntries
+                If Item.HasInvalidDirectoryEntries Then
+                    InvalidDirectoryEntryCount += 1
                 End If
             Else
                 Item.IsValidImage = False
-                HasInvalidImage = True
+                InvalidImageCount += 1
             End If
 
             Item.Scanned = True
         Next
         LblFilterMessage.Visible = False
 
-        If HasunknownOEMID Then
-            ListFilters.Items.Add(New ComboFileType(FilterTypes.UnknownOEMID, "Unknown OEM ID"))
+        If _ModifiedCount > 0 Then
+            ListFilters.Items.Add(New ComboFileType(FilterTypes.ModifiedFiles, _ModifiedCount))
         End If
-        If HasMismatchedOEMID Then
-            ListFilters.Items.Add(New ComboFileType(FilterTypes.MismatchedOEMID, "Mismatched OEM ID"))
+        If UnknownOEMIDCount > 0 Then
+            ListFilters.Items.Add(New ComboFileType(FilterTypes.UnknownOEMID, UnknownOEMIDCount))
         End If
-        If HasCreated Then
-            ListFilters.Items.Add(New ComboFileType(FilterTypes.HasCreated, "Has Creation Date"))
+        If MismatchedOEMIDCount > 0 Then
+            ListFilters.Items.Add(New ComboFileType(FilterTypes.MismatchedOEMID, MismatchedOEMIDCount))
         End If
-        If HasLastAccessed Then
-            ListFilters.Items.Add(New ComboFileType(FilterTypes.HasLastAccessed, "Has Last Access Date"))
+        If CreatedCount > 0 Then
+            ListFilters.Items.Add(New ComboFileType(FilterTypes.HasCreated, CreatedCount))
         End If
-        If HasLongFileNames Then
-            ListFilters.Items.Add(New ComboFileType(FilterTypes.HasLongFileNames, "Has Long File Names"))
+        If LastAccessedCount > 0 Then
+            ListFilters.Items.Add(New ComboFileType(FilterTypes.HasLastAccessed, LastAccessedCount))
         End If
-        If HasInvalidImage Then
-            ListFilters.Items.Add(New ComboFileType(FilterTypes.HasInvalidImage, "Invalid Image"))
+        If LongFileNameCount > 0 Then
+            ListFilters.Items.Add(New ComboFileType(FilterTypes.HasLongFileNames, LongFileNameCount))
         End If
+        If InvalidDirectoryEntryCount > 0 Then
+            ListFilters.Items.Add(New ComboFileType(FilterTypes.HasInvalidDirectoryEntries, InvalidDirectoryEntryCount))
+        End If
+        If InvalidImageCount > 0 Then
+            ListFilters.Items.Add(New ComboFileType(FilterTypes.HasInvalidImage, InvalidImageCount))
+        End If
+        ListFilters.Height = Math.Max(3, ListFilters.Items.Count) * 15 + 4
         BtnFilters.Enabled = (ListFilters.Items.Count > 0)
         BtnScan.Enabled = True
 
@@ -1076,6 +1113,12 @@ Public Class MainForm
         ApplyFilters(e)
     End Sub
 
+    Private Sub MainForm_Click(sender As Object, e As EventArgs) Handles Me.Click
+        If ListFilters.Visible Then
+            ListFilters.Visible = False
+        End If
+    End Sub
+
 End Class
 
 Public Structure ProcessFilesResponse
@@ -1083,6 +1126,7 @@ Public Structure ProcessFilesResponse
     Dim HasCreated As Boolean
     Dim HasLastAccessed As Boolean
     Dim HasLFN As Boolean
+    Dim HasInvalidDirectoryEntries As Boolean
 End Structure
 
 Public Structure FileData
@@ -1091,40 +1135,5 @@ Public Structure FileData
     Dim HasCreated As Boolean
     Dim HasLastAccessed As Boolean
 End Structure
-
-Public Class BootstrapType
-    Public OSNames As List(Of String)
-    Public Language As String
-End Class
-
-Public Class ComboFileType
-    Private _ID As FilterTypes
-    Private _Text As String
-
-    Public Property ID As FilterTypes
-        Get
-            Return _ID
-        End Get
-        Set
-            _ID = Value
-        End Set
-    End Property
-
-    Public Property Text As String
-        Get
-            Return _Text
-        End Get
-        Set
-            _Text = Value
-        End Set
-    End Property
-    Public Sub New(ID As FilterTypes, Text As String)
-        _ID = ID
-        _Text = Text
-    End Sub
-    Public Overrides Function ToString() As String
-        Return _Text
-    End Function
-End Class
 
 

@@ -29,8 +29,8 @@
     <TargetCulture>en-US</TargetCulture>
     <ProductName>DiskImageTool</ProductName>
     <PublisherName>Digitoxin</PublisherName>
-    <ApplicationRevision>1</ApplicationRevision>
-    <ApplicationVersion>1.1.0.%2a</ApplicationVersion>
+    <ApplicationRevision>2</ApplicationRevision>
+    <ApplicationVersion>1.2.0.%2a</ApplicationVersion>
     <UseApplicationTrust>false</UseApplicationTrust>
     <PublishWizardCompleted>true</PublishWizardCompleted>
     <BootstrapperEnabled>true</BootstrapperEnabled>
@@ -105,12 +105,14 @@
     <Import Include="System.Threading.Tasks" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="BootSector.vb" />
-    <Compile Include="ComboFileItem.vb" />
+    <Compile Include="ComboFileType.vb" />
+    <Compile Include="DiskImage\BootSector.vb" />
+    <Compile Include="OEMIDLookup.vb" />
+    <Compile Include="LoadedImageData.vb" />
     <Compile Include="CRC32.vb" />
-    <Compile Include="Directory.vb" />
-    <Compile Include="DirectoryEntry.vb" />
-    <Compile Include="Disk.vb" />
+    <Compile Include="DiskImage\Directory.vb" />
+    <Compile Include="DiskImage\DirectoryEntry.vb" />
+    <Compile Include="DiskImage\Disk.vb" />
     <Compile Include="MainForm.vb">
       <SubType>Form</SubType>
     </Compile>
