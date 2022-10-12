@@ -22,6 +22,7 @@ Partial Class MainForm
     'Do not modify it using the code editor.
     <System.Diagnostics.DebuggerStepThrough()>
     Private Sub InitializeComponent()
+        Me.components = New System.ComponentModel.Container()
         Dim FileName As System.Windows.Forms.ColumnHeader
         Dim FileExt As System.Windows.Forms.ColumnHeader
         Dim FileSize As System.Windows.Forms.ColumnHeader
@@ -57,6 +58,8 @@ Partial Class MainForm
         Me.ToolStripFileName = New System.Windows.Forms.ToolStripStatusLabel()
         Me.ToolStripFileCount = New System.Windows.Forms.ToolStripStatusLabel()
         Me.ToolStripModified = New System.Windows.Forms.ToolStripStatusLabel()
+        Me.ContextMenuFiles = New System.Windows.Forms.ContextMenuStrip(Me.components)
+        Me.ItemDisplayDirectory = New System.Windows.Forms.ToolStripMenuItem()
         FileName = CType(New System.Windows.Forms.ColumnHeader(), System.Windows.Forms.ColumnHeader)
         FileExt = CType(New System.Windows.Forms.ColumnHeader(), System.Windows.Forms.ColumnHeader)
         FileSize = CType(New System.Windows.Forms.ColumnHeader(), System.Windows.Forms.ColumnHeader)
@@ -72,6 +75,7 @@ Partial Class MainForm
         Me.Panel1.SuspendLayout()
         Me.FlowLayoutPanel1.SuspendLayout()
         Me.StatusStrip1.SuspendLayout()
+        Me.ContextMenuFiles.SuspendLayout()
         Me.SuspendLayout()
         '
         'FileName
@@ -141,6 +145,7 @@ Partial Class MainForm
             Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
         Me.ListViewFiles.CheckBoxes = True
         Me.ListViewFiles.Columns.AddRange(New System.Windows.Forms.ColumnHeader() {ColumnHeader1, FileName, FileExt, FileSize, FileLastWriteDate, FileStartingCluster, FileAttrib, FileCRC32})
+        Me.ListViewFiles.ContextMenuStrip = Me.ContextMenuFiles
         Me.ListViewFiles.FullRowSelect = True
         Me.ListViewFiles.HideSelection = False
         Me.ListViewFiles.Location = New System.Drawing.Point(320, 41)
@@ -401,6 +406,19 @@ Partial Class MainForm
         Me.ToolStripModified.Size = New System.Drawing.Size(94, 19)
         Me.ToolStripModified.Text = "0 Files Modified"
         '
+        'ContextMenuFiles
+        '
+        Me.ContextMenuFiles.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.ItemDisplayDirectory})
+        Me.ContextMenuFiles.Name = "ContextMenuFiles"
+        Me.ContextMenuFiles.Size = New System.Drawing.Size(164, 26)
+        '
+        'ItemDisplayDirectory
+        '
+        Me.ItemDisplayDirectory.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text
+        Me.ItemDisplayDirectory.Name = "ItemDisplayDirectory"
+        Me.ItemDisplayDirectory.Size = New System.Drawing.Size(163, 22)
+        Me.ItemDisplayDirectory.Text = "Display Directory"
+        '
         'MainForm
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
@@ -428,6 +446,7 @@ Partial Class MainForm
         Me.FlowLayoutPanel1.ResumeLayout(False)
         Me.StatusStrip1.ResumeLayout(False)
         Me.StatusStrip1.PerformLayout()
+        Me.ContextMenuFiles.ResumeLayout(False)
         Me.ResumeLayout(False)
         Me.PerformLayout()
 
@@ -456,4 +475,6 @@ Partial Class MainForm
     Friend WithEvents ToolStripFileCount As ToolStripStatusLabel
     Friend WithEvents ToolStripFileName As ToolStripStatusLabel
     Friend WithEvents ToolStripModified As ToolStripStatusLabel
+    Friend WithEvents ContextMenuFiles As ContextMenuStrip
+    Friend WithEvents ItemDisplayDirectory As ToolStripMenuItem
 End Class

@@ -1,4 +1,9 @@
 ﻿Namespace DiskImage
+    Public Structure DataBlock
+        Dim Offset As UInteger
+        Dim Data() As Byte
+    End Structure
+
     Public Class Disk
         Private ReadOnly _BootSector As DiskImage.BootSector
         Private ReadOnly _Directory As DiskImage.Directory

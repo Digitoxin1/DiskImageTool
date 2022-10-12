@@ -1,8 +1,10 @@
-﻿Imports System.Security.Cryptography
+﻿Imports System.ComponentModel
+Imports System.Security.Cryptography
 Imports System.Text
 
 Public Class MainForm
     Private ReadOnly _FileHashTable As Dictionary(Of UInteger, FileData)
+    Private ReadOnly _DirectoryHashTable As Dictionary(Of UInteger, DirectoryData)
     Private ReadOnly _LoadedImageList As List(Of LoadedImageData)
     Private ReadOnly _OEMIDDictionary As Dictionary(Of UInteger, OEMIDList)
     Private _Disk As DiskImage.Disk
@@ -18,6 +20,7 @@ Public Class MainForm
 
         ' Add any initialization after the InitializeComponent() call.
         _FileHashTable = New Dictionary(Of UInteger, FileData)
+        _DirectoryHashTable = New Dictionary(Of UInteger, DirectoryData)
         _LoadedImageList = New List(Of LoadedImageData)
         _OEMIDDictionary = GetOEMIDDictionary()
         FlowLayoutPanel1.Visible = False
@@ -687,6 +690,11 @@ Public Class MainForm
             GroupName = GroupName & "  (" & FileCount & IIf(FileCount <> 1, " entries", " entry") & ")"
             Group = New ListViewGroup(GroupName)
             ListViewFiles.Groups.Add(Group)
+
+            Dim DirectoryData As DirectoryData
+            DirectoryData.Path = Path
+            DirectoryData.Directory = Directory
+            _DirectoryHashTable.Add(Group.GetHashCode, DirectoryData)
         End If
 
         For Counter = 1 To Directory.DirectoryLength
@@ -770,6 +778,7 @@ Public Class MainForm
     End Function
     Private Sub ProcessImage(Item As LoadedImageData)
         _FileHashTable.Clear()
+        _DirectoryHashTable.Clear()
         InitializeColumns()
         InitializeButtons()
 
@@ -1034,7 +1043,15 @@ Public Class MainForm
     End Sub
 
     Private Sub ButtonDisplayBootSector_Click(sender As Object, e As EventArgs) Handles ButtonDisplayBootSector.Click
-        Dim frmHexView As New HexViewForm(_Disk.BootSector.Data)
+        Dim Block As DiskImage.DataBlock
+        Block.Offset = 0
+        Block.Data = _Disk.BootSector.Data
+
+        Dim DataBlockList = New List(Of DiskImage.DataBlock) From {
+            Block
+        }
+
+        Dim frmHexView As New HexViewForm(DataBlockList)
         frmHexView.ShowDialog()
     End Sub
 
@@ -1119,6 +1136,24 @@ Public Class MainForm
         End If
     End Sub
 
+    Private Sub ContextMenuFiles_Opening(sender As Object, e As CancelEventArgs) Handles ContextMenuFiles.Opening
+        If ListViewFiles.FocusedItem IsNot Nothing Then
+            Dim DirectoryData = _DirectoryHashTable(ListViewFiles.FocusedItem.Group.GetHashCode)
+            ItemDisplayDirectory.Text = "Display Directory (" & IIf(DirectoryData.Path = "", "Root", DirectoryData.Path) & ")"
+        Else
+            e.Cancel = True
+        End If
+    End Sub
+
+    Private Sub ItemDisplayDirectory_Click(sender As Object, e As EventArgs) Handles ItemDisplayDirectory.Click
+        If ListViewFiles.FocusedItem IsNot Nothing Then
+            Dim DirectoryData = _DirectoryHashTable(ListViewFiles.FocusedItem.Group.GetHashCode)
+            Dim DataBlockList = DirectoryData.Directory.GetData
+
+            Dim frmHexView As New HexViewForm(DataBlockList)
+            frmHexView.ShowDialog()
+        End If
+    End Sub
 End Class
 
 Public Structure ProcessFilesResponse
@@ -1134,6 +1169,11 @@ Public Structure FileData
     Dim Offset As UInteger
     Dim HasCreated As Boolean
     Dim HasLastAccessed As Boolean
+End Structure
+
+Public Structure DirectoryData
+    Dim Path As String
+    Dim Directory As DiskImage.Directory
 End Structure
 
 

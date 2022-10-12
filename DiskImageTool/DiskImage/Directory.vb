@@ -8,6 +8,35 @@
             _FatChain = FatChain
         End Sub
 
+        Private Function GetDataRoot() As DataBlock
+            Dim Result As DataBlock
+
+            Result.Offset = _Parent.BootSector.RootDirectoryRegionStart * _Parent.BootSector.BytesPerSector
+            Dim OffsetEnd As UInteger = _Parent.BootSector.DataRegionStart * _Parent.BootSector.BytesPerSector
+
+            Result.Data = _Parent.GetBytes(Result.Offset, OffsetEnd - Result.Offset)
+
+            Return Result
+        End Function
+
+        Private Function GetDataSubDirectory() As List(Of DataBlock)
+            Dim Result As New List(Of DataBlock)
+
+            For Each Cluster In _FatChain
+                Dim Block As DataBlock
+
+                Block.Offset = _Parent.BootSector.DataRegionStart + ((Cluster - 2) * _Parent.BootSector.SectorsPerCluster)
+                Block.Offset *= _Parent.BootSector.BytesPerSector
+
+                Dim Length As UInteger = _Parent.BootSector.SectorsPerCluster * _Parent.BootSector.BytesPerSector
+
+                Block.Data = _Parent.GetBytes(Block.Offset, Length)
+                Result.Add(Block)
+            Next
+
+            Return Result
+        End Function
+
         Private Function GetDirectoryLengthSubDirectory(FileCountOnly As Boolean) As Integer
             Dim Count As UInteger = 0
 
@@ -70,6 +99,16 @@
                 Return GetFileRoot(Index)
             Else
                 Return GetFileSubDirectory(Index)
+            End If
+        End Function
+
+        Public Function GetData() As List(Of DataBlock)
+            If _FatChain Is Nothing Then
+                Return New List(Of DataBlock) From {
+                    GetDataRoot()
+                }
+            Else
+                Return GetDataSubDirectory()
             End If
         End Function
     End Class
