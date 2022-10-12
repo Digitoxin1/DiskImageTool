@@ -2,7 +2,7 @@
     Private _Path As String
     Private _File As String
     Private _Modified As Boolean
-    Private _Disk As DiskImage.Disk
+    Private _Modifications As Hashtable
     Private _Scanned As Boolean
     Private _OEMIDFound As Boolean
     Private _OEMIDMatched As Boolean
@@ -112,12 +112,12 @@
         End Set
     End Property
 
-    Public Property Disk As DiskImage.Disk
+    Public Property Modifications As Hashtable
         Get
-            Return _Disk
+            Return _Modifications
         End Get
         Set
-            _Disk = Value
+            _Modifications = Value
         End Set
     End Property
 
@@ -141,7 +141,7 @@
         _HasCreated = False
         _HasLastAccessed = False
         _HasLongFileNames = False
-        _Disk = Nothing
+        _Modifications = Nothing
         _HasInvalidDirectoryEntries = False
         _ComboIndex = -1
     End Sub

@@ -195,7 +195,7 @@ Public Class MainForm
             ToolStripModified.Visible = True
             RefreshModifiedFilter()
         End If
-        ImageData.Disk = _Disk
+        ImageData.Modifications = _Disk.Modifications
         _SuppressEvent = True
         ComboGroups.Items(ComboGroups.SelectedIndex) = ComboGroups.Items(ComboGroups.SelectedIndex)
         _SuppressEvent = False
@@ -773,12 +773,12 @@ Public Class MainForm
         InitializeColumns()
         InitializeButtons()
 
-        If Item.Disk IsNot Nothing Then
-            _Disk = Item.Disk
-        Else
-            Dim FilePath As String = System.IO.Path.Combine(Item.Path, Item.File)
-            _Disk = New DiskImage.Disk(FilePath)
+        Dim FilePath As String = System.IO.Path.Combine(Item.Path, Item.File)
+        _Disk = New DiskImage.Disk(FilePath)
+        If Item.Modified Then
+            _Disk.ApplyModifications(Item.Modifications)
         End If
+
         If _Disk.IsValidImage Then
             PopulateDetails()
             PopulateSummary()
@@ -817,18 +817,19 @@ Public Class MainForm
         _SuppressEvent = True
         For Each ImageData In _LoadedImageList
             If ImageData.Modified Then
-                If ImageData.Disk IsNot Nothing Then
-                    Dim BackupPath As String = ImageData.Disk.FilePath & ".bak"
-                    System.IO.File.Copy(ImageData.Disk.FilePath, BackupPath, True)
-                    ImageData.Disk.SaveFile(ImageData.Disk.FilePath)
-                    ImageData.Disk = Nothing
-                    ImageData.Modified = False
-                    _ModifiedCount -= 1
-                    ToolStripModified.Text = _ModifiedCount & " File" & IIf(_ModifiedCount <> 1, "s", "") & " Modified"
-                    ToolStripModified.Visible = (_ModifiedCount > 0)
-                    If ImageData.ComboIndex > -1 Then
-                        ComboGroups.Items(ImageData.ComboIndex) = ComboGroups.Items(ImageData.ComboIndex)
-                    End If
+                Dim FilePath As String = System.IO.Path.Combine(ImageData.Path, ImageData.File)
+                Dim Disk = New DiskImage.Disk(FilePath)
+                Disk.ApplyModifications(ImageData.Modifications)
+                Dim BackupPath As String = Disk.FilePath & ".bak"
+                System.IO.File.Copy(Disk.FilePath, BackupPath, True)
+                Disk.SaveFile(Disk.FilePath)
+                ImageData.Modified = False
+                ImageData.Modifications = Nothing
+                _ModifiedCount -= 1
+                ToolStripModified.Text = _ModifiedCount & " File" & IIf(_ModifiedCount <> 1, "s", "") & " Modified"
+                ToolStripModified.Visible = (_ModifiedCount > 0)
+                If ImageData.ComboIndex > -1 Then
+                    ComboGroups.Items(ImageData.ComboIndex) = ComboGroups.Items(ImageData.ComboIndex)
                 End If
             End If
         Next
@@ -899,10 +900,9 @@ Public Class MainForm
             End If
             Dim Item As LoadedImageData = ComboGroups.Items(Counter)
             Dim FilePath As String = System.IO.Path.Combine(Item.Path, Item.File)
-            If Item.Disk IsNot Nothing Then
-                Disk = Item.Disk
-            Else
-                Disk = New DiskImage.Disk(FilePath)
+            Disk = New DiskImage.Disk(FilePath)
+            If Item.Modified Then
+                Disk.ApplyModifications(Item.Modifications)
             End If
             If Disk.IsValidImage Then
                 Item.IsValidImage = True

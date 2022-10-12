@@ -6,8 +6,10 @@
         Private ReadOnly _FileBytes() As Byte
         Private ReadOnly _FilePath As String
         Private _Modified As Boolean
+        Private ReadOnly _Modifications As Hashtable
 
         Sub New(FilePath As String)
+            _Modifications = New Hashtable()
             _Modified = False
             _FilePath = FilePath
             _FileBytes = System.IO.File.ReadAllBytes(FilePath)
@@ -54,6 +56,12 @@
             End Get
         End Property
 
+        Public ReadOnly Property Modifications As Hashtable
+            Get
+                Return _Modifications
+            End Get
+        End Property
+
         Public Function GetByte(Offset As UInteger) As Byte
             Return _FileBytes(Offset)
         End Function
@@ -75,29 +83,47 @@
         Public Sub SetBytes(Value As UShort, Offset As UInteger)
             Array.Copy(BitConverter.GetBytes(Value), 0, _FileBytes, Offset, 2)
             _Modified = True
+            _Modifications.Item(Offset) = Value
         End Sub
 
         Public Sub SetBytes(Value As UInteger, Offset As UInteger)
             Array.Copy(BitConverter.GetBytes(Value), 0, _FileBytes, Offset, 4)
             _Modified = True
+            _Modifications.Item(Offset) = Value
         End Sub
 
         Public Sub SetBytes(Value As Byte, Offset As UInteger)
             _FileBytes(Offset) = Value
             _Modified = True
+            _Modifications.Item(Offset) = Value
+        End Sub
+
+        Public Sub SetBytes(Value() As Byte, Offset As UInteger)
+            Array.Copy(Value, 0, _FileBytes, Offset, Value.Length)
+            _Modified = True
+            _Modifications.Item(Offset) = Value
         End Sub
 
         Public Sub SetBytes(Value() As Byte, Offset As UInteger, Size As UInteger, Padding As Byte)
+            Debug.Print("Array: " & Offset & "," & Size)
             Disk.ResizeArray(Value, Size, Padding)
             Array.Copy(Value, 0, _FileBytes, Offset, Size)
             _Modified = True
+            _Modifications.Item(Offset) = Value
         End Sub
 
-        Public Shared Sub ResizeArray(ByRef b() As Byte, length As UInteger, Padding As Byte)
+        Public Sub ApplyModifications(Modifications As Hashtable)
+            For Each Offset As UInteger In Modifications.Keys
+                Dim Value = Modifications.Item(Offset)
+                SetBytes(Value, Offset)
+            Next
+        End Sub
+
+        Public Shared Sub ResizeArray(ByRef b() As Byte, Length As UInteger, Padding As Byte)
             Dim Size = UBound(b)
-            If Size < length - 1 Then
-                ReDim Preserve b(length - 1)
-                For counter As UInteger = Size + 1 To length - 1
+            If Size < Length - 1 Then
+                ReDim Preserve b(Length - 1)
+                For counter As UInteger = Size + 1 To Length - 1
                     b(counter) = Padding
                 Next
             End If
@@ -165,6 +191,7 @@
         Public Sub SaveFile(FilePath As String)
             System.IO.File.WriteAllBytes(FilePath, _FileBytes)
             _Modified = False
+            _Modifications.Clear()
         End Sub
     End Class
 End Namespace
