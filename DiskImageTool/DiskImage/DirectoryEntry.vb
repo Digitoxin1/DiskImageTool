@@ -212,9 +212,8 @@ Namespace DiskImage
             Dim FileBytes = _Parent.Data
 
             For Each Cluster In _FatChain
-                Dim Offset As UInteger = _Parent.BootSector.DataRegionStart + ((Cluster - 2) * _Parent.BootSector.SectorsPerCluster)
-                Offset *= _Parent.BootSector.BytesPerSector
-                BytesToCopy = _Parent.BootSector.BytesPerSector * _Parent.BootSector.SectorsPerCluster
+                Dim Offset As UInteger = _Parent.ClusterToOffset(Cluster)
+                BytesToCopy = _Parent.BootSector.BytesPerCluster
                 If BytesToCopy > BytesRemaining Then
                     BytesToCopy = BytesRemaining
                 End If
@@ -353,15 +352,7 @@ Namespace DiskImage
         End Function
 
         Public Function HasInvalidFileSize() As Boolean
-            Dim SectorCount As UInteger
-
-            If _Parent.BootSector.SmallNumberOfSectors > 0 Then
-                SectorCount = _Parent.BootSector.SmallNumberOfSectors
-            Else
-                SectorCount = _Parent.BootSector.LargeNumberOfSectors
-            End If
-
-            Return FileSize > SectorCount * _Parent.BootSector.BytesPerSector
+            Return FileSize > _Parent.BootSector.SectorCount * _Parent.BootSector.BytesPerSector
         End Function
 
         Public Function HasLastAccessDate() As Boolean

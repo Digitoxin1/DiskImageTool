@@ -40,13 +40,12 @@
             _Parent = Parent
         End Sub
 
-        Public Function DataRegionSize() As UInteger
-            Dim TotalNumberOfSectors = SmallNumberOfSectors
-            If TotalNumberOfSectors = 0 Then
-                TotalNumberOfSectors = LargeNumberOfSectors
-            End If
+        Public Function BytesPerCluster() As UInteger
+            Return SectorsPerCluster * BytesPerSector
+        End Function
 
-            Return TotalNumberOfSectors - (ReservedSectors + FatRegionSize() + RootDirectoryRegionSize())
+        Public Function DataRegionSize() As UInteger
+            Return SectorCount() - (ReservedSectors + FatRegionSize() + RootDirectoryRegionSize())
         End Function
 
         Public Function DataRegionStart() As UInteger
@@ -71,6 +70,14 @@
 
         Public Function RootDirectoryRegionStart() As UInteger
             Return FatRegionStart() + FatRegionSize()
+        End Function
+
+        Public Function SectorCount() As UInteger
+            If SmallNumberOfSectors > 0 Then
+                Return SmallNumberOfSectors
+            Else
+                Return LargeNumberOfSectors
+            End If
         End Function
 
         Public Property BootStrapCode() As Byte()

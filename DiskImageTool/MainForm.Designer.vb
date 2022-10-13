@@ -23,6 +23,11 @@ Partial Class MainForm
     <System.Diagnostics.DebuggerStepThrough()>
     Private Sub InitializeComponent()
         Me.components = New System.ComponentModel.Container()
+        Dim SummaryName As System.Windows.Forms.ColumnHeader
+        Dim SummaryValue As System.Windows.Forms.ColumnHeader
+        Dim HashName As System.Windows.Forms.ColumnHeader
+        Dim HashValue As System.Windows.Forms.ColumnHeader
+        Dim ColumnHeader1 As System.Windows.Forms.ColumnHeader
         Dim FileName As System.Windows.Forms.ColumnHeader
         Dim FileExt As System.Windows.Forms.ColumnHeader
         Dim FileSize As System.Windows.Forms.ColumnHeader
@@ -30,19 +35,16 @@ Partial Class MainForm
         Dim FileStartingCluster As System.Windows.Forms.ColumnHeader
         Dim FileAttrib As System.Windows.Forms.ColumnHeader
         Dim FileCRC32 As System.Windows.Forms.ColumnHeader
-        Dim SummaryName As System.Windows.Forms.ColumnHeader
-        Dim SummaryValue As System.Windows.Forms.ColumnHeader
-        Dim HashName As System.Windows.Forms.ColumnHeader
-        Dim HashValue As System.Windows.Forms.ColumnHeader
-        Dim ColumnHeader1 As System.Windows.Forms.ColumnHeader
-        Me.ListViewFiles = New System.Windows.Forms.ListView()
+        Me.ContextMenuFiles = New System.Windows.Forms.ContextMenuStrip(Me.components)
+        Me.ItemDisplayDirectory = New System.Windows.Forms.ToolStripMenuItem()
         Me.ListViewSummary = New System.Windows.Forms.ListView()
         Me.ComboGroups = New System.Windows.Forms.ComboBox()
         Me.LblInvalidImage = New System.Windows.Forms.Label()
         Me.ListViewHashes = New System.Windows.Forms.ListView()
-        Me.Panel1 = New System.Windows.Forms.Panel()
+        Me.PanelButtons = New System.Windows.Forms.Panel()
         Me.FlowLayoutPanel1 = New System.Windows.Forms.FlowLayoutPanel()
         Me.ButtonDisplayBootSector = New System.Windows.Forms.Button()
+        Me.ButtonDisplayClusters = New System.Windows.Forms.Button()
         Me.ButtonOEMID = New System.Windows.Forms.Button()
         Me.BtnClearCreated = New System.Windows.Forms.Button()
         Me.BtnClearLastAccessed = New System.Windows.Forms.Button()
@@ -58,8 +60,12 @@ Partial Class MainForm
         Me.ToolStripFileName = New System.Windows.Forms.ToolStripStatusLabel()
         Me.ToolStripFileCount = New System.Windows.Forms.ToolStripStatusLabel()
         Me.ToolStripModified = New System.Windows.Forms.ToolStripStatusLabel()
-        Me.ContextMenuFiles = New System.Windows.Forms.ContextMenuStrip(Me.components)
-        Me.ItemDisplayDirectory = New System.Windows.Forms.ToolStripMenuItem()
+        Me.ListViewFiles = New System.Windows.Forms.ListView()
+        SummaryName = CType(New System.Windows.Forms.ColumnHeader(), System.Windows.Forms.ColumnHeader)
+        SummaryValue = CType(New System.Windows.Forms.ColumnHeader(), System.Windows.Forms.ColumnHeader)
+        HashName = CType(New System.Windows.Forms.ColumnHeader(), System.Windows.Forms.ColumnHeader)
+        HashValue = CType(New System.Windows.Forms.ColumnHeader(), System.Windows.Forms.ColumnHeader)
+        ColumnHeader1 = CType(New System.Windows.Forms.ColumnHeader(), System.Windows.Forms.ColumnHeader)
         FileName = CType(New System.Windows.Forms.ColumnHeader(), System.Windows.Forms.ColumnHeader)
         FileExt = CType(New System.Windows.Forms.ColumnHeader(), System.Windows.Forms.ColumnHeader)
         FileSize = CType(New System.Windows.Forms.ColumnHeader(), System.Windows.Forms.ColumnHeader)
@@ -67,16 +73,34 @@ Partial Class MainForm
         FileStartingCluster = CType(New System.Windows.Forms.ColumnHeader(), System.Windows.Forms.ColumnHeader)
         FileAttrib = CType(New System.Windows.Forms.ColumnHeader(), System.Windows.Forms.ColumnHeader)
         FileCRC32 = CType(New System.Windows.Forms.ColumnHeader(), System.Windows.Forms.ColumnHeader)
-        SummaryName = CType(New System.Windows.Forms.ColumnHeader(), System.Windows.Forms.ColumnHeader)
-        SummaryValue = CType(New System.Windows.Forms.ColumnHeader(), System.Windows.Forms.ColumnHeader)
-        HashName = CType(New System.Windows.Forms.ColumnHeader(), System.Windows.Forms.ColumnHeader)
-        HashValue = CType(New System.Windows.Forms.ColumnHeader(), System.Windows.Forms.ColumnHeader)
-        ColumnHeader1 = CType(New System.Windows.Forms.ColumnHeader(), System.Windows.Forms.ColumnHeader)
-        Me.Panel1.SuspendLayout()
+        Me.ContextMenuFiles.SuspendLayout()
+        Me.PanelButtons.SuspendLayout()
         Me.FlowLayoutPanel1.SuspendLayout()
         Me.StatusStrip1.SuspendLayout()
-        Me.ContextMenuFiles.SuspendLayout()
         Me.SuspendLayout()
+        '
+        'SummaryName
+        '
+        SummaryName.Text = "Name"
+        SummaryName.Width = 130
+        '
+        'SummaryValue
+        '
+        SummaryValue.Text = "Value"
+        SummaryValue.Width = 140
+        '
+        'HashName
+        '
+        HashName.Width = -1
+        '
+        'HashValue
+        '
+        HashValue.Width = -1
+        '
+        'ColumnHeader1
+        '
+        ColumnHeader1.Text = ""
+        ColumnHeader1.Width = 23
         '
         'FileName
         '
@@ -114,46 +138,18 @@ Partial Class MainForm
         FileCRC32.Text = "CRC32"
         FileCRC32.Width = 70
         '
-        'SummaryName
+        'ContextMenuFiles
         '
-        SummaryName.Text = "Name"
-        SummaryName.Width = 130
+        Me.ContextMenuFiles.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.ItemDisplayDirectory})
+        Me.ContextMenuFiles.Name = "ContextMenuFiles"
+        Me.ContextMenuFiles.Size = New System.Drawing.Size(164, 26)
         '
-        'SummaryValue
+        'ItemDisplayDirectory
         '
-        SummaryValue.Text = "Value"
-        SummaryValue.Width = 140
-        '
-        'HashName
-        '
-        HashName.Width = -1
-        '
-        'HashValue
-        '
-        HashValue.Width = -1
-        '
-        'ColumnHeader1
-        '
-        ColumnHeader1.Text = ""
-        ColumnHeader1.Width = 23
-        '
-        'ListViewFiles
-        '
-        Me.ListViewFiles.AllowDrop = True
-        Me.ListViewFiles.Anchor = CType((((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Bottom) _
-            Or System.Windows.Forms.AnchorStyles.Left) _
-            Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
-        Me.ListViewFiles.CheckBoxes = True
-        Me.ListViewFiles.Columns.AddRange(New System.Windows.Forms.ColumnHeader() {ColumnHeader1, FileName, FileExt, FileSize, FileLastWriteDate, FileStartingCluster, FileAttrib, FileCRC32})
-        Me.ListViewFiles.ContextMenuStrip = Me.ContextMenuFiles
-        Me.ListViewFiles.FullRowSelect = True
-        Me.ListViewFiles.HideSelection = False
-        Me.ListViewFiles.Location = New System.Drawing.Point(320, 41)
-        Me.ListViewFiles.Name = "ListViewFiles"
-        Me.ListViewFiles.Size = New System.Drawing.Size(642, 481)
-        Me.ListViewFiles.TabIndex = 10
-        Me.ListViewFiles.UseCompatibleStateImageBehavior = False
-        Me.ListViewFiles.View = System.Windows.Forms.View.Details
+        Me.ItemDisplayDirectory.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text
+        Me.ItemDisplayDirectory.Name = "ItemDisplayDirectory"
+        Me.ItemDisplayDirectory.Size = New System.Drawing.Size(163, 22)
+        Me.ItemDisplayDirectory.Text = "Display Directory"
         '
         'ListViewSummary
         '
@@ -219,31 +215,34 @@ Partial Class MainForm
         Me.ListViewHashes.UseCompatibleStateImageBehavior = False
         Me.ListViewHashes.View = System.Windows.Forms.View.Tile
         '
-        'Panel1
+        'PanelButtons
         '
-        Me.Panel1.Anchor = CType((System.Windows.Forms.AnchorStyles.Bottom Or System.Windows.Forms.AnchorStyles.Left), System.Windows.Forms.AnchorStyles)
-        Me.Panel1.BackColor = System.Drawing.SystemColors.Window
-        Me.Panel1.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle
-        Me.Panel1.Controls.Add(Me.FlowLayoutPanel1)
-        Me.Panel1.Location = New System.Drawing.Point(12, 365)
-        Me.Panel1.Name = "Panel1"
-        Me.Panel1.Size = New System.Drawing.Size(302, 157)
-        Me.Panel1.TabIndex = 8
+        Me.PanelButtons.Anchor = CType((System.Windows.Forms.AnchorStyles.Bottom Or System.Windows.Forms.AnchorStyles.Left), System.Windows.Forms.AnchorStyles)
+        Me.PanelButtons.BackColor = System.Drawing.SystemColors.Window
+        Me.PanelButtons.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle
+        Me.PanelButtons.Controls.Add(Me.FlowLayoutPanel1)
+        Me.PanelButtons.Location = New System.Drawing.Point(12, 365)
+        Me.PanelButtons.Name = "PanelButtons"
+        Me.PanelButtons.Size = New System.Drawing.Size(302, 157)
+        Me.PanelButtons.TabIndex = 8
         '
         'FlowLayoutPanel1
         '
         Me.FlowLayoutPanel1.Anchor = CType((((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Bottom) _
             Or System.Windows.Forms.AnchorStyles.Left) _
             Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
+        Me.FlowLayoutPanel1.AutoSize = True
+        Me.FlowLayoutPanel1.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink
         Me.FlowLayoutPanel1.Controls.Add(Me.ButtonDisplayBootSector)
+        Me.FlowLayoutPanel1.Controls.Add(Me.ButtonDisplayClusters)
         Me.FlowLayoutPanel1.Controls.Add(Me.ButtonOEMID)
         Me.FlowLayoutPanel1.Controls.Add(Me.BtnClearCreated)
         Me.FlowLayoutPanel1.Controls.Add(Me.BtnClearLastAccessed)
         Me.FlowLayoutPanel1.Controls.Add(Me.Button1)
         Me.FlowLayoutPanel1.FlowDirection = System.Windows.Forms.FlowDirection.TopDown
-        Me.FlowLayoutPanel1.Location = New System.Drawing.Point(84, 3)
+        Me.FlowLayoutPanel1.Location = New System.Drawing.Point(3, 3)
         Me.FlowLayoutPanel1.Name = "FlowLayoutPanel1"
-        Me.FlowLayoutPanel1.Size = New System.Drawing.Size(133, 149)
+        Me.FlowLayoutPanel1.Size = New System.Drawing.Size(280, 145)
         Me.FlowLayoutPanel1.TabIndex = 0
         '
         'ButtonDisplayBootSector
@@ -251,47 +250,57 @@ Partial Class MainForm
         Me.ButtonDisplayBootSector.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink
         Me.ButtonDisplayBootSector.Location = New System.Drawing.Point(3, 3)
         Me.ButtonDisplayBootSector.Name = "ButtonDisplayBootSector"
-        Me.ButtonDisplayBootSector.Size = New System.Drawing.Size(126, 23)
+        Me.ButtonDisplayBootSector.Size = New System.Drawing.Size(134, 23)
         Me.ButtonDisplayBootSector.TabIndex = 0
         Me.ButtonDisplayBootSector.Text = "Display Boot Sector"
         Me.ButtonDisplayBootSector.UseVisualStyleBackColor = True
         '
+        'ButtonDisplayClusters
+        '
+        Me.ButtonDisplayClusters.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink
+        Me.ButtonDisplayClusters.Location = New System.Drawing.Point(3, 32)
+        Me.ButtonDisplayClusters.Name = "ButtonDisplayClusters"
+        Me.ButtonDisplayClusters.Size = New System.Drawing.Size(134, 23)
+        Me.ButtonDisplayClusters.TabIndex = 1
+        Me.ButtonDisplayClusters.Text = "Display Unused Clusters"
+        Me.ButtonDisplayClusters.UseVisualStyleBackColor = True
+        '
         'ButtonOEMID
         '
         Me.ButtonOEMID.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink
-        Me.ButtonOEMID.Location = New System.Drawing.Point(3, 32)
+        Me.ButtonOEMID.Location = New System.Drawing.Point(3, 61)
         Me.ButtonOEMID.Name = "ButtonOEMID"
-        Me.ButtonOEMID.Size = New System.Drawing.Size(126, 23)
-        Me.ButtonOEMID.TabIndex = 1
+        Me.ButtonOEMID.Size = New System.Drawing.Size(134, 23)
+        Me.ButtonOEMID.TabIndex = 2
         Me.ButtonOEMID.Text = "Change OEM ID"
         Me.ButtonOEMID.UseVisualStyleBackColor = True
         '
         'BtnClearCreated
         '
         Me.BtnClearCreated.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink
-        Me.BtnClearCreated.Location = New System.Drawing.Point(3, 61)
+        Me.BtnClearCreated.Location = New System.Drawing.Point(3, 90)
         Me.BtnClearCreated.Name = "BtnClearCreated"
-        Me.BtnClearCreated.Size = New System.Drawing.Size(126, 23)
-        Me.BtnClearCreated.TabIndex = 2
+        Me.BtnClearCreated.Size = New System.Drawing.Size(134, 23)
+        Me.BtnClearCreated.TabIndex = 3
         Me.BtnClearCreated.Text = "Clear Creation Date"
         Me.BtnClearCreated.UseVisualStyleBackColor = True
         '
         'BtnClearLastAccessed
         '
         Me.BtnClearLastAccessed.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink
-        Me.BtnClearLastAccessed.Location = New System.Drawing.Point(3, 90)
+        Me.BtnClearLastAccessed.Location = New System.Drawing.Point(3, 119)
         Me.BtnClearLastAccessed.Name = "BtnClearLastAccessed"
-        Me.BtnClearLastAccessed.Size = New System.Drawing.Size(126, 23)
-        Me.BtnClearLastAccessed.TabIndex = 3
+        Me.BtnClearLastAccessed.Size = New System.Drawing.Size(134, 23)
+        Me.BtnClearLastAccessed.TabIndex = 4
         Me.BtnClearLastAccessed.Text = "Clear Last Access Date"
         Me.BtnClearLastAccessed.UseVisualStyleBackColor = True
         '
         'Button1
         '
-        Me.Button1.Location = New System.Drawing.Point(3, 119)
+        Me.Button1.Location = New System.Drawing.Point(143, 3)
         Me.Button1.Name = "Button1"
-        Me.Button1.Size = New System.Drawing.Size(126, 23)
-        Me.Button1.TabIndex = 4
+        Me.Button1.Size = New System.Drawing.Size(134, 23)
+        Me.Button1.TabIndex = 5
         Me.Button1.Text = "Load All"
         Me.Button1.UseVisualStyleBackColor = True
         Me.Button1.Visible = False
@@ -406,18 +415,23 @@ Partial Class MainForm
         Me.ToolStripModified.Size = New System.Drawing.Size(94, 19)
         Me.ToolStripModified.Text = "0 Files Modified"
         '
-        'ContextMenuFiles
+        'ListViewFiles
         '
-        Me.ContextMenuFiles.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.ItemDisplayDirectory})
-        Me.ContextMenuFiles.Name = "ContextMenuFiles"
-        Me.ContextMenuFiles.Size = New System.Drawing.Size(164, 26)
-        '
-        'ItemDisplayDirectory
-        '
-        Me.ItemDisplayDirectory.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text
-        Me.ItemDisplayDirectory.Name = "ItemDisplayDirectory"
-        Me.ItemDisplayDirectory.Size = New System.Drawing.Size(163, 22)
-        Me.ItemDisplayDirectory.Text = "Display Directory"
+        Me.ListViewFiles.AllowDrop = True
+        Me.ListViewFiles.Anchor = CType((((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Bottom) _
+            Or System.Windows.Forms.AnchorStyles.Left) _
+            Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
+        Me.ListViewFiles.CheckBoxes = True
+        Me.ListViewFiles.Columns.AddRange(New System.Windows.Forms.ColumnHeader() {ColumnHeader1, FileName, FileExt, FileSize, FileLastWriteDate, FileStartingCluster, FileAttrib, FileCRC32})
+        Me.ListViewFiles.ContextMenuStrip = Me.ContextMenuFiles
+        Me.ListViewFiles.FullRowSelect = True
+        Me.ListViewFiles.HideSelection = False
+        Me.ListViewFiles.Location = New System.Drawing.Point(320, 41)
+        Me.ListViewFiles.Name = "ListViewFiles"
+        Me.ListViewFiles.Size = New System.Drawing.Size(642, 481)
+        Me.ListViewFiles.TabIndex = 10
+        Me.ListViewFiles.UseCompatibleStateImageBehavior = False
+        Me.ListViewFiles.View = System.Windows.Forms.View.Details
         '
         'MainForm
         '
@@ -432,7 +446,7 @@ Partial Class MainForm
         Me.Controls.Add(Me.CBCheckAll)
         Me.Controls.Add(Me.LabelDropMessage)
         Me.Controls.Add(Me.BtnSave)
-        Me.Controls.Add(Me.Panel1)
+        Me.Controls.Add(Me.PanelButtons)
         Me.Controls.Add(Me.ListViewHashes)
         Me.Controls.Add(Me.LblInvalidImage)
         Me.Controls.Add(Me.ComboGroups)
@@ -442,22 +456,21 @@ Partial Class MainForm
         Me.Name = "MainForm"
         Me.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen
         Me.Text = "Disk Image Tool"
-        Me.Panel1.ResumeLayout(False)
+        Me.ContextMenuFiles.ResumeLayout(False)
+        Me.PanelButtons.ResumeLayout(False)
+        Me.PanelButtons.PerformLayout()
         Me.FlowLayoutPanel1.ResumeLayout(False)
         Me.StatusStrip1.ResumeLayout(False)
         Me.StatusStrip1.PerformLayout()
-        Me.ContextMenuFiles.ResumeLayout(False)
         Me.ResumeLayout(False)
         Me.PerformLayout()
 
     End Sub
-
-    Friend WithEvents ListViewFiles As ListView
     Friend WithEvents ListViewSummary As ListView
     Friend WithEvents ComboGroups As ComboBox
     Friend WithEvents LblInvalidImage As Label
     Friend WithEvents ListViewHashes As ListView
-    Friend WithEvents Panel1 As Panel
+    Friend WithEvents PanelButtons As Panel
     Friend WithEvents BtnSave As Button
     Friend WithEvents LabelDropMessage As Label
     Friend WithEvents FlowLayoutPanel1 As FlowLayoutPanel
@@ -477,4 +490,6 @@ Partial Class MainForm
     Friend WithEvents ToolStripModified As ToolStripStatusLabel
     Friend WithEvents ContextMenuFiles As ContextMenuStrip
     Friend WithEvents ItemDisplayDirectory As ToolStripMenuItem
+    Friend WithEvents ButtonDisplayClusters As Button
+    Friend WithEvents ListViewFiles As ListView
 End Class

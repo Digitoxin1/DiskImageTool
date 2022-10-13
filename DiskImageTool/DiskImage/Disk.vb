@@ -1,13 +1,19 @@
 ﻿Namespace DiskImage
     Public Structure DataBlock
+        Dim Cluster As UInteger
+        Dim Sector As UInteger
         Dim Offset As UInteger
         Dim Data() As Byte
     End Structure
 
     Public Class Disk
+        Private ReadOnly _ValidBytesPerSector() As UShort = {512, 1024, 2048, 4096}
+        Private ReadOnly _ValidSectorsPerSector() As Byte = {1, 2, 4, 8, 16, 32, 128}
         Private ReadOnly _BootSector As DiskImage.BootSector
         Private ReadOnly _Directory As DiskImage.Directory
         Private _FAT12() As UShort
+        Private _FreeSpace As UInteger = 0
+        Private _FreeSpaceClusterStart As UInteger = 0
         Private ReadOnly _FileBytes() As Byte
         Private ReadOnly _FilePath As String
         Private _Modified As Boolean
@@ -52,6 +58,18 @@
         Public ReadOnly Property FilePath As String
             Get
                 Return _FilePath
+            End Get
+        End Property
+
+        Public ReadOnly Property FreeSpace As UInteger
+            Get
+                Return _FreeSpace
+            End Get
+        End Property
+
+        Public ReadOnly Property FreeSpaceClusterStart As UInteger
+            Get
+                Return _FreeSpaceClusterStart
             End Get
         End Property
 
@@ -110,7 +128,6 @@
         End Sub
 
         Public Sub SetBytes(Value() As Byte, Offset As UInteger, Size As UInteger, Padding As Byte)
-            Debug.Print("Array: " & Offset & "," & Size)
             Disk.ResizeArray(Value, Size, Padding)
             Array.Copy(Value, 0, _FileBytes, Offset, Size)
             _Modified = True
@@ -133,6 +150,22 @@
                 Next
             End If
         End Sub
+
+        Public Function ClusterToSector(Cluster As UInteger) As UInteger
+            Return (_BootSector.DataRegionStart + ((Cluster - 2) * _BootSector.SectorsPerCluster))
+        End Function
+
+        Public Function ClusterToOffset(Cluster As UInteger) As UInteger
+            Return (_BootSector.DataRegionStart + ((Cluster - 2) * _BootSector.SectorsPerCluster)) * _BootSector.BytesPerSector
+        End Function
+
+        Public Function SectorToCluster(Sector As UInteger) As UInteger
+            Return Int((Sector - _BootSector.DataRegionStart) / _BootSector.SectorsPerCluster + 2)
+        End Function
+
+        Public Function SectorToOffset(Sector As UInteger) As UInteger
+            Return Sector * _BootSector.BytesPerSector
+        End Function
 
         Public Function GetDirectoryEntryByOffset(Offset As UInteger) As DiskImage.DirectoryEntry
             Return New DiskImage.DirectoryEntry(Me, Offset)
@@ -159,21 +192,72 @@
             Return Count
         End Function
 
+        Public Function HasUnusedClustersWithData() As Boolean
+            If _FreeSpaceClusterStart > 0 Then
+                Dim ClusterCount As UInteger = _BootSector.NumberOfFATEntries + 1
+
+                For Counter = _FreeSpaceClusterStart To ClusterCount
+                    Dim Data = GetBytes(ClusterToOffset(Counter), _BootSector.BytesPerCluster)
+                    For Each B In Data
+                        If B <> &HF6 And B <> &H0 Then
+                            Return True
+                        End If
+                    Next
+                Next
+            End If
+
+            Return False
+        End Function
+
+        Public Function GetUnusedClustersWithData() As List(Of DataBlock)
+            Dim Result As New List(Of DataBlock)
+            Dim Found As Boolean
+
+            If _FreeSpaceClusterStart > 0 Then
+                Dim SectorStart As UInteger = ClusterToSector(_FreeSpaceClusterStart)
+                Dim SectorCount As UInteger = _BootSector.SectorCount - 1
+
+                For Counter = SectorStart To SectorCount
+                    Dim Block As DataBlock
+                    With Block
+                        .Cluster = SectorToCluster(Counter)
+                        .Sector = Counter
+                        .Offset = SectorToOffset(Counter)
+                        .Data = GetBytes(.Offset, _BootSector.BytesPerSector)
+                    End With
+                    Found = False
+                    For Each B In Block.Data
+                        If B <> &HF6 And B <> &H0 Then
+                            Found = True
+                            Exit For
+                        End If
+                    Next
+                    If Found Then
+                        Result.Add(Block)
+                    End If
+                Next
+            End If
+
+            Return Result
+        End Function
+
         Public Function IsValidImage() As Boolean
             Dim Result As Boolean = True
 
-            Result = Result And (_BootSector.BytesPerSector = 512 Or _BootSector.BytesPerSector = 1024 Or _BootSector.BytesPerSector = 2048 Or _BootSector.BytesPerSector = 4096)
-            Result = Result And (_BootSector.SectorsPerCluster = 1 Or _BootSector.SectorsPerCluster = 2 Or _BootSector.SectorsPerCluster = 4 Or _BootSector.SectorsPerCluster = 8 Or _BootSector.SectorsPerCluster = 16 Or _BootSector.SectorsPerCluster = 32 Or _BootSector.SectorsPerCluster = 128)
+            Result = Result And _ValidBytesPerSector.Contains(_BootSector.BytesPerSector)
+            Result = Result And _ValidSectorsPerSector.Contains(_BootSector.SectorsPerCluster)
             Result = Result And (_BootSector.MediaDescriptor = 240 Or (_BootSector.MediaDescriptor >= 248 And _BootSector.MediaDescriptor <= 255))
             Return Result
         End Function
 
         Private Sub PopulateFAT12()
-            Dim Start As UInteger = _BootSector.FatRegionStart * _BootSector.BytesPerSector
-            Dim Length As UInteger = _BootSector.FatRegionSize / 2 * _BootSector.BytesPerSector
+            Dim Start As UInteger = SectorToOffset(_BootSector.FatRegionStart)
+            Dim Length As UInteger = SectorToOffset(_BootSector.FatRegionSize / 2)
 
             Dim FAT12Bytes(Length - 1) As Byte
             ReDim _FAT12(_BootSector.NumberOfFATEntries + 1)
+            _FreeSpace = 0
+            _FreeSpaceClusterStart = 0
 
             Array.Copy(_FileBytes, Start, FAT12Bytes, 0, Length)
 
@@ -183,10 +267,26 @@
             Do While Cluster <= _BootSector.NumberOfFATEntries + 1
                 b = BitConverter.ToUInt32(FAT12Bytes, Start)
                 _FAT12(Cluster) = b Mod 4096
+                If _FAT12(Cluster) = 0 Then
+                    _FreeSpace += _BootSector.BytesPerCluster
+                    If _FreeSpaceClusterStart = 0 Then
+                        _FreeSpaceClusterStart = Cluster
+                    End If
+                Else
+                    _FreeSpaceClusterStart = 0
+                End If
                 Cluster += 1
                 If Cluster <= _BootSector.NumberOfFATEntries + 1 Then
                     b >>= 12
                     _FAT12(Cluster) = b Mod 4096
+                    If _FAT12(Cluster) = 0 Then
+                        _FreeSpace += _BootSector.BytesPerCluster
+                        If _FreeSpaceClusterStart = 0 Then
+                            _FreeSpaceClusterStart = Cluster
+                        End If
+                    Else
+                        _FreeSpaceClusterStart = 0
+                    End If
                     Cluster += 1
                 End If
                 Start += 3

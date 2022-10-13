@@ -29,7 +29,7 @@
     <TargetCulture>en-US</TargetCulture>
     <ProductName>DiskImageTool</ProductName>
     <PublisherName>Digitoxin</PublisherName>
-    <ApplicationRevision>3</ApplicationRevision>
+    <ApplicationRevision>4</ApplicationRevision>
     <ApplicationVersion>1.2.0.%2a</ApplicationVersion>
     <UseApplicationTrust>false</UseApplicationTrust>
     <PublishWizardCompleted>true</PublishWizardCompleted>
@@ -106,6 +106,12 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ComboFileType.vb" />
+    <Compile Include="AdvancedListView.Designer.vb">
+      <DependentUpon>AdvancedListView.vb</DependentUpon>
+    </Compile>
+    <Compile Include="AdvancedListView.vb">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="DiskImage\BootSector.vb" />
     <Compile Include="OEMIDLookup.vb" />
     <Compile Include="LoadedImageData.vb" />

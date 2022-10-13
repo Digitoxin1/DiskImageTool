@@ -26,6 +26,7 @@ Public Class MainForm
         FlowLayoutPanel1.Visible = False
         BtnClearCreated.Enabled = False
         BtnClearCreated.Visible = False
+        ButtonDisplayClusters.Visible = False
         BtnClearLastAccessed.Enabled = False
         BtnClearLastAccessed.Visible = False
         BtnScan.Enabled = False
@@ -578,6 +579,7 @@ Public Class MainForm
             .Add(GetListViewSummaryItem("Bytes Per Sector:", _Disk.BootSector.BytesPerSector))
             .Add(GetListViewSummaryItem("Sectors Per Cluster:", _Disk.BootSector.SectorsPerCluster))
             .Add(GetListViewSummaryItem("Sectors Per Track:", _Disk.BootSector.SectorsPerTrack))
+            .Add(GetListViewSummaryItem("Free Space:", Format(_Disk.FreeSpace, "N0") & " bytes"))
             If BootstrapType IsNot Nothing Then
                 If Not OEMIDMatched Then
                     For Each OEMID In BootstrapType.OEMIDList
@@ -791,6 +793,7 @@ Public Class MainForm
         If _Disk.IsValidImage Then
             PopulateDetails()
             PopulateSummary()
+            ButtonDisplayClusters.Visible = _Disk.HasUnusedClustersWithData
             LblInvalidImage.Visible = False
             CBCheckAll.Visible = True
         Else
@@ -800,6 +803,7 @@ Public Class MainForm
             LblInvalidImage.Visible = True
             BtnClearCreated.Visible = False
             BtnClearLastAccessed.Visible = False
+            ButtonDisplayClusters.Visible = False
             CBCheckAll.Visible = False
         End If
     End Sub
@@ -1044,6 +1048,9 @@ Public Class MainForm
 
     Private Sub ButtonDisplayBootSector_Click(sender As Object, e As EventArgs) Handles ButtonDisplayBootSector.Click
         Dim Block As DiskImage.DataBlock
+
+        Block.Cluster = 0
+        Block.Sector = 0
         Block.Offset = 0
         Block.Data = _Disk.BootSector.Data
 
@@ -1153,6 +1160,17 @@ Public Class MainForm
             Dim frmHexView As New HexViewForm(DataBlockList)
             frmHexView.ShowDialog()
         End If
+    End Sub
+
+    Private Sub FlowLayoutPanel1_Resize(sender As Object, e As EventArgs) Handles FlowLayoutPanel1.Resize
+        FlowLayoutPanel1.Left = (FlowLayoutPanel1.Parent.Width - FlowLayoutPanel1.Width) / 2
+    End Sub
+
+    Private Sub ButtonDisplayClusters_Click(sender As Object, e As EventArgs) Handles ButtonDisplayClusters.Click
+        Dim DataBlockList = _Disk.GetUnusedClustersWithData
+
+        Dim frmHexView As New HexViewForm(DataBlockList)
+        frmHexView.ShowDialog()
     End Sub
 End Class
 

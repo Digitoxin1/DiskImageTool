@@ -8,13 +8,22 @@
             _FatChain = FatChain
         End Sub
 
-        Private Function GetDataRoot() As DataBlock
-            Dim Result As DataBlock
+        Private Function GetDataRoot() As List(Of DataBlock)
+            Dim Result As New List(Of DataBlock)
 
-            Result.Offset = _Parent.BootSector.RootDirectoryRegionStart * _Parent.BootSector.BytesPerSector
-            Dim OffsetEnd As UInteger = _Parent.BootSector.DataRegionStart * _Parent.BootSector.BytesPerSector
+            Dim SectorStart = _Parent.BootSector.RootDirectoryRegionStart
+            Dim SectorEnd = _Parent.BootSector.DataRegionStart
 
-            Result.Data = _Parent.GetBytes(Result.Offset, OffsetEnd - Result.Offset)
+            For Sector = SectorStart To SectorEnd - 1
+                Dim Block As DataBlock
+                With Block
+                    .Cluster = 0
+                    .Sector = Sector
+                    .Offset = _Parent.SectorToOffset(Sector)
+                    .Data = _Parent.GetBytes(.Offset, _Parent.BootSector.BytesPerSector)
+                End With
+                Result.Add(Block)
+            Next
 
             Return Result
         End Function
@@ -23,15 +32,17 @@
             Dim Result As New List(Of DataBlock)
 
             For Each Cluster In _FatChain
-                Dim Block As DataBlock
-
-                Block.Offset = _Parent.BootSector.DataRegionStart + ((Cluster - 2) * _Parent.BootSector.SectorsPerCluster)
-                Block.Offset *= _Parent.BootSector.BytesPerSector
-
-                Dim Length As UInteger = _Parent.BootSector.SectorsPerCluster * _Parent.BootSector.BytesPerSector
-
-                Block.Data = _Parent.GetBytes(Block.Offset, Length)
-                Result.Add(Block)
+                Dim Sector = _Parent.ClusterToSector(Cluster)
+                For Counter = 0 To _Parent.BootSector.SectorsPerCluster - 1
+                    Dim Block As DataBlock
+                    With Block
+                        .Cluster = Cluster
+                        .Sector = Sector + Counter
+                        .Offset = _Parent.SectorToOffset(Sector + Counter)
+                        .Data = _Parent.GetBytes(.Offset, _Parent.BootSector.BytesPerSector)
+                    End With
+                    Result.Add(Block)
+                Next
             Next
 
             Return Result
@@ -41,39 +52,34 @@
             Dim Count As UInteger = 0
 
             For Each Cluster In _FatChain
-                Dim OffsetStart As UInteger = _Parent.BootSector.DataRegionStart + ((Cluster - 2) * _Parent.BootSector.SectorsPerCluster)
-                Dim OffsetEnd As UInteger = OffsetStart + _Parent.BootSector.SectorsPerCluster
+                Dim OffsetStart As UInteger = _Parent.ClusterToOffset(Cluster)
+                Dim OffsetLength As UInteger = _Parent.BootSector.BytesPerCluster
 
-                OffsetStart *= _Parent.BootSector.BytesPerSector
-                OffsetEnd *= _Parent.BootSector.BytesPerSector
 
-                Count += _Parent.GetDirectoryLength(OffsetStart, OffsetEnd, FileCountOnly)
+                Count += _Parent.GetDirectoryLength(OffsetStart, OffsetStart + OffsetLength, FileCountOnly)
             Next
 
             Return Count
         End Function
 
         Private Function GetDirectoryLengthRoot(FileCountOnly As Boolean) As UInteger
-            Dim OffsetStart As UInteger = _Parent.BootSector.RootDirectoryRegionStart * _Parent.BootSector.BytesPerSector
-            Dim OffsetEnd As UInteger = _Parent.BootSector.DataRegionStart * _Parent.BootSector.BytesPerSector
+            Dim OffsetStart As UInteger = _Parent.SectorToOffset(_Parent.BootSector.RootDirectoryRegionStart)
+            Dim OffsetEnd As UInteger = _Parent.SectorToOffset(_Parent.BootSector.DataRegionStart)
 
             Return _Parent.GetDirectoryLength(OffsetStart, OffsetEnd, FileCountOnly)
         End Function
 
         Private Function GetFileSubDirectory(Index As UInteger) As DiskImage.DirectoryEntry
-            Dim EntriesPerCluster As UInteger = _Parent.BootSector.BytesPerSector * _Parent.BootSector.SectorsPerCluster / 32
+            Dim EntriesPerCluster As UInteger = _Parent.BootSector.BytesPerCluster / 32
             Dim ChainIndex As UInteger = (Index - 1) \ EntriesPerCluster
             Dim ClusterIndex As UInteger = (Index - 1) Mod EntriesPerCluster
-            Dim Offset As UInteger = _Parent.BootSector.DataRegionStart + ((_FatChain.Item(ChainIndex) - 2) * _Parent.BootSector.SectorsPerCluster)
-            Offset *= _Parent.BootSector.BytesPerSector
-            Offset += ClusterIndex * 32
+            Dim Offset As UInteger = _Parent.ClusterToOffset(_FatChain.Item(ChainIndex)) + ClusterIndex * 32
 
             Return New DiskImage.DirectoryEntry(_Parent, Offset)
         End Function
 
         Private Function GetFileRoot(Index As Integer) As DiskImage.DirectoryEntry
-            Dim Offset As UInteger = _Parent.BootSector.RootDirectoryRegionStart * _Parent.BootSector.BytesPerSector
-            Offset += (Index - 1) * 32
+            Dim Offset As UInteger = _Parent.SectorToOffset(_Parent.BootSector.RootDirectoryRegionStart) + (Index - 1) * 32
 
             Return New DiskImage.DirectoryEntry(_Parent, Offset)
         End Function
@@ -104,9 +110,7 @@
 
         Public Function GetData() As List(Of DataBlock)
             If _FatChain Is Nothing Then
-                Return New List(Of DataBlock) From {
-                    GetDataRoot()
-                }
+                Return GetDataRoot()
             Else
                 Return GetDataSubDirectory()
             End If
