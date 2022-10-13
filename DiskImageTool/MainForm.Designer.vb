@@ -43,12 +43,13 @@ Partial Class MainForm
         Me.ListViewHashes = New System.Windows.Forms.ListView()
         Me.PanelButtons = New System.Windows.Forms.Panel()
         Me.FlowLayoutPanel1 = New System.Windows.Forms.FlowLayoutPanel()
-        Me.ButtonDisplayBootSector = New System.Windows.Forms.Button()
-        Me.ButtonDisplayClusters = New System.Windows.Forms.Button()
-        Me.ButtonOEMID = New System.Windows.Forms.Button()
+        Me.BtnDisplayBootSector = New System.Windows.Forms.Button()
+        Me.BtnDisplayClusters = New System.Windows.Forms.Button()
+        Me.BtnOEMID = New System.Windows.Forms.Button()
         Me.BtnClearCreated = New System.Windows.Forms.Button()
         Me.BtnClearLastAccessed = New System.Windows.Forms.Button()
         Me.Button1 = New System.Windows.Forms.Button()
+        Me.BtnRevert = New System.Windows.Forms.Button()
         Me.BtnSave = New System.Windows.Forms.Button()
         Me.LabelDropMessage = New System.Windows.Forms.Label()
         Me.CBCheckAll = New System.Windows.Forms.CheckBox()
@@ -228,52 +229,52 @@ Partial Class MainForm
         '
         'FlowLayoutPanel1
         '
-        Me.FlowLayoutPanel1.Anchor = CType((((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Bottom) _
-            Or System.Windows.Forms.AnchorStyles.Left) _
-            Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
+        Me.FlowLayoutPanel1.Anchor = System.Windows.Forms.AnchorStyles.None
         Me.FlowLayoutPanel1.AutoSize = True
         Me.FlowLayoutPanel1.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink
-        Me.FlowLayoutPanel1.Controls.Add(Me.ButtonDisplayBootSector)
-        Me.FlowLayoutPanel1.Controls.Add(Me.ButtonDisplayClusters)
-        Me.FlowLayoutPanel1.Controls.Add(Me.ButtonOEMID)
+        Me.FlowLayoutPanel1.Controls.Add(Me.BtnDisplayBootSector)
+        Me.FlowLayoutPanel1.Controls.Add(Me.BtnDisplayClusters)
+        Me.FlowLayoutPanel1.Controls.Add(Me.BtnOEMID)
         Me.FlowLayoutPanel1.Controls.Add(Me.BtnClearCreated)
         Me.FlowLayoutPanel1.Controls.Add(Me.BtnClearLastAccessed)
         Me.FlowLayoutPanel1.Controls.Add(Me.Button1)
+        Me.FlowLayoutPanel1.Controls.Add(Me.BtnRevert)
         Me.FlowLayoutPanel1.FlowDirection = System.Windows.Forms.FlowDirection.TopDown
         Me.FlowLayoutPanel1.Location = New System.Drawing.Point(3, 3)
+        Me.FlowLayoutPanel1.MaximumSize = New System.Drawing.Size(296, 151)
         Me.FlowLayoutPanel1.Name = "FlowLayoutPanel1"
         Me.FlowLayoutPanel1.Size = New System.Drawing.Size(280, 145)
         Me.FlowLayoutPanel1.TabIndex = 0
         '
-        'ButtonDisplayBootSector
+        'BtnDisplayBootSector
         '
-        Me.ButtonDisplayBootSector.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink
-        Me.ButtonDisplayBootSector.Location = New System.Drawing.Point(3, 3)
-        Me.ButtonDisplayBootSector.Name = "ButtonDisplayBootSector"
-        Me.ButtonDisplayBootSector.Size = New System.Drawing.Size(134, 23)
-        Me.ButtonDisplayBootSector.TabIndex = 0
-        Me.ButtonDisplayBootSector.Text = "Display Boot Sector"
-        Me.ButtonDisplayBootSector.UseVisualStyleBackColor = True
+        Me.BtnDisplayBootSector.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink
+        Me.BtnDisplayBootSector.Location = New System.Drawing.Point(3, 3)
+        Me.BtnDisplayBootSector.Name = "BtnDisplayBootSector"
+        Me.BtnDisplayBootSector.Size = New System.Drawing.Size(134, 23)
+        Me.BtnDisplayBootSector.TabIndex = 0
+        Me.BtnDisplayBootSector.Text = "Display Boot Sector"
+        Me.BtnDisplayBootSector.UseVisualStyleBackColor = True
         '
-        'ButtonDisplayClusters
+        'BtnDisplayClusters
         '
-        Me.ButtonDisplayClusters.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink
-        Me.ButtonDisplayClusters.Location = New System.Drawing.Point(3, 32)
-        Me.ButtonDisplayClusters.Name = "ButtonDisplayClusters"
-        Me.ButtonDisplayClusters.Size = New System.Drawing.Size(134, 23)
-        Me.ButtonDisplayClusters.TabIndex = 1
-        Me.ButtonDisplayClusters.Text = "Display Unused Clusters"
-        Me.ButtonDisplayClusters.UseVisualStyleBackColor = True
+        Me.BtnDisplayClusters.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink
+        Me.BtnDisplayClusters.Location = New System.Drawing.Point(3, 32)
+        Me.BtnDisplayClusters.Name = "BtnDisplayClusters"
+        Me.BtnDisplayClusters.Size = New System.Drawing.Size(134, 23)
+        Me.BtnDisplayClusters.TabIndex = 1
+        Me.BtnDisplayClusters.Text = "Display Unused Clusters"
+        Me.BtnDisplayClusters.UseVisualStyleBackColor = True
         '
-        'ButtonOEMID
+        'BtnOEMID
         '
-        Me.ButtonOEMID.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink
-        Me.ButtonOEMID.Location = New System.Drawing.Point(3, 61)
-        Me.ButtonOEMID.Name = "ButtonOEMID"
-        Me.ButtonOEMID.Size = New System.Drawing.Size(134, 23)
-        Me.ButtonOEMID.TabIndex = 2
-        Me.ButtonOEMID.Text = "Change OEM ID"
-        Me.ButtonOEMID.UseVisualStyleBackColor = True
+        Me.BtnOEMID.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink
+        Me.BtnOEMID.Location = New System.Drawing.Point(3, 61)
+        Me.BtnOEMID.Name = "BtnOEMID"
+        Me.BtnOEMID.Size = New System.Drawing.Size(134, 23)
+        Me.BtnOEMID.TabIndex = 2
+        Me.BtnOEMID.Text = "Change OEM ID"
+        Me.BtnOEMID.UseVisualStyleBackColor = True
         '
         'BtnClearCreated
         '
@@ -304,6 +305,15 @@ Partial Class MainForm
         Me.Button1.Text = "Load All"
         Me.Button1.UseVisualStyleBackColor = True
         Me.Button1.Visible = False
+        '
+        'BtnRevert
+        '
+        Me.BtnRevert.Location = New System.Drawing.Point(143, 32)
+        Me.BtnRevert.Name = "BtnRevert"
+        Me.BtnRevert.Size = New System.Drawing.Size(134, 23)
+        Me.BtnRevert.TabIndex = 6
+        Me.BtnRevert.Text = "Revert Changes"
+        Me.BtnRevert.UseVisualStyleBackColor = True
         '
         'BtnSave
         '
@@ -474,8 +484,8 @@ Partial Class MainForm
     Friend WithEvents BtnSave As Button
     Friend WithEvents LabelDropMessage As Label
     Friend WithEvents FlowLayoutPanel1 As FlowLayoutPanel
-    Friend WithEvents ButtonOEMID As Button
-    Friend WithEvents ButtonDisplayBootSector As Button
+    Friend WithEvents BtnOEMID As Button
+    Friend WithEvents BtnDisplayBootSector As Button
     Friend WithEvents Button1 As Button
     Friend WithEvents BtnClearCreated As Button
     Friend WithEvents CBCheckAll As CheckBox
@@ -490,6 +500,7 @@ Partial Class MainForm
     Friend WithEvents ToolStripModified As ToolStripStatusLabel
     Friend WithEvents ContextMenuFiles As ContextMenuStrip
     Friend WithEvents ItemDisplayDirectory As ToolStripMenuItem
-    Friend WithEvents ButtonDisplayClusters As Button
+    Friend WithEvents BtnDisplayClusters As Button
     Friend WithEvents ListViewFiles As ListView
+    Friend WithEvents BtnRevert As Button
 End Class

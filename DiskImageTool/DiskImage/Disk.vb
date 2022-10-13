@@ -18,9 +18,11 @@
         Private ReadOnly _FilePath As String
         Private _Modified As Boolean
         Private ReadOnly _Modifications As Hashtable
+        Private ReadOnly _OriginalData As Hashtable
 
         Sub New(FilePath As String)
             _Modifications = New Hashtable()
+            _OriginalData = New Hashtable()
             _Modified = False
             _FilePath = FilePath
             _FileBytes = System.IO.File.ReadAllBytes(FilePath)
@@ -104,32 +106,59 @@
         End Function
 
         Public Sub SetBytes(Value As UShort, Offset As UInteger)
+            If Not _OriginalData.ContainsKey(Offset) Then
+                _OriginalData.Item(Offset) = GetBytesShort(Offset)
+            End If
+
             Array.Copy(BitConverter.GetBytes(Value), 0, _FileBytes, Offset, 2)
+
             _Modified = True
             _Modifications.Item(Offset) = Value
         End Sub
 
         Public Sub SetBytes(Value As UInteger, Offset As UInteger)
+            If Not _OriginalData.ContainsKey(Offset) Then
+                _OriginalData.Item(Offset) = GetBytesInteger(Offset)
+            End If
+
             Array.Copy(BitConverter.GetBytes(Value), 0, _FileBytes, Offset, 4)
+
             _Modified = True
             _Modifications.Item(Offset) = Value
         End Sub
 
         Public Sub SetBytes(Value As Byte, Offset As UInteger)
+            If Not _OriginalData.ContainsKey(Offset) Then
+                _OriginalData.Item(Offset) = GetByte(Offset)
+            End If
+
             _FileBytes(Offset) = Value
+
             _Modified = True
             _Modifications.Item(Offset) = Value
         End Sub
 
         Public Sub SetBytes(Value() As Byte, Offset As UInteger)
+            If Not _OriginalData.ContainsKey(Offset) Then
+                _OriginalData.Item(Offset) = GetBytes(Offset, Value.Length)
+            End If
+
             Array.Copy(Value, 0, _FileBytes, Offset, Value.Length)
+
             _Modified = True
             _Modifications.Item(Offset) = Value
         End Sub
 
         Public Sub SetBytes(Value() As Byte, Offset As UInteger, Size As UInteger, Padding As Byte)
-            Disk.ResizeArray(Value, Size, Padding)
+            If Not _OriginalData.ContainsKey(Offset) Then
+                _OriginalData.Item(Offset) = GetBytes(Offset, Size)
+            End If
+
+            If Value.Length <> Size Then
+                Disk.ResizeArray(Value, Size, Padding)
+            End If
             Array.Copy(Value, 0, _FileBytes, Offset, Size)
+
             _Modified = True
             _Modifications.Item(Offset) = Value
         End Sub
@@ -192,17 +221,44 @@
             Return Count
         End Function
 
+        Public Function GetFillCharacter() As Byte
+            Dim Offset = Math.Min(_FileBytes.Length, _BootSector.ImageSize)
+            Dim FillChar = _FileBytes(Offset - 1)
+            If FillChar = &H0 Then
+                For Counter As Integer = Offset - 1 To Offset - _BootSector.BytesPerSector Step -1
+                    If _FileBytes(Counter) <> &H0 Then
+                        FillChar = &HFF
+                        Exit For
+                    End If
+                Next
+            ElseIf FillChar <> &HF6 Then
+                FillChar = &HFF
+            End If
+
+            Return FillChar
+        End Function
+
         Public Function HasUnusedClustersWithData() As Boolean
             If _FreeSpaceClusterStart > 0 Then
                 Dim ClusterCount As UInteger = _BootSector.NumberOfFATEntries + 1
 
-                For Counter = _FreeSpaceClusterStart To ClusterCount
-                    Dim Data = GetBytes(ClusterToOffset(Counter), _BootSector.BytesPerCluster)
-                    For Each B In Data
-                        If B <> &HF6 And B <> &H0 Then
+                For Cluster = _FreeSpaceClusterStart To ClusterCount
+                    Dim Offset = ClusterToOffset(Cluster)
+                    Dim Length = _BootSector.BytesPerCluster
+                    If _FileBytes.Length >= Offset + Length Then
+                        Dim Data = GetBytes(Offset, Length)
+                        Dim EmptyByte As Byte = Data(0)
+                        If EmptyByte <> &HF6 And EmptyByte <> &H0 Then
                             Return True
                         End If
-                    Next
+                        For Each B In Data
+                            If B <> EmptyByte Then
+                                Return True
+                            End If
+                        Next
+                    Else
+                        Exit For
+                    End If
                 Next
             End If
 
@@ -214,27 +270,39 @@
             Dim Found As Boolean
 
             If _FreeSpaceClusterStart > 0 Then
-                Dim SectorStart As UInteger = ClusterToSector(_FreeSpaceClusterStart)
-                Dim SectorCount As UInteger = _BootSector.SectorCount - 1
-
-                For Counter = SectorStart To SectorCount
-                    Dim Block As DataBlock
-                    With Block
-                        .Cluster = SectorToCluster(Counter)
-                        .Sector = Counter
-                        .Offset = SectorToOffset(Counter)
-                        .Data = GetBytes(.Offset, _BootSector.BytesPerSector)
-                    End With
+                Dim ClusterCount As UInteger = _BootSector.NumberOfFATEntries + 1
+                For Cluster = _FreeSpaceClusterStart To ClusterCount
                     Found = False
-                    For Each B In Block.Data
-                        If B <> &HF6 And B <> &H0 Then
-                            Found = True
-                            Exit For
+                    Dim Sector = ClusterToSector(Cluster)
+                    For Counter = 0 To _BootSector.SectorsPerCluster - 1
+                        Dim Offset = SectorToOffset(Sector + Counter)
+                        Dim Length = _BootSector.BytesPerSector
+                        If _FileBytes.Length >= Offset + Length Then
+                            Dim Block As DataBlock
+                            With Block
+                                .Cluster = Cluster
+                                .Sector = Sector + Counter
+                                .Offset = Offset
+                                .Data = GetBytes(.Offset, Length)
+                            End With
+                            If Not Found Then
+                                Dim EmptyByte As Byte = Block.Data(0)
+                                If EmptyByte <> &HF6 And EmptyByte <> &H0 Then
+                                    Found = True
+                                Else
+                                    For Each B In Block.Data
+                                        If B <> EmptyByte Then
+                                            Found = True
+                                            Exit For
+                                        End If
+                                    Next
+                                End If
+                            End If
+                            If Found Then
+                                Result.Add(Block)
+                            End If
                         End If
                     Next
-                    If Found Then
-                        Result.Add(Block)
-                    End If
                 Next
             End If
 
@@ -295,8 +363,22 @@
 
         Public Sub SaveFile(FilePath As String)
             System.IO.File.WriteAllBytes(FilePath, _FileBytes)
-            _Modified = False
+            _OriginalData.Clear()
             _Modifications.Clear()
+            _Modified = False
         End Sub
+
+        Public Function RevertChanges() As Boolean
+            Dim Result As Boolean = False
+
+            If _OriginalData.Count > 0 Then
+                ApplyModifications(_OriginalData)
+                _OriginalData.Clear()
+                _Modifications.Clear()
+                _Modified = False
+            End If
+
+            Return Result
+        End Function
     End Class
 End Namespace

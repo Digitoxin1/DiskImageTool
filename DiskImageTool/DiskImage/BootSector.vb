@@ -80,6 +80,10 @@
             End If
         End Function
 
+        Public Function ImageSize() As UInteger
+            Return SectorCount() * BytesPerSector
+        End Function
+
         Public Property BootStrapCode() As Byte()
             Get
                 Return _Parent.GetBytes(BootSectorOffset.BootStrapCode, BootSectorSize.BootStrapCode)

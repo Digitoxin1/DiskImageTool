@@ -26,11 +26,12 @@ Public Class MainForm
         FlowLayoutPanel1.Visible = False
         BtnClearCreated.Enabled = False
         BtnClearCreated.Visible = False
-        ButtonDisplayClusters.Visible = False
+        BtnDisplayClusters.Visible = False
         BtnClearLastAccessed.Enabled = False
         BtnClearLastAccessed.Visible = False
         BtnScan.Enabled = False
         BtnFilters.Enabled = False
+        BtnRevert.Visible = False
         CBCheckAll.Visible = False
         LblFilterMessage.Visible = False
         ToolStripFileCount.Visible = False
@@ -39,49 +40,55 @@ Public Class MainForm
     End Sub
     Private Function IsFiltered(ImageData As LoadedImageData, AppliedFilters As FilterTypes) As Boolean
         If (AppliedFilters And FilterTypes.HasInvalidImage) > 0 Then
-            If Not ImageData.IsValidImage Then
+            If Not ImageData.ScanInfo.IsValidImage Then
                 Return False
             End If
         End If
 
         If (AppliedFilters And FilterTypes.HasCreated) > 0 Then
-            If ImageData.IsValidImage And ImageData.HasCreated Then
+            If ImageData.ScanInfo.IsValidImage And ImageData.ScanInfo.HasCreated Then
                 Return False
             End If
         End If
 
         If (AppliedFilters And FilterTypes.HasLastAccessed) > 0 Then
-            If ImageData.IsValidImage And ImageData.HasLastAccessed Then
+            If ImageData.ScanInfo.IsValidImage And ImageData.ScanInfo.HasLastAccessed Then
                 Return False
             End If
         End If
 
         If (AppliedFilters And FilterTypes.MismatchedOEMID) > 0 Then
-            If ImageData.IsValidImage And ImageData.OEMIDFound And Not ImageData.OEMIDMatched Then
+            If ImageData.ScanInfo.IsValidImage And ImageData.ScanInfo.OEMIDFound And Not ImageData.ScanInfo.OEMIDMatched Then
                 Return False
             End If
         End If
 
         If (AppliedFilters And FilterTypes.UnknownOEMID) > 0 Then
-            If ImageData.IsValidImage And Not ImageData.OEMIDFound Then
+            If ImageData.ScanInfo.IsValidImage And Not ImageData.ScanInfo.OEMIDFound Then
                 Return False
             End If
         End If
 
         If (AppliedFilters And FilterTypes.HasLongFileNames) > 0 Then
-            If ImageData.IsValidImage And ImageData.HasLongFileNames Then
+            If ImageData.ScanInfo.IsValidImage And ImageData.ScanInfo.HasLongFileNames Then
                 Return False
             End If
         End If
 
         If (AppliedFilters And FilterTypes.HasInvalidDirectoryEntries) > 0 Then
-            If ImageData.IsValidImage And ImageData.HasInvalidDirectoryEntries Then
+            If ImageData.ScanInfo.IsValidImage And ImageData.ScanInfo.HasInvalidDirectoryEntries Then
                 Return False
             End If
         End If
 
         If (AppliedFilters And FilterTypes.ModifiedFiles) > 0 Then
             If ImageData.Modified Then
+                Return False
+            End If
+        End If
+
+        If (AppliedFilters And FilterTypes.UnusedClusters) > 0 Then
+            If ImageData.ScanInfo.IsValidImage And ImageData.ScanInfo.HasUnusedClusters Then
                 Return False
             End If
         End If
@@ -106,8 +113,9 @@ Public Class MainForm
         End If
 
         If Count > 0 Then
-            Me.Cursor = Cursors.WaitCursor
+            Me.UseWaitCursor = True
 
+            Dim SelectedItem As LoadedImageData = ComboGroups.SelectedItem
             ComboGroups.Items.Clear()
             Dim AppliedFilters As FilterTypes = 0
             For Counter = 0 To ListFilters.Items.Count - 1
@@ -129,15 +137,21 @@ Public Class MainForm
                 End If
             Next
             If ComboGroups.Items.Count > 0 Then
-                ComboGroups.SelectedIndex = 0
+                Dim SearchIndex = ComboGroups.Items.IndexOf(SelectedItem)
+                If SearchIndex > -1 Then
+                    ComboGroups.SelectedIndex = SearchIndex
+                Else
+                    ComboGroups.SelectedIndex = 0
+                End If
             End If
+
             BtnFilters.BackColor = Color.LightGreen
 
             ToolStripFileCount.Text = ComboGroups.Items.Count & " of " & _LoadedImageList.Count & " File" & IIf(_LoadedImageList.Count <> 1, "s", "")
 
             _FiltersApplied = True
 
-            Me.Cursor = Cursors.Default
+            Me.UseWaitCursor = False
         Else
             If _FiltersApplied Then
                 ClearFilters()
@@ -146,19 +160,25 @@ Public Class MainForm
     End Sub
 
     Private Sub ClearFilters()
-        Me.Cursor = Cursors.WaitCursor
+        Me.UseWaitCursor = True
 
+        Dim SelectedItem As LoadedImageData = ComboGroups.SelectedItem
         ComboGroups.Items.Clear()
         For Each ImageData In _LoadedImageList
             ImageData.ComboIndex = ComboGroups.Items.Add(ImageData)
         Next
         If ComboGroups.Items.Count > 0 Then
-            ComboGroups.SelectedIndex = 0
+            Dim SearchIndex = ComboGroups.Items.IndexOf(SelectedItem)
+            If SearchIndex > -1 Then
+                ComboGroups.SelectedIndex = SearchIndex
+            Else
+                ComboGroups.SelectedIndex = 0
+            End If
         End If
 
         ResetFilterButton()
 
-        Me.Cursor = Cursors.Default
+        Me.UseWaitCursor = False
     End Sub
 
     Private Sub ResetFilters()
@@ -448,8 +468,14 @@ Public Class MainForm
         End Select
     End Function
 
-    Private Sub InitializeButtons()
-        FlowLayoutPanel1.Visible = True
+    Private Sub RefreshButtonState()
+        If _Disk.IsValidImage Then
+            FlowLayoutPanel1.Visible = True
+            CBCheckAll.Visible = True
+        Else
+            FlowLayoutPanel1.Visible = False
+            CBCheckAll.Visible = False
+        End If
         BtnClearCreated.Enabled = False
         BtnClearLastAccessed.Enabled = False
     End Sub
@@ -504,6 +530,7 @@ Public Class MainForm
         ListViewFiles.BeginUpdate()
         ListViewFiles.Items.Clear()
 
+        Dim Items As New List(Of ListViewItem)
         Dim Response As ProcessFilesResponse = ProcessFiles(_Disk.Directory, "", False)
 
         If Not Response.HasCreated Then
@@ -569,6 +596,7 @@ Public Class MainForm
                 .Add(GetListViewSummaryItem("Language:", _OEMIDDictionary.Item(BootstrapChecksum).Language))
             End If
             .Add(GetListViewSummaryItem("Media Type:", GetMediaType(_Disk.BootSector.MediaDescriptor, _Disk.BootSector.SectorsPerTrack)))
+
             If _VolumeLabel <> "" Then
                 .Add(GetListViewSummaryItem("Volume Label:", _VolumeLabel))
             End If
@@ -599,6 +627,9 @@ Public Class MainForm
             .Add(GetListViewSummaryItem("MD5", MD5Hash(_Disk.Data)))
             .Add(GetListViewSummaryItem("SHA-1", SHA1Hash(_Disk.Data)))
         End With
+
+        BtnDisplayClusters.Visible = _Disk.HasUnusedClustersWithData
+        BtnRevert.Visible = _Disk.Modified
     End Sub
     Private Sub ProcessFileDrop(Files() As String)
         Dim AllowedExtensions = {".img", ".ima"}
@@ -610,7 +641,7 @@ Public Class MainForm
 
         BtnSave.Enabled = False
 
-        Me.Cursor = Cursors.WaitCursor
+        Me.UseWaitCursor = True
 
         For Each FilePath In Files
             Dim FAttributes = System.IO.File.GetAttributes(FilePath)
@@ -660,7 +691,7 @@ Public Class MainForm
             _ModifiedCount = 0
         End If
 
-        Me.Cursor = Cursors.Default
+        Me.UseWaitCursor = False
     End Sub
     Private Function GetFileDataFromFile(File As DiskImage.DirectoryEntry, FilePath As String) As FileData
         Dim Response As FileData
@@ -678,6 +709,7 @@ Public Class MainForm
         Dim Counter As UInteger
         Dim FileCount As UInteger = Directory.FileCount
         Dim LFNFileName As String = ""
+
         Dim Response As ProcessFilesResponse
         With Response
             .VolumeLabel = ""
@@ -782,7 +814,6 @@ Public Class MainForm
         _FileHashTable.Clear()
         _DirectoryHashTable.Clear()
         InitializeColumns()
-        InitializeButtons()
 
         Dim FilePath As String = System.IO.Path.Combine(Item.Path, Item.File)
         _Disk = New DiskImage.Disk(FilePath)
@@ -790,21 +821,17 @@ Public Class MainForm
             _Disk.ApplyModifications(Item.Modifications)
         End If
 
+        RefreshButtonState()
+
         If _Disk.IsValidImage Then
             PopulateDetails()
             PopulateSummary()
-            ButtonDisplayClusters.Visible = _Disk.HasUnusedClustersWithData
             LblInvalidImage.Visible = False
-            CBCheckAll.Visible = True
         Else
             _VolumeLabel = ""
             ListViewSummary.Items.Clear()
             ListViewFiles.Items.Clear()
             LblInvalidImage.Visible = True
-            BtnClearCreated.Visible = False
-            BtnClearLastAccessed.Visible = False
-            ButtonDisplayClusters.Visible = False
-            CBCheckAll.Visible = False
         End If
     End Sub
     Private Sub RefreshButtons()
@@ -826,6 +853,29 @@ Public Class MainForm
         BtnClearCreated.Enabled = CreatedEnabled
         BtnClearLastAccessed.Enabled = LastAccessEnabled
     End Sub
+
+    Private Sub RevertChanges()
+        If _Disk.Modified Then
+            _Disk.RevertChanges()
+        End If
+
+        Dim ImageData As LoadedImageData = ComboGroups.SelectedItem
+        If ImageData.Modified Then
+            ImageData.Modified = False
+            _ModifiedCount -= 1
+            ToolStripModified.Text = _ModifiedCount & " File" & IIf(_ModifiedCount <> 1, "s", "") & " Modified"
+            ToolStripModified.Visible = (_ModifiedCount > 0)
+            RefreshModifiedFilter()
+        End If
+        ImageData.Modifications = Nothing
+        _SuppressEvent = True
+        ComboGroups.Items(ComboGroups.SelectedIndex) = ComboGroups.Items(ComboGroups.SelectedIndex)
+        _SuppressEvent = False
+        PopulateDetails()
+        PopulateSummary()
+        BtnSave.Enabled = (_ModifiedCount > 0)
+    End Sub
+
     Private Sub SaveChanges()
         _SuppressEvent = True
         For Each ImageData In _LoadedImageList
@@ -895,8 +945,10 @@ Public Class MainForm
         Dim InvalidImageCount As Integer = 0
         Dim LongFileNameCount As Integer = 0
         Dim InvalidDirectoryEntryCount As Integer = 0
+        Dim UnusedClusterCount As Integer = 0
 
-        Me.Cursor = Cursors.WaitCursor
+        Me.UseWaitCursor = True
+        Dim T = Stopwatch.StartNew
 
         BtnScan.Enabled = False
         ResetFilters()
@@ -918,42 +970,49 @@ Public Class MainForm
                 Disk.ApplyModifications(Item.Modifications)
             End If
             If Disk.IsValidImage Then
-                Item.IsValidImage = True
+                Item.ScanInfo.IsValidImage = True
                 Dim BootstrapChecksum = Crc32.ComputeChecksum(Disk.BootSector.BootStrapCode)
                 Dim OEMIDString As String = Encoding.UTF8.GetString(Disk.BootSector.OEMID)
 
                 Dim BootstrapType = FindOEMMatch(BootstrapChecksum)
                 If BootstrapType IsNot Nothing Then
-                    Item.OEMIDFound = True
-                    Item.OEMIDMatched = BootstrapType.OEMIDList.Contains(OEMIDString)
-                    If Not Item.OEMIDMatched Then
+                    Item.ScanInfo.OEMIDFound = True
+                    Item.ScanInfo.OEMIDMatched = BootstrapType.OEMIDList.Contains(OEMIDString)
+                    If Not Item.ScanInfo.OEMIDMatched Then
                         MismatchedOEMIDCount += 1
                     End If
                 Else
-                    Item.OEMIDFound = False
-                    Item.OEMIDMatched = False
+                    Item.ScanInfo.OEMIDFound = False
+                    Item.ScanInfo.OEMIDMatched = False
                     UnknownOEMIDCount += 1
                 End If
 
+                If Disk.HasUnusedClustersWithData Then
+                    Item.ScanInfo.HasUnusedClusters = True
+                    UnusedClusterCount += 1
+                Else
+                    Item.ScanInfo.HasUnusedClusters = False
+                End If
+
                 Dim Response As ProcessFilesResponse = ProcessFiles(Disk.Directory, "", True)
-                Item.HasCreated = Response.HasCreated
-                If Item.HasCreated Then
-                    CreatedCount += 1
-                End If
-                Item.HasLastAccessed = Response.HasLastAccessed
-                If Item.HasLastAccessed Then
-                    LastAccessedCount += 1
-                End If
-                Item.HasLongFileNames = Response.HasLFN
-                If Item.HasLongFileNames Then
-                    LongFileNameCount += 1
-                End If
-                Item.HasInvalidDirectoryEntries = Response.HasInvalidDirectoryEntries
-                If Item.HasInvalidDirectoryEntries Then
-                    InvalidDirectoryEntryCount += 1
-                End If
-            Else
-                Item.IsValidImage = False
+                    Item.ScanInfo.HasCreated = Response.HasCreated
+                    If Item.ScanInfo.HasCreated Then
+                        CreatedCount += 1
+                    End If
+                    Item.ScanInfo.HasLastAccessed = Response.HasLastAccessed
+                    If Item.ScanInfo.HasLastAccessed Then
+                        LastAccessedCount += 1
+                    End If
+                    Item.ScanInfo.HasLongFileNames = Response.HasLFN
+                    If Item.ScanInfo.HasLongFileNames Then
+                        LongFileNameCount += 1
+                    End If
+                    Item.ScanInfo.HasInvalidDirectoryEntries = Response.HasInvalidDirectoryEntries
+                    If Item.ScanInfo.HasInvalidDirectoryEntries Then
+                        InvalidDirectoryEntryCount += 1
+                    End If
+                Else
+                    Item.ScanInfo.IsValidImage = False
                 InvalidImageCount += 1
             End If
 
@@ -982,6 +1041,9 @@ Public Class MainForm
         If InvalidDirectoryEntryCount > 0 Then
             ListFilters.Items.Add(New ComboFileType(FilterTypes.HasInvalidDirectoryEntries, InvalidDirectoryEntryCount))
         End If
+        If UnusedClusterCount > 0 Then
+            ListFilters.Items.Add(New ComboFileType(FilterTypes.UnusedClusters, UnusedClusterCount))
+        End If
         If InvalidImageCount > 0 Then
             ListFilters.Items.Add(New ComboFileType(FilterTypes.HasInvalidImage, InvalidImageCount))
         End If
@@ -989,7 +1051,9 @@ Public Class MainForm
         BtnFilters.Enabled = (ListFilters.Items.Count > 0)
         BtnScan.Enabled = True
 
-        Me.Cursor = Cursors.Default
+        T.Stop()
+        Debug.Print("ScanImages Time Taken: " & T.Elapsed.ToString)
+        Me.UseWaitCursor = False
     End Sub
     Private Sub StartFileDrop(e As DragEventArgs)
         If _InternalDrop Then
@@ -1046,7 +1110,7 @@ Public Class MainForm
         _InternalDrop = False
     End Sub
 
-    Private Sub ButtonDisplayBootSector_Click(sender As Object, e As EventArgs) Handles ButtonDisplayBootSector.Click
+    Private Sub BtnDisplayBootSector_Click(sender As Object, e As EventArgs) Handles BtnDisplayBootSector.Click
         Dim Block As DiskImage.DataBlock
 
         Block.Cluster = 0
@@ -1058,11 +1122,11 @@ Public Class MainForm
             Block
         }
 
-        Dim frmHexView As New HexViewForm(DataBlockList)
+        Dim frmHexView As New HexViewForm(_Disk, DataBlockList, False)
         frmHexView.ShowDialog()
     End Sub
 
-    Private Sub ButtonOEMID_Click(sender As Object, e As EventArgs) Handles ButtonOEMID.Click
+    Private Sub BtnOEMID_Click(sender As Object, e As EventArgs) Handles BtnOEMID.Click
         ChangeOEMID()
     End Sub
 
@@ -1157,7 +1221,7 @@ Public Class MainForm
             Dim DirectoryData = _DirectoryHashTable(ListViewFiles.FocusedItem.Group.GetHashCode)
             Dim DataBlockList = DirectoryData.Directory.GetData
 
-            Dim frmHexView As New HexViewForm(DataBlockList)
+            Dim frmHexView As New HexViewForm(_Disk, DataBlockList, False)
             frmHexView.ShowDialog()
         End If
     End Sub
@@ -1166,11 +1230,18 @@ Public Class MainForm
         FlowLayoutPanel1.Left = (FlowLayoutPanel1.Parent.Width - FlowLayoutPanel1.Width) / 2
     End Sub
 
-    Private Sub ButtonDisplayClusters_Click(sender As Object, e As EventArgs) Handles ButtonDisplayClusters.Click
+    Private Sub BtnDisplayClusters_Click(sender As Object, e As EventArgs) Handles BtnDisplayClusters.Click
         Dim DataBlockList = _Disk.GetUnusedClustersWithData
 
-        Dim frmHexView As New HexViewForm(DataBlockList)
+        Dim frmHexView As New HexViewForm(_Disk, DataBlockList, True)
         frmHexView.ShowDialog()
+        If frmHexView.Modified Then
+            ComboItemSetModified(False)
+        End If
+    End Sub
+
+    Private Sub BtnRevert_Click(sender As Object, e As EventArgs) Handles BtnRevert.Click
+        RevertChanges
     End Sub
 End Class
 

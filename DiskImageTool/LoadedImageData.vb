@@ -1,26 +1,21 @@
-﻿Public Class LoadedImageData
+﻿Public Class ImageDataScanInfo
+    Public Property OEMIDFound As Boolean = False
+    Public Property OEMIDMatched As Boolean = False
+    Public Property IsValidImage As Boolean = False
+    Public Property HasCreated As Boolean = False
+    Public Property HasLastAccessed As Boolean = False
+    Public Property HasLongFileNames As Boolean = False
+    Public Property HasInvalidDirectoryEntries As Boolean = False
+    Public Property HasUnusedClusters As Boolean = False
+End Class
+Public Class LoadedImageData
     Private _Path As String
     Private _File As String
     Private _Modified As Boolean
     Private _Modifications As Hashtable
     Private _Scanned As Boolean
-    Private _OEMIDFound As Boolean
-    Private _OEMIDMatched As Boolean
-    Private _IsValidImage As Boolean
-    Private _HasCreated As Boolean
-    Private _HasLastAccessed As Boolean
-    Private _HasLongFileNames As Boolean
-    Public Property HasInvalidDirectoryEntries As Boolean
-        Get
-            Return _HasInvalidDirectoryEntries
-        End Get
-        Set
-            _HasInvalidDirectoryEntries = Value
-        End Set
-    End Property
-
+    Private ReadOnly _ScanInfo As New ImageDataScanInfo
     Private _ComboIndex As Integer
-    Private _HasInvalidDirectoryEntries As Boolean
 
     Public Property ComboIndex As Integer
         Get
@@ -28,60 +23,6 @@
         End Get
         Set
             _ComboIndex = Value
-        End Set
-    End Property
-
-    Public Property HasLongFileNames As Boolean
-        Get
-            Return _HasLongFileNames
-        End Get
-        Set
-            _HasLongFileNames = Value
-        End Set
-    End Property
-
-    Public Property HasCreated As Boolean
-        Get
-            Return _HasCreated
-        End Get
-        Set
-            _HasCreated = Value
-        End Set
-    End Property
-
-    Public Property HasLastAccessed As Boolean
-        Get
-            Return _HasLastAccessed
-        End Get
-        Set
-            _HasLastAccessed = Value
-        End Set
-    End Property
-
-    Public Property IsValidImage As Boolean
-        Get
-            Return _IsValidImage
-        End Get
-        Set
-            _IsValidImage = Value
-        End Set
-    End Property
-
-    Public Property OEMIDFound As Boolean
-        Get
-            Return _OEMIDFound
-        End Get
-        Set
-            _OEMIDFound = Value
-        End Set
-    End Property
-
-    Public Property OEMIDMatched As Boolean
-        Get
-            Return _OEMIDMatched
-        End Get
-        Set
-            _OEMIDMatched = Value
         End Set
     End Property
 
@@ -130,19 +71,18 @@
         End Set
     End Property
 
+    Public ReadOnly Property ScanInfo As ImageDataScanInfo
+        Get
+            Return _ScanInfo
+        End Get
+    End Property
+
     Public Sub New(Path As String, File As String)
         _Path = Path
         _File = File
         _Modified = False
         _Scanned = False
-        _OEMIDFound = False
-        _OEMIDMatched = False
-        _IsValidImage = False
-        _HasCreated = False
-        _HasLastAccessed = False
-        _HasLongFileNames = False
         _Modifications = Nothing
-        _HasInvalidDirectoryEntries = False
         _ComboIndex = -1
     End Sub
     Public Overrides Function ToString() As String

@@ -352,7 +352,7 @@ Namespace DiskImage
         End Function
 
         Public Function HasInvalidFileSize() As Boolean
-            Return FileSize > _Parent.BootSector.SectorCount * _Parent.BootSector.BytesPerSector
+            Return FileSize > _Parent.BootSector.ImageSize
         End Function
 
         Public Function HasLastAccessDate() As Boolean

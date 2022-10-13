@@ -7,6 +7,7 @@
     HasLongFileNames = 32
     HasInvalidDirectoryEntries = 64
     ModifiedFiles = 128
+    UnusedClusters = 256
 End Enum
 
 Public Class ComboFileType
@@ -56,6 +57,8 @@ Public Class ComboFileType
                 Return "Has Invalid Directory Entries"
             Case FilterTypes.ModifiedFiles
                 Return "Modified Files"
+            Case FilterTypes.UnusedClusters
+                Return "Unused Clusters with Data"
             Case Else
                 Return ""
         End Select

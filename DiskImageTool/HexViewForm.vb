@@ -1,31 +1,52 @@
-﻿Imports System.Text
-Imports System.Runtime.InteropServices
-
+﻿
 Public Class HexViewForm
     Private ReadOnly InvalidChars() As Byte = {127, 129, 141, 143, 144, 152, 157}
     Private _SuppressEvent As Boolean = False
+    Private ReadOnly _Disk As DiskImage.Disk
+    Private _Modified As Boolean = False
 
-    Public Sub New(DataBlockList As List(Of DiskImage.DataBlock))
+    Public Sub New(Disk As DiskImage.Disk, DataBlockList As List(Of DiskImage.DataBlock), AllowModifications As Boolean)
         ' This call is required by the designer.
         InitializeComponent()
         ' Add any initialization after the InitializeComponent() call.
+        _Disk = Disk
 
-        Me.Cursor = Cursors.WaitCursor
+        If AllowModifications Then
+            BtnClear.Visible = True
+            ComboBytes.Visible = True
+            ComboBytes.SelectedIndex = 0
+        Else
+            BtnClear.Visible = False
+            ComboBytes.Visible = False
+        End If
+
+        FlowLayoutHeader.Left = (Me.ClientSize.Width - FlowLayoutHeader.Width) / 2
+
+        Initialize(DataBlockList)
+    End Sub
+
+    Public ReadOnly Property Modified As Boolean
+        Get
+            Return _Modified
+        End Get
+    End Property
+
+    Private Sub Initialize(DataBlockList As List(Of DiskImage.DataBlock))
+        _SuppressEvent = True
+
+        ListViewHex.BeginUpdate()
         ListViewHex.Items.Clear()
         CmbGroups.Items.Clear()
         Dim Group As ListViewGroup
         Dim OffsetStart As UInteger = 0
         Dim Index As Integer = 0
         For Each DataBlock In DataBlockList
-            Dim Header As String = "Sector " & DataBlock.Sector
-            If DataBlock.Cluster > 0 Then
-                Header = "Cluster " & DataBlock.Cluster & ", " & Header
-            End If
-            Group = New ListViewGroup(Header)
-
+            Dim ComboGroup = New ComboGroups(DataBlock.Cluster, DataBlock.Sector, DataBlock.Offset)
+            Group = New ListViewGroup(ComboGroup.ToString)
             ListViewHex.Groups.Add(Group)
             ListViewHex.ShowGroups = True
-            CmbGroups.Items.Add(Header)
+            CmbGroups.Items.Add(ComboGroup)
+
 
             Dim Rows As Integer = Math.Ceiling(DataBlock.Data.Length / 16)
             For Row = 1 To Rows
@@ -56,10 +77,10 @@ Public Class HexViewForm
             OffsetStart += 16
             Index += 1
         Next
-        Me.Cursor = Cursors.Default
+        ListViewHex.EndUpdate()
 
-        _SuppressEvent = True
         CmbGroups.SelectedIndex = 0
+
         _SuppressEvent = False
     End Sub
 
@@ -75,12 +96,50 @@ Public Class HexViewForm
         End If
     End Sub
 
+    Private Sub ClearSector()
+        Dim ComboGroup As ComboGroups = CmbGroups.SelectedItem()
+        Dim Value = Convert.ToByte(ComboBytes.Text, 16)
+        Dim Data(_Disk.BootSector.BytesPerSector - 1) As Byte
+        For Index = 0 To Data.Length - 1
+            Data(Index) = Value
+        Next
+
+        Dim HexValues As String = ""
+        Dim DecodedText As String = ""
+        For Col = 0 To 15
+            If Col > 0 Then
+                HexValues &= " "
+            End If
+            HexValues &= Value.ToString("X2")
+            If Value < 32 Or InvalidChars.Contains(Value) Then
+                DecodedText &= "."
+            Else
+                DecodedText &= Chr(Value)
+            End If
+        Next
+        Dim Group = ListViewHex.Groups.Item(CmbGroups.SelectedIndex)
+        For Each Item As ListViewItem In Group.Items
+            Item.SubItems.Item(2).Text = HexValues
+            Item.SubItems.Item(3).Text = DecodedText
+        Next
+        _Disk.SetBytes(Data, ComboGroup.Offset)
+        _Modified = True
+    End Sub
+
     Private Sub ListViewHex_ColumnWidthChanging(sender As Object, e As ColumnWidthChangingEventArgs) Handles ListViewHex.ColumnWidthChanging
+        If _SuppressEvent Then
+            Exit Sub
+        End If
+
         e.NewWidth = Me.ListViewHex.Columns(e.ColumnIndex).Width
         e.Cancel = True
     End Sub
 
     Private Sub ListViewHex_Scroll(sender As Object, e As EventArgs) Handles ListViewHex.Scroll
+        If _SuppressEvent Then
+            Exit Sub
+        End If
+
         SetComboIndex()
     End Sub
 
@@ -91,4 +150,28 @@ Public Class HexViewForm
 
         ListViewHex.ScrollToGroup(CmbGroups.SelectedIndex, 45)
     End Sub
+
+    Private Sub BtnClear_Click(sender As Object, e As EventArgs) Handles BtnClear.Click
+        ClearSector
+    End Sub
+
+    Private Class ComboGroups
+        Public Property Cluster As UInteger
+        Public Property Sector As UInteger
+        Public Property Offset As UInteger
+
+        Public Sub New(Cluster As UInteger, Sector As UInteger, Offset As UInteger)
+            Me.Cluster = Cluster
+            Me.Sector = Sector
+            Me.Offset = Offset
+        End Sub
+        Public Overrides Function ToString() As String
+            Dim Header As String = "Sector " & Sector
+            If Cluster > 0 Then
+                Header = "Cluster " & Cluster & ", " & Header
+            End If
+
+            Return Header
+        End Function
+    End Class
 End Class
