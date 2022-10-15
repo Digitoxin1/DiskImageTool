@@ -108,7 +108,7 @@
     <Import Include="System.Threading.Tasks" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="ComboFileType.vb" />
+    <Compile Include="Filters.vb" />
     <Compile Include="DiskImage\BootSector.vb" />
     <Compile Include="OEMIDLookup.vb" />
     <Compile Include="LoadedImageData.vb" />
