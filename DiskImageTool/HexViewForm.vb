@@ -2,27 +2,85 @@
 Public Class HexViewForm
     Private ReadOnly InvalidChars() As Byte = {127, 129, 141, 143, 144, 152, 157}
     Private _SuppressEvent As Boolean = False
-    Private ReadOnly _Disk As DiskImage.Disk
+    Private _Disk As DiskImage.Disk
     Private _Modified As Boolean = False
+    Private _JumpPoints As Boolean = False
 
-    Public Sub New(Disk As DiskImage.Disk, DataBlockList As List(Of DiskImage.DataBlock), AllowModifications As Boolean)
+    Public Sub New(Disk As DiskImage.Disk, Block As DiskImage.DataBlock, AllowModifications As Boolean, Caption As String)
+        ' This call is required by the designer.
+        InitializeComponent()
+
+        ' Add any initialization after the InitializeComponent() call.
+        Dim DataBlock = New List(Of DiskImage.DataBlock) From {
+            Block
+        }
+        Initialize(Disk, DataBlock, AllowModifications, Caption, False)
+    End Sub
+
+    Public Sub New(Disk As DiskImage.Disk, DataBlockList As List(Of DiskImage.DataBlock), AllowModifications As Boolean, Caption As String, JumpPoints As Boolean)
         ' This call is required by the designer.
         InitializeComponent()
         ' Add any initialization after the InitializeComponent() call.
+        Initialize(Disk, DataBlockList, AllowModifications, Caption, JumpPoints)
+    End Sub
+
+    Private Sub Initialize(Disk As DiskImage.Disk, DataBlockList As List(Of DiskImage.DataBlock), AllowModifications As Boolean, Caption As String, JumpPoints As Boolean)
         _Disk = Disk
+        _JumpPoints = JumpPoints
+
+        Me.Text = "Hex Viewer" & IIf(Caption <> "", " - " & Caption, "")
 
         If AllowModifications Then
             BtnClear.Visible = True
             ComboBytes.Visible = True
-            ComboBytes.SelectedIndex = 0
         Else
             BtnClear.Visible = False
             ComboBytes.Visible = False
         End If
 
-        FlowLayoutHeader.Left = (Me.ClientSize.Width - FlowLayoutHeader.Width) / 2
+        If JumpPoints Then
+            LblHeaderCaption.Text = "Jump To:"
+        Else
+            LblHeaderCaption.Text = "Display:"
+        End If
 
-        Initialize(DataBlockList)
+        If DataBlockList.Count > 1 Or JumpPoints Or AllowModifications Then
+            FlowLayoutHeader.Visible = True
+            FlowLayoutHeader.Left = (Me.ClientSize.Width - FlowLayoutHeader.Width) / 2
+            HexBox1.Top = FlowLayoutHeader.Bottom + 6
+            For Each Block In DataBlockList
+                CmbGroups.Items.Add(New ComboGroups(Disk, Block))
+            Next
+            ComboBytes.SelectedIndex = 0
+        Else
+            FlowLayoutHeader.Visible = False
+            HexBox1.Top = 12
+        End If
+
+        HexBox1.Anchor = AnchorStyles.Left + AnchorStyles.Right + AnchorStyles.Top
+        Me.ClientSize = New Size(Me.ClientSize.Width, HexBox1.Bottom + StatusStrip1.Height + 3)
+        HexBox1.Anchor = AnchorStyles.Left + AnchorStyles.Right + AnchorStyles.Top + AnchorStyles.Bottom
+
+        HexBox1.VScrollBarVisible = True
+
+        If JumpPoints Then
+            Dim Sector = _Disk.OffsetToSector(DataBlockList(0).Offset)
+            Dim Cluster = _Disk.SectorToCluster(Sector)
+            Dim Offset = _Disk.ClusterToOffset(Cluster)
+            Dim OffsetEnd = Math.Min(Disk.Data.Length, Disk.BootSector.ImageSize)
+            Dim Block As DiskImage.DataBlock
+            With Block
+                .Offset = Offset
+                .Length = OffsetEnd - Offset
+            End With
+            DisplayBlock(Block)
+        Else
+            DisplayBlock(DataBlockList(0))
+        End If
+
+        If CmbGroups.Items.Count > 0 Then
+            CmbGroups.SelectedIndex = 0
+        End If
     End Sub
 
     Public ReadOnly Property Modified As Boolean
@@ -31,141 +89,228 @@ Public Class HexViewForm
         End Get
     End Property
 
-    Private Sub Initialize(DataBlockList As List(Of DiskImage.DataBlock))
-        _SuppressEvent = True
-
-        ListViewHex.BeginUpdate()
-        ListViewHex.Items.Clear()
-        CmbGroups.Items.Clear()
-        Dim Group As ListViewGroup
-        Dim OffsetStart As UInteger = 0
-        Dim Index As Integer = 0
-        For Each DataBlock In DataBlockList
-            Dim ComboGroup = New ComboGroups(DataBlock.Cluster, DataBlock.Sector, DataBlock.Offset)
-            Group = New ListViewGroup(ComboGroup.ToString)
-            ListViewHex.Groups.Add(Group)
-            ListViewHex.ShowGroups = True
-            CmbGroups.Items.Add(ComboGroup)
-
-
-            Dim Rows As Integer = Math.Ceiling(DataBlock.Data.Length / 16)
-            For Row = 1 To Rows
-                OffsetStart = (Row - 1) * 16
-                Dim HexValues As String = ""
-                Dim DecodedText As String = ""
-                For Col = 0 To 15
-                    Dim Offset As Integer = OffsetStart + Col
-                    If Offset < DataBlock.Data.Length Then
-                        If HexValues <> "" Then
-                            HexValues &= " "
-                        End If
-                        HexValues &= DataBlock.Data(Offset).ToString("X2")
-                        Dim Value = DataBlock.Data(Offset)
-                        If Value < 32 Or InvalidChars.Contains(Value) Then
-                            DecodedText &= "."
-                        Else
-                            DecodedText &= Chr(Value)
-                        End If
-                    End If
-                Next
-                Dim Item As New ListViewItem("", Group)
-                Dim SI = Item.SubItems.Add((DataBlock.Offset + OffsetStart).ToString("X8"))
-                Item.SubItems.Add(HexValues)
-                Item.SubItems.Add(DecodedText)
-                ListViewHex.Items.Add(Item)
-            Next
-            OffsetStart += 16
-            Index += 1
-        Next
-        ListViewHex.EndUpdate()
-
-        CmbGroups.SelectedIndex = 0
-
-        _SuppressEvent = False
-    End Sub
-
-    Private Sub SetComboIndex()
-        Dim Item = ListViewHex.HitTest(0, 45).Item
-        If Item IsNot Nothing Then
-            Dim NewIndex = ListViewHex.Groups.IndexOf(Item.Group)
-            If CmbGroups.SelectedIndex <> NewIndex Then
-                _SuppressEvent = True
-                CmbGroups.SelectedIndex = NewIndex
-                _SuppressEvent = False
-            End If
-        End If
-    End Sub
-
-    Private Sub ClearSector()
-        Dim ComboGroup As ComboGroups = CmbGroups.SelectedItem()
+    Private Sub ClearData()
         Dim Value = Convert.ToByte(ComboBytes.Text, 16)
-        Dim Data(_Disk.BootSector.BytesPerSector - 1) As Byte
-        For Index = 0 To Data.Length - 1
-            Data(Index) = Value
-        Next
+        Dim Length = _Disk.BootSector.BytesPerSector
+        Dim Data(Length - 1) As Byte
+        Dim SectorOffset As UInteger = 0
 
-        Dim HexValues As String = ""
-        Dim DecodedText As String = ""
-        For Col = 0 To 15
-            If Col > 0 Then
-                HexValues &= " "
-            End If
-            HexValues &= Value.ToString("X2")
-            If Value < 32 Or InvalidChars.Contains(Value) Then
-                DecodedText &= "."
-            Else
-                DecodedText &= Chr(Value)
-            End If
-        Next
-        Dim Group = ListViewHex.Groups.Item(CmbGroups.SelectedIndex)
-        For Each Item As ListViewItem In Group.Items
-            Item.SubItems.Item(2).Text = HexValues
-            Item.SubItems.Item(3).Text = DecodedText
-        Next
-        _Disk.SetBytes(Data, ComboGroup.Offset)
+        If HexBox1.SelectionLength > 0 Then
+            Dim HexOffsetStart = HexBox1.SelectionStart
+            Dim HexOffsetEnd = HexOffsetStart + HexBox1.SelectionLength - 1
+            Dim PrevSector As UInteger = 0
+            For Index = HexOffsetStart To HexOffsetEnd
+                Dim Offset As UInteger = HexBox1.LineInfoOffset + Index
+                Dim Sector = _Disk.OffsetToSector(Offset)
+                If Sector <> PrevSector Or Index = HexOffsetStart Then
+                    If Index > HexOffsetStart Then
+                        _Disk.SetBytes(Data, SectorOffset)
+                    End If
+                    SectorOffset = _Disk.SectorToOffset(Sector)
+                    Data = _Disk.GetBytes(SectorOffset, Length)
+                End If
+                HexBox1.ByteProvider.WriteByte(Index, Value)
+                Data(Offset - SectorOffset) = Value
+            Next
+            _Disk.SetBytes(Data, SectorOffset)
+        Else
+            Dim Sector = _Disk.OffsetToSector(HexBox1.LineInfoOffset + HexBox1.startByte)
+            SectorOffset = _Disk.SectorToOffset(Sector)
+            Dim OffsetStart = SectorOffset - HexBox1.LineInfoOffset
+            Dim OffsetEnd = OffsetStart + Length - 1
+            For Index = OffsetStart To OffsetEnd
+                HexBox1.ByteProvider.WriteByte(Index, Value)
+            Next
+            For Index = 0 To Data.Length - 1
+                Data(Index) = Value
+            Next
+            _Disk.SetBytes(Data, SectorOffset)
+        End If
+        HexBox1.Refresh()
         _Modified = True
     End Sub
 
-    Private Sub ListViewHex_ColumnWidthChanging(sender As Object, e As ColumnWidthChangingEventArgs) Handles ListViewHex.ColumnWidthChanging
-        If _SuppressEvent Then
+    Private Sub DisplayBlock(Block As DiskImage.DataBlock)
+        HexBox1.ByteProvider = New Hb.Windows.Forms.DynamicByteProvider(_Disk.GetBytes(Block.Offset, Block.Length))
+        HexBox1.LineInfoOffset = Block.Offset
+        PopulateToolstrip(Block.Offset)
+        ToolStripStatusBytes.Text = Format(Block.Length, "N0") & " bytes"
+    End Sub
+
+    Private Sub JumpTo(Offset As UInteger)
+        Offset -= HexBox1.LineInfoOffset
+
+        If Offset > HexBox1.startByte Then
+            Offset += (HexBox1.VerticalByteCount - 1) * HexBox1.HorizontalByteCount
+        End If
+
+        HexBox1.ScrollByteIntoView(Offset)
+    End Sub
+
+    Private Function PopulateToolstrip(Offset As UInteger) As UInteger
+        Dim Length As UInteger
+        Dim BlockOffset As UInteger
+
+        Dim Sector = _Disk.OffsetToSector(Offset)
+        Dim Cluster = _Disk.SectorToCluster(Sector)
+
+        If Cluster = 0 Then
+            Length = _Disk.BootSector.BytesPerSector
+            BlockOffset = _Disk.SectorToOffset(Sector)
+            ToolStripStatusCluster.Visible = False
+        Else
+            Length = _Disk.BootSector.BytesPerCluster
+            BlockOffset = _Disk.ClusterToOffset(Cluster)
+            ToolStripStatusCluster.Visible = True
+            ToolStripStatusCluster.Text = "Cluster " & Cluster
+        End If
+        ToolStripStatusSector.Text = "Sector " & Sector
+        ToolStripStatusRange.Text = BlockOffset.ToString("X8") & "-" & (BlockOffset + Length - 1).ToString("X8")
+
+        Return BlockOffset
+    End Function
+
+    Private Sub ProcessMousewheel(Delta As Integer)
+        If _JumpPoints Then
             Exit Sub
         End If
 
-        e.NewWidth = Me.ListViewHex.Columns(e.ColumnIndex).Width
-        e.Cancel = True
+        If Delta < 0 Then
+            If HexBox1.endByte = HexBox1.ByteProvider.Length - 1 Then
+                If CmbGroups.SelectedIndex < CmbGroups.Items.Count - 1 Then
+                    CmbGroups.SelectedIndex = CmbGroups.SelectedIndex + 1
+                End If
+            End If
+        ElseIf Delta > 0 Then
+            If HexBox1.startByte = 0 Then
+                If CmbGroups.SelectedIndex > 0 Then
+                    CmbGroups.SelectedIndex = CmbGroups.SelectedIndex - 1
+                End If
+            End If
+        End If
     End Sub
 
-    Private Sub ListViewHex_Scroll(sender As Object, e As EventArgs) Handles ListViewHex.Scroll
-        If _SuppressEvent Then
+    Private Sub ProcessKeyPress(e As KeyEventArgs)
+        If _JumpPoints Then
             Exit Sub
         End If
 
-        SetComboIndex()
+        If e.KeyCode = 40 Then 'Down Arrow
+            Dim LineCount = Math.Ceiling(HexBox1.ByteProvider.Length / HexBox1.HorizontalByteCount)
+            If HexBox1.CurrentLine >= LineCount Then
+                If CmbGroups.SelectedIndex < CmbGroups.Items.Count - 1 Then
+                    Dim Offset = HexBox1.SelectionStart Mod HexBox1.HorizontalByteCount
+                    CmbGroups.SelectedIndex = CmbGroups.SelectedIndex + 1
+                    HexBox1.SelectionStart = Offset
+                    e.SuppressKeyPress = True
+                End If
+            End If
+        ElseIf e.KeyCode = 38 Then 'Up Arrow
+            If HexBox1.CurrentLine <= 1 Then
+                If CmbGroups.SelectedIndex > 0 Then
+                    Dim Offset = HexBox1.SelectionStart Mod HexBox1.HorizontalByteCount
+                    CmbGroups.SelectedIndex = CmbGroups.SelectedIndex - 1
+                    HexBox1.SelectionStart = HexBox1.ByteProvider.Length - (HexBox1.HorizontalByteCount - Offset)
+                    e.SuppressKeyPress = True
+                End If
+            End If
+        ElseIf e.KeyCode = 35 Then 'End
+            If CmbGroups.SelectedIndex < CmbGroups.Items.Count - 1 Then
+                CmbGroups.SelectedIndex = CmbGroups.Items.Count - 1
+                HexBox1.SelectionStart = HexBox1.ByteProvider.Length - HexBox1.HorizontalByteCount
+                e.SuppressKeyPress = True
+            End If
+        ElseIf e.KeyCode = 36 Then 'Home
+            If CmbGroups.SelectedIndex > 0 Then
+                CmbGroups.SelectedIndex = 0
+                e.SuppressKeyPress = True
+            End If
+        ElseIf e.KeyCode = 33 Then 'Page Up
+            If HexBox1.startByte = 0 Then
+                If CmbGroups.SelectedIndex > 0 Then
+                    Dim Offset = HexBox1.SelectionStart Mod HexBox1.HorizontalByteCount
+                    CmbGroups.SelectedIndex = CmbGroups.SelectedIndex - 1
+                    HexBox1.SelectionStart = HexBox1.ByteProvider.Length - (HexBox1.HorizontalByteCount - Offset)
+                    e.SuppressKeyPress = True
+                End If
+            End If
+        ElseIf e.KeyCode = 34 Then 'Page Down
+            If HexBox1.endByte = HexBox1.ByteProvider.Length - 1 Then
+                If CmbGroups.SelectedIndex < CmbGroups.Items.Count - 1 Then
+                    Dim Offset = HexBox1.SelectionStart Mod HexBox1.HorizontalByteCount
+                    CmbGroups.SelectedIndex = CmbGroups.SelectedIndex + 1
+                    HexBox1.SelectionStart = Offset
+                    e.SuppressKeyPress = True
+                End If
+            End If
+        End If
     End Sub
 
+    Private Sub SelectGroupByOffset(Offset As UInteger)
+        For Each Group As ComboGroups In CmbGroups.Items
+            If Offset >= Group.Block.Offset And Offset < Group.Block.Offset + Group.Block.Length Then
+                If CmbGroups.SelectedItem IsNot Group Then
+                    _SuppressEvent = True
+                    CmbGroups.SelectedItem = Group
+                    _SuppressEvent = False
+                End If
+                Exit For
+            End If
+        Next
+    End Sub
+
+    Private Sub BtnClear_Click(sender As Object, e As EventArgs) Handles BtnClear.Click
+        ClearData()
+    End Sub
     Private Sub CmbGroups_SelectedIndexChanged(sender As Object, e As EventArgs) Handles CmbGroups.SelectedIndexChanged
         If _SuppressEvent Then
             Exit Sub
         End If
 
-        ListViewHex.ScrollToGroup(CmbGroups.SelectedIndex, 45)
+        Dim Group As ComboGroups = CmbGroups.SelectedItem
+        If _JumpPoints Then
+            JumpTo(Group.Block.Offset)
+        Else
+            DisplayBlock(Group.Block)
+        End If
     End Sub
 
-    Private Sub BtnClear_Click(sender As Object, e As EventArgs) Handles BtnClear.Click
-        ClearSector
+    Private Sub HexBox1_VisibilityBytesChanged(sender As Object, e As Hb.Windows.Forms.HexBox.VisibilityBytesEventArgs) Handles HexBox1.VisibilityBytesChanged
+        Dim Offset = PopulateToolstrip(HexBox1.LineInfoOffset + e.startByte)
+
+        If _JumpPoints Then
+            SelectGroupByOffset(Offset)
+        End If
+    End Sub
+
+    Private Sub HexBox1_SelectionLengthChanged(sender As Object, e As EventArgs) Handles HexBox1.SelectionLengthChanged
+        If HexBox1.SelectionLength > 0 Then
+            BtnClear.Text = "Clear Selection"
+        Else
+            BtnClear.Text = "Clear Sector"
+        End If
+    End Sub
+
+    Private Sub HexBox1_MouseWheel(sender As Object, e As MouseEventArgs) Handles HexBox1.MouseWheel
+        ProcessMousewheel(e.Delta)
+    End Sub
+
+    Private Sub HexBox1_KeyDown(sender As Object, e As KeyEventArgs) Handles HexBox1.KeyDown
+        ProcessKeyPress(e)
     End Sub
 
     Private Class ComboGroups
-        Public Property Cluster As UInteger
-        Public Property Sector As UInteger
-        Public Property Offset As UInteger
+        Public Property Disk As DiskImage.Disk
+        Public Property Block As DiskImage.DataBlock
 
-        Public Sub New(Cluster As UInteger, Sector As UInteger, Offset As UInteger)
-            Me.Cluster = Cluster
-            Me.Sector = Sector
-            Me.Offset = Offset
+        Public Sub New(Disk As DiskImage.Disk, Block As DiskImage.DataBlock)
+            Me.Disk = Disk
+            Me.Block = Block
         End Sub
         Public Overrides Function ToString() As String
+            Dim Sector = Disk.OffsetToSector(Block.Offset)
+            Dim Cluster = Disk.SectorToCluster(Sector)
+
             Dim Header As String = "Sector " & Sector
             If Cluster > 0 Then
                 Header = "Cluster " & Cluster & ", " & Header

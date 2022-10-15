@@ -37,6 +37,8 @@ Public Class MainForm
         ToolStripFileCount.Visible = False
         ToolStripFileName.Visible = False
         ToolStripModified.Visible = False
+
+        ListViewDoubleBuffer(ListViewFiles)
     End Sub
     Private Function IsFiltered(ImageData As LoadedImageData, AppliedFilters As FilterTypes) As Boolean
         If (AppliedFilters And FilterTypes.HasInvalidImage) > 0 Then
@@ -467,6 +469,12 @@ Public Class MainForm
                 Return "Unknown"
         End Select
     End Function
+
+    Private Sub ListViewDoubleBuffer(lv As ListView)
+        lv.GetType() _
+            .GetProperty("DoubleBuffered", System.Reflection.BindingFlags.Instance Or System.Reflection.BindingFlags.NonPublic) _
+            .SetValue(lv, True, Nothing)
+    End Sub
 
     Private Sub RefreshButtonState()
         If _Disk.IsValidImage Then
@@ -1063,13 +1071,6 @@ Public Class MainForm
             e.Effect = DragDropEffects.Copy
         End If
     End Sub
-    Private Sub Button1_Click(sender As Object, e As EventArgs)
-        For Counter = 0 To ComboGroups.Items.Count - 1
-            ComboGroups.SelectedIndex = Counter
-            Debug.Print(ComboGroups.Text)
-            Application.DoEvents()
-        Next
-    End Sub
     Private Sub ComboGroups_DragDrop(sender As Object, e As DragEventArgs) Handles ComboGroups.DragDrop
         ProcessFileDrop(e.Data.GetData(DataFormats.FileDrop))
     End Sub
@@ -1112,17 +1113,12 @@ Public Class MainForm
 
     Private Sub BtnDisplayBootSector_Click(sender As Object, e As EventArgs) Handles BtnDisplayBootSector.Click
         Dim Block As DiskImage.DataBlock
+        With Block
+            .Offset = 0
+            .Length = 512
+        End With
 
-        Block.Cluster = 0
-        Block.Sector = 0
-        Block.Offset = 0
-        Block.Data = _Disk.BootSector.Data
-
-        Dim DataBlockList = New List(Of DiskImage.DataBlock) From {
-            Block
-        }
-
-        Dim frmHexView As New HexViewForm(_Disk, DataBlockList, False)
+        Dim frmHexView As New HexViewForm(_Disk, Block, False, "Boot Sector")
         frmHexView.ShowDialog()
     End Sub
 
@@ -1221,7 +1217,9 @@ Public Class MainForm
             Dim DirectoryData = _DirectoryHashTable(ListViewFiles.FocusedItem.Group.GetHashCode)
             Dim DataBlockList = DirectoryData.Directory.GetData
 
-            Dim frmHexView As New HexViewForm(_Disk, DataBlockList, False)
+            Dim Caption As String = "Directory - " & IIf(DirectoryData.Path = "", "Root", DirectoryData.Path)
+
+            Dim frmHexView As New HexViewForm(_Disk, DataBlockList, False, Caption, False)
             frmHexView.ShowDialog()
         End If
     End Sub
@@ -1233,7 +1231,7 @@ Public Class MainForm
     Private Sub BtnDisplayClusters_Click(sender As Object, e As EventArgs) Handles BtnDisplayClusters.Click
         Dim DataBlockList = _Disk.GetUnusedClustersWithData
 
-        Dim frmHexView As New HexViewForm(_Disk, DataBlockList, True)
+        Dim frmHexView As New HexViewForm(_Disk, DataBlockList, True, "Unused Clusters", True)
         frmHexView.ShowDialog()
         If frmHexView.Modified Then
             ComboItemSetModified(False)

@@ -8,42 +8,52 @@
             _FatChain = FatChain
         End Sub
 
-        Private Function GetDataRoot() As List(Of DataBlock)
-            Dim Result As New List(Of DataBlock)
+        Private Function GetDataRoot() As DataBlock
 
             Dim SectorStart = _Parent.BootSector.RootDirectoryRegionStart
             Dim SectorEnd = _Parent.BootSector.DataRegionStart
+            Dim Length = (SectorEnd - SectorStart) * _Parent.BootSector.BytesPerSector
 
-            For Sector = SectorStart To SectorEnd - 1
-                Dim Block As DataBlock
-                With Block
-                    .Cluster = 0
-                    .Sector = Sector
-                    .Offset = _Parent.SectorToOffset(Sector)
-                    .Data = _Parent.GetBytes(.Offset, _Parent.BootSector.BytesPerSector)
-                End With
-                Result.Add(Block)
-            Next
+            Dim Block As DataBlock
+            With Block
+                .Offset = _Parent.SectorToOffset(SectorStart)
+                .Length = Length
+            End With
 
-            Return Result
+            Return Block
         End Function
 
         Private Function GetDataSubDirectory() As List(Of DataBlock)
             Dim Result As New List(Of DataBlock)
+            Dim Block As DataBlock
+            Dim CurrentOffset As UInteger = 0
+            Dim Length As UInteger = _Parent.BootSector.BytesPerCluster
+            Dim TotalLength As UInteger = 0
 
+            Dim LastCluster As UInteger = 0
             For Each Cluster In _FatChain
-                Dim Sector = _Parent.ClusterToSector(Cluster)
-                For Counter = 0 To _Parent.BootSector.SectorsPerCluster - 1
-                    Dim Block As DataBlock
-                    With Block
-                        .Cluster = Cluster
-                        .Sector = Sector + Counter
-                        .Offset = _Parent.SectorToOffset(Sector + Counter)
-                        .Data = _Parent.GetBytes(.Offset, _Parent.BootSector.BytesPerSector)
-                    End With
-                    Result.Add(Block)
-                Next
+                If LastCluster = 0 Or Cluster <> LastCluster + 1 Then
+                    If LastCluster > 0 Then
+                        With Block
+                            .Offset = CurrentOffset
+                            .Length = TotalLength
+                        End With
+                        Result.Add(Block)
+                        TotalLength = 0
+                    End If
+                    CurrentOffset = _Parent.ClusterToOffset(Cluster)
+                End If
+                TotalLength += Length
+                LastCluster = Cluster
             Next
+
+            If Length > 0 Then
+                With Block
+                    .Offset = CurrentOffset
+                    .Length = TotalLength
+                End With
+                Result.Add(Block)
+            End If
 
             Return Result
         End Function
@@ -110,7 +120,10 @@
 
         Public Function GetData() As List(Of DataBlock)
             If _FatChain Is Nothing Then
-                Return GetDataRoot()
+                Dim DataBlock = New List(Of DataBlock) From {
+                    GetDataRoot()
+                }
+                Return DataBlock
             Else
                 Return GetDataSubDirectory()
             End If

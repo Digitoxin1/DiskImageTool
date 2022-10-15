@@ -245,9 +245,12 @@ Namespace DiskImage
                     End If
                     AssignedClusters.Add(Cluster, Cluster)
                     FatChain.Add(Cluster)
+                    If Not _Parent.FileAllocation.ContainsKey(Cluster) Then
+                        _Parent.FileAllocation.Add(Cluster, _Offset)
+                    End If
                     Cluster = _Parent.FAT12(Cluster)
-                Else
-                    Cluster = 0
+                    Else
+                        Cluster = 0
                 End If
             Loop Until Cluster < 2 Or Cluster > 4079
 

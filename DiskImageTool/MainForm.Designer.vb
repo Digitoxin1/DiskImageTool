@@ -48,7 +48,6 @@ Partial Class MainForm
         Me.BtnOEMID = New System.Windows.Forms.Button()
         Me.BtnClearCreated = New System.Windows.Forms.Button()
         Me.BtnClearLastAccessed = New System.Windows.Forms.Button()
-        Me.Button1 = New System.Windows.Forms.Button()
         Me.BtnRevert = New System.Windows.Forms.Button()
         Me.BtnSave = New System.Windows.Forms.Button()
         Me.LabelDropMessage = New System.Windows.Forms.Label()
@@ -185,7 +184,7 @@ Partial Class MainForm
         '
         'LblInvalidImage
         '
-        Me.LblInvalidImage.Anchor = System.Windows.Forms.AnchorStyles.None
+        Me.LblInvalidImage.Anchor = System.Windows.Forms.AnchorStyles.Left
         Me.LblInvalidImage.AutoSize = True
         Me.LblInvalidImage.BackColor = System.Drawing.SystemColors.Window
         Me.LblInvalidImage.Font = New System.Drawing.Font("Microsoft Sans Serif", 18.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
@@ -237,7 +236,6 @@ Partial Class MainForm
         Me.FlowLayoutPanel1.Controls.Add(Me.BtnOEMID)
         Me.FlowLayoutPanel1.Controls.Add(Me.BtnClearCreated)
         Me.FlowLayoutPanel1.Controls.Add(Me.BtnClearLastAccessed)
-        Me.FlowLayoutPanel1.Controls.Add(Me.Button1)
         Me.FlowLayoutPanel1.Controls.Add(Me.BtnRevert)
         Me.FlowLayoutPanel1.FlowDirection = System.Windows.Forms.FlowDirection.TopDown
         Me.FlowLayoutPanel1.Location = New System.Drawing.Point(3, 3)
@@ -296,19 +294,9 @@ Partial Class MainForm
         Me.BtnClearLastAccessed.Text = "Clear Last Access Date"
         Me.BtnClearLastAccessed.UseVisualStyleBackColor = True
         '
-        'Button1
-        '
-        Me.Button1.Location = New System.Drawing.Point(143, 3)
-        Me.Button1.Name = "Button1"
-        Me.Button1.Size = New System.Drawing.Size(134, 23)
-        Me.Button1.TabIndex = 5
-        Me.Button1.Text = "Load All"
-        Me.Button1.UseVisualStyleBackColor = True
-        Me.Button1.Visible = False
-        '
         'BtnRevert
         '
-        Me.BtnRevert.Location = New System.Drawing.Point(143, 32)
+        Me.BtnRevert.Location = New System.Drawing.Point(143, 3)
         Me.BtnRevert.Name = "BtnRevert"
         Me.BtnRevert.Size = New System.Drawing.Size(134, 23)
         Me.BtnRevert.TabIndex = 6
@@ -486,7 +474,6 @@ Partial Class MainForm
     Friend WithEvents FlowLayoutPanel1 As FlowLayoutPanel
     Friend WithEvents BtnOEMID As Button
     Friend WithEvents BtnDisplayBootSector As Button
-    Friend WithEvents Button1 As Button
     Friend WithEvents BtnClearCreated As Button
     Friend WithEvents CBCheckAll As CheckBox
     Friend WithEvents BtnClearLastAccessed As Button

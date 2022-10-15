@@ -29,7 +29,7 @@
     <TargetCulture>en-US</TargetCulture>
     <ProductName>DiskImageTool</ProductName>
     <PublisherName>Digitoxin</PublisherName>
-    <ApplicationRevision>4</ApplicationRevision>
+    <ApplicationRevision>5</ApplicationRevision>
     <ApplicationVersion>1.2.0.%2a</ApplicationVersion>
     <UseApplicationTrust>false</UseApplicationTrust>
     <PublishWizardCompleted>true</PublishWizardCompleted>
@@ -80,6 +80,9 @@
     <SignManifests>true</SignManifests>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Hb.Windows.Forms.HexBox2">
+      <HintPath>..\..\HexBox\Hb.Windows.Forms.HexBox2.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
     <Reference Include="System.Deployment" />
@@ -106,12 +109,6 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ComboFileType.vb" />
-    <Compile Include="AdvancedListView.Designer.vb">
-      <DependentUpon>AdvancedListView.vb</DependentUpon>
-    </Compile>
-    <Compile Include="AdvancedListView.vb">
-      <SubType>Component</SubType>
-    </Compile>
     <Compile Include="DiskImage\BootSector.vb" />
     <Compile Include="OEMIDLookup.vb" />
     <Compile Include="LoadedImageData.vb" />
