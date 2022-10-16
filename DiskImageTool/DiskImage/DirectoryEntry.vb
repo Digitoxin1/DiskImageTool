@@ -60,7 +60,7 @@ Namespace DiskImage
         End Enum
 
         Private ReadOnly InvalidChars() As Byte = {&H22, &H2B, &H2C, &H2E, &H2F, &H3A, &H3B, &H3C, &H3D, &H3E, &H3F, &H5B, &H5C, &H5D, &H7C, &H7F}
-        Private ReadOnly _FatChain As List(Of UInteger)
+        Private ReadOnly _FatClusterList As List(Of UShort)
         Private ReadOnly _Offset As UInteger
         Private ReadOnly _Parent As Disk
         Private _SubDirectory As DiskImage.Directory
@@ -70,9 +70,9 @@ Namespace DiskImage
             _Offset = Offset
 
             If IsDeleted() Then
-                _FatChain = New List(Of UInteger)
+                _FatClusterList = New List(Of UShort)
             Else
-                _FatChain = GetFATChain()
+                _FatClusterList = GetFATClusterList()
             End If
 
             InitSubDirectory()
@@ -204,38 +204,22 @@ Namespace DiskImage
         Public Function GetCreationDate() As ExpandedDate
             Return ExpandDate(CreationDate, CreationTime, CreationMillisecond)
         End Function
-        Public Function GetContent() As Byte()
-            Dim Content(FileSize - 1) As Byte
-            Dim ContentOffset As UInteger = 0
-            Dim BytesRemaining As UInteger = FileSize
-            Dim BytesToCopy As UInteger
-            Dim FileBytes = _Parent.Data
 
-            For Each Cluster In _FatChain
-                Dim Offset As UInteger = _Parent.ClusterToOffset(Cluster)
-                BytesToCopy = _Parent.BootSector.BytesPerCluster
-                If BytesToCopy > BytesRemaining Then
-                    BytesToCopy = BytesRemaining
-                End If
-                If FileBytes.Length - Offset < BytesToCopy Then
-                    BytesToCopy = Math.Max(FileBytes.Length - Offset, 0)
-                End If
-                If BytesToCopy = 0 Then
-                    Exit For
-                End If
-                Array.Copy(FileBytes, Offset, Content, ContentOffset, BytesToCopy)
-                BytesRemaining -= BytesToCopy
-                If BytesRemaining = 0 Then
-                    Exit For
-                End If
-                ContentOffset += BytesToCopy
-            Next
+        Public Function GetDataBlocks() As List(Of DataBlock)
+            Return _Parent.GetDataBlocksFromFatClusterList(_FatClusterList)
+        End Function
+
+        Public Function GetContent() As Byte()
+            Dim Content = _Parent.GetDataFromFATClusterList(_FatClusterList)
+            If Content.Length <> FileSize Then
+                Array.Resize(Of Byte)(Content, FileSize)
+            End If
 
             Return Content
         End Function
 
-        Private Function GetFATChain() As List(Of UInteger)
-            Dim FatChain = New List(Of UInteger)
+        Private Function GetFATClusterList() As List(Of UShort)
+            Dim FATClusterList = New List(Of UShort)
             Dim Cluster As UShort = StartingCluster
             Dim AssignedClusters As New Hashtable
             Do
@@ -244,17 +228,17 @@ Namespace DiskImage
                         Exit Do
                     End If
                     AssignedClusters.Add(Cluster, Cluster)
-                    FatChain.Add(Cluster)
+                    FATClusterList.Add(Cluster)
                     If Not _Parent.FileAllocation.ContainsKey(Cluster) Then
                         _Parent.FileAllocation.Add(Cluster, _Offset)
                     End If
                     Cluster = _Parent.FAT12(Cluster)
-                    Else
-                        Cluster = 0
+                Else
+                    Cluster = 0
                 End If
-            Loop Until Cluster < 2 Or Cluster > 4079
+            Loop Until Cluster < &H2 Or Cluster > &HFEF
 
-            Return FatChain
+            Return FATClusterList
         End Function
 
         Public Function GetFileName() As String
@@ -364,7 +348,7 @@ Namespace DiskImage
 
         Private Sub InitSubDirectory()
             If IsDirectory() And Not IsDeleted() Then
-                _SubDirectory = New DiskImage.Directory(_Parent, _FatChain)
+                _SubDirectory = New DiskImage.Directory(_Parent, _FatClusterList)
             Else
                 _SubDirectory = Nothing
             End If

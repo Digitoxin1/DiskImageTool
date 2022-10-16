@@ -60,8 +60,8 @@
             Return FatCopies * SectorsPerFAT
         End Function
 
-        Public Function NumberOfFATEntries() As UInteger
-            Return Int(DataRegionSize() / SectorsPerCluster)
+        Public Function NumberOfFATEntries() As UShort
+            Return DataRegionSize() \ SectorsPerCluster
         End Function
 
         Public Function RootDirectoryRegionSize() As UInteger

@@ -11,24 +11,6 @@
         UnusedClusters = 256
     End Enum
 
-    Public Sub FilterAdd(CM As ContextMenuStrip, ID As FilterTypes, Count As Integer)
-        Dim Item As New ToolStripMenuItem With {
-            .Text = FilterGetCaption(ID, Count),
-            .CheckOnClick = True,
-            .Name = ID
-        }
-        CM.Items.Add(Item)
-    End Sub
-
-    Public Sub FilterAdd(CM As ContextMenuStrip, ID As FilterTypes, Count As Integer, Index As Integer)
-        Dim Item As New ToolStripMenuItem With {
-            .Text = FilterGetCaption(ID, Count),
-            .CheckOnClick = True,
-            .Name = ID
-        }
-        CM.Items.Insert(Index, Item)
-    End Sub
-
     Public Function FilterGetCaption(ID As FilterTypes, Count As Integer) As String
         Dim Caption As String
 

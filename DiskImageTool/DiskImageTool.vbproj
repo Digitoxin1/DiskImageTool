@@ -30,7 +30,7 @@
     <ProductName>DiskImageTool</ProductName>
     <PublisherName>Digitoxin</PublisherName>
     <ApplicationRevision>1</ApplicationRevision>
-    <ApplicationVersion>1.7.0.%2a</ApplicationVersion>
+    <ApplicationVersion>1.8.0.%2a</ApplicationVersion>
     <UseApplicationTrust>false</UseApplicationTrust>
     <PublishWizardCompleted>true</PublishWizardCompleted>
     <BootstrapperEnabled>true</BootstrapperEnabled>
@@ -110,6 +110,7 @@
   <ItemGroup>
     <Compile Include="Filters.vb" />
     <Compile Include="DiskImage\BootSector.vb" />
+    <Compile Include="Functions.vb" />
     <Compile Include="OEMIDLookup.vb" />
     <Compile Include="LoadedImageData.vb" />
     <Compile Include="CRC32.vb" />

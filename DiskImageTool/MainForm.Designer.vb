@@ -70,6 +70,7 @@ Partial Class MainForm
         Me.BtnDisplayBootSector = New System.Windows.Forms.ToolStripMenuItem()
         Me.BtnDisplayDirectory = New System.Windows.Forms.ToolStripMenuItem()
         Me.BtnDisplayClusters = New System.Windows.Forms.ToolStripMenuItem()
+        Me.BtnDisplayFile = New System.Windows.Forms.ToolStripMenuItem()
         SummaryName = CType(New System.Windows.Forms.ColumnHeader(), System.Windows.Forms.ColumnHeader)
         SummaryValue = CType(New System.Windows.Forms.ColumnHeader(), System.Windows.Forms.ColumnHeader)
         HashName = CType(New System.Windows.Forms.ColumnHeader(), System.Windows.Forms.ColumnHeader)
@@ -399,7 +400,6 @@ Partial Class MainForm
         '
         Me.ContextMenuFilters.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.BtnScan, Me.FilterSeparator})
         Me.ContextMenuFilters.Name = "ContextMenuStrip1"
-        Me.ContextMenuFilters.OwnerItem = Me.FilterToolStripMenuItem
         Me.ContextMenuFilters.Size = New System.Drawing.Size(141, 32)
         '
         'BtnScan
@@ -416,7 +416,7 @@ Partial Class MainForm
         '
         'HexViewerToolStripMenuItem
         '
-        Me.HexViewerToolStripMenuItem.DropDownItems.AddRange(New System.Windows.Forms.ToolStripItem() {Me.BtnDisplayBootSector, Me.BtnDisplayDirectory, Me.BtnDisplayClusters})
+        Me.HexViewerToolStripMenuItem.DropDownItems.AddRange(New System.Windows.Forms.ToolStripItem() {Me.BtnDisplayBootSector, Me.BtnDisplayDirectory, Me.BtnDisplayClusters, Me.BtnDisplayFile})
         Me.HexViewerToolStripMenuItem.Name = "HexViewerToolStripMenuItem"
         Me.HexViewerToolStripMenuItem.Size = New System.Drawing.Size(78, 20)
         Me.HexViewerToolStripMenuItem.Text = "&Hex Viewer"
@@ -438,6 +438,12 @@ Partial Class MainForm
         Me.BtnDisplayClusters.Name = "BtnDisplayClusters"
         Me.BtnDisplayClusters.Size = New System.Drawing.Size(159, 22)
         Me.BtnDisplayClusters.Text = "&Unused Clusters"
+        '
+        'BtnDisplayFile
+        '
+        Me.BtnDisplayFile.Name = "BtnDisplayFile"
+        Me.BtnDisplayFile.Size = New System.Drawing.Size(159, 22)
+        Me.BtnDisplayFile.Text = "&File"
         '
         'MainForm
         '
@@ -501,4 +507,5 @@ Partial Class MainForm
     Friend WithEvents BtnRevert As ToolStripMenuItem
     Friend WithEvents BtnClearCreated As ToolStripMenuItem
     Friend WithEvents BtnClearLastAccessed As ToolStripMenuItem
+    Friend WithEvents BtnDisplayFile As ToolStripMenuItem
 End Class
