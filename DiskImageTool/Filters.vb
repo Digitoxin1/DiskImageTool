@@ -1,14 +1,14 @@
 ﻿Public Module Filters
     Public Enum FilterTypes
-        UnknownOEMID = 1
-        MismatchedOEMID = 2
-        HasCreated = 4
-        HasLastAccessed = 8
-        HasInvalidImage = 16
-        HasLongFileNames = 32
-        HasInvalidDirectoryEntries = 64
-        ModifiedFiles = 128
-        UnusedClusters = 256
+        ModifiedFiles
+        UnknownOEMID
+        MismatchedOEMID
+        HasCreated
+        HasLastAccessed
+        HasLongFileNames
+        HasInvalidDirectoryEntries
+        UnusedClusters
+        HasInvalidImage
     End Enum
 
     Public Function FilterGetCaption(ID As FilterTypes, Count As Integer) As String
@@ -41,56 +41,60 @@
         Return Caption
     End Function
 
+    Private Function CheckFilter(FilterType As FilterTypes, AppliedFilters As Integer) As Boolean
+        Return (AppliedFilters And (2 ^ FilterType)) > 0
+    End Function
+
     Public Function IsFiltered(ImageData As LoadedImageData, AppliedFilters As FilterTypes) As Boolean
-        If (AppliedFilters And FilterTypes.HasInvalidImage) > 0 Then
+        If CheckFilter(FilterTypes.HasInvalidImage, AppliedFilters) Then
             If Not ImageData.ScanInfo.IsValidImage Then
                 Return False
             End If
         End If
 
-        If (AppliedFilters And FilterTypes.HasCreated) > 0 Then
+        If CheckFilter(FilterTypes.HasCreated, AppliedFilters) Then
             If ImageData.ScanInfo.IsValidImage And ImageData.ScanInfo.HasCreated Then
                 Return False
             End If
         End If
 
-        If (AppliedFilters And FilterTypes.HasLastAccessed) > 0 Then
+        If CheckFilter(FilterTypes.HasLastAccessed, AppliedFilters) Then
             If ImageData.ScanInfo.IsValidImage And ImageData.ScanInfo.HasLastAccessed Then
                 Return False
             End If
         End If
 
-        If (AppliedFilters And FilterTypes.MismatchedOEMID) > 0 Then
+        If CheckFilter(FilterTypes.MismatchedOEMID, AppliedFilters) Then
             If ImageData.ScanInfo.IsValidImage And ImageData.ScanInfo.OEMIDFound And Not ImageData.ScanInfo.OEMIDMatched Then
                 Return False
             End If
         End If
 
-        If (AppliedFilters And FilterTypes.UnknownOEMID) > 0 Then
+        If CheckFilter(FilterTypes.UnknownOEMID, AppliedFilters) Then
             If ImageData.ScanInfo.IsValidImage And Not ImageData.ScanInfo.OEMIDFound Then
                 Return False
             End If
         End If
 
-        If (AppliedFilters And FilterTypes.HasLongFileNames) > 0 Then
+        If CheckFilter(FilterTypes.HasLongFileNames, AppliedFilters) Then
             If ImageData.ScanInfo.IsValidImage And ImageData.ScanInfo.HasLongFileNames Then
                 Return False
             End If
         End If
 
-        If (AppliedFilters And FilterTypes.HasInvalidDirectoryEntries) > 0 Then
+        If CheckFilter(FilterTypes.HasInvalidDirectoryEntries, AppliedFilters) Then
             If ImageData.ScanInfo.IsValidImage And ImageData.ScanInfo.HasInvalidDirectoryEntries Then
                 Return False
             End If
         End If
 
-        If (AppliedFilters And FilterTypes.ModifiedFiles) > 0 Then
+        If CheckFilter(FilterTypes.ModifiedFiles, AppliedFilters) Then
             If ImageData.Modified Then
                 Return False
             End If
         End If
 
-        If (AppliedFilters And FilterTypes.UnusedClusters) > 0 Then
+        If CheckFilter(FilterTypes.UnusedClusters, AppliedFilters) Then
             If ImageData.ScanInfo.IsValidImage And ImageData.ScanInfo.HasUnusedClusters Then
                 Return False
             End If

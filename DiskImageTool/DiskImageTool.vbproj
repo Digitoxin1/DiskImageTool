@@ -79,6 +79,9 @@
   <PropertyGroup>
     <SignManifests>true</SignManifests>
   </PropertyGroup>
+  <PropertyGroup>
+    <ApplicationIcon>62835-floppy-disk-icon.ico</ApplicationIcon>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="Hb.Windows.Forms.HexBox2">
       <HintPath>..\..\HexBox\Hb.Windows.Forms.HexBox2.dll</HintPath>
@@ -134,6 +137,7 @@
     <Compile Include="My Project\Application.Designer.vb">
       <AutoGen>True</AutoGen>
       <DependentUpon>Application.myapp</DependentUpon>
+      <DesignTime>True</DesignTime>
     </Compile>
     <Compile Include="My Project\Resources.Designer.vb">
       <AutoGen>True</AutoGen>
@@ -149,6 +153,12 @@
       <DependentUpon>OEMIDForm.vb</DependentUpon>
     </Compile>
     <Compile Include="OEMIDForm.vb">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="SaveAllForm.Designer.vb">
+      <DependentUpon>SaveAllForm.vb</DependentUpon>
+    </Compile>
+    <Compile Include="SaveAllForm.vb">
       <SubType>Form</SubType>
     </Compile>
   </ItemGroup>
@@ -167,6 +177,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="OEMIDForm.resx">
       <DependentUpon>OEMIDForm.vb</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="SaveAllForm.resx">
+      <DependentUpon>SaveAllForm.vb</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
@@ -193,6 +206,9 @@
       <ProductName>.NET Framework 3.5 SP1</ProductName>
       <Install>false</Install>
     </BootstrapperPackage>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="62835-floppy-disk-icon.ico" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.VisualBasic.targets" />
 </Project>

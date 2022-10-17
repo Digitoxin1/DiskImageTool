@@ -41,7 +41,6 @@ Partial Class MainForm
         Me.LblInvalidImage = New System.Windows.Forms.Label()
         Me.ListViewHashes = New System.Windows.Forms.ListView()
         Me.LabelDropMessage = New System.Windows.Forms.Label()
-        Me.CBCheckAll = New System.Windows.Forms.CheckBox()
         Me.StatusStrip1 = New System.Windows.Forms.StatusStrip()
         Me.ToolStripFileName = New System.Windows.Forms.ToolStripStatusLabel()
         Me.ToolStripFileCount = New System.Windows.Forms.ToolStripStatusLabel()
@@ -54,6 +53,9 @@ Partial Class MainForm
         Me.BtnSave = New System.Windows.Forms.ToolStripMenuItem()
         Me.BtnSaveAs = New System.Windows.Forms.ToolStripMenuItem()
         Me.BtnSaveAll = New System.Windows.Forms.ToolStripMenuItem()
+        Me.ToolStripSeparator3 = New System.Windows.Forms.ToolStripSeparator()
+        Me.BtnClose = New System.Windows.Forms.ToolStripMenuItem()
+        Me.BtnCloseAll = New System.Windows.Forms.ToolStripMenuItem()
         Me.toolStripSeparator1 = New System.Windows.Forms.ToolStripSeparator()
         Me.BtnExit = New System.Windows.Forms.ToolStripMenuItem()
         Me.EditToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem()
@@ -225,15 +227,6 @@ Partial Class MainForm
         Me.LabelDropMessage.Text = "Drag && Drop Floppy Disk Images Here"
         Me.LabelDropMessage.TextAlign = System.Drawing.ContentAlignment.MiddleCenter
         '
-        'CBCheckAll
-        '
-        Me.CBCheckAll.AutoSize = True
-        Me.CBCheckAll.Location = New System.Drawing.Point(326, 63)
-        Me.CBCheckAll.Name = "CBCheckAll"
-        Me.CBCheckAll.Size = New System.Drawing.Size(15, 14)
-        Me.CBCheckAll.TabIndex = 9
-        Me.CBCheckAll.UseVisualStyleBackColor = True
-        '
         'StatusStrip1
         '
         Me.StatusStrip1.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.ToolStripFileName, Me.ToolStripFileCount, Me.ToolStripModified})
@@ -284,6 +277,7 @@ Partial Class MainForm
         Me.ListViewFiles.HideSelection = False
         Me.ListViewFiles.Location = New System.Drawing.Point(320, 56)
         Me.ListViewFiles.Name = "ListViewFiles"
+        Me.ListViewFiles.OwnerDraw = True
         Me.ListViewFiles.Size = New System.Drawing.Size(642, 493)
         Me.ListViewFiles.TabIndex = 10
         Me.ListViewFiles.UseCompatibleStateImageBehavior = False
@@ -300,7 +294,7 @@ Partial Class MainForm
         '
         'FileToolStripMenuItem
         '
-        Me.FileToolStripMenuItem.DropDownItems.AddRange(New System.Windows.Forms.ToolStripItem() {Me.BtnOpen, Me.toolStripSeparator, Me.BtnSave, Me.BtnSaveAs, Me.BtnSaveAll, Me.toolStripSeparator1, Me.BtnExit})
+        Me.FileToolStripMenuItem.DropDownItems.AddRange(New System.Windows.Forms.ToolStripItem() {Me.BtnOpen, Me.toolStripSeparator, Me.BtnSave, Me.BtnSaveAs, Me.BtnSaveAll, Me.ToolStripSeparator3, Me.BtnClose, Me.BtnCloseAll, Me.toolStripSeparator1, Me.BtnExit})
         Me.FileToolStripMenuItem.Name = "FileToolStripMenuItem"
         Me.FileToolStripMenuItem.Size = New System.Drawing.Size(37, 20)
         Me.FileToolStripMenuItem.Text = "&File"
@@ -339,6 +333,23 @@ Partial Class MainForm
         Me.BtnSaveAll.Name = "BtnSaveAll"
         Me.BtnSaveAll.Size = New System.Drawing.Size(146, 22)
         Me.BtnSaveAll.Text = "Save All"
+        '
+        'ToolStripSeparator3
+        '
+        Me.ToolStripSeparator3.Name = "ToolStripSeparator3"
+        Me.ToolStripSeparator3.Size = New System.Drawing.Size(143, 6)
+        '
+        'BtnClose
+        '
+        Me.BtnClose.Name = "BtnClose"
+        Me.BtnClose.Size = New System.Drawing.Size(146, 22)
+        Me.BtnClose.Text = "&Close"
+        '
+        'BtnCloseAll
+        '
+        Me.BtnCloseAll.Name = "BtnCloseAll"
+        Me.BtnCloseAll.Size = New System.Drawing.Size(146, 22)
+        Me.BtnCloseAll.Text = "Close All"
         '
         'toolStripSeparator1
         '
@@ -400,6 +411,7 @@ Partial Class MainForm
         '
         Me.ContextMenuFilters.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.BtnScan, Me.FilterSeparator})
         Me.ContextMenuFilters.Name = "ContextMenuStrip1"
+        Me.ContextMenuFilters.OwnerItem = Me.FilterToolStripMenuItem
         Me.ContextMenuFilters.Size = New System.Drawing.Size(141, 32)
         '
         'BtnScan
@@ -452,13 +464,13 @@ Partial Class MainForm
         Me.ClientSize = New System.Drawing.Size(974, 576)
         Me.Controls.Add(Me.StatusStrip1)
         Me.Controls.Add(Me.MenuStripMain)
-        Me.Controls.Add(Me.CBCheckAll)
         Me.Controls.Add(Me.LabelDropMessage)
         Me.Controls.Add(Me.ListViewHashes)
         Me.Controls.Add(Me.LblInvalidImage)
         Me.Controls.Add(Me.ComboGroups)
         Me.Controls.Add(Me.ListViewSummary)
         Me.Controls.Add(Me.ListViewFiles)
+        Me.Icon = CType(resources.GetObject("$this.Icon"), System.Drawing.Icon)
         Me.MainMenuStrip = Me.MenuStripMain
         Me.MinimumSize = New System.Drawing.Size(640, 480)
         Me.Name = "MainForm"
@@ -478,7 +490,6 @@ Partial Class MainForm
     Friend WithEvents LblInvalidImage As Label
     Friend WithEvents ListViewHashes As ListView
     Friend WithEvents LabelDropMessage As Label
-    Friend WithEvents CBCheckAll As CheckBox
     Friend WithEvents StatusStrip1 As StatusStrip
     Friend WithEvents ToolStripFileCount As ToolStripStatusLabel
     Friend WithEvents ToolStripFileName As ToolStripStatusLabel
@@ -508,4 +519,7 @@ Partial Class MainForm
     Friend WithEvents BtnClearCreated As ToolStripMenuItem
     Friend WithEvents BtnClearLastAccessed As ToolStripMenuItem
     Friend WithEvents BtnDisplayFile As ToolStripMenuItem
+    Friend WithEvents ToolStripSeparator3 As ToolStripSeparator
+    Friend WithEvents BtnClose As ToolStripMenuItem
+    Friend WithEvents BtnCloseAll As ToolStripMenuItem
 End Class

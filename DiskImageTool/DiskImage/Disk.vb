@@ -216,7 +216,7 @@
             For Each Cluster In FATClusterList
                 Dim Offset As UInteger = ClusterToOffset(Cluster)
                 If _FileBytes.Length < Offset + ClusterSize Then
-                    ClusterSize = _FileBytes.Length - Offset
+                    ClusterSize = Math.Max(_FileBytes.Length - Offset, 0)
                 End If
                 If ClusterSize > 0 Then
                     If LastCluster = 0 Or Cluster <> LastCluster + 1 Then
@@ -248,7 +248,7 @@
             For Each Cluster In FATClusterList
                 Dim Offset As UInteger = ClusterToOffset(Cluster)
                 If _FileBytes.Length < Offset + ClusterSize Then
-                    ClusterSize = _FileBytes.Length - Offset
+                    ClusterSize = Math.Max(_FileBytes.Length - Offset, 0)
                 End If
                 If ClusterSize > 0 Then
                     Array.Copy(_FileBytes, ClusterToOffset(Cluster), Content, ContentOffset, ClusterSize)
@@ -354,7 +354,7 @@
                 If _FAT12(Cluster) = 0 Then
                     Dim Offset = ClusterToOffset(Cluster)
                     If _FileBytes.Length < Offset + ClusterSize Then
-                        ClusterSize = _FileBytes.Length - Offset
+                        ClusterSize = Math.Max(_FileBytes.Length - Offset, 0)
                     End If
                     If ClusterSize > 0 Then
                         If Not IsDataBlockEmpty(GetBytes(Offset, ClusterSize)) Then
