@@ -9,8 +9,8 @@
     Public Property HasUnusedClusters As Boolean = False
 End Class
 Public Class LoadedImageData
-    Private _Path As String
-    Private _File As String
+    Public Shared Property StringOffset As Integer = 0
+    Private _FilePath As String
     Private _Modified As Boolean
     Private _Modifications As Hashtable
     Private _Scanned As Boolean
@@ -26,21 +26,12 @@ Public Class LoadedImageData
         End Set
     End Property
 
-    Public Property Path As String
+    Public Property FilePath As String
         Get
-            Return _Path
+            Return _FilePath
         End Get
         Set
-            _Path = Value
-        End Set
-    End Property
-
-    Public Property File As String
-        Get
-            Return _File
-        End Get
-        Set
-            _File = Value
+            _FilePath = Value
         End Set
     End Property
 
@@ -77,16 +68,15 @@ Public Class LoadedImageData
         End Get
     End Property
 
-    Public Sub New(Path As String, File As String)
-        _Path = Path
-        _File = File
+    Public Sub New(FilePath As String)
+        _FilePath = FilePath
         _Modified = False
         _Scanned = False
         _Modifications = Nothing
         _ComboIndex = -1
     End Sub
     Public Overrides Function ToString() As String
-        Return _File & IIf(_Modified, " *", "")
+        Return Right(_FilePath, Len(_FilePath) - _StringOffset) & IIf(_Modified, " *", "")
     End Function
 End Class
 

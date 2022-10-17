@@ -17,6 +17,15 @@ Module Functions
             .SetValue(lv, True, Nothing)
     End Sub
 
+    Public Function PathAddBackslash(Path As String) As String
+        If Len(Path) > 0 Then
+            If Not Path.EndsWith("\") Then
+                Path &= "\"
+            End If
+        End If
+        Return Path
+    End Function
+
     Public Function MD5Hash(Data() As Byte) As String
         Using hasher As MD5 = MD5.Create()
             Dim dbytes As Byte() = hasher.ComputeHash(Data)

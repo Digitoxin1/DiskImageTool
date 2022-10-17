@@ -38,7 +38,6 @@ Partial Class MainForm
         Dim resources As System.ComponentModel.ComponentResourceManager = New System.ComponentModel.ComponentResourceManager(GetType(MainForm))
         Me.ListViewSummary = New System.Windows.Forms.ListView()
         Me.ComboGroups = New System.Windows.Forms.ComboBox()
-        Me.LblInvalidImage = New System.Windows.Forms.Label()
         Me.ListViewHashes = New System.Windows.Forms.ListView()
         Me.LabelDropMessage = New System.Windows.Forms.Label()
         Me.StatusStrip1 = New System.Windows.Forms.StatusStrip()
@@ -66,6 +65,7 @@ Partial Class MainForm
         Me.BtnRevert = New System.Windows.Forms.ToolStripMenuItem()
         Me.FilterToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem()
         Me.ContextMenuFilters = New System.Windows.Forms.ContextMenuStrip(Me.components)
+        Me.BtnScanNew = New System.Windows.Forms.ToolStripMenuItem()
         Me.BtnScan = New System.Windows.Forms.ToolStripMenuItem()
         Me.FilterSeparator = New System.Windows.Forms.ToolStripSeparator()
         Me.HexViewerToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem()
@@ -179,21 +179,6 @@ Partial Class MainForm
         Me.ComboGroups.Size = New System.Drawing.Size(642, 21)
         Me.ComboGroups.Sorted = True
         Me.ComboGroups.TabIndex = 3
-        '
-        'LblInvalidImage
-        '
-        Me.LblInvalidImage.Anchor = System.Windows.Forms.AnchorStyles.Left
-        Me.LblInvalidImage.AutoSize = True
-        Me.LblInvalidImage.BackColor = System.Drawing.SystemColors.Window
-        Me.LblInvalidImage.Font = New System.Drawing.Font("Microsoft Sans Serif", 18.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.LblInvalidImage.ForeColor = System.Drawing.Color.Red
-        Me.LblInvalidImage.Location = New System.Drawing.Point(86, 221)
-        Me.LblInvalidImage.Name = "LblInvalidImage"
-        Me.LblInvalidImage.Size = New System.Drawing.Size(155, 29)
-        Me.LblInvalidImage.TabIndex = 6
-        Me.LblInvalidImage.Text = "Invalid Image"
-        Me.LblInvalidImage.TextAlign = System.Drawing.ContentAlignment.MiddleCenter
-        Me.LblInvalidImage.Visible = False
         '
         'ListViewHashes
         '
@@ -409,21 +394,27 @@ Partial Class MainForm
         '
         'ContextMenuFilters
         '
-        Me.ContextMenuFilters.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.BtnScan, Me.FilterSeparator})
+        Me.ContextMenuFilters.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.BtnScanNew, Me.BtnScan, Me.FilterSeparator})
         Me.ContextMenuFilters.Name = "ContextMenuStrip1"
         Me.ContextMenuFilters.OwnerItem = Me.FilterToolStripMenuItem
-        Me.ContextMenuFilters.Size = New System.Drawing.Size(141, 32)
+        Me.ContextMenuFilters.Size = New System.Drawing.Size(168, 54)
+        '
+        'BtnScanNew
+        '
+        Me.BtnScanNew.Name = "BtnScanNew"
+        Me.BtnScanNew.Size = New System.Drawing.Size(167, 22)
+        Me.BtnScanNew.Text = "Scan &New Images"
         '
         'BtnScan
         '
         Me.BtnScan.Name = "BtnScan"
-        Me.BtnScan.Size = New System.Drawing.Size(140, 22)
+        Me.BtnScan.Size = New System.Drawing.Size(167, 22)
         Me.BtnScan.Text = "&Scan Images"
         '
         'FilterSeparator
         '
         Me.FilterSeparator.Name = "FilterSeparator"
-        Me.FilterSeparator.Size = New System.Drawing.Size(137, 6)
+        Me.FilterSeparator.Size = New System.Drawing.Size(164, 6)
         Me.FilterSeparator.Visible = False
         '
         'HexViewerToolStripMenuItem
@@ -466,7 +457,6 @@ Partial Class MainForm
         Me.Controls.Add(Me.MenuStripMain)
         Me.Controls.Add(Me.LabelDropMessage)
         Me.Controls.Add(Me.ListViewHashes)
-        Me.Controls.Add(Me.LblInvalidImage)
         Me.Controls.Add(Me.ComboGroups)
         Me.Controls.Add(Me.ListViewSummary)
         Me.Controls.Add(Me.ListViewFiles)
@@ -487,7 +477,6 @@ Partial Class MainForm
     End Sub
     Friend WithEvents ListViewSummary As ListView
     Friend WithEvents ComboGroups As ComboBox
-    Friend WithEvents LblInvalidImage As Label
     Friend WithEvents ListViewHashes As ListView
     Friend WithEvents LabelDropMessage As Label
     Friend WithEvents StatusStrip1 As StatusStrip
@@ -522,4 +511,5 @@ Partial Class MainForm
     Friend WithEvents ToolStripSeparator3 As ToolStripSeparator
     Friend WithEvents BtnClose As ToolStripMenuItem
     Friend WithEvents BtnCloseAll As ToolStripMenuItem
+    Friend WithEvents BtnScanNew As ToolStripMenuItem
 End Class

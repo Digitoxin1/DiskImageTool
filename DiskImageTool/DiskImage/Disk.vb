@@ -17,13 +17,19 @@
         Private _Modified As Boolean
         Private ReadOnly _Modifications As Hashtable
         Private ReadOnly _OriginalData As Hashtable
+        Private ReadOnly _LoadError As Boolean = False
 
         Sub New(FilePath As String)
             _Modifications = New Hashtable()
             _OriginalData = New Hashtable()
             _Modified = False
+            _LoadError = False
             _FilePath = FilePath
-            _FileBytes = System.IO.File.ReadAllBytes(FilePath)
+            Try
+                _FileBytes = System.IO.File.ReadAllBytes(FilePath)
+            Catch ex As Exception
+                _LoadError = True
+            End Try
             _BootSector = New DiskImage.BootSector(Me)
             If IsValidImage() Then
                 PopulateFAT12()
@@ -70,6 +76,12 @@
         Public ReadOnly Property FreeSpace As UInteger
             Get
                 Return _FreeSpace
+            End Get
+        End Property
+
+        Public ReadOnly Property LoadError As Boolean
+            Get
+                Return _LoadError
             End Get
         End Property
 
@@ -386,11 +398,18 @@
         End Function
 
         Public Function IsValidImage() As Boolean
-            Dim Result As Boolean = True
+            Dim Result As Boolean = Not _LoadError
 
-            Result = Result And _ValidBytesPerSector.Contains(_BootSector.BytesPerSector)
-            Result = Result And _ValidSectorsPerSector.Contains(_BootSector.SectorsPerCluster)
-            Result = Result And (_BootSector.MediaDescriptor = 240 Or (_BootSector.MediaDescriptor >= 248 And _BootSector.MediaDescriptor <= 255))
+            If Result Then
+                Result = _ValidBytesPerSector.Contains(_BootSector.BytesPerSector)
+            End If
+            If Result Then
+                Result = _ValidSectorsPerSector.Contains(_BootSector.SectorsPerCluster)
+            End If
+            If Result Then
+                Result = (_BootSector.MediaDescriptor = 240 Or (_BootSector.MediaDescriptor >= 248 And _BootSector.MediaDescriptor <= 255))
+            End If
+
             Return Result
         End Function
 
