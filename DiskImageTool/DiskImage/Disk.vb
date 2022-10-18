@@ -359,6 +359,20 @@
             Return Result
         End Function
 
+        Public Function GetVolumeLabel() As String
+            Dim VolumeLabel As String = ""
+
+            For Counter As UInteger = 1 To _Directory.DirectoryLength
+                Dim File = _Directory.GetFile(Counter)
+                If Not File.IsDeleted And File.IsVolumeName Then
+                    VolumeLabel = File.GetFileName & File.GetFileExtension
+                    Exit For
+                End If
+            Next
+
+            Return VolumeLabel
+        End Function
+
         Public Function HasUnusedClustersWithData() As Boolean
             Dim ClusterSize As UInteger = _BootSector.BytesPerCluster
 

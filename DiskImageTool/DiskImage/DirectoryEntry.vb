@@ -241,9 +241,18 @@ Namespace DiskImage
             Return FATClusterList
         End Function
 
+        Public Function GetFileExtension() As String
+            Return Encoding.UTF8.GetString(Extension).Trim
+        End Function
+
         Public Function GetFileName() As String
-            Dim File = Encoding.UTF8.GetString(FileName).Trim
-            Dim Ext = Encoding.UTF8.GetString(Extension).Trim
+            Return Encoding.UTF8.GetString(FileName).Trim
+        End Function
+
+        Public Function GetFullFileName() As String
+            Dim File = GetFileName()
+            Dim Ext = GetFileExtension()
+
             If Ext <> "" Then
                 File = File & "." & Ext
             End If
@@ -348,7 +357,7 @@ Namespace DiskImage
 
         Private Sub InitSubDirectory()
             If IsDirectory() And Not IsDeleted() Then
-                _SubDirectory = New DiskImage.Directory(_Parent, _FatClusterList)
+                _SubDirectory = New DiskImage.Directory(_Parent, _FatClusterList, FileSize)
             Else
                 _SubDirectory = Nothing
             End If

@@ -2,6 +2,15 @@
 Imports System.Text
 
 Module Functions
+    Public Function DuplicateHashTable(Table As Hashtable) As Hashtable
+        Dim NewTable As New Hashtable
+        For Each Key In Table.Keys
+            NewTable.Item(Key) = Table.Item(Key)
+        Next
+
+        Return NewTable
+    End Function
+
     Public Sub ListViewAddColumn(LV As ListView, Name As String, Text As String, Width As Integer, Index As Integer)
         Dim Column As New ColumnHeader With {
             .Name = Name,

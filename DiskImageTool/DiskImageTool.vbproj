@@ -30,7 +30,7 @@
     <ProductName>DiskImageTool</ProductName>
     <PublisherName>Digitoxin</PublisherName>
     <ApplicationRevision>1</ApplicationRevision>
-    <ApplicationVersion>1.9.0.%2a</ApplicationVersion>
+    <ApplicationVersion>1.10.0.%2a</ApplicationVersion>
     <UseApplicationTrust>false</UseApplicationTrust>
     <PublishWizardCompleted>true</PublishWizardCompleted>
     <BootstrapperEnabled>true</BootstrapperEnabled>
@@ -90,6 +90,8 @@
     <Reference Include="System.Data" />
     <Reference Include="System.Deployment" />
     <Reference Include="System.Drawing" />
+    <Reference Include="System.IO.Compression" />
+    <Reference Include="System.IO.Compression.FileSystem" />
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
     <Reference Include="System.Core" />
@@ -111,6 +113,7 @@
     <Import Include="System.Threading.Tasks" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="DebugScript.vb" />
     <Compile Include="Filters.vb" />
     <Compile Include="DiskImage\BootSector.vb" />
     <Compile Include="Functions.vb" />
@@ -183,6 +186,9 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="DebugScript\CHOICE.COM" />
+    <EmbeddedResource Include="DebugScript\CRC32.COM" />
+    <EmbeddedResource Include="DebugScript\PATCH.BAT" />
     <None Include="DiskImageTool_TemporaryKey.pfx" />
     <None Include="My Project\Application.myapp">
       <Generator>MyApplicationCodeGenerator</Generator>

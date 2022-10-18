@@ -73,6 +73,8 @@ Partial Class MainForm
         Me.BtnDisplayDirectory = New System.Windows.Forms.ToolStripMenuItem()
         Me.BtnDisplayClusters = New System.Windows.Forms.ToolStripMenuItem()
         Me.BtnDisplayFile = New System.Windows.Forms.ToolStripMenuItem()
+        Me.ToolsToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem()
+        Me.BtnExportDebug = New System.Windows.Forms.ToolStripMenuItem()
         SummaryName = CType(New System.Windows.Forms.ColumnHeader(), System.Windows.Forms.ColumnHeader)
         SummaryValue = CType(New System.Windows.Forms.ColumnHeader(), System.Windows.Forms.ColumnHeader)
         HashName = CType(New System.Windows.Forms.ColumnHeader(), System.Windows.Forms.ColumnHeader)
@@ -174,7 +176,7 @@ Partial Class MainForm
         Me.ComboGroups.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList
         Me.ComboGroups.DropDownWidth = 523
         Me.ComboGroups.FormattingEnabled = True
-        Me.ComboGroups.Location = New System.Drawing.Point(320, 28)
+        Me.ComboGroups.Location = New System.Drawing.Point(320, 29)
         Me.ComboGroups.Name = "ComboGroups"
         Me.ComboGroups.Size = New System.Drawing.Size(642, 21)
         Me.ComboGroups.Sorted = True
@@ -270,7 +272,7 @@ Partial Class MainForm
         '
         'MenuStripMain
         '
-        Me.MenuStripMain.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.FileToolStripMenuItem, Me.EditToolStripMenuItem, Me.FilterToolStripMenuItem, Me.HexViewerToolStripMenuItem})
+        Me.MenuStripMain.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.FileToolStripMenuItem, Me.EditToolStripMenuItem, Me.FilterToolStripMenuItem, Me.HexViewerToolStripMenuItem, Me.ToolsToolStripMenuItem})
         Me.MenuStripMain.Location = New System.Drawing.Point(0, 0)
         Me.MenuStripMain.Name = "MenuStripMain"
         Me.MenuStripMain.Size = New System.Drawing.Size(974, 24)
@@ -448,6 +450,19 @@ Partial Class MainForm
         Me.BtnDisplayFile.Size = New System.Drawing.Size(159, 22)
         Me.BtnDisplayFile.Text = "&File"
         '
+        'ToolsToolStripMenuItem
+        '
+        Me.ToolsToolStripMenuItem.DropDownItems.AddRange(New System.Windows.Forms.ToolStripItem() {Me.BtnExportDebug})
+        Me.ToolsToolStripMenuItem.Name = "ToolsToolStripMenuItem"
+        Me.ToolsToolStripMenuItem.Size = New System.Drawing.Size(88, 20)
+        Me.ToolsToolStripMenuItem.Text = "Experimental"
+        '
+        'BtnExportDebug
+        '
+        Me.BtnExportDebug.Name = "BtnExportDebug"
+        Me.BtnExportDebug.Size = New System.Drawing.Size(225, 22)
+        Me.BtnExportDebug.Text = "Generate Physical Disk Patch"
+        '
         'MainForm
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
@@ -512,4 +527,6 @@ Partial Class MainForm
     Friend WithEvents BtnClose As ToolStripMenuItem
     Friend WithEvents BtnCloseAll As ToolStripMenuItem
     Friend WithEvents BtnScanNew As ToolStripMenuItem
+    Friend WithEvents ToolsToolStripMenuItem As ToolStripMenuItem
+    Friend WithEvents BtnExportDebug As ToolStripMenuItem
 End Class
