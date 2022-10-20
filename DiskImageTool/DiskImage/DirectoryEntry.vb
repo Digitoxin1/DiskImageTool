@@ -59,7 +59,6 @@ Namespace DiskImage
             LFNFilePart3 = 4
         End Enum
 
-        Private ReadOnly InvalidChars() As Byte = {&H22, &H2B, &H2C, &H2E, &H2F, &H3A, &H3B, &H3C, &H3D, &H3E, &H3F, &H5B, &H5C, &H5D, &H7C, &H7F}
         Private ReadOnly _FatClusterList As List(Of UShort)
         Private ReadOnly _Offset As UInteger
         Private ReadOnly _Parent As Disk
@@ -171,19 +170,31 @@ Namespace DiskImage
         End Function
 
         Private Sub SetBytes(Value As UShort, Offset As UInteger)
-            _Parent.SetBytes(Value, Offset + _Offset)
+            _Parent.SetOriginalData(_Offset, 32)
+            _Parent.SetBytes(Value, Offset + _Offset, False)
+            _Parent.SetModification(_Offset, 32)
         End Sub
 
         Private Sub SetBytes(Value As UInteger, Offset As UInteger)
-            _Parent.SetBytes(Value, Offset + _Offset)
+            _Parent.SetOriginalData(_Offset, 32)
+            _Parent.SetBytes(Value, Offset + _Offset, False)
+            _Parent.SetModification(_Offset, 32)
         End Sub
 
         Private Sub SetBytes(Value As Byte, Offset As UInteger)
-            _Parent.SetBytes(Value, Offset + _Offset)
+            _Parent.SetOriginalData(_Offset, 32)
+            _Parent.SetBytes(Value, Offset + _Offset, False)
+            _Parent.SetModification(_Offset, 32)
         End Sub
 
         Private Sub SetBytes(Value() As Byte, Offset As UInteger, Size As UInteger, Padding As Byte)
-            _Parent.SetBytes(Value, Offset + _Offset, Size, Padding)
+            _Parent.SetOriginalData(_Offset, 32)
+            _Parent.SetBytes(Value, Offset + _Offset, Size, Padding, False)
+            _Parent.SetModification(_Offset, 32)
+        End Sub
+
+        Public Sub RemoveModification()
+            _Parent.RemoveModification(_Offset)
         End Sub
 
         Public Sub ClearCreationDate()
@@ -249,6 +260,10 @@ Namespace DiskImage
             Return Encoding.UTF8.GetString(FileName).Trim
         End Function
 
+        Public Function GetVolumeName() As String
+            Return Encoding.UTF8.GetString(FileName) & Encoding.UTF8.GetString(Extension).TrimEnd(" ")
+        End Function
+
         Public Function GetFullFileName() As String
             Dim File = GetFileName()
             Dim Ext = GetFileExtension()
@@ -294,57 +309,11 @@ Namespace DiskImage
         End Function
 
         Public Function HasInvalidExtension() As Boolean
-            Dim Result As Boolean = False
-            Dim LocalExtension = Extension
-            Dim VolumeName As Boolean = IsVolumeName()
-            Dim C As Byte
-
-            For Counter = 0 To UBound(LocalExtension)
-                C = LocalExtension(Counter)
-                If VolumeName And (C = &H0) Then
-                    Result = False
-                ElseIf C < &H20 Then
-                    Result = True
-                    Exit For
-                ElseIf Not VolumeName And C > &H60 And C < &H7B Then
-                    Result = True
-                    Exit For
-                ElseIf Not VolumeName And InvalidChars.Contains(C) Then
-                    Result = True
-                    Exit For
-                End If
-            Next
-
-            Return Result
+            Return Not Disk.CheckValidFileName(Extension, True, IsVolumeName())
         End Function
 
         Public Function HasInvalidFilename() As Boolean
-            Dim Result As Boolean = False
-            Dim LocalFileName = FileName
-            Dim VolumeName As Boolean = IsVolumeName()
-            Dim C As Byte
-
-            If Not VolumeName And LocalFileName(0) = &H20 Then
-                Result = True
-            Else
-                For Counter = 0 To UBound(LocalFileName)
-                    C = LocalFileName(Counter)
-                    If VolumeName And (C = &H0 Or (Counter = 1 And C = &H3)) Then
-                        Result = False
-                    ElseIf C < &H20 Then
-                        Result = True
-                        Exit For
-                    ElseIf Not VolumeName And C > &H60 And C < &H7B Then
-                        Result = True
-                        Exit For
-                    ElseIf Not VolumeName And InvalidChars.Contains(C) Then
-                        Result = True
-                        Exit For
-                    End If
-                Next
-            End If
-
-            Return Result
+            Return Not Disk.CheckValidFileName(FileName, False, IsVolumeName())
         End Function
 
         Public Function HasInvalidFileSize() As Boolean
@@ -381,6 +350,10 @@ Namespace DiskImage
 
         Public Function IsLFN() As Boolean
             Return (Attributes And AttributeFlags.LongFileName) = AttributeFlags.LongFileName
+        End Function
+
+        Public Function IsModified() As Boolean
+            Return _Parent.HasModification(_Offset)
         End Function
 
         Public Function IsReadOnly() As Boolean

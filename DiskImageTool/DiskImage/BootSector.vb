@@ -89,7 +89,7 @@
                 Return _Parent.GetBytes(BootSectorOffset.BootStrapCode, BootSectorSize.BootStrapCode)
             End Get
             Set
-                _Parent.SetBytes(Value, BootSectorOffset.BootStrapCode, BootSectorSize.BootStrapCode, 0)
+                _Parent.SetBytes(Value, BootSectorOffset.BootStrapCode, BootSectorSize.BootStrapCode, 0, True)
             End Set
         End Property
 
@@ -98,7 +98,7 @@
                 Return _Parent.GetBytesShort(BootSectorOffset.BootStrapSignature)
             End Get
             Set
-                _Parent.SetBytes(Value, BootSectorOffset.BootStrapSignature)
+                _Parent.SetBytes(Value, BootSectorOffset.BootStrapSignature, True)
             End Set
         End Property
 
@@ -107,7 +107,7 @@
                 Return _Parent.GetBytesShort(BootSectorOffset.BytesPerSector)
             End Get
             Set
-                _Parent.SetBytes(Value, BootSectorOffset.BytesPerSector)
+                _Parent.SetBytes(Value, BootSectorOffset.BytesPerSector, True)
             End Set
         End Property
 
@@ -116,7 +116,7 @@
                 Return _Parent.GetBytes(BootSectorOffset.Code, BootSectorSize.Code)
             End Get
             Set
-                _Parent.SetBytes(Value, BootSectorOffset.Code, BootSectorSize.Code, 0)
+                _Parent.SetBytes(Value, BootSectorOffset.Code, BootSectorSize.Code, 0, True)
             End Set
         End Property
 
@@ -132,7 +132,7 @@
                 Return _Parent.GetByte(BootSectorOffset.DriveNumber)
             End Get
             Set
-                _Parent.SetBytes(Value, BootSectorOffset.DriveNumber)
+                _Parent.SetBytes(Value, BootSectorOffset.DriveNumber, True)
             End Set
         End Property
 
@@ -141,7 +141,7 @@
                 Return _Parent.GetByte(BootSectorOffset.ExtendedBootSignature)
             End Get
             Set
-                _Parent.SetBytes(Value, BootSectorOffset.ExtendedBootSignature)
+                _Parent.SetBytes(Value, BootSectorOffset.ExtendedBootSignature, True)
             End Set
         End Property
 
@@ -150,7 +150,7 @@
                 Return _Parent.GetByte(BootSectorOffset.FatCopies)
             End Get
             Set
-                _Parent.SetBytes(Value, BootSectorOffset.FatCopies)
+                _Parent.SetBytes(Value, BootSectorOffset.FatCopies, True)
             End Set
         End Property
 
@@ -159,7 +159,7 @@
                 Return _Parent.GetBytes(BootSectorOffset.FileSystemType, BootSectorSize.FileSystemType)
             End Get
             Set
-                _Parent.SetBytes(Value, BootSectorOffset.FileSystemType, BootSectorSize.FileSystemType, 0)
+                _Parent.SetBytes(Value, BootSectorOffset.FileSystemType, BootSectorSize.FileSystemType, 0, True)
             End Set
         End Property
 
@@ -168,7 +168,7 @@
                 Return _Parent.GetBytesInteger(BootSectorOffset.HiddenSectors)
             End Get
             Set
-                _Parent.SetBytes(Value, BootSectorOffset.HiddenSectors)
+                _Parent.SetBytes(Value, BootSectorOffset.HiddenSectors, True)
             End Set
         End Property
 
@@ -177,7 +177,7 @@
                 Return _Parent.GetBytesInteger(BootSectorOffset.LargeNumberOfSectors)
             End Get
             Set
-                _Parent.SetBytes(Value, BootSectorOffset.LargeNumberOfSectors)
+                _Parent.SetBytes(Value, BootSectorOffset.LargeNumberOfSectors, True)
             End Set
         End Property
 
@@ -186,7 +186,7 @@
                 Return _Parent.GetByte(BootSectorOffset.MediaDescriptor)
             End Get
             Set
-                _Parent.SetBytes(Value, BootSectorOffset.MediaDescriptor)
+                _Parent.SetBytes(Value, BootSectorOffset.MediaDescriptor, True)
             End Set
         End Property
 
@@ -195,7 +195,7 @@
                 Return _Parent.GetBytesShort(BootSectorOffset.NumberOfHeads)
             End Get
             Set
-                _Parent.SetBytes(Value, BootSectorOffset.NumberOfHeads)
+                _Parent.SetBytes(Value, BootSectorOffset.NumberOfHeads, True)
             End Set
         End Property
 
@@ -204,7 +204,7 @@
                 Return _Parent.GetBytes(BootSectorOffset.OEMID, BootSectorSize.OEMID)
             End Get
             Set
-                _Parent.SetBytes(Value, BootSectorOffset.OEMID, BootSectorSize.OEMID, 0)
+                _Parent.SetBytes(Value, BootSectorOffset.OEMID, BootSectorSize.OEMID, 0, True)
             End Set
         End Property
 
@@ -213,7 +213,7 @@
                 Return _Parent.GetByte(BootSectorOffset.Reserved)
             End Get
             Set
-                _Parent.SetBytes(Value, BootSectorOffset.Reserved)
+                _Parent.SetBytes(Value, BootSectorOffset.Reserved, True)
             End Set
         End Property
 
@@ -222,7 +222,7 @@
                 Return _Parent.GetBytesShort(BootSectorOffset.ReservedSectors)
             End Get
             Set
-                _Parent.SetBytes(Value, BootSectorOffset.ReservedSectors)
+                _Parent.SetBytes(Value, BootSectorOffset.ReservedSectors, True)
             End Set
         End Property
 
@@ -231,7 +231,7 @@
                 Return _Parent.GetBytesShort(BootSectorOffset.RootEntryCount)
             End Get
             Set
-                _Parent.SetBytes(Value, BootSectorOffset.RootEntryCount)
+                _Parent.SetBytes(Value, BootSectorOffset.RootEntryCount, True)
             End Set
         End Property
 
@@ -240,7 +240,7 @@
                 Return _Parent.GetByte(BootSectorOffset.SectorsPerCluster)
             End Get
             Set
-                _Parent.SetBytes(Value, BootSectorOffset.SectorsPerCluster)
+                _Parent.SetBytes(Value, BootSectorOffset.SectorsPerCluster, True)
             End Set
         End Property
 
@@ -249,7 +249,7 @@
                 Return _Parent.GetBytesShort(BootSectorOffset.SectorsPerFAT)
             End Get
             Set
-                _Parent.SetBytes(Value, BootSectorOffset.SectorsPerFAT)
+                _Parent.SetBytes(Value, BootSectorOffset.SectorsPerFAT, True)
             End Set
         End Property
 
@@ -258,7 +258,7 @@
                 Return _Parent.GetBytesShort(BootSectorOffset.SectorsPerTrack)
             End Get
             Set
-                _Parent.SetBytes(Value, BootSectorOffset.SectorsPerTrack)
+                _Parent.SetBytes(Value, BootSectorOffset.SectorsPerTrack, True)
             End Set
         End Property
 
@@ -267,7 +267,7 @@
                 Return _Parent.GetBytesShort(BootSectorOffset.SmallNumberOfSectors)
             End Get
             Set
-                _Parent.SetBytes(Value, BootSectorOffset.SmallNumberOfSectors)
+                _Parent.SetBytes(Value, BootSectorOffset.SmallNumberOfSectors, True)
             End Set
         End Property
 
@@ -276,7 +276,7 @@
                 Return _Parent.GetBytes(BootSectorOffset.VolumeLabel, BootSectorSize.VolumeLabel)
             End Get
             Set
-                _Parent.SetBytes(Value, BootSectorOffset.VolumeLabel, BootSectorSize.VolumeLabel, 0)
+                _Parent.SetBytes(Value, BootSectorOffset.VolumeLabel, BootSectorSize.VolumeLabel, 0, True)
             End Set
         End Property
 
@@ -285,7 +285,7 @@
                 Return _Parent.GetBytesInteger(BootSectorOffset.VolumeSerialNumber)
             End Get
             Set
-                _Parent.SetBytes(Value, BootSectorOffset.VolumeSerialNumber)
+                _Parent.SetBytes(Value, BootSectorOffset.VolumeSerialNumber, True)
             End Set
         End Property
     End Class

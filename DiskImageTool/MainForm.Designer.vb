@@ -27,7 +27,6 @@ Partial Class MainForm
         Dim SummaryValue As System.Windows.Forms.ColumnHeader
         Dim HashName As System.Windows.Forms.ColumnHeader
         Dim HashValue As System.Windows.Forms.ColumnHeader
-        Dim ColumnHeader1 As System.Windows.Forms.ColumnHeader
         Dim FileName As System.Windows.Forms.ColumnHeader
         Dim FileExt As System.Windows.Forms.ColumnHeader
         Dim FileSize As System.Windows.Forms.ColumnHeader
@@ -35,18 +34,13 @@ Partial Class MainForm
         Dim FileStartingCluster As System.Windows.Forms.ColumnHeader
         Dim FileAttrib As System.Windows.Forms.ColumnHeader
         Dim FileCRC32 As System.Windows.Forms.ColumnHeader
+        Dim FileModified As System.Windows.Forms.ColumnHeader
+        Dim MainMenuFile As System.Windows.Forms.ToolStripMenuItem
         Dim resources As System.ComponentModel.ComponentResourceManager = New System.ComponentModel.ComponentResourceManager(GetType(MainForm))
-        Me.ListViewSummary = New System.Windows.Forms.ListView()
-        Me.ComboGroups = New System.Windows.Forms.ComboBox()
-        Me.ListViewHashes = New System.Windows.Forms.ListView()
-        Me.LabelDropMessage = New System.Windows.Forms.Label()
-        Me.StatusStrip1 = New System.Windows.Forms.StatusStrip()
-        Me.ToolStripFileName = New System.Windows.Forms.ToolStripStatusLabel()
-        Me.ToolStripFileCount = New System.Windows.Forms.ToolStripStatusLabel()
-        Me.ToolStripModified = New System.Windows.Forms.ToolStripStatusLabel()
-        Me.ListViewFiles = New System.Windows.Forms.ListView()
-        Me.MenuStripMain = New System.Windows.Forms.MenuStrip()
-        Me.FileToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem()
+        Dim MainMenuEdit As System.Windows.Forms.ToolStripMenuItem
+        Dim MainMenuView As System.Windows.Forms.ToolStripMenuItem
+        Dim MainMenuExperimental As System.Windows.Forms.ToolStripMenuItem
+        Dim ToolStripSeparator5 As System.Windows.Forms.ToolStripSeparator
         Me.BtnOpen = New System.Windows.Forms.ToolStripMenuItem()
         Me.toolStripSeparator = New System.Windows.Forms.ToolStripSeparator()
         Me.BtnSave = New System.Windows.Forms.ToolStripMenuItem()
@@ -57,29 +51,42 @@ Partial Class MainForm
         Me.BtnCloseAll = New System.Windows.Forms.ToolStripMenuItem()
         Me.toolStripSeparator1 = New System.Windows.Forms.ToolStripSeparator()
         Me.BtnExit = New System.Windows.Forms.ToolStripMenuItem()
-        Me.EditToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem()
         Me.BtnOEMID = New System.Windows.Forms.ToolStripMenuItem()
-        Me.BtnClearCreated = New System.Windows.Forms.ToolStripMenuItem()
-        Me.BtnClearLastAccessed = New System.Windows.Forms.ToolStripMenuItem()
+        Me.ToolStripSeparator4 = New System.Windows.Forms.ToolStripSeparator()
+        Me.BtnFileProperties = New System.Windows.Forms.ToolStripMenuItem()
         Me.ToolStripSeparator2 = New System.Windows.Forms.ToolStripSeparator()
         Me.BtnRevert = New System.Windows.Forms.ToolStripMenuItem()
-        Me.FilterToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem()
-        Me.ContextMenuFilters = New System.Windows.Forms.ContextMenuStrip(Me.components)
-        Me.BtnScanNew = New System.Windows.Forms.ToolStripMenuItem()
-        Me.BtnScan = New System.Windows.Forms.ToolStripMenuItem()
-        Me.FilterSeparator = New System.Windows.Forms.ToolStripSeparator()
-        Me.HexViewerToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem()
         Me.BtnDisplayBootSector = New System.Windows.Forms.ToolStripMenuItem()
         Me.BtnDisplayDirectory = New System.Windows.Forms.ToolStripMenuItem()
         Me.BtnDisplayClusters = New System.Windows.Forms.ToolStripMenuItem()
         Me.BtnDisplayFile = New System.Windows.Forms.ToolStripMenuItem()
-        Me.ToolsToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem()
         Me.BtnExportDebug = New System.Windows.Forms.ToolStripMenuItem()
+        Me.ListViewSummary = New System.Windows.Forms.ListView()
+        Me.ComboGroups = New System.Windows.Forms.ComboBox()
+        Me.ListViewHashes = New System.Windows.Forms.ListView()
+        Me.LabelDropMessage = New System.Windows.Forms.Label()
+        Me.StatusStrip1 = New System.Windows.Forms.StatusStrip()
+        Me.ToolStripFileName = New System.Windows.Forms.ToolStripStatusLabel()
+        Me.ToolStripFileCount = New System.Windows.Forms.ToolStripStatusLabel()
+        Me.ToolStripImageCount = New System.Windows.Forms.ToolStripStatusLabel()
+        Me.ToolStripModified = New System.Windows.Forms.ToolStripStatusLabel()
+        Me.ListViewFiles = New System.Windows.Forms.ListView()
+        Me.ContextMenuFiles = New System.Windows.Forms.ContextMenuStrip(Me.components)
+        Me.BtnFileMenuFileProperties = New System.Windows.Forms.ToolStripMenuItem()
+        Me.BtnFileMenuViewFile = New System.Windows.Forms.ToolStripMenuItem()
+        Me.BtnFileMenuViewFileText = New System.Windows.Forms.ToolStripMenuItem()
+        Me.MenuStripMain = New System.Windows.Forms.MenuStrip()
+        Me.MainMenuFilters = New System.Windows.Forms.ToolStripMenuItem()
+        Me.ContextMenuFilters = New System.Windows.Forms.ContextMenuStrip(Me.components)
+        Me.BtnScanNew = New System.Windows.Forms.ToolStripMenuItem()
+        Me.BtnScan = New System.Windows.Forms.ToolStripMenuItem()
+        Me.FilterSeparator = New System.Windows.Forms.ToolStripSeparator()
+        Me.FileMenuSeparator = New System.Windows.Forms.ToolStripSeparator()
+        Me.BtnFileMenuUndo = New System.Windows.Forms.ToolStripMenuItem()
         SummaryName = CType(New System.Windows.Forms.ColumnHeader(), System.Windows.Forms.ColumnHeader)
         SummaryValue = CType(New System.Windows.Forms.ColumnHeader(), System.Windows.Forms.ColumnHeader)
         HashName = CType(New System.Windows.Forms.ColumnHeader(), System.Windows.Forms.ColumnHeader)
         HashValue = CType(New System.Windows.Forms.ColumnHeader(), System.Windows.Forms.ColumnHeader)
-        ColumnHeader1 = CType(New System.Windows.Forms.ColumnHeader(), System.Windows.Forms.ColumnHeader)
         FileName = CType(New System.Windows.Forms.ColumnHeader(), System.Windows.Forms.ColumnHeader)
         FileExt = CType(New System.Windows.Forms.ColumnHeader(), System.Windows.Forms.ColumnHeader)
         FileSize = CType(New System.Windows.Forms.ColumnHeader(), System.Windows.Forms.ColumnHeader)
@@ -87,7 +94,14 @@ Partial Class MainForm
         FileStartingCluster = CType(New System.Windows.Forms.ColumnHeader(), System.Windows.Forms.ColumnHeader)
         FileAttrib = CType(New System.Windows.Forms.ColumnHeader(), System.Windows.Forms.ColumnHeader)
         FileCRC32 = CType(New System.Windows.Forms.ColumnHeader(), System.Windows.Forms.ColumnHeader)
+        FileModified = CType(New System.Windows.Forms.ColumnHeader(), System.Windows.Forms.ColumnHeader)
+        MainMenuFile = New System.Windows.Forms.ToolStripMenuItem()
+        MainMenuEdit = New System.Windows.Forms.ToolStripMenuItem()
+        MainMenuView = New System.Windows.Forms.ToolStripMenuItem()
+        MainMenuExperimental = New System.Windows.Forms.ToolStripMenuItem()
+        ToolStripSeparator5 = New System.Windows.Forms.ToolStripSeparator()
         Me.StatusStrip1.SuspendLayout()
+        Me.ContextMenuFiles.SuspendLayout()
         Me.MenuStripMain.SuspendLayout()
         Me.ContextMenuFilters.SuspendLayout()
         Me.SuspendLayout()
@@ -109,11 +123,6 @@ Partial Class MainForm
         'HashValue
         '
         HashValue.Width = -1
-        '
-        'ColumnHeader1
-        '
-        ColumnHeader1.Text = ""
-        ColumnHeader1.Width = 23
         '
         'FileName
         '
@@ -150,6 +159,161 @@ Partial Class MainForm
         '
         FileCRC32.Text = "CRC32"
         FileCRC32.Width = 70
+        '
+        'FileModified
+        '
+        FileModified.Text = ""
+        FileModified.Width = 20
+        '
+        'MainMenuFile
+        '
+        MainMenuFile.DropDownItems.AddRange(New System.Windows.Forms.ToolStripItem() {Me.BtnOpen, Me.toolStripSeparator, Me.BtnSave, Me.BtnSaveAs, Me.BtnSaveAll, Me.ToolStripSeparator3, Me.BtnClose, Me.BtnCloseAll, Me.toolStripSeparator1, Me.BtnExit})
+        MainMenuFile.Name = "MainMenuFile"
+        MainMenuFile.Size = New System.Drawing.Size(37, 20)
+        MainMenuFile.Text = "&File"
+        '
+        'BtnOpen
+        '
+        Me.BtnOpen.Image = CType(resources.GetObject("BtnOpen.Image"), System.Drawing.Image)
+        Me.BtnOpen.ImageTransparentColor = System.Drawing.Color.Magenta
+        Me.BtnOpen.Name = "BtnOpen"
+        Me.BtnOpen.ShortcutKeys = CType((System.Windows.Forms.Keys.Control Or System.Windows.Forms.Keys.O), System.Windows.Forms.Keys)
+        Me.BtnOpen.Size = New System.Drawing.Size(146, 22)
+        Me.BtnOpen.Text = "&Open"
+        '
+        'toolStripSeparator
+        '
+        Me.toolStripSeparator.Name = "toolStripSeparator"
+        Me.toolStripSeparator.Size = New System.Drawing.Size(143, 6)
+        '
+        'BtnSave
+        '
+        Me.BtnSave.Image = CType(resources.GetObject("BtnSave.Image"), System.Drawing.Image)
+        Me.BtnSave.ImageTransparentColor = System.Drawing.Color.Magenta
+        Me.BtnSave.Name = "BtnSave"
+        Me.BtnSave.ShortcutKeys = CType((System.Windows.Forms.Keys.Control Or System.Windows.Forms.Keys.S), System.Windows.Forms.Keys)
+        Me.BtnSave.Size = New System.Drawing.Size(146, 22)
+        Me.BtnSave.Text = "&Save"
+        '
+        'BtnSaveAs
+        '
+        Me.BtnSaveAs.Name = "BtnSaveAs"
+        Me.BtnSaveAs.Size = New System.Drawing.Size(146, 22)
+        Me.BtnSaveAs.Text = "Save &As"
+        '
+        'BtnSaveAll
+        '
+        Me.BtnSaveAll.Name = "BtnSaveAll"
+        Me.BtnSaveAll.Size = New System.Drawing.Size(146, 22)
+        Me.BtnSaveAll.Text = "Save All"
+        '
+        'ToolStripSeparator3
+        '
+        Me.ToolStripSeparator3.Name = "ToolStripSeparator3"
+        Me.ToolStripSeparator3.Size = New System.Drawing.Size(143, 6)
+        '
+        'BtnClose
+        '
+        Me.BtnClose.Name = "BtnClose"
+        Me.BtnClose.Size = New System.Drawing.Size(146, 22)
+        Me.BtnClose.Text = "&Close"
+        '
+        'BtnCloseAll
+        '
+        Me.BtnCloseAll.Name = "BtnCloseAll"
+        Me.BtnCloseAll.Size = New System.Drawing.Size(146, 22)
+        Me.BtnCloseAll.Text = "Close All"
+        '
+        'toolStripSeparator1
+        '
+        Me.toolStripSeparator1.Name = "toolStripSeparator1"
+        Me.toolStripSeparator1.Size = New System.Drawing.Size(143, 6)
+        '
+        'BtnExit
+        '
+        Me.BtnExit.Name = "BtnExit"
+        Me.BtnExit.Size = New System.Drawing.Size(146, 22)
+        Me.BtnExit.Text = "E&xit"
+        '
+        'MainMenuEdit
+        '
+        MainMenuEdit.DropDownItems.AddRange(New System.Windows.Forms.ToolStripItem() {Me.BtnOEMID, Me.ToolStripSeparator4, Me.BtnFileProperties, Me.ToolStripSeparator2, Me.BtnRevert})
+        MainMenuEdit.Name = "MainMenuEdit"
+        MainMenuEdit.Size = New System.Drawing.Size(39, 20)
+        MainMenuEdit.Text = "&Edit"
+        '
+        'BtnOEMID
+        '
+        Me.BtnOEMID.Name = "BtnOEMID"
+        Me.BtnOEMID.Size = New System.Drawing.Size(158, 22)
+        Me.BtnOEMID.Text = "Change &OEM ID"
+        '
+        'ToolStripSeparator4
+        '
+        Me.ToolStripSeparator4.Name = "ToolStripSeparator4"
+        Me.ToolStripSeparator4.Size = New System.Drawing.Size(155, 6)
+        '
+        'BtnFileProperties
+        '
+        Me.BtnFileProperties.Name = "BtnFileProperties"
+        Me.BtnFileProperties.Size = New System.Drawing.Size(158, 22)
+        Me.BtnFileProperties.Text = "File &Properties"
+        '
+        'ToolStripSeparator2
+        '
+        Me.ToolStripSeparator2.Name = "ToolStripSeparator2"
+        Me.ToolStripSeparator2.Size = New System.Drawing.Size(155, 6)
+        '
+        'BtnRevert
+        '
+        Me.BtnRevert.Name = "BtnRevert"
+        Me.BtnRevert.Size = New System.Drawing.Size(158, 22)
+        Me.BtnRevert.Text = "&Revert Changes"
+        Me.BtnRevert.TextAlign = System.Drawing.ContentAlignment.MiddleLeft
+        '
+        'MainMenuView
+        '
+        MainMenuView.DropDownItems.AddRange(New System.Windows.Forms.ToolStripItem() {Me.BtnDisplayBootSector, Me.BtnDisplayDirectory, Me.BtnDisplayClusters, Me.BtnDisplayFile})
+        MainMenuView.Name = "MainMenuView"
+        MainMenuView.Size = New System.Drawing.Size(44, 20)
+        MainMenuView.Text = "&View"
+        '
+        'BtnDisplayBootSector
+        '
+        Me.BtnDisplayBootSector.Name = "BtnDisplayBootSector"
+        Me.BtnDisplayBootSector.Size = New System.Drawing.Size(159, 22)
+        Me.BtnDisplayBootSector.Text = "&Boot Sector"
+        '
+        'BtnDisplayDirectory
+        '
+        Me.BtnDisplayDirectory.Name = "BtnDisplayDirectory"
+        Me.BtnDisplayDirectory.Size = New System.Drawing.Size(159, 22)
+        Me.BtnDisplayDirectory.Text = "&Root Directory"
+        '
+        'BtnDisplayClusters
+        '
+        Me.BtnDisplayClusters.Name = "BtnDisplayClusters"
+        Me.BtnDisplayClusters.Size = New System.Drawing.Size(159, 22)
+        Me.BtnDisplayClusters.Text = "&Unused Clusters"
+        '
+        'BtnDisplayFile
+        '
+        Me.BtnDisplayFile.Name = "BtnDisplayFile"
+        Me.BtnDisplayFile.Size = New System.Drawing.Size(159, 22)
+        Me.BtnDisplayFile.Text = "&File"
+        '
+        'MainMenuExperimental
+        '
+        MainMenuExperimental.DropDownItems.AddRange(New System.Windows.Forms.ToolStripItem() {Me.BtnExportDebug})
+        MainMenuExperimental.Name = "MainMenuExperimental"
+        MainMenuExperimental.Size = New System.Drawing.Size(88, 20)
+        MainMenuExperimental.Text = "Experimental"
+        '
+        'BtnExportDebug
+        '
+        Me.BtnExportDebug.Name = "BtnExportDebug"
+        Me.BtnExportDebug.Size = New System.Drawing.Size(225, 22)
+        Me.BtnExportDebug.Text = "Generate Physical Disk Patch"
         '
         'ListViewSummary
         '
@@ -216,7 +380,7 @@ Partial Class MainForm
         '
         'StatusStrip1
         '
-        Me.StatusStrip1.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.ToolStripFileName, Me.ToolStripFileCount, Me.ToolStripModified})
+        Me.StatusStrip1.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.ToolStripFileName, Me.ToolStripFileCount, Me.ToolStripImageCount, Me.ToolStripModified})
         Me.StatusStrip1.Location = New System.Drawing.Point(0, 552)
         Me.StatusStrip1.Name = "StatusStrip1"
         Me.StatusStrip1.Size = New System.Drawing.Size(974, 24)
@@ -228,7 +392,7 @@ Partial Class MainForm
         Me.ToolStripFileName.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text
         Me.ToolStripFileName.Margin = New System.Windows.Forms.Padding(2, 3, 2, 2)
         Me.ToolStripFileName.Name = "ToolStripFileName"
-        Me.ToolStripFileName.Size = New System.Drawing.Size(810, 19)
+        Me.ToolStripFileName.Size = New System.Drawing.Size(733, 19)
         Me.ToolStripFileName.Spring = True
         Me.ToolStripFileName.Text = "File Name"
         Me.ToolStripFileName.TextAlign = System.Drawing.ContentAlignment.MiddleLeft
@@ -236,12 +400,20 @@ Partial Class MainForm
         'ToolStripFileCount
         '
         Me.ToolStripFileCount.BorderSides = System.Windows.Forms.ToolStripStatusLabelBorderSides.Left
-        Me.ToolStripFileCount.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text
         Me.ToolStripFileCount.Margin = New System.Windows.Forms.Padding(2, 3, 2, 2)
         Me.ToolStripFileCount.Name = "ToolStripFileCount"
         Me.ToolStripFileCount.Size = New System.Drawing.Size(43, 19)
         Me.ToolStripFileCount.Text = "0 Files"
-        Me.ToolStripFileCount.TextAlign = System.Drawing.ContentAlignment.MiddleRight
+        '
+        'ToolStripImageCount
+        '
+        Me.ToolStripImageCount.BorderSides = System.Windows.Forms.ToolStripStatusLabelBorderSides.Left
+        Me.ToolStripImageCount.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text
+        Me.ToolStripImageCount.Margin = New System.Windows.Forms.Padding(2, 3, 2, 2)
+        Me.ToolStripImageCount.Name = "ToolStripImageCount"
+        Me.ToolStripImageCount.Size = New System.Drawing.Size(58, 19)
+        Me.ToolStripImageCount.Text = "0 Images"
+        Me.ToolStripImageCount.TextAlign = System.Drawing.ContentAlignment.MiddleRight
         '
         'ToolStripModified
         '
@@ -249,8 +421,8 @@ Partial Class MainForm
         Me.ToolStripModified.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text
         Me.ToolStripModified.Margin = New System.Windows.Forms.Padding(2, 3, 2, 2)
         Me.ToolStripModified.Name = "ToolStripModified"
-        Me.ToolStripModified.Size = New System.Drawing.Size(94, 19)
-        Me.ToolStripModified.Text = "0 Files Modified"
+        Me.ToolStripModified.Size = New System.Drawing.Size(109, 19)
+        Me.ToolStripModified.Text = "0 Images Modified"
         '
         'ListViewFiles
         '
@@ -258,8 +430,8 @@ Partial Class MainForm
         Me.ListViewFiles.Anchor = CType((((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Bottom) _
             Or System.Windows.Forms.AnchorStyles.Left) _
             Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
-        Me.ListViewFiles.CheckBoxes = True
-        Me.ListViewFiles.Columns.AddRange(New System.Windows.Forms.ColumnHeader() {ColumnHeader1, FileName, FileExt, FileSize, FileLastWriteDate, FileStartingCluster, FileAttrib, FileCRC32})
+        Me.ListViewFiles.Columns.AddRange(New System.Windows.Forms.ColumnHeader() {FileModified, FileName, FileExt, FileSize, FileLastWriteDate, FileStartingCluster, FileAttrib, FileCRC32})
+        Me.ListViewFiles.ContextMenuStrip = Me.ContextMenuFiles
         Me.ListViewFiles.FullRowSelect = True
         Me.ListViewFiles.HideSelection = False
         Me.ListViewFiles.Location = New System.Drawing.Point(320, 56)
@@ -270,135 +442,52 @@ Partial Class MainForm
         Me.ListViewFiles.UseCompatibleStateImageBehavior = False
         Me.ListViewFiles.View = System.Windows.Forms.View.Details
         '
+        'ContextMenuFiles
+        '
+        Me.ContextMenuFiles.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.BtnFileMenuFileProperties, ToolStripSeparator5, Me.BtnFileMenuViewFile, Me.BtnFileMenuViewFileText, Me.FileMenuSeparator, Me.BtnFileMenuUndo})
+        Me.ContextMenuFiles.Name = "ContextMenuFiles"
+        Me.ContextMenuFiles.Size = New System.Drawing.Size(181, 126)
+        '
+        'BtnFileMenuFileProperties
+        '
+        Me.BtnFileMenuFileProperties.Name = "BtnFileMenuFileProperties"
+        Me.BtnFileMenuFileProperties.Size = New System.Drawing.Size(180, 22)
+        Me.BtnFileMenuFileProperties.Text = "Edit File &Properties"
+        '
+        'BtnFileMenuViewFile
+        '
+        Me.BtnFileMenuViewFile.Name = "BtnFileMenuViewFile"
+        Me.BtnFileMenuViewFile.Size = New System.Drawing.Size(180, 22)
+        Me.BtnFileMenuViewFile.Text = "&View File"
+        '
+        'BtnFileMenuViewFileText
+        '
+        Me.BtnFileMenuViewFileText.Name = "BtnFileMenuViewFileText"
+        Me.BtnFileMenuViewFileText.Size = New System.Drawing.Size(180, 22)
+        Me.BtnFileMenuViewFileText.Text = "View File as &Text"
+        '
         'MenuStripMain
         '
-        Me.MenuStripMain.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.FileToolStripMenuItem, Me.EditToolStripMenuItem, Me.FilterToolStripMenuItem, Me.HexViewerToolStripMenuItem, Me.ToolsToolStripMenuItem})
+        Me.MenuStripMain.Items.AddRange(New System.Windows.Forms.ToolStripItem() {MainMenuFile, MainMenuEdit, Me.MainMenuFilters, MainMenuView, MainMenuExperimental})
         Me.MenuStripMain.Location = New System.Drawing.Point(0, 0)
         Me.MenuStripMain.Name = "MenuStripMain"
         Me.MenuStripMain.Size = New System.Drawing.Size(974, 24)
         Me.MenuStripMain.TabIndex = 14
         Me.MenuStripMain.Text = "MenuStrip1"
         '
-        'FileToolStripMenuItem
+        'MainMenuFilters
         '
-        Me.FileToolStripMenuItem.DropDownItems.AddRange(New System.Windows.Forms.ToolStripItem() {Me.BtnOpen, Me.toolStripSeparator, Me.BtnSave, Me.BtnSaveAs, Me.BtnSaveAll, Me.ToolStripSeparator3, Me.BtnClose, Me.BtnCloseAll, Me.toolStripSeparator1, Me.BtnExit})
-        Me.FileToolStripMenuItem.Name = "FileToolStripMenuItem"
-        Me.FileToolStripMenuItem.Size = New System.Drawing.Size(37, 20)
-        Me.FileToolStripMenuItem.Text = "&File"
-        '
-        'BtnOpen
-        '
-        Me.BtnOpen.Image = CType(resources.GetObject("BtnOpen.Image"), System.Drawing.Image)
-        Me.BtnOpen.ImageTransparentColor = System.Drawing.Color.Magenta
-        Me.BtnOpen.Name = "BtnOpen"
-        Me.BtnOpen.ShortcutKeys = CType((System.Windows.Forms.Keys.Control Or System.Windows.Forms.Keys.O), System.Windows.Forms.Keys)
-        Me.BtnOpen.Size = New System.Drawing.Size(146, 22)
-        Me.BtnOpen.Text = "&Open"
-        '
-        'toolStripSeparator
-        '
-        Me.toolStripSeparator.Name = "toolStripSeparator"
-        Me.toolStripSeparator.Size = New System.Drawing.Size(143, 6)
-        '
-        'BtnSave
-        '
-        Me.BtnSave.Image = CType(resources.GetObject("BtnSave.Image"), System.Drawing.Image)
-        Me.BtnSave.ImageTransparentColor = System.Drawing.Color.Magenta
-        Me.BtnSave.Name = "BtnSave"
-        Me.BtnSave.ShortcutKeys = CType((System.Windows.Forms.Keys.Control Or System.Windows.Forms.Keys.S), System.Windows.Forms.Keys)
-        Me.BtnSave.Size = New System.Drawing.Size(146, 22)
-        Me.BtnSave.Text = "&Save"
-        '
-        'BtnSaveAs
-        '
-        Me.BtnSaveAs.Name = "BtnSaveAs"
-        Me.BtnSaveAs.Size = New System.Drawing.Size(146, 22)
-        Me.BtnSaveAs.Text = "Save &As"
-        '
-        'BtnSaveAll
-        '
-        Me.BtnSaveAll.Name = "BtnSaveAll"
-        Me.BtnSaveAll.Size = New System.Drawing.Size(146, 22)
-        Me.BtnSaveAll.Text = "Save All"
-        '
-        'ToolStripSeparator3
-        '
-        Me.ToolStripSeparator3.Name = "ToolStripSeparator3"
-        Me.ToolStripSeparator3.Size = New System.Drawing.Size(143, 6)
-        '
-        'BtnClose
-        '
-        Me.BtnClose.Name = "BtnClose"
-        Me.BtnClose.Size = New System.Drawing.Size(146, 22)
-        Me.BtnClose.Text = "&Close"
-        '
-        'BtnCloseAll
-        '
-        Me.BtnCloseAll.Name = "BtnCloseAll"
-        Me.BtnCloseAll.Size = New System.Drawing.Size(146, 22)
-        Me.BtnCloseAll.Text = "Close All"
-        '
-        'toolStripSeparator1
-        '
-        Me.toolStripSeparator1.Name = "toolStripSeparator1"
-        Me.toolStripSeparator1.Size = New System.Drawing.Size(143, 6)
-        '
-        'BtnExit
-        '
-        Me.BtnExit.Name = "BtnExit"
-        Me.BtnExit.Size = New System.Drawing.Size(146, 22)
-        Me.BtnExit.Text = "E&xit"
-        '
-        'EditToolStripMenuItem
-        '
-        Me.EditToolStripMenuItem.DropDownItems.AddRange(New System.Windows.Forms.ToolStripItem() {Me.BtnOEMID, Me.BtnClearCreated, Me.BtnClearLastAccessed, Me.ToolStripSeparator2, Me.BtnRevert})
-        Me.EditToolStripMenuItem.Name = "EditToolStripMenuItem"
-        Me.EditToolStripMenuItem.Size = New System.Drawing.Size(39, 20)
-        Me.EditToolStripMenuItem.Text = "&Edit"
-        '
-        'BtnOEMID
-        '
-        Me.BtnOEMID.Name = "BtnOEMID"
-        Me.BtnOEMID.Size = New System.Drawing.Size(196, 22)
-        Me.BtnOEMID.Text = "Change &OEM ID"
-        '
-        'BtnClearCreated
-        '
-        Me.BtnClearCreated.Name = "BtnClearCreated"
-        Me.BtnClearCreated.Size = New System.Drawing.Size(196, 22)
-        Me.BtnClearCreated.Text = "Clear &Creation Dates"
-        '
-        'BtnClearLastAccessed
-        '
-        Me.BtnClearLastAccessed.Name = "BtnClearLastAccessed"
-        Me.BtnClearLastAccessed.Size = New System.Drawing.Size(196, 22)
-        Me.BtnClearLastAccessed.Text = "Clear &Last Access Dates"
-        '
-        'ToolStripSeparator2
-        '
-        Me.ToolStripSeparator2.Name = "ToolStripSeparator2"
-        Me.ToolStripSeparator2.Size = New System.Drawing.Size(193, 6)
-        '
-        'BtnRevert
-        '
-        Me.BtnRevert.Name = "BtnRevert"
-        Me.BtnRevert.Size = New System.Drawing.Size(196, 22)
-        Me.BtnRevert.Text = "&Revert Changes"
-        Me.BtnRevert.TextAlign = System.Drawing.ContentAlignment.MiddleLeft
-        '
-        'FilterToolStripMenuItem
-        '
-        Me.FilterToolStripMenuItem.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text
-        Me.FilterToolStripMenuItem.DropDown = Me.ContextMenuFilters
-        Me.FilterToolStripMenuItem.Name = "FilterToolStripMenuItem"
-        Me.FilterToolStripMenuItem.Size = New System.Drawing.Size(50, 20)
-        Me.FilterToolStripMenuItem.Text = "F&ilters"
+        Me.MainMenuFilters.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text
+        Me.MainMenuFilters.DropDown = Me.ContextMenuFilters
+        Me.MainMenuFilters.Name = "MainMenuFilters"
+        Me.MainMenuFilters.Size = New System.Drawing.Size(50, 20)
+        Me.MainMenuFilters.Text = "F&ilters"
         '
         'ContextMenuFilters
         '
         Me.ContextMenuFilters.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.BtnScanNew, Me.BtnScan, Me.FilterSeparator})
         Me.ContextMenuFilters.Name = "ContextMenuStrip1"
-        Me.ContextMenuFilters.OwnerItem = Me.FilterToolStripMenuItem
+        Me.ContextMenuFilters.OwnerItem = Me.MainMenuFilters
         Me.ContextMenuFilters.Size = New System.Drawing.Size(168, 54)
         '
         'BtnScanNew
@@ -419,49 +508,21 @@ Partial Class MainForm
         Me.FilterSeparator.Size = New System.Drawing.Size(164, 6)
         Me.FilterSeparator.Visible = False
         '
-        'HexViewerToolStripMenuItem
+        'ToolStripSeparator5
         '
-        Me.HexViewerToolStripMenuItem.DropDownItems.AddRange(New System.Windows.Forms.ToolStripItem() {Me.BtnDisplayBootSector, Me.BtnDisplayDirectory, Me.BtnDisplayClusters, Me.BtnDisplayFile})
-        Me.HexViewerToolStripMenuItem.Name = "HexViewerToolStripMenuItem"
-        Me.HexViewerToolStripMenuItem.Size = New System.Drawing.Size(78, 20)
-        Me.HexViewerToolStripMenuItem.Text = "&Hex Viewer"
+        ToolStripSeparator5.Name = "ToolStripSeparator5"
+        ToolStripSeparator5.Size = New System.Drawing.Size(177, 6)
         '
-        'BtnDisplayBootSector
+        'FileMenuSeparator
         '
-        Me.BtnDisplayBootSector.Name = "BtnDisplayBootSector"
-        Me.BtnDisplayBootSector.Size = New System.Drawing.Size(159, 22)
-        Me.BtnDisplayBootSector.Text = "&Boot Sector"
+        Me.FileMenuSeparator.Name = "FileMenuSeparator"
+        Me.FileMenuSeparator.Size = New System.Drawing.Size(177, 6)
         '
-        'BtnDisplayDirectory
+        'BtnFileMenuUndo
         '
-        Me.BtnDisplayDirectory.Name = "BtnDisplayDirectory"
-        Me.BtnDisplayDirectory.Size = New System.Drawing.Size(159, 22)
-        Me.BtnDisplayDirectory.Text = "&Root Directory"
-        '
-        'BtnDisplayClusters
-        '
-        Me.BtnDisplayClusters.Name = "BtnDisplayClusters"
-        Me.BtnDisplayClusters.Size = New System.Drawing.Size(159, 22)
-        Me.BtnDisplayClusters.Text = "&Unused Clusters"
-        '
-        'BtnDisplayFile
-        '
-        Me.BtnDisplayFile.Name = "BtnDisplayFile"
-        Me.BtnDisplayFile.Size = New System.Drawing.Size(159, 22)
-        Me.BtnDisplayFile.Text = "&File"
-        '
-        'ToolsToolStripMenuItem
-        '
-        Me.ToolsToolStripMenuItem.DropDownItems.AddRange(New System.Windows.Forms.ToolStripItem() {Me.BtnExportDebug})
-        Me.ToolsToolStripMenuItem.Name = "ToolsToolStripMenuItem"
-        Me.ToolsToolStripMenuItem.Size = New System.Drawing.Size(88, 20)
-        Me.ToolsToolStripMenuItem.Text = "Experimental"
-        '
-        'BtnExportDebug
-        '
-        Me.BtnExportDebug.Name = "BtnExportDebug"
-        Me.BtnExportDebug.Size = New System.Drawing.Size(225, 22)
-        Me.BtnExportDebug.Text = "Generate Physical Disk Patch"
+        Me.BtnFileMenuUndo.Name = "BtnFileMenuUndo"
+        Me.BtnFileMenuUndo.Size = New System.Drawing.Size(180, 22)
+        Me.BtnFileMenuUndo.Text = "&Undo Changes"
         '
         'MainForm
         '
@@ -483,6 +544,7 @@ Partial Class MainForm
         Me.Text = "Disk Image Tool"
         Me.StatusStrip1.ResumeLayout(False)
         Me.StatusStrip1.PerformLayout()
+        Me.ContextMenuFiles.ResumeLayout(False)
         Me.MenuStripMain.ResumeLayout(False)
         Me.MenuStripMain.PerformLayout()
         Me.ContextMenuFilters.ResumeLayout(False)
@@ -495,38 +557,41 @@ Partial Class MainForm
     Friend WithEvents ListViewHashes As ListView
     Friend WithEvents LabelDropMessage As Label
     Friend WithEvents StatusStrip1 As StatusStrip
-    Friend WithEvents ToolStripFileCount As ToolStripStatusLabel
+    Friend WithEvents ToolStripImageCount As ToolStripStatusLabel
     Friend WithEvents ToolStripFileName As ToolStripStatusLabel
     Friend WithEvents ToolStripModified As ToolStripStatusLabel
     Friend WithEvents ListViewFiles As ListView
     Friend WithEvents MenuStripMain As MenuStrip
-    Friend WithEvents FileToolStripMenuItem As ToolStripMenuItem
     Friend WithEvents BtnOpen As ToolStripMenuItem
     Friend WithEvents toolStripSeparator As ToolStripSeparator
     Friend WithEvents BtnSave As ToolStripMenuItem
     Friend WithEvents BtnSaveAs As ToolStripMenuItem
     Friend WithEvents toolStripSeparator1 As ToolStripSeparator
     Friend WithEvents BtnExit As ToolStripMenuItem
-    Friend WithEvents FilterToolStripMenuItem As ToolStripMenuItem
     Friend WithEvents ContextMenuFilters As ContextMenuStrip
     Friend WithEvents BtnSaveAll As ToolStripMenuItem
     Friend WithEvents BtnScan As ToolStripMenuItem
     Friend WithEvents FilterSeparator As ToolStripSeparator
-    Friend WithEvents HexViewerToolStripMenuItem As ToolStripMenuItem
     Friend WithEvents BtnDisplayBootSector As ToolStripMenuItem
     Friend WithEvents BtnDisplayDirectory As ToolStripMenuItem
     Friend WithEvents BtnDisplayClusters As ToolStripMenuItem
-    Friend WithEvents EditToolStripMenuItem As ToolStripMenuItem
     Friend WithEvents BtnOEMID As ToolStripMenuItem
     Friend WithEvents ToolStripSeparator2 As ToolStripSeparator
     Friend WithEvents BtnRevert As ToolStripMenuItem
-    Friend WithEvents BtnClearCreated As ToolStripMenuItem
-    Friend WithEvents BtnClearLastAccessed As ToolStripMenuItem
     Friend WithEvents BtnDisplayFile As ToolStripMenuItem
     Friend WithEvents ToolStripSeparator3 As ToolStripSeparator
     Friend WithEvents BtnClose As ToolStripMenuItem
     Friend WithEvents BtnCloseAll As ToolStripMenuItem
     Friend WithEvents BtnScanNew As ToolStripMenuItem
-    Friend WithEvents ToolsToolStripMenuItem As ToolStripMenuItem
     Friend WithEvents BtnExportDebug As ToolStripMenuItem
+    Friend WithEvents ToolStripSeparator4 As ToolStripSeparator
+    Friend WithEvents ToolStripFileCount As ToolStripStatusLabel
+    Friend WithEvents BtnFileProperties As ToolStripMenuItem
+    Friend WithEvents ContextMenuFiles As ContextMenuStrip
+    Friend WithEvents BtnFileMenuFileProperties As ToolStripMenuItem
+    Friend WithEvents BtnFileMenuViewFile As ToolStripMenuItem
+    Friend WithEvents BtnFileMenuViewFileText As ToolStripMenuItem
+    Friend WithEvents MainMenuFilters As ToolStripMenuItem
+    Friend WithEvents FileMenuSeparator As ToolStripSeparator
+    Friend WithEvents BtnFileMenuUndo As ToolStripMenuItem
 End Class

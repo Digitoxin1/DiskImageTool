@@ -102,7 +102,7 @@ Public Class HexViewForm
                 Dim Sector = _Disk.OffsetToSector(Offset)
                 If Sector <> PrevSector Or Index = HexOffsetStart Then
                     If Index > HexOffsetStart Then
-                        _Disk.SetBytes(Data, SectorOffset)
+                        _Disk.SetBytes(Data, SectorOffset, True)
                     End If
                     SectorOffset = _Disk.SectorToOffset(Sector)
                     Data = _Disk.GetBytes(SectorOffset, SectorSize)
@@ -110,7 +110,7 @@ Public Class HexViewForm
                 HexBox1.ByteProvider.WriteByte(Index, Value)
                 Data(Offset - SectorOffset) = Value
             Next
-            _Disk.SetBytes(Data, SectorOffset)
+            _Disk.SetBytes(Data, SectorOffset, True)
         Else
             Dim Sector = _Disk.OffsetToSector(HexBox1.LineInfoOffset + HexBox1.startByte)
             SectorOffset = _Disk.SectorToOffset(Sector)
@@ -122,7 +122,7 @@ Public Class HexViewForm
             For Index = 0 To Data.Length - 1
                 Data(Index) = Value
             Next
-            _Disk.SetBytes(Data, SectorOffset)
+            _Disk.SetBytes(Data, SectorOffset, True)
         End If
         HexBox1.Refresh()
         _Modified = True
@@ -356,4 +356,37 @@ Public Class HexViewForm
             Return Header
         End Function
     End Class
+
+    Private Sub ContextMenuStrip1_Opening(sender As Object, e As System.ComponentModel.CancelEventArgs) Handles ContextMenuStrip1.Opening
+        BtnCopyText.Enabled = HexBox1.SelectionLength > 0
+        BtnCopyHex.Enabled = HexBox1.SelectionLength > 0
+        BtnCopyHexFormatted.Enabled = HexBox1.SelectionLength > 0
+    End Sub
+
+    Private Sub BtnSelectAll_Click(sender As Object, e As EventArgs) Handles BtnSelectAll.Click
+        HexBox1.SelectAll()
+    End Sub
+
+    Private Sub BtnCopyText_Click(sender As Object, e As EventArgs) Handles BtnCopyText.Click
+        HexBox1.Copy()
+    End Sub
+
+    Private Sub BtnCopyHex_Click(sender As Object, e As EventArgs) Handles BtnCopyHex.Click
+        HexBox1.CopyHex()
+    End Sub
+
+    Private Sub BtnCopyHexFormatted_Click(sender As Object, e As EventArgs) Handles BtnCopyHexFormatted.Click
+        Dim Capacity As Integer = HexBox1.SelectionLength * 2 + HexBox1.SelectionLength + HexBox1.SelectionLength \ 16
+        Dim SB = New System.Text.StringBuilder(Capacity)
+        For Counter = 0 To HexBox1.SelectionLength - 1
+            Dim B = HexBox1.ByteProvider.ReadByte(HexBox1.SelectionStart + Counter)
+            SB.Append(B.ToString("X2"))
+            If (Counter + 1) Mod 16 = 0 Then
+                SB.Append(vbNewLine)
+            Else
+                SB.Append(" ")
+            End If
+        Next
+        Clipboard.SetText(SB.ToString)
+    End Sub
 End Class

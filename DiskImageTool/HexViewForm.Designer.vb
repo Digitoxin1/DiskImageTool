@@ -22,12 +22,17 @@ Partial Class HexViewForm
     'Do not modify it using the code editor.
     <System.Diagnostics.DebuggerStepThrough()>
     Private Sub InitializeComponent()
+        Me.components = New System.ComponentModel.Container()
         Me.FlowLayoutHeader = New System.Windows.Forms.FlowLayoutPanel()
         Me.LblHeaderCaption = New System.Windows.Forms.Label()
         Me.CmbGroups = New System.Windows.Forms.ComboBox()
         Me.BtnClear = New System.Windows.Forms.Button()
         Me.ComboBytes = New System.Windows.Forms.ComboBox()
         Me.HexBox1 = New Hb.Windows.Forms.HexBox()
+        Me.ContextMenuStrip1 = New System.Windows.Forms.ContextMenuStrip(Me.components)
+        Me.BtnCopyText = New System.Windows.Forms.ToolStripMenuItem()
+        Me.BtnCopyHex = New System.Windows.Forms.ToolStripMenuItem()
+        Me.BtnSelectAll = New System.Windows.Forms.ToolStripMenuItem()
         Me.StatusStrip1 = New System.Windows.Forms.StatusStrip()
         Me.ToolStripStatusFile = New System.Windows.Forms.ToolStripStatusLabel()
         Me.ToolStripStatusRange = New System.Windows.Forms.ToolStripStatusLabel()
@@ -35,7 +40,9 @@ Partial Class HexViewForm
         Me.ToolStripStatusSector = New System.Windows.Forms.ToolStripStatusLabel()
         Me.ToolStripStatusGap = New System.Windows.Forms.ToolStripStatusLabel()
         Me.ToolStripStatusBytes = New System.Windows.Forms.ToolStripStatusLabel()
+        Me.BtnCopyHexFormatted = New System.Windows.Forms.ToolStripMenuItem()
         Me.FlowLayoutHeader.SuspendLayout()
+        Me.ContextMenuStrip1.SuspendLayout()
         Me.StatusStrip1.SuspendLayout()
         Me.SuspendLayout()
         '
@@ -109,7 +116,13 @@ Partial Class HexViewForm
         Me.HexBox1.Anchor = CType((((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Bottom) _
             Or System.Windows.Forms.AnchorStyles.Left) _
             Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
+        '
+        '
+        '
+        Me.HexBox1.BuiltInContextMenu.CopyMenuItemText = "Copy Text"
+        Me.HexBox1.BuiltInContextMenu.SelectAllMenuItemText = "Select All"
         Me.HexBox1.ColumnInfoVisible = True
+        Me.HexBox1.ContextMenuStrip = Me.ContextMenuStrip1
         Me.HexBox1.Font = New System.Drawing.Font("Courier New", 9.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.HexBox1.ForeColor = System.Drawing.SystemColors.ControlText
         Me.HexBox1.HexViewTextColor = System.Drawing.SystemColors.ControlText
@@ -123,6 +136,30 @@ Partial Class HexViewForm
         Me.HexBox1.TabIndex = 1
         Me.HexBox1.UseFixedBytesPerLine = True
         Me.HexBox1.VScrollBarVisible = False
+        '
+        'ContextMenuStrip1
+        '
+        Me.ContextMenuStrip1.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.BtnCopyText, Me.BtnCopyHex, Me.BtnCopyHexFormatted, Me.BtnSelectAll})
+        Me.ContextMenuStrip1.Name = "ContextMenuStrip1"
+        Me.ContextMenuStrip1.Size = New System.Drawing.Size(185, 114)
+        '
+        'BtnCopyText
+        '
+        Me.BtnCopyText.Name = "BtnCopyText"
+        Me.BtnCopyText.Size = New System.Drawing.Size(184, 22)
+        Me.BtnCopyText.Text = "Copy &Text"
+        '
+        'BtnCopyHex
+        '
+        Me.BtnCopyHex.Name = "BtnCopyHex"
+        Me.BtnCopyHex.Size = New System.Drawing.Size(184, 22)
+        Me.BtnCopyHex.Text = "Copy &Hex"
+        '
+        'BtnSelectAll
+        '
+        Me.BtnSelectAll.Name = "BtnSelectAll"
+        Me.BtnSelectAll.Size = New System.Drawing.Size(184, 22)
+        Me.BtnSelectAll.Text = "Select &All"
         '
         'StatusStrip1
         '
@@ -189,6 +226,12 @@ Partial Class HexViewForm
         Me.ToolStripStatusBytes.Text = "0 Bytes"
         Me.ToolStripStatusBytes.TextAlign = System.Drawing.ContentAlignment.MiddleRight
         '
+        'BtnCopyHexFormatted
+        '
+        Me.BtnCopyHexFormatted.Name = "BtnCopyHexFormatted"
+        Me.BtnCopyHexFormatted.Size = New System.Drawing.Size(184, 22)
+        Me.BtnCopyHexFormatted.Text = "Copy Hex &Formatted"
+        '
         'HexViewForm
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
@@ -208,6 +251,7 @@ Partial Class HexViewForm
         Me.Text = "Hex Viewer"
         Me.FlowLayoutHeader.ResumeLayout(False)
         Me.FlowLayoutHeader.PerformLayout()
+        Me.ContextMenuStrip1.ResumeLayout(False)
         Me.StatusStrip1.ResumeLayout(False)
         Me.StatusStrip1.PerformLayout()
         Me.ResumeLayout(False)
@@ -227,4 +271,9 @@ Partial Class HexViewForm
     Friend WithEvents ToolStripStatusBytes As ToolStripStatusLabel
     Friend WithEvents ToolStripStatusFile As ToolStripStatusLabel
     Friend WithEvents ToolStripStatusGap As ToolStripStatusLabel
+    Friend WithEvents ContextMenuStrip1 As ContextMenuStrip
+    Friend WithEvents BtnCopyText As ToolStripMenuItem
+    Friend WithEvents BtnCopyHex As ToolStripMenuItem
+    Friend WithEvents BtnSelectAll As ToolStripMenuItem
+    Friend WithEvents BtnCopyHexFormatted As ToolStripMenuItem
 End Class

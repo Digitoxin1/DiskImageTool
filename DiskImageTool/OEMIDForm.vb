@@ -2,7 +2,6 @@
 
 Public Class OEMIDForm
     Private ReadOnly _DiskImage As DiskImage.Disk
-    Private _Result As Boolean = False
 
     Public Sub New(DiskImage As DiskImage.Disk, OEMIDDictionary As Dictionary(Of UInteger, OEMIDList))
 
@@ -35,21 +34,16 @@ Public Class OEMIDForm
         End If
     End Sub
 
-    Public ReadOnly Property Result As Boolean
-        Get
-            Return _Result
-        End Get
-    End Property
-
     Private Sub BtnUpdate_Click(sender As Object, e As EventArgs) Handles BtnUpdate.Click
         Dim OEMIDString As String = Encoding.UTF8.GetString(_DiskImage.BootSector.OEMID)
         Dim NewOEMID As String = Strings.Left(CboOEMID.Text, 8).PadRight(8)
 
         If OEMIDString <> NewOEMID Then
             _DiskImage.BootSector.OEMID = Encoding.UTF8.GetBytes(NewOEMID)
-            _Result = True
         End If
+    End Sub
 
-        Me.Close()
+    Private Sub OEMIDForm_Load(sender As Object, e As EventArgs) Handles Me.Load
+        ActiveControl = CboOEMID
     End Sub
 End Class

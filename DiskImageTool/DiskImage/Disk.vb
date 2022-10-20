@@ -5,6 +5,7 @@
     End Structure
 
     Public Class Disk
+        Public Shared ReadOnly InvalidFileChars() As Byte = {&H22, &H2A, &H2B, &H2C, &H2E, &H2F, &H3A, &H3B, &H3C, &H3D, &H3E, &H3F, &H5B, &H5C, &H5D, &H7C, &H7F}
         Private ReadOnly _ValidBytesPerSector() As UShort = {512, 1024, 2048, 4096}
         Private ReadOnly _ValidSectorsPerSector() As Byte = {1, 2, 4, 8, 16, 32, 128}
         Private ReadOnly _BootSector As DiskImage.BootSector
@@ -14,7 +15,6 @@
         Private _FreeSpace As UInteger = 0
         Private ReadOnly _FileBytes() As Byte
         Private ReadOnly _FilePath As String
-        Private _Modified As Boolean
         Private ReadOnly _Modifications As Hashtable
         Private ReadOnly _OriginalData As Hashtable
         Private ReadOnly _LoadError As Boolean = False
@@ -22,7 +22,6 @@
         Sub New(FilePath As String)
             _Modifications = New Hashtable()
             _OriginalData = New Hashtable()
-            _Modified = False
             _LoadError = False
             _FilePath = FilePath
             Try
@@ -87,7 +86,7 @@
 
         Public ReadOnly Property Modified As Boolean
             Get
-                Return _Modified
+                Return _Modifications.Keys.Count > 0
             End Get
         End Property
 
@@ -115,51 +114,55 @@
             Return BitConverter.ToUInt16(_FileBytes, Offset)
         End Function
 
-        Public Sub SetBytes(Value As UShort, Offset As UInteger)
+        Public Sub SetBytes(Value As UShort, Offset As UInteger, Modified As Boolean)
             If Not _OriginalData.ContainsKey(Offset) Then
                 _OriginalData.Item(Offset) = GetBytesShort(Offset)
             End If
 
             Array.Copy(BitConverter.GetBytes(Value), 0, _FileBytes, Offset, 2)
 
-            _Modified = True
-            _Modifications.Item(Offset) = Value
+            If Modified Then
+                _Modifications.Item(Offset) = Value
+            End If
         End Sub
 
-        Public Sub SetBytes(Value As UInteger, Offset As UInteger)
+        Public Sub SetBytes(Value As UInteger, Offset As UInteger, Modified As Boolean)
             If Not _OriginalData.ContainsKey(Offset) Then
                 _OriginalData.Item(Offset) = GetBytesInteger(Offset)
             End If
 
             Array.Copy(BitConverter.GetBytes(Value), 0, _FileBytes, Offset, 4)
 
-            _Modified = True
-            _Modifications.Item(Offset) = Value
+            If Modified Then
+                _Modifications.Item(Offset) = Value
+            End If
         End Sub
 
-        Public Sub SetBytes(Value As Byte, Offset As UInteger)
+        Public Sub SetBytes(Value As Byte, Offset As UInteger, Modified As Boolean)
             If Not _OriginalData.ContainsKey(Offset) Then
                 _OriginalData.Item(Offset) = GetByte(Offset)
             End If
 
             _FileBytes(Offset) = Value
 
-            _Modified = True
-            _Modifications.Item(Offset) = Value
+            If Modified Then
+                _Modifications.Item(Offset) = Value
+            End If
         End Sub
 
-        Public Sub SetBytes(Value() As Byte, Offset As UInteger)
+        Public Sub SetBytes(Value() As Byte, Offset As UInteger, Modified As Boolean)
             If Not _OriginalData.ContainsKey(Offset) Then
                 _OriginalData.Item(Offset) = GetBytes(Offset, Value.Length)
             End If
 
             Array.Copy(Value, 0, _FileBytes, Offset, Value.Length)
 
-            _Modified = True
-            _Modifications.Item(Offset) = Value
+            If Modified Then
+                _Modifications.Item(Offset) = Value
+            End If
         End Sub
 
-        Public Sub SetBytes(Value() As Byte, Offset As UInteger, Size As UInteger, Padding As Byte)
+        Public Sub SetBytes(Value() As Byte, Offset As UInteger, Size As UInteger, Padding As Byte, Modified As Boolean)
             If Not _OriginalData.ContainsKey(Offset) Then
                 _OriginalData.Item(Offset) = GetBytes(Offset, Size)
             End If
@@ -169,13 +172,71 @@
             End If
             Array.Copy(Value, 0, _FileBytes, Offset, Size)
 
-            _Modified = True
-            _Modifications.Item(Offset) = Value
+            If Modified Then
+                _Modifications.Item(Offset) = Value
+            End If
         End Sub
 
+        Friend Sub SetOriginalData(Offset As UInteger, Size As UInteger)
+            If Not _OriginalData.ContainsKey(Offset) Then
+                _OriginalData.Item(Offset) = GetBytes(Offset, Size)
+            End If
+        End Sub
+
+        Friend Sub SetModification(Offset As UInteger, Size As UInteger)
+            _Modifications.Item(Offset) = GetBytes(Offset, Size)
+        End Sub
+
+        Friend Sub RemoveModification(Offset As UInteger)
+            If _OriginalData.ContainsKey(Offset) Then
+                Dim Value = _OriginalData.Item(Offset)
+                _OriginalData.Remove(Offset)
+                _Modifications.Remove(Offset)
+                Array.Copy(Value, 0, _FileBytes, Offset, Value.Length)
+            End If
+        End Sub
+
+        Friend Function HasModification(Offset As UInteger) As Boolean
+            Return _Modifications.ContainsKey(Offset)
+        End Function
+
+        Public Shared Function CheckValidFileName(FileName() As Byte, IsExtension As Boolean, IsVolumeName As Boolean) As Boolean
+            Dim Result As Boolean = True
+            Dim C As Byte
+            Dim SpaceAllowed As Boolean = True
+
+            If FileName.Length = 0 Then
+                Return IsExtension
+            End If
+
+            For Index = FileName.Length - 1 To 0 Step -1
+                C = FileName(Index)
+                If Not IsVolumeName And (C <> &H20 Or (Not IsExtension And Index = 0)) Then
+                    SpaceAllowed = False
+                End If
+
+                If C = &H20 And SpaceAllowed Then
+                    Result = True
+                ElseIf IsVolumeName And (C = &H0 Or (Not IsExtension And Index = 0 And C = &H3)) Then
+                    Result = True
+                ElseIf C < &H21 Then
+                    Result = False
+                    Exit For
+                ElseIf Not IsVolumeName And C > &H60 And C < &H7B Then
+                    Result = False
+                    Exit For
+                ElseIf Not IsVolumeName And InvalidFileChars.Contains(C) Then
+                    Result = False
+                    Exit For
+                End If
+            Next
+
+            Return Result
+        End Function
+
         Public Shared Sub ResizeArray(ByRef b() As Byte, Length As UInteger, Padding As Byte)
-            Dim Size = UBound(b)
-            If Size < Length - 1 Then
+            Dim Size = b.Length - 1
+            If Size <> Length - 1 Then
                 ReDim Preserve b(Length - 1)
                 For counter As UInteger = Size + 1 To Length - 1
                     b(counter) = Padding
@@ -214,7 +275,7 @@
         Public Sub ApplyModifications(Modifications As Hashtable)
             For Each Offset As UInteger In Modifications.Keys
                 Dim Value = Modifications.Item(Offset)
-                SetBytes(Value, Offset)
+                SetBytes(Value, Offset, True)
             Next
         End Sub
 
@@ -365,7 +426,7 @@
             For Counter As UInteger = 1 To _Directory.DirectoryLength
                 Dim File = _Directory.GetFile(Counter)
                 If Not File.IsDeleted And File.IsVolumeName Then
-                    VolumeLabel = File.GetFileName & File.GetFileExtension
+                    VolumeLabel = File.GetVolumeName
                     Exit For
                 End If
             Next
@@ -471,7 +532,6 @@
             System.IO.File.WriteAllBytes(FilePath, _FileBytes)
             _OriginalData.Clear()
             _Modifications.Clear()
-            _Modified = False
         End Sub
 
         Public Function RevertChanges() As Boolean
@@ -481,7 +541,6 @@
                 ApplyModifications(_OriginalData)
                 _OriginalData.Clear()
                 _Modifications.Clear()
-                _Modified = False
             End If
 
             Return Result
