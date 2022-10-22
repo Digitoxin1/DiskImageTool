@@ -414,15 +414,17 @@ Public Class MainForm
         ItemScanAll(_Disk, ImageData, True, True)
         _LoadedImageList.Remove(ImageData)
         _LoadedFileNames.Remove(ImageData.FilePath)
+        Dim IsCurrentItem As Boolean = (ComboGroups.SelectedItem Is ImageData)
         Dim SelectedIndex = ComboGroups.SelectedIndex
         ComboGroups.Items.Remove(ImageData)
-        If ComboGroups.Items.Count > 0 Then
+        ImageCountUpdate()
+        If IsCurrentItem Then
             If SelectedIndex > ComboGroups.Items.Count - 1 Then
                 SelectedIndex = ComboGroups.Items.Count - 1
             End If
             ComboGroups.SelectedIndex = SelectedIndex
-            ImageCountUpdate()
-        Else
+        End If
+        If _LoadedImageList.Count = 0 Then
             ResetAll()
         End If
     End Sub
