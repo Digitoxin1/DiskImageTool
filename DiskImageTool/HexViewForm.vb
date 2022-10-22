@@ -71,7 +71,7 @@ Public Class HexViewForm
             Dim Offset = _Disk.ClusterToOffset(Cluster)
             Dim OffsetEnd = Math.Min(Disk.Data.Length, Disk.BootSector.ImageSize)
 
-            DisplayBlock(_Disk.NewDataBlock(Offset, OffsetEnd - Offset))
+            DisplayBlock(DiskImage.Disk.NewDataBlock(Offset, OffsetEnd - Offset))
         Else
             DisplayBlock(DataBlockList(0))
         End If
@@ -102,7 +102,7 @@ Public Class HexViewForm
                 Dim Sector = _Disk.OffsetToSector(Offset)
                 If Sector <> PrevSector Or Index = HexOffsetStart Then
                     If Index > HexOffsetStart Then
-                        _Disk.SetBytes(Data, SectorOffset, True)
+                        _Disk.SetBytes(Data, SectorOffset)
                     End If
                     SectorOffset = _Disk.SectorToOffset(Sector)
                     Data = _Disk.GetBytes(SectorOffset, SectorSize)
@@ -110,7 +110,7 @@ Public Class HexViewForm
                 HexBox1.ByteProvider.WriteByte(Index, Value)
                 Data(Offset - SectorOffset) = Value
             Next
-            _Disk.SetBytes(Data, SectorOffset, True)
+            _Disk.SetBytes(Data, SectorOffset)
         Else
             Dim Sector = _Disk.OffsetToSector(HexBox1.LineInfoOffset + HexBox1.startByte)
             SectorOffset = _Disk.SectorToOffset(Sector)
@@ -122,7 +122,7 @@ Public Class HexViewForm
             For Index = 0 To Data.Length - 1
                 Data(Index) = Value
             Next
-            _Disk.SetBytes(Data, SectorOffset, True)
+            _Disk.SetBytes(Data, SectorOffset)
         End If
         HexBox1.Refresh()
         _Modified = True

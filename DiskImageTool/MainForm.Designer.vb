@@ -75,14 +75,16 @@ Partial Class MainForm
         Me.BtnFileMenuFileProperties = New System.Windows.Forms.ToolStripMenuItem()
         Me.BtnFileMenuViewFile = New System.Windows.Forms.ToolStripMenuItem()
         Me.BtnFileMenuViewFileText = New System.Windows.Forms.ToolStripMenuItem()
+        Me.FileMenuSeparator = New System.Windows.Forms.ToolStripSeparator()
+        Me.BtnFileMenuUndo = New System.Windows.Forms.ToolStripMenuItem()
         Me.MenuStripMain = New System.Windows.Forms.MenuStrip()
         Me.MainMenuFilters = New System.Windows.Forms.ToolStripMenuItem()
         Me.ContextMenuFilters = New System.Windows.Forms.ContextMenuStrip(Me.components)
         Me.BtnScanNew = New System.Windows.Forms.ToolStripMenuItem()
         Me.BtnScan = New System.Windows.Forms.ToolStripMenuItem()
         Me.FilterSeparator = New System.Windows.Forms.ToolStripSeparator()
-        Me.FileMenuSeparator = New System.Windows.Forms.ToolStripSeparator()
-        Me.BtnFileMenuUndo = New System.Windows.Forms.ToolStripMenuItem()
+        Me.BtnFileMenuReplaceFile = New System.Windows.Forms.ToolStripMenuItem()
+        Me.BtnReplaceFile = New System.Windows.Forms.ToolStripMenuItem()
         SummaryName = CType(New System.Windows.Forms.ColumnHeader(), System.Windows.Forms.ColumnHeader)
         SummaryValue = CType(New System.Windows.Forms.ColumnHeader(), System.Windows.Forms.ColumnHeader)
         HashName = CType(New System.Windows.Forms.ColumnHeader(), System.Windows.Forms.ColumnHeader)
@@ -237,7 +239,7 @@ Partial Class MainForm
         '
         'MainMenuEdit
         '
-        MainMenuEdit.DropDownItems.AddRange(New System.Windows.Forms.ToolStripItem() {Me.BtnOEMID, Me.ToolStripSeparator4, Me.BtnFileProperties, Me.ToolStripSeparator2, Me.BtnRevert})
+        MainMenuEdit.DropDownItems.AddRange(New System.Windows.Forms.ToolStripItem() {Me.BtnOEMID, Me.ToolStripSeparator4, Me.BtnFileProperties, Me.BtnReplaceFile, Me.ToolStripSeparator2, Me.BtnRevert})
         MainMenuEdit.Name = "MainMenuEdit"
         MainMenuEdit.Size = New System.Drawing.Size(39, 20)
         MainMenuEdit.Text = "&Edit"
@@ -245,29 +247,29 @@ Partial Class MainForm
         'BtnOEMID
         '
         Me.BtnOEMID.Name = "BtnOEMID"
-        Me.BtnOEMID.Size = New System.Drawing.Size(158, 22)
+        Me.BtnOEMID.Size = New System.Drawing.Size(180, 22)
         Me.BtnOEMID.Text = "Change &OEM ID"
         '
         'ToolStripSeparator4
         '
         Me.ToolStripSeparator4.Name = "ToolStripSeparator4"
-        Me.ToolStripSeparator4.Size = New System.Drawing.Size(155, 6)
+        Me.ToolStripSeparator4.Size = New System.Drawing.Size(177, 6)
         '
         'BtnFileProperties
         '
         Me.BtnFileProperties.Name = "BtnFileProperties"
-        Me.BtnFileProperties.Size = New System.Drawing.Size(158, 22)
+        Me.BtnFileProperties.Size = New System.Drawing.Size(180, 22)
         Me.BtnFileProperties.Text = "File &Properties"
         '
         'ToolStripSeparator2
         '
         Me.ToolStripSeparator2.Name = "ToolStripSeparator2"
-        Me.ToolStripSeparator2.Size = New System.Drawing.Size(155, 6)
+        Me.ToolStripSeparator2.Size = New System.Drawing.Size(177, 6)
         '
         'BtnRevert
         '
         Me.BtnRevert.Name = "BtnRevert"
-        Me.BtnRevert.Size = New System.Drawing.Size(158, 22)
+        Me.BtnRevert.Size = New System.Drawing.Size(180, 22)
         Me.BtnRevert.Text = "&Revert Changes"
         Me.BtnRevert.TextAlign = System.Drawing.ContentAlignment.MiddleLeft
         '
@@ -314,6 +316,11 @@ Partial Class MainForm
         Me.BtnExportDebug.Name = "BtnExportDebug"
         Me.BtnExportDebug.Size = New System.Drawing.Size(225, 22)
         Me.BtnExportDebug.Text = "Generate Physical Disk Patch"
+        '
+        'ToolStripSeparator5
+        '
+        ToolStripSeparator5.Name = "ToolStripSeparator5"
+        ToolStripSeparator5.Size = New System.Drawing.Size(168, 6)
         '
         'ListViewSummary
         '
@@ -444,27 +451,38 @@ Partial Class MainForm
         '
         'ContextMenuFiles
         '
-        Me.ContextMenuFiles.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.BtnFileMenuFileProperties, ToolStripSeparator5, Me.BtnFileMenuViewFile, Me.BtnFileMenuViewFileText, Me.FileMenuSeparator, Me.BtnFileMenuUndo})
+        Me.ContextMenuFiles.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.BtnFileMenuFileProperties, Me.BtnFileMenuReplaceFile, ToolStripSeparator5, Me.BtnFileMenuViewFile, Me.BtnFileMenuViewFileText, Me.FileMenuSeparator, Me.BtnFileMenuUndo})
         Me.ContextMenuFiles.Name = "ContextMenuFiles"
-        Me.ContextMenuFiles.Size = New System.Drawing.Size(181, 126)
+        Me.ContextMenuFiles.Size = New System.Drawing.Size(181, 148)
         '
         'BtnFileMenuFileProperties
         '
         Me.BtnFileMenuFileProperties.Name = "BtnFileMenuFileProperties"
-        Me.BtnFileMenuFileProperties.Size = New System.Drawing.Size(180, 22)
+        Me.BtnFileMenuFileProperties.Size = New System.Drawing.Size(171, 22)
         Me.BtnFileMenuFileProperties.Text = "Edit File &Properties"
         '
         'BtnFileMenuViewFile
         '
         Me.BtnFileMenuViewFile.Name = "BtnFileMenuViewFile"
-        Me.BtnFileMenuViewFile.Size = New System.Drawing.Size(180, 22)
+        Me.BtnFileMenuViewFile.Size = New System.Drawing.Size(171, 22)
         Me.BtnFileMenuViewFile.Text = "&View File"
         '
         'BtnFileMenuViewFileText
         '
         Me.BtnFileMenuViewFileText.Name = "BtnFileMenuViewFileText"
-        Me.BtnFileMenuViewFileText.Size = New System.Drawing.Size(180, 22)
+        Me.BtnFileMenuViewFileText.Size = New System.Drawing.Size(171, 22)
         Me.BtnFileMenuViewFileText.Text = "View File as &Text"
+        '
+        'FileMenuSeparator
+        '
+        Me.FileMenuSeparator.Name = "FileMenuSeparator"
+        Me.FileMenuSeparator.Size = New System.Drawing.Size(168, 6)
+        '
+        'BtnFileMenuUndo
+        '
+        Me.BtnFileMenuUndo.Name = "BtnFileMenuUndo"
+        Me.BtnFileMenuUndo.Size = New System.Drawing.Size(171, 22)
+        Me.BtnFileMenuUndo.Text = "&Undo Changes"
         '
         'MenuStripMain
         '
@@ -508,21 +526,17 @@ Partial Class MainForm
         Me.FilterSeparator.Size = New System.Drawing.Size(164, 6)
         Me.FilterSeparator.Visible = False
         '
-        'ToolStripSeparator5
+        'BtnFileMenuReplaceFile
         '
-        ToolStripSeparator5.Name = "ToolStripSeparator5"
-        ToolStripSeparator5.Size = New System.Drawing.Size(177, 6)
+        Me.BtnFileMenuReplaceFile.Name = "BtnFileMenuReplaceFile"
+        Me.BtnFileMenuReplaceFile.Size = New System.Drawing.Size(180, 22)
+        Me.BtnFileMenuReplaceFile.Text = "&Replace File"
         '
-        'FileMenuSeparator
+        'BtnReplaceFile
         '
-        Me.FileMenuSeparator.Name = "FileMenuSeparator"
-        Me.FileMenuSeparator.Size = New System.Drawing.Size(177, 6)
-        '
-        'BtnFileMenuUndo
-        '
-        Me.BtnFileMenuUndo.Name = "BtnFileMenuUndo"
-        Me.BtnFileMenuUndo.Size = New System.Drawing.Size(180, 22)
-        Me.BtnFileMenuUndo.Text = "&Undo Changes"
+        Me.BtnReplaceFile.Name = "BtnReplaceFile"
+        Me.BtnReplaceFile.Size = New System.Drawing.Size(180, 22)
+        Me.BtnReplaceFile.Text = "&Replace File"
         '
         'MainForm
         '
@@ -594,4 +608,6 @@ Partial Class MainForm
     Friend WithEvents MainMenuFilters As ToolStripMenuItem
     Friend WithEvents FileMenuSeparator As ToolStripSeparator
     Friend WithEvents BtnFileMenuUndo As ToolStripMenuItem
+    Friend WithEvents BtnReplaceFile As ToolStripMenuItem
+    Friend WithEvents BtnFileMenuReplaceFile As ToolStripMenuItem
 End Class

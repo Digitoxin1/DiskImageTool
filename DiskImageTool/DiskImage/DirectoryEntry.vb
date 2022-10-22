@@ -21,6 +21,8 @@ Namespace DiskImage
     End Enum
 
     Public Class DirectoryEntry
+        Private Const DIRECTORY_ENTRY_SIZE As Byte = 32
+        Private Const CHAR_SPACE As Byte = 32
         Public Enum AttributeFlags
             [ReadOnly] = 1
             Hidden = 2
@@ -60,13 +62,15 @@ Namespace DiskImage
         End Enum
 
         Private ReadOnly _FatClusterList As List(Of UShort)
+        Private _Data() As Byte
         Private ReadOnly _Offset As UInteger
-        Private ReadOnly _Parent As Disk
-        Private _SubDirectory As DiskImage.Directory
+        Private WithEvents Parent As Disk
+        Private _SubDirectory As Directory
 
         Sub New(Parent As Disk, Offset As UInteger)
-            _Parent = Parent
+            Me.Parent = Parent
             _Offset = Offset
+            LoadData()
 
             If IsDeleted() Then
                 _FatClusterList = New List(Of UShort)
@@ -154,47 +158,50 @@ Namespace DiskImage
         End Function
 
         Private Function GetByte(Offset As UInteger) As Byte
-            Return _Parent.GetByte(Offset + _Offset)
+            Return _Data(Offset)
         End Function
 
         Private Function GetBytes(Offset As UInteger, Size As UInteger) As Byte()
-            Return _Parent.GetBytes(Offset + _Offset, Size)
+            Dim temp(Size - 1) As Byte
+            Array.Copy(_Data, Offset, temp, 0, Size)
+            Return temp
         End Function
 
         Private Function GetBytesShort(Offset As UInteger) As UShort
-            Return _Parent.GetBytesShort(Offset + _Offset)
+            Return BitConverter.ToUInt16(_Data, Offset)
         End Function
 
         Private Function GetBytesInteger(Offset As UInteger) As UInteger
-            Return _Parent.GetBytesInteger(Offset + _Offset)
+            Return BitConverter.ToUInt32(_Data, Offset)
         End Function
 
         Private Sub SetBytes(Value As UShort, Offset As UInteger)
-            _Parent.SetOriginalData(_Offset, 32)
-            _Parent.SetBytes(Value, Offset + _Offset, False)
-            _Parent.SetModification(_Offset, 32)
+            Array.Copy(BitConverter.GetBytes(Value), 0, _Data, Offset, 2)
+            Parent.SetBytes(_Data, _Offset)
         End Sub
 
         Private Sub SetBytes(Value As UInteger, Offset As UInteger)
-            _Parent.SetOriginalData(_Offset, 32)
-            _Parent.SetBytes(Value, Offset + _Offset, False)
-            _Parent.SetModification(_Offset, 32)
+            Array.Copy(BitConverter.GetBytes(Value), 0, _Data, Offset, 4)
+            Parent.SetBytes(_Data, _Offset)
         End Sub
 
         Private Sub SetBytes(Value As Byte, Offset As UInteger)
-            _Parent.SetOriginalData(_Offset, 32)
-            _Parent.SetBytes(Value, Offset + _Offset, False)
-            _Parent.SetModification(_Offset, 32)
+            _Data(Offset) = Value
+            Parent.SetBytes(_Data, _Offset)
         End Sub
 
         Private Sub SetBytes(Value() As Byte, Offset As UInteger, Size As UInteger, Padding As Byte)
-            _Parent.SetOriginalData(_Offset, 32)
-            _Parent.SetBytes(Value, Offset + _Offset, Size, Padding, False)
-            _Parent.SetModification(_Offset, 32)
+            If Value.Length <> Size Then
+                Disk.ResizeArray(Value, Size, Padding)
+            End If
+            Array.Copy(Value, 0, _Data, Offset, Size)
+            Parent.SetBytes(_Data, _Offset)
         End Sub
 
         Public Sub RemoveModification()
-            _Parent.RemoveModification(_Offset)
+            If Parent.RemoveModification(_Offset) Then
+                LoadData()
+            End If
         End Sub
 
         Public Sub ClearCreationDate()
@@ -217,11 +224,12 @@ Namespace DiskImage
         End Function
 
         Public Function GetDataBlocks() As List(Of DataBlock)
-            Return _Parent.GetDataBlocksFromFatClusterList(_FatClusterList)
+            Return Parent.GetDataBlocksFromFATClusterList(_FatClusterList)
         End Function
 
         Public Function GetContent() As Byte()
-            Dim Content = _Parent.GetDataFromFATClusterList(_FatClusterList)
+            Dim Content = Parent.GetDataFromFATClusterList(_FatClusterList)
+
             If Content.Length <> FileSize Then
                 Array.Resize(Of Byte)(Content, FileSize)
             End If
@@ -234,16 +242,16 @@ Namespace DiskImage
             Dim Cluster As UShort = StartingCluster
             Dim AssignedClusters As New Hashtable
             Do
-                If Cluster > 1 And Cluster <= UBound(_Parent.FAT12) Then
+                If Cluster > 1 And Cluster <= UBound(Parent.FAT12) Then
                     If AssignedClusters.ContainsKey(Cluster) Then
                         Exit Do
                     End If
                     AssignedClusters.Add(Cluster, Cluster)
                     FATClusterList.Add(Cluster)
-                    If Not _Parent.FileAllocation.ContainsKey(Cluster) Then
-                        _Parent.FileAllocation.Add(Cluster, _Offset)
+                    If Not Parent.FileAllocation.ContainsKey(Cluster) Then
+                        Parent.FileAllocation.Add(Cluster, _Offset)
                     End If
-                    Cluster = _Parent.FAT12(Cluster)
+                    Cluster = Parent.FAT12(Cluster)
                 Else
                     Cluster = 0
                 End If
@@ -288,9 +296,9 @@ Namespace DiskImage
                 Dim Size As Integer = DirectoryEntrySize.LFNFilePart1 + DirectoryEntrySize.LFNFilePart2 + DirectoryEntrySize.LFNFilePart3
                 Dim LFN(Size - 1) As Byte
 
-                Array.Copy(_Parent.Data, _Offset + DirectoryEntryOffset.LFNFilePart1, LFN, 0, DirectoryEntrySize.LFNFilePart1)
-                Array.Copy(_Parent.Data, _Offset + DirectoryEntryOffset.LFNFilePart2, LFN, DirectoryEntrySize.LFNFilePart1, DirectoryEntrySize.LFNFilePart2)
-                Array.Copy(_Parent.Data, _Offset + DirectoryEntryOffset.LFNFilePart3, LFN, DirectoryEntrySize.LFNFilePart1 + DirectoryEntrySize.LFNFilePart2, DirectoryEntrySize.LFNFilePart3)
+                Array.Copy(Parent.Data, _Offset + DirectoryEntryOffset.LFNFilePart1, LFN, 0, DirectoryEntrySize.LFNFilePart1)
+                Array.Copy(Parent.Data, _Offset + DirectoryEntryOffset.LFNFilePart2, LFN, DirectoryEntrySize.LFNFilePart1, DirectoryEntrySize.LFNFilePart2)
+                Array.Copy(Parent.Data, _Offset + DirectoryEntryOffset.LFNFilePart3, LFN, DirectoryEntrySize.LFNFilePart1 + DirectoryEntrySize.LFNFilePart2, DirectoryEntrySize.LFNFilePart3)
 
                 Return Encoding.Unicode.GetString(LFN)
             Else
@@ -317,7 +325,7 @@ Namespace DiskImage
         End Function
 
         Public Function HasInvalidFileSize() As Boolean
-            Return FileSize > _Parent.BootSector.ImageSize
+            Return FileSize > Parent.BootSector.ImageSize
         End Function
 
         Public Function HasLastAccessDate() As Boolean
@@ -326,7 +334,7 @@ Namespace DiskImage
 
         Private Sub InitSubDirectory()
             If IsDirectory() And Not IsDeleted() Then
-                _SubDirectory = New DiskImage.Directory(_Parent, _FatClusterList, FileSize)
+                _SubDirectory = New Directory(Parent, _FatClusterList, FileSize)
             Else
                 _SubDirectory = Nothing
             End If
@@ -353,7 +361,14 @@ Namespace DiskImage
         End Function
 
         Public Function IsModified() As Boolean
-            Return _Parent.HasModification(_Offset)
+            Dim HasModification As Boolean = Parent.HasModification(_Offset)
+            If Not HasModification Then
+                If _FatClusterList.Count > 0 Then
+                    Dim ClusterOffset = _Parent.ClusterToOffset(_FatClusterList(0))
+                    HasModification = Parent.HasModification(ClusterOffset)
+                End If
+            End If
+            Return HasModification
         End Function
 
         Public Function IsReadOnly() As Boolean
@@ -368,6 +383,10 @@ Namespace DiskImage
             Return (Attributes And AttributeFlags.VolumeName) > 0
         End Function
 
+        Private Sub LoadData()
+            _Data = Parent.GetBytes(Offset, DIRECTORY_ENTRY_SIZE)
+        End Sub
+
         Public Sub SetCreationDate(Value As Date)
             CreationDate = DateToFATDate(Value)
             CreationTime = DateToFATTime(Value)
@@ -381,6 +400,10 @@ Namespace DiskImage
         Public Sub SetLastWriteDate(Value As Date)
             LastWriteDate = DateToFATDate(Value)
             LastWriteTime = DateToFATTime(Value)
+        End Sub
+
+        Private Sub Parent_ChangesReverted(sender As Object, e As EventArgs) Handles Parent.ChangesReverted
+            LoadData()
         End Sub
 
         Public Property Attributes() As Byte
@@ -424,8 +447,14 @@ Namespace DiskImage
                 Return GetBytes(DirectoryEntryOffset.Extension, DirectoryEntrySize.Extension)
             End Get
             Set
-                SetBytes(Value, DirectoryEntryOffset.Extension, DirectoryEntrySize.Extension, 32)
+                SetBytes(Value, DirectoryEntryOffset.Extension, DirectoryEntrySize.Extension, CHAR_SPACE)
             End Set
+        End Property
+
+        Public ReadOnly Property FatClusterList As List(Of UShort)
+            Get
+                Return _FatClusterList
+            End Get
         End Property
 
         Public Property FileName() As Byte()
@@ -433,7 +462,7 @@ Namespace DiskImage
                 Return GetBytes(DirectoryEntryOffset.FileName, DirectoryEntrySize.FileName)
             End Get
             Set
-                SetBytes(Value, DirectoryEntryOffset.FileName, DirectoryEntrySize.FileName, 32)
+                SetBytes(Value, DirectoryEntryOffset.FileName, DirectoryEntrySize.FileName, CHAR_SPACE)
             End Set
         End Property
 
@@ -512,7 +541,7 @@ Namespace DiskImage
             End Set
         End Property
 
-        Public ReadOnly Property SubDirectory As DiskImage.Directory
+        Public ReadOnly Property SubDirectory As Directory
             Get
                 Return _SubDirectory
             End Get

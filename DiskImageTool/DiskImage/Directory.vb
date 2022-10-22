@@ -41,7 +41,7 @@
             Dim SectorEnd = _Parent.BootSector.DataRegionStart
             Dim Length = (SectorEnd - SectorStart) * _Parent.BootSector.BytesPerSector
 
-            Return _Parent.NewDataBlock(_Parent.SectorToOffset(SectorStart), Length)
+            Return Disk.NewDataBlock(_Parent.SectorToOffset(SectorStart), Length)
         End Function
 
         Private Function GetDataBlocksSubDirectory() As List(Of DataBlock)
@@ -69,19 +69,19 @@
             Return _Parent.GetDirectoryLength(OffsetStart, OffsetEnd, FileCountOnly)
         End Function
 
-        Private Function GetFileSubDirectory(Index As UInteger) As DiskImage.DirectoryEntry
+        Private Function GetFileSubDirectory(Index As UInteger) As DirectoryEntry
             Dim EntriesPerCluster As UInteger = _Parent.BootSector.BytesPerCluster / 32
             Dim ChainIndex As UInteger = (Index - 1) \ EntriesPerCluster
             Dim ClusterIndex As UInteger = (Index - 1) Mod EntriesPerCluster
             Dim Offset As UInteger = _Parent.ClusterToOffset(_FatClusterList.Item(ChainIndex)) + ClusterIndex * 32
 
-            Return New DiskImage.DirectoryEntry(_Parent, Offset)
+            Return New DirectoryEntry(_Parent, Offset)
         End Function
 
-        Private Function GetFileRoot(Index As Integer) As DiskImage.DirectoryEntry
+        Private Function GetFileRoot(Index As Integer) As DirectoryEntry
             Dim Offset As UInteger = _Parent.SectorToOffset(_Parent.BootSector.RootDirectoryRegionStart) + (Index - 1) * 32
 
-            Return New DiskImage.DirectoryEntry(_Parent, Offset)
+            Return New DirectoryEntry(_Parent, Offset)
         End Function
 
         Public Function DirectoryLength() As UInteger
@@ -100,7 +100,7 @@
             End If
         End Function
 
-        Public Function GetFile(Index As UInteger) As DiskImage.DirectoryEntry
+        Public Function GetFile(Index As UInteger) As DirectoryEntry
             If _FatClusterList Is Nothing Then
                 Return GetFileRoot(Index)
             Else

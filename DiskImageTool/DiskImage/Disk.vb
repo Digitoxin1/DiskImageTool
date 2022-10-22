@@ -8,8 +8,8 @@
         Public Shared ReadOnly InvalidFileChars() As Byte = {&H22, &H2A, &H2B, &H2C, &H2E, &H2F, &H3A, &H3B, &H3C, &H3D, &H3E, &H3F, &H5B, &H5C, &H5D, &H7C, &H7F}
         Private ReadOnly _ValidBytesPerSector() As UShort = {512, 1024, 2048, 4096}
         Private ReadOnly _ValidSectorsPerSector() As Byte = {1, 2, 4, 8, 16, 32, 128}
-        Private ReadOnly _BootSector As DiskImage.BootSector
-        Private ReadOnly _Directory As DiskImage.Directory
+        Private ReadOnly _BootSector As BootSector
+        Private ReadOnly _Directory As Directory
         Private _FAT12() As UShort
         Private _FileAllocation As Dictionary(Of UInteger, UInteger)
         Private _FreeSpace As UInteger = 0
@@ -19,7 +19,9 @@
         Private ReadOnly _OriginalData As Hashtable
         Private ReadOnly _LoadError As Boolean = False
 
-        Sub New(FilePath As String)
+        Public Event ChangesReverted As EventHandler
+
+        Sub New(FilePath As String, Optional Modifications As Hashtable = Nothing)
             _Modifications = New Hashtable()
             _OriginalData = New Hashtable()
             _LoadError = False
@@ -29,14 +31,19 @@
             Catch ex As Exception
                 _LoadError = True
             End Try
-            _BootSector = New DiskImage.BootSector(Me)
+            If Not _LoadError Then
+                If Modifications IsNot Nothing Then
+                    ApplyModifications(Modifications)
+                End If
+            End If
+            _BootSector = New BootSector(Me)
             If IsValidImage() Then
                 PopulateFAT12()
-                _Directory = New DiskImage.Directory(Me)
+                _Directory = New Directory(Me)
             End If
         End Sub
 
-        Public ReadOnly Property BootSector As DiskImage.BootSector
+        Public ReadOnly Property BootSector As BootSector
             Get
                 Return _BootSector
             End Get
@@ -48,7 +55,7 @@
             End Get
         End Property
 
-        Public ReadOnly Property Directory As DiskImage.Directory
+        Public ReadOnly Property Directory As Directory
             Get
                 Return _Directory
             End Get
@@ -114,55 +121,47 @@
             Return BitConverter.ToUInt16(_FileBytes, Offset)
         End Function
 
-        Public Sub SetBytes(Value As UShort, Offset As UInteger, Modified As Boolean)
+        Public Sub SetBytes(Value As UShort, Offset As UInteger)
             If Not _OriginalData.ContainsKey(Offset) Then
                 _OriginalData.Item(Offset) = GetBytesShort(Offset)
             End If
 
             Array.Copy(BitConverter.GetBytes(Value), 0, _FileBytes, Offset, 2)
 
-            If Modified Then
-                _Modifications.Item(Offset) = Value
-            End If
+            _Modifications.Item(Offset) = Value
         End Sub
 
-        Public Sub SetBytes(Value As UInteger, Offset As UInteger, Modified As Boolean)
+        Public Sub SetBytes(Value As UInteger, Offset As UInteger)
             If Not _OriginalData.ContainsKey(Offset) Then
                 _OriginalData.Item(Offset) = GetBytesInteger(Offset)
             End If
 
             Array.Copy(BitConverter.GetBytes(Value), 0, _FileBytes, Offset, 4)
 
-            If Modified Then
-                _Modifications.Item(Offset) = Value
-            End If
+            _Modifications.Item(Offset) = Value
         End Sub
 
-        Public Sub SetBytes(Value As Byte, Offset As UInteger, Modified As Boolean)
+        Public Sub SetBytes(Value As Byte, Offset As UInteger)
             If Not _OriginalData.ContainsKey(Offset) Then
                 _OriginalData.Item(Offset) = GetByte(Offset)
             End If
 
             _FileBytes(Offset) = Value
 
-            If Modified Then
-                _Modifications.Item(Offset) = Value
-            End If
+            _Modifications.Item(Offset) = Value
         End Sub
 
-        Public Sub SetBytes(Value() As Byte, Offset As UInteger, Modified As Boolean)
+        Public Sub SetBytes(Value() As Byte, Offset As UInteger)
             If Not _OriginalData.ContainsKey(Offset) Then
                 _OriginalData.Item(Offset) = GetBytes(Offset, Value.Length)
             End If
 
             Array.Copy(Value, 0, _FileBytes, Offset, Value.Length)
 
-            If Modified Then
-                _Modifications.Item(Offset) = Value
-            End If
+            _Modifications.Item(Offset) = Value
         End Sub
 
-        Public Sub SetBytes(Value() As Byte, Offset As UInteger, Size As UInteger, Padding As Byte, Modified As Boolean)
+        Public Sub SetBytes(Value() As Byte, Offset As UInteger, Size As UInteger, Padding As Byte)
             If Not _OriginalData.ContainsKey(Offset) Then
                 _OriginalData.Item(Offset) = GetBytes(Offset, Size)
             End If
@@ -172,29 +171,22 @@
             End If
             Array.Copy(Value, 0, _FileBytes, Offset, Size)
 
-            If Modified Then
-                _Modifications.Item(Offset) = Value
-            End If
+            _Modifications.Item(Offset) = Value
         End Sub
+        Friend Function RemoveModification(Offset As UInteger) As Boolean
+            Dim Result As Boolean = False
 
-        Friend Sub SetOriginalData(Offset As UInteger, Size As UInteger)
-            If Not _OriginalData.ContainsKey(Offset) Then
-                _OriginalData.Item(Offset) = GetBytes(Offset, Size)
-            End If
-        End Sub
-
-        Friend Sub SetModification(Offset As UInteger, Size As UInteger)
-            _Modifications.Item(Offset) = GetBytes(Offset, Size)
-        End Sub
-
-        Friend Sub RemoveModification(Offset As UInteger)
             If _OriginalData.ContainsKey(Offset) Then
                 Dim Value = _OriginalData.Item(Offset)
                 _OriginalData.Remove(Offset)
                 _Modifications.Remove(Offset)
                 Array.Copy(Value, 0, _FileBytes, Offset, Value.Length)
+
+                Result = True
             End If
-        End Sub
+
+            Return Result
+        End Function
 
         Friend Function HasModification(Offset As UInteger) As Boolean
             Return _Modifications.ContainsKey(Offset)
@@ -272,10 +264,10 @@
             Return Offset \ _BootSector.BytesPerSector
         End Function
 
-        Public Sub ApplyModifications(Modifications As Hashtable)
+        Private Sub ApplyModifications(Modifications As Hashtable)
             For Each Offset As UInteger In Modifications.Keys
-                Dim Value = Modifications.Item(Offset)
-                SetBytes(Value, Offset, True)
+                Dim Value() As Byte = Modifications.Item(Offset)
+                SetBytes(Value, Offset)
             Next
         End Sub
 
@@ -334,8 +326,8 @@
             Return Content
         End Function
 
-        Public Function GetDirectoryEntryByOffset(Offset As UInteger) As DiskImage.DirectoryEntry
-            Return New DiskImage.DirectoryEntry(Me, Offset)
+        Public Function GetDirectoryEntryByOffset(Offset As UInteger) As DirectoryEntry
+            Return New DirectoryEntry(Me, Offset)
         End Function
 
         Public Function GetDirectoryLength(OffsetStart As UInteger, OffsetEnd As UInteger, FileCountOnly As Boolean) As UInteger
@@ -488,7 +480,7 @@
             Return Result
         End Function
 
-        Public Function NewDataBlock(Offset As UInteger, Length As UInteger) As DataBlock
+        Public Shared Function NewDataBlock(Offset As UInteger, Length As UInteger) As DataBlock
             NewDataBlock.Offset = Offset
             NewDataBlock.Length = Length
         End Function
@@ -541,6 +533,7 @@
                 ApplyModifications(_OriginalData)
                 _OriginalData.Clear()
                 _Modifications.Clear()
+                RaiseEvent ChangesReverted(Me, EventArgs.Empty)
             End If
 
             Return Result

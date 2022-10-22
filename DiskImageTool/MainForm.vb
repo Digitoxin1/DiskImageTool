@@ -2,8 +2,9 @@
 Imports System.Text
 
 Public Class MainForm
+    Private Const FILE_FILTER As String = "Disk Image Files (*.ima; *.img)|*.ima;*.img"
     Private ReadOnly _LoadedImageList As List(Of LoadedImageData)
-    Private ReadOnly _LoadedFileNames As HashSet(Of String)
+    Private ReadOnly _LoadedFileNames As Dictionary(Of String, LoadedImageData)
     Private ReadOnly _OEMIDDictionary As Dictionary(Of UInteger, OEMIDList)
     Private _Disk As DiskImage.Disk
     Private _SuppressEvent As Boolean = False
@@ -20,14 +21,14 @@ Public Class MainForm
         ListViewDoubleBuffer(ListViewFiles)
         FiltersInitialize()
         _LoadedImageList = New List(Of LoadedImageData)
-        _LoadedFileNames = New HashSet(Of String)
+        _LoadedFileNames = New Dictionary(Of String, LoadedImageData)
         _OEMIDDictionary = GetOEMIDDictionary()
 
         ResetAll()
     End Sub
 
     Private Sub BootSectorDisplayHex()
-        Dim Block = _Disk.NewDataBlock(0, 512)
+        Dim Block = DiskImage.Disk.NewDataBlock(0, 512)
 
         Dim frmHexView As New HexViewForm(_Disk, Block, False, "Boot Sector")
         frmHexView.ShowDialog()
@@ -46,6 +47,7 @@ Public Class MainForm
         BtnDisplayDirectory.Enabled = False
         BtnDisplayClusters.Enabled = False
         BtnFileProperties.Enabled = False
+        BtnReplaceFile.Enabled = False
         BtnScan.Enabled = False
         BtnScanNew.Enabled = False
         BtnScanNew.Visible = False
@@ -87,7 +89,7 @@ Public Class MainForm
             Dim SaveAllForm As SaveAllForm
 
             For Each ImageData In ModifyImageList
-                Dim Msg As String = "Save file '" & System.IO.Path.GetFileName(ImageData.FilePath) & "'?"
+                Dim Msg As String = "Save file '" & IO.Path.GetFileName(ImageData.FilePath) & "'?"
                 If ShowDialog Then
                     If ModifyImageList.Count = 1 Then
                         Result = MsgBox(Msg, MsgBoxStyle.Question + MsgBoxStyle.YesNoCancel + MsgBoxStyle.DefaultButton3, "Save")
@@ -122,7 +124,7 @@ Public Class MainForm
         Dim Result As MsgBoxResult
 
         If ImageData.Modified Then
-            Dim Msg As String = "Save file '" & System.IO.Path.GetFileName(ImageData.FilePath) & "'?"
+            Dim Msg As String = "Save file '" & IO.Path.GetFileName(ImageData.FilePath) & "'?"
             Result = MsgBox(Msg, MsgBoxStyle.Question + MsgBoxStyle.YesNoCancel + MsgBoxStyle.DefaultButton3, "Save")
         Else
             Result = MsgBoxResult.No
@@ -130,22 +132,9 @@ Public Class MainForm
 
         If Result <> MsgBoxResult.Cancel Then
             If Result = MsgBoxResult.Yes Then
-                SaveCurrent(False)
+                DiskImageSave(ImageData)
             End If
-            ItemScanAll(_Disk, ImageData, True, True)
-            _LoadedImageList.Remove(ImageData)
-            _LoadedFileNames.Remove(ImageData.FilePath)
-            Dim SelectedIndex = ComboGroups.SelectedIndex
-            ComboGroups.Items.Remove(ImageData)
-            If ComboGroups.Items.Count > 0 Then
-                If SelectedIndex > ComboGroups.Items.Count - 1 Then
-                    SelectedIndex = ComboGroups.Items.Count - 1
-                End If
-                ComboGroups.SelectedIndex = SelectedIndex
-                ImageCountUpdate()
-            Else
-                ResetAll()
-            End If
+            FileClose(ImageData)
         End If
     End Sub
 
@@ -230,7 +219,7 @@ Public Class MainForm
             If DirectoryEntry.IsDeleted Then
                 Dim DataOffset = _Disk.ClusterToOffset(DirectoryEntry.StartingCluster)
                 Dim Length = Math.Ceiling(DirectoryEntry.FileSize / _Disk.BootSector.BytesPerCluster) * _Disk.BootSector.BytesPerCluster
-                Dim Block = _Disk.NewDataBlock(DataOffset, Length)
+                Dim Block = DiskImage.Disk.NewDataBlock(DataOffset, Length)
                 Caption = "Deleted " & Caption
                 frmHexView = New HexViewForm(_Disk, Block, True, Caption)
             Else
@@ -242,11 +231,8 @@ Public Class MainForm
     End Sub
 
     Private Function DiskImageLoad(ImageData As LoadedImageData) As DiskImage.Disk
-        Dim Disk = New DiskImage.Disk(ImageData.FilePath)
+        Dim Disk = New DiskImage.Disk(ImageData.FilePath, ImageData.Modifications)
         If Not Disk.LoadError Then
-            If ImageData.Modified Then
-                Disk.ApplyModifications(ImageData.Modifications)
-            End If
             ImageData.Modifications = Disk.Modifications
         End If
 
@@ -291,7 +277,7 @@ Public Class MainForm
                 Success = SaveDiskImageToFile(Disk, NewFilePath)
             End If
             If Not Success Then
-                Dim Msg As String = "Error saving file '" & System.IO.Path.GetFileName(ImageData.FilePath) & "'."
+                Dim Msg As String = "Error saving file '" & IO.Path.GetFileName(ImageData.FilePath) & "'."
                 Dim ErrorResult = MsgBox(Msg, MsgBoxStyle.Critical + MsgBoxStyle.RetryCancel)
                 If ErrorResult = MsgBoxResult.Cancel Then
                     Exit Do
@@ -374,34 +360,34 @@ Public Class MainForm
             Exit Sub
         End If
 
-        Dim TempPath As String = System.IO.Path.GetTempPath() & Guid.NewGuid().ToString() & "\"
+        Dim TempPath As String = IO.Path.GetTempPath() & Guid.NewGuid().ToString() & "\"
 
         For Each Item As ListViewItem In ListViewFiles.SelectedItems
             Dim FileData As FileData = Item.Tag
             Dim DirectoryEntry = _Disk.GetDirectoryEntryByOffset(FileData.Offset)
             If Not DirectoryEntry.IsDeleted And Not DirectoryEntry.IsDirectory And Not DirectoryEntry.IsVolumeName And Not DirectoryEntry.HasInvalidFileSize And Not DirectoryEntry.HasInvalidFilename And Not DirectoryEntry.HasInvalidExtension Then
-                Dim FilePath = System.IO.Path.Combine(TempPath, FileData.FilePath, DirectoryEntry.GetFullFileName)
-                If Not System.IO.Directory.Exists(System.IO.Path.GetDirectoryName(FilePath)) Then
-                    System.IO.Directory.CreateDirectory(System.IO.Path.GetDirectoryName(FilePath))
+                Dim FilePath = IO.Path.Combine(TempPath, FileData.FilePath, DirectoryEntry.GetFullFileName)
+                If Not IO.Directory.Exists(IO.Path.GetDirectoryName(FilePath)) Then
+                    IO.Directory.CreateDirectory(IO.Path.GetDirectoryName(FilePath))
                 End If
-                System.IO.File.WriteAllBytes(FilePath, DirectoryEntry.GetContent)
+                IO.File.WriteAllBytes(FilePath, DirectoryEntry.GetContent)
                 Dim D = DirectoryEntry.GetLastWriteDate
                 If D.IsValidDate Then
-                    System.IO.File.SetLastWriteTime(FilePath, D.DateObject)
+                    IO.File.SetLastWriteTime(FilePath, D.DateObject)
                 End If
             End If
         Next
 
-        If System.IO.Directory.Exists(TempPath) Then
-            Dim FileList = System.IO.Directory.EnumerateDirectories(TempPath)
-            For Each FilePath In System.IO.Directory.GetFiles(TempPath)
+        If IO.Directory.Exists(TempPath) Then
+            Dim FileList = IO.Directory.EnumerateDirectories(TempPath)
+            For Each FilePath In IO.Directory.GetFiles(TempPath)
                 FileList = FileList.Append(FilePath)
             Next
             If FileList.Count > 0 Then
                 Dim Data = New DataObject(DataFormats.FileDrop, FileList.ToArray)
                 ListViewFiles.DoDragDrop(Data, DragDropEffects.Copy)
             End If
-            System.IO.Directory.Delete(TempPath, True)
+            IO.Directory.Delete(TempPath, True)
         End If
     End Sub
 
@@ -424,6 +410,23 @@ Public Class MainForm
         GenerateDebugPackage(_Disk, ImageData)
     End Sub
 
+    Private Sub FileClose(ImageData As LoadedImageData)
+        ItemScanAll(_Disk, ImageData, True, True)
+        _LoadedImageList.Remove(ImageData)
+        _LoadedFileNames.Remove(ImageData.FilePath)
+        Dim SelectedIndex = ComboGroups.SelectedIndex
+        ComboGroups.Items.Remove(ImageData)
+        If ComboGroups.Items.Count > 0 Then
+            If SelectedIndex > ComboGroups.Items.Count - 1 Then
+                SelectedIndex = ComboGroups.Items.Count - 1
+            End If
+            ComboGroups.SelectedIndex = SelectedIndex
+            ImageCountUpdate()
+        Else
+            ResetAll()
+        End If
+    End Sub
+
     Private Sub FileDropStart(e As DragEventArgs)
         If _SuppressEvent Then
             Exit Sub
@@ -433,19 +436,89 @@ Public Class MainForm
         End If
     End Sub
 
+    Private Sub FileReplace(Offset As UInteger)
+        Dim DirectoryEntry = _Disk.GetDirectoryEntryByOffset(Offset)
+        Dim ImageData As LoadedImageData = ComboGroups.SelectedItem
+
+        Dim Dialog = New OpenFileDialog
+        If Dialog.ShowDialog <> DialogResult.OK Then
+            Exit Sub
+        End If
+
+        Dim FileInfo As New IO.FileInfo(Dialog.FileName)
+        Dim Msg As String
+
+        If FileInfo.Length < DirectoryEntry.FileSize Then
+            Msg = FileInfo.Name & " is smaller than " & DirectoryEntry.GetFullFileName & " and will be padded with nulls." & vbCrLf & vbCrLf
+        ElseIf FileInfo.Length > DirectoryEntry.FileSize Then
+            Msg = FileInfo.Name & " is larger than " & DirectoryEntry.GetFullFileName & " and will be truncated." & vbCrLf & vbCrLf
+        Else
+            Msg = ""
+        End If
+        Msg &= "Do you wish to replace " & DirectoryEntry.GetFullFileName & " with " & FileInfo.FullName & "?"
+
+
+        If MsgBox(Msg, MsgBoxStyle.Question + MsgBoxStyle.YesNo + MsgBoxStyle.DefaultButton2) = MsgBoxResult.Yes Then
+            Dim ClusterSize = _Disk.BootSector.BytesPerCluster
+            Dim FileSize = Math.Min(DirectoryEntry.FileSize, DirectoryEntry.FatClusterList.Count * ClusterSize)
+            Dim BytesToFill As Integer
+            Dim ClusterIndex As Integer = 0
+            Using fs = FileInfo.OpenRead()
+                Dim BytesToRead As Integer = Math.Min(fs.Length, FileSize)
+                Dim n As Integer
+                Do While BytesToRead > 0
+                    Dim b(ClusterSize - 1) As Byte
+                    Dim Cluster = DirectoryEntry.FatClusterList(ClusterIndex)
+                    Dim ClusterOffset = _Disk.ClusterToOffset(Cluster)
+                    If BytesToRead < ClusterSize Then
+                        b = _Disk.GetBytes(ClusterOffset, ClusterSize)
+                    End If
+                    n = fs.Read(b, 0, Math.Min(ClusterSize, BytesToRead))
+                    BytesToRead -= n
+                    FileSize -= n
+                    If BytesToRead <= 0 And FileSize > 0 And n < ClusterSize Then
+                        BytesToFill = Math.Min(b.Length - n, FileSize)
+                        For Counter = n To n + BytesToFill - 1
+                            b(Counter) = 0
+                        Next
+                        FileSize -= BytesToFill
+                    End If
+                    _Disk.SetBytes(b, ClusterOffset)
+
+                    ClusterIndex += 1
+                Loop
+            End Using
+            Do While FileSize > 0
+                Dim b(ClusterSize - 1) As Byte
+                Dim Cluster = DirectoryEntry.FatClusterList(ClusterIndex)
+                Dim ClusterOffset = _Disk.ClusterToOffset(Cluster)
+                BytesToFill = Math.Min(FileSize, ClusterSize)
+                If BytesToFill < ClusterSize Then
+                    b = _Disk.GetBytes(ClusterOffset, ClusterSize)
+                End If
+                For Counter = 0 To BytesToFill - 1
+                    b(Counter) = 0
+                Next
+                FileSize -= BytesToFill
+                _Disk.SetBytes(b, ClusterOffset)
+                ClusterIndex += 1
+            Loop
+            ItemScanAll(_Disk, ComboGroups.SelectedItem, True)
+            ComboItemRefresh(True)
+        End If
+    End Sub
+
     Private Sub FilesOpen()
         Dim Dialog = New OpenFileDialog With {
-            .Filter = "Disk Image Files (*.ima; *.img)|*.ima;*.img",
+            .Filter = FILE_FILTER,
             .Multiselect = True
         }
         If Dialog.ShowDialog <> DialogResult.OK Then
             Exit Sub
         End If
 
-        ProcessFileDrop(Dialog.FileNames)
+        ProcessFileDrop(Dialog.FileNames, False)
     End Sub
-
-#Region "Filter Functions"
 
     Private Sub FiltersInitialize()
         Dim FilterCount As Integer = [Enum].GetNames(GetType(FilterTypes)).Length
@@ -601,8 +674,6 @@ Public Class MainForm
         BtnScan.Text = "Scan Images"
     End Sub
 
-#End Region
-
     Private Function GetFileDataFromDirectoryEntry(DirectoryEntry As DiskImage.DirectoryEntry, FilePath As String) As FileData
         Dim Response As FileData
         With Response
@@ -617,14 +688,14 @@ Public Class MainForm
         Dim PathName As String = ""
         Dim CheckPath As Boolean = False
         For Each ImageData In _LoadedImageList
-            Dim CurrentPathName As String = System.IO.Path.GetDirectoryName(ImageData.FilePath)
+            Dim CurrentPathName As String = IO.Path.GetDirectoryName(ImageData.FilePath)
             If CheckPath Then
                 If Len(CurrentPathName) > Len(PathName) Then
                     CurrentPathName = Strings.Left(CurrentPathName, Len(PathName))
                 End If
                 Do While PathName <> CurrentPathName
-                    PathName = System.IO.Path.GetDirectoryName(PathName)
-                    CurrentPathName = System.IO.Path.GetDirectoryName(CurrentPathName)
+                    PathName = IO.Path.GetDirectoryName(PathName)
+                    CurrentPathName = IO.Path.GetDirectoryName(CurrentPathName)
                 Loop
             Else
                 PathName = CurrentPathName
@@ -820,9 +891,13 @@ Public Class MainForm
     End Sub
 
     Private Sub ItemSelectionChanged()
-        RefreshDisplayFileButton()
-        RefreshEditButtons()
+        RefreshFileButtons()
         FileCountUpdate()
+        Dim CheckAll = (ListViewFiles.SelectedItems.Count = ListViewFiles.Items.Count)
+        If CheckAll <> _CheckAll Then
+            _CheckAll = CheckAll
+            ListViewFiles.Invalidate(New Rectangle(0, 0, 20, 20), True)
+        End If
     End Sub
 
     Private Function ListViewFilesGetItem(DirectoryEntry As DiskImage.DirectoryEntry, Group As ListViewGroup, LFNFileName As String, FileData As FileData) As ListViewItem
@@ -1082,14 +1157,13 @@ Public Class MainForm
         ListViewFiles.EndUpdate()
 
         ItemSelectionChanged()
-        _CheckAll = False
     End Sub
 
     Private Sub PopulateSummary()
         Dim ForeColor As Color
 
-        Me.Text = "Disk Image Tool - " & System.IO.Path.GetFileName(_Disk.FilePath)
-        ToolStripFileName.Text = System.IO.Path.GetFileName(_Disk.FilePath)
+        Me.Text = "Disk Image Tool - " & IO.Path.GetFileName(_Disk.FilePath)
+        ToolStripFileName.Text = IO.Path.GetFileName(_Disk.FilePath)
         ToolStripFileName.Visible = True
 
         ListViewSummary.BeginUpdate()
@@ -1270,10 +1344,17 @@ Public Class MainForm
         Return Response
     End Function
 
-    Private Sub ProcessFileDrop(Files() As String)
+    Private Sub ProcessFileDrop(File As String, AllowAllExtensions As Boolean)
+        Dim Files(0) As String
+        Files(0) = File
+
+        ProcessFileDrop(Files, AllowAllExtensions)
+    End Sub
+
+    Private Sub ProcessFileDrop(Files() As String, AllowAllExtensions As Boolean)
         Dim AllowedExtensions = {".img", ".ima"}
         Dim FilePath As String
-        Dim FileInfo As System.IO.FileInfo
+        Dim FileInfo As IO.FileInfo
         Dim SelectedImageData As LoadedImageData = Nothing
 
         Me.UseWaitCursor = True
@@ -1282,14 +1363,14 @@ Public Class MainForm
         LoadedImageData.StringOffset = 0
 
         For Each FilePath In Files.OrderBy(Function(f) f)
-            Dim FAttributes = System.IO.File.GetAttributes(FilePath)
-            If (FAttributes And System.IO.FileAttributes.Directory) > 0 Then
-                Dim DirectoryInfo As New System.IO.DirectoryInfo(FilePath)
-                For Each FileInfo In DirectoryInfo.GetFiles("*.im*", System.IO.SearchOption.AllDirectories)
+            Dim FAttributes = IO.File.GetAttributes(FilePath)
+            If (FAttributes And IO.FileAttributes.Directory) > 0 Then
+                Dim DirectoryInfo As New IO.DirectoryInfo(FilePath)
+                For Each FileInfo In DirectoryInfo.GetFiles("*.im*", IO.SearchOption.AllDirectories)
                     If AllowedExtensions.Contains(FileInfo.Extension.ToLower) Then
-                        If Not _LoadedFileNames.Contains(FileInfo.FullName) Then
-                            _LoadedFileNames.Add(FileInfo.FullName)
+                        If Not _LoadedFileNames.ContainsKey(FileInfo.FullName) Then
                             Dim ImageData As New LoadedImageData(FileInfo.FullName)
+                            _LoadedFileNames.Add(FileInfo.FullName, ImageData)
                             ImageData.ComboIndex = ComboGroups.Items.Add(ImageData)
                             _LoadedImageList.Add(ImageData)
                             If SelectedImageData Is Nothing Then
@@ -1299,11 +1380,11 @@ Public Class MainForm
                     End If
                 Next
             Else
-                Dim Ext As String = UCase(System.IO.Path.GetExtension(FilePath))
-                If Ext = ".IMA" Or Ext = ".IMG" Then
-                    If Not _LoadedFileNames.Contains(FilePath) Then
-                        _LoadedFileNames.Add(FilePath)
+                Dim Ext As String = IO.Path.GetExtension(FilePath)
+                If AllowAllExtensions Or AllowedExtensions.Contains(Ext.ToLower) Then
+                    If Not _LoadedFileNames.ContainsKey(FilePath) Then
                         Dim ImageData As New LoadedImageData(FilePath)
+                        _LoadedFileNames.Add(FilePath, ImageData)
                         ImageData.ComboIndex = ComboGroups.Items.Add(ImageData)
                         _LoadedImageList.Add(ImageData)
                         If SelectedImageData Is Nothing Then
@@ -1343,7 +1424,8 @@ Public Class MainForm
         Me.UseWaitCursor = False
     End Sub
 
-    Private Sub RefreshDisplayFileButton()
+    Private Sub RefreshFileButtons()
+        BtnFileProperties.Enabled = (ListViewFiles.SelectedItems.Count > 0)
         If ListViewFiles.SelectedItems.Count = 1 Then
             Dim FileData = ListViewFiles.SelectedItems(0).Tag
             Dim DirectoryEntry = _Disk.GetDirectoryEntryByOffset(FileData.Offset)
@@ -1355,23 +1437,23 @@ Public Class MainForm
 
                 If DirectoryEntry.IsDeleted Then
                     BtnDisplayFile.Text = "Deleted &File:  " & DirectoryEntry.GetFullFileName
+                    BtnReplaceFile.Enabled = False
                 Else
                     BtnDisplayFile.Text = "&File:  " & DirectoryEntry.GetFullFileName
+                    BtnReplaceFile.Enabled = True
                 End If
                 BtnDisplayFile.Tag = FileData.Offset
                 BtnDisplayFile.Visible = True
             Else
                 BtnDisplayFile.Tag = Nothing
                 BtnDisplayFile.Visible = False
+                BtnReplaceFile.Enabled = False
             End If
         Else
             BtnDisplayFile.Tag = Nothing
             BtnDisplayFile.Visible = False
+            BtnReplaceFile.Enabled = False
         End If
-    End Sub
-
-    Private Sub RefreshEditButtons()
-        BtnFileProperties.Enabled = (ListViewFiles.SelectedItems.Count > 0)
     End Sub
 
     Private Sub RefreshButtonState()
@@ -1405,8 +1487,13 @@ Public Class MainForm
                 If Result Then
                     If ImageData.ComboIndex > -1 Then
                         _SuppressEvent = True
-                        ComboGroups.Items(ImageData.ComboIndex) = ComboGroups.Items(ImageData.ComboIndex)
-                        _SuppressEvent = False
+                        If ImageData Is ComboGroups.SelectedItem Then
+                            ComboItemRefresh(True)
+                        Else
+                            _SuppressEvent = True
+                            ComboGroups.Items(ImageData.ComboIndex) = ComboGroups.Items(ImageData.ComboIndex)
+                            _SuppressEvent = False
+                        End If
                     End If
                 End If
             End If
@@ -1414,7 +1501,6 @@ Public Class MainForm
         _SuppressEvent = False
 
         FilterUpdate(FilterTypes.ModifiedFiles)
-        ComboItemRefresh(False)
     End Sub
 
     Private Sub SaveCurrent(NewFileName As Boolean)
@@ -1422,9 +1508,9 @@ Public Class MainForm
 
         If NewFileName Then
             Dim Dialog = New SaveFileDialog With {
-                .InitialDirectory = System.IO.Path.GetDirectoryName(_Disk.FilePath),
-                .FileName = System.IO.Path.GetFileName(_Disk.FilePath),
-                .Filter = "Disk Image Files (*.ima; *.img)|*.ima;*.img"
+                .InitialDirectory = IO.Path.GetDirectoryName(_Disk.FilePath),
+                .FileName = IO.Path.GetFileName(_Disk.FilePath),
+                .Filter = FILE_FILTER
             }
             If Dialog.ShowDialog <> DialogResult.OK Then
                 Exit Sub
@@ -1434,18 +1520,32 @@ Public Class MainForm
             FilePath = ""
         End If
 
-        Dim Result = DiskImageSave(ComboGroups.SelectedItem, FilePath)
+        Dim ImageData As LoadedImageData = ComboGroups.SelectedItem
+
+        Dim Result = DiskImageSave(ImageData, FilePath)
         If Result Then
             FilterUpdate(FilterTypes.ModifiedFiles)
-            ComboItemRefresh(False)
+            If NewFileName Then
+                If _LoadedFileNames.ContainsKey(FilePath) Then
+                    FileClose(_LoadedFileNames.Item(FilePath))
+                End If
+                _LoadedFileNames.Remove(ImageData.FilePath)
+                _LoadedFileNames.Add(FilePath, ImageData)
+                ImageData.FilePath = FilePath
+                ComboGroups.BeginUpdate()
+                LoadedImageData.StringOffset = GetPathOffset()
+                ComboGroupRefreshItemText()
+                ComboGroups.EndUpdate()
+            End If
+            ComboItemRefresh(True)
         End If
     End Sub
 
     Private Function SaveDiskImageToFile(Disk As DiskImage.Disk, FilePath As String) As Boolean
         Try
-            If System.IO.File.Exists(FilePath) Then
+            If IO.File.Exists(FilePath) Then
                 Dim BackupPath As String = FilePath & ".bak"
-                System.IO.File.Copy(FilePath, BackupPath, True)
+                IO.File.Copy(FilePath, BackupPath, True)
             End If
             Disk.SaveFile(FilePath)
         Catch ex As Exception
@@ -1486,7 +1586,7 @@ Public Class MainForm
     End Sub
 
     Private Sub BtnExportDebug_Click(sender As Object, e As EventArgs) Handles BtnExportDebug.Click
-        ExportDebugScript
+        ExportDebugScript()
     End Sub
 
     Private Sub BtnDisplayBootSector_Click(sender As Object, e As EventArgs) Handles BtnDisplayBootSector.Click
@@ -1566,7 +1666,8 @@ Public Class MainForm
     End Sub
 
     Private Sub File_DragDrop(sender As Object, e As DragEventArgs) Handles ComboGroups.DragDrop, LabelDropMessage.DragDrop, ListViewFiles.DragDrop, ListViewHashes.DragDrop, ListViewSummary.DragDrop
-        ProcessFileDrop(e.Data.GetData(DataFormats.FileDrop))
+        Dim Files As String() = e.Data.GetData(DataFormats.FileDrop)
+        ProcessFileDrop(Files, False)
     End Sub
 
     Private Sub File_DragEnter(sender As Object, e As DragEventArgs) Handles ComboGroups.DragEnter, LabelDropMessage.DragEnter, ListViewFiles.DragEnter, ListViewHashes.DragEnter, ListViewSummary.DragEnter
@@ -1619,7 +1720,7 @@ Public Class MainForm
                     Item.Selected = _CheckAll
                 Next
                 _SuppressEvent = False
-                RefreshEditButtons()
+                ItemSelectionChanged()
             End If
         End If
     End Sub
@@ -1654,6 +1755,7 @@ Public Class MainForm
                 If DirectoryEntry.IsVolumeName Or DirectoryEntry.HasInvalidFileSize Or DirectoryEntry.StartingCluster < 2 Then
                     BtnFileMenuViewFile.Enabled = False
                     BtnFileMenuViewFileText.Visible = False
+                    BtnFileMenuReplaceFile.Enabled = False
                     Caption &= "File"
                 Else
                     BtnFileMenuViewFile.Enabled = True
@@ -1663,10 +1765,12 @@ Public Class MainForm
                     If DirectoryEntry.IsDirectory Then
                         Caption &= "Directory"
                         BtnFileMenuViewFileText.Visible = False
+                        BtnFileMenuReplaceFile.Enabled = False
                     Else
                         Caption &= "File"
                         BtnFileMenuViewFileText.Visible = Not DirectoryEntry.IsDeleted
                         BtnFileMenuViewFileText.Enabled = True
+                        BtnFileMenuReplaceFile.Enabled = Not DirectoryEntry.IsDeleted
                     End If
                 End If
                 BtnFileMenuUndo.Enabled = DirectoryEntry.IsModified
@@ -1684,6 +1788,7 @@ Public Class MainForm
                         Exit For
                     End If
                 Next
+                BtnFileMenuReplaceFile.Enabled = False
             End If
             BtnFileMenuViewFile.Text = Caption
         End If
@@ -1718,6 +1823,14 @@ Public Class MainForm
         If Removed Then
             ItemScanAll(_Disk, ComboGroups.SelectedItem, True)
             ComboItemRefresh(True)
+        End If
+    End Sub
+
+    Private Sub BtnReplaceFile_Click(sender As Object, e As EventArgs) Handles BtnReplaceFile.Click, BtnFileMenuReplaceFile.Click
+        If ListViewFiles.SelectedItems.Count = 1 Then
+            Dim Item As ListViewItem = ListViewFiles.SelectedItems(0)
+            Dim FileData As FileData = Item.Tag
+            FileReplace(FileData.Offset)
         End If
     End Sub
 
