@@ -261,11 +261,11 @@ Namespace DiskImage
         End Function
 
         Public Function GetFileExtension() As String
-            Return Encoding.UTF8.GetString(Extension).Trim
+            Return Encoding.UTF8.GetString(Extension).TrimEnd(" ")
         End Function
 
         Public Function GetFileName() As String
-            Return Encoding.UTF8.GetString(FileName).Trim
+            Return Encoding.UTF8.GetString(FileName).TrimEnd(" ")
         End Function
 
         Public Function GetVolumeName() As String
@@ -326,6 +326,17 @@ Namespace DiskImage
 
         Public Function HasInvalidFileSize() As Boolean
             Return FileSize > Parent.BootSector.ImageSize
+        End Function
+
+        Public Function HasIncorrectFileSize() As Boolean
+            If IsDirectory() Then
+                Return False
+            End If
+
+            Dim AllocatedSize As UInteger = Math.Ceiling(FileSize / _Parent.BootSector.BytesPerCluster) * _Parent.BootSector.BytesPerCluster
+            Dim AllocatedSizeFromFAT As UInteger = _FatClusterList.Count * _Parent.BootSector.BytesPerCluster
+
+            Return AllocatedSize <> AllocatedSizeFromFAT
         End Function
 
         Public Function HasLastAccessDate() As Boolean

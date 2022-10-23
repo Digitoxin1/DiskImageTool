@@ -33,7 +33,6 @@ Partial Class MainForm
         Dim FileLastWriteDate As System.Windows.Forms.ColumnHeader
         Dim FileStartingCluster As System.Windows.Forms.ColumnHeader
         Dim FileAttrib As System.Windows.Forms.ColumnHeader
-        Dim FileCRC32 As System.Windows.Forms.ColumnHeader
         Dim FileModified As System.Windows.Forms.ColumnHeader
         Dim MainMenuFile As System.Windows.Forms.ToolStripMenuItem
         Dim resources As System.ComponentModel.ComponentResourceManager = New System.ComponentModel.ComponentResourceManager(GetType(MainForm))
@@ -54,6 +53,7 @@ Partial Class MainForm
         Me.BtnOEMID = New System.Windows.Forms.ToolStripMenuItem()
         Me.ToolStripSeparator4 = New System.Windows.Forms.ToolStripSeparator()
         Me.BtnFileProperties = New System.Windows.Forms.ToolStripMenuItem()
+        Me.BtnReplaceFile = New System.Windows.Forms.ToolStripMenuItem()
         Me.ToolStripSeparator2 = New System.Windows.Forms.ToolStripSeparator()
         Me.BtnRevert = New System.Windows.Forms.ToolStripMenuItem()
         Me.BtnDisplayBootSector = New System.Windows.Forms.ToolStripMenuItem()
@@ -61,8 +61,9 @@ Partial Class MainForm
         Me.BtnDisplayClusters = New System.Windows.Forms.ToolStripMenuItem()
         Me.BtnDisplayFile = New System.Windows.Forms.ToolStripMenuItem()
         Me.BtnExportDebug = New System.Windows.Forms.ToolStripMenuItem()
+        Me.FileCRC32 = CType(New System.Windows.Forms.ColumnHeader(), System.Windows.Forms.ColumnHeader)
         Me.ListViewSummary = New System.Windows.Forms.ListView()
-        Me.ComboGroups = New System.Windows.Forms.ComboBox()
+        Me.ComboImages = New System.Windows.Forms.ComboBox()
         Me.ListViewHashes = New System.Windows.Forms.ListView()
         Me.LabelDropMessage = New System.Windows.Forms.Label()
         Me.StatusStrip1 = New System.Windows.Forms.StatusStrip()
@@ -73,6 +74,7 @@ Partial Class MainForm
         Me.ListViewFiles = New System.Windows.Forms.ListView()
         Me.ContextMenuFiles = New System.Windows.Forms.ContextMenuStrip(Me.components)
         Me.BtnFileMenuFileProperties = New System.Windows.Forms.ToolStripMenuItem()
+        Me.BtnFileMenuReplaceFile = New System.Windows.Forms.ToolStripMenuItem()
         Me.BtnFileMenuViewFile = New System.Windows.Forms.ToolStripMenuItem()
         Me.BtnFileMenuViewFileText = New System.Windows.Forms.ToolStripMenuItem()
         Me.FileMenuSeparator = New System.Windows.Forms.ToolStripSeparator()
@@ -83,8 +85,9 @@ Partial Class MainForm
         Me.BtnScanNew = New System.Windows.Forms.ToolStripMenuItem()
         Me.BtnScan = New System.Windows.Forms.ToolStripMenuItem()
         Me.FilterSeparator = New System.Windows.Forms.ToolStripSeparator()
-        Me.BtnFileMenuReplaceFile = New System.Windows.Forms.ToolStripMenuItem()
-        Me.BtnReplaceFile = New System.Windows.Forms.ToolStripMenuItem()
+        Me.FileCreateDate = CType(New System.Windows.Forms.ColumnHeader(), System.Windows.Forms.ColumnHeader)
+        Me.FileLastAccessDate = CType(New System.Windows.Forms.ColumnHeader(), System.Windows.Forms.ColumnHeader)
+        Me.FileLFN = CType(New System.Windows.Forms.ColumnHeader(), System.Windows.Forms.ColumnHeader)
         SummaryName = CType(New System.Windows.Forms.ColumnHeader(), System.Windows.Forms.ColumnHeader)
         SummaryValue = CType(New System.Windows.Forms.ColumnHeader(), System.Windows.Forms.ColumnHeader)
         HashName = CType(New System.Windows.Forms.ColumnHeader(), System.Windows.Forms.ColumnHeader)
@@ -95,7 +98,6 @@ Partial Class MainForm
         FileLastWriteDate = CType(New System.Windows.Forms.ColumnHeader(), System.Windows.Forms.ColumnHeader)
         FileStartingCluster = CType(New System.Windows.Forms.ColumnHeader(), System.Windows.Forms.ColumnHeader)
         FileAttrib = CType(New System.Windows.Forms.ColumnHeader(), System.Windows.Forms.ColumnHeader)
-        FileCRC32 = CType(New System.Windows.Forms.ColumnHeader(), System.Windows.Forms.ColumnHeader)
         FileModified = CType(New System.Windows.Forms.ColumnHeader(), System.Windows.Forms.ColumnHeader)
         MainMenuFile = New System.Windows.Forms.ToolStripMenuItem()
         MainMenuEdit = New System.Windows.Forms.ToolStripMenuItem()
@@ -156,11 +158,6 @@ Partial Class MainForm
         '
         FileAttrib.Text = "Attrib"
         FileAttrib.Width = 75
-        '
-        'FileCRC32
-        '
-        FileCRC32.Text = "CRC32"
-        FileCRC32.Width = 70
         '
         'FileModified
         '
@@ -247,29 +244,35 @@ Partial Class MainForm
         'BtnOEMID
         '
         Me.BtnOEMID.Name = "BtnOEMID"
-        Me.BtnOEMID.Size = New System.Drawing.Size(180, 22)
+        Me.BtnOEMID.Size = New System.Drawing.Size(158, 22)
         Me.BtnOEMID.Text = "Change &OEM ID"
         '
         'ToolStripSeparator4
         '
         Me.ToolStripSeparator4.Name = "ToolStripSeparator4"
-        Me.ToolStripSeparator4.Size = New System.Drawing.Size(177, 6)
+        Me.ToolStripSeparator4.Size = New System.Drawing.Size(155, 6)
         '
         'BtnFileProperties
         '
         Me.BtnFileProperties.Name = "BtnFileProperties"
-        Me.BtnFileProperties.Size = New System.Drawing.Size(180, 22)
+        Me.BtnFileProperties.Size = New System.Drawing.Size(158, 22)
         Me.BtnFileProperties.Text = "File &Properties"
+        '
+        'BtnReplaceFile
+        '
+        Me.BtnReplaceFile.Name = "BtnReplaceFile"
+        Me.BtnReplaceFile.Size = New System.Drawing.Size(158, 22)
+        Me.BtnReplaceFile.Text = "&Replace File"
         '
         'ToolStripSeparator2
         '
         Me.ToolStripSeparator2.Name = "ToolStripSeparator2"
-        Me.ToolStripSeparator2.Size = New System.Drawing.Size(177, 6)
+        Me.ToolStripSeparator2.Size = New System.Drawing.Size(155, 6)
         '
         'BtnRevert
         '
         Me.BtnRevert.Name = "BtnRevert"
-        Me.BtnRevert.Size = New System.Drawing.Size(180, 22)
+        Me.BtnRevert.Size = New System.Drawing.Size(158, 22)
         Me.BtnRevert.Text = "&Revert Changes"
         Me.BtnRevert.TextAlign = System.Drawing.ContentAlignment.MiddleLeft
         '
@@ -322,6 +325,11 @@ Partial Class MainForm
         ToolStripSeparator5.Name = "ToolStripSeparator5"
         ToolStripSeparator5.Size = New System.Drawing.Size(168, 6)
         '
+        'FileCRC32
+        '
+        Me.FileCRC32.Text = "CRC32"
+        Me.FileCRC32.Width = 70
+        '
         'ListViewSummary
         '
         Me.ListViewSummary.AllowDrop = True
@@ -339,19 +347,19 @@ Partial Class MainForm
         Me.ListViewSummary.UseCompatibleStateImageBehavior = False
         Me.ListViewSummary.View = System.Windows.Forms.View.Details
         '
-        'ComboGroups
+        'ComboImages
         '
-        Me.ComboGroups.AllowDrop = True
-        Me.ComboGroups.Anchor = CType(((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Left) _
+        Me.ComboImages.AllowDrop = True
+        Me.ComboImages.Anchor = CType(((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Left) _
             Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
-        Me.ComboGroups.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList
-        Me.ComboGroups.DropDownWidth = 523
-        Me.ComboGroups.FormattingEnabled = True
-        Me.ComboGroups.Location = New System.Drawing.Point(320, 29)
-        Me.ComboGroups.Name = "ComboGroups"
-        Me.ComboGroups.Size = New System.Drawing.Size(642, 21)
-        Me.ComboGroups.Sorted = True
-        Me.ComboGroups.TabIndex = 3
+        Me.ComboImages.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList
+        Me.ComboImages.DropDownWidth = 523
+        Me.ComboImages.FormattingEnabled = True
+        Me.ComboImages.Location = New System.Drawing.Point(320, 29)
+        Me.ComboImages.Name = "ComboImages"
+        Me.ComboImages.Size = New System.Drawing.Size(642, 21)
+        Me.ComboImages.Sorted = True
+        Me.ComboImages.TabIndex = 3
         '
         'ListViewHashes
         '
@@ -437,7 +445,7 @@ Partial Class MainForm
         Me.ListViewFiles.Anchor = CType((((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Bottom) _
             Or System.Windows.Forms.AnchorStyles.Left) _
             Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
-        Me.ListViewFiles.Columns.AddRange(New System.Windows.Forms.ColumnHeader() {FileModified, FileName, FileExt, FileSize, FileLastWriteDate, FileStartingCluster, FileAttrib, FileCRC32})
+        Me.ListViewFiles.Columns.AddRange(New System.Windows.Forms.ColumnHeader() {FileModified, FileName, FileExt, FileSize, FileLastWriteDate, FileStartingCluster, FileAttrib, Me.FileCRC32, Me.FileCreateDate, Me.FileLastAccessDate, Me.FileLFN})
         Me.ListViewFiles.ContextMenuStrip = Me.ContextMenuFiles
         Me.ListViewFiles.FullRowSelect = True
         Me.ListViewFiles.HideSelection = False
@@ -453,13 +461,19 @@ Partial Class MainForm
         '
         Me.ContextMenuFiles.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.BtnFileMenuFileProperties, Me.BtnFileMenuReplaceFile, ToolStripSeparator5, Me.BtnFileMenuViewFile, Me.BtnFileMenuViewFileText, Me.FileMenuSeparator, Me.BtnFileMenuUndo})
         Me.ContextMenuFiles.Name = "ContextMenuFiles"
-        Me.ContextMenuFiles.Size = New System.Drawing.Size(181, 148)
+        Me.ContextMenuFiles.Size = New System.Drawing.Size(172, 126)
         '
         'BtnFileMenuFileProperties
         '
         Me.BtnFileMenuFileProperties.Name = "BtnFileMenuFileProperties"
         Me.BtnFileMenuFileProperties.Size = New System.Drawing.Size(171, 22)
         Me.BtnFileMenuFileProperties.Text = "Edit File &Properties"
+        '
+        'BtnFileMenuReplaceFile
+        '
+        Me.BtnFileMenuReplaceFile.Name = "BtnFileMenuReplaceFile"
+        Me.BtnFileMenuReplaceFile.Size = New System.Drawing.Size(171, 22)
+        Me.BtnFileMenuReplaceFile.Text = "&Replace File"
         '
         'BtnFileMenuViewFile
         '
@@ -505,7 +519,6 @@ Partial Class MainForm
         '
         Me.ContextMenuFilters.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.BtnScanNew, Me.BtnScan, Me.FilterSeparator})
         Me.ContextMenuFilters.Name = "ContextMenuStrip1"
-        Me.ContextMenuFilters.OwnerItem = Me.MainMenuFilters
         Me.ContextMenuFilters.Size = New System.Drawing.Size(168, 54)
         '
         'BtnScanNew
@@ -526,17 +539,20 @@ Partial Class MainForm
         Me.FilterSeparator.Size = New System.Drawing.Size(164, 6)
         Me.FilterSeparator.Visible = False
         '
-        'BtnFileMenuReplaceFile
+        'FileCreateDate
         '
-        Me.BtnFileMenuReplaceFile.Name = "BtnFileMenuReplaceFile"
-        Me.BtnFileMenuReplaceFile.Size = New System.Drawing.Size(180, 22)
-        Me.BtnFileMenuReplaceFile.Text = "&Replace File"
+        Me.FileCreateDate.Text = "Created"
+        Me.FileCreateDate.Width = 0
         '
-        'BtnReplaceFile
+        'FileLastAccessDate
         '
-        Me.BtnReplaceFile.Name = "BtnReplaceFile"
-        Me.BtnReplaceFile.Size = New System.Drawing.Size(180, 22)
-        Me.BtnReplaceFile.Text = "&Replace File"
+        Me.FileLastAccessDate.Text = "Last Accessed"
+        Me.FileLastAccessDate.Width = 0
+        '
+        'FileLFN
+        '
+        Me.FileLFN.Text = "Long File Name"
+        Me.FileLFN.Width = 0
         '
         'MainForm
         '
@@ -547,7 +563,7 @@ Partial Class MainForm
         Me.Controls.Add(Me.MenuStripMain)
         Me.Controls.Add(Me.LabelDropMessage)
         Me.Controls.Add(Me.ListViewHashes)
-        Me.Controls.Add(Me.ComboGroups)
+        Me.Controls.Add(Me.ComboImages)
         Me.Controls.Add(Me.ListViewSummary)
         Me.Controls.Add(Me.ListViewFiles)
         Me.Icon = CType(resources.GetObject("$this.Icon"), System.Drawing.Icon)
@@ -567,7 +583,7 @@ Partial Class MainForm
 
     End Sub
     Friend WithEvents ListViewSummary As ListView
-    Friend WithEvents ComboGroups As ComboBox
+    Friend WithEvents ComboImages As ComboBox
     Friend WithEvents ListViewHashes As ListView
     Friend WithEvents LabelDropMessage As Label
     Friend WithEvents StatusStrip1 As StatusStrip
@@ -610,4 +626,8 @@ Partial Class MainForm
     Friend WithEvents BtnFileMenuUndo As ToolStripMenuItem
     Friend WithEvents BtnReplaceFile As ToolStripMenuItem
     Friend WithEvents BtnFileMenuReplaceFile As ToolStripMenuItem
+    Friend WithEvents FileCRC32 As ColumnHeader
+    Friend WithEvents FileCreateDate As ColumnHeader
+    Friend WithEvents FileLastAccessDate As ColumnHeader
+    Friend WithEvents FileLFN As ColumnHeader
 End Class

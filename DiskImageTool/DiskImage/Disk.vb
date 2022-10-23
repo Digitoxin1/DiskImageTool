@@ -5,6 +5,8 @@
     End Structure
 
     Public Class Disk
+        Public Const BootSectorOffset As UInteger = 0
+        Public Const BootSectorSize As UInteger = 512
         Public Shared ReadOnly InvalidFileChars() As Byte = {&H22, &H2A, &H2B, &H2C, &H2E, &H2F, &H3A, &H3B, &H3C, &H3D, &H3E, &H3F, &H5B, &H5C, &H5D, &H7C, &H7F}
         Private ReadOnly _ValidBytesPerSector() As UShort = {512, 1024, 2048, 4096}
         Private ReadOnly _ValidSectorsPerSector() As Byte = {1, 2, 4, 8, 16, 32, 128}
@@ -13,6 +15,7 @@
         Private _FAT12() As UShort
         Private _FileAllocation As Dictionary(Of UInteger, UInteger)
         Private _FreeSpace As UInteger = 0
+        Private _BadClusters As UShort = 0
         Private ReadOnly _FileBytes() As Byte
         Private ReadOnly _FilePath As String
         Private ReadOnly _Modifications As Hashtable
@@ -42,6 +45,12 @@
                 _Directory = New Directory(Me)
             End If
         End Sub
+
+        Public ReadOnly Property BadClusters As UShort
+            Get
+                Return _BadClusters
+            End Get
+        End Property
 
         Public ReadOnly Property BootSector As BootSector
             Get
@@ -209,7 +218,7 @@
 
                 If C = &H20 And SpaceAllowed Then
                     Result = True
-                ElseIf IsVolumeName And (C = &H0 Or (Not IsExtension And Index = 0 And C = &H3)) Then
+                ElseIf IsVolumeName And (C = &H0 Or (Not IsExtension And Index = 1 And C = &H3)) Then
                     Result = True
                 ElseIf C < &H21 Then
                     Result = False
@@ -412,13 +421,13 @@
             Return Result
         End Function
 
-        Public Function GetVolumeLabel() As String
-            Dim VolumeLabel As String = ""
+        Public Function GetVolumeLabel() As DirectoryEntry
+            Dim VolumeLabel As DirectoryEntry = Nothing
 
             For Counter As UInteger = 1 To _Directory.DirectoryLength
                 Dim File = _Directory.GetFile(Counter)
                 If Not File.IsDeleted And File.IsVolumeName Then
-                    VolumeLabel = File.GetVolumeName
+                    VolumeLabel = File
                     Exit For
                 End If
             Next
@@ -495,6 +504,7 @@
             ReDim _FAT12(Size)
             _FileAllocation = New Dictionary(Of UInteger, UInteger)
             _FreeSpace = 0
+            _BadClusters = 0
 
             Array.Copy(_FileBytes, Start, FAT12Bytes, 0, Length)
 
@@ -506,6 +516,8 @@
                 _FAT12(Cluster) = b Mod 4096
                 If _FAT12(Cluster) = 0 Then
                     _FreeSpace += ClusterSize
+                ElseIf _FAT12(Cluster) = &HFF7 Then
+                    _BadClusters += 1
                 End If
                 Cluster += 1
                 If Cluster <= Size Then
@@ -513,6 +525,8 @@
                     _FAT12(Cluster) = b Mod 4096
                     If _FAT12(Cluster) = 0 Then
                         _FreeSpace += ClusterSize
+                    ElseIf _FAT12(Cluster) = &HFF7 Then
+                        _BadClusters += 1
                     End If
                     Cluster += 1
                 End If
