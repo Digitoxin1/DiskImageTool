@@ -72,6 +72,9 @@ Partial Class MainForm
         Me.ToolStripImageCount = New System.Windows.Forms.ToolStripStatusLabel()
         Me.ToolStripModified = New System.Windows.Forms.ToolStripStatusLabel()
         Me.ListViewFiles = New System.Windows.Forms.ListView()
+        Me.FileCreateDate = CType(New System.Windows.Forms.ColumnHeader(), System.Windows.Forms.ColumnHeader)
+        Me.FileLastAccessDate = CType(New System.Windows.Forms.ColumnHeader(), System.Windows.Forms.ColumnHeader)
+        Me.FileLFN = CType(New System.Windows.Forms.ColumnHeader(), System.Windows.Forms.ColumnHeader)
         Me.ContextMenuFiles = New System.Windows.Forms.ContextMenuStrip(Me.components)
         Me.BtnFileMenuFileProperties = New System.Windows.Forms.ToolStripMenuItem()
         Me.BtnFileMenuReplaceFile = New System.Windows.Forms.ToolStripMenuItem()
@@ -85,9 +88,7 @@ Partial Class MainForm
         Me.BtnScanNew = New System.Windows.Forms.ToolStripMenuItem()
         Me.BtnScan = New System.Windows.Forms.ToolStripMenuItem()
         Me.FilterSeparator = New System.Windows.Forms.ToolStripSeparator()
-        Me.FileCreateDate = CType(New System.Windows.Forms.ColumnHeader(), System.Windows.Forms.ColumnHeader)
-        Me.FileLastAccessDate = CType(New System.Windows.Forms.ColumnHeader(), System.Windows.Forms.ColumnHeader)
-        Me.FileLFN = CType(New System.Windows.Forms.ColumnHeader(), System.Windows.Forms.ColumnHeader)
+        Me.BtnDisplayFAT = New System.Windows.Forms.ToolStripMenuItem()
         SummaryName = CType(New System.Windows.Forms.ColumnHeader(), System.Windows.Forms.ColumnHeader)
         SummaryValue = CType(New System.Windows.Forms.ColumnHeader(), System.Windows.Forms.ColumnHeader)
         HashName = CType(New System.Windows.Forms.ColumnHeader(), System.Windows.Forms.ColumnHeader)
@@ -278,7 +279,7 @@ Partial Class MainForm
         '
         'MainMenuView
         '
-        MainMenuView.DropDownItems.AddRange(New System.Windows.Forms.ToolStripItem() {Me.BtnDisplayBootSector, Me.BtnDisplayDirectory, Me.BtnDisplayClusters, Me.BtnDisplayFile})
+        MainMenuView.DropDownItems.AddRange(New System.Windows.Forms.ToolStripItem() {Me.BtnDisplayBootSector, Me.BtnDisplayFAT, Me.BtnDisplayDirectory, Me.BtnDisplayClusters, Me.BtnDisplayFile})
         MainMenuView.Name = "MainMenuView"
         MainMenuView.Size = New System.Drawing.Size(44, 20)
         MainMenuView.Text = "&View"
@@ -286,25 +287,25 @@ Partial Class MainForm
         'BtnDisplayBootSector
         '
         Me.BtnDisplayBootSector.Name = "BtnDisplayBootSector"
-        Me.BtnDisplayBootSector.Size = New System.Drawing.Size(159, 22)
+        Me.BtnDisplayBootSector.Size = New System.Drawing.Size(180, 22)
         Me.BtnDisplayBootSector.Text = "&Boot Sector"
         '
         'BtnDisplayDirectory
         '
         Me.BtnDisplayDirectory.Name = "BtnDisplayDirectory"
-        Me.BtnDisplayDirectory.Size = New System.Drawing.Size(159, 22)
+        Me.BtnDisplayDirectory.Size = New System.Drawing.Size(180, 22)
         Me.BtnDisplayDirectory.Text = "&Root Directory"
         '
         'BtnDisplayClusters
         '
         Me.BtnDisplayClusters.Name = "BtnDisplayClusters"
-        Me.BtnDisplayClusters.Size = New System.Drawing.Size(159, 22)
+        Me.BtnDisplayClusters.Size = New System.Drawing.Size(180, 22)
         Me.BtnDisplayClusters.Text = "&Unused Clusters"
         '
         'BtnDisplayFile
         '
         Me.BtnDisplayFile.Name = "BtnDisplayFile"
-        Me.BtnDisplayFile.Size = New System.Drawing.Size(159, 22)
+        Me.BtnDisplayFile.Size = New System.Drawing.Size(180, 22)
         Me.BtnDisplayFile.Text = "&File"
         '
         'MainMenuExperimental
@@ -367,7 +368,7 @@ Partial Class MainForm
         Me.ListViewHashes.Anchor = CType((System.Windows.Forms.AnchorStyles.Bottom Or System.Windows.Forms.AnchorStyles.Left), System.Windows.Forms.AnchorStyles)
         Me.ListViewHashes.Columns.AddRange(New System.Windows.Forms.ColumnHeader() {HashName, HashValue})
         Me.ListViewHashes.Font = New System.Drawing.Font("Microsoft Sans Serif", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.ListViewHashes.HeaderStyle = System.Windows.Forms.ColumnHeaderStyle.Nonclickable
+        Me.ListViewHashes.HeaderStyle = System.Windows.Forms.ColumnHeaderStyle.None
         Me.ListViewHashes.HideSelection = False
         Me.ListViewHashes.Location = New System.Drawing.Point(12, 448)
         Me.ListViewHashes.MultiSelect = False
@@ -457,6 +458,21 @@ Partial Class MainForm
         Me.ListViewFiles.UseCompatibleStateImageBehavior = False
         Me.ListViewFiles.View = System.Windows.Forms.View.Details
         '
+        'FileCreateDate
+        '
+        Me.FileCreateDate.Text = "Created"
+        Me.FileCreateDate.Width = 0
+        '
+        'FileLastAccessDate
+        '
+        Me.FileLastAccessDate.Text = "Last Accessed"
+        Me.FileLastAccessDate.Width = 0
+        '
+        'FileLFN
+        '
+        Me.FileLFN.Text = "Long File Name"
+        Me.FileLFN.Width = 0
+        '
         'ContextMenuFiles
         '
         Me.ContextMenuFiles.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.BtnFileMenuFileProperties, Me.BtnFileMenuReplaceFile, ToolStripSeparator5, Me.BtnFileMenuViewFile, Me.BtnFileMenuViewFileText, Me.FileMenuSeparator, Me.BtnFileMenuUndo})
@@ -519,6 +535,7 @@ Partial Class MainForm
         '
         Me.ContextMenuFilters.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.BtnScanNew, Me.BtnScan, Me.FilterSeparator})
         Me.ContextMenuFilters.Name = "ContextMenuStrip1"
+        Me.ContextMenuFilters.OwnerItem = Me.MainMenuFilters
         Me.ContextMenuFilters.Size = New System.Drawing.Size(168, 54)
         '
         'BtnScanNew
@@ -539,20 +556,11 @@ Partial Class MainForm
         Me.FilterSeparator.Size = New System.Drawing.Size(164, 6)
         Me.FilterSeparator.Visible = False
         '
-        'FileCreateDate
+        'BtnDisplayFAT
         '
-        Me.FileCreateDate.Text = "Created"
-        Me.FileCreateDate.Width = 0
-        '
-        'FileLastAccessDate
-        '
-        Me.FileLastAccessDate.Text = "Last Accessed"
-        Me.FileLastAccessDate.Width = 0
-        '
-        'FileLFN
-        '
-        Me.FileLFN.Text = "Long File Name"
-        Me.FileLFN.Width = 0
+        Me.BtnDisplayFAT.Name = "BtnDisplayFAT"
+        Me.BtnDisplayFAT.Size = New System.Drawing.Size(180, 22)
+        Me.BtnDisplayFAT.Text = "File &Allocation Table"
         '
         'MainForm
         '
@@ -630,4 +638,5 @@ Partial Class MainForm
     Friend WithEvents FileCreateDate As ColumnHeader
     Friend WithEvents FileLastAccessDate As ColumnHeader
     Friend WithEvents FileLFN As ColumnHeader
+    Friend WithEvents BtnDisplayFAT As ToolStripMenuItem
 End Class

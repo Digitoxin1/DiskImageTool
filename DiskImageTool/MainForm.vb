@@ -34,6 +34,18 @@ Public Class MainForm
         frmHexView.ShowDialog()
     End Sub
 
+    Private Sub FATDisplayHex()
+        Dim DataBlockList As New List(Of DiskImage.DataBlock)
+        For Index = 0 To _Disk.BootSector.FatCopies - 1
+            Dim Length As UInteger = _Disk.BootSector.SectorsPerFAT * _Disk.BootSector.BytesPerSector
+            Dim Start As UInteger = _Disk.SectorToOffset(_Disk.BootSector.FatRegionStart) + Length * Index
+            DataBlockList.Add(DiskImage.Disk.NewDataBlock(Start, Length))
+        Next
+
+        Dim frmHexView As New HexViewForm(_Disk, DataBlockList, False, "File Allocation Table", False)
+        frmHexView.ShowDialog()
+    End Sub
+
     Private Function CloseAll() As Boolean
         Dim Result As MsgBoxResult = MsgBoxResult.No
 
@@ -692,10 +704,12 @@ Public Class MainForm
         If _Disk IsNot Nothing AndAlso _Disk.IsValidImage Then
             BtnOEMID.Enabled = True
             BtnDisplayBootSector.Enabled = True
+            BtnDisplayFAT.Enabled = True
             BtnDisplayDirectory.Enabled = True
         Else
             BtnOEMID.Enabled = False
             BtnDisplayBootSector.Enabled = False
+            BtnDisplayFAT.Enabled = False
             BtnDisplayDirectory.Enabled = False
         End If
         BtnDisplayFile.Tag = Nothing
@@ -709,7 +723,7 @@ Public Class MainForm
         ItemScanModified(Disk, ImageData, UpdateFilters, Remove)
 
         If ImageData.Scanned Then
-            ItemScanValidImage(Disk, ImageData, UpdateFilters, Remove)
+            ItemScanDisk(Disk, ImageData, UpdateFilters, Remove)
             ItemScanOEMID(Disk, ImageData, UpdateFilters, Remove)
             ItemScanUnusedClusters(Disk, ImageData, UpdateFilters, Remove)
             ItemScanDirectory(Disk, ImageData, UpdateFilters, Remove)
@@ -857,9 +871,19 @@ Public Class MainForm
         End If
     End Sub
 
-    Friend Sub ItemScanValidImage(Disk As DiskImage.Disk, ImageData As LoadedImageData, Optional UpdateFilters As Boolean = False, Optional Remove As Boolean = False)
-        Dim IsValidImage As Boolean = Disk.IsValidImage Or Remove
+    Friend Sub ItemScanDisk(Disk As DiskImage.Disk, ImageData As LoadedImageData, Optional UpdateFilters As Boolean = False, Optional Remove As Boolean = False)
+        Dim IsValidImage As Boolean = Disk.IsValidImage
+        Dim HasBadSectors As Boolean = False
+        Dim HasMismatchedFATs As Boolean = False
 
+        If Not Remove And IsValidImage Then
+            HasBadSectors = Disk.BadClusters > 0
+            HasMismatchedFATs = Not Disk.CompareFATTables
+        End If
+
+        If Remove Then
+            IsValidImage = True
+        End If
 
         If Not ImageData.Scanned Or IsValidImage <> ImageData.ScanInfo.IsValidImage Then
             ImageData.ScanInfo.IsValidImage = IsValidImage
@@ -870,6 +894,30 @@ Public Class MainForm
             End If
             If UpdateFilters Then
                 FilterUpdate(FilterTypes.HasInvalidImage)
+            End If
+        End If
+
+        If Not ImageData.Scanned Or HasBadSectors <> ImageData.ScanInfo.HasBadSectors Then
+            ImageData.ScanInfo.HasBadSectors = HasBadSectors
+            If HasBadSectors Then
+                _FilterCounts(FilterTypes.HasBadSectors) += 1
+            ElseIf ImageData.Scanned Then
+                _FilterCounts(FilterTypes.HasBadSectors) -= 1
+            End If
+            If UpdateFilters Then
+                FilterUpdate(FilterTypes.HasBadSectors)
+            End If
+        End If
+
+        If Not ImageData.Scanned Or HasMismatchedFATs <> ImageData.ScanInfo.HasMismatchedFATs Then
+            ImageData.ScanInfo.HasMismatchedFATs = HasMismatchedFATs
+            If HasMismatchedFATs Then
+                _FilterCounts(FilterTypes.HasMismatchedFATs) += 1
+            ElseIf ImageData.Scanned Then
+                _FilterCounts(FilterTypes.HasMismatchedFATs) -= 1
+            End If
+            If UpdateFilters Then
+                FilterUpdate(FilterTypes.HasMismatchedFATs)
             End If
         End If
     End Sub
@@ -1192,6 +1240,14 @@ Public Class MainForm
                 .Add(ListViewTileGetItem("Bytes Per Sector:", _Disk.BootSector.BytesPerSector))
                 .Add(ListViewTileGetItem("Sectors Per Cluster:", _Disk.BootSector.SectorsPerCluster))
                 .Add(ListViewTileGetItem("Sectors Per Track:", _Disk.BootSector.SectorsPerTrack))
+                Dim Value As String = _Disk.BootSector.FatCopies
+                If Not _Disk.CompareFATTables Then
+                    Value &= " (Mismatched)"
+                    ForeColor = Color.Red
+                Else
+                    ForeColor = SystemColors.WindowText
+                End If
+                .Add(ListViewTileGetItem("Number of FAT copies:", Value, ForeColor))
                 .Add(ListViewTileGetItem("Total Space:", Format(_Disk.BootSector.DataRegionSize * _Disk.BootSector.BytesPerSector, "N0") & " bytes"))
                 .Add(ListViewTileGetItem("Free Space:", Format(_Disk.FreeSpace, "N0") & " bytes"))
                 If _Disk.BadClusters > 0 Then
@@ -1199,6 +1255,7 @@ Public Class MainForm
                 End If
                 If BootstrapType IsNot Nothing Then
                     If Not OEMIDMatched Then
+                        .Add("")
                         For Each OEMID In BootstrapType.OEMIDList
                             .Add(ListViewTileGetItem("Detected OEM ID:", OEMID))
                         Next
@@ -1862,6 +1919,18 @@ Public Class MainForm
             Dim FileData As FileData = Item.Tag
             FileReplace(FileData.Offset)
         End If
+    End Sub
+
+    Private Sub ListViewSummary_ItemSelectionChanged(sender As Object, e As ListViewItemSelectionChangedEventArgs) Handles ListViewSummary.ItemSelectionChanged
+        e.Item.Selected = False
+    End Sub
+
+    Private Sub ListViewHashes_ItemSelectionChanged(sender As Object, e As ListViewItemSelectionChangedEventArgs) Handles ListViewHashes.ItemSelectionChanged
+        e.Item.Selected = False
+    End Sub
+
+    Private Sub BtnDisplayFAT_Click(sender As Object, e As EventArgs) Handles BtnDisplayFAT.Click
+        FATDisplayHex()
     End Sub
 
 #End Region

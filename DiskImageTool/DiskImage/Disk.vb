@@ -41,7 +41,7 @@
             End If
             _BootSector = New BootSector(Me)
             If IsValidImage() Then
-                PopulateFAT12()
+                PopulateFAT12(0)
                 _Directory = New Directory(Me)
             End If
         End Sub
@@ -360,6 +360,36 @@
             Return Count
         End Function
 
+        Public Function CompareFATTables() As Boolean
+            If _BootSector.FatCopies < 2 Then
+                Return True
+            End If
+
+            For Counter As UShort = 1 To _BootSector.FatCopies - 1
+                Dim FatCopy1 = GetFAT12(Counter - 1)
+                Dim FatCopy2 = GetFAT12(Counter)
+
+                For Index = 0 To FatCopy1.Length - 1
+                    If FatCopy1(Index) <> FatCopy2(Index) Then
+                        Return False
+                    End If
+                Next
+            Next
+
+            Return True
+        End Function
+
+        Private Function GetFAT12(Index As UShort) As Byte()
+            Dim Length As UInteger = _BootSector.SectorsPerFAT * _BootSector.BytesPerSector
+            Dim Start As UInteger = SectorToOffset(_BootSector.FatRegionStart) + Length * Index
+
+            Dim FAT12Bytes(Length - 1) As Byte
+
+            Array.Copy(_FileBytes, Start, FAT12Bytes, 0, Length)
+
+            Return FAT12Bytes
+        End Function
+
         Public Function GetFillCharacter() As Byte
             Dim Offset As UInteger = Math.Min(_FileBytes.Length, _BootSector.ImageSize)
             Dim FillChar = _FileBytes(Offset - 1)
@@ -494,22 +524,18 @@
             NewDataBlock.Length = Length
         End Function
 
-        Private Sub PopulateFAT12()
-            Dim Start As UInteger = SectorToOffset(_BootSector.FatRegionStart)
-            Dim Length As UInteger = SectorToOffset(_BootSector.FatRegionSize / 2)
+        Private Sub PopulateFAT12(Index As UShort)
             Dim Size As UShort = _BootSector.NumberOfFATEntries + 1
             Dim ClusterSize As UInteger = _BootSector.BytesPerCluster
-            Dim FAT12Bytes(Length - 1) As Byte
+            Dim FAT12Bytes = GetFAT12(Index)
 
             ReDim _FAT12(Size)
             _FileAllocation = New Dictionary(Of UInteger, UInteger)
             _FreeSpace = 0
             _BadClusters = 0
 
-            Array.Copy(_FileBytes, Start, FAT12Bytes, 0, Length)
-
             Dim b As UInteger
-            Start = 0
+            Dim Start As Integer = 0
             Dim Cluster As UShort = 0
             Do While Cluster <= Size
                 b = BitConverter.ToUInt32(FAT12Bytes, Start)

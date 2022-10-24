@@ -9,6 +9,8 @@
         HasInvalidDirectoryEntries
         UnusedClusters
         HasInvalidImage
+        HasBadSectors
+        HasMismatchedFATs
     End Enum
 
     Public Function FilterGetCaption(ID As FilterTypes, Count As Integer) As String
@@ -33,6 +35,10 @@
                 Caption = "Modified Files"
             Case FilterTypes.UnusedClusters
                 Caption = "Unused Clusters with Data"
+            Case FilterTypes.HasBadSectors
+                Caption = "Has Bad Sectors"
+            Case FilterTypes.HasMismatchedFATs
+                Caption = "Has Mismatched FATs"
             Case Else
                 Caption = ""
         End Select
@@ -96,6 +102,18 @@
 
         If CheckFilter(FilterTypes.UnusedClusters, AppliedFilters) Then
             If ImageData.ScanInfo.IsValidImage And ImageData.ScanInfo.HasUnusedClusters Then
+                Return False
+            End If
+        End If
+
+        If CheckFilter(FilterTypes.HasBadSectors, AppliedFilters) Then
+            If ImageData.ScanInfo.IsValidImage And ImageData.ScanInfo.HasBadSectors Then
+                Return False
+            End If
+        End If
+
+        If CheckFilter(FilterTypes.HasMismatchedFATs, AppliedFilters) Then
+            If ImageData.ScanInfo.IsValidImage And ImageData.ScanInfo.hasmismatchedFATS Then
                 Return False
             End If
         End If
