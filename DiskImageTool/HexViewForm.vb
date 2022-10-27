@@ -12,20 +12,42 @@ Public Class HexViewForm
         InitializeComponent()
 
         ' Add any initialization after the InitializeComponent() call.
-        Dim DataBlock = New List(Of DiskImage.DataBlock) From {
-            Block
+        Dim DataList = New List(Of HexViewData) From {
+            New HexViewData(Block)
         }
-        Initialize(Disk, DataBlock, AllowModifications, Caption, False)
+        Initialize(Disk, DataList, AllowModifications, Caption, False)
     End Sub
 
-    Public Sub New(Disk As DiskImage.Disk, DataBlockList As List(Of DiskImage.DataBlock), AllowModifications As Boolean, Caption As String, JumpPoints As Boolean)
+    Public Sub New(Disk As DiskImage.Disk, Data As HexViewData, AllowModifications As Boolean, Caption As String)
+        ' This call is required by the designer.
+        InitializeComponent()
+
+        ' Add any initialization after the InitializeComponent() call.
+        Dim DataList = New List(Of HexViewData) From {
+            Data
+        }
+        Initialize(Disk, DataList, AllowModifications, Caption, False)
+    End Sub
+
+    Public Sub New(Disk As DiskImage.Disk, DataBlockList As List(Of DiskImage.DataBlock), AllowModifications As Boolean, Caption As String)
         ' This call is required by the designer.
         InitializeComponent()
         ' Add any initialization after the InitializeComponent() call.
-        Initialize(Disk, DataBlockList, AllowModifications, Caption, JumpPoints)
+        Dim DataList = New List(Of HexViewData)
+        For Each Block In DataBlockList
+            DataList.Add(New HexViewData(Block))
+        Next
+        Initialize(Disk, DataList, AllowModifications, Caption, False)
     End Sub
 
-    Private Sub Initialize(Disk As DiskImage.Disk, DataBlockList As List(Of DiskImage.DataBlock), AllowModifications As Boolean, Caption As String, JumpPoints As Boolean)
+    Public Sub New(Disk As DiskImage.Disk, DataList As List(Of HexViewData), AllowModifications As Boolean, Caption As String)
+        ' This call is required by the designer.
+        InitializeComponent()
+        ' Add any initialization after the InitializeComponent() call.
+        Initialize(Disk, DataList, AllowModifications, Caption, False)
+    End Sub
+
+    Private Sub Initialize(Disk As DiskImage.Disk, DataList As List(Of HexViewData), AllowModifications As Boolean, Caption As String, JumpPoints As Boolean)
         _Disk = Disk
         _JumpPoints = JumpPoints
         _AllowModifications = AllowModifications
@@ -35,9 +57,11 @@ Public Class HexViewForm
         If AllowModifications Then
             BtnClear.Visible = True
             ComboBytes.Visible = True
+            LblHeaderFill.Visible = True
         Else
             BtnClear.Visible = False
             ComboBytes.Visible = False
+            LblHeaderFill.Visible = False
         End If
 
         If JumpPoints Then
@@ -46,12 +70,12 @@ Public Class HexViewForm
             LblHeaderCaption.Text = "Display:"
         End If
 
-        If DataBlockList.Count > 1 Or JumpPoints Or AllowModifications Then
+        If DataList.Count > 1 Or JumpPoints Or AllowModifications Then
             FlowLayoutHeader.Visible = True
             FlowLayoutHeader.Left = (Me.ClientSize.Width - FlowLayoutHeader.Width) / 2
             HexBox1.Top = FlowLayoutHeader.Bottom + 6
-            For Each Block In DataBlockList
-                CmbGroups.Items.Add(New ComboGroups(Disk, Block))
+            For Each HexViewData In DataList
+                CmbGroups.Items.Add(New ComboGroups(Disk, HexViewData))
             Next
             ComboBytes.SelectedIndex = 0
         Else
@@ -66,14 +90,16 @@ Public Class HexViewForm
         HexBox1.VScrollBarVisible = True
 
         If JumpPoints Then
-            Dim Sector = _Disk.OffsetToSector(DataBlockList(0).Offset)
+            Dim Sector = _Disk.OffsetToSector(DataList(0).DataBlock.Offset)
             Dim Cluster = _Disk.SectorToCluster(Sector)
             Dim Offset = _Disk.ClusterToOffset(Cluster)
             Dim OffsetEnd = Math.Min(Disk.Data.Length, Disk.BootSector.ImageSize)
 
-            DisplayBlock(DiskImage.Disk.NewDataBlock(Offset, OffsetEnd - Offset))
+            Dim HexViewData As New HexViewData(DiskImage.Disk.NewDataBlock(Offset, OffsetEnd - Offset))
+
+            DisplayBlock(HexViewData)
         Else
-            DisplayBlock(DataBlockList(0))
+            DisplayBlock(DataList(0))
         End If
 
         If CmbGroups.Items.Count > 0 Then
@@ -112,7 +138,7 @@ Public Class HexViewForm
             Next
             _Disk.SetBytes(Data, SectorOffset)
         Else
-            Dim Sector = _Disk.OffsetToSector(HexBox1.LineInfoOffset + HexBox1.startByte)
+            Dim Sector = _Disk.OffsetToSector(HexBox1.LineInfoOffset + HexBox1.StartByte)
             SectorOffset = _Disk.SectorToOffset(Sector)
             Dim OffsetStart = SectorOffset - HexBox1.LineInfoOffset
             Dim OffsetEnd = OffsetStart + SectorSize - 1
@@ -128,17 +154,25 @@ Public Class HexViewForm
         _Modified = True
     End Sub
 
-    Private Sub DisplayBlock(Block As DiskImage.DataBlock)
-        HexBox1.ByteProvider = New Hb.Windows.Forms.DynamicByteProvider(_Disk.GetBytes(Block.Offset, Block.Length))
-        HexBox1.LineInfoOffset = Block.Offset
-        PopulateToolstrip(Block.Offset, True)
-        ToolStripStatusBytes.Text = Format(Block.Length, "N0") & " bytes"
+    Private Sub DisplayBlock(Data As HexViewData)
+        With HexBox1
+            .ByteProvider = Nothing
+            .ByteProvider = New Hb.Windows.Forms.DynamicByteProvider(_Disk.GetBytes(Data.DataBlock.Offset, Data.DataBlock.Length))
+            .LineInfoOffset = Data.DataBlock.Offset
+            For Each HighlightRegion In Data.HighlightedRegions
+                .HighlightBackColor = HighlightRegion.BackColor
+                .HighlightForeColor = HighlightRegion.ForeColor
+                .Highlight(HighlightRegion.Start, HighlightRegion.Size)
+            Next
+        End With
+        PopulateToolstrip(Data.DataBlock.Offset, True)
+        ToolStripStatusBytes.Text = Format(Data.DataBlock.Length, "N0") & " bytes"
     End Sub
 
     Private Sub JumpTo(Offset As UInteger)
         Offset -= HexBox1.LineInfoOffset
 
-        If Offset > HexBox1.startByte Then
+        If Offset > HexBox1.StartByte Then
             Offset += (HexBox1.VerticalByteCount - 1) * HexBox1.HorizontalByteCount
         End If
 
@@ -148,11 +182,18 @@ Public Class HexViewForm
     Private Function PopulateToolstrip(Offset As UInteger, ForceUpdate As Boolean) As UInteger
         Dim Length As UInteger
         Dim BlockOffset As UInteger = 0
+        Dim Cluster As UShort = 0
+        Dim Sector As UInteger = 0
         Dim FileName As String = ""
 
-        Dim Sector = _Disk.OffsetToSector(Offset)
+        If _Disk.IsValidImage Then
+            Sector = _Disk.OffsetToSector(Offset)
+        End If
+
         If _CurrentSector <> Sector Or ForceUpdate Then
-            Dim Cluster = _Disk.SectorToCluster(Sector)
+            If _Disk.IsValidImage Then
+                Cluster = _Disk.SectorToCluster(Sector)
+            End If
 
             If Cluster = 0 Then
                 Length = _Disk.BootSector.BytesPerSector
@@ -164,8 +205,9 @@ Public Class HexViewForm
                 ToolStripStatusCluster.Visible = True
                 ToolStripStatusCluster.Text = "Cluster " & Cluster
                 If _Disk.FileAllocation.ContainsKey(Cluster) Then
-                    Dim DirectoryEntry = _Disk.GetDirectoryEntryByOffset(_Disk.FileAllocation.Item(Cluster))
-                    FileName = DirectoryEntry.GetFileName
+                    Dim OffsetList = _Disk.FileAllocation.Item(Cluster)
+                    Dim DirectoryEntry = _Disk.GetDirectoryEntryByOffset(OffsetList.Item(0))
+                    FileName = DirectoryEntry.GetFullFileName
                 End If
             End If
             ToolStripStatusSector.Text = "Sector " & Sector
@@ -198,7 +240,7 @@ Public Class HexViewForm
         End If
 
         If Delta < 0 Then
-            If HexBox1.endByte = HexBox1.ByteProvider.Length - 1 Then
+            If HexBox1.EndByte = HexBox1.ByteProvider.Length - 1 Then
                 If CmbGroups.SelectedIndex < CmbGroups.Items.Count - 1 Then
                     Dim Offset = HexBox1.SelectionStart Mod HexBox1.HorizontalByteCount
                     CmbGroups.SelectedIndex = CmbGroups.SelectedIndex + 1
@@ -206,7 +248,7 @@ Public Class HexViewForm
                 End If
             End If
         ElseIf Delta > 0 Then
-            If HexBox1.startByte = 0 Then
+            If HexBox1.StartByte = 0 Then
                 If CmbGroups.SelectedIndex > 0 Then
                     Dim Offset = HexBox1.SelectionStart Mod HexBox1.HorizontalByteCount
                     CmbGroups.SelectedIndex = CmbGroups.SelectedIndex - 1
@@ -252,7 +294,7 @@ Public Class HexViewForm
                 e.SuppressKeyPress = True
             End If
         ElseIf e.KeyCode = 33 Then 'Page Up
-            If HexBox1.startByte = 0 Then
+            If HexBox1.StartByte = 0 Then
                 If CmbGroups.SelectedIndex > 0 Then
                     Dim Offset = HexBox1.SelectionStart Mod HexBox1.HorizontalByteCount
                     CmbGroups.SelectedIndex = CmbGroups.SelectedIndex - 1
@@ -261,7 +303,7 @@ Public Class HexViewForm
                 End If
             End If
         ElseIf e.KeyCode = 34 Then 'Page Down
-            If HexBox1.endByte = HexBox1.ByteProvider.Length - 1 Then
+            If HexBox1.EndByte = HexBox1.ByteProvider.Length - 1 Then
                 If CmbGroups.SelectedIndex < CmbGroups.Items.Count - 1 Then
                     Dim Offset = HexBox1.SelectionStart Mod HexBox1.HorizontalByteCount
                     CmbGroups.SelectedIndex = CmbGroups.SelectedIndex + 1
@@ -274,7 +316,7 @@ Public Class HexViewForm
 
     Private Sub SelectGroupByOffset(Offset As UInteger)
         For Each Group As ComboGroups In CmbGroups.Items
-            If Offset >= Group.Block.Offset And Offset < Group.Block.Offset + Group.Block.Length Then
+            If Offset >= Group.Data.DataBlock.Offset And Offset < Group.Data.DataBlock.Offset + Group.Data.DataBlock.Length Then
                 If CmbGroups.SelectedItem IsNot Group Then
                     _SuppressEvent = True
                     CmbGroups.SelectedItem = Group
@@ -295,23 +337,22 @@ Public Class HexViewForm
 
         Dim Group As ComboGroups = CmbGroups.SelectedItem
         If _JumpPoints Then
-            JumpTo(Group.Block.Offset)
+            JumpTo(Group.Data.DataBlock.Offset)
         Else
-            DisplayBlock(Group.Block)
+            DisplayBlock(Group.Data)
         End If
     End Sub
 
-    Private Sub HexBox1_VisibilityBytesChanged(sender As Object, e As Hb.Windows.Forms.HexBox.VisibilityBytesEventArgs) Handles HexBox1.VisibilityBytesChanged
+    Private Sub HexBox1_VisibilityBytesChanged(sender As Object, e As EventArgs) Handles HexBox1.VisibilityBytesChanged
         Dim Offset As UInteger
 
-        If HexBox1.SelectionStart < e.startByte Or HexBox1.SelectionStart > e.endByte Then
-            Offset = e.startByte
+        If HexBox1.SelectionStart < HexBox1.StartByte Or HexBox1.SelectionStart > HexBox1.EndByte Then
+            Offset = HexBox1.StartByte
         Else
             Offset = HexBox1.SelectionStart
         End If
 
         Offset = PopulateToolstrip(HexBox1.LineInfoOffset + Offset, _JumpPoints)
-
 
         If _JumpPoints Then
             SelectGroupByOffset(Offset)
@@ -336,21 +377,24 @@ Public Class HexViewForm
 
     Private Class ComboGroups
         Public Property Disk As DiskImage.Disk
-        Public Property Block As DiskImage.DataBlock
+        Public Property Data As HexViewData
 
-        Public Sub New(Disk As DiskImage.Disk, Block As DiskImage.DataBlock)
+        Public Sub New(Disk As DiskImage.Disk, Data As HexViewData)
             Me.Disk = Disk
-            Me.Block = Block
+            Me.Data = Data
         End Sub
         Public Overrides Function ToString() As String
-            Dim Sector = Disk.OffsetToSector(Block.Offset)
-            Dim SectorEnd = Disk.OffsetToSector(Block.Offset + Block.Length - 1)
+            Dim Sector = Disk.OffsetToSector(Data.DataBlock.Offset)
+            Dim SectorEnd = Disk.OffsetToSector(Data.DataBlock.Offset + Data.DataBlock.Length - 1)
             Dim Cluster = Disk.SectorToCluster(Sector)
             Dim ClusterEnd = Disk.SectorToCluster(SectorEnd)
 
             Dim Header As String = "Sector " & Sector & IIf(SectorEnd > Sector, " - " & SectorEnd, "")
             If Cluster > 0 Then
                 Header = "Cluster " & Cluster & IIf(ClusterEnd > Cluster, " - " & ClusterEnd, "") & "; " & Header
+            End If
+            If Data.DataBlock.Caption <> "" Then
+                Header = Data.DataBlock.Caption & "  (" & Header & ")"
             End If
 
             Return Header
@@ -388,5 +432,25 @@ Public Class HexViewForm
             End If
         Next
         Clipboard.SetText(SB.ToString)
+    End Sub
+End Class
+Public Class HexViewHighlightRegion
+    Public ReadOnly Property Start As Long
+    Public ReadOnly Property Size As Long
+    Public ReadOnly Property ForeColor As Color
+    Public ReadOnly Property BackColor As Color
+    Public Sub New(Start As Long, Size As Long, ForeColor As Color, BackColor As Color)
+        _Start = Start
+        _Size = Size
+        _ForeColor = ForeColor
+        _BackColor = BackColor
+    End Sub
+End Class
+
+Public Class HexViewData
+    Public Property HighlightedRegions As New List(Of HexViewHighlightRegion)
+    Public ReadOnly Property DataBlock As DiskImage.DataBlock
+    Public Sub New(DataBlock As DiskImage.DataBlock)
+        _DataBlock = DataBlock
     End Sub
 End Class

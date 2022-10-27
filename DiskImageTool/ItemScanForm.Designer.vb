@@ -23,6 +23,7 @@ Partial Class ItemScanForm
     <System.Diagnostics.DebuggerStepThrough()> _
     Private Sub InitializeComponent()
         Me.LblScanning = New System.Windows.Forms.Label()
+        Me.BackgroundWorker1 = New System.ComponentModel.BackgroundWorker()
         Me.SuspendLayout()
         '
         'LblScanning
@@ -35,6 +36,11 @@ Partial Class ItemScanForm
         Me.LblScanning.Size = New System.Drawing.Size(112, 16)
         Me.LblScanning.TabIndex = 0
         Me.LblScanning.Text = "Scanning ... 100%"
+        '
+        'BackgroundWorker1
+        '
+        Me.BackgroundWorker1.WorkerReportsProgress = True
+        Me.BackgroundWorker1.WorkerSupportsCancellation = True
         '
         'ItemScanForm
         '
@@ -56,4 +62,5 @@ Partial Class ItemScanForm
     End Sub
 
     Friend WithEvents LblScanning As Label
+    Friend WithEvents BackgroundWorker1 As System.ComponentModel.BackgroundWorker
 End Class

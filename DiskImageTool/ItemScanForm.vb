@@ -28,17 +28,14 @@ Public Class ItemScanForm
     Private Sub ItemScanForm_Activated(sender As Object, e As EventArgs) Handles Me.Activated
         If Not _Activated Then
             _EndScan = False
-            ProcessScan()
-            _EndScan = True
-            Me.Close()
+            _ScanComplete = False
+            LblScanning.Text = "Scanning"
+            BackgroundWorker1.RunWorkerAsync()
         End If
         _Activated = True
     End Sub
 
-    Private Sub ProcessScan()
-        LblScanning.Text = "Scanning"
-        _ScanComplete = False
-
+    Private Function ProcessScan(bw As BackgroundWorker) As Boolean
         Dim ItemCount As Integer = 0
         If _NewOnly Then
             For Each ImageData In _LoadedImageList
@@ -50,15 +47,16 @@ Public Class ItemScanForm
             ItemCount = _LoadedImageList.Count
         End If
 
+        Dim PrevPercentage As Integer = 0
         Dim Counter As Integer = 0
         For Each ImageData In _LoadedImageList
-            If _EndScan Then
-                Exit For
+            If bw.CancellationPending Then
+                Return False
             End If
-            Dim Percentage = Counter / ItemCount * 100
-            If Counter Mod 100 = 0 Then
-                LblScanning.Text = "Scanning... " & Int(Percentage) & "%"
-                Application.DoEvents()
+            Dim Percentage As Integer = Counter / ItemCount * 100
+            If Percentage <> PrevPercentage Then
+                bw.ReportProgress(Percentage)
+                PrevPercentage = Percentage
             End If
             If Not _NewOnly Or Not ImageData.Scanned Then
                 Dim Disk = _Parent.DiskImageLoad(ImageData)
@@ -76,15 +74,36 @@ Public Class ItemScanForm
             End If
         Next
 
-        If Not _EndScan Then
-            _ScanComplete = True
-        End If
-    End Sub
+        Return True
+    End Function
 
     Private Sub ItemScanForm_FormClosing(sender As Object, e As FormClosingEventArgs) Handles Me.FormClosing
         If Not _EndScan Then
             e.Cancel = True
-            _EndScan = True
+            If Not BackgroundWorker1.CancellationPending Then
+                BackgroundWorker1.CancelAsync()
+            End If
         End If
+    End Sub
+
+    Private Sub BackgroundWorker1_DoWork(sender As Object, e As DoWorkEventArgs) Handles BackgroundWorker1.DoWork
+        Dim bw As BackgroundWorker = CType(sender, BackgroundWorker)
+
+        If Not ProcessScan(bw) Then
+            e.Cancel = True
+        End If
+    End Sub
+
+    Private Sub BackgroundWorker1_RunWorkerCompleted(sender As Object, e As RunWorkerCompletedEventArgs) Handles BackgroundWorker1.RunWorkerCompleted
+        _EndScan = True
+        If Not e.Cancelled Then
+            _ScanComplete = True
+        End If
+        Me.Close()
+    End Sub
+
+    Private Sub BackgroundWorker1_ProgressChanged(sender As Object, e As ProgressChangedEventArgs) Handles BackgroundWorker1.ProgressChanged
+        LblScanning.Text = "Scanning... " & e.ProgressPercentage & "%"
+        LblScanning.Refresh()
     End Sub
 End Class

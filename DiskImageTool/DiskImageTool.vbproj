@@ -30,7 +30,7 @@
     <ProductName>DiskImageTool</ProductName>
     <PublisherName>Digitoxin</PublisherName>
     <ApplicationRevision>1</ApplicationRevision>
-    <ApplicationVersion>1.11.0.%2a</ApplicationVersion>
+    <ApplicationVersion>1.12.0.%2a</ApplicationVersion>
     <UseApplicationTrust>false</UseApplicationTrust>
     <PublishWizardCompleted>true</PublishWizardCompleted>
     <BootstrapperEnabled>true</BootstrapperEnabled>
@@ -80,11 +80,15 @@
     <SignManifests>true</SignManifests>
   </PropertyGroup>
   <PropertyGroup>
-    <ApplicationIcon>62835-floppy-disk-icon.ico</ApplicationIcon>
+    <ApplicationIcon>Assets\floppyDisk.ico</ApplicationIcon>
+  </PropertyGroup>
+  <PropertyGroup>
+    <ApplicationManifest>My Project\app.manifest</ApplicationManifest>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Hb.Windows.Forms.HexBox2">
-      <HintPath>..\..\HexBox\Hb.Windows.Forms.HexBox2.dll</HintPath>
+    <Reference Include="Hb.Windows.Forms.HexBox2, Version=2.0.1.35160, Culture=neutral, PublicKeyToken=e0e5adf0ebc99863, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\Hb.Hexeditor2\sources\Hb.Windows.Forms.HexBox\bin\Release\Hb.Windows.Forms.HexBox2.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
@@ -218,6 +222,7 @@
     <EmbeddedResource Include="DebugScript\CRC32.COM" />
     <EmbeddedResource Include="DebugScript\PATCH.BAT" />
     <None Include="DiskImageTool_TemporaryKey.pfx" />
+    <None Include="My Project\app.manifest" />
     <None Include="My Project\Application.myapp">
       <Generator>MyApplicationCodeGenerator</Generator>
       <LastGenOutput>Application.Designer.vb</LastGenOutput>
@@ -242,7 +247,7 @@
     </BootstrapperPackage>
   </ItemGroup>
   <ItemGroup>
-    <Content Include="62835-floppy-disk-icon.ico" />
+    <Content Include="Assets\floppyDisk.ico" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.VisualBasic.targets" />
 </Project>

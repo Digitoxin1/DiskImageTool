@@ -163,13 +163,15 @@ Public Class FilePropertiesForm
         If _Items.Count = 1 Then
             Dim Item As ListViewItem = _Items(0)
             Dim FileData As FileData = Item.Tag
-            Dim DirectoryEntry = _Disk.GetDirectoryEntryByOffset(FileData.Offset)
+            'Dim DirectoryEntry = _Disk.GetDirectoryEntryByOffset(FileData.Offset)
+            Dim DirectoryEntry = FileData.DirectoryEntry
             ApplyFileNameUpdate(DirectoryEntry)
         End If
 
         For Each Item As ListViewItem In _Items
             Dim FileData As FileData = Item.Tag
-            Dim DirectoryEntry = _Disk.GetDirectoryEntryByOffset(FileData.Offset)
+            'Dim DirectoryEntry = _Disk.GetDirectoryEntryByOffset(FileData.Offset)
+            Dim DirectoryEntry = FileData.DirectoryEntry
 
             ApplyFileDatesUpdate(DirectoryEntry)
             ApplyAttributesUpdate(DirectoryEntry)
@@ -187,7 +189,8 @@ Public Class FilePropertiesForm
     Private Sub PopulateFormSingle()
         Dim Item As ListViewItem = _Items(0)
         Dim FileData As FileData = Item.Tag
-        Dim DirectoryEntry = _Disk.GetDirectoryEntryByOffset(FileData.Offset)
+        'Dim DirectoryEntry = _Disk.GetDirectoryEntryByOffset(FileData.Offset)
+        Dim DirectoryEntry = FileData.DirectoryEntry
         Dim DT As DiskImage.ExpandedDate
 
         _IsDirectory = DirectoryEntry.IsDirectory
@@ -273,7 +276,8 @@ Public Class FilePropertiesForm
 
         For Each Item As ListViewItem In _Items
             Dim FileData As FileData = Item.Tag
-            Dim DirectoryEntry = _Disk.GetDirectoryEntryByOffset(FileData.Offset)
+            'Dim DirectoryEntry = _Disk.GetDirectoryEntryByOffset(FileData.Offset)
+            Dim DirectoryEntry = FileData.DirectoryEntry
             DT = DirectoryEntry.GetLastWriteDate
             If DT.IsValidDate Then
                 If DT.DateObject > LastWritten Then

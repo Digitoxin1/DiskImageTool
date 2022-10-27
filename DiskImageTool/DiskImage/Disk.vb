@@ -2,7 +2,14 @@
     Public Structure DataBlock
         Dim Offset As UInteger
         Dim Length As UInteger
+        Dim Caption As String
     End Structure
+
+    Public Class FATChain
+        Public Property Chain As New List(Of UShort)
+        Public Property HasCircularChain As Boolean = False
+        Public Property CrossLinks As New List(Of UInteger)
+    End Class
 
     Public Class Disk
         Public Const BootSectorOffset As UInteger = 0
@@ -12,10 +19,11 @@
         Private ReadOnly _ValidSectorsPerSector() As Byte = {1, 2, 4, 8, 16, 32, 128}
         Private ReadOnly _BootSector As BootSector
         Private ReadOnly _Directory As Directory
-        Private _FAT12() As UShort
-        Private _FileAllocation As Dictionary(Of UInteger, UInteger)
+        Private _FAT() As UShort
+        Private _FATChains As Dictionary(Of UInteger, FATChain)
+        Private _FileAllocation As Dictionary(Of UInteger, List(Of UInteger))
         Private _FreeSpace As UInteger = 0
-        Private _BadClusters As UShort = 0
+        Private _BadClusters As List(Of UShort)
         Private ReadOnly _FileBytes() As Byte
         Private ReadOnly _FilePath As String
         Private ReadOnly _Modifications As Hashtable
@@ -30,7 +38,7 @@
             _LoadError = False
             _FilePath = FilePath
             Try
-                _FileBytes = System.IO.File.ReadAllBytes(FilePath)
+                _FileBytes = IO.File.ReadAllBytes(FilePath)
             Catch ex As Exception
                 _LoadError = True
             End Try
@@ -46,7 +54,7 @@
             End If
         End Sub
 
-        Public ReadOnly Property BadClusters As UShort
+        Public ReadOnly Property BadClusters As List(Of UShort)
             Get
                 Return _BadClusters
             End Get
@@ -70,13 +78,19 @@
             End Get
         End Property
 
-        Public ReadOnly Property FAT12 As UShort()
+        Public ReadOnly Property FAT As UShort()
             Get
-                Return _FAT12
+                Return _FAT
             End Get
         End Property
 
-        Public ReadOnly Property FileAllocation As Dictionary(Of UInteger, UInteger)
+        Public ReadOnly Property FATChains As Dictionary(Of UInteger, FATChain)
+            Get
+                Return _FATChains
+            End Get
+        End Property
+
+        Public ReadOnly Property FileAllocation As Dictionary(Of UInteger, List(Of UInteger))
             Get
                 Return _FileAllocation
             End Get
@@ -269,6 +283,10 @@
             Return Sector * _BootSector.BytesPerSector
         End Function
 
+        Public Function OffsetToCluster(Offset As UInteger) As UShort
+            Return SectorToCluster(OffsetToSector(Offset))
+        End Function
+
         Public Function OffsetToSector(Offset As UInteger) As UInteger
             Return Offset \ _BootSector.BytesPerSector
         End Function
@@ -366,8 +384,8 @@
             End If
 
             For Counter As UShort = 1 To _BootSector.FatCopies - 1
-                Dim FatCopy1 = GetFAT12(Counter - 1)
-                Dim FatCopy2 = GetFAT12(Counter)
+                Dim FatCopy1 = GetFAT(Counter - 1)
+                Dim FatCopy2 = GetFAT(Counter)
 
                 For Index = 0 To FatCopy1.Length - 1
                     If FatCopy1(Index) <> FatCopy2(Index) Then
@@ -379,15 +397,15 @@
             Return True
         End Function
 
-        Private Function GetFAT12(Index As UShort) As Byte()
+        Private Function GetFAT(Index As UShort) As Byte()
             Dim Length As UInteger = _BootSector.SectorsPerFAT * _BootSector.BytesPerSector
             Dim Start As UInteger = SectorToOffset(_BootSector.FatRegionStart) + Length * Index
 
-            Dim FAT12Bytes(Length - 1) As Byte
+            Dim FATBytes(Length - 1) As Byte
 
-            Array.Copy(_FileBytes, Start, FAT12Bytes, 0, Length)
+            Array.Copy(_FileBytes, Start, FATBytes, 0, Length)
 
-            Return FAT12Bytes
+            Return FATBytes
         End Function
 
         Public Function GetFillCharacter() As Byte
@@ -415,8 +433,8 @@
             Dim AddCluster As Boolean
 
             Dim LastCluster As UInteger = 0
-            For Cluster As UShort = 1 To _FAT12.Count - 1
-                If _FAT12(Cluster) = 0 Then
+            For Cluster As UShort = 1 To _FAT.Count - 1
+                If _FAT(Cluster) = 0 Then
                     Dim Offset = ClusterToOffset(Cluster)
                     If _FileBytes.Length < Offset + ClusterSize Then
                         ClusterSize = _FileBytes.Length - Offset
@@ -468,8 +486,8 @@
         Public Function HasUnusedClustersWithData() As Boolean
             Dim ClusterSize As UInteger = _BootSector.BytesPerCluster
 
-            For Cluster As UShort = 1 To _FAT12.Count - 1
-                If _FAT12(Cluster) = 0 Then
+            For Cluster As UShort = 1 To _FAT.Count - 1
+                If _FAT(Cluster) = 0 Then
                     Dim Offset = ClusterToOffset(Cluster)
                     If _FileBytes.Length < Offset + ClusterSize Then
                         ClusterSize = Math.Max(_FileBytes.Length - Offset, 0)
@@ -485,6 +503,51 @@
             Next
 
             Return False
+        End Function
+
+        Friend Function InitFATChain(Offset As UInteger, ClusterStart As UShort) As FATChain
+            Dim FatChain As New FATChain
+            Dim Cluster As UShort = ClusterStart
+            Dim AssignedClusters As New HashSet(Of UShort)
+            Dim OffsetList As List(Of UInteger)
+
+            Do
+                If Cluster > 1 And Cluster < _FAT.Length Then
+                    If AssignedClusters.Contains(Cluster) Then
+                        FatChain.HasCircularChain = True
+                        Exit Do
+                    End If
+                    AssignedClusters.Add(Cluster)
+                    FatChain.Chain.Add(Cluster)
+                    If Not _FileAllocation.ContainsKey(Cluster) Then
+                        OffsetList = New List(Of UInteger) From {
+                            Offset
+                        }
+                        _FileAllocation.Add(Cluster, OffsetList)
+                    Else
+                        OffsetList = _FileAllocation.Item(Cluster)
+                        For Each OffsetItem In OffsetList
+                            If Not FatChain.CrossLinks.Contains(OffsetItem) Then
+                                FatChain.CrossLinks.Add(OffsetItem)
+                            End If
+                            If _FATChains.ContainsKey(OffsetItem) Then
+                                Dim CrossLinks = FATChains.Item(OffsetItem).CrossLinks
+                                If Not CrossLinks.Contains(Offset) Then
+                                    CrossLinks.Add(Offset)
+                                End If
+                            End If
+                        Next
+                        OffsetList.Add(Offset)
+                    End If
+                    Cluster = _FAT(Cluster)
+                Else
+                    Cluster = 0
+                End If
+            Loop Until Cluster < &H2 Or Cluster > &HFEF
+
+            _FATChains.Item(Offset) = FatChain
+
+            Return FatChain
         End Function
 
         Private Function IsDataBlockEmpty(Data() As Byte) As Boolean
@@ -522,37 +585,45 @@
         Public Shared Function NewDataBlock(Offset As UInteger, Length As UInteger) As DataBlock
             NewDataBlock.Offset = Offset
             NewDataBlock.Length = Length
+            NewDataBlock.Caption = ""
+        End Function
+
+        Public Shared Function NewDataBlock(Offset As UInteger, Length As UInteger, Caption As String) As DataBlock
+            NewDataBlock.Offset = Offset
+            NewDataBlock.Length = Length
+            NewDataBlock.Caption = Caption
         End Function
 
         Private Sub PopulateFAT12(Index As UShort)
             Dim Size As UShort = _BootSector.NumberOfFATEntries + 1
             Dim ClusterSize As UInteger = _BootSector.BytesPerCluster
-            Dim FAT12Bytes = GetFAT12(Index)
+            Dim FATBytes = GetFAT(Index)
 
-            ReDim _FAT12(Size)
-            _FileAllocation = New Dictionary(Of UInteger, UInteger)
+            ReDim _FAT(Size)
+            _FATChains = New Dictionary(Of UInteger, FATChain)
+            _FileAllocation = New Dictionary(Of UInteger, List(Of UInteger))
             _FreeSpace = 0
-            _BadClusters = 0
+            _BadClusters = New List(Of UShort)
 
             Dim b As UInteger
             Dim Start As Integer = 0
             Dim Cluster As UShort = 0
             Do While Cluster <= Size
-                b = BitConverter.ToUInt32(FAT12Bytes, Start)
-                _FAT12(Cluster) = b Mod 4096
-                If _FAT12(Cluster) = 0 Then
+                b = BitConverter.ToUInt32(FATBytes, Start)
+                _FAT(Cluster) = b Mod 4096
+                If _FAT(Cluster) = 0 Then
                     _FreeSpace += ClusterSize
-                ElseIf _FAT12(Cluster) = &HFF7 Then
-                    _BadClusters += 1
+                ElseIf _FAT(Cluster) = &HFF7 Then
+                    _BadClusters.Add(Cluster)
                 End If
                 Cluster += 1
                 If Cluster <= Size Then
                     b >>= 12
-                    _FAT12(Cluster) = b Mod 4096
-                    If _FAT12(Cluster) = 0 Then
+                    _FAT(Cluster) = b Mod 4096
+                    If _FAT(Cluster) = 0 Then
                         _FreeSpace += ClusterSize
-                    ElseIf _FAT12(Cluster) = &HFF7 Then
-                        _BadClusters += 1
+                    ElseIf _FAT(Cluster) = &HFF7 Then
+                        _BadClusters.Add(Cluster)
                     End If
                     Cluster += 1
                 End If
@@ -561,7 +632,7 @@
         End Sub
 
         Public Sub SaveFile(FilePath As String)
-            System.IO.File.WriteAllBytes(FilePath, _FileBytes)
+            IO.File.WriteAllBytes(FilePath, _FileBytes)
             _OriginalData.Clear()
             _Modifications.Clear()
         End Sub

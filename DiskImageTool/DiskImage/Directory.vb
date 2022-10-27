@@ -1,17 +1,17 @@
 ﻿Namespace DiskImage
     Public Class Directory
-        Private ReadOnly _FatClusterList As List(Of UShort)
+        Private ReadOnly _FatChain As List(Of UShort)
         Private ReadOnly _Parent As Disk
         Private ReadOnly _Length As UInteger
 
-        Sub New(Parent As Disk, Optional FatClusterList As List(Of UShort) = Nothing, Optional Length As UInteger = 0)
+        Sub New(Parent As Disk, Optional FatChain As List(Of UShort) = Nothing, Optional Length As UInteger = 0)
             _Parent = Parent
-            _FatClusterList = FatClusterList
+            _FatChain = FatChain
             _Length = Length
         End Sub
 
         Public Function GetContent() As Byte()
-            If _FatClusterList Is Nothing Then
+            If _FatChain Is Nothing Then
                 Return GetContentRoot()
             Else
                 Return GetContentSubDirectory()
@@ -28,7 +28,7 @@
         End Function
 
         Private Function GetContentSubDirectory() As Byte()
-            Dim Content = _Parent.GetDataFromFATClusterList(_FatClusterList)
+            Dim Content = _Parent.GetDataFromFATClusterList(_FatChain)
             If Content.Length <> _Length Then
                 Array.Resize(Of Byte)(Content, _Length)
             End If
@@ -45,13 +45,13 @@
         End Function
 
         Private Function GetDataBlocksSubDirectory() As List(Of DataBlock)
-            Return _Parent.GetDataBlocksFromFATClusterList(_FatClusterList)
+            Return _Parent.GetDataBlocksFromFATClusterList(_FatChain)
         End Function
 
         Private Function GetDirectoryLengthSubDirectory(FileCountOnly As Boolean) As UInteger
             Dim Count As UInteger = 0
 
-            For Each Cluster In _FatClusterList
+            For Each Cluster In _FatChain
                 Dim OffsetStart As UInteger = _Parent.ClusterToOffset(Cluster)
                 Dim OffsetLength As UInteger = _Parent.BootSector.BytesPerCluster
 
@@ -73,7 +73,7 @@
             Dim EntriesPerCluster As UInteger = _Parent.BootSector.BytesPerCluster / 32
             Dim ChainIndex As UInteger = (Index - 1) \ EntriesPerCluster
             Dim ClusterIndex As UInteger = (Index - 1) Mod EntriesPerCluster
-            Dim Offset As UInteger = _Parent.ClusterToOffset(_FatClusterList.Item(ChainIndex)) + ClusterIndex * 32
+            Dim Offset As UInteger = _Parent.ClusterToOffset(_FatChain.Item(ChainIndex)) + ClusterIndex * 32
 
             Return New DirectoryEntry(_Parent, Offset)
         End Function
@@ -85,7 +85,7 @@
         End Function
 
         Public Function DirectoryLength() As UInteger
-            If _FatClusterList Is Nothing Then
+            If _FatChain Is Nothing Then
                 Return GetDirectoryLengthRoot(False)
             Else
                 Return GetDirectoryLengthSubDirectory(False)
@@ -93,7 +93,7 @@
         End Function
 
         Public Function FileCount() As UInteger
-            If _FatClusterList Is Nothing Then
+            If _FatChain Is Nothing Then
                 Return GetDirectoryLengthRoot(True)
             Else
                 Return GetDirectoryLengthSubDirectory(True)
@@ -101,7 +101,7 @@
         End Function
 
         Public Function GetFile(Index As UInteger) As DirectoryEntry
-            If _FatClusterList Is Nothing Then
+            If _FatChain Is Nothing Then
                 Return GetFileRoot(Index)
             Else
                 Return GetFileSubDirectory(Index)
@@ -109,7 +109,7 @@
         End Function
 
         Public Function GetDataBlocks() As List(Of DataBlock)
-            If _FatClusterList Is Nothing Then
+            If _FatChain Is Nothing Then
                 Return New List(Of DataBlock) From {
                     GetDataBlockRoot()
                 }

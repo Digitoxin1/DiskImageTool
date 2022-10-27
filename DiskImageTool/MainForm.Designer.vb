@@ -40,6 +40,7 @@ Partial Class MainForm
         Dim MainMenuView As System.Windows.Forms.ToolStripMenuItem
         Dim MainMenuExperimental As System.Windows.Forms.ToolStripMenuItem
         Dim ToolStripSeparator5 As System.Windows.Forms.ToolStripSeparator
+        Dim FileCRC32 As System.Windows.Forms.ColumnHeader
         Me.BtnOpen = New System.Windows.Forms.ToolStripMenuItem()
         Me.toolStripSeparator = New System.Windows.Forms.ToolStripSeparator()
         Me.BtnSave = New System.Windows.Forms.ToolStripMenuItem()
@@ -53,15 +54,16 @@ Partial Class MainForm
         Me.BtnOEMID = New System.Windows.Forms.ToolStripMenuItem()
         Me.ToolStripSeparator4 = New System.Windows.Forms.ToolStripSeparator()
         Me.BtnFileProperties = New System.Windows.Forms.ToolStripMenuItem()
+        Me.BtnExportFile = New System.Windows.Forms.ToolStripMenuItem()
         Me.BtnReplaceFile = New System.Windows.Forms.ToolStripMenuItem()
         Me.ToolStripSeparator2 = New System.Windows.Forms.ToolStripSeparator()
         Me.BtnRevert = New System.Windows.Forms.ToolStripMenuItem()
         Me.BtnDisplayBootSector = New System.Windows.Forms.ToolStripMenuItem()
+        Me.BtnDisplayFAT = New System.Windows.Forms.ToolStripMenuItem()
         Me.BtnDisplayDirectory = New System.Windows.Forms.ToolStripMenuItem()
         Me.BtnDisplayClusters = New System.Windows.Forms.ToolStripMenuItem()
         Me.BtnDisplayFile = New System.Windows.Forms.ToolStripMenuItem()
         Me.BtnExportDebug = New System.Windows.Forms.ToolStripMenuItem()
-        Me.FileCRC32 = CType(New System.Windows.Forms.ColumnHeader(), System.Windows.Forms.ColumnHeader)
         Me.ListViewSummary = New System.Windows.Forms.ListView()
         Me.ComboImages = New System.Windows.Forms.ComboBox()
         Me.ListViewHashes = New System.Windows.Forms.ListView()
@@ -72,14 +74,17 @@ Partial Class MainForm
         Me.ToolStripImageCount = New System.Windows.Forms.ToolStripStatusLabel()
         Me.ToolStripModified = New System.Windows.Forms.ToolStripStatusLabel()
         Me.ListViewFiles = New System.Windows.Forms.ListView()
+        Me.FileClusterError = CType(New System.Windows.Forms.ColumnHeader(), System.Windows.Forms.ColumnHeader)
         Me.FileCreateDate = CType(New System.Windows.Forms.ColumnHeader(), System.Windows.Forms.ColumnHeader)
         Me.FileLastAccessDate = CType(New System.Windows.Forms.ColumnHeader(), System.Windows.Forms.ColumnHeader)
         Me.FileLFN = CType(New System.Windows.Forms.ColumnHeader(), System.Windows.Forms.ColumnHeader)
         Me.ContextMenuFiles = New System.Windows.Forms.ContextMenuStrip(Me.components)
         Me.BtnFileMenuFileProperties = New System.Windows.Forms.ToolStripMenuItem()
+        Me.BtnFileMenuExportFile = New System.Windows.Forms.ToolStripMenuItem()
         Me.BtnFileMenuReplaceFile = New System.Windows.Forms.ToolStripMenuItem()
         Me.BtnFileMenuViewFile = New System.Windows.Forms.ToolStripMenuItem()
         Me.BtnFileMenuViewFileText = New System.Windows.Forms.ToolStripMenuItem()
+        Me.BtnFileMenuViewCrosslinked = New System.Windows.Forms.ToolStripMenuItem()
         Me.FileMenuSeparator = New System.Windows.Forms.ToolStripSeparator()
         Me.BtnFileMenuUndo = New System.Windows.Forms.ToolStripMenuItem()
         Me.MenuStripMain = New System.Windows.Forms.MenuStrip()
@@ -88,7 +93,6 @@ Partial Class MainForm
         Me.BtnScanNew = New System.Windows.Forms.ToolStripMenuItem()
         Me.BtnScan = New System.Windows.Forms.ToolStripMenuItem()
         Me.FilterSeparator = New System.Windows.Forms.ToolStripSeparator()
-        Me.BtnDisplayFAT = New System.Windows.Forms.ToolStripMenuItem()
         SummaryName = CType(New System.Windows.Forms.ColumnHeader(), System.Windows.Forms.ColumnHeader)
         SummaryValue = CType(New System.Windows.Forms.ColumnHeader(), System.Windows.Forms.ColumnHeader)
         HashName = CType(New System.Windows.Forms.ColumnHeader(), System.Windows.Forms.ColumnHeader)
@@ -105,6 +109,7 @@ Partial Class MainForm
         MainMenuView = New System.Windows.Forms.ToolStripMenuItem()
         MainMenuExperimental = New System.Windows.Forms.ToolStripMenuItem()
         ToolStripSeparator5 = New System.Windows.Forms.ToolStripSeparator()
+        FileCRC32 = CType(New System.Windows.Forms.ColumnHeader(), System.Windows.Forms.ColumnHeader)
         Me.StatusStrip1.SuspendLayout()
         Me.ContextMenuFiles.SuspendLayout()
         Me.MenuStripMain.SuspendLayout()
@@ -237,7 +242,7 @@ Partial Class MainForm
         '
         'MainMenuEdit
         '
-        MainMenuEdit.DropDownItems.AddRange(New System.Windows.Forms.ToolStripItem() {Me.BtnOEMID, Me.ToolStripSeparator4, Me.BtnFileProperties, Me.BtnReplaceFile, Me.ToolStripSeparator2, Me.BtnRevert})
+        MainMenuEdit.DropDownItems.AddRange(New System.Windows.Forms.ToolStripItem() {Me.BtnOEMID, Me.ToolStripSeparator4, Me.BtnFileProperties, Me.BtnExportFile, Me.BtnReplaceFile, Me.ToolStripSeparator2, Me.BtnRevert})
         MainMenuEdit.Name = "MainMenuEdit"
         MainMenuEdit.Size = New System.Drawing.Size(39, 20)
         MainMenuEdit.Text = "&Edit"
@@ -258,6 +263,12 @@ Partial Class MainForm
         Me.BtnFileProperties.Name = "BtnFileProperties"
         Me.BtnFileProperties.Size = New System.Drawing.Size(158, 22)
         Me.BtnFileProperties.Text = "File &Properties"
+        '
+        'BtnExportFile
+        '
+        Me.BtnExportFile.Name = "BtnExportFile"
+        Me.BtnExportFile.Size = New System.Drawing.Size(158, 22)
+        Me.BtnExportFile.Text = "&Export File"
         '
         'BtnReplaceFile
         '
@@ -287,25 +298,31 @@ Partial Class MainForm
         'BtnDisplayBootSector
         '
         Me.BtnDisplayBootSector.Name = "BtnDisplayBootSector"
-        Me.BtnDisplayBootSector.Size = New System.Drawing.Size(180, 22)
+        Me.BtnDisplayBootSector.Size = New System.Drawing.Size(179, 22)
         Me.BtnDisplayBootSector.Text = "&Boot Sector"
+        '
+        'BtnDisplayFAT
+        '
+        Me.BtnDisplayFAT.Name = "BtnDisplayFAT"
+        Me.BtnDisplayFAT.Size = New System.Drawing.Size(179, 22)
+        Me.BtnDisplayFAT.Text = "File &Allocation Table"
         '
         'BtnDisplayDirectory
         '
         Me.BtnDisplayDirectory.Name = "BtnDisplayDirectory"
-        Me.BtnDisplayDirectory.Size = New System.Drawing.Size(180, 22)
+        Me.BtnDisplayDirectory.Size = New System.Drawing.Size(179, 22)
         Me.BtnDisplayDirectory.Text = "&Root Directory"
         '
         'BtnDisplayClusters
         '
         Me.BtnDisplayClusters.Name = "BtnDisplayClusters"
-        Me.BtnDisplayClusters.Size = New System.Drawing.Size(180, 22)
+        Me.BtnDisplayClusters.Size = New System.Drawing.Size(179, 22)
         Me.BtnDisplayClusters.Text = "&Unused Clusters"
         '
         'BtnDisplayFile
         '
         Me.BtnDisplayFile.Name = "BtnDisplayFile"
-        Me.BtnDisplayFile.Size = New System.Drawing.Size(180, 22)
+        Me.BtnDisplayFile.Size = New System.Drawing.Size(179, 22)
         Me.BtnDisplayFile.Text = "&File"
         '
         'MainMenuExperimental
@@ -324,12 +341,12 @@ Partial Class MainForm
         'ToolStripSeparator5
         '
         ToolStripSeparator5.Name = "ToolStripSeparator5"
-        ToolStripSeparator5.Size = New System.Drawing.Size(168, 6)
+        ToolStripSeparator5.Size = New System.Drawing.Size(186, 6)
         '
         'FileCRC32
         '
-        Me.FileCRC32.Text = "CRC32"
-        Me.FileCRC32.Width = 70
+        FileCRC32.Text = "CRC32"
+        FileCRC32.Width = 70
         '
         'ListViewSummary
         '
@@ -446,8 +463,9 @@ Partial Class MainForm
         Me.ListViewFiles.Anchor = CType((((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Bottom) _
             Or System.Windows.Forms.AnchorStyles.Left) _
             Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
-        Me.ListViewFiles.Columns.AddRange(New System.Windows.Forms.ColumnHeader() {FileModified, FileName, FileExt, FileSize, FileLastWriteDate, FileStartingCluster, FileAttrib, Me.FileCRC32, Me.FileCreateDate, Me.FileLastAccessDate, Me.FileLFN})
+        Me.ListViewFiles.Columns.AddRange(New System.Windows.Forms.ColumnHeader() {FileModified, FileName, FileExt, FileSize, FileLastWriteDate, FileStartingCluster, Me.FileClusterError, FileAttrib, FileCRC32, Me.FileCreateDate, Me.FileLastAccessDate, Me.FileLFN})
         Me.ListViewFiles.ContextMenuStrip = Me.ContextMenuFiles
+        Me.ListViewFiles.Font = New System.Drawing.Font("Microsoft Sans Serif", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.ListViewFiles.FullRowSelect = True
         Me.ListViewFiles.HideSelection = False
         Me.ListViewFiles.Location = New System.Drawing.Point(320, 56)
@@ -457,6 +475,11 @@ Partial Class MainForm
         Me.ListViewFiles.TabIndex = 10
         Me.ListViewFiles.UseCompatibleStateImageBehavior = False
         Me.ListViewFiles.View = System.Windows.Forms.View.Details
+        '
+        'FileClusterError
+        '
+        Me.FileClusterError.Text = "Err"
+        Me.FileClusterError.Width = 0
         '
         'FileCreateDate
         '
@@ -475,43 +498,55 @@ Partial Class MainForm
         '
         'ContextMenuFiles
         '
-        Me.ContextMenuFiles.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.BtnFileMenuFileProperties, Me.BtnFileMenuReplaceFile, ToolStripSeparator5, Me.BtnFileMenuViewFile, Me.BtnFileMenuViewFileText, Me.FileMenuSeparator, Me.BtnFileMenuUndo})
+        Me.ContextMenuFiles.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.BtnFileMenuFileProperties, Me.BtnFileMenuExportFile, Me.BtnFileMenuReplaceFile, ToolStripSeparator5, Me.BtnFileMenuViewFile, Me.BtnFileMenuViewFileText, Me.BtnFileMenuViewCrosslinked, Me.FileMenuSeparator, Me.BtnFileMenuUndo})
         Me.ContextMenuFiles.Name = "ContextMenuFiles"
-        Me.ContextMenuFiles.Size = New System.Drawing.Size(172, 126)
+        Me.ContextMenuFiles.Size = New System.Drawing.Size(190, 170)
         '
         'BtnFileMenuFileProperties
         '
         Me.BtnFileMenuFileProperties.Name = "BtnFileMenuFileProperties"
-        Me.BtnFileMenuFileProperties.Size = New System.Drawing.Size(171, 22)
+        Me.BtnFileMenuFileProperties.Size = New System.Drawing.Size(189, 22)
         Me.BtnFileMenuFileProperties.Text = "Edit File &Properties"
+        '
+        'BtnFileMenuExportFile
+        '
+        Me.BtnFileMenuExportFile.Name = "BtnFileMenuExportFile"
+        Me.BtnFileMenuExportFile.Size = New System.Drawing.Size(189, 22)
+        Me.BtnFileMenuExportFile.Text = "&Export File"
         '
         'BtnFileMenuReplaceFile
         '
         Me.BtnFileMenuReplaceFile.Name = "BtnFileMenuReplaceFile"
-        Me.BtnFileMenuReplaceFile.Size = New System.Drawing.Size(171, 22)
+        Me.BtnFileMenuReplaceFile.Size = New System.Drawing.Size(189, 22)
         Me.BtnFileMenuReplaceFile.Text = "&Replace File"
         '
         'BtnFileMenuViewFile
         '
         Me.BtnFileMenuViewFile.Name = "BtnFileMenuViewFile"
-        Me.BtnFileMenuViewFile.Size = New System.Drawing.Size(171, 22)
+        Me.BtnFileMenuViewFile.Size = New System.Drawing.Size(189, 22)
         Me.BtnFileMenuViewFile.Text = "&View File"
         '
         'BtnFileMenuViewFileText
         '
         Me.BtnFileMenuViewFileText.Name = "BtnFileMenuViewFileText"
-        Me.BtnFileMenuViewFileText.Size = New System.Drawing.Size(171, 22)
+        Me.BtnFileMenuViewFileText.Size = New System.Drawing.Size(189, 22)
         Me.BtnFileMenuViewFileText.Text = "View File as &Text"
+        '
+        'BtnFileMenuViewCrosslinked
+        '
+        Me.BtnFileMenuViewCrosslinked.Name = "BtnFileMenuViewCrosslinked"
+        Me.BtnFileMenuViewCrosslinked.Size = New System.Drawing.Size(189, 22)
+        Me.BtnFileMenuViewCrosslinked.Text = "View &Crosslinked Files"
         '
         'FileMenuSeparator
         '
         Me.FileMenuSeparator.Name = "FileMenuSeparator"
-        Me.FileMenuSeparator.Size = New System.Drawing.Size(168, 6)
+        Me.FileMenuSeparator.Size = New System.Drawing.Size(186, 6)
         '
         'BtnFileMenuUndo
         '
         Me.BtnFileMenuUndo.Name = "BtnFileMenuUndo"
-        Me.BtnFileMenuUndo.Size = New System.Drawing.Size(171, 22)
+        Me.BtnFileMenuUndo.Size = New System.Drawing.Size(189, 22)
         Me.BtnFileMenuUndo.Text = "&Undo Changes"
         '
         'MenuStripMain
@@ -555,12 +590,6 @@ Partial Class MainForm
         Me.FilterSeparator.Name = "FilterSeparator"
         Me.FilterSeparator.Size = New System.Drawing.Size(164, 6)
         Me.FilterSeparator.Visible = False
-        '
-        'BtnDisplayFAT
-        '
-        Me.BtnDisplayFAT.Name = "BtnDisplayFAT"
-        Me.BtnDisplayFAT.Size = New System.Drawing.Size(180, 22)
-        Me.BtnDisplayFAT.Text = "File &Allocation Table"
         '
         'MainForm
         '
@@ -634,9 +663,12 @@ Partial Class MainForm
     Friend WithEvents BtnFileMenuUndo As ToolStripMenuItem
     Friend WithEvents BtnReplaceFile As ToolStripMenuItem
     Friend WithEvents BtnFileMenuReplaceFile As ToolStripMenuItem
-    Friend WithEvents FileCRC32 As ColumnHeader
     Friend WithEvents FileCreateDate As ColumnHeader
     Friend WithEvents FileLastAccessDate As ColumnHeader
     Friend WithEvents FileLFN As ColumnHeader
     Friend WithEvents BtnDisplayFAT As ToolStripMenuItem
+    Friend WithEvents FileClusterError As ColumnHeader
+    Friend WithEvents BtnFileMenuViewCrosslinked As ToolStripMenuItem
+    Friend WithEvents BtnExportFile As ToolStripMenuItem
+    Friend WithEvents BtnFileMenuExportFile As ToolStripMenuItem
 End Class

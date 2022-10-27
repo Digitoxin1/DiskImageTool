@@ -11,6 +11,7 @@
         HasInvalidImage
         HasBadSectors
         HasMismatchedFATs
+        HasFATChainingErrors
     End Enum
 
     Public Function FilterGetCaption(ID As FilterTypes, Count As Integer) As String
@@ -26,19 +27,21 @@
             Case FilterTypes.HasLastAccessed
                 Caption = "Has Last Access Date"
             Case FilterTypes.HasInvalidImage
-                Caption = "Invalid Image"
+                Caption = "Unknown Image Format"
             Case FilterTypes.HasLongFileNames
                 Caption = "Has Long File Names"
             Case FilterTypes.HasInvalidDirectoryEntries
-                Caption = "Has Invalid Directory Entries"
+                Caption = "Invalid Directory Entries"
             Case FilterTypes.ModifiedFiles
                 Caption = "Modified Files"
             Case FilterTypes.UnusedClusters
                 Caption = "Unused Clusters with Data"
             Case FilterTypes.HasBadSectors
-                Caption = "Has Bad Sectors"
+                Caption = "Bad Sectors"
             Case FilterTypes.HasMismatchedFATs
-                Caption = "Has Mismatched FATs"
+                Caption = "Mismatched FATs"
+            Case FilterTypes.HasFATChainingErrors
+                Caption = "FAT Chaining Errors"
             Case Else
                 Caption = ""
         End Select
@@ -114,6 +117,12 @@
 
         If CheckFilter(FilterTypes.HasMismatchedFATs, AppliedFilters) Then
             If ImageData.ScanInfo.IsValidImage And ImageData.ScanInfo.hasmismatchedFATS Then
+                Return False
+            End If
+        End If
+
+        If CheckFilter(FilterTypes.HasFATChainingErrors, AppliedFilters) Then
+            If ImageData.ScanInfo.IsValidImage And ImageData.ScanInfo.HasFATChainingErrors Then
                 Return False
             End If
         End If
