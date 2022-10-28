@@ -3,7 +3,6 @@ Imports System.Text
 
 Public Class MainForm
     Private Const FILE_FILTER As String = "Disk Image Files (*.ima; *.img)|*.ima;*.img"
-    Private ReadOnly _LoadedImageList As List(Of LoadedImageData)
     Private ReadOnly _LoadedFileNames As Dictionary(Of String, LoadedImageData)
     Private ReadOnly _OEMIDDictionary As Dictionary(Of UInteger, OEMIDList)
     Private _Disk As DiskImage.Disk
@@ -12,6 +11,7 @@ Public Class MainForm
     Private _FilterCounts() As Integer
     Private _CheckAll As Boolean = False
     Private _ScanRun As Boolean = False
+    Private WithEvents _Debounce As Timer
 
     <Runtime.InteropServices.DllImport("User32.dll")>
     Private Shared Function SetForegroundWindow(ByVal hWnd As Integer) As Integer
@@ -24,9 +24,10 @@ Public Class MainForm
         ' Add any initialization after the InitializeComponent() call.
         ListViewDoubleBuffer(ListViewFiles)
         FiltersInitialize()
-        _LoadedImageList = New List(Of LoadedImageData)
         _LoadedFileNames = New Dictionary(Of String, LoadedImageData)
         _OEMIDDictionary = GetOEMIDDictionary()
+        _Debounce = New Timer
+        _Debounce.Interval = 750
 
         ResetAll()
     End Sub
@@ -145,24 +146,61 @@ Public Class MainForm
         End If
     End Sub
 
-    Private Sub ComboImagesRefreshItemText(Index As Integer)
+    Private Sub ComboImagesRefreshCurrentItemText()
         _SuppressEvent = True
-        ComboImages.Items(Index) = ComboImages.Items(Index)
+
+        If ComboImages.SelectedIndex > -1 Then
+            ComboImages.Items(ComboImages.SelectedIndex) = ComboImages.Items(ComboImages.SelectedIndex)
+        End If
+
+        If ComboImagesFiltered.SelectedIndex > -1 Then
+            ComboImagesFiltered.Items(ComboImagesFiltered.SelectedIndex) = ComboImagesFiltered.Items(ComboImagesFiltered.SelectedIndex)
+        End If
+
+        _SuppressEvent = False
+    End Sub
+
+    Private Sub ComboImagesRefreshItemText(Item As Object)
+        Dim Index As Integer
+
+        _SuppressEvent = True
+
+        Index = ComboImages.Items.IndexOf(Item)
+        If Index > -1 Then
+            ComboImages.Items(Index) = ComboImages.Items(Index)
+        End If
+
+        Index = ComboImagesFiltered.Items.IndexOf(Item)
+        If Index > -1 Then
+            ComboImagesFiltered.Items(Index) = ComboImagesFiltered.Items(Index)
+        End If
+
         _SuppressEvent = False
     End Sub
 
     Private Sub ComboImagesRefreshItemText()
         _SuppressEvent = True
+
         For Index = 0 To ComboImages.Items.Count - 1
             ComboImages.Items(Index) = ComboImages.Items(Index)
         Next
+
+        For Index = 0 To ComboImagesFiltered.Items.Count - 1
+            ComboImagesFiltered.Items(Index) = ComboImagesFiltered.Items(Index)
+        Next
+
         _SuppressEvent = False
     End Sub
 
-    Private Sub ComboItemRefresh(FullRefresh As Boolean)
-        Dim CurrentImageData As LoadedImageData = ComboImages.SelectedItem
+    Private Sub ComboImagesRefreshPaths()
+        ComboImages.BeginUpdate()
+        LoadedImageData.StringOffset = GetPathOffset()
+        ComboImagesRefreshItemText()
+        ComboImages.EndUpdate()
+    End Sub
 
-        ComboImagesRefreshItemText(ComboImages.SelectedIndex)
+    Private Sub ComboItemRefresh(FullRefresh As Boolean)
+        ComboImagesRefreshCurrentItemText()
 
         PopulateSummaryPanel()
 
@@ -334,15 +372,13 @@ Public Class MainForm
         Me.UseWaitCursor = True
         Dim T = Stopwatch.StartNew
 
-        ContextMenuFilters.Close()
         BtnScanNew.Visible = False
         BtnScan.Enabled = False
         If _FiltersApplied Then
             FiltersClear()
             ImageCountUpdate()
         End If
-
-        Dim ItemScanForm As New ItemScanForm(Me, _LoadedImageList, NewOnly)
+        Dim ItemScanForm As New ItemScanForm(Me, ComboImages.Items, NewOnly)
         ItemScanForm.ShowDialog()
         BtnScanNew.Visible = Not ItemScanForm.ScanComplete
 
@@ -429,24 +465,26 @@ Public Class MainForm
 
     Private Sub FileClose(ImageData As LoadedImageData)
         ItemScanAll(_Disk, ImageData, True, True)
-        _LoadedImageList.Remove(ImageData)
         _LoadedFileNames.Remove(ImageData.FilePath)
 
-        Dim IsCurrentItem As Boolean = (ComboImages.SelectedItem Is ImageData)
-        Dim SelectedIndex = ComboImages.SelectedIndex
+        Dim ActiveComboBox As ComboBox = IIf(_FiltersApplied, ComboImagesFiltered, ComboImages)
+
+        Dim SelectedIndex = ActiveComboBox.SelectedIndex
+
         ComboImages.Items.Remove(ImageData)
+        ComboImagesFiltered.Items.Remove(ImageData)
 
-        ImageCountUpdate()
-
-        If IsCurrentItem Then
-            If SelectedIndex > ComboImages.Items.Count - 1 Then
-                SelectedIndex = ComboImages.Items.Count - 1
+        If ActiveComboBox.SelectedIndex = -1 Then
+            If SelectedIndex > ActiveComboBox.Items.Count - 1 Then
+                SelectedIndex = ActiveComboBox.Items.Count - 1
             End If
-            ComboImages.SelectedIndex = SelectedIndex
+            ActiveComboBox.SelectedIndex = SelectedIndex
         End If
 
-        If _LoadedImageList.Count = 0 Then
+        If ComboImages.Items.Count = 0 Then
             ResetAll()
+        Else
+            ImageCountUpdate()
         End If
     End Sub
 
@@ -716,19 +754,23 @@ Public Class MainForm
 
     Private Sub FiltersApply()
         Dim FilterCount As Integer = [Enum].GetNames(GetType(FilterTypes)).Length
-        Dim Count As Integer = 0
+        Dim TextFilter As String = TxtSearch.Text.Trim.ToLower
+
+        Dim FiltersChecked As Boolean = False
         For Counter = 0 To FilterCount - 1
             Dim Item As ToolStripMenuItem = ContextMenuFilters.Items("key_" & Counter)
             If Item.CheckState = CheckState.Checked Then
-                Count += 1
+                FiltersChecked = True
+                Exit For
             End If
         Next
 
-        If Count > 0 Then
+        If FiltersChecked Or TextFilter.Length > 0 Then
             Me.UseWaitCursor = True
 
-            Dim CurrentImageData As LoadedImageData = ComboImages.SelectedItem
-            ComboImages.Items.Clear()
+            ComboImagesFiltered.BeginUpdate()
+            ComboImagesFiltered.Items.Clear()
+
             Dim AppliedFilters As Integer = 0
             For Counter = 0 To FilterCount - 1
                 Dim Item As ToolStripMenuItem = ContextMenuFilters.Items("key_" & Counter)
@@ -736,24 +778,39 @@ Public Class MainForm
                     AppliedFilters += Item.Tag
                 End If
             Next
-            For Each ImageData In _LoadedImageList
-                If Not IsFiltered(ImageData, AppliedFilters) Then
-                    ImageData.ComboIndex = ComboImages.Items.Add(ImageData)
-                Else
-                    ImageData.ComboIndex = -1
+            For Each ImageData As LoadedImageData In ComboImages.Items
+                Dim ShowItem As Boolean = True
+
+                If TextFilter.Length > 0 Then
+                    Dim FilePath = ImageData.FilePath.ToLower
+                    ShowItem = FilePath.StartsWith(TextFilter) OrElse FilePath.Contains(" " & TextFilter) OrElse FilePath.Contains("\" & TextFilter)
+                End If
+
+                If FiltersChecked And ShowItem Then
+                    ShowItem = Not IsFiltered(ImageData, AppliedFilters)
+                End If
+
+                If ShowItem Then
+                    Dim Index = ComboImagesFiltered.Items.Add(ImageData)
+                    If ImageData Is ComboImages.SelectedItem Then
+                        ComboImagesFiltered.SelectedIndex = Index
+                    End If
                 End If
             Next
-            If ComboImages.Items.Count > 0 Then
-                Dim SearchIndex = ComboImages.Items.IndexOf(CurrentImageData)
-                If SearchIndex > -1 Then
-                    ComboImages.SelectedIndex = SearchIndex
-                Else
-                    ComboImages.SelectedIndex = 0
-                End If
+
+            If ComboImagesFiltered.SelectedIndex = -1 AndAlso ComboImagesFiltered.Items.Count > 0 Then
+                ComboImagesFiltered.SelectedIndex = 0
             End If
+
             MainMenuFilters.BackColor = Color.LightGreen
 
+            ComboImagesFiltered.EndUpdate()
+            ComboImagesFiltered.Visible = True
+            ComboImagesFiltered.Enabled = ComboImagesFiltered.Items.Count > 0
+            ComboImages.Visible = False
+
             _FiltersApplied = True
+            BtnClearFilters.Enabled = True
 
             Me.UseWaitCursor = False
         Else
@@ -775,24 +832,16 @@ Public Class MainForm
                 Item.CheckState = CheckState.Unchecked
             End If
         Next
+        TxtSearch.Text = ""
         _SuppressEvent = False
 
-        Dim CurrentImageData As LoadedImageData = ComboImages.SelectedItem
-        ComboImages.Items.Clear()
-        For Each ImageData In _LoadedImageList
-            ImageData.ComboIndex = ComboImages.Items.Add(ImageData)
-        Next
-        If ComboImages.Items.Count > 0 Then
-            Dim SearchIndex = ComboImages.Items.IndexOf(CurrentImageData)
-            If SearchIndex > -1 Then
-                ComboImages.SelectedIndex = SearchIndex
-            Else
-                ComboImages.SelectedIndex = 0
-            End If
-        End If
+        ComboImages.Visible = True
+        ComboImagesFiltered.Visible = False
+        ComboImagesFiltered.Items.Clear()
 
         MainMenuFilters.BackColor = SystemColors.Control
         _FiltersApplied = False
+        BtnClearFilters.Enabled = False
 
         Me.UseWaitCursor = False
     End Sub
@@ -803,6 +852,8 @@ Public Class MainForm
             FilterUpdate(Counter)
         Next
         BtnScan.Text = "Scan Images"
+        TxtSearch.Text = ""
+        BtnClearFilters.Enabled = False
     End Sub
 
     Private Function GetDataListFromDataBlocks(DataBlocks As List(Of DiskImage.DataBlock), FileSize As UInteger, HighlightAssigned As Boolean) As List(Of HexViewData)
@@ -842,7 +893,7 @@ Public Class MainForm
     Private Function GetModifiedImageList() As List(Of LoadedImageData)
         Dim ModifyImageList As New List(Of LoadedImageData)
 
-        For Each ImageData In _LoadedImageList
+        For Each ImageData As LoadedImageData In ComboImages.Items
             If ImageData.Modified Then
                 ModifyImageList.Add(ImageData)
             End If
@@ -855,7 +906,7 @@ Public Class MainForm
         Dim PathName As String = ""
         Dim CheckPath As Boolean = False
 
-        For Each ImageData In _LoadedImageList
+        For Each ImageData As LoadedImageData In ComboImages.Items
             Dim CurrentPathName As String = IO.Path.GetDirectoryName(ImageData.FilePath)
             If CheckPath Then
                 If Len(CurrentPathName) > Len(PathName) Then
@@ -880,9 +931,9 @@ Public Class MainForm
 
     Private Sub ImageCountUpdate()
         If _FiltersApplied Then
-            ToolStripImageCount.Text = ComboImages.Items.Count & " Of " & _LoadedImageList.Count & " Image" & IIf(_LoadedImageList.Count <> 1, "s", "")
+            ToolStripImageCount.Text = ComboImagesFiltered.Items.Count & " Of " & ComboImages.Items.Count & " Image" & IIf(ComboImages.Items.Count <> 1, "s", "")
         Else
-            ToolStripImageCount.Text = _LoadedImageList.Count & " Image" & IIf(_LoadedImageList.Count <> 1, "s", "")
+            ToolStripImageCount.Text = ComboImages.Items.Count & " Image" & IIf(ComboImages.Items.Count <> 1, "s", "")
         End If
     End Sub
 
@@ -1664,6 +1715,11 @@ Public Class MainForm
         Dim SelectedImageData As LoadedImageData = Nothing
 
         Me.UseWaitCursor = True
+
+        If _FiltersApplied Then
+            FiltersClear()
+        End If
+
         ComboImages.BeginUpdate()
 
         LoadedImageData.StringOffset = 0
@@ -1677,8 +1733,7 @@ Public Class MainForm
                         If Not _LoadedFileNames.ContainsKey(FileInfo.FullName) Then
                             Dim ImageData As New LoadedImageData(FileInfo.FullName)
                             _LoadedFileNames.Add(FileInfo.FullName, ImageData)
-                            ImageData.ComboIndex = ComboImages.Items.Add(ImageData)
-                            _LoadedImageList.Add(ImageData)
+                            ComboImages.Items.Add(ImageData)
                             If SelectedImageData Is Nothing Then
                                 SelectedImageData = ImageData
                             End If
@@ -1691,8 +1746,7 @@ Public Class MainForm
                     If Not _LoadedFileNames.ContainsKey(FilePath) Then
                         Dim ImageData As New LoadedImageData(FilePath)
                         _LoadedFileNames.Add(FilePath, ImageData)
-                        ImageData.ComboIndex = ComboImages.Items.Add(ImageData)
-                        _LoadedImageList.Add(ImageData)
+                        ComboImages.Items.Add(ImageData)
                         If SelectedImageData Is Nothing Then
                             SelectedImageData = ImageData
                         End If
@@ -1705,11 +1759,7 @@ Public Class MainForm
 
         If SelectedImageData IsNot Nothing Then
             ComboImages.Enabled = True
-            If _FiltersApplied Then
-                FiltersClear()
-            Else
-                ComboImagesRefreshItemText()
-            End If
+            ComboImagesRefreshItemText()
             ImageCountUpdate()
 
             ComboImages.SelectedItem = SelectedImageData
@@ -1721,6 +1771,7 @@ Public Class MainForm
         End If
 
         ComboImages.EndUpdate()
+
         Me.UseWaitCursor = False
     End Sub
 
@@ -1875,7 +1926,6 @@ Public Class MainForm
         _Disk = Nothing
         _FiltersApplied = False
         _CheckAll = False
-        _LoadedImageList.Clear()
         _LoadedFileNames.Clear()
         _ScanRun = False
         BtnDisplayClusters.Enabled = False
@@ -1884,6 +1934,7 @@ Public Class MainForm
         ToolStripModified.Visible = False
         BtnSaveAll.Enabled = False
         ComboImages.Enabled = False
+        ComboImagesFiltered.Visible = False
         ListViewSummary.Items.Clear()
         ListViewHashes.Items.Clear()
         ListViewFiles.Items.Clear()
@@ -1891,6 +1942,7 @@ Public Class MainForm
         ListViewFiles.MultiSelect = False
         ListViewFiles.Refresh()
         ComboImages.Items.Clear()
+        ComboImagesFiltered.Items.Clear()
         MainMenuFilters.BackColor = SystemColors.Control
         RefreshFileButtons()
         SetImagesLoaded(False)
@@ -1908,17 +1960,14 @@ Public Class MainForm
 
     Private Sub SaveAll()
         _SuppressEvent = True
-        For Each ImageData In _LoadedImageList
+        For Each ImageData As LoadedImageData In ComboImages.Items
             If ImageData.Modified Then
                 Dim Result = DiskImageSave(ImageData)
                 If Result Then
-                    If ImageData.ComboIndex > -1 Then
-                        _SuppressEvent = True
-                        If ImageData Is ComboImages.SelectedItem Then
-                            ComboItemRefresh(True)
-                        Else
-                            ComboImagesRefreshItemText(ImageData.ComboIndex)
-                        End If
+                    If ImageData Is ComboImages.SelectedItem Then
+                        ComboItemRefresh(True)
+                    Else
+                        ComboImagesRefreshItemText(ImageData)
                     End If
                 End If
             End If
@@ -1957,10 +2006,7 @@ Public Class MainForm
                 _LoadedFileNames.Remove(CurrentImageData.FilePath)
                 _LoadedFileNames.Add(FilePath, CurrentImageData)
                 CurrentImageData.FilePath = FilePath
-                ComboImages.BeginUpdate()
-                LoadedImageData.StringOffset = GetPathOffset()
-                ComboImagesRefreshItemText()
-                ComboImages.EndUpdate()
+                ComboImagesRefreshPaths()
             End If
             ComboItemRefresh(True)
         End If
@@ -2002,6 +2048,7 @@ Public Class MainForm
         BtnScanNew.Visible = _ScanRun
         BtnClose.Enabled = Value
         BtnCloseAll.Enabled = Value
+        TxtSearch.Enabled = Value
     End Sub
 
     Private Sub UnusedClustersDisplayHex()
@@ -2080,10 +2127,12 @@ Public Class MainForm
     End Sub
 
     Private Sub BtnScan_Click(sender As Object, e As EventArgs) Handles BtnScan.Click
+        ContextMenuFilters.Close()
         DiskImagesScan(False)
     End Sub
 
     Private Sub BtnScanNew_Click(sender As Object, e As EventArgs) Handles BtnScanNew.Click
+        ContextMenuFilters.Close()
         DiskImagesScan(True)
     End Sub
 
@@ -2093,6 +2142,14 @@ Public Class MainForm
         End If
 
         DiskImageProcess()
+    End Sub
+
+    Private Sub ComboImagesFiltered_SelectedIndexChanged(sender As Object, e As EventArgs) Handles ComboImagesFiltered.SelectedIndexChanged
+        If _SuppressEvent Then
+            Exit Sub
+        End If
+
+        ComboImages.SelectedItem = ComboImagesFiltered.SelectedItem
     End Sub
 
     Private Sub ContextMenuFilters_CheckStateChanged(sender As Object, e As EventArgs)
@@ -2109,12 +2166,12 @@ Public Class MainForm
         End If
     End Sub
 
-    Private Sub File_DragDrop(sender As Object, e As DragEventArgs) Handles ComboImages.DragDrop, LabelDropMessage.DragDrop, ListViewFiles.DragDrop, ListViewHashes.DragDrop, ListViewSummary.DragDrop
+    Private Sub File_DragDrop(sender As Object, e As DragEventArgs) Handles ComboImages.DragDrop, ComboImagesFiltered.DragDrop, LabelDropMessage.DragDrop, ListViewFiles.DragDrop, ListViewHashes.DragDrop, ListViewSummary.DragDrop
         Dim Files As String() = e.Data.GetData(DataFormats.FileDrop)
         ProcessFileDrop(Files, False)
     End Sub
 
-    Private Sub File_DragEnter(sender As Object, e As DragEventArgs) Handles ComboImages.DragEnter, LabelDropMessage.DragEnter, ListViewFiles.DragEnter, ListViewHashes.DragEnter, ListViewSummary.DragEnter
+    Private Sub File_DragEnter(sender As Object, e As DragEventArgs) Handles ComboImages.DragEnter, ComboImagesFiltered.DragEnter, LabelDropMessage.DragEnter, ListViewFiles.DragEnter, ListViewHashes.DragEnter, ListViewSummary.DragEnter
         FileDropStart(e)
     End Sub
 
@@ -2256,6 +2313,28 @@ Public Class MainForm
             Dim FileData As FileData = Item.Tag
             DisplayCrossLinkedFiles(FileData.DirectoryEntry)
         End If
+    End Sub
+
+    Private Sub TxtSearch_TextChanged(sender As Object, e As EventArgs) Handles TxtSearch.TextChanged
+        If _SuppressEvent Then
+            Exit Sub
+        End If
+
+        _Debounce.Stop()
+        _Debounce.Start()
+    End Sub
+
+    Private Sub BtnClearFilters_Click(sender As Object, e As EventArgs) Handles BtnClearFilters.Click
+        If _FiltersApplied Then
+            FiltersClear()
+            ImageCountUpdate()
+            ContextMenuFilters.Invalidate()
+        End If
+    End Sub
+
+    Private Sub Debounce_Tick(sender As Object, e As EventArgs) Handles _Debounce.Tick
+        _Debounce.Stop()
+        FiltersApply()
     End Sub
 
 #End Region

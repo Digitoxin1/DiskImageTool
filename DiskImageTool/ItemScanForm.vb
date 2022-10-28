@@ -3,19 +3,19 @@
 Public Class ItemScanForm
     Private _Activated As Boolean = False
     Private ReadOnly _Parent As MainForm
-    Private ReadOnly _LoadedImageList As List(Of LoadedImageData)
+    Private ReadOnly _ImageList As ComboBox.ObjectCollection
     Private ReadOnly _NewOnly As Boolean
     Private _EndScan As Boolean = False
     Private _ScanComplete As Boolean = False
 
-    Public Sub New(Parent As MainForm, LoadedImageList As List(Of LoadedImageData), NewOnly As Boolean)
+    Public Sub New(Parent As MainForm, ImageList As ComboBox.ObjectCollection, NewOnly As Boolean)
 
         ' This call is required by the designer.
         InitializeComponent()
 
         ' Add any initialization after the InitializeComponent() call.
         _Parent = Parent
-        _LoadedImageList = LoadedImageList
+        _ImageList = ImageList
         _NewOnly = NewOnly
     End Sub
 
@@ -38,18 +38,18 @@ Public Class ItemScanForm
     Private Function ProcessScan(bw As BackgroundWorker) As Boolean
         Dim ItemCount As Integer = 0
         If _NewOnly Then
-            For Each ImageData In _LoadedImageList
+            For Each ImageData As LoadedImageData In _ImageList
                 If Not ImageData.Scanned Then
                     ItemCount += 1
                 End If
             Next
         Else
-            ItemCount = _LoadedImageList.Count
+            ItemCount = _ImageList.Count
         End If
 
         Dim PrevPercentage As Integer = 0
         Dim Counter As Integer = 0
-        For Each ImageData In _LoadedImageList
+        For Each ImageData As LoadedImageData In _ImageList
             If bw.CancellationPending Then
                 Return False
             End If

@@ -41,6 +41,7 @@ Partial Class MainForm
         Dim MainMenuExperimental As System.Windows.Forms.ToolStripMenuItem
         Dim ToolStripSeparator5 As System.Windows.Forms.ToolStripSeparator
         Dim FileCRC32 As System.Windows.Forms.ColumnHeader
+        Dim ToolStripSearch As System.Windows.Forms.ToolStripLabel
         Me.BtnOpen = New System.Windows.Forms.ToolStripMenuItem()
         Me.toolStripSeparator = New System.Windows.Forms.ToolStripSeparator()
         Me.BtnSave = New System.Windows.Forms.ToolStripMenuItem()
@@ -92,7 +93,10 @@ Partial Class MainForm
         Me.ContextMenuFilters = New System.Windows.Forms.ContextMenuStrip(Me.components)
         Me.BtnScanNew = New System.Windows.Forms.ToolStripMenuItem()
         Me.BtnScan = New System.Windows.Forms.ToolStripMenuItem()
+        Me.BtnClearFilters = New System.Windows.Forms.ToolStripMenuItem()
         Me.FilterSeparator = New System.Windows.Forms.ToolStripSeparator()
+        Me.TxtSearch = New System.Windows.Forms.ToolStripTextBox()
+        Me.ComboImagesFiltered = New System.Windows.Forms.ComboBox()
         SummaryName = CType(New System.Windows.Forms.ColumnHeader(), System.Windows.Forms.ColumnHeader)
         SummaryValue = CType(New System.Windows.Forms.ColumnHeader(), System.Windows.Forms.ColumnHeader)
         HashName = CType(New System.Windows.Forms.ColumnHeader(), System.Windows.Forms.ColumnHeader)
@@ -110,6 +114,7 @@ Partial Class MainForm
         MainMenuExperimental = New System.Windows.Forms.ToolStripMenuItem()
         ToolStripSeparator5 = New System.Windows.Forms.ToolStripSeparator()
         FileCRC32 = CType(New System.Windows.Forms.ColumnHeader(), System.Windows.Forms.ColumnHeader)
+        ToolStripSearch = New System.Windows.Forms.ToolStripLabel()
         Me.StatusStrip1.SuspendLayout()
         Me.ContextMenuFiles.SuspendLayout()
         Me.MenuStripMain.SuspendLayout()
@@ -174,7 +179,7 @@ Partial Class MainForm
         '
         MainMenuFile.DropDownItems.AddRange(New System.Windows.Forms.ToolStripItem() {Me.BtnOpen, Me.toolStripSeparator, Me.BtnSave, Me.BtnSaveAs, Me.BtnSaveAll, Me.ToolStripSeparator3, Me.BtnClose, Me.BtnCloseAll, Me.toolStripSeparator1, Me.BtnExit})
         MainMenuFile.Name = "MainMenuFile"
-        MainMenuFile.Size = New System.Drawing.Size(37, 20)
+        MainMenuFile.Size = New System.Drawing.Size(37, 23)
         MainMenuFile.Text = "&File"
         '
         'BtnOpen
@@ -244,7 +249,7 @@ Partial Class MainForm
         '
         MainMenuEdit.DropDownItems.AddRange(New System.Windows.Forms.ToolStripItem() {Me.BtnOEMID, Me.ToolStripSeparator4, Me.BtnFileProperties, Me.BtnExportFile, Me.BtnReplaceFile, Me.ToolStripSeparator2, Me.BtnRevert})
         MainMenuEdit.Name = "MainMenuEdit"
-        MainMenuEdit.Size = New System.Drawing.Size(39, 20)
+        MainMenuEdit.Size = New System.Drawing.Size(39, 23)
         MainMenuEdit.Text = "&Edit"
         '
         'BtnOEMID
@@ -292,7 +297,7 @@ Partial Class MainForm
         '
         MainMenuView.DropDownItems.AddRange(New System.Windows.Forms.ToolStripItem() {Me.BtnDisplayBootSector, Me.BtnDisplayFAT, Me.BtnDisplayDirectory, Me.BtnDisplayClusters, Me.BtnDisplayFile})
         MainMenuView.Name = "MainMenuView"
-        MainMenuView.Size = New System.Drawing.Size(44, 20)
+        MainMenuView.Size = New System.Drawing.Size(44, 23)
         MainMenuView.Text = "&View"
         '
         'BtnDisplayBootSector
@@ -329,7 +334,7 @@ Partial Class MainForm
         '
         MainMenuExperimental.DropDownItems.AddRange(New System.Windows.Forms.ToolStripItem() {Me.BtnExportDebug})
         MainMenuExperimental.Name = "MainMenuExperimental"
-        MainMenuExperimental.Size = New System.Drawing.Size(88, 20)
+        MainMenuExperimental.Size = New System.Drawing.Size(88, 23)
         MainMenuExperimental.Text = "Experimental"
         '
         'BtnExportDebug
@@ -348,6 +353,13 @@ Partial Class MainForm
         FileCRC32.Text = "CRC32"
         FileCRC32.Width = 70
         '
+        'ToolStripSearch
+        '
+        ToolStripSearch.Alignment = System.Windows.Forms.ToolStripItemAlignment.Right
+        ToolStripSearch.Name = "ToolStripSearch"
+        ToolStripSearch.Size = New System.Drawing.Size(42, 20)
+        ToolStripSearch.Text = "Search"
+        '
         'ListViewSummary
         '
         Me.ListViewSummary.AllowDrop = True
@@ -361,7 +373,7 @@ Partial Class MainForm
         Me.ListViewSummary.Name = "ListViewSummary"
         Me.ListViewSummary.ShowGroups = False
         Me.ListViewSummary.Size = New System.Drawing.Size(302, 414)
-        Me.ListViewSummary.TabIndex = 5
+        Me.ListViewSummary.TabIndex = 1
         Me.ListViewSummary.UseCompatibleStateImageBehavior = False
         Me.ListViewSummary.View = System.Windows.Forms.View.Details
         '
@@ -372,8 +384,7 @@ Partial Class MainForm
             Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
         Me.ComboImages.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList
         Me.ComboImages.DropDownWidth = 523
-        Me.ComboImages.FormattingEnabled = True
-        Me.ComboImages.Location = New System.Drawing.Point(320, 29)
+        Me.ComboImages.Location = New System.Drawing.Point(320, 28)
         Me.ComboImages.Name = "ComboImages"
         Me.ComboImages.Size = New System.Drawing.Size(642, 21)
         Me.ComboImages.Sorted = True
@@ -392,7 +403,7 @@ Partial Class MainForm
         Me.ListViewHashes.Name = "ListViewHashes"
         Me.ListViewHashes.Scrollable = False
         Me.ListViewHashes.Size = New System.Drawing.Size(302, 101)
-        Me.ListViewHashes.TabIndex = 7
+        Me.ListViewHashes.TabIndex = 2
         Me.ListViewHashes.TileSize = New System.Drawing.Size(295, 30)
         Me.ListViewHashes.UseCompatibleStateImageBehavior = False
         Me.ListViewHashes.View = System.Windows.Forms.View.Tile
@@ -407,7 +418,7 @@ Partial Class MainForm
         Me.LabelDropMessage.Location = New System.Drawing.Point(504, 288)
         Me.LabelDropMessage.Name = "LabelDropMessage"
         Me.LabelDropMessage.Size = New System.Drawing.Size(274, 16)
-        Me.LabelDropMessage.TabIndex = 11
+        Me.LabelDropMessage.TabIndex = 5
         Me.LabelDropMessage.Text = "Drag && Drop Floppy Disk Images Here"
         Me.LabelDropMessage.TextAlign = System.Drawing.ContentAlignment.MiddleCenter
         '
@@ -417,7 +428,7 @@ Partial Class MainForm
         Me.StatusStrip1.Location = New System.Drawing.Point(0, 552)
         Me.StatusStrip1.Name = "StatusStrip1"
         Me.StatusStrip1.Size = New System.Drawing.Size(974, 24)
-        Me.StatusStrip1.TabIndex = 13
+        Me.StatusStrip1.TabIndex = 6
         Me.StatusStrip1.Text = "StatusStrip1"
         '
         'ToolStripFileName
@@ -468,11 +479,11 @@ Partial Class MainForm
         Me.ListViewFiles.Font = New System.Drawing.Font("Microsoft Sans Serif", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.ListViewFiles.FullRowSelect = True
         Me.ListViewFiles.HideSelection = False
-        Me.ListViewFiles.Location = New System.Drawing.Point(320, 56)
+        Me.ListViewFiles.Location = New System.Drawing.Point(320, 55)
         Me.ListViewFiles.Name = "ListViewFiles"
         Me.ListViewFiles.OwnerDraw = True
-        Me.ListViewFiles.Size = New System.Drawing.Size(642, 493)
-        Me.ListViewFiles.TabIndex = 10
+        Me.ListViewFiles.Size = New System.Drawing.Size(642, 494)
+        Me.ListViewFiles.TabIndex = 4
         Me.ListViewFiles.UseCompatibleStateImageBehavior = False
         Me.ListViewFiles.View = System.Windows.Forms.View.Details
         '
@@ -551,11 +562,11 @@ Partial Class MainForm
         '
         'MenuStripMain
         '
-        Me.MenuStripMain.Items.AddRange(New System.Windows.Forms.ToolStripItem() {MainMenuFile, MainMenuEdit, Me.MainMenuFilters, MainMenuView, MainMenuExperimental})
+        Me.MenuStripMain.Items.AddRange(New System.Windows.Forms.ToolStripItem() {MainMenuFile, MainMenuEdit, Me.MainMenuFilters, MainMenuView, MainMenuExperimental, Me.TxtSearch, ToolStripSearch})
         Me.MenuStripMain.Location = New System.Drawing.Point(0, 0)
         Me.MenuStripMain.Name = "MenuStripMain"
-        Me.MenuStripMain.Size = New System.Drawing.Size(974, 24)
-        Me.MenuStripMain.TabIndex = 14
+        Me.MenuStripMain.Size = New System.Drawing.Size(974, 27)
+        Me.MenuStripMain.TabIndex = 0
         Me.MenuStripMain.Text = "MenuStrip1"
         '
         'MainMenuFilters
@@ -563,15 +574,14 @@ Partial Class MainForm
         Me.MainMenuFilters.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text
         Me.MainMenuFilters.DropDown = Me.ContextMenuFilters
         Me.MainMenuFilters.Name = "MainMenuFilters"
-        Me.MainMenuFilters.Size = New System.Drawing.Size(50, 20)
+        Me.MainMenuFilters.Size = New System.Drawing.Size(50, 23)
         Me.MainMenuFilters.Text = "F&ilters"
         '
         'ContextMenuFilters
         '
-        Me.ContextMenuFilters.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.BtnScanNew, Me.BtnScan, Me.FilterSeparator})
+        Me.ContextMenuFilters.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.BtnScanNew, Me.BtnScan, Me.BtnClearFilters, Me.FilterSeparator})
         Me.ContextMenuFilters.Name = "ContextMenuStrip1"
-        Me.ContextMenuFilters.OwnerItem = Me.MainMenuFilters
-        Me.ContextMenuFilters.Size = New System.Drawing.Size(168, 54)
+        Me.ContextMenuFilters.Size = New System.Drawing.Size(168, 76)
         '
         'BtnScanNew
         '
@@ -585,17 +595,47 @@ Partial Class MainForm
         Me.BtnScan.Size = New System.Drawing.Size(167, 22)
         Me.BtnScan.Text = "&Scan Images"
         '
+        'BtnClearFilters
+        '
+        Me.BtnClearFilters.Name = "BtnClearFilters"
+        Me.BtnClearFilters.Size = New System.Drawing.Size(167, 22)
+        Me.BtnClearFilters.Text = "Clear Filters"
+        '
         'FilterSeparator
         '
         Me.FilterSeparator.Name = "FilterSeparator"
         Me.FilterSeparator.Size = New System.Drawing.Size(164, 6)
         Me.FilterSeparator.Visible = False
         '
+        'TxtSearch
+        '
+        Me.TxtSearch.Alignment = System.Windows.Forms.ToolStripItemAlignment.Right
+        Me.TxtSearch.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle
+        Me.TxtSearch.Font = New System.Drawing.Font("Segoe UI", 9.0!)
+        Me.TxtSearch.Margin = New System.Windows.Forms.Padding(1, 0, 12, 0)
+        Me.TxtSearch.MaxLength = 255
+        Me.TxtSearch.Name = "TxtSearch"
+        Me.TxtSearch.Size = New System.Drawing.Size(200, 23)
+        '
+        'ComboImagesFiltered
+        '
+        Me.ComboImagesFiltered.AllowDrop = True
+        Me.ComboImagesFiltered.Anchor = CType(((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Left) _
+            Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
+        Me.ComboImagesFiltered.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList
+        Me.ComboImagesFiltered.DropDownWidth = 523
+        Me.ComboImagesFiltered.Location = New System.Drawing.Point(320, 28)
+        Me.ComboImagesFiltered.Name = "ComboImagesFiltered"
+        Me.ComboImagesFiltered.Size = New System.Drawing.Size(642, 21)
+        Me.ComboImagesFiltered.Sorted = True
+        Me.ComboImagesFiltered.TabIndex = 3
+        '
         'MainForm
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
         Me.ClientSize = New System.Drawing.Size(974, 576)
+        Me.Controls.Add(Me.ComboImagesFiltered)
         Me.Controls.Add(Me.StatusStrip1)
         Me.Controls.Add(Me.MenuStripMain)
         Me.Controls.Add(Me.LabelDropMessage)
@@ -671,4 +711,7 @@ Partial Class MainForm
     Friend WithEvents BtnFileMenuViewCrosslinked As ToolStripMenuItem
     Friend WithEvents BtnExportFile As ToolStripMenuItem
     Friend WithEvents BtnFileMenuExportFile As ToolStripMenuItem
+    Friend WithEvents TxtSearch As ToolStripTextBox
+    Friend WithEvents ComboImagesFiltered As ComboBox
+    Friend WithEvents BtnClearFilters As ToolStripMenuItem
 End Class

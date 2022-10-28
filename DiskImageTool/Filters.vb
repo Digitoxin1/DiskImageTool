@@ -55,6 +55,16 @@
     End Function
 
     Public Function IsFiltered(ImageData As LoadedImageData, AppliedFilters As FilterTypes) As Boolean
+        If CheckFilter(FilterTypes.ModifiedFiles, AppliedFilters) Then
+            If ImageData.Modified Then
+                Return False
+            End If
+        End If
+
+        If Not ImageData.Scanned Then
+            Return True
+        End If
+
         If CheckFilter(FilterTypes.HasInvalidImage, AppliedFilters) Then
             If Not ImageData.ScanInfo.IsValidImage Then
                 Return False
@@ -97,12 +107,6 @@
             End If
         End If
 
-        If CheckFilter(FilterTypes.ModifiedFiles, AppliedFilters) Then
-            If ImageData.Modified Then
-                Return False
-            End If
-        End If
-
         If CheckFilter(FilterTypes.UnusedClusters, AppliedFilters) Then
             If ImageData.ScanInfo.IsValidImage And ImageData.ScanInfo.HasUnusedClusters Then
                 Return False
@@ -116,7 +120,7 @@
         End If
 
         If CheckFilter(FilterTypes.HasMismatchedFATs, AppliedFilters) Then
-            If ImageData.ScanInfo.IsValidImage And ImageData.ScanInfo.hasmismatchedFATS Then
+            If ImageData.ScanInfo.IsValidImage And ImageData.ScanInfo.HasMismatchedFATs Then
                 Return False
             End If
         End If
