@@ -3,7 +3,7 @@
 Public Class OEMIDForm
     Private ReadOnly _DiskImage As DiskImage.Disk
 
-    Public Sub New(DiskImage As DiskImage.Disk, OEMIDDictionary As Dictionary(Of UInteger, OEMIDList))
+    Public Sub New(DiskImage As DiskImage.Disk, OEMIDDictionary As Dictionary(Of UInteger, List(Of OEMID)))
 
         ' This call is required by the designer.
         InitializeComponent()
@@ -16,10 +16,10 @@ Public Class OEMIDForm
         txtCurrentOEMID.Text = OEMIDString
 
         If OEMIDDictionary.ContainsKey(BootstrapChecksum) Then
-            Dim OEMIDList As List(Of String) = OEMIDDictionary.Item(BootstrapChecksum).OEMIDList
+            Dim OEMIDList As List(Of OEMID) = OEMIDDictionary.Item(BootstrapChecksum)
             For Each OEMID In OEMIDList
-                Dim Index = CboOEMID.Items.Add(OEMID)
-                If OEMID = OEMIDString Then
+                Dim Index = CboOEMID.Items.Add(OEMID.ID)
+                If OEMID.ID = OEMIDString Then
                     CboOEMID.SelectedIndex = Index
                 End If
             Next

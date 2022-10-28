@@ -3,6 +3,7 @@
         ModifiedFiles
         UnknownOEMID
         MismatchedOEMID
+        Windows9xOEMID
         HasCreated
         HasLastAccessed
         HasLongFileNames
@@ -20,6 +21,8 @@
         Select Case ID
             Case FilterTypes.UnknownOEMID
                 Caption = "Unknown OEM ID"
+            Case FilterTypes.Windows9xOEMID
+                Caption = "Windows 9x OEM ID"
             Case FilterTypes.MismatchedOEMID
                 Caption = "Mismatched OEM ID"
             Case FilterTypes.HasCreated
@@ -85,6 +88,12 @@
 
         If CheckFilter(FilterTypes.MismatchedOEMID, AppliedFilters) Then
             If ImageData.ScanInfo.IsValidImage And ImageData.ScanInfo.OEMIDFound And Not ImageData.ScanInfo.OEMIDMatched Then
+                Return False
+            End If
+        End If
+
+        If CheckFilter(FilterTypes.Windows9xOEMID, AppliedFilters) Then
+            If ImageData.ScanInfo.IsValidImage And ImageData.ScanInfo.OEMIDFound And ImageData.ScanInfo.OEMIDWin9x Then
                 Return False
             End If
         End If

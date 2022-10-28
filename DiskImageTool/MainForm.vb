@@ -4,14 +4,17 @@ Imports System.Text
 Public Class MainForm
     Private Const FILE_FILTER As String = "Disk Image Files (*.ima; *.img)|*.ima;*.img"
     Private ReadOnly _LoadedFileNames As Dictionary(Of String, LoadedImageData)
-    Private ReadOnly _OEMIDDictionary As Dictionary(Of UInteger, OEMIDList)
+    Private ReadOnly _OEMIDDictionary As Dictionary(Of UInteger, List(Of OEMID))
     Private _Disk As DiskImage.Disk
     Private _SuppressEvent As Boolean = False
     Private _FiltersApplied As Boolean = False
     Private _FilterCounts() As Integer
+    Private _FilterOEMID As Dictionary(Of String, ComboOEMIDItem)
     Private _CheckAll As Boolean = False
     Private _ScanRun As Boolean = False
-    Private WithEvents _Debounce As Timer
+    Private WithEvents Debounce As Timer
+    Private WithEvents ContextMenuCopy1 As ContextMenuStrip
+    Private WithEvents ContextMenuCopy2 As ContextMenuStrip
 
     <Runtime.InteropServices.DllImport("User32.dll")>
     Private Shared Function SetForegroundWindow(ByVal hWnd As Integer) As Integer
@@ -26,8 +29,20 @@ Public Class MainForm
         FiltersInitialize()
         _LoadedFileNames = New Dictionary(Of String, LoadedImageData)
         _OEMIDDictionary = GetOEMIDDictionary()
-        _Debounce = New Timer
-        _Debounce.Interval = 750
+        Debounce = New Timer With {
+            .Interval = 750
+        }
+        ContextMenuCopy1 = New ContextMenuStrip With {
+            .Name = "Summary"
+        }
+        ContextMenuCopy1.Items.Add("&Copy Value")
+        ListViewSummary.ContextMenuStrip = ContextMenuCopy1
+
+        ContextMenuCopy2 = New ContextMenuStrip With {
+            .Name = "Hashes"
+        }
+        ContextMenuCopy2.Items.Add("&Copy Value")
+        ListViewHashes.ContextMenuStrip = ContextMenuCopy2
 
         ResetAll()
     End Sub
@@ -225,7 +240,6 @@ Public Class MainForm
         End With
     End Function
 
-
     Private Sub DirectoryEntryDisplayHex(Offset As UInteger)
         Dim frmHexView As HexViewForm
 
@@ -367,7 +381,6 @@ Public Class MainForm
         Return Success
     End Function
 
-
     Private Sub DiskImagesScan(NewOnly As Boolean)
         Me.UseWaitCursor = True
         Dim T = Stopwatch.StartNew
@@ -385,6 +398,8 @@ Public Class MainForm
         For Counter = 0 To [Enum].GetNames(GetType(FilterTypes)).Length - 1
             FilterUpdate(Counter)
         Next
+
+        PopulateComboOEMID()
 
         BtnScan.Text = "Rescan Images"
         BtnScan.Enabled = True
@@ -720,8 +735,10 @@ Public Class MainForm
             AddHandler Item.CheckStateChanged, AddressOf ContextMenuFilters_CheckStateChanged
             ContextMenuFilters.Items.Add(Item)
         Next
+
         FilterSeparator.Visible = False
         FilterSeparator.Tag = 0
+        _FilterOEMID = New Dictionary(Of String, ComboOEMIDItem)
     End Sub
 
     Private Function FilterUpdate(ID As FilterTypes) As Boolean
@@ -757,15 +774,19 @@ Public Class MainForm
         Dim TextFilter As String = TxtSearch.Text.Trim.ToLower
 
         Dim FiltersChecked As Boolean = False
+
         For Counter = 0 To FilterCount - 1
             Dim Item As ToolStripMenuItem = ContextMenuFilters.Items("key_" & Counter)
-            If Item.CheckState = CheckState.Checked Then
+            If Item.Checked Then
                 FiltersChecked = True
                 Exit For
             End If
         Next
 
-        If FiltersChecked Or TextFilter.Length > 0 Then
+        Dim OEMIDItem As ComboOEMIDItem = ComboOEMID.SelectedItem
+        Dim HasComboFilter = OEMIDItem IsNot Nothing AndAlso Not OEMIDItem.AllItems
+
+        If FiltersChecked Or TextFilter.Length > 0 Or HasComboFilter Then
             Me.UseWaitCursor = True
 
             ComboImagesFiltered.BeginUpdate()
@@ -774,10 +795,11 @@ Public Class MainForm
             Dim AppliedFilters As Integer = 0
             For Counter = 0 To FilterCount - 1
                 Dim Item As ToolStripMenuItem = ContextMenuFilters.Items("key_" & Counter)
-                If Item.CheckState = CheckState.Checked Then
+                If Item.Checked Then
                     AppliedFilters += Item.Tag
                 End If
             Next
+
             For Each ImageData As LoadedImageData In ComboImages.Items
                 Dim ShowItem As Boolean = True
 
@@ -786,7 +808,11 @@ Public Class MainForm
                     ShowItem = FilePath.StartsWith(TextFilter) OrElse FilePath.Contains(" " & TextFilter) OrElse FilePath.Contains("\" & TextFilter)
                 End If
 
-                If FiltersChecked And ShowItem Then
+                If ShowItem And HasComboFilter Then
+                    ShowItem = (OEMIDItem.ID = ImageData.ScanInfo.OEMID)
+                End If
+
+                If ShowItem And FiltersChecked Then
                     ShowItem = Not IsFiltered(ImageData, AppliedFilters)
                 End If
 
@@ -833,6 +859,9 @@ Public Class MainForm
             End If
         Next
         TxtSearch.Text = ""
+        If ComboOEMID.Items.Count > 0 Then
+            ComboOEMID.SelectedIndex = 0
+        End If
         _SuppressEvent = False
 
         ComboImages.Visible = True
@@ -854,6 +883,10 @@ Public Class MainForm
         BtnScan.Text = "Scan Images"
         TxtSearch.Text = ""
         BtnClearFilters.Enabled = False
+        _FilterOEMID.Clear()
+        ComboOEMID.Items.Clear()
+        ComboOEMID.Visible = False
+        ToolStripOEMID.Visible = False
     End Sub
 
     Private Function GetDataListFromDataBlocks(DataBlocks As List(Of DiskImage.DataBlock), FileSize As UInteger, HighlightAssigned As Boolean) As List(Of HexViewData)
@@ -1061,17 +1094,38 @@ Public Class MainForm
     Friend Sub ItemScanOEMID(Disk As DiskImage.Disk, ImageData As LoadedImageData, Optional UpdateFilters As Boolean = False, Optional Remove As Boolean = False)
         Dim OEMIDMatched As Boolean = True
         Dim OEMIDFound As Boolean = True
+        Dim OEMIDWin9x As Boolean = False
+        Dim OEMIDString As String = ""
 
         If Not Remove And Disk.IsValidImage Then
             Dim BootstrapChecksum = Crc32.ComputeChecksum(Disk.BootSector.BootStrapCode)
-            Dim OEMIDString As String = Encoding.UTF8.GetString(Disk.BootSector.OEMID)
+            OEMIDString = Disk.GetOEMIDString
+            OEMIDWin9x = OEMIDString.EndsWith("IHC")
 
             Dim BootstrapType = OEMIDFindMatch(BootstrapChecksum)
             OEMIDFound = BootstrapType IsNot Nothing
-            If OEMIDFound Then
-                OEMIDMatched = BootstrapType.OEMIDList.Contains(OEMIDString)
+            If OEMIDFound And Not OEMIDWin9x Then
+                OEMIDMatched = False
+                For Each OEMID In BootstrapType
+                    If OEMID.ID = OEMIDString Then
+                        OEMIDMatched = True
+                        Exit For
+                    End If
+                Next
             Else
                 OEMIDMatched = True
+            End If
+        End If
+
+        If Not ImageData.Scanned Or OEMIDWin9x <> ImageData.ScanInfo.OEMIDWin9x Then
+            ImageData.ScanInfo.OEMIDWin9x = OEMIDWin9x
+            If OEMIDWin9x Then
+                _FilterCounts(FilterTypes.Windows9xOEMID) += 1
+            ElseIf ImageData.Scanned Then
+                _FilterCounts(FilterTypes.Windows9xOEMID) -= 1
+            End If
+            If UpdateFilters Then
+                FilterUpdate(FilterTypes.Windows9xOEMID)
             End If
         End If
 
@@ -1096,6 +1150,49 @@ Public Class MainForm
             End If
             If UpdateFilters Then
                 FilterUpdate(FilterTypes.UnknownOEMID)
+            End If
+        End If
+
+        If Disk.IsValidImage And (Not ImageData.Scanned Or OEMIDString <> ImageData.ScanInfo.OEMID) Then
+            If ImageData.Scanned Then
+                Dim Item = _FilterOEMID.Item(ImageData.ScanInfo.OEMID)
+                Item.Count -= 1
+                If Item.Count = 0 Then
+                    _FilterOEMID.Remove(Item.ID)
+                    If UpdateFilters Then
+                        ComboOEMID.Items.Remove(Item)
+                        If ComboOEMID.SelectedIndex = -1 Then
+                            ComboOEMID.SelectedIndex = 0
+                        End If
+                    End If
+                Else
+                    If UpdateFilters Then
+                        Dim Index = ComboOEMID.Items.IndexOf(Item)
+                        ComboOEMID.Items.Item(Index) = Item
+                    End If
+                End If
+            End If
+
+            ImageData.ScanInfo.OEMID = OEMIDString
+
+            If Not Remove AndAlso Not OEMIDString.EndsWith("IHC") Then
+                If _FilterOEMID.ContainsKey(OEMIDString) Then
+                    Dim Item = _FilterOEMID.Item(ImageData.ScanInfo.OEMID)
+                    Item.Count += 1
+                    If UpdateFilters Then
+                        Dim Index = ComboOEMID.Items.IndexOf(Item)
+                        ComboOEMID.Items.Item(Index) = Item
+                    End If
+                Else
+                    Dim Item = New ComboOEMIDItem With {
+                        .ID = OEMIDString,
+                        .Count = 1
+                    }
+                    _FilterOEMID.Add(Item.ID, Item)
+                    If UpdateFilters Then
+                        ComboOEMID.Items.Add(Item)
+                    End If
+                End If
             End If
         End If
     End Sub
@@ -1402,7 +1499,7 @@ Public Class MainForm
     Private Function MsgBoxOverwrite(FilePath As String) As MsgBoxResult
         Dim MSg As String = IO.Path.GetFileName(FilePath) & " already exists." & vbCrLf & "Do you want to replace it?"
 
-        Dim SaveAllForm As New SaveAllForm(Msg)
+        Dim SaveAllForm As New SaveAllForm(MSg)
         SaveAllForm.ShowDialog()
         Return SaveAllForm.Result
     End Function
@@ -1423,13 +1520,33 @@ Public Class MainForm
         Return Result
     End Function
 
-    Private Function OEMIDFindMatch(Checksum As UInteger) As OEMIDList
+    Private Function OEMIDFindMatch(Checksum As UInteger) As List(Of OEMID)
         If _OEMIDDictionary.ContainsKey(Checksum) Then
             Return _OEMIDDictionary.Item(Checksum)
         Else
             Return Nothing
         End If
     End Function
+
+    Private Sub PopulateComboOEMID()
+        Dim Item As ComboOEMIDItem
+
+        ComboOEMID.BeginUpdate()
+        ComboOEMID.Items.Clear()
+        ComboOEMID.Sorted = True
+        For Each Item In _FilterOEMID.Values
+            ComboOEMID.Items.Add(Item)
+        Next
+        Item = New ComboOEMIDItem With {
+            .AllItems = True
+        }
+        ComboOEMID.Sorted = False
+        ComboOEMID.Items.Insert(0, Item)
+        ComboOEMID.SelectedIndex = 0
+        ComboOEMID.EndUpdate()
+        ComboOEMID.Visible = True
+        ToolStripOEMID.Visible = True
+    End Sub
 
     Private Sub PopulateFilesPanel()
         ListViewFiles.BeginUpdate()
@@ -1493,16 +1610,21 @@ Public Class MainForm
             .Clear()
             If _Disk.IsValidImage Then
                 Dim BootstrapChecksum = Crc32.ComputeChecksum(_Disk.BootSector.BootStrapCode)
-                Dim OEMIDString As String = Encoding.UTF8.GetString(_Disk.BootSector.OEMID)
+                Dim OEMIDString As String = _Disk.GetOEMIDString()
                 Dim OEMIDMatched As Boolean = False
 
                 Dim BootstrapType = OEMIDFindMatch(BootstrapChecksum)
 
                 If BootstrapType IsNot Nothing Then
-                    OEMIDMatched = BootstrapType.OEMIDList.Contains(OEMIDString)
+                    For Each OEMID In BootstrapType
+                        If OEMID.ID = OEMIDString Then
+                            OEMIDMatched = True
+                            Exit For
+                        End If
+                    Next
                 End If
 
-                .Add(ListViewTileGetItem("Modified:", IIf(_Disk.Modified, "Yes", "No"), IIf(_Disk.Modified, Color.Blue, SystemColors.WindowText)))
+                .Add(ListViewTileGetItem("Modified", IIf(_Disk.Modified, "Yes", "No"), IIf(_Disk.Modified, Color.Blue, SystemColors.WindowText)))
                 If BootstrapType IsNot Nothing Then
                     If Not OEMIDMatched Then
                         ForeColor = Color.Red
@@ -1512,25 +1634,25 @@ Public Class MainForm
                 Else
                     ForeColor = SystemColors.WindowText
                 End If
-                .Add(ListViewTileGetItem("OEM ID:", OEMIDString, ForeColor))
+                .Add(ListViewTileGetItem("OEM ID", OEMIDString, ForeColor))
                 If BootstrapType IsNot Nothing Then
-                    .Add(ListViewTileGetItem("Detected Language:", _OEMIDDictionary.Item(BootstrapChecksum).Language))
+                    .Add(ListViewTileGetItem("Detected Language", BootstrapType.Item(0).Language))
                 End If
-                .Add(ListViewTileGetItem("Media Type:", MediaTypeGet(_Disk.BootSector.MediaDescriptor, _Disk.BootSector.SectorsPerTrack)))
+                .Add(ListViewTileGetItem("Media Type", MediaTypeGet(_Disk.BootSector.MediaDescriptor, _Disk.BootSector.SectorsPerTrack)))
 
                 Dim VolumeLabel = _Disk.GetVolumeLabel
                 If VolumeLabel IsNot Nothing Then
-                    .Add(ListViewTileGetItem("Volume Label:", VolumeLabel.GetVolumeName))
+                    .Add(ListViewTileGetItem("Volume Label", VolumeLabel.GetVolumeName))
                     Dim VolumeDate = VolumeLabel.GetLastWriteDate
-                    .Add(ListViewTileGetItem("Volume Date:", ExpandedDateToString(VolumeDate, True, False, False, False)))
+                    .Add(ListViewTileGetItem("Volume Date", ExpandedDateToString(VolumeDate, True, False, False, False)))
                 End If
                 If _Disk.BootSector.ExtendedBootSignature = &H29 Then
-                    .Add(ListViewTileGetItem("Volume Serial Number:", _Disk.BootSector.VolumeSerialNumber.ToString("X8").Insert(4, "-")))
-                    .Add(ListViewTileGetItem("File System Type:", Encoding.UTF8.GetString(_Disk.BootSector.FileSystemType)))
+                    .Add(ListViewTileGetItem("Volume Serial Number", _Disk.BootSector.VolumeSerialNumber.ToString("X8").Insert(4, "-")))
+                    .Add(ListViewTileGetItem("File System Type", Encoding.UTF8.GetString(_Disk.BootSector.FileSystemType)))
                 End If
-                .Add(ListViewTileGetItem("Bytes Per Sector:", _Disk.BootSector.BytesPerSector))
-                .Add(ListViewTileGetItem("Sectors Per Cluster:", _Disk.BootSector.SectorsPerCluster))
-                .Add(ListViewTileGetItem("Sectors Per Track:", _Disk.BootSector.SectorsPerTrack))
+                .Add(ListViewTileGetItem("Bytes Per Sector", _Disk.BootSector.BytesPerSector))
+                .Add(ListViewTileGetItem("Sectors Per Cluster", _Disk.BootSector.SectorsPerCluster))
+                .Add(ListViewTileGetItem("Sectors Per Track", _Disk.BootSector.SectorsPerTrack))
                 Value = _Disk.BootSector.FatCopies
                 If Not _Disk.CompareFATTables Then
                     Value &= " (Mismatched)"
@@ -1538,27 +1660,28 @@ Public Class MainForm
                 Else
                     ForeColor = SystemColors.WindowText
                 End If
-                .Add(ListViewTileGetItem("Number of FAT copies:", Value, ForeColor))
-                .Add(ListViewTileGetItem("Total Space:", Format(_Disk.BootSector.DataRegionSize * _Disk.BootSector.BytesPerSector, "N0") & " bytes"))
-                .Add(ListViewTileGetItem("Free Space:", Format(_Disk.FreeSpace, "N0") & " bytes"))
+                .Add(ListViewTileGetItem("Number of FAT copies", Value, ForeColor))
+                .Add(ListViewTileGetItem("Total Space", Format(_Disk.BootSector.DataRegionSize * _Disk.BootSector.BytesPerSector, "N0") & " bytes"))
+                .Add(ListViewTileGetItem("Free Space", Format(_Disk.FreeSpace, "N0") & " bytes"))
                 If _Disk.BadClusters.Count > 0 Then
                     Value = Format(_Disk.BadClusters.Count * _Disk.BootSector.BytesPerCluster, "N0") & " bytes"
                     ForeColor = Color.Red
-                    .Add(ListViewTileGetItem("Bad Sectors:", Value, ForeColor))
+                    .Add(ListViewTileGetItem("Bad Sectors", Value, ForeColor))
                 End If
+                .Add(ListViewTileGetItem("Boot Strap CRC32", Crc32.ComputeChecksum(_Disk.BootSector.BootStrapCode).ToString("X8")))
                 If BootstrapType IsNot Nothing Then
                     If Not OEMIDMatched Then
                         .Add("")
-                        For Each OEMID In BootstrapType.OEMIDList
-                            .Add(ListViewTileGetItem("Detected OEM ID:", OEMID))
+                        For Each OEMID In BootstrapType
+                            .Add(ListViewTileGetItem("Detected OEM ID", OEMID.ID))
                         Next
                     End If
                 End If
             Else
                 If _Disk.LoadError Then
-                    .Add(ListViewTileGetItem("Error:", "Error Loading File", Color.Red))
+                    .Add(ListViewTileGetItem("Error", "Error Loading File", Color.Red))
                 Else
-                    .Add(ListViewTileGetItem("Error:", "Unknown Image Format", Color.Red))
+                    .Add(ListViewTileGetItem("Error", "Unknown Image Format", Color.Red))
                 End If
             End If
         End With
@@ -2284,7 +2407,7 @@ Public Class MainForm
     End Sub
 
     Private Sub BtnExportFile_Click(sender As Object, e As EventArgs) Handles BtnExportFile.Click, BtnFileMenuExportFile.Click
-        FileExport
+        FileExport()
     End Sub
 
     Private Sub BtnReplaceFile_Click(sender As Object, e As EventArgs) Handles BtnReplaceFile.Click, BtnFileMenuReplaceFile.Click
@@ -2320,8 +2443,8 @@ Public Class MainForm
             Exit Sub
         End If
 
-        _Debounce.Stop()
-        _Debounce.Start()
+        Debounce.Stop()
+        Debounce.Start()
     End Sub
 
     Private Sub BtnClearFilters_Click(sender As Object, e As EventArgs) Handles BtnClearFilters.Click
@@ -2332,8 +2455,48 @@ Public Class MainForm
         End If
     End Sub
 
-    Private Sub Debounce_Tick(sender As Object, e As EventArgs) Handles _Debounce.Tick
-        _Debounce.Stop()
+    Private Sub Debounce_Tick(sender As Object, e As EventArgs) Handles Debounce.Tick
+        Debounce.Stop()
+        FiltersApply()
+    End Sub
+
+    Private Sub ContextMenuCopy_Opening(sender As Object, e As CancelEventArgs) Handles ContextMenuCopy1.Opening, ContextMenuCopy2.Opening
+        Dim LV As ListView = Nothing
+        Dim CM As ContextMenuStrip = sender
+
+        If CM.Name = "Summary" Then
+            LV = ListViewSummary
+        ElseIf CM.Name = "Hashes" Then
+            LV = ListViewHashes
+        End If
+
+        If LV IsNot Nothing AndAlso LV.FocusedItem IsNot Nothing Then
+            CM.Items(0).Text = "&Copy " & LV.FocusedItem.Text
+        Else
+            e.Cancel = True
+        End If
+    End Sub
+
+    Private Sub ContextMenuCopy_ItemClicked(sender As Object, e As ToolStripItemClickedEventArgs) Handles ContextMenuCopy1.ItemClicked, ContextMenuCopy2.ItemClicked
+        Dim LV As ListView = Nothing
+
+        If sender.name = "Summary" Then
+            LV = ListViewSummary
+        ElseIf sender.name = "Hashes" Then
+            LV = ListViewHashes
+        End If
+
+        If LV IsNot Nothing AndAlso LV.FocusedItem IsNot Nothing Then
+            Dim Value As String = LV.FocusedItem.SubItems.Item(1).Text
+            Clipboard.SetText(Value)
+        End If
+    End Sub
+
+    Private Sub ComboOEMID_SelectedIndexChanged(sender As Object, e As EventArgs) Handles ComboOEMID.SelectedIndexChanged
+        If _SuppressEvent Then
+            Exit Sub
+        End If
+
         FiltersApply()
     End Sub
 
@@ -2353,4 +2516,17 @@ Public Structure FileData
     Dim FilePath As String
     Dim DirectoryEntry As DiskImage.DirectoryEntry
 End Structure
+
+Public Class ComboOEMIDItem
+    Public Property ID As String
+    Public Property Count As Integer
+    Public Property AllItems As Boolean = False
+    Public Overrides Function ToString() As String
+        If AllItems Then
+            Return "(ALL)"
+        Else
+            Return _ID & "  [" & _Count & "]"
+        End If
+    End Function
+End Class
 

@@ -7,9 +7,11 @@
     Public Property IsValidImage As Boolean = True
     Public Property OEMIDFound As Boolean = False
     Public Property OEMIDMatched As Boolean = False
+    Public Property OEMIDWin9x As Boolean = False
     Public Property HasBadSectors As Boolean = False
     Public Property HasMismatchedFATs As Boolean = False
     Public Property HasFATChainingErrors As Boolean = False
+    Public Property OEMID As String = ""
 End Class
 
 Public Class LoadedImageData
