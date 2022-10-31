@@ -133,7 +133,7 @@
     <Compile Include="ItemScanForm.vb">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="OEMIDLookup.vb" />
+    <Compile Include="OEMNameLookup.vb" />
     <Compile Include="LoadedImageData.vb" />
     <Compile Include="CRC32.vb" />
     <Compile Include="DiskImage\Directory.vb" />
@@ -168,10 +168,10 @@
       <DependentUpon>Settings.settings</DependentUpon>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
-    <Compile Include="OEMIDForm.Designer.vb">
-      <DependentUpon>OEMIDForm.vb</DependentUpon>
+    <Compile Include="OEMNameForm.Designer.vb">
+      <DependentUpon>OEMNameForm.vb</DependentUpon>
     </Compile>
-    <Compile Include="OEMIDForm.vb">
+    <Compile Include="OEMNameForm.vb">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="SaveAllForm.Designer.vb">
@@ -207,8 +207,8 @@
       <CustomToolNamespace>My.Resources</CustomToolNamespace>
       <SubType>Designer</SubType>
     </EmbeddedResource>
-    <EmbeddedResource Include="OEMIDForm.resx">
-      <DependentUpon>OEMIDForm.vb</DependentUpon>
+    <EmbeddedResource Include="OEMNameForm.resx">
+      <DependentUpon>OEMNameForm.vb</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="SaveAllForm.resx">
       <DependentUpon>SaveAllForm.vb</DependentUpon>
@@ -248,6 +248,7 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Assets\floppyDisk.ico" />
+    <EmbeddedResource Include="Assets\bootstrap.xml" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.VisualBasic.targets" />
 </Project>

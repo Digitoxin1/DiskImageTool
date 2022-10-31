@@ -12,29 +12,9 @@
     End Class
 
     Public Class Disk
-        Private Shared ReadOnly CP437LookupTable As Integer() = New Integer(255) {
-            65533, 9786, 9787, 9829, 9830, 9827, 9824, 8226, 9688, 9675, 9689, 9794, 9792, 9834, 9835, 9788,
-            9658, 9668, 8597, 8252, 182, 167, 9644, 8616, 8593, 8595, 8594, 8592, 8735, 8596, 9650, 9660,
-            32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47,
-            48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63,
-            64, 65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 75, 76, 77, 78, 79,
-            80, 81, 82, 83, 84, 85, 86, 87, 88, 89, 90, 91, 92, 93, 94, 95,
-            96, 97, 98, 99, 100, 101, 102, 103, 104, 105, 106, 107, 108, 109, 110, 111,
-            112, 113, 114, 115, 116, 117, 118, 119, 120, 121, 122, 123, 124, 125, 126, 8962,
-            199, 252, 233, 226, 228, 224, 229, 231, 234, 235, 232, 239, 238, 236, 196, 197,
-            201, 230, 198, 244, 246, 242, 251, 249, 255, 214, 220, 162, 163, 165, 8359, 402,
-            225, 237, 243, 250, 241, 209, 170, 186, 191, 8976, 172, 189, 188, 161, 171, 187,
-            9617, 9618, 9619, 9474, 9508, 9569, 9570, 9558, 9557, 9571, 9553, 9559, 9565, 9564, 9563, 9488,
-            9492, 9524, 9516, 9500, 9472, 9532, 9566, 9567, 9562, 9556, 9577, 9574, 9568, 9552, 9580, 9575,
-            9576, 9572, 9573, 9561, 9560, 9554, 9555, 9579, 9578, 9496, 9484, 9608, 9604, 9612, 9616, 9600,
-            945, 223, 915, 960, 931, 963, 181, 964, 934, 920, 937, 948, 8734, 966, 949, 8745,
-            8801, 177, 8805, 8804, 8992, 8993, 247, 8776, 176, 8729, 183, 8730, 8319, 178, 9632, 160
-        }
         Public Const BootSectorOffset As UInteger = 0
         Public Const BootSectorSize As UInteger = 512
-        Public Shared ReadOnly InvalidFileChars() As Byte = {&H22, &H2A, &H2B, &H2C, &H2E, &H2F, &H3A, &H3B, &H3C, &H3D, &H3E, &H3F, &H5B, &H5C, &H5D, &H7C, &H7F}
-        Private ReadOnly _ValidBytesPerSector() As UShort = {512, 1024, 2048, 4096}
-        Private ReadOnly _ValidSectorsPerSector() As Byte = {1, 2, 4, 8, 16, 32, 128}
+        Public Shared ReadOnly InvalidFileChars() As Byte = {&H22, &H2A, &H2B, &H2C, &H2E, &H2F, &H3A, &H3B, &H3C, &H3D, &H3E, &H3F, &H5B, &H5C, &H5D, &H7C}
         Private ReadOnly _BootSector As BootSector
         Private ReadOnly _Directory As Directory
         Private _FAT() As UShort
@@ -267,16 +247,6 @@
             Return Result
         End Function
 
-        Public Shared Function CP437ToUnicode(b() As Byte) As String
-            Dim b2(b.Length - 1) As UShort
-            For counter = 0 To b.Length - 1
-                b2(counter) = CP437LookupTable(b(counter))
-            Next
-            ReDim b(b2.Length * 2 - 1)
-            Buffer.BlockCopy(b2, 0, b, 0, b.Length)
-            Return System.Text.Encoding.Unicode.GetString(b)
-        End Function
-
         Public Shared Sub ResizeArray(ByRef b() As Byte, Length As UInteger, Padding As Byte)
             Dim Size = b.Length - 1
             If Size <> Length - 1 Then
@@ -407,15 +377,15 @@
         End Function
 
         Public Function CompareFATTables() As Boolean
-            If _BootSector.FatCopies < 2 Then
+            If _BootSector.NumberOfFATs < 2 Then
                 Return True
             End If
 
-            For Counter As UShort = 1 To _BootSector.FatCopies - 1
+            For Counter As UShort = 1 To _BootSector.NumberOfFATs - 1
                 Dim FatCopy1 = GetFAT(Counter - 1)
                 Dim FatCopy2 = GetFAT(Counter)
 
-                For Index = 0 To FatCopy1.Length - 1
+                For Index = FatCopy1.Length - 1 To 0 Step -1
                     If FatCopy1(Index) <> FatCopy2(Index) Then
                         Return False
                     End If
@@ -427,7 +397,7 @@
 
         Private Function GetFAT(Index As UShort) As Byte()
             Dim Length As UInteger = _BootSector.SectorsPerFAT * _BootSector.BytesPerSector
-            Dim Start As UInteger = SectorToOffset(_BootSector.FatRegionStart) + Length * Index
+            Dim Start As UInteger = SectorToOffset(_BootSector.FATRegionStart) + Length * Index
 
             Dim FATBytes(Length - 1) As Byte
 
@@ -451,10 +421,6 @@
             End If
 
             Return FillChar
-        End Function
-
-        Public Function GetOEMIDString() As String
-            Return CP437ToUnicode(_BootSector.OEMID)
         End Function
 
         Public Function GetUnusedClusterDataBlocks(WithData As Boolean) As List(Of DataBlock)
@@ -599,19 +565,7 @@
         End Function
 
         Public Function IsValidImage() As Boolean
-            Dim Result As Boolean = Not _LoadError
-
-            If Result Then
-                Result = _ValidBytesPerSector.Contains(_BootSector.BytesPerSector)
-            End If
-            If Result Then
-                Result = _ValidSectorsPerSector.Contains(_BootSector.SectorsPerCluster)
-            End If
-            If Result Then
-                Result = (_BootSector.MediaDescriptor = 240 Or (_BootSector.MediaDescriptor >= 248 And _BootSector.MediaDescriptor <= 255))
-            End If
-
-            Return Result
+            Return Not _LoadError AndAlso _BootSector.HasValidBytesPerSector AndAlso _BootSector.HasValidSectorsPerCluster AndAlso _BootSector.HasValidMediaDescriptor
         End Function
 
         Public Shared Function NewDataBlock(Offset As UInteger, Length As UInteger) As DataBlock

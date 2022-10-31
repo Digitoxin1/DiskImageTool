@@ -405,6 +405,7 @@ Public Class HexViewForm
         BtnCopyText.Enabled = HexBox1.SelectionLength > 0
         BtnCopyHex.Enabled = HexBox1.SelectionLength > 0
         BtnCopyHexFormatted.Enabled = HexBox1.SelectionLength > 0
+        BtnCRC32.Enabled = HexBox1.SelectionLength > 0
     End Sub
 
     Private Sub BtnSelectAll_Click(sender As Object, e As EventArgs) Handles BtnSelectAll.Click
@@ -432,6 +433,17 @@ Public Class HexViewForm
             End If
         Next
         Clipboard.SetText(SB.ToString)
+    End Sub
+
+    Private Sub BtnCRC32_Click(sender As Object, e As EventArgs) Handles BtnCRC32.Click
+        Dim OffsetStart As UInteger = HexBox1.SelectionStart + HexBox1.LineInfoOffset
+        Dim Length As UInteger = HexBox1.SelectionLength
+
+        Dim B = _Disk.GetBytes(OffsetStart, Length)
+        Dim Checksum = Crc32.ComputeChecksum(B).ToString("X8")
+        Dim Range = OffsetStart.ToString("X8") & "-" & (OffsetStart + Length - 1).ToString("X8")
+        Dim Msg As String = "The CRC32 for " & Range & " is: " & Checksum
+        MsgBox(Msg, MsgBoxStyle.Information)
     End Sub
 End Class
 Public Class HexViewHighlightRegion

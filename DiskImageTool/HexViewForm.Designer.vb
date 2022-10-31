@@ -23,6 +23,8 @@ Partial Class HexViewForm
     <System.Diagnostics.DebuggerStepThrough()>
     Private Sub InitializeComponent()
         Me.components = New System.ComponentModel.Container()
+        Dim ToolStripSeparator1 As System.Windows.Forms.ToolStripSeparator
+        Dim ToolStripSeparator2 As System.Windows.Forms.ToolStripSeparator
         Me.FlowLayoutHeader = New System.Windows.Forms.FlowLayoutPanel()
         Me.LblHeaderCaption = New System.Windows.Forms.Label()
         Me.CmbGroups = New System.Windows.Forms.ComboBox()
@@ -35,6 +37,7 @@ Partial Class HexViewForm
         Me.BtnCopyHex = New System.Windows.Forms.ToolStripMenuItem()
         Me.BtnCopyHexFormatted = New System.Windows.Forms.ToolStripMenuItem()
         Me.BtnSelectAll = New System.Windows.Forms.ToolStripMenuItem()
+        Me.BtnCRC32 = New System.Windows.Forms.ToolStripMenuItem()
         Me.StatusStrip1 = New System.Windows.Forms.StatusStrip()
         Me.ToolStripStatusFile = New System.Windows.Forms.ToolStripStatusLabel()
         Me.ToolStripStatusRange = New System.Windows.Forms.ToolStripStatusLabel()
@@ -42,10 +45,22 @@ Partial Class HexViewForm
         Me.ToolStripStatusSector = New System.Windows.Forms.ToolStripStatusLabel()
         Me.ToolStripStatusGap = New System.Windows.Forms.ToolStripStatusLabel()
         Me.ToolStripStatusBytes = New System.Windows.Forms.ToolStripStatusLabel()
+        ToolStripSeparator1 = New System.Windows.Forms.ToolStripSeparator()
+        ToolStripSeparator2 = New System.Windows.Forms.ToolStripSeparator()
         Me.FlowLayoutHeader.SuspendLayout()
         Me.ContextMenuStrip1.SuspendLayout()
         Me.StatusStrip1.SuspendLayout()
         Me.SuspendLayout()
+        '
+        'ToolStripSeparator1
+        '
+        ToolStripSeparator1.Name = "ToolStripSeparator1"
+        ToolStripSeparator1.Size = New System.Drawing.Size(181, 6)
+        '
+        'ToolStripSeparator2
+        '
+        ToolStripSeparator2.Name = "ToolStripSeparator2"
+        ToolStripSeparator2.Size = New System.Drawing.Size(181, 6)
         '
         'FlowLayoutHeader
         '
@@ -154,9 +169,9 @@ Partial Class HexViewForm
         '
         'ContextMenuStrip1
         '
-        Me.ContextMenuStrip1.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.BtnCopyText, Me.BtnCopyHex, Me.BtnCopyHexFormatted, Me.BtnSelectAll})
+        Me.ContextMenuStrip1.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.BtnCopyText, Me.BtnCopyHex, Me.BtnCopyHexFormatted, ToolStripSeparator1, Me.BtnSelectAll, ToolStripSeparator2, Me.BtnCRC32})
         Me.ContextMenuStrip1.Name = "ContextMenuStrip1"
-        Me.ContextMenuStrip1.Size = New System.Drawing.Size(185, 92)
+        Me.ContextMenuStrip1.Size = New System.Drawing.Size(185, 148)
         '
         'BtnCopyText
         '
@@ -181,6 +196,12 @@ Partial Class HexViewForm
         Me.BtnSelectAll.Name = "BtnSelectAll"
         Me.BtnSelectAll.Size = New System.Drawing.Size(184, 22)
         Me.BtnSelectAll.Text = "Select &All"
+        '
+        'BtnCRC32
+        '
+        Me.BtnCRC32.Name = "BtnCRC32"
+        Me.BtnCRC32.Size = New System.Drawing.Size(184, 22)
+        Me.BtnCRC32.Text = "Calculate CRC32"
         '
         'StatusStrip1
         '
@@ -234,7 +255,7 @@ Partial Class HexViewForm
         'ToolStripStatusGap
         '
         Me.ToolStripStatusGap.Name = "ToolStripStatusGap"
-        Me.ToolStripStatusGap.Size = New System.Drawing.Size(295, 19)
+        Me.ToolStripStatusGap.Size = New System.Drawing.Size(326, 19)
         Me.ToolStripStatusGap.Spring = True
         '
         'ToolStripStatusBytes
@@ -292,4 +313,5 @@ Partial Class HexViewForm
     Friend WithEvents BtnSelectAll As ToolStripMenuItem
     Friend WithEvents BtnCopyHexFormatted As ToolStripMenuItem
     Friend WithEvents LblHeaderFill As Label
+    Friend WithEvents BtnCRC32 As ToolStripMenuItem
 End Class

@@ -23,6 +23,7 @@ Namespace DiskImage
     Public Class DirectoryEntry
         Private Const DIRECTORY_ENTRY_SIZE As Byte = 32
         Private Const CHAR_SPACE As Byte = 32
+
         Public Enum AttributeFlags
             [ReadOnly] = 1
             Hidden = 2
@@ -245,15 +246,15 @@ Namespace DiskImage
         End Function
 
         Public Function GetFileExtension() As String
-            Return Disk.CP437ToUnicode(Extension).TrimEnd(" ")
+            Return CodePage437ToUnicode(Extension).TrimEnd(" ")
         End Function
 
         Public Function GetFileName() As String
-            Return Disk.CP437ToUnicode(FileName).TrimEnd(" ")
+            Return CodePage437ToUnicode(FileName).TrimEnd(" ")
         End Function
 
         Public Function GetVolumeName() As String
-            Return Disk.CP437ToUnicode(FileName) & Disk.CP437ToUnicode(Extension).TrimEnd(" ")
+            Return (CodePage437ToUnicode(FileName) & CodePage437ToUnicode(Extension)).TrimEnd(" ")
         End Function
 
         Public Function GetFullFileName() As String

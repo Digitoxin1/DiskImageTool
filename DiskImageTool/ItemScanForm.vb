@@ -64,7 +64,7 @@ Public Class ItemScanForm
                 If Not Disk.LoadError Then
                     _Parent.ItemScanModified(Disk, ImageData)
                     _Parent.ItemScanDisk(Disk, ImageData)
-                    _Parent.ItemScanOEMID(Disk, ImageData)
+                    _Parent.ItemScanOEMName(Disk, ImageData)
                     _Parent.ItemScanUnusedClusters(Disk, ImageData)
                     _Parent.ItemScanDirectory(Disk, ImageData)
 

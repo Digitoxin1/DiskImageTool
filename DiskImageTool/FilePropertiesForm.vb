@@ -135,23 +135,23 @@ Public Class FilePropertiesForm
             Dim VolumeLabel() As Byte
             ReDim FileName(7)
             ReDim Extension(2)
-            VolumeLabel = Encoding.UTF8.GetBytes(TxtFile.Text)
+            VolumeLabel = UnicodeToCodePage437(TxtFile.Text)
             DiskImage.Disk.ResizeArray(VolumeLabel, 11, 32)
             Array.Copy(VolumeLabel, 0, FileName, 0, 8)
             Array.Copy(VolumeLabel, 8, Extension, 0, 3)
         Else
-            FileName = Encoding.UTF8.GetBytes(TxtFile.Text)
+            FileName = UnicodeToCodePage437(TxtFile.Text)
             DiskImage.Disk.ResizeArray(FileName, 8, 32)
-            Extension = Encoding.UTF8.GetBytes(TxtExtension.Text)
+            Extension = UnicodeToCodePage437(TxtExtension.Text)
             DiskImage.Disk.ResizeArray(Extension, 3, 32)
         End If
 
-        If Not FileName.SequenceEqual(DirectoryEntry.FileName) Then
+        If Not ByteArrayCompare(FileName, DirectoryEntry.FileName) Then
             DirectoryEntry.FileName = FileName
             _Updated = True
         End If
 
-        If Not Extension.SequenceEqual(DirectoryEntry.Extension) Then
+        If Not ByteArrayCompare(Extension, DirectoryEntry.Extension) Then
             DirectoryEntry.Extension = Extension
             _Updated = True
         End If
@@ -427,15 +427,15 @@ Public Class FilePropertiesForm
         End If
     End Sub
 
-    Private Sub TxtFile_Validating(sender As Object, e As CancelEventArgs) Handles TxtFile.Validating
-        If _Deleted And TxtFile.Text = "" Then
-            Exit Sub
-        End If
+    'Private Sub TxtFile_Validating(sender As Object, e As CancelEventArgs) Handles TxtFile.Validating
+    '    If _Deleted And TxtFile.Text = "" Then
+    '        Exit Sub
+    '    End If
 
-        If Not DiskImage.Disk.CheckValidFileName(Encoding.UTF8.GetBytes(TxtFile.Text), False, _IsVolumeLabel) Then
-            e.Cancel = True
-        End If
-    End Sub
+    '    If Not DiskImage.Disk.CheckValidFileName(Encoding.UTF8.GetBytes(TxtFile.Text), False, _IsVolumeLabel) Then
+    '        e.Cancel = True
+    '    End If
+    'End Sub
 
     Private Sub BtnUpdate_Click(sender As Object, e As EventArgs) Handles BtnUpdate.Click
         ApplyUpdates

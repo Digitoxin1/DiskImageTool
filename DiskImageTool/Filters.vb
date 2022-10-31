@@ -1,9 +1,9 @@
 ﻿Public Module Filters
     Public Enum FilterTypes
         ModifiedFiles
-        UnknownOEMID
-        MismatchedOEMID
-        Windows9xOEMID
+        UnknownOEMName
+        MismatchedOEMName
+        Windows9xOEMName
         HasCreated
         HasLastAccessed
         HasLongFileNames
@@ -19,12 +19,12 @@
         Dim Caption As String
 
         Select Case ID
-            Case FilterTypes.UnknownOEMID
-                Caption = "Unknown OEM ID"
-            Case FilterTypes.Windows9xOEMID
-                Caption = "Windows 9x OEM ID"
-            Case FilterTypes.MismatchedOEMID
-                Caption = "Mismatched OEM ID"
+            Case FilterTypes.UnknownOEMName
+                Caption = "Unknown OEM Name"
+            Case FilterTypes.Windows9xOEMName
+                Caption = "Windows 9x OEM Name"
+            Case FilterTypes.MismatchedOEMName
+                Caption = "Mismatched OEM Name"
             Case FilterTypes.HasCreated
                 Caption = "Has Creation Date"
             Case FilterTypes.HasLastAccessed
@@ -86,20 +86,20 @@
             End If
         End If
 
-        If CheckFilter(FilterTypes.MismatchedOEMID, AppliedFilters) Then
-            If ImageData.ScanInfo.IsValidImage And ImageData.ScanInfo.OEMIDFound And Not ImageData.ScanInfo.OEMIDMatched Then
+        If CheckFilter(FilterTypes.MismatchedOEMName, AppliedFilters) Then
+            If ImageData.ScanInfo.IsValidImage And ImageData.ScanInfo.OEMNameFound And Not ImageData.ScanInfo.OEMNameMatched Then
                 Return False
             End If
         End If
 
-        If CheckFilter(FilterTypes.Windows9xOEMID, AppliedFilters) Then
-            If ImageData.ScanInfo.IsValidImage And ImageData.ScanInfo.OEMIDFound And ImageData.ScanInfo.OEMIDWin9x Then
+        If CheckFilter(FilterTypes.Windows9xOEMName, AppliedFilters) Then
+            If ImageData.ScanInfo.IsValidImage And ImageData.ScanInfo.OEMNameFound And ImageData.ScanInfo.OEMNameWin9x Then
                 Return False
             End If
         End If
 
-        If CheckFilter(FilterTypes.UnknownOEMID, AppliedFilters) Then
-            If ImageData.ScanInfo.IsValidImage And Not ImageData.ScanInfo.OEMIDFound Then
+        If CheckFilter(FilterTypes.UnknownOEMName, AppliedFilters) Then
+            If ImageData.ScanInfo.IsValidImage And Not ImageData.ScanInfo.OEMNameFound Then
                 Return False
             End If
         End If

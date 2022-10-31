@@ -2,14 +2,15 @@
 Imports System.Text
 
 Public Class MainForm
+    Public Const NULL_CHAR As Char = "�"
     Private Const FILE_FILTER As String = "Disk Image Files (*.ima; *.img)|*.ima;*.img"
     Private ReadOnly _LoadedFileNames As Dictionary(Of String, LoadedImageData)
-    Private ReadOnly _OEMIDDictionary As Dictionary(Of UInteger, List(Of OEMID))
+    Private ReadOnly _OEMNameDictionary As Dictionary(Of UInteger, BootstrapLookup)
     Private _Disk As DiskImage.Disk
     Private _SuppressEvent As Boolean = False
     Private _FiltersApplied As Boolean = False
     Private _FilterCounts() As Integer
-    Private _FilterOEMID As Dictionary(Of String, ComboOEMIDItem)
+    Private _FilterOEMName As Dictionary(Of String, ComboOEMNameItem)
     Private _CheckAll As Boolean = False
     Private _ScanRun As Boolean = False
     Private WithEvents Debounce As Timer
@@ -28,7 +29,7 @@ Public Class MainForm
         ListViewDoubleBuffer(ListViewFiles)
         FiltersInitialize()
         _LoadedFileNames = New Dictionary(Of String, LoadedImageData)
-        _OEMIDDictionary = GetOEMIDDictionary()
+        _OEMNameDictionary = GetOEMNameDictionary()
         Debounce = New Timer With {
             .Interval = 750
         }
@@ -48,9 +49,49 @@ Public Class MainForm
     End Sub
 
     Private Sub BootSectorDisplayHex()
-        Dim Block = DiskImage.Disk.NewDataBlock(DiskImage.Disk.BootSectorOffset, DiskImage.Disk.BootSectorSize)
+        Dim Data As New HexViewData(DiskImage.Disk.NewDataBlock(DiskImage.Disk.BootSectorOffset, DiskImage.Disk.BootSectorSize))
 
-        Dim frmHexView As New HexViewForm(_Disk, Block, False, "Boot Sector")
+        If _Disk.IsValidImage Then
+            Dim BootStrapStart = _Disk.BootSector.GetBootStrapOffset
+            Dim BootStrapLength = DiskImage.BootSector.BootSectorOffset.BootStrapSignature - BootStrapStart
+            Dim JmpBootStart = DiskImage.BootSector.BootSectorOffset.JmpBoot
+            Dim JmpBootLength = DiskImage.BootSector.BootSectorSize.JmpBoot
+            Dim OEMNameStart = DiskImage.BootSector.BootSectorOffset.OEMName
+            Dim OEMNameLength = DiskImage.BootSector.BootSectorSize.OEMName
+            Dim BiosParameterBlockStart = DiskImage.BootSector.BootSectorOffset.BiosParameterBlock
+            Dim BiosParameterBlockLength = DiskImage.BootSector.BootSectorSize.BiosParameterBlockFat12
+            Dim ExtenderParameterBlockStart = DiskImage.BootSector.BootSectorOffset.ExtendedParameterBlock
+            Dim ExtenderParameterBlockLength = DiskImage.BootSector.BootSectorSize.ExtendedParameterBlock
+
+            Dim ForeColor As Color
+            If _Disk.BootSector.HasValidJumpInstruction Then
+                ForeColor = Color.Green
+            Else
+                ForeColor = Color.Black
+            End If
+
+            Data.HighlightedRegions.Add(New HexViewHighlightRegion(JmpBootStart, JmpBootLength, ForeColor, Color.White))
+            Data.HighlightedRegions.Add(New HexViewHighlightRegion(OEMNameStart, OEMNameLength, Color.Red, Color.White))
+            Data.HighlightedRegions.Add(New HexViewHighlightRegion(BiosParameterBlockStart, BiosParameterBlockLength, Color.Blue, Color.White))
+            If _Disk.BootSector.HasValidExtendedBootSignature And BootStrapStart >= ExtenderParameterBlockStart + ExtenderParameterBlockLength Then
+                Data.HighlightedRegions.Add(New HexViewHighlightRegion(ExtenderParameterBlockStart, ExtenderParameterBlockLength, Color.Purple, Color.White))
+            End If
+
+            If BootStrapStart > 2 And BootStrapLength > 1 Then
+                Data.HighlightedRegions.Add(New HexViewHighlightRegion(BootStrapStart, BootStrapLength, ForeColor, Color.White))
+            End If
+
+            If _Disk.BootSector.HasValidBootStrapSignature Then
+                ForeColor = Color.Goldenrod
+            Else
+                ForeColor = Color.Black
+            End If
+            Data.HighlightedRegions.Add(New HexViewHighlightRegion(510, 2, ForeColor, Color.White))
+
+        End If
+
+
+        Dim frmHexView As New HexViewForm(_Disk, Data, False, "Boot Sector")
         frmHexView.ShowDialog()
     End Sub
 
@@ -58,9 +99,9 @@ Public Class MainForm
         Dim DataList As New List(Of HexViewData)
         Dim HighlightedRegions As New List(Of HexViewHighlightRegion)
         Dim OriginalData() As Byte = Nothing
-        For Index = 0 To _Disk.BootSector.FatCopies - 1
+        For Index = 0 To _Disk.BootSector.NumberOfFATs - 1
             Dim Length As UInteger = _Disk.BootSector.SectorsPerFAT * _Disk.BootSector.BytesPerSector
-            Dim Start As UInteger = _Disk.SectorToOffset(_Disk.BootSector.FatRegionStart) + Length * Index
+            Dim Start As UInteger = _Disk.SectorToOffset(_Disk.BootSector.FATRegionStart) + Length * Index
             Dim Data = _Disk.GetBytes(Start, Length)
             Dim HexViewData = New HexViewData(DiskImage.Disk.NewDataBlock(Start, Length, "FAT " & Index + 1))
             DataList.Add(HexViewData)
@@ -399,7 +440,7 @@ Public Class MainForm
             FilterUpdate(Counter)
         Next
 
-        PopulateComboOEMID()
+        PopulateComboOEMName()
 
         BtnScan.Text = "Rescan Images"
         BtnScan.Enabled = True
@@ -412,6 +453,7 @@ Public Class MainForm
         SetForegroundWindow(Me.Handle)
         MainMenuFilters.ShowDropDown()
     End Sub
+
 
     Private Sub DisplayCrossLinkedFiles(DirectoryEntry As DiskImage.DirectoryEntry)
         Dim Msg As String = DirectoryEntry.GetFullFileName() & " is crosslinked with the following files:" & vbCrLf
@@ -738,7 +780,7 @@ Public Class MainForm
 
         FilterSeparator.Visible = False
         FilterSeparator.Tag = 0
-        _FilterOEMID = New Dictionary(Of String, ComboOEMIDItem)
+        _FilterOEMName = New Dictionary(Of String, ComboOEMNameItem)
     End Sub
 
     Private Function FilterUpdate(ID As FilterTypes) As Boolean
@@ -783,8 +825,8 @@ Public Class MainForm
             End If
         Next
 
-        Dim OEMIDItem As ComboOEMIDItem = ComboOEMID.SelectedItem
-        Dim HasComboFilter = OEMIDItem IsNot Nothing AndAlso Not OEMIDItem.AllItems
+        Dim OEMNameItem As ComboOEMNameItem = ComboOEMName.SelectedItem
+        Dim HasComboFilter = OEMNameItem IsNot Nothing AndAlso Not OEMNameItem.AllItems
 
         If FiltersChecked Or TextFilter.Length > 0 Or HasComboFilter Then
             Me.UseWaitCursor = True
@@ -809,7 +851,7 @@ Public Class MainForm
                 End If
 
                 If ShowItem And HasComboFilter Then
-                    ShowItem = (OEMIDItem.ID = ImageData.ScanInfo.OEMID)
+                    ShowItem = ImageData.ScanInfo.IsValidImage And OEMNameItem.Name = ImageData.ScanInfo.OEMName
                 End If
 
                 If ShowItem And FiltersChecked Then
@@ -859,8 +901,8 @@ Public Class MainForm
             End If
         Next
         TxtSearch.Text = ""
-        If ComboOEMID.Items.Count > 0 Then
-            ComboOEMID.SelectedIndex = 0
+        If ComboOEMName.Items.Count > 0 Then
+            ComboOEMName.SelectedIndex = 0
         End If
         _SuppressEvent = False
 
@@ -883,10 +925,10 @@ Public Class MainForm
         BtnScan.Text = "Scan Images"
         TxtSearch.Text = ""
         BtnClearFilters.Enabled = False
-        _FilterOEMID.Clear()
-        ComboOEMID.Items.Clear()
-        ComboOEMID.Visible = False
-        ToolStripOEMID.Visible = False
+        _FilterOEMName.Clear()
+        ComboOEMName.Items.Clear()
+        ComboOEMName.Visible = False
+        ToolStripOEMName.Visible = False
     End Sub
 
     Private Function GetDataListFromDataBlocks(DataBlocks As List(Of DiskImage.DataBlock), FileSize As UInteger, HighlightAssigned As Boolean) As List(Of HexViewData)
@@ -972,12 +1014,12 @@ Public Class MainForm
 
     Private Sub InitButtonState()
         If _Disk IsNot Nothing Then
-            BtnOEMID.Enabled = _Disk.IsValidImage
+            BtnChangeOEMName.Enabled = _Disk.IsValidImage
             BtnDisplayBootSector.Enabled = True
             BtnDisplayFAT.Enabled = _Disk.IsValidImage
             BtnDisplayDirectory.Enabled = _Disk.IsValidImage
         Else
-            BtnOEMID.Enabled = False
+            BtnChangeOEMName.Enabled = False
             BtnDisplayBootSector.Enabled = False
             BtnDisplayFAT.Enabled = False
             BtnDisplayDirectory.Enabled = False
@@ -992,7 +1034,7 @@ Public Class MainForm
 
         If ImageData.Scanned Then
             ItemScanDisk(Disk, ImageData, UpdateFilters, Remove)
-            ItemScanOEMID(Disk, ImageData, UpdateFilters, Remove)
+            ItemScanOEMName(Disk, ImageData, UpdateFilters, Remove)
             ItemScanUnusedClusters(Disk, ImageData, UpdateFilters, Remove)
             ItemScanDirectory(Disk, ImageData, UpdateFilters, Remove)
         End If
@@ -1091,106 +1133,108 @@ Public Class MainForm
         End If
     End Sub
 
-    Friend Sub ItemScanOEMID(Disk As DiskImage.Disk, ImageData As LoadedImageData, Optional UpdateFilters As Boolean = False, Optional Remove As Boolean = False)
-        Dim OEMIDMatched As Boolean = True
-        Dim OEMIDFound As Boolean = True
-        Dim OEMIDWin9x As Boolean = False
-        Dim OEMIDString As String = ""
+    Friend Sub ItemScanOEMName(Disk As DiskImage.Disk, ImageData As LoadedImageData, Optional UpdateFilters As Boolean = False, Optional Remove As Boolean = False)
+        Dim OEMNameMatched As Boolean = True
+        Dim OEMNameFound As Boolean = True
+        Dim OEMNameWin9x As Boolean = False
+        Dim OEMNameString As String = ""
 
         If Not Remove And Disk.IsValidImage Then
             Dim BootstrapChecksum = Crc32.ComputeChecksum(Disk.BootSector.BootStrapCode)
-            OEMIDString = Disk.GetOEMIDString
-            OEMIDWin9x = OEMIDString.EndsWith("IHC")
+            Dim OEMName = Disk.BootSector.OEMName
+            OEMNameWin9x = Disk.BootSector.IsWin9xOEMName
+            OEMNameString = Disk.BootSector.GetOEMNameString.TrimEnd(NULL_CHAR)
 
-            Dim BootstrapType = OEMIDFindMatch(BootstrapChecksum)
-            OEMIDFound = BootstrapType IsNot Nothing
-            If OEMIDFound And Not OEMIDWin9x Then
-                OEMIDMatched = False
-                For Each OEMID In BootstrapType
-                    If OEMID.ID = OEMIDString Then
-                        OEMIDMatched = True
+
+            Dim BootstrapType = OEMNameFindMatch(BootstrapChecksum)
+            OEMNameFound = BootstrapType IsNot Nothing
+            If OEMNameFound AndAlso Not OEMNameWin9x AndAlso Not BootstrapType.ExactMatch Then
+                OEMNameMatched = False
+                For Each KnownOEMName In BootstrapType.KnownOEMNames
+                    If ByteArrayCompare(KnownOEMName.Name, OEMName) Then
+                        OEMNameMatched = True
                         Exit For
                     End If
                 Next
             Else
-                OEMIDMatched = True
+                OEMNameMatched = True
             End If
         End If
 
-        If Not ImageData.Scanned Or OEMIDWin9x <> ImageData.ScanInfo.OEMIDWin9x Then
-            ImageData.ScanInfo.OEMIDWin9x = OEMIDWin9x
-            If OEMIDWin9x Then
-                _FilterCounts(FilterTypes.Windows9xOEMID) += 1
+        If Not ImageData.Scanned Or OEMNameWin9x <> ImageData.ScanInfo.OEMNameWin9x Then
+            ImageData.ScanInfo.OEMNameWin9x = OEMNameWin9x
+            If OEMNameWin9x Then
+                _FilterCounts(FilterTypes.Windows9xOEMName) += 1
             ElseIf ImageData.Scanned Then
-                _FilterCounts(FilterTypes.Windows9xOEMID) -= 1
+                _FilterCounts(FilterTypes.Windows9xOEMName) -= 1
             End If
             If UpdateFilters Then
-                FilterUpdate(FilterTypes.Windows9xOEMID)
+                FilterUpdate(FilterTypes.Windows9xOEMName)
             End If
         End If
 
-        If Not ImageData.Scanned Or OEMIDMatched <> ImageData.ScanInfo.OEMIDMatched Then
-            ImageData.ScanInfo.OEMIDMatched = OEMIDMatched
-            If Not OEMIDMatched Then
-                _FilterCounts(FilterTypes.MismatchedOEMID) += 1
+        If Not ImageData.Scanned Or OEMNameMatched <> ImageData.ScanInfo.OEMNameMatched Then
+            ImageData.ScanInfo.OEMNameMatched = OEMNameMatched
+            If Not OEMNameMatched Then
+                _FilterCounts(FilterTypes.MismatchedOEMName) += 1
             ElseIf ImageData.Scanned Then
-                _FilterCounts(FilterTypes.MismatchedOEMID) -= 1
+                _FilterCounts(FilterTypes.MismatchedOEMName) -= 1
             End If
             If UpdateFilters Then
-                FilterUpdate(FilterTypes.MismatchedOEMID)
+                FilterUpdate(FilterTypes.MismatchedOEMName)
             End If
         End If
 
-        If Not ImageData.Scanned Or OEMIDFound <> ImageData.ScanInfo.OEMIDFound Then
-            ImageData.ScanInfo.OEMIDFound = OEMIDFound
-            If Not OEMIDFound Then
-                _FilterCounts(FilterTypes.UnknownOEMID) += 1
+        If Not ImageData.Scanned Or OEMNameFound <> ImageData.ScanInfo.OEMNameFound Then
+            ImageData.ScanInfo.OEMNameFound = OEMNameFound
+            If Not OEMNameFound Then
+                _FilterCounts(FilterTypes.UnknownOEMName) += 1
             ElseIf ImageData.Scanned Then
-                _FilterCounts(FilterTypes.UnknownOEMID) -= 1
+                _FilterCounts(FilterTypes.UnknownOEMName) -= 1
             End If
             If UpdateFilters Then
-                FilterUpdate(FilterTypes.UnknownOEMID)
+                FilterUpdate(FilterTypes.UnknownOEMName)
             End If
         End If
 
-        If Disk.IsValidImage And (Not ImageData.Scanned Or OEMIDString <> ImageData.ScanInfo.OEMID) Then
+        If Disk.IsValidImage And (Not ImageData.Scanned Or OEMNameString <> ImageData.ScanInfo.OEMName) Then
             If ImageData.Scanned Then
-                Dim Item = _FilterOEMID.Item(ImageData.ScanInfo.OEMID)
+                Dim Item = _FilterOEMName.Item(ImageData.ScanInfo.OEMName)
                 Item.Count -= 1
                 If Item.Count = 0 Then
-                    _FilterOEMID.Remove(Item.ID)
+                    _FilterOEMName.Remove(Item.Name)
                     If UpdateFilters Then
-                        ComboOEMID.Items.Remove(Item)
-                        If ComboOEMID.SelectedIndex = -1 Then
-                            ComboOEMID.SelectedIndex = 0
+                        ComboOEMName.Items.Remove(Item)
+                        If ComboOEMName.SelectedIndex = -1 Then
+                            ComboOEMName.SelectedIndex = 0
                         End If
                     End If
                 Else
                     If UpdateFilters Then
-                        Dim Index = ComboOEMID.Items.IndexOf(Item)
-                        ComboOEMID.Items.Item(Index) = Item
+                        Dim Index = ComboOEMName.Items.IndexOf(Item)
+                        ComboOEMName.Items.Item(Index) = Item
                     End If
                 End If
             End If
 
-            ImageData.ScanInfo.OEMID = OEMIDString
+            ImageData.ScanInfo.OEMName = OEMNameString
 
-            If Not Remove AndAlso Not OEMIDString.EndsWith("IHC") Then
-                If _FilterOEMID.ContainsKey(OEMIDString) Then
-                    Dim Item = _FilterOEMID.Item(ImageData.ScanInfo.OEMID)
+            If Not Remove AndAlso Not OEMNameWin9x Then
+                If _FilterOEMName.ContainsKey(OEMNameString) Then
+                    Dim Item = _FilterOEMName.Item(ImageData.ScanInfo.OEMName)
                     Item.Count += 1
                     If UpdateFilters Then
-                        Dim Index = ComboOEMID.Items.IndexOf(Item)
-                        ComboOEMID.Items.Item(Index) = Item
+                        Dim Index = ComboOEMName.Items.IndexOf(Item)
+                        ComboOEMName.Items.Item(Index) = Item
                     End If
                 Else
-                    Dim Item = New ComboOEMIDItem With {
-                        .ID = OEMIDString,
+                    Dim Item = New ComboOEMNameItem With {
+                        .Name = OEMNameString,
                         .Count = 1
                     }
-                    _FilterOEMID.Add(Item.ID, Item)
+                    _FilterOEMName.Add(Item.Name, Item)
                     If UpdateFilters Then
-                        ComboOEMID.Items.Add(Item)
+                        ComboOEMName.Items.Add(Item)
                     End If
                 End If
             End If
@@ -1431,6 +1475,25 @@ Public Class MainForm
         Return Item
     End Function
 
+    Private Function ListViewTileGetItem(Group As ListViewGroup, Name As String, Value As String) As ListViewItem
+        Dim Item = New ListViewItem(Name, Group) With {
+                .UseItemStyleForSubItems = False
+            }
+        Item.SubItems.Add(Value)
+
+        Return Item
+    End Function
+
+    Private Function ListViewTileGetItem(Group As ListViewGroup, Name As String, Value As String, ForeColor As Color) As ListViewItem
+        Dim Item = New ListViewItem(Name, Group) With {
+                .UseItemStyleForSubItems = False
+            }
+        Dim SubItem = Item.SubItems.Add(Value)
+        SubItem.ForeColor = ForeColor
+
+        Return Item
+    End Function
+
     Private Function MediaTypeGet(MediaDescriptor As Byte, SectorsPerTrack As UShort) As String
         Select Case MediaDescriptor
             Case &HF0
@@ -1458,7 +1521,7 @@ Public Class MainForm
             Case &HFF
                 Return "320KB Floppy"
             Case Else
-                Return "Unknown"
+                Return MediaDescriptor.ToString("X2") & " Hex"
         End Select
     End Function
 
@@ -1504,13 +1567,13 @@ Public Class MainForm
         Return SaveAllForm.Result
     End Function
 
-    Private Function OEMIDEdit() As Boolean
-        Dim frmOEMID As New OEMIDForm(_Disk, _OEMIDDictionary)
+    Private Function OEMNameEdit() As Boolean
+        Dim frmOEMName As New OEMNameForm(_Disk, _OEMNameDictionary)
         Dim Result As Boolean
 
-        frmOEMID.ShowDialog()
+        frmOEMName.ShowDialog()
 
-        Result = frmOEMID.DialogResult = DialogResult.OK
+        Result = frmOEMName.DialogResult = DialogResult.OK
 
         If Result Then
             ItemScanAll(_Disk, ComboImages.SelectedItem, True)
@@ -1520,32 +1583,32 @@ Public Class MainForm
         Return Result
     End Function
 
-    Private Function OEMIDFindMatch(Checksum As UInteger) As List(Of OEMID)
-        If _OEMIDDictionary.ContainsKey(Checksum) Then
-            Return _OEMIDDictionary.Item(Checksum)
+    Private Function OEMNameFindMatch(Checksum As UInteger) As BootstrapLookup
+        If _OEMNameDictionary.ContainsKey(Checksum) Then
+            Return _OEMNameDictionary.Item(Checksum)
         Else
             Return Nothing
         End If
     End Function
 
-    Private Sub PopulateComboOEMID()
-        Dim Item As ComboOEMIDItem
+    Private Sub PopulateComboOEMName()
+        Dim Item As ComboOEMNameItem
 
-        ComboOEMID.BeginUpdate()
-        ComboOEMID.Items.Clear()
-        ComboOEMID.Sorted = True
-        For Each Item In _FilterOEMID.Values
-            ComboOEMID.Items.Add(Item)
+        ComboOEMName.BeginUpdate()
+        ComboOEMName.Items.Clear()
+        ComboOEMName.Sorted = True
+        For Each Item In _FilterOEMName.Values
+            ComboOEMName.Items.Add(Item)
         Next
-        Item = New ComboOEMIDItem With {
+        Item = New ComboOEMNameItem With {
             .AllItems = True
         }
-        ComboOEMID.Sorted = False
-        ComboOEMID.Items.Insert(0, Item)
-        ComboOEMID.SelectedIndex = 0
-        ComboOEMID.EndUpdate()
-        ComboOEMID.Visible = True
-        ToolStripOEMID.Visible = True
+        ComboOEMName.Sorted = False
+        ComboOEMName.Items.Insert(0, Item)
+        ComboOEMName.SelectedIndex = 0
+        ComboOEMName.EndUpdate()
+        ComboOEMName.Visible = True
+        ToolStripOEMName.Visible = True
     End Sub
 
     Private Sub PopulateFilesPanel()
@@ -1598,11 +1661,13 @@ Public Class MainForm
     Private Sub PopulateSummaryPanel()
         Dim Value As String
         Dim ForeColor As Color
+        Dim BootStrapStart = _Disk.BootSector.GetBootStrapOffset
 
         Me.Text = "Disk Image Tool - " & IO.Path.GetFileName(_Disk.FilePath)
 
         ToolStripFileName.Text = IO.Path.GetFileName(_Disk.FilePath)
         ToolStripFileName.Visible = True
+        ToolStripStatusModified.Visible = _Disk.Modified
 
         ListViewSummary.BeginUpdate()
 
@@ -1610,23 +1675,28 @@ Public Class MainForm
             .Clear()
             If _Disk.IsValidImage Then
                 Dim BootstrapChecksum = Crc32.ComputeChecksum(_Disk.BootSector.BootStrapCode)
-                Dim OEMIDString As String = _Disk.GetOEMIDString()
-                Dim OEMIDMatched As Boolean = False
+                Dim OEMName = _Disk.BootSector.OEMName
+                Dim KnownOEMNameMatch As KnownOEMName = Nothing
+                Dim OEMNameWin9x = _Disk.BootSector.IsWin9xOEMName
 
-                Dim BootstrapType = OEMIDFindMatch(BootstrapChecksum)
+                Dim BootstrapType = OEMNameFindMatch(BootstrapChecksum)
 
                 If BootstrapType IsNot Nothing Then
-                    For Each OEMID In BootstrapType
-                        If OEMID.ID = OEMIDString Then
-                            OEMIDMatched = True
+                    For Each KnownOEMName In BootstrapType.KnownOEMNames
+                        If ByteArrayCompare(KnownOEMName.Name, OEMName) Or (OEMNameWin9x And KnownOEMName.Win9xId) Then
+                            KnownOEMNameMatch = KnownOEMName
                             Exit For
                         End If
                     Next
+                    If KnownOEMNameMatch Is Nothing And BootstrapType.ExactMatch Then
+                        BootstrapType = Nothing
+                    End If
                 End If
 
-                .Add(ListViewTileGetItem("Modified", IIf(_Disk.Modified, "Yes", "No"), IIf(_Disk.Modified, Color.Blue, SystemColors.WindowText)))
+                Dim BootRecordGroup = ListViewSummary.Groups.Add("BootRecord", "Boot Record")
+
                 If BootstrapType IsNot Nothing Then
-                    If Not OEMIDMatched Then
+                    If KnownOEMNameMatch Is Nothing Then
                         ForeColor = Color.Red
                     Else
                         ForeColor = Color.Green
@@ -1634,58 +1704,116 @@ Public Class MainForm
                 Else
                     ForeColor = SystemColors.WindowText
                 End If
-                .Add(ListViewTileGetItem("OEM ID", OEMIDString, ForeColor))
-                If BootstrapType IsNot Nothing Then
-                    .Add(ListViewTileGetItem("Detected Language", BootstrapType.Item(0).Language))
-                End If
-                .Add(ListViewTileGetItem("Media Type", MediaTypeGet(_Disk.BootSector.MediaDescriptor, _Disk.BootSector.SectorsPerTrack)))
+                .Add(ListViewTileGetItem(BootRecordGroup, "OEM Name", _Disk.BootSector.GetOEMNameString.TrimEnd(NULL_CHAR), ForeColor))
 
-                Dim VolumeLabel = _Disk.GetVolumeLabel
-                If VolumeLabel IsNot Nothing Then
-                    .Add(ListViewTileGetItem("Volume Label", VolumeLabel.GetVolumeName))
-                    Dim VolumeDate = VolumeLabel.GetLastWriteDate
-                    .Add(ListViewTileGetItem("Volume Date", ExpandedDateToString(VolumeDate, True, False, False, False)))
-                End If
-                If _Disk.BootSector.ExtendedBootSignature = &H29 Then
-                    .Add(ListViewTileGetItem("Volume Serial Number", _Disk.BootSector.VolumeSerialNumber.ToString("X8").Insert(4, "-")))
-                    .Add(ListViewTileGetItem("File System Type", Encoding.UTF8.GetString(_Disk.BootSector.FileSystemType)))
-                End If
-                .Add(ListViewTileGetItem("Bytes Per Sector", _Disk.BootSector.BytesPerSector))
-                .Add(ListViewTileGetItem("Sectors Per Cluster", _Disk.BootSector.SectorsPerCluster))
-                .Add(ListViewTileGetItem("Sectors Per Track", _Disk.BootSector.SectorsPerTrack))
-                Value = _Disk.BootSector.FatCopies
+                .Add(ListViewTileGetItem(BootRecordGroup, "Bytes per Sector", _Disk.BootSector.BytesPerSector))
+                .Add(ListViewTileGetItem(BootRecordGroup, "Sectors per Cluster", _Disk.BootSector.SectorsPerCluster))
+                .Add(ListViewTileGetItem(BootRecordGroup, "Reserved Sectors", _Disk.BootSector.ReservedSectorCount))
+
+                Value = _Disk.BootSector.NumberOfFATs
                 If Not _Disk.CompareFATTables Then
                     Value &= " (Mismatched)"
                     ForeColor = Color.Red
                 Else
                     ForeColor = SystemColors.WindowText
                 End If
-                .Add(ListViewTileGetItem("Number of FAT copies", Value, ForeColor))
-                .Add(ListViewTileGetItem("Total Space", Format(_Disk.BootSector.DataRegionSize * _Disk.BootSector.BytesPerSector, "N0") & " bytes"))
-                .Add(ListViewTileGetItem("Free Space", Format(_Disk.FreeSpace, "N0") & " bytes"))
+                .Add(ListViewTileGetItem(BootRecordGroup, "Number of FATs", Value, ForeColor))
+
+                .Add(ListViewTileGetItem(BootRecordGroup, "Root Directory Entries", _Disk.BootSector.RootEntryCount))
+                .Add(ListViewTileGetItem(BootRecordGroup, "Total Sectors Count", _Disk.BootSector.SectorCount))
+                .Add(ListViewTileGetItem(BootRecordGroup, "Media Descriptor", MediaTypeGet(_Disk.BootSector.MediaDescriptor, _Disk.BootSector.SectorsPerTrack)))
+                .Add(ListViewTileGetItem(BootRecordGroup, "Sectors per FAT", _Disk.BootSector.SectorsPerFAT))
+                .Add(ListViewTileGetItem(BootRecordGroup, "Sectors per Track", _Disk.BootSector.SectorsPerTrack))
+                .Add(ListViewTileGetItem(BootRecordGroup, "Number of Heads", _Disk.BootSector.NumberOfHeads))
+
+                If _Disk.BootSector.HiddenSectors > 0 Then
+                    .Add(ListViewTileGetItem(BootRecordGroup, "Hidden Sectors", _Disk.BootSector.HiddenSectors))
+                End If
+
+                If BootStrapStart >= DiskImage.BootSector.BootSectorOffset.BootStrapCode Then
+                    If _Disk.BootSector.DriveNumber > 0 Then
+                        .Add(ListViewTileGetItem(BootRecordGroup, "Drive Number", _Disk.BootSector.DriveNumber))
+                    End If
+                    If _Disk.BootSector.HasValidExtendedBootSignature Then
+                        .Add(ListViewTileGetItem(BootRecordGroup, "Volume Serial Number", _Disk.BootSector.VolumeSerialNumber.ToString("X8").Insert(4, "-")))
+                        .Add(ListViewTileGetItem(BootRecordGroup, "Volume Label", _Disk.BootSector.GetVolumeLabelString.TrimEnd(NULL_CHAR)))
+                        .Add(ListViewTileGetItem(BootRecordGroup, "File System ID", Encoding.UTF8.GetString(_Disk.BootSector.FileSystemType)))
+                    End If
+                End If
+
+                If _Disk.BootSector.BootStrapSignature <> &HAA55 Then
+                    .Add(ListViewTileGetItem(BootRecordGroup, "Boot Sector Signature", _Disk.BootSector.BootStrapSignature.ToString("X4")))
+                End If
+
+                If Not _Disk.BootSector.HasValidJumpInstruction Then
+                    ForeColor = Color.Red
+                Else
+                    ForeColor = SystemColors.WindowText
+                End If
+
+                .Add(ListViewTileGetItem(BootRecordGroup, "Bootstrap Jump", BitConverter.ToString(_Disk.BootSector.JmpBoot), ForeColor))
+                .Add(ListViewTileGetItem(BootRecordGroup, "Bootstrap CRC32", Crc32.ComputeChecksum(_Disk.BootSector.BootStrapCode).ToString("X8")))
+
+                Dim FileSystemGroup = ListViewSummary.Groups.Add("FileSystem", "File System")
+
+                Dim VolumeLabel = _Disk.GetVolumeLabel
+                If VolumeLabel IsNot Nothing Then
+                    .Add(ListViewTileGetItem(FileSystemGroup, "Volume Label", VolumeLabel.GetVolumeName.TrimEnd(NULL_CHAR)))
+                    Dim VolumeDate = VolumeLabel.GetLastWriteDate
+                    .Add(ListViewTileGetItem(FileSystemGroup, "Volume Date", ExpandedDateToString(VolumeDate, True, False, False, False)))
+                End If
+
+                .Add(ListViewTileGetItem(FileSystemGroup, "Total Space", Format(_Disk.BootSector.DataRegionSize * _Disk.BootSector.BytesPerSector, "N0") & " bytes"))
+                .Add(ListViewTileGetItem(FileSystemGroup, "Free Space", Format(_Disk.FreeSpace, "N0") & " bytes"))
+
                 If _Disk.BadClusters.Count > 0 Then
                     Value = Format(_Disk.BadClusters.Count * _Disk.BootSector.BytesPerCluster, "N0") & " bytes"
                     ForeColor = Color.Red
-                    .Add(ListViewTileGetItem("Bad Sectors", Value, ForeColor))
+                    .Add(ListViewTileGetItem(FileSystemGroup, "Bad Sectors", Value, ForeColor))
                 End If
-                .Add(ListViewTileGetItem("Boot Strap CRC32", Crc32.ComputeChecksum(_Disk.BootSector.BootStrapCode).ToString("X8")))
+
+                Dim BootStrapGroup = ListViewSummary.Groups.Add("Bootstrap", "Bootstrap")
+
                 If BootstrapType IsNot Nothing Then
-                    If Not OEMIDMatched Then
-                        .Add("")
-                        For Each OEMID In BootstrapType
-                            .Add(ListViewTileGetItem("Detected OEM ID", OEMID.ID))
+                    If BootstrapType.Language.Length > 0 Then
+                        .Add(ListViewTileGetItem(BootStrapGroup, "Language", BootstrapType.Language))
+                    End If
+
+                    If KnownOEMNameMatch Is Nothing And BootstrapType.KnownOEMNames.Count = 1 Then
+                        KnownOEMNameMatch = BootstrapType.KnownOEMNames(0)
+                    End If
+
+                    If KnownOEMNameMatch IsNot Nothing Then
+                        If KnownOEMNameMatch.Company <> "" Then
+                            .Add(ListViewTileGetItem(BootStrapGroup, "Company", KnownOEMNameMatch.Company))
+                        End If
+                        If KnownOEMNameMatch.Description <> "" Then
+                            .Add(ListViewTileGetItem(BootStrapGroup, "Description", KnownOEMNameMatch.Description))
+                        End If
+                    End If
+
+                    If Not BootstrapType.ExactMatch Then
+                        For Each KnownOEMName In BootstrapType.KnownOEMNames
+                            If KnownOEMName.Name.Length > 0 AndAlso KnownOEMName.Suggestion AndAlso Not ByteArrayCompare(KnownOEMName.Name, OEMName) Then
+                                .Add(ListViewTileGetItem(BootStrapGroup, "Alternative OEM Name", KnownOEMName.GetNameAsString))
+                            End If
                         Next
                     End If
                 End If
             Else
+                Dim ErrorGroup = ListViewSummary.Groups.Add("Error", "Error")
+
                 If _Disk.LoadError Then
-                    .Add(ListViewTileGetItem("Error", "Error Loading File", Color.Red))
+                    Dim LV = .Add(ListViewTileGetItem(ErrorGroup, "Error Loading File", ""))
+                    LV.ForeColor = Color.Red
                 Else
-                    .Add(ListViewTileGetItem("Error", "Unknown Image Format", Color.Red))
+                    Dim LV = .Add(ListViewTileGetItem(ErrorGroup, "Unknown Image Format", ""))
+                    LV.ForeColor = Color.Red
                 End If
             End If
         End With
 
+        ListViewSummary.AutoResizeColumns(ColumnHeaderAutoResizeStyle.ColumnContent)
         ListViewSummary.EndUpdate()
         ListViewSummary.Refresh()
 
@@ -2047,6 +2175,7 @@ Public Class MainForm
 
     Private Sub ResetAll()
         _Disk = Nothing
+        Me.Text = "Disk Image Tool"
         _FiltersApplied = False
         _CheckAll = False
         _LoadedFileNames.Clear()
@@ -2055,8 +2184,10 @@ Public Class MainForm
         BtnRevert.Enabled = False
         ToolStripFileName.Visible = False
         ToolStripModified.Visible = False
+        ToolStripStatusModified.Visible = False
         BtnSaveAll.Enabled = False
         ComboImages.Enabled = False
+        ComboImages.Visible = True
         ComboImagesFiltered.Visible = False
         ListViewSummary.Items.Clear()
         ListViewHashes.Items.Clear()
@@ -2187,8 +2318,8 @@ Public Class MainForm
     End Sub
 
 #Region "Events"
-    Private Sub BtnOEMID_Click(sender As Object, e As EventArgs) Handles BtnOEMID.Click
-        OEMIDEdit()
+    Private Sub BtnOOEMName_Click(sender As Object, e As EventArgs) Handles BtnChangeOEMName.Click
+        OEMNameEdit()
     End Sub
 
     Private Sub BtnClose_Click(sender As Object, e As EventArgs) Handles BtnClose.Click
@@ -2492,7 +2623,7 @@ Public Class MainForm
         End If
     End Sub
 
-    Private Sub ComboOEMID_SelectedIndexChanged(sender As Object, e As EventArgs) Handles ComboOEMID.SelectedIndexChanged
+    Private Sub ComboOEMName_SelectedIndexChanged(sender As Object, e As EventArgs) Handles ComboOEMName.SelectedIndexChanged
         If _SuppressEvent Then
             Exit Sub
         End If
@@ -2517,15 +2648,15 @@ Public Structure FileData
     Dim DirectoryEntry As DiskImage.DirectoryEntry
 End Structure
 
-Public Class ComboOEMIDItem
-    Public Property ID As String
+Public Class ComboOEMNameItem
+    Public Property Name As String
     Public Property Count As Integer
     Public Property AllItems As Boolean = False
     Public Overrides Function ToString() As String
         If AllItems Then
             Return "(ALL)"
         Else
-            Return _ID & "  [" & _Count & "]"
+            Return Name & "  [" & _Count & "]"
         End If
     End Function
 End Class
