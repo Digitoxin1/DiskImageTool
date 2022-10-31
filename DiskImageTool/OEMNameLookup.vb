@@ -79,4 +79,7 @@ Public Class KnownOEMName
     Public Function GetNameAsString() As String
         Return CodePage437ToUnicode(_Name)
     End Function
+    Public Overrides Function ToString() As String
+        Return GetNameAsString()
+    End Function
 End Class
