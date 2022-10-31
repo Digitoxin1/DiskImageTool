@@ -11,6 +11,7 @@ Public Class FilePropertiesForm
     Private _IsVolumeLabel As Boolean = False
     Private _Deleted As Boolean = False
     Private _Updated As Boolean = False
+    Private _SuppressEvent As Boolean = True
 
     Public ReadOnly Property Updated As Boolean
         Get
@@ -53,6 +54,8 @@ Public Class FilePropertiesForm
         TxtFile.Visible = Not Multiple
         TxtExtension.Visible = Not Multiple
         LblMultipleFiles.Visible = Multiple
+        MskFileHex.Visible = Not Multiple
+        MskExtensionHex.Visible = Not Multiple
 
         InitButtons(Multiple)
     End Sub
@@ -200,19 +203,25 @@ Public Class FilePropertiesForm
         Dim Caption As String
         Dim Maxlength As Integer
         Dim FileName As String
+        Dim FileNameHex() As Byte
 
         If _IsVolumeLabel Then
             Caption = "Volume Label"
-            TxtFile.Width = 150
             Maxlength = 11
             TxtExtension.Visible = False
+            MskExtensionHex.Visible = False
             FileName = DirectoryEntry.GetVolumeName
+            ReDim FileNameHex(Maxlength - 1)
+            DirectoryEntry.FileName.CopyTo(FileNameHex, 0)
+            DirectoryEntry.Extension.CopyTo(FileNameHex, 8)
         Else
-            TxtFile.Width = 100
             Maxlength = 8
             TxtExtension.Visible = True
+            MskExtensionHex.Visible = True
             FileName = DirectoryEntry.GetFileName
+            FileNameHex = DirectoryEntry.FileName
             TxtExtension.Text = DirectoryEntry.GetFileExtension
+            MskExtensionHex.SetHex(DirectoryEntry.Extension)
             If _IsDirectory Then
                 Caption = "Directory Name"
             Else
@@ -224,11 +233,17 @@ Public Class FilePropertiesForm
             Caption &= " (Deleted)"
             Maxlength -= 1
             FileName = FileName.Substring(1)
+            ReDim FileNameHex(Maxlength - 1)
+            Array.Copy(DirectoryEntry.FileName, 1, FileNameHex, 0, Maxlength)
         End If
 
         GroupFileName.Text = Caption
         TxtFile.MaxLength = Maxlength
         TxtFile.Text = FileName
+        MskFileHex.MaskLength = Maxlength
+        MskFileHex.Width = (Maxlength * 3 - 1) * 7 + 8
+        MskFileHex.SetHex(FileNameHex)
+        TxtFile.Width = MskFileHex.Width
 
         DT = DirectoryEntry.GetLastWriteDate
         If DT.IsValidDate Then
@@ -276,7 +291,6 @@ Public Class FilePropertiesForm
 
         For Each Item As ListViewItem In _Items
             Dim FileData As FileData = Item.Tag
-            'Dim DirectoryEntry = _Disk.GetDirectoryEntryByOffset(FileData.Offset)
             Dim DirectoryEntry = FileData.DirectoryEntry
             DT = DirectoryEntry.GetLastWriteDate
             If DT.IsValidDate Then
@@ -400,12 +414,6 @@ Public Class FilePropertiesForm
         End If
     End Sub
 
-    Private Sub TxtExtension_Validating(sender As Object, e As CancelEventArgs) Handles TxtExtension.Validating
-        If Not DiskImage.Disk.CheckValidFileName(Encoding.UTF8.GetBytes(TxtExtension.Text), True, _IsVolumeLabel) Then
-            e.Cancel = True
-        End If
-    End Sub
-
     Private Sub TxtFile_KeyPress(sender As Object, e As KeyPressEventArgs) Handles TxtFile.KeyPress, TxtExtension.KeyPress
         Dim Value = Asc(e.KeyChar)
 
@@ -427,17 +435,61 @@ Public Class FilePropertiesForm
         End If
     End Sub
 
-    'Private Sub TxtFile_Validating(sender As Object, e As CancelEventArgs) Handles TxtFile.Validating
-    '    If _Deleted And TxtFile.Text = "" Then
-    '        Exit Sub
-    '    End If
-
-    '    If Not DiskImage.Disk.CheckValidFileName(Encoding.UTF8.GetBytes(TxtFile.Text), False, _IsVolumeLabel) Then
-    '        e.Cancel = True
-    '    End If
-    'End Sub
-
     Private Sub BtnUpdate_Click(sender As Object, e As EventArgs) Handles BtnUpdate.Click
-        ApplyUpdates
+        ApplyUpdates()
+    End Sub
+
+    Private Sub FilePropertiesForm_Load(sender As Object, e As EventArgs) Handles Me.Load
+        _SuppressEvent = False
+    End Sub
+
+    Private Sub MskFileHex_TextChanged(sender As Object, e As EventArgs) Handles MskFileHex.TextChanged
+        If _SuppressEvent Then
+            Exit Sub
+        End If
+
+        Dim NewValue = CodePage437ToUnicode(MskFileHex.GetHex)
+
+        _SuppressEvent = True
+        If TxtFile.Text <> NewValue Then
+            TxtFile.Text = NewValue
+        End If
+        _SuppressEvent = False
+    End Sub
+
+    Private Sub MskExtensionHex_TextChanged(sender As Object, e As EventArgs) Handles MskExtensionHex.TextChanged
+        If _SuppressEvent Then
+            Exit Sub
+        End If
+
+        Dim NewValue = CodePage437ToUnicode(MskExtensionHex.GetHex)
+
+        _SuppressEvent = True
+        If TxtExtension.Text <> NewValue Then
+            TxtExtension.Text = NewValue
+        End If
+        _SuppressEvent = False
+    End Sub
+
+    Private Sub TxtFile_TextChanged(sender As Object, e As EventArgs) Handles TxtFile.TextChanged
+        If _SuppressEvent Then
+            Exit Sub
+        End If
+
+        Dim Value As String = Strings.Left(TxtFile.Text, TxtFile.MaxLength).PadRight(TxtFile.MaxLength)
+        Dim b = UnicodeToCodePage437(Value)
+
+        MskFileHex.SetHex(b)
+    End Sub
+
+    Private Sub TxtExtension_TextChanged(sender As Object, e As EventArgs) Handles TxtExtension.TextChanged
+        If _SuppressEvent Then
+            Exit Sub
+        End If
+
+        Dim Value As String = Strings.Left(TxtExtension.Text, TxtExtension.MaxLength).PadRight(TxtExtension.MaxLength)
+        Dim b = UnicodeToCodePage437(Value)
+
+        MskExtensionHex.SetHex(b)
     End Sub
 End Class

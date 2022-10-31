@@ -29,9 +29,9 @@ Partial Class OEMNameForm
         Me.BtnUpdate = New System.Windows.Forms.Button()
         Me.BtnCancel = New System.Windows.Forms.Button()
         Me.TableLayoutPanel1 = New System.Windows.Forms.TableLayoutPanel()
-        Me.FlowLayoutPanel1 = New System.Windows.Forms.FlowLayoutPanel()
-        Me.MskOEMNameHex = New System.Windows.Forms.MaskedTextBox()
         Me.TxtCurrentOEMHex = New System.Windows.Forms.TextBox()
+        Me.FlowLayoutPanel1 = New System.Windows.Forms.FlowLayoutPanel()
+        Me.MskOEMNameHex = New DiskImageTool.HexTextBox()
         Me.TableLayoutPanel1.SuspendLayout()
         Me.FlowLayoutPanel1.SuspendLayout()
         Me.SuspendLayout()
@@ -120,13 +120,24 @@ Partial Class OEMNameForm
         Me.TableLayoutPanel1.Size = New System.Drawing.Size(391, 53)
         Me.TableLayoutPanel1.TabIndex = 0
         '
+        'TxtCurrentOEMHex
+        '
+        Me.TxtCurrentOEMHex.Anchor = System.Windows.Forms.AnchorStyles.Left
+        Me.TxtCurrentOEMHex.Font = New System.Drawing.Font("Courier New", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.TxtCurrentOEMHex.Location = New System.Drawing.Point(218, 3)
+        Me.TxtCurrentOEMHex.MaxLength = 8
+        Me.TxtCurrentOEMHex.Name = "TxtCurrentOEMHex"
+        Me.TxtCurrentOEMHex.ReadOnly = True
+        Me.TxtCurrentOEMHex.Size = New System.Drawing.Size(170, 20)
+        Me.TxtCurrentOEMHex.TabIndex = 2
+        '
         'FlowLayoutPanel1
         '
         Me.FlowLayoutPanel1.AutoSize = True
         Me.FlowLayoutPanel1.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink
         Me.FlowLayoutPanel1.Controls.Add(Me.BtnUpdate)
         Me.FlowLayoutPanel1.Controls.Add(Me.BtnCancel)
-        Me.FlowLayoutPanel1.Location = New System.Drawing.Point(120, 83)
+        Me.FlowLayoutPanel1.Location = New System.Drawing.Point(125, 80)
         Me.FlowLayoutPanel1.Name = "FlowLayoutPanel1"
         Me.FlowLayoutPanel1.Size = New System.Drawing.Size(192, 29)
         Me.FlowLayoutPanel1.TabIndex = 1
@@ -138,22 +149,13 @@ Partial Class OEMNameForm
         Me.MskOEMNameHex.InsertKeyMode = System.Windows.Forms.InsertKeyMode.Overwrite
         Me.MskOEMNameHex.Location = New System.Drawing.Point(218, 29)
         Me.MskOEMNameHex.Mask = "AA AA AA AA AA AA AA AA"
+        Me.MskOEMNameHex.MaskLength = 8
         Me.MskOEMNameHex.Name = "MskOEMNameHex"
         Me.MskOEMNameHex.PromptChar = Global.Microsoft.VisualBasic.ChrW(45)
+        Me.MskOEMNameHex.ShortcutsEnabled = False
         Me.MskOEMNameHex.Size = New System.Drawing.Size(170, 20)
         Me.MskOEMNameHex.TabIndex = 5
         Me.MskOEMNameHex.TextMaskFormat = System.Windows.Forms.MaskFormat.ExcludePromptAndLiterals
-        '
-        'TxtCurrentOEMHex
-        '
-        Me.TxtCurrentOEMHex.Anchor = System.Windows.Forms.AnchorStyles.Left
-        Me.TxtCurrentOEMHex.Font = New System.Drawing.Font("Courier New", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.TxtCurrentOEMHex.Location = New System.Drawing.Point(218, 3)
-        Me.TxtCurrentOEMHex.MaxLength = 8
-        Me.TxtCurrentOEMHex.Name = "TxtCurrentOEMHex"
-        Me.TxtCurrentOEMHex.ReadOnly = True
-        Me.TxtCurrentOEMHex.Size = New System.Drawing.Size(170, 20)
-        Me.TxtCurrentOEMHex.TabIndex = 2
         '
         'OEMNameForm
         '
@@ -189,6 +191,6 @@ Partial Class OEMNameForm
     Friend WithEvents BtnCancel As Button
     Friend WithEvents TableLayoutPanel1 As TableLayoutPanel
     Friend WithEvents FlowLayoutPanel1 As FlowLayoutPanel
-    Friend WithEvents MskOEMNameHex As MaskedTextBox
     Friend WithEvents TxtCurrentOEMHex As TextBox
+    Friend WithEvents MskOEMNameHex As HexTextBox
 End Class

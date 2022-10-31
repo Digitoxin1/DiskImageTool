@@ -2,7 +2,6 @@
 
 Public Class OEMNameForm
     Private ReadOnly _Disk As DiskImage.Disk
-    Private ReadOnly _ValidChars() As Char = {"0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "A", "B", "C", "D", "E", "F"}
     Private _SuppressEvent As Boolean = True
 
     Public Sub New(Disk As DiskImage.Disk, OEMNameDictionary As Dictionary(Of UInteger, BootstrapLookup))
@@ -16,7 +15,6 @@ Public Class OEMNameForm
         Dim OEMName As New KnownOEMName With {
             .Name = Disk.BootSector.OEMName
         }
-
 
         TxtCurrentOEMName.Text = OEMName.GetNameAsString
         TxtCurrentOEMHex.Text = BitConverter.ToString(OEMName.Name).Replace("-", " ")
@@ -47,24 +45,9 @@ Public Class OEMNameForm
 
         If CboOEMName.SelectedIndex > -1 Then
             OEMName = CType(CboOEMName.SelectedItem, KnownOEMName)
-            MskOEMNameHex.Text = BitConverter.ToString(OEMName.Name).Replace("-", " ")
+            MskOEMNameHex.SetHex(OEMName.Name)
         End If
     End Sub
-
-    Private Function GetHexString() As String
-        Dim HexString = ""
-        Dim TmpString = MskOEMNameHex.Text
-        For Counter = 0 To TmpString.Length - 1
-            Dim C As Char = TmpString.Substring(Counter, 1)
-            If _ValidChars.Contains(C) Then
-                HexString &= C
-            Else
-                HexString &= 0
-            End If
-        Next
-
-        Return HexString.Replace(" ", "0").PadRight(16, "0")
-    End Function
 
     Private Sub BtnUpdate_Click(sender As Object, e As EventArgs) Handles BtnUpdate.Click
         Dim OEMName = _Disk.BootSector.OEMName
@@ -81,22 +64,6 @@ Public Class OEMNameForm
         _SuppressEvent = False
     End Sub
 
-    Private Sub MskOEMNameHex_KeyPress(sender As Object, e As KeyPressEventArgs) Handles MskOEMNameHex.KeyPress
-        If (e.KeyChar >= "a" And e.KeyChar <= "f") Then
-            e.KeyChar = Chr(Asc(e.KeyChar) - 32)
-        ElseIf Not _ValidChars.Contains(e.KeyChar) Then
-            e.KeyChar = ""
-            e.Handled = True
-        End If
-    End Sub
-
-    Private Sub MskOEMNameHex_LostFocus(sender As Object, e As EventArgs) Handles MskOEMNameHex.LostFocus
-        MskOEMNameHex.Text = GetHexString()
-    End Sub
-
-    Private Sub MskOEMNameHex_Click(sender As Object, e As EventArgs) Handles MskOEMNameHex.Click
-        MskOEMNameHex.SelectionStart = (MskOEMNameHex.SelectionStart \ 3) * 3
-    End Sub
 
     Private Sub CboOEMName_TextChanged(sender As Object, e As EventArgs) Handles CboOEMName.TextChanged
         If _SuppressEvent Then
@@ -112,9 +79,7 @@ Public Class OEMNameForm
             OEMName = CType(CboOEMName.SelectedItem, KnownOEMName).Name
         End If
 
-        _SuppressEvent = True
-        MskOEMNameHex.Text = BitConverter.ToString(OEMName).Replace("-", " ")
-        _SuppressEvent = False
+        MskOEMNameHex.SetHex(OEMName)
     End Sub
 
     Private Sub MskOEMNameHex_TextChanged(sender As Object, e As EventArgs) Handles MskOEMNameHex.TextChanged
@@ -122,10 +87,8 @@ Public Class OEMNameForm
             Exit Sub
         End If
 
-        Dim OEMName = HexStringToBytes(GetHexString())
-
         _SuppressEvent = True
-        CboOEMName.Text = CodePage437ToUnicode(OEMName)
+        CboOEMName.Text = CodePage437ToUnicode(MskOEMNameHex.GetHex)
         _SuppressEvent = False
     End Sub
 End Class
