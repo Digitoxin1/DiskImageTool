@@ -27,17 +27,6 @@ Public Class FilePropertiesForm
         ' Add any initialization after the InitializeComponent() call.
         _Disk = Disk
         _Items = Items
-
-        DTLastWritten.Value = New Date(1980, 1, 1, 0, 0, 0)
-        SetCreatedDateValue(Nothing)
-        SetLastAccessedDateValue(Nothing)
-
-        InitMultiple(Items.Count > 1)
-        If Items.Count = 1 Then
-            PopulateFormSingle()
-        Else
-            PopulateFormMultiple()
-        End If
     End Sub
 
     Private Sub InitButtons(Visible As Boolean)
@@ -88,6 +77,11 @@ Public Class FilePropertiesForm
         Dim Created As Date? = GetDateFromPicker(DTCreated)
         Dim LastAccessed As Date? = GetDateFromPicker(DTLastAccessed)
         Dim DT As DiskImage.ExpandedDate
+
+        If Created IsNot Nothing Then
+            Dim MSDiff As Integer = NumCreatedMS.Value - Created.Value.Millisecond
+            Created = Created.Value.AddMilliseconds(MSDiff)
+        End If
 
         If BtnLastWritten.Tag Then
             DT = DirectoryEntry.GetLastWriteDate
@@ -166,14 +160,12 @@ Public Class FilePropertiesForm
         If _Items.Count = 1 Then
             Dim Item As ListViewItem = _Items(0)
             Dim FileData As FileData = Item.Tag
-            'Dim DirectoryEntry = _Disk.GetDirectoryEntryByOffset(FileData.Offset)
             Dim DirectoryEntry = FileData.DirectoryEntry
             ApplyFileNameUpdate(DirectoryEntry)
         End If
 
         For Each Item As ListViewItem In _Items
             Dim FileData As FileData = Item.Tag
-            'Dim DirectoryEntry = _Disk.GetDirectoryEntryByOffset(FileData.Offset)
             Dim DirectoryEntry = FileData.DirectoryEntry
 
             ApplyFileDatesUpdate(DirectoryEntry)
@@ -192,7 +184,6 @@ Public Class FilePropertiesForm
     Private Sub PopulateFormSingle()
         Dim Item As ListViewItem = _Items(0)
         Dim FileData As FileData = Item.Tag
-        'Dim DirectoryEntry = _Disk.GetDirectoryEntryByOffset(FileData.Offset)
         Dim DirectoryEntry = FileData.DirectoryEntry
         Dim DT As DiskImage.ExpandedDate
 
@@ -339,10 +330,14 @@ Public Class FilePropertiesForm
         If Value Is Nothing Then
             DTCreated.CustomFormat = EMPTY_FORMAT
             DTCreated.Checked = False
+            NumCreatedMS.Visible = False
+            NumCreatedMS.Value = 0
         Else
             DTCreated.CustomFormat = CREATED_FORMAT
             DTCreated.Checked = True
             DTCreated.Value = Value
+            NumCreatedMS.Visible = True
+            NumCreatedMS.Value = Value.Value.Millisecond
         End If
     End Sub
 
@@ -382,6 +377,7 @@ Public Class FilePropertiesForm
             LblLastAccessed.Enabled = Button.Tag
         ElseIf Button Is BtnCreated Then
             DTCreated.Enabled = Button.Tag
+            NumCreatedMS.Enabled = Button.Tag
             LblCreated.Enabled = Button.Tag
         ElseIf Button Is BtnArchive Then
             ChkArchive.Enabled = Button.Tag
@@ -401,8 +397,10 @@ Public Class FilePropertiesForm
     Private Sub DTCreated_ValueChanged(sender As Object, e As EventArgs) Handles DTCreated.ValueChanged
         If DTCreated.Checked Then
             DTCreated.CustomFormat = CREATED_FORMAT
+            NumCreatedMS.Visible = True
         Else
             DTCreated.CustomFormat = EMPTY_FORMAT
+            NumCreatedMS.Visible = False
         End If
     End Sub
 
@@ -440,6 +438,19 @@ Public Class FilePropertiesForm
     End Sub
 
     Private Sub FilePropertiesForm_Load(sender As Object, e As EventArgs) Handles Me.Load
+        _SuppressEvent = True
+
+        DTLastWritten.Value = New Date(1980, 1, 1, 0, 0, 0)
+        SetCreatedDateValue(Nothing)
+        SetLastAccessedDateValue(Nothing)
+
+        InitMultiple(_Items.Count > 1)
+        If _Items.Count = 1 Then
+            PopulateFormSingle()
+        Else
+            PopulateFormMultiple()
+        End If
+
         _SuppressEvent = False
     End Sub
 

@@ -106,13 +106,13 @@ Namespace DiskImage
             DTTime <<= 6
             DTTime += D.Minute
             DTTime <<= 5
-            DTTime += D.Second / 2
+            DTTime += D.Second \ 2
 
             Return DTTime
         End Function
 
         Public Shared Function DateToFATMilliseconds(D As Date) As Byte
-            Return D.Millisecond / 10
+            Return D.Millisecond \ 10 + (D.Second Mod 2) * 100
         End Function
 
         Public Shared Function ExpandDate(FATDate As UShort) As ExpandedDate
@@ -138,13 +138,14 @@ Namespace DiskImage
             FATTime >>= 6
             DT.Hour = FATTime Mod 32
 
-            If Milliseconds < 100 Then
-                DT.Milliseconds = Milliseconds * 10
+            If Milliseconds < 200 Then
+                DT.Second += (Milliseconds \ 100)
+                DT.Milliseconds = (Milliseconds Mod 100) * 10
             Else
                 DT.Milliseconds = 0
             End If
 
-            Dim DateString As String = DT.Year & "-" & Format(DT.Month, "00") & "-" & Format(DT.Day, "00") & " " & DT.Hour & ":" & Format(DT.Minute, "00") & ":" & Format(DT.Second, "00")
+            Dim DateString As String = DT.Year & "-" & Format(DT.Month, "00") & "-" & Format(DT.Day, "00") & " " & DT.Hour & ":" & Format(DT.Minute, "00") & ":" & Format(DT.Second, "00") & "." & DT.Milliseconds.ToString.PadLeft(3, "0")
 
             DT.IsValidDate = IsDate(DateString)
 

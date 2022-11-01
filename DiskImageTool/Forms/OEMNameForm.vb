@@ -2,6 +2,7 @@
 
 Public Class OEMNameForm
     Private ReadOnly _Disk As DiskImage.Disk
+    Private ReadOnly _OEMNameDictionary As Dictionary(Of UInteger, BootstrapLookup)
     Private _SuppressEvent As Boolean = True
 
     Public Sub New(Disk As DiskImage.Disk, OEMNameDictionary As Dictionary(Of UInteger, BootstrapLookup))
@@ -11,16 +12,32 @@ Public Class OEMNameForm
 
         ' Add any initialization after the InitializeComponent() call.
         _Disk = Disk
-        Dim BootstrapChecksum = Crc32.ComputeChecksum(Disk.BootSector.BootStrapCode)
+        _OEMNameDictionary = OEMNameDictionary
+    End Sub
+
+    Private Sub BtnUpdate_Click(sender As Object, e As EventArgs) Handles BtnUpdate.Click
+        Dim OEMName = _Disk.BootSector.OEMName
+        Dim NewOEMNameString As String = Strings.Left(CboOEMName.Text, 8).PadRight(8)
+        Dim NewOEMName = UnicodeToCodePage437(NewOEMNameString)
+
+        If Not ByteArrayCompare(OEMName, NewOEMName) Then
+            _Disk.BootSector.OEMName = NewOEMName
+        End If
+    End Sub
+
+    Private Sub OEMNameForm_Load(sender As Object, e As EventArgs) Handles Me.Load
+        _SuppressEvent = True
+
+        Dim BootstrapChecksum = Crc32.ComputeChecksum(_Disk.BootSector.BootStrapCode)
         Dim OEMName As New KnownOEMName With {
-            .Name = Disk.BootSector.OEMName
+            .Name = _Disk.BootSector.OEMName
         }
 
         TxtCurrentOEMName.Text = OEMName.GetNameAsString
         TxtCurrentOEMHex.Text = BitConverter.ToString(OEMName.Name).Replace("-", " ")
 
-        If OEMNameDictionary.ContainsKey(BootstrapChecksum) Then
-            Dim BootstrapType = OEMNameDictionary.Item(BootstrapChecksum)
+        If _OEMNameDictionary.ContainsKey(BootstrapChecksum) Then
+            Dim BootstrapType = _OEMNameDictionary.Item(BootstrapChecksum)
             For Each KnownOEMName In BootstrapType.KnownOEMNames
                 If KnownOEMName.Name.Length > 0 Then
                     Dim IsMatch = ByteArrayCompare(KnownOEMName.Name, OEMName.Name)
@@ -47,21 +64,10 @@ Public Class OEMNameForm
             OEMName = CType(CboOEMName.SelectedItem, KnownOEMName)
             MskOEMNameHex.SetHex(OEMName.Name)
         End If
-    End Sub
 
-    Private Sub BtnUpdate_Click(sender As Object, e As EventArgs) Handles BtnUpdate.Click
-        Dim OEMName = _Disk.BootSector.OEMName
-        Dim NewOEMNameString As String = Strings.Left(CboOEMName.Text, 8).PadRight(8)
-        Dim NewOEMName = UnicodeToCodePage437(NewOEMNameString)
-
-        If Not ByteArrayCompare(OEMName, NewOEMName) Then
-            _Disk.BootSector.OEMName = NewOEMName
-        End If
-    End Sub
-
-    Private Sub OEMNameForm_Load(sender As Object, e As EventArgs) Handles Me.Load
-        ActiveControl = CboOEMName
         _SuppressEvent = False
+
+        ActiveControl = CboOEMName
     End Sub
 
 
@@ -90,5 +96,9 @@ Public Class OEMNameForm
         _SuppressEvent = True
         CboOEMName.Text = CodePage437ToUnicode(MskOEMNameHex.GetHex)
         _SuppressEvent = False
+    End Sub
+
+    Private Sub OEMNameForm_Leave(sender As Object, e As EventArgs) Handles Me.Leave
+
     End Sub
 End Class

@@ -118,22 +118,22 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="DebugScript.vb" />
-    <Compile Include="FilePropertiesForm.Designer.vb">
+    <Compile Include="Forms\FilePropertiesForm.Designer.vb">
       <DependentUpon>FilePropertiesForm.vb</DependentUpon>
     </Compile>
-    <Compile Include="FilePropertiesForm.vb">
+    <Compile Include="Forms\FilePropertiesForm.vb">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="Filters.vb" />
     <Compile Include="DiskImage\BootSector.vb" />
     <Compile Include="Functions.vb" />
-    <Compile Include="HexTextBox.vb">
+    <Compile Include="Controls\HexTextBox.vb">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="ItemScanForm.Designer.vb">
+    <Compile Include="Forms\ItemScanForm.Designer.vb">
       <DependentUpon>ItemScanForm.vb</DependentUpon>
     </Compile>
-    <Compile Include="ItemScanForm.vb">
+    <Compile Include="Forms\ItemScanForm.vb">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="OEMNameLookup.vb" />
@@ -149,10 +149,10 @@
       <DependentUpon>MainForm.vb</DependentUpon>
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="HexViewForm.Designer.vb">
+    <Compile Include="Forms\HexViewForm.Designer.vb">
       <DependentUpon>HexViewForm.vb</DependentUpon>
     </Compile>
-    <Compile Include="HexViewForm.vb">
+    <Compile Include="Forms\HexViewForm.vb">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="My Project\AssemblyInfo.vb" />
@@ -171,37 +171,37 @@
       <DependentUpon>Settings.settings</DependentUpon>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
-    <Compile Include="OEMNameForm.Designer.vb">
+    <Compile Include="Forms\OEMNameForm.Designer.vb">
       <DependentUpon>OEMNameForm.vb</DependentUpon>
     </Compile>
-    <Compile Include="OEMNameForm.vb">
+    <Compile Include="Forms\OEMNameForm.vb">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="SaveAllForm.Designer.vb">
+    <Compile Include="Forms\SaveAllForm.Designer.vb">
       <DependentUpon>SaveAllForm.vb</DependentUpon>
     </Compile>
-    <Compile Include="SaveAllForm.vb">
+    <Compile Include="Forms\SaveAllForm.vb">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="TextViewForm.Designer.vb">
+    <Compile Include="Forms\TextViewForm.Designer.vb">
       <DependentUpon>TextViewForm.vb</DependentUpon>
     </Compile>
-    <Compile Include="TextViewForm.vb">
+    <Compile Include="Forms\TextViewForm.vb">
       <SubType>Form</SubType>
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="FilePropertiesForm.resx">
+    <EmbeddedResource Include="Forms\FilePropertiesForm.resx">
       <DependentUpon>FilePropertiesForm.vb</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="ItemScanForm.resx">
+    <EmbeddedResource Include="Forms\ItemScanForm.resx">
       <DependentUpon>ItemScanForm.vb</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="MainForm.resx">
       <DependentUpon>MainForm.vb</DependentUpon>
       <SubType>Designer</SubType>
     </EmbeddedResource>
-    <EmbeddedResource Include="HexViewForm.resx">
+    <EmbeddedResource Include="Forms\HexViewForm.resx">
       <DependentUpon>HexViewForm.vb</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="My Project\Resources.resx">
@@ -210,13 +210,13 @@
       <CustomToolNamespace>My.Resources</CustomToolNamespace>
       <SubType>Designer</SubType>
     </EmbeddedResource>
-    <EmbeddedResource Include="OEMNameForm.resx">
+    <EmbeddedResource Include="Forms\OEMNameForm.resx">
       <DependentUpon>OEMNameForm.vb</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="SaveAllForm.resx">
+    <EmbeddedResource Include="Forms\SaveAllForm.resx">
       <DependentUpon>SaveAllForm.vb</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="TextViewForm.resx">
+    <EmbeddedResource Include="Forms\TextViewForm.resx">
       <DependentUpon>TextViewForm.vb</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
