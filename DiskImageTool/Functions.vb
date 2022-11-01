@@ -2,6 +2,7 @@
 Imports System.Text
 
 Module Functions
+
     Private ReadOnly CodePage437LookupTable As UShort() = New UShort(255) {
         65533, 9786, 9787, 9829, 9830, 9827, 9824, 8226, 9688, 9675, 9689, 9794, 9792, 9834, 9835, 9788,
         9658, 9668, 8597, 8252, 182, 167, 9644, 8616, 8593, 8595, 8594, 8592, 8735, 8596, 9650, 9660,
@@ -20,41 +21,8 @@ Module Functions
         945, 223, 915, 960, 931, 963, 181, 964, 934, 920, 937, 948, 8734, 966, 949, 8745,
         8801, 177, 8805, 8804, 8992, 8993, 247, 8776, 176, 8729, 183, 8730, 8319, 178, 9632, 160
     }
+
     Private CodePage437ReverseLookupTable As Dictionary(Of UShort, Byte)
-
-    Public Function CodePage437ToUnicode(b() As Byte) As String
-        Dim b2(b.Length - 1) As UShort
-        For counter = 0 To b.Length - 1
-            b2(counter) = CodePage437LookupTable(b(counter))
-        Next
-        ReDim b(b2.Length * 2 - 1)
-        Buffer.BlockCopy(b2, 0, b, 0, b.Length)
-
-        Return Encoding.Unicode.GetString(b)
-    End Function
-
-    Public Function UnicodeToCodePage437(Value As String) As Byte()
-        If CodePage437ReverseLookupTable Is Nothing Then
-            CodePage437ReverseLookupTable = New Dictionary(Of UShort, Byte)
-            For Counter = 0 To CodePage437LookupTable.Length - 1
-                CodePage437ReverseLookupTable.Add(CodePage437LookupTable(Counter), Counter)
-            Next
-        End If
-
-        Dim b = Encoding.Unicode.GetBytes(Value)
-        Dim b2(b.Length / 2 - 1) As Byte
-        For Counter = 0 To b.Length - 1 Step 2
-            Dim c = BitConverter.ToUInt16(b, Counter)
-            If CodePage437ReverseLookupTable.ContainsKey(c) Then
-                c = CodePage437ReverseLookupTable.Item(c)
-            Else
-                c = 32
-            End If
-            b2(Counter / 2) = c
-        Next
-
-        Return b2
-    End Function
 
     Public Function ByteArrayCompare(b1() As Byte, b2() As Byte) As Boolean
         If b1.Length <> b2.Length Then
@@ -68,6 +36,17 @@ Module Functions
         Next
 
         Return True
+    End Function
+
+    Public Function CodePage437ToUnicode(b() As Byte) As String
+        Dim b2(b.Length - 1) As UShort
+        For counter = 0 To b.Length - 1
+            b2(counter) = CodePage437LookupTable(b(counter))
+        Next
+        ReDim b(b2.Length * 2 - 1)
+        Buffer.BlockCopy(b2, 0, b, 0, b.Length)
+
+        Return Encoding.Unicode.GetString(b)
     End Function
 
     Public Function DuplicateHashTable(Table As Hashtable) As Hashtable
@@ -104,15 +83,6 @@ Module Functions
             .SetValue(lv, True, Nothing)
     End Sub
 
-    Public Function PathAddBackslash(Path As String) As String
-        If Len(Path) > 0 Then
-            If Not Path.EndsWith("\") Then
-                Path &= "\"
-            End If
-        End If
-        Return Path
-    End Function
-
     Public Function MD5Hash(Data() As Byte) As String
         Using hasher As MD5 = MD5.Create()
             Dim dbytes As Byte() = hasher.ComputeHash(Data)
@@ -124,6 +94,15 @@ Module Functions
 
             Return sBuilder.ToString
         End Using
+    End Function
+
+    Public Function PathAddBackslash(Path As String) As String
+        If Len(Path) > 0 Then
+            If Not Path.EndsWith("\") Then
+                Path &= "\"
+            End If
+        End If
+        Return Path
     End Function
 
     Public Function SHA1Hash(Data() As Byte) As String
@@ -138,4 +117,28 @@ Module Functions
             Return sBuilder.ToString
         End Using
     End Function
+
+    Public Function UnicodeToCodePage437(Value As String) As Byte()
+        If CodePage437ReverseLookupTable Is Nothing Then
+            CodePage437ReverseLookupTable = New Dictionary(Of UShort, Byte)
+            For Counter = 0 To CodePage437LookupTable.Length - 1
+                CodePage437ReverseLookupTable.Add(CodePage437LookupTable(Counter), Counter)
+            Next
+        End If
+
+        Dim b = Encoding.Unicode.GetBytes(Value)
+        Dim b2(b.Length / 2 - 1) As Byte
+        For Counter = 0 To b.Length - 1 Step 2
+            Dim c = BitConverter.ToUInt16(b, Counter)
+            If CodePage437ReverseLookupTable.ContainsKey(c) Then
+                c = CodePage437ReverseLookupTable.Item(c)
+            Else
+                c = 32
+            End If
+            b2(Counter / 2) = c
+        Next
+
+        Return b2
+    End Function
+
 End Module

@@ -26,4 +26,5 @@
         Next
         Return Not crc
     End Function
+
 End Class

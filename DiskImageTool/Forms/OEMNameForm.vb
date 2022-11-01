@@ -1,6 +1,4 @@
-﻿Imports System.Text
-
-Public Class OEMNameForm
+﻿Public Class OEMNameForm
     Private ReadOnly _Disk As DiskImage.Disk
     Private ReadOnly _OEMNameDictionary As Dictionary(Of UInteger, BootstrapLookup)
     Private _SuppressEvent As Boolean = True
@@ -15,6 +13,8 @@ Public Class OEMNameForm
         _OEMNameDictionary = OEMNameDictionary
     End Sub
 
+#Region "Events"
+
     Private Sub BtnUpdate_Click(sender As Object, e As EventArgs) Handles BtnUpdate.Click
         Dim OEMName = _Disk.BootSector.OEMName
         Dim NewOEMNameString As String = Strings.Left(CboOEMName.Text, 8).PadRight(8)
@@ -23,6 +23,33 @@ Public Class OEMNameForm
         If Not ByteArrayCompare(OEMName, NewOEMName) Then
             _Disk.BootSector.OEMName = NewOEMName
         End If
+    End Sub
+
+    Private Sub CboOEMName_TextChanged(sender As Object, e As EventArgs) Handles CboOEMName.TextChanged
+        If _SuppressEvent Then
+            Exit Sub
+        End If
+
+        Dim OEMName() As Byte
+
+        If CboOEMName.SelectedIndex = -1 Then
+            Dim OEMNameString As String = Strings.Left(CboOEMName.Text, 8).PadRight(8)
+            OEMName = UnicodeToCodePage437(OEMNameString)
+        Else
+            OEMName = CType(CboOEMName.SelectedItem, KnownOEMName).Name
+        End If
+
+        MskOEMNameHex.SetHex(OEMName)
+    End Sub
+
+    Private Sub MskOEMNameHex_TextChanged(sender As Object, e As EventArgs) Handles MskOEMNameHex.TextChanged
+        If _SuppressEvent Then
+            Exit Sub
+        End If
+
+        _SuppressEvent = True
+        CboOEMName.Text = CodePage437ToUnicode(MskOEMNameHex.GetHex)
+        _SuppressEvent = False
     End Sub
 
     Private Sub OEMNameForm_Load(sender As Object, e As EventArgs) Handles Me.Load
@@ -70,35 +97,6 @@ Public Class OEMNameForm
         ActiveControl = CboOEMName
     End Sub
 
+#End Region
 
-    Private Sub CboOEMName_TextChanged(sender As Object, e As EventArgs) Handles CboOEMName.TextChanged
-        If _SuppressEvent Then
-            Exit Sub
-        End If
-
-        Dim OEMName() As Byte
-
-        If CboOEMName.SelectedIndex = -1 Then
-            Dim OEMNameString As String = Strings.Left(CboOEMName.Text, 8).PadRight(8)
-            OEMName = UnicodeToCodePage437(OEMNameString)
-        Else
-            OEMName = CType(CboOEMName.SelectedItem, KnownOEMName).Name
-        End If
-
-        MskOEMNameHex.SetHex(OEMName)
-    End Sub
-
-    Private Sub MskOEMNameHex_TextChanged(sender As Object, e As EventArgs) Handles MskOEMNameHex.TextChanged
-        If _SuppressEvent Then
-            Exit Sub
-        End If
-
-        _SuppressEvent = True
-        CboOEMName.Text = CodePage437ToUnicode(MskOEMNameHex.GetHex)
-        _SuppressEvent = False
-    End Sub
-
-    Private Sub OEMNameForm_Leave(sender As Object, e As EventArgs) Handles Me.Leave
-
-    End Sub
 End Class

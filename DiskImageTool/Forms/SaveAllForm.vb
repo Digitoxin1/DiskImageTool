@@ -19,9 +19,7 @@
         End Set
     End Property
 
-    Private Sub SaveAllForm_Paint(sender As Object, e As PaintEventArgs) Handles Me.Paint
-        e.Graphics.DrawImage(SystemIcons.Question.ToBitmap, 22, 24)
-    End Sub
+#Region "Events"
 
     Private Sub Button_Click(sender As Object, e As EventArgs) Handles BtnYes.Click, BtnNo.Click, BtnCancel.Click, BtnYesToAll.Click, BtnNoToall.Click
         If sender Is BtnYes Then
@@ -38,4 +36,11 @@
 
         Me.Close()
     End Sub
+
+    Private Sub SaveAllForm_Paint(sender As Object, e As PaintEventArgs) Handles Me.Paint
+        e.Graphics.DrawImage(SystemIcons.Question.ToBitmap, 22, 24)
+    End Sub
+
+#End Region
+
 End Class

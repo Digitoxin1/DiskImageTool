@@ -189,6 +189,7 @@
     <Compile Include="Forms\TextViewForm.vb">
       <SubType>Form</SubType>
     </Compile>
+    <Compile Include="SharedClasses.cls" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Forms\FilePropertiesForm.resx">

@@ -2,12 +2,12 @@
 
 Public Class HexTextBox
     Inherits MaskedTextBox
+    Private WithEvents ButtonCopy As ToolStripMenuItem
+    Private WithEvents ButtonUndo As ToolStripMenuItem
     Private ReadOnly _ValidChars() As Char = {"0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "A", "B", "C", "D", "E", "F"}
+    Private _LastValue As String = ""
     Private _MaskLength As Integer
     Private _SuppressEvent As Boolean = False
-    Private WithEvents ButtonUndo As ToolStripMenuItem
-    Private WithEvents ButtonCopy As ToolStripMenuItem
-    Private _LastValue As String = ""
     Private _UndoValue As String = ""
 
     Public Sub New()
@@ -23,28 +23,47 @@ Public Class HexTextBox
         InitMenu()
     End Sub
 
-    Private Sub InitMenu()
-        MyBase.ContextMenuStrip = New ContextMenuStrip
-        ButtonUndo = MyBase.ContextMenuStrip.Items.Add("&Undo")
-        MyBase.ContextMenuStrip.Items.Add(New ToolStripSeparator)
-        ButtonCopy = MyBase.ContextMenuStrip.Items.Add("&Copy")
-        ButtonUndo.Enabled = False
-    End Sub
+    <Browsable(False), DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)>
+    Public Overloads ReadOnly Property AllowPromptAsInput As Boolean
+        Get
+            Return MyBase.AllowPromptAsInput
+        End Get
+    End Property
 
-    Public Sub SetHex(Value() As Byte)
-        Dim NewText = BitConverter.ToString(Value).Replace("-", " ")
+    <Browsable(False), DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)>
+    Public Overloads ReadOnly Property AsciiOnly As Boolean
+        Get
+            Return MyBase.AsciiOnly
+        End Get
+    End Property
 
-        If MyBase.Text <> NewText Then
-            _SuppressEvent = True
-            MyBase.Text = NewText
-            _SuppressEvent = False
-            ButtonUndo.Enabled = False
-        End If
-    End Sub
+    <Browsable(False), DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)>
+    Public Overloads ReadOnly Property CutCopyMaskFormat As MaskFormat
+        Get
+            Return MyBase.CutCopyMaskFormat
+        End Get
+    End Property
 
-    Public Function GetHex() As Byte()
-        Return HexStringToBytes(GetHexString())
-    End Function
+    <Browsable(False), DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)>
+    Public Overloads ReadOnly Property HidePromptOnLeave As Boolean
+        Get
+            Return MyBase.HidePromptOnLeave
+        End Get
+    End Property
+
+    <Browsable(False), DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)>
+    Public Overloads ReadOnly Property InsertKeyMode As InsertKeyMode
+        Get
+            Return MyBase.InsertKeyMode
+        End Get
+    End Property
+
+    <Browsable(False), DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)>
+    Public Overloads ReadOnly Property Mask As String
+        Get
+            Return MyBase.Mask
+        End Get
+    End Property
 
     <Description("Length of mask"), Category("Behavior")>
     Public Property MaskLength As Integer
@@ -65,30 +84,9 @@ Public Class HexTextBox
     End Property
 
     <Browsable(False), DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)>
-    Public Overloads ReadOnly Property Mask As String
+    Public Overloads ReadOnly Property PromptChar As Char
         Get
-            Return MyBase.Mask
-        End Get
-    End Property
-
-    <Browsable(False), DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)>
-    Public Overloads ReadOnly Property TextMaskFormat As MaskFormat
-        Get
-            Return MyBase.TextMaskFormat
-        End Get
-    End Property
-
-    <Browsable(False), DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)>
-    Public Overloads ReadOnly Property CutCopyMaskFormat As MaskFormat
-        Get
-            Return MyBase.CutCopyMaskFormat
-        End Get
-    End Property
-
-    <Browsable(False), DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)>
-    Public Overloads ReadOnly Property InsertKeyMode As InsertKeyMode
-        Get
-            Return MyBase.InsertKeyMode
+            Return MyBase.PromptChar
         End Get
     End Property
 
@@ -100,27 +98,6 @@ Public Class HexTextBox
     End Property
 
     <Browsable(False), DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)>
-    Public Overloads ReadOnly Property AsciiOnly As Boolean
-        Get
-            Return MyBase.AsciiOnly
-        End Get
-    End Property
-
-    <Browsable(False), DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)>
-    Public Overloads ReadOnly Property PromptChar As Char
-        Get
-            Return MyBase.PromptChar
-        End Get
-    End Property
-
-    <Browsable(False), DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)>
-    Public Overloads ReadOnly Property HidePromptOnLeave As Boolean
-        Get
-            Return MyBase.HidePromptOnLeave
-        End Get
-    End Property
-
-    <Browsable(False), DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)>
     Public Overloads ReadOnly Property Text As String
         Get
             Return GetHexString()
@@ -128,15 +105,36 @@ Public Class HexTextBox
     End Property
 
     <Browsable(False), DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)>
-    Public Overloads ReadOnly Property AllowPromptAsInput As Boolean
+    Public Overloads ReadOnly Property TextMaskFormat As MaskFormat
         Get
-            Return MyBase.AllowPromptAsInput
+            Return MyBase.TextMaskFormat
         End Get
     End Property
+
+    Public Function GetHex() As Byte()
+        Return HexStringToBytes(GetHexString())
+    End Function
+
+    Public Sub SetHex(Value() As Byte)
+        Dim NewText = BitConverter.ToString(Value).Replace("-", " ")
+
+        If MyBase.Text <> NewText Then
+            _SuppressEvent = True
+            MyBase.Text = NewText
+            _SuppressEvent = False
+            ButtonUndo.Enabled = False
+        End If
+    End Sub
 
     Protected Overrides Sub OnClick(e As EventArgs)
         MyBase.SelectionStart = (MyBase.SelectionStart \ 3) * 3
         MyBase.OnClick(e)
+    End Sub
+
+    Protected Overrides Sub OnDoubleClick(e As EventArgs)
+        MyBase.SelectAll()
+
+        MyBase.OnDoubleClick(e)
     End Sub
 
     Protected Overrides Sub OnGotFocus(e As EventArgs)
@@ -154,12 +152,6 @@ Public Class HexTextBox
         Else
             MyBase.OnKeyDown(e)
         End If
-    End Sub
-
-    Protected Overrides Sub OnDoubleClick(e As EventArgs)
-        MyBase.SelectAll()
-
-        MyBase.OnDoubleClick(e)
     End Sub
 
     Protected Overrides Sub OnKeyPress(e As KeyPressEventArgs)
@@ -211,13 +203,26 @@ Public Class HexTextBox
         Return HexString.Replace(" ", "0").PadRight(Size, "0")
     End Function
 
+    Private Sub InitMenu()
+        MyBase.ContextMenuStrip = New ContextMenuStrip
+        ButtonUndo = MyBase.ContextMenuStrip.Items.Add("&Undo")
+        MyBase.ContextMenuStrip.Items.Add(New ToolStripSeparator)
+        ButtonCopy = MyBase.ContextMenuStrip.Items.Add("&Copy")
+        ButtonUndo.Enabled = False
+    End Sub
+
+#Region "Events"
+
+    Private Sub ButtonCopy_Click(sender As Object, e As EventArgs) Handles ButtonCopy.Click
+        Clipboard.SetText(GetHexString)
+    End Sub
+
     Private Sub ButtonUndo_Click(sender As Object, e As EventArgs) Handles ButtonUndo.Click
         Dim CurrentValue = MyBase.Text
         MyBase.Text = _UndoValue
         _UndoValue = CurrentValue
     End Sub
 
-    Private Sub ButtonCopy_Click(sender As Object, e As EventArgs) Handles ButtonCopy.Click
-        Clipboard.SetText(GetHexString)
-    End Sub
+#End Region
+
 End Class

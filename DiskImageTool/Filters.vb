@@ -1,4 +1,5 @@
 ﻿Public Module Filters
+
     Public Enum FilterTypes
         ModifiedFiles
         UnknownOEMName
@@ -51,10 +52,6 @@
         Caption &= "  [" & Count & "]"
 
         Return Caption
-    End Function
-
-    Private Function CheckFilter(FilterType As FilterTypes, AppliedFilters As Integer) As Boolean
-        Return (AppliedFilters And (2 ^ FilterType)) > 0
     End Function
 
     Public Function IsFiltered(ImageData As LoadedImageData, AppliedFilters As FilterTypes) As Boolean
@@ -142,6 +139,9 @@
 
         Return True
     End Function
+
+    Private Function CheckFilter(FilterType As FilterTypes, AppliedFilters As Integer) As Boolean
+        Return (AppliedFilters And (2 ^ FilterType)) > 0
+    End Function
+
 End Module
-
-

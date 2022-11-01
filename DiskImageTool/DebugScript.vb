@@ -3,71 +3,6 @@ Imports System.IO.Compression
 Imports System.Text
 
 Module DebugScript
-    Public Structure DebugSegment
-        Dim Offset As UInteger
-        Dim Data() As Byte
-    End Structure
-
-    Private Function ConvertUintegerToByteArray(Value As UInteger) As Byte()
-        Return BitConverter.GetBytes(Value)
-    End Function
-    Private Function ConvertUShortToByteArray(Value As UShort) As Byte()
-        Return BitConverter.GetBytes(Value)
-    End Function
-    Private Function ConvertByteToByteArray(Value As Byte) As Byte()
-        Dim Data(0) As Byte
-        Data(0) = Value
-        Return Data
-    End Function
-
-    Private Function DebugDump(Address As UInteger, Length As UInteger) As String
-        Dim Response As String
-
-        Response = "D " & Address.ToString("X4") & " " & (Address + Length - 1).ToString("X4")
-
-        Return Response
-    End Function
-
-    Private Function DebugEnter(Address As UInteger, Data() As Byte) As String
-        Dim Response As String
-
-        Response = "E " & Address.ToString("X4") & " " & BitConverter.ToString(Data).Replace("-", " ")
-
-        Return Response
-    End Function
-
-    Private Function DebugLoad(Address As UInteger, Drive As Byte, FirstSector As UInteger, Number As UShort) As String
-        Dim Response As String
-
-        Response = "L " & Address.ToString("X4") & " " & Drive & " " & FirstSector.ToString("X") & " " & Number.ToString("X")
-
-        Return Response
-    End Function
-
-    Private Function DebugWrite(Address As UInteger, Drive As Byte, FirstSector As UInteger, Number As UShort) As String
-        Dim Response As String
-
-        Response = "W " & Address.ToString("X4") & " " & Drive & " " & FirstSector.ToString("X") & " " & Number.ToString("X")
-
-        Return Response
-    End Function
-
-    Private Function GetSegment(Offset As UInteger, Value As Object) As DebugSegment
-        Dim Segment As DebugSegment
-
-        Segment.Offset = Offset
-        If TypeOf Value Is System.UInt16 Then
-            Segment.Data = ConvertUShortToByteArray(Value)
-        ElseIf TypeOf Value Is System.UInt32 Then
-            Segment.Data = ConvertUintegerToByteArray(Value)
-        ElseIf TypeOf Value Is System.Byte Then
-            Segment.Data = ConvertByteToByteArray(Value)
-        Else
-            Segment.Data = Value
-        End If
-
-        Return Segment
-    End Function
 
     Public Sub GenerateDebugPackage(Disk As DiskImage.Disk, ImageData As LoadedImageData)
         Dim TempPath As String = Path.GetTempPath() & Guid.NewGuid().ToString()
@@ -97,34 +32,6 @@ Module DebugScript
         End If
 
         Directory.Delete(TempPath, True)
-    End Sub
-
-    Public Sub GenerateDirectoryDump(DataPath As String, Disk As DiskImage.Disk, CachedRootDir() As Byte)
-        Dim FileName As String
-
-        Dim SectorStart = Disk.BootSector.RootDirectoryRegionStart
-        Dim SectorEnd = Disk.BootSector.DataRegionStart
-        Dim Length = (SectorEnd - SectorStart) * Disk.BootSector.BytesPerSector
-        Dim Offset As UInteger = 256
-
-        For Index = 0 To 1
-            FileName = Path.Combine(DataPath, "DIRDUMP" & Index & ".TXT")
-            Dim SB = New StringBuilder()
-
-            SB.AppendLine("N ROOTDIR.TMP")
-            SB.AppendLine(DebugLoad(Offset, Index, SectorStart, SectorEnd - SectorStart))
-            SB.AppendLine("RCX")
-            SB.AppendLine(Length.ToString("X4"))
-            SB.AppendLine("RBX")
-            SB.AppendLine("0")
-            SB.AppendLine("W " & Offset.ToString("X4"))
-            SB.AppendLine("Q")
-
-            File.WriteAllText(FileName, SB.ToString)
-        Next Index
-
-        FileName = Path.Combine(DataPath, "ROOTDIR.CRC")
-        File.WriteAllText(FileName, "ROOTDIR.TMP " & Crc32.ComputeChecksum(Disk.Directory.GetContent()).ToString("X8"))
     End Sub
 
     Public Sub GenerateDebugScripts(DataPath As String, Disk As DiskImage.Disk, Modifications As Hashtable)
@@ -190,6 +97,97 @@ Module DebugScript
         File.WriteAllText(DriveBFile, SB_B.ToString)
     End Sub
 
+    Public Sub GenerateDirectoryDump(DataPath As String, Disk As DiskImage.Disk, CachedRootDir() As Byte)
+        Dim FileName As String
+
+        Dim SectorStart = Disk.BootSector.RootDirectoryRegionStart
+        Dim SectorEnd = Disk.BootSector.DataRegionStart
+        Dim Length = (SectorEnd - SectorStart) * Disk.BootSector.BytesPerSector
+        Dim Offset As UInteger = 256
+
+        For Index = 0 To 1
+            FileName = Path.Combine(DataPath, "DIRDUMP" & Index & ".TXT")
+            Dim SB = New StringBuilder()
+
+            SB.AppendLine("N ROOTDIR.TMP")
+            SB.AppendLine(DebugLoad(Offset, Index, SectorStart, SectorEnd - SectorStart))
+            SB.AppendLine("RCX")
+            SB.AppendLine(Length.ToString("X4"))
+            SB.AppendLine("RBX")
+            SB.AppendLine("0")
+            SB.AppendLine("W " & Offset.ToString("X4"))
+            SB.AppendLine("Q")
+
+            File.WriteAllText(FileName, SB.ToString)
+        Next Index
+
+        FileName = Path.Combine(DataPath, "ROOTDIR.CRC")
+        File.WriteAllText(FileName, "ROOTDIR.TMP " & Crc32.ComputeChecksum(Disk.Directory.GetContent()).ToString("X8"))
+    End Sub
+
+    Private Function ConvertByteToByteArray(Value As Byte) As Byte()
+        Dim Data(0) As Byte
+        Data(0) = Value
+        Return Data
+    End Function
+
+    Private Function ConvertUintegerToByteArray(Value As UInteger) As Byte()
+        Return BitConverter.GetBytes(Value)
+    End Function
+
+    Private Function ConvertUShortToByteArray(Value As UShort) As Byte()
+        Return BitConverter.GetBytes(Value)
+    End Function
+
+    Private Function DebugDump(Address As UInteger, Length As UInteger) As String
+        Dim Response As String
+
+        Response = "D " & Address.ToString("X4") & " " & (Address + Length - 1).ToString("X4")
+
+        Return Response
+    End Function
+
+    Private Function DebugEnter(Address As UInteger, Data() As Byte) As String
+        Dim Response As String
+
+        Response = "E " & Address.ToString("X4") & " " & BitConverter.ToString(Data).Replace("-", " ")
+
+        Return Response
+    End Function
+
+    Private Function DebugLoad(Address As UInteger, Drive As Byte, FirstSector As UInteger, Number As UShort) As String
+        Dim Response As String
+
+        Response = "L " & Address.ToString("X4") & " " & Drive & " " & FirstSector.ToString("X") & " " & Number.ToString("X")
+
+        Return Response
+    End Function
+
+    Private Function DebugWrite(Address As UInteger, Drive As Byte, FirstSector As UInteger, Number As UShort) As String
+        Dim Response As String
+
+        Response = "W " & Address.ToString("X4") & " " & Drive & " " & FirstSector.ToString("X") & " " & Number.ToString("X")
+
+        Return Response
+    End Function
+
+    Private Function GetSegment(Offset As UInteger, Value As Object) As DebugSegment
+        Dim Segment As DebugSegment
+
+        Segment.Offset = Offset
+        If TypeOf Value Is System.UInt16 Then
+            Segment.Data = ConvertUShortToByteArray(Value)
+        ElseIf TypeOf Value Is System.UInt32 Then
+            Segment.Data = ConvertUintegerToByteArray(Value)
+        ElseIf TypeOf Value Is System.Byte Then
+            Segment.Data = ConvertByteToByteArray(Value)
+        Else
+            Segment.Data = Value
+        End If
+
+        Return Segment
+    End Function
+
     Private Sub WriteResourceToFile(ResourceName As String, FileName As String)
         Dim AppName = System.Diagnostics.Process.GetCurrentProcess().ProcessName
         Using Resource = Reflection.Assembly.GetExecutingAssembly().GetManifestResourceStream(AppName & "." & ResourceName)
@@ -213,4 +211,9 @@ Module DebugScript
             End Using
         End Using
     End Sub
+
+    Public Structure DebugSegment
+        Dim Data() As Byte
+        Dim Offset As UInteger
+    End Structure
 End Module

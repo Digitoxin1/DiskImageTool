@@ -1,10 +1,9 @@
-﻿
-Public Class HexViewForm
-    Private _Disk As DiskImage.Disk
-    Private _DataList As List(Of HexViewData)
-    Private _Modified As Boolean = False
-    Private _CurrentSector As UInteger = 0
+﻿Public Class HexViewForm
     Private _AllowModifications As Boolean = False
+    Private _CurrentSector As UInteger = 0
+    Private _DataList As List(Of HexViewData)
+    Private _Disk As DiskImage.Disk
+    Private _Modified As Boolean = False
 
     Public Sub New(Disk As DiskImage.Disk, Block As DiskImage.DataBlock, AllowModifications As Boolean, Caption As String)
         ' This call is required by the designer.
@@ -44,14 +43,6 @@ Public Class HexViewForm
         InitializeComponent()
         ' Add any initialization after the InitializeComponent() call.
         Initialize(Disk, DataList, AllowModifications, Caption)
-    End Sub
-
-    Private Sub Initialize(Disk As DiskImage.Disk, DataList As List(Of HexViewData), AllowModifications As Boolean, Caption As String)
-        _Disk = Disk
-        _DataList = DataList
-        _AllowModifications = AllowModifications
-
-        Me.Text = "Hex Viewer" & IIf(Caption <> "", " - " & Caption, "")
     End Sub
 
     Public ReadOnly Property Modified As Boolean
@@ -144,26 +135,13 @@ Public Class HexViewForm
         Return Offset
     End Function
 
-    Private Sub ProcessMousewheel(Delta As Integer)
-        If Delta < 0 Then
-            If HexBox1.EndByte = HexBox1.ByteProvider.Length - 1 Then
-                If CmbGroups.SelectedIndex < CmbGroups.Items.Count - 1 Then
-                    Dim Offset = HexBox1.SelectionStart Mod HexBox1.HorizontalByteCount
-                    CmbGroups.SelectedIndex = CmbGroups.SelectedIndex + 1
-                    HexBox1.SelectionStart = Offset
-                End If
-            End If
-        ElseIf Delta > 0 Then
-            If HexBox1.StartByte = 0 Then
-                If CmbGroups.SelectedIndex > 0 Then
-                    Dim Offset = HexBox1.SelectionStart Mod HexBox1.HorizontalByteCount
-                    CmbGroups.SelectedIndex = CmbGroups.SelectedIndex - 1
-                    HexBox1.SelectionStart = HexBox1.ByteProvider.Length - (HexBox1.HorizontalByteCount - Offset)
-                End If
-            End If
-        End If
-    End Sub
+    Private Sub Initialize(Disk As DiskImage.Disk, DataList As List(Of HexViewData), AllowModifications As Boolean, Caption As String)
+        _Disk = Disk
+        _DataList = DataList
+        _AllowModifications = AllowModifications
 
+        Me.Text = "Hex Viewer" & IIf(Caption <> "", " - " & Caption, "")
+    End Sub
     Private Sub ProcessKeyPress(e As KeyEventArgs)
         If e.KeyCode = 40 Then 'Down Arrow
             Dim LineCount = Math.Ceiling(HexBox1.ByteProvider.Length / HexBox1.HorizontalByteCount)
@@ -216,6 +194,25 @@ Public Class HexViewForm
         End If
     End Sub
 
+    Private Sub ProcessMousewheel(Delta As Integer)
+        If Delta < 0 Then
+            If HexBox1.EndByte = HexBox1.ByteProvider.Length - 1 Then
+                If CmbGroups.SelectedIndex < CmbGroups.Items.Count - 1 Then
+                    Dim Offset = HexBox1.SelectionStart Mod HexBox1.HorizontalByteCount
+                    CmbGroups.SelectedIndex = CmbGroups.SelectedIndex + 1
+                    HexBox1.SelectionStart = Offset
+                End If
+            End If
+        ElseIf Delta > 0 Then
+            If HexBox1.StartByte = 0 Then
+                If CmbGroups.SelectedIndex > 0 Then
+                    Dim Offset = HexBox1.SelectionStart Mod HexBox1.HorizontalByteCount
+                    CmbGroups.SelectedIndex = CmbGroups.SelectedIndex - 1
+                    HexBox1.SelectionStart = HexBox1.ByteProvider.Length - (HexBox1.HorizontalByteCount - Offset)
+                End If
+            End If
+        End If
+    End Sub
     Private Sub RefreshSelection(ForceUpdate As Boolean)
         Dim SelectionStart = HexBox1.SelectionStart
         Dim Offset As UInteger = HexBox1.LineInfoOffset + SelectionStart
@@ -283,51 +280,10 @@ Public Class HexViewForm
         End If
     End Sub
 
+#Region "Events"
+
     Private Sub BtnClear_Click(sender As Object, e As EventArgs) Handles BtnClear.Click
         ClearData()
-    End Sub
-    Private Sub CmbGroups_SelectedIndexChanged(sender As Object, e As EventArgs) Handles CmbGroups.SelectedIndexChanged
-        Dim Group As ComboGroups = CmbGroups.SelectedItem
-        DisplayBlock(Group.Data)
-    End Sub
-
-    Private Sub HexBox1_VisibilityBytesChanged(sender As Object, e As EventArgs) Handles HexBox1.VisibilityBytesChanged
-        If HexBox1.SelectionLength = 0 Then
-            BtnClear.Text = "Clear Sector " & _Disk.OffsetToSector(GetVisibleOffset)
-        Else
-            BtnClear.Text = "Clear Selection"
-        End If
-    End Sub
-
-    Private Sub HexBox1_SelectionStartChanged(sender As Object, e As EventArgs) Handles HexBox1.SelectionStartChanged
-        RefreshSelection(False)
-    End Sub
-
-    Private Sub HexBox1_SelectionLengthChanged(sender As Object, e As EventArgs) Handles HexBox1.SelectionLengthChanged
-        RefreshSelection(False)
-    End Sub
-
-    Private Sub HexBox1_MouseWheel(sender As Object, e As MouseEventArgs) Handles HexBox1.MouseWheel
-        ProcessMousewheel(e.Delta)
-    End Sub
-
-    Private Sub HexBox1_KeyDown(sender As Object, e As KeyEventArgs) Handles HexBox1.KeyDown
-        ProcessKeyPress(e)
-    End Sub
-
-    Private Sub ContextMenuStrip1_Opening(sender As Object, e As System.ComponentModel.CancelEventArgs) Handles ContextMenuStrip1.Opening
-        BtnCopyText.Enabled = HexBox1.SelectionLength > 0
-        BtnCopyHex.Enabled = HexBox1.SelectionLength > 0
-        BtnCopyHexFormatted.Enabled = HexBox1.SelectionLength > 0
-        BtnCRC32.Enabled = HexBox1.SelectionLength > 0
-    End Sub
-
-    Private Sub BtnSelectAll_Click(sender As Object, e As EventArgs) Handles BtnSelectAll.Click
-        HexBox1.SelectAll()
-    End Sub
-
-    Private Sub BtnCopyText_Click(sender As Object, e As EventArgs) Handles BtnCopyText.Click
-        HexBox1.Copy()
     End Sub
 
     Private Sub BtnCopyHex_Click(sender As Object, e As EventArgs) Handles BtnCopyHex.Click
@@ -349,6 +305,10 @@ Public Class HexViewForm
         Clipboard.SetText(SB.ToString)
     End Sub
 
+    Private Sub BtnCopyText_Click(sender As Object, e As EventArgs) Handles BtnCopyText.Click
+        HexBox1.Copy()
+    End Sub
+
     Private Sub BtnCRC32_Click(sender As Object, e As EventArgs) Handles BtnCRC32.Click
         Dim OffsetStart As UInteger = HexBox1.SelectionStart + HexBox1.LineInfoOffset
         Dim Length As UInteger = HexBox1.SelectionLength
@@ -360,6 +320,45 @@ Public Class HexViewForm
         MsgBox(Msg, MsgBoxStyle.Information)
     End Sub
 
+    Private Sub BtnSelectAll_Click(sender As Object, e As EventArgs) Handles BtnSelectAll.Click
+        HexBox1.SelectAll()
+    End Sub
+
+    Private Sub CmbGroups_SelectedIndexChanged(sender As Object, e As EventArgs) Handles CmbGroups.SelectedIndexChanged
+        Dim Group As ComboGroups = CmbGroups.SelectedItem
+        DisplayBlock(Group.Data)
+    End Sub
+
+    Private Sub ContextMenuStrip1_Opening(sender As Object, e As System.ComponentModel.CancelEventArgs) Handles ContextMenuStrip1.Opening
+        BtnCopyText.Enabled = HexBox1.SelectionLength > 0
+        BtnCopyHex.Enabled = HexBox1.SelectionLength > 0
+        BtnCopyHexFormatted.Enabled = HexBox1.SelectionLength > 0
+        BtnCRC32.Enabled = HexBox1.SelectionLength > 0
+    End Sub
+
+    Private Sub HexBox1_KeyDown(sender As Object, e As KeyEventArgs) Handles HexBox1.KeyDown
+        ProcessKeyPress(e)
+    End Sub
+
+    Private Sub HexBox1_MouseWheel(sender As Object, e As MouseEventArgs) Handles HexBox1.MouseWheel
+        ProcessMousewheel(e.Delta)
+    End Sub
+
+    Private Sub HexBox1_SelectionLengthChanged(sender As Object, e As EventArgs) Handles HexBox1.SelectionLengthChanged
+        RefreshSelection(False)
+    End Sub
+
+    Private Sub HexBox1_SelectionStartChanged(sender As Object, e As EventArgs) Handles HexBox1.SelectionStartChanged
+        RefreshSelection(False)
+    End Sub
+
+    Private Sub HexBox1_VisibilityBytesChanged(sender As Object, e As EventArgs) Handles HexBox1.VisibilityBytesChanged
+        If HexBox1.SelectionLength = 0 Then
+            BtnClear.Text = "Clear Sector " & _Disk.OffsetToSector(GetVisibleOffset)
+        Else
+            BtnClear.Text = "Clear Selection"
+        End If
+    End Sub
     Private Sub HexViewForm_Load(sender As Object, e As EventArgs) Handles Me.Load
         If _AllowModifications Then
             BtnClear.Visible = True
@@ -399,14 +398,16 @@ Public Class HexViewForm
         End If
     End Sub
 
-    Private Class ComboGroups
-        Public Property Disk As DiskImage.Disk
-        Public Property Data As HexViewData
+#End Region
 
+    Private Class ComboGroups
         Public Sub New(Disk As DiskImage.Disk, Data As HexViewData)
             Me.Disk = Disk
             Me.Data = Data
         End Sub
+
+        Public Property Data As HexViewData
+        Public Property Disk As DiskImage.Disk
         Public Overrides Function ToString() As String
             Dim Sector = Disk.OffsetToSector(Data.DataBlock.Offset)
             Dim SectorEnd = Disk.OffsetToSector(Data.DataBlock.Offset + Data.DataBlock.Length - 1)
@@ -423,26 +424,7 @@ Public Class HexViewForm
 
             Return Header
         End Function
+
     End Class
-End Class
 
-Public Class HexViewHighlightRegion
-    Public ReadOnly Property Start As Long
-    Public ReadOnly Property Size As Long
-    Public ReadOnly Property ForeColor As Color
-    Public ReadOnly Property BackColor As Color
-    Public Sub New(Start As Long, Size As Long, ForeColor As Color, BackColor As Color)
-        _Start = Start
-        _Size = Size
-        _ForeColor = ForeColor
-        _BackColor = BackColor
-    End Sub
-End Class
-
-Public Class HexViewData
-    Public Property HighlightedRegions As New List(Of HexViewHighlightRegion)
-    Public ReadOnly Property DataBlock As DiskImage.DataBlock
-    Public Sub New(DataBlock As DiskImage.DataBlock)
-        _DataBlock = DataBlock
-    End Sub
 End Class

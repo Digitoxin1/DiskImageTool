@@ -1,23 +1,14 @@
-﻿Imports System.ComponentModel
-Imports System.Text
-
-Public Class FilePropertiesForm
+﻿Public Class FilePropertiesForm
     Private Const CREATED_FORMAT As String = "yyyy-MM-dd  h:mm:ss tt"
-    Private Const LASTACCESSED_FORMAT As String = "yyyy-MM-dd"
     Private Const EMPTY_FORMAT As String = "'Empty'"
+    Private Const LASTACCESSED_FORMAT As String = "yyyy-MM-dd"
     Private ReadOnly _Disk As DiskImage.Disk
     Private ReadOnly _Items As ICollection
+    Private _Deleted As Boolean = False
     Private _IsDirectory As Boolean = False
     Private _IsVolumeLabel As Boolean = False
-    Private _Deleted As Boolean = False
-    Private _Updated As Boolean = False
     Private _SuppressEvent As Boolean = True
-
-    Public ReadOnly Property Updated As Boolean
-        Get
-            Return _Updated
-        End Get
-    End Property
+    Private _Updated As Boolean = False
 
     Public Sub New(Disk As DiskImage.Disk, Items As ICollection)
 
@@ -29,25 +20,11 @@ Public Class FilePropertiesForm
         _Items = Items
     End Sub
 
-    Private Sub InitButtons(Visible As Boolean)
-        ToggleButton(BtnLastAccessed, Not Visible, Visible)
-        ToggleButton(BtnCreated, Not Visible, Visible)
-        ToggleButton(BtnLastWritten, Not Visible, Visible)
-        ToggleButton(BtnArchive, Not Visible, Visible)
-        ToggleButton(BtnReadOnly, Not Visible, Visible)
-        ToggleButton(BtnSystem, Not Visible, Visible)
-        ToggleButton(BtnHidden, Not Visible, Visible)
-    End Sub
-
-    Private Sub InitMultiple(Multiple As Boolean)
-        TxtFile.Visible = Not Multiple
-        TxtExtension.Visible = Not Multiple
-        LblMultipleFiles.Visible = Multiple
-        MskFileHex.Visible = Not Multiple
-        MskExtensionHex.Visible = Not Multiple
-
-        InitButtons(Multiple)
-    End Sub
+    Public ReadOnly Property Updated As Boolean
+        Get
+            Return _Updated
+        End Get
+    End Property
 
     Private Sub ApplyAttributesUpdate(DirectoryEntry As DiskImage.DirectoryEntry)
         Dim Attributes As Byte = DirectoryEntry.Attributes
@@ -181,6 +158,89 @@ Public Class FilePropertiesForm
         End If
     End Function
 
+    Private Sub InitButtons(Visible As Boolean)
+        ToggleButton(BtnLastAccessed, Not Visible, Visible)
+        ToggleButton(BtnCreated, Not Visible, Visible)
+        ToggleButton(BtnLastWritten, Not Visible, Visible)
+        ToggleButton(BtnArchive, Not Visible, Visible)
+        ToggleButton(BtnReadOnly, Not Visible, Visible)
+        ToggleButton(BtnSystem, Not Visible, Visible)
+        ToggleButton(BtnHidden, Not Visible, Visible)
+    End Sub
+
+    Private Sub InitMultiple(Multiple As Boolean)
+        TxtFile.Visible = Not Multiple
+        TxtExtension.Visible = Not Multiple
+        LblMultipleFiles.Visible = Multiple
+        MskFileHex.Visible = Not Multiple
+        MskExtensionHex.Visible = Not Multiple
+
+        InitButtons(Multiple)
+    End Sub
+
+    Private Sub PopulateFormMultiple()
+        Dim DT As DiskImage.ExpandedDate
+        Dim LastWritten = New Date(1980, 1, 1, 0, 0, 0)
+        Dim Created As Date? = Nothing
+        Dim LastAccessed As Date? = Nothing
+        Dim SetArchived As Boolean = True
+        Dim SetReadOnly As Boolean = True
+        Dim SetSystem As Boolean = True
+        Dim SetHidden As Boolean = True
+
+        _IsDirectory = False
+        _IsVolumeLabel = False
+        _Deleted = False
+
+        GroupFileName.Text = "Multiple Files"
+        LblMultipleFiles.Text = "(" & _Items.Count & " Files Selected)"
+
+        For Each Item As ListViewItem In _Items
+            Dim FileData As FileData = Item.Tag
+            Dim DirectoryEntry = FileData.DirectoryEntry
+            DT = DirectoryEntry.GetLastWriteDate
+            If DT.IsValidDate Then
+                If DT.DateObject > LastWritten Then
+                    LastWritten = DT.DateObject
+                End If
+            End If
+            DT = DirectoryEntry.GetCreationDate
+            If DT.IsValidDate Then
+                If Created Is Nothing Or DT.DateObject > Created Then
+                    Created = DT.DateObject
+                End If
+            End If
+            DT = DirectoryEntry.GetLastAccessDate
+            If DT.IsValidDate Then
+                If LastAccessed Is Nothing Or DT.DateObject > LastAccessed Then
+                    LastAccessed = DT.DateObject
+                End If
+            End If
+
+            If Not DirectoryEntry.IsArchive Then
+                SetArchived = False
+            End If
+            If Not DirectoryEntry.IsReadOnly Then
+                SetReadOnly = False
+            End If
+            If Not DirectoryEntry.IsHidden Then
+                SetHidden = False
+            End If
+            If Not DirectoryEntry.IsSystem Then
+                SetSystem = False
+            End If
+        Next
+
+        DTLastWritten.Value = LastWritten
+        SetCreatedDateValue(Created)
+        SetLastAccessedDateValue(LastAccessed)
+
+        ChkArchive.Checked = SetArchived
+        ChkReadOnly.Checked = SetReadOnly
+        ChkHidden.Checked = SetHidden
+        ChkSystem.Checked = SetSystem
+    End Sub
+
     Private Sub PopulateFormSingle()
         Dim Item As ListViewItem = _Items(0)
         Dim FileData As FileData = Item.Tag
@@ -263,69 +323,6 @@ Public Class FilePropertiesForm
         ChkSystem.Checked = DirectoryEntry.IsSystem
     End Sub
 
-    Private Sub PopulateFormMultiple()
-        Dim DT As DiskImage.ExpandedDate
-        Dim LastWritten = New Date(1980, 1, 1, 0, 0, 0)
-        Dim Created As Date? = Nothing
-        Dim LastAccessed As Date? = Nothing
-        Dim SetArchived As Boolean = True
-        Dim SetReadOnly As Boolean = True
-        Dim SetSystem As Boolean = True
-        Dim SetHidden As Boolean = True
-
-        _IsDirectory = False
-        _IsVolumeLabel = False
-        _Deleted = False
-
-        GroupFileName.Text = "Multiple Files"
-        LblMultipleFiles.Text = "(" & _Items.Count & " Files Selected)"
-
-        For Each Item As ListViewItem In _Items
-            Dim FileData As FileData = Item.Tag
-            Dim DirectoryEntry = FileData.DirectoryEntry
-            DT = DirectoryEntry.GetLastWriteDate
-            If DT.IsValidDate Then
-                If DT.DateObject > LastWritten Then
-                    LastWritten = DT.DateObject
-                End If
-            End If
-            DT = DirectoryEntry.GetCreationDate
-            If DT.IsValidDate Then
-                If Created Is Nothing Or DT.DateObject > Created Then
-                    Created = DT.DateObject
-                End If
-            End If
-            DT = DirectoryEntry.GetLastAccessDate
-            If DT.IsValidDate Then
-                If LastAccessed Is Nothing Or DT.DateObject > LastAccessed Then
-                    LastAccessed = DT.DateObject
-                End If
-            End If
-
-            If Not DirectoryEntry.IsArchive Then
-                SetArchived = False
-            End If
-            If Not DirectoryEntry.IsReadOnly Then
-                SetReadOnly = False
-            End If
-            If Not DirectoryEntry.IsHidden Then
-                SetHidden = False
-            End If
-            If Not DirectoryEntry.IsSystem Then
-                SetSystem = False
-            End If
-        Next
-
-        DTLastWritten.Value = LastWritten
-        SetCreatedDateValue(Created)
-        SetLastAccessedDateValue(LastAccessed)
-
-        ChkArchive.Checked = SetArchived
-        ChkReadOnly.Checked = SetReadOnly
-        ChkHidden.Checked = SetHidden
-        ChkSystem.Checked = SetSystem
-    End Sub
-
     Private Sub SetCreatedDateValue(Value? As Date)
         If Value Is Nothing Then
             DTCreated.CustomFormat = EMPTY_FORMAT
@@ -390,8 +387,14 @@ Public Class FilePropertiesForm
         End If
     End Sub
 
+#Region "Events"
+
     Private Sub BtnEnable_Click(sender As Object, e As EventArgs) Handles BtnLastWritten.Click, BtnCreated.Click, BtnLastAccessed.Click, BtnReadOnly.Click, BtnHidden.Click, BtnArchive.Click, BtnSystem.Click
         ToggleButton(sender, Not sender.tag)
+    End Sub
+
+    Private Sub BtnUpdate_Click(sender As Object, e As EventArgs) Handles BtnUpdate.Click
+        ApplyUpdates()
     End Sub
 
     Private Sub DTCreated_ValueChanged(sender As Object, e As EventArgs) Handles DTCreated.ValueChanged
@@ -410,6 +413,62 @@ Public Class FilePropertiesForm
         Else
             DTLastAccessed.CustomFormat = EMPTY_FORMAT
         End If
+    End Sub
+
+    Private Sub FilePropertiesForm_Load(sender As Object, e As EventArgs) Handles Me.Load
+        _SuppressEvent = True
+
+        DTLastWritten.Value = New Date(1980, 1, 1, 0, 0, 0)
+        SetCreatedDateValue(Nothing)
+        SetLastAccessedDateValue(Nothing)
+
+        InitMultiple(_Items.Count > 1)
+        If _Items.Count = 1 Then
+            PopulateFormSingle()
+        Else
+            PopulateFormMultiple()
+        End If
+
+        _SuppressEvent = False
+    End Sub
+
+    Private Sub MskExtensionHex_TextChanged(sender As Object, e As EventArgs) Handles MskExtensionHex.TextChanged
+        If _SuppressEvent Then
+            Exit Sub
+        End If
+
+        Dim NewValue = CodePage437ToUnicode(MskExtensionHex.GetHex)
+
+        _SuppressEvent = True
+        If TxtExtension.Text <> NewValue Then
+            TxtExtension.Text = NewValue
+        End If
+        _SuppressEvent = False
+    End Sub
+
+    Private Sub MskFileHex_TextChanged(sender As Object, e As EventArgs) Handles MskFileHex.TextChanged
+        If _SuppressEvent Then
+            Exit Sub
+        End If
+
+        Dim NewValue = CodePage437ToUnicode(MskFileHex.GetHex)
+
+        _SuppressEvent = True
+        If TxtFile.Text <> NewValue Then
+            TxtFile.Text = NewValue
+        End If
+        _SuppressEvent = False
+    End Sub
+
+    Private Sub TxtExtension_TextChanged(sender As Object, e As EventArgs) Handles TxtExtension.TextChanged
+        If _SuppressEvent Then
+            Exit Sub
+        End If
+
+        Dim Value As String = Strings.Left(TxtExtension.Text, TxtExtension.MaxLength).PadRight(TxtExtension.MaxLength)
+        Dim b = UnicodeToCodePage437(Value)
+
+        MskExtensionHex.SetHex(b)
     End Sub
 
     Private Sub TxtFile_KeyPress(sender As Object, e As KeyPressEventArgs) Handles TxtFile.KeyPress, TxtExtension.KeyPress
@@ -433,55 +492,6 @@ Public Class FilePropertiesForm
         End If
     End Sub
 
-    Private Sub BtnUpdate_Click(sender As Object, e As EventArgs) Handles BtnUpdate.Click
-        ApplyUpdates()
-    End Sub
-
-    Private Sub FilePropertiesForm_Load(sender As Object, e As EventArgs) Handles Me.Load
-        _SuppressEvent = True
-
-        DTLastWritten.Value = New Date(1980, 1, 1, 0, 0, 0)
-        SetCreatedDateValue(Nothing)
-        SetLastAccessedDateValue(Nothing)
-
-        InitMultiple(_Items.Count > 1)
-        If _Items.Count = 1 Then
-            PopulateFormSingle()
-        Else
-            PopulateFormMultiple()
-        End If
-
-        _SuppressEvent = False
-    End Sub
-
-    Private Sub MskFileHex_TextChanged(sender As Object, e As EventArgs) Handles MskFileHex.TextChanged
-        If _SuppressEvent Then
-            Exit Sub
-        End If
-
-        Dim NewValue = CodePage437ToUnicode(MskFileHex.GetHex)
-
-        _SuppressEvent = True
-        If TxtFile.Text <> NewValue Then
-            TxtFile.Text = NewValue
-        End If
-        _SuppressEvent = False
-    End Sub
-
-    Private Sub MskExtensionHex_TextChanged(sender As Object, e As EventArgs) Handles MskExtensionHex.TextChanged
-        If _SuppressEvent Then
-            Exit Sub
-        End If
-
-        Dim NewValue = CodePage437ToUnicode(MskExtensionHex.GetHex)
-
-        _SuppressEvent = True
-        If TxtExtension.Text <> NewValue Then
-            TxtExtension.Text = NewValue
-        End If
-        _SuppressEvent = False
-    End Sub
-
     Private Sub TxtFile_TextChanged(sender As Object, e As EventArgs) Handles TxtFile.TextChanged
         If _SuppressEvent Then
             Exit Sub
@@ -493,14 +503,6 @@ Public Class FilePropertiesForm
         MskFileHex.SetHex(b)
     End Sub
 
-    Private Sub TxtExtension_TextChanged(sender As Object, e As EventArgs) Handles TxtExtension.TextChanged
-        If _SuppressEvent Then
-            Exit Sub
-        End If
+#End Region
 
-        Dim Value As String = Strings.Left(TxtExtension.Text, TxtExtension.MaxLength).PadRight(TxtExtension.MaxLength)
-        Dim b = UnicodeToCodePage437(Value)
-
-        MskExtensionHex.SetHex(b)
-    End Sub
 End Class

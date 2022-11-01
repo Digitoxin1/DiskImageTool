@@ -1,4 +1,5 @@
 ﻿Public Class TextViewForm
+
     Public Sub New(Caption As String, Content As String)
 
         ' This call is required by the designer.
@@ -9,4 +10,5 @@
         TextBox1.Text = Content
         TextBox1.SelectionStart = 0
     End Sub
+
 End Class

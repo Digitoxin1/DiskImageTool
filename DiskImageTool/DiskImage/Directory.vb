@@ -1,8 +1,9 @@
 ﻿Namespace DiskImage
+
     Public Class Directory
         Private ReadOnly _FatChain As List(Of UShort)
-        Private ReadOnly _Parent As Disk
         Private ReadOnly _Length As UInteger
+        Private ReadOnly _Parent As Disk
 
         Sub New(Parent As Disk, Optional FatChain As List(Of UShort) = Nothing, Optional Length As UInteger = 0)
             _Parent = Parent
@@ -10,11 +11,45 @@
             _Length = Length
         End Sub
 
+        Public Function DirectoryLength() As UInteger
+            If _FatChain Is Nothing Then
+                Return GetDirectoryLengthRoot(False)
+            Else
+                Return GetDirectoryLengthSubDirectory(False)
+            End If
+        End Function
+
+        Public Function FileCount() As UInteger
+            If _FatChain Is Nothing Then
+                Return GetDirectoryLengthRoot(True)
+            Else
+                Return GetDirectoryLengthSubDirectory(True)
+            End If
+        End Function
+
         Public Function GetContent() As Byte()
             If _FatChain Is Nothing Then
                 Return GetContentRoot()
             Else
                 Return GetContentSubDirectory()
+            End If
+        End Function
+
+        Public Function GetDataBlocks() As List(Of DataBlock)
+            If _FatChain Is Nothing Then
+                Return New List(Of DataBlock) From {
+                    GetDataBlockRoot()
+                }
+            Else
+                Return GetDataBlocksSubDirectory()
+            End If
+        End Function
+
+        Public Function GetFile(Index As UInteger) As DirectoryEntry
+            If _FatChain Is Nothing Then
+                Return GetFileRoot(Index)
+            Else
+                Return GetFileSubDirectory(Index)
             End If
         End Function
 
@@ -48,6 +83,13 @@
             Return _Parent.GetDataBlocksFromFATClusterList(_FatChain)
         End Function
 
+        Private Function GetDirectoryLengthRoot(FileCountOnly As Boolean) As UInteger
+            Dim OffsetStart As UInteger = _Parent.SectorToOffset(_Parent.BootSector.RootDirectoryRegionStart)
+            Dim OffsetEnd As UInteger = _Parent.SectorToOffset(_Parent.BootSector.DataRegionStart)
+
+            Return _Parent.GetDirectoryLength(OffsetStart, OffsetEnd, FileCountOnly)
+        End Function
+
         Private Function GetDirectoryLengthSubDirectory(FileCountOnly As Boolean) As UInteger
             Dim Count As UInteger = 0
 
@@ -55,18 +97,15 @@
                 Dim OffsetStart As UInteger = _Parent.ClusterToOffset(Cluster)
                 Dim OffsetLength As UInteger = _Parent.BootSector.BytesPerCluster
 
-
                 Count += _Parent.GetDirectoryLength(OffsetStart, OffsetStart + OffsetLength, FileCountOnly)
             Next
 
             Return Count
         End Function
+        Private Function GetFileRoot(Index As Integer) As DirectoryEntry
+            Dim Offset As UInteger = _Parent.SectorToOffset(_Parent.BootSector.RootDirectoryRegionStart) + (Index - 1) * 32
 
-        Private Function GetDirectoryLengthRoot(FileCountOnly As Boolean) As UInteger
-            Dim OffsetStart As UInteger = _Parent.SectorToOffset(_Parent.BootSector.RootDirectoryRegionStart)
-            Dim OffsetEnd As UInteger = _Parent.SectorToOffset(_Parent.BootSector.DataRegionStart)
-
-            Return _Parent.GetDirectoryLength(OffsetStart, OffsetEnd, FileCountOnly)
+            Return New DirectoryEntry(_Parent, Offset)
         End Function
 
         Private Function GetFileSubDirectory(Index As UInteger) As DirectoryEntry
@@ -77,45 +116,6 @@
 
             Return New DirectoryEntry(_Parent, Offset)
         End Function
-
-        Private Function GetFileRoot(Index As Integer) As DirectoryEntry
-            Dim Offset As UInteger = _Parent.SectorToOffset(_Parent.BootSector.RootDirectoryRegionStart) + (Index - 1) * 32
-
-            Return New DirectoryEntry(_Parent, Offset)
-        End Function
-
-        Public Function DirectoryLength() As UInteger
-            If _FatChain Is Nothing Then
-                Return GetDirectoryLengthRoot(False)
-            Else
-                Return GetDirectoryLengthSubDirectory(False)
-            End If
-        End Function
-
-        Public Function FileCount() As UInteger
-            If _FatChain Is Nothing Then
-                Return GetDirectoryLengthRoot(True)
-            Else
-                Return GetDirectoryLengthSubDirectory(True)
-            End If
-        End Function
-
-        Public Function GetFile(Index As UInteger) As DirectoryEntry
-            If _FatChain Is Nothing Then
-                Return GetFileRoot(Index)
-            Else
-                Return GetFileSubDirectory(Index)
-            End If
-        End Function
-
-        Public Function GetDataBlocks() As List(Of DataBlock)
-            If _FatChain Is Nothing Then
-                Return New List(Of DataBlock) From {
-                    GetDataBlockRoot()
-                }
-            Else
-                Return GetDataBlocksSubDirectory()
-            End If
-        End Function
     End Class
+
 End Namespace

@@ -1,28 +1,29 @@
 ﻿Imports System.Text
 
 Namespace DiskImage
+
     Public Structure ExpandedDate
-        Dim Year As UShort
-        Dim Month As Byte
+        Dim DateObject As Date
         Dim Day As Byte
         Dim Hour As Byte
         Dim Hour12 As Byte
-        Dim Minute As Byte
-        Dim Second As Byte
-        Dim Milliseconds As UShort
-        Dim IsValidDate As Boolean
-        Dim DateObject As Date
         Dim IsPM As Boolean
+        Dim IsValidDate As Boolean
+        Dim Milliseconds As UShort
+        Dim Minute As Byte
+        Dim Month As Byte
+        Dim Second As Byte
+        Dim Year As UShort
     End Structure
 
-    Public Enum PropertyType
-        inByte = 0
-        inString = 1
-    End Enum
-
     Public Class DirectoryEntry
-        Private Const DIRECTORY_ENTRY_SIZE As Byte = 32
+        Private WithEvents Parent As Disk
         Private Const CHAR_SPACE As Byte = 32
+        Private Const DIRECTORY_ENTRY_SIZE As Byte = 32
+        Private ReadOnly _FatChain As FATChain
+        Private ReadOnly _Offset As UInteger
+        Private _Data() As Byte
+        Private _SubDirectory As Directory
 
         Public Enum AttributeFlags
             [ReadOnly] = 1
@@ -62,12 +63,6 @@ Namespace DiskImage
             LFNFilePart3 = 4
         End Enum
 
-        Private _Data() As Byte
-        Private ReadOnly _Offset As UInteger
-        Private ReadOnly _FatChain As FATChain
-        Private WithEvents Parent As Disk
-        Private _SubDirectory As Directory
-
         Sub New(Parent As Disk, Offset As UInteger)
             Me.Parent = Parent
             _Offset = Offset
@@ -88,329 +83,6 @@ Namespace DiskImage
 
             InitSubDirectory()
         End Sub
-
-        Public Shared Function DateToFATDate(D As Date) As UShort
-            Dim FATDate As UShort = D.Year - 1980
-
-            FATDate <<= 4
-            FATDate += D.Month
-            FATDate <<= 5
-            FATDate += D.Day
-
-            Return FATDate
-        End Function
-
-        Public Shared Function DateToFATTime(D As Date) As UShort
-            Dim DTTime As UShort = D.Hour
-
-            DTTime <<= 6
-            DTTime += D.Minute
-            DTTime <<= 5
-            DTTime += D.Second \ 2
-
-            Return DTTime
-        End Function
-
-        Public Shared Function DateToFATMilliseconds(D As Date) As Byte
-            Return D.Millisecond \ 10 + (D.Second Mod 2) * 100
-        End Function
-
-        Public Shared Function ExpandDate(FATDate As UShort) As ExpandedDate
-            Return ExpandDate(FATDate, 0, 0)
-        End Function
-
-        Public Shared Function ExpandDate(FATDate As UShort, FATTime As UShort) As ExpandedDate
-            Return ExpandDate(FATDate, FATTime, 0)
-        End Function
-
-        Public Shared Function ExpandDate(FATDate As UShort, FATTime As UShort, Milliseconds As Byte) As ExpandedDate
-            Dim DT As ExpandedDate
-
-            DT.Day = FATDate Mod 32
-            FATDate >>= 5
-            DT.Month = FATDate Mod 16
-            FATDate >>= 4
-            DT.Year = 1980 + FATDate Mod 128
-
-            DT.Second = (FATTime Mod 32) * 2
-            FATTime >>= 5
-            DT.Minute = FATTime Mod 64
-            FATTime >>= 6
-            DT.Hour = FATTime Mod 32
-
-            If Milliseconds < 200 Then
-                DT.Second += (Milliseconds \ 100)
-                DT.Milliseconds = (Milliseconds Mod 100) * 10
-            Else
-                DT.Milliseconds = 0
-            End If
-
-            Dim DateString As String = DT.Year & "-" & Format(DT.Month, "00") & "-" & Format(DT.Day, "00") & " " & DT.Hour & ":" & Format(DT.Minute, "00") & ":" & Format(DT.Second, "00") & "." & DT.Milliseconds.ToString.PadLeft(3, "0")
-
-            DT.IsValidDate = IsDate(DateString)
-
-            DT.IsPM = (DT.Hour > 11)
-
-            If DT.Hour > 12 Then
-                DT.Hour12 = DT.Hour - 12
-            ElseIf DT.Hour = 0 Then
-                DT.Hour12 = 12
-            Else
-                DT.Hour12 = DT.Hour
-            End If
-
-            If DT.IsValidDate Then
-                DT.DateObject = New Date(DT.Year, DT.Month, DT.Day, DT.Hour, DT.Minute, DT.Second, DT.Milliseconds)
-            End If
-
-            Return DT
-        End Function
-
-        Private Function GetByte(Offset As UInteger) As Byte
-            Return _Data(Offset)
-        End Function
-
-        Private Function GetBytes(Offset As UInteger, Size As UInteger) As Byte()
-            Dim temp(Size - 1) As Byte
-            Array.Copy(_Data, Offset, temp, 0, Size)
-            Return temp
-        End Function
-
-        Private Function GetBytesShort(Offset As UInteger) As UShort
-            Return BitConverter.ToUInt16(_Data, Offset)
-        End Function
-
-        Private Function GetBytesInteger(Offset As UInteger) As UInteger
-            Return BitConverter.ToUInt32(_Data, Offset)
-        End Function
-
-        Private Sub SetBytes(Value As UShort, Offset As UInteger)
-            Array.Copy(BitConverter.GetBytes(Value), 0, _Data, Offset, 2)
-            Parent.SetBytes(_Data, _Offset)
-        End Sub
-
-        Private Sub SetBytes(Value As UInteger, Offset As UInteger)
-            Array.Copy(BitConverter.GetBytes(Value), 0, _Data, Offset, 4)
-            Parent.SetBytes(_Data, _Offset)
-        End Sub
-
-        Private Sub SetBytes(Value As Byte, Offset As UInteger)
-            _Data(Offset) = Value
-            Parent.SetBytes(_Data, _Offset)
-        End Sub
-
-        Private Sub SetBytes(Value() As Byte, Offset As UInteger, Size As UInteger, Padding As Byte)
-            If Value.Length <> Size Then
-                Disk.ResizeArray(Value, Size, Padding)
-            End If
-            Array.Copy(Value, 0, _Data, Offset, Size)
-            Parent.SetBytes(_Data, _Offset)
-        End Sub
-
-        Public Sub RemoveModification()
-            If Parent.RemoveModification(_Offset) Then
-                LoadData()
-            End If
-        End Sub
-
-        Public Sub ClearCreationDate()
-            CreationDate = 0
-            CreationTime = 0
-            CreationMillisecond = 0
-        End Sub
-
-        Public Sub ClearLastAccessDate()
-            LastAccessDate = 0
-        End Sub
-
-        Public Sub ClearLastWriteDate()
-            LastWriteDate = 0
-            LastWriteTime = 0
-        End Sub
-
-        Public Function GetCreationDate() As ExpandedDate
-            Return ExpandDate(CreationDate, CreationTime, CreationMillisecond)
-        End Function
-
-        Public Function GetDataBlocks() As List(Of DataBlock)
-            Return Parent.GetDataBlocksFromFATClusterList(_FatChain.Chain)
-        End Function
-
-        Public Function GetContent() As Byte()
-            Dim Content = Parent.GetDataFromFATClusterList(_FatChain.Chain)
-
-            If Content.Length <> FileSize Then
-                Array.Resize(Of Byte)(Content, FileSize)
-            End If
-
-            Return Content
-        End Function
-
-        Public Function GetFileExtension() As String
-            Return CodePage437ToUnicode(Extension).TrimEnd(" ")
-        End Function
-
-        Public Function GetFileName() As String
-            Return CodePage437ToUnicode(FileName).TrimEnd(" ")
-        End Function
-
-        Public Function GetVolumeName() As String
-            Return (CodePage437ToUnicode(FileName) & CodePage437ToUnicode(Extension)).TrimEnd(" ")
-        End Function
-
-        Public Function GetFullFileName() As String
-            Dim File = GetFileName()
-            Dim Ext = GetFileExtension()
-
-            If Ext <> "" Then
-                File = File & "." & Ext
-            End If
-
-            Return File
-        End Function
-
-        Public Function GetLastAccessDate() As ExpandedDate
-            Return ExpandDate(LastAccessDate)
-        End Function
-
-        Public Function GetLastWriteDate() As ExpandedDate
-            Return ExpandDate(LastWriteDate, LastWriteTime)
-        End Function
-
-        Public Function GetLFNFileName() As String
-            If IsLFN() Then
-                Dim Size As Integer = DirectoryEntrySize.LFNFilePart1 + DirectoryEntrySize.LFNFilePart2 + DirectoryEntrySize.LFNFilePart3
-                Dim LFN(Size - 1) As Byte
-
-                Array.Copy(Parent.Data, _Offset + DirectoryEntryOffset.LFNFilePart1, LFN, 0, DirectoryEntrySize.LFNFilePart1)
-                Array.Copy(Parent.Data, _Offset + DirectoryEntryOffset.LFNFilePart2, LFN, DirectoryEntrySize.LFNFilePart1, DirectoryEntrySize.LFNFilePart2)
-                Array.Copy(Parent.Data, _Offset + DirectoryEntryOffset.LFNFilePart3, LFN, DirectoryEntrySize.LFNFilePart1 + DirectoryEntrySize.LFNFilePart2, DirectoryEntrySize.LFNFilePart3)
-
-                Return Encoding.Unicode.GetString(LFN)
-            Else
-                Dim LFN(1) As Byte
-
-                Return Encoding.Unicode.GetString(LFN)
-            End If
-        End Function
-
-        Public Function HasCreationDate() As Boolean
-            Return CreationDate <> 0 Or CreationTime <> 0 Or CreationMillisecond <> 0
-        End Function
-
-        Public Function HasInvalidAttributes() As Boolean
-            Return (Attributes > 63)
-        End Function
-
-        Public Function HasInvalidExtension() As Boolean
-            Return Not Disk.CheckValidFileName(Extension, True, IsVolumeName())
-        End Function
-
-        Public Function HasInvalidFilename() As Boolean
-            Return Not Disk.CheckValidFileName(FileName, False, IsVolumeName())
-        End Function
-
-        Public Function HasInvalidFileSize() As Boolean
-            Return FileSize > Parent.BootSector.ImageSize
-        End Function
-
-        Public Function HasInvalidStartingCluster() As Boolean
-            Return StartingCluster = 1 Or StartingCluster > _Parent.BootSector.NumberOfFATEntries + 1
-        End Function
-
-        Public Function HasIncorrectFileSize() As Boolean
-            If IsDirectory() Then
-                Return False
-            End If
-
-            Dim AllocatedSize As UInteger = Math.Ceiling(FileSize / _Parent.BootSector.BytesPerCluster) * _Parent.BootSector.BytesPerCluster
-            Dim AllocatedSizeFromFAT As UInteger = _FatChain.Chain.Count * _Parent.BootSector.BytesPerCluster
-
-            Return AllocatedSize <> AllocatedSizeFromFAT
-        End Function
-
-        Public Function HasLastAccessDate() As Boolean
-            Return LastAccessDate <> 0
-        End Function
-
-        Private Sub InitSubDirectory()
-            If IsDirectory() And Not IsDeleted() Then
-                _SubDirectory = New Directory(Parent, _FatChain.Chain, FileSize)
-            Else
-                _SubDirectory = Nothing
-            End If
-        End Sub
-
-        Public Function IsArchive() As Boolean
-            Return (Attributes And AttributeFlags.ArchiveFlag) > 0
-        End Function
-
-        Public Function IsCrossLinked() As Boolean
-            Return _FatChain.CrossLinks.Count > 0
-        End Function
-
-        Public Function IsDeleted() As Boolean
-            Return FileName(0) = &HE5
-        End Function
-
-        Public Function IsDirectory() As Boolean
-            Return (Attributes And AttributeFlags.Directory) > 0
-        End Function
-
-        Public Function IsHidden() As Boolean
-            Return (Attributes And AttributeFlags.Hidden) > 0
-        End Function
-
-        Public Function IsLFN() As Boolean
-            Return (Attributes And AttributeFlags.LongFileName) = AttributeFlags.LongFileName
-        End Function
-
-        Public Function IsModified() As Boolean
-            Dim HasModification As Boolean = Parent.HasModification(_Offset)
-            If Not HasModification Then
-                If _FatChain.Chain.Count > 0 Then
-                    Dim ClusterOffset = _Parent.ClusterToOffset(_FatChain.Chain(0))
-                    HasModification = Parent.HasModification(ClusterOffset)
-                End If
-            End If
-            Return HasModification
-        End Function
-
-        Public Function IsReadOnly() As Boolean
-            Return (Attributes And AttributeFlags.ReadOnly) > 0
-        End Function
-
-        Public Function IsSystem() As Boolean
-            Return (Attributes And AttributeFlags.System) > 0
-        End Function
-
-        Public Function IsVolumeName() As Boolean
-            Return (Attributes And AttributeFlags.VolumeName) > 0
-        End Function
-
-        Private Sub LoadData()
-            _Data = Parent.GetBytes(Offset, DIRECTORY_ENTRY_SIZE)
-        End Sub
-
-        Public Sub SetCreationDate(Value As Date)
-            CreationDate = DateToFATDate(Value)
-            CreationTime = DateToFATTime(Value)
-            CreationMillisecond = DateToFATMilliseconds(Value)
-        End Sub
-
-        Public Sub SetLastAccessDate(Value As Date)
-            LastAccessDate = DateToFATDate(Value)
-        End Sub
-
-        Public Sub SetLastWriteDate(Value As Date)
-            LastWriteDate = DateToFATDate(Value)
-            LastWriteTime = DateToFATTime(Value)
-        End Sub
-
-        Private Sub Parent_ChangesReverted(sender As Object, e As EventArgs) Handles Parent.ChangesReverted
-            LoadData()
-        End Sub
-
         Public Property Attributes() As Byte
             Get
                 Return GetByte(DirectoryEntryOffset.Attributes)
@@ -429,21 +101,21 @@ Namespace DiskImage
             End Set
         End Property
 
-        Public Property CreationTime() As UShort
-            Get
-                Return GetBytesShort(DirectoryEntryOffset.CreationTime)
-            End Get
-            Set
-                SetBytes(Value, DirectoryEntryOffset.CreationTime)
-            End Set
-        End Property
-
         Public Property CreationMillisecond() As Byte
             Get
                 Return GetByte(DirectoryEntryOffset.CreationMillisecond)
             End Get
             Set
                 SetBytes(Value, DirectoryEntryOffset.CreationMillisecond)
+            End Set
+        End Property
+
+        Public Property CreationTime() As UShort
+            Get
+                Return GetBytesShort(DirectoryEntryOffset.CreationTime)
+            End Get
+            Set
+                SetBytes(Value, DirectoryEntryOffset.CreationTime)
             End Set
         End Property
 
@@ -531,21 +203,21 @@ Namespace DiskImage
             End Get
         End Property
 
-        Public Property ReservedForWinNT() As Byte
-            Get
-                Return GetByte(DirectoryEntryOffset.ReservedForWinNT)
-            End Get
-            Set
-                SetBytes(Value, DirectoryEntryOffset.ReservedForWinNT)
-            End Set
-        End Property
-
         Public Property ReservedForFAT32() As UShort
             Get
                 Return GetBytesShort(DirectoryEntryOffset.ReservedForFAT32)
             End Get
             Set
                 SetBytes(Value, DirectoryEntryOffset.ReservedForFAT32)
+            End Set
+        End Property
+
+        Public Property ReservedForWinNT() As Byte
+            Get
+                Return GetByte(DirectoryEntryOffset.ReservedForWinNT)
+            End Get
+            Set
+                SetBytes(Value, DirectoryEntryOffset.ReservedForWinNT)
             End Set
         End Property
 
@@ -563,5 +235,327 @@ Namespace DiskImage
                 Return _SubDirectory
             End Get
         End Property
+
+        Public Shared Function DateToFATDate(D As Date) As UShort
+            Dim FATDate As UShort = D.Year - 1980
+
+            FATDate <<= 4
+            FATDate += D.Month
+            FATDate <<= 5
+            FATDate += D.Day
+
+            Return FATDate
+        End Function
+
+        Public Shared Function DateToFATMilliseconds(D As Date) As Byte
+            Return D.Millisecond \ 10 + (D.Second Mod 2) * 100
+        End Function
+
+        Public Shared Function DateToFATTime(D As Date) As UShort
+            Dim DTTime As UShort = D.Hour
+
+            DTTime <<= 6
+            DTTime += D.Minute
+            DTTime <<= 5
+            DTTime += D.Second \ 2
+
+            Return DTTime
+        End Function
+        Public Shared Function ExpandDate(FATDate As UShort) As ExpandedDate
+            Return ExpandDate(FATDate, 0, 0)
+        End Function
+
+        Public Shared Function ExpandDate(FATDate As UShort, FATTime As UShort) As ExpandedDate
+            Return ExpandDate(FATDate, FATTime, 0)
+        End Function
+
+        Public Shared Function ExpandDate(FATDate As UShort, FATTime As UShort, Milliseconds As Byte) As ExpandedDate
+            Dim DT As ExpandedDate
+
+            DT.Day = FATDate Mod 32
+            FATDate >>= 5
+            DT.Month = FATDate Mod 16
+            FATDate >>= 4
+            DT.Year = 1980 + FATDate Mod 128
+
+            DT.Second = (FATTime Mod 32) * 2
+            FATTime >>= 5
+            DT.Minute = FATTime Mod 64
+            FATTime >>= 6
+            DT.Hour = FATTime Mod 32
+
+            If Milliseconds < 200 Then
+                DT.Second += (Milliseconds \ 100)
+                DT.Milliseconds = (Milliseconds Mod 100) * 10
+            Else
+                DT.Milliseconds = 0
+            End If
+
+            Dim DateString As String = DT.Year & "-" & Format(DT.Month, "00") & "-" & Format(DT.Day, "00") & " " & DT.Hour & ":" & Format(DT.Minute, "00") & ":" & Format(DT.Second, "00") & "." & DT.Milliseconds.ToString.PadLeft(3, "0")
+
+            DT.IsValidDate = IsDate(DateString)
+
+            DT.IsPM = (DT.Hour > 11)
+
+            If DT.Hour > 12 Then
+                DT.Hour12 = DT.Hour - 12
+            ElseIf DT.Hour = 0 Then
+                DT.Hour12 = 12
+            Else
+                DT.Hour12 = DT.Hour
+            End If
+
+            If DT.IsValidDate Then
+                DT.DateObject = New Date(DT.Year, DT.Month, DT.Day, DT.Hour, DT.Minute, DT.Second, DT.Milliseconds)
+            End If
+
+            Return DT
+        End Function
+
+        Public Sub ClearCreationDate()
+            CreationDate = 0
+            CreationTime = 0
+            CreationMillisecond = 0
+        End Sub
+
+        Public Sub ClearLastAccessDate()
+            LastAccessDate = 0
+        End Sub
+
+        Public Sub ClearLastWriteDate()
+            LastWriteDate = 0
+            LastWriteTime = 0
+        End Sub
+
+        Public Function GetContent() As Byte()
+            Dim Content = Parent.GetDataFromFATClusterList(_FatChain.Chain)
+
+            If Content.Length <> FileSize Then
+                Array.Resize(Of Byte)(Content, FileSize)
+            End If
+
+            Return Content
+        End Function
+
+        Public Function GetCreationDate() As ExpandedDate
+            Return ExpandDate(CreationDate, CreationTime, CreationMillisecond)
+        End Function
+
+        Public Function GetDataBlocks() As List(Of DataBlock)
+            Return Parent.GetDataBlocksFromFATClusterList(_FatChain.Chain)
+        End Function
+
+        Public Function GetFileExtension() As String
+            Return CodePage437ToUnicode(Extension).TrimEnd(" ")
+        End Function
+
+        Public Function GetFileName() As String
+            Return CodePage437ToUnicode(FileName).TrimEnd(" ")
+        End Function
+
+        Public Function GetFullFileName() As String
+            Dim File = GetFileName()
+            Dim Ext = GetFileExtension()
+
+            If Ext <> "" Then
+                File = File & "." & Ext
+            End If
+
+            Return File
+        End Function
+
+        Public Function GetLastAccessDate() As ExpandedDate
+            Return ExpandDate(LastAccessDate)
+        End Function
+
+        Public Function GetLastWriteDate() As ExpandedDate
+            Return ExpandDate(LastWriteDate, LastWriteTime)
+        End Function
+
+        Public Function GetLFNFileName() As String
+            If IsLFN() Then
+                Dim Size As Integer = DirectoryEntrySize.LFNFilePart1 + DirectoryEntrySize.LFNFilePart2 + DirectoryEntrySize.LFNFilePart3
+                Dim LFN(Size - 1) As Byte
+
+                Array.Copy(Parent.Data, _Offset + DirectoryEntryOffset.LFNFilePart1, LFN, 0, DirectoryEntrySize.LFNFilePart1)
+                Array.Copy(Parent.Data, _Offset + DirectoryEntryOffset.LFNFilePart2, LFN, DirectoryEntrySize.LFNFilePart1, DirectoryEntrySize.LFNFilePart2)
+                Array.Copy(Parent.Data, _Offset + DirectoryEntryOffset.LFNFilePart3, LFN, DirectoryEntrySize.LFNFilePart1 + DirectoryEntrySize.LFNFilePart2, DirectoryEntrySize.LFNFilePart3)
+
+                Return Encoding.Unicode.GetString(LFN)
+            Else
+                Dim LFN(1) As Byte
+
+                Return Encoding.Unicode.GetString(LFN)
+            End If
+        End Function
+
+        Public Function GetVolumeName() As String
+            Return (CodePage437ToUnicode(FileName) & CodePage437ToUnicode(Extension)).TrimEnd(" ")
+        End Function
+
+        Public Function HasCreationDate() As Boolean
+            Return CreationDate <> 0 Or CreationTime <> 0 Or CreationMillisecond <> 0
+        End Function
+
+        Public Function HasIncorrectFileSize() As Boolean
+            If IsDirectory() Then
+                Return False
+            End If
+
+            Dim AllocatedSize As UInteger = Math.Ceiling(FileSize / _Parent.BootSector.BytesPerCluster) * _Parent.BootSector.BytesPerCluster
+            Dim AllocatedSizeFromFAT As UInteger = _FatChain.Chain.Count * _Parent.BootSector.BytesPerCluster
+
+            Return AllocatedSize <> AllocatedSizeFromFAT
+        End Function
+
+        Public Function HasInvalidAttributes() As Boolean
+            Return (Attributes > 63)
+        End Function
+
+        Public Function HasInvalidExtension() As Boolean
+            Return Not Disk.CheckValidFileName(Extension, True, IsVolumeName())
+        End Function
+
+        Public Function HasInvalidFilename() As Boolean
+            Return Not Disk.CheckValidFileName(FileName, False, IsVolumeName())
+        End Function
+
+        Public Function HasInvalidFileSize() As Boolean
+            Return FileSize > Parent.BootSector.ImageSize
+        End Function
+
+        Public Function HasInvalidStartingCluster() As Boolean
+            Return StartingCluster = 1 Or StartingCluster > _Parent.BootSector.NumberOfFATEntries + 1
+        End Function
+
+        Public Function HasLastAccessDate() As Boolean
+            Return LastAccessDate <> 0
+        End Function
+
+        Public Function IsArchive() As Boolean
+            Return (Attributes And AttributeFlags.ArchiveFlag) > 0
+        End Function
+
+        Public Function IsCrossLinked() As Boolean
+            Return _FatChain.CrossLinks.Count > 0
+        End Function
+
+        Public Function IsDeleted() As Boolean
+            Return FileName(0) = &HE5
+        End Function
+
+        Public Function IsDirectory() As Boolean
+            Return (Attributes And AttributeFlags.Directory) > 0
+        End Function
+
+        Public Function IsHidden() As Boolean
+            Return (Attributes And AttributeFlags.Hidden) > 0
+        End Function
+
+        Public Function IsLFN() As Boolean
+            Return (Attributes And AttributeFlags.LongFileName) = AttributeFlags.LongFileName
+        End Function
+
+        Public Function IsModified() As Boolean
+            Dim HasModification As Boolean = Parent.HasModification(_Offset)
+            If Not HasModification Then
+                If _FatChain.Chain.Count > 0 Then
+                    Dim ClusterOffset = _Parent.ClusterToOffset(_FatChain.Chain(0))
+                    HasModification = Parent.HasModification(ClusterOffset)
+                End If
+            End If
+            Return HasModification
+        End Function
+
+        Public Function IsReadOnly() As Boolean
+            Return (Attributes And AttributeFlags.ReadOnly) > 0
+        End Function
+
+        Public Function IsSystem() As Boolean
+            Return (Attributes And AttributeFlags.System) > 0
+        End Function
+
+        Public Function IsVolumeName() As Boolean
+            Return (Attributes And AttributeFlags.VolumeName) > 0
+        End Function
+
+        Public Sub RemoveModification()
+            If Parent.RemoveModification(_Offset) Then
+                LoadData()
+            End If
+        End Sub
+
+        Public Sub SetCreationDate(Value As Date)
+            CreationDate = DateToFATDate(Value)
+            CreationTime = DateToFATTime(Value)
+            CreationMillisecond = DateToFATMilliseconds(Value)
+        End Sub
+
+        Public Sub SetLastAccessDate(Value As Date)
+            LastAccessDate = DateToFATDate(Value)
+        End Sub
+
+        Public Sub SetLastWriteDate(Value As Date)
+            LastWriteDate = DateToFATDate(Value)
+            LastWriteTime = DateToFATTime(Value)
+        End Sub
+
+        Private Function GetByte(Offset As UInteger) As Byte
+            Return _Data(Offset)
+        End Function
+
+        Private Function GetBytes(Offset As UInteger, Size As UInteger) As Byte()
+            Dim temp(Size - 1) As Byte
+            Array.Copy(_Data, Offset, temp, 0, Size)
+            Return temp
+        End Function
+
+        Private Function GetBytesInteger(Offset As UInteger) As UInteger
+            Return BitConverter.ToUInt32(_Data, Offset)
+        End Function
+
+        Private Function GetBytesShort(Offset As UInteger) As UShort
+            Return BitConverter.ToUInt16(_Data, Offset)
+        End Function
+
+        Private Sub InitSubDirectory()
+            If IsDirectory() And Not IsDeleted() Then
+                _SubDirectory = New Directory(Parent, _FatChain.Chain, FileSize)
+            Else
+                _SubDirectory = Nothing
+            End If
+        End Sub
+
+        Private Sub LoadData()
+            _Data = Parent.GetBytes(Offset, DIRECTORY_ENTRY_SIZE)
+        End Sub
+
+        Private Sub SetBytes(Value As UShort, Offset As UInteger)
+            Array.Copy(BitConverter.GetBytes(Value), 0, _Data, Offset, 2)
+            Parent.SetBytes(_Data, _Offset)
+        End Sub
+
+        Private Sub SetBytes(Value As UInteger, Offset As UInteger)
+            Array.Copy(BitConverter.GetBytes(Value), 0, _Data, Offset, 4)
+            Parent.SetBytes(_Data, _Offset)
+        End Sub
+
+        Private Sub SetBytes(Value As Byte, Offset As UInteger)
+            _Data(Offset) = Value
+            Parent.SetBytes(_Data, _Offset)
+        End Sub
+
+        Private Sub SetBytes(Value() As Byte, Offset As UInteger, Size As UInteger, Padding As Byte)
+            If Value.Length <> Size Then
+                Disk.ResizeArray(Value, Size, Padding)
+            End If
+            Array.Copy(Value, 0, _Data, Offset, Size)
+            Parent.SetBytes(_Data, _Offset)
+        End Sub
+
+        Private Sub Parent_ChangesReverted(sender As Object, e As EventArgs) Handles Parent.ChangesReverted
+            LoadData()
+        End Sub
     End Class
+
 End Namespace

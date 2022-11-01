@@ -2,21 +2,6 @@
 
 Module OEMNameLookup
     Private ReadOnly _NameSpace As String = New StubClass().GetType.Namespace
-    Private Function GetResource(Name As String) As String
-        Dim Value As String
-
-        Dim Assembly As Reflection.[Assembly] = Reflection.[Assembly].GetExecutingAssembly()
-        Dim Stream = Assembly.GetManifestResourceStream(_NameSpace & "." & Name)
-        If Stream Is Nothing Then
-            Throw New Exception("Unable to load resource " & Name)
-        Else
-            Dim TextStreamReader = New IO.StreamReader(Stream)
-            Value = TextStreamReader.ReadToEnd()
-            TextStreamReader.Close()
-        End If
-
-        Return Value
-    End Function
 
     Public Function GetOEMNameDictionary() As Dictionary(Of UInteger, BootstrapLookup)
         Dim Result = New Dictionary(Of UInteger, BootstrapLookup)
@@ -59,27 +44,24 @@ Module OEMNameLookup
         Next
         Return Result
     End Function
+
+    Private Function GetResource(Name As String) As String
+        Dim Value As String
+
+        Dim Assembly As Reflection.[Assembly] = Reflection.[Assembly].GetExecutingAssembly()
+        Dim Stream = Assembly.GetManifestResourceStream(_NameSpace & "." & Name)
+        If Stream Is Nothing Then
+            Throw New Exception("Unable to load resource " & Name)
+        Else
+            Dim TextStreamReader = New IO.StreamReader(Stream)
+            Value = TextStreamReader.ReadToEnd()
+            TextStreamReader.Close()
+        End If
+
+        Return Value
+    End Function
+
 End Module
 
 Public Class StubClass
-End Class
-
-Public Class BootstrapLookup
-    Public Property Language As String = "English"
-    Public Property KnownOEMNames As New List(Of KnownOEMName)
-    Public Property ExactMatch As Boolean = False
-End Class
-
-Public Class KnownOEMName
-    Public Property Name As Byte()
-    Public Property Company As String = ""
-    Public Property Description As String = ""
-    Public Property Win9xId As Boolean = False
-    Public Property Suggestion As Boolean = True
-    Public Function GetNameAsString() As String
-        Return CodePage437ToUnicode(_Name)
-    End Function
-    Public Overrides Function ToString() As String
-        Return GetNameAsString()
-    End Function
 End Class

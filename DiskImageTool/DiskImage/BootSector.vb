@@ -1,5 +1,7 @@
 ﻿Namespace DiskImage
+
     Public Class BootSector
+        Private ReadOnly _Parent As Disk
         Private ReadOnly _ValidBootStrapSignature As UShort = &HAA55
         Private ReadOnly _ValidBytesPerSector() As UShort = {512, 1024, 2048, 4096}
         Private ReadOnly _ValidDriveNumber() As Byte = {&H0, &H80}
@@ -47,129 +49,9 @@
             ExtendedParameterBlock = 26
         End Enum
 
-        ReadOnly _Parent As Disk
-
         Sub New(Parent As Disk)
             _Parent = Parent
         End Sub
-
-        Public Function BytesPerCluster() As UInteger
-            Return SectorsPerCluster * BytesPerSector
-        End Function
-
-        Public Function DataRegionSize() As UInteger
-            Return SectorCount() - (ReservedSectorCount + FATRegionSize() + RootDirectoryRegionSize())
-        End Function
-
-        Public Function DataRegionStart() As UInteger
-            Return RootDirectoryRegionStart() + RootDirectoryRegionSize()
-        End Function
-
-        Public Function FATRegionStart() As UInteger
-            Return ReservedSectorCount
-        End Function
-
-        Public Function FATRegionSize() As UInteger
-            Return NumberOfFATs * SectorsPerFAT
-        End Function
-
-        Public Function GetBootStrapOffset() As UShort
-            Dim JmpBootLocal = JmpBoot
-            Dim JumpInstruction As Byte = JmpBootLocal(0)
-            Dim Offset As UShort
-
-            If JumpInstruction = &HEB Then
-                Offset = JmpBootLocal(1) + 2
-            ElseIf JumpInstruction = &HE9 Then
-                Offset = BitConverter.ToUInt16(JmpBootLocal, 1) + 3
-            Else
-                Offset = 0
-            End If
-
-            If Offset >= BootSectorOffset.BootStrapSignature Then
-                Offset = 0
-            End If
-
-            Return Offset
-        End Function
-
-        Public Function GetOEMNameString() As String
-            Return CodePage437ToUnicode(OEMName)
-        End Function
-
-        Public Function GetVolumeLabelString() As String
-            Return CodePage437ToUnicode(VolumeLabel)
-        End Function
-
-        Public Function IsWin9xOEMName() As Boolean
-            Dim OEMNameLocal = OEMName
-
-            Return OEMNameLocal(5) = &H49 And OEMNameLocal(6) = &H48 And OEMNameLocal(7) = &H43
-        End Function
-
-        Public Function HasValidBootStrapSignature() As Boolean
-            Return BootStrapSignature = _ValidBootStrapSignature
-        End Function
-
-        Public Function HasValidBytesPerSector() As Boolean
-            Return _ValidBytesPerSector.Contains(BytesPerSector)
-        End Function
-
-        Public Function HasValidDriveNumber() As Boolean
-            Return _ValidDriveNumber.Contains(DriveNumber)
-        End Function
-        Public Function HasValidExtendedBootSignature() As Boolean
-            Return _ValidExtendedBootSignature.Contains(ExtendedBootSignature)
-        End Function
-
-        Public Function HasValidJumpInstruction() As Boolean
-            Return _ValidJumpInstructuon.Contains(JmpBoot(0))
-        End Function
-
-        Public Function HasValidMediaDescriptor() As Boolean
-            Return _ValidMediaDescriptor.Contains(MediaDescriptor)
-        End Function
-
-        Public Function HasValidNumberOfFATs() As Boolean
-            Return NumberOfFATs > 0
-        End Function
-
-        Public Function HasValidReservedSectorCount() As Boolean
-            Return ReservedSectorCount > 0
-        End Function
-
-        Public Function HasValidRootEntryCount() As Boolean
-            Return (RootEntryCount * 32) Mod BytesPerSector = 0
-        End Function
-
-        Public Function HasValidSectorsPerCluster() As Boolean
-            Return _ValidSectorsPerSector.Contains(SectorsPerCluster)
-        End Function
-
-        Public Function NumberOfFATEntries() As UShort
-            Return DataRegionSize() \ SectorsPerCluster
-        End Function
-
-        Public Function RootDirectoryRegionSize() As UInteger
-            Return Math.Ceiling((RootEntryCount * 32) / BytesPerSector)
-        End Function
-
-        Public Function RootDirectoryRegionStart() As UInteger
-            Return FATRegionStart() + FATRegionSize()
-        End Function
-
-        Public Function SectorCount() As UInteger
-            If SectorCountSmall > 0 Then
-                Return SectorCountSmall
-            Else
-                Return SectorCountLarge
-            End If
-        End Function
-
-        Public Function ImageSize() As UInteger
-            Return SectorCount() * BytesPerSector
-        End Function
-
         Public Property BootStrapCode() As Byte()
             Get
                 Dim BootStrapStart = GetBootStrapOffset()
@@ -213,7 +95,6 @@
             End Get
         End Property
 
-
         Public Property DriveNumber() As Byte
             Get
                 Return _Parent.GetByte(BootSectorOffset.DriveNumber)
@@ -256,15 +137,6 @@
             End Get
             Set
                 _Parent.SetBytes(Value, BootSectorOffset.JmpBoot, BootSectorSize.JmpBoot, 0)
-            End Set
-        End Property
-
-        Public Property SectorCountLarge() As UInteger
-            Get
-                Return _Parent.GetBytesInteger(BootSectorOffset.SectorCountLarge)
-            End Get
-            Set
-                _Parent.SetBytes(Value, BootSectorOffset.SectorCountLarge)
             End Set
         End Property
 
@@ -331,6 +203,24 @@
             End Set
         End Property
 
+        Public Property SectorCountLarge() As UInteger
+            Get
+                Return _Parent.GetBytesInteger(BootSectorOffset.SectorCountLarge)
+            End Get
+            Set
+                _Parent.SetBytes(Value, BootSectorOffset.SectorCountLarge)
+            End Set
+        End Property
+
+        Public Property SectorCountSmall() As UShort
+            Get
+                Return _Parent.GetBytesShort(BootSectorOffset.SectorCountSmall)
+            End Get
+            Set
+                _Parent.SetBytes(Value, BootSectorOffset.SectorCountSmall)
+            End Set
+        End Property
+
         Public Property SectorsPerCluster() As Byte
             Get
                 Return _Parent.GetByte(BootSectorOffset.SectorsPerCluster)
@@ -358,15 +248,6 @@
             End Set
         End Property
 
-        Public Property SectorCountSmall() As UShort
-            Get
-                Return _Parent.GetBytesShort(BootSectorOffset.SectorCountSmall)
-            End Get
-            Set
-                _Parent.SetBytes(Value, BootSectorOffset.SectorCountSmall)
-            End Set
-        End Property
-
         Public Property VolumeLabel() As Byte()
             Get
                 Return _Parent.GetBytes(BootSectorOffset.VolumeLabel, BootSectorSize.VolumeLabel)
@@ -384,5 +265,123 @@
                 _Parent.SetBytes(Value, BootSectorOffset.VolumeSerialNumber)
             End Set
         End Property
+
+        Public Function BytesPerCluster() As UInteger
+            Return SectorsPerCluster * BytesPerSector
+        End Function
+
+        Public Function DataRegionSize() As UInteger
+            Return SectorCount() - (ReservedSectorCount + FATRegionSize() + RootDirectoryRegionSize())
+        End Function
+
+        Public Function DataRegionStart() As UInteger
+            Return RootDirectoryRegionStart() + RootDirectoryRegionSize()
+        End Function
+
+        Public Function FATRegionSize() As UInteger
+            Return NumberOfFATs * SectorsPerFAT
+        End Function
+
+        Public Function FATRegionStart() As UInteger
+            Return ReservedSectorCount
+        End Function
+
+        Public Function GetBootStrapOffset() As UShort
+            Dim JmpBootLocal = JmpBoot
+            Dim JumpInstruction As Byte = JmpBootLocal(0)
+            Dim Offset As UShort
+
+            If JumpInstruction = &HEB Then
+                Offset = JmpBootLocal(1) + 2
+            ElseIf JumpInstruction = &HE9 Then
+                Offset = BitConverter.ToUInt16(JmpBootLocal, 1) + 3
+            Else
+                Offset = 0
+            End If
+
+            If Offset >= BootSectorOffset.BootStrapSignature Then
+                Offset = 0
+            End If
+
+            Return Offset
+        End Function
+
+        Public Function GetOEMNameString() As String
+            Return CodePage437ToUnicode(OEMName)
+        End Function
+
+        Public Function GetVolumeLabelString() As String
+            Return CodePage437ToUnicode(VolumeLabel)
+        End Function
+
+        Public Function HasValidBootStrapSignature() As Boolean
+            Return BootStrapSignature = _ValidBootStrapSignature
+        End Function
+
+        Public Function HasValidBytesPerSector() As Boolean
+            Return _ValidBytesPerSector.Contains(BytesPerSector)
+        End Function
+
+        Public Function HasValidDriveNumber() As Boolean
+            Return _ValidDriveNumber.Contains(DriveNumber)
+        End Function
+
+        Public Function HasValidExtendedBootSignature() As Boolean
+            Return _ValidExtendedBootSignature.Contains(ExtendedBootSignature)
+        End Function
+
+        Public Function HasValidJumpInstruction() As Boolean
+            Return _ValidJumpInstructuon.Contains(JmpBoot(0))
+        End Function
+
+        Public Function HasValidMediaDescriptor() As Boolean
+            Return _ValidMediaDescriptor.Contains(MediaDescriptor)
+        End Function
+
+        Public Function HasValidNumberOfFATs() As Boolean
+            Return NumberOfFATs > 0
+        End Function
+
+        Public Function HasValidReservedSectorCount() As Boolean
+            Return ReservedSectorCount > 0
+        End Function
+
+        Public Function HasValidRootEntryCount() As Boolean
+            Return (RootEntryCount * 32) Mod BytesPerSector = 0
+        End Function
+
+        Public Function HasValidSectorsPerCluster() As Boolean
+            Return _ValidSectorsPerSector.Contains(SectorsPerCluster)
+        End Function
+
+        Public Function ImageSize() As UInteger
+            Return SectorCount() * BytesPerSector
+        End Function
+
+        Public Function IsWin9xOEMName() As Boolean
+            Dim OEMNameLocal = OEMName
+
+            Return OEMNameLocal(5) = &H49 And OEMNameLocal(6) = &H48 And OEMNameLocal(7) = &H43
+        End Function
+        Public Function NumberOfFATEntries() As UShort
+            Return DataRegionSize() \ SectorsPerCluster
+        End Function
+
+        Public Function RootDirectoryRegionSize() As UInteger
+            Return Math.Ceiling((RootEntryCount * 32) / BytesPerSector)
+        End Function
+
+        Public Function RootDirectoryRegionStart() As UInteger
+            Return FATRegionStart() + FATRegionSize()
+        End Function
+
+        Public Function SectorCount() As UInteger
+            If SectorCountSmall > 0 Then
+                Return SectorCountSmall
+            Else
+                Return SectorCountLarge
+            End If
+        End Function
     End Class
+
 End Namespace
