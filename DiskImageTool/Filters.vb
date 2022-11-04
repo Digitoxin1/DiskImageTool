@@ -12,6 +12,7 @@
         UnusedClusters
         HasInvalidImage
         HasBadSectors
+        HasInvalidImageSize
         HasMismatchedFATs
         HasFATChainingErrors
     End Enum
@@ -46,6 +47,8 @@
                 Caption = "Mismatched FATs"
             Case FilterTypes.HasFATChainingErrors
                 Caption = "FAT Chaining Errors"
+            Case FilterTypes.HasInvalidImageSize
+                Caption = "Bad Image Size"
             Case Else
                 Caption = ""
         End Select
@@ -133,6 +136,12 @@
 
         If CheckFilter(FilterTypes.HasFATChainingErrors, AppliedFilters) Then
             If ImageData.ScanInfo.IsValidImage And ImageData.ScanInfo.HasFATChainingErrors Then
+                Return False
+            End If
+        End If
+
+        If CheckFilter(FilterTypes.HasInvalidImageSize, AppliedFilters) Then
+            If ImageData.ScanInfo.IsValidImage And ImageData.ScanInfo.HasInvalidImageSize Then
                 Return False
             End If
         End If

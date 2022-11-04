@@ -3,6 +3,7 @@
     Public Property HasCreated As Boolean = False
     Public Property HasFATChainingErrors As Boolean = False
     Public Property HasInvalidDirectoryEntries As Boolean = False
+    Public Property HasInvalidImageSize As Boolean = False
     Public Property HasLastAccessed As Boolean = False
     Public Property HasLongFileNames As Boolean = False
     Public Property HasMismatchedFATs As Boolean = False

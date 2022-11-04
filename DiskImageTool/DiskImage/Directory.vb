@@ -1,4 +1,6 @@
-﻿Namespace DiskImage
+﻿Imports System.IO
+
+Namespace DiskImage
 
     Public Class Directory
         Private ReadOnly _FatChain As List(Of UShort)
@@ -51,6 +53,19 @@
             Else
                 Return GetFileSubDirectory(Index)
             End If
+        End Function
+
+        Public Function HasFile(Filename As String) As Boolean
+            For Counter As UInteger = 1 To DirectoryLength()
+                Dim File = GetFile(Counter)
+                If Not File.IsDeleted And Not File.IsVolumeName And Not File.IsDirectory Then
+                    If File.GetFullFileName = Filename Then
+                        Return True
+                    End If
+                End If
+            Next
+
+            Return False
         End Function
 
         Private Function GetContentRoot() As Byte()

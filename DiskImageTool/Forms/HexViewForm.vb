@@ -1,4 +1,7 @@
-﻿Public Class HexViewForm
+﻿Imports System.Text
+
+Public Class HexViewForm
+    Public Shared ReadOnly ALT_BACK_COLOR As Color = Color.FromArgb(246, 246, 252)
     Private _AllowModifications As Boolean = False
     Private _CurrentSector As UInteger = 0
     Private _DataList As List(Of HexViewData)
@@ -94,31 +97,83 @@
     End Sub
 
     Private Sub DisplayBlock(Data As HexViewData)
+        Dim BlockLength As UInteger
+
         With HexBox1
             .ByteProvider = Nothing
-            .ByteProvider = New Hb.Windows.Forms.DynamicByteProvider(_Disk.GetBytes(Data.DataBlock.Offset, Data.DataBlock.Length))
-            .LineInfoOffset = Data.DataBlock.Offset
 
-            If Data.HighlightedRegions.Count = 0 Then
-                Dim BytesPerSector = _Disk.BootSector.BytesPerSector
-                Dim Length As UInteger = .ByteProvider.Length - 1
-                For Counter As UInteger = 0 To Length Step BytesPerSector
-                    If (Counter / BytesPerSector) Mod 2 = 1 Then
-                        .HighlightBackColor = Color.FromArgb(247, 247, 252)
-                        .Highlight(Counter, BytesPerSector)
-                    End If
-                Next
+            If Data.DataBlock.Offset + Data.DataBlock.Length > _Disk.Data.Length Then
+                BlockLength = Math.Max(0, _Disk.Data.Length - Data.DataBlock.Offset)
+            Else
+                BlockLength = Data.DataBlock.Length
             End If
 
-            For Each HighlightRegion In Data.HighlightedRegions
-                .HighlightBackColor = HighlightRegion.BackColor
-                .HighlightForeColor = HighlightRegion.ForeColor
-                .Highlight(HighlightRegion.Start, HighlightRegion.Size)
-            Next
+            If BlockLength > 0 Then
+                .ByteProvider = New Hb.Windows.Forms.DynamicByteProvider(_Disk.GetBytes(Data.DataBlock.Offset, BlockLength))
+                .LineInfoOffset = Data.DataBlock.Offset
+
+                Data.HighlightedRegions.Sort()
+
+                Dim BytesPerSector As UShort
+                If _Disk.IsValidImage Then
+                    BytesPerSector = _Disk.BootSector.BytesPerSector
+                Else
+                    BytesPerSector = 512
+                End If
+                Dim TotalLength As UInteger = .ByteProvider.Length
+                Dim Start As UInteger = 0
+                Dim Length = BytesPerSector - (Start Mod BytesPerSector)
+                Dim Size As UInteger = Math.Min(Length, TotalLength - Start)
+                Dim CurrentRegion As HexViewHighlightRegion
+                Dim Index As Integer = 0
+                If Index < Data.HighlightedRegions.Count Then
+                    CurrentRegion = Data.HighlightedRegions(Index)
+                Else
+                    CurrentRegion = Nothing
+                End If
+                Do While Size > 0
+                    Dim HighlightForeColor As Color = Color.Black
+                    Dim HighlightBackColor As Color = Color.White
+
+                    If CurrentRegion IsNot Nothing Then
+                        If CurrentRegion.Start = Start Then
+                            Size = CurrentRegion.Size
+                            HighlightForeColor = CurrentRegion.ForeColor
+                            HighlightBackColor = CurrentRegion.BackColor
+                        ElseIf CurrentRegion.Start > Start And CurrentRegion.Start < Start + Size Then
+                            Size = CurrentRegion.Start - Start
+                        End If
+                        If Start + Size >= CurrentRegion.Start + CurrentRegion.Size Then
+                            Index += 1
+                            If Index < Data.HighlightedRegions.Count Then
+                                CurrentRegion = Data.HighlightedRegions(Index)
+                            Else
+                                CurrentRegion = Nothing
+                            End If
+                        End If
+                    End If
+
+                    If Size > 0 Then
+                        If HighlightBackColor = Color.White AndAlso (Start \ BytesPerSector) Mod 2 = 1 Then
+                            HighlightBackColor = ALT_BACK_COLOR
+                        End If
+                        If HighlightForeColor <> Color.Black Or HighlightBackColor <> Color.White Then
+                            .HighlightForeColor = HighlightForeColor
+                            .HighlightBackColor = HighlightBackColor
+                            .Highlight(Start, Size)
+                        End If
+                    End If
+
+                    Start += Size
+                    Length = BytesPerSector - (Start Mod BytesPerSector)
+                    Size = Math.Min(Length, TotalLength - Start)
+                Loop
+            End If
         End With
 
         RefreshSelection(True)
-        ToolStripStatusBytes.Text = Format(Data.DataBlock.Length, "N0") & " bytes"
+
+        ToolStripStatusBytes.Text = Format(BlockLength, "N0") & " bytes"
     End Sub
 
     Private Function GetVisibleOffset() As UInteger
@@ -215,68 +270,81 @@
     End Sub
     Private Sub RefreshSelection(ForceUpdate As Boolean)
         Dim SelectionStart = HexBox1.SelectionStart
-        Dim Offset As UInteger = HexBox1.LineInfoOffset + SelectionStart
-        Dim Sector As UInteger = 0
-        Dim ClearEnabled As Boolean = False
-        Dim FileName As String = ""
-        Dim OutOfRange As Boolean = SelectionStart >= HexBox1.ByteProvider.Length
 
-        If _Disk.IsValidImage Then
-            Sector = _Disk.OffsetToSector(Offset)
-        End If
-
-        ToolStripStatusOffset.Visible = Not OutOfRange
-        ToolStripStatusOffset.Text = "Offset(h): " & SelectionStart.ToString("X")
-
-        If HexBox1.SelectionLength = 0 Then
+        If SelectionStart = -1 Then
+            ToolStripStatusOffset.Visible = False
             ToolStripStatusBlock.Visible = False
-            ToolStripStatusBlock.Text = ""
             ToolStripStatusLength.Visible = False
-            ToolStripStatusLength.Text = ""
-
-            BtnClear.Text = "Clear Sector " & _Disk.OffsetToSector(GetVisibleOffset)
+            ToolStripStatusSector.Visible = False
+            ToolStripStatusCluster.Visible = False
+            ToolStripStatusFile.Visible = False
+            BtnClear.Text = "Clear Sector"
+            BtnClear.Enabled = False
+            ComboBytes.Enabled = False
         Else
-            Dim SelectionEnd = HexBox1.SelectionStart + HexBox1.SelectionLength - 1
-            ToolStripStatusBlock.Visible = True
-            ToolStripStatusBlock.Text = "Block(h): " & SelectionStart.ToString("X") & "-" & SelectionEnd.ToString("X")
-            ToolStripStatusLength.Visible = True
-            ToolStripStatusLength.Text = "Length(h): " & HexBox1.SelectionLength.ToString("X")
-            BtnClear.Text = "Clear Selection"
-        End If
+            Dim Offset As UInteger = HexBox1.LineInfoOffset + SelectionStart
+            Dim Sector As UInteger = 0
+            Dim ClearEnabled As Boolean = False
+            Dim FileName As String = ""
+            Dim OutOfRange As Boolean = SelectionStart >= HexBox1.ByteProvider.Length
 
-        If _CurrentSector <> Sector Or ForceUpdate Then
-            Dim Cluster As UShort = _Disk.SectorToCluster(Sector)
+            If _Disk.IsValidImage Then
+                Sector = _Disk.OffsetToSector(Offset)
+            End If
 
-            ToolStripStatusSector.Visible = Not OutOfRange
-            ToolStripStatusSector.Text = "Sector: " & Sector
-            If Cluster < 2 Then
-                ToolStripStatusCluster.Visible = False
-                ToolStripStatusCluster.Text = ""
+            ToolStripStatusOffset.Visible = Not OutOfRange
+            ToolStripStatusOffset.Text = "Offset(h): " & SelectionStart.ToString("X")
+
+            If HexBox1.SelectionLength = 0 Then
+                ToolStripStatusBlock.Visible = False
+                ToolStripStatusBlock.Text = ""
+                ToolStripStatusLength.Visible = False
+                ToolStripStatusLength.Text = ""
+
+                BtnClear.Text = "Clear Sector " & _Disk.OffsetToSector(GetVisibleOffset)
             Else
-                ToolStripStatusCluster.Visible = Not OutOfRange
-                ToolStripStatusCluster.Text = "Cluster: " & Cluster
+                Dim SelectionEnd = HexBox1.SelectionStart + HexBox1.SelectionLength - 1
+                ToolStripStatusBlock.Visible = True
+                ToolStripStatusBlock.Text = "Block(h): " & SelectionStart.ToString("X") & "-" & SelectionEnd.ToString("X")
+                ToolStripStatusLength.Visible = True
+                ToolStripStatusLength.Text = "Length(h): " & HexBox1.SelectionLength.ToString("X")
+                BtnClear.Text = "Clear Selection"
+            End If
 
-                If _Disk.FileAllocation.ContainsKey(Cluster) Then
-                    Dim OffsetList = _Disk.FileAllocation.Item(Cluster)
-                    Dim DirectoryEntry = _Disk.GetDirectoryEntryByOffset(OffsetList.Item(0))
-                    FileName = DirectoryEntry.GetFullFileName
+            If _CurrentSector <> Sector Or ForceUpdate Then
+                Dim Cluster As UShort = _Disk.SectorToCluster(Sector)
+
+                ToolStripStatusSector.Visible = Not OutOfRange
+                ToolStripStatusSector.Text = "Sector: " & Sector
+                If Cluster < 2 Then
+                    ToolStripStatusCluster.Visible = False
+                    ToolStripStatusCluster.Text = ""
                 Else
-                    ClearEnabled = Not OutOfRange
+                    ToolStripStatusCluster.Visible = Not OutOfRange
+                    ToolStripStatusCluster.Text = "Cluster: " & Cluster
+
+                    If _Disk.FileAllocation.ContainsKey(Cluster) Then
+                        Dim OffsetList = _Disk.FileAllocation.Item(Cluster)
+                        Dim DirectoryEntry = _Disk.GetDirectoryEntryByOffset(OffsetList.Item(0))
+                        FileName = DirectoryEntry.GetFullFileName
+                    Else
+                        ClearEnabled = Not OutOfRange
+                    End If
                 End If
+
+                If FileName.Length = 0 Then
+                    ToolStripStatusFile.Visible = False
+                    ToolStripStatusFile.Text = ""
+                Else
+                    ToolStripStatusFile.Visible = Not OutOfRange
+                    ToolStripStatusFile.Text = "File: " & FileName
+                End If
+
+                BtnClear.Enabled = ClearEnabled
+                ComboBytes.Enabled = ClearEnabled
+
+                _CurrentSector = Sector
             End If
-
-            If FileName.Length = 0 Then
-                ToolStripStatusFile.Visible = False
-                ToolStripStatusFile.Text = ""
-            Else
-                ToolStripStatusFile.Visible = Not OutOfRange
-                ToolStripStatusFile.Text = "File: " & FileName
-            End If
-
-            BtnClear.Enabled = ClearEnabled
-            ComboBytes.Enabled = ClearEnabled
-
-            _CurrentSector = Sector
         End If
     End Sub
 

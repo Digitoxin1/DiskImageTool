@@ -117,6 +117,7 @@
     <Import Include="System.Threading.Tasks" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Copy Protection.vb" />
     <Compile Include="DebugScript.vb" />
     <Compile Include="Forms\FilePropertiesForm.Designer.vb">
       <DependentUpon>FilePropertiesForm.vb</DependentUpon>

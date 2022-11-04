@@ -64,6 +64,7 @@ Partial Class MainForm
         Me.BtnDisplayDirectory = New System.Windows.Forms.ToolStripMenuItem()
         Me.BtnDisplayClusters = New System.Windows.Forms.ToolStripMenuItem()
         Me.BtnDisplayFile = New System.Windows.Forms.ToolStripMenuItem()
+        Me.BtnDisplayBadSectors = New System.Windows.Forms.ToolStripMenuItem()
         Me.BtnExportDebug = New System.Windows.Forms.ToolStripMenuItem()
         Me.ToolStripOEMName = New System.Windows.Forms.ToolStripLabel()
         Me.ListViewSummary = New System.Windows.Forms.ListView()
@@ -258,47 +259,47 @@ Partial Class MainForm
         'BtnChangeOEMName
         '
         Me.BtnChangeOEMName.Name = "BtnChangeOEMName"
-        Me.BtnChangeOEMName.Size = New System.Drawing.Size(180, 22)
+        Me.BtnChangeOEMName.Size = New System.Drawing.Size(179, 22)
         Me.BtnChangeOEMName.Text = "Change &OEM Name"
         '
         'ToolStripSeparator4
         '
         Me.ToolStripSeparator4.Name = "ToolStripSeparator4"
-        Me.ToolStripSeparator4.Size = New System.Drawing.Size(177, 6)
+        Me.ToolStripSeparator4.Size = New System.Drawing.Size(176, 6)
         '
         'BtnFileProperties
         '
         Me.BtnFileProperties.Name = "BtnFileProperties"
-        Me.BtnFileProperties.Size = New System.Drawing.Size(180, 22)
+        Me.BtnFileProperties.Size = New System.Drawing.Size(179, 22)
         Me.BtnFileProperties.Text = "File &Properties"
         '
         'BtnExportFile
         '
         Me.BtnExportFile.Name = "BtnExportFile"
-        Me.BtnExportFile.Size = New System.Drawing.Size(180, 22)
+        Me.BtnExportFile.Size = New System.Drawing.Size(179, 22)
         Me.BtnExportFile.Text = "&Export File"
         '
         'BtnReplaceFile
         '
         Me.BtnReplaceFile.Name = "BtnReplaceFile"
-        Me.BtnReplaceFile.Size = New System.Drawing.Size(180, 22)
+        Me.BtnReplaceFile.Size = New System.Drawing.Size(179, 22)
         Me.BtnReplaceFile.Text = "&Replace File"
         '
         'ToolStripSeparator2
         '
         Me.ToolStripSeparator2.Name = "ToolStripSeparator2"
-        Me.ToolStripSeparator2.Size = New System.Drawing.Size(177, 6)
+        Me.ToolStripSeparator2.Size = New System.Drawing.Size(176, 6)
         '
         'BtnRevert
         '
         Me.BtnRevert.Name = "BtnRevert"
-        Me.BtnRevert.Size = New System.Drawing.Size(180, 22)
+        Me.BtnRevert.Size = New System.Drawing.Size(179, 22)
         Me.BtnRevert.Text = "&Revert Changes"
         Me.BtnRevert.TextAlign = System.Drawing.ContentAlignment.MiddleLeft
         '
         'MainMenuView
         '
-        MainMenuView.DropDownItems.AddRange(New System.Windows.Forms.ToolStripItem() {Me.BtnDisplayBootSector, Me.BtnDisplayFAT, Me.BtnDisplayDirectory, Me.BtnDisplayClusters, Me.BtnDisplayFile})
+        MainMenuView.DropDownItems.AddRange(New System.Windows.Forms.ToolStripItem() {Me.BtnDisplayBootSector, Me.BtnDisplayFAT, Me.BtnDisplayDirectory, Me.BtnDisplayClusters, Me.BtnDisplayFile, Me.BtnDisplayBadSectors})
         MainMenuView.Name = "MainMenuView"
         MainMenuView.Size = New System.Drawing.Size(44, 23)
         MainMenuView.Text = "&View"
@@ -306,32 +307,38 @@ Partial Class MainForm
         'BtnDisplayBootSector
         '
         Me.BtnDisplayBootSector.Name = "BtnDisplayBootSector"
-        Me.BtnDisplayBootSector.Size = New System.Drawing.Size(180, 22)
+        Me.BtnDisplayBootSector.Size = New System.Drawing.Size(179, 22)
         Me.BtnDisplayBootSector.Text = "&Boot Sector"
         '
         'BtnDisplayFAT
         '
         Me.BtnDisplayFAT.Name = "BtnDisplayFAT"
-        Me.BtnDisplayFAT.Size = New System.Drawing.Size(180, 22)
+        Me.BtnDisplayFAT.Size = New System.Drawing.Size(179, 22)
         Me.BtnDisplayFAT.Text = "File &Allocation Table"
         '
         'BtnDisplayDirectory
         '
         Me.BtnDisplayDirectory.Name = "BtnDisplayDirectory"
-        Me.BtnDisplayDirectory.Size = New System.Drawing.Size(180, 22)
-        Me.BtnDisplayDirectory.Text = "&Root Directory"
+        Me.BtnDisplayDirectory.Size = New System.Drawing.Size(179, 22)
+        Me.BtnDisplayDirectory.Text = "Root &Directory"
         '
         'BtnDisplayClusters
         '
         Me.BtnDisplayClusters.Name = "BtnDisplayClusters"
-        Me.BtnDisplayClusters.Size = New System.Drawing.Size(180, 22)
+        Me.BtnDisplayClusters.Size = New System.Drawing.Size(179, 22)
         Me.BtnDisplayClusters.Text = "&Unused Clusters"
         '
         'BtnDisplayFile
         '
         Me.BtnDisplayFile.Name = "BtnDisplayFile"
-        Me.BtnDisplayFile.Size = New System.Drawing.Size(180, 22)
+        Me.BtnDisplayFile.Size = New System.Drawing.Size(179, 22)
         Me.BtnDisplayFile.Text = "&File"
+        '
+        'BtnDisplayBadSectors
+        '
+        Me.BtnDisplayBadSectors.Name = "BtnDisplayBadSectors"
+        Me.BtnDisplayBadSectors.Size = New System.Drawing.Size(179, 22)
+        Me.BtnDisplayBadSectors.Text = "Bad &Sectors"
         '
         'MainMenuExperimental
         '
@@ -428,7 +435,7 @@ Partial Class MainForm
         Me.LabelDropMessage.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.75!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.LabelDropMessage.Location = New System.Drawing.Point(507, 290)
         Me.LabelDropMessage.Name = "LabelDropMessage"
-        Me.LabelDropMessage.Size = New System.Drawing.Size(274, 16)
+        Me.LabelDropMessage.Size = New System.Drawing.Size(273, 16)
         Me.LabelDropMessage.TabIndex = 5
         Me.LabelDropMessage.Text = "Drag && Drop Floppy Disk Images Here"
         Me.LabelDropMessage.TextAlign = System.Drawing.ContentAlignment.MiddleCenter
@@ -599,6 +606,7 @@ Partial Class MainForm
         '
         Me.ContextMenuFilters.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.BtnScanNew, Me.BtnScan, Me.BtnClearFilters, Me.FilterSeparator})
         Me.ContextMenuFilters.Name = "ContextMenuStrip1"
+        Me.ContextMenuFilters.OwnerItem = Me.MainMenuFilters
         Me.ContextMenuFilters.Size = New System.Drawing.Size(168, 76)
         '
         'BtnScanNew
@@ -674,7 +682,7 @@ Partial Class MainForm
         Me.MainMenuStrip = Me.MenuStripMain
         Me.MinimumSize = New System.Drawing.Size(800, 600)
         Me.Name = "MainForm"
-        Me.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen
+        Me.StartPosition = System.Windows.Forms.FormStartPosition.Manual
         Me.Text = "Disk Image Tool"
         Me.StatusStrip1.ResumeLayout(False)
         Me.StatusStrip1.PerformLayout()
@@ -744,4 +752,5 @@ Partial Class MainForm
     Friend WithEvents ComboOEMName As ToolStripComboBox
     Friend WithEvents ToolStripOEMName As ToolStripLabel
     Friend WithEvents ToolStripStatusModified As ToolStripStatusLabel
+    Friend WithEvents BtnDisplayBadSectors As ToolStripMenuItem
 End Class

@@ -9,6 +9,7 @@
     Public Class Disk
         Public Const BootSectorOffset As UInteger = 0
         Public Const BootSectorSize As UInteger = 512
+        Private Const FAT_BADCLUSTER As UShort = &HFF7
         Public Shared ReadOnly InvalidFileChars() As Byte = {&H22, &H2A, &H2B, &H2C, &H2E, &H2F, &H3A, &H3B, &H3C, &H3D, &H3E, &H3F, &H5B, &H5C, &H5D, &H7C}
         Private ReadOnly _BootSector As BootSector
         Private ReadOnly _Directory As Directory
@@ -18,6 +19,7 @@
         Private ReadOnly _Modifications As Hashtable
         Private ReadOnly _OriginalData As Hashtable
         Private _BadClusters As List(Of UShort)
+        Private _BadSectors As HashSet(Of UInteger)
         Private _FAT() As UShort
         Private _FATChains As Dictionary(Of UInteger, FATChain)
         Private _FileAllocation As Dictionary(Of UInteger, List(Of UInteger))
@@ -50,6 +52,12 @@
         Public ReadOnly Property BadClusters As List(Of UShort)
             Get
                 Return _BadClusters
+            End Get
+        End Property
+
+        Public ReadOnly Property BadSectors As HashSet(Of UInteger)
+            Get
+                Return _BadSectors
             End Get
         End Property
 
@@ -375,6 +383,11 @@
             Return VolumeLabel
         End Function
 
+        Public Function HasInvalidSize() As Boolean
+            Dim ReportedSize = (_BootSector.DataRegionStart + _BootSector.DataRegionSize) * _BootSector.BytesPerSector
+            Return ReportedSize <> Data.Length
+        End Function
+
         Public Function HasUnusedClustersWithData() As Boolean
             Dim ClusterSize As UInteger = _BootSector.BytesPerCluster
 
@@ -506,9 +519,10 @@
             Dim Cluster As UShort = ClusterStart
             Dim AssignedClusters As New HashSet(Of UShort)
             Dim OffsetList As List(Of UInteger)
+            Dim ClusterCount = _FAT.Length - 1
 
             Do
-                If Cluster > 1 And Cluster < _FAT.Length Then
+                If Cluster >= 2 And Cluster <= ClusterCount Then
                     If AssignedClusters.Contains(Cluster) Then
                         FatChain.HasCircularChain = True
                         Exit Do
@@ -539,7 +553,7 @@
                 Else
                     Cluster = 0
                 End If
-            Loop Until Cluster < &H2 Or Cluster > &HFEF
+            Loop Until Cluster < 2 Or Cluster > ClusterCount
 
             _FATChains.Item(Offset) = FatChain
 
@@ -605,6 +619,7 @@
             _FileAllocation = New Dictionary(Of UInteger, List(Of UInteger))
             _FreeSpace = 0
             _BadClusters = New List(Of UShort)
+            _BadSectors = New HashSet(Of UInteger)
 
             Dim b As UInteger
             Dim Start As Integer = 0
@@ -614,8 +629,11 @@
                 _FAT(Cluster) = b Mod 4096
                 If _FAT(Cluster) = 0 Then
                     _FreeSpace += ClusterSize
-                ElseIf _FAT(Cluster) = &HFF7 Then
+                ElseIf _FAT(Cluster) = FAT_BADCLUSTER Then
                     _BadClusters.Add(Cluster)
+                    For Counter = 0 To _BootSector.SectorsPerCluster - 1
+                        _BadSectors.Add(ClusterToSector(Cluster) + Counter)
+                    Next Counter
                 End If
                 Cluster += 1
                 If Cluster <= Size Then
@@ -623,8 +641,11 @@
                     _FAT(Cluster) = b Mod 4096
                     If _FAT(Cluster) = 0 Then
                         _FreeSpace += ClusterSize
-                    ElseIf _FAT(Cluster) = &HFF7 Then
+                    ElseIf _FAT(Cluster) = FAT_BADCLUSTER Then
                         _BadClusters.Add(Cluster)
+                        For Counter = 0 To _BootSector.SectorsPerCluster - 1
+                            _BadSectors.Add(ClusterToSector(Cluster) + Counter)
+                        Next Counter
                     End If
                     Cluster += 1
                 End If
