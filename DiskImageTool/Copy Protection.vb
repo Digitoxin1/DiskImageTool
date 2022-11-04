@@ -23,22 +23,35 @@ Module Copy_Protection
     Public Function GetCopyProtection(Disk As DiskImage.Disk) As String
         Dim ProtectionFound As Boolean = False
         Dim ProtectionName As String = ""
+        Dim DataLength = Disk.Data.Length
+        Dim Offset As UInteger
 
-        If Not ProtectionFound AndAlso Disk.BadSectors.Count = 2 Then
+        'H.L.S. Duplication
+        If Not ProtectionFound AndAlso Disk.BadSectors.Count >= 2 Then
             If CheckBadSectors(Disk, {708, 709}) Then
-                ProtectionFound = True
-                ProtectionName = "H.L.S. Duplication"
+                Offset = Disk.SectorToOffset(709)
+                If Offset + 8 <= DataLength Then
+                    Dim b1 = Disk.GetBytes(Offset, 8)
+                    Offset = Disk.SectorToOffset(708)
+                    Dim b2 = Disk.GetBytes(Offset, 8)
+                    If ByteArrayCompare(b1, b2) AndAlso Integer.TryParse(Encoding.UTF8.GetString(b1, 3, 4), 0) Then
+                        ProtectionFound = True
+                        ProtectionName = "H.L.S. Duplication"
+                    End If
+                End If
             End If
         End If
 
-        If Not ProtectionFound AndAlso Disk.BadSectors.Count = 10 Then
+        'Softguard 2.0.3 (Sierra)
+        If Not ProtectionFound AndAlso Disk.BadSectors.Count >= 10 Then
             If CheckBadSectors(Disk, {108, 109, 110, 111, 112, 113, 114, 115, 116, 117}) AndAlso Disk.Directory.HasFile("CPC.COM") Then
                 ProtectionFound = True
                 ProtectionName = "Softguard 2.0.3 (Sierra)"
             End If
         End If
 
-        If Not ProtectionFound AndAlso Disk.BadSectors.Count = 10 Then
+        'Origin Systems OSI-1
+        If Not ProtectionFound AndAlso Disk.BadSectors.Count >= 10 Then
             If CheckBadSectors(Disk, {108, 109, 110, 111, 112, 113, 114, 115, 116, 117}) _
                 AndAlso CheckFileList(Disk, {"2400AD.EXE", "ULTIMA.COM", "ULTIMA.EXE", "ULTIMAII.EXE"}) Then
 
@@ -47,37 +60,45 @@ Module Copy_Protection
             End If
         End If
 
-        If Not ProtectionFound AndAlso Disk.BadSectors.Count = 10 Then
-            For Each Sector In Disk.BadSectors
-                Dim b = Disk.GetBytes(Disk.SectorToOffset(Sector), 31)
-                If Encoding.UTF8.GetString(b) = "(c) 1986 for KBI by L. TOURNIER" Then
-                    ProtectionFound = True
-                    ProtectionName = "KBI"
-                    Exit For
+        'KBI
+        If Not ProtectionFound AndAlso Disk.BadSectors.Count >= 10 Then
+            For Sector As UInteger = 710 To 729
+                If Disk.BadSectors.Contains(Sector) Then
+                    Offset = Disk.SectorToOffset(Sector)
+                    If Offset + 31 <= DataLength Then
+                        Dim b = Disk.GetBytes(Offset, 31)
+                        If Encoding.UTF8.GetString(b) = "(c) 1986 for KBI by L. TOURNIER" Then
+                            ProtectionFound = True
+                            ProtectionName = "KBI"
+                            Exit For
+                        End If
+                    End If
                 End If
             Next
         End If
 
-        If Not ProtectionFound AndAlso Disk.BadSectors.Count = 8 AndAlso Disk.BootSector.MediaDescriptor = &HFD Then
-            If CheckBadSectors(Disk, {684, 685, 686, 687, 702, 703, 704, 705}) Then
+        'Microprose Protection 2
+        If Not ProtectionFound AndAlso Disk.BadSectors.Count >= 8 AndAlso Disk.BootSector.MediaDescriptor = &HFD Then
+            If CheckBadSectors(Disk, {684, 685, 686, 687, 702, 703, 704, 705}) AndAlso Not CheckBadSectors(Disk, {683, 706}) Then
                 ProtectionFound = True
                 ProtectionName = "Microprose Protection 2"
             End If
         End If
 
-        If Not ProtectionFound AndAlso Disk.BadSectors.Count = 8 AndAlso Disk.BootSector.MediaDescriptor = &HF9 Then
-            If CheckBadSectors(Disk, {1406, 1407, 1408, 1409, 1424, 1425, 1426, 1427}) Then
+        If Not ProtectionFound AndAlso Disk.BadSectors.Count >= 8 AndAlso Disk.BootSector.MediaDescriptor = &HF9 Then
+            If CheckBadSectors(Disk, {1406, 1407, 1408, 1409, 1424, 1425, 1426, 1427}) AndAlso Not CheckBadSectors(Disk, {1405, 1428}) Then
                 ProtectionFound = True
                 ProtectionName = "Microprose Protection 2"
             End If
             If Not ProtectionFound Then
-                If CheckBadSectors(Disk, {1404, 1405, 1406, 1407, 1422, 1423, 1424, 1425}) Then
+                If CheckBadSectors(Disk, {1404, 1405, 1406, 1407, 1422, 1423, 1424, 1425}) AndAlso Not CheckBadSectors(Disk, {1403, 1426}) Then
                     ProtectionFound = True
                     ProtectionName = "Microprose Protection 2"
                 End If
             End If
         End If
 
+        'Softguard 2.x/3.x
         If Not ProtectionFound AndAlso Disk.Directory.HasFile("CML0300.FCL") Then
             ProtectionFound = True
             ProtectionName = "Softguard 2.x/3.x"
@@ -91,7 +112,7 @@ Module Copy_Protection
     End Function
 
     Public Function GetBroderbundCopyright(Disk As DiskImage.Disk) As String
-        If Disk.BadSectors.Count = 2 AndAlso CheckBadSectors(Disk, {186, 187}) Then
+        If Disk.BadSectors.Count >= 2 AndAlso CheckBadSectors(Disk, {186, 187}) AndAlso Not CheckBadSectors(Disk, {185, 188}) Then
             Dim b = Disk.GetBytes(Disk.SectorToOffset(186), Disk.BootSector.BytesPerSector)
             Dim Counter As Integer
             For Counter = 0 To b.Length - 1

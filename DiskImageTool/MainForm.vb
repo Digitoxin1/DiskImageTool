@@ -1813,8 +1813,9 @@ Public Class MainForm
                 Else
                     ForeColor = SystemColors.WindowText
                 End If
-                .Add(ListViewTileGetItem(BootRecordGroup, "Bootstrap Jump", BitConverter.ToString(_Disk.BootSector.JmpBoot), ForeColor))
-                .Add(ListViewTileGetItem(BootRecordGroup, "Bootstrap CRC32", Crc32.ComputeChecksum(_Disk.BootSector.BootStrapCode).ToString("X8")))
+                If Debugger.IsAttached Then
+                    .Add(ListViewTileGetItem(BootRecordGroup, "Bootstrap Jump", BitConverter.ToString(_Disk.BootSector.JmpBoot), ForeColor))
+                End If
 
                 Dim FileSystemGroup = ListViewSummary.Groups.Add("FileSystem", "File System")
 
@@ -1835,6 +1836,10 @@ Public Class MainForm
                 End If
 
                 Dim BootStrapGroup = ListViewSummary.Groups.Add("Bootstrap", "Bootstrap")
+
+                If Debugger.IsAttached Then
+                    .Add(ListViewTileGetItem(BootStrapGroup, "Bootstrap CRC32", Crc32.ComputeChecksum(_Disk.BootSector.BootStrapCode).ToString("X8")))
+                End If
 
                 If BootstrapType IsNot Nothing Then
                     If BootstrapType.Language.Length > 0 Then
