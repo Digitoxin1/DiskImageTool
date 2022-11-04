@@ -30,7 +30,7 @@
     <ProductName>DiskImageTool</ProductName>
     <PublisherName>Digitoxin</PublisherName>
     <ApplicationRevision>1</ApplicationRevision>
-    <ApplicationVersion>1.12.0.%2a</ApplicationVersion>
+    <ApplicationVersion>1.13.0.%2a</ApplicationVersion>
     <UseApplicationTrust>false</UseApplicationTrust>
     <PublishWizardCompleted>true</PublishWizardCompleted>
     <BootstrapperEnabled>true</BootstrapperEnabled>
