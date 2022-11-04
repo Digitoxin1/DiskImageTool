@@ -11,3 +11,5 @@ What does DiskImageTool do?
 4. Remove Created and Last Accessed date and time stamps from one or more directory entries.
 
 Suggestions for new features are welcome.
+
+![Screenshot](https://user-images.githubusercontent.com/5696659/199896684-e2162a0f-6ba9-47a3-a25d-0e6a8be51518.png)
