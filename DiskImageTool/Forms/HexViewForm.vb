@@ -7,6 +7,8 @@ Public Class HexViewForm
     Private _DataList As List(Of HexViewData)
     Private _Disk As DiskImage.Disk
     Private _Modified As Boolean = False
+    Private _RegionDescriptions As Dictionary(Of UInteger, HexViewHighlightRegion)
+    Private _Initialized As Boolean = False
 
     Public Sub New(Disk As DiskImage.Disk, Block As DiskImage.DataBlock, AllowModifications As Boolean, Caption As String)
         ' This call is required by the designer.
@@ -171,6 +173,7 @@ Public Class HexViewForm
             End If
         End With
 
+        InitRegionDescriptions(Data.HighlightedRegions)
         RefreshSelection(True)
 
         ToolStripStatusBytes.Text = Format(BlockLength, "N0") & " bytes"
@@ -197,6 +200,19 @@ Public Class HexViewForm
 
         Me.Text = "Hex Viewer" & IIf(Caption <> "", " - " & Caption, "")
     End Sub
+
+    Private Sub InitRegionDescriptions(HighlightedRegions As HighlightedRegions)
+        _RegionDescriptions = New Dictionary(Of UInteger, HexViewHighlightRegion)
+
+        For Each HighlightedRegion In HighlightedRegions
+            If HighlightedRegion.Description.Length > 0 Then
+                For Counter = 0 To HighlightedRegion.Size - 1
+                    _RegionDescriptions.Item(HighlightedRegion.Start + Counter) = HighlightedRegion
+                Next
+            End If
+        Next
+    End Sub
+
     Private Sub ProcessKeyPress(e As KeyEventArgs)
         If e.KeyCode = 40 Then 'Down Arrow
             Dim LineCount = Math.Ceiling(HexBox1.ByteProvider.Length / HexBox1.HorizontalByteCount)
@@ -269,7 +285,13 @@ Public Class HexViewForm
         End If
     End Sub
     Private Sub RefreshSelection(ForceUpdate As Boolean)
+        If Not _Initialized And Not ForceUpdate Then
+            Exit Sub
+        End If
+
         Dim SelectionStart = HexBox1.SelectionStart
+        Dim SelectionLength = HexBox1.SelectionLength
+        Dim SelectionEnd = SelectionStart + SelectionLength - 1
 
         If SelectionStart = -1 Then
             ToolStripStatusOffset.Visible = False
@@ -278,6 +300,7 @@ Public Class HexViewForm
             ToolStripStatusSector.Visible = False
             ToolStripStatusCluster.Visible = False
             ToolStripStatusFile.Visible = False
+            ToolStripStatusDescription.Visible = False
             BtnClear.Text = "Clear Sector"
             BtnClear.Enabled = False
             ComboBytes.Enabled = False
@@ -295,7 +318,7 @@ Public Class HexViewForm
             ToolStripStatusOffset.Visible = Not OutOfRange
             ToolStripStatusOffset.Text = "Offset(h): " & SelectionStart.ToString("X")
 
-            If HexBox1.SelectionLength = 0 Then
+            If SelectionLength = 0 Then
                 ToolStripStatusBlock.Visible = False
                 ToolStripStatusBlock.Text = ""
                 ToolStripStatusLength.Visible = False
@@ -303,11 +326,10 @@ Public Class HexViewForm
 
                 BtnClear.Text = "Clear Sector " & _Disk.OffsetToSector(GetVisibleOffset)
             Else
-                Dim SelectionEnd = HexBox1.SelectionStart + HexBox1.SelectionLength - 1
                 ToolStripStatusBlock.Visible = True
                 ToolStripStatusBlock.Text = "Block(h): " & SelectionStart.ToString("X") & "-" & SelectionEnd.ToString("X")
                 ToolStripStatusLength.Visible = True
-                ToolStripStatusLength.Text = "Length(h): " & HexBox1.SelectionLength.ToString("X")
+                ToolStripStatusLength.Text = "Length(h): " & SelectionLength.ToString("X")
                 BtnClear.Text = "Clear Selection"
             End If
 
@@ -345,7 +367,38 @@ Public Class HexViewForm
 
                 _CurrentSector = Sector
             End If
+
+            If ToolStripStatusFile.Visible Or _RegionDescriptions.Count = 0 Then
+                ToolStripStatusDescription.Visible = False
+            Else
+                Dim RegionStart As HexViewHighlightRegion
+                Dim RegionEnd As HexViewHighlightRegion
+
+                If _RegionDescriptions.ContainsKey(SelectionStart) Then
+                    RegionStart = _RegionDescriptions.Item(SelectionStart)
+                Else
+                    RegionStart = Nothing
+                End If
+
+                If SelectionLength = 0 Then
+                    RegionEnd = RegionStart
+                ElseIf _RegionDescriptions.ContainsKey(SelectionEnd) Then
+                    RegionEnd = _RegionDescriptions.Item(SelectionEnd)
+                Else
+                    RegionEnd = Nothing
+                End If
+
+                If RegionStart IsNot Nothing AndAlso RegionStart Is RegionEnd Then
+                    ToolStripStatusDescription.Visible = Not OutOfRange
+                    ToolStripStatusDescription.Text = _RegionDescriptions.Item(SelectionStart).Description
+                Else
+                    ToolStripStatusDescription.Visible = False
+                    ToolStripStatusDescription.Text = ""
+                End If
+            End If
         End If
+
+        _Initialized = True
     End Sub
 
 #Region "Events"

@@ -24,6 +24,53 @@ Module Functions
 
     Private CodePage437ReverseLookupTable As Dictionary(Of UShort, Byte)
 
+    Public Function BootSectorDescription(Offset As DiskImage.BootSector.BootSectorOffset) As String
+        Select Case Offset
+            Case DiskImage.BootSector.BootSectorOffset.JmpBoot
+                Return "Bootstrap Jump"
+            Case DiskImage.BootSector.BootSectorOffset.OEMName
+                Return "OEM Name"
+            Case DiskImage.BootSector.BootSectorOffset.BytesPerSector
+                Return "Bytes per Sector"
+            Case DiskImage.BootSector.BootSectorOffset.SectorsPerCluster
+                Return "Sectors per Cluster"
+            Case DiskImage.BootSector.BootSectorOffset.ReservedSectorCount
+                Return "Reserved Sectors"
+            Case DiskImage.BootSector.BootSectorOffset.NumberOfFATs
+                Return "Number of FATs"
+            Case DiskImage.BootSector.BootSectorOffset.RootEntryCount
+                Return "Root Directory Entries"
+            Case DiskImage.BootSector.BootSectorOffset.SectorCountSmall
+                Return "Total Sector Count"
+            Case DiskImage.BootSector.BootSectorOffset.MediaDescriptor
+                Return "Media Descriptor"
+            Case DiskImage.BootSector.BootSectorOffset.SectorsPerFAT
+                Return "Sectors per FAT"
+            Case DiskImage.BootSector.BootSectorOffset.SectorsPerTrack
+                Return "Sectors per Track"
+            Case DiskImage.BootSector.BootSectorOffset.NumberOfHeads
+                Return "Number of Heads"
+            Case DiskImage.BootSector.BootSectorOffset.HiddenSectors
+                Return "Hidden Sectors"
+            Case DiskImage.BootSector.BootSectorOffset.DriveNumber
+                Return "Drive Number"
+            Case DiskImage.BootSector.BootSectorOffset.Reserved
+                Return "Reserved"
+            Case DiskImage.BootSector.BootSectorOffset.ExtendedBootSignature
+                Return "Extended Boot Signature"
+            Case DiskImage.BootSector.BootSectorOffset.VolumeSerialNumber
+                Return "Volume Serial Number"
+            Case DiskImage.BootSector.BootSectorOffset.VolumeLabel
+                Return "Volume Label"
+            Case DiskImage.BootSector.BootSectorOffset.FileSystemType
+                Return "File System ID"
+            Case DiskImage.BootSector.BootSectorOffset.BootStrapSignature
+                Return "Boot Sector Signature"
+            Case Else
+                Return Offset.ToString
+        End Select
+    End Function
+
     Public Function ByteArrayCompare(b1() As Byte, b2() As Byte) As Boolean
         If b1.Length <> b2.Length Then
             Return False

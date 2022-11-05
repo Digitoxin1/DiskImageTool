@@ -39,14 +39,15 @@ Partial Class HexViewForm
         Me.BtnSelectAll = New System.Windows.Forms.ToolStripMenuItem()
         Me.BtnCRC32 = New System.Windows.Forms.ToolStripMenuItem()
         Me.StatusStrip1 = New System.Windows.Forms.StatusStrip()
+        Me.ToolStripStatusFile = New System.Windows.Forms.ToolStripStatusLabel()
+        Me.ToolStripStatusOffset = New System.Windows.Forms.ToolStripStatusLabel()
         Me.ToolStripStatusBlock = New System.Windows.Forms.ToolStripStatusLabel()
+        Me.ToolStripStatusLength = New System.Windows.Forms.ToolStripStatusLabel()
+        Me.ToolStripStatusGap = New System.Windows.Forms.ToolStripStatusLabel()
         Me.ToolStripStatusCluster = New System.Windows.Forms.ToolStripStatusLabel()
         Me.ToolStripStatusSector = New System.Windows.Forms.ToolStripStatusLabel()
-        Me.ToolStripStatusGap = New System.Windows.Forms.ToolStripStatusLabel()
         Me.ToolStripStatusBytes = New System.Windows.Forms.ToolStripStatusLabel()
-        Me.ToolStripStatusOffset = New System.Windows.Forms.ToolStripStatusLabel()
-        Me.ToolStripStatusLength = New System.Windows.Forms.ToolStripStatusLabel()
-        Me.ToolStripStatusFile = New System.Windows.Forms.ToolStripStatusLabel()
+        Me.ToolStripStatusDescription = New System.Windows.Forms.ToolStripStatusLabel()
         ToolStripSeparator1 = New System.Windows.Forms.ToolStripSeparator()
         ToolStripSeparator2 = New System.Windows.Forms.ToolStripSeparator()
         Me.FlowLayoutHeader.SuspendLayout()
@@ -207,12 +208,32 @@ Partial Class HexViewForm
         '
         'StatusStrip1
         '
-        Me.StatusStrip1.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.ToolStripStatusFile, Me.ToolStripStatusOffset, Me.ToolStripStatusBlock, Me.ToolStripStatusLength, Me.ToolStripStatusGap, Me.ToolStripStatusCluster, Me.ToolStripStatusSector, Me.ToolStripStatusBytes})
+        Me.StatusStrip1.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.ToolStripStatusFile, Me.ToolStripStatusDescription, Me.ToolStripStatusOffset, Me.ToolStripStatusBlock, Me.ToolStripStatusLength, Me.ToolStripStatusGap, Me.ToolStripStatusCluster, Me.ToolStripStatusSector, Me.ToolStripStatusBytes})
         Me.StatusStrip1.Location = New System.Drawing.Point(0, 569)
         Me.StatusStrip1.Name = "StatusStrip1"
         Me.StatusStrip1.Size = New System.Drawing.Size(669, 24)
         Me.StatusStrip1.TabIndex = 2
         Me.StatusStrip1.Text = "StatusStrip1"
+        '
+        'ToolStripStatusFile
+        '
+        Me.ToolStripStatusFile.BorderSides = System.Windows.Forms.ToolStripStatusLabelBorderSides.Right
+        Me.ToolStripStatusFile.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text
+        Me.ToolStripStatusFile.Margin = New System.Windows.Forms.Padding(2, 3, 2, 2)
+        Me.ToolStripStatusFile.Name = "ToolStripStatusFile"
+        Me.ToolStripStatusFile.Size = New System.Drawing.Size(32, 19)
+        Me.ToolStripStatusFile.Text = "File:"
+        Me.ToolStripStatusFile.TextAlign = System.Drawing.ContentAlignment.MiddleLeft
+        '
+        'ToolStripStatusOffset
+        '
+        Me.ToolStripStatusOffset.BorderSides = System.Windows.Forms.ToolStripStatusLabelBorderSides.Right
+        Me.ToolStripStatusOffset.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text
+        Me.ToolStripStatusOffset.Margin = New System.Windows.Forms.Padding(2, 3, 2, 2)
+        Me.ToolStripStatusOffset.Name = "ToolStripStatusOffset"
+        Me.ToolStripStatusOffset.Size = New System.Drawing.Size(70, 19)
+        Me.ToolStripStatusOffset.Text = "Offset(h): 0"
+        Me.ToolStripStatusOffset.TextAlign = System.Drawing.ContentAlignment.MiddleLeft
         '
         'ToolStripStatusBlock
         '
@@ -223,6 +244,22 @@ Partial Class HexViewForm
         Me.ToolStripStatusBlock.Size = New System.Drawing.Size(78, 19)
         Me.ToolStripStatusBlock.Text = "Block(h): 0-0"
         Me.ToolStripStatusBlock.TextAlign = System.Drawing.ContentAlignment.MiddleLeft
+        '
+        'ToolStripStatusLength
+        '
+        Me.ToolStripStatusLength.BorderSides = System.Windows.Forms.ToolStripStatusLabelBorderSides.Right
+        Me.ToolStripStatusLength.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text
+        Me.ToolStripStatusLength.Margin = New System.Windows.Forms.Padding(2, 3, 2, 2)
+        Me.ToolStripStatusLength.Name = "ToolStripStatusLength"
+        Me.ToolStripStatusLength.Size = New System.Drawing.Size(75, 19)
+        Me.ToolStripStatusLength.Text = "Length(h): 0"
+        Me.ToolStripStatusLength.TextAlign = System.Drawing.ContentAlignment.MiddleLeft
+        '
+        'ToolStripStatusGap
+        '
+        Me.ToolStripStatusGap.Name = "ToolStripStatusGap"
+        Me.ToolStripStatusGap.Size = New System.Drawing.Size(107, 19)
+        Me.ToolStripStatusGap.Spring = True
         '
         'ToolStripStatusCluster
         '
@@ -244,12 +281,6 @@ Partial Class HexViewForm
         Me.ToolStripStatusSector.Text = "Sector 0"
         Me.ToolStripStatusSector.TextAlign = System.Drawing.ContentAlignment.MiddleRight
         '
-        'ToolStripStatusGap
-        '
-        Me.ToolStripStatusGap.Name = "ToolStripStatusGap"
-        Me.ToolStripStatusGap.Size = New System.Drawing.Size(213, 19)
-        Me.ToolStripStatusGap.Spring = True
-        '
         'ToolStripStatusBytes
         '
         Me.ToolStripStatusBytes.BorderSides = System.Windows.Forms.ToolStripStatusLabelBorderSides.Left
@@ -260,35 +291,15 @@ Partial Class HexViewForm
         Me.ToolStripStatusBytes.Text = "0 Bytes"
         Me.ToolStripStatusBytes.TextAlign = System.Drawing.ContentAlignment.MiddleRight
         '
-        'ToolStripStatusOffset
+        'ToolStripStatusDescription
         '
-        Me.ToolStripStatusOffset.BorderSides = System.Windows.Forms.ToolStripStatusLabelBorderSides.Right
-        Me.ToolStripStatusOffset.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text
-        Me.ToolStripStatusOffset.Margin = New System.Windows.Forms.Padding(2, 3, 2, 2)
-        Me.ToolStripStatusOffset.Name = "ToolStripStatusOffset"
-        Me.ToolStripStatusOffset.Size = New System.Drawing.Size(70, 19)
-        Me.ToolStripStatusOffset.Text = "Offset(h): 0"
-        Me.ToolStripStatusOffset.TextAlign = System.Drawing.ContentAlignment.MiddleLeft
-        '
-        'ToolStripStatusLength
-        '
-        Me.ToolStripStatusLength.BorderSides = System.Windows.Forms.ToolStripStatusLabelBorderSides.Right
-        Me.ToolStripStatusLength.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text
-        Me.ToolStripStatusLength.Margin = New System.Windows.Forms.Padding(2, 3, 2, 2)
-        Me.ToolStripStatusLength.Name = "ToolStripStatusLength"
-        Me.ToolStripStatusLength.Size = New System.Drawing.Size(75, 19)
-        Me.ToolStripStatusLength.Text = "Length(h): 0"
-        Me.ToolStripStatusLength.TextAlign = System.Drawing.ContentAlignment.MiddleLeft
-        '
-        'ToolStripStatusFile
-        '
-        Me.ToolStripStatusFile.BorderSides = System.Windows.Forms.ToolStripStatusLabelBorderSides.Right
-        Me.ToolStripStatusFile.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text
-        Me.ToolStripStatusFile.Margin = New System.Windows.Forms.Padding(2, 3, 2, 2)
-        Me.ToolStripStatusFile.Name = "ToolStripStatusFile"
-        Me.ToolStripStatusFile.Size = New System.Drawing.Size(32, 19)
-        Me.ToolStripStatusFile.Text = "File:"
-        Me.ToolStripStatusFile.TextAlign = System.Drawing.ContentAlignment.MiddleLeft
+        Me.ToolStripStatusDescription.BorderSides = System.Windows.Forms.ToolStripStatusLabelBorderSides.Right
+        Me.ToolStripStatusDescription.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text
+        Me.ToolStripStatusDescription.Margin = New System.Windows.Forms.Padding(2, 3, 2, 2)
+        Me.ToolStripStatusDescription.Name = "ToolStripStatusDescription"
+        Me.ToolStripStatusDescription.Size = New System.Drawing.Size(71, 19)
+        Me.ToolStripStatusDescription.Text = "Description"
+        Me.ToolStripStatusDescription.TextAlign = System.Drawing.ContentAlignment.MiddleLeft
         '
         'HexViewForm
         '
@@ -338,4 +349,5 @@ Partial Class HexViewForm
     Friend WithEvents ToolStripStatusOffset As ToolStripStatusLabel
     Friend WithEvents ToolStripStatusLength As ToolStripStatusLabel
     Friend WithEvents ToolStripStatusFile As ToolStripStatusLabel
+    Friend WithEvents ToolStripStatusDescription As ToolStripStatusLabel
 End Class

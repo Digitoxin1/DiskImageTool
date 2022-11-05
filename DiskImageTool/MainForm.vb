@@ -1,6 +1,8 @@
 ﻿Imports System.ComponentModel
+Imports System.Net.Http.Headers
 Imports System.Text
-Imports DiskImageTool.DiskImage
+Imports BootSectorOffset = DiskImageTool.DiskImage.BootSector.BootSectorOffset
+Imports BootSectorSize = DiskImageTool.DiskImage.BootSector.BootSectorSize
 
 Public Structure FileData
     Dim DirectoryEntry As DiskImage.DirectoryEntry
@@ -365,19 +367,12 @@ Public Class MainForm
     End Sub
 
     Private Sub BootSectorDisplayHex()
+
         Dim Data As New HexViewData(DiskImage.Disk.NewDataBlock(DiskImage.Disk.BootSectorOffset, DiskImage.Disk.BootSectorSize))
 
         If _Disk.IsValidImage Then
             Dim BootStrapStart = _Disk.BootSector.GetBootStrapOffset
-            Dim BootStrapLength = DiskImage.BootSector.BootSectorOffset.BootStrapSignature - BootStrapStart
-            Dim JmpBootStart = DiskImage.BootSector.BootSectorOffset.JmpBoot
-            Dim JmpBootLength = DiskImage.BootSector.BootSectorSize.JmpBoot
-            Dim OEMNameStart = DiskImage.BootSector.BootSectorOffset.OEMName
-            Dim OEMNameLength = DiskImage.BootSector.BootSectorSize.OEMName
-            Dim BiosParameterBlockStart = DiskImage.BootSector.BootSectorOffset.BiosParameterBlock
-            Dim BiosParameterBlockLength = DiskImage.BootSector.BootSectorSize.BiosParameterBlockFat12
-            Dim ExtenderParameterBlockStart = DiskImage.BootSector.BootSectorOffset.ExtendedParameterBlock
-            Dim ExtenderParameterBlockLength = DiskImage.BootSector.BootSectorSize.ExtendedParameterBlock
+            Dim BootStrapLength = BootSectorOffset.BootStrapSignature - BootStrapStart
 
             Dim ForeColor As Color
             If _Disk.BootSector.HasValidJumpInstruction Then
@@ -386,15 +381,31 @@ Public Class MainForm
                 ForeColor = Color.Black
             End If
 
-            Data.HighlightedRegions.Add(New HexViewHighlightRegion(JmpBootStart, JmpBootLength, ForeColor, Color.White))
-            Data.HighlightedRegions.Add(New HexViewHighlightRegion(OEMNameStart, OEMNameLength, Color.Red, Color.White))
-            Data.HighlightedRegions.Add(New HexViewHighlightRegion(BiosParameterBlockStart, BiosParameterBlockLength, Color.Blue, Color.White))
-            If _Disk.BootSector.HasValidExtendedBootSignature And BootStrapStart >= ExtenderParameterBlockStart + ExtenderParameterBlockLength Then
-                Data.HighlightedRegions.Add(New HexViewHighlightRegion(ExtenderParameterBlockStart, ExtenderParameterBlockLength, Color.Purple, Color.White))
+            Data.HighlightedRegions.AddOffset(BootSectorOffset.JmpBoot, ForeColor)
+            Data.HighlightedRegions.AddOffset(BootSectorOffset.OEMName, Color.Red)
+            Data.HighlightedRegions.AddOffset(BootSectorOffset.BytesPerSector, Color.Blue)
+            Data.HighlightedRegions.AddOffset(BootSectorOffset.SectorsPerCluster, Color.Blue)
+            Data.HighlightedRegions.AddOffset(BootSectorOffset.ReservedSectorCount, Color.Blue)
+            Data.HighlightedRegions.AddOffset(BootSectorOffset.NumberOfFATs, Color.Blue)
+            Data.HighlightedRegions.AddOffset(BootSectorOffset.RootEntryCount, Color.Blue)
+            Data.HighlightedRegions.AddOffset(BootSectorOffset.SectorCountSmall, Color.Blue)
+            Data.HighlightedRegions.AddOffset(BootSectorOffset.MediaDescriptor, Color.Blue)
+            Data.HighlightedRegions.AddOffset(BootSectorOffset.SectorsPerFAT, Color.Blue)
+            Data.HighlightedRegions.AddOffset(BootSectorOffset.SectorsPerTrack, Color.Blue)
+            Data.HighlightedRegions.AddOffset(BootSectorOffset.NumberOfHeads, Color.Blue)
+            Data.HighlightedRegions.AddOffset(BootSectorOffset.HiddenSectors, Color.Blue)
+
+            If _Disk.BootSector.HasValidExtendedBootSignature And BootStrapStart >= BootSectorOffset.FileSystemType + BootSectorSize.FileSystemType Then
+                Data.HighlightedRegions.AddOffset(BootSectorOffset.DriveNumber, Color.Purple)
+                Data.HighlightedRegions.AddOffset(BootSectorOffset.Reserved, Color.Purple)
+                Data.HighlightedRegions.AddOffset(BootSectorOffset.ExtendedBootSignature, Color.Purple)
+                Data.HighlightedRegions.AddOffset(BootSectorOffset.VolumeSerialNumber, Color.Purple)
+                Data.HighlightedRegions.AddOffset(BootSectorOffset.VolumeLabel, Color.Purple)
+                Data.HighlightedRegions.AddOffset(BootSectorOffset.FileSystemType, Color.Purple)
             End If
 
             If BootStrapStart > 2 And BootStrapLength > 1 Then
-                Data.HighlightedRegions.Add(New HexViewHighlightRegion(BootStrapStart, BootStrapLength, ForeColor, Color.White))
+                Data.HighlightedRegions.AddItem(BootStrapStart, BootStrapLength, ForeColor, "Boot Strap Code")
             End If
 
             If _Disk.BootSector.HasValidBootStrapSignature Then
@@ -402,8 +413,8 @@ Public Class MainForm
             Else
                 ForeColor = Color.Black
             End If
-            Data.HighlightedRegions.Add(New HexViewHighlightRegion(510, 2, ForeColor, Color.White))
 
+            Data.HighlightedRegions.AddOffset(BootSectorOffset.BootStrapSignature, ForeColor)
         End If
 
         Dim frmHexView As New HexViewForm(_Disk, Data, False, "Boot Sector")
@@ -800,7 +811,7 @@ Public Class MainForm
 
     Private Sub FATDisplayHex()
         Dim DataList As New List(Of HexViewData)
-        Dim HighlightedRegions As New List(Of HexViewHighlightRegion)
+        Dim HighlightedRegions As New HighlightedRegions
         Dim OriginalData() As Byte = Nothing
         For Index = 0 To _Disk.BootSector.NumberOfFATs - 1
             Dim Length As UInteger = _Disk.BootSector.SectorsPerFAT * _Disk.BootSector.BytesPerSector
@@ -817,7 +828,7 @@ Public Class MainForm
                     If Data(Counter) <> OriginalData(Counter) Then
                         If Counter > HighlightStart + 1 Then
                             If HighlightLength > 0 Then
-                                HighlightedRegions.Add(New HexViewHighlightRegion(HighlightStart, HighlightLength, Color.Red, Color.White))
+                                HighlightedRegions.AddItem(HighlightStart, HighlightLength, Color.Red)
                             End If
                             HighlightStart = Counter
                             HighlightLength = 1
@@ -827,7 +838,7 @@ Public Class MainForm
                     End If
                 Next
                 If HighlightLength > 0 Then
-                    HighlightedRegions.Add(New HexViewHighlightRegion(HighlightStart, HighlightLength, Color.Red, Color.White))
+                    HighlightedRegions.AddItem(HighlightStart, HighlightLength, Color.Red)
                 End If
             End If
         Next
@@ -1260,14 +1271,12 @@ Public Class MainForm
                 For Counter As UInteger = 0 To Block.Length - 1 Step _Disk.BootSector.BytesPerCluster
                     Dim Cluster = _Disk.OffsetToCluster(Block.Offset + Counter)
                     If _Disk.FileAllocation.ContainsKey(Cluster) Then
-                        Dim HighlightedRegion As New HexViewHighlightRegion(Counter, Math.Min(FileSize, _Disk.BootSector.BytesPerCluster), Color.Red, Color.White)
-                        HexViewData.HighlightedRegions.Add(HighlightedRegion)
+                        HexViewData.HighlightedRegions.AddItem(Counter, Math.Min(FileSize, _Disk.BootSector.BytesPerCluster), Color.Red)
                     End If
                 Next
             End If
             If Block.Length > FileSize Then
-                Dim HighlightedRegion As New HexViewHighlightRegion(FileSize, Block.Length - FileSize, Color.DarkGray, Color.White)
-                HexViewData.HighlightedRegions.Add(HighlightedRegion)
+                HexViewData.HighlightedRegions.AddItem(FileSize, Block.Length - FileSize, Color.DarkGray)
             End If
             DataList.Add(HexViewData)
             FileSize -= Math.Min(FileSize, Block.Length)
@@ -1772,10 +1781,10 @@ Public Class MainForm
                 Else
                     ForeColor = SystemColors.WindowText
                 End If
-                .Add(ListViewTileGetItem(BootRecordGroup, "OEM Name", _Disk.BootSector.GetOEMNameString.TrimEnd(NULL_CHAR), ForeColor))
-                .Add(ListViewTileGetItem(BootRecordGroup, "Bytes per Sector", _Disk.BootSector.BytesPerSector))
-                .Add(ListViewTileGetItem(BootRecordGroup, "Sectors per Cluster", _Disk.BootSector.SectorsPerCluster))
-                .Add(ListViewTileGetItem(BootRecordGroup, "Reserved Sectors", _Disk.BootSector.ReservedSectorCount))
+                .Add(ListViewTileGetItem(BootRecordGroup, BootSectorDescription(BootSectorOffset.OEMName), _Disk.BootSector.GetOEMNameString.TrimEnd(NULL_CHAR), ForeColor))
+                .Add(ListViewTileGetItem(BootRecordGroup, BootSectorDescription(BootSectorOffset.BytesPerSector), _Disk.BootSector.BytesPerSector))
+                .Add(ListViewTileGetItem(BootRecordGroup, BootSectorDescription(BootSectorOffset.SectorsPerCluster), _Disk.BootSector.SectorsPerCluster))
+                .Add(ListViewTileGetItem(BootRecordGroup, BootSectorDescription(BootSectorOffset.ReservedSectorCount), _Disk.BootSector.ReservedSectorCount))
 
                 Value = _Disk.BootSector.NumberOfFATs
                 If Not _Disk.CompareFATTables Then
@@ -1784,29 +1793,29 @@ Public Class MainForm
                 Else
                     ForeColor = SystemColors.WindowText
                 End If
-                .Add(ListViewTileGetItem(BootRecordGroup, "Number of FATs", Value, ForeColor))
+                .Add(ListViewTileGetItem(BootRecordGroup, BootSectorDescription(BootSectorOffset.NumberOfFATs), Value, ForeColor))
 
-                .Add(ListViewTileGetItem(BootRecordGroup, "Root Directory Entries", _Disk.BootSector.RootEntryCount))
-                .Add(ListViewTileGetItem(BootRecordGroup, "Total Sectors Count", _Disk.BootSector.SectorCount))
-                .Add(ListViewTileGetItem(BootRecordGroup, "Media Descriptor", MediaTypeGet(_Disk.BootSector.MediaDescriptor, _Disk.BootSector.SectorsPerTrack)))
-                .Add(ListViewTileGetItem(BootRecordGroup, "Sectors per FAT", _Disk.BootSector.SectorsPerFAT))
-                .Add(ListViewTileGetItem(BootRecordGroup, "Sectors per Track", _Disk.BootSector.SectorsPerTrack))
-                .Add(ListViewTileGetItem(BootRecordGroup, "Number of Heads", _Disk.BootSector.NumberOfHeads))
+                .Add(ListViewTileGetItem(BootRecordGroup, BootSectorDescription(BootSectorOffset.RootEntryCount), _Disk.BootSector.RootEntryCount))
+                .Add(ListViewTileGetItem(BootRecordGroup, BootSectorDescription(BootSectorOffset.SectorCountSmall), _Disk.BootSector.SectorCount))
+                .Add(ListViewTileGetItem(BootRecordGroup, BootSectorDescription(BootSectorOffset.MediaDescriptor), MediaTypeGet(_Disk.BootSector.MediaDescriptor, _Disk.BootSector.SectorsPerTrack)))
+                .Add(ListViewTileGetItem(BootRecordGroup, BootSectorDescription(BootSectorOffset.SectorsPerFAT), _Disk.BootSector.SectorsPerFAT))
+                .Add(ListViewTileGetItem(BootRecordGroup, BootSectorDescription(BootSectorOffset.SectorsPerTrack), _Disk.BootSector.SectorsPerTrack))
+                .Add(ListViewTileGetItem(BootRecordGroup, BootSectorDescription(BootSectorOffset.NumberOfHeads), _Disk.BootSector.NumberOfHeads))
                 If _Disk.BootSector.HiddenSectors > 0 Then
-                    .Add(ListViewTileGetItem(BootRecordGroup, "Hidden Sectors", _Disk.BootSector.HiddenSectors))
+                    .Add(ListViewTileGetItem(BootRecordGroup, BootSectorDescription(BootSectorOffset.HiddenSectors), _Disk.BootSector.HiddenSectors))
                 End If
-                If BootStrapStart >= DiskImage.BootSector.BootSectorOffset.BootStrapCode Then
+                If BootStrapStart >= BootSectorOffset.BootStrapCode Then
                     If _Disk.BootSector.DriveNumber > 0 Then
-                        .Add(ListViewTileGetItem(BootRecordGroup, "Drive Number", _Disk.BootSector.DriveNumber))
+                        .Add(ListViewTileGetItem(BootRecordGroup, BootSectorDescription(BootSectorOffset.DriveNumber), _Disk.BootSector.DriveNumber))
                     End If
                     If _Disk.BootSector.HasValidExtendedBootSignature Then
-                        .Add(ListViewTileGetItem(BootRecordGroup, "Volume Serial Number", _Disk.BootSector.VolumeSerialNumber.ToString("X8").Insert(4, "-")))
-                        .Add(ListViewTileGetItem(BootRecordGroup, "Volume Label", _Disk.BootSector.GetVolumeLabelString.TrimEnd(NULL_CHAR)))
-                        .Add(ListViewTileGetItem(BootRecordGroup, "File System ID", Encoding.UTF8.GetString(_Disk.BootSector.FileSystemType)))
+                        .Add(ListViewTileGetItem(BootRecordGroup, BootSectorDescription(BootSectorOffset.VolumeSerialNumber), _Disk.BootSector.VolumeSerialNumber.ToString("X8").Insert(4, "-")))
+                        .Add(ListViewTileGetItem(BootRecordGroup, BootSectorDescription(BootSectorOffset.VolumeLabel), _Disk.BootSector.GetVolumeLabelString.TrimEnd(NULL_CHAR)))
+                        .Add(ListViewTileGetItem(BootRecordGroup, BootSectorDescription(BootSectorOffset.FileSystemType), Encoding.UTF8.GetString(_Disk.BootSector.FileSystemType)))
                     End If
                 End If
                 If _Disk.BootSector.BootStrapSignature <> &HAA55 Then
-                    .Add(ListViewTileGetItem(BootRecordGroup, "Boot Sector Signature", _Disk.BootSector.BootStrapSignature.ToString("X4")))
+                    .Add(ListViewTileGetItem(BootRecordGroup, BootSectorDescription(BootSectorOffset.BootStrapSignature), _Disk.BootSector.BootStrapSignature.ToString("X4")))
                 End If
                 If Not _Disk.BootSector.HasValidJumpInstruction Then
                     ForeColor = Color.Red
@@ -1814,7 +1823,7 @@ Public Class MainForm
                     ForeColor = SystemColors.WindowText
                 End If
                 If Debugger.IsAttached Then
-                    .Add(ListViewTileGetItem(BootRecordGroup, "Bootstrap Jump", BitConverter.ToString(_Disk.BootSector.JmpBoot), ForeColor))
+                    .Add(ListViewTileGetItem(BootRecordGroup, BootSectorDescription(BootSectorOffset.JmpBoot), BitConverter.ToString(_Disk.BootSector.JmpBoot), ForeColor))
                 End If
 
                 Dim FileSystemGroup = ListViewSummary.Groups.Add("FileSystem", "File System")

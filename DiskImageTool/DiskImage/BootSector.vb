@@ -33,20 +33,32 @@
             FileSystemType = 54
             BootStrapCode = 62
             BootStrapSignature = 510
-            BiosParameterBlock = 11
-            ExtendedParameterBlock = 36
         End Enum
 
         Public Enum BootSectorSize As UInteger
             JmpBoot = 3
             OEMName = 8
+            BytesPerSector = 2
+            SectorsPerCluster = 1
+            ReservedSectorCount = 2
+            NumberOfFATs = 1
+            RootEntryCount = 2
+            SectorCountSmall = 2
+            MediaDescriptor = 1
+            SectorsPerFAT = 2
+            SectorsPerTrack = 2
+            NumberOfHeads = 2
+            HiddenSectors = 2
+            SectorCountLarge = 4
+            DriveNumber = 1
+            Reserved = 1
+            ExtendedBootSignature = 1
+            VolumeSerialNumber = 4
             VolumeLabel = 11
             FileSystemType = 8
             BootStrapCode = 448
+            BootStrapSignature = 2
             Data = 512
-            BiosParameterBlockFat12 = 19
-            BiosParameterBlockFat16 = 25
-            ExtendedParameterBlock = 26
         End Enum
 
         Sub New(Parent As Disk)
