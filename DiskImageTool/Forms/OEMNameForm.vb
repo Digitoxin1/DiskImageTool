@@ -18,7 +18,7 @@
     Private Sub BtnUpdate_Click(sender As Object, e As EventArgs) Handles BtnUpdate.Click
         Dim OEMName = _Disk.BootSector.OEMName
         Dim NewOEMNameString As String = Strings.Left(CboOEMName.Text, 8).PadRight(8)
-        Dim NewOEMName = UnicodeToCodePage437(NewOEMNameString)
+        Dim NewOEMName = DiskImage.UnicodeToCodePage437(NewOEMNameString)
 
         If Not ByteArrayCompare(OEMName, NewOEMName) Then
             _Disk.BootSector.OEMName = NewOEMName
@@ -34,7 +34,7 @@
 
         If CboOEMName.SelectedIndex = -1 Then
             Dim OEMNameString As String = Strings.Left(CboOEMName.Text, 8).PadRight(8)
-            OEMName = UnicodeToCodePage437(OEMNameString)
+            OEMName = DiskImage.UnicodeToCodePage437(OEMNameString)
         Else
             OEMName = CType(CboOEMName.SelectedItem, KnownOEMName).Name
         End If
@@ -48,7 +48,7 @@
         End If
 
         _SuppressEvent = True
-        CboOEMName.Text = CodePage437ToUnicode(MskOEMNameHex.GetHex)
+        CboOEMName.Text = DiskImage.CodePage437ToUnicode(MskOEMNameHex.GetHex)
         _SuppressEvent = False
     End Sub
 

@@ -1,51 +1,44 @@
-﻿Public Class BootstrapLookup
+﻿Imports DiskImageTool.DiskImage
+
+Public Class BootstrapLookup
     Public Property ExactMatch As Boolean = False
     Public Property KnownOEMNames As New List(Of KnownOEMName)
     Public Property Language As String = "English"
 End Class
 
 Public Class HexViewData
-
-    Public Sub New(DataBlock As DiskImage.DataBlock)
-        _DataBlock = DataBlock
+    Public Sub New(Disk As DiskImage.Disk, SectorBlock As SectorBlock)
+        _Disk = Disk
+        _SectorBlock = SectorBlock
     End Sub
 
-    Public ReadOnly Property DataBlock As DiskImage.DataBlock
-    Public Property HighlightedRegions As New HighlightedRegions
-End Class
+    Public ReadOnly Property Disk As DiskImage.Disk
+    Public ReadOnly Property SectorBlock As SectorBlock
 
-Public Class HighlightedRegions
-    Inherits List(Of HexViewHighlightRegion)
+    Public Overrides Function ToString() As String
+        Dim Sector = SectorBlock.SectorStart
+        Dim SectorEnd = SectorBlock.SectorStart + SectorBlock.SectorCount - 1
 
-    Public Function AddItem(Start As Long, Size As Long, ForeColor As Color) As HexViewHighlightRegion
-        Return AddItem(Start, Size, ForeColor, Color.White, "")
-    End Function
-
-    Public Function AddItem(Start As Long, Size As Long, ForeColor As Color, Description As String) As HexViewHighlightRegion
-        Return AddItem(Start, Size, ForeColor, Color.White, Description)
-    End Function
-
-    Public Function AddItem(Start As Long, Size As Long, ForeColor As Color, BackColor As Color) As HexViewHighlightRegion
-        Return AddItem(Start, Size, ForeColor, BackColor, "")
-    End Function
-
-    Public Function AddItem(Start As Long, Size As Long, ForeColor As Color, BackColor As Color, Description As String) As HexViewHighlightRegion
-        Dim HexViewHighlightRegion As New HexViewHighlightRegion(Start, Size, ForeColor, BackColor, Description)
-        Me.Add(HexViewHighlightRegion)
-
-        Return HexViewHighlightRegion
-    End Function
-
-    Public Sub AddOffset(Offset As DiskImage.BootSector.BootSectorOffset, ForeColor As Color)
-        Dim Name As String = [Enum].GetName(GetType(DiskImage.BootSector.BootSectorOffset), Offset)
-        Dim Size As DiskImage.BootSector.BootSectorSize
-
-        If Not [Enum].TryParse(Of DiskImage.BootSector.BootSectorSize)(Name, Size) Then
-            Size = 0
+        Dim Cluster As UShort
+        Dim ClusterEnd As UShort
+        If Disk.IsValidImage Then
+            Cluster = Disk.BootSector.SectorToCluster(Sector)
+            ClusterEnd = Disk.BootSector.SectorToCluster(SectorEnd)
+        Else
+            Cluster = 0
+            ClusterEnd = 0
         End If
 
-        Me.Add(New HexViewHighlightRegion(Offset, Size, ForeColor, BootSectorDescription(Offset)))
-    End Sub
+        Dim Header As String = "Sector " & Sector & IIf(SectorEnd > Sector, "-" & SectorEnd, "")
+        If Cluster > 0 Then
+            Header = "Cluster " & Cluster & IIf(ClusterEnd > Cluster, "-" & ClusterEnd, "") & "; " & Header
+        End If
+        If SectorBlock.Description <> "" Then
+            Header = SectorBlock.Description & "  (" & Header & ")"
+        End If
+
+        Return Header
+    End Function
 End Class
 
 Public Class HexViewHighlightRegion
@@ -118,6 +111,66 @@ Public Class HexViewRegionDescription
     Public ReadOnly Property Text As String
 End Class
 
+Public Class HexViewSectorData
+    Public Sub New(Disk As DiskImage.Disk)
+        _Disk = Disk
+        _SectorData = New SectorData(Disk.Data)
+        _HighlightedRegionList = New List(Of HighlightedRegions)
+    End Sub
+
+    Public Sub New(Disk As DiskImage.Disk, SectorChain As List(Of UInteger))
+        _Disk = Disk
+        _SectorData = New SectorData(Disk.Data)
+        _SectorData.AddBlocksByChain(SectorChain)
+        _HighlightedRegionList = New List(Of HighlightedRegions)
+    End Sub
+
+    Public Sub New(Disk As DiskImage.Disk, Offset As UInteger, Length As UInteger)
+        _Disk = Disk
+        _SectorData = New SectorData(Disk.Data)
+        _SectorData.AddBlockByOffset(Offset, Length)
+        _HighlightedRegionList = New List(Of HighlightedRegions)
+    End Sub
+
+
+    Public ReadOnly Property Disk As DiskImage.Disk
+    Public ReadOnly Property HighlightedRegionList As List(Of HighlightedRegions)
+    Public ReadOnly Property SectorData As SectorData
+End Class
+
+Public Class HighlightedRegions
+    Inherits List(Of HexViewHighlightRegion)
+
+    Public Function AddItem(Start As Long, Size As Long, ForeColor As Color) As HexViewHighlightRegion
+        Return AddItem(Start, Size, ForeColor, Color.White, "")
+    End Function
+
+    Public Function AddItem(Start As Long, Size As Long, ForeColor As Color, Description As String) As HexViewHighlightRegion
+        Return AddItem(Start, Size, ForeColor, Color.White, Description)
+    End Function
+
+    Public Function AddItem(Start As Long, Size As Long, ForeColor As Color, BackColor As Color) As HexViewHighlightRegion
+        Return AddItem(Start, Size, ForeColor, BackColor, "")
+    End Function
+
+    Public Function AddItem(Start As Long, Size As Long, ForeColor As Color, BackColor As Color, Description As String) As HexViewHighlightRegion
+        Dim HexViewHighlightRegion As New HexViewHighlightRegion(Start, Size, ForeColor, BackColor, Description)
+        Me.Add(HexViewHighlightRegion)
+
+        Return HexViewHighlightRegion
+    End Function
+
+    Public Sub AddOffset(Offset As DiskImage.BootSector.BootSectorOffsets, ForeColor As Color)
+        Dim Name As String = [Enum].GetName(GetType(DiskImage.BootSector.BootSectorOffsets), Offset)
+        Dim Size As DiskImage.BootSector.BootSectorSizes
+
+        If Not [Enum].TryParse(Of DiskImage.BootSector.BootSectorSizes)(Name, Size) Then
+            Size = 0
+        End If
+
+        Me.Add(New HexViewHighlightRegion(Offset, Size, ForeColor, DiskImage.BootSectorDescription(Offset)))
+    End Sub
+End Class
 Public Class KnownOEMName
     Public Property Company As String = ""
     Public Property Description As String = ""
@@ -126,7 +179,7 @@ Public Class KnownOEMName
     Public Property Win9xId As Boolean = False
 
     Public Function GetNameAsString() As String
-        Return CodePage437ToUnicode(_Name)
+        Return DiskImage.CodePage437ToUnicode(_Name)
     End Function
 
     Public Overrides Function ToString() As String

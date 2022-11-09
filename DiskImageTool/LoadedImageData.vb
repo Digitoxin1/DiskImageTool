@@ -22,24 +22,17 @@ Public Class LoadedImageData
         _Modified = False
         _ScanInfo = New ImageDataScanInfo
         _Scanned = False
-        _SessionModifications = New Hashtable()
     End Sub
 
     Public Property CachedRootDir As Byte()
     Public Property FilePath As String
-    Public Property Modifications As Hashtable
+    Public Property Modifications As Stack(Of DiskImage.DataChange())
     Public Property Modified As Boolean
     Public ReadOnly Property ScanInfo As ImageDataScanInfo
     Public Property Scanned As Boolean
-    Public ReadOnly Property SessionModifications As Hashtable
     Public Shared Property StringOffset As Integer = 0
+
     Public Overrides Function ToString() As String
         Return Right(_FilePath, Len(_FilePath) - _StringOffset) & IIf(_Modified, " *", "")
     End Function
-
-    Public Sub UpdateSessionModifications(Modifications As Hashtable)
-        For Each Offset As UInteger In Modifications.Keys
-            _SessionModifications.Item(Offset) = Modifications.Item(Offset)
-        Next
-    End Sub
 End Class

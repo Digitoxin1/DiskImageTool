@@ -14,7 +14,7 @@ Module DebugScript
         Directory.CreateDirectory(DataPath)
         Directory.CreateDirectory(ToolsPath)
 
-        GenerateDebugScripts(DataPath, Disk, ImageData.SessionModifications)
+        'GenerateDebugScripts(DataPath, Disk, ImageData.SessionModifications)
         GenerateDirectoryDump(DataPath, Disk, ImageData.CachedRootDir)
 
         WriteResourceToFile("CHOICE.COM", Path.Combine(ToolsPath, "CHOICE.COM"))
@@ -49,16 +49,16 @@ Module DebugScript
         For Each Offset As UInteger In Modifications.Keys
             ScriptModifications.Item(Offset) = Modifications.Item(Offset)
         Next
-        For Each Offset As UInteger In Disk.Modifications.Keys
-            ScriptModifications.Item(Offset) = Disk.Modifications.Item(Offset)
-        Next
+        'For Each Offset As UInteger In Disk.Modifications.Keys
+        'ScriptModifications.Item(Offset) = Disk.Modifications.Item(Offset)
+        ' Next
 
         Dim OffsetArray(ScriptModifications.Keys.Count - 1) As UInteger
         ScriptModifications.Keys.CopyTo(OffsetArray, 0)
         Array.Sort(OffsetArray)
 
         For Each Offset As UInteger In OffsetArray
-            Dim Sector As UInteger = Disk.OffsetToSector(Offset)
+            Dim Sector As UInteger = DiskImage.OffsetToSector(Offset)
 
             If SectorDict.ContainsKey(Sector) Then
                 SegmentList = SectorDict.Item(Sector)
@@ -67,7 +67,7 @@ Module DebugScript
                 SectorDict.Add(Sector, SegmentList)
             End If
 
-            Dim SectorOffset As UInteger = Disk.SectorToOffset(Sector)
+            Dim SectorOffset As UInteger = DiskImage.SectorToBytes(Sector)
             Dim Value = ScriptModifications.Item(Offset)
             SegmentList.Add(GetSegment(Offset - SectorOffset, Value))
         Next
@@ -102,7 +102,7 @@ Module DebugScript
 
         Dim SectorStart = Disk.BootSector.RootDirectoryRegionStart
         Dim SectorEnd = Disk.BootSector.DataRegionStart
-        Dim Length = (SectorEnd - SectorStart) * Disk.BootSector.BytesPerSector
+        Dim Length = DiskImage.SectorToBytes(SectorEnd - SectorStart)
         Dim Offset As UInteger = 256
 
         For Index = 0 To 1

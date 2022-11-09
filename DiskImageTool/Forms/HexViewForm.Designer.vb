@@ -24,22 +24,43 @@ Partial Class HexViewForm
     Private Sub InitializeComponent()
         Me.components = New System.ComponentModel.Container()
         Dim ToolStripSeparator1 As System.Windows.Forms.ToolStripSeparator
+        Dim ToolStripSeparator3 As System.Windows.Forms.ToolStripSeparator
         Dim ToolStripSeparator2 As System.Windows.Forms.ToolStripSeparator
-        Me.FlowLayoutHeader = New System.Windows.Forms.FlowLayoutPanel()
-        Me.LblHeaderCaption = New System.Windows.Forms.Label()
-        Me.CmbGroups = New System.Windows.Forms.ComboBox()
-        Me.BtnClear = New System.Windows.Forms.Button()
-        Me.LblHeaderFill = New System.Windows.Forms.Label()
-        Me.ComboBytes = New System.Windows.Forms.ComboBox()
-        Me.HexBox1 = New Hb.Windows.Forms.HexBox()
+        Dim ToolStripSeparator4 As System.Windows.Forms.ToolStripSeparator
+        Dim ToolStripSeparator5 As System.Windows.Forms.ToolStripSeparator
+        Dim ToolStripSeparator6 As System.Windows.Forms.ToolStripSeparator
+        Dim ToolStripSeparator7 As System.Windows.Forms.ToolStripSeparator
+        Dim resources As System.ComponentModel.ComponentResourceManager = New System.ComponentModel.ComponentResourceManager(GetType(HexViewForm))
+        Me.ToolStripMain = New System.Windows.Forms.ToolStrip()
+        Me.ToolStripBtnCommit = New System.Windows.Forms.ToolStripButton()
+        Me.ToolStripBtnUndo = New System.Windows.Forms.ToolStripButton()
+        Me.ToolStripBtnRedo = New System.Windows.Forms.ToolStripButton()
+        Me.ToolStripBtnCopyText = New System.Windows.Forms.ToolStripButton()
+        Me.ToolStripBtnCopyHex = New System.Windows.Forms.ToolStripButton()
+        Me.ToolStripBtnCopyHexFormatted = New System.Windows.Forms.ToolStripButton()
+        Me.ToolStripBtnPaste = New System.Windows.Forms.ToolStripButton()
+        Me.ToolStripBtnDelete = New System.Windows.Forms.ToolStripButton()
+        Me.ToolStripBtnFillF6 = New System.Windows.Forms.ToolStripButton()
+        Me.ToolStripBtnSelectAll = New System.Windows.Forms.ToolStripButton()
+        Me.ToolStripBtnSelectSector = New System.Windows.Forms.ToolStripButton()
+        Me.CmbGroups = New System.Windows.Forms.ToolStripComboBox()
+        Me.LblGroups = New System.Windows.Forms.ToolStripLabel()
+        Me.ToolStripSeparatorCRC32 = New System.Windows.Forms.ToolStripSeparator()
         Me.ContextMenuStrip1 = New System.Windows.Forms.ContextMenuStrip(Me.components)
+        Me.BtnUndo = New System.Windows.Forms.ToolStripMenuItem()
+        Me.BtnRedo = New System.Windows.Forms.ToolStripMenuItem()
         Me.BtnCopyText = New System.Windows.Forms.ToolStripMenuItem()
         Me.BtnCopyHex = New System.Windows.Forms.ToolStripMenuItem()
         Me.BtnCopyHexFormatted = New System.Windows.Forms.ToolStripMenuItem()
+        Me.BtnPaste = New System.Windows.Forms.ToolStripMenuItem()
+        Me.BtnDelete = New System.Windows.Forms.ToolStripMenuItem()
+        Me.BtnFillF6 = New System.Windows.Forms.ToolStripMenuItem()
+        Me.BtnSelectSector = New System.Windows.Forms.ToolStripMenuItem()
         Me.BtnSelectAll = New System.Windows.Forms.ToolStripMenuItem()
         Me.BtnCRC32 = New System.Windows.Forms.ToolStripMenuItem()
         Me.StatusStrip1 = New System.Windows.Forms.StatusStrip()
         Me.ToolStripStatusFile = New System.Windows.Forms.ToolStripStatusLabel()
+        Me.ToolStripStatusDescription = New System.Windows.Forms.ToolStripStatusLabel()
         Me.ToolStripStatusOffset = New System.Windows.Forms.ToolStripStatusLabel()
         Me.ToolStripStatusBlock = New System.Windows.Forms.ToolStripStatusLabel()
         Me.ToolStripStatusLength = New System.Windows.Forms.ToolStripStatusLabel()
@@ -47,10 +68,15 @@ Partial Class HexViewForm
         Me.ToolStripStatusCluster = New System.Windows.Forms.ToolStripStatusLabel()
         Me.ToolStripStatusSector = New System.Windows.Forms.ToolStripStatusLabel()
         Me.ToolStripStatusBytes = New System.Windows.Forms.ToolStripStatusLabel()
-        Me.ToolStripStatusDescription = New System.Windows.Forms.ToolStripStatusLabel()
+        Me.HexBox1 = New Hb.Windows.Forms.HexBox()
         ToolStripSeparator1 = New System.Windows.Forms.ToolStripSeparator()
+        ToolStripSeparator3 = New System.Windows.Forms.ToolStripSeparator()
         ToolStripSeparator2 = New System.Windows.Forms.ToolStripSeparator()
-        Me.FlowLayoutHeader.SuspendLayout()
+        ToolStripSeparator4 = New System.Windows.Forms.ToolStripSeparator()
+        ToolStripSeparator5 = New System.Windows.Forms.ToolStripSeparator()
+        ToolStripSeparator6 = New System.Windows.Forms.ToolStripSeparator()
+        ToolStripSeparator7 = New System.Windows.Forms.ToolStripSeparator()
+        Me.ToolStripMain.SuspendLayout()
         Me.ContextMenuStrip1.SuspendLayout()
         Me.StatusStrip1.SuspendLayout()
         Me.SuspendLayout()
@@ -58,158 +84,264 @@ Partial Class HexViewForm
         'ToolStripSeparator1
         '
         ToolStripSeparator1.Name = "ToolStripSeparator1"
-        ToolStripSeparator1.Size = New System.Drawing.Size(181, 6)
+        ToolStripSeparator1.Size = New System.Drawing.Size(255, 6)
+        '
+        'ToolStripSeparator3
+        '
+        ToolStripSeparator3.Name = "ToolStripSeparator3"
+        ToolStripSeparator3.Size = New System.Drawing.Size(255, 6)
         '
         'ToolStripSeparator2
         '
         ToolStripSeparator2.Name = "ToolStripSeparator2"
-        ToolStripSeparator2.Size = New System.Drawing.Size(181, 6)
+        ToolStripSeparator2.Size = New System.Drawing.Size(255, 6)
         '
-        'FlowLayoutHeader
+        'ToolStripSeparator4
         '
-        Me.FlowLayoutHeader.Anchor = CType(((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Left) _
-            Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
-        Me.FlowLayoutHeader.AutoSize = True
-        Me.FlowLayoutHeader.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink
-        Me.FlowLayoutHeader.Controls.Add(Me.LblHeaderCaption)
-        Me.FlowLayoutHeader.Controls.Add(Me.CmbGroups)
-        Me.FlowLayoutHeader.Controls.Add(Me.BtnClear)
-        Me.FlowLayoutHeader.Controls.Add(Me.LblHeaderFill)
-        Me.FlowLayoutHeader.Controls.Add(Me.ComboBytes)
-        Me.FlowLayoutHeader.Location = New System.Drawing.Point(98, 12)
-        Me.FlowLayoutHeader.Name = "FlowLayoutHeader"
-        Me.FlowLayoutHeader.Size = New System.Drawing.Size(472, 29)
-        Me.FlowLayoutHeader.TabIndex = 0
-        Me.FlowLayoutHeader.WrapContents = False
+        ToolStripSeparator4.Name = "ToolStripSeparator4"
+        ToolStripSeparator4.Size = New System.Drawing.Size(6, 26)
         '
-        'LblHeaderCaption
+        'ToolStripSeparator5
         '
-        Me.LblHeaderCaption.Anchor = CType((((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Bottom) _
-            Or System.Windows.Forms.AnchorStyles.Left) _
-            Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
-        Me.LblHeaderCaption.AutoSize = True
-        Me.LblHeaderCaption.Location = New System.Drawing.Point(3, 0)
-        Me.LblHeaderCaption.Name = "LblHeaderCaption"
-        Me.LblHeaderCaption.Size = New System.Drawing.Size(44, 29)
-        Me.LblHeaderCaption.TabIndex = 0
-        Me.LblHeaderCaption.Text = "Display:"
-        Me.LblHeaderCaption.TextAlign = System.Drawing.ContentAlignment.MiddleLeft
+        ToolStripSeparator5.Name = "ToolStripSeparator5"
+        ToolStripSeparator5.Size = New System.Drawing.Size(6, 26)
+        '
+        'ToolStripSeparator6
+        '
+        ToolStripSeparator6.Name = "ToolStripSeparator6"
+        ToolStripSeparator6.Size = New System.Drawing.Size(6, 26)
+        '
+        'ToolStripSeparator7
+        '
+        ToolStripSeparator7.Name = "ToolStripSeparator7"
+        ToolStripSeparator7.Size = New System.Drawing.Size(6, 26)
+        '
+        'ToolStripMain
+        '
+        Me.ToolStripMain.GripStyle = System.Windows.Forms.ToolStripGripStyle.Hidden
+        Me.ToolStripMain.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.ToolStripBtnCommit, ToolStripSeparator7, Me.ToolStripBtnUndo, Me.ToolStripBtnRedo, ToolStripSeparator4, Me.ToolStripBtnCopyText, Me.ToolStripBtnCopyHex, Me.ToolStripBtnCopyHexFormatted, Me.ToolStripBtnPaste, ToolStripSeparator5, Me.ToolStripBtnDelete, Me.ToolStripBtnFillF6, ToolStripSeparator6, Me.ToolStripBtnSelectAll, Me.ToolStripBtnSelectSector, Me.CmbGroups, Me.LblGroups})
+        Me.ToolStripMain.Location = New System.Drawing.Point(0, 0)
+        Me.ToolStripMain.Name = "ToolStripMain"
+        Me.ToolStripMain.Padding = New System.Windows.Forms.Padding(12, 0, 12, 0)
+        Me.ToolStripMain.Size = New System.Drawing.Size(669, 25)
+        Me.ToolStripMain.TabIndex = 0
+        Me.ToolStripMain.Text = "ToolStrip1"
+        '
+        'ToolStripBtnCommit
+        '
+        Me.ToolStripBtnCommit.ImageTransparentColor = System.Drawing.Color.Magenta
+        Me.ToolStripBtnCommit.Name = "ToolStripBtnCommit"
+        Me.ToolStripBtnCommit.Size = New System.Drawing.Size(55, 23)
+        Me.ToolStripBtnCommit.Text = "Commit"
+        Me.ToolStripBtnCommit.ToolTipText = "Commit Changes"
+        '
+        'ToolStripBtnUndo
+        '
+        Me.ToolStripBtnUndo.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image
+        Me.ToolStripBtnUndo.Image = CType(resources.GetObject("ToolStripBtnUndo.Image"), System.Drawing.Image)
+        Me.ToolStripBtnUndo.ImageTransparentColor = System.Drawing.Color.Magenta
+        Me.ToolStripBtnUndo.Name = "ToolStripBtnUndo"
+        Me.ToolStripBtnUndo.Size = New System.Drawing.Size(23, 22)
+        Me.ToolStripBtnUndo.Text = "Undo"
+        '
+        'ToolStripBtnRedo
+        '
+        Me.ToolStripBtnRedo.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image
+        Me.ToolStripBtnRedo.Image = CType(resources.GetObject("ToolStripBtnRedo.Image"), System.Drawing.Image)
+        Me.ToolStripBtnRedo.ImageTransparentColor = System.Drawing.Color.Magenta
+        Me.ToolStripBtnRedo.Name = "ToolStripBtnRedo"
+        Me.ToolStripBtnRedo.Size = New System.Drawing.Size(23, 23)
+        Me.ToolStripBtnRedo.Text = "Redo"
+        '
+        'ToolStripBtnCopyText
+        '
+        Me.ToolStripBtnCopyText.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image
+        Me.ToolStripBtnCopyText.Image = CType(resources.GetObject("ToolStripBtnCopyText.Image"), System.Drawing.Image)
+        Me.ToolStripBtnCopyText.ImageTransparentColor = System.Drawing.Color.Magenta
+        Me.ToolStripBtnCopyText.Name = "ToolStripBtnCopyText"
+        Me.ToolStripBtnCopyText.Size = New System.Drawing.Size(23, 23)
+        Me.ToolStripBtnCopyText.Text = "Copy Text"
+        '
+        'ToolStripBtnCopyHex
+        '
+        Me.ToolStripBtnCopyHex.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image
+        Me.ToolStripBtnCopyHex.Image = CType(resources.GetObject("ToolStripBtnCopyHex.Image"), System.Drawing.Image)
+        Me.ToolStripBtnCopyHex.ImageTransparentColor = System.Drawing.Color.Magenta
+        Me.ToolStripBtnCopyHex.Name = "ToolStripBtnCopyHex"
+        Me.ToolStripBtnCopyHex.Size = New System.Drawing.Size(23, 23)
+        Me.ToolStripBtnCopyHex.Text = "Copy Hex"
+        '
+        'ToolStripBtnCopyHexFormatted
+        '
+        Me.ToolStripBtnCopyHexFormatted.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image
+        Me.ToolStripBtnCopyHexFormatted.Image = CType(resources.GetObject("ToolStripBtnCopyHexFormatted.Image"), System.Drawing.Image)
+        Me.ToolStripBtnCopyHexFormatted.ImageTransparentColor = System.Drawing.Color.Magenta
+        Me.ToolStripBtnCopyHexFormatted.Name = "ToolStripBtnCopyHexFormatted"
+        Me.ToolStripBtnCopyHexFormatted.Size = New System.Drawing.Size(23, 23)
+        Me.ToolStripBtnCopyHexFormatted.Text = "Copy Hex Formatted"
+        '
+        'ToolStripBtnPaste
+        '
+        Me.ToolStripBtnPaste.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image
+        Me.ToolStripBtnPaste.Image = CType(resources.GetObject("ToolStripBtnPaste.Image"), System.Drawing.Image)
+        Me.ToolStripBtnPaste.ImageTransparentColor = System.Drawing.Color.Magenta
+        Me.ToolStripBtnPaste.Name = "ToolStripBtnPaste"
+        Me.ToolStripBtnPaste.Size = New System.Drawing.Size(23, 23)
+        Me.ToolStripBtnPaste.Text = "Paste Over"
+        '
+        'ToolStripBtnDelete
+        '
+        Me.ToolStripBtnDelete.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image
+        Me.ToolStripBtnDelete.Image = CType(resources.GetObject("ToolStripBtnDelete.Image"), System.Drawing.Image)
+        Me.ToolStripBtnDelete.ImageTransparentColor = System.Drawing.Color.Magenta
+        Me.ToolStripBtnDelete.Name = "ToolStripBtnDelete"
+        Me.ToolStripBtnDelete.Size = New System.Drawing.Size(23, 23)
+        Me.ToolStripBtnDelete.Text = "Fill Selection with 0x00"
+        '
+        'ToolStripBtnFillF6
+        '
+        Me.ToolStripBtnFillF6.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image
+        Me.ToolStripBtnFillF6.Image = CType(resources.GetObject("ToolStripBtnFillF6.Image"), System.Drawing.Image)
+        Me.ToolStripBtnFillF6.ImageTransparentColor = System.Drawing.Color.Magenta
+        Me.ToolStripBtnFillF6.Name = "ToolStripBtnFillF6"
+        Me.ToolStripBtnFillF6.Size = New System.Drawing.Size(23, 23)
+        Me.ToolStripBtnFillF6.Text = "Fill Selection with 0xF6"
+        '
+        'ToolStripBtnSelectAll
+        '
+        Me.ToolStripBtnSelectAll.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image
+        Me.ToolStripBtnSelectAll.Image = CType(resources.GetObject("ToolStripBtnSelectAll.Image"), System.Drawing.Image)
+        Me.ToolStripBtnSelectAll.ImageTransparentColor = System.Drawing.Color.Magenta
+        Me.ToolStripBtnSelectAll.Name = "ToolStripBtnSelectAll"
+        Me.ToolStripBtnSelectAll.Size = New System.Drawing.Size(23, 23)
+        Me.ToolStripBtnSelectAll.Text = "Select All"
+        '
+        'ToolStripBtnSelectSector
+        '
+        Me.ToolStripBtnSelectSector.Image = CType(resources.GetObject("ToolStripBtnSelectSector.Image"), System.Drawing.Image)
+        Me.ToolStripBtnSelectSector.ImageTransparentColor = System.Drawing.Color.Magenta
+        Me.ToolStripBtnSelectSector.Name = "ToolStripBtnSelectSector"
+        Me.ToolStripBtnSelectSector.Size = New System.Drawing.Size(60, 23)
+        Me.ToolStripBtnSelectSector.Text = "Sector"
         '
         'CmbGroups
         '
-        Me.CmbGroups.Anchor = CType(((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Left) _
-            Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
+        Me.CmbGroups.Alignment = System.Windows.Forms.ToolStripItemAlignment.Right
         Me.CmbGroups.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList
-        Me.CmbGroups.FormattingEnabled = True
-        Me.CmbGroups.Location = New System.Drawing.Point(53, 4)
-        Me.CmbGroups.Margin = New System.Windows.Forms.Padding(3, 4, 3, 3)
+        Me.CmbGroups.FlatStyle = System.Windows.Forms.FlatStyle.Standard
         Me.CmbGroups.Name = "CmbGroups"
-        Me.CmbGroups.Size = New System.Drawing.Size(218, 21)
-        Me.CmbGroups.TabIndex = 1
+        Me.CmbGroups.Size = New System.Drawing.Size(218, 26)
         '
-        'BtnClear
+        'LblGroups
         '
-        Me.BtnClear.AutoSize = True
-        Me.BtnClear.Location = New System.Drawing.Point(282, 3)
-        Me.BtnClear.Margin = New System.Windows.Forms.Padding(8, 3, 3, 3)
-        Me.BtnClear.Name = "BtnClear"
-        Me.BtnClear.Size = New System.Drawing.Size(87, 23)
-        Me.BtnClear.TabIndex = 2
-        Me.BtnClear.Text = "Clear Sector"
-        Me.BtnClear.UseVisualStyleBackColor = True
-        Me.BtnClear.Visible = False
+        Me.LblGroups.Alignment = System.Windows.Forms.ToolStripItemAlignment.Right
+        Me.LblGroups.Name = "LblGroups"
+        Me.LblGroups.Size = New System.Drawing.Size(45, 23)
+        Me.LblGroups.Text = "Display"
         '
-        'LblHeaderFill
+        'ToolStripSeparatorCRC32
         '
-        Me.LblHeaderFill.Anchor = CType((((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Bottom) _
-            Or System.Windows.Forms.AnchorStyles.Left) _
-            Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
-        Me.LblHeaderFill.AutoSize = True
-        Me.LblHeaderFill.Location = New System.Drawing.Point(375, 0)
-        Me.LblHeaderFill.Name = "LblHeaderFill"
-        Me.LblHeaderFill.Size = New System.Drawing.Size(47, 29)
-        Me.LblHeaderFill.TabIndex = 5
-        Me.LblHeaderFill.Text = "Fill With:"
-        Me.LblHeaderFill.TextAlign = System.Drawing.ContentAlignment.MiddleRight
-        '
-        'ComboBytes
-        '
-        Me.ComboBytes.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList
-        Me.ComboBytes.FormattingEnabled = True
-        Me.ComboBytes.Items.AddRange(New Object() {"F6", "00"})
-        Me.ComboBytes.Location = New System.Drawing.Point(428, 4)
-        Me.ComboBytes.Margin = New System.Windows.Forms.Padding(3, 4, 3, 3)
-        Me.ComboBytes.Name = "ComboBytes"
-        Me.ComboBytes.Size = New System.Drawing.Size(41, 21)
-        Me.ComboBytes.TabIndex = 4
-        Me.ComboBytes.Visible = False
-        '
-        'HexBox1
-        '
-        Me.HexBox1.Anchor = CType((((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Bottom) _
-            Or System.Windows.Forms.AnchorStyles.Left) _
-            Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
-        '
-        '
-        '
-        Me.HexBox1.BuiltInContextMenu.CopyMenuItemText = "Copy Text"
-        Me.HexBox1.BuiltInContextMenu.SelectAllMenuItemText = "Select All"
-        Me.HexBox1.ColumnInfoVisible = True
-        Me.HexBox1.ContextMenuStrip = Me.ContextMenuStrip1
-        Me.HexBox1.Font = New System.Drawing.Font("Courier New", 9.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.HexBox1.ForeColor = System.Drawing.SystemColors.ControlText
-        Me.HexBox1.HexViewTextColor = System.Drawing.SystemColors.ControlText
-        Me.HexBox1.LineInfoVisible = True
-        Me.HexBox1.Location = New System.Drawing.Point(12, 47)
-        Me.HexBox1.Name = "HexBox1"
-        Me.HexBox1.ReadOnly = True
-        Me.HexBox1.ShadowSelectionColor = System.Drawing.Color.FromArgb(CType(CType(100, Byte), Integer), CType(CType(60, Byte), Integer), CType(CType(188, Byte), Integer), CType(CType(255, Byte), Integer))
-        Me.HexBox1.Size = New System.Drawing.Size(645, 519)
-        Me.HexBox1.StringViewVisible = True
-        Me.HexBox1.TabIndex = 1
-        Me.HexBox1.UseFixedBytesPerLine = True
-        Me.HexBox1.VScrollBarVisible = False
+        Me.ToolStripSeparatorCRC32.Name = "ToolStripSeparatorCRC32"
+        Me.ToolStripSeparatorCRC32.Size = New System.Drawing.Size(255, 6)
         '
         'ContextMenuStrip1
         '
-        Me.ContextMenuStrip1.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.BtnCopyText, Me.BtnCopyHex, Me.BtnCopyHexFormatted, ToolStripSeparator1, Me.BtnSelectAll, ToolStripSeparator2, Me.BtnCRC32})
+        Me.ContextMenuStrip1.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.BtnUndo, Me.BtnRedo, ToolStripSeparator3, Me.BtnCopyText, Me.BtnCopyHex, Me.BtnCopyHexFormatted, Me.BtnPaste, ToolStripSeparator2, Me.BtnDelete, Me.BtnFillF6, ToolStripSeparator1, Me.BtnSelectSector, Me.BtnSelectAll, Me.ToolStripSeparatorCRC32, Me.BtnCRC32})
         Me.ContextMenuStrip1.Name = "ContextMenuStrip1"
-        Me.ContextMenuStrip1.Size = New System.Drawing.Size(185, 126)
+        Me.ContextMenuStrip1.Size = New System.Drawing.Size(259, 270)
+        '
+        'BtnUndo
+        '
+        Me.BtnUndo.Image = CType(resources.GetObject("BtnUndo.Image"), System.Drawing.Image)
+        Me.BtnUndo.Name = "BtnUndo"
+        Me.BtnUndo.ShortcutKeys = CType((System.Windows.Forms.Keys.Control Or System.Windows.Forms.Keys.Z), System.Windows.Forms.Keys)
+        Me.BtnUndo.Size = New System.Drawing.Size(258, 22)
+        Me.BtnUndo.Text = "&Undo"
+        '
+        'BtnRedo
+        '
+        Me.BtnRedo.Image = CType(resources.GetObject("BtnRedo.Image"), System.Drawing.Image)
+        Me.BtnRedo.Name = "BtnRedo"
+        Me.BtnRedo.ShortcutKeys = CType(((System.Windows.Forms.Keys.Control Or System.Windows.Forms.Keys.Shift) _
+            Or System.Windows.Forms.Keys.Z), System.Windows.Forms.Keys)
+        Me.BtnRedo.Size = New System.Drawing.Size(258, 22)
+        Me.BtnRedo.Text = "&Redo"
         '
         'BtnCopyText
         '
+        Me.BtnCopyText.Image = CType(resources.GetObject("BtnCopyText.Image"), System.Drawing.Image)
         Me.BtnCopyText.Name = "BtnCopyText"
-        Me.BtnCopyText.Size = New System.Drawing.Size(184, 22)
+        Me.BtnCopyText.ShortcutKeys = CType((System.Windows.Forms.Keys.Control Or System.Windows.Forms.Keys.T), System.Windows.Forms.Keys)
+        Me.BtnCopyText.Size = New System.Drawing.Size(258, 22)
         Me.BtnCopyText.Text = "Copy &Text"
         '
         'BtnCopyHex
         '
+        Me.BtnCopyHex.Image = CType(resources.GetObject("BtnCopyHex.Image"), System.Drawing.Image)
         Me.BtnCopyHex.Name = "BtnCopyHex"
-        Me.BtnCopyHex.Size = New System.Drawing.Size(184, 22)
+        Me.BtnCopyHex.ShortcutKeys = CType((System.Windows.Forms.Keys.Control Or System.Windows.Forms.Keys.C), System.Windows.Forms.Keys)
+        Me.BtnCopyHex.Size = New System.Drawing.Size(258, 22)
         Me.BtnCopyHex.Text = "Copy &Hex"
         '
         'BtnCopyHexFormatted
         '
+        Me.BtnCopyHexFormatted.Image = CType(resources.GetObject("BtnCopyHexFormatted.Image"), System.Drawing.Image)
         Me.BtnCopyHexFormatted.Name = "BtnCopyHexFormatted"
-        Me.BtnCopyHexFormatted.Size = New System.Drawing.Size(184, 22)
+        Me.BtnCopyHexFormatted.ShortcutKeys = CType(((System.Windows.Forms.Keys.Control Or System.Windows.Forms.Keys.Shift) _
+            Or System.Windows.Forms.Keys.C), System.Windows.Forms.Keys)
+        Me.BtnCopyHexFormatted.Size = New System.Drawing.Size(258, 22)
         Me.BtnCopyHexFormatted.Text = "Copy Hex &Formatted"
+        '
+        'BtnPaste
+        '
+        Me.BtnPaste.Image = CType(resources.GetObject("BtnPaste.Image"), System.Drawing.Image)
+        Me.BtnPaste.Name = "BtnPaste"
+        Me.BtnPaste.ShortcutKeys = CType((System.Windows.Forms.Keys.Control Or System.Windows.Forms.Keys.V), System.Windows.Forms.Keys)
+        Me.BtnPaste.Size = New System.Drawing.Size(258, 22)
+        Me.BtnPaste.Text = "&Paste Over"
+        '
+        'BtnDelete
+        '
+        Me.BtnDelete.Image = CType(resources.GetObject("BtnDelete.Image"), System.Drawing.Image)
+        Me.BtnDelete.Name = "BtnDelete"
+        Me.BtnDelete.ShortcutKeys = System.Windows.Forms.Keys.Delete
+        Me.BtnDelete.Size = New System.Drawing.Size(258, 22)
+        Me.BtnDelete.Text = "Fill Selection with 0x00"
+        '
+        'BtnFillF6
+        '
+        Me.BtnFillF6.Image = CType(resources.GetObject("BtnFillF6.Image"), System.Drawing.Image)
+        Me.BtnFillF6.Name = "BtnFillF6"
+        Me.BtnFillF6.ShortcutKeys = CType((System.Windows.Forms.Keys.Shift Or System.Windows.Forms.Keys.Delete), System.Windows.Forms.Keys)
+        Me.BtnFillF6.Size = New System.Drawing.Size(258, 22)
+        Me.BtnFillF6.Text = "Fill Selection with 0xF6"
+        '
+        'BtnSelectSector
+        '
+        Me.BtnSelectSector.Image = CType(resources.GetObject("BtnSelectSector.Image"), System.Drawing.Image)
+        Me.BtnSelectSector.Name = "BtnSelectSector"
+        Me.BtnSelectSector.ShortcutKeys = CType((System.Windows.Forms.Keys.Control Or System.Windows.Forms.Keys.E), System.Windows.Forms.Keys)
+        Me.BtnSelectSector.Size = New System.Drawing.Size(258, 22)
+        Me.BtnSelectSector.Text = "Select &Sector"
         '
         'BtnSelectAll
         '
+        Me.BtnSelectAll.Image = CType(resources.GetObject("BtnSelectAll.Image"), System.Drawing.Image)
         Me.BtnSelectAll.Name = "BtnSelectAll"
-        Me.BtnSelectAll.Size = New System.Drawing.Size(184, 22)
+        Me.BtnSelectAll.ShortcutKeys = CType((System.Windows.Forms.Keys.Control Or System.Windows.Forms.Keys.A), System.Windows.Forms.Keys)
+        Me.BtnSelectAll.Size = New System.Drawing.Size(258, 22)
         Me.BtnSelectAll.Text = "Select &All"
         '
         'BtnCRC32
         '
         Me.BtnCRC32.Name = "BtnCRC32"
-        Me.BtnCRC32.Size = New System.Drawing.Size(184, 22)
-        Me.BtnCRC32.Text = "Calculate CRC32"
+        Me.BtnCRC32.Size = New System.Drawing.Size(258, 22)
+        Me.BtnCRC32.Text = "CRC32"
         '
         'StatusStrip1
         '
         Me.StatusStrip1.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.ToolStripStatusFile, Me.ToolStripStatusDescription, Me.ToolStripStatusOffset, Me.ToolStripStatusBlock, Me.ToolStripStatusLength, Me.ToolStripStatusGap, Me.ToolStripStatusCluster, Me.ToolStripStatusSector, Me.ToolStripStatusBytes})
-        Me.StatusStrip1.Location = New System.Drawing.Point(0, 569)
+        Me.StatusStrip1.Location = New System.Drawing.Point(0, 550)
         Me.StatusStrip1.Name = "StatusStrip1"
         Me.StatusStrip1.Size = New System.Drawing.Size(669, 24)
         Me.StatusStrip1.TabIndex = 2
@@ -224,6 +356,16 @@ Partial Class HexViewForm
         Me.ToolStripStatusFile.Size = New System.Drawing.Size(32, 19)
         Me.ToolStripStatusFile.Text = "File:"
         Me.ToolStripStatusFile.TextAlign = System.Drawing.ContentAlignment.MiddleLeft
+        '
+        'ToolStripStatusDescription
+        '
+        Me.ToolStripStatusDescription.BorderSides = System.Windows.Forms.ToolStripStatusLabelBorderSides.Right
+        Me.ToolStripStatusDescription.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text
+        Me.ToolStripStatusDescription.Margin = New System.Windows.Forms.Padding(2, 3, 2, 2)
+        Me.ToolStripStatusDescription.Name = "ToolStripStatusDescription"
+        Me.ToolStripStatusDescription.Size = New System.Drawing.Size(71, 19)
+        Me.ToolStripStatusDescription.Text = "Description"
+        Me.ToolStripStatusDescription.TextAlign = System.Drawing.ContentAlignment.MiddleLeft
         '
         'ToolStripStatusOffset
         '
@@ -258,7 +400,7 @@ Partial Class HexViewForm
         'ToolStripStatusGap
         '
         Me.ToolStripStatusGap.Name = "ToolStripStatusGap"
-        Me.ToolStripStatusGap.Size = New System.Drawing.Size(107, 19)
+        Me.ToolStripStatusGap.Size = New System.Drawing.Size(138, 19)
         Me.ToolStripStatusGap.Spring = True
         '
         'ToolStripStatusCluster
@@ -291,24 +433,40 @@ Partial Class HexViewForm
         Me.ToolStripStatusBytes.Text = "0 Bytes"
         Me.ToolStripStatusBytes.TextAlign = System.Drawing.ContentAlignment.MiddleRight
         '
-        'ToolStripStatusDescription
+        'HexBox1
         '
-        Me.ToolStripStatusDescription.BorderSides = System.Windows.Forms.ToolStripStatusLabelBorderSides.Right
-        Me.ToolStripStatusDescription.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text
-        Me.ToolStripStatusDescription.Margin = New System.Windows.Forms.Padding(2, 3, 2, 2)
-        Me.ToolStripStatusDescription.Name = "ToolStripStatusDescription"
-        Me.ToolStripStatusDescription.Size = New System.Drawing.Size(71, 19)
-        Me.ToolStripStatusDescription.Text = "Description"
-        Me.ToolStripStatusDescription.TextAlign = System.Drawing.ContentAlignment.MiddleLeft
+        Me.HexBox1.Anchor = CType((((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Bottom) _
+            Or System.Windows.Forms.AnchorStyles.Left) _
+            Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
+        '
+        '
+        '
+        Me.HexBox1.BuiltInContextMenu.CopyMenuItemText = "Copy Text"
+        Me.HexBox1.BuiltInContextMenu.SelectAllMenuItemText = "Select All"
+        Me.HexBox1.ColumnInfoVisible = True
+        Me.HexBox1.ContextMenuStrip = Me.ContextMenuStrip1
+        Me.HexBox1.Font = New System.Drawing.Font("Courier New", 9.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.HexBox1.ForeColor = System.Drawing.SystemColors.ControlText
+        Me.HexBox1.HexViewTextColor = System.Drawing.SystemColors.ControlText
+        Me.HexBox1.LineInfoVisible = True
+        Me.HexBox1.Location = New System.Drawing.Point(12, 28)
+        Me.HexBox1.Name = "HexBox1"
+        Me.HexBox1.ReadOnly = True
+        Me.HexBox1.ShadowSelectionColor = System.Drawing.Color.FromArgb(CType(CType(100, Byte), Integer), CType(CType(60, Byte), Integer), CType(CType(188, Byte), Integer), CType(CType(255, Byte), Integer))
+        Me.HexBox1.Size = New System.Drawing.Size(645, 519)
+        Me.HexBox1.StringViewVisible = True
+        Me.HexBox1.TabIndex = 1
+        Me.HexBox1.UseFixedBytesPerLine = True
+        Me.HexBox1.VScrollBarVisible = False
         '
         'HexViewForm
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
-        Me.ClientSize = New System.Drawing.Size(669, 593)
+        Me.ClientSize = New System.Drawing.Size(669, 574)
+        Me.Controls.Add(Me.ToolStripMain)
         Me.Controls.Add(Me.StatusStrip1)
         Me.Controls.Add(Me.HexBox1)
-        Me.Controls.Add(Me.FlowLayoutHeader)
         Me.MaximizeBox = False
         Me.MaximumSize = New System.Drawing.Size(685, 1280)
         Me.MinimizeBox = False
@@ -318,8 +476,8 @@ Partial Class HexViewForm
         Me.ShowInTaskbar = False
         Me.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent
         Me.Text = "Hex Viewer"
-        Me.FlowLayoutHeader.ResumeLayout(False)
-        Me.FlowLayoutHeader.PerformLayout()
+        Me.ToolStripMain.ResumeLayout(False)
+        Me.ToolStripMain.PerformLayout()
         Me.ContextMenuStrip1.ResumeLayout(False)
         Me.StatusStrip1.ResumeLayout(False)
         Me.StatusStrip1.PerformLayout()
@@ -327,11 +485,6 @@ Partial Class HexViewForm
         Me.PerformLayout()
 
     End Sub
-    Friend WithEvents FlowLayoutHeader As FlowLayoutPanel
-    Friend WithEvents LblHeaderCaption As Label
-    Friend WithEvents CmbGroups As ComboBox
-    Friend WithEvents BtnClear As Button
-    Friend WithEvents ComboBytes As ComboBox
     Friend WithEvents HexBox1 As Hb.Windows.Forms.HexBox
     Friend WithEvents StatusStrip1 As StatusStrip
     Friend WithEvents ToolStripStatusCluster As ToolStripStatusLabel
@@ -344,10 +497,30 @@ Partial Class HexViewForm
     Friend WithEvents BtnCopyHex As ToolStripMenuItem
     Friend WithEvents BtnSelectAll As ToolStripMenuItem
     Friend WithEvents BtnCopyHexFormatted As ToolStripMenuItem
-    Friend WithEvents LblHeaderFill As Label
     Friend WithEvents BtnCRC32 As ToolStripMenuItem
     Friend WithEvents ToolStripStatusOffset As ToolStripStatusLabel
     Friend WithEvents ToolStripStatusLength As ToolStripStatusLabel
     Friend WithEvents ToolStripStatusFile As ToolStripStatusLabel
     Friend WithEvents ToolStripStatusDescription As ToolStripStatusLabel
+    Friend WithEvents BtnUndo As ToolStripMenuItem
+    Friend WithEvents BtnDelete As ToolStripMenuItem
+    Friend WithEvents ToolStripSeparatorCRC32 As ToolStripSeparator
+    Friend WithEvents BtnFillF6 As ToolStripMenuItem
+    Friend WithEvents BtnPaste As ToolStripMenuItem
+    Friend WithEvents BtnSelectSector As ToolStripMenuItem
+    Friend WithEvents ToolStripBtnUndo As ToolStripButton
+    Friend WithEvents ToolStripBtnCopyText As ToolStripButton
+    Friend WithEvents ToolStripBtnCopyHex As ToolStripButton
+    Friend WithEvents ToolStripBtnCopyHexFormatted As ToolStripButton
+    Friend WithEvents ToolStripBtnPaste As ToolStripButton
+    Friend WithEvents ToolStripBtnDelete As ToolStripButton
+    Friend WithEvents ToolStripBtnFillF6 As ToolStripButton
+    Friend WithEvents ToolStripBtnSelectAll As ToolStripButton
+    Friend WithEvents ToolStripBtnSelectSector As ToolStripButton
+    Friend WithEvents CmbGroups As ToolStripComboBox
+    Friend WithEvents BtnRedo As ToolStripMenuItem
+    Friend WithEvents ToolStripBtnRedo As ToolStripButton
+    Friend WithEvents ToolStripBtnCommit As ToolStripButton
+    Friend WithEvents LblGroups As ToolStripLabel
+    Friend WithEvents ToolStripMain As ToolStrip
 End Class

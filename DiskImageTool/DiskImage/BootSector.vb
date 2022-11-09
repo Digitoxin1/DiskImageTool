@@ -1,16 +1,17 @@
 ﻿Namespace DiskImage
 
     Public Class BootSector
-        Private ReadOnly _Parent As Disk
-        Private ReadOnly _ValidBootStrapSignature As UShort = &HAA55
-        Private ReadOnly _ValidBytesPerSector() As UShort = {512, 1024, 2048, 4096}
-        Private ReadOnly _ValidDriveNumber() As Byte = {&H0, &H80}
-        Private ReadOnly _ValidExtendedBootSignature() As Byte = {&H29}
-        Private ReadOnly _ValidJumpInstructuon() As Byte = {&HEB, &HE9}
-        Private ReadOnly _ValidMediaDescriptor() As Byte = {&HF0, &HF8, &HF9, &HFA, &HFB, &HFC, &HFD, &HFE, &HFF}
-        Private ReadOnly _ValidSectorsPerSector() As Byte = {1, 2, 4, 8, 16, 32, 64, 128}
+        Private Const BOOT_SECTOR As UInteger = 0
+        Private ReadOnly _FileBytes As ImageByteArray
+        Private Shared ReadOnly _ValidBootStrapSignature As UShort = &HAA55
+        Private Shared ReadOnly _ValidBytesPerSector() As UShort = {512, 1024, 2048, 4096}
+        Private Shared ReadOnly _ValidDriveNumber() As Byte = {&H0, &H80}
+        Private Shared ReadOnly _ValidExtendedBootSignature() As Byte = {&H29}
+        Private Shared ReadOnly _ValidJumpInstructuon() As Byte = {&HEB, &HE9}
+        Private Shared ReadOnly _ValidMediaDescriptor() As Byte = {&HF0, &HF8, &HF9, &HFA, &HFB, &HFC, &HFD, &HFE, &HFF}
+        Private Shared ReadOnly _ValidSectorsPerSector() As Byte = {1, 2, 4, 8, 16, 32, 64, 128}
 
-        Public Enum BootSectorOffset As UInteger
+        Public Enum BootSectorOffsets As UInteger
             JmpBoot = 0
             OEMName = 3
             BytesPerSector = 11
@@ -35,7 +36,7 @@
             BootStrapSignature = 510
         End Enum
 
-        Public Enum BootSectorSize As UInteger
+        Public Enum BootSectorSizes As UInteger
             JmpBoot = 3
             OEMName = 8
             BytesPerSector = 2
@@ -58,228 +59,236 @@
             FileSystemType = 8
             BootStrapCode = 448
             BootStrapSignature = 2
-            Data = 512
         End Enum
 
-        Sub New(Parent As Disk)
-            _Parent = Parent
+        Sub New(FileBytes As ImageByteArray)
+            _FileBytes = FileBytes
         End Sub
+
         Public Property BootStrapCode() As Byte()
             Get
                 Dim BootStrapStart = GetBootStrapOffset()
-                Dim BootStrapLength = BootSectorOffset.BootStrapSignature - BootStrapStart
+                Dim BootStrapLength = BootSectorOffsets.BootStrapSignature - BootStrapStart
                 If BootStrapStart > 2 And BootStrapLength > 0 Then
-                    Return _Parent.GetBytes(BootStrapStart, BootStrapLength)
+                    Return _FileBytes.GetBytes(BootStrapStart, BootStrapLength)
                 Else
                     Return {}
                 End If
             End Get
             Set
                 Dim BootStrapStart = GetBootStrapOffset()
-                Dim BootStrapLength = BootSectorOffset.BootStrapSignature - BootStrapStart
+                Dim BootStrapLength = BootSectorOffsets.BootStrapSignature - BootStrapStart
                 If BootStrapStart > 2 And BootStrapLength > 0 Then
-                    _Parent.SetBytes(Value, BootStrapStart, BootSectorOffset.BootStrapSignature - BootStrapStart, 0)
+                    _FileBytes.SetBytes(Value, BootStrapStart, BootSectorOffsets.BootStrapSignature - BootStrapStart, 0)
                 End If
             End Set
         End Property
 
         Public Property BootStrapSignature() As UShort
             Get
-                Return _Parent.GetBytesShort(BootSectorOffset.BootStrapSignature)
+                Return _FileBytes.GetBytesShort(BootSectorOffsets.BootStrapSignature)
             End Get
             Set
-                _Parent.SetBytes(Value, BootSectorOffset.BootStrapSignature)
+                _FileBytes.SetBytes(Value, BootSectorOffsets.BootStrapSignature)
             End Set
         End Property
 
         Public Property BytesPerSector() As UShort
             Get
-                Return _Parent.GetBytesShort(BootSectorOffset.BytesPerSector)
+                Return _FileBytes.GetBytesShort(BootSectorOffsets.BytesPerSector)
             End Get
             Set
-                _Parent.SetBytes(Value, BootSectorOffset.BytesPerSector)
+                _FileBytes.SetBytes(Value, BootSectorOffsets.BytesPerSector)
             End Set
         End Property
 
         Public ReadOnly Property Data As Byte()
             Get
-                Return _Parent.GetBytes(0, BootSectorSize.Data)
+                Return _FileBytes.GetSector(BOOT_SECTOR)
             End Get
         End Property
 
         Public Property DriveNumber() As Byte
             Get
-                Return _Parent.GetByte(BootSectorOffset.DriveNumber)
+                Return _FileBytes.GetByte(BootSectorOffsets.DriveNumber)
             End Get
             Set
-                _Parent.SetBytes(Value, BootSectorOffset.DriveNumber)
+                _FileBytes.SetBytes(Value, BootSectorOffsets.DriveNumber)
             End Set
         End Property
 
         Public Property ExtendedBootSignature() As Byte
             Get
-                Return _Parent.GetByte(BootSectorOffset.ExtendedBootSignature)
+                Return _FileBytes.GetByte(BootSectorOffsets.ExtendedBootSignature)
             End Get
             Set
-                _Parent.SetBytes(Value, BootSectorOffset.ExtendedBootSignature)
+                _FileBytes.SetBytes(Value, BootSectorOffsets.ExtendedBootSignature)
             End Set
         End Property
 
         Public Property FileSystemType() As Byte()
             Get
-                Return _Parent.GetBytes(BootSectorOffset.FileSystemType, BootSectorSize.FileSystemType)
+                Return _FileBytes.GetBytes(BootSectorOffsets.FileSystemType, BootSectorSizes.FileSystemType)
             End Get
             Set
-                _Parent.SetBytes(Value, BootSectorOffset.FileSystemType, BootSectorSize.FileSystemType, 0)
+                _FileBytes.SetBytes(Value, BootSectorOffsets.FileSystemType, BootSectorSizes.FileSystemType, 0)
             End Set
         End Property
 
         Public Property HiddenSectors() As UShort
             Get
-                Return _Parent.GetBytesShort(BootSectorOffset.HiddenSectors)
+                Return _FileBytes.GetBytesShort(BootSectorOffsets.HiddenSectors)
             End Get
             Set
-                _Parent.SetBytes(Value, BootSectorOffset.HiddenSectors)
+                _FileBytes.SetBytes(Value, BootSectorOffsets.HiddenSectors)
             End Set
         End Property
 
         Public Property JmpBoot() As Byte()
             Get
-                Return _Parent.GetBytes(BootSectorOffset.JmpBoot, BootSectorSize.JmpBoot)
+                Return _FileBytes.GetBytes(BootSectorOffsets.JmpBoot, BootSectorSizes.JmpBoot)
             End Get
             Set
-                _Parent.SetBytes(Value, BootSectorOffset.JmpBoot, BootSectorSize.JmpBoot, 0)
+                _FileBytes.SetBytes(Value, BootSectorOffsets.JmpBoot, BootSectorSizes.JmpBoot, 0)
             End Set
         End Property
 
         Public Property MediaDescriptor() As Byte
             Get
-                Return _Parent.GetByte(BootSectorOffset.MediaDescriptor)
+                Return _FileBytes.GetByte(BootSectorOffsets.MediaDescriptor)
             End Get
             Set
-                _Parent.SetBytes(Value, BootSectorOffset.MediaDescriptor)
+                _FileBytes.SetBytes(Value, BootSectorOffsets.MediaDescriptor)
             End Set
         End Property
 
         Public Property NumberOfFATs() As Byte
             Get
-                Return _Parent.GetByte(BootSectorOffset.NumberOfFATs)
+                Return _FileBytes.GetByte(BootSectorOffsets.NumberOfFATs)
             End Get
             Set
-                _Parent.SetBytes(Value, BootSectorOffset.NumberOfFATs)
+                _FileBytes.SetBytes(Value, BootSectorOffsets.NumberOfFATs)
             End Set
         End Property
 
         Public Property NumberOfHeads() As UShort
             Get
-                Return _Parent.GetBytesShort(BootSectorOffset.NumberOfHeads)
+                Return _FileBytes.GetBytesShort(BootSectorOffsets.NumberOfHeads)
             End Get
             Set
-                _Parent.SetBytes(Value, BootSectorOffset.NumberOfHeads)
+                _FileBytes.SetBytes(Value, BootSectorOffsets.NumberOfHeads)
             End Set
         End Property
 
         Public Property OEMName() As Byte()
             Get
-                Return _Parent.GetBytes(BootSectorOffset.OEMName, BootSectorSize.OEMName)
+                Return _FileBytes.GetBytes(BootSectorOffsets.OEMName, BootSectorSizes.OEMName)
             End Get
             Set
-                _Parent.SetBytes(Value, BootSectorOffset.OEMName, BootSectorSize.OEMName, 0)
+                _FileBytes.SetBytes(Value, BootSectorOffsets.OEMName, BootSectorSizes.OEMName, 0)
             End Set
         End Property
 
         Public Property Reserved() As Byte
             Get
-                Return _Parent.GetByte(BootSectorOffset.Reserved)
+                Return _FileBytes.GetByte(BootSectorOffsets.Reserved)
             End Get
             Set
-                _Parent.SetBytes(Value, BootSectorOffset.Reserved)
+                _FileBytes.SetBytes(Value, BootSectorOffsets.Reserved)
             End Set
         End Property
 
         Public Property ReservedSectorCount() As UShort
             Get
-                Return _Parent.GetBytesShort(BootSectorOffset.ReservedSectorCount)
+                Return _FileBytes.GetBytesShort(BootSectorOffsets.ReservedSectorCount)
             End Get
             Set
-                _Parent.SetBytes(Value, BootSectorOffset.ReservedSectorCount)
+                _FileBytes.SetBytes(Value, BootSectorOffsets.ReservedSectorCount)
             End Set
         End Property
 
         Public Property RootEntryCount() As UShort
             Get
-                Return _Parent.GetBytesShort(BootSectorOffset.RootEntryCount)
+                Return _FileBytes.GetBytesShort(BootSectorOffsets.RootEntryCount)
             End Get
             Set
-                _Parent.SetBytes(Value, BootSectorOffset.RootEntryCount)
+                _FileBytes.SetBytes(Value, BootSectorOffsets.RootEntryCount)
             End Set
         End Property
 
         Public Property SectorCountLarge() As UInteger
             Get
-                Return _Parent.GetBytesInteger(BootSectorOffset.SectorCountLarge)
+                Return _FileBytes.GetBytesInteger(BootSectorOffsets.SectorCountLarge)
             End Get
             Set
-                _Parent.SetBytes(Value, BootSectorOffset.SectorCountLarge)
+                _FileBytes.SetBytes(Value, BootSectorOffsets.SectorCountLarge)
             End Set
         End Property
 
         Public Property SectorCountSmall() As UShort
             Get
-                Return _Parent.GetBytesShort(BootSectorOffset.SectorCountSmall)
+                Return _FileBytes.GetBytesShort(BootSectorOffsets.SectorCountSmall)
             End Get
             Set
-                _Parent.SetBytes(Value, BootSectorOffset.SectorCountSmall)
+                _FileBytes.SetBytes(Value, BootSectorOffsets.SectorCountSmall)
             End Set
         End Property
 
         Public Property SectorsPerCluster() As Byte
             Get
-                Return _Parent.GetByte(BootSectorOffset.SectorsPerCluster)
+                Return _FileBytes.GetByte(BootSectorOffsets.SectorsPerCluster)
             End Get
             Set
-                _Parent.SetBytes(Value, BootSectorOffset.SectorsPerCluster)
+                _FileBytes.SetBytes(Value, BootSectorOffsets.SectorsPerCluster)
             End Set
         End Property
 
         Public Property SectorsPerFAT() As UShort
             Get
-                Return _Parent.GetBytesShort(BootSectorOffset.SectorsPerFAT)
+                Return _FileBytes.GetBytesShort(BootSectorOffsets.SectorsPerFAT)
             End Get
             Set
-                _Parent.SetBytes(Value, BootSectorOffset.SectorsPerFAT)
+                _FileBytes.SetBytes(Value, BootSectorOffsets.SectorsPerFAT)
             End Set
         End Property
 
         Public Property SectorsPerTrack() As UShort
             Get
-                Return _Parent.GetBytesShort(BootSectorOffset.SectorsPerTrack)
+                Return _FileBytes.GetBytesShort(BootSectorOffsets.SectorsPerTrack)
             End Get
             Set
-                _Parent.SetBytes(Value, BootSectorOffset.SectorsPerTrack)
+                _FileBytes.SetBytes(Value, BootSectorOffsets.SectorsPerTrack)
             End Set
         End Property
 
         Public Property VolumeLabel() As Byte()
             Get
-                Return _Parent.GetBytes(BootSectorOffset.VolumeLabel, BootSectorSize.VolumeLabel)
+                Return _FileBytes.GetBytes(BootSectorOffsets.VolumeLabel, BootSectorSizes.VolumeLabel)
             End Get
             Set
-                _Parent.SetBytes(Value, BootSectorOffset.VolumeLabel, BootSectorSize.VolumeLabel, 0)
+                _FileBytes.SetBytes(Value, BootSectorOffsets.VolumeLabel, BootSectorSizes.VolumeLabel, 0)
             End Set
         End Property
 
         Public Property VolumeSerialNumber() As UInteger
             Get
-                Return _Parent.GetBytesInteger(BootSectorOffset.VolumeSerialNumber)
+                Return _FileBytes.GetBytesInteger(BootSectorOffsets.VolumeSerialNumber)
             End Get
             Set
-                _Parent.SetBytes(Value, BootSectorOffset.VolumeSerialNumber)
+                _FileBytes.SetBytes(Value, BootSectorOffsets.VolumeSerialNumber)
             End Set
         End Property
 
         Public Function BytesPerCluster() As UInteger
-            Return SectorsPerCluster * BytesPerSector
+            Return SectorToBytes(SectorsPerCluster)
+        End Function
+
+        Public Function ClusterToOffset(Cluster As UShort) As UInteger
+            Return SectorToBytes(ClusterToSector(Cluster))
+        End Function
+
+        Public Function ClusterToSector(Cluster As UShort) As UInteger
+            Return (DataRegionStart() + ((Cluster - 2) * SectorsPerCluster))
         End Function
 
         Public Function DataRegionSize() As UInteger
@@ -311,7 +320,7 @@
                 Offset = 0
             End If
 
-            If Offset >= BootSectorOffset.BootStrapSignature Then
+            If Offset >= BootSectorOffsets.BootStrapSignature Then
                 Offset = 0
             End If
 
@@ -359,7 +368,7 @@
         End Function
 
         Public Function HasValidRootEntryCount() As Boolean
-            Return (RootEntryCount * 32) Mod BytesPerSector = 0
+            Return (RootEntryCount * 32) Mod BYTES_PER_SECTOR = 0
         End Function
 
         Public Function HasValidSectorsPerCluster() As Boolean
@@ -367,7 +376,15 @@
         End Function
 
         Public Function ImageSize() As UInteger
-            Return SectorCount() * BytesPerSector
+            Return SectorToBytes(SectorCount())
+        End Function
+
+        Public Function IsBootSectorRegion(Offset As UInteger) As Boolean
+            Return OffsetToSector(Offset) = BOOT_SECTOR
+        End Function
+
+        Public Function IsValidImage() As Boolean
+            Return HasValidSectorsPerCluster() AndAlso HasValidMediaDescriptor()
         End Function
 
         Public Function IsWin9xOEMName() As Boolean
@@ -375,12 +392,17 @@
 
             Return OEMNameLocal(5) = &H49 And OEMNameLocal(6) = &H48 And OEMNameLocal(7) = &H43
         End Function
+
         Public Function NumberOfFATEntries() As UShort
             Return DataRegionSize() \ SectorsPerCluster
         End Function
 
+        Public Function OffsetToCluster(Offset As UInteger) As UShort
+            Return SectorToCluster(OffsetToSector(Offset))
+        End Function
+
         Public Function RootDirectoryRegionSize() As UInteger
-            Return Math.Ceiling((RootEntryCount * 32) / BytesPerSector)
+            Return BytesToSector(RootEntryCount * 32)
         End Function
 
         Public Function RootDirectoryRegionStart() As UInteger
@@ -392,6 +414,18 @@
                 Return SectorCountSmall
             Else
                 Return SectorCountLarge
+            End If
+        End Function
+
+        Public Function SectorToCluster(Sector As UInteger) As UShort
+            If Sector < DataRegionStart() Then
+                Return 0
+            End If
+            Dim Result = (Sector - DataRegionStart()) \ SectorsPerCluster + 2
+            If Result < 2 Then
+                Return 0
+            Else
+                Return Result
             End If
         End Function
     End Class

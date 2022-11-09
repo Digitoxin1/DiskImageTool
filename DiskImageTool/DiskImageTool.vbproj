@@ -119,6 +119,14 @@
   <ItemGroup>
     <Compile Include="Copy Protection.vb" />
     <Compile Include="DebugScript.vb" />
+    <Compile Include="DiskImage\Classes.vb" />
+    <Compile Include="DiskImage\ByteArray.vb" />
+    <Compile Include="DiskImage\FAT12.vb" />
+    <Compile Include="DiskImage\Functions.vb" />
+    <Compile Include="DiskImage\IDirectory.vb" />
+    <Compile Include="DiskImage\ImageByteArray.vb" />
+    <Compile Include="DiskImage\RootDirectory.vb" />
+    <Compile Include="DiskImage\SubDirectory.vb" />
     <Compile Include="Forms\FilePropertiesForm.Designer.vb">
       <DependentUpon>FilePropertiesForm.vb</DependentUpon>
     </Compile>
@@ -137,10 +145,10 @@
     <Compile Include="Forms\ItemScanForm.vb">
       <SubType>Form</SubType>
     </Compile>
+    <Compile Include="MyByteProvider.vb" />
     <Compile Include="OEMNameLookup.vb" />
     <Compile Include="LoadedImageData.vb" />
     <Compile Include="CRC32.vb" />
-    <Compile Include="DiskImage\Directory.vb" />
     <Compile Include="DiskImage\DirectoryEntry.vb" />
     <Compile Include="DiskImage\Disk.vb" />
     <Compile Include="MainForm.vb">
@@ -191,6 +199,9 @@
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="SharedClasses.cls" />
+    <Compile Include="Controls\ToolStripNumericUpDown.vb">
+      <SubType>Component</SubType>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Forms\FilePropertiesForm.resx">
@@ -205,6 +216,7 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\HexViewForm.resx">
       <DependentUpon>HexViewForm.vb</DependentUpon>
+      <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="My Project\Resources.resx">
       <Generator>VbMyResourcesResXFileCodeGenerator</Generator>

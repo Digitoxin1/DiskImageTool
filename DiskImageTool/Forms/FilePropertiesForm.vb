@@ -109,15 +109,15 @@
             Dim VolumeLabel() As Byte
             ReDim FileName(7)
             ReDim Extension(2)
-            VolumeLabel = UnicodeToCodePage437(TxtFile.Text)
-            DiskImage.Disk.ResizeArray(VolumeLabel, 11, 32)
+            VolumeLabel = DiskImage.UnicodeToCodePage437(TxtFile.Text)
+            DiskImage.ResizeArray(VolumeLabel, 11, 32)
             Array.Copy(VolumeLabel, 0, FileName, 0, 8)
             Array.Copy(VolumeLabel, 8, Extension, 0, 3)
         Else
-            FileName = UnicodeToCodePage437(TxtFile.Text)
-            DiskImage.Disk.ResizeArray(FileName, 8, 32)
-            Extension = UnicodeToCodePage437(TxtExtension.Text)
-            DiskImage.Disk.ResizeArray(Extension, 3, 32)
+            FileName = DiskImage.UnicodeToCodePage437(TxtFile.Text)
+            DiskImage.ResizeArray(FileName, 8, 32)
+            Extension = DiskImage.UnicodeToCodePage437(TxtExtension.Text)
+            DiskImage.ResizeArray(Extension, 3, 32)
         End If
 
         If Not ByteArrayCompare(FileName, DirectoryEntry.FileName) Then
@@ -141,6 +141,8 @@
             ApplyFileNameUpdate(DirectoryEntry)
         End If
 
+        _Disk.Data.BatchEditMode = True
+
         For Each Item As ListViewItem In _Items
             Dim FileData As FileData = Item.Tag
             Dim DirectoryEntry = FileData.DirectoryEntry
@@ -148,6 +150,8 @@
             ApplyFileDatesUpdate(DirectoryEntry)
             ApplyAttributesUpdate(DirectoryEntry)
         Next
+
+        _Disk.Data.BatchEditMode = False
     End Sub
 
     Private Function GetDateFromPicker(DTP As DateTimePicker) As Date?
@@ -437,7 +441,7 @@
             Exit Sub
         End If
 
-        Dim NewValue = CodePage437ToUnicode(MskExtensionHex.GetHex)
+        Dim NewValue = DiskImage.CodePage437ToUnicode(MskExtensionHex.GetHex)
 
         _SuppressEvent = True
         If TxtExtension.Text <> NewValue Then
@@ -451,7 +455,7 @@
             Exit Sub
         End If
 
-        Dim NewValue = CodePage437ToUnicode(MskFileHex.GetHex)
+        Dim NewValue = DiskImage.CodePage437ToUnicode(MskFileHex.GetHex)
 
         _SuppressEvent = True
         If TxtFile.Text <> NewValue Then
@@ -466,7 +470,7 @@
         End If
 
         Dim Value As String = Strings.Left(TxtExtension.Text, TxtExtension.MaxLength).PadRight(TxtExtension.MaxLength)
-        Dim b = UnicodeToCodePage437(Value)
+        Dim b = DiskImage.UnicodeToCodePage437(Value)
 
         MskExtensionHex.SetHex(b)
     End Sub
@@ -486,7 +490,7 @@
                 e.KeyChar = Chr(0)
             ElseIf Value < 33 And Value <> 8 Then
                 e.KeyChar = Chr(0)
-            ElseIf DiskImage.Disk.InvalidFileChars.Contains(Value) Then
+            ElseIf DiskImage.InvalidFileChars.Contains(Value) Then
                 e.KeyChar = Chr(0)
             End If
         End If
@@ -498,7 +502,7 @@
         End If
 
         Dim Value As String = Strings.Left(TxtFile.Text, TxtFile.MaxLength).PadRight(TxtFile.MaxLength)
-        Dim b = UnicodeToCodePage437(Value)
+        Dim b = DiskImage.UnicodeToCodePage437(Value)
 
         MskFileHex.SetHex(b)
     End Sub
