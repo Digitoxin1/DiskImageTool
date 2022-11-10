@@ -23,29 +23,31 @@ Partial Class OEMNameForm
     <System.Diagnostics.DebuggerStepThrough()> _
     Private Sub InitializeComponent()
         Me.components = New System.ComponentModel.Container()
-        Me.Label1 = New System.Windows.Forms.Label()
+        Dim Label1 As System.Windows.Forms.Label
+        Dim Label2 As System.Windows.Forms.Label
         Me.TxtCurrentOEMName = New System.Windows.Forms.TextBox()
         Me.CboOEMName = New System.Windows.Forms.ComboBox()
-        Me.Label2 = New System.Windows.Forms.Label()
         Me.BtnUpdate = New System.Windows.Forms.Button()
         Me.BtnCancel = New System.Windows.Forms.Button()
         Me.TableLayoutPanel1 = New System.Windows.Forms.TableLayoutPanel()
-        Me.MskOEMNameHex = New DiskImageTool.HexTextBox()
         Me.TxtCurrentOEMHex = New System.Windows.Forms.TextBox()
         Me.FlowLayoutPanel1 = New System.Windows.Forms.FlowLayoutPanel()
+        Me.MskOEMNameHex = New DiskImageTool.HexTextBox()
+        Label1 = New System.Windows.Forms.Label()
+        Label2 = New System.Windows.Forms.Label()
         Me.TableLayoutPanel1.SuspendLayout()
         Me.FlowLayoutPanel1.SuspendLayout()
         Me.SuspendLayout()
         '
         'Label1
         '
-        Me.Label1.Anchor = System.Windows.Forms.AnchorStyles.Left
-        Me.Label1.AutoSize = True
-        Me.Label1.Location = New System.Drawing.Point(3, 6)
-        Me.Label1.Name = "Label1"
-        Me.Label1.Size = New System.Drawing.Size(99, 13)
-        Me.Label1.TabIndex = 0
-        Me.Label1.Text = "Current OEM Name"
+        Label1.Anchor = System.Windows.Forms.AnchorStyles.Left
+        Label1.AutoSize = True
+        Label1.Location = New System.Drawing.Point(3, 6)
+        Label1.Name = "Label1"
+        Label1.Size = New System.Drawing.Size(99, 13)
+        Label1.TabIndex = 0
+        Label1.Text = "Current OEM Name"
         '
         'TxtCurrentOEMName
         '
@@ -69,13 +71,13 @@ Partial Class OEMNameForm
         '
         'Label2
         '
-        Me.Label2.Anchor = System.Windows.Forms.AnchorStyles.Left
-        Me.Label2.AutoSize = True
-        Me.Label2.Location = New System.Drawing.Point(3, 33)
-        Me.Label2.Name = "Label2"
-        Me.Label2.Size = New System.Drawing.Size(87, 13)
-        Me.Label2.TabIndex = 3
-        Me.Label2.Text = "New OEM Name"
+        Label2.Anchor = System.Windows.Forms.AnchorStyles.Left
+        Label2.AutoSize = True
+        Label2.Location = New System.Drawing.Point(3, 33)
+        Label2.Name = "Label2"
+        Label2.Size = New System.Drawing.Size(87, 13)
+        Label2.TabIndex = 3
+        Label2.Text = "New OEM Name"
         '
         'BtnUpdate
         '
@@ -109,8 +111,8 @@ Partial Class OEMNameForm
         Me.TableLayoutPanel1.ColumnStyles.Add(New System.Windows.Forms.ColumnStyle())
         Me.TableLayoutPanel1.Controls.Add(Me.MskOEMNameHex, 2, 1)
         Me.TableLayoutPanel1.Controls.Add(Me.TxtCurrentOEMHex, 2, 0)
-        Me.TableLayoutPanel1.Controls.Add(Me.Label1, 0, 0)
-        Me.TableLayoutPanel1.Controls.Add(Me.Label2, 0, 1)
+        Me.TableLayoutPanel1.Controls.Add(Label1, 0, 0)
+        Me.TableLayoutPanel1.Controls.Add(Label2, 0, 1)
         Me.TableLayoutPanel1.Controls.Add(Me.TxtCurrentOEMName, 1, 0)
         Me.TableLayoutPanel1.Controls.Add(Me.CboOEMName, 1, 1)
         Me.TableLayoutPanel1.Location = New System.Drawing.Point(21, 21)
@@ -120,15 +122,6 @@ Partial Class OEMNameForm
         Me.TableLayoutPanel1.RowStyles.Add(New System.Windows.Forms.RowStyle())
         Me.TableLayoutPanel1.Size = New System.Drawing.Size(391, 53)
         Me.TableLayoutPanel1.TabIndex = 0
-        '
-        'MskOEMNameHex
-        '
-        Me.MskOEMNameHex.Font = New System.Drawing.Font("Courier New", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.MskOEMNameHex.Location = New System.Drawing.Point(218, 29)
-        Me.MskOEMNameHex.MaskLength = 8
-        Me.MskOEMNameHex.Name = "MskOEMNameHex"
-        Me.MskOEMNameHex.Size = New System.Drawing.Size(170, 20)
-        Me.MskOEMNameHex.TabIndex = 5
         '
         'TxtCurrentOEMHex
         '
@@ -151,6 +144,15 @@ Partial Class OEMNameForm
         Me.FlowLayoutPanel1.Name = "FlowLayoutPanel1"
         Me.FlowLayoutPanel1.Size = New System.Drawing.Size(192, 29)
         Me.FlowLayoutPanel1.TabIndex = 1
+        '
+        'MskOEMNameHex
+        '
+        Me.MskOEMNameHex.Font = New System.Drawing.Font("Courier New", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.MskOEMNameHex.Location = New System.Drawing.Point(218, 29)
+        Me.MskOEMNameHex.MaskLength = 8
+        Me.MskOEMNameHex.Name = "MskOEMNameHex"
+        Me.MskOEMNameHex.Size = New System.Drawing.Size(170, 20)
+        Me.MskOEMNameHex.TabIndex = 5
         '
         'OEMNameForm
         '
@@ -177,11 +179,8 @@ Partial Class OEMNameForm
         Me.PerformLayout()
 
     End Sub
-
-    Friend WithEvents Label1 As Label
     Friend WithEvents TxtCurrentOEMName As TextBox
     Friend WithEvents CboOEMName As ComboBox
-    Friend WithEvents Label2 As Label
     Friend WithEvents BtnUpdate As Button
     Friend WithEvents BtnCancel As Button
     Friend WithEvents TableLayoutPanel1 As TableLayoutPanel
