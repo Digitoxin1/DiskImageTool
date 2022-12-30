@@ -2332,7 +2332,8 @@ Public Class MainForm
 
     Private Sub SaveAll()
         _SuppressEvent = True
-        For Each ImageData As LoadedImageData In ComboImages.Items
+        For Index = 0 To ComboImages.Items.Count - 1
+            Dim ImageData As LoadedImageData = ComboImages.Items(Index)
             If ImageData.Modified Then
                 Dim Result = DiskImageSave(ImageData)
                 If Result Then
@@ -2343,7 +2344,7 @@ Public Class MainForm
                     End If
                 End If
             End If
-        Next
+        Next Index
         _SuppressEvent = False
 
         FilterUpdate(FilterTypes.ModifiedFiles)
