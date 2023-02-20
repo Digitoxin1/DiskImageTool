@@ -4,6 +4,7 @@ Namespace DiskImage
 
     Public Class DirectoryEntry
         Private Const CHAR_SPACE As Byte = 32
+        Private Const CHAR_DELETED As Byte = &HE5
         Private ReadOnly _FatChain As FATChain
         Private ReadOnly _FAT As FAT12
         Private ReadOnly _Offset As UInteger
@@ -228,6 +229,23 @@ Namespace DiskImage
             End Get
         End Property
 
+        Public Sub Clear(FullClear As Boolean)
+            Dim b(31) As Byte
+
+            If FullClear Then
+                For Counter = 0 To b.Length - 1
+                    b(Counter) = 0
+                Next
+            Else
+                b(0) = CHAR_DELETED
+                For Counter = 1 To b.Length - 1
+                    b(Counter) = 0
+                Next
+            End If
+
+            _FileBytes.SetBytes(b, _Offset)
+        End Sub
+
         Public Sub ClearCreationDate()
             CreationDate = 0
             CreationTime = 0
@@ -353,7 +371,7 @@ Namespace DiskImage
         End Function
 
         Public Function IsDeleted() As Boolean
-            Return FileName(0) = &HE5
+            Return FileName(0) = CHAR_DELETED
         End Function
 
         Public Function IsDirectory() As Boolean
@@ -388,6 +406,30 @@ Namespace DiskImage
         Public Function IsVolumeName() As Boolean
             Return (Attributes And AttributeFlags.VolumeName) > 0
         End Function
+
+        Public Sub Remove(Clear As Boolean)
+            _FileBytes.BatchEditMode = True
+            _FileBytes.SetBytes(CHAR_DELETED, _Offset)
+
+            Dim b(_BootSector.BytesPerCluster - 1) As Byte
+            If Clear Then
+                For i = 0 To b.Length - 1
+                    b(i) = &HF6
+                Next
+            End If
+
+            For Each Cluster In _FatChain.Chain
+                If Clear Then
+                    Dim Offset = _BootSector.ClusterToOffset(Cluster)
+                    _FileBytes.SetBytes(b, Offset)
+                End If
+
+                _FAT.TableEntry(Cluster) = 0
+            Next
+            _FAT.UpdateFAT12()
+
+            _FileBytes.BatchEditMode = False
+        End Sub
 
         Public Sub SetCreationDate(Value As Date)
             CreationDate = DateToFATDate(Value)

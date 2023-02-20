@@ -1,6 +1,4 @@
-﻿Imports System.Collections.Specialized.BitVector32
-Imports System.ComponentModel
-Imports System.IO
+﻿Imports System.ComponentModel
 Imports DiskImageTool.DiskImage
 Imports Hb.Windows.Forms
 
@@ -9,7 +7,8 @@ Public Class HexViewForm
     Private ReadOnly _Changes As Stack(Of HexChange)
     Private ReadOnly _HexViewSectorData As HexViewSectorData
     Private ReadOnly _RedoChanges As Stack(Of HexChange)
-    Private ReadOnly _SectorNavigators As Boolean
+    Private ReadOnly _SectorNavigator As Boolean
+    Private ReadOnly _ClusterNavigator As Boolean
     Private _CurrentHexViewData As HexViewData
     Private _CurrentIndex As Integer = -1
     Private _CurrentSector As UInteger = 0
@@ -20,7 +19,7 @@ Public Class HexViewForm
     Private WithEvents NumericSector As ToolStripNumericUpDown
     Private WithEvents NumericCluster As ToolStripNumericUpDown
 
-    Public Sub New(HexViewSectorData As HexViewSectorData, Caption As String, SectorNavigators As Boolean)
+    Public Sub New(HexViewSectorData As HexViewSectorData, Caption As String, SectorNavigator As Boolean, ClusterNavigator As Boolean)
         ' This call is required by the designer.
         InitializeComponent()
         ' Add any initialization after the InitializeComponent() call.
@@ -28,7 +27,8 @@ Public Class HexViewForm
         _Changes = New Stack(Of HexChange)
         _RedoChanges = New Stack(Of HexChange)
         _CurrentHexViewData = Nothing
-        _SectorNavigators = SectorNavigators
+        _SectorNavigator = SectorNavigator
+        _ClusterNavigator = ClusterNavigator
 
         HexBox1.ReadOnly = False
 
@@ -38,19 +38,33 @@ Public Class HexViewForm
             Me.Text = Caption
         End If
 
-        LblGroups.Visible = Not SectorNavigators
-        CmbGroups.Visible = Not SectorNavigators
+        LblGroups.Visible = Not SectorNavigator And Not ClusterNavigator
+        CmbGroups.Visible = Not SectorNavigator And Not ClusterNavigator
 
-        If SectorNavigators Then
-            InitializeSectorNavigators()
+        If ClusterNavigator Then
+            InitializeClusterNavigator()
+        End If
+
+        If SectorNavigator Then
+            InitializeSectorNavigator()
         End If
     End Sub
 
-    Private Sub InitializeSectorNavigators()
-        NumericCluster = New ToolStripNumericUpDown() With {
+    Private Sub InitializeSectorNavigator()
+        NumericSector = New ToolStripNumericUpDown() With {
             .Alignment = ToolStripItemAlignment.Right
         }
-        NumericSector = New ToolStripNumericUpDown() With {
+
+        Dim LabelSector = New ToolStripLabel("Sector") With {
+            .Alignment = ToolStripItemAlignment.Right
+        }
+
+        ToolStripMain.Items.Add(NumericSector)
+        ToolStripMain.Items.Add(LabelSector)
+    End Sub
+
+    Private Sub InitializeClusterNavigator()
+        NumericCluster = New ToolStripNumericUpDown() With {
             .Alignment = ToolStripItemAlignment.Right
         }
 
@@ -58,16 +72,9 @@ Public Class HexViewForm
             .Alignment = ToolStripItemAlignment.Right,
             .Padding = New Padding(12, 0, 0, 0)
         }
-        Dim LabelSector = New ToolStripLabel("Sector") With {
-            .Alignment = ToolStripItemAlignment.Right
-        }
 
         ToolStripMain.Items.Add(NumericCluster)
         ToolStripMain.Items.Add(LabelCluster)
-
-        ToolStripMain.Items.Add(NumericSector)
-        ToolStripMain.Items.Add(LabelSector)
-
     End Sub
 
     Public ReadOnly Property Modified As Boolean
@@ -469,13 +476,10 @@ Public Class HexViewForm
             ToolStripBtnSelectSector.Enabled = BtnSelectSector.Enabled
         Else
             Dim Offset As UInteger = HexBox1.LineInfoOffset + SelectionStart
-            Dim Sector As UInteger = 0
             Dim FileName As String = ""
             Dim OutOfRange As Boolean = SelectionStart >= HexBox1.ByteProvider.Length
 
-            If _CurrentHexViewData.Disk.IsValidImage Then
-                Sector = OffsetToSector(Offset)
-            End If
+            Dim Sector = OffsetToSector(Offset)
 
             ToolStripStatusOffset.Visible = Not OutOfRange
             ToolStripStatusOffset.Text = "Offset(h): " & SelectionStart.ToString("X")
@@ -598,16 +602,26 @@ Public Class HexViewForm
     End Sub
 
     Private Sub RefresSelectors()
-        If _SectorNavigators AndAlso _CurrentHexViewData.SectorBlock.Size > 0 Then
-            Dim SectorStart = _CurrentHexViewData.SectorBlock.SectorStart
-            Dim SectorEnd = SectorStart + _CurrentHexViewData.SectorBlock.SectorCount - 1
-            NumericSector.Minimum = SectorStart
-            NumericSector.Maximum = SectorEnd
-            NumericSector.Enabled = True
+        Dim SectorStart As UInteger = 0
+        Dim SectorEnd As UInteger = 0
 
-            NumericCluster.Minimum = _HexViewSectorData.Disk.BootSector.SectorToCluster(SectorStart)
-            NumericCluster.Maximum = _HexViewSectorData.Disk.BootSector.SectorToCluster(SectorEnd)
-            NumericCluster.Enabled = True
+        If _CurrentHexViewData.SectorBlock.Size > 0 Then
+            If _SectorNavigator Or _ClusterNavigator Then
+                SectorStart = _CurrentHexViewData.SectorBlock.SectorStart
+                SectorEnd = SectorStart + _CurrentHexViewData.SectorBlock.SectorCount - 1
+            End If
+
+            If _SectorNavigator Then
+                NumericSector.Minimum = SectorStart
+                NumericSector.Maximum = SectorEnd
+                NumericSector.Enabled = True
+            End If
+
+            If _ClusterNavigator Then
+                NumericCluster.Minimum = _HexViewSectorData.Disk.BootSector.SectorToCluster(SectorStart)
+                NumericCluster.Maximum = _HexViewSectorData.Disk.BootSector.SectorToCluster(SectorEnd)
+                NumericCluster.Enabled = True
+            End If
         End If
     End Sub
 
@@ -618,16 +632,21 @@ Public Class HexViewForm
 
         Dim Offset = HexBox1.LineInfoOffset + HexBox1.StartByte
         Dim Sector = OffsetToSector(Offset)
-        Dim Cluster = _CurrentHexViewData.Disk.BootSector.SectorToCluster(Sector)
 
         _IgnoreEvent = True
 
-        If Sector <> NumericSector.Value Then
-            NumericSector.Value = Sector
+        If _SectorNavigator Then
+            If Sector <> NumericSector.Value Then
+                NumericSector.Value = Sector
+            End If
         End If
 
-        If Cluster <> NumericCluster.Value Then
-            NumericCluster.Value = Cluster
+        If _ClusterNavigator Then
+            Dim Cluster = _CurrentHexViewData.Disk.BootSector.SectorToCluster(Sector)
+
+            If Cluster <> NumericCluster.Value Then
+                NumericCluster.Value = Cluster
+            End If
         End If
 
         _IgnoreEvent = False
@@ -730,7 +749,7 @@ Public Class HexViewForm
 
     Private Sub HexBox1_MouseDown(sender As Object, e As MouseEventArgs) Handles HexBox1.MouseDown
         If e.Button = MouseButtons.Right Then
-            If HexBox1.SelectionLength = 0 Then
+            If HexBox1.SelectionLength < 2 Then
                 HexBox1.SetCaretPosition(New Point(e.X, e.Y))
             End If
         End If
@@ -765,7 +784,7 @@ Public Class HexViewForm
     End Sub
 
     Private Sub HexBox1_VisibilityBytesChanged(sender As Object, e As EventArgs) Handles HexBox1.VisibilityBytesChanged
-        If _SectorNavigators Then
+        If _SectorNavigator Or _ClusterNavigator Then
             RefresSelectorValues()
         End If
     End Sub
@@ -775,7 +794,7 @@ Public Class HexViewForm
             Exit Sub
         End If
 
-        If _SectorNavigators Then
+        If _ClusterNavigator Then
             JumpToCluster(NumericCluster.Value)
         End If
     End Sub
@@ -785,7 +804,7 @@ Public Class HexViewForm
             Exit Sub
         End If
 
-        If _SectorNavigators Then
+        If _SectorNavigator Then
             JumpToSector(NumericSector.Value)
         End If
     End Sub

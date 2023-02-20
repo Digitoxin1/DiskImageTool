@@ -40,6 +40,7 @@ Public Class ItemScanForm
         Dim PrevPercentage As Integer = 0
         Dim Counter As Integer = 0
         For Each ImageData As LoadedImageData In _ImageList
+            Debug.Print(ImageData.FilePath)
             If bw.CancellationPending Then
                 Return False
             End If
