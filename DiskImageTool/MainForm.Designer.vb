@@ -44,6 +44,7 @@ Partial Class MainForm
         Dim ToolStripSearch As System.Windows.Forms.ToolStripLabel
         Dim StatusStrip1 As System.Windows.Forms.StatusStrip
         Dim ToolStripTop As System.Windows.Forms.ToolStrip
+        Dim MainMenuTools As System.Windows.Forms.ToolStripMenuItem
         Me.BtnOpen = New System.Windows.Forms.ToolStripMenuItem()
         Me.toolStripSeparator = New System.Windows.Forms.ToolStripSeparator()
         Me.BtnSave = New System.Windows.Forms.ToolStripMenuItem()
@@ -115,6 +116,7 @@ Partial Class MainForm
         Me.ToolStripSeparator11 = New System.Windows.Forms.ToolStripSeparator()
         Me.BtnFileMenuRemoveDeletedFile = New System.Windows.Forms.ToolStripMenuItem()
         Me.BtnFileMenuDeleteFile = New System.Windows.Forms.ToolStripMenuItem()
+        Me.BtnFileMenuDeleteFileWithFill = New System.Windows.Forms.ToolStripMenuItem()
         Me.MenuStripMain = New System.Windows.Forms.MenuStrip()
         Me.MainMenuFilters = New System.Windows.Forms.ToolStripMenuItem()
         Me.ContextMenuFilters = New System.Windows.Forms.ContextMenuStrip(Me.components)
@@ -123,7 +125,7 @@ Partial Class MainForm
         Me.BtnClearFilters = New System.Windows.Forms.ToolStripMenuItem()
         Me.FilterSeparator = New System.Windows.Forms.ToolStripSeparator()
         Me.ComboImagesFiltered = New System.Windows.Forms.ComboBox()
-        Me.BtnFileMenuDeleteFileWithFill = New System.Windows.Forms.ToolStripMenuItem()
+        Me.BtnWin9xClean = New System.Windows.Forms.ToolStripMenuItem()
         SummaryName = CType(New System.Windows.Forms.ColumnHeader(), System.Windows.Forms.ColumnHeader)
         SummaryValue = CType(New System.Windows.Forms.ColumnHeader(), System.Windows.Forms.ColumnHeader)
         HashName = CType(New System.Windows.Forms.ColumnHeader(), System.Windows.Forms.ColumnHeader)
@@ -144,6 +146,7 @@ Partial Class MainForm
         ToolStripSearch = New System.Windows.Forms.ToolStripLabel()
         StatusStrip1 = New System.Windows.Forms.StatusStrip()
         ToolStripTop = New System.Windows.Forms.ToolStrip()
+        MainMenuTools = New System.Windows.Forms.ToolStripMenuItem()
         StatusStrip1.SuspendLayout()
         ToolStripTop.SuspendLayout()
         Me.ContextMenuFiles.SuspendLayout()
@@ -367,43 +370,43 @@ Partial Class MainForm
         'BtnDisplayBootSector
         '
         Me.BtnDisplayBootSector.Name = "BtnDisplayBootSector"
-        Me.BtnDisplayBootSector.Size = New System.Drawing.Size(179, 22)
+        Me.BtnDisplayBootSector.Size = New System.Drawing.Size(180, 22)
         Me.BtnDisplayBootSector.Text = "&Boot Sector"
         '
         'BtnDisplayFAT
         '
         Me.BtnDisplayFAT.Name = "BtnDisplayFAT"
-        Me.BtnDisplayFAT.Size = New System.Drawing.Size(179, 22)
+        Me.BtnDisplayFAT.Size = New System.Drawing.Size(180, 22)
         Me.BtnDisplayFAT.Text = "File &Allocation Table"
         '
         'BtnDisplayDirectory
         '
         Me.BtnDisplayDirectory.Name = "BtnDisplayDirectory"
-        Me.BtnDisplayDirectory.Size = New System.Drawing.Size(179, 22)
+        Me.BtnDisplayDirectory.Size = New System.Drawing.Size(180, 22)
         Me.BtnDisplayDirectory.Text = "Root &Directory"
         '
         'BtnDisplayClusters
         '
         Me.BtnDisplayClusters.Name = "BtnDisplayClusters"
-        Me.BtnDisplayClusters.Size = New System.Drawing.Size(179, 22)
+        Me.BtnDisplayClusters.Size = New System.Drawing.Size(180, 22)
         Me.BtnDisplayClusters.Text = "&Unused Clusters"
         '
         'BtnDisplayFile
         '
         Me.BtnDisplayFile.Name = "BtnDisplayFile"
-        Me.BtnDisplayFile.Size = New System.Drawing.Size(179, 22)
+        Me.BtnDisplayFile.Size = New System.Drawing.Size(180, 22)
         Me.BtnDisplayFile.Text = "&File"
         '
         'BtnDisplayBadSectors
         '
         Me.BtnDisplayBadSectors.Name = "BtnDisplayBadSectors"
-        Me.BtnDisplayBadSectors.Size = New System.Drawing.Size(179, 22)
+        Me.BtnDisplayBadSectors.Size = New System.Drawing.Size(180, 22)
         Me.BtnDisplayBadSectors.Text = "Bad &Sectors"
         '
         'BtnDisplayDisk
         '
         Me.BtnDisplayDisk.Name = "BtnDisplayDisk"
-        Me.BtnDisplayDisk.Size = New System.Drawing.Size(179, 22)
+        Me.BtnDisplayDisk.Size = New System.Drawing.Size(180, 22)
         Me.BtnDisplayDisk.Text = "Entire &Disk"
         '
         'MainMenuExperimental
@@ -767,7 +770,7 @@ Partial Class MainForm
         '
         Me.ContextMenuFiles.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.BtnFileMenuFileProperties, Me.BtnFileMenuExportFile, Me.BtnFileMenuReplaceFile, ToolStripSeparator5, Me.BtnFileMenuViewFile, Me.BtnFileMenuViewFileText, Me.BtnFileMenuViewCrosslinked, Me.ToolStripSeparator11, Me.BtnFileMenuRemoveDeletedFile, Me.BtnFileMenuDeleteFile, Me.BtnFileMenuDeleteFileWithFill})
         Me.ContextMenuFiles.Name = "ContextMenuFiles"
-        Me.ContextMenuFiles.Size = New System.Drawing.Size(223, 236)
+        Me.ContextMenuFiles.Size = New System.Drawing.Size(223, 214)
         '
         'BtnFileMenuFileProperties
         '
@@ -826,9 +829,15 @@ Partial Class MainForm
         Me.BtnFileMenuDeleteFile.Size = New System.Drawing.Size(222, 22)
         Me.BtnFileMenuDeleteFile.Text = "&Delete File"
         '
+        'BtnFileMenuDeleteFileWithFill
+        '
+        Me.BtnFileMenuDeleteFileWithFill.Name = "BtnFileMenuDeleteFileWithFill"
+        Me.BtnFileMenuDeleteFileWithFill.Size = New System.Drawing.Size(222, 22)
+        Me.BtnFileMenuDeleteFileWithFill.Text = "&Delete File and Clear Sectors"
+        '
         'MenuStripMain
         '
-        Me.MenuStripMain.Items.AddRange(New System.Windows.Forms.ToolStripItem() {MainMenuFile, MainMenuEdit, Me.MainMenuFilters, MainMenuView, MainMenuExperimental})
+        Me.MenuStripMain.Items.AddRange(New System.Windows.Forms.ToolStripItem() {MainMenuFile, MainMenuEdit, Me.MainMenuFilters, MainMenuView, MainMenuTools, MainMenuExperimental})
         Me.MenuStripMain.Location = New System.Drawing.Point(0, 0)
         Me.MenuStripMain.Name = "MenuStripMain"
         Me.MenuStripMain.Padding = New System.Windows.Forms.Padding(6, 2, 12, 2)
@@ -848,6 +857,7 @@ Partial Class MainForm
         '
         Me.ContextMenuFilters.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.BtnScanNew, Me.BtnScan, Me.BtnClearFilters, Me.FilterSeparator})
         Me.ContextMenuFilters.Name = "ContextMenuStrip1"
+        Me.ContextMenuFilters.OwnerItem = Me.MainMenuFilters
         Me.ContextMenuFilters.Size = New System.Drawing.Size(168, 76)
         '
         'BtnScanNew
@@ -887,11 +897,18 @@ Partial Class MainForm
         Me.ComboImagesFiltered.Sorted = True
         Me.ComboImagesFiltered.TabIndex = 4
         '
-        'BtnFileMenuDeleteFileWithFill
+        'MainMenuTools
         '
-        Me.BtnFileMenuDeleteFileWithFill.Name = "BtnFileMenuDeleteFileWithFill"
-        Me.BtnFileMenuDeleteFileWithFill.Size = New System.Drawing.Size(222, 22)
-        Me.BtnFileMenuDeleteFileWithFill.Text = "&Delete File and Clear Sectors"
+        MainMenuTools.DropDownItems.AddRange(New System.Windows.Forms.ToolStripItem() {Me.BtnWin9xClean})
+        MainMenuTools.Name = "MainMenuTools"
+        MainMenuTools.Size = New System.Drawing.Size(46, 20)
+        MainMenuTools.Text = "&Tools"
+        '
+        'BtnWin9xClean
+        '
+        Me.BtnWin9xClean.Name = "BtnWin9xClean"
+        Me.BtnWin9xClean.Size = New System.Drawing.Size(229, 22)
+        Me.BtnWin9xClean.Text = "Remove &Win9x Modifications"
         '
         'MainForm
         '
@@ -1005,4 +1022,5 @@ Partial Class MainForm
     Friend WithEvents BtnFileMenuRemoveDeletedFile As ToolStripMenuItem
     Friend WithEvents BtnFileMenuDeleteFile As ToolStripMenuItem
     Friend WithEvents BtnFileMenuDeleteFileWithFill As ToolStripMenuItem
+    Friend WithEvents BtnWin9xClean As ToolStripMenuItem
 End Class

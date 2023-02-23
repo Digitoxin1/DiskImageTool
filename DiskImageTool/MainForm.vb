@@ -26,6 +26,7 @@ Public Class MainForm
     Private _OEMNameDictionary As Dictionary(Of UInteger, BootstrapLookup)
     Private _ScanRun As Boolean = False
     Private _SuppressEvent As Boolean = False
+    Private _FileVersion As String = ""
 
     Public Sub New()
         ' This call is required by the designer.
@@ -261,20 +262,22 @@ Public Class MainForm
 
         If Disk.IsValidImage And (Not ImageData.Scanned Or OEMNameString <> ImageData.ScanInfo.OEMName) Then
             If ImageData.Scanned Then
-                Dim Item = _FilterOEMName.Item(ImageData.ScanInfo.OEMName)
-                Item.Count -= 1
-                If Item.Count = 0 Then
-                    _FilterOEMName.Remove(Item.Name)
-                    If UpdateFilters Then
-                        ComboOEMName.Items.Remove(Item)
-                        If ComboOEMName.SelectedIndex = -1 Then
-                            ComboOEMName.SelectedIndex = 0
+                If _FilterOEMName.ContainsKey(ImageData.ScanInfo.OEMName) Then
+                    Dim Item = _FilterOEMName.Item(ImageData.ScanInfo.OEMName)
+                    Item.Count -= 1
+                    If Item.Count = 0 Then
+                        _FilterOEMName.Remove(Item.Name)
+                        If UpdateFilters Then
+                            ComboOEMName.Items.Remove(Item)
+                            If ComboOEMName.SelectedIndex = -1 Then
+                                ComboOEMName.SelectedIndex = 0
+                            End If
                         End If
-                    End If
-                Else
-                    If UpdateFilters Then
-                        Dim Index = ComboOEMName.Items.IndexOf(Item)
-                        ComboOEMName.Items.Item(Index) = Item
+                    Else
+                        If UpdateFilters Then
+                            Dim Index = ComboOEMName.Items.IndexOf(Item)
+                            ComboOEMName.Items.Item(Index) = Item
+                        End If
                     End If
                 End If
             End If
@@ -1357,6 +1360,10 @@ Public Class MainForm
         Return Len(PathName)
     End Function
 
+    Private Function GetWindowCaption() As String
+        Return My.Application.Info.ProductName & " v" & _FileVersion
+    End Function
+
     Private Sub HighlightSectorData(HexViewSectorData As HexViewSectorData, FileSize As UInteger, HighlightAssigned As Boolean)
         For Index = 0 To HexViewSectorData.SectorData.BlockCount - 1
             Dim SectorBlock = HexViewSectorData.SectorData.GetBlock(Index)
@@ -1405,12 +1412,14 @@ Public Class MainForm
             BtnDisplayDisk.Enabled = True
             BtnDisplayFAT.Enabled = _Disk.IsValidImage
             BtnDisplayDirectory.Enabled = _Disk.IsValidImage
+            BtnWin9xClean.Enabled = _Disk.IsValidImage
         Else
             BtnChangeOEMName.Enabled = False
             BtnDisplayBootSector.Enabled = False
             BtnDisplayDisk.Enabled = False
             BtnDisplayFAT.Enabled = False
             BtnDisplayDirectory.Enabled = False
+            BtnWin9xClean.Enabled = False
         End If
         MenuDisplayDirectorySubMenuClear()
 
@@ -1698,6 +1707,40 @@ Public Class MainForm
         Return Result
     End Function
 
+    Private Sub Win9xClean()
+        Dim Result As Boolean = False
+        Dim FullRefresh As Boolean = False
+
+        If _Disk.BootSector.IsWin9xOEMName Then
+            Dim BootstrapChecksum = Crc32.ComputeChecksum(_Disk.BootSector.BootStrapCode)
+            If _OEMNameDictionary.ContainsKey(BootstrapChecksum) Then
+                Dim BootstrapType = _OEMNameDictionary.Item(BootstrapChecksum)
+                If BootstrapType.KnownOEMNames.Count > 0 Then
+                    _Disk.BootSector.OEMName = BootstrapType.KnownOEMNames.Item(0).Name
+                    Result = True
+                End If
+            End If
+        End If
+
+        For Each Item As ListViewItem In ListViewFiles.Items
+            Dim FileData As FileData = Item.Tag
+            If FileData.DirectoryEntry.HasLastAccessDate Then
+                FileData.DirectoryEntry.ClearLastAccessDate()
+                Result = True
+                FullRefresh = True
+            End If
+            If FileData.DirectoryEntry.HasCreationDate Then
+                FileData.DirectoryEntry.ClearCreationDate()
+                Result = True
+                FullRefresh = True
+            End If
+        Next
+
+        If Result Then
+            ComboItemRefresh(FullRefresh, True)
+        End If
+    End Sub
+
     Private Function OEMNameFindMatch(Checksum As UInteger) As BootstrapLookup
         If _OEMNameDictionary.ContainsKey(Checksum) Then
             Return _OEMNameDictionary.Item(Checksum)
@@ -1791,7 +1834,7 @@ Public Class MainForm
         Dim Value As String
         Dim ForeColor As Color
 
-        Me.Text = "Disk Image Tool - " & IO.Path.GetFileName(_Disk.FilePath)
+        Me.Text = GetWindowCaption() & " - " & IO.Path.GetFileName(_Disk.FilePath)
 
         ToolStripFileName.Text = IO.Path.GetFileName(_Disk.FilePath)
         ToolStripFileName.Visible = True
@@ -2329,7 +2372,7 @@ Public Class MainForm
 
     Private Sub ResetAll()
         _Disk = Nothing
-        Me.Text = "Disk Image Tool"
+        Me.Text = GetWindowCaption()
         _FiltersApplied = False
         _CheckAll = False
         _LoadedFileNames.Clear()
@@ -2651,6 +2694,10 @@ Public Class MainForm
         OEMNameEdit()
     End Sub
 
+    Private Sub BtnWin9xClean_Click(sender As Object, e As EventArgs) Handles BtnWin9xClean.Click
+        Win9xClean()
+    End Sub
+
     Private Sub BtnOpen_Click(sender As Object, e As EventArgs) Handles BtnOpen.Click, ToolStripBtnOpen.Click
         FilesOpen()
     End Sub
@@ -2869,6 +2916,9 @@ Public Class MainForm
     End Sub
 
     Private Sub MainForm_Load(sender As Object, e As EventArgs) Handles Me.Load
+        _FileVersion = FileVersionInfo.GetVersionInfo(Application.ExecutablePath).FileVersion
+        Me.Text = GetWindowCaption()
+
         PositionForm()
 
         ListViewDoubleBuffer(ListViewFiles)

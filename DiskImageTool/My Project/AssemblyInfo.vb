@@ -7,11 +7,11 @@ Imports System.Runtime.InteropServices
 
 ' Review the values of the assembly attributes
 
-<Assembly: AssemblyTitle("DiskImageTool")>
+<Assembly: AssemblyTitle("Disk Image Tool")>
 <Assembly: AssemblyDescription("")>
 <Assembly: AssemblyCompany("")>
-<Assembly: AssemblyProduct("DiskImageTool")>
-<Assembly: AssemblyCopyright("Copyright ©  2022")>
+<Assembly: AssemblyProduct("Disk Image Tool")>
+<Assembly: AssemblyCopyright("Copyright ©  2023")>
 <Assembly: AssemblyTrademark("")>
 
 <Assembly: ComVisible(False)>
@@ -31,4 +31,4 @@ Imports System.Runtime.InteropServices
 ' <Assembly: AssemblyVersion("1.0.*")>
 
 <Assembly: AssemblyVersion("1.0.0.0")>
-<Assembly: AssemblyFileVersion("1.16.0.0")>
+<Assembly: AssemblyFileVersion("1.17.0.0")>

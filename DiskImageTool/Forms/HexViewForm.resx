@@ -138,6 +138,9 @@
   <metadata name="ToolStripSeparator7.GenerateMember" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
     <value>False</value>
   </metadata>
+  <metadata name="ToolStripStatusGap.GenerateMember" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
+    <value>False</value>
+  </metadata>
   <metadata name="ToolStripMain.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
     <value>291, 17</value>
   </metadata>
@@ -219,9 +222,9 @@
         iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8
         YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAEFSURBVDhPY6AGYJSXl18tJSUlrKiouJ8YGqQeqhcCQIKk
         YqhWCECy4T8hDFW3H6oVApBNhmEhISE+bOIwDNUKASATQYLINklKSoooKCjchfGRNQP5hF0AlWKWkZER
-        wiMPASATQYIw20AYLBG7MwvI9gbiPyAxmGYgm0gXxC77zRC72wUYbRxY5WEAZCJWBbG7/gPxO6AhauLi
+        wiMPASATQYIw20AYLBG7MwvI9gbiPyAxmGYgm0gXxC74zRC72wUYbRxY5WEAZCJWBbG7/gPxO6AhauLi
         4twwORJcADbgP0PUjpsMUVsEkWMGLA8DQBNXSkhIiMJcArcBZgAIR+/czWA8kxXoHQGQerA8QYAw4CMQ
-        vwTiPqgMkQCiMRUYG6egIiSC+B0aYDp253aGuO3aYDZZIGZnBEPcznQoDwkwMAAABTSAjXBt2k0AAAAA
+        vwTiPqgMkQCiMRUYG6egIiSC+B0aYDp253aGuO3aYDZZIGZnBEPcznQoDwkwMAAA+a+AhxsmwDYAAAAA
         SUVORK5CYII=
 </value>
   </data>
@@ -230,9 +233,9 @@
         iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8
         YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAADdSURBVDhPYxh8QEZGRhpEKyoq/kfmEwVUVFSA6mVeKikp
         mQAN6ATRID5IHKqEMFBWVjYGauIEsUE0iA+WIAaAnA3EHVAuA0PELikgfyLMO0QBqLPBLmCI3XWWIWYn
-        N5hNDEAOA7BA7K7/DLE71zAw/GcE84kBQAMQoQ42AIhjdtVDRUgEMANiV/5jiN4VCRUlAcANAGL/9d8Z
+        N5hNDEAOA7BA7K7/DLE71zAw/GcE84kBQAMQoQ42AIhjdtVDRUgEMANiF/9jiN4VCRUlAcANAGL/9d8Z
         4naYQWWIBCCN0TvvAL1wHogzgfxYqAyRIHbXTIaQY5wMUduvMaRt4oKKkgFid3UCcRSURwaI3qPFELs7
-        F8qjJmBgAACgSkbAeFn9TQAAAABJRU5ErkJggg==
+        F8qjJmBgAACWika68VUiuAAAAABJRU5ErkJggg==
 </value>
   </data>
   <metadata name="ContextMenuStrip1.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
@@ -337,5 +340,8 @@
   </metadata>
   <metadata name="HexBox1.Locked" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
     <value>True</value>
+  </metadata>
+  <metadata name="StatusStrip2.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
+    <value>419, 17</value>
   </metadata>
 </root>

@@ -428,6 +428,18 @@
                 Return Result
             End If
         End Function
+
+        Public Function SectorToTrack(Sector As UInteger) As UShort
+            Return Int(Sector / SectorsPerTrack / NumberOfHeads)
+        End Function
+
+        Public Function SectorToSide(Sector As UInteger) As UShort
+            Return Int(Sector / SectorsPerTrack) Mod NumberOfHeads
+        End Function
+
+        Public Function TrackToSector(Track As UShort, Side As UShort) As UInteger
+            Return Track * NumberOfHeads * SectorsPerTrack + SectorsPerTrack * Side
+        End Function
     End Class
 
 End Namespace

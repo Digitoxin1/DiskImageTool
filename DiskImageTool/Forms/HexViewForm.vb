@@ -18,6 +18,7 @@ Public Class HexViewForm
     Private _IgnoreEvent As Boolean = False
     Private WithEvents NumericSector As ToolStripNumericUpDown
     Private WithEvents NumericCluster As ToolStripNumericUpDown
+    Private WithEvents ComboTrack As ToolStripComboBox
 
     Public Sub New(HexViewSectorData As HexViewSectorData, Caption As String, SectorNavigator As Boolean, ClusterNavigator As Boolean)
         ' This call is required by the designer.
@@ -42,11 +43,15 @@ Public Class HexViewForm
         CmbGroups.Visible = Not SectorNavigator And Not ClusterNavigator
 
         If ClusterNavigator Then
-            InitializeClusterNavigator()
+            InitializeTrackNavigator()
         End If
 
         If SectorNavigator Then
             InitializeSectorNavigator()
+        End If
+
+        If ClusterNavigator Then
+            InitializeClusterNavigator()
         End If
     End Sub
 
@@ -56,7 +61,8 @@ Public Class HexViewForm
         }
 
         Dim LabelSector = New ToolStripLabel("Sector") With {
-            .Alignment = ToolStripItemAlignment.Right
+            .Alignment = ToolStripItemAlignment.Right,
+            .Padding = New Padding(12, 0, 0, 0)
         }
 
         ToolStripMain.Items.Add(NumericSector)
@@ -75,6 +81,24 @@ Public Class HexViewForm
 
         ToolStripMain.Items.Add(NumericCluster)
         ToolStripMain.Items.Add(LabelCluster)
+    End Sub
+
+    Private Sub InitializeTrackNavigator()
+        ComboTrack = New ToolStripComboBox() With {
+            .Alignment = ToolStripItemAlignment.Right,
+            .DropDownStyle = ComboBoxStyle.DropDownList,
+            .AutoSize = False,
+            .FlatStyle = FlatStyle.Popup,
+            .Size = New Drawing.Size(50, 23)
+        }
+
+        Dim LabelTrack = New ToolStripLabel("Track") With {
+            .Alignment = ToolStripItemAlignment.Right,
+            .Padding = New Padding(12, 0, 0, 0)
+        }
+
+        ToolStripMain.Items.Add(ComboTrack)
+        ToolStripMain.Items.Add(LabelTrack)
     End Sub
 
     Public ReadOnly Property Modified As Boolean
@@ -289,6 +313,24 @@ Public Class HexViewForm
         End If
     End Sub
 
+    Private Sub JumpToTrack(TrackValue As String)
+        Dim TrackSet = TrackValue.Split(".")
+        Dim Track As UShort = TrackSet(0)
+        Dim Side As UShort = TrackSet(1)
+
+        Dim SectorStart = _CurrentHexViewData.SectorBlock.SectorStart
+        Dim SectorEnd = SectorStart + _CurrentHexViewData.SectorBlock.SectorCount - 1
+        Dim TrackStart = _HexViewSectorData.Disk.BootSector.SectorToTrack(SectorStart)
+        Dim TrackEnd = _HexViewSectorData.Disk.BootSector.SectorToTrack(SectorEnd)
+        Dim Sector = _HexViewSectorData.Disk.BootSector.TrackToSector(Track, Side)
+
+        If Track >= TrackStart And Track <= TrackEnd Then
+            Dim Offset = SectorToBytes(Sector) - HexBox1.LineInfoOffset
+            Dim Line = Offset \ HexBox1.BytesPerLine
+            HexBox1.PerformScrollToLine(Line)
+        End If
+    End Sub
+
     Private Sub PasteHex()
         Dim HexBytes = ConvertHexToBytes(Clipboard.GetText)
         Dim Offset = HexBox1.SelectionStart
@@ -467,6 +509,8 @@ Public Class HexViewForm
             ToolStripStatusLength.Visible = False
             ToolStripStatusSector.Visible = False
             ToolStripStatusCluster.Visible = False
+            ToolStripStatusTrack.Visible = False
+            ToolStripStatusSide.Visible = False
             ToolStripStatusFile.Visible = False
             ToolStripStatusDescription.Visible = False
             BtnSelectSector.Text = "Select &Sector"
@@ -518,6 +562,20 @@ Public Class HexViewForm
                         Dim DirectoryEntry = Disk.GetDirectoryEntryByOffset(OffsetList.Item(0))
                         FileName = DirectoryEntry.GetFullFileName
                     End If
+                End If
+
+                If Disk.IsValidImage Then
+                    ToolStripStatusTrack.Visible = Not OutOfRange
+                    ToolStripStatusTrack.Text = "Track: " & Disk.BootSector.SectorToTrack(Sector)
+
+                    ToolStripStatusSide.Visible = Not OutOfRange
+                    ToolStripStatusSide.Text = "Side: " & Disk.BootSector.SectorToSide(Sector)
+                Else
+                    ToolStripStatusTrack.Visible = False
+                    ToolStripStatusTrack.Text = ""
+
+                    ToolStripStatusSide.Visible = False
+                    ToolStripStatusSide.Text = ""
                 End If
 
                 If FileName.Length = 0 Then
@@ -605,6 +663,8 @@ Public Class HexViewForm
         Dim SectorStart As UInteger = 0
         Dim SectorEnd As UInteger = 0
 
+        _IgnoreEvent = True
+
         If _CurrentHexViewData.SectorBlock.Size > 0 Then
             If _SectorNavigator Or _ClusterNavigator Then
                 SectorStart = _CurrentHexViewData.SectorBlock.SectorStart
@@ -621,8 +681,21 @@ Public Class HexViewForm
                 NumericCluster.Minimum = _HexViewSectorData.Disk.BootSector.SectorToCluster(SectorStart)
                 NumericCluster.Maximum = _HexViewSectorData.Disk.BootSector.SectorToCluster(SectorEnd)
                 NumericCluster.Enabled = True
+
+                ComboTrack.Items.Clear()
+                Dim TrackStart = _HexViewSectorData.Disk.BootSector.SectorToTrack(SectorStart)
+                Dim TrackEnd = _HexViewSectorData.Disk.BootSector.SectorToTrack(SectorEnd)
+                For i = TrackStart To TrackEnd
+                    For j = 0 To _HexViewSectorData.Disk.BootSector.NumberOfHeads - 1
+                        ComboTrack.Items.Add(i & "." & j)
+                    Next
+                Next
+                ComboTrack.SelectedIndex = 0
+                ComboTrack.Enabled = True
             End If
         End If
+
+        _IgnoreEvent = False
     End Sub
 
     Private Sub RefresSelectorValues()
@@ -646,6 +719,13 @@ Public Class HexViewForm
 
             If Cluster <> NumericCluster.Value Then
                 NumericCluster.Value = Cluster
+            End If
+
+            Dim Track = _CurrentHexViewData.Disk.BootSector.SectorToTrack(Sector)
+            Dim Side = _CurrentHexViewData.Disk.BootSector.SectorToSide(Sector)
+            Dim Value = Track.ToString & "." & Side.ToString
+            If Value <> ComboTrack.Text Then
+                ComboTrack.Text = Value
             End If
         End If
 
@@ -810,11 +890,21 @@ Public Class HexViewForm
     End Sub
 
     Private Sub NumericSector_KeyDown(sender As Object, e As KeyEventArgs) Handles NumericSector.KeyDown, NumericCluster.KeyDown
-        Debug.Print(e.KeyCode)
         If e.KeyCode = Keys.Return Then
             e.SuppressKeyPress = True
         End If
     End Sub
+
+    Private Sub ComboTrack_SelectedIndexChanged(sender As Object, e As EventArgs) Handles ComboTrack.SelectedIndexChanged
+        If _IgnoreEvent Then
+            Exit Sub
+        End If
+
+        If _ClusterNavigator Then
+            JumpToTrack(ComboTrack.Text)
+        End If
+    End Sub
+
 #End Region
 
     Private Class HexChange
