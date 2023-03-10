@@ -691,7 +691,7 @@ Public Class MainForm
         If Not _Disk.LoadError Then
             CurrentImageData.Modifications = _Disk.Data.Changes
         End If
-
+        Debug.Print("load")
         DiskImageProcess(DoItemScan, False)
     End Sub
 
@@ -2941,6 +2941,12 @@ Public Class MainForm
         ListViewHashes.ContextMenuStrip = ContextMenuCopy2
 
         ResetAll()
+
+        Dim Args = Environment.GetCommandLineArgs.Skip(1).ToArray
+
+        If Args.Length > 0 Then
+            ProcessFileDrop(Args)
+        End If
     End Sub
 
     Private Sub MainForm_ResizeEnd(sender As Object, e As EventArgs) Handles Me.ResizeEnd
