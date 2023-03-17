@@ -16,6 +16,7 @@ Public Class MainForm
     Private WithEvents ContextMenuCopy2 As ContextMenuStrip
     Private WithEvents Debounce As Timer
     Public Const NULL_CHAR As Char = "�"
+    Public Const SITE_URL = "https://github.com/Digitoxin1/DiskImageTool"
     Private Const FILE_FILTER As String = "Disk Image Files (*.ima; *.img)|*.ima;*.img|All files (*.*)|*.*"
     Private _CheckAll As Boolean = False
     Private _Disk As DiskImage.Disk
@@ -2983,6 +2984,15 @@ Public Class MainForm
 
         Debounce.Stop()
         Debounce.Start()
+    End Sub
+
+    Private Sub BtnHelpProjectPage_Click(sender As Object, e As EventArgs) Handles BtnHelpProjectPage.Click
+        Process.Start(SITE_URL)
+    End Sub
+
+    Private Sub BtnHelpAbout_Click(sender As Object, e As EventArgs) Handles BtnHelpAbout.Click
+        Dim AboutBox As New AboutBox()
+        AboutBox.ShowDialog()
     End Sub
 #End Region
 
