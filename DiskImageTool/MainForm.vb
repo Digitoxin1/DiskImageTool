@@ -39,25 +39,24 @@ Public Class MainForm
         Return New DiskImage.Disk(ImageData.FilePath, ImageData.Modifications)
     End Function
 
-    Friend Sub ItemScanDirectory(Disk As DiskImage.Disk, ImageData As LoadedImageData, Optional UpdateFilters As Boolean = False, Optional Remove As Boolean = False)
-        Dim HasCreated As Boolean = False
-        Dim HasLastAccessed As Boolean = False
-        Dim HasLongFileNames As Boolean = False
-        Dim HasInvalidDirectoryEntries As Boolean = False
-        Dim HasFATChainingErrors As Boolean = False
+    Friend Function ItemScanDirectory(Disk As DiskImage.Disk, ImageData As LoadedImageData, Optional UpdateFilters As Boolean = False, Optional Remove As Boolean = False) As ProcessDirectoryEntryResponse
+        Dim Response As ProcessDirectoryEntryResponse
 
         If Not Remove And Disk.IsValidImage Then
-            Dim Response As ProcessDirectoryEntryResponse = ProcessDirectoryEntries(Disk.Directory, "", True)
-            HasCreated = Response.HasCreated
-            HasLastAccessed = Response.HasLastAccessed
-            HasLongFileNames = Response.HasLFN
-            HasInvalidDirectoryEntries = Response.HasInvalidDirectoryEntries
-            HasFATChainingErrors = Response.HasFATChainingErrors
+            Response = ProcessDirectoryEntries(Disk.Directory, "", True)
+        Else
+            With Response
+                .HasCreated = False
+                .HasFATChainingErrors = False
+                .HasInvalidDirectoryEntries = False
+                .HasLastAccessed = False
+                .HasLFN = False
+            End With
         End If
 
-        If Not ImageData.Scanned Or HasCreated <> ImageData.ScanInfo.HasCreated Then
-            ImageData.ScanInfo.HasCreated = HasCreated
-            If HasCreated Then
+        If Not ImageData.Scanned Or Response.HasCreated <> ImageData.ScanInfo.HasCreated Then
+            ImageData.ScanInfo.HasCreated = Response.HasCreated
+            If Response.HasCreated Then
                 _FilterCounts(FilterTypes.HasCreated) += 1
             ElseIf ImageData.Scanned Then
                 _FilterCounts(FilterTypes.HasCreated) -= 1
@@ -67,9 +66,9 @@ Public Class MainForm
             End If
         End If
 
-        If Not ImageData.Scanned Or HasLastAccessed <> ImageData.ScanInfo.HasLastAccessed Then
-            ImageData.ScanInfo.HasLastAccessed = HasLastAccessed
-            If HasLastAccessed Then
+        If Not ImageData.Scanned Or Response.HasLastAccessed <> ImageData.ScanInfo.HasLastAccessed Then
+            ImageData.ScanInfo.HasLastAccessed = Response.HasLastAccessed
+            If Response.HasLastAccessed Then
                 _FilterCounts(FilterTypes.HasLastAccessed) += 1
             ElseIf ImageData.Scanned Then
                 _FilterCounts(FilterTypes.HasLastAccessed) -= 1
@@ -79,9 +78,9 @@ Public Class MainForm
             End If
         End If
 
-        If Not ImageData.Scanned Or HasLongFileNames <> ImageData.ScanInfo.HasLongFileNames Then
-            ImageData.ScanInfo.HasLongFileNames = HasLongFileNames
-            If HasLongFileNames Then
+        If Not ImageData.Scanned Or Response.HasLFN <> ImageData.ScanInfo.HasLongFileNames Then
+            ImageData.ScanInfo.HasLongFileNames = Response.HasLFN
+            If Response.HasLFN Then
                 _FilterCounts(FilterTypes.HasLongFileNames) += 1
             ElseIf ImageData.Scanned Then
                 _FilterCounts(FilterTypes.HasLongFileNames) -= 1
@@ -91,9 +90,9 @@ Public Class MainForm
             End If
         End If
 
-        If Not ImageData.Scanned Or HasInvalidDirectoryEntries <> ImageData.ScanInfo.HasInvalidDirectoryEntries Then
-            ImageData.ScanInfo.HasInvalidDirectoryEntries = HasInvalidDirectoryEntries
-            If HasInvalidDirectoryEntries Then
+        If Not ImageData.Scanned Or Response.HasInvalidDirectoryEntries <> ImageData.ScanInfo.HasInvalidDirectoryEntries Then
+            ImageData.ScanInfo.HasInvalidDirectoryEntries = Response.HasInvalidDirectoryEntries
+            If Response.HasInvalidDirectoryEntries Then
                 _FilterCounts(FilterTypes.HasInvalidDirectoryEntries) += 1
             ElseIf ImageData.Scanned Then
                 _FilterCounts(FilterTypes.HasInvalidDirectoryEntries) -= 1
@@ -103,9 +102,9 @@ Public Class MainForm
             End If
         End If
 
-        If Not ImageData.Scanned Or HasFATChainingErrors <> ImageData.ScanInfo.HasFATChainingErrors Then
-            ImageData.ScanInfo.HasFATChainingErrors = HasFATChainingErrors
-            If HasFATChainingErrors Then
+        If Not ImageData.Scanned Or Response.HasFATChainingErrors <> ImageData.ScanInfo.HasFATChainingErrors Then
+            ImageData.ScanInfo.HasFATChainingErrors = Response.HasFATChainingErrors
+            If Response.HasFATChainingErrors Then
                 _FilterCounts(FilterTypes.HasFATChainingErrors) += 1
             ElseIf ImageData.Scanned Then
                 _FilterCounts(FilterTypes.HasFATChainingErrors) -= 1
@@ -114,7 +113,9 @@ Public Class MainForm
                 FilterUpdate(FilterTypes.HasFATChainingErrors)
             End If
         End If
-    End Sub
+
+        Return Response
+    End Function
 
     Friend Sub ItemScanDisk(Disk As DiskImage.Disk, ImageData As LoadedImageData, Optional UpdateFilters As Boolean = False, Optional Remove As Boolean = False)
         Dim IsValidImage As Boolean = Disk.IsValidImage
@@ -416,6 +417,12 @@ Public Class MainForm
         End If
     End Sub
 
+    Private Sub ClearFilesPanel()
+        ListViewFiles.Items.Clear()
+        BtnWin9xClean.Enabled = False
+        ItemSelectionChanged()
+    End Sub
+
     Private Function CloseAll() As Boolean
         Dim BatchResult As MyMsgBoxResult = MyMsgBoxResult.Yes
         Dim Result As MyMsgBoxResult = MyMsgBoxResult.Yes
@@ -545,8 +552,7 @@ Public Class MainForm
             If _Disk.IsValidImage Then
                 PopulateFilesPanel()
             Else
-                ListViewFiles.Items.Clear()
-                ItemSelectionChanged()
+                ClearFilesPanel()
             End If
         End If
 
@@ -710,8 +716,7 @@ Public Class MainForm
             End If
             PopulateFilesPanel()
         Else
-            ListViewFiles.Items.Clear()
-            ItemSelectionChanged()
+            ClearFilesPanel()
         End If
 
         If DoItemScan Then
@@ -1412,15 +1417,15 @@ Public Class MainForm
             BtnDisplayDisk.Enabled = True
             BtnDisplayFAT.Enabled = _Disk.IsValidImage
             BtnDisplayDirectory.Enabled = _Disk.IsValidImage
-            BtnWin9xClean.Enabled = _Disk.IsValidImage
         Else
             BtnChangeOEMName.Enabled = False
             BtnDisplayBootSector.Enabled = False
             BtnDisplayDisk.Enabled = False
             BtnDisplayFAT.Enabled = False
             BtnDisplayDirectory.Enabled = False
-            BtnWin9xClean.Enabled = False
         End If
+        BtnWin9xClean.Enabled = False
+
         MenuDisplayDirectorySubMenuClear()
 
         SaveButtonsRefresh()
@@ -1701,15 +1706,26 @@ Public Class MainForm
         Result = frmOEMName.DialogResult = DialogResult.OK
 
         If Result Then
-            ComboItemRefresh(False, True)
+            ComboItemRefresh(True, True)
         End If
 
         Return Result
     End Function
 
+    Private Sub FixImageSize()
+        Dim Msg As String = "Any modifications you have made to the disk image will be saved at this time.  This process cannot be undone." _
+            & vbCrLf & vbCrLf & "Are you sure you wish to resize the disk image?"
+
+        If MsgBox(Msg, MsgBoxStyle.Question + MsgBoxStyle.YesNo + MsgBoxStyle.DefaultButton2) = MsgBoxResult.Yes Then
+            If _Disk.FixImageSize Then
+                ComboItemRefresh(False, True)
+                SaveCurrent(False)
+            End If
+        End If
+    End Sub
+
     Private Sub Win9xClean()
         Dim Result As Boolean = False
-        Dim FullRefresh As Boolean = False
 
         If _Disk.BootSector.IsWin9xOEMName Then
             Dim BootstrapChecksum = Crc32.ComputeChecksum(_Disk.BootSector.BootStrapCode)
@@ -1727,17 +1743,15 @@ Public Class MainForm
             If FileData.DirectoryEntry.HasLastAccessDate Then
                 FileData.DirectoryEntry.ClearLastAccessDate()
                 Result = True
-                FullRefresh = True
             End If
             If FileData.DirectoryEntry.HasCreationDate Then
                 FileData.DirectoryEntry.ClearCreationDate()
                 Result = True
-                FullRefresh = True
             End If
         Next
 
         If Result Then
-            ComboItemRefresh(FullRefresh, True)
+            ComboItemRefresh(True, True)
         End If
     End Sub
 
@@ -1810,6 +1824,8 @@ Public Class MainForm
         Else
             FileClusterError.Width = 0
         End If
+
+        BtnWin9xClean.Enabled = Response.HasCreated Or Response.HasLastAccessed Or _Disk.BootSector.IsWin9xOEMName
 
         ListViewFiles.EndUpdate()
 
@@ -2006,10 +2022,11 @@ Public Class MainForm
         If _Disk.IsValidImage Then
             BtnDisplayClusters.Enabled = _Disk.FAT.HasUnusedSectors(True)
             BtnDisplayBadSectors.Enabled = _Disk.FAT.BadClusters.Count > 0
-            BtnRevert.Enabled = _Disk.Data.Modified
+            BtnFixImageSize.Enabled = _Disk.HasInvalidSize
         Else
             BtnDisplayClusters.Enabled = False
             BtnDisplayBadSectors.Enabled = False
+            BtnFixImageSize.Enabled = False
         End If
 
         BtnRevert.Enabled = Not _Disk.LoadError AndAlso _Disk.Data.Modified
@@ -2380,6 +2397,7 @@ Public Class MainForm
         BtnDisplayClusters.Enabled = False
         BtnDisplayBadSectors.Enabled = False
         BtnRevert.Enabled = False
+        BtnFixImageSize.Enabled = False
 
         BtnUndo.Enabled = False
         ToolStripBtnUndo.Enabled = False
@@ -2542,7 +2560,7 @@ Public Class MainForm
         Dim IsValidFile As Boolean
     End Structure
 
-    Private Structure ProcessDirectoryEntryResponse
+    Friend Structure ProcessDirectoryEntryResponse
         Dim HasCreated As Boolean
         Dim HasFATChainingErrors As Boolean
         Dim HasInvalidDirectoryEntries As Boolean
@@ -2692,6 +2710,10 @@ Public Class MainForm
 
     Private Sub BtnOOEMName_Click(sender As Object, e As EventArgs) Handles BtnChangeOEMName.Click
         OEMNameEdit()
+    End Sub
+
+    Private Sub BtnFixImageSize_Click(sender As Object, e As EventArgs) Handles BtnFixImageSize.Click
+        FixImageSize()
     End Sub
 
     Private Sub BtnWin9xClean_Click(sender As Object, e As EventArgs) Handles BtnWin9xClean.Click

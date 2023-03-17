@@ -97,6 +97,7 @@ Partial Class MainForm
         Me.ToolStripSeparator10 = New System.Windows.Forms.ToolStripSeparator()
         Me.ToolStripBtnViewFile = New System.Windows.Forms.ToolStripButton()
         Me.ToolStripBtnViewFileText = New System.Windows.Forms.ToolStripButton()
+        Me.BtnWin9xClean = New System.Windows.Forms.ToolStripMenuItem()
         Me.ListViewSummary = New System.Windows.Forms.ListView()
         Me.ComboImages = New System.Windows.Forms.ComboBox()
         Me.ListViewHashes = New System.Windows.Forms.ListView()
@@ -125,7 +126,7 @@ Partial Class MainForm
         Me.BtnClearFilters = New System.Windows.Forms.ToolStripMenuItem()
         Me.FilterSeparator = New System.Windows.Forms.ToolStripSeparator()
         Me.ComboImagesFiltered = New System.Windows.Forms.ComboBox()
-        Me.BtnWin9xClean = New System.Windows.Forms.ToolStripMenuItem()
+        Me.BtnFixImageSize = New System.Windows.Forms.ToolStripMenuItem()
         SummaryName = CType(New System.Windows.Forms.ColumnHeader(), System.Windows.Forms.ColumnHeader)
         SummaryValue = CType(New System.Windows.Forms.ColumnHeader(), System.Windows.Forms.ColumnHeader)
         HashName = CType(New System.Windows.Forms.ColumnHeader(), System.Windows.Forms.ColumnHeader)
@@ -664,6 +665,19 @@ Partial Class MainForm
         Me.ToolStripBtnViewFileText.Size = New System.Drawing.Size(23, 22)
         Me.ToolStripBtnViewFileText.Text = "View File as Text"
         '
+        'MainMenuTools
+        '
+        MainMenuTools.DropDownItems.AddRange(New System.Windows.Forms.ToolStripItem() {Me.BtnWin9xClean, Me.BtnFixImageSize})
+        MainMenuTools.Name = "MainMenuTools"
+        MainMenuTools.Size = New System.Drawing.Size(46, 20)
+        MainMenuTools.Text = "&Tools"
+        '
+        'BtnWin9xClean
+        '
+        Me.BtnWin9xClean.Name = "BtnWin9xClean"
+        Me.BtnWin9xClean.Size = New System.Drawing.Size(229, 22)
+        Me.BtnWin9xClean.Text = "Remove &Win9x Modifications"
+        '
         'ListViewSummary
         '
         Me.ListViewSummary.AllowDrop = True
@@ -897,18 +911,11 @@ Partial Class MainForm
         Me.ComboImagesFiltered.Sorted = True
         Me.ComboImagesFiltered.TabIndex = 4
         '
-        'MainMenuTools
+        'BtnFixImageSize
         '
-        MainMenuTools.DropDownItems.AddRange(New System.Windows.Forms.ToolStripItem() {Me.BtnWin9xClean})
-        MainMenuTools.Name = "MainMenuTools"
-        MainMenuTools.Size = New System.Drawing.Size(46, 20)
-        MainMenuTools.Text = "&Tools"
-        '
-        'BtnWin9xClean
-        '
-        Me.BtnWin9xClean.Name = "BtnWin9xClean"
-        Me.BtnWin9xClean.Size = New System.Drawing.Size(229, 22)
-        Me.BtnWin9xClean.Text = "Remove &Win9x Modifications"
+        Me.BtnFixImageSize.Name = "BtnFixImageSize"
+        Me.BtnFixImageSize.Size = New System.Drawing.Size(229, 22)
+        Me.BtnFixImageSize.Text = "Fix Image &Size"
         '
         'MainForm
         '
@@ -1023,4 +1030,5 @@ Partial Class MainForm
     Friend WithEvents BtnFileMenuDeleteFile As ToolStripMenuItem
     Friend WithEvents BtnFileMenuDeleteFileWithFill As ToolStripMenuItem
     Friend WithEvents BtnWin9xClean As ToolStripMenuItem
+    Friend WithEvents BtnFixImageSize As ToolStripMenuItem
 End Class

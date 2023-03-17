@@ -105,6 +105,18 @@
             Return ReportedSize <> Data.Length
         End Function
 
+        Public Function FixImageSize() As Boolean
+            Dim Result As Boolean = False
+
+            Dim ReportedSize = SectorToBytes(_BootSector.DataRegionStart + _BootSector.DataRegionSize)
+
+            If ReportedSize <> Data.Length Then
+                Result = Data.Resize(ReportedSize)
+            End If
+
+            Return Result
+        End Function
+
         Public Function IsValidImage() As Boolean
             Return Not _LoadError AndAlso _BootSector.IsValidImage
         End Function

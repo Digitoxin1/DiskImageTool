@@ -53,6 +53,17 @@
             Return BitConverter.ToUInt16(_Data, Offset)
         End Function
 
+        Public Function Resize(Length As Integer) As Boolean
+            Dim Result As Boolean = False
+
+            If _Data.Length <> Length Then
+                ReDim Preserve _Data(Length - 1)
+                Result = True
+            End If
+
+            Return Result
+        End Function
+
         Public Function SetBytes(Value As UShort, Offset As UInteger) As Boolean
             Dim Result As Boolean = False
             Dim CurrentValue = GetBytesShort(Offset)
@@ -99,16 +110,26 @@
         Public Function SetBytes(Value() As Byte, Offset As UInteger, Size As UInteger, Padding As Byte) As Boolean
             Dim Result As Boolean = False
 
-            If Value.Length <> Size Then
-                ResizeArray(Value, Size, Padding)
+            If Offset + Size > _Data.Length Then
+                If _Data.Length - Offset >= 0 Then
+                    Size = _Data.Length - Offset
+                Else
+                    Size = 0
+                End If
             End If
 
-            Dim CurrentValue = GetBytes(Offset, Size)
+            If Size > 0 Then
+                If Value.Length <> Size Then
+                    ResizeArray(Value, Size, Padding)
+                End If
 
-            If Not ByteArrayCompare(CurrentValue, Value) Then
-                Array.Copy(Value, 0, _Data, Offset, Size)
-                Result = True
-                RaiseEvent DataChanged(Offset, CurrentValue, Value)
+                Dim CurrentValue = GetBytes(Offset, Size)
+
+                If Not ByteArrayCompare(CurrentValue, Value) Then
+                    Array.Copy(Value, 0, _Data, Offset, Size)
+                    Result = True
+                    RaiseEvent DataChanged(Offset, CurrentValue, Value)
+                End If
             End If
 
             Return Result

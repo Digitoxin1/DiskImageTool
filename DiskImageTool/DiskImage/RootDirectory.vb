@@ -49,14 +49,16 @@
 
         Public Function HasFile(Filename As String) As Boolean Implements IDirectory.HasFile
             Dim Count = GetDirectoryEntryCount(False)
-            For Counter As UInteger = 0 To Count - 1
-                Dim File = GetFile(Counter)
-                If Not File.IsDeleted And Not File.IsVolumeName And Not File.IsDirectory Then
-                    If File.GetFullFileName = Filename Then
-                        Return True
+            If Count > 0 Then
+                For Counter As UInteger = 0 To Count - 1
+                    Dim File = GetFile(Counter)
+                    If Not File.IsDeleted And Not File.IsVolumeName And Not File.IsDirectory Then
+                        If File.GetFullFileName = Filename Then
+                            Return True
+                        End If
                     End If
-                End If
-            Next
+                Next
+            End If
 
             Return False
         End Function
