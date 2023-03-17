@@ -368,8 +368,8 @@
         iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8
         YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAACrSURBVDhPY6A6kJeXV4AySQdAzQ5ycnKvyDJEUVHRVkZG
         5qWSkpITVIh4QJFmEAAacBWI/+PBfxQUFO4A6UagRZxQbQiA5HcHqBAK0NLSYgNqNgUasgVIHyPLEBiA
-        GtIA5aICJENwxgJQsxlQ/jaUiwnwaQYBdXV1XlFR0R9QLukA6oJbUC7pABgGW4G4HsolDkBjwQyq+SjW
-        WMAHgJpqQAEHsplkzTQGDAwABwgyfkGoFCUAAAAASUVORK5CYII=
+        GtIA5aICJENwxgJQsxlQ/jaUiwnwaQYBdXV1XhERkR9QLukA6oJbUC7pABgGW4G4HsolDkBjwQyq+SjW
+        WMAHgJpqQAEHsplkzTQGDAwAAlUye85WwDwAAAAASUVORK5CYII=
 </value>
   </data>
   <data name="ToolStripBtnUndo.Image" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
@@ -409,6 +409,9 @@
 </value>
   </data>
   <metadata name="MainMenuTools.GenerateMember" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
+    <value>False</value>
+  </metadata>
+  <metadata name="MainHelp.GenerateMember" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
     <value>False</value>
   </metadata>
   <metadata name="ListViewSummary.Locked" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
@@ -477,9 +480,6 @@
   </metadata>
   <metadata name="ContextMenuFilters.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
     <value>274, 17</value>
-  </metadata>
-  <metadata name="MainHelp.GenerateMember" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
-    <value>False</value>
   </metadata>
   <metadata name="ComboImagesFiltered.Locked" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
     <value>True</value>

@@ -1,6 +1,8 @@
 ﻿Imports System.ComponentModel
 Imports System.IO
+Imports System.Net
 Imports System.Text
+Imports System.Text.RegularExpressions
 Imports DiskImageTool.DiskImage
 Imports BootSectorOffsets = DiskImageTool.DiskImage.BootSector.BootSectorOffsets
 Imports BootSectorSizes = DiskImageTool.DiskImage.BootSector.BootSectorSizes
@@ -17,6 +19,7 @@ Public Class MainForm
     Private WithEvents Debounce As Timer
     Public Const NULL_CHAR As Char = "�"
     Public Const SITE_URL = "https://github.com/Digitoxin1/DiskImageTool"
+    Public Const UPDATE_URL = "https://api.github.com/repos/Digitoxin1/DiskImageTool/releases/latest"
     Private Const FILE_FILTER As String = "Disk Image Files (*.ima; *.img)|*.ima;*.img|All files (*.*)|*.*"
     Private _CheckAll As Boolean = False
     Private _Disk As DiskImage.Disk
@@ -415,6 +418,71 @@ Public Class MainForm
 
         If DisplayHexViewForm(HexViewSectorData, "Boot Sector", False, False) Then
             DiskImageProcess(True, True)
+        End If
+    End Sub
+
+    Private Sub CheckForUpdates()
+        Dim DownloadVersion As String = ""
+        Dim DownloadURL As String = ""
+        Dim UpdateAvailable As Boolean = False
+        Dim Regex As Regex
+        Dim Match As Match
+
+        Cursor.Current = Cursors.WaitCursor
+        Try
+            Dim Request As HttpWebRequest = WebRequest.Create(UPDATE_URL)
+            Request.UserAgent = "DiskImageTool"
+            Dim Response As HttpWebResponse = Request.GetResponse
+            Dim Reader As New StreamReader(Response.GetResponseStream)
+            Dim ResponseText = Reader.ReadToEnd
+
+
+            Regex = New Regex("""tag_name"":""(\d+\.\d+(?:\.\d+)?(?:\.\d+)?)""")
+            Match = Regex.Match(ResponseText)
+            If Match.Success Then
+                If Match.Groups.Count > 1 Then
+                    DownloadVersion = Match.Groups.Item(1).Value
+                End If
+            End If
+
+            Regex = New Regex("""browser_download_url"":""([^""]+)""")
+            Match = Regex.Match(ResponseText)
+            If Match.Success Then
+                If Match.Groups.Count > 1 Then
+                    DownloadURL = Match.Groups.Item(1).Value
+                End If
+            End If
+        Catch
+            MsgBox("An error occured while checking for updates.  Please try again later.", MsgBoxStyle.Exclamation)
+            Exit Sub
+        End Try
+        Cursor.Current = Cursors.Default
+
+        If DownloadVersion <> "" And DownloadURL <> "" Then
+            Dim CurrentVersion = FileVersionInfo.GetVersionInfo(Application.ExecutablePath).FileVersion
+            UpdateAvailable = Version.Parse(DownloadVersion) > Version.Parse(CurrentVersion)
+        End If
+
+        If UpdateAvailable Then
+            Dim Msg = "A New version Of " & My.Application.Info.Title & " Is available." & vbCrLf & vbCrLf & "Do you wish to download it at this time?"
+            If MsgBox(Msg, MsgBoxStyle.Question + MsgBoxStyle.YesNo + MsgBoxStyle.DefaultButton2) = MsgBoxResult.Yes Then
+                Dim Dialog As New SaveFileDialog
+                Dialog.Filter = "Zip Archive|*.zip"
+                Dialog.FileName = Path.GetFileName(DownloadURL)
+                Dialog.ShowDialog()
+                If Dialog.FileName <> "" Then
+                    Cursor.Current = Cursors.WaitCursor
+                    Try
+                        Dim Client As New WebClient()
+                        Client.DownloadFile(DownloadURL, Dialog.FileName)
+                    Catch
+                        MsgBox("An error occured while downloading the file.", MsgBoxStyle.Exclamation)
+                    End Try
+                    Cursor.Current = Cursors.Default
+                End If
+            End If
+        Else
+            MsgBox("You are running the latest version of " & My.Application.Info.Title & ".", MsgBoxStyle.Information)
         End If
     End Sub
 
@@ -2993,6 +3061,10 @@ Public Class MainForm
     Private Sub BtnHelpAbout_Click(sender As Object, e As EventArgs) Handles BtnHelpAbout.Click
         Dim AboutBox As New AboutBox()
         AboutBox.ShowDialog()
+    End Sub
+
+    Private Sub BtnHelpUpdateCheck_Click(sender As Object, e As EventArgs) Handles BtnHelpUpdateCheck.Click
+        CheckForUpdates
     End Sub
 #End Region
 

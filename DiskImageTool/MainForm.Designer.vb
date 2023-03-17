@@ -100,6 +100,9 @@ Partial Class MainForm
         Me.ToolStripBtnViewFileText = New System.Windows.Forms.ToolStripButton()
         Me.BtnWin9xClean = New System.Windows.Forms.ToolStripMenuItem()
         Me.BtnFixImageSize = New System.Windows.Forms.ToolStripMenuItem()
+        Me.BtnHelpProjectPage = New System.Windows.Forms.ToolStripMenuItem()
+        Me.ToolStripSeparator12 = New System.Windows.Forms.ToolStripSeparator()
+        Me.BtnHelpAbout = New System.Windows.Forms.ToolStripMenuItem()
         Me.ListViewSummary = New System.Windows.Forms.ListView()
         Me.ComboImages = New System.Windows.Forms.ComboBox()
         Me.ListViewHashes = New System.Windows.Forms.ListView()
@@ -128,9 +131,7 @@ Partial Class MainForm
         Me.BtnClearFilters = New System.Windows.Forms.ToolStripMenuItem()
         Me.FilterSeparator = New System.Windows.Forms.ToolStripSeparator()
         Me.ComboImagesFiltered = New System.Windows.Forms.ComboBox()
-        Me.BtnHelpAbout = New System.Windows.Forms.ToolStripMenuItem()
-        Me.ToolStripSeparator12 = New System.Windows.Forms.ToolStripSeparator()
-        Me.BtnHelpProjectPage = New System.Windows.Forms.ToolStripMenuItem()
+        Me.BtnHelpUpdateCheck = New System.Windows.Forms.ToolStripMenuItem()
         SummaryName = CType(New System.Windows.Forms.ColumnHeader(), System.Windows.Forms.ColumnHeader)
         SummaryValue = CType(New System.Windows.Forms.ColumnHeader(), System.Windows.Forms.ColumnHeader)
         HashName = CType(New System.Windows.Forms.ColumnHeader(), System.Windows.Forms.ColumnHeader)
@@ -689,6 +690,31 @@ Partial Class MainForm
         Me.BtnFixImageSize.Size = New System.Drawing.Size(229, 22)
         Me.BtnFixImageSize.Text = "Fix Image &Size"
         '
+        'MainHelp
+        '
+        MainHelp.DropDownItems.AddRange(New System.Windows.Forms.ToolStripItem() {Me.BtnHelpProjectPage, Me.BtnHelpUpdateCheck, Me.ToolStripSeparator12, Me.BtnHelpAbout})
+        MainHelp.Name = "MainHelp"
+        MainHelp.Size = New System.Drawing.Size(24, 20)
+        MainHelp.Text = "?"
+        '
+        'BtnHelpProjectPage
+        '
+        Me.BtnHelpProjectPage.Name = "BtnHelpProjectPage"
+        Me.BtnHelpProjectPage.Size = New System.Drawing.Size(212, 22)
+        Me.BtnHelpProjectPage.Text = "&Project Page"
+        '
+        'ToolStripSeparator12
+        '
+        Me.ToolStripSeparator12.Name = "ToolStripSeparator12"
+        Me.ToolStripSeparator12.Size = New System.Drawing.Size(209, 6)
+        '
+        'BtnHelpAbout
+        '
+        Me.BtnHelpAbout.Name = "BtnHelpAbout"
+        Me.BtnHelpAbout.ShortcutKeys = System.Windows.Forms.Keys.F1
+        Me.BtnHelpAbout.Size = New System.Drawing.Size(212, 22)
+        Me.BtnHelpAbout.Text = "About Disk Image Tool"
+        '
         'ListViewSummary
         '
         Me.ListViewSummary.AllowDrop = True
@@ -922,30 +948,11 @@ Partial Class MainForm
         Me.ComboImagesFiltered.Sorted = True
         Me.ComboImagesFiltered.TabIndex = 4
         '
-        'MainHelp
+        'BtnHelpUpdateCheck
         '
-        MainHelp.DropDownItems.AddRange(New System.Windows.Forms.ToolStripItem() {Me.BtnHelpProjectPage, Me.ToolStripSeparator12, Me.BtnHelpAbout})
-        MainHelp.Name = "MainHelp"
-        MainHelp.Size = New System.Drawing.Size(24, 20)
-        MainHelp.Text = "?"
-        '
-        'BtnHelpAbout
-        '
-        Me.BtnHelpAbout.Name = "BtnHelpAbout"
-        Me.BtnHelpAbout.ShortcutKeys = System.Windows.Forms.Keys.F1
-        Me.BtnHelpAbout.Size = New System.Drawing.Size(212, 22)
-        Me.BtnHelpAbout.Text = "About Disk Image Tool"
-        '
-        'ToolStripSeparator12
-        '
-        Me.ToolStripSeparator12.Name = "ToolStripSeparator12"
-        Me.ToolStripSeparator12.Size = New System.Drawing.Size(209, 6)
-        '
-        'BtnHelpProjectPage
-        '
-        Me.BtnHelpProjectPage.Name = "BtnHelpProjectPage"
-        Me.BtnHelpProjectPage.Size = New System.Drawing.Size(212, 22)
-        Me.BtnHelpProjectPage.Text = "&Project Page"
+        Me.BtnHelpUpdateCheck.Name = "BtnHelpUpdateCheck"
+        Me.BtnHelpUpdateCheck.Size = New System.Drawing.Size(212, 22)
+        Me.BtnHelpUpdateCheck.Text = "Check for &Updates"
         '
         'MainForm
         '
@@ -1064,4 +1071,5 @@ Partial Class MainForm
     Friend WithEvents BtnHelpAbout As ToolStripMenuItem
     Friend WithEvents BtnHelpProjectPage As ToolStripMenuItem
     Friend WithEvents ToolStripSeparator12 As ToolStripSeparator
+    Friend WithEvents BtnHelpUpdateCheck As ToolStripMenuItem
 End Class
