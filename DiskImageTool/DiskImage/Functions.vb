@@ -72,6 +72,73 @@ Namespace DiskImage
             End Select
         End Function
 
+        Public Function BuildBootSectorFromFileSize(Size As Integer) As BootSector
+            Dim Data(511) As Byte
+            Dim FileBytes As New ImageByteArray(Data)
+            Dim BootSector = New BootSector(FileBytes)
+
+            Select Case Size
+                Case 163840
+                    BootSector.MediaDescriptor = &HFE
+                    BootSector.NumberOfHeads = 1
+                    BootSector.RootEntryCount = 64
+                    BootSector.SectorCountSmall = 320
+                    BootSector.SectorsPerCluster = 1
+                    BootSector.SectorsPerFAT = 1
+                    BootSector.SectorsPerTrack = 8
+                Case 184320
+                    BootSector.MediaDescriptor = &HFC
+                    BootSector.NumberOfHeads = 1
+                    BootSector.RootEntryCount = 64
+                    BootSector.SectorCountSmall = 360
+                    BootSector.SectorsPerCluster = 1
+                    BootSector.SectorsPerFAT = 1
+                    BootSector.SectorsPerTrack = 9
+                Case 327680
+                    BootSector.MediaDescriptor = &HFF
+                    BootSector.NumberOfHeads = 2
+                    BootSector.RootEntryCount = 112
+                    BootSector.SectorCountSmall = 640
+                    BootSector.SectorsPerCluster = 2
+                    BootSector.SectorsPerFAT = 1
+                    BootSector.SectorsPerTrack = 8
+                Case 368640
+                    BootSector.MediaDescriptor = &HFD
+                    BootSector.NumberOfHeads = 2
+                    BootSector.RootEntryCount = 112
+                    BootSector.SectorCountSmall = 720
+                    BootSector.SectorsPerCluster = 2
+                    BootSector.SectorsPerFAT = 2
+                    BootSector.SectorsPerTrack = 9
+                Case 737280
+                    BootSector.MediaDescriptor = &HF9
+                    BootSector.NumberOfHeads = 2
+                    BootSector.RootEntryCount = 112
+                    BootSector.SectorCountSmall = 1440
+                    BootSector.SectorsPerCluster = 2
+                    BootSector.SectorsPerFAT = 3
+                    BootSector.SectorsPerTrack = 9
+                Case 1228800
+                    BootSector.MediaDescriptor = &HF9
+                    BootSector.NumberOfHeads = 2
+                    BootSector.RootEntryCount = 224
+                    BootSector.SectorCountSmall = 2400
+                    BootSector.SectorsPerCluster = 1
+                    BootSector.SectorsPerFAT = 7
+                    BootSector.SectorsPerTrack = 15
+                Case 1474560
+                    BootSector.MediaDescriptor = &HF0
+                    BootSector.NumberOfHeads = 2
+                    BootSector.RootEntryCount = 224
+                    BootSector.SectorCountSmall = 2880
+                    BootSector.SectorsPerCluster = 1
+                    BootSector.SectorsPerFAT = 9
+                    BootSector.SectorsPerTrack = 18
+            End Select
+
+            Return BootSector
+        End Function
+
         Public Function BytesToSector(Bytes As UInteger) As UInteger
             Return Math.Ceiling(Bytes / BYTES_PER_SECTOR)
         End Function

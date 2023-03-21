@@ -9,7 +9,7 @@
         Private Shared ReadOnly _ValidExtendedBootSignature() As Byte = {&H29}
         Private Shared ReadOnly _ValidJumpInstructuon() As Byte = {&HEB, &HE9}
         Private Shared ReadOnly _ValidMediaDescriptor() As Byte = {&HF0, &HF8, &HF9, &HFA, &HFB, &HFC, &HFD, &HFE, &HFF}
-        Private Shared ReadOnly _ValidSectorsPerSector() As Byte = {1, 2, 4, 8, 16, 32, 64, 128}
+        Private Shared ReadOnly _ValidSectorsPerCluster() As Byte = {1, 2, 4, 8, 16, 32, 64, 128}
 
         Public Enum BootSectorOffsets As UInteger
             JmpBoot = 0
@@ -372,7 +372,7 @@
         End Function
 
         Public Function HasValidSectorsPerCluster() As Boolean
-            Return _ValidSectorsPerSector.Contains(SectorsPerCluster)
+            Return _ValidSectorsPerCluster.Contains(SectorsPerCluster)
         End Function
 
         Public Function ImageSize() As UInteger

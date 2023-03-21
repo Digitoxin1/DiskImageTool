@@ -753,9 +753,8 @@ Public Class MainForm
 
     Private Sub DiskImageDisplayHex()
         Dim HexViewSectorData = New HexViewSectorData(_Disk, 0, _Disk.Data.Length)
-        Dim ClusterNavigator = _Disk.IsValidImage
 
-        If DisplayHexViewForm(HexViewSectorData, "Disk", True, ClusterNavigator, False) Then
+        If DisplayHexViewForm(HexViewSectorData, "Disk", True, True, False) Then
             ComboItemRefresh(True, True)
         End If
     End Sub

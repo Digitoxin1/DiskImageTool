@@ -1,6 +1,4 @@
 ﻿Imports System.ComponentModel
-Imports System.Reflection
-Imports System.Text
 Imports DiskImageTool.DiskImage
 Imports Hb.Windows.Forms
 
@@ -8,6 +6,7 @@ Public Class HexViewForm
     Public Shared ReadOnly ALT_BACK_COLOR As Color = Color.FromArgb(246, 246, 252)
     Private ReadOnly _Changes As Stack(Of List(Of HexChange))
     Private ReadOnly _HexViewSectorData As HexViewSectorData
+    Private ReadOnly _BootSector As BootSector
     Private ReadOnly _RedoChanges As Stack(Of List(Of HexChange))
     Private ReadOnly _SectorNavigator As Boolean
     Private ReadOnly _ClusterNavigator As Boolean
@@ -29,12 +28,21 @@ Public Class HexViewForm
         InitializeComponent()
         ' Add any initialization after the InitializeComponent() call.
         _HexViewSectorData = HexViewSectorData
+        _BootSector = _HexViewSectorData.Disk.BootSector
         _Changes = New Stack(Of List(Of HexChange))
         _RedoChanges = New Stack(Of List(Of HexChange))
         _CurrentHexViewData = Nothing
         _SectorNavigator = SectorNavigator
         _ClusterNavigator = ClusterNavigator
         _SyncBlocks = SyncBlocks
+
+        If Not _BootSector.IsValidImage Then
+            _BootSector = BuildBootSectorFromFileSize(_HexViewSectorData.Disk.Data.Length)
+        End If
+
+        If Not _BootSector.IsValidImage Then
+            _ClusterNavigator = False
+        End If
 
         HexBox1.ReadOnly = False
 
@@ -44,25 +52,25 @@ Public Class HexViewForm
             Me.Text = Caption
         End If
 
-        CmbGroups.Size = New Drawing.Size(IIf(SyncBlocks, 130, 218), CmbGroups.Size.Height)
+        CmbGroups.Size = New Drawing.Size(IIf(_SyncBlocks, 130, 218), CmbGroups.Size.Height)
         CmbGroups.DropDownWidth = CmbGroups.Width
 
-        LblGroups.Visible = Not SectorNavigator And Not ClusterNavigator
-        CmbGroups.Visible = Not SectorNavigator And Not ClusterNavigator
+        LblGroups.Visible = Not _SectorNavigator And Not _ClusterNavigator
+        CmbGroups.Visible = Not _SectorNavigator And Not _ClusterNavigator
 
-        If ClusterNavigator Then
+        If _ClusterNavigator Then
             InitializeTrackNavigator()
         End If
 
-        If SectorNavigator Then
+        If _SectorNavigator Then
             InitializeSectorNavigator()
         End If
 
-        If ClusterNavigator Then
+        If _ClusterNavigator Then
             InitializeClusterNavigator()
         End If
 
-        If SyncBlocks Then
+        If _SyncBlocks Then
             InitializeSyncCheckBox()
         End If
     End Sub
@@ -350,9 +358,9 @@ Public Class HexViewForm
     Private Sub JumpToCluster(Cluster As UShort)
         Dim SectorStart = _CurrentHexViewData.SectorBlock.SectorStart
         Dim SectorEnd = SectorStart + _CurrentHexViewData.SectorBlock.SectorCount - 1
-        Dim ClusterStart = _HexViewSectorData.Disk.BootSector.SectorToCluster(SectorStart)
-        Dim ClusterEnd = _HexViewSectorData.Disk.BootSector.SectorToCluster(SectorEnd)
-        Dim Sector = _HexViewSectorData.Disk.BootSector.ClusterToSector(Cluster)
+        Dim ClusterStart = _BootSector.SectorToCluster(SectorStart)
+        Dim ClusterEnd = _BootSector.SectorToCluster(SectorEnd)
+        Dim Sector = _BootSector.ClusterToSector(Cluster)
 
         If Cluster > 1 And Cluster >= ClusterStart And Cluster <= ClusterEnd Then
             Dim Offset = SectorToBytes(Sector) - HexBox1.LineInfoOffset
@@ -379,9 +387,9 @@ Public Class HexViewForm
 
         Dim SectorStart = _CurrentHexViewData.SectorBlock.SectorStart
         Dim SectorEnd = SectorStart + _CurrentHexViewData.SectorBlock.SectorCount - 1
-        Dim TrackStart = _HexViewSectorData.Disk.BootSector.SectorToTrack(SectorStart)
-        Dim TrackEnd = _HexViewSectorData.Disk.BootSector.SectorToTrack(SectorEnd)
-        Dim Sector = _HexViewSectorData.Disk.BootSector.TrackToSector(Track, Side)
+        Dim TrackStart = _BootSector.SectorToTrack(SectorStart)
+        Dim TrackEnd = _BootSector.SectorToTrack(SectorEnd)
+        Dim Sector = _BootSector.TrackToSector(Track, Side)
 
         If Track >= TrackStart And Track <= TrackEnd Then
             Dim Offset = SectorToBytes(Sector) - HexBox1.LineInfoOffset
@@ -566,7 +574,6 @@ Public Class HexViewForm
             Exit Sub
         End If
 
-        Dim Disk = _CurrentHexViewData.Disk
         Dim SelectionStart = HexBox1.SelectionStart
         Dim SelectionLength = HexBox1.SelectionLength
         Dim SelectionEnd = SelectionStart + SelectionLength - 1
@@ -587,14 +594,15 @@ Public Class HexViewForm
             ToolStripBtnSelectSector.ToolTipText = "SelectSector"
             ToolStripBtnSelectSector.Enabled = BtnSelectSector.Enabled
         Else
-            Dim Offset As UInteger = HexBox1.LineInfoOffset + SelectionStart
+            Dim OffsetStart As UInteger = HexBox1.LineInfoOffset + SelectionStart
+            Dim OffsetEnd As Integer = HexBox1.LineInfoOffset + SelectionEnd
             Dim FileName As String = ""
             Dim OutOfRange As Boolean = SelectionStart >= HexBox1.ByteProvider.Length
 
-            Dim Sector = OffsetToSector(Offset)
+            Dim Sector = OffsetToSector(OffsetStart)
 
             ToolStripStatusOffset.Visible = Not OutOfRange
-            ToolStripStatusOffset.Text = "Offset(h): " & SelectionStart.ToString("X")
+            ToolStripStatusOffset.Text = "Offset(h): " & OffsetStart.ToString("X")
 
             If SelectionLength = 0 Then
                 ToolStripStatusBlock.Visible = False
@@ -603,15 +611,15 @@ Public Class HexViewForm
                 ToolStripStatusLength.Text = ""
             Else
                 ToolStripStatusBlock.Visible = True
-                ToolStripStatusBlock.Text = "Block(h): " & SelectionStart.ToString("X") & "-" & SelectionEnd.ToString("X")
+                ToolStripStatusBlock.Text = "Block(h): " & OffsetStart.ToString("X") & "-" & OffsetEnd.ToString("X")
                 ToolStripStatusLength.Visible = True
                 ToolStripStatusLength.Text = "Length(h): " & SelectionLength.ToString("X")
             End If
 
             If _CurrentSector <> Sector Or ForceUpdate Then
                 Dim Cluster As UShort
-                If Disk.IsValidImage Then
-                    Cluster = Disk.BootSector.SectorToCluster(Sector)
+                If _BootSector.IsValidImage Then
+                    Cluster = _BootSector.SectorToCluster(Sector)
                 Else
                     Cluster = 0
                 End If
@@ -625,19 +633,21 @@ Public Class HexViewForm
                     ToolStripStatusCluster.Visible = Not OutOfRange
                     ToolStripStatusCluster.Text = "Cluster: " & Cluster
 
-                    If Disk.FAT.FileAllocation.ContainsKey(Cluster) Then
-                        Dim OffsetList = Disk.FAT.FileAllocation.Item(Cluster)
-                        Dim DirectoryEntry = Disk.GetDirectoryEntryByOffset(OffsetList.Item(0))
-                        FileName = DirectoryEntry.GetFullFileName
+                    If _BootSector.IsValidImage Then
+                        If _CurrentHexViewData.Disk.FAT.FileAllocation.ContainsKey(Cluster) Then
+                            Dim OffsetList = _CurrentHexViewData.Disk.FAT.FileAllocation.Item(Cluster)
+                            Dim DirectoryEntry = _CurrentHexViewData.Disk.GetDirectoryEntryByOffset(OffsetList.Item(0))
+                            FileName = DirectoryEntry.GetFullFileName
+                        End If
                     End If
                 End If
 
-                If Disk.IsValidImage Then
+                If _BootSector.IsValidImage Then
                     ToolStripStatusTrack.Visible = Not OutOfRange
-                    ToolStripStatusTrack.Text = "Track: " & Disk.BootSector.SectorToTrack(Sector)
+                    ToolStripStatusTrack.Text = "Track: " & _BootSector.SectorToTrack(Sector)
 
                     ToolStripStatusSide.Visible = Not OutOfRange
-                    ToolStripStatusSide.Text = "Side: " & Disk.BootSector.SectorToSide(Sector)
+                    ToolStripStatusSide.Text = "Side: " & _BootSector.SectorToSide(Sector)
                 Else
                     ToolStripStatusTrack.Visible = False
                     ToolStripStatusTrack.Text = ""
@@ -746,15 +756,15 @@ Public Class HexViewForm
             End If
 
             If _ClusterNavigator Then
-                NumericCluster.Minimum = _HexViewSectorData.Disk.BootSector.SectorToCluster(SectorStart)
-                NumericCluster.Maximum = _HexViewSectorData.Disk.BootSector.SectorToCluster(SectorEnd)
+                NumericCluster.Minimum = _BootSector.SectorToCluster(SectorStart)
+                NumericCluster.Maximum = _BootSector.SectorToCluster(SectorEnd)
                 NumericCluster.Enabled = True
 
                 ComboTrack.Items.Clear()
-                Dim TrackStart = _HexViewSectorData.Disk.BootSector.SectorToTrack(SectorStart)
-                Dim TrackEnd = _HexViewSectorData.Disk.BootSector.SectorToTrack(SectorEnd)
+                Dim TrackStart = _BootSector.SectorToTrack(SectorStart)
+                Dim TrackEnd = _BootSector.SectorToTrack(SectorEnd)
                 For i = TrackStart To TrackEnd
-                    For j = 0 To _HexViewSectorData.Disk.BootSector.NumberOfHeads - 1
+                    For j = 0 To _BootSector.NumberOfHeads - 1
                         ComboTrack.Items.Add(i & "." & j)
                     Next
                 Next
@@ -783,14 +793,14 @@ Public Class HexViewForm
         End If
 
         If _ClusterNavigator Then
-            Dim Cluster = _CurrentHexViewData.Disk.BootSector.SectorToCluster(Sector)
+            Dim Cluster = _BootSector.SectorToCluster(Sector)
 
             If Cluster <> NumericCluster.Value Then
                 NumericCluster.Value = Cluster
             End If
 
-            Dim Track = _CurrentHexViewData.Disk.BootSector.SectorToTrack(Sector)
-            Dim Side = _CurrentHexViewData.Disk.BootSector.SectorToSide(Sector)
+            Dim Track = _BootSector.SectorToTrack(Sector)
+            Dim Side = _BootSector.SectorToSide(Sector)
             Dim Value = Track.ToString & "." & Side.ToString
             If Value <> ComboTrack.Text Then
                 ComboTrack.Text = Value
