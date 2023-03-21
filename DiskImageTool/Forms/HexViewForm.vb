@@ -1,14 +1,17 @@
 ﻿Imports System.ComponentModel
+Imports System.Reflection
+Imports System.Text
 Imports DiskImageTool.DiskImage
 Imports Hb.Windows.Forms
 
 Public Class HexViewForm
     Public Shared ReadOnly ALT_BACK_COLOR As Color = Color.FromArgb(246, 246, 252)
-    Private ReadOnly _Changes As Stack(Of HexChange)
+    Private ReadOnly _Changes As Stack(Of List(Of HexChange))
     Private ReadOnly _HexViewSectorData As HexViewSectorData
-    Private ReadOnly _RedoChanges As Stack(Of HexChange)
+    Private ReadOnly _RedoChanges As Stack(Of List(Of HexChange))
     Private ReadOnly _SectorNavigator As Boolean
     Private ReadOnly _ClusterNavigator As Boolean
+    Private ReadOnly _SyncBlocks As Boolean
     Private _CurrentHexViewData As HexViewData
     Private _CurrentIndex As Integer = -1
     Private _CurrentSector As UInteger = 0
@@ -19,17 +22,19 @@ Public Class HexViewForm
     Private WithEvents NumericSector As ToolStripNumericUpDown
     Private WithEvents NumericCluster As ToolStripNumericUpDown
     Private WithEvents ComboTrack As ToolStripComboBox
+    Private WithEvents CheckBoxSync As ToolStripCheckBox
 
-    Public Sub New(HexViewSectorData As HexViewSectorData, Caption As String, SectorNavigator As Boolean, ClusterNavigator As Boolean)
+    Public Sub New(HexViewSectorData As HexViewSectorData, Caption As String, SectorNavigator As Boolean, ClusterNavigator As Boolean, SyncBlocks As Boolean)
         ' This call is required by the designer.
         InitializeComponent()
         ' Add any initialization after the InitializeComponent() call.
         _HexViewSectorData = HexViewSectorData
-        _Changes = New Stack(Of HexChange)
-        _RedoChanges = New Stack(Of HexChange)
+        _Changes = New Stack(Of List(Of HexChange))
+        _RedoChanges = New Stack(Of List(Of HexChange))
         _CurrentHexViewData = Nothing
         _SectorNavigator = SectorNavigator
         _ClusterNavigator = ClusterNavigator
+        _SyncBlocks = SyncBlocks
 
         HexBox1.ReadOnly = False
 
@@ -38,6 +43,9 @@ Public Class HexViewForm
         Else
             Me.Text = Caption
         End If
+
+        CmbGroups.Size = New Drawing.Size(IIf(SyncBlocks, 130, 218), CmbGroups.Size.Height)
+        CmbGroups.DropDownWidth = CmbGroups.Width
 
         LblGroups.Visible = Not SectorNavigator And Not ClusterNavigator
         CmbGroups.Visible = Not SectorNavigator And Not ClusterNavigator
@@ -52,6 +60,10 @@ Public Class HexViewForm
 
         If ClusterNavigator Then
             InitializeClusterNavigator()
+        End If
+
+        If SyncBlocks Then
+            InitializeSyncCheckBox()
         End If
     End Sub
 
@@ -99,6 +111,18 @@ Public Class HexViewForm
 
         ToolStripMain.Items.Add(ComboTrack)
         ToolStripMain.Items.Add(LabelTrack)
+    End Sub
+
+    Private Sub InitializeSyncCheckBox()
+        CheckBoxSync = New ToolStripCheckBox With {
+            .Alignment = ToolStripItemAlignment.Right,
+            .Checked = True,
+            .Margin = New Padding(0, 3, 6, 2),
+            .Text = "Sync FATs"
+        }
+
+        ToolStripMain.Items.Add(CheckBoxSync)
+
     End Sub
 
     Public ReadOnly Property Modified As Boolean
@@ -169,7 +193,7 @@ Public Class HexViewForm
             .ByteProvider = Nothing
 
             If _CurrentHexViewData.SectorBlock.Size > 0 Then
-                .ByteProvider = New MyByteProvider(_HexViewSectorData.SectorData.Data, _CurrentHexViewData.SectorBlock.Offset, _CurrentHexViewData.SectorBlock.Size)
+                .ByteProvider = _CurrentHexViewData.ByteProvider
                 .LineInfoOffset = SectorToBytes(_CurrentHexViewData.SectorBlock.SectorStart)
 
                 HighlightedRegions.Sort()
@@ -232,26 +256,61 @@ Public Class HexViewForm
         ToolStripStatusBytes.Text = Format(_CurrentHexViewData.SectorBlock.Size, "N0") & " bytes"
     End Sub
 
-    Private Sub FillRegion(Offset As Integer, Length As Integer, Value As Byte)
-        Dim b(Length - 1) As Byte
-        Dim Modified As Boolean = False
+    Private Function FillRegion(ByteProvider As IByteProvider, Offset As Integer, Length As Integer, Value As Byte) As FillRegionResult
+        Dim Result As New FillRegionResult(Length)
 
         For Index = 0 To Length - 1
-            b(Index) = HexBox1.ByteProvider.ReadByte(Offset + Index)
-            If b(Index) <> Value Then
-                HexBox1.ByteProvider.WriteByte(Offset + Index, Value)
-                Modified = True
+            Result.OriginalData(Index) = ByteProvider.ReadByte(Offset + Index)
+            If Result.OriginalData(Index) <> Value Then
+                ByteProvider.WriteByte(Offset + Index, Value)
+                Result.Modified = True
             End If
         Next
 
-        If Modified Then
-            PushChange(_CurrentIndex, Offset, b, HexBox1.SelectionStart, HexBox1.SelectionLength)
-            HexBox1.Invalidate()
-        End If
-    End Sub
+        Return Result
+    End Function
+
+    Private Function FillRegion(ByteProvider As IByteProvider, Offset As Integer, Length As Integer, Value() As Byte) As FillRegionResult
+        Dim Result As New FillRegionResult(Length)
+
+        For Index = 0 To Length - 1
+            Result.OriginalData(Index) = ByteProvider.ReadByte(Offset + Index)
+            If Result.OriginalData(Index) <> Value(Index) Then
+                ByteProvider.WriteByte(Offset + Index, Value(Index))
+                Result.Modified = True
+            End If
+        Next
+
+        Return Result
+    End Function
 
     Private Sub FillSelected(Value As Byte)
-        FillRegion(HexBox1.SelectionStart, HexBox1.SelectionLength, Value)
+        Dim ChangeList As New List(Of HexChange)
+        Dim DoSync As Boolean = _SyncBlocks AndAlso CheckBoxSync.Checked
+        Dim StartIndex As Integer
+        Dim EndIndex As Integer
+
+        If DoSync Then
+            StartIndex = 0
+            EndIndex = CmbGroups.Items.Count - 1
+        Else
+            StartIndex = _CurrentIndex
+            EndIndex = _CurrentIndex
+        End If
+
+        For Counter = StartIndex To EndIndex
+            Dim IsPrimary As Boolean = (Counter = _CurrentIndex)
+            Dim Data As HexViewData = CmbGroups.Items(Counter)
+            Dim Result = FillRegion(Data.ByteProvider, HexBox1.SelectionStart, HexBox1.SelectionLength, Value)
+            If Result.Modified Then
+                ChangeList.Add(New HexChange(Counter, HexBox1.SelectionStart, Result.OriginalData, HexBox1.SelectionStart, HexBox1.SelectionLength, IsPrimary))
+            End If
+        Next
+
+        If ChangeList.Count > 0 Then
+            PushChanges(ChangeList)
+            HexBox1.Invalidate()
+        End If
     End Sub
 
     Private Function GetCRC32Selected() As String
@@ -295,7 +354,7 @@ Public Class HexViewForm
         Dim ClusterEnd = _HexViewSectorData.Disk.BootSector.SectorToCluster(SectorEnd)
         Dim Sector = _HexViewSectorData.Disk.BootSector.ClusterToSector(Cluster)
 
-        If Cluster > 1 And Cluster >= ClusterStart And Cluster <= clusterend Then
+        If Cluster > 1 And Cluster >= ClusterStart And Cluster <= ClusterEnd Then
             Dim Offset = SectorToBytes(Sector) - HexBox1.LineInfoOffset
             Dim Line = Offset \ HexBox1.BytesPerLine
             HexBox1.PerformScrollToLine(Line)
@@ -335,49 +394,64 @@ Public Class HexViewForm
         Dim HexBytes = ConvertHexToBytes(Clipboard.GetText)
         Dim Offset = HexBox1.SelectionStart
         Dim Length = HexBytes.Length
-        Dim Modified As Boolean = False
 
         If Offset + Length > HexBox1.ByteProvider.Length Then
             Length = HexBox1.ByteProvider.Length - Offset
         End If
 
         If Length > 0 Then
-            Dim b(Length - 1) As Byte
-            For Index = 0 To Length - 1
-                b(Index) = HexBox1.ByteProvider.ReadByte(Offset + Index)
-                If b(Index) <> HexBytes(Index) Then
-                    HexBox1.ByteProvider.WriteByte(Offset + Index, HexBytes(Index))
-                    Modified = True
+            Dim ChangeList As New List(Of HexChange)
+            Dim DoSync As Boolean = _SyncBlocks AndAlso CheckBoxSync.Checked
+            Dim StartIndex As Integer
+            Dim EndIndex As Integer
+
+            If DoSync Then
+                StartIndex = 0
+                EndIndex = CmbGroups.Items.Count - 1
+            Else
+                StartIndex = _CurrentIndex
+                EndIndex = _CurrentIndex
+            End If
+
+            For Counter = StartIndex To EndIndex
+                Dim IsPrimary As Boolean = (Counter = _CurrentIndex)
+                Dim Data As HexViewData = CmbGroups.Items(Counter)
+                Dim Result = FillRegion(Data.ByteProvider, Offset, Length, HexBytes)
+                If Result.Modified Then
+                    ChangeList.Add(New HexChange(Counter, Offset, Result.OriginalData, HexBox1.SelectionStart, HexBox1.SelectionLength, IsPrimary))
                 End If
             Next
 
-            If Modified Then
-                PushChange(_CurrentIndex, Offset, b, HexBox1.SelectionStart, HexBox1.SelectionLength)
+            If ChangeList.Count > 0 Then
+                PushChanges(ChangeList)
                 HexBox1.SelectionLength = Length
                 HexBox1.Invalidate()
             End If
         End If
     End Sub
 
-    Private Sub PopChange(Source As Stack(Of HexChange), Destination As Stack(Of HexChange))
+    Private Sub PopChange(Source As Stack(Of List(Of HexChange)), Destination As Stack(Of List(Of HexChange)))
         If Source.Count > 0 Then
-            Dim BlockOffset As UInteger
-            Dim HexChange = Source.Pop()
+            Dim HexChangelist = Source.Pop()
+            Dim DestinationChangeList = New List(Of HexChange)
 
-            If HexChange.BlockIndex <> _CurrentIndex Then
-                CmbGroups.SelectedIndex = HexChange.BlockIndex
-            End If
+            For Each HexChange In HexChangelist
+                Dim Data As HexViewData = CmbGroups.Items(HexChange.BlockIndex)
 
-            Dim b(HexChange.Data.Length - 1) As Byte
-            BlockOffset = _CurrentHexViewData.SectorBlock.Offset + HexChange.Index
-            _HexViewSectorData.SectorData.Data.CopyTo(BlockOffset, b, 0, HexChange.Data.Length)
-            Destination.Push(New HexChange(HexChange.BlockIndex, HexChange.Index, b, HexChange.SelectionStart, HexChange.SelectionLength))
+                Dim OriginalData = ReadBytes(Data.ByteProvider, HexChange.Index, HexChange.Data.Length)
+                DestinationChangeList.Add(New HexChange(HexChange.BlockIndex, HexChange.Index, OriginalData, HexChange.SelectionStart, HexChange.SelectionLength, HexChange.IsPrimary))
 
-            For Counter = 0 To HexChange.Data.Length - 1
-                HexBox1.ByteProvider.WriteByte(HexChange.Index + Counter, HexChange.Data(Counter))
+                WriteBytes(Data.ByteProvider, HexChange.Index, HexChange.Data)
+
+                If HexChange.IsPrimary Then
+                    If HexChange.BlockIndex <> _CurrentIndex Then
+                        CmbGroups.SelectedIndex = HexChange.BlockIndex
+                    End If
+                    HexBox1.Select(HexChange.SelectionStart, HexChange.SelectionLength)
+                End If
             Next
 
-            HexBox1.Select(HexChange.SelectionStart, HexChange.SelectionLength)
+            Destination.Push(DestinationChangeList)
 
             RefreshUndoButtons()
         End If
@@ -476,14 +550,8 @@ Public Class HexViewForm
         End If
     End Sub
 
-    Private Sub PushChange(BlockIndex As Integer, Index As Long, Data As Byte, SelectionStart As Long, SelectionLength As Long)
-        _Changes.Push(New HexChange(BlockIndex, Index, Data, SelectionStart, SelectionLength))
-        _RedoChanges.Clear()
-        RefreshUndoButtons()
-    End Sub
-
-    Private Sub PushChange(BlockIndex As Integer, Index As Long, Data() As Byte, SelectionStart As Long, SelectionLength As Long)
-        _Changes.Push(New HexChange(BlockIndex, Index, Data, SelectionStart, SelectionLength))
+    Private Sub PushChanges(ChangeList As List(Of HexChange))
+        _Changes.Push(ChangeList)
         _RedoChanges.Clear()
         RefreshUndoButtons()
     End Sub
@@ -740,6 +808,22 @@ Public Class HexViewForm
         End If
     End Sub
 
+    Private Function ReadBytes(ByteProvider As IByteProvider, Offset As Long, Length As Integer) As Byte()
+        Dim Data(Length - 1) As Byte
+
+        For Counter = 0 To Data.Length - 1
+            Data(Counter) = ByteProvider.ReadByte(Offset + Counter)
+        Next
+
+        Return Data
+    End Function
+
+    Private Sub WriteBytes(ByteProvider As IByteProvider, Offset As Long, Data() As Byte)
+        For Counter = 0 To Data.Length - 1
+            ByteProvider.WriteByte(Offset + Counter, Data(Counter))
+        Next
+    End Sub
+
 #Region "Events"
 
     Private Sub BtnCopyHex_Click(sender As Object, e As EventArgs) Handles BtnCopyHex.Click, ToolStripBtnCopyHex.Click
@@ -816,7 +900,23 @@ Public Class HexViewForm
     End Sub
 
     Private Sub HexBox1_ByteChanged(source As Object, e As HexBox.ByteChangedArgs) Handles HexBox1.ByteChanged
-        PushChange(_CurrentIndex, e.Index, e.PrevValue, HexBox1.SelectionStart, HexBox1.SelectionLength)
+        Dim ChangeList As New List(Of HexChange)
+        Dim DoSync As Boolean = _SyncBlocks AndAlso CheckBoxSync.Checked
+
+        ChangeList.Add(New HexChange(_CurrentIndex, e.Index, e.PrevValue, HexBox1.SelectionStart, HexBox1.SelectionLength, True))
+
+        If DoSync Then
+            For Counter = 0 To CmbGroups.Items.Count - 1
+                If Counter <> _CurrentIndex Then
+                    Dim Data As HexViewData = CmbGroups.Items(Counter)
+                    Dim PrevValue As Byte = Data.ByteProvider.ReadByte(e.Index)
+                    Data.ByteProvider.WriteByte(e.Index, e.Value)
+                    ChangeList.Add(New HexChange(Counter, e.Index, PrevValue, HexBox1.SelectionStart, HexBox1.SelectionLength, False))
+                End If
+            Next
+        End If
+
+        PushChanges(ChangeList)
     End Sub
 
     Private Sub HexBox1_InsertActiveChanged(sender As Object, e As EventArgs) Handles HexBox1.InsertActiveChanged
@@ -849,7 +949,7 @@ Public Class HexViewForm
 
     Private Sub HexViewForm_Load(sender As Object, e As EventArgs) Handles Me.Load
         For Counter = 0 To _HexViewSectorData.SectorData.BlockCount - 1
-            CmbGroups.Items.Add(New HexViewData(_HexViewSectorData.Disk, _HexViewSectorData.SectorData.GetBlock(Counter)))
+            CmbGroups.Items.Add(New HexViewData(_HexViewSectorData, Counter))
         Next
 
         HexBox1.VScrollBarVisible = True
@@ -907,28 +1007,38 @@ Public Class HexViewForm
 
 #End Region
 
+    Private Class FillRegionResult
+        Public Sub New(Length As Integer)
+            ReDim _OriginalData(Length - 1)
+        End Sub
+        Public Property Modified As Boolean = False
+        Public Property OriginalData As Byte()
+    End Class
+
     Private Class HexChange
-        Public Sub New(BlockIndex As Integer, Index As Long, Data As Byte(), SelectionStart As Long, SelectionLength As Long)
+        Public Sub New(BlockIndex As UShort, Index As UInteger, Data As Byte(), SelectionStart As UInteger, SelectionLength As UInteger, IsPrimary As Boolean)
             Me.BlockIndex = BlockIndex
             Me.Index = Index
+            Me.IsPrimary = IsPrimary
             Me.SelectionLength = SelectionLength
             Me.SelectionStart = SelectionStart
             Me.Data = Data
         End Sub
 
-        Public Sub New(BlockIndex As Integer, Index As Long, Data As Byte, SelectionStart As Long, SelectionLength As Long)
+        Public Sub New(BlockIndex As UShort, Index As UInteger, Data As Byte, SelectionStart As UInteger, SelectionLength As UInteger, IsPrimary As Boolean)
             Me.BlockIndex = BlockIndex
             Me.Index = Index
+            Me.IsPrimary = IsPrimary
             Me.SelectionLength = SelectionLength
             Me.SelectionStart = SelectionStart
-            ReDim Me.Data(0)
-            Me.Data(0) = Data
+            Me.Data = {Data}
         End Sub
 
-        Public Property BlockIndex As Integer
+        Public Property BlockIndex As UShort
         Public Property Data As Byte()
-        Public Property Index As Long
-        Public Property SelectionLength As Long
-        Public Property SelectionStart As Long
+        Public Property Index As UInteger
+        Public Property IsPrimary As Boolean
+        Public Property SelectionLength As UInteger
+        Public Property SelectionStart As UInteger
     End Class
 End Class

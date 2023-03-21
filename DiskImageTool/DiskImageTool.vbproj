@@ -30,7 +30,7 @@
     <ProductName>DiskImageTool</ProductName>
     <PublisherName>Digitoxin</PublisherName>
     <ApplicationRevision>0</ApplicationRevision>
-    <ApplicationVersion>1.19.0.%2a</ApplicationVersion>
+    <ApplicationVersion>1.20.0.%2a</ApplicationVersion>
     <UseApplicationTrust>false</UseApplicationTrust>
     <PublishWizardCompleted>true</PublishWizardCompleted>
     <BootstrapperEnabled>true</BootstrapperEnabled>
@@ -117,6 +117,9 @@
     <Import Include="System.Threading.Tasks" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Controls\ToolStripCheckBox.vb">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="Forms\AboutBox.Designer.vb">
       <DependentUpon>AboutBox.vb</DependentUpon>
     </Compile>
@@ -134,6 +137,12 @@
     <Compile Include="DiskImage\ImageByteArray.vb" />
     <Compile Include="DiskImage\RootDirectory.vb" />
     <Compile Include="DiskImage\SubDirectory.vb" />
+    <Compile Include="Forms\FATEditForm.Designer.vb">
+      <DependentUpon>FATEditForm.vb</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\FATEditForm.vb">
+      <SubType>Form</SubType>
+    </Compile>
     <Compile Include="Forms\FilePropertiesForm.Designer.vb">
       <DependentUpon>FilePropertiesForm.vb</DependentUpon>
     </Compile>
@@ -213,6 +222,9 @@
   <ItemGroup>
     <EmbeddedResource Include="Forms\AboutBox.resx">
       <DependentUpon>AboutBox.vb</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\FATEditForm.resx">
+      <DependentUpon>FATEditForm.vb</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\FilePropertiesForm.resx">
       <DependentUpon>FilePropertiesForm.vb</DependentUpon>

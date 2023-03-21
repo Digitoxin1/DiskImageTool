@@ -1,5 +1,7 @@
 ﻿Imports System.ComponentModel
+Imports System.Windows.Forms.Design
 
+<ToolStripItemDesignerAvailability(ToolStripItemDesignerAvailability.ToolStrip), DebuggerStepThrough()>
 Public Class ToolStripNumericUpDown
     Inherits MyToolStripControlHost
 

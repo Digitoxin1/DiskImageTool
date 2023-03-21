@@ -101,6 +101,7 @@ Partial Class MainForm
         Me.BtnWin9xClean = New System.Windows.Forms.ToolStripMenuItem()
         Me.BtnFixImageSize = New System.Windows.Forms.ToolStripMenuItem()
         Me.BtnHelpProjectPage = New System.Windows.Forms.ToolStripMenuItem()
+        Me.BtnHelpUpdateCheck = New System.Windows.Forms.ToolStripMenuItem()
         Me.ToolStripSeparator12 = New System.Windows.Forms.ToolStripSeparator()
         Me.BtnHelpAbout = New System.Windows.Forms.ToolStripMenuItem()
         Me.ListViewSummary = New System.Windows.Forms.ListView()
@@ -131,7 +132,7 @@ Partial Class MainForm
         Me.BtnClearFilters = New System.Windows.Forms.ToolStripMenuItem()
         Me.FilterSeparator = New System.Windows.Forms.ToolStripSeparator()
         Me.ComboImagesFiltered = New System.Windows.Forms.ComboBox()
-        Me.BtnHelpUpdateCheck = New System.Windows.Forms.ToolStripMenuItem()
+        Me.BtnEditFAT = New System.Windows.Forms.ToolStripMenuItem()
         SummaryName = CType(New System.Windows.Forms.ColumnHeader(), System.Windows.Forms.ColumnHeader)
         SummaryValue = CType(New System.Windows.Forms.ColumnHeader(), System.Windows.Forms.ColumnHeader)
         HashName = CType(New System.Windows.Forms.ColumnHeader(), System.Windows.Forms.ColumnHeader)
@@ -302,7 +303,7 @@ Partial Class MainForm
         '
         'MainMenuEdit
         '
-        MainMenuEdit.DropDownItems.AddRange(New System.Windows.Forms.ToolStripItem() {Me.BtnChangeOEMName, Me.ToolStripSeparator4, Me.BtnFileProperties, Me.BtnExportFile, Me.BtnReplaceFile, Me.ToolStripSeparator2, Me.BtnUndo, Me.BtnRedo, Me.BtnRevert})
+        MainMenuEdit.DropDownItems.AddRange(New System.Windows.Forms.ToolStripItem() {Me.BtnChangeOEMName, Me.BtnEditFAT, Me.ToolStripSeparator4, Me.BtnFileProperties, Me.BtnExportFile, Me.BtnReplaceFile, Me.ToolStripSeparator2, Me.BtnUndo, Me.BtnRedo, Me.BtnRevert})
         MainMenuEdit.Name = "MainMenuEdit"
         MainMenuEdit.Size = New System.Drawing.Size(39, 20)
         MainMenuEdit.Text = "&Edit"
@@ -310,45 +311,45 @@ Partial Class MainForm
         'BtnChangeOEMName
         '
         Me.BtnChangeOEMName.Name = "BtnChangeOEMName"
-        Me.BtnChangeOEMName.Size = New System.Drawing.Size(179, 22)
-        Me.BtnChangeOEMName.Text = "Change &OEM Name"
+        Me.BtnChangeOEMName.Size = New System.Drawing.Size(180, 22)
+        Me.BtnChangeOEMName.Text = "&OEM Name"
         '
         'ToolStripSeparator4
         '
         Me.ToolStripSeparator4.Name = "ToolStripSeparator4"
-        Me.ToolStripSeparator4.Size = New System.Drawing.Size(176, 6)
+        Me.ToolStripSeparator4.Size = New System.Drawing.Size(177, 6)
         '
         'BtnFileProperties
         '
         Me.BtnFileProperties.Image = CType(resources.GetObject("BtnFileProperties.Image"), System.Drawing.Image)
         Me.BtnFileProperties.Name = "BtnFileProperties"
-        Me.BtnFileProperties.Size = New System.Drawing.Size(179, 22)
+        Me.BtnFileProperties.Size = New System.Drawing.Size(180, 22)
         Me.BtnFileProperties.Text = "File &Properties"
         '
         'BtnExportFile
         '
         Me.BtnExportFile.Image = CType(resources.GetObject("BtnExportFile.Image"), System.Drawing.Image)
         Me.BtnExportFile.Name = "BtnExportFile"
-        Me.BtnExportFile.Size = New System.Drawing.Size(179, 22)
+        Me.BtnExportFile.Size = New System.Drawing.Size(180, 22)
         Me.BtnExportFile.Text = "&Export File"
         '
         'BtnReplaceFile
         '
         Me.BtnReplaceFile.Name = "BtnReplaceFile"
-        Me.BtnReplaceFile.Size = New System.Drawing.Size(179, 22)
+        Me.BtnReplaceFile.Size = New System.Drawing.Size(180, 22)
         Me.BtnReplaceFile.Text = "&Replace File"
         '
         'ToolStripSeparator2
         '
         Me.ToolStripSeparator2.Name = "ToolStripSeparator2"
-        Me.ToolStripSeparator2.Size = New System.Drawing.Size(176, 6)
+        Me.ToolStripSeparator2.Size = New System.Drawing.Size(177, 6)
         '
         'BtnUndo
         '
         Me.BtnUndo.Image = CType(resources.GetObject("BtnUndo.Image"), System.Drawing.Image)
         Me.BtnUndo.Name = "BtnUndo"
         Me.BtnUndo.ShortcutKeys = CType((System.Windows.Forms.Keys.Control Or System.Windows.Forms.Keys.Z), System.Windows.Forms.Keys)
-        Me.BtnUndo.Size = New System.Drawing.Size(179, 22)
+        Me.BtnUndo.Size = New System.Drawing.Size(180, 22)
         Me.BtnUndo.Text = "&Undo"
         '
         'BtnRedo
@@ -357,13 +358,13 @@ Partial Class MainForm
         Me.BtnRedo.Name = "BtnRedo"
         Me.BtnRedo.ShortcutKeys = CType(((System.Windows.Forms.Keys.Control Or System.Windows.Forms.Keys.Shift) _
             Or System.Windows.Forms.Keys.Z), System.Windows.Forms.Keys)
-        Me.BtnRedo.Size = New System.Drawing.Size(179, 22)
+        Me.BtnRedo.Size = New System.Drawing.Size(180, 22)
         Me.BtnRedo.Text = "&Redo"
         '
         'BtnRevert
         '
         Me.BtnRevert.Name = "BtnRevert"
-        Me.BtnRevert.Size = New System.Drawing.Size(179, 22)
+        Me.BtnRevert.Size = New System.Drawing.Size(180, 22)
         Me.BtnRevert.Text = "&Revert Changes"
         Me.BtnRevert.TextAlign = System.Drawing.ContentAlignment.MiddleLeft
         '
@@ -371,49 +372,49 @@ Partial Class MainForm
         '
         MainMenuView.DropDownItems.AddRange(New System.Windows.Forms.ToolStripItem() {Me.BtnDisplayBootSector, Me.BtnDisplayFAT, Me.BtnDisplayDirectory, Me.BtnDisplayClusters, Me.BtnDisplayFile, Me.BtnDisplayBadSectors, Me.BtnDisplayDisk})
         MainMenuView.Name = "MainMenuView"
-        MainMenuView.Size = New System.Drawing.Size(44, 20)
-        MainMenuView.Text = "&View"
+        MainMenuView.Size = New System.Drawing.Size(40, 20)
+        MainMenuView.Text = "&Hex"
         '
         'BtnDisplayBootSector
         '
         Me.BtnDisplayBootSector.Name = "BtnDisplayBootSector"
-        Me.BtnDisplayBootSector.Size = New System.Drawing.Size(179, 22)
+        Me.BtnDisplayBootSector.Size = New System.Drawing.Size(180, 22)
         Me.BtnDisplayBootSector.Text = "&Boot Sector"
         '
         'BtnDisplayFAT
         '
         Me.BtnDisplayFAT.Name = "BtnDisplayFAT"
-        Me.BtnDisplayFAT.Size = New System.Drawing.Size(179, 22)
+        Me.BtnDisplayFAT.Size = New System.Drawing.Size(180, 22)
         Me.BtnDisplayFAT.Text = "File &Allocation Table"
         '
         'BtnDisplayDirectory
         '
         Me.BtnDisplayDirectory.Name = "BtnDisplayDirectory"
-        Me.BtnDisplayDirectory.Size = New System.Drawing.Size(179, 22)
+        Me.BtnDisplayDirectory.Size = New System.Drawing.Size(180, 22)
         Me.BtnDisplayDirectory.Text = "Root &Directory"
         '
         'BtnDisplayClusters
         '
         Me.BtnDisplayClusters.Name = "BtnDisplayClusters"
-        Me.BtnDisplayClusters.Size = New System.Drawing.Size(179, 22)
+        Me.BtnDisplayClusters.Size = New System.Drawing.Size(180, 22)
         Me.BtnDisplayClusters.Text = "&Unused Clusters"
         '
         'BtnDisplayFile
         '
         Me.BtnDisplayFile.Name = "BtnDisplayFile"
-        Me.BtnDisplayFile.Size = New System.Drawing.Size(179, 22)
+        Me.BtnDisplayFile.Size = New System.Drawing.Size(180, 22)
         Me.BtnDisplayFile.Text = "&File"
         '
         'BtnDisplayBadSectors
         '
         Me.BtnDisplayBadSectors.Name = "BtnDisplayBadSectors"
-        Me.BtnDisplayBadSectors.Size = New System.Drawing.Size(179, 22)
+        Me.BtnDisplayBadSectors.Size = New System.Drawing.Size(180, 22)
         Me.BtnDisplayBadSectors.Text = "Bad &Sectors"
         '
         'BtnDisplayDisk
         '
         Me.BtnDisplayDisk.Name = "BtnDisplayDisk"
-        Me.BtnDisplayDisk.Size = New System.Drawing.Size(179, 22)
+        Me.BtnDisplayDisk.Size = New System.Drawing.Size(180, 22)
         Me.BtnDisplayDisk.Text = "Entire &Disk"
         '
         'MainMenuExperimental
@@ -703,6 +704,12 @@ Partial Class MainForm
         Me.BtnHelpProjectPage.Size = New System.Drawing.Size(212, 22)
         Me.BtnHelpProjectPage.Text = "&Project Page"
         '
+        'BtnHelpUpdateCheck
+        '
+        Me.BtnHelpUpdateCheck.Name = "BtnHelpUpdateCheck"
+        Me.BtnHelpUpdateCheck.Size = New System.Drawing.Size(212, 22)
+        Me.BtnHelpUpdateCheck.Text = "Check for &Updates"
+        '
         'ToolStripSeparator12
         '
         Me.ToolStripSeparator12.Name = "ToolStripSeparator12"
@@ -948,11 +955,11 @@ Partial Class MainForm
         Me.ComboImagesFiltered.Sorted = True
         Me.ComboImagesFiltered.TabIndex = 4
         '
-        'BtnHelpUpdateCheck
+        'BtnEditFAT
         '
-        Me.BtnHelpUpdateCheck.Name = "BtnHelpUpdateCheck"
-        Me.BtnHelpUpdateCheck.Size = New System.Drawing.Size(212, 22)
-        Me.BtnHelpUpdateCheck.Text = "Check for &Updates"
+        Me.BtnEditFAT.Name = "BtnEditFAT"
+        Me.BtnEditFAT.Size = New System.Drawing.Size(180, 22)
+        Me.BtnEditFAT.Text = "File &Allocation Table"
         '
         'MainForm
         '
@@ -1072,4 +1079,5 @@ Partial Class MainForm
     Friend WithEvents BtnHelpProjectPage As ToolStripMenuItem
     Friend WithEvents ToolStripSeparator12 As ToolStripSeparator
     Friend WithEvents BtnHelpUpdateCheck As ToolStripMenuItem
+    Friend WithEvents BtnEditFAT As ToolStripMenuItem
 End Class

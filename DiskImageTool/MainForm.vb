@@ -357,7 +357,7 @@ Public Class MainForm
             HexViewSectorData.SectorData.AddBlockByOffset(Offset, Length)
         End If
 
-        If DisplayHexViewForm(HexViewSectorData, "Bad Sectors", False, False) Then
+        If DisplayHexViewForm(HexViewSectorData, "Bad Sectors") Then
             ComboItemRefresh(False, True)
         End If
     End Sub
@@ -416,7 +416,7 @@ Public Class MainForm
             HighlightedRegions.AddOffset(BootSectorOffsets.BootStrapSignature, ForeColor)
         End If
 
-        If DisplayHexViewForm(HexViewSectorData, "Boot Sector", False, False) Then
+        If DisplayHexViewForm(HexViewSectorData, "Boot Sector") Then
             DiskImageProcess(True, True)
         End If
     End Sub
@@ -466,9 +466,10 @@ Public Class MainForm
         If UpdateAvailable Then
             Dim Msg = "A New version Of " & My.Application.Info.Title & " Is available." & vbCrLf & vbCrLf & "Do you wish to download it at this time?"
             If MsgBox(Msg, MsgBoxStyle.Question + MsgBoxStyle.YesNo + MsgBoxStyle.DefaultButton2) = MsgBoxResult.Yes Then
-                Dim Dialog As New SaveFileDialog
-                Dialog.Filter = "Zip Archive|*.zip"
-                Dialog.FileName = Path.GetFileName(DownloadURL)
+                Dim Dialog As New SaveFileDialog With {
+                    .Filter = "Zip Archive|*.zip",
+                    .FileName = Path.GetFileName(DownloadURL)
+                }
                 Dialog.ShowDialog()
                 If Dialog.FileName <> "" Then
                     Cursor.Current = Cursors.WaitCursor
@@ -688,7 +689,7 @@ Public Class MainForm
             End If
         End If
 
-        If DisplayHexViewForm(HexViewSectorData, Caption, False, False) Then
+        If DisplayHexViewForm(HexViewSectorData, Caption) Then
             ComboItemRefresh(True, True)
         End If
     End Sub
@@ -754,7 +755,7 @@ Public Class MainForm
         Dim HexViewSectorData = New HexViewSectorData(_Disk, 0, _Disk.Data.Length)
         Dim ClusterNavigator = _Disk.IsValidImage
 
-        If DisplayHexViewForm(HexViewSectorData, "Disk", True, ClusterNavigator) Then
+        If DisplayHexViewForm(HexViewSectorData, "Disk", True, ClusterNavigator, False) Then
             ComboItemRefresh(True, True)
         End If
     End Sub
@@ -766,7 +767,6 @@ Public Class MainForm
         If Not _Disk.LoadError Then
             CurrentImageData.Modifications = _Disk.Data.Changes
         End If
-        Debug.Print("load")
         DiskImageProcess(DoItemScan, False)
     End Sub
 
@@ -873,8 +873,16 @@ Public Class MainForm
         MsgBox(Msg, MsgBoxStyle.Information + MsgBoxStyle.OkOnly)
     End Sub
 
-    Private Function DisplayHexViewForm(HexViewSectorData As HexViewSectorData, Caption As String, SectorNavigator As Boolean, ClusterNavigator As Boolean) As Boolean
-        Dim frmHexView As New HexViewForm(HexViewSectorData, Caption, SectorNavigator, ClusterNavigator)
+    Private Function DisplayHexViewForm(HexViewSectorData As HexViewSectorData, Caption As String) As Boolean
+        Return DisplayHexViewForm(HexViewSectorData, Caption, False, False, False)
+    End Function
+
+    Private Function DisplayHexViewForm(HexViewSectorData As HexViewSectorData, Caption As String, SyncBlocks As Boolean) As Boolean
+        Return DisplayHexViewForm(HexViewSectorData, Caption, False, False, SyncBlocks)
+    End Function
+
+    Private Function DisplayHexViewForm(HexViewSectorData As HexViewSectorData, Caption As String, SectorNavigator As Boolean, ClusterNavigator As Boolean, SyncBlocks As Boolean) As Boolean
+        Dim frmHexView As New HexViewForm(HexViewSectorData, Caption, SectorNavigator, ClusterNavigator, SyncBlocks)
         frmHexView.ShowDialog()
 
         Return frmHexView.Modified
@@ -969,9 +977,15 @@ Public Class MainForm
             End If
         Next
 
-        If DisplayHexViewForm(HexViewSectorData, "File Allocation Table", False, False) Then
+        If DisplayHexViewForm(HexViewSectorData, "File Allocation Table", True) Then
             DiskImageProcess(True, True)
         End If
+    End Sub
+
+    Private Sub FATEdit()
+        Dim frmFATEdit As New FATEditForm(_Disk)
+
+        frmFATEdit.ShowDialog()
     End Sub
 
     Private Sub FileClose(ImageData As LoadedImageData)
@@ -1485,12 +1499,14 @@ Public Class MainForm
             BtnDisplayBootSector.Enabled = True
             BtnDisplayDisk.Enabled = True
             BtnDisplayFAT.Enabled = _Disk.IsValidImage
+            BtnEditFAT.Enabled = _Disk.IsValidImage
             BtnDisplayDirectory.Enabled = _Disk.IsValidImage
         Else
             BtnChangeOEMName.Enabled = False
             BtnDisplayBootSector.Enabled = False
             BtnDisplayDisk.Enabled = False
             BtnDisplayFAT.Enabled = False
+            BtnEditFAT.Enabled = False
             BtnDisplayDirectory.Enabled = False
         End If
         BtnWin9xClean.Enabled = False
@@ -2063,6 +2079,9 @@ Public Class MainForm
                         If KnownOEMNameMatch.Description <> "" Then
                             .Add(ListViewTileGetItem(BootStrapGroup, "Description", KnownOEMNameMatch.Description))
                         End If
+                        If KnownOEMNameMatch.Note <> "" Then
+                            .Add(ListViewTileGetItem(BootStrapGroup, "Note", KnownOEMNameMatch.Note, Color.Blue))
+                        End If
                     End If
                     If Not BootstrapType.ExactMatch Then
                         For Each KnownOEMName In BootstrapType.KnownOEMNames
@@ -2613,7 +2632,7 @@ Public Class MainForm
     Private Sub UnusedClustersDisplayHex()
         Dim HexViewSectorData = New HexViewSectorData(_Disk, _Disk.FAT.GetUnusedSectors(True))
 
-        If DisplayHexViewForm(HexViewSectorData, "Unused Clusters", False, False) Then
+        If DisplayHexViewForm(HexViewSectorData, "Unused Clusters") Then
             ComboItemRefresh(False, True)
         End If
     End Sub
@@ -2694,6 +2713,10 @@ Public Class MainForm
 
     Private Sub BtnDisplayFAT_Click(sender As Object, e As EventArgs) Handles BtnDisplayFAT.Click
         FATDisplayHex()
+    End Sub
+
+    Private Sub BtnEditFAT_Click(sender As Object, e As EventArgs) Handles BtnEditFAT.Click
+        FATEdit
     End Sub
 
     Private Sub BtnDisplayFile_Click(sender As Object, e As EventArgs) Handles BtnDisplayFile.Click

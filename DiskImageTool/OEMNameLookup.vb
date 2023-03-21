@@ -21,16 +21,20 @@ Module OEMNameLookup
             End If
             For Each oemNameNode As XmlElement In bootstrapNode.SelectNodes("oemname")
                 Dim KnownOEMName As New KnownOEMName
-                If oemNameNode.HasAttribute("name") Then
-                    KnownOEMName.Name = Text.Encoding.UTF8.GetBytes(oemNameNode.Attributes("name").Value)
-                ElseIf oemNameNode.HasAttribute("namehex") Then
+
+                If oemNameNode.HasAttribute("namehex") Then
                     KnownOEMName.Name = HexStringToBytes(oemNameNode.Attributes("namehex").Value)
+                ElseIf oemNameNode.HasAttribute("name") Then
+                    KnownOEMName.Name = Text.Encoding.UTF8.GetBytes(oemNameNode.Attributes("name").Value)
                 End If
                 If oemNameNode.HasAttribute("company") Then
                     KnownOEMName.Company = oemNameNode.Attributes("company").Value
                 End If
                 If oemNameNode.HasAttribute("description") Then
                     KnownOEMName.Description = oemNameNode.Attributes("description").Value
+                End If
+                If oemNameNode.HasAttribute("note") Then
+                    KnownOEMName.Note = oemNameNode.Attributes("note").Value
                 End If
                 If oemNameNode.HasAttribute("win9xid") Then
                     KnownOEMName.Win9xId = oemNameNode.Attributes("win9xid").Value

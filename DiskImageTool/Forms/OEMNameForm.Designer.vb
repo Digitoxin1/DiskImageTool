@@ -30,9 +30,9 @@ Partial Class OEMNameForm
         Me.BtnUpdate = New System.Windows.Forms.Button()
         Me.BtnCancel = New System.Windows.Forms.Button()
         Me.TableLayoutPanel1 = New System.Windows.Forms.TableLayoutPanel()
+        Me.MskOEMNameHex = New DiskImageTool.HexTextBox()
         Me.TxtCurrentOEMHex = New System.Windows.Forms.TextBox()
         Me.FlowLayoutPanel1 = New System.Windows.Forms.FlowLayoutPanel()
-        Me.MskOEMNameHex = New DiskImageTool.HexTextBox()
         Label1 = New System.Windows.Forms.Label()
         Label2 = New System.Windows.Forms.Label()
         Me.TableLayoutPanel1.SuspendLayout()
@@ -48,6 +48,16 @@ Partial Class OEMNameForm
         Label1.Size = New System.Drawing.Size(99, 13)
         Label1.TabIndex = 0
         Label1.Text = "Current OEM Name"
+        '
+        'Label2
+        '
+        Label2.Anchor = System.Windows.Forms.AnchorStyles.Left
+        Label2.AutoSize = True
+        Label2.Location = New System.Drawing.Point(3, 33)
+        Label2.Name = "Label2"
+        Label2.Size = New System.Drawing.Size(87, 13)
+        Label2.TabIndex = 3
+        Label2.Text = "New OEM Name"
         '
         'TxtCurrentOEMName
         '
@@ -68,16 +78,6 @@ Partial Class OEMNameForm
         Me.CboOEMName.Name = "CboOEMName"
         Me.CboOEMName.Size = New System.Drawing.Size(104, 21)
         Me.CboOEMName.TabIndex = 4
-        '
-        'Label2
-        '
-        Label2.Anchor = System.Windows.Forms.AnchorStyles.Left
-        Label2.AutoSize = True
-        Label2.Location = New System.Drawing.Point(3, 33)
-        Label2.Name = "Label2"
-        Label2.Size = New System.Drawing.Size(87, 13)
-        Label2.TabIndex = 3
-        Label2.Text = "New OEM Name"
         '
         'BtnUpdate
         '
@@ -123,6 +123,15 @@ Partial Class OEMNameForm
         Me.TableLayoutPanel1.Size = New System.Drawing.Size(391, 53)
         Me.TableLayoutPanel1.TabIndex = 0
         '
+        'MskOEMNameHex
+        '
+        Me.MskOEMNameHex.Font = New System.Drawing.Font("Courier New", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.MskOEMNameHex.Location = New System.Drawing.Point(218, 29)
+        Me.MskOEMNameHex.MaskLength = 8
+        Me.MskOEMNameHex.Name = "MskOEMNameHex"
+        Me.MskOEMNameHex.Size = New System.Drawing.Size(170, 20)
+        Me.MskOEMNameHex.TabIndex = 5
+        '
         'TxtCurrentOEMHex
         '
         Me.TxtCurrentOEMHex.Anchor = System.Windows.Forms.AnchorStyles.Left
@@ -145,15 +154,6 @@ Partial Class OEMNameForm
         Me.FlowLayoutPanel1.Size = New System.Drawing.Size(192, 29)
         Me.FlowLayoutPanel1.TabIndex = 1
         '
-        'MskOEMNameHex
-        '
-        Me.MskOEMNameHex.Font = New System.Drawing.Font("Courier New", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.MskOEMNameHex.Location = New System.Drawing.Point(218, 29)
-        Me.MskOEMNameHex.MaskLength = 8
-        Me.MskOEMNameHex.Name = "MskOEMNameHex"
-        Me.MskOEMNameHex.Size = New System.Drawing.Size(170, 20)
-        Me.MskOEMNameHex.TabIndex = 5
-        '
         'OEMNameForm
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
@@ -171,7 +171,7 @@ Partial Class OEMNameForm
         Me.ShowIcon = False
         Me.ShowInTaskbar = False
         Me.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent
-        Me.Text = "Change OEM Name"
+        Me.Text = "OEM Name"
         Me.TableLayoutPanel1.ResumeLayout(False)
         Me.TableLayoutPanel1.PerformLayout()
         Me.FlowLayoutPanel1.ResumeLayout(False)
