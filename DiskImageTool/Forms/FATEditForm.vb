@@ -1,8 +1,10 @@
-﻿Imports System.Text
+﻿Imports System.IO
 Imports DiskImageTool.DiskImage
 
 Public Class FATEditForm
     Private ReadOnly _Disk As DiskImage.Disk
+    Private ReadOnly _FAT() As FAT12
+    Private ReadOnly _FATTable() As DataTable
     Private _IgnoreEvents As Boolean = True
 
     Public Sub New(Disk As DiskImage.Disk)
@@ -13,23 +15,47 @@ Public Class FATEditForm
         ' Add any initialization after the InitializeComponent() call.
         _Disk = Disk
 
-        PopulateGrid()
+        ReDim _FAT(_Disk.BootSector.NumberOfFATs - 1)
+        ReDim _FATTable(_Disk.BootSector.NumberOfFATs - 1)
+        For Counter = 0 To _Disk.BootSector.NumberOfFATs - 1
+            _FAT(Counter) = New FAT12(_Disk.Data, _Disk.BootSector, Counter, True)
+            _FATTable(Counter) = GetDataTable(_FAT(Counter))
+        Next
+
+        DataGridViewFAT.DataSource = _FATTable(0)
 
         _IgnoreEvents = False
     End Sub
 
-    Private Sub PopulateGrid()
-        DataGridViewFAT.Rows.Clear()
-        For Counter = 2 To _Disk.FAT.TableLength - 1
-            Dim Value = _Disk.FAT.TableEntry(Counter)
-            Dim TypeName = GetTypeFromValue(Value)
-            Dim Filename = GetFileFromCluster(Counter)
-            Dim Row As New DataGridViewRow
-            Row.CreateCells(DataGridViewFAT, Counter, TypeName, Value, Filename)
-            Dim Index = DataGridViewFAT.Rows.Add(Row)
-            SetRowStyle(Index)
+    Private Function GetDataTable(FAT As FAT12) As DataTable
+        Dim FATTable = New DataTable("FATTable")
+        Dim Column As DataColumn
+
+        Column = New DataColumn("Cluster", Type.GetType("System.UInt16")) With {
+            .ReadOnly = True
+        }
+        FATTable.Columns.Add(Column)
+        Column = New DataColumn("Type", Type.GetType("System.String"))
+        FATTable.Columns.Add(Column)
+        Column = New DataColumn("Value", Type.GetType("System.UInt16"))
+        FATTable.Columns.Add(Column)
+        Column = New DataColumn("File", Type.GetType("System.String")) With {
+            .ReadOnly = True
+        }
+        FATTable.Columns.Add(Column)
+
+        For Counter = 2 To FAT.TableLength - 1
+            Dim Value = FAT.TableEntry(Counter)
+            Dim Row = FATTable.NewRow
+            Row.Item("Cluster") = Counter
+            Row.Item("Value") = Value
+            Row.Item("Type") = GetTypeFromValue(Value)
+            Row.Item("File") = GetFileFromCluster(FAT, Counter)
+            FATTable.Rows.Add(Row)
         Next
-    End Sub
+
+        Return FATTable
+    End Function
 
     Private Sub DataGridViewFAT_CellValueChanged(sender As Object, e As DataGridViewCellEventArgs) Handles DataGridViewFAT.CellValueChanged
         If _IgnoreEvents Then
@@ -51,11 +77,11 @@ Public Class FATEditForm
         End If
     End Sub
 
-    Private Function GetFileFromCluster(Cluster As UInteger) As String
+    Private Function GetFileFromCluster(FAT As FAT12, Cluster As UInteger) As String
         Dim FileName As String = ""
 
-        If _Disk.FAT.FileAllocation.ContainsKey(Cluster) Then
-            Dim OffsetList = _Disk.FAT.FileAllocation.Item(Cluster)
+        If FAT.FileAllocation.ContainsKey(Cluster) Then
+            Dim OffsetList = FAT.FileAllocation.Item(Cluster)
             Dim DirectoryEntry = _Disk.GetDirectoryEntryByOffset(OffsetList.Item(0))
             FileName = DirectoryEntry.GetFullFileName
         End If
@@ -91,8 +117,6 @@ Public Class FATEditForm
 
         Row.Cells(1).Value = TypeName
 
-        SetRowStyle(RowIndex)
-
         _IgnoreEvents = False
     End Sub
 
@@ -120,8 +144,6 @@ Public Class FATEditForm
             Row.Cells(2).Value = Value
         End If
 
-        SetRowStyle(RowIndex)
-
         _IgnoreEvents = False
 
         If Not SetValue Then
@@ -140,27 +162,24 @@ Public Class FATEditForm
         End If
     End Sub
 
-    Private Sub SetRowStyle(RowIndex As Integer)
+    Private Function GetValueForeColor(Value As UShort) As Color
         Dim Style = New DataGridViewCellStyle
 
-        Dim Row = DataGridViewFAT.Rows(RowIndex)
-        Dim Cell = Row.Cells(2)
-        Dim TypeName = GetTypeFromValue(Cell.Value)
+        Dim TypeName = GetTypeFromValue(Value)
         If TypeName = "Free" Then
-            Style.ForeColor = Color.Gray
+            Return Color.Gray
         ElseIf TypeName = "Bad" Then
-            Style.ForeColor = Color.Red
+            Return Color.Red
         ElseIf TypeName = "Last" Then
-            Style.ForeColor = Color.Black
+            Return Color.Black
         ElseIf TypeName = "Reserved" Then
-            Style.ForeColor = Color.Orange
-        ElseIf Cell.Value > _Disk.FAT.TableLength - 1 Then
-            Style.ForeColor = Color.Red
+            Return Color.Orange
+        ElseIf Value > _Disk.FAT.TableLength - 1 Then
+            Return Color.Red
         Else
-            Style.ForeColor = Color.Blue
+            Return Color.Blue
         End If
-        Cell.Style = Style
-    End Sub
+    End Function
 
     Private Sub DataGridViewFAT_CellValidating(sender As Object, e As DataGridViewCellValidatingEventArgs) Handles DataGridViewFAT.CellValidating
         If e.ColumnIndex = 2 Then
@@ -184,6 +203,12 @@ Public Class FATEditForm
                 e.SortResult = Value1.CompareTo(Value2)
             End If
             e.Handled = True
+        End If
+    End Sub
+
+    Private Sub DataGridViewFAT_CellFormatting(sender As Object, e As DataGridViewCellFormattingEventArgs) Handles DataGridViewFAT.CellFormatting
+        If e.RowIndex >= 0 And e.ColumnIndex = 2 Then
+            e.CellStyle.ForeColor = GetValueForeColor(e.Value)
         End If
     End Sub
 End Class

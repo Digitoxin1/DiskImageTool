@@ -19,7 +19,7 @@
 
             If Not _LoadError Then
                 _BootSector = New BootSector(FileBytes)
-                _FAT12 = New FAT12(FileBytes, _BootSector)
+                _FAT12 = New FAT12(FileBytes, _BootSector, 0, False)
                 _Directory = New RootDirectory(FileBytes, _BootSector, _FAT12)
 
                 If _BootSector.IsValidImage Then

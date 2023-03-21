@@ -52,6 +52,7 @@ Partial Class FATEditForm
         '
         'GridCluster
         '
+        Me.GridCluster.DataPropertyName = "Cluster"
         Me.GridCluster.HeaderText = "Cluster"
         Me.GridCluster.Name = "GridCluster"
         Me.GridCluster.ReadOnly = True
@@ -59,6 +60,7 @@ Partial Class FATEditForm
         '
         'GridType
         '
+        Me.GridType.DataPropertyName = "Type"
         Me.GridType.HeaderText = "Type"
         Me.GridType.Items.AddRange(New Object() {"Free", "Next", "Bad", "Last", "Reserved"})
         Me.GridType.Name = "GridType"
@@ -66,6 +68,7 @@ Partial Class FATEditForm
         '
         'GridValue
         '
+        Me.GridValue.DataPropertyName = "Value"
         Me.GridValue.HeaderText = "Value"
         Me.GridValue.Name = "GridValue"
         Me.GridValue.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable
@@ -74,6 +77,7 @@ Partial Class FATEditForm
         'GridFile
         '
         Me.GridFile.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill
+        Me.GridFile.DataPropertyName = "File"
         Me.GridFile.HeaderText = "File"
         Me.GridFile.Name = "GridFile"
         Me.GridFile.ReadOnly = True

@@ -1,4 +1,6 @@
-﻿Namespace DiskImage
+﻿Imports System.Reflection
+
+Namespace DiskImage
     Public Class FAT12
         Private Const FAT_BADCLUSTER As UShort = &HFF7
         Private ReadOnly _BadClusters As List(Of UShort)
@@ -10,7 +12,7 @@
         Private _FATTable() As UShort
         Private _FreeSpace As UInteger
 
-        Sub New(FileBytes As ImageByteArray, BootSector As BootSector)
+        Sub New(FileBytes As ImageByteArray, BootSector As BootSector, Index As UShort, ProcessFATChains As Boolean)
             _BootSector = BootSector
             _FileBytes = FileBytes
             _FATChains = New Dictionary(Of UInteger, FATChain)
@@ -20,7 +22,10 @@
             _BadSectors = New HashSet(Of UInteger)
 
             If BootSector.IsValidImage Then
-                PopulateFAT12(0)
+                PopulateFAT12(Index)
+                If ProcessFATChains Then
+                    PopulateFATChains()
+                End If
             End If
         End Sub
 
@@ -222,6 +227,29 @@
             End If
 
             ProcessFAT12()
+        End Sub
+
+        Private Sub PopulateFATChains()
+            Dim Directory = New RootDirectory(_FileBytes, _BootSector, Me)
+            EnumDirectoryEntries(Directory)
+        End Sub
+
+        Private Sub EnumDirectoryEntries(Directory As DiskImage.IDirectory)
+            Dim DirectoryEntryCount = Directory.DirectoryEntryCount
+
+            If DirectoryEntryCount > 0 Then
+                For Counter = 0 To DirectoryEntryCount - 1
+                    Dim File = Directory.GetFile(Counter)
+
+                    If Not File.IsLink Then
+                        If File.IsDirectory And File.SubDirectory IsNot Nothing Then
+                            If File.SubDirectory.DirectoryEntryCount > 0 Then
+                                EnumDirectoryEntries(File.SubDirectory)
+                            End If
+                        End If
+                    End If
+                Next
+            End If
         End Sub
 
         Public Sub UpdateFAT12()
