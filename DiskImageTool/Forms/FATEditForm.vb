@@ -1,30 +1,57 @@
-﻿Imports System.IO
+﻿Imports System.ComponentModel
+Imports System.Reflection
+Imports System.Runtime.CompilerServices
 Imports DiskImageTool.DiskImage
 
 Public Class FATEditForm
     Private ReadOnly _Disk As DiskImage.Disk
-    Private ReadOnly _FAT() As FAT12
-    Private ReadOnly _FATTable() As DataTable
+    Private ReadOnly _FAT As FAT12
+    Private ReadOnly _FATTable As DataTable
     Private _IgnoreEvents As Boolean = True
+    Private _Updated As Boolean = False
 
-    Public Sub New(Disk As DiskImage.Disk)
+    Public Sub New(Disk As DiskImage.Disk, Index As UShort)
 
         ' This call is required by the designer.
         InitializeComponent()
 
         ' Add any initialization after the InitializeComponent() call.
+
+        Me.Text = "File Allocation Table " & Index + 1
+        ChkSync.Checked = True
+
+        PopulateContextMenu()
+
         _Disk = Disk
 
-        ReDim _FAT(_Disk.BootSector.NumberOfFATs - 1)
-        ReDim _FATTable(_Disk.BootSector.NumberOfFATs - 1)
-        For Counter = 0 To _Disk.BootSector.NumberOfFATs - 1
-            _FAT(Counter) = New FAT12(_Disk.Data, _Disk.BootSector, Counter, True)
-            _FATTable(Counter) = GetDataTable(_FAT(Counter))
-        Next
+        _FAT = New FAT12(_Disk.Data, _Disk.BootSector, Index, True)
+        _FATTable = GetDataTable(_FAT)
 
-        DataGridViewFAT.DataSource = _FATTable(0)
+        DataGridViewFAT.DataSource = _FATTable
 
         _IgnoreEvents = False
+    End Sub
+
+    Public ReadOnly Property Updated As Boolean
+        Get
+            Return _Updated
+        End Get
+    End Property
+
+    Private Sub ApplyUpdates()
+        Dim SyncAll = ChkSync.Checked
+
+        For Each Row As DataGridViewRow In DataGridViewFAT.Rows
+            Dim Cluster As UShort = Row.Cells("GridCluster").Value
+            Dim Value As UShort = Row.Cells("GridValue").Value
+            _FAT.TableEntry(Cluster) = Value
+        Next
+
+        _Disk.Data.BatchEditMode = True
+
+        _Updated = _FAT.UpdateFAT12(SyncAll)
+
+        _Disk.Data.BatchEditMode = False
     End Sub
 
     Private Function GetDataTable(FAT As FAT12) As DataTable
@@ -39,9 +66,9 @@ Public Class FATEditForm
         FATTable.Columns.Add(Column)
         Column = New DataColumn("Value", Type.GetType("System.UInt16"))
         FATTable.Columns.Add(Column)
-        Column = New DataColumn("File", Type.GetType("System.String")) With {
-            .ReadOnly = True
-        }
+        Column = New DataColumn("Error", Type.GetType("System.String"))
+        FATTable.Columns.Add(Column)
+        Column = New DataColumn("File", Type.GetType("System.String"))
         FATTable.Columns.Add(Column)
 
         For Counter = 2 To FAT.TableLength - 1
@@ -51,118 +78,49 @@ Public Class FATEditForm
             Row.Item("Value") = Value
             Row.Item("Type") = GetTypeFromValue(Value)
             Row.Item("File") = GetFileFromCluster(FAT, Counter)
+            Row.Item("Error") = GetRowError(FAT, Counter, Value)
             FATTable.Rows.Add(Row)
         Next
 
         Return FATTable
     End Function
 
-    Private Sub DataGridViewFAT_CellValueChanged(sender As Object, e As DataGridViewCellEventArgs) Handles DataGridViewFAT.CellValueChanged
-        If _IgnoreEvents Then
-            Exit Sub
-        End If
-
-        If e.ColumnIndex = 1 Then
-            SetValueFromType(e.RowIndex)
-        ElseIf e.ColumnIndex = 2 Then
-            SetTypeFromValue(e.RowIndex)
-        End If
-    End Sub
-
-    Private Sub DataGridViewFAT_CurrentCellDirtyStateChanged(sender As Object, e As EventArgs) Handles DataGridViewFAT.CurrentCellDirtyStateChanged
-        If DataGridViewFAT.CurrentCell.ColumnIndex = 1 Then
-            If DataGridViewFAT.IsCurrentCellDirty Then
-                DataGridViewFAT.CommitEdit(DataGridViewDataErrorContexts.Commit)
-            End If
-        End If
-    End Sub
-
-    Private Function GetFileFromCluster(FAT As FAT12, Cluster As UInteger) As String
+    Private Function GetFileFromCluster(FAT As FAT12, Cluster As UShort) As String
         Dim FileName As String = ""
 
         If FAT.FileAllocation.ContainsKey(Cluster) Then
             Dim OffsetList = FAT.FileAllocation.Item(Cluster)
-            Dim DirectoryEntry = _Disk.GetDirectoryEntryByOffset(OffsetList.Item(0))
-            FileName = DirectoryEntry.GetFullFileName
+            For Each Offset In OffsetList
+                Dim DirectoryEntry = _Disk.GetDirectoryEntryByOffset(Offset)
+                If FileName <> "" Then
+                    FileName &= ", "
+                End If
+                FileName &= DirectoryEntry.GetFullFileName()
+            Next
         End If
 
         Return FileName
     End Function
 
     Private Function GetTypeFromValue(Value As UShort) As String
-        If Value = 0 Then
+        If Value = FAT12.FAT_FREE_CLUSTER Then
             Return "Free"
-        ElseIf Value = 4087 Then
+        ElseIf Value = FAT12.FAT_BAD_CLUSTER Then
             Return "Bad"
-        ElseIf Value >= 4088 And Value <= 4095 Then
+        ElseIf Value >= FAT12.FAT_LAST_CLUSTER_START And Value <= FAT12.FAT_LAST_CLUSTER_END Then
             Return "Last"
-        ElseIf Value = 1 Or (Value >= 4080 And Value <= 4086) Then
+        ElseIf Value = 1 Or (Value >= FAT12.FAT_LAST_RESERVED_START And Value <= FAT12.FAT_LAST_RESERVED_END) Then
             Return "Reserved"
         Else
             Return "Next"
         End If
     End Function
 
-    Private Sub SetTypeFromValue(RowIndex As Integer)
-        _IgnoreEvents = True
+    Private Function GetValueForeColor(RowIndex As Integer) As Color
         Dim Row = DataGridViewFAT.Rows(RowIndex)
-        Dim Cell = Row.Cells(2)
+        Dim Value As UShort = Row.Cells("GridValue").Value
+        Dim ErrorString As String = Row.Cells("GridError").Value
 
-        If Cell.Value Is Nothing Then
-            Cell.Value = 0
-        End If
-
-        Dim Value As UShort = Cell.Value
-        Dim TypeName = GetTypeFromValue(Value)
-
-        Row.Cells(1).Value = TypeName
-
-        _IgnoreEvents = False
-    End Sub
-
-    Private Sub SetValueFromType(RowIndex As Integer)
-        _IgnoreEvents = True
-        Dim Row = DataGridViewFAT.Rows(RowIndex)
-        Dim TypeName As String = Row.Cells(1).Value
-        Dim Value As UShort = 0
-        Dim SetValue As Boolean = False
-        If TypeName = "Free" Then
-            Value = 0
-            SetValue = True
-        ElseIf TypeName = "Bad" Then
-            Value = 4087
-            SetValue = True
-        ElseIf TypeName = "Last" Then
-            Value = 4095
-            SetValue = True
-        ElseIf TypeName = "Reserved" Then
-            Value = 4086
-            SetValue = True
-        End If
-
-        If SetValue Then
-            Row.Cells(2).Value = Value
-        End If
-
-        _IgnoreEvents = False
-
-        If Not SetValue Then
-            DataGridViewFAT.CurrentCell = Row.Cells(2)
-            DataGridViewFAT.BeginEdit(True)
-        End If
-    End Sub
-
-    Private Sub DataGridViewFAT_CellLeave(sender As Object, e As DataGridViewCellEventArgs) Handles DataGridViewFAT.CellLeave
-        If _IgnoreEvents Then
-            Exit Sub
-        End If
-
-        If e.ColumnIndex = 2 Then
-            SetTypeFromValue(e.RowIndex)
-        End If
-    End Sub
-
-    Private Function GetValueForeColor(Value As UShort) As Color
         Dim Style = New DataGridViewCellStyle
 
         Dim TypeName = GetTypeFromValue(Value)
@@ -174,12 +132,151 @@ Public Class FATEditForm
             Return Color.Black
         ElseIf TypeName = "Reserved" Then
             Return Color.Orange
-        ElseIf Value > _Disk.FAT.TableLength - 1 Then
+        ElseIf Value > _FAT.TableLength - 1 Then
+            Return Color.Red
+        ElseIf ErrorString <> "" Then
             Return Color.Red
         Else
             Return Color.Blue
         End If
     End Function
+
+    Private Function GetRowError(FAT As FAT12, Cluster As UShort, Value As UShort) As String
+        Dim FileAllocation As List(Of UInteger) = Nothing
+
+        If FAT.FileAllocation.ContainsKey(Cluster) Then
+            FileAllocation = FAT.FileAllocation.Item(Cluster)
+        End If
+
+        If Value = FAT12.FAT_BAD_CLUSTER Then
+            Return "Bad Sector"
+        ElseIf Value = FAT12.FAT_FREE_CLUSTER Then
+            If FileAllocation Is Nothing Then
+                Return ""
+            Else
+                Return "Invalid Allocation"
+            End If
+        ElseIf Value = 1 Or (Value >= FAT12.FAT_LAST_RESERVED_START And Value <= FAT12.FAT_LAST_RESERVED_END) Then
+            If FileAllocation Is Nothing Then
+                Return ""
+            Else
+                Return "Invalid Allocation"
+            End If
+        ElseIf Value >= FAT12.FAT_LAST_CLUSTER_START And Value <= FAT12.FAT_LAST_CLUSTER_END Then
+            If FileAllocation Is Nothing Then
+                Return "Lost Cluster"
+            ElseIf FileAllocation.Count > 1 Then
+                Return "Cross-Linked"
+            Else
+                Return ""
+            End If
+        ElseIf Value > _FAT.TableLength - 1 Then
+            Return "Invalid Cluster"
+        ElseIf FileAllocation Is Nothing Then
+            Return "Lost Cluster"
+        ElseIf FileAllocation.Count > 1 Then
+            Return "Cross-Linked"
+        ElseIf _FAT.CircularChains.Contains(Cluster) Then
+            Return "Circular Chain"
+        Else
+            Return ""
+        End If
+    End Function
+
+    Private Sub PopulateContextMenu()
+        Dim Item As ToolStripMenuItem
+        Dim SubItem As ToolStripMenuItem
+
+        Item = ContextMenuGrid.Items.Add("&Free")
+        Item.Tag = FAT12.FAT_FREE_CLUSTER
+
+        Item = ContextMenuGrid.Items.Add("&Bad")
+        Item.Tag = FAT12.FAT_BAD_CLUSTER
+
+        Item = ContextMenuGrid.Items.Add("&Last")
+        DirectCast(Item.DropDown, ToolStripDropDownMenu).ShowImageMargin = False
+        AddHandler Item.DropDownItemClicked, AddressOf ContextMenuGrid_ItemClicked
+        SubItem = Item.DropDownItems.Add(FAT12.FAT_LAST_CLUSTER_END)
+        SubItem.Tag = FAT12.FAT_LAST_CLUSTER_END
+        Item.DropDownItems.Add("-")
+        For Counter = FAT12.FAT_LAST_CLUSTER_START To FAT12.FAT_LAST_CLUSTER_END - 1
+            SubItem = Item.DropDownItems.Add(Counter)
+            SubItem.Tag = Counter
+        Next
+
+        Item = ContextMenuGrid.Items.Add("&Reserved")
+        DirectCast(Item.DropDown, ToolStripDropDownMenu).ShowImageMargin = False
+        AddHandler Item.DropDownItemClicked, AddressOf ContextMenuGrid_ItemClicked
+        For Counter = FAT12.FAT_LAST_RESERVED_START To FAT12.FAT_LAST_RESERVED_END
+            SubItem = Item.DropDownItems.Add(Counter)
+            SubItem.Tag = Counter
+        Next
+        SubItem = Item.DropDownItems.Add(1)
+        SubItem.Tag = 1
+    End Sub
+
+    Private Sub RefreshGrid()
+        _IgnoreEvents = True
+
+        For Each Row As DataGridViewRow In DataGridViewFAT.Rows
+            Dim Cluster As UShort = Row.Cells("GridCluster").Value
+            Dim Value As UShort = Row.Cells("GridValue").Value
+            Row.Cells("GridFile").Value = GetFileFromCluster(_FAT, Cluster)
+            Row.Cells("GridError").Value = GetRowError(_FAT, Cluster, Value)
+            DataGridViewFAT.InvalidateCell(2, Row.Index)
+        Next
+
+        _IgnoreEvents = False
+    End Sub
+
+    Private Sub SetCurrentCellValue(Value As UShort)
+        If DataGridViewFAT.CurrentCellAddress.Y >= 0 Or DataGridViewFAT.CurrentCellAddress.X = 2 Then
+            DataGridViewFAT.CurrentCell.Value = Value
+        End If
+    End Sub
+
+    Private Function SetTypeFromValue(RowIndex As Integer) As Boolean
+        Dim Changed As Boolean = False
+
+        _IgnoreEvents = True
+
+        Dim Row = DataGridViewFAT.Rows(RowIndex)
+        Dim Value As UShort = Row.Cells.Item("GridValue").Value
+        Dim TypeName = GetTypeFromValue(Value)
+
+        If Row.Cells.Item("GridType").Value <> TypeName Then
+            Row.Cells.Item("GridType").Value = TypeName
+            Changed = True
+        End If
+
+        _IgnoreEvents = False
+
+        Return Changed
+    End Function
+
+    Private Sub UpdateFAT(RowIndex As Integer)
+        Dim Row = DataGridViewFAT.Rows(RowIndex)
+        Dim Cluster As UShort = Row.Cells("GridCluster").Value
+        Dim Value As UShort = Row.Cells("GridValue").Value
+
+        _FAT.TableEntry(Cluster) = Value
+        _FAT.ProcessFAT12(True)
+
+        RefreshGrid()
+    End Sub
+
+    Private Sub DataGridViewFAT_CellValueChanged(sender As Object, e As DataGridViewCellEventArgs) Handles DataGridViewFAT.CellValueChanged
+        If _IgnoreEvents Then
+            Exit Sub
+        End If
+
+        If e.RowIndex >= 0 Then
+            If e.ColumnIndex = 2 Then
+                SetTypeFromValue(e.RowIndex)
+                UpdateFAT(e.RowIndex)
+            End If
+        End If
+    End Sub
 
     Private Sub DataGridViewFAT_CellValidating(sender As Object, e As DataGridViewCellValidatingEventArgs) Handles DataGridViewFAT.CellValidating
         If e.ColumnIndex = 2 Then
@@ -195,7 +292,7 @@ Public Class FATEditForm
     End Sub
 
     Private Sub DataGridViewFAT_SortCompare(sender As Object, e As DataGridViewSortCompareEventArgs) Handles DataGridViewFAT.SortCompare
-        If e.Column.Index = 3 Then
+        If e.Column.Index = 4 Then
             e.SortResult = System.String.Compare(e.CellValue1.ToString, e.CellValue2.ToString)
             If e.SortResult = 0 Then
                 Dim Value1 As Integer = DataGridViewFAT.Rows(e.RowIndex1).Cells(0).Value
@@ -207,8 +304,37 @@ Public Class FATEditForm
     End Sub
 
     Private Sub DataGridViewFAT_CellFormatting(sender As Object, e As DataGridViewCellFormattingEventArgs) Handles DataGridViewFAT.CellFormatting
-        If e.RowIndex >= 0 And e.ColumnIndex = 2 Then
-            e.CellStyle.ForeColor = GetValueForeColor(e.Value)
+        If e.RowIndex >= 0 Then
+            If e.ColumnIndex = 2 Then
+                e.CellStyle.ForeColor = GetValueForeColor(e.RowIndex)
+            End If
+        End If
+    End Sub
+
+    Private Sub BtnUpdate_Click(sender As Object, e As EventArgs) Handles BtnUpdate.Click
+        ApplyUpdates()
+    End Sub
+
+    Private Sub DataGridViewFAT_MouseDown(sender As Object, e As MouseEventArgs) Handles DataGridViewFAT.MouseDown
+        If e.Button = MouseButtons.Right Then
+            Dim htinfo As DataGridView.HitTestInfo = DataGridViewFAT.HitTest(e.X, e.Y)
+            If htinfo.Type = DataGridViewHitTestType.Cell Then
+                Dim Cell = DataGridViewFAT.Item(htinfo.ColumnIndex, htinfo.RowIndex)
+                DataGridViewFAT.CurrentCell = Cell
+            End If
+        End If
+    End Sub
+
+    Private Sub ContextMenuGrid_Opening(sender As Object, e As CancelEventArgs) Handles ContextMenuGrid.Opening
+        If DataGridViewFAT.CurrentCellAddress.Y < 0 Or DataGridViewFAT.CurrentCellAddress.X <> 2 Then
+            e.Cancel = True
+        End If
+    End Sub
+
+    Private Sub ContextMenuGrid_ItemClicked(sender As Object, e As ToolStripItemClickedEventArgs) Handles ContextMenuGrid.ItemClicked
+        If e.ClickedItem.Tag IsNot Nothing Then
+            Dim Value As UShort = e.ClickedItem.Tag
+            SetCurrentCellValue(Value)
         End If
     End Sub
 End Class

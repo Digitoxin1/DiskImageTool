@@ -1,4 +1,6 @@
-﻿Namespace DiskImage
+﻿Imports System.Text
+
+Namespace DiskImage
     Public Class SubDirectory
         Implements IDirectory
 
@@ -18,7 +20,7 @@
 
         Public ReadOnly Property SectorChain As List(Of UInteger) Implements IDirectory.SectorChain
             Get
-                Return _FatChain.SectorChain
+                Return _FatChain.Sectors
             End Get
         End Property
 
@@ -31,7 +33,7 @@
         End Function
 
         Public Function GetContent() As Byte() Implements IDirectory.GetContent
-            Dim Content = GetDataFromChain(_FileBytes, _FatChain.SectorChain)
+            Dim Content = GetDataFromChain(_FileBytes, _FatChain.Sectors)
 
             If Content.Length <> _Length Then
                 Array.Resize(Of Byte)(Content, _Length)
@@ -44,7 +46,7 @@
             Dim EntriesPerCluster As UInteger = _BootSector.BytesPerCluster / 32
             Dim ChainIndex As UInteger = Index \ EntriesPerCluster
             Dim ClusterIndex As UInteger = Index Mod EntriesPerCluster
-            Dim Offset As UInteger = _BootSector.ClusterToOffset(_FatChain.Chain.Item(ChainIndex)) + ClusterIndex * 32
+            Dim Offset As UInteger = _BootSector.ClusterToOffset(_FatChain.Clusters.Item(ChainIndex)) + ClusterIndex * 32
 
             Return New DirectoryEntry(_FileBytes, _BootSector, _FAT, Offset)
         End Function
@@ -66,7 +68,7 @@
         Private Function GetDirectoryEntryCount(FileCountOnly As Boolean) As UInteger
             Dim Count As UInteger = 0
 
-            For Each Cluster In _FatChain.Chain
+            For Each Cluster In _FatChain.Clusters
                 Dim OffsetStart As UInteger = _BootSector.ClusterToOffset(Cluster)
                 Dim OffsetLength As UInteger = _BootSector.BytesPerCluster
 

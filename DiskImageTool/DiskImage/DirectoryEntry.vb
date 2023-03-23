@@ -61,7 +61,7 @@ Namespace DiskImage
             Else
                 If IsDeleted() Then
                     _FatChain = _FAT.InitFATChain(Offset, 0)
-                ElseIf IsDirectory() AndAlso IsLink Then
+                ElseIf IsDirectory() AndAlso IsLink() Then
                     _FatChain = _FAT.InitFATChain(Offset, 0)
                 Else
                     _FatChain = _FAT.InitFATChain(Offset, StartingCluster)
@@ -262,7 +262,7 @@ Namespace DiskImage
         End Sub
 
         Public Function GetContent() As Byte()
-            Dim Content = GetDataFromChain(_FileBytes, _FatChain.SectorChain)
+            Dim Content = GetDataFromChain(_FileBytes, _FatChain.Sectors)
 
             If Content.Length <> FileSize Then
                 Array.Resize(Of Byte)(Content, FileSize)
@@ -333,7 +333,7 @@ Namespace DiskImage
             End If
 
             Dim AllocatedSize As UInteger = Math.Ceiling(FileSize / _BootSector.BytesPerCluster) * _BootSector.BytesPerCluster
-            Dim AllocatedSizeFromFAT As UInteger = _FatChain.Chain.Count * _BootSector.BytesPerCluster
+            Dim AllocatedSizeFromFAT As UInteger = _FatChain.Clusters.Count * _BootSector.BytesPerCluster
 
             Return AllocatedSize <> AllocatedSizeFromFAT
         End Function
@@ -388,7 +388,12 @@ Namespace DiskImage
 
         Public Function IsLink() As Boolean
             Dim FilePart = _FileBytes.ToUInt16(_Offset)
-            IsLink = (FilePart = &H202E Or FilePart = &H2E2E)
+            Return (FilePart = &H202E Or FilePart = &H2E2E)
+        End Function
+
+        Public Function ISParentLink() As Boolean
+            Dim FilePart = _FileBytes.ToUInt16(_Offset)
+            Return (FilePart = &H2E2E)
         End Function
 
         Public Function IsModified() As Boolean
@@ -418,7 +423,7 @@ Namespace DiskImage
                 Next
             End If
 
-            For Each Cluster In _FatChain.Chain
+            For Each Cluster In _FatChain.Clusters
                 If Clear Then
                     Dim Offset = _BootSector.ClusterToOffset(Cluster)
                     _FileBytes.SetBytes(b, Offset)
@@ -426,7 +431,7 @@ Namespace DiskImage
 
                 _FAT.TableEntry(Cluster) = 0
             Next
-            _FAT.UpdateFAT12()
+            _FAT.UpdateFAT12(True)
 
             _FileBytes.BatchEditMode = False
         End Sub

@@ -682,7 +682,7 @@ Public Class MainForm
                 HexViewSectorData = New HexViewSectorData(_Disk, DataOffset, Length)
                 HighlightSectorData(HexViewSectorData, FileSize, True)
             Else
-                HexViewSectorData = New HexViewSectorData(_Disk, DirectoryEntry.FATChain.SectorChain)
+                HexViewSectorData = New HexViewSectorData(_Disk, DirectoryEntry.FATChain.Sectors)
                 If Not DirectoryEntry.IsDirectory Then
                     HighlightSectorData(HexViewSectorData, DirectoryEntry.FileSize, False)
                 End If
@@ -981,10 +981,14 @@ Public Class MainForm
         End If
     End Sub
 
-    Private Sub FATEdit()
-        Dim frmFATEdit As New FATEditForm(_Disk)
+    Private Sub FATEdit(Index As UShort)
+        Dim frmFATEdit As New FATEditForm(_Disk, Index)
 
         frmFATEdit.ShowDialog()
+
+        If frmFATEdit.Updated Then
+            DiskImageProcess(True, True)
+        End If
     End Sub
 
     Private Sub FileClose(ImageData As LoadedImageData)
@@ -1012,13 +1016,38 @@ Public Class MainForm
         End If
     End Sub
 
-    Private Sub FileCountUpdate()
+    Private Sub FileInfoUpdate()
         If ListViewFiles.SelectedItems.Count > 0 Then
             ToolStripFileCount.Text = ListViewFiles.SelectedItems.Count & " of " & ListViewFiles.Items.Count & " File" & IIf(ListViewFiles.Items.Count <> 1, "s", "") & " Selected"
         Else
             ToolStripFileCount.Text = ListViewFiles.Items.Count & " File" & IIf(ListViewFiles.Items.Count <> 1, "s", "")
         End If
         ToolStripFileCount.Visible = True
+
+        If ListViewFiles.SelectedItems.Count = 1 Then
+            Dim FileData As FileData = ListViewFiles.SelectedItems(0).Tag
+
+            If FileData.DirectoryEntry.StartingCluster >= 2 Then
+
+                Dim Sector = _Disk.BootSector.ClusterToSector(FileData.DirectoryEntry.StartingCluster)
+                ToolStripFileSector.Text = "Sector " & Sector
+                ToolStripFileSector.Visible = True
+
+                Dim Track = _Disk.BootSector.SectorToTrack(Sector)
+                Dim Side = _Disk.BootSector.SectorToSide(Sector)
+
+                ToolStripFileTrack.Text = "Track " & Track & "." & Side
+                ToolStripFileTrack.Visible = True
+
+                ToolStripFileTrack.GetCurrentParent.Refresh()
+            Else
+                ToolStripFileSector.Visible = False
+                ToolStripFileTrack.Visible = False
+            End If
+        Else
+            ToolStripFileSector.Visible = False
+            ToolStripFileTrack.Visible = False
+        End If
     End Sub
 
     Private Sub FileDropStart(e As DragEventArgs)
@@ -1151,7 +1180,7 @@ Public Class MainForm
 
         If MsgBox(Msg, MsgBoxStyle.Question + MsgBoxStyle.YesNo + MsgBoxStyle.DefaultButton2) = MsgBoxResult.Yes Then
             Dim ClusterSize = _Disk.BootSector.BytesPerCluster
-            Dim FileSize = Math.Min(DirectoryEntry.FileSize, DirectoryEntry.FATChain.Chain.Count * ClusterSize)
+            Dim FileSize = Math.Min(DirectoryEntry.FileSize, DirectoryEntry.FATChain.Clusters.Count * ClusterSize)
             Dim BytesToFill As Integer
             Dim ClusterIndex As Integer = 0
 
@@ -1160,7 +1189,7 @@ Public Class MainForm
                 Dim n As Integer
                 Do While BytesToRead > 0
                     Dim b(ClusterSize - 1) As Byte
-                    Dim Cluster = DirectoryEntry.FATChain.Chain(ClusterIndex)
+                    Dim Cluster = DirectoryEntry.FATChain.Clusters(ClusterIndex)
                     Dim ClusterOffset = _Disk.BootSector.ClusterToOffset(Cluster)
                     If BytesToRead < ClusterSize Then
                         b = _Disk.Data.GetBytes(ClusterOffset, ClusterSize)
@@ -1183,7 +1212,7 @@ Public Class MainForm
 
             Do While FileSize > 0
                 Dim b(ClusterSize - 1) As Byte
-                Dim Cluster = DirectoryEntry.FATChain.Chain(ClusterIndex)
+                Dim Cluster = DirectoryEntry.FATChain.Clusters(ClusterIndex)
                 Dim ClusterOffset = _Disk.BootSector.ClusterToOffset(Cluster)
                 BytesToFill = Math.Min(FileSize, ClusterSize)
                 If BytesToFill < ClusterSize Then
@@ -1511,6 +1540,7 @@ Public Class MainForm
         BtnWin9xClean.Enabled = False
 
         MenuDisplayDirectorySubMenuClear()
+        FATSubMenuRefresh()
 
         SaveButtonsRefresh()
     End Sub
@@ -1528,7 +1558,7 @@ Public Class MainForm
 
     Private Sub ItemSelectionChanged()
         RefreshFileButtons()
-        FileCountUpdate()
+        FileInfoUpdate()
         RefreshCheckAll()
     End Sub
 
@@ -1670,8 +1700,8 @@ Public Class MainForm
         Return Item
     End Function
 
-    Private Function ListViewTileGetItem(Name As String, Value As String) As ListViewItem
-        Dim Item = New ListViewItem(Name) With {
+    Private Function ListViewTileGetItem(Text As String, Value As String) As ListViewItem
+        Dim Item = New ListViewItem(Text) With {
                 .UseItemStyleForSubItems = False
             }
         Item.SubItems.Add(Value)
@@ -1679,8 +1709,8 @@ Public Class MainForm
         Return Item
     End Function
 
-    Private Function ListViewTileGetItem(Name As String, Value As String, ForeColor As Color) As ListViewItem
-        Dim Item = New ListViewItem(Name) With {
+    Private Function ListViewTileGetItem(Text As String, Value As String, ForeColor As Color) As ListViewItem
+        Dim Item = New ListViewItem(Text) With {
                 .UseItemStyleForSubItems = False
             }
         Dim SubItem = Item.SubItems.Add(Value)
@@ -1689,8 +1719,8 @@ Public Class MainForm
         Return Item
     End Function
 
-    Private Function ListViewTileGetItem(Group As ListViewGroup, Name As String, Value As String) As ListViewItem
-        Dim Item = New ListViewItem(Name, Group) With {
+    Private Function ListViewTileGetItem(Group As ListViewGroup, Text As String, Value As String) As ListViewItem
+        Dim Item = New ListViewItem(Text, Group) With {
                 .UseItemStyleForSubItems = False
             }
         Item.SubItems.Add(Value)
@@ -1698,8 +1728,8 @@ Public Class MainForm
         Return Item
     End Function
 
-    Private Function ListViewTileGetItem(Group As ListViewGroup, Name As String, Value As String, ForeColor As Color) As ListViewItem
-        Dim Item = New ListViewItem(Name, Group) With {
+    Private Function ListViewTileGetItem(Group As ListViewGroup, Text As String, Value As String, ForeColor As Color) As ListViewItem
+        Dim Item = New ListViewItem(Text, Group) With {
                 .UseItemStyleForSubItems = False
             }
         Dim SubItem = Item.SubItems.Add(Value)
@@ -1738,6 +1768,24 @@ Public Class MainForm
                 Return MediaDescriptor.ToString("X2") & " Hex"
         End Select
     End Function
+
+    Private Sub FATSubMenuRefresh()
+        For Each Item As ToolStripMenuItem In BtnEditFAT.DropDownItems
+            RemoveHandler Item.Click, AddressOf BtnEditFAT_Click
+        Next
+        BtnEditFAT.DropDownItems.Clear()
+
+        If _Disk IsNot Nothing AndAlso _Disk.IsValidImage Then
+            For Counter = 0 To _Disk.BootSector.NumberOfFATs - 1
+                Dim Item As New ToolStripMenuItem With {
+                   .Text = "FAT &" & Counter + 1,
+                   .Tag = Counter
+                }
+                BtnEditFAT.DropDownItems.Add(Item)
+                AddHandler Item.Click, AddressOf BtnEditFAT_Click
+            Next
+        End If
+    End Sub
 
     Private Sub MenuDisplayDirectorySubMenuClear()
         For Each Item As ToolStripMenuItem In BtnDisplayDirectory.DropDownItems
@@ -2496,6 +2544,8 @@ Public Class MainForm
         ToolStripModified.Visible = False
         ToolStripStatusModified.Visible = False
         ToolStripFileCount.Visible = False
+        ToolStripFileSector.Visible = False
+        ToolStripFileTrack.Visible = False
 
         BtnSaveAll.Enabled = False
         ToolStripBtnSaveAll.Enabled = BtnSaveAll.Enabled
@@ -2715,7 +2765,9 @@ Public Class MainForm
     End Sub
 
     Private Sub BtnEditFAT_Click(sender As Object, e As EventArgs) Handles BtnEditFAT.Click
-        FATEdit
+        If sender.tag IsNot Nothing Then
+            FATEdit(sender.tag)
+        End If
     End Sub
 
     Private Sub BtnDisplayFile_Click(sender As Object, e As EventArgs) Handles BtnDisplayFile.Click

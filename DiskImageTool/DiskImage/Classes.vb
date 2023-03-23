@@ -25,10 +25,15 @@
     End Class
 
     Public Class FATChain
-        Public Property Chain As New List(Of UShort)
+        Public Sub New(Offset As UInteger)
+            _Offset = Offset
+        End Sub
+        Public Property Clusters As New List(Of UShort)
         Public Property CrossLinks As New List(Of UInteger)
         Public Property HasCircularChain As Boolean = False
-        Public Property SectorChain As New List(Of UInteger)
+        Public ReadOnly Property Offset As UInteger
+        Public Property OpenChain As Boolean = True
+        Public Property Sectors As New List(Of UInteger)
     End Class
 
     Public Class SectorBlock

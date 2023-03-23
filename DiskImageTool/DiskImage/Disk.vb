@@ -122,7 +122,7 @@
         End Function
 
         Public Sub Reinitialize()
-            _FAT12.PopulateFAT12(0)
+            _FAT12.PopulateFAT12(0, False)
             _ReinitializeRequired = False
         End Sub
         Public Sub SaveFile(FilePath As String)
