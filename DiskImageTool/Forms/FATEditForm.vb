@@ -1,6 +1,4 @@
 ﻿Imports System.ComponentModel
-Imports System.Reflection
-Imports System.Runtime.CompilerServices
 Imports DiskImageTool.DiskImage
 
 Public Class FATEditForm
@@ -19,6 +17,7 @@ Public Class FATEditForm
 
         Me.Text = "File Allocation Table " & Index + 1
         ChkSync.Checked = True
+        SetButtonStatus(False)
 
         PopulateContextMenu()
 
@@ -26,6 +25,8 @@ Public Class FATEditForm
 
         _FAT = New FAT12(_Disk.Data, _Disk.BootSector, Index, True)
         _FATTable = GetDataTable(_FAT)
+
+        LblValid.Text = "Valid Clusters: 2 - " & _FAT.TableLength - 1
 
         DataGridViewFAT.DataSource = _FATTable
 
@@ -194,24 +195,22 @@ Public Class FATEditForm
         Item.Tag = FAT12.FAT_BAD_CLUSTER
 
         Item = ContextMenuGrid.Items.Add("&Last")
-        DirectCast(Item.DropDown, ToolStripDropDownMenu).ShowImageMargin = False
-        AddHandler Item.DropDownItemClicked, AddressOf ContextMenuGrid_ItemClicked
-        SubItem = Item.DropDownItems.Add(FAT12.FAT_LAST_CLUSTER_END)
+        Item.DropDown = ContextMenuLast
+        SubItem = ContextMenuLast.Items.Add(FAT12.FAT_LAST_CLUSTER_END)
         SubItem.Tag = FAT12.FAT_LAST_CLUSTER_END
-        Item.DropDownItems.Add("-")
+        ContextMenuLast.Items.Add("-")
         For Counter = FAT12.FAT_LAST_CLUSTER_START To FAT12.FAT_LAST_CLUSTER_END - 1
-            SubItem = Item.DropDownItems.Add(Counter)
+            SubItem = ContextMenuLast.Items.Add(Counter)
             SubItem.Tag = Counter
         Next
 
         Item = ContextMenuGrid.Items.Add("&Reserved")
-        DirectCast(Item.DropDown, ToolStripDropDownMenu).ShowImageMargin = False
-        AddHandler Item.DropDownItemClicked, AddressOf ContextMenuGrid_ItemClicked
+        Item.DropDown = ContextMenuReserved
         For Counter = FAT12.FAT_LAST_RESERVED_START To FAT12.FAT_LAST_RESERVED_END
-            SubItem = Item.DropDownItems.Add(Counter)
+            SubItem = ContextMenuReserved.Items.Add(Counter)
             SubItem.Tag = Counter
         Next
-        SubItem = Item.DropDownItems.Add(1)
+        SubItem = ContextMenuReserved.Items.Add(1)
         SubItem.Tag = 1
     End Sub
 
@@ -229,8 +228,14 @@ Public Class FATEditForm
         _IgnoreEvents = False
     End Sub
 
+    Private Sub SetButtonStatus(Enabled As Boolean)
+        For Each Control In FlowLayoutPanelTop.Controls.OfType(Of Button)
+            Control.Enabled = Enabled
+        Next
+    End Sub
+
     Private Sub SetCurrentCellValue(Value As UShort)
-        If DataGridViewFAT.CurrentCellAddress.Y >= 0 Or DataGridViewFAT.CurrentCellAddress.X = 2 Then
+        If DataGridViewFAT.CurrentCellAddress.Y >= 0 And DataGridViewFAT.CurrentCellAddress.X = 2 Then
             DataGridViewFAT.CurrentCell.Value = Value
         End If
     End Sub
@@ -331,10 +336,33 @@ Public Class FATEditForm
         End If
     End Sub
 
-    Private Sub ContextMenuGrid_ItemClicked(sender As Object, e As ToolStripItemClickedEventArgs) Handles ContextMenuGrid.ItemClicked
+    Private Sub ContextMenuGrid_ItemClicked(sender As Object, e As ToolStripItemClickedEventArgs) Handles ContextMenuGrid.ItemClicked, ContextMenuLast.ItemClicked, ContextMenuReserved.ItemClicked
         If e.ClickedItem.Tag IsNot Nothing Then
             Dim Value As UShort = e.ClickedItem.Tag
             SetCurrentCellValue(Value)
         End If
+    End Sub
+
+    Private Sub DataGridViewFAT_SelectionChanged(sender As Object, e As EventArgs) Handles DataGridViewFAT.SelectionChanged
+        Dim Enabled = (DataGridViewFAT.CurrentCellAddress.Y >= 0 And DataGridViewFAT.CurrentCellAddress.X = 2)
+        SetButtonStatus(Enabled)
+    End Sub
+
+    Private Sub BtnFree_Click(sender As Object, e As EventArgs) Handles BtnFree.Click
+        SetCurrentCellValue(FAT12.FAT_FREE_CLUSTER)
+    End Sub
+
+    Private Sub BtnBad_Click(sender As Object, e As EventArgs) Handles BtnBad.Click
+        SetCurrentCellValue(FAT12.FAT_BAD_CLUSTER)
+    End Sub
+
+    Private Sub BtnLast_Click(sender As Object, e As EventArgs) Handles BtnLast.Click
+        Dim Button = DirectCast(sender, Button)
+        ContextMenuLast.Show(Button, 0, Button.Height)
+    End Sub
+
+    Private Sub BtnReserved_Click(sender As Object, e As EventArgs) Handles BtnReserved.Click
+        Dim Button = DirectCast(sender, Button)
+        ContextMenuReserved.Show(Button, 0, Button.Height)
     End Sub
 End Class

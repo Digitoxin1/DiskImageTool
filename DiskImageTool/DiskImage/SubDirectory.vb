@@ -1,6 +1,4 @@
-﻿Imports System.Text
-
-Namespace DiskImage
+﻿Namespace DiskImage
     Public Class SubDirectory
         Implements IDirectory
 
