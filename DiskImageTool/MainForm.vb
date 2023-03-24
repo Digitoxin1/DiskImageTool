@@ -436,8 +436,7 @@ Public Class MainForm
             Dim Reader As New StreamReader(Response.GetResponseStream)
             Dim ResponseText = Reader.ReadToEnd
 
-
-            Regex = New Regex("""tag_name"":""(\d+\.\d+(?:\.\d+)?(?:\.\d+)?)""")
+            Regex = New Regex("""tag_name"":""v(\d+\.\d+(?:\.\d+)?(?:\.\d+)?)""")
             Match = Regex.Match(ResponseText)
             If Match.Success Then
                 If Match.Groups.Count > 1 Then
@@ -457,7 +456,6 @@ Public Class MainForm
             Exit Sub
         End Try
         Cursor.Current = Cursors.Default
-
         If DownloadVersion <> "" And DownloadURL <> "" Then
             Dim CurrentVersion = FileVersionInfo.GetVersionInfo(Application.ExecutablePath).FileVersion
             UpdateAvailable = Version.Parse(DownloadVersion) > Version.Parse(CurrentVersion)
