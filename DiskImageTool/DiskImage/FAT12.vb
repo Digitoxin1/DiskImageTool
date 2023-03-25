@@ -4,8 +4,8 @@
         Public Const FAT_FREE_CLUSTER As UShort = &H0
         Public Const FAT_LAST_CLUSTER_START As UShort = &HFF8
         Public Const FAT_LAST_CLUSTER_END As UShort = &HFFF
-        Public Const FAT_LAST_RESERVED_START As UShort = &HFF0
-        Public Const FAT_LAST_RESERVED_END As UShort = &HFF6
+        Public Const FAT_RESERVED_START As UShort = &HFF0
+        Public Const FAT_RESERVED_END As UShort = &HFF6
         Private ReadOnly _BadClusters As List(Of UShort)
         Private ReadOnly _BadSectors As HashSet(Of UInteger)
         Private ReadOnly _BootSector As BootSector

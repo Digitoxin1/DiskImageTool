@@ -1,12 +1,25 @@
 ﻿Imports System.ComponentModel
+Imports System.IO
 Imports DiskImageTool.DiskImage
 
 Public Class FATEditForm
     Private ReadOnly _Disk As DiskImage.Disk
     Private ReadOnly _FAT As FAT12
     Private ReadOnly _FATTable As DataTable
+    Private ReadOnly _ToolTip As ToolTip
     Private _IgnoreEvents As Boolean = True
     Private _Updated As Boolean = False
+    Private _GridSize As Integer
+
+    'Private _OffsetLookup As Dictionary(Of UInteger, UInteger)
+    'Private ReadOnly _ColorArray() As Color = {
+    '    Color.LightBlue,
+    '    Color.LightGreen,
+    '    Color.Orange,
+    '    Color.Pink,
+    '    Color.Yellow,
+    '    Color.Magenta
+    '}
 
     Public Sub New(Disk As DiskImage.Disk, Index As UShort)
 
@@ -21,11 +34,14 @@ Public Class FATEditForm
 
         PopulateContextMenu()
 
+        _ToolTip = New ToolTip()
+        _ToolTip.SetToolTip(PictureBoxFAT, "test")
         _Disk = Disk
 
         _FAT = New FAT12(_Disk.Data, _Disk.BootSector, Index, True)
         _FATTable = GetDataTable(_FAT)
 
+        _GridSize = GetGridSize(_FAT.TableLength - 2)
         LblValid.Text = "Valid Clusters: 2 - " & _FAT.TableLength - 1
 
         DataGridViewFAT.DataSource = _FATTable
@@ -71,26 +87,49 @@ Public Class FATEditForm
         FATTable.Columns.Add(Column)
         Column = New DataColumn("File", Type.GetType("System.String"))
         FATTable.Columns.Add(Column)
+        Column = New DataColumn("FileIndex", Type.GetType("System.UInt16"))
+        FATTable.Columns.Add(Column)
 
-        For Counter = 2 To FAT.TableLength - 1
-            Dim Value = FAT.TableEntry(Counter)
+        '_OffsetLookup = New Dictionary(Of UInteger, UInteger)
+        'Dim OffsetIndex As UInteger = 0
+        For Cluster = 2 To FAT.TableLength - 1
+            Dim OffsetList = GetOffsetsFromCluster(FAT, Cluster)
+            Dim Value = FAT.TableEntry(Cluster)
             Dim Row = FATTable.NewRow
-            Row.Item("Cluster") = Counter
+            Row.Item("Cluster") = Cluster
             Row.Item("Value") = Value
             Row.Item("Type") = GetTypeFromValue(Value)
-            Row.Item("File") = GetFileFromCluster(FAT, Counter)
-            Row.Item("Error") = GetRowError(FAT, Counter, Value)
+            Row.Item("File") = GetFileFromOffsetList(OffsetList)
+            Row.Item("Error") = GetRowError(FAT, Cluster, Value)
+            'If OffsetList IsNot Nothing Then
+            '    If Not _OffsetLookup.ContainsKey(OffsetList(0)) Then
+            '        _OffsetLookup.Add(OffsetList(0), OffsetIndex)
+            '        Row.Item("FileIndex") = OffsetIndex
+            '        OffsetIndex += 1
+            '    Else
+            '        Row.Item("FileIndex") = _OffsetLookup.Item(OffsetList(0))
+            '    End If
+            'Else
+            '    Row.Item("FileIndex") = 0
+            'End If
             FATTable.Rows.Add(Row)
         Next
 
         Return FATTable
     End Function
 
-    Private Function GetFileFromCluster(FAT As FAT12, Cluster As UShort) As String
+    Private Function GetOffsetsFromCluster(FAT As FAT12, Cluster As UShort) As List(Of UInteger)
+        If FAT.FileAllocation.ContainsKey(Cluster) Then
+            Return FAT.FileAllocation.Item(Cluster)
+        Else
+            Return Nothing
+        End If
+    End Function
+
+    Private Function GetFileFromOffsetList(OffsetList As List(Of UInteger)) As String
         Dim FileName As String = ""
 
-        If FAT.FileAllocation.ContainsKey(Cluster) Then
-            Dim OffsetList = FAT.FileAllocation.Item(Cluster)
+        If OffsetList IsNot Nothing Then
             For Each Offset In OffsetList
                 Dim DirectoryEntry = _Disk.GetDirectoryEntryByOffset(Offset)
                 If FileName <> "" Then
@@ -103,6 +142,26 @@ Public Class FATEditForm
         Return FileName
     End Function
 
+    Private Function GetGridSize(Count As Integer) As Integer
+        Dim Size As Integer = 3
+        Dim GridWidth As Integer = Int(PictureBoxFAT.Width / Size)
+        Dim GridHeight As Integer = Int(PictureBoxFAT.Height / Size)
+        Dim RequiredHeight As Integer = Math.Ceiling(Count / GridWidth)
+
+        Do While RequiredHeight < GridHeight
+            Size += 1
+            GridWidth = Int(PictureBoxFAT.Width / Size)
+            GridHeight = Int(PictureBoxFAT.Height / Size)
+            RequiredHeight = Math.Ceiling(Count / GridWidth)
+        Loop
+
+        If RequiredHeight > GridHeight Then
+            Size -= 1
+        End If
+
+        Return Size
+    End Function
+
     Private Function GetTypeFromValue(Value As UShort) As String
         If Value = FAT12.FAT_FREE_CLUSTER Then
             Return "Free"
@@ -110,7 +169,7 @@ Public Class FATEditForm
             Return "Bad"
         ElseIf Value >= FAT12.FAT_LAST_CLUSTER_START And Value <= FAT12.FAT_LAST_CLUSTER_END Then
             Return "Last"
-        ElseIf Value = 1 Or (Value >= FAT12.FAT_LAST_RESERVED_START And Value <= FAT12.FAT_LAST_RESERVED_END) Then
+        ElseIf Value = 1 Or (Value >= FAT12.FAT_RESERVED_START And Value <= FAT12.FAT_RESERVED_END) Then
             Return "Reserved"
         Else
             Return "Next"
@@ -125,7 +184,9 @@ Public Class FATEditForm
         Dim Style = New DataGridViewCellStyle
 
         Dim TypeName = GetTypeFromValue(Value)
-        If TypeName = "Free" Then
+        If ErrorString <> "" Then
+            Return Color.Red
+        ElseIf TypeName = "Free" Then
             Return Color.Gray
         ElseIf TypeName = "Bad" Then
             Return Color.Red
@@ -134,8 +195,6 @@ Public Class FATEditForm
         ElseIf TypeName = "Reserved" Then
             Return Color.Orange
         ElseIf Value > _FAT.TableLength - 1 Then
-            Return Color.Red
-        ElseIf ErrorString <> "" Then
             Return Color.Red
         Else
             Return Color.Blue
@@ -157,7 +216,7 @@ Public Class FATEditForm
             Else
                 Return "Invalid Allocation"
             End If
-        ElseIf Value = 1 Or (Value >= FAT12.FAT_LAST_RESERVED_START And Value <= FAT12.FAT_LAST_RESERVED_END) Then
+        ElseIf Value = 1 Or (Value >= FAT12.FAT_RESERVED_START And Value <= FAT12.FAT_RESERVED_END) Then
             If FileAllocation Is Nothing Then
                 Return ""
             Else
@@ -206,7 +265,7 @@ Public Class FATEditForm
 
         Item = ContextMenuGrid.Items.Add("&Reserved")
         Item.DropDown = ContextMenuReserved
-        For Counter = FAT12.FAT_LAST_RESERVED_START To FAT12.FAT_LAST_RESERVED_END
+        For Counter = FAT12.FAT_RESERVED_START To FAT12.FAT_RESERVED_END
             SubItem = ContextMenuReserved.Items.Add(Counter)
             SubItem.Tag = Counter
         Next
@@ -217,16 +276,49 @@ Public Class FATEditForm
     Private Sub RefreshGrid()
         _IgnoreEvents = True
 
+        '_OffsetLookup.Clear()
+        'Dim OffsetIndex As UInteger = 0
         For Each Row As DataGridViewRow In DataGridViewFAT.Rows
             Dim Cluster As UShort = Row.Cells("GridCluster").Value
+            Dim OffsetList = GetOffsetsFromCluster(_FAT, Cluster)
             Dim Value As UShort = Row.Cells("GridValue").Value
-            Row.Cells("GridFile").Value = GetFileFromCluster(_FAT, Cluster)
+            Row.Cells("GridFile").Value = GetFileFromOffsetList(OffsetList)
             Row.Cells("GridError").Value = GetRowError(_FAT, Cluster, Value)
+            'If OffsetList IsNot Nothing Then
+            '    If Not _OffsetLookup.ContainsKey(OffsetList(0)) Then
+            '        _OffsetLookup.Add(OffsetList(0), OffsetIndex)
+            '        Row.Cells("GridFileIndex").Value = OffsetIndex
+            '        OffsetIndex += 1
+            '    Else
+            '        Row.Cells("GridFileIndex").Value = _OffsetLookup.Item(OffsetList(0))
+            '    End If
+            'Else
+            '    Row.Cells("GridFileIndex").Value = 0
+            'End If
             DataGridViewFAT.InvalidateCell(2, Row.Index)
         Next
 
         _IgnoreEvents = False
     End Sub
+
+    Private Function GridGetIndex(e As MouseEventArgs) As Integer
+        Dim Index As Integer = -1
+
+        Dim Length = _FAT.TableLength - 2
+        Dim LeftPos As Integer = Int(e.X / _GridSize)
+        Dim TopPos As Integer = Int(e.Y / _GridSize)
+        Dim MaxWidth As Integer = Int(PictureBoxFAT.Width / _GridSize)
+        Dim MaxHeight As Integer = Math.Ceiling(Length / MaxWidth)
+
+        If LeftPos < MaxWidth And TopPos < MaxHeight Then
+            Index = TopPos * MaxWidth + LeftPos
+            If Index < 0 Or Index >= Length Then
+                Index = -1
+            End If
+        End If
+
+        Return Index
+    End Function
 
     Private Sub SetButtonStatus(Enabled As Boolean)
         For Each Control In FlowLayoutPanelTop.Controls.OfType(Of Button)
@@ -266,8 +358,12 @@ Public Class FATEditForm
 
         _FAT.TableEntry(Cluster) = Value
         _FAT.ProcessFAT12(True)
+        For Each key In _FAT.FATChains.Keys
+            Debug.Print(key)
+        Next
 
         RefreshGrid()
+        PictureBoxFAT.Invalidate()
     End Sub
 
     Private Sub DataGridViewFAT_CellValueChanged(sender As Object, e As DataGridViewCellEventArgs) Handles DataGridViewFAT.CellValueChanged
@@ -364,5 +460,105 @@ Public Class FATEditForm
     Private Sub BtnReserved_Click(sender As Object, e As EventArgs) Handles BtnReserved.Click
         Dim Button = DirectCast(sender, Button)
         ContextMenuReserved.Show(Button, 0, Button.Height)
+    End Sub
+
+    Private Sub PictureBox1_Paint(sender As Object, e As PaintEventArgs) Handles PictureBoxFAT.Paint
+        e.Graphics.Clear(PictureBoxFAT.BackColor)
+        If _FATTable IsNot Nothing Then
+            Dim Width = PictureBoxFAT.Width
+            Dim Size As Integer = _GridSize
+
+            'Dim BrushAllocated(_ColorArray.Length - 1) As Brush
+            'For Counter = 0 To _ColorArray.Length - 1
+            '    BrushAllocated(Counter) = New SolidBrush(_ColorArray(Counter))
+            'Next
+
+            Dim Pen As New Pen(Color.FromArgb(160, 160, 160))
+            Dim BrushFree As New SolidBrush(Color.White)
+            Dim BrushBad As New SolidBrush(Color.Red)
+            Dim BrushReserved As New SolidBrush(Color.Gray)
+            Dim BrushAllocated As New SolidBrush(Color.Blue)
+            Dim Brush As Brush
+
+            Dim Left As Integer = 0
+            Dim Top As Integer = 0
+            For Each Row In _FATTable.Rows
+                Dim Value As UShort = Row.Item("Value")
+                'Dim FileIndex As UInteger = Row.Item("FileIndex")
+                Dim HasError As Boolean = (Row.Item("Error") <> "")
+                If HasError Then
+                    Brush = BrushBad
+                ElseIf Value = FAT12.FAT_FREE_CLUSTER Then
+                    Brush = BrushFree
+                ElseIf Value = 1 Or (Value >= FAT12.FAT_RESERVED_START And Value <= FAT12.FAT_RESERVED_END) Then
+                    Brush = BrushReserved
+                Else
+                    'Brush = BrushAllocated(FileIndex Mod _ColorArray.Length)
+                    Brush = BrushAllocated
+                End If
+                e.Graphics.FillRectangle(Brush, Left, Top, Size, Size)
+                e.Graphics.DrawRectangle(Pen, Left, Top, Size, Size)
+                Left += Size
+                If Left + Size > Width Then
+                    Left = 0
+                    Top += Size
+                End If
+            Next
+            Pen.Dispose()
+            BrushFree.Dispose()
+            BrushBad.Dispose()
+            BrushReserved.Dispose()
+            BrushAllocated.Dispose()
+            'For Counter = 0 To _ColorArray.Length - 1
+            '    BrushAllocated(Counter).Dispose()
+            'Next
+        End If
+    End Sub
+
+    Private Sub PictureBox1_Resize(sender As Object, e As EventArgs) Handles PictureBoxFAT.Resize
+        If _FAT IsNot Nothing Then
+            _GridSize = GetGridSize(_FAT.TableLength - 2)
+            PictureBoxFAT.Invalidate()
+        End If
+    End Sub
+
+    Private Sub PictureBoxFAT_MouseMove(sender As Object, e As MouseEventArgs) Handles PictureBoxFAT.MouseMove
+        Dim TooltipText As String = ""
+        Dim Index = GridGetIndex(e)
+
+        If Index > -1 Then
+            Dim Row = _FATTable.Rows(Index)
+            Dim Cluster As UShort = Row.Item("Cluster")
+            Dim File As String = Row.Item("File")
+            Dim ErrorString As String = Row.Item("Error")
+            TooltipText = "Cluster: " & vbTab & Cluster
+            If File <> "" Then
+                TooltipText &= vbCrLf & "File: " & vbTab & File
+            End If
+            If ErrorString <> "" Then
+                TooltipText &= vbCrLf & "Error: " & vbTab & ErrorString
+            End If
+        End If
+
+        If TooltipText <> _ToolTip.GetToolTip(PictureBoxFAT) Then
+            _ToolTip.SetToolTip(PictureBoxFAT, TooltipText)
+        End If
+    End Sub
+
+    Private Sub PictureBoxFAT_MouseClick(sender As Object, e As MouseEventArgs) Handles PictureBoxFAT.MouseClick
+        Dim Index = GridGetIndex(e)
+
+        If Index > -1 Then
+            Dim RowIndex As Integer = -1
+            For Each Row As DataGridViewRow In DataGridViewFAT.Rows
+                If Row.Cells("GridCluster").Value = Index + 2 Then
+                    RowIndex = Row.Index
+                    Exit For
+                End If
+            Next
+            If RowIndex > -1 Then
+                DataGridViewFAT.FirstDisplayedScrollingRowIndex = RowIndex
+            End If
+        End If
     End Sub
 End Class
