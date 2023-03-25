@@ -12,4 +12,4 @@ What does DiskImageTool do?
 
 Suggestions for new features are welcome.
 
-![Screenshot 2022-11-09 231752](https://user-images.githubusercontent.com/5696659/200999718-2fe4d0f3-4ccc-4e8a-be3e-4767072df4fc.png)
+![Screenshot 2023-03-24 235833](https://user-images.githubusercontent.com/5696659/227692756-913a5702-80d2-4915-8634-a8b5fc689e98.png)
