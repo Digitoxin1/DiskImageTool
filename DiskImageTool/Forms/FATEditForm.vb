@@ -10,8 +10,8 @@ Public Class FATEditForm
     Private _IgnoreEvents As Boolean = True
     Private _Updated As Boolean = False
     Private _GridSize As Integer
-
-    'Private _OffsetLookup As Dictionary(Of UInteger, UInteger)
+    Private _OffsetLookup As Dictionary(Of UInteger, UInteger)
+    Private _CurrentFileIndex As UInteger = 0
     'Private ReadOnly _ColorArray() As Color = {
     '    Color.LightBlue,
     '    Color.LightGreen,
@@ -33,6 +33,7 @@ Public Class FATEditForm
         SetButtonStatus(False)
 
         PopulateContextMenu()
+        InitializeGridColumns
 
         _ToolTip = New ToolTip()
         _ToolTip.SetToolTip(PictureBoxFAT, "test")
@@ -71,6 +72,72 @@ Public Class FATEditForm
         _Disk.Data.BatchEditMode = False
     End Sub
 
+    Private Sub InitializeGridColumns()
+        Dim GridViewColumn As DataGridViewColumn
+
+        DataGridViewFAT.Columns.Clear()
+
+        GridViewColumn = New DataGridViewTextBoxColumn With {
+            .Name = "GridCluster",
+            .HeaderText = "Cluster",
+            .ReadOnly = True,
+            .DataPropertyName = "Cluster",
+            .Width = 65
+        }
+        DataGridViewFAT.Columns.Add(GridViewColumn)
+
+        GridViewColumn = New DataGridViewTextBoxColumn With {
+            .Name = "GridType",
+            .HeaderText = "Type",
+            .ReadOnly = True,
+            .Resizable = False,
+            .SortMode = DataGridViewColumnSortMode.NotSortable,
+            .DataPropertyName = "Type",
+            .Width = 75
+        }
+        DataGridViewFAT.Columns.Add(GridViewColumn)
+
+        GridViewColumn = New DataGridViewTextBoxColumn With {
+           .Name = "GridValue",
+           .HeaderText = "Value",
+           .SortMode = DataGridViewColumnSortMode.NotSortable,
+           .DataPropertyName = "Value",
+           .Width = 60
+       }
+        DataGridViewFAT.Columns.Add(GridViewColumn)
+
+        GridViewColumn = New DataGridViewTextBoxColumn With {
+            .Name = "GridError",
+            .HeaderText = "Error",
+            .ReadOnly = True,
+            .Resizable = False,
+            .SortMode = DataGridViewColumnSortMode.NotSortable,
+            .DataPropertyName = "Error",
+            .Width = 100,
+            .DefaultCellStyle = New DataGridViewCellStyle()
+        }
+        GridViewColumn.DefaultCellStyle.ForeColor = Color.Red
+        DataGridViewFAT.Columns.Add(GridViewColumn)
+
+        GridViewColumn = New DataGridViewTextBoxColumn With {
+            .Name = "GridFile",
+            .HeaderText = "File",
+            .ReadOnly = True,
+            .DataPropertyName = "File",
+            .Width = 200,
+            .AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill
+        }
+        DataGridViewFAT.Columns.Add(GridViewColumn)
+
+        GridViewColumn = New DataGridViewTextBoxColumn With {
+            .Name = "GridFileIndex",
+            .HeaderText = "FileIndex",
+            .Visible = False,
+            .DataPropertyName = "FileIndex"
+        }
+        DataGridViewFAT.Columns.Add(GridViewColumn)
+    End Sub
+
     Private Function GetDataTable(FAT As FAT12) As DataTable
         Dim FATTable = New DataTable("FATTable")
         Dim Column As DataColumn
@@ -79,19 +146,28 @@ Public Class FATEditForm
             .ReadOnly = True
         }
         FATTable.Columns.Add(Column)
+
         Column = New DataColumn("Type", Type.GetType("System.String"))
         FATTable.Columns.Add(Column)
+
         Column = New DataColumn("Value", Type.GetType("System.UInt16"))
         FATTable.Columns.Add(Column)
+
         Column = New DataColumn("Error", Type.GetType("System.String"))
         FATTable.Columns.Add(Column)
+
         Column = New DataColumn("File", Type.GetType("System.String"))
         FATTable.Columns.Add(Column)
+
         Column = New DataColumn("FileIndex", Type.GetType("System.UInt16"))
         FATTable.Columns.Add(Column)
 
-        '_OffsetLookup = New Dictionary(Of UInteger, UInteger)
-        'Dim OffsetIndex As UInteger = 0
+        'Column = New DataColumn("StartingCluster", Type.GetType("System.Boolean"))
+        'FATTable.Columns.Add(Column)
+
+        _OffsetLookup = New Dictionary(Of UInteger, UInteger)
+        Dim OffsetIndex As UInteger = 1
+
         For Cluster = 2 To FAT.TableLength - 1
             Dim OffsetList = GetOffsetsFromCluster(FAT, Cluster)
             Dim Value = FAT.TableEntry(Cluster)
@@ -101,17 +177,20 @@ Public Class FATEditForm
             Row.Item("Type") = GetTypeFromValue(Value)
             Row.Item("File") = GetFileFromOffsetList(OffsetList)
             Row.Item("Error") = GetRowError(FAT, Cluster, Value)
-            'If OffsetList IsNot Nothing Then
-            '    If Not _OffsetLookup.ContainsKey(OffsetList(0)) Then
-            '        _OffsetLookup.Add(OffsetList(0), OffsetIndex)
-            '        Row.Item("FileIndex") = OffsetIndex
-            '        OffsetIndex += 1
-            '    Else
-            '        Row.Item("FileIndex") = _OffsetLookup.Item(OffsetList(0))
-            '    End If
-            'Else
-            '    Row.Item("FileIndex") = 0
-            'End If
+            If OffsetList IsNot Nothing Then
+                'Dim DirectoryEntry = _Disk.GetDirectoryEntryByOffset(OffsetList(0))
+                'Row.Item("StartingCluster") = (DirectoryEntry.StartingCluster = Cluster)
+                If Not _OffsetLookup.ContainsKey(OffsetList(0)) Then
+                    _OffsetLookup.Add(OffsetList(0), OffsetIndex)
+                    Row.Item("FileIndex") = OffsetIndex
+                    OffsetIndex += 1
+                Else
+                    Row.Item("FileIndex") = _OffsetLookup.Item(OffsetList(0))
+                End If
+            Else
+                Row.Item("FileIndex") = 0
+                'Row.Item("StartingCluster") = False
+            End If
             FATTable.Rows.Add(Row)
         Next
 
@@ -160,6 +239,19 @@ Public Class FATEditForm
         End If
 
         Return Size
+    End Function
+
+    Private Function GetSelectedFileInddex() As UInteger
+        Dim FileIndex As UInteger = 0
+
+        If DataGridViewFAT.SelectedCells.Count > 0 Then
+            Dim RowIndex = DataGridViewFAT.SelectedCells(0).RowIndex
+            If RowIndex >= 0 And DataGridViewFAT.SelectedCells(0).ColumnIndex = 2 Then
+                FileIndex = DataGridViewFAT.Rows(RowIndex).Cells("GridFileIndex").Value
+            End If
+        End If
+
+        Return FileIndex
     End Function
 
     Private Function GetTypeFromValue(Value As UShort) As String
@@ -276,25 +368,28 @@ Public Class FATEditForm
     Private Sub RefreshGrid()
         _IgnoreEvents = True
 
-        '_OffsetLookup.Clear()
-        'Dim OffsetIndex As UInteger = 0
+        _OffsetLookup.Clear()
+        Dim OffsetIndex As UInteger = 1
         For Each Row As DataGridViewRow In DataGridViewFAT.Rows
             Dim Cluster As UShort = Row.Cells("GridCluster").Value
             Dim OffsetList = GetOffsetsFromCluster(_FAT, Cluster)
             Dim Value As UShort = Row.Cells("GridValue").Value
             Row.Cells("GridFile").Value = GetFileFromOffsetList(OffsetList)
             Row.Cells("GridError").Value = GetRowError(_FAT, Cluster, Value)
-            'If OffsetList IsNot Nothing Then
-            '    If Not _OffsetLookup.ContainsKey(OffsetList(0)) Then
-            '        _OffsetLookup.Add(OffsetList(0), OffsetIndex)
-            '        Row.Cells("GridFileIndex").Value = OffsetIndex
-            '        OffsetIndex += 1
-            '    Else
-            '        Row.Cells("GridFileIndex").Value = _OffsetLookup.Item(OffsetList(0))
-            '    End If
-            'Else
-            '    Row.Cells("GridFileIndex").Value = 0
-            'End If
+            If OffsetList IsNot Nothing Then
+                If Not _OffsetLookup.ContainsKey(OffsetList(0)) Then
+                    'Dim DirectoryEntry = _Disk.GetDirectoryEntryByOffset(OffsetList(0))
+                    'Row.Cells("GridStartingCluster").Value = (DirectoryEntry.StartingCluster = Cluster)
+                    _OffsetLookup.Add(OffsetList(0), OffsetIndex)
+                    Row.Cells("GridFileIndex").Value = OffsetIndex
+                    OffsetIndex += 1
+                Else
+                    Row.Cells("GridFileIndex").Value = _OffsetLookup.Item(OffsetList(0))
+                    'Row.Cells("GridStartingCluster").Value = False
+                End If
+            Else
+                Row.Cells("GridFileIndex").Value = 0
+            End If
             DataGridViewFAT.InvalidateCell(2, Row.Index)
         Next
 
@@ -329,6 +424,13 @@ Public Class FATEditForm
     Private Sub SetCurrentCellValue(Value As UShort)
         If DataGridViewFAT.CurrentCellAddress.Y >= 0 And DataGridViewFAT.CurrentCellAddress.X = 2 Then
             DataGridViewFAT.CurrentCell.Value = Value
+        End If
+    End Sub
+
+    Private Sub SetCurrentFileIndex(FileIndex As UInteger)
+        If _CurrentFileIndex <> FileIndex Then
+            _CurrentFileIndex = FileIndex
+            PictureBoxFAT.Invalidate()
         End If
     End Sub
 
@@ -440,8 +542,16 @@ Public Class FATEditForm
     End Sub
 
     Private Sub DataGridViewFAT_SelectionChanged(sender As Object, e As EventArgs) Handles DataGridViewFAT.SelectionChanged
-        Dim Enabled = (DataGridViewFAT.CurrentCellAddress.Y >= 0 And DataGridViewFAT.CurrentCellAddress.X = 2)
+        Dim Enabled As Boolean
+
+        If DataGridViewFAT.SelectedCells.Count > 0 Then
+            Enabled = (DataGridViewFAT.SelectedCells(0).RowIndex >= 0 And DataGridViewFAT.SelectedCells(0).ColumnIndex = 2)
+        Else
+            Enabled = False
+        End If
         SetButtonStatus(Enabled)
+
+        SetCurrentFileIndex(GetSelectedFileInddex())
     End Sub
 
     Private Sub BtnFree_Click(sender As Object, e As EventArgs) Handles BtnFree.Click
@@ -462,8 +572,9 @@ Public Class FATEditForm
         ContextMenuReserved.Show(Button, 0, Button.Height)
     End Sub
 
-    Private Sub PictureBox1_Paint(sender As Object, e As PaintEventArgs) Handles PictureBoxFAT.Paint
+    Private Sub PictureBoxFAT_Paint(sender As Object, e As PaintEventArgs) Handles PictureBoxFAT.Paint
         e.Graphics.Clear(PictureBoxFAT.BackColor)
+
         If _FATTable IsNot Nothing Then
             Dim Width = PictureBoxFAT.Width
             Dim Size As Integer = _GridSize
@@ -478,13 +589,16 @@ Public Class FATEditForm
             Dim BrushBad As New SolidBrush(Color.Red)
             Dim BrushReserved As New SolidBrush(Color.Gray)
             Dim BrushAllocated As New SolidBrush(Color.Blue)
+            Dim BrushHighlight As New SolidBrush(Color.Green)
+            'Dim BrushHighlightStart As New SolidBrush(Color.LightGreen)
             Dim Brush As Brush
 
             Dim Left As Integer = 0
             Dim Top As Integer = 0
             For Each Row In _FATTable.Rows
                 Dim Value As UShort = Row.Item("Value")
-                'Dim FileIndex As UInteger = Row.Item("FileIndex")
+                Dim FileIndex As UInteger = Row.Item("FileIndex")
+                'Dim StartingCluster As Boolean = Row.Item("StartingCluster")
                 Dim HasError As Boolean = (Row.Item("Error") <> "")
                 If HasError Then
                     Brush = BrushBad
@@ -494,7 +608,15 @@ Public Class FATEditForm
                     Brush = BrushReserved
                 Else
                     'Brush = BrushAllocated(FileIndex Mod _ColorArray.Length)
-                    Brush = BrushAllocated
+                    If _CurrentFileIndex = FileIndex And FileIndex > 0 Then
+                        'If StartingCluster Then
+                        'Brush = BrushHighlightStart
+                        'Else
+                        Brush = BrushHighlight
+                        'End If
+                    Else
+                        Brush = BrushAllocated
+                    End If
                 End If
                 e.Graphics.FillRectangle(Brush, Left, Top, Size, Size)
                 e.Graphics.DrawRectangle(Pen, Left, Top, Size, Size)
@@ -509,13 +631,15 @@ Public Class FATEditForm
             BrushBad.Dispose()
             BrushReserved.Dispose()
             BrushAllocated.Dispose()
+            BrushHighlight.Dispose()
+            'BrushHighlightStart.Dispose()
             'For Counter = 0 To _ColorArray.Length - 1
             '    BrushAllocated(Counter).Dispose()
             'Next
         End If
     End Sub
 
-    Private Sub PictureBox1_Resize(sender As Object, e As EventArgs) Handles PictureBoxFAT.Resize
+    Private Sub PictureBoxFAT_Resize(sender As Object, e As EventArgs) Handles PictureBoxFAT.Resize
         If _FAT IsNot Nothing Then
             _GridSize = GetGridSize(_FAT.TableLength - 2)
             PictureBoxFAT.Invalidate()
@@ -524,6 +648,7 @@ Public Class FATEditForm
 
     Private Sub PictureBoxFAT_MouseMove(sender As Object, e As MouseEventArgs) Handles PictureBoxFAT.MouseMove
         Dim TooltipText As String = ""
+        Dim FileIndex As UInteger = 0
         Dim Index = GridGetIndex(e)
 
         If Index > -1 Then
@@ -531,6 +656,8 @@ Public Class FATEditForm
             Dim Cluster As UShort = Row.Item("Cluster")
             Dim File As String = Row.Item("File")
             Dim ErrorString As String = Row.Item("Error")
+            FileIndex = Row.Item("FileIndex")
+
             TooltipText = "Cluster: " & vbTab & Cluster
             If File <> "" Then
                 TooltipText &= vbCrLf & "File: " & vbTab & File
@@ -543,6 +670,8 @@ Public Class FATEditForm
         If TooltipText <> _ToolTip.GetToolTip(PictureBoxFAT) Then
             _ToolTip.SetToolTip(PictureBoxFAT, TooltipText)
         End If
+
+        SetCurrentFileIndex(FileIndex)
     End Sub
 
     Private Sub PictureBoxFAT_MouseClick(sender As Object, e As MouseEventArgs) Handles PictureBoxFAT.MouseClick
@@ -558,7 +687,12 @@ Public Class FATEditForm
             Next
             If RowIndex > -1 Then
                 DataGridViewFAT.FirstDisplayedScrollingRowIndex = RowIndex
+                DataGridViewFAT.CurrentCell = DataGridViewFAT.Rows(RowIndex).Cells(2)
             End If
         End If
+    End Sub
+
+    Private Sub PictureBoxFAT_MouseLeave(sender As Object, e As EventArgs) Handles PictureBoxFAT.MouseLeave
+        SetCurrentFileIndex(GetSelectedFileInddex())
     End Sub
 End Class

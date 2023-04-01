@@ -261,6 +261,14 @@ Namespace DiskImage
             LastWriteTime = 0
         End Sub
 
+        Public Function GetAllocatedSize() As UInteger
+            Return Math.Ceiling(FileSize / _BootSector.BytesPerCluster) * _BootSector.BytesPerCluster
+        End Function
+
+        Public Function GetAllocatedSizeFromFAT() As UInteger
+            Return _FatChain.Clusters.Count * _BootSector.BytesPerCluster
+        End Function
+
         Public Function GetContent() As Byte()
             Dim Content = GetDataFromChain(_FileBytes, _FatChain.Sectors)
 
@@ -332,10 +340,7 @@ Namespace DiskImage
                 Return False
             End If
 
-            Dim AllocatedSize As UInteger = Math.Ceiling(FileSize / _BootSector.BytesPerCluster) * _BootSector.BytesPerCluster
-            Dim AllocatedSizeFromFAT As UInteger = _FatChain.Clusters.Count * _BootSector.BytesPerCluster
-
-            Return AllocatedSize <> AllocatedSizeFromFAT
+            Return GetAllocatedSize() <> GetAllocatedSizeFromFAT()
         End Function
 
         Public Function HasInvalidAttributes() As Boolean

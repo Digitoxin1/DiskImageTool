@@ -825,6 +825,6 @@
     <oemname namehex="0000000000000000" description="No Boot Loader" />
   </bootstrap>
   <bootstrap crc32="AEA629C4">
-    <oemname namehex="03048849B7160100" />
+    <oemname namehex="03048849B7160100" suggestion="false"/>
   </bootstrap>
 </root>

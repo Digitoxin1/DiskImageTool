@@ -23,17 +23,7 @@ Partial Class FATEditForm
     <System.Diagnostics.DebuggerStepThrough()>
     Private Sub InitializeComponent()
         Me.components = New System.ComponentModel.Container()
-        Dim DataGridViewCellStyle5 As System.Windows.Forms.DataGridViewCellStyle = New System.Windows.Forms.DataGridViewCellStyle()
-        Dim DataGridViewCellStyle6 As System.Windows.Forms.DataGridViewCellStyle = New System.Windows.Forms.DataGridViewCellStyle()
-        Dim DataGridViewCellStyle7 As System.Windows.Forms.DataGridViewCellStyle = New System.Windows.Forms.DataGridViewCellStyle()
-        Dim DataGridViewCellStyle8 As System.Windows.Forms.DataGridViewCellStyle = New System.Windows.Forms.DataGridViewCellStyle()
         Me.DataGridViewFAT = New System.Windows.Forms.DataGridView()
-        Me.GridCluster = New System.Windows.Forms.DataGridViewTextBoxColumn()
-        Me.GridType = New System.Windows.Forms.DataGridViewTextBoxColumn()
-        Me.GridValue = New System.Windows.Forms.DataGridViewTextBoxColumn()
-        Me.GridError = New System.Windows.Forms.DataGridViewTextBoxColumn()
-        Me.GridFile = New System.Windows.Forms.DataGridViewTextBoxColumn()
-        Me.GridFileIndex = New System.Windows.Forms.DataGridViewTextBoxColumn()
         Me.ContextMenuGrid = New System.Windows.Forms.ContextMenuStrip(Me.components)
         Me.FlowLayoutPanelBottom = New System.Windows.Forms.FlowLayoutPanel()
         Me.BtnUpdate = New System.Windows.Forms.Button()
@@ -64,7 +54,6 @@ Partial Class FATEditForm
             Or System.Windows.Forms.AnchorStyles.Left) _
             Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
         Me.DataGridViewFAT.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize
-        Me.DataGridViewFAT.Columns.AddRange(New System.Windows.Forms.DataGridViewColumn() {Me.GridCluster, Me.GridType, Me.GridValue, Me.GridError, Me.GridFile, Me.GridFileIndex})
         Me.DataGridViewFAT.ContextMenuStrip = Me.ContextMenuGrid
         Me.DataGridViewFAT.Location = New System.Drawing.Point(21, 200)
         Me.DataGridViewFAT.MultiSelect = False
@@ -74,69 +63,6 @@ Partial Class FATEditForm
         Me.DataGridViewFAT.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.CellSelect
         Me.DataGridViewFAT.Size = New System.Drawing.Size(542, 318)
         Me.DataGridViewFAT.TabIndex = 1
-        '
-        'GridCluster
-        '
-        Me.GridCluster.DataPropertyName = "Cluster"
-        DataGridViewCellStyle5.SelectionBackColor = System.Drawing.Color.White
-        DataGridViewCellStyle5.SelectionForeColor = System.Drawing.Color.Black
-        Me.GridCluster.DefaultCellStyle = DataGridViewCellStyle5
-        Me.GridCluster.HeaderText = "Cluster"
-        Me.GridCluster.Name = "GridCluster"
-        Me.GridCluster.ReadOnly = True
-        Me.GridCluster.Width = 65
-        '
-        'GridType
-        '
-        Me.GridType.DataPropertyName = "Type"
-        DataGridViewCellStyle6.SelectionBackColor = System.Drawing.Color.White
-        DataGridViewCellStyle6.SelectionForeColor = System.Drawing.Color.Black
-        Me.GridType.DefaultCellStyle = DataGridViewCellStyle6
-        Me.GridType.HeaderText = "Type"
-        Me.GridType.Name = "GridType"
-        Me.GridType.ReadOnly = True
-        Me.GridType.Resizable = System.Windows.Forms.DataGridViewTriState.[False]
-        Me.GridType.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable
-        Me.GridType.Width = 75
-        '
-        'GridValue
-        '
-        Me.GridValue.DataPropertyName = "Value"
-        Me.GridValue.HeaderText = "Value"
-        Me.GridValue.Name = "GridValue"
-        Me.GridValue.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable
-        Me.GridValue.Width = 60
-        '
-        'GridError
-        '
-        Me.GridError.DataPropertyName = "Error"
-        DataGridViewCellStyle7.ForeColor = System.Drawing.Color.Red
-        DataGridViewCellStyle7.SelectionBackColor = System.Drawing.Color.White
-        DataGridViewCellStyle7.SelectionForeColor = System.Drawing.Color.Red
-        Me.GridError.DefaultCellStyle = DataGridViewCellStyle7
-        Me.GridError.HeaderText = "Error"
-        Me.GridError.Name = "GridError"
-        Me.GridError.ReadOnly = True
-        Me.GridError.Resizable = System.Windows.Forms.DataGridViewTriState.[False]
-        Me.GridError.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable
-        '
-        'GridFile
-        '
-        Me.GridFile.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill
-        Me.GridFile.DataPropertyName = "File"
-        DataGridViewCellStyle8.SelectionBackColor = System.Drawing.Color.White
-        DataGridViewCellStyle8.SelectionForeColor = System.Drawing.Color.Black
-        Me.GridFile.DefaultCellStyle = DataGridViewCellStyle8
-        Me.GridFile.HeaderText = "File"
-        Me.GridFile.Name = "GridFile"
-        Me.GridFile.ReadOnly = True
-        '
-        'GridFileIndex
-        '
-        Me.GridFileIndex.DataPropertyName = "FileIndex"
-        Me.GridFileIndex.HeaderText = "FileIndex"
-        Me.GridFileIndex.Name = "GridFileIndex"
-        Me.GridFileIndex.Visible = False
         '
         'ContextMenuGrid
         '
@@ -317,10 +243,4 @@ Partial Class FATEditForm
     Friend WithEvents ContextMenuReserved As ContextMenuStrip
     Friend WithEvents LblValid As Label
     Friend WithEvents PictureBoxFAT As PictureBox
-    Friend WithEvents GridCluster As DataGridViewTextBoxColumn
-    Friend WithEvents GridType As DataGridViewTextBoxColumn
-    Friend WithEvents GridValue As DataGridViewTextBoxColumn
-    Friend WithEvents GridError As DataGridViewTextBoxColumn
-    Friend WithEvents GridFile As DataGridViewTextBoxColumn
-    Friend WithEvents GridFileIndex As DataGridViewTextBoxColumn
 End Class

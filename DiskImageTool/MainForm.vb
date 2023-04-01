@@ -20,7 +20,7 @@ Public Class MainForm
     Public Const NULL_CHAR As Char = "�"
     Public Const SITE_URL = "https://github.com/Digitoxin1/DiskImageTool"
     Public Const UPDATE_URL = "https://api.github.com/repos/Digitoxin1/DiskImageTool/releases/latest"
-    Private Const FILE_FILTER As String = "Disk Image Files (*.ima; *.img)|*.ima;*.img|All files (*.*)|*.*"
+    Private ReadOnly _FileFilterExt As New List(Of String) From {"*.ima", "*.img"}
     Private _CheckAll As Boolean = False
     Private _Disk As DiskImage.Disk
     Private _FilterCounts() As Integer
@@ -31,6 +31,7 @@ Public Class MainForm
     Private _ScanRun As Boolean = False
     Private _SuppressEvent As Boolean = False
     Private _FileVersion As String = ""
+    Private _FileFilter As String = ""
 
     Public Sub New()
         ' This call is required by the designer.
@@ -1244,7 +1245,7 @@ Public Class MainForm
 
     Private Sub FilesOpen()
         Dim Dialog = New OpenFileDialog With {
-            .Filter = FILE_FILTER,
+            .Filter = _FileFilter,
             .Multiselect = True
         }
         If Dialog.ShowDialog <> DialogResult.OK Then
@@ -1842,6 +1843,13 @@ Public Class MainForm
         Return Result
     End Function
 
+    Private Sub FixFileSize(DirectoryEntry As DirectoryEntry)
+        If DirectoryEntry.HasIncorrectFileSize() Then
+            DirectoryEntry.FileSize = DirectoryEntry.GetAllocatedSizeFromFAT
+            ComboItemRefresh(True, True)
+        End If
+    End Sub
+
     Private Sub FixImageSize()
         Dim Msg As String = "Any modifications you have made to the disk image will be saved at this time.  This process cannot be undone." _
             & vbCrLf & vbCrLf & "Are you sure you wish to resize the disk image?"
@@ -2430,6 +2438,7 @@ Public Class MainForm
             BtnReplaceFile.Enabled = Stats.IsValidFile
             BtnFileProperties.Enabled = True
             BtnFileMenuViewCrosslinked.Visible = FileData.DirectoryEntry.IsCrossLinked
+            BtnFileMenuFixSize.Enabled = FileData.DirectoryEntry.HasIncorrectFileSize
 
             BtnFileMenuViewFileText.Visible = Stats.IsValidFile
             BtnFileMenuViewFileText.Enabled = Stats.FileSize > 0
@@ -2621,7 +2630,7 @@ Public Class MainForm
             Dim Dialog = New SaveFileDialog With {
                 .InitialDirectory = IO.Path.GetDirectoryName(_Disk.FilePath),
                 .FileName = IO.Path.GetFileName(_Disk.FilePath),
-                .Filter = FILE_FILTER
+                .Filter = _FileFilter
             }
             If Dialog.ShowDialog <> DialogResult.OK Then
                 Exit Sub
@@ -3078,9 +3087,25 @@ Public Class MainForm
         End If
     End Sub
 
+    Private Sub ParseCustomFilters()
+        If My.Settings.CustomFileExtensions.Length > 0 Then
+            For Each Extension In My.Settings.CustomFileExtensions.Split(",")
+                If Not Extension.StartsWith(".") Then
+                    Extension = "." & Extension
+                End If
+                Extension = "*" & Extension
+                _FileFilterExt.Add(Extension)
+            Next
+        End If
+    End Sub
+
     Private Sub MainForm_Load(sender As Object, e As EventArgs) Handles Me.Load
         _FileVersion = FileVersionInfo.GetVersionInfo(Application.ExecutablePath).FileVersion
         Me.Text = GetWindowCaption()
+
+        ParseCustomFilters()
+
+        _FileFilter = "Disk Image Files (" & String.Join("; ", _FileFilterExt.ToArray) & ")|" & String.Join(";", _FileFilterExt.ToArray) & "|All files (*.*)|*.*"
 
         PositionForm()
 
@@ -3137,6 +3162,17 @@ Public Class MainForm
 
     Private Sub BtnHelpUpdateCheck_Click(sender As Object, e As EventArgs) Handles BtnHelpUpdateCheck.Click
         CheckForUpdates
+    End Sub
+
+    Private Sub BtnFileMenuFixSize_Click(sender As Object, e As EventArgs) Handles BtnFileMenuFixSize.Click
+        If ListViewFiles.SelectedItems.Count = 1 Then
+            Dim Item As ListViewItem = ListViewFiles.SelectedItems(0)
+            Dim FileData As FileData = Item.Tag
+
+            If FileData.DirectoryEntry.HasIncorrectFileSize Then
+                FixFileSize(FileData.DirectoryEntry)
+            End If
+        End If
     End Sub
 #End Region
 
