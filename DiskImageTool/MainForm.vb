@@ -487,6 +487,7 @@ Public Class MainForm
     End Sub
 
     Private Sub ClearFilesPanel()
+        MenuDisplayDirectorySubMenuClear()
         ListViewFiles.Items.Clear()
         BtnWin9xClean.Enabled = False
         ItemSelectionChanged()
@@ -1922,6 +1923,8 @@ Public Class MainForm
     End Sub
 
     Private Sub PopulateFilesPanel()
+        MenuDisplayDirectorySubMenuClear()
+
         ListViewFiles.BeginUpdate()
 
         ListViewFiles.Items.Clear()
