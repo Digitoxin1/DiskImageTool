@@ -29,8 +29,8 @@
     <TargetCulture>en-US</TargetCulture>
     <ProductName>DiskImageTool</ProductName>
     <PublisherName>Digitoxin</PublisherName>
-    <ApplicationRevision>1</ApplicationRevision>
-    <ApplicationVersion>1.22.0.%2a</ApplicationVersion>
+    <ApplicationRevision>0</ApplicationRevision>
+    <ApplicationVersion>1.23.0.%2a</ApplicationVersion>
     <UseApplicationTrust>false</UseApplicationTrust>
     <PublishWizardCompleted>true</PublishWizardCompleted>
     <BootstrapperEnabled>true</BootstrapperEnabled>
@@ -161,6 +161,8 @@
     <Compile Include="Forms\ItemScanForm.vb">
       <SubType>Form</SubType>
     </Compile>
+    <Compile Include="ListViewColumnSorter.vb" />
+    <Compile Include="ListViewExtensions.vb" />
     <Compile Include="MyByteProvider.vb" />
     <Compile Include="OEMNameLookup.vb" />
     <Compile Include="LoadedImageData.vb" />

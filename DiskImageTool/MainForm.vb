@@ -11,6 +11,7 @@ Public Structure FileData
     Dim DirectoryEntry As DiskImage.DirectoryEntry
     Dim FilePath As String
     Dim IsLastEntry As Boolean
+    Dim Index As Integer
 End Structure
 
 Public Class MainForm
@@ -32,12 +33,14 @@ Public Class MainForm
     Private _SuppressEvent As Boolean = False
     Private _FileVersion As String = ""
     Private _FileFilter As String = ""
+    Private ReadOnly _lvwColumnSorter As ListViewColumnSorter
 
     Public Sub New()
         ' This call is required by the designer.
         InitializeComponent()
 
         ' Add any initialization after the InitializeComponent() call.
+        _lvwColumnSorter = New ListViewColumnSorter
     End Sub
 
     Friend Function DiskImageLoad(ImageData As LoadedImageData) As DiskImage.Disk
@@ -488,6 +491,7 @@ Public Class MainForm
 
     Private Sub ClearFilesPanel()
         MenuDisplayDirectorySubMenuClear()
+        ListViewFiles.ListViewItemSorter = Nothing
         ListViewFiles.Items.Clear()
         BtnWin9xClean.Enabled = False
         ItemSelectionChanged()
@@ -769,6 +773,19 @@ Public Class MainForm
         DiskImageProcess(DoItemScan, False)
     End Sub
 
+    Private Sub ClearSort(Reset As Boolean)
+        If Reset Then
+            _lvwColumnSorter.Order = SortOrder.Ascending
+            _lvwColumnSorter.SortColumn = 0
+            ListViewFiles.Sort()
+        Else
+            _lvwColumnSorter.Order = SortOrder.None
+            _lvwColumnSorter.SortColumn = -1
+        End If
+        ListViewFiles.SetSortIcon(_lvwColumnSorter.SortColumn, _lvwColumnSorter.Order)
+        BtnResetSort.Enabled = False
+    End Sub
+
     Private Sub DiskImageProcess(DoItemScan As Boolean, Reinitialize As Boolean)
         Dim CurrentImageData As LoadedImageData = ComboImages.SelectedItem
 
@@ -778,6 +795,7 @@ Public Class MainForm
 
         InitButtonState()
         PopulateSummaryPanel()
+        ClearSort(False)
         If _Disk.IsValidImage Then
             If CurrentImageData.CachedRootDir Is Nothing Then
                 CurrentImageData.CachedRootDir = _Disk.Directory.GetContent
@@ -1426,9 +1444,10 @@ Public Class MainForm
         Return CheckstateChanged
     End Function
 
-    Private Function GetFileDataFromDirectoryEntry(DirectoryEntry As DiskImage.DirectoryEntry, FilePath As String, IsLastEntry As Boolean) As FileData
+    Private Function GetFileDataFromDirectoryEntry(Index As Integer, DirectoryEntry As DiskImage.DirectoryEntry, FilePath As String, IsLastEntry As Boolean) As FileData
         Dim Response As FileData
         With Response
+            .Index = Index
             .FilePath = FilePath
             .DirectoryEntry = DirectoryEntry
             .IsLastEntry = IsLastEntry
@@ -1598,6 +1617,7 @@ Public Class MainForm
         End If
 
         SI = Item.SubItems.Add(DirectoryEntry.GetFileName)
+        SI.Name = "FileName"
         If Not IsDeleted And DirectoryEntry.HasInvalidFilename Then
             SI.ForeColor = Color.Red
         Else
@@ -1605,6 +1625,7 @@ Public Class MainForm
         End If
 
         SI = Item.SubItems.Add(DirectoryEntry.GetFileExtension)
+        SI.Name = "FileExtension"
         If Not IsDeleted And DirectoryEntry.HasInvalidExtension Then
             SI.ForeColor = Color.Red
         Else
@@ -1625,8 +1646,10 @@ Public Class MainForm
             SI = Item.SubItems.Add(Format(DirectoryEntry.FileSize, "N0"))
             SI.ForeColor = ForeColor
         End If
+        SI.Name = "FileSize"
 
         SI = Item.SubItems.Add(ExpandedDateToString(DirectoryEntry.GetLastWriteDate, True, True, False, True))
+        SI.Name = "FileLastWriteDate"
         If DirectoryEntry.GetLastWriteDate.IsValidDate Or IsDeleted Then
             SI.ForeColor = ForeColor
         Else
@@ -1643,6 +1666,7 @@ Public Class MainForm
         Else
             SI = Item.SubItems.Add(Format(DirectoryEntry.StartingCluster, "N0"))
         End If
+        SI.Name = "FileStartingCluster"
 
         If Not IsDeleted And DirectoryEntry.IsCrossLinked Then
             SubItemForeColor = Color.Red
@@ -1652,7 +1676,6 @@ Public Class MainForm
             ErrorText = "CC"
         End If
         SI.ForeColor = SubItemForeColor
-        SI.Name = "FileStartingCluster"
 
         SI = Item.SubItems.Add(ErrorText)
         SI.Name = "FileClusterError"
@@ -1680,8 +1703,9 @@ Public Class MainForm
                 SI.ForeColor = Color.Red
             End If
         Else
-            Item.SubItems.Add("")
+            SI = Item.SubItems.Add("")
         End If
+        SI.Name = "FileCreationDate"
 
         If DirectoryEntry.HasLastAccessDate Then
             SI = Item.SubItems.Add(ExpandedDateToString(DirectoryEntry.GetLastAccessDate))
@@ -1691,8 +1715,9 @@ Public Class MainForm
                 SI.ForeColor = Color.Red
             End If
         Else
-            Item.SubItems.Add("")
+            SI = Item.SubItems.Add("")
         End If
+        SI.Name = "FileLastAccessDate"
 
         SI = Item.SubItems.Add(LFNFileName)
         SI.ForeColor = ForeColor
@@ -1927,6 +1952,7 @@ Public Class MainForm
 
         ListViewFiles.BeginUpdate()
 
+        ListViewFiles.ListViewItemSorter = Nothing
         ListViewFiles.Items.Clear()
         ListViewFiles.MultiSelect = True
 
@@ -1968,6 +1994,7 @@ Public Class MainForm
 
         BtnWin9xClean.Enabled = Response.HasCreated Or Response.HasLastAccessed Or _Disk.BootSector.IsWin9xOEMName
 
+        ListViewFiles.ListViewItemSorter = _lvwColumnSorter
         ListViewFiles.EndUpdate()
 
         ItemSelectionChanged()
@@ -2229,7 +2256,7 @@ Public Class MainForm
                 Dim File = Directory.GetFile(Counter)
                 Dim FullFileName = File.GetFullFileName
                 Dim IsLastEntry = (Counter = DirectoryEntryCount - 1)
-                Dim FileData = GetFileDataFromDirectoryEntry(File, Path, IsLastEntry)
+                Dim FileData = GetFileDataFromDirectoryEntry(Counter, File, Path, IsLastEntry)
 
                 If Not File.IsLink Then
                     If File.IsLFN Then
@@ -2566,6 +2593,7 @@ Public Class MainForm
         ListViewSummary.Items.Clear()
         ListViewHashes.Items.Clear()
 
+        ClearSort(False)
         ListViewFiles.BeginUpdate()
         ListViewFiles.Items.Clear()
         ListViewFiles.Groups.Clear()
@@ -3018,16 +3046,32 @@ Public Class MainForm
     End Sub
 
     Private Sub ListViewFiles_ColumnClick(sender As Object, e As ColumnClickEventArgs) Handles ListViewFiles.ColumnClick
+        If ListViewFiles.Items.Count = 0 Then
+            Exit Sub
+        End If
+
         If e.Column = 0 Then
-            If ListViewFiles.Items.Count > 0 Then
-                _CheckAll = Not _CheckAll
-                _SuppressEvent = True
-                For Each Item As ListViewItem In ListViewFiles.Items
-                    Item.Selected = _CheckAll
-                Next
-                _SuppressEvent = False
-                ItemSelectionChanged()
+            _CheckAll = Not _CheckAll
+            _SuppressEvent = True
+            For Each Item As ListViewItem In ListViewFiles.Items
+                Item.Selected = _CheckAll
+            Next
+            _SuppressEvent = False
+            ItemSelectionChanged()
+        Else
+            If e.Column = _lvwColumnSorter.SortColumn Then
+                If _lvwColumnSorter.Order = SortOrder.Ascending Then
+                    _lvwColumnSorter.Order = SortOrder.Descending
+                Else
+                    _lvwColumnSorter.Order = SortOrder.Ascending
+                End If
+            Else
+                _lvwColumnSorter.SortColumn = e.Column
+                _lvwColumnSorter.Order = SortOrder.Ascending
             End If
+            ListViewFiles.Sort()
+            ListViewFiles.SetSortIcon(_lvwColumnSorter.SortColumn, _lvwColumnSorter.Order)
+            BtnResetSort.Enabled = True
         End If
     End Sub
 
@@ -3176,6 +3220,10 @@ Public Class MainForm
                 FixFileSize(FileData.DirectoryEntry)
             End If
         End If
+    End Sub
+
+    Private Sub BtnResetSort_Click(sender As Object, e As EventArgs) Handles BtnResetSort.Click
+        ClearSort(True)
     End Sub
 #End Region
 

@@ -137,6 +137,7 @@ Partial Class MainForm
         Me.BtnClearFilters = New System.Windows.Forms.ToolStripMenuItem()
         Me.FilterSeparator = New System.Windows.Forms.ToolStripSeparator()
         Me.ComboImagesFiltered = New System.Windows.Forms.ComboBox()
+        Me.BtnResetSort = New System.Windows.Forms.Button()
         SummaryName = CType(New System.Windows.Forms.ColumnHeader(), System.Windows.Forms.ColumnHeader)
         SummaryValue = CType(New System.Windows.Forms.ColumnHeader(), System.Windows.Forms.ColumnHeader)
         HashName = CType(New System.Windows.Forms.ColumnHeader(), System.Windows.Forms.ColumnHeader)
@@ -755,6 +756,12 @@ Partial Class MainForm
         FileMenuSeparatoor2.Name = "FileMenuSeparatoor2"
         FileMenuSeparatoor2.Size = New System.Drawing.Size(219, 6)
         '
+        'FileMenuSeparatoor3
+        '
+        FileMenuSeparatoor3.Name = "FileMenuSeparatoor3"
+        FileMenuSeparatoor3.Size = New System.Drawing.Size(219, 6)
+        FileMenuSeparatoor3.Visible = False
+        '
         'ListViewSummary
         '
         Me.ListViewSummary.AllowDrop = True
@@ -781,7 +788,7 @@ Partial Class MainForm
         Me.ComboImages.DropDownWidth = 523
         Me.ComboImages.Location = New System.Drawing.Point(323, 55)
         Me.ComboImages.Name = "ComboImages"
-        Me.ComboImages.Size = New System.Drawing.Size(639, 21)
+        Me.ComboImages.Size = New System.Drawing.Size(568, 21)
         Me.ComboImages.Sorted = True
         Me.ComboImages.TabIndex = 3
         Me.ComboImages.Visible = False
@@ -861,7 +868,7 @@ Partial Class MainForm
         '
         Me.ContextMenuFiles.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.BtnFileMenuFileProperties, Me.BtnFileMenuExportFile, Me.BtnFileMenuReplaceFile, FileMenuSeparatoor1, Me.BtnFileMenuViewFile, Me.BtnFileMenuViewFileText, Me.BtnFileMenuViewCrosslinked, FileMenuSeparatoor2, Me.BtnFileMenuRemoveDeletedFile, Me.BtnFileMenuDeleteFile, Me.BtnFileMenuDeleteFileWithFill, FileMenuSeparatoor3, Me.BtnFileMenuFixSize})
         Me.ContextMenuFiles.Name = "ContextMenuFiles"
-        Me.ContextMenuFiles.Size = New System.Drawing.Size(223, 264)
+        Me.ContextMenuFiles.Size = New System.Drawing.Size(223, 242)
         '
         'BtnFileMenuFileProperties
         '
@@ -920,12 +927,6 @@ Partial Class MainForm
         Me.BtnFileMenuDeleteFileWithFill.Name = "BtnFileMenuDeleteFileWithFill"
         Me.BtnFileMenuDeleteFileWithFill.Size = New System.Drawing.Size(222, 22)
         Me.BtnFileMenuDeleteFileWithFill.Text = "&Delete File and Clear Sectors"
-        '
-        'FileMenuSeparatoor3
-        '
-        FileMenuSeparatoor3.Name = "FileMenuSeparatoor3"
-        FileMenuSeparatoor3.Size = New System.Drawing.Size(219, 6)
-        FileMenuSeparatoor3.Visible = False
         '
         'BtnFileMenuFixSize
         '
@@ -992,15 +993,26 @@ Partial Class MainForm
         Me.ComboImagesFiltered.DropDownWidth = 523
         Me.ComboImagesFiltered.Location = New System.Drawing.Point(323, 55)
         Me.ComboImagesFiltered.Name = "ComboImagesFiltered"
-        Me.ComboImagesFiltered.Size = New System.Drawing.Size(639, 21)
+        Me.ComboImagesFiltered.Size = New System.Drawing.Size(568, 21)
         Me.ComboImagesFiltered.Sorted = True
         Me.ComboImagesFiltered.TabIndex = 4
+        '
+        'BtnResetSort
+        '
+        Me.BtnResetSort.Anchor = CType((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
+        Me.BtnResetSort.Location = New System.Drawing.Point(897, 54)
+        Me.BtnResetSort.Name = "BtnResetSort"
+        Me.BtnResetSort.Size = New System.Drawing.Size(65, 23)
+        Me.BtnResetSort.TabIndex = 5
+        Me.BtnResetSort.Text = "Reset Sort"
+        Me.BtnResetSort.UseVisualStyleBackColor = True
         '
         'MainForm
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
         Me.ClientSize = New System.Drawing.Size(974, 576)
+        Me.Controls.Add(Me.BtnResetSort)
         Me.Controls.Add(ToolStripTop)
         Me.Controls.Add(Me.ComboImagesFiltered)
         Me.Controls.Add(StatusStrip1)
@@ -1117,4 +1129,5 @@ Partial Class MainForm
     Friend WithEvents ToolStripFileSector As ToolStripStatusLabel
     Friend WithEvents ToolStripFileTrack As ToolStripStatusLabel
     Friend WithEvents BtnFileMenuFixSize As ToolStripMenuItem
+    Friend WithEvents BtnResetSort As Button
 End Class
