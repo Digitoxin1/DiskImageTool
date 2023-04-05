@@ -1,5 +1,4 @@
 ﻿Imports System.ComponentModel
-Imports System.IO
 Imports DiskImageTool.DiskImage
 
 Public Class FATEditForm
@@ -82,8 +81,11 @@ Public Class FATEditForm
             .HeaderText = "Cluster",
             .ReadOnly = True,
             .DataPropertyName = "Cluster",
-            .Width = 65
+            .Width = 65,
+            .DefaultCellStyle = New DataGridViewCellStyle()
         }
+        GridViewColumn.DefaultCellStyle.SelectionForeColor = Color.Black
+        GridViewColumn.DefaultCellStyle.SelectionBackColor = Color.White
         DataGridViewFAT.Columns.Add(GridViewColumn)
 
         GridViewColumn = New DataGridViewTextBoxColumn With {
@@ -93,8 +95,11 @@ Public Class FATEditForm
             .Resizable = False,
             .SortMode = DataGridViewColumnSortMode.NotSortable,
             .DataPropertyName = "Type",
-            .Width = 75
+            .Width = 75,
+            .DefaultCellStyle = New DataGridViewCellStyle()
         }
+        GridViewColumn.DefaultCellStyle.SelectionForeColor = Color.Black
+        GridViewColumn.DefaultCellStyle.SelectionBackColor = Color.White
         DataGridViewFAT.Columns.Add(GridViewColumn)
 
         GridViewColumn = New DataGridViewTextBoxColumn With {
@@ -117,6 +122,8 @@ Public Class FATEditForm
             .DefaultCellStyle = New DataGridViewCellStyle()
         }
         GridViewColumn.DefaultCellStyle.ForeColor = Color.Red
+        GridViewColumn.DefaultCellStyle.SelectionForeColor = Color.Red
+        GridViewColumn.DefaultCellStyle.SelectionBackColor = Color.White
         DataGridViewFAT.Columns.Add(GridViewColumn)
 
         GridViewColumn = New DataGridViewTextBoxColumn With {
@@ -125,8 +132,11 @@ Public Class FATEditForm
             .ReadOnly = True,
             .DataPropertyName = "File",
             .Width = 200,
-            .AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill
+            .AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill,
+            .DefaultCellStyle = New DataGridViewCellStyle()
         }
+        GridViewColumn.DefaultCellStyle.SelectionForeColor = Color.Black
+        GridViewColumn.DefaultCellStyle.SelectionBackColor = Color.White
         DataGridViewFAT.Columns.Add(GridViewColumn)
 
         GridViewColumn = New DataGridViewTextBoxColumn With {
