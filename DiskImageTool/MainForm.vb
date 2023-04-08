@@ -1543,8 +1543,8 @@ Public Class MainForm
     Private Sub InitButtonState()
         If _Disk IsNot Nothing AndAlso Not _Disk.LoadError Then
             BtnChangeOEMName.Enabled = _Disk.IsValidImage
-            BtnDisplayBootSector.Enabled = True
-            BtnDisplayDisk.Enabled = True
+            BtnDisplayBootSector.Enabled = _Disk.CheckSize
+            BtnDisplayDisk.Enabled = _Disk.CheckSize
             BtnDisplayFAT.Enabled = _Disk.IsValidImage
             BtnEditFAT.Enabled = _Disk.IsValidImage
             BtnDisplayDirectory.Enabled = _Disk.IsValidImage

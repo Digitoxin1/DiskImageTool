@@ -121,6 +121,10 @@
             Return Not _LoadError AndAlso _BootSector.IsValidImage
         End Function
 
+        Public Function CheckSize() As Boolean
+            Return Not _LoadError AndAlso (FileBytes.Length > 0 And FileBytes.Length < 4423680)
+        End Function
+
         Public Sub Reinitialize()
             _FAT12.PopulateFAT12(0, False)
             _ReinitializeRequired = False

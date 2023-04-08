@@ -384,7 +384,7 @@
         End Function
 
         Public Function IsValidImage() As Boolean
-            Return HasValidSectorsPerCluster() AndAlso HasValidMediaDescriptor()
+            Return _FileBytes.Length > 0 AndAlso HasValidSectorsPerCluster() AndAlso HasValidMediaDescriptor()
         End Function
 
         Public Function IsWin9xOEMName() As Boolean
