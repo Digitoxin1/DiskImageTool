@@ -20,6 +20,7 @@ Public Class LoadedImageData
         _FilePath = FilePath
         _Modifications = Nothing
         _Modified = False
+        _ReadOnly = False
         _ScanInfo = New ImageDataScanInfo
         _Scanned = False
     End Sub
@@ -28,6 +29,7 @@ Public Class LoadedImageData
     Public Property FilePath As String
     Public Property Modifications As Stack(Of DiskImage.DataChange())
     Public Property Modified As Boolean
+    Public Property [ReadOnly] As Boolean
     Public ReadOnly Property ScanInfo As ImageDataScanInfo
     Public Property Scanned As Boolean
     Public Shared Property StringOffset As Integer = 0

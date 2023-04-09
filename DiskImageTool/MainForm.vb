@@ -507,6 +507,7 @@ Public Class MainForm
             Dim ShowDialog As Boolean = True
 
             For Each ImageData In ModifyImageList
+                Dim NewFilePath As String = ""
                 If ShowDialog Then
                     If ModifyImageList.Count = 1 Then
                         Result = MsgBoxSave(ImageData.FilePath)
@@ -516,14 +517,34 @@ Public Class MainForm
                 Else
                     Result = BatchResult
                 End If
+
                 If Result = MyMsgBoxResult.YesToAll Or Result = MyMsgBoxResult.NoToAll Then
                     ShowDialog = False
                     If Result = MyMsgBoxResult.NoToAll Then
                         BatchResult = MyMsgBoxResult.No
                     End If
                 End If
+
                 If Result = MyMsgBoxResult.Yes Or Result = MyMsgBoxResult.YesToAll Then
-                    If Not DiskImageSave(ImageData) Then
+                    If ImageData.ReadOnly Then
+                        If Not ShowDialog Then
+                            If MsgBoxNewFileName(ImageData.FilePath) <> MsgBoxResult.Ok Then
+                                Result = MyMsgBoxResult.Cancel
+                                Exit For
+                            End If
+                        End If
+                        If Result <> MyMsgBoxResult.No Then
+                            NewFilePath = GetNewFilePath(ImageData.FilePath)
+                            If NewFilePath = "" Then
+                                Result = MyMsgBoxResult.Cancel
+                                Exit For
+                            End If
+                        End If
+                    End If
+                End If
+
+                If Result = MyMsgBoxResult.Yes Or Result = MyMsgBoxResult.YesToAll Then
+                    If Not DiskImageSave(ImageData, NewFilePath) Then
                         Result = MyMsgBoxResult.Cancel
                         Exit For
                     End If
@@ -540,6 +561,7 @@ Public Class MainForm
     End Function
 
     Private Sub CloseCurrent()
+        Dim NewFilePath As String = ""
         Dim CurrentImageData As LoadedImageData = ComboImages.SelectedItem
         Dim Result As MsgBoxResult
 
@@ -550,8 +572,16 @@ Public Class MainForm
         End If
 
         If Result = MsgBoxResult.Yes Then
-            If Not DiskImageSave(CurrentImageData) Then
-                Result = MsgBoxResult.Cancel
+            If CurrentImageData.ReadOnly Then
+                NewFilePath = GetNewFilePath(CurrentImageData.FilePath)
+                If NewFilePath = "" Then
+                    Result = MsgBoxResult.Cancel
+                End If
+            End If
+            If Result = MsgBoxResult.Yes Then
+                If Not DiskImageSave(CurrentImageData, NewFilePath) Then
+                    Result = MsgBoxResult.Cancel
+                End If
             End If
         End If
 
@@ -800,6 +830,7 @@ Public Class MainForm
             If CurrentImageData.CachedRootDir Is Nothing Then
                 CurrentImageData.CachedRootDir = _Disk.Directory.GetContent
             End If
+            CurrentImageData.ReadOnly = _Disk.ReadOnly
             PopulateFilesPanel()
         Else
             ClearFilesPanel()
@@ -1468,6 +1499,32 @@ Public Class MainForm
         Return ModifyImageList
     End Function
 
+    Private Function GetNewFilePath(FilePath As String) As String
+        Dim NewFilePath As String = ""
+
+        Dim Dialog = New SaveFileDialog With {
+            .InitialDirectory = IO.Path.GetDirectoryName(FilePath),
+            .FileName = IO.Path.GetFileName(FilePath),
+            .Filter = _FileFilter
+        }
+
+        AddHandler Dialog.FileOk, Sub(sender As Object, e As CancelEventArgs)
+                                      If Dialog.FileName <> FilePath AndAlso _LoadedFileNames.ContainsKey(Dialog.FileName) Then
+                                          Dim Msg As String = Path.GetFileName(Dialog.FileName) _
+                                            & vbCrLf & "This file is currently open in " & Application.ProductName & "." _
+                                            & vbCrLf & "Try again with a different file name."
+                                          MsgBox(Msg, MsgBoxStyle.Exclamation, "Save As")
+                                          e.Cancel = True
+                                      End If
+                                  End Sub
+
+        If Dialog.ShowDialog = DialogResult.OK Then
+            NewFilePath = Dialog.FileName
+        End If
+
+        Return NewFilePath
+    End Function
+
     Private Function GetPathOffset() As Integer
         Dim PathName As String = ""
         Dim CheckPath As Boolean = False
@@ -1833,6 +1890,11 @@ Public Class MainForm
         AddHandler Item.Click, AddressOf BtnDisplayDirectory_Click
     End Sub
 
+    Private Function MsgBoxNewFileName(FilePath As String) As MsgBoxResult
+        Dim Msg As String = "'" & Path.GetFileName(FilePath) & "' is a read-only file.  Please specify a new file name."
+        Return MsgBox(Msg, MsgBoxStyle.OkCancel)
+    End Function
+
     Private Function MsgBoxOverwrite(FilePath As String) As MyMsgBoxResult
         Dim MSg As String = IO.Path.GetFileName(FilePath) & " already exists." & vbCrLf & "Do you want to replace it?"
 
@@ -2038,6 +2100,9 @@ Public Class MainForm
                 .Add(ListViewTileGetItem(DiskGroup, "Image Size", _Disk.Data.Length.ToString("N0"), ForeColor))
             End If
             If _Disk.IsValidImage Then
+                If _Disk.ReadOnly Then
+                    .Add(ListViewTileGetItem(DiskGroup, "Read Only", _Disk.ReadOnly))
+                End If
                 ToolStripStatusModified.Visible = _Disk.Data.Modified
                 Dim BootStrapStart = _Disk.BootSector.GetBootStrapOffset
                 Dim CopyProtection As String = GetCopyProtection(_Disk)
@@ -2620,14 +2685,29 @@ Public Class MainForm
     Private Sub SaveAll()
         _SuppressEvent = True
         For Index = 0 To ComboImages.Items.Count - 1
+            Dim NewFilePath As String = ""
+            Dim DoSave As Boolean = True
             Dim ImageData As LoadedImageData = ComboImages.Items(Index)
             If ImageData.Modified Then
-                Dim Result = DiskImageSave(ImageData)
-                If Result Then
-                    If ImageData Is ComboImages.SelectedItem Then
-                        ComboItemRefresh(True, False)
+                If ImageData.ReadOnly Then
+                    If MsgBoxNewFileName(ImageData.FilePath) = MsgBoxResult.Ok Then
+                        NewFilePath = GetNewFilePath(ImageData.FilePath)
+                        DoSave = (NewFilePath <> "")
                     Else
-                        ComboImagesRefreshItemText(ImageData)
+                        DoSave = False
+                    End If
+                End If
+                If DoSave Then
+                    Dim Result = DiskImageSave(ImageData, NewFilePath)
+                    If Result Then
+                        If ImageData.ReadOnly Then
+                            SetNewFilePath(ImageData, NewFilePath)
+                        End If
+                        If ImageData Is ComboImages.SelectedItem Then
+                            ComboItemRefresh(True, False)
+                        Else
+                            ComboImagesRefreshItemText(ImageData)
+                        End If
                     End If
                 End If
             End If
@@ -2645,7 +2725,7 @@ Public Class MainForm
             BtnSaveAs.Enabled = False
             BtnExportDebug.Enabled = False
         Else
-            BtnSave.Enabled = CurrentImageData.Modified
+            BtnSave.Enabled = CurrentImageData.Modified And Not CurrentImageData.ReadOnly
             BtnSaveAs.Enabled = CurrentImageData.Modified
             'BtnExportDebug.Enabled = (CurrentImageData.Modified Or CurrentImageData.SessionModifications.Count > 0)
             BtnExportDebug.Enabled = False
@@ -2655,35 +2735,22 @@ Public Class MainForm
     End Sub
 
     Private Sub SaveCurrent(NewFileName As Boolean)
-        Dim FilePath As String
+        Dim NewFilePath As String = ""
 
         If NewFileName Then
-            Dim Dialog = New SaveFileDialog With {
-                .InitialDirectory = IO.Path.GetDirectoryName(_Disk.FilePath),
-                .FileName = IO.Path.GetFileName(_Disk.FilePath),
-                .Filter = _FileFilter
-            }
-            If Dialog.ShowDialog <> DialogResult.OK Then
+            NewFilePath = GetNewFilePath(_Disk.FilePath)
+            If NewFilePath = "" Then
                 Exit Sub
             End If
-            FilePath = Dialog.FileName
-        Else
-            FilePath = ""
         End If
 
         Dim CurrentImageData As LoadedImageData = ComboImages.SelectedItem
 
-        Dim Result = DiskImageSave(CurrentImageData, FilePath)
+        Dim Result = DiskImageSave(CurrentImageData, NewFilePath)
         If Result Then
             FilterUpdate(FilterTypes.ModifiedFiles)
             If NewFileName Then
-                If _LoadedFileNames.ContainsKey(FilePath) Then
-                    FileClose(_LoadedFileNames.Item(FilePath))
-                End If
-                _LoadedFileNames.Remove(CurrentImageData.FilePath)
-                _LoadedFileNames.Add(FilePath, CurrentImageData)
-                CurrentImageData.FilePath = FilePath
-                ComboImagesRefreshPaths()
+                SetNewFilePath(CurrentImageData, NewFilePath)
             End If
             ComboItemRefresh(True, False)
         End If
@@ -2714,6 +2781,18 @@ Public Class MainForm
         BtnCloseAll.Enabled = Value
         ToolStripBtnCloseAll.Enabled = BtnCloseAll.Enabled
         TxtSearch.Enabled = Value
+    End Sub
+
+    Private Sub SetNewFilePath(CurrentImageData As LoadedImageData, NewFilePath As String)
+        If CurrentImageData.FilePath <> NewFilePath Then
+            If _LoadedFileNames.ContainsKey(NewFilePath) Then
+                FileClose(_LoadedFileNames.Item(NewFilePath))
+            End If
+            _LoadedFileNames.Remove(CurrentImageData.FilePath)
+            _LoadedFileNames.Add(NewFilePath, CurrentImageData)
+            CurrentImageData.FilePath = NewFilePath
+            ComboImagesRefreshPaths()
+        End If
     End Sub
 
     Private Sub UnusedClustersDisplayHex()

@@ -1,4 +1,6 @@
-﻿Namespace DiskImage
+﻿Imports System.IO
+
+Namespace DiskImage
     Public Class Disk
         Private WithEvents FileBytes As ImageByteArray
         Private ReadOnly _BootSector As BootSector
@@ -6,12 +8,14 @@
         Private ReadOnly _FAT12 As FAT12
         Private ReadOnly _FilePath As String
         Private ReadOnly _LoadError As Boolean = False
+        Private ReadOnly _ReadOnly As Boolean = False
         Private _ReinitializeRequired As Boolean = False
         Sub New(FilePath As String, Optional Modifications As Stack(Of DataChange()) = Nothing)
             _LoadError = False
             _FilePath = FilePath
-
             Try
+                Dim fInfo As New FileInfo(FilePath)
+                _ReadOnly = fInfo.IsReadOnly
                 FileBytes = New ImageByteArray(IO.File.ReadAllBytes(FilePath))
             Catch ex As Exception
                 _LoadError = True
@@ -70,6 +74,12 @@
         Public ReadOnly Property LoadError As Boolean
             Get
                 Return _LoadError
+            End Get
+        End Property
+
+        Public ReadOnly Property [ReadOnly] As Boolean
+            Get
+                Return _ReadOnly
             End Get
         End Property
 
