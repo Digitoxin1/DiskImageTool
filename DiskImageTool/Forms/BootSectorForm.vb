@@ -435,4 +435,5 @@ Public Class BootSectorForm
     Private Sub BtnUpdate_Click(sender As Object, e As EventArgs) Handles BtnUpdate.Click
         UpdateBootSector
     End Sub
+
 End Class

@@ -71,6 +71,7 @@ Partial Class SaveAllForm
         '
         'BtnCancel
         '
+        Me.BtnCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel
         Me.BtnCancel.Location = New System.Drawing.Point(170, 10)
         Me.BtnCancel.Margin = New System.Windows.Forms.Padding(4, 10, 4, 9)
         Me.BtnCancel.Name = "BtnCancel"
@@ -127,6 +128,7 @@ Partial Class SaveAllForm
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
         Me.AutoSize = True
         Me.BackColor = System.Drawing.SystemColors.Window
+        Me.CancelButton = Me.BtnCancel
         Me.ClientSize = New System.Drawing.Size(461, 122)
         Me.Controls.Add(Me.LblCaption)
         Me.Controls.Add(Me.Panel1)

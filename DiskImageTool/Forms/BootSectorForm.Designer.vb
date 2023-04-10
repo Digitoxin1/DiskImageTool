@@ -62,11 +62,11 @@ Partial Class BootSectorForm
         Me.TxtHiddenSectors = New System.Windows.Forms.TextBox()
         Me.GroupBoxExtended = New System.Windows.Forms.GroupBox()
         Me.TableLayoutPanel1 = New System.Windows.Forms.TableLayoutPanel()
-        Me.HexVolumeLabel = New DiskImageTool.HexTextBox()
         Me.HexFileSystemType = New DiskImageTool.HexTextBox()
         Me.TxtSectorCountLarge = New System.Windows.Forms.TextBox()
         Me.TxtDriveNumber = New System.Windows.Forms.TextBox()
         Me.TxtVolumeLabel = New System.Windows.Forms.TextBox()
+        Me.HexVolumeLabel = New DiskImageTool.HexTextBox()
         Me.TxtFileSystemType = New System.Windows.Forms.TextBox()
         Me.HexExtendedBootSignature = New DiskImageTool.HexTextBox()
         Me.HexVolumeSerialNumber = New DiskImageTool.HexTextBox()
@@ -546,16 +546,6 @@ Partial Class BootSectorForm
         Me.TableLayoutPanel1.Size = New System.Drawing.Size(489, 104)
         Me.TableLayoutPanel1.TabIndex = 0
         '
-        'HexVolumeLabel
-        '
-        Me.TableLayoutPanel1.SetColumnSpan(Me.HexVolumeLabel, 2)
-        Me.HexVolumeLabel.Font = New System.Drawing.Font("Courier New", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.HexVolumeLabel.Location = New System.Drawing.Point(251, 55)
-        Me.HexVolumeLabel.MaskLength = 11
-        Me.HexVolumeLabel.Name = "HexVolumeLabel"
-        Me.HexVolumeLabel.Size = New System.Drawing.Size(234, 20)
-        Me.HexVolumeLabel.TabIndex = 10
-        '
         'HexFileSystemType
         '
         Me.TableLayoutPanel1.SetColumnSpan(Me.HexFileSystemType, 2)
@@ -589,6 +579,16 @@ Partial Class BootSectorForm
         Me.TxtVolumeLabel.Name = "TxtVolumeLabel"
         Me.TxtVolumeLabel.Size = New System.Drawing.Size(104, 20)
         Me.TxtVolumeLabel.TabIndex = 9
+        '
+        'HexVolumeLabel
+        '
+        Me.TableLayoutPanel1.SetColumnSpan(Me.HexVolumeLabel, 2)
+        Me.HexVolumeLabel.Font = New System.Drawing.Font("Courier New", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.HexVolumeLabel.Location = New System.Drawing.Point(251, 55)
+        Me.HexVolumeLabel.MaskLength = 11
+        Me.HexVolumeLabel.Name = "HexVolumeLabel"
+        Me.HexVolumeLabel.Size = New System.Drawing.Size(234, 20)
+        Me.HexVolumeLabel.TabIndex = 10
         '
         'TxtFileSystemType
         '
@@ -656,6 +656,7 @@ Partial Class BootSectorForm
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
         Me.AutoSize = True
         Me.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink
+        Me.CancelButton = Me.BtnCancel
         Me.ClientSize = New System.Drawing.Size(573, 504)
         Me.Controls.Add(FlowLayoutPanel3)
         Me.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle

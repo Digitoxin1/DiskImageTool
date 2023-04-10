@@ -30,9 +30,9 @@ Partial Class OEMNameForm
         Me.BtnUpdate = New System.Windows.Forms.Button()
         Me.BtnCancel = New System.Windows.Forms.Button()
         Me.TableLayoutPanel1 = New System.Windows.Forms.TableLayoutPanel()
-        Me.MskOEMNameHex = New DiskImageTool.HexTextBox()
         Me.TxtCurrentOEMHex = New System.Windows.Forms.TextBox()
         Me.FlowLayoutPanel1 = New System.Windows.Forms.FlowLayoutPanel()
+        Me.MskOEMNameHex = New DiskImageTool.HexTextBox()
         Label1 = New System.Windows.Forms.Label()
         Label2 = New System.Windows.Forms.Label()
         Me.TableLayoutPanel1.SuspendLayout()
@@ -123,15 +123,6 @@ Partial Class OEMNameForm
         Me.TableLayoutPanel1.Size = New System.Drawing.Size(391, 53)
         Me.TableLayoutPanel1.TabIndex = 0
         '
-        'MskOEMNameHex
-        '
-        Me.MskOEMNameHex.Font = New System.Drawing.Font("Courier New", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.MskOEMNameHex.Location = New System.Drawing.Point(218, 29)
-        Me.MskOEMNameHex.MaskLength = 8
-        Me.MskOEMNameHex.Name = "MskOEMNameHex"
-        Me.MskOEMNameHex.Size = New System.Drawing.Size(170, 20)
-        Me.MskOEMNameHex.TabIndex = 5
-        '
         'TxtCurrentOEMHex
         '
         Me.TxtCurrentOEMHex.Anchor = System.Windows.Forms.AnchorStyles.Left
@@ -154,12 +145,22 @@ Partial Class OEMNameForm
         Me.FlowLayoutPanel1.Size = New System.Drawing.Size(192, 29)
         Me.FlowLayoutPanel1.TabIndex = 1
         '
+        'MskOEMNameHex
+        '
+        Me.MskOEMNameHex.Font = New System.Drawing.Font("Courier New", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.MskOEMNameHex.Location = New System.Drawing.Point(218, 29)
+        Me.MskOEMNameHex.MaskLength = 8
+        Me.MskOEMNameHex.Name = "MskOEMNameHex"
+        Me.MskOEMNameHex.Size = New System.Drawing.Size(170, 20)
+        Me.MskOEMNameHex.TabIndex = 5
+        '
         'OEMNameForm
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
         Me.AutoSize = True
         Me.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink
+        Me.CancelButton = Me.BtnCancel
         Me.ClientSize = New System.Drawing.Size(440, 151)
         Me.Controls.Add(Me.FlowLayoutPanel1)
         Me.Controls.Add(Me.TableLayoutPanel1)

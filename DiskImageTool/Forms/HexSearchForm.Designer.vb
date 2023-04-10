@@ -138,6 +138,7 @@ Partial Class HexSearchForm
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
         Me.AutoSize = True
         Me.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink
+        Me.CancelButton = Me.BtnCancel
         Me.ClientSize = New System.Drawing.Size(396, 236)
         Me.Controls.Add(Me.ChkCaseSensitive)
         Me.Controls.Add(Me.Label1)

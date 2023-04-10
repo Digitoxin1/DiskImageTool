@@ -49,6 +49,7 @@ Partial Class TextViewForm
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
         Me.ClientSize = New System.Drawing.Size(769, 561)
         Me.Controls.Add(Me.TextBox1)
+        Me.KeyPreview = True
         Me.Name = "TextViewForm"
         Me.ShowIcon = False
         Me.ShowInTaskbar = False

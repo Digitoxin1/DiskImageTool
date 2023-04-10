@@ -550,6 +550,7 @@ Partial Class HexViewForm
         Me.Controls.Add(Me.ToolStripMain)
         Me.Controls.Add(Me.StatusStrip1)
         Me.Controls.Add(Me.HexBox1)
+        Me.KeyPreview = True
         Me.MaximizeBox = False
         Me.MaximumSize = New System.Drawing.Size(765, 1280)
         Me.MinimizeBox = False
