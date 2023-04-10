@@ -425,6 +425,18 @@ Public Class MainForm
         End If
     End Sub
 
+    Private Sub BootSectorEdit()
+        Dim BootSectorForm As New BootSectorForm(_Disk, _OEMNameDictionary)
+
+        BootSectorForm.ShowDialog()
+
+        Dim Result As Boolean = BootSectorForm.DialogResult = DialogResult.OK
+
+        If Result Then
+            ComboItemRefresh(True, True)
+        End If
+    End Sub
+
     Private Sub CheckForUpdates()
         Dim DownloadVersion As String = ""
         Dim DownloadURL As String = ""
@@ -1601,6 +1613,7 @@ Public Class MainForm
         If _Disk IsNot Nothing AndAlso Not _Disk.LoadError Then
             BtnChangeOEMName.Enabled = _Disk.IsValidImage
             BtnDisplayBootSector.Enabled = _Disk.CheckSize
+            BtnEditBootSector.Enabled = _Disk.CheckSize
             BtnDisplayDisk.Enabled = _Disk.CheckSize
             BtnDisplayFAT.Enabled = _Disk.IsValidImage
             BtnEditFAT.Enabled = _Disk.IsValidImage
@@ -1610,6 +1623,7 @@ Public Class MainForm
             BtnDisplayBootSector.Enabled = False
             BtnDisplayDisk.Enabled = False
             BtnDisplayFAT.Enabled = False
+            BtnEditBootSector.Enabled = False
             BtnEditFAT.Enabled = False
             BtnDisplayDirectory.Enabled = False
         End If
@@ -2174,7 +2188,7 @@ Public Class MainForm
                     If _Disk.BootSector.HasValidExtendedBootSignature Then
                         .Add(ListViewTileGetItem(BootRecordGroup, BootSectorDescription(BootSectorOffsets.VolumeSerialNumber), _Disk.BootSector.VolumeSerialNumber.ToString("X8").Insert(4, "-")))
                         .Add(ListViewTileGetItem(BootRecordGroup, BootSectorDescription(BootSectorOffsets.VolumeLabel), _Disk.BootSector.GetVolumeLabelString.TrimEnd(NULL_CHAR)))
-                        .Add(ListViewTileGetItem(BootRecordGroup, BootSectorDescription(BootSectorOffsets.FileSystemType), Encoding.UTF8.GetString(_Disk.BootSector.FileSystemType)))
+                        .Add(ListViewTileGetItem(BootRecordGroup, BootSectorDescription(BootSectorOffsets.FileSystemType), _Disk.BootSector.GetFileSystemTypeString))
                     End If
                 End If
                 If _Disk.BootSector.BootStrapSignature <> &HAA55 Then
@@ -3303,6 +3317,10 @@ Public Class MainForm
 
     Private Sub BtnResetSort_Click(sender As Object, e As EventArgs) Handles BtnResetSort.Click
         ClearSort(True)
+    End Sub
+
+    Private Sub BtnEditBootSector_Click(sender As Object, e As EventArgs) Handles BtnEditBootSector.Click
+        BootSectorEdit
     End Sub
 #End Region
 

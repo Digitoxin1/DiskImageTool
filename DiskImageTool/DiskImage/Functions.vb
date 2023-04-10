@@ -79,56 +79,84 @@ Namespace DiskImage
 
             Select Case Size
                 Case 163840
+                    BootSector.BytesPerSector = 512
+                    BootSector.HiddenSectors = 0
                     BootSector.MediaDescriptor = &HFE
+                    BootSector.NumberOfFATs = 2
                     BootSector.NumberOfHeads = 1
+                    BootSector.ReservedSectorCount = 1
                     BootSector.RootEntryCount = 64
                     BootSector.SectorCountSmall = 320
                     BootSector.SectorsPerCluster = 1
                     BootSector.SectorsPerFAT = 1
                     BootSector.SectorsPerTrack = 8
                 Case 184320
+                    BootSector.BytesPerSector = 512
+                    BootSector.HiddenSectors = 0
                     BootSector.MediaDescriptor = &HFC
+                    BootSector.NumberOfFATs = 2
                     BootSector.NumberOfHeads = 1
+                    BootSector.ReservedSectorCount = 1
                     BootSector.RootEntryCount = 64
                     BootSector.SectorCountSmall = 360
                     BootSector.SectorsPerCluster = 1
                     BootSector.SectorsPerFAT = 1
                     BootSector.SectorsPerTrack = 9
                 Case 327680
+                    BootSector.BytesPerSector = 512
+                    BootSector.HiddenSectors = 0
                     BootSector.MediaDescriptor = &HFF
+                    BootSector.NumberOfFATs = 2
                     BootSector.NumberOfHeads = 2
+                    BootSector.ReservedSectorCount = 1
                     BootSector.RootEntryCount = 112
                     BootSector.SectorCountSmall = 640
                     BootSector.SectorsPerCluster = 2
                     BootSector.SectorsPerFAT = 1
                     BootSector.SectorsPerTrack = 8
                 Case 368640
+                    BootSector.BytesPerSector = 512
+                    BootSector.HiddenSectors = 0
                     BootSector.MediaDescriptor = &HFD
+                    BootSector.NumberOfFATs = 2
                     BootSector.NumberOfHeads = 2
+                    BootSector.ReservedSectorCount = 1
                     BootSector.RootEntryCount = 112
                     BootSector.SectorCountSmall = 720
                     BootSector.SectorsPerCluster = 2
                     BootSector.SectorsPerFAT = 2
                     BootSector.SectorsPerTrack = 9
                 Case 737280
+                    BootSector.BytesPerSector = 512
+                    BootSector.HiddenSectors = 0
                     BootSector.MediaDescriptor = &HF9
+                    BootSector.NumberOfFATs = 2
                     BootSector.NumberOfHeads = 2
+                    BootSector.ReservedSectorCount = 1
                     BootSector.RootEntryCount = 112
                     BootSector.SectorCountSmall = 1440
                     BootSector.SectorsPerCluster = 2
                     BootSector.SectorsPerFAT = 3
                     BootSector.SectorsPerTrack = 9
                 Case 1228800
+                    BootSector.BytesPerSector = 512
+                    BootSector.HiddenSectors = 0
                     BootSector.MediaDescriptor = &HF9
+                    BootSector.NumberOfFATs = 2
                     BootSector.NumberOfHeads = 2
+                    BootSector.ReservedSectorCount = 1
                     BootSector.RootEntryCount = 224
                     BootSector.SectorCountSmall = 2400
                     BootSector.SectorsPerCluster = 1
                     BootSector.SectorsPerFAT = 7
                     BootSector.SectorsPerTrack = 15
                 Case 1474560
+                    BootSector.BytesPerSector = 512
+                    BootSector.HiddenSectors = 0
                     BootSector.MediaDescriptor = &HF0
+                    BootSector.NumberOfFATs = 2
                     BootSector.NumberOfHeads = 2
+                    BootSector.ReservedSectorCount = 1
                     BootSector.RootEntryCount = 224
                     BootSector.SectorCountSmall = 2880
                     BootSector.SectorsPerCluster = 1

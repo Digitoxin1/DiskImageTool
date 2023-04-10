@@ -115,6 +115,15 @@ Public Class HexTextBox
         Return HexStringToBytes(GetHexString())
     End Function
 
+    Public Sub SetHex(Value As String)
+        If MyBase.Text <> Value Then
+            _SuppressEvent = True
+            MyBase.Text = Value
+            _SuppressEvent = False
+            ButtonUndo.Enabled = False
+        End If
+    End Sub
+
     Public Sub SetHex(Value() As Byte)
         Dim NewText = BitConverter.ToString(Value).Replace("-", " ")
 

@@ -137,6 +137,12 @@
     <Compile Include="DiskImage\ImageByteArray.vb" />
     <Compile Include="DiskImage\RootDirectory.vb" />
     <Compile Include="DiskImage\SubDirectory.vb" />
+    <Compile Include="Forms\BootSectorForm.Designer.vb">
+      <DependentUpon>BootSectorForm.vb</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\BootSectorForm.vb">
+      <SubType>Form</SubType>
+    </Compile>
     <Compile Include="Forms\FATEditForm.Designer.vb">
       <DependentUpon>FATEditForm.vb</DependentUpon>
     </Compile>
@@ -230,6 +236,9 @@
   <ItemGroup>
     <EmbeddedResource Include="Forms\AboutBox.resx">
       <DependentUpon>AboutBox.vb</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\BootSectorForm.resx">
+      <DependentUpon>BootSectorForm.vb</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\FATEditForm.resx">
       <DependentUpon>FATEditForm.vb</DependentUpon>

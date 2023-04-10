@@ -169,9 +169,5 @@
 
             Return DataBytes.GetBytes(SectorBlock.Offset, SectorBlock.Size)
         End Function
-
-        Private Sub DataBytes_DataChanged(Offset As UInteger, OriginalValue As Object, NewValue As Object) Handles DataBytes.DataChanged
-
-        End Sub
     End Class
 End Namespace
