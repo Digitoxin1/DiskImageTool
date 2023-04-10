@@ -29,14 +29,15 @@ Module Functions
         End If
 
         Hex = Hex.Trim()
+        Hex = Hex.Replace(" ", "")
+        Hex = Hex.Replace(Chr(13), "")
+        Hex = Hex.Replace(Chr(10), "")
+        Hex = Hex.Replace(Chr(9), "")
 
         Dim regex = New Regex("^[0-9A-F]*$", RegexOptions.IgnoreCase)
-        Dim regexSpaces = New Regex("^([0-9A-F]{1,2} )*([0-9A-F]{1,2})?$", RegexOptions.IgnoreCase)
 
         Dim HexArray As String()
-        If regexSpaces.IsMatch(Hex) Then
-            HexArray = Hex.Split()
-        ElseIf regex.IsMatch(hex) Then
+        If regex.IsMatch(Hex) Then
             If Hex.Length Mod 2 = 1 Then
                 Hex = "0" & Hex
             End If

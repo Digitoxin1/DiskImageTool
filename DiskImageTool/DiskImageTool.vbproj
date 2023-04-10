@@ -151,6 +151,12 @@
     </Compile>
     <Compile Include="Filters.vb" />
     <Compile Include="DiskImage\BootSector.vb" />
+    <Compile Include="Forms\HexSearchForm.Designer.vb">
+      <DependentUpon>HexSearchForm.vb</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\HexSearchForm.vb">
+      <SubType>Form</SubType>
+    </Compile>
     <Compile Include="Functions.vb" />
     <Compile Include="Controls\HexTextBox.vb">
       <SubType>Component</SubType>
@@ -230,6 +236,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\FilePropertiesForm.resx">
       <DependentUpon>FilePropertiesForm.vb</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\HexSearchForm.resx">
+      <DependentUpon>HexSearchForm.vb</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\ItemScanForm.resx">
       <DependentUpon>ItemScanForm.vb</DependentUpon>

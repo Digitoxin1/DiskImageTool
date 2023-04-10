@@ -18,6 +18,7 @@ Public Class HexViewForm
     Private _Modified As Boolean = False
     Private _RegionDescriptions As Dictionary(Of UInteger, HexViewHighlightRegion)
     Private _IgnoreEvent As Boolean = False
+    Private _LastSearch As HexSearch
     Private WithEvents NumericSector As ToolStripNumericUpDown
     Private WithEvents NumericCluster As ToolStripNumericUpDown
     Private WithEvents ComboTrack As ToolStripComboBox
@@ -35,6 +36,7 @@ Public Class HexViewForm
         _SectorNavigator = SectorNavigator
         _ClusterNavigator = ClusterNavigator
         _SyncBlocks = SyncBlocks
+        _LastSearch = New HexSearch
 
         If Not _BootSector.IsValidImage Then
             _BootSector = BuildBootSectorFromFileSize(_HexViewSectorData.Disk.Data.Length)
@@ -809,6 +811,74 @@ Public Class HexViewForm
 
         _IgnoreEvent = False
     End Sub
+
+    Private Sub Search(FindNext As Boolean)
+        Dim Result As Boolean = True
+        Dim SelectionStart = HexBox1.SelectionStart
+        Dim SelectionLength = HexBox1.SelectionLength
+        Dim TopLine = HexBox1.StartByte \ HexBox1.BytesPerLine
+
+        _IgnoreEvent = True
+
+        If FindNext And _LastSearch.SearchString <> "" Then
+            Result = SearchNext(_LastSearch)
+        Else
+            Dim frmHexSearchForm As New HexSearchForm(_LastSearch)
+            frmHexSearchForm.ShowDialog()
+
+            If frmHexSearchForm.DialogResult = DialogResult.OK Then
+                _LastSearch = frmHexSearchForm.Search
+                Result = SearchNext(_LastSearch)
+            End If
+        End If
+
+        _IgnoreEvent = False
+
+        If Not Result Then
+            HexBox1.PerformScrollToLine(TopLine)
+            HexBox1.SelectionStart = SelectionStart
+            HexBox1.SelectionLength = SelectionLength
+            MsgBox("Can't Find '" & _LastSearch.SearchString & "'", MsgBoxStyle.Information)
+        Else
+            RefreshSelection(False)
+            RefresSelectorValues()
+        End If
+    End Sub
+
+    Private Function SearchNext(Search As HexSearch) As Boolean
+        Dim Result As Boolean = True
+        Dim DoSearch As Boolean = True
+
+        If Search.SearchString <> "" Then
+            Dim Options As New FindOptions()
+            If Search.SearchHex Then
+                Options.Type = FindType.Hex
+                Options.Hex = ConvertHexToBytes(Search.SearchString)
+                If Options.Hex Is Nothing Then
+                    DoSearch = False
+                End If
+            Else
+                Options.Type = FindType.Text
+                Options.Text = Search.SearchString
+                Options.MatchCase = Search.CaseSensitive
+            End If
+            If DoSearch Then
+                Dim Index = HexBox1.Find(Options)
+                If Index = -1 Then
+                    If HexBox1.SelectionStart > 0 Then
+                        HexBox1.SelectionStart = 0
+                        HexBox1.SelectionLength = 0
+                        Result = SearchNext(Search)
+                    Else
+                        Result = False
+                    End If
+                End If
+            End If
+        End If
+
+        Return Result
+    End Function
+
     Private Sub SelectCurrentSector()
         Dim OutOfRange As Boolean = HexBox1.SelectionStart >= HexBox1.ByteProvider.Length
         If Not OutOfRange Then
@@ -870,6 +940,14 @@ Public Class HexViewForm
         If HexBox1.SelectionLength > 0 Then
             FillSelected(&HF6)
         End If
+    End Sub
+
+    Private Sub BtnFind_Click(sender As Object, e As EventArgs) Handles BtnFind.Click, ToolStripBtnFind.Click
+        Search(False)
+    End Sub
+
+    Private Sub BtnFindNext_Click(sender As Object, e As EventArgs) Handles BtnFindNext.Click, ToolStripBtnFindNext.Click
+        Search(True)
     End Sub
 
     Private Sub BtnPaste_Click(sender As Object, e As EventArgs) Handles BtnPaste.Click, ToolStripBtnPaste.Click
@@ -950,10 +1028,18 @@ Public Class HexViewForm
     End Sub
 
     Private Sub HexBox1_SelectionLengthChanged(sender As Object, e As EventArgs) Handles HexBox1.SelectionLengthChanged
+        If _IgnoreEvent Then
+            Exit Sub
+        End If
+
         RefreshSelection(False)
     End Sub
 
     Private Sub HexBox1_SelectionStartChanged(sender As Object, e As EventArgs) Handles HexBox1.SelectionStartChanged
+        If _IgnoreEvent Then
+            Exit Sub
+        End If
+
         RefreshSelection(False)
     End Sub
 
@@ -974,6 +1060,10 @@ Public Class HexViewForm
     End Sub
 
     Private Sub HexBox1_VisibilityBytesChanged(sender As Object, e As EventArgs) Handles HexBox1.VisibilityBytesChanged
+        If _IgnoreEvent Then
+            Exit Sub
+        End If
+
         If _SectorNavigator Or _ClusterNavigator Then
             RefresSelectorValues()
         End If
