@@ -129,7 +129,7 @@ Public Class BootSectorForm
         SetHelpString(Msg, LblNumberOfHeads, TxtNumberOfHeads)
 
         Msg = "Number of sectors preceeding the first sector of a partitioned volume" _
-             & vbCrLf & vbCrLf & "Note: This value should be 0 for all floppy disks"
+             & vbCrLf & vbCrLf & "Note: This value is unused on floppy disks and is usually but not always 0"
         SetHelpString(Msg, LblHiddenSectors, TxtHiddenSectors)
 
         Msg = "Total number of sectors in a FAT16 volume larger than 65535 sectors" _
@@ -168,6 +168,20 @@ Public Class BootSectorForm
             _HelpProvider1.SetShowHelp(Control, True)
         Next
     End Sub
+
+    Private Function IsByteArrayNull(b() As Byte) As Boolean
+        Dim Result As Boolean = True
+
+        For Each value In b
+            Debug.Print(value)
+            If value <> 0 Then
+                Result = False
+                Exit For
+            End If
+        Next
+
+        Return Result
+    End Function
 
     Private Function SetTagValue(Control As Control, Value As String) As FieldData
         If Control.Tag Is Nothing Then
@@ -237,18 +251,30 @@ Public Class BootSectorForm
         SetValue(TxtSectorsPerFAT, BootSector.SectorsPerFAT)
         SetValue(TxtSectorsPerTrack, BootSector.SectorsPerTrack, {"8", "9", "15", "18"})
         SetValue(TxtNumberOfHeads, BootSector.NumberOfHeads, {"1", "2"})
-        SetValue(TxtHiddenSectors, BootSector.HiddenSectors, {"0"})
+        SetValue(TxtHiddenSectors, BootSector.HiddenSectors)
     End Sub
 
     Private Sub PopulateExtended(BootSector As BootSector)
-        SetValue(TxtSectorCountLarge, BootSector.SectorCountLarge, {"0"})
-        SetValue(TxtDriveNumber, BootSector.DriveNumber, Array.ConvertAll(BootSector.ValidDriveNumber, Function(x) x.ToString()))
-        SetValue(HexExtendedBootSignature, BootSector.ExtendedBootSignature.ToString("X2"), {"00", "29"})
+        SetValue(TxtSectorCountLarge, BootSector.SectorCountLarge)
+        SetValue(TxtDriveNumber, BootSector.DriveNumber)
+        SetValue(HexExtendedBootSignature, BootSector.ExtendedBootSignature.ToString("X2"))
         SetValue(HexVolumeSerialNumber, BootSector.VolumeSerialNumber.ToString("X8"))
         SetValue(TxtVolumeLabel, BootSector.GetVolumeLabelString.TrimEnd)
         HexVolumeLabel.SetHex(BootSector.VolumeLabel)
         SetValue(TxtFileSystemType, BootSector.GetFileSystemTypeString.TrimEnd)
         HexFileSystemType.SetHex(BootSector.FileSystemType)
+
+        Dim ErrorCount As Integer = 0
+        If BootSector.SectorCountLarge <> 0 Then
+            ErrorCount += 1
+        End If
+        If BootSector.ExtendedBootSignature <> 0 And BootSector.ExtendedBootSignature <> &H29 Then
+            ErrorCount += 1
+        End If
+        If BootSector.DriveNumber <> 0 And BootSector.DriveNumber <> 128 Then
+            ErrorCount += 1
+        End If
+        LblExtendedMsg.Visible = (ErrorCount > 1)
     End Sub
 
     Private Sub PopulateValues()
@@ -325,6 +351,32 @@ Public Class BootSectorForm
         HexOEMName.SetHex(_Disk.BootSector.OEMName)
     End Sub
 
+    Private Sub RefreshVolumeLabel()
+        Dim MaskNulls As Boolean = (HexExtendedBootSignature.GetHex(0) <> &H29)
+        Dim b = HexVolumeLabel.GetHex
+        Dim Value As String
+        If MaskNulls AndAlso IsByteArrayNull(b) Then
+            Value = ""
+        Else
+            Value = DiskImage.CodePage437ToUnicode(HexVolumeLabel.GetHex).TrimEnd
+        End If
+
+        SetValue(TxtVolumeLabel, Value)
+    End Sub
+
+    Private Sub RefreshFileSystemType()
+        Dim MaskNulls As Boolean = (HexExtendedBootSignature.GetHex(0) <> &H29)
+        Dim b = HexFileSystemType.GetHex
+        Dim Value As String
+        If MaskNulls AndAlso IsByteArrayNull(b) Then
+            Value = ""
+        Else
+            Value = DiskImage.CodePage437ToUnicode(HexFileSystemType.GetHex).TrimEnd
+        End If
+
+        SetValue(TxtFileSystemType, Value)
+    End Sub
+
     Private Sub SetCurrentDiskType()
         Dim SelectedItem As BootSectorDiskType = Nothing
 
@@ -340,8 +392,7 @@ Public Class BootSectorForm
                     And BootSector.SectorsPerTrack = TxtSectorsPerTrack.Text _
                     And BootSector.BytesPerSector = CboBytesPerSector.Text _
                     And BootSector.NumberOfFATs = TxtNumberOfFATs.Text _
-                    And BootSector.ReservedSectorCount = TxtReservedSectors.Text _
-                    And BootSector.HiddenSectors = TxtHiddenSectors.Text Then
+                    And BootSector.ReservedSectorCount = TxtReservedSectors.Text Then
 
                     SelectedItem = DiskType
                     Exit For
@@ -364,6 +415,9 @@ Public Class BootSectorForm
         TxtFileSystemType.Enabled = Enabled
         HexFileSystemType.Enabled = Enabled
         BtnVolumeSerialNumber.Enabled = Enabled
+
+        RefreshVolumeLabel()
+        RefreshFileSystemType()
     End Sub
 
     Private Sub UpdateBootSector()
@@ -415,8 +469,8 @@ Public Class BootSectorForm
             _Disk.BootSector.NumberOfHeads = UShortValue
         End If
 
-        If UShort.TryParse(TxtHiddenSectors.Text, UShortValue) Then
-            _Disk.BootSector.HiddenSectors = UShortValue
+        If UInteger.TryParse(TxtHiddenSectors.Text, UintegerValue) Then
+            _Disk.BootSector.HiddenSectors = UintegerValue
         End If
 
         If _HasExtended Then
@@ -522,7 +576,7 @@ Public Class BootSectorForm
         End If
 
         _SuppressEvent = True
-        SetValue(TxtVolumeLabel, DiskImage.CodePage437ToUnicode(HexVolumeLabel.GetHex).TrimEnd)
+        RefreshVolumeLabel()
         _SuppressEvent = False
     End Sub
 
@@ -542,7 +596,7 @@ Public Class BootSectorForm
         End If
 
         _SuppressEvent = True
-        SetValue(TxtFileSystemType, DiskImage.CodePage437ToUnicode(HexFileSystemType.GetHex).TrimEnd)
+        RefreshFileSystemType()
         _SuppressEvent = False
     End Sub
 
@@ -671,11 +725,13 @@ Public Class BootSectorForm
             Exit Sub
         End If
 
+        _SuppressEvent = True
         Dim HB As HexTextBox = sender
         If HB.Text <> CType(HB.Tag, FieldData).LastValue Then
             UpdateTag(HB)
             SetExtendedState()
         End If
+        _SuppressEvent = False
     End Sub
 
     Private Sub HexVolumeSerialNumber_TextChanged(sender As Object, e As EventArgs) Handles HexVolumeSerialNumber.TextChanged

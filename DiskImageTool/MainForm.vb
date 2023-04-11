@@ -2179,9 +2179,9 @@ Public Class MainForm
                 .Add(ListViewTileGetItem(BootRecordGroup, BootSectorDescription(BootSectorOffsets.SectorsPerFAT), _Disk.BootSector.SectorsPerFAT))
                 .Add(ListViewTileGetItem(BootRecordGroup, BootSectorDescription(BootSectorOffsets.SectorsPerTrack), _Disk.BootSector.SectorsPerTrack))
                 .Add(ListViewTileGetItem(BootRecordGroup, BootSectorDescription(BootSectorOffsets.NumberOfHeads), _Disk.BootSector.NumberOfHeads))
-                If _Disk.BootSector.HiddenSectors > 0 Then
-                    .Add(ListViewTileGetItem(BootRecordGroup, BootSectorDescription(BootSectorOffsets.HiddenSectors), _Disk.BootSector.HiddenSectors))
-                End If
+                'If _Disk.BootSector.HiddenSectors > 0 Then
+                '.Add(ListViewTileGetItem(BootRecordGroup, BootSectorDescription(BootSectorOffsets.HiddenSectors), _Disk.BootSector.HiddenSectors))
+                'End If
                 If BootStrapStart >= BootSectorOffsets.BootStrapCode Then
                     If _Disk.BootSector.DriveNumber > 0 Then
                         .Add(ListViewTileGetItem(BootRecordGroup, BootSectorDescription(BootSectorOffsets.DriveNumber), _Disk.BootSector.DriveNumber))

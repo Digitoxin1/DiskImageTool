@@ -80,7 +80,6 @@ Namespace DiskImage
             Select Case Size
                 Case 163840
                     BootSector.BytesPerSector = 512
-                    BootSector.HiddenSectors = 0
                     BootSector.MediaDescriptor = &HFE
                     BootSector.NumberOfFATs = 2
                     BootSector.NumberOfHeads = 1
@@ -92,7 +91,6 @@ Namespace DiskImage
                     BootSector.SectorsPerTrack = 8
                 Case 184320
                     BootSector.BytesPerSector = 512
-                    BootSector.HiddenSectors = 0
                     BootSector.MediaDescriptor = &HFC
                     BootSector.NumberOfFATs = 2
                     BootSector.NumberOfHeads = 1
@@ -104,7 +102,6 @@ Namespace DiskImage
                     BootSector.SectorsPerTrack = 9
                 Case 327680
                     BootSector.BytesPerSector = 512
-                    BootSector.HiddenSectors = 0
                     BootSector.MediaDescriptor = &HFF
                     BootSector.NumberOfFATs = 2
                     BootSector.NumberOfHeads = 2
@@ -116,7 +113,6 @@ Namespace DiskImage
                     BootSector.SectorsPerTrack = 8
                 Case 368640
                     BootSector.BytesPerSector = 512
-                    BootSector.HiddenSectors = 0
                     BootSector.MediaDescriptor = &HFD
                     BootSector.NumberOfFATs = 2
                     BootSector.NumberOfHeads = 2
@@ -128,7 +124,6 @@ Namespace DiskImage
                     BootSector.SectorsPerTrack = 9
                 Case 737280
                     BootSector.BytesPerSector = 512
-                    BootSector.HiddenSectors = 0
                     BootSector.MediaDescriptor = &HF9
                     BootSector.NumberOfFATs = 2
                     BootSector.NumberOfHeads = 2
@@ -140,7 +135,6 @@ Namespace DiskImage
                     BootSector.SectorsPerTrack = 9
                 Case 1228800
                     BootSector.BytesPerSector = 512
-                    BootSector.HiddenSectors = 0
                     BootSector.MediaDescriptor = &HF9
                     BootSector.NumberOfFATs = 2
                     BootSector.NumberOfHeads = 2
@@ -152,7 +146,6 @@ Namespace DiskImage
                     BootSector.SectorsPerTrack = 15
                 Case 1474560
                     BootSector.BytesPerSector = 512
-                    BootSector.HiddenSectors = 0
                     BootSector.MediaDescriptor = &HF0
                     BootSector.NumberOfFATs = 2
                     BootSector.NumberOfHeads = 2

@@ -26,11 +26,9 @@ Partial Class BootSectorForm
         Dim FlowLayoutPanel1 As System.Windows.Forms.FlowLayoutPanel
         Dim FlowLayoutPanel3 As System.Windows.Forms.FlowLayoutPanel
         Dim resources As System.ComponentModel.ComponentResourceManager = New System.ComponentModel.ComponentResourceManager(GetType(BootSectorForm))
-        Me.LblVolumeSerialNumber = New System.Windows.Forms.Label()
-        Me.LblVolumeLabel = New System.Windows.Forms.Label()
+        Dim FlowLayoutPanel4 As System.Windows.Forms.FlowLayoutPanel
         Me.LblDiskType = New System.Windows.Forms.Label()
         Me.CboDiskType = New System.Windows.Forms.ComboBox()
-        Me.LblFileSystemType = New System.Windows.Forms.Label()
         Me.GroupBoxMain = New System.Windows.Forms.GroupBox()
         Me.TableLayoutPanelMain = New System.Windows.Forms.TableLayoutPanel()
         Me.LblBytesPerSector = New System.Windows.Forms.Label()
@@ -58,17 +56,21 @@ Partial Class BootSectorForm
         Me.TxtHiddenSectors = New System.Windows.Forms.TextBox()
         Me.GroupBoxExtended = New System.Windows.Forms.GroupBox()
         Me.TableLayoutPanel1 = New System.Windows.Forms.TableLayoutPanel()
+        Me.BtnVolumeSerialNumber = New System.Windows.Forms.Button()
         Me.TxtDriveNumber = New System.Windows.Forms.TextBox()
         Me.LblDriveNumber = New System.Windows.Forms.Label()
         Me.LblSectorCountLarge = New System.Windows.Forms.Label()
         Me.TxtSectorCountLarge = New System.Windows.Forms.TextBox()
+        Me.LblVolumeLabel = New System.Windows.Forms.Label()
         Me.TxtVolumeLabel = New System.Windows.Forms.TextBox()
+        Me.LblFileSystemType = New System.Windows.Forms.Label()
         Me.TxtFileSystemType = New System.Windows.Forms.TextBox()
+        Me.LblVolumeSerialNumber = New System.Windows.Forms.Label()
         Me.lblExtendedBootSignature = New System.Windows.Forms.Label()
         Me.FlowLayoutPanel2 = New System.Windows.Forms.FlowLayoutPanel()
         Me.BtnUpdate = New System.Windows.Forms.Button()
         Me.BtnCancel = New System.Windows.Forms.Button()
-        Me.BtnVolumeSerialNumber = New System.Windows.Forms.Button()
+        Me.LblExtendedMsg = New System.Windows.Forms.Label()
         Me.HexOEMName = New DiskImageTool.HexTextBox()
         Me.HexMediaDescriptor = New DiskImageTool.HexTextBox()
         Me.HexFileSystemType = New DiskImageTool.HexTextBox()
@@ -77,6 +79,7 @@ Partial Class BootSectorForm
         Me.HexExtendedBootSignature = New DiskImageTool.HexTextBox()
         FlowLayoutPanel1 = New System.Windows.Forms.FlowLayoutPanel()
         FlowLayoutPanel3 = New System.Windows.Forms.FlowLayoutPanel()
+        FlowLayoutPanel4 = New System.Windows.Forms.FlowLayoutPanel()
         FlowLayoutPanel1.SuspendLayout()
         FlowLayoutPanel3.SuspendLayout()
         Me.GroupBoxMain.SuspendLayout()
@@ -84,37 +87,8 @@ Partial Class BootSectorForm
         Me.GroupBoxExtended.SuspendLayout()
         Me.TableLayoutPanel1.SuspendLayout()
         Me.FlowLayoutPanel2.SuspendLayout()
+        FlowLayoutPanel4.SuspendLayout()
         Me.SuspendLayout()
-        '
-        'LblVolumeSerialNumber
-        '
-        Me.LblVolumeSerialNumber.Anchor = System.Windows.Forms.AnchorStyles.Left
-        Me.LblVolumeSerialNumber.AutoSize = True
-        Me.LblVolumeSerialNumber.Location = New System.Drawing.Point(251, 32)
-        Me.LblVolumeSerialNumber.Name = "LblVolumeSerialNumber"
-        Me.LblVolumeSerialNumber.Size = New System.Drawing.Size(111, 13)
-        Me.LblVolumeSerialNumber.TabIndex = 6
-        Me.LblVolumeSerialNumber.Text = "Volume Serial Number"
-        '
-        'LblVolumeLabel
-        '
-        Me.LblVolumeLabel.Anchor = System.Windows.Forms.AnchorStyles.Left
-        Me.LblVolumeLabel.AutoSize = True
-        Me.LblVolumeLabel.Location = New System.Drawing.Point(3, 58)
-        Me.LblVolumeLabel.Name = "LblVolumeLabel"
-        Me.LblVolumeLabel.Size = New System.Drawing.Size(71, 13)
-        Me.LblVolumeLabel.TabIndex = 9
-        Me.LblVolumeLabel.Text = "Volume Label"
-        '
-        'LblDiskType
-        '
-        Me.LblDiskType.Anchor = System.Windows.Forms.AnchorStyles.Left
-        Me.LblDiskType.AutoSize = True
-        Me.LblDiskType.Location = New System.Drawing.Point(3, 7)
-        Me.LblDiskType.Name = "LblDiskType"
-        Me.LblDiskType.Size = New System.Drawing.Size(55, 13)
-        Me.LblDiskType.TabIndex = 0
-        Me.LblDiskType.Text = "Disk Type"
         '
         'FlowLayoutPanel1
         '
@@ -128,6 +102,16 @@ Partial Class BootSectorForm
         FlowLayoutPanel1.Size = New System.Drawing.Size(188, 27)
         FlowLayoutPanel1.TabIndex = 0
         '
+        'LblDiskType
+        '
+        Me.LblDiskType.Anchor = System.Windows.Forms.AnchorStyles.Left
+        Me.LblDiskType.AutoSize = True
+        Me.LblDiskType.Location = New System.Drawing.Point(3, 7)
+        Me.LblDiskType.Name = "LblDiskType"
+        Me.LblDiskType.Size = New System.Drawing.Size(55, 13)
+        Me.LblDiskType.TabIndex = 0
+        Me.LblDiskType.Text = "Disk Type"
+        '
         'CboDiskType
         '
         Me.CboDiskType.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList
@@ -136,16 +120,6 @@ Partial Class BootSectorForm
         Me.CboDiskType.Name = "CboDiskType"
         Me.CboDiskType.Size = New System.Drawing.Size(121, 21)
         Me.CboDiskType.TabIndex = 1
-        '
-        'LblFileSystemType
-        '
-        Me.LblFileSystemType.Anchor = System.Windows.Forms.AnchorStyles.Left
-        Me.LblFileSystemType.AutoSize = True
-        Me.LblFileSystemType.Location = New System.Drawing.Point(3, 84)
-        Me.LblFileSystemType.Name = "LblFileSystemType"
-        Me.LblFileSystemType.Size = New System.Drawing.Size(74, 13)
-        Me.LblFileSystemType.TabIndex = 12
-        Me.LblFileSystemType.Text = "File System ID"
         '
         'FlowLayoutPanel3
         '
@@ -158,7 +132,7 @@ Partial Class BootSectorForm
         FlowLayoutPanel3.FlowDirection = System.Windows.Forms.FlowDirection.TopDown
         FlowLayoutPanel3.Location = New System.Drawing.Point(21, 21)
         FlowLayoutPanel3.Name = "FlowLayoutPanel3"
-        FlowLayoutPanel3.Size = New System.Drawing.Size(506, 444)
+        FlowLayoutPanel3.Size = New System.Drawing.Size(506, 467)
         FlowLayoutPanel3.TabIndex = 0
         FlowLayoutPanel3.WrapContents = False
         '
@@ -430,7 +404,7 @@ Partial Class BootSectorForm
         'TxtHiddenSectors
         '
         Me.TxtHiddenSectors.Location = New System.Drawing.Point(141, 161)
-        Me.TxtHiddenSectors.MaxLength = 5
+        Me.TxtHiddenSectors.MaxLength = 10
         Me.TxtHiddenSectors.Name = "TxtHiddenSectors"
         Me.TxtHiddenSectors.Size = New System.Drawing.Size(104, 20)
         Me.TxtHiddenSectors.TabIndex = 24
@@ -439,10 +413,10 @@ Partial Class BootSectorForm
         '
         Me.GroupBoxExtended.AutoSize = True
         Me.GroupBoxExtended.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink
-        Me.GroupBoxExtended.Controls.Add(Me.TableLayoutPanel1)
+        Me.GroupBoxExtended.Controls.Add(FlowLayoutPanel4)
         Me.GroupBoxExtended.Location = New System.Drawing.Point(3, 264)
         Me.GroupBoxExtended.Name = "GroupBoxExtended"
-        Me.GroupBoxExtended.Size = New System.Drawing.Size(500, 142)
+        Me.GroupBoxExtended.Size = New System.Drawing.Size(500, 165)
         Me.GroupBoxExtended.TabIndex = 2
         Me.GroupBoxExtended.TabStop = False
         Me.GroupBoxExtended.Text = "Extended Parameters"
@@ -472,7 +446,8 @@ Partial Class BootSectorForm
         Me.TableLayoutPanel1.Controls.Add(Me.HexVolumeSerialNumber, 3, 1)
         Me.TableLayoutPanel1.Controls.Add(Me.lblExtendedBootSignature, 0, 1)
         Me.TableLayoutPanel1.Controls.Add(Me.HexExtendedBootSignature, 1, 1)
-        Me.TableLayoutPanel1.Location = New System.Drawing.Point(6, 19)
+        Me.TableLayoutPanel1.Location = New System.Drawing.Point(0, 23)
+        Me.TableLayoutPanel1.Margin = New System.Windows.Forms.Padding(0)
         Me.TableLayoutPanel1.Name = "TableLayoutPanel1"
         Me.TableLayoutPanel1.RowCount = 4
         Me.TableLayoutPanel1.RowStyles.Add(New System.Windows.Forms.RowStyle())
@@ -481,6 +456,19 @@ Partial Class BootSectorForm
         Me.TableLayoutPanel1.RowStyles.Add(New System.Windows.Forms.RowStyle())
         Me.TableLayoutPanel1.Size = New System.Drawing.Size(488, 104)
         Me.TableLayoutPanel1.TabIndex = 0
+        '
+        'BtnVolumeSerialNumber
+        '
+        Me.BtnVolumeSerialNumber.AutoSize = True
+        Me.BtnVolumeSerialNumber.FlatAppearance.BorderSize = 0
+        Me.BtnVolumeSerialNumber.FlatStyle = System.Windows.Forms.FlatStyle.Flat
+        Me.BtnVolumeSerialNumber.Image = CType(resources.GetObject("BtnVolumeSerialNumber.Image"), System.Drawing.Image)
+        Me.BtnVolumeSerialNumber.Location = New System.Drawing.Point(461, 26)
+        Me.BtnVolumeSerialNumber.Margin = New System.Windows.Forms.Padding(0)
+        Me.BtnVolumeSerialNumber.Name = "BtnVolumeSerialNumber"
+        Me.BtnVolumeSerialNumber.Size = New System.Drawing.Size(24, 24)
+        Me.BtnVolumeSerialNumber.TabIndex = 8
+        Me.BtnVolumeSerialNumber.UseVisualStyleBackColor = True
         '
         'TxtDriveNumber
         '
@@ -519,6 +507,16 @@ Partial Class BootSectorForm
         Me.TxtSectorCountLarge.Size = New System.Drawing.Size(104, 20)
         Me.TxtSectorCountLarge.TabIndex = 1
         '
+        'LblVolumeLabel
+        '
+        Me.LblVolumeLabel.Anchor = System.Windows.Forms.AnchorStyles.Left
+        Me.LblVolumeLabel.AutoSize = True
+        Me.LblVolumeLabel.Location = New System.Drawing.Point(3, 58)
+        Me.LblVolumeLabel.Name = "LblVolumeLabel"
+        Me.LblVolumeLabel.Size = New System.Drawing.Size(71, 13)
+        Me.LblVolumeLabel.TabIndex = 9
+        Me.LblVolumeLabel.Text = "Volume Label"
+        '
         'TxtVolumeLabel
         '
         Me.TxtVolumeLabel.Location = New System.Drawing.Point(141, 55)
@@ -527,6 +525,16 @@ Partial Class BootSectorForm
         Me.TxtVolumeLabel.Size = New System.Drawing.Size(104, 20)
         Me.TxtVolumeLabel.TabIndex = 10
         '
+        'LblFileSystemType
+        '
+        Me.LblFileSystemType.Anchor = System.Windows.Forms.AnchorStyles.Left
+        Me.LblFileSystemType.AutoSize = True
+        Me.LblFileSystemType.Location = New System.Drawing.Point(3, 84)
+        Me.LblFileSystemType.Name = "LblFileSystemType"
+        Me.LblFileSystemType.Size = New System.Drawing.Size(74, 13)
+        Me.LblFileSystemType.TabIndex = 12
+        Me.LblFileSystemType.Text = "File System ID"
+        '
         'TxtFileSystemType
         '
         Me.TxtFileSystemType.Location = New System.Drawing.Point(141, 81)
@@ -534,6 +542,16 @@ Partial Class BootSectorForm
         Me.TxtFileSystemType.Name = "TxtFileSystemType"
         Me.TxtFileSystemType.Size = New System.Drawing.Size(104, 20)
         Me.TxtFileSystemType.TabIndex = 13
+        '
+        'LblVolumeSerialNumber
+        '
+        Me.LblVolumeSerialNumber.Anchor = System.Windows.Forms.AnchorStyles.Left
+        Me.LblVolumeSerialNumber.AutoSize = True
+        Me.LblVolumeSerialNumber.Location = New System.Drawing.Point(251, 32)
+        Me.LblVolumeSerialNumber.Name = "LblVolumeSerialNumber"
+        Me.LblVolumeSerialNumber.Size = New System.Drawing.Size(111, 13)
+        Me.LblVolumeSerialNumber.TabIndex = 6
+        Me.LblVolumeSerialNumber.Text = "Volume Serial Number"
         '
         'lblExtendedBootSignature
         '
@@ -552,7 +570,7 @@ Partial Class BootSectorForm
         Me.FlowLayoutPanel2.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink
         Me.FlowLayoutPanel2.Controls.Add(Me.BtnUpdate)
         Me.FlowLayoutPanel2.Controls.Add(Me.BtnCancel)
-        Me.FlowLayoutPanel2.Location = New System.Drawing.Point(157, 412)
+        Me.FlowLayoutPanel2.Location = New System.Drawing.Point(157, 435)
         Me.FlowLayoutPanel2.Name = "FlowLayoutPanel2"
         Me.FlowLayoutPanel2.Size = New System.Drawing.Size(192, 29)
         Me.FlowLayoutPanel2.TabIndex = 3
@@ -579,18 +597,29 @@ Partial Class BootSectorForm
         Me.BtnCancel.Text = "&Cancel"
         Me.BtnCancel.UseVisualStyleBackColor = True
         '
-        'BtnVolumeSerialNumber
+        'FlowLayoutPanel4
         '
-        Me.BtnVolumeSerialNumber.AutoSize = True
-        Me.BtnVolumeSerialNumber.FlatAppearance.BorderSize = 0
-        Me.BtnVolumeSerialNumber.FlatStyle = System.Windows.Forms.FlatStyle.Flat
-        Me.BtnVolumeSerialNumber.Image = CType(resources.GetObject("BtnVolumeSerialNumber.Image"), System.Drawing.Image)
-        Me.BtnVolumeSerialNumber.Location = New System.Drawing.Point(461, 26)
-        Me.BtnVolumeSerialNumber.Margin = New System.Windows.Forms.Padding(0)
-        Me.BtnVolumeSerialNumber.Name = "BtnVolumeSerialNumber"
-        Me.BtnVolumeSerialNumber.Size = New System.Drawing.Size(24, 24)
-        Me.BtnVolumeSerialNumber.TabIndex = 8
-        Me.BtnVolumeSerialNumber.UseVisualStyleBackColor = True
+        FlowLayoutPanel4.AutoSize = True
+        FlowLayoutPanel4.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink
+        FlowLayoutPanel4.Controls.Add(Me.LblExtendedMsg)
+        FlowLayoutPanel4.Controls.Add(Me.TableLayoutPanel1)
+        FlowLayoutPanel4.FlowDirection = System.Windows.Forms.FlowDirection.TopDown
+        FlowLayoutPanel4.Location = New System.Drawing.Point(6, 19)
+        FlowLayoutPanel4.Name = "FlowLayoutPanel4"
+        FlowLayoutPanel4.Size = New System.Drawing.Size(488, 127)
+        FlowLayoutPanel4.TabIndex = 1
+        '
+        'LblExtendedMsg
+        '
+        Me.LblExtendedMsg.AutoSize = True
+        Me.LblExtendedMsg.ForeColor = System.Drawing.Color.Blue
+        Me.LblExtendedMsg.Location = New System.Drawing.Point(3, 0)
+        Me.LblExtendedMsg.Margin = New System.Windows.Forms.Padding(3, 0, 3, 10)
+        Me.LblExtendedMsg.Name = "LblExtendedMsg"
+        Me.LblExtendedMsg.Size = New System.Drawing.Size(417, 13)
+        Me.LblExtendedMsg.TabIndex = 0
+        Me.LblExtendedMsg.Text = "There appears to be data stored in the Extended Parameters block of this Boot Sec" &
+    "tor. "
         '
         'HexOEMName
         '
@@ -656,7 +685,7 @@ Partial Class BootSectorForm
         Me.AutoSize = True
         Me.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink
         Me.CancelButton = Me.BtnCancel
-        Me.ClientSize = New System.Drawing.Size(573, 504)
+        Me.ClientSize = New System.Drawing.Size(560, 529)
         Me.Controls.Add(FlowLayoutPanel3)
         Me.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle
         Me.HelpButton = True
@@ -681,6 +710,8 @@ Partial Class BootSectorForm
         Me.TableLayoutPanel1.ResumeLayout(False)
         Me.TableLayoutPanel1.PerformLayout()
         Me.FlowLayoutPanel2.ResumeLayout(False)
+        FlowLayoutPanel4.ResumeLayout(False)
+        FlowLayoutPanel4.PerformLayout()
         Me.ResumeLayout(False)
         Me.PerformLayout()
 
@@ -735,4 +766,5 @@ Partial Class BootSectorForm
     Friend WithEvents LblFileSystemType As Label
     Friend WithEvents LblDiskType As Label
     Friend WithEvents BtnVolumeSerialNumber As Button
+    Friend WithEvents LblExtendedMsg As Label
 End Class

@@ -51,7 +51,7 @@ Namespace DiskImage
             SectorsPerFAT = 2
             SectorsPerTrack = 2
             NumberOfHeads = 2
-            HiddenSectors = 2
+            HiddenSectors = 4
             SectorCountLarge = 4
             DriveNumber = 1
             Reserved = 1
@@ -137,9 +137,9 @@ Namespace DiskImage
             End Set
         End Property
 
-        Public Property HiddenSectors() As UShort
+        Public Property HiddenSectors() As UInteger
             Get
-                Return _FileBytes.GetBytesShort(BootSectorOffsets.HiddenSectors)
+                Return _FileBytes.GetBytesInteger(BootSectorOffsets.HiddenSectors)
             End Get
             Set
                 _FileBytes.SetBytes(Value, BootSectorOffsets.HiddenSectors)
