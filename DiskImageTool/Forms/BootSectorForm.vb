@@ -46,7 +46,9 @@ Public Class BootSectorForm
             & vbCrLf & "360K Floppy" & vbTab & "2" _
             & vbCrLf & "720K Floppy" & vbTab & "2" _
             & vbCrLf & "1.2M Floppy" & vbTab & "1" _
-            & vbCrLf & "1.44M Floppy" & vbTab & "1"
+            & vbCrLf & "1.44M Floppy" & vbTab & "1" _
+            & vbCrLf & "2.88M Floppy" & vbTab & "2" _
+            & vbCrLf & "DMF Floppy" & vbTab & "2 or 4"
         SetHelpString(Msg, LblSectorsPerCluster, CboSectorsPerCluster)
 
         Msg = "Number of reserved sectors in the reserved region of the volume starting at the first sector of the volume" _
@@ -68,7 +70,9 @@ Public Class BootSectorForm
             & vbCrLf & "360K Floppy" & vbTab & "112" _
             & vbCrLf & "720K Floppy" & vbTab & "112" _
             & vbCrLf & "1.2M Floppy" & vbTab & "224" _
-            & vbCrLf & "1.44M Floppy" & vbTab & "224"
+            & vbCrLf & "1.44M Floppy" & vbTab & "224" _
+            & vbCrLf & "2.88M Floppy" & vbTab & "240" _
+            & vbCrLf & "DMF Floppy" & vbTab & "16"
         SetHelpString(Msg, LblRootDirectoryEntries, TxtRootDirectoryEntries)
 
         Msg = "Total number of sectors in the volume" _
@@ -79,12 +83,14 @@ Public Class BootSectorForm
             & vbCrLf & "360K Floppy" & vbTab & "720" _
             & vbCrLf & "720K Floppy" & vbTab & "1440" _
             & vbCrLf & "1.2M Floppy" & vbTab & "2400" _
-            & vbCrLf & "1.44M Floppy" & vbTab & "2880"
+            & vbCrLf & "1.44M Floppy" & vbTab & "2880" _
+            & vbCrLf & "2.88M Floppy" & vbTab & "5760" _
+            & vbCrLf & "DMF Floppy" & vbTab & "3360"
         SetHelpString(Msg, LblSectorCountSmall, TxtSectorCountSmall)
 
         Msg = "Media Descriptor" _
             & vbCrLf & vbCrLf & "Allowed Values:" _
-            & vbCrLf & "F0" & vbTab & "1.44M & 2.88M Floppy" _
+            & vbCrLf & "F0" & vbTab & "1.44M, 2.88M, DMF Floppy" _
             & vbCrLf & "F8" & vbTab & "Fixed Disk" _
             & vbCrLf & "F9" & vbTab & "720K & 1.2M Floppy" _
             & vbCrLf & "FA" & vbTab & "Unused" _
@@ -103,7 +109,9 @@ Public Class BootSectorForm
             & vbCrLf & "360K Floppy" & vbTab & "2" _
             & vbCrLf & "720K Floppy" & vbTab & "3" _
             & vbCrLf & "1.2M Floppy" & vbTab & "7" _
-            & vbCrLf & "1.44M Floppy" & vbTab & "9"
+            & vbCrLf & "1.44M Floppy" & vbTab & "9" _
+            & vbCrLf & "2.88M Floppy" & vbTab & "9" _
+            & vbCrLf & "DMF Floppy" & vbTab & "3 or 5"
         SetHelpString(Msg, LblSectorsPerFAT, TxtSectorsPerFAT)
 
         Msg = "Number of sectors per track on the disk" _
@@ -114,7 +122,9 @@ Public Class BootSectorForm
             & vbCrLf & "360K Floppy" & vbTab & "9" _
             & vbCrLf & "720K Floppy" & vbTab & "9" _
             & vbCrLf & "1.2M Floppy" & vbTab & "15" _
-            & vbCrLf & "1.44M Floppy" & vbTab & "18"
+            & vbCrLf & "1.44M Floppy" & vbTab & "18" _
+            & vbCrLf & "2.88M Floppy" & vbTab & "36" _
+            & vbCrLf & "DMF Floppy" & vbTab & "21"
         SetHelpString(Msg, LblSectorsPerTrack, TxtSectorsPerTrack)
 
         Msg = "Number of physical heads (sides) on the disk" _
@@ -125,7 +135,9 @@ Public Class BootSectorForm
             & vbCrLf & "360K Floppy" & vbTab & "2" _
             & vbCrLf & "720K Floppy" & vbTab & "2" _
             & vbCrLf & "1.2M Floppy" & vbTab & "2" _
-            & vbCrLf & "1.44M Floppy" & vbTab & "2"
+            & vbCrLf & "1.44M Floppy" & vbTab & "2" _
+            & vbCrLf & "2.88M Floppy" & vbTab & "2" _
+            & vbCrLf & "DMF Floppy" & vbTab & "2"
         SetHelpString(Msg, LblNumberOfHeads, TxtNumberOfHeads)
 
         Msg = "Number of sectors preceeding the first sector of a partitioned volume" _
@@ -173,7 +185,6 @@ Public Class BootSectorForm
         Dim Result As Boolean = True
 
         For Each value In b
-            Debug.Print(value)
             If value <> 0 Then
                 Result = False
                 Exit For
@@ -249,7 +260,7 @@ Public Class BootSectorForm
         SetValue(TxtSectorCountSmall, BootSector.SectorCountSmall)
         SetValue(HexMediaDescriptor, BootSector.MediaDescriptor.ToString("X2"), Array.ConvertAll(BootSector.ValidMediaDescriptor, Function(x) x.ToString("X2")))
         SetValue(TxtSectorsPerFAT, BootSector.SectorsPerFAT)
-        SetValue(TxtSectorsPerTrack, BootSector.SectorsPerTrack, {"8", "9", "15", "18"})
+        SetValue(TxtSectorsPerTrack, BootSector.SectorsPerTrack, {"8", "9", "15", "18", "21", "36"})
         SetValue(TxtNumberOfHeads, BootSector.NumberOfHeads, {"1", "2"})
         SetValue(TxtHiddenSectors, BootSector.HiddenSectors)
     End Sub
@@ -294,14 +305,17 @@ Public Class BootSectorForm
 
     Private Sub PopulateDiskTypes()
         CboDiskType.Items.Clear()
-        CboDiskType.Items.Add(New BootSectorDiskType("160K Floppy", 163840))
-        CboDiskType.Items.Add(New BootSectorDiskType("180K Floppy", 184320))
-        CboDiskType.Items.Add(New BootSectorDiskType("320K Floppy", 327680))
-        CboDiskType.Items.Add(New BootSectorDiskType("360K Floppy", 368640))
-        CboDiskType.Items.Add(New BootSectorDiskType("720K Floppy", 737280))
-        CboDiskType.Items.Add(New BootSectorDiskType("1.2M Floppy", 1228800))
-        CboDiskType.Items.Add(New BootSectorDiskType("1.44M Floppy", 1474560))
-        CboDiskType.Items.Add(New BootSectorDiskType("Custom", 0))
+        CboDiskType.Items.Add(New BootSectorDiskType("160K", FloppyDiskType.Floppy160))
+        CboDiskType.Items.Add(New BootSectorDiskType("180K", FloppyDiskType.Floppy180))
+        CboDiskType.Items.Add(New BootSectorDiskType("320K", FloppyDiskType.Floppy320))
+        CboDiskType.Items.Add(New BootSectorDiskType("360K", FloppyDiskType.Floppy360))
+        CboDiskType.Items.Add(New BootSectorDiskType("720K", FloppyDiskType.Floppy720))
+        CboDiskType.Items.Add(New BootSectorDiskType("1.2M", FloppyDiskType.Floppy1200))
+        CboDiskType.Items.Add(New BootSectorDiskType("1.44M", FloppyDiskType.Floppy1440))
+        CboDiskType.Items.Add(New BootSectorDiskType("2.88M", FloppyDiskType.Floppy2880))
+        CboDiskType.Items.Add(New BootSectorDiskType("DMF (1024)", FloppyDiskType.FloppyDMF1024))
+        CboDiskType.Items.Add(New BootSectorDiskType("DMF (2048)", FloppyDiskType.FloppyDMF2048))
+        CboDiskType.Items.Add(New BootSectorDiskType("Custom", FloppyDiskType.FloppyUnknown))
 
         CboDiskType.SelectedIndex = CboDiskType.Items.Count - 1
     End Sub
@@ -381,8 +395,8 @@ Public Class BootSectorForm
         Dim SelectedItem As BootSectorDiskType = Nothing
 
         For Each DiskType As BootSectorDiskType In CboDiskType.Items
-            If DiskType.Size > 0 Then
-                Dim BootSector = BuildBootSectorFromFileSize(DiskType.Size)
+            If DiskType.Type <> FloppyDiskType.FloppyUnknown Then
+                Dim BootSector = BuildBootSectorFromType(DiskType.Type)
                 If BootSector.MediaDescriptor = HexMediaDescriptor.GetHex(0) _
                     And BootSector.NumberOfHeads = TxtNumberOfHeads.Text _
                     And BootSector.RootEntryCount = TxtRootDirectoryEntries.Text _
@@ -691,8 +705,8 @@ Public Class BootSectorForm
 
         _SuppressEvent = True
         Dim DiskType As BootSectorDiskType = CboDiskType.SelectedItem
-        If DiskType.Size > 0 Then
-            Dim BootSector = BuildBootSectorFromFileSize(DiskType.Size)
+        If DiskType.Type <> FloppyDiskType.FloppyUnknown Then
+            Dim BootSector = BuildBootSectorFromType(DiskType.Type)
             PopulateBootRecord(BootSector)
         End If
         _SuppressEvent = False
@@ -714,7 +728,7 @@ Public Class BootSectorForm
     Private Sub CboDiskType_LostFocus(sender As Object, e As EventArgs) Handles CboDiskType.LostFocus
         _SuppressEvent = True
         Dim DiskType As BootSectorDiskType = CboDiskType.SelectedItem
-        If DiskType.Size = 0 Then
+        If DiskType.Type = FloppyDiskType.FloppyUnknown Then
             SetCurrentDiskType()
         End If
         _SuppressEvent = False
@@ -758,13 +772,13 @@ Public Class BootSectorForm
     End Class
 
     Private Class BootSectorDiskType
-        Public Sub New(Name As String, Size As Integer)
+        Public Sub New(Name As String, Type As FloppyDiskType)
             _Name = Name
-            _Size = Size
+            _Type = Type
         End Sub
 
         Public Property Name As String
-        Public Property Size As Integer
+        Public Property Type As FloppyDiskType
 
         Public Overrides Function ToString() As String
             Return _Name

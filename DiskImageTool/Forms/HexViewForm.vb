@@ -39,7 +39,7 @@ Public Class HexViewForm
         _LastSearch = New HexSearch
 
         If Not _BootSector.IsValidImage Then
-            _BootSector = BuildBootSectorFromFileSize(_HexViewSectorData.Disk.Data.Length)
+            _BootSector = BuildBootSectorFromType(GetFloppyDiskType(_HexViewSectorData.Disk.Data.Length))
         End If
 
         If Not _BootSector.IsValidImage Then

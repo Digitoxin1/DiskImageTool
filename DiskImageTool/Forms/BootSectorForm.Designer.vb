@@ -97,9 +97,9 @@ Partial Class BootSectorForm
         FlowLayoutPanel1.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink
         FlowLayoutPanel1.Controls.Add(Me.LblDiskType)
         FlowLayoutPanel1.Controls.Add(Me.CboDiskType)
-        FlowLayoutPanel1.Location = New System.Drawing.Point(315, 3)
+        FlowLayoutPanel1.Location = New System.Drawing.Point(356, 3)
         FlowLayoutPanel1.Name = "FlowLayoutPanel1"
-        FlowLayoutPanel1.Size = New System.Drawing.Size(188, 27)
+        FlowLayoutPanel1.Size = New System.Drawing.Size(147, 27)
         FlowLayoutPanel1.TabIndex = 0
         '
         'LblDiskType
@@ -118,7 +118,7 @@ Partial Class BootSectorForm
         Me.CboDiskType.FormattingEnabled = True
         Me.CboDiskType.Location = New System.Drawing.Point(64, 3)
         Me.CboDiskType.Name = "CboDiskType"
-        Me.CboDiskType.Size = New System.Drawing.Size(121, 21)
+        Me.CboDiskType.Size = New System.Drawing.Size(80, 21)
         Me.CboDiskType.TabIndex = 1
         '
         'FlowLayoutPanel3

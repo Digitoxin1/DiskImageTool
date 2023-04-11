@@ -25,6 +25,20 @@ Namespace DiskImage
 
         Private CodePage437ReverseLookupTable As Dictionary(Of UShort, Byte)
 
+        Public Enum FloppyDiskType
+            FloppyUnknown = 0
+            Floppy160 = 1
+            Floppy180 = 2
+            Floppy320 = 3
+            Floppy360 = 4
+            Floppy720 = 5
+            Floppy1200 = 6
+            Floppy1440 = 7
+            Floppy2880 = 8
+            FloppyDMF1024 = 9
+            FloppyDMF2048 = 10
+        End Enum
+
         Public Function BootSectorDescription(Offset As DiskImage.BootSector.BootSectorOffsets) As String
             Select Case Offset
                 Case DiskImage.BootSector.BootSectorOffsets.JmpBoot
@@ -72,13 +86,13 @@ Namespace DiskImage
             End Select
         End Function
 
-        Public Function BuildBootSectorFromFileSize(Size As Integer) As BootSector
+        Public Function BuildBootSectorFromType(Type As FloppyDiskType) As BootSector
             Dim Data(511) As Byte
             Dim FileBytes As New ImageByteArray(Data)
             Dim BootSector = New BootSector(FileBytes)
 
-            Select Case Size
-                Case 163840
+            Select Case Type
+                Case FloppyDiskType.Floppy160
                     BootSector.BytesPerSector = 512
                     BootSector.MediaDescriptor = &HFE
                     BootSector.NumberOfFATs = 2
@@ -89,7 +103,8 @@ Namespace DiskImage
                     BootSector.SectorsPerCluster = 1
                     BootSector.SectorsPerFAT = 1
                     BootSector.SectorsPerTrack = 8
-                Case 184320
+
+                Case FloppyDiskType.Floppy180
                     BootSector.BytesPerSector = 512
                     BootSector.MediaDescriptor = &HFC
                     BootSector.NumberOfFATs = 2
@@ -100,7 +115,8 @@ Namespace DiskImage
                     BootSector.SectorsPerCluster = 1
                     BootSector.SectorsPerFAT = 1
                     BootSector.SectorsPerTrack = 9
-                Case 327680
+
+                Case FloppyDiskType.Floppy320
                     BootSector.BytesPerSector = 512
                     BootSector.MediaDescriptor = &HFF
                     BootSector.NumberOfFATs = 2
@@ -111,7 +127,8 @@ Namespace DiskImage
                     BootSector.SectorsPerCluster = 2
                     BootSector.SectorsPerFAT = 1
                     BootSector.SectorsPerTrack = 8
-                Case 368640
+
+                Case FloppyDiskType.Floppy360
                     BootSector.BytesPerSector = 512
                     BootSector.MediaDescriptor = &HFD
                     BootSector.NumberOfFATs = 2
@@ -122,7 +139,8 @@ Namespace DiskImage
                     BootSector.SectorsPerCluster = 2
                     BootSector.SectorsPerFAT = 2
                     BootSector.SectorsPerTrack = 9
-                Case 737280
+
+                Case FloppyDiskType.Floppy720
                     BootSector.BytesPerSector = 512
                     BootSector.MediaDescriptor = &HF9
                     BootSector.NumberOfFATs = 2
@@ -133,7 +151,8 @@ Namespace DiskImage
                     BootSector.SectorsPerCluster = 2
                     BootSector.SectorsPerFAT = 3
                     BootSector.SectorsPerTrack = 9
-                Case 1228800
+
+                Case FloppyDiskType.Floppy1200
                     BootSector.BytesPerSector = 512
                     BootSector.MediaDescriptor = &HF9
                     BootSector.NumberOfFATs = 2
@@ -144,7 +163,8 @@ Namespace DiskImage
                     BootSector.SectorsPerCluster = 1
                     BootSector.SectorsPerFAT = 7
                     BootSector.SectorsPerTrack = 15
-                Case 1474560
+
+                Case FloppyDiskType.Floppy1440
                     BootSector.BytesPerSector = 512
                     BootSector.MediaDescriptor = &HF0
                     BootSector.NumberOfFATs = 2
@@ -155,9 +175,70 @@ Namespace DiskImage
                     BootSector.SectorsPerCluster = 1
                     BootSector.SectorsPerFAT = 9
                     BootSector.SectorsPerTrack = 18
+
+                Case FloppyDiskType.FloppyDMF1024
+                    BootSector.BytesPerSector = 512
+                    BootSector.MediaDescriptor = &HF0
+                    BootSector.NumberOfFATs = 2
+                    BootSector.NumberOfHeads = 2
+                    BootSector.ReservedSectorCount = 1
+                    BootSector.RootEntryCount = 16
+                    BootSector.SectorCountSmall = 3360
+                    BootSector.SectorsPerCluster = 2
+                    BootSector.SectorsPerFAT = 5
+                    BootSector.SectorsPerTrack = 21
+
+                Case FloppyDiskType.FloppyDMF2048
+                    BootSector.BytesPerSector = 512
+                    BootSector.MediaDescriptor = &HF0
+                    BootSector.NumberOfFATs = 2
+                    BootSector.NumberOfHeads = 2
+                    BootSector.ReservedSectorCount = 1
+                    BootSector.RootEntryCount = 16
+                    BootSector.SectorCountSmall = 3360
+                    BootSector.SectorsPerCluster = 4
+                    BootSector.SectorsPerFAT = 3
+                    BootSector.SectorsPerTrack = 21
+
+                Case FloppyDiskType.Floppy2880
+                    BootSector.BytesPerSector = 512
+                    BootSector.MediaDescriptor = &HF0
+                    BootSector.NumberOfFATs = 2
+                    BootSector.NumberOfHeads = 2
+                    BootSector.ReservedSectorCount = 1
+                    BootSector.RootEntryCount = 240
+                    BootSector.SectorCountSmall = 5760
+                    BootSector.SectorsPerCluster = 2
+                    BootSector.SectorsPerFAT = 9
+                    BootSector.SectorsPerTrack = 36
             End Select
 
             Return BootSector
+        End Function
+
+        Public Function GetFloppyDiskType(Size As Integer) As FloppyDiskType
+            Select Case Size
+                Case 163840
+                    Return FloppyDiskType.Floppy160
+                Case 184320
+                    Return FloppyDiskType.Floppy180
+                Case 327680
+                    Return FloppyDiskType.Floppy320
+                Case 368640
+                    Return FloppyDiskType.Floppy360
+                Case 737280
+                    Return FloppyDiskType.Floppy720
+                Case 1228800
+                    Return FloppyDiskType.Floppy1200
+                Case 1474560
+                    Return FloppyDiskType.Floppy1440
+                Case 1720320
+                    Return FloppyDiskType.FloppyDMF2048
+                Case 2949120
+                    Return FloppyDiskType.Floppy2880
+                Case Else
+                    Return FloppyDiskType.FloppyUnknown
+            End Select
         End Function
 
         Public Function BytesToSector(Bytes As UInteger) As UInteger
