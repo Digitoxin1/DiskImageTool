@@ -18,6 +18,10 @@ What does DiskImageTool do?
 
 Suggestions for new features are welcome.
 
+[Download the latest release here](https://github.com/Digitoxin1/DiskImageTool/releases/latest)
+
+---
+
 ![Screenshot 2023-03-24 235833](https://user-images.githubusercontent.com/5696659/227692756-913a5702-80d2-4915-8634-a8b5fc689e98.png)
 
 ![Screenshot 2023-03-25 000320](https://user-images.githubusercontent.com/5696659/227693418-8df385b5-96cf-4b7e-a48c-8e24defdf4f4.png)
