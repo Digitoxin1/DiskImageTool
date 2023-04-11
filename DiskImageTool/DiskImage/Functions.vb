@@ -293,6 +293,13 @@ Namespace DiskImage
             Return DT
         End Function
 
+        Public Function GenerateVolumeSerialNumber(Value As Date) As UInteger
+            Dim Lo As UShort = (Value.Day + Value.Month * 256) + (Value.Millisecond \ 10 + Value.Second * 256)
+            Dim Hi As UShort = (Value.Minute + Value.Hour * 256) + Value.Year
+
+            Return Hi + Lo * 65536
+        End Function
+
         Public Function GetDataFromChain(FileBytes As ByteArray, SectorChain As List(Of UInteger)) As Byte()
             Dim SectorSize As UInteger = BYTES_PER_SECTOR
             Dim Content(SectorChain.Count * SectorSize - 1) As Byte

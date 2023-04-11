@@ -24,9 +24,9 @@ Partial Class FilePropertiesForm
     Private Sub InitializeComponent()
         Me.components = New System.ComponentModel.Container()
         Dim GroupFileDates As System.Windows.Forms.GroupBox
+        Dim Panel1 As System.Windows.Forms.Panel
         Dim GroupAttributes As System.Windows.Forms.GroupBox
         Dim TableLayoutPanel3 As System.Windows.Forms.TableLayoutPanel
-        Dim Panel1 As System.Windows.Forms.Panel
         Me.TableLayoutPanel1 = New System.Windows.Forms.TableLayoutPanel()
         Me.NumCreatedMS = New System.Windows.Forms.NumericUpDown()
         Me.BtnLastAccessed = New System.Windows.Forms.Button()
@@ -47,6 +47,8 @@ Partial Class FilePropertiesForm
         Me.BtnHidden = New System.Windows.Forms.Button()
         Me.ChkReadOnly = New System.Windows.Forms.CheckBox()
         Me.ChkHidden = New System.Windows.Forms.CheckBox()
+        Me.MskExtensionHex = New DiskImageTool.HexTextBox()
+        Me.MskFileHex = New DiskImageTool.HexTextBox()
         Me.LblMultipleFiles = New System.Windows.Forms.Label()
         Me.TxtExtension = New System.Windows.Forms.TextBox()
         Me.TxtFile = New System.Windows.Forms.TextBox()
@@ -55,21 +57,19 @@ Partial Class FilePropertiesForm
         Me.BtnUpdate = New System.Windows.Forms.Button()
         Me.FlowLayoutPanel1 = New System.Windows.Forms.FlowLayoutPanel()
         Me.FlowLayoutPanel2 = New System.Windows.Forms.FlowLayoutPanel()
-        Me.MskExtensionHex = New DiskImageTool.HexTextBox()
-        Me.MskFileHex = New DiskImageTool.HexTextBox()
         GroupFileDates = New System.Windows.Forms.GroupBox()
+        Panel1 = New System.Windows.Forms.Panel()
         GroupAttributes = New System.Windows.Forms.GroupBox()
         TableLayoutPanel3 = New System.Windows.Forms.TableLayoutPanel()
-        Panel1 = New System.Windows.Forms.Panel()
         GroupFileDates.SuspendLayout()
         Me.TableLayoutPanel1.SuspendLayout()
+        Panel1.SuspendLayout()
         CType(Me.NumCreatedMS, System.ComponentModel.ISupportInitialize).BeginInit()
         GroupAttributes.SuspendLayout()
         Me.TableLayoutPanel2.SuspendLayout()
         TableLayoutPanel3.SuspendLayout()
         Me.GroupFileName.SuspendLayout()
         Me.FlowLayoutPanel1.SuspendLayout()
-        Panel1.SuspendLayout()
         Me.FlowLayoutPanel2.SuspendLayout()
         Me.SuspendLayout()
         '
@@ -116,6 +116,17 @@ Partial Class FilePropertiesForm
         Me.TableLayoutPanel1.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 26.0!))
         Me.TableLayoutPanel1.Size = New System.Drawing.Size(378, 78)
         Me.TableLayoutPanel1.TabIndex = 0
+        '
+        'Panel1
+        '
+        Panel1.BackColor = System.Drawing.SystemColors.Window
+        Panel1.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle
+        Panel1.Controls.Add(Me.NumCreatedMS)
+        Panel1.Location = New System.Drawing.Point(263, 29)
+        Panel1.Name = "Panel1"
+        Panel1.Padding = New System.Windows.Forms.Padding(1, 1, 0, 0)
+        Panel1.Size = New System.Drawing.Size(44, 20)
+        Panel1.TabIndex = 5
         '
         'NumCreatedMS
         '
@@ -339,7 +350,7 @@ Partial Class FilePropertiesForm
         'ChkReadOnly
         '
         Me.ChkReadOnly.Anchor = System.Windows.Forms.AnchorStyles.Left
-        Me.ChkReadOnly.Location = New System.Drawing.Point(195, 4)
+        Me.ChkReadOnly.Location = New System.Drawing.Point(189, 4)
         Me.ChkReadOnly.Name = "ChkReadOnly"
         Me.ChkReadOnly.Padding = New System.Windows.Forms.Padding(6, 1, 0, 0)
         Me.ChkReadOnly.Size = New System.Drawing.Size(87, 17)
@@ -350,7 +361,7 @@ Partial Class FilePropertiesForm
         'ChkHidden
         '
         Me.ChkHidden.Anchor = System.Windows.Forms.AnchorStyles.Left
-        Me.ChkHidden.Location = New System.Drawing.Point(195, 30)
+        Me.ChkHidden.Location = New System.Drawing.Point(189, 30)
         Me.ChkHidden.Name = "ChkHidden"
         Me.ChkHidden.Padding = New System.Windows.Forms.Padding(6, 1, 0, 0)
         Me.ChkHidden.Size = New System.Drawing.Size(76, 17)
@@ -379,6 +390,24 @@ Partial Class FilePropertiesForm
         TableLayoutPanel3.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50.0!))
         TableLayoutPanel3.Size = New System.Drawing.Size(370, 52)
         TableLayoutPanel3.TabIndex = 1
+        '
+        'MskExtensionHex
+        '
+        Me.MskExtensionHex.Font = New System.Drawing.Font("Courier New", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.MskExtensionHex.Location = New System.Drawing.Point(179, 29)
+        Me.MskExtensionHex.MaskLength = 3
+        Me.MskExtensionHex.Name = "MskExtensionHex"
+        Me.MskExtensionHex.Size = New System.Drawing.Size(64, 20)
+        Me.MskExtensionHex.TabIndex = 4
+        '
+        'MskFileHex
+        '
+        Me.MskFileHex.Font = New System.Drawing.Font("Courier New", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.MskFileHex.Location = New System.Drawing.Point(3, 29)
+        Me.MskFileHex.MaskLength = 8
+        Me.MskFileHex.Name = "MskFileHex"
+        Me.MskFileHex.Size = New System.Drawing.Size(170, 20)
+        Me.MskFileHex.TabIndex = 3
         '
         'LblMultipleFiles
         '
@@ -456,17 +485,6 @@ Partial Class FilePropertiesForm
         Me.FlowLayoutPanel1.Size = New System.Drawing.Size(192, 29)
         Me.FlowLayoutPanel1.TabIndex = 3
         '
-        'Panel1
-        '
-        Panel1.BackColor = System.Drawing.SystemColors.Window
-        Panel1.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle
-        Panel1.Controls.Add(Me.NumCreatedMS)
-        Panel1.Location = New System.Drawing.Point(263, 29)
-        Panel1.Name = "Panel1"
-        Panel1.Padding = New System.Windows.Forms.Padding(1, 1, 0, 0)
-        Panel1.Size = New System.Drawing.Size(44, 20)
-        Panel1.TabIndex = 5
-        '
         'FlowLayoutPanel2
         '
         Me.FlowLayoutPanel2.AutoSize = True
@@ -480,24 +498,6 @@ Partial Class FilePropertiesForm
         Me.FlowLayoutPanel2.Name = "FlowLayoutPanel2"
         Me.FlowLayoutPanel2.Size = New System.Drawing.Size(402, 346)
         Me.FlowLayoutPanel2.TabIndex = 4
-        '
-        'MskExtensionHex
-        '
-        Me.MskExtensionHex.Font = New System.Drawing.Font("Courier New", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.MskExtensionHex.Location = New System.Drawing.Point(179, 29)
-        Me.MskExtensionHex.MaskLength = 3
-        Me.MskExtensionHex.Name = "MskExtensionHex"
-        Me.MskExtensionHex.Size = New System.Drawing.Size(64, 20)
-        Me.MskExtensionHex.TabIndex = 4
-        '
-        'MskFileHex
-        '
-        Me.MskFileHex.Font = New System.Drawing.Font("Courier New", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.MskFileHex.Location = New System.Drawing.Point(3, 29)
-        Me.MskFileHex.MaskLength = 8
-        Me.MskFileHex.Name = "MskFileHex"
-        Me.MskFileHex.Size = New System.Drawing.Size(170, 20)
-        Me.MskFileHex.TabIndex = 3
         '
         'FilePropertiesForm
         '
@@ -521,6 +521,7 @@ Partial Class FilePropertiesForm
         GroupFileDates.PerformLayout()
         Me.TableLayoutPanel1.ResumeLayout(False)
         Me.TableLayoutPanel1.PerformLayout()
+        Panel1.ResumeLayout(False)
         CType(Me.NumCreatedMS, System.ComponentModel.ISupportInitialize).EndInit()
         GroupAttributes.ResumeLayout(False)
         GroupAttributes.PerformLayout()
@@ -530,7 +531,6 @@ Partial Class FilePropertiesForm
         Me.GroupFileName.ResumeLayout(False)
         Me.GroupFileName.PerformLayout()
         Me.FlowLayoutPanel1.ResumeLayout(False)
-        Panel1.ResumeLayout(False)
         Me.FlowLayoutPanel2.ResumeLayout(False)
         Me.FlowLayoutPanel2.PerformLayout()
         Me.ResumeLayout(False)

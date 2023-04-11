@@ -35,7 +35,6 @@ Public Class FATEditForm
         InitializeGridColumns
 
         _ToolTip = New ToolTip()
-        _ToolTip.SetToolTip(PictureBoxFAT, "test")
         _Disk = Disk
 
         _FAT = New FAT12(_Disk.Data, _Disk.BootSector, Index, True)

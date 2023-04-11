@@ -672,6 +672,7 @@ Public Class MainForm
             End If
         End If
 
+        FATSubMenuRefresh()
         SaveButtonsRefresh()
     End Sub
 

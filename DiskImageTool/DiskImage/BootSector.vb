@@ -7,10 +7,10 @@ Namespace DiskImage
         Private ReadOnly _FileBytes As ImageByteArray
         Private Shared ReadOnly _ValidBootStrapSignature As UShort = &HAA55
         Public Shared ReadOnly ValidBytesPerSector() As UShort = {512, 1024, 2048, 4096}
-        Private Shared ReadOnly _ValidDriveNumber() As Byte = {&H0, &H80}
+        Public Shared ReadOnly ValidDriveNumber() As Byte = {&H0, &H80}
         Private Shared ReadOnly _ValidExtendedBootSignature() As Byte = {&H29}
         Private Shared ReadOnly _ValidJumpInstructuon() As Byte = {&HEB, &HE9}
-        Private Shared ReadOnly _ValidMediaDescriptor() As Byte = {&HF0, &HF8, &HF9, &HFA, &HFB, &HFC, &HFD, &HFE, &HFF}
+        Public Shared ReadOnly ValidMediaDescriptor() As Byte = {&HF0, &HF8, &HF9, &HFA, &HFB, &HFC, &HFD, &HFE, &HFF}
         Public Shared ReadOnly ValidSectorsPerCluster() As Byte = {1, 2, 4, 8, 16, 32, 64, 128}
 
         Public Enum BootSectorOffsets As UInteger
@@ -350,7 +350,7 @@ Namespace DiskImage
         End Function
 
         Public Function HasValidDriveNumber() As Boolean
-            Return _ValidDriveNumber.Contains(DriveNumber)
+            Return ValidDriveNumber.Contains(DriveNumber)
         End Function
 
         Public Function HasValidExtendedBootSignature() As Boolean
@@ -362,7 +362,7 @@ Namespace DiskImage
         End Function
 
         Public Function HasValidMediaDescriptor() As Boolean
-            Return _ValidMediaDescriptor.Contains(MediaDescriptor)
+            Return ValidMediaDescriptor.Contains(MediaDescriptor)
         End Function
 
         Public Function HasValidNumberOfFATs() As Boolean

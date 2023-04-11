@@ -30,7 +30,7 @@
     <ProductName>DiskImageTool</ProductName>
     <PublisherName>Digitoxin</PublisherName>
     <ApplicationRevision>0</ApplicationRevision>
-    <ApplicationVersion>1.25.0.%2a</ApplicationVersion>
+    <ApplicationVersion>1.26.0.%2a</ApplicationVersion>
     <UseApplicationTrust>false</UseApplicationTrust>
     <PublishWizardCompleted>true</PublishWizardCompleted>
     <BootstrapperEnabled>true</BootstrapperEnabled>
@@ -163,6 +163,12 @@
     <Compile Include="Forms\HexSearchForm.vb">
       <SubType>Form</SubType>
     </Compile>
+    <Compile Include="Forms\VolumeSerialNumberForm.Designer.vb">
+      <DependentUpon>VolumeSerialNumberForm.vb</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\VolumeSerialNumberForm.vb">
+      <SubType>Form</SubType>
+    </Compile>
     <Compile Include="Functions.vb" />
     <Compile Include="Controls\HexTextBox.vb">
       <SubType>Component</SubType>
@@ -251,6 +257,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\ItemScanForm.resx">
       <DependentUpon>ItemScanForm.vb</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\VolumeSerialNumberForm.resx">
+      <DependentUpon>VolumeSerialNumberForm.vb</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="MainForm.resx">
       <DependentUpon>MainForm.vb</DependentUpon>
