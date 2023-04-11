@@ -5,10 +5,16 @@ This is a personal project of mine.  I decided to make the source code available
 
 What does DiskImageTool do?
 
-1. It allows you to view and perform simple repairs on IBM PC formatted floppy disk images
-2. You can easily copy files out of the images by dragging and dropping
-3. Easily edit a modified boot sector OEM ID using a built in database of suggestions.
-4. Remove Created and Last Accessed date and time stamps from one or more directory entries.
+1. It allows you to view and perform simple repairs on IBM PC formatted floppy disk images.
+2. You can easily copy files out of the images by dragging and dropping.
+3. File properties editor
+4. Boot sector editor
+5. File Allocation Table (FAT) editor
+6. Full featured Hex editor.  Focus on individual regions of the disk or view and edit the entire disk.
+7. Text file viewer
+8. Easily repair a modified boot sector OEM Name using a built in database of suggestions.
+9. Clean up modifications made by Windows to the boot sector and directory entries with one click.
+10. Open hundreds of images at one time and use powerful filters to narrow down your search to the ones that need your attention.
 
 Suggestions for new features are welcome.
 
