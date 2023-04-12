@@ -701,7 +701,6 @@ Public Class MainForm
         DirectoryEntry.BatchEditMode = True
 
         DirectoryEntry.Clear(IsLastEntry)
-
         If IsLastEntry And Index > 0 Then
             Dim Offset = DirectoryEntry.Offset
             For Counter = Index - 1 To 0 Step -1
@@ -797,6 +796,20 @@ Public Class MainForm
         frmTextView.ShowDialog()
     End Sub
 
+    Private Function DirectoryEntryCanDelete(DirectoryEntry As DiskImage.DirectoryEntry) As Boolean
+        If DirectoryEntry.IsDeleted Then
+            Return False
+        ElseIf DirectoryEntry.IsDirectory Then
+            Return DirectoryEntry.SubDirectory.FileCount(True) = 0
+        Else
+            Return True
+        End If
+    End Function
+
+    Private Function DirectoryEntryCanDeleteWithFill(DirectoryEntry As DiskImage.DirectoryEntry) As Boolean
+        Return DirectoryEntryCanDelete(DirectoryEntry) And DirectoryEntryIsValid(DirectoryEntry)
+    End Function
+
     Private Function DirectoryEntryGetStats(DirectoryEntry As DiskImage.DirectoryEntry) As DirectoryStats
         Dim Stats As DirectoryStats
 
@@ -809,6 +822,8 @@ Public Class MainForm
             .CanExport = .IsValidFile And Not DirectoryEntry.HasInvalidFilename And Not DirectoryEntry.HasInvalidExtension
             .FileSize = DirectoryEntry.FileSize
             .FullFileName = DirectoryEntry.GetFullFileName
+            .CanDelete = DirectoryEntryCanDelete(DirectoryEntry)
+            .CanDeleteWithFill = DirectoryEntryCanDeleteWithFill(DirectoryEntry)
         End With
 
         Return Stats
@@ -1973,6 +1988,8 @@ Public Class MainForm
     Private Sub Win9xClean()
         Dim Result As Boolean = False
 
+        _Disk.Data.BatchEditMode = True
+
         If _Disk.BootSector.IsWin9xOEMName Then
             Dim BootstrapChecksum = Crc32.ComputeChecksum(_Disk.BootSector.BootStrapCode)
             If _OEMNameDictionary.ContainsKey(BootstrapChecksum) Then
@@ -1995,6 +2012,8 @@ Public Class MainForm
                 Result = True
             End If
         Next
+
+        _Disk.Data.BatchEditMode = False
 
         If Result Then
             ComboItemRefresh(True, True)
@@ -2119,16 +2138,17 @@ Public Class MainForm
                     ForeColor = SystemColors.WindowText
                 End If
                 .Add(ListViewTileGetItem(DiskGroup, "Image Size", _Disk.Data.Length.ToString("N0"), ForeColor))
-                ToolStripStatusModified.Visible = _Disk.Data.Modified
-            Else
-                ToolStripStatusModified.Visible = False
-            End If
-
-            If _Disk.IsValidImage Then
                 If _Disk.ReadOnly Then
                     .Add(ListViewTileGetItem(DiskGroup, "Read Only", _Disk.ReadOnly))
                 End If
+                ToolStripStatusModified.Visible = _Disk.Data.Modified
+                ToolStripStatusReadOnly.Visible = _Disk.ReadOnly
+            Else
+                ToolStripStatusModified.Visible = False
+                ToolStripStatusReadOnly.Visible = False
+            End If
 
+            If _Disk.IsValidImage Then
                 Dim BootStrapStart = _Disk.BootSector.GetBootStrapOffset
                 Dim CopyProtection As String = GetCopyProtection(_Disk)
 
@@ -2338,7 +2358,8 @@ Public Class MainForm
     Private Function ProcessDirectoryEntries(Directory As DiskImage.IDirectory, Path As String, ScanOnly As Boolean) As ProcessDirectoryEntryResponse
         Dim Group As ListViewGroup = Nothing
         Dim Counter As UInteger
-        Dim FileCount As UInteger = Directory.FileCount
+        Dim FileCount As UInteger = Directory.FileCount(False)
+
         Dim LFNFileName As String = ""
         Dim Response As ProcessDirectoryEntryResponse
         With Response
@@ -2565,6 +2586,9 @@ Public Class MainForm
             BtnFileMenuDeleteFile.Visible = True
             BtnFileMenuDeleteFile.Enabled = False
 
+            BtnFileMenuDeleteFileWithFill.Visible = False
+            BtnFileMenuDeleteFileWithFill.Enabled = False
+
         ElseIf ListViewFiles.SelectedItems.Count = 1 Then
             Dim FileData As FileData = ListViewFiles.SelectedItems(0).Tag
             Stats = DirectoryEntryGetStats(FileData.DirectoryEntry)
@@ -2583,15 +2607,21 @@ Public Class MainForm
             If Stats.IsDeleted Then
                 BtnFileMenuRemoveDeletedFile.Visible = True
                 BtnFileMenuRemoveDeletedFile.Enabled = True
+
                 BtnFileMenuDeleteFile.Visible = False
                 BtnFileMenuDeleteFile.Enabled = False
+
                 BtnFileMenuDeleteFileWithFill.Visible = False
                 BtnFileMenuDeleteFileWithFill.Enabled = False
             Else
                 BtnFileMenuRemoveDeletedFile.Visible = False
                 BtnFileMenuRemoveDeletedFile.Enabled = False
+
                 BtnFileMenuDeleteFile.Visible = True
-                BtnFileMenuDeleteFile.Enabled = Stats.IsValid And Not Stats.IsDirectory
+                BtnFileMenuDeleteFile.Enabled = Stats.CanDelete
+
+                BtnFileMenuDeleteFileWithFill.Visible = Stats.CanDeleteWithFill
+                BtnFileMenuDeleteFileWithFill.Enabled = Stats.CanDeleteWithFill
             End If
 
             If Stats.IsValid Then
@@ -2651,6 +2681,9 @@ Public Class MainForm
 
             BtnFileMenuDeleteFile.Visible = True
             BtnFileMenuDeleteFile.Enabled = False
+
+            BtnFileMenuDeleteFileWithFill.Visible = False
+            BtnFileMenuDeleteFileWithFill.Enabled = False
         End If
 
         BtnFileMenuExportFile.Text = BtnExportFile.Text
@@ -2662,8 +2695,6 @@ Public Class MainForm
         ToolStripBtnViewFile.Text = BtnFileMenuViewFile.Text
         ToolStripBtnViewFile.Enabled = BtnFileMenuViewFile.Enabled
         ToolStripBtnViewFileText.Enabled = BtnFileMenuViewFileText.Enabled
-        BtnFileMenuDeleteFileWithFill.Visible = BtnFileMenuDeleteFile.Enabled
-        BtnFileMenuDeleteFileWithFill.Enabled = BtnFileMenuDeleteFile.Enabled
     End Sub
 
     Private Sub ResetAll()
@@ -2687,6 +2718,7 @@ Public Class MainForm
         ToolStripFileName.Visible = False
         ToolStripModified.Visible = False
         ToolStripStatusModified.Visible = False
+        ToolStripStatusReadOnly.Visible = False
         ToolStripFileCount.Visible = False
         ToolStripFileSector.Visible = False
         ToolStripFileTrack.Visible = False
@@ -2847,6 +2879,8 @@ Public Class MainForm
 
     Private Structure DirectoryStats
         Dim CanExport As Boolean
+        Dim CanDelete As Boolean
+        Dim CanDeleteWithFill As Boolean
         Dim FileSize As UInteger
         Dim FullFileName As String
         Dim IsDeleted As Boolean
@@ -2954,7 +2988,7 @@ Public Class MainForm
             Dim Item As ListViewItem = ListViewFiles.SelectedItems(0)
             Dim FileData As FileData = Item.Tag
 
-            If Not FileData.DirectoryEntry.IsDeleted And Not FileData.DirectoryEntry.IsDirectory Then
+            If DirectoryEntryCanDelete(FileData.DirectoryEntry) Then
                 DeleteFile(FileData.DirectoryEntry, False)
             End If
         End If
@@ -2965,7 +2999,7 @@ Public Class MainForm
             Dim Item As ListViewItem = ListViewFiles.SelectedItems(0)
             Dim FileData As FileData = Item.Tag
 
-            If Not FileData.DirectoryEntry.IsDeleted And Not FileData.DirectoryEntry.IsDirectory Then
+            If DirectoryEntryCanDeleteWithFill(FileData.DirectoryEntry) Then
                 DeleteFile(FileData.DirectoryEntry, True)
             End If
         End If

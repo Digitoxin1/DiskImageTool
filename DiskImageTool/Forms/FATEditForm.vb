@@ -465,9 +465,6 @@ Public Class FATEditForm
 
         _FAT.TableEntry(Cluster) = Value
         _FAT.ProcessFAT12(True)
-        For Each key In _FAT.FATChains.Keys
-            Debug.Print(key)
-        Next
 
         RefreshGrid()
         PictureBoxFAT.Invalidate()

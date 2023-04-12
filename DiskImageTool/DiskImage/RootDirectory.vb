@@ -25,11 +25,11 @@
         End Property
 
         Public Function DirectoryEntryCount() As UInteger Implements IDirectory.DirectoryEntryCount
-            Return GetDirectoryEntryCount(False)
+            Return GetDirectoryEntryCount(False, False)
         End Function
 
-        Public Function FileCount() As UInteger Implements IDirectory.FileCount
-            Return GetDirectoryEntryCount(True)
+        Public Function FileCount(ExcludeDeleted As Boolean) As UInteger Implements IDirectory.FileCount
+            Return GetDirectoryEntryCount(True, ExcludeDeleted)
         End Function
 
         Public Function GetContent() As Byte() Implements IDirectory.GetContent
@@ -48,7 +48,7 @@
         End Function
 
         Public Function HasFile(Filename As String) As Boolean Implements IDirectory.HasFile
-            Dim Count = GetDirectoryEntryCount(False)
+            Dim Count = GetDirectoryEntryCount(False, False)
             If Count > 0 Then
                 For Counter As UInteger = 0 To Count - 1
                     Dim File = GetFile(Counter)
@@ -63,11 +63,11 @@
             Return False
         End Function
 
-        Private Function GetDirectoryEntryCount(FileCountOnly As Boolean) As UInteger
+        Private Function GetDirectoryEntryCount(FileCountOnly As Boolean, ExcludeDeleted As Boolean) As UInteger
             Dim OffsetStart As UInteger = SectorToBytes(_BootSector.RootDirectoryRegionStart)
             Dim OffsetEnd As UInteger = SectorToBytes(_BootSector.DataRegionStart)
 
-            Return Functions.GetDirectoryEntryCount(_FileBytes, OffsetStart, OffsetEnd, FileCountOnly)
+            Return Functions.GetDirectoryEntryCount(_FileBytes, OffsetStart, OffsetEnd, FileCountOnly, ExcludeDeleted)
         End Function
     End Class
 End Namespace

@@ -23,11 +23,11 @@
         End Property
 
         Public Function DirectoryEntryCount() As UInteger Implements IDirectory.DirectoryEntryCount
-            Return GetDirectoryEntryCount(False)
+            Return GetDirectoryEntryCount(False, False)
         End Function
 
-        Public Function FileCount() As UInteger Implements IDirectory.FileCount
-            Return GetDirectoryEntryCount(True)
+        Public Function FileCount(ExcludeDeleted As Boolean) As UInteger Implements IDirectory.FileCount
+            Return GetDirectoryEntryCount(True, ExcludeDeleted)
         End Function
 
         Public Function GetContent() As Byte() Implements IDirectory.GetContent
@@ -50,7 +50,7 @@
         End Function
 
         Public Function HasFile(Filename As String) As Boolean Implements IDirectory.HasFile
-            Dim Count = GetDirectoryEntryCount(False)
+            Dim Count = GetDirectoryEntryCount(False, False)
             For Counter As UInteger = 0 To Count - 1
                 Dim File = GetFile(Counter)
                 If Not File.IsDeleted And Not File.IsVolumeName And Not File.IsDirectory Then
@@ -63,14 +63,14 @@
             Return False
         End Function
 
-        Private Function GetDirectoryEntryCount(FileCountOnly As Boolean) As UInteger
+        Private Function GetDirectoryEntryCount(FileCountOnly As Boolean, ExcludeDeleted As Boolean) As UInteger
             Dim Count As UInteger = 0
 
             For Each Cluster In _FatChain.Clusters
                 Dim OffsetStart As UInteger = _BootSector.ClusterToOffset(Cluster)
                 Dim OffsetLength As UInteger = _BootSector.BytesPerCluster
 
-                Count += Functions.GetDirectoryEntryCount(_FileBytes, OffsetStart, OffsetStart + OffsetLength, FileCountOnly)
+                Count += Functions.GetDirectoryEntryCount(_FileBytes, OffsetStart, OffsetStart + OffsetLength, FileCountOnly, ExcludeDeleted)
             Next
 
             Return Count

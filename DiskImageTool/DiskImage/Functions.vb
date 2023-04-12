@@ -395,16 +395,18 @@ Namespace DiskImage
             Return Content
         End Function
 
-        Public Function GetDirectoryEntryCount(FileBytes As ByteArray, OffsetStart As UInteger, OffsetEnd As UInteger, FileCountOnly As Boolean) As UInteger
+        Public Function GetDirectoryEntryCount(FileBytes As ByteArray, OffsetStart As UInteger, OffsetEnd As UInteger, FileCountOnly As Boolean, ExcludeDeleted As Boolean) As UInteger
             Dim Count As UInteger = 0
 
             Do While FileBytes.GetByte(OffsetStart) > 0
-                If Not FileCountOnly Then
-                    Count += 1
-                ElseIf FileBytes.GetByte(OffsetStart + 11) <> &HF Then 'Exclude LFN entries
-                    Dim FilePart = FileBytes.ToUInt16(OffsetStart)
-                    If FilePart <> &H202E And FilePart <> &H2E2E Then 'Exclude '.' and '..' entries
+                If Not ExcludeDeleted OrElse FileBytes.GetByte(OffsetStart) <> &HE5 Then
+                    If Not FileCountOnly Then
                         Count += 1
+                    ElseIf FileBytes.GetByte(OffsetStart + 11) <> &HF Then 'Exclude LFN entries
+                        Dim FilePart = FileBytes.ToUInt16(OffsetStart)
+                        If FilePart <> &H202E And FilePart <> &H2E2E Then 'Exclude '.' and '..' entries
+                            Count += 1
+                        End If
                     End If
                 End If
                 OffsetStart += 32

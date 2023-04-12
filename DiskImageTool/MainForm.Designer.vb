@@ -138,6 +138,7 @@ Partial Class MainForm
         Me.FilterSeparator = New System.Windows.Forms.ToolStripSeparator()
         Me.ComboImagesFiltered = New System.Windows.Forms.ComboBox()
         Me.BtnResetSort = New System.Windows.Forms.Button()
+        Me.ToolStripStatusReadOnly = New System.Windows.Forms.ToolStripStatusLabel()
         SummaryName = CType(New System.Windows.Forms.ColumnHeader(), System.Windows.Forms.ColumnHeader)
         SummaryValue = CType(New System.Windows.Forms.ColumnHeader(), System.Windows.Forms.ColumnHeader)
         HashName = CType(New System.Windows.Forms.ColumnHeader(), System.Windows.Forms.ColumnHeader)
@@ -318,51 +319,51 @@ Partial Class MainForm
         'BtnEditBootSector
         '
         Me.BtnEditBootSector.Name = "BtnEditBootSector"
-        Me.BtnEditBootSector.Size = New System.Drawing.Size(180, 22)
+        Me.BtnEditBootSector.Size = New System.Drawing.Size(179, 22)
         Me.BtnEditBootSector.Text = "&Boot Sector"
         '
         'BtnEditFAT
         '
         Me.BtnEditFAT.Name = "BtnEditFAT"
-        Me.BtnEditFAT.Size = New System.Drawing.Size(180, 22)
+        Me.BtnEditFAT.Size = New System.Drawing.Size(179, 22)
         Me.BtnEditFAT.Text = "File &Allocation Table"
         '
         'ToolStripSeparator4
         '
         Me.ToolStripSeparator4.Name = "ToolStripSeparator4"
-        Me.ToolStripSeparator4.Size = New System.Drawing.Size(177, 6)
+        Me.ToolStripSeparator4.Size = New System.Drawing.Size(176, 6)
         '
         'BtnFileProperties
         '
         Me.BtnFileProperties.Image = CType(resources.GetObject("BtnFileProperties.Image"), System.Drawing.Image)
         Me.BtnFileProperties.Name = "BtnFileProperties"
-        Me.BtnFileProperties.Size = New System.Drawing.Size(180, 22)
+        Me.BtnFileProperties.Size = New System.Drawing.Size(179, 22)
         Me.BtnFileProperties.Text = "File &Properties"
         '
         'BtnExportFile
         '
         Me.BtnExportFile.Image = CType(resources.GetObject("BtnExportFile.Image"), System.Drawing.Image)
         Me.BtnExportFile.Name = "BtnExportFile"
-        Me.BtnExportFile.Size = New System.Drawing.Size(180, 22)
+        Me.BtnExportFile.Size = New System.Drawing.Size(179, 22)
         Me.BtnExportFile.Text = "&Export File"
         '
         'BtnReplaceFile
         '
         Me.BtnReplaceFile.Name = "BtnReplaceFile"
-        Me.BtnReplaceFile.Size = New System.Drawing.Size(180, 22)
+        Me.BtnReplaceFile.Size = New System.Drawing.Size(179, 22)
         Me.BtnReplaceFile.Text = "&Replace File"
         '
         'ToolStripSeparator2
         '
         Me.ToolStripSeparator2.Name = "ToolStripSeparator2"
-        Me.ToolStripSeparator2.Size = New System.Drawing.Size(177, 6)
+        Me.ToolStripSeparator2.Size = New System.Drawing.Size(176, 6)
         '
         'BtnUndo
         '
         Me.BtnUndo.Image = CType(resources.GetObject("BtnUndo.Image"), System.Drawing.Image)
         Me.BtnUndo.Name = "BtnUndo"
         Me.BtnUndo.ShortcutKeys = CType((System.Windows.Forms.Keys.Control Or System.Windows.Forms.Keys.Z), System.Windows.Forms.Keys)
-        Me.BtnUndo.Size = New System.Drawing.Size(180, 22)
+        Me.BtnUndo.Size = New System.Drawing.Size(179, 22)
         Me.BtnUndo.Text = "&Undo"
         '
         'BtnRedo
@@ -371,13 +372,13 @@ Partial Class MainForm
         Me.BtnRedo.Name = "BtnRedo"
         Me.BtnRedo.ShortcutKeys = CType(((System.Windows.Forms.Keys.Control Or System.Windows.Forms.Keys.Shift) _
             Or System.Windows.Forms.Keys.Z), System.Windows.Forms.Keys)
-        Me.BtnRedo.Size = New System.Drawing.Size(180, 22)
+        Me.BtnRedo.Size = New System.Drawing.Size(179, 22)
         Me.BtnRedo.Text = "&Redo"
         '
         'BtnRevert
         '
         Me.BtnRevert.Name = "BtnRevert"
-        Me.BtnRevert.Size = New System.Drawing.Size(180, 22)
+        Me.BtnRevert.Size = New System.Drawing.Size(179, 22)
         Me.BtnRevert.Text = "&Revert Changes"
         Me.BtnRevert.TextAlign = System.Drawing.ContentAlignment.MiddleLeft
         '
@@ -464,7 +465,7 @@ Partial Class MainForm
         '
         'StatusStrip1
         '
-        StatusStrip1.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.ToolStripStatusModified, Me.ToolStripFileName, Me.ToolStripFileCount, Me.ToolStripFileSector, Me.ToolStripFileTrack, Me.ToolStripImageCount, Me.ToolStripModified})
+        StatusStrip1.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.ToolStripStatusReadOnly, Me.ToolStripStatusModified, Me.ToolStripFileName, Me.ToolStripFileCount, Me.ToolStripFileSector, Me.ToolStripFileTrack, Me.ToolStripImageCount, Me.ToolStripModified})
         StatusStrip1.Location = New System.Drawing.Point(0, 552)
         StatusStrip1.Name = "StatusStrip1"
         StatusStrip1.Size = New System.Drawing.Size(974, 24)
@@ -483,7 +484,7 @@ Partial Class MainForm
         Me.ToolStripFileName.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text
         Me.ToolStripFileName.Margin = New System.Windows.Forms.Padding(2, 3, 2, 2)
         Me.ToolStripFileName.Name = "ToolStripFileName"
-        Me.ToolStripFileName.Size = New System.Drawing.Size(561, 19)
+        Me.ToolStripFileName.Size = New System.Drawing.Size(467, 19)
         Me.ToolStripFileName.Spring = True
         Me.ToolStripFileName.Text = "File Name"
         Me.ToolStripFileName.TextAlign = System.Drawing.ContentAlignment.MiddleLeft
@@ -1007,6 +1008,14 @@ Partial Class MainForm
         Me.BtnResetSort.Text = "Reset Sort"
         Me.BtnResetSort.UseVisualStyleBackColor = True
         '
+        'ToolStripStatusReadOnly
+        '
+        Me.ToolStripStatusReadOnly.Font = New System.Drawing.Font("Segoe UI", 9.0!)
+        Me.ToolStripStatusReadOnly.ForeColor = System.Drawing.Color.Red
+        Me.ToolStripStatusReadOnly.Name = "ToolStripStatusReadOnly"
+        Me.ToolStripStatusReadOnly.Size = New System.Drawing.Size(61, 19)
+        Me.ToolStripStatusReadOnly.Text = "Read Only"
+        '
         'MainForm
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
@@ -1130,4 +1139,5 @@ Partial Class MainForm
     Friend WithEvents BtnFileMenuFixSize As ToolStripMenuItem
     Friend WithEvents BtnResetSort As Button
     Friend WithEvents BtnEditBootSector As ToolStripMenuItem
+    Friend WithEvents ToolStripStatusReadOnly As ToolStripStatusLabel
 End Class
