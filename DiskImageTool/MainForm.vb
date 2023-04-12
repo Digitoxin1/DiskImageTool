@@ -373,18 +373,18 @@ Public Class MainForm
         HexViewSectorData.SectorData.AddBlock(0, 1)
         HexViewSectorData.HighlightedRegionList.Add(HighlightedRegions)
 
+        Dim BootStrapStart = _Disk.BootSector.GetBootStrapOffset
+        Dim BootStrapLength = BootSectorOffsets.BootStrapSignature - BootStrapStart
+
+        Dim ForeColor As Color
+        If _Disk.BootSector.HasValidJumpInstruction(False) Then
+            ForeColor = Color.Green
+        Else
+            ForeColor = Color.Black
+        End If
+
+        HighlightedRegions.AddOffset(BootSectorOffsets.JmpBoot, ForeColor)
         If _Disk.IsValidImage Then
-            Dim BootStrapStart = _Disk.BootSector.GetBootStrapOffset
-            Dim BootStrapLength = BootSectorOffsets.BootStrapSignature - BootStrapStart
-
-            Dim ForeColor As Color
-            If _Disk.BootSector.HasValidJumpInstruction Then
-                ForeColor = Color.Green
-            Else
-                ForeColor = Color.Black
-            End If
-
-            HighlightedRegions.AddOffset(BootSectorOffsets.JmpBoot, ForeColor)
             HighlightedRegions.AddOffset(BootSectorOffsets.OEMName, Color.Red)
             HighlightedRegions.AddOffset(BootSectorOffsets.BytesPerSector, Color.Blue)
             HighlightedRegions.AddOffset(BootSectorOffsets.SectorsPerCluster, Color.Blue)
@@ -406,19 +406,23 @@ Public Class MainForm
                 HighlightedRegions.AddOffset(BootSectorOffsets.VolumeLabel, Color.Purple)
                 HighlightedRegions.AddOffset(BootSectorOffsets.FileSystemType, Color.Purple)
             End If
-
-            If BootStrapStart > 2 And BootStrapLength > 1 Then
-                HighlightedRegions.AddItem(BootStrapStart, BootStrapLength, ForeColor, "Boot Strap Code")
-            End If
-
-            If _Disk.BootSector.HasValidBootStrapSignature Then
-                ForeColor = Color.Goldenrod
-            Else
-                ForeColor = Color.Black
-            End If
-
-            HighlightedRegions.AddOffset(BootSectorOffsets.BootStrapSignature, ForeColor)
         End If
+
+        If BootStrapStart > 2 And BootStrapLength > 1 Then
+            If _Disk.BootSector.HasValidJumpInstruction(False) Then
+                HighlightedRegions.AddItem(BootStrapStart, BootStrapLength, ForeColor, "Boot Strap Code")
+            Else
+                HighlightedRegions.AddItem(BootStrapStart, BootStrapLength, ForeColor)
+            End If
+        End If
+
+        If _Disk.BootSector.HasValidBootStrapSignature Then
+            ForeColor = Color.Goldenrod
+        Else
+            ForeColor = Color.Black
+        End If
+
+        HighlightedRegions.AddOffset(BootSectorOffsets.BootStrapSignature, ForeColor)
 
         If DisplayHexViewForm(HexViewSectorData, "Boot Sector") Then
             DiskImageProcess(True, True)
@@ -1612,7 +1616,6 @@ Public Class MainForm
 
     Private Sub InitButtonState()
         If _Disk IsNot Nothing AndAlso Not _Disk.LoadError Then
-            BtnChangeOEMName.Enabled = _Disk.IsValidImage
             BtnDisplayBootSector.Enabled = _Disk.CheckSize
             BtnEditBootSector.Enabled = _Disk.CheckSize
             BtnDisplayDisk.Enabled = _Disk.CheckSize
@@ -1620,7 +1623,6 @@ Public Class MainForm
             BtnEditFAT.Enabled = _Disk.IsValidImage
             BtnDisplayDirectory.Enabled = _Disk.IsValidImage
         Else
-            BtnChangeOEMName.Enabled = False
             BtnDisplayBootSector.Enabled = False
             BtnDisplayDisk.Enabled = False
             BtnDisplayFAT.Enabled = False
@@ -1931,21 +1933,6 @@ Public Class MainForm
         Return SaveAllForm.Result
     End Function
 
-    Private Function OEMNameEdit() As Boolean
-        Dim frmOEMName As New OEMNameForm(_Disk, _OEMNameDictionary)
-        Dim Result As Boolean
-
-        frmOEMName.ShowDialog()
-
-        Result = frmOEMName.DialogResult = DialogResult.OK
-
-        If Result Then
-            ComboItemRefresh(True, True)
-        End If
-
-        Return Result
-    End Function
-
     Private Sub FixFileSize(DirectoryEntry As DirectoryEntry)
         If DirectoryEntry.HasIncorrectFileSize() Then
             DirectoryEntry.FileSize = DirectoryEntry.GetAllocatedSizeFromFAT
@@ -2114,6 +2101,9 @@ Public Class MainForm
                     ForeColor = SystemColors.WindowText
                 End If
                 .Add(ListViewTileGetItem(DiskGroup, "Image Size", _Disk.Data.Length.ToString("N0"), ForeColor))
+                ToolStripStatusModified.Visible = _Disk.Data.Modified
+            Else
+                ToolStripStatusModified.Visible = False
             End If
 
             If _Disk.IsValidImage Then
@@ -2121,7 +2111,6 @@ Public Class MainForm
                     .Add(ListViewTileGetItem(DiskGroup, "Read Only", _Disk.ReadOnly))
                 End If
 
-                ToolStripStatusModified.Visible = _Disk.Data.Modified
                 Dim BootStrapStart = _Disk.BootSector.GetBootStrapOffset
                 Dim CopyProtection As String = GetCopyProtection(_Disk)
 
@@ -2187,95 +2176,95 @@ Public Class MainForm
                 .Add(ListViewTileGetItem(BootRecordGroup, BootSectorDescription(BootSectorOffsets.SectorsPerTrack), _Disk.BootSector.SectorsPerTrack))
                 .Add(ListViewTileGetItem(BootRecordGroup, BootSectorDescription(BootSectorOffsets.NumberOfHeads), _Disk.BootSector.NumberOfHeads))
 
-                If Debugger.IsAttached Then
-                    If _Disk.BootSector.HiddenSectors > 0 Then
-                        .Add(ListViewTileGetItem(BootRecordGroup, BootSectorDescription(BootSectorOffsets.HiddenSectors), _Disk.BootSector.HiddenSectors))
-                    End If
+                'If Debugger.IsAttached Then
+                If _Disk.BootSector.HiddenSectors > 0 Then
+                    .Add(ListViewTileGetItem(BootRecordGroup, BootSectorDescription(BootSectorOffsets.HiddenSectors), _Disk.BootSector.HiddenSectors))
                 End If
+                'End If
 
                 If BootStrapStart >= BootSectorOffsets.BootStrapCode Then
-                        If _Disk.BootSector.DriveNumber > 0 Then
-                            .Add(ListViewTileGetItem(BootRecordGroup, BootSectorDescription(BootSectorOffsets.DriveNumber), _Disk.BootSector.DriveNumber))
-                        End If
+                    If _Disk.BootSector.DriveNumber > 0 Then
+                        .Add(ListViewTileGetItem(BootRecordGroup, BootSectorDescription(BootSectorOffsets.DriveNumber), _Disk.BootSector.DriveNumber))
+                    End If
 
-                        If _Disk.BootSector.HasValidExtendedBootSignature Then
-                            .Add(ListViewTileGetItem(BootRecordGroup, BootSectorDescription(BootSectorOffsets.VolumeSerialNumber), _Disk.BootSector.VolumeSerialNumber.ToString("X8").Insert(4, "-")))
+                    If _Disk.BootSector.HasValidExtendedBootSignature Then
+                        .Add(ListViewTileGetItem(BootRecordGroup, BootSectorDescription(BootSectorOffsets.VolumeSerialNumber), _Disk.BootSector.VolumeSerialNumber.ToString("X8").Insert(4, "-")))
+                        If _Disk.BootSector.ExtendedBootSignature = BootSector.ValidExtendedBootSignature(1) Then
                             .Add(ListViewTileGetItem(BootRecordGroup, BootSectorDescription(BootSectorOffsets.VolumeLabel), _Disk.BootSector.GetVolumeLabelString.TrimEnd(NULL_CHAR)))
                             .Add(ListViewTileGetItem(BootRecordGroup, BootSectorDescription(BootSectorOffsets.FileSystemType), _Disk.BootSector.GetFileSystemTypeString))
                         End If
                     End If
+                End If
 
-                    If _Disk.BootSector.BootStrapSignature <> &HAA55 Then
-                        .Add(ListViewTileGetItem(BootRecordGroup, BootSectorDescription(BootSectorOffsets.BootStrapSignature), _Disk.BootSector.BootStrapSignature.ToString("X4")))
-                    End If
+                If _Disk.BootSector.BootStrapSignature <> BootSector.ValidBootStrapSignature Then
+                    .Add(ListViewTileGetItem(BootRecordGroup, BootSectorDescription(BootSectorOffsets.BootStrapSignature), _Disk.BootSector.BootStrapSignature.ToString("X4")))
+                End If
 
-                    If Not _Disk.BootSector.HasValidJumpInstruction Then
-                        ForeColor = Color.Red
-                    Else
-                        ForeColor = SystemColors.WindowText
-                    End If
-
-                    If Debugger.IsAttached Then
-                        .Add(ListViewTileGetItem(BootRecordGroup, BootSectorDescription(BootSectorOffsets.JmpBoot), BitConverter.ToString(_Disk.BootSector.JmpBoot), ForeColor))
-                    End If
-
-                    Dim FileSystemGroup = ListViewSummary.Groups.Add("FileSystem", "File System")
-
-                    Dim VolumeLabel = _Disk.GetVolumeLabel
-
-                    If VolumeLabel IsNot Nothing Then
-                        .Add(ListViewTileGetItem(FileSystemGroup, "Volume Label", VolumeLabel.GetVolumeName.TrimEnd(NULL_CHAR)))
-                        Dim VolumeDate = VolumeLabel.GetLastWriteDate
-                        .Add(ListViewTileGetItem(FileSystemGroup, "Volume Date", ExpandedDateToString(VolumeDate, True, False, False, False)))
-                    End If
-
-                    .Add(ListViewTileGetItem(FileSystemGroup, "Total Space", Format(SectorToBytes(_Disk.BootSector.DataRegionSize), "N0") & " bytes"))
-                    .Add(ListViewTileGetItem(FileSystemGroup, "Free Space", Format(_Disk.FAT.FreeSpace, "N0") & " bytes"))
-
-                    If _Disk.FAT.BadClusters.Count > 0 Then
-                        Value = Format(_Disk.FAT.BadClusters.Count * _Disk.BootSector.BytesPerCluster, "N0") & " bytes"
-                        ForeColor = Color.Red
-                        .Add(ListViewTileGetItem(FileSystemGroup, "Bad Sectors", Value, ForeColor))
-                    End If
-
-                    Dim BootStrapGroup = ListViewSummary.Groups.Add("Bootstrap", "Bootstrap")
-
-                    If Debugger.IsAttached Then
-                        .Add(ListViewTileGetItem(BootStrapGroup, "Bootstrap CRC32", Crc32.ComputeChecksum(_Disk.BootSector.BootStrapCode).ToString("X8")))
-                    End If
-
-                    If BootstrapType IsNot Nothing Then
-                        If BootstrapType.Language.Length > 0 Then
-                            .Add(ListViewTileGetItem(BootStrapGroup, "Language", BootstrapType.Language))
-                        End If
-
-                        If KnownOEMNameMatch Is Nothing And BootstrapType.KnownOEMNames.Count = 1 Then
-                            KnownOEMNameMatch = BootstrapType.KnownOEMNames(0)
-                        End If
-
-                        If KnownOEMNameMatch IsNot Nothing Then
-                            If KnownOEMNameMatch.Company <> "" Then
-                                .Add(ListViewTileGetItem(BootStrapGroup, "Company", KnownOEMNameMatch.Company))
-                            End If
-                            If KnownOEMNameMatch.Description <> "" Then
-                                .Add(ListViewTileGetItem(BootStrapGroup, "Description", KnownOEMNameMatch.Description))
-                            End If
-                            If KnownOEMNameMatch.Note <> "" Then
-                                .Add(ListViewTileGetItem(BootStrapGroup, "Note", KnownOEMNameMatch.Note, Color.Blue))
-                            End If
-                        End If
-
-                        If Not BootstrapType.ExactMatch Then
-                            For Each KnownOEMName In BootstrapType.KnownOEMNames
-                                If KnownOEMName.Name.Length > 0 AndAlso KnownOEMName.Suggestion AndAlso Not ByteArrayCompare(KnownOEMName.Name, OEMName) Then
-                                    .Add(ListViewTileGetItem(BootStrapGroup, "Alternative OEM Name", KnownOEMName.GetNameAsString))
-                                End If
-                            Next
-                        End If
-                    End If
+                If Not _Disk.BootSector.HasValidJumpInstruction(True) Then
+                    ForeColor = Color.Red
                 Else
-                    ToolStripStatusModified.Visible = False
+                    ForeColor = SystemColors.WindowText
+                End If
 
+                If Debugger.IsAttached Then
+                    .Add(ListViewTileGetItem(BootRecordGroup, BootSectorDescription(BootSectorOffsets.JmpBoot), BitConverter.ToString(_Disk.BootSector.JmpBoot), ForeColor))
+                End If
+
+                Dim FileSystemGroup = ListViewSummary.Groups.Add("FileSystem", "File System")
+
+                Dim VolumeLabel = _Disk.GetVolumeLabel
+
+                If VolumeLabel IsNot Nothing Then
+                    .Add(ListViewTileGetItem(FileSystemGroup, "Volume Label", VolumeLabel.GetVolumeName.TrimEnd(NULL_CHAR)))
+                    Dim VolumeDate = VolumeLabel.GetLastWriteDate
+                    .Add(ListViewTileGetItem(FileSystemGroup, "Volume Date", ExpandedDateToString(VolumeDate, True, False, False, False)))
+                End If
+
+                .Add(ListViewTileGetItem(FileSystemGroup, "Total Space", Format(SectorToBytes(_Disk.BootSector.DataRegionSize), "N0") & " bytes"))
+                .Add(ListViewTileGetItem(FileSystemGroup, "Free Space", Format(_Disk.FAT.FreeSpace, "N0") & " bytes"))
+
+                If _Disk.FAT.BadClusters.Count > 0 Then
+                    Value = Format(_Disk.FAT.BadClusters.Count * _Disk.BootSector.BytesPerCluster, "N0") & " bytes"
+                    ForeColor = Color.Red
+                    .Add(ListViewTileGetItem(FileSystemGroup, "Bad Sectors", Value, ForeColor))
+                End If
+
+                Dim BootStrapGroup = ListViewSummary.Groups.Add("Bootstrap", "Bootstrap")
+
+                If Debugger.IsAttached Then
+                    .Add(ListViewTileGetItem(BootStrapGroup, "Bootstrap CRC32", Crc32.ComputeChecksum(_Disk.BootSector.BootStrapCode).ToString("X8")))
+                End If
+
+                If BootstrapType IsNot Nothing Then
+                    If BootstrapType.Language.Length > 0 Then
+                        .Add(ListViewTileGetItem(BootStrapGroup, "Language", BootstrapType.Language))
+                    End If
+
+                    If KnownOEMNameMatch Is Nothing And BootstrapType.KnownOEMNames.Count = 1 Then
+                        KnownOEMNameMatch = BootstrapType.KnownOEMNames(0)
+                    End If
+
+                    If KnownOEMNameMatch IsNot Nothing Then
+                        If KnownOEMNameMatch.Company <> "" Then
+                            .Add(ListViewTileGetItem(BootStrapGroup, "Company", KnownOEMNameMatch.Company))
+                        End If
+                        If KnownOEMNameMatch.Description <> "" Then
+                            .Add(ListViewTileGetItem(BootStrapGroup, "Description", KnownOEMNameMatch.Description))
+                        End If
+                        If KnownOEMNameMatch.Note <> "" Then
+                            .Add(ListViewTileGetItem(BootStrapGroup, "Note", KnownOEMNameMatch.Note, Color.Blue))
+                        End If
+                    End If
+
+                    If Not BootstrapType.ExactMatch Then
+                        For Each KnownOEMName In BootstrapType.KnownOEMNames
+                            If KnownOEMName.Name.Length > 0 AndAlso KnownOEMName.Suggestion AndAlso Not ByteArrayCompare(KnownOEMName.Name, OEMName) Then
+                                .Add(ListViewTileGetItem(BootStrapGroup, "Alternative OEM Name", KnownOEMName.GetNameAsString))
+                            End If
+                        Next
+                    End If
+                End If
+            Else
                 If _Disk.LoadError Then
                     .Add(ListViewTileGetItem(DiskGroup, "Error", "Error Loading File", Color.Red))
                 Else
@@ -3001,10 +2990,6 @@ Public Class MainForm
 
     Private Sub BtnFileProperties_Click(sender As Object, e As EventArgs) Handles BtnFileProperties.Click, BtnFileMenuFileProperties.Click, ToolStripBtnFileProperties.Click
         FilePropertiesEdit()
-    End Sub
-
-    Private Sub BtnOOEMName_Click(sender As Object, e As EventArgs) Handles BtnChangeOEMName.Click
-        OEMNameEdit()
     End Sub
 
     Private Sub BtnFixImageSize_Click(sender As Object, e As EventArgs) Handles BtnFixImageSize.Click

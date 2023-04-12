@@ -1,5 +1,7 @@
-﻿Imports DiskImageTool.DiskImage
+﻿Imports System.Text
+Imports DiskImageTool.DiskImage
 Imports DiskImageTool.DiskImage.BootSector
+Imports Hb.Windows.Forms
 
 Public Class BootSectorForm
     Private ReadOnly _Disk As DiskImage.Disk
@@ -22,6 +24,11 @@ Public Class BootSectorForm
         _HasExtended = BootStrapStart >= BootSectorOffsets.FileSystemType + BootSectorSizes.FileSystemType
 
         IntitializeHelp()
+        PopulateDiskTypes()
+        PopulateValues()
+        SetCurrentDiskType()
+
+        _SuppressEvent = False
     End Sub
 
     Private Sub IntitializeHelp()
@@ -104,7 +111,7 @@ Public Class BootSectorForm
         Msg = "Number of sectors allocated to each copy of the File Allocation Table (FAT)" _
             & vbCrLf & vbCrLf & "Typical Values:" _
             & vbCrLf & "160K Floppy" & vbTab & "1" _
-            & vbCrLf & "180K Floppy" & vbTab & "1" _
+            & vbCrLf & "180K Floppy" & vbTab & "2" _
             & vbCrLf & "320K Floppy" & vbTab & "1" _
             & vbCrLf & "360K Floppy" & vbTab & "2" _
             & vbCrLf & "720K Floppy" & vbTab & "3" _
@@ -141,7 +148,7 @@ Public Class BootSectorForm
         SetHelpString(Msg, LblNumberOfHeads, TxtNumberOfHeads)
 
         Msg = "Number of sectors preceeding the first sector of a partitioned volume" _
-             & vbCrLf & vbCrLf & "Note: This value is unused on floppy disks and is usually but not always 0"
+             & vbCrLf & vbCrLf & "Note: This value should be 0 for all floppy disks"
         SetHelpString(Msg, LblHiddenSectors, TxtHiddenSectors)
 
         Msg = "Total number of sectors in a FAT16 volume larger than 65535 sectors" _
@@ -153,7 +160,9 @@ Public Class BootSectorForm
         SetHelpString(Msg, LblDriveNumber, TxtDriveNumber)
 
         Msg = "Extended Boot Signature" _
-            & vbCrLf & vbCrLf & "Note: Should be set to 29h if Volume Serial Number, Volume Label, and File System ID are present"
+            & vbCrLf & vbCrLf & "Typical Values:" _
+            & vbCrLf & "28h" & vbTab & "Volume Serial Number is present" _
+            & vbCrLf & "29h" & vbTab & "Volume Serial Number, Volume Label, and File System ID are present"
         SetHelpString(Msg, lblExtendedBootSignature, HexExtendedBootSignature)
 
         Msg = "The Volume Serial Number is a 32-bit random number used in conjunction with the Volume Label for removable media tracking" _
@@ -172,6 +181,17 @@ Public Class BootSectorForm
 
         Msg = "Generate a new volume serial number based on a user supplied date and time"
         SetHelpString(Msg, BtnVolumeSerialNumber)
+
+        Msg = "This instruction indicates where the bootstrap code starts." _
+            & vbCrLf & vbCrLf & "Allowed Values: EB xx 90, E9 xx xx"
+        SetHelpString(Msg, LblJumpInstruction, HexJumpInstruction)
+
+        Msg = "Indicated to the BIOS that the sector is executable." _
+            & vbCrLf & vbCrLf & "Allowed Values: AA 55"
+        SetHelpString(Msg, LblBootSectorSignature, HexBootSectorSignature)
+
+        Msg = "This is additional data found in the Boot Sector." & vbCrLf & vbCrLf & "Note: Data highlighted in green is the bootstrap code."
+        SetHelpString(Msg, HexBox1)
     End Sub
 
     Private Sub SetHelpString(HelpString As String, ParamArray ControlArray() As Control)
@@ -207,40 +227,57 @@ Public Class BootSectorForm
     Private Sub SetValue(Control As Control, Value As String)
         Control.Text = Value
         SetTagValue(Control, Value)
-        UpdateColor(Control)
+        UpdateColor(Control, False)
     End Sub
 
     Private Sub SetValue(Control As Control, Value As String, AllowedValues() As String)
         Control.Text = Value
         Dim Data = SetTagValue(Control, Value)
         Data.AllowedValues = AllowedValues
-        UpdateColor(Control)
+        UpdateColor(Control, False)
     End Sub
 
     Private Sub SetValue(Control As HexTextBox, Value As String)
         Control.SetHex(Value)
         SetTagValue(Control, Value)
-        UpdateColor(Control)
+        UpdateColor(Control, False)
+    End Sub
+
+    Private Sub SetValue(Control As HexTextBox, Value() As Byte, IsInvalid As Boolean)
+        Control.SetHex(Value)
+        SetTagValue(Control, BitConverter.ToString(Value).Replace("-", ""))
+        UpdateColor(Control, IsInvalid)
     End Sub
 
     Private Sub UpdateTag(Control As Control)
         CType(Control.Tag, FieldData).LastValue = Control.Text
-        UpdateColor(Control)
+        UpdateColor(Control, False)
     End Sub
 
-    Private Sub UpdateColor(Control As Control)
+    Private Sub UpdateTag(Control As Control, IsInvalid As Boolean)
+        CType(Control.Tag, FieldData).LastValue = Control.Text
+        UpdateColor(Control, IsInvalid)
+    End Sub
+
+    Private Sub UpdateColor(Control As Control, IsInvalid As Boolean)
         Dim Data = CType(Control.Tag, FieldData)
+
         If Control.Text <> Data.OriginalValue Then
             Control.ForeColor = Color.Blue
         Else
             Control.ForeColor = SystemColors.WindowText
         End If
-        If Data.AllowedValues IsNot Nothing Then
+
+        If IsInvalid Then
+            Control.BackColor = Color.LightPink
+        ElseIf Data.AllowedValues IsNot Nothing Then
             If Data.AllowedValues.Contains(Control.Text) Then
                 Control.BackColor = SystemColors.Window
             Else
                 Control.BackColor = Color.LightPink
             End If
+        ElseIf Not IsDataValid(control) Then
+            Control.BackColor = Color.LightPink
         Else
             Control.BackColor = SystemColors.Window
         End If
@@ -248,8 +285,26 @@ Public Class BootSectorForm
 
     Private Sub RevertValue(Control As Control)
         Control.Text = CType(Control.Tag, FieldData).LastValue
-        UpdateColor(Control)
+        UpdateColor(Control, False)
     End Sub
+
+    Private Function IsDataValid(Control As Control) As Boolean
+        If Control Is TxtReservedSectors Then
+            Return Control.Text <> "0"
+        ElseIf Control Is TxtNumberOfFATs Then
+            Return Control.Text <> "0"
+        ElseIf Control Is TxtRootDirectoryEntries Then
+            Return Control.Text <> "0"
+        ElseIf Control Is TxtSectorCountSmall Then
+            Return Control.Text <> "0"
+        ElseIf Control Is TxtSectorsPerFAT Then
+            Return Control.Text <> "0"
+        ElseIf Control Is TxtHiddenSectors Then
+            Return Control.Text = "0"
+        Else
+            Return True
+        End If
+    End Function
 
     Private Sub PopulateBootRecord(BootSector As BootSector)
         SetValue(CboBytesPerSector, BootSector.BytesPerSector, Array.ConvertAll(BootSector.ValidBytesPerSector, Function(x) x.ToString()))
@@ -263,6 +318,8 @@ Public Class BootSectorForm
         SetValue(TxtSectorsPerTrack, BootSector.SectorsPerTrack, {"8", "9", "15", "18", "21", "36"})
         SetValue(TxtNumberOfHeads, BootSector.NumberOfHeads, {"1", "2"})
         SetValue(TxtHiddenSectors, BootSector.HiddenSectors)
+        SetValue(HexJumpInstruction, BootSector.JmpBoot, Not BootSector.HasValidJumpInstruction(True))
+        SetValue(HexBootSectorSignature, BootSector.BootStrapSignature.ToString("X4"), {BootSector.ValidBootStrapSignature.ToString("X4")})
     End Sub
 
     Private Sub PopulateExtended(BootSector As BootSector)
@@ -279,7 +336,7 @@ Public Class BootSectorForm
         If BootSector.SectorCountLarge <> 0 Then
             ErrorCount += 1
         End If
-        If BootSector.ExtendedBootSignature <> 0 And BootSector.ExtendedBootSignature <> &H29 Then
+        If BootSector.ExtendedBootSignature <> 0 And BootSector.ExtendedBootSignature <> &H28 And BootSector.ExtendedBootSignature <> &H29 Then
             ErrorCount += 1
         End If
         If BootSector.DriveNumber <> 0 And BootSector.DriveNumber <> 128 Then
@@ -288,11 +345,55 @@ Public Class BootSectorForm
         LblExtendedMsg.Visible = (ErrorCount > 1)
     End Sub
 
+    Private Sub PopulateAdditionalData(BootSector As BootSector)
+        Dim DataStart As UShort
+        Dim DataLength As UShort = 0
+        Dim BootStrapStart = BootSector.GetBootStrapOffset
+
+        If BootSector.HasValidExtendedBootSignature And BootStrapStart >= BootSectorOffsets.FileSystemType + BootSectorSizes.FileSystemType Then
+            DataStart = BootSector.BootSectorOffsets.FileSystemType + BootSector.BootSectorSizes.FileSystemType
+        Else
+            DataStart = BootSector.BootSectorOffsets.HiddenSectors + BootSector.BootSectorSizes.HiddenSectors
+            'If BootSector.HiddenSectors >> 4 > 0 Then
+            'DataStart -= 2
+            'End If
+        End If
+
+        If BootSectorOffsets.BootStrapSignature > DataStart Then
+            DataLength = BootSectorOffsets.BootStrapSignature - DataStart
+        End If
+
+        If DataLength > 0 Then
+            Dim Data(DataLength - 1) As Byte
+            Array.Copy(BootSector.Data, DataStart, Data, 0, DataLength)
+
+            HexBox1.ByteProvider = New DynamicByteProvider(Data)
+            Dim LineCount As Integer = Math.Ceiling(DataLength / HexBox1.BytesPerLine)
+            If LineCount = 1 Then
+                LineCount = 2
+            ElseIf LineCount > 10 Then
+                LineCount = 10
+                HexBox1.VScrollBarVisible = True
+            End If
+            HexBox1.Height = LineCount * 13 + 4
+
+            If BootSector.HasValidJumpInstruction(False) Then
+                Dim Start = BootStrapStart - DataStart
+                HexBox1.Highlight(Start, DataLength - Start, Color.Green, Color.White)
+            End If
+
+            GroupBoxAdditionalData.Visible = True
+        Else
+            GroupBoxAdditionalData.Visible = False
+        End If
+    End Sub
+
     Private Sub PopulateValues()
         PopulateOEMName()
         PopulateBytesPerSector()
         PopulateSectorsPerCluster()
         PopulateBootRecord(_Disk.BootSector)
+        PopulateAdditionalData(_Disk.BootSector)
 
         If _HasExtended Then
             GroupBoxExtended.Visible = True
@@ -366,7 +467,8 @@ Public Class BootSectorForm
     End Sub
 
     Private Sub RefreshVolumeLabel()
-        Dim MaskNulls As Boolean = (HexExtendedBootSignature.GetHex(0) <> &H29)
+        Dim BootSignature = HexExtendedBootSignature.GetHex(0)
+        Dim MaskNulls As Boolean = (BootSignature <> &H28 And BootSignature <> &H29)
         Dim b = HexVolumeLabel.GetHex
         Dim Value As String
         If MaskNulls AndAlso IsByteArrayNull(b) Then
@@ -422,13 +524,19 @@ Public Class BootSectorForm
     End Sub
 
     Private Sub SetExtendedState()
-        Dim Enabled = (HexExtendedBootSignature.GetHex(0) = &H29)
+        Dim Enabled As Boolean
+
+        Dim BootSignature = HexExtendedBootSignature.GetHex(0)
+
+        Enabled = (BootSignature = &H28 Or BootSignature = &H29)
         HexVolumeSerialNumber.Enabled = Enabled
+        BtnVolumeSerialNumber.Enabled = Enabled
+
+        Enabled = (BootSignature = &H29)
         TxtVolumeLabel.Enabled = Enabled
         HexVolumeLabel.Enabled = Enabled
         TxtFileSystemType.Enabled = Enabled
         HexFileSystemType.Enabled = Enabled
-        BtnVolumeSerialNumber.Enabled = Enabled
 
         RefreshVolumeLabel()
         RefreshFileSystemType()
@@ -483,9 +591,15 @@ Public Class BootSectorForm
             _Disk.BootSector.NumberOfHeads = UShortValue
         End If
 
-        If UInteger.TryParse(TxtHiddenSectors.Text, UintegerValue) Then
-            _Disk.BootSector.HiddenSectors = UintegerValue
+        If UShort.TryParse(TxtHiddenSectors.Text, UShortValue) Then
+            _Disk.BootSector.HiddenSectors = UShortValue
         End If
+
+        _Disk.BootSector.JmpBoot = HexJumpInstruction.GetHex
+
+        Dim BootStrapSignature = HexBootSectorSignature.GetHex
+        Array.Reverse(BootStrapSignature)
+        _Disk.BootSector.BootStrapSignature = BitConverter.ToUInt16(BootStrapSignature, 0)
 
         If _HasExtended Then
             If UInteger.TryParse(TxtSectorCountLarge.Text, UintegerValue) Then
@@ -563,14 +677,6 @@ Public Class BootSectorForm
     End Sub
 
     Private Sub OEMNameForm_Load(sender As Object, e As EventArgs) Handles Me.Load
-        _SuppressEvent = True
-
-        PopulateDiskTypes()
-        PopulateValues()
-        SetCurrentDiskType()
-
-        _SuppressEvent = False
-
         ActiveControl = BtnCancel
     End Sub
 
@@ -748,7 +854,7 @@ Public Class BootSectorForm
         _SuppressEvent = False
     End Sub
 
-    Private Sub HexVolumeSerialNumber_TextChanged(sender As Object, e As EventArgs) Handles HexVolumeSerialNumber.TextChanged
+    Private Sub HexTextBox_TextChanged(sender As Object, e As EventArgs) Handles HexVolumeSerialNumber.TextChanged, HexBootSectorSignature.TextChanged
         If _SuppressEvent Then
             Exit Sub
         End If
@@ -756,6 +862,18 @@ Public Class BootSectorForm
         Dim HB As HexTextBox = sender
         If HB.Text <> CType(HB.Tag, FieldData).LastValue Then
             UpdateTag(HB)
+        End If
+    End Sub
+
+    Private Sub HexJumpInstruction_TextChanged(sender As Object, e As EventArgs) Handles HexJumpInstruction.TextChanged
+        If _SuppressEvent Then
+            Exit Sub
+        End If
+
+        Dim HB As HexTextBox = sender
+        If HB.Text <> CType(HB.Tag, FieldData).LastValue Then
+            Dim IsInvalid = Not BootSector.CheckJumpInstruction(HB.GetHex, True)
+            UpdateTag(HB, IsInvalid)
         End If
     End Sub
 

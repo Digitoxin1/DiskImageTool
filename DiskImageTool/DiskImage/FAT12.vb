@@ -141,23 +141,25 @@
         Public Function HasUnusedSectors(WithData As Boolean) As Boolean
             Dim ClusterSize As UInteger = _BootSector.BytesPerCluster
 
-            For Cluster As UShort = 1 To _BootSector.NumberOfFATEntries + 1
-                If _FATTable(Cluster) = 0 Then
-                    Dim Offset = _BootSector.ClusterToOffset(Cluster)
-                    If _FileBytes.Length < Offset + ClusterSize Then
-                        ClusterSize = Math.Max(_FileBytes.Length - Offset, 0)
-                    End If
-                    If ClusterSize > 0 Then
-                        If Not WithData Then
-                            Return True
-                        ElseIf Not IsDataBlockEmpty(_FileBytes.GetBytes(Offset, ClusterSize)) Then
-                            Return True
+            If _FATTable IsNot Nothing Then
+                For Cluster As UShort = 1 To _BootSector.NumberOfFATEntries + 1
+                    If _FATTable(Cluster) = 0 Then
+                        Dim Offset = _BootSector.ClusterToOffset(Cluster)
+                        If _FileBytes.Length < Offset + ClusterSize Then
+                            ClusterSize = Math.Max(_FileBytes.Length - Offset, 0)
                         End If
-                    Else
-                        Exit For
+                        If ClusterSize > 0 Then
+                            If Not WithData Then
+                                Return True
+                            ElseIf Not IsDataBlockEmpty(_FileBytes.GetBytes(Offset, ClusterSize)) Then
+                                Return True
+                            End If
+                        Else
+                            Exit For
+                        End If
                     End If
-                End If
-            Next
+                Next
+            End If
 
             Return False
         End Function

@@ -5,11 +5,11 @@ Namespace DiskImage
     Public Class BootSector
         Private Const BOOT_SECTOR As UInteger = 0
         Private ReadOnly _FileBytes As ImageByteArray
-        Private Shared ReadOnly _ValidBootStrapSignature As UShort = &HAA55
+        Public Shared ReadOnly ValidBootStrapSignature As UShort = &HAA55
         Public Shared ReadOnly ValidBytesPerSector() As UShort = {512, 1024, 2048, 4096}
         Public Shared ReadOnly ValidDriveNumber() As Byte = {&H0, &H80}
-        Private Shared ReadOnly _ValidExtendedBootSignature() As Byte = {&H29}
-        Private Shared ReadOnly _ValidJumpInstructuon() As Byte = {&HEB, &HE9}
+        Public Shared ReadOnly ValidExtendedBootSignature() As Byte = {&H28, &H29}
+        'Private Shared ReadOnly _ValidJumpInstructuon() As Byte = {&HEB, &HE9}
         Public Shared ReadOnly ValidMediaDescriptor() As Byte = {&HF0, &HF8, &HF9, &HFA, &HFB, &HFC, &HFD, &HFE, &HFF}
         Public Shared ReadOnly ValidSectorsPerCluster() As Byte = {1, 2, 4, 8, 16, 32, 64, 128}
 
@@ -51,7 +51,8 @@ Namespace DiskImage
             SectorsPerFAT = 2
             SectorsPerTrack = 2
             NumberOfHeads = 2
-            HiddenSectors = 4
+            HiddenSectors = 2
+            HiddenSectorsFAT16 = 4
             SectorCountLarge = 4
             DriveNumber = 1
             Reserved = 1
@@ -62,6 +63,10 @@ Namespace DiskImage
             BootStrapCode = 448
             BootStrapSignature = 2
         End Enum
+
+        Public Shared Function CheckJumpInstruction(Value() As Byte, CheckNOP As Boolean) As Boolean
+            Return (Value(0) = &HEB And (Not CheckNOP Or Value(2) = &H90)) Or Value(0) = &HE9
+        End Function
 
         Sub New(FileBytes As ImageByteArray)
             _FileBytes = FileBytes
@@ -137,7 +142,16 @@ Namespace DiskImage
             End Set
         End Property
 
-        Public Property HiddenSectors() As UInteger
+        Public Property HiddenSectors() As UShort
+            Get
+                Return _FileBytes.GetBytesShort(BootSectorOffsets.HiddenSectors)
+            End Get
+            Set
+                _FileBytes.SetBytes(Value, BootSectorOffsets.HiddenSectors)
+            End Set
+        End Property
+
+        Public Property HiddenSectorsFAT16() As UInteger
             Get
                 Return _FileBytes.GetBytesInteger(BootSectorOffsets.HiddenSectors)
             End Get
@@ -342,7 +356,7 @@ Namespace DiskImage
         End Function
 
         Public Function HasValidBootStrapSignature() As Boolean
-            Return BootStrapSignature = _ValidBootStrapSignature
+            Return BootStrapSignature = ValidBootStrapSignature
         End Function
 
         Public Function HasValidBytesPerSector() As Boolean
@@ -354,11 +368,11 @@ Namespace DiskImage
         End Function
 
         Public Function HasValidExtendedBootSignature() As Boolean
-            Return _ValidExtendedBootSignature.Contains(ExtendedBootSignature)
+            Return ValidExtendedBootSignature.Contains(ExtendedBootSignature)
         End Function
 
-        Public Function HasValidJumpInstruction() As Boolean
-            Return _ValidJumpInstructuon.Contains(JmpBoot(0))
+        Public Function HasValidJumpInstruction(CheckNOP As Boolean) As Boolean
+            Return CheckJumpInstruction(JmpBoot, CheckNOP)
         End Function
 
         Public Function HasValidMediaDescriptor() As Boolean
@@ -390,7 +404,14 @@ Namespace DiskImage
         End Function
 
         Public Function IsValidImage() As Boolean
-            Return _FileBytes.Length > 0 AndAlso HasValidSectorsPerCluster() AndAlso HasValidMediaDescriptor()
+            Return _FileBytes.Length > 0 _
+                AndAlso HasValidSectorsPerCluster() _
+                AndAlso HasValidMediaDescriptor() _
+                AndAlso SectorsPerTrack > 0 _
+                AndAlso NumberOfHeads > 0 _
+                AndAlso SectorsPerFAT > 0 _
+                AndAlso ReservedSectorCount > 0 _
+                AndAlso NumberOfFATs > 0
         End Function
 
         Public Function IsWin9xOEMName() As Boolean

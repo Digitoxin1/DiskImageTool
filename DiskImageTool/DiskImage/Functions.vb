@@ -113,7 +113,7 @@ Namespace DiskImage
                     BootSector.RootEntryCount = 64
                     BootSector.SectorCountSmall = 360
                     BootSector.SectorsPerCluster = 1
-                    BootSector.SectorsPerFAT = 1
+                    BootSector.SectorsPerFAT = 2
                     BootSector.SectorsPerTrack = 9
 
                 Case FloppyDiskType.Floppy320
