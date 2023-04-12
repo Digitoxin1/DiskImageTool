@@ -5,6 +5,7 @@ Namespace DiskImage
     Public Class DirectoryEntry
         Private Const CHAR_SPACE As Byte = 32
         Private Const CHAR_DELETED As Byte = &HE5
+        Public Const DIRECTORY_ENTRY_SIZE As Byte = 32
         Private ReadOnly _FatChain As FATChain
         Private ReadOnly _FAT As FAT12
         Private ReadOnly _Offset As UInteger
@@ -79,6 +80,15 @@ Namespace DiskImage
             End Set
         End Property
 
+        Public Property BatchEditMode() As Boolean
+            Get
+                Return _FileBytes.BatchEditMode
+            End Get
+            Set
+                _FileBytes.BatchEditMode = Value
+            End Set
+        End Property
+
         Public Property CreationDate() As UShort
             Get
                 Return _FileBytes.GetBytesShort(_Offset + DirectoryEntryOffset.CreationDate)
@@ -114,7 +124,7 @@ Namespace DiskImage
 
         Public ReadOnly Property Data As Byte()
             Get
-                Return _FileBytes.GetBytes(_Offset, 32)
+                Return _FileBytes.GetBytes(_Offset, DIRECTORY_ENTRY_SIZE)
             End Get
         End Property
 
@@ -418,7 +428,12 @@ Namespace DiskImage
         End Function
 
         Public Sub Remove(Clear As Boolean)
-            _FileBytes.BatchEditMode = True
+            Dim UseBatchEditMode As Boolean = Not _FileBytes.BatchEditMode
+
+            If UseBatchEditMode Then
+                _FileBytes.BatchEditMode = True
+            End If
+
             _FileBytes.SetBytes(CHAR_DELETED, _Offset)
 
             Dim b(_BootSector.BytesPerCluster - 1) As Byte
@@ -438,7 +453,9 @@ Namespace DiskImage
             Next
             _FAT.UpdateFAT12(True)
 
-            _FileBytes.BatchEditMode = False
+            If UseBatchEditMode Then
+                _FileBytes.BatchEditMode = False
+            End If
         End Sub
 
         Public Sub SetCreationDate(Value As Date)

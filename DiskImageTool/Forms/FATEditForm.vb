@@ -63,11 +63,7 @@ Public Class FATEditForm
             _FAT.TableEntry(Cluster) = Value
         Next
 
-        _Disk.Data.BatchEditMode = True
-
         _Updated = _FAT.UpdateFAT12(SyncAll)
-
-        _Disk.Data.BatchEditMode = False
     End Sub
 
     Private Sub InitializeGridColumns()

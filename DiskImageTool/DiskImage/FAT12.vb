@@ -264,8 +264,13 @@
 
         Public Function UpdateFAT12(SyncAll As Boolean) As Boolean
             Dim Updated As Boolean = False
+            Dim UseBatchEditMode As Boolean = Not _FileBytes.BatchEditMode
 
             Dim FATBytes = EncodeFAT12(_FATTable)
+
+            If UseBatchEditMode Then
+                _FileBytes.BatchEditMode = True
+            End If
 
             If SyncAll Then
                 For Counter = 0 To _BootSector.NumberOfFATs - 1
@@ -281,6 +286,10 @@
                     SetFAT(_Index, FATBytes)
                     Updated = True
                 End If
+            End If
+
+            If UseBatchEditMode Then
+                _FileBytes.BatchEditMode = False
             End If
 
             If Updated Then

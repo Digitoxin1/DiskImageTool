@@ -697,8 +697,26 @@ Public Class MainForm
         End If
     End Sub
 
-    Private Sub RemoveDeletedFile(DirectoryEntry As DiskImage.DirectoryEntry, IsLastEntry As Boolean)
+    Private Sub RemoveDeletedFile(DirectoryEntry As DiskImage.DirectoryEntry, Index As Integer, IsLastEntry As Boolean)
+        DirectoryEntry.BatchEditMode = True
+
         DirectoryEntry.Clear(IsLastEntry)
+
+        If IsLastEntry And Index > 0 Then
+            Dim Offset = DirectoryEntry.Offset
+            For Counter = Index - 1 To 0 Step -1
+                Offset -= DirectoryEntry.DIRECTORY_ENTRY_SIZE
+                Dim PrevEntry = _Disk.GetDirectoryEntryByOffset(Offset)
+                If PrevEntry.IsLFN Then
+                    PrevEntry.Clear(True)
+                Else
+                    Exit For
+                End If
+            Next
+        End If
+
+        DirectoryEntry.BatchEditMode = False
+
         ComboItemRefresh(True, True)
     End Sub
 
@@ -2959,7 +2977,7 @@ Public Class MainForm
             Dim FileData As FileData = Item.Tag
 
             If FileData.DirectoryEntry.IsDeleted Then
-                RemoveDeletedFile(FileData.DirectoryEntry, FileData.IsLastEntry)
+                RemoveDeletedFile(FileData.DirectoryEntry, FileData.Index, FileData.IsLastEntry)
             End If
         End If
     End Sub

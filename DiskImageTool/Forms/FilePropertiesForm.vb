@@ -134,14 +134,14 @@
     Private Sub ApplyUpdates()
         _Updated = False
 
+        _Disk.Data.BatchEditMode = True
+
         If _Items.Count = 1 Then
             Dim Item As ListViewItem = _Items(0)
             Dim FileData As FileData = Item.Tag
             Dim DirectoryEntry = FileData.DirectoryEntry
             ApplyFileNameUpdate(DirectoryEntry)
         End If
-
-        _Disk.Data.BatchEditMode = True
 
         For Each Item As ListViewItem In _Items
             Dim FileData As FileData = Item.Tag

@@ -142,7 +142,12 @@
         End Sub
 
         Public Sub CommitChanges()
-            _FileBytes.BatchEditMode = True
+            Dim UseBatchEditMode = Not _FileBytes.BatchEditMode
+
+            If UseBatchEditMode Then
+                _FileBytes.BatchEditMode = True
+            End If
+
             For Each SectorBlock In _SectorList.Values
                 Dim Offset = SectorToBytes(SectorBlock.SectorStart)
                 Dim OriginalData = _FileBytes.GetBytes(Offset, SectorBlock.Size)
@@ -151,7 +156,10 @@
                     _FileBytes.SetBytes(NewData, Offset)
                 End If
             Next
-            _FileBytes.BatchEditMode = False
+
+            If UseBatchEditMode Then
+                _FileBytes.BatchEditMode = False
+            End If
         End Sub
 
         Public Function GetBlock(Index As Integer) As SectorBlock
