@@ -317,9 +317,6 @@ Public Class BootSectorForm
         SetValue(TxtSectorsPerFAT, BootSector.SectorsPerFAT)
         SetValue(TxtSectorsPerTrack, BootSector.SectorsPerTrack, {"8", "9", "15", "18", "21", "36"})
         SetValue(TxtNumberOfHeads, BootSector.NumberOfHeads, {"1", "2"})
-        SetValue(TxtHiddenSectors, BootSector.HiddenSectors)
-        SetValue(HexJumpInstruction, BootSector.JmpBoot, Not BootSector.HasValidJumpInstruction(True))
-        SetValue(HexBootSectorSignature, BootSector.BootStrapSignature.ToString("X4"), {BootSector.ValidBootStrapSignature.ToString("X4")})
     End Sub
 
     Private Sub PopulateExtended(BootSector As BootSector)
@@ -393,6 +390,11 @@ Public Class BootSectorForm
         PopulateBytesPerSector()
         PopulateSectorsPerCluster()
         PopulateBootRecord(_Disk.BootSector)
+
+        SetValue(TxtHiddenSectors, _Disk.BootSector.HiddenSectors)
+        SetValue(HexJumpInstruction, _Disk.BootSector.JmpBoot, Not _Disk.BootSector.HasValidJumpInstruction(True))
+        SetValue(HexBootSectorSignature, _Disk.BootSector.BootStrapSignature.ToString("X4"), {BootSector.ValidBootStrapSignature.ToString("X4")})
+
         PopulateAdditionalData(_Disk.BootSector)
 
         If _HasExtended Then

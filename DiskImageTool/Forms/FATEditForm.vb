@@ -20,7 +20,7 @@ Public Class FATEditForm
     '    Color.Magenta
     '}
 
-    Public Sub New(Disk As DiskImage.Disk, Index As UShort)
+    Public Sub New(Disk As DiskImage.Disk, Index As UShort, DisplaySync As Boolean)
 
         ' This call is required by the designer.
         InitializeComponent()
@@ -29,10 +29,14 @@ Public Class FATEditForm
 
         Me.Text = "File Allocation Table " & Index + 1
         ChkSync.Checked = True
+        ChkSync.Visible = DisplaySync
+        If Not DisplaySync Then
+            DataGridViewFAT.Height = ChkSync.Bottom - DataGridViewFAT.Top
+        End If
         SetButtonStatus(False)
 
         PopulateContextMenu()
-        InitializeGridColumns
+        InitializeGridColumns()
 
         _ToolTip = New ToolTip()
         _Disk = Disk

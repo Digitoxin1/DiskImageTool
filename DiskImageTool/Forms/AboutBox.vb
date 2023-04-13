@@ -14,7 +14,7 @@
         ' TODO: Customize the application's assembly information in the "Application" pane of the project 
         '    properties dialog (under the "Project" menu).
         Me.LabelProductName.Text = My.Application.Info.ProductName
-        Me.LabelVersion.Text = String.Format("Version {0}", FileVersionInfo.GetVersionInfo(Application.ExecutablePath).FileVersion)
+        Me.LabelVersion.Text = String.Format("Version {0}", GetVersionString)
         Me.LabelURL.Text = MainForm.SITE_URL
         Me.TextBoxDescription.Text = GetResource("License.txt")
     End Sub

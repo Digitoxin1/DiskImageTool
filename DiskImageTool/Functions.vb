@@ -73,6 +73,11 @@ Module Functions
         Return NewTable
     End Function
 
+    Public Function GetVersionString() As String
+        Dim Version = FileVersionInfo.GetVersionInfo(Application.ExecutablePath)
+        Return Version.FileMajorPart & "." & Version.FileMinorPart & "." & Version.FilePrivatePart
+    End Function
+
     Public Function HexStringToBytes(ByVal HexString As String) As Byte()
         Dim b(HexString.Length / 2 - 1) As Byte
 

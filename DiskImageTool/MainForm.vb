@@ -477,7 +477,7 @@ Public Class MainForm
         End Try
         Cursor.Current = Cursors.Default
         If DownloadVersion <> "" And DownloadURL <> "" Then
-            Dim CurrentVersion = FileVersionInfo.GetVersionInfo(Application.ExecutablePath).FileVersion
+            Dim CurrentVersion = GetVersionString()
             UpdateAvailable = Version.Parse(DownloadVersion) > Version.Parse(CurrentVersion)
         End If
 
@@ -1080,8 +1080,8 @@ Public Class MainForm
         End If
     End Sub
 
-    Private Sub FATEdit(Index As UShort)
-        Dim frmFATEdit As New FATEditForm(_Disk, Index)
+    Private Sub FATEdit(Index As UShort, DisplaySync As Boolean)
+        Dim frmFATEdit As New FATEditForm(_Disk, Index, DisplaySync)
 
         frmFATEdit.ShowDialog()
 
@@ -1906,16 +1906,21 @@ Public Class MainForm
             RemoveHandler Item.Click, AddressOf BtnEditFAT_Click
         Next
         BtnEditFAT.DropDownItems.Clear()
+        BtnEditFAT.Tag = Nothing
 
         If _Disk IsNot Nothing AndAlso _Disk.IsValidImage Then
-            For Counter = 0 To _Disk.BootSector.NumberOfFATs - 1
-                Dim Item As New ToolStripMenuItem With {
-                   .Text = "FAT &" & Counter + 1,
-                   .Tag = Counter
-                }
-                BtnEditFAT.DropDownItems.Add(Item)
-                AddHandler Item.Click, AddressOf BtnEditFAT_Click
-            Next
+            If _Disk.BootSector.NumberOfFATs = 1 OrElse _Disk.FAT.CompareTables Then
+                BtnEditFAT.Tag = -1
+            Else
+                For Counter = 0 To _Disk.BootSector.NumberOfFATs - 1
+                    Dim Item As New ToolStripMenuItem With {
+                       .Text = "FAT &" & Counter + 1,
+                       .Tag = Counter
+                    }
+                    BtnEditFAT.DropDownItems.Add(Item)
+                    AddHandler Item.Click, AddressOf BtnEditFAT_Click
+                Next
+            End If
         End If
     End Sub
 
@@ -2959,7 +2964,11 @@ Public Class MainForm
 
     Private Sub BtnEditFAT_Click(sender As Object, e As EventArgs) Handles BtnEditFAT.Click
         If sender.tag IsNot Nothing Then
-            FATEdit(sender.tag)
+            If sender.tag = -1 Then
+                FATEdit(0, False)
+            Else
+                FATEdit(sender.tag, True)
+            End If
         End If
     End Sub
 
@@ -3298,7 +3307,7 @@ Public Class MainForm
     End Sub
 
     Private Sub MainForm_Load(sender As Object, e As EventArgs) Handles Me.Load
-        _FileVersion = FileVersionInfo.GetVersionInfo(Application.ExecutablePath).FileVersion
+        _FileVersion = GetVersionString()
         Me.Text = GetWindowCaption()
 
         ParseCustomFilters()
