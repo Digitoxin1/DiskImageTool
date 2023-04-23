@@ -1,5 +1,5 @@
 ﻿Public Class FilePropertiesForm
-    Private Const CREATED_FORMAT As String = "yyyy-MM-dd  h:mm:ss tt"
+    Private Const CREATED_FORMAT As String = "yyyy-MM-dd  H:mm:ss"
     Private Const EMPTY_FORMAT As String = "'Empty'"
     Private Const LASTACCESSED_FORMAT As String = "yyyy-MM-dd"
     Private ReadOnly _Disk As DiskImage.Disk

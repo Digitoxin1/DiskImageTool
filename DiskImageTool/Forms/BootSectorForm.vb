@@ -1,5 +1,4 @@
-﻿Imports System.Text
-Imports DiskImageTool.DiskImage
+﻿Imports DiskImageTool.DiskImage
 Imports DiskImageTool.DiskImage.BootSector
 Imports Hb.Windows.Forms
 

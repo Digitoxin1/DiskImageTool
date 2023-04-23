@@ -47,8 +47,6 @@ Partial Class FilePropertiesForm
         Me.BtnHidden = New System.Windows.Forms.Button()
         Me.ChkReadOnly = New System.Windows.Forms.CheckBox()
         Me.ChkHidden = New System.Windows.Forms.CheckBox()
-        Me.MskExtensionHex = New DiskImageTool.HexTextBox()
-        Me.MskFileHex = New DiskImageTool.HexTextBox()
         Me.LblMultipleFiles = New System.Windows.Forms.Label()
         Me.TxtExtension = New System.Windows.Forms.TextBox()
         Me.TxtFile = New System.Windows.Forms.TextBox()
@@ -57,6 +55,8 @@ Partial Class FilePropertiesForm
         Me.BtnUpdate = New System.Windows.Forms.Button()
         Me.FlowLayoutPanel1 = New System.Windows.Forms.FlowLayoutPanel()
         Me.FlowLayoutPanel2 = New System.Windows.Forms.FlowLayoutPanel()
+        Me.MskExtensionHex = New DiskImageTool.HexTextBox()
+        Me.MskFileHex = New DiskImageTool.HexTextBox()
         GroupFileDates = New System.Windows.Forms.GroupBox()
         Panel1 = New System.Windows.Forms.Panel()
         GroupAttributes = New System.Windows.Forms.GroupBox()
@@ -83,7 +83,7 @@ Partial Class FilePropertiesForm
         GroupFileDates.Location = New System.Drawing.Point(3, 99)
         GroupFileDates.Name = "GroupFileDates"
         GroupFileDates.Padding = New System.Windows.Forms.Padding(3, 3, 3, 0)
-        GroupFileDates.Size = New System.Drawing.Size(396, 113)
+        GroupFileDates.Size = New System.Drawing.Size(388, 113)
         GroupFileDates.TabIndex = 1
         GroupFileDates.TabStop = False
         GroupFileDates.Text = "File Dates"
@@ -114,7 +114,7 @@ Partial Class FilePropertiesForm
         Me.TableLayoutPanel1.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 26.0!))
         Me.TableLayoutPanel1.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 26.0!))
         Me.TableLayoutPanel1.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 26.0!))
-        Me.TableLayoutPanel1.Size = New System.Drawing.Size(378, 78)
+        Me.TableLayoutPanel1.Size = New System.Drawing.Size(370, 78)
         Me.TableLayoutPanel1.TabIndex = 0
         '
         'Panel1
@@ -122,7 +122,7 @@ Partial Class FilePropertiesForm
         Panel1.BackColor = System.Drawing.SystemColors.Window
         Panel1.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle
         Panel1.Controls.Add(Me.NumCreatedMS)
-        Panel1.Location = New System.Drawing.Point(263, 29)
+        Panel1.Location = New System.Drawing.Point(255, 29)
         Panel1.Name = "Panel1"
         Panel1.Padding = New System.Windows.Forms.Padding(1, 1, 0, 0)
         Panel1.Size = New System.Drawing.Size(44, 20)
@@ -143,7 +143,7 @@ Partial Class FilePropertiesForm
         'BtnLastAccessed
         '
         Me.BtnLastAccessed.Anchor = System.Windows.Forms.AnchorStyles.Left
-        Me.BtnLastAccessed.Location = New System.Drawing.Point(313, 55)
+        Me.BtnLastAccessed.Location = New System.Drawing.Point(305, 55)
         Me.BtnLastAccessed.Name = "BtnLastAccessed"
         Me.BtnLastAccessed.Size = New System.Drawing.Size(62, 20)
         Me.BtnLastAccessed.TabIndex = 9
@@ -164,7 +164,7 @@ Partial Class FilePropertiesForm
         'BtnCreated
         '
         Me.BtnCreated.Anchor = System.Windows.Forms.AnchorStyles.Left
-        Me.BtnCreated.Location = New System.Drawing.Point(313, 29)
+        Me.BtnCreated.Location = New System.Drawing.Point(305, 29)
         Me.BtnCreated.Name = "BtnCreated"
         Me.BtnCreated.Size = New System.Drawing.Size(62, 20)
         Me.BtnCreated.TabIndex = 6
@@ -185,7 +185,7 @@ Partial Class FilePropertiesForm
         'BtnLastWritten
         '
         Me.BtnLastWritten.Anchor = System.Windows.Forms.AnchorStyles.Left
-        Me.BtnLastWritten.Location = New System.Drawing.Point(313, 3)
+        Me.BtnLastWritten.Location = New System.Drawing.Point(305, 3)
         Me.BtnLastWritten.Name = "BtnLastWritten"
         Me.BtnLastWritten.Size = New System.Drawing.Size(62, 20)
         Me.BtnLastWritten.TabIndex = 2
@@ -220,7 +220,7 @@ Partial Class FilePropertiesForm
         'DTCreated
         '
         Me.DTCreated.Anchor = System.Windows.Forms.AnchorStyles.Left
-        Me.DTCreated.CustomFormat = "yyyy-MM-dd  h:mm:ss tt"
+        Me.DTCreated.CustomFormat = "yyyy-MM-dd  H:mm:ss"
         Me.DTCreated.Format = System.Windows.Forms.DateTimePickerFormat.Custom
         Me.DTCreated.Location = New System.Drawing.Point(86, 29)
         Me.DTCreated.MaxDate = New Date(2107, 12, 31, 0, 0, 0, 0)
@@ -228,20 +228,20 @@ Partial Class FilePropertiesForm
         Me.DTCreated.Name = "DTCreated"
         Me.DTCreated.ShowCheckBox = True
         Me.DTCreated.ShowUpDown = True
-        Me.DTCreated.Size = New System.Drawing.Size(171, 20)
+        Me.DTCreated.Size = New System.Drawing.Size(163, 20)
         Me.DTCreated.TabIndex = 4
         '
         'DTLastWritten
         '
         Me.DTLastWritten.Anchor = System.Windows.Forms.AnchorStyles.Left
-        Me.DTLastWritten.CustomFormat = "yyyy-MM-dd  h:mm:ss tt"
+        Me.DTLastWritten.CustomFormat = "yyyy-MM-dd  H:mm:ss"
         Me.DTLastWritten.Format = System.Windows.Forms.DateTimePickerFormat.Custom
         Me.DTLastWritten.Location = New System.Drawing.Point(86, 3)
         Me.DTLastWritten.MaxDate = New Date(2107, 12, 31, 0, 0, 0, 0)
         Me.DTLastWritten.MinDate = New Date(1980, 1, 1, 0, 0, 0, 0)
         Me.DTLastWritten.Name = "DTLastWritten"
         Me.DTLastWritten.ShowUpDown = True
-        Me.DTLastWritten.Size = New System.Drawing.Size(154, 20)
+        Me.DTLastWritten.Size = New System.Drawing.Size(132, 20)
         Me.DTLastWritten.TabIndex = 1
         '
         'GroupAttributes
@@ -254,7 +254,7 @@ Partial Class FilePropertiesForm
         GroupAttributes.Location = New System.Drawing.Point(3, 218)
         GroupAttributes.Name = "GroupAttributes"
         GroupAttributes.Padding = New System.Windows.Forms.Padding(3, 3, 3, 0)
-        GroupAttributes.Size = New System.Drawing.Size(396, 90)
+        GroupAttributes.Size = New System.Drawing.Size(388, 90)
         GroupAttributes.TabIndex = 2
         GroupAttributes.TabStop = False
         GroupAttributes.Text = "Attributes"
@@ -264,9 +264,9 @@ Partial Class FilePropertiesForm
         Me.TableLayoutPanel2.AutoSize = True
         Me.TableLayoutPanel2.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink
         Me.TableLayoutPanel2.ColumnCount = 4
-        Me.TableLayoutPanel2.ColumnStyles.Add(New System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 118.0!))
+        Me.TableLayoutPanel2.ColumnStyles.Add(New System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 117.0!))
         Me.TableLayoutPanel2.ColumnStyles.Add(New System.Windows.Forms.ColumnStyle())
-        Me.TableLayoutPanel2.ColumnStyles.Add(New System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 124.0!))
+        Me.TableLayoutPanel2.ColumnStyles.Add(New System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 117.0!))
         Me.TableLayoutPanel2.ColumnStyles.Add(New System.Windows.Forms.ColumnStyle())
         Me.TableLayoutPanel2.Controls.Add(Me.ChkArchive, 0, 0)
         Me.TableLayoutPanel2.Controls.Add(Me.ChkSystem, 0, 1)
@@ -282,7 +282,7 @@ Partial Class FilePropertiesForm
         Me.TableLayoutPanel2.RowCount = 2
         Me.TableLayoutPanel2.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 26.0!))
         Me.TableLayoutPanel2.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 26.0!))
-        Me.TableLayoutPanel2.Size = New System.Drawing.Size(378, 52)
+        Me.TableLayoutPanel2.Size = New System.Drawing.Size(370, 52)
         Me.TableLayoutPanel2.TabIndex = 0
         '
         'ChkArchive
@@ -310,7 +310,7 @@ Partial Class FilePropertiesForm
         'BtnArchive
         '
         Me.BtnArchive.Anchor = System.Windows.Forms.AnchorStyles.Left
-        Me.BtnArchive.Location = New System.Drawing.Point(121, 3)
+        Me.BtnArchive.Location = New System.Drawing.Point(120, 3)
         Me.BtnArchive.Name = "BtnArchive"
         Me.BtnArchive.Size = New System.Drawing.Size(62, 20)
         Me.BtnArchive.TabIndex = 1
@@ -320,7 +320,7 @@ Partial Class FilePropertiesForm
         'BtnSystem
         '
         Me.BtnSystem.Anchor = System.Windows.Forms.AnchorStyles.Left
-        Me.BtnSystem.Location = New System.Drawing.Point(121, 29)
+        Me.BtnSystem.Location = New System.Drawing.Point(120, 29)
         Me.BtnSystem.Name = "BtnSystem"
         Me.BtnSystem.Size = New System.Drawing.Size(62, 20)
         Me.BtnSystem.TabIndex = 5
@@ -330,7 +330,7 @@ Partial Class FilePropertiesForm
         'BtnReadOnly
         '
         Me.BtnReadOnly.Anchor = System.Windows.Forms.AnchorStyles.Left
-        Me.BtnReadOnly.Location = New System.Drawing.Point(313, 3)
+        Me.BtnReadOnly.Location = New System.Drawing.Point(305, 3)
         Me.BtnReadOnly.Name = "BtnReadOnly"
         Me.BtnReadOnly.Size = New System.Drawing.Size(62, 20)
         Me.BtnReadOnly.TabIndex = 3
@@ -340,7 +340,7 @@ Partial Class FilePropertiesForm
         'BtnHidden
         '
         Me.BtnHidden.Anchor = System.Windows.Forms.AnchorStyles.Left
-        Me.BtnHidden.Location = New System.Drawing.Point(313, 29)
+        Me.BtnHidden.Location = New System.Drawing.Point(305, 29)
         Me.BtnHidden.Name = "BtnHidden"
         Me.BtnHidden.Size = New System.Drawing.Size(62, 20)
         Me.BtnHidden.TabIndex = 7
@@ -350,7 +350,7 @@ Partial Class FilePropertiesForm
         'ChkReadOnly
         '
         Me.ChkReadOnly.Anchor = System.Windows.Forms.AnchorStyles.Left
-        Me.ChkReadOnly.Location = New System.Drawing.Point(189, 4)
+        Me.ChkReadOnly.Location = New System.Drawing.Point(188, 4)
         Me.ChkReadOnly.Name = "ChkReadOnly"
         Me.ChkReadOnly.Padding = New System.Windows.Forms.Padding(6, 1, 0, 0)
         Me.ChkReadOnly.Size = New System.Drawing.Size(87, 17)
@@ -361,7 +361,7 @@ Partial Class FilePropertiesForm
         'ChkHidden
         '
         Me.ChkHidden.Anchor = System.Windows.Forms.AnchorStyles.Left
-        Me.ChkHidden.Location = New System.Drawing.Point(189, 30)
+        Me.ChkHidden.Location = New System.Drawing.Point(188, 30)
         Me.ChkHidden.Name = "ChkHidden"
         Me.ChkHidden.Padding = New System.Windows.Forms.Padding(6, 1, 0, 0)
         Me.ChkHidden.Size = New System.Drawing.Size(76, 17)
@@ -390,24 +390,6 @@ Partial Class FilePropertiesForm
         TableLayoutPanel3.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50.0!))
         TableLayoutPanel3.Size = New System.Drawing.Size(370, 52)
         TableLayoutPanel3.TabIndex = 1
-        '
-        'MskExtensionHex
-        '
-        Me.MskExtensionHex.Font = New System.Drawing.Font("Courier New", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.MskExtensionHex.Location = New System.Drawing.Point(179, 29)
-        Me.MskExtensionHex.MaskLength = 3
-        Me.MskExtensionHex.Name = "MskExtensionHex"
-        Me.MskExtensionHex.Size = New System.Drawing.Size(64, 20)
-        Me.MskExtensionHex.TabIndex = 4
-        '
-        'MskFileHex
-        '
-        Me.MskFileHex.Font = New System.Drawing.Font("Courier New", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.MskFileHex.Location = New System.Drawing.Point(3, 29)
-        Me.MskFileHex.MaskLength = 8
-        Me.MskFileHex.Name = "MskFileHex"
-        Me.MskFileHex.Size = New System.Drawing.Size(170, 20)
-        Me.MskFileHex.TabIndex = 3
         '
         'LblMultipleFiles
         '
@@ -444,7 +426,7 @@ Partial Class FilePropertiesForm
         Me.GroupFileName.Controls.Add(TableLayoutPanel3)
         Me.GroupFileName.Location = New System.Drawing.Point(3, 3)
         Me.GroupFileName.Name = "GroupFileName"
-        Me.GroupFileName.Size = New System.Drawing.Size(396, 90)
+        Me.GroupFileName.Size = New System.Drawing.Size(388, 90)
         Me.GroupFileName.TabIndex = 0
         Me.GroupFileName.TabStop = False
         Me.GroupFileName.Text = "File Name"
@@ -480,7 +462,7 @@ Partial Class FilePropertiesForm
         Me.FlowLayoutPanel1.CausesValidation = False
         Me.FlowLayoutPanel1.Controls.Add(Me.BtnUpdate)
         Me.FlowLayoutPanel1.Controls.Add(Me.BtnCancel)
-        Me.FlowLayoutPanel1.Location = New System.Drawing.Point(105, 314)
+        Me.FlowLayoutPanel1.Location = New System.Drawing.Point(101, 314)
         Me.FlowLayoutPanel1.Name = "FlowLayoutPanel1"
         Me.FlowLayoutPanel1.Size = New System.Drawing.Size(192, 29)
         Me.FlowLayoutPanel1.TabIndex = 3
@@ -496,8 +478,26 @@ Partial Class FilePropertiesForm
         Me.FlowLayoutPanel2.FlowDirection = System.Windows.Forms.FlowDirection.TopDown
         Me.FlowLayoutPanel2.Location = New System.Drawing.Point(21, 21)
         Me.FlowLayoutPanel2.Name = "FlowLayoutPanel2"
-        Me.FlowLayoutPanel2.Size = New System.Drawing.Size(402, 346)
+        Me.FlowLayoutPanel2.Size = New System.Drawing.Size(394, 346)
         Me.FlowLayoutPanel2.TabIndex = 4
+        '
+        'MskExtensionHex
+        '
+        Me.MskExtensionHex.Font = New System.Drawing.Font("Courier New", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.MskExtensionHex.Location = New System.Drawing.Point(179, 29)
+        Me.MskExtensionHex.MaskLength = 3
+        Me.MskExtensionHex.Name = "MskExtensionHex"
+        Me.MskExtensionHex.Size = New System.Drawing.Size(64, 20)
+        Me.MskExtensionHex.TabIndex = 4
+        '
+        'MskFileHex
+        '
+        Me.MskFileHex.Font = New System.Drawing.Font("Courier New", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.MskFileHex.Location = New System.Drawing.Point(3, 29)
+        Me.MskFileHex.MaskLength = 8
+        Me.MskFileHex.Name = "MskFileHex"
+        Me.MskFileHex.Size = New System.Drawing.Size(170, 20)
+        Me.MskFileHex.TabIndex = 3
         '
         'FilePropertiesForm
         '
