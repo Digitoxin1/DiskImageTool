@@ -30,7 +30,7 @@
     <ProductName>DiskImageTool</ProductName>
     <PublisherName>Digitoxin</PublisherName>
     <ApplicationRevision>0</ApplicationRevision>
-    <ApplicationVersion>1.30.0.%2a</ApplicationVersion>
+    <ApplicationVersion>1.31.0.%2a</ApplicationVersion>
     <UseApplicationTrust>false</UseApplicationTrust>
     <PublishWizardCompleted>true</PublishWizardCompleted>
     <BootstrapperEnabled>true</BootstrapperEnabled>
@@ -54,6 +54,7 @@
     <OutputPath>bin\Release\</OutputPath>
     <DocumentationFile>DiskImageTool.xml</DocumentationFile>
     <NoWarn>42016,41999,42017,42018,42019,42032,42036,42020,42021,42022</NoWarn>
+    <DebugSymbols>true</DebugSymbols>
   </PropertyGroup>
   <PropertyGroup>
     <OptionExplicit>On</OptionExplicit>
@@ -86,6 +87,9 @@
     <ApplicationManifest>My Project\app.manifest</ApplicationManifest>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="CompactJson, Version=1.2.3.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\CompactJson.1.2.3\lib\net472\CompactJson.dll</HintPath>
+    </Reference>
     <Reference Include="Hb.Windows.Forms.HexBox2, Version=2.0.1.35160, Culture=neutral, PublicKeyToken=e0e5adf0ebc99863, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\Hb.Hexeditor2\sources\Hb.Windows.Forms.HexBox\bin\Release\Hb.Windows.Forms.HexBox2.dll</HintPath>
@@ -289,6 +293,7 @@
       <LastGenOutput>Settings.Designer.vb</LastGenOutput>
     </None>
     <None Include="App.config" />
+    <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
     <BootstrapperPackage Include=".NETFramework,Version=v4.7.2">

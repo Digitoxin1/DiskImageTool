@@ -2,7 +2,6 @@
 Imports System.IO
 Imports System.Net
 Imports System.Text
-Imports System.Text.RegularExpressions
 Imports DiskImageTool.DiskImage
 Imports BootSectorOffsets = DiskImageTool.DiskImage.BootSector.BootSectorOffsets
 Imports BootSectorSizes = DiskImageTool.DiskImage.BootSector.BootSectorSizes
@@ -444,9 +443,8 @@ Public Class MainForm
     Private Sub CheckForUpdates()
         Dim DownloadVersion As String = ""
         Dim DownloadURL As String = ""
+        Dim Body As String = ""
         Dim UpdateAvailable As Boolean = False
-        Dim Regex As Regex
-        Dim Match As Match
 
         Cursor.Current = Cursors.WaitCursor
         Try
@@ -456,20 +454,26 @@ Public Class MainForm
             Dim Reader As New StreamReader(Response.GetResponseStream)
             Dim ResponseText = Reader.ReadToEnd
 
-            Regex = New Regex("""tag_name"":""v(\d+\.\d+(?:\.\d+)?(?:\.\d+)?)""")
-            Match = Regex.Match(ResponseText)
-            If Match.Success Then
-                If Match.Groups.Count > 1 Then
-                    DownloadVersion = Match.Groups.Item(1).Value
+            Dim json As Dictionary(Of String, Object) = CompactJson.Serializer.Parse(Of Dictionary(Of String, Object))(ResponseText)
+
+            If json.ContainsKey("tag_name") Then
+                DownloadVersion = json.Item("tag_name").ToString
+                If DownloadVersion.StartsWith("v", StringComparison.CurrentCultureIgnoreCase) Then
+                    DownloadVersion = DownloadVersion.Remove(0, 1)
                 End If
             End If
 
-            Regex = New Regex("""browser_download_url"":""([^""]+)""")
-            Match = Regex.Match(ResponseText)
-            If Match.Success Then
-                If Match.Groups.Count > 1 Then
-                    DownloadURL = Match.Groups.Item(1).Value
+            If json.ContainsKey("assets") Then
+                Dim assets() As Dictionary(Of String, Object) = CompactJson.Serializer.Parse(Of Dictionary(Of String, Object)())(json.Item("assets").ToString)
+                If assets.Length > 0 Then
+                    If assets(0).ContainsKey("browser_download_url") Then
+                        DownloadURL = assets(0).Item("browser_download_url").ToString
+                    End If
                 End If
+            End If
+
+            If json.ContainsKey("body") Then
+                Body = json.Item("body").ToString
             End If
         Catch
             MsgBox("An error occured while checking for updates.  Please try again later.", MsgBoxStyle.Exclamation)
@@ -482,11 +486,17 @@ Public Class MainForm
         End If
 
         If UpdateAvailable Then
-            Dim Msg = "A New version Of " & My.Application.Info.Title & " Is available." & vbCrLf & vbCrLf & "Do you wish to download it at this time?"
+            Dim Msg = My.Application.Info.Title & " v" & DownloadVersion & " Is available."
+            If Body <> "" Then
+                Msg = Msg & vbCrLf & vbCrLf & "Whats New" & vbCrLf & New String("—", 6) & vbCrLf & Body & vbCrLf
+            End If
+            Msg = Msg & vbCrLf & vbCrLf & "Do you wish to download it at this time?"
             If MsgBox(Msg, MsgBoxStyle.Question + MsgBoxStyle.YesNo + MsgBoxStyle.DefaultButton2) = MsgBoxResult.Yes Then
                 Dim Dialog As New SaveFileDialog With {
                     .Filter = "Zip Archive|*.zip",
-                    .FileName = Path.GetFileName(DownloadURL)
+                    .FileName = Path.GetFileName(DownloadURL),
+                    .InitialDirectory = GetDownloadsFolder(),
+                    .RestoreDirectory = True
                 }
                 Dialog.ShowDialog()
                 If Dialog.FileName <> "" Then

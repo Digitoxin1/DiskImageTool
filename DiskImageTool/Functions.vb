@@ -141,4 +141,26 @@ Module Functions
     Private Function ConvertHexToByte(Hex As String, <Out> ByRef b As Byte) As Boolean
         Return Byte.TryParse(Hex, NumberStyles.HexNumber, Thread.CurrentThread.CurrentCulture, b)
     End Function
+
+    <DllImport("shell32.dll")>
+    Private Function SHGetKnownFolderPath(<MarshalAs(UnmanagedType.LPStruct)> ByVal rfid As Guid,
+        ByVal dwFlags As UInt32,
+        ByVal hToken As IntPtr,
+        ByRef pszPath As IntPtr) As Int32
+    End Function
+
+    Public Function GetDownloadsFolder() As String
+
+        Dim Result As String = ""
+        Dim ppszPath As IntPtr
+        Dim rfid = New Guid("{374DE290-123F-4565-9164-39C4925E467B}")
+
+        If SHGetKnownFolderPath(rfid, 0, 0, ppszPath) = 0 Then
+            Result = Marshal.PtrToStringUni(ppszPath)
+            Marshal.FreeCoTaskMem(ppszPath)
+        End If
+
+        Return Result
+    End Function
+
 End Module
