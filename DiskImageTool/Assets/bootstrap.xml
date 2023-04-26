@@ -423,7 +423,7 @@
     <oemname name="LHX TWO " company="Electronic Arts" description="LHX: ATTACK CHOPPER Disk Two" />
   </bootstrap>
   <bootstrap crc32="8CD8F888">
-    <oemname name="MagicISO" company="MagicISO, Inc." description="MagicISO 4.70" />
+    <oemname name="MagicISO" company="MagicISO, Inc." description="MagicISO 4.70" note="Not imaged from Original Media" />
   </bootstrap>
   <bootstrap crc32="5B5678E2">
     <oemname name="MSC 3.1 " />

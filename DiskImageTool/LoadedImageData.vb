@@ -1,4 +1,6 @@
 ﻿Public Class ImageDataScanInfo
+    Public Property DirectoryHasAdditionalData As Boolean = False
+    Public Property DirectoryHasBootSector As Boolean = False
     Public Property HasBadSectors As Boolean = False
     Public Property HasCreated As Boolean = False
     Public Property HasFATChainingErrors As Boolean = False

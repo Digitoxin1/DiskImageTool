@@ -4,7 +4,7 @@ Namespace DiskImage
 
     Public Class DirectoryEntry
         Private Const CHAR_SPACE As Byte = 32
-        Private Const CHAR_DELETED As Byte = &HE5
+        Public Const CHAR_DELETED As Byte = &HE5
         Public Const DIRECTORY_ENTRY_SIZE As Byte = 32
         Private ReadOnly _FatChain As FATChain
         Private ReadOnly _FAT As FAT12
@@ -200,7 +200,7 @@ Namespace DiskImage
             End Get
         End Property
 
-        Public ReadOnly Property Offset As Integer
+        Public ReadOnly Property Offset As UInteger
             Get
                 Return _Offset
             End Get
@@ -474,7 +474,7 @@ Namespace DiskImage
         End Sub
 
         Private Sub InitSubDirectory()
-            If IsDirectory() And Not IsDeleted() Then
+            If IsDirectory() AndAlso Not IsLink() AndAlso Not IsDeleted() Then
                 _SubDirectory = New SubDirectory(_FileBytes, _BootSector, _FAT, _FatChain, FileSize)
             Else
                 _SubDirectory = Nothing

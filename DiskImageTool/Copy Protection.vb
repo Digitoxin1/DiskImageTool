@@ -53,7 +53,7 @@ Module Copy_Protection
         'Origin Systems OSI-1
         If Not ProtectionFound AndAlso Disk.FAT.BadSectors.Count >= 10 Then
             If CheckBadSectors(Disk, {108, 109, 110, 111, 112, 113, 114, 115, 116, 117}) _
-                AndAlso CheckFileList(Disk, {"2400AD.EXE", "ULTIMA.COM", "ULTIMA.EXE", "ULTIMAII.EXE"}) Then
+                AndAlso CheckFileList(Disk, {"2400AD.EXE", "ULTIMA.COM", "ULTIMA.EXE", "ULTIMAII.EXE", "LORE.EXE"}) Then
 
                 ProtectionFound = True
                 ProtectionName = "Origin Systems OSI-1"

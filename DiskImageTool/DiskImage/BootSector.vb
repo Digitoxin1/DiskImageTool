@@ -1,15 +1,14 @@
-﻿Imports System.Text
-
-Namespace DiskImage
+﻿Namespace DiskImage
 
     Public Class BootSector
         Private Const BOOT_SECTOR As UInteger = 0
+        Public Const BOOT_SECTOR_SIZE As UShort = 512
         Private ReadOnly _FileBytes As ImageByteArray
         Public Shared ReadOnly ValidBootStrapSignature As UShort = &HAA55
         Public Shared ReadOnly ValidBytesPerSector() As UShort = {512, 1024, 2048, 4096}
         Public Shared ReadOnly ValidDriveNumber() As Byte = {&H0, &H80}
         Public Shared ReadOnly ValidExtendedBootSignature() As Byte = {&H28, &H29}
-        'Private Shared ReadOnly _ValidJumpInstructuon() As Byte = {&HEB, &HE9}
+        Public Shared ReadOnly ValidJumpInstructuon() As Byte = {&HEB, &HE9}
         Public Shared ReadOnly ValidMediaDescriptor() As Byte = {&HF0, &HF8, &HF9, &HFA, &HFB, &HFC, &HFD, &HFE, &HFF}
         Public Shared ReadOnly ValidSectorsPerCluster() As Byte = {1, 2, 4, 8, 16, 32, 64, 128}
 

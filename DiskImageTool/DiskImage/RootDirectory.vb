@@ -5,12 +5,24 @@
         Private ReadOnly _BootSector As BootSector
         Private ReadOnly _FAT As FAT12
         Private ReadOnly _FileBytes As ImageByteArray
+        Private _DirectoryData As DirectoryData
 
         Sub New(FileBytes As ImageByteArray, BootSector As BootSector, FAT As FAT12)
             _BootSector = BootSector
             _FAT = FAT
             _FileBytes = FileBytes
+            If BootSector.IsValidImage Then
+                _DirectoryData = GetDirectoryData()
+            Else
+                _DirectoryData = New DirectoryData
+            End If
         End Sub
+
+        Public ReadOnly Property Data As DirectoryData Implements IDirectory.Data
+            Get
+                Return _DirectoryData
+            End Get
+        End Property
 
         Public ReadOnly Property SectorChain As List(Of UInteger) Implements IDirectory.SectorChain
             Get
@@ -24,14 +36,6 @@
             End Get
         End Property
 
-        Public Function DirectoryEntryCount() As UInteger Implements IDirectory.DirectoryEntryCount
-            Return GetDirectoryEntryCount(False, False)
-        End Function
-
-        Public Function FileCount(ExcludeDeleted As Boolean) As UInteger Implements IDirectory.FileCount
-            Return GetDirectoryEntryCount(True, ExcludeDeleted)
-        End Function
-
         Public Function GetContent() As Byte() Implements IDirectory.GetContent
             Dim SectorStart = _BootSector.RootDirectoryRegionStart
             Dim SectorEnd = _BootSector.DataRegionStart
@@ -42,13 +46,13 @@
         End Function
 
         Public Function GetFile(Index As UInteger) As DirectoryEntry Implements IDirectory.GetFile
-            Dim Offset As UInteger = SectorToBytes(_BootSector.RootDirectoryRegionStart) + Index * 32
+            Dim Offset As UInteger = SectorToBytes(_BootSector.RootDirectoryRegionStart) + Index * DirectoryEntry.DIRECTORY_ENTRY_SIZE
 
             Return New DirectoryEntry(_FileBytes, _BootSector, _FAT, Offset)
         End Function
 
         Public Function HasFile(Filename As String) As Boolean Implements IDirectory.HasFile
-            Dim Count = GetDirectoryEntryCount(False, False)
+            Dim Count = _DirectoryData.EntryCount
             If Count > 0 Then
                 For Counter As UInteger = 0 To Count - 1
                     Dim File = GetFile(Counter)
@@ -63,11 +67,22 @@
             Return False
         End Function
 
-        Private Function GetDirectoryEntryCount(FileCountOnly As Boolean, ExcludeDeleted As Boolean) As UInteger
+        Public Sub RefreshData() Implements IDirectory.RefreshData
+            If _BootSector.IsValidImage Then
+                _DirectoryData = GetDirectoryData()
+            Else
+                _DirectoryData = New DirectoryData
+            End If
+        End Sub
+
+        Private Function GetDirectoryData() As DirectoryData
             Dim OffsetStart As UInteger = SectorToBytes(_BootSector.RootDirectoryRegionStart)
             Dim OffsetEnd As UInteger = SectorToBytes(_BootSector.DataRegionStart)
+            Dim Data As New DirectoryData
 
-            Return Functions.GetDirectoryEntryCount(_FileBytes, OffsetStart, OffsetEnd, FileCountOnly, ExcludeDeleted)
+            Functions.GetDirectoryData(Data, _FileBytes, OffsetStart, OffsetEnd, False, True)
+
+            Return Data
         End Function
     End Class
 End Namespace

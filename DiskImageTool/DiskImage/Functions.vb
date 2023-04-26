@@ -87,7 +87,7 @@ Namespace DiskImage
         End Function
 
         Public Function BuildBootSectorFromType(Type As FloppyDiskType) As BootSector
-            Dim Data(511) As Byte
+            Dim Data(DiskImage.BootSector.BOOT_SECTOR_SIZE - 1) As Byte
             Dim FileBytes As New ImageByteArray(Data)
             Dim BootSector = New BootSector(FileBytes)
 
@@ -395,27 +395,88 @@ Namespace DiskImage
             Return Content
         End Function
 
-        Public Function GetDirectoryEntryCount(FileBytes As ByteArray, OffsetStart As UInteger, OffsetEnd As UInteger, FileCountOnly As Boolean, ExcludeDeleted As Boolean) As UInteger
-            Dim Count As UInteger = 0
+        Public Function DirectoryEntryHasData(FileBytes As ByteArray, Offset As UInteger) As Boolean
+            Dim Result As Boolean = False
 
-            Do While FileBytes.GetByte(OffsetStart) > 0
-                If Not ExcludeDeleted OrElse FileBytes.GetByte(OffsetStart) <> &HE5 Then
-                    If Not FileCountOnly Then
-                        Count += 1
-                    ElseIf FileBytes.GetByte(OffsetStart + 11) <> &HF Then 'Exclude LFN entries
-                        Dim FilePart = FileBytes.ToUInt16(OffsetStart)
-                        If FilePart <> &H202E And FilePart <> &H2E2E Then 'Exclude '.' and '..' entries
-                            Count += 1
-                        End If
+
+            If FileBytes.GetByte(Offset) = &HE5 Then
+                For Offset2 As UInteger = Offset + 1 To Offset + DirectoryEntry.DIRECTORY_ENTRY_SIZE - 1
+                    If FileBytes.GetByte(Offset2) <> 0 Then
+                        Result = True
+                        Exit For
+                    End If
+                Next
+            ElseIf FileBytes.GetByte(Offset) <> 0 Then
+                Result = True
+            Else
+                Dim HexF6Count As UInteger = 0
+                For Offset2 As UInteger = Offset + 1 To Offset + DirectoryEntry.DIRECTORY_ENTRY_SIZE - 1
+                    If FileBytes.GetByte(Offset2) = &HF6 Then
+                        HexF6Count += 1
+                    ElseIf FileBytes.GetByte(Offset2) <> 0 Then
+                        Result = True
+                        Exit For
+                    End If
+                Next
+                If Not Result Then
+                    If HexF6Count > 0 And HexF6Count < DirectoryEntry.DIRECTORY_ENTRY_SIZE - 2 Then
+                        Result = True
                     End If
                 End If
-                OffsetStart += 32
-                If OffsetEnd > 0 And OffsetStart >= OffsetEnd Then
-                    Exit Do
-                End If
-            Loop
+            End If
 
-            Return Count
+            Return Result
+        End Function
+
+        Public Function GetDirectoryData(Data As DirectoryData, FileBytes As ByteArray, OffsetStart As UInteger, OffsetEnd As UInteger, EndOfDirectory As Boolean, CheckBootSector As Boolean) As Boolean
+            Dim EntryCount = (OffsetEnd - OffsetStart) \ DirectoryEntry.DIRECTORY_ENTRY_SIZE
+
+            Data.MaxEntries += EntryCount
+
+            If EntryCount > 0 Then
+                For Entry As UInteger = 0 To EntryCount - 1
+                    Dim Offset = OffsetStart + (Entry * DirectoryEntry.DIRECTORY_ENTRY_SIZE)
+                    Dim FirstByte = FileBytes.GetByte(Offset)
+                    If FirstByte = 0 Then
+                        EndOfDirectory = True
+                    End If
+                    If Not Data.HasBootSector And CheckBootSector Then
+                        If BootSector.ValidJumpInstructuon.Contains(FirstByte) Then
+                            If OffsetEnd - Offset >= BootSector.BOOT_SECTOR_SIZE Then
+                                Dim BootSectorData = FileBytes.GetBytes(Offset, DiskImage.BootSector.BOOT_SECTOR_SIZE)
+                                Dim BootSector = New BootSector(New ImageByteArray(BootSectorData))
+                                If BootSector.IsValidImage Then
+                                    Data.HasBootSector = True
+                                    Data.BootSectorOffset = Offset
+                                    EndOfDirectory = True
+                                End If
+                            End If
+                        End If
+                    End If
+                    If EndOfDirectory Then
+                        If Not Data.HasAdditionalData Then
+                            If Not Data.HasBootSector Or Offset < Data.BootSectorOffset Or Offset > Data.BootSectorOffset + DiskImage.BootSector.BOOT_SECTOR_SIZE Then
+                                If DirectoryEntryHasData(FileBytes, Offset) Then
+                                    Data.HasAdditionalData = True
+                                End If
+                            End If
+                        End If
+                    Else
+                        Data.EntryCount += 1
+                        If FileBytes.GetByte(Offset + 11) <> &HF Then 'Exclude LFN entries
+                            Dim FilePart = FileBytes.ToUInt16(Offset)
+                            If FilePart <> &H202E And FilePart <> &H2E2E Then 'Exclude '.' and '..' entries
+                                Data.FileCount += 1
+                                If FirstByte = DirectoryEntry.CHAR_DELETED Then
+                                    Data.DeletedFileCount += 1
+                                End If
+                            End If
+                        End If
+                    End If
+                Next
+            End If
+
+            Return EndOfDirectory
         End Function
 
         Public Function GetObjectSize(o As Object) As Integer

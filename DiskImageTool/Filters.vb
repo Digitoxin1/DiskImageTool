@@ -9,6 +9,8 @@
         HasLastAccessed
         HasLongFileNames
         HasInvalidDirectoryEntries
+        DirectoryHasAdditionalData
+        DirectoryHasBootSector
         UnusedClusters
         HasInvalidImage
         HasBadSectors
@@ -37,6 +39,10 @@
                 Caption = "Has Long File Names"
             Case FilterTypes.HasInvalidDirectoryEntries
                 Caption = "Invalid Directory Entries"
+            Case FilterTypes.DirectoryHasAdditionalData
+                Caption = "Directory has Additional Data"
+            Case FilterTypes.DirectoryHasBootSector
+                Caption = "Directory has Boot Sector"
             Case FilterTypes.ModifiedFiles
                 Caption = "Modified Files"
             Case FilterTypes.UnusedClusters
@@ -112,6 +118,18 @@
 
         If CheckFilter(FilterTypes.HasInvalidDirectoryEntries, AppliedFilters) Then
             If ImageData.ScanInfo.IsValidImage And ImageData.ScanInfo.HasInvalidDirectoryEntries Then
+                Return False
+            End If
+        End If
+
+        If CheckFilter(FilterTypes.DirectoryHasAdditionalData, AppliedFilters) Then
+            If ImageData.ScanInfo.IsValidImage And ImageData.ScanInfo.DirectoryHasAdditionalData Then
+                Return False
+            End If
+        End If
+
+        If CheckFilter(FilterTypes.DirectoryHasBootSector, AppliedFilters) Then
+            If ImageData.ScanInfo.IsValidImage And ImageData.ScanInfo.DirectoryHasBootSector Then
                 Return False
             End If
         End If

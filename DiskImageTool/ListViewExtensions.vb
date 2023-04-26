@@ -5,7 +5,7 @@ Imports System.Runtime.InteropServices
 Module ListViewExtensions
 
     <StructLayout(LayoutKind.Sequential)>
-    Public Structure HDITEM
+    Private Structure HDITEM
         Public theMask As Mask
         Public cxy As Integer
         <MarshalAs(UnmanagedType.LPTStr)>
@@ -35,19 +35,36 @@ Module ListViewExtensions
         End Enum
     End Structure
 
-    Public Const LVM_FIRST As Integer = &H1000
-    Public Const LVM_GETHEADER As Integer = LVM_FIRST + 31
+    <StructLayout(LayoutKind.Sequential)>
+    Private Structure LVHITTESTINFO
+        Public pt_x As Integer
+        Public pt_y As Integer
+        Public flags As Integer
+        Public iItem As Integer
+        Public iSubItem As Integer
+        Public iGroup As Integer
+    End Structure
 
-    Public Const HDM_FIRST As Integer = &H1200
-    Public Const HDM_GETITEM As Integer = HDM_FIRST + 11
-    Public Const HDM_SETITEM As Integer = HDM_FIRST + 12
+    Private Const LVM_FIRST As Integer = &H1000
+    Private Const LVM_GETHEADER As Integer = LVM_FIRST + 31
+    Private Const LVM_HITTEST As Integer = &H1000 + 18
+
+    Private Const LVHT_EX_GROUP_HEADER As Integer = &H10000000
+
+    Private Const HDM_FIRST As Integer = &H1200
+    Private Const HDM_GETITEM As Integer = HDM_FIRST + 11
+    Private Const HDM_SETITEM As Integer = HDM_FIRST + 12
 
     <DllImport("user32.dll", CharSet:=CharSet.Auto, SetLastError:=True)>
-    Public Function SendMessage(hWnd As IntPtr, msg As UInt32, wParam As IntPtr, lParam As IntPtr) As IntPtr
+    Private Function SendMessage(hWnd As IntPtr, msg As UInt32, wParam As IntPtr, lParam As IntPtr) As IntPtr
     End Function
 
     <DllImport("user32.dll", CharSet:=CharSet.Auto, SetLastError:=True)>
-    Public Function SendMessage(hWnd As IntPtr, msg As UInt32, wParam As IntPtr, ByRef lParam As HDITEM) As IntPtr
+    Private Function SendMessage(hWnd As IntPtr, msg As UInt32, wParam As IntPtr, ByRef lParam As HDITEM) As IntPtr
+    End Function
+
+    <DllImport("user32.dll", CharSet:=CharSet.Auto, SetLastError:=True)>
+    Private Function SendMessage(hWnd As IntPtr, msg As Integer, wParam As Integer, ByRef ht As LVHITTESTINFO) As Integer
     End Function
 
     <Extension()>
@@ -78,4 +95,37 @@ Module ListViewExtensions
             If SendMessage(columnHeader, HDM_SETITEM, columnPtr, item) = IntPtr.Zero Then Throw New Win32Exception
         Next
     End Sub
+
+    <Extension()>
+    Public Function GetGroupAtPoint(ListViewControl As ListView, pt As Point) As ListViewGroup
+        Dim Response As ListViewGroup = Nothing
+
+        Dim ht = New LVHITTESTINFO() With {
+            .pt_x = pt.X,
+            .pt_y = pt.Y
+        }
+        Dim Id = SendMessage(ListViewControl.Handle, LVM_HITTEST, -1, ht)
+        If Id <> -1 AndAlso (ht.flags And LVHT_EX_GROUP_HEADER) = 0 Then
+            Id = -1
+        End If
+
+        If Id > -1 Then
+            For Each Group As ListViewGroup In ListViewControl.Groups
+                If Id = ExtractID(Group) Then
+                    Response = Group
+                    Exit For
+                End If
+            Next
+        End If
+
+        Return Response
+    End Function
+
+    Private Function ExtractID(Group As ListViewGroup) As Integer
+        Try
+            Return Group.GetType().GetProperty("ID", Reflection.BindingFlags.NonPublic Or Reflection.BindingFlags.Instance).GetValue(Group, New Object(-1) {})
+        Catch ex As Exception
+            Return -1
+        End Try
+    End Function
 End Module

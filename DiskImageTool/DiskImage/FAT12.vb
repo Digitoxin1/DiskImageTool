@@ -245,7 +245,7 @@
         End Sub
 
         Private Sub EnumDirectoryEntries(Directory As DiskImage.IDirectory)
-            Dim DirectoryEntryCount = Directory.DirectoryEntryCount
+            Dim DirectoryEntryCount = Directory.Data.EntryCount
 
             If DirectoryEntryCount > 0 Then
                 For Counter = 0 To DirectoryEntryCount - 1
@@ -253,7 +253,7 @@
 
                     If Not File.IsLink Then
                         If File.IsDirectory And File.SubDirectory IsNot Nothing Then
-                            If File.SubDirectory.DirectoryEntryCount > 0 Then
+                            If File.SubDirectory.Data.EntryCount > 0 Then
                                 EnumDirectoryEntries(File.SubDirectory)
                             End If
                         End If

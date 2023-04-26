@@ -11,6 +11,7 @@ Public Structure FileData
     Dim FilePath As String
     Dim IsLastEntry As Boolean
     Dim Index As Integer
+    Dim ParentOffset As Integer
 End Structure
 
 Public Class MainForm
@@ -20,7 +21,7 @@ Public Class MainForm
     Public Const NULL_CHAR As Char = "�"
     Public Const SITE_URL = "https://github.com/Digitoxin1/DiskImageTool"
     Public Const UPDATE_URL = "https://api.github.com/repos/Digitoxin1/DiskImageTool/releases/latest"
-    Private ReadOnly _FileFilterExt As New List(Of String) From {"*.ima", "*.img"}
+    Private ReadOnly _FileFilterExt As New List(Of String) From {".ima", ".img"}
     Private _CheckAll As Boolean = False
     Private _Disk As DiskImage.Disk
     Private _FilterCounts() As Integer
@@ -50,9 +51,11 @@ Public Class MainForm
         Dim Response As ProcessDirectoryEntryResponse
 
         If Not Remove And Disk.IsValidImage Then
-            Response = ProcessDirectoryEntries(Disk.Directory, "", True)
+            Response = ProcessDirectoryEntries(Disk.Directory, 0, "", True)
         Else
             With Response
+                .HasAdditionalData = False
+                .HasBootSector = False
                 .HasCreated = False
                 .HasFATChainingErrors = False
                 .HasInvalidDirectoryEntries = False
@@ -94,6 +97,30 @@ Public Class MainForm
             End If
             If UpdateFilters Then
                 FilterUpdate(FilterTypes.HasLongFileNames)
+            End If
+        End If
+
+        If Not ImageData.Scanned Or Response.HasAdditionalData <> ImageData.ScanInfo.DirectoryHasAdditionalData Then
+            ImageData.ScanInfo.DirectoryHasAdditionalData = Response.HasAdditionalData
+            If Response.HasAdditionalData Then
+                _FilterCounts(FilterTypes.DirectoryHasAdditionalData) += 1
+            ElseIf ImageData.Scanned Then
+                _FilterCounts(FilterTypes.DirectoryHasAdditionalData) -= 1
+            End If
+            If UpdateFilters Then
+                FilterUpdate(FilterTypes.DirectoryHasAdditionalData)
+            End If
+        End If
+
+        If Not ImageData.Scanned Or Response.HasBootSector <> ImageData.ScanInfo.DirectoryHasBootSector Then
+            ImageData.ScanInfo.DirectoryHasBootSector = Response.HasBootSector
+            If Response.HasBootSector Then
+                _FilterCounts(FilterTypes.DirectoryHasBootSector) += 1
+            ElseIf ImageData.Scanned Then
+                _FilterCounts(FilterTypes.DirectoryHasBootSector) -= 1
+            End If
+            If UpdateFilters Then
+                FilterUpdate(FilterTypes.DirectoryHasBootSector)
             End If
         End If
 
@@ -440,6 +467,29 @@ Public Class MainForm
         End If
     End Sub
 
+    Private Sub RestoreBootSector()
+        If _Disk.Directory.Data.HasBootSector Then
+            Dim BootSectorBytes = _Disk.Data.GetBytes(_Disk.Directory.Data.BootSectorOffset, BootSector.BOOT_SECTOR_SIZE)
+            _Disk.Data.SetBytes(BootSectorBytes, 0)
+
+            DiskImageProcess(True, True)
+        End If
+    End Sub
+
+    Private Sub RemoveBootSector()
+        If _Disk.Directory.Data.HasBootSector Then
+            Dim BootSectorBytes(BootSector.BOOT_SECTOR_SIZE - 1) As Byte
+
+            For Counter = 0 To BootSectorBytes.Length - 1
+                BootSectorBytes(Counter) = 0
+            Next
+
+            _Disk.Data.SetBytes(BootSectorBytes, _Disk.Directory.Data.BootSectorOffset)
+
+            ComboItemRefresh(True, True)
+        End If
+    End Sub
+
     Private Sub CheckForUpdates()
         Dim DownloadVersion As String = ""
         Dim DownloadURL As String = ""
@@ -670,6 +720,10 @@ Public Class MainForm
     End Sub
 
     Private Sub ComboItemRefresh(FullRefresh As Boolean, DoItemScan As Boolean)
+        If FullRefresh Then
+            _Disk.Directory.RefreshData()
+        End If
+
         If DoItemScan Then
             ItemScanAll(_Disk, ComboImages.SelectedItem, True)
         End If
@@ -736,6 +790,7 @@ Public Class MainForm
         If Offset = 0 Then
             Caption = "Root Directory"
             HexViewSectorData = New HexViewSectorData(_Disk, _Disk.Directory.SectorChain)
+            HighlightDirectoryData(HexViewSectorData, True)
         Else
             Dim DirectoryEntry = _Disk.GetDirectoryEntryByOffset(Offset)
             If Not DirectoryEntryIsValid(DirectoryEntry) Then
@@ -763,6 +818,8 @@ Public Class MainForm
                 HexViewSectorData = New HexViewSectorData(_Disk, DirectoryEntry.FATChain.Sectors)
                 If Not DirectoryEntry.IsDirectory Then
                     HighlightSectorData(HexViewSectorData, DirectoryEntry.FileSize, False)
+                Else
+                    HighlightDirectoryData(HexViewSectorData, False)
                 End If
             End If
         End If
@@ -810,7 +867,7 @@ Public Class MainForm
         If DirectoryEntry.IsDeleted Then
             Return False
         ElseIf DirectoryEntry.IsDirectory Then
-            Return DirectoryEntry.SubDirectory.FileCount(True) = 0
+            Return DirectoryEntry.SubDirectory.Data.FileCount - DirectoryEntry.SubDirectory.Data.DeletedFileCount = 0
         Else
             Return True
         End If
@@ -1535,13 +1592,14 @@ Public Class MainForm
         Return CheckstateChanged
     End Function
 
-    Private Function GetFileDataFromDirectoryEntry(Index As Integer, DirectoryEntry As DiskImage.DirectoryEntry, FilePath As String, IsLastEntry As Boolean) As FileData
+    Private Function GetFileDataFromDirectoryEntry(Index As Integer, DirectoryEntry As DiskImage.DirectoryEntry, ParentOffset As UInteger, FilePath As String, IsLastEntry As Boolean) As FileData
         Dim Response As FileData
         With Response
             .Index = Index
             .FilePath = FilePath
             .DirectoryEntry = DirectoryEntry
             .IsLastEntry = IsLastEntry
+            .ParentOffset = ParentOffset
         End With
 
         Return Response
@@ -1615,6 +1673,49 @@ Public Class MainForm
     Private Function GetWindowCaption() As String
         Return My.Application.Info.ProductName & " v" & _FileVersion
     End Function
+
+    Private Sub HighlightDirectoryData(HexViewSectorData As HexViewSectorData, CheckBootSector As Boolean)
+        Dim EndOfDirectory As Boolean = False
+
+        For Index = 0 To HexViewSectorData.SectorData.BlockCount - 1
+            Dim HasBootSector As Boolean = False
+            Dim BootSectorOffset As UInteger = 0
+            Dim SectorBlock = HexViewSectorData.SectorData.GetBlock(Index)
+            Dim HighlightedRegions As New HighlightedRegions
+            HexViewSectorData.HighlightedRegionList.Add(HighlightedRegions)
+            Dim OffsetStart As UInteger = SectorToBytes(SectorBlock.SectorStart)
+            Dim OffsetEnd As UInteger = SectorToBytes(SectorBlock.SectorStart + SectorBlock.SectorCount) - 1
+            For Offset As UInteger = OffsetStart To OffsetEnd Step DirectoryEntry.DIRECTORY_ENTRY_SIZE
+                Dim FirstByte = _Disk.Data.GetByte(Offset)
+                If FirstByte = 0 Then
+                    EndOfDirectory = True
+                End If
+                If Not HasBootSector And CheckBootSector Then
+                    If BootSector.ValidJumpInstructuon.Contains(FirstByte) Then
+                        If OffsetEnd - Offset + 1 >= BootSector.BOOT_SECTOR_SIZE Then
+                            Dim BootSectorData = _Disk.Data.GetBytes(Offset, DiskImage.BootSector.BOOT_SECTOR_SIZE)
+                            Dim BootSector = New BootSector(New ImageByteArray(BootSectorData))
+                            If BootSector.IsValidImage Then
+                                HasBootSector = True
+                                BootSectorOffset = Offset
+                                EndOfDirectory = True
+                                HighlightedRegions.AddItem(Offset - OffsetStart, DiskImage.BootSector.BOOT_SECTOR_SIZE, Color.Purple)
+                            End If
+                        End If
+                    End If
+                End If
+                If EndOfDirectory Then
+                    If Not HasBootSector Or Offset < BootSectorOffset Or Offset > BootSectorOffset + DiskImage.BootSector.BOOT_SECTOR_SIZE Then
+                        If DirectoryEntryHasData(_Disk.Data, Offset) Then
+                            HighlightedRegions.AddItem(Offset - OffsetStart, DirectoryEntry.DIRECTORY_ENTRY_SIZE, Color.Red)
+                        End If
+                    End If
+                Else
+                    HighlightedRegions.AddItem(Offset - OffsetStart, DirectoryEntry.DIRECTORY_ENTRY_SIZE, Color.Blue)
+                End If
+            Next
+        Next
+    End Sub
 
     Private Sub HighlightSectorData(HexViewSectorData As HexViewSectorData, FileSize As UInteger, HighlightAssigned As Boolean)
         For Index = 0 To HexViewSectorData.SectorData.BlockCount - 1
@@ -2073,7 +2174,7 @@ Public Class MainForm
         ListViewFiles.MultiSelect = True
 
         Dim Items As New List(Of ListViewItem)
-        Dim Response As ProcessDirectoryEntryResponse = ProcessDirectoryEntries(_Disk.Directory, "", False)
+        Dim Response As ProcessDirectoryEntryResponse = ProcessDirectoryEntries(_Disk.Directory, 0, "", False)
 
         If BtnDisplayDirectory.DropDownItems.Count > 0 Then
             BtnDisplayDirectory.Text = "Directory"
@@ -2336,10 +2437,19 @@ Public Class MainForm
             BtnDisplayClusters.Enabled = _Disk.FAT.HasUnusedSectors(True)
             BtnDisplayBadSectors.Enabled = _Disk.FAT.BadClusters.Count > 0
             BtnFixImageSize.Enabled = _Disk.HasInvalidSize
+            If _Disk.Directory.Data.HasBootSector Then
+                Dim BootSectorBytes = _Disk.Data.GetBytes(_Disk.Directory.Data.BootSectorOffset, BootSector.BOOT_SECTOR_SIZE)
+                BtnRestoreBootSector.Enabled = Not ByteArrayCompare(BootSectorBytes, _Disk.BootSector.Data)
+            Else
+                BtnRestoreBootSector.Enabled = False
+            End If
+            BtnRemoveBootSector.Enabled = _Disk.Directory.Data.HasBootSector
         Else
             BtnDisplayClusters.Enabled = False
             BtnDisplayBadSectors.Enabled = False
             BtnFixImageSize.Enabled = False
+            BtnRestoreBootSector.Enabled = False
+            BtnRemoveBootSector.Enabled = False
         End If
 
         BtnRevert.Enabled = Not _Disk.LoadError AndAlso _Disk.Data.Modified
@@ -2370,14 +2480,16 @@ Public Class MainForm
         Me.Location = New Point(WorkingArea.Left + (WorkingArea.Width - Width) / 2, WorkingArea.Top + (WorkingArea.Height - Height) / 2)
     End Sub
 
-    Private Function ProcessDirectoryEntries(Directory As DiskImage.IDirectory, Path As String, ScanOnly As Boolean) As ProcessDirectoryEntryResponse
+    Private Function ProcessDirectoryEntries(Directory As DiskImage.IDirectory, Offset As UInteger, Path As String, ScanOnly As Boolean) As ProcessDirectoryEntryResponse
         Dim Group As ListViewGroup = Nothing
         Dim Counter As UInteger
-        Dim FileCount As UInteger = Directory.FileCount(False)
+        Dim FileCount As UInteger = Directory.Data.FileCount
 
         Dim LFNFileName As String = ""
         Dim Response As ProcessDirectoryEntryResponse
         With Response
+            .HasAdditionalData = Directory.Data.HasAdditionalData
+            .HasBootSector = Directory.Data.HasBootSector
             .HasCreated = False
             .HasLFN = False
             .HasLastAccessed = False
@@ -2387,19 +2499,22 @@ Public Class MainForm
 
         If Not ScanOnly Then
             Dim GroupName As String = IIf(Path = "", "(Root)", Path)
-            GroupName = GroupName & "  (" & FileCount & IIf(FileCount <> 1, " entries", " entry") & ")"
+            GroupName = GroupName & "  (" & FileCount & IIf(FileCount <> 1, " entries", " entry") _
+                & IIf(Directory.Data.HasBootSector, ", Boot Sector", "") _
+                & IIf(Directory.Data.HasAdditionalData, ", Additional Data", "") _
+                & ")"
             Group = New ListViewGroup(GroupName)
             ListViewFiles.Groups.Add(Group)
         End If
 
-        Dim DirectoryEntryCount = Directory.DirectoryEntryCount
+        Dim DirectoryEntryCount = Directory.Data.EntryCount
 
         If DirectoryEntryCount > 0 Then
             For Counter = 0 To DirectoryEntryCount - 1
                 Dim File = Directory.GetFile(Counter)
                 Dim FullFileName = File.GetFullFileName
                 Dim IsLastEntry = (Counter = DirectoryEntryCount - 1)
-                Dim FileData = GetFileDataFromDirectoryEntry(Counter, File, Path, IsLastEntry)
+                Dim FileData = GetFileDataFromDirectoryEntry(Counter, File, Offset, Path, IsLastEntry)
 
                 If Not File.IsLink Then
                     If File.IsLFN Then
@@ -2465,7 +2580,7 @@ Public Class MainForm
                     End If
 
                     If File.IsDirectory And File.SubDirectory IsNot Nothing Then
-                        If File.SubDirectory.DirectoryEntryCount > 0 Then
+                        If File.SubDirectory.Data.EntryCount > 0 Then
                             Dim NewPath = FullFileName
                             If Path <> "" Then
                                 NewPath = Path & "\" & NewPath
@@ -2473,12 +2588,14 @@ Public Class MainForm
                             If Not ScanOnly Then
                                 MenuDisplayDirectorySubMenuItemAdd(NewPath, File.Offset, -1)
                             End If
-                            Dim SubResponse = ProcessDirectoryEntries(File.SubDirectory, NewPath, ScanOnly)
+                            Dim SubResponse = ProcessDirectoryEntries(File.SubDirectory, File.Offset, NewPath, ScanOnly)
                             Response.HasLastAccessed = Response.HasLastAccessed Or SubResponse.HasLastAccessed
                             Response.HasCreated = Response.HasCreated Or SubResponse.HasCreated
                             Response.HasLFN = Response.HasLFN Or SubResponse.HasLFN
                             Response.HasInvalidDirectoryEntries = Response.HasInvalidDirectoryEntries Or SubResponse.HasInvalidDirectoryEntries
                             Response.HasFATChainingErrors = Response.HasFATChainingErrors Or SubResponse.HasFATChainingErrors
+                            Response.HasAdditionalData = Response.HasAdditionalData Or SubResponse.HasAdditionalData
+                            Response.HasBootSector = Response.HasBootSector Or SubResponse.HasBootSector
                         End If
                     End If
                 End If
@@ -2496,7 +2613,6 @@ Public Class MainForm
     End Sub
 
     Private Sub ProcessFileDrop(Files() As String)
-        Dim AllowedExtensions = {".img", ".ima"}
         Dim FilePath As String
         Dim FileInfo As IO.FileInfo
         Dim SelectedImageData As LoadedImageData = Nothing
@@ -2516,12 +2632,14 @@ Public Class MainForm
             If (FAttributes And IO.FileAttributes.Directory) > 0 Then
                 Dim DirectoryInfo As New IO.DirectoryInfo(FilePath)
                 For Each FileInfo In DirectoryInfo.GetFiles("*.*", IO.SearchOption.AllDirectories)
-                    If Not _LoadedFileNames.ContainsKey(FileInfo.FullName) Then
-                        Dim ImageData As New LoadedImageData(FileInfo.FullName)
-                        _LoadedFileNames.Add(FileInfo.FullName, ImageData)
-                        ComboImages.Items.Add(ImageData)
-                        If SelectedImageData Is Nothing Then
-                            SelectedImageData = ImageData
+                    If _FileFilterExt.Contains(FileInfo.Extension.ToLower) Then
+                        If Not _LoadedFileNames.ContainsKey(FileInfo.FullName) Then
+                            Dim ImageData As New LoadedImageData(FileInfo.FullName)
+                            _LoadedFileNames.Add(FileInfo.FullName, ImageData)
+                            ComboImages.Items.Add(ImageData)
+                            If SelectedImageData Is Nothing Then
+                                SelectedImageData = ImageData
+                            End If
                         End If
                     End If
                 Next
@@ -2577,6 +2695,7 @@ Public Class MainForm
 
     Private Sub RefreshFileButtons()
         Dim Stats As DirectoryStats
+        Dim DirectoryOffset As Integer = -1
 
         If ListViewFiles.SelectedItems.Count = 0 Then
             BtnExportFile.Text = "&Export File"
@@ -2606,6 +2725,7 @@ Public Class MainForm
 
         ElseIf ListViewFiles.SelectedItems.Count = 1 Then
             Dim FileData As FileData = ListViewFiles.SelectedItems(0).Tag
+            DirectoryOffset = FileData.ParentOffset
             Stats = DirectoryEntryGetStats(FileData.DirectoryEntry)
 
             BtnExportFile.Text = "&Export File"
@@ -2667,12 +2787,20 @@ Public Class MainForm
                 BtnFileMenuViewFile.Enabled = False
             End If
         Else
+            Dim FileData As FileData
             Dim ExportEnabled As Boolean = False
+            FileData = ListViewFiles.SelectedItems(0).Tag
+            DirectoryOffset = FileData.ParentOffset
+            Dim ParentOffset As UInteger = FileData.ParentOffset
+
             For Each Item As ListViewItem In ListViewFiles.SelectedItems
-                Dim FileData As FileData = Item.Tag
+                FileData = Item.Tag
                 Stats = DirectoryEntryGetStats(FileData.DirectoryEntry)
                 If Stats.CanExport Then
                     ExportEnabled = True
+                End If
+                If FileData.ParentOffset <> ParentOffset Then
+                    DirectoryOffset = -1
                 End If
             Next
             BtnExportFile.Text = "&Export Selected Files"
@@ -2710,6 +2838,24 @@ Public Class MainForm
         ToolStripBtnViewFile.Text = BtnFileMenuViewFile.Text
         ToolStripBtnViewFile.Enabled = BtnFileMenuViewFile.Enabled
         ToolStripBtnViewFileText.Enabled = BtnFileMenuViewFileText.Enabled
+
+        If DirectoryOffset = -1 Then
+            BtnFileMenuViewDirectory.Visible = False
+            BtnFileMenuViewDirectory.Enabled = False
+            FileMenuSeparatorDirectory.Visible = False
+        Else
+            If DirectoryOffset = 0 Then
+                BtnFileMenuViewDirectory.Visible = True
+                BtnFileMenuViewDirectory.Text = "View Root D&irectory"
+                BtnFileMenuViewDirectory.Enabled = True
+            Else
+                BtnFileMenuViewDirectory.Visible = True
+                BtnFileMenuViewDirectory.Text = "View Parent D&irectory"
+                BtnFileMenuViewDirectory.Enabled = True
+            End If
+            BtnFileMenuViewDirectory.Tag = DirectoryOffset
+            FileMenuSeparatorDirectory.Visible = True
+        End If
     End Sub
 
     Private Sub ResetAll()
@@ -2723,6 +2869,8 @@ Public Class MainForm
         BtnDisplayBadSectors.Enabled = False
         BtnRevert.Enabled = False
         BtnFixImageSize.Enabled = False
+        BtnRestoreBootSector.Enabled = False
+        BtnRemoveBootSector.Enabled = False
 
         BtnUndo.Enabled = False
         ToolStripBtnUndo.Enabled = False
@@ -2906,6 +3054,8 @@ Public Class MainForm
     End Structure
 
     Friend Structure ProcessDirectoryEntryResponse
+        Dim HasAdditionalData As Boolean
+        Dim HasBootSector As Boolean
         Dim HasCreated As Boolean
         Dim HasFATChainingErrors As Boolean
         Dim HasInvalidDirectoryEntries As Boolean
@@ -2958,7 +3108,7 @@ Public Class MainForm
         UnusedClustersDisplayHex()
     End Sub
 
-    Private Sub BtnDisplayDirectory_Click(sender As Object, e As EventArgs) Handles BtnDisplayDirectory.Click
+    Private Sub BtnDisplayDirectory_Click(sender As Object, e As EventArgs) Handles BtnDisplayDirectory.Click, BtnFileMenuViewDirectory.Click
         If sender.Tag IsNot Nothing Then
             DirectoryEntryDisplayHex(sender.tag)
         End If
@@ -3310,10 +3460,19 @@ Public Class MainForm
                 If Not Extension.StartsWith(".") Then
                     Extension = "." & Extension
                 End If
-                Extension = "*" & Extension
                 _FileFilterExt.Add(Extension)
             Next
         End If
+    End Sub
+
+    Private Sub InitFileFilter()
+        Dim ExtensionList As New List(Of String)
+
+        For Each Extension In _FileFilterExt
+            ExtensionList.Add("*" & Extension)
+        Next
+
+        _FileFilter = "Disk Image Files (" & String.Join("; ", ExtensionList.ToArray) & ")|" & String.Join(";", ExtensionList.ToArray) & "|All files (*.*)|*.*"
     End Sub
 
     Private Sub MainForm_Load(sender As Object, e As EventArgs) Handles Me.Load
@@ -3321,8 +3480,7 @@ Public Class MainForm
         Me.Text = GetWindowCaption()
 
         ParseCustomFilters()
-
-        _FileFilter = "Disk Image Files (" & String.Join("; ", _FileFilterExt.ToArray) & ")|" & String.Join(";", _FileFilterExt.ToArray) & "|All files (*.*)|*.*"
+        InitFileFilter()
 
         PositionForm()
 
@@ -3399,6 +3557,15 @@ Public Class MainForm
     Private Sub BtnEditBootSector_Click(sender As Object, e As EventArgs) Handles BtnEditBootSector.Click
         BootSectorEdit
     End Sub
+
+    Private Sub BtnRestoreBootSector_Click(sender As Object, e As EventArgs) Handles BtnRestoreBootSector.Click
+        RestoreBootSector
+    End Sub
+
+    Private Sub BtnRemoveBootSector_Click(sender As Object, e As EventArgs) Handles BtnRemoveBootSector.Click
+        RemoveBootSector
+    End Sub
+
 #End Region
 
 End Class

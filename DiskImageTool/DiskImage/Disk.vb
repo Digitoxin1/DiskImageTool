@@ -26,9 +26,7 @@ Namespace DiskImage
                 _FAT12 = New FAT12(FileBytes, _BootSector, 0, False)
                 _Directory = New RootDirectory(FileBytes, _BootSector, _FAT12)
 
-                If _BootSector.IsValidImage Then
-                    CacheDirectoryEntries(_Directory)
-                End If
+                CacheDirectoryEntries()
 
                 If Modifications IsNot Nothing Then
                     FileBytes.ApplyModifications(Modifications)
@@ -95,7 +93,7 @@ Namespace DiskImage
 
         Public Function GetVolumeLabel() As DirectoryEntry
             Dim VolumeLabel As DirectoryEntry = Nothing
-            Dim DirectoryEntryCount = _Directory.DirectoryEntryCount
+            Dim DirectoryEntryCount = _Directory.Data.EntryCount
 
             If DirectoryEntryCount > 0 Then
                 For Counter As UInteger = 0 To DirectoryEntryCount - 1
@@ -137,16 +135,25 @@ Namespace DiskImage
 
         Public Sub Reinitialize()
             _FAT12.PopulateFAT12(0, False)
+            _Directory.RefreshData()
+
             _ReinitializeRequired = False
         End Sub
         Public Sub SaveFile(FilePath As String)
             IO.File.WriteAllBytes(FilePath, FileBytes.Data)
             FileBytes.ClearChanges()
-            CacheDirectoryEntries(_Directory)
+            CacheDirectoryEntries()
+        End Sub
+
+        Private Sub CacheDirectoryEntries()
+            FileBytes.DirectoryCache.Clear()
+            If _BootSector.IsValidImage Then
+                CacheDirectoryEntries(_Directory)
+            End If
         End Sub
 
         Private Sub CacheDirectoryEntries(Directory As DiskImage.IDirectory)
-            Dim DirectoryEntryCount = Directory.DirectoryEntryCount
+            Dim DirectoryEntryCount = Directory.Data.EntryCount
 
             If DirectoryEntryCount > 0 Then
                 For Counter = 0 To DirectoryEntryCount - 1
@@ -155,7 +162,7 @@ Namespace DiskImage
                     If Not File.IsLink Then
                         FileBytes.DirectoryCache.Item(File.Offset) = File.Data
                         If File.IsDirectory And File.SubDirectory IsNot Nothing Then
-                            If File.SubDirectory.DirectoryEntryCount > 0 Then
+                            If File.SubDirectory.Data.EntryCount > 0 Then
                                 CacheDirectoryEntries(File.SubDirectory)
                             End If
                         End If

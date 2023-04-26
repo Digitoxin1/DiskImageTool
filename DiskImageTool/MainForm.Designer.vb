@@ -76,6 +76,7 @@ Partial Class MainForm
         Me.BtnDisplayBadSectors = New System.Windows.Forms.ToolStripMenuItem()
         Me.BtnDisplayDisk = New System.Windows.Forms.ToolStripMenuItem()
         Me.BtnExportDebug = New System.Windows.Forms.ToolStripMenuItem()
+        Me.ToolStripStatusReadOnly = New System.Windows.Forms.ToolStripStatusLabel()
         Me.ToolStripStatusModified = New System.Windows.Forms.ToolStripStatusLabel()
         Me.ToolStripFileName = New System.Windows.Forms.ToolStripStatusLabel()
         Me.ToolStripFileCount = New System.Windows.Forms.ToolStripStatusLabel()
@@ -105,6 +106,8 @@ Partial Class MainForm
         Me.ToolStripBtnViewFileText = New System.Windows.Forms.ToolStripButton()
         Me.BtnWin9xClean = New System.Windows.Forms.ToolStripMenuItem()
         Me.BtnFixImageSize = New System.Windows.Forms.ToolStripMenuItem()
+        Me.BtnRestoreBootSector = New System.Windows.Forms.ToolStripMenuItem()
+        Me.BtnRemoveBootSector = New System.Windows.Forms.ToolStripMenuItem()
         Me.BtnHelpProjectPage = New System.Windows.Forms.ToolStripMenuItem()
         Me.BtnHelpUpdateCheck = New System.Windows.Forms.ToolStripMenuItem()
         Me.ToolStripSeparator12 = New System.Windows.Forms.ToolStripSeparator()
@@ -122,6 +125,8 @@ Partial Class MainForm
         Me.BtnFileMenuFileProperties = New System.Windows.Forms.ToolStripMenuItem()
         Me.BtnFileMenuExportFile = New System.Windows.Forms.ToolStripMenuItem()
         Me.BtnFileMenuReplaceFile = New System.Windows.Forms.ToolStripMenuItem()
+        Me.BtnFileMenuViewDirectory = New System.Windows.Forms.ToolStripMenuItem()
+        Me.FileMenuSeparatorDirectory = New System.Windows.Forms.ToolStripSeparator()
         Me.BtnFileMenuViewFile = New System.Windows.Forms.ToolStripMenuItem()
         Me.BtnFileMenuViewFileText = New System.Windows.Forms.ToolStripMenuItem()
         Me.BtnFileMenuViewCrosslinked = New System.Windows.Forms.ToolStripMenuItem()
@@ -138,7 +143,6 @@ Partial Class MainForm
         Me.FilterSeparator = New System.Windows.Forms.ToolStripSeparator()
         Me.ComboImagesFiltered = New System.Windows.Forms.ComboBox()
         Me.BtnResetSort = New System.Windows.Forms.Button()
-        Me.ToolStripStatusReadOnly = New System.Windows.Forms.ToolStripStatusLabel()
         SummaryName = CType(New System.Windows.Forms.ColumnHeader(), System.Windows.Forms.ColumnHeader)
         SummaryValue = CType(New System.Windows.Forms.ColumnHeader(), System.Windows.Forms.ColumnHeader)
         HashName = CType(New System.Windows.Forms.ColumnHeader(), System.Windows.Forms.ColumnHeader)
@@ -472,6 +476,14 @@ Partial Class MainForm
         StatusStrip1.TabIndex = 7
         StatusStrip1.Text = "StatusStrip1"
         '
+        'ToolStripStatusReadOnly
+        '
+        Me.ToolStripStatusReadOnly.Font = New System.Drawing.Font("Segoe UI", 9.0!)
+        Me.ToolStripStatusReadOnly.ForeColor = System.Drawing.Color.Red
+        Me.ToolStripStatusReadOnly.Name = "ToolStripStatusReadOnly"
+        Me.ToolStripStatusReadOnly.Size = New System.Drawing.Size(61, 19)
+        Me.ToolStripStatusReadOnly.Text = "Read Only"
+        '
         'ToolStripStatusModified
         '
         Me.ToolStripStatusModified.ForeColor = System.Drawing.Color.Blue
@@ -484,7 +496,7 @@ Partial Class MainForm
         Me.ToolStripFileName.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text
         Me.ToolStripFileName.Margin = New System.Windows.Forms.Padding(2, 3, 2, 2)
         Me.ToolStripFileName.Name = "ToolStripFileName"
-        Me.ToolStripFileName.Size = New System.Drawing.Size(467, 19)
+        Me.ToolStripFileName.Size = New System.Drawing.Size(500, 19)
         Me.ToolStripFileName.Spring = True
         Me.ToolStripFileName.Text = "File Name"
         Me.ToolStripFileName.TextAlign = System.Drawing.ContentAlignment.MiddleLeft
@@ -704,7 +716,7 @@ Partial Class MainForm
         '
         'MainMenuTools
         '
-        MainMenuTools.DropDownItems.AddRange(New System.Windows.Forms.ToolStripItem() {Me.BtnWin9xClean, Me.BtnFixImageSize})
+        MainMenuTools.DropDownItems.AddRange(New System.Windows.Forms.ToolStripItem() {Me.BtnWin9xClean, Me.BtnFixImageSize, Me.BtnRestoreBootSector, Me.BtnRemoveBootSector})
         MainMenuTools.Name = "MainMenuTools"
         MainMenuTools.Size = New System.Drawing.Size(46, 20)
         MainMenuTools.Text = "&Tools"
@@ -712,14 +724,26 @@ Partial Class MainForm
         'BtnWin9xClean
         '
         Me.BtnWin9xClean.Name = "BtnWin9xClean"
-        Me.BtnWin9xClean.Size = New System.Drawing.Size(229, 22)
+        Me.BtnWin9xClean.Size = New System.Drawing.Size(289, 22)
         Me.BtnWin9xClean.Text = "Remove &Win9x Modifications"
         '
         'BtnFixImageSize
         '
         Me.BtnFixImageSize.Name = "BtnFixImageSize"
-        Me.BtnFixImageSize.Size = New System.Drawing.Size(229, 22)
+        Me.BtnFixImageSize.Size = New System.Drawing.Size(289, 22)
         Me.BtnFixImageSize.Text = "Fix Image &Size"
+        '
+        'BtnRestoreBootSector
+        '
+        Me.BtnRestoreBootSector.Name = "BtnRestoreBootSector"
+        Me.BtnRestoreBootSector.Size = New System.Drawing.Size(289, 22)
+        Me.BtnRestoreBootSector.Text = "Restore &Boot Sector from Root Directory"
+        '
+        'BtnRemoveBootSector
+        '
+        Me.BtnRemoveBootSector.Name = "BtnRemoveBootSector"
+        Me.BtnRemoveBootSector.Size = New System.Drawing.Size(289, 22)
+        Me.BtnRemoveBootSector.Text = "Remove &Boot Sector from Root Directory"
         '
         'MainHelp
         '
@@ -867,9 +891,9 @@ Partial Class MainForm
         '
         'ContextMenuFiles
         '
-        Me.ContextMenuFiles.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.BtnFileMenuFileProperties, Me.BtnFileMenuExportFile, Me.BtnFileMenuReplaceFile, FileMenuSeparatoor1, Me.BtnFileMenuViewFile, Me.BtnFileMenuViewFileText, Me.BtnFileMenuViewCrosslinked, FileMenuSeparatoor2, Me.BtnFileMenuRemoveDeletedFile, Me.BtnFileMenuDeleteFile, Me.BtnFileMenuDeleteFileWithFill, FileMenuSeparatoor3, Me.BtnFileMenuFixSize})
+        Me.ContextMenuFiles.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.BtnFileMenuFileProperties, Me.BtnFileMenuExportFile, Me.BtnFileMenuReplaceFile, FileMenuSeparatoor1, Me.BtnFileMenuViewDirectory, Me.FileMenuSeparatorDirectory, Me.BtnFileMenuViewFile, Me.BtnFileMenuViewFileText, Me.BtnFileMenuViewCrosslinked, FileMenuSeparatoor2, Me.BtnFileMenuRemoveDeletedFile, Me.BtnFileMenuDeleteFile, Me.BtnFileMenuDeleteFileWithFill, FileMenuSeparatoor3, Me.BtnFileMenuFixSize})
         Me.ContextMenuFiles.Name = "ContextMenuFiles"
-        Me.ContextMenuFiles.Size = New System.Drawing.Size(223, 242)
+        Me.ContextMenuFiles.Size = New System.Drawing.Size(223, 292)
         '
         'BtnFileMenuFileProperties
         '
@@ -890,6 +914,17 @@ Partial Class MainForm
         Me.BtnFileMenuReplaceFile.Name = "BtnFileMenuReplaceFile"
         Me.BtnFileMenuReplaceFile.Size = New System.Drawing.Size(222, 22)
         Me.BtnFileMenuReplaceFile.Text = "&Replace File"
+        '
+        'BtnFileMenuViewDirectory
+        '
+        Me.BtnFileMenuViewDirectory.Name = "BtnFileMenuViewDirectory"
+        Me.BtnFileMenuViewDirectory.Size = New System.Drawing.Size(222, 22)
+        Me.BtnFileMenuViewDirectory.Text = "View Parent D&irectory"
+        '
+        'FileMenuSeparatorDirectory
+        '
+        Me.FileMenuSeparatorDirectory.Name = "FileMenuSeparatorDirectory"
+        Me.FileMenuSeparatorDirectory.Size = New System.Drawing.Size(219, 6)
         '
         'BtnFileMenuViewFile
         '
@@ -1007,14 +1042,6 @@ Partial Class MainForm
         Me.BtnResetSort.TabIndex = 5
         Me.BtnResetSort.Text = "Reset Sort"
         Me.BtnResetSort.UseVisualStyleBackColor = True
-        '
-        'ToolStripStatusReadOnly
-        '
-        Me.ToolStripStatusReadOnly.Font = New System.Drawing.Font("Segoe UI", 9.0!)
-        Me.ToolStripStatusReadOnly.ForeColor = System.Drawing.Color.Red
-        Me.ToolStripStatusReadOnly.Name = "ToolStripStatusReadOnly"
-        Me.ToolStripStatusReadOnly.Size = New System.Drawing.Size(61, 19)
-        Me.ToolStripStatusReadOnly.Text = "Read Only"
         '
         'MainForm
         '
@@ -1140,4 +1167,8 @@ Partial Class MainForm
     Friend WithEvents BtnResetSort As Button
     Friend WithEvents BtnEditBootSector As ToolStripMenuItem
     Friend WithEvents ToolStripStatusReadOnly As ToolStripStatusLabel
+    Friend WithEvents BtnRestoreBootSector As ToolStripMenuItem
+    Friend WithEvents BtnRemoveBootSector As ToolStripMenuItem
+    Friend WithEvents BtnFileMenuViewDirectory As ToolStripMenuItem
+    Friend WithEvents FileMenuSeparatorDirectory As ToolStripSeparator
 End Class
