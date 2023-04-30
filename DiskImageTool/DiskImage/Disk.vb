@@ -186,7 +186,7 @@ Namespace DiskImage
                 For Counter = 0 To DirectoryEntryCount - 1
                     Dim File = Directory.GetFile(Counter)
 
-                    If Not File.IsLink Then
+                    If Not File.IsLink And Not File.IsVolumeName Then
                         FileBytes.DirectoryCache.Item(File.Offset) = File.Data
                         If File.IsDirectory And File.SubDirectory IsNot Nothing Then
                             If File.SubDirectory.Data.EntryCount > 0 Then

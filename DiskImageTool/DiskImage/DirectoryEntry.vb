@@ -346,11 +346,11 @@ Namespace DiskImage
         End Function
 
         Public Function HasIncorrectFileSize() As Boolean
-            If IsDirectory() Then
-                Return False
+            If IsDirectory() Or IsVolumeName() Then
+                Return FileSize > 0
+            Else
+                Return GetAllocatedSize() <> GetAllocatedSizeFromFAT()
             End If
-
-            Return GetAllocatedSize() <> GetAllocatedSizeFromFAT()
         End Function
 
         Public Function HasInvalidAttributes() As Boolean
@@ -474,7 +474,7 @@ Namespace DiskImage
         End Sub
 
         Private Sub InitSubDirectory()
-            If IsDirectory() AndAlso Not IsLink() AndAlso Not IsDeleted() Then
+            If IsDirectory() AndAlso Not IsLink() AndAlso Not IsDeleted() AndAlso Not IsVolumeName() Then
                 _SubDirectory = New SubDirectory(_FileBytes, _BootSector, _FAT, _FatChain, FileSize)
             Else
                 _SubDirectory = Nothing

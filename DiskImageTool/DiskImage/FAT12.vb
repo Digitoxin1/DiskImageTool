@@ -95,8 +95,9 @@
             If _FATTable IsNot Nothing Then
                 Dim ClusterSize As UInteger = _BootSector.BytesPerCluster
                 Dim AddCluster As Boolean
+                Dim Length = GetFATTableLength()
 
-                For Cluster As UShort = 1 To _BootSector.NumberOfFATEntries + 1
+                For Cluster As UShort = 1 To Length
                     If _FATTable(Cluster) = 0 Then
                         Dim Offset = _BootSector.ClusterToOffset(Cluster)
                         If _FileBytes.Length < Offset + ClusterSize Then
@@ -125,8 +126,9 @@
 
             If _FATTable IsNot Nothing Then
                 Dim ClusterSize As UInteger = _BootSector.BytesPerCluster
+                Dim Length = GetFATTableLength()
 
-                For Cluster As UShort = 1 To _BootSector.NumberOfFATEntries + 1
+                For Cluster As UShort = 1 To Length
                     If _FATTable(Cluster) = 0 Then
                         Dim Offset = _BootSector.ClusterToOffset(Cluster)
                         If _FileBytes.Length < Offset + ClusterSize Then
@@ -253,6 +255,10 @@
             Return Updated
         End Function
 
+        Private Function GetFATTableLength() As UShort
+            Return Math.Min(_FATTable.Length - 1, _BootSector.NumberOfFATEntries + 1)
+        End Function
+
         Public Sub ProcessFAT12()
             _FATChains.Clear()
             _FileAllocation.Clear()
@@ -261,7 +267,9 @@
             _CircularChains.Clear()
 
             If _BootSector.IsValidImage Then
-                For Cluster = 2 To _BootSector.NumberOfFATEntries + 1
+                Dim Length As UShort = GetFATTableLength()
+
+                For Cluster = 2 To Length
                     If _FATTable(Cluster) = 0 Then
                         _FreeClusters += 1
                     ElseIf _FATTable(Cluster) = FAT_BAD_CLUSTER Then
@@ -279,7 +287,7 @@
             Dim PrevCluster As UShort = 0
 
             If _FATTable IsNot Nothing Then
-                Dim ClusterCount = _BootSector.NumberOfFATEntries + 1
+                Dim ClusterCount = GetFATTableLength()
 
                 Do
                     If Cluster >= 2 And Cluster <= ClusterCount Then

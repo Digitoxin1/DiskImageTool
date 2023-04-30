@@ -315,7 +315,7 @@
         End Function
 
         Public Function FATRegionSize() As UInteger
-            Return NumberOfFATs * SectorsPerFAT
+            Return NumberOfFATs * CUInt(SectorsPerFAT)
         End Function
 
         Public Function FATRegionStart() As UInteger

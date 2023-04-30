@@ -463,7 +463,7 @@ Public Class MainForm
         Dim Result As Boolean = BootSectorForm.DialogResult = DialogResult.OK
 
         If Result Then
-            ComboItemRefresh(True, True)
+            DiskImageProcess(True, True)
         End If
     End Sub
 
@@ -866,7 +866,7 @@ Public Class MainForm
     Private Function DirectoryEntryCanDelete(DirectoryEntry As DiskImage.DirectoryEntry) As Boolean
         If DirectoryEntry.IsDeleted Then
             Return False
-        ElseIf DirectoryEntry.IsDirectory Then
+        ElseIf DirectoryEntry.IsDirectory And Not DirectoryEntry.IsVolumeName Then
             Return DirectoryEntry.SubDirectory.Data.FileCount - DirectoryEntry.SubDirectory.Data.DeletedFileCount = 0
         Else
             Return True
@@ -882,7 +882,7 @@ Public Class MainForm
 
         With Stats
             .IsValid = DirectoryEntryIsValid(DirectoryEntry)
-            .IsDirectory = DirectoryEntry.IsDirectory
+            .IsDirectory = DirectoryEntry.IsDirectory And Not DirectoryEntry.IsVolumeName
             .IsDeleted = DirectoryEntry.IsDeleted
             .IsModified = DirectoryEntry.IsModified
             .IsValidFile = .IsValid And Not .IsDirectory And Not .IsDeleted
@@ -3229,9 +3229,10 @@ Public Class MainForm
     Private Sub BtnRedo_Click(sender As Object, e As EventArgs) Handles BtnRedo.Click, ToolStripBtnRedo.Click
         _Disk.Data.Redo()
         If _Disk.ReinitializeRequired Then
-            _Disk.Reinitialize()
+            DiskImageProcess(True, True)
+        Else
+            ComboItemRefresh(True, True)
         End If
-        ComboItemRefresh(True, True)
     End Sub
 
     Private Sub BtnReplaceFile_Click(sender As Object, e As EventArgs) Handles BtnReplaceFile.Click, BtnFileMenuReplaceFile.Click
@@ -3271,9 +3272,10 @@ Public Class MainForm
     Private Sub BtnUndo_Click(sender As Object, e As EventArgs) Handles BtnUndo.Click, ToolStripBtnUndo.Click
         _Disk.Data.Undo()
         If _Disk.ReinitializeRequired Then
-            _Disk.Reinitialize()
+            DiskImageProcess(True, True)
+        Else
+            ComboItemRefresh(True, True)
         End If
-        ComboItemRefresh(True, True)
     End Sub
 
     Private Sub ComboImages_SelectedIndexChanged(sender As Object, e As EventArgs) Handles ComboImages.SelectedIndexChanged

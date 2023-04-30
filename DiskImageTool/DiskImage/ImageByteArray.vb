@@ -83,6 +83,10 @@
             Dim Offset = SectorToBytes(SectorStart)
             Dim Size = SectorToBytes(Count)
 
+            If Size + Offset > MyBase.Length Then
+                Size = MyBase.Length - Offset
+            End If
+
             Return MyBase.GetBytes(Offset, Size)
         End Function
 
