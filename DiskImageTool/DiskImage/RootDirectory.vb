@@ -7,12 +7,15 @@
         Private ReadOnly _FileBytes As ImageByteArray
         Private _DirectoryData As DirectoryData
 
-        Sub New(FileBytes As ImageByteArray, BootSector As BootSector, FAT As FAT12)
+        Sub New(FileBytes As ImageByteArray, BootSector As BootSector, FAT As FAT12, EnumerateEntries As Boolean)
             _BootSector = BootSector
             _FAT = FAT
             _FileBytes = FileBytes
             If BootSector.IsValidImage Then
                 _DirectoryData = GetDirectoryData()
+                If EnumerateEntries Then
+                    EnumDirectoryEntries(Me)
+                End If
             Else
                 _DirectoryData = New DirectoryData
             End If
@@ -84,5 +87,23 @@
 
             Return Data
         End Function
+
+        Private Shared Sub EnumDirectoryEntries(Directory As DiskImage.IDirectory)
+            Dim DirectoryEntryCount = Directory.Data.EntryCount
+
+            If DirectoryEntryCount > 0 Then
+                For Counter = 0 To DirectoryEntryCount - 1
+                    Dim File = Directory.GetFile(Counter)
+
+                    If Not File.IsLink Then
+                        If File.IsDirectory And File.SubDirectory IsNot Nothing Then
+                            If File.SubDirectory.Data.EntryCount > 0 Then
+                                EnumDirectoryEntries(File.SubDirectory)
+                            End If
+                        End If
+                    End If
+                Next
+            End If
+        End Sub
     End Class
 End Namespace

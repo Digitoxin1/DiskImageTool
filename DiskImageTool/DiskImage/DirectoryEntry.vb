@@ -280,7 +280,7 @@ Namespace DiskImage
         End Function
 
         Public Function GetContent() As Byte()
-            Dim Content = GetDataFromChain(_FileBytes, _FatChain.Sectors)
+            Dim Content = GetDataFromChain(_FileBytes, ClusterListToSectorList(_BootSector, _FatChain.Clusters))
 
             If Content.Length <> FileSize Then
                 Array.Resize(Of Byte)(Content, FileSize)

@@ -159,7 +159,7 @@ Public Class MainForm
 
         If Not Remove And IsValidImage Then
             HasBadSectors = Disk.FAT.BadClusters.Count > 0
-            HasMismatchedFATs = Not Disk.FAT.CompareTables
+            HasMismatchedFATs = Not Disk.CompareFATTables
             HasInvalidImageSize = Disk.HasInvalidSize
         End If
 
@@ -345,7 +345,7 @@ Public Class MainForm
         Dim HasUnusedClusters As Boolean = False
 
         If Not Remove And Disk.IsValidImage Then
-            HasUnusedClusters = Disk.FAT.HasUnusedSectors(True)
+            HasUnusedClusters = Disk.FAT.HasUnusedClusters(True)
         End If
 
         If Not ImageData.Scanned Or HasUnusedClusters <> ImageData.ScanInfo.HasUnusedClusters Then
@@ -815,7 +815,7 @@ Public Class MainForm
                 HexViewSectorData = New HexViewSectorData(_Disk, DataOffset, Length)
                 HighlightSectorData(HexViewSectorData, FileSize, True)
             Else
-                HexViewSectorData = New HexViewSectorData(_Disk, DirectoryEntry.FATChain.Sectors)
+                HexViewSectorData = New HexViewSectorData(_Disk, DirectoryEntry.FATChain.Clusters)
                 If Not DirectoryEntry.IsDirectory Then
                     HighlightSectorData(HexViewSectorData, DirectoryEntry.FileSize, False)
                 Else
@@ -2020,7 +2020,7 @@ Public Class MainForm
         BtnEditFAT.Tag = Nothing
 
         If _Disk IsNot Nothing AndAlso _Disk.IsValidImage Then
-            If _Disk.BootSector.NumberOfFATs = 1 OrElse _Disk.FAT.CompareTables Then
+            If _Disk.BootSector.NumberOfFATs = 1 OrElse _Disk.CompareFATTables Then
                 BtnEditFAT.Tag = -1
             Else
                 For Counter = 0 To _Disk.BootSector.NumberOfFATs - 1
@@ -2265,14 +2265,15 @@ Public Class MainForm
             End If
 
             If _Disk.IsValidImage Then
+                Dim BadSectors = GetBadSectors(_Disk.BootSector, _Disk.FAT.BadClusters)
                 Dim BootStrapStart = _Disk.BootSector.GetBootStrapOffset
-                Dim CopyProtection As String = GetCopyProtection(_Disk)
+                Dim CopyProtection As String = GetCopyProtection(_Disk, BadSectors)
 
                 If CopyProtection.Length > 0 Then
                     .Add(ListViewTileGetItem(DiskGroup, "Copy Protection", CopyProtection))
                 End If
 
-                Dim BroderbundCopyright = GetBroderbundCopyright(_Disk)
+                Dim BroderbundCopyright = GetBroderbundCopyright(_Disk, BadSectors)
 
                 If BroderbundCopyright <> "" Then
                     .Add(ListViewTileGetItem(DiskGroup, "Broderbund Copyright", BroderbundCopyright))
@@ -2315,7 +2316,7 @@ Public Class MainForm
                 .Add(ListViewTileGetItem(BootRecordGroup, BootSectorDescription(BootSectorOffsets.ReservedSectorCount), _Disk.BootSector.ReservedSectorCount))
 
                 Value = _Disk.BootSector.NumberOfFATs
-                If Not _Disk.FAT.CompareTables Then
+                If Not _Disk.CompareFATTables Then
                     Value &= " (Mismatched)"
                     ForeColor = Color.Red
                 Else
@@ -2375,7 +2376,7 @@ Public Class MainForm
                 End If
 
                 .Add(ListViewTileGetItem(FileSystemGroup, "Total Space", Format(SectorToBytes(_Disk.BootSector.DataRegionSize), "N0") & " bytes"))
-                .Add(ListViewTileGetItem(FileSystemGroup, "Free Space", Format(_Disk.FAT.FreeSpace, "N0") & " bytes"))
+                .Add(ListViewTileGetItem(FileSystemGroup, "Free Space", Format(_Disk.FAT.GetFreeSpace(_Disk.BootSector.BytesPerCluster), "N0") & " bytes"))
 
                 If _Disk.FAT.BadClusters.Count > 0 Then
                     Value = Format(_Disk.FAT.BadClusters.Count * _Disk.BootSector.BytesPerCluster, "N0") & " bytes"
@@ -2434,7 +2435,7 @@ Public Class MainForm
         PopulateHashes()
 
         If _Disk.IsValidImage Then
-            BtnDisplayClusters.Enabled = _Disk.FAT.HasUnusedSectors(True)
+            BtnDisplayClusters.Enabled = _Disk.FAT.HasUnusedClusters(True)
             BtnDisplayBadSectors.Enabled = _Disk.FAT.BadClusters.Count > 0
             BtnFixImageSize.Enabled = _Disk.HasInvalidSize
             If _Disk.Directory.Data.HasBootSector Then
@@ -3033,7 +3034,7 @@ Public Class MainForm
     End Sub
 
     Private Sub UnusedClustersDisplayHex()
-        Dim HexViewSectorData = New HexViewSectorData(_Disk, _Disk.FAT.GetUnusedSectors(True))
+        Dim HexViewSectorData = New HexViewSectorData(_Disk, _Disk.FAT.GetUnusedClusters(True))
 
         If DisplayHexViewForm(HexViewSectorData, "Unused Clusters") Then
             ComboItemRefresh(False, True)

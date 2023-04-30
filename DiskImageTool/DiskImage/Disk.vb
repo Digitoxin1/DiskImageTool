@@ -23,8 +23,8 @@ Namespace DiskImage
 
             If Not _LoadError Then
                 _BootSector = New BootSector(FileBytes)
-                _FAT12 = New FAT12(FileBytes, _BootSector, 0, False)
-                _Directory = New RootDirectory(FileBytes, _BootSector, _FAT12)
+                _FAT12 = New FAT12(FileBytes, _BootSector, 0)
+                _Directory = New RootDirectory(FileBytes, _BootSector, _FAT12, False)
 
                 CacheDirectoryEntries()
 
@@ -87,6 +87,23 @@ Namespace DiskImage
             End Get
         End Property
 
+        Public Function CompareFATTables() As Boolean
+            If _BootSector.NumberOfFATs < 2 Then
+                Return True
+            End If
+
+            For Counter As UShort = 1 To _BootSector.NumberOfFATs - 1
+                Dim FATCopy1 = _FileBytes.GetSectors(FAT12.GetFATSectors(_BootSector.FATRegionStart, _BootSector.SectorsPerFAT, Counter - 1))
+                Dim FATCopy2 = _FileBytes.GetSectors(FAT12.GetFATSectors(_BootSector.FATRegionStart, _BootSector.SectorsPerFAT, Counter))
+
+                If Not ByteArrayCompare(FATCopy1, FATCopy2) Then
+                    Return False
+                End If
+            Next
+
+            Return True
+        End Function
+
         Public Function GetDirectoryEntryByOffset(Offset As UInteger) As DirectoryEntry
             Return New DirectoryEntry(FileBytes, _BootSector, _FAT12, Offset)
         End Function
@@ -125,6 +142,16 @@ Namespace DiskImage
             Return Result
         End Function
 
+        Private Function IsFATRegion(Offset As UInteger, Length As UInteger) As Boolean
+            Dim FATSectorStart = _BootSector.FATRegionStart
+            Dim FATSectorEnd = _BootSector.FATRegionStart + (_BootSector.SectorsPerFAT * _BootSector.NumberOfFATs) - 1
+
+            Dim SectorStart = OffsetToSector(Offset)
+            Dim SectorEnd = OffsetToSector(Offset + Length - 1)
+
+            Return (SectorStart >= FATSectorStart And SectorStart <= FATSectorEnd) Or (SectorEnd >= FATSectorStart And SectorEnd <= FATSectorEnd)
+        End Function
+
         Public Function IsValidImage() As Boolean
             Return Not _LoadError AndAlso _BootSector.IsValidImage
         End Function
@@ -134,7 +161,7 @@ Namespace DiskImage
         End Function
 
         Public Sub Reinitialize()
-            _FAT12.PopulateFAT12(0, False)
+            _FAT12.PopulateFAT12()
             _Directory.RefreshData()
 
             _ReinitializeRequired = False
@@ -174,7 +201,7 @@ Namespace DiskImage
         Private Sub FileBytes_DataChanged(Offset As UInteger, OriginalValue As Object, NewValue As Object) Handles FileBytes.DataChanged
             If BootSector.IsBootSectorRegion(Offset) Then
                 _ReinitializeRequired = True
-            ElseIf _BootSector.IsValidImage AndAlso FAT.IsFATRegion(Offset, GetObjectSize(NewValue)) Then
+            ElseIf _BootSector.IsValidImage AndAlso IsFATRegion(Offset, GetObjectSize(NewValue)) Then
                 _ReinitializeRequired = True
             End If
         End Sub

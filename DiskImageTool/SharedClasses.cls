@@ -127,6 +127,13 @@ Public Class HexViewSectorData
         _HighlightedRegionList = New List(Of HighlightedRegions)
     End Sub
 
+    Public Sub New(Disk As DiskImage.Disk, ClusterChain As List(Of UShort))
+        _Disk = Disk
+        _SectorData = New SectorData(Disk.Data)
+        _SectorData.AddBlocksByChain(ClusterListToSectorList(_Disk.BootSector, ClusterChain))
+        _HighlightedRegionList = New List(Of HighlightedRegions)
+    End Sub
+
     Public Sub New(Disk As DiskImage.Disk, SectorChain As List(Of UInteger))
         _Disk = Disk
         _SectorData = New SectorData(Disk.Data)

@@ -41,7 +41,9 @@ Public Class FATEditForm
         _ToolTip = New ToolTip()
         _Disk = Disk
 
-        _FAT = New FAT12(_Disk.Data, _Disk.BootSector, Index, True)
+        _FAT = New FAT12(_Disk.Data, _Disk.BootSector, Index)
+        ProcessFATChains()
+
         _FATTable = GetDataTable(_FAT)
 
         _GridSize = GetGridSize(_FAT.TableLength - 2)
@@ -424,6 +426,10 @@ Public Class FATEditForm
         Return Index
     End Function
 
+    Private Sub ProcessFATChains()
+        Dim Directory = New RootDirectory(_Disk.Data, _Disk.BootSector, _FAT, True)
+    End Sub
+
     Private Sub SetButtonStatus(Enabled As Boolean)
         For Each Control In FlowLayoutPanelTop.Controls.OfType(Of Button)
             Control.Enabled = Enabled
@@ -468,7 +474,7 @@ Public Class FATEditForm
         Dim Value As UShort = Row.Cells("GridValue").Value
 
         _FAT.TableEntry(Cluster) = Value
-        _FAT.ProcessFAT12(True)
+        _FAT.ProcessFAT12()
 
         RefreshGrid()
         PictureBoxFAT.Invalidate()

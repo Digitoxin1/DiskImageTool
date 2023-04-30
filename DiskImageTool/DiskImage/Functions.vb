@@ -279,6 +279,19 @@ Namespace DiskImage
             Return Result
         End Function
 
+        Public Function ClusterListToSectorList(BootSector As BootSector, ClusterList As List(Of UShort)) As List(Of UInteger)
+            Dim SectorList As New List(Of UInteger)
+
+            For Each Cluster In ClusterList
+                Dim Sector = BootSector.ClusterToSector(Cluster)
+                For Index = 0 To BootSector.SectorsPerCluster - 1
+                    SectorList.Add(Sector + Index)
+                Next
+            Next
+
+            Return SectorList
+        End Function
+
         Public Function CodePage437ToUnicode(b() As Byte) As String
             Dim b2(b.Length - 1) As UShort
             For counter = 0 To b.Length - 1
@@ -372,6 +385,19 @@ Namespace DiskImage
             Dim Hi As UShort = (Value.Minute + Value.Hour * 256) + Value.Year
 
             Return Hi + Lo * 65536
+        End Function
+
+        Public Function GetBadSectors(BootSector As BootSector, BadClusters As List(Of UShort)) As HashSet(Of UInteger)
+            Dim BadSectors As New HashSet(Of UInteger)
+
+            For Each Cluster In BadClusters
+                Dim Sector = BootSector.ClusterToSector(Cluster)
+                For Index = 0 To BootSector.SectorsPerCluster - 1
+                    BadSectors.Add(Sector + Index)
+                Next
+            Next
+
+            Return BadSectors
         End Function
 
         Public Function GetDataFromChain(FileBytes As ByteArray, SectorChain As List(Of UInteger)) As Byte()

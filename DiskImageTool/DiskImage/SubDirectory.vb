@@ -26,12 +26,12 @@
 
         Public ReadOnly Property SectorChain As List(Of UInteger) Implements IDirectory.SectorChain
             Get
-                Return _FatChain.Sectors
+                Return ClusterListToSectorList(_BootSector, _FatChain.Clusters)
             End Get
         End Property
 
         Public Function GetContent() As Byte() Implements IDirectory.GetContent
-            Dim Content = GetDataFromChain(_FileBytes, _FatChain.Sectors)
+            Dim Content = GetDataFromChain(_FileBytes, SectorChain)
 
             If Content.Length <> _Length Then
                 Array.Resize(Of Byte)(Content, _Length)
@@ -41,7 +41,7 @@
         End Function
 
         Public Function GetFile(Index As UInteger) As DirectoryEntry Implements IDirectory.GetFile
-            Dim EntriesPerCluster As UInteger = _BootSector.BytesPerCluster / 32
+            Dim EntriesPerCluster As UInteger = _BootSector.BytesPerCluster / DirectoryEntry.DIRECTORY_ENTRY_SIZE
             Dim ChainIndex As UInteger = Index \ EntriesPerCluster
             Dim ClusterIndex As UInteger = Index Mod EntriesPerCluster
             Dim Offset As UInteger = _BootSector.ClusterToOffset(_FatChain.Clusters.Item(ChainIndex)) + ClusterIndex * DirectoryEntry.DIRECTORY_ENTRY_SIZE

@@ -14,6 +14,11 @@
         Dim Year As UShort
     End Structure
 
+    Public Structure SectorRange
+        Dim Start As UInteger
+        Dim Count As UInteger
+    End Structure
+
     Public Class DataChange
         Public Sub New(Offset As UInteger, OriginalValue As Object, NewValue As Object)
             Me.Offset = Offset
@@ -34,7 +39,6 @@
         Public Property HasCircularChain As Boolean = False
         Public ReadOnly Property Offset As UInteger
         Public Property OpenChain As Boolean = True
-        Public Property Sectors As New List(Of UInteger)
     End Class
 
     Public Class SectorBlock
