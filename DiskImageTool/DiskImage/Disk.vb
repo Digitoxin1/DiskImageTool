@@ -174,7 +174,7 @@ Namespace DiskImage
         Private Sub FileBytes_DataChanged(Offset As UInteger, OriginalValue As Object, NewValue As Object) Handles FileBytes.DataChanged
             If BootSector.IsBootSectorRegion(Offset) Then
                 _ReinitializeRequired = True
-            ElseIf FAT.IsFATRegion(Offset, GetObjectSize(NewValue)) Then
+            ElseIf _BootSector.IsValidImage AndAlso FAT.IsFATRegion(Offset, GetObjectSize(NewValue)) Then
                 _ReinitializeRequired = True
             End If
         End Sub
