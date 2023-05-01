@@ -1,4 +1,7 @@
-﻿Namespace DiskImage
+﻿Imports System.IO
+Imports System.IO.Compression
+
+Namespace DiskImage
     Public Structure SectorRange
         Dim Start As UInteger
         Dim Count As UInteger
@@ -193,5 +196,14 @@
                 Next
             End If
         End Sub
+
+        Public Function OpenFileFromZIP(ZipFileName As String, FileName As String) As Byte()
+            Dim Data As New MemoryStream()
+            Dim Archive As ZipArchive = ZipFile.OpenRead(ZipFileName)
+            Dim Entry = Archive.GetEntry(FileName)
+            Entry.Open.CopyTo(Data)
+
+            Return Data.ToArray
+        End Function
     End Module
 End Namespace

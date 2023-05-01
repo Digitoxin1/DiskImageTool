@@ -51,8 +51,7 @@ Public Class ItemScanForm
             If Not _NewOnly Or Not ImageData.Scanned Then
                 Dim Disk = _Parent.DiskImageLoad(ImageData)
 
-                If Not Disk.LoadError Then
-                    ImageData.ReadOnly = Disk.ReadOnly
+                If Disk IsNot Nothing Then
                     _Parent.ItemScanModified(Disk, ImageData)
                     _Parent.ItemScanDisk(Disk, ImageData)
                     _Parent.ItemScanOEMName(Disk, ImageData)

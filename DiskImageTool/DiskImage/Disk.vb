@@ -1,15 +1,10 @@
-﻿Imports System.IO
-
-Namespace DiskImage
+﻿Namespace DiskImage
     Public Class Disk
         Public Const BYTES_PER_SECTOR As UShort = 512
         Private WithEvents FileBytes As ImageByteArray
         Private ReadOnly _BootSector As BootSector
         Private ReadOnly _Directory As RootDirectory
         Private ReadOnly _FAT12 As FAT12
-        Private ReadOnly _FilePath As String
-        Private ReadOnly _LoadError As Boolean = False
-        Private ReadOnly _ReadOnly As Boolean = False
         Private _ReinitializeRequired As Boolean = False
 
         Public Shared Function BytesToSector(Bytes As UInteger) As UInteger
@@ -24,32 +19,21 @@ Namespace DiskImage
             Return Sector * BYTES_PER_SECTOR
         End Function
 
-        Sub New(FilePath As String, Optional Modifications As Stack(Of DataChange()) = Nothing)
-            _LoadError = False
-            _FilePath = FilePath
-            Try
-                Dim fInfo As New FileInfo(FilePath)
-                _ReadOnly = fInfo.IsReadOnly
-                FileBytes = New ImageByteArray(IO.File.ReadAllBytes(FilePath))
-            Catch ex As Exception
-                _LoadError = True
-            End Try
+        Sub New(Data() As Byte, Optional Modifications As Stack(Of DataChange()) = Nothing)
+            FileBytes = New ImageByteArray(Data)
+            _BootSector = New BootSector(FileBytes)
+            _FAT12 = New FAT12(FileBytes, _BootSector, 0)
+            _Directory = New RootDirectory(FileBytes, _BootSector, _FAT12, False)
 
-            If Not _LoadError Then
-                _BootSector = New BootSector(FileBytes)
-                _FAT12 = New FAT12(FileBytes, _BootSector, 0)
-                _Directory = New RootDirectory(FileBytes, _BootSector, _FAT12, False)
+            CacheDirectoryEntries()
 
-                CacheDirectoryEntries()
-
-                If Modifications IsNot Nothing Then
-                    FileBytes.ApplyModifications(Modifications)
-
-                    If ReinitializeRequired Then
-                        Reinitialize()
-                    End If
+            If Modifications IsNot Nothing Then
+                FileBytes.ApplyModifications(Modifications)
+                If _ReinitializeRequired Then
+                    _FAT12.PopulateFAT12()
+                    _ReinitializeRequired = False
                 End If
-
+                _Directory.RefreshData()
             End If
         End Sub
 
@@ -74,24 +58,6 @@ Namespace DiskImage
         Public ReadOnly Property FAT As FAT12
             Get
                 Return _FAT12
-            End Get
-        End Property
-
-        Public ReadOnly Property FilePath As String
-            Get
-                Return _FilePath
-            End Get
-        End Property
-
-        Public ReadOnly Property LoadError As Boolean
-            Get
-                Return _LoadError
-            End Get
-        End Property
-
-        Public ReadOnly Property [ReadOnly] As Boolean
-            Get
-                Return _ReadOnly
             End Get
         End Property
 
@@ -167,11 +133,11 @@ Namespace DiskImage
         End Function
 
         Public Function IsValidImage() As Boolean
-            Return Not _LoadError AndAlso _BootSector.IsValidImage
+            Return _BootSector.IsValidImage
         End Function
 
         Public Function CheckSize() As Boolean
-            Return Not _LoadError AndAlso (FileBytes.Length > 0 And FileBytes.Length < 4423680)
+            Return (FileBytes.Length > 0 And FileBytes.Length < 4423680)
         End Function
 
         Public Sub Reinitialize()

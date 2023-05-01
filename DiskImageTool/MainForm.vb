@@ -1,5 +1,6 @@
 ﻿Imports System.ComponentModel
 Imports System.IO
+Imports System.IO.Compression
 Imports System.Net
 Imports System.Text
 Imports DiskImageTool.DiskImage
@@ -21,6 +22,7 @@ Public Class MainForm
     Public Const SITE_URL = "https://github.com/Digitoxin1/DiskImageTool"
     Public Const UPDATE_URL = "https://api.github.com/repos/Digitoxin1/DiskImageTool/releases/latest"
     Private ReadOnly _FileFilterExt As New List(Of String) From {".ima", ".img"}
+    Private ReadOnly _ArchiveFilterExt As New List(Of String) From {".zip"}
     Private _CheckAll As Boolean = False
     Private _Disk As DiskImage.Disk
     Private _FilterCounts() As Integer
@@ -43,7 +45,21 @@ Public Class MainForm
     End Sub
 
     Friend Function DiskImageLoad(ImageData As LoadedImageData) As DiskImage.Disk
-        Return New DiskImage.Disk(ImageData.FilePath, ImageData.Modifications)
+        Dim Data() As Byte
+
+        Try
+            If ImageData.Compressed Then
+                ImageData.ReadOnly = True
+                Data = OpenFileFromZIP(ImageData.SourceFile, ImageData.CompressedFile)
+            Else
+                ImageData.ReadOnly = IsFileReadOnly(ImageData.SourceFile)
+                Data = IO.File.ReadAllBytes(ImageData.SourceFile)
+            End If
+        Catch ex As Exception
+            Return Nothing
+        End Try
+
+        Return New DiskImage.Disk(Data, ImageData.Modifications)
     End Function
 
     Friend Function ItemScanDirectory(Disk As DiskImage.Disk, ImageData As LoadedImageData, Optional UpdateFilters As Boolean = False, Optional Remove As Boolean = False) As ProcessDirectoryEntryResponse
@@ -230,7 +246,7 @@ Public Class MainForm
     End Sub
 
     Friend Sub ItemScanModified(Disk As DiskImage.Disk, ImageData As LoadedImageData, Optional UpdateFilters As Boolean = False, Optional Remove As Boolean = False)
-        Dim IsModified As Boolean = Not Remove And (Not Disk.LoadError AndAlso Disk.Data.Modified)
+        Dim IsModified As Boolean = Not Remove And (Disk IsNot Nothing AndAlso Disk.Data.Modified)
 
         If IsModified <> ImageData.Modified Then
             ImageData.Modified = IsModified
@@ -472,7 +488,7 @@ Public Class MainForm
             Msg = Msg & vbCrLf & vbCrLf & "Do you wish to download it at this time?"
             If MsgBox(Msg, MsgBoxStyle.Question + MsgBoxStyle.YesNo + MsgBoxStyle.DefaultButton2) = MsgBoxResult.Yes Then
                 Dim Dialog As New SaveFileDialog With {
-                    .Filter = "Zip Archive|*.zip",
+                    .Filter = GetFileFilter("Zip Archive", "*.zip"),
                     .FileName = Path.GetFileName(DownloadURL),
                     .InitialDirectory = GetDownloadsFolder(),
                     .RestoreDirectory = True
@@ -515,9 +531,9 @@ Public Class MainForm
                 Dim NewFilePath As String = ""
                 If ShowDialog Then
                     If ModifyImageList.Count = 1 Then
-                        Result = MsgBoxSave(ImageData.FilePath)
+                        Result = MsgBoxSave(ImageData.FileName)
                     Else
-                        Result = MsgBoxSaveAll(ImageData.FilePath)
+                        Result = MsgBoxSaveAll(ImageData.FileName)
                     End If
                 Else
                     Result = BatchResult
@@ -533,13 +549,13 @@ Public Class MainForm
                 If Result = MyMsgBoxResult.Yes Or Result = MyMsgBoxResult.YesToAll Then
                     If ImageData.ReadOnly Then
                         If Not ShowDialog Then
-                            If MsgBoxNewFileName(ImageData.FilePath) <> MsgBoxResult.Ok Then
+                            If MsgBoxNewFileName(ImageData.FileName) <> MsgBoxResult.Ok Then
                                 Result = MyMsgBoxResult.Cancel
                                 Exit For
                             End If
                         End If
                         If Result <> MyMsgBoxResult.No Then
-                            NewFilePath = GetNewFilePath(ImageData.FilePath)
+                            NewFilePath = GetNewFilePath(ImageData.SaveFile)
                             If NewFilePath = "" Then
                                 Result = MyMsgBoxResult.Cancel
                                 Exit For
@@ -571,14 +587,14 @@ Public Class MainForm
         Dim Result As MsgBoxResult
 
         If CurrentImageData.Modified Then
-            Result = MsgBoxSave(CurrentImageData.FilePath)
+            Result = MsgBoxSave(CurrentImageData.FileName)
         Else
             Result = MsgBoxResult.No
         End If
 
         If Result = MsgBoxResult.Yes Then
             If CurrentImageData.ReadOnly Then
-                NewFilePath = GetNewFilePath(CurrentImageData.FilePath)
+                NewFilePath = GetNewFilePath(CurrentImageData.SaveFile)
                 If NewFilePath = "" Then
                     Result = MsgBoxResult.Cancel
                 End If
@@ -649,17 +665,19 @@ Public Class MainForm
     End Sub
 
     Private Sub ComboItemRefresh(FullRefresh As Boolean, DoItemScan As Boolean)
+        Dim CurrentImageData As LoadedImageData = ComboImages.SelectedItem
+
         If FullRefresh Then
             _Disk.Directory.RefreshData()
         End If
 
         If DoItemScan Then
-            ItemScanAll(_Disk, ComboImages.SelectedItem, True)
+            ItemScanAll(_Disk, CurrentImageData, True)
         End If
 
         ComboImagesRefreshCurrentItemText()
 
-        PopulateSummary(_Disk)
+        PopulateSummary(_Disk, CurrentImageData)
 
         If FullRefresh Then
             If _Disk.IsValidImage Then
@@ -783,7 +801,7 @@ Public Class MainForm
     Private Sub DiskImageLoad(DoItemScan As Boolean)
         Dim CurrentImageData As LoadedImageData = ComboImages.SelectedItem
         _Disk = DiskImageLoad(CurrentImageData)
-        If Not _Disk.LoadError Then
+        If _Disk IsNot Nothing Then
             CurrentImageData.Modifications = _Disk.Data.Changes
         End If
         DiskImageProcess(DoItemScan, False)
@@ -806,17 +824,17 @@ Public Class MainForm
         Dim CurrentImageData As LoadedImageData = ComboImages.SelectedItem
 
         If Reinitialize Then
-            _Disk.Reinitialize()
+            _Disk?.Reinitialize()
         End If
 
         InitButtonState()
-        PopulateSummary(_Disk)
+        PopulateSummary(_Disk, CurrentImageData)
         ClearSort(False)
-        If _Disk.IsValidImage Then
+
+        If _Disk IsNot Nothing AndAlso _Disk.IsValidImage Then
             If CurrentImageData.CachedRootDir Is Nothing Then
                 CurrentImageData.CachedRootDir = _Disk.Directory.GetContent
             End If
-            CurrentImageData.ReadOnly = _Disk.ReadOnly
             PopulateFilesPanel()
         Else
             ClearFilesPanel()
@@ -840,15 +858,15 @@ Public Class MainForm
             Else
                 Disk = DiskImageLoad(ImageData)
             End If
-            Success = Not Disk.LoadError
+            Success = Disk IsNot Nothing
             If Success Then
                 If NewFilePath = "" Then
-                    NewFilePath = Disk.FilePath
+                    NewFilePath = ImageData.SaveFile
                 End If
                 Success = SaveDiskImageToFile(Disk, NewFilePath)
             End If
             If Not Success Then
-                Dim Msg As String = "Error saving file '" & IO.Path.GetFileName(ImageData.FilePath) & "'."
+                Dim Msg As String = "Error saving file '" & IO.Path.GetFileName(NewFilePath) & "'."
                 Dim ErrorResult = MsgBox(Msg, MsgBoxStyle.Critical + MsgBoxStyle.RetryCancel)
                 If ErrorResult = MsgBoxResult.Cancel Then
                     Exit Do
@@ -947,7 +965,7 @@ Public Class MainForm
 
     Private Sub FileClose(ImageData As LoadedImageData)
         ItemScanAll(_Disk, ImageData, True, True)
-        _LoadedFileNames.Remove(ImageData.FilePath)
+        _LoadedFileNames.Remove(ImageData.DisplayPath)
 
         Dim ActiveComboBox As ComboBox = IIf(_FiltersApplied, ComboImagesFiltered, ComboImages)
 
@@ -1199,8 +1217,12 @@ Public Class MainForm
     End Function
 
     Private Sub FilesOpen()
+        Dim FileFilter = _FileFilter
+        FileFilter = AppendFileFilter(FileFilter, "Zip Archive", "*.zip")
+        FileFilter = AppendFileFilter(FileFilter, "All files (*.*)", "*.*")
+
         Dim Dialog = New OpenFileDialog With {
-            .Filter = _FileFilter,
+            .Filter = FileFilter,
             .Multiselect = True
         }
         If Dialog.ShowDialog <> DialogResult.OK Then
@@ -1228,7 +1250,7 @@ Public Class MainForm
         Dim HasComboFilter = OEMNameItem IsNot Nothing AndAlso Not OEMNameItem.AllItems
 
         If FiltersChecked Or TextFilter.Length > 0 Or HasComboFilter Then
-            Me.UseWaitCursor = True
+            Cursor.Current = Cursors.WaitCursor
 
             ComboImagesFiltered.BeginUpdate()
             ComboImagesFiltered.Items.Clear()
@@ -1245,7 +1267,7 @@ Public Class MainForm
                 Dim ShowItem As Boolean = True
 
                 If TextFilter.Length > 0 Then
-                    Dim FilePath = ImageData.FilePath.ToLower
+                    Dim FilePath = ImageData.DisplayPath.ToLower
                     ShowItem = FilePath.StartsWith(TextFilter) OrElse FilePath.Contains(" " & TextFilter) OrElse FilePath.Contains("\" & TextFilter)
                 End If
 
@@ -1279,7 +1301,7 @@ Public Class MainForm
             _FiltersApplied = True
             BtnClearFilters.Enabled = True
 
-            Me.UseWaitCursor = False
+            Cursor.Current = Cursors.Default
         Else
             If _FiltersApplied Then
                 FiltersClear()
@@ -1290,7 +1312,7 @@ Public Class MainForm
     End Sub
 
     Private Sub FiltersClear()
-        Me.UseWaitCursor = True
+        Cursor.Current = Cursors.WaitCursor
 
         _SuppressEvent = True
         For Counter = 0 To [Enum].GetNames(GetType(FilterTypes)).Length - 1
@@ -1313,7 +1335,7 @@ Public Class MainForm
         _FiltersApplied = False
         BtnClearFilters.Enabled = False
 
-        Me.UseWaitCursor = False
+        Cursor.Current = Cursors.Default
     End Sub
 
     Private Sub FiltersInitialize()
@@ -1419,10 +1441,13 @@ Public Class MainForm
     Private Function GetNewFilePath(FilePath As String) As String
         Dim NewFilePath As String = ""
 
+        Dim FileFilter = _FileFilter
+        FileFilter = AppendFileFilter(FileFilter, "All files (*.*)", "*.*")
+
         Dim Dialog = New SaveFileDialog With {
             .InitialDirectory = IO.Path.GetDirectoryName(FilePath),
             .FileName = IO.Path.GetFileName(FilePath),
-            .Filter = _FileFilter
+            .Filter = FileFilter
         }
 
         AddHandler Dialog.FileOk, Sub(sender As Object, e As CancelEventArgs)
@@ -1447,7 +1472,7 @@ Public Class MainForm
         Dim CheckPath As Boolean = False
 
         For Each ImageData As LoadedImageData In ComboImages.Items
-            Dim CurrentPathName As String = IO.Path.GetDirectoryName(ImageData.FilePath)
+            Dim CurrentPathName As String = IO.Path.GetDirectoryName(ImageData.DisplayPath)
             If CheckPath Then
                 If Len(CurrentPathName) > Len(PathName) Then
                     CurrentPathName = Strings.Left(CurrentPathName, Len(PathName))
@@ -1536,7 +1561,7 @@ Public Class MainForm
     End Sub
 
     Private Sub InitButtonState()
-        If _Disk IsNot Nothing AndAlso Not _Disk.LoadError Then
+        If _Disk IsNot Nothing Then
             BtnDisplayBootSector.Enabled = _Disk.CheckSize
             BtnEditBootSector.Enabled = _Disk.CheckSize
             BtnDisplayDisk.Enabled = _Disk.CheckSize
@@ -1804,8 +1829,8 @@ Public Class MainForm
         AddHandler Item.Click, AddressOf BtnDisplayDirectory_Click
     End Sub
 
-    Private Function MsgBoxNewFileName(FilePath As String) As MsgBoxResult
-        Dim Msg As String = "'" & Path.GetFileName(FilePath) & "' is a read-only file.  Please specify a new file name."
+    Private Function MsgBoxNewFileName(FileName As String) As MsgBoxResult
+        Dim Msg As String = "'" & FileName & "' is a read-only file.  Please specify a new file name."
         Return MsgBox(Msg, MsgBoxStyle.OkCancel)
     End Function
 
@@ -1817,13 +1842,13 @@ Public Class MainForm
         Return SaveAllForm.Result
     End Function
 
-    Private Function MsgBoxSave(FilePath As String) As MsgBoxResult
-        Dim Msg As String = "Save file '" & IO.Path.GetFileName(FilePath) & "'?"
+    Private Function MsgBoxSave(FileName As String) As MsgBoxResult
+        Dim Msg As String = "Save file '" & FileName & "'?"
         Return MsgBox(Msg, MsgBoxStyle.Question + MsgBoxStyle.YesNoCancel + MsgBoxStyle.DefaultButton3, "Save")
     End Function
 
-    Private Function MsgBoxSaveAll(FilePath As String) As MyMsgBoxResult
-        Dim Msg As String = "Save file '" & IO.Path.GetFileName(FilePath) & "'?"
+    Private Function MsgBoxSaveAll(FileName As String) As MyMsgBoxResult
+        Dim Msg As String = "Save file '" & FileName & "'?"
 
         Dim SaveAllForm As New SaveAllForm(Msg)
         SaveAllForm.ShowDialog()
@@ -1962,7 +1987,7 @@ Public Class MainForm
 
         With ListViewHashes.Items
             .Clear()
-            If Not Disk.LoadError Then
+            If Disk IsNot Nothing Then
                 .AddItem("CRC32", Crc32.ComputeChecksum(Disk.Data.Data).ToString("X8"))
                 .AddItem("MD5", MD5Hash(Disk.Data.Data))
                 .AddItem("SHA-1", SHA1Hash(Disk.Data.Data))
@@ -1973,8 +1998,8 @@ Public Class MainForm
         ListViewHashes.Refresh()
     End Sub
 
-    Private Sub PopulateSummary(Disk As Disk)
-        Dim FileName = IO.Path.GetFileName(Disk.FilePath)
+    Private Sub PopulateSummary(Disk As Disk, ImageData As LoadedImageData)
+        Dim FileName = ImageData.FileName
 
         Me.Text = GetWindowCaption() & " - " & FileName
 
@@ -1984,7 +2009,7 @@ Public Class MainForm
         PopulateSummaryPanel(Disk)
         PopulateHashPanel(Disk)
 
-        If Disk.IsValidImage Then
+        If Disk IsNot Nothing AndAlso Disk.IsValidImage Then
             BtnDisplayClusters.Enabled = Disk.FAT.HasUnusedClusters(True)
             BtnDisplayBadSectors.Enabled = Disk.FAT.BadClusters.Count > 0
             BtnFixImageSize.Enabled = Disk.HasInvalidSize
@@ -2003,13 +2028,22 @@ Public Class MainForm
             BtnRemoveBootSector.Enabled = False
         End If
 
-        BtnRevert.Enabled = Not Disk.LoadError AndAlso Disk.Data.Modified
+        BtnRevert.Enabled = Disk IsNot Nothing AndAlso Disk.Data.Modified
 
-        BtnUndo.Enabled = Not Disk.LoadError AndAlso Disk.Data.UndoEnabled
+        BtnUndo.Enabled = Disk IsNot Nothing AndAlso Disk.Data.UndoEnabled
         ToolStripBtnUndo.Enabled = BtnUndo.Enabled
 
-        BtnRedo.Enabled = Not Disk.LoadError AndAlso Disk.Data.RedoEnabled
+        BtnRedo.Enabled = Disk IsNot Nothing AndAlso Disk.Data.RedoEnabled
         ToolStripBtnRedo.Enabled = BtnRedo.Enabled
+
+        If Disk IsNot Nothing Then
+            ToolStripStatusModified.Visible = Disk.Data.Modified
+            ToolStripStatusReadOnly.Visible = ImageData.ReadOnly
+            ToolStripStatusReadOnly.Text = IIf(ImageData.Compressed, "Compressed", "Read Only")
+        Else
+            ToolStripStatusModified.Visible = False
+            ToolStripStatusReadOnly.Visible = False
+        End If
     End Sub
 
     Private Sub PopulateSummaryPanel(Disk As Disk)
@@ -2023,55 +2057,57 @@ Public Class MainForm
 
             Dim DiskGroup = ListViewSummary.Groups.Add("Disk", "Disk")
 
-            If Not Disk.LoadError Then
+            If Disk IsNot Nothing Then
+                Dim BootStrapStart = Disk.BootSector.GetBootStrapOffset
+                Dim BootstrapType As BootstrapLookup = Nothing
+                Dim KnownOEMNameMatch As KnownOEMName = Nothing
+                Dim OEMName() As Byte = Nothing
+
+                If Disk.IsValidImage Then
+                    Dim BootstrapChecksum = Crc32.ComputeChecksum(Disk.BootSector.BootStrapCode)
+                    Dim OEMNameWin9x = Disk.BootSector.IsWin9xOEMName
+                    OEMName = Disk.BootSector.OEMName
+
+                    BootstrapType = OEMNameFindMatch(_OEMNameDictionary, BootstrapChecksum)
+
+                    If BootstrapType IsNot Nothing Then
+                        For Each KnownOEMName In BootstrapType.KnownOEMNames
+                            If KnownOEMName.Name.CompareTo(OEMName) Or (OEMNameWin9x And KnownOEMName.Win9xId) Then
+                                KnownOEMNameMatch = KnownOEMName
+                                Exit For
+                            End If
+                        Next
+                        If KnownOEMNameMatch Is Nothing And BootstrapType.ExactMatch Then
+                            BootstrapType = Nothing
+                        End If
+                    End If
+                End If
+
                 If Disk.IsValidImage AndAlso Disk.HasInvalidSize Then
                     ForeColor = Color.Red
                 Else
                     ForeColor = SystemColors.WindowText
                 End If
                 .AddItem(DiskGroup, "Image Size", Disk.Data.Length.ToString("N0"), ForeColor)
-                ToolStripStatusModified.Visible = Disk.Data.Modified
-                ToolStripStatusReadOnly.Visible = Disk.ReadOnly
-            Else
-                ToolStripStatusModified.Visible = False
-                ToolStripStatusReadOnly.Visible = False
-            End If
 
-            If Disk.IsValidImage Then
-                Dim DiskType As String = GetFloppyDiskTypeName(Disk.BootSector) & " Floppy"
-                .AddItem(DiskGroup, "Disk Type", DiskType)
+                If Disk.IsValidImage Then
+                    Dim DiskType As String = GetFloppyDiskTypeName(Disk.BootSector) & " Floppy"
+                    .AddItem(DiskGroup, "Disk Type", DiskType)
 
-                Dim BadSectors = GetBadSectors(Disk.BootSector, Disk.FAT.BadClusters)
-                Dim BootStrapStart = Disk.BootSector.GetBootStrapOffset
-                Dim CopyProtection As String = GetCopyProtection(Disk, BadSectors)
+                    Dim BadSectors = GetBadSectors(Disk.BootSector, Disk.FAT.BadClusters)
+                    Dim CopyProtection As String = GetCopyProtection(Disk, BadSectors)
 
-                If CopyProtection.Length > 0 Then
-                    .AddItem(DiskGroup, "Copy Protection", CopyProtection)
-                End If
-
-                Dim BroderbundCopyright = GetBroderbundCopyright(Disk, BadSectors)
-
-                If BroderbundCopyright <> "" Then
-                    .AddItem(DiskGroup, "Broderbund Copyright", BroderbundCopyright)
-                End If
-
-                Dim BootstrapChecksum = Crc32.ComputeChecksum(Disk.BootSector.BootStrapCode)
-                Dim OEMName = Disk.BootSector.OEMName
-                Dim KnownOEMNameMatch As KnownOEMName = Nothing
-                Dim OEMNameWin9x = Disk.BootSector.IsWin9xOEMName
-
-                Dim BootstrapType = OEMNameFindMatch(_OEMNameDictionary, BootstrapChecksum)
-
-                If BootstrapType IsNot Nothing Then
-                    For Each KnownOEMName In BootstrapType.KnownOEMNames
-                        If KnownOEMName.Name.CompareTo(OEMName) Or (OEMNameWin9x And KnownOEMName.Win9xId) Then
-                            KnownOEMNameMatch = KnownOEMName
-                            Exit For
-                        End If
-                    Next
-                    If KnownOEMNameMatch Is Nothing And BootstrapType.ExactMatch Then
-                        BootstrapType = Nothing
+                    If CopyProtection.Length > 0 Then
+                        .AddItem(DiskGroup, "Copy Protection", CopyProtection)
                     End If
+
+                    Dim BroderbundCopyright = GetBroderbundCopyright(Disk, BadSectors)
+
+                    If BroderbundCopyright <> "" Then
+                        .AddItem(DiskGroup, "Broderbund Copyright", BroderbundCopyright)
+                    End If
+                Else
+                    .AddItem(DiskGroup, "Error", "Unknown Image Format", Color.Red)
                 End If
 
                 Dim BootRecordGroup = ListViewSummary.Groups.Add("BootRecord", "Boot Record")
@@ -2092,7 +2128,7 @@ Public Class MainForm
                 .AddItem(BootRecordGroup, BootSectorDescription(BootSectorOffsets.ReservedSectorCount), Disk.BootSector.ReservedSectorCount)
 
                 Value = Disk.BootSector.NumberOfFATs
-                If Not Disk.CompareFATTables Then
+                If Disk.BootSector.IsValidImage AndAlso Not Disk.CompareFATTables Then
                     Value &= " (Mismatched)"
                     ForeColor = Color.Red
                 Else
@@ -2141,67 +2177,66 @@ Public Class MainForm
                     .AddItem(BootRecordGroup, BootSectorDescription(BootSectorOffsets.JmpBoot), BitConverter.ToString(Disk.BootSector.JmpBoot), ForeColor)
                 End If
 
-                Dim FileSystemGroup = ListViewSummary.Groups.Add("FileSystem", "File System")
+                If Disk.IsValidImage Then
+                    Dim FileSystemGroup = ListViewSummary.Groups.Add("FileSystem", "File System")
 
-                Dim VolumeLabel = Disk.GetVolumeLabel
+                    Dim VolumeLabel = Disk.GetVolumeLabel
 
-                If VolumeLabel IsNot Nothing Then
-                    .AddItem(FileSystemGroup, "Volume Label", VolumeLabel.GetVolumeName.TrimEnd(NULL_CHAR))
-                    Dim VolumeDate = VolumeLabel.GetLastWriteDate
-                    .AddItem(FileSystemGroup, "Volume Date", ExpandedDateToString(VolumeDate, True, False, False, False))
-                End If
-
-                .AddItem(FileSystemGroup, "Total Space", Format(Disk.SectorToBytes(Disk.BootSector.DataRegionSize), "N0") & " bytes")
-                .AddItem(FileSystemGroup, "Free Space", Format(Disk.FAT.GetFreeSpace(Disk.BootSector.BytesPerCluster), "N0") & " bytes")
-
-                If Disk.FAT.BadClusters.Count > 0 Then
-                    Value = Format(Disk.FAT.BadClusters.Count * Disk.BootSector.BytesPerCluster, "N0") & " bytes"
-                    ForeColor = Color.Red
-                    .AddItem(FileSystemGroup, "Bad Sectors", Value, ForeColor)
-                End If
-
-                Dim BootStrapGroup = ListViewSummary.Groups.Add("Bootstrap", "Bootstrap")
-
-                If Debugger.IsAttached Then
-                    .AddItem(BootStrapGroup, "Bootstrap CRC32", Crc32.ComputeChecksum(Disk.BootSector.BootStrapCode).ToString("X8"))
-                End If
-
-                If BootstrapType IsNot Nothing Then
-                    If BootstrapType.Language.Length > 0 Then
-                        .AddItem(BootStrapGroup, "Language", BootstrapType.Language)
+                    If VolumeLabel IsNot Nothing Then
+                        .AddItem(FileSystemGroup, "Volume Label", VolumeLabel.GetVolumeName.TrimEnd(NULL_CHAR))
+                        Dim VolumeDate = VolumeLabel.GetLastWriteDate
+                        .AddItem(FileSystemGroup, "Volume Date", ExpandedDateToString(VolumeDate, True, False, False, False))
                     End If
 
-                    If KnownOEMNameMatch Is Nothing And BootstrapType.KnownOEMNames.Count = 1 Then
-                        KnownOEMNameMatch = BootstrapType.KnownOEMNames(0)
+                    .AddItem(FileSystemGroup, "Total Space", Format(Disk.SectorToBytes(Disk.BootSector.DataRegionSize), "N0") & " bytes")
+                    .AddItem(FileSystemGroup, "Free Space", Format(Disk.FAT.GetFreeSpace(Disk.BootSector.BytesPerCluster), "N0") & " bytes")
+
+                    If Disk.FAT.BadClusters.Count > 0 Then
+                        Value = Format(Disk.FAT.BadClusters.Count * Disk.BootSector.BytesPerCluster, "N0") & " bytes"
+                        ForeColor = Color.Red
+                        .AddItem(FileSystemGroup, "Bad Sectors", Value, ForeColor)
                     End If
 
-                    If KnownOEMNameMatch IsNot Nothing Then
-                        If KnownOEMNameMatch.Company <> "" Then
-                            .AddItem(BootStrapGroup, "Company", KnownOEMNameMatch.Company)
-                        End If
-                        If KnownOEMNameMatch.Description <> "" Then
-                            .AddItem(BootStrapGroup, "Description", KnownOEMNameMatch.Description)
-                        End If
-                        If KnownOEMNameMatch.Note <> "" Then
-                            .AddItem(BootStrapGroup, "Note", KnownOEMNameMatch.Note, Color.Blue)
-                        End If
+                    Dim BootStrapGroup = ListViewSummary.Groups.Add("Bootstrap", "Bootstrap")
+
+                    If Debugger.IsAttached Then
+                        .AddItem(BootStrapGroup, "Bootstrap CRC32", Crc32.ComputeChecksum(Disk.BootSector.BootStrapCode).ToString("X8"))
                     End If
 
-                    If Not BootstrapType.ExactMatch Then
-                        For Each KnownOEMName In BootstrapType.KnownOEMNames
-                            If KnownOEMName.Name.Length > 0 AndAlso KnownOEMName.Suggestion AndAlso Not KnownOEMName.Name.CompareTo(OEMName) Then
-                                .AddItem(BootStrapGroup, "Alternative OEM Name", KnownOEMName.GetNameAsString)
+                    If BootstrapType IsNot Nothing Then
+                        If BootstrapType.Language.Length > 0 Then
+                            .AddItem(BootStrapGroup, "Language", BootstrapType.Language)
+                        End If
+
+                        If KnownOEMNameMatch Is Nothing And BootstrapType.KnownOEMNames.Count = 1 Then
+                            KnownOEMNameMatch = BootstrapType.KnownOEMNames(0)
+                        End If
+
+                        If KnownOEMNameMatch IsNot Nothing Then
+                            If KnownOEMNameMatch.Company <> "" Then
+                                .AddItem(BootStrapGroup, "Company", KnownOEMNameMatch.Company)
                             End If
-                        Next
+                            If KnownOEMNameMatch.Description <> "" Then
+                                .AddItem(BootStrapGroup, "Description", KnownOEMNameMatch.Description)
+                            End If
+                            If KnownOEMNameMatch.Note <> "" Then
+                                .AddItem(BootStrapGroup, "Note", KnownOEMNameMatch.Note, Color.Blue)
+                            End If
+                        End If
+
+                        If Not BootstrapType.ExactMatch Then
+                            For Each KnownOEMName In BootstrapType.KnownOEMNames
+                                If KnownOEMName.Name.Length > 0 AndAlso KnownOEMName.Suggestion AndAlso Not KnownOEMName.Name.CompareTo(OEMName) Then
+                                    .AddItem(BootStrapGroup, "Alternative OEM Name", KnownOEMName.GetNameAsString)
+                                End If
+                            Next
+                        End If
                     End If
                 End If
             Else
-                If Disk.LoadError Then
-                    .AddItem(DiskGroup, "Error", "Error Loading File", Color.Red)
-                Else
-                    .AddItem(DiskGroup, "Error", "Unknown Image Format", Color.Red)
-                End If
+                .AddItem(DiskGroup, "Error", "Error Loading File", Color.Red)
             End If
+
         End With
 
         ListViewSummary.AutoResizeColumns(ColumnHeaderAutoResizeStyle.ColumnContent)
@@ -2353,6 +2388,66 @@ Public Class MainForm
         Return Response
     End Function
 
+    Private Function IsFileReadOnly(fileName As String) As Boolean
+        Dim fInfo As New FileInfo(fileName)
+        Return fInfo.IsReadOnly
+    End Function
+
+    Private Function IsZipArchive(FileName As String) As ZipArchive
+        Try
+            Dim Buffer(1) As Byte
+            Using fs = New FileStream(FileName, FileMode.Open, FileAccess.Read)
+                Dim BytesRead = fs.Read(Buffer, 0, Buffer.Length)
+                fs.Close()
+            End Using
+
+            If Buffer(0) = &H50 And Buffer(1) = &H4B Then
+                Return ZipFile.OpenRead(FileName)
+            End If
+        Catch
+            Return Nothing
+        End Try
+
+        Return Nothing
+    End Function
+
+    Private Sub ProcessZipFile(FileName As String, Archive As ZipArchive, ByRef SelectedImageData As LoadedImageData)
+        For Each Entry In Archive.Entries.OrderBy(Function(e) e.FullName)
+            If _FileFilterExt.Contains(Path.GetExtension(Entry.Name).ToLower) Then
+                Dim FilePath = Path.Combine(FileName, Entry.FullName)
+                If Not _LoadedFileNames.ContainsKey(FilePath) Then
+                    Dim ImageData As New LoadedImageData(FileName) With {
+                        .Compressed = True,
+                        .CompressedFile = Entry.FullName
+                    }
+                    _LoadedFileNames.Add(FilePath, ImageData)
+                    ComboImages.Items.Add(ImageData)
+                    If SelectedImageData Is Nothing Then
+                        SelectedImageData = ImageData
+                    End If
+                End If
+            End If
+        Next
+    End Sub
+
+    Private Sub ProcessFile(FileName As String, ByRef SelectedImageData As LoadedImageData)
+        Dim Archive = IsZipArchive(FileName)
+
+        If Archive IsNot Nothing Then
+            ProcessZipFile(FileName, Archive, SelectedImageData)
+            Exit Sub
+        End If
+
+        If Not _LoadedFileNames.ContainsKey(FileName) Then
+            Dim ImageData As New LoadedImageData(FileName)
+            _LoadedFileNames.Add(FileName, ImageData)
+            ComboImages.Items.Add(ImageData)
+            If SelectedImageData Is Nothing Then
+                SelectedImageData = ImageData
+            End If
+        End If
+    End Sub
+
     Private Sub ProcessFileDrop(File As String)
         Dim Files(0) As String
         Files(0) = File
@@ -2365,7 +2460,7 @@ Public Class MainForm
         Dim FileInfo As IO.FileInfo
         Dim SelectedImageData As LoadedImageData = Nothing
 
-        Me.UseWaitCursor = True
+        Cursor.Current = Cursors.WaitCursor
 
         If _FiltersApplied Then
             FiltersClear()
@@ -2380,26 +2475,13 @@ Public Class MainForm
             If (FAttributes And IO.FileAttributes.Directory) > 0 Then
                 Dim DirectoryInfo As New IO.DirectoryInfo(FilePath)
                 For Each FileInfo In DirectoryInfo.GetFiles("*.*", IO.SearchOption.AllDirectories)
-                    If _FileFilterExt.Contains(FileInfo.Extension.ToLower) Then
-                        If Not _LoadedFileNames.ContainsKey(FileInfo.FullName) Then
-                            Dim ImageData As New LoadedImageData(FileInfo.FullName)
-                            _LoadedFileNames.Add(FileInfo.FullName, ImageData)
-                            ComboImages.Items.Add(ImageData)
-                            If SelectedImageData Is Nothing Then
-                                SelectedImageData = ImageData
-                            End If
-                        End If
+                    Dim Extension = FileInfo.Extension.ToLower
+                    If _FileFilterExt.Contains(Extension) OrElse _ArchiveFilterExt.Contains(Extension) Then
+                        ProcessFile(FileInfo.FullName, SelectedImageData)
                     End If
                 Next
             Else
-                If Not _LoadedFileNames.ContainsKey(FilePath) Then
-                    Dim ImageData As New LoadedImageData(FilePath)
-                    _LoadedFileNames.Add(FilePath, ImageData)
-                    ComboImages.Items.Add(ImageData)
-                    If SelectedImageData Is Nothing Then
-                        SelectedImageData = ImageData
-                    End If
-                End If
+                ProcessFile(FilePath, SelectedImageData)
             End If
         Next
 
@@ -2420,7 +2502,7 @@ Public Class MainForm
 
         ComboImages.EndUpdate()
 
-        Me.UseWaitCursor = False
+        Cursor.Current = Cursors.Default
     End Sub
 
     Private Sub RefreshCheckAll()
@@ -2675,8 +2757,8 @@ Public Class MainForm
             Dim ImageData As LoadedImageData = ComboImages.Items(Index)
             If ImageData.Modified Then
                 If ImageData.ReadOnly Then
-                    If MsgBoxNewFileName(ImageData.FilePath) = MsgBoxResult.Ok Then
-                        NewFilePath = GetNewFilePath(ImageData.FilePath)
+                    If MsgBoxNewFileName(ImageData.FileName) = MsgBoxResult.Ok Then
+                        NewFilePath = GetNewFilePath(ImageData.SaveFile)
                         DoSave = (NewFilePath <> "")
                     Else
                         DoSave = False
@@ -2723,14 +2805,15 @@ Public Class MainForm
     Private Sub SaveCurrent(NewFileName As Boolean)
         Dim NewFilePath As String = ""
 
+        Dim CurrentImageData As LoadedImageData = ComboImages.SelectedItem
+
         If NewFileName Then
-            NewFilePath = GetNewFilePath(_Disk.FilePath)
+            NewFilePath = GetNewFilePath(CurrentImageData.SaveFile)
             If NewFilePath = "" Then
                 Exit Sub
             End If
         End If
 
-        Dim CurrentImageData As LoadedImageData = ComboImages.SelectedItem
 
         Dim Result = DiskImageSave(CurrentImageData, NewFilePath)
         If Result Then
@@ -2772,13 +2855,20 @@ Public Class MainForm
     End Sub
 
     Private Sub SetNewFilePath(CurrentImageData As LoadedImageData, NewFilePath As String)
-        If CurrentImageData.FilePath <> NewFilePath Then
-            If _LoadedFileNames.ContainsKey(NewFilePath) Then
-                FileClose(_LoadedFileNames.Item(NewFilePath))
+        If CurrentImageData.SourceFile <> NewFilePath Then
+            _LoadedFileNames.Remove(CurrentImageData.DisplayPath)
+
+            CurrentImageData.SourceFile = NewFilePath
+            CurrentImageData.Compressed = False
+            CurrentImageData.CompressedFile = ""
+            CurrentImageData.ReadOnly = IsFileReadOnly(NewFilePath)
+
+            If _LoadedFileNames.ContainsKey(CurrentImageData.DisplayPath) Then
+                FileClose(_LoadedFileNames.Item(CurrentImageData.DisplayPath))
             End If
-            _LoadedFileNames.Remove(CurrentImageData.FilePath)
-            _LoadedFileNames.Add(NewFilePath, CurrentImageData)
-            CurrentImageData.FilePath = NewFilePath
+
+            _LoadedFileNames.Add(CurrentImageData.DisplayPath, CurrentImageData)
+
             ComboImagesRefreshPaths()
         End If
     End Sub
@@ -3219,6 +3309,14 @@ Public Class MainForm
         Return Path
     End Function
 
+    Private Function AppendFileFilter(FileFilter As String, Description As String, Pattern As String) As String
+        Return FileFilter & "|" & GetFileFilter(Description, Pattern)
+    End Function
+
+    Private Function GetFileFilter(Description As String, Pattern As String) As String
+        Return Description & "|" & Pattern
+    End Function
+
     Private Sub InitFileFilter()
         Dim ExtensionList As New List(Of String)
 
@@ -3226,7 +3324,7 @@ Public Class MainForm
             ExtensionList.Add("*" & Extension)
         Next
 
-        _FileFilter = "Disk Image Files (" & String.Join("; ", ExtensionList.ToArray) & ")|" & String.Join(";", ExtensionList.ToArray) & "|All files (*.*)|*.*"
+        _FileFilter = GetFileFilter("Disk Image Files (" & String.Join("; ", ExtensionList.ToArray) & ")", String.Join(";", ExtensionList.ToArray))
     End Sub
 
     Private Sub MainForm_Load(sender As Object, e As EventArgs) Handles Me.Load

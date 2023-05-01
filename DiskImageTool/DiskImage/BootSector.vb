@@ -427,7 +427,6 @@
                 AndAlso HasValidNumberOfHeadss() _
                 AndAlso HasValidSectorsPerCluster() _
                 AndAlso HasValidSectorsPerTrack() _
-                AndAlso NumberOfHeads > 0 _
                 AndAlso SectorsPerFAT > 0 _
                 AndAlso ReservedSectorCount > 0
         End Function
