@@ -125,7 +125,7 @@
 
                 Dim CurrentValue = GetBytes(Offset, Size)
 
-                If Not ByteArrayCompare(CurrentValue, Value) Then
+                If Not CurrentValue.CompareTo(Value) Then
                     Array.Copy(Value, 0, _Data, Offset, Size)
                     Result = True
                     RaiseEvent DataChanged(Offset, CurrentValue, Value)

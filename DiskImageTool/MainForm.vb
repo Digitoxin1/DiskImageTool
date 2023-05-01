@@ -4,7 +4,6 @@ Imports System.Net
 Imports System.Text
 Imports DiskImageTool.DiskImage
 Imports BootSectorOffsets = DiskImageTool.DiskImage.BootSector.BootSectorOffsets
-Imports BootSectorSizes = DiskImageTool.DiskImage.BootSector.BootSectorSizes
 
 Public Structure FileData
     Dim DirectoryEntry As DiskImage.DirectoryEntry
@@ -156,11 +155,13 @@ Public Class MainForm
         Dim HasBadSectors As Boolean = False
         Dim HasMismatchedFATs As Boolean = False
         Dim HasInvalidImageSize As Boolean = False
+        Dim UnknownDiskType As Boolean = False
 
         If Not Remove And IsValidImage Then
             HasBadSectors = Disk.FAT.BadClusters.Count > 0
             HasMismatchedFATs = Not Disk.CompareFATTables
             HasInvalidImageSize = Disk.HasInvalidSize
+            UnknownDiskType = GetFloppyDiskType(Disk.BootSector) = FloppyDiskType.FloppyUnknown
         End If
 
         If Remove Then
@@ -214,10 +215,22 @@ Public Class MainForm
                 FilterUpdate(FilterTypes.HasInvalidImageSize)
             End If
         End If
+
+        If Not ImageData.Scanned Or UnknownDiskType <> ImageData.ScanInfo.UnknownDiskType Then
+            ImageData.ScanInfo.UnknownDiskType = UnknownDiskType
+            If UnknownDiskType Then
+                _FilterCounts(FilterTypes.UnknownDiskType) += 1
+            ElseIf ImageData.Scanned Then
+                _FilterCounts(FilterTypes.UnknownDiskType) -= 1
+            End If
+            If UpdateFilters Then
+                FilterUpdate(FilterTypes.UnknownDiskType)
+            End If
+        End If
     End Sub
 
     Friend Sub ItemScanModified(Disk As DiskImage.Disk, ImageData As LoadedImageData, Optional UpdateFilters As Boolean = False, Optional Remove As Boolean = False)
-        Dim IsModified As Boolean = Not Remove And (Not _Disk.LoadError AndAlso Disk.Data.Modified)
+        Dim IsModified As Boolean = Not Remove And (Not Disk.LoadError AndAlso Disk.Data.Modified)
 
         If IsModified <> ImageData.Modified Then
             ImageData.Modified = IsModified
@@ -236,20 +249,18 @@ Public Class MainForm
         Dim OEMNameMatched As Boolean = True
         Dim OEMNameFound As Boolean = True
         Dim OEMNameWin9x As Boolean = False
-        Dim OEMNameString As String = ""
 
         If Not Remove And Disk.IsValidImage Then
             Dim BootstrapChecksum = Crc32.ComputeChecksum(Disk.BootSector.BootStrapCode)
             Dim OEMName = Disk.BootSector.OEMName
             OEMNameWin9x = Disk.BootSector.IsWin9xOEMName
-            OEMNameString = Disk.BootSector.GetOEMNameString.TrimEnd(NULL_CHAR)
 
-            Dim BootstrapType = OEMNameFindMatch(BootstrapChecksum)
+            Dim BootstrapType = OEMNameFindMatch(_OEMNameDictionary, BootstrapChecksum)
             OEMNameFound = BootstrapType IsNot Nothing
             If OEMNameFound AndAlso Not OEMNameWin9x AndAlso Not BootstrapType.ExactMatch Then
                 OEMNameMatched = False
                 For Each KnownOEMName In BootstrapType.KnownOEMNames
-                    If ByteArrayCompare(KnownOEMName.Name, OEMName) Then
+                    If KnownOEMName.Name.CompareTo(OEMName) Then
                         OEMNameMatched = True
                         Exit For
                     End If
@@ -294,6 +305,14 @@ Public Class MainForm
                 FilterUpdate(FilterTypes.UnknownOEMName)
             End If
         End If
+    End Sub
+
+    Friend Sub UpdateOEMNameFilter(Disk As DiskImage.Disk, ImageData As LoadedImageData, Optional UpdateFilters As Boolean = False, Optional Remove As Boolean = False)
+        Dim OEMNameString As String = ""
+
+        If Not Remove And Disk.IsValidImage Then
+            OEMNameString = Disk.BootSector.GetOEMNameString.TrimEnd(NULL_CHAR)
+        End If
 
         If Disk.IsValidImage And (Not ImageData.Scanned Or OEMNameString <> ImageData.ScanInfo.OEMName) Then
             If ImageData.Scanned Then
@@ -319,7 +338,7 @@ Public Class MainForm
 
             ImageData.ScanInfo.OEMName = OEMNameString
 
-            If Not Remove AndAlso Not OEMNameWin9x Then
+            If Not Remove AndAlso Not Disk.BootSector.IsWin9xOEMName Then
                 If _FilterOEMName.ContainsKey(OEMNameString) Then
                     Dim Item = _FilterOEMName.Item(ImageData.ScanInfo.OEMName)
                     Item.Count += 1
@@ -365,96 +384,6 @@ Public Class MainForm
     Private Shared Function SetForegroundWindow(ByVal hWnd As Integer) As Integer
     End Function
 
-    Private Sub BadSectorsDisplayHex()
-        Dim HexViewSectorData As New HexViewSectorData(_Disk)
-        Dim Offset As UInteger = 0
-        Dim Length As UInteger = 0
-        Dim LastCluster As UShort = 0
-
-        For Each Cluster In _Disk.FAT.BadClusters
-            If Cluster > LastCluster + 1 Then
-                If Length > 0 Then
-                    HexViewSectorData.SectorData.AddBlockByOffset(Offset, Length)
-                End If
-                Offset = _Disk.BootSector.ClusterToOffset(Cluster)
-                Length = 0
-            End If
-            Length += _Disk.BootSector.BytesPerCluster
-            LastCluster = Cluster
-        Next
-
-        If Length > 0 Then
-            HexViewSectorData.SectorData.AddBlockByOffset(Offset, Length)
-        End If
-
-        If DisplayHexViewForm(HexViewSectorData, "Bad Sectors") Then
-            ComboItemRefresh(False, True)
-        End If
-    End Sub
-
-    Private Sub BootSectorDisplayHex()
-        Dim HexViewSectorData As New HexViewSectorData(_Disk)
-        Dim HighlightedRegions As New HighlightedRegions
-
-        HexViewSectorData.SectorData.AddBlock(0, 1)
-        HexViewSectorData.HighlightedRegionList.Add(HighlightedRegions)
-
-        Dim BootStrapStart = _Disk.BootSector.GetBootStrapOffset
-        Dim BootStrapLength = BootSectorOffsets.BootStrapSignature - BootStrapStart
-
-        Dim ForeColor As Color
-        If _Disk.BootSector.HasValidJumpInstruction(False) Then
-            ForeColor = Color.Green
-        Else
-            ForeColor = Color.Black
-        End If
-
-        HighlightedRegions.AddOffset(BootSectorOffsets.JmpBoot, ForeColor)
-        If _Disk.IsValidImage Then
-            HighlightedRegions.AddOffset(BootSectorOffsets.OEMName, Color.Red)
-            HighlightedRegions.AddOffset(BootSectorOffsets.BytesPerSector, Color.Blue)
-            HighlightedRegions.AddOffset(BootSectorOffsets.SectorsPerCluster, Color.Blue)
-            HighlightedRegions.AddOffset(BootSectorOffsets.ReservedSectorCount, Color.Blue)
-            HighlightedRegions.AddOffset(BootSectorOffsets.NumberOfFATs, Color.Blue)
-            HighlightedRegions.AddOffset(BootSectorOffsets.RootEntryCount, Color.Blue)
-            HighlightedRegions.AddOffset(BootSectorOffsets.SectorCountSmall, Color.Blue)
-            HighlightedRegions.AddOffset(BootSectorOffsets.MediaDescriptor, Color.Blue)
-            HighlightedRegions.AddOffset(BootSectorOffsets.SectorsPerFAT, Color.Blue)
-            HighlightedRegions.AddOffset(BootSectorOffsets.SectorsPerTrack, Color.Blue)
-            HighlightedRegions.AddOffset(BootSectorOffsets.NumberOfHeads, Color.Blue)
-            HighlightedRegions.AddOffset(BootSectorOffsets.HiddenSectors, Color.Blue)
-
-            If _Disk.BootSector.HasValidExtendedBootSignature And BootStrapStart >= BootSectorOffsets.FileSystemType + BootSectorSizes.FileSystemType Then
-                HighlightedRegions.AddOffset(BootSectorOffsets.DriveNumber, Color.Purple)
-                HighlightedRegions.AddOffset(BootSectorOffsets.Reserved, Color.Purple)
-                HighlightedRegions.AddOffset(BootSectorOffsets.ExtendedBootSignature, Color.Purple)
-                HighlightedRegions.AddOffset(BootSectorOffsets.VolumeSerialNumber, Color.Purple)
-                HighlightedRegions.AddOffset(BootSectorOffsets.VolumeLabel, Color.Purple)
-                HighlightedRegions.AddOffset(BootSectorOffsets.FileSystemType, Color.Purple)
-            End If
-        End If
-
-        If BootStrapStart > 2 And BootStrapLength > 1 Then
-            If _Disk.BootSector.HasValidJumpInstruction(False) Then
-                HighlightedRegions.AddItem(BootStrapStart, BootStrapLength, ForeColor, "Boot Strap Code")
-            Else
-                HighlightedRegions.AddItem(BootStrapStart, BootStrapLength, ForeColor)
-            End If
-        End If
-
-        If _Disk.BootSector.HasValidBootStrapSignature Then
-            ForeColor = Color.Goldenrod
-        Else
-            ForeColor = Color.Black
-        End If
-
-        HighlightedRegions.AddOffset(BootSectorOffsets.BootStrapSignature, ForeColor)
-
-        If DisplayHexViewForm(HexViewSectorData, "Boot Sector") Then
-            DiskImageProcess(True, True)
-        End If
-    End Sub
-
     Private Sub BootSectorEdit()
         Dim BootSectorForm As New BootSectorForm(_Disk, _OEMNameDictionary)
 
@@ -467,16 +396,7 @@ Public Class MainForm
         End If
     End Sub
 
-    Private Sub RestoreBootSector()
-        If _Disk.Directory.Data.HasBootSector Then
-            Dim BootSectorBytes = _Disk.Data.GetBytes(_Disk.Directory.Data.BootSectorOffset, BootSector.BOOT_SECTOR_SIZE)
-            _Disk.Data.SetBytes(BootSectorBytes, 0)
-
-            DiskImageProcess(True, True)
-        End If
-    End Sub
-
-    Private Sub RemoveBootSector()
+    Private Sub BootSectorRemove()
         If _Disk.Directory.Data.HasBootSector Then
             Dim BootSectorBytes(BootSector.BOOT_SECTOR_SIZE - 1) As Byte
 
@@ -487,6 +407,15 @@ Public Class MainForm
             _Disk.Data.SetBytes(BootSectorBytes, _Disk.Directory.Data.BootSectorOffset)
 
             ComboItemRefresh(True, True)
+        End If
+    End Sub
+
+    Private Sub BootSectorRestore()
+        If _Disk.Directory.Data.HasBootSector Then
+            Dim BootSectorBytes = _Disk.Data.GetBytes(_Disk.Directory.Data.BootSectorOffset, BootSector.BOOT_SECTOR_SIZE)
+            _Disk.Data.SetBytes(BootSectorBytes, 0)
+
+            DiskImageProcess(True, True)
         End If
     End Sub
 
@@ -504,17 +433,17 @@ Public Class MainForm
             Dim Reader As New StreamReader(Response.GetResponseStream)
             Dim ResponseText = Reader.ReadToEnd
 
-            Dim json As Dictionary(Of String, Object) = CompactJson.Serializer.Parse(Of Dictionary(Of String, Object))(ResponseText)
+            Dim JSON As Dictionary(Of String, Object) = CompactJson.Serializer.Parse(Of Dictionary(Of String, Object))(ResponseText)
 
-            If json.ContainsKey("tag_name") Then
-                DownloadVersion = json.Item("tag_name").ToString
+            If JSON.ContainsKey("tag_name") Then
+                DownloadVersion = JSON.Item("tag_name").ToString
                 If DownloadVersion.StartsWith("v", StringComparison.CurrentCultureIgnoreCase) Then
                     DownloadVersion = DownloadVersion.Remove(0, 1)
                 End If
             End If
 
-            If json.ContainsKey("assets") Then
-                Dim assets() As Dictionary(Of String, Object) = CompactJson.Serializer.Parse(Of Dictionary(Of String, Object)())(json.Item("assets").ToString)
+            If JSON.ContainsKey("assets") Then
+                Dim assets() As Dictionary(Of String, Object) = CompactJson.Serializer.Parse(Of Dictionary(Of String, Object)())(JSON.Item("assets").ToString)
                 If assets.Length > 0 Then
                     If assets(0).ContainsKey("browser_download_url") Then
                         DownloadURL = assets(0).Item("browser_download_url").ToString
@@ -522,8 +451,8 @@ Public Class MainForm
                 End If
             End If
 
-            If json.ContainsKey("body") Then
-                Body = json.Item("body").ToString
+            If JSON.ContainsKey("body") Then
+                Body = JSON.Item("body").ToString
             End If
         Catch
             MsgBox("An error occured while checking for updates.  Please try again later.", MsgBoxStyle.Exclamation)
@@ -730,7 +659,7 @@ Public Class MainForm
 
         ComboImagesRefreshCurrentItemText()
 
-        PopulateSummaryPanel()
+        PopulateSummary(_Disk)
 
         If FullRefresh Then
             If _Disk.IsValidImage Then
@@ -745,7 +674,7 @@ Public Class MainForm
     End Sub
 
     Private Function DirectoryEntryCanExport(DirectoryEntry As DiskImage.DirectoryEntry) As Boolean
-        Return DirectoryEntryIsValid(DirectoryEntry) _
+        Return DirectoryEntry.IsValid _
             And Not DirectoryEntry.IsDeleted _
             And Not DirectoryEntry.IsDirectory _
             And Not DirectoryEntry.HasInvalidFilename _
@@ -783,56 +712,10 @@ Public Class MainForm
         ComboItemRefresh(True, True)
     End Sub
 
-    Private Sub DirectoryEntryDisplayHex(Offset As UInteger)
-        Dim HexViewSectorData As HexViewSectorData
-        Dim Caption As String
-
-        If Offset = 0 Then
-            Caption = "Root Directory"
-            HexViewSectorData = New HexViewSectorData(_Disk, _Disk.Directory.SectorChain)
-            HighlightDirectoryData(HexViewSectorData, True)
-        Else
-            Dim DirectoryEntry = _Disk.GetDirectoryEntryByOffset(Offset)
-            If Not DirectoryEntryIsValid(DirectoryEntry) Then
-                Exit Sub
-            End If
-
-            Caption = IIf(DirectoryEntry.IsDirectory, "Directory", "File") & " - " & DirectoryEntry.GetFullFileName
-
-            If DirectoryEntry.IsDeleted Then
-                Caption = "Deleted " & Caption
-                Dim DataOffset = _Disk.BootSector.ClusterToOffset(DirectoryEntry.StartingCluster)
-                Dim Length As UInteger
-                Dim FileSize As UInteger
-                If DirectoryEntry.IsDirectory Then
-                    Length = _Disk.BootSector.BytesPerCluster
-                    FileSize = Length
-                Else
-                    Length = Math.Ceiling(DirectoryEntry.FileSize / _Disk.BootSector.BytesPerCluster) * _Disk.BootSector.BytesPerCluster
-                    FileSize = DirectoryEntry.FileSize
-                End If
-
-                HexViewSectorData = New HexViewSectorData(_Disk, DataOffset, Length)
-                HighlightSectorData(HexViewSectorData, FileSize, True)
-            Else
-                HexViewSectorData = New HexViewSectorData(_Disk, DirectoryEntry.FATChain.Clusters)
-                If Not DirectoryEntry.IsDirectory Then
-                    HighlightSectorData(HexViewSectorData, DirectoryEntry.FileSize, False)
-                Else
-                    HighlightDirectoryData(HexViewSectorData, False)
-                End If
-            End If
-        End If
-
-        If DisplayHexViewForm(HexViewSectorData, Caption) Then
-            ComboItemRefresh(True, True)
-        End If
-    End Sub
-
     Private Sub DirectoryEntryDisplayText(DirectoryEntry As DiskImage.DirectoryEntry)
         Dim frmTextView As TextViewForm
 
-        If Not DirectoryEntryIsValid(DirectoryEntry) _
+        If Not DirectoryEntry.IsValid _
             Or DirectoryEntry.IsDirectory _
             Or DirectoryEntry.IsDeleted Then
             Exit Sub
@@ -874,14 +757,14 @@ Public Class MainForm
     End Function
 
     Private Function DirectoryEntryCanDeleteWithFill(DirectoryEntry As DiskImage.DirectoryEntry) As Boolean
-        Return DirectoryEntryCanDelete(DirectoryEntry) And DirectoryEntryIsValid(DirectoryEntry)
+        Return DirectoryEntryCanDelete(DirectoryEntry) And DirectoryEntry.IsValid
     End Function
 
     Private Function DirectoryEntryGetStats(DirectoryEntry As DiskImage.DirectoryEntry) As DirectoryStats
         Dim Stats As DirectoryStats
 
         With Stats
-            .IsValid = DirectoryEntryIsValid(DirectoryEntry)
+            .IsValid = DirectoryEntry.IsValid
             .IsDirectory = DirectoryEntry.IsDirectory And Not DirectoryEntry.IsVolumeName
             .IsDeleted = DirectoryEntry.IsDeleted
             .IsModified = DirectoryEntry.IsModified
@@ -895,20 +778,6 @@ Public Class MainForm
 
         Return Stats
     End Function
-
-    Private Function DirectoryEntryIsValid(DirectoryEntry As DiskImage.DirectoryEntry) As Boolean
-        With DirectoryEntry
-            Return Not (.IsVolumeName Or .HasInvalidFileSize Or .HasInvalidStartingCluster Or .StartingCluster < 2)
-        End With
-    End Function
-
-    Private Sub DiskImageDisplayHex()
-        Dim HexViewSectorData = New HexViewSectorData(_Disk, 0, _Disk.Data.Length)
-
-        If DisplayHexViewForm(HexViewSectorData, "Disk", True, True, False) Then
-            ComboItemRefresh(True, True)
-        End If
-    End Sub
 
 
     Private Sub DiskImageLoad(DoItemScan As Boolean)
@@ -941,7 +810,7 @@ Public Class MainForm
         End If
 
         InitButtonState()
-        PopulateSummaryPanel()
+        PopulateSummary(_Disk)
         ClearSort(False)
         If _Disk.IsValidImage Then
             If CurrentImageData.CachedRootDir Is Nothing Then
@@ -1012,6 +881,7 @@ Public Class MainForm
             FilterUpdate(Counter)
         Next
 
+        RefreshModifiedState()
         PopulateComboOEMName()
 
         BtnScan.Text = "Rescan Images"
@@ -1038,21 +908,6 @@ Public Class MainForm
         MsgBox(Msg, MsgBoxStyle.Information + MsgBoxStyle.OkOnly)
     End Sub
 
-    Private Function DisplayHexViewForm(HexViewSectorData As HexViewSectorData, Caption As String) As Boolean
-        Return DisplayHexViewForm(HexViewSectorData, Caption, False, False, False)
-    End Function
-
-    Private Function DisplayHexViewForm(HexViewSectorData As HexViewSectorData, Caption As String, SyncBlocks As Boolean) As Boolean
-        Return DisplayHexViewForm(HexViewSectorData, Caption, False, False, SyncBlocks)
-    End Function
-
-    Private Function DisplayHexViewForm(HexViewSectorData As HexViewSectorData, Caption As String, SectorNavigator As Boolean, ClusterNavigator As Boolean, SyncBlocks As Boolean) As Boolean
-        Dim frmHexView As New HexViewForm(HexViewSectorData, Caption, SectorNavigator, ClusterNavigator, SyncBlocks)
-        frmHexView.ShowDialog()
-
-        Return frmHexView.Modified
-    End Function
-
     Private Sub DragDropSelectedFiles()
         If ListViewFiles.SelectedItems.Count = 0 Then
             Exit Sub
@@ -1075,76 +930,9 @@ Public Class MainForm
         End If
     End Sub
 
-    Private Function ExpandedDateToString(D As DiskImage.ExpandedDate) As String
-        Return ExpandedDateToString(D, False, False, False, False)
-    End Function
-
-    Private Function ExpandedDateToString(D As DiskImage.ExpandedDate, IncludeTime As Boolean, IncludeSeconds As Boolean, IncludeMilliseconds As Boolean, Use24Hour As Boolean) As String
-        Dim Response As String = Format(D.Year, "0000") & "-" & Format(D.Month, "00") & "-" & Format(D.Day, "00")
-        If IncludeTime Then
-            Response &= "  " & Format(IIf(Use24Hour, D.Hour, D.Hour12), "00") _
-                & ":" & Format(D.Minute, "00")
-
-            If IncludeSeconds Then
-                Response &= ":" & Format(D.Second, "00")
-            End If
-
-            If IncludeMilliseconds Then
-                Response &= Format(D.Milliseconds / 1000, ".000")
-            End If
-
-            If Not Use24Hour Then
-                Response &= IIf(D.IsPM, " PM", " AM")
-            End If
-        End If
-
-        Return Response
-    End Function
-
     Private Sub ExportDebugScript()
         Dim CurrentImageData As LoadedImageData = ComboImages.SelectedItem
         GenerateDebugPackage(_Disk, CurrentImageData)
-    End Sub
-
-    Private Sub FATDisplayHex()
-        Dim HexViewSectorData = New HexViewSectorData(_Disk)
-        Dim HighlightedRegions As New HighlightedRegions
-        Dim OriginalData() As Byte = Nothing
-        For Index = 0 To _Disk.BootSector.NumberOfFATs - 1
-            Dim Length As UInteger = SectorToBytes(_Disk.BootSector.SectorsPerFAT)
-            Dim Start As UInteger = SectorToBytes(_Disk.BootSector.FATRegionStart) + Length * Index
-            Dim Data = _Disk.Data.GetBytes(Start, Length)
-
-            HexViewSectorData.SectorData.AddBlockByOffset(Start, Length, "FAT " & Index + 1)
-            HexViewSectorData.HighlightedRegionList.Add(HighlightedRegions)
-
-            If Index = 0 Then
-                OriginalData = Data
-            Else
-                Dim HighlightStart As Integer = -2
-                Dim HighlightLength As Integer = 0
-                For Counter = 0 To Data.Length - 1
-                    If Data(Counter) <> OriginalData(Counter) Then
-                        If Counter > HighlightStart + 1 Then
-                            If HighlightLength > 0 Then
-                                HighlightedRegions.AddItem(HighlightStart, HighlightLength, Color.Red)
-                            End If
-                            HighlightStart = Counter
-                            HighlightLength = 1
-                        Else
-                            HighlightLength += 1
-                        End If
-                    End If
-                Next
-                If HighlightLength > 0 Then
-                    HighlightedRegions.AddItem(HighlightStart, HighlightLength, Color.Red)
-                End If
-            End If
-        Next
-
-        If DisplayHexViewForm(HexViewSectorData, "File Allocation Table", True) Then
-            DiskImageProcess(True, True)
-        End If
     End Sub
 
     Private Sub FATEdit(Index As UShort, DisplaySync As Boolean)
@@ -1529,6 +1317,13 @@ Public Class MainForm
     End Sub
 
     Private Sub FiltersInitialize()
+        Dim Separator = New ToolStripSeparator With {
+            .Name = "FilterSeparator",
+            .Visible = False,
+            .Tag = 0
+        }
+        ContextMenuFilters.Items.Add(Separator)
+
         Dim FilterCount As Integer = [Enum].GetNames(GetType(FilterTypes)).Length
         ReDim _FilterCounts(FilterCount - 1)
         For Counter = 0 To FilterCount
@@ -1544,8 +1339,6 @@ Public Class MainForm
             ContextMenuFilters.Items.Add(Item)
         Next
 
-        FilterSeparator.Visible = False
-        FilterSeparator.Tag = 0
         _FilterOEMName = New Dictionary(Of String, ComboOEMNameItem)
     End Sub
 
@@ -1554,6 +1347,8 @@ Public Class MainForm
             _FilterCounts(Counter) = 0
             FilterUpdate(Counter)
         Next
+        RefreshModifiedState()
+
         BtnScan.Text = "Scan Images"
         TxtSearch.Text = ""
         BtnClearFilters.Enabled = False
@@ -1578,19 +1373,23 @@ Public Class MainForm
                 Item.CheckState = CheckState.Unchecked
                 CheckstateChanged = True
             End If
-            FilterSeparator.Tag = FilterSeparator.Tag + IIf(Enabled, 1, -1)
-            FilterSeparator.Visible = (FilterSeparator.Tag > 0)
-        End If
-
-        If ID = FilterTypes.ModifiedFiles Then
-            ToolStripModified.Text = Count & " Image" & IIf(Count <> 1, "s", "") & " Modified"
-            ToolStripModified.Visible = (Count > 0)
-            BtnSaveAll.Enabled = (Count > 0)
-            ToolStripBtnSaveAll.Enabled = BtnSaveAll.Enabled
+            With ContextMenuFilters.Items.Item("FilterSeparator")
+                .Tag = .Tag + IIf(Enabled, 1, -1)
+                .Visible = (.Tag > 0)
+            End With
         End If
 
         Return CheckstateChanged
     End Function
+
+    Private Sub RefreshModifiedState()
+        Dim Count As Integer = _FilterCounts(FilterTypes.ModifiedFiles)
+
+        ToolStripModified.Text = Count & " Image" & IIf(Count <> 1, "s", "") & " Modified"
+        ToolStripModified.Visible = (Count > 0)
+        BtnSaveAll.Enabled = (Count > 0)
+        ToolStripBtnSaveAll.Enabled = BtnSaveAll.Enabled
+    End Sub
 
     Private Function GetFileDataFromDirectoryEntry(Index As Integer, DirectoryEntry As DiskImage.DirectoryEntry, ParentOffset As UInteger, FilePath As String, IsLastEntry As Boolean) As FileData
         Dim Response As FileData
@@ -1674,82 +1473,60 @@ Public Class MainForm
         Return My.Application.Info.ProductName & " v" & _FileVersion
     End Function
 
-    Private Sub HighlightDirectoryData(HexViewSectorData As HexViewSectorData, CheckBootSector As Boolean)
-        Dim EndOfDirectory As Boolean = False
+    Private Sub HexDisplayBadSectors()
+        Dim HexViewSectorData = HexViewBadSectors(_Disk)
 
-        For Index = 0 To HexViewSectorData.SectorData.BlockCount - 1
-            Dim HasBootSector As Boolean = False
-            Dim BootSectorOffset As UInteger = 0
-            Dim SectorBlock = HexViewSectorData.SectorData.GetBlock(Index)
-            Dim HighlightedRegions As New HighlightedRegions
-            HexViewSectorData.HighlightedRegionList.Add(HighlightedRegions)
-            Dim OffsetStart As UInteger = SectorToBytes(SectorBlock.SectorStart)
-            Dim OffsetEnd As UInteger = SectorToBytes(SectorBlock.SectorStart + SectorBlock.SectorCount) - 1
-            For Offset As UInteger = OffsetStart To OffsetEnd Step DirectoryEntry.DIRECTORY_ENTRY_SIZE
-                Dim FirstByte = _Disk.Data.GetByte(Offset)
-                If FirstByte = 0 Then
-                    EndOfDirectory = True
-                End If
-                If Not HasBootSector And CheckBootSector Then
-                    If BootSector.ValidJumpInstructuon.Contains(FirstByte) Then
-                        If OffsetEnd - Offset + 1 >= BootSector.BOOT_SECTOR_SIZE Then
-                            Dim BootSectorData = _Disk.Data.GetBytes(Offset, DiskImage.BootSector.BOOT_SECTOR_SIZE)
-                            Dim BootSector = New BootSector(New ImageByteArray(BootSectorData))
-                            If BootSector.IsValidImage Then
-                                HasBootSector = True
-                                BootSectorOffset = Offset
-                                EndOfDirectory = True
-                                HighlightedRegions.AddItem(Offset - OffsetStart, DiskImage.BootSector.BOOT_SECTOR_SIZE, Color.Purple)
-                            End If
-                        End If
-                    End If
-                End If
-                If EndOfDirectory Then
-                    If Not HasBootSector Or Offset < BootSectorOffset Or Offset > BootSectorOffset + DiskImage.BootSector.BOOT_SECTOR_SIZE Then
-                        If DirectoryEntryHasData(_Disk.Data, Offset) Then
-                            HighlightedRegions.AddItem(Offset - OffsetStart, DirectoryEntry.DIRECTORY_ENTRY_SIZE, Color.Red)
-                        End If
-                    End If
-                Else
-                    HighlightedRegions.AddItem(Offset - OffsetStart, DirectoryEntry.DIRECTORY_ENTRY_SIZE, Color.Blue)
-                End If
-            Next
-        Next
+        If DisplayHexViewForm(HexViewSectorData) Then
+            ComboItemRefresh(False, True)
+        End If
     End Sub
 
-    Private Sub HighlightSectorData(HexViewSectorData As HexViewSectorData, FileSize As UInteger, HighlightAssigned As Boolean)
-        For Index = 0 To HexViewSectorData.SectorData.BlockCount - 1
-            Dim SectorBlock = HexViewSectorData.SectorData.GetBlock(Index)
-            Dim HighlightedRegions As New HighlightedRegions
-            HexViewSectorData.HighlightedRegionList.Add(HighlightedRegions)
+    Private Sub HexDisplayBootSector()
+        Dim HexViewSectorData = HexViewBootSector(_Disk)
 
-            If HighlightAssigned Then
-                Dim BytesRemaining = FileSize
-                For J = 0 To SectorBlock.SectorCount - 1
-                    Dim Sector = SectorBlock.SectorStart + J
-                    Dim BlockOffset = J * BYTES_PER_SECTOR
-                    Dim BlockSize = Math.Min(BytesRemaining, BYTES_PER_SECTOR)
-                    If BlockSize > 0 Then
-                        Dim Cluster = _Disk.BootSector.SectorToCluster(Sector)
-                        If _Disk.FAT.FileAllocation.ContainsKey(Cluster) Then
-                            HighlightedRegions.AddItem(BlockOffset, BlockSize, Color.Red)
-                        End If
-                    End If
-                    BytesRemaining -= BlockSize
-                Next
-            End If
-
-            If SectorBlock.Size > FileSize Then
-                Dim Start = FileSize
-                Dim Size = SectorBlock.Size - FileSize
-                If Size > 0 Then
-                    HighlightedRegions.AddItem(Start, Size, Color.DarkGray)
-                End If
-            End If
-
-            FileSize -= Math.Min(FileSize, SectorBlock.Size)
-        Next
+        If DisplayHexViewForm(HexViewSectorData) Then
+            DiskImageProcess(True, True)
+        End If
     End Sub
+
+    Private Sub HexDisplayDirectoryEntry(Offset As UInteger)
+        Dim HexViewSectorData = HexViewDirectoryEntry(_Disk, Offset)
+
+        If HexViewSectorData IsNot Nothing Then
+            If DisplayHexViewForm(HexViewSectorData) Then
+                ComboItemRefresh(True, True)
+            End If
+        End If
+    End Sub
+
+    Private Sub HexDisplayDiskImage()
+        Dim HexViewSectorData = New HexViewSectorData(_Disk, 0, _Disk.Data.Length) With {
+            .Description = "Disk"
+        }
+
+        If DisplayHexViewForm(HexViewSectorData, True, True, False) Then
+            ComboItemRefresh(True, True)
+        End If
+    End Sub
+
+    Private Sub HexDisplayFAT()
+        Dim HexViewSectorData = HexViewFAT(_Disk)
+
+        If DisplayHexViewForm(HexViewSectorData, True) Then
+            DiskImageProcess(True, True)
+        End If
+    End Sub
+
+    Private Sub HexDisplayUnusedClusters()
+        Dim HexViewSectorData = New HexViewSectorData(_Disk, _Disk.FAT.GetUnusedClusters(True)) With {
+            .Description = "Unused Clusters"
+        }
+
+        If DisplayHexViewForm(HexViewSectorData) Then
+            ComboItemRefresh(False, True)
+        End If
+    End Sub
+
     Private Sub ImageCountUpdate()
         If _FiltersApplied Then
             ToolStripImageCount.Text = ComboImagesFiltered.Items.Count & " Of " & ComboImages.Items.Count & " Image" & IIf(ComboImages.Items.Count <> 1, "s", "")
@@ -1785,9 +1562,14 @@ Public Class MainForm
     Private Sub ItemScanAll(Disk As DiskImage.Disk, ImageData As LoadedImageData, Optional UpdateFilters As Boolean = False, Optional Remove As Boolean = False)
         ItemScanModified(Disk, ImageData, UpdateFilters, Remove)
 
+        If UpdateFilters Then
+            RefreshModifiedState()
+        End If
+
         If ImageData.Scanned Then
             ItemScanDisk(Disk, ImageData, UpdateFilters, Remove)
             ItemScanOEMName(Disk, ImageData, UpdateFilters, Remove)
+            UpdateOEMNameFilter(Disk, ImageData, UpdateFilters, Remove)
             ItemScanUnusedClusters(Disk, ImageData, UpdateFilters, Remove)
             ItemScanDirectory(Disk, ImageData, UpdateFilters, Remove)
         End If
@@ -1943,52 +1725,18 @@ Public Class MainForm
         Return Item
     End Function
 
-    Private Function ListViewTileGetItem(Text As String, Value As String) As ListViewItem
-        Dim Item = New ListViewItem(Text) With {
-                .UseItemStyleForSubItems = False
-            }
-        Item.SubItems.Add(Value)
-
-        Return Item
-    End Function
-
-    Private Function ListViewTileGetItem(Text As String, Value As String, ForeColor As Color) As ListViewItem
-        Dim Item = New ListViewItem(Text) With {
-                .UseItemStyleForSubItems = False
-            }
-        Dim SubItem = Item.SubItems.Add(Value)
-        SubItem.ForeColor = ForeColor
-
-        Return Item
-    End Function
-
-    Private Function ListViewTileGetItem(Group As ListViewGroup, Text As String, Value As String) As ListViewItem
-        Dim Item = New ListViewItem(Text, Group) With {
-                .UseItemStyleForSubItems = False
-            }
-        Item.SubItems.Add(Value)
-
-        Return Item
-    End Function
-
-    Private Function ListViewTileGetItem(Group As ListViewGroup, Text As String, Value As String, ForeColor As Color) As ListViewItem
-        Dim Item = New ListViewItem(Text, Group) With {
-                .UseItemStyleForSubItems = False
-            }
-        Dim SubItem = Item.SubItems.Add(Value)
-        SubItem.ForeColor = ForeColor
-
-        Return Item
-    End Function
-
-    Private Function MediaTypeGet(MediaDescriptor As Byte, SectorsPerTrack As UShort) As String
+    Private Function MediaTypeGet(MediaDescriptor As Byte, SectorsPerTrack As UShort, SectorsPerFAT As UShort) As String
         Select Case MediaDescriptor
             Case &HF0
                 If SectorsPerTrack = 36 Then
                     Return "2.88M Floppy"
                 ElseIf SectorsPerTrack = 21 Then
-                    Return "DMF Floppy"
-                Else
+                    If SectorsPerFAT = 5 Then
+                        Return "DMF (1024) Floppy"
+                    ElseIf SectorsPerFAT = 3 Then
+                        Return "DMF (2048) Floppy"
+                    End If
+                ElseIf SectorsPerTrack = 18 Then
                     Return "1.44M Floppy"
                 End If
             Case &HF8
@@ -1996,7 +1744,7 @@ Public Class MainForm
             Case &HF9
                 If SectorsPerTrack = 15 Then
                     Return "1.2M Floppy"
-                Else
+                ElseIf SectorsPerTrack = 9 Then
                     Return "720KB Floppy"
                 End If
             Case &HFC
@@ -2007,9 +1755,9 @@ Public Class MainForm
                 Return "160KB Floppy"
             Case &HFF
                 Return "320KB Floppy"
-            Case Else
-                Return MediaDescriptor.ToString("X2") & " Hex"
         End Select
+
+        Return MediaDescriptor.ToString("X2") & " Hex"
     End Function
 
     Private Sub FATSubMenuRefresh()
@@ -2136,14 +1884,6 @@ Public Class MainForm
         End If
     End Sub
 
-    Private Function OEMNameFindMatch(Checksum As UInteger) As BootstrapLookup
-        If _OEMNameDictionary.ContainsKey(Checksum) Then
-            Return _OEMNameDictionary.Item(Checksum)
-        Else
-            Return Nothing
-        End If
-    End Function
-
     Private Sub PopulateComboOEMName()
         Dim Item As ComboOEMNameItem
 
@@ -2217,28 +1957,64 @@ Public Class MainForm
         ItemSelectionChanged()
     End Sub
 
-    Private Sub PopulateHashes()
+    Private Sub PopulateHashPanel(Disk As Disk)
         ListViewHashes.BeginUpdate()
+
         With ListViewHashes.Items
             .Clear()
-            If Not _Disk.LoadError Then
-                .Add(ListViewTileGetItem("CRC32", Crc32.ComputeChecksum(_Disk.Data.Data).ToString("X8")))
-                .Add(ListViewTileGetItem("MD5", MD5Hash(_Disk.Data.Data)))
-                .Add(ListViewTileGetItem("SHA-1", SHA1Hash(_Disk.Data.Data)))
+            If Not Disk.LoadError Then
+                .AddItem("CRC32", Crc32.ComputeChecksum(Disk.Data.Data).ToString("X8"))
+                .AddItem("MD5", MD5Hash(Disk.Data.Data))
+                .AddItem("SHA-1", SHA1Hash(Disk.Data.Data))
             End If
         End With
+
         ListViewHashes.EndUpdate()
         ListViewHashes.Refresh()
     End Sub
 
-    Private Sub PopulateSummaryPanel()
+    Private Sub PopulateSummary(Disk As Disk)
+        Dim FileName = IO.Path.GetFileName(Disk.FilePath)
+
+        Me.Text = GetWindowCaption() & " - " & FileName
+
+        ToolStripFileName.Text = FileName
+        ToolStripFileName.Visible = True
+
+        PopulateSummaryPanel(Disk)
+        PopulateHashPanel(Disk)
+
+        If Disk.IsValidImage Then
+            BtnDisplayClusters.Enabled = Disk.FAT.HasUnusedClusters(True)
+            BtnDisplayBadSectors.Enabled = Disk.FAT.BadClusters.Count > 0
+            BtnFixImageSize.Enabled = Disk.HasInvalidSize
+            If Disk.Directory.Data.HasBootSector Then
+                Dim BootSectorBytes = Disk.Data.GetBytes(Disk.Directory.Data.BootSectorOffset, BootSector.BOOT_SECTOR_SIZE)
+                BtnRestoreBootSector.Enabled = Not BootSectorBytes.CompareTo(Disk.BootSector.Data)
+            Else
+                BtnRestoreBootSector.Enabled = False
+            End If
+            BtnRemoveBootSector.Enabled = Disk.Directory.Data.HasBootSector
+        Else
+            BtnDisplayClusters.Enabled = False
+            BtnDisplayBadSectors.Enabled = False
+            BtnFixImageSize.Enabled = False
+            BtnRestoreBootSector.Enabled = False
+            BtnRemoveBootSector.Enabled = False
+        End If
+
+        BtnRevert.Enabled = Not Disk.LoadError AndAlso Disk.Data.Modified
+
+        BtnUndo.Enabled = Not Disk.LoadError AndAlso Disk.Data.UndoEnabled
+        ToolStripBtnUndo.Enabled = BtnUndo.Enabled
+
+        BtnRedo.Enabled = Not Disk.LoadError AndAlso Disk.Data.RedoEnabled
+        ToolStripBtnRedo.Enabled = BtnRedo.Enabled
+    End Sub
+
+    Private Sub PopulateSummaryPanel(Disk As Disk)
         Dim Value As String
         Dim ForeColor As Color
-
-        Me.Text = GetWindowCaption() & " - " & IO.Path.GetFileName(_Disk.FilePath)
-
-        ToolStripFileName.Text = IO.Path.GetFileName(_Disk.FilePath)
-        ToolStripFileName.Visible = True
 
         ListViewSummary.BeginUpdate()
 
@@ -2247,48 +2023,48 @@ Public Class MainForm
 
             Dim DiskGroup = ListViewSummary.Groups.Add("Disk", "Disk")
 
-            If Not _Disk.LoadError Then
-                If _Disk.IsValidImage AndAlso _Disk.HasInvalidSize Then
+            If Not Disk.LoadError Then
+                If Disk.IsValidImage AndAlso Disk.HasInvalidSize Then
                     ForeColor = Color.Red
                 Else
                     ForeColor = SystemColors.WindowText
                 End If
-                .Add(ListViewTileGetItem(DiskGroup, "Image Size", _Disk.Data.Length.ToString("N0"), ForeColor))
-                If _Disk.ReadOnly Then
-                    .Add(ListViewTileGetItem(DiskGroup, "Read Only", _Disk.ReadOnly))
-                End If
-                ToolStripStatusModified.Visible = _Disk.Data.Modified
-                ToolStripStatusReadOnly.Visible = _Disk.ReadOnly
+                .AddItem(DiskGroup, "Image Size", Disk.Data.Length.ToString("N0"), ForeColor)
+                ToolStripStatusModified.Visible = Disk.Data.Modified
+                ToolStripStatusReadOnly.Visible = Disk.ReadOnly
             Else
                 ToolStripStatusModified.Visible = False
                 ToolStripStatusReadOnly.Visible = False
             End If
 
-            If _Disk.IsValidImage Then
-                Dim BadSectors = GetBadSectors(_Disk.BootSector, _Disk.FAT.BadClusters)
-                Dim BootStrapStart = _Disk.BootSector.GetBootStrapOffset
-                Dim CopyProtection As String = GetCopyProtection(_Disk, BadSectors)
+            If Disk.IsValidImage Then
+                Dim DiskType As String = GetFloppyDiskTypeName(Disk.BootSector) & " Floppy"
+                .AddItem(DiskGroup, "Disk Type", DiskType)
+
+                Dim BadSectors = GetBadSectors(Disk.BootSector, Disk.FAT.BadClusters)
+                Dim BootStrapStart = Disk.BootSector.GetBootStrapOffset
+                Dim CopyProtection As String = GetCopyProtection(Disk, BadSectors)
 
                 If CopyProtection.Length > 0 Then
-                    .Add(ListViewTileGetItem(DiskGroup, "Copy Protection", CopyProtection))
+                    .AddItem(DiskGroup, "Copy Protection", CopyProtection)
                 End If
 
-                Dim BroderbundCopyright = GetBroderbundCopyright(_Disk, BadSectors)
+                Dim BroderbundCopyright = GetBroderbundCopyright(Disk, BadSectors)
 
                 If BroderbundCopyright <> "" Then
-                    .Add(ListViewTileGetItem(DiskGroup, "Broderbund Copyright", BroderbundCopyright))
+                    .AddItem(DiskGroup, "Broderbund Copyright", BroderbundCopyright)
                 End If
 
-                Dim BootstrapChecksum = Crc32.ComputeChecksum(_Disk.BootSector.BootStrapCode)
-                Dim OEMName = _Disk.BootSector.OEMName
+                Dim BootstrapChecksum = Crc32.ComputeChecksum(Disk.BootSector.BootStrapCode)
+                Dim OEMName = Disk.BootSector.OEMName
                 Dim KnownOEMNameMatch As KnownOEMName = Nothing
-                Dim OEMNameWin9x = _Disk.BootSector.IsWin9xOEMName
+                Dim OEMNameWin9x = Disk.BootSector.IsWin9xOEMName
 
-                Dim BootstrapType = OEMNameFindMatch(BootstrapChecksum)
+                Dim BootstrapType = OEMNameFindMatch(_OEMNameDictionary, BootstrapChecksum)
 
                 If BootstrapType IsNot Nothing Then
                     For Each KnownOEMName In BootstrapType.KnownOEMNames
-                        If ByteArrayCompare(KnownOEMName.Name, OEMName) Or (OEMNameWin9x And KnownOEMName.Win9xId) Then
+                        If KnownOEMName.Name.CompareTo(OEMName) Or (OEMNameWin9x And KnownOEMName.Win9xId) Then
                             KnownOEMNameMatch = KnownOEMName
                             Exit For
                         End If
@@ -2310,89 +2086,89 @@ Public Class MainForm
                     ForeColor = SystemColors.WindowText
                 End If
 
-                .Add(ListViewTileGetItem(BootRecordGroup, BootSectorDescription(BootSectorOffsets.OEMName), _Disk.BootSector.GetOEMNameString.TrimEnd(NULL_CHAR), ForeColor))
-                .Add(ListViewTileGetItem(BootRecordGroup, BootSectorDescription(BootSectorOffsets.BytesPerSector), _Disk.BootSector.BytesPerSector))
-                .Add(ListViewTileGetItem(BootRecordGroup, BootSectorDescription(BootSectorOffsets.SectorsPerCluster), _Disk.BootSector.SectorsPerCluster))
-                .Add(ListViewTileGetItem(BootRecordGroup, BootSectorDescription(BootSectorOffsets.ReservedSectorCount), _Disk.BootSector.ReservedSectorCount))
+                .AddItem(BootRecordGroup, BootSectorDescription(BootSectorOffsets.OEMName), Disk.BootSector.GetOEMNameString.TrimEnd(NULL_CHAR), ForeColor)
+                .AddItem(BootRecordGroup, BootSectorDescription(BootSectorOffsets.BytesPerSector), Disk.BootSector.BytesPerSector)
+                .AddItem(BootRecordGroup, BootSectorDescription(BootSectorOffsets.SectorsPerCluster), Disk.BootSector.SectorsPerCluster)
+                .AddItem(BootRecordGroup, BootSectorDescription(BootSectorOffsets.ReservedSectorCount), Disk.BootSector.ReservedSectorCount)
 
-                Value = _Disk.BootSector.NumberOfFATs
-                If Not _Disk.CompareFATTables Then
+                Value = Disk.BootSector.NumberOfFATs
+                If Not Disk.CompareFATTables Then
                     Value &= " (Mismatched)"
                     ForeColor = Color.Red
                 Else
                     ForeColor = SystemColors.WindowText
                 End If
 
-                .Add(ListViewTileGetItem(BootRecordGroup, BootSectorDescription(BootSectorOffsets.NumberOfFATs), Value, ForeColor))
-                .Add(ListViewTileGetItem(BootRecordGroup, BootSectorDescription(BootSectorOffsets.RootEntryCount), _Disk.BootSector.RootEntryCount))
-                .Add(ListViewTileGetItem(BootRecordGroup, BootSectorDescription(BootSectorOffsets.SectorCountSmall), _Disk.BootSector.SectorCount))
-                .Add(ListViewTileGetItem(BootRecordGroup, BootSectorDescription(BootSectorOffsets.MediaDescriptor), MediaTypeGet(_Disk.BootSector.MediaDescriptor, _Disk.BootSector.SectorsPerTrack)))
-                .Add(ListViewTileGetItem(BootRecordGroup, BootSectorDescription(BootSectorOffsets.SectorsPerFAT), _Disk.BootSector.SectorsPerFAT))
-                .Add(ListViewTileGetItem(BootRecordGroup, BootSectorDescription(BootSectorOffsets.SectorsPerTrack), _Disk.BootSector.SectorsPerTrack))
-                .Add(ListViewTileGetItem(BootRecordGroup, BootSectorDescription(BootSectorOffsets.NumberOfHeads), _Disk.BootSector.NumberOfHeads))
+                .AddItem(BootRecordGroup, BootSectorDescription(BootSectorOffsets.NumberOfFATs), Value, ForeColor)
+                .AddItem(BootRecordGroup, BootSectorDescription(BootSectorOffsets.RootEntryCount), Disk.BootSector.RootEntryCount)
+                .AddItem(BootRecordGroup, BootSectorDescription(BootSectorOffsets.SectorCountSmall), Disk.BootSector.SectorCount)
+                .AddItem(BootRecordGroup, BootSectorDescription(BootSectorOffsets.MediaDescriptor), Disk.BootSector.MediaDescriptor.ToString("X2") & " Hex")
+                .AddItem(BootRecordGroup, BootSectorDescription(BootSectorOffsets.SectorsPerFAT), Disk.BootSector.SectorsPerFAT)
+                .AddItem(BootRecordGroup, BootSectorDescription(BootSectorOffsets.SectorsPerTrack), Disk.BootSector.SectorsPerTrack)
+                .AddItem(BootRecordGroup, BootSectorDescription(BootSectorOffsets.NumberOfHeads), Disk.BootSector.NumberOfHeads)
 
                 'If Debugger.IsAttached Then
-                If _Disk.BootSector.HiddenSectors > 0 Then
-                    .Add(ListViewTileGetItem(BootRecordGroup, BootSectorDescription(BootSectorOffsets.HiddenSectors), _Disk.BootSector.HiddenSectors))
+                If Disk.BootSector.HiddenSectors > 0 Then
+                    .AddItem(BootRecordGroup, BootSectorDescription(BootSectorOffsets.HiddenSectors), Disk.BootSector.HiddenSectors)
                 End If
                 'End If
 
                 If BootStrapStart >= BootSectorOffsets.BootStrapCode Then
-                    If _Disk.BootSector.DriveNumber > 0 Then
-                        .Add(ListViewTileGetItem(BootRecordGroup, BootSectorDescription(BootSectorOffsets.DriveNumber), _Disk.BootSector.DriveNumber))
+                    If Disk.BootSector.DriveNumber > 0 Then
+                        .AddItem(BootRecordGroup, BootSectorDescription(BootSectorOffsets.DriveNumber), Disk.BootSector.DriveNumber)
                     End If
 
-                    If _Disk.BootSector.HasValidExtendedBootSignature Then
-                        .Add(ListViewTileGetItem(BootRecordGroup, BootSectorDescription(BootSectorOffsets.VolumeSerialNumber), _Disk.BootSector.VolumeSerialNumber.ToString("X8").Insert(4, "-")))
-                        If _Disk.BootSector.ExtendedBootSignature = BootSector.ValidExtendedBootSignature(1) Then
-                            .Add(ListViewTileGetItem(BootRecordGroup, BootSectorDescription(BootSectorOffsets.VolumeLabel), _Disk.BootSector.GetVolumeLabelString.TrimEnd(NULL_CHAR)))
-                            .Add(ListViewTileGetItem(BootRecordGroup, BootSectorDescription(BootSectorOffsets.FileSystemType), _Disk.BootSector.GetFileSystemTypeString))
+                    If Disk.BootSector.HasValidExtendedBootSignature Then
+                        .AddItem(BootRecordGroup, BootSectorDescription(BootSectorOffsets.VolumeSerialNumber), Disk.BootSector.VolumeSerialNumber.ToString("X8").Insert(4, "-"))
+                        If Disk.BootSector.ExtendedBootSignature = BootSector.ValidExtendedBootSignature(1) Then
+                            .AddItem(BootRecordGroup, BootSectorDescription(BootSectorOffsets.VolumeLabel), Disk.BootSector.GetVolumeLabelString.TrimEnd(NULL_CHAR))
+                            .AddItem(BootRecordGroup, BootSectorDescription(BootSectorOffsets.FileSystemType), Disk.BootSector.GetFileSystemTypeString)
                         End If
                     End If
                 End If
 
-                If _Disk.BootSector.BootStrapSignature <> BootSector.ValidBootStrapSignature Then
-                    .Add(ListViewTileGetItem(BootRecordGroup, BootSectorDescription(BootSectorOffsets.BootStrapSignature), _Disk.BootSector.BootStrapSignature.ToString("X4")))
+                If Disk.BootSector.BootStrapSignature <> BootSector.ValidBootStrapSignature Then
+                    .AddItem(BootRecordGroup, BootSectorDescription(BootSectorOffsets.BootStrapSignature), Disk.BootSector.BootStrapSignature.ToString("X4"))
                 End If
 
-                If Not _Disk.BootSector.HasValidJumpInstruction(True) Then
+                If Not Disk.BootSector.HasValidJumpInstruction(True) Then
                     ForeColor = Color.Red
                 Else
                     ForeColor = SystemColors.WindowText
                 End If
 
                 If Debugger.IsAttached Then
-                    .Add(ListViewTileGetItem(BootRecordGroup, BootSectorDescription(BootSectorOffsets.JmpBoot), BitConverter.ToString(_Disk.BootSector.JmpBoot), ForeColor))
+                    .AddItem(BootRecordGroup, BootSectorDescription(BootSectorOffsets.JmpBoot), BitConverter.ToString(Disk.BootSector.JmpBoot), ForeColor)
                 End If
 
                 Dim FileSystemGroup = ListViewSummary.Groups.Add("FileSystem", "File System")
 
-                Dim VolumeLabel = _Disk.GetVolumeLabel
+                Dim VolumeLabel = Disk.GetVolumeLabel
 
                 If VolumeLabel IsNot Nothing Then
-                    .Add(ListViewTileGetItem(FileSystemGroup, "Volume Label", VolumeLabel.GetVolumeName.TrimEnd(NULL_CHAR)))
+                    .AddItem(FileSystemGroup, "Volume Label", VolumeLabel.GetVolumeName.TrimEnd(NULL_CHAR))
                     Dim VolumeDate = VolumeLabel.GetLastWriteDate
-                    .Add(ListViewTileGetItem(FileSystemGroup, "Volume Date", ExpandedDateToString(VolumeDate, True, False, False, False)))
+                    .AddItem(FileSystemGroup, "Volume Date", ExpandedDateToString(VolumeDate, True, False, False, False))
                 End If
 
-                .Add(ListViewTileGetItem(FileSystemGroup, "Total Space", Format(SectorToBytes(_Disk.BootSector.DataRegionSize), "N0") & " bytes"))
-                .Add(ListViewTileGetItem(FileSystemGroup, "Free Space", Format(_Disk.FAT.GetFreeSpace(_Disk.BootSector.BytesPerCluster), "N0") & " bytes"))
+                .AddItem(FileSystemGroup, "Total Space", Format(Disk.SectorToBytes(Disk.BootSector.DataRegionSize), "N0") & " bytes")
+                .AddItem(FileSystemGroup, "Free Space", Format(Disk.FAT.GetFreeSpace(Disk.BootSector.BytesPerCluster), "N0") & " bytes")
 
-                If _Disk.FAT.BadClusters.Count > 0 Then
-                    Value = Format(_Disk.FAT.BadClusters.Count * _Disk.BootSector.BytesPerCluster, "N0") & " bytes"
+                If Disk.FAT.BadClusters.Count > 0 Then
+                    Value = Format(Disk.FAT.BadClusters.Count * Disk.BootSector.BytesPerCluster, "N0") & " bytes"
                     ForeColor = Color.Red
-                    .Add(ListViewTileGetItem(FileSystemGroup, "Bad Sectors", Value, ForeColor))
+                    .AddItem(FileSystemGroup, "Bad Sectors", Value, ForeColor)
                 End If
 
                 Dim BootStrapGroup = ListViewSummary.Groups.Add("Bootstrap", "Bootstrap")
 
                 If Debugger.IsAttached Then
-                    .Add(ListViewTileGetItem(BootStrapGroup, "Bootstrap CRC32", Crc32.ComputeChecksum(_Disk.BootSector.BootStrapCode).ToString("X8")))
+                    .AddItem(BootStrapGroup, "Bootstrap CRC32", Crc32.ComputeChecksum(Disk.BootSector.BootStrapCode).ToString("X8"))
                 End If
 
                 If BootstrapType IsNot Nothing Then
                     If BootstrapType.Language.Length > 0 Then
-                        .Add(ListViewTileGetItem(BootStrapGroup, "Language", BootstrapType.Language))
+                        .AddItem(BootStrapGroup, "Language", BootstrapType.Language)
                     End If
 
                     If KnownOEMNameMatch Is Nothing And BootstrapType.KnownOEMNames.Count = 1 Then
@@ -2401,29 +2177,29 @@ Public Class MainForm
 
                     If KnownOEMNameMatch IsNot Nothing Then
                         If KnownOEMNameMatch.Company <> "" Then
-                            .Add(ListViewTileGetItem(BootStrapGroup, "Company", KnownOEMNameMatch.Company))
+                            .AddItem(BootStrapGroup, "Company", KnownOEMNameMatch.Company)
                         End If
                         If KnownOEMNameMatch.Description <> "" Then
-                            .Add(ListViewTileGetItem(BootStrapGroup, "Description", KnownOEMNameMatch.Description))
+                            .AddItem(BootStrapGroup, "Description", KnownOEMNameMatch.Description)
                         End If
                         If KnownOEMNameMatch.Note <> "" Then
-                            .Add(ListViewTileGetItem(BootStrapGroup, "Note", KnownOEMNameMatch.Note, Color.Blue))
+                            .AddItem(BootStrapGroup, "Note", KnownOEMNameMatch.Note, Color.Blue)
                         End If
                     End If
 
                     If Not BootstrapType.ExactMatch Then
                         For Each KnownOEMName In BootstrapType.KnownOEMNames
-                            If KnownOEMName.Name.Length > 0 AndAlso KnownOEMName.Suggestion AndAlso Not ByteArrayCompare(KnownOEMName.Name, OEMName) Then
-                                .Add(ListViewTileGetItem(BootStrapGroup, "Alternative OEM Name", KnownOEMName.GetNameAsString))
+                            If KnownOEMName.Name.Length > 0 AndAlso KnownOEMName.Suggestion AndAlso Not KnownOEMName.Name.CompareTo(OEMName) Then
+                                .AddItem(BootStrapGroup, "Alternative OEM Name", KnownOEMName.GetNameAsString)
                             End If
                         Next
                     End If
                 End If
             Else
-                If _Disk.LoadError Then
-                    .Add(ListViewTileGetItem(DiskGroup, "Error", "Error Loading File", Color.Red))
+                If Disk.LoadError Then
+                    .AddItem(DiskGroup, "Error", "Error Loading File", Color.Red)
                 Else
-                    .Add(ListViewTileGetItem(DiskGroup, "Error", "Unknown Image Format", Color.Red))
+                    .AddItem(DiskGroup, "Error", "Unknown Image Format", Color.Red)
                 End If
             End If
         End With
@@ -2431,35 +2207,6 @@ Public Class MainForm
         ListViewSummary.AutoResizeColumns(ColumnHeaderAutoResizeStyle.ColumnContent)
         ListViewSummary.EndUpdate()
         ListViewSummary.Refresh()
-
-        PopulateHashes()
-
-        If _Disk.IsValidImage Then
-            BtnDisplayClusters.Enabled = _Disk.FAT.HasUnusedClusters(True)
-            BtnDisplayBadSectors.Enabled = _Disk.FAT.BadClusters.Count > 0
-            BtnFixImageSize.Enabled = _Disk.HasInvalidSize
-            If _Disk.Directory.Data.HasBootSector Then
-                Dim BootSectorBytes = _Disk.Data.GetBytes(_Disk.Directory.Data.BootSectorOffset, BootSector.BOOT_SECTOR_SIZE)
-                BtnRestoreBootSector.Enabled = Not ByteArrayCompare(BootSectorBytes, _Disk.BootSector.Data)
-            Else
-                BtnRestoreBootSector.Enabled = False
-            End If
-            BtnRemoveBootSector.Enabled = _Disk.Directory.Data.HasBootSector
-        Else
-            BtnDisplayClusters.Enabled = False
-            BtnDisplayBadSectors.Enabled = False
-            BtnFixImageSize.Enabled = False
-            BtnRestoreBootSector.Enabled = False
-            BtnRemoveBootSector.Enabled = False
-        End If
-
-        BtnRevert.Enabled = Not _Disk.LoadError AndAlso _Disk.Data.Modified
-
-        BtnUndo.Enabled = Not _Disk.LoadError AndAlso _Disk.Data.UndoEnabled
-        ToolStripBtnUndo.Enabled = BtnUndo.Enabled
-
-        BtnRedo.Enabled = Not _Disk.LoadError AndAlso _Disk.Data.RedoEnabled
-        ToolStripBtnRedo.Enabled = BtnRedo.Enabled
     End Sub
 
     Private Sub PositionForm()
@@ -2953,6 +2700,7 @@ Public Class MainForm
         _SuppressEvent = False
 
         FilterUpdate(FilterTypes.ModifiedFiles)
+        RefreshModifiedState()
     End Sub
 
     Private Sub SaveButtonsRefresh()
@@ -2987,6 +2735,8 @@ Public Class MainForm
         Dim Result = DiskImageSave(CurrentImageData, NewFilePath)
         If Result Then
             FilterUpdate(FilterTypes.ModifiedFiles)
+            RefreshModifiedState()
+
             If NewFileName Then
                 SetNewFilePath(CurrentImageData, NewFilePath)
             End If
@@ -3030,14 +2780,6 @@ Public Class MainForm
             _LoadedFileNames.Add(NewFilePath, CurrentImageData)
             CurrentImageData.FilePath = NewFilePath
             ComboImagesRefreshPaths()
-        End If
-    End Sub
-
-    Private Sub UnusedClustersDisplayHex()
-        Dim HexViewSectorData = New HexViewSectorData(_Disk, _Disk.FAT.GetUnusedClusters(True))
-
-        If DisplayHexViewForm(HexViewSectorData, "Unused Clusters") Then
-            ComboItemRefresh(False, True)
         End If
     End Sub
 
@@ -3098,29 +2840,29 @@ Public Class MainForm
     End Sub
 
     Private Sub BtnDisplayBadSectors_Click(sender As Object, e As EventArgs) Handles BtnDisplayBadSectors.Click
-        BadSectorsDisplayHex()
+        HexDisplayBadSectors()
     End Sub
 
     Private Sub BtnDisplayBootSector_Click(sender As Object, e As EventArgs) Handles BtnDisplayBootSector.Click
-        BootSectorDisplayHex()
+        HexDisplayBootSector()
     End Sub
 
     Private Sub BtnDisplayClusters_Click(sender As Object, e As EventArgs) Handles BtnDisplayClusters.Click
-        UnusedClustersDisplayHex()
+        HexDisplayUnusedClusters()
     End Sub
 
     Private Sub BtnDisplayDirectory_Click(sender As Object, e As EventArgs) Handles BtnDisplayDirectory.Click, BtnFileMenuViewDirectory.Click
         If sender.Tag IsNot Nothing Then
-            DirectoryEntryDisplayHex(sender.tag)
+            HexDisplayDirectoryEntry(sender.tag)
         End If
     End Sub
 
     Private Sub BtnDisplayDisk_Click(sender As Object, e As EventArgs) Handles BtnDisplayDisk.Click
-        DiskImageDisplayHex()
+        HexDisplayDiskImage()
     End Sub
 
     Private Sub BtnDisplayFAT_Click(sender As Object, e As EventArgs) Handles BtnDisplayFAT.Click
-        FATDisplayHex()
+        HexDisplayFAT()
     End Sub
 
     Private Sub BtnEditFAT_Click(sender As Object, e As EventArgs) Handles BtnEditFAT.Click
@@ -3135,7 +2877,7 @@ Public Class MainForm
 
     Private Sub BtnDisplayFile_Click(sender As Object, e As EventArgs) Handles BtnDisplayFile.Click
         If sender.tag IsNot Nothing Then
-            DirectoryEntryDisplayHex(sender.tag)
+            HexDisplayDirectoryEntry(sender.tag)
         End If
     End Sub
 
@@ -3198,7 +2940,7 @@ Public Class MainForm
         If ListViewFiles.SelectedItems.Count = 1 Then
             Dim Item As ListViewItem = ListViewFiles.SelectedItems(0)
             Dim FileData As FileData = Item.Tag
-            DirectoryEntryDisplayHex(FileData.DirectoryEntry.Offset)
+            HexDisplayDirectoryEntry(FileData.DirectoryEntry.Offset)
         End If
     End Sub
 
@@ -3468,6 +3210,15 @@ Public Class MainForm
         End If
     End Sub
 
+    Private Function PathAddBackslash(Path As String) As String
+        If Len(Path) > 0 Then
+            If Not Path.EndsWith("\") Then
+                Path &= "\"
+            End If
+        End If
+        Return Path
+    End Function
+
     Private Sub InitFileFilter()
         Dim ExtensionList As New List(Of String)
 
@@ -3487,7 +3238,7 @@ Public Class MainForm
 
         PositionForm()
 
-        ListViewDoubleBuffer(ListViewFiles)
+        ListViewFiles.DoubleBuffer
         FiltersInitialize()
         _LoadedFileNames = New Dictionary(Of String, LoadedImageData)
         _OEMNameDictionary = GetOEMNameDictionary()
@@ -3539,7 +3290,7 @@ Public Class MainForm
     End Sub
 
     Private Sub BtnHelpUpdateCheck_Click(sender As Object, e As EventArgs) Handles BtnHelpUpdateCheck.Click
-        CheckForUpdates
+        CheckForUpdates()
     End Sub
 
     Private Sub BtnFileMenuFixSize_Click(sender As Object, e As EventArgs) Handles BtnFileMenuFixSize.Click
@@ -3558,15 +3309,15 @@ Public Class MainForm
     End Sub
 
     Private Sub BtnEditBootSector_Click(sender As Object, e As EventArgs) Handles BtnEditBootSector.Click
-        BootSectorEdit
+        BootSectorEdit()
     End Sub
 
     Private Sub BtnRestoreBootSector_Click(sender As Object, e As EventArgs) Handles BtnRestoreBootSector.Click
-        RestoreBootSector
+        BootSectorRestore()
     End Sub
 
     Private Sub BtnRemoveBootSector_Click(sender As Object, e As EventArgs) Handles BtnRemoveBootSector.Click
-        RemoveBootSector
+        BootSectorRemove()
     End Sub
 
 #End Region

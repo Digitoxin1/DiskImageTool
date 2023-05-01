@@ -56,6 +56,7 @@ Public Class ItemScanForm
                     _Parent.ItemScanModified(Disk, ImageData)
                     _Parent.ItemScanDisk(Disk, ImageData)
                     _Parent.ItemScanOEMName(Disk, ImageData)
+                    _Parent.UpdateOEMNameFilter(Disk, ImageData)
                     _Parent.ItemScanUnusedClusters(Disk, ImageData)
                     _Parent.ItemScanDirectory(Disk, ImageData)
 

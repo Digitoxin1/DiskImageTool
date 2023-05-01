@@ -1,4 +1,8 @@
 ﻿Imports System.ComponentModel
+Imports System.Globalization
+Imports System.Runtime.InteropServices
+Imports System.Text.RegularExpressions
+Imports System.Threading
 Imports DiskImageTool.DiskImage
 Imports Hb.Windows.Forms
 
@@ -24,7 +28,7 @@ Public Class HexViewForm
     Private WithEvents ComboTrack As ToolStripComboBox
     Private WithEvents CheckBoxSync As ToolStripCheckBox
 
-    Public Sub New(HexViewSectorData As HexViewSectorData, Caption As String, SectorNavigator As Boolean, ClusterNavigator As Boolean, SyncBlocks As Boolean)
+    Public Sub New(HexViewSectorData As HexViewSectorData, SectorNavigator As Boolean, ClusterNavigator As Boolean, SyncBlocks As Boolean)
         ' This call is required by the designer.
         InitializeComponent()
         ' Add any initialization after the InitializeComponent() call.
@@ -39,7 +43,7 @@ Public Class HexViewForm
         _LastSearch = New HexSearch
 
         If Not _BootSector.IsValidImage Then
-            _BootSector = BuildBootSectorFromType(GetFloppyDiskType(_HexViewSectorData.Disk.Data.Length))
+            _BootSector = BuildBootSector(_HexViewSectorData.Disk.Data.Length)
         End If
 
         If Not _BootSector.IsValidImage Then
@@ -48,10 +52,10 @@ Public Class HexViewForm
 
         HexBox1.ReadOnly = False
 
-        If Caption = "" Then
+        If HexViewSectorData.Description = "" Then
             Me.Text = "Hex Editor"
         Else
-            Me.Text = Caption
+            Me.Text = HexViewSectorData.Description
         End If
 
         CmbGroups.Size = New Drawing.Size(IIf(_SyncBlocks, 130, 218), CmbGroups.Size.Height)
@@ -159,6 +163,51 @@ Public Class HexViewForm
         Me.Close()
     End Sub
 
+    Private Function ConvertHexToByte(Hex As String, <Out> ByRef b As Byte) As Boolean
+        Return Byte.TryParse(Hex, NumberStyles.HexNumber, Thread.CurrentThread.CurrentCulture, b)
+    End Function
+
+    Private Function ConvertHexToBytes(Hex As String) As Byte()
+        If String.IsNullOrEmpty(Hex) Then
+            Return Nothing
+        End If
+
+        Hex = Hex.Trim()
+        Hex = Hex.Replace(" ", "")
+        Hex = Hex.Replace(Chr(13), "")
+        Hex = Hex.Replace(Chr(10), "")
+        Hex = Hex.Replace(Chr(9), "")
+
+        Dim regex = New Regex("^[0-9A-F]*$", RegexOptions.IgnoreCase)
+
+        Dim HexArray As String()
+        If regex.IsMatch(Hex) Then
+            If Hex.Length Mod 2 = 1 Then
+                Hex = "0" & Hex
+            End If
+            HexArray = New String(Hex.Length / 2 - 1) {}
+            For i As Integer = 0 To Hex.Length / 2 - 1
+                HexArray(i) = Hex.Substring(i * 2, 2)
+            Next
+        Else
+            Return Nothing
+        End If
+
+        Dim ByteArray = New Byte(HexArray.Length - 1) {}
+        Dim b As Byte = Nothing
+        For j = 0 To HexArray.Length - 1
+            Dim HexValue = HexArray(j)
+
+            If Not ConvertHexToByte(HexValue, b) Then
+                Return Nothing
+            End If
+
+            ByteArray(j) = b
+        Next
+
+        Return ByteArray
+    End Function
+
     Private Sub CopyHexFormatted()
         Dim Capacity As Integer = HexBox1.SelectionLength * 2 + HexBox1.SelectionLength + HexBox1.SelectionLength \ 16
         Dim SB = New System.Text.StringBuilder(Capacity)
@@ -204,13 +253,13 @@ Public Class HexViewForm
 
             If _CurrentHexViewData.SectorBlock.Size > 0 Then
                 .ByteProvider = _CurrentHexViewData.ByteProvider
-                .LineInfoOffset = SectorToBytes(_CurrentHexViewData.SectorBlock.SectorStart)
+                .LineInfoOffset = Disk.SectorToBytes(_CurrentHexViewData.SectorBlock.SectorStart)
 
                 HighlightedRegions.Sort()
 
                 Dim TotalLength As UInteger = .ByteProvider.Length
                 Dim Start As UInteger = 0
-                Dim Length = BYTES_PER_SECTOR - (Start Mod BYTES_PER_SECTOR)
+                Dim Length = Disk.BYTES_PER_SECTOR - (Start Mod Disk.BYTES_PER_SECTOR)
                 Dim Size As UInteger = Math.Min(Length, TotalLength - Start)
                 Dim CurrentRegion As HexViewHighlightRegion
                 Dim Index As Integer = 0
@@ -242,7 +291,7 @@ Public Class HexViewForm
                     End If
 
                     If Size > 0 Then
-                        If HighlightBackColor = Color.White AndAlso OffsetToSector(Start) Mod 2 = 1 Then
+                        If HighlightBackColor = Color.White AndAlso Disk.OffsetToSector(Start) Mod 2 = 1 Then
                             HighlightBackColor = ALT_BACK_COLOR
                         End If
                         If HighlightForeColor <> Color.Black Or HighlightBackColor <> Color.White Then
@@ -253,7 +302,7 @@ Public Class HexViewForm
                     End If
 
                     Start += Size
-                    Length = BYTES_PER_SECTOR - (Start Mod BYTES_PER_SECTOR)
+                    Length = Disk.BYTES_PER_SECTOR - (Start Mod Disk.BYTES_PER_SECTOR)
                     Size = Math.Min(Length, TotalLength - Start)
                 Loop
             End If
@@ -365,7 +414,7 @@ Public Class HexViewForm
         Dim Sector = _BootSector.ClusterToSector(Cluster)
 
         If Cluster > 1 And Cluster >= ClusterStart And Cluster <= ClusterEnd Then
-            Dim Offset = SectorToBytes(Sector) - HexBox1.LineInfoOffset
+            Dim Offset = Disk.SectorToBytes(Sector) - HexBox1.LineInfoOffset
             Dim Line = Offset \ HexBox1.BytesPerLine
             HexBox1.PerformScrollToLine(Line)
         End If
@@ -376,7 +425,7 @@ Public Class HexViewForm
         Dim SectorEnd = SectorStart + _CurrentHexViewData.SectorBlock.SectorCount - 1
 
         If Sector >= SectorStart And Sector <= SectorEnd Then
-            Dim Offset = SectorToBytes(Sector) - HexBox1.LineInfoOffset
+            Dim Offset = Disk.SectorToBytes(Sector) - HexBox1.LineInfoOffset
             Dim Line = Offset \ HexBox1.BytesPerLine
             HexBox1.PerformScrollToLine(Line)
         End If
@@ -394,7 +443,7 @@ Public Class HexViewForm
         Dim Sector = _BootSector.TrackToSector(Track, Side)
 
         If Track >= TrackStart And Track <= TrackEnd Then
-            Dim Offset = SectorToBytes(Sector) - HexBox1.LineInfoOffset
+            Dim Offset = Disk.SectorToBytes(Sector) - HexBox1.LineInfoOffset
             Dim Line = Offset \ HexBox1.BytesPerLine
             HexBox1.PerformScrollToLine(Line)
         End If
@@ -601,7 +650,7 @@ Public Class HexViewForm
             Dim FileName As String = ""
             Dim OutOfRange As Boolean = SelectionStart >= HexBox1.ByteProvider.Length
 
-            Dim Sector = OffsetToSector(OffsetStart)
+            Dim Sector = Disk.OffsetToSector(OffsetStart)
 
             ToolStripStatusOffset.Visible = Not OutOfRange
             ToolStripStatusOffset.Text = "Offset(h): " & OffsetStart.ToString("X")
@@ -784,7 +833,7 @@ Public Class HexViewForm
         End If
 
         Dim Offset = HexBox1.LineInfoOffset + HexBox1.StartByte
-        Dim Sector = OffsetToSector(Offset)
+        Dim Sector = Disk.OffsetToSector(Offset)
 
         _IgnoreEvent = True
 
@@ -882,8 +931,8 @@ Public Class HexViewForm
     Private Sub SelectCurrentSector()
         Dim OutOfRange As Boolean = HexBox1.SelectionStart >= HexBox1.ByteProvider.Length
         If Not OutOfRange Then
-            Dim Offset = SectorToBytes(_CurrentSector) - HexBox1.LineInfoOffset
-            Dim Length = BYTES_PER_SECTOR
+            Dim Offset = Disk.SectorToBytes(_CurrentSector) - HexBox1.LineInfoOffset
+            Dim Length = Disk.BYTES_PER_SECTOR
             HexBox1.Select(Offset, Length)
         End If
     End Sub

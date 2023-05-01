@@ -407,17 +407,18 @@ Public Class BootSectorForm
 
     Private Sub PopulateDiskTypes()
         CboDiskType.Items.Clear()
-        CboDiskType.Items.Add(New BootSectorDiskType("160K", FloppyDiskType.Floppy160))
-        CboDiskType.Items.Add(New BootSectorDiskType("180K", FloppyDiskType.Floppy180))
-        CboDiskType.Items.Add(New BootSectorDiskType("320K", FloppyDiskType.Floppy320))
-        CboDiskType.Items.Add(New BootSectorDiskType("360K", FloppyDiskType.Floppy360))
-        CboDiskType.Items.Add(New BootSectorDiskType("720K", FloppyDiskType.Floppy720))
-        CboDiskType.Items.Add(New BootSectorDiskType("1.2M", FloppyDiskType.Floppy1200))
-        CboDiskType.Items.Add(New BootSectorDiskType("1.44M", FloppyDiskType.Floppy1440))
-        CboDiskType.Items.Add(New BootSectorDiskType("2.88M", FloppyDiskType.Floppy2880))
-        CboDiskType.Items.Add(New BootSectorDiskType("DMF (1024)", FloppyDiskType.FloppyDMF1024))
-        CboDiskType.Items.Add(New BootSectorDiskType("DMF (2048)", FloppyDiskType.FloppyDMF2048))
-        CboDiskType.Items.Add(New BootSectorDiskType("Custom", FloppyDiskType.FloppyUnknown))
+        CboDiskType.Items.Add(New BootSectorDiskType(FloppyDiskType.Floppy160))
+        CboDiskType.Items.Add(New BootSectorDiskType(FloppyDiskType.Floppy180))
+        CboDiskType.Items.Add(New BootSectorDiskType(FloppyDiskType.Floppy320))
+        CboDiskType.Items.Add(New BootSectorDiskType(FloppyDiskType.Floppy360))
+        CboDiskType.Items.Add(New BootSectorDiskType(FloppyDiskType.Floppy720))
+        CboDiskType.Items.Add(New BootSectorDiskType(FloppyDiskType.Floppy1200))
+        CboDiskType.Items.Add(New BootSectorDiskType(FloppyDiskType.Floppy1440))
+        CboDiskType.Items.Add(New BootSectorDiskType(FloppyDiskType.Floppy2880))
+        CboDiskType.Items.Add(New BootSectorDiskType(FloppyDiskType.FloppyDMF1024))
+        CboDiskType.Items.Add(New BootSectorDiskType(FloppyDiskType.FloppyDMF2048))
+        CboDiskType.Items.Add(New BootSectorDiskType(FloppyDiskType.FloppyProCopy))
+        CboDiskType.Items.Add(New BootSectorDiskType(FloppyDiskType.FloppyUnknown))
 
         CboDiskType.SelectedIndex = CboDiskType.Items.Count - 1
     End Sub
@@ -446,7 +447,7 @@ Public Class BootSectorForm
             Dim BootstrapType = _OEMNameDictionary.Item(BootstrapChecksum)
             For Each KnownOEMName In BootstrapType.KnownOEMNames
                 If KnownOEMName.Name.Length > 0 Then
-                    Dim IsMatch = ByteArrayCompare(KnownOEMName.Name, OEMName.Name)
+                    Dim IsMatch = KnownOEMName.Name.CompareTo(OEMName.Name)
                     If (KnownOEMName.Suggestion And Not BootstrapType.ExactMatch) Or IsMatch Then
                         Dim Index = CboOEMName.Items.Add(KnownOEMName)
                         If IsMatch Then
@@ -499,7 +500,7 @@ Public Class BootSectorForm
 
         For Each DiskType As BootSectorDiskType In CboDiskType.Items
             If DiskType.Type <> FloppyDiskType.FloppyUnknown Then
-                Dim BootSector = BuildBootSectorFromType(DiskType.Type)
+                Dim BootSector = BuildBootSector(DiskType.Type)
                 If BootSector.MediaDescriptor = HexMediaDescriptor.GetHex(0) _
                     And BootSector.NumberOfHeads = TxtNumberOfHeads.Text _
                     And BootSector.RootEntryCount = TxtRootDirectoryEntries.Text _
@@ -639,7 +640,7 @@ Public Class BootSectorForm
         If Result Then
             _SuppressEvent = True
             Dim Value = VolumeSerialNumberForm.GetValue()
-            SetValue(HexVolumeSerialNumber, GenerateVolumeSerialNumber(Value).ToString("X8"))
+            SetValue(HexVolumeSerialNumber, BootSector.GenerateVolumeSerialNumber(Value).ToString("X8"))
             _SuppressEvent = False
         End If
     End Sub
@@ -813,7 +814,7 @@ Public Class BootSectorForm
         _SuppressEvent = True
         Dim DiskType As BootSectorDiskType = CboDiskType.SelectedItem
         If DiskType.Type <> FloppyDiskType.FloppyUnknown Then
-            Dim BootSector = BuildBootSectorFromType(DiskType.Type)
+            Dim BootSector = BuildBootSector(DiskType.Type)
             PopulateBootRecord(BootSector)
         End If
         _SuppressEvent = False
@@ -891,16 +892,14 @@ Public Class BootSectorForm
     End Class
 
     Private Class BootSectorDiskType
-        Public Sub New(Name As String, Type As FloppyDiskType)
-            _Name = Name
+        Public Sub New(Type As FloppyDiskType)
             _Type = Type
         End Sub
 
-        Public Property Name As String
         Public Property Type As FloppyDiskType
 
         Public Overrides Function ToString() As String
-            Return _Name
+            Return GetFloppyDiskTypeName(_Type)
         End Function
     End Class
 

@@ -11,6 +11,9 @@
         Public Shared ReadOnly ValidJumpInstructuon() As Byte = {&HEB, &HE9}
         Public Shared ReadOnly ValidMediaDescriptor() As Byte = {&HF0, &HF8, &HF9, &HFA, &HFB, &HFC, &HFD, &HFE, &HFF}
         Public Shared ReadOnly ValidSectorsPerCluster() As Byte = {1, 2, 4, 8, 16, 32, 64, 128}
+        Public Shared ReadOnly ValidSectorsPerTrack() As UShort = {8, 9, 15, 18, 21, 36}
+        Public Shared ReadOnly ValidNumberOfFATS() As Byte = {1, 2}
+        Public Shared ReadOnly ValidNumberOfHeads() As UShort = {1, 2}
 
         Public Enum BootSectorOffsets As UInteger
             JmpBoot = 0
@@ -65,6 +68,13 @@
 
         Public Shared Function CheckJumpInstruction(Value() As Byte, CheckNOP As Boolean) As Boolean
             Return (Value(0) = &HEB And (Not CheckNOP Or Value(2) = &H90)) Or Value(0) = &HE9
+        End Function
+
+        Public Shared Function GenerateVolumeSerialNumber(Value As Date) As UInteger
+            Dim Lo As UShort = (Value.Day + Value.Month * 256) + (Value.Millisecond \ 10 + Value.Second * 256)
+            Dim Hi As UShort = (Value.Minute + Value.Hour * 256) + Value.Year
+
+            Return Hi + Lo * 65536
         End Function
 
         Sub New(FileBytes As ImageByteArray)
@@ -295,11 +305,11 @@
         End Property
 
         Public Function BytesPerCluster() As UInteger
-            Return SectorToBytes(SectorsPerCluster)
+            Return Disk.SectorToBytes(SectorsPerCluster)
         End Function
 
         Public Function ClusterToOffset(Cluster As UShort) As UInteger
-            Return SectorToBytes(ClusterToSector(Cluster))
+            Return Disk.SectorToBytes(ClusterToSector(Cluster))
         End Function
 
         Public Function ClusterToSector(Cluster As UShort) As UInteger
@@ -379,7 +389,11 @@
         End Function
 
         Public Function HasValidNumberOfFATs() As Boolean
-            Return NumberOfFATs > 0
+            Return ValidNumberOfFATS.Contains(NumberOfFATs)
+        End Function
+
+        Public Function HasValidNumberOfHeadss() As Boolean
+            Return ValidNumberOfHeads.Contains(NumberOfHeads)
         End Function
 
         Public Function HasValidReservedSectorCount() As Boolean
@@ -387,30 +401,35 @@
         End Function
 
         Public Function HasValidRootEntryCount() As Boolean
-            Return (RootEntryCount * 32) Mod BYTES_PER_SECTOR = 0
+            Return (RootEntryCount * 32) Mod Disk.BYTES_PER_SECTOR = 0
         End Function
 
         Public Function HasValidSectorsPerCluster() As Boolean
             Return ValidSectorsPerCluster.Contains(SectorsPerCluster)
         End Function
 
+        Public Function HasValidSectorsPerTrack() As Boolean
+            Return ValidSectorsPerTrack.Contains(SectorsPerTrack)
+        End Function
+
         Public Function ImageSize() As UInteger
-            Return SectorToBytes(SectorCount())
+            Return Disk.SectorToBytes(SectorCount())
         End Function
 
         Public Function IsBootSectorRegion(Offset As UInteger) As Boolean
-            Return OffsetToSector(Offset) = BOOT_SECTOR
+            Return Disk.OffsetToSector(Offset) = BOOT_SECTOR
         End Function
 
         Public Function IsValidImage() As Boolean
             Return _FileBytes.Length > 0 _
-                AndAlso HasValidSectorsPerCluster() _
                 AndAlso HasValidMediaDescriptor() _
-                AndAlso SectorsPerTrack > 0 _
+                AndAlso HasValidNumberOfFATs() _
+                AndAlso HasValidNumberOfHeadss() _
+                AndAlso HasValidSectorsPerCluster() _
+                AndAlso HasValidSectorsPerTrack() _
                 AndAlso NumberOfHeads > 0 _
                 AndAlso SectorsPerFAT > 0 _
-                AndAlso ReservedSectorCount > 0 _
-                AndAlso NumberOfFATs > 0
+                AndAlso ReservedSectorCount > 0
         End Function
 
         Public Function IsWin9xOEMName() As Boolean
@@ -424,11 +443,11 @@
         End Function
 
         Public Function OffsetToCluster(Offset As UInteger) As UShort
-            Return SectorToCluster(OffsetToSector(Offset))
+            Return SectorToCluster(Disk.OffsetToSector(Offset))
         End Function
 
         Public Function RootDirectoryRegionSize() As UInteger
-            Return BytesToSector(RootEntryCount * 32)
+            Return Disk.BytesToSector(RootEntryCount * 32)
         End Function
 
         Public Function RootDirectoryRegionStart() As UInteger

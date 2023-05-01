@@ -412,7 +412,7 @@ Namespace DiskImage
         End Function
 
         Public Function IsModified() As Boolean
-            Return _FileBytes.DirectoryCache.ContainsKey(_Offset) AndAlso Not ByteArrayCompare(Data, _FileBytes.DirectoryCache.Item(_Offset))
+            Return _FileBytes.DirectoryCache.ContainsKey(_Offset) AndAlso Not Data.CompareTo(_FileBytes.DirectoryCache.Item(_Offset))
         End Function
 
         Public Function IsReadOnly() As Boolean
@@ -421,6 +421,10 @@ Namespace DiskImage
 
         Public Function IsSystem() As Boolean
             Return (Attributes And AttributeFlags.System) > 0
+        End Function
+
+        Public Function IsValid() As Boolean
+            Return Not (IsVolumeName() Or HasInvalidFileSize() Or HasInvalidStartingCluster() Or StartingCluster < 2)
         End Function
 
         Public Function IsVolumeName() As Boolean
@@ -472,6 +476,66 @@ Namespace DiskImage
             LastWriteDate = DateToFATDate(Value)
             LastWriteTime = DateToFATTime(Value)
         End Sub
+
+        Private Shared Function CheckValidFileName(FileName() As Byte, IsExtension As Boolean, IsVolumeName As Boolean) As Boolean
+            Dim Result As Boolean = True
+            Dim C As Byte
+            Dim SpaceAllowed As Boolean = True
+
+            If FileName.Length = 0 Then
+                Return IsExtension
+            End If
+
+            For Index = FileName.Length - 1 To 0 Step -1
+                C = FileName(Index)
+                If Not IsVolumeName And (C <> &H20 Or (Not IsExtension And Index = 0)) Then
+                    SpaceAllowed = False
+                End If
+
+                If C = &H20 And SpaceAllowed Then
+                    Result = True
+                ElseIf IsVolumeName And (C = &H0 Or (Not IsExtension And Index = 1 And C = &H3)) Then
+                    Result = True
+                ElseIf C < &H21 Then
+                    Result = False
+                    Exit For
+                ElseIf Not IsVolumeName And C > &H60 And C < &H7B Then
+                    Result = False
+                    Exit For
+                ElseIf Not IsVolumeName And InvalidFileChars.Contains(C) Then
+                    Result = False
+                    Exit For
+                End If
+            Next
+
+            Return Result
+        End Function
+
+        Private Shared Function DateToFATDate(D As Date) As UShort
+            Dim FATDate As UShort = D.Year - 1980
+
+            FATDate <<= 4
+            FATDate += D.Month
+            FATDate <<= 5
+            FATDate += D.Day
+
+            Return FATDate
+        End Function
+
+        Private Shared Function DateToFATMilliseconds(D As Date) As Byte
+            Return D.Millisecond \ 10 + (D.Second Mod 2) * 100
+        End Function
+
+        Private Shared Function DateToFATTime(D As Date) As UShort
+            Dim DTTime As UShort = D.Hour
+
+            DTTime <<= 6
+            DTTime += D.Minute
+            DTTime <<= 5
+            DTTime += D.Second \ 2
+
+            Return DTTime
+        End Function
 
         Private Sub InitSubDirectory()
             If IsDirectory() AndAlso Not IsLink() AndAlso Not IsDeleted() AndAlso Not IsVolumeName() Then

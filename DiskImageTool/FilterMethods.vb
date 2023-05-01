@@ -1,4 +1,4 @@
-﻿Public Module Filters
+﻿Public Module FilterMethods
 
     Public Enum FilterTypes
         ModifiedFiles
@@ -13,6 +13,7 @@
         DirectoryHasBootSector
         UnusedClusters
         HasInvalidImage
+        UnknownDiskType
         HasBadSectors
         HasInvalidImageSize
         HasMismatchedFATs
@@ -35,6 +36,8 @@
                 Caption = "Has Last Access Date"
             Case FilterTypes.HasInvalidImage
                 Caption = "Unknown Image Format"
+            Case FilterTypes.UnknownDiskType
+                Caption = "Custom Disk Type"
             Case FilterTypes.HasLongFileNames
                 Caption = "Has Long File Names"
             Case FilterTypes.HasInvalidDirectoryEntries
@@ -160,6 +163,12 @@
 
         If CheckFilter(FilterTypes.HasInvalidImageSize, AppliedFilters) Then
             If ImageData.ScanInfo.IsValidImage And ImageData.ScanInfo.HasInvalidImageSize Then
+                Return False
+            End If
+        End If
+
+        If CheckFilter(FilterTypes.UnknownDiskType, AppliedFilters) Then
+            If ImageData.ScanInfo.IsValidImage And ImageData.ScanInfo.UnknownDiskType Then
                 Return False
             End If
         End If

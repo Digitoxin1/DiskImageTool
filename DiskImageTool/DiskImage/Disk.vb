@@ -2,6 +2,7 @@
 
 Namespace DiskImage
     Public Class Disk
+        Public Const BYTES_PER_SECTOR As UShort = 512
         Private WithEvents FileBytes As ImageByteArray
         Private ReadOnly _BootSector As BootSector
         Private ReadOnly _Directory As RootDirectory
@@ -10,6 +11,19 @@ Namespace DiskImage
         Private ReadOnly _LoadError As Boolean = False
         Private ReadOnly _ReadOnly As Boolean = False
         Private _ReinitializeRequired As Boolean = False
+
+        Public Shared Function BytesToSector(Bytes As UInteger) As UInteger
+            Return Math.Ceiling(Bytes / BYTES_PER_SECTOR)
+        End Function
+
+        Public Shared Function OffsetToSector(Offset As UInteger) As UInteger
+            Return Offset \ BYTES_PER_SECTOR
+        End Function
+
+        Public Shared Function SectorToBytes(Sector As UInteger) As UInteger
+            Return Sector * BYTES_PER_SECTOR
+        End Function
+
         Sub New(FilePath As String, Optional Modifications As Stack(Of DataChange()) = Nothing)
             _LoadError = False
             _FilePath = FilePath
@@ -96,7 +110,7 @@ Namespace DiskImage
                 Dim FATCopy1 = _FileBytes.GetSectors(FAT12.GetFATSectors(_BootSector.FATRegionStart, _BootSector.SectorsPerFAT, Counter - 1))
                 Dim FATCopy2 = _FileBytes.GetSectors(FAT12.GetFATSectors(_BootSector.FATRegionStart, _BootSector.SectorsPerFAT, Counter))
 
-                If Not ByteArrayCompare(FATCopy1, FATCopy2) Then
+                If Not FATCopy1.CompareTo(FATCopy2) Then
                     Return False
                 End If
             Next
@@ -197,6 +211,21 @@ Namespace DiskImage
                 Next
             End If
         End Sub
+
+        Private Function GetObjectSize(o As Object) As Integer
+            Dim t = o.GetType()
+            If t.Equals(GetType(Byte)) Then
+                Return 1
+            ElseIf t.Equals(GetType(UShort)) Then
+                Return 2
+            ElseIf t.Equals(GetType(UInteger)) Then
+                Return 4
+            ElseIf t.Equals(GetType(Byte())) Then
+                Return CType(o, Byte()).Length
+            Else
+                Return 0
+            End If
+        End Function
 
         Private Sub FileBytes_DataChanged(Offset As UInteger, OriginalValue As Object, NewValue As Object) Handles FileBytes.DataChanged
             If BootSector.IsBootSectorRegion(Offset) Then

@@ -74,14 +74,14 @@
         End Sub
 
         Public Function GetSector(Sector As UInteger) As Byte()
-            Dim Offset = SectorToBytes(Sector)
+            Dim Offset = Disk.SectorToBytes(Sector)
 
             Return GetSectors(Sector, 1)
         End Function
 
         Public Function GetSectors(SectorStart As UInteger, Count As UShort) As Byte()
-            Dim Offset = SectorToBytes(SectorStart)
-            Dim Size = SectorToBytes(Count)
+            Dim Offset = Disk.SectorToBytes(SectorStart)
+            Dim Size = Disk.SectorToBytes(Count)
 
             If Size + Offset > MyBase.Length Then
                 Size = MyBase.Length - Offset
@@ -105,9 +105,9 @@
         End Sub
 
         Public Function SetSector(Value() As Byte, Sector As UInteger) As Boolean
-            Dim Offset = SectorToBytes(Sector)
+            Dim Offset = Disk.SectorToBytes(Sector)
 
-            Return MyBase.SetBytes(Value, Offset, BYTES_PER_SECTOR, 0)
+            Return MyBase.SetBytes(Value, Offset, Disk.BYTES_PER_SECTOR, 0)
         End Function
 
         Public Sub Undo()

@@ -1,64 +1,4 @@
 ﻿Namespace DiskImage
-
-    Public Structure ExpandedDate
-        Dim DateObject As Date
-        Dim Day As Byte
-        Dim Hour As Byte
-        Dim Hour12 As Byte
-        Dim IsPM As Boolean
-        Dim IsValidDate As Boolean
-        Dim Milliseconds As UShort
-        Dim Minute As Byte
-        Dim Month As Byte
-        Dim Second As Byte
-        Dim Year As UShort
-    End Structure
-
-    Public Structure SectorRange
-        Dim Start As UInteger
-        Dim Count As UInteger
-    End Structure
-
-    Public Class DataChange
-        Public Sub New(Offset As UInteger, OriginalValue As Object, NewValue As Object)
-            Me.Offset = Offset
-            Me.OriginalValue = OriginalValue
-            Me.NewValue = NewValue
-        End Sub
-        Public Property Offset As UInteger
-        Public Property OriginalValue As Object
-        Public Property NewValue As Object
-    End Class
-
-    Public Class FATChain
-        Public Sub New(Offset As UInteger)
-            _Offset = Offset
-        End Sub
-        Public Property Clusters As New List(Of UShort)
-        Public Property CrossLinks As New List(Of UInteger)
-        Public Property HasCircularChain As Boolean = False
-        Public ReadOnly Property Offset As UInteger
-        Public Property OpenChain As Boolean = True
-    End Class
-
-    Public Class SectorBlock
-        Sub New(Index As Integer, SectorStart As UInteger, SectorCount As UInteger, Offset As UInteger, Size As UInteger, Description As String)
-            _Index = Index
-            _Description = Description
-            _SectorStart = SectorStart
-            _SectorCount = SectorCount
-            _Offset = Offset
-            _Size = Size
-        End Sub
-
-        Public ReadOnly Property Description As String
-        Public ReadOnly Property Index As Integer
-        Public ReadOnly Property Offset As UInteger
-        Public ReadOnly Property SectorCount As UInteger
-        Public ReadOnly Property SectorStart As UInteger
-        Public ReadOnly Property Size As UInteger
-    End Class
-
     Public Class SectorData
         Private WithEvents DataBytes As ByteArray
         Private ReadOnly _BlockList As List(Of SectorBlock)
@@ -96,8 +36,8 @@
 
         Public Sub AddBlock(SectorStart As UInteger, SectorCount As UInteger, Description As String)
             Dim Offset As UInteger = DataBytes.Length
-            Dim SourceOffset = SectorToBytes(SectorStart)
-            Dim Size As UInteger = SectorToBytes(SectorCount)
+            Dim SourceOffset = Disk.SectorToBytes(SectorStart)
+            Dim Size As UInteger = Disk.SectorToBytes(SectorCount)
 
             If SourceOffset + Size > _FileBytes.Length Then
                 Size = Math.Max(0, _FileBytes.Length - SourceOffset)
@@ -109,7 +49,7 @@
                 _BlockList.Add(New SectorBlock(_BlockList.Count, SectorStart, SectorCount, Offset, Size, Description))
 
                 Do While Size > 0
-                    Dim SectorSize = Math.Min(Size, BYTES_PER_SECTOR)
+                    Dim SectorSize = Math.Min(Size, Disk.BYTES_PER_SECTOR)
                     _SectorList.Add(SectorStart, New SectorBlock(_SectorList.Count, SectorStart, 1, Offset, SectorSize, ""))
                     Offset += SectorSize
                     Size -= SectorSize
@@ -123,8 +63,8 @@
         End Sub
 
         Public Sub AddBlockByOffset(Offset As UInteger, Length As UInteger, Description As String)
-            Dim SectorStart = OffsetToSector(Offset)
-            Dim SectorCount = BytesToSector(Length)
+            Dim SectorStart = Disk.OffsetToSector(Offset)
+            Dim SectorCount = Disk.BytesToSector(Length)
 
             AddBlock(SectorStart, SectorCount, Description)
         End Sub
@@ -154,10 +94,10 @@
             End If
 
             For Each SectorBlock In _SectorList.Values
-                Dim Offset = SectorToBytes(SectorBlock.SectorStart)
+                Dim Offset = Disk.SectorToBytes(SectorBlock.SectorStart)
                 Dim OriginalData = _FileBytes.GetBytes(Offset, SectorBlock.Size)
                 Dim NewData = DataBytes.GetBytes(SectorBlock.Offset, SectorBlock.Size)
-                If Not ByteArrayCompare(OriginalData, NewData) Then
+                If Not OriginalData.CompareTo(NewData) Then
                     _FileBytes.SetBytes(NewData, Offset)
                 End If
             Next
@@ -182,15 +122,5 @@
 
             Return DataBytes.GetBytes(SectorBlock.Offset, SectorBlock.Size)
         End Function
-    End Class
-
-    Public Class DirectoryData
-        Public Property MaxEntries As UInteger = 0
-        Public Property EntryCount As UInteger = 0
-        Public Property FileCount As UInteger = 0
-        Public Property DeletedFileCount As UInteger = 0
-        Public Property HasAdditionalData As Boolean = False
-        Public Property HasBootSector As Boolean = False
-        Public Property BootSectorOffset As UInteger = 0
     End Class
 End Namespace

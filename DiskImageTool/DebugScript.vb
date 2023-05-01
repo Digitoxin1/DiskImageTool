@@ -58,7 +58,7 @@ Module DebugScript
         Array.Sort(OffsetArray)
 
         For Each Offset As UInteger In OffsetArray
-            Dim Sector As UInteger = DiskImage.OffsetToSector(Offset)
+            Dim Sector As UInteger = DiskImage.Disk.OffsetToSector(Offset)
 
             If SectorDict.ContainsKey(Sector) Then
                 SegmentList = SectorDict.Item(Sector)
@@ -67,7 +67,7 @@ Module DebugScript
                 SectorDict.Add(Sector, SegmentList)
             End If
 
-            Dim SectorOffset As UInteger = DiskImage.SectorToBytes(Sector)
+            Dim SectorOffset As UInteger = DiskImage.Disk.SectorToBytes(Sector)
             Dim Value = ScriptModifications.Item(Offset)
             SegmentList.Add(GetSegment(Offset - SectorOffset, Value))
         Next
@@ -102,7 +102,7 @@ Module DebugScript
 
         Dim SectorStart = Disk.BootSector.RootDirectoryRegionStart
         Dim SectorEnd = Disk.BootSector.DataRegionStart
-        Dim Length = DiskImage.SectorToBytes(SectorEnd - SectorStart)
+        Dim Length = DiskImage.Disk.SectorToBytes(SectorEnd - SectorStart)
         Dim Offset As UInteger = 256
 
         For Index = 0 To 1

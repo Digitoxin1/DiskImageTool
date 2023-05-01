@@ -11,6 +11,7 @@
     Public Property HasMismatchedFATs As Boolean = False
     Public Property HasUnusedClusters As Boolean = False
     Public Property IsValidImage As Boolean = True
+    Public Property UnknownDiskType As Boolean = False
     Public Property OEMName As String = ""
     Public Property OEMNameFound As Boolean = False
     Public Property OEMNameMatched As Boolean = False

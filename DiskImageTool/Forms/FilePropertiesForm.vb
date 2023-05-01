@@ -120,12 +120,12 @@
             DiskImage.ResizeArray(Extension, 3, 32)
         End If
 
-        If Not ByteArrayCompare(FileName, DirectoryEntry.FileName) Then
+        If Not FileName.CompareTo(DirectoryEntry.FileName) Then
             DirectoryEntry.FileName = FileName
             _Updated = True
         End If
 
-        If Not ByteArrayCompare(Extension, DirectoryEntry.Extension) Then
+        If Not Extension.CompareTo(DirectoryEntry.Extension) Then
             DirectoryEntry.Extension = Extension
             _Updated = True
         End If

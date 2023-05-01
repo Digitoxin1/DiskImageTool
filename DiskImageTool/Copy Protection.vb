@@ -1,4 +1,5 @@
-﻿Imports System.Text
+﻿Imports System.IO
+Imports System.Text
 Imports DiskImageTool.DiskImage
 
 Module Copy_Protection
@@ -29,12 +30,13 @@ Module Copy_Protection
         'H.L.S. Duplication
         If Not ProtectionFound AndAlso BadSectors.Count >= 2 Then
             If CheckBadSectors(BadSectors, {708, 709}) Then
-                Offset = SectorToBytes(709)
+                Offset = Disk.SectorToBytes(709)
                 If Offset + 8 <= DataLength Then
                     Dim b1 = Disk.Data.GetBytes(Offset, 8)
-                    Offset = SectorToBytes(708)
+                    Offset = Disk.SectorToBytes(708)
                     Dim b2 = Disk.Data.GetBytes(Offset, 8)
-                    If ByteArrayCompare(b1, b2) AndAlso Integer.TryParse(Encoding.UTF8.GetString(b1, 3, 4), 0) Then
+
+                    If b1.CompareTo(b2) AndAlso Integer.TryParse(Encoding.UTF8.GetString(b1, 3, 4), 0) Then
                         ProtectionFound = True
                         ProtectionName = "H.L.S. Duplication"
                     End If
@@ -64,7 +66,7 @@ Module Copy_Protection
         If Not ProtectionFound AndAlso BadSectors.Count >= 10 Then
             For Sector As UInteger = 710 To 729
                 If BadSectors.Contains(Sector) Then
-                    Offset = SectorToBytes(Sector)
+                    Offset = Disk.SectorToBytes(Sector)
                     If Offset + 31 <= DataLength Then
                         Dim b = Disk.Data.GetBytes(Offset, 31)
                         If Encoding.UTF8.GetString(b) = "(c) 1986 for KBI by L. TOURNIER" Then
@@ -113,7 +115,7 @@ Module Copy_Protection
 
     Public Function GetBroderbundCopyright(Disk As DiskImage.Disk, BadSectors As HashSet(Of UInteger)) As String
         If BadSectors.Count >= 2 AndAlso CheckBadSectors(BadSectors, {186, 187}) AndAlso Not CheckBadSectors(BadSectors, {185, 188}) Then
-            Dim b = Disk.Data.GetBytes(SectorToBytes(186), BYTES_PER_SECTOR)
+            Dim b = Disk.Data.GetBytes(Disk.SectorToBytes(186), Disk.BYTES_PER_SECTOR)
             Dim Counter As Integer
             For Counter = 0 To b.Length - 1
                 If {0, &HF6}.Contains(b(Counter)) Then

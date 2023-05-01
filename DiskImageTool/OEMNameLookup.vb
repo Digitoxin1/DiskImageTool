@@ -49,6 +49,14 @@ Module OEMNameLookup
         Return Result
     End Function
 
+    Public Function OEMNameFindMatch(OEMNameDictionary As Dictionary(Of UInteger, BootstrapLookup), Checksum As UInteger) As BootstrapLookup
+        If OEMNameDictionary.ContainsKey(Checksum) Then
+            Return OEMNameDictionary.Item(Checksum)
+        Else
+            Return Nothing
+        End If
+    End Function
+
     Private Function GetResource(Name As String) As String
         Dim Value As String
 
@@ -66,6 +74,29 @@ Module OEMNameLookup
     End Function
 
 End Module
+
+Public Class BootstrapLookup
+    Public Property ExactMatch As Boolean = False
+    Public Property KnownOEMNames As New List(Of KnownOEMName)
+    Public Property Language As String = "English"
+End Class
+
+Public Class KnownOEMName
+    Public Property Company As String = ""
+    Public Property Description As String = ""
+    Public Property Name As Byte()
+    Public Property Suggestion As Boolean = True
+    Public Property Win9xId As Boolean = False
+    Public Property Note As String = ""
+
+    Public Function GetNameAsString() As String
+        Return DiskImage.CodePage437ToUnicode(_Name)
+    End Function
+
+    Public Overrides Function ToString() As String
+        Return GetNameAsString()
+    End Function
+End Class
 
 Public Class StubClass
 End Class

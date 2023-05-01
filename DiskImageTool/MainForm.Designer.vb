@@ -140,7 +140,6 @@ Partial Class MainForm
         Me.BtnScanNew = New System.Windows.Forms.ToolStripMenuItem()
         Me.BtnScan = New System.Windows.Forms.ToolStripMenuItem()
         Me.BtnClearFilters = New System.Windows.Forms.ToolStripMenuItem()
-        Me.FilterSeparator = New System.Windows.Forms.ToolStripSeparator()
         Me.ComboImagesFiltered = New System.Windows.Forms.ComboBox()
         Me.BtnResetSort = New System.Windows.Forms.Button()
         SummaryName = CType(New System.Windows.Forms.ColumnHeader(), System.Windows.Forms.ColumnHeader)
@@ -893,7 +892,7 @@ Partial Class MainForm
         '
         Me.ContextMenuFiles.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.BtnFileMenuFileProperties, Me.BtnFileMenuExportFile, Me.BtnFileMenuReplaceFile, FileMenuSeparatoor1, Me.BtnFileMenuViewDirectory, Me.FileMenuSeparatorDirectory, Me.BtnFileMenuViewFile, Me.BtnFileMenuViewFileText, Me.BtnFileMenuViewCrosslinked, FileMenuSeparatoor2, Me.BtnFileMenuRemoveDeletedFile, Me.BtnFileMenuDeleteFile, Me.BtnFileMenuDeleteFileWithFill, FileMenuSeparatoor3, Me.BtnFileMenuFixSize})
         Me.ContextMenuFiles.Name = "ContextMenuFiles"
-        Me.ContextMenuFiles.Size = New System.Drawing.Size(223, 292)
+        Me.ContextMenuFiles.Size = New System.Drawing.Size(223, 270)
         '
         'BtnFileMenuFileProperties
         '
@@ -991,34 +990,28 @@ Partial Class MainForm
         '
         'ContextMenuFilters
         '
-        Me.ContextMenuFilters.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.BtnScanNew, Me.BtnScan, Me.BtnClearFilters, Me.FilterSeparator})
+        Me.ContextMenuFilters.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.BtnScanNew, Me.BtnScan, Me.BtnClearFilters})
         Me.ContextMenuFilters.Name = "ContextMenuStrip1"
         Me.ContextMenuFilters.OwnerItem = Me.MainMenuFilters
-        Me.ContextMenuFilters.Size = New System.Drawing.Size(168, 76)
+        Me.ContextMenuFilters.Size = New System.Drawing.Size(181, 92)
         '
         'BtnScanNew
         '
         Me.BtnScanNew.Name = "BtnScanNew"
-        Me.BtnScanNew.Size = New System.Drawing.Size(167, 22)
+        Me.BtnScanNew.Size = New System.Drawing.Size(180, 22)
         Me.BtnScanNew.Text = "Scan &New Images"
         '
         'BtnScan
         '
         Me.BtnScan.Name = "BtnScan"
-        Me.BtnScan.Size = New System.Drawing.Size(167, 22)
+        Me.BtnScan.Size = New System.Drawing.Size(180, 22)
         Me.BtnScan.Text = "&Scan Images"
         '
         'BtnClearFilters
         '
         Me.BtnClearFilters.Name = "BtnClearFilters"
-        Me.BtnClearFilters.Size = New System.Drawing.Size(167, 22)
+        Me.BtnClearFilters.Size = New System.Drawing.Size(180, 22)
         Me.BtnClearFilters.Text = "Clear Filters"
-        '
-        'FilterSeparator
-        '
-        Me.FilterSeparator.Name = "FilterSeparator"
-        Me.FilterSeparator.Size = New System.Drawing.Size(164, 6)
-        Me.FilterSeparator.Visible = False
         '
         'ComboImagesFiltered
         '
@@ -1093,7 +1086,6 @@ Partial Class MainForm
     Friend WithEvents ContextMenuFilters As ContextMenuStrip
     Friend WithEvents BtnSaveAll As ToolStripMenuItem
     Friend WithEvents BtnScan As ToolStripMenuItem
-    Friend WithEvents FilterSeparator As ToolStripSeparator
     Friend WithEvents BtnDisplayBootSector As ToolStripMenuItem
     Friend WithEvents BtnDisplayDirectory As ToolStripMenuItem
     Friend WithEvents BtnDisplayClusters As ToolStripMenuItem

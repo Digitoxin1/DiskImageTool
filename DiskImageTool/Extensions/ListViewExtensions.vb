@@ -68,6 +68,73 @@ Module ListViewExtensions
     End Function
 
     <Extension()>
+    Public Sub AddColumn(listViewControl As ListView, Name As String, Text As String, Width As Integer, Index As Integer)
+        Dim Column As New ColumnHeader With {
+            .Name = Name,
+            .Width = Width,
+            .Text = Text
+        }
+        listViewControl.Columns.Insert(Index, Column)
+    End Sub
+
+    <Extension()>
+    Public Function AddItem(ItemCollecction As ListView.ListViewItemCollection, Text As String, Value As String) As ListViewItem
+        Dim Item = New ListViewItem(Text) With {
+                .UseItemStyleForSubItems = False
+            }
+        Item.SubItems.Add(Value)
+
+        ItemCollecction.Add(Item)
+
+        Return Item
+    End Function
+
+    <Extension()>
+    Public Function AddItem(ItemCollecction As ListView.ListViewItemCollection, Text As String, Value As String, ForeColor As Color) As ListViewItem
+        Dim Item = New ListViewItem(Text) With {
+                .UseItemStyleForSubItems = False
+            }
+        Dim SubItem = Item.SubItems.Add(Value)
+        SubItem.ForeColor = ForeColor
+
+        ItemCollecction.Add(Item)
+
+        Return Item
+    End Function
+
+    <Extension()>
+    Public Function AddItem(ItemCollecction As ListView.ListViewItemCollection, Group As ListViewGroup, Text As String, Value As String) As ListViewItem
+        Dim Item = New ListViewItem(Text, Group) With {
+                .UseItemStyleForSubItems = False
+            }
+        Item.SubItems.Add(Value)
+
+        ItemCollecction.Add(Item)
+
+        Return Item
+    End Function
+
+    <Extension()>
+    Public Function AddItem(ItemCollecction As ListView.ListViewItemCollection, Group As ListViewGroup, Text As String, Value As String, ForeColor As Color) As ListViewItem
+        Dim Item = New ListViewItem(Text, Group) With {
+                .UseItemStyleForSubItems = False
+            }
+        Dim SubItem = Item.SubItems.Add(Value)
+        SubItem.ForeColor = ForeColor
+
+        ItemCollecction.Add(Item)
+
+        Return Item
+    End Function
+
+    <Extension()>
+    Public Sub DoubleBuffer(listViewControl As ListView)
+        listViewControl.GetType() _
+            .GetProperty("DoubleBuffered", System.Reflection.BindingFlags.Instance Or System.Reflection.BindingFlags.NonPublic) _
+            .SetValue(listViewControl, True, Nothing)
+    End Sub
+
+    <Extension()>
     Public Sub SetSortIcon(listViewControl As ListView, columnIndex As Integer, order As SortOrder)
         Dim columnHeader As IntPtr = SendMessage(listViewControl.Handle, LVM_GETHEADER, IntPtr.Zero, IntPtr.Zero)
         For columnNumber As Integer = 0 To listViewControl.Columns.Count - 1

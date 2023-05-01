@@ -124,6 +124,14 @@
     <Compile Include="Controls\ToolStripCheckBox.vb">
       <SubType>Component</SubType>
     </Compile>
+    <Compile Include="DiskImage\CodePage437.vb" />
+    <Compile Include="DiskImage\DataChange.vb" />
+    <Compile Include="DiskImage\DirectoryData.vb" />
+    <Compile Include="DiskImage\EpandedDate.vb" />
+    <Compile Include="DiskImage\FATChain.vb" />
+    <Compile Include="DiskImage\FloppyDiskFunctions.vb" />
+    <Compile Include="DiskImage\SectorBlock.vb" />
+    <Compile Include="Extensions\ByteArrayExtensions.vb" />
     <Compile Include="Forms\AboutBox.Designer.vb">
       <DependentUpon>AboutBox.vb</DependentUpon>
     </Compile>
@@ -133,10 +141,10 @@
     <Compile Include="ApplicationEvents.vb" />
     <Compile Include="Copy Protection.vb" />
     <Compile Include="DebugScript.vb" />
-    <Compile Include="DiskImage\Classes.vb" />
+    <Compile Include="DiskImage\SectorData.vb" />
     <Compile Include="DiskImage\ByteArray.vb" />
     <Compile Include="DiskImage\FAT12.vb" />
-    <Compile Include="DiskImage\Functions.vb" />
+    <Compile Include="DiskImage\Utility.vb" />
     <Compile Include="DiskImage\IDirectory.vb" />
     <Compile Include="DiskImage\ImageByteArray.vb" />
     <Compile Include="DiskImage\RootDirectory.vb" />
@@ -159,7 +167,7 @@
     <Compile Include="Forms\FilePropertiesForm.vb">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Filters.vb" />
+    <Compile Include="FilterMethods.vb" />
     <Compile Include="DiskImage\BootSector.vb" />
     <Compile Include="Forms\HexSearchForm.Designer.vb">
       <DependentUpon>HexSearchForm.vb</DependentUpon>
@@ -173,7 +181,8 @@
     <Compile Include="Forms\VolumeSerialNumberForm.vb">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Functions.vb" />
+    <Compile Include="HexView\HexViews.vb" />
+    <Compile Include="Utility.vb" />
     <Compile Include="Controls\HexTextBox.vb">
       <SubType>Component</SubType>
     </Compile>
@@ -183,8 +192,14 @@
     <Compile Include="Forms\ItemScanForm.vb">
       <SubType>Form</SubType>
     </Compile>
+    <Compile Include="HashFunctions.vb" />
+    <Compile Include="HexView\HexViewData.vb" />
+    <Compile Include="HexView\HexViewHighlightRegion.vb" />
+    <Compile Include="HexView\HexViewRegionDescription.vb" />
+    <Compile Include="HexView\HexViewSectorData.vb" />
+    <Compile Include="HexView\HighlightedRegions.vb" />
     <Compile Include="ListViewColumnSorter.vb" />
-    <Compile Include="ListViewExtensions.vb" />
+    <Compile Include="Extensions\ListViewExtensions.vb" />
     <Compile Include="MyByteProvider.vb" />
     <Compile Include="OEMNameLookup.vb" />
     <Compile Include="LoadedImageData.vb" />
@@ -232,7 +247,6 @@
     <Compile Include="Forms\TextViewForm.vb">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="SharedClasses.cls" />
     <Compile Include="Controls\ToolStripNumericUpDown.vb">
       <SubType>Component</SubType>
     </Compile>

@@ -231,14 +231,14 @@
             If SyncAll Then
                 For Counter = 0 To _BootSector.NumberOfFATs - 1
                     Dim OldBytes = GetFAT(Counter)
-                    If Not ByteArrayCompare(OldBytes, FATBytes, True) Then
+                    If Not OldBytes.CompareTo(FATBytes, True) Then
                         SetFAT(Counter, FATBytes)
                         Updated = True
                     End If
                 Next
             Else
                 Dim OldBytes = GetFAT(_Index)
-                If Not ByteArrayCompare(OldBytes, FATBytes, True) Then
+                If Not OldBytes.CompareTo(FATBytes, True) Then
                     SetFAT(_Index, FATBytes)
                     Updated = True
                 End If
@@ -349,9 +349,25 @@
             Return _FileBytes.GetSectors(Sectors)
         End Function
 
+        Private Function IsDataBlockEmpty(Data() As Byte) As Boolean
+            Dim EmptyByte As Byte = Data(0)
+            If EmptyByte <> &HF6 And EmptyByte <> &H0 Then
+                Return False
+            Else
+                For Each B In Data
+                    If B <> EmptyByte Then
+                        Return False
+                        Exit For
+                    End If
+                Next
+            End If
+
+            Return True
+        End Function
+
         Private Sub SetFAT(Index As UShort, Data() As Byte)
             Dim Range = GetFATSectors(_BootSector.FATRegionStart, _BootSector.SectorsPerFAT, Index)
-            Dim Offset = SectorToBytes(Range.Start)
+            Dim Offset = Disk.SectorToBytes(Range.Start)
 
             _FileBytes.SetBytes(Data, Offset)
         End Sub

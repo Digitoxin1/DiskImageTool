@@ -42,14 +42,14 @@
         Public Function GetContent() As Byte() Implements IDirectory.GetContent
             Dim SectorStart = _BootSector.RootDirectoryRegionStart
             Dim SectorEnd = _BootSector.DataRegionStart
-            Dim Length = SectorToBytes(SectorEnd - SectorStart)
-            Dim Offset = SectorToBytes(SectorStart)
+            Dim Length = Disk.SectorToBytes(SectorEnd - SectorStart)
+            Dim Offset = Disk.SectorToBytes(SectorStart)
 
             Return _FileBytes.GetBytes(Offset, Length)
         End Function
 
         Public Function GetFile(Index As UInteger) As DirectoryEntry Implements IDirectory.GetFile
-            Dim Offset As UInteger = SectorToBytes(_BootSector.RootDirectoryRegionStart) + Index * DirectoryEntry.DIRECTORY_ENTRY_SIZE
+            Dim Offset As UInteger = Disk.SectorToBytes(_BootSector.RootDirectoryRegionStart) + Index * DirectoryEntry.DIRECTORY_ENTRY_SIZE
 
             Return New DirectoryEntry(_FileBytes, _BootSector, _FAT, Offset)
         End Function
@@ -79,8 +79,8 @@
         End Sub
 
         Private Function GetDirectoryData() As DirectoryData
-            Dim OffsetStart As UInteger = SectorToBytes(_BootSector.RootDirectoryRegionStart)
-            Dim OffsetEnd As UInteger = SectorToBytes(_BootSector.DataRegionStart)
+            Dim OffsetStart As UInteger = Disk.SectorToBytes(_BootSector.RootDirectoryRegionStart)
+            Dim OffsetEnd As UInteger = Disk.SectorToBytes(_BootSector.DataRegionStart)
             Dim Data As New DirectoryData
 
             Functions.GetDirectoryData(Data, _FileBytes, OffsetStart, OffsetEnd, False, True)
