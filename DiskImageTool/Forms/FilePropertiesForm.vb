@@ -1,7 +1,5 @@
 ﻿Public Class FilePropertiesForm
-    Private Const CREATED_FORMAT As String = "yyyy-MM-dd  H:mm:ss"
     Private Const EMPTY_FORMAT As String = "'Empty'"
-    Private Const LASTACCESSED_FORMAT As String = "yyyy-MM-dd"
     Private ReadOnly _Disk As DiskImage.Disk
     Private ReadOnly _Items As ICollection
     Private _Deleted As Boolean = False
@@ -48,17 +46,11 @@
             _Updated = True
         End If
     End Sub
-
     Private Sub ApplyFileDatesUpdate(DirectoryEntry As DiskImage.DirectoryEntry)
-        Dim LastWritten = DTLastWritten.Value
-        Dim Created As Date? = GetDateFromPicker(DTCreated)
+        Dim LastWritten = GetDateFromPicker(DTLastWritten, DTLastWrittenTime).Value
+        Dim Created As Date? = GetDateFromPicker(DTCreated, DTCreatedTime, NumCreatedMS)
         Dim LastAccessed As Date? = GetDateFromPicker(DTLastAccessed)
         Dim DT As DiskImage.ExpandedDate
-
-        If Created IsNot Nothing Then
-            Dim MSDiff As Integer = NumCreatedMS.Value - Created.Value.Millisecond
-            Created = Created.Value.AddMilliseconds(MSDiff)
-        End If
 
         If BtnLastWritten.Tag Then
             DT = DirectoryEntry.GetLastWriteDate
@@ -154,9 +146,25 @@
         _Disk.Data.BatchEditMode = False
     End Sub
 
-    Private Function GetDateFromPicker(DTP As DateTimePicker) As Date?
-        If DTP.Checked Then
-            Return DTP.Value
+    Private Function GetDateFromPicker(DatePicker As DateTimePicker, TimePicker As DateTimePicker, MS As NumericUpDown) As Date?
+        If Not DatePicker.ShowCheckBox OrElse DatePicker.Checked Then
+            Dim Milliseecond As Integer = 0
+            If MS IsNot Nothing Then
+                Milliseecond = MS.Value
+            End If
+            Return New Date(DatePicker.Value.Year, DatePicker.Value.Month, DatePicker.Value.Day, TimePicker.Value.Hour, TimePicker.Value.Minute, TimePicker.Value.Second, Milliseecond)
+        Else
+            Return Nothing
+        End If
+    End Function
+
+    Private Function GetDateFromPicker(DatePicker As DateTimePicker, TimePicker As DateTimePicker) As Date?
+        Return GetDateFromPicker(DatePicker, TimePicker, Nothing)
+    End Function
+
+    Private Function GetDateFromPicker(DatePicker As DateTimePicker) As Date?
+        If DatePicker.Checked Then
+            Return DatePicker.Value
         Else
             Return Nothing
         End If
@@ -235,7 +243,8 @@
             End If
         Next
 
-        DTLastWritten.Value = LastWritten
+        DTLastWritten.Value = LastWritten.Date
+        DTLastWrittenTime.Value = LastWritten
         SetCreatedDateValue(Created)
         SetLastAccessedDateValue(LastAccessed)
 
@@ -302,9 +311,11 @@
 
         DT = DirectoryEntry.GetLastWriteDate
         If DT.IsValidDate Then
-            DTLastWritten.Value = DT.DateObject
+            DTLastWritten.Value = DT.DateObject.Date
+            DTLastWrittenTime.Value = DT.DateObject
         Else
-            DTLastWritten.Value = New Date(1980, 1, 1, 0, 0, 0)
+            DTLastWritten.Value = New Date(1980, 1, 1)
+            DTLastWrittenTime.Value = New Date(1980, 1, 1, 0, 0, 0)
         End If
 
         If DirectoryEntry.HasCreationDate Then
@@ -329,25 +340,40 @@
 
     Private Sub SetCreatedDateValue(Value? As Date)
         If Value Is Nothing Then
+            DTCreated.Format = DateTimePickerFormat.Custom
             DTCreated.CustomFormat = EMPTY_FORMAT
             DTCreated.Checked = False
+
+            DTCreatedTime.Visible = False
+
             NumCreatedMS.Visible = False
             NumCreatedMS.Value = 0
+
+            PanelCreatedTime.BorderStyle = BorderStyle.FixedSingle
         Else
-            DTCreated.CustomFormat = CREATED_FORMAT
+            DTCreated.Format = DateTimePickerFormat.Short
+            DTCreated.CustomFormat = ""
             DTCreated.Checked = True
-            DTCreated.Value = Value
+            DTCreated.Value = Value.Value.Date
+
+            DTCreatedTime.Visible = True
+            DTCreatedTime.Value = Value.Value
+
             NumCreatedMS.Visible = True
             NumCreatedMS.Value = Value.Value.Millisecond
+
+            PanelCreatedTime.BorderStyle = BorderStyle.None
         End If
     End Sub
 
     Private Sub SetLastAccessedDateValue(Value? As Date)
         If Value Is Nothing Then
+            DTLastAccessed.Format = DateTimePickerFormat.Custom
             DTLastAccessed.CustomFormat = EMPTY_FORMAT
             DTLastAccessed.Checked = False
         Else
-            DTLastAccessed.CustomFormat = LASTACCESSED_FORMAT
+            DTLastAccessed.Format = DateTimePickerFormat.Short
+            DTLastAccessed.CustomFormat = ""
             DTLastAccessed.Checked = True
             DTLastAccessed.Value = Value
         End If
@@ -372,12 +398,14 @@
     Private Sub ToggleRelatedControls(Button As Button)
         If Button Is BtnLastWritten Then
             DTLastWritten.Enabled = Button.Tag
+            DTLastWrittenTime.Enabled = Button.Tag
             LblLastWritten.Enabled = Button.Tag
         ElseIf Button Is BtnLastAccessed Then
             DTLastAccessed.Enabled = Button.Tag
             LblLastAccessed.Enabled = Button.Tag
         ElseIf Button Is BtnCreated Then
             DTCreated.Enabled = Button.Tag
+            DTCreatedTime.Enabled = Button.Tag
             NumCreatedMS.Enabled = Button.Tag
             LblCreated.Enabled = Button.Tag
         ElseIf Button Is BtnArchive Then
@@ -403,18 +431,26 @@
 
     Private Sub DTCreated_ValueChanged(sender As Object, e As EventArgs) Handles DTCreated.ValueChanged
         If DTCreated.Checked Then
-            DTCreated.CustomFormat = CREATED_FORMAT
+            DTCreated.Format = DateTimePickerFormat.Short
+            DTCreated.CustomFormat = ""
+            DTCreatedTime.Visible = True
             NumCreatedMS.Visible = True
+            PanelCreatedTime.BorderStyle = BorderStyle.None
         Else
+            DTCreated.Format = DateTimePickerFormat.Custom
             DTCreated.CustomFormat = EMPTY_FORMAT
+            DTCreatedTime.Visible = False
             NumCreatedMS.Visible = False
+            PanelCreatedTime.BorderStyle = BorderStyle.FixedSingle
         End If
     End Sub
 
     Private Sub DTLastAccessed_ValueChanged(sender As Object, e As EventArgs) Handles DTLastAccessed.ValueChanged
         If DTLastAccessed.Checked Then
-            DTLastAccessed.CustomFormat = LASTACCESSED_FORMAT
+            DTLastAccessed.Format = DateTimePickerFormat.Short
+            DTLastAccessed.CustomFormat = ""
         Else
+            DTLastAccessed.Format = DateTimePickerFormat.Custom
             DTLastAccessed.CustomFormat = EMPTY_FORMAT
         End If
     End Sub
@@ -422,16 +458,17 @@
     Private Sub FilePropertiesForm_Load(sender As Object, e As EventArgs) Handles Me.Load
         _SuppressEvent = True
 
-        DTLastWritten.Value = New Date(1980, 1, 1, 0, 0, 0)
+        DTLastWritten.Value = New Date(1980, 1, 1)
+        DTLastWrittenTime.Value = New Date(1980, 1, 1, 0, 0, 0)
         SetCreatedDateValue(Nothing)
         SetLastAccessedDateValue(Nothing)
 
-        InitMultiple(_Items.Count > 1)
         If _Items.Count = 1 Then
             PopulateFormSingle()
         Else
             PopulateFormMultiple()
         End If
+        InitMultiple(_Items.Count > 1)
 
         _SuppressEvent = False
     End Sub

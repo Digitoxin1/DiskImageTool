@@ -24,20 +24,23 @@ Partial Class FilePropertiesForm
     Private Sub InitializeComponent()
         Me.components = New System.ComponentModel.Container()
         Dim GroupFileDates As System.Windows.Forms.GroupBox
-        Dim Panel1 As System.Windows.Forms.Panel
         Dim GroupAttributes As System.Windows.Forms.GroupBox
         Dim TableLayoutPanel3 As System.Windows.Forms.TableLayoutPanel
         Me.TableLayoutPanel1 = New System.Windows.Forms.TableLayoutPanel()
+        Me.PanelCreatedMS = New System.Windows.Forms.Panel()
         Me.NumCreatedMS = New System.Windows.Forms.NumericUpDown()
         Me.BtnLastAccessed = New System.Windows.Forms.Button()
         Me.LblLastWritten = New System.Windows.Forms.Label()
         Me.BtnCreated = New System.Windows.Forms.Button()
         Me.LblCreated = New System.Windows.Forms.Label()
-        Me.BtnLastWritten = New System.Windows.Forms.Button()
         Me.LblLastAccessed = New System.Windows.Forms.Label()
         Me.DTLastAccessed = New System.Windows.Forms.DateTimePicker()
         Me.DTCreated = New System.Windows.Forms.DateTimePicker()
         Me.DTLastWritten = New System.Windows.Forms.DateTimePicker()
+        Me.BtnLastWritten = New System.Windows.Forms.Button()
+        Me.DTLastWrittenTime = New System.Windows.Forms.DateTimePicker()
+        Me.PanelCreatedTime = New System.Windows.Forms.Panel()
+        Me.DTCreatedTime = New System.Windows.Forms.DateTimePicker()
         Me.TableLayoutPanel2 = New System.Windows.Forms.TableLayoutPanel()
         Me.ChkArchive = New System.Windows.Forms.CheckBox()
         Me.ChkSystem = New System.Windows.Forms.CheckBox()
@@ -58,13 +61,13 @@ Partial Class FilePropertiesForm
         Me.MskExtensionHex = New DiskImageTool.HexTextBox()
         Me.MskFileHex = New DiskImageTool.HexTextBox()
         GroupFileDates = New System.Windows.Forms.GroupBox()
-        Panel1 = New System.Windows.Forms.Panel()
         GroupAttributes = New System.Windows.Forms.GroupBox()
         TableLayoutPanel3 = New System.Windows.Forms.TableLayoutPanel()
         GroupFileDates.SuspendLayout()
         Me.TableLayoutPanel1.SuspendLayout()
-        Panel1.SuspendLayout()
+        Me.PanelCreatedMS.SuspendLayout()
         CType(Me.NumCreatedMS, System.ComponentModel.ISupportInitialize).BeginInit()
+        Me.PanelCreatedTime.SuspendLayout()
         GroupAttributes.SuspendLayout()
         Me.TableLayoutPanel2.SuspendLayout()
         TableLayoutPanel3.SuspendLayout()
@@ -83,7 +86,7 @@ Partial Class FilePropertiesForm
         GroupFileDates.Location = New System.Drawing.Point(3, 99)
         GroupFileDates.Name = "GroupFileDates"
         GroupFileDates.Padding = New System.Windows.Forms.Padding(3, 3, 3, 0)
-        GroupFileDates.Size = New System.Drawing.Size(388, 113)
+        GroupFileDates.Size = New System.Drawing.Size(438, 113)
         GroupFileDates.TabIndex = 1
         GroupFileDates.TabStop = False
         GroupFileDates.Text = "File Dates"
@@ -92,21 +95,24 @@ Partial Class FilePropertiesForm
         '
         Me.TableLayoutPanel1.AutoSize = True
         Me.TableLayoutPanel1.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink
-        Me.TableLayoutPanel1.ColumnCount = 4
+        Me.TableLayoutPanel1.ColumnCount = 5
         Me.TableLayoutPanel1.ColumnStyles.Add(New System.Windows.Forms.ColumnStyle())
         Me.TableLayoutPanel1.ColumnStyles.Add(New System.Windows.Forms.ColumnStyle())
         Me.TableLayoutPanel1.ColumnStyles.Add(New System.Windows.Forms.ColumnStyle())
         Me.TableLayoutPanel1.ColumnStyles.Add(New System.Windows.Forms.ColumnStyle())
-        Me.TableLayoutPanel1.Controls.Add(Panel1, 2, 1)
-        Me.TableLayoutPanel1.Controls.Add(Me.BtnLastAccessed, 3, 2)
+        Me.TableLayoutPanel1.ColumnStyles.Add(New System.Windows.Forms.ColumnStyle())
+        Me.TableLayoutPanel1.Controls.Add(Me.PanelCreatedMS, 3, 1)
+        Me.TableLayoutPanel1.Controls.Add(Me.BtnLastAccessed, 4, 2)
         Me.TableLayoutPanel1.Controls.Add(Me.LblLastWritten, 0, 0)
-        Me.TableLayoutPanel1.Controls.Add(Me.BtnCreated, 3, 1)
+        Me.TableLayoutPanel1.Controls.Add(Me.BtnCreated, 4, 1)
         Me.TableLayoutPanel1.Controls.Add(Me.LblCreated, 0, 1)
-        Me.TableLayoutPanel1.Controls.Add(Me.BtnLastWritten, 3, 0)
         Me.TableLayoutPanel1.Controls.Add(Me.LblLastAccessed, 0, 2)
         Me.TableLayoutPanel1.Controls.Add(Me.DTLastAccessed, 1, 2)
         Me.TableLayoutPanel1.Controls.Add(Me.DTCreated, 1, 1)
         Me.TableLayoutPanel1.Controls.Add(Me.DTLastWritten, 1, 0)
+        Me.TableLayoutPanel1.Controls.Add(Me.BtnLastWritten, 4, 0)
+        Me.TableLayoutPanel1.Controls.Add(Me.DTLastWrittenTime, 2, 0)
+        Me.TableLayoutPanel1.Controls.Add(Me.PanelCreatedTime, 2, 1)
         Me.TableLayoutPanel1.Location = New System.Drawing.Point(9, 19)
         Me.TableLayoutPanel1.Margin = New System.Windows.Forms.Padding(6, 3, 6, 3)
         Me.TableLayoutPanel1.Name = "TableLayoutPanel1"
@@ -114,39 +120,38 @@ Partial Class FilePropertiesForm
         Me.TableLayoutPanel1.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 26.0!))
         Me.TableLayoutPanel1.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 26.0!))
         Me.TableLayoutPanel1.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 26.0!))
-        Me.TableLayoutPanel1.Size = New System.Drawing.Size(370, 78)
+        Me.TableLayoutPanel1.Size = New System.Drawing.Size(420, 78)
         Me.TableLayoutPanel1.TabIndex = 0
         '
-        'Panel1
+        'PanelCreatedMS
         '
-        Panel1.BackColor = System.Drawing.SystemColors.Window
-        Panel1.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle
-        Panel1.Controls.Add(Me.NumCreatedMS)
-        Panel1.Location = New System.Drawing.Point(255, 29)
-        Panel1.Name = "Panel1"
-        Panel1.Padding = New System.Windows.Forms.Padding(1, 1, 0, 0)
-        Panel1.Size = New System.Drawing.Size(44, 20)
-        Panel1.TabIndex = 5
+        Me.PanelCreatedMS.BackColor = System.Drawing.SystemColors.Window
+        Me.PanelCreatedMS.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle
+        Me.PanelCreatedMS.Controls.Add(Me.NumCreatedMS)
+        Me.PanelCreatedMS.Location = New System.Drawing.Point(305, 29)
+        Me.PanelCreatedMS.Name = "PanelCreatedMS"
+        Me.PanelCreatedMS.Padding = New System.Windows.Forms.Padding(1, 1, 0, 0)
+        Me.PanelCreatedMS.Size = New System.Drawing.Size(44, 20)
+        Me.PanelCreatedMS.TabIndex = 7
         '
         'NumCreatedMS
         '
         Me.NumCreatedMS.BackColor = System.Drawing.SystemColors.Window
         Me.NumCreatedMS.BorderStyle = System.Windows.Forms.BorderStyle.None
-        Me.NumCreatedMS.Dock = System.Windows.Forms.DockStyle.Top
         Me.NumCreatedMS.Increment = New Decimal(New Integer() {10, 0, 0, 0})
         Me.NumCreatedMS.Location = New System.Drawing.Point(1, 1)
         Me.NumCreatedMS.Maximum = New Decimal(New Integer() {999, 0, 0, 0})
         Me.NumCreatedMS.Name = "NumCreatedMS"
-        Me.NumCreatedMS.Size = New System.Drawing.Size(41, 16)
+        Me.NumCreatedMS.Size = New System.Drawing.Size(42, 16)
         Me.NumCreatedMS.TabIndex = 0
         '
         'BtnLastAccessed
         '
         Me.BtnLastAccessed.Anchor = System.Windows.Forms.AnchorStyles.Left
-        Me.BtnLastAccessed.Location = New System.Drawing.Point(305, 55)
+        Me.BtnLastAccessed.Location = New System.Drawing.Point(355, 55)
         Me.BtnLastAccessed.Name = "BtnLastAccessed"
         Me.BtnLastAccessed.Size = New System.Drawing.Size(62, 20)
-        Me.BtnLastAccessed.TabIndex = 9
+        Me.BtnLastAccessed.TabIndex = 11
         Me.BtnLastAccessed.Text = "Edit"
         Me.BtnLastAccessed.UseVisualStyleBackColor = True
         '
@@ -164,10 +169,10 @@ Partial Class FilePropertiesForm
         'BtnCreated
         '
         Me.BtnCreated.Anchor = System.Windows.Forms.AnchorStyles.Left
-        Me.BtnCreated.Location = New System.Drawing.Point(305, 29)
+        Me.BtnCreated.Location = New System.Drawing.Point(355, 29)
         Me.BtnCreated.Name = "BtnCreated"
         Me.BtnCreated.Size = New System.Drawing.Size(62, 20)
-        Me.BtnCreated.TabIndex = 6
+        Me.BtnCreated.TabIndex = 8
         Me.BtnCreated.Text = "Edit"
         Me.BtnCreated.UseVisualStyleBackColor = True
         '
@@ -179,18 +184,8 @@ Partial Class FilePropertiesForm
         Me.LblCreated.Margin = New System.Windows.Forms.Padding(3)
         Me.LblCreated.Name = "LblCreated"
         Me.LblCreated.Size = New System.Drawing.Size(44, 13)
-        Me.LblCreated.TabIndex = 3
+        Me.LblCreated.TabIndex = 4
         Me.LblCreated.Text = "Created"
-        '
-        'BtnLastWritten
-        '
-        Me.BtnLastWritten.Anchor = System.Windows.Forms.AnchorStyles.Left
-        Me.BtnLastWritten.Location = New System.Drawing.Point(305, 3)
-        Me.BtnLastWritten.Name = "BtnLastWritten"
-        Me.BtnLastWritten.Size = New System.Drawing.Size(62, 20)
-        Me.BtnLastWritten.TabIndex = 2
-        Me.BtnLastWritten.Text = "Edit"
-        Me.BtnLastWritten.UseVisualStyleBackColor = True
         '
         'LblLastAccessed
         '
@@ -200,49 +195,83 @@ Partial Class FilePropertiesForm
         Me.LblLastAccessed.Margin = New System.Windows.Forms.Padding(3)
         Me.LblLastAccessed.Name = "LblLastAccessed"
         Me.LblLastAccessed.Size = New System.Drawing.Size(77, 13)
-        Me.LblLastAccessed.TabIndex = 7
+        Me.LblLastAccessed.TabIndex = 9
         Me.LblLastAccessed.Text = "Last Accessed"
         '
         'DTLastAccessed
         '
         Me.DTLastAccessed.Anchor = System.Windows.Forms.AnchorStyles.Left
-        Me.DTLastAccessed.CustomFormat = "yyyy-MM-dd"
-        Me.DTLastAccessed.Format = System.Windows.Forms.DateTimePickerFormat.Custom
+        Me.DTLastAccessed.CustomFormat = ""
+        Me.DTLastAccessed.Format = System.Windows.Forms.DateTimePickerFormat.[Short]
         Me.DTLastAccessed.Location = New System.Drawing.Point(86, 55)
         Me.DTLastAccessed.MaxDate = New Date(2107, 12, 31, 0, 0, 0, 0)
         Me.DTLastAccessed.MinDate = New Date(1980, 1, 1, 0, 0, 0, 0)
         Me.DTLastAccessed.Name = "DTLastAccessed"
         Me.DTLastAccessed.ShowCheckBox = True
-        Me.DTLastAccessed.ShowUpDown = True
-        Me.DTLastAccessed.Size = New System.Drawing.Size(103, 20)
-        Me.DTLastAccessed.TabIndex = 8
+        Me.DTLastAccessed.Size = New System.Drawing.Size(116, 20)
+        Me.DTLastAccessed.TabIndex = 10
         '
         'DTCreated
         '
         Me.DTCreated.Anchor = System.Windows.Forms.AnchorStyles.Left
-        Me.DTCreated.CustomFormat = "yyyy-MM-dd  H:mm:ss"
-        Me.DTCreated.Format = System.Windows.Forms.DateTimePickerFormat.Custom
+        Me.DTCreated.CustomFormat = ""
+        Me.DTCreated.Format = System.Windows.Forms.DateTimePickerFormat.[Short]
         Me.DTCreated.Location = New System.Drawing.Point(86, 29)
         Me.DTCreated.MaxDate = New Date(2107, 12, 31, 0, 0, 0, 0)
         Me.DTCreated.MinDate = New Date(1980, 1, 1, 0, 0, 0, 0)
         Me.DTCreated.Name = "DTCreated"
         Me.DTCreated.ShowCheckBox = True
-        Me.DTCreated.ShowUpDown = True
-        Me.DTCreated.Size = New System.Drawing.Size(163, 20)
-        Me.DTCreated.TabIndex = 4
+        Me.DTCreated.Size = New System.Drawing.Size(116, 20)
+        Me.DTCreated.TabIndex = 5
         '
         'DTLastWritten
         '
         Me.DTLastWritten.Anchor = System.Windows.Forms.AnchorStyles.Left
-        Me.DTLastWritten.CustomFormat = "yyyy-MM-dd  H:mm:ss"
-        Me.DTLastWritten.Format = System.Windows.Forms.DateTimePickerFormat.Custom
+        Me.DTLastWritten.CustomFormat = ""
+        Me.DTLastWritten.Format = System.Windows.Forms.DateTimePickerFormat.[Short]
         Me.DTLastWritten.Location = New System.Drawing.Point(86, 3)
         Me.DTLastWritten.MaxDate = New Date(2107, 12, 31, 0, 0, 0, 0)
         Me.DTLastWritten.MinDate = New Date(1980, 1, 1, 0, 0, 0, 0)
         Me.DTLastWritten.Name = "DTLastWritten"
-        Me.DTLastWritten.ShowUpDown = True
-        Me.DTLastWritten.Size = New System.Drawing.Size(132, 20)
+        Me.DTLastWritten.Size = New System.Drawing.Size(116, 20)
         Me.DTLastWritten.TabIndex = 1
+        '
+        'BtnLastWritten
+        '
+        Me.BtnLastWritten.Anchor = System.Windows.Forms.AnchorStyles.Left
+        Me.BtnLastWritten.Location = New System.Drawing.Point(355, 3)
+        Me.BtnLastWritten.Name = "BtnLastWritten"
+        Me.BtnLastWritten.Size = New System.Drawing.Size(62, 20)
+        Me.BtnLastWritten.TabIndex = 3
+        Me.BtnLastWritten.Text = "Edit"
+        Me.BtnLastWritten.UseVisualStyleBackColor = True
+        '
+        'DTLastWrittenTime
+        '
+        Me.DTLastWrittenTime.Format = System.Windows.Forms.DateTimePickerFormat.Time
+        Me.DTLastWrittenTime.Location = New System.Drawing.Point(208, 3)
+        Me.DTLastWrittenTime.Name = "DTLastWrittenTime"
+        Me.DTLastWrittenTime.ShowUpDown = True
+        Me.DTLastWrittenTime.Size = New System.Drawing.Size(91, 20)
+        Me.DTLastWrittenTime.TabIndex = 2
+        '
+        'PanelCreatedTime
+        '
+        Me.PanelCreatedTime.BackColor = System.Drawing.SystemColors.Window
+        Me.PanelCreatedTime.Controls.Add(Me.DTCreatedTime)
+        Me.PanelCreatedTime.Location = New System.Drawing.Point(208, 29)
+        Me.PanelCreatedTime.Name = "PanelCreatedTime"
+        Me.PanelCreatedTime.Size = New System.Drawing.Size(91, 20)
+        Me.PanelCreatedTime.TabIndex = 6
+        '
+        'DTCreatedTime
+        '
+        Me.DTCreatedTime.Format = System.Windows.Forms.DateTimePickerFormat.Time
+        Me.DTCreatedTime.Location = New System.Drawing.Point(0, 0)
+        Me.DTCreatedTime.Name = "DTCreatedTime"
+        Me.DTCreatedTime.ShowUpDown = True
+        Me.DTCreatedTime.Size = New System.Drawing.Size(91, 20)
+        Me.DTCreatedTime.TabIndex = 0
         '
         'GroupAttributes
         '
@@ -254,7 +283,7 @@ Partial Class FilePropertiesForm
         GroupAttributes.Location = New System.Drawing.Point(3, 218)
         GroupAttributes.Name = "GroupAttributes"
         GroupAttributes.Padding = New System.Windows.Forms.Padding(3, 3, 3, 0)
-        GroupAttributes.Size = New System.Drawing.Size(388, 90)
+        GroupAttributes.Size = New System.Drawing.Size(438, 90)
         GroupAttributes.TabIndex = 2
         GroupAttributes.TabStop = False
         GroupAttributes.Text = "Attributes"
@@ -264,9 +293,9 @@ Partial Class FilePropertiesForm
         Me.TableLayoutPanel2.AutoSize = True
         Me.TableLayoutPanel2.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink
         Me.TableLayoutPanel2.ColumnCount = 4
-        Me.TableLayoutPanel2.ColumnStyles.Add(New System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 117.0!))
+        Me.TableLayoutPanel2.ColumnStyles.Add(New System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 142.0!))
         Me.TableLayoutPanel2.ColumnStyles.Add(New System.Windows.Forms.ColumnStyle())
-        Me.TableLayoutPanel2.ColumnStyles.Add(New System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 117.0!))
+        Me.TableLayoutPanel2.ColumnStyles.Add(New System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 142.0!))
         Me.TableLayoutPanel2.ColumnStyles.Add(New System.Windows.Forms.ColumnStyle())
         Me.TableLayoutPanel2.Controls.Add(Me.ChkArchive, 0, 0)
         Me.TableLayoutPanel2.Controls.Add(Me.ChkSystem, 0, 1)
@@ -282,7 +311,7 @@ Partial Class FilePropertiesForm
         Me.TableLayoutPanel2.RowCount = 2
         Me.TableLayoutPanel2.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 26.0!))
         Me.TableLayoutPanel2.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 26.0!))
-        Me.TableLayoutPanel2.Size = New System.Drawing.Size(370, 52)
+        Me.TableLayoutPanel2.Size = New System.Drawing.Size(420, 52)
         Me.TableLayoutPanel2.TabIndex = 0
         '
         'ChkArchive
@@ -310,7 +339,7 @@ Partial Class FilePropertiesForm
         'BtnArchive
         '
         Me.BtnArchive.Anchor = System.Windows.Forms.AnchorStyles.Left
-        Me.BtnArchive.Location = New System.Drawing.Point(120, 3)
+        Me.BtnArchive.Location = New System.Drawing.Point(145, 3)
         Me.BtnArchive.Name = "BtnArchive"
         Me.BtnArchive.Size = New System.Drawing.Size(62, 20)
         Me.BtnArchive.TabIndex = 1
@@ -320,7 +349,7 @@ Partial Class FilePropertiesForm
         'BtnSystem
         '
         Me.BtnSystem.Anchor = System.Windows.Forms.AnchorStyles.Left
-        Me.BtnSystem.Location = New System.Drawing.Point(120, 29)
+        Me.BtnSystem.Location = New System.Drawing.Point(145, 29)
         Me.BtnSystem.Name = "BtnSystem"
         Me.BtnSystem.Size = New System.Drawing.Size(62, 20)
         Me.BtnSystem.TabIndex = 5
@@ -330,7 +359,7 @@ Partial Class FilePropertiesForm
         'BtnReadOnly
         '
         Me.BtnReadOnly.Anchor = System.Windows.Forms.AnchorStyles.Left
-        Me.BtnReadOnly.Location = New System.Drawing.Point(305, 3)
+        Me.BtnReadOnly.Location = New System.Drawing.Point(355, 3)
         Me.BtnReadOnly.Name = "BtnReadOnly"
         Me.BtnReadOnly.Size = New System.Drawing.Size(62, 20)
         Me.BtnReadOnly.TabIndex = 3
@@ -340,7 +369,7 @@ Partial Class FilePropertiesForm
         'BtnHidden
         '
         Me.BtnHidden.Anchor = System.Windows.Forms.AnchorStyles.Left
-        Me.BtnHidden.Location = New System.Drawing.Point(305, 29)
+        Me.BtnHidden.Location = New System.Drawing.Point(355, 29)
         Me.BtnHidden.Name = "BtnHidden"
         Me.BtnHidden.Size = New System.Drawing.Size(62, 20)
         Me.BtnHidden.TabIndex = 7
@@ -350,7 +379,7 @@ Partial Class FilePropertiesForm
         'ChkReadOnly
         '
         Me.ChkReadOnly.Anchor = System.Windows.Forms.AnchorStyles.Left
-        Me.ChkReadOnly.Location = New System.Drawing.Point(188, 4)
+        Me.ChkReadOnly.Location = New System.Drawing.Point(213, 4)
         Me.ChkReadOnly.Name = "ChkReadOnly"
         Me.ChkReadOnly.Padding = New System.Windows.Forms.Padding(6, 1, 0, 0)
         Me.ChkReadOnly.Size = New System.Drawing.Size(87, 17)
@@ -361,7 +390,7 @@ Partial Class FilePropertiesForm
         'ChkHidden
         '
         Me.ChkHidden.Anchor = System.Windows.Forms.AnchorStyles.Left
-        Me.ChkHidden.Location = New System.Drawing.Point(188, 30)
+        Me.ChkHidden.Location = New System.Drawing.Point(213, 30)
         Me.ChkHidden.Name = "ChkHidden"
         Me.ChkHidden.Padding = New System.Windows.Forms.Padding(6, 1, 0, 0)
         Me.ChkHidden.Size = New System.Drawing.Size(76, 17)
@@ -426,7 +455,7 @@ Partial Class FilePropertiesForm
         Me.GroupFileName.Controls.Add(TableLayoutPanel3)
         Me.GroupFileName.Location = New System.Drawing.Point(3, 3)
         Me.GroupFileName.Name = "GroupFileName"
-        Me.GroupFileName.Size = New System.Drawing.Size(388, 90)
+        Me.GroupFileName.Size = New System.Drawing.Size(438, 90)
         Me.GroupFileName.TabIndex = 0
         Me.GroupFileName.TabStop = False
         Me.GroupFileName.Text = "File Name"
@@ -462,7 +491,7 @@ Partial Class FilePropertiesForm
         Me.FlowLayoutPanel1.CausesValidation = False
         Me.FlowLayoutPanel1.Controls.Add(Me.BtnUpdate)
         Me.FlowLayoutPanel1.Controls.Add(Me.BtnCancel)
-        Me.FlowLayoutPanel1.Location = New System.Drawing.Point(101, 314)
+        Me.FlowLayoutPanel1.Location = New System.Drawing.Point(126, 314)
         Me.FlowLayoutPanel1.Name = "FlowLayoutPanel1"
         Me.FlowLayoutPanel1.Size = New System.Drawing.Size(192, 29)
         Me.FlowLayoutPanel1.TabIndex = 3
@@ -478,7 +507,7 @@ Partial Class FilePropertiesForm
         Me.FlowLayoutPanel2.FlowDirection = System.Windows.Forms.FlowDirection.TopDown
         Me.FlowLayoutPanel2.Location = New System.Drawing.Point(21, 21)
         Me.FlowLayoutPanel2.Name = "FlowLayoutPanel2"
-        Me.FlowLayoutPanel2.Size = New System.Drawing.Size(394, 346)
+        Me.FlowLayoutPanel2.Size = New System.Drawing.Size(444, 346)
         Me.FlowLayoutPanel2.TabIndex = 4
         '
         'MskExtensionHex
@@ -506,7 +535,7 @@ Partial Class FilePropertiesForm
         Me.AutoSize = True
         Me.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink
         Me.CancelButton = Me.BtnCancel
-        Me.ClientSize = New System.Drawing.Size(453, 396)
+        Me.ClientSize = New System.Drawing.Size(484, 396)
         Me.Controls.Add(Me.FlowLayoutPanel2)
         Me.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog
         Me.MaximizeBox = False
@@ -521,8 +550,9 @@ Partial Class FilePropertiesForm
         GroupFileDates.PerformLayout()
         Me.TableLayoutPanel1.ResumeLayout(False)
         Me.TableLayoutPanel1.PerformLayout()
-        Panel1.ResumeLayout(False)
+        Me.PanelCreatedMS.ResumeLayout(False)
         CType(Me.NumCreatedMS, System.ComponentModel.ISupportInitialize).EndInit()
+        Me.PanelCreatedTime.ResumeLayout(False)
         GroupAttributes.ResumeLayout(False)
         GroupAttributes.PerformLayout()
         Me.TableLayoutPanel2.ResumeLayout(False)
@@ -568,4 +598,8 @@ Partial Class FilePropertiesForm
     Friend WithEvents MskExtensionHex As HexTextBox
     Friend WithEvents NumCreatedMS As NumericUpDown
     Friend WithEvents FlowLayoutPanel2 As FlowLayoutPanel
+    Friend WithEvents DTLastWrittenTime As DateTimePicker
+    Friend WithEvents DTCreatedTime As DateTimePicker
+    Friend WithEvents PanelCreatedMS As Panel
+    Friend WithEvents PanelCreatedTime As Panel
 End Class
