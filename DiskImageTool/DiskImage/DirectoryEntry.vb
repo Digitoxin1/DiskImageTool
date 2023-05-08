@@ -406,6 +406,11 @@ Namespace DiskImage
             Return (FilePart = &H202E Or FilePart = &H2E2E)
         End Function
 
+        Public Function IsCurrentLink() As Boolean
+            Dim FilePart = _FileBytes.ToUInt16(_Offset)
+            Return (FilePart = &H202E)
+        End Function
+
         Public Function ISParentLink() As Boolean
             Dim FilePart = _FileBytes.ToUInt16(_Offset)
             Return (FilePart = &H2E2E)
@@ -423,8 +428,16 @@ Namespace DiskImage
             Return (Attributes And AttributeFlags.System) > 0
         End Function
 
-        Public Function IsValid() As Boolean
-            Return Not (IsVolumeName() Or HasInvalidFileSize() Or HasInvalidStartingCluster() Or StartingCluster < 2)
+        Public Function IsValidDirectory() As Boolean
+            Return IsDirectory() AndAlso Not (IsVolumeName() OrElse HasInvalidStartingCluster()) AndAlso StartingCluster > 1
+        End Function
+
+        Public Function IsValidFile() As Boolean
+            Return Not (IsDirectory() OrElse IsVolumeName() OrElse HasInvalidStartingCluster() OrElse HasInvalidFileSize()) AndAlso StartingCluster > 1
+        End Function
+
+        Public Function IsValidValumeName() As Boolean
+            Return IsVolumeName() AndAlso Not (IsHidden() OrElse IsSystem() OrElse IsDirectory() OrElse IsDeleted()) AndAlso StartingCluster = 0
         End Function
 
         Public Function IsVolumeName() As Boolean
@@ -538,8 +551,8 @@ Namespace DiskImage
         End Function
 
         Private Sub InitSubDirectory()
-            If IsDirectory() AndAlso Not IsLink() AndAlso Not IsDeleted() AndAlso Not IsVolumeName() Then
-                _SubDirectory = New SubDirectory(_FileBytes, _BootSector, _FAT, _FatChain, FileSize)
+            If IsValidDirectory() AndAlso Not IsLink() AndAlso Not IsDeleted() Then
+                _SubDirectory = New SubDirectory(_FileBytes, _BootSector, _FAT, _FatChain)
             Else
                 _SubDirectory = Nothing
             End If

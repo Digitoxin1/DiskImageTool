@@ -95,7 +95,7 @@
             If DirectoryEntryCount > 0 Then
                 For Counter As UInteger = 0 To DirectoryEntryCount - 1
                     Dim File = _Directory.GetFile(Counter)
-                    If Not File.IsDeleted And File.IsVolumeName Then
+                    If File.IsValidValumeName Then
                         VolumeLabel = File
                         Exit For
                     End If
@@ -166,7 +166,7 @@
                 For Counter = 0 To DirectoryEntryCount - 1
                     Dim File = Directory.GetFile(Counter)
 
-                    If Not File.IsLink And Not File.IsVolumeName Then
+                    If Not File.IsLink Then
                         FileBytes.DirectoryCache.Item(File.Offset) = File.Data
                         If File.IsDirectory And File.SubDirectory IsNot Nothing Then
                             If File.SubDirectory.Data.EntryCount > 0 Then

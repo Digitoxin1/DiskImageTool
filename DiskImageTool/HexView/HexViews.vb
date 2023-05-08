@@ -118,7 +118,7 @@ Module HexViews
             HighlightDirectoryData(Disk, HexViewSectorData, True)
         Else
             Dim DirectoryEntry = Disk.GetDirectoryEntryByOffset(Offset)
-            If Not DirectoryEntry.IsValid Then
+            If Not (DirectoryEntry.IsValidFile OrElse DirectoryEntry.IsValidDirectory) Then
                 Return Nothing
             End If
 

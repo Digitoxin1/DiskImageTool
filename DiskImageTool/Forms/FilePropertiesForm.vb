@@ -260,8 +260,8 @@
         Dim DirectoryEntry = FileData.DirectoryEntry
         Dim DT As DiskImage.ExpandedDate
 
-        _IsDirectory = DirectoryEntry.IsDirectory
-        _IsVolumeLabel = DirectoryEntry.IsVolumeName
+        _IsDirectory = DirectoryEntry.IsDirectory And Not DirectoryEntry.IsVolumeName
+        _IsVolumeLabel = DirectoryEntry.IsValidValumeName
         _Deleted = DirectoryEntry.IsDeleted
 
         Dim Caption As String

@@ -421,7 +421,7 @@
         End Function
 
         Public Function IsValidImage() As Boolean
-            Return _FileBytes.Length > 0 _
+            Return _FileBytes.Length > 512 _
                 AndAlso HasValidMediaDescriptor() _
                 AndAlso HasValidNumberOfFATs() _
                 AndAlso HasValidNumberOfHeadss() _

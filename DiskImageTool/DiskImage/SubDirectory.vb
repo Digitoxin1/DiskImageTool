@@ -6,15 +6,13 @@
         Private ReadOnly _FAT As FAT12
         Private ReadOnly _FatChain As FATChain
         Private ReadOnly _FileBytes As ImageByteArray
-        Private ReadOnly _Length As UInteger
         Private _DirectoryData As DirectoryData
 
-        Sub New(FileBytes As ImageByteArray, BootSector As BootSector, FAT As FAT12, FatChain As FATChain, Length As UInteger)
+        Sub New(FileBytes As ImageByteArray, BootSector As BootSector, FAT As FAT12, FatChain As FATChain)
             _BootSector = BootSector
             _FAT = FAT
             _FileBytes = FileBytes
             _FatChain = FatChain
-            _Length = Length
             _DirectoryData = GetDirectoryData()
         End Sub
 
@@ -31,13 +29,7 @@
         End Property
 
         Public Function GetContent() As Byte() Implements IDirectory.GetContent
-            Dim Content = GetDataFromChain(_FileBytes, SectorChain)
-
-            If Content.Length <> _Length Then
-                Array.Resize(Of Byte)(Content, _Length)
-            End If
-
-            Return Content
+            Return GetDataFromChain(_FileBytes, SectorChain)
         End Function
 
         Public Function GetFile(Index As UInteger) As DirectoryEntry Implements IDirectory.GetFile

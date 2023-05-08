@@ -470,7 +470,7 @@ Public Class MainForm
             If JSON.ContainsKey("body") Then
                 Body = JSON.Item("body").ToString
             End If
-        Catch
+        Catch ex As Exception
             MsgBox("An error occured while checking for updates.  Please try again later.", MsgBoxStyle.Exclamation)
             Exit Sub
         End Try
@@ -499,7 +499,7 @@ Public Class MainForm
                     Try
                         Dim Client As New WebClient()
                         Client.DownloadFile(DownloadURL, Dialog.FileName)
-                    Catch
+                    Catch ex As Exception
                         MsgBox("An error occured while downloading the file.", MsgBoxStyle.Exclamation)
                     End Try
                     Cursor.Current = Cursors.Default
@@ -692,9 +692,8 @@ Public Class MainForm
     End Sub
 
     Private Function DirectoryEntryCanExport(DirectoryEntry As DiskImage.DirectoryEntry) As Boolean
-        Return DirectoryEntry.IsValid _
+        Return DirectoryEntry.IsValidFile _
             And Not DirectoryEntry.IsDeleted _
-            And Not DirectoryEntry.IsDirectory _
             And Not DirectoryEntry.HasInvalidFilename _
             And Not DirectoryEntry.HasInvalidExtension
     End Function
@@ -733,8 +732,7 @@ Public Class MainForm
     Private Sub DirectoryEntryDisplayText(DirectoryEntry As DiskImage.DirectoryEntry)
         Dim frmTextView As TextViewForm
 
-        If Not DirectoryEntry.IsValid _
-            Or DirectoryEntry.IsDirectory _
+        If Not DirectoryEntry.IsValidFile _
             Or DirectoryEntry.IsDeleted Then
             Exit Sub
         End If
@@ -767,7 +765,7 @@ Public Class MainForm
     Private Function DirectoryEntryCanDelete(DirectoryEntry As DiskImage.DirectoryEntry) As Boolean
         If DirectoryEntry.IsDeleted Then
             Return False
-        ElseIf DirectoryEntry.IsDirectory And Not DirectoryEntry.IsVolumeName Then
+        ElseIf DirectoryEntry.IsValidDirectory Then
             Return DirectoryEntry.SubDirectory.Data.FileCount - DirectoryEntry.SubDirectory.Data.DeletedFileCount = 0
         Else
             Return True
@@ -775,19 +773,19 @@ Public Class MainForm
     End Function
 
     Private Function DirectoryEntryCanDeleteWithFill(DirectoryEntry As DiskImage.DirectoryEntry) As Boolean
-        Return DirectoryEntryCanDelete(DirectoryEntry) And DirectoryEntry.IsValid
+        Return DirectoryEntryCanDelete(DirectoryEntry) AndAlso DirectoryEntry.IsValidFile
     End Function
 
     Private Function DirectoryEntryGetStats(DirectoryEntry As DiskImage.DirectoryEntry) As DirectoryStats
         Dim Stats As DirectoryStats
 
         With Stats
-            .IsValid = DirectoryEntry.IsValid
             .IsDirectory = DirectoryEntry.IsDirectory And Not DirectoryEntry.IsVolumeName
             .IsDeleted = DirectoryEntry.IsDeleted
             .IsModified = DirectoryEntry.IsModified
-            .IsValidFile = .IsValid And Not .IsDirectory And Not .IsDeleted
-            .CanExport = .IsValidFile And Not DirectoryEntry.HasInvalidFilename And Not DirectoryEntry.HasInvalidExtension
+            .IsValidFile = DirectoryEntry.IsValidFile
+            .IsValidDirectory = DirectoryEntry.IsValidDirectory
+            .CanExport = DirectoryEntryCanExport(DirectoryEntry)
             .FileSize = DirectoryEntry.FileSize
             .FullFileName = DirectoryEntry.GetFullFileName
             .CanDelete = DirectoryEntryCanDelete(DirectoryEntry)
@@ -798,7 +796,7 @@ Public Class MainForm
     End Function
 
 
-    Private Sub DiskImageLoad(DoItemScan As Boolean)
+    Private Sub ReloadCurrentImage(DoItemScan As Boolean)
         Dim CurrentImageData As LoadedImageData = ComboImages.SelectedItem
         _Disk = DiskImageLoad(CurrentImageData)
         If _Disk IsNot Nothing Then
@@ -1610,22 +1608,20 @@ Public Class MainForm
         Dim SI As ListViewItem.ListViewSubItem
         Dim ForeColor As Color
         Dim IsDeleted As Boolean = DirectoryEntry.IsDeleted
-        Dim IsVolumeName As Boolean = DirectoryEntry.IsVolumeName
-        Dim IsDirectory As Boolean = DirectoryEntry.IsDirectory
         Dim HasInvalidFileSize As Boolean = DirectoryEntry.HasInvalidFileSize
 
         Dim Attrib As String = IIf(DirectoryEntry.IsArchive, "A ", "- ") _
             & IIf(DirectoryEntry.IsReadOnly, "R ", "- ") _
             & IIf(DirectoryEntry.IsSystem, "S ", "- ") _
             & IIf(DirectoryEntry.IsHidden, "H ", "- ") _
-            & IIf(IsDirectory, "D ", "- ") _
-            & IIf(IsVolumeName, "V ", "- ")
+            & IIf(DirectoryEntry.IsDirectory, "D ", "- ") _
+            & IIf(DirectoryEntry.IsVolumeName, "V ", "- ")
 
         If IsDeleted Then
             ForeColor = Color.Gray
-        ElseIf IsVolumeName Then
+        ElseIf DirectoryEntry.IsValidValumeName Then
             ForeColor = Color.Green
-        ElseIf IsDirectory Then
+        ElseIf DirectoryEntry.IsDirectory And Not DirectoryEntry.IsVolumeName Then
             ForeColor = Color.Blue
         End If
 
@@ -1713,7 +1709,7 @@ Public Class MainForm
             SI.ForeColor = ForeColor
         End If
 
-        If Not IsDeleted And Not IsDirectory And Not IsVolumeName And Not HasInvalidFileSize Then
+        If DirectoryEntry.IsValidFile Then
             SI = Item.SubItems.Add(Crc32.ComputeChecksum(DirectoryEntry.GetContent).ToString("X8"))
         Else
             SI = Item.SubItems.Add("")
@@ -2311,12 +2307,13 @@ Public Class MainForm
                         If Not Response.HasInvalidDirectoryEntries Then
                             If Not File.IsDeleted Then
                                 If File.HasInvalidFilename _
-                                Or File.HasInvalidExtension _
-                                Or File.HasInvalidFileSize _
-                                Or File.HasIncorrectFileSize _
-                                Or File.HasInvalidAttributes _
-                                Or File.HasInvalidStartingCluster _
-                                Or Not File.GetLastWriteDate.IsValidDate Then
+                                    OrElse File.HasInvalidExtension _
+                                    OrElse File.HasInvalidFileSize _
+                                    OrElse File.HasIncorrectFileSize _
+                                    OrElse File.HasInvalidAttributes _
+                                    OrElse File.HasInvalidStartingCluster _
+                                    OrElse (File.IsVolumeName And Not File.IsValidValumeName) _
+                                    OrElse Not File.GetLastWriteDate.IsValidDate Then
                                     Response.HasInvalidDirectoryEntries = True
                                 End If
                             End If
@@ -2404,7 +2401,7 @@ Public Class MainForm
             If Buffer(0) = &H50 And Buffer(1) = &H4B Then
                 Return ZipFile.OpenRead(FileName)
             End If
-        Catch
+        Catch ex As Exception
             Return Nothing
         End Try
 
@@ -2431,6 +2428,10 @@ Public Class MainForm
     End Sub
 
     Private Sub ProcessFile(FileName As String, ByRef SelectedImageData As LoadedImageData)
+        If Not File.Exists(FileName) Then
+            Return
+        End If
+
         Dim Archive = IsZipArchive(FileName)
 
         If Archive IsNot Nothing Then
@@ -2561,12 +2562,12 @@ Public Class MainForm
             BtnExportFile.Text = "&Export File"
             BtnExportFile.Enabled = Stats.CanExport
 
-            BtnReplaceFile.Enabled = Stats.IsValidFile
+            BtnReplaceFile.Enabled = Stats.IsValidFile And Not Stats.IsDeleted
             BtnFileProperties.Enabled = True
             BtnFileMenuViewCrosslinked.Visible = FileData.DirectoryEntry.IsCrossLinked
             BtnFileMenuFixSize.Enabled = FileData.DirectoryEntry.HasIncorrectFileSize
 
-            BtnFileMenuViewFileText.Visible = Stats.IsValidFile
+            BtnFileMenuViewFileText.Visible = Stats.IsValidFile And Not Stats.IsDeleted
             BtnFileMenuViewFileText.Enabled = Stats.FileSize > 0
 
             If Stats.IsDeleted Then
@@ -2589,7 +2590,7 @@ Public Class MainForm
                 BtnFileMenuDeleteFileWithFill.Enabled = Stats.CanDeleteWithFill
             End If
 
-            If Stats.IsValid Then
+            If Stats.IsValidFile Or Stats.IsValidDirectory Then
                 If Stats.IsDeleted Then
                     BtnDisplayFile.Text = "Deleted &File:  " & Stats.FullFileName
                 Else
@@ -2745,7 +2746,7 @@ Public Class MainForm
         If _Disk.Data.Modified Then
             Dim CurrentImageData As LoadedImageData = ComboImages.SelectedItem
             CurrentImageData.Modifications.Clear()
-            DiskImageLoad(True)
+            ReloadCurrentImage(True)
         End If
     End Sub
 
@@ -2882,7 +2883,7 @@ Public Class MainForm
         Dim IsDeleted As Boolean
         Dim IsDirectory As Boolean
         Dim IsModified As Boolean
-        Dim IsValid As Boolean
+        Dim IsValidDirectory As Boolean
         Dim IsValidFile As Boolean
     End Structure
 
@@ -3115,7 +3116,7 @@ Public Class MainForm
             Exit Sub
         End If
 
-        DiskImageLoad(False)
+        ReloadCurrentImage(False)
     End Sub
 
     Private Sub ComboImagesFiltered_SelectedIndexChanged(sender As Object, e As EventArgs) Handles ComboImagesFiltered.SelectedIndexChanged
