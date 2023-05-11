@@ -7,6 +7,7 @@ Public Class ItemScanForm
     Private _Activated As Boolean = False
     Private _EndScan As Boolean = False
     Private _ScanComplete As Boolean = False
+    Private _ItemsRemaining As UInteger
 
     Public Sub New(Parent As MainForm, ImageList As ComboBox.ObjectCollection, NewOnly As Boolean)
 
@@ -17,7 +18,21 @@ Public Class ItemScanForm
         _Parent = Parent
         _ImageList = ImageList
         _NewOnly = NewOnly
+        _ItemsRemaining = ImageList.Count
+        If _NewOnly Then
+            For Each ImageData As LoadedImageData In ImageList
+                If ImageData.Scanned Then
+                    _ItemsRemaining -= 1
+                End If
+            Next
+        End If
     End Sub
+
+    Public ReadOnly Property ItemsRemaining As Boolean
+        Get
+            Return _ItemsRemaining
+        End Get
+    End Property
 
     Public ReadOnly Property ScanComplete As Boolean
         Get
@@ -26,15 +41,10 @@ Public Class ItemScanForm
     End Property
 
     Private Function ProcessScan(bw As BackgroundWorker) As Boolean
-        Dim ItemCount As Integer = 0
-        If _NewOnly Then
-            For Each ImageData As LoadedImageData In _ImageList
-                If Not ImageData.Scanned Then
-                    ItemCount += 1
-                End If
-            Next
-        Else
-            ItemCount = _ImageList.Count
+        Dim ItemCount As Integer = _ItemsRemaining
+
+        If ItemCount = 0 Then
+            Return True
         End If
 
         Dim PrevPercentage As Integer = 0
@@ -55,13 +65,15 @@ Public Class ItemScanForm
                     _Parent.ItemScanModified(Disk, ImageData)
                     _Parent.ItemScanDisk(Disk, ImageData)
                     _Parent.ItemScanOEMName(Disk, ImageData)
-                    _Parent.UpdateOEMNameFilter(Disk, ImageData)
+                    _Parent.OEMNameFilterUpdate(Disk, ImageData)
+                    _Parent.DiskTypeFilterUpdate(Disk, ImageData)
                     _Parent.ItemScanUnusedClusters(Disk, ImageData)
                     _Parent.ItemScanDirectory(Disk, ImageData)
 
                     ImageData.Scanned = True
                 End If
                 Counter += 1
+                _ItemsRemaining -= 1
             End If
         Next
 

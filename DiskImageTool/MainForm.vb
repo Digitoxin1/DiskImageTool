@@ -26,7 +26,8 @@ Public Class MainForm
     Private _CheckAll As Boolean = False
     Private _Disk As DiskImage.Disk
     Private _FilterCounts() As Integer
-    Private _FilterOEMName As Dictionary(Of String, ComboOEMNameItem)
+    Private _FilterOEMName As ComboFilter
+    Private _FilterDiskType As ComboFilter
     Private _FiltersApplied As Boolean = False
     Private _LoadedFileNames As Dictionary(Of String, LoadedImageData)
     Private _OEMNameDictionary As Dictionary(Of UInteger, BootstrapLookup)
@@ -323,55 +324,72 @@ Public Class MainForm
         End If
     End Sub
 
-    Friend Sub UpdateOEMNameFilter(Disk As DiskImage.Disk, ImageData As LoadedImageData, Optional UpdateFilters As Boolean = False, Optional Remove As Boolean = False)
-        Dim OEMNameString As String = ""
-
-        If Not Remove And Disk.IsValidImage Then
-            OEMNameString = Disk.BootSector.GetOEMNameString.TrimEnd(NULL_CHAR)
+    Private Sub OEMNameFilterAdd(OEMName As String, UpdateFilters As Boolean)
+        If OEMName.EndsWith("IHC") Then
+            Return
         End If
 
-        If Disk.IsValidImage And (Not ImageData.Scanned Or OEMNameString <> ImageData.ScanInfo.OEMName) Then
-            If ImageData.Scanned Then
-                If _FilterOEMName.ContainsKey(ImageData.ScanInfo.OEMName) Then
-                    Dim Item = _FilterOEMName.Item(ImageData.ScanInfo.OEMName)
-                    Item.Count -= 1
-                    If Item.Count = 0 Then
-                        _FilterOEMName.Remove(Item.Name)
-                        If UpdateFilters Then
-                            ComboOEMName.Items.Remove(Item)
-                            If ComboOEMName.SelectedIndex = -1 Then
-                                ComboOEMName.SelectedIndex = 0
-                            End If
-                        End If
-                    Else
-                        If UpdateFilters Then
-                            Dim Index = ComboOEMName.Items.IndexOf(Item)
-                            ComboOEMName.Items.Item(Index) = Item
-                        End If
-                    End If
-                End If
+        _FilterOEMName.Add(OEMName, UpdateFilters)
+    End Sub
+
+    Private Sub OEMNameFilterReset()
+        _FilterOEMName.Clear()
+        For Each ImageData As LoadedImageData In ComboImages.Items
+            OEMNameFilterAdd(ImageData.ScanInfo.OEMName, False)
+        Next
+        _FilterOEMName.Populate()
+    End Sub
+
+    Private Sub DiskTypeFilterReset()
+        _FilterDiskType.Clear()
+        For Each ImageData As LoadedImageData In ComboImages.Items
+            _FilterDiskType.Add(ImageData.ScanInfo.DiskType, False)
+        Next
+        _FilterDiskType.Populate()
+    End Sub
+
+    Friend Sub OEMNameFilterUpdate(Disk As DiskImage.Disk, ImageData As LoadedImageData, Optional UpdateFilters As Boolean = False, Optional Remove As Boolean = False)
+        If Disk.IsValidImage Then
+            Dim OEMNameString As String = ""
+
+            If Not Remove Then
+                OEMNameString = Disk.BootSector.GetOEMNameString.TrimEnd(NULL_CHAR)
             End If
 
-            ImageData.ScanInfo.OEMName = OEMNameString
-
-            If Not Remove AndAlso Not Disk.BootSector.IsWin9xOEMName Then
-                If _FilterOEMName.ContainsKey(OEMNameString) Then
-                    Dim Item = _FilterOEMName.Item(ImageData.ScanInfo.OEMName)
-                    Item.Count += 1
-                    If UpdateFilters Then
-                        Dim Index = ComboOEMName.Items.IndexOf(Item)
-                        ComboOEMName.Items.Item(Index) = Item
-                    End If
-                Else
-                    Dim Item = New ComboOEMNameItem With {
-                        .Name = OEMNameString,
-                        .Count = 1
-                    }
-                    _FilterOEMName.Add(Item.Name, Item)
-                    If UpdateFilters Then
-                        ComboOEMName.Items.Add(Item)
-                    End If
+            If Not ImageData.Scanned Or OEMNameString <> ImageData.ScanInfo.OEMName Then
+                If ImageData.Scanned Then
+                    _FilterOEMName.Remove(ImageData.ScanInfo.OEMName, UpdateFilters)
                 End If
+
+                ImageData.ScanInfo.OEMName = OEMNameString
+
+                If Not Remove Then
+                    OEMNameFilterAdd(ImageData.ScanInfo.OEMName, UpdateFilters)
+                End If
+            End If
+        End If
+    End Sub
+
+    Friend Sub DiskTypeFilterUpdate(Disk As DiskImage.Disk, ImageData As LoadedImageData, Optional UpdateFilters As Boolean = False, Optional Remove As Boolean = False)
+        Dim DiskType As String = ""
+
+        If Not Remove Then
+            If Disk.IsValidImage Then
+                DiskType = GetFloppyDiskTypeName(Disk.BootSector)
+            Else
+                DiskType = GetFloppyDiskTypeName(Disk.Data.Length)
+            End If
+        End If
+
+        If Not ImageData.Scanned Or DiskType <> ImageData.ScanInfo.DiskType Then
+            If ImageData.Scanned Then
+                _FilterDiskType.Remove(ImageData.ScanInfo.DiskType, UpdateFilters)
+            End If
+
+            ImageData.ScanInfo.DiskType = DiskType
+
+            If Not Remove Then
+                _FilterDiskType.Add(ImageData.ScanInfo.DiskType, UpdateFilters)
             End If
         End If
     End Sub
@@ -395,10 +413,6 @@ Public Class MainForm
             End If
         End If
     End Sub
-
-    <Runtime.InteropServices.DllImport("User32.dll")>
-    Private Shared Function SetForegroundWindow(ByVal hWnd As Integer) As Integer
-    End Function
 
     Private Sub BootSectorEdit()
         Dim BootSectorForm As New BootSectorForm(_Disk, _OEMNameDictionary)
@@ -891,14 +905,20 @@ Public Class MainForm
         End If
         Dim ItemScanForm As New ItemScanForm(Me, ComboImages.Items, NewOnly)
         ItemScanForm.ShowDialog()
-        BtnScanNew.Visible = Not ItemScanForm.ScanComplete
+        BtnScanNew.Visible = ItemScanForm.ItemsRemaining > 0
 
         For Counter = 0 To [Enum].GetNames(GetType(FilterTypes)).Length - 1
             FilterUpdate(Counter)
         Next
 
         RefreshModifiedState()
-        PopulateComboOEMName()
+        _FilterOEMName.Populate()
+        _FilterDiskType.Populate()
+
+        ComboOEMName.Visible = True
+        ToolStripOEMName.Visible = True
+        ComboDiskType.Visible = True
+        ToolStripDiskType.Visible = True
 
         BtnScan.Text = "Rescan Images"
         BtnScan.Enabled = True
@@ -908,8 +928,12 @@ Public Class MainForm
         Debug.Print("ScanImages Time Taken: " & T.Elapsed.ToString)
         Me.UseWaitCursor = False
 
-        SetForegroundWindow(Me.Handle)
-        MainMenuFilters.ShowDropDown()
+        Dim Handle = WindowsAPI.GetForegroundWindow()
+        If Handle = Me.Handle Then
+            MainMenuFilters.ShowDropDown()
+        Else
+            WindowsAPI.FlashWindow(Me.Handle, True, True, 5, True)
+        End If
     End Sub
 
     Private Sub DisplayCrossLinkedFiles(DirectoryEntry As DiskImage.DirectoryEntry)
@@ -1230,25 +1254,42 @@ Public Class MainForm
         ProcessFileDrop(Dialog.FileNames)
     End Sub
 
-    Private Sub FiltersApply()
+    Private Function AreFiltersApplied() As Boolean
         Dim FilterCount As Integer = [Enum].GetNames(GetType(FilterTypes)).Length
-        Dim TextFilter As String = TxtSearch.Text.Trim.ToLower
-
-        Dim FiltersChecked As Boolean = False
 
         For Counter = 0 To FilterCount - 1
             Dim Item As ToolStripMenuItem = ContextMenuFilters.Items("key_" & Counter)
             If Item.Checked Then
-                FiltersChecked = True
+                Return True
                 Exit For
             End If
         Next
 
-        Dim OEMNameItem As ComboOEMNameItem = ComboOEMName.SelectedItem
-        Dim HasComboFilter = OEMNameItem IsNot Nothing AndAlso Not OEMNameItem.AllItems
+        Return False
+    End Function
 
-        If FiltersChecked Or TextFilter.Length > 0 Or HasComboFilter Then
+    Private Sub FiltersApply(ResetSubFilters As Boolean)
+        Dim FilterCount As Integer = [Enum].GetNames(GetType(FilterTypes)).Length
+
+        If ResetSubFilters Then
+            SubFiltersClear()
+        End If
+
+        Dim FiltersChecked As Boolean = AreFiltersApplied()
+
+        Dim TextFilter As String = TxtSearch.Text.Trim.ToLower
+        Dim OEMNameItem As ComboFilterItem = ComboOEMName.SelectedItem
+        Dim DiskTypeItem As ComboFilterItem = ComboDiskType.SelectedItem
+        Dim HasOEMNameFilter = OEMNameItem IsNot Nothing AndAlso Not OEMNameItem.AllItems
+        Dim HasDiskTypeFilter = DiskTypeItem IsNot Nothing AndAlso Not DiskTypeItem.AllItems
+
+        If FiltersChecked Or TextFilter.Length > 0 Or HasOEMNameFilter Or HasDiskTypeFilter Then
             Cursor.Current = Cursors.WaitCursor
+
+            If ResetSubFilters Then
+                _FilterOEMName.Clear()
+                _FilterDiskType.Clear()
+            End If
 
             ComboImagesFiltered.BeginUpdate()
             ComboImagesFiltered.Items.Clear()
@@ -1264,17 +1305,26 @@ Public Class MainForm
             For Each ImageData As LoadedImageData In ComboImages.Items
                 Dim ShowItem As Boolean = True
 
-                If TextFilter.Length > 0 Then
+                If ShowItem AndAlso FiltersChecked Then
+                    ShowItem = Not IsFiltered(ImageData, AppliedFilters)
+                End If
+
+                If ShowItem And ResetSubFilters Then
+                    OEMNameFilterAdd(ImageData.ScanInfo.OEMName, False)
+                    _FilterDiskType.Add(ImageData.ScanInfo.DiskType, False)
+                End If
+
+                If ShowItem AndAlso TextFilter.Length > 0 Then
                     Dim FilePath = ImageData.DisplayPath.ToLower
                     ShowItem = FilePath.StartsWith(TextFilter) OrElse FilePath.Contains(" " & TextFilter) OrElse FilePath.Contains("\" & TextFilter)
                 End If
 
-                If ShowItem And HasComboFilter Then
+                If ShowItem AndAlso HasOEMNameFilter Then
                     ShowItem = ImageData.ScanInfo.IsValidImage And OEMNameItem.Name = ImageData.ScanInfo.OEMName
                 End If
 
-                If ShowItem And FiltersChecked Then
-                    ShowItem = Not IsFiltered(ImageData, AppliedFilters)
+                If ShowItem AndAlso HasDiskTypeFilter Then
+                    ShowItem = DiskTypeItem.Name = ImageData.ScanInfo.DiskType
                 End If
 
                 If ShowItem Then
@@ -1284,6 +1334,11 @@ Public Class MainForm
                     End If
                 End If
             Next
+
+            If ResetSubFilters Then
+                _FilterOEMName.Populate()
+                _FilterDiskType.Populate()
+            End If
 
             If ComboImagesFiltered.SelectedIndex = -1 AndAlso ComboImagesFiltered.Items.Count > 0 Then
                 ComboImagesFiltered.SelectedIndex = 0
@@ -1312,6 +1367,8 @@ Public Class MainForm
     Private Sub FiltersClear()
         Cursor.Current = Cursors.WaitCursor
 
+        Dim FiltersApplied = AreFiltersApplied()
+
         _SuppressEvent = True
         For Counter = 0 To [Enum].GetNames(GetType(FilterTypes)).Length - 1
             Dim Item As ToolStripMenuItem = ContextMenuFilters.Items("key_" & Counter)
@@ -1319,11 +1376,13 @@ Public Class MainForm
                 Item.CheckState = CheckState.Unchecked
             End If
         Next
-        TxtSearch.Text = ""
-        If ComboOEMName.Items.Count > 0 Then
-            ComboOEMName.SelectedIndex = 0
-        End If
         _SuppressEvent = False
+
+        SubFiltersClear()
+        If FiltersApplied Then
+            OEMNameFilterReset()
+            DiskTypeFilterReset()
+        End If
 
         ComboImages.Visible = True
         ComboImagesFiltered.Visible = False
@@ -1334,6 +1393,16 @@ Public Class MainForm
         BtnClearFilters.Enabled = False
 
         Cursor.Current = Cursors.Default
+    End Sub
+
+    Private Sub SubFiltersClear()
+        _SuppressEvent = True
+
+        TxtSearch.Text = ""
+        _FilterOEMName.ClearFilter()
+        _FilterDiskType.ClearFilter()
+
+        _SuppressEvent = False
     End Sub
 
     Private Sub FiltersInitialize()
@@ -1359,7 +1428,8 @@ Public Class MainForm
             ContextMenuFilters.Items.Add(Item)
         Next
 
-        _FilterOEMName = New Dictionary(Of String, ComboOEMNameItem)
+        _FilterOEMName = New ComboFilter(ComboOEMName)
+        _FilterDiskType = New ComboFilter(ComboDiskType)
     End Sub
 
     Private Sub FiltersReset()
@@ -1373,9 +1443,10 @@ Public Class MainForm
         TxtSearch.Text = ""
         BtnClearFilters.Enabled = False
         _FilterOEMName.Clear()
-        ComboOEMName.Items.Clear()
         ComboOEMName.Visible = False
         ToolStripOEMName.Visible = False
+        ComboDiskType.Visible = False
+        ToolStripDiskType.Visible = False
     End Sub
 
     Private Function FilterUpdate(ID As FilterTypes) As Boolean
@@ -1592,7 +1663,8 @@ Public Class MainForm
         If ImageData.Scanned Then
             ItemScanDisk(Disk, ImageData, UpdateFilters, Remove)
             ItemScanOEMName(Disk, ImageData, UpdateFilters, Remove)
-            UpdateOEMNameFilter(Disk, ImageData, UpdateFilters, Remove)
+            OEMNameFilterUpdate(Disk, ImageData, UpdateFilters, Remove)
+            DiskTypeFilterUpdate(Disk, ImageData, UpdateFilters, Remove)
             ItemScanUnusedClusters(Disk, ImageData, UpdateFilters, Remove)
             ItemScanDirectory(Disk, ImageData, UpdateFilters, Remove)
         End If
@@ -1905,26 +1977,6 @@ Public Class MainForm
         End If
     End Sub
 
-    Private Sub PopulateComboOEMName()
-        Dim Item As ComboOEMNameItem
-
-        ComboOEMName.BeginUpdate()
-        ComboOEMName.Items.Clear()
-        ComboOEMName.Sorted = True
-        For Each Item In _FilterOEMName.Values
-            ComboOEMName.Items.Add(Item)
-        Next
-        Item = New ComboOEMNameItem With {
-            .AllItems = True
-        }
-        ComboOEMName.Sorted = False
-        ComboOEMName.Items.Insert(0, Item)
-        ComboOEMName.SelectedIndex = 0
-        ComboOEMName.EndUpdate()
-        ComboOEMName.Visible = True
-        ToolStripOEMName.Visible = True
-    End Sub
-
     Private Sub PopulateFilesPanel()
         MenuDisplayDirectorySubMenuClear()
 
@@ -2086,10 +2138,16 @@ Public Class MainForm
                 End If
                 .AddItem(DiskGroup, "Image Size", Disk.Data.Length.ToString("N0"), ForeColor)
 
+                Dim DiskType As String
                 If Disk.IsValidImage Then
-                    Dim DiskType As String = GetFloppyDiskTypeName(Disk.BootSector) & " Floppy"
-                    .AddItem(DiskGroup, "Disk Type", DiskType)
+                    DiskType = GetFloppyDiskTypeName(Disk.BootSector)
+                Else
+                    DiskType = GetFloppyDiskTypeName(Disk.Data.Length)
+                End If
+                DiskType &= " Floppy"
+                .AddItem(DiskGroup, "Disk Type", DiskType)
 
+                If Disk.IsValidImage Then
                     Dim BadSectors = GetBadSectors(Disk.BootSector, Disk.FAT.BadClusters)
                     Dim CopyProtection As String = GetCopyProtection(Disk, BadSectors)
 
@@ -2897,21 +2955,6 @@ Public Class MainForm
         Dim HasLFN As Boolean
     End Structure
 
-    Private Class ComboOEMNameItem
-        Public Property AllItems As Boolean = False
-        Public Property Count As Integer
-        Public Property Name As String
-
-        Public Overrides Function ToString() As String
-            If AllItems Then
-                Return "(ALL)"
-            Else
-                Return Name & "  [" & _Count & "]"
-            End If
-        End Function
-
-    End Class
-
 #Region "Events"
 
     Private Sub BtnClearFilters_Click(sender As Object, e As EventArgs) Handles BtnClearFilters.Click
@@ -3127,12 +3170,12 @@ Public Class MainForm
         ComboImages.SelectedItem = ComboImagesFiltered.SelectedItem
     End Sub
 
-    Private Sub ComboOEMName_SelectedIndexChanged(sender As Object, e As EventArgs) Handles ComboOEMName.SelectedIndexChanged
+    Private Sub ComboFilter_SelectedIndexChanged(sender As Object, e As EventArgs) Handles ComboOEMName.SelectedIndexChanged, ComboDiskType.SelectedIndexChanged
         If _SuppressEvent Then
             Exit Sub
         End If
 
-        FiltersApply()
+        FiltersApply(False)
     End Sub
 
     Private Sub ContextMenuCopy_ItemClicked(sender As Object, e As ToolStripItemClickedEventArgs) Handles ContextMenuCopy1.ItemClicked, ContextMenuCopy2.ItemClicked
@@ -3178,7 +3221,7 @@ Public Class MainForm
             Exit Sub
         End If
 
-        FiltersApply()
+        FiltersApply(True)
     End Sub
 
     Private Sub ContextMenuFilters_Closing(sender As Object, e As ToolStripDropDownClosingEventArgs) Handles ContextMenuFilters.Closing
@@ -3189,7 +3232,7 @@ Public Class MainForm
 
     Private Sub Debounce_Tick(sender As Object, e As EventArgs) Handles Debounce.Tick
         Debounce.Stop()
-        FiltersApply()
+        FiltersApply(False)
     End Sub
 
     Private Sub File_DragDrop(sender As Object, e As DragEventArgs) Handles ComboImages.DragDrop, ComboImagesFiltered.DragDrop, LabelDropMessage.DragDrop, ListViewFiles.DragDrop, ListViewHashes.DragDrop, ListViewSummary.DragDrop
@@ -3418,7 +3461,6 @@ Public Class MainForm
     Private Sub BtnRemoveBootSector_Click(sender As Object, e As EventArgs) Handles BtnRemoveBootSector.Click
         BootSectorRemove()
     End Sub
-
 #End Region
 
 End Class

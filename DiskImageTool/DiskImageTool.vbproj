@@ -30,7 +30,7 @@
     <ProductName>DiskImageTool</ProductName>
     <PublisherName>Digitoxin</PublisherName>
     <ApplicationRevision>0</ApplicationRevision>
-    <ApplicationVersion>1.34.0.%2a</ApplicationVersion>
+    <ApplicationVersion>1.35.0.%2a</ApplicationVersion>
     <UseApplicationTrust>false</UseApplicationTrust>
     <PublishWizardCompleted>true</PublishWizardCompleted>
     <BootstrapperEnabled>true</BootstrapperEnabled>
@@ -121,6 +121,7 @@
     <Import Include="System.Threading.Tasks" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ComboFilter.vb" />
     <Compile Include="Controls\ToolStripCheckBox.vb">
       <SubType>Component</SubType>
     </Compile>
@@ -250,6 +251,7 @@
     <Compile Include="Controls\ToolStripNumericUpDown.vb">
       <SubType>Component</SubType>
     </Compile>
+    <Compile Include="WindowsAPI.vb" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Forms\AboutBox.resx">

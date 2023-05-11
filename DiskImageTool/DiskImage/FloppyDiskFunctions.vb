@@ -286,5 +286,9 @@
         Public Function GetFloppyDiskTypeName(BootSector As BootSector) As String
             Return GetFloppyDiskTypeName(GetFloppyDiskType(BootSector))
         End Function
+
+        Public Function GetFloppyDiskTypeName(Size As Integer) As String
+            Return GetFloppyDiskTypeName(GetFloppyDiskType(Size))
+        End Function
     End Module
 End Namespace
