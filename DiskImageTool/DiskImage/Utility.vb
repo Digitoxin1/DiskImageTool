@@ -56,6 +56,62 @@ Namespace DiskImage
             End Select
         End Function
 
+        Public Function DirectorytEntryDescription(Offset As DiskImage.DirectoryEntry.DirectoryEntryOffsets) As String
+            Select Case Offset
+                Case DiskImage.DirectoryEntry.DirectoryEntryOffsets.FileName
+                    Return "Name"
+                Case DiskImage.DirectoryEntry.DirectoryEntryOffsets.Extension
+                    Return "Extension"
+                Case DiskImage.DirectoryEntry.DirectoryEntryOffsets.Attributes
+                    Return "Attributes"
+                Case DiskImage.DirectoryEntry.DirectoryEntryOffsets.ReservedForWinNT
+                    Return "Reserved For Windows NT"
+                Case DiskImage.DirectoryEntry.DirectoryEntryOffsets.CreationMillisecond
+                    Return "Creation Time Tenths"
+                Case DiskImage.DirectoryEntry.DirectoryEntryOffsets.CreationTime
+                    Return "Creation Time"
+                Case DiskImage.DirectoryEntry.DirectoryEntryOffsets.CreationDate
+                    Return "Creation Date"
+                Case DiskImage.DirectoryEntry.DirectoryEntryOffsets.LastAccessDate
+                    Return "Last Access Date"
+                Case DiskImage.DirectoryEntry.DirectoryEntryOffsets.ReservedForFAT32
+                    Return "Reserved for FAT 32"
+                Case DiskImage.DirectoryEntry.DirectoryEntryOffsets.LastWriteTime
+                    Return "Last Write Time"
+                Case DiskImage.DirectoryEntry.DirectoryEntryOffsets.LastWriteDate
+                    Return "Last Write Date"
+                Case DiskImage.DirectoryEntry.DirectoryEntryOffsets.StartingCluster
+                    Return "Starting Cluster"
+                Case DiskImage.DirectoryEntry.DirectoryEntryOffsets.FileSize
+                    Return "Size"
+                Case Else
+                    Return Offset.ToString
+            End Select
+        End Function
+
+        Public Function DirectorytEntryLFNDescription(Offset As DiskImage.DirectoryEntry.LFNOffsets) As String
+            Select Case Offset
+                Case DiskImage.DirectoryEntry.LFNOffsets.Sequence
+                    Return "LFN Sequence"
+                Case DiskImage.DirectoryEntry.LFNOffsets.FilePart1
+                    Return "LFN Name 1"
+                Case DiskImage.DirectoryEntry.LFNOffsets.Attributes
+                    Return "LFN Attributes"
+                Case DiskImage.DirectoryEntry.LFNOffsets.Type
+                    Return "LFN Type"
+                Case DiskImage.DirectoryEntry.LFNOffsets.Checksum
+                    Return "LFN Checksum"
+                Case DiskImage.DirectoryEntry.LFNOffsets.FilePart2
+                    Return "LFN Name 2"
+                Case DiskImage.DirectoryEntry.LFNOffsets.StartingCluster
+                    Return "LFN Starting Cluster"
+                Case DiskImage.DirectoryEntry.LFNOffsets.FilePart3
+                    Return "LFN Name 3"
+                Case Else
+                    Return Offset.ToString
+            End Select
+        End Function
+
         Public Function ClusterListToSectorList(BootSector As BootSector, ClusterList As List(Of UShort)) As List(Of UInteger)
             Dim SectorList As New List(Of UInteger)
 

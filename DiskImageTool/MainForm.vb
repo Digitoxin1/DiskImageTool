@@ -903,6 +903,7 @@ Public Class MainForm
             FiltersClear()
             ImageCountUpdate()
         End If
+
         Dim ItemScanForm As New ItemScanForm(Me, ComboImages.Items, NewOnly)
         ItemScanForm.ShowDialog()
         BtnScanNew.Visible = ItemScanForm.ItemsRemaining > 0

@@ -724,7 +724,7 @@ Public Class HexViewForm
                 _CurrentSector = Sector
             End If
 
-            If ToolStripStatusFile.Visible Or _RegionDescriptions.Count = 0 Then
+            If _RegionDescriptions.Count = 0 Then
                 ToolStripStatusDescription.Visible = False
             Else
                 Dim RegionStart As HexViewHighlightRegion

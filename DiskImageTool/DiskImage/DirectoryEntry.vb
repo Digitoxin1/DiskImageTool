@@ -23,7 +23,7 @@ Namespace DiskImage
             LongFileName = 15
         End Enum
 
-        Private Enum DirectoryEntryOffset As UInteger
+        Public Enum DirectoryEntryOffsets As UInteger
             FileName = 0
             Extension = 8
             Attributes = 11
@@ -37,18 +37,44 @@ Namespace DiskImage
             LastWriteDate = 24
             StartingCluster = 26
             FileSize = 28
-            LFNSequence = 0
-            LFNFilePart1 = 1
-            LFNFilePart2 = 14
-            LFNFilePart3 = 28
         End Enum
 
-        Private Enum DirectoryEntrySize As UInteger
+        Public Enum DirectoryEntrySizes As UInteger
             FileName = 8
             Extension = 3
-            LFNFilePart1 = 10
-            LFNFilePart2 = 12
-            LFNFilePart3 = 4
+            Attributes = 1
+            ReservedForWinNT = 1
+            CreationMillisecond = 1
+            CreationTime = 2
+            CreationDate = 2
+            LastAccessDate = 2
+            ReservedForFAT32 = 2
+            LastWriteTime = 2
+            LastWriteDate = 2
+            StartingCluster = 2
+            FileSize = 4
+        End Enum
+
+        Public Enum LFNOffsets As UInteger
+            Sequence = 0
+            FilePart1 = 1
+            Attributes = 11
+            Type = 12
+            Checksum = 13
+            FilePart2 = 14
+            StartingCluster = 26
+            FilePart3 = 28
+        End Enum
+
+        Public Enum LFNSizes As UInteger
+            Sequence = 1
+            FilePart1 = 10
+            Attributes = 1
+            Type = 1
+            Checksum = 1
+            FilePart2 = 12
+            StartingCluster = 2
+            FilePart3 = 4
         End Enum
 
         Sub New(FileBytes As ImageByteArray, BootSector As BootSector, FAT As FAT12, Offset As UInteger)
@@ -73,10 +99,10 @@ Namespace DiskImage
         End Sub
         Public Property Attributes() As Byte
             Get
-                Return _FileBytes.GetByte(_Offset + DirectoryEntryOffset.Attributes)
+                Return _FileBytes.GetByte(_Offset + DirectoryEntryOffsets.Attributes)
             End Get
             Set
-                _FileBytes.SetBytes(Value, _Offset + DirectoryEntryOffset.Attributes)
+                _FileBytes.SetBytes(Value, _Offset + DirectoryEntryOffsets.Attributes)
             End Set
         End Property
 
@@ -91,28 +117,28 @@ Namespace DiskImage
 
         Public Property CreationDate() As UShort
             Get
-                Return _FileBytes.GetBytesShort(_Offset + DirectoryEntryOffset.CreationDate)
+                Return _FileBytes.GetBytesShort(_Offset + DirectoryEntryOffsets.CreationDate)
             End Get
             Set
-                _FileBytes.SetBytes(Value, _Offset + DirectoryEntryOffset.CreationDate)
+                _FileBytes.SetBytes(Value, _Offset + DirectoryEntryOffsets.CreationDate)
             End Set
         End Property
 
         Public Property CreationMillisecond() As Byte
             Get
-                Return _FileBytes.GetByte(_Offset + DirectoryEntryOffset.CreationMillisecond)
+                Return _FileBytes.GetByte(_Offset + DirectoryEntryOffsets.CreationMillisecond)
             End Get
             Set
-                _FileBytes.SetBytes(Value, _Offset + DirectoryEntryOffset.CreationMillisecond)
+                _FileBytes.SetBytes(Value, _Offset + DirectoryEntryOffsets.CreationMillisecond)
             End Set
         End Property
 
         Public Property CreationTime() As UShort
             Get
-                Return _FileBytes.GetBytesShort(_Offset + DirectoryEntryOffset.CreationTime)
+                Return _FileBytes.GetBytesShort(_Offset + DirectoryEntryOffsets.CreationTime)
             End Get
             Set
-                _FileBytes.SetBytes(Value, _Offset + DirectoryEntryOffset.CreationTime)
+                _FileBytes.SetBytes(Value, _Offset + DirectoryEntryOffsets.CreationTime)
             End Set
         End Property
 
@@ -130,10 +156,10 @@ Namespace DiskImage
 
         Public Property Extension() As Byte()
             Get
-                Return _FileBytes.GetBytes(_Offset + DirectoryEntryOffset.Extension, DirectoryEntrySize.Extension)
+                Return _FileBytes.GetBytes(_Offset + DirectoryEntryOffsets.Extension, DirectoryEntrySizes.Extension)
             End Get
             Set
-                _FileBytes.SetBytes(Value, _Offset + DirectoryEntryOffset.Extension, DirectoryEntrySize.Extension, CHAR_SPACE)
+                _FileBytes.SetBytes(Value, _Offset + DirectoryEntryOffsets.Extension, DirectoryEntrySizes.Extension, CHAR_SPACE)
             End Set
         End Property
 
@@ -145,19 +171,19 @@ Namespace DiskImage
 
         Public Property FileName() As Byte()
             Get
-                Return _FileBytes.GetBytes(_Offset + DirectoryEntryOffset.FileName, DirectoryEntrySize.FileName)
+                Return _FileBytes.GetBytes(_Offset + DirectoryEntryOffsets.FileName, DirectoryEntrySizes.FileName)
             End Get
             Set
-                _FileBytes.SetBytes(Value, _Offset + DirectoryEntryOffset.FileName, DirectoryEntrySize.FileName, CHAR_SPACE)
+                _FileBytes.SetBytes(Value, _Offset + DirectoryEntryOffsets.FileName, DirectoryEntrySizes.FileName, CHAR_SPACE)
             End Set
         End Property
 
         Public Property FileSize() As UInteger
             Get
-                Return _FileBytes.GetBytesInteger(_Offset + DirectoryEntryOffset.FileSize)
+                Return _FileBytes.GetBytesInteger(_Offset + DirectoryEntryOffsets.FileSize)
             End Get
             Set
-                _FileBytes.SetBytes(Value, _Offset + DirectoryEntryOffset.FileSize)
+                _FileBytes.SetBytes(Value, _Offset + DirectoryEntryOffsets.FileSize)
             End Set
         End Property
 
@@ -169,34 +195,34 @@ Namespace DiskImage
 
         Public Property LastAccessDate() As UShort
             Get
-                Return _FileBytes.GetBytesShort(_Offset + DirectoryEntryOffset.LastAccessDate)
+                Return _FileBytes.GetBytesShort(_Offset + DirectoryEntryOffsets.LastAccessDate)
             End Get
             Set
-                _FileBytes.SetBytes(Value, _Offset + DirectoryEntryOffset.LastAccessDate)
+                _FileBytes.SetBytes(Value, _Offset + DirectoryEntryOffsets.LastAccessDate)
             End Set
         End Property
 
         Public Property LastWriteDate() As UShort
             Get
-                Return _FileBytes.GetBytesShort(_Offset + DirectoryEntryOffset.LastWriteDate)
+                Return _FileBytes.GetBytesShort(_Offset + DirectoryEntryOffsets.LastWriteDate)
             End Get
             Set
-                _FileBytes.SetBytes(Value, _Offset + DirectoryEntryOffset.LastWriteDate)
+                _FileBytes.SetBytes(Value, _Offset + DirectoryEntryOffsets.LastWriteDate)
             End Set
         End Property
 
         Public Property LastWriteTime() As UShort
             Get
-                Return _FileBytes.GetBytesShort(_Offset + DirectoryEntryOffset.LastWriteTime)
+                Return _FileBytes.GetBytesShort(_Offset + DirectoryEntryOffsets.LastWriteTime)
             End Get
             Set
-                _FileBytes.SetBytes(Value, _Offset + DirectoryEntryOffset.LastWriteTime)
+                _FileBytes.SetBytes(Value, _Offset + DirectoryEntryOffsets.LastWriteTime)
             End Set
         End Property
 
         Public ReadOnly Property LFNSequence As Byte
             Get
-                Return _FileBytes.GetByte(_Offset + DirectoryEntryOffset.LFNSequence)
+                Return _FileBytes.GetByte(_Offset + LFNOffsets.Sequence)
             End Get
         End Property
 
@@ -208,28 +234,28 @@ Namespace DiskImage
 
         Public Property ReservedForFAT32() As UShort
             Get
-                Return _FileBytes.GetBytesShort(_Offset + DirectoryEntryOffset.ReservedForFAT32)
+                Return _FileBytes.GetBytesShort(_Offset + DirectoryEntryOffsets.ReservedForFAT32)
             End Get
             Set
-                _FileBytes.SetBytes(Value, _Offset + DirectoryEntryOffset.ReservedForFAT32)
+                _FileBytes.SetBytes(Value, _Offset + DirectoryEntryOffsets.ReservedForFAT32)
             End Set
         End Property
 
         Public Property ReservedForWinNT() As Byte
             Get
-                Return _FileBytes.GetByte(_Offset + DirectoryEntryOffset.ReservedForWinNT)
+                Return _FileBytes.GetByte(_Offset + DirectoryEntryOffsets.ReservedForWinNT)
             End Get
             Set
-                _FileBytes.SetBytes(Value, _Offset + DirectoryEntryOffset.ReservedForWinNT)
+                _FileBytes.SetBytes(Value, _Offset + DirectoryEntryOffsets.ReservedForWinNT)
             End Set
         End Property
 
         Public Property StartingCluster() As UShort
             Get
-                Return _FileBytes.GetBytesShort(_Offset + DirectoryEntryOffset.StartingCluster)
+                Return _FileBytes.GetBytesShort(_Offset + DirectoryEntryOffsets.StartingCluster)
             End Get
             Set
-                _FileBytes.SetBytes(Value, _Offset + DirectoryEntryOffset.StartingCluster)
+                _FileBytes.SetBytes(Value, _Offset + DirectoryEntryOffsets.StartingCluster)
             End Set
         End Property
 
@@ -322,12 +348,12 @@ Namespace DiskImage
 
         Public Function GetLFNFileName() As String
             If IsLFN() Then
-                Dim Size As Integer = DirectoryEntrySize.LFNFilePart1 + DirectoryEntrySize.LFNFilePart2 + DirectoryEntrySize.LFNFilePart3
+                Dim Size As Integer = LFNSizes.FilePart1 + LFNSizes.FilePart2 + LFNSizes.FilePart3
                 Dim LFN(Size - 1) As Byte
 
-                _FileBytes.CopyTo(_Offset + DirectoryEntryOffset.LFNFilePart1, LFN, 0, DirectoryEntrySize.LFNFilePart1)
-                _FileBytes.CopyTo(_Offset + DirectoryEntryOffset.LFNFilePart2, LFN, DirectoryEntrySize.LFNFilePart1, DirectoryEntrySize.LFNFilePart2)
-                _FileBytes.CopyTo(_Offset + DirectoryEntryOffset.LFNFilePart3, LFN, DirectoryEntrySize.LFNFilePart1 + DirectoryEntrySize.LFNFilePart2, DirectoryEntrySize.LFNFilePart3)
+                _FileBytes.CopyTo(_Offset + LFNOffsets.FilePart1, LFN, 0, LFNSizes.FilePart1)
+                _FileBytes.CopyTo(_Offset + LFNOffsets.FilePart2, LFN, LFNSizes.FilePart1, LFNSizes.FilePart2)
+                _FileBytes.CopyTo(_Offset + LFNOffsets.FilePart3, LFN, LFNSizes.FilePart1 + LFNSizes.FilePart2, LFNSizes.FilePart3)
 
                 Return Encoding.Unicode.GetString(LFN)
             Else

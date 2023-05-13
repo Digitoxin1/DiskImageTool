@@ -1,5 +1,6 @@
 ﻿Imports DiskImageTool.DiskImage
 Imports DiskImageTool.DiskImage.BootSector
+Imports DiskImageTool.DiskImage.DirectoryEntry
 
 Module HexViews
     Public Function DisplayHexViewForm(HexViewSectorData As HexViewSectorData) As Boolean
@@ -64,28 +65,28 @@ Module HexViews
             ForeColor = Color.Black
         End If
 
-        HighlightedRegions.AddOffset(BootSectorOffsets.JmpBoot, ForeColor)
+        HighlightedRegions.AddBootSectorOffset(BootSectorOffsets.JmpBoot, ForeColor)
         If Disk.IsValidImage Then
-            HighlightedRegions.AddOffset(BootSectorOffsets.OEMName, Color.Red)
-            HighlightedRegions.AddOffset(BootSectorOffsets.BytesPerSector, Color.Blue)
-            HighlightedRegions.AddOffset(BootSectorOffsets.SectorsPerCluster, Color.Blue)
-            HighlightedRegions.AddOffset(BootSectorOffsets.ReservedSectorCount, Color.Blue)
-            HighlightedRegions.AddOffset(BootSectorOffsets.NumberOfFATs, Color.Blue)
-            HighlightedRegions.AddOffset(BootSectorOffsets.RootEntryCount, Color.Blue)
-            HighlightedRegions.AddOffset(BootSectorOffsets.SectorCountSmall, Color.Blue)
-            HighlightedRegions.AddOffset(BootSectorOffsets.MediaDescriptor, Color.Blue)
-            HighlightedRegions.AddOffset(BootSectorOffsets.SectorsPerFAT, Color.Blue)
-            HighlightedRegions.AddOffset(BootSectorOffsets.SectorsPerTrack, Color.Blue)
-            HighlightedRegions.AddOffset(BootSectorOffsets.NumberOfHeads, Color.Blue)
-            HighlightedRegions.AddOffset(BootSectorOffsets.HiddenSectors, Color.Blue)
+            HighlightedRegions.AddBootSectorOffset(BootSectorOffsets.OEMName, Color.Red)
+            HighlightedRegions.AddBootSectorOffset(BootSectorOffsets.BytesPerSector, Color.Blue)
+            HighlightedRegions.AddBootSectorOffset(BootSectorOffsets.SectorsPerCluster, Color.Blue)
+            HighlightedRegions.AddBootSectorOffset(BootSectorOffsets.ReservedSectorCount, Color.Blue)
+            HighlightedRegions.AddBootSectorOffset(BootSectorOffsets.NumberOfFATs, Color.Blue)
+            HighlightedRegions.AddBootSectorOffset(BootSectorOffsets.RootEntryCount, Color.Blue)
+            HighlightedRegions.AddBootSectorOffset(BootSectorOffsets.SectorCountSmall, Color.Blue)
+            HighlightedRegions.AddBootSectorOffset(BootSectorOffsets.MediaDescriptor, Color.Blue)
+            HighlightedRegions.AddBootSectorOffset(BootSectorOffsets.SectorsPerFAT, Color.Blue)
+            HighlightedRegions.AddBootSectorOffset(BootSectorOffsets.SectorsPerTrack, Color.Blue)
+            HighlightedRegions.AddBootSectorOffset(BootSectorOffsets.NumberOfHeads, Color.Blue)
+            HighlightedRegions.AddBootSectorOffset(BootSectorOffsets.HiddenSectors, Color.Blue)
 
             If Disk.BootSector.HasValidExtendedBootSignature And BootStrapStart >= BootSectorOffsets.FileSystemType + BootSectorSizes.FileSystemType Then
-                HighlightedRegions.AddOffset(BootSectorOffsets.DriveNumber, Color.Purple)
-                HighlightedRegions.AddOffset(BootSectorOffsets.Reserved, Color.Purple)
-                HighlightedRegions.AddOffset(BootSectorOffsets.ExtendedBootSignature, Color.Purple)
-                HighlightedRegions.AddOffset(BootSectorOffsets.VolumeSerialNumber, Color.Purple)
-                HighlightedRegions.AddOffset(BootSectorOffsets.VolumeLabel, Color.Purple)
-                HighlightedRegions.AddOffset(BootSectorOffsets.FileSystemType, Color.Purple)
+                HighlightedRegions.AddBootSectorOffset(BootSectorOffsets.DriveNumber, Color.Purple)
+                HighlightedRegions.AddBootSectorOffset(BootSectorOffsets.Reserved, Color.Purple)
+                HighlightedRegions.AddBootSectorOffset(BootSectorOffsets.ExtendedBootSignature, Color.Purple)
+                HighlightedRegions.AddBootSectorOffset(BootSectorOffsets.VolumeSerialNumber, Color.Purple)
+                HighlightedRegions.AddBootSectorOffset(BootSectorOffsets.VolumeLabel, Color.Purple)
+                HighlightedRegions.AddBootSectorOffset(BootSectorOffsets.FileSystemType, Color.Purple)
             End If
         End If
 
@@ -103,7 +104,7 @@ Module HexViews
             ForeColor = Color.Black
         End If
 
-        HighlightedRegions.AddOffset(BootSectorOffsets.BootStrapSignature, ForeColor)
+        HighlightedRegions.AddBootSectorOffset(BootSectorOffsets.BootStrapSignature, ForeColor)
 
         Return HexViewSectorData
     End Function
@@ -233,7 +234,32 @@ Module HexViews
                         End If
                     End If
                 Else
-                    HighlightedRegions.AddItem(Offset - OffsetStart, DirectoryEntry.DIRECTORY_ENTRY_SIZE, Color.Blue)
+                    Dim Attributes As Byte = Disk.Data.GetByte(Offset + DirectoryEntry.DirectoryEntryOffsets.Attributes)
+                    If (Attributes And AttributeFlags.LongFileName) = AttributeFlags.LongFileName Then
+                        HighlightedRegions.AddDirectoryEntryLFNOffset(Offset - OffsetStart, DirectoryEntry.LFNOffsets.Sequence, Color.Purple)
+                        HighlightedRegions.AddDirectoryEntryLFNOffset(Offset - OffsetStart, DirectoryEntry.LFNOffsets.FilePart1, Color.Purple)
+                        HighlightedRegions.AddDirectoryEntryLFNOffset(Offset - OffsetStart, DirectoryEntry.LFNOffsets.Attributes, Color.Purple)
+                        HighlightedRegions.AddDirectoryEntryLFNOffset(Offset - OffsetStart, DirectoryEntry.LFNOffsets.Type, Color.Purple)
+                        HighlightedRegions.AddDirectoryEntryLFNOffset(Offset - OffsetStart, DirectoryEntry.LFNOffsets.Checksum, Color.Purple)
+                        HighlightedRegions.AddDirectoryEntryLFNOffset(Offset - OffsetStart, DirectoryEntry.LFNOffsets.FilePart2, Color.Purple)
+                        HighlightedRegions.AddDirectoryEntryLFNOffset(Offset - OffsetStart, DirectoryEntry.LFNOffsets.StartingCluster, Color.Purple)
+                        HighlightedRegions.AddDirectoryEntryLFNOffset(Offset - OffsetStart, DirectoryEntry.LFNOffsets.FilePart3, Color.Purple)
+                    Else
+                        HighlightedRegions.AddDirectoryEntryOffset(Offset - OffsetStart, DirectoryEntry.DirectoryEntryOffsets.FileName, Color.Blue)
+                        HighlightedRegions.AddDirectoryEntryOffset(Offset - OffsetStart, DirectoryEntry.DirectoryEntryOffsets.Extension, Color.Blue)
+                        HighlightedRegions.AddDirectoryEntryOffset(Offset - OffsetStart, DirectoryEntry.DirectoryEntryOffsets.Attributes, Color.Blue)
+                        HighlightedRegions.AddDirectoryEntryOffset(Offset - OffsetStart, DirectoryEntry.DirectoryEntryOffsets.ReservedForWinNT, Color.Blue)
+                        HighlightedRegions.AddDirectoryEntryOffset(Offset - OffsetStart, DirectoryEntry.DirectoryEntryOffsets.CreationMillisecond, Color.Blue)
+                        HighlightedRegions.AddDirectoryEntryOffset(Offset - OffsetStart, DirectoryEntry.DirectoryEntryOffsets.CreationTime, Color.Blue)
+                        HighlightedRegions.AddDirectoryEntryOffset(Offset - OffsetStart, DirectoryEntry.DirectoryEntryOffsets.CreationDate, Color.Blue)
+                        HighlightedRegions.AddDirectoryEntryOffset(Offset - OffsetStart, DirectoryEntry.DirectoryEntryOffsets.LastAccessDate, Color.Blue)
+                        HighlightedRegions.AddDirectoryEntryOffset(Offset - OffsetStart, DirectoryEntry.DirectoryEntryOffsets.ReservedForFAT32, Color.Blue)
+                        HighlightedRegions.AddDirectoryEntryOffset(Offset - OffsetStart, DirectoryEntry.DirectoryEntryOffsets.LastWriteTime, Color.Blue)
+                        HighlightedRegions.AddDirectoryEntryOffset(Offset - OffsetStart, DirectoryEntry.DirectoryEntryOffsets.LastWriteDate, Color.Blue)
+                        HighlightedRegions.AddDirectoryEntryOffset(Offset - OffsetStart, DirectoryEntry.DirectoryEntryOffsets.StartingCluster, Color.Blue)
+                        HighlightedRegions.AddDirectoryEntryOffset(Offset - OffsetStart, DirectoryEntry.DirectoryEntryOffsets.FileSize, Color.Blue)
+                    End If
+                    'HighlightedRegions.AddItem(Offset - OffsetStart, DirectoryEntry.DIRECTORY_ENTRY_SIZE, Color.Blue)
                 End If
             Next
         Next
