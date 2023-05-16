@@ -1932,14 +1932,8 @@ Public Class MainForm
     End Sub
 
     Private Sub FixImageSize()
-        Dim Msg As String = "Any modifications you have made to the disk image will be saved at this time.  This process cannot be undone." _
-            & vbCrLf & vbCrLf & "Are you sure you wish to resize the disk image?"
-
-        If MsgBox(Msg, MsgBoxStyle.Question + MsgBoxStyle.YesNo + MsgBoxStyle.DefaultButton2) = MsgBoxResult.Yes Then
-            If _Disk.FixImageSize Then
-                ComboItemRefresh(False, True)
-                SaveCurrent(False)
-            End If
+        If _Disk.FixImageSize Then
+            ComboItemRefresh(True, True)
         End If
     End Sub
 

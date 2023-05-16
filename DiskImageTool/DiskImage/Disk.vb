@@ -1,4 +1,6 @@
-﻿Namespace DiskImage
+﻿Imports System.Runtime.ConstrainedExecution
+
+Namespace DiskImage
     Public Class Disk
         Public Const BYTES_PER_SECTOR As UShort = 512
         Private WithEvents FileBytes As ImageByteArray
@@ -116,7 +118,17 @@
             Dim ReportedSize = SectorToBytes(_BootSector.DataRegionStart + _BootSector.DataRegionSize)
 
             If ReportedSize <> Data.Length Then
-                Result = Data.Resize(ReportedSize)
+                Data.BatchEditMode = True
+                If ReportedSize < Data.Length Then
+                    Dim b(Data.Length - ReportedSize - 1) As Byte
+                    For i = 0 To b.Length - 1
+                        b(i) = 0
+                    Next
+                    Data.SetBytes(b, Data.Length - b.Length)
+                End If
+                Data.Resize(ReportedSize)
+                Data.BatchEditMode = False
+                Result = True
             End If
 
             Return Result

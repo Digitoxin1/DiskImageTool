@@ -1,10 +1,12 @@
 ﻿Namespace DiskImage
     Public Delegate Sub DataChangedEventHandler(Offset As UInteger, OriginalValue As Object, NewValue As Object)
+    Public Delegate Sub SizeChangedEventHandler(OriginalLength As Integer, NewLength As Integer)
 
     Public Class ByteArray
         Private _Data() As Byte
 
         Public Event DataChanged As DataChangedEventHandler
+        Public Event SizeChanged As SizeChangedEventHandler
 
         Sub New(Data() As Byte)
             _Data = Data
@@ -57,8 +59,10 @@
             Dim Result As Boolean = False
 
             If _Data.Length <> Length Then
+                Dim CurrentLength = _Data.Length
                 ReDim Preserve _Data(Length - 1)
                 Result = True
+                RaiseEvent SizeChanged(CurrentLength, Length)
             End If
 
             Return Result

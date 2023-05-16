@@ -98,7 +98,11 @@
             Dim DataChange = _RedoChanges.Pop
             _IgnoreChange = True
             For Each Item In DataChange
-                MyBase.SetBytes(Item.NewValue, Item.Offset)
+                If Item.Type = DataChangeType.Data Then
+                    MyBase.SetBytes(Item.NewValue, Item.Offset)
+                ElseIf Item.Type = DataChangeType.Size Then
+                    MyBase.Resize(Item.NewValue)
+                End If
             Next
             _IgnoreChange = False
             _Changes.Push(DataChange)
@@ -113,8 +117,12 @@
         Public Sub Undo()
             Dim DataChange = _Changes.Pop
             _IgnoreChange = True
-            For Each Item In DataChange
-                MyBase.SetBytes(Item.OriginalValue, Item.Offset)
+            For Each Item In DataChange.Reverse
+                If Item.Type = DataChangeType.Data Then
+                    MyBase.SetBytes(Item.OriginalValue, Item.Offset)
+                ElseIf Item.Type = DataChangeType.Size Then
+                    MyBase.Resize(Item.OriginalValue)
+                End If
             Next
             _IgnoreChange = False
             _RedoChanges.Push(DataChange)
@@ -124,7 +132,11 @@
             For Each DataChange In Modifications.Reverse
                 BatchEditMode = DataChange.Length > 1
                 For Each Item In DataChange
-                    MyBase.SetBytes(Item.NewValue, Item.Offset)
+                    If Item.Type = DataChangeType.Data Then
+                        MyBase.SetBytes(Item.NewValue, Item.Offset)
+                    ElseIf Item.Type = DataChangeType.Size Then
+                        MyBase.Resize(Item.NewValue)
+                    End If
                 Next
                 If BatchEditMode Then
                     BatchEditMode = False
@@ -135,7 +147,20 @@
         Private Sub ImageByteArray_DataChanged(Offset As UInteger, OriginalValue As Object, NewValue As Object) Handles Me.DataChanged
             If _IgnoreChange Then Exit Sub
 
-            Dim DataChange = New DataChange(Offset, OriginalValue, NewValue)
+            Dim DataChange = New DataChange(DataChangeType.Data, Offset, OriginalValue, NewValue)
+
+            If _BatchEditMode Then
+                _PendingChanges.Add(DataChange)
+            Else
+                _Changes.Push({DataChange})
+                _RedoChanges.Clear()
+            End If
+        End Sub
+
+        Private Sub ImageByteArray_SizeChanged(OriginalLength As Integer, NewLength As Integer) Handles Me.SizeChanged
+            If _IgnoreChange Then Exit Sub
+
+            Dim DataChange = New DataChange(DataChangeType.Size, 0, OriginalLength, NewLength)
 
             If _BatchEditMode Then
                 _PendingChanges.Add(DataChange)
