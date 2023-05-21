@@ -177,6 +177,7 @@
   </bootstrap>
   <bootstrap crc32="3ED5B183">
     <oemname name="IBM  2.0" company="IBM" description="PC-DOS 2.0" />
+    <oemname name="IBM  3.2" />
   </bootstrap>
   <bootstrap crc32="B0E49411" language="French">
     <oemname name="IBM  2.0" />
@@ -682,6 +683,7 @@
   </bootstrap>
   <bootstrap crc32="5831A313">
     <oemname name="softeam4" />
+    <oemname name="Logitech" />
   </bootstrap>
   <bootstrap crc32="580B2275">
     <oemname name="SU25 3-1" company="Electronic Arts" description="STORMOVIK: THE SU-25 SOVIET ATTACK FIGHTER DISK ONE" />

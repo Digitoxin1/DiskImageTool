@@ -41,20 +41,20 @@
             Return New DirectoryEntry(_FileBytes, _BootSector, _FAT, Offset)
         End Function
 
-        Public Function HasFile(Filename As String) As Boolean Implements IDirectory.HasFile
+        Public Function HasFile(Filename As String) As Integer Implements IDirectory.HasFile
             Dim Count = _DirectoryData.EntryCount
             If Count > 0 Then
                 For Counter As UInteger = 0 To Count - 1
                     Dim File = GetFile(Counter)
                     If Not File.IsDeleted And Not File.IsVolumeName And Not File.IsDirectory Then
                         If File.GetFullFileName = Filename Then
-                            Return True
+                            Return Counter
                         End If
                     End If
                 Next
             End If
 
-            Return False
+            Return -1
         End Function
 
         Public Sub RefreshData() Implements IDirectory.RefreshData
