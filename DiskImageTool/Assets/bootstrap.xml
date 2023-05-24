@@ -201,6 +201,9 @@
   <bootstrap crc32="CB2078CC">
     <oemname name="IBM  3.1" />
   </bootstrap>
+  <bootstrap crc32="BE20800F">
+    <oemname name="IBM  3.1" />
+  </bootstrap>
   <bootstrap crc32="FB0D45F6" language="French">
     <oemname name="IBM  3.1" />
   </bootstrap>
@@ -263,6 +266,7 @@
     <oemname name="IBM  3.2" />
     <oemname name="KEY DISK" suggestion="false" />
     <oemname namehex="004D4D4900332E33" suggestion="false" />
+    <oemname namehex="4432026E30392E33" suggestion="false" />
   </bootstrap>
   <bootstrap crc32="CA660021" language="French">
     <oemname name="IBM  3.3" />
@@ -429,6 +433,9 @@
   <bootstrap crc32="5B5678E2">
     <oemname name="MSC 3.1 " />
   </bootstrap>
+  <bootstrap crc32="54ABD321">
+    <oemname name="Mastrnic" company="Mastertronic" />
+  </bootstrap>
   <bootstrap crc32="EB85220D">
     <oemname name="MSDMF3.2" company="Microsoft" description="Microsoft Distribution Media Format" />
   </bootstrap>
@@ -462,6 +469,9 @@
     <oemname name="MSDOS3.2" />
   </bootstrap>
   <bootstrap crc32="4D47BE99">
+    <oemname name="MSDOS3.2" />
+  </bootstrap>
+  <bootstrap crc32="74648700">
     <oemname name="MSDOS3.2" />
   </bootstrap>
   <bootstrap crc32="294E370A">
@@ -527,6 +537,7 @@
     <oemname namehex="443206C630392E30" suggestion="false" />
     <oemname namehex="4432ED9130392E30" suggestion="false" />
     <oemname namehex="443245F330392E30" suggestion="false" />
+    <oemname namehex="274A5E2871494843" suggestion="false" company="Sybex, Inc." description="The Lost Episodes of Doom" />
   </bootstrap>
   <bootstrap crc32="D065ACD8">
     <oemname name="MSDOS5.0" company="Microsoft" description="Windows NT 3.1" />
@@ -576,6 +587,14 @@
   <bootstrap crc32="2A8273B6">
     <oemname name="MSWIN4.0" company="Microsoft" description="Windows 95" />
     <oemname namehex="267C3F5032494843" suggestion="false" company="Sierra On-Line" description="Hoyle Classic Games for Laptops Disk 1" />
+    <oemname namehex="274C7D3177494843" suggestion="false" company="GameTek" description="Super Street Fighter II Turbo Disk 1" />
+    <oemname namehex="275E61284B494843" suggestion="false" company="GameTek" description="Super Street Fighter II Turbo Disk 2" />
+    <oemname namehex="275E5E6968494843" suggestion="false" company="GameTek" description="Super Street Fighter II Turbo Disk 3" />
+    <oemname namehex="275E55612B494843" suggestion="false" company="GameTek" description="Super Street Fighter II Turbo Disk 4" />
+    <oemname namehex="275E6A7A63494843" suggestion="false" company="GameTek" description="Super Street Fighter II Turbo Disk 5" />
+    <oemname namehex="275E6A5F3B494843" suggestion="false" company="GameTek" description="Super Street Fighter II Turbo Disk 6" />
+    <oemname namehex="275D2A567A494843" suggestion="false" company="GameTek" description="Super Street Fighter II Turbo Disk 7" />
+    <oemname namehex="275D223D76494843" suggestion="false" company="GameTek" description="Super Street Fighter II Turbo Disk 8" />
   </bootstrap>
   <bootstrap crc32="1D056B6E">
     <oemname name="MSWIN4.1" company="Microsoft" description="Windows 95/98/ME" />
@@ -594,6 +613,9 @@
   </bootstrap>
   <bootstrap crc32="C494C107">
     <oemname name="Olivetti" />
+  </bootstrap>
+  <bootstrap crc32="50EFBA9F">
+    <oemname name="PC &amp; AT " />
   </bootstrap>
   <bootstrap crc32="43A1CAF3">
     <oemname name="PC Tools" />
@@ -747,6 +769,9 @@
   <bootstrap crc32="58FAD3FA">
     <oemname name="TLC DSK " company="The Learning Company" description="Treasure Mountain! Disk 2" />
   </bootstrap>
+  <bootstrap crc32="EA4447DC">
+    <oemname name="TRIACGBR" />
+  </bootstrap>
   <bootstrap crc32="F1D48AEC">
     <oemname name="ULTRAISO" company="EZB Systems, Inc." description="UltraISO 9.0" />
   </bootstrap>
@@ -828,5 +853,6 @@
   </bootstrap>
   <bootstrap crc32="AEA629C4">
     <oemname namehex="03048849B7160100" suggestion="false"/>
+    <oemname name="CDM  3.2" suggestion="false"/>
   </bootstrap>
 </root>
