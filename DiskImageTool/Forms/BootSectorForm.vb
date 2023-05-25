@@ -4,19 +4,19 @@ Imports Hb.Windows.Forms
 
 Public Class BootSectorForm
     Private ReadOnly _Disk As DiskImage.Disk
-    Private ReadOnly _OEMNameDictionary As Dictionary(Of UInteger, BootstrapLookup)
+    Private ReadOnly _BootStrap As Bootstrap
     Private ReadOnly _HasExtended As Boolean
     Private ReadOnly _HelpProvider1 As HelpProvider
     Private _SuppressEvent As Boolean = True
 
-    Public Sub New(Disk As DiskImage.Disk, OEMNameDictionary As Dictionary(Of UInteger, BootstrapLookup))
+    Public Sub New(Disk As DiskImage.Disk, BootStrap As Bootstrap)
 
         ' This call is required by the designer.
         InitializeComponent()
 
         ' Add any initialization after the InitializeComponent() call.
         _Disk = Disk
-        _OEMNameDictionary = OEMNameDictionary
+        _BootStrap = BootStrap
         _HelpProvider1 = New HelpProvider
 
         Dim BootStrapStart = _Disk.BootSector.GetBootStrapOffset
@@ -438,13 +438,12 @@ Public Class BootSectorForm
     End Sub
 
     Private Sub PopulateOEMName()
-        Dim BootstrapChecksum = Crc32.ComputeChecksum(_Disk.BootSector.BootStrapCode)
         Dim OEMName As New KnownOEMName With {
             .Name = _Disk.BootSector.OEMName
         }
 
-        If _OEMNameDictionary.ContainsKey(BootstrapChecksum) Then
-            Dim BootstrapType = _OEMNameDictionary.Item(BootstrapChecksum)
+        Dim BootstrapType = _BootStrap.FindMatch(_Disk.BootSector.BootStrapCode)
+        If BootstrapType IsNot Nothing Then
             For Each KnownOEMName In BootstrapType.KnownOEMNames
                 If KnownOEMName.Name.Length > 0 Then
                     Dim IsMatch = KnownOEMName.Name.CompareTo(OEMName.Name)

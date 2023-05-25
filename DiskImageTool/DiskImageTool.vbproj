@@ -30,7 +30,7 @@
     <ProductName>DiskImageTool</ProductName>
     <PublisherName>Digitoxin</PublisherName>
     <ApplicationRevision>0</ApplicationRevision>
-    <ApplicationVersion>1.36.0.%2a</ApplicationVersion>
+    <ApplicationVersion>1.37.0.%2a</ApplicationVersion>
     <UseApplicationTrust>false</UseApplicationTrust>
     <PublishWizardCompleted>true</PublishWizardCompleted>
     <BootstrapperEnabled>true</BootstrapperEnabled>
@@ -140,7 +140,7 @@
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="ApplicationEvents.vb" />
-    <Compile Include="Copy Protection.vb" />
+    <Compile Include="CopyProtection.vb" />
     <Compile Include="DebugScript.vb" />
     <Compile Include="DiskImage\SectorData.vb" />
     <Compile Include="DiskImage\ByteArray.vb" />
@@ -183,6 +183,7 @@
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="HexView\HexViews.vb" />
+    <Compile Include="ProcessDirectoryEntryResponse.vb" />
     <Compile Include="Utility.vb" />
     <Compile Include="Controls\HexTextBox.vb">
       <SubType>Component</SubType>
@@ -202,7 +203,7 @@
     <Compile Include="ListViewColumnSorter.vb" />
     <Compile Include="Extensions\ListViewExtensions.vb" />
     <Compile Include="MyByteProvider.vb" />
-    <Compile Include="OEMNameLookup.vb" />
+    <Compile Include="Bootstrap.vb" />
     <Compile Include="LoadedImageData.vb" />
     <Compile Include="CRC32.vb" />
     <Compile Include="DiskImage\DirectoryEntry.vb" />

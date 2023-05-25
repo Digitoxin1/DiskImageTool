@@ -90,6 +90,14 @@ Namespace DiskImage
             Return New DirectoryEntry(FileBytes, _BootSector, _FAT12, Offset)
         End Function
 
+        Public Function GetFileList() As List(Of DirectoryEntry)
+            Dim DirectoryList As New List(Of DirectoryEntry)
+
+            EnumerateDirectoryEntries(_Directory, DirectoryList)
+
+            Return DirectoryList
+        End Function
+
         Public Function GetVolumeLabel() As DirectoryEntry
             Dim VolumeLabel As DirectoryEntry = Nothing
             Dim DirectoryEntryCount = _Directory.Data.EntryCount
@@ -107,15 +115,19 @@ Namespace DiskImage
             Return VolumeLabel
         End Function
 
-        Public Function HasInvalidSize() As Boolean
-            Dim ReportedSize = SectorToBytes(_BootSector.DataRegionStart + _BootSector.DataRegionSize)
-            Return ReportedSize <> Data.Length
+        Public Function ReportedImageSize() As UInteger
+            Return SectorToBytes(_BootSector.DataRegionStart + _BootSector.DataRegionSize)
+        End Function
+
+        Public Function CheckImageSize() As Integer
+            Dim ReportedSize As Integer = ReportedImageSize()
+            Return Data.Length.CompareTo(ReportedSize)
         End Function
 
         Public Function FixImageSize() As Boolean
             Dim Result As Boolean = False
 
-            Dim ReportedSize = SectorToBytes(_BootSector.DataRegionStart + _BootSector.DataRegionSize)
+            Dim ReportedSize = ReportedImageSize()
 
             If ReportedSize <> Data.Length Then
                 Data.BatchEditMode = True
@@ -176,13 +188,32 @@ Namespace DiskImage
 
             If DirectoryEntryCount > 0 Then
                 For Counter = 0 To DirectoryEntryCount - 1
-                    Dim File = Directory.GetFile(Counter)
+                    Dim DirectoryEntry = Directory.GetFile(Counter)
 
-                    If Not File.IsLink Then
-                        FileBytes.DirectoryCache.Item(File.Offset) = File.Data
-                        If File.IsDirectory And File.SubDirectory IsNot Nothing Then
-                            If File.SubDirectory.Data.EntryCount > 0 Then
-                                CacheDirectoryEntries(File.SubDirectory)
+                    If Not DirectoryEntry.IsLink Then
+                        FileBytes.DirectoryCache.Item(DirectoryEntry.Offset) = DirectoryEntry.Data
+                        If DirectoryEntry.IsDirectory And DirectoryEntry.SubDirectory IsNot Nothing Then
+                            If DirectoryEntry.SubDirectory.Data.EntryCount > 0 Then
+                                CacheDirectoryEntries(DirectoryEntry.SubDirectory)
+                            End If
+                        End If
+                    End If
+                Next
+            End If
+        End Sub
+
+        Private Sub EnumerateDirectoryEntries(Directory As DiskImage.IDirectory, DirectoryList As List(Of DirectoryEntry))
+            Dim DirectoryEntryCount = Directory.Data.EntryCount
+
+            If DirectoryEntryCount > 0 Then
+                For Counter = 0 To DirectoryEntryCount - 1
+                    Dim DirectoryEntry = Directory.GetFile(Counter)
+
+                    If Not DirectoryEntry.IsLink Then
+                        DirectoryList.Add(DirectoryEntry)
+                        If DirectoryEntry.IsDirectory And DirectoryEntry.SubDirectory IsNot Nothing Then
+                            If DirectoryEntry.SubDirectory.Data.EntryCount > 0 Then
+                                EnumerateDirectoryEntries(DirectoryEntry.SubDirectory, DirectoryList)
                             End If
                         End If
                     End If

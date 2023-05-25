@@ -1,10 +1,26 @@
 ﻿Imports System.Xml
+Imports DiskImageTool.DiskImage
 
-Module OEMNameLookup
+Public Class Bootstrap
     Private ReadOnly _NameSpace As String = New StubClass().GetType.Namespace
+    Private _OEMNameDictionary As Dictionary(Of UInteger, BootstrapLookup)
 
-    Public Function GetOEMNameDictionary() As Dictionary(Of UInteger, BootstrapLookup)
-        Dim Result = New Dictionary(Of UInteger, BootstrapLookup)
+    Public Sub New()
+        InitOEMNames()
+    End Sub
+
+    Public Function FindMatch(BootstrapCode() As Byte) As BootstrapLookup
+        Dim Checksum = Crc32.ComputeChecksum(BootstrapCode)
+
+        If _OEMNameDictionary.ContainsKey(Checksum) Then
+            Return _OEMNameDictionary.Item(Checksum)
+        Else
+            Return Nothing
+        End If
+    End Function
+
+    Private Sub InitOEMNames()
+        _OEMNameDictionary = New Dictionary(Of UInteger, BootstrapLookup)
 
         Dim XMLDoc As New XmlDocument()
         XMLDoc.LoadXml(GetResource("bootstrap.xml"))
@@ -44,18 +60,9 @@ Module OEMNameLookup
                 End If
                 BootstrapType.KnownOEMNames.Add(KnownOEMName)
             Next
-            Result.Add(crc32, BootstrapType)
+            _OEMNameDictionary.Add(crc32, BootstrapType)
         Next
-        Return Result
-    End Function
-
-    Public Function OEMNameFindMatch(OEMNameDictionary As Dictionary(Of UInteger, BootstrapLookup), Checksum As UInteger) As BootstrapLookup
-        If OEMNameDictionary.ContainsKey(Checksum) Then
-            Return OEMNameDictionary.Item(Checksum)
-        Else
-            Return Nothing
-        End If
-    End Function
+    End Sub
 
     Private Function GetResource(Name As String) As String
         Dim Value As String
@@ -72,8 +79,7 @@ Module OEMNameLookup
 
         Return Value
     End Function
-
-End Module
+End Class
 
 Public Class BootstrapLookup
     Public Property ExactMatch As Boolean = False

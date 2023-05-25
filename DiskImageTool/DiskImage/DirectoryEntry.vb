@@ -274,7 +274,10 @@ Namespace DiskImage
                 Next
             Else
                 b(0) = CHAR_DELETED
-                For Counter = 1 To b.Length - 1
+                For counter = 1 To 10
+                    b(counter) = 32
+                Next
+                For Counter = 11 To b.Length - 1
                     b(Counter) = 0
                 Next
             End If
@@ -296,6 +299,21 @@ Namespace DiskImage
             LastWriteDate = 0
             LastWriteTime = 0
         End Sub
+
+        Public Function HasVendorExceptions() As Boolean
+
+            If Attributes = &HF7 AndAlso ReservedForWinNT = &H7F Then       'ORIGIN Systems, Inc.
+                Return True
+            ElseIf Attributes = &HDB AndAlso ReservedForWinNT = &H6D Then   'Psygnosis
+                Return True
+            ElseIf Attributes = &HB6 AndAlso ReservedForWinNT = &HDB Then   'Psygnosis
+                Return True
+            ElseIf Attributes = &H6D AndAlso ReservedForWinNT = &HB6 Then   'Psygnosis
+                Return True
+            End If
+
+            Return False
+        End Function
 
         Public Function GetAllocatedSize() As UInteger
             Return Math.Ceiling(FileSize / _BootSector.BytesPerCluster) * _BootSector.BytesPerCluster
@@ -464,6 +482,10 @@ Namespace DiskImage
 
         Public Function IsValidValumeName() As Boolean
             Return IsVolumeName() AndAlso Not (IsHidden() OrElse IsSystem() OrElse IsDirectory() OrElse IsDeleted()) AndAlso StartingCluster = 0
+        End Function
+
+        Public Function IsValid() As Boolean
+            Return Not (HasInvalidFileSize() OrElse HasInvalidAttributes() OrElse HasInvalidStartingCluster())
         End Function
 
         Public Function IsVolumeName() As Boolean

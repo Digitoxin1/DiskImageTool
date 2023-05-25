@@ -61,7 +61,7 @@
         End If
 
         If BtnCreated.Tag Then
-            If DirectoryEntry.HasCreationDate Then
+            If DirectoryEntry.HasCreationDate() Then
                 DT = DirectoryEntry.GetCreationDate
                 If Created Is Nothing Then
                     DirectoryEntry.ClearCreationDate()
@@ -77,7 +77,7 @@
         End If
 
         If BtnLastAccessed.Tag Then
-            If DirectoryEntry.HasLastAccessDate Then
+            If DirectoryEntry.HasLastAccessDate() Then
                 DT = DirectoryEntry.GetLastAccessDate
                 If LastAccessed Is Nothing Then
                     DirectoryEntry.ClearLastAccessDate()
@@ -318,14 +318,14 @@
             DTLastWrittenTime.Value = New Date(1980, 1, 1, 0, 0, 0)
         End If
 
-        If DirectoryEntry.HasCreationDate Then
+        If DirectoryEntry.HasCreationDate() Then
             DT = DirectoryEntry.GetCreationDate
             If DT.IsValidDate Then
                 SetCreatedDateValue(DT.DateObject)
             End If
         End If
 
-        If DirectoryEntry.HasLastAccessDate Then
+        If DirectoryEntry.HasLastAccessDate() Then
             DT = DirectoryEntry.GetLastAccessDate
             If DT.IsValidDate Then
                 SetLastAccessedDateValue(DT.DateObject)

@@ -585,7 +585,7 @@
     <oemname name="MSDOS6.0" />
   </bootstrap>
   <bootstrap crc32="2A8273B6">
-    <oemname name="MSWIN4.0" company="Microsoft" description="Windows 95" />
+    <oemname name="MSWIN4.0" company="Microsoft" description="Windows 95" win9xid="true" />
     <oemname namehex="267C3F5032494843" suggestion="false" company="Sierra On-Line" description="Hoyle Classic Games for Laptops Disk 1" />
     <oemname namehex="274C7D3177494843" suggestion="false" company="GameTek" description="Super Street Fighter II Turbo Disk 1" />
     <oemname namehex="275E61284B494843" suggestion="false" company="GameTek" description="Super Street Fighter II Turbo Disk 2" />
@@ -597,7 +597,7 @@
     <oemname namehex="275D223D76494843" suggestion="false" company="GameTek" description="Super Street Fighter II Turbo Disk 8" />
   </bootstrap>
   <bootstrap crc32="1D056B6E">
-    <oemname name="MSWIN4.1" company="Microsoft" description="Windows 95/98/ME" />
+    <oemname name="MSWIN4.1" company="Microsoft" description="Windows 95/98/ME" win9xid="true" />
   </bootstrap>
   <bootstrap crc32="8A465282">
     <oemname name="NEC 2.00" />

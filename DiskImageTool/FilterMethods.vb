@@ -84,13 +84,13 @@
         End If
 
         If CheckFilter(FilterTypes.HasCreated, AppliedFilters) Then
-            If ImageData.ScanInfo.IsValidImage And ImageData.ScanInfo.HasCreated Then
+            If ImageData.ScanInfo.IsValidImage And ImageData.ScanInfo.HasValidCreated Then
                 Return False
             End If
         End If
 
         If CheckFilter(FilterTypes.HasLastAccessed, AppliedFilters) Then
-            If ImageData.ScanInfo.IsValidImage And ImageData.ScanInfo.HasLastAccessed Then
+            If ImageData.ScanInfo.IsValidImage And ImageData.ScanInfo.HasValidLastAccessed Then
                 Return False
             End If
         End If
@@ -102,7 +102,7 @@
         End If
 
         If CheckFilter(FilterTypes.Windows9xOEMName, AppliedFilters) Then
-            If ImageData.ScanInfo.IsValidImage And ImageData.ScanInfo.OEMNameFound And ImageData.ScanInfo.OEMNameWin9x Then
+            If ImageData.ScanInfo.IsValidImage And ImageData.ScanInfo.OEMNameWin9x Then
                 Return False
             End If
         End If

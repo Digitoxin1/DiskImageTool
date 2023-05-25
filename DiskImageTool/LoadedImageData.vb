@@ -5,11 +5,11 @@ Public Class ImageDataScanInfo
     Public Property DirectoryHasBootSector As Boolean = False
     Public Property DiskType As String = ""
     Public Property HasBadSectors As Boolean = False
-    Public Property HasCreated As Boolean = False
+    Public Property HasValidCreated As Boolean = False
     Public Property HasFATChainingErrors As Boolean = False
     Public Property HasInvalidDirectoryEntries As Boolean = False
     Public Property HasInvalidImageSize As Boolean = False
-    Public Property HasLastAccessed As Boolean = False
+    Public Property HasValidLastAccessed As Boolean = False
     Public Property HasLongFileNames As Boolean = False
     Public Property HasMismatchedFATs As Boolean = False
     Public Property HasUnusedClusters As Boolean = False
@@ -23,6 +23,7 @@ End Class
 
 Public Class LoadedImageData
     Public Sub New(SourceFile As String)
+        _BatchUpdated = False
         _Compressed = False
         _CompressedFile = ""
         _SourceFile = SourceFile
@@ -33,6 +34,7 @@ Public Class LoadedImageData
         _Scanned = False
     End Sub
 
+    Public Property BatchUpdated As Boolean
     Public Property CachedRootDir As Byte()
     Public Property Compressed As Boolean
     Public Property CompressedFile As String
@@ -66,6 +68,6 @@ Public Class LoadedImageData
     End Function
 
     Public Overrides Function ToString() As String
-        Return Right(DisplayPath, Len(DisplayPath) - _StringOffset) & IIf(_Modified, " *", "")
+        Return Right(DisplayPath, Len(DisplayPath) - _StringOffset) '& IIf(_Modified, " *", "")
     End Function
 End Class

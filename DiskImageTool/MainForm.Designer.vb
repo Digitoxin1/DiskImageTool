@@ -45,6 +45,7 @@ Partial Class MainForm
         Dim StatusStrip1 As System.Windows.Forms.StatusStrip
         Dim ToolStripTop As System.Windows.Forms.ToolStrip
         Dim MainMenuTools As System.Windows.Forms.ToolStripMenuItem
+        Dim ToolStripMenuItem1 As System.Windows.Forms.ToolStripSeparator
         Dim MainHelp As System.Windows.Forms.ToolStripMenuItem
         Dim FileMenuSeparatoor2 As System.Windows.Forms.ToolStripSeparator
         Dim FileMenuSeparatoor3 As System.Windows.Forms.ToolStripSeparator
@@ -110,6 +111,7 @@ Partial Class MainForm
         Me.BtnFixImageSize = New System.Windows.Forms.ToolStripMenuItem()
         Me.BtnRestoreBootSector = New System.Windows.Forms.ToolStripMenuItem()
         Me.BtnRemoveBootSector = New System.Windows.Forms.ToolStripMenuItem()
+        Me.BtnWin9xCleanBatch = New System.Windows.Forms.ToolStripMenuItem()
         Me.BtnHelpProjectPage = New System.Windows.Forms.ToolStripMenuItem()
         Me.BtnHelpUpdateCheck = New System.Windows.Forms.ToolStripMenuItem()
         Me.ToolStripSeparator12 = New System.Windows.Forms.ToolStripSeparator()
@@ -165,6 +167,7 @@ Partial Class MainForm
         StatusStrip1 = New System.Windows.Forms.StatusStrip()
         ToolStripTop = New System.Windows.Forms.ToolStrip()
         MainMenuTools = New System.Windows.Forms.ToolStripMenuItem()
+        ToolStripMenuItem1 = New System.Windows.Forms.ToolStripSeparator()
         MainHelp = New System.Windows.Forms.ToolStripMenuItem()
         FileMenuSeparatoor2 = New System.Windows.Forms.ToolStripSeparator()
         FileMenuSeparatoor3 = New System.Windows.Forms.ToolStripSeparator()
@@ -591,7 +594,7 @@ Partial Class MainForm
         Me.ComboDiskType.DropDownWidth = 95
         Me.ComboDiskType.FlatStyle = System.Windows.Forms.FlatStyle.System
         Me.ComboDiskType.Name = "ComboDiskType"
-        Me.ComboDiskType.Size = New System.Drawing.Size(95, 25)
+        Me.ComboDiskType.Size = New System.Drawing.Size(95, 23)
         '
         'ToolStripDiskType
         '
@@ -735,7 +738,7 @@ Partial Class MainForm
         '
         'MainMenuTools
         '
-        MainMenuTools.DropDownItems.AddRange(New System.Windows.Forms.ToolStripItem() {Me.BtnWin9xClean, Me.BtnFixImageSize, Me.BtnRestoreBootSector, Me.BtnRemoveBootSector})
+        MainMenuTools.DropDownItems.AddRange(New System.Windows.Forms.ToolStripItem() {Me.BtnWin9xClean, Me.BtnFixImageSize, Me.BtnRestoreBootSector, Me.BtnRemoveBootSector, ToolStripMenuItem1, Me.BtnWin9xCleanBatch})
         MainMenuTools.Name = "MainMenuTools"
         MainMenuTools.Size = New System.Drawing.Size(46, 20)
         MainMenuTools.Text = "&Tools"
@@ -744,7 +747,7 @@ Partial Class MainForm
         '
         Me.BtnWin9xClean.Name = "BtnWin9xClean"
         Me.BtnWin9xClean.Size = New System.Drawing.Size(289, 22)
-        Me.BtnWin9xClean.Text = "Remove &Win9x Modifications"
+        Me.BtnWin9xClean.Text = "Remove &Windows Modifications"
         '
         'BtnFixImageSize
         '
@@ -763,6 +766,17 @@ Partial Class MainForm
         Me.BtnRemoveBootSector.Name = "BtnRemoveBootSector"
         Me.BtnRemoveBootSector.Size = New System.Drawing.Size(289, 22)
         Me.BtnRemoveBootSector.Text = "Remove &Boot Sector from Root Directory"
+        '
+        'ToolStripMenuItem1
+        '
+        ToolStripMenuItem1.Name = "ToolStripMenuItem1"
+        ToolStripMenuItem1.Size = New System.Drawing.Size(286, 6)
+        '
+        'BtnWin9xCleanBatch
+        '
+        Me.BtnWin9xCleanBatch.Name = "BtnWin9xCleanBatch"
+        Me.BtnWin9xCleanBatch.Size = New System.Drawing.Size(289, 22)
+        Me.BtnWin9xCleanBatch.Text = "Batch Remove Windows Modifications"
         '
         'MainHelp
         '
@@ -1038,6 +1052,7 @@ Partial Class MainForm
         Me.ComboImagesFiltered.AllowDrop = True
         Me.ComboImagesFiltered.Anchor = CType(((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Left) _
             Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
+        Me.ComboImagesFiltered.BackColor = System.Drawing.SystemColors.Control
         Me.ComboImagesFiltered.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList
         Me.ComboImagesFiltered.DropDownWidth = 523
         Me.ComboImagesFiltered.Location = New System.Drawing.Point(323, 55)
@@ -1185,4 +1200,5 @@ Partial Class MainForm
     Friend WithEvents FileMenuSeparatorDirectory As ToolStripSeparator
     Friend WithEvents ComboDiskType As ToolStripComboBox
     Friend WithEvents ToolStripDiskType As ToolStripLabel
+    Friend WithEvents BtnWin9xCleanBatch As ToolStripMenuItem
 End Class
