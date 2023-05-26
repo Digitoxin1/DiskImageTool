@@ -79,146 +79,146 @@ Public Class BootSectorForm
     Private Sub IntitializeHelp()
         Dim Msg As String
 
-        Msg = "OEM Name Identifier" _
-            & vbCrLf & vbCrLf & "Can be set by a FAT implementation to any desired value" _
-            & vbCrLf & vbCrLf & "Typically this Is some indication of what system formatted the volume."
+        Msg = "OEM Name Identifier" &
+            $"{vbCrLf}{vbCrLf}Can be set by a FAT implementation to any desired value" &
+            $"{vbCrLf}{vbCrLf}Typically this is some indication of what system formatted the volume."
         SetHelpString(Msg, LblOEMName, CboOEMName, HexOEMName)
 
-        Msg = "Number of bytes in each physical sector" _
-            & vbCrLf & vbCrLf & "Allowed Values: 512, 1024, 2048, 4096" _
-            & vbCrLf & vbCrLf & "Note: This value should be 512 for all floppy disks."
+        Msg = "Number of bytes in each physical sector" &
+             $"{vbCrLf}{vbCrLf}Allowed Values: 512, 1024, 2048, 4096" &
+             $"{vbCrLf}{vbCrLf}Note: This value should be 512 for all floppy disks."
         SetHelpString(Msg, LblBytesPerSector, CboBytesPerSector)
 
-        Msg = "Number of sectors per cluster" _
-            & vbCrLf & vbCrLf & "Allowed Values: 1, 2, 4, 8, 16, 32, 128" _
-            & vbCrLf & vbCrLf & "Typical Values:" _
-            & vbCrLf & "160K Floppy" & vbTab & "1" _
-            & vbCrLf & "180K Floppy" & vbTab & "1" _
-            & vbCrLf & "320K Floppy" & vbTab & "2" _
-            & vbCrLf & "360K Floppy" & vbTab & "2" _
-            & vbCrLf & "720K Floppy" & vbTab & "2" _
-            & vbCrLf & "1.2M Floppy" & vbTab & "1" _
-            & vbCrLf & "1.44M Floppy" & vbTab & "1" _
-            & vbCrLf & "2.88M Floppy" & vbTab & "2" _
-            & vbCrLf & "DMF Floppy" & vbTab & "2 or 4"
+        Msg = "Number of sectors per cluster" &
+            $"{vbCrLf}{vbCrLf}Allowed Values: 1, 2, 4, 8, 16, 32, 128" &
+            $"{vbCrLf}{vbCrLf}Typical Values:" &
+            $"{vbCrLf}160K Floppy{vbTab}1" &
+            $"{vbCrLf}180K Floppy{vbTab}1" &
+            $"{vbCrLf}320K Floppy{vbTab}2" &
+            $"{vbCrLf}360K Floppy{vbTab}2" &
+            $"{vbCrLf}720K Floppy{vbTab}2" &
+            $"{vbCrLf}1.2M Floppy{vbTab}1" &
+            $"{vbCrLf}1.44M Floppy{vbTab}1" &
+            $"{vbCrLf}2.88M Floppy{vbTab}2" &
+            $"{vbCrLf}DMF Floppy{vbTab}2 or 4"
         SetHelpString(Msg, LblSectorsPerCluster, CboSectorsPerCluster)
 
-        Msg = "Number of reserved sectors in the reserved region of the volume starting at the first sector of the volume" _
-            & vbCrLf & vbCrLf & "Allowed Values: Any non-zero value" _
-            & vbCrLf & vbCrLf & "Note: This value should typically be set to 1."
+        Msg = "Number of reserved sectors in the reserved region of the volume starting at the first sector of the volume" &
+            $"{vbCrLf}{vbCrLf}Allowed Values: Any non-zero value" &
+            $"{vbCrLf}{vbCrLf}Note: This value should typically be set to 1."
         SetHelpString(Msg, LblReservedSectors, TxtReservedSectors)
 
-        Msg = "Number of File Allocation Table (FAT) copies on the volume" _
-            & vbCrLf & vbCrLf & "Allowed Values: Any non-zero value" _
-            & vbCrLf & vbCrLf & "Note: This value should typically be set to 2."
+        Msg = "Number of File Allocation Table (FAT) copies on the volume" &
+            $"{vbCrLf}{vbCrLf}Allowed Values: Any non-zero value" &
+            $"{vbCrLf}{vbCrLf}Note: This value should typically be set to 2."
         SetHelpString(Msg, LblNumberOfFATS, TxtNumberOfFATs)
 
-        Msg = "Number of entries in the root directory" _
-            & vbCrLf & vbCrLf & "Allowed Values: Value multiplied by 32 should be an even multiple of Bytes Per Sector" _
-            & vbCrLf & vbCrLf & "Typical Values:" _
-            & vbCrLf & "160K Floppy" & vbTab & "64" _
-            & vbCrLf & "180K Floppy" & vbTab & "64" _
-            & vbCrLf & "320K Floppy" & vbTab & "112" _
-            & vbCrLf & "360K Floppy" & vbTab & "112" _
-            & vbCrLf & "720K Floppy" & vbTab & "112" _
-            & vbCrLf & "1.2M Floppy" & vbTab & "224" _
-            & vbCrLf & "1.44M Floppy" & vbTab & "224" _
-            & vbCrLf & "2.88M Floppy" & vbTab & "240" _
-            & vbCrLf & "DMF Floppy" & vbTab & "16"
+        Msg = "Number of entries in the root directory" &
+            $"{vbCrLf}{vbCrLf}Allowed Values: Value multiplied by 32 should be an even multiple of Bytes Per Sector" &
+            $"{vbCrLf}{vbCrLf}Typical Values:" &
+            $"{vbCrLf}160K Floppy{vbTab}64" &
+            $"{vbCrLf}180K Floppy{vbTab}64" &
+            $"{vbCrLf}320K Floppy{vbTab}112" &
+            $"{vbCrLf}360K Floppy{vbTab}112" &
+            $"{vbCrLf}720K Floppy{vbTab}112" &
+            $"{vbCrLf}1.2M Floppy{vbTab}224" &
+            $"{vbCrLf}1.44M Floppy{vbTab}224" &
+            $"{vbCrLf}2.88M Floppy{vbTab}240" &
+            $"{vbCrLf}DMF Floppy{vbTab}16"
         SetHelpString(Msg, LblRootDirectoryEntries, TxtRootDirectoryEntries)
 
-        Msg = "Total number of sectors in the volume" _
-            & vbCrLf & vbCrLf & "Typical Values:" _
-            & vbCrLf & "160K Floppy" & vbTab & "320" _
-            & vbCrLf & "180K Floppy" & vbTab & "360" _
-            & vbCrLf & "320K Floppy" & vbTab & "640" _
-            & vbCrLf & "360K Floppy" & vbTab & "720" _
-            & vbCrLf & "720K Floppy" & vbTab & "1440" _
-            & vbCrLf & "1.2M Floppy" & vbTab & "2400" _
-            & vbCrLf & "1.44M Floppy" & vbTab & "2880" _
-            & vbCrLf & "2.88M Floppy" & vbTab & "5760" _
-            & vbCrLf & "DMF Floppy" & vbTab & "3360"
+        Msg = "Total number of sectors in the volume" &
+            $"{vbCrLf}{vbCrLf}Typical Values:" &
+            $"{vbCrLf}160K Floppy{vbTab}320" &
+            $"{vbCrLf}180K Floppy{vbTab}360" &
+            $"{vbCrLf}320K Floppy{vbTab}640" &
+            $"{vbCrLf}360K Floppy{vbTab}720" &
+            $"{vbCrLf}720K Floppy{vbTab}1440" &
+            $"{vbCrLf}1.2M Floppy{vbTab}2400" &
+            $"{vbCrLf}1.44M Floppy{vbTab}2880" &
+            $"{vbCrLf}2.88M Floppy{vbTab}5760" &
+            $"{vbCrLf}DMF Floppy{vbTab}3360"
         SetHelpString(Msg, LblSectorCountSmall, TxtSectorCountSmall)
 
-        Msg = "Media Descriptor" _
-            & vbCrLf & vbCrLf & "Allowed Values:" _
-            & vbCrLf & "F0" & vbTab & "1.44M, 2.88M, DMF Floppy" _
-            & vbCrLf & "F8" & vbTab & "Fixed Disk" _
-            & vbCrLf & "F9" & vbTab & "720K & 1.2M Floppy" _
-            & vbCrLf & "FA" & vbTab & "Unused" _
-            & vbCrLf & "FB" & vbTab & "Unused" _
-            & vbCrLf & "FC" & vbTab & "180K Floppy" _
-            & vbCrLf & "FD" & vbTab & "360K Floppy" _
-            & vbCrLf & "FE" & vbTab & "160K Floppy" _
-            & vbCrLf & "FF" & vbTab & "320K Floppy"
+        Msg = "Media Descriptor" &
+            $"{vbCrLf}{vbCrLf}Allowed Values:" &
+            $"{vbCrLf}F0{vbTab}1.44M, 2.88M, DMF Floppy" &
+            $"{vbCrLf}F8{vbTab}Fixed Disk" &
+            $"{vbCrLf}F9{vbTab}720K & 1.2M Floppy" &
+            $"{vbCrLf}FA{vbTab}Unused" &
+            $"{vbCrLf}FB{vbTab}Unused" &
+            $"{vbCrLf}FC{vbTab}180K Floppy" &
+            $"{vbCrLf}FD{vbTab}360K Floppy" &
+            $"{vbCrLf}FE{vbTab}160K Floppy" &
+            $"{vbCrLf}FF{vbTab}320K Floppy"
         SetHelpString(Msg, TxtMediaDescriptor, HexMediaDescriptor)
 
-        Msg = "Number of sectors allocated to each copy of the File Allocation Table (FAT)" _
-            & vbCrLf & vbCrLf & "Typical Values:" _
-            & vbCrLf & "160K Floppy" & vbTab & "1" _
-            & vbCrLf & "180K Floppy" & vbTab & "2" _
-            & vbCrLf & "320K Floppy" & vbTab & "1" _
-            & vbCrLf & "360K Floppy" & vbTab & "2" _
-            & vbCrLf & "720K Floppy" & vbTab & "3" _
-            & vbCrLf & "1.2M Floppy" & vbTab & "7" _
-            & vbCrLf & "1.44M Floppy" & vbTab & "9" _
-            & vbCrLf & "2.88M Floppy" & vbTab & "9" _
-            & vbCrLf & "DMF Floppy" & vbTab & "3 or 5"
+        Msg = "Number of sectors allocated to each copy of the File Allocation Table (FAT)" &
+            $"{vbCrLf}{vbCrLf}Typical Values:" &
+            $"{vbCrLf}160K Floppy{vbTab}1" &
+            $"{vbCrLf}180K Floppy{vbTab}2" &
+            $"{vbCrLf}320K Floppy{vbTab}1" &
+            $"{vbCrLf}360K Floppy{vbTab}2" &
+            $"{vbCrLf}720K Floppy{vbTab}3" &
+            $"{vbCrLf}1.2M Floppy{vbTab}7" &
+            $"{vbCrLf}1.44M Floppy{vbTab}9" &
+            $"{vbCrLf}2.88M Floppy{vbTab}9" &
+            $"{vbCrLf}DMF Floppy{vbTab}3 or 5"
         SetHelpString(Msg, LblSectorsPerFAT, TxtSectorsPerFAT)
 
-        Msg = "Number of sectors per track on the disk" _
-            & vbCrLf & vbCrLf & "Typical Values:" _
-            & vbCrLf & "160K Floppy" & vbTab & "8" _
-            & vbCrLf & "180K Floppy" & vbTab & "9" _
-            & vbCrLf & "320K Floppy" & vbTab & "8" _
-            & vbCrLf & "360K Floppy" & vbTab & "9" _
-            & vbCrLf & "720K Floppy" & vbTab & "9" _
-            & vbCrLf & "1.2M Floppy" & vbTab & "15" _
-            & vbCrLf & "1.44M Floppy" & vbTab & "18" _
-            & vbCrLf & "2.88M Floppy" & vbTab & "36" _
-            & vbCrLf & "DMF Floppy" & vbTab & "21"
+        Msg = "Number of sectors per track on the disk" &
+            $"{vbCrLf}{vbCrLf}Typical Values:" &
+            $"{vbCrLf}160K Floppy{vbTab}8" &
+            $"{vbCrLf}180K Floppy{vbTab}9" &
+            $"{vbCrLf}320K Floppy{vbTab}8" &
+            $"{vbCrLf}360K Floppy{vbTab}9" &
+            $"{vbCrLf}720K Floppy{vbTab}9" &
+            $"{vbCrLf}1.2M Floppy{vbTab}15" &
+            $"{vbCrLf}1.44M Floppy{vbTab}18" &
+            $"{vbCrLf}2.88M Floppy{vbTab}36" &
+            $"{vbCrLf}DMF Floppy{vbTab}21"
         SetHelpString(Msg, LblSectorsPerTrack, TxtSectorsPerTrack)
 
-        Msg = "Number of physical heads (sides) on the disk" _
-            & vbCrLf & vbCrLf & "Typical Values:" _
-            & vbCrLf & "160K Floppy" & vbTab & "1" _
-            & vbCrLf & "180K Floppy" & vbTab & "1" _
-            & vbCrLf & "320K Floppy" & vbTab & "2" _
-            & vbCrLf & "360K Floppy" & vbTab & "2" _
-            & vbCrLf & "720K Floppy" & vbTab & "2" _
-            & vbCrLf & "1.2M Floppy" & vbTab & "2" _
-            & vbCrLf & "1.44M Floppy" & vbTab & "2" _
-            & vbCrLf & "2.88M Floppy" & vbTab & "2" _
-            & vbCrLf & "DMF Floppy" & vbTab & "2"
+        Msg = "Number of physical heads (sides) on the disk" &
+            $"{vbCrLf}{vbCrLf}Typical Values:" &
+            $"{vbCrLf}160K Floppy{vbTab}1" &
+            $"{vbCrLf}180K Floppy{vbTab}1" &
+            $"{vbCrLf}320K Floppy{vbTab}2" &
+            $"{vbCrLf}360K Floppy{vbTab}2" &
+            $"{vbCrLf}720K Floppy{vbTab}2" &
+            $"{vbCrLf}1.2M Floppy{vbTab}2" &
+            $"{vbCrLf}1.44M Floppy{vbTab}2" &
+            $"{vbCrLf}2.88M Floppy{vbTab}2" &
+            $"{vbCrLf}DMF Floppy{vbTab}2"
         SetHelpString(Msg, LblNumberOfHeads, TxtNumberOfHeads)
 
-        Msg = "Number of sectors preceeding the first sector of a partitioned volume" _
-             & vbCrLf & vbCrLf & "Note: This value should be 0 for all floppy disks"
+        Msg = "Number of sectors preceeding the first sector of a partitioned volume" &
+             $"{vbCrLf}{vbCrLf}Note: This value should be 0 for all floppy disks"
         SetHelpString(Msg, LblHiddenSectors, TxtHiddenSectors)
 
-        Msg = "Total number of sectors in a FAT16 volume larger than 65535 sectors" _
-             & vbCrLf & vbCrLf & "Note: This value should be 0 for all floppy disks"
+        Msg = "Total number of sectors in a FAT16 volume larger than 65535 sectors" &
+             $"{vbCrLf}{vbCrLf}Note: This value should be 0 for all floppy disks"
         SetHelpString(Msg, LblSectorCountLarge, TxtSectorCountLarge)
 
-        Msg = "Interrupt 13h drive number" _
-            & vbCrLf & vbCrLf & "Allowed Values: 0, 128"
+        Msg = "Interrupt 13h drive number" &
+            $"{vbCrLf}{vbCrLf}Allowed Values: 0, 128"
         SetHelpString(Msg, LblDriveNumber, TxtDriveNumber)
 
-        Msg = "Extended Boot Signature" _
-            & vbCrLf & vbCrLf & "Typical Values:" _
-            & vbCrLf & "28h" & vbTab & "Volume Serial Number is present" _
-            & vbCrLf & "29h" & vbTab & "Volume Serial Number, Volume Label, and File System ID are present"
+        Msg = "Extended Boot Signature" &
+            $"{vbCrLf}{vbCrLf}Typical Values:" &
+            $"{vbCrLf}28h{vbTab}Volume Serial Number is present" &
+            $"{vbCrLf}29h{vbTab}Volume Serial Number, Volume Label, and File System ID are present"
         SetHelpString(Msg, lblExtendedBootSignature, HexExtendedBootSignature)
 
-        Msg = "The Volume Serial Number is a 32-bit random number used in conjunction with the Volume Label for removable media tracking" _
-            & vbCrLf & vbCrLf & "Note: This id is typically generated by converting the current date and time into a 32-bit value"
+        Msg = "The Volume Serial Number is a 32-bit random number used in conjunction with the Volume Label for removable media tracking" &
+            $"{vbCrLf}{vbCrLf}Note: This id is typically generated by converting the current date and time into a 32-bit value"
         SetHelpString(Msg, LblVolumeSerialNumber, HexVolumeSerialNumber)
 
         Msg = "This field typically matches the 11-byte volume label in the root directory of the disk or has the value ""NO NAME    "" if the volume label does not exist."
         SetHelpString(Msg, LblVolumeLabel, TxtVolumeLabel, HexVolumeLabel)
 
-        Msg = "The File System ID is informational only" _
-            & vbCrLf & vbCrLf & "Typical Values: FAT12, FAT16, FAT"
+        Msg = "The File System ID is informational only" &
+            $"{vbCrLf}{vbCrLf}Typical Values: FAT12, FAT16, FAT"
         SetHelpString(Msg, LblFileSystemType, TxtFileSystemType, HexFileSystemType)
 
         Msg = "The disk type detected based on the current values in the Boot Record.  Changing this will set the values in the boot record to those of the selected disk type."
@@ -227,15 +227,15 @@ Public Class BootSectorForm
         Msg = "Generate a new volume serial number based on a user supplied date and time"
         SetHelpString(Msg, BtnVolumeSerialNumber)
 
-        Msg = "This instruction indicates where the bootstrap code starts." _
-            & vbCrLf & vbCrLf & "Allowed Values: EB xx 90, E9 xx xx"
+        Msg = "This instruction indicates where the bootstrap code starts." &
+            $"{vbCrLf}{vbCrLf}Allowed Values: EB xx 90, E9 xx xx"
         SetHelpString(Msg, LblJumpInstruction, HexJumpInstruction)
 
-        Msg = "Indicated to the BIOS that the sector is executable." _
-            & vbCrLf & vbCrLf & "Allowed Values: AA 55"
+        Msg = "Indicated to the BIOS that the sector is executable." &
+            $"{vbCrLf}{vbCrLf}Allowed Values: AA 55"
         SetHelpString(Msg, LblBootSectorSignature, HexBootSectorSignature)
 
-        Msg = "This is additional data found in the Boot Sector." & vbCrLf & vbCrLf & "Note: Data highlighted in green is the bootstrap code."
+        Msg = $"This is additional data found in the Boot Sector.{vbCrLf}{vbCrLf}Note: Data highlighted in green is the bootstrap code."
         SetHelpString(Msg, HexBox1)
     End Sub
 

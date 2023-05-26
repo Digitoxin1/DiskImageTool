@@ -132,7 +132,7 @@ Public Class ItemScanForm
         End If
 
         If Disk IsNot Nothing Then
-            Dim Result = _Parent.Win9xClean(Disk, False)
+            Dim Result = _Parent.Win9xClean(Disk)
             ImageData.BatchUpdated = Result
             If Result Then
                 _Parent.ItemScanModified(Disk, ImageData)

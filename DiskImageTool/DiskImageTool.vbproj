@@ -133,6 +133,7 @@
     <Compile Include="DiskImage\FloppyDiskFunctions.vb" />
     <Compile Include="DiskImage\SectorBlock.vb" />
     <Compile Include="Extensions\ByteArrayExtensions.vb" />
+    <Compile Include="Extensions\StringExtensions.vb" />
     <Compile Include="Forms\AboutBox.Designer.vb">
       <DependentUpon>AboutBox.vb</DependentUpon>
     </Compile>
