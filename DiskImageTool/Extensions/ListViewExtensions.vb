@@ -55,6 +55,17 @@ Module ListViewExtensions
     Private Const HDM_GETITEM As Integer = HDM_FIRST + 11
     Private Const HDM_SETITEM As Integer = HDM_FIRST + 12
 
+    Private Const SB_HORZ As Integer = 0
+    Private Const SB_VERT As Integer = 1
+
+    <DllImport("user32.dll", CharSet:=CharSet.Auto, SetLastError:=True)>
+    Private Function GetScrollPos(hWnd As IntPtr, nBar As Integer) As Integer
+    End Function
+
+    <DllImport("user32.dll", CharSet:=CharSet.Auto, SetLastError:=True)>
+    Private Function SetScrollPos(hWnd As IntPtr, nBar As Integer, nPos As Integer, bRedraw As Boolean) As Integer
+    End Function
+
     <DllImport("user32.dll", CharSet:=CharSet.Auto, SetLastError:=True)>
     Private Function SendMessage(hWnd As IntPtr, msg As UInt32, wParam As IntPtr, lParam As IntPtr) As IntPtr
     End Function
@@ -186,6 +197,12 @@ Module ListViewExtensions
         End If
 
         Return Response
+    End Function
+
+    <Extension()>
+    Public Function GetVerticalScrollPos(ListViewControl As ListView) As Integer
+        Return GetScrollPos(ListViewControl.Handle, SB_VERT)
+
     End Function
 
     Private Function ExtractID(Group As ListViewGroup) As Integer

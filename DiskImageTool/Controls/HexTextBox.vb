@@ -1,4 +1,5 @@
 ﻿Imports System.ComponentModel
+Imports System.Text
 
 Public Class HexTextBox
     Inherits MaskedTextBox
@@ -73,9 +74,9 @@ Public Class HexTextBox
         Set
             _MaskLength = Value
             Dim Mask As String = ""
-            For Counter = 1 To MaskLength
+            For Counter = 0 To MaskLength - 1
                 Mask &= "AA"
-                If Counter < MaskLength Then
+                If Counter < MaskLength - 1 Then
                     Mask &= " "
                 End If
             Next
@@ -124,14 +125,16 @@ Public Class HexTextBox
         End If
     End Sub
 
-    Public Sub SetHex(Value() As Byte)
+    Public Sub SetHex(Value() As Byte, Optional ResetUndo As Boolean = True)
         Dim NewText = BitConverter.ToString(Value).Replace("-", " ")
 
         If MyBase.Text <> NewText Then
             _SuppressEvent = True
             MyBase.Text = NewText
             _SuppressEvent = False
-            ButtonUndo.Enabled = False
+            If ResetUndo Then
+                ButtonUndo.Enabled = False
+            End If
         End If
     End Sub
 
@@ -214,10 +217,15 @@ Public Class HexTextBox
 
     Private Sub InitMenu()
         MyBase.ContextMenuStrip = New ContextMenuStrip
+
         ButtonUndo = MyBase.ContextMenuStrip.Items.Add("&Undo")
-        MyBase.ContextMenuStrip.Items.Add(New ToolStripSeparator)
-        ButtonCopy = MyBase.ContextMenuStrip.Items.Add("&Copy")
+        ButtonUndo.ShortcutKeys = Keys.Control + Keys.Z
         ButtonUndo.Enabled = False
+
+        MyBase.ContextMenuStrip.Items.Add(New ToolStripSeparator)
+
+        ButtonCopy = MyBase.ContextMenuStrip.Items.Add("&Copy")
+        ButtonCopy.ShortcutKeys = Keys.Control + Keys.C
     End Sub
 
 #Region "Events"

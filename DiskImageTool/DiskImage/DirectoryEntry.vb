@@ -3,7 +3,8 @@
 Namespace DiskImage
 
     Public Class DirectoryEntry
-        Private Const CHAR_SPACE As Byte = 32
+        Private Const CHAR_SPACE As Byte = &H20
+        Private Const CHAR_EMPTY As Byte = &H0
         Public Const CHAR_DELETED As Byte = &HE5
         Public Const DIRECTORY_ENTRY_SIZE As Byte = 32
         Private ReadOnly _FatChain As FATChain
@@ -435,6 +436,10 @@ Namespace DiskImage
 
         Public Function IsDirectory() As Boolean
             Return (Attributes And AttributeFlags.Directory) > 0
+        End Function
+
+        Public Function IsEmpty() As Boolean
+            Return FileName(0) = CHAR_EMPTY
         End Function
 
         Public Function IsHidden() As Boolean

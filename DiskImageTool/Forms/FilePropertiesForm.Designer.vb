@@ -52,7 +52,7 @@ Partial Class FilePropertiesForm
         Me.ChkHidden = New System.Windows.Forms.CheckBox()
         Me.LblMultipleFiles = New System.Windows.Forms.Label()
         Me.TxtExtension = New System.Windows.Forms.TextBox()
-        Me.TxtFile = New System.Windows.Forms.TextBox()
+        Me.TxtFile = New System.Windows.Forms.MaskedTextBox()
         Me.GroupFileName = New System.Windows.Forms.GroupBox()
         Me.BtnCancel = New System.Windows.Forms.Button()
         Me.BtnUpdate = New System.Windows.Forms.Button()
@@ -441,7 +441,6 @@ Partial Class FilePropertiesForm
         'TxtFile
         '
         Me.TxtFile.Location = New System.Drawing.Point(3, 3)
-        Me.TxtFile.MaxLength = 8
         Me.TxtFile.Name = "TxtFile"
         Me.TxtFile.Size = New System.Drawing.Size(170, 20)
         Me.TxtFile.TabIndex = 0
@@ -585,7 +584,7 @@ Partial Class FilePropertiesForm
     Friend WithEvents BtnArchive As Button
     Friend WithEvents BtnSystem As Button
     Friend WithEvents FlowLayoutPanel1 As FlowLayoutPanel
-    Friend WithEvents TxtFile As TextBox
+    Friend WithEvents TxtFile As MaskedTextBox
     Friend WithEvents TxtExtension As TextBox
     Friend WithEvents LblLastWritten As Label
     Friend WithEvents LblCreated As Label

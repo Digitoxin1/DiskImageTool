@@ -6,12 +6,22 @@ Imports System.Text
 Imports DiskImageTool.DiskImage
 Imports BootSectorOffsets = DiskImageTool.DiskImage.BootSector.BootSectorOffsets
 
+Public Enum ItemScanTypes
+    Disk = 1
+    OEMName = 2
+    DiskType = 4
+    UnusedClusters = 8
+    Directory = 16
+    All = 31
+End Enum
+
 Public Structure FileData
     Dim DirectoryEntry As DiskImage.DirectoryEntry
     Dim FilePath As String
     Dim IsLastEntry As Boolean
     Dim Index As Integer
     Dim ParentOffset As Integer
+    Dim LFNFileName As String
 End Structure
 
 Public Class MainForm
@@ -63,13 +73,13 @@ Public Class MainForm
         Return New DiskImage.Disk(Data, ImageData.Modifications)
     End Function
 
-    Friend Function ItemScanDirectory(Disk As DiskImage.Disk, ImageData As LoadedImageData, Optional UpdateFilters As Boolean = False, Optional Remove As Boolean = False) As ProcessDirectoryEntryResponse
-        Dim Response As ProcessDirectoryEntryResponse
+    Friend Function ItemScanDirectory(Disk As DiskImage.Disk, ImageData As LoadedImageData, Optional UpdateFilters As Boolean = False, Optional Remove As Boolean = False) As DirectoryScanResponse
+        Dim Response As DirectoryScanResponse
 
         If Not Remove And Disk.IsValidImage Then
             Response = ProcessDirectoryEntries(Disk.Directory, 0, "", True)
         Else
-            Response = New ProcessDirectoryEntryResponse(Nothing)
+            Response = New DirectoryScanResponse(Nothing)
         End If
 
         If Not ImageData.Scanned Or Response.HasValidCreated <> ImageData.ScanInfo.HasValidCreated Then
@@ -650,7 +660,7 @@ Public Class MainForm
         End If
 
         If DoItemScan Then
-            ItemScanAll(_Disk, CurrentImageData, True)
+            ItemScan(ItemScanTypes.All, _Disk, CurrentImageData, True)
         End If
 
         ComboImagesRefreshCurrentItemText()
@@ -666,7 +676,7 @@ Public Class MainForm
         End If
 
         FATSubMenuRefresh()
-        SaveButtonsRefresh()
+        RefreshSaveButtons()
     End Sub
 
     Private Function DirectoryEntryCanExport(DirectoryEntry As DiskImage.DirectoryEntry) As Boolean
@@ -676,22 +686,59 @@ Public Class MainForm
             And Not DirectoryEntry.HasInvalidExtension
     End Function
 
-    Private Sub DeleteFile(DirectoryEntry As DiskImage.DirectoryEntry, Clear As Boolean)
-        Dim Msg As String = "Are you sure you with to delete " & DirectoryEntry.GetFullFileName & "?"
-        If MsgBox(Msg, MsgBoxStyle.YesNo + MsgBoxStyle.DefaultButton2) = MsgBoxResult.Yes Then
-            DirectoryEntry.Remove(Clear)
+    Private Sub DeleteSelectedFiles(Clear As Boolean)
+        Dim Msg As String
+        Dim Item As ListViewItem
+        Dim FileData As FileData
+        Dim Result As Boolean = False
 
-            ComboItemRefresh(True, True)
+        If ListViewFiles.SelectedItems.Count = 0 Then
+            Exit Sub
+        ElseIf ListViewFiles.SelectedItems.Count = 1 Then
+            Item = ListViewFiles.SelectedItems(0)
+            FileData = Item.Tag
+            Msg = "Are you sure you with to delete " & FileData.DirectoryEntry.GetFullFileName & "?"
+        Else
+            Msg = "Are you sure you with to delete the selected files?"
+        End If
+
+        If MsgBox(Msg, MsgBoxStyle.YesNo + MsgBoxStyle.DefaultButton2) = MsgBoxResult.No Then
+            Exit Sub
+        End If
+
+        _Disk.Data.BatchEditMode = True
+
+        For Each Item In ListViewFiles.SelectedItems
+            FileData = Item.Tag
+            If DirectoryEntryCanDelete(FileData.DirectoryEntry, Clear) Then
+                FileData.DirectoryEntry.Remove(Clear)
+                Result = True
+            ElseIf Clear And DirectoryEntryCanDelete(FileData.DirectoryEntry, False) Then
+                FileData.DirectoryEntry.Remove(False)
+                Result = True
+            End If
+        Next
+
+        _Disk.Data.BatchEditMode = False
+
+        If Result Then
+            FilePropertiesRefresh(ListViewFiles.SelectedItems, True)
         End If
     End Sub
 
-    Private Sub RemoveDeletedFile(DirectoryEntry As DiskImage.DirectoryEntry, Index As Integer, IsLastEntry As Boolean)
-        DirectoryEntry.BatchEditMode = True
+    Private Sub RemoveDeletedFile(Item As ListViewItem)
+        Dim FileData As FileData = Item.Tag
 
-        DirectoryEntry.Clear(IsLastEntry)
-        If IsLastEntry And Index > 0 Then
-            Dim Offset = DirectoryEntry.Offset
-            For Counter = Index - 1 To 0 Step -1
+        If Not FileData.DirectoryEntry.IsDeleted Then
+            Exit Sub
+        End If
+
+        FileData.DirectoryEntry.BatchEditMode = True
+
+        FileData.DirectoryEntry.Clear(FileData.IsLastEntry)
+        If FileData.IsLastEntry And FileData.Index > 0 Then
+            Dim Offset = FileData.DirectoryEntry.Offset
+            For Counter = FileData.Index - 1 To 0 Step -1
                 Offset -= DirectoryEntry.DIRECTORY_ENTRY_SIZE
                 Dim PrevEntry = _Disk.GetDirectoryEntryByOffset(Offset)
                 If PrevEntry.IsLFN Then
@@ -702,9 +749,9 @@ Public Class MainForm
             Next
         End If
 
-        DirectoryEntry.BatchEditMode = False
+        FileData.DirectoryEntry.BatchEditMode = False
 
-        ComboItemRefresh(True, True)
+        FilePropertiesRefresh(Item, False)
     End Sub
 
     Private Sub DirectoryEntryDisplayText(DirectoryEntry As DiskImage.DirectoryEntry)
@@ -740,18 +787,16 @@ Public Class MainForm
         frmTextView.ShowDialog()
     End Sub
 
-    Private Function DirectoryEntryCanDelete(DirectoryEntry As DiskImage.DirectoryEntry) As Boolean
+    Private Function DirectoryEntryCanDelete(DirectoryEntry As DiskImage.DirectoryEntry, Clear As Boolean) As Boolean
         If DirectoryEntry.IsDeleted Then
+            Return False
+        ElseIf Clear And Not DirectoryEntry.IsValidFile Then
             Return False
         ElseIf DirectoryEntry.IsValidDirectory Then
             Return DirectoryEntry.SubDirectory.Data.FileCount - DirectoryEntry.SubDirectory.Data.DeletedFileCount = 0
         Else
             Return True
         End If
-    End Function
-
-    Private Function DirectoryEntryCanDeleteWithFill(DirectoryEntry As DiskImage.DirectoryEntry) As Boolean
-        Return DirectoryEntryCanDelete(DirectoryEntry) AndAlso DirectoryEntry.IsValidFile
     End Function
 
     Private Function DirectoryEntryGetStats(DirectoryEntry As DiskImage.DirectoryEntry) As DirectoryStats
@@ -766,8 +811,8 @@ Public Class MainForm
             .CanExport = DirectoryEntryCanExport(DirectoryEntry)
             .FileSize = DirectoryEntry.FileSize
             .FullFileName = DirectoryEntry.GetFullFileName
-            .CanDelete = DirectoryEntryCanDelete(DirectoryEntry)
-            .CanDeleteWithFill = DirectoryEntryCanDeleteWithFill(DirectoryEntry)
+            .CanDelete = DirectoryEntryCanDelete(DirectoryEntry, False)
+            .CanDeleteWithFill = DirectoryEntryCanDelete(DirectoryEntry, True)
         End With
 
         Return Stats
@@ -817,9 +862,9 @@ Public Class MainForm
         End If
 
         If DoItemScan Then
-            ItemScanAll(_Disk, CurrentImageData, True)
+            ItemScan(ItemScanTypes.All, _Disk, CurrentImageData, True)
             ComboImagesRefreshCurrentItemText()
-            SaveButtonsRefresh()
+            RefreshSaveButtons()
         End If
     End Sub
 
@@ -990,7 +1035,7 @@ Public Class MainForm
     End Sub
 
     Private Sub FileClose(ImageData As LoadedImageData)
-        ItemScanAll(_Disk, ImageData, True, True)
+        ItemScan(ItemScanTypes.All, _Disk, ImageData, True, True)
         _LoadedFileNames.Remove(ImageData.DisplayPath)
 
         Dim ActiveComboBox As ComboBox = IIf(_FiltersApplied, ComboImagesFiltered, ComboImages)
@@ -1151,14 +1196,46 @@ Public Class MainForm
             Result = frmFileProperties.Updated
 
             If Result Then
-                ComboItemRefresh(True, True)
+                FilePropertiesRefresh(ListViewFiles.SelectedItems, False)
             End If
         End If
 
         Return Result
     End Function
 
-    Private Sub FileReplace(DirectoryEntry As DiskImage.DirectoryEntry)
+    Private Sub FilePropertiesRefresh(Item As ListViewItem, RefreshSummary As Boolean)
+        Dim List As New List(Of ListViewItem) From {
+            Item
+        }
+
+        FilePropertiesRefresh(List, RefreshSummary)
+    End Sub
+
+    Private Sub FilePropertiesRefresh(List As IList, RefreshSummary As Boolean)
+        Dim Response = ProcessDirectoryEntries(_Disk.Directory, 0, "", True)
+
+        ListViewFiles.BeginUpdate()
+
+        For Each Item As ListViewItem In List
+            ListViewFilesRefreshItem(Item.Index)
+        Next
+        ProcessDirectoryScanResponse(Response)
+
+        ListViewFiles.EndUpdate()
+
+        Dim CurrentImageData As LoadedImageData = ComboImages.SelectedItem
+        ItemScan(ItemScanTypes.Directory, _Disk, CurrentImageData, True)
+        ComboImagesRefreshCurrentItemText()
+        RefreshSaveButtons()
+        RefreshFileButtons()
+        If RefreshSummary Then
+            PopulateSummaryPanel(_Disk)
+        End If
+        PopulateHashPanel(_Disk)
+        RefreshButtonStatus(_Disk, CurrentImageData)
+    End Sub
+
+    Private Sub FileReplace(Item As ListViewItem)
         Dim Dialog = New OpenFileDialog
         If Dialog.ShowDialog <> DialogResult.OK Then
             Exit Sub
@@ -1167,27 +1244,31 @@ Public Class MainForm
         Dim FileInfo As New IO.FileInfo(Dialog.FileName)
         Dim Msg As String
 
-        If FileInfo.Length < DirectoryEntry.FileSize Then
-            Msg = FileInfo.Name & " Is smaller than " & DirectoryEntry.GetFullFileName & " And will be padded With nulls." & vbCrLf & vbCrLf
-        ElseIf FileInfo.Length > DirectoryEntry.FileSize Then
-            Msg = FileInfo.Name & " Is larger than " & DirectoryEntry.GetFullFileName & " And will be truncated." & vbCrLf & vbCrLf
+        Dim FileData As FileData = Item.Tag
+
+        If FileInfo.Length < FileData.DirectoryEntry.FileSize Then
+            Msg = FileInfo.Name & " Is smaller than " & FileData.DirectoryEntry.GetFullFileName & " And will be padded With nulls." & vbCrLf & vbCrLf
+        ElseIf FileInfo.Length > FileData.DirectoryEntry.FileSize Then
+            Msg = FileInfo.Name & " Is larger than " & FileData.DirectoryEntry.GetFullFileName & " And will be truncated." & vbCrLf & vbCrLf
         Else
             Msg = ""
         End If
-        Msg &= "Do you wish To replace " & DirectoryEntry.GetFullFileName & " With " & FileInfo.FullName & "?"
+        Msg &= "Do you wish To replace " & FileData.DirectoryEntry.GetFullFileName & " With " & FileInfo.FullName & "?"
 
         If MsgBox(Msg, MsgBoxStyle.Question + MsgBoxStyle.YesNo + MsgBoxStyle.DefaultButton2) = MsgBoxResult.Yes Then
             Dim ClusterSize = _Disk.BootSector.BytesPerCluster
-            Dim FileSize = Math.Min(DirectoryEntry.FileSize, DirectoryEntry.FATChain.Clusters.Count * ClusterSize)
+            Dim FileSize = Math.Min(FileData.DirectoryEntry.FileSize, FileData.DirectoryEntry.FATChain.Clusters.Count * ClusterSize)
             Dim BytesToFill As Integer
             Dim ClusterIndex As Integer = 0
+
+            _Disk.Data.BatchEditMode = True
 
             Using fs = FileInfo.OpenRead()
                 Dim BytesToRead As Integer = Math.Min(fs.Length, FileSize)
                 Dim n As Integer
                 Do While BytesToRead > 0
                     Dim b(ClusterSize - 1) As Byte
-                    Dim Cluster = DirectoryEntry.FATChain.Clusters(ClusterIndex)
+                    Dim Cluster = FileData.DirectoryEntry.FATChain.Clusters(ClusterIndex)
                     Dim ClusterOffset = _Disk.BootSector.ClusterToOffset(Cluster)
                     If BytesToRead < ClusterSize Then
                         b = _Disk.Data.GetBytes(ClusterOffset, ClusterSize)
@@ -1210,7 +1291,7 @@ Public Class MainForm
 
             Do While FileSize > 0
                 Dim b(ClusterSize - 1) As Byte
-                Dim Cluster = DirectoryEntry.FATChain.Clusters(ClusterIndex)
+                Dim Cluster = FileData.DirectoryEntry.FATChain.Clusters(ClusterIndex)
                 Dim ClusterOffset = _Disk.BootSector.ClusterToOffset(Cluster)
                 BytesToFill = Math.Min(FileSize, ClusterSize)
                 If BytesToFill < ClusterSize Then
@@ -1224,7 +1305,9 @@ Public Class MainForm
                 ClusterIndex += 1
             Loop
 
-            ComboItemRefresh(True, True)
+            _Disk.Data.BatchEditMode = False
+
+            FilePropertiesRefresh(Item, False)
         End If
     End Sub
 
@@ -1516,7 +1599,7 @@ Public Class MainForm
         ToolStripBtnSaveAll.Enabled = BtnSaveAll.Enabled
     End Sub
 
-    Private Function GetFileDataFromDirectoryEntry(Index As Integer, DirectoryEntry As DiskImage.DirectoryEntry, ParentOffset As UInteger, FilePath As String, IsLastEntry As Boolean) As FileData
+    Private Function GetFileDataFromDirectoryEntry(Index As Integer, DirectoryEntry As DiskImage.DirectoryEntry, ParentOffset As UInteger, FilePath As String, IsLastEntry As Boolean, LFNFileName As String) As FileData
         Dim Response As FileData
         With Response
             .Index = Index
@@ -1524,6 +1607,7 @@ Public Class MainForm
             .DirectoryEntry = DirectoryEntry
             .IsLastEntry = IsLastEntry
             .ParentOffset = ParentOffset
+            .LFNFileName = LFNFileName
         End With
 
         Return Response
@@ -1684,10 +1768,10 @@ Public Class MainForm
         MenuDisplayDirectorySubMenuClear()
         FATSubMenuRefresh()
 
-        SaveButtonsRefresh()
+        RefreshSaveButtons()
     End Sub
 
-    Private Sub ItemScanAll(Disk As DiskImage.Disk, ImageData As LoadedImageData, Optional UpdateFilters As Boolean = False, Optional Remove As Boolean = False)
+    Private Sub ItemScan(Type As ItemScanTypes, Disk As DiskImage.Disk, ImageData As LoadedImageData, Optional UpdateFilters As Boolean = False, Optional Remove As Boolean = False)
         ItemScanModified(Disk, ImageData, UpdateFilters, Remove)
 
         If UpdateFilters Then
@@ -1695,12 +1779,22 @@ Public Class MainForm
         End If
 
         If ImageData.Scanned Then
-            ItemScanDisk(Disk, ImageData, UpdateFilters, Remove)
-            ItemScanOEMName(Disk, ImageData, UpdateFilters, Remove)
-            OEMNameFilterUpdate(Disk, ImageData, UpdateFilters, Remove)
-            DiskTypeFilterUpdate(Disk, ImageData, UpdateFilters, Remove)
-            ItemScanUnusedClusters(Disk, ImageData, UpdateFilters, Remove)
-            ItemScanDirectory(Disk, ImageData, UpdateFilters, Remove)
+            If Type And ItemScanTypes.Disk Then
+                ItemScanDisk(Disk, ImageData, UpdateFilters, Remove)
+            End If
+            If Type And ItemScanTypes.OEMName Then
+                ItemScanOEMName(Disk, ImageData, UpdateFilters, Remove)
+                OEMNameFilterUpdate(Disk, ImageData, UpdateFilters, Remove)
+            End If
+            If Type And ItemScanTypes.DiskType Then
+                DiskTypeFilterUpdate(Disk, ImageData, UpdateFilters, Remove)
+            End If
+            If Type And ItemScanTypes.UnusedClusters Then
+                ItemScanUnusedClusters(Disk, ImageData, UpdateFilters, Remove)
+            End If
+            If Type And ItemScanTypes.Directory Then
+                ItemScanDirectory(Disk, ImageData, UpdateFilters, Remove)
+            End If
         End If
     End Sub
 
@@ -1712,9 +1806,23 @@ Public Class MainForm
 
     Private Sub ListViewFilesAddItem(FilePath As String, DirectoryEntry As DirectoryEntry, LFNFileName As String, ParentOffset As UInteger, Index As Integer, Count As Integer, Group As ListViewGroup)
         Dim IsLastEntry = (Index = Count - 1)
-        Dim FileData = GetFileDataFromDirectoryEntry(Index, DirectoryEntry, ParentOffset, FilePath, IsLastEntry)
-        Dim Item = ListViewFilesGetItem(DirectoryEntry, Group, LFNFileName, FileData)
+        Dim FileData = GetFileDataFromDirectoryEntry(Index, DirectoryEntry, ParentOffset, FilePath, IsLastEntry, LFNFileName)
+        Dim Item = ListViewFilesGetItem(Group, FileData)
         ListViewFiles.Items.Add(Item)
+    End Sub
+
+    Private Sub ListViewFilesRefreshItem(Index As Integer)
+        Dim Item = ListViewFiles.Items(Index)
+        Dim FileData As FileData = Item.Tag
+
+        If FileData.DirectoryEntry.IsEmpty Then
+            ListViewFiles.Items.Remove(Item)
+        Else
+            Dim NewItem = ListViewFilesGetItem(Item.Group, FileData)
+            For Counter = 0 To Item.SubItems.Count - 1
+                Item.SubItems(Counter) = NewItem.SubItems(Counter)
+            Next
+        End If
     End Sub
 
     Private Function ListViewFilesAddGroup(Directory As DiskImage.IDirectory, Path As String) As ListViewGroup
@@ -1730,28 +1838,28 @@ Public Class MainForm
         Return Group
     End Function
 
-    Private Function ListViewFilesGetItem(DirectoryEntry As DiskImage.DirectoryEntry, Group As ListViewGroup, LFNFileName As String, FileData As FileData) As ListViewItem
+    Private Function ListViewFilesGetItem(Group As ListViewGroup, FileData As FileData) As ListViewItem
         Dim SI As ListViewItem.ListViewSubItem
         Dim ForeColor As Color
-        Dim IsDeleted As Boolean = DirectoryEntry.IsDeleted
-        Dim HasInvalidFileSize As Boolean = DirectoryEntry.HasInvalidFileSize
+        Dim IsDeleted As Boolean = FileData.DirectoryEntry.IsDeleted
+        Dim HasInvalidFileSize As Boolean = FileData.DirectoryEntry.HasInvalidFileSize
 
-        Dim Attrib As String = IIf(DirectoryEntry.IsArchive, "A ", "- ") _
-            & IIf(DirectoryEntry.IsReadOnly, "R ", "- ") _
-            & IIf(DirectoryEntry.IsSystem, "S ", "- ") _
-            & IIf(DirectoryEntry.IsHidden, "H ", "- ") _
-            & IIf(DirectoryEntry.IsDirectory, "D ", "- ") _
-            & IIf(DirectoryEntry.IsVolumeName, "V ", "- ")
+        Dim Attrib As String = IIf(FileData.DirectoryEntry.IsArchive, "A ", "- ") _
+            & IIf(FileData.DirectoryEntry.IsReadOnly, "R ", "- ") _
+            & IIf(FileData.DirectoryEntry.IsSystem, "S ", "- ") _
+            & IIf(FileData.DirectoryEntry.IsHidden, "H ", "- ") _
+            & IIf(FileData.DirectoryEntry.IsDirectory, "D ", "- ") _
+            & IIf(FileData.DirectoryEntry.IsVolumeName, "V ", "- ")
 
         If IsDeleted Then
             ForeColor = Color.Gray
-        ElseIf DirectoryEntry.IsValidValumeName Then
+        ElseIf FileData.DirectoryEntry.IsValidValumeName Then
             ForeColor = Color.Green
-        ElseIf DirectoryEntry.IsDirectory And Not DirectoryEntry.IsVolumeName Then
+        ElseIf FileData.DirectoryEntry.IsDirectory And Not FileData.DirectoryEntry.IsVolumeName Then
             ForeColor = Color.Blue
         End If
 
-        Dim ModifiedString As String = IIf(DirectoryEntry.IsModified, "#", "")
+        Dim ModifiedString As String = IIf(FileData.DirectoryEntry.IsModified, "#", "")
 
         Dim Item = New ListViewItem(ModifiedString, Group) With {
             .UseItemStyleForSubItems = False,
@@ -1763,17 +1871,17 @@ Public Class MainForm
             Item.ForeColor = Color.Blue
         End If
 
-        SI = Item.SubItems.Add(DirectoryEntry.GetFileName)
+        SI = Item.SubItems.Add(FileData.DirectoryEntry.GetFileName)
         SI.Name = "FileName"
-        If Not IsDeleted And DirectoryEntry.HasInvalidFilename Then
+        If Not IsDeleted And FileData.DirectoryEntry.HasInvalidFilename Then
             SI.ForeColor = Color.Red
         Else
             SI.ForeColor = ForeColor
         End If
 
-        SI = Item.SubItems.Add(DirectoryEntry.GetFileExtension)
+        SI = Item.SubItems.Add(FileData.DirectoryEntry.GetFileExtension)
         SI.Name = "FileExtension"
-        If Not IsDeleted And DirectoryEntry.HasInvalidExtension Then
+        If Not IsDeleted And FileData.DirectoryEntry.HasInvalidExtension Then
             SI.ForeColor = Color.Red
         Else
             SI.ForeColor = ForeColor
@@ -1786,18 +1894,18 @@ Public Class MainForm
             Else
                 SI.ForeColor = ForeColor
             End If
-        ElseIf Not IsDeleted And DirectoryEntry.HasIncorrectFileSize Then
-            SI = Item.SubItems.Add(Format(DirectoryEntry.FileSize, "N0"))
+        ElseIf Not IsDeleted And FileData.DirectoryEntry.HasIncorrectFileSize Then
+            SI = Item.SubItems.Add(Format(FileData.DirectoryEntry.FileSize, "N0"))
             SI.ForeColor = Color.Red
         Else
-            SI = Item.SubItems.Add(Format(DirectoryEntry.FileSize, "N0"))
+            SI = Item.SubItems.Add(Format(FileData.DirectoryEntry.FileSize, "N0"))
             SI.ForeColor = ForeColor
         End If
         SI.Name = "FileSize"
 
-        SI = Item.SubItems.Add(ExpandedDateToString(DirectoryEntry.GetLastWriteDate, True, True, False, True))
+        SI = Item.SubItems.Add(ExpandedDateToString(FileData.DirectoryEntry.GetLastWriteDate, True, True, False, True))
         SI.Name = "FileLastWriteDate"
-        If DirectoryEntry.GetLastWriteDate.IsValidDate Or IsDeleted Then
+        If FileData.DirectoryEntry.GetLastWriteDate.IsValidDate Or IsDeleted Then
             SI.ForeColor = ForeColor
         Else
             SI.ForeColor = Color.Red
@@ -1805,20 +1913,20 @@ Public Class MainForm
 
         Dim ErrorText As String = ""
         Dim SubItemForeColor As Color = ForeColor
-        If DirectoryEntry.HasInvalidStartingCluster Then
+        If FileData.DirectoryEntry.HasInvalidStartingCluster Then
             SI = Item.SubItems.Add("Invalid")
             If Not IsDeleted Then
                 SubItemForeColor = Color.Red
             End If
         Else
-            SI = Item.SubItems.Add(Format(DirectoryEntry.StartingCluster, "N0"))
+            SI = Item.SubItems.Add(Format(FileData.DirectoryEntry.StartingCluster, "N0"))
         End If
         SI.Name = "FileStartingCluster"
 
-        If Not IsDeleted And DirectoryEntry.IsCrossLinked Then
+        If Not IsDeleted And FileData.DirectoryEntry.IsCrossLinked Then
             SubItemForeColor = Color.Red
             ErrorText = "CL"
-        ElseIf Not IsDeleted And DirectoryEntry.HasCircularChain Then
+        ElseIf Not IsDeleted And FileData.DirectoryEntry.HasCircularChain Then
             SubItemForeColor = Color.Red
             ErrorText = "CC"
         End If
@@ -1829,22 +1937,22 @@ Public Class MainForm
         SI.ForeColor = Color.Red
 
         SI = Item.SubItems.Add(Attrib)
-        If Not IsDeleted And DirectoryEntry.HasInvalidAttributes Then
+        If Not IsDeleted And FileData.DirectoryEntry.HasInvalidAttributes Then
             SI.ForeColor = Color.Red
         Else
             SI.ForeColor = ForeColor
         End If
 
-        If DirectoryEntry.IsValidFile Then
-            SI = Item.SubItems.Add(Crc32.ComputeChecksum(DirectoryEntry.GetContent).ToString("X8"))
+        If FileData.DirectoryEntry.IsValidFile Then
+            SI = Item.SubItems.Add(Crc32.ComputeChecksum(FileData.DirectoryEntry.GetContent).ToString("X8"))
         Else
             SI = Item.SubItems.Add("")
         End If
         SI.ForeColor = ForeColor
 
-        If DirectoryEntry.HasCreationDate Then
-            SI = Item.SubItems.Add(ExpandedDateToString(DirectoryEntry.GetCreationDate, True, True, True, True))
-            If DirectoryEntry.GetCreationDate.IsValidDate Or IsDeleted Then
+        If FileData.DirectoryEntry.HasCreationDate Then
+            SI = Item.SubItems.Add(ExpandedDateToString(FileData.DirectoryEntry.GetCreationDate, True, True, True, True))
+            If FileData.DirectoryEntry.GetCreationDate.IsValidDate Or IsDeleted Then
                 SI.ForeColor = ForeColor
             Else
                 SI.ForeColor = Color.Red
@@ -1854,9 +1962,9 @@ Public Class MainForm
         End If
         SI.Name = "FileCreationDate"
 
-        If DirectoryEntry.HasLastAccessDate Then
-            SI = Item.SubItems.Add(ExpandedDateToString(DirectoryEntry.GetLastAccessDate))
-            If DirectoryEntry.GetLastAccessDate.IsValidDate Or IsDeleted Then
+        If FileData.DirectoryEntry.HasLastAccessDate Then
+            SI = Item.SubItems.Add(ExpandedDateToString(FileData.DirectoryEntry.GetLastAccessDate))
+            If FileData.DirectoryEntry.GetLastAccessDate.IsValidDate Or IsDeleted Then
                 SI.ForeColor = ForeColor
             Else
                 SI.ForeColor = Color.Red
@@ -1866,7 +1974,7 @@ Public Class MainForm
         End If
         SI.Name = "FileLastAccessDate"
 
-        SI = Item.SubItems.Add(LFNFileName)
+        SI = Item.SubItems.Add(FileData.LFNFileName)
         SI.ForeColor = ForeColor
 
         Return Item
@@ -2079,26 +2187,7 @@ Public Class MainForm
         Return Result
     End Function
 
-    Private Sub PopulateFilesPanel()
-        MenuDisplayDirectorySubMenuClear()
-
-        ListViewFiles.BeginUpdate()
-
-        ListViewFiles.ListViewItemSorter = Nothing
-        ListViewFiles.Items.Clear()
-        ListViewFiles.MultiSelect = True
-
-        Dim Items As New List(Of ListViewItem)
-        Dim Response = ProcessDirectoryEntries(_Disk.Directory, 0, "", False)
-
-        If BtnDisplayDirectory.DropDownItems.Count > 0 Then
-            BtnDisplayDirectory.Text = "Directory"
-            MenuDisplayDirectorySubMenuItemAdd("(Root)", 0, 0)
-            BtnDisplayDirectory.Tag = Nothing
-        Else
-            BtnDisplayDirectory.Tag = 0
-        End If
-
+    Private Sub ProcessDirectoryScanResponse(Response As DirectoryScanResponse)
         If Response.HasCreated Then
             FileCreateDate.Width = 140
         Else
@@ -2125,6 +2214,27 @@ Public Class MainForm
         End If
 
         BtnWin9xClean.Enabled = Response.HasValidCreated Or Response.HasValidLastAccessed Or _Disk.BootSector.IsWin9xOEMName
+    End Sub
+
+    Private Sub PopulateFilesPanel()
+        MenuDisplayDirectorySubMenuClear()
+
+        ListViewFiles.BeginUpdate()
+
+        ListViewFiles.ListViewItemSorter = Nothing
+        ListViewFiles.Items.Clear()
+        ListViewFiles.MultiSelect = True
+
+        If BtnDisplayDirectory.DropDownItems.Count > 0 Then
+            BtnDisplayDirectory.Text = "Directory"
+            MenuDisplayDirectorySubMenuItemAdd("(Root)", 0, 0)
+            BtnDisplayDirectory.Tag = Nothing
+        Else
+            BtnDisplayDirectory.Tag = 0
+        End If
+
+        Dim Response = ProcessDirectoryEntries(_Disk.Directory, 0, "", False)
+        ProcessDirectoryScanResponse(Response)
 
         ListViewFiles.ListViewItemSorter = _lvwColumnSorter
         ListViewFiles.EndUpdate()
@@ -2148,17 +2258,7 @@ Public Class MainForm
         ListViewHashes.Refresh()
     End Sub
 
-    Private Sub PopulateSummary(Disk As Disk, ImageData As LoadedImageData)
-        Dim FileName = ImageData.FileName
-
-        Me.Text = GetWindowCaption() & " - " & FileName
-
-        ToolStripFileName.Text = FileName
-        ToolStripFileName.Visible = True
-
-        PopulateSummaryPanel(Disk)
-        PopulateHashPanel(Disk)
-
+    Private Sub RefreshButtonStatus(Disk As Disk, ImageData As LoadedImageData)
         If Disk IsNot Nothing AndAlso Disk.IsValidImage Then
             BtnDisplayClusters.Enabled = Disk.FAT.HasUnusedClusters(True)
             BtnDisplayBadSectors.Enabled = Disk.FAT.BadClusters.Count > 0
@@ -2194,6 +2294,19 @@ Public Class MainForm
             ToolStripStatusModified.Visible = False
             ToolStripStatusReadOnly.Visible = False
         End If
+    End Sub
+
+    Private Sub PopulateSummary(Disk As Disk, ImageData As LoadedImageData)
+        Dim FileName = ImageData.FileName
+
+        Me.Text = GetWindowCaption() & " - " & FileName
+
+        ToolStripFileName.Text = FileName
+        ToolStripFileName.Visible = True
+
+        PopulateSummaryPanel(Disk)
+        PopulateHashPanel(Disk)
+        RefreshButtonStatus(Disk, ImageData)
     End Sub
 
     Private Sub PopulateSummaryPanel(Disk As Disk)
@@ -2425,8 +2538,8 @@ Public Class MainForm
         Me.Location = New Point(WorkingArea.Left + (WorkingArea.Width - Width) / 2, WorkingArea.Top + (WorkingArea.Height - Height) / 2)
     End Sub
 
-    Private Function ProcessDirectoryEntries(Directory As DiskImage.IDirectory, Offset As UInteger, Path As String, ScanOnly As Boolean) As ProcessDirectoryEntryResponse
-        Dim Response As New ProcessDirectoryEntryResponse(Directory)
+    Private Function ProcessDirectoryEntries(Directory As DiskImage.IDirectory, Offset As UInteger, Path As String, ScanOnly As Boolean) As DirectoryScanResponse
+        Dim Response As New DirectoryScanResponse(Directory)
         Dim Group As ListViewGroup = Nothing
 
         If Not ScanOnly Then
@@ -2642,9 +2755,11 @@ Public Class MainForm
 
             BtnFileMenuDeleteFile.Visible = True
             BtnFileMenuDeleteFile.Enabled = False
+            BtnFileMenuDeleteFile.Text = "&Delete File"
 
             BtnFileMenuDeleteFileWithFill.Visible = False
             BtnFileMenuDeleteFileWithFill.Enabled = False
+            BtnFileMenuDeleteFileWithFill.Text = "&Delete File and Clear Sectors"
 
         ElseIf ListViewFiles.SelectedItems.Count = 1 Then
             Dim FileData As FileData = ListViewFiles.SelectedItems(0).Tag
@@ -2677,9 +2792,11 @@ Public Class MainForm
 
                 BtnFileMenuDeleteFile.Visible = True
                 BtnFileMenuDeleteFile.Enabled = Stats.CanDelete
+                BtnFileMenuDeleteFile.Text = "&Delete File"
 
                 BtnFileMenuDeleteFileWithFill.Visible = Stats.CanDeleteWithFill
                 BtnFileMenuDeleteFileWithFill.Enabled = Stats.CanDeleteWithFill
+                BtnFileMenuDeleteFileWithFill.Text = "&Delete File and Clear Sectors"
             End If
 
             If Stats.IsValidFile Or Stats.IsValidDirectory Then
@@ -2712,6 +2829,7 @@ Public Class MainForm
         Else
             Dim FileData As FileData
             Dim ExportEnabled As Boolean = False
+            Dim DeleteEnabled As Boolean = False
             FileData = ListViewFiles.SelectedItems(0).Tag
             DirectoryOffset = FileData.ParentOffset
             Dim ParentOffset As UInteger = FileData.ParentOffset
@@ -2721,6 +2839,9 @@ Public Class MainForm
                 Stats = DirectoryEntryGetStats(FileData.DirectoryEntry)
                 If Stats.CanExport Then
                     ExportEnabled = True
+                End If
+                If Not Stats.IsDeleted And Stats.CanDelete Then
+                    DeleteEnabled = True
                 End If
                 If FileData.ParentOffset <> ParentOffset Then
                     DirectoryOffset = -1
@@ -2746,10 +2867,12 @@ Public Class MainForm
             BtnFileMenuRemoveDeletedFile.Enabled = False
 
             BtnFileMenuDeleteFile.Visible = True
-            BtnFileMenuDeleteFile.Enabled = False
+            BtnFileMenuDeleteFile.Enabled = DeleteEnabled
+            BtnFileMenuDeleteFile.Text = "&Delete Selected Files"
 
-            BtnFileMenuDeleteFileWithFill.Visible = False
-            BtnFileMenuDeleteFileWithFill.Enabled = False
+            BtnFileMenuDeleteFileWithFill.Visible = True
+            BtnFileMenuDeleteFileWithFill.Enabled = DeleteEnabled
+            BtnFileMenuDeleteFileWithFill.Text = "&Delete Selected Files and Clear Sectors"
         End If
 
         BtnFileMenuExportFile.Text = BtnExportFile.Text
@@ -2877,7 +3000,7 @@ Public Class MainForm
         RefreshModifiedState()
     End Sub
 
-    Private Sub SaveButtonsRefresh()
+    Private Sub RefreshSaveButtons()
         Dim CurrentImageData As LoadedImageData = ComboImages.SelectedItem
 
         If CurrentImageData Is Nothing Then
@@ -3054,35 +3177,16 @@ Public Class MainForm
     End Sub
 
     Private Sub BtnFileMenuDeleteFile_Click(sender As Object, e As EventArgs) Handles BtnFileMenuDeleteFile.Click
-        If ListViewFiles.SelectedItems.Count = 1 Then
-            Dim Item As ListViewItem = ListViewFiles.SelectedItems(0)
-            Dim FileData As FileData = Item.Tag
-
-            If DirectoryEntryCanDelete(FileData.DirectoryEntry) Then
-                DeleteFile(FileData.DirectoryEntry, False)
-            End If
-        End If
+        DeleteSelectedFiles(False)
     End Sub
 
     Private Sub BtnFileMenuDeleteFileWithFill_Click(sender As Object, e As EventArgs) Handles BtnFileMenuDeleteFileWithFill.Click
-        If ListViewFiles.SelectedItems.Count = 1 Then
-            Dim Item As ListViewItem = ListViewFiles.SelectedItems(0)
-            Dim FileData As FileData = Item.Tag
-
-            If DirectoryEntryCanDeleteWithFill(FileData.DirectoryEntry) Then
-                DeleteFile(FileData.DirectoryEntry, True)
-            End If
-        End If
+        DeleteSelectedFiles(True)
     End Sub
 
     Private Sub BtnFileMenuRemoveDeletedFile_Click(sender As Object, e As EventArgs) Handles BtnFileMenuRemoveDeletedFile.Click
         If ListViewFiles.SelectedItems.Count = 1 Then
-            Dim Item As ListViewItem = ListViewFiles.SelectedItems(0)
-            Dim FileData As FileData = Item.Tag
-
-            If FileData.DirectoryEntry.IsDeleted Then
-                RemoveDeletedFile(FileData.DirectoryEntry, FileData.Index, FileData.IsLastEntry)
-            End If
+            RemoveDeletedFile(ListViewFiles.SelectedItems(0))
         End If
     End Sub
 
@@ -3137,9 +3241,7 @@ Public Class MainForm
 
     Private Sub BtnReplaceFile_Click(sender As Object, e As EventArgs) Handles BtnReplaceFile.Click, BtnFileMenuReplaceFile.Click
         If ListViewFiles.SelectedItems.Count = 1 Then
-            Dim Item As ListViewItem = ListViewFiles.SelectedItems(0)
-            Dim FileData As FileData = Item.Tag
-            FileReplace(FileData.DirectoryEntry)
+            FileReplace(ListViewFiles.SelectedItems(0))
         End If
     End Sub
 

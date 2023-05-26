@@ -183,7 +183,7 @@
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="HexView\HexViews.vb" />
-    <Compile Include="ProcessDirectoryEntryResponse.vb" />
+    <Compile Include="DirectoryScanResponse.vb" />
     <Compile Include="Utility.vb" />
     <Compile Include="Controls\HexTextBox.vb">
       <SubType>Component</SubType>

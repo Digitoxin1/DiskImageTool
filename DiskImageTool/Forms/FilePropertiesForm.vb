@@ -1,4 +1,6 @@
-﻿Public Class FilePropertiesForm
+﻿Imports System.Globalization
+
+Public Class FilePropertiesForm
     Private Const EMPTY_FORMAT As String = "'Empty'"
     Private ReadOnly _Disk As DiskImage.Disk
     Private ReadOnly _Items As ICollection
@@ -7,6 +9,8 @@
     Private _IsVolumeLabel As Boolean = False
     Private _SuppressEvent As Boolean = True
     Private _Updated As Boolean = False
+    Private _HasDeferredChange As Boolean = False
+    Private _DeferredChange() As Byte
 
     Public Sub New(Disk As DiskImage.Disk, Items As ICollection)
 
@@ -295,18 +299,18 @@
 
         If _Deleted Then
             Caption &= " (Deleted)"
-            Maxlength -= 1
-            FileName = FileName.Substring(1)
-            ReDim FileNameHex(Maxlength - 1)
-            Array.Copy(DirectoryEntry.FileName, 1, FileNameHex, 0, Maxlength)
+            TxtFile.Mask = "\" & FileName.Substring(0, 1) & Strings.StrDup(Maxlength - 1, "C")
+            TxtFile.Text = FileName.Substring(1)
+        Else
+            TxtFile.Mask = Strings.StrDup(Maxlength, "C")
+            TxtFile.Text = FileName
         End If
 
         GroupFileName.Text = Caption
-        TxtFile.MaxLength = Maxlength
-        TxtFile.Text = FileName
         MskFileHex.MaskLength = Maxlength
         MskFileHex.Width = (Maxlength * 3 - 1) * 7 + 8
         MskFileHex.SetHex(FileNameHex)
+        TxtFile.PromptChar = " "
         TxtFile.Width = MskFileHex.Width
 
         DT = DirectoryEntry.GetLastWriteDate
@@ -492,13 +496,31 @@
             Exit Sub
         End If
 
-        Dim NewValue = DiskImage.CodePage437ToUnicode(MskFileHex.GetHex)
+        Dim Hex = MskFileHex.GetHex
+
+        If _Deleted And Hex(0) <> &HE5 Then
+            Hex(0) = &HE5
+            _DeferredChange = Hex
+            _HasDeferredChange = True
+        End If
+
+        Dim NewValue = DiskImage.CodePage437ToUnicode(Hex)
 
         _SuppressEvent = True
         If TxtFile.Text <> NewValue Then
             TxtFile.Text = NewValue
         End If
         _SuppressEvent = False
+    End Sub
+
+    Private Sub MskFileHex_KeyUp(sender As Object, e As KeyEventArgs) Handles MskFileHex.KeyUp
+        If _HasDeferredChange Then
+            Dim SelectionStart = MskFileHex.SelectionStart
+            MskFileHex.SetHex(_DeferredChange, False)
+            MskFileHex.Select(SelectionStart, 0)
+            _DeferredChange = Nothing
+            _HasDeferredChange = False
+        End If
     End Sub
 
     Private Sub TxtExtension_TextChanged(sender As Object, e As EventArgs) Handles TxtExtension.TextChanged
@@ -543,7 +565,6 @@
 
         MskFileHex.SetHex(b)
     End Sub
-
 #End Region
 
 End Class

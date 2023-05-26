@@ -1,6 +1,6 @@
 ﻿Imports DiskImageTool.DiskImage
 
-Public Class ProcessDirectoryEntryResponse
+Public Class DirectoryScanResponse
     Public Property HasAdditionalData As Boolean
     Public Property HasBootSector As Boolean
     Public Property HasCreated As Boolean
@@ -28,7 +28,7 @@ Public Class ProcessDirectoryEntryResponse
         _HasFATChainingErrors = False
     End Sub
 
-    Public Sub Combine(Response As ProcessDirectoryEntryResponse)
+    Public Sub Combine(Response As DirectoryScanResponse)
         _HasLastAccessed = _HasLastAccessed Or Response.HasLastAccessed
         _HasValidLastAccessed = _HasValidLastAccessed Or Response.HasValidLastAccessed
         _HasCreated = _HasCreated Or Response.HasCreated
