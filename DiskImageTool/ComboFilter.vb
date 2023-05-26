@@ -1,7 +1,6 @@
 ﻿Public Class ComboFilter
-    Private ReadOnly _Filter As Dictionary(Of String, ComboFilterItem)
     Private ReadOnly _Combo As ToolStripComboBox
-
+    Private ReadOnly _Filter As Dictionary(Of String, ComboFilterItem)
     Public Sub New(ComboBox As ToolStripComboBox)
         _Combo = ComboBox
         _Combo.ComboBox.DrawMode = DrawMode.OwnerDrawFixed

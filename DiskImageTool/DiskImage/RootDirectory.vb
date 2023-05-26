@@ -78,16 +78,6 @@
             End If
         End Sub
 
-        Private Function GetDirectoryData() As DirectoryData
-            Dim OffsetStart As UInteger = Disk.SectorToBytes(_BootSector.RootDirectoryRegionStart)
-            Dim OffsetEnd As UInteger = Disk.SectorToBytes(_BootSector.DataRegionStart)
-            Dim Data As New DirectoryData
-
-            Functions.GetDirectoryData(Data, _FileBytes, OffsetStart, OffsetEnd, False, True)
-
-            Return Data
-        End Function
-
         Private Shared Sub EnumDirectoryEntries(Directory As DiskImage.IDirectory)
             Dim DirectoryEntryCount = Directory.Data.EntryCount
 
@@ -105,5 +95,15 @@
                 Next
             End If
         End Sub
+
+        Private Function GetDirectoryData() As DirectoryData
+            Dim OffsetStart As UInteger = Disk.SectorToBytes(_BootSector.RootDirectoryRegionStart)
+            Dim OffsetEnd As UInteger = Disk.SectorToBytes(_BootSector.DataRegionStart)
+            Dim Data As New DirectoryData
+
+            Functions.GetDirectoryData(Data, _FileBytes, OffsetStart, OffsetEnd, False, True)
+
+            Return Data
+        End Function
     End Class
 End Namespace

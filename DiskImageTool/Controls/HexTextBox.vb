@@ -1,5 +1,4 @@
 ﻿Imports System.ComponentModel
-Imports System.Text
 
 Public Class HexTextBox
     Inherits MaskedTextBox

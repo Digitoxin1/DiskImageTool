@@ -3,15 +3,15 @@
 Namespace DiskImage
 
     Public Class DirectoryEntry
-        Private Const CHAR_SPACE As Byte = &H20
-        Private Const CHAR_EMPTY As Byte = &H0
         Public Const CHAR_DELETED As Byte = &HE5
         Public Const DIRECTORY_ENTRY_SIZE As Byte = 32
-        Private ReadOnly _FatChain As FATChain
-        Private ReadOnly _FAT As FAT12
-        Private ReadOnly _Offset As UInteger
+        Private Const CHAR_EMPTY As Byte = &H0
+        Private Const CHAR_SPACE As Byte = &H20
         Private ReadOnly _BootSector As BootSector
+        Private ReadOnly _FAT As FAT12
+        Private ReadOnly _FatChain As FATChain
         Private ReadOnly _FileBytes As ImageByteArray
+        Private ReadOnly _Offset As UInteger
         Private _SubDirectory As SubDirectory
 
         Public Enum AttributeFlags
@@ -301,21 +301,6 @@ Namespace DiskImage
             LastWriteTime = 0
         End Sub
 
-        Public Function HasVendorExceptions() As Boolean
-
-            If Attributes = &HF7 AndAlso ReservedForWinNT = &H7F Then       'ORIGIN Systems, Inc.
-                Return True
-            ElseIf Attributes = &HDB AndAlso ReservedForWinNT = &H6D Then   'Psygnosis
-                Return True
-            ElseIf Attributes = &HB6 AndAlso ReservedForWinNT = &HDB Then   'Psygnosis
-                Return True
-            ElseIf Attributes = &H6D AndAlso ReservedForWinNT = &HB6 Then   'Psygnosis
-                Return True
-            End If
-
-            Return False
-        End Function
-
         Public Function GetAllocatedSize() As UInteger
             Return Math.Ceiling(FileSize / _BootSector.BytesPerCluster) * _BootSector.BytesPerCluster
         End Function
@@ -422,12 +407,31 @@ Namespace DiskImage
             Return LastAccessDate <> 0
         End Function
 
+        Public Function HasVendorExceptions() As Boolean
+
+            If Attributes = &HF7 AndAlso ReservedForWinNT = &H7F Then       'ORIGIN Systems, Inc.
+                Return True
+            ElseIf Attributes = &HDB AndAlso ReservedForWinNT = &H6D Then   'Psygnosis
+                Return True
+            ElseIf Attributes = &HB6 AndAlso ReservedForWinNT = &HDB Then   'Psygnosis
+                Return True
+            ElseIf Attributes = &H6D AndAlso ReservedForWinNT = &HB6 Then   'Psygnosis
+                Return True
+            End If
+
+            Return False
+        End Function
         Public Function IsArchive() As Boolean
             Return (Attributes And AttributeFlags.ArchiveFlag) > 0
         End Function
 
         Public Function IsCrossLinked() As Boolean
             Return _FatChain.CrossLinks.Count > 0
+        End Function
+
+        Public Function IsCurrentLink() As Boolean
+            Dim FilePart = _FileBytes.ToUInt16(_Offset)
+            Return (FilePart = &H202E)
         End Function
 
         Public Function IsDeleted() As Boolean
@@ -454,27 +458,24 @@ Namespace DiskImage
             Dim FilePart = _FileBytes.ToUInt16(_Offset)
             Return (FilePart = &H202E Or FilePart = &H2E2E)
         End Function
-
-        Public Function IsCurrentLink() As Boolean
-            Dim FilePart = _FileBytes.ToUInt16(_Offset)
-            Return (FilePart = &H202E)
+        Public Function IsModified() As Boolean
+            Return _FileBytes.DirectoryCache.ContainsKey(_Offset) AndAlso Not Data.CompareTo(_FileBytes.DirectoryCache.Item(_Offset))
         End Function
 
         Public Function ISParentLink() As Boolean
             Dim FilePart = _FileBytes.ToUInt16(_Offset)
             Return (FilePart = &H2E2E)
         End Function
-
-        Public Function IsModified() As Boolean
-            Return _FileBytes.DirectoryCache.ContainsKey(_Offset) AndAlso Not Data.CompareTo(_FileBytes.DirectoryCache.Item(_Offset))
-        End Function
-
         Public Function IsReadOnly() As Boolean
             Return (Attributes And AttributeFlags.ReadOnly) > 0
         End Function
 
         Public Function IsSystem() As Boolean
             Return (Attributes And AttributeFlags.System) > 0
+        End Function
+
+        Public Function IsValid() As Boolean
+            Return Not (HasInvalidFileSize() OrElse HasInvalidAttributes() OrElse HasInvalidStartingCluster())
         End Function
 
         Public Function IsValidDirectory() As Boolean
@@ -488,11 +489,6 @@ Namespace DiskImage
         Public Function IsValidValumeName() As Boolean
             Return IsVolumeName() AndAlso Not (IsHidden() OrElse IsSystem() OrElse IsDirectory() OrElse IsDeleted()) AndAlso StartingCluster = 0
         End Function
-
-        Public Function IsValid() As Boolean
-            Return Not (HasInvalidFileSize() OrElse HasInvalidAttributes() OrElse HasInvalidStartingCluster())
-        End Function
-
         Public Function IsVolumeName() As Boolean
             Return (Attributes And AttributeFlags.VolumeName) > 0
         End Function

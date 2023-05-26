@@ -19,16 +19,6 @@ Public Class ToolStripCheckBox
         End Get
     End Property
 
-    <Description("Indicates whether the control is enabled."), Category("Behavior")>
-    Public Overrides Property Enabled() As Boolean
-        Get
-            Return CheckBox.Enabled
-        End Get
-        Set(ByVal value As Boolean)
-            CheckBox.Enabled = value
-        End Set
-    End Property
-
     <Description("Indicates whether the component is in the checked state."), Category("Appearance")>
     Public Property Checked() As Boolean
         Get
@@ -39,6 +29,15 @@ Public Class ToolStripCheckBox
         End Set
     End Property
 
+    <Description("Indicates whether the control is enabled."), Category("Behavior")>
+    Public Overrides Property Enabled() As Boolean
+        Get
+            Return CheckBox.Enabled
+        End Get
+        Set(ByVal value As Boolean)
+            CheckBox.Enabled = value
+        End Set
+    End Property
     <Description("The text associated with the control."), Category("Appearance")>
     Public Overrides Property Text As String
         Get

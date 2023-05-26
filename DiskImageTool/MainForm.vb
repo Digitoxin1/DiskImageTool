@@ -18,10 +18,10 @@ End Enum
 Public Structure FileData
     Dim DirectoryEntry As DiskImage.DirectoryEntry
     Dim FilePath As String
-    Dim IsLastEntry As Boolean
     Dim Index As Integer
-    Dim ParentOffset As Integer
+    Dim IsLastEntry As Boolean
     Dim LFNFileName As String
+    Dim ParentOffset As Integer
 End Structure
 
 Public Class MainForm
@@ -31,22 +31,21 @@ Public Class MainForm
     Public Const NULL_CHAR As Char = "�"
     Public Const SITE_URL = "https://github.com/Digitoxin1/DiskImageTool"
     Public Const UPDATE_URL = "https://api.github.com/repos/Digitoxin1/DiskImageTool/releases/latest"
-    Private ReadOnly _FileFilterExt As New List(Of String) From {".ima", ".img"}
     Private ReadOnly _ArchiveFilterExt As New List(Of String) From {".zip"}
+    Private ReadOnly _FileFilterExt As New List(Of String) From {".ima", ".img"}
+    Private ReadOnly _lvwColumnSorter As ListViewColumnSorter
+    Private _BootStrap As Bootstrap
     Private _CheckAll As Boolean = False
     Private _Disk As DiskImage.Disk
+    Private _FileFilter As String = ""
+    Private _FileVersion As String = ""
     Private _FilterCounts() As Integer
-    Private _FilterOEMName As ComboFilter
     Private _FilterDiskType As ComboFilter
+    Private _FilterOEMName As ComboFilter
     Private _FiltersApplied As Boolean = False
     Private _LoadedFileNames As Dictionary(Of String, LoadedImageData)
-    Private _BootStrap As Bootstrap
     Private _ScanRun As Boolean = False
     Private _SuppressEvent As Boolean = False
-    Private _FileVersion As String = ""
-    Private _FileFilter As String = ""
-    Private ReadOnly _lvwColumnSorter As ListViewColumnSorter
-
     Public Sub New()
         ' This call is required by the designer.
         InitializeComponent()
@@ -72,6 +71,30 @@ Public Class MainForm
 
         Return New DiskImage.Disk(Data, ImageData.Modifications)
     End Function
+
+    Friend Sub DiskTypeFilterUpdate(Disk As DiskImage.Disk, ImageData As LoadedImageData, Optional UpdateFilters As Boolean = False, Optional Remove As Boolean = False)
+        Dim DiskType As String = ""
+
+        If Not Remove Then
+            If Disk.IsValidImage Then
+                DiskType = GetFloppyDiskTypeName(Disk.BootSector)
+            Else
+                DiskType = GetFloppyDiskTypeName(Disk.Data.Length)
+            End If
+        End If
+
+        If Not ImageData.Scanned Or DiskType <> ImageData.ScanInfo.DiskType Then
+            If ImageData.Scanned Then
+                _FilterDiskType.Remove(ImageData.ScanInfo.DiskType, UpdateFilters)
+            End If
+
+            ImageData.ScanInfo.DiskType = DiskType
+
+            If Not Remove Then
+                _FilterDiskType.Add(ImageData.ScanInfo.DiskType, UpdateFilters)
+            End If
+        End If
+    End Sub
 
     Friend Function ItemScanDirectory(Disk As DiskImage.Disk, ImageData As LoadedImageData, Optional UpdateFilters As Boolean = False, Optional Remove As Boolean = False) As DirectoryScanResponse
         Dim Response As DirectoryScanResponse
@@ -325,28 +348,24 @@ Public Class MainForm
         End If
     End Sub
 
-    Private Sub OEMNameFilterAdd(OEMName As String, UpdateFilters As Boolean)
-        If OEMName.EndsWith("IHC") Then
-            Return
+    Friend Sub ItemScanUnusedClusters(Disk As DiskImage.Disk, ImageData As LoadedImageData, Optional UpdateFilters As Boolean = False, Optional Remove As Boolean = False)
+        Dim HasUnusedClusters As Boolean = False
+
+        If Not Remove And Disk.IsValidImage Then
+            HasUnusedClusters = Disk.FAT.HasUnusedClusters(True)
         End If
 
-        _FilterOEMName.Add(OEMName, UpdateFilters)
-    End Sub
-
-    Private Sub OEMNameFilterReset()
-        _FilterOEMName.Clear()
-        For Each ImageData As LoadedImageData In ComboImages.Items
-            OEMNameFilterAdd(ImageData.ScanInfo.OEMName, False)
-        Next
-        _FilterOEMName.Populate()
-    End Sub
-
-    Private Sub DiskTypeFilterReset()
-        _FilterDiskType.Clear()
-        For Each ImageData As LoadedImageData In ComboImages.Items
-            _FilterDiskType.Add(ImageData.ScanInfo.DiskType, False)
-        Next
-        _FilterDiskType.Populate()
+        If Not ImageData.Scanned Or HasUnusedClusters <> ImageData.ScanInfo.HasUnusedClusters Then
+            ImageData.ScanInfo.HasUnusedClusters = HasUnusedClusters
+            If HasUnusedClusters Then
+                _FilterCounts(FilterTypes.UnusedClusters) += 1
+            ElseIf ImageData.Scanned Then
+                _FilterCounts(FilterTypes.UnusedClusters) -= 1
+            End If
+            If UpdateFilters Then
+                FilterUpdate(FilterTypes.UnusedClusters)
+            End If
+        End If
     End Sub
 
     Friend Sub OEMNameFilterUpdate(Disk As DiskImage.Disk, ImageData As LoadedImageData, Optional UpdateFilters As Boolean = False, Optional Remove As Boolean = False)
@@ -371,49 +390,63 @@ Public Class MainForm
         End If
     End Sub
 
-    Friend Sub DiskTypeFilterUpdate(Disk As DiskImage.Disk, ImageData As LoadedImageData, Optional UpdateFilters As Boolean = False, Optional Remove As Boolean = False)
-        Dim DiskType As String = ""
+    Friend Function Win9xClean(Disk As Disk, DoRefresh As Boolean) As Boolean
+        Dim Result As Boolean = False
 
-        If Not Remove Then
-            If Disk.IsValidImage Then
-                DiskType = GetFloppyDiskTypeName(Disk.BootSector)
-            Else
-                DiskType = GetFloppyDiskTypeName(Disk.Data.Length)
+        Disk.Data.BatchEditMode = True
+
+        If Disk.BootSector.IsWin9xOEMName Then
+            Dim BootstrapType = _BootStrap.FindMatch(Disk.BootSector.BootStrapCode)
+            If BootstrapType IsNot Nothing Then
+                If BootstrapType.KnownOEMNames.Count > 0 Then
+                    Disk.BootSector.OEMName = BootstrapType.KnownOEMNames.Item(0).Name
+                    Result = True
+                End If
             End If
         End If
 
-        If Not ImageData.Scanned Or DiskType <> ImageData.ScanInfo.DiskType Then
-            If ImageData.Scanned Then
-                _FilterDiskType.Remove(ImageData.ScanInfo.DiskType, UpdateFilters)
-            End If
+        Dim FileList = Disk.GetFileList()
 
-            ImageData.ScanInfo.DiskType = DiskType
+        For Each DirectoryEntry In FileList
+            If DirectoryEntry.IsValid Then
+                If DirectoryEntry.HasLastAccessDate Then
+                    If DirectoryEntry.GetLastAccessDate.IsValidDate Then
+                        DirectoryEntry.ClearLastAccessDate()
+                        Result = True
+                    End If
+                End If
 
-            If Not Remove Then
-                _FilterDiskType.Add(ImageData.ScanInfo.DiskType, UpdateFilters)
+                If DirectoryEntry.HasCreationDate Then
+                    If DirectoryEntry.GetCreationDate.IsValidDate Then
+                        DirectoryEntry.ClearCreationDate()
+                        Result = True
+                    End If
+                End If
             End If
+        Next
+
+        Disk.Data.BatchEditMode = False
+
+        If Result And DoRefresh Then
+            ComboItemRefresh(True, True)
         End If
-    End Sub
 
-    Friend Sub ItemScanUnusedClusters(Disk As DiskImage.Disk, ImageData As LoadedImageData, Optional UpdateFilters As Boolean = False, Optional Remove As Boolean = False)
-        Dim HasUnusedClusters As Boolean = False
+        Return Result
+    End Function
 
-        If Not Remove And Disk.IsValidImage Then
-            HasUnusedClusters = Disk.FAT.HasUnusedClusters(True)
-        End If
+    Private Function AreFiltersApplied() As Boolean
+        Dim FilterCount As Integer = [Enum].GetNames(GetType(FilterTypes)).Length
 
-        If Not ImageData.Scanned Or HasUnusedClusters <> ImageData.ScanInfo.HasUnusedClusters Then
-            ImageData.ScanInfo.HasUnusedClusters = HasUnusedClusters
-            If HasUnusedClusters Then
-                _FilterCounts(FilterTypes.UnusedClusters) += 1
-            ElseIf ImageData.Scanned Then
-                _FilterCounts(FilterTypes.UnusedClusters) -= 1
+        For Counter = 0 To FilterCount - 1
+            Dim Item As ToolStripMenuItem = ContextMenuFilters.Items("key_" & Counter)
+            If Item.Checked Then
+                Return True
+                Exit For
             End If
-            If UpdateFilters Then
-                FilterUpdate(FilterTypes.UnusedClusters)
-            End If
-        End If
-    End Sub
+        Next
+
+        Return False
+    End Function
 
     Private Sub BootSectorEdit()
         Dim BootSectorForm As New BootSectorForm(_Disk, _BootStrap)
@@ -531,6 +564,19 @@ Public Class MainForm
         ListViewFiles.Items.Clear()
         BtnWin9xClean.Enabled = False
         ItemSelectionChanged()
+    End Sub
+
+    Private Sub ClearSort(Reset As Boolean)
+        If Reset Then
+            _lvwColumnSorter.Order = SortOrder.Ascending
+            _lvwColumnSorter.SortColumn = 0
+            ListViewFiles.Sort()
+        Else
+            _lvwColumnSorter.Order = SortOrder.None
+            _lvwColumnSorter.SortColumn = -1
+        End If
+        ListViewFiles.SetSortIcon(_lvwColumnSorter.SortColumn, _lvwColumnSorter.Order)
+        BtnResetSort.Enabled = False
     End Sub
 
     Private Function CloseAll() As Boolean
@@ -679,13 +725,6 @@ Public Class MainForm
         RefreshSaveButtons()
     End Sub
 
-    Private Function DirectoryEntryCanExport(DirectoryEntry As DiskImage.DirectoryEntry) As Boolean
-        Return DirectoryEntry.IsValidFile _
-            And Not DirectoryEntry.IsDeleted _
-            And Not DirectoryEntry.HasInvalidFilename _
-            And Not DirectoryEntry.HasInvalidExtension
-    End Function
-
     Private Sub DeleteSelectedFiles(Clear As Boolean)
         Dim Msg As String
         Dim Item As ListViewItem
@@ -726,33 +765,24 @@ Public Class MainForm
         End If
     End Sub
 
-    Private Sub RemoveDeletedFile(Item As ListViewItem)
-        Dim FileData As FileData = Item.Tag
-
-        If Not FileData.DirectoryEntry.IsDeleted Then
-            Exit Sub
+    Private Function DirectoryEntryCanDelete(DirectoryEntry As DiskImage.DirectoryEntry, Clear As Boolean) As Boolean
+        If DirectoryEntry.IsDeleted Then
+            Return False
+        ElseIf Clear And Not DirectoryEntry.IsValidFile Then
+            Return False
+        ElseIf DirectoryEntry.IsValidDirectory Then
+            Return DirectoryEntry.SubDirectory.Data.FileCount - DirectoryEntry.SubDirectory.Data.DeletedFileCount = 0
+        Else
+            Return True
         End If
+    End Function
 
-        FileData.DirectoryEntry.BatchEditMode = True
-
-        FileData.DirectoryEntry.Clear(FileData.IsLastEntry)
-        If FileData.IsLastEntry And FileData.Index > 0 Then
-            Dim Offset = FileData.DirectoryEntry.Offset
-            For Counter = FileData.Index - 1 To 0 Step -1
-                Offset -= DirectoryEntry.DIRECTORY_ENTRY_SIZE
-                Dim PrevEntry = _Disk.GetDirectoryEntryByOffset(Offset)
-                If PrevEntry.IsLFN Then
-                    PrevEntry.Clear(True)
-                Else
-                    Exit For
-                End If
-            Next
-        End If
-
-        FileData.DirectoryEntry.BatchEditMode = False
-
-        FilePropertiesRefresh(Item, False)
-    End Sub
+    Private Function DirectoryEntryCanExport(DirectoryEntry As DiskImage.DirectoryEntry) As Boolean
+        Return DirectoryEntry.IsValidFile _
+            And Not DirectoryEntry.IsDeleted _
+            And Not DirectoryEntry.HasInvalidFilename _
+            And Not DirectoryEntry.HasInvalidExtension
+    End Function
 
     Private Sub DirectoryEntryDisplayText(DirectoryEntry As DiskImage.DirectoryEntry)
         Dim frmTextView As TextViewForm
@@ -787,18 +817,6 @@ Public Class MainForm
         frmTextView.ShowDialog()
     End Sub
 
-    Private Function DirectoryEntryCanDelete(DirectoryEntry As DiskImage.DirectoryEntry, Clear As Boolean) As Boolean
-        If DirectoryEntry.IsDeleted Then
-            Return False
-        ElseIf Clear And Not DirectoryEntry.IsValidFile Then
-            Return False
-        ElseIf DirectoryEntry.IsValidDirectory Then
-            Return DirectoryEntry.SubDirectory.Data.FileCount - DirectoryEntry.SubDirectory.Data.DeletedFileCount = 0
-        Else
-            Return True
-        End If
-    End Function
-
     Private Function DirectoryEntryGetStats(DirectoryEntry As DiskImage.DirectoryEntry) As DirectoryStats
         Dim Stats As DirectoryStats
 
@@ -817,29 +835,6 @@ Public Class MainForm
 
         Return Stats
     End Function
-
-
-    Private Sub ReloadCurrentImage(DoItemScan As Boolean)
-        Dim CurrentImageData As LoadedImageData = ComboImages.SelectedItem
-        _Disk = DiskImageLoad(CurrentImageData)
-        If _Disk IsNot Nothing Then
-            CurrentImageData.Modifications = _Disk.Data.Changes
-        End If
-        DiskImageProcess(DoItemScan, False)
-    End Sub
-
-    Private Sub ClearSort(Reset As Boolean)
-        If Reset Then
-            _lvwColumnSorter.Order = SortOrder.Ascending
-            _lvwColumnSorter.SortColumn = 0
-            ListViewFiles.Sort()
-        Else
-            _lvwColumnSorter.Order = SortOrder.None
-            _lvwColumnSorter.SortColumn = -1
-        End If
-        ListViewFiles.SetSortIcon(_lvwColumnSorter.SortColumn, _lvwColumnSorter.Order)
-        BtnResetSort.Enabled = False
-    End Sub
 
     Private Sub DiskImageProcess(DoItemScan As Boolean, Reinitialize As Boolean)
         Dim CurrentImageData As LoadedImageData = ComboImages.SelectedItem
@@ -902,45 +897,6 @@ Public Class MainForm
         Return Success
     End Function
 
-    Private Sub Win9xCleanBatch()
-        Dim Msg = "This will restore the OEM Name and remove any Creation and Last Accessed Dates from all loaded images." _
-                & vbCrLf & vbCrLf & "Do you wish to proceed??"
-
-        If MsgBox(Msg, MsgBoxStyle.Question + MsgBoxStyle.YesNo + MsgBoxStyle.DefaultButton2) = MsgBoxResult.No Then
-            Exit Sub
-        End If
-
-        Me.UseWaitCursor = True
-        Dim T = Stopwatch.StartNew
-
-        Dim CurrentImageData As LoadedImageData = ComboImages.SelectedItem
-        Dim ItemScanForm As New ItemScanForm(Me, ComboImages.Items, CurrentImageData, _Disk, False, ScanType.ScanTypeWin9xClean)
-        ItemScanForm.ShowDialog()
-
-        For Counter = 0 To [Enum].GetNames(GetType(FilterTypes)).Length - 1
-            FilterUpdate(Counter)
-        Next
-
-        RefreshModifiedState()
-        If _ScanRun Then
-            SubFiltersPopulate()
-        End If
-
-        For Index = 0 To ComboImages.Items.Count - 1
-            Dim ImageData As LoadedImageData = ComboImages.Items(Index)
-            If ImageData.BatchUpdated Then
-                If ImageData Is CurrentImageData Then
-                    ComboItemRefresh(True, False)
-                End If
-                ImageData.BatchUpdated = False
-            End If
-        Next Index
-
-        T.Stop()
-        Debug.Print("Batch Process Time Taken: " & T.Elapsed.ToString)
-        Me.UseWaitCursor = False
-    End Sub
-
     Private Sub DiskImagesScan(NewOnly As Boolean)
         Me.UseWaitCursor = True
         Dim T = Stopwatch.StartNew
@@ -983,6 +939,14 @@ Public Class MainForm
         Else
             WindowsAPI.FlashWindow(Me.Handle, True, True, 5, True)
         End If
+    End Sub
+
+    Private Sub DiskTypeFilterReset()
+        _FilterDiskType.Clear()
+        For Each ImageData As LoadedImageData In ComboImages.Items
+            _FilterDiskType.Add(ImageData.ScanInfo.DiskType, False)
+        Next
+        _FilterDiskType.Populate()
     End Sub
 
     Private Sub DisplayCrossLinkedFiles(DirectoryEntry As DiskImage.DirectoryEntry)
@@ -1034,6 +998,29 @@ Public Class MainForm
         End If
     End Sub
 
+    Private Sub FATSubMenuRefresh()
+        For Each Item As ToolStripMenuItem In BtnEditFAT.DropDownItems
+            RemoveHandler Item.Click, AddressOf BtnEditFAT_Click
+        Next
+        BtnEditFAT.DropDownItems.Clear()
+        BtnEditFAT.Tag = Nothing
+
+        If _Disk IsNot Nothing AndAlso _Disk.IsValidImage Then
+            If _Disk.BootSector.NumberOfFATs = 1 OrElse _Disk.CompareFATTables Then
+                BtnEditFAT.Tag = -1
+            Else
+                For Counter = 0 To _Disk.BootSector.NumberOfFATs - 1
+                    Dim Item As New ToolStripMenuItem With {
+                       .Text = "FAT &" & Counter + 1,
+                       .Tag = Counter
+                    }
+                    BtnEditFAT.DropDownItems.Add(Item)
+                    AddHandler Item.Click, AddressOf BtnEditFAT_Click
+                Next
+            End If
+        End If
+    End Sub
+
     Private Sub FileClose(ImageData As LoadedImageData)
         ItemScan(ItemScanTypes.All, _Disk, ImageData, True, True)
         _LoadedFileNames.Remove(ImageData.DisplayPath)
@@ -1056,40 +1043,6 @@ Public Class MainForm
             ResetAll()
         Else
             ImageCountUpdate()
-        End If
-    End Sub
-
-    Private Sub FileInfoUpdate()
-        If ListViewFiles.SelectedItems.Count > 0 Then
-            ToolStripFileCount.Text = ListViewFiles.SelectedItems.Count & " of " & ListViewFiles.Items.Count & " File" & IIf(ListViewFiles.Items.Count <> 1, "s", "") & " Selected"
-        Else
-            ToolStripFileCount.Text = ListViewFiles.Items.Count & " File" & IIf(ListViewFiles.Items.Count <> 1, "s", "")
-        End If
-        ToolStripFileCount.Visible = True
-
-        If ListViewFiles.SelectedItems.Count = 1 Then
-            Dim FileData As FileData = ListViewFiles.SelectedItems(0).Tag
-
-            If FileData.DirectoryEntry.StartingCluster >= 2 Then
-
-                Dim Sector = _Disk.BootSector.ClusterToSector(FileData.DirectoryEntry.StartingCluster)
-                ToolStripFileSector.Text = "Sector " & Sector
-                ToolStripFileSector.Visible = True
-
-                Dim Track = _Disk.BootSector.SectorToTrack(Sector)
-                Dim Side = _Disk.BootSector.SectorToSide(Sector)
-
-                ToolStripFileTrack.Text = "Track " & Track & "." & Side
-                ToolStripFileTrack.Visible = True
-
-                ToolStripFileTrack.GetCurrentParent.Refresh()
-            Else
-                ToolStripFileSector.Visible = False
-                ToolStripFileTrack.Visible = False
-            End If
-        Else
-            ToolStripFileSector.Visible = False
-            ToolStripFileTrack.Visible = False
         End If
     End Sub
 
@@ -1183,6 +1136,40 @@ Public Class MainForm
         If ShowResults Then
             Dim Msg As String = FileCount & " of " & TotalFiles & " file" & IIf(TotalFiles <> 1, "s", "") & " exported successfully."
             MsgBox(Msg, MsgBoxStyle.Information + MsgBoxStyle.OkOnly)
+        End If
+    End Sub
+
+    Private Sub FileInfoUpdate()
+        If ListViewFiles.SelectedItems.Count > 0 Then
+            ToolStripFileCount.Text = ListViewFiles.SelectedItems.Count & " of " & ListViewFiles.Items.Count & " File" & IIf(ListViewFiles.Items.Count <> 1, "s", "") & " Selected"
+        Else
+            ToolStripFileCount.Text = ListViewFiles.Items.Count & " File" & IIf(ListViewFiles.Items.Count <> 1, "s", "")
+        End If
+        ToolStripFileCount.Visible = True
+
+        If ListViewFiles.SelectedItems.Count = 1 Then
+            Dim FileData As FileData = ListViewFiles.SelectedItems(0).Tag
+
+            If FileData.DirectoryEntry.StartingCluster >= 2 Then
+
+                Dim Sector = _Disk.BootSector.ClusterToSector(FileData.DirectoryEntry.StartingCluster)
+                ToolStripFileSector.Text = "Sector " & Sector
+                ToolStripFileSector.Visible = True
+
+                Dim Track = _Disk.BootSector.SectorToTrack(Sector)
+                Dim Side = _Disk.BootSector.SectorToSide(Sector)
+
+                ToolStripFileTrack.Text = "Track " & Track & "." & Side
+                ToolStripFileTrack.Visible = True
+
+                ToolStripFileTrack.GetCurrentParent.Refresh()
+            Else
+                ToolStripFileSector.Visible = False
+                ToolStripFileTrack.Visible = False
+            End If
+        Else
+            ToolStripFileSector.Visible = False
+            ToolStripFileTrack.Visible = False
         End If
     End Sub
 
@@ -1341,20 +1328,6 @@ Public Class MainForm
         ProcessFileDrop(Dialog.FileNames)
     End Sub
 
-    Private Function AreFiltersApplied() As Boolean
-        Dim FilterCount As Integer = [Enum].GetNames(GetType(FilterTypes)).Length
-
-        For Counter = 0 To FilterCount - 1
-            Dim Item As ToolStripMenuItem = ContextMenuFilters.Items("key_" & Counter)
-            If Item.Checked Then
-                Return True
-                Exit For
-            End If
-        Next
-
-        Return False
-    End Function
-
     Private Sub FiltersApply(ResetSubFilters As Boolean)
         Dim FilterCount As Integer = [Enum].GetNames(GetType(FilterTypes)).Length
 
@@ -1485,43 +1458,6 @@ Public Class MainForm
         Cursor.Current = Cursors.Default
     End Sub
 
-    Private Sub SubFiltersClear()
-        _SuppressEvent = True
-
-        _FilterOEMName.Clear()
-        _FilterDiskType.Clear()
-
-        _SuppressEvent = False
-    End Sub
-
-    Private Sub SubFiltersClearFilter()
-        _SuppressEvent = True
-
-        TxtSearch.Text = ""
-        _FilterOEMName.ClearFilter()
-        _FilterDiskType.ClearFilter()
-
-        _SuppressEvent = False
-    End Sub
-
-    Private Sub SubFiltersPopulate()
-        _SuppressEvent = True
-
-        _FilterOEMName.Populate()
-        _FilterDiskType.Populate()
-
-        _SuppressEvent = False
-    End Sub
-
-    Private Sub SubFiltersReset()
-        _SuppressEvent = True
-
-        OEMNameFilterReset()
-        DiskTypeFilterReset()
-
-        _SuppressEvent = False
-    End Sub
-
     Private Sub FiltersInitialize()
         Dim Separator = New ToolStripSeparator With {
             .Name = "FilterSeparator",
@@ -1590,13 +1526,41 @@ Public Class MainForm
         Return CheckstateChanged
     End Function
 
-    Private Sub RefreshModifiedState()
-        Dim Count As Integer = _FilterCounts(FilterTypes.ModifiedFiles)
+    Private Sub FixFileSize(DirectoryEntry As DirectoryEntry)
+        If DirectoryEntry.HasIncorrectFileSize() Then
+            DirectoryEntry.FileSize = DirectoryEntry.GetAllocatedSizeFromFAT
+            ComboItemRefresh(True, True)
+        End If
+    End Sub
 
-        ToolStripModified.Text = Count & " Image" & IIf(Count <> 1, "s", "") & " Modified"
-        ToolStripModified.Visible = (Count > 0)
-        BtnSaveAll.Enabled = (Count > 0)
-        ToolStripBtnSaveAll.Enabled = BtnSaveAll.Enabled
+    Private Sub FixImageSize()
+        Dim Result As Boolean = True
+        Dim Compare = _Disk.CheckImageSize
+
+        If Compare = 0 Then
+            Result = False
+        ElseIf Compare < 0 Then
+            Result = MsgBox("The image size is smaller than the detected size." & vbCrLf & vbCrLf & "Are you sure you wish to increase the image size?", MsgBoxStyle.Question + MsgBoxStyle.YesNo + MsgBoxStyle.DefaultButton2) = MsgBoxResult.Yes
+        Else
+            Dim ReportedSize = _Disk.ReportedImageSize
+            Dim Data = _Disk.Data.GetBytes(ReportedSize, _Disk.Data.Length - ReportedSize)
+            Dim HasData As Boolean = False
+            For Each b In Data
+                If b <> 0 Then
+                    HasData = True
+                    Exit For
+                End If
+            Next
+            If HasData Then
+                Result = MsgBox("There is data in the overdumped region of the image." & vbCrLf & vbCrLf & "Are you sure you wish to truncate the image?", MsgBoxStyle.Question + MsgBoxStyle.YesNo + MsgBoxStyle.DefaultButton2) = MsgBoxResult.Yes
+            End If
+        End If
+
+        If Result Then
+            If _Disk.FixImageSize Then
+                ComboItemRefresh(True, True)
+            End If
+        End If
     End Sub
 
     Private Function GetFileDataFromDirectoryEntry(Index As Integer, DirectoryEntry As DiskImage.DirectoryEntry, ParentOffset As UInteger, FilePath As String, IsLastEntry As Boolean, LFNFileName As String) As FileData
@@ -1771,6 +1735,50 @@ Public Class MainForm
         RefreshSaveButtons()
     End Sub
 
+    Private Function IsFileReadOnly(fileName As String) As Boolean
+        Dim fInfo As New FileInfo(fileName)
+        Return fInfo.IsReadOnly
+    End Function
+
+    Private Function IsWin9xDisk(Disk As Disk) As Boolean
+        Dim Response As Boolean = False
+        Dim OEMNameWin9x = Disk.BootSector.IsWin9xOEMName
+        Dim OEMName = Disk.BootSector.OEMName
+
+        If OEMNameWin9x Then
+            Dim BootstrapType = _BootStrap.FindMatch(Disk.BootSector.BootStrapCode)
+
+            If BootstrapType IsNot Nothing Then
+                For Each KnownOEMName In BootstrapType.KnownOEMNames
+                    If KnownOEMName.Name.CompareTo(OEMName) Or KnownOEMName.Win9xId Then
+                        Return True
+                        Exit For
+                    End If
+                Next
+            End If
+        End If
+
+        Return Response
+    End Function
+
+    Private Function IsZipArchive(FileName As String) As ZipArchive
+        Try
+            Dim Buffer(1) As Byte
+            Using fs = New FileStream(FileName, FileMode.Open, FileAccess.Read)
+                Dim BytesRead = fs.Read(Buffer, 0, Buffer.Length)
+                fs.Close()
+            End Using
+
+            If Buffer(0) = &H50 And Buffer(1) = &H4B Then
+                Return ZipFile.OpenRead(FileName)
+            End If
+        Catch ex As Exception
+            Return Nothing
+        End Try
+
+        Return Nothing
+    End Function
+
     Private Sub ItemScan(Type As ItemScanTypes, Disk As DiskImage.Disk, ImageData As LoadedImageData, Optional UpdateFilters As Boolean = False, Optional Remove As Boolean = False)
         ItemScanModified(Disk, ImageData, UpdateFilters, Remove)
 
@@ -1804,27 +1812,6 @@ Public Class MainForm
         RefreshCheckAll()
     End Sub
 
-    Private Sub ListViewFilesAddItem(FilePath As String, DirectoryEntry As DirectoryEntry, LFNFileName As String, ParentOffset As UInteger, Index As Integer, Count As Integer, Group As ListViewGroup)
-        Dim IsLastEntry = (Index = Count - 1)
-        Dim FileData = GetFileDataFromDirectoryEntry(Index, DirectoryEntry, ParentOffset, FilePath, IsLastEntry, LFNFileName)
-        Dim Item = ListViewFilesGetItem(Group, FileData)
-        ListViewFiles.Items.Add(Item)
-    End Sub
-
-    Private Sub ListViewFilesRefreshItem(Index As Integer)
-        Dim Item = ListViewFiles.Items(Index)
-        Dim FileData As FileData = Item.Tag
-
-        If FileData.DirectoryEntry.IsEmpty Then
-            ListViewFiles.Items.Remove(Item)
-        Else
-            Dim NewItem = ListViewFilesGetItem(Item.Group, FileData)
-            For Counter = 0 To Item.SubItems.Count - 1
-                Item.SubItems(Counter) = NewItem.SubItems(Counter)
-            Next
-        End If
-    End Sub
-
     Private Function ListViewFilesAddGroup(Directory As DiskImage.IDirectory, Path As String) As ListViewGroup
         Dim FileCount As UInteger = Directory.Data.FileCount
         Dim GroupName As String = IIf(Path = "", "(Root)", Path)
@@ -1837,6 +1824,13 @@ Public Class MainForm
 
         Return Group
     End Function
+
+    Private Sub ListViewFilesAddItem(FilePath As String, DirectoryEntry As DirectoryEntry, LFNFileName As String, ParentOffset As UInteger, Index As Integer, Count As Integer, Group As ListViewGroup)
+        Dim IsLastEntry = (Index = Count - 1)
+        Dim FileData = GetFileDataFromDirectoryEntry(Index, DirectoryEntry, ParentOffset, FilePath, IsLastEntry, LFNFileName)
+        Dim Item = ListViewFilesGetItem(Group, FileData)
+        ListViewFiles.Items.Add(Item)
+    End Sub
 
     Private Function ListViewFilesGetItem(Group As ListViewGroup, FileData As FileData) As ListViewItem
         Dim SI As ListViewItem.ListViewSubItem
@@ -1980,6 +1974,20 @@ Public Class MainForm
         Return Item
     End Function
 
+    Private Sub ListViewFilesRefreshItem(Index As Integer)
+        Dim Item = ListViewFiles.Items(Index)
+        Dim FileData As FileData = Item.Tag
+
+        If FileData.DirectoryEntry.IsEmpty Then
+            ListViewFiles.Items.Remove(Item)
+        Else
+            Dim NewItem = ListViewFilesGetItem(Item.Group, FileData)
+            For Counter = 0 To Item.SubItems.Count - 1
+                Item.SubItems(Counter) = NewItem.SubItems(Counter)
+            Next
+        End If
+    End Sub
+
     Private Function MediaTypeGet(MediaDescriptor As Byte, SectorsPerTrack As UShort, SectorsPerFAT As UShort) As String
         Select Case MediaDescriptor
             Case &HF0
@@ -2014,29 +2022,6 @@ Public Class MainForm
 
         Return MediaDescriptor.ToString("X2") & " Hex"
     End Function
-
-    Private Sub FATSubMenuRefresh()
-        For Each Item As ToolStripMenuItem In BtnEditFAT.DropDownItems
-            RemoveHandler Item.Click, AddressOf BtnEditFAT_Click
-        Next
-        BtnEditFAT.DropDownItems.Clear()
-        BtnEditFAT.Tag = Nothing
-
-        If _Disk IsNot Nothing AndAlso _Disk.IsValidImage Then
-            If _Disk.BootSector.NumberOfFATs = 1 OrElse _Disk.CompareFATTables Then
-                BtnEditFAT.Tag = -1
-            Else
-                For Counter = 0 To _Disk.BootSector.NumberOfFATs - 1
-                    Dim Item As New ToolStripMenuItem With {
-                       .Text = "FAT &" & Counter + 1,
-                       .Tag = Counter
-                    }
-                    BtnEditFAT.DropDownItems.Add(Item)
-                    AddHandler Item.Click, AddressOf BtnEditFAT_Click
-                Next
-            End If
-        End If
-    End Sub
 
     Private Sub MenuDisplayDirectorySubMenuClear()
         For Each Item As ToolStripMenuItem In BtnDisplayDirectory.DropDownItems
@@ -2085,137 +2070,21 @@ Public Class MainForm
         Return SaveAllForm.Result
     End Function
 
-    Private Sub FixFileSize(DirectoryEntry As DirectoryEntry)
-        If DirectoryEntry.HasIncorrectFileSize() Then
-            DirectoryEntry.FileSize = DirectoryEntry.GetAllocatedSizeFromFAT
-            ComboItemRefresh(True, True)
+    Private Sub OEMNameFilterAdd(OEMName As String, UpdateFilters As Boolean)
+        If OEMName.EndsWith("IHC") Then
+            Return
         End If
+
+        _FilterOEMName.Add(OEMName, UpdateFilters)
     End Sub
 
-    Private Sub FixImageSize()
-        Dim Result As Boolean = True
-        Dim Compare = _Disk.CheckImageSize
-
-        If Compare = 0 Then
-            Result = False
-        ElseIf Compare < 0 Then
-            Result = MsgBox("The image size is smaller than the detected size." & vbCrLf & vbCrLf & "Are you sure you wish to increase the image size?", MsgBoxStyle.Question + MsgBoxStyle.YesNo + MsgBoxStyle.DefaultButton2) = MsgBoxResult.Yes
-        Else
-            Dim ReportedSize = _Disk.ReportedImageSize
-            Dim Data = _Disk.Data.GetBytes(ReportedSize, _Disk.Data.Length - ReportedSize)
-            Dim HasData As Boolean = False
-            For Each b In Data
-                If b <> 0 Then
-                    HasData = True
-                    Exit For
-                End If
-            Next
-            If HasData Then
-                Result = MsgBox("There is data in the overdumped region of the image." & vbCrLf & vbCrLf & "Are you sure you wish to truncate the image?", MsgBoxStyle.Question + MsgBoxStyle.YesNo + MsgBoxStyle.DefaultButton2) = MsgBoxResult.Yes
-            End If
-        End If
-
-        If Result Then
-            If _Disk.FixImageSize Then
-                ComboItemRefresh(True, True)
-            End If
-        End If
-    End Sub
-
-    Private Function IsWin9xDisk(Disk As Disk) As Boolean
-        Dim Response As Boolean = False
-        Dim OEMNameWin9x = Disk.BootSector.IsWin9xOEMName
-        Dim OEMName = Disk.BootSector.OEMName
-
-        If OEMNameWin9x Then
-            Dim BootstrapType = _BootStrap.FindMatch(Disk.BootSector.BootStrapCode)
-
-            If BootstrapType IsNot Nothing Then
-                For Each KnownOEMName In BootstrapType.KnownOEMNames
-                    If KnownOEMName.Name.CompareTo(OEMName) Or KnownOEMName.Win9xId Then
-                        Return True
-                        Exit For
-                    End If
-                Next
-            End If
-        End If
-
-        Return Response
-    End Function
-
-    Friend Function Win9xClean(Disk As Disk, DoRefresh As Boolean) As Boolean
-        Dim Result As Boolean = False
-
-        Disk.Data.BatchEditMode = True
-
-        If Disk.BootSector.IsWin9xOEMName Then
-            Dim BootstrapType = _BootStrap.FindMatch(Disk.BootSector.BootStrapCode)
-            If BootstrapType IsNot Nothing Then
-                If BootstrapType.KnownOEMNames.Count > 0 Then
-                    Disk.BootSector.OEMName = BootstrapType.KnownOEMNames.Item(0).Name
-                    Result = True
-                End If
-            End If
-        End If
-
-        Dim FileList = Disk.GetFileList()
-
-        For Each DirectoryEntry In FileList
-            If DirectoryEntry.IsValid Then
-                If DirectoryEntry.HasLastAccessDate Then
-                    If DirectoryEntry.GetLastAccessDate.IsValidDate Then
-                        DirectoryEntry.ClearLastAccessDate()
-                        Result = True
-                    End If
-                End If
-
-                If DirectoryEntry.HasCreationDate Then
-                    If DirectoryEntry.GetCreationDate.IsValidDate Then
-                        DirectoryEntry.ClearCreationDate()
-                        Result = True
-                    End If
-                End If
-            End If
+    Private Sub OEMNameFilterReset()
+        _FilterOEMName.Clear()
+        For Each ImageData As LoadedImageData In ComboImages.Items
+            OEMNameFilterAdd(ImageData.ScanInfo.OEMName, False)
         Next
-
-        Disk.Data.BatchEditMode = False
-
-        If Result And DoRefresh Then
-            ComboItemRefresh(True, True)
-        End If
-
-        Return Result
-    End Function
-
-    Private Sub ProcessDirectoryScanResponse(Response As DirectoryScanResponse)
-        If Response.HasCreated Then
-            FileCreateDate.Width = 140
-        Else
-            FileCreateDate.Width = 0
-        End If
-
-        If Response.HasLastAccessed Then
-            FileLastAccessDate.Width = 90
-        Else
-            FileLastAccessDate.Width = 0
-        End If
-
-        If Response.HasLFN Then
-            FileLFN.Width = 200
-        Else
-            FileLFN.Width = 0
-        End If
-
-        If Response.HasFATChainingErrors Then
-            FileClusterError.Width = 30
-            RefreshClusterErrors()
-        Else
-            FileClusterError.Width = 0
-        End If
-
-        BtnWin9xClean.Enabled = Response.HasValidCreated Or Response.HasValidLastAccessed Or _Disk.BootSector.IsWin9xOEMName
+        _FilterOEMName.Populate()
     End Sub
-
     Private Sub PopulateFilesPanel()
         MenuDisplayDirectorySubMenuClear()
 
@@ -2256,44 +2125,6 @@ Public Class MainForm
 
         ListViewHashes.EndUpdate()
         ListViewHashes.Refresh()
-    End Sub
-
-    Private Sub RefreshButtonStatus(Disk As Disk, ImageData As LoadedImageData)
-        If Disk IsNot Nothing AndAlso Disk.IsValidImage Then
-            BtnDisplayClusters.Enabled = Disk.FAT.HasUnusedClusters(True)
-            BtnDisplayBadSectors.Enabled = Disk.FAT.BadClusters.Count > 0
-            BtnFixImageSize.Enabled = Disk.CheckImageSize <> 0
-            If Disk.Directory.Data.HasBootSector Then
-                Dim BootSectorBytes = Disk.Data.GetBytes(Disk.Directory.Data.BootSectorOffset, BootSector.BOOT_SECTOR_SIZE)
-                BtnRestoreBootSector.Enabled = Not BootSectorBytes.CompareTo(Disk.BootSector.Data)
-            Else
-                BtnRestoreBootSector.Enabled = False
-            End If
-            BtnRemoveBootSector.Enabled = Disk.Directory.Data.HasBootSector
-        Else
-            BtnDisplayClusters.Enabled = False
-            BtnDisplayBadSectors.Enabled = False
-            BtnFixImageSize.Enabled = False
-            BtnRestoreBootSector.Enabled = False
-            BtnRemoveBootSector.Enabled = False
-        End If
-
-        BtnRevert.Enabled = Disk IsNot Nothing AndAlso Disk.Data.Modified
-
-        BtnUndo.Enabled = Disk IsNot Nothing AndAlso Disk.Data.UndoEnabled
-        ToolStripBtnUndo.Enabled = BtnUndo.Enabled
-
-        BtnRedo.Enabled = Disk IsNot Nothing AndAlso Disk.Data.RedoEnabled
-        ToolStripBtnRedo.Enabled = BtnRedo.Enabled
-
-        If Disk IsNot Nothing Then
-            ToolStripStatusModified.Visible = Disk.Data.Modified
-            ToolStripStatusReadOnly.Visible = ImageData.ReadOnly
-            ToolStripStatusReadOnly.Text = IIf(ImageData.Compressed, "Compressed", "Read Only")
-        Else
-            ToolStripStatusModified.Visible = False
-            ToolStripStatusReadOnly.Visible = False
-        End If
     End Sub
 
     Private Sub PopulateSummary(Disk As Disk, ImageData As LoadedImageData)
@@ -2589,46 +2420,33 @@ Public Class MainForm
         Return Response
     End Function
 
-    Private Function IsFileReadOnly(fileName As String) As Boolean
-        Dim fInfo As New FileInfo(fileName)
-        Return fInfo.IsReadOnly
-    End Function
+    Private Sub ProcessDirectoryScanResponse(Response As DirectoryScanResponse)
+        If Response.HasCreated Then
+            FileCreateDate.Width = 140
+        Else
+            FileCreateDate.Width = 0
+        End If
 
-    Private Function IsZipArchive(FileName As String) As ZipArchive
-        Try
-            Dim Buffer(1) As Byte
-            Using fs = New FileStream(FileName, FileMode.Open, FileAccess.Read)
-                Dim BytesRead = fs.Read(Buffer, 0, Buffer.Length)
-                fs.Close()
-            End Using
+        If Response.HasLastAccessed Then
+            FileLastAccessDate.Width = 90
+        Else
+            FileLastAccessDate.Width = 0
+        End If
 
-            If Buffer(0) = &H50 And Buffer(1) = &H4B Then
-                Return ZipFile.OpenRead(FileName)
-            End If
-        Catch ex As Exception
-            Return Nothing
-        End Try
+        If Response.HasLFN Then
+            FileLFN.Width = 200
+        Else
+            FileLFN.Width = 0
+        End If
 
-        Return Nothing
-    End Function
+        If Response.HasFATChainingErrors Then
+            FileClusterError.Width = 30
+            RefreshClusterErrors()
+        Else
+            FileClusterError.Width = 0
+        End If
 
-    Private Sub ProcessZipFile(FileName As String, Archive As ZipArchive, ByRef SelectedImageData As LoadedImageData)
-        For Each Entry In Archive.Entries.OrderBy(Function(e) e.FullName)
-            If _FileFilterExt.Contains(Path.GetExtension(Entry.Name).ToLower) Then
-                Dim FilePath = Path.Combine(FileName, Entry.FullName)
-                If Not _LoadedFileNames.ContainsKey(FilePath) Then
-                    Dim ImageData As New LoadedImageData(FileName) With {
-                        .Compressed = True,
-                        .CompressedFile = Entry.FullName
-                    }
-                    _LoadedFileNames.Add(FilePath, ImageData)
-                    ComboImages.Items.Add(ImageData)
-                    If SelectedImageData Is Nothing Then
-                        SelectedImageData = ImageData
-                    End If
-                End If
-            End If
-        Next
+        BtnWin9xClean.Enabled = Response.HasValidCreated Or Response.HasValidLastAccessed Or _Disk.BootSector.IsWin9xOEMName
     End Sub
 
     Private Sub ProcessFile(FileName As String, ByRef SelectedImageData As LoadedImageData)
@@ -2709,6 +2527,63 @@ Public Class MainForm
         ComboImages.EndUpdate()
 
         Cursor.Current = Cursors.Default
+    End Sub
+
+    Private Sub ProcessZipFile(FileName As String, Archive As ZipArchive, ByRef SelectedImageData As LoadedImageData)
+        For Each Entry In Archive.Entries.OrderBy(Function(e) e.FullName)
+            If _FileFilterExt.Contains(Path.GetExtension(Entry.Name).ToLower) Then
+                Dim FilePath = Path.Combine(FileName, Entry.FullName)
+                If Not _LoadedFileNames.ContainsKey(FilePath) Then
+                    Dim ImageData As New LoadedImageData(FileName) With {
+                        .Compressed = True,
+                        .CompressedFile = Entry.FullName
+                    }
+                    _LoadedFileNames.Add(FilePath, ImageData)
+                    ComboImages.Items.Add(ImageData)
+                    If SelectedImageData Is Nothing Then
+                        SelectedImageData = ImageData
+                    End If
+                End If
+            End If
+        Next
+    End Sub
+
+    Private Sub RefreshButtonStatus(Disk As Disk, ImageData As LoadedImageData)
+        If Disk IsNot Nothing AndAlso Disk.IsValidImage Then
+            BtnDisplayClusters.Enabled = Disk.FAT.HasUnusedClusters(True)
+            BtnDisplayBadSectors.Enabled = Disk.FAT.BadClusters.Count > 0
+            BtnFixImageSize.Enabled = Disk.CheckImageSize <> 0
+            If Disk.Directory.Data.HasBootSector Then
+                Dim BootSectorBytes = Disk.Data.GetBytes(Disk.Directory.Data.BootSectorOffset, BootSector.BOOT_SECTOR_SIZE)
+                BtnRestoreBootSector.Enabled = Not BootSectorBytes.CompareTo(Disk.BootSector.Data)
+            Else
+                BtnRestoreBootSector.Enabled = False
+            End If
+            BtnRemoveBootSector.Enabled = Disk.Directory.Data.HasBootSector
+        Else
+            BtnDisplayClusters.Enabled = False
+            BtnDisplayBadSectors.Enabled = False
+            BtnFixImageSize.Enabled = False
+            BtnRestoreBootSector.Enabled = False
+            BtnRemoveBootSector.Enabled = False
+        End If
+
+        BtnRevert.Enabled = Disk IsNot Nothing AndAlso Disk.Data.Modified
+
+        BtnUndo.Enabled = Disk IsNot Nothing AndAlso Disk.Data.UndoEnabled
+        ToolStripBtnUndo.Enabled = BtnUndo.Enabled
+
+        BtnRedo.Enabled = Disk IsNot Nothing AndAlso Disk.Data.RedoEnabled
+        ToolStripBtnRedo.Enabled = BtnRedo.Enabled
+
+        If Disk IsNot Nothing Then
+            ToolStripStatusModified.Visible = Disk.Data.Modified
+            ToolStripStatusReadOnly.Visible = ImageData.ReadOnly
+            ToolStripStatusReadOnly.Text = IIf(ImageData.Compressed, "Compressed", "Read Only")
+        Else
+            ToolStripStatusModified.Visible = False
+            ToolStripStatusReadOnly.Visible = False
+        End If
     End Sub
 
     Private Sub RefreshCheckAll()
@@ -2904,6 +2779,68 @@ Public Class MainForm
         End If
     End Sub
 
+    Private Sub RefreshModifiedState()
+        Dim Count As Integer = _FilterCounts(FilterTypes.ModifiedFiles)
+
+        ToolStripModified.Text = Count & " Image" & IIf(Count <> 1, "s", "") & " Modified"
+        ToolStripModified.Visible = (Count > 0)
+        BtnSaveAll.Enabled = (Count > 0)
+        ToolStripBtnSaveAll.Enabled = BtnSaveAll.Enabled
+    End Sub
+
+    Private Sub RefreshSaveButtons()
+        Dim CurrentImageData As LoadedImageData = ComboImages.SelectedItem
+
+        If CurrentImageData Is Nothing Then
+            BtnSave.Enabled = False
+            BtnSaveAs.Enabled = False
+            BtnExportDebug.Enabled = False
+        Else
+            BtnSave.Enabled = CurrentImageData.Modified And Not CurrentImageData.ReadOnly
+            BtnSaveAs.Enabled = CurrentImageData.Modified
+            'BtnExportDebug.Enabled = (CurrentImageData.Modified Or CurrentImageData.SessionModifications.Count > 0)
+            BtnExportDebug.Enabled = False
+        End If
+        ToolStripBtnSave.Enabled = BtnSave.Enabled
+        ToolStripBtnSaveAs.Enabled = BtnSaveAs.Enabled
+    End Sub
+
+    Private Sub ReloadCurrentImage(DoItemScan As Boolean)
+        Dim CurrentImageData As LoadedImageData = ComboImages.SelectedItem
+        _Disk = DiskImageLoad(CurrentImageData)
+        If _Disk IsNot Nothing Then
+            CurrentImageData.Modifications = _Disk.Data.Changes
+        End If
+        DiskImageProcess(DoItemScan, False)
+    End Sub
+
+    Private Sub RemoveDeletedFile(Item As ListViewItem)
+        Dim FileData As FileData = Item.Tag
+
+        If Not FileData.DirectoryEntry.IsDeleted Then
+            Exit Sub
+        End If
+
+        FileData.DirectoryEntry.BatchEditMode = True
+
+        FileData.DirectoryEntry.Clear(FileData.IsLastEntry)
+        If FileData.IsLastEntry And FileData.Index > 0 Then
+            Dim Offset = FileData.DirectoryEntry.Offset
+            For Counter = FileData.Index - 1 To 0 Step -1
+                Offset -= DirectoryEntry.DIRECTORY_ENTRY_SIZE
+                Dim PrevEntry = _Disk.GetDirectoryEntryByOffset(Offset)
+                If PrevEntry.IsLFN Then
+                    PrevEntry.Clear(True)
+                Else
+                    Exit For
+                End If
+            Next
+        End If
+
+        FileData.DirectoryEntry.BatchEditMode = False
+
+        FilePropertiesRefresh(Item, False)
+    End Sub
     Private Sub ResetAll()
         _Disk = Nothing
         Me.Text = GetWindowCaption()
@@ -3000,23 +2937,6 @@ Public Class MainForm
         RefreshModifiedState()
     End Sub
 
-    Private Sub RefreshSaveButtons()
-        Dim CurrentImageData As LoadedImageData = ComboImages.SelectedItem
-
-        If CurrentImageData Is Nothing Then
-            BtnSave.Enabled = False
-            BtnSaveAs.Enabled = False
-            BtnExportDebug.Enabled = False
-        Else
-            BtnSave.Enabled = CurrentImageData.Modified And Not CurrentImageData.ReadOnly
-            BtnSaveAs.Enabled = CurrentImageData.Modified
-            'BtnExportDebug.Enabled = (CurrentImageData.Modified Or CurrentImageData.SessionModifications.Count > 0)
-            BtnExportDebug.Enabled = False
-        End If
-        ToolStripBtnSave.Enabled = BtnSave.Enabled
-        ToolStripBtnSaveAs.Enabled = BtnSaveAs.Enabled
-    End Sub
-
     Private Sub SaveCurrent(NewFileName As Boolean)
         Dim NewFilePath As String = ""
 
@@ -3089,10 +3009,85 @@ Public Class MainForm
         End If
     End Sub
 
+    Private Sub SubFiltersClear()
+        _SuppressEvent = True
+
+        _FilterOEMName.Clear()
+        _FilterDiskType.Clear()
+
+        _SuppressEvent = False
+    End Sub
+
+    Private Sub SubFiltersClearFilter()
+        _SuppressEvent = True
+
+        TxtSearch.Text = ""
+        _FilterOEMName.ClearFilter()
+        _FilterDiskType.ClearFilter()
+
+        _SuppressEvent = False
+    End Sub
+
+    Private Sub SubFiltersPopulate()
+        _SuppressEvent = True
+
+        _FilterOEMName.Populate()
+        _FilterDiskType.Populate()
+
+        _SuppressEvent = False
+    End Sub
+
+    Private Sub SubFiltersReset()
+        _SuppressEvent = True
+
+        OEMNameFilterReset()
+        DiskTypeFilterReset()
+
+        _SuppressEvent = False
+    End Sub
+
+    Private Sub Win9xCleanBatch()
+        Dim Msg = "This will restore the OEM Name and remove any Creation and Last Accessed Dates from all loaded images." _
+                & vbCrLf & vbCrLf & "Do you wish to proceed??"
+
+        If MsgBox(Msg, MsgBoxStyle.Question + MsgBoxStyle.YesNo + MsgBoxStyle.DefaultButton2) = MsgBoxResult.No Then
+            Exit Sub
+        End If
+
+        Me.UseWaitCursor = True
+        Dim T = Stopwatch.StartNew
+
+        Dim CurrentImageData As LoadedImageData = ComboImages.SelectedItem
+        Dim ItemScanForm As New ItemScanForm(Me, ComboImages.Items, CurrentImageData, _Disk, False, ScanType.ScanTypeWin9xClean)
+        ItemScanForm.ShowDialog()
+
+        For Counter = 0 To [Enum].GetNames(GetType(FilterTypes)).Length - 1
+            FilterUpdate(Counter)
+        Next
+
+        RefreshModifiedState()
+        If _ScanRun Then
+            SubFiltersPopulate()
+        End If
+
+        For Index = 0 To ComboImages.Items.Count - 1
+            Dim ImageData As LoadedImageData = ComboImages.Items(Index)
+            If ImageData.BatchUpdated Then
+                If ImageData Is CurrentImageData Then
+                    ComboItemRefresh(True, False)
+                End If
+                ImageData.BatchUpdated = False
+            End If
+        Next Index
+
+        T.Stop()
+        Debug.Print("Batch Process Time Taken: " & T.Elapsed.ToString)
+        Me.UseWaitCursor = False
+    End Sub
     Private Structure DirectoryStats
-        Dim CanExport As Boolean
         Dim CanDelete As Boolean
         Dim CanDeleteWithFill As Boolean
+        Dim CanExport As Boolean
         Dim FileSize As UInteger
         Dim FullFileName As String
         Dim IsDeleted As Boolean
@@ -3103,6 +3098,10 @@ Public Class MainForm
     End Structure
 
 #Region "Events"
+
+    Private Function AppendFileFilter(FileFilter As String, Description As String, Pattern As String) As String
+        Return FileFilter & "|" & GetFileFilter(Description, Pattern)
+    End Function
 
     Private Sub BtnClearFilters_Click(sender As Object, e As EventArgs) Handles BtnClearFilters.Click
         If _FiltersApplied Then
@@ -3146,6 +3145,16 @@ Public Class MainForm
         HexDisplayFAT()
     End Sub
 
+    Private Sub BtnDisplayFile_Click(sender As Object, e As EventArgs) Handles BtnDisplayFile.Click
+        If sender.tag IsNot Nothing Then
+            HexDisplayDirectoryEntry(sender.tag)
+        End If
+    End Sub
+
+    Private Sub BtnEditBootSector_Click(sender As Object, e As EventArgs) Handles BtnEditBootSector.Click
+        BootSectorEdit()
+    End Sub
+
     Private Sub BtnEditFAT_Click(sender As Object, e As EventArgs) Handles BtnEditFAT.Click
         If sender.tag IsNot Nothing Then
             If sender.tag = -1 Then
@@ -3155,13 +3164,6 @@ Public Class MainForm
             End If
         End If
     End Sub
-
-    Private Sub BtnDisplayFile_Click(sender As Object, e As EventArgs) Handles BtnDisplayFile.Click
-        If sender.tag IsNot Nothing Then
-            HexDisplayDirectoryEntry(sender.tag)
-        End If
-    End Sub
-
     Private Sub BtnExit_Click(sender As Object, e As EventArgs) Handles BtnExit.Click
         If CloseAll() Then
             Me.Close()
@@ -3182,6 +3184,17 @@ Public Class MainForm
 
     Private Sub BtnFileMenuDeleteFileWithFill_Click(sender As Object, e As EventArgs) Handles BtnFileMenuDeleteFileWithFill.Click
         DeleteSelectedFiles(True)
+    End Sub
+
+    Private Sub BtnFileMenuFixSize_Click(sender As Object, e As EventArgs) Handles BtnFileMenuFixSize.Click
+        If ListViewFiles.SelectedItems.Count = 1 Then
+            Dim Item As ListViewItem = ListViewFiles.SelectedItems(0)
+            Dim FileData As FileData = Item.Tag
+
+            If FileData.DirectoryEntry.HasIncorrectFileSize Then
+                FixFileSize(FileData.DirectoryEntry)
+            End If
+        End If
     End Sub
 
     Private Sub BtnFileMenuRemoveDeletedFile_Click(sender As Object, e As EventArgs) Handles BtnFileMenuRemoveDeletedFile.Click
@@ -3222,8 +3235,17 @@ Public Class MainForm
         FixImageSize()
     End Sub
 
-    Private Sub BtnWin9xClean_Click(sender As Object, e As EventArgs) Handles BtnWin9xClean.Click
-        Win9xClean(_Disk, True)
+    Private Sub BtnHelpAbout_Click(sender As Object, e As EventArgs) Handles BtnHelpAbout.Click
+        Dim AboutBox As New AboutBox()
+        AboutBox.ShowDialog()
+    End Sub
+
+    Private Sub BtnHelpProjectPage_Click(sender As Object, e As EventArgs) Handles BtnHelpProjectPage.Click
+        Process.Start(SITE_URL)
+    End Sub
+
+    Private Sub BtnHelpUpdateCheck_Click(sender As Object, e As EventArgs) Handles BtnHelpUpdateCheck.Click
+        CheckForUpdates()
     End Sub
 
     Private Sub BtnOpen_Click(sender As Object, e As EventArgs) Handles BtnOpen.Click, ToolStripBtnOpen.Click
@@ -3239,10 +3261,22 @@ Public Class MainForm
         End If
     End Sub
 
+    Private Sub BtnRemoveBootSector_Click(sender As Object, e As EventArgs) Handles BtnRemoveBootSector.Click
+        BootSectorRemove()
+    End Sub
+
     Private Sub BtnReplaceFile_Click(sender As Object, e As EventArgs) Handles BtnReplaceFile.Click, BtnFileMenuReplaceFile.Click
         If ListViewFiles.SelectedItems.Count = 1 Then
             FileReplace(ListViewFiles.SelectedItems(0))
         End If
+    End Sub
+
+    Private Sub BtnResetSort_Click(sender As Object, e As EventArgs) Handles BtnResetSort.Click
+        ClearSort(True)
+    End Sub
+
+    Private Sub BtnRestoreBootSector_Click(sender As Object, e As EventArgs) Handles BtnRestoreBootSector.Click
+        BootSectorRestore()
     End Sub
 
     Private Sub BtnRevert_Click(sender As Object, e As EventArgs) Handles BtnRevert.Click
@@ -3280,6 +3314,64 @@ Public Class MainForm
         End If
     End Sub
 
+    Private Sub BtnWin9xClean_Click(sender As Object, e As EventArgs) Handles BtnWin9xClean.Click
+        Win9xClean(_Disk, True)
+    End Sub
+    Private Sub BtnWin9xCleanBatch_Click(sender As Object, e As EventArgs) Handles BtnWin9xCleanBatch.Click
+        Win9xCleanBatch()
+    End Sub
+
+    Private Sub ComboFilter_SelectedIndexChanged(sender As Object, e As EventArgs) Handles ComboOEMName.SelectedIndexChanged, ComboDiskType.SelectedIndexChanged
+        If _SuppressEvent Then
+            Exit Sub
+        End If
+
+        FiltersApply(False)
+    End Sub
+
+    Private Sub ComboImages_DrawItem(sender As Object, e As DrawItemEventArgs) Handles ComboImages.DrawItem, ComboImagesFiltered.DrawItem
+        Dim CB As ComboBox = sender
+
+        If e.Index >= -1 Then
+            Dim Brush As Brush
+
+            If e.State And DrawItemState.Selected Then
+                Brush = New SolidBrush(SystemColors.Highlight)
+            Else
+                Brush = New SolidBrush(SystemColors.Window)
+            End If
+
+            e.Graphics.FillRectangle(Brush, e.Bounds)
+
+            Brush.Dispose()
+
+            If e.Index > -1 Then
+                Dim tBrush As Brush
+                If e.State And DrawItemState.Selected Then
+                    tBrush = New SolidBrush(SystemColors.HighlightText)
+                Else
+                    Dim CurrentImageData As LoadedImageData = CB.Items(e.Index)
+                    If CurrentImageData IsNot Nothing AndAlso CurrentImageData.Modified Then
+                        tBrush = New SolidBrush(Color.Blue)
+                    Else
+                        tBrush = New SolidBrush(SystemColors.WindowText)
+                    End If
+                End If
+
+                Dim Format As New StringFormat With {
+                    .Trimming = StringTrimming.None,
+                    .FormatFlags = StringFormatFlags.NoWrap
+                }
+
+                e.Graphics.DrawString(CB.Items(e.Index).ToString, e.Font, tBrush, e.Bounds, Format)
+
+                tBrush.Dispose()
+            End If
+        End If
+
+        e.DrawFocusRectangle()
+    End Sub
+
     Private Sub ComboImages_SelectedIndexChanged(sender As Object, e As EventArgs) Handles ComboImages.SelectedIndexChanged
         If _SuppressEvent Then
             Exit Sub
@@ -3295,15 +3387,6 @@ Public Class MainForm
 
         ComboImages.SelectedItem = ComboImagesFiltered.SelectedItem
     End Sub
-
-    Private Sub ComboFilter_SelectedIndexChanged(sender As Object, e As EventArgs) Handles ComboOEMName.SelectedIndexChanged, ComboDiskType.SelectedIndexChanged
-        If _SuppressEvent Then
-            Exit Sub
-        End If
-
-        FiltersApply(False)
-    End Sub
-
     Private Sub ContextMenuCopy_ItemClicked(sender As Object, e As ToolStripItemClickedEventArgs) Handles ContextMenuCopy1.ItemClicked, ContextMenuCopy2.ItemClicked
         Dim LV As ListView = Nothing
 
@@ -3369,6 +3452,20 @@ Public Class MainForm
 
     Private Sub File_DragEnter(sender As Object, e As DragEventArgs) Handles ComboImages.DragEnter, ComboImagesFiltered.DragEnter, LabelDropMessage.DragEnter, ListViewFiles.DragEnter, ListViewHashes.DragEnter, ListViewSummary.DragEnter
         FileDropStart(e)
+    End Sub
+
+    Private Function GetFileFilter(Description As String, Pattern As String) As String
+        Return Description & "|" & Pattern
+    End Function
+
+    Private Sub InitFileFilter()
+        Dim ExtensionList As New List(Of String)
+
+        For Each Extension In _FileFilterExt
+            ExtensionList.Add("*" & Extension)
+        Next
+
+        _FileFilter = GetFileFilter("Disk Image Files (" & String.Join("; ", ExtensionList.ToArray) & ")", String.Join(";", ExtensionList.ToArray))
     End Sub
 
     Private Sub ListViewFiles_ColumnClick(sender As Object, e As ColumnClickEventArgs) Handles ListViewFiles.ColumnClick
@@ -3460,44 +3557,6 @@ Public Class MainForm
         End If
     End Sub
 
-    Private Sub ParseCustomFilters()
-        If My.Settings.CustomFileExtensions.Length > 0 Then
-            For Each Extension In My.Settings.CustomFileExtensions.Split(",")
-                If Not Extension.StartsWith(".") Then
-                    Extension = "." & Extension
-                End If
-                _FileFilterExt.Add(Extension)
-            Next
-        End If
-    End Sub
-
-    Private Function PathAddBackslash(Path As String) As String
-        If Len(Path) > 0 Then
-            If Not Path.EndsWith("\") Then
-                Path &= "\"
-            End If
-        End If
-        Return Path
-    End Function
-
-    Private Function AppendFileFilter(FileFilter As String, Description As String, Pattern As String) As String
-        Return FileFilter & "|" & GetFileFilter(Description, Pattern)
-    End Function
-
-    Private Function GetFileFilter(Description As String, Pattern As String) As String
-        Return Description & "|" & Pattern
-    End Function
-
-    Private Sub InitFileFilter()
-        Dim ExtensionList As New List(Of String)
-
-        For Each Extension In _FileFilterExt
-            ExtensionList.Add("*" & Extension)
-        Next
-
-        _FileFilter = GetFileFilter("Disk Image Files (" & String.Join("; ", ExtensionList.ToArray) & ")", String.Join(";", ExtensionList.ToArray))
-    End Sub
-
     Private Sub MainForm_Load(sender As Object, e As EventArgs) Handles Me.Load
         _FileVersion = GetVersionString()
         Me.Text = GetWindowCaption()
@@ -3540,6 +3599,25 @@ Public Class MainForm
         My.Settings.WindowHeight = Me.Height
     End Sub
 
+    Private Sub ParseCustomFilters()
+        If My.Settings.CustomFileExtensions.Length > 0 Then
+            For Each Extension In My.Settings.CustomFileExtensions.Split(",")
+                If Not Extension.StartsWith(".") Then
+                    Extension = "." & Extension
+                End If
+                _FileFilterExt.Add(Extension)
+            Next
+        End If
+    End Sub
+
+    Private Function PathAddBackslash(Path As String) As String
+        If Len(Path) > 0 Then
+            If Not Path.EndsWith("\") Then
+                Path &= "\"
+            End If
+        End If
+        Return Path
+    End Function
     Private Sub TxtSearch_TextChanged(sender As Object, e As EventArgs) Handles TxtSearch.TextChanged
         If _SuppressEvent Then
             Exit Sub
@@ -3547,93 +3625,6 @@ Public Class MainForm
 
         Debounce.Stop()
         Debounce.Start()
-    End Sub
-
-    Private Sub BtnHelpProjectPage_Click(sender As Object, e As EventArgs) Handles BtnHelpProjectPage.Click
-        Process.Start(SITE_URL)
-    End Sub
-
-    Private Sub BtnHelpAbout_Click(sender As Object, e As EventArgs) Handles BtnHelpAbout.Click
-        Dim AboutBox As New AboutBox()
-        AboutBox.ShowDialog()
-    End Sub
-
-    Private Sub BtnHelpUpdateCheck_Click(sender As Object, e As EventArgs) Handles BtnHelpUpdateCheck.Click
-        CheckForUpdates()
-    End Sub
-
-    Private Sub BtnFileMenuFixSize_Click(sender As Object, e As EventArgs) Handles BtnFileMenuFixSize.Click
-        If ListViewFiles.SelectedItems.Count = 1 Then
-            Dim Item As ListViewItem = ListViewFiles.SelectedItems(0)
-            Dim FileData As FileData = Item.Tag
-
-            If FileData.DirectoryEntry.HasIncorrectFileSize Then
-                FixFileSize(FileData.DirectoryEntry)
-            End If
-        End If
-    End Sub
-
-    Private Sub BtnResetSort_Click(sender As Object, e As EventArgs) Handles BtnResetSort.Click
-        ClearSort(True)
-    End Sub
-
-    Private Sub BtnEditBootSector_Click(sender As Object, e As EventArgs) Handles BtnEditBootSector.Click
-        BootSectorEdit()
-    End Sub
-
-    Private Sub BtnRestoreBootSector_Click(sender As Object, e As EventArgs) Handles BtnRestoreBootSector.Click
-        BootSectorRestore()
-    End Sub
-
-    Private Sub BtnRemoveBootSector_Click(sender As Object, e As EventArgs) Handles BtnRemoveBootSector.Click
-        BootSectorRemove()
-    End Sub
-
-    Private Sub BtnWin9xCleanBatch_Click(sender As Object, e As EventArgs) Handles BtnWin9xCleanBatch.Click
-        Win9xCleanBatch()
-    End Sub
-
-    Private Sub ComboImages_DrawItem(sender As Object, e As DrawItemEventArgs) Handles ComboImages.DrawItem, ComboImagesFiltered.DrawItem
-        Dim CB As ComboBox = sender
-
-        If e.Index >= -1 Then
-            Dim Brush As Brush
-
-            If e.State And DrawItemState.Selected Then
-                Brush = New SolidBrush(SystemColors.Highlight)
-            Else
-                Brush = New SolidBrush(SystemColors.Window)
-            End If
-
-            e.Graphics.FillRectangle(Brush, e.Bounds)
-
-            Brush.Dispose()
-
-            If e.Index > -1 Then
-                Dim tBrush As Brush
-                If e.State And DrawItemState.Selected Then
-                    tBrush = New SolidBrush(SystemColors.HighlightText)
-                Else
-                    Dim CurrentImageData As LoadedImageData = CB.Items(e.Index)
-                    If CurrentImageData IsNot Nothing AndAlso CurrentImageData.Modified Then
-                        tBrush = New SolidBrush(Color.Blue)
-                    Else
-                        tBrush = New SolidBrush(SystemColors.WindowText)
-                    End If
-                End If
-
-                Dim Format As New StringFormat With {
-                    .Trimming = StringTrimming.None,
-                    .FormatFlags = StringFormatFlags.NoWrap
-                }
-
-                e.Graphics.DrawString(CB.Items(e.Index).ToString, e.Font, tBrush, e.Bounds, Format)
-
-                tBrush.Dispose()
-            End If
-        End If
-
-        e.DrawFocusRectangle()
     End Sub
 #End Region
 

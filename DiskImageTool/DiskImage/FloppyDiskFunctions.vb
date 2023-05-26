@@ -15,18 +15,18 @@
             FloppyProCopy = 11
         End Enum
 
-        Public Structure FloppyDiskParams
-            Dim BytesPerSector As UShort
-            Dim MediaDescriptor As Byte
-            Dim NumberOfFATs As Byte
-            Dim NumberOfHeads As UShort
-            Dim ReservedSectorCount As UShort
-            Dim RootEntryCount As UShort
-            Dim SectorCountSmall As UShort
-            Dim SectorsPerCluster As Byte
-            Dim SectorsPerFAT As UShort
-            Dim SectorsPerTrack As UShort
-        End Structure
+        Public Function BootSectorCompare(BootSector As BootSector, Params As FloppyDiskParams) As Boolean
+            Return BootSector.BytesPerSector = Params.BytesPerSector _
+                AndAlso BootSector.MediaDescriptor = Params.MediaDescriptor _
+                AndAlso BootSector.NumberOfFATs = Params.NumberOfFATs _
+                AndAlso BootSector.NumberOfHeads = Params.NumberOfHeads _
+                AndAlso BootSector.ReservedSectorCount = Params.ReservedSectorCount _
+                AndAlso BootSector.RootEntryCount = Params.RootEntryCount _
+                AndAlso BootSector.SectorCountSmall = Params.SectorCountSmall _
+                AndAlso BootSector.SectorsPerCluster = Params.SectorsPerCluster _
+                AndAlso BootSector.SectorsPerFAT = Params.SectorsPerFAT _
+                AndAlso BootSector.SectorsPerTrack = Params.SectorsPerTrack
+        End Function
 
         Public Function BuildBootSector(Params As FloppyDiskParams) As BootSector
             Dim Data(DiskImage.BootSector.BOOT_SECTOR_SIZE - 1) As Byte
@@ -201,19 +201,6 @@
             Return GetFloppyDiskParams(GetFloppyDiskType(Size))
         End Function
 
-        Public Function BootSectorCompare(BootSector As BootSector, Params As FloppyDiskParams) As Boolean
-            Return BootSector.BytesPerSector = Params.BytesPerSector _
-                AndAlso BootSector.MediaDescriptor = Params.MediaDescriptor _
-                AndAlso BootSector.NumberOfFATs = Params.NumberOfFATs _
-                AndAlso BootSector.NumberOfHeads = Params.NumberOfHeads _
-                AndAlso BootSector.ReservedSectorCount = Params.ReservedSectorCount _
-                AndAlso BootSector.RootEntryCount = Params.RootEntryCount _
-                AndAlso BootSector.SectorCountSmall = Params.SectorCountSmall _
-                AndAlso BootSector.SectorsPerCluster = Params.SectorsPerCluster _
-                AndAlso BootSector.SectorsPerFAT = Params.SectorsPerFAT _
-                AndAlso BootSector.SectorsPerTrack = Params.SectorsPerTrack
-        End Function
-
         Public Function GetFloppyDiskType(BootSector As BootSector) As FloppyDiskType
             Dim Items = System.Enum.GetValues(GetType(FloppyDiskType))
 
@@ -290,5 +277,18 @@
         Public Function GetFloppyDiskTypeName(Size As Integer) As String
             Return GetFloppyDiskTypeName(GetFloppyDiskType(Size))
         End Function
+
+        Public Structure FloppyDiskParams
+            Dim BytesPerSector As UShort
+            Dim MediaDescriptor As Byte
+            Dim NumberOfFATs As Byte
+            Dim NumberOfHeads As UShort
+            Dim ReservedSectorCount As UShort
+            Dim RootEntryCount As UShort
+            Dim SectorCountSmall As UShort
+            Dim SectorsPerCluster As Byte
+            Dim SectorsPerFAT As UShort
+            Dim SectorsPerTrack As UShort
+        End Structure
     End Module
 End Namespace

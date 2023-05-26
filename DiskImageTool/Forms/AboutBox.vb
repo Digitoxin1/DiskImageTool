@@ -19,14 +19,6 @@
         Me.TextBoxDescription.Text = GetResource("License.txt")
     End Sub
 
-    Private Sub OKButton_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles OKButton.Click
-        Me.Close()
-    End Sub
-
-    Private Sub LabelURL_LinkClicked(sender As Object, e As LinkLabelLinkClickedEventArgs) Handles LabelURL.LinkClicked
-        Process.Start(MainForm.SITE_URL)
-    End Sub
-
     Private Function GetResource(Name As String) As String
         Dim Value As String
 
@@ -42,4 +34,12 @@
 
         Return Value
     End Function
+
+    Private Sub LabelURL_LinkClicked(sender As Object, e As LinkLabelLinkClickedEventArgs) Handles LabelURL.LinkClicked
+        Process.Start(MainForm.SITE_URL)
+    End Sub
+
+    Private Sub OKButton_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles OKButton.Click
+        Me.Close()
+    End Sub
 End Class

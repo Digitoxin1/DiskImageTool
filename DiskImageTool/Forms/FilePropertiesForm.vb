@@ -1,17 +1,14 @@
-﻿Imports System.Globalization
-
-Public Class FilePropertiesForm
+﻿Public Class FilePropertiesForm
     Private Const EMPTY_FORMAT As String = "'Empty'"
     Private ReadOnly _Disk As DiskImage.Disk
     Private ReadOnly _Items As ICollection
+    Private _DeferredChange() As Byte
     Private _Deleted As Boolean = False
+    Private _HasDeferredChange As Boolean = False
     Private _IsDirectory As Boolean = False
     Private _IsVolumeLabel As Boolean = False
     Private _SuppressEvent As Boolean = True
     Private _Updated As Boolean = False
-    Private _HasDeferredChange As Boolean = False
-    Private _DeferredChange() As Byte
-
     Public Sub New(Disk As DiskImage.Disk, Items As ICollection)
 
         ' This call is required by the designer.
@@ -491,6 +488,16 @@ Public Class FilePropertiesForm
         _SuppressEvent = False
     End Sub
 
+    Private Sub MskFileHex_KeyUp(sender As Object, e As KeyEventArgs) Handles MskFileHex.KeyUp
+        If _HasDeferredChange Then
+            Dim SelectionStart = MskFileHex.SelectionStart
+            MskFileHex.SetHex(_DeferredChange, False)
+            MskFileHex.Select(SelectionStart, 0)
+            _DeferredChange = Nothing
+            _HasDeferredChange = False
+        End If
+    End Sub
+
     Private Sub MskFileHex_TextChanged(sender As Object, e As EventArgs) Handles MskFileHex.TextChanged
         If _SuppressEvent Then
             Exit Sub
@@ -512,17 +519,6 @@ Public Class FilePropertiesForm
         End If
         _SuppressEvent = False
     End Sub
-
-    Private Sub MskFileHex_KeyUp(sender As Object, e As KeyEventArgs) Handles MskFileHex.KeyUp
-        If _HasDeferredChange Then
-            Dim SelectionStart = MskFileHex.SelectionStart
-            MskFileHex.SetHex(_DeferredChange, False)
-            MskFileHex.Select(SelectionStart, 0)
-            _DeferredChange = Nothing
-            _HasDeferredChange = False
-        End If
-    End Sub
-
     Private Sub TxtExtension_TextChanged(sender As Object, e As EventArgs) Handles TxtExtension.TextChanged
         If _SuppressEvent Then
             Exit Sub

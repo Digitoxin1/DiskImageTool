@@ -67,6 +67,22 @@
             End Get
         End Property
 
+        Public Sub ApplyModifications(Modifications As Stack(Of DataChange()))
+            For Each DataChange In Modifications.Reverse
+                BatchEditMode = DataChange.Length > 1
+                For Each Item In DataChange
+                    If Item.Type = DataChangeType.Data Then
+                        MyBase.SetBytes(Item.NewValue, Item.Offset)
+                    ElseIf Item.Type = DataChangeType.Size Then
+                        MyBase.Resize(Item.NewValue)
+                    End If
+                Next
+                If BatchEditMode Then
+                    BatchEditMode = False
+                End If
+            Next
+        End Sub
+
         Public Sub ClearChanges()
             _Changes.Clear()
             _RedoChanges.Clear()
@@ -127,23 +143,6 @@
             _IgnoreChange = False
             _RedoChanges.Push(DataChange)
         End Sub
-
-        Public Sub ApplyModifications(Modifications As Stack(Of DataChange()))
-            For Each DataChange In Modifications.Reverse
-                BatchEditMode = DataChange.Length > 1
-                For Each Item In DataChange
-                    If Item.Type = DataChangeType.Data Then
-                        MyBase.SetBytes(Item.NewValue, Item.Offset)
-                    ElseIf Item.Type = DataChangeType.Size Then
-                        MyBase.Resize(Item.NewValue)
-                    End If
-                Next
-                If BatchEditMode Then
-                    BatchEditMode = False
-                End If
-            Next
-        End Sub
-
         Private Sub ImageByteArray_DataChanged(Offset As UInteger, OriginalValue As Object, NewValue As Object) Handles Me.DataChanged
             If _IgnoreChange Then Exit Sub
 

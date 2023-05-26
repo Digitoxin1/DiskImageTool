@@ -1,5 +1,4 @@
 ﻿Imports System.Xml
-Imports DiskImageTool.DiskImage
 
 Public Class Bootstrap
     Private ReadOnly _NameSpace As String = New StubClass().GetType.Namespace
@@ -17,6 +16,22 @@ Public Class Bootstrap
         Else
             Return Nothing
         End If
+    End Function
+
+    Private Function GetResource(Name As String) As String
+        Dim Value As String
+
+        Dim Assembly As Reflection.[Assembly] = Reflection.[Assembly].GetExecutingAssembly()
+        Dim Stream = Assembly.GetManifestResourceStream(_NameSpace & "." & Name)
+        If Stream Is Nothing Then
+            Throw New Exception("Unable to load resource " & Name)
+        Else
+            Dim TextStreamReader = New IO.StreamReader(Stream)
+            Value = TextStreamReader.ReadToEnd()
+            TextStreamReader.Close()
+        End If
+
+        Return Value
     End Function
 
     Private Sub InitOEMNames()
@@ -63,22 +78,6 @@ Public Class Bootstrap
             _OEMNameDictionary.Add(crc32, BootstrapType)
         Next
     End Sub
-
-    Private Function GetResource(Name As String) As String
-        Dim Value As String
-
-        Dim Assembly As Reflection.[Assembly] = Reflection.[Assembly].GetExecutingAssembly()
-        Dim Stream = Assembly.GetManifestResourceStream(_NameSpace & "." & Name)
-        If Stream Is Nothing Then
-            Throw New Exception("Unable to load resource " & Name)
-        Else
-            Dim TextStreamReader = New IO.StreamReader(Stream)
-            Value = TextStreamReader.ReadToEnd()
-            TextStreamReader.Close()
-        End If
-
-        Return Value
-    End Function
 End Class
 
 Public Class BootstrapLookup
@@ -91,10 +90,9 @@ Public Class KnownOEMName
     Public Property Company As String = ""
     Public Property Description As String = ""
     Public Property Name As Byte()
+    Public Property Note As String = ""
     Public Property Suggestion As Boolean = True
     Public Property Win9xId As Boolean = False
-    Public Property Note As String = ""
-
     Public Function GetNameAsString() As String
         Return DiskImage.CodePage437ToUnicode(_Name)
     End Function

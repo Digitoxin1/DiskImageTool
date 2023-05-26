@@ -1,6 +1,18 @@
 ﻿Imports System.ComponentModel
 Imports System.Windows.Forms.Design
 
+Public Class MyToolStripControlHost
+    Inherits ToolStripControlHost
+
+    Public Sub New()
+        MyBase.New(New Control)
+    End Sub
+
+    Public Sub New(c As Control)
+        MyBase.New(c)
+    End Sub
+End Class
+
 <ToolStripItemDesignerAvailability(ToolStripItemDesignerAvailability.ToolStrip), DebuggerStepThrough()>
 Public Class ToolStripNumericUpDown
     Inherits MyToolStripControlHost
@@ -232,17 +244,5 @@ Public Class ToolStripNumericUpDown
 
     Private Sub HandleValueChanged(sender As Object, e As EventArgs)
         RaiseEvent ValueChanged(Me, e)
-    End Sub
-End Class
-
-Public Class MyToolStripControlHost
-    Inherits ToolStripControlHost
-
-    Public Sub New()
-        MyBase.New(New Control)
-    End Sub
-
-    Public Sub New(c As Control)
-        MyBase.New(c)
     End Sub
 End Class

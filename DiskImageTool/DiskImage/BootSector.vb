@@ -1,20 +1,19 @@
 ﻿Namespace DiskImage
 
     Public Class BootSector
-        Private Const BOOT_SECTOR As UInteger = 0
         Public Const BOOT_SECTOR_SIZE As UShort = 512
-        Private ReadOnly _FileBytes As ImageByteArray
         Public Shared ReadOnly ValidBootStrapSignature As UShort = &HAA55
         Public Shared ReadOnly ValidBytesPerSector() As UShort = {512, 1024, 2048, 4096}
         Public Shared ReadOnly ValidDriveNumber() As Byte = {&H0, &H80}
         Public Shared ReadOnly ValidExtendedBootSignature() As Byte = {&H28, &H29}
         Public Shared ReadOnly ValidJumpInstructuon() As Byte = {&HEB, &HE9}
         Public Shared ReadOnly ValidMediaDescriptor() As Byte = {&HF0, &HF8, &HF9, &HFA, &HFB, &HFC, &HFD, &HFE, &HFF}
-        Public Shared ReadOnly ValidSectorsPerCluster() As Byte = {1, 2, 4, 8, 16, 32, 64, 128}
-        Public Shared ReadOnly ValidSectorsPerTrack() As UShort = {8, 9, 15, 18, 21, 36}
         Public Shared ReadOnly ValidNumberOfFATS() As Byte = {1, 2}
         Public Shared ReadOnly ValidNumberOfHeads() As UShort = {1, 2}
-
+        Public Shared ReadOnly ValidSectorsPerCluster() As Byte = {1, 2, 4, 8, 16, 32, 64, 128}
+        Public Shared ReadOnly ValidSectorsPerTrack() As UShort = {8, 9, 15, 18, 21, 36}
+        Private Const BOOT_SECTOR As UInteger = 0
+        Private ReadOnly _FileBytes As ImageByteArray
         Public Enum BootSectorOffsets As UInteger
             JmpBoot = 0
             OEMName = 3
@@ -65,17 +64,6 @@
             BootStrapCode = 448
             BootStrapSignature = 2
         End Enum
-
-        Public Shared Function CheckJumpInstruction(Value() As Byte, CheckNOP As Boolean) As Boolean
-            Return (Value(0) = &HEB And (Not CheckNOP Or Value(2) = &H90)) Or Value(0) = &HE9
-        End Function
-
-        Public Shared Function GenerateVolumeSerialNumber(Value As Date) As UInteger
-            Dim Lo As UShort = (Value.Day + Value.Month * 256) + (Value.Millisecond \ 10 + Value.Second * 256)
-            Dim Hi As UShort = (Value.Minute + Value.Hour * 256) + Value.Year
-
-            Return Hi + Lo * 65536
-        End Function
 
         Sub New(FileBytes As ImageByteArray)
             _FileBytes = FileBytes
@@ -304,6 +292,16 @@
             End Set
         End Property
 
+        Public Shared Function CheckJumpInstruction(Value() As Byte, CheckNOP As Boolean) As Boolean
+            Return (Value(0) = &HEB And (Not CheckNOP Or Value(2) = &H90)) Or Value(0) = &HE9
+        End Function
+
+        Public Shared Function GenerateVolumeSerialNumber(Value As Date) As UInteger
+            Dim Lo As UShort = (Value.Day + Value.Month * 256) + (Value.Millisecond \ 10 + Value.Second * 256)
+            Dim Hi As UShort = (Value.Minute + Value.Hour * 256) + Value.Year
+
+            Return Hi + Lo * 65536
+        End Function
         Public Function BytesPerCluster() As UInteger
             Return Disk.SectorToBytes(SectorsPerCluster)
         End Function
@@ -473,14 +471,13 @@
             End If
         End Function
 
-        Public Function SectorToTrack(Sector As UInteger) As UShort
-            Return Int(Sector / SectorsPerTrack / NumberOfHeads)
-        End Function
-
         Public Function SectorToSide(Sector As UInteger) As UShort
             Return Int(Sector / SectorsPerTrack) Mod NumberOfHeads
         End Function
 
+        Public Function SectorToTrack(Sector As UInteger) As UShort
+            Return Int(Sector / SectorsPerTrack / NumberOfHeads)
+        End Function
         Public Function TrackToSector(Track As UShort, Side As UShort) As UInteger
             Return Track * NumberOfHeads * SectorsPerTrack + SectorsPerTrack * Side
         End Function

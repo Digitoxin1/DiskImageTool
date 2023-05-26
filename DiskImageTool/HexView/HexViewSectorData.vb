@@ -28,8 +28,8 @@ Public Class HexViewSectorData
         _HighlightedRegionList = New List(Of HighlightedRegions)
     End Sub
 
+    Public Property Description As String
     Public ReadOnly Property Disk As Disk
     Public ReadOnly Property HighlightedRegionList As List(Of HighlightedRegions)
     Public ReadOnly Property SectorData As SectorData
-    Public Property Description As String
 End Class

@@ -1,5 +1,17 @@
 ﻿Imports System.ComponentModel
 
+Public Class HexSearch
+    Public Sub New()
+        _CaseSensitive = False
+        _SearchHex = False
+        _SearchString = ""
+    End Sub
+
+    Public Property CaseSensitive As Boolean
+    Public Property SearchHex As Boolean
+    Public Property SearchString As String
+End Class
+
 Public Class HexSearchForm
     Public Sub New(HexSearch As HexSearch)
 
@@ -42,14 +54,6 @@ Public Class HexSearchForm
         Return Result
     End Function
 
-    Private Sub RadBtn_CheckedChanged(sender As Object, e As EventArgs) Handles RadBtnText.CheckedChanged, RadBtnHex.CheckedChanged
-        ChkCaseSensitive.Enabled = RadBtnText.Checked
-    End Sub
-
-    Private Sub TextSearch_TextChanged(sender As Object, e As EventArgs) Handles TextSearch.TextChanged
-        BtnOK.Enabled = TextSearch.Text.Length > 0
-    End Sub
-
     Private Sub HexSearchForm_Closing(sender As Object, e As CancelEventArgs) Handles Me.Closing
         If Me.DialogResult = DialogResult.OK Then
             If RadBtnHex.Checked Then
@@ -60,16 +64,12 @@ Public Class HexSearchForm
             End If
         End If
     End Sub
-End Class
 
-Public Class HexSearch
-    Public Sub New()
-        _CaseSensitive = False
-        _SearchHex = False
-        _SearchString = ""
+    Private Sub RadBtn_CheckedChanged(sender As Object, e As EventArgs) Handles RadBtnText.CheckedChanged, RadBtnHex.CheckedChanged
+        ChkCaseSensitive.Enabled = RadBtnText.Checked
     End Sub
 
-    Public Property CaseSensitive As Boolean
-    Public Property SearchHex As Boolean
-    Public Property SearchString As String
+    Private Sub TextSearch_TextChanged(sender As Object, e As EventArgs) Handles TextSearch.TextChanged
+        BtnOK.Enabled = TextSearch.Text.Length > 0
+    End Sub
 End Class

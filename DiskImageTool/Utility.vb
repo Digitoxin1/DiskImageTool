@@ -10,6 +10,20 @@ Module Utility
         Return NewTable
     End Function
 
+    Public Function GetDownloadsFolder() As String
+
+        Dim Result As String = ""
+        Dim ppszPath As IntPtr
+        Dim rfid = New Guid("{374DE290-123F-4565-9164-39C4925E467B}")
+
+        If SHGetKnownFolderPath(rfid, 0, 0, ppszPath) = 0 Then
+            Result = Marshal.PtrToStringUni(ppszPath)
+            Marshal.FreeCoTaskMem(ppszPath)
+        End If
+
+        Return Result
+    End Function
+
     Public Function GetVersionString() As String
         Dim Version = FileVersionInfo.GetVersionInfo(Application.ExecutablePath)
         Return Version.FileMajorPart & "." & Version.FileMinorPart & "." & Version.FilePrivatePart
@@ -31,19 +45,4 @@ Module Utility
         ByVal hToken As IntPtr,
         ByRef pszPath As IntPtr) As Int32
     End Function
-
-    Public Function GetDownloadsFolder() As String
-
-        Dim Result As String = ""
-        Dim ppszPath As IntPtr
-        Dim rfid = New Guid("{374DE290-123F-4565-9164-39C4925E467B}")
-
-        If SHGetKnownFolderPath(rfid, 0, 0, ppszPath) = 0 Then
-            Result = Marshal.PtrToStringUni(ppszPath)
-            Marshal.FreeCoTaskMem(ppszPath)
-        End If
-
-        Return Result
-    End Function
-
 End Module

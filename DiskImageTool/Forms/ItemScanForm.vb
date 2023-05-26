@@ -6,18 +6,17 @@ Public Enum ScanType
 End Enum
 
 Public Class ItemScanForm
+    Private ReadOnly _CurrentDisk As DiskImage.Disk
+    Private ReadOnly _CurrentImageData As LoadedImageData
     Private ReadOnly _ImageList As ComboBox.ObjectCollection
     Private ReadOnly _NewOnly As Boolean
     Private ReadOnly _Parent As MainForm
     Private ReadOnly _ProgressLabel As String
     Private ReadOnly _ScanType As ScanType
-    Private ReadOnly _CurrentImageData As LoadedImageData
-    Private ReadOnly _CurrentDisk As DiskImage.Disk
     Private _Activated As Boolean = False
     Private _EndScan As Boolean = False
-    Private _ScanComplete As Boolean = False
     Private _ItemsRemaining As UInteger
-
+    Private _ScanComplete As Boolean = False
     Public Sub New(Parent As MainForm, ImageList As ComboBox.ObjectCollection, CurrentImageData As LoadedImageData, CurrentDisk As DiskImage.Disk, NewOnly As Boolean, ScanType As ScanType)
 
         ' This call is required by the designer.
@@ -85,34 +84,6 @@ Public Class ItemScanForm
         Return Result
     End Function
 
-    Private Function ProcessWin9XClean(ImageData As LoadedImageData) As Boolean
-        Dim Disk As DiskImage.Disk
-
-        If ImageData Is _CurrentImageData Then
-            Disk = _CurrentDisk
-        Else
-            Disk = _Parent.DiskImageLoad(ImageData)
-            If Disk IsNot Nothing Then
-                ImageData.Modifications = Disk.Data.Changes
-            End If
-        End If
-
-        If Disk IsNot Nothing Then
-            Dim Result = _Parent.Win9xClean(Disk, False)
-            ImageData.BatchUpdated = Result
-            If Result Then
-                _Parent.ItemScanModified(Disk, ImageData)
-                If ImageData.Scanned Then
-                    _Parent.ItemScanOEMName(Disk, ImageData)
-                    _Parent.OEMNameFilterUpdate(Disk, ImageData)
-                    _Parent.ItemScanDirectory(Disk, ImageData)
-                End If
-            End If
-        End If
-
-        Return True
-    End Function
-
     Private Function ProcessScan(bw As BackgroundWorker) As Boolean
         Dim ItemCount As Integer = _ItemsRemaining
 
@@ -148,6 +119,33 @@ Public Class ItemScanForm
         Return True
     End Function
 
+    Private Function ProcessWin9XClean(ImageData As LoadedImageData) As Boolean
+        Dim Disk As DiskImage.Disk
+
+        If ImageData Is _CurrentImageData Then
+            Disk = _CurrentDisk
+        Else
+            Disk = _Parent.DiskImageLoad(ImageData)
+            If Disk IsNot Nothing Then
+                ImageData.Modifications = Disk.Data.Changes
+            End If
+        End If
+
+        If Disk IsNot Nothing Then
+            Dim Result = _Parent.Win9xClean(Disk, False)
+            ImageData.BatchUpdated = Result
+            If Result Then
+                _Parent.ItemScanModified(Disk, ImageData)
+                If ImageData.Scanned Then
+                    _Parent.ItemScanOEMName(Disk, ImageData)
+                    _Parent.OEMNameFilterUpdate(Disk, ImageData)
+                    _Parent.ItemScanDirectory(Disk, ImageData)
+                End If
+            End If
+        End If
+
+        Return True
+    End Function
 #Region "Events"
 
     Private Sub BackgroundWorker1_DoWork(sender As Object, e As DoWorkEventArgs) Handles BackgroundWorker1.DoWork

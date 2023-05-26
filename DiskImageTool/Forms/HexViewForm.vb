@@ -7,27 +7,26 @@ Imports DiskImageTool.DiskImage
 Imports Hb.Windows.Forms
 
 Public Class HexViewForm
+    Private WithEvents CheckBoxSync As ToolStripCheckBox
+    Private WithEvents ComboTrack As ToolStripComboBox
+    Private WithEvents NumericCluster As ToolStripNumericUpDown
+    Private WithEvents NumericSector As ToolStripNumericUpDown
     Public Shared ReadOnly ALT_BACK_COLOR As Color = Color.FromArgb(246, 246, 252)
-    Private ReadOnly _Changes As Stack(Of List(Of HexChange))
-    Private ReadOnly _HexViewSectorData As HexViewSectorData
     Private ReadOnly _BootSector As BootSector
+    Private ReadOnly _Changes As Stack(Of List(Of HexChange))
+    Private ReadOnly _ClusterNavigator As Boolean
+    Private ReadOnly _HexViewSectorData As HexViewSectorData
     Private ReadOnly _RedoChanges As Stack(Of List(Of HexChange))
     Private ReadOnly _SectorNavigator As Boolean
-    Private ReadOnly _ClusterNavigator As Boolean
     Private ReadOnly _SyncBlocks As Boolean
     Private _CurrentHexViewData As HexViewData
     Private _CurrentIndex As Integer = -1
     Private _CurrentSector As UInteger = 0
+    Private _IgnoreEvent As Boolean = False
     Private _Initialized As Boolean = False
+    Private _LastSearch As HexSearch
     Private _Modified As Boolean = False
     Private _RegionDescriptions As Dictionary(Of UInteger, HexViewHighlightRegion)
-    Private _IgnoreEvent As Boolean = False
-    Private _LastSearch As HexSearch
-    Private WithEvents NumericSector As ToolStripNumericUpDown
-    Private WithEvents NumericCluster As ToolStripNumericUpDown
-    Private WithEvents ComboTrack As ToolStripComboBox
-    Private WithEvents CheckBoxSync As ToolStripCheckBox
-
     Public Sub New(HexViewSectorData As HexViewSectorData, SectorNavigator As Boolean, ClusterNavigator As Boolean, SyncBlocks As Boolean)
         ' This call is required by the designer.
         InitializeComponent()
@@ -79,64 +78,6 @@ Public Class HexViewForm
         If _SyncBlocks Then
             InitializeSyncCheckBox()
         End If
-    End Sub
-
-    Private Sub InitializeSectorNavigator()
-        NumericSector = New ToolStripNumericUpDown() With {
-            .Alignment = ToolStripItemAlignment.Right
-        }
-
-        Dim LabelSector = New ToolStripLabel("Sector") With {
-            .Alignment = ToolStripItemAlignment.Right,
-            .Padding = New Padding(12, 0, 0, 0)
-        }
-
-        ToolStripMain.Items.Add(NumericSector)
-        ToolStripMain.Items.Add(LabelSector)
-    End Sub
-
-    Private Sub InitializeClusterNavigator()
-        NumericCluster = New ToolStripNumericUpDown() With {
-            .Alignment = ToolStripItemAlignment.Right
-        }
-
-        Dim LabelCluster = New ToolStripLabel("Cluster") With {
-            .Alignment = ToolStripItemAlignment.Right,
-            .Padding = New Padding(12, 0, 0, 0)
-        }
-
-        ToolStripMain.Items.Add(NumericCluster)
-        ToolStripMain.Items.Add(LabelCluster)
-    End Sub
-
-    Private Sub InitializeTrackNavigator()
-        ComboTrack = New ToolStripComboBox() With {
-            .Alignment = ToolStripItemAlignment.Right,
-            .DropDownStyle = ComboBoxStyle.DropDownList,
-            .AutoSize = False,
-            .FlatStyle = FlatStyle.Popup,
-            .Size = New Drawing.Size(50, 23)
-        }
-
-        Dim LabelTrack = New ToolStripLabel("Track") With {
-            .Alignment = ToolStripItemAlignment.Right,
-            .Padding = New Padding(12, 0, 0, 0)
-        }
-
-        ToolStripMain.Items.Add(ComboTrack)
-        ToolStripMain.Items.Add(LabelTrack)
-    End Sub
-
-    Private Sub InitializeSyncCheckBox()
-        CheckBoxSync = New ToolStripCheckBox With {
-            .Alignment = ToolStripItemAlignment.Right,
-            .Checked = True,
-            .Margin = New Padding(0, 3, 6, 2),
-            .Text = "Sync FATs"
-        }
-
-        ToolStripMain.Items.Add(CheckBoxSync)
-
     End Sub
 
     Public ReadOnly Property Modified As Boolean
@@ -394,6 +335,62 @@ Public Class HexViewForm
         Return Offset
     End Function
 
+    Private Sub InitializeClusterNavigator()
+        NumericCluster = New ToolStripNumericUpDown() With {
+            .Alignment = ToolStripItemAlignment.Right
+        }
+
+        Dim LabelCluster = New ToolStripLabel("Cluster") With {
+            .Alignment = ToolStripItemAlignment.Right,
+            .Padding = New Padding(12, 0, 0, 0)
+        }
+
+        ToolStripMain.Items.Add(NumericCluster)
+        ToolStripMain.Items.Add(LabelCluster)
+    End Sub
+
+    Private Sub InitializeSectorNavigator()
+        NumericSector = New ToolStripNumericUpDown() With {
+            .Alignment = ToolStripItemAlignment.Right
+        }
+
+        Dim LabelSector = New ToolStripLabel("Sector") With {
+            .Alignment = ToolStripItemAlignment.Right,
+            .Padding = New Padding(12, 0, 0, 0)
+        }
+
+        ToolStripMain.Items.Add(NumericSector)
+        ToolStripMain.Items.Add(LabelSector)
+    End Sub
+    Private Sub InitializeSyncCheckBox()
+        CheckBoxSync = New ToolStripCheckBox With {
+            .Alignment = ToolStripItemAlignment.Right,
+            .Checked = True,
+            .Margin = New Padding(0, 3, 6, 2),
+            .Text = "Sync FATs"
+        }
+
+        ToolStripMain.Items.Add(CheckBoxSync)
+
+    End Sub
+
+    Private Sub InitializeTrackNavigator()
+        ComboTrack = New ToolStripComboBox() With {
+            .Alignment = ToolStripItemAlignment.Right,
+            .DropDownStyle = ComboBoxStyle.DropDownList,
+            .AutoSize = False,
+            .FlatStyle = FlatStyle.Popup,
+            .Size = New Drawing.Size(50, 23)
+        }
+
+        Dim LabelTrack = New ToolStripLabel("Track") With {
+            .Alignment = ToolStripItemAlignment.Right,
+            .Padding = New Padding(12, 0, 0, 0)
+        }
+
+        ToolStripMain.Items.Add(ComboTrack)
+        ToolStripMain.Items.Add(LabelTrack)
+    End Sub
     Private Sub InitRegionDescriptions(HighlightedRegions As HighlightedRegions)
         _RegionDescriptions = New Dictionary(Of UInteger, HexViewHighlightRegion)
 
@@ -614,6 +611,16 @@ Public Class HexViewForm
         _RedoChanges.Clear()
         RefreshUndoButtons()
     End Sub
+
+    Private Function ReadBytes(ByteProvider As IByteProvider, Offset As Long, Length As Integer) As Byte()
+        Dim Data(Length - 1) As Byte
+
+        For Counter = 0 To Data.Length - 1
+            Data(Counter) = ByteProvider.ReadByte(Offset + Counter)
+        Next
+
+        Return Data
+    End Function
 
     Private Sub RefreshPasteButton()
         BtnPaste.Enabled = ClipboardHasHex()
@@ -936,17 +943,6 @@ Public Class HexViewForm
             HexBox1.Select(Offset, Length)
         End If
     End Sub
-
-    Private Function ReadBytes(ByteProvider As IByteProvider, Offset As Long, Length As Integer) As Byte()
-        Dim Data(Length - 1) As Byte
-
-        For Counter = 0 To Data.Length - 1
-            Data(Counter) = ByteProvider.ReadByte(Offset + Counter)
-        Next
-
-        Return Data
-    End Function
-
     Private Sub WriteBytes(ByteProvider As IByteProvider, Offset As Long, Data() As Byte)
         For Counter = 0 To Data.Length - 1
             ByteProvider.WriteByte(Offset + Counter, Data(Counter))
@@ -1025,6 +1021,16 @@ Public Class HexViewForm
         DisplayBlock(CmbGroups.SelectedIndex)
     End Sub
 
+    Private Sub ComboTrack_SelectedIndexChanged(sender As Object, e As EventArgs) Handles ComboTrack.SelectedIndexChanged
+        If _IgnoreEvent Then
+            Exit Sub
+        End If
+
+        If _ClusterNavigator Then
+            JumpToTrack(ComboTrack.Text)
+        End If
+    End Sub
+
     Private Sub ContextMenuStrip1_Opening(sender As Object, e As CancelEventArgs) Handles ContextMenuStrip1.Opening
         If HexBox1.CanCopy Then
             Dim CRC32 = GetCRC32Selected()
@@ -1092,6 +1098,22 @@ Public Class HexViewForm
         RefreshSelection(False)
     End Sub
 
+    Private Sub HexBox1_VisibilityBytesChanged(sender As Object, e As EventArgs) Handles HexBox1.VisibilityBytesChanged
+        If _IgnoreEvent Then
+            Exit Sub
+        End If
+
+        If _SectorNavigator Or _ClusterNavigator Then
+            RefresSelectorValues()
+        End If
+    End Sub
+
+    Private Sub HexViewForm_KeyDown(sender As Object, e As KeyEventArgs) Handles Me.KeyDown
+        If e.KeyCode = Keys.Escape Then
+            Me.Close()
+        End If
+    End Sub
+
     Private Sub HexViewForm_Load(sender As Object, e As EventArgs) Handles Me.Load
         For Counter = 0 To _HexViewSectorData.SectorData.BlockCount - 1
             CmbGroups.Items.Add(New HexViewData(_HexViewSectorData, Counter))
@@ -1101,20 +1123,6 @@ Public Class HexViewForm
 
         If CmbGroups.Items.Count > 0 Then
             CmbGroups.SelectedIndex = 0
-        End If
-    End Sub
-
-    Private Sub ToolStripBtnCommit_Click(sender As Object, e As EventArgs) Handles ToolStripBtnCommit.Click
-        CommitChanges()
-    End Sub
-
-    Private Sub HexBox1_VisibilityBytesChanged(sender As Object, e As EventArgs) Handles HexBox1.VisibilityBytesChanged
-        If _IgnoreEvent Then
-            Exit Sub
-        End If
-
-        If _SectorNavigator Or _ClusterNavigator Then
-            RefresSelectorValues()
         End If
     End Sub
 
@@ -1128,6 +1136,12 @@ Public Class HexViewForm
         End If
     End Sub
 
+    Private Sub NumericSector_KeyDown(sender As Object, e As KeyEventArgs) Handles NumericSector.KeyDown, NumericCluster.KeyDown
+        If e.KeyCode = Keys.Return Then
+            e.SuppressKeyPress = True
+        End If
+    End Sub
+
     Private Sub NumericSector_ValueChanged(sender As Object, e As EventArgs) Handles NumericSector.ValueChanged
         If _IgnoreEvent Then
             Exit Sub
@@ -1138,28 +1152,9 @@ Public Class HexViewForm
         End If
     End Sub
 
-    Private Sub NumericSector_KeyDown(sender As Object, e As KeyEventArgs) Handles NumericSector.KeyDown, NumericCluster.KeyDown
-        If e.KeyCode = Keys.Return Then
-            e.SuppressKeyPress = True
-        End If
+    Private Sub ToolStripBtnCommit_Click(sender As Object, e As EventArgs) Handles ToolStripBtnCommit.Click
+        CommitChanges()
     End Sub
-
-    Private Sub ComboTrack_SelectedIndexChanged(sender As Object, e As EventArgs) Handles ComboTrack.SelectedIndexChanged
-        If _IgnoreEvent Then
-            Exit Sub
-        End If
-
-        If _ClusterNavigator Then
-            JumpToTrack(ComboTrack.Text)
-        End If
-    End Sub
-
-    Private Sub HexViewForm_KeyDown(sender As Object, e As KeyEventArgs) Handles Me.KeyDown
-        If e.KeyCode = Keys.Escape Then
-            Me.Close()
-        End If
-    End Sub
-
 #End Region
 
     Private Class FillRegionResult

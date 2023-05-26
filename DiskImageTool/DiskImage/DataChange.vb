@@ -11,9 +11,10 @@
             Me.OriginalValue = OriginalValue
             Me.NewValue = NewValue
         End Sub
-        Public Property Type As DataChangeType
+
+        Public Property NewValue As Object
         Public Property Offset As UInteger
         Public Property OriginalValue As Object
-        Public Property NewValue As Object
+        Public Property Type As DataChangeType
     End Class
 End Namespace

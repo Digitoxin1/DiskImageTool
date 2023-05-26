@@ -9,12 +9,13 @@ Public Class HexViewData
         _SectorBlock = _HexViewSectorData.SectorData.GetBlock(Index)
         _ByteProvider = New MyByteProvider(_HexViewSectorData.SectorData.Data, _SectorBlock.Offset, _SectorBlock.Size)
     End Sub
+    Public ReadOnly Property ByteProvider As IByteProvider
+
     Public ReadOnly Property Disk As DiskImage.Disk
         Get
             Return _HexViewSectorData.Disk
         End Get
     End Property
-    Public ReadOnly Property ByteProvider As IByteProvider
     Public ReadOnly Property Index As Integer
     Public ReadOnly Property SectorBlock As SectorBlock
 

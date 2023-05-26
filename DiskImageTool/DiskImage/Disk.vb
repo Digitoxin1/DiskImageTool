@@ -1,25 +1,11 @@
-﻿Imports System.Runtime.ConstrainedExecution
-
-Namespace DiskImage
+﻿Namespace DiskImage
     Public Class Disk
-        Public Const BYTES_PER_SECTOR As UShort = 512
         Private WithEvents FileBytes As ImageByteArray
+        Public Const BYTES_PER_SECTOR As UShort = 512
         Private ReadOnly _BootSector As BootSector
         Private ReadOnly _Directory As RootDirectory
         Private ReadOnly _FAT12 As FAT12
         Private _ReinitializeRequired As Boolean = False
-
-        Public Shared Function BytesToSector(Bytes As UInteger) As UInteger
-            Return Math.Ceiling(Bytes / BYTES_PER_SECTOR)
-        End Function
-
-        Public Shared Function OffsetToSector(Offset As UInteger) As UInteger
-            Return Offset \ BYTES_PER_SECTOR
-        End Function
-
-        Public Shared Function SectorToBytes(Sector As UInteger) As UInteger
-            Return Sector * BYTES_PER_SECTOR
-        End Function
 
         Sub New(Data() As Byte, Optional Modifications As Stack(Of DataChange()) = Nothing)
             FileBytes = New ImageByteArray(Data)
@@ -69,6 +55,26 @@ Namespace DiskImage
             End Get
         End Property
 
+        Public Shared Function BytesToSector(Bytes As UInteger) As UInteger
+            Return Math.Ceiling(Bytes / BYTES_PER_SECTOR)
+        End Function
+
+        Public Shared Function OffsetToSector(Offset As UInteger) As UInteger
+            Return Offset \ BYTES_PER_SECTOR
+        End Function
+
+        Public Shared Function SectorToBytes(Sector As UInteger) As UInteger
+            Return Sector * BYTES_PER_SECTOR
+        End Function
+        Public Function CheckImageSize() As Integer
+            Dim ReportedSize As Integer = ReportedImageSize()
+            Return Data.Length.CompareTo(ReportedSize)
+        End Function
+
+        Public Function CheckSize() As Boolean
+            Return (FileBytes.Length > 0 And FileBytes.Length < 4423680)
+        End Function
+
         Public Function CompareFATTables() As Boolean
             If _BootSector.NumberOfFATs < 2 Then
                 Return True
@@ -84,6 +90,28 @@ Namespace DiskImage
             Next
 
             Return True
+        End Function
+
+        Public Function FixImageSize() As Boolean
+            Dim Result As Boolean = False
+
+            Dim ReportedSize = ReportedImageSize()
+
+            If ReportedSize <> Data.Length Then
+                Data.BatchEditMode = True
+                If ReportedSize < Data.Length Then
+                    Dim b(Data.Length - ReportedSize - 1) As Byte
+                    For i = 0 To b.Length - 1
+                        b(i) = 0
+                    Next
+                    Data.SetBytes(b, Data.Length - b.Length)
+                End If
+                Data.Resize(ReportedSize)
+                Data.BatchEditMode = False
+                Result = True
+            End If
+
+            Return Result
         End Function
 
         Public Function GetDirectoryEntryByOffset(Offset As UInteger) As DirectoryEntry
@@ -115,53 +143,8 @@ Namespace DiskImage
             Return VolumeLabel
         End Function
 
-        Public Function ReportedImageSize() As UInteger
-            Return SectorToBytes(_BootSector.DataRegionStart + _BootSector.DataRegionSize)
-        End Function
-
-        Public Function CheckImageSize() As Integer
-            Dim ReportedSize As Integer = ReportedImageSize()
-            Return Data.Length.CompareTo(ReportedSize)
-        End Function
-
-        Public Function FixImageSize() As Boolean
-            Dim Result As Boolean = False
-
-            Dim ReportedSize = ReportedImageSize()
-
-            If ReportedSize <> Data.Length Then
-                Data.BatchEditMode = True
-                If ReportedSize < Data.Length Then
-                    Dim b(Data.Length - ReportedSize - 1) As Byte
-                    For i = 0 To b.Length - 1
-                        b(i) = 0
-                    Next
-                    Data.SetBytes(b, Data.Length - b.Length)
-                End If
-                Data.Resize(ReportedSize)
-                Data.BatchEditMode = False
-                Result = True
-            End If
-
-            Return Result
-        End Function
-
-        Private Function IsFATRegion(Offset As UInteger, Length As UInteger) As Boolean
-            Dim FATSectorStart = _BootSector.FATRegionStart
-            Dim FATSectorEnd = _BootSector.FATRegionStart + (_BootSector.SectorsPerFAT * _BootSector.NumberOfFATs) - 1
-
-            Dim SectorStart = OffsetToSector(Offset)
-            Dim SectorEnd = OffsetToSector(Offset + Length - 1)
-
-            Return (SectorStart >= FATSectorStart And SectorStart <= FATSectorEnd) Or (SectorEnd >= FATSectorStart And SectorEnd <= FATSectorEnd)
-        End Function
-
         Public Function IsValidImage() As Boolean
             Return _BootSector.IsValidImage
-        End Function
-
-        Public Function CheckSize() As Boolean
-            Return (FileBytes.Length > 0 And FileBytes.Length < 4423680)
         End Function
 
         Public Sub Reinitialize()
@@ -170,6 +153,10 @@ Namespace DiskImage
 
             _ReinitializeRequired = False
         End Sub
+
+        Public Function ReportedImageSize() As UInteger
+            Return SectorToBytes(_BootSector.DataRegionStart + _BootSector.DataRegionSize)
+        End Function
         Public Sub SaveFile(FilePath As String)
             IO.File.WriteAllBytes(FilePath, FileBytes.Data)
             FileBytes.ClearChanges()
@@ -221,6 +208,14 @@ Namespace DiskImage
             End If
         End Sub
 
+        Private Sub FileBytes_DataChanged(Offset As UInteger, OriginalValue As Object, NewValue As Object) Handles FileBytes.DataChanged
+            If BootSector.IsBootSectorRegion(Offset) Then
+                _ReinitializeRequired = True
+            ElseIf _BootSector.IsValidImage AndAlso IsFATRegion(Offset, GetObjectSize(NewValue)) Then
+                _ReinitializeRequired = True
+            End If
+        End Sub
+
         Private Function GetObjectSize(o As Object) As Integer
             Dim t = o.GetType()
             If t.Equals(GetType(Byte)) Then
@@ -236,13 +231,15 @@ Namespace DiskImage
             End If
         End Function
 
-        Private Sub FileBytes_DataChanged(Offset As UInteger, OriginalValue As Object, NewValue As Object) Handles FileBytes.DataChanged
-            If BootSector.IsBootSectorRegion(Offset) Then
-                _ReinitializeRequired = True
-            ElseIf _BootSector.IsValidImage AndAlso IsFATRegion(Offset, GetObjectSize(NewValue)) Then
-                _ReinitializeRequired = True
-            End If
-        End Sub
+        Private Function IsFATRegion(Offset As UInteger, Length As UInteger) As Boolean
+            Dim FATSectorStart = _BootSector.FATRegionStart
+            Dim FATSectorEnd = _BootSector.FATRegionStart + (_BootSector.SectorsPerFAT * _BootSector.NumberOfFATs) - 1
+
+            Dim SectorStart = OffsetToSector(Offset)
+            Dim SectorEnd = OffsetToSector(Offset + Length - 1)
+
+            Return (SectorStart >= FATSectorStart And SectorStart <= FATSectorEnd) Or (SectorEnd >= FATSectorStart And SectorEnd <= FATSectorEnd)
+        End Function
     End Class
 
 End Namespace

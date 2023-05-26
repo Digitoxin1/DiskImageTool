@@ -173,9 +173,7 @@
     <Compile Include="Forms\HexSearchForm.Designer.vb">
       <DependentUpon>HexSearchForm.vb</DependentUpon>
     </Compile>
-    <Compile Include="Forms\HexSearchForm.vb">
-      <SubType>Form</SubType>
-    </Compile>
+    <Compile Include="Forms\HexSearchForm.vb" />
     <Compile Include="Forms\VolumeSerialNumberForm.Designer.vb">
       <DependentUpon>VolumeSerialNumberForm.vb</DependentUpon>
     </Compile>

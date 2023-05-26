@@ -1,16 +1,6 @@
 ﻿Imports DiskImageTool.DiskImage
 
 Public Class DirectoryScanResponse
-    Public Property HasAdditionalData As Boolean
-    Public Property HasBootSector As Boolean
-    Public Property HasCreated As Boolean
-    Public Property HasValidCreated As Boolean
-    Public Property HasFATChainingErrors As Boolean
-    Public Property HasInvalidDirectoryEntries As Boolean
-    Public Property HasLastAccessed As Boolean
-    Public Property HasValidLastAccessed As Boolean
-    Public Property HasLFN As Boolean
-
     Public Sub New(Directory As DiskImage.IDirectory)
         If Directory Is Nothing Then
             _HasAdditionalData = False
@@ -28,6 +18,15 @@ Public Class DirectoryScanResponse
         _HasFATChainingErrors = False
     End Sub
 
+    Public Property HasAdditionalData As Boolean
+    Public Property HasBootSector As Boolean
+    Public Property HasCreated As Boolean
+    Public Property HasFATChainingErrors As Boolean
+    Public Property HasInvalidDirectoryEntries As Boolean
+    Public Property HasLastAccessed As Boolean
+    Public Property HasLFN As Boolean
+    Public Property HasValidCreated As Boolean
+    Public Property HasValidLastAccessed As Boolean
     Public Sub Combine(Response As DirectoryScanResponse)
         _HasLastAccessed = _HasLastAccessed Or Response.HasLastAccessed
         _HasValidLastAccessed = _HasValidLastAccessed Or Response.HasValidLastAccessed

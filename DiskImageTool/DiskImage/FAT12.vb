@@ -2,10 +2,10 @@
     Public Class FAT12
         Public Const FAT_BAD_CLUSTER As UShort = &HFF7
         Public Const FAT_FREE_CLUSTER As UShort = &H0
-        Public Const FAT_LAST_CLUSTER_START As UShort = &HFF8
         Public Const FAT_LAST_CLUSTER_END As UShort = &HFFF
-        Public Const FAT_RESERVED_START As UShort = &HFF0
+        Public Const FAT_LAST_CLUSTER_START As UShort = &HFF8
         Public Const FAT_RESERVED_END As UShort = &HFF6
+        Public Const FAT_RESERVED_START As UShort = &HFF0
         Private ReadOnly _BadClusters As List(Of UShort)
         Private ReadOnly _BootSector As BootSector
         Private ReadOnly _CircularChains As HashSet(Of UShort)
@@ -85,6 +85,68 @@
             End Set
         End Property
 
+        Public Shared Function DecodeFAT12(Data() As Byte, Size As UShort) As UShort()
+            Dim MaxSize As Integer = Int(Data.Length * 2 / 3)
+
+            If MaxSize Mod 2 > 0 Then
+                MaxSize -= 1
+            End If
+
+            If Size Mod 2 > 0 Then
+                Size += 1
+            End If
+
+            If Size > MaxSize Then
+                Size = MaxSize
+            End If
+
+            Dim FATTable(Size - 1) As UShort
+
+            For i = 0 To Size - 1
+                Dim Offset As Integer = Int(i + i / 2)
+                Dim b = BitConverter.ToUInt16(Data, Offset)
+
+                If i Mod 2 = 0 Then
+                    FATTable(i) = b And &HFFF
+                Else
+                    FATTable(i) = b >> 4
+                End If
+            Next
+
+            Return FATTable
+        End Function
+
+        Public Shared Function EncodeFAT12(FATTable() As UShort) As Byte()
+            Dim Size As Integer = Math.Ceiling(FATTable.Length / 2 * 3)
+
+            Dim FatBytes(Size - 1) As Byte
+
+            For i = 0 To Size - 1
+                Dim Offset As Integer = Int(i / 3 * 2)
+                If i Mod 3 = 0 Then
+                    FatBytes(i) = FATTable(Offset) And &HFF
+                ElseIf i Mod 3 = 1 Then
+                    FatBytes(i) = (FATTable(Offset) >> 8)
+                    If Offset < FATTable.Length - 1 Then
+                        FatBytes(i) = FatBytes(i) + (FATTable(Offset + 1) And &HF) * 16
+                    End If
+                Else
+                    FatBytes(i) = FATTable(Offset) >> 4
+                End If
+            Next
+
+            Return FatBytes
+        End Function
+
+        Public Shared Function GetFATSectors(FATRegionStart As UInteger, SectorsPerFAT As UShort, Index As UShort) As SectorRange
+            Dim Sectors As SectorRange
+
+            Sectors.Count = SectorsPerFAT
+            Sectors.Start = FATRegionStart + (SectorsPerFAT * Index)
+
+            Return Sectors
+        End Function
+
         Public Function GetFreeSpace(ClusterSize As UInteger) As UInteger
             Return _FreeClusters * ClusterSize
         End Function
@@ -149,60 +211,6 @@
 
             Return False
         End Function
-
-        Public Shared Function DecodeFAT12(Data() As Byte, Size As UShort) As UShort()
-            Dim MaxSize As Integer = Int(Data.Length * 2 / 3)
-
-            If MaxSize Mod 2 > 0 Then
-                MaxSize -= 1
-            End If
-
-            If Size Mod 2 > 0 Then
-                Size += 1
-            End If
-
-            If Size > MaxSize Then
-                Size = MaxSize
-            End If
-
-            Dim FATTable(Size - 1) As UShort
-
-            For i = 0 To Size - 1
-                Dim Offset As Integer = Int(i + i / 2)
-                Dim b = BitConverter.ToUInt16(Data, Offset)
-
-                If i Mod 2 = 0 Then
-                    FATTable(i) = b And &HFFF
-                Else
-                    FATTable(i) = b >> 4
-                End If
-            Next
-
-            Return FATTable
-        End Function
-
-        Public Shared Function EncodeFAT12(FATTable() As UShort) As Byte()
-            Dim Size As Integer = Math.Ceiling(FATTable.Length / 2 * 3)
-
-            Dim FatBytes(Size - 1) As Byte
-
-            For i = 0 To Size - 1
-                Dim Offset As Integer = Int(i / 3 * 2)
-                If i Mod 3 = 0 Then
-                    FatBytes(i) = FATTable(Offset) And &HFF
-                ElseIf i Mod 3 = 1 Then
-                    FatBytes(i) = (FATTable(Offset) >> 8)
-                    If Offset < FATTable.Length - 1 Then
-                        FatBytes(i) = FatBytes(i) + (FATTable(Offset + 1) And &HF) * 16
-                    End If
-                Else
-                    FatBytes(i) = FATTable(Offset) >> 4
-                End If
-            Next
-
-            Return FatBytes
-        End Function
-
         Public Sub PopulateFAT12()
             Erase _FATTable
 
@@ -216,6 +224,26 @@
             End If
 
             ProcessFAT12()
+        End Sub
+
+        Public Sub ProcessFAT12()
+            _FATChains.Clear()
+            _FileAllocation.Clear()
+            _FreeClusters = 0
+            _BadClusters.Clear()
+            _CircularChains.Clear()
+
+            If _BootSector.IsValidImage Then
+                Dim Length As UShort = GetFATTableLength()
+
+                For Cluster = 2 To Length
+                    If _FATTable(Cluster) = 0 Then
+                        _FreeClusters += 1
+                    ElseIf _FATTable(Cluster) = FAT_BAD_CLUSTER Then
+                        _BadClusters.Add(Cluster)
+                    End If
+                Next Cluster
+            End If
         End Sub
 
         Public Function UpdateFAT12(SyncAll As Boolean) As Boolean
@@ -254,30 +282,6 @@
 
             Return Updated
         End Function
-
-        Private Function GetFATTableLength() As UShort
-            Return Math.Min(_FATTable.Length - 1, _BootSector.NumberOfFATEntries + 1)
-        End Function
-
-        Public Sub ProcessFAT12()
-            _FATChains.Clear()
-            _FileAllocation.Clear()
-            _FreeClusters = 0
-            _BadClusters.Clear()
-            _CircularChains.Clear()
-
-            If _BootSector.IsValidImage Then
-                Dim Length As UShort = GetFATTableLength()
-
-                For Cluster = 2 To Length
-                    If _FATTable(Cluster) = 0 Then
-                        _FreeClusters += 1
-                    ElseIf _FATTable(Cluster) = FAT_BAD_CLUSTER Then
-                        _BadClusters.Add(Cluster)
-                    End If
-                Next Cluster
-            End If
-        End Sub
 
         Friend Function InitFATChain(Offset As UInteger, ClusterStart As UShort) As FATChain
             Dim FatChain As New FATChain(Offset)
@@ -334,21 +338,15 @@
             Return FatChain
         End Function
 
-        Public Shared Function GetFATSectors(FATRegionStart As UInteger, SectorsPerFAT As UShort, Index As UShort) As SectorRange
-            Dim Sectors As SectorRange
-
-            Sectors.Count = SectorsPerFAT
-            Sectors.Start = FATRegionStart + (SectorsPerFAT * Index)
-
-            Return Sectors
-        End Function
-
         Private Function GetFAT(Index As UShort) As Byte()
             Dim Sectors = GetFATSectors(_BootSector.FATRegionStart, _BootSector.SectorsPerFAT, Index)
 
             Return _FileBytes.GetSectors(Sectors)
         End Function
 
+        Private Function GetFATTableLength() As UShort
+            Return Math.Min(_FATTable.Length - 1, _BootSector.NumberOfFATEntries + 1)
+        End Function
         Private Function IsDataBlockEmpty(Data() As Byte) As Boolean
             Dim EmptyByte As Byte = Data(0)
             If EmptyByte <> &HF6 And EmptyByte <> &H0 Then

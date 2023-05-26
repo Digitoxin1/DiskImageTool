@@ -1,15 +1,32 @@
 ﻿Public Class ListViewColumnSorter
     Implements IComparer
 
+    Private ReadOnly ObjectCompare As CaseInsensitiveComparer
     Private ColumnToSort As Integer
     Private OrderOfSort As SortOrder
-    Private ReadOnly ObjectCompare As CaseInsensitiveComparer
-
     Public Sub New()
         ColumnToSort = -1
         OrderOfSort = SortOrder.None
         ObjectCompare = New CaseInsensitiveComparer()
     End Sub
+
+    Public Property Order As SortOrder
+        Set(ByVal value As SortOrder)
+            OrderOfSort = value
+        End Set
+        Get
+            Return OrderOfSort
+        End Get
+    End Property
+
+    Public Property SortColumn As Integer
+        Set(ByVal value As Integer)
+            ColumnToSort = value
+        End Set
+        Get
+            Return ColumnToSort
+        End Get
+    End Property
 
     Public Function Compare(x As Object, y As Object) As Integer Implements IComparer.Compare
         Dim Response As Integer = 0
@@ -63,22 +80,4 @@
 
         Return Response
     End Function
-
-    Public Property SortColumn As Integer
-        Set(ByVal value As Integer)
-            ColumnToSort = value
-        End Set
-        Get
-            Return ColumnToSort
-        End Get
-    End Property
-
-    Public Property Order As SortOrder
-        Set(ByVal value As SortOrder)
-            OrderOfSort = value
-        End Set
-        Get
-            Return OrderOfSort
-        End Get
-    End Property
 End Class

@@ -3,22 +3,19 @@ Imports System.Text
 Imports DiskImageTool.DiskImage
 
 Module Copy_Protection
-    Private Function CheckBadSectors(BadSectors As HashSet(Of UInteger), SectorList() As UShort) As Boolean
-        For Each Sector In SectorList
-            If Not BadSectors.Contains(Sector) Then
-                Return False
-            End If
-        Next
-        Return True
-    End Function
+    Public Function GetBroderbundCopyright(Disk As DiskImage.Disk, BadSectors As HashSet(Of UInteger)) As String
+        If BadSectors.Count >= 2 AndAlso CheckBadSectors(BadSectors, {186, 187}) AndAlso Not CheckBadSectors(BadSectors, {185, 188}) Then
+            Dim b = Disk.Data.GetBytes(Disk.SectorToBytes(186), Disk.BYTES_PER_SECTOR)
+            Dim Counter As Integer
+            For Counter = 0 To b.Length - 1
+                If {0, &HF6}.Contains(b(Counter)) Then
+                    Exit For
+                End If
+            Next
+            Return Encoding.UTF8.GetString(b, 0, Counter)
+        End If
 
-    Private Function CheckFileList(Disk As DiskImage.Disk, FileList() As String) As Boolean
-        For Each File In FileList
-            If Disk.Directory.HasFile(File) > -1 Then
-                Return True
-            End If
-        Next
-        Return False
+        Return ""
     End Function
 
     Public Function GetCopyProtection(Disk As DiskImage.Disk, BadSectors As HashSet(Of UInteger)) As String
@@ -125,18 +122,21 @@ Module Copy_Protection
         End If
     End Function
 
-    Public Function GetBroderbundCopyright(Disk As DiskImage.Disk, BadSectors As HashSet(Of UInteger)) As String
-        If BadSectors.Count >= 2 AndAlso CheckBadSectors(BadSectors, {186, 187}) AndAlso Not CheckBadSectors(BadSectors, {185, 188}) Then
-            Dim b = Disk.Data.GetBytes(Disk.SectorToBytes(186), Disk.BYTES_PER_SECTOR)
-            Dim Counter As Integer
-            For Counter = 0 To b.Length - 1
-                If {0, &HF6}.Contains(b(Counter)) Then
-                    Exit For
-                End If
-            Next
-            Return Encoding.UTF8.GetString(b, 0, Counter)
-        End If
+    Private Function CheckBadSectors(BadSectors As HashSet(Of UInteger), SectorList() As UShort) As Boolean
+        For Each Sector In SectorList
+            If Not BadSectors.Contains(Sector) Then
+                Return False
+            End If
+        Next
+        Return True
+    End Function
 
-        Return ""
+    Private Function CheckFileList(Disk As DiskImage.Disk, FileList() As String) As Boolean
+        For Each File In FileList
+            If Disk.Directory.HasFile(File) > -1 Then
+                Return True
+            End If
+        Next
+        Return False
     End Function
 End Module
