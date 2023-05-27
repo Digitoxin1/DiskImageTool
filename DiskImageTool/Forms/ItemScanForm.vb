@@ -64,7 +64,7 @@ Public Class ItemScanForm
         Dim Result As Boolean = False
 
         If Not _NewOnly Or Not ImageData.Scanned Then
-            Dim Disk = _Parent.DiskImageLoad(ImageData)
+            Dim Disk = DiskImage.DiskImageLoad(ImageData)
 
             If Disk IsNot Nothing Then
                 _Parent.ItemScanModified(Disk, ImageData)
@@ -125,7 +125,7 @@ Public Class ItemScanForm
         If ImageData Is _CurrentImageData Then
             Disk = _CurrentDisk
         Else
-            Disk = _Parent.DiskImageLoad(ImageData)
+            Disk = DiskImage.DiskImageLoad(ImageData)
             If Disk IsNot Nothing Then
                 ImageData.Modifications = Disk.Data.Changes
             End If

@@ -1,4 +1,5 @@
-﻿Imports System.Runtime.InteropServices
+﻿Imports System.IO
+Imports System.Runtime.InteropServices
 
 Module Utility
     Public Function DuplicateHashTable(Table As Hashtable) As Hashtable
@@ -37,6 +38,11 @@ Module Utility
         Next
 
         Return b
+    End Function
+
+    Public Function IsFileReadOnly(fileName As String) As Boolean
+        Dim fInfo As New FileInfo(fileName)
+        Return fInfo.IsReadOnly
     End Function
 
     <DllImport("shell32.dll")>

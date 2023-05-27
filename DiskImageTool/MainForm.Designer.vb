@@ -146,6 +146,7 @@ Partial Class MainForm
         Me.BtnClearFilters = New System.Windows.Forms.ToolStripMenuItem()
         Me.ComboImagesFiltered = New System.Windows.Forms.ComboBox()
         Me.BtnResetSort = New System.Windows.Forms.Button()
+        Me.BtnCompare = New System.Windows.Forms.ToolStripMenuItem()
         SummaryName = CType(New System.Windows.Forms.ColumnHeader(), System.Windows.Forms.ColumnHeader)
         SummaryValue = CType(New System.Windows.Forms.ColumnHeader(), System.Windows.Forms.ColumnHeader)
         HashName = CType(New System.Windows.Forms.ColumnHeader(), System.Windows.Forms.ColumnHeader)
@@ -738,7 +739,7 @@ Partial Class MainForm
         '
         'MainMenuTools
         '
-        MainMenuTools.DropDownItems.AddRange(New System.Windows.Forms.ToolStripItem() {Me.BtnWin9xClean, Me.BtnFixImageSize, Me.BtnRestoreBootSector, Me.BtnRemoveBootSector, ToolStripMenuItem1, Me.BtnWin9xCleanBatch})
+        MainMenuTools.DropDownItems.AddRange(New System.Windows.Forms.ToolStripItem() {Me.BtnCompare, Me.BtnWin9xClean, Me.BtnFixImageSize, Me.BtnRestoreBootSector, Me.BtnRemoveBootSector, ToolStripMenuItem1, Me.BtnWin9xCleanBatch})
         MainMenuTools.Name = "MainMenuTools"
         MainMenuTools.Size = New System.Drawing.Size(46, 20)
         MainMenuTools.Text = "&Tools"
@@ -1071,6 +1072,12 @@ Partial Class MainForm
         Me.BtnResetSort.Text = "Reset Sort"
         Me.BtnResetSort.UseVisualStyleBackColor = True
         '
+        'BtnCompare
+        '
+        Me.BtnCompare.Name = "BtnCompare"
+        Me.BtnCompare.Size = New System.Drawing.Size(289, 22)
+        Me.BtnCompare.Text = "&Compare Images"
+        '
         'MainForm
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
@@ -1201,4 +1208,5 @@ Partial Class MainForm
     Friend WithEvents ComboDiskType As ToolStripComboBox
     Friend WithEvents ToolStripDiskType As ToolStripLabel
     Friend WithEvents BtnWin9xCleanBatch As ToolStripMenuItem
+    Friend WithEvents BtnCompare As ToolStripMenuItem
 End Class

@@ -854,5 +854,7 @@
   <bootstrap crc32="AEA629C4">
     <oemname namehex="03048849B7160100" suggestion="false"/>
     <oemname name="CDM  3.2" suggestion="false"/>
+    <oemname namehex="03051C5C89140700" suggestion="false" company="Activision" description="Powerhits: BattleTech Disk 1" />
+    <oemname namehex="03051C5C89140800" suggestion="false" company="Activision" description="Powerhits: Sci-Fi Disk 2" />   
   </bootstrap>
 </root>

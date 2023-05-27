@@ -307,9 +307,9 @@ Partial Class BootSectorForm
         Me.LblSectorsPerCluster.AutoSize = True
         Me.LblSectorsPerCluster.Location = New System.Drawing.Point(251, 61)
         Me.LblSectorsPerCluster.Name = "LblSectorsPerCluster"
-        Me.LblSectorsPerCluster.Size = New System.Drawing.Size(97, 13)
+        Me.LblSectorsPerCluster.Size = New System.Drawing.Size(96, 13)
         Me.LblSectorsPerCluster.TabIndex = 8
-        Me.LblSectorsPerCluster.Text = "Sectors Per Cluster"
+        Me.LblSectorsPerCluster.Text = "Sectors per Cluster"
         '
         'CboSectorsPerCluster
         '

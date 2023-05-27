@@ -24,6 +24,7 @@ End Class
 Public Class LoadedImageData
     Public Sub New(SourceFile As String)
         _BatchUpdated = False
+        _BottomIndex = -1
         _Compressed = False
         _CompressedFile = ""
         _SourceFile = SourceFile
@@ -32,10 +33,12 @@ Public Class LoadedImageData
         _ReadOnly = False
         _ScanInfo = New ImageDataScanInfo
         _Scanned = False
+        _SortHistory = Nothing
     End Sub
 
     Public Property [ReadOnly] As Boolean
     Public Property BatchUpdated As Boolean
+    Public Property BottomIndex As Integer
     Public Property CachedRootDir As Byte()
     Public Property Compressed As Boolean
     Public Property CompressedFile As String
@@ -44,6 +47,7 @@ Public Class LoadedImageData
     Public ReadOnly Property ScanInfo As ImageDataScanInfo
     Public Property Scanned As Boolean
     Public Property SourceFile As String
+    Public Property SortHistory As List(Of SortEntity)
     Public Shared Property StringOffset As Integer = 0
     Public Function DisplayPath() As String
         Dim FullPath = _SourceFile

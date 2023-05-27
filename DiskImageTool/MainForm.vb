@@ -47,6 +47,7 @@ Public Class MainForm
     Private _LoadedFileNames As Dictionary(Of String, LoadedImageData)
     Private _ScanRun As Boolean = False
     Private _SuppressEvent As Boolean = False
+    Private _CurrentImageData As LoadedImageData = Nothing
     Public Sub New()
         ' This call is required by the designer.
         InitializeComponent()
@@ -54,24 +55,6 @@ Public Class MainForm
         ' Add any initialization after the InitializeComponent() call.
         _lvwColumnSorter = New ListViewColumnSorter
     End Sub
-
-    Friend Function DiskImageLoad(ImageData As LoadedImageData) As DiskImage.Disk
-        Dim Data() As Byte
-
-        Try
-            If ImageData.Compressed Then
-                ImageData.ReadOnly = True
-                Data = OpenFileFromZIP(ImageData.SourceFile, ImageData.CompressedFile)
-            Else
-                ImageData.ReadOnly = IsFileReadOnly(ImageData.SourceFile)
-                Data = IO.File.ReadAllBytes(ImageData.SourceFile)
-            End If
-        Catch ex As Exception
-            Return Nothing
-        End Try
-
-        Return New DiskImage.Disk(Data, ImageData.Modifications)
-    End Function
 
     Friend Sub DiskTypeFilterUpdate(Disk As DiskImage.Disk, ImageData As LoadedImageData, Optional UpdateFilters As Boolean = False, Optional Remove As Boolean = False)
         Dim DiskType As String = ""
@@ -577,14 +560,13 @@ Public Class MainForm
 
     Private Sub ClearSort(Reset As Boolean)
         If Reset Then
-            _lvwColumnSorter.Order = SortOrder.Ascending
-            _lvwColumnSorter.SortColumn = 0
+            _lvwColumnSorter.Sort(0)
             ListViewFiles.Sort()
         Else
-            _lvwColumnSorter.Order = SortOrder.None
-            _lvwColumnSorter.SortColumn = -1
+            _lvwColumnSorter.Sort(-1, SortOrder.None)
         End If
-        ListViewFiles.SetSortIcon(_lvwColumnSorter.SortColumn, _lvwColumnSorter.Order)
+        ListViewFiles.SetSortIcon(-1, SortOrder.None)
+        _lvwColumnSorter.ClearHistory()
         BtnResetSort.Enabled = False
     End Sub
 
@@ -738,7 +720,7 @@ Public Class MainForm
 
         If FullRefresh Then
             If _Disk.IsValidImage Then
-                PopulateFilesPanel()
+                PopulateFilesPanel(CurrentImageData)
             Else
                 ClearFilesPanel()
             End If
@@ -746,6 +728,17 @@ Public Class MainForm
 
         FATSubMenuRefresh()
         RefreshSaveButtons()
+    End Sub
+
+    Private Sub CompareImages()
+        Dim ImageData1 As LoadedImageData = ComboImages.Items(0)
+        Dim ImageData2 As LoadedImageData = ComboImages.Items(1)
+
+        Dim Content = ImageCompare.CompareImages(ImageData1, ImageData2)
+
+
+        Dim frmTextView = New TextViewForm("Image Comparison", Content)
+        frmTextView.ShowDialog()
     End Sub
 
     Private Sub DeleteSelectedFiles(Clear As Boolean)
@@ -871,7 +864,7 @@ Public Class MainForm
             If CurrentImageData.CachedRootDir Is Nothing Then
                 CurrentImageData.CachedRootDir = _Disk.Directory.GetContent
             End If
-            PopulateFilesPanel()
+            PopulateFilesPanel(CurrentImageData)
         Else
             ClearFilesPanel()
         End If
@@ -903,7 +896,7 @@ Public Class MainForm
             End If
             If Not Success Then
                 Dim Msg As String = $"Error saving file '{IO.Path.GetFileName(NewFilePath)}'."
-                Dim ErrorResult = MsgBox(Msg, MsgBoxStyle.Critical + MsgBoxStyle.RetryCancel)
+        Dim ErrorResult = MsgBox(Msg, MsgBoxStyle.Critical + MsgBoxStyle.RetryCancel)
                 If ErrorResult = MsgBoxResult.Cancel Then
                     Exit Do
                 End If
@@ -1063,6 +1056,7 @@ Public Class MainForm
             ResetAll()
         Else
             ImageCountUpdate()
+            BtnCompare.Enabled = ComboImages.Items.Count > 1
         End If
     End Sub
 
@@ -1781,11 +1775,6 @@ Public Class MainForm
         _FileFilter = GetFileFilter("Disk Image Files (" & String.Join("; ", ExtensionList.ToArray) & ")", String.Join(";", ExtensionList.ToArray))
     End Sub
 
-    Private Function IsFileReadOnly(fileName As String) As Boolean
-        Dim fInfo As New FileInfo(fileName)
-        Return fInfo.IsReadOnly
-    End Function
-
     Private Function IsWin9xDisk(Disk As Disk) As Boolean
         Dim Response As Boolean = False
         Dim OEMNameWin9x = Disk.BootSector.IsWin9xOEMName
@@ -2139,7 +2128,7 @@ Public Class MainForm
         Return Path
     End Function
 
-    Private Sub PopulateFilesPanel()
+    Private Sub PopulateFilesPanel(ImageData As LoadedImageData)
         MenuDisplayDirectorySubMenuClear()
 
         ListViewFiles.BeginUpdate()
@@ -2160,6 +2149,25 @@ Public Class MainForm
         ProcessDirectoryScanResponse(Response)
 
         ListViewFiles.ListViewItemSorter = _lvwColumnSorter
+
+        If ImageData.SortHistory IsNot Nothing Then
+            If ImageData.SortHistory.Count > 0 Then
+                For Each Sort In ImageData.SortHistory
+                    _lvwColumnSorter.Sort(Sort)
+                    Debug.Print(Sort.Column & "," & Sort.Order)
+                    ListViewFiles.Sort()
+                    ListViewFiles.SetSortIcon(_lvwColumnSorter.SortColumn, _lvwColumnSorter.Order)
+                Next
+                BtnResetSort.Enabled = True
+            End If
+        End If
+
+            If ImageData IsNot Nothing AndAlso ImageData.BottomIndex > -1 Then
+            If ImageData.BottomIndex < ListViewFiles.Items.Count Then
+                ListViewFiles.EnsureVisible(ImageData.BottomIndex)
+            End If
+        End If
+
         ListViewFiles.EndUpdate()
 
         ItemSelectionChanged()
@@ -2863,7 +2871,12 @@ Public Class MainForm
     End Sub
 
     Private Sub ReloadCurrentImage(DoItemScan As Boolean)
+        If _CurrentImageData IsNot Nothing Then
+            _CurrentImageData.BottomIndex = ListViewFiles.GetBottomIndex
+            _CurrentImageData.SortHistory = _lvwColumnSorter.SortHistory
+        End If
         Dim CurrentImageData As LoadedImageData = ComboImages.SelectedItem
+        _CurrentImageData = CurrentImageData
         _Disk = DiskImageLoad(CurrentImageData)
         If _Disk IsNot Nothing Then
             CurrentImageData.Modifications = _Disk.Data.Changes
@@ -3037,6 +3050,11 @@ Public Class MainForm
         ToolStripBtnCloseAll.Enabled = BtnCloseAll.Enabled
         TxtSearch.Enabled = Value
         BtnWin9xCleanBatch.Enabled = Value
+        If Value Then
+            BtnCompare.Enabled = ComboImages.Items.Count > 1
+        Else
+            BtnCompare.Enabled = False
+        End If
     End Sub
 
     Private Sub SetNewFilePath(CurrentImageData As LoadedImageData, NewFilePath As String)
@@ -3513,14 +3531,9 @@ Public Class MainForm
             ItemSelectionChanged()
         Else
             If e.Column = _lvwColumnSorter.SortColumn Then
-                If _lvwColumnSorter.Order = SortOrder.Ascending Then
-                    _lvwColumnSorter.Order = SortOrder.Descending
-                Else
-                    _lvwColumnSorter.Order = SortOrder.Ascending
-                End If
+                _lvwColumnSorter.SwitchOrder()
             Else
-                _lvwColumnSorter.SortColumn = e.Column
-                _lvwColumnSorter.Order = SortOrder.Ascending
+                _lvwColumnSorter.Sort(e.Column)
             End If
             ListViewFiles.Sort()
             ListViewFiles.SetSortIcon(_lvwColumnSorter.SortColumn, _lvwColumnSorter.Order)
@@ -3596,6 +3609,7 @@ Public Class MainForm
 
         PositionForm()
 
+        BtnCompare.Visible = False
         ListViewFiles.DoubleBuffer
         FiltersInitialize()
         _LoadedFileNames = New Dictionary(Of String, LoadedImageData)
@@ -3637,6 +3651,11 @@ Public Class MainForm
         Debounce.Stop()
         Debounce.Start()
     End Sub
+
+    Private Sub BtnCompare_Click(sender As Object, e As EventArgs) Handles BtnCompare.Click
+        CompareImages()
+    End Sub
+
 #End Region
 
 End Class

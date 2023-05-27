@@ -82,6 +82,28 @@ Module ListViewExtensions
     End Sub
 
     <Extension()>
+    Public Function GetBottomIndex(ListViewControl As ListView) As Integer
+        Dim BottomItem As ListViewItem = Nothing
+        Dim LastPosY As Integer = 0
+        Dim Bottom = ListViewControl.Bounds.Height
+
+        For Each Item As ListViewItem In ListViewControl.Items
+            If Item.Position.Y > LastPosY Then
+                LastPosY = Item.Position.Y
+                If Item.Position.Y + Item.Bounds.Height < Bottom Then
+                    BottomItem = Item
+                End If
+            End If
+        Next
+
+        If BottomItem Is Nothing Then
+            Return -1
+        Else
+            Return BottomItem.Index
+        End If
+    End Function
+
+    <Extension()>
     Public Function GetGroupAtPoint(ListViewControl As ListView, pt As Point) As ListViewGroup
         Dim Response As ListViewGroup = Nothing
 

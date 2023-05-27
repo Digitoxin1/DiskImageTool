@@ -125,6 +125,24 @@ Namespace DiskImage
             Return SectorList
         End Function
 
+        Public Function DiskImageLoad(ImageData As LoadedImageData) As DiskImage.Disk
+            Dim Data() As Byte
+
+            Try
+                If ImageData.Compressed Then
+                    ImageData.ReadOnly = True
+                    Data = OpenFileFromZIP(ImageData.SourceFile, ImageData.CompressedFile)
+                Else
+                    ImageData.ReadOnly = IsFileReadOnly(ImageData.SourceFile)
+                    Data = IO.File.ReadAllBytes(ImageData.SourceFile)
+                End If
+            Catch ex As Exception
+                Return Nothing
+            End Try
+
+            Return New DiskImage.Disk(Data, ImageData.Modifications)
+        End Function
+
         Public Function GetBadSectors(BootSector As BootSector, BadClusters As List(Of UShort)) As HashSet(Of UInteger)
             Dim BadSectors As New HashSet(Of UInteger)
 

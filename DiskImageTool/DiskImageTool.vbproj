@@ -30,7 +30,7 @@
     <ProductName>DiskImageTool</ProductName>
     <PublisherName>Digitoxin</PublisherName>
     <ApplicationRevision>0</ApplicationRevision>
-    <ApplicationVersion>1.37.0.%2a</ApplicationVersion>
+    <ApplicationVersion>1.38.0.%2a</ApplicationVersion>
     <UseApplicationTrust>false</UseApplicationTrust>
     <PublishWizardCompleted>true</PublishWizardCompleted>
     <BootstrapperEnabled>true</BootstrapperEnabled>
@@ -183,6 +183,7 @@
     </Compile>
     <Compile Include="HexView\HexViews.vb" />
     <Compile Include="DirectoryScanResponse.vb" />
+    <Compile Include="ImageCompare.vb" />
     <Compile Include="Utility.vb" />
     <Compile Include="Controls\HexTextBox.vb">
       <SubType>Component</SubType>

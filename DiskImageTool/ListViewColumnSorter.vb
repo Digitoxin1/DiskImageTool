@@ -1,6 +1,12 @@
-﻿Public Class ListViewColumnSorter
+﻿Public Structure SortEntity
+    Dim Column As Integer
+    Dim Order As SortOrder
+End Structure
+
+Public Class ListViewColumnSorter
     Implements IComparer
 
+    Private ReadOnly _SortHistory As List(Of SortEntity)
     Private ReadOnly ObjectCompare As CaseInsensitiveComparer
     Private ColumnToSort As Integer
     Private OrderOfSort As SortOrder
@@ -8,25 +14,42 @@
         ColumnToSort = -1
         OrderOfSort = SortOrder.None
         ObjectCompare = New CaseInsensitiveComparer()
+        _SortHistory = New List(Of SortEntity)
     End Sub
 
     Public Property Order As SortOrder
         Set(ByVal value As SortOrder)
-            OrderOfSort = value
+            If OrderOfSort <> value Then
+                OrderOfSort = value
+                If ColumnToSort > -1 Then
+                    AddColumnToHistory(ColumnToSort, value)
+                End If
+            End If
         End Set
         Get
             Return OrderOfSort
         End Get
     End Property
 
-    Public Property SortColumn As Integer
-        Set(ByVal value As Integer)
-            ColumnToSort = value
-        End Set
+    Public ReadOnly Property SortColumn As Integer
         Get
             Return ColumnToSort
         End Get
     End Property
+
+    Public ReadOnly Property SortHistory As List(Of SortEntity)
+        Get
+            Dim NewSortHistory As New List(Of SortEntity)
+            For Each Entity In _SortHistory
+                NewSortHistory.Add(Entity)
+            Next
+            Return NewSortHistory
+        End Get
+    End Property
+
+    Public Sub ClearHistory()
+        _SortHistory.Clear()
+    End Sub
 
     Public Function Compare(x As Object, y As Object) As Integer Implements IComparer.Compare
         Dim Response As Integer = 0
@@ -80,4 +103,48 @@
 
         Return Response
     End Function
+    Public Sub Sort(Column As Integer, Optional Order As SortOrder = SortOrder.Ascending)
+        If Column <> ColumnToSort Then
+            ColumnToSort = Column
+        End If
+        If Order <> OrderOfSort Then
+            OrderOfSort = Order
+        End If
+        If Column > -1 Then
+            AddColumnToHistory(Column, Order)
+        End If
+    End Sub
+
+    Public Sub Sort(Entity As SortEntity)
+        Sort(Entity.Column, Entity.Order)
+    End Sub
+
+    Public Sub SwitchOrder()
+        If OrderOfSort = SortOrder.Ascending Then
+            OrderOfSort = SortOrder.Descending
+        Else
+            OrderOfSort = SortOrder.Ascending
+        End If
+        If ColumnToSort > -1 Then
+            AddColumnToHistory(ColumnToSort, OrderOfSort)
+        End If
+    End Sub
+
+    Private Sub AddColumnToHistory(Column As Integer, Order As SortOrder)
+        RemoveColumnFromHistory(Column)
+
+        Dim Entity As SortEntity
+        Entity.Column = Column
+        Entity.Order = Order
+        _SortHistory.Add(Entity)
+    End Sub
+
+    Private Sub RemoveColumnFromHistory(Column As Integer)
+        For Each Item In _SortHistory
+            If Item.Column = Column Then
+                _SortHistory.Remove(Item)
+                Exit For
+            End If
+        Next
+    End Sub
 End Class
