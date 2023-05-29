@@ -73,6 +73,9 @@ Public Class Bootstrap
                 If oemNameNode.HasAttribute("suggestion") Then
                     KnownOEMName.Suggestion = oemNameNode.Attributes("suggestion").Value
                 End If
+                If oemNameNode.HasAttribute("verified") Then
+                    KnownOEMName.Verified = oemNameNode.Attributes("verified").Value
+                End If
                 BootstrapType.KnownOEMNames.Add(KnownOEMName)
             Next
             _OEMNameDictionary.Add(crc32, BootstrapType)
@@ -92,7 +95,9 @@ Public Class KnownOEMName
     Public Property Name As Byte()
     Public Property Note As String = ""
     Public Property Suggestion As Boolean = True
+    Public Property Verified As Boolean = False
     Public Property Win9xId As Boolean = False
+
     Public Function GetNameAsString() As String
         Return DiskImage.CodePage437ToUnicode(_Name)
     End Function

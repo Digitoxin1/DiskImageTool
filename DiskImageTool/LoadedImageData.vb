@@ -72,6 +72,6 @@ Public Class LoadedImageData
         End If
     End Function
     Public Overrides Function ToString() As String
-        Return Right(DisplayPath, Len(DisplayPath) - _StringOffset) '& IIf(_Modified, " *", "")
+        Return Right(DisplayPath, Len(DisplayPath) - _StringOffset).Replace("\", " > ") '& IIf(_Modified, " *", "")
     End Function
 End Class

@@ -107,6 +107,7 @@ Partial Class MainForm
         Me.ToolStripSeparator10 = New System.Windows.Forms.ToolStripSeparator()
         Me.ToolStripBtnViewFile = New System.Windows.Forms.ToolStripButton()
         Me.ToolStripBtnViewFileText = New System.Windows.Forms.ToolStripButton()
+        Me.BtnCompare = New System.Windows.Forms.ToolStripMenuItem()
         Me.BtnWin9xClean = New System.Windows.Forms.ToolStripMenuItem()
         Me.BtnFixImageSize = New System.Windows.Forms.ToolStripMenuItem()
         Me.BtnRestoreBootSector = New System.Windows.Forms.ToolStripMenuItem()
@@ -146,7 +147,6 @@ Partial Class MainForm
         Me.BtnClearFilters = New System.Windows.Forms.ToolStripMenuItem()
         Me.ComboImagesFiltered = New System.Windows.Forms.ComboBox()
         Me.BtnResetSort = New System.Windows.Forms.Button()
-        Me.BtnCompare = New System.Windows.Forms.ToolStripMenuItem()
         SummaryName = CType(New System.Windows.Forms.ColumnHeader(), System.Windows.Forms.ColumnHeader)
         SummaryValue = CType(New System.Windows.Forms.ColumnHeader(), System.Windows.Forms.ColumnHeader)
         HashName = CType(New System.Windows.Forms.ColumnHeader(), System.Windows.Forms.ColumnHeader)
@@ -182,12 +182,12 @@ Partial Class MainForm
         'SummaryName
         '
         SummaryName.Text = "Name"
-        SummaryName.Width = 145
+        SummaryName.Width = 118
         '
         'SummaryValue
         '
         SummaryValue.Text = "Value"
-        SummaryValue.Width = 137
+        SummaryValue.Width = 183
         '
         'HashName
         '
@@ -744,6 +744,12 @@ Partial Class MainForm
         MainMenuTools.Size = New System.Drawing.Size(46, 20)
         MainMenuTools.Text = "&Tools"
         '
+        'BtnCompare
+        '
+        Me.BtnCompare.Name = "BtnCompare"
+        Me.BtnCompare.Size = New System.Drawing.Size(289, 22)
+        Me.BtnCompare.Text = "&Compare Images"
+        '
         'BtnWin9xClean
         '
         Me.BtnWin9xClean.Name = "BtnWin9xClean"
@@ -1071,12 +1077,6 @@ Partial Class MainForm
         Me.BtnResetSort.TabIndex = 5
         Me.BtnResetSort.Text = "Reset Sort"
         Me.BtnResetSort.UseVisualStyleBackColor = True
-        '
-        'BtnCompare
-        '
-        Me.BtnCompare.Name = "BtnCompare"
-        Me.BtnCompare.Size = New System.Drawing.Size(289, 22)
-        Me.BtnCompare.Text = "&Compare Images"
         '
         'MainForm
         '

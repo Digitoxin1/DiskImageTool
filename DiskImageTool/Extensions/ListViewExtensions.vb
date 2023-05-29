@@ -25,54 +25,92 @@ Module ListViewExtensions
     End Sub
 
     <Extension()>
-    Public Function AddItem(ItemCollecction As ListView.ListViewItemCollection, Text As String, Value As String) As ListViewItem
-        Dim Item = New ListViewItem(Text) With {
-                .UseItemStyleForSubItems = False
-            }
-        Item.SubItems.Add(Value)
-
-        ItemCollecction.Add(Item)
-
-        Return Item
+    Public Function AddItem(listViewControl As ListView, Text As String, Value As String, WrapText As Boolean) As ListViewItem
+        Return AddItem(listViewControl, Nothing, Text, Value, Color.Empty, WrapText)
     End Function
 
     <Extension()>
-    Public Function AddItem(ItemCollecction As ListView.ListViewItemCollection, Text As String, Value As String, ForeColor As Color) As ListViewItem
-        Dim Item = New ListViewItem(Text) With {
-                .UseItemStyleForSubItems = False
-            }
-        Dim SubItem = Item.SubItems.Add(Value)
-        SubItem.ForeColor = ForeColor
-
-        ItemCollecction.Add(Item)
-
-        Return Item
+    Public Function AddItem(listViewControl As ListView, Text As String, Value As String, ForeColor As Color) As ListViewItem
+        Return AddItem(listViewControl, Nothing, Text, Value, ForeColor)
     End Function
 
     <Extension()>
-    Public Function AddItem(ItemCollecction As ListView.ListViewItemCollection, Group As ListViewGroup, Text As String, Value As String) As ListViewItem
-        Dim Item = New ListViewItem(Text, Group) With {
-                .UseItemStyleForSubItems = False
-            }
-        Item.SubItems.Add(Value)
-
-        ItemCollecction.Add(Item)
-
-        Return Item
+    Public Function AddItem(listViewControl As ListView, Group As ListViewGroup, Text As String, Value As String) As ListViewItem
+        Return AddItem(listViewControl, Group, Text, Value, Color.Empty)
     End Function
 
     <Extension()>
-    Public Function AddItem(ItemCollecction As ListView.ListViewItemCollection, Group As ListViewGroup, Text As String, Value As String, ForeColor As Color) As ListViewItem
-        Dim Item = New ListViewItem(Text, Group) With {
-                .UseItemStyleForSubItems = False
-            }
-        Dim SubItem = Item.SubItems.Add(Value)
-        SubItem.ForeColor = ForeColor
+    Public Function AddItem(listViewControl As ListView, Group As ListViewGroup, Text As String, Value As String, ForeColor As Color) As ListViewItem
+        Return AddItem(listViewControl, Group, Text, Value, ForeColor, True)
+    End Function
 
-        ItemCollecction.Add(Item)
+    <Extension()>
+    Public Function AddItem(listViewControl As ListView, Group As ListViewGroup, Text As String, Value As String, ForeColor As Color, WrapText As Boolean) As ListViewItem
+        Dim Item As ListViewItem = Nothing
+        Dim SubItem As ListViewItem.ListViewSubItem
+        Dim StringList As List(Of String) = Nothing
+        Dim AddTags As Boolean = False
+
+        If WrapText Then
+            Dim Width = listViewControl.Columns.Item(1).Width - 5
+            If TextRenderer.MeasureText(Value, listViewControl.Font).Width > Width Then
+                StringList = Value.WordWrap(Width, listViewControl.Font)
+                AddTags = True
+            End If
+        End If
+
+        If StringList Is Nothing Then
+            StringList = New List(Of String) From {
+                Value
+            }
+        End If
+
+        For Counter = 0 To StringList.Count - 1
+            Dim ItemText As String
+            If Counter = 0 Then
+                ItemText = Text
+            Else
+                ItemText = ""
+            End If
+            Dim NewItem = New ListViewItem(ItemText, Group) With {
+                    .UseItemStyleForSubItems = False
+                }
+            If AddTags Then
+                NewItem.Tag = Text
+            End If
+            SubItem = NewItem.SubItems.Add(StringList(Counter))
+            SubItem.ForeColor = ForeColor
+            If AddTags Then
+                SubItem.Tag = Value
+            End If
+            listViewControl.Items.Add(NewItem)
+
+            If Item Is Nothing Then
+                Item = NewItem
+            End If
+        Next
 
         Return Item
     End Function
+    <Extension()>
+    Public Sub AutoResizeColumnsContstrained(listViewControl As ListView, headerAutoResize As ColumnHeaderAutoResizeStyle)
+        listViewControl.AutoResizeColumns(headerAutoResize)
+
+        If listViewControl.Columns.Count = 0 Then
+            Exit Sub
+        End If
+
+        Dim LastColumnn = listViewControl.Columns(listViewControl.Columns.Count - 1)
+        Dim TotalWidth As Integer = 0
+        For Counter = 0 To listViewControl.Columns.Count - 2
+            Dim Column = listViewControl.Columns(Counter)
+            TotalWidth += Column.Width
+        Next
+        Dim ClientWidth = listViewControl.ClientSize.Width - SystemInformation.VerticalScrollBarWidth
+        'If TotalWidth + LastColumnn.Width > listViewControl.ClientSize.Width Then
+        LastColumnn.Width = ClientWidth - TotalWidth
+        'End If
+    End Sub
 
     <Extension()>
     Public Sub DoubleBuffer(listViewControl As ListView)

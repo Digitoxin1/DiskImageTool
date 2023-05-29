@@ -37,6 +37,7 @@ Public Class MainForm
     Private ReadOnly _lvwColumnSorter As ListViewColumnSorter
     Private _BootStrap As Bootstrap
     Private _CheckAll As Boolean = False
+    Private _CurrentImageData As LoadedImageData = Nothing
     Private _Disk As DiskImage.Disk
     Private _FileFilter As String = ""
     Private _FileVersion As String = ""
@@ -47,7 +48,6 @@ Public Class MainForm
     Private _LoadedFileNames As Dictionary(Of String, LoadedImageData)
     Private _ScanRun As Boolean = False
     Private _SuppressEvent As Boolean = False
-    Private _CurrentImageData As LoadedImageData = Nothing
     Public Sub New()
         ' This call is required by the designer.
         InitializeComponent()
@@ -358,6 +358,7 @@ Public Class MainForm
 
             If Not Remove Then
                 OEMNameString = Disk.BootSector.GetOEMNameString.TrimEnd(NULL_CHAR)
+                'OEMNameString = Crc32.ComputeChecksum(Disk.BootSector.BootStrapCode).ToString("X8") & " (" & OEMNameString & ")"
             End If
 
             If Not ImageData.Scanned Or OEMNameString <> ImageData.ScanInfo.OEMName Then
@@ -896,7 +897,7 @@ Public Class MainForm
             End If
             If Not Success Then
                 Dim Msg As String = $"Error saving file '{IO.Path.GetFileName(NewFilePath)}'."
-        Dim ErrorResult = MsgBox(Msg, MsgBoxStyle.Critical + MsgBoxStyle.RetryCancel)
+                Dim ErrorResult = MsgBox(Msg, MsgBoxStyle.Critical + MsgBoxStyle.RetryCancel)
                 If ErrorResult = MsgBoxResult.Cancel Then
                     Exit Do
                 End If
@@ -2162,7 +2163,7 @@ Public Class MainForm
             End If
         End If
 
-            If ImageData IsNot Nothing AndAlso ImageData.BottomIndex > -1 Then
+        If ImageData IsNot Nothing AndAlso ImageData.BottomIndex > -1 Then
             If ImageData.BottomIndex < ListViewFiles.Items.Count Then
                 ListViewFiles.EnsureVisible(ImageData.BottomIndex)
             End If
@@ -2174,19 +2175,19 @@ Public Class MainForm
     End Sub
 
     Private Sub PopulateHashPanel(Disk As Disk)
-        ListViewHashes.BeginUpdate()
+        With ListViewHashes
+            .BeginUpdate()
+            .Items.Clear()
 
-        With ListViewHashes.Items
-            .Clear()
             If Disk IsNot Nothing Then
-                .AddItem("CRC32", Crc32.ComputeChecksum(Disk.Data.Data).ToString("X8"))
-                .AddItem("MD5", MD5Hash(Disk.Data.Data))
-                .AddItem("SHA-1", SHA1Hash(Disk.Data.Data))
+                .AddItem("CRC32", Crc32.ComputeChecksum(Disk.Data.Data).ToString("X8"), False)
+                .AddItem("MD5", MD5Hash(Disk.Data.Data), False)
+                .AddItem("SHA-1", SHA1Hash(Disk.Data.Data), False)
             End If
-        End With
 
-        ListViewHashes.EndUpdate()
-        ListViewHashes.Refresh()
+            .EndUpdate()
+            .Refresh()
+        End With
     End Sub
 
     Private Sub PopulateSummary(Disk As Disk, ImageData As LoadedImageData)
@@ -2200,12 +2201,11 @@ Public Class MainForm
         Dim Value As String
         Dim ForeColor As Color
 
-        ListViewSummary.BeginUpdate()
+        With ListViewSummary
+            .BeginUpdate()
+            .Items.Clear()
 
-        With ListViewSummary.Items
-            .Clear()
-
-            Dim DiskGroup = ListViewSummary.Groups.Add("Disk", "Disk")
+            Dim DiskGroup = .Groups.Add("Disk", "Disk")
 
             If Disk IsNot Nothing Then
                 Dim BootStrapStart = Disk.BootSector.GetBootStrapOffset
@@ -2266,19 +2266,23 @@ Public Class MainForm
                     Dim BroderbundCopyright = GetBroderbundCopyright(Disk, BadSectors)
 
                     If BroderbundCopyright <> "" Then
-                        .AddItem(DiskGroup, "Broderbund Copyright", BroderbundCopyright)
+                        .AddItem(DiskGroup, "Broderbund Copyright", Trim(BroderbundCopyright))
                     End If
                 Else
                     .AddItem(DiskGroup, "Error", "Unknown Image Format", Color.Red)
                 End If
 
-                Dim BootRecordGroup = ListViewSummary.Groups.Add("BootRecord", "Boot Record")
+                Dim BootRecordGroup = .Groups.Add("BootRecord", "Boot Record")
 
                 If BootstrapType IsNot Nothing Then
                     If KnownOEMNameMatch Is Nothing Then
                         ForeColor = Color.Red
                     Else
-                        ForeColor = Color.Green
+                        If KnownOEMNameMatch.Verified Then
+                            ForeColor = Color.Green
+                        Else
+                            ForeColor = Color.Blue
+                        End If
                     End If
                 Else
                     ForeColor = SystemColors.WindowText
@@ -2340,7 +2344,7 @@ Public Class MainForm
                 End If
 
                 If Disk.IsValidImage Then
-                    Dim FileSystemGroup = ListViewSummary.Groups.Add("FileSystem", "File System")
+                    Dim FileSystemGroup = .Groups.Add("FileSystem", "File System")
 
                     Dim VolumeLabel = Disk.GetVolumeLabel
 
@@ -2359,7 +2363,7 @@ Public Class MainForm
                         .AddItem(FileSystemGroup, "Bad Sectors", Value, ForeColor)
                     End If
 
-                    Dim BootStrapGroup = ListViewSummary.Groups.Add("Bootstrap", "Bootstrap")
+                    Dim BootStrapGroup = .Groups.Add("Bootstrap", "Bootstrap")
 
                     If Debugger.IsAttached Then
                         .AddItem(BootStrapGroup, "Bootstrap CRC32", Crc32.ComputeChecksum(Disk.BootSector.BootStrapCode).ToString("X8"))
@@ -2389,7 +2393,12 @@ Public Class MainForm
                         If Not BootstrapType.ExactMatch Then
                             For Each KnownOEMName In BootstrapType.KnownOEMNames
                                 If KnownOEMName.Name.Length > 0 AndAlso KnownOEMName.Suggestion AndAlso Not KnownOEMName.Name.CompareTo(OEMName) Then
-                                    .AddItem(BootStrapGroup, "Alternative OEM Name", KnownOEMName.GetNameAsString)
+                                    If KnownOEMName.Verified Then
+                                        ForeColor = Color.Green
+                                    Else
+                                        ForeColor = SystemColors.WindowText
+                                    End If
+                                    .AddItem(BootStrapGroup, "Alternative OEM Name", KnownOEMName.GetNameAsString, ForeColor)
                                 End If
                             Next
                         End If
@@ -2399,13 +2408,10 @@ Public Class MainForm
                 .AddItem(DiskGroup, "Error", "Error Loading File", Color.Red)
             End If
 
+            .EndUpdate()
+            .Refresh()
         End With
-
-        ListViewSummary.AutoResizeColumns(ColumnHeaderAutoResizeStyle.ColumnContent)
-        ListViewSummary.EndUpdate()
-        ListViewSummary.Refresh()
     End Sub
-
     Private Sub PositionForm()
         Dim WorkingArea = Screen.FromControl(Me).WorkingArea
         Dim Width As Integer = Me.Width
@@ -3194,6 +3200,10 @@ Public Class MainForm
         CloseAll()
     End Sub
 
+    Private Sub BtnCompare_Click(sender As Object, e As EventArgs) Handles BtnCompare.Click
+        CompareImages()
+    End Sub
+
     Private Sub BtnDisplayBadSectors_Click(sender As Object, e As EventArgs) Handles BtnDisplayBadSectors.Click
         HexDisplayBadSectors()
     End Sub
@@ -3459,7 +3469,13 @@ Public Class MainForm
         End If
 
         If LV IsNot Nothing AndAlso LV.FocusedItem IsNot Nothing Then
-            Dim Value As String = LV.FocusedItem.SubItems.Item(1).Text
+            Dim Item = LV.FocusedItem.SubItems.Item(1)
+            Dim Value As String
+            If Item.Tag Is Nothing Then
+                Value = Item.Text
+            Else
+                Value = Item.Tag
+            End If
             Clipboard.SetText(Value)
         End If
     End Sub
@@ -3475,7 +3491,14 @@ Public Class MainForm
         End If
 
         If LV IsNot Nothing AndAlso LV.FocusedItem IsNot Nothing Then
-            CM.Items(0).Text = "&Copy " & LV.FocusedItem.Text
+            Dim Item = LV.FocusedItem
+            Dim Text As String
+            If Item.Tag Is Nothing Then
+                Text = Item.Text
+            Else
+                Text = Item.Tag
+            End If
+            CM.Items(0).Text = "&Copy " & Text
         Else
             e.Cancel = True
         End If
@@ -3611,6 +3634,7 @@ Public Class MainForm
 
         BtnCompare.Visible = False
         ListViewFiles.DoubleBuffer
+        ListViewSummary.AutoResizeColumnsContstrained(ColumnHeaderAutoResizeStyle.None)
         FiltersInitialize()
         _LoadedFileNames = New Dictionary(Of String, LoadedImageData)
         _BootStrap = New Bootstrap
@@ -3651,11 +3675,6 @@ Public Class MainForm
         Debounce.Stop()
         Debounce.Start()
     End Sub
-
-    Private Sub BtnCompare_Click(sender As Object, e As EventArgs) Handles BtnCompare.Click
-        CompareImages()
-    End Sub
-
 #End Region
 
 End Class

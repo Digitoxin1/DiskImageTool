@@ -1,13 +1,13 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <root>
   <bootstrap crc32="B41EC58C">
-    <oemname name="        " />
+    <oemname name="        " verified="true" />
   </bootstrap>
   <bootstrap crc32="FA8F7D48">
-    <oemname namehex="0000000000000000" />
+    <oemname namehex="0000000000000000" verified="true"/>
   </bootstrap>
   <bootstrap crc32="84DD63C3">
-    <oemname name="-SHADOW-" />
+    <oemname name="-SHADOW-" verified="true" />
   </bootstrap>
   <bootstrap crc32="C6CE8A87">
     <oemname name="..DOS4.0" />
@@ -16,22 +16,22 @@
     <oemname name="688AS EA" company="Electronic Arts" description="688 Attack Sub Master Disk" />
   </bootstrap>
   <bootstrap crc32="4D2A3923">
-    <oemname name="688AS EA" company="Electronic Arts" description="688 Attack Sub Master Disk 1" />
+    <oemname name="688AS EA" company="Electronic Arts" description="688 Attack Sub Master Disk 1" verified="true" />
   </bootstrap>
   <bootstrap crc32="5A5553EB">
-    <oemname name="688AS EA" company="Electronic Arts" description="688 Attack Sub Master Disk 2" />
+    <oemname name="688AS EA" company="Electronic Arts" description="688 Attack Sub Master Disk 2" verified="true" />
   </bootstrap>
   <bootstrap crc32="0231A83E">
     <oemname name="ALF  2.0" company="ALF Products Inc." />
   </bootstrap>
   <bootstrap crc32="B4140C43">
-    <oemname name="ALF  3.0" company="ALF Products Inc." />
+    <oemname name="ALF  3.0" company="ALF Products Inc." verified="true" />
   </bootstrap>
   <bootstrap crc32="7096EE00">
-    <oemname name="ALF  3.0" company="ALF Products Inc." />
+    <oemname name="ALF  3.0" company="ALF Products Inc." verified="true" />
   </bootstrap>
   <bootstrap crc32="E981E850">
-    <oemname name="ALF  3.0" company="ALF Products Inc." />
+    <oemname name="ALF  3.0" company="ALF Products Inc." verified="true" />
   </bootstrap>
   <bootstrap crc32="CABDB72C">
     <oemname name="C ZDS3.2" />
@@ -55,28 +55,28 @@
     <oemname name="CACHET  " />
   </bootstrap>
   <bootstrap crc32="2CD0CD53">
-    <oemname name="Caldwell" company="New World Computing" description="Might and Magic ]I[ Disk 1  1.2mb Version" />
+    <oemname name="Caldwell" company="New World Computing" description="Might and Magic ]I[ Disk 1  1.2mb Version" verified="true" />
   </bootstrap>
   <bootstrap crc32="01250250">
-    <oemname name="Caldwell" company="New World Computing" description="Might and Magic ]I[ Disk 2  1.2mb Version" />
+    <oemname name="Caldwell" company="New World Computing" description="Might and Magic ]I[ Disk 2  1.2mb Version" verified="true" />
   </bootstrap>
   <bootstrap crc32="1A764751">
-    <oemname name="Caldwell" company="New World Computing" description="Might and Magic ]I[ Disk 3  1.2mb Version" />
+    <oemname name="Caldwell" company="New World Computing" description="Might and Magic ]I[ Disk 3  1.2mb Version" verified="true" />
   </bootstrap>
   <bootstrap crc32="E460A351">
-    <oemname name="Caldwell" company="New World Computing" description="Might and Magic ]I[ Disk 1 720k Version" />
+    <oemname name="Caldwell" company="New World Computing" description="Might and Magic ]I[ Disk 1 720k Version" verified="true" />
   </bootstrap>
   <bootstrap crc32="C9956C52">
-    <oemname name="Caldwell" company="New World Computing" description="Might and Magic ]I[ Disk 2 720k Version" />
+    <oemname name="Caldwell" company="New World Computing" description="Might and Magic ]I[ Disk 2 720k Version" verified="true" />
   </bootstrap>
   <bootstrap crc32="D2C62953">
-    <oemname name="Caldwell" company="New World Computing" description="Might and Magic ]I[ Disk 3 720k Version" />
+    <oemname name="Caldwell" company="New World Computing" description="Might and Magic ]I[ Disk 3 720k Version" verified="true" />
   </bootstrap>
   <bootstrap crc32="927EF254">
-    <oemname name="Caldwell" company="New World Computing" description="Might and Magic ]I[ Disk 4 720k Version" />
+    <oemname name="Caldwell" company="New World Computing" description="Might and Magic ]I[ Disk 4 720k Version" verified="true" />
   </bootstrap>
   <bootstrap crc32="892DB755">
-    <oemname name="Caldwell" company="New World Computing" description="Might and Magic ]I[ Disk 5 720k Version" />
+    <oemname name="Caldwell" company="New World Computing" description="Might and Magic ]I[ Disk 5 720k Version" verified="true" />
   </bootstrap>
   <bootstrap crc32="239BF3E0">
     <oemname name="Caldwell" company="New World Computing" description="Might and Magic ]I[ Disk 1  360k Version" />
@@ -109,19 +109,19 @@
     <oemname name="Caldwell" company="New World Computing" description="Might and Magic ]I[ Disk 10 360k Version" />
   </bootstrap>
   <bootstrap crc32="F7DD188D">
-    <oemname name="CH-FOR15" company="Christoph H. Hochstätter" description="FDFORMAT 1.5" />
+    <oemname name="CH-FOR15" company="Christoph H. Hochstätter" description="FDFORMAT 1.5" verified="true" />
   </bootstrap>
   <bootstrap crc32="E93D9089">
-    <oemname name="CH-FOR16" company="Christoph H. Hochstätter" description="FDFORMAT 1.6" />
+    <oemname name="CH-FOR16" company="Christoph H. Hochstätter" description="FDFORMAT 1.6" verified="true" />
   </bootstrap>
   <bootstrap crc32="49E78A0B">
     <oemname name="CH-FOR18" company="Christoph H. Hochstätter" description="FDFORMAT 1.8" />
   </bootstrap>
   <bootstrap crc32="54A77568">
-    <oemname name="CMAST2.0" />
+    <oemname name="CMAST2.0" verified="true" />
   </bootstrap>
   <bootstrap crc32="DEF4FE26">
-    <oemname name="DIGITAL " />
+    <oemname name="DIGITAL " verified="true" />
   </bootstrap>
   <bootstrap crc32="DCD1230E">
     <oemname name="DIGITAL " />
@@ -151,7 +151,7 @@
     <oemname name="Falcon  " />
   </bootstrap>
   <bootstrap crc32="88C67F84">
-    <oemname name="FORMATQM" />
+    <oemname name="FORMATQM" verified="true" />
   </bootstrap>
   <bootstrap crc32="B068240E">
     <oemname name="FRDOS4.1" description="FreeDOS" />
@@ -173,42 +173,42 @@
   </bootstrap>
   <bootstrap crc32="2FE90A49">
     <oemname name="IBM  2.0" company="Compaq" description="MS-DOS 2.0" />
-    <oemname name="CCC  2.1" company="Compaq" />
+    <oemname name="CCC  2.1" company="Compaq" verified="true" />
   </bootstrap>
   <bootstrap crc32="3ED5B183">
-    <oemname name="IBM  2.0" company="IBM" description="PC-DOS 2.0" />
-    <oemname name="IBM  3.2" />
+    <oemname name="IBM  2.0" company="IBM" description="PC-DOS 2.0" verified="true" />
+    <oemname name="IBM  3.2" verified="true" />
   </bootstrap>
   <bootstrap crc32="B0E49411" language="French">
     <oemname name="IBM  2.0" />
   </bootstrap>
   <bootstrap crc32="78101FF1">
-    <oemname name="IBM  3.0" company="Compaq" />
+    <oemname name="IBM  3.0" company="Compaq" verified="true" />
   </bootstrap>
   <bootstrap crc32="1E598C85">
-    <oemname name="IBM  3.0" company="IBM" description="PC-DOS 3.0" />
-    <oemname name="SNê╖ 3.0" namehex="534E88B720332E30" suggestion="false" />
+    <oemname name="IBM  3.0" company="IBM" description="PC-DOS 3.0" verified="true" />
+    <oemname name="SNê╖ 3.0" namehex="534E88B720332E30" suggestion="false" verified="true" />
   </bootstrap>
   <bootstrap crc32="495551E6" language="German">
     <oemname name="IBM  3.0" company="IBM" description="PC-DOS 3.0" />
   </bootstrap>
   <bootstrap crc32="E893442C">
-    <oemname name="IBM  3.1" company="Compaq" />
+    <oemname name="IBM  3.1" company="Compaq" verified="true" />
   </bootstrap>
   <bootstrap crc32="5C812429">
-    <oemname name="IBM  3.1" company="IBM" description="PC-DOS 3.1" />
+    <oemname name="IBM  3.1" company="IBM" description="PC-DOS 3.1" verified="true" />
   </bootstrap>
   <bootstrap crc32="CB2078CC">
     <oemname name="IBM  3.1" />
   </bootstrap>
   <bootstrap crc32="BE20800F">
-    <oemname name="IBM  3.1" />
+    <oemname name="IBM  3.1" verified="true" />
   </bootstrap>
   <bootstrap crc32="FB0D45F6" language="French">
-    <oemname name="IBM  3.1" />
+    <oemname name="IBM  3.1" verified="true" />
   </bootstrap>
   <bootstrap crc32="7C57479F">
-    <oemname name="IBM  3.2" company="Compaq" />
+    <oemname name="IBM  3.2" company="Compaq" verified="true" />
   </bootstrap>
   <bootstrap crc32="E4189823">
     <oemname name="IBM  3.2" company="Falk Data Systems" />
@@ -223,10 +223,10 @@
     <oemname name="IBM  3.2" company="Falk Data Systems" description="Easy Format 3.2" />
   </bootstrap>
   <bootstrap crc32="FCEC1B35">
-    <oemname name="IBM  3.2" company="IBM" description="PC-DOS 3.2" />
+    <oemname name="IBM  3.2" company="IBM" description="PC-DOS 3.2" verified="true" />
   </bootstrap>
   <bootstrap crc32="482C2D5D">
-    <oemname name="IBM  3.2" company="Seiko Epson" description="MS-DOS 3.2" />
+    <oemname name="IBM  3.2" company="Seiko Epson" description="MS-DOS 3.2" verified="true" />
   </bootstrap>
   <bootstrap crc32="D28A5F6D">
     <oemname name="IBM  3.2" company="Sofsource" />
@@ -235,23 +235,23 @@
     <oemname name="IBM  3.2" />
   </bootstrap>
   <bootstrap crc32="20C78168">
-    <oemname name="IBM  3.2" />
+    <oemname name="IBM  3.2" verified="true" />
   </bootstrap>
   <bootstrap crc32="E05C8F91">
-    <oemname name="IBM  3.2" />
-    <oemname name="IBMMS3.2" />
+    <oemname name="IBM  3.2" verified="true" />
+    <oemname name="IBMMS3.2" verified="true" />
   </bootstrap>
   <bootstrap crc32="E3CB4A10" language="Dutch">
     <oemname name="IBM  3.3" company="IBM" description="PC-DOS 3.3" />
   </bootstrap>
   <bootstrap crc32="2132C8C4">
-    <oemname name="IBM  3.3" company="Accolade" description="Star Control 1" />
+    <oemname name="IBM  3.3" company="Accolade" description="Star Control 1" verified="true" />
   </bootstrap>
   <bootstrap crc32="AD6A7854">
-    <oemname name="IBM  3.3" company="Compaq" description="MS-DOS 3.3" />
-    <oemname namehex="4432EC5230392E33" suggestion="false" />
-    <oemname namehex="4432FFB130392E33" suggestion="false" />
-    <oemname namehex="44329DC630392E33" suggestion="false" />
+    <oemname name="IBM  3.3" company="Compaq" description="MS-DOS 3.3" verified="true" />
+    <oemname namehex="4432EC5230392E33" suggestion="false" verified="true" />
+    <oemname namehex="4432FFB130392E33" suggestion="false" verified="true" />
+    <oemname namehex="44329DC630392E33" suggestion="false" verified="true" />
   </bootstrap>
   <bootstrap crc32="79C070EC">
     <oemname name="IBM  3.3" company="Falk Data Systems" />
@@ -260,16 +260,16 @@
     <oemname name="IBM  3.3" company="Falk Data Systems" />
   </bootstrap>
   <bootstrap crc32="4F2A959C">
-    <oemname name="IBM  3.3" company="IBM" description="PC-DOS 3.3" />
+    <oemname name="IBM  3.3" company="IBM" description="PC-DOS 3.3" verified="true" />
+    <oemname name="MSDOS3.3" verified="true" />
     <oemname name="IBMMS3.3" />
-    <oemname name="MSDOS3.3" />
     <oemname name="IBM  3.2" />
-    <oemname name="KEY DISK" suggestion="false" />
-    <oemname namehex="004D4D4900332E33" suggestion="false" />
-    <oemname namehex="4432026E30392E33" suggestion="false" />
+    <oemname name="KEY DISK" suggestion="false" verified="true" />
+    <oemname namehex="004D4D4900332E33" suggestion="false" verified="true" />
+    <oemname namehex="4432026E30392E33" suggestion="false" verified="true" />
   </bootstrap>
   <bootstrap crc32="CA660021" language="French">
-    <oemname name="IBM  3.3" />
+    <oemname name="IBM  3.3" verified="true" />
   </bootstrap>
   <bootstrap crc32="1862753A" language="French">
     <oemname name="IBM  3.3" />
@@ -278,13 +278,13 @@
     <oemname name="IBM  3.3" company="Compaq" description="MS-DOS 3.3" />
   </bootstrap>
   <bootstrap crc32="9552AECB" language="German">
-    <oemname name="IBM  3.3" company="IBM" description="PC-DOS 3.3" />
+    <oemname name="IBM  3.3" company="IBM" description="PC-DOS 3.3" verified="true" />
   </bootstrap>
   <bootstrap crc32="59BAB0AE" language="German">
-    <oemname name="IBM  3.3" />
+    <oemname name="IBM  3.3" verified="true" />
   </bootstrap>
   <bootstrap crc32="4EB99892" language="German">
-    <oemname name="IBM  3.3" />
+    <oemname name="IBM  3.3" verified="true" />
   </bootstrap>
   <bootstrap crc32="82204B8B" language="Italian">
     <oemname name="IBM  3.3" company="IBM" description="PC-DOS 3.3" />
@@ -296,21 +296,21 @@
     <oemname name="IBM  3.3" />
   </bootstrap>
   <bootstrap crc32="A43C20B9">
-    <oemname name="IBM  3.3" />
+    <oemname name="IBM  3.3" verified="true" />
   </bootstrap>
   <bootstrap crc32="224A8195">
-    <oemname name="IBM  3.3" />
+    <oemname name="IBM  3.3" verified="true" />
   </bootstrap>
   <bootstrap crc32="D7B7CBBF">
     <oemname name="IBM  3.3" />
   </bootstrap>
   <bootstrap crc32="0E19E6E1">
-    <oemname name="IBM  3.3" />
+    <oemname name="IBM  3.3" verified="true" />
   </bootstrap>
   <bootstrap crc32="CA5FCC71">
-    <oemname name="IBM  4.0" company="IBM" description="PC-DOS 4.0" />
-    <oemname name="IBMMS4.0" />
-    <oemname name="MSDOS4.0" />
+    <oemname name="IBM  4.0" company="IBM" description="PC-DOS 4.0" verified="true" />
+    <oemname name="IBMMS4.0" verified="true" />
+    <oemname name="MSDOS4.0" verified="true" />
   </bootstrap>
   <bootstrap crc32="4FB6532F">
     <oemname name="IBM  4.0" company="Compaq" description="MS-DOS 4.0" />
@@ -322,7 +322,7 @@
     <oemname name="IBM  4.0" company="IBM" description="PC-DOS 4.0" />
   </bootstrap>
   <bootstrap crc32="D6D774CA" language="French">
-    <oemname name="IBM  4.0" />
+    <oemname name="IBM  4.0" verified="true" />
   </bootstrap>
   <bootstrap crc32="8DF494D4" language="German">
     <oemname name="IBM  4.0" company="IBM" description="PC-DOS 4.0" />
@@ -337,14 +337,14 @@
     <oemname name="IBM  4.0" company="IBM" description="PC-DOS 4.0" />
   </bootstrap>
   <bootstrap crc32="1EDC6713">
-    <oemname name="IBM  4.0" />
+    <oemname name="IBM  4.0" verified="true" />
   </bootstrap>
   <bootstrap crc32="47E20088">
+    <oemname name="IBM 4.01" verified="true" />
     <oemname name="IBM  4.1" />
-    <oemname name="IBM 4.01" />
   </bootstrap>
   <bootstrap crc32="3F6176DF">
-    <oemname name="IBM  5.0" company="IBM" description="PC-DOS 5.0" />
+    <oemname name="IBM  5.0" company="IBM" description="PC-DOS 5.0" verified="true" />
     <oemname name="IBM  6.0" company="IBM" description="PC-DOS 6.0" />
   </bootstrap>
   <bootstrap crc32="DA5E0D9D" language="Dutch" notfound="true">
@@ -378,7 +378,7 @@
     <oemname name="IBM 10.2" company="IBM" description="OS/2 1.2" />
   </bootstrap>
   <bootstrap crc32="7EEACAF5">
-    <oemname name="IBM 20.0" company="IBM" description="OS/2 2.0" />
+    <oemname name="IBM 20.0" company="IBM" description="OS/2 2.0" verified="true" />
   </bootstrap>
   <bootstrap crc32="A37E972B">
     <oemname name="IBM 20.0" company="IBM" description="OS/2 2.0" />
@@ -387,18 +387,18 @@
     <oemname name="IBM PNCI" company="Peter Norton Computing Inc." />
   </bootstrap>
   <bootstrap crc32="EB26ECB7">
-    <oemname name="IBM PNCI" company="Peter Norton Computing Inc." />
+    <oemname name="IBM PNCI" company="Peter Norton Computing Inc." verified="true" />
   </bootstrap>
   <bootstrap crc32="B0F82ACE">
-    <oemname name="IBM PNCI" company="Peter Norton Computing Inc." />
-    <oemname namehex="274C493F38494843" suggestion="false" company="Sierra On-Line" description="Hoyle Classic Games for Laptops Disk 1" />
-    <oemname namehex="274D382379494843" suggestion="false" company="Sierra On-Line" description="Hoyle Classic Games for Laptops Disk 2" />
-    <oemname namehex="274D4F5E22494843" suggestion="false" company="Sierra On-Line" description="Hoyle Classic Games for Laptops Disk 3" />
-    <oemname namehex="25727B7073494843" suggestion="false" company="Sierra On-Line" description="Hoyle Classic Games for Laptops Disk 2" />
-    <oemname namehex="257325382B494843" suggestion="false" company="Sierra On-Line" description="Hoyle Classic Games for Laptops Disk 3" />
+    <oemname name="IBM PNCI" company="Peter Norton Computing Inc." verified="true" />
+    <oemname namehex="274C493F38494843" suggestion="false" company="Sierra On-Line" description="Hoyle Classic Games for Laptops Disk 1" verified="true" />
+    <oemname namehex="274D382379494843" suggestion="false" company="Sierra On-Line" description="Hoyle Classic Games for Laptops Disk 2" verified="true" />
+    <oemname namehex="274D4F5E22494843" suggestion="false" company="Sierra On-Line" description="Hoyle Classic Games for Laptops Disk 3" verified="true" />
+    <oemname namehex="25727B7073494843" suggestion="false" company="Sierra On-Line" description="Hoyle Classic Games for Laptops Disk 2" verified="true" />
+    <oemname namehex="257325382B494843" suggestion="false" company="Sierra On-Line" description="Hoyle Classic Games for Laptops Disk 3" verified="true" />
   </bootstrap>
   <bootstrap crc32="41F209E3">
-    <oemname name="IBM PNCI" company="Peter Norton Computing Inc." />
+    <oemname name="IBM PNCI" company="Peter Norton Computing Inc." verified="true" />
   </bootstrap>
   <bootstrap crc32="F3B69FC4">
     <oemname name="IBM PNCI" company="Peter Norton Computing Inc." />
@@ -413,28 +413,28 @@
     <oemname name="INDY 500" company="Electronic Arts" description="Indianapolis 500 Disk 2" />
   </bootstrap>
   <bootstrap crc32="96C05093">
-    <oemname name="INDY 500" company="Electronic Arts" description="Indianapolis 500 Disk" />
+    <oemname name="INDY 500" company="Electronic Arts" description="Indianapolis 500 Disk" verified="true" />
   </bootstrap>
   <bootstrap crc32="5FB5B7FD">
-    <oemname name="KEY DISK" company="AEG Olympia" />
+    <oemname name="KEY DISK" company="AEG Olympia" verified="true" />
   </bootstrap>
   <bootstrap crc32="A979A4C4">
-    <oemname name="LHX 3.5 " company="Electronic Arts" description="LHX: ATTACK CHOPPER Disk" />
+    <oemname name="LHX 3.5 " company="Electronic Arts" description="LHX: ATTACK CHOPPER Disk" verified="true" />
   </bootstrap>
   <bootstrap crc32="1B8FAB89">
     <oemname name="LHX ONE " company="Electronic Arts" description="LHX: ATTACK CHOPPER Disk One" />
   </bootstrap>
   <bootstrap crc32="9733ADF7">
-    <oemname name="LHX TWO " company="Electronic Arts" description="LHX: ATTACK CHOPPER Disk Two" />
+    <oemname name="LHX TWO " company="Electronic Arts" description="LHX: ATTACK CHOPPER Disk Two" verified="true" />
   </bootstrap>
   <bootstrap crc32="8CD8F888">
     <oemname name="MagicISO" company="MagicISO, Inc." description="MagicISO 4.70" note="Not imaged from Original Media" />
   </bootstrap>
   <bootstrap crc32="5B5678E2">
-    <oemname name="MSC 3.1 " />
+    <oemname name="MSC 3.1 " verified="true" />
   </bootstrap>
   <bootstrap crc32="54ABD321">
-    <oemname name="Mastrnic" company="Mastertronic" />
+    <oemname name="Mastrnic" company="Mastertronic" verified="true" />
   </bootstrap>
   <bootstrap crc32="EB85220D">
     <oemname name="MSDMF3.2" company="Microsoft" description="Microsoft Distribution Media Format" />
@@ -443,12 +443,12 @@
     <oemname name="MSDOS3.2" company="Hewlett-Packard" description="MS-DOS 3.2" />
   </bootstrap>
   <bootstrap crc32="F956DD42">
-    <oemname name="MSDOS3.2" company="Microsoft" description="MS-DOS 3.2" />
+    <oemname name="MSDOS3.2" company="Microsoft" description="MS-DOS 3.2" verified="true" />
     <oemname name="IBMMS3.2" />
     <oemname name="SANYO3.2" />
   </bootstrap>
   <bootstrap crc32="EB0CE3F4" language="French">
-    <oemname name="MSDOS3.2" />
+    <oemname name="MSDOS3.2" verified="true" />
   </bootstrap>
   <bootstrap crc32="DC95FC79" language="French">
     <oemname name="MSDOS3.2" />
@@ -463,30 +463,30 @@
     <oemname name="MSDOS3.2" />
   </bootstrap>
   <bootstrap crc32="B7BE2F89">
-    <oemname name="MSDOS3.2" />
+    <oemname name="MSDOS3.2" verified="true" />
   </bootstrap>
   <bootstrap crc32="C270FB1D">
-    <oemname name="MSDOS3.2" />
+    <oemname name="MSDOS3.2" verified="true" />
   </bootstrap>
   <bootstrap crc32="4D47BE99">
     <oemname name="MSDOS3.2" />
   </bootstrap>
   <bootstrap crc32="74648700">
-    <oemname name="MSDOS3.2" />
+    <oemname name="MSDOS3.2" verified="true" />
   </bootstrap>
   <bootstrap crc32="294E370A">
-    <oemname name="MSDOS3.3" company="Microsoft" description="MS-DOS 3.3" />
+    <oemname name="MSDOS3.3" company="Microsoft" description="MS-DOS 3.3" verified="true" />
+    <oemname name="INSIGNIA" verified="true" />
     <oemname name="I93 1.00" />
-    <oemname name="INSIGNIA" />
   </bootstrap>
   <bootstrap crc32="623749D0" language="French">
-    <oemname name="MSDOS3.3" company="Microsoft" description="MS-DOS 3.3" />
+    <oemname name="MSDOS3.3" company="Microsoft" description="MS-DOS 3.3" verified="true" />
   </bootstrap>
   <bootstrap crc32="F89FC8CD" language="French">
     <oemname name="MSDOS3.3" />
   </bootstrap>
   <bootstrap crc32="66F5A981" language="French">
-    <oemname name="MSDOS3.3" />
+    <oemname name="MSDOS3.3" verified="true" />
   </bootstrap>
   <bootstrap crc32="20F3024C" language="German">
     <oemname name="MSDOS3.3" company="Microsoft" description="MS-DOS 3.3" />
@@ -504,13 +504,13 @@
     <oemname name="MSDOS3.3" />
   </bootstrap>
   <bootstrap crc32="CACFCC8C">
-    <oemname name="MSDOS3.3" />
+    <oemname name="MSDOS3.3" verified="true" />
   </bootstrap>
   <bootstrap crc32="DB11BCE5">
-    <oemname name="MSDOS4.0" company="Microsoft" description="MS-DOS 4.0" />
+    <oemname name="MSDOS4.0" company="Microsoft" description="MS-DOS 4.0" verified="true" />
   </bootstrap>
   <bootstrap crc32="4767DBA2" language="French">
-    <oemname name="MSDOS4.0" company="Microsoft" description="MS-DOS 4.0" />
+    <oemname name="MSDOS4.0" company="Microsoft" description="MS-DOS 4.0" verified="true" />
   </bootstrap>
   <bootstrap crc32="BEEAD529" language="German">
     <oemname name="MSDOS4.0" company="Microsoft" description="MS-DOS 4.0" />
@@ -528,7 +528,7 @@
     <oemname name="MSDOS5.0" company="Microsoft" description="MS-DOS 6.0" />
   </bootstrap>
   <bootstrap crc32="FE944220">
-    <oemname name="MSDOS5.0" company="Microsoft" description="MS-DOS 5.0, MS-DOS 6.0" />
+    <oemname name="MSDOS5.0" company="Microsoft" description="MS-DOS 5.0, MS-DOS 6.0" verified="true" />
     <oemname name="MSDBL6.0" />
     <oemname name="MSDSP6.0" />
     <oemname name="MSDMF3.2" company="Microsoft" description="Microsoft Distribution Media Format" />
@@ -537,7 +537,7 @@
     <oemname namehex="443206C630392E30" suggestion="false" />
     <oemname namehex="4432ED9130392E30" suggestion="false" />
     <oemname namehex="443245F330392E30" suggestion="false" />
-    <oemname namehex="274A5E2871494843" suggestion="false" company="Sybex, Inc." description="The Lost Episodes of Doom" />
+    <oemname namehex="274A5E2871494843" suggestion="false" company="Sybex, Inc." description="The Lost Episodes of Doom" verified="true" />
   </bootstrap>
   <bootstrap crc32="D065ACD8">
     <oemname name="MSDOS5.0" company="Microsoft" description="Windows NT 3.1" />
@@ -549,19 +549,19 @@
     <oemname name="MSDOS5.0" company="Toshiba" description="MS-DOS 5.0" />
   </bootstrap>
   <bootstrap crc32="D3C0FBEF" language="French">
-    <oemname name="MSDOS5.0" company="Microsoft" description="MS-DOS 5.0, MS-DOS 6.0" />
+    <oemname name="MSDOS5.0" company="Microsoft" description="MS-DOS 5.0, MS-DOS 6.0" verified="true" />
   </bootstrap>
   <bootstrap crc32="7E3C7397" language="French">
     <oemname name="MSDOS5.0" />
   </bootstrap>
   <bootstrap crc32="5D696A06" language="German">
-    <oemname name="MSDOS5.0" company="Microsoft" description="MS-DOS 5.0, MS-DOS 6.0" />
+    <oemname name="MSDOS5.0" company="Microsoft" description="MS-DOS 5.0, MS-DOS 6.0" verified="true" />
   </bootstrap>
   <bootstrap crc32="F043E2A8" language="German">
     <oemname name="MSDOS5.0" />
   </bootstrap>
   <bootstrap crc32="EEB2E10D" language="Italian">
-    <oemname name="MSDOS5.0" company="Microsoft" description="MS-DOS 5.0, MS-DOS 6.0" />
+    <oemname name="MSDOS5.0" company="Microsoft" description="MS-DOS 5.0, MS-DOS 6.0" verified="true" />
   </bootstrap>
   <bootstrap crc32="DC98D56D" language="Italian">
     <oemname name="MSDOS5.0" />
@@ -586,24 +586,24 @@
   </bootstrap>
   <bootstrap crc32="2A8273B6">
     <oemname name="MSWIN4.0" company="Microsoft" description="Windows 95" win9xid="true" />
-    <oemname namehex="267C3F5032494843" suggestion="false" company="Sierra On-Line" description="Hoyle Classic Games for Laptops Disk 1" />
-    <oemname namehex="274C7D3177494843" suggestion="false" company="GameTek" description="Super Street Fighter II Turbo Disk 1" />
-    <oemname namehex="275E61284B494843" suggestion="false" company="GameTek" description="Super Street Fighter II Turbo Disk 2" />
-    <oemname namehex="275E5E6968494843" suggestion="false" company="GameTek" description="Super Street Fighter II Turbo Disk 3" />
-    <oemname namehex="275E55612B494843" suggestion="false" company="GameTek" description="Super Street Fighter II Turbo Disk 4" />
-    <oemname namehex="275E6A7A63494843" suggestion="false" company="GameTek" description="Super Street Fighter II Turbo Disk 5" />
-    <oemname namehex="275E6A5F3B494843" suggestion="false" company="GameTek" description="Super Street Fighter II Turbo Disk 6" />
-    <oemname namehex="275D2A567A494843" suggestion="false" company="GameTek" description="Super Street Fighter II Turbo Disk 7" />
-    <oemname namehex="275D223D76494843" suggestion="false" company="GameTek" description="Super Street Fighter II Turbo Disk 8" />
+    <oemname namehex="267C3F5032494843" suggestion="false" company="Sierra On-Line" description="Hoyle Classic Games for Laptops Disk 1" verified="true" />
+    <oemname namehex="274C7D3177494843" suggestion="false" company="GameTek" description="Super Street Fighter II Turbo Disk 1" verified="true" />
+    <oemname namehex="275E61284B494843" suggestion="false" company="GameTek" description="Super Street Fighter II Turbo Disk 2" verified="true" />
+    <oemname namehex="275E5E6968494843" suggestion="false" company="GameTek" description="Super Street Fighter II Turbo Disk 3" verified="true" />
+    <oemname namehex="275E55612B494843" suggestion="false" company="GameTek" description="Super Street Fighter II Turbo Disk 4" verified="true" />
+    <oemname namehex="275E6A7A63494843" suggestion="false" company="GameTek" description="Super Street Fighter II Turbo Disk 5" verified="true"  />
+    <oemname namehex="275E6A5F3B494843" suggestion="false" company="GameTek" description="Super Street Fighter II Turbo Disk 6" verified="true" />
+    <oemname namehex="275D2A567A494843" suggestion="false" company="GameTek" description="Super Street Fighter II Turbo Disk 7" verified="true" />
+    <oemname namehex="275D223D76494843" suggestion="false" company="GameTek" description="Super Street Fighter II Turbo Disk 8" verified="true" />
   </bootstrap>
   <bootstrap crc32="1D056B6E">
     <oemname name="MSWIN4.1" company="Microsoft" description="Windows 95/98/ME" win9xid="true" />
   </bootstrap>
   <bootstrap crc32="8A465282">
-    <oemname name="NEC 2.00" />
+    <oemname name="NEC 2.00" verified="true" />
   </bootstrap>
   <bootstrap crc32="AEA06A37">
-    <oemname name="NECIS3.3" />
+    <oemname name="NECIS3.3" verified="true" />
   </bootstrap>
   <bootstrap crc32="9042ECD9" language="German">
     <oemname name="NWDOS7.0" />
@@ -615,27 +615,27 @@
     <oemname name="Olivetti" />
   </bootstrap>
   <bootstrap crc32="50EFBA9F">
-    <oemname name="PC &amp; AT " />
+    <oemname name="PC &amp; AT " verified="true" />
   </bootstrap>
   <bootstrap crc32="43A1CAF3">
-    <oemname name="PC Tools" />
+    <oemname name="PC Tools" verified="true" />
     <oemname name="UBI-SOFT" company="UBI Soft" />
     <oemname name="        " suggestion="false" />
   </bootstrap>
   <bootstrap crc32="DF630E60">
-    <oemname name="PC Tools" />
+    <oemname name="PC Tools" verified="true" />
   </bootstrap>
   <bootstrap crc32="383DBDD7">
-    <oemname name="PC Tools" />
+    <oemname name="PC Tools" verified="true" />
   </bootstrap>
   <bootstrap crc32="89F66446" language="French">
-    <oemname name="PC Tools" />
+    <oemname name="PC Tools" verified="true" />
   </bootstrap>
   <bootstrap crc32="33B1D564">
-    <oemname name="PCFormat" />
+    <oemname name="PCFormat" verified="true" />
   </bootstrap>
   <bootstrap crc32="CE12EB60">
-    <oemname name="PCFormat" />
+    <oemname name="PCFormat" verified="true" />
   </bootstrap>
   <bootstrap crc32="00F3CCFB">
     <oemname name="PCFormat" />
@@ -656,7 +656,7 @@
     <oemname name="PKWARE  " company="PKWARE" />
   </bootstrap>
   <bootstrap crc32="8BE98DEC">
-    <oemname name="ProCopy " />
+    <oemname name="ProCopy " verified="true" />
   </bootstrap>
   <bootstrap crc32="EC19E4D9">
     <oemname name="PSA 1.04" />
@@ -668,7 +668,7 @@
     <oemname name="PSA  3.1" />
   </bootstrap>
   <bootstrap crc32="48BB97A3">
-    <oemname name="PSA  3.2" />
+    <oemname name="PSA  3.2" verified="true" />
   </bootstrap>
   <bootstrap crc32="617EE1BE">
     <oemname name="PSA  3.2" />
@@ -677,79 +677,79 @@
     <oemname name="QuickDOS" />
   </bootstrap>
   <bootstrap crc32="E8020052">
-    <oemname name="Retal1.0" company="Ocean Software" description="RETALIATOR" />
+    <oemname name="Retal1.0" company="Ocean Software" description="F-29 Retaliator" verified="true" />
   </bootstrap>
   <bootstrap crc32="EE3F38CB">
-    <oemname name="Retal1.0" company="Ocean Software" description="RETALIATOR" />
+    <oemname name="Retal1.0" company="Ocean Software" description="F-29 Retaliator" verified="true" />
   </bootstrap>
   <bootstrap crc32="65676AD8">
     <oemname name="riGem1.1" company="TriGem" />
   </bootstrap>
   <bootstrap crc32="7512BFB2">
-    <oemname name="SARAKON " company="Virgin Mastertronic Ltd." description="Sarakon" />
+    <oemname name="SARAKON " company="Virgin Mastertronic Ltd." description="Sarakon Disk A" verified="true" />
   </bootstrap>
   <bootstrap crc32="CFDEA725">
-    <oemname name="SARAKON " company="Virgin Mastertronic Ltd." description="Sarakon" />
+    <oemname name="SARAKON " company="Virgin Mastertronic Ltd." description="Sarakon Disk B" verified="true" />
   </bootstrap>
   <bootstrap crc32="A66550A8">
-    <oemname name="SARAKON " company="Virgin Mastertronic Ltd." description="Sarakon" />
+    <oemname name="SARAKON " company="Virgin Mastertronic Ltd." description="Sarakon Disk C" verified="true" />
   </bootstrap>
   <bootstrap crc32="5376FF97">
-    <oemname name="StupnDOS" />
+    <oemname name="StupnDOS" verified="true" />
   </bootstrap>
   <bootstrap crc32="19935C0A">
-    <oemname name="StupnDOS" />
+    <oemname name="StupnDOS" verified="true" />
   </bootstrap>
   <bootstrap crc32="49EFF33F">
     <oemname name="S.BERMAN" />
   </bootstrap>
   <bootstrap crc32="5831A313">
+    <oemname name="Logitech" verified="true" />
     <oemname name="softeam4" />
-    <oemname name="Logitech" />
   </bootstrap>
   <bootstrap crc32="580B2275">
-    <oemname name="SU25 3-1" company="Electronic Arts" description="STORMOVIK: THE SU-25 SOVIET ATTACK FIGHTER DISK ONE" />
+    <oemname name="SU25 3-1" company="Electronic Arts" description="STORMOVIK: THE SU-25 SOVIET ATTACK FIGHTER DISK ONE" verified="true" />
     <oemname name="SU25 5-1" company="Electronic Arts" description="STORMOVIK: THE SU-25 SOVIET ATTACK FIGHTER DISK ONE" />
   </bootstrap>
   <bootstrap crc32="45E66E07">
-    <oemname name="SU25 3-2" company="Electronic Arts" description="STORMOVIK: THE SU-25 SOVIET ATTACK FIGHTER DISK TWO" />
+    <oemname name="SU25 3-2" company="Electronic Arts" description="STORMOVIK: THE SU-25 SOVIET ATTACK FIGHTER DISK TWO" verified="true" />
     <oemname name="SU25 5-2" company="Electronic Arts" description="STORMOVIK: THE SU-25 SOVIET ATTACK FIGHTER DISK TWO" />
   </bootstrap>
   <bootstrap crc32="E24772F5">
     <oemname name="SU25 5-3" company="Electronic Arts" description="STORMOVIK: THE SU-25 SOVIET ATTACK FIGHTER DISK THREE" />
   </bootstrap>
   <bootstrap crc32="A839DC5D">
-    <oemname name="Sysgen 2" />
+    <oemname name="Sysgen 2" verified="true" />
   </bootstrap>
   <bootstrap crc32="8876F787">
-    <oemname name="T V2.11 " company="Toshiba" />
+    <oemname name="T V2.11 " company="Toshiba" verified="true" />
   </bootstrap>
   <bootstrap crc32="C1C6ECB8" language="French">
     <oemname name="T V4.00 " />
   </bootstrap>
   <bootstrap crc32="CDF39875">
-    <oemname name="TAN  3.2" company="Tandy" description="MS-DOS 3.2" />
+    <oemname name="TAN  3.2" company="Tandy" description="MS-DOS 3.2" verified="true" />
   </bootstrap>
   <bootstrap crc32="B44D579C" language="French">
     <oemname name="TAN  3.2" company="Tandy" />
   </bootstrap>
   <bootstrap crc32="1EFC2A4F">
-    <oemname name="TAN  3.3" company="Tandy" description="MS-DOS 3.3" />
+    <oemname name="TAN  3.3" company="Tandy" description="MS-DOS 3.3" verified="true" />
   </bootstrap>
   <bootstrap crc32="52A29B7F" language="French">
     <oemname name="TAN  3.3" company="Tandy" />
   </bootstrap>
   <bootstrap crc32="ED266093">
-    <oemname name="Tandy557" company="Tandy" description="MS-DOS 2.11" />
+    <oemname name="Tandy557" company="Tandy" description="MS-DOS 2.11" verified="true" />
   </bootstrap>
   <bootstrap crc32="A26247F1">
-    <oemname name="TracerST" company="Trace Mountain Products" />
-    <oemname name="'b|m}IHC" suggestion="false" company="Virgin Interactive" description="Disney's The Jungle Book Disk 1" />
-    <oemname name="'d-:\IHC" suggestion="false" company="Virgin Interactive" description="Disney's The Jungle Book Disk 2" />
-    <oemname name="'c|!(IHC" suggestion="false" company="Virgin Interactive" description="Disney's The Jungle Book Disk 3" />
+    <oemname name="TracerST" company="Trace Mountain Products" verified="true" />
+    <oemname name="'b|m}IHC" suggestion="false" company="Virgin Interactive" description="Disney's The Jungle Book Disk 1" verified="true" />
+    <oemname name="'d-:\IHC" suggestion="false" company="Virgin Interactive" description="Disney's The Jungle Book Disk 2" verified="true" />
+    <oemname name="'c|!(IHC" suggestion="false" company="Virgin Interactive" description="Disney's The Jungle Book Disk 3" verified="true" />
   </bootstrap>
   <bootstrap crc32="C5B1E5A4">
-    <oemname name="TLC DSK " company="The Learning Company" description="Math Rabbit Program Disk" />
+    <oemname name="TLC DSK " company="The Learning Company" description="Math Rabbit Program Disk" verified="true" />
   </bootstrap>
   <bootstrap crc32="81322A5B">
     <oemname name="TLC DSK " company="The Learning Company" description="Math Rabbit Program Disk" />
@@ -770,14 +770,14 @@
     <oemname name="TLC DSK " company="The Learning Company" description="Treasure Mountain! Disk 2" />
   </bootstrap>
   <bootstrap crc32="EA4447DC">
-    <oemname name="TRIACGBR" />
+    <oemname name="TRIACGBR" verified="true" />
   </bootstrap>
   <bootstrap crc32="F1D48AEC">
     <oemname name="ULTRAISO" company="EZB Systems, Inc." description="UltraISO 9.0" />
   </bootstrap>
   <bootstrap crc32="468A1643" exactmatch="true">
     <oemname name="VFD2.1  " description="Virtual Floppy Drive 2.1" note="Not imaged from Original Media" />
-    <oemname name="AN CHEN " description="No Boot Loader" />
+    <oemname name="AN CHEN " description="No Boot Loader" verified="true" />
   </bootstrap>
   <bootstrap crc32="AA8C95CA" language="German">
     <oemname name="VGACPY45" company="Thomas Mönkemeier" description="VGA-Copy 4.5" />
@@ -801,7 +801,7 @@
     <oemname name=" VICTOR " />
   </bootstrap>
   <bootstrap crc32="3042486F">
-    <oemname name=" VICTOR " />
+    <oemname name=" VICTOR " verified="true" />
   </bootstrap>
   <bootstrap crc32="B6A45502">
     <oemname name="WINIMAGE" company="WinImage" note="Not imaged from Original Media" />
@@ -816,28 +816,28 @@
     <oemname name="WYTRON  " />
   </bootstrap>
   <bootstrap crc32="0D9D9701">
-    <oemname name="XTF-BOOT" company="Executive Systems, Inc." />
+    <oemname name="XTF-BOOT" company="Executive Systems, Inc." verified="true" />
   </bootstrap>
   <bootstrap crc32="B8DDBA37">
-    <oemname name="XTREEWIN" company="Executive Systems, Inc." />
+    <oemname name="XTREEWIN" company="Executive Systems, Inc." verified="true" />
   </bootstrap>
   <bootstrap crc32="B02B9A3C">
-    <oemname name="YAC 1   " company="Electronic Arts" description="Yeager Air Combat Disk 1" />
+    <oemname name="YAC 1   " company="Electronic Arts" description="Yeager Air Combat Disk 1" verified="true" />
   </bootstrap>
   <bootstrap crc32="2689A1BA">
-    <oemname name="YAC 2   " company="Electronic Arts" description="Yeager Air Combat Disk 2" />
+    <oemname name="YAC 2   " company="Electronic Arts" description="Yeager Air Combat Disk 2" verified="true" />
   </bootstrap>
   <bootstrap crc32="6DCD79E5">
-    <oemname name="YAC 3   " company="Electronic Arts" description="Yeager Air Combat Disk 3" />
+    <oemname name="YAC 3   " company="Electronic Arts" description="Yeager Air Combat Disk 3" verified="true" />
   </bootstrap>
   <bootstrap crc32="46627639">
-    <oemname name="YAC 4   " company="Electronic Arts" description="Yeager Air Combat Disk 4" />
+    <oemname name="YAC 4   " company="Electronic Arts" description="Yeager Air Combat Disk 4" verified="true" />
   </bootstrap>
   <bootstrap crc32="55E4CFDB">
-    <oemname name="YAC 1&amp;2 " company="Electronic Arts" description="Yeager Air Combat Disks 1 &amp; 2" />
+    <oemname name="YAC 1&amp;2 " company="Electronic Arts" description="Yeager Air Combat Disks 1 &amp; 2" verified="true" />
   </bootstrap>
   <bootstrap crc32="25272248">
-    <oemname name="YAC 3&amp;4 " company="Electronic Arts" description="Yeager Air Combat Disks 3 &amp; 4" />
+    <oemname name="YAC 3&amp;4 " company="Electronic Arts" description="Yeager Air Combat Disks 3 &amp; 4" verified="true" />
   </bootstrap>
   <bootstrap crc32="015628B5">
     <oemname name="ZDS  3.0" />
@@ -852,9 +852,9 @@
     <oemname namehex="0000000000000000" description="No Boot Loader" />
   </bootstrap>
   <bootstrap crc32="AEA629C4">
-    <oemname namehex="03048849B7160100" suggestion="false"/>
-    <oemname name="CDM  3.2" suggestion="false"/>
-    <oemname namehex="03051C5C89140700" suggestion="false" company="Activision" description="Powerhits: BattleTech Disk 1" />
-    <oemname namehex="03051C5C89140800" suggestion="false" company="Activision" description="Powerhits: Sci-Fi Disk 2" />   
+    <oemname namehex="03048849B7160100" suggestion="false" verified="true" />
+    <oemname name="CDM  3.2" suggestion="false" verified="true" />
+    <oemname namehex="03051C5C89140700" suggestion="false" company="Activision" description="Powerhits: BattleTech Disk 1" verified="true" />
+    <oemname namehex="03051C5C89140800" suggestion="false" company="Activision" description="Powerhits: Sci-Fi Disk 2" verified="true" />   
   </bootstrap>
 </root>
