@@ -1,5 +1,6 @@
 ﻿Imports DiskImageTool.DiskImage
 Imports DiskImageTool.DiskImage.BootSector
+Imports DiskImageTool.DiskImage.BiosParameterBlock
 Imports DiskImageTool.DiskImage.DirectoryEntry
 
 Module HexViews
@@ -31,10 +32,10 @@ Module HexViews
                 If Length > 0 Then
                     HexViewSectorData.SectorData.AddBlockByOffset(Offset, Length)
                 End If
-                Offset = Disk.BootSector.ClusterToOffset(Cluster)
+                Offset = Disk.BPB.ClusterToOffset(Cluster)
                 Length = 0
             End If
-            Length += Disk.BootSector.BytesPerCluster
+            Length += Disk.BPB.BytesPerCluster
             LastCluster = Cluster
         Next
 
@@ -68,17 +69,17 @@ Module HexViews
         HighlightedRegions.AddBootSectorOffset(BootSectorOffsets.JmpBoot, ForeColor)
         If Disk.IsValidImage Then
             HighlightedRegions.AddBootSectorOffset(BootSectorOffsets.OEMName, Color.Red)
-            HighlightedRegions.AddBootSectorOffset(BootSectorOffsets.BytesPerSector, Color.Blue)
-            HighlightedRegions.AddBootSectorOffset(BootSectorOffsets.SectorsPerCluster, Color.Blue)
-            HighlightedRegions.AddBootSectorOffset(BootSectorOffsets.ReservedSectorCount, Color.Blue)
-            HighlightedRegions.AddBootSectorOffset(BootSectorOffsets.NumberOfFATs, Color.Blue)
-            HighlightedRegions.AddBootSectorOffset(BootSectorOffsets.RootEntryCount, Color.Blue)
-            HighlightedRegions.AddBootSectorOffset(BootSectorOffsets.SectorCountSmall, Color.Blue)
-            HighlightedRegions.AddBootSectorOffset(BootSectorOffsets.MediaDescriptor, Color.Blue)
-            HighlightedRegions.AddBootSectorOffset(BootSectorOffsets.SectorsPerFAT, Color.Blue)
-            HighlightedRegions.AddBootSectorOffset(BootSectorOffsets.SectorsPerTrack, Color.Blue)
-            HighlightedRegions.AddBootSectorOffset(BootSectorOffsets.NumberOfHeads, Color.Blue)
-            HighlightedRegions.AddBootSectorOffset(BootSectorOffsets.HiddenSectors, Color.Blue)
+            HighlightedRegions.AddBPBoffset(BPBOoffsets.BytesPerSector, Color.Blue)
+            HighlightedRegions.AddBPBoffset(BPBOoffsets.SectorsPerCluster, Color.Blue)
+            HighlightedRegions.AddBPBoffset(BPBOoffsets.ReservedSectorCount, Color.Blue)
+            HighlightedRegions.AddBPBoffset(BPBOoffsets.NumberOfFATs, Color.Blue)
+            HighlightedRegions.AddBPBoffset(BPBOoffsets.RootEntryCount, Color.Blue)
+            HighlightedRegions.AddBPBoffset(BPBOoffsets.SectorCountSmall, Color.Blue)
+            HighlightedRegions.AddBPBoffset(BPBOoffsets.MediaDescriptor, Color.Blue)
+            HighlightedRegions.AddBPBoffset(BPBOoffsets.SectorsPerFAT, Color.Blue)
+            HighlightedRegions.AddBPBoffset(BPBOoffsets.SectorsPerTrack, Color.Blue)
+            HighlightedRegions.AddBPBoffset(BPBOoffsets.NumberOfHeads, Color.Blue)
+            HighlightedRegions.AddBPBoffset(BPBOoffsets.HiddenSectors, Color.Blue)
 
             If Disk.BootSector.HasValidExtendedBootSignature And BootStrapStart >= BootSectorOffsets.FileSystemType + BootSectorSizes.FileSystemType Then
                 HighlightedRegions.AddBootSectorOffset(BootSectorOffsets.DriveNumber, Color.Purple)
@@ -127,14 +128,14 @@ Module HexViews
 
             If DirectoryEntry.IsDeleted Then
                 Caption = "Deleted " & Caption
-                Dim DataOffset = Disk.BootSector.ClusterToOffset(DirectoryEntry.StartingCluster)
+                Dim DataOffset = Disk.BPB.ClusterToOffset(DirectoryEntry.StartingCluster)
                 Dim Length As UInteger
                 Dim FileSize As UInteger
                 If DirectoryEntry.IsDirectory Then
-                    Length = Disk.BootSector.BytesPerCluster
+                    Length = Disk.BPB.BytesPerCluster
                     FileSize = Length
                 Else
-                    Length = Math.Ceiling(DirectoryEntry.FileSize / Disk.BootSector.BytesPerCluster) * Disk.BootSector.BytesPerCluster
+                    Length = Math.Ceiling(DirectoryEntry.FileSize / Disk.BPB.BytesPerCluster) * Disk.BPB.BytesPerCluster
                     FileSize = DirectoryEntry.FileSize
                 End If
 
@@ -162,9 +163,9 @@ Module HexViews
 
         Dim HighlightedRegions As New HighlightedRegions
         Dim OriginalData() As Byte = Nothing
-        For Index = 0 To Disk.BootSector.NumberOfFATs - 1
-            Dim Length As UInteger = Disk.SectorToBytes(Disk.BootSector.SectorsPerFAT)
-            Dim Start As UInteger = Disk.SectorToBytes(Disk.BootSector.FATRegionStart) + Length * Index
+        For Index = 0 To Disk.BPB.NumberOfFATs - 1
+            Dim Length As UInteger = Disk.SectorToBytes(Disk.BPB.SectorsPerFAT)
+            Dim Start As UInteger = Disk.SectorToBytes(Disk.BPB.FATRegionStart) + Length * Index
             Dim Data = Disk.Data.GetBytes(Start, Length)
 
             HexViewSectorData.SectorData.AddBlockByOffset(Start, Length, "FAT " & Index + 1)
@@ -278,7 +279,7 @@ Module HexViews
                     Dim BlockOffset = J * Disk.BYTES_PER_SECTOR
                     Dim BlockSize = Math.Min(BytesRemaining, Disk.BYTES_PER_SECTOR)
                     If BlockSize > 0 Then
-                        Dim Cluster = Disk.BootSector.SectorToCluster(Sector)
+                        Dim Cluster = Disk.BPB.SectorToCluster(Sector)
                         If Disk.FAT.FileAllocation.ContainsKey(Cluster) Then
                             HighlightedRegions.AddItem(BlockOffset, BlockSize, Color.Red)
                         End If

@@ -5,6 +5,7 @@ Imports System.Net
 Imports System.Text
 Imports DiskImageTool.DiskImage
 Imports BootSectorOffsets = DiskImageTool.DiskImage.BootSector.BootSectorOffsets
+Imports BPBOffsets = DiskImageTool.DiskImage.BiosParameterBlock.BPBOoffsets
 
 Public Enum ItemScanTypes
     None = 0
@@ -61,7 +62,7 @@ Public Class MainForm
 
         If Not Remove Then
             If Disk.IsValidImage Then
-                DiskType = GetFloppyDiskTypeName(Disk.BootSector)
+                DiskType = GetFloppyDiskTypeName(Disk.BPB)
             Else
                 DiskType = GetFloppyDiskTypeName(Disk.Data.Length)
             End If
@@ -180,14 +181,16 @@ Public Class MainForm
         Dim IsValidImage As Boolean = Disk.IsValidImage
         Dim HasBadSectors As Boolean = False
         Dim HasMismatchedFATs As Boolean = False
+        Dim HasMismatchedMediaDescriptor As Boolean = False
         Dim HasInvalidImageSize As Boolean = False
         Dim UnknownDiskType As Boolean = False
 
         If Not Remove And IsValidImage Then
             HasBadSectors = Disk.FAT.BadClusters.Count > 0
             HasMismatchedFATs = Not Disk.CompareFATTables
+            HasMismatchedMediaDescriptor = Disk.BootSector.BPB.IsValid AndAlso Disk.GetFATMediaDescriptor <> Disk.BootSector.BPB.MediaDescriptor
             HasInvalidImageSize = Disk.CheckImageSize <> 0
-            UnknownDiskType = GetFloppyDiskType(Disk.BootSector) = FloppyDiskType.FloppyUnknown
+            UnknownDiskType = GetFloppyDiskType(Disk.BPB) = FloppyDiskType.FloppyUnknown
         End If
 
         If Remove Then
@@ -227,6 +230,18 @@ Public Class MainForm
             End If
             If UpdateFilters Then
                 FilterUpdate(FilterTypes.HasMismatchedFATs)
+            End If
+        End If
+
+        If Not ImageData.Scanned Or HasMismatchedMediaDescriptor <> ImageData.ScanInfo.HasMismatchedMediaDescriptor Then
+            ImageData.ScanInfo.HasMismatchedMediaDescriptor = HasMismatchedMediaDescriptor
+            If HasMismatchedMediaDescriptor Then
+                _FilterCounts(FilterTypes.HasMismatchedMediaDescriptor) += 1
+            ElseIf ImageData.Scanned Then
+                _FilterCounts(FilterTypes.HasMismatchedMediaDescriptor) -= 1
+            End If
+            If UpdateFilters Then
+                FilterUpdate(FilterTypes.HasMismatchedMediaDescriptor)
             End If
         End If
 
@@ -276,7 +291,7 @@ Public Class MainForm
         Dim OEMNameFound As Boolean = True
         Dim OEMNameWin9x As Boolean = False
 
-        If Not Remove And Disk.IsValidImage Then
+        If Not Remove And Disk.BootSector.BPB.IsValid Then
             Dim OEMName = Disk.BootSector.OEMName
             OEMNameWin9x = Disk.BootSector.IsWin9xOEMName
 
@@ -1020,10 +1035,10 @@ Public Class MainForm
         BtnEditFAT.Tag = Nothing
 
         If _Disk IsNot Nothing AndAlso _Disk.IsValidImage Then
-            If _Disk.BootSector.NumberOfFATs = 1 OrElse _Disk.CompareFATTables Then
+            If _Disk.BPB.NumberOfFATs = 1 OrElse _Disk.CompareFATTables Then
                 BtnEditFAT.Tag = -1
             Else
-                For Counter = 0 To _Disk.BootSector.NumberOfFATs - 1
+                For Counter = 0 To _Disk.BPB.NumberOfFATs - 1
                     Dim Item As New ToolStripMenuItem With {
                        .Text = "FAT &" & Counter + 1,
                        .Tag = Counter
@@ -1167,12 +1182,12 @@ Public Class MainForm
 
             If FileData.DirectoryEntry.StartingCluster >= 2 Then
 
-                Dim Sector = _Disk.BootSector.ClusterToSector(FileData.DirectoryEntry.StartingCluster)
+                Dim Sector = _Disk.BPB.ClusterToSector(FileData.DirectoryEntry.StartingCluster)
                 ToolStripFileSector.Text = $"Sector {Sector}"
                 ToolStripFileSector.Visible = True
 
-                Dim Track = _Disk.BootSector.SectorToTrack(Sector)
-                Dim Side = _Disk.BootSector.SectorToSide(Sector)
+                Dim Track = _Disk.BPB.SectorToTrack(Sector)
+                Dim Side = _Disk.BPB.SectorToSide(Sector)
 
                 ToolStripFileTrack.Text = $"Track {Track}.{Side}"
                 ToolStripFileTrack.Visible = True
@@ -1261,7 +1276,7 @@ Public Class MainForm
         Msg &= $"Do you wish to replace {FileData.DirectoryEntry.GetFullFileName} with {FileInfo.FullName}?"
 
         If MsgBox(Msg, MsgBoxStyle.Question + MsgBoxStyle.YesNo + MsgBoxStyle.DefaultButton2) = MsgBoxResult.Yes Then
-            Dim ClusterSize = _Disk.BootSector.BytesPerCluster
+            Dim ClusterSize = _Disk.BPB.BytesPerCluster
             Dim FileSize = Math.Min(FileData.DirectoryEntry.FileSize, FileData.DirectoryEntry.FATChain.Clusters.Count * ClusterSize)
             Dim BytesToFill As Integer
             Dim ClusterIndex As Integer = 0
@@ -1274,7 +1289,7 @@ Public Class MainForm
                 Do While BytesToRead > 0
                     Dim b(ClusterSize - 1) As Byte
                     Dim Cluster = FileData.DirectoryEntry.FATChain.Clusters(ClusterIndex)
-                    Dim ClusterOffset = _Disk.BootSector.ClusterToOffset(Cluster)
+                    Dim ClusterOffset = _Disk.BPB.ClusterToOffset(Cluster)
                     If BytesToRead < ClusterSize Then
                         b = _Disk.Data.GetBytes(ClusterOffset, ClusterSize)
                     End If
@@ -1297,7 +1312,7 @@ Public Class MainForm
             Do While FileSize > 0
                 Dim b(ClusterSize - 1) As Byte
                 Dim Cluster = FileData.DirectoryEntry.FATChain.Clusters(ClusterIndex)
-                Dim ClusterOffset = _Disk.BootSector.ClusterToOffset(Cluster)
+                Dim ClusterOffset = _Disk.BPB.ClusterToOffset(Cluster)
                 BytesToFill = Math.Min(FileSize, ClusterSize)
                 If BytesToFill < ClusterSize Then
                     b = _Disk.Data.GetBytes(ClusterOffset, ClusterSize)
@@ -1566,7 +1581,7 @@ Public Class MainForm
         ElseIf Compare < 0 Then
             Result = MsgBox($"The image size is smaller than the detected size.{vbCrLf}{vbCrLf}Are you sure you wish to increase the image size?", MsgBoxStyle.Question + MsgBoxStyle.YesNo + MsgBoxStyle.DefaultButton2) = MsgBoxResult.Yes
         Else
-            Dim ReportedSize = _Disk.ReportedImageSize
+            Dim ReportedSize = _Disk.BPB.ReportedImageSize
             Dim Data = _Disk.Data.GetBytes(ReportedSize, _Disk.Data.Length - ReportedSize)
             Dim HasData As Boolean = False
             For Each b In Data
@@ -2246,17 +2261,24 @@ Public Class MainForm
                 End If
                 .AddItem(DiskGroup, "Image Size", Disk.Data.Length.ToString("N0"), ForeColor)
 
-                Dim DiskType As String
-                If Disk.IsValidImage Then
-                    DiskType = GetFloppyDiskTypeName(Disk.BootSector)
+                Dim DiskType As FloppyDiskType
+                If Disk.BPB.IsValid Then
+                    DiskType = GetFloppyDiskType(Disk.BPB)
                 Else
-                    DiskType = GetFloppyDiskTypeName(Disk.Data.Length)
+                    DiskType = GetFloppyDiskType(Disk.GetFATMediaDescriptor)
+                    If DiskType = FloppyDiskType.FloppyUnknown Then
+                        DiskType = GetFloppyDiskType(Disk.Data.Length)
+                    End If
                 End If
-                DiskType &= " Floppy"
-                .AddItem(DiskGroup, "Disk Type", DiskType)
+                Dim DiskTypeString = GetFloppyDiskTypeName(DiskType)
+                .AddItem(DiskGroup, "Disk Type", DiskTypeString & " Floppy")
+
+                If Disk.BPB.IsValid AndAlso Disk.CheckImageSize > 0 Then
+                    .AddItem(DiskGroup, DiskTypeString & " CRC32", Crc32.ComputeChecksum(Disk.Data.GetBytes(0, Disk.BPB.ReportedImageSize())).ToString("X8"))
+                End If
 
                 If Disk.IsValidImage Then
-                    Dim BadSectors = GetBadSectors(Disk.BootSector, Disk.FAT.BadClusters)
+                    Dim BadSectors = GetBadSectors(Disk.BPB, Disk.FAT.BadClusters)
                     Dim CopyProtection As String = GetCopyProtection(Disk, BadSectors)
 
                     If CopyProtection.Length > 0 Then
@@ -2289,29 +2311,40 @@ Public Class MainForm
                 End If
 
                 .AddItem(BootRecordGroup, BootSectorDescription(BootSectorOffsets.OEMName), Disk.BootSector.GetOEMNameString.TrimEnd(NULL_CHAR), ForeColor)
-                .AddItem(BootRecordGroup, BootSectorDescription(BootSectorOffsets.BytesPerSector), Disk.BootSector.BytesPerSector)
-                .AddItem(BootRecordGroup, BootSectorDescription(BootSectorOffsets.SectorsPerCluster), Disk.BootSector.SectorsPerCluster)
-                .AddItem(BootRecordGroup, BootSectorDescription(BootSectorOffsets.ReservedSectorCount), Disk.BootSector.ReservedSectorCount)
+                .AddItem(BootRecordGroup, BPBDescription(BPBOffsets.BytesPerSector), Disk.BootSector.BPB.BytesPerSector)
+                .AddItem(BootRecordGroup, BPBDescription(BPBOffsets.SectorsPerCluster), Disk.BootSector.BPB.SectorsPerCluster)
+                .AddItem(BootRecordGroup, BPBDescription(BPBOffsets.ReservedSectorCount), Disk.BootSector.BPB.ReservedSectorCount)
 
-                Value = Disk.BootSector.NumberOfFATs
-                If Disk.BootSector.IsValidImage AndAlso Not Disk.CompareFATTables Then
+                Value = Disk.BootSector.BPB.NumberOfFATs
+                If Disk.IsValidImage AndAlso Not Disk.CompareFATTables Then
                     Value &= " (Mismatched)"
                     ForeColor = Color.Red
                 Else
                     ForeColor = SystemColors.WindowText
                 End If
 
-                .AddItem(BootRecordGroup, BootSectorDescription(BootSectorOffsets.NumberOfFATs), Value, ForeColor)
-                .AddItem(BootRecordGroup, BootSectorDescription(BootSectorOffsets.RootEntryCount), Disk.BootSector.RootEntryCount)
-                .AddItem(BootRecordGroup, BootSectorDescription(BootSectorOffsets.SectorCountSmall), Disk.BootSector.SectorCount)
-                .AddItem(BootRecordGroup, BootSectorDescription(BootSectorOffsets.MediaDescriptor), Disk.BootSector.MediaDescriptor.ToString("X2") & " Hex")
-                .AddItem(BootRecordGroup, BootSectorDescription(BootSectorOffsets.SectorsPerFAT), Disk.BootSector.SectorsPerFAT)
-                .AddItem(BootRecordGroup, BootSectorDescription(BootSectorOffsets.SectorsPerTrack), Disk.BootSector.SectorsPerTrack)
-                .AddItem(BootRecordGroup, BootSectorDescription(BootSectorOffsets.NumberOfHeads), Disk.BootSector.NumberOfHeads)
+                .AddItem(BootRecordGroup, BPBDescription(BPBOffsets.NumberOfFATs), Value, ForeColor)
+                .AddItem(BootRecordGroup, BPBDescription(BPBOffsets.RootEntryCount), Disk.BootSector.BPB.RootEntryCount)
+                .AddItem(BootRecordGroup, BPBDescription(BPBOffsets.SectorCountSmall), Disk.BootSector.BPB.SectorCount)
+
+                Value = Disk.BootSector.BPB.MediaDescriptor.ToString("X2") & " Hex"
+                If Disk.IsValidImage AndAlso Disk.GetFATMediaDescriptor <> Disk.BootSector.BPB.MediaDescriptor Then
+                    Value &= " (Mismatched)"
+                    ForeColor = Color.Red
+                Else
+                    ForeColor = SystemColors.WindowText
+                End If
+
+                .AddItem(BootRecordGroup, BPBDescription(BPBOffsets.MediaDescriptor), Value, ForeColor)
+
+
+                .AddItem(BootRecordGroup, BPBDescription(BPBOffsets.SectorsPerFAT), Disk.BootSector.BPB.SectorsPerFAT)
+                .AddItem(BootRecordGroup, BPBDescription(BPBOffsets.SectorsPerTrack), Disk.BootSector.BPB.SectorsPerTrack)
+                .AddItem(BootRecordGroup, BPBDescription(BPBOffsets.NumberOfHeads), Disk.BootSector.BPB.NumberOfHeads)
 
                 'If Debugger.IsAttached Then
-                If Disk.BootSector.HiddenSectors > 0 Then
-                    .AddItem(BootRecordGroup, BootSectorDescription(BootSectorOffsets.HiddenSectors), Disk.BootSector.HiddenSectors)
+                If Disk.BootSector.BPB.HiddenSectors > 0 Then
+                    .AddItem(BootRecordGroup, BPBDescription(BPBOffsets.HiddenSectors), Disk.BootSector.BPB.HiddenSectors)
                 End If
                 'End If
 
@@ -2354,20 +2387,18 @@ Public Class MainForm
                         .AddItem(FileSystemGroup, "Volume Date", ExpandedDateToString(VolumeDate, True, False, False, False))
                     End If
 
-                    .AddItem(FileSystemGroup, "Total Space", Format(Disk.SectorToBytes(Disk.BootSector.DataRegionSize), "N0") & " bytes")
-                    .AddItem(FileSystemGroup, "Free Space", Format(Disk.FAT.GetFreeSpace(Disk.BootSector.BytesPerCluster), "N0") & " bytes")
+                    .AddItem(FileSystemGroup, "Total Space", Format(Disk.SectorToBytes(Disk.BPB.DataRegionSize), "N0") & " bytes")
+                    .AddItem(FileSystemGroup, "Free Space", Format(Disk.FAT.GetFreeSpace(Disk.BPB.BytesPerCluster), "N0") & " bytes")
 
                     If Disk.FAT.BadClusters.Count > 0 Then
-                        Value = Format(Disk.FAT.BadClusters.Count * Disk.BootSector.BytesPerCluster, "N0") & " bytes"
+                        Value = Format(Disk.FAT.BadClusters.Count * Disk.BPB.BytesPerCluster, "N0") & " bytes"
                         ForeColor = Color.Red
                         .AddItem(FileSystemGroup, "Bad Sectors", Value, ForeColor)
                     End If
 
                     Dim BootStrapGroup = .Groups.Add("Bootstrap", "Bootstrap")
 
-                    If Debugger.IsAttached Then
-                        .AddItem(BootStrapGroup, "Bootstrap CRC32", Crc32.ComputeChecksum(Disk.BootSector.BootStrapCode).ToString("X8"))
-                    End If
+                    .AddItem(BootStrapGroup, "Bootstrap CRC32", Crc32.ComputeChecksum(Disk.BootSector.BootStrapCode).ToString("X8"))
 
                     If BootstrapType IsNot Nothing Then
                         If BootstrapType.Language.Length > 0 Then

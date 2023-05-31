@@ -41,7 +41,7 @@ Public Class FATEditForm
         _ToolTip = New ToolTip()
         _Disk = Disk
 
-        _FAT = New FAT12(_Disk.Data, _Disk.BootSector, Index)
+        _FAT = New FAT12(_Disk.Data, _Disk.BPB, Index)
         ProcessFATChains()
 
         _FATTable = GetDataTable(_FAT)
@@ -623,7 +623,7 @@ Public Class FATEditForm
     End Sub
 
     Private Sub ProcessFATChains()
-        Dim Directory = New RootDirectory(_Disk.Data, _Disk.BootSector, _FAT, True)
+        Dim Directory = New RootDirectory(_Disk.Data, _Disk.BPB, _FAT, True)
     End Sub
 
     Private Sub RefreshGrid()

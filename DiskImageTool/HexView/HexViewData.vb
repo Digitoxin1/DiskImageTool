@@ -26,8 +26,8 @@ Public Class HexViewData
         Dim Cluster As UShort
         Dim ClusterEnd As UShort
         If _HexViewSectorData.Disk.IsValidImage Then
-            Cluster = _HexViewSectorData.Disk.BootSector.SectorToCluster(Sector)
-            ClusterEnd = _HexViewSectorData.Disk.BootSector.SectorToCluster(SectorEnd)
+            Cluster = _HexViewSectorData.Disk.BPB.SectorToCluster(Sector)
+            ClusterEnd = _HexViewSectorData.Disk.BPB.SectorToCluster(SectorEnd)
         Else
             Cluster = 0
             ClusterEnd = 0

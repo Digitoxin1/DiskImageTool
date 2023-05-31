@@ -15,28 +15,6 @@ Namespace DiskImage
                     Return "Bootstrap Jump"
                 Case DiskImage.BootSector.BootSectorOffsets.OEMName
                     Return "OEM Name"
-                Case DiskImage.BootSector.BootSectorOffsets.BytesPerSector
-                    Return "Bytes per Sector"
-                Case DiskImage.BootSector.BootSectorOffsets.SectorsPerCluster
-                    Return "Sectors per Cluster"
-                Case DiskImage.BootSector.BootSectorOffsets.ReservedSectorCount
-                    Return "Reserved Sectors"
-                Case DiskImage.BootSector.BootSectorOffsets.NumberOfFATs
-                    Return "Number of FATs"
-                Case DiskImage.BootSector.BootSectorOffsets.RootEntryCount
-                    Return "Root Directory Entries"
-                Case DiskImage.BootSector.BootSectorOffsets.SectorCountSmall
-                    Return "Total Sector Count"
-                Case DiskImage.BootSector.BootSectorOffsets.MediaDescriptor
-                    Return "Media Descriptor"
-                Case DiskImage.BootSector.BootSectorOffsets.SectorsPerFAT
-                    Return "Sectors per FAT"
-                Case DiskImage.BootSector.BootSectorOffsets.SectorsPerTrack
-                    Return "Sectors per Track"
-                Case DiskImage.BootSector.BootSectorOffsets.NumberOfHeads
-                    Return "Number of Heads"
-                Case DiskImage.BootSector.BootSectorOffsets.HiddenSectors
-                    Return "Hidden Sectors"
                 Case DiskImage.BootSector.BootSectorOffsets.DriveNumber
                     Return "Drive Number"
                 Case DiskImage.BootSector.BootSectorOffsets.Reserved
@@ -51,6 +29,35 @@ Namespace DiskImage
                     Return "File System ID"
                 Case DiskImage.BootSector.BootSectorOffsets.BootStrapSignature
                     Return "Boot Sector Signature"
+                Case Else
+                    Return Offset.ToString
+            End Select
+        End Function
+
+        Public Function BPBDescription(Offset As DiskImage.BiosParameterBlock.BPBOoffsets) As String
+            Select Case Offset
+                Case DiskImage.BiosParameterBlock.BPBOoffsets.BytesPerSector
+                    Return "Bytes per Sector"
+                Case DiskImage.BiosParameterBlock.BPBOoffsets.SectorsPerCluster
+                    Return "Sectors per Cluster"
+                Case DiskImage.BiosParameterBlock.BPBOoffsets.ReservedSectorCount
+                    Return "Reserved Sectors"
+                Case DiskImage.BiosParameterBlock.BPBOoffsets.NumberOfFATs
+                    Return "Number of FATs"
+                Case DiskImage.BiosParameterBlock.BPBOoffsets.RootEntryCount
+                    Return "Root Directory Entries"
+                Case DiskImage.BiosParameterBlock.BPBOoffsets.SectorCountSmall
+                    Return "Total Sector Count"
+                Case DiskImage.BiosParameterBlock.BPBOoffsets.MediaDescriptor
+                    Return "Media Descriptor"
+                Case DiskImage.BiosParameterBlock.BPBOoffsets.SectorsPerFAT
+                    Return "Sectors per FAT"
+                Case DiskImage.BiosParameterBlock.BPBOoffsets.SectorsPerTrack
+                    Return "Sectors per Track"
+                Case DiskImage.BiosParameterBlock.BPBOoffsets.NumberOfHeads
+                    Return "Number of Heads"
+                Case DiskImage.BiosParameterBlock.BPBOoffsets.HiddenSectors
+                    Return "Hidden Sectors"
                 Case Else
                     Return Offset.ToString
             End Select
@@ -112,12 +119,12 @@ Namespace DiskImage
             End Select
         End Function
 
-        Public Function ClusterListToSectorList(BootSector As BootSector, ClusterList As List(Of UShort)) As List(Of UInteger)
+        Public Function ClusterListToSectorList(BPB As BiosParameterBlock, ClusterList As List(Of UShort)) As List(Of UInteger)
             Dim SectorList As New List(Of UInteger)
 
             For Each Cluster In ClusterList
-                Dim Sector = BootSector.ClusterToSector(Cluster)
-                For Index = 0 To BootSector.SectorsPerCluster - 1
+                Dim Sector = BPB.ClusterToSector(Cluster)
+                For Index = 0 To BPB.SectorsPerCluster - 1
                     SectorList.Add(Sector + Index)
                 Next
             Next
@@ -143,12 +150,12 @@ Namespace DiskImage
             Return New DiskImage.Disk(Data, ImageData.Modifications)
         End Function
 
-        Public Function GetBadSectors(BootSector As BootSector, BadClusters As List(Of UShort)) As HashSet(Of UInteger)
+        Public Function GetBadSectors(BPB As BiosParameterBlock, BadClusters As List(Of UShort)) As HashSet(Of UInteger)
             Dim BadSectors As New HashSet(Of UInteger)
 
             For Each Cluster In BadClusters
-                Dim Sector = BootSector.ClusterToSector(Cluster)
-                For Index = 0 To BootSector.SectorsPerCluster - 1
+                Dim Sector = BPB.ClusterToSector(Cluster)
+                For Index = 0 To BPB.SectorsPerCluster - 1
                     BadSectors.Add(Sector + Index)
                 Next
             Next

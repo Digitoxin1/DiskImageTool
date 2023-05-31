@@ -125,6 +125,7 @@
     <Compile Include="Controls\ToolStripCheckBox.vb">
       <SubType>Component</SubType>
     </Compile>
+    <Compile Include="DiskImage\BiosParameterBlock.vb" />
     <Compile Include="DiskImage\CodePage437.vb" />
     <Compile Include="DiskImage\DataChange.vb" />
     <Compile Include="DiskImage\DirectoryData.vb" />

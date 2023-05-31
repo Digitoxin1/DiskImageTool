@@ -12,7 +12,7 @@ Public Class HexViewForm
     Private WithEvents NumericCluster As ToolStripNumericUpDown
     Private WithEvents NumericSector As ToolStripNumericUpDown
     Public Shared ReadOnly ALT_BACK_COLOR As Color = Color.FromArgb(246, 246, 252)
-    Private ReadOnly _BootSector As BootSector
+    Private ReadOnly _BPB As BiosParameterBlock
     Private ReadOnly _Changes As Stack(Of List(Of HexChange))
     Private ReadOnly _ClusterNavigator As Boolean
     Private ReadOnly _HexViewSectorData As HexViewSectorData
@@ -32,7 +32,7 @@ Public Class HexViewForm
         InitializeComponent()
         ' Add any initialization after the InitializeComponent() call.
         _HexViewSectorData = HexViewSectorData
-        _BootSector = _HexViewSectorData.Disk.BootSector
+        _BPB = _HexViewSectorData.Disk.BPB
         _Changes = New Stack(Of List(Of HexChange))
         _RedoChanges = New Stack(Of List(Of HexChange))
         _CurrentHexViewData = Nothing
@@ -41,11 +41,11 @@ Public Class HexViewForm
         _SyncBlocks = SyncBlocks
         _LastSearch = New HexSearch
 
-        If Not _BootSector.IsValidImage Then
-            _BootSector = BuildBootSector(_HexViewSectorData.Disk.Data.Length)
+        If Not _BPB.IsValid Then
+            _BPB = BuildBPB(_HexViewSectorData.Disk.Data.Length)
         End If
 
-        If Not _BootSector.IsValidImage Then
+        If Not _BPB.IsValid Then
             _ClusterNavigator = False
         End If
 
@@ -406,9 +406,9 @@ Public Class HexViewForm
     Private Sub JumpToCluster(Cluster As UShort)
         Dim SectorStart = _CurrentHexViewData.SectorBlock.SectorStart
         Dim SectorEnd = SectorStart + _CurrentHexViewData.SectorBlock.SectorCount - 1
-        Dim ClusterStart = _BootSector.SectorToCluster(SectorStart)
-        Dim ClusterEnd = _BootSector.SectorToCluster(SectorEnd)
-        Dim Sector = _BootSector.ClusterToSector(Cluster)
+        Dim ClusterStart = _BPB.SectorToCluster(SectorStart)
+        Dim ClusterEnd = _BPB.SectorToCluster(SectorEnd)
+        Dim Sector = _BPB.ClusterToSector(Cluster)
 
         If Cluster > 1 And Cluster >= ClusterStart And Cluster <= ClusterEnd Then
             Dim Offset = Disk.SectorToBytes(Sector) - HexBox1.LineInfoOffset
@@ -435,9 +435,9 @@ Public Class HexViewForm
 
         Dim SectorStart = _CurrentHexViewData.SectorBlock.SectorStart
         Dim SectorEnd = SectorStart + _CurrentHexViewData.SectorBlock.SectorCount - 1
-        Dim TrackStart = _BootSector.SectorToTrack(SectorStart)
-        Dim TrackEnd = _BootSector.SectorToTrack(SectorEnd)
-        Dim Sector = _BootSector.TrackToSector(Track, Side)
+        Dim TrackStart = _BPB.SectorToTrack(SectorStart)
+        Dim TrackEnd = _BPB.SectorToTrack(SectorEnd)
+        Dim Sector = _BPB.TrackToSector(Track, Side)
 
         If Track >= TrackStart And Track <= TrackEnd Then
             Dim Offset = Disk.SectorToBytes(Sector) - HexBox1.LineInfoOffset
@@ -676,8 +676,8 @@ Public Class HexViewForm
 
             If _CurrentSector <> Sector Or ForceUpdate Then
                 Dim Cluster As UShort
-                If _BootSector.IsValidImage Then
-                    Cluster = _BootSector.SectorToCluster(Sector)
+                If _BPB.IsValid Then
+                    Cluster = _BPB.SectorToCluster(Sector)
                 Else
                     Cluster = 0
                 End If
@@ -691,7 +691,7 @@ Public Class HexViewForm
                     ToolStripStatusCluster.Visible = Not OutOfRange
                     ToolStripStatusCluster.Text = "Cluster: " & Cluster
 
-                    If _BootSector.IsValidImage Then
+                    If _BPB.IsValid Then
                         If _CurrentHexViewData.Disk.FAT.FileAllocation.ContainsKey(Cluster) Then
                             Dim OffsetList = _CurrentHexViewData.Disk.FAT.FileAllocation.Item(Cluster)
                             Dim DirectoryEntry = _CurrentHexViewData.Disk.GetDirectoryEntryByOffset(OffsetList.Item(0))
@@ -700,12 +700,12 @@ Public Class HexViewForm
                     End If
                 End If
 
-                If _BootSector.IsValidImage Then
+                If _BPB.IsValid Then
                     ToolStripStatusTrack.Visible = Not OutOfRange
-                    ToolStripStatusTrack.Text = "Track: " & _BootSector.SectorToTrack(Sector)
+                    ToolStripStatusTrack.Text = "Track: " & _BPB.SectorToTrack(Sector)
 
                     ToolStripStatusSide.Visible = Not OutOfRange
-                    ToolStripStatusSide.Text = "Side: " & _BootSector.SectorToSide(Sector)
+                    ToolStripStatusSide.Text = "Side: " & _BPB.SectorToSide(Sector)
                 Else
                     ToolStripStatusTrack.Visible = False
                     ToolStripStatusTrack.Text = ""
@@ -814,15 +814,15 @@ Public Class HexViewForm
             End If
 
             If _ClusterNavigator Then
-                NumericCluster.Minimum = _BootSector.SectorToCluster(SectorStart)
-                NumericCluster.Maximum = _BootSector.SectorToCluster(SectorEnd)
+                NumericCluster.Minimum = _BPB.SectorToCluster(SectorStart)
+                NumericCluster.Maximum = _BPB.SectorToCluster(SectorEnd)
                 NumericCluster.Enabled = True
 
                 ComboTrack.Items.Clear()
-                Dim TrackStart = _BootSector.SectorToTrack(SectorStart)
-                Dim TrackEnd = _BootSector.SectorToTrack(SectorEnd)
+                Dim TrackStart = _BPB.SectorToTrack(SectorStart)
+                Dim TrackEnd = _BPB.SectorToTrack(SectorEnd)
                 For i = TrackStart To TrackEnd
-                    For j = 0 To _BootSector.NumberOfHeads - 1
+                    For j = 0 To _BPB.NumberOfHeads - 1
                         ComboTrack.Items.Add(i & "." & j)
                     Next
                 Next
@@ -851,14 +851,14 @@ Public Class HexViewForm
         End If
 
         If _ClusterNavigator Then
-            Dim Cluster = _BootSector.SectorToCluster(Sector)
+            Dim Cluster = _BPB.SectorToCluster(Sector)
 
             If Cluster <> NumericCluster.Value Then
                 NumericCluster.Value = Cluster
             End If
 
-            Dim Track = _BootSector.SectorToTrack(Sector)
-            Dim Side = _BootSector.SectorToSide(Sector)
+            Dim Track = _BPB.SectorToTrack(Sector)
+            Dim Side = _BPB.SectorToSide(Sector)
             Dim Value = Track.ToString & "." & Side.ToString
             If Value <> ComboTrack.Text Then
                 ComboTrack.Text = Value

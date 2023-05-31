@@ -7,7 +7,7 @@ Namespace DiskImage
         Public Const DIRECTORY_ENTRY_SIZE As Byte = 32
         Private Const CHAR_EMPTY As Byte = &H0
         Private Const CHAR_SPACE As Byte = &H20
-        Private ReadOnly _BootSector As BootSector
+        Private ReadOnly _BPB As BiosParameterBlock
         Private ReadOnly _FAT As FAT12
         Private ReadOnly _FatChain As FATChain
         Private ReadOnly _FileBytes As ImageByteArray
@@ -78,8 +78,8 @@ Namespace DiskImage
             FilePart3 = 4
         End Enum
 
-        Sub New(FileBytes As ImageByteArray, BootSector As BootSector, FAT As FAT12, Offset As UInteger)
-            _BootSector = BootSector
+        Sub New(FileBytes As ImageByteArray, BPB As BiosParameterBlock, FAT As FAT12, Offset As UInteger)
+            _BPB = BPB
             _FAT = FAT
             _FileBytes = FileBytes
             _Offset = Offset
@@ -302,15 +302,15 @@ Namespace DiskImage
         End Sub
 
         Public Function GetAllocatedSize() As UInteger
-            Return Math.Ceiling(FileSize / _BootSector.BytesPerCluster) * _BootSector.BytesPerCluster
+            Return Math.Ceiling(FileSize / _BPB.BytesPerCluster) * _BPB.BytesPerCluster
         End Function
 
         Public Function GetAllocatedSizeFromFAT() As UInteger
-            Return _FatChain.Clusters.Count * _BootSector.BytesPerCluster
+            Return _FatChain.Clusters.Count * _BPB.BytesPerCluster
         End Function
 
         Public Function GetContent() As Byte()
-            Dim Content = GetDataFromChain(_FileBytes, ClusterListToSectorList(_BootSector, _FatChain.Clusters))
+            Dim Content = GetDataFromChain(_FileBytes, ClusterListToSectorList(_BPB, _FatChain.Clusters))
 
             If Content.Length <> FileSize Then
                 Array.Resize(Of Byte)(Content, FileSize)
@@ -396,11 +396,11 @@ Namespace DiskImage
         End Function
 
         Public Function HasInvalidFileSize() As Boolean
-            Return FileSize > _BootSector.ImageSize
+            Return FileSize > _BPB.ImageSize
         End Function
 
         Public Function HasInvalidStartingCluster() As Boolean
-            Return StartingCluster = 1 Or StartingCluster > _BootSector.NumberOfFATEntries + 1
+            Return StartingCluster = 1 Or StartingCluster > _BPB.NumberOfFATEntries + 1
         End Function
 
         Public Function HasLastAccessDate() As Boolean
@@ -502,7 +502,7 @@ Namespace DiskImage
 
             _FileBytes.SetBytes(CHAR_DELETED, _Offset)
 
-            Dim b(_BootSector.BytesPerCluster - 1) As Byte
+            Dim b(_BPB.BytesPerCluster - 1) As Byte
             If Clear Then
                 For i = 0 To b.Length - 1
                     b(i) = &HF6
@@ -511,7 +511,7 @@ Namespace DiskImage
 
             For Each Cluster In _FatChain.Clusters
                 If Clear Then
-                    Dim Offset = _BootSector.ClusterToOffset(Cluster)
+                    Dim Offset = _BPB.ClusterToOffset(Cluster)
                     _FileBytes.SetBytes(b, Offset)
                 End If
 
@@ -601,7 +601,7 @@ Namespace DiskImage
 
         Private Sub InitSubDirectory()
             If IsValidDirectory() AndAlso Not IsLink() AndAlso Not IsDeleted() Then
-                _SubDirectory = New SubDirectory(_FileBytes, _BootSector, _FAT, _FatChain)
+                _SubDirectory = New SubDirectory(_FileBytes, _BPB, _FAT, _FatChain)
             Else
                 _SubDirectory = Nothing
             End If

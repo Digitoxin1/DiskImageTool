@@ -10,6 +10,7 @@ Public Class ImageDataScanInfo
     Public Property HasInvalidImageSize As Boolean = False
     Public Property HasLongFileNames As Boolean = False
     Public Property HasMismatchedFATs As Boolean = False
+    Public Property HasMismatchedMediaDescriptor As Boolean = False
     Public Property HasUnusedClusters As Boolean = False
     Public Property HasValidCreated As Boolean = False
     Public Property HasValidLastAccessed As Boolean = False

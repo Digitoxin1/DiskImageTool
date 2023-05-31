@@ -10,7 +10,7 @@ Public Class HexViewSectorData
     Public Sub New(Disk As Disk, ClusterChain As List(Of UShort))
         _Disk = Disk
         _SectorData = New SectorData(Disk.Data)
-        _SectorData.AddBlocksByChain(ClusterListToSectorList(_Disk.BootSector, ClusterChain))
+        _SectorData.AddBlocksByChain(ClusterListToSectorList(_Disk.BPB, ClusterChain))
         _HighlightedRegionList = New List(Of HighlightedRegions)
     End Sub
 

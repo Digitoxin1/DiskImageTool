@@ -100,8 +100,8 @@ Module DebugScript
     Public Sub GenerateDirectoryDump(DataPath As String, Disk As DiskImage.Disk, CachedRootDir() As Byte)
         Dim FileName As String
 
-        Dim SectorStart = Disk.BootSector.RootDirectoryRegionStart
-        Dim SectorEnd = Disk.BootSector.DataRegionStart
+        Dim SectorStart = Disk.BootSector.BPB.RootDirectoryRegionStart
+        Dim SectorEnd = Disk.BootSector.BPB.DataRegionStart
         Dim Length = DiskImage.Disk.SectorToBytes(SectorEnd - SectorStart)
         Dim Offset As UInteger = 256
 

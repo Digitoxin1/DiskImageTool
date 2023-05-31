@@ -77,14 +77,14 @@ Module Copy_Protection
         End If
 
         'Microprose Protection 2
-        If Not ProtectionFound AndAlso BadSectors.Count >= 8 AndAlso Disk.BootSector.MediaDescriptor = &HFD Then
+        If Not ProtectionFound AndAlso BadSectors.Count >= 8 AndAlso Disk.BPB.MediaDescriptor = &HFD Then
             If CheckBadSectors(BadSectors, {684, 685, 686, 687, 702, 703, 704, 705}) AndAlso Not CheckBadSectors(BadSectors, {683, 706}) Then
                 ProtectionFound = True
                 ProtectionName = "Microprose Protection 2"
             End If
         End If
 
-        If Not ProtectionFound AndAlso BadSectors.Count >= 8 AndAlso Disk.BootSector.MediaDescriptor = &HF9 Then
+        If Not ProtectionFound AndAlso BadSectors.Count >= 8 AndAlso Disk.BPB.MediaDescriptor = &HF9 Then
             If CheckBadSectors(BadSectors, {1406, 1407, 1408, 1409, 1424, 1425, 1426, 1427}) AndAlso Not CheckBadSectors(BadSectors, {1405, 1428}) Then
                 ProtectionFound = True
                 ProtectionName = "Microprose Protection 2"
@@ -108,7 +108,7 @@ Module Copy_Protection
             Dim Fileindex = Disk.Directory.HasFile("XEMAG.SYS")
             If Fileindex > -1 Then
                 Dim DirectoryEntry = Disk.Directory.GetFile(Fileindex)
-                If Disk.BootSector.ClusterToSector(DirectoryEntry.StartingCluster) = 162 Then
+                If Disk.BPB.ClusterToSector(DirectoryEntry.StartingCluster) = 162 Then
                     ProtectionFound = True
                     ProtectionName = "Xidex Magnetics XEMAG / XELOK"
                 End If

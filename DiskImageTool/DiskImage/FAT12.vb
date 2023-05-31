@@ -7,7 +7,7 @@
         Public Const FAT_RESERVED_END As UShort = &HFF6
         Public Const FAT_RESERVED_START As UShort = &HFF0
         Private ReadOnly _BadClusters As List(Of UShort)
-        Private ReadOnly _BootSector As BootSector
+        Private _BPB As BiosParameterBlock
         Private ReadOnly _CircularChains As HashSet(Of UShort)
         Private ReadOnly _FATChains As Dictionary(Of UInteger, FATChain)
         Private ReadOnly _FileAllocation As Dictionary(Of UShort, List(Of UInteger))
@@ -17,8 +17,8 @@
         Private _FreeClusters As UInteger
         Private _MediaDescriptor As Byte
 
-        Sub New(FileBytes As ImageByteArray, BootSector As BootSector, Index As UShort)
-            _BootSector = BootSector
+        Sub New(FileBytes As ImageByteArray, BPB As BiosParameterBlock, Index As UShort)
+            _BPB = BPB
             _FileBytes = FileBytes
             _Index = Index
             _FATChains = New Dictionary(Of UInteger, FATChain)
@@ -155,13 +155,13 @@
             Dim ClusterChain As New List(Of UShort)
 
             If _FATTable IsNot Nothing Then
-                Dim ClusterSize As UInteger = _BootSector.BytesPerCluster
+                Dim ClusterSize As UInteger = _BPB.BytesPerCluster
                 Dim AddCluster As Boolean
                 Dim Length = GetFATTableLength()
 
                 For Cluster As UShort = 1 To Length
                     If _FATTable(Cluster) = 0 Then
-                        Dim Offset = _BootSector.ClusterToOffset(Cluster)
+                        Dim Offset = _BPB.ClusterToOffset(Cluster)
                         If _FileBytes.Length < Offset + ClusterSize Then
                             ClusterSize = Math.Max(_FileBytes.Length - Offset, 0)
                         End If
@@ -187,12 +187,12 @@
         Public Function HasUnusedClusters(WithData As Boolean) As Boolean
 
             If _FATTable IsNot Nothing Then
-                Dim ClusterSize As UInteger = _BootSector.BytesPerCluster
+                Dim ClusterSize As UInteger = _BPB.BytesPerCluster
                 Dim Length = GetFATTableLength()
 
                 For Cluster As UShort = 1 To Length
                     If _FATTable(Cluster) = 0 Then
-                        Dim Offset = _BootSector.ClusterToOffset(Cluster)
+                        Dim Offset = _BPB.ClusterToOffset(Cluster)
                         If _FileBytes.Length < Offset + ClusterSize Then
                             ClusterSize = Math.Max(_FileBytes.Length - Offset, 0)
                         End If
@@ -214,9 +214,9 @@
         Public Sub PopulateFAT12()
             Erase _FATTable
 
-            If _BootSector.IsValidImage Then
+            If _BPB.IsValid Then
                 Dim FATBytes = GetFAT(_Index)
-                Dim Size = _BootSector.NumberOfFATEntries + 2
+                Dim Size = _BPB.NumberOfFATEntries + 2
                 _FATTable = DecodeFAT12(FATBytes, Size)
                 If FATBytes(1) = &HFF And FATBytes(2) = &HFF Then
                     _MediaDescriptor = FATBytes(0)
@@ -226,6 +226,11 @@
             ProcessFAT12()
         End Sub
 
+        Public Sub PopulateFAT12(BPB As BiosParameterBlock)
+            _BPB = BPB
+            PopulateFAT12()
+        End Sub
+
         Public Sub ProcessFAT12()
             _FATChains.Clear()
             _FileAllocation.Clear()
@@ -233,7 +238,7 @@
             _BadClusters.Clear()
             _CircularChains.Clear()
 
-            If _BootSector.IsValidImage Then
+            If _BPB.IsValid Then
                 Dim Length As UShort = GetFATTableLength()
 
                 For Cluster = 2 To Length
@@ -257,7 +262,7 @@
             End If
 
             If SyncAll Then
-                For Counter = 0 To _BootSector.NumberOfFATs - 1
+                For Counter = 0 To _BPB.NumberOfFATs - 1
                     Dim OldBytes = GetFAT(Counter)
                     If Not OldBytes.CompareTo(FATBytes, True) Then
                         SetFAT(Counter, FATBytes)
@@ -339,13 +344,13 @@
         End Function
 
         Private Function GetFAT(Index As UShort) As Byte()
-            Dim Sectors = GetFATSectors(_BootSector.FATRegionStart, _BootSector.SectorsPerFAT, Index)
+            Dim Sectors = GetFATSectors(_BPB.FATRegionStart, _BPB.SectorsPerFAT, Index)
 
             Return _FileBytes.GetSectors(Sectors)
         End Function
 
         Private Function GetFATTableLength() As UShort
-            Return Math.Min(_FATTable.Length - 1, _BootSector.NumberOfFATEntries + 1)
+            Return Math.Min(_FATTable.Length - 1, _BPB.NumberOfFATEntries + 1)
         End Function
         Private Function IsDataBlockEmpty(Data() As Byte) As Boolean
             Dim EmptyByte As Byte = Data(0)
@@ -364,7 +369,7 @@
         End Function
 
         Private Sub SetFAT(Index As UShort, Data() As Byte)
-            Dim Range = GetFATSectors(_BootSector.FATRegionStart, _BootSector.SectorsPerFAT, Index)
+            Dim Range = GetFATSectors(_BPB.FATRegionStart, _BPB.SectorsPerFAT, Index)
             Dim Offset = Disk.SectorToBytes(Range.Start)
 
             _FileBytes.SetBytes(Data, Offset)

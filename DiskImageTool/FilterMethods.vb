@@ -17,6 +17,7 @@
         HasBadSectors
         HasInvalidImageSize
         HasMismatchedFATs
+        HasMismatchedMediaDescriptor
         HasFATChainingErrors
     End Enum
 
@@ -57,7 +58,9 @@
             Case FilterTypes.HasFATChainingErrors
                 Caption = "FAT Chaining Errors"
             Case FilterTypes.HasInvalidImageSize
-                Caption = "Bad Image Size"
+                Caption = "Mismatched Image Size"
+            Case FilterTypes.HasMismatchedMediaDescriptor
+                Caption = "Mismatched Media Descriptor"
             Case Else
                 Caption = ""
         End Select
@@ -151,6 +154,12 @@
 
         If CheckFilter(FilterTypes.HasMismatchedFATs, AppliedFilters) Then
             If ImageData.ScanInfo.IsValidImage And ImageData.ScanInfo.HasMismatchedFATs Then
+                Return False
+            End If
+        End If
+
+        If CheckFilter(FilterTypes.HasMismatchedMediaDescriptor, AppliedFilters) Then
+            If ImageData.ScanInfo.IsValidImage And ImageData.ScanInfo.HasMismatchedMediaDescriptor Then
                 Return False
             End If
         End If

@@ -12,6 +12,17 @@
         Me.Add(New HexViewHighlightRegion(Offset, Size, ForeColor, DiskImage.BootSectorDescription(Offset)))
     End Sub
 
+    Public Sub AddBPBoffset(Offset As DiskImage.BiosParameterBlock.BPBOoffsets, ForeColor As Color)
+        Dim Name As String = [Enum].GetName(GetType(DiskImage.BiosParameterBlock.BPBOoffsets), Offset)
+        Dim Size As DiskImage.BiosParameterBlock.BPBSizes
+
+        If Not [Enum].TryParse(Name, Size) Then
+            Size = 0
+        End If
+
+        Me.Add(New HexViewHighlightRegion(Offset, Size, ForeColor, DiskImage.BPBDescription(Offset)))
+    End Sub
+
     Public Sub AddDirectoryEntryLFNOffset(Start As Long, Offset As DiskImage.DirectoryEntry.LFNOffsets, ForeColor As Color)
         Dim Name As String = [Enum].GetName(GetType(DiskImage.DirectoryEntry.LFNOffsets), Offset)
         Dim Size As DiskImage.DirectoryEntry.LFNSizes

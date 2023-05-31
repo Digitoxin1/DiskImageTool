@@ -2,14 +2,14 @@
     Public Class SubDirectory
         Implements IDirectory
 
-        Private ReadOnly _BootSector As BootSector
+        Private ReadOnly _BPB As BiosParameterBlock
         Private ReadOnly _FAT As FAT12
         Private ReadOnly _FatChain As FATChain
         Private ReadOnly _FileBytes As ImageByteArray
         Private _DirectoryData As DirectoryData
 
-        Sub New(FileBytes As ImageByteArray, BootSector As BootSector, FAT As FAT12, FatChain As FATChain)
-            _BootSector = BootSector
+        Sub New(FileBytes As ImageByteArray, BPB As BiosParameterBlock, FAT As FAT12, FatChain As FATChain)
+            _BPB = BPB
             _FAT = FAT
             _FileBytes = FileBytes
             _FatChain = FatChain
@@ -24,7 +24,7 @@
 
         Public ReadOnly Property SectorChain As List(Of UInteger) Implements IDirectory.SectorChain
             Get
-                Return ClusterListToSectorList(_BootSector, _FatChain.Clusters)
+                Return ClusterListToSectorList(_BPB, _FatChain.Clusters)
             End Get
         End Property
 
@@ -33,12 +33,12 @@
         End Function
 
         Public Function GetFile(Index As UInteger) As DirectoryEntry Implements IDirectory.GetFile
-            Dim EntriesPerCluster As UInteger = _BootSector.BytesPerCluster / DirectoryEntry.DIRECTORY_ENTRY_SIZE
+            Dim EntriesPerCluster As UInteger = _BPB.BytesPerCluster / DirectoryEntry.DIRECTORY_ENTRY_SIZE
             Dim ChainIndex As UInteger = Index \ EntriesPerCluster
             Dim ClusterIndex As UInteger = Index Mod EntriesPerCluster
-            Dim Offset As UInteger = _BootSector.ClusterToOffset(_FatChain.Clusters.Item(ChainIndex)) + ClusterIndex * DirectoryEntry.DIRECTORY_ENTRY_SIZE
+            Dim Offset As UInteger = _BPB.ClusterToOffset(_FatChain.Clusters.Item(ChainIndex)) + ClusterIndex * DirectoryEntry.DIRECTORY_ENTRY_SIZE
 
-            Return New DirectoryEntry(_FileBytes, _BootSector, _FAT, Offset)
+            Return New DirectoryEntry(_FileBytes, _BPB, _FAT, Offset)
         End Function
 
         Public Function HasFile(Filename As String) As Integer Implements IDirectory.HasFile
@@ -58,7 +58,7 @@
         End Function
 
         Public Sub RefreshData() Implements IDirectory.RefreshData
-            If _BootSector.IsValidImage Then
+            If _BPB.isvalid Then
                 _DirectoryData = GetDirectoryData()
             Else
                 _DirectoryData = New DirectoryData
@@ -70,8 +70,8 @@
             Dim EndOfDirectory As Boolean = False
 
             For Each Cluster In _FatChain.Clusters
-                Dim OffsetStart As UInteger = _BootSector.ClusterToOffset(Cluster)
-                Dim OffsetLength As UInteger = _BootSector.BytesPerCluster
+                Dim OffsetStart As UInteger = _BPB.ClusterToOffset(Cluster)
+                Dim OffsetLength As UInteger = _BPB.BytesPerCluster
 
                 EndOfDirectory = Functions.GetDirectoryData(Data, _FileBytes, OffsetStart, OffsetStart + OffsetLength, EndOfDirectory, False)
             Next

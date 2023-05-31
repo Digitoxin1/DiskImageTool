@@ -3,6 +3,7 @@
         Private WithEvents FileBytes As ImageByteArray
         Public Const BYTES_PER_SECTOR As UShort = 512
         Private ReadOnly _BootSector As BootSector
+        Private _BPB As BiosParameterBlock
         Private ReadOnly _Directory As RootDirectory
         Private ReadOnly _FAT12 As FAT12
         Private _ReinitializeRequired As Boolean = False
@@ -10,20 +11,36 @@
         Sub New(Data() As Byte, Optional Modifications As Stack(Of DataChange()) = Nothing)
             FileBytes = New ImageByteArray(Data)
             _BootSector = New BootSector(FileBytes)
-            _FAT12 = New FAT12(FileBytes, _BootSector, 0)
-            _Directory = New RootDirectory(FileBytes, _BootSector, _FAT12, False)
+            If _BootSector.BPB.IsValid Then
+                _BPB = _BootSector.BPB
+            Else
+                _BPB = BuildBPB(GetFATMediaDescriptor)
+            End If
+            _FAT12 = New FAT12(FileBytes, _BPB, 0)
+            _Directory = New RootDirectory(FileBytes, _BPB, _FAT12, False)
 
             CacheDirectoryEntries()
 
             If Modifications IsNot Nothing Then
                 FileBytes.ApplyModifications(Modifications)
+                If _BootSector.BPB.IsValid Then
+                    _BPB = _BootSector.BPB
+                Else
+                    _BPB = BuildBPB(GetFATMediaDescriptor)
+                End If
                 If _ReinitializeRequired Then
-                    _FAT12.PopulateFAT12()
+                    _FAT12.PopulateFAT12(_BPB)
                     _ReinitializeRequired = False
                 End If
-                _Directory.RefreshData()
+                _Directory.RefreshData(_BPB)
             End If
         End Sub
+
+        Public ReadOnly Property BPB As BiosParameterBlock
+            Get
+                Return _BPB
+            End Get
+        End Property
 
         Public ReadOnly Property BootSector As BootSector
             Get
@@ -67,7 +84,7 @@
             Return Sector * BYTES_PER_SECTOR
         End Function
         Public Function CheckImageSize() As Integer
-            Dim ReportedSize As Integer = ReportedImageSize()
+            Dim ReportedSize As Integer = _BPB.ReportedImageSize()
             Return Data.Length.CompareTo(ReportedSize)
         End Function
 
@@ -76,13 +93,13 @@
         End Function
 
         Public Function CompareFATTables() As Boolean
-            If _BootSector.NumberOfFATs < 2 Then
+            If _BPB.NumberOfFATs < 2 Then
                 Return True
             End If
 
-            For Counter As UShort = 1 To _BootSector.NumberOfFATs - 1
-                Dim FATCopy1 = _FileBytes.GetSectors(FAT12.GetFATSectors(_BootSector.FATRegionStart, _BootSector.SectorsPerFAT, Counter - 1))
-                Dim FATCopy2 = _FileBytes.GetSectors(FAT12.GetFATSectors(_BootSector.FATRegionStart, _BootSector.SectorsPerFAT, Counter))
+            For Counter As UShort = 1 To _BPB.NumberOfFATs - 1
+                Dim FATCopy1 = _FileBytes.GetSectors(FAT12.GetFATSectors(_BPB.FATRegionStart, _BPB.SectorsPerFAT, Counter - 1))
+                Dim FATCopy2 = _FileBytes.GetSectors(FAT12.GetFATSectors(_BPB.FATRegionStart, _BPB.SectorsPerFAT, Counter))
 
                 If Not FATCopy1.CompareTo(FATCopy2) Then
                     Return False
@@ -95,7 +112,7 @@
         Public Function FixImageSize() As Boolean
             Dim Result As Boolean = False
 
-            Dim ReportedSize = ReportedImageSize()
+            Dim ReportedSize = _BPB.ReportedImageSize()
 
             If ReportedSize <> Data.Length Then
                 Data.BatchEditMode = True
@@ -115,7 +132,20 @@
         End Function
 
         Public Function GetDirectoryEntryByOffset(Offset As UInteger) As DirectoryEntry
-            Return New DirectoryEntry(FileBytes, _BootSector, _FAT12, Offset)
+            Return New DirectoryEntry(FileBytes, _BPB, _FAT12, Offset)
+        End Function
+
+        Public Function GetFATMediaDescriptor() As Byte
+            Dim Result As Byte = 0
+
+            If FileBytes.Length >= 515 Then
+                Dim b = FileBytes.GetBytes(512, 3)
+                If b(1) = &HFF And b(2) = &HFF Then
+                    Result = b(0)
+                End If
+            End If
+
+            Return Result
         End Function
 
         Public Function GetFileList() As List(Of DirectoryEntry)
@@ -144,19 +174,22 @@
         End Function
 
         Public Function IsValidImage() As Boolean
-            Return _BootSector.IsValidImage
+            Return _FileBytes.Length >= 512 And _BPB.IsValid
         End Function
 
         Public Sub Reinitialize()
-            _FAT12.PopulateFAT12()
-            _Directory.RefreshData()
+            If _BootSector.BPB.IsValid Then
+                _BPB = _BootSector.BPB
+            Else
+                _BPB = BuildBPB(GetFATMediaDescriptor)
+            End If
+
+            _FAT12.PopulateFAT12(_BPB)
+            _Directory.RefreshData(_BPB)
 
             _ReinitializeRequired = False
         End Sub
 
-        Public Function ReportedImageSize() As UInteger
-            Return SectorToBytes(_BootSector.DataRegionStart + _BootSector.DataRegionSize)
-        End Function
         Public Sub SaveFile(FilePath As String)
             IO.File.WriteAllBytes(FilePath, FileBytes.Data)
             FileBytes.ClearChanges()
@@ -165,7 +198,8 @@
 
         Private Sub CacheDirectoryEntries()
             FileBytes.DirectoryCache.Clear()
-            If _BootSector.IsValidImage Then
+
+            If IsValidImage() Then
                 CacheDirectoryEntries(_Directory)
             End If
         End Sub
@@ -209,9 +243,9 @@
         End Sub
 
         Private Sub FileBytes_DataChanged(Offset As UInteger, OriginalValue As Object, NewValue As Object) Handles FileBytes.DataChanged
-            If BootSector.IsBootSectorRegion(Offset) Then
+            If _BootSector.IsBootSectorRegion(Offset) Then
                 _ReinitializeRequired = True
-            ElseIf _BootSector.IsValidImage AndAlso IsFATRegion(Offset, GetObjectSize(NewValue)) Then
+            ElseIf IsValidImage() AndAlso _BPB.IsFATRegion(Offset, GetObjectSize(NewValue)) Then
                 _ReinitializeRequired = True
             End If
         End Sub
@@ -229,16 +263,6 @@
             Else
                 Return 0
             End If
-        End Function
-
-        Private Function IsFATRegion(Offset As UInteger, Length As UInteger) As Boolean
-            Dim FATSectorStart = _BootSector.FATRegionStart
-            Dim FATSectorEnd = _BootSector.FATRegionStart + (_BootSector.SectorsPerFAT * _BootSector.NumberOfFATs) - 1
-
-            Dim SectorStart = OffsetToSector(Offset)
-            Dim SectorEnd = OffsetToSector(Offset + Length - 1)
-
-            Return (SectorStart >= FATSectorStart And SectorStart <= FATSectorEnd) Or (SectorEnd >= FATSectorStart And SectorEnd <= FATSectorEnd)
         End Function
     End Class
 

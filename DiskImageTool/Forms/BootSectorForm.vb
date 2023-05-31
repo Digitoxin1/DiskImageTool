@@ -278,7 +278,7 @@ Public Class BootSectorForm
         If BootSector.HasValidExtendedBootSignature And BootStrapStart >= BootSectorOffsets.FileSystemType + BootSectorSizes.FileSystemType Then
             DataStart = BootSector.BootSectorOffsets.FileSystemType + BootSector.BootSectorSizes.FileSystemType
         Else
-            DataStart = BootSector.BootSectorOffsets.HiddenSectors + BootSector.BootSectorSizes.HiddenSectors
+            DataStart = BiosParameterBlock.BPBOoffsets.HiddenSectors + BiosParameterBlock.BPBSizes.HiddenSectors
             'If BootSector.HiddenSectors >> 4 > 0 Then
             'DataStart -= 2
             'End If
@@ -313,22 +313,22 @@ Public Class BootSectorForm
         End If
     End Sub
 
-    Private Sub PopulateBootRecord(BootSector As BootSector)
-        SetValue(CboBytesPerSector, BootSector.BytesPerSector, Array.ConvertAll(BootSector.ValidBytesPerSector, Function(x) x.ToString()))
-        SetValue(CboSectorsPerCluster, BootSector.SectorsPerCluster, Array.ConvertAll(BootSector.ValidSectorsPerCluster, Function(x) x.ToString()))
-        SetValue(TxtReservedSectors, BootSector.ReservedSectorCount)
-        SetValue(TxtNumberOfFATs, BootSector.NumberOfFATs)
-        SetValue(TxtRootDirectoryEntries, BootSector.RootEntryCount)
-        SetValue(TxtSectorCountSmall, BootSector.SectorCountSmall)
-        SetValue(HexMediaDescriptor, BootSector.MediaDescriptor.ToString("X2"), Array.ConvertAll(BootSector.ValidMediaDescriptor, Function(x) x.ToString("X2")))
-        SetValue(TxtSectorsPerFAT, BootSector.SectorsPerFAT)
-        SetValue(TxtSectorsPerTrack, BootSector.SectorsPerTrack, {"8", "9", "15", "18", "21", "36"})
-        SetValue(TxtNumberOfHeads, BootSector.NumberOfHeads, {"1", "2"})
+    Private Sub PopulateBPB(BPB As BiosParameterBlock)
+        SetValue(CboBytesPerSector, BPB.BytesPerSector, Array.ConvertAll(BiosParameterBlock.ValidBytesPerSector, Function(x) x.ToString()))
+        SetValue(CboSectorsPerCluster, BPB.SectorsPerCluster, Array.ConvertAll(BiosParameterBlock.ValidSectorsPerCluster, Function(x) x.ToString()))
+        SetValue(TxtReservedSectors, BPB.ReservedSectorCount)
+        SetValue(TxtNumberOfFATs, BPB.NumberOfFATs)
+        SetValue(TxtRootDirectoryEntries, BPB.RootEntryCount)
+        SetValue(TxtSectorCountSmall, BPB.SectorCountSmall)
+        SetValue(HexMediaDescriptor, BPB.MediaDescriptor.ToString("X2"), Array.ConvertAll(BiosParameterBlock.ValidMediaDescriptor, Function(x) x.ToString("X2")))
+        SetValue(TxtSectorsPerFAT, BPB.SectorsPerFAT)
+        SetValue(TxtSectorsPerTrack, BPB.SectorsPerTrack, {"8", "9", "15", "18", "21", "36"})
+        SetValue(TxtNumberOfHeads, BPB.NumberOfHeads, {"1", "2"})
     End Sub
 
     Private Sub PopulateBytesPerSector()
         CboBytesPerSector.Items.Clear()
-        For Each Value In BootSector.ValidBytesPerSector
+        For Each Value In BiosParameterBlock.ValidBytesPerSector
             CboBytesPerSector.Items.Add(Value)
         Next
     End Sub
@@ -352,7 +352,7 @@ Public Class BootSectorForm
     End Sub
 
     Private Sub PopulateExtended(BootSector As BootSector)
-        SetValue(TxtSectorCountLarge, BootSector.SectorCountLarge)
+        SetValue(TxtSectorCountLarge, BootSector.BPB.SectorCountLarge)
         SetValue(TxtDriveNumber, BootSector.DriveNumber)
         SetValue(HexExtendedBootSignature, BootSector.ExtendedBootSignature.ToString("X2"))
         SetValue(HexVolumeSerialNumber, BootSector.VolumeSerialNumber.ToString("X8"))
@@ -362,7 +362,7 @@ Public Class BootSectorForm
         HexFileSystemType.SetHex(BootSector.FileSystemType)
 
         Dim ErrorCount As Integer = 0
-        If BootSector.SectorCountLarge <> 0 Then
+        If BootSector.BPB.SectorCountLarge <> 0 Then
             ErrorCount += 1
         End If
         If BootSector.ExtendedBootSignature <> 0 And BootSector.ExtendedBootSignature <> &H28 And BootSector.ExtendedBootSignature <> &H29 Then
@@ -406,7 +406,7 @@ Public Class BootSectorForm
 
     Private Sub PopulateSectorsPerCluster()
         CboSectorsPerCluster.Items.Clear()
-        For Each Value In BootSector.ValidSectorsPerCluster
+        For Each Value In BiosParameterBlock.ValidSectorsPerCluster
             CboSectorsPerCluster.Items.Add(Value)
         Next
     End Sub
@@ -415,9 +415,9 @@ Public Class BootSectorForm
         PopulateOEMName()
         PopulateBytesPerSector()
         PopulateSectorsPerCluster()
-        PopulateBootRecord(_Disk.BootSector)
+        PopulateBPB(_Disk.BootSector.BPB)
 
-        SetValue(TxtHiddenSectors, _Disk.BootSector.HiddenSectors)
+        SetValue(TxtHiddenSectors, _Disk.BootSector.BPB.HiddenSectors)
         SetValue(HexJumpInstruction, _Disk.BootSector.JmpBoot, Not _Disk.BootSector.HasValidJumpInstruction(True))
         SetValue(HexBootSectorSignature, _Disk.BootSector.BootStrapSignature.ToString("X4"), {BootSector.ValidBootStrapSignature.ToString("X4")})
 
@@ -469,17 +469,17 @@ Public Class BootSectorForm
 
         For Each DiskType As BootSectorDiskType In CboDiskType.Items
             If DiskType.Type <> FloppyDiskType.FloppyUnknown Then
-                Dim BootSector = BuildBootSector(DiskType.Type)
-                If BootSector.MediaDescriptor = HexMediaDescriptor.GetHex(0) _
-                    And BootSector.NumberOfHeads = TxtNumberOfHeads.Text _
-                    And BootSector.RootEntryCount = TxtRootDirectoryEntries.Text _
-                    And BootSector.SectorCountSmall = TxtSectorCountSmall.Text _
-                    And BootSector.SectorsPerCluster = CboSectorsPerCluster.Text _
-                    And BootSector.SectorsPerFAT = TxtSectorsPerFAT.Text _
-                    And BootSector.SectorsPerTrack = TxtSectorsPerTrack.Text _
-                    And BootSector.BytesPerSector = CboBytesPerSector.Text _
-                    And BootSector.NumberOfFATs = TxtNumberOfFATs.Text _
-                    And BootSector.ReservedSectorCount = TxtReservedSectors.Text Then
+                Dim BPB = BuildBPB(DiskType.Type)
+                If BPB.MediaDescriptor = HexMediaDescriptor.GetHex(0) _
+                    And BPB.NumberOfHeads = TxtNumberOfHeads.Text _
+                    And BPB.RootEntryCount = TxtRootDirectoryEntries.Text _
+                    And BPB.SectorCountSmall = TxtSectorCountSmall.Text _
+                    And BPB.SectorsPerCluster = CboSectorsPerCluster.Text _
+                    And BPB.SectorsPerFAT = TxtSectorsPerFAT.Text _
+                    And BPB.SectorsPerTrack = TxtSectorsPerTrack.Text _
+                    And BPB.BytesPerSector = CboBytesPerSector.Text _
+                    And BPB.NumberOfFATs = TxtNumberOfFATs.Text _
+                    And BPB.ReservedSectorCount = TxtReservedSectors.Text Then
 
                     SelectedItem = DiskType
                     Exit For
@@ -566,45 +566,45 @@ Public Class BootSectorForm
         _Disk.BootSector.OEMName = OEMName
 
         If UShort.TryParse(CboBytesPerSector.Text, UShortValue) Then
-            _Disk.BootSector.BytesPerSector = UShortValue
+            _Disk.BootSector.BPB.BytesPerSector = UShortValue
         End If
 
         If Byte.TryParse(CboSectorsPerCluster.Text, ByteValue) Then
-            _Disk.BootSector.SectorsPerCluster = ByteValue
+            _Disk.BootSector.BPB.SectorsPerCluster = ByteValue
         End If
 
         If UShort.TryParse(TxtReservedSectors.Text, UShortValue) Then
-            _Disk.BootSector.ReservedSectorCount = UShortValue
+            _Disk.BootSector.BPB.ReservedSectorCount = UShortValue
         End If
 
         If Byte.TryParse(TxtNumberOfFATs.Text, ByteValue) Then
-            _Disk.BootSector.NumberOfFATs = ByteValue
+            _Disk.BootSector.BPB.NumberOfFATs = ByteValue
         End If
 
         If UShort.TryParse(TxtRootDirectoryEntries.Text, UShortValue) Then
-            _Disk.BootSector.RootEntryCount = UShortValue
+            _Disk.BootSector.BPB.RootEntryCount = UShortValue
         End If
 
         If UShort.TryParse(TxtSectorCountSmall.Text, UShortValue) Then
-            _Disk.BootSector.SectorCountSmall = UShortValue
+            _Disk.BootSector.BPB.SectorCountSmall = UShortValue
         End If
 
-        _Disk.BootSector.MediaDescriptor = HexMediaDescriptor.GetHex(0)
+        _Disk.BootSector.BPB.MediaDescriptor = HexMediaDescriptor.GetHex(0)
 
         If UShort.TryParse(TxtSectorsPerFAT.Text, UShortValue) Then
-            _Disk.BootSector.SectorsPerFAT = UShortValue
+            _Disk.BootSector.BPB.SectorsPerFAT = UShortValue
         End If
 
         If UShort.TryParse(TxtSectorsPerTrack.Text, UShortValue) Then
-            _Disk.BootSector.SectorsPerTrack = UShortValue
+            _Disk.BootSector.BPB.SectorsPerTrack = UShortValue
         End If
 
         If UShort.TryParse(TxtNumberOfHeads.Text, UShortValue) Then
-            _Disk.BootSector.NumberOfHeads = UShortValue
+            _Disk.BootSector.BPB.NumberOfHeads = UShortValue
         End If
 
         If UShort.TryParse(TxtHiddenSectors.Text, UShortValue) Then
-            _Disk.BootSector.HiddenSectors = UShortValue
+            _Disk.BootSector.BPB.HiddenSectors = UShortValue
         End If
 
         _Disk.BootSector.JmpBoot = HexJumpInstruction.GetHex
@@ -615,7 +615,7 @@ Public Class BootSectorForm
 
         If _HasExtended Then
             If UInteger.TryParse(TxtSectorCountLarge.Text, UintegerValue) Then
-                _Disk.BootSector.SectorCountLarge = UintegerValue
+                _Disk.BootSector.BPB.SectorCountLarge = UintegerValue
             End If
 
             _Disk.BootSector.ExtendedBootSignature = HexExtendedBootSignature.GetHex(0)
@@ -696,8 +696,8 @@ Public Class BootSectorForm
         _SuppressEvent = True
         Dim DiskType As BootSectorDiskType = CboDiskType.SelectedItem
         If DiskType.Type <> FloppyDiskType.FloppyUnknown Then
-            Dim BootSector = BuildBootSector(DiskType.Type)
-            PopulateBootRecord(BootSector)
+            Dim BPB = BuildBPB(DiskType.Type)
+            PopulateBPB(BPB)
         End If
         _SuppressEvent = False
     End Sub

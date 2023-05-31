@@ -15,46 +15,50 @@
             FloppyProCopy = 11
         End Enum
 
-        Public Function BootSectorCompare(BootSector As BootSector, Params As FloppyDiskParams) As Boolean
-            Return BootSector.BytesPerSector = Params.BytesPerSector _
-                AndAlso BootSector.MediaDescriptor = Params.MediaDescriptor _
-                AndAlso BootSector.NumberOfFATs = Params.NumberOfFATs _
-                AndAlso BootSector.NumberOfHeads = Params.NumberOfHeads _
-                AndAlso BootSector.ReservedSectorCount = Params.ReservedSectorCount _
-                AndAlso BootSector.RootEntryCount = Params.RootEntryCount _
-                AndAlso BootSector.SectorCountSmall = Params.SectorCountSmall _
-                AndAlso BootSector.SectorsPerCluster = Params.SectorsPerCluster _
-                AndAlso BootSector.SectorsPerFAT = Params.SectorsPerFAT _
-                AndAlso BootSector.SectorsPerTrack = Params.SectorsPerTrack
+        Public Function BPBCompare(BPB As BiosParameterBlock, Params As FloppyDiskParams) As Boolean
+            Return BPB.BytesPerSector = Params.BytesPerSector _
+                AndAlso BPB.MediaDescriptor = Params.MediaDescriptor _
+                AndAlso BPB.NumberOfFATs = Params.NumberOfFATs _
+                AndAlso BPB.NumberOfHeads = Params.NumberOfHeads _
+                AndAlso BPB.ReservedSectorCount = Params.ReservedSectorCount _
+                AndAlso BPB.RootEntryCount = Params.RootEntryCount _
+                AndAlso BPB.SectorCountSmall = Params.SectorCountSmall _
+                AndAlso BPB.SectorsPerCluster = Params.SectorsPerCluster _
+                AndAlso BPB.SectorsPerFAT = Params.SectorsPerFAT _
+                AndAlso BPB.SectorsPerTrack = Params.SectorsPerTrack
         End Function
 
-        Public Function BuildBootSector(Params As FloppyDiskParams) As BootSector
-            Dim Data(DiskImage.BootSector.BOOT_SECTOR_SIZE - 1) As Byte
+        Public Function BuildBPB(Params As FloppyDiskParams) As BiosParameterBlock
+            Dim Data(BiosParameterBlock.BPB_SIZE - 1) As Byte
             Dim FileBytes As New ImageByteArray(Data)
-            Dim BootSector = New BootSector(FileBytes)
+            Dim BPB = New BiosParameterBlock(FileBytes)
 
             With Params
-                BootSector.BytesPerSector = .BytesPerSector
-                BootSector.MediaDescriptor = .MediaDescriptor
-                BootSector.NumberOfFATs = .NumberOfFATs
-                BootSector.NumberOfHeads = .NumberOfHeads
-                BootSector.ReservedSectorCount = .ReservedSectorCount
-                BootSector.RootEntryCount = .RootEntryCount
-                BootSector.SectorCountSmall = .SectorCountSmall
-                BootSector.SectorsPerCluster = .SectorsPerCluster
-                BootSector.SectorsPerFAT = .SectorsPerFAT
-                BootSector.SectorsPerTrack = .SectorsPerTrack
+                BPB.BytesPerSector = .BytesPerSector
+                BPB.MediaDescriptor = .MediaDescriptor
+                BPB.NumberOfFATs = .NumberOfFATs
+                BPB.NumberOfHeads = .NumberOfHeads
+                BPB.ReservedSectorCount = .ReservedSectorCount
+                BPB.RootEntryCount = .RootEntryCount
+                BPB.SectorCountSmall = .SectorCountSmall
+                BPB.SectorsPerCluster = .SectorsPerCluster
+                BPB.SectorsPerFAT = .SectorsPerFAT
+                BPB.SectorsPerTrack = .SectorsPerTrack
             End With
 
-            Return BootSector
+            Return BPB
         End Function
 
-        Public Function BuildBootSector(Type As FloppyDiskType) As BootSector
-            Return BuildBootSector(GetFloppyDiskParams(Type))
+        Public Function BuildBPB(Type As FloppyDiskType) As BiosParameterBlock
+            Return BuildBPB(GetFloppyDiskParams(Type))
         End Function
 
-        Public Function BuildBootSector(Size As Integer) As BootSector
-            Return BuildBootSector(GetFloppyDiskParams(Size))
+        Public Function BuildBPB(Size As Integer) As BiosParameterBlock
+            Return BuildBPB(GetFloppyDiskParams(Size))
+        End Function
+
+        Public Function BuildBPB(MediaDescriptor As Byte) As BiosParameterBlock
+            Return BuildBPB(GetFloppyDiskParams(GetFloppyDiskType(MediaDescriptor)))
         End Function
 
         Public Function GetFloppyDiskParams(Type As FloppyDiskType) As FloppyDiskParams
@@ -201,13 +205,28 @@
             Return GetFloppyDiskParams(GetFloppyDiskType(Size))
         End Function
 
-        Public Function GetFloppyDiskType(BootSector As BootSector) As FloppyDiskType
+        Public Function GetFloppyDiskType(MediaDescriptor As Byte) As FloppyDiskType
+            Select Case MediaDescriptor
+                Case &HFE
+                    Return FloppyDiskType.Floppy160
+                Case &HFC
+                    Return FloppyDiskType.Floppy180
+                Case &HFF
+                    Return FloppyDiskType.Floppy320
+                Case &HFD
+                    Return FloppyDiskType.Floppy360
+                Case Else
+                    Return FloppyDiskType.FloppyUnknown
+            End Select
+        End Function
+
+        Public Function GetFloppyDiskType(BPB As BiosParameterBlock) As FloppyDiskType
             Dim Items = System.Enum.GetValues(GetType(FloppyDiskType))
 
             For Each Type As FloppyDiskType In Items
                 If Type <> FloppyDiskType.FloppyUnknown Then
                     Dim Params = GetFloppyDiskParams(Type)
-                    If BootSectorCompare(BootSector, Params) Then
+                    If BPBCompare(BPB, Params) Then
                         Return Type
                     End If
                 End If
@@ -270,12 +289,16 @@
             End Select
         End Function
 
-        Public Function GetFloppyDiskTypeName(BootSector As BootSector) As String
-            Return GetFloppyDiskTypeName(GetFloppyDiskType(BootSector))
+        Public Function GetFloppyDiskTypeName(BPB As BiosParameterBlock) As String
+            Return GetFloppyDiskTypeName(GetFloppyDiskType(BPB))
         End Function
 
         Public Function GetFloppyDiskTypeName(Size As Integer) As String
             Return GetFloppyDiskTypeName(GetFloppyDiskType(Size))
+        End Function
+
+        Public Function GetFloppyDiskTypeName(MediaDescriptor As Byte) As String
+            Return GetFloppyDiskTypeName(GetFloppyDiskType(MediaDescriptor))
         End Function
 
         Public Structure FloppyDiskParams

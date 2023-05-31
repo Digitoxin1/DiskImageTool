@@ -2,16 +2,16 @@
     Public Class RootDirectory
         Implements IDirectory
 
-        Private ReadOnly _BootSector As BootSector
+        Private _BPB As BiosParameterBlock
         Private ReadOnly _FAT As FAT12
         Private ReadOnly _FileBytes As ImageByteArray
         Private _DirectoryData As DirectoryData
 
-        Sub New(FileBytes As ImageByteArray, BootSector As BootSector, FAT As FAT12, EnumerateEntries As Boolean)
-            _BootSector = BootSector
+        Sub New(FileBytes As ImageByteArray, BPB As BiosParameterBlock, FAT As FAT12, EnumerateEntries As Boolean)
+            _BPB = BPB
             _FAT = FAT
             _FileBytes = FileBytes
-            If BootSector.IsValidImage Then
+            If BPB.IsValid Then
                 _DirectoryData = GetDirectoryData()
                 If EnumerateEntries Then
                     EnumDirectoryEntries(Me)
@@ -31,7 +31,7 @@
             Get
                 Dim Chain = New List(Of UInteger)
 
-                For Sector = _BootSector.RootDirectoryRegionStart To _BootSector.DataRegionStart - 1
+                For Sector = _BPB.RootDirectoryRegionStart To _BPB.DataRegionStart - 1
                     Chain.Add(Sector)
                 Next
 
@@ -40,8 +40,8 @@
         End Property
 
         Public Function GetContent() As Byte() Implements IDirectory.GetContent
-            Dim SectorStart = _BootSector.RootDirectoryRegionStart
-            Dim SectorEnd = _BootSector.DataRegionStart
+            Dim SectorStart = _BPB.RootDirectoryRegionStart
+            Dim SectorEnd = _BPB.DataRegionStart
             Dim Length = Disk.SectorToBytes(SectorEnd - SectorStart)
             Dim Offset = Disk.SectorToBytes(SectorStart)
 
@@ -49,9 +49,9 @@
         End Function
 
         Public Function GetFile(Index As UInteger) As DirectoryEntry Implements IDirectory.GetFile
-            Dim Offset As UInteger = Disk.SectorToBytes(_BootSector.RootDirectoryRegionStart) + Index * DirectoryEntry.DIRECTORY_ENTRY_SIZE
+            Dim Offset As UInteger = Disk.SectorToBytes(_BPB.RootDirectoryRegionStart) + Index * DirectoryEntry.DIRECTORY_ENTRY_SIZE
 
-            Return New DirectoryEntry(_FileBytes, _BootSector, _FAT, Offset)
+            Return New DirectoryEntry(_FileBytes, _BPB, _FAT, Offset)
         End Function
 
         Public Function HasFile(Filename As String) As Integer Implements IDirectory.HasFile
@@ -71,11 +71,16 @@
         End Function
 
         Public Sub RefreshData() Implements IDirectory.RefreshData
-            If _BootSector.IsValidImage Then
+            If _BPB.IsValid Then
                 _DirectoryData = GetDirectoryData()
             Else
                 _DirectoryData = New DirectoryData
             End If
+        End Sub
+
+        Public Sub RefreshData(BPB As BiosParameterBlock)
+            _BPB = BPB
+            RefreshData()
         End Sub
 
         Private Shared Sub EnumDirectoryEntries(Directory As DiskImage.IDirectory)
@@ -97,8 +102,8 @@
         End Sub
 
         Private Function GetDirectoryData() As DirectoryData
-            Dim OffsetStart As UInteger = Disk.SectorToBytes(_BootSector.RootDirectoryRegionStart)
-            Dim OffsetEnd As UInteger = Disk.SectorToBytes(_BootSector.DataRegionStart)
+            Dim OffsetStart As UInteger = Disk.SectorToBytes(_BPB.RootDirectoryRegionStart)
+            Dim OffsetEnd As UInteger = Disk.SectorToBytes(_BPB.DataRegionStart)
             Dim Data As New DirectoryData
 
             Functions.GetDirectoryData(Data, _FileBytes, OffsetStart, OffsetEnd, False, True)
