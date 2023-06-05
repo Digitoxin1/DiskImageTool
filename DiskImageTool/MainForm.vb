@@ -2223,7 +2223,7 @@ Public Class MainForm
             Dim DiskGroup = .Groups.Add("Disk", "Disk")
 
             If Disk IsNot Nothing Then
-                Dim BootStrapStart = Disk.BootSector.GetBootStrapOffset
+                Dim BootStrapStart As UShort = 0
                 Dim BootstrapType As BootstrapLookup = Nothing
                 Dim KnownOEMNameMatch As KnownOEMName = Nothing
                 Dim OEMName() As Byte = Nothing
@@ -2232,6 +2232,7 @@ Public Class MainForm
                     Dim OEMNameWin9x = Disk.BootSector.IsWin9xOEMName
                     OEMName = Disk.BootSector.OEMName
 
+                    BootStrapStart = Disk.BootSector.GetBootStrapOffset
                     BootstrapType = _BootStrap.FindMatch(Disk.BootSector.BootStrapCode)
 
                     If BootstrapType IsNot Nothing Then
@@ -2261,20 +2262,22 @@ Public Class MainForm
                 End If
                 .AddItem(DiskGroup, "Image Size", Disk.Data.Length.ToString("N0"), ForeColor)
 
-                Dim DiskType As FloppyDiskType
-                If Disk.BPB.IsValid Then
-                    DiskType = GetFloppyDiskType(Disk.BPB)
-                Else
-                    DiskType = GetFloppyDiskType(Disk.GetFATMediaDescriptor)
-                    If DiskType = FloppyDiskType.FloppyUnknown Then
-                        DiskType = GetFloppyDiskType(Disk.Data.Length)
+                If Disk.IsValidImage(False) Then
+                    Dim DiskType As FloppyDiskType
+                    If Disk.BPB.IsValid Then
+                        DiskType = GetFloppyDiskType(Disk.BPB)
+                    Else
+                        DiskType = GetFloppyDiskType(Disk.GetFATMediaDescriptor)
+                        If DiskType = FloppyDiskType.FloppyUnknown Then
+                            DiskType = GetFloppyDiskType(Disk.Data.Length)
+                        End If
                     End If
-                End If
-                Dim DiskTypeString = GetFloppyDiskTypeName(DiskType)
-                .AddItem(DiskGroup, "Disk Type", DiskTypeString & " Floppy")
+                    Dim DiskTypeString = GetFloppyDiskTypeName(DiskType)
+                    .AddItem(DiskGroup, "Disk Type", DiskTypeString & " Floppy")
 
-                If Disk.BPB.IsValid AndAlso Disk.CheckImageSize > 0 Then
-                    .AddItem(DiskGroup, DiskTypeString & " CRC32", Crc32.ComputeChecksum(Disk.Data.GetBytes(0, Disk.BPB.ReportedImageSize())).ToString("X8"))
+                    If Disk.BPB.IsValid AndAlso Disk.CheckImageSize > 0 Then
+                        .AddItem(DiskGroup, DiskTypeString & " CRC32", Crc32.ComputeChecksum(Disk.Data.GetBytes(0, Disk.BPB.ReportedImageSize())).ToString("X8"))
+                    End If
                 End If
 
                 If Disk.IsValidImage Then
@@ -2294,86 +2297,88 @@ Public Class MainForm
                     .AddItem(DiskGroup, "Error", "Unknown Image Format", Color.Red)
                 End If
 
-                Dim BootRecordGroup = .Groups.Add("BootRecord", "Boot Record")
+                If Disk.IsValidImage(False) Then
+                    Dim BootRecordGroup = .Groups.Add("BootRecord", "Boot Record")
 
-                If BootstrapType IsNot Nothing Then
-                    If KnownOEMNameMatch Is Nothing Then
+                    If BootstrapType IsNot Nothing Then
+                        If KnownOEMNameMatch Is Nothing Then
+                            ForeColor = Color.Red
+                        Else
+                            If KnownOEMNameMatch.Verified Then
+                                ForeColor = Color.Green
+                            Else
+                                ForeColor = Color.Blue
+                            End If
+                        End If
+                    Else
+                        ForeColor = SystemColors.WindowText
+                    End If
+
+                    .AddItem(BootRecordGroup, BootSectorDescription(BootSectorOffsets.OEMName), Disk.BootSector.GetOEMNameString.TrimEnd(NULL_CHAR), ForeColor)
+                    .AddItem(BootRecordGroup, BPBDescription(BPBOffsets.BytesPerSector), Disk.BootSector.BPB.BytesPerSector)
+                    .AddItem(BootRecordGroup, BPBDescription(BPBOffsets.SectorsPerCluster), Disk.BootSector.BPB.SectorsPerCluster)
+                    .AddItem(BootRecordGroup, BPBDescription(BPBOffsets.ReservedSectorCount), Disk.BootSector.BPB.ReservedSectorCount)
+
+                    Value = Disk.BootSector.BPB.NumberOfFATs
+                    If Disk.IsValidImage AndAlso Not Disk.CompareFATTables Then
+                        Value &= " (Mismatched)"
                         ForeColor = Color.Red
                     Else
-                        If KnownOEMNameMatch.Verified Then
-                            ForeColor = Color.Green
-                        Else
-                            ForeColor = Color.Blue
+                        ForeColor = SystemColors.WindowText
+                    End If
+
+                    .AddItem(BootRecordGroup, BPBDescription(BPBOffsets.NumberOfFATs), Value, ForeColor)
+                    .AddItem(BootRecordGroup, BPBDescription(BPBOffsets.RootEntryCount), Disk.BootSector.BPB.RootEntryCount)
+                    .AddItem(BootRecordGroup, BPBDescription(BPBOffsets.SectorCountSmall), Disk.BootSector.BPB.SectorCount)
+
+                    Value = Disk.BootSector.BPB.MediaDescriptor.ToString("X2") & " Hex"
+                    If Disk.BootSector.BPB.IsValid AndAlso Disk.GetFATMediaDescriptor <> Disk.BootSector.BPB.MediaDescriptor Then
+                        Value &= " (Mismatched)"
+                        ForeColor = Color.Red
+                    Else
+                        ForeColor = SystemColors.WindowText
+                    End If
+
+                    .AddItem(BootRecordGroup, BPBDescription(BPBOffsets.MediaDescriptor), Value, ForeColor)
+
+
+                    .AddItem(BootRecordGroup, BPBDescription(BPBOffsets.SectorsPerFAT), Disk.BootSector.BPB.SectorsPerFAT)
+                    .AddItem(BootRecordGroup, BPBDescription(BPBOffsets.SectorsPerTrack), Disk.BootSector.BPB.SectorsPerTrack)
+                    .AddItem(BootRecordGroup, BPBDescription(BPBOffsets.NumberOfHeads), Disk.BootSector.BPB.NumberOfHeads)
+
+                    'If Debugger.IsAttached Then
+                    If Disk.BootSector.BPB.HiddenSectors > 0 Then
+                        .AddItem(BootRecordGroup, BPBDescription(BPBOffsets.HiddenSectors), Disk.BootSector.BPB.HiddenSectors)
+                    End If
+                    'End If
+
+                    If BootStrapStart >= BootSectorOffsets.BootStrapCode Then
+                        If Disk.BootSector.DriveNumber > 0 Then
+                            .AddItem(BootRecordGroup, BootSectorDescription(BootSectorOffsets.DriveNumber), Disk.BootSector.DriveNumber)
+                        End If
+
+                        If Disk.BootSector.HasValidExtendedBootSignature Then
+                            .AddItem(BootRecordGroup, BootSectorDescription(BootSectorOffsets.VolumeSerialNumber), Disk.BootSector.VolumeSerialNumber.ToString("X8").Insert(4, "-"))
+                            If Disk.BootSector.ExtendedBootSignature = BootSector.ValidExtendedBootSignature(1) Then
+                                .AddItem(BootRecordGroup, BootSectorDescription(BootSectorOffsets.VolumeLabel), Disk.BootSector.GetVolumeLabelString.TrimEnd(NULL_CHAR))
+                                .AddItem(BootRecordGroup, BootSectorDescription(BootSectorOffsets.FileSystemType), Disk.BootSector.GetFileSystemTypeString)
+                            End If
                         End If
                     End If
-                Else
-                    ForeColor = SystemColors.WindowText
-                End If
 
-                .AddItem(BootRecordGroup, BootSectorDescription(BootSectorOffsets.OEMName), Disk.BootSector.GetOEMNameString.TrimEnd(NULL_CHAR), ForeColor)
-                .AddItem(BootRecordGroup, BPBDescription(BPBOffsets.BytesPerSector), Disk.BootSector.BPB.BytesPerSector)
-                .AddItem(BootRecordGroup, BPBDescription(BPBOffsets.SectorsPerCluster), Disk.BootSector.BPB.SectorsPerCluster)
-                .AddItem(BootRecordGroup, BPBDescription(BPBOffsets.ReservedSectorCount), Disk.BootSector.BPB.ReservedSectorCount)
-
-                Value = Disk.BootSector.BPB.NumberOfFATs
-                If Disk.IsValidImage AndAlso Not Disk.CompareFATTables Then
-                    Value &= " (Mismatched)"
-                    ForeColor = Color.Red
-                Else
-                    ForeColor = SystemColors.WindowText
-                End If
-
-                .AddItem(BootRecordGroup, BPBDescription(BPBOffsets.NumberOfFATs), Value, ForeColor)
-                .AddItem(BootRecordGroup, BPBDescription(BPBOffsets.RootEntryCount), Disk.BootSector.BPB.RootEntryCount)
-                .AddItem(BootRecordGroup, BPBDescription(BPBOffsets.SectorCountSmall), Disk.BootSector.BPB.SectorCount)
-
-                Value = Disk.BootSector.BPB.MediaDescriptor.ToString("X2") & " Hex"
-                If Disk.IsValidImage AndAlso Disk.GetFATMediaDescriptor <> Disk.BootSector.BPB.MediaDescriptor Then
-                    Value &= " (Mismatched)"
-                    ForeColor = Color.Red
-                Else
-                    ForeColor = SystemColors.WindowText
-                End If
-
-                .AddItem(BootRecordGroup, BPBDescription(BPBOffsets.MediaDescriptor), Value, ForeColor)
-
-
-                .AddItem(BootRecordGroup, BPBDescription(BPBOffsets.SectorsPerFAT), Disk.BootSector.BPB.SectorsPerFAT)
-                .AddItem(BootRecordGroup, BPBDescription(BPBOffsets.SectorsPerTrack), Disk.BootSector.BPB.SectorsPerTrack)
-                .AddItem(BootRecordGroup, BPBDescription(BPBOffsets.NumberOfHeads), Disk.BootSector.BPB.NumberOfHeads)
-
-                'If Debugger.IsAttached Then
-                If Disk.BootSector.BPB.HiddenSectors > 0 Then
-                    .AddItem(BootRecordGroup, BPBDescription(BPBOffsets.HiddenSectors), Disk.BootSector.BPB.HiddenSectors)
-                End If
-                'End If
-
-                If BootStrapStart >= BootSectorOffsets.BootStrapCode Then
-                    If Disk.BootSector.DriveNumber > 0 Then
-                        .AddItem(BootRecordGroup, BootSectorDescription(BootSectorOffsets.DriveNumber), Disk.BootSector.DriveNumber)
+                    If Disk.BootSector.BootStrapSignature <> BootSector.ValidBootStrapSignature Then
+                        .AddItem(BootRecordGroup, BootSectorDescription(BootSectorOffsets.BootStrapSignature), Disk.BootSector.BootStrapSignature.ToString("X4"))
                     End If
 
-                    If Disk.BootSector.HasValidExtendedBootSignature Then
-                        .AddItem(BootRecordGroup, BootSectorDescription(BootSectorOffsets.VolumeSerialNumber), Disk.BootSector.VolumeSerialNumber.ToString("X8").Insert(4, "-"))
-                        If Disk.BootSector.ExtendedBootSignature = BootSector.ValidExtendedBootSignature(1) Then
-                            .AddItem(BootRecordGroup, BootSectorDescription(BootSectorOffsets.VolumeLabel), Disk.BootSector.GetVolumeLabelString.TrimEnd(NULL_CHAR))
-                            .AddItem(BootRecordGroup, BootSectorDescription(BootSectorOffsets.FileSystemType), Disk.BootSector.GetFileSystemTypeString)
-                        End If
+                    If Not Disk.BootSector.HasValidJumpInstruction(True) Then
+                        ForeColor = Color.Red
+                    Else
+                        ForeColor = SystemColors.WindowText
                     End If
-                End If
 
-                If Disk.BootSector.BootStrapSignature <> BootSector.ValidBootStrapSignature Then
-                    .AddItem(BootRecordGroup, BootSectorDescription(BootSectorOffsets.BootStrapSignature), Disk.BootSector.BootStrapSignature.ToString("X4"))
-                End If
-
-                If Not Disk.BootSector.HasValidJumpInstruction(True) Then
-                    ForeColor = Color.Red
-                Else
-                    ForeColor = SystemColors.WindowText
-                End If
-
-                If Debugger.IsAttached Then
-                    .AddItem(BootRecordGroup, BootSectorDescription(BootSectorOffsets.JmpBoot), BitConverter.ToString(Disk.BootSector.JmpBoot), ForeColor)
+                    If Debugger.IsAttached Then
+                        .AddItem(BootRecordGroup, BootSectorDescription(BootSectorOffsets.JmpBoot), BitConverter.ToString(Disk.BootSector.JmpBoot), ForeColor)
+                    End If
                 End If
 
                 If Disk.IsValidImage Then
@@ -2946,7 +2951,8 @@ Public Class MainForm
 
         FileData.DirectoryEntry.BatchEditMode = False
 
-        FilePropertiesRefresh(Item, False, False)
+        'FilePropertiesRefresh(Item, False, False)
+        ComboItemRefresh(True, True)
     End Sub
 
     Private Sub ResetAll()

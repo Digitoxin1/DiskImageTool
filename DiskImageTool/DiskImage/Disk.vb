@@ -173,8 +173,8 @@
             Return VolumeLabel
         End Function
 
-        Public Function IsValidImage() As Boolean
-            Return _FileBytes.Length >= 512 And _BPB.IsValid
+        Public Function IsValidImage(Optional CheckBPB As Boolean = True) As Boolean
+            Return _FileBytes.Length >= 512 And (Not CheckBPB OrElse _BPB.IsValid)
         End Function
 
         Public Sub Reinitialize()

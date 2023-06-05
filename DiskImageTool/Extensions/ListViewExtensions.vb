@@ -4,6 +4,7 @@ Imports System.Runtime.InteropServices
 
 Module ListViewExtensions
 
+    Private Const GWL_STYLE As Integer = -16
     Private Const HDM_FIRST As Integer = &H1200
     Private Const HDM_GETITEM As Integer = HDM_FIRST + 11
     Private Const HDM_SETITEM As Integer = HDM_FIRST + 12
@@ -13,6 +14,7 @@ Module ListViewExtensions
     Private Const LVM_HITTEST As Integer = &H1000 + 18
     Private Const SB_HORZ As Integer = 0
     Private Const SB_VERT As Integer = 1
+    Private Const WS_HSCROLL As Integer = &H100000
 
     <Extension()>
     Public Sub AddColumn(listViewControl As ListView, Name As String, Text As String, Width As Integer, Index As Integer)
@@ -125,6 +127,10 @@ Module ListViewExtensions
         Dim LastPosY As Integer = 0
         Dim Bottom = ListViewControl.Bounds.Height
 
+        If ListViewControl.IsHorizontalScrollBarVisible Then
+            Bottom -= SystemInformation.HorizontalScrollBarHeight
+        End If
+
         For Each Item As ListViewItem In ListViewControl.Items
             If Item.Position.Y > LastPosY Then
                 LastPosY = Item.Position.Y
@@ -173,6 +179,13 @@ Module ListViewExtensions
     End Function
 
     <Extension()>
+    Public Function IsHorizontalScrollBarVisible(ListViewControl As ListView) As Boolean
+        Dim wndStyle = GetWindowLong(ListViewControl.Handle, GWL_STYLE)
+
+        Return (wndStyle And WS_HSCROLL) <> 0
+    End Function
+
+    <Extension()>
     Public Sub SetSortIcon(listViewControl As ListView, columnIndex As Integer, order As SortOrder)
         Dim columnHeader As IntPtr = SendMessage(listViewControl.Handle, LVM_GETHEADER, IntPtr.Zero, IntPtr.Zero)
         For columnNumber As Integer = 0 To listViewControl.Columns.Count - 1
@@ -213,6 +226,10 @@ Module ListViewExtensions
     Private Function GetScrollPos(hWnd As IntPtr, nBar As Integer) As Integer
     End Function
 
+    <DllImport("user32.dll", SetLastError:=True)>
+    Private Function GetWindowLong(hWnd As IntPtr, nIndex As Integer) As Integer
+    End Function
+
     <DllImport("user32.dll", CharSet:=CharSet.Auto, SetLastError:=True)>
     Private Function SendMessage(hWnd As IntPtr, msg As UInt32, wParam As IntPtr, lParam As IntPtr) As IntPtr
     End Function
@@ -228,7 +245,6 @@ Module ListViewExtensions
     <DllImport("user32.dll", CharSet:=CharSet.Auto, SetLastError:=True)>
     Private Function SetScrollPos(hWnd As IntPtr, nBar As Integer, nPos As Integer, bRedraw As Boolean) As Integer
     End Function
-
     <StructLayout(LayoutKind.Sequential)>
     Private Structure HDITEM
         Public theMask As Mask

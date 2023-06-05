@@ -237,7 +237,8 @@ Namespace DiskImage
         End Function
 
         Public Function IsValid() As Boolean
-            Return HasValidSectorsPerCluster() _
+            Return _FileBytes.Length >= BPB_SIZE _
+                AndAlso HasValidSectorsPerCluster() _
                 AndAlso HasValidReservedSectorCount() _
                 AndAlso HasValidNumberOfFATs() _
                 AndAlso RootEntryCount > 0 _
