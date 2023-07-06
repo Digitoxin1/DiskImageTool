@@ -18,6 +18,8 @@ What does DiskImageTool do?
 
 Suggestions for new features are welcome.
 
+I have a discord channel set up for the discussion of DiskImageTool at [#diskimagetool](https://discord.gg/7BNMJuf4CR)
+
 [Download the latest release here](https://github.com/Digitoxin1/DiskImageTool/releases/latest)
 
 ---
