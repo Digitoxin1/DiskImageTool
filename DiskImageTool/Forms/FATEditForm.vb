@@ -52,6 +52,10 @@ Public Class FATEditForm
         DataGridViewFAT.DataSource = _FATTable
 
         _IgnoreEvents = False
+
+        If DataGridViewFAT.Rows.Count > 0 Then
+            DataGridViewFAT.CurrentCell = DataGridViewFAT.Rows(0).Cells(0)
+        End If
     End Sub
 
     Public ReadOnly Property Updated As Boolean
@@ -96,14 +100,20 @@ Public Class FATEditForm
 
     Private Sub ContextMenuGrid_ItemClicked(sender As Object, e As ToolStripItemClickedEventArgs) Handles ContextMenuGrid.ItemClicked, ContextMenuLast.ItemClicked, ContextMenuReserved.ItemClicked
         If e.ClickedItem.Tag IsNot Nothing Then
-            Dim Value As UShort = e.ClickedItem.Tag
-            SetCurrentCellValue(Value)
+            Dim Value As Short = e.ClickedItem.Tag
+            If Value = -1 Then
+            Else
+                SetCurrentCellValue(Value)
+            End If
         End If
     End Sub
 
     Private Sub ContextMenuGrid_Opening(sender As Object, e As CancelEventArgs) Handles ContextMenuGrid.Opening
-        If DataGridViewFAT.CurrentCellAddress.Y < 0 Or DataGridViewFAT.CurrentCellAddress.X <> 2 Then
+        If DataGridViewFAT.CurrentCellAddress.Y < 0 Then
             e.Cancel = True
+        Else
+            Dim Cluster As Integer = DataGridViewFAT.CurrentRow.Cells("GridCluster").Value
+            ContextMenuGrid.Items("lblCluster").Text = "Cluster:  " & Cluster
         End If
     End Sub
 
@@ -151,18 +161,22 @@ Public Class FATEditForm
         End If
     End Sub
 
-    Private Sub DataGridViewFAT_SelectionChanged(sender As Object, e As EventArgs) Handles DataGridViewFAT.SelectionChanged
-        Dim Enabled As Boolean
 
-        If DataGridViewFAT.SelectedCells.Count > 0 Then
-            Enabled = (DataGridViewFAT.SelectedCells(0).RowIndex >= 0 And DataGridViewFAT.SelectedCells(0).ColumnIndex = 2)
-        Else
-            Enabled = False
-        End If
+    Private Sub DataGridViewFAT_RowEnter(sender As Object, e As DataGridViewCellEventArgs) Handles DataGridViewFAT.RowEnter
+        Dim Enabled As Boolean
+        Dim Fileindex As UInteger
+
+        Enabled = e.RowIndex >= 0
         SetButtonStatus(Enabled)
 
-        SetCurrentFileIndex(GetSelectedFileInddex())
+        If Enabled Then
+            Fileindex = DataGridViewFAT.Rows(e.RowIndex).Cells("GridFileIndex").Value
+        Else
+            Fileindex = 0
+        End If
+        SetCurrentFileIndex(Fileindex)
     End Sub
+
 
     Private Sub DataGridViewFAT_SortCompare(sender As Object, e As DataGridViewSortCompareEventArgs) Handles DataGridViewFAT.SortCompare
         If e.Column.Index = 4 Then
@@ -324,9 +338,9 @@ Public Class FATEditForm
     Private Function GetSelectedFileInddex() As UInteger
         Dim FileIndex As UInteger = 0
 
-        If DataGridViewFAT.SelectedCells.Count > 0 Then
-            Dim RowIndex = DataGridViewFAT.SelectedCells(0).RowIndex
-            If RowIndex >= 0 And DataGridViewFAT.SelectedCells(0).ColumnIndex = 2 Then
+        If DataGridViewFAT.CurrentRow IsNot Nothing Then
+            Dim RowIndex = DataGridViewFAT.CurrentRow.Index
+            If RowIndex >= 0 Then
                 FileIndex = DataGridViewFAT.Rows(RowIndex).Cells("GridFileIndex").Value
             End If
         End If
@@ -390,6 +404,21 @@ Public Class FATEditForm
         End If
 
         Return Index
+    End Function
+
+    Private Function GridGetRowIndexFromIndex(Index As Integer) As Integer
+        Dim RowIndex As Integer = -1
+
+        If Index > -1 Then
+            For Each Row As DataGridViewRow In DataGridViewFAT.Rows
+                If Row.Cells("GridCluster").Value = Index + 2 Then
+                    RowIndex = Row.Index
+                    Exit For
+                End If
+            Next
+        End If
+
+        Return RowIndex
     End Function
 
     Private Sub InitializeGridColumns()
@@ -468,20 +497,21 @@ Public Class FATEditForm
         }
         DataGridViewFAT.Columns.Add(GridViewColumn)
     End Sub
-    Private Sub PictureBoxFAT_MouseClick(sender As Object, e As MouseEventArgs) Handles PictureBoxFAT.MouseClick
-        Dim Index = GridGetIndex(e)
 
-        If Index > -1 Then
-            Dim RowIndex As Integer = -1
-            For Each Row As DataGridViewRow In DataGridViewFAT.Rows
-                If Row.Cells("GridCluster").Value = Index + 2 Then
-                    RowIndex = Row.Index
-                    Exit For
-                End If
-            Next
+    Private Sub PictureBoxFAT_MouseDown(sender As Object, e As MouseEventArgs) Handles PictureBoxFAT.MouseDown
+        Dim RowIndex = GridGetRowIndexFromIndex(GridGetIndex(e))
+
+        If RowIndex > -1 Then
+            DataGridViewFAT.FirstDisplayedScrollingRowIndex = RowIndex
+            DataGridViewFAT.CurrentCell = DataGridViewFAT.Rows(RowIndex).Cells("GridValue")
+        End If
+    End Sub
+
+    Private Sub PictureBoxFAT_MouseUp(sender As Object, e As MouseEventArgs) Handles PictureBoxFAT.MouseUp
+        If e.Button And MouseButtons.Right Then
+            Dim RowIndex = GridGetRowIndexFromIndex(GridGetIndex(e))
             If RowIndex > -1 Then
-                DataGridViewFAT.FirstDisplayedScrollingRowIndex = RowIndex
-                DataGridViewFAT.CurrentCell = DataGridViewFAT.Rows(RowIndex).Cells(2)
+                ContextMenuGrid.Show(MousePosition)
             End If
         End If
     End Sub
@@ -538,7 +568,6 @@ Public Class FATEditForm
             Dim BrushHighlight As New SolidBrush(Color.Green)
             'Dim BrushHighlightStart As New SolidBrush(Color.LightGreen)
             Dim Brush As Brush
-
             Dim Left As Integer = 0
             Dim Top As Integer = 0
             For Each Row In _FATTable.Rows
@@ -596,6 +625,13 @@ Public Class FATEditForm
         Dim Item As ToolStripMenuItem
         Dim SubItem As ToolStripMenuItem
 
+
+        Dim Label = New ToolStripLabel("Cluster:  0") With {
+            .Name = "lblCluster"
+        }
+        ContextMenuGrid.Items.Add(Label)
+        ContextMenuGrid.Items.Add(New ToolStripSeparator)
+
         Item = ContextMenuGrid.Items.Add("&Free")
         Item.Tag = FAT12.FAT_FREE_CLUSTER
 
@@ -620,6 +656,11 @@ Public Class FATEditForm
         Next
         SubItem = ContextMenuReserved.Items.Add(1)
         SubItem.Tag = 1
+
+        'ContextMenuGrid.Items.Add(New ToolStripSeparator)
+
+        'Item = ContextMenuGrid.Items.Add("&View in Hex Editor")
+        'Item.Tag = -1
     End Sub
 
     Private Sub ProcessFATChains()
@@ -663,8 +704,8 @@ Public Class FATEditForm
     End Sub
 
     Private Sub SetCurrentCellValue(Value As UShort)
-        If DataGridViewFAT.CurrentCellAddress.Y >= 0 And DataGridViewFAT.CurrentCellAddress.X = 2 Then
-            DataGridViewFAT.CurrentCell.Value = Value
+        If DataGridViewFAT.CurrentCellAddress.Y >= 0 Then
+            DataGridViewFAT.Rows(DataGridViewFAT.CurrentCellAddress.Y).Cells("GridValue").Value = Value
         End If
     End Sub
 
@@ -701,6 +742,7 @@ Public Class FATEditForm
 
         _FAT.TableEntry(Cluster) = Value
         _FAT.ProcessFAT12()
+        ProcessFATChains()
 
         RefreshGrid()
         PictureBoxFAT.Invalidate()

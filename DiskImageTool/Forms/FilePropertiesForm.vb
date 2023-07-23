@@ -99,17 +99,16 @@
         Dim Extension() As Byte
 
         If _IsVolumeLabel Then
-            Dim VolumeLabel() As Byte
+            Dim VolumeLabel() As Byte = MskFileHex.GetHex
             ReDim FileName(7)
             ReDim Extension(2)
-            VolumeLabel = DiskImage.UnicodeToCodePage437(TxtFile.Text)
             DiskImage.ResizeArray(VolumeLabel, 11, 32)
             Array.Copy(VolumeLabel, 0, FileName, 0, 8)
             Array.Copy(VolumeLabel, 8, Extension, 0, 3)
         Else
-            FileName = DiskImage.UnicodeToCodePage437(TxtFile.Text)
+            FileName = MskFileHex.GetHex
             DiskImage.ResizeArray(FileName, 8, 32)
-            Extension = DiskImage.UnicodeToCodePage437(TxtExtension.Text)
+            Extension = MskExtensionHex.GetHex
             DiskImage.ResizeArray(Extension, 3, 32)
         End If
 
@@ -294,6 +293,13 @@
             End If
         End If
 
+        GroupFileName.Text = Caption
+        MskFileHex.MaskLength = Maxlength
+        MskFileHex.Width = (Maxlength * 3 - 1) * 7 + 8
+        MskFileHex.SetHex(FileNameHex)
+        TxtFile.PromptChar = " "
+        TxtFile.Width = MskFileHex.Width
+
         If _Deleted Then
             Caption &= " (Deleted)"
             TxtFile.Mask = "\" & FileName.Substring(0, 1) & Strings.StrDup(Maxlength - 1, "C")
@@ -302,13 +308,6 @@
             TxtFile.Mask = Strings.StrDup(Maxlength, "C")
             TxtFile.Text = FileName
         End If
-
-        GroupFileName.Text = Caption
-        MskFileHex.MaskLength = Maxlength
-        MskFileHex.Width = (Maxlength * 3 - 1) * 7 + 8
-        MskFileHex.SetHex(FileNameHex)
-        TxtFile.PromptChar = " "
-        TxtFile.Width = MskFileHex.Width
 
         DT = DirectoryEntry.GetLastWriteDate
         If DT.IsValidDate Then
@@ -464,12 +463,13 @@
         SetCreatedDateValue(Nothing)
         SetLastAccessedDateValue(Nothing)
 
+        InitMultiple(_Items.Count > 1)
+
         If _Items.Count = 1 Then
             PopulateFormSingle()
         Else
             PopulateFormMultiple()
         End If
-        InitMultiple(_Items.Count > 1)
 
         _SuppressEvent = False
     End Sub

@@ -422,7 +422,7 @@
     <oemname name="LHX 3.5 " company="Electronic Arts" description="LHX: ATTACK CHOPPER Disk" verified="true" />
   </bootstrap>
   <bootstrap crc32="1B8FAB89">
-    <oemname name="LHX ONE " company="Electronic Arts" description="LHX: ATTACK CHOPPER Disk One" />
+    <oemname name="LHX ONE " company="Electronic Arts" description="LHX: ATTACK CHOPPER Disk One" verified="true" />
   </bootstrap>
   <bootstrap crc32="9733ADF7">
     <oemname name="LHX TWO " company="Electronic Arts" description="LHX: ATTACK CHOPPER Disk Two" verified="true" />
@@ -683,7 +683,7 @@
     <oemname name="Retal1.0" company="Ocean Software" description="F-29 Retaliator" verified="true" />
   </bootstrap>
   <bootstrap crc32="65676AD8">
-    <oemname name="riGem1.1" company="TriGem" />
+    <oemname name="riGem1.1" company="TriGem" verified="true" />
   </bootstrap>
   <bootstrap crc32="7512BFB2">
     <oemname name="SARAKON " company="Virgin Mastertronic Ltd." description="Sarakon Disk A" verified="true" />
