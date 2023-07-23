@@ -100,7 +100,8 @@ Public Class BootSectorForm
             $"{vbCrLf}1.2M Floppy{vbTab}1" &
             $"{vbCrLf}1.44M Floppy{vbTab}1" &
             $"{vbCrLf}2.88M Floppy{vbTab}2" &
-            $"{vbCrLf}DMF Floppy{vbTab}2 or 4"
+            $"{vbCrLf}DMF Floppy{vbTab}2 or 4" &
+            $"{vbCrLf}XDF Floppy{vbTab}1"
         SetHelpString(Msg, LblSectorsPerCluster, CboSectorsPerCluster)
 
         Msg = "Number of reserved sectors in the reserved region of the volume starting at the first sector of the volume" &
@@ -124,7 +125,8 @@ Public Class BootSectorForm
             $"{vbCrLf}1.2M Floppy{vbTab}224" &
             $"{vbCrLf}1.44M Floppy{vbTab}224" &
             $"{vbCrLf}2.88M Floppy{vbTab}240" &
-            $"{vbCrLf}DMF Floppy{vbTab}16"
+            $"{vbCrLf}DMF Floppy{vbTab}16" &
+            $"{vbCrLf}XDF Floppy{vbTab}224"
         SetHelpString(Msg, LblRootDirectoryEntries, TxtRootDirectoryEntries)
 
         Msg = "Total number of sectors in the volume" &
@@ -137,12 +139,13 @@ Public Class BootSectorForm
             $"{vbCrLf}1.2M Floppy{vbTab}2400" &
             $"{vbCrLf}1.44M Floppy{vbTab}2880" &
             $"{vbCrLf}2.88M Floppy{vbTab}5760" &
-            $"{vbCrLf}DMF Floppy{vbTab}3360"
+            $"{vbCrLf}DMF Floppy{vbTab}3360" &
+            $"{vbCrLf}XDF Floppy{vbTab}3680"
         SetHelpString(Msg, LblSectorCountSmall, TxtSectorCountSmall)
 
         Msg = "Media Descriptor" &
             $"{vbCrLf}{vbCrLf}Allowed Values:" &
-            $"{vbCrLf}F0{vbTab}1.44M, 2.88M, DMF Floppy" &
+            $"{vbCrLf}F0{vbTab}1.44M, 2.88M, DMF, XDF Floppy" &
             $"{vbCrLf}F8{vbTab}Fixed Disk" &
             $"{vbCrLf}F9{vbTab}720K & 1.2M Floppy" &
             $"{vbCrLf}FA{vbTab}Unused" &
@@ -163,7 +166,8 @@ Public Class BootSectorForm
             $"{vbCrLf}1.2M Floppy{vbTab}7" &
             $"{vbCrLf}1.44M Floppy{vbTab}9" &
             $"{vbCrLf}2.88M Floppy{vbTab}9" &
-            $"{vbCrLf}DMF Floppy{vbTab}3 or 5"
+            $"{vbCrLf}DMF Floppy{vbTab}3 or 5" &
+            $"{vbCrLf}XDF Floppy{vbTab}11"
         SetHelpString(Msg, LblSectorsPerFAT, TxtSectorsPerFAT)
 
         Msg = "Number of sectors per track on the disk" &
@@ -176,7 +180,8 @@ Public Class BootSectorForm
             $"{vbCrLf}1.2M Floppy{vbTab}15" &
             $"{vbCrLf}1.44M Floppy{vbTab}18" &
             $"{vbCrLf}2.88M Floppy{vbTab}36" &
-            $"{vbCrLf}DMF Floppy{vbTab}21"
+            $"{vbCrLf}DMF Floppy{vbTab}21" &
+            $"{vbCrLf}XDF Floppy{vbTab}23"
         SetHelpString(Msg, LblSectorsPerTrack, TxtSectorsPerTrack)
 
         Msg = "Number of physical heads (sides) on the disk" &
@@ -189,7 +194,8 @@ Public Class BootSectorForm
             $"{vbCrLf}1.2M Floppy{vbTab}2" &
             $"{vbCrLf}1.44M Floppy{vbTab}2" &
             $"{vbCrLf}2.88M Floppy{vbTab}2" &
-            $"{vbCrLf}DMF Floppy{vbTab}2"
+            $"{vbCrLf}DMF Floppy{vbTab}2" &
+            $"{vbCrLf}XDF Floppy{vbTab}2"
         SetHelpString(Msg, LblNumberOfHeads, TxtNumberOfHeads)
 
         Msg = "Number of sectors preceeding the first sector of a partitioned volume" &
@@ -322,7 +328,7 @@ Public Class BootSectorForm
         SetValue(TxtSectorCountSmall, BPB.SectorCountSmall)
         SetValue(HexMediaDescriptor, BPB.MediaDescriptor.ToString("X2"), Array.ConvertAll(BiosParameterBlock.ValidMediaDescriptor, Function(x) x.ToString("X2")))
         SetValue(TxtSectorsPerFAT, BPB.SectorsPerFAT)
-        SetValue(TxtSectorsPerTrack, BPB.SectorsPerTrack, {"8", "9", "15", "18", "21", "36"})
+        SetValue(TxtSectorsPerTrack, BPB.SectorsPerTrack, {"8", "9", "15", "18", "21", "23", "36"})
         SetValue(TxtNumberOfHeads, BPB.NumberOfHeads, {"1", "2"})
     End Sub
 
@@ -345,6 +351,7 @@ Public Class BootSectorForm
         CboDiskType.Items.Add(New BootSectorDiskType(FloppyDiskType.Floppy2880))
         CboDiskType.Items.Add(New BootSectorDiskType(FloppyDiskType.FloppyDMF1024))
         CboDiskType.Items.Add(New BootSectorDiskType(FloppyDiskType.FloppyDMF2048))
+        CboDiskType.Items.Add(New BootSectorDiskType(FloppyDiskType.FloppyXDF))
         CboDiskType.Items.Add(New BootSectorDiskType(FloppyDiskType.FloppyProCopy))
         CboDiskType.Items.Add(New BootSectorDiskType(FloppyDiskType.FloppyUnknown))
 
