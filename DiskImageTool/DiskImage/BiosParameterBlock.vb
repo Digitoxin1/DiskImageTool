@@ -7,7 +7,7 @@ Namespace DiskImage
         Public Shared ReadOnly ValidNumberOfFATS() As Byte = {1, 2}
         Public Shared ReadOnly ValidNumberOfHeads() As UShort = {1, 2}
         Public Shared ReadOnly ValidSectorsPerCluster() As Byte = {1, 2, 4, 8, 16, 32, 64, 128}
-        Public Shared ReadOnly ValidSectorsPerTrack() As UShort = {8, 9, 15, 18, 21, 36}
+        Public Shared ReadOnly ValidSectorsPerTrack() As UShort = {8, 9, 15, 18, 21, 23, 36}
         Private ReadOnly _FileBytes As ImageByteArray
 
         Public Enum BPBOoffsets As UInteger

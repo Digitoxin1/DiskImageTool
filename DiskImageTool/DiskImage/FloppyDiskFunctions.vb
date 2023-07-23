@@ -13,6 +13,7 @@
             FloppyDMF1024 = 9
             FloppyDMF2048 = 10
             FloppyProCopy = 11
+            FloppyXDF = 12
         End Enum
 
         Public Function BPBCompare(BPB As BiosParameterBlock, Params As FloppyDiskParams) As Boolean
@@ -196,6 +197,18 @@
                     Params.SectorsPerCluster = 2
                     Params.SectorsPerFAT = 5
                     Params.SectorsPerTrack = 18
+
+                Case FloppyDiskType.FloppyXDF
+                    Params.BytesPerSector = 512
+                    Params.MediaDescriptor = &HF0
+                    Params.NumberOfFATs = 2
+                    Params.NumberOfHeads = 2
+                    Params.ReservedSectorCount = 1
+                    Params.RootEntryCount = 224
+                    Params.SectorCountSmall = 3680
+                    Params.SectorsPerCluster = 1
+                    Params.SectorsPerFAT = 11
+                    Params.SectorsPerTrack = 23
             End Select
 
             Return Params
@@ -253,6 +266,8 @@
                     Return FloppyDiskType.Floppy1440
                 Case 1720320
                     Return FloppyDiskType.FloppyDMF2048
+                Case 1884160
+                    Return FloppyDiskType.FloppyXDF
                 Case 2949120
                     Return FloppyDiskType.Floppy2880
                 Case Else
@@ -284,6 +299,8 @@
                     Return "2.88M"
                 Case FloppyDiskType.FloppyProCopy
                     Return "ProCopy"
+                Case FloppyDiskType.FloppyXDF
+                    Return "XDF"
                 Case Else
                     Return "Custom"
             End Select
