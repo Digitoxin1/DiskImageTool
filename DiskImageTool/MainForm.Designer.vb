@@ -231,7 +231,7 @@ Partial Class MainForm
         'FileModified
         '
         FileModified.Text = ""
-        FileModified.Width = 20
+        FileModified.Width = 27
         '
         'MainMenuFile
         '
@@ -912,22 +912,22 @@ Partial Class MainForm
         'FileClusterError
         '
         Me.FileClusterError.Text = "Err"
-        Me.FileClusterError.Width = 0
+        Me.FileClusterError.Width = 30
         '
         'FileCreateDate
         '
         Me.FileCreateDate.Text = "Created"
-        Me.FileCreateDate.Width = 0
+        Me.FileCreateDate.Width = 140
         '
         'FileLastAccessDate
         '
         Me.FileLastAccessDate.Text = "Last Accessed"
-        Me.FileLastAccessDate.Width = 0
+        Me.FileLastAccessDate.Width = 90
         '
         'FileLFN
         '
         Me.FileLFN.Text = "Long File Name"
-        Me.FileLFN.Width = 0
+        Me.FileLFN.Width = 200
         '
         'ContextMenuFiles
         '

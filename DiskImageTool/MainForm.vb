@@ -46,6 +46,8 @@ Public Class MainForm
     Private _FilterDiskType As ComboFilter
     Private _FilterOEMName As ComboFilter
     Private _FiltersApplied As Boolean = False
+    Private _ListViewHeader As ListViewHeader
+    Private _ListViewWidths() As Integer
     Private _LoadedFileNames As Dictionary(Of String, LoadedImageData)
     Private _ScanRun As Boolean = False
     Private _SuppressEvent As Boolean = False
@@ -55,6 +57,7 @@ Public Class MainForm
 
         ' Add any initialization after the InitializeComponent() call.
         _lvwColumnSorter = New ListViewColumnSorter
+        ListViewInit()
     End Sub
 
     Friend Sub DiskTypeFilterUpdate(Disk As DiskImage.Disk, ImageData As LoadedImageData, Optional UpdateFilters As Boolean = False, Optional Remove As Boolean = False)
@@ -1863,6 +1866,17 @@ Public Class MainForm
         RefreshCheckAll()
     End Sub
 
+    Private Sub ListViewAutoSize()
+        For Each Column As ColumnHeader In ListViewFiles.Columns
+            If Column.Width > 0 Then
+                Column.Width = -2
+                If Column.Width < _ListViewWidths(Column.Index) Then
+                    Column.Width = _ListViewWidths(Column.Index)
+                End If
+            End If
+        Next
+    End Sub
+
     Private Function ListViewFilesAddGroup(Directory As DiskImage.IDirectory, Path As String) As ListViewGroup
         Dim FileCount As UInteger = Directory.Data.FileCount
         Dim GroupName As String = IIf(Path = "", "(Root)", Path)
@@ -2060,6 +2074,18 @@ Public Class MainForm
         ListViewFiles.EndUpdate()
     End Sub
 
+    Private Sub ListViewInit()
+        ReDim _ListViewWidths(_ListViewFiles.Columns.Count - 1)
+        For Each Column As ColumnHeader In ListViewFiles.Columns
+            _ListViewWidths(Column.Index) = Column.Width
+        Next
+
+        FileCreateDate.Width = 0
+        FileLastAccessDate.Width = 0
+        FileLFN.Width = 0
+        FileClusterError.Width = 0
+    End Sub
+
     Private Sub MenuDisplayDirectorySubMenuClear()
         For Each Item As ToolStripMenuItem In BtnDisplayDirectory.DropDownItems
             RemoveHandler Item.Click, AddressOf BtnDisplayDirectory_Click
@@ -2163,6 +2189,8 @@ Public Class MainForm
 
         Dim Response = ProcessDirectoryEntries(_Disk.Directory, 0, "", False)
         ProcessDirectoryScanResponse(Response)
+
+        ListViewAutoSize()
 
         ListViewFiles.ListViewItemSorter = _lvwColumnSorter
 
@@ -3671,6 +3699,7 @@ Public Class MainForm
 
         BtnCompare.Visible = False
         ListViewFiles.DoubleBuffer
+        _ListViewHeader = New ListViewHeader(ListViewFiles.Handle)
         ListViewSummary.AutoResizeColumnsContstrained(ColumnHeaderAutoResizeStyle.None)
         FiltersInitialize()
         _LoadedFileNames = New Dictionary(Of String, LoadedImageData)
