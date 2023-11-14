@@ -86,7 +86,7 @@ Public Class HexViewForm
         End Get
     End Property
 
-    Private Function ClipboardHasHex() As Boolean
+    Private Shared Function ClipboardHasHex() As Boolean
         Dim DataObject = Clipboard.GetDataObject()
 
         If DataObject.GetDataPresent(GetType(String)) Then
@@ -104,11 +104,11 @@ Public Class HexViewForm
         Me.Close()
     End Sub
 
-    Private Function ConvertHexToByte(Hex As String, <Out> ByRef b As Byte) As Boolean
+    Private Shared Function ConvertHexToByte(Hex As String, <Out> ByRef b As Byte) As Boolean
         Return Byte.TryParse(Hex, NumberStyles.HexNumber, Thread.CurrentThread.CurrentCulture, b)
     End Function
 
-    Private Function ConvertHexToBytes(Hex As String) As Byte()
+    Private Shared Function ConvertHexToBytes(Hex As String) As Byte()
         If String.IsNullOrEmpty(Hex) Then
             Return Nothing
         End If
@@ -256,7 +256,7 @@ Public Class HexViewForm
         ToolStripStatusBytes.Text = Format(_CurrentHexViewData.SectorBlock.Size, "N0") & " bytes"
     End Sub
 
-    Private Function FillRegion(ByteProvider As IByteProvider, Offset As Integer, Length As Integer, Value As Byte) As FillRegionResult
+    Private Shared Function FillRegion(ByteProvider As IByteProvider, Offset As Integer, Length As Integer, Value As Byte) As FillRegionResult
         Dim Result As New FillRegionResult(Length)
 
         For Index = 0 To Length - 1
@@ -270,7 +270,7 @@ Public Class HexViewForm
         Return Result
     End Function
 
-    Private Function FillRegion(ByteProvider As IByteProvider, Offset As Integer, Length As Integer, Value() As Byte) As FillRegionResult
+    Private Shared Function FillRegion(ByteProvider As IByteProvider, Offset As Integer, Length As Integer, Value() As Byte) As FillRegionResult
         Dim Result As New FillRegionResult(Length)
 
         For Index = 0 To Length - 1
@@ -612,7 +612,7 @@ Public Class HexViewForm
         RefreshUndoButtons()
     End Sub
 
-    Private Function ReadBytes(ByteProvider As IByteProvider, Offset As Long, Length As Integer) As Byte()
+    Private Shared Function ReadBytes(ByteProvider As IByteProvider, Offset As Long, Length As Integer) As Byte()
         Dim Data(Length - 1) As Byte
 
         For Counter = 0 To Data.Length - 1
@@ -943,7 +943,7 @@ Public Class HexViewForm
             HexBox1.Select(Offset, Length)
         End If
     End Sub
-    Private Sub WriteBytes(ByteProvider As IByteProvider, Offset As Long, Data() As Byte)
+    Private Shared Sub WriteBytes(ByteProvider As IByteProvider, Offset As Long, Data() As Byte)
         For Counter = 0 To Data.Length - 1
             ByteProvider.WriteByte(Offset + Counter, Data(Counter))
         Next

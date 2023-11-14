@@ -434,7 +434,7 @@ Public Class MainForm
         Return Result
     End Function
 
-    Private Function AppendFileFilter(FileFilter As String, Description As String, Pattern As String) As String
+    Private Shared Function AppendFileFilter(FileFilter As String, Description As String, Pattern As String) As String
         Return FileFilter & "|" & GetFileFilter(Description, Pattern)
     End Function
 
@@ -800,7 +800,7 @@ Public Class MainForm
         End If
     End Sub
 
-    Private Function DirectoryEntryCanDelete(DirectoryEntry As DiskImage.DirectoryEntry, Clear As Boolean) As Boolean
+    Private Shared Function DirectoryEntryCanDelete(DirectoryEntry As DiskImage.DirectoryEntry, Clear As Boolean) As Boolean
         If DirectoryEntry.IsDeleted Then
             Return False
         ElseIf Clear And Not DirectoryEntry.IsValidFile Then
@@ -812,14 +812,14 @@ Public Class MainForm
         End If
     End Function
 
-    Private Function DirectoryEntryCanExport(DirectoryEntry As DiskImage.DirectoryEntry) As Boolean
+    Private Shared Function DirectoryEntryCanExport(DirectoryEntry As DiskImage.DirectoryEntry) As Boolean
         Return DirectoryEntry.IsValidFile _
             And Not DirectoryEntry.IsDeleted _
             And Not DirectoryEntry.HasInvalidFilename _
             And Not DirectoryEntry.HasInvalidExtension
     End Function
 
-    Private Sub DirectoryEntryDisplayText(DirectoryEntry As DiskImage.DirectoryEntry)
+    Private Shared Sub DirectoryEntryDisplayText(DirectoryEntry As DiskImage.DirectoryEntry)
         If Not DirectoryEntry.IsValidFile Or DirectoryEntry.IsDeleted Then
             Exit Sub
         End If
@@ -1334,7 +1334,7 @@ Public Class MainForm
         End If
     End Sub
 
-    Private Function FileSave(FilePath As String, DirectoryEntry As DiskImage.DirectoryEntry) As Boolean
+    Private Shared Function FileSave(FilePath As String, DirectoryEntry As DiskImage.DirectoryEntry) As Boolean
         Try
             IO.File.WriteAllBytes(FilePath, DirectoryEntry.GetContent)
             Dim D = DirectoryEntry.GetLastWriteDate
@@ -1619,7 +1619,7 @@ Public Class MainForm
         Return Response
     End Function
 
-    Private Function GetFileFilter(Description As String, Pattern As String) As String
+    Private Shared Function GetFileFilter(Description As String, Pattern As String) As String
         Return Description & "|" & Pattern
     End Function
 
@@ -1815,7 +1815,7 @@ Public Class MainForm
         Return Response
     End Function
 
-    Private Function IsZipArchive(FileName As String) As ZipArchive
+    Private Shared Function IsZipArchive(FileName As String) As ZipArchive
         Try
             Dim Buffer(1) As Byte
             Using fs = New FileStream(FileName, FileMode.Open, FileAccess.Read)
@@ -1909,7 +1909,7 @@ Public Class MainForm
         ListViewFiles.EndUpdate()
     End Sub
 
-    Private Function ListViewFilesGetItem(Group As ListViewGroup, FileData As FileData) As ListViewItem
+    Private Shared Function ListViewFilesGetItem(Group As ListViewGroup, FileData As FileData) As ListViewItem
         Dim SI As ListViewItem.ListViewSubItem
         Dim ForeColor As Color
         Dim IsDeleted As Boolean = FileData.DirectoryEntry.IsDeleted
@@ -2107,12 +2107,12 @@ Public Class MainForm
         AddHandler Item.Click, AddressOf BtnDisplayDirectory_Click
     End Sub
 
-    Private Function MsgBoxNewFileName(FileName As String) As MsgBoxResult
+    Private Shared Function MsgBoxNewFileName(FileName As String) As MsgBoxResult
         Dim Msg As String = $"'{FileName}' is a read-only file.  Please specify a new file name."
         Return MsgBox(Msg, MsgBoxStyle.OkCancel)
     End Function
 
-    Private Function MsgBoxOverwrite(FilePath As String) As MyMsgBoxResult
+    Private Shared Function MsgBoxOverwrite(FilePath As String) As MyMsgBoxResult
         Dim Msg As String = $"{IO.Path.GetFileName(FilePath)} already exists.{vbCrLf}Do you wish to replace it?"
 
         Dim SaveAllForm As New SaveAllForm(Msg)
@@ -2120,13 +2120,13 @@ Public Class MainForm
         Return SaveAllForm.Result
     End Function
 
-    Private Function MsgBoxSave(FileName As String) As MsgBoxResult
+    Private Shared Function MsgBoxSave(FileName As String) As MsgBoxResult
         Dim Msg As String = $"Save file '{FileName}'?"
 
         Return MsgBox(Msg, MsgBoxStyle.Question + MsgBoxStyle.YesNoCancel + MsgBoxStyle.DefaultButton3, "Save")
     End Function
 
-    Private Function MsgBoxSaveAll(FileName As String) As MyMsgBoxResult
+    Private Shared Function MsgBoxSaveAll(FileName As String) As MyMsgBoxResult
         Dim Msg As String = $"Save file '{FileName}'?"
 
         Dim SaveAllForm As New SaveAllForm(Msg)
@@ -2161,7 +2161,7 @@ Public Class MainForm
         End If
     End Sub
 
-    Private Function PathAddBackslash(Path As String) As String
+    Private Shared Function PathAddBackslash(Path As String) As String
         If Len(Path) > 0 Then
             If Not Path.EndsWith("\") Then
                 Path &= "\"
@@ -3086,7 +3086,7 @@ Public Class MainForm
         End If
     End Sub
 
-    Private Function SaveDiskImageToFile(Disk As DiskImage.Disk, FilePath As String) As Boolean
+    Private Shared Function SaveDiskImageToFile(Disk As DiskImage.Disk, FilePath As String) As Boolean
         Try
             If IO.File.Exists(FilePath) Then
                 Dim BackupPath As String = FilePath & ".bak"
