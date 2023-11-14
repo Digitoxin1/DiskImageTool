@@ -34,7 +34,7 @@ Public Class MainForm
     Public Const SITE_URL = "https://github.com/Digitoxin1/DiskImageTool"
     Public Const UPDATE_URL = "https://api.github.com/repos/Digitoxin1/DiskImageTool/releases/latest"
     Private ReadOnly _ArchiveFilterExt As New List(Of String) From {".zip"}
-    Private ReadOnly _FileFilterExt As New List(Of String) From {".ima", ".img"}
+    Private ReadOnly _FileFilterExt As New List(Of String) From {".ima", ".img", ".180", ".360", ".720"}
     Private ReadOnly _lvwColumnSorter As ListViewColumnSorter
     Private _BootStrap As Bootstrap
     Private _CheckAll As Boolean = False

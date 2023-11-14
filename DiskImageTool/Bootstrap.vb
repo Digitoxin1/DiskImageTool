@@ -1,8 +1,10 @@
 ﻿Imports System.Xml
+Imports DiskImageTool.DiskImage
 
 Public Class Bootstrap
     Private ReadOnly _NameSpace As String = New StubClass().GetType.Namespace
     Private _OEMNameDictionary As Dictionary(Of UInteger, BootstrapLookup)
+    Private _JmpInst As HashSet(Of String)
 
     Public Sub New()
         InitOEMNames()
@@ -16,6 +18,19 @@ Public Class Bootstrap
         Else
             Return Nothing
         End If
+    End Function
+
+    Public Function SearchBootSector(BootSector As BootSector) As BootstrapLookup
+        For Each JmpString In _JmpInst
+            Dim Jmp = HexStringToBytes(JmpString)
+            Dim BootstrapCode = BootSector.GetBootStrapCode(Jmp)
+            Dim Lookup = FindMatch(BootstrapCode)
+            If Lookup IsNot Nothing Then
+                Return Lookup
+            End If
+        Next
+
+        Return Nothing
     End Function
 
     Private Function GetResource(Name As String) As String
@@ -36,6 +51,7 @@ Public Class Bootstrap
 
     Private Sub InitOEMNames()
         _OEMNameDictionary = New Dictionary(Of UInteger, BootstrapLookup)
+        _JmpInst = New HashSet(Of String)
 
         Dim XMLDoc As New XmlDocument()
         XMLDoc.LoadXml(GetResource("bootstrap.xml"))
@@ -49,6 +65,9 @@ Public Class Bootstrap
             End If
             If bootstrapNode.HasAttribute("exactmatch") Then
                 BootstrapType.ExactMatch = bootstrapNode.Attributes("exactmatch").Value
+            End If
+            If bootstrapNode.HasAttribute("jmp") Then
+                BootstrapType.Jmp = bootstrapNode.Attributes("jmp").Value
             End If
             For Each oemNameNode As XmlElement In bootstrapNode.SelectNodes("oemname")
                 Dim KnownOEMName As New KnownOEMName
@@ -79,12 +98,19 @@ Public Class Bootstrap
                 BootstrapType.KnownOEMNames.Add(KnownOEMName)
             Next
             _OEMNameDictionary.Add(crc32, BootstrapType)
+
+            If BootstrapType.Jmp <> "" Then
+                If Not _JmpInst.Contains(BootstrapType.Jmp) Then
+                    _JmpInst.Add(BootstrapType.Jmp)
+                End If
+            End If
         Next
     End Sub
 End Class
 
 Public Class BootstrapLookup
     Public Property ExactMatch As Boolean = False
+    Public Property Jmp As String
     Public Property KnownOEMNames As New List(Of KnownOEMName)
     Public Property Language As String = "English"
 End Class

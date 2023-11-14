@@ -42,13 +42,7 @@
 
         Public Property BootStrapCode() As Byte()
             Get
-                Dim BootStrapStart = GetBootStrapOffset()
-                Dim BootStrapLength = BootSectorOffsets.BootStrapSignature - BootStrapStart
-                If BootStrapStart > 2 And BootStrapLength > 0 Then
-                    Return _FileBytes.GetBytes(BootStrapStart, BootStrapLength)
-                Else
-                    Return {}
-                End If
+                Return GetBootStrapCode(GetBootStrapOffset())
             End Get
             Set
                 Dim BootStrapStart = GetBootStrapOffset()
@@ -163,15 +157,29 @@
             Return Hi + Lo * 65536
         End Function
 
-        Public Function GetBootStrapOffset() As UShort
-            Dim JmpBootLocal = JmpBoot
-            Dim JumpInstruction As Byte = JmpBootLocal(0)
+        Public Function GetBootStrapCode(Jmp() As Byte) As Byte()
+            Dim Offset = GetBootStrapOffset(Jmp)
+
+            Return GetBootStrapCode(Offset)
+        End Function
+
+        Public Function GetBootStrapCode(Offset As UShort) As Byte()
+            Dim BootStrapLength = BootSectorOffsets.BootStrapSignature - Offset
+            If Offset > 2 And BootStrapLength > 0 Then
+                Return _FileBytes.GetBytes(Offset, BootStrapLength)
+            Else
+                Return {}
+            End If
+        End Function
+
+        Public Function GetBootStrapOffset(Jmp() As Byte) As UShort
+            Dim JumpInstruction As Byte = Jmp(0)
             Dim Offset As UShort
 
             If JumpInstruction = &HEB Then
-                Offset = JmpBootLocal(1) + 2
+                Offset = Jmp(1) + 2
             ElseIf JumpInstruction = &HE9 Then
-                Offset = BitConverter.ToUInt16(JmpBootLocal, 1) + 3
+                Offset = BitConverter.ToUInt16(Jmp, 1) + 3
             Else
                 Offset = 0
             End If
@@ -181,6 +189,10 @@
             End If
 
             Return Offset
+        End Function
+
+        Public Function GetBootStrapOffset() As UShort
+            Return GetBootStrapOffset(JmpBoot)
         End Function
 
         Public Function GetFileSystemTypeString() As String
