@@ -38,8 +38,7 @@ Public Class MainForm
     Public Const SITE_URL = "https://github.com/Digitoxin1/DiskImageTool"
     Public Const UPDATE_URL = "https://api.github.com/repos/Digitoxin1/DiskImageTool/releases/latest"
     Private ReadOnly _ArchiveFilterExt As New List(Of String) From {".zip"}
-    Private ReadOnly _FileFilterExt As New List(Of String) From {".ima", ".img", ".vhd"}
-    Private _ValidFileExt As List(Of String)
+    Private ReadOnly _ValidFileExt As New List(Of String) From {".ima", ".img", ".imz", ".vfd", ".flp"}
     Private ReadOnly _lvwColumnSorter As ListViewColumnSorter
     Private _BootStrap As Bootstrap
     Private _CheckAll As Boolean = False
@@ -438,10 +437,6 @@ Public Class MainForm
         Return Result
     End Function
 
-    Private Shared Function AppendFileFilter(FileFilter As String, Description As String, Extension As String) As String
-        Return FileFilter & IIf(FileFilter = "", "", "|") & GetFileFilter(Description, Extension)
-    End Function
-
     Private Function AreFiltersApplied() As Boolean
         Dim FilterCount As Integer = [Enum].GetNames(GetType(FilterTypes)).Length
 
@@ -514,7 +509,7 @@ Public Class MainForm
 
             If JSON.ContainsKey("tag_name") Then
                 DownloadVersion = JSON.Item("tag_name").ToString
-                If DownloadVersion.StartsWith("v", StringComparison.CurrentCultureIgnoreCase) Then
+                If DownloadVersion.StartsWith("v", StringComparison.OrdinalIgnoreCase) Then
                     DownloadVersion = DownloadVersion.Remove(0, 1)
                 End If
             End If
@@ -551,7 +546,7 @@ Public Class MainForm
 
             If MsgBox(Msg, MsgBoxStyle.Question + MsgBoxStyle.YesNo + MsgBoxStyle.DefaultButton2) = MsgBoxResult.Yes Then
                 Dim Dialog As New SaveFileDialog With {
-                    .Filter = GetFileFilter("Zip Archive", ".zip"),
+                    .Filter = FileDialogGetFilter("Zip Archive", ".zip"),
                     .FileName = Path.GetFileName(DownloadURL),
                     .InitialDirectory = GetDownloadsFolder(),
                     .RestoreDirectory = True
@@ -1622,20 +1617,6 @@ Public Class MainForm
         Return Response
     End Function
 
-    Private Shared Function GetFileFilter(Description As String, Extension As String) As String
-        Return Description & " (*" & Extension & ")|" & "*" & Extension
-    End Function
-
-    Private Shared Function GetFileFilter(Description As String, ExtensionList As List(Of String)) As String
-        Dim Extensions = ExtensionList.ToArray
-
-        For Counter = 0 To Extensions.Length - 1
-            Extensions(Counter) = "*" & Extensions(Counter)
-        Next
-
-        Return Description & " (" & String.Join("; ", Extensions) & ")|" & String.Join(";", Extensions)
-    End Function
-
     Private Function GetModifiedImageList() As List(Of LoadedImageData)
         Dim ModifyImageList As New List(Of LoadedImageData)
 
@@ -1815,11 +1796,19 @@ Public Class MainForm
 
     Private Function GetLoadDialogFilters() As String
         Dim FileFilter As String
+        Dim ExtensionList As List(Of String)
 
 
-        FileFilter = GetFileFilter("Floppy Disk Image", _ValidFileExt)
-        FileFilter = AppendFileFilter(FileFilter, "Zip Archive", ".zip")
-        FileFilter = AppendFileFilter(FileFilter, "All files", ".*")
+        FileFilter = FileDialogGetFilter("All Floppy Disk Images", _ValidFileExt)
+
+        ExtensionList = New List(Of String) From {".imz"}
+        FileFilter = FileDialogAppendFilter(FileFilter, "Compressed Disk Image", ExtensionList)
+
+        ExtensionList = New List(Of String) From {".vfd", ".flp"}
+        FileFilter = FileDialogAppendFilter(FileFilter, "Virtual Floppy Disk", ExtensionList)
+
+        FileFilter = FileDialogAppendFilter(FileFilter, "Zip Archive", ".zip")
+        FileFilter = FileDialogAppendFilter(FileFilter, "All files", ".*")
 
         Return FileFilter
     End Function
@@ -1828,28 +1817,45 @@ Public Class MainForm
         Dim Response As SaveDialogFilter
         Dim CurrentIndex As Integer = 1
         Dim Extension As String
+        Dim ExtensionList As List(Of String)
 
         Response.FilterIndex = 0
 
-        For Each Extension In _FileFilterExt
-            If FileExt.ToLower = Extension.ToLower Then
+        ExtensionList = New List(Of String) From {".ima", ".img"}
+        For Each Extension In ExtensionList
+            If FileExt.Equals(Extension, StringComparison.OrdinalIgnoreCase) Then
                 Response.FilterIndex = CurrentIndex
             End If
         Next
-        Response.Filter = GetFileFilter("Floppy Disk Image", _FileFilterExt)
+        Response.Filter = FileDialogGetFilter("Floppy Disk Image", ExtensionList)
         CurrentIndex += 1
 
-        Extension = GetFileFilterExtByType(DiskType)
-        If Extension <> "" Then
-            Dim Description = GetFileFilterDescriptionByType(DiskType)
-            Response.Filter = AppendFileFilter(Response.Filter, Description, Extension)
-            If FileExt.ToLower = Extension.ToLower Then
+        ExtensionList = New List(Of String) From {".vfd", ".flp"}
+        For Each Extension In ExtensionList
+            If FileExt.Equals(Extension, StringComparison.OrdinalIgnoreCase) Then
                 Response.FilterIndex = CurrentIndex
             End If
-            CurrentIndex += 1
-        End If
+        Next
+        Response.Filter = FileDialogAppendFilter(Response.Filter, "Virtual Floppy Disk", ExtensionList)
+        CurrentIndex += 1
 
-        Response.Filter = AppendFileFilter(Response.Filter, "All files", ".*")
+        Dim Items = System.Enum.GetValues(GetType(FloppyDiskType))
+        For Each Item As Integer In Items
+            Extension = GetFileFilterExtByType(Item)
+            If Extension <> "" Then
+                Dim Description = GetFileFilterDescriptionByType(Item)
+                If FileExt.Equals(Extension, StringComparison.OrdinalIgnoreCase) Then
+                    Response.Filter = FileDialogAppendFilter(Response.Filter, Description, Extension)
+                    Response.FilterIndex = CurrentIndex
+                    CurrentIndex += 1
+                ElseIf Item = DiskType Then
+                    Response.Filter = FileDialogAppendFilter(Response.Filter, Description, Extension)
+                    CurrentIndex += 1
+                End If
+            End If
+        Next
+
+        Response.Filter = FileDialogAppendFilter(Response.Filter, "All files", ".*")
         If Response.FilterIndex = 0 Then
             Response.FilterIndex = CurrentIndex
         End If
@@ -2196,12 +2202,6 @@ Public Class MainForm
     End Sub
 
     Private Sub InitValidFilters()
-        _ValidFileExt = New List(Of String)
-
-        For Each FileExt In _FileFilterExt
-            _ValidFileExt.Add(FileExt)
-        Next
-
         ParseFileTypeFilters()
         ParseCustomFilters()
     End Sub
@@ -2228,15 +2228,6 @@ Public Class MainForm
             Next
         End If
     End Sub
-
-    Private Shared Function PathAddBackslash(Path As String) As String
-        If Len(Path) > 0 Then
-            If Not Path.EndsWith("\") Then
-                Path &= "\"
-            End If
-        End If
-        Return Path
-    End Function
 
     Private Sub PopulateFilesPanel(ImageData As LoadedImageData)
         MenuDisplayDirectorySubMenuClear()

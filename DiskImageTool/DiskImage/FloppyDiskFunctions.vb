@@ -323,15 +323,15 @@
                 Case FloppyDiskType.Floppy1440
                     Return ".144"
                 Case FloppyDiskType.FloppyDMF1024
-                    Return ".DMF"
+                    Return ".dmf"
                 Case FloppyDiskType.FloppyDMF2048
-                    Return ".DMF"
+                    Return ".dmf"
                 Case FloppyDiskType.Floppy2880
                     Return ".288"
                 Case FloppyDiskType.FloppyProCopy
                     Return ""
                 Case FloppyDiskType.FloppyXDF
-                    Return ".XDF"
+                    Return ".xdf"
                 Case Else
                     Return ""
             End Select

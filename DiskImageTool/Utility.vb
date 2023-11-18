@@ -11,6 +11,28 @@ Module Utility
         Return NewTable
     End Function
 
+    Public Function FileDialogAppendFilter(FileFilter As String, Description As String, Extension As String) As String
+        Return FileFilter & IIf(FileFilter = "", "", "|") & FileDialogGetFilter(Description, Extension)
+    End Function
+
+    Public Function FileDialogAppendFilter(FileFilter As String, Description As String, ExtensionList As List(Of String)) As String
+        Return FileFilter & IIf(FileFilter = "", "", "|") & FileDialogGetFilter(Description, ExtensionList)
+    End Function
+
+    Public Function FileDialogGetFilter(Description As String, Extension As String) As String
+        Return Description & " (*" & Extension & ")|" & "*" & Extension
+    End Function
+
+    Public Function FileDialogGetFilter(Description As String, ExtensionList As List(Of String)) As String
+        Dim Extensions = ExtensionList.ToArray
+
+        For Counter = 0 To Extensions.Length - 1
+            Extensions(Counter) = "*" & Extensions(Counter)
+        Next
+
+        Return Description & " (" & String.Join("; ", Extensions) & ")|" & String.Join(";", Extensions)
+    End Function
+
     Public Function GetDownloadsFolder() As String
 
         Dim Result As String = ""
@@ -43,6 +65,15 @@ Module Utility
     Public Function IsFileReadOnly(fileName As String) As Boolean
         Dim fInfo As New FileInfo(fileName)
         Return fInfo.IsReadOnly
+    End Function
+
+    Public Function PathAddBackslash(Path As String) As String
+        If Len(Path) > 0 Then
+            If Not Path.EndsWith("\") Then
+                Path &= "\"
+            End If
+        End If
+        Return Path
     End Function
 
     <DllImport("shell32.dll")>
