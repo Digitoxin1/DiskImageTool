@@ -678,6 +678,7 @@ Public Class MainForm
 
         If Result <> MsgBoxResult.Cancel Then
             FileClose(CurrentImageData)
+            ComboImagesRefreshPaths()
         End If
     End Sub
 

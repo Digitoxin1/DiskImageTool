@@ -11,7 +11,6 @@ Public Class ImageLoadForm
     Private ReadOnly _Parent As MainForm
     Private _Activated As Boolean = False
     Private _Counter As Integer = 0
-    Private _CurrentImageData As LoadedImageData = Nothing
     Private _EndScan As Boolean = False
     Private _SelectedImageData As LoadedImageData = Nothing
     Private _Visible As Boolean = False
@@ -60,22 +59,21 @@ Public Class ImageLoadForm
         Return Nothing
     End Function
 
-    Private Function LoadedFileAdd(bw As BackgroundWorker, Key As String, FileName As String, Compressed As Boolean, Optional CompressedFile As String = "") As LoadedImageData
-        Dim ImageData As LoadedImageData = Nothing
+    Private Sub LoadedFileAdd(bw As BackgroundWorker, Key As String, FileName As String, Compressed As Boolean, Optional CompressedFile As String = "")
 
         If Not _LoadedFileNames.ContainsKey(Key) Then
-            ImageData = New LoadedImageData(FileName)
+            Dim ImageData = New LoadedImageData(FileName)
             If Compressed Then
                 ImageData.Compressed = True
                 ImageData.CompressedFile = CompressedFile
             End If
             _LoadedFileNames.Add(Key, ImageData)
-            _CurrentImageData = ImageData
-            bw.ReportProgress(2)
+            If _SelectedImageData Is Nothing Then
+                _SelectedImageData = ImageData
+            End If
+            bw.ReportProgress(2, ImageData)
         End If
-
-        Return ImageData
-    End Function
+    End Sub
 
     Private Sub ProcessFile(bw As BackgroundWorker, FileName As String)
         If Not File.Exists(FileName) Then
@@ -149,10 +147,8 @@ Public Class ImageLoadForm
                 LblScanning.Text = "Scanning... " & _Counter & " files"
             End If
         ElseIf e.ProgressPercentage = 2 Then
-            _Parent.ComboImages.Items.Add(_CurrentImageData)
-            If _SelectedImageData Is Nothing Then
-                _SelectedImageData = _CurrentImageData
-            End If
+            Dim ImageData As LoadedImageData = e.UserState
+            _Parent.ComboImages.Items.Add(ImageData)
         End If
     End Sub
 
