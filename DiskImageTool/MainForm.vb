@@ -1,6 +1,5 @@
 ﻿Imports System.ComponentModel
 Imports System.IO
-Imports System.IO.Compression
 Imports System.Net
 Imports System.Text
 Imports DiskImageTool.DiskImage
@@ -1815,24 +1814,6 @@ Public Class MainForm
         Return Response
     End Function
 
-    Private Shared Function IsZipArchive(FileName As String) As ZipArchive
-        Try
-            Dim Buffer(1) As Byte
-            Using fs = New FileStream(FileName, FileMode.Open, FileAccess.Read)
-                Dim BytesRead = fs.Read(Buffer, 0, Buffer.Length)
-                fs.Close()
-            End Using
-
-            If Buffer(0) = &H50 And Buffer(1) = &H4B Then
-                Return ZipFile.OpenRead(FileName)
-            End If
-        Catch ex As Exception
-            Return Nothing
-        End Try
-
-        Return Nothing
-    End Function
-
     Private Sub ItemScan(Type As ItemScanTypes, Disk As DiskImage.Disk, ImageData As LoadedImageData, Optional UpdateFilters As Boolean = False, Optional Remove As Boolean = False)
         ItemScanModified(Disk, ImageData, UpdateFilters, Remove)
 
@@ -2575,28 +2556,6 @@ Public Class MainForm
         BtnWin9xClean.Enabled = Response.HasValidCreated Or Response.HasValidLastAccessed Or _Disk.BootSector.IsWin9xOEMName
     End Sub
 
-    Private Sub ProcessFile(FileName As String, ByRef SelectedImageData As LoadedImageData)
-        If Not File.Exists(FileName) Then
-            Return
-        End If
-
-        Dim Archive = IsZipArchive(FileName)
-
-        If Archive IsNot Nothing Then
-            ProcessZipFile(FileName, Archive, SelectedImageData)
-            Exit Sub
-        End If
-
-        If Not _LoadedFileNames.ContainsKey(FileName) Then
-            Dim ImageData As New LoadedImageData(FileName)
-            _LoadedFileNames.Add(FileName, ImageData)
-            ComboImages.Items.Add(ImageData)
-            If SelectedImageData Is Nothing Then
-                SelectedImageData = ImageData
-            End If
-        End If
-    End Sub
-
     Private Sub ProcessFileDrop(File As String)
         Dim Files(0) As String
         Files(0) = File
@@ -2605,10 +2564,6 @@ Public Class MainForm
     End Sub
 
     Private Sub ProcessFileDrop(Files() As String)
-        Dim FilePath As String
-        Dim FileInfo As IO.FileInfo
-        Dim SelectedImageData As LoadedImageData = Nothing
-
         Cursor.Current = Cursors.WaitCursor
 
         If _FiltersApplied Then
@@ -2619,30 +2574,18 @@ Public Class MainForm
 
         LoadedImageData.StringOffset = 0
 
-        For Each FilePath In Files.OrderBy(Function(f) f)
-            Dim FAttributes = IO.File.GetAttributes(FilePath)
-            If (FAttributes And IO.FileAttributes.Directory) > 0 Then
-                Dim DirectoryInfo As New IO.DirectoryInfo(FilePath)
-                For Each FileInfo In DirectoryInfo.GetFiles("*.*", IO.SearchOption.AllDirectories)
-                    Dim Extension = FileInfo.Extension.ToLower
-                    If _FileFilterExt.Contains(Extension) OrElse _ArchiveFilterExt.Contains(Extension) Then
-                        ProcessFile(FileInfo.FullName, SelectedImageData)
-                    End If
-                Next
-            Else
-                ProcessFile(FilePath, SelectedImageData)
-            End If
-        Next
+        Dim ImageLoadForm As New ImageLoadForm(Me, Files, _LoadedFileNames, _FileFilterExt, _ArchiveFilterExt)
+        ImageLoadForm.ShowDialog(Me)
 
         LoadedImageData.StringOffset = GetPathOffset()
 
-        If SelectedImageData IsNot Nothing Then
+        If ImageLoadForm.SelectedImageData IsNot Nothing Then
             ComboImages.Enabled = True
             ComboImages.DrawMode = DrawMode.OwnerDrawFixed
             ComboImagesRefreshItemText()
             ImageCountUpdate()
 
-            ComboImages.SelectedItem = SelectedImageData
+            ComboImages.SelectedItem = ImageLoadForm.SelectedImageData
             If ComboImages.SelectedIndex = -1 Then
                 ComboImages.SelectedIndex = 0
             End If
@@ -2652,26 +2595,9 @@ Public Class MainForm
 
         ComboImages.EndUpdate()
 
-        Cursor.Current = Cursors.Default
-    End Sub
+        ImageLoadForm.Close()
 
-    Private Sub ProcessZipFile(FileName As String, Archive As ZipArchive, ByRef SelectedImageData As LoadedImageData)
-        For Each Entry In Archive.Entries.OrderBy(Function(e) e.FullName)
-            If _FileFilterExt.Contains(Path.GetExtension(Entry.Name).ToLower) Then
-                Dim FilePath = Path.Combine(FileName, Entry.FullName)
-                If Not _LoadedFileNames.ContainsKey(FilePath) Then
-                    Dim ImageData As New LoadedImageData(FileName) With {
-                        .Compressed = True,
-                        .CompressedFile = Entry.FullName
-                    }
-                    _LoadedFileNames.Add(FilePath, ImageData)
-                    ComboImages.Items.Add(ImageData)
-                    If SelectedImageData Is Nothing Then
-                        SelectedImageData = ImageData
-                    End If
-                End If
-            End If
-        Next
+        Cursor.Current = Cursors.Default
     End Sub
 
     Private Sub RefreshCheckAll()

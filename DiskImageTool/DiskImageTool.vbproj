@@ -176,6 +176,12 @@
       <DependentUpon>HexSearchForm.vb</DependentUpon>
     </Compile>
     <Compile Include="Forms\HexSearchForm.vb" />
+    <Compile Include="Forms\ImageLoadForm.Designer.vb">
+      <DependentUpon>ImageLoadForm.vb</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\ImageLoadForm.vb">
+      <SubType>Form</SubType>
+    </Compile>
     <Compile Include="Forms\VolumeSerialNumberForm.Designer.vb">
       <DependentUpon>VolumeSerialNumberForm.vb</DependentUpon>
     </Compile>
@@ -271,6 +277,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\HexSearchForm.resx">
       <DependentUpon>HexSearchForm.vb</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\ImageLoadForm.resx">
+      <DependentUpon>ImageLoadForm.vb</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\ItemScanForm.resx">
       <DependentUpon>ItemScanForm.vb</DependentUpon>
