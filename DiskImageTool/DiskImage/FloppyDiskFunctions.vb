@@ -306,6 +306,57 @@
             End Select
         End Function
 
+        Public Function GetFileFilterExtByType(Type As FloppyDiskType) As String
+            Select Case Type
+                Case FloppyDiskType.Floppy160
+                    Return ".160"
+                Case FloppyDiskType.Floppy180
+                    Return ".180"
+                Case FloppyDiskType.Floppy320
+                    Return ".320"
+                Case FloppyDiskType.Floppy360
+                    Return ".360"
+                Case FloppyDiskType.Floppy720
+                    Return ".720"
+                Case FloppyDiskType.Floppy1200
+                    Return ".120"
+                Case FloppyDiskType.Floppy1440
+                    Return ".144"
+                Case FloppyDiskType.FloppyDMF1024
+                    Return ".DMF"
+                Case FloppyDiskType.FloppyDMF2048
+                    Return ".DMF"
+                Case FloppyDiskType.Floppy2880
+                    Return ".288"
+                Case FloppyDiskType.FloppyProCopy
+                    Return ""
+                Case FloppyDiskType.FloppyXDF
+                    Return ".XDF"
+                Case Else
+                    Return ""
+            End Select
+        End Function
+
+        Public Function GetFileFilterDescriptionByType(Type As FloppyDiskType) As String
+            Dim Description As String = GetFloppyDiskTypeName(Type)
+            Select Case Type
+                Case FloppyDiskType.FloppyDMF1024
+                    Description = "DMF"
+                Case FloppyDiskType.FloppyDMF2048
+                    Description = "DMF"
+                Case FloppyDiskType.FloppyProCopy
+                    Description = ""
+                Case FloppyDiskType.FloppyUnknown
+                    Description = ""
+            End Select
+
+            If Description <> "" Then
+                Description &= " Floppy Image"
+            End If
+
+            Return Description
+        End Function
+
         Public Function GetFloppyDiskTypeName(BPB As BiosParameterBlock) As String
             Return GetFloppyDiskTypeName(GetFloppyDiskType(BPB))
         End Function

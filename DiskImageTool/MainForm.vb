@@ -25,6 +25,11 @@ Public Structure FileData
     Dim ParentOffset As Integer
 End Structure
 
+Public Structure SaveDialogFilter
+    Dim Filter As String
+    Dim FilterIndex As Integer
+End Structure
+
 Public Class MainForm
     Private WithEvents ContextMenuCopy1 As ContextMenuStrip
     Private WithEvents ContextMenuCopy2 As ContextMenuStrip
@@ -33,13 +38,13 @@ Public Class MainForm
     Public Const SITE_URL = "https://github.com/Digitoxin1/DiskImageTool"
     Public Const UPDATE_URL = "https://api.github.com/repos/Digitoxin1/DiskImageTool/releases/latest"
     Private ReadOnly _ArchiveFilterExt As New List(Of String) From {".zip"}
-    Private ReadOnly _FileFilterExt As New List(Of String) From {".ima", ".img", ".180", ".360", ".720"}
+    Private ReadOnly _FileFilterExt As New List(Of String) From {".ima", ".img", ".vhd"}
+    Private _ValidFileExt As List(Of String)
     Private ReadOnly _lvwColumnSorter As ListViewColumnSorter
     Private _BootStrap As Bootstrap
     Private _CheckAll As Boolean = False
     Private _CurrentImageData As LoadedImageData = Nothing
     Private _Disk As DiskImage.Disk
-    Private _FileFilter As String = ""
     Private _FileVersion As String = ""
     Private _FilterCounts() As Integer
     Private _FilterDiskType As ComboFilter
@@ -433,8 +438,8 @@ Public Class MainForm
         Return Result
     End Function
 
-    Private Shared Function AppendFileFilter(FileFilter As String, Description As String, Pattern As String) As String
-        Return FileFilter & "|" & GetFileFilter(Description, Pattern)
+    Private Shared Function AppendFileFilter(FileFilter As String, Description As String, Extension As String) As String
+        Return FileFilter & IIf(FileFilter = "", "", "|") & GetFileFilter(Description, Extension)
     End Function
 
     Private Function AreFiltersApplied() As Boolean
@@ -546,7 +551,7 @@ Public Class MainForm
 
             If MsgBox(Msg, MsgBoxStyle.Question + MsgBoxStyle.YesNo + MsgBoxStyle.DefaultButton2) = MsgBoxResult.Yes Then
                 Dim Dialog As New SaveFileDialog With {
-                    .Filter = GetFileFilter("Zip Archive", "*.zip"),
+                    .Filter = GetFileFilter("Zip Archive", ".zip"),
                     .FileName = Path.GetFileName(DownloadURL),
                     .InitialDirectory = GetDownloadsFolder(),
                     .RestoreDirectory = True
@@ -625,7 +630,7 @@ Public Class MainForm
                             End If
                         End If
                         If Result <> MyMsgBoxResult.No Then
-                            NewFilePath = GetNewFilePath(ImageData.SaveFile)
+                            NewFilePath = GetNewFilePath(ImageData)
                             If NewFilePath = "" Then
                                 Result = MyMsgBoxResult.Cancel
                                 Exit For
@@ -664,7 +669,7 @@ Public Class MainForm
 
         If Result = MsgBoxResult.Yes Then
             If CurrentImageData.ReadOnly Then
-                NewFilePath = GetNewFilePath(CurrentImageData.SaveFile)
+                NewFilePath = GetNewFilePath(CurrentImageData)
                 If NewFilePath = "" Then
                     Result = MsgBoxResult.Cancel
                 End If
@@ -1349,9 +1354,7 @@ Public Class MainForm
     End Function
 
     Private Sub FilesOpen()
-        Dim FileFilter = _FileFilter
-        FileFilter = AppendFileFilter(FileFilter, "Zip Archive", "*.zip")
-        FileFilter = AppendFileFilter(FileFilter, "All files (*.*)", "*.*")
+        Dim FileFilter = GetLoadDialogFilters()
 
         Dim Dialog = New OpenFileDialog With {
             .Filter = FileFilter,
@@ -1619,8 +1622,18 @@ Public Class MainForm
         Return Response
     End Function
 
-    Private Shared Function GetFileFilter(Description As String, Pattern As String) As String
-        Return Description & "|" & Pattern
+    Private Shared Function GetFileFilter(Description As String, Extension As String) As String
+        Return Description & " (*" & Extension & ")|" & "*" & Extension
+    End Function
+
+    Private Shared Function GetFileFilter(Description As String, ExtensionList As List(Of String)) As String
+        Dim Extensions = ExtensionList.ToArray
+
+        For Counter = 0 To Extensions.Length - 1
+            Extensions(Counter) = "*" & Extensions(Counter)
+        Next
+
+        Return Description & " (" & String.Join("; ", Extensions) & ")|" & String.Join(";", Extensions)
     End Function
 
     Private Function GetModifiedImageList() As List(Of LoadedImageData)
@@ -1635,16 +1648,32 @@ Public Class MainForm
         Return ModifyImageList
     End Function
 
-    Private Function GetNewFilePath(FilePath As String) As String
+    Private Function GetNewFilePath(ImageData As LoadedImageData) As String
+        Dim Disk As DiskImage.Disk
+        Dim CurrentImageData As LoadedImageData = ComboImages.SelectedItem
+        Dim FilePath = ImageData.SaveFile
         Dim NewFilePath As String = ""
+        Dim DiskType As FloppyDiskType = FloppyDiskType.FloppyUnknown
 
-        Dim FileFilter = _FileFilter
-        FileFilter = AppendFileFilter(FileFilter, "All files (*.*)", "*.*")
+        If ImageData Is CurrentImageData Then
+            Disk = _Disk
+        Else
+            Disk = DiskImageLoad(ImageData)
+        End If
+
+        If Disk IsNot Nothing Then
+            DiskType = InferFloppyDiskType(Disk)
+        End If
+
+        Dim FileExt = IO.Path.GetExtension(FilePath)
+        Dim FileFilter = GetSaveDialogFilters(DiskType, FileExt)
 
         Dim Dialog = New SaveFileDialog With {
             .InitialDirectory = IO.Path.GetDirectoryName(FilePath),
             .FileName = IO.Path.GetFileName(FilePath),
-            .Filter = FileFilter
+            .Filter = FileFilter.Filter,
+            .FilterIndex = FileFilter.FilterIndex,
+            .DefaultExt = FileExt
         }
 
         AddHandler Dialog.FileOk, Sub(sender As Object, e As CancelEventArgs)
@@ -1784,15 +1813,49 @@ Public Class MainForm
         RefreshSaveButtons()
     End Sub
 
-    Private Sub InitFileFilter()
-        Dim ExtensionList As New List(Of String)
+    Private Function GetLoadDialogFilters() As String
+        Dim FileFilter As String
+
+
+        FileFilter = GetFileFilter("Floppy Disk Image", _ValidFileExt)
+        FileFilter = AppendFileFilter(FileFilter, "Zip Archive", ".zip")
+        FileFilter = AppendFileFilter(FileFilter, "All files", ".*")
+
+        Return FileFilter
+    End Function
+
+    Private Function GetSaveDialogFilters(DiskType As FloppyDiskType, FileExt As String) As SaveDialogFilter
+        Dim Response As SaveDialogFilter
+        Dim CurrentIndex As Integer = 1
+        Dim Extension As String
+
+        Response.FilterIndex = 0
 
         For Each Extension In _FileFilterExt
-            ExtensionList.Add("*" & Extension)
+            If FileExt.ToLower = Extension.ToLower Then
+                Response.FilterIndex = CurrentIndex
+            End If
         Next
+        Response.Filter = GetFileFilter("Floppy Disk Image", _FileFilterExt)
+        CurrentIndex += 1
 
-        _FileFilter = GetFileFilter("Disk Image Files (" & String.Join("; ", ExtensionList.ToArray) & ")", String.Join(";", ExtensionList.ToArray))
-    End Sub
+        Extension = GetFileFilterExtByType(DiskType)
+        If Extension <> "" Then
+            Dim Description = GetFileFilterDescriptionByType(DiskType)
+            Response.Filter = AppendFileFilter(Response.Filter, Description, Extension)
+            If FileExt.ToLower = Extension.ToLower Then
+                Response.FilterIndex = CurrentIndex
+            End If
+            CurrentIndex += 1
+        End If
+
+        Response.Filter = AppendFileFilter(Response.Filter, "All files", ".*")
+        If Response.FilterIndex = 0 Then
+            Response.FilterIndex = CurrentIndex
+        End If
+
+        Return Response
+    End Function
 
     Private Function IsWin9xDisk(Disk As Disk) As Boolean
         Dim Response As Boolean = False
@@ -2132,13 +2195,36 @@ Public Class MainForm
         _FilterOEMName.Populate()
     End Sub
 
+    Private Sub InitValidFilters()
+        _ValidFileExt = New List(Of String)
+
+        For Each FileExt In _FileFilterExt
+            _ValidFileExt.Add(FileExt)
+        Next
+
+        ParseFileTypeFilters()
+        ParseCustomFilters()
+    End Sub
+
+    Private Sub ParseFileTypeFilters()
+        Dim Items = System.Enum.GetValues(GetType(FloppyDiskType))
+        For Each Item As Integer In Items
+            Dim FileExt = GetFileFilterExtByType(Item)
+            If FileExt <> "" Then
+                If Not _ValidFileExt.Contains(FileExt) Then
+                    _ValidFileExt.Add(FileExt)
+                End If
+            End If
+        Next
+    End Sub
+
     Private Sub ParseCustomFilters()
         If My.Settings.CustomFileExtensions.Length > 0 Then
             For Each Extension In My.Settings.CustomFileExtensions.Split(",")
                 If Not Extension.StartsWith(".") Then
                     Extension = "." & Extension
                 End If
-                _FileFilterExt.Add(Extension)
+                _ValidFileExt.Add(Extension)
             Next
         End If
     End Sub
@@ -2221,6 +2307,21 @@ Public Class MainForm
         RefreshDiskButtons(Disk, ImageData)
     End Sub
 
+    Private Function InferFloppyDiskType(Disk As DiskImage.Disk) As FloppyDiskType
+        Dim DiskType As FloppyDiskType
+
+        If Disk.BPB.IsValid Then
+            DiskType = GetFloppyDiskType(Disk.BPB)
+        Else
+            DiskType = GetFloppyDiskType(Disk.GetFATMediaDescriptor)
+            If DiskType = FloppyDiskType.FloppyUnknown Then
+                DiskType = GetFloppyDiskType(Disk.Data.Length)
+            End If
+        End If
+
+        Return DiskType
+    End Function
+
     Private Sub PopulateSummaryPanel(Disk As Disk)
         Dim Value As String
         Dim ForeColor As Color
@@ -2272,15 +2373,7 @@ Public Class MainForm
                 .AddItem(DiskGroup, "Image Size", Disk.Data.Length.ToString("N0"), ForeColor)
 
                 If Disk.IsValidImage(False) Then
-                    Dim DiskType As FloppyDiskType
-                    If Disk.BPB.IsValid Then
-                        DiskType = GetFloppyDiskType(Disk.BPB)
-                    Else
-                        DiskType = GetFloppyDiskType(Disk.GetFATMediaDescriptor)
-                        If DiskType = FloppyDiskType.FloppyUnknown Then
-                            DiskType = GetFloppyDiskType(Disk.Data.Length)
-                        End If
-                    End If
+                    Dim DiskType = InferFloppyDiskType(Disk)
                     Dim DiskTypeString = GetFloppyDiskTypeName(DiskType)
                     .AddItem(DiskGroup, "Disk Type", DiskTypeString & " Floppy")
 
@@ -2574,7 +2667,7 @@ Public Class MainForm
 
         LoadedImageData.StringOffset = 0
 
-        Dim ImageLoadForm As New ImageLoadForm(Me, Files, _LoadedFileNames, _FileFilterExt, _ArchiveFilterExt)
+        Dim ImageLoadForm As New ImageLoadForm(Me, Files, _LoadedFileNames, _ValidFileExt, _ArchiveFilterExt)
         ImageLoadForm.ShowDialog(Me)
 
         LoadedImageData.StringOffset = GetPathOffset()
@@ -2957,7 +3050,7 @@ Public Class MainForm
             If ImageData.Modified Then
                 If ImageData.ReadOnly Then
                     If MsgBoxNewFileName(ImageData.FileName) = MsgBoxResult.Ok Then
-                        NewFilePath = GetNewFilePath(ImageData.SaveFile)
+                        NewFilePath = GetNewFilePath(ImageData)
                         DoSave = (NewFilePath <> "")
                     Else
                         DoSave = False
@@ -2990,7 +3083,7 @@ Public Class MainForm
         Dim CurrentImageData As LoadedImageData = ComboImages.SelectedItem
 
         If NewFileName Then
-            NewFilePath = GetNewFilePath(CurrentImageData.SaveFile)
+            NewFilePath = GetNewFilePath(CurrentImageData)
             If NewFilePath = "" Then
                 Exit Sub
             End If
@@ -3618,8 +3711,7 @@ Public Class MainForm
         _FileVersion = GetVersionString()
         Me.Text = GetWindowCaption()
 
-        ParseCustomFilters()
-        InitFileFilter()
+        InitValidFilters()
 
         PositionForm()
 
