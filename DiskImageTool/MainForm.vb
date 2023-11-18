@@ -1997,7 +1997,7 @@ Public Class MainForm
         End If
 
         If FileData.DirectoryEntry.IsValidFile Then
-            SI = Item.SubItems.Add(Crc32.ComputeChecksum(FileData.DirectoryEntry.GetContent).ToString("X8"))
+            SI = Item.SubItems.Add(FileData.DirectoryEntry.GetChecksum().ToString("X8"))
         Else
             SI = Item.SubItems.Add("")
         End If
@@ -2180,7 +2180,6 @@ Public Class MainForm
             If ImageData.SortHistory.Count > 0 Then
                 For Each Sort In ImageData.SortHistory
                     _lvwColumnSorter.Sort(Sort)
-                    Debug.Print(Sort.Column & "," & Sort.Order)
                     ListViewFiles.Sort()
                     ListViewFiles.SetSortIcon(_lvwColumnSorter.SortColumn, _lvwColumnSorter.Order)
                 Next

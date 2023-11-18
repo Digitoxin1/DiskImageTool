@@ -1,10 +1,16 @@
 ﻿Namespace DiskImage
+    Public Structure DirectoryCacheEntry
+        Dim Checksum As UInteger
+        Dim Data() As Byte
+    End Structure
+
     Public Class Disk
         Private WithEvents FileBytes As ImageByteArray
         Public Const BYTES_PER_SECTOR As UShort = 512
         Private ReadOnly _BootSector As BootSector
         Private _BPB As BiosParameterBlock
         Private ReadOnly _Directory As RootDirectory
+        Private ReadOnly _DirectoryCache As Dictionary(Of UInteger, DirectoryCacheEntry)
         Private ReadOnly _FAT12 As FAT12
         Private _ReinitializeRequired As Boolean = False
 
@@ -17,7 +23,8 @@
                 _BPB = BuildBPB(GetFATMediaDescriptor)
             End If
             _FAT12 = New FAT12(FileBytes, _BPB, 0)
-            _Directory = New RootDirectory(FileBytes, _BPB, _FAT12, False)
+            _DirectoryCache = New Dictionary(Of UInteger, DirectoryCacheEntry)
+            _Directory = New RootDirectory(FileBytes, _BPB, _FAT12, _DirectoryCache, False)
 
             CacheDirectoryEntries()
 
@@ -57,6 +64,12 @@
         Public ReadOnly Property Directory As RootDirectory
             Get
                 Return _Directory
+            End Get
+        End Property
+
+        Public ReadOnly Property DirectoryCache As Dictionary(Of UInteger, DirectoryCacheEntry)
+            Get
+                Return _DirectoryCache
             End Get
         End Property
 
@@ -132,7 +145,7 @@
         End Function
 
         Public Function GetDirectoryEntryByOffset(Offset As UInteger) As DirectoryEntry
-            Return New DirectoryEntry(FileBytes, _BPB, _FAT12, Offset)
+            Return New DirectoryEntry(FileBytes, _BPB, _FAT12, _DirectoryCache, Offset)
         End Function
 
         Public Function GetFATMediaDescriptor() As Byte
@@ -197,7 +210,7 @@
         End Sub
 
         Private Sub CacheDirectoryEntries()
-            FileBytes.DirectoryCache.Clear()
+            _DirectoryCache.Clear()
 
             If IsValidImage() Then
                 CacheDirectoryEntries(_Directory)
@@ -212,7 +225,7 @@
                     Dim DirectoryEntry = Directory.GetFile(Counter)
 
                     If Not DirectoryEntry.IsLink Then
-                        FileBytes.DirectoryCache.Item(DirectoryEntry.Offset) = DirectoryEntry.Data
+                        _DirectoryCache.Item(DirectoryEntry.Offset) = GetDirectoryCacheEntry(DirectoryEntry)
                         If DirectoryEntry.IsDirectory And DirectoryEntry.SubDirectory IsNot Nothing Then
                             If DirectoryEntry.SubDirectory.Data.EntryCount > 0 Then
                                 CacheDirectoryEntries(DirectoryEntry.SubDirectory)
@@ -222,6 +235,19 @@
                 Next
             End If
         End Sub
+
+        Private Function GetDirectoryCacheEntry(DirectoryEntry As DirectoryEntry) As DirectoryCacheEntry
+            Dim CacheEntry As DirectoryCacheEntry
+
+            CacheEntry.Data = DirectoryEntry.Data
+            If DirectoryEntry.IsValidFile Then
+                CacheEntry.Checksum = DirectoryEntry.GetChecksum()
+            Else
+                CacheEntry.Checksum = 0
+            End If
+
+            Return CacheEntry
+        End Function
 
         Private Sub EnumerateDirectoryEntries(Directory As DiskImage.IDirectory, DirectoryList As List(Of DirectoryEntry))
             Dim DirectoryEntryCount = Directory.Data.EntryCount

@@ -3,7 +3,6 @@
         Inherits ByteArray
 
         Private ReadOnly _Changes As Stack(Of DataChange())
-        Private ReadOnly _DirectoryCache As Dictionary(Of UInteger, Byte())
         Private ReadOnly _RedoChanges As Stack(Of DataChange())
         Private _BatchEditMode As Boolean = False
         Private _IgnoreChange As Boolean = False
@@ -13,7 +12,6 @@
             MyBase.New(Data)
 
             _Changes = New Stack(Of DataChange())
-            _DirectoryCache = New Dictionary(Of UInteger, Byte())
             _RedoChanges = New Stack(Of DataChange())
         End Sub
 
@@ -40,12 +38,6 @@
         Public ReadOnly Property Changes As Stack(Of DataChange())
             Get
                 Return _Changes
-            End Get
-        End Property
-
-        Public ReadOnly Property DirectoryCache As Dictionary(Of UInteger, Byte())
-            Get
-                Return _DirectoryCache
             End Get
         End Property
 

@@ -664,7 +664,7 @@ Public Class FATEditForm
     End Sub
 
     Private Sub ProcessFATChains()
-        Dim Directory = New RootDirectory(_Disk.Data, _Disk.BPB, _FAT, True)
+        Dim Directory = New RootDirectory(_Disk.Data, _Disk.BPB, _FAT, _Disk.DirectoryCache, True)
     End Sub
 
     Private Sub RefreshGrid()

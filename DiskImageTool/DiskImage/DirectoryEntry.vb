@@ -12,6 +12,7 @@ Namespace DiskImage
         Private ReadOnly _FatChain As FATChain
         Private ReadOnly _FileBytes As ImageByteArray
         Private ReadOnly _Offset As UInteger
+        Private ReadOnly _DirectoryCache As Dictionary(Of UInteger, DirectoryCacheEntry)
         Private _SubDirectory As SubDirectory
 
         Public Enum AttributeFlags
@@ -78,11 +79,12 @@ Namespace DiskImage
             FilePart3 = 4
         End Enum
 
-        Sub New(FileBytes As ImageByteArray, BPB As BiosParameterBlock, FAT As FAT12, Offset As UInteger)
+        Sub New(FileBytes As ImageByteArray, BPB As BiosParameterBlock, FAT As FAT12, DirectoryCache As Dictionary(Of UInteger, DirectoryCacheEntry), Offset As UInteger)
             _BPB = BPB
             _FAT = FAT
             _FileBytes = FileBytes
             _Offset = Offset
+            _DirectoryCache = DirectoryCache
 
             If _FAT.FATChains.ContainsKey(Offset) Then
                 _FatChain = _FAT.FATChains.Item(Offset)
@@ -309,6 +311,10 @@ Namespace DiskImage
             Return _FatChain.Clusters.Count * _BPB.BytesPerCluster
         End Function
 
+        Public Function GetChecksum() As UInteger
+            Return Crc32.ComputeChecksum(GetContent)
+        End Function
+
         Public Function GetContent() As Byte()
             Dim Content = GetDataFromChain(_FileBytes, ClusterListToSectorList(_BPB, _FatChain.Clusters))
 
@@ -459,7 +465,22 @@ Namespace DiskImage
             Return (FilePart = &H202E Or FilePart = &H2E2E)
         End Function
         Public Function IsModified() As Boolean
-            Return _FileBytes.DirectoryCache.ContainsKey(_Offset) AndAlso Not Data.CompareTo(_FileBytes.DirectoryCache.Item(_Offset))
+            If _DirectoryCache.ContainsKey(_Offset) Then
+                Dim CacheEntry = _DirectoryCache.Item(_Offset)
+                If Not Data.CompareTo(CacheEntry.Data) Then
+                    Return True
+                Else
+                    Dim Checksum As UInteger = 0
+                    If IsValidFile() Then
+                        Checksum = GetChecksum()
+                    End If
+                    If Checksum <> CacheEntry.Checksum Then
+                        Return True
+                    End If
+                End If
+            End If
+
+            Return False
         End Function
 
         Public Function ISParentLink() As Boolean
@@ -601,7 +622,7 @@ Namespace DiskImage
 
         Private Sub InitSubDirectory()
             If IsValidDirectory() AndAlso Not IsLink() AndAlso Not IsDeleted() Then
-                _SubDirectory = New SubDirectory(_FileBytes, _BPB, _FAT, _FatChain)
+                _SubDirectory = New SubDirectory(_FileBytes, _BPB, _FAT, _FatChain, _DirectoryCache)
             Else
                 _SubDirectory = Nothing
             End If
