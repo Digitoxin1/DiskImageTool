@@ -293,7 +293,6 @@
             End If
         End If
 
-        GroupFileName.Text = Caption
         MskFileHex.MaskLength = Maxlength
         MskFileHex.Width = (Maxlength * 3 - 1) * 7 + 8
         MskFileHex.SetHex(FileNameHex)
@@ -308,6 +307,8 @@
             TxtFile.Mask = Strings.StrDup(Maxlength, "C")
             TxtFile.Text = FileName
         End If
+
+        GroupFileName.Text = Caption
 
         DT = DirectoryEntry.GetLastWriteDate
         If DT.IsValidDate Then
