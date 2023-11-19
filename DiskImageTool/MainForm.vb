@@ -2203,7 +2203,6 @@ Public Class MainForm
 
     Private Sub InitValidFilters()
         ParseFileTypeFilters()
-        ParseCustomFilters()
     End Sub
 
     Private Sub ParseFileTypeFilters()
@@ -2216,17 +2215,6 @@ Public Class MainForm
                 End If
             End If
         Next
-    End Sub
-
-    Private Sub ParseCustomFilters()
-        If My.Settings.CustomFileExtensions.Length > 0 Then
-            For Each Extension In My.Settings.CustomFileExtensions.Split(",")
-                If Not Extension.StartsWith(".") Then
-                    Extension = "." & Extension
-                End If
-                _ValidFileExt.Add(Extension)
-            Next
-        End If
     End Sub
 
     Private Sub PopulateFilesPanel(ImageData As LoadedImageData)

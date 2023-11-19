@@ -18,6 +18,15 @@ Module HexViews
 
         Return frmHexView.Modified
     End Function
+
+    Public Function DisplayHexViewForm(HexViewSectorData As HexViewSectorData, SectorNavigator As Boolean, ClusterNavigator As Boolean, SyncBlocks As Boolean, Cluster As UShort) As Boolean
+        Dim frmHexView As New HexViewForm(HexViewSectorData, SectorNavigator, ClusterNavigator, SyncBlocks)
+        frmHexView.SetStartingCluster(Cluster)
+        frmHexView.ShowDialog()
+
+        Return frmHexView.Modified
+    End Function
+
     Public Function HexViewBadSectors(Disk As Disk) As HexViewSectorData
         Dim HexViewSectorData As New HexViewSectorData(Disk) With {
             .Description = "Bad Sectors"

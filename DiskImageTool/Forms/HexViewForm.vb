@@ -27,6 +27,8 @@ Public Class HexViewForm
     Private _LastSearch As HexSearch
     Private _Modified As Boolean = False
     Private _RegionDescriptions As Dictionary(Of UInteger, HexViewHighlightRegion)
+    Private _StartingCluster As UShort = 0
+
     Public Sub New(HexViewSectorData As HexViewSectorData, SectorNavigator As Boolean, ClusterNavigator As Boolean, SyncBlocks As Boolean)
         ' This call is required by the designer.
         InitializeComponent()
@@ -96,6 +98,10 @@ Public Class HexViewForm
 
         Return False
     End Function
+
+    Public Sub SetStartingCluster(Cluster As UShort)
+        _StartingCluster = Cluster
+    End Sub
 
     Private Sub CommitChanges()
         _HexViewSectorData.SectorData.CommitChanges()
@@ -1123,6 +1129,10 @@ Public Class HexViewForm
 
         If CmbGroups.Items.Count > 0 Then
             CmbGroups.SelectedIndex = 0
+        End If
+
+        If _StartingCluster <> 0 Then
+            JumpToCluster(_StartingCluster)
         End If
     End Sub
 

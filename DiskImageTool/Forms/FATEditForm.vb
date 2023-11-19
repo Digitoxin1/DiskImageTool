@@ -73,7 +73,9 @@ Public Class FATEditForm
             _FAT.TableEntry(Cluster) = Value
         Next
 
-        _Updated = _FAT.UpdateFAT12(SyncAll)
+        If _FAT.UpdateFAT12(SyncAll) Then
+            _Updated = True
+        End If
     End Sub
 
     Private Sub BtnBad_Click(sender As Object, e As EventArgs) Handles BtnBad.Click
@@ -102,6 +104,8 @@ Public Class FATEditForm
         If e.ClickedItem.Tag IsNot Nothing Then
             Dim Value As Short = e.ClickedItem.Tag
             If Value = -1 Then
+                Dim Cluster As UShort = DataGridViewFAT.CurrentRow.Cells("GridCluster").Value
+                HexDisplayDiskImage(Cluster)
             Else
                 SetCurrentCellValue(Value)
             End If
@@ -112,7 +116,7 @@ Public Class FATEditForm
         If DataGridViewFAT.CurrentCellAddress.Y < 0 Then
             e.Cancel = True
         Else
-            Dim Cluster As Integer = DataGridViewFAT.CurrentRow.Cells("GridCluster").Value
+            Dim Cluster As UShort = DataGridViewFAT.CurrentRow.Cells("GridCluster").Value
             ContextMenuGrid.Items("lblCluster").Text = "Cluster:  " & Cluster
         End If
     End Sub
@@ -421,6 +425,16 @@ Public Class FATEditForm
         Return RowIndex
     End Function
 
+    Private Sub HexDisplayDiskImage(Cluster As UShort)
+        Dim HexViewSectorData = New HexViewSectorData(_Disk, 0, _Disk.Data.Length) With {
+            .Description = "Disk"
+        }
+
+        If DisplayHexViewForm(HexViewSectorData, True, True, False, Cluster) Then
+            _Updated = True
+        End If
+    End Sub
+
     Private Sub InitializeGridColumns()
         Dim GridViewColumn As DataGridViewColumn
 
@@ -625,7 +639,6 @@ Public Class FATEditForm
         Dim Item As ToolStripMenuItem
         Dim SubItem As ToolStripMenuItem
 
-
         Dim Label = New ToolStripLabel("Cluster:  0") With {
             .Name = "lblCluster"
         }
@@ -657,10 +670,10 @@ Public Class FATEditForm
         SubItem = ContextMenuReserved.Items.Add(1)
         SubItem.Tag = 1
 
-        'ContextMenuGrid.Items.Add(New ToolStripSeparator)
+        ContextMenuGrid.Items.Add(New ToolStripSeparator)
 
-        'Item = ContextMenuGrid.Items.Add("&View in Hex Editor")
-        'Item.Tag = -1
+        Item = ContextMenuGrid.Items.Add("&View in Hex Editor")
+        Item.Tag = -1
     End Sub
 
     Private Sub ProcessFATChains()
@@ -741,6 +754,10 @@ Public Class FATEditForm
         Dim Value As UShort = Row.Cells("GridValue").Value
 
         _FAT.TableEntry(Cluster) = Value
+        RefreshFAT()
+    End Sub
+
+    Private Sub RefreshFAT()
         _FAT.ProcessFAT12()
         ProcessFATChains()
 
