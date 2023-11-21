@@ -459,7 +459,7 @@ Public Class MainForm
         Dim Result As Boolean = BootSectorForm.DialogResult = DialogResult.OK
 
         If Result Then
-            DiskImageProcess(True, True)
+            DiskImageRefresh()
         End If
     End Sub
 
@@ -476,7 +476,7 @@ Public Class MainForm
 
         _Disk.Data.SetBytes(BootSectorBytes, _Disk.Directory.Data.BootSectorOffset)
 
-        ComboItemRefresh(True, True)
+        DiskImageRefresh()
     End Sub
 
     Private Sub BootSectorRestore()
@@ -487,7 +487,7 @@ Public Class MainForm
         Dim BootSectorBytes = _Disk.Data.GetBytes(_Disk.Directory.Data.BootSectorOffset, BootSector.BOOT_SECTOR_SIZE)
         _Disk.Data.SetBytes(BootSectorBytes, 0)
 
-        DiskImageProcess(True, True)
+        DiskImageRefresh()
     End Sub
 
     Private Sub CheckForUpdates()
@@ -717,38 +717,6 @@ Public Class MainForm
         ComboImagesFiltered.Items.Clear()
     End Sub
 
-    Private Sub ComboItemRefresh(FullRefresh As Boolean, DoItemScan As Boolean)
-        If _Disk.ReinitializeRequired Then
-            DiskImageProcess(True, True)
-            Exit Sub
-        End If
-
-        Dim CurrentImageData As LoadedImageData = ComboImages.SelectedItem
-
-        If FullRefresh Then
-            _Disk.Directory.RefreshData()
-        End If
-
-        If DoItemScan Then
-            ItemScan(ItemScanTypes.All, _Disk, CurrentImageData, True)
-        End If
-
-        ComboImagesRefreshCurrentItemText()
-
-        PopulateSummary(_Disk, CurrentImageData)
-
-        If FullRefresh Then
-            If _Disk.IsValidImage Then
-                PopulateFilesPanel(CurrentImageData)
-            Else
-                ClearFilesPanel()
-            End If
-        End If
-
-        FATSubMenuRefresh()
-        RefreshSaveButtons()
-    End Sub
-
     Private Sub CompareImages()
         Dim ImageData1 As LoadedImageData = ComboImages.Items(0)
         Dim ImageData2 As LoadedImageData = ComboImages.Items(1)
@@ -868,12 +836,14 @@ Public Class MainForm
         Return Stats
     End Function
 
-    Private Sub DiskImageProcess(DoItemScan As Boolean, Reinitialize As Boolean)
-        Dim CurrentImageData As LoadedImageData = ComboImages.SelectedItem
+    Private Sub DiskImageRefresh()
+        _Disk?.Reinitialize()
 
-        If Reinitialize Then
-            _Disk?.Reinitialize()
-        End If
+        DiskImageProcess(True)
+    End Sub
+
+    Private Sub DiskImageProcess(DoItemScan As Boolean)
+        Dim CurrentImageData As LoadedImageData = ComboImages.SelectedItem
 
         InitButtonState()
         PopulateSummary(_Disk, CurrentImageData)
@@ -1026,7 +996,7 @@ Public Class MainForm
         frmFATEdit.ShowDialog()
 
         If frmFATEdit.Updated Then
-            DiskImageProcess(True, True)
+            DiskImageRefresh()
         End If
     End Sub
 
@@ -1598,7 +1568,7 @@ Public Class MainForm
 
         If Result Then
             If _Disk.FixImageSize Then
-                ComboItemRefresh(True, True)
+                DiskImageRefresh()
             End If
         End If
     End Sub
@@ -1709,7 +1679,7 @@ Public Class MainForm
         Dim HexViewSectorData = HexViewBadSectors(_Disk)
 
         If DisplayHexViewForm(HexViewSectorData) Then
-            ComboItemRefresh(False, True)
+            DiskImageRefresh()
         End If
     End Sub
 
@@ -1717,7 +1687,7 @@ Public Class MainForm
         Dim HexViewSectorData = HexViewBootSector(_Disk)
 
         If DisplayHexViewForm(HexViewSectorData) Then
-            DiskImageProcess(True, True)
+            DiskImageRefresh()
         End If
     End Sub
 
@@ -1726,7 +1696,7 @@ Public Class MainForm
 
         If HexViewSectorData IsNot Nothing Then
             If DisplayHexViewForm(HexViewSectorData) Then
-                ComboItemRefresh(True, True)
+                DiskImageRefresh()
             End If
         End If
     End Sub
@@ -1737,7 +1707,7 @@ Public Class MainForm
         }
 
         If DisplayHexViewForm(HexViewSectorData, True, True, False) Then
-            ComboItemRefresh(True, True)
+            DiskImageRefresh()
         End If
     End Sub
 
@@ -1745,7 +1715,7 @@ Public Class MainForm
         Dim HexViewSectorData = HexViewFAT(_Disk)
 
         If DisplayHexViewForm(HexViewSectorData, True) Then
-            DiskImageProcess(True, True)
+            DiskImageRefresh()
         End If
     End Sub
 
@@ -2949,7 +2919,7 @@ Public Class MainForm
         If _Disk IsNot Nothing Then
             CurrentImageData.Modifications = _Disk.Data.Changes
         End If
-        DiskImageProcess(DoItemScan, False)
+        DiskImageProcess(DoItemScan)
     End Sub
 
     Private Sub RemoveDeletedFile(Item As ListViewItem)
@@ -2978,7 +2948,7 @@ Public Class MainForm
         FileData.DirectoryEntry.BatchEditMode = False
 
         'FilePropertiesRefresh(Item, False, False)
-        ComboItemRefresh(True, True)
+        DiskImageRefresh()
     End Sub
 
     Private Sub ResetAll()
@@ -3397,7 +3367,7 @@ Public Class MainForm
 
     Private Sub BtnRedo_Click(sender As Object, e As EventArgs) Handles BtnRedo.Click, ToolStripBtnRedo.Click
         _Disk.Data.Redo()
-        ComboItemRefresh(True, True)
+        DiskImageRefresh()
     End Sub
 
     Private Sub BtnRemoveBootSector_Click(sender As Object, e As EventArgs) Handles BtnRemoveBootSector.Click
@@ -3446,7 +3416,7 @@ Public Class MainForm
 
     Private Sub BtnUndo_Click(sender As Object, e As EventArgs) Handles BtnUndo.Click, ToolStripBtnUndo.Click
         _Disk.Data.Undo()
-        ComboItemRefresh(True, True)
+        DiskImageRefresh()
     End Sub
 
     Private Sub BtnWin9xClean_Click(sender As Object, e As EventArgs) Handles BtnWin9xClean.Click

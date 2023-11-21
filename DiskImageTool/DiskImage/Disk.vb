@@ -12,10 +12,10 @@
         Private ReadOnly _Directory As RootDirectory
         Private ReadOnly _DirectoryCache As Dictionary(Of UInteger, DirectoryCacheEntry)
         Private ReadOnly _FAT12 As FAT12
-        Private _ReinitializeRequired As Boolean = False
 
         Sub New(Data() As Byte, Optional Modifications As Stack(Of DataChange()) = Nothing)
             FileBytes = New ImageByteArray(Data)
+            _DirectoryCache = New Dictionary(Of UInteger, DirectoryCacheEntry)
             _BootSector = New BootSector(FileBytes)
             If _BootSector.BPB.IsValid Then
                 _BPB = _BootSector.BPB
@@ -23,23 +23,13 @@
                 _BPB = BuildBPB(GetFATMediaDescriptor)
             End If
             _FAT12 = New FAT12(FileBytes, _BPB, 0)
-            _DirectoryCache = New Dictionary(Of UInteger, DirectoryCacheEntry)
             _Directory = New RootDirectory(FileBytes, _BPB, _FAT12, _DirectoryCache, False)
 
             CacheDirectoryEntries()
 
             If Modifications IsNot Nothing Then
                 FileBytes.ApplyModifications(Modifications)
-                If _BootSector.BPB.IsValid Then
-                    _BPB = _BootSector.BPB
-                Else
-                    _BPB = BuildBPB(GetFATMediaDescriptor)
-                End If
-                If _ReinitializeRequired Then
-                    _FAT12.PopulateFAT12(_BPB)
-                    _ReinitializeRequired = False
-                End If
-                _Directory.RefreshData(_BPB)
+                Reinitialize()
             End If
         End Sub
 
@@ -76,12 +66,6 @@
         Public ReadOnly Property FAT As FAT12
             Get
                 Return _FAT12
-            End Get
-        End Property
-
-        Public ReadOnly Property ReinitializeRequired As Boolean
-            Get
-                Return _ReinitializeRequired
             End Get
         End Property
 
@@ -199,8 +183,6 @@
 
             _FAT12.PopulateFAT12(_BPB)
             _Directory.RefreshData(_BPB)
-
-            _ReinitializeRequired = False
         End Sub
 
         Public Sub SaveFile(FilePath As String)
@@ -267,29 +249,6 @@
                 Next
             End If
         End Sub
-
-        Private Sub FileBytes_DataChanged(Offset As UInteger, OriginalValue As Object, NewValue As Object) Handles FileBytes.DataChanged
-            If _BootSector.IsBootSectorRegion(Offset) Then
-                _ReinitializeRequired = True
-            ElseIf IsValidImage() AndAlso _BPB.IsFATRegion(Offset, GetObjectSize(NewValue)) Then
-                _ReinitializeRequired = True
-            End If
-        End Sub
-
-        Private Function GetObjectSize(o As Object) As Integer
-            Dim t = o.GetType()
-            If t.Equals(GetType(Byte)) Then
-                Return 1
-            ElseIf t.Equals(GetType(UShort)) Then
-                Return 2
-            ElseIf t.Equals(GetType(UInteger)) Then
-                Return 4
-            ElseIf t.Equals(GetType(Byte())) Then
-                Return CType(o, Byte()).Length
-            Else
-                Return 0
-            End If
-        End Function
     End Class
 
 End Namespace
