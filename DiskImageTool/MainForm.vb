@@ -788,11 +788,14 @@ Public Class MainForm
     End Function
 
     Private Shared Sub DirectoryEntryDisplayText(DirectoryEntry As DiskImage.DirectoryEntry)
-        If Not DirectoryEntry.IsValidFile Or DirectoryEntry.IsDeleted Then
+        If Not DirectoryEntry.IsValidFile Then 'Or DirectoryEntry.IsDeleted Then
             Exit Sub
         End If
 
         Dim Caption As String = $"File - {DirectoryEntry.GetFullFileName}"
+        If DirectoryEntry.IsDeleted Then
+            Caption = "Deleted " & Caption
+        End If
         Dim Bytes = DirectoryEntry.GetContent
         Dim Content As String
 
@@ -2710,6 +2713,7 @@ Public Class MainForm
     Private Sub RefreshFileButtons()
         Dim Stats As DirectoryStats
         Dim DirectoryOffset As Integer = -1
+        Dim Caption As String
 
         If ListViewFiles.SelectedItems.Count = 0 Then
             BtnExportFile.Text = "&Export File"
@@ -2752,7 +2756,13 @@ Public Class MainForm
             BtnFileMenuViewCrosslinked.Visible = FileData.DirectoryEntry.IsCrossLinked
             BtnFileMenuFixSize.Enabled = FileData.DirectoryEntry.HasIncorrectFileSize
 
-            BtnFileMenuViewFileText.Visible = Stats.IsValidFile And Not Stats.IsDeleted
+            Caption = "View "
+            If Stats.IsDeleted Then
+                Caption &= "Deleted "
+            End If
+            Caption &= "&File as Text"
+            BtnFileMenuViewFileText.Text = Caption
+            BtnFileMenuViewFileText.Visible = Stats.IsValidFile 'And Not Stats.IsDeleted
             BtnFileMenuViewFileText.Enabled = Stats.FileSize > 0
 
             If Stats.IsDeleted Then
@@ -2786,7 +2796,7 @@ Public Class MainForm
                 BtnDisplayFile.Tag = FileData.DirectoryEntry.Offset
                 BtnDisplayFile.Visible = Not Stats.IsDirectory And Stats.FileSize > 0
 
-                Dim Caption As String = "&View "
+                Caption = "&View "
                 If Stats.IsDeleted Then
                     Caption &= "Deleted "
                 End If
