@@ -9,10 +9,10 @@ Namespace DiskImage
         Private Const CHAR_SPACE As Byte = &H20
         Private ReadOnly _BPB As BiosParameterBlock
         Private ReadOnly _FAT As FAT12
-        Private ReadOnly _FatChain As FATChain
         Private ReadOnly _FileBytes As ImageByteArray
         Private ReadOnly _Offset As UInteger
         Private ReadOnly _DirectoryCache As Dictionary(Of UInteger, DirectoryCacheEntry)
+        Private _FatChain As FATChain
         Private _SubDirectory As SubDirectory
 
         Public Enum AttributeFlags
@@ -86,20 +86,10 @@ Namespace DiskImage
             _Offset = Offset
             _DirectoryCache = DirectoryCache
 
-            If _FAT.FATChains.ContainsKey(Offset) Then
-                _FatChain = _FAT.FATChains.Item(Offset)
-            Else
-                If IsDeleted() Then
-                    _FatChain = _FAT.InitFATChain(Offset, 0)
-                ElseIf IsDirectory() AndAlso IsLink() Then
-                    _FatChain = _FAT.InitFATChain(Offset, 0)
-                Else
-                    _FatChain = _FAT.InitFATChain(Offset, StartingCluster)
-                End If
-            End If
-
+            InitFatChain()
             InitSubDirectory()
         End Sub
+
         Public Property Attributes() As Byte
             Get
                 Return _FileBytes.GetByte(_Offset + DirectoryEntryOffsets.Attributes)
@@ -550,6 +540,71 @@ Namespace DiskImage
                 _FAT.TableEntry(Cluster) = 0
             Next
             _FAT.UpdateFAT12(True)
+            InitFatChain()
+
+            If UseBatchEditMode Then
+                _FileBytes.BatchEditMode = False
+            End If
+        End Sub
+
+        Public Function CanRestore() As Boolean
+            Dim Size = _BPB.NumberOfFATEntries + 2
+
+            Dim ClusterCount As UShort
+
+            If IsDirectory() Then
+                ClusterCount = 1
+            Else
+                ClusterCount = Math.Ceiling(FileSize / _BPB.BytesPerCluster)
+            End If
+
+            If StartingCluster + ClusterCount - 1 > Size Then
+                Return False
+            End If
+
+            If ClusterCount > 0 Then
+                For Index As UShort = 0 To ClusterCount - 1
+                    Dim Cluster = StartingCluster + Index
+                    If _FAT.TableEntry(Cluster) <> 0 Then
+                        Return False
+                    End If
+                Next
+            End If
+
+            Return True
+        End Function
+
+        Public Sub Restore(FirstChar As Byte)
+            Dim UseBatchEditMode As Boolean = Not _FileBytes.BatchEditMode
+
+            If UseBatchEditMode Then
+                _FileBytes.BatchEditMode = True
+            End If
+
+            _FileBytes.SetBytes(FirstChar, _Offset)
+
+            Dim ClusterCount As UShort
+
+            If IsDirectory() Then
+                ClusterCount = 1
+            Else
+                ClusterCount = Math.Ceiling(FileSize / _BPB.BytesPerCluster)
+            End If
+
+            If ClusterCount > 0 Then
+                Dim TableEntey As UShort
+                For Index As UShort = 0 To ClusterCount - 1
+                    Dim Cluster = StartingCluster + Index
+                    If Index < ClusterCount - 1 Then
+                        TableEntey = Cluster + 1
+                    Else
+                        TableEntey = 4095
+                    End If
+                    _FAT.TableEntry(Cluster) = TableEntey
+                Next
+                _FAT.UpdateFAT12(True)
+                InitFatChain()
+            End If
 
             If UseBatchEditMode Then
                 _FileBytes.BatchEditMode = False
@@ -630,6 +685,20 @@ Namespace DiskImage
 
             Return DTTime
         End Function
+
+        Private Sub InitFatChain()
+            If _FAT.FATChains.ContainsKey(Offset) Then
+                _FatChain = _FAT.FATChains.Item(Offset)
+            Else
+                If IsDeleted() Then
+                    _FatChain = _FAT.InitFATChain(Offset, 0)
+                ElseIf IsDirectory() AndAlso IsLink() Then
+                    _FatChain = _FAT.InitFATChain(Offset, 0)
+                Else
+                    _FatChain = _FAT.InitFATChain(Offset, StartingCluster)
+                End If
+            End If
+        End Sub
 
         Private Sub InitSubDirectory()
             If IsValidDirectory() AndAlso Not IsLink() AndAlso Not IsDeleted() Then

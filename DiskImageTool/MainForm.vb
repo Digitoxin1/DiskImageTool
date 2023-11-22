@@ -780,6 +780,14 @@ Public Class MainForm
         End If
     End Function
 
+    Private Shared Function DirectoryEntryCanUndelete(DirectoryEntry As DiskImage.DirectoryEntry) As Boolean
+        If Not DirectoryEntry.IsDeleted Then
+            Return False
+        End If
+
+        Return DirectoryEntry.CanRestore
+    End Function
+
     Private Shared Function DirectoryEntryCanExport(DirectoryEntry As DiskImage.DirectoryEntry) As Boolean
         Return DirectoryEntry.IsValidFile _
             And Not DirectoryEntry.IsDeleted _
@@ -833,6 +841,7 @@ Public Class MainForm
             .FileSize = DirectoryEntry.FileSize
             .FullFileName = DirectoryEntry.GetFullFileName
             .CanDelete = DirectoryEntryCanDelete(DirectoryEntry, False)
+            .CanUndelete = DirectoryEntryCanUndelete(DirectoryEntry)
             .CanDeleteWithFill = DirectoryEntryCanDelete(DirectoryEntry, True)
         End With
 
@@ -2739,6 +2748,10 @@ Public Class MainForm
             BtnFileMenuDeleteFile.Enabled = False
             BtnFileMenuDeleteFile.Text = "&Delete File"
 
+            BtnFileMenuUnDeleteFile.Visible = False
+            BtnFileMenuUnDeleteFile.Enabled = False
+            BtnFileMenuUnDeleteFile.Text = "&Undelete File"
+
             BtnFileMenuDeleteFileWithFill.Visible = False
             BtnFileMenuDeleteFileWithFill.Enabled = False
             BtnFileMenuDeleteFileWithFill.Text = "&Delete File and Clear Sectors"
@@ -2772,6 +2785,9 @@ Public Class MainForm
                 BtnFileMenuDeleteFile.Visible = False
                 BtnFileMenuDeleteFile.Enabled = False
 
+                BtnFileMenuUnDeleteFile.Visible = True
+                BtnFileMenuUnDeleteFile.Enabled = Stats.CanUndelete
+
                 BtnFileMenuDeleteFileWithFill.Visible = False
                 BtnFileMenuDeleteFileWithFill.Enabled = False
             Else
@@ -2781,6 +2797,9 @@ Public Class MainForm
                 BtnFileMenuDeleteFile.Visible = True
                 BtnFileMenuDeleteFile.Enabled = Stats.CanDelete
                 BtnFileMenuDeleteFile.Text = "&Delete File"
+
+                BtnFileMenuUnDeleteFile.Visible = False
+                BtnFileMenuUnDeleteFile.Enabled = False
 
                 BtnFileMenuDeleteFileWithFill.Visible = Stats.CanDeleteWithFill
                 BtnFileMenuDeleteFileWithFill.Enabled = Stats.CanDeleteWithFill
@@ -2858,6 +2877,9 @@ Public Class MainForm
             BtnFileMenuDeleteFile.Enabled = DeleteEnabled
             BtnFileMenuDeleteFile.Text = "&Delete Selected Files"
 
+            BtnFileMenuUnDeleteFile.Visible = False
+            BtnFileMenuUnDeleteFile.Enabled = False
+
             BtnFileMenuDeleteFileWithFill.Visible = True
             BtnFileMenuDeleteFileWithFill.Enabled = DeleteEnabled
             BtnFileMenuDeleteFileWithFill.Text = "&Delete Selected Files and Clear Sectors"
@@ -2871,6 +2893,7 @@ Public Class MainForm
         ToolStripBtnFileProperties.Enabled = BtnFileProperties.Enabled
         ToolStripBtnViewFile.Text = BtnFileMenuViewFile.Text
         ToolStripBtnViewFile.Enabled = BtnFileMenuViewFile.Enabled
+        ToolStripBtnViewFileText.Text = BtnFileMenuViewFileText.Text
         ToolStripBtnViewFileText.Enabled = BtnFileMenuViewFileText.Enabled
 
         If DirectoryOffset = -1 Then
@@ -3162,6 +3185,27 @@ Public Class MainForm
         _SuppressEvent = False
     End Sub
 
+    Private Sub UndeleteFile(Item As ListViewItem)
+        Dim FileData As FileData = Item.Tag
+
+        If Not DirectoryEntryCanUndelete(FileData.DirectoryEntry) Then
+            Exit Sub
+        End If
+
+        Dim UndeleteForm As New UndeleteForm(FileData.DirectoryEntry.GetFullFileName)
+
+        UndeleteForm.ShowDialog()
+
+        If UndeleteForm.DialogResult = DialogResult.OK Then
+            Dim FirstChar = UndeleteForm.FirstChar
+            If FirstChar > 0 Then
+                FileData.DirectoryEntry.Restore(FirstChar)
+
+                FilePropertiesRefresh(Item, True, False)
+            End If
+        End If
+    End Sub
+
     Private Sub Win9xCleanBatch()
         Dim Msg = $"This will restore the OEM Name and remove any Creation and Last Accessed Dates from all loaded images.{vbCrLf}{vbCrLf}Do you wish to proceed??"
 
@@ -3214,6 +3258,7 @@ Public Class MainForm
     End Sub
     Private Structure DirectoryStats
         Dim CanDelete As Boolean
+        Dim CanUndelete As Boolean
         Dim CanDeleteWithFill As Boolean
         Dim CanExport As Boolean
         Dim FileSize As UInteger
@@ -3312,6 +3357,12 @@ Public Class MainForm
 
     Private Sub BtnFileMenuDeleteFileWithFill_Click(sender As Object, e As EventArgs) Handles BtnFileMenuDeleteFileWithFill.Click
         DeleteSelectedFiles(True)
+    End Sub
+
+    Private Sub BtnFileMenuUnDeleteFile_Click(sender As Object, e As EventArgs) Handles BtnFileMenuUnDeleteFile.Click
+        If ListViewFiles.SelectedItems.Count = 1 Then
+            UndeleteFile(ListViewFiles.SelectedItems(0))
+        End If
     End Sub
 
     Private Sub BtnFileMenuFixSize_Click(sender As Object, e As EventArgs) Handles BtnFileMenuFixSize.Click

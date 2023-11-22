@@ -147,6 +147,7 @@ Partial Class MainForm
         Me.BtnClearFilters = New System.Windows.Forms.ToolStripMenuItem()
         Me.ComboImagesFiltered = New System.Windows.Forms.ComboBox()
         Me.BtnResetSort = New System.Windows.Forms.Button()
+        Me.BtnFileMenuUnDeleteFile = New System.Windows.Forms.ToolStripMenuItem()
         SummaryName = CType(New System.Windows.Forms.ColumnHeader(), System.Windows.Forms.ColumnHeader)
         SummaryValue = CType(New System.Windows.Forms.ColumnHeader(), System.Windows.Forms.ColumnHeader)
         HashName = CType(New System.Windows.Forms.ColumnHeader(), System.Windows.Forms.ColumnHeader)
@@ -931,9 +932,9 @@ Partial Class MainForm
         '
         'ContextMenuFiles
         '
-        Me.ContextMenuFiles.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.BtnFileMenuFileProperties, Me.BtnFileMenuExportFile, Me.BtnFileMenuReplaceFile, FileMenuSeparatoor1, Me.BtnFileMenuViewDirectory, Me.FileMenuSeparatorDirectory, Me.BtnFileMenuViewFile, Me.BtnFileMenuViewFileText, Me.BtnFileMenuViewCrosslinked, FileMenuSeparatoor2, Me.BtnFileMenuRemoveDeletedFile, Me.BtnFileMenuDeleteFile, Me.BtnFileMenuDeleteFileWithFill, FileMenuSeparatoor3, Me.BtnFileMenuFixSize})
+        Me.ContextMenuFiles.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.BtnFileMenuFileProperties, Me.BtnFileMenuExportFile, Me.BtnFileMenuReplaceFile, FileMenuSeparatoor1, Me.BtnFileMenuViewDirectory, Me.FileMenuSeparatorDirectory, Me.BtnFileMenuViewFile, Me.BtnFileMenuViewFileText, Me.BtnFileMenuViewCrosslinked, FileMenuSeparatoor2, Me.BtnFileMenuDeleteFile, Me.BtnFileMenuUnDeleteFile, Me.BtnFileMenuRemoveDeletedFile, Me.BtnFileMenuDeleteFileWithFill, FileMenuSeparatoor3, Me.BtnFileMenuFixSize})
         Me.ContextMenuFiles.Name = "ContextMenuFiles"
-        Me.ContextMenuFiles.Size = New System.Drawing.Size(223, 270)
+        Me.ContextMenuFiles.Size = New System.Drawing.Size(223, 314)
         '
         'BtnFileMenuFileProperties
         '
@@ -1078,6 +1079,12 @@ Partial Class MainForm
         Me.BtnResetSort.Text = "Reset Sort"
         Me.BtnResetSort.UseVisualStyleBackColor = True
         '
+        'BtnFileMenuUnDeleteFile
+        '
+        Me.BtnFileMenuUnDeleteFile.Name = "BtnFileMenuUnDeleteFile"
+        Me.BtnFileMenuUnDeleteFile.Size = New System.Drawing.Size(222, 22)
+        Me.BtnFileMenuUnDeleteFile.Text = "&Undelete File"
+        '
         'MainForm
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
@@ -1209,4 +1216,5 @@ Partial Class MainForm
     Friend WithEvents ToolStripDiskType As ToolStripLabel
     Friend WithEvents BtnWin9xCleanBatch As ToolStripMenuItem
     Friend WithEvents BtnCompare As ToolStripMenuItem
+    Friend WithEvents BtnFileMenuUnDeleteFile As ToolStripMenuItem
 End Class

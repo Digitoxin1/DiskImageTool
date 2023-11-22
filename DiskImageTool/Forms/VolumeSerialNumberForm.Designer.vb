@@ -183,7 +183,7 @@ Partial Class VolumeSerialNumberForm
         Me.CancelButton = Me.BtnCancel
         Me.ClientSize = New System.Drawing.Size(362, 145)
         Me.Controls.Add(FlowLayoutPanel1)
-        Me.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle
+        Me.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog
         Me.MaximizeBox = False
         Me.MinimizeBox = False
         Me.Name = "VolumeSerialNumberForm"
