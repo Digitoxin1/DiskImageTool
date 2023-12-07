@@ -123,7 +123,7 @@ Partial Class MainForm
         Me.LabelDropMessage = New System.Windows.Forms.Label()
         Me.ListViewFiles = New System.Windows.Forms.ListView()
         Me.FileClusterError = CType(New System.Windows.Forms.ColumnHeader(), System.Windows.Forms.ColumnHeader)
-        Me.FileCreateDate = CType(New System.Windows.Forms.ColumnHeader(), System.Windows.Forms.ColumnHeader)
+        Me.FileCreationDate = CType(New System.Windows.Forms.ColumnHeader(), System.Windows.Forms.ColumnHeader)
         Me.FileLastAccessDate = CType(New System.Windows.Forms.ColumnHeader(), System.Windows.Forms.ColumnHeader)
         Me.FileLFN = CType(New System.Windows.Forms.ColumnHeader(), System.Windows.Forms.ColumnHeader)
         Me.ContextMenuFiles = New System.Windows.Forms.ContextMenuStrip(Me.components)
@@ -135,8 +135,9 @@ Partial Class MainForm
         Me.BtnFileMenuViewFile = New System.Windows.Forms.ToolStripMenuItem()
         Me.BtnFileMenuViewFileText = New System.Windows.Forms.ToolStripMenuItem()
         Me.BtnFileMenuViewCrosslinked = New System.Windows.Forms.ToolStripMenuItem()
-        Me.BtnFileMenuRemoveDeletedFile = New System.Windows.Forms.ToolStripMenuItem()
         Me.BtnFileMenuDeleteFile = New System.Windows.Forms.ToolStripMenuItem()
+        Me.BtnFileMenuUnDeleteFile = New System.Windows.Forms.ToolStripMenuItem()
+        Me.BtnFileMenuRemoveDeletedFile = New System.Windows.Forms.ToolStripMenuItem()
         Me.BtnFileMenuDeleteFileWithFill = New System.Windows.Forms.ToolStripMenuItem()
         Me.BtnFileMenuFixSize = New System.Windows.Forms.ToolStripMenuItem()
         Me.MenuStripMain = New System.Windows.Forms.MenuStrip()
@@ -147,7 +148,7 @@ Partial Class MainForm
         Me.BtnClearFilters = New System.Windows.Forms.ToolStripMenuItem()
         Me.ComboImagesFiltered = New System.Windows.Forms.ComboBox()
         Me.BtnResetSort = New System.Windows.Forms.Button()
-        Me.BtnFileMenuUnDeleteFile = New System.Windows.Forms.ToolStripMenuItem()
+        Me.FileReserved = CType(New System.Windows.Forms.ColumnHeader(), System.Windows.Forms.ColumnHeader)
         SummaryName = CType(New System.Windows.Forms.ColumnHeader(), System.Windows.Forms.ColumnHeader)
         SummaryValue = CType(New System.Windows.Forms.ColumnHeader(), System.Windows.Forms.ColumnHeader)
         HashName = CType(New System.Windows.Forms.ColumnHeader(), System.Windows.Forms.ColumnHeader)
@@ -897,7 +898,7 @@ Partial Class MainForm
         Me.ListViewFiles.Anchor = CType((((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Bottom) _
             Or System.Windows.Forms.AnchorStyles.Left) _
             Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
-        Me.ListViewFiles.Columns.AddRange(New System.Windows.Forms.ColumnHeader() {FileModified, FileName, FileExt, FileSize, FileLastWriteDate, FileStartingCluster, Me.FileClusterError, FileAttrib, FileCRC32, Me.FileCreateDate, Me.FileLastAccessDate, Me.FileLFN})
+        Me.ListViewFiles.Columns.AddRange(New System.Windows.Forms.ColumnHeader() {FileModified, FileName, FileExt, FileSize, FileLastWriteDate, FileStartingCluster, Me.FileClusterError, FileAttrib, FileCRC32, Me.FileCreationDate, Me.FileLastAccessDate, Me.FileReserved, Me.FileLFN})
         Me.ListViewFiles.ContextMenuStrip = Me.ContextMenuFiles
         Me.ListViewFiles.Font = New System.Drawing.Font("Microsoft Sans Serif", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.ListViewFiles.FullRowSelect = True
@@ -915,10 +916,10 @@ Partial Class MainForm
         Me.FileClusterError.Text = "Err"
         Me.FileClusterError.Width = 30
         '
-        'FileCreateDate
+        'FileCreationDate
         '
-        Me.FileCreateDate.Text = "Created"
-        Me.FileCreateDate.Width = 140
+        Me.FileCreationDate.Text = "Created"
+        Me.FileCreationDate.Width = 140
         '
         'FileLastAccessDate
         '
@@ -934,7 +935,7 @@ Partial Class MainForm
         '
         Me.ContextMenuFiles.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.BtnFileMenuFileProperties, Me.BtnFileMenuExportFile, Me.BtnFileMenuReplaceFile, FileMenuSeparatoor1, Me.BtnFileMenuViewDirectory, Me.FileMenuSeparatorDirectory, Me.BtnFileMenuViewFile, Me.BtnFileMenuViewFileText, Me.BtnFileMenuViewCrosslinked, FileMenuSeparatoor2, Me.BtnFileMenuDeleteFile, Me.BtnFileMenuUnDeleteFile, Me.BtnFileMenuRemoveDeletedFile, Me.BtnFileMenuDeleteFileWithFill, FileMenuSeparatoor3, Me.BtnFileMenuFixSize})
         Me.ContextMenuFiles.Name = "ContextMenuFiles"
-        Me.ContextMenuFiles.Size = New System.Drawing.Size(223, 314)
+        Me.ContextMenuFiles.Size = New System.Drawing.Size(223, 292)
         '
         'BtnFileMenuFileProperties
         '
@@ -987,17 +988,23 @@ Partial Class MainForm
         Me.BtnFileMenuViewCrosslinked.Size = New System.Drawing.Size(222, 22)
         Me.BtnFileMenuViewCrosslinked.Text = "View &Crosslinked Files"
         '
-        'BtnFileMenuRemoveDeletedFile
-        '
-        Me.BtnFileMenuRemoveDeletedFile.Name = "BtnFileMenuRemoveDeletedFile"
-        Me.BtnFileMenuRemoveDeletedFile.Size = New System.Drawing.Size(222, 22)
-        Me.BtnFileMenuRemoveDeletedFile.Text = "Remove &Deleted File"
-        '
         'BtnFileMenuDeleteFile
         '
         Me.BtnFileMenuDeleteFile.Name = "BtnFileMenuDeleteFile"
         Me.BtnFileMenuDeleteFile.Size = New System.Drawing.Size(222, 22)
         Me.BtnFileMenuDeleteFile.Text = "&Delete File"
+        '
+        'BtnFileMenuUnDeleteFile
+        '
+        Me.BtnFileMenuUnDeleteFile.Name = "BtnFileMenuUnDeleteFile"
+        Me.BtnFileMenuUnDeleteFile.Size = New System.Drawing.Size(222, 22)
+        Me.BtnFileMenuUnDeleteFile.Text = "&Undelete File"
+        '
+        'BtnFileMenuRemoveDeletedFile
+        '
+        Me.BtnFileMenuRemoveDeletedFile.Name = "BtnFileMenuRemoveDeletedFile"
+        Me.BtnFileMenuRemoveDeletedFile.Size = New System.Drawing.Size(222, 22)
+        Me.BtnFileMenuRemoveDeletedFile.Text = "Remove &Deleted File"
         '
         'BtnFileMenuDeleteFileWithFill
         '
@@ -1079,11 +1086,9 @@ Partial Class MainForm
         Me.BtnResetSort.Text = "Reset Sort"
         Me.BtnResetSort.UseVisualStyleBackColor = True
         '
-        'BtnFileMenuUnDeleteFile
+        'FileReserved
         '
-        Me.BtnFileMenuUnDeleteFile.Name = "BtnFileMenuUnDeleteFile"
-        Me.BtnFileMenuUnDeleteFile.Size = New System.Drawing.Size(222, 22)
-        Me.BtnFileMenuUnDeleteFile.Text = "&Undelete File"
+        Me.FileReserved.Text = "Reserved"
         '
         'MainForm
         '
@@ -1156,7 +1161,7 @@ Partial Class MainForm
     Friend WithEvents MainMenuFilters As ToolStripMenuItem
     Friend WithEvents BtnReplaceFile As ToolStripMenuItem
     Friend WithEvents BtnFileMenuReplaceFile As ToolStripMenuItem
-    Friend WithEvents FileCreateDate As ColumnHeader
+    Friend WithEvents FileCreationDate As ColumnHeader
     Friend WithEvents FileLastAccessDate As ColumnHeader
     Friend WithEvents FileLFN As ColumnHeader
     Friend WithEvents BtnDisplayFAT As ToolStripMenuItem
@@ -1217,4 +1222,5 @@ Partial Class MainForm
     Friend WithEvents BtnWin9xCleanBatch As ToolStripMenuItem
     Friend WithEvents BtnCompare As ToolStripMenuItem
     Friend WithEvents BtnFileMenuUnDeleteFile As ToolStripMenuItem
+    Friend WithEvents FileReserved As ColumnHeader
 End Class

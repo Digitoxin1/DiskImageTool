@@ -16,6 +16,7 @@ Public Class DirectoryScanResponse
         _HasValidLastAccessed = False
         _HasInvalidDirectoryEntries = False
         _HasFATChainingErrors = False
+        _HasReserved = False
     End Sub
 
     Public Property HasAdditionalData As Boolean
@@ -27,6 +28,7 @@ Public Class DirectoryScanResponse
     Public Property HasLFN As Boolean
     Public Property HasValidCreated As Boolean
     Public Property HasValidLastAccessed As Boolean
+    Public Property HasReserved As Boolean
     Public Sub Combine(Response As DirectoryScanResponse)
         _HasLastAccessed = _HasLastAccessed Or Response.HasLastAccessed
         _HasValidLastAccessed = _HasValidLastAccessed Or Response.HasValidLastAccessed
@@ -37,10 +39,12 @@ Public Class DirectoryScanResponse
         _HasFATChainingErrors = _HasFATChainingErrors Or Response.HasFATChainingErrors
         _HasAdditionalData = _HasAdditionalData Or Response.HasAdditionalData
         _HasBootSector = _HasBootSector Or Response.HasBootSector
+        _HasReserved = _HasReserved Or Response.HasReserved
     End Sub
 
     Public Sub ProcessDirectoryEntry(DirectoryEntry As DirectoryEntry, LFNFileName As String)
         Dim IsValid = DirectoryEntry.IsValid
+        Dim IsBlank = DirectoryEntry.IsBlank
         Dim HasCreationDate = DirectoryEntry.HasCreationDate
         Dim HasLastAccessDate = DirectoryEntry.HasLastAccessDate
 
@@ -51,7 +55,7 @@ Public Class DirectoryScanResponse
         'AndAlso Not File.HasVendorExceptions
 
         If Not _HasInvalidDirectoryEntries Then
-            If Not DirectoryEntry.IsDeleted Then
+            If Not IsBlank And Not DirectoryEntry.IsDeleted Then
                 If Not IsValid _
                     OrElse DirectoryEntry.HasInvalidFilename _
                     OrElse DirectoryEntry.HasInvalidExtension _
@@ -64,20 +68,20 @@ Public Class DirectoryScanResponse
         End If
 
         If Not _HasInvalidDirectoryEntries Then
-            If Not DirectoryEntry.IsDeleted Then
+            If Not IsBlank AndAlso Not DirectoryEntry.IsDeleted Then
                 If (HasCreationDate And Not HasValidCreationDate) Or (HasLastAccessDate And Not HasValidLastAccessDate) Then
                     _HasInvalidDirectoryEntries = True
                 End If
             End If
         End If
 
-        If HasCreationDate Then
+        If Not IsBlank And HasCreationDate Then
             _HasCreated = True
         End If
         If HasValidCreationDate Then
             _HasValidCreated = True
         End If
-        If HasLastAccessDate Then
+        If Not IsBlank And HasLastAccessDate Then
             _HasLastAccessed = True
         End If
         If HasValidLastAccessDate Then
@@ -85,8 +89,14 @@ Public Class DirectoryScanResponse
         End If
 
         If Not _HasFATChainingErrors Then
-            If DirectoryEntry.HasCircularChain Or DirectoryEntry.IsCrossLinked Then
+            If Not IsBlank And (DirectoryEntry.HasCircularChain Or DirectoryEntry.IsCrossLinked) Then
                 _HasFATChainingErrors = True
+            End If
+        End If
+
+        If Not _HasReserved Then
+            If Not IsBlank And (DirectoryEntry.ReservedForWinNT <> 0 Or DirectoryEntry.ReservedForFAT32 <> 0) Then
+                _HasReserved = True
             End If
         End If
 

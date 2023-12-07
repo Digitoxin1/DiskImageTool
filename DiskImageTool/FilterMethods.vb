@@ -7,6 +7,7 @@
         Windows9xOEMName
         HasCreated
         HasLastAccessed
+        HasReservedBytesSet
         HasLongFileNames
         HasInvalidDirectoryEntries
         DirectoryHasAdditionalData
@@ -61,6 +62,8 @@
                 Caption = "Mismatched Image Size"
             Case FilterTypes.HasMismatchedMediaDescriptor
                 Caption = "Mismatched Media Descriptor"
+            Case FilterTypes.HasReservedBytesSet
+                Caption = "Has Reserved Bytes Set"
             Case Else
                 Caption = ""
         End Select
@@ -94,6 +97,12 @@
 
         If CheckFilter(FilterTypes.HasLastAccessed, AppliedFilters) Then
             If ImageData.ScanInfo.IsValidImage And ImageData.ScanInfo.HasValidLastAccessed Then
+                Return False
+            End If
+        End If
+
+        If CheckFilter(FilterTypes.HasReservedBytesSet, AppliedFilters) Then
+            If ImageData.ScanInfo.IsValidImage And ImageData.ScanInfo.HasReservedBytesSet Then
                 Return False
             End If
         End If

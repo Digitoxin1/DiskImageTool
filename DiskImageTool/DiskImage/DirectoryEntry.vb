@@ -432,6 +432,21 @@ Namespace DiskImage
             Return (Attributes And AttributeFlags.ArchiveFlag) > 0
         End Function
 
+        Public Function IsBlank() As Boolean
+            Dim Data = Me.Data
+            Dim CheckByte = Data(1)
+            If Data(0) = CHAR_DELETED And (CheckByte = &H0 Or CheckByte = &HF6) Then
+                For Counter = 2 To Data.Length - 1
+                    If Data(Counter) <> CheckByte Then
+                        Return False
+                    End If
+                Next
+                Return True
+            End If
+
+            Return False
+        End Function
+
         Public Function IsCrossLinked() As Boolean
             Return _FatChain.CrossLinks.Count > 0
         End Function
@@ -548,6 +563,10 @@ Namespace DiskImage
         End Sub
 
         Public Function CanRestore() As Boolean
+            If FileSize = 0 Or HasInvalidFileSize() Or HasInvalidStartingCluster() Then
+                Return False
+            End If
+
             Dim Size = _BPB.NumberOfFATEntries + 2
 
             Dim ClusterCount As UShort

@@ -120,6 +120,18 @@ Public Class MainForm
             End If
         End If
 
+        If Not ImageData.Scanned Or Response.HasReserved <> ImageData.ScanInfo.HasReservedBytesSet Then
+            ImageData.ScanInfo.HasReservedBytesSet = Response.HasReserved
+            If Response.HasReserved Then
+                _FilterCounts(FilterTypes.HasReservedBytesSet) += 1
+            ElseIf ImageData.Scanned Then
+                _FilterCounts(FilterTypes.HasReservedBytesSet) -= 1
+            End If
+            If UpdateFilters Then
+                FilterUpdate(FilterTypes.HasReservedBytesSet)
+            End If
+        End If
+
         If Not ImageData.Scanned Or Response.HasLFN <> ImageData.ScanInfo.HasLongFileNames Then
             ImageData.ScanInfo.HasLongFileNames = Response.HasLFN
             If Response.HasLFN Then
@@ -1947,6 +1959,7 @@ Public Class MainForm
         Dim ForeColor As Color
         Dim IsDeleted As Boolean = FileData.DirectoryEntry.IsDeleted
         Dim HasInvalidFileSize As Boolean = FileData.DirectoryEntry.HasInvalidFileSize
+        Dim IsBlank As Boolean = FileData.DirectoryEntry.IsBlank
 
         Dim Attrib As String = IIf(FileData.DirectoryEntry.IsArchive, "A ", "- ") _
             & IIf(FileData.DirectoryEntry.IsReadOnly, "R ", "- ") _
@@ -1991,7 +2004,9 @@ Public Class MainForm
             SI.ForeColor = ForeColor
         End If
 
-        If HasInvalidFileSize Then
+        If IsBlank Then
+            SI = Item.SubItems.Add("")
+        ElseIf HasInvalidFileSize Then
             SI = Item.SubItems.Add("Invalid")
             If Not IsDeleted Then
                 SI.ForeColor = Color.Red
@@ -2007,79 +2022,124 @@ Public Class MainForm
         End If
         SI.Name = "FileSize"
 
-        SI = Item.SubItems.Add(ExpandedDateToString(FileData.DirectoryEntry.GetLastWriteDate, True, True, False, True))
-        SI.Name = "FileLastWriteDate"
-        If FileData.DirectoryEntry.GetLastWriteDate.IsValidDate Or IsDeleted Then
-            SI.ForeColor = ForeColor
+        If IsBlank Then
+            SI = Item.SubItems.Add("")
         Else
-            SI.ForeColor = Color.Red
-        End If
-
-        Dim ErrorText As String = ""
-        Dim SubItemForeColor As Color = ForeColor
-        If FileData.DirectoryEntry.HasInvalidStartingCluster Then
-            SI = Item.SubItems.Add("Invalid")
-            If Not IsDeleted Then
-                SubItemForeColor = Color.Red
+            SI = Item.SubItems.Add(ExpandedDateToString(FileData.DirectoryEntry.GetLastWriteDate, True, True, False, True))
+            If FileData.DirectoryEntry.GetLastWriteDate.IsValidDate Or IsDeleted Then
+                SI.ForeColor = ForeColor
+            Else
+                SI.ForeColor = Color.Red
             End If
+        End If
+        SI.Name = "FileLastWriteDate"
+
+        Dim SubItemForeColor As Color = ForeColor
+        If IsBlank Then
+            SI = Item.SubItems.Add("")
         Else
-            SI = Item.SubItems.Add(Format(FileData.DirectoryEntry.StartingCluster, "N0"))
+            If FileData.DirectoryEntry.HasInvalidStartingCluster Then
+                SI = Item.SubItems.Add("Invalid")
+                If Not IsDeleted Then
+                    SubItemForeColor = Color.Red
+                End If
+            Else
+                SI = Item.SubItems.Add(Format(FileData.DirectoryEntry.StartingCluster, "N0"))
+            End If
         End If
         SI.Name = "FileStartingCluster"
 
-        If Not IsDeleted And FileData.DirectoryEntry.IsCrossLinked Then
-            SubItemForeColor = Color.Red
-            ErrorText = "CL"
-        ElseIf Not IsDeleted And FileData.DirectoryEntry.HasCircularChain Then
-            SubItemForeColor = Color.Red
-            ErrorText = "CC"
-        End If
-        SI.ForeColor = SubItemForeColor
-
-        SI = Item.SubItems.Add(ErrorText)
-        SI.Name = "FileClusterError"
-        SI.ForeColor = Color.Red
-
-        SI = Item.SubItems.Add(Attrib)
-        If Not IsDeleted And FileData.DirectoryEntry.HasInvalidAttributes Then
-            SI.ForeColor = Color.Red
+        If IsBlank Then
+            SI = Item.SubItems.Add("")
         Else
+            Dim ErrorText As String = ""
+            If Not IsDeleted And FileData.DirectoryEntry.IsCrossLinked Then
+                SubItemForeColor = Color.Red
+                ErrorText = "CL"
+            ElseIf Not IsDeleted And FileData.DirectoryEntry.HasCircularChain Then
+                SubItemForeColor = Color.Red
+                ErrorText = "CC"
+            End If
+            SI.ForeColor = SubItemForeColor
+
+            SI = Item.SubItems.Add(ErrorText)
+            SI.ForeColor = Color.Red
+        End If
+        SI.Name = "FileClusterError"
+
+        If IsBlank Then
+            Item.SubItems.Add("")
+        Else
+            SI = Item.SubItems.Add(Attrib)
+            If Not IsDeleted And FileData.DirectoryEntry.HasInvalidAttributes Then
+                SI.ForeColor = Color.Red
+            Else
+                SI.ForeColor = ForeColor
+            End If
+        End If
+
+        If IsBlank Then
+            Item.SubItems.Add("")
+        Else
+            If FileData.DirectoryEntry.IsValidFile Then
+                SI = Item.SubItems.Add(FileData.DirectoryEntry.GetChecksum().ToString("X8"))
+            Else
+                SI = Item.SubItems.Add("")
+            End If
             SI.ForeColor = ForeColor
         End If
 
-        If FileData.DirectoryEntry.IsValidFile Then
-            SI = Item.SubItems.Add(FileData.DirectoryEntry.GetChecksum().ToString("X8"))
-        Else
+        If IsBlank Then
             SI = Item.SubItems.Add("")
-        End If
-        SI.ForeColor = ForeColor
-
-        If FileData.DirectoryEntry.HasCreationDate Then
-            SI = Item.SubItems.Add(ExpandedDateToString(FileData.DirectoryEntry.GetCreationDate, True, True, True, True))
-            If FileData.DirectoryEntry.GetCreationDate.IsValidDate Or IsDeleted Then
-                SI.ForeColor = ForeColor
+        Else
+            If FileData.DirectoryEntry.HasCreationDate Then
+                SI = Item.SubItems.Add(ExpandedDateToString(FileData.DirectoryEntry.GetCreationDate, True, True, True, True))
+                If FileData.DirectoryEntry.GetCreationDate.IsValidDate Or IsDeleted Then
+                    SI.ForeColor = ForeColor
+                Else
+                    SI.ForeColor = Color.Red
+                End If
             Else
-                SI.ForeColor = Color.Red
+                SI = Item.SubItems.Add("")
             End If
-        Else
-            SI = Item.SubItems.Add("")
         End If
         SI.Name = "FileCreationDate"
 
-        If FileData.DirectoryEntry.HasLastAccessDate Then
-            SI = Item.SubItems.Add(ExpandedDateToString(FileData.DirectoryEntry.GetLastAccessDate))
-            If FileData.DirectoryEntry.GetLastAccessDate.IsValidDate Or IsDeleted Then
-                SI.ForeColor = ForeColor
-            Else
-                SI.ForeColor = Color.Red
-            End If
-        Else
+        If IsBlank Then
             SI = Item.SubItems.Add("")
+        Else
+            If FileData.DirectoryEntry.HasLastAccessDate Then
+                SI = Item.SubItems.Add(ExpandedDateToString(FileData.DirectoryEntry.GetLastAccessDate))
+                If FileData.DirectoryEntry.GetLastAccessDate.IsValidDate Or IsDeleted Then
+                    SI.ForeColor = ForeColor
+                Else
+                    SI.ForeColor = Color.Red
+                End If
+            Else
+                SI = Item.SubItems.Add("")
+            End If
         End If
         SI.Name = "FileLastAccessDate"
 
-        SI = Item.SubItems.Add(FileData.LFNFileName)
-        SI.ForeColor = ForeColor
+
+        If IsBlank Then
+            Item.SubItems.Add("")
+        Else
+            Dim Reserved As String = ""
+            If FileData.DirectoryEntry.ReservedForWinNT <> 0 Or FileData.DirectoryEntry.ReservedForFAT32 <> 0 Then
+                Reserved = FileData.DirectoryEntry.ReservedForWinNT.ToString("X2")
+                Reserved &= "-" & BitConverter.ToString(BitConverter.GetBytes(FileData.DirectoryEntry.ReservedForFAT32))
+            End If
+            SI = Item.SubItems.Add(Reserved)
+            SI.ForeColor = ForeColor
+        End If
+
+        If IsBlank Then
+            Item.SubItems.Add("")
+        Else
+            SI = Item.SubItems.Add(FileData.LFNFileName)
+            SI.ForeColor = ForeColor
+        End If
 
         Return Item
     End Function
@@ -2113,10 +2173,11 @@ Public Class MainForm
             _ListViewWidths(Column.Index) = Column.Width
         Next
 
-        FileCreateDate.Width = 0
+        FileCreationDate.Width = 0
         FileLastAccessDate.Width = 0
         FileLFN.Width = 0
         FileClusterError.Width = 0
+        FileReserved.Width = 0
     End Sub
 
     Private Sub MenuDisplayDirectorySubMenuClear()
@@ -2241,6 +2302,7 @@ Public Class MainForm
         End If
 
         ListViewFiles.EndUpdate()
+        ListViewFiles.Refresh()
 
         ItemSelectionChanged()
     End Sub
@@ -2583,9 +2645,9 @@ Public Class MainForm
 
     Private Sub ProcessDirectoryScanResponse(Response As DirectoryScanResponse)
         If Response.HasCreated Then
-            FileCreateDate.Width = 140
+            FileCreationDate.Width = 140
         Else
-            FileCreateDate.Width = 0
+            FileCreationDate.Width = 0
         End If
 
         If Response.HasLastAccessed Then
@@ -2598,6 +2660,12 @@ Public Class MainForm
             FileLFN.Width = 200
         Else
             FileLFN.Width = 0
+        End If
+
+        If Response.HasReserved Then
+            FileReserved.Width = 60
+        Else
+            FileReserved.Width = 0
         End If
 
         If Response.HasFATChainingErrors Then
@@ -3727,6 +3795,7 @@ Public Class MainForm
 
         BtnCompare.Visible = False
         ListViewFiles.DoubleBuffer
+        ListViewSummary.DoubleBuffer
         _ListViewHeader = New ListViewHeader(ListViewFiles.Handle)
         ListViewSummary.AutoResizeColumnsContstrained(ColumnHeaderAutoResizeStyle.None)
         FiltersInitialize()

@@ -20,6 +20,7 @@ Public Class ImageDataScanInfo
     Public Property OEMNameMatched As Boolean = False
     Public Property OEMNameWin9x As Boolean = False
     Public Property UnknownDiskType As Boolean = False
+    Public Property HasReservedBytesSet As Boolean = False
 End Class
 
 Public Class LoadedImageData
