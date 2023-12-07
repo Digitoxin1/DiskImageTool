@@ -125,6 +125,7 @@ Partial Class MainForm
         Me.FileClusterError = CType(New System.Windows.Forms.ColumnHeader(), System.Windows.Forms.ColumnHeader)
         Me.FileCreationDate = CType(New System.Windows.Forms.ColumnHeader(), System.Windows.Forms.ColumnHeader)
         Me.FileLastAccessDate = CType(New System.Windows.Forms.ColumnHeader(), System.Windows.Forms.ColumnHeader)
+        Me.FileReserved = CType(New System.Windows.Forms.ColumnHeader(), System.Windows.Forms.ColumnHeader)
         Me.FileLFN = CType(New System.Windows.Forms.ColumnHeader(), System.Windows.Forms.ColumnHeader)
         Me.ContextMenuFiles = New System.Windows.Forms.ContextMenuStrip(Me.components)
         Me.BtnFileMenuFileProperties = New System.Windows.Forms.ToolStripMenuItem()
@@ -148,7 +149,7 @@ Partial Class MainForm
         Me.BtnClearFilters = New System.Windows.Forms.ToolStripMenuItem()
         Me.ComboImagesFiltered = New System.Windows.Forms.ComboBox()
         Me.BtnResetSort = New System.Windows.Forms.Button()
-        Me.FileReserved = CType(New System.Windows.Forms.ColumnHeader(), System.Windows.Forms.ColumnHeader)
+        Me.BtnClearReservedBytes = New System.Windows.Forms.ToolStripMenuItem()
         SummaryName = CType(New System.Windows.Forms.ColumnHeader(), System.Windows.Forms.ColumnHeader)
         SummaryValue = CType(New System.Windows.Forms.ColumnHeader(), System.Windows.Forms.ColumnHeader)
         HashName = CType(New System.Windows.Forms.ColumnHeader(), System.Windows.Forms.ColumnHeader)
@@ -741,7 +742,7 @@ Partial Class MainForm
         '
         'MainMenuTools
         '
-        MainMenuTools.DropDownItems.AddRange(New System.Windows.Forms.ToolStripItem() {Me.BtnCompare, Me.BtnWin9xClean, Me.BtnFixImageSize, Me.BtnRestoreBootSector, Me.BtnRemoveBootSector, ToolStripMenuItem1, Me.BtnWin9xCleanBatch})
+        MainMenuTools.DropDownItems.AddRange(New System.Windows.Forms.ToolStripItem() {Me.BtnCompare, Me.BtnWin9xClean, Me.BtnClearReservedBytes, Me.BtnFixImageSize, Me.BtnRestoreBootSector, Me.BtnRemoveBootSector, ToolStripMenuItem1, Me.BtnWin9xCleanBatch})
         MainMenuTools.Name = "MainMenuTools"
         MainMenuTools.Size = New System.Drawing.Size(46, 20)
         MainMenuTools.Text = "&Tools"
@@ -926,6 +927,10 @@ Partial Class MainForm
         Me.FileLastAccessDate.Text = "Last Accessed"
         Me.FileLastAccessDate.Width = 90
         '
+        'FileReserved
+        '
+        Me.FileReserved.Text = "Reserved"
+        '
         'FileLFN
         '
         Me.FileLFN.Text = "Long File Name"
@@ -1041,7 +1046,6 @@ Partial Class MainForm
         '
         Me.ContextMenuFilters.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.BtnScanNew, Me.BtnScan, Me.BtnClearFilters})
         Me.ContextMenuFilters.Name = "ContextMenuStrip1"
-        Me.ContextMenuFilters.OwnerItem = Me.MainMenuFilters
         Me.ContextMenuFilters.Size = New System.Drawing.Size(168, 70)
         '
         'BtnScanNew
@@ -1086,9 +1090,11 @@ Partial Class MainForm
         Me.BtnResetSort.Text = "Reset Sort"
         Me.BtnResetSort.UseVisualStyleBackColor = True
         '
-        'FileReserved
+        'BtnClearReservedBytes
         '
-        Me.FileReserved.Text = "Reserved"
+        Me.BtnClearReservedBytes.Name = "BtnClearReservedBytes"
+        Me.BtnClearReservedBytes.Size = New System.Drawing.Size(289, 22)
+        Me.BtnClearReservedBytes.Text = "Clear &Reserved Bytes"
         '
         'MainForm
         '
@@ -1223,4 +1229,5 @@ Partial Class MainForm
     Friend WithEvents BtnCompare As ToolStripMenuItem
     Friend WithEvents BtnFileMenuUnDeleteFile As ToolStripMenuItem
     Friend WithEvents FileReserved As ColumnHeader
+    Friend WithEvents BtnClearReservedBytes As ToolStripMenuItem
 End Class

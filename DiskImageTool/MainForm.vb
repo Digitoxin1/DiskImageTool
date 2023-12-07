@@ -585,7 +585,35 @@ Public Class MainForm
         ListViewFiles.ListViewItemSorter = Nothing
         ListViewFiles.Items.Clear()
         BtnWin9xClean.Enabled = False
+        BtnClearReservedBytes.Enabled = False
         ItemSelectionChanged()
+    End Sub
+
+    Private Sub ClearReservedBytes()
+        Dim Result As Boolean = False
+
+        _Disk.Data.BatchEditMode = True
+
+        Dim FileList = _Disk.GetFileList()
+
+        For Each DirectoryEntry In FileList
+            If DirectoryEntry.IsValid Then
+                If DirectoryEntry.ReservedForWinNT <> 0 Then
+                    DirectoryEntry.ReservedForWinNT = 0
+                    Result = True
+                End If
+                If DirectoryEntry.ReservedForFAT32 <> 0 Then
+                    DirectoryEntry.ReservedForFAT32 = 0
+                    Result = True
+                End If
+            End If
+        Next
+
+        _Disk.Data.BatchEditMode = False
+
+        If Result Then
+            FilePropertiesRefresh(ListViewFiles.Items, True, True)
+        End If
     End Sub
 
     Private Sub ClearSort(Reset As Boolean)
@@ -1781,6 +1809,7 @@ Public Class MainForm
             BtnDisplayDirectory.Enabled = False
         End If
         BtnWin9xClean.Enabled = False
+        BtnClearReservedBytes.Enabled = False
 
         MenuDisplayDirectorySubMenuClear()
         FATSubMenuRefresh()
@@ -2676,6 +2705,7 @@ Public Class MainForm
         End If
 
         BtnWin9xClean.Enabled = Response.HasValidCreated Or Response.HasValidLastAccessed Or _Disk.BootSector.IsWin9xOEMName
+        BtnClearReservedBytes.Enabled = Response.HasReserved
     End Sub
 
     Private Sub ProcessFileDrop(File As String)
@@ -3346,6 +3376,10 @@ Public Class MainForm
             ImageCountUpdate()
             ContextMenuFilters.Invalidate()
         End If
+    End Sub
+
+    Private Sub BtnClearReservedBytes_Click(sender As Object, e As EventArgs) Handles BtnClearReservedBytes.Click
+        ClearReservedBytes
     End Sub
 
     Private Sub BtnClose_Click(sender As Object, e As EventArgs) Handles BtnClose.Click, ToolStripBtnClose.Click

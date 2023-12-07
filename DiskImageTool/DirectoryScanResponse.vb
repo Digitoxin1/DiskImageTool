@@ -95,7 +95,7 @@ Public Class DirectoryScanResponse
         End If
 
         If Not _HasReserved Then
-            If Not IsBlank And (DirectoryEntry.ReservedForWinNT <> 0 Or DirectoryEntry.ReservedForFAT32 <> 0) Then
+            If IsValid And Not IsBlank And (DirectoryEntry.ReservedForWinNT <> 0 Or DirectoryEntry.ReservedForFAT32 <> 0) Then
                 _HasReserved = True
             End If
         End If
