@@ -846,7 +846,7 @@
     <oemname name="C ZDS3.2" />
   </bootstrap>
   <bootstrap crc32="B6998C98" jmp="EB3C90">
-    <oemname company="Microsoft" description="Windows NT 3.5" win9xid="true" />
+    <oemname name="MSDOS5.0" company="Microsoft" description="Windows NT 3.5" win9xid="true" />
   </bootstrap>
   <bootstrap crc32="00000000" language="" exactmatch="true">
     <oemname namehex="0000000000000000" description="No Boot Loader" />

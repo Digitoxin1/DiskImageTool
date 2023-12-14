@@ -1,4 +1,5 @@
 ﻿Imports System.IO
+Imports System.Security
 Imports System.Text
 Imports DiskImageTool.DiskImage
 
@@ -25,12 +26,16 @@ Module Copy_Protection
         Dim Offset As UInteger
 
         'H.L.S. Duplication
+        Dim StartingSector As UInteger = 708
+        If Disk.BPB.NumberOfHeads = 1 Then
+            StartingSector = 357
+        End If
         If Not ProtectionFound AndAlso BadSectors.Count >= 2 Then
-            If CheckBadSectors(BadSectors, {708, 709}) Then
-                Offset = Disk.SectorToBytes(709)
+            If CheckBadSectors(BadSectors, {StartingSector, StartingSector + 1}) Then
+                Offset = Disk.SectorToBytes(StartingSector + 1)
                 If Offset + 8 <= DataLength Then
                     Dim b1 = Disk.Data.GetBytes(Offset, 8)
-                    Offset = Disk.SectorToBytes(708)
+                    Offset = Disk.SectorToBytes(StartingSector)
                     Dim b2 = Disk.Data.GetBytes(Offset, 8)
 
                     If b1.CompareTo(b2) AndAlso Integer.TryParse(Encoding.UTF8.GetString(b1, 3, 4), 0) Then

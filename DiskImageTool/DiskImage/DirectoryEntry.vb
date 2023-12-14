@@ -306,20 +306,23 @@ Namespace DiskImage
         End Function
 
         Public Function GetContent() As Byte()
+            Dim Size = FileSize
             Dim Content() As Byte
 
             If IsDeleted() Then
+                ReDim Content(Size - 1)
                 Dim Offset As UInteger = _BPB.ClusterToOffset(StartingCluster)
-                Dim Size = FileSize
                 If Offset + Size > _FileBytes.Length Then
-                    Size = _FileBytes.Length - Offset
+                    Size = Math.Max(_FileBytes.Length - Offset, 0)
                 End If
-                Content = _FileBytes.GetBytes(Offset, Size)
+                If Size > 0 Then
+                    _FileBytes.CopyTo(Offset, Content, 0, Size)
+                End If
             Else
                 Content = GetDataFromChain(_FileBytes, ClusterListToSectorList(_BPB, _FatChain.Clusters))
 
-                If Content.Length <> FileSize Then
-                    Array.Resize(Of Byte)(Content, FileSize)
+                If Content.Length <> Size Then
+                    Array.Resize(Of Byte)(Content, Size)
                 End If
             End If
 
