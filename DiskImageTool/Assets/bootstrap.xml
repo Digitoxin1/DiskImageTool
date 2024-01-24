@@ -141,6 +141,12 @@
   <bootstrap crc32="82D411E6" jmp="EB3C90">
     <oemname name="DOS 4.01" />
   </bootstrap>
+  <bootstrap crc32="CE492464" jmp="EB1D90">
+    <oemname name="DOSV2.11" />
+  </bootstrap>
+  <bootstrap crc32="B7B8B257" jmp="EB1D90">
+    <oemname name="DOSV3.00" />
+  </bootstrap>
   <bootstrap crc32="C7050246" jmp="EB5B90">
     <oemname name="DUPLICAT" company="The Finot Group" description="The Duplicator Toolkit" />
   </bootstrap>
@@ -230,6 +236,9 @@
   </bootstrap>
   <bootstrap crc32="D28A5F6D" jmp="E9B101">
     <oemname name="IBM  3.2" company="Sofsource" />
+  </bootstrap>
+  <bootstrap crc32="133828FB" jmp="EB3490" language="French">
+    <oemname name="IBM  3.2" />
   </bootstrap>
   <bootstrap crc32="0C3DA50D" jmp="EB3490" language="German">
     <oemname name="IBM  3.2" />
@@ -353,10 +362,16 @@
   <bootstrap crc32="56D09242" jmp="" language="Finnish" notfound="true">
     <oemname name="IBM  5.0" company="IBM" description="PC-DOS 5.0" />
   </bootstrap>
+  <bootstrap crc32="788A185C" jmp="EB3C90" language="Danish">
+    <oemname name="IBM  5.0" />
+  </bootstrap>
   <bootstrap crc32="42705487" jmp="EB3C90" language="French">
     <oemname name="IBM  5.0" />
   </bootstrap>
   <bootstrap crc32="1E9133C3" jmp="EB3C90" language="German">
+    <oemname name="IBM  5.0" />
+  </bootstrap>
+  <bootstrap crc32="3570B750" jmp="EB3C90" language="Italian">
     <oemname name="IBM  5.0" />
   </bootstrap>
   <bootstrap crc32="00A157CE" jmp="EB3C90">
@@ -538,6 +553,11 @@
     <oemname namehex="4432ED9130392E30" suggestion="false" />
     <oemname namehex="443245F330392E30" suggestion="false" />
     <oemname namehex="274A5E2871494843" suggestion="false" company="Sybex, Inc." description="The Lost Episodes of Doom" verified="true" />
+    <oemname namehex="44323D7A30392E30" suggestion="false" />
+    <oemname namehex="44320AB130392E30" suggestion="false" />
+    <oemname namehex="443208AD30392E30" suggestion="false" />
+    <oemname namehex="44324E0630392E30" suggestion="false" />
+    <oemname namehex="4432A55230392E30" suggestion="false" />
   </bootstrap>
   <bootstrap crc32="D065ACD8" jmp="EB3C90">
     <oemname name="MSDOS5.0" company="Microsoft" description="Windows NT 3.1" />
@@ -631,6 +651,9 @@
   <bootstrap crc32="89F66446" jmp="EB3E90" language="French">
     <oemname name="PC Tools" verified="true" />
   </bootstrap>
+  <bootstrap crc32="8C4DB3F7" jmp="EB3E90" language="German">
+    <oemname name="PC Tools" />
+  </bootstrap>
   <bootstrap crc32="33B1D564" jmp="EB3E90">
     <oemname name="PCFormat" verified="true" />
   </bootstrap>
@@ -688,11 +711,20 @@
   <bootstrap crc32="7512BFB2" jmp="EB1C90">
     <oemname name="SARAKON " company="Virgin Mastertronic Ltd." description="Sarakon Disk A" verified="true" />
   </bootstrap>
+  <bootstrap crc32="2C61D385" jmp="EB1C90">
+    <oemname name="SARAKON " company="Virgin Mastertronic Ltd." description="Sarakon Disk B" />
+  </bootstrap>
   <bootstrap crc32="CFDEA725" jmp="EB1C90">
     <oemname name="SARAKON " company="Virgin Mastertronic Ltd." description="Sarakon Disk B" verified="true" />
   </bootstrap>
   <bootstrap crc32="A66550A8" jmp="EB1C90">
     <oemname name="SARAKON " company="Virgin Mastertronic Ltd." description="Sarakon Disk C" verified="true" />
+  </bootstrap>
+  <bootstrap crc32="75CB7832" jmp="EBFE90">
+    <oemname namehex="534EAF7D6F6F6C73" suggestion="false" />
+    <oemname namehex="534EACDC6F6F6C73" suggestion="false" />
+    <oemname namehex="534E1A756F6F6C73" suggestion="false" />
+    <oemname namehex="534E19206F6F6C73" suggestion="false" />
   </bootstrap>
   <bootstrap crc32="5376FF97" jmp="EB3490">
     <oemname name="StupnDOS" verified="true" />
@@ -723,6 +755,12 @@
   </bootstrap>
   <bootstrap crc32="8876F787" jmp="EB2290">
     <oemname name="T V2.11 " company="Toshiba" verified="true" />
+  </bootstrap>
+  <bootstrap crc32="14C3F50C" jmp="EB2A90">
+    <oemname name="T V3.30 " company="Toshiba" />
+  </bootstrap>
+  <bootstrap crc32="F71F69D0" jmp="EB2A90">
+    <oemname name="T V3.30 " company="Toshiba" />
   </bootstrap>
   <bootstrap crc32="C1C6ECB8" jmp="EB3C90" language="French">
     <oemname name="T V4.00 " />

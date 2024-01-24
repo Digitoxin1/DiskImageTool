@@ -63,6 +63,7 @@ Partial Class HexViewForm
         Me.BtnDelete = New System.Windows.Forms.ToolStripMenuItem()
         Me.BtnFillF6 = New System.Windows.Forms.ToolStripMenuItem()
         Me.BtnSelectSector = New System.Windows.Forms.ToolStripMenuItem()
+        Me.BtnSelectTrack = New System.Windows.Forms.ToolStripMenuItem()
         Me.BtnSelectAll = New System.Windows.Forms.ToolStripMenuItem()
         Me.BtnCRC32 = New System.Windows.Forms.ToolStripMenuItem()
         Me.StatusStrip1 = New System.Windows.Forms.StatusStrip()
@@ -78,6 +79,7 @@ Partial Class HexViewForm
         Me.ToolStripStatusLength = New System.Windows.Forms.ToolStripStatusLabel()
         Me.HexBox1 = New Hb.Windows.Forms.HexBox()
         Me.StatusStrip2 = New System.Windows.Forms.StatusStrip()
+        Me.ToolStripStatusCRC32 = New System.Windows.Forms.ToolStripStatusLabel()
         ToolStripSeparator1 = New System.Windows.Forms.ToolStripSeparator()
         ToolStripSeparator3 = New System.Windows.Forms.ToolStripSeparator()
         ToolStripSeparator2 = New System.Windows.Forms.ToolStripSeparator()
@@ -287,9 +289,9 @@ Partial Class HexViewForm
         '
         'ContextMenuStrip1
         '
-        Me.ContextMenuStrip1.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.BtnUndo, Me.BtnRedo, ToolStripSeparator3, Me.BtnCopyText, Me.BtnCopyHex, Me.BtnCopyHexFormatted, Me.BtnPaste, ToolStripSeparator2, Me.BtnFind, Me.BtnFindNext, Me.ToolStripMenuItem1, Me.BtnDelete, Me.BtnFillF6, ToolStripSeparator1, Me.BtnSelectSector, Me.BtnSelectAll, Me.ToolStripSeparatorCRC32, Me.BtnCRC32})
+        Me.ContextMenuStrip1.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.BtnUndo, Me.BtnRedo, ToolStripSeparator3, Me.BtnCopyText, Me.BtnCopyHex, Me.BtnCopyHexFormatted, Me.BtnPaste, ToolStripSeparator2, Me.BtnFind, Me.BtnFindNext, Me.ToolStripMenuItem1, Me.BtnDelete, Me.BtnFillF6, ToolStripSeparator1, Me.BtnSelectSector, Me.BtnSelectTrack, Me.BtnSelectAll, Me.ToolStripSeparatorCRC32, Me.BtnCRC32})
         Me.ContextMenuStrip1.Name = "ContextMenuStrip1"
-        Me.ContextMenuStrip1.Size = New System.Drawing.Size(259, 320)
+        Me.ContextMenuStrip1.Size = New System.Drawing.Size(259, 342)
         '
         'BtnUndo
         '
@@ -383,6 +385,13 @@ Partial Class HexViewForm
         Me.BtnSelectSector.ShortcutKeys = CType((System.Windows.Forms.Keys.Control Or System.Windows.Forms.Keys.E), System.Windows.Forms.Keys)
         Me.BtnSelectSector.Size = New System.Drawing.Size(258, 22)
         Me.BtnSelectSector.Text = "Select &Sector"
+        '
+        'BtnSelectTrack
+        '
+        Me.BtnSelectTrack.Name = "BtnSelectTrack"
+        Me.BtnSelectTrack.ShortcutKeys = CType((System.Windows.Forms.Keys.Control Or System.Windows.Forms.Keys.R), System.Windows.Forms.Keys)
+        Me.BtnSelectTrack.Size = New System.Drawing.Size(258, 22)
+        Me.BtnSelectTrack.Text = "Select T&rack"
         '
         'BtnSelectAll
         '
@@ -533,13 +542,23 @@ Partial Class HexViewForm
         '
         'StatusStrip2
         '
-        Me.StatusStrip2.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.ToolStripStatusFile, Me.ToolStripStatusDescription, Me.ToolStripStatusBlock, Me.ToolStripStatusLength})
+        Me.StatusStrip2.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.ToolStripStatusFile, Me.ToolStripStatusDescription, Me.ToolStripStatusBlock, Me.ToolStripStatusLength, Me.ToolStripStatusCRC32})
         Me.StatusStrip2.Location = New System.Drawing.Point(0, 549)
         Me.StatusStrip2.Name = "StatusStrip2"
         Me.StatusStrip2.Size = New System.Drawing.Size(749, 24)
         Me.StatusStrip2.SizingGrip = False
         Me.StatusStrip2.TabIndex = 2
         Me.StatusStrip2.Text = "StatusStrip2"
+        '
+        'ToolStripStatusCRC32
+        '
+        Me.ToolStripStatusCRC32.BorderSides = System.Windows.Forms.ToolStripStatusLabelBorderSides.Right
+        Me.ToolStripStatusCRC32.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text
+        Me.ToolStripStatusCRC32.Margin = New System.Windows.Forms.Padding(2, 3, 2, 2)
+        Me.ToolStripStatusCRC32.Name = "ToolStripStatusCRC32"
+        Me.ToolStripStatusCRC32.Size = New System.Drawing.Size(100, 19)
+        Me.ToolStripStatusCRC32.Text = "CRC32: 00000000"
+        Me.ToolStripStatusCRC32.TextAlign = System.Drawing.ContentAlignment.MiddleLeft
         '
         'HexViewForm
         '
@@ -617,4 +636,6 @@ Partial Class HexViewForm
     Friend WithEvents BtnFind As ToolStripMenuItem
     Friend WithEvents BtnFindNext As ToolStripMenuItem
     Friend WithEvents ToolStripMenuItem1 As ToolStripSeparator
+    Friend WithEvents BtnSelectTrack As ToolStripMenuItem
+    Friend WithEvents ToolStripStatusCRC32 As ToolStripStatusLabel
 End Class

@@ -64,6 +64,7 @@ Public Class HexViewForm
 
         LblGroups.Visible = Not _SectorNavigator And Not _ClusterNavigator
         CmbGroups.Visible = Not _SectorNavigator And Not _ClusterNavigator
+        BtnSelectTrack.Visible = _ClusterNavigator
 
         If _ClusterNavigator Then
             InitializeTrackNavigator()
@@ -322,6 +323,8 @@ Public Class HexViewForm
     Private Function GetCRC32Selected() As String
         Dim OffsetStart As UInteger = _CurrentHexViewData.SectorBlock.Offset + HexBox1.SelectionStart
         Dim Length As UInteger = HexBox1.SelectionLength
+
+        Debug.Print(HexBox1.SelectionStart & "," & HexBox1.SelectionLength)
 
         Dim B = _HexViewSectorData.SectorData.Data.GetBytes(OffsetStart, Length)
         Return Crc32.ComputeChecksum(B).ToString("X8")
@@ -646,6 +649,7 @@ Public Class HexViewForm
             ToolStripStatusOffset.Visible = False
             ToolStripStatusBlock.Visible = False
             ToolStripStatusLength.Visible = False
+            ToolStripStatusCRC32.Visible = False
             ToolStripStatusSector.Visible = False
             ToolStripStatusCluster.Visible = False
             ToolStripStatusTrack.Visible = False
@@ -657,6 +661,8 @@ Public Class HexViewForm
             ToolStripBtnSelectSector.Text = "Sector"
             ToolStripBtnSelectSector.ToolTipText = "SelectSector"
             ToolStripBtnSelectSector.Enabled = BtnSelectSector.Enabled
+            BtnSelectTrack.Text = "Select T&rack"
+            BtnSelectTrack.Enabled = False
         Else
             Dim OffsetStart As UInteger = HexBox1.LineInfoOffset + SelectionStart
             Dim OffsetEnd As Integer = HexBox1.LineInfoOffset + SelectionEnd
@@ -673,14 +679,24 @@ Public Class HexViewForm
                 ToolStripStatusBlock.Text = ""
                 ToolStripStatusLength.Visible = False
                 ToolStripStatusLength.Text = ""
+                ToolStripStatusCRC32.Visible = False
+                ToolStripStatusCRC32.Text = ""
             Else
                 ToolStripStatusBlock.Visible = True
                 ToolStripStatusBlock.Text = "Block(h): " & OffsetStart.ToString("X") & "-" & OffsetEnd.ToString("X")
                 ToolStripStatusLength.Visible = True
                 ToolStripStatusLength.Text = "Length(h): " & SelectionLength.ToString("X")
+
+                If SelectionEnd >= HexBox1.ByteProvider.Length Then
+                    ToolStripStatusCRC32.Visible = False
+                    ToolStripStatusCRC32.Text = ""
+                Else
+                    ToolStripStatusCRC32.Visible = True
+                    ToolStripStatusCRC32.Text = "CRC32: " & GetCRC32Selected()
+                End If
             End If
 
-            If _CurrentSector <> Sector Or ForceUpdate Then
+                If _CurrentSector <> Sector Or ForceUpdate Then
                 Dim Cluster As UShort
                 If _BPB.IsValid Then
                     Cluster = _BPB.SectorToCluster(Sector)
@@ -733,6 +749,13 @@ Public Class HexViewForm
                 ToolStripBtnSelectSector.Text = "Sector " & Sector
                 ToolStripBtnSelectSector.ToolTipText = "Select Sector " & Sector
                 ToolStripBtnSelectSector.Enabled = BtnSelectSector.Enabled
+
+                Dim Track = _BPB.SectorToTrack(Sector)
+                Dim Side = _BPB.SectorToSide(Sector)
+                Dim Value = Track.ToString & "." & Side.ToString
+
+                BtnSelectTrack.Text = "Select T&rack " & Value
+                BtnSelectTrack.Enabled = _ClusterNavigator And Not OutOfRange
 
                 _CurrentSector = Sector
             End If
@@ -949,6 +972,19 @@ Public Class HexViewForm
             HexBox1.Select(Offset, Length)
         End If
     End Sub
+
+    Private Sub SelectCurrentTrack()
+        Dim OutOfRange As Boolean = HexBox1.SelectionStart >= HexBox1.ByteProvider.Length
+        If Not OutOfRange Then
+            Dim Track = _BPB.SectorToTrack(_CurrentSector)
+            Dim Side = _BPB.SectorToSide(_CurrentSector)
+            Dim Sector = _BPB.TrackToSector(Track, Side)
+            Dim Offset = Disk.SectorToBytes(Sector) - HexBox1.LineInfoOffset
+            Dim Length = Disk.BYTES_PER_SECTOR * _BPB.SectorsPerTrack
+            HexBox1.Select(Offset, Length)
+        End If
+    End Sub
+
     Private Shared Sub WriteBytes(ByteProvider As IByteProvider, Offset As Long, Data() As Byte)
         For Counter = 0 To Data.Length - 1
             ByteProvider.WriteByte(Offset + Counter, Data(Counter))
@@ -1017,6 +1053,10 @@ Public Class HexViewForm
 
     Private Sub BtnSelectSector_Click(sender As Object, e As EventArgs) Handles BtnSelectSector.Click, ToolStripBtnSelectSector.Click
         SelectCurrentSector()
+    End Sub
+
+    Private Sub BtnSelectTrack_Click(sender As Object, e As EventArgs) Handles BtnSelectTrack.Click
+        SelectCurrentTrack()
     End Sub
 
     Private Sub BtnUndo_Click(sender As Object, e As EventArgs) Handles BtnUndo.Click, ToolStripBtnUndo.Click
