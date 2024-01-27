@@ -32,6 +32,8 @@ Partial Class HexViewForm
         Dim ToolStripSeparator7 As System.Windows.Forms.ToolStripSeparator
         Dim ToolStripStatusGap As System.Windows.Forms.ToolStripStatusLabel
         Dim resources As System.ComponentModel.ComponentResourceManager = New System.ComponentModel.ComponentResourceManager(GetType(HexViewForm))
+        Dim ToolStripStatusLabel1 As System.Windows.Forms.ToolStripStatusLabel
+        Dim ToolStripStatusLabel2 As System.Windows.Forms.ToolStripStatusLabel
         Me.ToolStripMain = New System.Windows.Forms.ToolStrip()
         Me.ToolStripBtnCommit = New System.Windows.Forms.ToolStripButton()
         Me.ToolStripBtnUndo = New System.Windows.Forms.ToolStripButton()
@@ -49,7 +51,7 @@ Partial Class HexViewForm
         Me.ToolStripBtnSelectSector = New System.Windows.Forms.ToolStripButton()
         Me.CmbGroups = New System.Windows.Forms.ToolStripComboBox()
         Me.LblGroups = New System.Windows.Forms.ToolStripLabel()
-        Me.ToolStripSeparatorCRC32 = New System.Windows.Forms.ToolStripSeparator()
+        Me.ToolStripBtnSelectTrack = New System.Windows.Forms.ToolStripButton()
         Me.ContextMenuStrip1 = New System.Windows.Forms.ContextMenuStrip(Me.components)
         Me.BtnUndo = New System.Windows.Forms.ToolStripMenuItem()
         Me.BtnRedo = New System.Windows.Forms.ToolStripMenuItem()
@@ -65,21 +67,26 @@ Partial Class HexViewForm
         Me.BtnSelectSector = New System.Windows.Forms.ToolStripMenuItem()
         Me.BtnSelectTrack = New System.Windows.Forms.ToolStripMenuItem()
         Me.BtnSelectAll = New System.Windows.Forms.ToolStripMenuItem()
-        Me.BtnCRC32 = New System.Windows.Forms.ToolStripMenuItem()
         Me.StatusStrip1 = New System.Windows.Forms.StatusStrip()
         Me.ToolStripStatusOffset = New System.Windows.Forms.ToolStripStatusLabel()
+        Me.ToolStripStatusBlock = New System.Windows.Forms.ToolStripStatusLabel()
+        Me.ToolStripStatusLength = New System.Windows.Forms.ToolStripStatusLabel()
         Me.ToolStripStatusCluster = New System.Windows.Forms.ToolStripStatusLabel()
         Me.ToolStripStatusSector = New System.Windows.Forms.ToolStripStatusLabel()
         Me.ToolStripStatusTrack = New System.Windows.Forms.ToolStripStatusLabel()
         Me.ToolStripStatusSide = New System.Windows.Forms.ToolStripStatusLabel()
         Me.ToolStripStatusBytes = New System.Windows.Forms.ToolStripStatusLabel()
-        Me.ToolStripStatusFile = New System.Windows.Forms.ToolStripStatusLabel()
-        Me.ToolStripStatusDescription = New System.Windows.Forms.ToolStripStatusLabel()
-        Me.ToolStripStatusBlock = New System.Windows.Forms.ToolStripStatusLabel()
-        Me.ToolStripStatusLength = New System.Windows.Forms.ToolStripStatusLabel()
         Me.HexBox1 = New Hb.Windows.Forms.HexBox()
-        Me.StatusStrip2 = New System.Windows.Forms.StatusStrip()
-        Me.ToolStripStatusCRC32 = New System.Windows.Forms.ToolStripStatusLabel()
+        Me.DataGridDataInspector = New System.Windows.Forms.DataGridView()
+        Me.DataGridName = New System.Windows.Forms.DataGridViewTextBoxColumn()
+        Me.DataGridValue = New System.Windows.Forms.DataGridViewTextBoxColumn()
+        Me.DataGridLength = New System.Windows.Forms.DataGridViewTextBoxColumn()
+        Me.DataGridInvalid = New System.Windows.Forms.DataGridViewTextBoxColumn()
+        Me.DataGridEditable = New System.Windows.Forms.DataGridViewTextBoxColumn()
+        Me.DataGridType = New System.Windows.Forms.DataGridViewTextBoxColumn()
+        Me.ContextMenuStrip2 = New System.Windows.Forms.ContextMenuStrip(Me.components)
+        Me.BtnCopyValue = New System.Windows.Forms.ToolStripMenuItem()
+        Me.ToolStripStatusTrackSector = New System.Windows.Forms.ToolStripStatusLabel()
         ToolStripSeparator1 = New System.Windows.Forms.ToolStripSeparator()
         ToolStripSeparator3 = New System.Windows.Forms.ToolStripSeparator()
         ToolStripSeparator2 = New System.Windows.Forms.ToolStripSeparator()
@@ -88,10 +95,13 @@ Partial Class HexViewForm
         ToolStripSeparator6 = New System.Windows.Forms.ToolStripSeparator()
         ToolStripSeparator7 = New System.Windows.Forms.ToolStripSeparator()
         ToolStripStatusGap = New System.Windows.Forms.ToolStripStatusLabel()
+        ToolStripStatusLabel1 = New System.Windows.Forms.ToolStripStatusLabel()
+        ToolStripStatusLabel2 = New System.Windows.Forms.ToolStripStatusLabel()
         Me.ToolStripMain.SuspendLayout()
         Me.ContextMenuStrip1.SuspendLayout()
         Me.StatusStrip1.SuspendLayout()
-        Me.StatusStrip2.SuspendLayout()
+        CType(Me.DataGridDataInspector, System.ComponentModel.ISupportInitialize).BeginInit()
+        Me.ContextMenuStrip2.SuspendLayout()
         Me.SuspendLayout()
         '
         'ToolStripSeparator1
@@ -132,17 +142,17 @@ Partial Class HexViewForm
         'ToolStripStatusGap
         '
         ToolStripStatusGap.Name = "ToolStripStatusGap"
-        ToolStripStatusGap.Size = New System.Drawing.Size(393, 19)
+        ToolStripStatusGap.Size = New System.Drawing.Size(281, 19)
         ToolStripStatusGap.Spring = True
         '
         'ToolStripMain
         '
         Me.ToolStripMain.GripStyle = System.Windows.Forms.ToolStripGripStyle.Hidden
-        Me.ToolStripMain.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.ToolStripBtnCommit, ToolStripSeparator7, Me.ToolStripBtnUndo, Me.ToolStripBtnRedo, ToolStripSeparator4, Me.ToolStripBtnCopyText, Me.ToolStripBtnCopyHex, Me.ToolStripBtnCopyHexFormatted, Me.ToolStripBtnPaste, ToolStripSeparator5, Me.ToolStripBtnFind, Me.ToolStripBtnFindNext, Me.ToolStripSeparator8, Me.ToolStripBtnDelete, Me.ToolStripBtnFillF6, ToolStripSeparator6, Me.ToolStripBtnSelectAll, Me.ToolStripBtnSelectSector, Me.CmbGroups, Me.LblGroups})
+        Me.ToolStripMain.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.ToolStripBtnCommit, ToolStripSeparator7, Me.ToolStripBtnUndo, Me.ToolStripBtnRedo, ToolStripSeparator4, Me.ToolStripBtnCopyText, Me.ToolStripBtnCopyHex, Me.ToolStripBtnCopyHexFormatted, Me.ToolStripBtnPaste, ToolStripSeparator5, Me.ToolStripBtnFind, Me.ToolStripBtnFindNext, Me.ToolStripSeparator8, Me.ToolStripBtnDelete, Me.ToolStripBtnFillF6, ToolStripSeparator6, Me.ToolStripBtnSelectAll, Me.ToolStripBtnSelectSector, Me.CmbGroups, Me.LblGroups, Me.ToolStripBtnSelectTrack})
         Me.ToolStripMain.Location = New System.Drawing.Point(0, 0)
         Me.ToolStripMain.Name = "ToolStripMain"
         Me.ToolStripMain.Padding = New System.Windows.Forms.Padding(12, 0, 12, 0)
-        Me.ToolStripMain.Size = New System.Drawing.Size(749, 25)
+        Me.ToolStripMain.Size = New System.Drawing.Size(934, 25)
         Me.ToolStripMain.TabIndex = 0
         Me.ToolStripMain.Text = "ToolStrip1"
         '
@@ -262,6 +272,7 @@ Partial Class HexViewForm
         '
         Me.ToolStripBtnSelectSector.Image = CType(resources.GetObject("ToolStripBtnSelectSector.Image"), System.Drawing.Image)
         Me.ToolStripBtnSelectSector.ImageTransparentColor = System.Drawing.Color.Magenta
+        Me.ToolStripBtnSelectSector.Margin = New System.Windows.Forms.Padding(0, 1, 4, 2)
         Me.ToolStripBtnSelectSector.Name = "ToolStripBtnSelectSector"
         Me.ToolStripBtnSelectSector.Size = New System.Drawing.Size(60, 22)
         Me.ToolStripBtnSelectSector.Text = "Sector"
@@ -282,16 +293,21 @@ Partial Class HexViewForm
         Me.LblGroups.Size = New System.Drawing.Size(45, 22)
         Me.LblGroups.Text = "Display"
         '
-        'ToolStripSeparatorCRC32
+        'ToolStripBtnSelectTrack
         '
-        Me.ToolStripSeparatorCRC32.Name = "ToolStripSeparatorCRC32"
-        Me.ToolStripSeparatorCRC32.Size = New System.Drawing.Size(255, 6)
+        Me.ToolStripBtnSelectTrack.Image = CType(resources.GetObject("ToolStripBtnSelectTrack.Image"), System.Drawing.Image)
+        Me.ToolStripBtnSelectTrack.ImageTransparentColor = System.Drawing.Color.Magenta
+        Me.ToolStripBtnSelectTrack.Margin = New System.Windows.Forms.Padding(0, 1, 4, 2)
+        Me.ToolStripBtnSelectTrack.Name = "ToolStripBtnSelectTrack"
+        Me.ToolStripBtnSelectTrack.Size = New System.Drawing.Size(54, 22)
+        Me.ToolStripBtnSelectTrack.Text = "Track"
+        Me.ToolStripBtnSelectTrack.ToolTipText = "Track"
         '
         'ContextMenuStrip1
         '
-        Me.ContextMenuStrip1.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.BtnUndo, Me.BtnRedo, ToolStripSeparator3, Me.BtnCopyText, Me.BtnCopyHex, Me.BtnCopyHexFormatted, Me.BtnPaste, ToolStripSeparator2, Me.BtnFind, Me.BtnFindNext, Me.ToolStripMenuItem1, Me.BtnDelete, Me.BtnFillF6, ToolStripSeparator1, Me.BtnSelectSector, Me.BtnSelectTrack, Me.BtnSelectAll, Me.ToolStripSeparatorCRC32, Me.BtnCRC32})
+        Me.ContextMenuStrip1.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.BtnUndo, Me.BtnRedo, ToolStripSeparator3, Me.BtnCopyText, Me.BtnCopyHex, Me.BtnCopyHexFormatted, Me.BtnPaste, ToolStripSeparator2, Me.BtnFind, Me.BtnFindNext, Me.ToolStripMenuItem1, Me.BtnDelete, Me.BtnFillF6, ToolStripSeparator1, Me.BtnSelectSector, Me.BtnSelectTrack, Me.BtnSelectAll})
         Me.ContextMenuStrip1.Name = "ContextMenuStrip1"
-        Me.ContextMenuStrip1.Size = New System.Drawing.Size(259, 342)
+        Me.ContextMenuStrip1.Size = New System.Drawing.Size(259, 314)
         '
         'BtnUndo
         '
@@ -388,6 +404,7 @@ Partial Class HexViewForm
         '
         'BtnSelectTrack
         '
+        Me.BtnSelectTrack.Image = CType(resources.GetObject("BtnSelectTrack.Image"), System.Drawing.Image)
         Me.BtnSelectTrack.Name = "BtnSelectTrack"
         Me.BtnSelectTrack.ShortcutKeys = CType((System.Windows.Forms.Keys.Control Or System.Windows.Forms.Keys.R), System.Windows.Forms.Keys)
         Me.BtnSelectTrack.Size = New System.Drawing.Size(258, 22)
@@ -401,19 +418,13 @@ Partial Class HexViewForm
         Me.BtnSelectAll.Size = New System.Drawing.Size(258, 22)
         Me.BtnSelectAll.Text = "Select &All"
         '
-        'BtnCRC32
-        '
-        Me.BtnCRC32.Name = "BtnCRC32"
-        Me.BtnCRC32.Size = New System.Drawing.Size(258, 22)
-        Me.BtnCRC32.Text = "CRC32"
-        '
         'StatusStrip1
         '
-        Me.StatusStrip1.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.ToolStripStatusOffset, ToolStripStatusGap, Me.ToolStripStatusCluster, Me.ToolStripStatusSector, Me.ToolStripStatusTrack, Me.ToolStripStatusSide, Me.ToolStripStatusBytes})
-        Me.StatusStrip1.Location = New System.Drawing.Point(0, 573)
+        Me.StatusStrip1.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.ToolStripStatusOffset, Me.ToolStripStatusBlock, Me.ToolStripStatusLength, ToolStripStatusGap, Me.ToolStripStatusCluster, Me.ToolStripStatusSector, ToolStripStatusLabel1, Me.ToolStripStatusTrack, Me.ToolStripStatusSide, Me.ToolStripStatusTrackSector, ToolStripStatusLabel2, Me.ToolStripStatusBytes})
+        Me.StatusStrip1.Location = New System.Drawing.Point(0, 549)
         Me.StatusStrip1.Name = "StatusStrip1"
-        Me.StatusStrip1.Size = New System.Drawing.Size(749, 24)
-        Me.StatusStrip1.TabIndex = 3
+        Me.StatusStrip1.Size = New System.Drawing.Size(934, 24)
+        Me.StatusStrip1.TabIndex = 5
         Me.StatusStrip1.Text = "StatusStrip1"
         '
         'ToolStripStatusOffset
@@ -425,6 +436,26 @@ Partial Class HexViewForm
         Me.ToolStripStatusOffset.Size = New System.Drawing.Size(70, 19)
         Me.ToolStripStatusOffset.Text = "Offset(h): 0"
         Me.ToolStripStatusOffset.TextAlign = System.Drawing.ContentAlignment.MiddleLeft
+        '
+        'ToolStripStatusBlock
+        '
+        Me.ToolStripStatusBlock.BorderSides = System.Windows.Forms.ToolStripStatusLabelBorderSides.Right
+        Me.ToolStripStatusBlock.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text
+        Me.ToolStripStatusBlock.Margin = New System.Windows.Forms.Padding(2, 3, 2, 2)
+        Me.ToolStripStatusBlock.Name = "ToolStripStatusBlock"
+        Me.ToolStripStatusBlock.Size = New System.Drawing.Size(78, 19)
+        Me.ToolStripStatusBlock.Text = "Block(h): 0-0"
+        Me.ToolStripStatusBlock.TextAlign = System.Drawing.ContentAlignment.MiddleLeft
+        '
+        'ToolStripStatusLength
+        '
+        Me.ToolStripStatusLength.BorderSides = System.Windows.Forms.ToolStripStatusLabelBorderSides.Right
+        Me.ToolStripStatusLength.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text
+        Me.ToolStripStatusLength.Margin = New System.Windows.Forms.Padding(2, 3, 2, 2)
+        Me.ToolStripStatusLength.Name = "ToolStripStatusLength"
+        Me.ToolStripStatusLength.Size = New System.Drawing.Size(75, 19)
+        Me.ToolStripStatusLength.Text = "Length(h): 0"
+        Me.ToolStripStatusLength.TextAlign = System.Drawing.ContentAlignment.MiddleLeft
         '
         'ToolStripStatusCluster
         '
@@ -474,51 +505,10 @@ Partial Class HexViewForm
         Me.ToolStripStatusBytes.Text = "0 Bytes"
         Me.ToolStripStatusBytes.TextAlign = System.Drawing.ContentAlignment.MiddleRight
         '
-        'ToolStripStatusFile
-        '
-        Me.ToolStripStatusFile.BorderSides = System.Windows.Forms.ToolStripStatusLabelBorderSides.Right
-        Me.ToolStripStatusFile.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text
-        Me.ToolStripStatusFile.Margin = New System.Windows.Forms.Padding(2, 3, 2, 2)
-        Me.ToolStripStatusFile.Name = "ToolStripStatusFile"
-        Me.ToolStripStatusFile.Size = New System.Drawing.Size(32, 19)
-        Me.ToolStripStatusFile.Text = "File:"
-        Me.ToolStripStatusFile.TextAlign = System.Drawing.ContentAlignment.MiddleLeft
-        '
-        'ToolStripStatusDescription
-        '
-        Me.ToolStripStatusDescription.BorderSides = System.Windows.Forms.ToolStripStatusLabelBorderSides.Right
-        Me.ToolStripStatusDescription.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text
-        Me.ToolStripStatusDescription.Margin = New System.Windows.Forms.Padding(2, 3, 2, 2)
-        Me.ToolStripStatusDescription.Name = "ToolStripStatusDescription"
-        Me.ToolStripStatusDescription.Size = New System.Drawing.Size(71, 19)
-        Me.ToolStripStatusDescription.Text = "Description"
-        Me.ToolStripStatusDescription.TextAlign = System.Drawing.ContentAlignment.MiddleLeft
-        '
-        'ToolStripStatusBlock
-        '
-        Me.ToolStripStatusBlock.BorderSides = System.Windows.Forms.ToolStripStatusLabelBorderSides.Right
-        Me.ToolStripStatusBlock.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text
-        Me.ToolStripStatusBlock.Margin = New System.Windows.Forms.Padding(2, 3, 2, 2)
-        Me.ToolStripStatusBlock.Name = "ToolStripStatusBlock"
-        Me.ToolStripStatusBlock.Size = New System.Drawing.Size(78, 19)
-        Me.ToolStripStatusBlock.Text = "Block(h): 0-0"
-        Me.ToolStripStatusBlock.TextAlign = System.Drawing.ContentAlignment.MiddleLeft
-        '
-        'ToolStripStatusLength
-        '
-        Me.ToolStripStatusLength.BorderSides = System.Windows.Forms.ToolStripStatusLabelBorderSides.Right
-        Me.ToolStripStatusLength.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text
-        Me.ToolStripStatusLength.Margin = New System.Windows.Forms.Padding(2, 3, 2, 2)
-        Me.ToolStripStatusLength.Name = "ToolStripStatusLength"
-        Me.ToolStripStatusLength.Size = New System.Drawing.Size(75, 19)
-        Me.ToolStripStatusLength.Text = "Length(h): 0"
-        Me.ToolStripStatusLength.TextAlign = System.Drawing.ContentAlignment.MiddleLeft
-        '
         'HexBox1
         '
-        Me.HexBox1.Anchor = CType((((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Bottom) _
-            Or System.Windows.Forms.AnchorStyles.Left) _
-            Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
+        Me.HexBox1.Anchor = CType(((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Bottom) _
+            Or System.Windows.Forms.AnchorStyles.Left), System.Windows.Forms.AnchorStyles)
         '
         '
         '
@@ -534,46 +524,146 @@ Partial Class HexViewForm
         Me.HexBox1.Name = "HexBox1"
         Me.HexBox1.ReadOnly = True
         Me.HexBox1.ShadowSelectionColor = System.Drawing.Color.FromArgb(CType(CType(100, Byte), Integer), CType(CType(60, Byte), Integer), CType(CType(188, Byte), Integer), CType(CType(255, Byte), Integer))
-        Me.HexBox1.Size = New System.Drawing.Size(725, 519)
+        Me.HexBox1.Size = New System.Drawing.Size(640, 517)
         Me.HexBox1.StringViewVisible = True
         Me.HexBox1.TabIndex = 1
         Me.HexBox1.UseFixedBytesPerLine = True
         Me.HexBox1.VScrollBarVisible = False
         '
-        'StatusStrip2
+        'DataGridDataInspector
         '
-        Me.StatusStrip2.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.ToolStripStatusFile, Me.ToolStripStatusDescription, Me.ToolStripStatusBlock, Me.ToolStripStatusLength, Me.ToolStripStatusCRC32})
-        Me.StatusStrip2.Location = New System.Drawing.Point(0, 549)
-        Me.StatusStrip2.Name = "StatusStrip2"
-        Me.StatusStrip2.Size = New System.Drawing.Size(749, 24)
-        Me.StatusStrip2.SizingGrip = False
-        Me.StatusStrip2.TabIndex = 2
-        Me.StatusStrip2.Text = "StatusStrip2"
+        Me.DataGridDataInspector.AllowUserToAddRows = False
+        Me.DataGridDataInspector.AllowUserToDeleteRows = False
+        Me.DataGridDataInspector.AllowUserToResizeColumns = False
+        Me.DataGridDataInspector.AllowUserToResizeRows = False
+        Me.DataGridDataInspector.Anchor = CType((((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Bottom) _
+            Or System.Windows.Forms.AnchorStyles.Left) _
+            Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
+        Me.DataGridDataInspector.BackgroundColor = System.Drawing.SystemColors.Window
+        Me.DataGridDataInspector.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D
+        Me.DataGridDataInspector.ClipboardCopyMode = System.Windows.Forms.DataGridViewClipboardCopyMode.Disable
+        Me.DataGridDataInspector.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.DisableResizing
+        Me.DataGridDataInspector.ColumnHeadersVisible = False
+        Me.DataGridDataInspector.Columns.AddRange(New System.Windows.Forms.DataGridViewColumn() {Me.DataGridName, Me.DataGridValue, Me.DataGridLength, Me.DataGridInvalid, Me.DataGridEditable, Me.DataGridType})
+        Me.DataGridDataInspector.ContextMenuStrip = Me.ContextMenuStrip2
+        Me.DataGridDataInspector.EditMode = System.Windows.Forms.DataGridViewEditMode.EditOnF2
+        Me.DataGridDataInspector.GridColor = System.Drawing.SystemColors.ControlLight
+        Me.DataGridDataInspector.Location = New System.Drawing.Point(658, 28)
+        Me.DataGridDataInspector.MultiSelect = False
+        Me.DataGridDataInspector.Name = "DataGridDataInspector"
+        Me.DataGridDataInspector.RowHeadersVisible = False
+        Me.DataGridDataInspector.RowHeadersWidthSizeMode = System.Windows.Forms.DataGridViewRowHeadersWidthSizeMode.DisableResizing
+        Me.DataGridDataInspector.ScrollBars = System.Windows.Forms.ScrollBars.Vertical
+        Me.DataGridDataInspector.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect
+        Me.DataGridDataInspector.Size = New System.Drawing.Size(264, 517)
+        Me.DataGridDataInspector.StandardTab = True
+        Me.DataGridDataInspector.TabIndex = 2
         '
-        'ToolStripStatusCRC32
+        'DataGridName
         '
-        Me.ToolStripStatusCRC32.BorderSides = System.Windows.Forms.ToolStripStatusLabelBorderSides.Right
-        Me.ToolStripStatusCRC32.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text
-        Me.ToolStripStatusCRC32.Margin = New System.Windows.Forms.Padding(2, 3, 2, 2)
-        Me.ToolStripStatusCRC32.Name = "ToolStripStatusCRC32"
-        Me.ToolStripStatusCRC32.Size = New System.Drawing.Size(100, 19)
-        Me.ToolStripStatusCRC32.Text = "CRC32: 00000000"
-        Me.ToolStripStatusCRC32.TextAlign = System.Drawing.ContentAlignment.MiddleLeft
+        Me.DataGridName.HeaderText = "Name"
+        Me.DataGridName.Name = "DataGridName"
+        Me.DataGridName.ReadOnly = True
+        Me.DataGridName.Resizable = System.Windows.Forms.DataGridViewTriState.[False]
+        Me.DataGridName.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable
+        '
+        'DataGridValue
+        '
+        Me.DataGridValue.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill
+        Me.DataGridValue.HeaderText = "Value"
+        Me.DataGridValue.Name = "DataGridValue"
+        Me.DataGridValue.Resizable = System.Windows.Forms.DataGridViewTriState.[False]
+        Me.DataGridValue.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable
+        '
+        'DataGridLength
+        '
+        Me.DataGridLength.HeaderText = "Length"
+        Me.DataGridLength.Name = "DataGridLength"
+        Me.DataGridLength.ReadOnly = True
+        Me.DataGridLength.Resizable = System.Windows.Forms.DataGridViewTriState.[False]
+        Me.DataGridLength.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable
+        Me.DataGridLength.Visible = False
+        '
+        'DataGridInvalid
+        '
+        Me.DataGridInvalid.HeaderText = "Invalid"
+        Me.DataGridInvalid.Name = "DataGridInvalid"
+        Me.DataGridInvalid.ReadOnly = True
+        Me.DataGridInvalid.Resizable = System.Windows.Forms.DataGridViewTriState.[False]
+        Me.DataGridInvalid.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable
+        Me.DataGridInvalid.Visible = False
+        '
+        'DataGridEditable
+        '
+        Me.DataGridEditable.HeaderText = "Editable"
+        Me.DataGridEditable.Name = "DataGridEditable"
+        Me.DataGridEditable.ReadOnly = True
+        Me.DataGridEditable.Resizable = System.Windows.Forms.DataGridViewTriState.[False]
+        Me.DataGridEditable.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable
+        Me.DataGridEditable.Visible = False
+        '
+        'DataGridType
+        '
+        Me.DataGridType.HeaderText = "Type"
+        Me.DataGridType.Name = "DataGridType"
+        Me.DataGridType.ReadOnly = True
+        Me.DataGridType.Resizable = System.Windows.Forms.DataGridViewTriState.[False]
+        Me.DataGridType.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable
+        Me.DataGridType.Visible = False
+        '
+        'ContextMenuStrip2
+        '
+        Me.ContextMenuStrip2.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.BtnCopyValue})
+        Me.ContextMenuStrip2.Name = "ContextMenuStrip2"
+        Me.ContextMenuStrip2.Size = New System.Drawing.Size(176, 26)
+        '
+        'BtnCopyValue
+        '
+        Me.BtnCopyValue.Name = "BtnCopyValue"
+        Me.BtnCopyValue.ShortcutKeys = CType((System.Windows.Forms.Keys.Control Or System.Windows.Forms.Keys.C), System.Windows.Forms.Keys)
+        Me.BtnCopyValue.Size = New System.Drawing.Size(175, 22)
+        Me.BtnCopyValue.Text = "&Copy Value"
+        '
+        'ToolStripStatusLabel1
+        '
+        ToolStripStatusLabel1.BorderSides = System.Windows.Forms.ToolStripStatusLabelBorderSides.Left
+        ToolStripStatusLabel1.Margin = New System.Windows.Forms.Padding(2, 3, 2, 2)
+        ToolStripStatusLabel1.Name = "ToolStripStatusLabel1"
+        ToolStripStatusLabel1.Padding = New System.Windows.Forms.Padding(16, 0, 0, 0)
+        ToolStripStatusLabel1.Size = New System.Drawing.Size(20, 19)
+        '
+        'ToolStripStatusLabel2
+        '
+        ToolStripStatusLabel2.BorderSides = System.Windows.Forms.ToolStripStatusLabelBorderSides.Left
+        ToolStripStatusLabel2.Margin = New System.Windows.Forms.Padding(2, 3, 2, 2)
+        ToolStripStatusLabel2.Name = "ToolStripStatusLabel2"
+        ToolStripStatusLabel2.Padding = New System.Windows.Forms.Padding(16, 0, 0, 0)
+        ToolStripStatusLabel2.Size = New System.Drawing.Size(20, 19)
+        '
+        'ToolStripStatusTrackSector
+        '
+        Me.ToolStripStatusTrackSector.BorderSides = System.Windows.Forms.ToolStripStatusLabelBorderSides.Left
+        Me.ToolStripStatusTrackSector.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text
+        Me.ToolStripStatusTrackSector.Margin = New System.Windows.Forms.Padding(2, 3, 2, 2)
+        Me.ToolStripStatusTrackSector.Name = "ToolStripStatusTrackSector"
+        Me.ToolStripStatusTrackSector.Size = New System.Drawing.Size(53, 19)
+        Me.ToolStripStatusTrackSector.Text = "Sector 0"
+        Me.ToolStripStatusTrackSector.TextAlign = System.Drawing.ContentAlignment.MiddleRight
         '
         'HexViewForm
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
-        Me.ClientSize = New System.Drawing.Size(749, 597)
-        Me.Controls.Add(Me.StatusStrip2)
+        Me.ClientSize = New System.Drawing.Size(934, 573)
+        Me.Controls.Add(Me.DataGridDataInspector)
         Me.Controls.Add(Me.ToolStripMain)
         Me.Controls.Add(Me.StatusStrip1)
         Me.Controls.Add(Me.HexBox1)
         Me.KeyPreview = True
         Me.MaximizeBox = False
-        Me.MaximumSize = New System.Drawing.Size(765, 1280)
+        Me.MaximumSize = New System.Drawing.Size(950, 1280)
         Me.MinimizeBox = False
-        Me.MinimumSize = New System.Drawing.Size(765, 480)
+        Me.MinimumSize = New System.Drawing.Size(950, 480)
         Me.Name = "HexViewForm"
         Me.ShowIcon = False
         Me.ShowInTaskbar = False
@@ -584,8 +674,8 @@ Partial Class HexViewForm
         Me.ContextMenuStrip1.ResumeLayout(False)
         Me.StatusStrip1.ResumeLayout(False)
         Me.StatusStrip1.PerformLayout()
-        Me.StatusStrip2.ResumeLayout(False)
-        Me.StatusStrip2.PerformLayout()
+        CType(Me.DataGridDataInspector, System.ComponentModel.ISupportInitialize).EndInit()
+        Me.ContextMenuStrip2.ResumeLayout(False)
         Me.ResumeLayout(False)
         Me.PerformLayout()
 
@@ -594,21 +684,15 @@ Partial Class HexViewForm
     Friend WithEvents StatusStrip1 As StatusStrip
     Friend WithEvents ToolStripStatusCluster As ToolStripStatusLabel
     Friend WithEvents ToolStripStatusSector As ToolStripStatusLabel
-    Friend WithEvents ToolStripStatusBlock As ToolStripStatusLabel
     Friend WithEvents ToolStripStatusBytes As ToolStripStatusLabel
     Friend WithEvents ContextMenuStrip1 As ContextMenuStrip
     Friend WithEvents BtnCopyText As ToolStripMenuItem
     Friend WithEvents BtnCopyHex As ToolStripMenuItem
     Friend WithEvents BtnSelectAll As ToolStripMenuItem
     Friend WithEvents BtnCopyHexFormatted As ToolStripMenuItem
-    Friend WithEvents BtnCRC32 As ToolStripMenuItem
     Friend WithEvents ToolStripStatusOffset As ToolStripStatusLabel
-    Friend WithEvents ToolStripStatusLength As ToolStripStatusLabel
-    Friend WithEvents ToolStripStatusFile As ToolStripStatusLabel
-    Friend WithEvents ToolStripStatusDescription As ToolStripStatusLabel
     Friend WithEvents BtnUndo As ToolStripMenuItem
     Friend WithEvents BtnDelete As ToolStripMenuItem
-    Friend WithEvents ToolStripSeparatorCRC32 As ToolStripSeparator
     Friend WithEvents BtnFillF6 As ToolStripMenuItem
     Friend WithEvents BtnPaste As ToolStripMenuItem
     Friend WithEvents BtnSelectSector As ToolStripMenuItem
@@ -627,7 +711,6 @@ Partial Class HexViewForm
     Friend WithEvents ToolStripBtnCommit As ToolStripButton
     Friend WithEvents LblGroups As ToolStripLabel
     Friend WithEvents ToolStripMain As ToolStrip
-    Friend WithEvents StatusStrip2 As StatusStrip
     Friend WithEvents ToolStripStatusTrack As ToolStripStatusLabel
     Friend WithEvents ToolStripStatusSide As ToolStripStatusLabel
     Friend WithEvents ToolStripBtnFind As ToolStripButton
@@ -637,5 +720,20 @@ Partial Class HexViewForm
     Friend WithEvents BtnFindNext As ToolStripMenuItem
     Friend WithEvents ToolStripMenuItem1 As ToolStripSeparator
     Friend WithEvents BtnSelectTrack As ToolStripMenuItem
-    Friend WithEvents ToolStripStatusCRC32 As ToolStripStatusLabel
+    Friend WithEvents ToolStripStatusBlock As ToolStripStatusLabel
+    Friend WithEvents ToolStripStatusLength As ToolStripStatusLabel
+    Friend WithEvents DataGridDataInspector As DataGridView
+    'Friend WithEvents GroupBoxByteOrder As GroupBox
+    'Friend WithEvents RadioButtonBigEndien As RadioButton
+    'Friend WithEvents RadioButtonLittleEndien As RadioButton
+    Friend WithEvents ContextMenuStrip2 As ContextMenuStrip
+    Friend WithEvents BtnCopyValue As ToolStripMenuItem
+    Friend WithEvents DataGridName As DataGridViewTextBoxColumn
+    Friend WithEvents DataGridValue As DataGridViewTextBoxColumn
+    Friend WithEvents DataGridLength As DataGridViewTextBoxColumn
+    Friend WithEvents DataGridInvalid As DataGridViewTextBoxColumn
+    Friend WithEvents DataGridEditable As DataGridViewTextBoxColumn
+    Friend WithEvents DataGridType As DataGridViewTextBoxColumn
+    Friend WithEvents ToolStripBtnSelectTrack As ToolStripButton
+    Friend WithEvents ToolStripStatusTrackSector As ToolStripStatusLabel
 End Class

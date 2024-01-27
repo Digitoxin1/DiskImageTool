@@ -682,32 +682,6 @@ Namespace DiskImage
             Return Result
         End Function
 
-        Private Shared Function DateToFATDate(D As Date) As UShort
-            Dim FATDate As UShort = D.Year - 1980
-
-            FATDate <<= 4
-            FATDate += D.Month
-            FATDate <<= 5
-            FATDate += D.Day
-
-            Return FATDate
-        End Function
-
-        Private Shared Function DateToFATMilliseconds(D As Date) As Byte
-            Return D.Millisecond \ 10 + (D.Second Mod 2) * 100
-        End Function
-
-        Private Shared Function DateToFATTime(D As Date) As UShort
-            Dim DTTime As UShort = D.Hour
-
-            DTTime <<= 6
-            DTTime += D.Minute
-            DTTime <<= 5
-            DTTime += D.Second \ 2
-
-            Return DTTime
-        End Function
-
         Private Sub InitFatChain()
             If _FAT.FATChains.ContainsKey(Offset) Then
                 _FatChain = _FAT.FATChains.Item(Offset)

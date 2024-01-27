@@ -94,6 +94,57 @@ Module ListViewExtensions
 
         Return Item
     End Function
+
+    <Extension()>
+    Public Function InsertItem(listViewControl As ListView, Index As Integer, Group As ListViewGroup, Text As String, Value As String, ForeColor As Color, WrapText As Boolean) As ListViewItem
+        Dim Item As ListViewItem = Nothing
+        Dim SubItem As ListViewItem.ListViewSubItem
+        Dim StringList As List(Of String) = Nothing
+        Dim AddTags As Boolean = False
+
+        If WrapText Then
+            Dim Width = listViewControl.Columns.Item(1).Width - 5
+            If TextRenderer.MeasureText(Value, listViewControl.Font).Width > Width Then
+                StringList = Value.WordWrap(Width, listViewControl.Font)
+                AddTags = True
+            End If
+        End If
+
+        If StringList Is Nothing Then
+            StringList = New List(Of String) From {
+                Value
+            }
+        End If
+
+        For Counter = 0 To StringList.Count - 1
+            Dim ItemText As String
+            If Counter = 0 Then
+                ItemText = Text
+            Else
+                ItemText = ""
+            End If
+            Dim NewItem = New ListViewItem(ItemText, Group) With {
+                    .UseItemStyleForSubItems = False
+                }
+            If AddTags Then
+                NewItem.Tag = Text
+            End If
+            SubItem = NewItem.SubItems.Add(StringList(Counter))
+            SubItem.ForeColor = ForeColor
+            If AddTags Then
+                SubItem.Tag = Value
+            End If
+            listViewControl.Items.Insert(Index, NewItem)
+
+            If Item Is Nothing Then
+                Item = NewItem
+            End If
+        Next
+
+        Return Item
+    End Function
+
+
     <Extension()>
     Public Sub AutoResizeColumnsContstrained(listViewControl As ListView, headerAutoResize As ColumnHeaderAutoResizeStyle)
         listViewControl.AutoResizeColumns(headerAutoResize)

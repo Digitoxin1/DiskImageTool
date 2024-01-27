@@ -134,6 +134,7 @@
     <Compile Include="DiskImage\FloppyDiskFunctions.vb" />
     <Compile Include="DiskImage\SectorBlock.vb" />
     <Compile Include="Extensions\ByteArrayExtensions.vb" />
+    <Compile Include="Extensions\DataGridViewExtensions.vb" />
     <Compile Include="Extensions\StringExtensions.vb" />
     <Compile Include="Forms\AboutBox.Designer.vb">
       <DependentUpon>AboutBox.vb</DependentUpon>
@@ -198,6 +199,7 @@
     <Compile Include="DirectoryScanResponse.vb" />
     <Compile Include="ImageCompare.vb" />
     <Compile Include="ListViewHeader.vb" />
+    <Compile Include="MyBitConverter.vb" />
     <Compile Include="Utility.vb" />
     <Compile Include="Controls\HexTextBox.vb">
       <SubType>Component</SubType>
@@ -318,6 +320,7 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
+    <None Include="ClassDiagram1.cd" />
     <None Include="DiskImageTool_TemporaryKey.pfx" />
     <None Include="My Project\app.manifest" />
     <None Include="My Project\Application.myapp">

@@ -64,6 +64,21 @@
             Return DT
         End Function
 
+        Public Function ExpandTime(FATTime As UShort) As ExpandedDate
+            Return ExpandDate(33, FATTime, 0)
+        End Function
+
+        Public Function ExpandTimeDate(FATTimeDate As UInteger) As ExpandedDate
+            Dim FATDate As UShort
+            Dim FATTime As UShort
+
+            FATTime = FATTimeDate Mod 65536
+            FATTimeDate >>= 16
+            FATDate = FATTimeDate
+
+            Return ExpandDate(FATDate, FATTime)
+        End Function
+
         Public Function ExpandedDateToString(D As DiskImage.ExpandedDate) As String
             Return ExpandedDateToString(D, False, False, False, False)
         End Function

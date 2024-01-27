@@ -296,6 +296,11 @@ Namespace DiskImage
         Public Function SectorToTrack(Sector As UInteger) As UShort
             Return Int(Sector / SectorsPerTrack / NumberOfHeads)
         End Function
+
+        Public Function SectorToTrackSector(Sector As UInteger) As UShort
+            Return Sector Mod SectorsPerTrack
+        End Function
+
         Public Function TrackToSector(Track As UShort, Side As UShort) As UInteger
             Return Track * NumberOfHeads * SectorsPerTrack + SectorsPerTrack * Side
         End Function
