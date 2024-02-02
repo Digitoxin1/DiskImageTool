@@ -12,10 +12,11 @@
         HasInvalidDirectoryEntries
         DirectoryHasAdditionalData
         DirectoryHasBootSector
-        UnusedClusters
+        FreeClustersWithData
         HasInvalidImage
         UnknownDiskType
         HasBadSectors
+        HasLostClusters
         HasInvalidImageSize
         HasMismatchedFATs
         HasMismatchedMediaDescriptor
@@ -50,10 +51,12 @@
                 Caption = "Directory has Boot Sector"
             Case FilterTypes.ModifiedFiles
                 Caption = "Modified Files"
-            Case FilterTypes.UnusedClusters
-                Caption = "Unused Clusters with Data"
+            Case FilterTypes.FreeClustersWithData
+                Caption = "Free Clusters with Data"
             Case FilterTypes.HasBadSectors
                 Caption = "Bad Sectors"
+            Case FilterTypes.HasLostClusters
+                Caption = "Lost Clusters"
             Case FilterTypes.HasMismatchedFATs
                 Caption = "Mismatched FATs"
             Case FilterTypes.HasFATChainingErrors
@@ -149,14 +152,20 @@
             End If
         End If
 
-        If CheckFilter(FilterTypes.UnusedClusters, AppliedFilters) Then
-            If ImageData.ScanInfo.IsValidImage And ImageData.ScanInfo.HasUnusedClusters Then
+        If CheckFilter(FilterTypes.FreeClustersWithData, AppliedFilters) Then
+            If ImageData.ScanInfo.IsValidImage And ImageData.ScanInfo.HasFreeClustersWithData Then
                 Return False
             End If
         End If
 
         If CheckFilter(FilterTypes.HasBadSectors, AppliedFilters) Then
             If ImageData.ScanInfo.IsValidImage And ImageData.ScanInfo.HasBadSectors Then
+                Return False
+            End If
+        End If
+
+        If CheckFilter(FilterTypes.HasLostClusters, AppliedFilters) Then
+            If ImageData.ScanInfo.IsValidImage And ImageData.ScanInfo.HasLostClusters Then
                 Return False
             End If
         End If

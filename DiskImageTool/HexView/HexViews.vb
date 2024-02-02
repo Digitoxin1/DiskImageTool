@@ -55,6 +55,34 @@ Module HexViews
         Return HexViewSectorData
     End Function
 
+    Public Function HexViewLostClusters(Disk As Disk) As HexViewSectorData
+        Dim HexViewSectorData As New HexViewSectorData(Disk) With {
+            .Description = "Lost Clusters"
+        }
+
+        Dim Offset As UInteger = 0
+        Dim Length As UInteger = 0
+        Dim LastCluster As UShort = 0
+
+        For Each Cluster In Disk.FAT.LostClusters
+            If Cluster > LastCluster + 1 Then
+                If Length > 0 Then
+                    HexViewSectorData.SectorData.AddBlockByOffset(Offset, Length)
+                End If
+                Offset = Disk.BPB.ClusterToOffset(Cluster)
+                Length = 0
+            End If
+            Length += Disk.BPB.BytesPerCluster
+            LastCluster = Cluster
+        Next
+
+        If Length > 0 Then
+            HexViewSectorData.SectorData.AddBlockByOffset(Offset, Length)
+        End If
+
+        Return HexViewSectorData
+    End Function
+
     Public Function HexViewBootSector(Disk As Disk) As HexViewSectorData
         Dim HexViewSectorData As New HexViewSectorData(Disk) With {
             .Description = "Boot Sector"

@@ -563,7 +563,6 @@ Public Class HexViewForm
         Dim ErrorMsg As String = ""
 
         If e.FormattedValue = "Invalid" And Invalid Then
-            Result = True
             Exit Sub
         End If
 
@@ -1164,7 +1163,7 @@ Public Class HexViewForm
                     ToolStripStatusSide.Text = "Side: " & _BPB.SectorToSide(Sector)
 
                     ToolStripStatusTrackSector.Visible = Not OutOfRange
-                    ToolStripStatusTrackSector.Text = "Sector: " & _BPB.SectorToTrackSector(Sector) + 1
+                    ToolStripStatusTrackSector.Text = "Sector Id: " & _BPB.SectorToTrackSector(Sector) + 1
                 Else
                     ToolStripStatusTrack.Visible = False
                     ToolStripStatusTrack.Text = ""

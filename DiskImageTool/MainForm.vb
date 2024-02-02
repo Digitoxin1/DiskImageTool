@@ -11,7 +11,7 @@ Public Enum ItemScanTypes
     Disk = 1
     OEMName = 2
     DiskType = 4
-    UnusedClusters = 8
+    FreeClusters = 8
     Directory = 16
     All = 31
 End Enum
@@ -95,6 +95,9 @@ Public Class MainForm
         Else
             Response = New DirectoryScanResponse(Nothing)
         End If
+
+        Dim LostClusterCount As Integer = Disk.FAT.GetLostClusterCount
+        Dim HasLostClusters As Boolean = LostClusterCount <> 0
 
         If Not ImageData.Scanned Or Response.HasValidCreated <> ImageData.ScanInfo.HasValidCreated Then
             ImageData.ScanInfo.HasValidCreated = Response.HasValidCreated
@@ -189,6 +192,18 @@ Public Class MainForm
             End If
             If UpdateFilters Then
                 FilterUpdate(FilterTypes.HasFATChainingErrors)
+            End If
+        End If
+
+        If Not ImageData.Scanned Or HasLostClusters <> ImageData.ScanInfo.HasLostClusters Then
+            ImageData.ScanInfo.HasLostClusters = HasLostClusters
+            If HasLostClusters Then
+                _FilterCounts(FilterTypes.HasLostClusters) += 1
+            ElseIf ImageData.Scanned Then
+                _FilterCounts(FilterTypes.HasLostClusters) -= 1
+            End If
+            If UpdateFilters Then
+                FilterUpdate(FilterTypes.HasLostClusters)
             End If
         End If
 
@@ -365,22 +380,22 @@ Public Class MainForm
         End If
     End Sub
 
-    Friend Sub ItemScanUnusedClusters(Disk As DiskImage.Disk, ImageData As LoadedImageData, Optional UpdateFilters As Boolean = False, Optional Remove As Boolean = False)
-        Dim HasUnusedClusters As Boolean = False
+    Friend Sub ItemScanFreeClusters(Disk As DiskImage.Disk, ImageData As LoadedImageData, Optional UpdateFilters As Boolean = False, Optional Remove As Boolean = False)
+        Dim HasFreeClusters As Boolean = False
 
         If Not Remove And Disk.IsValidImage Then
-            HasUnusedClusters = Disk.FAT.HasUnusedClusters(True)
+            HasFreeClusters = Disk.FAT.HasFreeClusters(True)
         End If
 
-        If Not ImageData.Scanned Or HasUnusedClusters <> ImageData.ScanInfo.HasUnusedClusters Then
-            ImageData.ScanInfo.HasUnusedClusters = HasUnusedClusters
-            If HasUnusedClusters Then
-                _FilterCounts(FilterTypes.UnusedClusters) += 1
+        If Not ImageData.Scanned Or HasFreeClusters <> ImageData.ScanInfo.HasFreeClustersWithData Then
+            ImageData.ScanInfo.HasFreeClustersWithData = HasFreeClusters
+            If HasFreeClusters Then
+                _FilterCounts(FilterTypes.FreeClustersWithData) += 1
             ElseIf ImageData.Scanned Then
-                _FilterCounts(FilterTypes.UnusedClusters) -= 1
+                _FilterCounts(FilterTypes.FreeClustersWithData) -= 1
             End If
             If UpdateFilters Then
-                FilterUpdate(FilterTypes.UnusedClusters)
+                FilterUpdate(FilterTypes.FreeClustersWithData)
             End If
         End If
     End Sub
@@ -898,7 +913,7 @@ Public Class MainForm
         Dim CurrentImageData As LoadedImageData = ComboImages.SelectedItem
 
         InitButtonState()
-        PopulateSummary(_Disk, CurrentImageData)
+        'PopulateSummary(_Disk, CurrentImageData)
         ClearSort(False)
 
         If _Disk IsNot Nothing AndAlso _Disk.IsValidImage Then
@@ -909,6 +924,9 @@ Public Class MainForm
         Else
             ClearFilesPanel()
         End If
+
+        PopulateSummary(_Disk, CurrentImageData)
+        StatusStrip1.Refresh()
 
         If DoItemScan Then
             ItemScan(ItemScanTypes.All, _Disk, CurrentImageData, True)
@@ -1735,6 +1753,14 @@ Public Class MainForm
         End If
     End Sub
 
+    Private Sub HexDisplayLostClusters()
+        Dim HexViewSectorData = HexViewLostClusters(_Disk)
+
+        If DisplayHexViewForm(HexViewSectorData) Then
+            DiskImageRefresh()
+        End If
+    End Sub
+
     Private Sub HexDisplayBootSector()
         Dim HexViewSectorData = HexViewBootSector(_Disk)
 
@@ -1771,14 +1797,14 @@ Public Class MainForm
         End If
     End Sub
 
-    Private Sub HexDisplayUnusedClusters()
-        Dim HexViewSectorData = New HexViewSectorData(_Disk, _Disk.FAT.GetUnusedClusters(True)) With {
-            .Description = "Unused Clusters"
+    Private Sub HexDisplayFreeClusters()
+        Dim HexViewSectorData = New HexViewSectorData(_Disk, _Disk.FAT.GetFreeClusters(True)) With {
+            .Description = "Free Clusters"
         }
 
         If DisplayHexViewForm(HexViewSectorData) Then
             Dim CurrentImageData As LoadedImageData = ComboImages.SelectedItem
-            ItemScan(ItemScanTypes.UnusedClusters, _Disk, CurrentImageData, True)
+            ItemScan(ItemScanTypes.FreeClusters, _Disk, CurrentImageData, True)
             PopulateHashPanel(_Disk)
             RefreshCurrentState()
         End If
@@ -1925,8 +1951,8 @@ Public Class MainForm
             If Type And ItemScanTypes.DiskType Then
                 DiskTypeFilterUpdate(Disk, ImageData, UpdateFilters, Remove)
             End If
-            If Type And ItemScanTypes.UnusedClusters Then
-                ItemScanUnusedClusters(Disk, ImageData, UpdateFilters, Remove)
+            If Type And ItemScanTypes.FreeClusters Then
+                ItemScanFreeClusters(Disk, ImageData, UpdateFilters, Remove)
             End If
             If Type And ItemScanTypes.Directory Then
                 ItemScanDirectory(Disk, ImageData, UpdateFilters, Remove)
@@ -2550,9 +2576,20 @@ Public Class MainForm
                     .AddItem(FileSystemGroup, "Free Space", Format(Disk.FAT.GetFreeSpace(Disk.BPB.BytesPerCluster), "N0") & " bytes")
 
                     If Disk.FAT.BadClusters.Count > 0 Then
-                        Value = Format(Disk.FAT.BadClusters.Count * Disk.BPB.BytesPerCluster, "N0") & " bytes"
-                        ForeColor = Color.Red
-                        .AddItem(FileSystemGroup, "Bad Sectors", Value, ForeColor)
+                        Dim SectorCount = Disk.FAT.BadClusters.Count * Disk.BPB.SectorsPerCluster
+                        Value = Format(Disk.FAT.BadClusters.Count * Disk.BPB.BytesPerCluster, "N0") & " bytes  (" & SectorCount & ")"
+                        .AddItem(FileSystemGroup, "Bad Sectors", Value, Color.Red)
+                    End If
+
+                    Dim LostClusters = Disk.FAT.GetLostClusterCount
+                    If LostClusters > 0 Then
+                        Value = Format(LostClusters * Disk.BPB.BytesPerCluster, "N0") & " bytes  (" & LostClusters & ")"
+                        .AddItem(FileSystemGroup, "Lost Clusters", Value, Color.Red)
+                    End If
+
+                    If Disk.FAT.ReservedClusters > 0 Then
+                        Value = Format(Disk.FAT.ReservedClusters * Disk.BPB.BytesPerCluster, "N0") & " bytes  (" & Disk.FAT.ReservedClusters & ")"
+                        .AddItem(FileSystemGroup, "Reserved Clusters", Value)
                     End If
 
                     Dim BootStrapGroup = .Groups.Add("Bootstrap", "Bootstrap")
@@ -2780,8 +2817,9 @@ Public Class MainForm
 
     Private Sub RefreshDiskButtons(Disk As Disk, ImageData As LoadedImageData)
         If Disk IsNot Nothing AndAlso Disk.IsValidImage Then
-            BtnDisplayClusters.Enabled = Disk.FAT.HasUnusedClusters(True)
+            BtnDisplayClusters.Enabled = Disk.FAT.HasFreeClusters(True)
             BtnDisplayBadSectors.Enabled = Disk.FAT.BadClusters.Count > 0
+            BtnDisplayLostClusters.Enabled = Disk.FAT.GetLostClusterCount > 0
             BtnFixImageSize.Enabled = Disk.CheckImageSize <> 0
             If Disk.Directory.Data.HasBootSector Then
                 Dim BootSectorBytes = Disk.Data.GetBytes(Disk.Directory.Data.BootSectorOffset, BootSector.BOOT_SECTOR_SIZE)
@@ -2793,6 +2831,7 @@ Public Class MainForm
         Else
             BtnDisplayClusters.Enabled = False
             BtnDisplayBadSectors.Enabled = False
+            BtnDisplayLostClusters.Enabled = False
             BtnFixImageSize.Enabled = False
             BtnRestoreBootSector.Enabled = False
             BtnRemoveBootSector.Enabled = False
@@ -3379,7 +3418,7 @@ Public Class MainForm
     End Sub
 
     Private Sub BtnClearReservedBytes_Click(sender As Object, e As EventArgs) Handles BtnClearReservedBytes.Click
-        ClearReservedBytes
+        ClearReservedBytes()
     End Sub
 
     Private Sub BtnClose_Click(sender As Object, e As EventArgs) Handles BtnClose.Click, ToolStripBtnClose.Click
@@ -3398,12 +3437,16 @@ Public Class MainForm
         HexDisplayBadSectors()
     End Sub
 
+    Private Sub BtnDisplayLostClusters_Click(sender As Object, e As EventArgs) Handles BtnDisplayLostClusters.Click
+        HexDisplayLostClusters()
+    End Sub
+
     Private Sub BtnDisplayBootSector_Click(sender As Object, e As EventArgs) Handles BtnDisplayBootSector.Click
         HexDisplayBootSector()
     End Sub
 
     Private Sub BtnDisplayClusters_Click(sender As Object, e As EventArgs) Handles BtnDisplayClusters.Click
-        HexDisplayUnusedClusters()
+        HexDisplayFreeClusters()
     End Sub
 
     Private Sub BtnDisplayDirectory_Click(sender As Object, e As EventArgs) Handles BtnDisplayDirectory.Click, BtnFileMenuViewDirectory.Click

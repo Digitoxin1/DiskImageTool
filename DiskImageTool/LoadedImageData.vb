@@ -9,9 +9,10 @@ Public Class ImageDataScanInfo
     Public Property HasInvalidDirectoryEntries As Boolean = False
     Public Property HasInvalidImageSize As Boolean = False
     Public Property HasLongFileNames As Boolean = False
+    Public Property HasLostClusters As Boolean = False
     Public Property HasMismatchedFATs As Boolean = False
     Public Property HasMismatchedMediaDescriptor As Boolean = False
-    Public Property HasUnusedClusters As Boolean = False
+    Public Property HasFreeClustersWithData As Boolean = False
     Public Property HasValidCreated As Boolean = False
     Public Property HasValidLastAccessed As Boolean = False
     Public Property IsValidImage As Boolean = True
@@ -74,6 +75,6 @@ Public Class LoadedImageData
         End If
     End Function
     Public Overrides Function ToString() As String
-        Return Right(DisplayPath, Len(DisplayPath) - _StringOffset).Replace("\", " > ") '& IIf(_Modified, " *", "")
+        Return Right(DisplayPath, Len(DisplayPath) - _StringOffset).Replace("\", "  >  ") '& IIf(_Modified, " *", "")
     End Function
 End Class

@@ -45,9 +45,9 @@ Public Class FATEditForm
         ProcessFATChains()
 
         _FATTable = GetDataTable(_FAT)
-
-        _GridSize = GetGridSize(_FAT.TableLength - 2)
-        LblValid.Text = "Valid Clusters: 2 - " & _FAT.TableLength - 1
+        Dim TableLength = _FAT.GetFATTableLength()
+        _GridSize = GetGridSize(TableLength)
+        LblValid.Text = "Valid Clusters: 2 - " & TableLength
 
         DataGridViewFAT.DataSource = _FATTable
 
@@ -224,7 +224,7 @@ Public Class FATEditForm
         _OffsetLookup = New Dictionary(Of UInteger, UInteger)
         Dim OffsetIndex As UInteger = 1
 
-        For Cluster = 2 To FAT.TableLength - 1
+        For Cluster = 2 To FAT.GetFATTableLength
             Dim OffsetList = GetOffsetsFromCluster(FAT, Cluster)
             Dim Value = FAT.TableEntry(Cluster)
             Dim Row = FATTable.NewRow
@@ -326,13 +326,13 @@ Public Class FATEditForm
             Else
                 Return ""
             End If
-        ElseIf Value > _FAT.TableLength - 1 Then
+        ElseIf Value > FAT.GetFATTableLength Then
             Return "Invalid Cluster"
         ElseIf FileAllocation Is Nothing Then
             Return "Lost Cluster"
         ElseIf FileAllocation.Count > 1 Then
             Return "Cross-Linked"
-        ElseIf _FAT.CircularChains.Contains(Cluster) Then
+        ElseIf FAT.CircularChains.Contains(Cluster) Then
             Return "Circular Chain"
         Else
             Return ""
@@ -384,7 +384,7 @@ Public Class FATEditForm
             Return Color.Black
         ElseIf TypeName = "Reserved" Then
             Return Color.Orange
-        ElseIf Value > _FAT.TableLength - 1 Then
+        ElseIf Value > _FAT.GetFATTableLength Then
             Return Color.Red
         Else
             Return Color.Blue
@@ -394,7 +394,7 @@ Public Class FATEditForm
     Private Function GridGetIndex(e As MouseEventArgs) As Integer
         Dim Index As Integer = -1
 
-        Dim Length = _FAT.TableLength - 2
+        Dim Length = _FAT.GetFATTableLength - 2
         Dim LeftPos As Integer = Int(e.X / _GridSize)
         Dim TopPos As Integer = Int(e.Y / _GridSize)
         Dim MaxWidth As Integer = Int(PictureBoxFAT.Width / _GridSize)
@@ -402,7 +402,7 @@ Public Class FATEditForm
 
         If LeftPos < MaxWidth And TopPos < MaxHeight Then
             Index = TopPos * MaxWidth + LeftPos
-            If Index < 0 Or Index >= Length Then
+            If Index < 0 Or Index > Length Then
                 Index = -1
             End If
         End If
@@ -630,7 +630,7 @@ Public Class FATEditForm
 
     Private Sub PictureBoxFAT_Resize(sender As Object, e As EventArgs) Handles PictureBoxFAT.Resize
         If _FAT IsNot Nothing Then
-            _GridSize = GetGridSize(_FAT.TableLength - 2)
+            _GridSize = GetGridSize(_FAT.GetFATTableLength)
             PictureBoxFAT.Invalidate()
         End If
     End Sub

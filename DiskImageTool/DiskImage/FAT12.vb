@@ -9,6 +9,7 @@
         Private ReadOnly _BadClusters As List(Of UShort)
         Private _BPB As BiosParameterBlock
         Private ReadOnly _CircularChains As HashSet(Of UShort)
+        Private ReadOnly _LostClusters As SortedSet(Of UShort)
         Private ReadOnly _FATChains As Dictionary(Of UInteger, FATChain)
         Private ReadOnly _FileAllocation As Dictionary(Of UShort, List(Of UInteger))
         Private ReadOnly _FileBytes As ImageByteArray
@@ -16,6 +17,7 @@
         Private _FATTable() As UShort
         Private _FreeClusters As UInteger
         Private _MediaDescriptor As Byte
+        Private _ReservedClusters As UInteger
 
         Sub New(FileBytes As ImageByteArray, BPB As BiosParameterBlock, Index As UShort)
             _BPB = BPB
@@ -24,8 +26,10 @@
             _FATChains = New Dictionary(Of UInteger, FATChain)
             _FileAllocation = New Dictionary(Of UShort, List(Of UInteger))
             _FreeClusters = 0
+            _ReservedClusters = 0
             _BadClusters = New List(Of UShort)
             _CircularChains = New HashSet(Of UShort)
+            _LostClusters = New SortedSet(Of UShort)
 
             PopulateFAT12()
         End Sub
@@ -60,15 +64,21 @@
             End Get
         End Property
 
+        Public ReadOnly Property LostClusters As SortedSet(Of UShort)
+            Get
+                Return _LostClusters
+            End Get
+        End Property
+
         Public ReadOnly Property MediaDescriptor As Byte
             Get
                 Return _MediaDescriptor
             End Get
         End Property
 
-        Public ReadOnly Property TableLength As UShort
+        Public ReadOnly Property ReservedClusters As UInteger
             Get
-                Return _FATTable.Length
+                Return _ReservedClusters
             End Get
         End Property
 
@@ -80,7 +90,6 @@
             Set(value As UShort)
                 If _FATTable(Cluster) <> value Then
                     _FATTable(Cluster) = value
-
                 End If
             End Set
         End Property
@@ -147,11 +156,19 @@
             Return Sectors
         End Function
 
+        Public Function GetAllocatedClusterCount() As Integer
+            Return _FileAllocation.Count
+        End Function
+
         Public Function GetFreeSpace(ClusterSize As UInteger) As UInteger
             Return _FreeClusters * ClusterSize
         End Function
 
-        Public Function GetUnusedClusters(WithData As Boolean) As List(Of UShort)
+        Public Function GetLostClusterCount() As UShort
+            Return _LostClusters.Count
+        End Function
+
+        Public Function GetFreeClusters(WithData As Boolean) As List(Of UShort)
             Dim ClusterChain As New List(Of UShort)
 
             If _FATTable IsNot Nothing Then
@@ -184,7 +201,7 @@
             Return ClusterChain
         End Function
 
-        Public Function HasUnusedClusters(WithData As Boolean) As Boolean
+        Public Function HasFreeClusters(WithData As Boolean) As Boolean
 
             If _FATTable IsNot Nothing Then
                 Dim ClusterSize As UInteger = _BPB.BytesPerCluster
@@ -235,17 +252,25 @@
             _FATChains.Clear()
             _FileAllocation.Clear()
             _FreeClusters = 0
+            _ReservedClusters = 0
             _BadClusters.Clear()
             _CircularChains.Clear()
+            _LostClusters.Clear()
 
             If _BPB.IsValid Then
                 Dim Length As UShort = GetFATTableLength()
+                Dim Value As UShort
 
-                For Cluster = 2 To Length
-                    If _FATTable(Cluster) = 0 Then
+                For Cluster As UShort = 2 To Length
+                    Value = _FATTable(Cluster)
+                    If Value = 0 Then
                         _FreeClusters += 1
-                    ElseIf _FATTable(Cluster) = FAT_BAD_CLUSTER Then
+                    ElseIf Value = FAT_BAD_CLUSTER Then
                         _BadClusters.Add(Cluster)
+                    ElseIf Value >= 2 And Value <= Length Then
+                        _LostClusters.Add(Cluster)
+                    ElseIf Value = 1 Or (Value >= FAT12.FAT_RESERVED_START And Value <= FAT12.FAT_RESERVED_END) Then
+                        _ReservedClusters += 1
                     End If
                 Next Cluster
             End If
@@ -289,7 +314,7 @@
         End Function
 
         Friend Function InitFATChain(Offset As UInteger, ClusterStart As UShort) As FATChain
-            Dim FatChain As New FATChain(Offset)
+            Dim FATChain As New FATChain(Offset)
             Dim Cluster As UShort = ClusterStart
             Dim AssignedClusters As New HashSet(Of UShort)
             Dim OffsetList As List(Of UInteger)
@@ -301,22 +326,25 @@
                 Do
                     If Cluster >= 2 And Cluster <= ClusterCount Then
                         If AssignedClusters.Contains(Cluster) Then
-                            FatChain.HasCircularChain = True
+                            FATChain.HasCircularChain = True
                             _CircularChains.Add(PrevCluster)
                             Exit Do
                         End If
                         AssignedClusters.Add(Cluster)
-                        FatChain.Clusters.Add(Cluster)
+                        FATChain.Clusters.Add(Cluster)
                         If Not _FileAllocation.ContainsKey(Cluster) Then
                             OffsetList = New List(Of UInteger) From {
                                 Offset
                             }
                             _FileAllocation.Add(Cluster, OffsetList)
+                            If _LostClusters.Contains(Cluster) Then
+                                _LostClusters.Remove(Cluster)
+                            End If
                         Else
                             OffsetList = _FileAllocation.Item(Cluster)
                             For Each OffsetItem In OffsetList
-                                If Not FatChain.CrossLinks.Contains(OffsetItem) Then
-                                    FatChain.CrossLinks.Add(OffsetItem)
+                                If Not FATChain.CrossLinks.Contains(OffsetItem) Then
+                                    FATChain.CrossLinks.Add(OffsetItem)
                                 End If
                                 If _FATChains.ContainsKey(OffsetItem) Then
                                     Dim CrossLinks = _FATChains.Item(OffsetItem).CrossLinks
@@ -330,17 +358,17 @@
                         PrevCluster = Cluster
                         Cluster = _FATTable(Cluster)
                         If Cluster >= FAT_LAST_CLUSTER_START And Cluster <= FAT_LAST_CLUSTER_END Then
-                            FatChain.OpenChain = False
+                            FATChain.OpenChain = False
                         End If
                     Else
                         Cluster = 0
                     End If
                 Loop Until Cluster < 2 Or Cluster > ClusterCount
 
-                _FATChains.Item(Offset) = FatChain
+                _FATChains.Item(Offset) = FATChain
             End If
 
-            Return FatChain
+            Return FATChain
         End Function
 
         Private Function GetFAT(Index As UShort) As Byte()
@@ -349,9 +377,10 @@
             Return _FileBytes.GetSectors(Sectors)
         End Function
 
-        Private Function GetFATTableLength() As UShort
+        Public Function GetFATTableLength() As UShort
             Return Math.Min(_FATTable.Length - 1, _BPB.NumberOfFATEntries + 1)
         End Function
+
         Private Function IsDataBlockEmpty(Data() As Byte) As Boolean
             Dim EmptyByte As Byte = Data(0)
             If EmptyByte <> &HF6 And EmptyByte <> &H0 Then
