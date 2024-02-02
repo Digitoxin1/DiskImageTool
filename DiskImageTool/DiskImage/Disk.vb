@@ -13,7 +13,7 @@
         Private ReadOnly _DirectoryCache As Dictionary(Of UInteger, DirectoryCacheEntry)
         Private ReadOnly _FAT12 As FAT12
 
-        Sub New(Data() As Byte, Optional Modifications As Stack(Of DataChange()) = Nothing)
+        Sub New(Data() As Byte, FatIndex As UShort, Optional Modifications As Stack(Of DataChange()) = Nothing)
             FileBytes = New ImageByteArray(Data)
             _DirectoryCache = New Dictionary(Of UInteger, DirectoryCacheEntry)
             _BootSector = New BootSector(FileBytes)
@@ -22,7 +22,7 @@
             Else
                 _BPB = BuildBPB(GetFATMediaDescriptor)
             End If
-            _FAT12 = New FAT12(FileBytes, _BPB, 0)
+            _FAT12 = New FAT12(FileBytes, _BPB, FatIndex)
             _Directory = New RootDirectory(FileBytes, _BPB, _FAT12, _DirectoryCache, False)
 
             CacheDirectoryEntries()

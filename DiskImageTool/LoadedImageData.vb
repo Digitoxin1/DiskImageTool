@@ -30,6 +30,7 @@ Public Class LoadedImageData
         _BottomIndex = -1
         _Compressed = False
         _CompressedFile = ""
+        _FATIndex = 0
         _SourceFile = SourceFile
         _Modifications = Nothing
         _Modified = False
@@ -45,6 +46,7 @@ Public Class LoadedImageData
     Public Property CachedRootDir As Byte()
     Public Property Compressed As Boolean
     Public Property CompressedFile As String
+    Public Property FATIndex As UShort
     Public Property Modifications As Stack(Of DiskImage.DataChange())
     Public Property Modified As Boolean
     Public ReadOnly Property ScanInfo As ImageDataScanInfo
@@ -52,6 +54,7 @@ Public Class LoadedImageData
     Public Property SourceFile As String
     Public Property SortHistory As List(Of SortEntity)
     Public Shared Property StringOffset As Integer = 0
+
     Public Function DisplayPath() As String
         Dim FullPath = _SourceFile
         If _Compressed Then

@@ -912,7 +912,7 @@ Public Class MainForm
     Private Sub DiskImageProcess(DoItemScan As Boolean)
         Dim CurrentImageData As LoadedImageData = ComboImages.SelectedItem
 
-        InitButtonState()
+        InitButtonState(_Disk, CurrentImageData)
         'PopulateSummary(_Disk, CurrentImageData)
         ClearSort(False)
 
@@ -1070,25 +1070,37 @@ Public Class MainForm
         End If
     End Sub
 
-    Private Sub FATSubMenuRefresh()
+    Private Sub FATSubMenuRefresh(Disk As Disk, CurrentImageData As LoadedImageData, FATTablesMatch As Boolean)
         For Each Item As ToolStripMenuItem In BtnEditFAT.DropDownItems
             RemoveHandler Item.Click, AddressOf BtnEditFAT_Click
         Next
         BtnEditFAT.DropDownItems.Clear()
         BtnEditFAT.Tag = Nothing
+        ComboFAT.Items.Clear()
 
-        If _Disk IsNot Nothing AndAlso _Disk.IsValidImage Then
-            If _Disk.BPB.NumberOfFATs = 1 OrElse _Disk.CompareFATTables Then
+        If Disk IsNot Nothing AndAlso Disk.IsValidImage Then
+            If FATTablesMatch Then
                 BtnEditFAT.Tag = -1
             Else
-                For Counter = 0 To _Disk.BPB.NumberOfFATs - 1
+                For Counter = 0 To Disk.BPB.NumberOfFATs - 1
                     Dim Item As New ToolStripMenuItem With {
                        .Text = "FAT &" & Counter + 1,
                        .Tag = Counter
                     }
                     BtnEditFAT.DropDownItems.Add(Item)
                     AddHandler Item.Click, AddressOf BtnEditFAT_Click
+                    ComboFAT.Items.Add("FAT " & Counter + 1)
                 Next
+                _SuppressEvent = True
+                If CurrentImageData Is Nothing Then
+                    ComboFAT.SelectedIndex = 0
+                Else
+                    If CurrentImageData.FATIndex > Disk.BPB.NumberOfFATs - 1 Or FATTablesMatch Then
+                        CurrentImageData.FATIndex = 0
+                    End If
+                    ComboFAT.SelectedIndex = CurrentImageData.FATIndex
+                End If
+                _SuppressEvent = False
             End If
         End If
     End Sub
@@ -1818,14 +1830,20 @@ Public Class MainForm
         End If
     End Sub
 
-    Private Sub InitButtonState()
-        If _Disk IsNot Nothing Then
-            BtnDisplayBootSector.Enabled = _Disk.CheckSize
-            BtnEditBootSector.Enabled = _Disk.CheckSize
-            BtnDisplayDisk.Enabled = _Disk.CheckSize
-            BtnDisplayFAT.Enabled = _Disk.IsValidImage
-            BtnEditFAT.Enabled = _Disk.IsValidImage
-            BtnDisplayDirectory.Enabled = _Disk.IsValidImage
+    Private Sub InitButtonState(Disk As Disk, CurrentImageData As LoadedImageData)
+        Dim FATTablesMatch As Boolean = True
+
+        If Disk IsNot Nothing Then
+            FATTablesMatch = Disk.BPB.NumberOfFATs = 1 OrElse Disk.CompareFATTables
+            BtnDisplayBootSector.Enabled = Disk.CheckSize
+            BtnEditBootSector.Enabled = Disk.CheckSize
+            BtnDisplayDisk.Enabled = Disk.CheckSize
+            BtnDisplayFAT.Enabled = Disk.IsValidImage
+            BtnEditFAT.Enabled = Disk.IsValidImage
+            BtnDisplayDirectory.Enabled = Disk.IsValidImage
+            ToolStripSeparatorFAT.Visible = Not FATTablesMatch
+            ComboFAT.Visible = Not FATTablesMatch
+            ComboFAT.Width = 55
         Else
             BtnDisplayBootSector.Enabled = False
             BtnDisplayDisk.Enabled = False
@@ -1833,12 +1851,14 @@ Public Class MainForm
             BtnEditBootSector.Enabled = False
             BtnEditFAT.Enabled = False
             BtnDisplayDirectory.Enabled = False
+            ToolStripSeparatorFAT.Visible = False
+            ComboFAT.Visible = False
         End If
         BtnWin9xClean.Enabled = False
         BtnClearReservedBytes.Enabled = False
 
         MenuDisplayDirectorySubMenuClear()
-        FATSubMenuRefresh()
+        FATSubMenuRefresh(Disk, CurrentImageData, FATTablesMatch)
 
         RefreshSaveButtons()
     End Sub
@@ -3149,7 +3169,7 @@ Public Class MainForm
         RefreshFileButtons()
         SetImagesLoaded(False)
         FiltersReset()
-        InitButtonState()
+        InitButtonState(Nothing, Nothing)
     End Sub
 
     Private Sub RevertChanges()
@@ -3632,6 +3652,19 @@ Public Class MainForm
         Win9xCleanBatch()
     End Sub
 
+    Private Sub ComboFAT_SelectedIndexChanged(sender As Object, e As EventArgs) Handles ComboFAT.SelectedIndexChanged
+        If _SuppressEvent Then
+            Exit Sub
+        End If
+
+        Dim CurrentImageData As LoadedImageData = ComboImages.SelectedItem
+
+        If CurrentImageData IsNot Nothing Then
+            CurrentImageData.FATIndex = ComboFAT.SelectedIndex
+            ReloadCurrentImage(False)
+        End If
+    End Sub
+
     Private Sub ComboFilter_SelectedIndexChanged(sender As Object, e As EventArgs) Handles ComboOEMName.SelectedIndexChanged, ComboDiskType.SelectedIndexChanged
         If _SuppressEvent Then
             Exit Sub
@@ -3915,6 +3948,7 @@ Public Class MainForm
         Debounce.Stop()
         Debounce.Start()
     End Sub
+
 #End Region
 
 End Class

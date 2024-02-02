@@ -173,7 +173,7 @@ Namespace DiskImage
                 Return Nothing
             End Try
 
-            Return New DiskImage.Disk(Data, ImageData.Modifications)
+            Return New DiskImage.Disk(Data, ImageData.FATIndex, ImageData.Modifications)
         End Function
 
         Public Function GetBadSectors(BPB As BiosParameterBlock, BadClusters As List(Of UShort)) As HashSet(Of UInteger)
