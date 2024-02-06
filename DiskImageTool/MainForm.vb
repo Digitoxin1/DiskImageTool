@@ -219,9 +219,19 @@ Public Class MainForm
         Dim UnknownDiskType As Boolean = False
 
         If Not Remove And IsValidImage Then
+            Dim DiskType = InferFloppyDiskType(Disk)
+            Dim MediaDescriptor = GetFloppyDiskMediaDescriptor(DiskType)
             HasBadSectors = Disk.FAT.BadClusters.Count > 0
             HasMismatchedFATs = Not Disk.CompareFATTables
-            HasMismatchedMediaDescriptor = Disk.BootSector.BPB.IsValid AndAlso Disk.GetFATMediaDescriptor <> Disk.BootSector.BPB.MediaDescriptor
+            If Disk.BootSector.BPB.IsValid Then
+                If Disk.FAT.HasMediaDescriptor AndAlso Disk.FAT.MediaDescriptor <> Disk.BootSector.BPB.MediaDescriptor Then
+                    HasMismatchedMediaDescriptor = True
+                ElseIf Disk.BootSector.BPB.MediaDescriptor <> MediaDescriptor Then
+                    HasMismatchedMediaDescriptor = True
+                ElseIf Disk.FAT.HasMediaDescriptor AndAlso Disk.FAT.MediaDescriptor <> MediaDescriptor Then
+                    HasMismatchedMediaDescriptor = True
+                End If
+            End If
             HasInvalidImageSize = Disk.CheckImageSize <> 0
             UnknownDiskType = GetFloppyDiskType(Disk.BPB) = FloppyDiskType.FloppyUnknown
         End If
@@ -821,6 +831,28 @@ Public Class MainForm
         If Result Then
             FilePropertiesRefresh(ListViewFiles.SelectedItems, True, False)
         End If
+    End Sub
+
+    Private Sub DetectFloppyDrives()
+        Dim AllDrives() = DriveInfo.GetDrives()
+        Dim DriveAEnabled As Boolean = False
+        Dim DriveBEnabled As Boolean = False
+
+        For Each Drive In AllDrives
+            If Drive.Name = "A:\" Then
+                If Drive.DriveType = DriveType.Removable Then
+                    DriveAEnabled = True
+                End If
+            End If
+            If Drive.Name = "B:\" Then
+                If Drive.DriveType = DriveType.Removable Then
+                    DriveBEnabled = True
+                End If
+            End If
+        Next
+
+        BtnReadFloppyA.Enabled = DriveAEnabled
+        BtnReadFloppyB.Enabled = DriveBEnabled
     End Sub
 
     Private Shared Function DirectoryEntryCanDelete(DirectoryEntry As DiskImage.DirectoryEntry, Clear As Boolean) As Boolean
@@ -2411,7 +2443,7 @@ Public Class MainForm
         If Disk.BPB.IsValid Then
             DiskType = GetFloppyDiskType(Disk.BPB)
         Else
-            DiskType = GetFloppyDiskType(Disk.GetFATMediaDescriptor)
+            DiskType = GetFloppyDiskType(Disk.FAT.MediaDescriptor)
             If DiskType = FloppyDiskType.FloppyUnknown Then
                 DiskType = GetFloppyDiskType(Disk.Data.Length)
             End If
@@ -2470,14 +2502,17 @@ Public Class MainForm
                 End If
                 .AddItem(DiskGroup, "Image Size", Disk.Data.Length.ToString("N0"), ForeColor)
 
+                Dim DiskType As FloppyDiskType
                 If Disk.IsValidImage(False) Then
-                    Dim DiskType = InferFloppyDiskType(Disk)
+                    DiskType = InferFloppyDiskType(Disk)
                     Dim DiskTypeString = GetFloppyDiskTypeName(DiskType)
                     .AddItem(DiskGroup, "Disk Type", DiskTypeString & " Floppy")
 
                     If Disk.BPB.IsValid AndAlso Disk.CheckImageSize > 0 Then
                         .AddItem(DiskGroup, DiskTypeString & " CRC32", Crc32.ComputeChecksum(Disk.Data.GetBytes(0, Disk.BPB.ReportedImageSize())).ToString("X8"))
                     End If
+                Else
+                    DiskType = FloppyDiskType.FloppyUnknown
                 End If
 
                 If Disk.IsValidImage Then
@@ -2532,15 +2567,22 @@ Public Class MainForm
                     .AddItem(BootRecordGroup, BPBDescription(BPBOffsets.SectorCountSmall), Disk.BootSector.BPB.SectorCount)
 
                     Value = Disk.BootSector.BPB.MediaDescriptor.ToString("X2") & " Hex"
-                    If Disk.BootSector.BPB.IsValid AndAlso Disk.GetFATMediaDescriptor <> Disk.BootSector.BPB.MediaDescriptor Then
-                        Value &= " (Mismatched)"
-                        ForeColor = Color.Red
-                    Else
-                        ForeColor = SystemColors.WindowText
+
+                    ForeColor = SystemColors.WindowText
+                    If Disk.BootSector.BPB.IsValid Then
+                        If Not Disk.BPB.HasValidMediaDescriptor Then
+                            Value &= " (Invalid)"
+                            ForeColor = Color.Red
+                        ElseIf DiskType <> FloppyDiskType.FloppyUnknown AndAlso Disk.BootSector.BPB.MediaDescriptor <> GetFloppyDiskMediaDescriptor(DiskType) Then
+                            Value &= " (Mismatched)"
+                            ForeColor = Color.Red
+                        ElseIf Disk.FAT.MediaDescriptor <> Disk.BootSector.BPB.MediaDescriptor Then
+                            Value &= " (Mismatched)"
+                            ForeColor = Color.Red
+                        End If
                     End If
 
                     .AddItem(BootRecordGroup, BPBDescription(BPBOffsets.MediaDescriptor), Value, ForeColor)
-
 
                     .AddItem(BootRecordGroup, BPBDescription(BPBOffsets.SectorsPerFAT), Disk.BootSector.BPB.SectorsPerFAT)
                     .AddItem(BootRecordGroup, BPBDescription(BPBOffsets.SectorsPerTrack), Disk.BootSector.BPB.SectorsPerTrack)
@@ -2583,6 +2625,30 @@ Public Class MainForm
 
                 If Disk.IsValidImage Then
                     Dim FileSystemGroup = .Groups.Add("FileSystem", "File System")
+
+                    If _Disk.FAT.HasMediaDescriptor Then
+                        Value = Disk.FAT.MediaDescriptor.ToString("X2") & " Hex"
+                        ForeColor = SystemColors.WindowText
+                        Dim Visible As Boolean = False
+                        If Not Disk.BootSector.BPB.IsValid Then
+                            Visible = True
+                        ElseIf Disk.FAT.MediaDescriptor <> Disk.BootSector.BPB.MediaDescriptor Then
+                            Visible = True
+                        End If
+                        If Not Disk.FAT.HasValidMediaDescriptor Then
+                            Value &= " (Invalid)"
+                            ForeColor = Color.Red
+                            Visible = True
+                        ElseIf DiskType <> FloppyDiskType.FloppyUnknown AndAlso Disk.FAT.MediaDescriptor <> GetFloppyDiskMediaDescriptor(DiskType) Then
+                            Value &= " (Mismatched)"
+                            ForeColor = Color.Red
+                            Visible = True
+                        End If
+
+                        If Visible Then
+                            .AddItem(FileSystemGroup, "Media Descriptor", Value, ForeColor)
+                        End If
+                    End If
 
                     Dim VolumeLabel = Disk.GetVolumeLabel
 
@@ -2807,6 +2873,56 @@ Public Class MainForm
         ImageLoadForm.Close()
 
         Cursor.Current = Cursors.Default
+    End Sub
+
+    Private Sub FloppyDiskSaveFile(Buffer() As Byte, DiskType As FloppyDiskType)
+        Dim FileExt = ".ima"
+        Dim FileFilter = GetSaveDialogFilters(DiskType, FileExt)
+
+        Dim Dialog = New SaveFileDialog With {
+            .Filter = FileFilter.Filter,
+            .FilterIndex = FileFilter.FilterIndex,
+            .DefaultExt = FileExt
+        }
+
+        AddHandler Dialog.FileOk, Sub(sender As Object, e As CancelEventArgs)
+                                      If _LoadedFileNames.ContainsKey(Dialog.FileName) Then
+                                          Dim Msg As String = Path.GetFileName(Dialog.FileName) &
+                                            $"{vbCrLf}This file is currently open in {Application.ProductName}." &
+                                            $"Try again with a different file name."
+                                          MsgBox(Msg, MsgBoxStyle.Exclamation, "Save As")
+                                          e.Cancel = True
+                                      End If
+                                  End Sub
+
+        If Dialog.ShowDialog = DialogResult.OK Then
+            IO.File.WriteAllBytes(Dialog.FileName, Buffer)
+            ProcessFileDrop(Dialog.FileName)
+        End If
+    End Sub
+
+    Private Sub FloppyDiskRead(Drive As FloppyDriveEnum)
+        Dim FloppyDrive = New FloppyInterface
+        Dim Result = FloppyDrive.Open(Drive)
+        If Result Then
+            Dim Buffer(Disk.BYTES_PER_SECTOR - 1) As Byte
+            Dim BytesRead = FloppyDrive.ReadSector(0, Buffer)
+            If BytesRead = Buffer.Length Then
+                Dim BootSector = New BootSector(New ImageByteArray(Buffer))
+                Dim FloppyAccessForm As New FloppyAccessForm(FloppyDrive, BootSector.BPB)
+                FloppyAccessForm.ShowDialog(Me)
+                If FloppyAccessForm.Complete Then
+                    Dim DiskType = GetFloppyDiskType(BootSector.BPB)
+                    FloppyDiskSaveFile(FloppyAccessForm.DiskBuffer, DiskType)
+                End If
+                FloppyAccessForm.Close()
+            Else
+                MsgBox("Unable to read the Boot Sector of the Floppy Disk.", MsgBoxStyle.Exclamation)
+            End If
+            FloppyDrive.Close()
+        Else
+            MsgBox("Floppy Drive " & FloppyInterface.GetDriveLetter(Drive) & " is not ready.", MsgBoxStyle.Exclamation)
+        End If
     End Sub
 
     Private Sub RefreshCheckAll()
@@ -3926,6 +4042,7 @@ Public Class MainForm
         ContextMenuCopy2.Items.Add("&Copy Value")
         ListViewHashes.ContextMenuStrip = ContextMenuCopy2
 
+        DetectFloppyDrives()
         ResetAll()
 
         Dim Args = Environment.GetCommandLineArgs.Skip(1).ToArray
@@ -3947,6 +4064,14 @@ Public Class MainForm
 
         Debounce.Stop()
         Debounce.Start()
+    End Sub
+
+    Private Sub BtnReadFloppyA_Click(sender As Object, e As EventArgs) Handles BtnReadFloppyA.Click
+        FloppyDiskRead(FloppyDriveEnum.FloppyDriveA)
+    End Sub
+
+    Private Sub BtnReadFloppyB_Click(sender As Object, e As EventArgs) Handles BtnReadFloppyB.Click
+        FloppyDiskRead(FloppyDriveEnum.FloppyDriveB)
     End Sub
 
 #End Region

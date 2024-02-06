@@ -29,8 +29,8 @@
     <TargetCulture>en-US</TargetCulture>
     <ProductName>DiskImageTool</ProductName>
     <PublisherName>Digitoxin</PublisherName>
-    <ApplicationRevision>2</ApplicationRevision>
-    <ApplicationVersion>1.46.0.%2a</ApplicationVersion>
+    <ApplicationRevision>0</ApplicationRevision>
+    <ApplicationVersion>1.47.0.%2a</ApplicationVersion>
     <UseApplicationTrust>false</UseApplicationTrust>
     <PublishWizardCompleted>true</PublishWizardCompleted>
     <BootstrapperEnabled>true</BootstrapperEnabled>
@@ -136,6 +136,7 @@
     <Compile Include="Extensions\ByteArrayExtensions.vb" />
     <Compile Include="Extensions\DataGridViewExtensions.vb" />
     <Compile Include="Extensions\StringExtensions.vb" />
+    <Compile Include="FloppyInterface.vb" />
     <Compile Include="Forms\AboutBox.Designer.vb">
       <DependentUpon>AboutBox.vb</DependentUpon>
     </Compile>
@@ -173,6 +174,12 @@
     </Compile>
     <Compile Include="FilterMethods.vb" />
     <Compile Include="DiskImage\BootSector.vb" />
+    <Compile Include="Forms\FloppyAccessForm.Designer.vb">
+      <DependentUpon>FloppyAccessForm.vb</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\FloppyAccessForm.vb">
+      <SubType>Form</SubType>
+    </Compile>
     <Compile Include="Forms\HexSearchForm.Designer.vb">
       <DependentUpon>HexSearchForm.vb</DependentUpon>
     </Compile>
@@ -273,24 +280,35 @@
   <ItemGroup>
     <EmbeddedResource Include="Forms\AboutBox.resx">
       <DependentUpon>AboutBox.vb</DependentUpon>
+      <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\BootSectorForm.resx">
       <DependentUpon>BootSectorForm.vb</DependentUpon>
+      <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\FATEditForm.resx">
       <DependentUpon>FATEditForm.vb</DependentUpon>
+      <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\FilePropertiesForm.resx">
       <DependentUpon>FilePropertiesForm.vb</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\FloppyAccessForm.resx">
+      <DependentUpon>FloppyAccessForm.vb</DependentUpon>
+      <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\HexSearchForm.resx">
       <DependentUpon>HexSearchForm.vb</DependentUpon>
+      <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\ImageLoadForm.resx">
       <DependentUpon>ImageLoadForm.vb</DependentUpon>
+      <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\ItemScanForm.resx">
       <DependentUpon>ItemScanForm.vb</DependentUpon>
+      <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\UndeleteForm.resx">
       <DependentUpon>UndeleteForm.vb</DependentUpon>
@@ -348,6 +366,7 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Assets\floppyDisk.ico" />
+    <EmbeddedResource Include="Assets\titles.xml" />
     <EmbeddedResource Include="Assets\License.txt" />
     <EmbeddedResource Include="Assets\bootstrap.xml" />
   </ItemGroup>

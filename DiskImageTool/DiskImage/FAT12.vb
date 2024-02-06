@@ -1,5 +1,6 @@
 ﻿Namespace DiskImage
     Public Class FAT12
+        Public Shared ReadOnly ValidMediaDescriptor() As Byte = {&HF0, &HF8, &HF9, &HFA, &HFB, &HFC, &HFD, &HFE, &HFF}
         Public Const FAT_BAD_CLUSTER As UShort = &HFF7
         Public Const FAT_FREE_CLUSTER As UShort = &H0
         Public Const FAT_LAST_CLUSTER_END As UShort = &HFFF
@@ -16,6 +17,7 @@
         Private ReadOnly _Index As UShort
         Private _FATTable() As UShort
         Private _FreeClusters As UInteger
+        Private _HasMediaDescriptor As Boolean
         Private _MediaDescriptor As Byte
         Private _ReservedClusters As UInteger
 
@@ -228,6 +230,15 @@
 
             Return False
         End Function
+
+        Public Function HasMediaDescriptor() As Boolean
+            Return _HasMediaDescriptor
+        End Function
+
+        Public Function HasValidMediaDescriptor() As Boolean
+            Return ValidMediaDescriptor.Contains(MediaDescriptor)
+        End Function
+
         Public Sub PopulateFAT12()
             Erase _FATTable
 
@@ -235,9 +246,8 @@
                 Dim FATBytes = GetFAT(_Index)
                 Dim Size = _BPB.NumberOfFATEntries + 2
                 _FATTable = DecodeFAT12(FATBytes, Size)
-                If FATBytes(1) = &HFF And FATBytes(2) = &HFF Then
-                    _MediaDescriptor = FATBytes(0)
-                End If
+                _HasMediaDescriptor = FATBytes(1) = &HFF And FATBytes(2) = &HFF
+                _MediaDescriptor = FATBytes(0)
             End If
 
             ProcessFAT12()

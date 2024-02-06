@@ -895,4 +895,11 @@
     <oemname namehex="03051C5C89140700" suggestion="false" company="Activision" description="Powerhits: BattleTech Disk 1" verified="true" />
     <oemname namehex="03051C5C89140800" suggestion="false" company="Activision" description="Powerhits: Sci-Fi Disk 2" verified="true" />   
   </bootstrap>
+  <bootstrap crc32="DCF1CE25" jmp="EB3490" language="French">
+    <oemname namehex="03054855F6180100" suggestion="false" company="LucasArts" description="Monkey Island 2: LeChuck's Revenge Disk 1" verified="true" />
+    <oemname namehex="03054855F6180200" suggestion="false" company="LucasArts" description="Monkey Island 2: LeChuck's Revenge Disk 2" verified="true" />
+    <oemname namehex="03054855F6180300" suggestion="false" company="LucasArts" description="Monkey Island 2: LeChuck's Revenge Disk 3" verified="true" />
+    <oemname namehex="03054855F6180400" suggestion="false" company="LucasArts" description="Monkey Island 2: LeChuck's Revenge Disk 4" verified="true" />
+    <oemname namehex="03054855F6180500" suggestion="false" company="LucasArts" description="Monkey Island 2: LeChuck's Revenge Disk 5" verified="true" />
+  </bootstrap>
 </root>

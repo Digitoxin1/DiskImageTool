@@ -18,7 +18,6 @@
 
         Public Function BPBCompare(BPB As BiosParameterBlock, Params As FloppyDiskParams) As Boolean
             Return BPB.BytesPerSector = Params.BytesPerSector _
-                AndAlso BPB.MediaDescriptor = Params.MediaDescriptor _
                 AndAlso BPB.NumberOfFATs = Params.NumberOfFATs _
                 AndAlso BPB.NumberOfHeads = Params.NumberOfHeads _
                 AndAlso BPB.ReservedSectorCount = Params.ReservedSectorCount _
@@ -27,6 +26,7 @@
                 AndAlso BPB.SectorsPerCluster = Params.SectorsPerCluster _
                 AndAlso BPB.SectorsPerFAT = Params.SectorsPerFAT _
                 AndAlso BPB.SectorsPerTrack = Params.SectorsPerTrack
+            'AndAlso BPB.MediaDescriptor = Params.MediaDescriptor _
         End Function
 
         Public Function BuildBPB(Params As FloppyDiskParams) As BiosParameterBlock
@@ -60,6 +60,37 @@
 
         Public Function BuildBPB(MediaDescriptor As Byte) As BiosParameterBlock
             Return BuildBPB(GetFloppyDiskParams(GetFloppyDiskType(MediaDescriptor)))
+        End Function
+
+        Public Function GetFloppyDiskMediaDescriptor(Type As FloppyDiskType) As Byte
+            Select Case Type
+                Case FloppyDiskType.Floppy160
+                    Return &HFE
+                Case FloppyDiskType.Floppy180
+                    Return &HFC
+                Case FloppyDiskType.Floppy320
+                    Return &HFF
+                Case FloppyDiskType.Floppy360
+                    Return &HFD
+                Case FloppyDiskType.Floppy720
+                    Return &HF9
+                Case FloppyDiskType.Floppy1200
+                    Return &HF9
+                Case FloppyDiskType.Floppy1440
+                    Return &HF0
+                Case FloppyDiskType.FloppyDMF1024
+                    Return &HF0
+                Case FloppyDiskType.FloppyDMF2048
+                    Return &HF0
+                Case FloppyDiskType.Floppy2880
+                    Return &HF0
+                Case FloppyDiskType.FloppyProCopy
+                    Return &HF0
+                Case FloppyDiskType.FloppyXDF
+                    Return &HF0
+                Case Else
+                    Return &HF0
+            End Select
         End Function
 
         Public Function GetFloppyDiskParams(Type As FloppyDiskType) As FloppyDiskParams

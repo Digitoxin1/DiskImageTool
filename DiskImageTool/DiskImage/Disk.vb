@@ -132,7 +132,7 @@
             Return New DirectoryEntry(FileBytes, _BPB, _FAT12, _DirectoryCache, Offset)
         End Function
 
-        Public Function GetFATMediaDescriptor() As Byte
+        Private Function GetFATMediaDescriptor() As Byte
             Dim Result As Byte = 0
 
             If FileBytes.Length >= 515 Then
