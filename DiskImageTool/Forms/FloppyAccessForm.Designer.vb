@@ -52,30 +52,30 @@ Partial Class FloppyAccessForm
         Me.TableSide0.CellBorderStyle = System.Windows.Forms.TableLayoutPanelCellBorderStyle.[Single]
         Me.TableSide0.ColumnCount = 10
         Me.TableSide0Outer.SetColumnSpan(Me.TableSide0, 11)
-        Me.TableSide0.ColumnStyles.Add(New System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 16.0!))
-        Me.TableSide0.ColumnStyles.Add(New System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 16.0!))
-        Me.TableSide0.ColumnStyles.Add(New System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 16.0!))
-        Me.TableSide0.ColumnStyles.Add(New System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 16.0!))
-        Me.TableSide0.ColumnStyles.Add(New System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 16.0!))
-        Me.TableSide0.ColumnStyles.Add(New System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 16.0!))
-        Me.TableSide0.ColumnStyles.Add(New System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 16.0!))
-        Me.TableSide0.ColumnStyles.Add(New System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 16.0!))
-        Me.TableSide0.ColumnStyles.Add(New System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 16.0!))
+        Me.TableSide0.ColumnStyles.Add(New System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 19.0!))
+        Me.TableSide0.ColumnStyles.Add(New System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 19.0!))
+        Me.TableSide0.ColumnStyles.Add(New System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 19.0!))
+        Me.TableSide0.ColumnStyles.Add(New System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 19.0!))
+        Me.TableSide0.ColumnStyles.Add(New System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 19.0!))
+        Me.TableSide0.ColumnStyles.Add(New System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 19.0!))
+        Me.TableSide0.ColumnStyles.Add(New System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 19.0!))
+        Me.TableSide0.ColumnStyles.Add(New System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 19.0!))
+        Me.TableSide0.ColumnStyles.Add(New System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 19.0!))
         Me.TableSide0.ColumnStyles.Add(New System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 19.0!))
         Me.TableSide0.Location = New System.Drawing.Point(17, 21)
         Me.TableSide0.Margin = New System.Windows.Forms.Padding(0)
         Me.TableSide0.Name = "TableSide0"
         Me.TableSide0.RowCount = 8
         Me.TableSide0Outer.SetRowSpan(Me.TableSide0, 9)
-        Me.TableSide0.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20.0!))
-        Me.TableSide0.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20.0!))
-        Me.TableSide0.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20.0!))
-        Me.TableSide0.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20.0!))
-        Me.TableSide0.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20.0!))
-        Me.TableSide0.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20.0!))
-        Me.TableSide0.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20.0!))
-        Me.TableSide0.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20.0!))
-        Me.TableSide0.Size = New System.Drawing.Size(174, 169)
+        Me.TableSide0.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 21.0!))
+        Me.TableSide0.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 21.0!))
+        Me.TableSide0.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 21.0!))
+        Me.TableSide0.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 21.0!))
+        Me.TableSide0.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 21.0!))
+        Me.TableSide0.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 21.0!))
+        Me.TableSide0.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 21.0!))
+        Me.TableSide0.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 21.0!))
+        Me.TableSide0.Size = New System.Drawing.Size(201, 177)
         Me.TableSide0.TabIndex = 1
         '
         'TableSide0Outer
@@ -84,16 +84,16 @@ Partial Class FloppyAccessForm
         Me.TableSide0Outer.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink
         Me.TableSide0Outer.ColumnCount = 12
         Me.TableSide0Outer.ColumnStyles.Add(New System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 17.0!))
-        Me.TableSide0Outer.ColumnStyles.Add(New System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 17.0!))
-        Me.TableSide0Outer.ColumnStyles.Add(New System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 17.0!))
-        Me.TableSide0Outer.ColumnStyles.Add(New System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 17.0!))
-        Me.TableSide0Outer.ColumnStyles.Add(New System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 17.0!))
-        Me.TableSide0Outer.ColumnStyles.Add(New System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 17.0!))
-        Me.TableSide0Outer.ColumnStyles.Add(New System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 17.0!))
-        Me.TableSide0Outer.ColumnStyles.Add(New System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 17.0!))
-        Me.TableSide0Outer.ColumnStyles.Add(New System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 17.0!))
-        Me.TableSide0Outer.ColumnStyles.Add(New System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 17.0!))
-        Me.TableSide0Outer.ColumnStyles.Add(New System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 17.0!))
+        Me.TableSide0Outer.ColumnStyles.Add(New System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 20.0!))
+        Me.TableSide0Outer.ColumnStyles.Add(New System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 20.0!))
+        Me.TableSide0Outer.ColumnStyles.Add(New System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 20.0!))
+        Me.TableSide0Outer.ColumnStyles.Add(New System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 20.0!))
+        Me.TableSide0Outer.ColumnStyles.Add(New System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 20.0!))
+        Me.TableSide0Outer.ColumnStyles.Add(New System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 20.0!))
+        Me.TableSide0Outer.ColumnStyles.Add(New System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 20.0!))
+        Me.TableSide0Outer.ColumnStyles.Add(New System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 20.0!))
+        Me.TableSide0Outer.ColumnStyles.Add(New System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 20.0!))
+        Me.TableSide0Outer.ColumnStyles.Add(New System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 20.0!))
         Me.TableSide0Outer.ColumnStyles.Add(New System.Windows.Forms.ColumnStyle())
         Me.TableSide0Outer.Controls.Add(Me.TableSide0, 1, 1)
         Me.TableSide0Outer.Controls.Add(Me.Label2, 1, 10)
@@ -101,17 +101,17 @@ Partial Class FloppyAccessForm
         Me.TableSide0Outer.Name = "TableSide0Outer"
         Me.TableSide0Outer.RowCount = 11
         Me.TableSide0Outer.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 21.0!))
-        Me.TableSide0Outer.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 21.0!))
-        Me.TableSide0Outer.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 21.0!))
-        Me.TableSide0Outer.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 21.0!))
-        Me.TableSide0Outer.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 21.0!))
-        Me.TableSide0Outer.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 21.0!))
-        Me.TableSide0Outer.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 21.0!))
-        Me.TableSide0Outer.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 21.0!))
-        Me.TableSide0Outer.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 21.0!))
+        Me.TableSide0Outer.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 22.0!))
+        Me.TableSide0Outer.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 22.0!))
+        Me.TableSide0Outer.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 22.0!))
+        Me.TableSide0Outer.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 22.0!))
+        Me.TableSide0Outer.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 22.0!))
+        Me.TableSide0Outer.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 22.0!))
+        Me.TableSide0Outer.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 22.0!))
+        Me.TableSide0Outer.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 22.0!))
         Me.TableSide0Outer.RowStyles.Add(New System.Windows.Forms.RowStyle())
         Me.TableSide0Outer.RowStyles.Add(New System.Windows.Forms.RowStyle())
-        Me.TableSide0Outer.Size = New System.Drawing.Size(191, 213)
+        Me.TableSide0Outer.Size = New System.Drawing.Size(218, 221)
         Me.TableSide0Outer.TabIndex = 3
         '
         'Label2
@@ -121,10 +121,10 @@ Partial Class FloppyAccessForm
             Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
         Me.Label2.AutoSize = True
         Me.TableSide0Outer.SetColumnSpan(Me.Label2, 11)
-        Me.Label2.Location = New System.Drawing.Point(20, 200)
+        Me.Label2.Location = New System.Drawing.Point(20, 208)
         Me.Label2.Margin = New System.Windows.Forms.Padding(3, 10, 3, 0)
         Me.Label2.Name = "Label2"
-        Me.Label2.Size = New System.Drawing.Size(168, 13)
+        Me.Label2.Size = New System.Drawing.Size(195, 13)
         Me.Label2.TabIndex = 5
         Me.Label2.Text = "Side 0"
         Me.Label2.TextAlign = System.Drawing.ContentAlignment.MiddleCenter
@@ -135,34 +135,34 @@ Partial Class FloppyAccessForm
         Me.TableSide1Outer.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink
         Me.TableSide1Outer.ColumnCount = 12
         Me.TableSide1Outer.ColumnStyles.Add(New System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 17.0!))
-        Me.TableSide1Outer.ColumnStyles.Add(New System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 17.0!))
-        Me.TableSide1Outer.ColumnStyles.Add(New System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 17.0!))
-        Me.TableSide1Outer.ColumnStyles.Add(New System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 17.0!))
-        Me.TableSide1Outer.ColumnStyles.Add(New System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 17.0!))
-        Me.TableSide1Outer.ColumnStyles.Add(New System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 17.0!))
-        Me.TableSide1Outer.ColumnStyles.Add(New System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 17.0!))
-        Me.TableSide1Outer.ColumnStyles.Add(New System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 17.0!))
-        Me.TableSide1Outer.ColumnStyles.Add(New System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 17.0!))
-        Me.TableSide1Outer.ColumnStyles.Add(New System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 17.0!))
-        Me.TableSide1Outer.ColumnStyles.Add(New System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 17.0!))
+        Me.TableSide1Outer.ColumnStyles.Add(New System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 20.0!))
+        Me.TableSide1Outer.ColumnStyles.Add(New System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 20.0!))
+        Me.TableSide1Outer.ColumnStyles.Add(New System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 20.0!))
+        Me.TableSide1Outer.ColumnStyles.Add(New System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 20.0!))
+        Me.TableSide1Outer.ColumnStyles.Add(New System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 20.0!))
+        Me.TableSide1Outer.ColumnStyles.Add(New System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 20.0!))
+        Me.TableSide1Outer.ColumnStyles.Add(New System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 20.0!))
+        Me.TableSide1Outer.ColumnStyles.Add(New System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 20.0!))
+        Me.TableSide1Outer.ColumnStyles.Add(New System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 20.0!))
+        Me.TableSide1Outer.ColumnStyles.Add(New System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 20.0!))
         Me.TableSide1Outer.ColumnStyles.Add(New System.Windows.Forms.ColumnStyle())
         Me.TableSide1Outer.Controls.Add(Me.Label3, 1, 10)
         Me.TableSide1Outer.Controls.Add(Me.TableSide1, 1, 1)
-        Me.TableSide1Outer.Location = New System.Drawing.Point(236, 24)
+        Me.TableSide1Outer.Location = New System.Drawing.Point(266, 24)
         Me.TableSide1Outer.Name = "TableSide1Outer"
         Me.TableSide1Outer.RowCount = 11
         Me.TableSide1Outer.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 21.0!))
-        Me.TableSide1Outer.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 21.0!))
-        Me.TableSide1Outer.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 21.0!))
-        Me.TableSide1Outer.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 21.0!))
-        Me.TableSide1Outer.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 21.0!))
-        Me.TableSide1Outer.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 21.0!))
-        Me.TableSide1Outer.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 21.0!))
-        Me.TableSide1Outer.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 21.0!))
-        Me.TableSide1Outer.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 21.0!))
+        Me.TableSide1Outer.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 22.0!))
+        Me.TableSide1Outer.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 22.0!))
+        Me.TableSide1Outer.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 22.0!))
+        Me.TableSide1Outer.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 22.0!))
+        Me.TableSide1Outer.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 22.0!))
+        Me.TableSide1Outer.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 22.0!))
+        Me.TableSide1Outer.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 22.0!))
+        Me.TableSide1Outer.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 22.0!))
         Me.TableSide1Outer.RowStyles.Add(New System.Windows.Forms.RowStyle())
         Me.TableSide1Outer.RowStyles.Add(New System.Windows.Forms.RowStyle())
-        Me.TableSide1Outer.Size = New System.Drawing.Size(191, 213)
+        Me.TableSide1Outer.Size = New System.Drawing.Size(218, 221)
         Me.TableSide1Outer.TabIndex = 4
         '
         'Label3
@@ -172,10 +172,10 @@ Partial Class FloppyAccessForm
             Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
         Me.Label3.AutoSize = True
         Me.TableSide1Outer.SetColumnSpan(Me.Label3, 11)
-        Me.Label3.Location = New System.Drawing.Point(20, 200)
+        Me.Label3.Location = New System.Drawing.Point(20, 208)
         Me.Label3.Margin = New System.Windows.Forms.Padding(3, 10, 3, 0)
         Me.Label3.Name = "Label3"
-        Me.Label3.Size = New System.Drawing.Size(168, 13)
+        Me.Label3.Size = New System.Drawing.Size(195, 13)
         Me.Label3.TabIndex = 6
         Me.Label3.Text = "Side 1"
         Me.Label3.TextAlign = System.Drawing.ContentAlignment.MiddleCenter
@@ -187,38 +187,38 @@ Partial Class FloppyAccessForm
         Me.TableSide1.CellBorderStyle = System.Windows.Forms.TableLayoutPanelCellBorderStyle.[Single]
         Me.TableSide1.ColumnCount = 10
         Me.TableSide1Outer.SetColumnSpan(Me.TableSide1, 11)
-        Me.TableSide1.ColumnStyles.Add(New System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 16.0!))
-        Me.TableSide1.ColumnStyles.Add(New System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 16.0!))
-        Me.TableSide1.ColumnStyles.Add(New System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 16.0!))
-        Me.TableSide1.ColumnStyles.Add(New System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 16.0!))
-        Me.TableSide1.ColumnStyles.Add(New System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 16.0!))
-        Me.TableSide1.ColumnStyles.Add(New System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 16.0!))
-        Me.TableSide1.ColumnStyles.Add(New System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 16.0!))
-        Me.TableSide1.ColumnStyles.Add(New System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 16.0!))
-        Me.TableSide1.ColumnStyles.Add(New System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 16.0!))
+        Me.TableSide1.ColumnStyles.Add(New System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 19.0!))
+        Me.TableSide1.ColumnStyles.Add(New System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 19.0!))
+        Me.TableSide1.ColumnStyles.Add(New System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 19.0!))
+        Me.TableSide1.ColumnStyles.Add(New System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 19.0!))
+        Me.TableSide1.ColumnStyles.Add(New System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 19.0!))
+        Me.TableSide1.ColumnStyles.Add(New System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 19.0!))
+        Me.TableSide1.ColumnStyles.Add(New System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 19.0!))
+        Me.TableSide1.ColumnStyles.Add(New System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 19.0!))
+        Me.TableSide1.ColumnStyles.Add(New System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 19.0!))
         Me.TableSide1.ColumnStyles.Add(New System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 19.0!))
         Me.TableSide1.Location = New System.Drawing.Point(17, 21)
         Me.TableSide1.Margin = New System.Windows.Forms.Padding(0)
         Me.TableSide1.Name = "TableSide1"
         Me.TableSide1.RowCount = 8
         Me.TableSide1Outer.SetRowSpan(Me.TableSide1, 9)
-        Me.TableSide1.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20.0!))
-        Me.TableSide1.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20.0!))
-        Me.TableSide1.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20.0!))
-        Me.TableSide1.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20.0!))
-        Me.TableSide1.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20.0!))
-        Me.TableSide1.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20.0!))
-        Me.TableSide1.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20.0!))
-        Me.TableSide1.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20.0!))
-        Me.TableSide1.Size = New System.Drawing.Size(174, 169)
+        Me.TableSide1.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 21.0!))
+        Me.TableSide1.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 21.0!))
+        Me.TableSide1.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 21.0!))
+        Me.TableSide1.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 21.0!))
+        Me.TableSide1.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 21.0!))
+        Me.TableSide1.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 21.0!))
+        Me.TableSide1.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 21.0!))
+        Me.TableSide1.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 21.0!))
+        Me.TableSide1.Size = New System.Drawing.Size(201, 177)
         Me.TableSide1.TabIndex = 1
         '
         'StatusStrip1
         '
         Me.StatusStrip1.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.StatusType, Me.StatusTrack, Me.StatusSide, Me.StatusBadSectors})
-        Me.StatusStrip1.Location = New System.Drawing.Point(0, 275)
+        Me.StatusStrip1.Location = New System.Drawing.Point(0, 283)
         Me.StatusStrip1.Name = "StatusStrip1"
-        Me.StatusStrip1.Size = New System.Drawing.Size(454, 22)
+        Me.StatusStrip1.Size = New System.Drawing.Size(514, 22)
         Me.StatusStrip1.SizingGrip = False
         Me.StatusStrip1.TabIndex = 5
         Me.StatusStrip1.Text = "StatusStrip1"
@@ -254,9 +254,9 @@ Partial Class FloppyAccessForm
         '
         'btnAbort
         '
-        Me.btnAbort.Anchor = System.Windows.Forms.AnchorStyles.Top
+        Me.btnAbort.Anchor = System.Windows.Forms.AnchorStyles.Bottom
         Me.btnAbort.DialogResult = System.Windows.Forms.DialogResult.Cancel
-        Me.btnAbort.Location = New System.Drawing.Point(195, 243)
+        Me.btnAbort.Location = New System.Drawing.Point(225, 251)
         Me.btnAbort.Name = "btnAbort"
         Me.btnAbort.Size = New System.Drawing.Size(75, 23)
         Me.btnAbort.TabIndex = 6
@@ -268,7 +268,7 @@ Partial Class FloppyAccessForm
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
         Me.CancelButton = Me.btnAbort
-        Me.ClientSize = New System.Drawing.Size(454, 297)
+        Me.ClientSize = New System.Drawing.Size(514, 305)
         Me.Controls.Add(Me.btnAbort)
         Me.Controls.Add(Me.StatusStrip1)
         Me.Controls.Add(Me.TableSide1Outer)
