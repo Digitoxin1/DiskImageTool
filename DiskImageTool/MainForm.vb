@@ -2901,23 +2901,49 @@ Public Class MainForm
         End If
     End Sub
 
+    Private Function FloppyDiskGetType(FloppyDrive As FloppyInterface) As BiosParameterBlock
+        Dim DetectedType As FloppyDiskType
+        Dim ReturnedType As FloppyDiskType
+        Dim BootSector As BootSector = Nothing
+
+        Dim Buffer(Disk.BYTES_PER_SECTOR - 1) As Byte
+        Dim BytesRead = FloppyDrive.ReadSector(0, Buffer)
+        If BytesRead = Buffer.Length Then
+            BootSector = New BootSector(New ImageByteArray(Buffer))
+            DetectedType = GetFloppyDiskType(BootSector.BPB)
+        Else
+            DetectedType = -1
+        End If
+
+        Dim FloppySelectForm As New FloppySelectForm(DetectedType)
+        FloppySelectForm.ShowDialog(Me)
+        ReturnedType = FloppySelectForm.DiskType
+        FloppySelectForm.Close()
+
+        If FloppySelectForm.DialogResult = DialogResult.Cancel Then
+            Return Nothing
+        ElseIf ReturnedType = -1 Then
+            Return Nothing
+        ElseIf BootSector IsNot Nothing AndAlso DetectedType = ReturnedType Then
+            Return BootSector.BPB
+        Else
+            Return BuildBPB(ReturnedType)
+        End If
+    End Function
+
     Private Sub FloppyDiskRead(Drive As FloppyDriveEnum)
         Dim FloppyDrive = New FloppyInterface
         Dim Result = FloppyDrive.Open(Drive)
         If Result Then
-            Dim Buffer(Disk.BYTES_PER_SECTOR - 1) As Byte
-            Dim BytesRead = FloppyDrive.ReadSector(0, Buffer)
-            If BytesRead = Buffer.Length Then
-                Dim BootSector = New BootSector(New ImageByteArray(Buffer))
-                Dim FloppyAccessForm As New FloppyAccessForm(FloppyDrive, BootSector.BPB)
+            Dim BPB = FloppyDiskGetType(FloppyDrive)
+            If BPB IsNot Nothing Then
+                Dim FloppyAccessForm As New FloppyAccessForm(FloppyDrive, BPB)
                 FloppyAccessForm.ShowDialog(Me)
                 If FloppyAccessForm.Complete Then
-                    Dim DiskType = GetFloppyDiskType(BootSector.BPB)
+                    Dim DiskType = GetFloppyDiskType(BPB)
                     FloppyDiskSaveFile(FloppyAccessForm.DiskBuffer, DiskType)
                 End If
                 FloppyAccessForm.Close()
-            Else
-                MsgBox("Unable to read the Boot Sector of the Floppy Disk.", MsgBoxStyle.Exclamation)
             End If
             FloppyDrive.Close()
         Else

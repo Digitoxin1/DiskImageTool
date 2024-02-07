@@ -1,13 +1,13 @@
-﻿Imports System.ComponentModel
-Imports DiskImageTool.DiskImage
+﻿Imports DiskImageTool.DiskImage
+Imports System.ComponentModel
 
 Public Class FloppyAccessForm
+    Private ReadOnly _BPB As BiosParameterBlock
+    Private ReadOnly _FloppyDrive As FloppyInterface
     Private _Activated As Boolean = False
     Private _Complete As Boolean = False
-    Private _EndProcess As Boolean = False
-    Private ReadOnly _FloppyDrive As FloppyInterface
-    Private ReadOnly _BPB As BiosParameterBlock
     Private _DiskBuffer() As Byte = Nothing
+    Private _EndProcess As Boolean = False
     Private _SectorData As SectorData = Nothing
     Private _SectorError As Boolean = False
     Private _TotalBadSectors As UInteger = 0
@@ -22,12 +22,6 @@ Public Class FloppyAccessForm
         Success
         Failure
     End Enum
-
-    Private Structure TrackInfo
-        Dim Sector As UInteger
-        Dim Status As TrackStatus
-        Dim BadSectors As UShort
-    End Structure
 
     Public Sub New(FloppyDrive As FloppyInterface, BPB As BiosParameterBlock)
         ' This call is required by the designer.
@@ -50,15 +44,15 @@ Public Class FloppyAccessForm
         InitTables()
     End Sub
 
-    Public ReadOnly Property DiskBuffer As Byte()
-        Get
-            Return _DiskBuffer
-        End Get
-    End Property
-
     Public ReadOnly Property Complete As Boolean
         Get
             Return _Complete
+        End Get
+    End Property
+
+    Public ReadOnly Property DiskBuffer As Byte()
+        Get
+            Return _DiskBuffer
         End Get
     End Property
 
@@ -68,6 +62,115 @@ Public Class FloppyAccessForm
         End Get
     End Property
 
+    Private Function AddLabel(Text As String, BackColor As Color) As Label
+        Dim objLabel As New Label With {
+            .BorderStyle = BorderStyle.None,
+            .Margin = New Padding(0),
+            .TextAlign = ContentAlignment.MiddleCenter,
+            .UseMnemonic = False,
+            .AutoSize = False,
+            .Anchor = AnchorStyles.Top Or AnchorStyles.Left Or AnchorStyles.Right Or AnchorStyles.Bottom,
+            .BackColor = BackColor,
+            .Text = Text
+        }
+
+        Return objLabel
+    End Function
+
+    Private Function ConfirmAbort() As Boolean
+        Dim Msg = "Are you sure you wish to abort?"
+        Dim MsgBoxResult = MsgBox(Msg, MsgBoxStyle.YesNo Or MsgBoxStyle.DefaultButton2)
+
+        If MsgBoxResult = MsgBoxResult.No Then
+            BackgroundWorker1.RunWorkerAsync()
+            Return False
+        Else
+            Return True
+        End If
+    End Function
+
+    Private Sub FloppyDiskRead(bw As BackgroundWorker)
+        _Complete = False
+        _EndProcess = False
+        _SectorError = False
+        Dim TrackInfo As TrackInfo
+        Dim SectorData As SectorData
+        Dim SectorStart As UInteger
+
+        If _SectorData Is Nothing Then
+            SectorStart = 0
+            SectorData = Nothing
+        Else
+            SectorStart = _SectorData.SectorStart
+            SectorData = _SectorData
+        End If
+
+        For Sector As UInteger = SectorStart To _BPB.SectorCount - 1 Step _BPB.SectorsPerTrack
+            If SectorData Is Nothing Then
+                SectorData = New SectorData(Sector, _BPB.SectorsPerTrack)
+            End If
+            If bw.CancellationPending Then
+                _SectorData = SectorData
+                Exit Sub
+            End If
+            TrackInfo.Sector = Sector
+            TrackInfo.Status = TrackStatus.Pending
+            TrackInfo.BadSectors = 0
+            bw.ReportProgress(0, TrackInfo)
+            If SectorData.SectorsRead = 0 Then
+                ReadSectors(_DiskBuffer, SectorData, SectorReadType.ByTrack)
+            End If
+            If SectorData.SectorsRead < SectorData.SectorCount Then
+                ReadSectors(_DiskBuffer, SectorData, SectorReadType.BySector)
+            End If
+            If SectorData.SectorCount = SectorData.SectorsRead Then
+                TrackInfo.Status = TrackStatus.Success
+                TrackInfo.BadSectors = 0
+            Else
+                TrackInfo.Status = TrackStatus.Failure
+                TrackInfo.BadSectors = SectorData.SectorCount - SectorData.SectorsRead
+                _SectorError = True
+            End If
+            bw.ReportProgress(0, TrackInfo)
+
+            If _SectorError Then
+                _SectorData = SectorData
+                Exit Sub
+            End If
+            SectorData = Nothing
+        Next
+
+        _Complete = True
+    End Sub
+
+    Private Function HandleError() As Boolean
+        Dim Track = _BPB.SectorToTrack(_SectorData.SectorStart)
+        Dim Side = _BPB.SectorToSide(_SectorData.SectorStart)
+        Dim BadSectors = _SectorData.SectorCount - _SectorData.SectorsRead
+        Dim Msg = "Error Reading " & BadSectors & " Sector".Pluralize(BadSectors) & " in Track " & Track & ", Side " & Side & "."
+        Dim MsgBoxResult = MsgBox(Msg, MsgBoxStyle.AbortRetryIgnore Or MsgBoxStyle.DefaultButton2)
+
+        If MsgBoxResult = MsgBoxResult.Abort Then
+            _TotalBadSectors += BadSectors
+            StatusBadSectors.Text = _TotalBadSectors & " Bad Sector".Pluralize(_TotalBadSectors)
+            Return False
+        ElseIf MsgBoxResult = MsgBoxResult.Ignore Then
+            _TotalBadSectors += BadSectors
+            StatusBadSectors.Text = _TotalBadSectors & " Bad Sector".Pluralize(_TotalBadSectors)
+            Dim SectorStart = _SectorData.SectorStart + _BPB.SectorsPerTrack
+            If SectorStart < _BPB.SectorCount Then
+                _SectorData = New SectorData(SectorStart, _BPB.SectorsPerTrack)
+                BackgroundWorker1.RunWorkerAsync()
+                Return True
+            Else
+                _Complete = True
+                Return False
+            End If
+        Else
+            BackgroundWorker1.RunWorkerAsync()
+            Return True
+        End If
+    End Function
 
     Private Sub InitTables()
         Dim objLabel As Label
@@ -110,75 +213,6 @@ Public Class FloppyAccessForm
             Next
         Next
     End Sub
-
-    Private Function AddLabel(Text As String, BackColor As Color) As Label
-        Dim objLabel As New Label With {
-            .BorderStyle = BorderStyle.None,
-            .Margin = New Padding(0),
-            .TextAlign = ContentAlignment.MiddleCenter,
-            .UseMnemonic = False,
-            .AutoSize = False,
-            .Anchor = AnchorStyles.Top Or AnchorStyles.Left Or AnchorStyles.Right Or AnchorStyles.Bottom,
-            .BackColor = BackColor,
-            .Text = Text
-        }
-
-        Return objLabel
-    End Function
-
-    Private Sub FloppyDiskRead(bw As BackgroundWorker)
-        _Complete = False
-        _EndProcess = False
-        _SectorError = False
-        Dim TrackInfo As TrackInfo
-        Dim SectorData As SectorData
-        Dim SectorStart As UInteger
-
-        If _SectorData Is Nothing Then
-            SectorStart = 0
-            SectorData = Nothing
-        Else
-            SectorStart = _SectorData.SectorStart
-            SectorData = _SectorData
-        End If
-
-        For Sector As UInteger = SectorStart To _BPB.SectorCount - 1 Step _BPB.SectorsPerTrack
-            If bw.CancellationPending Then
-                Exit Sub
-            End If
-            If SectorData Is Nothing Then
-                SectorData = New SectorData(Sector, _BPB.SectorsPerTrack)
-            End If
-            TrackInfo.Sector = Sector
-            TrackInfo.Status = TrackStatus.Pending
-            TrackInfo.BadSectors = 0
-            bw.ReportProgress(0, TrackInfo)
-            If SectorData.SectorsRead = 0 Then
-                ReadSectors(_DiskBuffer, SectorData, SectorReadType.ByTrack)
-            End If
-            If SectorData.SectorsRead < SectorData.SectorCount Then
-                ReadSectors(_DiskBuffer, SectorData, SectorReadType.BySector)
-            End If
-            If SectorData.SectorCount = SectorData.SectorsRead Then
-                TrackInfo.Status = TrackStatus.Success
-                TrackInfo.BadSectors = 0
-            Else
-                TrackInfo.Status = TrackStatus.Failure
-                TrackInfo.BadSectors = SectorData.SectorCount - SectorData.SectorsRead
-                _SectorError = True
-            End If
-            bw.ReportProgress(0, TrackInfo)
-
-            If _SectorError Then
-                _SectorData = SectorData
-                Exit For
-            End If
-            SectorData = Nothing
-        Next
-
-        _Complete = True
-    End Sub
-
     Private Sub ReadSectors(DiskBuffer() As Byte, SectorData As SectorData, ReadType As SectorReadType)
         If ReadType = SectorReadType.ByTrack Then
             Dim BufferSize = Disk.BYTES_PER_SECTOR * SectorData.SectorCount
@@ -213,6 +247,11 @@ Public Class FloppyAccessForm
         End If
     End Sub
 
+    Private Structure TrackInfo
+        Dim BadSectors As UShort
+        Dim Sector As UInteger
+        Dim Status As TrackStatus
+    End Structure
 #Region "Events"
 
     Private Sub BackgroundWorker1_DoWork(sender As Object, e As DoWorkEventArgs) Handles BackgroundWorker1.DoWork
@@ -259,40 +298,16 @@ Public Class FloppyAccessForm
         StatusSide.Text = "Side " & Side
     End Sub
 
-    Private Function HandleError() As Boolean
-        Dim Track = _BPB.SectorToTrack(_SectorData.SectorStart)
-        Dim Side = _BPB.SectorToSide(_SectorData.SectorStart)
-        Dim BadSectors = _SectorData.SectorCount - _SectorData.SectorsRead
-        Dim Msg = "Error Reading " & BadSectors & " Sector".Pluralize(BadSectors) & " in Track " & Track & ", Side " & Side & "."
-        Dim MsgBoxResult = MsgBox(Msg, MsgBoxStyle.AbortRetryIgnore Or MsgBoxStyle.DefaultButton2)
-
-        If MsgBoxResult = MsgBoxResult.Abort Then
-            _TotalBadSectors += BadSectors
-            StatusBadSectors.Text = _TotalBadSectors & " Bad Sector".Pluralize(_TotalBadSectors)
-            Return False
-        ElseIf MsgBoxResult = MsgBoxResult.Ignore Then
-            _TotalBadSectors += BadSectors
-            StatusBadSectors.Text = _TotalBadSectors & " Bad Sector".Pluralize(_TotalBadSectors)
-            Dim SectorStart = _SectorData.SectorStart + _BPB.SectorsPerTrack
-            If SectorStart < _BPB.SectorCount Then
-                _SectorData = New SectorData(SectorStart, _BPB.SectorsPerTrack)
-                BackgroundWorker1.RunWorkerAsync()
-                Return True
-            Else
-                _Complete = True
-                Return False
-            End If
-        Else
-            BackgroundWorker1.RunWorkerAsync()
-            Return True
-        End If
-    End Function
-
     Private Sub BackgroundWorker1_RunWorkerCompleted(sender As Object, e As RunWorkerCompletedEventArgs) Handles BackgroundWorker1.RunWorkerCompleted
         _EndProcess = True
         If _SectorError Then
             _SectorError = False
             If HandleError() Then
+                Exit Sub
+            End If
+        End If
+        If Not _Complete Then
+            If Not ConfirmAbort Then
                 Exit Sub
             End If
         End If
@@ -315,6 +330,7 @@ Public Class FloppyAccessForm
         End If
     End Sub
 
+
 #End Region
 
     Private Class SectorData
@@ -334,14 +350,14 @@ Public Class FloppyAccessForm
             End Get
         End Property
 
+        Public Property SectorsRead As UShort
+
         Public ReadOnly Property SectorStart As UInteger
             Get
                 Return _SectorStart
             End Get
         End Property
-
-        Public Property SectorsRead As UShort
-
         Public Property SectorStatus As Boolean()
     End Class
+
 End Class

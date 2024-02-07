@@ -1,5 +1,5 @@
 ﻿Namespace DiskImage
-    Module FloppyDiskFunctions
+    Public Module FloppyDiskFunctions
         Public Enum FloppyDiskType
             FloppyUnknown = 0
             Floppy160 = 1
