@@ -38,8 +38,8 @@ Public Class MainForm
     Public Const SITE_URL = "https://github.com/Digitoxin1/DiskImageTool"
     Public Const UPDATE_URL = "https://api.github.com/repos/Digitoxin1/DiskImageTool/releases/latest"
     Private ReadOnly _ArchiveFilterExt As New List(Of String) From {".zip"}
-    Private ReadOnly _ValidFileExt As New List(Of String) From {".ima", ".img", ".imz", ".vfd", ".flp"}
     Private ReadOnly _lvwColumnSorter As ListViewColumnSorter
+    Private ReadOnly _ValidFileExt As New List(Of String) From {".ima", ".img", ".imz", ".vfd", ".flp"}
     Private _BootStrap As Bootstrap
     Private _CheckAll As Boolean = False
     Private _CurrentImageData As LoadedImageData = Nothing
@@ -54,6 +54,9 @@ Public Class MainForm
     Private _LoadedFileNames As Dictionary(Of String, LoadedImageData)
     Private _ScanRun As Boolean = False
     Private _SuppressEvent As Boolean = False
+    Private _DriveAEnabled As Boolean = False
+    Private _DriveBEnabled As Boolean = False
+
     Public Sub New()
         ' This call is required by the designer.
         InitializeComponent()
@@ -313,6 +316,26 @@ Public Class MainForm
         End If
     End Sub
 
+    Friend Sub ItemScanFreeClusters(Disk As DiskImage.Disk, ImageData As LoadedImageData, Optional UpdateFilters As Boolean = False, Optional Remove As Boolean = False)
+        Dim HasFreeClusters As Boolean = False
+
+        If Not Remove And Disk.IsValidImage Then
+            HasFreeClusters = Disk.FAT.HasFreeClusters(True)
+        End If
+
+        If Not ImageData.Scanned Or HasFreeClusters <> ImageData.ScanInfo.HasFreeClustersWithData Then
+            ImageData.ScanInfo.HasFreeClustersWithData = HasFreeClusters
+            If HasFreeClusters Then
+                _FilterCounts(FilterTypes.FreeClustersWithData) += 1
+            ElseIf ImageData.Scanned Then
+                _FilterCounts(FilterTypes.FreeClustersWithData) -= 1
+            End If
+            If UpdateFilters Then
+                FilterUpdate(FilterTypes.FreeClustersWithData)
+            End If
+        End If
+    End Sub
+
     Friend Sub ItemScanModified(Disk As DiskImage.Disk, ImageData As LoadedImageData, Optional UpdateFilters As Boolean = False, Optional Remove As Boolean = False)
         Dim IsModified As Boolean = Not Remove And (Disk IsNot Nothing AndAlso Disk.Data.Modified)
 
@@ -389,27 +412,6 @@ Public Class MainForm
             End If
         End If
     End Sub
-
-    Friend Sub ItemScanFreeClusters(Disk As DiskImage.Disk, ImageData As LoadedImageData, Optional UpdateFilters As Boolean = False, Optional Remove As Boolean = False)
-        Dim HasFreeClusters As Boolean = False
-
-        If Not Remove And Disk.IsValidImage Then
-            HasFreeClusters = Disk.FAT.HasFreeClusters(True)
-        End If
-
-        If Not ImageData.Scanned Or HasFreeClusters <> ImageData.ScanInfo.HasFreeClustersWithData Then
-            ImageData.ScanInfo.HasFreeClustersWithData = HasFreeClusters
-            If HasFreeClusters Then
-                _FilterCounts(FilterTypes.FreeClustersWithData) += 1
-            ElseIf ImageData.Scanned Then
-                _FilterCounts(FilterTypes.FreeClustersWithData) -= 1
-            End If
-            If UpdateFilters Then
-                FilterUpdate(FilterTypes.FreeClustersWithData)
-            End If
-        End If
-    End Sub
-
     Friend Sub OEMNameFilterUpdate(Disk As DiskImage.Disk, ImageData As LoadedImageData, Optional UpdateFilters As Boolean = False, Optional Remove As Boolean = False)
         If Disk.IsValidImage Then
             Dim OEMNameString As String = ""
@@ -472,6 +474,311 @@ Public Class MainForm
 
 
         Return Result
+    End Function
+
+    Private Shared Function DirectoryEntryCanDelete(DirectoryEntry As DiskImage.DirectoryEntry, Clear As Boolean) As Boolean
+        If DirectoryEntry.IsDeleted Then
+            Return False
+        ElseIf Clear And Not DirectoryEntry.IsValidFile Then
+            Return False
+        ElseIf DirectoryEntry.IsValidDirectory Then
+            Return DirectoryEntry.SubDirectory.Data.FileCount - DirectoryEntry.SubDirectory.Data.DeletedFileCount = 0
+        Else
+            Return True
+        End If
+    End Function
+
+    Private Shared Function DirectoryEntryCanExport(DirectoryEntry As DiskImage.DirectoryEntry) As Boolean
+        Return DirectoryEntry.IsValidFile _
+            And Not DirectoryEntry.IsDeleted _
+            And Not DirectoryEntry.HasInvalidFilename _
+            And Not DirectoryEntry.HasInvalidExtension
+    End Function
+
+    Private Shared Function DirectoryEntryCanUndelete(DirectoryEntry As DiskImage.DirectoryEntry) As Boolean
+        If Not DirectoryEntry.IsDeleted Then
+            Return False
+        End If
+
+        Return DirectoryEntry.CanRestore
+    End Function
+
+    Private Shared Sub DirectoryEntryDisplayText(DirectoryEntry As DiskImage.DirectoryEntry)
+        If Not DirectoryEntry.IsValidFile Then 'Or DirectoryEntry.IsDeleted Then
+            Exit Sub
+        End If
+
+        Dim Caption As String = $"File - {DirectoryEntry.GetFullFileName}"
+        If DirectoryEntry.IsDeleted Then
+            Caption = "Deleted " & Caption
+        End If
+        Dim Bytes = DirectoryEntry.GetContent
+        Dim Content As String
+
+        Using Stream As New IO.MemoryStream
+            Dim PrevByte As Byte = 0
+            For Counter = 0 To Bytes.Length - 1
+                Dim B = Bytes(Counter)
+                If B = 0 Then
+                    Stream.WriteByte(32)
+                ElseIf Counter > 0 And B = 10 And PrevByte <> 13 Then
+                    Stream.WriteByte(13)
+                    Stream.WriteByte(10)
+                Else
+                    Stream.WriteByte(B)
+                End If
+                PrevByte = B
+            Next
+            Content = Encoding.UTF7.GetString(Stream.GetBuffer)
+        End Using
+
+        Dim frmTextView = New TextViewForm(Caption, Content)
+        frmTextView.ShowDialog()
+    End Sub
+
+    Private Shared Function FileSave(FilePath As String, DirectoryEntry As DiskImage.DirectoryEntry) As Boolean
+        Try
+            IO.File.WriteAllBytes(FilePath, DirectoryEntry.GetContent)
+            Dim D = DirectoryEntry.GetLastWriteDate
+            If D.IsValidDate Then
+                IO.File.SetLastWriteTime(FilePath, D.DateObject)
+            End If
+        Catch ex As Exception
+            Return False
+        End Try
+
+        Return True
+    End Function
+
+    Private Shared Function ListViewFilesGetItem(Group As ListViewGroup, FileData As FileData) As ListViewItem
+        Dim SI As ListViewItem.ListViewSubItem
+        Dim ForeColor As Color
+        Dim IsDeleted As Boolean = FileData.DirectoryEntry.IsDeleted
+        Dim HasInvalidFileSize As Boolean = FileData.DirectoryEntry.HasInvalidFileSize
+        Dim IsBlank As Boolean = FileData.DirectoryEntry.IsBlank
+
+        Dim Attrib As String = IIf(FileData.DirectoryEntry.IsArchive, "A ", "- ") _
+            & IIf(FileData.DirectoryEntry.IsReadOnly, "R ", "- ") _
+            & IIf(FileData.DirectoryEntry.IsSystem, "S ", "- ") _
+            & IIf(FileData.DirectoryEntry.IsHidden, "H ", "- ") _
+            & IIf(FileData.DirectoryEntry.IsDirectory, "D ", "- ") _
+            & IIf(FileData.DirectoryEntry.IsVolumeName, "V ", "- ")
+
+        If IsDeleted Then
+            ForeColor = Color.Gray
+        ElseIf FileData.DirectoryEntry.IsValidValumeName Then
+            ForeColor = Color.Green
+        ElseIf FileData.DirectoryEntry.IsDirectory And Not FileData.DirectoryEntry.IsVolumeName Then
+            ForeColor = Color.Blue
+        End If
+
+        Dim ModifiedString As String = IIf(FileData.DirectoryEntry.IsModified, "#", "")
+
+        Dim Item = New ListViewItem(ModifiedString, Group) With {
+            .UseItemStyleForSubItems = False,
+            .Tag = FileData
+        }
+        If ModifiedString = "" Then
+            Item.ForeColor = ForeColor
+        Else
+            Item.ForeColor = Color.Blue
+        End If
+
+        SI = Item.SubItems.Add(FileData.DirectoryEntry.GetFileName)
+        SI.Name = "FileName"
+        If Not IsDeleted And FileData.DirectoryEntry.HasInvalidFilename Then
+            SI.ForeColor = Color.Red
+        Else
+            SI.ForeColor = ForeColor
+        End If
+
+        SI = Item.SubItems.Add(FileData.DirectoryEntry.GetFileExtension)
+        SI.Name = "FileExtension"
+        If Not IsDeleted And FileData.DirectoryEntry.HasInvalidExtension Then
+            SI.ForeColor = Color.Red
+        Else
+            SI.ForeColor = ForeColor
+        End If
+
+        If IsBlank Then
+            SI = Item.SubItems.Add("")
+        ElseIf HasInvalidFileSize Then
+            SI = Item.SubItems.Add("Invalid")
+            If Not IsDeleted Then
+                SI.ForeColor = Color.Red
+            Else
+                SI.ForeColor = ForeColor
+            End If
+        ElseIf Not IsDeleted And FileData.DirectoryEntry.HasIncorrectFileSize Then
+            SI = Item.SubItems.Add(Format(FileData.DirectoryEntry.FileSize, "N0"))
+            SI.ForeColor = Color.Red
+        Else
+            SI = Item.SubItems.Add(Format(FileData.DirectoryEntry.FileSize, "N0"))
+            SI.ForeColor = ForeColor
+        End If
+        SI.Name = "FileSize"
+
+        If IsBlank Then
+            SI = Item.SubItems.Add("")
+        Else
+            SI = Item.SubItems.Add(ExpandedDateToString(FileData.DirectoryEntry.GetLastWriteDate, True, True, False, True))
+            If FileData.DirectoryEntry.GetLastWriteDate.IsValidDate Or IsDeleted Then
+                SI.ForeColor = ForeColor
+            Else
+                SI.ForeColor = Color.Red
+            End If
+        End If
+        SI.Name = "FileLastWriteDate"
+
+        Dim SubItemForeColor As Color = ForeColor
+        If IsBlank Then
+            SI = Item.SubItems.Add("")
+        Else
+            If FileData.DirectoryEntry.HasInvalidStartingCluster Then
+                SI = Item.SubItems.Add("Invalid")
+                If Not IsDeleted Then
+                    SubItemForeColor = Color.Red
+                End If
+            Else
+                SI = Item.SubItems.Add(Format(FileData.DirectoryEntry.StartingCluster, "N0"))
+            End If
+        End If
+        SI.Name = "FileStartingCluster"
+
+        If IsBlank Then
+            SI = Item.SubItems.Add("")
+        Else
+            Dim ErrorText As String = ""
+            If Not IsDeleted And FileData.DirectoryEntry.IsCrossLinked Then
+                SubItemForeColor = Color.Red
+                ErrorText = "CL"
+            ElseIf Not IsDeleted And FileData.DirectoryEntry.HasCircularChain Then
+                SubItemForeColor = Color.Red
+                ErrorText = "CC"
+            End If
+            SI.ForeColor = SubItemForeColor
+
+            SI = Item.SubItems.Add(ErrorText)
+            SI.ForeColor = Color.Red
+        End If
+        SI.Name = "FileClusterError"
+
+        If IsBlank Then
+            Item.SubItems.Add("")
+        Else
+            SI = Item.SubItems.Add(Attrib)
+            If Not IsDeleted And FileData.DirectoryEntry.HasInvalidAttributes Then
+                SI.ForeColor = Color.Red
+            Else
+                SI.ForeColor = ForeColor
+            End If
+        End If
+
+        If IsBlank Then
+            Item.SubItems.Add("")
+        Else
+            If FileData.DirectoryEntry.IsValidFile Then
+                SI = Item.SubItems.Add(FileData.DirectoryEntry.GetChecksum().ToString("X8"))
+            Else
+                SI = Item.SubItems.Add("")
+            End If
+            SI.ForeColor = ForeColor
+        End If
+
+        If IsBlank Then
+            SI = Item.SubItems.Add("")
+        Else
+            If FileData.DirectoryEntry.HasCreationDate Then
+                SI = Item.SubItems.Add(ExpandedDateToString(FileData.DirectoryEntry.GetCreationDate, True, True, True, True))
+                If FileData.DirectoryEntry.GetCreationDate.IsValidDate Or IsDeleted Then
+                    SI.ForeColor = ForeColor
+                Else
+                    SI.ForeColor = Color.Red
+                End If
+            Else
+                SI = Item.SubItems.Add("")
+            End If
+        End If
+        SI.Name = "FileCreationDate"
+
+        If IsBlank Then
+            SI = Item.SubItems.Add("")
+        Else
+            If FileData.DirectoryEntry.HasLastAccessDate Then
+                SI = Item.SubItems.Add(ExpandedDateToString(FileData.DirectoryEntry.GetLastAccessDate))
+                If FileData.DirectoryEntry.GetLastAccessDate.IsValidDate Or IsDeleted Then
+                    SI.ForeColor = ForeColor
+                Else
+                    SI.ForeColor = Color.Red
+                End If
+            Else
+                SI = Item.SubItems.Add("")
+            End If
+        End If
+        SI.Name = "FileLastAccessDate"
+
+
+        If IsBlank Then
+            Item.SubItems.Add("")
+        Else
+            Dim Reserved As String = ""
+            If FileData.DirectoryEntry.ReservedForWinNT <> 0 Or FileData.DirectoryEntry.ReservedForFAT32 <> 0 Then
+                Reserved = FileData.DirectoryEntry.ReservedForWinNT.ToString("X2")
+                Reserved &= "-" & BitConverter.ToString(BitConverter.GetBytes(FileData.DirectoryEntry.ReservedForFAT32))
+            End If
+            SI = Item.SubItems.Add(Reserved)
+            SI.ForeColor = ForeColor
+        End If
+
+        If IsBlank Then
+            Item.SubItems.Add("")
+        Else
+            SI = Item.SubItems.Add(FileData.LFNFileName)
+            SI.ForeColor = ForeColor
+        End If
+
+        Return Item
+    End Function
+
+    Private Shared Function MsgBoxNewFileName(FileName As String) As MsgBoxResult
+        Dim Msg As String = $"'{FileName}' is a read-only file.  Please specify a new file name."
+        Return MsgBox(Msg, MsgBoxStyle.OkCancel)
+    End Function
+
+    Private Shared Function MsgBoxOverwrite(FilePath As String) As MyMsgBoxResult
+        Dim Msg As String = $"{IO.Path.GetFileName(FilePath)} already exists.{vbCrLf}Do you wish to replace it?"
+
+        Dim SaveAllForm As New SaveAllForm(Msg)
+        SaveAllForm.ShowDialog()
+        Return SaveAllForm.Result
+    End Function
+
+    Private Shared Function MsgBoxSave(FileName As String) As MsgBoxResult
+        Dim Msg As String = $"Save file '{FileName}'?"
+
+        Return MsgBox(Msg, MsgBoxStyle.Question + MsgBoxStyle.YesNoCancel + MsgBoxStyle.DefaultButton3, "Save")
+    End Function
+
+    Private Shared Function MsgBoxSaveAll(FileName As String) As MyMsgBoxResult
+        Dim Msg As String = $"Save file '{FileName}'?"
+
+        Dim SaveAllForm As New SaveAllForm(Msg)
+        SaveAllForm.ShowDialog()
+        Return SaveAllForm.Result
+    End Function
+
+    Private Shared Function SaveDiskImageToFile(Disk As DiskImage.Disk, FilePath As String) As Boolean
+        Try
+            If IO.File.Exists(FilePath) Then
+                Dim BackupPath As String = FilePath & ".bak"
+                IO.File.Copy(FilePath, BackupPath, True)
+            End If
+            Disk.SaveFile(FilePath)
+        Catch ex As Exception
+            Return False
+        End Try
+
+        Return True
     End Function
 
     Private Function AreFiltersApplied() As Boolean
@@ -835,86 +1142,27 @@ Public Class MainForm
 
     Private Sub DetectFloppyDrives()
         Dim AllDrives() = DriveInfo.GetDrives()
-        Dim DriveAEnabled As Boolean = False
-        Dim DriveBEnabled As Boolean = False
+        _DriveAEnabled = False
+        _DriveBEnabled = False
 
         For Each Drive In AllDrives
             If Drive.Name = "A:\" Then
                 If Drive.DriveType = DriveType.Removable Then
-                    DriveAEnabled = True
+                    _DriveAEnabled = True
                 End If
             End If
             If Drive.Name = "B:\" Then
                 If Drive.DriveType = DriveType.Removable Then
-                    DriveBEnabled = True
+                    _DriveBEnabled = True
                 End If
             End If
         Next
 
-        BtnReadFloppyA.Enabled = DriveAEnabled
-        BtnReadFloppyB.Enabled = DriveBEnabled
+        BtnReadFloppyA.Enabled = _DriveAEnabled
+        BtnReadFloppyB.Enabled = _DriveBEnabled
+        BtnWriteFloppyA.Enabled = False
+        BtnWriteFloppyB.Enabled = False
     End Sub
-
-    Private Shared Function DirectoryEntryCanDelete(DirectoryEntry As DiskImage.DirectoryEntry, Clear As Boolean) As Boolean
-        If DirectoryEntry.IsDeleted Then
-            Return False
-        ElseIf Clear And Not DirectoryEntry.IsValidFile Then
-            Return False
-        ElseIf DirectoryEntry.IsValidDirectory Then
-            Return DirectoryEntry.SubDirectory.Data.FileCount - DirectoryEntry.SubDirectory.Data.DeletedFileCount = 0
-        Else
-            Return True
-        End If
-    End Function
-
-    Private Shared Function DirectoryEntryCanUndelete(DirectoryEntry As DiskImage.DirectoryEntry) As Boolean
-        If Not DirectoryEntry.IsDeleted Then
-            Return False
-        End If
-
-        Return DirectoryEntry.CanRestore
-    End Function
-
-    Private Shared Function DirectoryEntryCanExport(DirectoryEntry As DiskImage.DirectoryEntry) As Boolean
-        Return DirectoryEntry.IsValidFile _
-            And Not DirectoryEntry.IsDeleted _
-            And Not DirectoryEntry.HasInvalidFilename _
-            And Not DirectoryEntry.HasInvalidExtension
-    End Function
-
-    Private Shared Sub DirectoryEntryDisplayText(DirectoryEntry As DiskImage.DirectoryEntry)
-        If Not DirectoryEntry.IsValidFile Then 'Or DirectoryEntry.IsDeleted Then
-            Exit Sub
-        End If
-
-        Dim Caption As String = $"File - {DirectoryEntry.GetFullFileName}"
-        If DirectoryEntry.IsDeleted Then
-            Caption = "Deleted " & Caption
-        End If
-        Dim Bytes = DirectoryEntry.GetContent
-        Dim Content As String
-
-        Using Stream As New IO.MemoryStream
-            Dim PrevByte As Byte = 0
-            For Counter = 0 To Bytes.Length - 1
-                Dim B = Bytes(Counter)
-                If B = 0 Then
-                    Stream.WriteByte(32)
-                ElseIf Counter > 0 And B = 10 And PrevByte <> 13 Then
-                    Stream.WriteByte(13)
-                    Stream.WriteByte(10)
-                Else
-                    Stream.WriteByte(B)
-                End If
-                PrevByte = B
-            Next
-            Content = Encoding.UTF7.GetString(Stream.GetBuffer)
-        End Using
-
-        Dim frmTextView = New TextViewForm(Caption, Content)
-        frmTextView.ShowDialog()
-    End Sub
-
     Private Function DirectoryEntryGetStats(DirectoryEntry As DiskImage.DirectoryEntry) As DirectoryStats
         Dim Stats As DirectoryStats
 
@@ -934,12 +1182,6 @@ Public Class MainForm
 
         Return Stats
     End Function
-
-    Private Sub DiskImageRefresh()
-        _Disk?.Reinitialize()
-
-        DiskImageProcess(True)
-    End Sub
 
     Private Sub DiskImageProcess(DoItemScan As Boolean)
         Dim CurrentImageData As LoadedImageData = ComboImages.SelectedItem
@@ -967,6 +1209,11 @@ Public Class MainForm
         End If
     End Sub
 
+    Private Sub DiskImageRefresh()
+        _Disk?.Reinitialize()
+
+        DiskImageProcess(True)
+    End Sub
     Private Function DiskImageSave(ImageData As LoadedImageData, Optional NewFilePath As String = "") As Boolean
         Dim Disk As DiskImage.Disk
         Dim CurrentImageData As LoadedImageData = ComboImages.SelectedItem
@@ -1417,21 +1664,6 @@ Public Class MainForm
             FilePropertiesRefresh(Item, False, False)
         End If
     End Sub
-
-    Private Shared Function FileSave(FilePath As String, DirectoryEntry As DiskImage.DirectoryEntry) As Boolean
-        Try
-            IO.File.WriteAllBytes(FilePath, DirectoryEntry.GetContent)
-            Dim D = DirectoryEntry.GetLastWriteDate
-            If D.IsValidDate Then
-                IO.File.SetLastWriteTime(FilePath, D.DateObject)
-            End If
-        Catch ex As Exception
-            Return False
-        End Try
-
-        Return True
-    End Function
-
     Private Sub FilesOpen()
         Dim FileFilter = GetLoadDialogFilters()
 
@@ -1687,6 +1919,168 @@ Public Class MainForm
         End If
     End Sub
 
+    Private Function FloppyDiskGetReadOptions(FloppyDrive As FloppyInterface) As BiosParameterBlock
+        Dim DetectedType As FloppyDiskType
+        Dim ReturnedType As FloppyDiskType
+        Dim BootSector As BootSector = Nothing
+
+        Dim Buffer(Disk.BYTES_PER_SECTOR - 1) As Byte
+        Dim BytesRead = FloppyDrive.ReadSector(0, Buffer)
+        If BytesRead = Buffer.Length Then
+            BootSector = New BootSector(New ImageByteArray(Buffer))
+            DetectedType = GetFloppyDiskType(BootSector.BPB)
+        Else
+            DetectedType = -1
+        End If
+
+        Dim FloppyReadOptionsForm As New FloppyReadOptionsForm(DetectedType)
+        FloppyReadOptionsForm.ShowDialog(Me)
+        ReturnedType = FloppyReadOptionsForm.DiskType
+        FloppyReadOptionsForm.Close()
+
+        If FloppyReadOptionsForm.DialogResult = DialogResult.Cancel Then
+            Return Nothing
+        ElseIf ReturnedType = -1 Then
+            Return Nothing
+        ElseIf BootSector IsNot Nothing AndAlso DetectedType = ReturnedType Then
+            Return BootSector.BPB
+        Else
+            Return BuildBPB(ReturnedType)
+        End If
+    End Function
+
+    Private Function FloppyDiskWriteOptions(DoFormat As Boolean, DetectedType As FloppyDiskType, ImageType As FloppyDiskType) As FloppyWriteOptionsForm.FloppyWriteOptions
+        Dim WriteOptions As FloppyWriteOptionsForm.FloppyWriteOptions
+
+        Dim FloppyWriteOptioonsForm As New FloppyWriteOptionsForm(DoFormat, DetectedType, ImageType)
+        FloppyWriteOptioonsForm.ShowDialog(Me)
+        WriteOptions = FloppyWriteOptioonsForm.WriteOptions
+        FloppyWriteOptioonsForm.Close()
+
+        Return WriteOptions
+    End Function
+
+    Private Sub FloppyDiskRead(Drive As FloppyDriveEnum)
+        Dim FloppyDrive = New FloppyInterface
+        Dim DriveLetter = FloppyInterface.GetDriveLetter(Drive)
+        Dim DriveName = DriveLetter & ":\"
+        Dim DriveInfo = New DriveInfo(DriveName)
+        Dim Result = DriveInfo.IsReady
+
+        If Result Then
+            Result = FloppyDrive.OpenRead(Drive)
+        End If
+
+        If Result Then
+            Dim BPB = FloppyDiskGetReadOptions(FloppyDrive)
+            If BPB IsNot Nothing Then
+                Dim FloppyAccessForm As New FloppyAccessForm(FloppyDrive, BPB, FloppyAccessForm.FloppyAccessType.Read)
+                FloppyAccessForm.ShowDialog(Me)
+                If FloppyAccessForm.Complete Then
+                    Dim DiskType = GetFloppyDiskType(BPB)
+                    FloppyDiskSaveFile(FloppyAccessForm.DiskBuffer, DiskType)
+                End If
+                FloppyAccessForm.Close()
+            End If
+            FloppyDrive.Close()
+        Else
+            MsgBox($"Floppy drive {DriveLetter} is not ready.{vbCrLf}{vbCrLf}Please verify that a formatted disk is inserted into drive {DriveLetter}.", MsgBoxStyle.Exclamation)
+        End If
+    End Sub
+
+    Private Sub FloppyDiskWrite(Drive As FloppyDriveEnum)
+        If _Disk Is Nothing Then
+            Exit Sub
+        End If
+
+        Dim FloppyDrive = New FloppyInterface
+        Dim DriveLetter = FloppyInterface.GetDriveLetter(Drive)
+        Dim DriveName = DriveLetter & ":\"
+        Dim DriveInfo = New DriveInfo(DriveName)
+        Dim IsReady = DriveInfo.IsReady
+        Dim NewDiskType = GetFloppyDiskType(_Disk.BPB)
+        Dim NewTypeName = GetFloppyDiskTypeName(NewDiskType) & " Floppy"
+        Dim DetectedType As FloppyDiskType = -2
+        Dim DoFormat = Not IsReady
+
+        Dim MsgBoxResult As MsgBoxResult
+        If IsReady Then
+            Dim Result = FloppyDrive.OpenRead(Drive)
+            If Result Then
+                Dim Buffer(Disk.BYTES_PER_SECTOR - 1) As Byte
+                Dim BytesRead = FloppyDrive.ReadSector(0, Buffer)
+                If BytesRead = Buffer.Length Then
+                    Dim BootSector = New BootSector(New ImageByteArray(Buffer))
+                    DetectedType = GetFloppyDiskType(BootSector.BPB)
+                Else
+                    DetectedType = -1
+                End If
+                FloppyDrive.Close()
+            Else
+                DetectedType = -1
+            End If
+            Dim Msg As String
+            If DetectedType = NewDiskType Then
+                Msg = $"Warning: The disk in drive {DriveLetter} is not empty.{vbCrLf}{vbCrLf}If you continue, the disk will be overwritten.{vbCrLf}{vbCrLf}Do you wish to continue?"
+            ElseIf DetectedType = -1 Then
+                DoFormat = True
+                Msg = $"Warning: The disk in drive {DriveLetter} is not empty, but I am unable to determine the format type.{vbCrLf}{vbCrLf}The image you are attempting to write is a {NewTypeName} image.{vbCrLf}{vbCrLf}If you continue, the disk will be overwritten and may be unreadable.{vbCrLf}{vbCrLf}Do you wish to continue?"
+            Else
+                DoFormat = True
+                Dim DetectedTypeName = GetFloppyDiskTypeName(DetectedType) & " Floppy"
+                Msg = $"Warning: The disk in drive {DriveLetter} is not empty and is formatted as a {DetectedTypeName}.{vbCrLf}{vbCrLf}The image you are attempting to write is a {NewTypeName} image.{vbCrLf}{vbCrLf}If you continue, the disk will be overwritten and may be unreadable.{vbCrLf}{vbCrLf}Do you wish to continue?"
+            End If
+            MsgBoxResult = MsgBox(Msg, MsgBoxStyle.Exclamation Or MsgBoxStyle.OkCancel Or MsgBoxStyle.DefaultButton2)
+        Else
+            MsgBoxResult = MsgBoxResult.Ok
+        End If
+
+        If MsgBoxResult = MsgBoxResult.Ok Then
+            Dim Result = FloppyDrive.OpenWrite(Drive)
+            If Result Then
+                Dim WriteOptions = FloppyDiskWriteOptions(DoFormat, DetectedType, NewDiskType)
+                If Not WriteOptions.Cancelled Then
+                    Dim FloppyAccessForm As New FloppyAccessForm(FloppyDrive, _Disk.BPB, FloppyAccessForm.FloppyAccessType.Write) With {
+                        .DiskBuffer = _Disk.Data.Data,
+                        .DoFormat = WriteOptions.Format,
+                        .DoVerify = WriteOptions.Verify
+                    }
+                    FloppyAccessForm.ShowDialog(Me)
+                    FloppyAccessForm.Close()
+                End If
+                FloppyDrive.Close()
+            Else
+                MsgBox($"Error: Unable to write to the drive at this time.", MsgBoxStyle.Exclamation)
+            End If
+        End If
+    End Sub
+
+    Private Sub FloppyDiskSaveFile(Buffer() As Byte, DiskType As FloppyDiskType)
+        Dim FileExt = ".ima"
+        Dim FileFilter = GetSaveDialogFilters(DiskType, FileExt)
+
+        Dim Dialog = New SaveFileDialog With {
+            .Filter = FileFilter.Filter,
+            .FilterIndex = FileFilter.FilterIndex,
+            .DefaultExt = FileExt
+        }
+
+        AddHandler Dialog.FileOk, Sub(sender As Object, e As CancelEventArgs)
+                                      If _LoadedFileNames.ContainsKey(Dialog.FileName) Then
+                                          Dim Msg As String = Path.GetFileName(Dialog.FileName) &
+                                            $"{vbCrLf}This file is currently open in {Application.ProductName}." &
+                                            $"Try again with a different file name."
+                                          MsgBox(Msg, MsgBoxStyle.Exclamation, "Save As")
+                                          e.Cancel = True
+                                      End If
+                                  End Sub
+
+        If Dialog.ShowDialog = DialogResult.OK Then
+            IO.File.WriteAllBytes(Dialog.FileName, Buffer)
+            ProcessFileDrop(Dialog.FileName)
+        End If
+    End Sub
+
     Private Function GetFileDataFromDirectoryEntry(Index As Integer, DirectoryEntry As DiskImage.DirectoryEntry, ParentOffset As UInteger, FilePath As String, IsLastEntry As Boolean, LFNFileName As String) As FileData
         Dim Response As FileData
         With Response
@@ -1699,6 +2093,25 @@ Public Class MainForm
         End With
 
         Return Response
+    End Function
+
+    Private Function GetLoadDialogFilters() As String
+        Dim FileFilter As String
+        Dim ExtensionList As List(Of String)
+
+
+        FileFilter = FileDialogGetFilter("All Floppy Disk Images", _ValidFileExt)
+
+        ExtensionList = New List(Of String) From {".imz"}
+        FileFilter = FileDialogAppendFilter(FileFilter, "Compressed Disk Image", ExtensionList)
+
+        ExtensionList = New List(Of String) From {".vfd", ".flp"}
+        FileFilter = FileDialogAppendFilter(FileFilter, "Virtual Floppy Disk", ExtensionList)
+
+        FileFilter = FileDialogAppendFilter(FileFilter, "Zip Archive", ".zip")
+        FileFilter = FileDialogAppendFilter(FileFilter, "All files", ".*")
+
+        Return FileFilter
     End Function
 
     Private Function GetModifiedImageList() As List(Of LoadedImageData)
@@ -1785,20 +2198,62 @@ Public Class MainForm
         Return Len(PathName)
     End Function
 
+    Private Function GetSaveDialogFilters(DiskType As FloppyDiskType, FileExt As String) As SaveDialogFilter
+        Dim Response As SaveDialogFilter
+        Dim CurrentIndex As Integer = 1
+        Dim Extension As String
+        Dim ExtensionList As List(Of String)
+
+        Response.FilterIndex = 0
+
+        ExtensionList = New List(Of String) From {".ima", ".img"}
+        For Each Extension In ExtensionList
+            If FileExt.Equals(Extension, StringComparison.OrdinalIgnoreCase) Then
+                Response.FilterIndex = CurrentIndex
+            End If
+        Next
+        Response.Filter = FileDialogGetFilter("Floppy Disk Image", ExtensionList)
+        CurrentIndex += 1
+
+        ExtensionList = New List(Of String) From {".vfd", ".flp"}
+        For Each Extension In ExtensionList
+            If FileExt.Equals(Extension, StringComparison.OrdinalIgnoreCase) Then
+                Response.FilterIndex = CurrentIndex
+            End If
+        Next
+        Response.Filter = FileDialogAppendFilter(Response.Filter, "Virtual Floppy Disk", ExtensionList)
+        CurrentIndex += 1
+
+        Dim Items = System.Enum.GetValues(GetType(FloppyDiskType))
+        For Each Item As Integer In Items
+            Extension = GetFileFilterExtByType(Item)
+            If Extension <> "" Then
+                Dim Description = GetFileFilterDescriptionByType(Item)
+                If FileExt.Equals(Extension, StringComparison.OrdinalIgnoreCase) Then
+                    Response.Filter = FileDialogAppendFilter(Response.Filter, Description, Extension)
+                    Response.FilterIndex = CurrentIndex
+                    CurrentIndex += 1
+                ElseIf Item = DiskType Then
+                    Response.Filter = FileDialogAppendFilter(Response.Filter, Description, Extension)
+                    CurrentIndex += 1
+                End If
+            End If
+        Next
+
+        Response.Filter = FileDialogAppendFilter(Response.Filter, "All files", ".*")
+        If Response.FilterIndex = 0 Then
+            Response.FilterIndex = CurrentIndex
+        End If
+
+        Return Response
+    End Function
+
     Private Function GetWindowCaption() As String
         Return My.Application.Info.ProductName & " v" & _FileVersion
     End Function
 
     Private Sub HexDisplayBadSectors()
         Dim HexViewSectorData = HexViewBadSectors(_Disk)
-
-        If DisplayHexViewForm(HexViewSectorData) Then
-            DiskImageRefresh()
-        End If
-    End Sub
-
-    Private Sub HexDisplayLostClusters()
-        Dim HexViewSectorData = HexViewLostClusters(_Disk)
 
         If DisplayHexViewForm(HexViewSectorData) Then
             DiskImageRefresh()
@@ -1854,6 +2309,13 @@ Public Class MainForm
         End If
     End Sub
 
+    Private Sub HexDisplayLostClusters()
+        Dim HexViewSectorData = HexViewLostClusters(_Disk)
+
+        If DisplayHexViewForm(HexViewSectorData) Then
+            DiskImageRefresh()
+        End If
+    End Sub
     Private Sub ImageCountUpdate()
         If _FiltersApplied Then
             ToolStripImageCount.Text = $"{ComboImagesFiltered.Items.Count} of {ComboImages.Items.Count} {"Image".Pluralize(ComboImages.Items.Count)}"
@@ -1861,6 +2323,21 @@ Public Class MainForm
             ToolStripImageCount.Text = $"{ComboImages.Items.Count} {"Image".Pluralize(ComboImages.Items.Count)}"
         End If
     End Sub
+
+    Private Function InferFloppyDiskType(Disk As DiskImage.Disk) As FloppyDiskType
+        Dim DiskType As FloppyDiskType
+
+        If Disk.BPB.IsValid Then
+            DiskType = GetFloppyDiskType(Disk.BPB)
+        Else
+            DiskType = GetFloppyDiskType(Disk.FAT.MediaDescriptor)
+            If DiskType = FloppyDiskType.FloppyUnknown Then
+                DiskType = GetFloppyDiskType(Disk.Data.Length)
+            End If
+        End If
+
+        Return DiskType
+    End Function
 
     Private Sub InitButtonState(Disk As Disk, CurrentImageData As LoadedImageData)
         Dim FATTablesMatch As Boolean = True
@@ -1876,6 +2353,8 @@ Public Class MainForm
             ToolStripSeparatorFAT.Visible = Not FATTablesMatch
             ComboFAT.Visible = Not FATTablesMatch
             ComboFAT.Width = 55
+            BtnWriteFloppyA.Enabled = _DriveAEnabled
+            BtnWriteFloppyB.Enabled = _DriveBEnabled
         Else
             BtnDisplayBootSector.Enabled = False
             BtnDisplayDisk.Enabled = False
@@ -1885,6 +2364,8 @@ Public Class MainForm
             BtnDisplayDirectory.Enabled = False
             ToolStripSeparatorFAT.Visible = False
             ComboFAT.Visible = False
+            BtnWriteFloppyA.Enabled = False
+            BtnWriteFloppyB.Enabled = False
         End If
         BtnWin9xClean.Enabled = False
         BtnClearReservedBytes.Enabled = False
@@ -1894,75 +2375,9 @@ Public Class MainForm
 
         RefreshSaveButtons()
     End Sub
-
-    Private Function GetLoadDialogFilters() As String
-        Dim FileFilter As String
-        Dim ExtensionList As List(Of String)
-
-
-        FileFilter = FileDialogGetFilter("All Floppy Disk Images", _ValidFileExt)
-
-        ExtensionList = New List(Of String) From {".imz"}
-        FileFilter = FileDialogAppendFilter(FileFilter, "Compressed Disk Image", ExtensionList)
-
-        ExtensionList = New List(Of String) From {".vfd", ".flp"}
-        FileFilter = FileDialogAppendFilter(FileFilter, "Virtual Floppy Disk", ExtensionList)
-
-        FileFilter = FileDialogAppendFilter(FileFilter, "Zip Archive", ".zip")
-        FileFilter = FileDialogAppendFilter(FileFilter, "All files", ".*")
-
-        Return FileFilter
-    End Function
-
-    Private Function GetSaveDialogFilters(DiskType As FloppyDiskType, FileExt As String) As SaveDialogFilter
-        Dim Response As SaveDialogFilter
-        Dim CurrentIndex As Integer = 1
-        Dim Extension As String
-        Dim ExtensionList As List(Of String)
-
-        Response.FilterIndex = 0
-
-        ExtensionList = New List(Of String) From {".ima", ".img"}
-        For Each Extension In ExtensionList
-            If FileExt.Equals(Extension, StringComparison.OrdinalIgnoreCase) Then
-                Response.FilterIndex = CurrentIndex
-            End If
-        Next
-        Response.Filter = FileDialogGetFilter("Floppy Disk Image", ExtensionList)
-        CurrentIndex += 1
-
-        ExtensionList = New List(Of String) From {".vfd", ".flp"}
-        For Each Extension In ExtensionList
-            If FileExt.Equals(Extension, StringComparison.OrdinalIgnoreCase) Then
-                Response.FilterIndex = CurrentIndex
-            End If
-        Next
-        Response.Filter = FileDialogAppendFilter(Response.Filter, "Virtual Floppy Disk", ExtensionList)
-        CurrentIndex += 1
-
-        Dim Items = System.Enum.GetValues(GetType(FloppyDiskType))
-        For Each Item As Integer In Items
-            Extension = GetFileFilterExtByType(Item)
-            If Extension <> "" Then
-                Dim Description = GetFileFilterDescriptionByType(Item)
-                If FileExt.Equals(Extension, StringComparison.OrdinalIgnoreCase) Then
-                    Response.Filter = FileDialogAppendFilter(Response.Filter, Description, Extension)
-                    Response.FilterIndex = CurrentIndex
-                    CurrentIndex += 1
-                ElseIf Item = DiskType Then
-                    Response.Filter = FileDialogAppendFilter(Response.Filter, Description, Extension)
-                    CurrentIndex += 1
-                End If
-            End If
-        Next
-
-        Response.Filter = FileDialogAppendFilter(Response.Filter, "All files", ".*")
-        If Response.FilterIndex = 0 Then
-            Response.FilterIndex = CurrentIndex
-        End If
-
-        Return Response
-    End Function
+    Private Sub InitValidFilters()
+        ParseFileTypeFilters()
+    End Sub
 
     Private Function IsWin9xDisk(Disk As Disk) As Boolean
         Dim Response As Boolean = False
@@ -2060,197 +2475,6 @@ Public Class MainForm
 
         ListViewFiles.EndUpdate()
     End Sub
-
-    Private Shared Function ListViewFilesGetItem(Group As ListViewGroup, FileData As FileData) As ListViewItem
-        Dim SI As ListViewItem.ListViewSubItem
-        Dim ForeColor As Color
-        Dim IsDeleted As Boolean = FileData.DirectoryEntry.IsDeleted
-        Dim HasInvalidFileSize As Boolean = FileData.DirectoryEntry.HasInvalidFileSize
-        Dim IsBlank As Boolean = FileData.DirectoryEntry.IsBlank
-
-        Dim Attrib As String = IIf(FileData.DirectoryEntry.IsArchive, "A ", "- ") _
-            & IIf(FileData.DirectoryEntry.IsReadOnly, "R ", "- ") _
-            & IIf(FileData.DirectoryEntry.IsSystem, "S ", "- ") _
-            & IIf(FileData.DirectoryEntry.IsHidden, "H ", "- ") _
-            & IIf(FileData.DirectoryEntry.IsDirectory, "D ", "- ") _
-            & IIf(FileData.DirectoryEntry.IsVolumeName, "V ", "- ")
-
-        If IsDeleted Then
-            ForeColor = Color.Gray
-        ElseIf FileData.DirectoryEntry.IsValidValumeName Then
-            ForeColor = Color.Green
-        ElseIf FileData.DirectoryEntry.IsDirectory And Not FileData.DirectoryEntry.IsVolumeName Then
-            ForeColor = Color.Blue
-        End If
-
-        Dim ModifiedString As String = IIf(FileData.DirectoryEntry.IsModified, "#", "")
-
-        Dim Item = New ListViewItem(ModifiedString, Group) With {
-            .UseItemStyleForSubItems = False,
-            .Tag = FileData
-        }
-        If ModifiedString = "" Then
-            Item.ForeColor = ForeColor
-        Else
-            Item.ForeColor = Color.Blue
-        End If
-
-        SI = Item.SubItems.Add(FileData.DirectoryEntry.GetFileName)
-        SI.Name = "FileName"
-        If Not IsDeleted And FileData.DirectoryEntry.HasInvalidFilename Then
-            SI.ForeColor = Color.Red
-        Else
-            SI.ForeColor = ForeColor
-        End If
-
-        SI = Item.SubItems.Add(FileData.DirectoryEntry.GetFileExtension)
-        SI.Name = "FileExtension"
-        If Not IsDeleted And FileData.DirectoryEntry.HasInvalidExtension Then
-            SI.ForeColor = Color.Red
-        Else
-            SI.ForeColor = ForeColor
-        End If
-
-        If IsBlank Then
-            SI = Item.SubItems.Add("")
-        ElseIf HasInvalidFileSize Then
-            SI = Item.SubItems.Add("Invalid")
-            If Not IsDeleted Then
-                SI.ForeColor = Color.Red
-            Else
-                SI.ForeColor = ForeColor
-            End If
-        ElseIf Not IsDeleted And FileData.DirectoryEntry.HasIncorrectFileSize Then
-            SI = Item.SubItems.Add(Format(FileData.DirectoryEntry.FileSize, "N0"))
-            SI.ForeColor = Color.Red
-        Else
-            SI = Item.SubItems.Add(Format(FileData.DirectoryEntry.FileSize, "N0"))
-            SI.ForeColor = ForeColor
-        End If
-        SI.Name = "FileSize"
-
-        If IsBlank Then
-            SI = Item.SubItems.Add("")
-        Else
-            SI = Item.SubItems.Add(ExpandedDateToString(FileData.DirectoryEntry.GetLastWriteDate, True, True, False, True))
-            If FileData.DirectoryEntry.GetLastWriteDate.IsValidDate Or IsDeleted Then
-                SI.ForeColor = ForeColor
-            Else
-                SI.ForeColor = Color.Red
-            End If
-        End If
-        SI.Name = "FileLastWriteDate"
-
-        Dim SubItemForeColor As Color = ForeColor
-        If IsBlank Then
-            SI = Item.SubItems.Add("")
-        Else
-            If FileData.DirectoryEntry.HasInvalidStartingCluster Then
-                SI = Item.SubItems.Add("Invalid")
-                If Not IsDeleted Then
-                    SubItemForeColor = Color.Red
-                End If
-            Else
-                SI = Item.SubItems.Add(Format(FileData.DirectoryEntry.StartingCluster, "N0"))
-            End If
-        End If
-        SI.Name = "FileStartingCluster"
-
-        If IsBlank Then
-            SI = Item.SubItems.Add("")
-        Else
-            Dim ErrorText As String = ""
-            If Not IsDeleted And FileData.DirectoryEntry.IsCrossLinked Then
-                SubItemForeColor = Color.Red
-                ErrorText = "CL"
-            ElseIf Not IsDeleted And FileData.DirectoryEntry.HasCircularChain Then
-                SubItemForeColor = Color.Red
-                ErrorText = "CC"
-            End If
-            SI.ForeColor = SubItemForeColor
-
-            SI = Item.SubItems.Add(ErrorText)
-            SI.ForeColor = Color.Red
-        End If
-        SI.Name = "FileClusterError"
-
-        If IsBlank Then
-            Item.SubItems.Add("")
-        Else
-            SI = Item.SubItems.Add(Attrib)
-            If Not IsDeleted And FileData.DirectoryEntry.HasInvalidAttributes Then
-                SI.ForeColor = Color.Red
-            Else
-                SI.ForeColor = ForeColor
-            End If
-        End If
-
-        If IsBlank Then
-            Item.SubItems.Add("")
-        Else
-            If FileData.DirectoryEntry.IsValidFile Then
-                SI = Item.SubItems.Add(FileData.DirectoryEntry.GetChecksum().ToString("X8"))
-            Else
-                SI = Item.SubItems.Add("")
-            End If
-            SI.ForeColor = ForeColor
-        End If
-
-        If IsBlank Then
-            SI = Item.SubItems.Add("")
-        Else
-            If FileData.DirectoryEntry.HasCreationDate Then
-                SI = Item.SubItems.Add(ExpandedDateToString(FileData.DirectoryEntry.GetCreationDate, True, True, True, True))
-                If FileData.DirectoryEntry.GetCreationDate.IsValidDate Or IsDeleted Then
-                    SI.ForeColor = ForeColor
-                Else
-                    SI.ForeColor = Color.Red
-                End If
-            Else
-                SI = Item.SubItems.Add("")
-            End If
-        End If
-        SI.Name = "FileCreationDate"
-
-        If IsBlank Then
-            SI = Item.SubItems.Add("")
-        Else
-            If FileData.DirectoryEntry.HasLastAccessDate Then
-                SI = Item.SubItems.Add(ExpandedDateToString(FileData.DirectoryEntry.GetLastAccessDate))
-                If FileData.DirectoryEntry.GetLastAccessDate.IsValidDate Or IsDeleted Then
-                    SI.ForeColor = ForeColor
-                Else
-                    SI.ForeColor = Color.Red
-                End If
-            Else
-                SI = Item.SubItems.Add("")
-            End If
-        End If
-        SI.Name = "FileLastAccessDate"
-
-
-        If IsBlank Then
-            Item.SubItems.Add("")
-        Else
-            Dim Reserved As String = ""
-            If FileData.DirectoryEntry.ReservedForWinNT <> 0 Or FileData.DirectoryEntry.ReservedForFAT32 <> 0 Then
-                Reserved = FileData.DirectoryEntry.ReservedForWinNT.ToString("X2")
-                Reserved &= "-" & BitConverter.ToString(BitConverter.GetBytes(FileData.DirectoryEntry.ReservedForFAT32))
-            End If
-            SI = Item.SubItems.Add(Reserved)
-            SI.ForeColor = ForeColor
-        End If
-
-        If IsBlank Then
-            Item.SubItems.Add("")
-        Else
-            SI = Item.SubItems.Add(FileData.LFNFileName)
-            SI.ForeColor = ForeColor
-        End If
-
-        Return Item
-    End Function
-
     Private Sub ListViewFilesRefreshItem(Index As Integer)
         Dim Item = ListViewFiles.Items(Index)
         Dim FileData As FileData = Item.Tag
@@ -2307,34 +2531,6 @@ Public Class MainForm
         End If
         AddHandler Item.Click, AddressOf BtnDisplayDirectory_Click
     End Sub
-
-    Private Shared Function MsgBoxNewFileName(FileName As String) As MsgBoxResult
-        Dim Msg As String = $"'{FileName}' is a read-only file.  Please specify a new file name."
-        Return MsgBox(Msg, MsgBoxStyle.OkCancel)
-    End Function
-
-    Private Shared Function MsgBoxOverwrite(FilePath As String) As MyMsgBoxResult
-        Dim Msg As String = $"{IO.Path.GetFileName(FilePath)} already exists.{vbCrLf}Do you wish to replace it?"
-
-        Dim SaveAllForm As New SaveAllForm(Msg)
-        SaveAllForm.ShowDialog()
-        Return SaveAllForm.Result
-    End Function
-
-    Private Shared Function MsgBoxSave(FileName As String) As MsgBoxResult
-        Dim Msg As String = $"Save file '{FileName}'?"
-
-        Return MsgBox(Msg, MsgBoxStyle.Question + MsgBoxStyle.YesNoCancel + MsgBoxStyle.DefaultButton3, "Save")
-    End Function
-
-    Private Shared Function MsgBoxSaveAll(FileName As String) As MyMsgBoxResult
-        Dim Msg As String = $"Save file '{FileName}'?"
-
-        Dim SaveAllForm As New SaveAllForm(Msg)
-        SaveAllForm.ShowDialog()
-        Return SaveAllForm.Result
-    End Function
-
     Private Sub OEMNameFilterAdd(OEMName As String, UpdateFilters As Boolean)
         If OEMName.EndsWith("IHC") Then
             Return
@@ -2350,11 +2546,6 @@ Public Class MainForm
         Next
         _FilterOEMName.Populate()
     End Sub
-
-    Private Sub InitValidFilters()
-        ParseFileTypeFilters()
-    End Sub
-
     Private Sub ParseFileTypeFilters()
         Dim Items = System.Enum.GetValues(GetType(FloppyDiskType))
         For Each Item As Integer In Items
@@ -2436,22 +2627,6 @@ Public Class MainForm
         PopulateHashPanel(Disk)
         RefreshDiskButtons(Disk, ImageData)
     End Sub
-
-    Private Function InferFloppyDiskType(Disk As DiskImage.Disk) As FloppyDiskType
-        Dim DiskType As FloppyDiskType
-
-        If Disk.BPB.IsValid Then
-            DiskType = GetFloppyDiskType(Disk.BPB)
-        Else
-            DiskType = GetFloppyDiskType(Disk.FAT.MediaDescriptor)
-            If DiskType = FloppyDiskType.FloppyUnknown Then
-                DiskType = GetFloppyDiskType(Disk.Data.Length)
-            End If
-        End If
-
-        Return DiskType
-    End Function
-
     Private Sub PopulateSummaryPanel(Disk As Disk)
         Dim Value As String
         Dim ForeColor As Color
@@ -2874,83 +3049,6 @@ Public Class MainForm
 
         Cursor.Current = Cursors.Default
     End Sub
-
-    Private Sub FloppyDiskSaveFile(Buffer() As Byte, DiskType As FloppyDiskType)
-        Dim FileExt = ".ima"
-        Dim FileFilter = GetSaveDialogFilters(DiskType, FileExt)
-
-        Dim Dialog = New SaveFileDialog With {
-            .Filter = FileFilter.Filter,
-            .FilterIndex = FileFilter.FilterIndex,
-            .DefaultExt = FileExt
-        }
-
-        AddHandler Dialog.FileOk, Sub(sender As Object, e As CancelEventArgs)
-                                      If _LoadedFileNames.ContainsKey(Dialog.FileName) Then
-                                          Dim Msg As String = Path.GetFileName(Dialog.FileName) &
-                                            $"{vbCrLf}This file is currently open in {Application.ProductName}." &
-                                            $"Try again with a different file name."
-                                          MsgBox(Msg, MsgBoxStyle.Exclamation, "Save As")
-                                          e.Cancel = True
-                                      End If
-                                  End Sub
-
-        If Dialog.ShowDialog = DialogResult.OK Then
-            IO.File.WriteAllBytes(Dialog.FileName, Buffer)
-            ProcessFileDrop(Dialog.FileName)
-        End If
-    End Sub
-
-    Private Function FloppyDiskGetType(FloppyDrive As FloppyInterface) As BiosParameterBlock
-        Dim DetectedType As FloppyDiskType
-        Dim ReturnedType As FloppyDiskType
-        Dim BootSector As BootSector = Nothing
-
-        Dim Buffer(Disk.BYTES_PER_SECTOR - 1) As Byte
-        Dim BytesRead = FloppyDrive.ReadSector(0, Buffer)
-        If BytesRead = Buffer.Length Then
-            BootSector = New BootSector(New ImageByteArray(Buffer))
-            DetectedType = GetFloppyDiskType(BootSector.BPB)
-        Else
-            DetectedType = -1
-        End If
-
-        Dim FloppySelectForm As New FloppySelectForm(DetectedType)
-        FloppySelectForm.ShowDialog(Me)
-        ReturnedType = FloppySelectForm.DiskType
-        FloppySelectForm.Close()
-
-        If FloppySelectForm.DialogResult = DialogResult.Cancel Then
-            Return Nothing
-        ElseIf ReturnedType = -1 Then
-            Return Nothing
-        ElseIf BootSector IsNot Nothing AndAlso DetectedType = ReturnedType Then
-            Return BootSector.BPB
-        Else
-            Return BuildBPB(ReturnedType)
-        End If
-    End Function
-
-    Private Sub FloppyDiskRead(Drive As FloppyDriveEnum)
-        Dim FloppyDrive = New FloppyInterface
-        Dim Result = FloppyDrive.Open(Drive)
-        If Result Then
-            Dim BPB = FloppyDiskGetType(FloppyDrive)
-            If BPB IsNot Nothing Then
-                Dim FloppyAccessForm As New FloppyAccessForm(FloppyDrive, BPB)
-                FloppyAccessForm.ShowDialog(Me)
-                If FloppyAccessForm.Complete Then
-                    Dim DiskType = GetFloppyDiskType(BPB)
-                    FloppyDiskSaveFile(FloppyAccessForm.DiskBuffer, DiskType)
-                End If
-                FloppyAccessForm.Close()
-            End If
-            FloppyDrive.Close()
-        Else
-            MsgBox("Floppy Drive " & FloppyInterface.GetDriveLetter(Drive) & " is not ready.", MsgBoxStyle.Exclamation)
-        End If
-    End Sub
-
     Private Sub RefreshCheckAll()
         Dim CheckAll = (ListViewFiles.SelectedItems.Count = ListViewFiles.Items.Count And ListViewFiles.Items.Count > 0)
         If CheckAll <> _CheckAll Then
@@ -3385,21 +3483,6 @@ Public Class MainForm
             RefreshCurrentState()
         End If
     End Sub
-
-    Private Shared Function SaveDiskImageToFile(Disk As DiskImage.Disk, FilePath As String) As Boolean
-        Try
-            If IO.File.Exists(FilePath) Then
-                Dim BackupPath As String = FilePath & ".bak"
-                IO.File.Copy(FilePath, BackupPath, True)
-            End If
-            Disk.SaveFile(FilePath)
-        Catch ex As Exception
-            Return False
-        End Try
-
-        Return True
-    End Function
-
     Private Sub SetCurrentFileName(ImageData As LoadedImageData)
         Dim FileName = ImageData.FileName
 
@@ -3557,9 +3640,9 @@ Public Class MainForm
     End Sub
     Private Structure DirectoryStats
         Dim CanDelete As Boolean
-        Dim CanUndelete As Boolean
         Dim CanDeleteWithFill As Boolean
         Dim CanExport As Boolean
+        Dim CanUndelete As Boolean
         Dim FileSize As UInteger
         Dim FullFileName As String
         Dim IsDeleted As Boolean
@@ -3599,10 +3682,6 @@ Public Class MainForm
         HexDisplayBadSectors()
     End Sub
 
-    Private Sub BtnDisplayLostClusters_Click(sender As Object, e As EventArgs) Handles BtnDisplayLostClusters.Click
-        HexDisplayLostClusters()
-    End Sub
-
     Private Sub BtnDisplayBootSector_Click(sender As Object, e As EventArgs) Handles BtnDisplayBootSector.Click
         HexDisplayBootSector()
     End Sub
@@ -3631,6 +3710,9 @@ Public Class MainForm
         End If
     End Sub
 
+    Private Sub BtnDisplayLostClusters_Click(sender As Object, e As EventArgs) Handles BtnDisplayLostClusters.Click
+        HexDisplayLostClusters()
+    End Sub
     Private Sub BtnEditBootSector_Click(sender As Object, e As EventArgs) Handles BtnEditBootSector.Click
         BootSectorEdit()
     End Sub
@@ -3666,12 +3748,6 @@ Public Class MainForm
         DeleteSelectedFiles(True)
     End Sub
 
-    Private Sub BtnFileMenuUnDeleteFile_Click(sender As Object, e As EventArgs) Handles BtnFileMenuUnDeleteFile.Click
-        If ListViewFiles.SelectedItems.Count = 1 Then
-            UndeleteFile(ListViewFiles.SelectedItems(0))
-        End If
-    End Sub
-
     Private Sub BtnFileMenuFixSize_Click(sender As Object, e As EventArgs) Handles BtnFileMenuFixSize.Click
         If ListViewFiles.SelectedItems.Count = 1 Then
             FixFileSize(ListViewFiles.SelectedItems(0))
@@ -3684,6 +3760,11 @@ Public Class MainForm
         End If
     End Sub
 
+    Private Sub BtnFileMenuUnDeleteFile_Click(sender As Object, e As EventArgs) Handles BtnFileMenuUnDeleteFile.Click
+        If ListViewFiles.SelectedItems.Count = 1 Then
+            UndeleteFile(ListViewFiles.SelectedItems(0))
+        End If
+    End Sub
     Private Sub BtnFileMenuViewCrosslinked_Click(sender As Object, e As EventArgs) Handles BtnFileMenuViewCrosslinked.Click
         If ListViewFiles.SelectedItems.Count = 1 Then
             Dim Item As ListViewItem = ListViewFiles.SelectedItems(0)
@@ -3731,6 +3812,14 @@ Public Class MainForm
 
     Private Sub BtnOpen_Click(sender As Object, e As EventArgs) Handles BtnOpen.Click, ToolStripBtnOpen.Click
         FilesOpen()
+    End Sub
+
+    Private Sub BtnReadFloppyA_Click(sender As Object, e As EventArgs) Handles BtnReadFloppyA.Click
+        FloppyDiskRead(FloppyDriveEnum.FloppyDriveA)
+    End Sub
+
+    Private Sub BtnReadFloppyB_Click(sender As Object, e As EventArgs) Handles BtnReadFloppyB.Click
+        FloppyDiskRead(FloppyDriveEnum.FloppyDriveB)
     End Sub
 
     Private Sub BtnRedo_Click(sender As Object, e As EventArgs) Handles BtnRedo.Click, ToolStripBtnRedo.Click
@@ -3792,6 +3881,14 @@ Public Class MainForm
     End Sub
     Private Sub BtnWin9xCleanBatch_Click(sender As Object, e As EventArgs) Handles BtnWin9xCleanBatch.Click
         Win9xCleanBatch()
+    End Sub
+
+    Private Sub BtnWriteFloppyA_Click(sender As Object, e As EventArgs) Handles BtnWriteFloppyA.Click
+        FloppyDiskWrite(FloppyDriveEnum.FloppyDriveA)
+    End Sub
+
+    Private Sub BtnWriteFloppyB_Click(sender As Object, e As EventArgs) Handles BtnWriteFloppyB.Click
+        FloppyDiskWrite(FloppyDriveEnum.FloppyDriveB)
     End Sub
 
     Private Sub ComboFAT_SelectedIndexChanged(sender As Object, e As EventArgs) Handles ComboFAT.SelectedIndexChanged
@@ -4091,15 +4188,6 @@ Public Class MainForm
         Debounce.Stop()
         Debounce.Start()
     End Sub
-
-    Private Sub BtnReadFloppyA_Click(sender As Object, e As EventArgs) Handles BtnReadFloppyA.Click
-        FloppyDiskRead(FloppyDriveEnum.FloppyDriveA)
-    End Sub
-
-    Private Sub BtnReadFloppyB_Click(sender As Object, e As EventArgs) Handles BtnReadFloppyB.Click
-        FloppyDiskRead(FloppyDriveEnum.FloppyDriveB)
-    End Sub
-
 #End Region
 
 End Class

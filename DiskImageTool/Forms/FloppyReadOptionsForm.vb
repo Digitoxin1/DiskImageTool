@@ -1,6 +1,6 @@
 ﻿Imports DiskImageTool.DiskImage.FloppyDiskFunctions
 
-Public Class FloppySelectForm
+Public Class FloppyReadOptionsForm
     Private _DiskType As FloppyDiskType = -1
 
     Public Sub New(DetectedType As FloppyDiskType)
@@ -24,7 +24,7 @@ Public Class FloppySelectForm
         ComboDiskType.Items.Clear()
 
         If DetectedType = -1 Then
-            lblMessage.Text = "Warning: Unable to read the floppy disk boot sector."
+            lblMessage.Text = "Warning: Unable to determine the floppy disk type."
             DiskTypeItem = New ComboDiskTypeItem(DetectedType, False)
             Dim Index = ComboDiskType.Items.Add(DiskTypeItem)
             ComboDiskType.SelectedIndex = Index

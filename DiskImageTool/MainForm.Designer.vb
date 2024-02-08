@@ -154,6 +154,9 @@ Partial Class MainForm
         Me.DiskToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem()
         Me.BtnReadFloppyA = New System.Windows.Forms.ToolStripMenuItem()
         Me.BtnReadFloppyB = New System.Windows.Forms.ToolStripMenuItem()
+        Me.ToolStripMenuItem2 = New System.Windows.Forms.ToolStripSeparator()
+        Me.BtnWriteFloppyA = New System.Windows.Forms.ToolStripMenuItem()
+        Me.BtnWriteFloppyB = New System.Windows.Forms.ToolStripMenuItem()
         Me.ComboImagesFiltered = New System.Windows.Forms.ComboBox()
         Me.BtnResetSort = New System.Windows.Forms.Button()
         SummaryName = CType(New System.Windows.Forms.ColumnHeader(), System.Windows.Forms.ColumnHeader)
@@ -1106,7 +1109,7 @@ Partial Class MainForm
         '
         'DiskToolStripMenuItem
         '
-        Me.DiskToolStripMenuItem.DropDownItems.AddRange(New System.Windows.Forms.ToolStripItem() {Me.BtnReadFloppyA, Me.BtnReadFloppyB})
+        Me.DiskToolStripMenuItem.DropDownItems.AddRange(New System.Windows.Forms.ToolStripItem() {Me.BtnReadFloppyA, Me.BtnReadFloppyB, Me.ToolStripMenuItem2, Me.BtnWriteFloppyA, Me.BtnWriteFloppyB})
         Me.DiskToolStripMenuItem.Name = "DiskToolStripMenuItem"
         Me.DiskToolStripMenuItem.Size = New System.Drawing.Size(41, 20)
         Me.DiskToolStripMenuItem.Text = "Disk"
@@ -1114,14 +1117,31 @@ Partial Class MainForm
         'BtnReadFloppyA
         '
         Me.BtnReadFloppyA.Name = "BtnReadFloppyA"
-        Me.BtnReadFloppyA.Size = New System.Drawing.Size(180, 22)
+        Me.BtnReadFloppyA.Size = New System.Drawing.Size(181, 22)
         Me.BtnReadFloppyA.Text = "&Read Disk in Drive A"
         '
         'BtnReadFloppyB
         '
         Me.BtnReadFloppyB.Name = "BtnReadFloppyB"
-        Me.BtnReadFloppyB.Size = New System.Drawing.Size(180, 22)
+        Me.BtnReadFloppyB.Size = New System.Drawing.Size(181, 22)
         Me.BtnReadFloppyB.Text = "&Read Disk in Drive B"
+        '
+        'ToolStripMenuItem2
+        '
+        Me.ToolStripMenuItem2.Name = "ToolStripMenuItem2"
+        Me.ToolStripMenuItem2.Size = New System.Drawing.Size(178, 6)
+        '
+        'BtnWriteFloppyA
+        '
+        Me.BtnWriteFloppyA.Name = "BtnWriteFloppyA"
+        Me.BtnWriteFloppyA.Size = New System.Drawing.Size(181, 22)
+        Me.BtnWriteFloppyA.Text = "&Write Disk in Drive A"
+        '
+        'BtnWriteFloppyB
+        '
+        Me.BtnWriteFloppyB.Name = "BtnWriteFloppyB"
+        Me.BtnWriteFloppyB.Size = New System.Drawing.Size(181, 22)
+        Me.BtnWriteFloppyB.Text = "&Write Disk in Drive B"
         '
         'ComboImagesFiltered
         '
@@ -1289,4 +1309,7 @@ Partial Class MainForm
     Friend WithEvents DiskToolStripMenuItem As ToolStripMenuItem
     Friend WithEvents BtnReadFloppyA As ToolStripMenuItem
     Friend WithEvents BtnReadFloppyB As ToolStripMenuItem
+    Friend WithEvents ToolStripMenuItem2 As ToolStripSeparator
+    Friend WithEvents BtnWriteFloppyA As ToolStripMenuItem
+    Friend WithEvents BtnWriteFloppyB As ToolStripMenuItem
 End Class

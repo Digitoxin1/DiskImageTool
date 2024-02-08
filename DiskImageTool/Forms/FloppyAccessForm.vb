@@ -2,28 +2,35 @@
 Imports System.ComponentModel
 
 Public Class FloppyAccessForm
+    Private ReadOnly _AccessType As FloppyAccessType
     Private ReadOnly _BPB As BiosParameterBlock
     Private ReadOnly _FloppyDrive As FloppyInterface
     Private _Activated As Boolean = False
     Private _Complete As Boolean = False
     Private _DiskBuffer() As Byte = Nothing
+    Private _DoFormat As Boolean
+    Private _DoVerify As Boolean
     Private _EndProcess As Boolean = False
+    Private _LastStatus As TrackStatus
     Private _SectorData As SectorData = Nothing
     Private _SectorError As Boolean = False
     Private _TotalBadSectors As UInteger = 0
 
-    Private Enum SectorReadType
-        BySector
-        ByTrack
+    Public Enum FloppyAccessType
+        Read
+        Write
     End Enum
 
     Private Enum TrackStatus
-        Pending
+        Reading
+        Writing
+        Verifying
+        Formatting
         Success
         Failure
     End Enum
 
-    Public Sub New(FloppyDrive As FloppyInterface, BPB As BiosParameterBlock)
+    Public Sub New(FloppyDrive As FloppyInterface, BPB As BiosParameterBlock, AccessType As FloppyAccessType)
         ' This call is required by the designer.
         InitializeComponent()
 
@@ -35,11 +42,14 @@ Public Class FloppyAccessForm
             .GetProperty("DoubleBuffered", System.Reflection.BindingFlags.Instance Or System.Reflection.BindingFlags.NonPublic) _
             .SetValue(TableSide1, True, Nothing)
 
+        _AccessType = AccessType
         _FloppyDrive = FloppyDrive
         _BPB = BPB
         ReDim _DiskBuffer(_BPB.ImageSize - 1)
+        Dim StatusTypeString = IIf(AccessType = FloppyAccessType.Read, "Reading", "Writing")
 
-        Me.Text = "Reading " & GetFloppyDiskTypeName(_BPB) & " Floppy"
+        Me.Text = StatusTypeString & " " & GetFloppyDiskTypeName(_BPB) & " Floppy"
+        StatusType.Text = StatusTypeString
 
         InitTables()
     End Sub
@@ -50,10 +60,31 @@ Public Class FloppyAccessForm
         End Get
     End Property
 
-    Public ReadOnly Property DiskBuffer As Byte()
+    Public Property DiskBuffer As Byte()
         Get
             Return _DiskBuffer
         End Get
+        Set(value As Byte())
+            _DiskBuffer = value
+        End Set
+    End Property
+
+    Public Property DoFormat As Boolean
+        Get
+            Return _DoFormat
+        End Get
+        Set(value As Boolean)
+            _DoFormat = value
+        End Set
+    End Property
+
+    Public Property DoVerify As Boolean
+        Get
+            Return _DoVerify
+        End Get
+        Set(value As Boolean)
+            _DoVerify = value
+        End Set
     End Property
 
     Public ReadOnly Property TotalBadSectors As UInteger
@@ -77,6 +108,13 @@ Public Class FloppyAccessForm
         Return objLabel
     End Function
 
+    Private Sub ClearFlags()
+        _Complete = False
+        _EndProcess = False
+        _LastStatus = TrackStatus.Reading
+        _SectorError = False
+    End Sub
+
     Private Function ConfirmAbort() As Boolean
         Dim Msg = "Are you sure you wish to abort?"
         Dim MsgBoxResult = MsgBox(Msg, MsgBoxStyle.YesNo Or MsgBoxStyle.DefaultButton2)
@@ -89,13 +127,31 @@ Public Class FloppyAccessForm
         End If
     End Function
 
+    Private Function FloppyDiskFormatTrack(bw As BackgroundWorker, TrackInfo As TrackInfo, SectorData As SectorData) As Boolean
+        Dim Result As Boolean
+
+        TrackInfo.Status = TrackStatus.Formatting
+        _LastStatus = TrackInfo.Status
+        bw.ReportProgress(0, TrackInfo)
+        Result = FormatTrack(SectorData.SectorStart)
+
+        If Not Result Then
+            TrackInfo.Status = TrackStatus.Failure
+            TrackInfo.BadSectors = 0
+            bw.ReportProgress(0, TrackInfo)
+            _SectorError = True
+            _SectorData = SectorData
+        End If
+
+        Return Result
+    End Function
+
     Private Sub FloppyDiskRead(bw As BackgroundWorker)
-        _Complete = False
-        _EndProcess = False
-        _SectorError = False
         Dim TrackInfo As TrackInfo
         Dim SectorData As SectorData
         Dim SectorStart As UInteger
+
+        ClearFlags()
 
         If _SectorData Is Nothing Then
             SectorStart = 0
@@ -106,6 +162,7 @@ Public Class FloppyAccessForm
         End If
 
         For Sector As UInteger = SectorStart To _BPB.SectorCount - 1 Step _BPB.SectorsPerTrack
+            TrackInfo = New TrackInfo(Sector)
             If SectorData Is Nothing Then
                 SectorData = New SectorData(Sector, _BPB.SectorsPerTrack)
             End If
@@ -113,22 +170,21 @@ Public Class FloppyAccessForm
                 _SectorData = SectorData
                 Exit Sub
             End If
-            TrackInfo.Sector = Sector
-            TrackInfo.Status = TrackStatus.Pending
-            TrackInfo.BadSectors = 0
+
+            _LastStatus = TrackInfo.Status
             bw.ReportProgress(0, TrackInfo)
-            If SectorData.SectorsRead = 0 Then
-                ReadSectors(_DiskBuffer, SectorData, SectorReadType.ByTrack)
+            If SectorData.SectorsProcessed = 0 Then
+                ReadSectorsByTrack(_DiskBuffer, SectorData)
             End If
-            If SectorData.SectorsRead < SectorData.SectorCount Then
-                ReadSectors(_DiskBuffer, SectorData, SectorReadType.BySector)
+            If SectorData.SectorsProcessed < SectorData.SectorCount Then
+                ReadSectorsBySector(_DiskBuffer, SectorData)
             End If
-            If SectorData.SectorCount = SectorData.SectorsRead Then
+            If SectorData.SectorCount = SectorData.SectorsProcessed Then
                 TrackInfo.Status = TrackStatus.Success
                 TrackInfo.BadSectors = 0
             Else
                 TrackInfo.Status = TrackStatus.Failure
-                TrackInfo.BadSectors = SectorData.SectorCount - SectorData.SectorsRead
+                TrackInfo.BadSectors = SectorData.SectorCount - SectorData.SectorsProcessed
                 _SectorError = True
             End If
             bw.ReportProgress(0, TrackInfo)
@@ -137,17 +193,191 @@ Public Class FloppyAccessForm
                 _SectorData = SectorData
                 Exit Sub
             End If
+
             SectorData = Nothing
         Next
 
         _Complete = True
     End Sub
 
+    Private Function FloppyDiskVerifyTrack(bw As BackgroundWorker, TrackInfo As TrackInfo, SectorData As SectorData) As Boolean
+        Dim Result As Boolean
+
+        TrackInfo.Status = TrackStatus.Verifying
+        _LastStatus = TrackInfo.Status
+        bw.ReportProgress(0, TrackInfo)
+        TrackInfo.BytesRead = ReadSectorsByTrack(Nothing, SectorData)
+
+        If SectorData.SectorCount <> SectorData.SectorsProcessed Then
+            TrackInfo.BadSectors = SectorData.SectorCount - SectorData.SectorsProcessed
+            Result = False
+        ElseIf Not TrackInfo.BytesWritten.CompareTo(TrackInfo.BytesRead) Then
+            TrackInfo.BadSectors = 0
+            Result = False
+        Else
+            Result = True
+        End If
+
+        If Not Result Then
+            TrackInfo.Status = TrackStatus.Failure
+            bw.ReportProgress(0, TrackInfo)
+            _SectorError = True
+            _SectorData = SectorData
+        End If
+
+        Return Result
+    End Function
+
+    Private Sub FloppyDiskWrite(bw As BackgroundWorker, ByVal Format As Boolean, ByVal Verify As Boolean)
+        Dim TrackInfo As TrackInfo
+        Dim SectorData As SectorData
+        Dim SectorStart As UInteger
+
+        ClearFlags()
+
+        If _SectorData Is Nothing Then
+            SectorStart = 0
+            SectorData = Nothing
+        Else
+            SectorStart = _SectorData.SectorStart
+            SectorData = _SectorData
+        End If
+
+        For Sector As UInteger = SectorStart To _BPB.SectorCount - 1 Step _BPB.SectorsPerTrack
+            TrackInfo = New TrackInfo(Sector)
+            If SectorData Is Nothing Then
+                SectorData = New SectorData(Sector, _BPB.SectorsPerTrack)
+            End If
+            If bw.CancellationPending Then
+                _SectorData = SectorData
+                Exit Sub
+            End If
+
+            If Format Then
+                If Not FloppyDiskFormatTrack(bw, TrackInfo, SectorData) Then
+                    Exit Sub
+                End If
+            End If
+
+            If Not FloppyDiskWriteTrack(bw, TrackInfo, SectorData) Then
+                Exit Sub
+            End If
+
+            If Verify Then
+                If Not FloppyDiskVerifyTrack(bw, TrackInfo, SectorData) Then
+                    Exit Sub
+                End If
+            End If
+
+            TrackInfo.Status = TrackStatus.Success
+            bw.ReportProgress(0, TrackInfo)
+
+            SectorData = Nothing
+        Next
+
+        _Complete = True
+    End Sub
+
+    Private Function FloppyDiskWriteTrack(bw As BackgroundWorker, TrackInfo As TrackInfo, SectorData As SectorData) As Boolean
+        Dim Result As Boolean
+
+        TrackInfo.Status = TrackStatus.Writing
+        _LastStatus = TrackInfo.Status
+        bw.ReportProgress(0, TrackInfo)
+        TrackInfo.BytesWritten = WriteSectorsByTrack(_DiskBuffer, SectorData)
+        Result = (SectorData.SectorCount = SectorData.SectorsProcessed)
+
+        If Not Result Then
+            TrackInfo.Status = TrackStatus.Failure
+            TrackInfo.BadSectors = SectorData.SectorCount - SectorData.SectorsProcessed
+            bw.ReportProgress(0, TrackInfo)
+            _SectorError = True
+            _SectorData = SectorData
+        End If
+
+        Return Result
+    End Function
+
+    Private Function FormatTrack(Sector As UInteger) As Boolean
+        Dim Track = _BPB.SectorToTrack(Sector)
+        Dim Side = _BPB.SectorToSide(Sector)
+        Dim MediaType As FloppyInterface.MEDIA_TYPE = GetMediaTypeFromDiskType(GetFloppyDiskType(_BPB))
+
+        If MediaType = FloppyInterface.MEDIA_TYPE.Unknown Then
+            Return False
+        Else
+            Return _FloppyDrive.FormatTrack(MediaType, Track, Side)
+        End If
+    End Function
+
+    Private Function GetMediaTypeFromDiskType(DiskType As FloppyDiskType) As FloppyInterface.MEDIA_TYPE
+        Select Case DiskType
+            Case FloppyDiskType.Floppy160
+                Return FloppyInterface.MEDIA_TYPE.F5_160_512
+            Case FloppyDiskType.Floppy180
+                Return FloppyInterface.MEDIA_TYPE.F5_180_512
+            Case FloppyDiskType.Floppy320
+                Return FloppyInterface.MEDIA_TYPE.F5_320_512
+            Case FloppyDiskType.Floppy360
+                Return FloppyInterface.MEDIA_TYPE.F5_360_512
+            Case FloppyDiskType.Floppy720
+                Return FloppyInterface.MEDIA_TYPE.F3_720_512
+            Case FloppyDiskType.Floppy1200
+                Return FloppyInterface.MEDIA_TYPE.F5_1Pt2_512
+            Case FloppyDiskType.Floppy1440
+                Return FloppyInterface.MEDIA_TYPE.F3_1Pt44_512
+            Case FloppyDiskType.Floppy2880
+                Return FloppyInterface.MEDIA_TYPE.F3_2Pt88_512
+            Case FloppyDiskType.FloppyProCopy
+                Return FloppyInterface.MEDIA_TYPE.F3_1Pt44_512
+            Case Else
+                Return FloppyInterface.MEDIA_TYPE.Unknown
+        End Select
+    End Function
+
+    Private Function GetStatusColor(Status As TrackStatus) As Color
+        Select Case Status
+            Case TrackStatus.Reading
+                Return Color.Blue
+            Case TrackStatus.Writing
+                Return Color.Blue
+            Case TrackStatus.Verifying
+                Return Color.Purple
+            Case TrackStatus.Formatting
+                Return Color.Yellow
+            Case TrackStatus.Success
+                Return Color.LightGreen
+            Case TrackStatus.Failure
+                Return Color.Red
+            Case Else
+                Return Color.Red
+        End Select
+    End Function
+
+    Private Function GetStatusText(Status As TrackStatus) As String
+        Select Case Status
+            Case TrackStatus.Reading
+                Return "Reading"
+            Case TrackStatus.Writing
+                Return "Writing"
+            Case TrackStatus.Verifying
+                Return "Verifying"
+            Case TrackStatus.Formatting
+                Return "Formatting"
+            Case Else
+                Return ""
+        End Select
+    End Function
     Private Function HandleError() As Boolean
         Dim Track = _BPB.SectorToTrack(_SectorData.SectorStart)
         Dim Side = _BPB.SectorToSide(_SectorData.SectorStart)
-        Dim BadSectors = _SectorData.SectorCount - _SectorData.SectorsRead
-        Dim Msg = "Error Reading " & BadSectors & " Sector".Pluralize(BadSectors) & " in Track " & Track & ", Side " & Side & "."
+        Dim BadSectors = _SectorData.SectorCount - _SectorData.SectorsProcessed
+        Dim Msg As String
+        If _AccessType = FloppyAccessType.Read Then
+            Msg = "Error Reading " & BadSectors & " Sector".Pluralize(BadSectors) & " in Track " & Track & ", Side " & Side & "."
+        Else
+            Msg = "Error " & GetStatusText(_LastStatus) & " Track " & Track & ", Side " & Side & "."
+        End If
         Dim MsgBoxResult = MsgBox(Msg, MsgBoxStyle.AbortRetryIgnore Or MsgBoxStyle.DefaultButton2)
 
         If MsgBoxResult = MsgBoxResult.Abort Then
@@ -213,51 +443,88 @@ Public Class FloppyAccessForm
             Next
         Next
     End Sub
-    Private Sub ReadSectors(DiskBuffer() As Byte, SectorData As SectorData, ReadType As SectorReadType)
-        If ReadType = SectorReadType.ByTrack Then
-            Dim BufferSize = Disk.BYTES_PER_SECTOR * SectorData.SectorCount
-            Dim Buffer(BufferSize - 1) As Byte
-            Dim BytesRead = _FloppyDrive.ReadSector(SectorData.SectorStart, Buffer)
-            If BytesRead = Buffer.Length Then
-                Buffer.CopyTo(DiskBuffer, Disk.SectorToBytes(SectorData.SectorStart))
-                SectorData.SectorsRead = SectorData.SectorCount
-                For Count = 0 To SectorData.SectorCount - 1
+    Private Sub ReadSectorsBySector(DiskBuffer() As Byte, SectorData As SectorData)
+        Dim BufferSize = Disk.BYTES_PER_SECTOR
+        Dim Buffer(BufferSize - 1) As Byte
+        For Count = 0 To SectorData.SectorCount - 1
+            If Not SectorData.SectorStatus(Count) Then
+                Dim Sector = SectorData.SectorStart + Count
+                Dim BytesRead = _FloppyDrive.ReadSector(Sector, Buffer)
+                If BytesRead = Buffer.Length Then
+                    Buffer.CopyTo(DiskBuffer, Disk.SectorToBytes(Sector))
+                    SectorData.SectorsProcessed += 1
                     SectorData.SectorStatus(Count) = True
-                Next
-            Else
-                SectorData.SectorsRead = 0
-                For Count = 0 To SectorData.SectorCount - 1
-                    SectorData.SectorStatus(Count) = False
-                Next
-            End If
-        Else
-            Dim BufferSize = Disk.BYTES_PER_SECTOR
-            Dim Buffer(BufferSize - 1) As Byte
-            For Count = 0 To SectorData.SectorCount - 1
-                If Not SectorData.SectorStatus(Count) Then
-                    Dim Sector = SectorData.SectorStart + Count
-                    Dim BytesRead = _FloppyDrive.ReadSector(Sector, Buffer)
-                    If BytesRead = Buffer.Length Then
-                        Buffer.CopyTo(DiskBuffer, Disk.SectorToBytes(Sector))
-                        SectorData.SectorsRead += 1
-                        SectorData.SectorStatus(Count) = True
-                    End If
                 End If
-            Next
-        End If
+            End If
+        Next
     End Sub
 
-    Private Structure TrackInfo
-        Dim BadSectors As UShort
-        Dim Sector As UInteger
-        Dim Status As TrackStatus
-    End Structure
+    Private Function ReadSectorsByTrack(DiskBuffer() As Byte, SectorData As SectorData) As Byte()
+        Dim BufferSize = Disk.BYTES_PER_SECTOR * SectorData.SectorCount
+        Dim Buffer(BufferSize - 1) As Byte
+        Dim BytesRead = _FloppyDrive.ReadSector(SectorData.SectorStart, Buffer)
+        If BytesRead = Buffer.Length Then
+            If DiskBuffer IsNot Nothing Then
+                Buffer.CopyTo(DiskBuffer, Disk.SectorToBytes(SectorData.SectorStart))
+            End If
+            SectorData.SectorsProcessed = SectorData.SectorCount
+            For Count = 0 To SectorData.SectorCount - 1
+                SectorData.SectorStatus(Count) = True
+            Next
+        Else
+            SectorData.SectorsProcessed = 0
+            For Count = 0 To SectorData.SectorCount - 1
+                SectorData.SectorStatus(Count) = False
+            Next
+        End If
+
+        Return Buffer
+    End Function
+    Private Sub WriteSectorsBySector(DiskBuffer() As Byte, SectorData As SectorData)
+        Dim BufferSize = Disk.BYTES_PER_SECTOR
+        Dim Buffer(BufferSize - 1) As Byte
+        For Count = 0 To SectorData.SectorCount - 1
+            If Not SectorData.SectorStatus(Count) Then
+                Dim Sector = SectorData.SectorStart + Count
+                Array.Copy(_DiskBuffer, Disk.SectorToBytes(Sector), Buffer, 0, Buffer.Length)
+                Dim BytesWritten = _FloppyDrive.WriteSector(Sector, Buffer)
+                If BytesWritten = Buffer.Length Then
+                    SectorData.SectorsProcessed += 1
+                    SectorData.SectorStatus(Count) = True
+                End If
+            End If
+        Next
+    End Sub
+
+    Private Function WriteSectorsByTrack(DiskBuffer() As Byte, SectorData As SectorData) As Byte()
+        Dim BufferSize = Disk.BYTES_PER_SECTOR * SectorData.SectorCount
+        Dim Buffer(BufferSize - 1) As Byte
+        Array.Copy(_DiskBuffer, Disk.SectorToBytes(SectorData.SectorStart), Buffer, 0, Buffer.Length)
+        Dim BytesWritten = _FloppyDrive.WriteSector(SectorData.SectorStart, Buffer)
+        If BytesWritten = Buffer.Length Then
+            SectorData.SectorsProcessed = SectorData.SectorCount
+            For Count = 0 To SectorData.SectorCount - 1
+                SectorData.SectorStatus(Count) = True
+            Next
+        Else
+            SectorData.SectorsProcessed = 0
+            For Count = 0 To SectorData.SectorCount - 1
+                SectorData.SectorStatus(Count) = False
+            Next
+        End If
+
+        Return Buffer
+    End Function
 #Region "Events"
 
     Private Sub BackgroundWorker1_DoWork(sender As Object, e As DoWorkEventArgs) Handles BackgroundWorker1.DoWork
         Dim bw As BackgroundWorker = CType(sender, BackgroundWorker)
 
-        FloppyDiskRead(bw)
+        If _AccessType = FloppyAccessType.Read Then
+            FloppyDiskRead(bw)
+        Else
+            FloppyDiskWrite(bw, _DoFormat, _DoVerify)
+        End If
     End Sub
 
     Private Sub BackgroundWorker1_ProgressChanged(sender As Object, e As ProgressChangedEventArgs) Handles BackgroundWorker1.ProgressChanged
@@ -277,16 +544,12 @@ Public Class FloppyAccessForm
         If Table IsNot Nothing Then
             Dim Row As Integer = Track \ 10
             Dim Col As Integer = Track Mod 10
-            Dim BackColor As Color
             Dim objLabel As Label = Table.GetControlFromPosition(Col, Row)
-            If TrackInfo.Status = TrackStatus.Pending Then
-                BackColor = Color.Blue
-            ElseIf TrackInfo.Status = TrackStatus.Success Then
-                BackColor = Color.LightGreen
-            Else
-                BackColor = Color.Red
+            Dim StatusText = GetStatusText(TrackInfo.Status)
+            If StatusText <> "" Then
+                StatusType.Text = StatusText
             End If
-            objLabel.BackColor = BackColor
+            objLabel.BackColor = GetStatusColor(TrackInfo.Status)
             If TrackInfo.BadSectors > 0 Then
                 objLabel.Text = TrackInfo.BadSectors
             Else
@@ -307,10 +570,18 @@ Public Class FloppyAccessForm
             End If
         End If
         If Not _Complete Then
-            If Not ConfirmAbort Then
+            If Not ConfirmAbort() Then
                 Exit Sub
             End If
         End If
+
+        If _AccessType = FloppyAccessType.Write Then
+            If _Complete Then
+                Dim Msg As String = $"Your disk has been written successfully.{vbCrLf}{vbCrLf}Please remove the disk from the drive and write protect it now.{vbCrLf}{vbCrLf}Warning: If you continue without write protecting the disk, The operating system may make modifications to the disk as soon as you close this window."
+                MsgBox(Msg, MsgBoxStyle.Information)
+            End If
+        End If
+
         Me.Hide()
     End Sub
 
@@ -340,7 +611,7 @@ Public Class FloppyAccessForm
         Public Sub New(SectorStart As UInteger, SectorCount As UShort)
             _SectorCount = SectorCount
             _SectorStart = SectorStart
-            _SectorsRead = 0
+            _SectorsProcessed = 0
             ReDim _SectorStatus(SectorCount - 1)
         End Sub
 
@@ -350,7 +621,7 @@ Public Class FloppyAccessForm
             End Get
         End Property
 
-        Public Property SectorsRead As UShort
+        Public Property SectorsProcessed As UShort
 
         Public ReadOnly Property SectorStart As UInteger
             Get
@@ -358,6 +629,17 @@ Public Class FloppyAccessForm
             End Get
         End Property
         Public Property SectorStatus As Boolean()
+    End Class
+
+    Private Class TrackInfo
+        Public Sub New(Sector As UInteger)
+            _Sector = Sector
+        End Sub
+        Public Property BadSectors As UShort = 0
+        Public Property BytesRead As Byte() = Nothing
+        Public Property BytesWritten As Byte() = Nothing
+        Public ReadOnly Property Sector As UInteger
+        Public Property Status As TrackStatus
     End Class
 
 End Class

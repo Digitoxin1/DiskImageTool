@@ -180,10 +180,16 @@
     <Compile Include="Forms\FloppyAccessForm.vb">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Forms\FloppySelectForm.Designer.vb">
-      <DependentUpon>FloppySelectForm.vb</DependentUpon>
+    <Compile Include="Forms\FloppyReadOptionsForm.Designer.vb">
+      <DependentUpon>FloppyReadOptionsForm.vb</DependentUpon>
     </Compile>
-    <Compile Include="Forms\FloppySelectForm.vb">
+    <Compile Include="Forms\FloppyReadOptionsForm.vb">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\FloppyWriteOptionsForm.Designer.vb">
+      <DependentUpon>FloppyWriteOptionsForm.vb</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\FloppyWriteOptionsForm.vb">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="Forms\HexSearchForm.Designer.vb">
@@ -277,9 +283,7 @@
     <Compile Include="Forms\TextViewForm.Designer.vb">
       <DependentUpon>TextViewForm.vb</DependentUpon>
     </Compile>
-    <Compile Include="Forms\TextViewForm.vb">
-      <SubType>Form</SubType>
-    </Compile>
+    <Compile Include="Forms\TextViewForm.vb" />
     <Compile Include="Controls\ToolStripNumericUpDown.vb">
       <SubType>Component</SubType>
     </Compile>
@@ -306,8 +310,11 @@
       <DependentUpon>FloppyAccessForm.vb</DependentUpon>
       <SubType>Designer</SubType>
     </EmbeddedResource>
-    <EmbeddedResource Include="Forms\FloppySelectForm.resx">
-      <DependentUpon>FloppySelectForm.vb</DependentUpon>
+    <EmbeddedResource Include="Forms\FloppyReadOptionsForm.resx">
+      <DependentUpon>FloppyReadOptionsForm.vb</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\FloppyWriteOptionsForm.resx">
+      <DependentUpon>FloppyWriteOptionsForm.vb</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\HexSearchForm.resx">
       <DependentUpon>HexSearchForm.vb</DependentUpon>
