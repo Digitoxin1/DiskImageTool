@@ -544,6 +544,7 @@
   </bootstrap>
   <bootstrap crc32="FE944220" jmp="EB3C90">
     <oemname name="MSDOS5.0" company="Microsoft" description="MS-DOS 5.0, MS-DOS 6.0" verified="true" />
+    <oemname name="MSDOS6.0" verified="true" />
     <oemname name="MSDBL6.0" />
     <oemname name="MSDSP6.0" />
     <oemname name="MSDMF3.2" company="Microsoft" description="Microsoft Distribution Media Format" />

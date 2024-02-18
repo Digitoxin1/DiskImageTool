@@ -1,6 +1,7 @@
 ﻿Imports System.ComponentModel
 Imports System.IO
 Imports System.Net
+Imports System.Security.Principal
 Imports System.Text
 Imports DiskImageTool.DiskImage
 Imports BootSectorOffsets = DiskImageTool.DiskImage.BootSector.BootSectorOffsets
@@ -40,7 +41,8 @@ Public Class MainForm
     Private ReadOnly _ArchiveFilterExt As New List(Of String) From {".zip"}
     Private ReadOnly _lvwColumnSorter As ListViewColumnSorter
     Private ReadOnly _ValidFileExt As New List(Of String) From {".ima", ".img", ".imz", ".vfd", ".flp"}
-    Private _BootStrap As Bootstrap
+    Private _BootStrapDB As BoootstrapDB
+    Private _TitleDB As FloppyDB
     Private _CheckAll As Boolean = False
     Private _CurrentImageData As LoadedImageData = Nothing
     Private _Disk As DiskImage.Disk
@@ -361,7 +363,7 @@ Public Class MainForm
             Dim OEMName = Disk.BootSector.OEMName
             OEMNameWin9x = Disk.BootSector.IsWin9xOEMName
 
-            Dim BootstrapType = _BootStrap.FindMatch(Disk.BootSector.BootStrapCode)
+            Dim BootstrapType = _BootStrapDB.FindMatch(Disk.BootSector.BootStrapCode)
             OEMNameFound = BootstrapType IsNot Nothing
             If OEMNameFound AndAlso Not OEMNameWin9x AndAlso Not BootstrapType.ExactMatch Then
                 OEMNameMatched = False
@@ -441,7 +443,7 @@ Public Class MainForm
         Disk.Data.BatchEditMode = True
 
         If Disk.BootSector.IsWin9xOEMName Then
-            Dim BootstrapType = _BootStrap.FindMatch(Disk.BootSector.BootStrapCode)
+            Dim BootstrapType = _BootStrapDB.FindMatch(Disk.BootSector.BootStrapCode)
             If BootstrapType IsNot Nothing Then
                 If BootstrapType.KnownOEMNames.Count > 0 Then
                     Disk.BootSector.OEMName = BootstrapType.KnownOEMNames.Item(0).Name
@@ -796,7 +798,7 @@ Public Class MainForm
     End Function
 
     Private Sub BootSectorEdit()
-        Dim BootSectorForm As New BootSectorForm(_Disk, _BootStrap)
+        Dim BootSectorForm As New BootSectorForm(_Disk, _BootStrapDB)
 
         BootSectorForm.ShowDialog()
 
@@ -1581,10 +1583,11 @@ Public Class MainForm
         Dim CurrentImageData As LoadedImageData = ComboImages.SelectedItem
         ItemScan(ScanType, _Disk, CurrentImageData, True)
         RefreshFileButtons()
+        Dim CRC32Checksum = Crc32.ComputeChecksum(_Disk.Data.Data)
         If RefreshSummary Then
-            PopulateSummaryPanel(_Disk)
+            PopulateSummaryPanel(_Disk, CRC32Checksum)
         End If
-        PopulateHashPanel(_Disk)
+        PopulateHashPanel(_Disk, CRC32Checksum)
         RefreshCurrentState()
     End Sub
 
@@ -2304,7 +2307,8 @@ Public Class MainForm
         If DisplayHexViewForm(HexViewSectorData) Then
             Dim CurrentImageData As LoadedImageData = ComboImages.SelectedItem
             ItemScan(ItemScanTypes.FreeClusters, _Disk, CurrentImageData, True)
-            PopulateHashPanel(_Disk)
+            Dim CRC32Checksum = Crc32.ComputeChecksum(_Disk.Data.Data)
+            PopulateHashPanel(_Disk, CRC32Checksum)
             RefreshCurrentState()
         End If
     End Sub
@@ -2385,7 +2389,7 @@ Public Class MainForm
         Dim OEMName = Disk.BootSector.OEMName
 
         If OEMNameWin9x Then
-            Dim BootstrapType = _BootStrap.FindMatch(Disk.BootSector.BootStrapCode)
+            Dim BootstrapType = _BootStrapDB.FindMatch(Disk.BootSector.BootStrapCode)
 
             If BootstrapType IsNot Nothing Then
                 For Each KnownOEMName In BootstrapType.KnownOEMNames
@@ -2605,13 +2609,13 @@ Public Class MainForm
         ItemSelectionChanged()
     End Sub
 
-    Private Sub PopulateHashPanel(Disk As Disk)
+    Private Sub PopulateHashPanel(Disk As Disk, CRC32Checksum As UInteger)
         With ListViewHashes
             .BeginUpdate()
             .Items.Clear()
 
             If Disk IsNot Nothing Then
-                .AddItem("CRC32", Crc32.ComputeChecksum(Disk.Data.Data).ToString("X8"), False)
+                .AddItem("CRC32", CRC32Checksum.ToString("X8"), False)
                 .AddItem("MD5", MD5Hash(Disk.Data.Data), False)
                 .AddItem("SHA-1", SHA1Hash(Disk.Data.Data), False)
             End If
@@ -2621,13 +2625,27 @@ Public Class MainForm
         End With
     End Sub
 
+    Private Function GetNormalizedChecksum(Disk As Disk) As UInteger
+        Dim Data(Disk.Data.Data.Length - 1) As Byte
+        Disk.Data.Data.CopyTo(Data, 0)
+        Dim BytesPerCluster = Disk.BPB.BytesPerCluster()
+        Dim Buffer(BytesPerCluster - 1) As Byte
+        For Each Cluster In Disk.FAT.BadClusters
+            Dim Offset = Disk.BPB.ClusterToOffset(Cluster)
+            Buffer.CopyTo(Data, Offset)
+        Next
+        Return Crc32.ComputeChecksum(Data)
+    End Function
+
     Private Sub PopulateSummary(Disk As Disk, ImageData As LoadedImageData)
+        Dim CRC32Checksum = Crc32.ComputeChecksum(Disk.Data.Data)
+
         SetCurrentFileName(ImageData)
-        PopulateSummaryPanel(Disk)
-        PopulateHashPanel(Disk)
+        PopulateSummaryPanel(Disk, CRC32Checksum)
+        PopulateHashPanel(Disk, CRC32Checksum)
         RefreshDiskButtons(Disk, ImageData)
     End Sub
-    Private Sub PopulateSummaryPanel(Disk As Disk)
+    Private Sub PopulateSummaryPanel(Disk As Disk, CRC32Checksum As UInteger)
         Dim Value As String
         Dim ForeColor As Color
 
@@ -2643,12 +2661,55 @@ Public Class MainForm
                 Dim KnownOEMNameMatch As KnownOEMName = Nothing
                 Dim OEMName() As Byte = Nothing
 
+                Dim TitleFound As Boolean = False
+                Dim CopyProtection As String = ""
+                Dim TitleData = _TitleDB.TitleLookup(CRC32Checksum)
+                If TitleData Is Nothing Then
+                    If Disk.FAT.BadClusters.Count > 0 Then
+                        Dim NormalizedChecksum = GetNormalizedChecksum(Disk)
+                        TitleData = _TitleDB.TitleLookup(NormalizedChecksum)
+                    End If
+                End If
+                If TitleData IsNot Nothing Then
+                    TitleFound = True
+                    Value = TitleData.GetName
+                    If Value <> "" Then
+                        ForeColor = IIf(TitleData.GetVerified, Color.Green, SystemColors.WindowText)
+                        .AddItem(DiskGroup, "Title", Value, ForeColor)
+                    End If
+                    Value = TitleData.GetPublisher
+                    If Value <> "" Then
+                        .AddItem(DiskGroup, "Publisher", Value)
+                    End If
+                    Value = TitleData.GetYear
+                    If Value <> "" Then
+                        .AddItem(DiskGroup, "Year", Value)
+                    End If
+                    Value = TitleData.GetRegion
+                    If Value <> "" Then
+                        .AddItem(DiskGroup, "Region", Value)
+                    End If
+                    Value = TitleData.GetLanguage
+                    If Value <> "" Then
+                        .AddItem(DiskGroup, "Language", Value)
+                    End If
+                    Value = TitleData.GetVersion
+                    If Value <> "" Then
+                        .AddItem(DiskGroup, "Version", Value)
+                    End If
+                    Value = TitleData.GetDisk
+                    If Value <> "" Then
+                        .AddItem(DiskGroup, "Disk", Value)
+                    End If
+                    CopyProtection = TitleData.CopyProtection
+                End If
+
                 If Disk.IsValidImage Then
                     Dim OEMNameWin9x = Disk.BootSector.IsWin9xOEMName
                     OEMName = Disk.BootSector.OEMName
 
                     BootStrapStart = Disk.BootSector.GetBootStrapOffset
-                    BootstrapType = _BootStrap.FindMatch(Disk.BootSector.BootStrapCode)
+                    BootstrapType = _BootStrapDB.FindMatch(Disk.BootSector.BootStrapCode)
 
                     If BootstrapType IsNot Nothing Then
                         Dim Win9xOEMName As KnownOEMName = Nothing
@@ -2692,16 +2753,20 @@ Public Class MainForm
 
                 If Disk.IsValidImage Then
                     Dim BadSectors = GetBadSectors(Disk.BPB, Disk.FAT.BadClusters)
-                    Dim CopyProtection As String = GetCopyProtection(Disk, BadSectors)
+                    If CopyProtection.Length = 0 Then
+                        CopyProtection = GetCopyProtection(Disk, BadSectors)
+                    End If
 
                     If CopyProtection.Length > 0 Then
                         .AddItem(DiskGroup, "Copy Protection", CopyProtection)
                     End If
 
-                    Dim BroderbundCopyright = GetBroderbundCopyright(Disk, BadSectors)
+                    If Not TitleFound Then
+                        Dim BroderbundCopyright = GetBroderbundCopyright(Disk, BadSectors)
 
-                    If BroderbundCopyright <> "" Then
-                        .AddItem(DiskGroup, "Broderbund Copyright", Trim(BroderbundCopyright))
+                        If BroderbundCopyright <> "" Then
+                            .AddItem(DiskGroup, "Broderbund Copyright", Trim(BroderbundCopyright))
+                        End If
                     End If
                 Else
                     .AddItem(DiskGroup, "Error", "Unknown Image Format", Color.Red)
@@ -4149,7 +4214,8 @@ Public Class MainForm
         ListViewSummary.AutoResizeColumnsContstrained(ColumnHeaderAutoResizeStyle.None)
         FiltersInitialize()
         _LoadedFileNames = New Dictionary(Of String, LoadedImageData)
-        _BootStrap = New Bootstrap
+        _BootStrapDB = New BoootstrapDB
+        _TitleDB = New FloppyDB
         Debounce = New Timer With {
             .Interval = 750
         }

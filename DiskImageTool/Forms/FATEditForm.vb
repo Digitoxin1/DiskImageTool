@@ -8,17 +8,26 @@ Public Class FATEditForm
     Private ReadOnly _ToolTip As ToolTip
     Private _CurrentFileIndex As UInteger = 0
     Private _GridSize As Integer
+    Private _GridCells() As GridCellType
     Private _IgnoreEvents As Boolean = True
     Private _OffsetLookup As Dictionary(Of UInteger, UInteger)
     Private _Updated As Boolean = False
-    'Private ReadOnly _ColorArray() As Color = {
-    '    Color.LightBlue,
-    '    Color.LightGreen,
-    '    Color.Orange,
-    '    Color.Pink,
-    '    Color.Yellow,
-    '    Color.Magenta
-    '}
+    Private ReadOnly _GridCellColors() As Color = {
+        Color.White,
+        Color.Red,
+        Color.Gray,
+        Color.Blue,
+        Color.Green
+    }
+
+    Private Enum GridCellType
+        Free
+        Bad
+        Reserved
+        Allocated
+        Highlight
+    End Enum
+
 
     Public Sub New(Disk As DiskImage.Disk, Index As UShort, DisplaySync As Boolean)
 
@@ -45,6 +54,7 @@ Public Class FATEditForm
         ProcessFATChains()
 
         _FATTable = GetDataTable(_FAT)
+        ReDim _GridCells(_FATTable.Rows.Count - 1)
         Dim TableLength = _FAT.GetFATTableLength()
         _GridSize = GetGridSize(TableLength)
         LblValid.Text = "Valid Clusters: 2 - " & TableLength
@@ -569,44 +579,21 @@ Public Class FATEditForm
             Dim Width = PictureBoxFAT.Width
             Dim Size As Integer = _GridSize
 
-            'Dim BrushAllocated(_ColorArray.Length - 1) As Brush
-            'For Counter = 0 To _ColorArray.Length - 1
-            '    BrushAllocated(Counter) = New SolidBrush(_ColorArray(Counter))
-            'Next
-
             Dim Pen As New Pen(Color.FromArgb(160, 160, 160))
-            Dim BrushFree As New SolidBrush(Color.White)
-            Dim BrushBad As New SolidBrush(Color.Red)
-            Dim BrushReserved As New SolidBrush(Color.Gray)
-            Dim BrushAllocated As New SolidBrush(Color.Blue)
-            Dim BrushHighlight As New SolidBrush(Color.Green)
-            'Dim BrushHighlightStart As New SolidBrush(Color.LightGreen)
+            Dim Brushes(_GridCellColors.Length - 1) As SolidBrush
+            For Counter = 0 To _GridCellColors.Length - 1
+                Brushes(Counter) = New SolidBrush(_GridCellColors(Counter))
+            Next
+
             Dim Brush As Brush
             Dim Left As Integer = 0
             Dim Top As Integer = 0
-            For Each Row In _FATTable.Rows
-                Dim Value As UShort = Row.Item("Value")
-                Dim FileIndex As UInteger = Row.Item("FileIndex")
-                'Dim StartingCluster As Boolean = Row.Item("StartingCluster")
-                Dim HasError As Boolean = (Row.Item("Error") <> "")
-                If HasError Then
-                    Brush = BrushBad
-                ElseIf Value = FAT12.FAT_FREE_CLUSTER Then
-                    Brush = BrushFree
-                ElseIf Value = 1 Or (Value >= FAT12.FAT_RESERVED_START And Value <= FAT12.FAT_RESERVED_END) Then
-                    Brush = BrushReserved
-                Else
-                    'Brush = BrushAllocated(FileIndex Mod _ColorArray.Length)
-                    If _CurrentFileIndex = FileIndex And FileIndex > 0 Then
-                        'If StartingCluster Then
-                        'Brush = BrushHighlightStart
-                        'Else
-                        Brush = BrushHighlight
-                        'End If
-                    Else
-                        Brush = BrushAllocated
-                    End If
-                End If
+            Dim CellType As GridCellType
+            Dim RowIndex As Integer = 0
+            For Each Row As DataRow In _FATTable.Rows
+                CellType = GetGridCellType(Row)
+                _GridCells(RowIndex) = CellType
+                Brush = Brushes(CellType)
                 e.Graphics.FillRectangle(Brush, Left, Top, Size, Size)
                 e.Graphics.DrawRectangle(Pen, Left, Top, Size, Size)
                 Left += Size
@@ -614,26 +601,47 @@ Public Class FATEditForm
                     Left = 0
                     Top += Size
                 End If
+                RowIndex += 1
             Next
             Pen.Dispose()
-            BrushFree.Dispose()
-            BrushBad.Dispose()
-            BrushReserved.Dispose()
-            BrushAllocated.Dispose()
-            BrushHighlight.Dispose()
-            'BrushHighlightStart.Dispose()
-            'For Counter = 0 To _ColorArray.Length - 1
-            '    BrushAllocated(Counter).Dispose()
-            'Next
+            For Counter = 0 To _GridCellColors.Length - 1
+                Brushes(Counter).Dispose()
+            Next
         End If
     End Sub
 
     Private Sub PictureBoxFAT_Resize(sender As Object, e As EventArgs) Handles PictureBoxFAT.Resize
         If _FAT IsNot Nothing Then
             _GridSize = GetGridSize(_FAT.GetFATTableLength)
-            PictureBoxFAT.Invalidate()
+            PictureBoxFAT.Refresh()
         End If
     End Sub
+
+    Private Function GetGridCellType(Row As DataRow) As GridCellType
+        Dim Value As UShort = Row.Item("Value")
+        Dim FileIndex As UInteger = Row.Item("FileIndex")
+        'Dim StartingCluster As Boolean = Row.Item("StartingCluster")
+        Dim HasError As Boolean = (Row.Item("Error") <> "")
+
+        If HasError Then
+            Return GridCellType.Bad
+        ElseIf Value = FAT12.FAT_FREE_CLUSTER Then
+            Return GridCellType.Free
+        ElseIf Value = 1 Or (Value >= FAT12.FAT_RESERVED_START And Value <= FAT12.FAT_RESERVED_END) Then
+            Return GridCellType.Reserved
+        Else
+            'Brush = BrushAllocated(FileIndex Mod _ColorArray.Length)
+            If _CurrentFileIndex = FileIndex And FileIndex > 0 Then
+                'If StartingCluster Then
+                'Brush = BrushHighlightStart
+                'Else
+                Return GridCellType.Highlight
+                'End If
+            Else
+                Return GridCellType.Allocated
+            End If
+        End If
+    End Function
 
     Private Sub PopulateContextMenu()
         Dim Item As ToolStripMenuItem
@@ -725,7 +733,7 @@ Public Class FATEditForm
     Private Sub SetCurrentFileIndex(FileIndex As UInteger)
         If _CurrentFileIndex <> FileIndex Then
             _CurrentFileIndex = FileIndex
-            PictureBoxFAT.Invalidate()
+            PictureBoxFAT.Refresh()
         End If
     End Sub
 
@@ -762,6 +770,6 @@ Public Class FATEditForm
         ProcessFATChains()
 
         RefreshGrid()
-        PictureBoxFAT.Invalidate()
+        PictureBoxFAT.Refresh()
     End Sub
 End Class

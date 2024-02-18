@@ -3,13 +3,13 @@ Imports DiskImageTool.DiskImage.BootSector
 Imports Hb.Windows.Forms
 
 Public Class BootSectorForm
-    Private ReadOnly _BootStrap As Bootstrap
+    Private ReadOnly _BootStrap As BoootstrapDB
     Private ReadOnly _Disk As DiskImage.Disk
     Private ReadOnly _HasExtended As Boolean
     Private ReadOnly _HelpProvider1 As HelpProvider
     Private _SuppressEvent As Boolean = True
 
-    Public Sub New(Disk As DiskImage.Disk, BootStrap As Bootstrap)
+    Public Sub New(Disk As DiskImage.Disk, BootStrap As BoootstrapDB)
 
         ' This call is required by the designer.
         InitializeComponent()

@@ -221,6 +221,7 @@
     <Compile Include="ImageCompare.vb" />
     <Compile Include="ListViewHeader.vb" />
     <Compile Include="MyBitConverter.vb" />
+    <Compile Include="FloppyDB.vb" />
     <Compile Include="Utility.vb" />
     <Compile Include="Controls\HexTextBox.vb">
       <SubType>Component</SubType>
@@ -240,7 +241,7 @@
     <Compile Include="ListViewColumnSorter.vb" />
     <Compile Include="Extensions\ListViewExtensions.vb" />
     <Compile Include="MyByteProvider.vb" />
-    <Compile Include="Bootstrap.vb" />
+    <Compile Include="BoootstrapDB.vb" />
     <Compile Include="LoadedImageData.vb" />
     <Compile Include="CRC32.vb" />
     <Compile Include="DiskImage\DirectoryEntry.vb" />
@@ -283,7 +284,9 @@
     <Compile Include="Forms\TextViewForm.Designer.vb">
       <DependentUpon>TextViewForm.vb</DependentUpon>
     </Compile>
-    <Compile Include="Forms\TextViewForm.vb" />
+    <Compile Include="Forms\TextViewForm.vb">
+      <SubType>Form</SubType>
+    </Compile>
     <Compile Include="Controls\ToolStripNumericUpDown.vb">
       <SubType>Component</SubType>
     </Compile>
@@ -384,7 +387,10 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Assets\floppyDisk.ico" />
-    <EmbeddedResource Include="Assets\titles.xml" />
+    <None Include="FloppyDB.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <EmbeddedResource Include="Assets\copyProtection.xml" />
     <EmbeddedResource Include="Assets\License.txt" />
     <EmbeddedResource Include="Assets\bootstrap.xml" />
   </ItemGroup>

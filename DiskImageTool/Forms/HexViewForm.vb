@@ -1187,21 +1187,23 @@ Public Class HexViewForm
                 ToolStripBtnSelectSector.ToolTipText = "Select Sector " & Sector
                 ToolStripBtnSelectSector.Enabled = BtnSelectSector.Enabled
 
-                Dim Track = _BPB.SectorToTrack(Sector)
-                Dim Side = _BPB.SectorToSide(Sector)
-                Dim Value = Track.ToString & "." & Side.ToString
+                If _BPB.IsValid Then
+                    Dim Track = _BPB.SectorToTrack(Sector)
+                    Dim Side = _BPB.SectorToSide(Sector)
+                    Dim Value = Track.ToString & "." & Side.ToString
 
-                BtnSelectTrack.Text = "Select T&rack " & Value
-                BtnSelectTrack.Enabled = _ClusterNavigator And Not OutOfRange
-                ToolStripBtnSelectTrack.Text = "Track " & Value
-                ToolStripBtnSelectTrack.ToolTipText = "Select Track " & Value
-                ToolStripBtnSelectTrack.Enabled = BtnSelectTrack.Enabled
+                    BtnSelectTrack.Text = "Select T&rack " & Value
+                    BtnSelectTrack.Enabled = _ClusterNavigator And Not OutOfRange
+                    ToolStripBtnSelectTrack.Text = "Track " & Value
+                    ToolStripBtnSelectTrack.ToolTipText = "Select Track " & Value
+                    ToolStripBtnSelectTrack.Enabled = BtnSelectTrack.Enabled
+                End If
 
 
                 _CurrentSector = Sector
-            End If
+                End If
 
-            If _RegionDescriptions.Count = 0 Then
+                If _RegionDescriptions.Count = 0 Then
                 SetDataRow(DataRowEnum.Description, Nothing, True)
             Else
                 Dim RegionStart As HexViewHighlightRegion

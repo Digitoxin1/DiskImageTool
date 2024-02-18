@@ -1,13 +1,13 @@
 ﻿Imports System.Xml
 Imports DiskImageTool.DiskImage
 
-Public Class Bootstrap
+Public Class BoootstrapDB
     Private ReadOnly _NameSpace As String = New StubClass().GetType.Namespace
     Private _OEMNameDictionary As Dictionary(Of UInteger, BootstrapLookup)
     Private _JmpInst As HashSet(Of String)
 
     Public Sub New()
-        InitOEMNames()
+        ParseXML()
     End Sub
 
     Public Function FindMatch(BootstrapCode() As Byte) As BootstrapLookup
@@ -49,7 +49,7 @@ Public Class Bootstrap
         Return Value
     End Function
 
-    Private Sub InitOEMNames()
+    Private Sub ParseXML()
         _OEMNameDictionary = New Dictionary(Of UInteger, BootstrapLookup)
         _JmpInst = New HashSet(Of String)
 

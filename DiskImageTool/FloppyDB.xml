@@ -1,0 +1,1439 @@
+﻿<?xml version="1.0"?>
+<root>
+	<title name="007: James Bond: The Stealth Affair" year="1990" publisher="Interplay Productions, Inc.">
+		<disk crc32="BB7DA556" disk="1" verified="true"/>
+		<disk crc32="3F55276E" disk="2" verified="true"/>
+		<disk crc32="AC9684D0" disk="3" verified="true"/>
+	</title>
+	<title name="4-D Boxing" year="1991" publisher="Electronic Arts, Inc.">
+		<disk crc32="9C28C0C8" disk="1" verified="true"/>
+		<disk crc32="A228A3E0" disk="2" verified="true"/>
+	</title>
+	<title name="4th &amp; Inches" year="1988" publisher="Accolade, Inc.">
+		<disk crc32="60E5E27D" media="360K" verified="true" cp="H.L.S. Duplication"/>
+		<disk crc32="3381CFD3" media="720K" verified="true" cp="H.L.S. Duplication"/>
+	</title>
+	<title name="688 Attack Sub" year="1989" publisher="Electronic Arts, Inc.">
+		<disk crc32="699B99AE" disk="1" verified="true"/>
+		<disk crc32="E9A5FE04" disk="2" verified="true"/>
+	</title>
+	<title name="A Mind Forever Voyaging" year="1985" version="r77, Serial 850814" publisher="Infocom, Inc.">
+		<disk crc32="93A938A2" verified="true"/>
+	</title>
+	<title name="A-10 Tank Killer" publisher="Sierra On-Line, Inc.">
+		<disk crc32="91DB1441" disk="1" year="1990" version="1.1, Int. 5.14.90" verified="true"/>
+		<disk crc32="A65CEEC8" disk="2" year="1990" version="1.1, Int. 5.14.90" verified="true"/>
+		<disk crc32="338DA4FF" disk="1" year="1991" version="1.51, Int. 8.22.91" verified="true"/>
+		<disk crc32="EE20CE6D" disk="2" year="1991" version="1.51, Int. 8.22.91" verified="true"/>
+		<disk crc32="D8423827" disk="3" year="1991" version="1.51, Int. 8.22.91" verified="true"/>
+		<disk crc32="F0F21922" disk="4" year="1991" version="1.51, Int. 8.22.91" verified="true"/>
+	</title>
+	<title name="Aces of the Pacific" year="1992" publisher="Sierra On-Line, Inc.">
+		<disk crc32="8662C2EE" disk="1" version="1.01, Int. 6.4.92" verified="true"/>
+		<disk crc32="24549500" disk="2" version="1.01, Int. 6.4.92" verified="true"/>
+		<disk crc32="0563AC4F" disk="3" version="1.01, Int. 6.4.92" verified="true"/>
+		<disk crc32="3A520499" disk="1" version="1.2, Int. 9.10.92" verified="true"/>
+		<disk crc32="15F7F41F" disk="2" version="1.2, Int. 9.10.92" verified="true"/>
+		<disk crc32="6EF44E39" disk="3" version="1.2, Int. 9.10.92" verified="true"/>
+	</title>
+	<title name="Adlib Juke Box" year="1991" version="1.64" publisher="Ad Lib, Inc.">
+		<disk crc32="03378AF1" verified="true"/>
+	</title>
+	<title name="Adlib Visual Composer" year="1989" version="1.51" publisher="Ad Lib, Inc.">
+		<disk crc32="358F9CBB" verified="true"/>
+	</title>
+	<title name="Alien Carnage" year="1995" publisher="Apogee Software, Ltd.">
+		<disk crc32="5F015BC8" disk="1" verified="true"/>
+		<disk crc32="BD2F6174" disk="2" verified="true"/>
+	</title>
+	<title name="Alter Ego (Male Version)" year="1985" publisher="Activision">
+		<disk crc32="70A0DE84" disk="1" verified="true" cp="Key Disk"/>
+		<disk crc32="824DCB4C" disk="2" verified="true"/>
+		<disk crc32="584D31A9" disk="3" verified="true"/>
+	</title>
+	<title name="Altered Destiny" year="1990" version="1.01" publisher="Accolade, Inc.">
+		<disk crc32="EE338E24" disk="1" verified="true"/>
+		<disk crc32="CE9C45AE" disk="2" verified="true"/>
+		<disk crc32="4C5DC80E" disk="3" verified="true"/>
+		<disk crc32="6D76710D" disk="4" verified="true"/>
+		<disk crc32="1CBF6D2B" disk="5" verified="true"/>
+		<disk crc32="B88795F5" disk="6" verified="true"/>
+		<disk crc32="0F8F36A3" disk="7" verified="true"/>
+		<disk crc32="102FADE1" disk="8" verified="true"/>
+	</title>
+	<title name="Apollo 18: Mission to the Moon" year="1988" publisher="Accolade, Inc.">
+		<disk crc32="AC7591C8" verified="true" cp="H.L.S. Duplication"/>
+	</title>
+	<title name="Arkanoid" year="1988" publisher="Taito, Inc.">
+		<disk crc32="48387EF9" verified="true" cp="Softguard 2x/3x"/>
+	</title>
+	<title name="Arkanoid II: Revenge of DOH" year="1989" publisher="Taito, Inc.">
+		<disk crc32="43C06DB0" media="360K" verified="true" cp="Softguard 2x/3x"/>
+		<disk crc32="8E0259AC" media="720K" verified="true" cp="Softguard 2x/3x"/>
+	</title>
+	<title name="Arthur: The Quest for Excalibur" year="1989" version="r74, Serial 890714" publisher="Infocom, Inc.">
+		<disk crc32="E05E1212" disk="1" media="360K" verified="true"/>
+		<disk crc32="A94B87DD" disk="2" media="360K" verified="true"/>
+		<disk crc32="A3C3CEE0" disk="3" media="360K" verified="true"/>
+		<disk crc32="0021BBE2" media="720K" verified="true"/>
+	</title>
+	<title name="A-Train" year="1992" version="1.01" publisher="Maxis Software, Inc.">
+		<disk crc32="019F57FD" disk="1" verified="true"/>
+		<disk crc32="2C2E5ECA" disk="2" verified="true"/>
+		<disk crc32="F4423443" disk="3" verified="true"/>
+	</title>
+	<title name="Ballyhoo" year="1985" version="r97, Serial 851218" publisher="Infocom, Inc.">
+		<disk crc32="32BEF4E9" verified="true"/>
+	</title>
+	<title name="Bank Street Writer" year="1984" publisher="Brøderbund Software, Inc.">
+		<disk crc32="E8BBCC2E" disk="Side 0" verified="true" cp="Key Disk"/>
+		<disk crc32="45128B2A" disk="Side 1" verified="true"/>
+	</title>
+	<title name="Battle Chess" year="1988" version="1.01" publisher="Interplay Productions, Inc.">
+		<disk crc32="B3602EFF" verified="true"/>
+	</title>
+	<title name="Battle Chess 2: Chinese Chess" publisher="Interplay Productions, Inc.">
+		<disk crc32="9321C77C" disk="Animation Disk 1" media="360K" year="1990" version="1.01" verified="true"/>
+		<disk crc32="C00F5D7B" disk="Animation Disk 2" media="360K" year="1990" version="1.01" verified="true"/>
+		<disk crc32="1AADADEC" disk="Startup Disk" media="360K" year="1990" version="1.01" verified="true"/>
+		<disk crc32="FABF0DFA" disk="Animation Disk" media="720K" year="1991" version="1.02" verified="true"/>
+		<disk crc32="23AFE17E" disk="Startup Disk" media="720K" year="1991" version="1.02" verified="true"/>
+	</title>
+	<title name="Battle Chess 4000 (SVGA)" year="1992" publisher="Interplay Productions, Inc.">
+		<disk crc32="6A677ADF" disk="Data Disk 1" verified="true"/>
+		<disk crc32="A8A2CFDC" disk="Data Disk 3" verified="true"/>
+		<disk crc32="DB4F09CF" disk="Data Disk 5" verified="true"/>
+		<disk crc32="18A85B14" disk="Startup Disk" verified="true"/>
+	</title>
+	<title name="Battle Chess 4000 (VGA)" year="1993" publisher="Interplay Productions, Inc.">
+		<disk crc32="6265BED6" disk="Data Disk 1" verified="true"/>
+		<disk crc32="BA2474D6" disk="Startup Disk" verified="true"/>
+	</title>
+	<title name="BattleTech: The Crescent Hawk's Inception" year="1988" version="1.03" publisher="Westwood Associates">
+		<disk crc32="1C16EECF" disk="1" media="360K" verified="true"/>
+		<disk crc32="CB700B99" disk="2" media="360K" verified="true"/>
+	</title>
+	<title name="BattleTech: The Crescent Hawk's Revenge" year="1990" publisher="Westwood Associates">
+		<disk crc32="E6BBB869" disk="1" media="360K" version="1.00" verified="true"/>
+		<disk crc32="8A722384" disk="1" media="360K" version="1.02" verified="true"/>
+		<disk crc32="BEC3A59D" disk="2" media="360K" version="1.00, 1.02" verified="true"/>
+		<disk crc32="72F1F2BC" disk="3" media="360K" version="1.00, 1.02" verified="true"/>
+		<disk crc32="16BF3338" disk="4" media="360K" version="1.00, 1.02" verified="true"/>
+		<disk crc32="8F918B6C" disk="1" media="720K" version="1.00" verified="true"/>
+		<disk crc32="A84C5682" disk="1" media="720K" version="1.02" verified="true"/>
+		<disk crc32="1EF7C576" disk="2" media="720K" version="1.00, 1.02" verified="true"/>
+	</title>
+	<title name="Betrayal at Krondor" year="1993" publisher="Sierra On-Line, Inc.">
+		<disk crc32="A6EDBC6C" disk="1" version="1.0, Int. 6.15.93" verified="true"/>
+		<disk crc32="E89E18C4" disk="2" version="1.0, Int. 6.15.93" verified="true"/>
+		<disk crc32="9D367FA0" disk="3" version="1.0, Int. 6.15.93" verified="true"/>
+		<disk crc32="E3876150" disk="4" version="1.0, Int. 6.15.93" verified="true"/>
+		<disk crc32="C3CB2A74" disk="5" version="1.0, Int. 6.15.93" verified="true"/>
+		<disk crc32="6CE0194C" disk="6" version="1.0, Int. 6.15.93" verified="true"/>
+		<disk crc32="04821065" disk="7" version="1.0, Int. 6.15.93" verified="true"/>
+		<disk crc32="924D5348" disk="1" version="1.01, Int. 6.28.93" verified="true"/>
+		<disk crc32="8C64D6CD" disk="2" version="1.01, Int. 6.28.93" verified="true"/>
+		<disk crc32="54900128" disk="3" version="1.01, Int. 6.28.93" verified="true"/>
+		<disk crc32="F318D3C7" disk="4" version="1.01, Int. 6.28.93" verified="true"/>
+		<disk crc32="AD01EA0A" disk="5" version="1.01, Int. 6.28.93" verified="true"/>
+		<disk crc32="F690BD7B" disk="6" version="1.01, Int. 6.28.93" verified="true"/>
+		<disk crc32="770A02A2" disk="7" version="1.01, Int. 6.28.93" verified="true"/>
+		<disk crc32="3FBDC3A9" disk="1" version="1.02, Int. 9.21.93" verified="true"/>
+		<disk crc32="B1AEF3B3" disk="2" version="1.02, Int. 9.21.93" verified="true"/>
+		<disk crc32="C1F115BB" disk="3" version="1.02, Int. 9.21.93" verified="true"/>
+		<disk crc32="9793BAAD" disk="4" version="1.02, Int. 9.21.93" verified="true"/>
+		<disk crc32="D1127F53" disk="5" version="1.02, Int. 9.21.93" verified="true"/>
+		<disk crc32="6AB91325" disk="6" version="1.02, Int. 9.21.93" verified="true"/>
+		<disk crc32="42303845" disk="7" version="1.02, Int. 9.21.93" verified="true"/>
+	</title>
+	<title name="Beyond Zork" year="1987" publisher="Infocom, Inc.">
+		<disk crc32="E39C9701" version="r49, Serial 870917" verified="true"/>
+		<disk crc32="B6FBAB29" version="r57, Serial 871221" verified="true"/>
+	</title>
+	<title name="Blue Angels: Formation Flight Simulation" year="1990" publisher="Accolade, Inc.">
+		<disk crc32="6B760EB4" disk="1" media="360K" verified="true"/>
+		<disk crc32="E1798C32" disk="2" media="360K" verified="true"/>
+		<disk crc32="DEBE1590" media="720K" verified="true"/>
+	</title>
+	<title name="Border Zone" year="1987" version="r9, Serial 871008" publisher="Infocom, Inc.">
+		<disk crc32="27E718FE" verified="true"/>
+	</title>
+	<title name="Brimstone" year="1985" publisher="Brøderbund Software, Inc.">
+		<disk crc32="3E1913F7" verified="true"/>
+	</title>
+	<title name="Bubble Bobble" year="1990" publisher="Taito, Inc.">
+		<disk crc32="245E094A" disk="A" media="360K" verified="true" cp="Softguard 2x/3x"/>
+		<disk crc32="26D72672" disk="B" media="360K" verified="true"/>
+		<disk crc32="40845E44" media="720K" verified="true" cp="Softguard 2x/3x"/>
+	</title>
+	<title name="Budokan: The Martial Spirit" year="1989" publisher="Electronic Arts, Inc.">
+		<disk crc32="4C90178F" disk="Dojo Disk" media="360K" verified="true"/>
+		<disk crc32="A4C61EA5" disk="Tournament Disk" media="360K" verified="true"/>
+		<disk crc32="4FAE7277" media="720K" verified="true"/>
+	</title>
+	<title name="Bureaucracy" year="1987" version="r86, Serial 870212" publisher="Infocom, Inc.">
+		<disk crc32="4670FCAE" verified="true"/>
+	</title>
+	<title name="Castles" year="1991" version="1.01" publisher="Interplay Productions, Inc.">
+		<disk crc32="003B1314" disk="Data Disk" media="360K" verified="true"/>
+		<disk crc32="7C0A61E5" disk="Introduction Disk" media="360K" verified="true"/>
+		<disk crc32="BE818299" disk="Messenger Disk" media="360K" verified="true"/>
+		<disk crc32="44DACEB3" disk="Startup Disk" media="360K" verified="true"/>
+		<disk crc32="A539C801" disk="Data Disk" media="720K" verified="true"/>
+	</title>
+	<title name="Centurion: Defender of Rome" year="1990" publisher="Electronic Arts, Inc.">
+		<disk crc32="1BE39EB9" disk="EGA / Tandy" verified="true"/>
+	</title>
+	<title name="Championship Golf: The Great Courses of the World: Volume One: Pebble Beach" year="1986" publisher="Gamestar, Inc.">
+		<disk crc32="09D65431" verified="true"/>
+	</title>
+	<title name="Chuck Yeager's Advanced Flight Simulator" year="1987" version="1.0" publisher="Electronic Arts, Inc.">
+		<disk crc32="C8109C4E" verified="true" cp="Key Disk"/>
+	</title>
+	<title name="Chuck Yeager's Advanced Flight Trainer" publisher="Electronic Arts, Inc.">
+		<disk crc32="56122F9F" year="1987" version="1.2" verified="true"/>
+		<disk crc32="BBF714F9" year="1987" version="1.2" verified="true" cp="Key Disk"/>
+		<disk crc32="7C2BA75A" disk="1" year="1989-03-08" version="2.0" verified="true"/>
+		<disk crc32="D3AEA278" disk="2" year="1989-03-08" version="2.0" verified="true"/>
+	</title>
+	<title name="Chuck Yeager's Air Combat" publisher="Electronic Arts, Inc.">
+		<disk crc32="F2AA5060" disk="1 &amp; 2" year="1991-06-15" verified="true"/>
+		<disk crc32="7247DDDB" disk="3 &amp; 4" year="1991-06-15" verified="true"/>
+		<disk crc32="CC8436C5" disk="1" year="1991-12-20" verified="true"/>
+		<disk crc32="F20B8F43" disk="2" year="1991-12-20" verified="true"/>
+		<disk crc32="BBCF74CE" disk="3" year="1991-12-20" verified="true"/>
+		<disk crc32="A1C0F8AA" disk="4" year="1991-12-20" verified="true"/>
+	</title>
+	<title name="Chuck Yeager's Air Combat: Gravis Ultrasound Edition" year="1993" publisher="Electronic Arts, Inc.">
+		<disk crc32="DA79F1FB" disk="1" verified="true"/>
+		<disk crc32="0AF680EB" disk="2" verified="true"/>
+		<disk crc32="488D635C" disk="3" verified="true"/>
+		<disk crc32="23645EE6" disk="4" verified="true"/>
+	</title>
+	<title name="Circuit's Edge" year="1990" publisher="Westwood Associates">
+		<disk crc32="751272ED" disk="1" media="360K" verified="true"/>
+		<disk crc32="1BB70E4C" disk="2" media="360K" verified="true"/>
+		<disk crc32="0267BBD4" disk="3" media="360K" verified="true"/>
+	</title>
+	<title name="Companions of Xanth" year="1993" publisher="Legend Entertainment Company">
+		<disk crc32="B10D0CDF" disk="2" version="1.0" verified="true"/>
+		<disk crc32="47092E4D" disk="3" version="1.0" verified="true"/>
+		<disk crc32="A20A124B" disk="4" version="1.0" verified="true"/>
+		<disk crc32="216A5CCE" disk="1" version="1.1" verified="true"/>
+		<disk crc32="F1A02F80" disk="2" version="1.1" verified="true"/>
+		<disk crc32="1182BC17" disk="3" version="1.1" verified="true"/>
+		<disk crc32="7118B233" disk="4" version="1.1" verified="true"/>
+	</title>
+	<title name="Conquest of Japan" year="1992" publisher="Impressions Games">
+		<disk crc32="A0E0F5D3" disk="1" verified="true"/>
+		<disk crc32="0F639622" disk="2" verified="true"/>
+		<disk crc32="483ACA97" disk="3" verified="true"/>
+	</title>
+	<title name="Corel Photo Paint 5" year="1995" publisher="Corel">
+		<disk crc32="02C7DE82" disk="1" verified="true"/>
+		<disk crc32="AD598647" disk="2" verified="true"/>
+		<disk crc32="A98ECE1F" disk="3" verified="true"/>
+		<disk crc32="D7C559A8" disk="4" verified="true"/>
+		<disk crc32="44DFC1C1" disk="5" verified="true"/>
+		<disk crc32="14F5FBDE" disk="6" verified="true"/>
+	</title>
+	<title name="Countdown" year="1990" version="1.0" publisher="Access Software, Inc.">
+		<disk crc32="F496D87A" disk="1" verified="true"/>
+		<disk crc32="BB7A502F" disk="2" verified="true"/>
+		<disk crc32="BA0DFA52" disk="3" verified="true"/>
+		<disk crc32="33F692F5" disk="4" verified="true"/>
+		<disk crc32="8C2E21BC" disk="5" verified="true"/>
+		<disk crc32="D12026B7" disk="7" verified="true"/>
+		<disk crc32="5EEC741B" disk="8" verified="true"/>
+	</title>
+	<title name="Crime Wave" year="1990" version="1.1" publisher="Access Software, Inc.">
+		<disk crc32="9D8C7B7B" disk="2" verified="true"/>
+		<disk crc32="10EEE8EF" disk="3" verified="true"/>
+		<disk crc32="503EB292" disk="4" verified="true"/>
+		<disk crc32="2D415D98" disk="5" verified="true"/>
+		<disk crc32="E635A53B" disk="6" verified="true"/>
+		<disk crc32="1DB54168" disk="7" verified="true"/>
+		<disk crc32="30D917E1" disk="8" verified="true"/>
+	</title>
+	<title name="David Wolf: Secret Agent" year="1989" publisher="Dynamix, Inc.">
+		<disk crc32="6097503B" disk="1" verified="true"/>
+		<disk crc32="96179B64" disk="2" verified="true"/>
+		<disk crc32="CBBDF2A9" disk="3" verified="true"/>
+		<disk crc32="C0A998B1" disk="4" verified="true"/>
+		<disk crc32="B1C92D22" disk="5" verified="true"/>
+	</title>
+	<title name="Deadline" year="1991" version="r27, Serial 831005, Int. 3L" publisher="Mastertronic, Inc.">
+		<disk crc32="78C62106" verified="true"/>
+	</title>
+	<title name="Death Sword" year="1988" publisher="Epyx, Inc.">
+		<disk crc32="BE8754EE" verified="true" cp="Key Disk"/>
+	</title>
+	<title name="Deathtrack" year="1989" publisher="Activision, Inc.">
+		<disk crc32="370950BE" disk="1" verified="true"/>
+		<disk crc32="FB1CBA9F" disk="2" verified="true"/>
+	</title>
+	<title name="Demon Stalkers" year="1989" publisher="Electronic Arts, Inc.">
+		<disk crc32="F02A0EA3" disk="Game Disk" verified="true"/>
+		<disk crc32="E2F2417E" disk="Graphics Disk" verified="true"/>
+	</title>
+	<title name="Descent" year="1995" version="1.0" publisher="Interplay Productions, Inc.">
+		<disk crc32="9328930C" disk="1" verified="true"/>
+		<disk crc32="9D7DABF4" disk="2" verified="true"/>
+		<disk crc32="CF85CD42" disk="3" verified="true"/>
+		<disk crc32="B03C94DC" disk="4" verified="true"/>
+		<disk crc32="018C2867" disk="5" verified="true"/>
+	</title>
+	<title name="Destroyer" year="1987" publisher="Epyx, Inc.">
+		<disk crc32="46A425AC" verified="true" cp="Key Disk"/>
+	</title>
+	<title name="Dragon Wars" year="1990" version="1.0" publisher="Interplay Productions, Inc.">
+		<disk crc32="0F78E176" disk="1" media="360K" verified="true"/>
+		<disk crc32="6E9847C8" disk="2" media="360K" verified="true"/>
+		<disk crc32="A86DB7F3" media="720K" verified="true"/>
+	</title>
+	<title name="Dunjonquest: Temple of Apshai" year="1982" publisher="Epyx, Inc.">
+		<disk crc32="37B695BE" verified="true"/>
+	</title>
+	<title name="Earl Weaver Baseball" year="1989" version="1.5" publisher="Electronic Arts, Inc.">
+		<disk crc32="92F05758" disk="Graphics Disk" verified="true"/>
+		<disk crc32="071D0A9C" disk="Program Disk" verified="true"/>
+	</title>
+	<title name="Earl Weaver Baseball II" year="1991" publisher="Electronic Arts, Inc.">
+		<disk crc32="F388D857" disk="1" verified="true"/>
+		<disk crc32="EC8358A3" disk="2" verified="true"/>
+		<disk crc32="8E4BACC9" disk="3" verified="true"/>
+	</title>
+	<title name="Earl Weaver Baseball II: 1990 MLBPA Player Stats and Manager Profiles" year="1991" publisher="Electronic Arts, Inc.">
+		<disk crc32="70E2FEA9" verified="true"/>
+	</title>
+	<title name="Earl Weaver Baseball II: Commemorative Edition" year="1991" publisher="Electronic Arts, Inc.">
+		<disk crc32="EB386D8E" disk="1" verified="true"/>
+		<disk crc32="16D4D9D5" disk="2" verified="true"/>
+	</title>
+	<title name="Elvira" publisher="Accolade, Inc.">
+		<disk crc32="B462EA14" disk="1" year="1990" verified="true"/>
+		<disk crc32="48520CA2" disk="2" year="1990" verified="true"/>
+		<disk crc32="45C0D3E9" disk="3" year="1990" verified="true"/>
+		<disk crc32="68BD8DCF" disk="4" year="1990" verified="true"/>
+		<disk crc32="88E311E8" disk="1" year="1994" verified="true"/>
+		<disk crc32="C5541F28" disk="2" year="1994" verified="true"/>
+	</title>
+	<title name="Elvira II: The Jaws of Cerberus" year="1991" publisher="Accolade, Inc.">
+		<disk crc32="362023E3" disk="1" verified="true"/>
+		<disk crc32="DA6D97F5" disk="2" verified="true"/>
+		<disk crc32="F84F1271" disk="3" verified="true"/>
+	</title>
+	<title name="Enchanter" year="1985" version="r24, Serial 851118" publisher="Infocom, Inc.">
+		<disk crc32="628D4AFB" verified="true"/>
+	</title>
+	<title name="Eric the Unready" year="1993" publisher="Legend Entertainment Company">
+		<disk crc32="E0F5561F" disk="1" verified="true"/>
+		<disk crc32="22949DEB" disk="2" verified="true"/>
+		<disk crc32="AE2F19D8" disk="3" verified="true"/>
+	</title>
+	<title name="F-16 Combat Pilot" year="1989" publisher="Electronic Arts, Inc.">
+		<disk crc32="DA5FA6C1" disk="2" verified="true"/>
+	</title>
+	<title name="Fast Break" year="1988" publisher="Accolade, Inc.">
+		<disk crc32="DF3C6DC6" media="360K" verified="true" cp="H.L.S. Duplication"/>
+		<disk crc32="B600AA99" media="720K" verified="true" cp="H.L.S. Duplication"/>
+	</title>
+	<title name="Ferrari Formula One" year="1989" publisher="Electronic Arts, Inc.">
+		<disk crc32="7DFA7AD8" disk="Main Disk" verified="true"/>
+		<disk crc32="24E3A090" disk="Race Disk" verified="true"/>
+	</title>
+	<title name="FIFA International Soccer" year="1994" publisher="Electronic Arts, Inc." region="Europe">
+		<disk crc32="B4D88C47" disk="1" verified="true"/>
+		<disk crc32="D4F6B4B7" disk="2" verified="true"/>
+		<disk crc32="ACE0BD64" disk="3" verified="true"/>
+	</title>
+	<title name="Final Assault" year="1988" publisher="Epyx, Inc.">
+		<disk crc32="F1E2CECA" verified="true" cp="Key Disk"/>
+	</title>
+	<title name="Fooblitzky" year="1986" publisher="Infocom, Inc.">
+		<disk crc32="B5CABE0B" verified="true"/>
+	</title>
+	<title name="Fountain of Dreams" year="1990" publisher="Electronic Arts, Inc.">
+		<disk crc32="B29514F8" disk="1" verified="true"/>
+		<disk crc32="EE4194DF" disk="2" verified="true"/>
+	</title>
+	<title name="Frederik Pohl's Gateway" year="1992" version="1.0" publisher="Legend Entertainment Company">
+		<disk crc32="378D4873" disk="1" verified="true"/>
+		<disk crc32="C7099C98" disk="2" verified="true"/>
+		<disk crc32="03F8D8E2" disk="5" verified="true"/>
+	</title>
+	<title name="Front Page Sports: Baseball '94" year="1994" version="1.0, Int. 9.10.94" publisher="Sierra On-Line, Inc.">
+		<disk crc32="176892B9" disk="1" verified="true"/>
+		<disk crc32="E0E2AA0E" disk="2" verified="true"/>
+		<disk crc32="F36C2EBF" disk="3" verified="true"/>
+		<disk crc32="A3035CB1" disk="4" verified="true"/>
+	</title>
+	<title name="Front Page Sports: Football Pro '95" year="1994" version="1.0, Int. 10.25.94" publisher="Sierra On-Line, Inc.">
+		<disk crc32="5B725A02" disk="1" verified="true"/>
+		<disk crc32="7C69B9B1" disk="2" verified="true"/>
+		<disk crc32="D6ACFCDC" disk="3" verified="true"/>
+		<disk crc32="8495B091" disk="4" verified="true"/>
+		<disk crc32="BC691941" disk="5" verified="true"/>
+	</title>
+	<title name="Fun School 4: for 7 to 11 year olds" year="1993" version="1.7" publisher="Coktel Vision" region="Europe">
+		<disk crc32="1ED39815" disk="1" media="360K" verified="true"/>
+		<disk crc32="A3C5B936" disk="2" media="360K" verified="true"/>
+		<disk crc32="F580217C" media="720K" verified="true"/>
+	</title>
+	<title name="Gateway II: Homeworld" year="1993" publisher="Legend Entertainment Company">
+		<disk crc32="8EE8B451" disk="1" verified="true"/>
+		<disk crc32="629E0A22" disk="2" verified="true"/>
+		<disk crc32="A9BF698D" disk="3" verified="true"/>
+		<disk crc32="43E2F6D0" disk="4" verified="true"/>
+	</title>
+	<title name="Ghostbusters" year="1985" publisher="Activision">
+		<disk crc32="C8E7BFCA" verified="true"/>
+	</title>
+	<title name="Ghostbusters II" year="1989" publisher="Activision, Inc.">
+		<disk crc32="2D9ABA1D" disk="1" media="360K" verified="true"/>
+		<disk crc32="ADD8ADE3" disk="2" media="360K" verified="true"/>
+		<disk crc32="91CF54A9" disk="3" media="360K" verified="true"/>
+		<disk crc32="A937943D" disk="4" media="360K" verified="true"/>
+		<disk crc32="EFFA451E" disk="2" media="720K" verified="true"/>
+	</title>
+	<title name="Gobliiins" year="1992" version="1.0, Int. 9.11.92" publisher="Sierra On-Line, Inc.">
+		<disk crc32="56127B39" disk="2" verified="true"/>
+	</title>
+	<title name="Gobliins 2: The Prince Buffoon" year="1993" version="1.0, Int. 2.10.93" publisher="Sierra On-Line, Inc.">
+		<disk crc32="38D1082B" disk="2" verified="true"/>
+	</title>
+	<title name="Gobliins 2: The Prince Buffoon" year="1992" version="1.02" publisher="Coktel Vision" region="Europe">
+		<disk crc32="048E7EF2" disk="1" verified="true"/>
+		<disk crc32="80A91519" disk="2" verified="true"/>
+	</title>
+	<title name="Goblin's Quest 3" year="1994" version="1.0, Int. 3.17.94" publisher="Sierra On-Line, Inc.">
+		<disk crc32="3211D4DB" disk="1" verified="true"/>
+		<disk crc32="491ABE39" disk="2" verified="true"/>
+		<disk crc32="55208929" disk="3" verified="true"/>
+		<disk crc32="65F613A9" disk="4" verified="true"/>
+		<disk crc32="5E3233C0" disk="5" verified="true"/>
+	</title>
+	<title name="Grand Prix Circuit" publisher="Accolade, Inc.">
+		<disk crc32="41FA3E12" disk="2" year="1988" verified="true" cp="H.L.S. Duplication"/>
+		<disk crc32="ED5DB851" media="360K" disk="1" year="1989" verified="true" cp="H.L.S. Duplication"/>
+		<disk crc32="83F41A22" media="720K" year="1989" verified="true" cp="H.L.S. Duplication"/>
+	</title>
+	<title name="Grand Prix Unlimited" year="1992" publisher="Accolade, Inc.">
+		<disk crc32="827EA881" disk="1" version="1.0" verified="true"/>
+		<disk crc32="00936AB5" disk="2" version="1.0" verified="true"/>
+		<disk crc32="3AA97EB6" version="1.4" verified="true"/>
+	</title>
+	<title name="Grand Slam Bridge" year="1987" publisher="Electronic Arts, Inc.">
+		<disk crc32="9D062515" disk="A" verified="true"/>
+		<disk crc32="20C07573" disk="B" verified="true"/>
+	</title>
+	<title name="Hacker II: The Doomsday Papers" year="1986" publisher="Activision">
+		<disk crc32="A43B15F5" verified="true"/>
+	</title>
+	<title name="Hard Nova" year="1990" publisher="Electronic Arts, Inc.">
+		<disk crc32="54631D94" disk="1" verified="true"/>
+		<disk crc32="C3644131" disk="2" verified="true"/>
+	</title>
+	<title name="HardBall" year="1988" publisher="Accolade, Inc.">
+		<disk crc32="41C4AB34" verified="true" cp="H.L.S. Duplication"/>
+	</title>
+	<title name="HardBall II" publisher="Accolade, Inc.">
+		<disk crc32="BD3356AD" disk="1" year="1989" verified="true"/>
+		<disk crc32="566AC0A8" disk="2" year="1989" verified="true"/>
+		<disk crc32="E95AB5A7" disk="Data Disk" year="1989" verified="true"/>
+		<disk crc32="9E917580" disk="2" year="1994" verified="true"/>
+	</title>
+	<title name="HardBall III" year="1992" publisher="Accolade, Inc.">
+		<disk crc32="A3E7ECFD" disk="1" verified="true"/>
+		<disk crc32="B9909259" disk="2" verified="true"/>
+	</title>
+	<title name="HardBall III: MLBPA Players Disk" year="1992" publisher="Accolade, Inc.">
+		<disk crc32="34EC1B6F" verified="true"/>
+	</title>
+	<title name="Heart of China (256 Color)" year="1991" version="1.0, Int. 5.21.91" publisher="Sierra On-Line, Inc.">
+		<disk crc32="AC6626B3" disk="2" media="1.2M" verified="true"/>
+		<disk crc32="EE8B8DCA" disk="3" media="1.2M" verified="true"/>
+		<disk crc32="3203D20C" disk="4" media="1.2M" verified="true"/>
+		<disk crc32="7F7EEA0D" disk="5" media="1.2M" verified="true"/>
+		<disk crc32="AEEA10FA" disk="7" media="1.2M" verified="true"/>
+		<disk crc32="1424F3B8" disk="1" media="1.44M" verified="true"/>
+		<disk crc32="A3076C16" disk="2" media="1.44M" verified="true"/>
+		<disk crc32="9BF33AB0" disk="3" media="1.44M" verified="true"/>
+		<disk crc32="62F41D1F" disk="4" media="1.44M" verified="true"/>
+		<disk crc32="6DECC910" disk="5" media="1.44M" verified="true"/>
+		<disk crc32="60DEBBBA" disk="6" media="1.44M" verified="true"/>
+	</title>
+	<title name="Hollywood Hijinx" year="1986" version="r37, Serial 861215" publisher="Infocom, Inc.">
+		<disk crc32="CD9E78E2" verified="true"/>
+	</title>
+	<title name="Hong Kong Mahjong Pro" year="1992" publisher="Electronic Arts, Inc.">
+		<disk crc32="5965168B" disk="1" verified="true"/>
+		<disk crc32="B03D9304" disk="2" verified="true"/>
+	</title>
+	<title name="Impossible Mission II" year="1989" publisher="Epyx, Inc.">
+		<disk crc32="44FC78F7" disk="1" verified="true" cp="H.L.S. Duplication"/>
+		<disk crc32="CA8A0345" disk="2" verified="true"/>
+	</title>
+	<title name="Inca" year="1992" publisher="Coktel Vision" region="Germany">
+		<disk crc32="BF6220C9" disk="6" verified="true"/>
+	</title>
+	<title name="Inca" year="1992" publisher="Coktel Vision" region="Italy">
+		<disk crc32="124FE8C9" disk="1" verified="true"/>
+		<disk crc32="CFF36EAC" disk="2" verified="true"/>
+		<disk crc32="051C60C6" disk="3" verified="true"/>
+		<disk crc32="EB9DD7D4" disk="4" verified="true"/>
+		<disk crc32="A0F7D798" disk="7" verified="true"/>
+		<disk crc32="E5D36C0A" disk="10" verified="true"/>
+	</title>
+	<title name="Inca II: Nations of Immortality" year="1994" version="1.0, Int. 3.18.94" publisher="Sierra On-Line, Inc.">
+		<disk crc32="CAF6E48C" disk="1" verified="true"/>
+		<disk crc32="311FD9F1" disk="2" verified="true"/>
+		<disk crc32="25EA852D" disk="3" verified="true"/>
+		<disk crc32="AA3389B2" disk="4" verified="true"/>
+		<disk crc32="E2CFDD55" disk="5" verified="true"/>
+		<disk crc32="89BA7F4E" disk="6" verified="true"/>
+		<disk crc32="48EE62C8" disk="7" verified="true"/>
+		<disk crc32="F2CE105D" disk="8" verified="true"/>
+		<disk crc32="6EB9F89C" disk="9" verified="true"/>
+		<disk crc32="6CE1F3F3" disk="10" verified="true"/>
+	</title>
+	<title name="Indianapolis 500: The Simulation" year="1989" publisher="Electronic Arts, Inc.">
+		<disk crc32="560105A6" verified="true"/>
+	</title>
+	<title name="Infidel" year="1985" version="r22, Serial 830916" publisher="Infocom, Inc.">
+		<disk crc32="E493DBFA" verified="true"/>
+	</title>
+	<title name="Ishido: The Way of Stones" year="1990" publisher="Accolade, Inc.">
+		<disk crc32="AF425222" disk="Program Disk" verified="true"/>
+		<disk crc32="BEF7AD36" disk="VGA Graphics Disk" verified="true"/>
+	</title>
+	<title name="J.R.R. Tolkien's The Lord of the Rings &amp; The Two Towers: Collector's Edition" year="1993" publisher="Interplay Productions, Inc.">
+		<disk crc32="B6B389C7" disk="Install / Disk 1" verified="true"/>
+		<disk crc32="D0FEB581" disk="Install / Disk 2" verified="true"/>
+		<disk crc32="675C6E36" disk="3" verified="true"/>
+		<disk crc32="84EEF10E" disk="4" verified="true"/>
+	</title>
+	<title name="J.R.R. Tolkien's The Lord of the Rings, Vol. I" year="1990" version="1.0" publisher="Interplay Productions, Inc.">
+		<disk crc32="D7604A7D" disk="1" verified="true"/>
+		<disk crc32="5C47749D" disk="2" verified="true"/>
+		<disk crc32="88297240" disk="3" verified="true"/>
+		<disk crc32="F6D420AF" disk="4" verified="true"/>
+		<disk crc32="E7E8A40B" disk="5" verified="true"/>
+	</title>
+	<title name="Jack Nicklaus Golf &amp; Course Design: Signature Edition" year="1992" publisher="Accolade, Inc.">
+		<disk crc32="9733D1E9" disk="1" verified="true"/>
+		<disk crc32="E2ADD251" disk="2" verified="true"/>
+	</title>
+	<title name="Jack Nicklaus' Greatest 18 Holes of Major Championship Golf" publisher="Accolade, Inc.">
+		<disk crc32="929A1C1D" disk="Course Disk" year="1989" verified="true"/>
+		<disk crc32="28EDC5E3" disk="Program Disk" year="1989" verified="true"/>
+		<disk crc32="E56A48FE" year="1990" verified="true"/>
+	</title>
+	<title name="Jack Nicklaus Presents The Major Championship Courses of 1989" year="1989" publisher="Accolade, Inc.">
+		<disk crc32="A805EA5F" verified="true"/>
+	</title>
+	<title name="Jack Nicklaus' Unlimited Golf &amp; Course Design" year="1991" publisher="Accolade, Inc.">
+		<disk crc32="84F3E3B2" disk="1" verified="true"/>
+		<disk crc32="1E1EF079" disk="2" verified="true"/>
+		<disk crc32="3D628738" disk="3" verified="true"/>
+	</title>
+	<title name="James Clavell's Shogun" year="1989" version="r322, Serial 890706" publisher="Infocom, Inc.">
+		<disk crc32="DAC426B9" disk="1" media="360K" verified="true"/>
+		<disk crc32="84F59B01" disk="2" media="360K" verified="true"/>
+		<disk crc32="81CBB211" disk="3" media="360K" verified="true"/>
+		<disk crc32="9D42F6FF" media="720K" verified="true"/>
+	</title>
+	<title name="John Madden Football" year="1989" publisher="Electronic Arts, Inc.">
+		<disk crc32="6A9DB420" verified="true"/>
+	</title>
+	<title name="Jordan vs Bird: One on One" year="1988" publisher="Electronic Arts, Inc.">
+		<disk crc32="069DC971" disk="Game Disk" verified="true"/>
+		<disk crc32="B94D8331" disk="Dunk / 3-pt Disk" verified="true"/>
+	</title>
+	<title name="Journey: The Quest Begins" year="1989" version="r83, Serial 890706" publisher="Infocom, Inc.">
+		<disk crc32="38D044E3" disk="1" media="360K" verified="true"/>
+		<disk crc32="36107132" disk="2" media="360K" verified="true"/>
+		<disk crc32="4045DB26" disk="3" media="360K" verified="true"/>
+		<disk crc32="04BEB89A" disk="4" media="360K" verified="true"/>
+		<disk crc32="60CC9736" disk="1" media="720K" verified="true"/>
+		<disk crc32="079ACF95" disk="2" media="720K" verified="true"/>
+	</title>
+	<title name="Karateka" publisher="Brøderbund Software, Inc.">
+		<disk crc32="ED153FE5" year="1986" version="1.0" verified="true" cp="Key Disk"/>
+		<disk crc32="4181EEEB" year="1987" version="1.1" verified="true" cp="Key Disk"/>
+	</title>
+	<title name="Kid Pix" year="1991" version="1.0" publisher="Brøderbund Software, Inc.">
+		<disk crc32="7E8120A9" disk="1" verified="true"/>
+		<disk crc32="4D670DF9" disk="2" verified="true"/>
+		<disk crc32="2264EC6C" disk="3" verified="true"/>
+	</title>
+	<title name="King's Bounty" year="1990" version="1.00" publisher="New World Computing, Inc.">
+		<disk crc32="0ECF2F27" disk="1" verified="true"/>
+		<disk crc32="380525DB" disk="2" verified="true"/>
+	</title>
+	<title name="Kings of the Beach" year="1989" publisher="Electronic Arts, Inc.">
+		<disk crc32="6EC6DAE7" disk="1" media="360K" verified="true"/>
+		<disk crc32="FD79AEA4" disk="2" media="360K" verified="true"/>
+		<disk crc32="084610A8" media="720K" verified="true"/>
+	</title>
+	<title name="L.A. Crackdown" year="1988" publisher="Epyx, Inc.">
+		<disk crc32="57054159" verified="true" cp="H.L.S. Duplication"/>
+	</title>
+	<title name="Lakers versus Celtics and the NBA Playoffs" year="1989" publisher="Electronic Arts, Inc.">
+		<disk crc32="CD206AEB" disk="Game Disk" verified="true"/>
+		<disk crc32="D85973DD" disk="Team Disk" verified="true"/>
+	</title>
+	<title name="Leather Goddesses of Phobos" year="1986" version="r59, Serial 860730" publisher="Infocom, Inc.">
+		<disk crc32="4818474A" verified="true"/>
+	</title>
+	<title name="Leather Goddesses of Phobos" year="1987" version="r59, Serial 860730" publisher="Infocom, Inc.">
+		<disk crc32="D4AF5FFD" verified="true"/>
+	</title>
+	<title name="Legacy of the Ancients" year="1989" publisher="Electronic Arts, Inc.">
+		<disk crc32="4D994B6D" disk="1" verified="true"/>
+		<disk crc32="4F30C0E2" disk="2" verified="true"/>
+	</title>
+	<title name="Les Manley in: Lost in L.A." year="1991" publisher="Accolade, Inc.">
+		<disk crc32="BD0711B3" disk="1" version="1.0" verified="true"/>
+		<disk crc32="783D6F93" disk="2" version="1.0" verified="true"/>
+		<disk crc32="614A9AB3" disk="3" version="1.0" verified="true"/>
+		<disk crc32="50731BD3" disk="4" version="1.0" verified="true"/>
+		<disk crc32="BEAC07F5" disk="2" version="1.01" verified="true"/>
+		<disk crc32="0B878B7B" disk="3" version="1.01" verified="true"/>
+		<disk crc32="B8BAC83A" disk="4" version="1.01" verified="true"/>
+		<disk crc32="8DA694C8" disk="5" version="1.01" verified="true"/>
+		<disk crc32="29806EF3" disk="6" version="1.01" verified="true"/>
+	</title>
+	<title name="Les Manley in: Search for the King" year="1990" publisher="Accolade, Inc.">
+		<disk crc32="38F38306" disk="1" version="1.1" verified="true"/>
+		<disk crc32="010A707C" disk="2" version="1.0, 1.1" verified="true"/>
+		<disk crc32="0D719F73" disk="3" version="1.0, 1.1" verified="true"/>
+	</title>
+	<title name="LHX: Attack Chopper" year="1990" publisher="Electronic Arts, Inc.">
+		<disk crc32="A0848C72" disk="1" media="360K" verified="true"/>
+		<disk crc32="CDC6C517" disk="2" media="360K" verified="true"/>
+		<disk crc32="BBE7E3E6" media="720K" verified="true"/>
+	</title>
+	<title name="Links 386 Pro" year="1992" version="1.07" publisher="Access Software, Inc.">
+		<disk crc32="1B015B83" disk="1" verified="true"/>
+		<disk crc32="C245E3DD" disk="2" verified="true"/>
+		<disk crc32="D849AA7D" disk="3" verified="true"/>
+		<disk crc32="95871B0B" disk="4" verified="true"/>
+	</title>
+	<title name="Links: Championship Course: Banff Springs" year="1994" version="1.21" publisher="Access Software, Inc.">
+		<disk crc32="F2A7E397" disk="1" verified="true"/>
+		<disk crc32="59EAEF3F" disk="2" verified="true"/>
+		<disk crc32="35F08E8D" disk="3" verified="true"/>
+	</title>
+	<title name="Links: Championship Course: Barton Creek" year="1992" version="1.52" publisher="Access Software, Inc.">
+		<disk crc32="28F87746" disk="1" verified="true"/>
+		<disk crc32="135E4BA0" disk="2" verified="true"/>
+	</title>
+	<title name="Links: Championship Course: Bighorn" year="1994" version="1.21" publisher="Access Software, Inc.">
+		<disk crc32="8B58EA9A" disk="1" verified="true"/>
+		<disk crc32="AFC5D5B7" disk="2" verified="true"/>
+		<disk crc32="8965B43C" disk="3" verified="true"/>
+	</title>
+	<title name="Links: Championship Course: Bountiful Golf Course" year="1992" version="1.55" publisher="Access Software, Inc.">
+		<disk crc32="8459DA71" verified="true"/>
+	</title>
+	<title name="Links: Championship Course: Castle Pines Golf Club" year="1994" version="1.21" publisher="Access Software, Inc.">
+		<disk crc32="51A201EE" disk="1" verified="true"/>
+		<disk crc32="F7276F36" disk="2" verified="true"/>
+		<disk crc32="90ED98CC" disk="3" verified="true"/>
+	</title>
+	<title name="Links: Championship Course: Firestone Country Club (SVGA)" year="1993" version="1.11" publisher="Access Software, Inc.">
+		<disk crc32="050C6992" disk="1" verified="true"/>
+		<disk crc32="C7A60224" disk="2" verified="true"/>
+	</title>
+	<title name="Links: Championship Course: Innisbrook" year="1993" version="1.10" publisher="Access Software, Inc.">
+		<disk crc32="CB2E4E00" disk="1" verified="true"/>
+		<disk crc32="0C7757CC" disk="2" verified="true"/>
+		<disk crc32="5D73AF22" disk="3" verified="true"/>
+	</title>
+	<title name="Links: Championship Course: Mauna Kea" year="1994" version="1.21" publisher="Access Software, Inc.">
+		<disk crc32="80FA5559" disk="1" verified="true"/>
+		<disk crc32="E9F208A4" disk="2" verified="true"/>
+		<disk crc32="ACE72498" disk="3" verified="true"/>
+	</title>
+	<title name="Links: Championship Course: Pebble Beach" year="1993" publisher="Access Software, Inc.">
+		<disk crc32="1C81CFCE" version="1.20" disk="1" verified="true"/>
+		<disk crc32="88299A44" version="1.21" disk="1" verified="true"/>
+		<disk crc32="F875B9D9" version="1.20, 1.21" disk="2" verified="true"/>
+		<disk crc32="647AF12C" version="1.20, 1.21" disk="3" verified="true"/>
+	</title>
+	<title name="Links: Championship Course: Pinehurst Resort &amp; Country Club" year="1991" version="1.50" publisher="Access Software, Inc.">
+		<disk crc32="23CE136C" disk="2" verified="true"/>
+	</title>
+	<title name="Links: Championship Course: Prairie Dunes Country Club" year="1995" version="1.21" publisher="Access Software, Inc.">
+		<disk crc32="77A7B11F" disk="1" verified="true"/>
+		<disk crc32="A79F0A94" disk="2" verified="true"/>
+		<disk crc32="64EFDC2A" disk="3" verified="true"/>
+	</title>
+	<title name="Links: Championship Course: The Belfry" year="1994" version="1.21" publisher="Access Software, Inc.">
+		<disk crc32="DA6411EF" disk="1" verified="true"/>
+		<disk crc32="A4D6B018" disk="3" verified="true"/>
+	</title>
+	<title name="Links: Fantasy Course: Devil's Island" year="1995" version="1.21" publisher="Access Software, Inc.">
+		<disk crc32="D1686EE3" disk="1" verified="true"/>
+		<disk crc32="E6B5D39B" disk="2" verified="true"/>
+		<disk crc32="30FF0A52" disk="3" verified="true"/>
+	</title>
+	<title name="Links: The Challenge of Golf" year="1991" publisher="Access Software, Inc.">
+		<disk crc32="AF35AA1B" disk="1" version="1.45" verified="true"/>
+		<disk crc32="9B384161" disk="2" version="1.45" verified="true"/>
+		<disk crc32="04C91F40" disk="3" version="1.45" verified="true"/>
+		<disk crc32="0A8090F9" disk="4" version="1.45" verified="true"/>
+		<disk crc32="26C18083" disk="5" version="1.45" verified="true"/>
+		<disk crc32="E7BCDEE6" disk="1" version="1.52" verified="true"/>
+		<disk crc32="032FE0B8" disk="2" version="1.52" verified="true"/>
+		<disk crc32="76B20159" disk="3" version="1.52" verified="true"/>
+	</title>
+	<title name="Little Big Adventure" year="1995" publisher="Electronic Arts, Inc." region="Europe">
+		<disk crc32="365C0BB9" disk="1" verified="true"/>
+		<disk crc32="595033CB" disk="2" verified="true"/>
+		<disk crc32="BD5F5709" disk="3" verified="true"/>
+		<disk crc32="82F6961F" disk="4" verified="true"/>
+		<disk crc32="5397BED1" disk="5" verified="true"/>
+		<disk crc32="6C174CF7" disk="6" verified="true"/>
+		<disk crc32="54CBD2DF" disk="7" verified="true"/>
+		<disk crc32="639D67A4" disk="8" verified="true"/>
+	</title>
+	<title name="Lords of the Realm" year="1994" publisher="Impressions Games" region="Europe">
+		<disk crc32="8D7CE78D" disk="1" verified="true"/>
+		<disk crc32="C9314FB8" disk="2" verified="true"/>
+		<disk crc32="532BC714" disk="3" verified="true"/>
+		<disk crc32="59625CF1" disk="4" verified="true"/>
+	</title>
+	<title name="Lost in Time" year="1993" version="1.0, Int. 9.8.93" publisher="Sierra On-Line, Inc.">
+		<disk crc32="607A35E7" disk="1" verified="true"/>
+		<disk crc32="623702A6" disk="2" verified="true"/>
+		<disk crc32="92754DF6" disk="3" verified="true"/>
+		<disk crc32="A3B234C2" disk="4" verified="true"/>
+		<disk crc32="8FA18250" disk="5" verified="true"/>
+		<disk crc32="9D45A277" disk="6" verified="true"/>
+		<disk crc32="DC7CEBB5" disk="7" verified="true"/>
+		<disk crc32="210586CD" disk="8" verified="true"/>
+		<disk crc32="0765C12B" disk="9" verified="true"/>
+		<disk crc32="1EDFF524" disk="10" verified="true"/>
+		<disk crc32="1519821A" disk="11" verified="true"/>
+		<disk crc32="D927CBDC" disk="12" verified="true"/>
+	</title>
+	<title name="Marble Madness" year="1987" publisher="Electronic Arts, Inc.">
+		<disk crc32="2838499E" verified="true" cp="Electronic Arts IBM Interlock"/>
+	</title>
+	<title name="Mean 18" publisher="Accolade, Inc.">
+		<disk crc32="A7CE3B24" disk="1" year="1986" verified="true" cp="H.L.S. Duplication"/>
+		<disk crc32="41C243C6" disk="2" year="1986" verified="true"/>
+		<disk crc32="AE03EFD1" disk="1" year="1988" verified="true" cp="H.L.S. Duplication"/>
+	</title>
+	<title name="MechWarrior" year="1989-11-03" publisher="Activision, Inc.">
+		<disk crc32="2EA5E8ED" disk="1" media="360K" verified="true"/>
+		<disk crc32="D69ADE21" disk="2" media="360K" verified="true"/>
+		<disk crc32="71DEAAA1" disk="3" media="360K" verified="true"/>
+		<disk crc32="076AF5C6" disk="4" media="360K" verified="true"/>
+		<disk crc32="36D31580" disk="1" media="720K" verified="true"/>
+		<disk crc32="3CEF8576" disk="2" media="720K" verified="true"/>
+	</title>
+	<title name="Metaltech: Battledrome" year="1994" version="1.0, Int. 11.18.94" publisher="Sierra On-Line, Inc.">
+		<disk crc32="6FC207D3" disk="1" verified="true"/>
+		<disk crc32="6340439E" disk="2" verified="true"/>
+	</title>
+	<title name="Metaltech: EarthSiege" year="1994" version="1.0, Int. 10.25.94" publisher="Sierra On-Line, Inc.">
+		<disk crc32="69D9176B" disk="1" verified="true"/>
+		<disk crc32="8BE938E3" disk="2" verified="true"/>
+		<disk crc32="DB303B52" disk="3" verified="true"/>
+		<disk crc32="AD5FF30C" disk="4" verified="true"/>
+		<disk crc32="9226302F" disk="5" verified="true"/>
+	</title>
+	<title name="Michael Jordan in Flight" year="1993" publisher="Electronic Arts, Inc.">
+		<disk crc32="A9DE8087" disk="1" verified="true"/>
+		<disk crc32="C8002FD1" disk="2" verified="true"/>
+	</title>
+	<title name="Microsoft MS-DOS 6.22 Plus Enhanced Tools" year="1994" publisher="Microsoft Corporation">
+		<disk crc32="69D8CFDD" disk="1 - Setup" verified="true"/>
+		<disk crc32="76258952" disk="2" verified="true"/>
+		<disk crc32="808B208D" disk="3" verified="true"/>
+		<disk crc32="6CEBCDF9" disk="Supplemental Disk" verified="true"/>
+	</title>
+	<title name="Might and Magic III: Isles of Terra" year="1991" publisher="New World Computing, Inc.">
+		<disk crc32="7755D84A" disk="1" verified="true"/>
+		<disk crc32="F3B8C1DE" disk="2" verified="true"/>
+		<disk crc32="988898DD" disk="3" verified="true"/>
+	</title>
+	<title name="Might and Magic: Book One: Secret of the Inner Sanctum" year="1988" publisher="New World Computing, Inc.">
+		<disk crc32="2123E397" disk="1" verified="true" cp="Key Disk"/>
+		<disk crc32="79E3E51B" disk="2" verified="true"/>
+	</title>
+	<title name="Might and Magic: Book Two: Gates to Another World" year="1989" publisher="New World Computing, Inc.">
+		<disk crc32="967231D3" disk="3" version="1.00" verified="true"/>
+		<disk crc32="718117E2" disk="1" version="1.01" verified="true" cp="Key Disk"/>
+		<disk crc32="9C132A2F" disk="2" version="1.01" verified="true"/>
+	</title>
+	<title name="Might and Magic: Clouds of Xeen" year="1992" publisher="New World Computing, Inc.">
+		<disk crc32="C9591CC9" disk="1" verified="true"/>
+		<disk crc32="D30E340C" disk="2" verified="true"/>
+		<disk crc32="BF2A7F47" disk="3" verified="true"/>
+		<disk crc32="764AB624" disk="4" verified="true"/>
+		<disk crc32="A52D670E" disk="5" verified="true"/>
+		<disk crc32="8DD45A45" disk="6" verified="true"/>
+	</title>
+	<title name="Might and Magic: Darkside of Xeen" year="1993" publisher="New World Computing, Inc.">
+		<disk crc32="39864A48" disk="1" verified="true"/>
+		<disk crc32="EE6B46FE" disk="2" verified="true"/>
+		<disk crc32="E30CD5A9" disk="3" verified="true"/>
+		<disk crc32="214A0304" disk="4" verified="true"/>
+		<disk crc32="E7DD86CE" disk="5" verified="true"/>
+		<disk crc32="D0257A15" disk="6" verified="true"/>
+		<disk crc32="874FD074" disk="7" verified="true"/>
+		<disk crc32="B4BF3F18" disk="8" verified="true"/>
+	</title>
+	<title name="Mike Ditka Ultimate Football" year="1992" publisher="Accolade, Inc.">
+		<disk crc32="D41B23BC" verified="true"/>
+	</title>
+	<title name="Mines of Titan" year="1989" publisher="Westwood Associates">
+		<disk crc32="9F7AE728" disk="1" media="360K" verified="true"/>
+	</title>
+	<title name="Mini-Putt" year="1988" publisher="Accolade, Inc.">
+		<disk crc32="4ECD881B" verified="true" cp="H.L.S. Duplication"/>
+	</title>
+	<title name="Moonmist" year="1986" version="r4, Serial 860918" publisher="Infocom, Inc.">
+		<disk crc32="20D732A8" verified="true"/>
+	</title>
+	<title name="NHL Hockey" year="1993" publisher="Electronic Arts, Inc.">
+		<disk crc32="C8421381" disk="1" verified="true"/>
+		<disk crc32="5DB196CB" disk="2" verified="true"/>
+		<disk crc32="4411F0A5" disk="3" verified="true"/>
+		<disk crc32="EABC287D" disk="4" verified="true"/>
+	</title>
+	<title name="Nord and Bert Couldn't Make Head or Tail of It" year="1987" version="r19, Serial 870722" publisher="Infocom, Inc.">
+		<disk crc32="268A51A9" verified="true"/>
+	</title>
+	<title name="Nova 9" year="1991" version="1.0, Int. 11.14.91" publisher="Sierra On-Line, Inc.">
+		<disk crc32="9F1AB6F9" disk="1" media="1.2M" verified="true"/>
+		<disk crc32="BCCD3A41" disk="2" media="1.2M" verified="true"/>
+		<disk crc32="2F57BE7B" disk="3" media="1.2M" verified="true"/>
+		<disk crc32="A27D7959" disk="4" media="1.2M" verified="true"/>
+		<disk crc32="A14599BC" disk="1" media="720K" verified="true"/>
+		<disk crc32="7A3EAEAC" disk="2" media="720K" verified="true"/>
+		<disk crc32="EBCE8727" disk="3" media="720K" verified="true"/>
+		<disk crc32="1D884A9F" disk="4" media="720K" verified="true"/>
+		<disk crc32="3E9DB843" disk="5" media="720K" verified="true"/>
+		<disk crc32="CC16D0DE" disk="6" media="720K" verified="true"/>
+	</title>
+	<title name="Omnicron Conspiracy" year="1989" publisher="Epyx, Inc.">
+		<disk crc32="03056AC4" disk="1" verified="true" cp="H.L.S. Duplication"/>
+		<disk crc32="D47ED651" disk="2" verified="true"/>
+		<disk crc32="CB0D11B7" disk="3" verified="true"/>
+		<disk crc32="E2E1246E" disk="4" verified="true"/>
+	</title>
+	<title name="Operation Wolf" year="1989" publisher="Taito, Inc.">
+		<disk crc32="F8F503C2" disk="A" media="360K" verified="true" cp="Softguard 2x/3x"/>
+		<disk crc32="61685134" disk="B" media="360K" verified="true"/>
+	</title>
+	<title name="Paris Dakar 90" year="1990" publisher="Coktel Vision" region="France">
+		<disk crc32="58DFFCA4" disk="1" verified="true"/>
+	</title>
+	<title name="Patton Strikes Back: The Battle of the Bulge" year="1991" publisher="Brøderbund Software, Inc.">
+		<disk crc32="B000030A" disk="2" verified="true"/>
+	</title>
+	<title name="Pete Rose Pennant Fever" year="1988" publisher="Activision, Inc.">
+		<disk crc32="F2311A78" disk="1" verified="true"/>
+		<disk crc32="23A78D42" disk="2" verified="true"/>
+	</title>
+	<title name="PGA Tour Golf" year="1990" publisher="Electronic Arts, Inc.">
+		<disk crc32="72979663" disk="Course Disk" media="360K" verified="true"/>
+		<disk crc32="A6A0CFFB" media="720K" verified="true"/>
+	</title>
+	<title name="PGA Tour Golf: Tournament Course Disk" year="1991" publisher="Electronic Arts, Inc.">
+		<disk crc32="90C61742" verified="true"/>
+	</title>
+	<title name="Pitstop II" year="1984" publisher="Epyx, Inc.">
+		<disk crc32="FB0531FD" verified="true" cp="Key Disk"/>
+	</title>
+	<title name="Planetfall" year="1985" version="r29, Serial 840118" publisher="Infocom, Inc.">
+		<disk crc32="BC8BB13A" verified="true"/>
+	</title>
+	<title name="Plundered Hearts" year="1987" version="r26, Serial 870730" publisher="Infocom, Inc.">
+		<disk crc32="A9047295" verified="true"/>
+	</title>
+	<title name="Populous" year="1989" publisher="Electronic Arts, Inc.">
+		<disk crc32="1A9D9332" media="360K" verified="true"/>
+		<disk crc32="5C98B69C" media="360K" verified="true"/>
+		<disk crc32="5BC74294" media="720K" verified="true"/>
+	</title>
+	<title name="Populous II: Trials of the Olympian Gods" year="1993" publisher="Electronic Arts, Inc.">
+		<disk crc32="ECB0A260" disk="1" verified="true"/>
+		<disk crc32="50E3A8E5" disk="2" verified="true"/>
+		<disk crc32="1FA04187" disk="3" verified="true"/>
+		<disk crc32="04BB96CA" disk="4" verified="true"/>
+	</title>
+	<title name="Populous: The Promised Lands" publisher="Electronic Arts, Inc.">
+		<disk crc32="650CD3C0" year="1989-11-22" verified="true"/>
+		<disk crc32="A8FE0D35" year="1989-12-06" verified="true"/>
+	</title>
+	<title name="Power Drift" year="1990" publisher="Activision">
+		<disk crc32="FDAE758A" disk="CGA Disk / MCGA Disk" verified="true"/>
+		<disk crc32="ADABE4F5" disk="Game Disk / EGA Disk" verified="true"/>
+	</title>
+	<title name="PowerHits: Battletech" year="1992" version="1.01" publisher="Activision">
+		<disk crc32="4026D0BA" disk="1" verified="true"/>
+		<disk crc32="2E6E3A69" disk="2" verified="true"/>
+	</title>
+	<title name="PowerHits: Sci-Fi" year="1992" publisher="Activision">
+		<disk crc32="48918AF2" disk="2" verified="true"/>
+		<disk crc32="8AB70A93" disk="3" verified="true"/>
+	</title>
+	<title name="PowerMonger" year="1992" publisher="Electronic Arts, Inc.">
+		<disk crc32="65241A81" disk="1" verified="true"/>
+		<disk crc32="C50348FA" disk="2" verified="true"/>
+		<disk crc32="8C68F80D" disk="3" verified="true"/>
+	</title>
+	<title name="Prince of Persia" year="1990" version="1.1" publisher="Brøderbund Software, Inc.">
+		<disk crc32="1FA2AA0D" disk="1" verified="true"/>
+	</title>
+	<title name="Prince of Persia 2: The Shadow &amp; The Flame" year="1993" publisher="Brøderbund Software, Inc.">
+		<disk crc32="6D27F6DE" disk="1" verified="true"/>
+		<disk crc32="33CCE22A" disk="2" verified="true"/>
+		<disk crc32="E16B92E4" disk="3" verified="true"/>
+		<disk crc32="F5366618" disk="4" verified="true"/>
+	</title>
+	<title name="Print Shop Graphics Library: Special Edition" year="1987" publisher="Brøderbund Software, Inc.">
+		<disk crc32="E9859D42" verified="true"/>
+	</title>
+	<title name="Purple Saturn Day" year="1994" publisher="Epyx, Inc.">
+		<disk crc32="5CAFD0FA" verified="true"/>
+	</title>
+	<title name="QIX" year="1990" publisher="Taito, Inc.">
+		<disk crc32="F97A4F12" verified="true" cp="Softguard 2x/3x"/>
+	</title>
+	<title name="Rambo III" year="1990" publisher="Taito, Inc.">
+		<disk crc32="54AE5AAB" disk="A" media="360K" verified="true" cp="Softguard 2x/3x"/>
+		<disk crc32="0AF1499C" disk="B" media="360K" verified="true"/>
+	</title>
+	<title name="Rampage" year="1988" version="1.0" publisher="Activision">
+		<disk crc32="6FFDB4F4" verified="true" cp="Key Disk"/>
+	</title>
+	<title name="Rampart" year="1992" publisher="Electronic Arts, Inc.">
+		<disk crc32="00204EE9" disk="1" verified="true"/>
+		<disk crc32="92A88899" disk="2" verified="true"/>
+		<disk crc32="2F927B6A" disk="3" verified="true"/>
+	</title>
+	<title name="Red Baron (256 Color)" year="1990" version="1.0, Int. 12.23.90" publisher="Sierra On-Line, Inc.">
+		<disk crc32="E4BD9C6D" disk="1" media="1.2M" verified="true"/>
+		<disk crc32="685CA956" disk="2" media="1.2M" verified="true"/>
+		<disk crc32="C27D0E23" disk="3" media="1.2M" verified="true"/>
+		<disk crc32="A7B7E3B7" disk="1" media="1.44M" verified="true"/>
+		<disk crc32="C21F2A67" disk="2" media="1.44M" verified="true"/>
+	</title>
+	<title name="Red Baron (256 Color)" year="1991" version="1.0, Int. 6.18.91" publisher="Sierra On-Line, Inc." region="Germany">
+		<disk crc32="8D75B628" disk="1" verified="true"/>
+		<disk crc32="6A7F8021" disk="2" verified="true"/>
+	</title>
+	<title name="Renegade" year="1989" publisher="Taito, Inc.">
+		<disk crc32="6D923D47" disk="1" media="360K" verified="true" cp="Softguard 2x/3x"/>
+		<disk crc32="C1E39E0A" disk="2" media="360K" verified="true"/>
+	</title>
+	<title name="Return to Zork" year="1993" publisher="Activision, Inc.">
+		<disk crc32="A60F6274" disk="1" verified="true"/>
+		<disk crc32="E014E2B4" disk="2" verified="true"/>
+		<disk crc32="3CF45D9B" disk="3" verified="true"/>
+		<disk crc32="542D992B" disk="4" verified="true"/>
+		<disk crc32="12BC6D2D" disk="5" verified="true"/>
+		<disk crc32="CE83F2BD" disk="6" verified="true"/>
+		<disk crc32="8A0991D6" disk="7" verified="true"/>
+		<disk crc32="74F06C27" disk="8" verified="true"/>
+		<disk crc32="865F3A45" disk="9" verified="true"/>
+		<disk crc32="D3798A5D" disk="10" verified="true"/>
+		<disk crc32="ED0B16EC" disk="11" verified="true"/>
+		<disk crc32="916DB84A" disk="12" verified="true"/>
+	</title>
+	<title name="Revenge of Defender" year="1989" publisher="Epyx, Inc.">
+		<disk crc32="CCF30B73" disk="1" verified="true" cp="H.L.S. Duplication"/>
+		<disk crc32="24DA95CF" disk="2" verified="true"/>
+		<disk crc32="EE496C75" disk="3" verified="true"/>
+	</title>
+	<title name="Rise of the Dragon (256 Color)" year="1990" version="1.113.90, Int. 1.116.90" publisher="Sierra On-Line, Inc.">
+		<disk crc32="3998D608" disk="1" media="1.2M" verified="true"/>
+		<disk crc32="5E323C4B" disk="2" media="1.2M" verified="true"/>
+		<disk crc32="76AE2AC5" disk="3" media="1.2M" verified="true"/>
+		<disk crc32="E239CE0D" disk="4" media="1.2M" verified="true"/>
+		<disk crc32="D9A5A5B3" disk="5" media="1.2M" verified="true"/>
+		<disk crc32="4FDE8B01" disk="6" media="1.2M" verified="true"/>
+		<disk crc32="DC023701" disk="7" media="1.2M" verified="true"/>
+		<disk crc32="BAE43D3B" disk="1" media="1.44M" verified="true"/>
+		<disk crc32="885F0FDF" disk="2" media="1.44M" verified="true"/>
+		<disk crc32="81EB1A78" disk="3" media="1.44M" verified="true"/>
+		<disk crc32="5C58A4CB" disk="4" media="1.44M" verified="true"/>
+		<disk crc32="8C5B0DFC" disk="5" media="1.44M" verified="true"/>
+		<disk crc32="2FCF9807" disk="6" media="1.44M" verified="true"/>
+	</title>
+	<title name="Rise of the Triad: Dark War" year="1995" publisher="Apogee Software, Ltd.">
+		<disk crc32="5CED55B4" disk="1" verified="true"/>
+		<disk crc32="12D34527" disk="2" verified="true"/>
+		<disk crc32="C6115A9F" disk="3" verified="true"/>
+		<disk crc32="FFA3437E" disk="4" verified="true"/>
+		<disk crc32="6652C413" disk="5" verified="true"/>
+	</title>
+	<title name="Risky Woods" year="1992" publisher="Electronic Arts, Inc." region="UK">
+		<disk crc32="783C9AF7" verified="true"/>
+	</title>
+	<title name="Rogue" year="1988" version="1.49" publisher="Epyx, Inc.">
+		<disk crc32="545CCBC6" verified="true"/>
+	</title>
+	<title name="Rorke's Drift" year="1990" publisher="Impressions Games" region="Europe">
+		<disk crc32="27C6331E" disk="CGA" verified="true"/>
+		<disk crc32="1B05A4A4" disk="EGA / VGA" verified="true"/>
+	</title>
+	<title name="Rules of Engagement 2" year="1993" version="1.05" publisher="Impressions Games">
+		<disk crc32="888D1220" disk="1" verified="true"/>
+		<disk crc32="EC5715DA" disk="2" verified="true"/>
+		<disk crc32="0E295423" disk="3" verified="true"/>
+	</title>
+	<title name="Seal Team" year="1993" publisher="Electronic Arts, Inc.">
+		<disk crc32="154AE46D" disk="1" verified="true"/>
+		<disk crc32="1E9F4F86" disk="2" verified="true"/>
+	</title>
+	<title name="Seastalker" year="1985" version="r16, Serial 850603" publisher="Infocom, Inc.">
+		<disk crc32="A4718510" verified="true"/>
+	</title>
+	<title name="Sentinel Worlds I: Future Magic" year="1993" publisher="Electronic Arts, Inc.">
+		<disk crc32="633F23F6" verified="true"/>
+	</title>
+	<title name="Shanghai II: Dragon's Eye" year="1990" publisher="Activision">
+		<disk crc32="A7CF4AC9" disk="1" media="360K" verified="true"/>
+		<disk crc32="CD18826F" disk="2" media="360K" verified="true"/>
+		<disk crc32="83806CBD" disk="3" media="360K" verified="true"/>
+		<disk crc32="1970C045" disk="4" media="360K" verified="true"/>
+		<disk crc32="4D1E220D" disk="1" media="720K" verified="true"/>
+		<disk crc32="CF480897" disk="2" media="720K" verified="true"/>
+	</title>
+	<title name="Shanghai II: Dragon's Eye (Win 3.1)" year="1994" publisher="Activision">
+		<disk crc32="EC3C9A04" disk="1" verified="true"/>
+		<disk crc32="BAC7E1F2" disk="2" verified="true"/>
+	</title>
+	<title name="Sherlock: The Riddle of the Crown Jewels" year="1987" version="r21, Serial 871214" publisher="Infocom, Inc.">
+		<disk crc32="9CFB4616" verified="true"/>
+	</title>
+	<title name="SimAnt" year="1991" version="1.06" publisher="Maxis Software, Inc.">
+		<disk crc32="F6373773" disk="Data Disk" media="360K" verified="true"/>
+		<disk crc32="B3F8946E" disk="Install Disk" media="360K" verified="true"/>
+		<disk crc32="B3FC64D4" disk="Program Disk / Data Disk" media="360K" verified="true"/>
+		<disk crc32="164E2A52" disk="Program Disk" media="360K" verified="true"/>
+		<disk crc32="33FD47BE" disk="Data Disk" media="360K" verified="true"/>
+		<disk crc32="02C370A7" disk="Install Disk" media="360K" verified="true"/>
+		<disk crc32="C206B656" disk="Program Disk / Data Disk" media="360K" verified="true"/>
+		<disk crc32="B1861F08" disk="Program Disk" media="360K" verified="true"/>
+		<disk crc32="50C33437" disk="Data Disk" media="720K" verified="true"/>
+		<disk crc32="FEBF9BDB" disk="Install Disk / Program Disk" media="720K" verified="true"/>
+		<disk crc32="FE05C251" disk="Data Disk" media="720K" verified="true"/>
+		<disk crc32="792924CB" disk="Install Disk / Program Disk" media="720K" verified="true"/>
+	</title>
+	<title name="SimCity" year="1989" version="1.02" publisher="Maxis Software, Inc." region="Europe">
+		<disk crc32="1895A578" disk="1" media="360K" verified="true"/>
+		<disk crc32="5CB63943" disk="2" media="360K" verified="true"/>
+		<disk crc32="036A4EA6" media="720K" verified="true"/>
+	</title>
+	<title name="SimCity" year="1990" version="1.07" publisher="Maxis Software, Inc.">
+		<disk crc32="09FC0910" disk="1" media="360K" verified="true"/>
+		<disk crc32="F0AAE25A" disk="2" media="360K" verified="true"/>
+	</title>
+	<title name="SimCity 2000" year="1994" publisher="Maxis Software, Inc." region="Germany">
+		<disk crc32="0F6BC7BD" disk="1" verified="true"/>
+		<disk crc32="A9D34795" disk="2" verified="true"/>
+	</title>
+	<title name="SimCity Classic" version="2.00" publisher="Maxis Software, Inc.">
+		<disk crc32="6A8A5144" disk="1" media="720K" year="1993-08-01" verified="true"/>
+		<disk crc32="284B203D" disk="2" media="720K" year="1993-08-01" verified="true"/>
+		<disk crc32="99C8EB01" disk="2" media="1.44M" year="1993-12-01" verified="true"/>
+	</title>
+	<title name="SimEarth: The Living Planet" year="1991" version="1.0" publisher="Maxis Software, Inc." region="Europe">
+		<disk crc32="FD6DDD31" disk="Data Disk 1" media="360K" verified="true"/>
+		<disk crc32="32CF78F6" disk="Data Disk 2" media="360K" verified="true"/>
+		<disk crc32="40D10F2F" disk="Data Disk 3" media="360K" verified="true"/>
+		<disk crc32="D915704F" disk="Install Disk" media="360K" verified="true"/>
+		<disk crc32="78AB310C" disk="Data Disk" media="720K" verified="true"/>
+		<disk crc32="0B84DFE7" disk="Install Disk" media="720K" verified="true"/>
+	</title>
+	<title name="SimFarm" year="1993" version="1.01" publisher="Maxis Software, Inc." region="Germany">
+		<disk crc32="419DC682" verified="true"/>
+	</title>
+	<title name="SimFarm" year="1993" version="1.01" publisher="Maxis Software, Inc.">
+		<disk crc32="8470750C" disk="1" verified="true"/>
+		<disk crc32="D4027037" disk="2" verified="true"/>
+	</title>
+	<title name="SimLife" year="1992" version="1.00" publisher="Maxis Software, Inc.">
+		<disk crc32="F78A43CC" disk="1" media="1.2M" verified="true"/>
+		<disk crc32="BC752B90" disk="2" media="360K" verified="true"/>
+		<disk crc32="301DBE83" disk="1" media="720K" verified="true"/>
+		<disk crc32="6E01CE3B" disk="2" media="720K" verified="true"/>
+	</title>
+	<title name="Simon the Sorcerer" year="1993" version="1.00" publisher="Activision, Inc.">
+		<disk crc32="90196B4D" disk="1" verified="true"/>
+		<disk crc32="AE0F40CC" disk="2" verified="true"/>
+		<disk crc32="A1D8BB36" disk="3" verified="true"/>
+	</title>
+	<title name="Sky Shark" year="1989" publisher="Taito, Inc.">
+		<disk crc32="A6588D3E" disk="A" media="360K" verified="true" cp="Softguard 2x/3x"/>
+		<disk crc32="33118530" disk="B" media="360K" verified="true"/>
+	</title>
+	<title name="Space Hulk" year="1993" publisher="Electronic Arts, Inc.">
+		<disk crc32="3159F47E" disk="1" verified="true"/>
+		<disk crc32="397899F7" disk="2" verified="true"/>
+		<disk crc32="85C9905B" disk="3" verified="true"/>
+		<disk crc32="F35E38C7" disk="4" verified="true"/>
+	</title>
+	<title name="Spaceward Ho!" year="1993" version="2.0" publisher="New World Computing, Inc.">
+		<disk crc32="B8D268D7" media="1.2M" verified="true"/>
+		<disk crc32="0EDC64CD" media="1.44M" verified="true"/>
+	</title>
+	<title name="Spellbreaker" year="1985" version="r63, Serial 850916" publisher="Infocom, Inc.">
+		<disk crc32="D15C1C33" verified="true"/>
+	</title>
+	<title name="Spellcasting 201: The Sorcerer's Appliance" year="1991" version="1.0" publisher="Legend Entertainment Company">
+		<disk crc32="DF895CF3" disk="1" verified="true"/>
+		<disk crc32="72846653" disk="2" verified="true"/>
+		<disk crc32="57B0531C" disk="5" verified="true"/>
+	</title>
+	<title name="Spellcasting 301: Spring Break" year="1992" version="1.0" publisher="Legend Entertainment Company">
+		<disk crc32="0914E2DF" disk="1" media="1.44M" verified="true"/>
+		<disk crc32="5D5982C0" disk="2" media="1.44M" verified="true"/>
+		<disk crc32="93FCF983" disk="4" media="720K" verified="true"/>
+	</title>
+	<title name="Star Control" year="1990" publisher="Accolade, Inc.">
+		<disk crc32="A9B2AC3B" disk="1" media="360K" verified="true"/>
+		<disk crc32="771DF3D1" disk="2" media="360K" verified="true"/>
+		<disk crc32="508EBB49" media="720K" verified="true"/>
+	</title>
+	<title name="Star Trek: 25th Anniversary" version="1.0" publisher="Interplay Productions, Inc.">
+		<disk crc32="60AF3999" disk="1" media="1.2M" year="1992" verified="true"/>
+		<disk crc32="38C59F99" disk="2" media="1.2M" year="1992" verified="true"/>
+		<disk crc32="1FFA0843" disk="3" media="1.2M" year="1992" verified="true"/>
+		<disk crc32="119F2773" disk="4" media="1.2M" year="1992" verified="true"/>
+		<disk crc32="B0D79EF3" disk="5" media="1.2M" year="1992" verified="true"/>
+		<disk crc32="4D7ACF14" disk="1" media="720K" year="1992" verified="true"/>
+		<disk crc32="94632AB6" disk="2" media="720K" year="1992" verified="true"/>
+		<disk crc32="00954E90" disk="3" media="720K" year="1992" verified="true"/>
+		<disk crc32="989D7981" disk="4" media="720K" year="1992" verified="true"/>
+		<disk crc32="08F0E75F" disk="5" media="720K" year="1992" verified="true"/>
+		<disk crc32="DE5BAC76" disk="6" media="720K" year="1992" verified="true"/>
+		<disk crc32="DD77B042" disk="7" media="720K" year="1992" verified="true"/>
+		<disk crc32="CDBCEB93" disk="8" media="720K" year="1992" verified="true"/>
+		<disk crc32="DFD13C21" disk="Data Disk #1" media="1.44M" year="1993" verified="true"/>
+		<disk crc32="5FDE998D" disk="Data Disk #2" media="1.44M" year="1993" verified="true"/>
+		<disk crc32="5AE1462F" disk="Data Disk #3" media="1.44M" year="1993" verified="true"/>
+	</title>
+	<title name="Star Wars" publisher="Brøderbund Software, Inc.">
+		<disk crc32="E2F85CB5" year="1988" version="1.0" verified="true" cp="Key Disk"/>
+		<disk crc32="7C01D462" year="1989" version="1.01" verified="true" cp="Key Disk"/>
+	</title>
+	<title name="Starcross" year="1985" version="r17, Serial 821021, Int. 3L" publisher="Infocom, Inc.">
+		<disk crc32="3B138911" verified="true"/>
+	</title>
+	<title name="Starflight" publisher="Electronic Arts, Inc.">
+		<disk crc32="CEA623EC" disk="Starflight A" media="360K" year="1986" verified="true"/>
+		<disk crc32="5DA2FC6A" disk="Starflight B" media="360K" year="1986" verified="true"/>
+		<disk crc32="BE32EDF7" media="720K" year="1987" verified="true"/>
+		<disk crc32="AD44B619" disk="Starflight A" media="360K" year="1988" verified="true"/>
+		<disk crc32="F00E1CCB" disk="Starflight B" media="360K" year="1988" verified="true"/>
+		<disk crc32="332259D9" media="720K" year="1988" verified="true"/>
+	</title>
+	<title name="Starflight 2: Trade Routes of the Cloud Nebula" year="1990" publisher="Electronic Arts, Inc.">
+		<disk crc32="00A5CE11" disk="1" media="360K" verified="true"/>
+		<disk crc32="F9E1FF4B" disk="2" media="360K" verified="true"/>
+		<disk crc32="14A815E7" media="720K" verified="true"/>
+	</title>
+	<title name="Steel Thunder: American Battle Tank Simulation" year="1989" publisher="Accolade, Inc.">
+		<disk crc32="CB491070" disk="A" verified="true"/>
+		<disk crc32="F9D68541" disk="B" verified="true"/>
+	</title>
+	<title name="Stellar 7" year="1990" version="1.0, Int. 9.20.90" publisher="Sierra On-Line, Inc.">
+		<disk crc32="E1E1AC87" disk="2" media="360K" verified="true"/>
+		<disk crc32="2B92DAB4" disk="3" media="360K" verified="true"/>
+		<disk crc32="CCC908B9" disk="4" media="360K" verified="true"/>
+		<disk crc32="9B0DB70D" disk="1" media="720K" verified="true"/>
+		<disk crc32="C828A588" disk="2" media="720K" verified="true"/>
+	</title>
+	<title name="Stormovik: SU-25 Soviet Attack Fighter" year="1990" publisher="Electronic Arts, Inc.">
+		<disk crc32="3CAF433E" disk="1" verified="true"/>
+		<disk crc32="C96DC6C1" disk="2" verified="true"/>
+	</title>
+	<title name="Street Sports Baseball" year="1987" publisher="Epyx, Inc.">
+		<disk crc32="F17E13AC" verified="true" cp="Key Disk"/>
+	</title>
+	<title name="Street Sports Basketball" year="1987" publisher="Epyx, Inc.">
+		<disk crc32="161C23D3" verified="true" cp="Key Disk"/>
+	</title>
+	<title name="Strike Aces" year="1990" publisher="Accolade, Inc.">
+		<disk crc32="468F3981" disk="EGA, Tandy, CGA, Herc" verified="true"/>
+		<disk crc32="30CD630D" disk="Game &amp; VGA" verified="true"/>
+	</title>
+	<title name="Stunts" year="1991" version="1.1" publisher="Brøderbund Software, Inc.">
+		<disk crc32="E163E30D" disk="A" media="360K" verified="true"/>
+		<disk crc32="880E31BB" disk="B" media="360K" verified="true"/>
+		<disk crc32="66194ACF" disk="C" media="360K" verified="true"/>
+		<disk crc32="90BB5C39" disk="D" media="360K" verified="true"/>
+		<disk crc32="94630086" disk="A" media="720K" verified="true"/>
+		<disk crc32="1B67A396" disk="B" media="720K" verified="true"/>
+	</title>
+	<title name="Super Space Invaders" year="1993" publisher="Slash">
+		<disk crc32="6E68790F" verified="true"/>
+	</title>
+	<title name="Superleague Soccer" year="1991" publisher="Impressions Games" region="UK">
+		<disk crc32="957691B4" verified="true"/>
+	</title>
+	<title name="Suspended" year="1985" version="r8, Serial 830521" publisher="Infocom, Inc.">
+		<disk crc32="A7A39324" verified="true"/>
+	</title>
+	<title name="Syndicate" year="1993" publisher="Electronic Arts, Inc.">
+		<disk crc32="1F88694E" disk="1" verified="true"/>
+		<disk crc32="A3BA3BF9" disk="2" verified="true"/>
+		<disk crc32="A724D555" disk="3" verified="true"/>
+		<disk crc32="576D07E1" disk="4" verified="true"/>
+		<disk crc32="4D3E6946" disk="5" verified="true"/>
+	</title>
+	<title name="Take a Break! Crosswords" year="1992" version="1.0, Int. 9.23.92" publisher="Sierra On-Line, Inc.">
+		<disk crc32="4867B1A6" verified="true"/>
+	</title>
+	<title name="Take a Break! Crosswords Vol 1+2" year="1993" version="1.01, Int. 9.29.93" publisher="Sierra On-Line, Inc.">
+		<disk crc32="D5440E34" disk="1" verified="true"/>
+		<disk crc32="5B02D6FF" disk="2" verified="true"/>
+	</title>
+	<title name="Take a Break! Pinball" year="1993" version="1.01, Int. 6.25.93" publisher="Sierra On-Line, Inc.">
+		<disk crc32="C6C53B0B" disk="1" verified="true"/>
+		<disk crc32="66AED3A7" disk="2" verified="true"/>
+	</title>
+	<title name="Test Drive" publisher="Accolade, Inc.">
+		<disk crc32="8BFC0816" disk="1" media="360K" year="1987" version="1.0" verified="true" cp="H.L.S. Duplication"/>
+		<disk crc32="6E930803" disk="2" media="360K" year="1987" version="1.0" verified="true" cp="H.L.S. Duplication"/>
+		<disk crc32="3BB3E9F0" media="720K" year="1987" version="1.0" verified="true" cp="H.L.S. Duplication"/>
+		<disk crc32="17210661" disk="1" media="360K" year="1988" version="1.1" verified="true" cp="H.L.S. Duplication"/>
+		<disk crc32="CFC46F9A" disk="2" media="360K" year="1988" version="1.1" verified="true" cp="H.L.S. Duplication"/>
+	</title>
+	<title name="Test Drive III: The Passion" year="1991" version="2.0" publisher="Accolade, Inc.">
+		<disk crc32="E2D02EA8" disk="Boot Disk" verified="true"/>
+		<disk crc32="88BCA09E" disk="Master Play Disk" verified="true"/>
+		<disk crc32="92F497F5" disk="Program Disk" verified="true"/>
+	</title>
+	<title name="The Adventures of Willy Beamish" year="1991" version="1.01, Int. 10.11.91" publisher="Sierra On-Line, Inc.">
+		<disk crc32="511B9EBE" disk="1" verified="true"/>
+		<disk crc32="84C15A73" disk="2" verified="true"/>
+		<disk crc32="C846959C" disk="3" verified="true"/>
+		<disk crc32="889E0D23" disk="4" verified="true"/>
+		<disk crc32="13D2E22A" disk="5" verified="true"/>
+		<disk crc32="43CE987C" disk="6" verified="true"/>
+		<disk crc32="FFF02B42" disk="7" verified="true"/>
+	</title>
+	<title name="The Ancient Art of War at Sea" year="1987" version="3.0" publisher="Brøderbund Software, Inc.">
+		<disk crc32="935A200D" verified="true" cp="Key Disk"/>
+	</title>
+	<title name="The Bard's Tale" year="1987" publisher="Electronic Arts, Inc.">
+		<disk crc32="40918452" disk="1" media="360K" verified="true"/>
+		<disk crc32="A90BD7EC" disk="2" media="360K" verified="true"/>
+	</title>
+	<title name="The Bard's Tale Construction Set" year="1991" publisher="Interplay Productions, Inc.">
+		<disk crc32="D0F6A99B" disk="Data Disk" verified="true"/>
+		<disk crc32="19A5BDFF" disk="Startup Disk" verified="true"/>
+	</title>
+	<title name="The Bard's Tale II: The Destiny Knight" year="1988" publisher="Electronic Arts, Inc.">
+		<disk crc32="447F403E" disk="Picture Disk" media="360K" verified="true"/>
+		<disk crc32="15066D22" disk="Program Disk" media="360K" verified="true"/>
+		<disk crc32="F3C4A1AC" media="720K" verified="true"/>
+	</title>
+	<title name="The Bard's Tale III: Thief of Fate" year="1990" publisher="Electronic Arts, Inc.">
+		<disk crc32="5CD9891F" disk="1" media="360K" verified="true"/>
+		<disk crc32="AD726A56" disk="2" media="360K" verified="true"/>
+		<disk crc32="CC9D1779" disk="3" media="360K" verified="true"/>
+		<disk crc32="56219FB3" disk="1" media="720K" verified="true"/>
+		<disk crc32="CAAC84A1" disk="2" media="720K" verified="true"/>
+	</title>
+	<title name="The Cycles: International Grand Prix Racing" year="1989" publisher="Accolade, Inc.">
+		<disk crc32="9A823DC0" verified="true"/>
+	</title>
+	<title name="The Dam Busters" year="1985" publisher="Accolade, Inc.">
+		<disk crc32="A875C714" verified="true" cp="Key Disk"/>
+	</title>
+	<title name="The Duel: Test Drive II" year="1989" publisher="Accolade, Inc.">
+		<disk crc32="017F59FE" disk="Master Disk" media="360K" verified="true" cp="H.L.S. Duplication"/>
+		<disk crc32="EBCCCEB6" disk="Program Disk" media="360K" verified="true" cp="H.L.S. Duplication"/>
+		<disk crc32="9E06EDFC" media="720K" verified="true" cp="H.L.S. Duplication"/>
+	</title>
+	<title name="The Duel: Test Drive II Car Disk: The Muscle Cars" year="1989" publisher="Accolade, Inc.">
+		<disk crc32="D9FAABAF" media="360K" verified="true" cp="H.L.S. Duplication"/>
+		<disk crc32="492042C7" media="720K" verified="true" cp="H.L.S. Duplication"/>
+	</title>
+	<title name="The Duel: Test Drive II Car Disk: The Supercars" year="1989" publisher="Accolade, Inc.">
+		<disk crc32="5B807731" media="360K" verified="true" cp="H.L.S. Duplication"/>
+		<disk crc32="584F83D1" media="720K" verified="true" cp="H.L.S. Duplication"/>
+	</title>
+	<title name="The Duel: Test Drive II Scenery Disk: California Challenge" year="1989" publisher="Accolade, Inc.">
+		<disk crc32="069DA18B" media="360K" verified="true" cp="H.L.S. Duplication"/>
+		<disk crc32="08D2C95F" media="720K" verified="true" cp="H.L.S. Duplication"/>
+	</title>
+	<title name="The Duel: Test Drive II Scenery Disk: European Challenge" year="1989" publisher="Accolade, Inc.">
+		<disk crc32="8BA8F6A4" media="360K" verified="true" cp="H.L.S. Duplication"/>
+		<disk crc32="811A6B6C" media="720K" verified="true" cp="H.L.S. Duplication"/>
+	</title>
+	<title name="The Games: Summer Challenge" year="1992" publisher="Accolade, Inc.">
+		<disk crc32="735AED33" verified="true"/>
+	</title>
+	<title name="The Games: Summer Edition" year="1988" version="4.0" publisher="Epyx, Inc.">
+		<disk crc32="760249FC" disk="A" verified="true" cp="H.L.S. Duplication"/>
+		<disk crc32="05D17C89" disk="B" verified="true"/>
+		<disk crc32="AFE8D0C4" disk="C" verified="true"/>
+		<disk crc32="921FCE3A" disk="D" verified="true"/>
+	</title>
+	<title name="The Games: Winter Challenge" year="1991" publisher="Accolade, Inc.">
+		<disk crc32="CECC7A17" disk="1" year="1991" verified="true"/>
+		<disk crc32="0560D65B" disk="2" year="1991" verified="true"/>
+		<disk crc32="E490406F" year="1992" verified="true"/>
+	</title>
+	<title name="The Heroes of the 357th" year="1992" publisher="Electronic Arts, Inc.">
+		<disk crc32="8C08A854" disk="1" verified="true"/>
+		<disk crc32="1DC946CF" disk="2" verified="true"/>
+	</title>
+	<title name="The Hitchhiker's Guide to the Galaxy" year="1987" version="r58, Serial 851002" publisher="Infocom, Inc.">
+		<disk crc32="BA7B90EB" verified="true"/>
+	</title>
+	<title name="The Immortal" year="1991" publisher="Electronic Arts, Inc.">
+		<disk crc32="9F345B44" disk="1" verified="true"/>
+		<disk crc32="F9C5FF93" disk="2" verified="true"/>
+	</title>
+	<title name="The Incredible Machine" year="1992" version="1.0, Int. 11.19.92" publisher="Sierra On-Line, Inc.">
+		<disk crc32="64F15085" verified="true"/>
+	</title>
+	<title name="The Last Ninja" year="1988" publisher="Activision">
+		<disk crc32="5E1CA68D" disk="A" media="360K" version="1.0" verified="true" cp="Key Disk"/>
+		<disk crc32="3653B115" media="720K" version="1.0" verified="true" cp="Key Disk"/>
+		<disk crc32="1D0DE1E6" media="720K" version="1.1" verified="true" cp="Key Disk"/>
+	</title>
+	<title name="The Lost Files of Sherlock Holmes" year="1992" publisher="Electronic Arts, Inc.">
+		<disk crc32="EC839B11" disk="1" verified="true"/>
+		<disk crc32="421E6AFB" disk="2" verified="true"/>
+		<disk crc32="EE64646A" disk="3" verified="true"/>
+		<disk crc32="9B89BD4B" disk="4" verified="true"/>
+		<disk crc32="BE56EBB1" disk="5" verified="true"/>
+		<disk crc32="18AFE5F8" disk="6" verified="true"/>
+		<disk crc32="9F00C665" disk="7" verified="true"/>
+		<disk crc32="81E18404" disk="8" verified="true"/>
+		<disk crc32="290F085F" disk="9" verified="true"/>
+	</title>
+	<title name="The Lurking Horror" year="1987" version="r203, Serial 870506" publisher="Infocom, Inc.">
+		<disk crc32="4DBD2AB2" verified="true"/>
+	</title>
+	<title name="The Playroom" year="1989" publisher="Brøderbund Software, Inc.">
+		<disk crc32="B8685C89" disk="A" verified="true" cp="Key Disk"/>
+		<disk crc32="44FE6740" disk="B" verified="true"/>
+	</title>
+	<title name="The Ultimate Soundblaster Book" year="1993" publisher="Que Publishing">
+		<disk crc32="A8B05C37" disk="1" verified="true"/>
+		<disk crc32="ED2D3DAC" disk="2" verified="true"/>
+	</title>
+	<title name="The Witness" year="1983" version="r21, Serial 831208" publisher="Infocom, Inc.">
+		<disk crc32="3027D6EE" verified="true" cp="Key Disk"/>
+	</title>
+	<title name="Theme Park" year="1994" publisher="Electronic Arts, Inc.">
+		<disk crc32="323928F5" disk="1" verified="true"/>
+		<disk crc32="023F779D" disk="2" verified="true"/>
+		<disk crc32="1F3283B3" disk="3" verified="true"/>
+		<disk crc32="8EF52774" disk="4" verified="true"/>
+		<disk crc32="B5D843A3" disk="5" verified="true"/>
+		<disk crc32="C6C8D026" disk="6" verified="true"/>
+	</title>
+	<title name="Timequest" year="1991" publisher="Legend Entertainment Company">
+		<disk crc32="A54CC9F0" disk="1" media="360K" version="1.0" verified="true"/>
+		<disk crc32="E88781CF" disk="2" media="360K" version="1.0" verified="true"/>
+		<disk crc32="71EFCAEE" disk="3" media="360K" version="1.0" verified="true"/>
+		<disk crc32="44B1ACCB" disk="4" media="360K" version="1.0" verified="true"/>
+		<disk crc32="C397F395" disk="5" media="360K" version="1.0" verified="true"/>
+		<disk crc32="73A5773F" disk="6" media="360K" version="1.0" verified="true"/>
+		<disk crc32="29F97B57" disk="7" media="360K" version="1.0" verified="true"/>
+		<disk crc32="649BE40E" disk="8" media="360K" version="1.0" verified="true"/>
+		<disk crc32="B4FCED38" disk="9" media="360K" version="1.0" verified="true"/>
+		<disk crc32="8C3E8077" disk="10" media="360K" version="1.0" verified="true"/>
+		<disk crc32="D59411DE" disk="1" media="720K" version="1.0" verified="true"/>
+		<disk crc32="ECF85302" disk="2" media="720K" version="1.0" verified="true"/>
+		<disk crc32="993557D7" disk="3" media="720K" version="1.0" verified="true"/>
+		<disk crc32="852F1ED8" disk="4" media="720K" version="1.0" verified="true"/>
+		<disk crc32="63E29F01" disk="5" media="720K" version="1.0" verified="true"/>
+		<disk crc32="28755D7D" disk="1" media="360K" version="1.1" verified="true"/>
+		<disk crc32="32A2B3A7" disk="2" media="360K" version="1.1" verified="true"/>
+		<disk crc32="3A7539A7" disk="3" media="360K" version="1.1" verified="true"/>
+		<disk crc32="C558926A" disk="4" media="360K" version="1.1" verified="true"/>
+		<disk crc32="C5D3A8A8" disk="5" media="360K" version="1.1" verified="true"/>
+		<disk crc32="FBB1200F" disk="6" media="360K" version="1.1" verified="true"/>
+		<disk crc32="720F8B6A" disk="7" media="360K" version="1.1" verified="true"/>
+		<disk crc32="7EF89346" disk="8" media="360K" version="1.1" verified="true"/>
+		<disk crc32="9048533F" disk="9" media="360K" version="1.1" verified="true"/>
+		<disk crc32="C2FF43B9" disk="10" media="360K" version="1.1" verified="true"/>
+	</title>
+	<title name="Tongue of the Fatman" year="1989" publisher="Activision">
+		<disk crc32="3DA79D86" disk="1" media="360K" verified="true"/>
+		<disk crc32="3CA7930F" disk="2" media="360K" verified="true"/>
+		<disk crc32="37FAABCB" disk="3" media="360K" verified="true"/>
+		<disk crc32="2C0B043E" media="720K" verified="true"/>
+	</title>
+	<title name="Trinity" year="1986" publisher="Infocom, Inc.">
+		<disk crc32="4CA6213B" version="r11, Serial 860509" verified="true"/>
+		<disk crc32="E4EF858F" version="r12, Serial 860926" verified="true"/>
+	</title>
+	<title name="Waxworks" year="1992" publisher="Accolade, Inc.">
+		<disk crc32="4CA43855" disk="1" verified="true"/>
+		<disk crc32="F70D8932" disk="2" verified="true"/>
+		<disk crc32="BDD1C369" disk="3" verified="true"/>
+	</title>
+	<title name="Where in the U.S.A. is Carmen Sandiego (Enhanced)" year="1992" version="2.3" publisher="Brøderbund Software, Inc.">
+		<disk crc32="E2C92FA1" disk="1" media="360K" verified="true"/>
+		<disk crc32="F4CC63E6" disk="2" media="360K" verified="true"/>
+		<disk crc32="6320C68C" media="720K" verified="true"/>
+	</title>
+	<title name="Where in Time is Carmen Sandiego" year="1989" version="1.01" publisher="Brøderbund Software, Inc.">
+		<disk crc32="203A688D" disk="Country Disk 1" verified="true"/>
+		<disk crc32="10BEBED5" disk="Country Disk 2" verified="true"/>
+		<disk crc32="A326D80B" disk="Program Disk" verified="true"/>
+	</title>
+	<title name="Wishbringer" year="1985" version="r68, Serial 850501" publisher="Infocom, Inc.">
+		<disk crc32="77CBAEA8" verified="true"/>
+	</title>
+	<title name="WolfPack" year="1990" version="1.10" publisher="Brøderbund Software, Inc.">
+		<disk crc32="8E2DA786" disk="A" media="360K" verified="true"/>
+		<disk crc32="E7747583" disk="B" media="360K" verified="true"/>
+		<disk crc32="09FD3CB5" media="720K" verified="true"/>
+	</title>
+	<title name="World Class Leader Board" year="1987" version="1.02" publisher="Access Software, Inc.">
+		<disk crc32="320CE928" verified="true"/>
+	</title>
+	<title name="World Games" year="1986" publisher="Epyx, Inc.">
+		<disk crc32="74F84D1B" media="360K" verified="true" cp="Key Disk"/>
+		<disk crc32="D8584E4D" media="720K" verified="true" cp="Key Disk"/>
+	</title>
+	<title name="World Tour Golf" year="1986" publisher="Electronic Arts, Inc.">
+		<disk crc32="B6FCFC6B" verified="true" cp="Key Disk"/>
+	</title>
+	<title name="Zork II: The Wizard of Frobozz" publisher="Infocom, Inc.">
+		<disk crc32="CB741F9E" year="1985" version="r48, Serial 840904" verified="true"/>
+		<disk crc32="6CC07430" year="1991" version="r48, Serial 840904" publisher="Mastertronic, Inc." verified="true"/>
+	</title>
+	<title name="Zork III: The Dungeon Master" publisher="Infocom, Inc.">
+		<disk crc32="6DC4BEDB" year="1983" version="r16, Serial 830410" verified="true" cp="Key Disk"/>
+		<disk crc32="37E13F11" year="1985" version="r17, Serial 840727" verified="true"/>
+	</title>
+	<title name="Zork Trilogy" year="1987" publisher="Infocom, Inc.">
+		<disk crc32="75A36BAC" verified="true"/>
+	</title>
+	<title name="Zork Zero" year="1989" version="r393, Serial 890714" publisher="Infocom, Inc.">
+		<disk crc32="11CD7452" disk="1" media="360K" verified="true"/>
+		<disk crc32="9CFC119B" disk="2" media="360K" verified="true"/>
+		<disk crc32="D86BE876" disk="3" media="360K" verified="true"/>
+		<disk crc32="1D7390C3" disk="1" media="720K" verified="true"/>
+		<disk crc32="0DAE92BF" disk="2" media="720K" verified="true"/>
+	</title>
+	<title name="Zork: The Great Underground Empire" publisher="Infocom, Inc.">
+		<disk crc32="F8BA909D" year="1984" version="r88, Serial 840726" verified="true" cp="Key Disk"/>
+		<disk crc32="225929C2" year="1985" version="r88, Serial 840726, Int. 3L" verified="true"/>
+		<disk crc32="C5FFAB28" year="1987" version="r52, Serial 871125, Solid Gold" verified="true"/>
+	</title>
+	<title name="ZorkQuest: Assault on Egreth Castle" year="1988" publisher="Infocom, Inc.">
+		<disk crc32="61E13FD1" verified="true" cp="Key Disk"/>
+	</title>
+</root>
