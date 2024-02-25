@@ -1,7 +1,7 @@
 ﻿Imports DiskImageTool.DiskImage.FloppyDiskFunctions
 
 Public Class FloppyReadOptionsForm
-    Private _DiskType As FloppyDiskType = -1
+    Private _DiskType As FloppyDiskType = FloppyDiskType.FloppyUnknown
 
     Public Sub New(DetectedType As FloppyDiskType)
 
@@ -23,7 +23,7 @@ Public Class FloppyReadOptionsForm
         ComboDiskType.BeginUpdate()
         ComboDiskType.Items.Clear()
 
-        If DetectedType = -1 Then
+        If DetectedType = FloppyDiskType.FloppyUnknown Then
             lblMessage.Text = "Warning: Unable to determine the floppy disk type."
             DiskTypeItem = New ComboDiskTypeItem(DetectedType, False)
             Dim Index = ComboDiskType.Items.Add(DiskTypeItem)
@@ -48,7 +48,7 @@ Public Class FloppyReadOptionsForm
 
     Private Sub BtnOK_Click(sender As Object, e As EventArgs) Handles BtnOK.Click
         If ComboDiskType.SelectedItem Is Nothing Then
-            _DiskType = -1
+            _DiskType = FloppyDiskType.FloppyUnknown
         Else
             Dim DiskTypeItem As ComboDiskTypeItem = ComboDiskType.SelectedItem
             _DiskType = DiskTypeItem.Type
@@ -60,7 +60,7 @@ Public Class FloppyReadOptionsForm
             BtnOK.Enabled = False
         Else
             Dim DiskTypeItem As ComboDiskTypeItem = ComboDiskType.SelectedItem
-            BtnOK.Enabled = DiskTypeItem.Type <> -1
+            BtnOK.Enabled = DiskTypeItem.Type <> FloppyDiskType.FloppyUnknown
         End If
     End Sub
 
@@ -77,7 +77,7 @@ Public Class FloppyReadOptionsForm
         Public Overrides Function ToString() As String
             Dim TypeName As String
 
-            If _Type = -1 Then
+            If _Type = FloppyDiskType.FloppyUnknown Then
                 TypeName = "Unknown"
             Else
                 TypeName = GetFloppyDiskTypeName(_Type) & " Floppy"

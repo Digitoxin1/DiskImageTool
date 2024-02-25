@@ -1,13 +1,14 @@
 ﻿Imports System.IO
 Imports System.Text.RegularExpressions
 Imports System.Xml
+Imports DiskImageTool.DiskImage.FloppyDiskFunctions
 
 Public Class FloppyDB
     Private ReadOnly _NameSpace As String = New StubClass().GetType.Namespace
     Private _TitleDictionary As Dictionary(Of String, FloppyData)
     Private _NewXMLDoc As XmlDocument
 
-    Public Enum FloppyDBStatus
+    Public Enum FloppyDBStatus As Byte
         Unknown
         Unverified
         Verified
@@ -185,7 +186,8 @@ Public Class FloppyDB
             TitleData.Disk = Node.Attributes("disk").Value
         End If
         If Node.HasAttribute("media") Then
-            TitleData.Media = Node.Attributes("media").Value
+            Dim Media As String = Node.Attributes("media").Value
+            TitleData.Media = GetFloppyDiskType(Media)
         End If
         If Node.HasAttribute("publisher") Then
             TitleData.Publisher = Node.Attributes("publisher").Value
@@ -211,6 +213,9 @@ Public Class FloppyDB
         End If
         If Node.HasAttribute("cp") Then
             TitleData.CopyProtection = Node.Attributes("cp").Value
+        End If
+        If Node.HasAttribute("os") Then
+            TitleData.OperatingSystem = Node.Attributes("os").Value
         End If
 
         Return TitleData
@@ -254,12 +259,13 @@ Public Class FloppyDB
         Public Property Year As String = ""
         Public Property Version As String = ""
         Public Property Disk As String = ""
-        Public Property Media As String = ""
+        Public Property Media As FloppyDiskType = FloppyDiskType.FloppyUnknown
         Public Property Publisher As String = ""
         Public Property Status As FloppyDBStatus = FloppyDBStatus.Unknown
         Public Property CopyProtection As String = ""
         Public Property Region As String = ""
         Public Property Language As String = ""
+        Public Property OperatingSystem As String = ""
         Public Property Parent As FloppyData = Nothing
 
         Public Function GetName() As String
@@ -322,20 +328,20 @@ Public Class FloppyDB
 
             Return ""
         End Function
-        Public Function GetMedia() As String
-            If _Media <> "" Then
+        Public Function GetMedia() As FloppyDiskType
+            If _Media <> FloppyDiskType.FloppyUnknown Then
                 Return _Media
             Else
                 Dim Parent = _Parent
                 Do While Parent IsNot Nothing
-                    If Parent.Media <> "" Then
+                    If Parent.Media <> FloppyDiskType.FloppyUnknown Then
                         Return Parent.Media
                     End If
                     Parent = Parent.Parent
                 Loop
             End If
 
-            Return ""
+            Return FloppyDiskType.FloppyUnknown
         End Function
         Public Function GetPublisher() As String
             If _Publisher <> "" Then
@@ -411,6 +417,21 @@ Public Class FloppyDB
             End If
 
             Return ""
+        End Function
+        Public Function GetOperatingSystem() As String
+            If _OperatingSystem <> "" Then
+                Return _OperatingSystem
+            Else
+                Dim Parent = _Parent
+                Do While Parent IsNot Nothing
+                    If Parent.OperatingSystem <> "" Then
+                        Return Parent.OperatingSystem
+                    End If
+                    Parent = Parent.Parent
+                Loop
+            End If
+
+            Return "MS-DOS"
         End Function
     End Class
 End Class

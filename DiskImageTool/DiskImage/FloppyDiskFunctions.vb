@@ -1,6 +1,6 @@
 ﻿Namespace DiskImage
     Public Module FloppyDiskFunctions
-        Public Enum FloppyDiskType
+        Public Enum FloppyDiskType As Byte
             FloppyUnknown = 0
             Floppy160 = 1
             Floppy180 = 2
@@ -301,6 +301,37 @@
                     Return FloppyDiskType.FloppyXDF
                 Case 2949120
                     Return FloppyDiskType.Floppy2880
+                Case Else
+                    Return FloppyDiskType.FloppyUnknown
+            End Select
+        End Function
+
+        Public Function GetFloppyDiskType(Name As String) As FloppyDiskType
+            Select Case Name
+                Case "160K"
+                    Return FloppyDiskType.Floppy160
+                Case "180K"
+                    Return FloppyDiskType.Floppy180
+                Case "320K"
+                    Return FloppyDiskType.Floppy320
+                Case "360K"
+                    Return FloppyDiskType.Floppy360
+                Case "720K"
+                    Return FloppyDiskType.Floppy720
+                Case "1.2M"
+                    Return FloppyDiskType.Floppy1200
+                Case "1.44M"
+                    Return FloppyDiskType.Floppy1440
+                Case "DMF (1024)"
+                    Return FloppyDiskType.FloppyDMF1024
+                Case "DMF (2048)"
+                    Return FloppyDiskType.FloppyDMF2048
+                Case "2.88M"
+                    Return FloppyDiskType.Floppy2880
+                Case "ProCopy"
+                    Return FloppyDiskType.FloppyProCopy
+                Case "XDF"
+                    Return FloppyDiskType.FloppyXDF
                 Case Else
                     Return FloppyDiskType.FloppyUnknown
             End Select

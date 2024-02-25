@@ -1961,7 +1961,7 @@ Public Class MainForm
             BootSector = New BootSector(New ImageByteArray(Buffer))
             DetectedType = GetFloppyDiskType(BootSector.BPB)
         Else
-            DetectedType = -1
+            DetectedType = FloppyDiskType.FloppyUnknown
         End If
 
         Dim FloppyReadOptionsForm As New FloppyReadOptionsForm(DetectedType)
@@ -2031,7 +2031,7 @@ Public Class MainForm
         Dim IsReady = DriveInfo.IsReady
         Dim NewDiskType = GetFloppyDiskType(_Disk.BPB)
         Dim NewTypeName = GetFloppyDiskTypeName(NewDiskType) & " Floppy"
-        Dim DetectedType As FloppyDiskType = -2
+        Dim DetectedType As FloppyDiskType = 255
         Dim DoFormat = Not IsReady
 
         Dim MsgBoxResult As MsgBoxResult
@@ -2044,11 +2044,11 @@ Public Class MainForm
                     Dim BootSector = New BootSector(New ImageByteArray(Buffer))
                     DetectedType = GetFloppyDiskType(BootSector.BPB)
                 Else
-                    DetectedType = -1
+                    DetectedType = FloppyDiskType.FloppyUnknown
                 End If
                 FloppyDrive.Close()
             Else
-                DetectedType = -1
+                DetectedType = FloppyDiskType.FloppyUnknown
             End If
             Dim Msg As String
             If DetectedType = NewDiskType Then
@@ -2726,6 +2726,10 @@ Public Class MainForm
                     Value = TitleData.GetYear
                     If Value <> "" Then
                         .AddItem(TitleGroup, "Year", Value)
+                    End If
+                    Value = TitleData.GetOperatingSystem
+                    If Value <> "" Then
+                        .AddItem(TitleGroup, "OS", Value)
                     End If
                     Value = TitleData.GetRegion
                     If Value <> "" Then
