@@ -75,7 +75,7 @@ Public Class ImageLoadForm
         End If
     End Sub
 
-    Private Sub ProcessFile(bw As BackgroundWorker, FileName As String)
+    Private Sub ProcessFile(bw As BackgroundWorker, FileName As String, Extension As String)
         If Not File.Exists(FileName) Then
             Return
         End If
@@ -90,7 +90,9 @@ Public Class ImageLoadForm
                 End If
             Next
         Else
-            LoadedFileAdd(bw, FileName, FileName, False)
+            If Not _ArchiveFilterExt.Contains(Extension) Then
+                LoadedFileAdd(bw, FileName, FileName, False)
+            End If
         End If
     End Sub
 
@@ -113,12 +115,13 @@ Public Class ImageLoadForm
                     End If
                     Dim Extension = FileInfo.Extension.ToLower
                     If _FileFilterExt.Contains(Extension) OrElse _ArchiveFilterExt.Contains(Extension) Then
-                        ProcessFile(bw, FileInfo.FullName)
+                        ProcessFile(bw, FileInfo.FullName, Extension)
                     End If
                     bw.ReportProgress(1)
                 Next
             Else
-                ProcessFile(bw, FilePath)
+                Dim Extension = Path.GetExtension(FilePath).ToLower
+                ProcessFile(bw, FilePath, Extension)
             End If
             bw.ReportProgress(1)
         Next

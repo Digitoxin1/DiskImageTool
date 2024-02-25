@@ -1,7 +1,6 @@
 ﻿Imports System.ComponentModel
 Imports System.IO
 Imports System.Net
-Imports System.Security.Principal
 Imports System.Text
 Imports DiskImageTool.DiskImage
 Imports BootSectorOffsets = DiskImageTool.DiskImage.BootSector.BootSectorOffsets
@@ -89,6 +88,14 @@ Public Class MainForm
             If Not Remove Then
                 _FilterDiskType.Add(ImageData.ScanInfo.DiskType, UpdateFilters)
             End If
+        End If
+    End Sub
+
+    Friend Sub ItemScanTitle(Disk As DiskImage.Disk, ImageData As LoadedImageData)
+        Dim NormalizedMD5 = MD5Hash(GetNormalizedData(Disk))
+        If Not _TitleDB.TitleExists(NormalizedMD5) Then
+            Dim Media = GetFloppyDiskTypeName(Disk.BPB)
+            _TitleDB.AddTile(ImageData.FileName, Media, NormalizedMD5)
         End If
     End Sub
 
@@ -222,26 +229,35 @@ Public Class MainForm
         Dim HasMismatchedMediaDescriptor As Boolean = False
         Dim HasInvalidImageSize As Boolean = False
         Dim UnknownDiskType As Boolean = False
+        Dim IsKnownImage As Boolean = False
 
-        If Not Remove And IsValidImage Then
-            Dim DiskType = InferFloppyDiskType(Disk)
-            Dim MediaDescriptor = GetFloppyDiskMediaDescriptor(DiskType)
-            HasBadSectors = Disk.FAT.BadClusters.Count > 0
-            HasMismatchedFATs = Not Disk.CompareFATTables
-            If Disk.BootSector.BPB.IsValid Then
-                If Disk.FAT.HasMediaDescriptor AndAlso Disk.FAT.MediaDescriptor <> Disk.BootSector.BPB.MediaDescriptor Then
-                    HasMismatchedMediaDescriptor = True
-                ElseIf Disk.BootSector.BPB.MediaDescriptor <> MediaDescriptor Then
-                    HasMismatchedMediaDescriptor = True
-                ElseIf Disk.FAT.HasMediaDescriptor AndAlso Disk.FAT.MediaDescriptor <> MediaDescriptor Then
-                    HasMismatchedMediaDescriptor = True
+        If Not Remove Then
+            If IsValidImage Then
+                Dim DiskType = InferFloppyDiskType(Disk)
+                Dim MediaDescriptor = GetFloppyDiskMediaDescriptor(DiskType)
+                HasBadSectors = Disk.FAT.BadClusters.Count > 0
+                HasMismatchedFATs = Not Disk.CompareFATTables
+                If Disk.BootSector.BPB.IsValid Then
+                    If Disk.FAT.HasMediaDescriptor AndAlso Disk.FAT.MediaDescriptor <> Disk.BootSector.BPB.MediaDescriptor Then
+                        HasMismatchedMediaDescriptor = True
+                    ElseIf Disk.BootSector.BPB.MediaDescriptor <> MediaDescriptor Then
+                        HasMismatchedMediaDescriptor = True
+                    ElseIf Disk.FAT.HasMediaDescriptor AndAlso Disk.FAT.MediaDescriptor <> MediaDescriptor Then
+                        HasMismatchedMediaDescriptor = True
+                    End If
+                End If
+                HasInvalidImageSize = Disk.CheckImageSize <> 0
+                UnknownDiskType = GetFloppyDiskType(Disk.BPB) = FloppyDiskType.FloppyUnknown
+            End If
+
+            If _TitleDB.TitleExists(MD5Hash(Disk.Data.Data)) Then
+                IsKnownImage = True
+            ElseIf Disk.FAT.BadClusters.Count > 0 Then
+                If _TitleDB.TitleExists(MD5Hash(GetNormalizedData(Disk))) Then
+                    IsKnownImage = True
                 End If
             End If
-            HasInvalidImageSize = Disk.CheckImageSize <> 0
-            UnknownDiskType = GetFloppyDiskType(Disk.BPB) = FloppyDiskType.FloppyUnknown
-        End If
-
-        If Remove Then
+        Else
             IsValidImage = True
         End If
 
@@ -254,6 +270,18 @@ Public Class MainForm
             End If
             If UpdateFilters Then
                 FilterUpdate(FilterTypes.HasInvalidImage)
+            End If
+        End If
+
+        If Not ImageData.Scanned Or IsKnownImage <> ImageData.ScanInfo.IsKnownImage Then
+            ImageData.ScanInfo.IsKnownImage = IsKnownImage
+            If IsKnownImage Then
+                _FilterCounts(FilterTypes.KnownImage) += 1
+            ElseIf ImageData.Scanned Then
+                _FilterCounts(FilterTypes.KnownImage) -= 1
+            End If
+            If UpdateFilters Then
+                FilterUpdate(FilterTypes.KnownImage)
             End If
         End If
 
@@ -1583,11 +1611,11 @@ Public Class MainForm
         Dim CurrentImageData As LoadedImageData = ComboImages.SelectedItem
         ItemScan(ScanType, _Disk, CurrentImageData, True)
         RefreshFileButtons()
-        Dim CRC32Checksum = Crc32.ComputeChecksum(_Disk.Data.Data)
+        Dim MD5 = MD5Hash(_Disk.Data.Data)
         If RefreshSummary Then
-            PopulateSummaryPanel(_Disk, CRC32Checksum)
+            PopulateSummaryPanel(_Disk, MD5)
         End If
-        PopulateHashPanel(_Disk, CRC32Checksum)
+        PopulateHashPanel(_Disk, MD5)
         RefreshCurrentState()
     End Sub
 
@@ -2307,8 +2335,8 @@ Public Class MainForm
         If DisplayHexViewForm(HexViewSectorData) Then
             Dim CurrentImageData As LoadedImageData = ComboImages.SelectedItem
             ItemScan(ItemScanTypes.FreeClusters, _Disk, CurrentImageData, True)
-            Dim CRC32Checksum = Crc32.ComputeChecksum(_Disk.Data.Data)
-            PopulateHashPanel(_Disk, CRC32Checksum)
+            Dim MD5 = MD5Hash(_Disk.Data.Data)
+            PopulateHashPanel(_Disk, MD5)
             RefreshCurrentState()
         End If
     End Sub
@@ -2609,14 +2637,14 @@ Public Class MainForm
         ItemSelectionChanged()
     End Sub
 
-    Private Sub PopulateHashPanel(Disk As Disk, CRC32Checksum As UInteger)
+    Private Sub PopulateHashPanel(Disk As Disk, MD5 As String)
         With ListViewHashes
             .BeginUpdate()
             .Items.Clear()
 
             If Disk IsNot Nothing Then
-                .AddItem("CRC32", CRC32Checksum.ToString("X8"), False)
-                .AddItem("MD5", MD5Hash(Disk.Data.Data), False)
+                .AddItem("CRC32", Crc32.ComputeChecksum(Disk.Data.Data).ToString("X8"), False)
+                .AddItem("MD5", MD5, False)
                 .AddItem("SHA-1", SHA1Hash(Disk.Data.Data), False)
             End If
 
@@ -2625,7 +2653,7 @@ Public Class MainForm
         End With
     End Sub
 
-    Private Function GetNormalizedChecksum(Disk As Disk) As UInteger
+    Private Function GetNormalizedData(Disk As Disk) As Byte()
         Dim Data(Disk.Data.Data.Length - 1) As Byte
         Disk.Data.Data.CopyTo(Data, 0)
         Dim BytesPerCluster = Disk.BPB.BytesPerCluster()
@@ -2634,24 +2662,90 @@ Public Class MainForm
             Dim Offset = Disk.BPB.ClusterToOffset(Cluster)
             Buffer.CopyTo(Data, Offset)
         Next
-        Return Crc32.ComputeChecksum(Data)
+        Return Data
     End Function
 
     Private Sub PopulateSummary(Disk As Disk, ImageData As LoadedImageData)
-        Dim CRC32Checksum = Crc32.ComputeChecksum(Disk.Data.Data)
+        Dim MD5 = MD5Hash(Disk.Data.Data)
 
         SetCurrentFileName(ImageData)
-        PopulateSummaryPanel(Disk, CRC32Checksum)
-        PopulateHashPanel(Disk, CRC32Checksum)
+        PopulateSummaryPanel(Disk, MD5)
+        PopulateHashPanel(Disk, MD5)
         RefreshDiskButtons(Disk, ImageData)
     End Sub
-    Private Sub PopulateSummaryPanel(Disk As Disk, CRC32Checksum As UInteger)
+    Private Sub PopulateSummaryPanel(Disk As Disk, MD5 As String)
         Dim Value As String
         Dim ForeColor As Color
+        Dim CopyProtection As String = ""
+        Dim TitleFound As Boolean = False
 
         With ListViewSummary
             .BeginUpdate()
             .Items.Clear()
+
+            If Disk IsNot Nothing Then
+                Dim TitleData = _TitleDB.TitleLookup(MD5)
+                If TitleData Is Nothing Then
+                    If Disk.FAT.BadClusters.Count > 0 Then
+                        Dim NormalizedData = GetNormalizedData(Disk)
+                        TitleData = _TitleDB.TitleLookup(MD5Hash(NormalizedData))
+                    End If
+                End If
+                If TitleData IsNot Nothing Then
+                    Dim TitleGroup = .Groups.Add("Title", "Title")
+                    TitleFound = True
+                    Value = TitleData.GetName
+                    If Value <> "" Then
+                        Dim Status = TitleData.GetStatus
+                        If Status = FloppyDB.FloppyDBStatus.Verified Then
+                            ForeColor = Color.Green
+                        ElseIf Status = FloppyDB.FloppyDBStatus.Modified Then
+                            ForeColor = Color.Red
+                        Else
+                            ForeColor = Color.Blue
+                        End If
+                        Dim CalcWidth As Integer = .Columns.Item(1).Width - 5
+                        Dim TextWidth As Integer = TextRenderer.MeasureText(Value, .Font).Width
+                        If TextWidth > CalcWidth Then
+                            Dim Offset As Integer = TextWidth - CalcWidth
+                            If Offset > 50 Then
+                                TextWidth -= (Offset - 50)
+                                Offset = 50
+                            End If
+                            TitleGroup.Tag = Offset
+                            .AddItem(TitleGroup, "Title", "Title", Value, ForeColor, True, TextWidth)
+                        Else
+                            TitleGroup.Tag = 0
+                            .AddItem(TitleGroup, "Title", Value, ForeColor, False)
+                        End If
+                    End If
+                    Value = TitleData.GetPublisher
+                    If Value <> "" Then
+                        .AddItem(TitleGroup, "Publisher", Value, False)
+                    End If
+                    Value = TitleData.GetYear
+                    If Value <> "" Then
+                        .AddItem(TitleGroup, "Year", Value)
+                    End If
+                    Value = TitleData.GetRegion
+                    If Value <> "" Then
+                        .AddItem(TitleGroup, "Region", Value)
+                    End If
+                    Value = TitleData.GetLanguage
+                    If Value <> "" Then
+                        .AddItem(TitleGroup, "Language", Value)
+                    End If
+                    Value = TitleData.GetVersion
+                    If Value <> "" Then
+                        .AddItem(TitleGroup, "Version", Value)
+                    End If
+                    Value = TitleData.GetDisk
+                    If Value <> "" Then
+                        .AddItem(TitleGroup, "Disk", Value)
+                    End If
+                    CopyProtection = TitleData.GetCopyProtection
+                End If
+            End If
 
             Dim DiskGroup = .Groups.Add("Disk", "Disk")
 
@@ -2660,49 +2754,6 @@ Public Class MainForm
                 Dim BootstrapType As BootstrapLookup = Nothing
                 Dim KnownOEMNameMatch As KnownOEMName = Nothing
                 Dim OEMName() As Byte = Nothing
-
-                Dim TitleFound As Boolean = False
-                Dim CopyProtection As String = ""
-                Dim TitleData = _TitleDB.TitleLookup(CRC32Checksum)
-                If TitleData Is Nothing Then
-                    If Disk.FAT.BadClusters.Count > 0 Then
-                        Dim NormalizedChecksum = GetNormalizedChecksum(Disk)
-                        TitleData = _TitleDB.TitleLookup(NormalizedChecksum)
-                    End If
-                End If
-                If TitleData IsNot Nothing Then
-                    TitleFound = True
-                    Value = TitleData.GetName
-                    If Value <> "" Then
-                        ForeColor = IIf(TitleData.GetVerified, Color.Green, SystemColors.WindowText)
-                        .AddItem(DiskGroup, "Title", Value, ForeColor)
-                    End If
-                    Value = TitleData.GetPublisher
-                    If Value <> "" Then
-                        .AddItem(DiskGroup, "Publisher", Value)
-                    End If
-                    Value = TitleData.GetYear
-                    If Value <> "" Then
-                        .AddItem(DiskGroup, "Year", Value)
-                    End If
-                    Value = TitleData.GetRegion
-                    If Value <> "" Then
-                        .AddItem(DiskGroup, "Region", Value)
-                    End If
-                    Value = TitleData.GetLanguage
-                    If Value <> "" Then
-                        .AddItem(DiskGroup, "Language", Value)
-                    End If
-                    Value = TitleData.GetVersion
-                    If Value <> "" Then
-                        .AddItem(DiskGroup, "Version", Value)
-                    End If
-                    Value = TitleData.GetDisk
-                    If Value <> "" Then
-                        .AddItem(DiskGroup, "Disk", Value)
-                    End If
-                    CopyProtection = TitleData.CopyProtection
-                End If
 
                 If Disk.IsValidImage Then
                     Dim OEMNameWin9x = Disk.BootSector.IsWin9xOEMName
@@ -2751,24 +2802,27 @@ Public Class MainForm
                     DiskType = FloppyDiskType.FloppyUnknown
                 End If
 
+                Dim BroderbundCopyright = ""
                 If Disk.IsValidImage Then
                     Dim BadSectors = GetBadSectors(Disk.BPB, Disk.FAT.BadClusters)
                     If CopyProtection.Length = 0 Then
                         CopyProtection = GetCopyProtection(Disk, BadSectors)
                     End If
 
-                    If CopyProtection.Length > 0 Then
-                        .AddItem(DiskGroup, "Copy Protection", CopyProtection)
-                    End If
-
                     If Not TitleFound Then
-                        Dim BroderbundCopyright = GetBroderbundCopyright(Disk, BadSectors)
-
-                        If BroderbundCopyright <> "" Then
-                            .AddItem(DiskGroup, "Broderbund Copyright", Trim(BroderbundCopyright))
-                        End If
+                        BroderbundCopyright = GetBroderbundCopyright(Disk, BadSectors)
                     End If
-                Else
+                End If
+
+                If CopyProtection.Length > 0 Then
+                    .AddItem(DiskGroup, "Copy Protection", CopyProtection)
+                End If
+
+                If BroderbundCopyright.Length > 0 Then
+                    .AddItem(DiskGroup, "Broderbund Copyright", Trim(BroderbundCopyright))
+                End If
+
+                If Not Disk.IsValidImage Then
                     .AddItem(DiskGroup, "Error", "Unknown Image Format", Color.Red)
                 End If
 
@@ -4253,6 +4307,27 @@ Public Class MainForm
 
         Debounce.Stop()
         Debounce.Start()
+    End Sub
+
+    Private Sub ListViewSummary_DrawItem(sender As Object, e As DrawListViewItemEventArgs) Handles ListViewSummary.DrawItem
+        e.DrawDefault = True
+    End Sub
+
+    Private Sub ListViewSummary_DrawSubItem(sender As Object, e As DrawListViewSubItemEventArgs) Handles ListViewSummary.DrawSubItem
+        If e.Item.Group.Name = "Title" AndAlso e.Item.Group.Tag <> 0 Then
+            Dim Offset = e.Item.Group.Tag
+            e.DrawBackground()
+            Dim rect As Rectangle = Rectangle.Inflate(e.Bounds, -3, -2)
+            If e.ColumnIndex = 0 Then
+                rect.Width -= Offset
+            Else
+                rect.X -= Offset
+                rect.Width += Offset
+            End If
+            TextRenderer.DrawText(e.Graphics, e.SubItem.Text, e.SubItem.Font, rect, e.SubItem.ForeColor, TextFormatFlags.Default Or TextFormatFlags.NoPrefix)
+        Else
+            e.DrawDefault = True
+        End If
     End Sub
 #End Region
 

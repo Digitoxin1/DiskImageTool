@@ -28,35 +28,50 @@ Module ListViewExtensions
 
     <Extension()>
     Public Function AddItem(listViewControl As ListView, Text As String, Value As String, WrapText As Boolean) As ListViewItem
-        Return AddItem(listViewControl, Nothing, Text, Value, Color.Empty, WrapText)
+        Return AddItem(listViewControl, Nothing, "", Text, Value, Color.Empty, WrapText, Nothing)
     End Function
 
     <Extension()>
     Public Function AddItem(listViewControl As ListView, Text As String, Value As String, ForeColor As Color) As ListViewItem
-        Return AddItem(listViewControl, Nothing, Text, Value, ForeColor)
+        Return AddItem(listViewControl, Nothing, "", Text, Value, ForeColor, True, Nothing)
     End Function
 
     <Extension()>
     Public Function AddItem(listViewControl As ListView, Group As ListViewGroup, Text As String, Value As String) As ListViewItem
-        Return AddItem(listViewControl, Group, Text, Value, Color.Empty)
+        Return AddItem(listViewControl, Group, "", Text, Value, Color.Empty, True, Nothing)
+    End Function
+
+    <Extension()>
+    Public Function AddItem(listViewControl As ListView, Group As ListViewGroup, Text As String, Value As String, WrapText As Boolean) As ListViewItem
+        Return AddItem(listViewControl, Group, "", Text, Value, Color.Empty, WrapText, Nothing)
     End Function
 
     <Extension()>
     Public Function AddItem(listViewControl As ListView, Group As ListViewGroup, Text As String, Value As String, ForeColor As Color) As ListViewItem
-        Return AddItem(listViewControl, Group, Text, Value, ForeColor, True)
+        Return AddItem(listViewControl, Group, "", Text, Value, ForeColor, True, Nothing)
     End Function
 
     <Extension()>
     Public Function AddItem(listViewControl As ListView, Group As ListViewGroup, Text As String, Value As String, ForeColor As Color, WrapText As Boolean) As ListViewItem
+        Return AddItem(listViewControl, Group, "", Text, Value, ForeColor, WrapText, Nothing)
+    End Function
+
+    <Extension()>
+    Public Function AddItem(listViewControl As ListView, Group As ListViewGroup, Name As String, Text As String, Value As String, ForeColor As Color, WrapText As Boolean, Width? As Integer) As ListViewItem
         Dim Item As ListViewItem = Nothing
         Dim SubItem As ListViewItem.ListViewSubItem
         Dim StringList As List(Of String) = Nothing
         Dim AddTags As Boolean = False
 
         If WrapText Then
-            Dim Width = listViewControl.Columns.Item(1).Width - 5
-            If TextRenderer.MeasureText(Value, listViewControl.Font).Width > Width Then
-                StringList = Value.WordWrap(Width, listViewControl.Font)
+            Dim CalcWidth As Integer
+            If Width.HasValue Then
+                CalcWidth = Width.Value
+            Else
+                CalcWidth = listViewControl.Columns.Item(1).Width - 5
+            End If
+            If TextRenderer.MeasureText(Value, listViewControl.Font).Width > CalcWidth Then
+                StringList = Value.WordWrap(CalcWidth, listViewControl.Font)
                 AddTags = True
             End If
         End If
@@ -75,8 +90,11 @@ Module ListViewExtensions
                 ItemText = ""
             End If
             Dim NewItem = New ListViewItem(ItemText, Group) With {
-                    .UseItemStyleForSubItems = False
-                }
+                .UseItemStyleForSubItems = False
+            }
+            If Name.Length > 0 Then
+                NewItem.Name = Name
+            End If
             If AddTags Then
                 NewItem.Tag = Text
             End If

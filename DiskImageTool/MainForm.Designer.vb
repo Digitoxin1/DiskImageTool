@@ -882,6 +882,7 @@ Partial Class MainForm
         Me.ListViewSummary.Location = New System.Drawing.Point(12, 55)
         Me.ListViewSummary.MultiSelect = False
         Me.ListViewSummary.Name = "ListViewSummary"
+        Me.ListViewSummary.OwnerDraw = True
         Me.ListViewSummary.Size = New System.Drawing.Size(305, 387)
         Me.ListViewSummary.TabIndex = 2
         Me.ListViewSummary.UseCompatibleStateImageBehavior = False
