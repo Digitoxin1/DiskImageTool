@@ -20,10 +20,6 @@ Public Class FloppyDB
     End Sub
 
     Public Sub AddTile(FileName As String, Media As String, MD5 As String)
-        If _NewXMLDoc Is Nothing Then
-            _NewXMLDoc = LoadXML("NewFloppyDB.xml")
-        End If
-
         Dim Title As String = Trim(Regex.Match(FileName, "^[^\\(]+").Value)
         Title = Replace(Title, " - ", ": ")
 
@@ -72,61 +68,72 @@ Public Class FloppyDB
             Status = "U"
         End If
 
-        If Not Cracked Then
-            Dim rootNode = _NewXMLDoc.SelectSingleNode("/root")
-
-            Dim node = rootNode.SelectSingleNode("//*[@md5=""" & MD5 & """]")
-            If node Is Nothing Then
-                Dim titleNode = rootNode.SelectSingleNode("title[@name=""" & Title & """]")
-                If titleNode Is Nothing Then
-                    titleNode = _NewXMLDoc.CreateElement("title")
-                    titleNode.AppendAttribute("name", Title)
-                    titleNode.AppendAttribute("publisher", "")
-                    rootNode.AppendChild(titleNode)
+        If Not _TitleDictionary.ContainsKey(MD5) Then
+            If Not Cracked Then
+                If _NewXMLDoc Is Nothing Then
+                    _NewXMLDoc = LoadXML("NewFloppyDB.xml")
                 End If
 
-                Dim xPath = "release[@media=""" & Media & """"
-                If Year <> "" Then
-                    xPath &= " and @year=""" & Year & """"
-                Else
-                    xPath &= " and not(@year)"
-                End If
-                If Version <> "" Then
-                    xPath &= " and @version=""" & Version & """"
-                Else
-                    xPath &= " and not(@version)"
-                End If
-                xPath &= "]"
+                Dim rootNode = _NewXMLDoc.SelectSingleNode("/root")
 
-                Dim releaseNode = titleNode.SelectSingleNode(xPath)
-                If releaseNode Is Nothing Then
-                    releaseNode = _NewXMLDoc.CreateElement("release")
+                Dim node = rootNode.SelectSingleNode("//*[@md5=""" & MD5 & """]")
+                If node Is Nothing Then
+                    Dim titleNode = rootNode.SelectSingleNode("title[@name=""" & Title & """]")
+                    If titleNode Is Nothing Then
+                        titleNode = _NewXMLDoc.CreateElement("title")
+                        titleNode.AppendAttribute("name", Title)
+                        titleNode.AppendAttribute("publisher", "")
+                        rootNode.AppendChild(titleNode)
+                    End If
+
+                    Dim xPath = "release[@media=""" & Media & """"
                     If Year <> "" Then
-                        releaseNode.AppendAttribute("year", Year)
+                        xPath &= " and @year=""" & Year & """"
+                    Else
+                        xPath &= " and not(@year)"
                     End If
                     If Version <> "" Then
-                        releaseNode.AppendAttribute("version", Version)
+                        xPath &= " and @version=""" & Version & """"
+                    Else
+                        xPath &= " and not(@version)"
                     End If
-                    releaseNode.AppendAttribute("media", Media)
-                    releaseNode.AppendAttribute("status", Status)
-                    titleNode.AppendChild(releaseNode)
-                End If
+                    xPath &= "]"
 
-                Dim ReleaseStatus As String = ""
-                Dim StatusAttribte As XmlAttribute = releaseNode.Attributes.GetNamedItem("status")
-                If StatusAttribte IsNot Nothing Then
-                    ReleaseStatus = StatusAttribte.Value
-                End If
+                    Dim releaseNode = titleNode.SelectSingleNode(xPath)
+                    If releaseNode Is Nothing Then
+                        releaseNode = _NewXMLDoc.CreateElement("release")
+                        If Year <> "" Then
+                            releaseNode.AppendAttribute("year", Year)
+                        End If
+                        If Version <> "" Then
+                            releaseNode.AppendAttribute("version", Version)
+                        End If
+                        releaseNode.AppendAttribute("media", Media)
+                        releaseNode.AppendAttribute("status", Status)
+                        titleNode.AppendChild(releaseNode)
+                    End If
 
-                Dim diskNode = _NewXMLDoc.CreateElement("disk")
-                diskNode.AppendAttribute("md5", MD5)
-                If Disk <> "" Then
-                    diskNode.AppendAttribute("disk", Disk)
+                    Dim ReleaseStatus As String = ""
+                    Dim StatusAttribte As XmlAttribute = releaseNode.Attributes.GetNamedItem("status")
+                    If StatusAttribte IsNot Nothing Then
+                        ReleaseStatus = StatusAttribte.Value
+                    End If
+
+                    Dim diskNode = _NewXMLDoc.CreateElement("disk")
+                    diskNode.AppendAttribute("md5", MD5)
+                    If Disk <> "" Then
+                        diskNode.AppendAttribute("disk", Disk)
+                    End If
+                    If ReleaseStatus <> Status Then
+                        diskNode.AppendAttribute("status", Status)
+                    End If
+                    releaseNode.AppendChild(diskNode)
                 End If
-                If ReleaseStatus <> Status Then
-                    diskNode.AppendAttribute("status", Status)
-                End If
-                releaseNode.AppendChild(diskNode)
+            End If
+        Else
+            Dim FloppyData = _TitleDictionary.Item(MD5)
+            If FloppyData.GetStatus <> GetFloppyDBStatus(Status) Then
+                Debug.Print("Check Status: " & MD5 & ", " & FileName)
             End If
         End If
     End Sub
@@ -168,6 +175,19 @@ Public Class FloppyDB
         End If
     End Sub
 
+    Private Function GetFloppyDBStatus(Status As String) As FloppyDBStatus
+        Select Case Status
+            Case "V"
+                Return FloppyDBStatus.Verified
+            Case "U"
+                Return FloppyDBStatus.Unverified
+            Case "M"
+                Return FloppyDBStatus.Modified
+            Case Else
+                Return FloppyDBStatus.Unknown
+        End Select
+    End Function
+
     Private Function GetTitleData(Node As XmlElement, Parent As FloppyData) As FloppyData
         Dim TitleData As New FloppyData With {
             .Parent = Parent
@@ -175,6 +195,9 @@ Public Class FloppyDB
 
         If Node.HasAttribute("name") Then
             TitleData.Name = Node.Attributes("name").Value
+        End If
+        If Node.HasAttribute("variation") Then
+            TitleData.Variation = Node.Attributes("variation").Value
         End If
         If Node.HasAttribute("year") Then
             TitleData.Year = Node.Attributes("year").Value
@@ -194,16 +217,7 @@ Public Class FloppyDB
         End If
         If Node.HasAttribute("status") Then
             Dim Status = Node.Attributes("status").Value
-            Select Case Status
-                Case "V"
-                    TitleData.Status = FloppyDBStatus.Verified
-                Case "U"
-                    TitleData.Status = FloppyDBStatus.Unverified
-                Case "M"
-                    TitleData.Status = FloppyDBStatus.Modified
-                Case Else
-                    TitleData.Status = FloppyDBStatus.Unknown
-            End Select
+            TitleData.Status = GetFloppyDBStatus(Status)
         End If
         If Node.HasAttribute("region") Then
             TitleData.Region = Node.Attributes("region").Value
@@ -221,6 +235,29 @@ Public Class FloppyDB
         Return TitleData
     End Function
 
+    Private Sub CheckTitleNodeForErrors(TitleNode As XmlNode)
+        If TitleNode.Name <> "title" Then
+            Debug.Print("Invalid top level node: " & TitleNode.OuterXml)
+        End If
+        Dim NameFound As Boolean = False
+        Dim PublisherFound As Boolean = False
+        For Each Attribute As XmlAttribute In TitleNode.Attributes
+            If Attribute.Name = "name" Then
+                NameFound = True
+            ElseIf Attribute.Name = "publisher" Then
+                PublisherFound = True
+            Else
+                Debug.Print("Check Attribute '" & Attribute.Name & "': " & TitleNode.OuterXml)
+            End If
+        Next
+        If Not NameFound Then
+            Debug.Print("Name Missing: " & TitleNode.OuterXml)
+        End If
+        If Not PublisherFound Then
+            Debug.Print("Publisher Missing: " & TitleNode.OuterXml)
+        End If
+    End Sub
+
     Private Sub ParseXML()
         _TitleDictionary = New Dictionary(Of String, FloppyData)
 
@@ -228,7 +265,18 @@ Public Class FloppyDB
 
         For Each TitleNode As XmlNode In XMLDoc.SelectNodes("/root/title")
             ParseNode(TitleNode, Nothing)
+#If DEBUG Then
+            CheckTitleNodeForErrors(TitleNode)
+#End If
         Next
+
+#If DEBUG Then
+        For Each Value In _TitleDictionary.Values
+            If Value.GetYear = "" Then
+                Debug.Print("Missing Year: " & Value.GetName)
+            End If
+        Next
+#End If
     End Sub
 
     Private Sub ParseNode(Node As XmlNode, ParentData As FloppyData)
@@ -256,6 +304,7 @@ Public Class FloppyDB
     Public Class FloppyData
         Public Property MD5 As String = ""
         Public Property Name As String = ""
+        Public Property Variation As String = ""
         Public Property Year As String = ""
         Public Property Version As String = ""
         Public Property Disk As String = ""
@@ -276,6 +325,21 @@ Public Class FloppyDB
                 Do While Parent IsNot Nothing
                     If Parent.Name <> "" Then
                         Return Parent.Name
+                    End If
+                    Parent = Parent.Parent
+                Loop
+            End If
+
+            Return ""
+        End Function
+        Public Function GetVariation() As String
+            If _Variation <> "" Then
+                Return _Variation
+            Else
+                Dim Parent = _Parent
+                Do While Parent IsNot Nothing
+                    If Parent.Variation <> "" Then
+                        Return Parent.Variation
                     End If
                     Parent = Parent.Parent
                 Loop

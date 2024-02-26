@@ -93,10 +93,8 @@ Public Class MainForm
 
     Friend Sub ItemScanTitle(Disk As DiskImage.Disk, ImageData As LoadedImageData)
         Dim NormalizedMD5 = MD5Hash(GetNormalizedData(Disk))
-        If Not _TitleDB.TitleExists(NormalizedMD5) Then
-            Dim Media = GetFloppyDiskTypeName(Disk.BPB)
-            _TitleDB.AddTile(ImageData.FileName, Media, NormalizedMD5)
-        End If
+        Dim Media = GetFloppyDiskTypeName(Disk.BPB)
+        _TitleDB.AddTile(ImageData.FileName, Media, NormalizedMD5)
     End Sub
 
     Friend Function ItemScanDirectory(Disk As DiskImage.Disk, ImageData As LoadedImageData, Optional UpdateFilters As Boolean = False, Optional Remove As Boolean = False) As DirectoryScanResponse
@@ -2695,6 +2693,10 @@ Public Class MainForm
                     Dim TitleGroup = .Groups.Add("Title", "Title")
                     TitleFound = True
                     Value = TitleData.GetName
+                    Dim Variation = TitleData.GetVariation
+                    If Variation <> "" Then
+                        Value &= " (" & Variation & ")"
+                    End If
                     If Value <> "" Then
                         Dim Status = TitleData.GetStatus
                         If Status = FloppyDB.FloppyDBStatus.Verified Then
@@ -2916,9 +2918,9 @@ Public Class MainForm
                         ForeColor = SystemColors.WindowText
                     End If
 
-                    If Debugger.IsAttached Then
-                        .AddItem(BootRecordGroup, BootSectorDescription(BootSectorOffsets.JmpBoot), BitConverter.ToString(Disk.BootSector.JmpBoot), ForeColor)
-                    End If
+#If DEBUG Then
+                    .AddItem(BootRecordGroup, BootSectorDescription(BootSectorOffsets.JmpBoot), BitConverter.ToString(Disk.BootSector.JmpBoot), ForeColor)
+#End If
                 End If
 
                 If Disk.IsValidImage Then

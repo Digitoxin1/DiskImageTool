@@ -164,9 +164,7 @@
     <Compile Include="Forms\FATEditForm.Designer.vb">
       <DependentUpon>FATEditForm.vb</DependentUpon>
     </Compile>
-    <Compile Include="Forms\FATEditForm.vb">
-      <SubType>Form</SubType>
-    </Compile>
+    <Compile Include="Forms\FATEditForm.vb" />
     <Compile Include="Forms\FilePropertiesForm.Designer.vb">
       <DependentUpon>FilePropertiesForm.vb</DependentUpon>
     </Compile>
