@@ -11,10 +11,11 @@
     <AssemblyName>DiskImageTool</AssemblyName>
     <FileAlignment>512</FileAlignment>
     <MyType>WindowsForms</MyType>
-    <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.8.1</TargetFrameworkVersion>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
     <Deterministic>true</Deterministic>
     <IsWebBootstrapper>false</IsWebBootstrapper>
+    <TargetFrameworkProfile />
     <PublishUrl>publish\</PublishUrl>
     <Install>true</Install>
     <InstallFrom>Disk</InstallFrom>
@@ -75,7 +76,7 @@
     <ManifestKeyFile>DiskImageTool_TemporaryKey.pfx</ManifestKeyFile>
   </PropertyGroup>
   <PropertyGroup>
-    <GenerateManifests>true</GenerateManifests>
+    <GenerateManifests>false</GenerateManifests>
   </PropertyGroup>
   <PropertyGroup>
     <SignManifests>false</SignManifests>
@@ -85,6 +86,9 @@
   </PropertyGroup>
   <PropertyGroup>
     <ApplicationManifest>My Project\app.manifest</ApplicationManifest>
+  </PropertyGroup>
+  <PropertyGroup>
+    <TargetZone>LocalIntranet</TargetZone>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="CompactJson, Version=1.2.3.0, Culture=neutral, processorArchitecture=MSIL">
@@ -100,6 +104,7 @@
     <Reference Include="System.Drawing" />
     <Reference Include="System.IO.Compression" />
     <Reference Include="System.IO.Compression.FileSystem" />
+    <Reference Include="System.Numerics" />
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
     <Reference Include="System.Core" />
@@ -164,7 +169,9 @@
     <Compile Include="Forms\FATEditForm.Designer.vb">
       <DependentUpon>FATEditForm.vb</DependentUpon>
     </Compile>
-    <Compile Include="Forms\FATEditForm.vb" />
+    <Compile Include="Forms\FATEditForm.vb">
+      <SubType>Form</SubType>
+    </Compile>
     <Compile Include="Forms\FilePropertiesForm.Designer.vb">
       <DependentUpon>FilePropertiesForm.vb</DependentUpon>
     </Compile>

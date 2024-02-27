@@ -23,6 +23,7 @@ Public Class ImageDataScanInfo
     Public Property UnknownDiskType As Boolean = False
     Public Property HasReservedBytesSet As Boolean = False
     Public Property IsKnownImage As Boolean = False
+    Public Property IsUnknownImage As Boolean = False
 End Class
 
 Public Class LoadedImageData

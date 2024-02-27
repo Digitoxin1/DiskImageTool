@@ -228,6 +228,7 @@ Public Class MainForm
         Dim HasInvalidImageSize As Boolean = False
         Dim UnknownDiskType As Boolean = False
         Dim IsKnownImage As Boolean = False
+        Dim IsUnknownImage As Boolean = False
 
         If Not Remove Then
             If IsValidImage Then
@@ -254,6 +255,8 @@ Public Class MainForm
                 If _TitleDB.TitleExists(MD5Hash(GetNormalizedData(Disk))) Then
                     IsKnownImage = True
                 End If
+            Else
+                IsUnknownImage = True
             End If
         Else
             IsValidImage = True
@@ -280,6 +283,18 @@ Public Class MainForm
             End If
             If UpdateFilters Then
                 FilterUpdate(FilterTypes.KnownImage)
+            End If
+        End If
+
+        If Not ImageData.Scanned Or IsUnknownImage <> ImageData.ScanInfo.IsUnknownImage Then
+            ImageData.ScanInfo.IsUnknownImage = IsUnknownImage
+            If IsUnknownImage Then
+                _FilterCounts(FilterTypes.UnknownImage) += 1
+            ElseIf ImageData.Scanned Then
+                _FilterCounts(FilterTypes.UnknownImage) -= 1
+            End If
+            If UpdateFilters Then
+                FilterUpdate(FilterTypes.UnknownImage)
             End If
         End If
 
@@ -2658,18 +2673,111 @@ Public Class MainForm
         Dim Buffer(BytesPerCluster - 1) As Byte
         For Each Cluster In Disk.FAT.BadClusters
             Dim Offset = Disk.BPB.ClusterToOffset(Cluster)
-            Buffer.CopyTo(Data, Offset)
+            If Offset + BytesPerCluster <= Data.Length Then
+                Buffer.CopyTo(Data, Offset)
+            End If
         Next
         Return Data
     End Function
 
     Private Sub PopulateSummary(Disk As Disk, ImageData As LoadedImageData)
-        Dim MD5 = MD5Hash(Disk.Data.Data)
+        Dim MD5 As String = ""
+
+        If Disk IsNot Nothing Then
+            MD5 = MD5Hash(Disk.Data.Data)
+        End If
 
         SetCurrentFileName(ImageData)
         PopulateSummaryPanel(Disk, MD5)
         PopulateHashPanel(Disk, MD5)
         RefreshDiskButtons(Disk, ImageData)
+    End Sub
+
+    Private Sub PopulateTitleGroup(TitleData As FloppyDB.FloppyData)
+        Dim MAxOffset As Integer = 50
+        Dim Offset As Integer = 0
+        Dim Value As String
+        Dim ForeColor As Color
+        Dim Name = TitleData.GetName
+        Dim Variation = TitleData.GetVariation
+        Dim Compilation = TitleData.GetCompilation
+        Dim Publisher = TitleData.GetPublisher
+        If Variation <> "" Then
+            Name &= " (" & Variation & ")"
+        End If
+
+        With ListViewSummary
+            Dim ColumnWidth As Integer = .Columns.Item(1).Width - 5
+
+            Dim TextWidth As Integer = TextRenderer.MeasureText(Name, .Font).Width
+            TextWidth = Math.Max(TextWidth, TextRenderer.MeasureText(Compilation, .Font).Width)
+            TextWidth = Math.Max(TextWidth, TextRenderer.MeasureText(Publisher, .Font).Width)
+
+            If TextWidth > ColumnWidth Then
+                Offset = TextWidth - ColumnWidth
+                If Offset > MAxOffset Then
+                    TextWidth -= (Offset - MAxOffset)
+                    Offset = MAxOffset
+                End If
+            End If
+
+            Dim TitleGroup = .Groups.Add("Title", "Title")
+            TitleGroup.Tag = Offset
+
+            If Name <> "" Then
+                Dim Status = TitleData.GetStatus
+                If Status = FloppyDB.FloppyDBStatus.Verified Then
+                    ForeColor = Color.Green
+                ElseIf Status = FloppyDB.FloppyDBStatus.Modified Then
+                    ForeColor = Color.Red
+                Else
+                    ForeColor = Color.Blue
+                End If
+                If Offset > 0 Then
+                    .AddItem(TitleGroup, "Title", Name, ForeColor, True, TextWidth)
+                Else
+                    .AddItem(TitleGroup, "Title", Name, ForeColor, False)
+                End If
+            End If
+            If Compilation <> "" Then
+                If Offset > 0 Then
+                    .AddItem(TitleGroup, "Compilation", Compilation, SystemColors.WindowText, True, TextWidth)
+                Else
+                    .AddItem(TitleGroup, "Compilation", Compilation, False)
+                End If
+            End If
+            If Publisher <> "" Then
+                If Offset > 0 Then
+                    .AddItem(TitleGroup, "Publisher", Publisher, SystemColors.WindowText, True, TextWidth)
+                Else
+                    .AddItem(TitleGroup, "Publisher", Publisher, False)
+                End If
+            End If
+            Value = TitleData.GetYear
+            If Value <> "" Then
+                .AddItem(TitleGroup, "Year", Value, False)
+            End If
+            Value = TitleData.GetOperatingSystem
+            If Value <> "" Then
+                .AddItem(TitleGroup, "OS", Value, False)
+            End If
+            Value = TitleData.GetRegion
+            If Value <> "" Then
+                .AddItem(TitleGroup, "Region", Value, False)
+            End If
+            Value = TitleData.GetLanguage
+            If Value <> "" Then
+                .AddItem(TitleGroup, "Language", Value, False)
+            End If
+            Value = TitleData.GetVersion
+            If Value <> "" Then
+                .AddItem(TitleGroup, "Version", Value, False)
+            End If
+            Value = TitleData.GetDisk
+            If Value <> "" Then
+                .AddItem(TitleGroup, "Disk", Value, False)
+            End If
+        End With
     End Sub
     Private Sub PopulateSummaryPanel(Disk As Disk, MD5 As String)
         Dim Value As String
@@ -2690,66 +2798,9 @@ Public Class MainForm
                     End If
                 End If
                 If TitleData IsNot Nothing Then
-                    Dim TitleGroup = .Groups.Add("Title", "Title")
                     TitleFound = True
-                    Value = TitleData.GetName
-                    Dim Variation = TitleData.GetVariation
-                    If Variation <> "" Then
-                        Value &= " (" & Variation & ")"
-                    End If
-                    If Value <> "" Then
-                        Dim Status = TitleData.GetStatus
-                        If Status = FloppyDB.FloppyDBStatus.Verified Then
-                            ForeColor = Color.Green
-                        ElseIf Status = FloppyDB.FloppyDBStatus.Modified Then
-                            ForeColor = Color.Red
-                        Else
-                            ForeColor = Color.Blue
-                        End If
-                        Dim CalcWidth As Integer = .Columns.Item(1).Width - 5
-                        Dim TextWidth As Integer = TextRenderer.MeasureText(Value, .Font).Width
-                        If TextWidth > CalcWidth Then
-                            Dim Offset As Integer = TextWidth - CalcWidth
-                            If Offset > 50 Then
-                                TextWidth -= (Offset - 50)
-                                Offset = 50
-                            End If
-                            TitleGroup.Tag = Offset
-                            .AddItem(TitleGroup, "Title", "Title", Value, ForeColor, True, TextWidth)
-                        Else
-                            TitleGroup.Tag = 0
-                            .AddItem(TitleGroup, "Title", Value, ForeColor, False)
-                        End If
-                    End If
-                    Value = TitleData.GetPublisher
-                    If Value <> "" Then
-                        .AddItem(TitleGroup, "Publisher", Value, False)
-                    End If
-                    Value = TitleData.GetYear
-                    If Value <> "" Then
-                        .AddItem(TitleGroup, "Year", Value)
-                    End If
-                    Value = TitleData.GetOperatingSystem
-                    If Value <> "" Then
-                        .AddItem(TitleGroup, "OS", Value)
-                    End If
-                    Value = TitleData.GetRegion
-                    If Value <> "" Then
-                        .AddItem(TitleGroup, "Region", Value)
-                    End If
-                    Value = TitleData.GetLanguage
-                    If Value <> "" Then
-                        .AddItem(TitleGroup, "Language", Value)
-                    End If
-                    Value = TitleData.GetVersion
-                    If Value <> "" Then
-                        .AddItem(TitleGroup, "Version", Value)
-                    End If
-                    Value = TitleData.GetDisk
-                    If Value <> "" Then
-                        .AddItem(TitleGroup, "Disk", Value)
-                    End If
                     CopyProtection = TitleData.GetCopyProtection
+                    PopulateTitleGroup(TitleData)
                 End If
             End If
 

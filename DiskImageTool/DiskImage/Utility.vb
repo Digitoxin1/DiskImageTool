@@ -159,21 +159,27 @@ Namespace DiskImage
         End Function
 
         Public Function DiskImageLoad(ImageData As LoadedImageData) As DiskImage.Disk
-            Dim Data() As Byte
+            Dim Data() As Byte = Nothing
 
-            Try
-                If ImageData.Compressed Then
-                    ImageData.ReadOnly = True
-                    Data = OpenFileFromZIP(ImageData.SourceFile, ImageData.CompressedFile)
-                Else
-                    ImageData.ReadOnly = IsFileReadOnly(ImageData.SourceFile)
-                    Data = IO.File.ReadAllBytes(ImageData.SourceFile)
-                End If
-            Catch ex As Exception
+            If File.Exists(ImageData.SourceFile) Then
+                Try
+                    If ImageData.Compressed Then
+                        ImageData.ReadOnly = True
+                        Data = OpenFileFromZIP(ImageData.SourceFile, ImageData.CompressedFile)
+                    Else
+                        ImageData.ReadOnly = IsFileReadOnly(ImageData.SourceFile)
+                        Data = IO.File.ReadAllBytes(ImageData.SourceFile)
+                    End If
+                Catch ex As Exception
+                    Data = Nothing
+                End Try
+            End If
+
+            If Data Is Nothing Then
                 Return Nothing
-            End Try
-
-            Return New DiskImage.Disk(Data, ImageData.FATIndex, ImageData.Modifications)
+            Else
+                Return New DiskImage.Disk(Data, ImageData.FATIndex, ImageData.Modifications)
+            End If
         End Function
 
         Public Function GetBadSectors(BPB As BiosParameterBlock, BadClusters As List(Of UShort)) As HashSet(Of UInteger)
@@ -308,9 +314,13 @@ Namespace DiskImage
             Dim Data As New MemoryStream()
             Dim Archive As ZipArchive = ZipFile.OpenRead(ZipFileName)
             Dim Entry = Archive.GetEntry(FileName)
-            Entry.Open.CopyTo(Data)
+            If Entry IsNot Nothing Then
+                Entry.Open.CopyTo(Data)
 
-            Return Data.ToArray
+                Return Data.ToArray
+            Else
+                Return Nothing
+            End If
         End Function
     End Module
 End Namespace

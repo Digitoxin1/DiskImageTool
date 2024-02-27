@@ -199,6 +199,9 @@ Public Class FloppyDB
         If Node.HasAttribute("variation") Then
             TitleData.Variation = Node.Attributes("variation").Value
         End If
+        If Node.HasAttribute("compilation") Then
+            TitleData.Compilation = Node.Attributes("compilation").Value
+        End If
         If Node.HasAttribute("year") Then
             TitleData.Year = Node.Attributes("year").Value
         End If
@@ -305,6 +308,7 @@ Public Class FloppyDB
         Public Property MD5 As String = ""
         Public Property Name As String = ""
         Public Property Variation As String = ""
+        Public Property Compilation As String = ""
         Public Property Year As String = ""
         Public Property Version As String = ""
         Public Property Disk As String = ""
@@ -340,6 +344,21 @@ Public Class FloppyDB
                 Do While Parent IsNot Nothing
                     If Parent.Variation <> "" Then
                         Return Parent.Variation
+                    End If
+                    Parent = Parent.Parent
+                Loop
+            End If
+
+            Return ""
+        End Function
+        Public Function GetCompilation() As String
+            If _Compilation <> "" Then
+                Return _Compilation
+            Else
+                Dim Parent = _Parent
+                Do While Parent IsNot Nothing
+                    If Parent.Compilation <> "" Then
+                        Return Parent.Compilation
                     End If
                     Parent = Parent.Parent
                 Loop

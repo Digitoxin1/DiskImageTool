@@ -57,6 +57,11 @@ Module ListViewExtensions
     End Function
 
     <Extension()>
+    Public Function AddItem(listViewControl As ListView, Group As ListViewGroup, Text As String, Value As String, ForeColor As Color, WrapText As Boolean, Width? As Integer) As ListViewItem
+        Return AddItem(listViewControl, Group, "", Text, Value, ForeColor, WrapText, Width)
+    End Function
+
+    <Extension()>
     Public Function AddItem(listViewControl As ListView, Group As ListViewGroup, Name As String, Text As String, Value As String, ForeColor As Color, WrapText As Boolean, Width? As Integer) As ListViewItem
         Dim Item As ListViewItem = Nothing
         Dim SubItem As ListViewItem.ListViewSubItem

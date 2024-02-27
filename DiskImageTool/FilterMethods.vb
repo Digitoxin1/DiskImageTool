@@ -22,6 +22,7 @@
         HasMismatchedMediaDescriptor
         HasFATChainingErrors
         KnownImage
+        UnknownImage
     End Enum
 
     Public Function FilterGetCaption(ID As FilterTypes, Count As Integer) As String
@@ -70,6 +71,8 @@
                 Caption = "Has Reserved Bytes Set"
             Case FilterTypes.KnownImage
                 Caption = "Image in Database"
+            Case FilterTypes.UnknownImage
+                Caption = "Image Not in Database"
             Case Else
                 Caption = ""
         End Select
@@ -97,6 +100,12 @@
 
         If CheckFilter(FilterTypes.KnownImage, AppliedFilters) Then
             If ImageData.ScanInfo.IsKnownImage Then
+                Return False
+            End If
+        End If
+
+        If CheckFilter(FilterTypes.UnknownImage, AppliedFilters) Then
+            If ImageData.ScanInfo.IsUnknownImage Then
                 Return False
             End If
         End If
