@@ -25,6 +25,12 @@ Public Structure FileData
     Dim ParentOffset As Integer
 End Structure
 
+Public Structure FileSystemInfo
+    Dim VolumeLabel As DirectoryEntry
+    Dim OldestFileDate As Date?
+    Dim NewestFileDate As Date?
+End Structure
+
 Public Structure SaveDialogFilter
     Dim Filter As String
     Dim FilterIndex As Integer
@@ -249,14 +255,16 @@ Public Class MainForm
                 UnknownDiskType = GetFloppyDiskType(Disk.BPB) = FloppyDiskType.FloppyUnknown
             End If
 
-            If _TitleDB.TitleExists(MD5Hash(Disk.Data.Data)) Then
-                IsKnownImage = True
-            ElseIf Disk.FAT.BadClusters.Count > 0 Then
-                If _TitleDB.TitleExists(MD5Hash(GetNormalizedData(Disk))) Then
+            If _TitleDB.TitleCount > 0 Then
+                If _TitleDB.TitleExists(MD5Hash(Disk.Data.Data)) Then
                     IsKnownImage = True
+                ElseIf Disk.FAT.BadClusters.Count > 0 Then
+                    If _TitleDB.TitleExists(MD5Hash(GetNormalizedData(Disk))) Then
+                        IsKnownImage = True
+                    End If
+                Else
+                    IsUnknownImage = True
                 End If
-            Else
-                IsUnknownImage = True
             End If
         Else
             IsValidImage = True
@@ -274,27 +282,29 @@ Public Class MainForm
             End If
         End If
 
-        If Not ImageData.Scanned Or IsKnownImage <> ImageData.ScanInfo.IsKnownImage Then
-            ImageData.ScanInfo.IsKnownImage = IsKnownImage
-            If IsKnownImage Then
-                _FilterCounts(FilterTypes.KnownImage) += 1
-            ElseIf ImageData.Scanned Then
-                _FilterCounts(FilterTypes.KnownImage) -= 1
+        If _TitleDB.TitleCount > 0 Then
+            If Not ImageData.Scanned Or IsKnownImage <> ImageData.ScanInfo.IsKnownImage Then
+                ImageData.ScanInfo.IsKnownImage = IsKnownImage
+                If IsKnownImage Then
+                    _FilterCounts(FilterTypes.KnownImage) += 1
+                ElseIf ImageData.Scanned Then
+                    _FilterCounts(FilterTypes.KnownImage) -= 1
+                End If
+                If UpdateFilters Then
+                    FilterUpdate(FilterTypes.KnownImage)
+                End If
             End If
-            If UpdateFilters Then
-                FilterUpdate(FilterTypes.KnownImage)
-            End If
-        End If
 
-        If Not ImageData.Scanned Or IsUnknownImage <> ImageData.ScanInfo.IsUnknownImage Then
-            ImageData.ScanInfo.IsUnknownImage = IsUnknownImage
-            If IsUnknownImage Then
-                _FilterCounts(FilterTypes.UnknownImage) += 1
-            ElseIf ImageData.Scanned Then
-                _FilterCounts(FilterTypes.UnknownImage) -= 1
-            End If
-            If UpdateFilters Then
-                FilterUpdate(FilterTypes.UnknownImage)
+            If Not ImageData.Scanned Or IsUnknownImage <> ImageData.ScanInfo.IsUnknownImage Then
+                ImageData.ScanInfo.IsUnknownImage = IsUnknownImage
+                If IsUnknownImage Then
+                    _FilterCounts(FilterTypes.UnknownImage) += 1
+                ElseIf ImageData.Scanned Then
+                    _FilterCounts(FilterTypes.UnknownImage) -= 1
+                End If
+                If UpdateFilters Then
+                    FilterUpdate(FilterTypes.UnknownImage)
+                End If
             End If
         End If
 
@@ -609,7 +619,7 @@ Public Class MainForm
 
         If IsDeleted Then
             ForeColor = Color.Gray
-        ElseIf FileData.DirectoryEntry.IsValidValumeName Then
+        ElseIf FileData.DirectoryEntry.IsValidVolumeName Then
             ForeColor = Color.Green
         ElseIf FileData.DirectoryEntry.IsDirectory And Not FileData.DirectoryEntry.IsVolumeName Then
             ForeColor = Color.Blue
@@ -2139,6 +2149,39 @@ Public Class MainForm
         Return Response
     End Function
 
+    Private Function GetFileSystemInfo(Disk As Disk) As FileSystemInfo
+        Dim fsi As FileSystemInfo
+
+        fsi.OldestFileDate = Nothing
+        fsi.NewestFileDate = Nothing
+        fsi.VolumeLabel = Nothing
+
+        Dim FileList = Disk.GetFileList()
+
+        For Each DirectoryEntry In FileList
+            If DirectoryEntry.IsValid Then
+                If fsi.VolumeLabel Is Nothing AndAlso DirectoryEntry.IsValidVolumeName AndAlso DirectoryEntry.IsInRoot Then
+                    fsi.VolumeLabel = DirectoryEntry
+                End If
+                Dim LastWriteDate = DirectoryEntry.GetLastWriteDate
+                If LastWriteDate.IsValidDate Then
+                    If fsi.OldestFileDate Is Nothing Then
+                        fsi.OldestFileDate = LastWriteDate.DateObject
+                    ElseIf fsi.OldestFileDate.Value.CompareTo(LastWriteDate.DateObject) > 0 Then
+                        fsi.OldestFileDate = LastWriteDate.DateObject
+                    End If
+                    If fsi.NewestFileDate Is Nothing Then
+                        fsi.NewestFileDate = LastWriteDate.DateObject
+                    ElseIf fsi.NewestFileDate.Value.CompareTo(LastWriteDate.DateObject) < 0 Then
+                        fsi.NewestFileDate = LastWriteDate.DateObject
+                    End If
+                End If
+            End If
+        Next
+
+        Return fsi
+    End Function
+
     Private Function GetLoadDialogFilters() As String
         Dim FileFilter As String
         Dim ExtensionList As List(Of String)
@@ -2222,9 +2265,9 @@ Public Class MainForm
         For Each ImageData As LoadedImageData In ComboImages.Items
             Dim CurrentPathName As String = IO.Path.GetDirectoryName(ImageData.DisplayPath)
             If CheckPath Then
-                If Len(CurrentPathName) > Len(PathName) Then
-                    CurrentPathName = Strings.Left(CurrentPathName, Len(PathName))
-                End If
+                Do While CurrentPathName.Split("\").Count > PathName.Split("\").Count
+                    CurrentPathName = IO.Path.GetDirectoryName(CurrentPathName)
+                Loop
                 Do While PathName <> CurrentPathName
                     PathName = IO.Path.GetDirectoryName(PathName)
                     CurrentPathName = IO.Path.GetDirectoryName(CurrentPathName)
@@ -2702,6 +2745,7 @@ Public Class MainForm
         Dim Variation = TitleData.GetVariation
         Dim Compilation = TitleData.GetCompilation
         Dim Publisher = TitleData.GetPublisher
+        Dim Version = TitleData.GetVersion
         If Variation <> "" Then
             Name &= " (" & Variation & ")"
         End If
@@ -2712,6 +2756,7 @@ Public Class MainForm
             Dim TextWidth As Integer = TextRenderer.MeasureText(Name, .Font).Width
             TextWidth = Math.Max(TextWidth, TextRenderer.MeasureText(Compilation, .Font).Width)
             TextWidth = Math.Max(TextWidth, TextRenderer.MeasureText(Publisher, .Font).Width)
+            TextWidth = Math.Max(TextWidth, TextRenderer.MeasureText(Version, .Font).Width)
 
             If TextWidth > ColumnWidth Then
                 Offset = TextWidth - ColumnWidth
@@ -2769,9 +2814,12 @@ Public Class MainForm
             If Value <> "" Then
                 .AddItem(TitleGroup, "Language", Value, False)
             End If
-            Value = TitleData.GetVersion
-            If Value <> "" Then
-                .AddItem(TitleGroup, "Version", Value, False)
+            If Version <> "" Then
+                If Offset > 0 Then
+                    .AddItem(TitleGroup, "Version", Version, SystemColors.WindowText, True, TextWidth)
+                Else
+                    .AddItem(TitleGroup, "Version", Version, False)
+                End If
             End If
             Value = TitleData.GetDisk
             If Value <> "" Then
@@ -2789,7 +2837,7 @@ Public Class MainForm
             .BeginUpdate()
             .Items.Clear()
 
-            If Disk IsNot Nothing Then
+            If Disk IsNot Nothing AndAlso _TitleDB.TitleCount > 0 Then
                 Dim TitleData = _TitleDB.TitleLookup(MD5)
                 If TitleData Is Nothing Then
                     If Disk.FAT.BadClusters.Count > 0 Then
@@ -3001,11 +3049,11 @@ Public Class MainForm
                         End If
                     End If
 
-                    Dim VolumeLabel = Disk.GetVolumeLabel
+                    Dim fsi = GetFileSystemInfo(Disk)
 
-                    If VolumeLabel IsNot Nothing Then
-                        .AddItem(FileSystemGroup, "Volume Label", VolumeLabel.GetVolumeName.TrimEnd(NULL_CHAR))
-                        Dim VolumeDate = VolumeLabel.GetLastWriteDate
+                    If fsi.VolumeLabel IsNot Nothing Then
+                        .AddItem(FileSystemGroup, "Volume Label", fsi.VolumeLabel.GetVolumeName.TrimEnd(NULL_CHAR))
+                        Dim VolumeDate = fsi.VolumeLabel.GetLastWriteDate
                         .AddItem(FileSystemGroup, "Volume Date", ExpandedDateToString(VolumeDate, True, False, False, False))
                     End If
 
@@ -3027,6 +3075,14 @@ Public Class MainForm
                     If Disk.FAT.ReservedClusters > 0 Then
                         Value = Format(Disk.FAT.ReservedClusters * Disk.BPB.BytesPerCluster, "N0") & " bytes  (" & Disk.FAT.ReservedClusters & ")"
                         .AddItem(FileSystemGroup, "Reserved Clusters", Value)
+                    End If
+
+                    If fsi.OldestFileDate IsNot Nothing Then
+                        .AddItem(FileSystemGroup, "Oldest Date", fsi.OldestFileDate.Value.ToString("yyyy-MM-dd  hh:mm tt"))
+                    End If
+
+                    If fsi.NewestFileDate IsNot Nothing Then
+                        .AddItem(FileSystemGroup, "Newest Date", fsi.NewestFileDate.Value.ToString("yyyy-MM-dd  hh:mm tt"))
                     End If
 
                     Dim BootStrapGroup = .Groups.Add("Bootstrap", "Bootstrap")
@@ -4089,31 +4145,21 @@ Public Class MainForm
     End Sub
 
     Private Sub ComboImages_DrawItem(sender As Object, e As DrawItemEventArgs) Handles ComboImages.DrawItem, ComboImagesFiltered.DrawItem
-        Dim CB As ComboBox = sender
-
         If e.Index >= -1 Then
-            Dim Brush As Brush
-
-            If e.State And DrawItemState.Selected Then
-                Brush = New SolidBrush(SystemColors.Highlight)
-            Else
-                Brush = New SolidBrush(SystemColors.Window)
-            End If
-
-            e.Graphics.FillRectangle(Brush, e.Bounds)
-
-            Brush.Dispose()
+            e.DrawBackground()
 
             If e.Index > -1 Then
+                Dim CB As ComboBox = sender
                 Dim tBrush As Brush
+
                 If e.State And DrawItemState.Selected Then
-                    tBrush = New SolidBrush(SystemColors.HighlightText)
+                    tBrush = SystemBrushes.HighlightText
                 Else
                     Dim CurrentImageData As LoadedImageData = CB.Items(e.Index)
                     If CurrentImageData IsNot Nothing AndAlso CurrentImageData.Modified Then
-                        tBrush = New SolidBrush(Color.Blue)
+                        tBrush = Brushes.Blue
                     Else
-                        tBrush = New SolidBrush(SystemColors.WindowText)
+                        tBrush = SystemBrushes.WindowText
                     End If
                 End If
 
@@ -4121,10 +4167,7 @@ Public Class MainForm
                     .Trimming = StringTrimming.None,
                     .FormatFlags = StringFormatFlags.NoWrap
                 }
-
                 e.Graphics.DrawString(CB.Items(e.Index).ToString, e.Font, tBrush, e.Bounds, Format)
-
-                tBrush.Dispose()
             End If
         End If
 

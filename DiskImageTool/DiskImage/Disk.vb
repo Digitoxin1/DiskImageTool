@@ -160,7 +160,7 @@
             If DirectoryEntryCount > 0 Then
                 For Counter As UInteger = 0 To DirectoryEntryCount - 1
                     Dim File = _Directory.GetFile(Counter)
-                    If File.IsValidValumeName Then
+                    If File.IsValidVolumeName Then
                         VolumeLabel = File
                         Exit For
                     End If

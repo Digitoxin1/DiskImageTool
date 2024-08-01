@@ -475,6 +475,10 @@ Namespace DiskImage
             Return (Attributes And AttributeFlags.Hidden) > 0
         End Function
 
+        Public Function IsInRoot() As Boolean
+            Return _BPB.OffsetToCluster(_Offset) = 0
+        End Function
+
         Public Function IsLFN() As Boolean
             Return (Attributes And AttributeFlags.LongFileName) = AttributeFlags.LongFileName
         End Function
@@ -526,7 +530,7 @@ Namespace DiskImage
             Return Not (IsDirectory() OrElse IsVolumeName() OrElse HasInvalidStartingCluster() OrElse HasInvalidFileSize()) AndAlso StartingCluster > 1
         End Function
 
-        Public Function IsValidValumeName() As Boolean
+        Public Function IsValidVolumeName() As Boolean
             Return IsVolumeName() AndAlso Not (IsHidden() OrElse IsSystem() OrElse IsDirectory() OrElse IsDeleted()) AndAlso StartingCluster = 0
         End Function
         Public Function IsVolumeName() As Boolean

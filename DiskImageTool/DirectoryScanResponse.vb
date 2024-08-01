@@ -60,7 +60,7 @@ Public Class DirectoryScanResponse
                     OrElse DirectoryEntry.HasInvalidFilename _
                     OrElse DirectoryEntry.HasInvalidExtension _
                     OrElse DirectoryEntry.HasIncorrectFileSize _
-                    OrElse (DirectoryEntry.IsVolumeName And Not DirectoryEntry.IsValidValumeName) _
+                    OrElse (DirectoryEntry.IsVolumeName And Not DirectoryEntry.IsValidVolumeName) _
                     OrElse Not DirectoryEntry.GetLastWriteDate.IsValidDate Then
                     _HasInvalidDirectoryEntries = True
                 End If

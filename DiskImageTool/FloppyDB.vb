@@ -16,7 +16,8 @@ Public Class FloppyDB
     End Enum
 
     Public Sub New()
-        ParseXML()
+        Dim FilePath = Path.Combine(Path.GetDirectoryName(Application.ExecutablePath), "FloppyDB.xml")
+        ParseXML(FilePath)
     End Sub
 
     Public Sub AddTile(FileName As String, Media As String, MD5 As String)
@@ -137,6 +138,10 @@ Public Class FloppyDB
             End If
         End If
     End Sub
+
+    Public Function TitleCount() As Integer
+        Return _TitleDictionary.Count
+    End Function
 
     Public Function TitleExists(md5 As String) As Boolean
         Return _TitleDictionary.ContainsKey(md5)
@@ -261,10 +266,14 @@ Public Class FloppyDB
         End If
     End Sub
 
-    Private Sub ParseXML()
+    Private Sub ParseXML(Name As String)
         _TitleDictionary = New Dictionary(Of String, FloppyData)
 
-        Dim XMLDoc = LoadXML("FloppyDB.xml")
+        If Not File.Exists(Name) Then
+            Return
+        End If
+
+        Dim XMLDoc = LoadXML(Name)
 
         For Each TitleNode As XmlNode In XMLDoc.SelectNodes("/root/title")
             ParseNode(TitleNode, Nothing)
@@ -300,7 +309,8 @@ Public Class FloppyDB
     End Sub
 
     Protected Overrides Sub Finalize()
-        SaveNewXML("NewFloppyDB.xml")
+        Dim FilePath = Path.Combine(Path.GetDirectoryName(Application.ExecutablePath), "NewFloppyDB.xml")
+        SaveNewXML(FilePath)
         MyBase.Finalize()
     End Sub
 
