@@ -3,7 +3,7 @@ Imports DiskImageTool.DiskImage
 
 Public Class FATEditForm
     Private ReadOnly _Disk As DiskImage.Disk
-    Private ReadOnly _FAT As FAT12
+    Private ReadOnly _FATTables As FATTables
     Private ReadOnly _FATTable As DataTable
     Private ReadOnly _ToolTip As ToolTip
     Private _CurrentFileIndex As UInteger = 0
@@ -29,15 +29,25 @@ Public Class FATEditForm
     End Enum
 
 
-    Public Sub New(Disk As DiskImage.Disk, Index As UShort, DisplaySync As Boolean)
+    Public Sub New(Disk As DiskImage.Disk, Index As UShort)
 
         ' This call is required by the designer.
         InitializeComponent()
 
         ' Add any initialization after the InitializeComponent() call.
 
+        _ToolTip = New ToolTip()
+        _Disk = Disk
+
+        _FATTables = New FATTables(_Disk.BPB, _Disk.Data, Index)
+        ProcessFATChains()
+
         Me.Text = "File Allocation Table " & Index + 1
-        ChkSync.Checked = True
+
+        Dim SyncFATS = _Disk.DiskType <> FloppyDiskType.FloppyXDF AndAlso Disk.CompareFATTables
+        Dim DisplaySync = _Disk.DiskType <> FloppyDiskType.FloppyXDF AndAlso Not Disk.CompareFATTables
+
+        ChkSync.Checked = SyncFATS
         ChkSync.Visible = DisplaySync
         If Not DisplaySync Then
             DataGridViewFAT.Height = ChkSync.Bottom - DataGridViewFAT.Top
@@ -47,15 +57,9 @@ Public Class FATEditForm
         PopulateContextMenu()
         InitializeGridColumns()
 
-        _ToolTip = New ToolTip()
-        _Disk = Disk
-
-        _FAT = New FAT12(_Disk.Data, _Disk.BPB, Index)
-        ProcessFATChains()
-
-        _FATTable = GetDataTable(_FAT)
+        _FATTable = GetDataTable(_FATTables.FAT)
         ReDim _GridCells(_FATTable.Rows.Count - 1)
-        Dim TableLength = _FAT.GetFATTableLength()
+        Dim TableLength = _FATTables.FAT.GetFATTableLength()
         _GridSize = GetGridSize(TableLength)
         LblValid.Text = "Valid Clusters: 2 - " & TableLength
 
@@ -75,15 +79,17 @@ Public Class FATEditForm
     End Property
 
     Private Sub ApplyUpdates()
-        Dim SyncAll = ChkSync.Checked
+        Dim SyncFATs = ChkSync.Checked
 
         For Each Row As DataGridViewRow In DataGridViewFAT.Rows
             Dim Cluster As UShort = Row.Cells("GridCluster").Value
             Dim Value As UShort = Row.Cells("GridValue").Value
-            _FAT.TableEntry(Cluster) = Value
+            If _Disk.FATTables.FAT(_FATTables.FatIndex).TableEntry(Cluster) <> Value Then
+                _FATTables.UpdateTableEntry(Cluster, Value, SyncFATs)
+            End If
         Next
 
-        If _FAT.UpdateFAT12(SyncAll) Then
+        If _FATTables.UpdateFAT12(SyncFATs) Then
             _Updated = True
         End If
     End Sub
@@ -394,7 +400,7 @@ Public Class FATEditForm
             Return Color.Black
         ElseIf TypeName = "Reserved" Then
             Return Color.Orange
-        ElseIf Value > _FAT.GetFATTableLength Then
+        ElseIf Value > _FATTables.FAT.GetFATTableLength Then
             Return Color.Red
         Else
             Return Color.Blue
@@ -404,7 +410,7 @@ Public Class FATEditForm
     Private Function GridGetIndex(e As MouseEventArgs) As Integer
         Dim Index As Integer = -1
 
-        Dim Length = _FAT.GetFATTableLength - 2
+        Dim Length = _FATTables.FAT.GetFATTableLength - 2
         Dim LeftPos As Integer = Int(e.X / _GridSize)
         Dim TopPos As Integer = Int(e.Y / _GridSize)
         Dim MaxWidth As Integer = Int(PictureBoxFAT.Width / _GridSize)
@@ -611,8 +617,8 @@ Public Class FATEditForm
     End Sub
 
     Private Sub PictureBoxFAT_Resize(sender As Object, e As EventArgs) Handles PictureBoxFAT.Resize
-        If _FAT IsNot Nothing Then
-            _GridSize = GetGridSize(_FAT.GetFATTableLength)
+        If _FATTables IsNot Nothing Then
+            _GridSize = GetGridSize(_FATTables.FAT.GetFATTableLength)
             PictureBoxFAT.Refresh()
         End If
     End Sub
@@ -685,7 +691,7 @@ Public Class FATEditForm
     End Sub
 
     Private Sub ProcessFATChains()
-        Dim Directory = New RootDirectory(_Disk.Data, _Disk.BPB, _FAT, _Disk.DirectoryCache, True)
+        Dim Directory = New RootDirectory(_Disk.Data, _Disk.BPB, _FATTables, _Disk.DirectoryCache, True)
     End Sub
 
     Private Sub RefreshGrid()
@@ -695,10 +701,10 @@ Public Class FATEditForm
         Dim OffsetIndex As UInteger = 1
         For Each Row As DataGridViewRow In DataGridViewFAT.Rows
             Dim Cluster As UShort = Row.Cells("GridCluster").Value
-            Dim OffsetList = GetOffsetsFromCluster(_FAT, Cluster)
+            Dim OffsetList = GetOffsetsFromCluster(_FATTables.FAT, Cluster)
             Dim Value As UShort = Row.Cells("GridValue").Value
             Row.Cells("GridFile").Value = GetFileFromOffsetList(OffsetList)
-            Row.Cells("GridError").Value = GetRowError(_FAT, Cluster, Value)
+            Row.Cells("GridError").Value = GetRowError(_FATTables.FAT, Cluster, Value)
             If OffsetList IsNot Nothing Then
                 If Not _OffsetLookup.ContainsKey(OffsetList(0)) Then
                     'Dim DirectoryEntry = _Disk.GetDirectoryEntryByOffset(OffsetList(0))
@@ -761,12 +767,12 @@ Public Class FATEditForm
         Dim Cluster As UShort = Row.Cells("GridCluster").Value
         Dim Value As UShort = Row.Cells("GridValue").Value
 
-        _FAT.TableEntry(Cluster) = Value
+        _FATTables.FAT.TableEntry(Cluster) = Value
         RefreshFAT()
     End Sub
 
     Private Sub RefreshFAT()
-        _FAT.ProcessFAT12()
+        _FATTables.FAT.ProcessFAT12()
         ProcessFATChains()
 
         RefreshGrid()

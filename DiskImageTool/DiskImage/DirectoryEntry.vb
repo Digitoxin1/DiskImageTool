@@ -8,7 +8,7 @@ Namespace DiskImage
         Private Const CHAR_EMPTY As Byte = &H0
         Private Const CHAR_SPACE As Byte = &H20
         Private ReadOnly _BPB As BiosParameterBlock
-        Private ReadOnly _FAT As FAT12
+        Private ReadOnly _FATTables As FATTables
         Private ReadOnly _FileBytes As ImageByteArray
         Private ReadOnly _Offset As UInteger
         Private ReadOnly _DirectoryCache As Dictionary(Of UInteger, DirectoryCacheEntry)
@@ -79,9 +79,9 @@ Namespace DiskImage
             FilePart3 = 4
         End Enum
 
-        Sub New(FileBytes As ImageByteArray, BPB As BiosParameterBlock, FAT As FAT12, DirectoryCache As Dictionary(Of UInteger, DirectoryCacheEntry), Offset As UInteger)
+        Sub New(FileBytes As ImageByteArray, BPB As BiosParameterBlock, FATTables As FATTables, DirectoryCache As Dictionary(Of UInteger, DirectoryCacheEntry), Offset As UInteger)
             _BPB = BPB
-            _FAT = FAT
+            _FATTables = FATTables
             _FileBytes = FileBytes
             _Offset = Offset
             _DirectoryCache = DirectoryCache
@@ -559,9 +559,9 @@ Namespace DiskImage
                     _FileBytes.SetBytes(b, Offset)
                 End If
 
-                _FAT.TableEntry(Cluster) = 0
+                _FATTables.UpdateTableEntry(Cluster, 0)
             Next
-            _FAT.UpdateFAT12(True)
+            _FATTables.UpdateFAT12()
             InitFatChain()
 
             If UseBatchEditMode Then
@@ -591,7 +591,7 @@ Namespace DiskImage
             If ClusterCount > 0 Then
                 For Index As UShort = 0 To ClusterCount - 1
                     Dim Cluster = StartingCluster + Index
-                    If _FAT.TableEntry(Cluster) <> 0 Then
+                    If _FATTables.FAT.TableEntry(Cluster) <> 0 Then
                         Return False
                     End If
                 Next
@@ -626,9 +626,9 @@ Namespace DiskImage
                     Else
                         TableEntey = 4095
                     End If
-                    _FAT.TableEntry(Cluster) = TableEntey
+                    _FATTables.UpdateTableEntry(Cluster, TableEntey)
                 Next
-                _FAT.UpdateFAT12(True)
+                _FATTables.UpdateFAT12()
                 InitFatChain()
             End If
 
@@ -687,22 +687,24 @@ Namespace DiskImage
         End Function
 
         Private Sub InitFatChain()
-            If _FAT.FATChains.ContainsKey(Offset) Then
-                _FatChain = _FAT.FATChains.Item(Offset)
+            Dim FAT = _FATTables.FAT
+
+            If FAT.FATChains.ContainsKey(Offset) Then
+                _FatChain = FAT.FATChains.Item(Offset)
             Else
                 If IsDeleted() Then
-                    _FatChain = _FAT.InitFATChain(Offset, 0)
+                    _FatChain = FAT.InitFATChain(Offset, 0)
                 ElseIf IsDirectory() AndAlso IsLink() Then
-                    _FatChain = _FAT.InitFATChain(Offset, 0)
+                    _FatChain = FAT.InitFATChain(Offset, 0)
                 Else
-                    _FatChain = _FAT.InitFATChain(Offset, StartingCluster)
+                    _FatChain = FAT.InitFATChain(Offset, StartingCluster)
                 End If
             End If
         End Sub
 
         Private Sub InitSubDirectory()
             If IsValidDirectory() AndAlso Not IsLink() AndAlso Not IsDeleted() Then
-                _SubDirectory = New SubDirectory(_FileBytes, _BPB, _FAT, _FatChain, _DirectoryCache)
+                _SubDirectory = New SubDirectory(_FileBytes, _BPB, _FATTables, _FatChain, _DirectoryCache)
             Else
                 _SubDirectory = Nothing
             End If

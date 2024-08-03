@@ -11,7 +11,8 @@
         Private _BPB As BiosParameterBlock
         Private ReadOnly _Directory As RootDirectory
         Private ReadOnly _DirectoryCache As Dictionary(Of UInteger, DirectoryCacheEntry)
-        Private ReadOnly _FAT12 As FAT12
+        Private ReadOnly _FATTables As FATTables
+        Private _DiskType As FloppyDiskType
 
         Sub New(Data() As Byte, FatIndex As UShort, Optional Modifications As Stack(Of DataChange()) = Nothing)
             FileBytes = New ImageByteArray(Data)
@@ -22,8 +23,12 @@
             Else
                 _BPB = BuildBPB(GetFATMediaDescriptor)
             End If
-            _FAT12 = New FAT12(FileBytes, _BPB, FatIndex)
-            _Directory = New RootDirectory(FileBytes, _BPB, _FAT12, _DirectoryCache, False)
+
+            _FATTables = New FATTables(_BPB, FileBytes, FatIndex)
+            _DiskType = InferFloppyDiskType()
+            _FATTables.SyncFATs = _DiskType <> FloppyDiskType.FloppyXDF
+
+            _Directory = New RootDirectory(FileBytes, _BPB, _FATTables, _DirectoryCache, False)
 
             CacheDirectoryEntries()
 
@@ -63,9 +68,21 @@
             End Get
         End Property
 
+        Public ReadOnly Property DiskType As FloppyDiskType
+            Get
+                Return _DiskType
+            End Get
+        End Property
+
+        Public ReadOnly Property FATTables As FATTables
+            Get
+                Return _FATTables
+            End Get
+        End Property
+
         Public ReadOnly Property FAT As FAT12
             Get
-                Return _FAT12
+                Return _FATTables.FAT
             End Get
         End Property
 
@@ -129,7 +146,7 @@
         End Function
 
         Public Function GetDirectoryEntryByOffset(Offset As UInteger) As DirectoryEntry
-            Return New DirectoryEntry(FileBytes, _BPB, _FAT12, _DirectoryCache, Offset)
+            Return New DirectoryEntry(FileBytes, _BPB, _FATTables, _DirectoryCache, Offset)
         End Function
 
         Private Function GetFATMediaDescriptor() As Byte
@@ -181,7 +198,9 @@
                 _BPB = BuildBPB(GetFATMediaDescriptor)
             End If
 
-            _FAT12.PopulateFAT12(_BPB)
+            _FATTables.Reinitialize(_BPB)
+            _DiskType = InferFloppyDiskType()
+            _FATTables.SyncFATs = _DiskType <> FloppyDiskType.FloppyXDF
             _Directory.RefreshData(_BPB)
         End Sub
 
@@ -249,6 +268,21 @@
                 Next
             End If
         End Sub
+
+        Private Function InferFloppyDiskType() As FloppyDiskType
+            Dim DiskType As FloppyDiskType
+
+            If _BPB.IsValid Then
+                DiskType = GetFloppyDiskType(_BPB)
+            Else
+                DiskType = GetFloppyDiskType(_FATTables.FAT.MediaDescriptor)
+                If DiskType = FloppyDiskType.FloppyUnknown Then
+                    DiskType = GetFloppyDiskType(_FileBytes.Length)
+                End If
+            End If
+
+            Return DiskType
+        End Function
     End Class
 
 End Namespace

@@ -200,7 +200,15 @@ Module HexViews
 
         Dim HighlightedRegions As New HighlightedRegions
         Dim OriginalData() As Byte = Nothing
-        For Index = 0 To Disk.BPB.NumberOfFATs - 1
+
+        Dim NumberOfFATs As Byte
+        If Disk.DiskType = FloppyDiskType.FloppyXDF Then
+            NumberOfFATs = 1
+        Else
+            NumberOfFATs = Disk.BPB.NumberOfFATs
+        End If
+
+        For Index = 0 To NumberOfFATs - 1
             Dim Length As UInteger = Disk.SectorToBytes(Disk.BPB.SectorsPerFAT)
             Dim Start As UInteger = Disk.SectorToBytes(Disk.BPB.FATRegionStart) + Length * Index
             Dim Data = Disk.Data.GetBytes(Start, Length)

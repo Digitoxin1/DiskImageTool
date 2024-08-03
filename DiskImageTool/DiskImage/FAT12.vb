@@ -243,7 +243,7 @@
             Erase _FATTable
 
             If _BPB.IsValid Then
-                Dim FATBytes = GetFAT(_Index)
+                Dim FATBytes = GetFAT()
                 Dim Size = _BPB.NumberOfFATEntries + 2
                 _FATTable = DecodeFAT12(FATBytes, Size)
                 _HasMediaDescriptor = FATBytes(1) = &HFF And FATBytes(2) = &HFF
@@ -286,7 +286,7 @@
             End If
         End Sub
 
-        Public Function UpdateFAT12(SyncAll As Boolean) As Boolean
+        Public Function UpdateFAT12() As Boolean
             Dim Updated As Boolean = False
             Dim UseBatchEditMode As Boolean = Not _FileBytes.BatchEditMode
 
@@ -296,20 +296,10 @@
                 _FileBytes.BatchEditMode = True
             End If
 
-            If SyncAll Then
-                For Counter = 0 To _BPB.NumberOfFATs - 1
-                    Dim OldBytes = GetFAT(Counter)
-                    If Not OldBytes.CompareTo(FATBytes, True) Then
-                        SetFAT(Counter, FATBytes)
-                        Updated = True
-                    End If
-                Next
-            Else
-                Dim OldBytes = GetFAT(_Index)
-                If Not OldBytes.CompareTo(FATBytes, True) Then
-                    SetFAT(_Index, FATBytes)
-                    Updated = True
-                End If
+            Dim OldBytes = GetFAT()
+            If Not OldBytes.CompareTo(FATBytes, True) Then
+                SetFAT(FATBytes)
+                Updated = True
             End If
 
             If UseBatchEditMode Then
@@ -381,8 +371,8 @@
             Return FATChain
         End Function
 
-        Private Function GetFAT(Index As UShort) As Byte()
-            Dim Sectors = GetFATSectors(_BPB.FATRegionStart, _BPB.SectorsPerFAT, Index)
+        Private Function GetFAT() As Byte()
+            Dim Sectors = GetFATSectors(_BPB.FATRegionStart, _BPB.SectorsPerFAT, _Index)
 
             Return _FileBytes.GetSectors(Sectors)
         End Function
@@ -407,8 +397,8 @@
             Return True
         End Function
 
-        Private Sub SetFAT(Index As UShort, Data() As Byte)
-            Dim Range = GetFATSectors(_BPB.FATRegionStart, _BPB.SectorsPerFAT, Index)
+        Private Sub SetFAT(Data() As Byte)
+            Dim Range = GetFATSectors(_BPB.FATRegionStart, _BPB.SectorsPerFAT, _Index)
             Dim Offset = Disk.SectorToBytes(Range.Start)
 
             _FileBytes.SetBytes(Data, Offset)

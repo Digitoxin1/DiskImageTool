@@ -4,14 +4,14 @@
 
         Private ReadOnly _BPB As BiosParameterBlock
         Private ReadOnly _DirectoryCache As Dictionary(Of UInteger, DirectoryCacheEntry)
-        Private ReadOnly _FAT As FAT12
+        Private ReadOnly _FatTables As FATTables
         Private ReadOnly _FatChain As FATChain
         Private ReadOnly _FileBytes As ImageByteArray
         Private _DirectoryData As DirectoryData
 
-        Sub New(FileBytes As ImageByteArray, BPB As BiosParameterBlock, FAT As FAT12, FatChain As FATChain, DirectoryCache As Dictionary(Of UInteger, DirectoryCacheEntry))
+        Sub New(FileBytes As ImageByteArray, BPB As BiosParameterBlock, FatTables As FATTables, FatChain As FATChain, DirectoryCache As Dictionary(Of UInteger, DirectoryCacheEntry))
             _BPB = BPB
-            _FAT = FAT
+            _FatTables = FatTables
             _FileBytes = FileBytes
             _FatChain = FatChain
             _DirectoryCache = DirectoryCache
@@ -40,7 +40,7 @@
             Dim ClusterIndex As UInteger = Index Mod EntriesPerCluster
             Dim Offset As UInteger = _BPB.ClusterToOffset(_FatChain.Clusters.Item(ChainIndex)) + ClusterIndex * DirectoryEntry.DIRECTORY_ENTRY_SIZE
 
-            Return New DirectoryEntry(_FileBytes, _BPB, _FAT, _DirectoryCache, Offset)
+            Return New DirectoryEntry(_FileBytes, _BPB, _FatTables, _DirectoryCache, Offset)
         End Function
 
         Public Function HasFile(Filename As String) As Integer Implements IDirectory.HasFile

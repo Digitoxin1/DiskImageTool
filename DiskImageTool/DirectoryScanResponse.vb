@@ -17,6 +17,7 @@ Public Class DirectoryScanResponse
         _HasInvalidDirectoryEntries = False
         _HasFATChainingErrors = False
         _HasReserved = False
+        _ItemCount = 0
     End Sub
 
     Public Property HasAdditionalData As Boolean
@@ -29,6 +30,8 @@ Public Class DirectoryScanResponse
     Public Property HasValidCreated As Boolean
     Public Property HasValidLastAccessed As Boolean
     Public Property HasReserved As Boolean
+    Public Property ItemCount As Integer
+
     Public Sub Combine(Response As DirectoryScanResponse)
         _HasLastAccessed = _HasLastAccessed Or Response.HasLastAccessed
         _HasValidLastAccessed = _HasValidLastAccessed Or Response.HasValidLastAccessed

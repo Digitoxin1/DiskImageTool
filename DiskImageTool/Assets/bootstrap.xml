@@ -412,6 +412,9 @@
     <oemname namehex="274D4F5E22494843" suggestion="false" company="Sierra On-Line" description="Hoyle Classic Games for Laptops Disk 3" verified="true" />
     <oemname namehex="25727B7073494843" suggestion="false" company="Sierra On-Line" description="Hoyle Classic Games for Laptops Disk 2" verified="true" />
     <oemname namehex="257325382B494843" suggestion="false" company="Sierra On-Line" description="Hoyle Classic Games for Laptops Disk 3" verified="true" />
+    <oemname namehex="276F297069494843" suggestion="false" company="Sierra On-Line" description="Front Page Sports: Football Online Disk 1" verified="true" />
+    <oemname namehex="275D5B6E2F494843" suggestion="false" company="Sierra On-Line" description="Front Page Sports: Football Online Disk 2" verified="true" />
+    <oemname namehex="275D316B30494843" suggestion="false" company="Sierra On-Line" description="Front Page Sports: Football Online Disk 3" verified="true" />
   </bootstrap>
   <bootstrap crc32="41F209E3" jmp="EB4590">
     <oemname name="IBM PNCI" company="Peter Norton Computing Inc." verified="true" />

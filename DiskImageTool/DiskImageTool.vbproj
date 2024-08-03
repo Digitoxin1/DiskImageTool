@@ -136,6 +136,7 @@
     <Compile Include="DiskImage\DirectoryData.vb" />
     <Compile Include="DiskImage\EpandedDate.vb" />
     <Compile Include="DiskImage\FATChain.vb" />
+    <Compile Include="DiskImage\FATTables.vb" />
     <Compile Include="DiskImage\FloppyDiskFunctions.vb" />
     <Compile Include="DiskImage\SectorBlock.vb" />
     <Compile Include="Extensions\ByteArrayExtensions.vb" />

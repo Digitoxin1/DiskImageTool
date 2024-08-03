@@ -1149,7 +1149,7 @@ Partial Class MainForm
         Me.ComboImagesFiltered.AllowDrop = True
         Me.ComboImagesFiltered.Anchor = CType(((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Left) _
             Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
-        Me.ComboImagesFiltered.BackColor = System.Drawing.SystemColors.Control
+        Me.ComboImagesFiltered.BackColor = System.Drawing.SystemColors.Window
         Me.ComboImagesFiltered.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList
         Me.ComboImagesFiltered.DropDownWidth = 523
         Me.ComboImagesFiltered.Location = New System.Drawing.Point(323, 55)

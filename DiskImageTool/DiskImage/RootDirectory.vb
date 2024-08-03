@@ -4,13 +4,13 @@
 
         Private _BPB As BiosParameterBlock
         Private ReadOnly _DirectoryCache As Dictionary(Of UInteger, DirectoryCacheEntry)
-        Private ReadOnly _FAT As FAT12
+        Private ReadOnly _FATTables As FATTables
         Private ReadOnly _FileBytes As ImageByteArray
         Private _DirectoryData As DirectoryData
 
-        Sub New(FileBytes As ImageByteArray, BPB As BiosParameterBlock, FAT As FAT12, DirectoryCache As Dictionary(Of UInteger, DirectoryCacheEntry), EnumerateEntries As Boolean)
+        Sub New(FileBytes As ImageByteArray, BPB As BiosParameterBlock, FATTables As FATTables, DirectoryCache As Dictionary(Of UInteger, DirectoryCacheEntry), EnumerateEntries As Boolean)
             _BPB = BPB
-            _FAT = FAT
+            _FATTables = FATTables
             _FileBytes = FileBytes
             _DirectoryCache = DirectoryCache
             If BPB.IsValid Then
@@ -53,7 +53,7 @@
         Public Function GetFile(Index As UInteger) As DirectoryEntry Implements IDirectory.GetFile
             Dim Offset As UInteger = Disk.SectorToBytes(_BPB.RootDirectoryRegionStart) + Index * DirectoryEntry.DIRECTORY_ENTRY_SIZE
 
-            Return New DirectoryEntry(_FileBytes, _BPB, _FAT, _DirectoryCache, Offset)
+            Return New DirectoryEntry(_FileBytes, _BPB, _FATTables, _DirectoryCache, Offset)
         End Function
 
         Public Function HasFile(Filename As String) As Integer Implements IDirectory.HasFile
