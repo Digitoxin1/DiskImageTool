@@ -2912,7 +2912,7 @@ Public Class MainForm
                     Dim DiskTypeString = GetFloppyDiskTypeName(Disk.DiskType)
                     .AddItem(DiskGroup, "Disk Type", DiskTypeString & " Floppy")
 
-                    If Disk.BPB.IsValid AndAlso Disk.CheckImageSize > 0 Then
+                    If Disk.BPB.IsValid AndAlso Disk.CheckImageSize > 0 AndAlso Disk.DiskType <> FloppyDiskType.FloppyUnknown Then
                         .AddItem(DiskGroup, DiskTypeString & " CRC32", Crc32.ComputeChecksum(Disk.Data.GetBytes(0, Disk.BPB.ReportedImageSize())).ToString("X8"))
                     End If
                 End If
@@ -2942,6 +2942,10 @@ Public Class MainForm
                 End If
 
                 If Disk.IsValidImage(False) Then
+                    Dim DiskTypeBySize = GetFloppyDiskType(Disk.Data.Length)
+                    Dim BPBBySize = BuildBPB(DiskTypeBySize)
+                    Dim DoBPBCompare = Disk.DiskType = FloppyDiskType.FloppyUnknown And DiskTypeBySize <> FloppyDiskType.FloppyUnknown
+
                     Dim BootRecordGroup = .Groups.Add("BootRecord", "Boot Record")
 
                     If BootstrapType IsNot Nothing Then
@@ -2959,9 +2963,36 @@ Public Class MainForm
                     End If
 
                     .AddItem(BootRecordGroup, BootSectorDescription(BootSectorOffsets.OEMName), Disk.BootSector.GetOEMNameString.TrimEnd(NULL_CHAR), ForeColor)
-                    .AddItem(BootRecordGroup, BPBDescription(BPBOffsets.BytesPerSector), Disk.BootSector.BPB.BytesPerSector)
-                    .AddItem(BootRecordGroup, BPBDescription(BPBOffsets.SectorsPerCluster), Disk.BootSector.BPB.SectorsPerCluster)
-                    .AddItem(BootRecordGroup, BPBDescription(BPBOffsets.ReservedSectorCount), Disk.BootSector.BPB.ReservedSectorCount)
+
+                    If DoBPBCompare AndAlso Disk.BootSector.BPB.BytesPerSector <> BPBBySize.BytesPerSector Then
+                        ForeColor = Color.Blue
+                    Else
+                        ForeColor = SystemColors.WindowText
+                    End If
+
+                    .AddItem(BootRecordGroup, BPBDescription(BPBOffsets.BytesPerSector), Disk.BootSector.BPB.BytesPerSector, ForeColor)
+
+                    If DoBPBCompare AndAlso Disk.BootSector.BPB.SectorsPerCluster <> BPBBySize.SectorsPerCluster Then
+                        ForeColor = Color.Blue
+                    Else
+                        ForeColor = SystemColors.WindowText
+                    End If
+
+                    .AddItem(BootRecordGroup, BPBDescription(BPBOffsets.SectorsPerCluster), Disk.BootSector.BPB.SectorsPerCluster, ForeColor)
+
+                    If DoBPBCompare AndAlso Disk.BootSector.BPB.ReservedSectorCount <> BPBBySize.ReservedSectorCount Then
+                        ForeColor = Color.Blue
+                    Else
+                        ForeColor = SystemColors.WindowText
+                    End If
+
+                    .AddItem(BootRecordGroup, BPBDescription(BPBOffsets.ReservedSectorCount), Disk.BootSector.BPB.ReservedSectorCount, ForeColor)
+
+                    If DoBPBCompare AndAlso Disk.BootSector.BPB.NumberOfFATs <> BPBBySize.NumberOfFATs Then
+                        ForeColor = Color.Blue
+                    Else
+                        ForeColor = SystemColors.WindowText
+                    End If
 
                     If Disk.DiskType = FloppyDiskType.FloppyXDF Then
                         Value = "1 + Compatibility Image"
@@ -2970,18 +3001,36 @@ Public Class MainForm
                         If Disk.IsValidImage AndAlso Not Disk.CompareFATTables Then
                             Value &= " (Mismatched)"
                             ForeColor = Color.Red
-                        Else
-                            ForeColor = SystemColors.WindowText
                         End If
                     End If
 
                     .AddItem(BootRecordGroup, BPBDescription(BPBOffsets.NumberOfFATs), Value, ForeColor)
-                    .AddItem(BootRecordGroup, BPBDescription(BPBOffsets.RootEntryCount), Disk.BootSector.BPB.RootEntryCount)
-                    .AddItem(BootRecordGroup, BPBDescription(BPBOffsets.SectorCountSmall), Disk.BootSector.BPB.SectorCount)
+
+                    If DoBPBCompare AndAlso Disk.BootSector.BPB.RootEntryCount <> BPBBySize.RootEntryCount Then
+                        ForeColor = Color.Blue
+                    Else
+                        ForeColor = SystemColors.WindowText
+                    End If
+
+                    .AddItem(BootRecordGroup, BPBDescription(BPBOffsets.RootEntryCount), Disk.BootSector.BPB.RootEntryCount, ForeColor)
+
+                    If DoBPBCompare AndAlso Disk.BootSector.BPB.SectorCount <> BPBBySize.SectorCount Then
+                        ForeColor = Color.Blue
+                    Else
+                        ForeColor = SystemColors.WindowText
+                    End If
+
+                    .AddItem(BootRecordGroup, BPBDescription(BPBOffsets.SectorCountSmall), Disk.BootSector.BPB.SectorCount, ForeColor)
+
+
+                    If DoBPBCompare AndAlso Disk.BootSector.BPB.MediaDescriptor <> BPBBySize.MediaDescriptor Then
+                        ForeColor = Color.Blue
+                    Else
+                        ForeColor = SystemColors.WindowText
+                    End If
 
                     Value = Disk.BootSector.BPB.MediaDescriptor.ToString("X2") & " Hex"
 
-                    ForeColor = SystemColors.WindowText
                     If Disk.BootSector.BPB.IsValid Then
                         If Not Disk.BPB.HasValidMediaDescriptor Then
                             Value &= " (Invalid)"
@@ -2999,9 +3048,29 @@ Public Class MainForm
 
                     .AddItem(BootRecordGroup, BPBDescription(BPBOffsets.MediaDescriptor), Value, ForeColor)
 
-                    .AddItem(BootRecordGroup, BPBDescription(BPBOffsets.SectorsPerFAT), Disk.BootSector.BPB.SectorsPerFAT)
-                    .AddItem(BootRecordGroup, BPBDescription(BPBOffsets.SectorsPerTrack), Disk.BootSector.BPB.SectorsPerTrack)
-                    .AddItem(BootRecordGroup, BPBDescription(BPBOffsets.NumberOfHeads), Disk.BootSector.BPB.NumberOfHeads)
+                    If DoBPBCompare AndAlso Disk.BootSector.BPB.SectorsPerFAT <> BPBBySize.SectorsPerFAT Then
+                        ForeColor = Color.Blue
+                    Else
+                        ForeColor = SystemColors.WindowText
+                    End If
+
+                    .AddItem(BootRecordGroup, BPBDescription(BPBOffsets.SectorsPerFAT), Disk.BootSector.BPB.SectorsPerFAT, ForeColor)
+
+                    If DoBPBCompare AndAlso Disk.BootSector.BPB.SectorsPerTrack <> BPBBySize.SectorsPerTrack Then
+                        ForeColor = Color.Blue
+                    Else
+                        ForeColor = SystemColors.WindowText
+                    End If
+
+                    .AddItem(BootRecordGroup, BPBDescription(BPBOffsets.SectorsPerTrack), Disk.BootSector.BPB.SectorsPerTrack, ForeColor)
+
+                    If DoBPBCompare AndAlso Disk.BootSector.BPB.NumberOfHeads <> BPBBySize.NumberOfHeads Then
+                        ForeColor = Color.Blue
+                    Else
+                        ForeColor = SystemColors.WindowText
+                    End If
+
+                    .AddItem(BootRecordGroup, BPBDescription(BPBOffsets.NumberOfHeads), Disk.BootSector.BPB.NumberOfHeads, ForeColor)
 
                     'If Debugger.IsAttached Then
                     If Disk.BootSector.BPB.HiddenSectors > 0 Then
