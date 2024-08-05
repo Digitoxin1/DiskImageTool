@@ -16,7 +16,7 @@
             FloppyXDF = 12
         End Enum
 
-        Public Function BPBCompare(BPB As BiosParameterBlock, Params As FloppyDiskParams) As Boolean
+        Public Function BPBCompare(BPB As BiosParameterBlock, Params As FloppyDiskParams, CheckMediaDescriptor As Boolean) As Boolean
             Return BPB.BytesPerSector = Params.BytesPerSector _
                 AndAlso BPB.NumberOfFATs = Params.NumberOfFATs _
                 AndAlso BPB.NumberOfHeads = Params.NumberOfHeads _
@@ -25,14 +25,12 @@
                 AndAlso BPB.SectorCountSmall = Params.SectorCountSmall _
                 AndAlso BPB.SectorsPerCluster = Params.SectorsPerCluster _
                 AndAlso BPB.SectorsPerFAT = Params.SectorsPerFAT _
-                AndAlso BPB.SectorsPerTrack = Params.SectorsPerTrack
-            'AndAlso BPB.MediaDescriptor = Params.MediaDescriptor _
+                AndAlso BPB.SectorsPerTrack = Params.SectorsPerTrack _
+                AndAlso (Not CheckMediaDescriptor Or BPB.MediaDescriptor = Params.MediaDescriptor)
         End Function
 
         Public Function BuildBPB(Params As FloppyDiskParams) As BiosParameterBlock
-            Dim Data(BiosParameterBlock.BPB_SIZE - 1) As Byte
-            Dim FileBytes As New ImageByteArray(Data)
-            Dim BPB = New BiosParameterBlock(FileBytes)
+            Dim BPB = New BiosParameterBlock()
 
             With Params
                 BPB.BytesPerSector = .BytesPerSector
@@ -264,13 +262,13 @@
             End Select
         End Function
 
-        Public Function GetFloppyDiskType(BPB As BiosParameterBlock) As FloppyDiskType
+        Public Function GetFloppyDiskType(BPB As BiosParameterBlock, CheckMediaDescriptor As Boolean) As FloppyDiskType
             Dim Items = System.Enum.GetValues(GetType(FloppyDiskType))
 
             For Each Type As FloppyDiskType In Items
                 If Type <> FloppyDiskType.FloppyUnknown Then
                     Dim Params = GetFloppyDiskParams(Type)
-                    If BPBCompare(BPB, Params) Then
+                    If BPBCompare(BPB, Params, CheckMediaDescriptor) Then
                         Return Type
                     End If
                 End If
@@ -337,7 +335,7 @@
             End Select
         End Function
 
-        Public Function GetFloppyDiskTypeName(Type As FloppyDiskType) As String
+        Public Function GetFloppyDiskTypeName(Type As FloppyDiskType, Optional Extended As Boolean = False) As String
             Select Case Type
                 Case FloppyDiskType.Floppy160
                     Return "160K"
@@ -354,9 +352,17 @@
                 Case FloppyDiskType.Floppy1440
                     Return "1.44M"
                 Case FloppyDiskType.FloppyDMF1024
-                    Return "DMF (1024)"
+                    If Extended Then
+                        Return "DMF (1024)"
+                    Else
+                        Return "DMF"
+                    End If
                 Case FloppyDiskType.FloppyDMF2048
-                    Return "DMF (2048)"
+                    If Extended Then
+                        Return "DMF (2048)"
+                    Else
+                        Return "DMF"
+                    End If
                 Case FloppyDiskType.Floppy2880
                     Return "2.88M"
                 Case FloppyDiskType.FloppyProCopy
@@ -402,10 +408,6 @@
         Public Function GetFileFilterDescriptionByType(Type As FloppyDiskType) As String
             Dim Description As String = GetFloppyDiskTypeName(Type)
             Select Case Type
-                Case FloppyDiskType.FloppyDMF1024
-                    Description = "DMF"
-                Case FloppyDiskType.FloppyDMF2048
-                    Description = "DMF"
                 Case FloppyDiskType.FloppyProCopy
                     Description = ""
                 Case FloppyDiskType.FloppyUnknown
@@ -419,16 +421,16 @@
             Return Description
         End Function
 
-        Public Function GetFloppyDiskTypeName(BPB As BiosParameterBlock) As String
-            Return GetFloppyDiskTypeName(GetFloppyDiskType(BPB))
+        Public Function GetFloppyDiskTypeName(BPB As BiosParameterBlock, CheckMediaDescriptor As Boolean, Optional Extended As Boolean = False) As String
+            Return GetFloppyDiskTypeName(GetFloppyDiskType(BPB, CheckMediaDescriptor), Extended)
         End Function
 
-        Public Function GetFloppyDiskTypeName(Size As Integer) As String
-            Return GetFloppyDiskTypeName(GetFloppyDiskType(Size))
+        Public Function GetFloppyDiskTypeName(Size As Integer, Optional Extended As Boolean = False) As String
+            Return GetFloppyDiskTypeName(GetFloppyDiskType(Size), Extended)
         End Function
 
-        Public Function GetFloppyDiskTypeName(MediaDescriptor As Byte) As String
-            Return GetFloppyDiskTypeName(GetFloppyDiskType(MediaDescriptor))
+        Public Function GetFloppyDiskTypeName(MediaDescriptor As Byte, Optional Extended As Boolean = False) As String
+            Return GetFloppyDiskTypeName(GetFloppyDiskType(MediaDescriptor), Extended)
         End Function
 
         Public Structure FloppyDiskParams

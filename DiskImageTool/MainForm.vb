@@ -71,6 +71,8 @@ Public Class MainForm
         ' Add any initialization after the InitializeComponent() call.
         _lvwColumnSorter = New ListViewColumnSorter
         ListViewInit()
+        ComboFAT.ComboBox.DrawMode = DrawMode.OwnerDrawFixed
+        AddHandler ComboFAT.ComboBox.DrawItem, AddressOf DrawComboFAT
     End Sub
 
     Friend Sub DiskTypeFilterUpdate(Disk As DiskImage.Disk, ImageData As LoadedImageData, Optional UpdateFilters As Boolean = False, Optional Remove As Boolean = False)
@@ -78,9 +80,9 @@ Public Class MainForm
 
         If Not Remove Then
             If Disk.IsValidImage Then
-                DiskType = GetFloppyDiskTypeName(Disk.BPB)
+                DiskType = GetFloppyDiskTypeName(Disk.BPB, True)
             Else
-                DiskType = GetFloppyDiskTypeName(Disk.Data.Length)
+                DiskType = GetFloppyDiskTypeName(Disk.Data.Length, True)
             End If
         End If
 
@@ -106,7 +108,7 @@ Public Class MainForm
         Else
             NormalizedMD5 = MD5Hash(GetNormalizedDataByBadSectors(Disk))
         End If
-        Dim Media = GetFloppyDiskTypeName(Disk.BPB)
+        Dim Media = GetFloppyDiskTypeName(Disk.BPB, True)
         _TitleDB.AddTile(ImageData.FileName, Media, NormalizedMD5)
     End Sub
 
@@ -247,7 +249,7 @@ Public Class MainForm
             If IsValidImage Then
                 Dim MediaDescriptor = GetFloppyDiskMediaDescriptor(Disk.DiskType)
                 HasBadSectors = Disk.FAT.BadClusters.Count > 0
-                HasMismatchedFATs = Disk.DiskType <> FloppyDiskType.FloppyXDF AndAlso Not Disk.CompareFATTables
+                HasMismatchedFATs = Disk.DiskType <> FloppyDiskType.FloppyXDF AndAlso Not Disk.FATTables.FATsMatch
                 If Disk.BootSector.BPB.IsValid Then
                     If Disk.BootSector.BPB.MediaDescriptor <> MediaDescriptor Then
                         HasMismatchedMediaDescriptor = True
@@ -260,7 +262,7 @@ Public Class MainForm
                     End If
                 End If
                 HasInvalidImageSize = Disk.CheckImageSize <> 0
-                UnknownDiskType = GetFloppyDiskType(Disk.BPB) = FloppyDiskType.FloppyUnknown
+                UnknownDiskType = GetFloppyDiskType(Disk.BPB, False) = FloppyDiskType.FloppyUnknown
             End If
 
             If _TitleDB.TitleCount > 0 Then
@@ -1409,6 +1411,30 @@ Public Class MainForm
         End If
     End Sub
 
+    Private Sub DrawComboFAT(ByVal sender As Object, ByVal e As DrawItemEventArgs)
+        e.DrawBackground()
+
+        If e.Index >= 0 Then
+            Dim Item As String = ComboFAT.Items(e.Index)
+
+            Dim Brush As Brush
+            Dim tBrush As Brush
+
+            If e.State And DrawItemState.Selected Then
+                Brush = SystemBrushes.Highlight
+                tBrush = SystemBrushes.HighlightText
+            Else
+                Brush = SystemBrushes.Window
+                tBrush = SystemBrushes.WindowText
+            End If
+
+            e.Graphics.FillRectangle(Brush, e.Bounds)
+            e.Graphics.DrawString(Item, e.Font, tBrush, e.Bounds, StringFormat.GenericDefault)
+        End If
+
+        e.DrawFocusRectangle()
+    End Sub
+
     Private Sub ExportDebugScript()
         Dim CurrentImageData As LoadedImageData = ComboImages.SelectedItem
         GenerateDebugPackage(_Disk, CurrentImageData)
@@ -1969,7 +1995,7 @@ Public Class MainForm
         Dim BytesRead = FloppyDrive.ReadSector(0, Buffer)
         If BytesRead = Buffer.Length Then
             BootSector = New BootSector(New ImageByteArray(Buffer))
-            DetectedType = GetFloppyDiskType(BootSector.BPB)
+            DetectedType = GetFloppyDiskType(BootSector.BPB, False)
         Else
             DetectedType = FloppyDiskType.FloppyUnknown
         End If
@@ -2018,7 +2044,7 @@ Public Class MainForm
                 Dim FloppyAccessForm As New FloppyAccessForm(FloppyDrive, BPB, FloppyAccessForm.FloppyAccessType.Read)
                 FloppyAccessForm.ShowDialog(Me)
                 If FloppyAccessForm.Complete Then
-                    Dim DiskType = GetFloppyDiskType(BPB)
+                    Dim DiskType = GetFloppyDiskType(BPB, False)
                     FloppyDiskSaveFile(FloppyAccessForm.DiskBuffer, DiskType)
                 End If
                 FloppyAccessForm.Close()
@@ -2039,7 +2065,7 @@ Public Class MainForm
         Dim DriveName = DriveLetter & ":\"
         Dim DriveInfo = New DriveInfo(DriveName)
         Dim IsReady = DriveInfo.IsReady
-        Dim NewDiskType = GetFloppyDiskType(_Disk.BPB)
+        Dim NewDiskType = GetFloppyDiskType(_Disk.BPB, False)
         Dim NewTypeName = GetFloppyDiskTypeName(NewDiskType) & " Floppy"
         Dim DetectedType As FloppyDiskType = 255
         Dim DoFormat = Not IsReady
@@ -2052,7 +2078,7 @@ Public Class MainForm
                 Dim BytesRead = FloppyDrive.ReadSector(0, Buffer)
                 If BytesRead = Buffer.Length Then
                     Dim BootSector = New BootSector(New ImageByteArray(Buffer))
-                    DetectedType = GetFloppyDiskType(BootSector.BPB)
+                    DetectedType = GetFloppyDiskType(BootSector.BPB, False)
                 Else
                     DetectedType = FloppyDiskType.FloppyUnknown
                 End If
@@ -2405,7 +2431,7 @@ Public Class MainForm
         Dim FATTablesMatch As Boolean = True
 
         If Disk IsNot Nothing Then
-            FATTablesMatch = Disk.DiskType = FloppyDiskType.FloppyXDF OrElse Disk.CompareFATTables
+            FATTablesMatch = Disk.DiskType = FloppyDiskType.FloppyXDF OrElse Disk.FATTables.FATsMatch
             BtnDisplayBootSector.Enabled = Disk.CheckSize
             BtnEditBootSector.Enabled = Disk.CheckSize
             BtnDisplayDisk.Enabled = Disk.CheckSize
@@ -2414,7 +2440,7 @@ Public Class MainForm
             BtnDisplayDirectory.Enabled = Disk.IsValidImage
             ToolStripSeparatorFAT.Visible = Not FATTablesMatch
             ComboFAT.Visible = Not FATTablesMatch
-            ComboFAT.Width = 55
+            ComboFAT.Width = 60
             BtnWriteFloppyA.Enabled = _DriveAEnabled
             BtnWriteFloppyB.Enabled = _DriveBEnabled
         Else
@@ -2846,6 +2872,7 @@ Public Class MainForm
         With ListViewSummary
             .BeginUpdate()
             .Items.Clear()
+            .Groups.Clear()
 
             If Disk IsNot Nothing AndAlso _TitleDB.TitleCount > 0 Then
                 Dim TitleData = _TitleDB.TitleLookup(MD5)
@@ -2910,14 +2937,20 @@ Public Class MainForm
 
                 If Disk.IsValidImage(False) Then
                     Dim DiskTypeString = GetFloppyDiskTypeName(Disk.DiskType)
-                    .AddItem(DiskGroup, "Disk Type", DiskTypeString & " Floppy")
+                    Dim DiskTypeBySize = GetFloppyDiskType(Disk.Data.Length)
 
-                    If Disk.BPB.IsValid AndAlso Disk.CheckImageSize > 0 AndAlso Disk.DiskType <> FloppyDiskType.FloppyUnknown Then
-                        .AddItem(DiskGroup, DiskTypeString & " CRC32", Crc32.ComputeChecksum(Disk.Data.GetBytes(0, Disk.BPB.ReportedImageSize())).ToString("X8"))
+                    If Disk.DiskType <> FloppyDiskType.FloppyUnknown Or DiskTypeBySize = FloppyDiskType.FloppyUnknown Then
+                        .AddItem(DiskGroup, "Disk Type", DiskTypeString & " Floppy")
+                    Else
+                        Dim DiskTypeStringBySize = GetFloppyDiskTypeName(DiskTypeBySize)
+                        .AddItem(DiskGroup, "Disk Type", DiskTypeStringBySize & " Floppy (Custom Format)")
                     End If
-                End If
+                    If Disk.BPB.IsValid AndAlso Disk.CheckImageSize > 0 AndAlso Disk.DiskType <> FloppyDiskType.FloppyUnknown Then
+                            .AddItem(DiskGroup, DiskTypeString & " CRC32", Crc32.ComputeChecksum(Disk.Data.GetBytes(0, Disk.BPB.ReportedImageSize())).ToString("X8"))
+                        End If
+                    End If
 
-                Dim BroderbundCopyright = ""
+                    Dim BroderbundCopyright = ""
                 If Disk.IsValidImage Then
                     Dim BadSectors = GetBadSectors(Disk.BPB, Disk.FAT.BadClusters)
                     If CopyProtection.Length = 0 Then
@@ -2998,7 +3031,7 @@ Public Class MainForm
                         Value = "1 + Compatibility Image"
                     Else
                         Value = Disk.BootSector.BPB.NumberOfFATs
-                        If Disk.IsValidImage AndAlso Not Disk.CompareFATTables Then
+                        If Disk.IsValidImage AndAlso Not Disk.FATTables.FATsMatch Then
                             Value &= " (Mismatched)"
                             ForeColor = Color.Red
                         End If
@@ -3037,7 +3070,8 @@ Public Class MainForm
                             ForeColor = Color.Red
                         ElseIf Disk.DiskType = FloppyDiskType.FloppyXDF AndAlso Disk.FAT.MediaDescriptor = &HF9 Then
                             'Do Nothing - This is normal for XDF
-                        ElseIf Disk.DiskType <> FloppyDiskType.FloppyUnknown AndAlso Disk.BootSector.BPB.MediaDescriptor <> GetFloppyDiskMediaDescriptor(Disk.DiskType) Then
+                            'ElseIf Disk.DiskType <> FloppyDiskType.FloppyUnknown AndAlso Disk.BootSector.BPB.MediaDescriptor <> GetFloppyDiskMediaDescriptor(Disk.DiskType) Then
+                        ElseIf Disk.BootSector.BPB.MediaDescriptor <> GetFloppyDiskMediaDescriptor(Disk.DiskType) Then
                             Value &= " (Mismatched)"
                             ForeColor = Color.Red
                         ElseIf Disk.FAT.MediaDescriptor <> Disk.BootSector.BPB.MediaDescriptor Then
@@ -3092,7 +3126,7 @@ Public Class MainForm
                         End If
                     End If
 
-                    If Disk.BootSector.BootStrapSignature <> BootSector.ValidBootStrapSignature Then
+                    If Not Disk.BootSector.HasValidBootStrapSignature Then
                         .AddItem(BootRecordGroup, BootSectorDescription(BootSectorOffsets.BootStrapSignature), Disk.BootSector.BootStrapSignature.ToString("X4"))
                     End If
 
@@ -3174,7 +3208,11 @@ Public Class MainForm
 
                     Dim BootStrapGroup = .Groups.Add("Bootstrap", "Bootstrap")
 
-                    .AddItem(BootStrapGroup, "Bootstrap CRC32", Crc32.ComputeChecksum(Disk.BootSector.BootStrapCode).ToString("X8"))
+                    Dim BootStrapCRC32 = Crc32.ComputeChecksum(Disk.BootSector.BootStrapCode)
+
+                    If BootStrapCRC32 <> 0 Then
+                        .AddItem(BootStrapGroup, "Bootstrap CRC32", BootStrapCRC32.ToString("X8"))
+                    End If
 
                     If BootstrapType IsNot Nothing Then
                         If BootstrapType.Language.Length > 0 Then
@@ -3211,7 +3249,7 @@ Public Class MainForm
                         End If
                     End If
                 End If
-            Else
+                Else
                 .AddItem(DiskGroup, "Error", "Error Loading File", Color.Red)
             End If
 
@@ -4533,6 +4571,7 @@ Public Class MainForm
             e.DrawDefault = True
         End If
     End Sub
+
 #End Region
 
 End Class

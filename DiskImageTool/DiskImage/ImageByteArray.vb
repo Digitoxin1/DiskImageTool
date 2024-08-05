@@ -98,10 +98,6 @@
             Return MyBase.GetBytes(Offset, Size)
         End Function
 
-        Public Function GetSectors(Sectors As SectorRange) As Byte()
-            Return GetSectors(Sectors.Start, Sectors.Count)
-        End Function
-
         Public Sub Redo()
             Dim DataChange = _RedoChanges.Pop
             _IgnoreChange = True

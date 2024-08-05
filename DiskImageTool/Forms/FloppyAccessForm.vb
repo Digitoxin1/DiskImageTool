@@ -48,7 +48,7 @@ Public Class FloppyAccessForm
         ReDim _DiskBuffer(_BPB.ImageSize - 1)
         Dim StatusTypeString = IIf(AccessType = FloppyAccessType.Read, "Reading", "Writing")
 
-        Me.Text = StatusTypeString & " " & GetFloppyDiskTypeName(_BPB) & " Floppy"
+        Me.Text = StatusTypeString & " " & GetFloppyDiskTypeName(_BPB, False) & " Floppy"
         StatusType.Text = StatusTypeString
 
         InitTables()
@@ -301,7 +301,7 @@ Public Class FloppyAccessForm
     Private Function FormatTrack(Sector As UInteger) As Boolean
         Dim Track = _BPB.SectorToTrack(Sector)
         Dim Side = _BPB.SectorToSide(Sector)
-        Dim MediaType As FloppyInterface.MEDIA_TYPE = GetMediaTypeFromDiskType(GetFloppyDiskType(_BPB))
+        Dim MediaType As FloppyInterface.MEDIA_TYPE = GetMediaTypeFromDiskType(GetFloppyDiskType(_BPB, False))
 
         If MediaType = FloppyInterface.MEDIA_TYPE.Unknown Then
             Return False

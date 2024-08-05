@@ -41,6 +41,11 @@ Namespace DiskImage
             SectorCountLarge = 4
         End Enum
 
+        Sub New()
+            Dim Data(BiosParameterBlock.BPB_SIZE - 1) As Byte
+            _FileBytes = New ImageByteArray(Data)
+        End Sub
+
         Sub New(FileBytes As ImageByteArray)
             _FileBytes = FileBytes
         End Sub

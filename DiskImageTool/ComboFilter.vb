@@ -101,13 +101,13 @@
             Dim nBrush As Brush
 
             If e.State And DrawItemState.Selected Then
-                Brush = New SolidBrush(SystemColors.Highlight)
-                tBrush = New SolidBrush(SystemColors.HighlightText)
-                nBrush = New SolidBrush(SystemColors.HighlightText)
+                Brush = SystemBrushes.Highlight
+                tBrush = SystemBrushes.HighlightText
+                nBrush = SystemBrushes.HighlightText
             Else
-                Brush = New SolidBrush(SystemColors.Window)
-                tBrush = New SolidBrush(SystemColors.WindowText)
-                nBrush = New SolidBrush(Color.Blue)
+                Brush = SystemBrushes.Window
+                tBrush = SystemBrushes.WindowText
+                nBrush = Brushes.Blue
             End If
 
             e.Graphics.FillRectangle(Brush, e.Bounds)
@@ -135,10 +135,6 @@
             End If
 
             e.Graphics.DrawString(Name, e.Font, tBrush, r1, StringFormat.GenericDefault)
-
-            nBrush.Dispose()
-            tBrush.Dispose()
-            Brush.Dispose()
         End If
 
         e.DrawFocusRectangle()

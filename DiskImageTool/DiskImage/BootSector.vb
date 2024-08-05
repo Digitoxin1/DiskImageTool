@@ -2,7 +2,7 @@
 
     Public Class BootSector
         Public Const BOOT_SECTOR_SIZE As UShort = 512
-        Public Shared ReadOnly ValidBootStrapSignature As UShort = &HAA55
+        Public Shared ReadOnly ValidBootStrapSignature() As UShort = {&HAA55, &H0}
         Public Shared ReadOnly ValidDriveNumber() As Byte = {&H0, &H80}
         Public Shared ReadOnly ValidExtendedBootSignature() As Byte = {&H28, &H29}
         Public Shared ReadOnly ValidJumpInstructuon() As Byte = {&HEB, &HE9}
@@ -208,7 +208,7 @@
         End Function
 
         Public Function HasValidBootStrapSignature() As Boolean
-            Return BootStrapSignature = ValidBootStrapSignature
+            Return ValidBootStrapSignature.Contains(BootStrapSignature)
         End Function
 
         Public Function HasValidDriveNumber() As Boolean

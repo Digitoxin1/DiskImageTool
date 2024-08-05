@@ -1,8 +1,10 @@
-﻿Imports DiskImageTool.DiskImage
+﻿Imports System.Globalization
+Imports DiskImageTool.DiskImage
 Imports DiskImageTool.DiskImage.BootSector
 Imports Hb.Windows.Forms
 
 Public Class BootSectorForm
+    Const ValidHexChars = "0123456789ABCDEF"
     Private ReadOnly _BootStrap As BoootstrapDB
     Private ReadOnly _Disk As DiskImage.Disk
     Private ReadOnly _HasExtended As Boolean
@@ -24,14 +26,10 @@ Public Class BootSectorForm
 
         IntitializeHelp()
         PopulateDiskTypes()
+        SetCurrentDiskType(GetFloppyDiskType(_Disk.BootSector.BPB, True))
         PopulateValues()
-        SetCurrentDiskType()
 
         _SuppressEvent = False
-    End Sub
-
-    Private Sub BtnVolumeSerialNumber_Click(sender As Object, e As EventArgs) Handles BtnVolumeSerialNumber.Click
-        ChangeVolumeSerialNumber()
     End Sub
 
     Private Sub ChangeVolumeSerialNumber()
@@ -44,36 +42,9 @@ Public Class BootSectorForm
         If Result Then
             _SuppressEvent = True
             Dim Value = VolumeSerialNumberForm.GetValue()
-            SetValue(HexVolumeSerialNumber, BootSector.GenerateVolumeSerialNumber(Value).ToString("X8"))
+            ControlSetValue(HexVolumeSerialNumber, BootSector.GenerateVolumeSerialNumber(Value).ToString("X8"), False)
             _SuppressEvent = False
         End If
-    End Sub
-
-    Private Sub ComboBox_DrawItem(sender As Object, e As DrawItemEventArgs) Handles CboBytesPerSector.DrawItem, CboSectorsPerCluster.DrawItem
-        Dim CB As ComboBox = sender
-
-        e.DrawBackground()
-
-        If e.Index >= 0 Then
-            Dim Brush As Brush
-            Dim tBrush As Brush
-
-            If e.State And DrawItemState.Selected Then
-                Brush = New SolidBrush(SystemColors.Highlight)
-                tBrush = New SolidBrush(SystemColors.HighlightText)
-            Else
-                Brush = New SolidBrush(SystemColors.Window)
-                tBrush = New SolidBrush(SystemColors.WindowText)
-            End If
-
-            e.Graphics.FillRectangle(Brush, e.Bounds)
-            e.Graphics.DrawString(CB.Items(e.Index).ToString, e.Font, tBrush, e.Bounds, StringFormat.GenericDefault)
-
-            tBrush.Dispose()
-            Brush.Dispose()
-        End If
-
-        e.DrawFocusRectangle()
     End Sub
 
     Private Sub IntitializeHelp()
@@ -154,7 +125,7 @@ Public Class BootSectorForm
             $"{vbCrLf}FD{vbTab}360K Floppy" &
             $"{vbCrLf}FE{vbTab}160K Floppy" &
             $"{vbCrLf}FF{vbTab}320K Floppy"
-        SetHelpString(Msg, TxtMediaDescriptor, HexMediaDescriptor)
+        SetHelpString(Msg, TxtMediaDescriptor, CboMediaDescriptor)
 
         Msg = "Number of sectors allocated to each copy of the File Allocation Table (FAT)" &
             $"{vbCrLf}{vbCrLf}Typical Values:" &
@@ -238,7 +209,7 @@ Public Class BootSectorForm
         SetHelpString(Msg, LblJumpInstruction, HexJumpInstruction)
 
         Msg = "Indicated to the BIOS that the sector is executable." &
-            $"{vbCrLf}{vbCrLf}Allowed Values: AA 55"
+            $"{vbCrLf}{vbCrLf}Allowed Values: AA 55, 00 00 (PC DOS 1.x)"
         SetHelpString(Msg, LblBootSectorSignature, HexBootSectorSignature)
 
         Msg = $"This is additional data found in the Boot Sector.{vbCrLf}{vbCrLf}Note: Data highlighted in green is the bootstrap code."
@@ -271,6 +242,8 @@ Public Class BootSectorForm
             Return Control.Text <> "0"
         ElseIf Control Is TxtHiddenSectors Then
             Return Control.Text = "0"
+        ElseIf Control Is HexJumpInstruction Then
+            Return BootSector.CheckJumpInstruction(HexJumpInstruction.GetHex, True)
         Else
             Return True
         End If
@@ -320,16 +293,16 @@ Public Class BootSectorForm
     End Sub
 
     Private Sub PopulateBPB(BPB As BiosParameterBlock)
-        SetValue(CboBytesPerSector, BPB.BytesPerSector, Array.ConvertAll(BiosParameterBlock.ValidBytesPerSector, Function(x) x.ToString()))
-        SetValue(CboSectorsPerCluster, BPB.SectorsPerCluster, Array.ConvertAll(BiosParameterBlock.ValidSectorsPerCluster, Function(x) x.ToString()))
-        SetValue(TxtReservedSectors, BPB.ReservedSectorCount)
-        SetValue(TxtNumberOfFATs, BPB.NumberOfFATs)
-        SetValue(TxtRootDirectoryEntries, BPB.RootEntryCount)
-        SetValue(TxtSectorCountSmall, BPB.SectorCountSmall)
-        SetValue(HexMediaDescriptor, BPB.MediaDescriptor.ToString("X2"), Array.ConvertAll(BiosParameterBlock.ValidMediaDescriptor, Function(x) x.ToString("X2")))
-        SetValue(TxtSectorsPerFAT, BPB.SectorsPerFAT)
-        SetValue(TxtSectorsPerTrack, BPB.SectorsPerTrack, {"8", "9", "15", "18", "21", "23", "36"})
-        SetValue(TxtNumberOfHeads, BPB.NumberOfHeads, {"1", "2"})
+        ControlSetValue(CboBytesPerSector, BPB.BytesPerSector, Array.ConvertAll(BiosParameterBlock.ValidBytesPerSector, Function(x) x.ToString()), True)
+        ControlSetValue(CboSectorsPerCluster, BPB.SectorsPerCluster, Array.ConvertAll(BiosParameterBlock.ValidSectorsPerCluster, Function(x) x.ToString()), True)
+        ControlSetValue(TxtReservedSectors, BPB.ReservedSectorCount, True)
+        ControlSetValue(TxtNumberOfFATs, BPB.NumberOfFATs, True)
+        ControlSetValue(TxtRootDirectoryEntries, BPB.RootEntryCount, True)
+        ControlSetValue(TxtSectorCountSmall, BPB.SectorCountSmall, True)
+        ControlSetValue(CboMediaDescriptor, BPB.MediaDescriptor.ToString("X2"), Array.ConvertAll(BiosParameterBlock.ValidMediaDescriptor, Function(x) x.ToString("X2")), True)
+        ControlSetValue(TxtSectorsPerFAT, BPB.SectorsPerFAT, True)
+        ControlSetValue(TxtSectorsPerTrack, BPB.SectorsPerTrack, {"8", "9", "15", "18", "21", "23", "36"}, True)
+        ControlSetValue(TxtNumberOfHeads, BPB.NumberOfHeads, {"1", "2"}, True)
     End Sub
 
     Private Sub PopulateBytesPerSector()
@@ -359,13 +332,13 @@ Public Class BootSectorForm
     End Sub
 
     Private Sub PopulateExtended(BootSector As BootSector)
-        SetValue(TxtSectorCountLarge, BootSector.BPB.SectorCountLarge)
-        SetValue(TxtDriveNumber, BootSector.DriveNumber)
-        SetValue(HexExtendedBootSignature, BootSector.ExtendedBootSignature.ToString("X2"))
-        SetValue(HexVolumeSerialNumber, BootSector.VolumeSerialNumber.ToString("X8"))
-        SetValue(TxtVolumeLabel, BootSector.GetVolumeLabelString.TrimEnd)
+        ControlSetValue(TxtSectorCountLarge, BootSector.BPB.SectorCountLarge, False)
+        ControlSetValue(TxtDriveNumber, BootSector.DriveNumber, False)
+        ControlSetValue(HexExtendedBootSignature, BootSector.ExtendedBootSignature.ToString("X2"), False)
+        ControlSetValue(HexVolumeSerialNumber, BootSector.VolumeSerialNumber.ToString("X8"), False)
+        ControlSetValue(TxtVolumeLabel, BootSector.GetVolumeLabelString.TrimEnd, False)
         HexVolumeLabel.SetHex(BootSector.VolumeLabel)
-        SetValue(TxtFileSystemType, BootSector.GetFileSystemTypeString.TrimEnd)
+        ControlSetValue(TxtFileSystemType, BootSector.GetFileSystemTypeString.TrimEnd, False)
         HexFileSystemType.SetHex(BootSector.FileSystemType)
 
         Dim ErrorCount As Integer = 0
@@ -379,6 +352,20 @@ Public Class BootSectorForm
             ErrorCount += 1
         End If
         LblExtendedMsg.Visible = (ErrorCount > 1)
+    End Sub
+
+    Private Sub PopulateMediaDescriptors()
+        CboMediaDescriptor.Items.Clear()
+        CboMediaDescriptor.Items.Add(New MediaDescriptorType("FE", "160K"))
+        CboMediaDescriptor.Items.Add(New MediaDescriptorType("FC", "180K"))
+        CboMediaDescriptor.Items.Add(New MediaDescriptorType("FF", "320K"))
+        CboMediaDescriptor.Items.Add(New MediaDescriptorType("FD", "360K"))
+        CboMediaDescriptor.Items.Add(New MediaDescriptorType("F9", "720K"))
+        CboMediaDescriptor.Items.Add(New MediaDescriptorType("F9", "1.2M"))
+        CboMediaDescriptor.Items.Add(New MediaDescriptorType("F0", "1.44M"))
+        CboMediaDescriptor.Items.Add(New MediaDescriptorType("F0", "2.88M"))
+        CboMediaDescriptor.Items.Add(New MediaDescriptorType("F0", "DNF"))
+        CboMediaDescriptor.Items.Add(New MediaDescriptorType("F0", "XDF"))
     End Sub
 
     Private Sub PopulateOEMName()
@@ -407,7 +394,7 @@ Public Class BootSectorForm
             End If
         End If
 
-        SetValue(CboOEMName, _Disk.BootSector.GetOEMNameString)
+        ControlSetValue(CboOEMName, _Disk.BootSector.GetOEMNameString, False)
         HexOEMName.SetHex(_Disk.BootSector.OEMName)
     End Sub
 
@@ -422,11 +409,12 @@ Public Class BootSectorForm
         PopulateOEMName()
         PopulateBytesPerSector()
         PopulateSectorsPerCluster()
+        PopulateMediaDescriptors()
         PopulateBPB(_Disk.BootSector.BPB)
 
-        SetValue(TxtHiddenSectors, _Disk.BootSector.BPB.HiddenSectors)
-        SetValue(HexJumpInstruction, _Disk.BootSector.JmpBoot, Not _Disk.BootSector.HasValidJumpInstruction(True))
-        SetValue(HexBootSectorSignature, _Disk.BootSector.BootStrapSignature.ToString("X4"), {BootSector.ValidBootStrapSignature.ToString("X4")})
+        ControlSetValue(TxtHiddenSectors, _Disk.BootSector.BPB.HiddenSectors, False)
+        ControlSetValue(HexJumpInstruction, _Disk.BootSector.JmpBoot, False)
+        ControlSetValue(HexBootSectorSignature, _Disk.BootSector.BootStrapSignature.ToString("X4"), Array.ConvertAll(BootSector.ValidBootStrapSignature, Function(x) x.ToString("X4")), False)
 
         PopulateAdditionalData(_Disk.BootSector)
 
@@ -437,6 +425,8 @@ Public Class BootSectorForm
         Else
             GroupBoxExtended.Visible = False
         End If
+
+        UpdateBackColors(GetFloppyDiskType(GetBPB(), True))
     End Sub
 
     Private Sub RefreshFileSystemType()
@@ -449,7 +439,7 @@ Public Class BootSectorForm
             Value = DiskImage.CodePage437ToUnicode(HexFileSystemType.GetHex).TrimEnd
         End If
 
-        SetValue(TxtFileSystemType, Value)
+        ControlSetValue(TxtFileSystemType, Value, False)
     End Sub
 
     Private Sub RefreshVolumeLabel()
@@ -463,42 +453,42 @@ Public Class BootSectorForm
             Value = DiskImage.CodePage437ToUnicode(HexVolumeLabel.GetHex).TrimEnd
         End If
 
-        SetValue(TxtVolumeLabel, Value)
+        ControlSetValue(TxtVolumeLabel, Value, False)
     End Sub
 
-    Private Sub RevertValue(Control As Control)
-        Control.Text = CType(Control.Tag, FieldData).LastValue
-        UpdateColor(Control, False)
+    Private Sub AddDiskTypeUnknown()
+        Dim LastDiskType As BootSectorDiskType = CboDiskType.Items.Item(CboDiskType.Items.Count - 1)
+
+        If LastDiskType.Type <> FloppyDiskType.FloppyUnknown Then
+            CboDiskType.Items.Add(New BootSectorDiskType(FloppyDiskType.FloppyUnknown))
+        End If
     End Sub
 
-    Private Sub SetCurrentDiskType()
+    Private Sub RemoveDiskTypeUnknown()
+        Dim LastDiskType As BootSectorDiskType = CboDiskType.Items.Item(CboDiskType.Items.Count - 1)
+
+        If LastDiskType.Type = FloppyDiskType.FloppyUnknown Then
+            CboDiskType.Items.RemoveAt(CboDiskType.Items.Count - 1)
+        End If
+    End Sub
+
+    Private Sub SetCurrentDiskType(CurrentDiskType As FloppyDiskType)
         Dim SelectedItem As BootSectorDiskType = Nothing
 
-        For Each DiskType As BootSectorDiskType In CboDiskType.Items
-            If DiskType.Type <> FloppyDiskType.FloppyUnknown Then
-                Dim BPB = BuildBPB(DiskType.Type)
-                If BPB.MediaDescriptor = HexMediaDescriptor.GetHex(0) _
-                    And BPB.NumberOfHeads = TxtNumberOfHeads.Text _
-                    And BPB.RootEntryCount = TxtRootDirectoryEntries.Text _
-                    And BPB.SectorCountSmall = TxtSectorCountSmall.Text _
-                    And BPB.SectorsPerCluster = CboSectorsPerCluster.Text _
-                    And BPB.SectorsPerFAT = TxtSectorsPerFAT.Text _
-                    And BPB.SectorsPerTrack = TxtSectorsPerTrack.Text _
-                    And BPB.BytesPerSector = CboBytesPerSector.Text _
-                    And BPB.NumberOfFATs = TxtNumberOfFATs.Text _
-                    And BPB.ReservedSectorCount = TxtReservedSectors.Text Then
+        If CurrentDiskType = FloppyDiskType.FloppyUnknown Then
+            AddDiskTypeUnknown()
+        Else
+            RemoveDiskTypeUnknown()
+        End If
 
-                    SelectedItem = DiskType
-                    Exit For
-                End If
+        For Each DiskType As BootSectorDiskType In CboDiskType.Items
+            If DiskType.Type = CurrentDiskType Then
+                SelectedItem = DiskType
+                Exit For
             End If
         Next
 
-        If SelectedItem Is Nothing Then
-            CboDiskType.SelectedIndex = CboDiskType.Items.Count - 1
-        Else
-            CboDiskType.SelectedItem = SelectedItem
-        End If
+        CboDiskType.SelectedItem = SelectedItem
     End Sub
 
     Private Sub SetExtendedState()
@@ -526,93 +516,82 @@ Public Class BootSectorForm
             _HelpProvider1.SetShowHelp(Control, True)
         Next
     End Sub
-    Private Function SetTagValue(Control As Control, Value As String) As FieldData
-        If Control.Tag Is Nothing Then
-            Control.Tag = New FieldData(Value)
-        Else
-            CType(Control.Tag, FieldData).LastValue = Value
-        End If
 
-        Return Control.Tag
+    Private Function GetBPB() As BiosParameterBlock
+        Dim BPB = New BiosParameterBlock()
+
+        UpdateBPB(BPB)
+
+        Return BPB
     End Function
 
-    Private Sub SetValue(Control As Control, Value As String)
-        Control.Text = Value
-        SetTagValue(Control, Value)
-        UpdateColor(Control, False)
-    End Sub
+    Private Sub UpdateBPB(BPB As BiosParameterBlock)
+        Dim UShortValue As UShort
+        Dim UintegerValue As UInteger
+        Dim ByteValue As Byte
+        Dim Result As Boolean
 
-    Private Sub SetValue(Control As Control, Value As String, AllowedValues() As String)
-        Control.Text = Value
-        Dim Data = SetTagValue(Control, Value)
-        Data.AllowedValues = AllowedValues
-        UpdateColor(Control, False)
-    End Sub
+        If UShort.TryParse(CboBytesPerSector.Text, UShortValue) Then
+            BPB.BytesPerSector = UShortValue
+        End If
 
-    Private Sub SetValue(Control As HexTextBox, Value As String)
-        Control.SetHex(Value)
-        SetTagValue(Control, Value)
-        UpdateColor(Control, False)
-    End Sub
+        If Byte.TryParse(CboSectorsPerCluster.Text, ByteValue) Then
+            BPB.SectorsPerCluster = ByteValue
+        End If
 
-    Private Sub SetValue(Control As HexTextBox, Value() As Byte, IsInvalid As Boolean)
-        Control.SetHex(Value)
-        SetTagValue(Control, BitConverter.ToString(Value).Replace("-", ""))
-        UpdateColor(Control, IsInvalid)
+        If UShort.TryParse(TxtReservedSectors.Text, UShortValue) Then
+            BPB.ReservedSectorCount = UShortValue
+        End If
+
+        If Byte.TryParse(TxtNumberOfFATs.Text, ByteValue) Then
+            BPB.NumberOfFATs = ByteValue
+        End If
+
+        If UShort.TryParse(TxtRootDirectoryEntries.Text, UShortValue) Then
+            BPB.RootEntryCount = UShortValue
+        End If
+
+        If UShort.TryParse(TxtSectorCountSmall.Text, UShortValue) Then
+            BPB.SectorCountSmall = UShortValue
+        End If
+
+        If UShort.TryParse(CboMediaDescriptor.Text, NumberStyles.HexNumber, CultureInfo.CurrentCulture, Result) Then
+            BPB.MediaDescriptor = Convert.ToByte(CboMediaDescriptor.Text, 16)
+        End If
+
+        If UShort.TryParse(TxtSectorsPerFAT.Text, UShortValue) Then
+            BPB.SectorsPerFAT = UShortValue
+        End If
+
+        If UShort.TryParse(TxtSectorsPerTrack.Text, UShortValue) Then
+            BPB.SectorsPerTrack = UShortValue
+        End If
+
+        If UShort.TryParse(TxtNumberOfHeads.Text, UShortValue) Then
+            BPB.NumberOfHeads = UShortValue
+        End If
+
+        If UShort.TryParse(TxtHiddenSectors.Text, UShortValue) Then
+            BPB.HiddenSectors = UShortValue
+        End If
+
+        If _HasExtended Then
+            If UInteger.TryParse(TxtSectorCountLarge.Text, UintegerValue) Then
+                BPB.SectorCountLarge = UintegerValue
+            End If
+        End If
     End Sub
 
     Private Sub UpdateBootSector()
         _Disk.Data.BatchEditMode = True
 
-        Dim UShortValue As UShort
-        Dim UintegerValue As UInteger
         Dim ByteValue As Byte
 
         Dim OEMNameString As String = Strings.Left(CboOEMName.Text, 8).PadRight(8)
         Dim OEMName = DiskImage.UnicodeToCodePage437(OEMNameString)
         _Disk.BootSector.OEMName = OEMName
 
-        If UShort.TryParse(CboBytesPerSector.Text, UShortValue) Then
-            _Disk.BootSector.BPB.BytesPerSector = UShortValue
-        End If
-
-        If Byte.TryParse(CboSectorsPerCluster.Text, ByteValue) Then
-            _Disk.BootSector.BPB.SectorsPerCluster = ByteValue
-        End If
-
-        If UShort.TryParse(TxtReservedSectors.Text, UShortValue) Then
-            _Disk.BootSector.BPB.ReservedSectorCount = UShortValue
-        End If
-
-        If Byte.TryParse(TxtNumberOfFATs.Text, ByteValue) Then
-            _Disk.BootSector.BPB.NumberOfFATs = ByteValue
-        End If
-
-        If UShort.TryParse(TxtRootDirectoryEntries.Text, UShortValue) Then
-            _Disk.BootSector.BPB.RootEntryCount = UShortValue
-        End If
-
-        If UShort.TryParse(TxtSectorCountSmall.Text, UShortValue) Then
-            _Disk.BootSector.BPB.SectorCountSmall = UShortValue
-        End If
-
-        _Disk.BootSector.BPB.MediaDescriptor = HexMediaDescriptor.GetHex(0)
-
-        If UShort.TryParse(TxtSectorsPerFAT.Text, UShortValue) Then
-            _Disk.BootSector.BPB.SectorsPerFAT = UShortValue
-        End If
-
-        If UShort.TryParse(TxtSectorsPerTrack.Text, UShortValue) Then
-            _Disk.BootSector.BPB.SectorsPerTrack = UShortValue
-        End If
-
-        If UShort.TryParse(TxtNumberOfHeads.Text, UShortValue) Then
-            _Disk.BootSector.BPB.NumberOfHeads = UShortValue
-        End If
-
-        If UShort.TryParse(TxtHiddenSectors.Text, UShortValue) Then
-            _Disk.BootSector.BPB.HiddenSectors = UShortValue
-        End If
+        UpdateBPB(_Disk.BootSector.BPB)
 
         _Disk.BootSector.JmpBoot = HexJumpInstruction.GetHex
 
@@ -621,10 +600,6 @@ Public Class BootSectorForm
         _Disk.BootSector.BootStrapSignature = BitConverter.ToUInt16(BootStrapSignature, 0)
 
         If _HasExtended Then
-            If UInteger.TryParse(TxtSectorCountLarge.Text, UintegerValue) Then
-                _Disk.BootSector.BPB.SectorCountLarge = UintegerValue
-            End If
-
             _Disk.BootSector.ExtendedBootSignature = HexExtendedBootSignature.GetHex(0)
 
             If Byte.TryParse(TxtDriveNumber.Text, ByteValue) Then
@@ -647,52 +622,53 @@ Public Class BootSectorForm
         _Disk.Data.BatchEditMode = False
     End Sub
 
-    Private Sub UpdateColor(Control As Control, IsInvalid As Boolean)
-        Dim Data = CType(Control.Tag, FieldData)
+    Private Sub UpdateBackColor(Control As Control, KnownDiskType As Boolean)
+        ControlUpdateBackColor(Control, KnownDiskType, IsDataValid(Control))
+    End Sub
 
-        If Control.Text <> Data.OriginalValue Then
-            Control.ForeColor = Color.Blue
-        Else
-            Control.ForeColor = SystemColors.WindowText
+    Private Sub UpdateBackColors(DiskType As FloppyDiskType)
+        Dim KnownDiskType = DiskType <> FloppyDiskType.FloppyUnknown
+
+        UpdateBackColor(CboBytesPerSector, KnownDiskType)
+        UpdateBackColor(CboSectorsPerCluster, KnownDiskType)
+        UpdateBackColor(TxtReservedSectors, KnownDiskType)
+        UpdateBackColor(TxtNumberOfFATs, KnownDiskType)
+        UpdateBackColor(TxtRootDirectoryEntries, KnownDiskType)
+        UpdateBackColor(TxtSectorCountSmall, KnownDiskType)
+        UpdateBackColor(CboMediaDescriptor, KnownDiskType)
+        UpdateBackColor(TxtSectorsPerFAT, KnownDiskType)
+        UpdateBackColor(TxtSectorsPerTrack, KnownDiskType)
+        UpdateBackColor(TxtNumberOfHeads, KnownDiskType)
+        UpdateBackColor(TxtHiddenSectors, KnownDiskType)
+        UpdateBackColor(HexJumpInstruction, KnownDiskType)
+        UpdateBackColor(HexBootSectorSignature, KnownDiskType)
+    End Sub
+
+    Private Sub UpdateTag(Control As Control, UpdateDiskType As Boolean)
+        ControlSetLastValue(Control, Control.Text)
+
+        Dim DiskType = GetFloppyDiskType(GetBPB(), True)
+
+        If UpdateDiskType Then
+            SetCurrentDiskType(DiskType)
         End If
 
-        If IsInvalid Then
-            Control.BackColor = Color.LightPink
-        ElseIf Data.AllowedValues IsNot Nothing Then
-            If Data.AllowedValues.Contains(Control.Text) Then
-                Control.BackColor = SystemColors.Window
-            Else
-                Control.BackColor = Color.LightPink
-            End If
-        ElseIf Not IsDataValid(Control) Then
-            Control.BackColor = Color.LightPink
-        Else
-            Control.BackColor = SystemColors.Window
-        End If
+        UpdateBackColors(DiskType)
+        ControlUpdateColor(Control)
     End Sub
 
-    Private Sub UpdateTag(Control As Control)
-        CType(Control.Tag, FieldData).LastValue = Control.Text
-        UpdateColor(Control, False)
-    End Sub
-
-    Private Sub UpdateTag(Control As Control, IsInvalid As Boolean)
-        CType(Control.Tag, FieldData).LastValue = Control.Text
-        UpdateColor(Control, IsInvalid)
-    End Sub
 #Region "Events"
+    Private Sub BtnReset_Click(sender As Object, e As EventArgs) Handles btnReset.Click
+        SetCurrentDiskType(GetFloppyDiskType(_Disk.BootSector.BPB, True))
+        PopulateValues()
+    End Sub
 
     Private Sub BtnUpdate_Click(sender As Object, e As EventArgs) Handles BtnUpdate.Click
         UpdateBootSector()
     End Sub
 
-    Private Sub CboDiskType_LostFocus(sender As Object, e As EventArgs) Handles CboDiskType.LostFocus
-        _SuppressEvent = True
-        Dim DiskType As BootSectorDiskType = CboDiskType.SelectedItem
-        If DiskType.Type = FloppyDiskType.FloppyUnknown Then
-            SetCurrentDiskType()
-        End If
-        _SuppressEvent = False
+    Private Sub BtnVolumeSerialNumber_Click(sender As Object, e As EventArgs) Handles BtnVolumeSerialNumber.Click
+        ChangeVolumeSerialNumber()
     End Sub
 
     Private Sub CboDiskType_SelectedIndexChanged(sender As Object, e As EventArgs) Handles CboDiskType.SelectedIndexChanged
@@ -701,10 +677,88 @@ Public Class BootSectorForm
         End If
 
         _SuppressEvent = True
-        Dim DiskType As BootSectorDiskType = CboDiskType.SelectedItem
-        If DiskType.Type <> FloppyDiskType.FloppyUnknown Then
-            Dim BPB = BuildBPB(DiskType.Type)
+        Dim DiskType = CType(CboDiskType.SelectedItem, BootSectorDiskType).Type
+        If DiskType <> FloppyDiskType.FloppyUnknown Then
+            RemoveDiskTypeUnknown()
+            Dim BPB = BuildBPB(DiskType)
             PopulateBPB(BPB)
+        Else
+            DiskType = GetFloppyDiskType(GetBPB, True)
+        End If
+        UpdateBackColors(DiskType)
+        _SuppressEvent = False
+    End Sub
+
+    Private Sub CboMediaDescriptor_DrawItem(sender As Object, e As DrawItemEventArgs) Handles CboMediaDescriptor.DrawItem
+        Dim CB As ComboBox = sender
+
+        e.DrawBackground()
+
+        If e.Index >= 0 Then
+            Dim Item As MediaDescriptorType = CB.Items(e.Index)
+
+            Dim Brush As Brush
+            Dim tBrush As Brush
+            Dim nBrush As Brush
+
+            If e.State And DrawItemState.Selected Then
+                Brush = SystemBrushes.Highlight
+                tBrush = SystemBrushes.HighlightText
+                nBrush = SystemBrushes.HighlightText
+            Else
+                Brush = SystemBrushes.Window
+                tBrush = SystemBrushes.WindowText
+                nBrush = Brushes.Blue
+            End If
+
+            e.Graphics.FillRectangle(Brush, e.Bounds)
+            Dim r1 As Rectangle = e.Bounds
+
+            Dim Width = TextRenderer.MeasureText(Item.MediaDescriptor, e.Font).Width + 2
+            r1.Width -= Width
+            Dim r2 As Rectangle = e.Bounds
+            r2.X = r2.Width - Width
+            e.Graphics.DrawString(Item.MediaDescriptor, e.Font, nBrush, r2, StringFormat.GenericDefault)
+
+            e.Graphics.DrawString(Item.Description, e.Font, tBrush, r1, StringFormat.GenericDefault)
+        End If
+
+        e.DrawFocusRectangle()
+    End Sub
+
+    Private Sub CboMediaDescriptor_KeyPress(sender As Object, e As KeyPressEventArgs) Handles CboMediaDescriptor.KeyPress
+        e.KeyChar = UCase(e.KeyChar)
+        If Not ValidHexChars.Contains(e.KeyChar) And Not Char.IsControl(e.KeyChar) Then
+            e.Handled = True
+        End If
+    End Sub
+
+    Private Sub CboMediaDescriptor_LostFocus(sender As Object, e As EventArgs) Handles CboMediaDescriptor.LostFocus
+        Dim CB As ComboBox = sender
+        Dim Result As UShort
+
+        If Not UShort.TryParse(CB.Text, NumberStyles.HexNumber, CultureInfo.CurrentCulture, Result) Then
+            ControlRevertValue(CB)
+        Else
+            _SuppressEvent = True
+            If CB.Text.Length = 1 Then
+                CB.Text = "0" & CB.Text
+            End If
+            If CB.Text <> CType(CB.Tag, FormControlData).LastValue Then
+                UpdateTag(CB, True)
+            End If
+            _SuppressEvent = False
+        End If
+    End Sub
+    Private Sub CboMediaDescriptor_SelectedIndexChanged(sender As Object, e As EventArgs) Handles CboMediaDescriptor.SelectedIndexChanged
+        If _SuppressEvent Then
+            Exit Sub
+        End If
+
+        Dim CB As ComboBox = sender
+        _SuppressEvent = True
+        If CB.Text <> CType(CB.Tag, FormControlData).LastValue Then
+            UpdateTag(CB, True)
         End If
         _SuppressEvent = False
     End Sub
@@ -726,11 +780,35 @@ Public Class BootSectorForm
         HexOEMName.SetHex(OEMName)
     End Sub
 
+    Private Sub ComboBox_DrawItem(sender As Object, e As DrawItemEventArgs) Handles CboBytesPerSector.DrawItem, CboSectorsPerCluster.DrawItem
+        Dim CB As ComboBox = sender
+
+        e.DrawBackground()
+
+        If e.Index >= 0 Then
+            Dim Brush As Brush
+            Dim tBrush As Brush
+
+            If e.State And DrawItemState.Selected Then
+                Brush = SystemBrushes.Highlight
+                tBrush = SystemBrushes.HighlightText
+            Else
+                Brush = SystemBrushes.Window
+                tBrush = SystemBrushes.WindowText
+            End If
+
+            e.Graphics.FillRectangle(Brush, e.Bounds)
+            e.Graphics.DrawString(CB.Items(e.Index).ToString, e.Font, tBrush, e.Bounds, StringFormat.GenericDefault)
+        End If
+
+        e.DrawFocusRectangle()
+    End Sub
+
     Private Sub ComboBoxNumeric_LostFocus(sender As Object, e As EventArgs) Handles CboBytesPerSector.LostFocus, CboSectorsPerCluster.LostFocus
         Dim CB As ComboBox = sender
         Dim Result As UInteger
         If Not UInt32.TryParse(CB.Text, Result) Then
-            RevertValue(CB)
+            ControlRevertValue(CB)
         Else
             _SuppressEvent = True
             If CB.MaxLength = 3 And Result > 255 Then
@@ -740,9 +818,8 @@ Public Class BootSectorForm
             Else
                 CB.Text = CUInt(CB.Text)
             End If
-            If CB.Text <> CType(CB.Tag, FieldData).LastValue Then
-                UpdateTag(CB)
-                SetCurrentDiskType()
+            If CB.Text <> CType(CB.Tag, FormControlData).LastValue Then
+                UpdateTag(CB, True)
             End If
             _SuppressEvent = False
         End If
@@ -755,15 +832,14 @@ Public Class BootSectorForm
 
         Dim CB As ComboBox = sender
         _SuppressEvent = True
-        If CB.Text <> CType(CB.Tag, FieldData).LastValue Then
-            UpdateTag(CB)
-            SetCurrentDiskType()
+        If CB.Text <> CType(CB.Tag, FormControlData).LastValue Then
+            UpdateTag(CB, True)
         End If
         _SuppressEvent = False
     End Sub
 
     Private Sub ComboBoxText_LostFocus(sender As Object, e As EventArgs) Handles CboOEMName.LostFocus
-        UpdateTag(CType(sender, ComboBox))
+        UpdateTag(CType(sender, ComboBox), False)
     End Sub
 
     Private Sub HexExtendedBootSignature_TextChanged(sender As Object, e As EventArgs) Handles HexExtendedBootSignature.TextChanged
@@ -773,8 +849,8 @@ Public Class BootSectorForm
 
         _SuppressEvent = True
         Dim HB As HexTextBox = sender
-        If HB.Text <> CType(HB.Tag, FieldData).LastValue Then
-            UpdateTag(HB)
+        If HB.Text <> CType(HB.Tag, FormControlData).LastValue Then
+            UpdateTag(HB, False)
             SetExtendedState()
         End If
         _SuppressEvent = False
@@ -796,23 +872,9 @@ Public Class BootSectorForm
         End If
 
         Dim HB As HexTextBox = sender
-        If HB.Text <> CType(HB.Tag, FieldData).LastValue Then
-            Dim IsInvalid = Not BootSector.CheckJumpInstruction(HB.GetHex, True)
-            UpdateTag(HB, IsInvalid)
+        If HB.Text <> CType(HB.Tag, FormControlData).LastValue Then
+            UpdateTag(HB, False)
         End If
-    End Sub
-
-    Private Sub HexMediaDescriptor_TextChanged(sender As Object, e As EventArgs) Handles HexMediaDescriptor.TextChanged
-        If _SuppressEvent Then
-            Exit Sub
-        End If
-
-        _SuppressEvent = True
-        If HexMediaDescriptor.Text <> CType(HexMediaDescriptor.Tag, FieldData).LastValue Then
-            UpdateTag(HexMediaDescriptor)
-            SetCurrentDiskType()
-        End If
-        _SuppressEvent = False
     End Sub
 
     Private Sub HexOEMName_TextChanged(sender As Object, e As EventArgs) Handles HexOEMName.TextChanged
@@ -821,7 +883,7 @@ Public Class BootSectorForm
         End If
 
         _SuppressEvent = True
-        SetValue(CboOEMName, DiskImage.CodePage437ToUnicode(HexOEMName.GetHex).TrimEnd)
+        ControlSetValue(CboOEMName, DiskImage.CodePage437ToUnicode(HexOEMName.GetHex).TrimEnd, False)
         _SuppressEvent = False
     End Sub
 
@@ -831,8 +893,8 @@ Public Class BootSectorForm
         End If
 
         Dim HB As HexTextBox = sender
-        If HB.Text <> CType(HB.Tag, FieldData).LastValue Then
-            UpdateTag(HB)
+        If HB.Text <> CType(HB.Tag, FormControlData).LastValue Then
+            UpdateTag(HB, False)
         End If
     End Sub
 
@@ -870,7 +932,7 @@ Public Class BootSectorForm
         Dim TB As TextBox = sender
         Dim Result As UInteger
         If Not UInt32.TryParse(TB.Text, Result) Then
-            RevertValue(TB)
+            ControlRevertValue(TB)
         Else
             _SuppressEvent = True
             If TB.MaxLength = 3 And Result > 255 Then
@@ -880,9 +942,8 @@ Public Class BootSectorForm
             Else
                 TB.Text = CUInt(TB.Text)
             End If
-            If TB.Text <> CType(TB.Tag, FieldData).LastValue Then
-                UpdateTag(TB)
-                SetCurrentDiskType()
+            If TB.Text <> CType(TB.Tag, FormControlData).LastValue Then
+                UpdateTag(TB, True)
             End If
             _SuppressEvent = False
         End If
@@ -891,7 +952,7 @@ Public Class BootSectorForm
     Private Sub TextBoxText_LostFocus(sender As Object, e As EventArgs) Handles TxtVolumeLabel.LostFocus, TxtFileSystemType.LostFocus
         Dim TB = CType(sender, TextBox)
         TB.Text = TB.Text.TrimEnd
-        UpdateTag(TB)
+        UpdateTag(TB, False)
     End Sub
 
     Private Sub TxtFileSystemType_TextChanged(sender As Object, e As EventArgs)
@@ -913,6 +974,7 @@ Public Class BootSectorForm
         Dim VolumeLabel() As Byte = DiskImage.UnicodeToCodePage437(VolumeLabelString)
         HexVolumeLabel.SetHex(VolumeLabel)
     End Sub
+
 #End Region
     Private Class BootSectorDiskType
         Public Sub New(Type As FloppyDiskType)
@@ -922,18 +984,7 @@ Public Class BootSectorForm
         Public Property Type As FloppyDiskType
 
         Public Overrides Function ToString() As String
-            Return GetFloppyDiskTypeName(_Type)
+            Return GetFloppyDiskTypeName(_Type, True)
         End Function
-    End Class
-
-    Private Class FieldData
-        Public Sub New(Value As String)
-            _OriginalValue = Value
-            _LastValue = Value
-            _AllowedValues = Nothing
-        End Sub
-        Public Property AllowedValues As String()
-        Public Property LastValue As String
-        Public Property OriginalValue As String
     End Class
 End Class

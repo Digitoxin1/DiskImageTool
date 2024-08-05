@@ -1,20 +1,20 @@
 ﻿Namespace DiskImage
     Public Class FAT12
-        Public Shared ReadOnly ValidMediaDescriptor() As Byte = {&HF0, &HF8, &HF9, &HFA, &HFB, &HFC, &HFD, &HFE, &HFF}
         Public Const FAT_BAD_CLUSTER As UShort = &HFF7
         Public Const FAT_FREE_CLUSTER As UShort = &H0
         Public Const FAT_LAST_CLUSTER_END As UShort = &HFFF
         Public Const FAT_LAST_CLUSTER_START As UShort = &HFF8
         Public Const FAT_RESERVED_END As UShort = &HFF6
         Public Const FAT_RESERVED_START As UShort = &HFF0
+        Public Shared ReadOnly ValidMediaDescriptor() As Byte = {&HF0, &HF8, &HF9, &HFA, &HFB, &HFC, &HFD, &HFE, &HFF}
         Private ReadOnly _BadClusters As List(Of UShort)
-        Private _BPB As BiosParameterBlock
         Private ReadOnly _CircularChains As HashSet(Of UShort)
-        Private ReadOnly _LostClusters As SortedSet(Of UShort)
         Private ReadOnly _FATChains As Dictionary(Of UInteger, FATChain)
         Private ReadOnly _FileAllocation As Dictionary(Of UShort, List(Of UInteger))
         Private ReadOnly _FileBytes As ImageByteArray
         Private ReadOnly _Index As UShort
+        Private ReadOnly _LostClusters As SortedSet(Of UShort)
+        Private _BPB As BiosParameterBlock
         Private _FATTable() As UShort
         Private _FreeClusters As UInteger
         Private _HasMediaDescriptor As Boolean
@@ -149,25 +149,18 @@
             Return FatBytes
         End Function
 
-        Public Shared Function GetFATSectors(FATRegionStart As UInteger, SectorsPerFAT As UShort, Index As UShort) As SectorRange
-            Dim Sectors As SectorRange
-
-            Sectors.Count = SectorsPerFAT
-            Sectors.Start = FATRegionStart + (SectorsPerFAT * Index)
-
-            Return Sectors
-        End Function
-
         Public Function GetAllocatedClusterCount() As Integer
             Return _FileAllocation.Count
         End Function
 
-        Public Function GetFreeSpace(ClusterSize As UInteger) As UInteger
-            Return _FreeClusters * ClusterSize
+        Public Function GetFAT() As Byte()
+            Dim SectorStart = _BPB.FATRegionStart + (_BPB.SectorsPerFAT * _Index)
+
+            Return _FileBytes.GetSectors(SectorStart, _BPB.SectorsPerFAT)
         End Function
 
-        Public Function GetLostClusterCount() As UShort
-            Return _LostClusters.Count
+        Public Function GetFATTableLength() As UShort
+            Return Math.Min(_FATTable.Length - 1, _BPB.NumberOfFATEntries + 1)
         End Function
 
         Public Function GetFreeClusters(WithData As Boolean) As List(Of UShort)
@@ -201,6 +194,19 @@
             End If
 
             Return ClusterChain
+        End Function
+
+        Public Function GetFreeSpace(ClusterSize As UInteger) As UInteger
+            Return _FreeClusters * ClusterSize
+        End Function
+
+        Public Function GetLostClusterCount() As UShort
+            Return _LostClusters.Count
+        End Function
+
+        Public Function GetOffset() As UInteger
+            Dim SectorStart = _BPB.FATRegionStart + (_BPB.SectorsPerFAT * _Index)
+            Return Disk.SectorToBytes(SectorStart)
         End Function
 
         Public Function HasFreeClusters(WithData As Boolean) As Boolean
@@ -313,6 +319,17 @@
             Return Updated
         End Function
 
+        Public Function UpdateMedaDescriptor(Value As Byte) As Boolean
+            If Value <> _MediaDescriptor Then
+                _MediaDescriptor = Value
+                Dim Offset = GetOffset()
+                _FileBytes.SetBytes(Value, Offset)
+                Return True
+            End If
+
+            Return False
+        End Function
+
         Friend Function InitFATChain(Offset As UInteger, ClusterStart As UShort) As FATChain
             Dim FATChain As New FATChain(Offset)
             Dim Cluster As UShort = ClusterStart
@@ -370,17 +387,6 @@
 
             Return FATChain
         End Function
-
-        Private Function GetFAT() As Byte()
-            Dim Sectors = GetFATSectors(_BPB.FATRegionStart, _BPB.SectorsPerFAT, _Index)
-
-            Return _FileBytes.GetSectors(Sectors)
-        End Function
-
-        Public Function GetFATTableLength() As UShort
-            Return Math.Min(_FATTable.Length - 1, _BPB.NumberOfFATEntries + 1)
-        End Function
-
         Private Function IsDataBlockEmpty(Data() As Byte) As Boolean
             Dim EmptyByte As Byte = Data(0)
             If EmptyByte <> &HF6 And EmptyByte <> &H0 Then
@@ -398,8 +404,7 @@
         End Function
 
         Private Sub SetFAT(Data() As Byte)
-            Dim Range = GetFATSectors(_BPB.FATRegionStart, _BPB.SectorsPerFAT, _Index)
-            Dim Offset = Disk.SectorToBytes(Range.Start)
+            Dim Offset = GetOffset()
 
             _FileBytes.SetBytes(Data, Offset)
         End Sub

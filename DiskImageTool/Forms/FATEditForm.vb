@@ -1,17 +1,12 @@
 ﻿Imports System.ComponentModel
+Imports System.Globalization
 Imports DiskImageTool.DiskImage
 
 Public Class FATEditForm
+    Const ValidHexChars = "0123456789ABCDEF"
     Private ReadOnly _Disk As DiskImage.Disk
-    Private ReadOnly _FATTables As FATTables
     Private ReadOnly _FATTable As DataTable
-    Private ReadOnly _ToolTip As ToolTip
-    Private _CurrentFileIndex As UInteger = 0
-    Private _GridSize As Integer
-    Private _GridCells() As GridCellType
-    Private _IgnoreEvents As Boolean = True
-    Private _OffsetLookup As Dictionary(Of UInteger, UInteger)
-    Private _Updated As Boolean = False
+    Private ReadOnly _FATTables As FATTables
     Private ReadOnly _GridCellColors() As Color = {
         Color.White,
         Color.Red,
@@ -20,6 +15,13 @@ Public Class FATEditForm
         Color.Green
     }
 
+    Private ReadOnly _ToolTip As ToolTip
+    Private _CurrentFileIndex As UInteger = 0
+    Private _GridCells() As GridCellType
+    Private _GridSize As Integer
+    Private _IgnoreEvents As Boolean = True
+    Private _OffsetLookup As Dictionary(Of UInteger, UInteger)
+    Private _Updated As Boolean = False
     Private Enum GridCellType
         Free
         Bad
@@ -27,7 +29,6 @@ Public Class FATEditForm
         Allocated
         Highlight
     End Enum
-
 
     Public Sub New(Disk As DiskImage.Disk, Index As UShort)
 
@@ -44,8 +45,8 @@ Public Class FATEditForm
 
         Me.Text = "File Allocation Table " & Index + 1
 
-        Dim SyncFATS = _Disk.DiskType <> FloppyDiskType.FloppyXDF AndAlso Disk.CompareFATTables
-        Dim DisplaySync = _Disk.DiskType <> FloppyDiskType.FloppyXDF AndAlso Not Disk.CompareFATTables
+        Dim SyncFATS = _Disk.DiskType <> FloppyDiskType.FloppyXDF AndAlso Disk.FATTables.FATsMatch
+        Dim DisplaySync = _Disk.DiskType <> FloppyDiskType.FloppyXDF AndAlso Not Disk.FATTables.FATsMatch
 
         ChkSync.Checked = SyncFATS
         ChkSync.Visible = DisplaySync
@@ -65,6 +66,9 @@ Public Class FATEditForm
 
         DataGridViewFAT.DataSource = _FATTable
 
+        PopulateMediaDescriptors()
+        ControlSetValue(CboMediaDescriptor, _FATTables.FAT.MediaDescriptor.ToString("X2"), Array.ConvertAll(FAT12.ValidMediaDescriptor, Function(x) x.ToString("X2")), True)
+
         _IgnoreEvents = False
 
         If DataGridViewFAT.Rows.Count > 0 Then
@@ -80,133 +84,25 @@ Public Class FATEditForm
 
     Private Sub ApplyUpdates()
         Dim SyncFATs = ChkSync.Checked
+        Dim Result As Boolean
 
         For Each Row As DataGridViewRow In DataGridViewFAT.Rows
             Dim Cluster As UShort = Row.Cells("GridCluster").Value
             Dim Value As UShort = Row.Cells("GridValue").Value
-            If _Disk.FATTables.FAT(_FATTables.FatIndex).TableEntry(Cluster) <> Value Then
+            If _Disk.FATTables.FAT(_FATTables.FATIndex).TableEntry(Cluster) <> Value Then
                 _FATTables.UpdateTableEntry(Cluster, Value, SyncFATs)
             End If
         Next
 
-        If _FATTables.UpdateFAT12(SyncFATs) Then
+        Dim MediaDescriptor = _FATTables.FAT.MediaDescriptor
+        If UShort.TryParse(CboMediaDescriptor.Text, NumberStyles.HexNumber, CultureInfo.CurrentCulture, Result) Then
+            MediaDescriptor = Convert.ToByte(CboMediaDescriptor.Text, 16)
+        End If
+
+        Result = _FATTables.UpdateFAT12(SyncFATs, MediaDescriptor)
+
+        If Result Then
             _Updated = True
-        End If
-    End Sub
-
-    Private Sub BtnBad_Click(sender As Object, e As EventArgs) Handles BtnBad.Click
-        SetCurrentCellValue(FAT12.FAT_BAD_CLUSTER)
-    End Sub
-
-    Private Sub BtnFree_Click(sender As Object, e As EventArgs) Handles BtnFree.Click
-        SetCurrentCellValue(FAT12.FAT_FREE_CLUSTER)
-    End Sub
-
-    Private Sub BtnLast_Click(sender As Object, e As EventArgs) Handles BtnLast.Click
-        Dim Button = DirectCast(sender, Button)
-        ContextMenuLast.Show(Button, 0, Button.Height)
-    End Sub
-
-    Private Sub BtnReserved_Click(sender As Object, e As EventArgs) Handles BtnReserved.Click
-        Dim Button = DirectCast(sender, Button)
-        ContextMenuReserved.Show(Button, 0, Button.Height)
-    End Sub
-
-    Private Sub BtnUpdate_Click(sender As Object, e As EventArgs) Handles BtnUpdate.Click
-        ApplyUpdates()
-    End Sub
-
-    Private Sub ContextMenuGrid_ItemClicked(sender As Object, e As ToolStripItemClickedEventArgs) Handles ContextMenuGrid.ItemClicked, ContextMenuLast.ItemClicked, ContextMenuReserved.ItemClicked
-        If e.ClickedItem.Tag IsNot Nothing Then
-            Dim Value As Short = e.ClickedItem.Tag
-            If Value = -1 Then
-                Dim Cluster As UShort = DataGridViewFAT.CurrentRow.Cells("GridCluster").Value
-                HexDisplayDiskImage(Cluster)
-            Else
-                SetCurrentCellValue(Value)
-            End If
-        End If
-    End Sub
-
-    Private Sub ContextMenuGrid_Opening(sender As Object, e As CancelEventArgs) Handles ContextMenuGrid.Opening
-        If DataGridViewFAT.CurrentCellAddress.Y < 0 Then
-            e.Cancel = True
-        Else
-            Dim Cluster As UShort = DataGridViewFAT.CurrentRow.Cells("GridCluster").Value
-            ContextMenuGrid.Items("lblCluster").Text = "Cluster:  " & Cluster
-        End If
-    End Sub
-
-    Private Sub DataGridViewFAT_CellFormatting(sender As Object, e As DataGridViewCellFormattingEventArgs) Handles DataGridViewFAT.CellFormatting
-        If e.RowIndex >= 0 Then
-            If e.ColumnIndex = 2 Then
-                e.CellStyle.ForeColor = GetValueForeColor(e.RowIndex)
-            End If
-        End If
-    End Sub
-
-    Private Sub DataGridViewFAT_CellValidating(sender As Object, e As DataGridViewCellValidatingEventArgs) Handles DataGridViewFAT.CellValidating
-        If e.ColumnIndex = 2 Then
-            Dim i As Integer
-            If Not Integer.TryParse(e.FormattedValue, i) Then
-                e.Cancel = True
-                DataGridViewFAT.CancelEdit()
-            ElseIf i < 0 Or i > 4095 Then
-                e.Cancel = True
-                DataGridViewFAT.CancelEdit()
-            End If
-        End If
-    End Sub
-
-    Private Sub DataGridViewFAT_CellValueChanged(sender As Object, e As DataGridViewCellEventArgs) Handles DataGridViewFAT.CellValueChanged
-        If _IgnoreEvents Then
-            Exit Sub
-        End If
-
-        If e.RowIndex >= 0 Then
-            If e.ColumnIndex = 2 Then
-                SetTypeFromValue(e.RowIndex)
-                UpdateFAT(e.RowIndex)
-            End If
-        End If
-    End Sub
-
-    Private Sub DataGridViewFAT_MouseDown(sender As Object, e As MouseEventArgs) Handles DataGridViewFAT.MouseDown
-        If e.Button = MouseButtons.Right Then
-            Dim htinfo As DataGridView.HitTestInfo = DataGridViewFAT.HitTest(e.X, e.Y)
-            If htinfo.Type = DataGridViewHitTestType.Cell Then
-                Dim Cell = DataGridViewFAT.Item(htinfo.ColumnIndex, htinfo.RowIndex)
-                DataGridViewFAT.CurrentCell = Cell
-            End If
-        End If
-    End Sub
-
-
-    Private Sub DataGridViewFAT_RowEnter(sender As Object, e As DataGridViewCellEventArgs) Handles DataGridViewFAT.RowEnter
-        Dim Enabled As Boolean
-        Dim Fileindex As UInteger
-
-        Enabled = e.RowIndex >= 0
-        SetButtonStatus(Enabled)
-
-        If Enabled Then
-            Fileindex = DataGridViewFAT.Rows(e.RowIndex).Cells("GridFileIndex").Value
-        Else
-            Fileindex = 0
-        End If
-        SetCurrentFileIndex(Fileindex)
-    End Sub
-
-
-    Private Sub DataGridViewFAT_SortCompare(sender As Object, e As DataGridViewSortCompareEventArgs) Handles DataGridViewFAT.SortCompare
-        If e.Column.Index = 4 Then
-            e.SortResult = System.String.Compare(e.CellValue1.ToString, e.CellValue2.ToString)
-            If e.SortResult = 0 Then
-                Dim Value1 As Integer = DataGridViewFAT.Rows(e.RowIndex1).Cells(0).Value
-                Dim Value2 As Integer = DataGridViewFAT.Rows(e.RowIndex2).Cells(0).Value
-                e.SortResult = Value1.CompareTo(Value2)
-            End If
-            e.Handled = True
         End If
     End Sub
 
@@ -283,6 +179,32 @@ Public Class FATEditForm
         End If
 
         Return FileName
+    End Function
+
+    Private Function GetGridCellType(Row As DataRow) As GridCellType
+        Dim Value As UShort = Row.Item("Value")
+        Dim FileIndex As UInteger = Row.Item("FileIndex")
+        'Dim StartingCluster As Boolean = Row.Item("StartingCluster")
+        Dim HasError As Boolean = (Row.Item("Error") <> "")
+
+        If HasError Then
+            Return GridCellType.Bad
+        ElseIf Value = FAT12.FAT_FREE_CLUSTER Then
+            Return GridCellType.Free
+        ElseIf Value = 1 Or (Value >= FAT12.FAT_RESERVED_START And Value <= FAT12.FAT_RESERVED_END) Then
+            Return GridCellType.Reserved
+        Else
+            'Brush = BrushAllocated(FileIndex Mod _ColorArray.Length)
+            If _CurrentFileIndex = FileIndex And FileIndex > 0 Then
+                'If StartingCluster Then
+                'Brush = BrushHighlightStart
+                'Else
+                Return GridCellType.Highlight
+                'End If
+            Else
+                Return GridCellType.Allocated
+            End If
+        End If
     End Function
 
     Private Function GetGridSize(Count As Integer) As Integer
@@ -528,127 +450,6 @@ Public Class FATEditForm
         DataGridViewFAT.Columns.Add(GridViewColumn)
     End Sub
 
-    Private Sub PictureBoxFAT_MouseDown(sender As Object, e As MouseEventArgs) Handles PictureBoxFAT.MouseDown
-        Dim RowIndex = GridGetRowIndexFromIndex(GridGetIndex(e))
-
-        If RowIndex > -1 Then
-            DataGridViewFAT.FirstDisplayedScrollingRowIndex = RowIndex
-            DataGridViewFAT.CurrentCell = DataGridViewFAT.Rows(RowIndex).Cells("GridValue")
-        End If
-    End Sub
-
-    Private Sub PictureBoxFAT_MouseUp(sender As Object, e As MouseEventArgs) Handles PictureBoxFAT.MouseUp
-        If e.Button And MouseButtons.Right Then
-            Dim RowIndex = GridGetRowIndexFromIndex(GridGetIndex(e))
-            If RowIndex > -1 Then
-                ContextMenuGrid.Show(MousePosition)
-            End If
-        End If
-    End Sub
-
-    Private Sub PictureBoxFAT_MouseLeave(sender As Object, e As EventArgs) Handles PictureBoxFAT.MouseLeave
-        SetCurrentFileIndex(GetSelectedFileInddex())
-    End Sub
-
-    Private Sub PictureBoxFAT_MouseMove(sender As Object, e As MouseEventArgs) Handles PictureBoxFAT.MouseMove
-        Dim TooltipText As String = ""
-        Dim FileIndex As UInteger = 0
-        Dim Index = GridGetIndex(e)
-
-        If Index > -1 Then
-            Dim Row = _FATTable.Rows(Index)
-            Dim Cluster As UShort = Row.Item("Cluster")
-            Dim File As String = Row.Item("File")
-            Dim ErrorString As String = Row.Item("Error")
-            FileIndex = Row.Item("FileIndex")
-
-            TooltipText = "Cluster: " & vbTab & Cluster
-            If File <> "" Then
-                TooltipText &= vbCrLf & "File: " & vbTab & File
-            End If
-            If ErrorString <> "" Then
-                TooltipText &= vbCrLf & "Error: " & vbTab & ErrorString
-            End If
-        End If
-
-        If TooltipText <> _ToolTip.GetToolTip(PictureBoxFAT) Then
-            _ToolTip.SetToolTip(PictureBoxFAT, TooltipText)
-        End If
-
-        SetCurrentFileIndex(FileIndex)
-    End Sub
-
-    Private Sub PictureBoxFAT_Paint(sender As Object, e As PaintEventArgs) Handles PictureBoxFAT.Paint
-        e.Graphics.Clear(PictureBoxFAT.BackColor)
-
-        If _FATTable IsNot Nothing Then
-            Dim Width = PictureBoxFAT.Width
-            Dim Size As Integer = _GridSize
-
-            Dim Pen As New Pen(Color.FromArgb(160, 160, 160))
-            Dim Brushes(_GridCellColors.Length - 1) As SolidBrush
-            For Counter = 0 To _GridCellColors.Length - 1
-                Brushes(Counter) = New SolidBrush(_GridCellColors(Counter))
-            Next
-
-            Dim Brush As Brush
-            Dim Left As Integer = 0
-            Dim Top As Integer = 0
-            Dim CellType As GridCellType
-            Dim RowIndex As Integer = 0
-            For Each Row As DataRow In _FATTable.Rows
-                CellType = GetGridCellType(Row)
-                _GridCells(RowIndex) = CellType
-                Brush = Brushes(CellType)
-                e.Graphics.FillRectangle(Brush, Left, Top, Size, Size)
-                e.Graphics.DrawRectangle(Pen, Left, Top, Size, Size)
-                Left += Size
-                If Left + Size > Width Then
-                    Left = 0
-                    Top += Size
-                End If
-                RowIndex += 1
-            Next
-            Pen.Dispose()
-            For Counter = 0 To _GridCellColors.Length - 1
-                Brushes(Counter).Dispose()
-            Next
-        End If
-    End Sub
-
-    Private Sub PictureBoxFAT_Resize(sender As Object, e As EventArgs) Handles PictureBoxFAT.Resize
-        If _FATTables IsNot Nothing Then
-            _GridSize = GetGridSize(_FATTables.FAT.GetFATTableLength)
-            PictureBoxFAT.Refresh()
-        End If
-    End Sub
-
-    Private Function GetGridCellType(Row As DataRow) As GridCellType
-        Dim Value As UShort = Row.Item("Value")
-        Dim FileIndex As UInteger = Row.Item("FileIndex")
-        'Dim StartingCluster As Boolean = Row.Item("StartingCluster")
-        Dim HasError As Boolean = (Row.Item("Error") <> "")
-
-        If HasError Then
-            Return GridCellType.Bad
-        ElseIf Value = FAT12.FAT_FREE_CLUSTER Then
-            Return GridCellType.Free
-        ElseIf Value = 1 Or (Value >= FAT12.FAT_RESERVED_START And Value <= FAT12.FAT_RESERVED_END) Then
-            Return GridCellType.Reserved
-        Else
-            'Brush = BrushAllocated(FileIndex Mod _ColorArray.Length)
-            If _CurrentFileIndex = FileIndex And FileIndex > 0 Then
-                'If StartingCluster Then
-                'Brush = BrushHighlightStart
-                'Else
-                Return GridCellType.Highlight
-                'End If
-            Else
-                Return GridCellType.Allocated
-            End If
-        End If
-    End Function
-
     Private Sub PopulateContextMenu()
         Dim Item As ToolStripMenuItem
         Dim SubItem As ToolStripMenuItem
@@ -690,8 +491,30 @@ Public Class FATEditForm
         Item.Tag = -1
     End Sub
 
+    Private Sub PopulateMediaDescriptors()
+        CboMediaDescriptor.Items.Clear()
+        CboMediaDescriptor.Items.Add(New MediaDescriptorType("FE", "160K"))
+        CboMediaDescriptor.Items.Add(New MediaDescriptorType("FC", "180K"))
+        CboMediaDescriptor.Items.Add(New MediaDescriptorType("FF", "320K"))
+        CboMediaDescriptor.Items.Add(New MediaDescriptorType("FD", "360K"))
+        CboMediaDescriptor.Items.Add(New MediaDescriptorType("F9", "720K"))
+        CboMediaDescriptor.Items.Add(New MediaDescriptorType("F9", "1.2M"))
+        CboMediaDescriptor.Items.Add(New MediaDescriptorType("F0", "1.44M"))
+        CboMediaDescriptor.Items.Add(New MediaDescriptorType("F0", "2.88M"))
+        CboMediaDescriptor.Items.Add(New MediaDescriptorType("F0", "DNF"))
+        CboMediaDescriptor.Items.Add(New MediaDescriptorType("F0", "XDF"))
+    End Sub
+
     Private Sub ProcessFATChains()
         Dim Directory = New RootDirectory(_Disk.Data, _Disk.BPB, _FATTables, _Disk.DirectoryCache, True)
+    End Sub
+
+    Private Sub RefreshFAT()
+        _FATTables.FAT.ProcessFAT12()
+        ProcessFATChains()
+
+        RefreshGrid()
+        PictureBoxFAT.Refresh()
     End Sub
 
     Private Sub RefreshGrid()
@@ -724,6 +547,7 @@ Public Class FATEditForm
 
         _IgnoreEvents = False
     End Sub
+
     Private Sub SetButtonStatus(Enabled As Boolean)
         For Each Control In FlowLayoutPanelTop.Controls.OfType(Of Button)
             Control.Enabled = Enabled
@@ -771,11 +595,295 @@ Public Class FATEditForm
         RefreshFAT()
     End Sub
 
-    Private Sub RefreshFAT()
-        _FATTables.FAT.ProcessFAT12()
-        ProcessFATChains()
+    Private Sub UpdateTag(Control As Control)
+        ControlSetLastValue(Control, Control.Text)
 
-        RefreshGrid()
-        PictureBoxFAT.Refresh()
+        ControlUpdateBackColor(Control)
+        ControlUpdateColor(Control)
     End Sub
+#Region "Events"
+    Private Sub BtnBad_Click(sender As Object, e As EventArgs) Handles BtnBad.Click
+        SetCurrentCellValue(FAT12.FAT_BAD_CLUSTER)
+    End Sub
+
+    Private Sub BtnFree_Click(sender As Object, e As EventArgs) Handles BtnFree.Click
+        SetCurrentCellValue(FAT12.FAT_FREE_CLUSTER)
+    End Sub
+
+    Private Sub BtnLast_Click(sender As Object, e As EventArgs) Handles BtnLast.Click
+        Dim Button = DirectCast(sender, Button)
+        ContextMenuLast.Show(Button, 0, Button.Height)
+    End Sub
+
+    Private Sub BtnReserved_Click(sender As Object, e As EventArgs) Handles BtnReserved.Click
+        Dim Button = DirectCast(sender, Button)
+        ContextMenuReserved.Show(Button, 0, Button.Height)
+    End Sub
+
+    Private Sub BtnUpdate_Click(sender As Object, e As EventArgs) Handles BtnUpdate.Click
+        ApplyUpdates()
+    End Sub
+
+    Private Sub CboMediaDescriptor_DrawItem(sender As Object, e As DrawItemEventArgs) Handles CboMediaDescriptor.DrawItem
+        Dim CB As ComboBox = sender
+
+        e.DrawBackground()
+
+        If e.Index >= 0 Then
+            Dim Item As MediaDescriptorType = CB.Items(e.Index)
+
+            Dim Brush As Brush
+            Dim tBrush As Brush
+            Dim nBrush As Brush
+
+            If e.State And DrawItemState.Selected Then
+                Brush = SystemBrushes.Highlight
+                tBrush = SystemBrushes.HighlightText
+                nBrush = SystemBrushes.HighlightText
+            Else
+                Brush = SystemBrushes.Window
+                tBrush = SystemBrushes.WindowText
+                nBrush = Brushes.Blue
+            End If
+
+            e.Graphics.FillRectangle(Brush, e.Bounds)
+            Dim r1 As Rectangle = e.Bounds
+
+            Dim Width = TextRenderer.MeasureText(Item.MediaDescriptor, e.Font).Width + 2
+            r1.Width -= Width
+            Dim r2 As Rectangle = e.Bounds
+            r2.X = r2.Width - Width
+            e.Graphics.DrawString(Item.MediaDescriptor, e.Font, nBrush, r2, StringFormat.GenericDefault)
+
+            e.Graphics.DrawString(Item.Description, e.Font, tBrush, r1, StringFormat.GenericDefault)
+        End If
+
+        e.DrawFocusRectangle()
+    End Sub
+
+    Private Sub CboMediaDescriptor_KeyPress(sender As Object, e As KeyPressEventArgs) Handles CboMediaDescriptor.KeyPress
+        e.KeyChar = UCase(e.KeyChar)
+        If Not ValidHexChars.Contains(e.KeyChar) And Not Char.IsControl(e.KeyChar) Then
+            e.Handled = True
+        End If
+    End Sub
+
+    Private Sub CboMediaDescriptor_LostFocus(sender As Object, e As EventArgs) Handles CboMediaDescriptor.LostFocus
+        Dim CB As ComboBox = sender
+        Dim Result As UShort
+
+        If Not UShort.TryParse(CB.Text, NumberStyles.HexNumber, CultureInfo.CurrentCulture, Result) Then
+            ControlRevertValue(CB)
+        Else
+            _IgnoreEvents = True
+            If CB.Text.Length = 1 Then
+                CB.Text = "0" & CB.Text
+            End If
+            If CB.Text <> CType(CB.Tag, FormControlData).LastValue Then
+                UpdateTag(CB)
+            End If
+            _IgnoreEvents = False
+        End If
+    End Sub
+    Private Sub CboMediaDescriptor_SelectedIndexChanged(sender As Object, e As EventArgs) Handles CboMediaDescriptor.SelectedIndexChanged
+        If _IgnoreEvents Then
+            Exit Sub
+        End If
+
+        Dim CB As ComboBox = sender
+        _IgnoreEvents = True
+        If CB.Text <> CType(CB.Tag, FormControlData).LastValue Then
+            UpdateTag(CB)
+        End If
+        _IgnoreEvents = False
+    End Sub
+
+    Private Sub ContextMenuGrid_ItemClicked(sender As Object, e As ToolStripItemClickedEventArgs) Handles ContextMenuGrid.ItemClicked, ContextMenuLast.ItemClicked, ContextMenuReserved.ItemClicked
+        If e.ClickedItem.Tag IsNot Nothing Then
+            Dim Value As Short = e.ClickedItem.Tag
+            If Value = -1 Then
+                Dim Cluster As UShort = DataGridViewFAT.CurrentRow.Cells("GridCluster").Value
+                HexDisplayDiskImage(Cluster)
+            Else
+                SetCurrentCellValue(Value)
+            End If
+        End If
+    End Sub
+
+    Private Sub ContextMenuGrid_Opening(sender As Object, e As CancelEventArgs) Handles ContextMenuGrid.Opening
+        If DataGridViewFAT.CurrentCellAddress.Y < 0 Then
+            e.Cancel = True
+        Else
+            Dim Cluster As UShort = DataGridViewFAT.CurrentRow.Cells("GridCluster").Value
+            ContextMenuGrid.Items("lblCluster").Text = "Cluster:  " & Cluster
+        End If
+    End Sub
+
+    Private Sub DataGridViewFAT_CellFormatting(sender As Object, e As DataGridViewCellFormattingEventArgs) Handles DataGridViewFAT.CellFormatting
+        If e.RowIndex >= 0 Then
+            If e.ColumnIndex = 2 Then
+                e.CellStyle.ForeColor = GetValueForeColor(e.RowIndex)
+            End If
+        End If
+    End Sub
+
+    Private Sub DataGridViewFAT_CellValidating(sender As Object, e As DataGridViewCellValidatingEventArgs) Handles DataGridViewFAT.CellValidating
+        If e.ColumnIndex = 2 Then
+            Dim i As Integer
+            If Not Integer.TryParse(e.FormattedValue, i) Then
+                e.Cancel = True
+                DataGridViewFAT.CancelEdit()
+            ElseIf i < 0 Or i > 4095 Then
+                e.Cancel = True
+                DataGridViewFAT.CancelEdit()
+            End If
+        End If
+    End Sub
+
+    Private Sub DataGridViewFAT_CellValueChanged(sender As Object, e As DataGridViewCellEventArgs) Handles DataGridViewFAT.CellValueChanged
+        If _IgnoreEvents Then
+            Exit Sub
+        End If
+
+        If e.RowIndex >= 0 Then
+            If e.ColumnIndex = 2 Then
+                SetTypeFromValue(e.RowIndex)
+                UpdateFAT(e.RowIndex)
+            End If
+        End If
+    End Sub
+
+    Private Sub DataGridViewFAT_MouseDown(sender As Object, e As MouseEventArgs) Handles DataGridViewFAT.MouseDown
+        If e.Button = MouseButtons.Right Then
+            Dim htinfo As DataGridView.HitTestInfo = DataGridViewFAT.HitTest(e.X, e.Y)
+            If htinfo.Type = DataGridViewHitTestType.Cell Then
+                Dim Cell = DataGridViewFAT.Item(htinfo.ColumnIndex, htinfo.RowIndex)
+                DataGridViewFAT.CurrentCell = Cell
+            End If
+        End If
+    End Sub
+
+
+    Private Sub DataGridViewFAT_RowEnter(sender As Object, e As DataGridViewCellEventArgs) Handles DataGridViewFAT.RowEnter
+        Dim Enabled As Boolean
+        Dim Fileindex As UInteger
+
+        Enabled = e.RowIndex >= 0
+        SetButtonStatus(Enabled)
+
+        If Enabled Then
+            Fileindex = DataGridViewFAT.Rows(e.RowIndex).Cells("GridFileIndex").Value
+        Else
+            Fileindex = 0
+        End If
+        SetCurrentFileIndex(Fileindex)
+    End Sub
+
+
+    Private Sub DataGridViewFAT_SortCompare(sender As Object, e As DataGridViewSortCompareEventArgs) Handles DataGridViewFAT.SortCompare
+        If e.Column.Index = 4 Then
+            e.SortResult = System.String.Compare(e.CellValue1.ToString, e.CellValue2.ToString)
+            If e.SortResult = 0 Then
+                Dim Value1 As Integer = DataGridViewFAT.Rows(e.RowIndex1).Cells(0).Value
+                Dim Value2 As Integer = DataGridViewFAT.Rows(e.RowIndex2).Cells(0).Value
+                e.SortResult = Value1.CompareTo(Value2)
+            End If
+            e.Handled = True
+        End If
+    End Sub
+
+    Private Sub PictureBoxFAT_MouseDown(sender As Object, e As MouseEventArgs) Handles PictureBoxFAT.MouseDown
+        Dim RowIndex = GridGetRowIndexFromIndex(GridGetIndex(e))
+
+        If RowIndex > -1 Then
+            DataGridViewFAT.FirstDisplayedScrollingRowIndex = RowIndex
+            DataGridViewFAT.CurrentCell = DataGridViewFAT.Rows(RowIndex).Cells("GridValue")
+        End If
+    End Sub
+
+    Private Sub PictureBoxFAT_MouseLeave(sender As Object, e As EventArgs) Handles PictureBoxFAT.MouseLeave
+        SetCurrentFileIndex(GetSelectedFileInddex())
+    End Sub
+
+    Private Sub PictureBoxFAT_MouseMove(sender As Object, e As MouseEventArgs) Handles PictureBoxFAT.MouseMove
+        Dim TooltipText As String = ""
+        Dim FileIndex As UInteger = 0
+        Dim Index = GridGetIndex(e)
+
+        If Index > -1 Then
+            Dim Row = _FATTable.Rows(Index)
+            Dim Cluster As UShort = Row.Item("Cluster")
+            Dim File As String = Row.Item("File")
+            Dim ErrorString As String = Row.Item("Error")
+            FileIndex = Row.Item("FileIndex")
+
+            TooltipText = "Cluster: " & vbTab & Cluster
+            If File <> "" Then
+                TooltipText &= vbCrLf & "File: " & vbTab & File
+            End If
+            If ErrorString <> "" Then
+                TooltipText &= vbCrLf & "Error: " & vbTab & ErrorString
+            End If
+        End If
+
+        If TooltipText <> _ToolTip.GetToolTip(PictureBoxFAT) Then
+            _ToolTip.SetToolTip(PictureBoxFAT, TooltipText)
+        End If
+
+        SetCurrentFileIndex(FileIndex)
+    End Sub
+
+    Private Sub PictureBoxFAT_MouseUp(sender As Object, e As MouseEventArgs) Handles PictureBoxFAT.MouseUp
+        If e.Button And MouseButtons.Right Then
+            Dim RowIndex = GridGetRowIndexFromIndex(GridGetIndex(e))
+            If RowIndex > -1 Then
+                ContextMenuGrid.Show(MousePosition)
+            End If
+        End If
+    End Sub
+    Private Sub PictureBoxFAT_Paint(sender As Object, e As PaintEventArgs) Handles PictureBoxFAT.Paint
+        e.Graphics.Clear(PictureBoxFAT.BackColor)
+
+        If _FATTable IsNot Nothing Then
+            Dim Width = PictureBoxFAT.Width
+            Dim Size As Integer = _GridSize
+
+            Dim Pen As New Pen(Color.FromArgb(160, 160, 160))
+            Dim Brushes(_GridCellColors.Length - 1) As SolidBrush
+            For Counter = 0 To _GridCellColors.Length - 1
+                Brushes(Counter) = New SolidBrush(_GridCellColors(Counter))
+            Next
+
+            Dim Brush As Brush
+            Dim Left As Integer = 0
+            Dim Top As Integer = 0
+            Dim CellType As GridCellType
+            Dim RowIndex As Integer = 0
+            For Each Row As DataRow In _FATTable.Rows
+                CellType = GetGridCellType(Row)
+                _GridCells(RowIndex) = CellType
+                Brush = Brushes(CellType)
+                e.Graphics.FillRectangle(Brush, Left, Top, Size, Size)
+                e.Graphics.DrawRectangle(Pen, Left, Top, Size, Size)
+                Left += Size
+                If Left + Size > Width Then
+                    Left = 0
+                    Top += Size
+                End If
+                RowIndex += 1
+            Next
+            Pen.Dispose()
+            For Counter = 0 To _GridCellColors.Length - 1
+                Brushes(Counter).Dispose()
+            Next
+        End If
+    End Sub
+
+    Private Sub PictureBoxFAT_Resize(sender As Object, e As EventArgs) Handles PictureBoxFAT.Resize
+        If _FATTables IsNot Nothing Then
+            _GridSize = GetGridSize(_FATTables.FAT.GetFATTableLength)
+            PictureBoxFAT.Refresh()
+        End If
+    End Sub
+#End Region
 End Class

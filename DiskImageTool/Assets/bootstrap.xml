@@ -6,6 +6,10 @@
   <bootstrap crc32="FA8F7D48" jmp="EB3490">
     <oemname namehex="0000000000000000" verified="true"/>
   </bootstrap>
+  <bootstrap crc32="0D53994B" jmp="EB2790">
+    <oemname namehex="0800140000000000" description="PC-DOS 1.10" suggestion="false" verified="true"/>
+    <oemname namehex="0301140000000000" description="PC-DOS 1.10" suggestion="false" verified="true"/>
+  </bootstrap>
   <bootstrap crc32="84DD63C3" jmp="EB4090">
     <oemname name="-SHADOW-" verified="true" />
   </bootstrap>

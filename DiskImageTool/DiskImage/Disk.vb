@@ -106,23 +106,6 @@
             Return (FileBytes.Length > 0 And FileBytes.Length < 4423680)
         End Function
 
-        Public Function CompareFATTables() As Boolean
-            If _BPB.NumberOfFATs < 2 Then
-                Return True
-            End If
-
-            For Counter As UShort = 1 To _BPB.NumberOfFATs - 1
-                Dim FATCopy1 = _FileBytes.GetSectors(FAT12.GetFATSectors(_BPB.FATRegionStart, _BPB.SectorsPerFAT, Counter - 1))
-                Dim FATCopy2 = _FileBytes.GetSectors(FAT12.GetFATSectors(_BPB.FATRegionStart, _BPB.SectorsPerFAT, Counter))
-
-                If Not FATCopy1.CompareTo(FATCopy2) Then
-                    Return False
-                End If
-            Next
-
-            Return True
-        End Function
-
         Public Function FixImageSize() As Boolean
             Dim Result As Boolean = False
 
@@ -273,7 +256,7 @@
             Dim DiskType As FloppyDiskType
 
             If _BPB.IsValid Then
-                DiskType = GetFloppyDiskType(_BPB)
+                DiskType = GetFloppyDiskType(_BPB, False)
             Else
                 DiskType = GetFloppyDiskType(_FATTables.FAT.MediaDescriptor)
                 If DiskType = FloppyDiskType.FloppyUnknown Then

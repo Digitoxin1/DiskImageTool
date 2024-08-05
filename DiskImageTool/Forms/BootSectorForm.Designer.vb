@@ -24,11 +24,12 @@ Partial Class BootSectorForm
     Private Sub InitializeComponent()
         Me.components = New System.ComponentModel.Container()
         Dim FlowLayoutPanel1 As System.Windows.Forms.FlowLayoutPanel
+        Dim resources As System.ComponentModel.ComponentResourceManager = New System.ComponentModel.ComponentResourceManager(GetType(BootSectorForm))
         Dim FlowLayoutPanel3 As System.Windows.Forms.FlowLayoutPanel
         Dim FlowLayoutPanel4 As System.Windows.Forms.FlowLayoutPanel
-        Dim resources As System.ComponentModel.ComponentResourceManager = New System.ComponentModel.ComponentResourceManager(GetType(BootSectorForm))
         Me.LblDiskType = New System.Windows.Forms.Label()
         Me.CboDiskType = New System.Windows.Forms.ComboBox()
+        Me.btnReset = New System.Windows.Forms.Button()
         Me.GroupBoxMain = New System.Windows.Forms.GroupBox()
         Me.TableLayoutPanelMain = New System.Windows.Forms.TableLayoutPanel()
         Me.HexJumpInstruction = New DiskImageTool.HexTextBox()
@@ -50,7 +51,7 @@ Partial Class BootSectorForm
         Me.TxtRootDirectoryEntries = New System.Windows.Forms.TextBox()
         Me.LblSectorCountSmall = New System.Windows.Forms.Label()
         Me.TxtSectorCountSmall = New System.Windows.Forms.TextBox()
-        Me.HexMediaDescriptor = New DiskImageTool.HexTextBox()
+        Me.CboMediaDescriptor = New System.Windows.Forms.ComboBox()
         Me.LblSectorsPerFAT = New System.Windows.Forms.Label()
         Me.LblSectorsPerTrack = New System.Windows.Forms.Label()
         Me.TxtSectorsPerFAT = New System.Windows.Forms.TextBox()
@@ -105,10 +106,11 @@ Partial Class BootSectorForm
         Me.TableLayoutPanelMain.SetColumnSpan(FlowLayoutPanel1, 2)
         FlowLayoutPanel1.Controls.Add(Me.LblDiskType)
         FlowLayoutPanel1.Controls.Add(Me.CboDiskType)
-        FlowLayoutPanel1.Location = New System.Drawing.Point(343, 0)
+        FlowLayoutPanel1.Controls.Add(Me.btnReset)
+        FlowLayoutPanel1.Location = New System.Drawing.Point(264, 0)
         FlowLayoutPanel1.Margin = New System.Windows.Forms.Padding(0)
         FlowLayoutPanel1.Name = "FlowLayoutPanel1"
-        FlowLayoutPanel1.Size = New System.Drawing.Size(147, 27)
+        FlowLayoutPanel1.Size = New System.Drawing.Size(226, 28)
         FlowLayoutPanel1.TabIndex = 2
         '
         'LblDiskType
@@ -127,8 +129,18 @@ Partial Class BootSectorForm
         Me.CboDiskType.FormattingEnabled = True
         Me.CboDiskType.Location = New System.Drawing.Point(64, 3)
         Me.CboDiskType.Name = "CboDiskType"
-        Me.CboDiskType.Size = New System.Drawing.Size(80, 21)
+        Me.CboDiskType.Size = New System.Drawing.Size(130, 21)
         Me.CboDiskType.TabIndex = 1
+        '
+        'btnReset
+        '
+        Me.btnReset.Image = CType(resources.GetObject("btnReset.Image"), System.Drawing.Image)
+        Me.btnReset.Location = New System.Drawing.Point(200, 2)
+        Me.btnReset.Margin = New System.Windows.Forms.Padding(3, 2, 3, 3)
+        Me.btnReset.Name = "btnReset"
+        Me.btnReset.Size = New System.Drawing.Size(23, 23)
+        Me.btnReset.TabIndex = 2
+        Me.btnReset.UseVisualStyleBackColor = True
         '
         'FlowLayoutPanel3
         '
@@ -141,7 +153,7 @@ Partial Class BootSectorForm
         FlowLayoutPanel3.FlowDirection = System.Windows.Forms.FlowDirection.TopDown
         FlowLayoutPanel3.Location = New System.Drawing.Point(21, 12)
         FlowLayoutPanel3.Name = "FlowLayoutPanel3"
-        FlowLayoutPanel3.Size = New System.Drawing.Size(502, 527)
+        FlowLayoutPanel3.Size = New System.Drawing.Size(502, 529)
         FlowLayoutPanel3.TabIndex = 0
         FlowLayoutPanel3.WrapContents = False
         '
@@ -154,7 +166,7 @@ Partial Class BootSectorForm
         Me.GroupBoxMain.Margin = New System.Windows.Forms.Padding(0, 3, 0, 3)
         Me.GroupBoxMain.Name = "GroupBoxMain"
         Me.GroupBoxMain.Padding = New System.Windows.Forms.Padding(3, 3, 3, 0)
-        Me.GroupBoxMain.Size = New System.Drawing.Size(502, 246)
+        Me.GroupBoxMain.Size = New System.Drawing.Size(502, 248)
         Me.GroupBoxMain.TabIndex = 1
         Me.GroupBoxMain.TabStop = False
         Me.GroupBoxMain.Text = "Boot Record"
@@ -168,6 +180,7 @@ Partial Class BootSectorForm
         Me.TableLayoutPanelMain.ColumnStyles.Add(New System.Windows.Forms.ColumnStyle())
         Me.TableLayoutPanelMain.ColumnStyles.Add(New System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 132.0!))
         Me.TableLayoutPanelMain.ColumnStyles.Add(New System.Windows.Forms.ColumnStyle())
+        Me.TableLayoutPanelMain.Controls.Add(Me.CboMediaDescriptor, 1, 5)
         Me.TableLayoutPanelMain.Controls.Add(FlowLayoutPanel1, 2, 0)
         Me.TableLayoutPanelMain.Controls.Add(Me.HexJumpInstruction, 1, 0)
         Me.TableLayoutPanelMain.Controls.Add(Me.LblJumpInstruction, 0, 0)
@@ -188,7 +201,6 @@ Partial Class BootSectorForm
         Me.TableLayoutPanelMain.Controls.Add(Me.TxtRootDirectoryEntries, 1, 4)
         Me.TableLayoutPanelMain.Controls.Add(Me.LblSectorCountSmall, 2, 4)
         Me.TableLayoutPanelMain.Controls.Add(Me.TxtSectorCountSmall, 3, 4)
-        Me.TableLayoutPanelMain.Controls.Add(Me.HexMediaDescriptor, 1, 5)
         Me.TableLayoutPanelMain.Controls.Add(Me.LblSectorsPerFAT, 2, 5)
         Me.TableLayoutPanelMain.Controls.Add(Me.LblSectorsPerTrack, 0, 6)
         Me.TableLayoutPanelMain.Controls.Add(Me.TxtSectorsPerFAT, 3, 5)
@@ -209,7 +221,7 @@ Partial Class BootSectorForm
         Me.TableLayoutPanelMain.RowStyles.Add(New System.Windows.Forms.RowStyle())
         Me.TableLayoutPanelMain.RowStyles.Add(New System.Windows.Forms.RowStyle())
         Me.TableLayoutPanelMain.RowStyles.Add(New System.Windows.Forms.RowStyle())
-        Me.TableLayoutPanelMain.Size = New System.Drawing.Size(490, 211)
+        Me.TableLayoutPanelMain.Size = New System.Drawing.Size(490, 213)
         Me.TableLayoutPanelMain.TabIndex = 0
         '
         'HexJumpInstruction
@@ -235,7 +247,7 @@ Partial Class BootSectorForm
         '
         Me.LblBytesPerSector.Anchor = System.Windows.Forms.AnchorStyles.Left
         Me.LblBytesPerSector.AutoSize = True
-        Me.LblBytesPerSector.Location = New System.Drawing.Point(3, 61)
+        Me.LblBytesPerSector.Location = New System.Drawing.Point(3, 62)
         Me.LblBytesPerSector.Name = "LblBytesPerSector"
         Me.LblBytesPerSector.Size = New System.Drawing.Size(85, 13)
         Me.LblBytesPerSector.TabIndex = 6
@@ -245,7 +257,7 @@ Partial Class BootSectorForm
         '
         Me.LblReservedSectors.Anchor = System.Windows.Forms.AnchorStyles.Left
         Me.LblReservedSectors.AutoSize = True
-        Me.LblReservedSectors.Location = New System.Drawing.Point(3, 87)
+        Me.LblReservedSectors.Location = New System.Drawing.Point(3, 88)
         Me.LblReservedSectors.Name = "LblReservedSectors"
         Me.LblReservedSectors.Size = New System.Drawing.Size(92, 13)
         Me.LblReservedSectors.TabIndex = 10
@@ -255,7 +267,7 @@ Partial Class BootSectorForm
         '
         Me.LblRootDirectoryEntries.Anchor = System.Windows.Forms.AnchorStyles.Left
         Me.LblRootDirectoryEntries.AutoSize = True
-        Me.LblRootDirectoryEntries.Location = New System.Drawing.Point(3, 113)
+        Me.LblRootDirectoryEntries.Location = New System.Drawing.Point(3, 114)
         Me.LblRootDirectoryEntries.Name = "LblRootDirectoryEntries"
         Me.LblRootDirectoryEntries.Size = New System.Drawing.Size(110, 13)
         Me.LblRootDirectoryEntries.TabIndex = 14
@@ -265,7 +277,7 @@ Partial Class BootSectorForm
         '
         Me.LblOEMName.Anchor = System.Windows.Forms.AnchorStyles.Left
         Me.LblOEMName.AutoSize = True
-        Me.LblOEMName.Location = New System.Drawing.Point(3, 34)
+        Me.LblOEMName.Location = New System.Drawing.Point(3, 35)
         Me.LblOEMName.Name = "LblOEMName"
         Me.LblOEMName.Size = New System.Drawing.Size(62, 13)
         Me.LblOEMName.TabIndex = 3
@@ -275,7 +287,7 @@ Partial Class BootSectorForm
         '
         Me.CboOEMName.Anchor = System.Windows.Forms.AnchorStyles.Left
         Me.CboOEMName.FormattingEnabled = True
-        Me.CboOEMName.Location = New System.Drawing.Point(141, 30)
+        Me.CboOEMName.Location = New System.Drawing.Point(141, 31)
         Me.CboOEMName.MaxLength = 8
         Me.CboOEMName.Name = "CboOEMName"
         Me.CboOEMName.Size = New System.Drawing.Size(104, 21)
@@ -285,7 +297,7 @@ Partial Class BootSectorForm
         '
         Me.TableLayoutPanelMain.SetColumnSpan(Me.HexOEMName, 2)
         Me.HexOEMName.Font = New System.Drawing.Font("Courier New", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.HexOEMName.Location = New System.Drawing.Point(251, 30)
+        Me.HexOEMName.Location = New System.Drawing.Point(251, 31)
         Me.HexOEMName.MaskLength = 8
         Me.HexOEMName.Name = "HexOEMName"
         Me.HexOEMName.Size = New System.Drawing.Size(174, 20)
@@ -295,7 +307,7 @@ Partial Class BootSectorForm
         '
         Me.CboBytesPerSector.DrawMode = System.Windows.Forms.DrawMode.OwnerDrawFixed
         Me.CboBytesPerSector.FormattingEnabled = True
-        Me.CboBytesPerSector.Location = New System.Drawing.Point(141, 57)
+        Me.CboBytesPerSector.Location = New System.Drawing.Point(141, 58)
         Me.CboBytesPerSector.MaxLength = 5
         Me.CboBytesPerSector.Name = "CboBytesPerSector"
         Me.CboBytesPerSector.Size = New System.Drawing.Size(104, 21)
@@ -305,7 +317,7 @@ Partial Class BootSectorForm
         '
         Me.LblSectorsPerCluster.Anchor = System.Windows.Forms.AnchorStyles.Left
         Me.LblSectorsPerCluster.AutoSize = True
-        Me.LblSectorsPerCluster.Location = New System.Drawing.Point(251, 61)
+        Me.LblSectorsPerCluster.Location = New System.Drawing.Point(251, 62)
         Me.LblSectorsPerCluster.Name = "LblSectorsPerCluster"
         Me.LblSectorsPerCluster.Size = New System.Drawing.Size(96, 13)
         Me.LblSectorsPerCluster.TabIndex = 8
@@ -315,7 +327,7 @@ Partial Class BootSectorForm
         '
         Me.CboSectorsPerCluster.DrawMode = System.Windows.Forms.DrawMode.OwnerDrawFixed
         Me.CboSectorsPerCluster.FormattingEnabled = True
-        Me.CboSectorsPerCluster.Location = New System.Drawing.Point(383, 57)
+        Me.CboSectorsPerCluster.Location = New System.Drawing.Point(383, 58)
         Me.CboSectorsPerCluster.MaxLength = 3
         Me.CboSectorsPerCluster.Name = "CboSectorsPerCluster"
         Me.CboSectorsPerCluster.Size = New System.Drawing.Size(104, 21)
@@ -325,7 +337,7 @@ Partial Class BootSectorForm
         '
         Me.LblHiddenSectors.Anchor = System.Windows.Forms.AnchorStyles.Left
         Me.LblHiddenSectors.AutoSize = True
-        Me.LblHiddenSectors.Location = New System.Drawing.Point(3, 191)
+        Me.LblHiddenSectors.Location = New System.Drawing.Point(3, 193)
         Me.LblHiddenSectors.Name = "LblHiddenSectors"
         Me.LblHiddenSectors.Size = New System.Drawing.Size(80, 13)
         Me.LblHiddenSectors.TabIndex = 26
@@ -335,7 +347,7 @@ Partial Class BootSectorForm
         '
         Me.TxtMediaDescriptor.Anchor = System.Windows.Forms.AnchorStyles.Left
         Me.TxtMediaDescriptor.AutoSize = True
-        Me.TxtMediaDescriptor.Location = New System.Drawing.Point(3, 139)
+        Me.TxtMediaDescriptor.Location = New System.Drawing.Point(3, 141)
         Me.TxtMediaDescriptor.Name = "TxtMediaDescriptor"
         Me.TxtMediaDescriptor.Size = New System.Drawing.Size(87, 13)
         Me.TxtMediaDescriptor.TabIndex = 18
@@ -343,7 +355,7 @@ Partial Class BootSectorForm
         '
         'TxtReservedSectors
         '
-        Me.TxtReservedSectors.Location = New System.Drawing.Point(141, 84)
+        Me.TxtReservedSectors.Location = New System.Drawing.Point(141, 85)
         Me.TxtReservedSectors.MaxLength = 3
         Me.TxtReservedSectors.Name = "TxtReservedSectors"
         Me.TxtReservedSectors.Size = New System.Drawing.Size(104, 20)
@@ -353,7 +365,7 @@ Partial Class BootSectorForm
         '
         Me.LblNumberOfFATS.Anchor = System.Windows.Forms.AnchorStyles.Left
         Me.LblNumberOfFATS.AutoSize = True
-        Me.LblNumberOfFATS.Location = New System.Drawing.Point(251, 87)
+        Me.LblNumberOfFATS.Location = New System.Drawing.Point(251, 88)
         Me.LblNumberOfFATS.Name = "LblNumberOfFATS"
         Me.LblNumberOfFATS.Size = New System.Drawing.Size(84, 13)
         Me.LblNumberOfFATS.TabIndex = 12
@@ -361,7 +373,7 @@ Partial Class BootSectorForm
         '
         'TxtNumberOfFATs
         '
-        Me.TxtNumberOfFATs.Location = New System.Drawing.Point(383, 84)
+        Me.TxtNumberOfFATs.Location = New System.Drawing.Point(383, 85)
         Me.TxtNumberOfFATs.MaxLength = 3
         Me.TxtNumberOfFATs.Name = "TxtNumberOfFATs"
         Me.TxtNumberOfFATs.Size = New System.Drawing.Size(104, 20)
@@ -369,7 +381,7 @@ Partial Class BootSectorForm
         '
         'TxtRootDirectoryEntries
         '
-        Me.TxtRootDirectoryEntries.Location = New System.Drawing.Point(141, 110)
+        Me.TxtRootDirectoryEntries.Location = New System.Drawing.Point(141, 111)
         Me.TxtRootDirectoryEntries.MaxLength = 5
         Me.TxtRootDirectoryEntries.Name = "TxtRootDirectoryEntries"
         Me.TxtRootDirectoryEntries.Size = New System.Drawing.Size(104, 20)
@@ -379,7 +391,7 @@ Partial Class BootSectorForm
         '
         Me.LblSectorCountSmall.Anchor = System.Windows.Forms.AnchorStyles.Left
         Me.LblSectorCountSmall.AutoSize = True
-        Me.LblSectorCountSmall.Location = New System.Drawing.Point(251, 113)
+        Me.LblSectorCountSmall.Location = New System.Drawing.Point(251, 114)
         Me.LblSectorCountSmall.Name = "LblSectorCountSmall"
         Me.LblSectorCountSmall.Size = New System.Drawing.Size(96, 13)
         Me.LblSectorCountSmall.TabIndex = 16
@@ -387,26 +399,27 @@ Partial Class BootSectorForm
         '
         'TxtSectorCountSmall
         '
-        Me.TxtSectorCountSmall.Location = New System.Drawing.Point(383, 110)
+        Me.TxtSectorCountSmall.Location = New System.Drawing.Point(383, 111)
         Me.TxtSectorCountSmall.MaxLength = 5
         Me.TxtSectorCountSmall.Name = "TxtSectorCountSmall"
         Me.TxtSectorCountSmall.Size = New System.Drawing.Size(104, 20)
         Me.TxtSectorCountSmall.TabIndex = 17
         '
-        'HexMediaDescriptor
+        'CboMediaDescriptor
         '
-        Me.HexMediaDescriptor.Font = New System.Drawing.Font("Courier New", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.HexMediaDescriptor.Location = New System.Drawing.Point(141, 136)
-        Me.HexMediaDescriptor.MaskLength = 1
-        Me.HexMediaDescriptor.Name = "HexMediaDescriptor"
-        Me.HexMediaDescriptor.Size = New System.Drawing.Size(30, 20)
-        Me.HexMediaDescriptor.TabIndex = 19
+        Me.CboMediaDescriptor.DrawMode = System.Windows.Forms.DrawMode.OwnerDrawFixed
+        Me.CboMediaDescriptor.FormattingEnabled = True
+        Me.CboMediaDescriptor.Location = New System.Drawing.Point(141, 137)
+        Me.CboMediaDescriptor.MaxLength = 2
+        Me.CboMediaDescriptor.Name = "CboMediaDescriptor"
+        Me.CboMediaDescriptor.Size = New System.Drawing.Size(104, 21)
+        Me.CboMediaDescriptor.TabIndex = 19
         '
         'LblSectorsPerFAT
         '
         Me.LblSectorsPerFAT.Anchor = System.Windows.Forms.AnchorStyles.Left
         Me.LblSectorsPerFAT.AutoSize = True
-        Me.LblSectorsPerFAT.Location = New System.Drawing.Point(251, 139)
+        Me.LblSectorsPerFAT.Location = New System.Drawing.Point(251, 141)
         Me.LblSectorsPerFAT.Name = "LblSectorsPerFAT"
         Me.LblSectorsPerFAT.Size = New System.Drawing.Size(84, 13)
         Me.LblSectorsPerFAT.TabIndex = 20
@@ -416,7 +429,7 @@ Partial Class BootSectorForm
         '
         Me.LblSectorsPerTrack.Anchor = System.Windows.Forms.AnchorStyles.Left
         Me.LblSectorsPerTrack.AutoSize = True
-        Me.LblSectorsPerTrack.Location = New System.Drawing.Point(3, 165)
+        Me.LblSectorsPerTrack.Location = New System.Drawing.Point(3, 167)
         Me.LblSectorsPerTrack.Name = "LblSectorsPerTrack"
         Me.LblSectorsPerTrack.Size = New System.Drawing.Size(92, 13)
         Me.LblSectorsPerTrack.TabIndex = 22
@@ -424,7 +437,7 @@ Partial Class BootSectorForm
         '
         'TxtSectorsPerFAT
         '
-        Me.TxtSectorsPerFAT.Location = New System.Drawing.Point(383, 136)
+        Me.TxtSectorsPerFAT.Location = New System.Drawing.Point(383, 137)
         Me.TxtSectorsPerFAT.MaxLength = 5
         Me.TxtSectorsPerFAT.Name = "TxtSectorsPerFAT"
         Me.TxtSectorsPerFAT.Size = New System.Drawing.Size(104, 20)
@@ -432,7 +445,7 @@ Partial Class BootSectorForm
         '
         'TxtSectorsPerTrack
         '
-        Me.TxtSectorsPerTrack.Location = New System.Drawing.Point(141, 162)
+        Me.TxtSectorsPerTrack.Location = New System.Drawing.Point(141, 164)
         Me.TxtSectorsPerTrack.MaxLength = 5
         Me.TxtSectorsPerTrack.Name = "TxtSectorsPerTrack"
         Me.TxtSectorsPerTrack.Size = New System.Drawing.Size(104, 20)
@@ -442,7 +455,7 @@ Partial Class BootSectorForm
         '
         Me.LblNumberOfHeads.Anchor = System.Windows.Forms.AnchorStyles.Left
         Me.LblNumberOfHeads.AutoSize = True
-        Me.LblNumberOfHeads.Location = New System.Drawing.Point(251, 165)
+        Me.LblNumberOfHeads.Location = New System.Drawing.Point(251, 167)
         Me.LblNumberOfHeads.Name = "LblNumberOfHeads"
         Me.LblNumberOfHeads.Size = New System.Drawing.Size(90, 13)
         Me.LblNumberOfHeads.TabIndex = 24
@@ -450,7 +463,7 @@ Partial Class BootSectorForm
         '
         'TxtNumberOfHeads
         '
-        Me.TxtNumberOfHeads.Location = New System.Drawing.Point(383, 162)
+        Me.TxtNumberOfHeads.Location = New System.Drawing.Point(383, 164)
         Me.TxtNumberOfHeads.MaxLength = 5
         Me.TxtNumberOfHeads.Name = "TxtNumberOfHeads"
         Me.TxtNumberOfHeads.Size = New System.Drawing.Size(104, 20)
@@ -458,7 +471,7 @@ Partial Class BootSectorForm
         '
         'TxtHiddenSectors
         '
-        Me.TxtHiddenSectors.Location = New System.Drawing.Point(141, 188)
+        Me.TxtHiddenSectors.Location = New System.Drawing.Point(141, 190)
         Me.TxtHiddenSectors.MaxLength = 5
         Me.TxtHiddenSectors.Name = "TxtHiddenSectors"
         Me.TxtHiddenSectors.Size = New System.Drawing.Size(104, 20)
@@ -468,7 +481,7 @@ Partial Class BootSectorForm
         '
         Me.LblBootSectorSignature.Anchor = System.Windows.Forms.AnchorStyles.Left
         Me.LblBootSectorSignature.AutoSize = True
-        Me.LblBootSectorSignature.Location = New System.Drawing.Point(251, 191)
+        Me.LblBootSectorSignature.Location = New System.Drawing.Point(251, 193)
         Me.LblBootSectorSignature.Name = "LblBootSectorSignature"
         Me.LblBootSectorSignature.Size = New System.Drawing.Size(111, 13)
         Me.LblBootSectorSignature.TabIndex = 28
@@ -477,7 +490,7 @@ Partial Class BootSectorForm
         'HexBootSectorSignature
         '
         Me.HexBootSectorSignature.Font = New System.Drawing.Font("Courier New", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.HexBootSectorSignature.Location = New System.Drawing.Point(383, 188)
+        Me.HexBootSectorSignature.Location = New System.Drawing.Point(383, 190)
         Me.HexBootSectorSignature.MaskLength = 2
         Me.HexBootSectorSignature.Name = "HexBootSectorSignature"
         Me.HexBootSectorSignature.Size = New System.Drawing.Size(49, 20)
@@ -488,7 +501,7 @@ Partial Class BootSectorForm
         Me.GroupBoxExtended.AutoSize = True
         Me.GroupBoxExtended.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink
         Me.GroupBoxExtended.Controls.Add(FlowLayoutPanel4)
-        Me.GroupBoxExtended.Location = New System.Drawing.Point(0, 255)
+        Me.GroupBoxExtended.Location = New System.Drawing.Point(0, 257)
         Me.GroupBoxExtended.Margin = New System.Windows.Forms.Padding(0, 3, 0, 3)
         Me.GroupBoxExtended.Name = "GroupBoxExtended"
         Me.GroupBoxExtended.Padding = New System.Windows.Forms.Padding(3, 3, 3, 0)
@@ -707,7 +720,7 @@ Partial Class BootSectorForm
         Me.GroupBoxAdditionalData.AutoSize = True
         Me.GroupBoxAdditionalData.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink
         Me.GroupBoxAdditionalData.Controls.Add(Me.HexBox1)
-        Me.GroupBoxAdditionalData.Location = New System.Drawing.Point(0, 436)
+        Me.GroupBoxAdditionalData.Location = New System.Drawing.Point(0, 438)
         Me.GroupBoxAdditionalData.Margin = New System.Windows.Forms.Padding(0, 3, 0, 3)
         Me.GroupBoxAdditionalData.Name = "GroupBoxAdditionalData"
         Me.GroupBoxAdditionalData.Padding = New System.Windows.Forms.Padding(3, 3, 3, 0)
@@ -743,7 +756,7 @@ Partial Class BootSectorForm
         Me.FlowLayoutPanel2.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink
         Me.FlowLayoutPanel2.Controls.Add(Me.BtnUpdate)
         Me.FlowLayoutPanel2.Controls.Add(Me.BtnCancel)
-        Me.FlowLayoutPanel2.Location = New System.Drawing.Point(155, 498)
+        Me.FlowLayoutPanel2.Location = New System.Drawing.Point(155, 500)
         Me.FlowLayoutPanel2.Margin = New System.Windows.Forms.Padding(3, 3, 3, 0)
         Me.FlowLayoutPanel2.Name = "FlowLayoutPanel2"
         Me.FlowLayoutPanel2.Size = New System.Drawing.Size(192, 29)
@@ -815,7 +828,6 @@ Partial Class BootSectorForm
     Friend WithEvents HexOEMName As HexTextBox
     Friend WithEvents CboOEMName As ComboBox
     Friend WithEvents HexVolumeSerialNumber As HexTextBox
-    Friend WithEvents HexMediaDescriptor As HexTextBox
     Friend WithEvents HexExtendedBootSignature As HexTextBox
     Friend WithEvents HexVolumeLabel As HexTextBox
     Friend WithEvents TxtVolumeLabel As TextBox
@@ -867,4 +879,6 @@ Partial Class BootSectorForm
     Friend WithEvents LblJumpInstruction As Label
     Friend WithEvents LblBootSectorSignature As Label
     Friend WithEvents HexBootSectorSignature As HexTextBox
+    Friend WithEvents btnReset As Button
+    Friend WithEvents CboMediaDescriptor As ComboBox
 End Class

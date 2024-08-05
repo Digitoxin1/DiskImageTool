@@ -2,10 +2,6 @@
 Imports System.IO.Compression
 
 Namespace DiskImage
-    Public Structure SectorRange
-        Dim Start As UInteger
-        Dim Count As UInteger
-    End Structure
     Module Functions
         Public ReadOnly InvalidFileChars() As Byte = {&H22, &H2A, &H2B, &H2C, &H2E, &H2F, &H3A, &H3B, &H3C, &H3D, &H3E, &H3F, &H5B, &H5C, &H5D, &H7C}
 

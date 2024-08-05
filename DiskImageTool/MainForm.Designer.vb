@@ -605,7 +605,7 @@ Partial Class MainForm
         Me.TxtSearch.MaxLength = 255
         Me.TxtSearch.Name = "TxtSearch"
         Me.TxtSearch.Overflow = System.Windows.Forms.ToolStripItemOverflow.Never
-        Me.TxtSearch.Size = New System.Drawing.Size(200, 25)
+        Me.TxtSearch.Size = New System.Drawing.Size(195, 25)
         '
         'ComboOEMName
         '
@@ -635,7 +635,7 @@ Partial Class MainForm
         Me.ComboDiskType.FlatStyle = System.Windows.Forms.FlatStyle.System
         Me.ComboDiskType.Name = "ComboDiskType"
         Me.ComboDiskType.Overflow = System.Windows.Forms.ToolStripItemOverflow.Never
-        Me.ComboDiskType.Size = New System.Drawing.Size(95, 23)
+        Me.ComboDiskType.Size = New System.Drawing.Size(95, 25)
         '
         'ToolStripDiskType
         '
@@ -787,9 +787,11 @@ Partial Class MainForm
         '
         Me.ComboFAT.AutoSize = False
         Me.ComboFAT.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList
+        Me.ComboFAT.DropDownWidth = 25
+        Me.ComboFAT.FlatStyle = System.Windows.Forms.FlatStyle.System
         Me.ComboFAT.Name = "ComboFAT"
         Me.ComboFAT.Overflow = System.Windows.Forms.ToolStripItemOverflow.Never
-        Me.ComboFAT.Size = New System.Drawing.Size(25, 23)
+        Me.ComboFAT.Size = New System.Drawing.Size(25, 25)
         '
         'StatusStrip1
         '

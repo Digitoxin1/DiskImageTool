@@ -3,14 +3,15 @@
 Public Class FATTables
     Private _BPB As BiosParameterBlock
     Private _FAT12() As FAT12
-    Private _FatIndex As UShort
+    Private _FATIndex As UShort
     Private ReadOnly _FileBytes As ImageByteArray
     Private _SyncFATs As Boolean
+    Private _FATsMatch As Boolean
 
-    Sub New(BPB As BiosParameterBlock, FileBytes As ImageByteArray, FatIndex As UShort)
+    Sub New(BPB As BiosParameterBlock, FileBytes As ImageByteArray, FATIndex As UShort)
         _BPB = BPB
         _FileBytes = FileBytes
-        _FatIndex = FatIndex
+        _FATIndex = FATIndex
 
         Dim FATCount = _BPB.NumberOfFATs
         If FATCount = 0 Then
@@ -23,16 +24,23 @@ Public Class FATTables
         For Counter = 0 To FATCount - 1
             _FAT12(Counter) = New FAT12(_FileBytes, _BPB, Counter)
         Next
+        _FATsMatch = CompareFATTables()
         _SyncFATs = True
     End Sub
 
-    Public Property FatIndex As UShort
+    Public Property FATIndex As UShort
         Get
-            Return _FatIndex
+            Return _FATIndex
         End Get
         Set
-            _FatIndex = Value
+            _FATIndex = Value
         End Set
+    End Property
+
+    Public ReadOnly Property FATsMatch As Boolean
+        Get
+            Return _FATsMatch
+        End Get
     End Property
 
 
@@ -45,11 +53,36 @@ Public Class FATTables
         End Set
     End Property
 
+    Private Function CompareFATTables() As Boolean
+        If _BPB.NumberOfFATs < 2 Then
+            Return True
+        End If
+
+        For Counter As UShort = 1 To _BPB.NumberOfFATs - 1
+            Dim FATCopy1 = _FAT12(Counter - 1).GetFAT
+            Dim FATCopy2 = _FAT12(Counter).GetFAT
+
+            If Not FATCopy1.CompareTo(FATCopy2) Then
+                Return False
+            End If
+        Next
+
+        Return True
+    End Function
+
     Public Sub UpdateFAT12()
         UpdateFAT12(_SyncFATs)
     End Sub
 
     Public Function UpdateFAT12(SyncFATs As Boolean) As Boolean
+        Return UpdateFAT12(SyncFATs, False, 0)
+    End Function
+
+    Public Function UpdateFAT12(SyncFATs As Boolean, MediaDescriptor As Byte) As Boolean
+        Return UpdateFAT12(SyncFATs, True, MediaDescriptor)
+    End Function
+
+    Private Function UpdateFAT12(SyncFATs As Boolean, UpdateMediaDescriptor As Boolean, MediaDescriptor As Byte) As Boolean
         Dim Start As UShort
         Dim Count As UShort
         Dim Result As Boolean = False
@@ -58,7 +91,7 @@ Public Class FATTables
             Start = 0
             Count = _FAT12.Length
         Else
-            Start = _FatIndex
+            Start = _FATIndex
             Count = 1
         End If
 
@@ -72,10 +105,19 @@ Public Class FATTables
             If _FAT12(Counter).UpdateFAT12() Then
                 Result = True
             End If
+            If UpdateMediaDescriptor Then
+                If _FAT12(Counter).UpdateMedaDescriptor(MediaDescriptor) Then
+                    Result = True
+                End If
+            End If
         Next
 
         If UseBatchEditMode Then
             _FileBytes.BatchEditMode = False
+        End If
+
+        If Result Then
+            _FATsMatch = CompareFATTables()
         End If
 
         Return Result
@@ -93,7 +135,7 @@ Public Class FATTables
             Start = 0
             Count = _FAT12.Length
         Else
-            Start = _FatIndex
+            Start = _FATIndex
             Count = 1
         End If
 
@@ -103,7 +145,7 @@ Public Class FATTables
     End Sub
 
     Public Function FAT() As FAT12
-        Return _FAT12(_FatIndex)
+        Return _FAT12(_FATIndex)
     End Function
 
     Public Function FAT(Index As UShort) As FAT12
@@ -131,5 +173,6 @@ Public Class FATTables
                 _FAT12(Counter).PopulateFAT12(_BPB)
             End If
         Next
+        _FATsMatch = CompareFATTables()
     End Sub
 End Class
