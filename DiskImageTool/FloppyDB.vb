@@ -71,7 +71,7 @@ Public Class FloppyDB
         End If
 
         If Not _TitleDictionary.ContainsKey(MD5) Then
-            If Not Cracked Then
+            If Not Cracked And Status <> "M" Then
                 If _NewXMLDoc Is Nothing Then
                     _NewXMLDoc = LoadXML("NewFloppyDB.xml")
                 End If
@@ -129,6 +129,7 @@ Public Class FloppyDB
                     If ReleaseStatus <> Status Then
                         diskNode.AppendAttribute("status", Status)
                     End If
+                    diskNode.AppendAttribute("fileName", FileName)
                     releaseNode.AppendChild(diskNode)
                 End If
             End If
