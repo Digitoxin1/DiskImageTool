@@ -843,7 +843,7 @@ Public Class MainForm
 
     Private Shared Function SaveDiskImageToFile(Disk As DiskImage.Disk, FilePath As String) As Boolean
         Try
-            If IO.File.Exists(FilePath) Then
+            If My.Settings.CreateBackups AndAlso IO.File.Exists(FilePath) Then
                 Dim BackupPath As String = FilePath & ".bak"
                 IO.File.Copy(FilePath, BackupPath, True)
             End If
@@ -3759,6 +3759,8 @@ Public Class MainForm
         _LoadedFileNames.Clear()
         _ScanRun = False
 
+        btnCreateBackup.Checked = My.Settings.CreateBackups
+
         RefreshDiskButtons(Nothing, Nothing)
 
         ToolStripFileName.Visible = False
@@ -4050,6 +4052,10 @@ Public Class MainForm
         CompareImages()
     End Sub
 
+    Private Sub btnCreateBackup_Click(sender As Object, e As EventArgs) Handles btnCreateBackup.Click
+        My.Settings.CreateBackups = btnCreateBackup.Checked
+    End Sub
+
     Private Sub BtnDisplayBadSectors_Click(sender As Object, e As EventArgs) Handles BtnDisplayBadSectors.Click
         HexDisplayBadSectors()
     End Sub
@@ -4086,10 +4092,12 @@ Public Class MainForm
         HexDisplayLostClusters()
     End Sub
     Private Sub BtnEditBootSector_Click(sender As Object, e As EventArgs) Handles BtnEditBootSector.Click
+        ContextMenuEdit.Close()
         BootSectorEdit()
     End Sub
 
     Private Sub BtnEditFAT_Click(sender As Object, e As EventArgs) Handles BtnEditFAT.Click
+        ContextMenuEdit.Close()
         If sender.tag IsNot Nothing Then
             If sender.tag = -1 Then
                 FATEdit(0)
@@ -4109,6 +4117,7 @@ Public Class MainForm
     End Sub
 
     Private Sub BtnExportFile_Click(sender As Object, e As EventArgs) Handles BtnExportFile.Click, BtnFileMenuExportFile.Click, ToolStripBtnExportFile.Click
+        ContextMenuEdit.Close()
         FileExport()
     End Sub
 
@@ -4162,6 +4171,7 @@ Public Class MainForm
     End Sub
 
     Private Sub BtnFileProperties_Click(sender As Object, e As EventArgs) Handles BtnFileProperties.Click, BtnFileMenuFileProperties.Click, ToolStripBtnFileProperties.Click
+        ContextMenuEdit.Close()
         FilePropertiesEdit()
     End Sub
 
@@ -4195,6 +4205,7 @@ Public Class MainForm
     End Sub
 
     Private Sub BtnRedo_Click(sender As Object, e As EventArgs) Handles BtnRedo.Click, ToolStripBtnRedo.Click
+        ContextMenuEdit.Close()
         _Disk.Data.Redo()
         DiskImageRefresh()
     End Sub
@@ -4204,6 +4215,7 @@ Public Class MainForm
     End Sub
 
     Private Sub BtnReplaceFile_Click(sender As Object, e As EventArgs) Handles BtnReplaceFile.Click, BtnFileMenuReplaceFile.Click
+        ContextMenuEdit.Close()
         If ListViewFiles.SelectedItems.Count = 1 Then
             FileReplace(ListViewFiles.SelectedItems(0))
         End If
@@ -4218,6 +4230,7 @@ Public Class MainForm
     End Sub
 
     Private Sub BtnRevert_Click(sender As Object, e As EventArgs) Handles BtnRevert.Click
+        ContextMenuEdit.Close()
         RevertChanges()
     End Sub
 
@@ -4246,6 +4259,7 @@ Public Class MainForm
     End Sub
 
     Private Sub BtnUndo_Click(sender As Object, e As EventArgs) Handles BtnUndo.Click, ToolStripBtnUndo.Click
+        ContextMenuEdit.Close()
         _Disk.Data.Undo()
         DiskImageRefresh()
     End Sub
@@ -4372,6 +4386,12 @@ Public Class MainForm
             End If
             CM.Items(0).Text = "&Copy " & Text
         Else
+            e.Cancel = True
+        End If
+    End Sub
+
+    Private Sub ContextMenuEdit_Closing(sender As Object, e As ToolStripDropDownClosingEventArgs) Handles ContextMenuEdit.Closing
+        If e.CloseReason = ToolStripDropDownCloseReason.ItemClicked Then
             e.Cancel = True
         End If
     End Sub
