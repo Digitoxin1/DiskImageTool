@@ -2,6 +2,28 @@
 Imports System.Runtime.InteropServices
 
 Module Utility
+    Public Function CleanFileName(FileName As String) As String
+        Return CleanString(FileName, Path.GetInvalidFileNameChars(), "_")
+    End Function
+
+    Public Function CleanPathName(FileName As String) As String
+        Return CleanString(FileName, Path.GetInvalidPathChars(), "_")
+    End Function
+
+    Private Function CleanString(Value As String, InvalidChars() As Char, ReplaceWith As String) As String
+        Dim NewValue As String = ""
+        For Counter = 0 To Value.Length - 1
+            Dim FileChar = Value.Substring(Counter, 1)
+            If InvalidChars.Contains(FileChar) Then
+                NewValue &= ReplaceWith
+            Else
+                NewValue &= FileChar
+            End If
+        Next
+
+        Return NewValue
+    End Function
+
     Public Function DuplicateHashTable(Table As Hashtable) As Hashtable
         Dim NewTable As New Hashtable
         For Each Key In Table.Keys

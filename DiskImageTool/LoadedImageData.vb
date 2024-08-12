@@ -20,7 +20,7 @@ Public Class ImageDataScanInfo
     Public Property OEMNameFound As Boolean = False
     Public Property OEMNameMatched As Boolean = False
     Public Property OEMNameWin9x As Boolean = False
-    Public Property UnknownDiskType As Boolean = False
+    Public Property CustomDiskFormat As Boolean = False
     Public Property HasReservedBytesSet As Boolean = False
     Public Property IsKnownImage As Boolean = False
     Public Property IsUnknownImage As Boolean = False

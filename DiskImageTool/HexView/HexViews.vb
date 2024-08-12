@@ -13,18 +13,28 @@ Module HexViews
     End Function
 
     Public Function DisplayHexViewForm(HexViewSectorData As HexViewSectorData, SectorNavigator As Boolean, ClusterNavigator As Boolean, SyncBlocks As Boolean) As Boolean
-        Dim frmHexView As New HexViewForm(HexViewSectorData, SectorNavigator, ClusterNavigator, SyncBlocks)
-        frmHexView.ShowDialog()
+        If HexViewSectorData.SectorData.BlockCount > 0 Then
+            Dim frmHexView As New HexViewForm(HexViewSectorData, SectorNavigator, ClusterNavigator, SyncBlocks)
+            frmHexView.ShowDialog()
 
-        Return frmHexView.Modified
+            Return frmHexView.Modified
+        Else
+            MsgBox("No Data Available at this location. Check the image size.", MsgBoxStyle.Exclamation)
+            Return False
+        End If
     End Function
 
     Public Function DisplayHexViewForm(HexViewSectorData As HexViewSectorData, SectorNavigator As Boolean, ClusterNavigator As Boolean, SyncBlocks As Boolean, Cluster As UShort) As Boolean
-        Dim frmHexView As New HexViewForm(HexViewSectorData, SectorNavigator, ClusterNavigator, SyncBlocks)
-        frmHexView.SetStartingCluster(Cluster)
-        frmHexView.ShowDialog()
+        If HexViewSectorData.SectorData.BlockCount > 0 Then
+            Dim frmHexView As New HexViewForm(HexViewSectorData, SectorNavigator, ClusterNavigator, SyncBlocks)
+            frmHexView.SetStartingCluster(Cluster)
+            frmHexView.ShowDialog()
 
-        Return frmHexView.Modified
+            Return frmHexView.Modified
+        Else
+            MsgBox("No Data Available at this location. Check the image size.", MsgBoxStyle.Exclamation)
+            Return False
+        End If
     End Function
 
     Public Function HexViewBadSectors(Disk As Disk) As HexViewSectorData

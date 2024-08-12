@@ -1,8 +1,11 @@
-﻿Imports System.ComponentModel
+﻿Imports System.Collections.ObjectModel
+Imports System.ComponentModel
 Imports System.IO
 Imports System.IO.Compression
 
 Public Class ImageLoadForm
+    Private Const MIN_FILE_SIZE As Long = 163840
+    Private Const MAX_FILE_SIZE As Long = 3000000
     Private ReadOnly _ArchiveFilterExt As List(Of String)
     Private ReadOnly _FileFilterExt As List(Of String)
     Private ReadOnly _Files() As String
@@ -83,15 +86,33 @@ Public Class ImageLoadForm
         Dim Archive = IsZipArchive(FileName)
 
         If Archive IsNot Nothing Then
-            For Each Entry In Archive.Entries.OrderBy(Function(e) e.FullName)
-                If _FileFilterExt.Contains(Path.GetExtension(Entry.Name).ToLower) Then
-                    Dim FilePath = Path.Combine(FileName, Entry.FullName)
-                    LoadedFileAdd(bw, FilePath, FileName, True, Entry.FullName)
-                End If
-            Next
+            Dim Entries As ReadOnlyCollection(Of ZipArchiveEntry) = Nothing
+            Try
+                Entries = Archive.Entries
+            Catch
+                '
+            End Try
+            If Entries IsNot Nothing Then
+                For Each Entry In Entries.OrderBy(Function(e) e.FullName)
+                    If _FileFilterExt.Contains(Path.GetExtension(Entry.Name).ToLower) Then
+                        Dim FilePath = Path.Combine(FileName, Entry.FullName)
+                        If Entry.Length >= MIN_FILE_SIZE And Entry.Length <= MAX_FILE_SIZE Then
+                            LoadedFileAdd(bw, FilePath, FileName, True, Entry.FullName)
+                        End If
+                    End If
+                Next
+            End If
         Else
             If Not _ArchiveFilterExt.Contains(Extension) Then
-                LoadedFileAdd(bw, FileName, FileName, False)
+                Dim Length As Long = 0
+                Try
+                    Length = New FileInfo(FileName).Length
+                Catch
+                    '
+                End Try
+                If Length >= MIN_FILE_SIZE And Length <= MAX_FILE_SIZE Then
+                    LoadedFileAdd(bw, FileName, FileName, False)
+                End If
             End If
         End If
     End Sub

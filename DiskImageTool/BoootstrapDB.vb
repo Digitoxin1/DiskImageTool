@@ -16,6 +16,23 @@ Public Class BoootstrapDB
         If _OEMNameDictionary.ContainsKey(Checksum) Then
             Return _OEMNameDictionary.Item(Checksum)
         Else
+            If BootstrapCode.Length = &H1AD Then
+                Return FindXDFMatch(BootstrapCode)
+            Else
+                Return Nothing
+            End If
+        End If
+    End Function
+
+    Private Function FindXDFMatch(BootstrapCode() As Byte) As BootstrapLookup
+        For Counter = &HE7 To &HEE
+            BootstrapCode(Counter) = 0
+        Next
+        Dim Checksum = Crc32.ComputeChecksum(BootstrapCode)
+
+        If _OEMNameDictionary.ContainsKey(Checksum) Then
+            Return _OEMNameDictionary.Item(Checksum)
+        Else
             Return Nothing
         End If
     End Function

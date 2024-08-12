@@ -732,7 +732,7 @@ Public Class HexViewForm
         InitRegionDescriptions(HighlightedRegions)
         RefreshSelection(True)
         DataInspectorRefresh(True)
-        RefresSelectors()
+        RefreshSelectors()
         DataGridDataInspector.ClearSelection()
 
         ToolStripStatusBytes.Text = Format(_CurrentHexViewData.SectorBlock.Size, "N0") & " bytes"
@@ -1048,6 +1048,10 @@ Public Class HexViewForm
     End Sub
 
     Private Sub ProcessMousewheel(Delta As Integer)
+        If HexBox1.ByteProvider Is Nothing Then
+            Return
+        End If
+
         If Delta < 0 Then
             If HexBox1.EndByte = HexBox1.ByteProvider.Length - 1 Then
                 If CmbGroups.SelectedIndex < CmbGroups.Items.Count - 1 Then
@@ -1203,9 +1207,9 @@ Public Class HexViewForm
 
 
                 _CurrentSector = Sector
-                End If
+            End If
 
-                If _RegionDescriptions.Count = 0 Then
+            If _RegionDescriptions.Count = 0 Then
                 SetDataRow(DataRowEnum.Description, Nothing, True)
             Else
                 Dim RegionStart As HexViewHighlightRegion
@@ -1272,7 +1276,7 @@ Public Class HexViewForm
         ToolStripBtnCommit.Enabled = _Changes.Count > 0
     End Sub
 
-    Private Sub RefresSelectors()
+    Private Sub RefreshSelectors()
         Dim SectorStart As UInteger = 0
         Dim SectorEnd As UInteger = 0
 
@@ -1414,6 +1418,10 @@ Public Class HexViewForm
     End Function
 
     Private Sub SelectCurrentSector()
+        If HexBox1.ByteProvider Is Nothing Then
+            Return
+        End If
+
         Dim OutOfRange As Boolean = HexBox1.SelectionStart >= HexBox1.ByteProvider.Length
         If Not OutOfRange Then
             Dim Offset = Disk.SectorToBytes(_CurrentSector) - HexBox1.LineInfoOffset

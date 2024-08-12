@@ -282,8 +282,10 @@ Public Class BootSectorForm
             HexBox1.Height = LineCount * 13 + 4
 
             If BootSector.HasValidJumpInstruction(False) Then
-                Dim Start = BootStrapStart - DataStart
-                HexBox1.Highlight(Start, DataLength - Start, Color.Green, Color.White)
+                If BootStrapStart >= DataStart Then
+                    Dim Start = BootStrapStart - DataStart
+                    HexBox1.Highlight(Start, DataLength - Start, Color.Green, Color.White)
+                End If
             End If
 
             GroupBoxAdditionalData.Visible = True

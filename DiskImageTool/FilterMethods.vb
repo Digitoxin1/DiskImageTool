@@ -14,7 +14,7 @@
         DirectoryHasBootSector
         FreeClustersWithData
         HasInvalidImage
-        UnknownDiskType
+        CustomDiskFormat
         HasBadSectors
         HasLostClusters
         HasInvalidImageSize
@@ -41,8 +41,8 @@
                 Caption = "Has Last Access Date"
             Case FilterTypes.HasInvalidImage
                 Caption = "Unknown Image Format"
-            Case FilterTypes.UnknownDiskType
-                Caption = "Custom Disk Type"
+            Case FilterTypes.CustomDiskFormat
+                Caption = "Custom Disk Format"
             Case FilterTypes.HasLongFileNames
                 Caption = "Has Long File Names"
             Case FilterTypes.HasInvalidDirectoryEntries
@@ -212,8 +212,8 @@
             End If
         End If
 
-        If CheckFilter(FilterTypes.UnknownDiskType, AppliedFilters) Then
-            If ImageData.ScanInfo.IsValidImage And ImageData.ScanInfo.UnknownDiskType Then
+        If CheckFilter(FilterTypes.CustomDiskFormat, AppliedFilters) Then
+            If ImageData.ScanInfo.IsValidImage And ImageData.ScanInfo.CustomDiskFormat Then
                 Return False
             End If
         End If
