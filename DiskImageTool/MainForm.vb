@@ -107,16 +107,19 @@ Public Class MainForm
     End Sub
 
     Friend Sub ItemScanTitle(Disk As DiskImage.Disk, ImageData As LoadedImageData)
-        Dim NormalizedMD5 As String
+        Dim MD5 = MD5Hash(Disk.Data.Data)
+        Dim NormalizedMD5 As String = ""
+
         Dim TrackList = _TitleDB.BooterLookup(Disk.BootSector.Data)
+        Dim HasBadSectors = Disk.FAT.BadClusters.Count > 0
 
         If TrackList IsNot Nothing Then
             NormalizedMD5 = MD5Hash(GetNormalizedDataByTrackList(Disk, TrackList))
-        Else
+        ElseIf HasBadSectors Then
             NormalizedMD5 = MD5Hash(GetNormalizedDataByBadSectors(Disk))
         End If
         Dim Media = GetFloppyDiskTypeName(Disk.BPB, True)
-        _TitleDB.AddTile(ImageData.FileName, Media, NormalizedMD5)
+        _TitleDB.AddTile(ImageData.FileName, Media, MD5, NormalizedMD5)
     End Sub
 
     Friend Function ItemScanDirectory(Disk As DiskImage.Disk, ImageData As LoadedImageData, Optional UpdateFilters As Boolean = False, Optional Remove As Boolean = False) As DirectoryScanResponse
@@ -134,108 +137,108 @@ Public Class MainForm
         If Not ImageData.Scanned Or Response.HasValidCreated <> ImageData.ScanInfo.HasValidCreated Then
             ImageData.ScanInfo.HasValidCreated = Response.HasValidCreated
             If Response.HasValidCreated Then
-                _FilterCounts(FilterTypes.HasCreated) += 1
+                _FilterCounts(FilterTypes.FileSystem_HasCreationDate) += 1
             ElseIf ImageData.Scanned Then
-                _FilterCounts(FilterTypes.HasCreated) -= 1
+                _FilterCounts(FilterTypes.FileSystem_HasCreationDate) -= 1
             End If
             If UpdateFilters Then
-                FilterUpdate(FilterTypes.HasCreated)
+                FilterUpdate(FilterTypes.FileSystem_HasCreationDate)
             End If
         End If
 
         If Not ImageData.Scanned Or Response.HasValidLastAccessed <> ImageData.ScanInfo.HasValidLastAccessed Then
             ImageData.ScanInfo.HasValidLastAccessed = Response.HasValidLastAccessed
             If Response.HasValidLastAccessed Then
-                _FilterCounts(FilterTypes.HasLastAccessed) += 1
+                _FilterCounts(FilterTypes.FileSystem_HasLastAccessDate) += 1
             ElseIf ImageData.Scanned Then
-                _FilterCounts(FilterTypes.HasLastAccessed) -= 1
+                _FilterCounts(FilterTypes.FileSystem_HasLastAccessDate) -= 1
             End If
             If UpdateFilters Then
-                FilterUpdate(FilterTypes.HasLastAccessed)
+                FilterUpdate(FilterTypes.FileSystem_HasLastAccessDate)
             End If
         End If
 
         If Not ImageData.Scanned Or Response.HasReserved <> ImageData.ScanInfo.HasReservedBytesSet Then
             ImageData.ScanInfo.HasReservedBytesSet = Response.HasReserved
             If Response.HasReserved Then
-                _FilterCounts(FilterTypes.HasReservedBytesSet) += 1
+                _FilterCounts(FilterTypes.FileSystem_HasReservedBytesSet) += 1
             ElseIf ImageData.Scanned Then
-                _FilterCounts(FilterTypes.HasReservedBytesSet) -= 1
+                _FilterCounts(FilterTypes.FileSystem_HasReservedBytesSet) -= 1
             End If
             If UpdateFilters Then
-                FilterUpdate(FilterTypes.HasReservedBytesSet)
+                FilterUpdate(FilterTypes.FileSystem_HasReservedBytesSet)
             End If
         End If
 
         If Not ImageData.Scanned Or Response.HasLFN <> ImageData.ScanInfo.HasLongFileNames Then
             ImageData.ScanInfo.HasLongFileNames = Response.HasLFN
             If Response.HasLFN Then
-                _FilterCounts(FilterTypes.HasLongFileNames) += 1
+                _FilterCounts(FilterTypes.FileSystem_HasLongFileNames) += 1
             ElseIf ImageData.Scanned Then
-                _FilterCounts(FilterTypes.HasLongFileNames) -= 1
+                _FilterCounts(FilterTypes.FileSystem_HasLongFileNames) -= 1
             End If
             If UpdateFilters Then
-                FilterUpdate(FilterTypes.HasLongFileNames)
+                FilterUpdate(FilterTypes.FileSystem_HasLongFileNames)
             End If
         End If
 
         If Not ImageData.Scanned Or Response.HasAdditionalData <> ImageData.ScanInfo.DirectoryHasAdditionalData Then
             ImageData.ScanInfo.DirectoryHasAdditionalData = Response.HasAdditionalData
             If Response.HasAdditionalData Then
-                _FilterCounts(FilterTypes.DirectoryHasAdditionalData) += 1
+                _FilterCounts(FilterTypes.FileSystem_DirectoryHasAdditionalData) += 1
             ElseIf ImageData.Scanned Then
-                _FilterCounts(FilterTypes.DirectoryHasAdditionalData) -= 1
+                _FilterCounts(FilterTypes.FileSystem_DirectoryHasAdditionalData) -= 1
             End If
             If UpdateFilters Then
-                FilterUpdate(FilterTypes.DirectoryHasAdditionalData)
+                FilterUpdate(FilterTypes.FileSystem_DirectoryHasAdditionalData)
             End If
         End If
 
         If Not ImageData.Scanned Or Response.HasBootSector <> ImageData.ScanInfo.DirectoryHasBootSector Then
             ImageData.ScanInfo.DirectoryHasBootSector = Response.HasBootSector
             If Response.HasBootSector Then
-                _FilterCounts(FilterTypes.DirectoryHasBootSector) += 1
+                _FilterCounts(FilterTypes.FileSystem_DirectoryHasBootSector) += 1
             ElseIf ImageData.Scanned Then
-                _FilterCounts(FilterTypes.DirectoryHasBootSector) -= 1
+                _FilterCounts(FilterTypes.FileSystem_DirectoryHasBootSector) -= 1
             End If
             If UpdateFilters Then
-                FilterUpdate(FilterTypes.DirectoryHasBootSector)
+                FilterUpdate(FilterTypes.FileSystem_DirectoryHasBootSector)
             End If
         End If
 
         If Not ImageData.Scanned Or Response.HasInvalidDirectoryEntries <> ImageData.ScanInfo.HasInvalidDirectoryEntries Then
             ImageData.ScanInfo.HasInvalidDirectoryEntries = Response.HasInvalidDirectoryEntries
             If Response.HasInvalidDirectoryEntries Then
-                _FilterCounts(FilterTypes.HasInvalidDirectoryEntries) += 1
+                _FilterCounts(FilterTypes.FileSystem_InvalidDirectoryEntries) += 1
             ElseIf ImageData.Scanned Then
-                _FilterCounts(FilterTypes.HasInvalidDirectoryEntries) -= 1
+                _FilterCounts(FilterTypes.FileSystem_InvalidDirectoryEntries) -= 1
             End If
             If UpdateFilters Then
-                FilterUpdate(FilterTypes.HasInvalidDirectoryEntries)
+                FilterUpdate(FilterTypes.FileSystem_InvalidDirectoryEntries)
             End If
         End If
 
         If Not ImageData.Scanned Or Response.HasFATChainingErrors <> ImageData.ScanInfo.HasFATChainingErrors Then
             ImageData.ScanInfo.HasFATChainingErrors = Response.HasFATChainingErrors
             If Response.HasFATChainingErrors Then
-                _FilterCounts(FilterTypes.HasFATChainingErrors) += 1
+                _FilterCounts(FilterTypes.FATS_ChainingErrors) += 1
             ElseIf ImageData.Scanned Then
-                _FilterCounts(FilterTypes.HasFATChainingErrors) -= 1
+                _FilterCounts(FilterTypes.FATS_ChainingErrors) -= 1
             End If
             If UpdateFilters Then
-                FilterUpdate(FilterTypes.HasFATChainingErrors)
+                FilterUpdate(FilterTypes.FATS_ChainingErrors)
             End If
         End If
 
         If Not ImageData.Scanned Or HasLostClusters <> ImageData.ScanInfo.HasLostClusters Then
             ImageData.ScanInfo.HasLostClusters = HasLostClusters
             If HasLostClusters Then
-                _FilterCounts(FilterTypes.HasLostClusters) += 1
+                _FilterCounts(FilterTypes.FAT_LostClusters) += 1
             ElseIf ImageData.Scanned Then
-                _FilterCounts(FilterTypes.HasLostClusters) -= 1
+                _FilterCounts(FilterTypes.FAT_LostClusters) -= 1
             End If
             If UpdateFilters Then
-                FilterUpdate(FilterTypes.HasLostClusters)
+                FilterUpdate(FilterTypes.FAT_LostClusters)
             End If
         End If
 
@@ -251,6 +254,10 @@ Public Class MainForm
         Dim CustomDiskFormat As Boolean = False
         Dim IsKnownImage As Boolean = False
         Dim IsUnknownImage As Boolean = False
+        Dim IsVerifiedImage As Boolean = False
+        Dim IsUnverifiedImage As Boolean = False
+        Dim NoBPB As Boolean = False
+        Dim CustomBootLoader As Boolean = False
 
         If Not Remove Then
             If IsValidImage Then
@@ -270,27 +277,31 @@ Public Class MainForm
                 End If
                 HasInvalidImageSize = Disk.CheckImageSize <> 0
                 CustomDiskFormat = GetFloppyDiskType(Disk.BPB, False) = FloppyDiskType.FloppyUnknown
+                NoBPB = Not Disk.BootSector.BPB.IsValid
+                CustomBootLoader = Disk.BootSector.BootStrapCode.Length = 0
             End If
 
             If _TitleDB.TitleCount > 0 Then
-                If _TitleDB.TitleExists(MD5Hash(Disk.Data.Data)) Then
-                    IsKnownImage = True
-                Else
+                Dim TitleData = _TitleDB.TitleLookup(MD5Hash(Disk.Data.Data))
+                If TitleData Is Nothing Then
                     Dim TrackList = _TitleDB.BooterLookup(Disk.BootSector.Data)
                     If TrackList IsNot Nothing Then
-                        If _TitleDB.TitleExists(MD5Hash(GetNormalizedDataByTrackList(Disk, TrackList))) Then
-                            IsKnownImage = True
-                        Else
-                            IsUnknownImage = True
-                        End If
-                    ElseIf Disk.FATTables.FAT(0).BadClusters.Count > 0 Then
-                        If _TitleDB.TitleExists(MD5Hash(GetNormalizedDataByBadSectors(Disk))) Then
-                            IsKnownImage = True
-                        Else
-                            IsUnknownImage = True
-                        End If
+                        TitleData = _TitleDB.TitleLookup(MD5Hash(GetNormalizedDataByTrackList(Disk, TrackList)))
+                    End If
+                End If
+                If TitleData Is Nothing Then
+                    If Disk.FATTables.FAT(0).BadClusters.Count > 0 Then
+                        TitleData = _TitleDB.TitleLookup(MD5Hash(GetNormalizedDataByBadSectors(Disk)))
+                    End If
+                End If
+                If TitleData Is Nothing Then
+                    IsUnknownImage = True
+                Else
+                    IsKnownImage = True
+                    If TitleData.GetStatus = FloppyDB.FloppyDBStatus.Verified Then
+                        IsVerifiedImage = True
                     Else
-                        IsUnknownImage = True
+                        IsUnverifiedImage = True
                     End If
                 End If
             End If
@@ -301,37 +312,61 @@ Public Class MainForm
         If Not ImageData.Scanned Or IsValidImage <> ImageData.ScanInfo.IsValidImage Then
             ImageData.ScanInfo.IsValidImage = IsValidImage
             If Not IsValidImage Then
-                _FilterCounts(FilterTypes.HasInvalidImage) += 1
+                _FilterCounts(FilterTypes.Disk_UnknownFormat) += 1
             ElseIf ImageData.Scanned Then
-                _FilterCounts(FilterTypes.HasInvalidImage) -= 1
+                _FilterCounts(FilterTypes.Disk_UnknownFormat) -= 1
             End If
             If UpdateFilters Then
-                FilterUpdate(FilterTypes.HasInvalidImage)
+                FilterUpdate(FilterTypes.Disk_UnknownFormat)
             End If
         End If
 
         If _TitleDB.TitleCount > 0 Then
-            If Not ImageData.Scanned Or IsKnownImage <> ImageData.ScanInfo.IsKnownImage Then
-                ImageData.ScanInfo.IsKnownImage = IsKnownImage
+            If Not ImageData.Scanned Or IsKnownImage <> ImageData.ScanInfo.ImageKnown Then
+                ImageData.ScanInfo.ImageKnown = IsKnownImage
                 If IsKnownImage Then
-                    _FilterCounts(FilterTypes.KnownImage) += 1
+                    _FilterCounts(FilterTypes.Image_InDatabase) += 1
                 ElseIf ImageData.Scanned Then
-                    _FilterCounts(FilterTypes.KnownImage) -= 1
+                    _FilterCounts(FilterTypes.Image_InDatabase) -= 1
                 End If
                 If UpdateFilters Then
-                    FilterUpdate(FilterTypes.KnownImage)
+                    FilterUpdate(FilterTypes.Image_InDatabase)
                 End If
             End If
 
-            If Not ImageData.Scanned Or IsUnknownImage <> ImageData.ScanInfo.IsUnknownImage Then
-                ImageData.ScanInfo.IsUnknownImage = IsUnknownImage
+            If Not ImageData.Scanned Or IsUnknownImage <> ImageData.ScanInfo.ImageUnknown Then
+                ImageData.ScanInfo.ImageUnknown = IsUnknownImage
                 If IsUnknownImage Then
-                    _FilterCounts(FilterTypes.UnknownImage) += 1
+                    _FilterCounts(FilterTypes.Image_NotInDatabase) += 1
                 ElseIf ImageData.Scanned Then
-                    _FilterCounts(FilterTypes.UnknownImage) -= 1
+                    _FilterCounts(FilterTypes.Image_NotInDatabase) -= 1
                 End If
                 If UpdateFilters Then
-                    FilterUpdate(FilterTypes.UnknownImage)
+                    FilterUpdate(FilterTypes.Image_NotInDatabase)
+                End If
+            End If
+
+            If Not ImageData.Scanned Or IsVerifiedImage <> ImageData.ScanInfo.ImageVerified Then
+                ImageData.ScanInfo.ImageVerified = IsVerifiedImage
+                If IsVerifiedImage Then
+                    _FilterCounts(FilterTypes.Image_Verified) += 1
+                ElseIf ImageData.Scanned Then
+                    _FilterCounts(FilterTypes.Image_Verified) -= 1
+                End If
+                If UpdateFilters Then
+                    FilterUpdate(FilterTypes.Image_Verified)
+                End If
+            End If
+
+            If Not ImageData.Scanned Or IsUnverifiedImage <> ImageData.ScanInfo.ImageUnverified Then
+                ImageData.ScanInfo.ImageUnverified = IsUnverifiedImage
+                If IsUnverifiedImage Then
+                    _FilterCounts(FilterTypes.Image_Unverified) += 1
+                ElseIf ImageData.Scanned Then
+                    _FilterCounts(FilterTypes.Image_Unverified) -= 1
+                End If
+                If UpdateFilters Then
+                    FilterUpdate(FilterTypes.Image_Unverified)
                 End If
             End If
         End If
@@ -339,60 +374,84 @@ Public Class MainForm
         If Not ImageData.Scanned Or HasBadSectors <> ImageData.ScanInfo.HasBadSectors Then
             ImageData.ScanInfo.HasBadSectors = HasBadSectors
             If HasBadSectors Then
-                _FilterCounts(FilterTypes.HasBadSectors) += 1
+                _FilterCounts(FilterTypes.FAT_BadSectors) += 1
             ElseIf ImageData.Scanned Then
-                _FilterCounts(FilterTypes.HasBadSectors) -= 1
+                _FilterCounts(FilterTypes.FAT_BadSectors) -= 1
             End If
             If UpdateFilters Then
-                FilterUpdate(FilterTypes.HasBadSectors)
+                FilterUpdate(FilterTypes.FAT_BadSectors)
             End If
         End If
 
         If Not ImageData.Scanned Or HasMismatchedFATs <> ImageData.ScanInfo.HasMismatchedFATs Then
             ImageData.ScanInfo.HasMismatchedFATs = HasMismatchedFATs
             If HasMismatchedFATs Then
-                _FilterCounts(FilterTypes.HasMismatchedFATs) += 1
+                _FilterCounts(FilterTypes.FATS_MismatchedFATs) += 1
             ElseIf ImageData.Scanned Then
-                _FilterCounts(FilterTypes.HasMismatchedFATs) -= 1
+                _FilterCounts(FilterTypes.FATS_MismatchedFATs) -= 1
             End If
             If UpdateFilters Then
-                FilterUpdate(FilterTypes.HasMismatchedFATs)
+                FilterUpdate(FilterTypes.FATS_MismatchedFATs)
             End If
         End If
 
         If Not ImageData.Scanned Or HasMismatchedMediaDescriptor <> ImageData.ScanInfo.HasMismatchedMediaDescriptor Then
             ImageData.ScanInfo.HasMismatchedMediaDescriptor = HasMismatchedMediaDescriptor
             If HasMismatchedMediaDescriptor Then
-                _FilterCounts(FilterTypes.HasMismatchedMediaDescriptor) += 1
+                _FilterCounts(FilterTypes.Disk_MismatchedMediaDescriptor) += 1
             ElseIf ImageData.Scanned Then
-                _FilterCounts(FilterTypes.HasMismatchedMediaDescriptor) -= 1
+                _FilterCounts(FilterTypes.Disk_MismatchedMediaDescriptor) -= 1
             End If
             If UpdateFilters Then
-                FilterUpdate(FilterTypes.HasMismatchedMediaDescriptor)
+                FilterUpdate(FilterTypes.Disk_MismatchedMediaDescriptor)
             End If
         End If
 
         If Not ImageData.Scanned Or HasInvalidImageSize <> ImageData.ScanInfo.HasInvalidImageSize Then
             ImageData.ScanInfo.HasInvalidImageSize = HasInvalidImageSize
             If HasInvalidImageSize Then
-                _FilterCounts(FilterTypes.HasInvalidImageSize) += 1
+                _FilterCounts(FilterTypes.Disk_MismatchedImageSize) += 1
             ElseIf ImageData.Scanned Then
-                _FilterCounts(FilterTypes.HasInvalidImageSize) -= 1
+                _FilterCounts(FilterTypes.Disk_MismatchedImageSize) -= 1
             End If
             If UpdateFilters Then
-                FilterUpdate(FilterTypes.HasInvalidImageSize)
+                FilterUpdate(FilterTypes.Disk_MismatchedImageSize)
             End If
         End If
 
         If Not ImageData.Scanned Or CustomDiskFormat <> ImageData.ScanInfo.CustomDiskFormat Then
             ImageData.ScanInfo.CustomDiskFormat = CustomDiskFormat
             If CustomDiskFormat Then
-                _FilterCounts(FilterTypes.CustomDiskFormat) += 1
+                _FilterCounts(FilterTypes.Disk_CustomFormat) += 1
             ElseIf ImageData.Scanned Then
-                _FilterCounts(FilterTypes.CustomDiskFormat) -= 1
+                _FilterCounts(FilterTypes.Disk_CustomFormat) -= 1
             End If
             If UpdateFilters Then
-                FilterUpdate(FilterTypes.CustomDiskFormat)
+                FilterUpdate(FilterTypes.Disk_CustomFormat)
+            End If
+        End If
+
+        If Not ImageData.Scanned Or NoBPB <> ImageData.ScanInfo.NoBPB Then
+            ImageData.ScanInfo.NoBPB = NoBPB
+            If NoBPB Then
+                _FilterCounts(FilterTypes.Disk_NOBPB) += 1
+            ElseIf ImageData.Scanned Then
+                _FilterCounts(FilterTypes.Disk_NOBPB) -= 1
+            End If
+            If UpdateFilters Then
+                FilterUpdate(FilterTypes.Disk_NOBPB)
+            End If
+        End If
+
+        If Not ImageData.Scanned Or CustomBootLoader <> ImageData.ScanInfo.CustomBootLoader Then
+            ImageData.ScanInfo.CustomBootLoader = CustomBootLoader
+            If CustomBootLoader Then
+                _FilterCounts(FilterTypes.DIsk_CustomBootLoader) += 1
+            ElseIf ImageData.Scanned Then
+                _FilterCounts(FilterTypes.DIsk_CustomBootLoader) -= 1
+            End If
+            If UpdateFilters Then
+                FilterUpdate(FilterTypes.DIsk_CustomBootLoader)
             End If
         End If
     End Sub
@@ -407,12 +466,12 @@ Public Class MainForm
         If Not ImageData.Scanned Or HasFreeClusters <> ImageData.ScanInfo.HasFreeClustersWithData Then
             ImageData.ScanInfo.HasFreeClustersWithData = HasFreeClusters
             If HasFreeClusters Then
-                _FilterCounts(FilterTypes.FreeClustersWithData) += 1
+                _FilterCounts(FilterTypes.Disk_FreeClustersWithData) += 1
             ElseIf ImageData.Scanned Then
-                _FilterCounts(FilterTypes.FreeClustersWithData) -= 1
+                _FilterCounts(FilterTypes.Disk_FreeClustersWithData) -= 1
             End If
             If UpdateFilters Then
-                FilterUpdate(FilterTypes.FreeClustersWithData)
+                FilterUpdate(FilterTypes.Disk_FreeClustersWithData)
             End If
         End If
     End Sub
@@ -434,62 +493,80 @@ Public Class MainForm
     End Sub
 
     Friend Sub ItemScanOEMName(Disk As DiskImage.Disk, ImageData As LoadedImageData, Optional UpdateFilters As Boolean = False, Optional Remove As Boolean = False)
-        Dim OEMNameMatched As Boolean = True
-        Dim OEMNameFound As Boolean = True
-        Dim OEMNameWin9x As Boolean = False
+        Dim DoOEMNameCheck As Boolean = Disk.BootSector.BPB.IsValid
 
-        If Not Remove And Disk.BootSector.BPB.IsValid Then
-            Dim OEMName = Disk.BootSector.OEMName
-            OEMNameWin9x = Disk.BootSector.IsWin9xOEMName
+        Dim OEMNameFound = True
+        Dim OEMNameMatched = True
+        Dim OEMNameVerified = False
+        Dim OEMNameUnverified = False
+        Dim IsWin9x = False
 
-            Dim BootstrapType = _BootStrapDB.FindMatch(Disk.BootSector.BootStrapCode)
-            OEMNameFound = BootstrapType IsNot Nothing
-            If OEMNameFound AndAlso Not OEMNameWin9x AndAlso Not BootstrapType.ExactMatch Then
-                OEMNameMatched = False
-                For Each KnownOEMName In BootstrapType.KnownOEMNames
-                    If KnownOEMName.Name.CompareTo(OEMName) Then
-                        OEMNameMatched = True
-                        Exit For
-                    End If
-                Next
-            Else
-                OEMNameMatched = True
-            End If
+        If Not Remove And DoOEMNameCheck Then
+            Dim OEMNameResponse = _BootStrapDB.CheckOEMName(Disk.BootSector)
+            OEMNameFound = OEMNameResponse.Found Or Not DoOEMNameCheck Or OEMNameResponse.NoBootLoader
+            OEMNameMatched = Not OEMNameResponse.Found Or OEMNameResponse.Matched
+            OEMNameVerified = OEMNameResponse.Matched And OEMNameResponse.Verified
+            OEMNameUnverified = OEMNameResponse.Matched And Not OEMNameResponse.Verified
+            IsWin9x = OEMNameResponse.IsWin9x
         End If
 
-        If Not ImageData.Scanned Or OEMNameWin9x <> ImageData.ScanInfo.OEMNameWin9x Then
-            ImageData.ScanInfo.OEMNameWin9x = OEMNameWin9x
-            If OEMNameWin9x Then
-                _FilterCounts(FilterTypes.Windows9xOEMName) += 1
+        If Not ImageData.Scanned Or IsWin9x <> ImageData.ScanInfo.OEMNameWin9x Then
+            ImageData.ScanInfo.OEMNameWin9x = IsWin9x
+            If IsWin9x Then
+                _FilterCounts(FilterTypes.OEMName_Windows9x) += 1
             ElseIf ImageData.Scanned Then
-                _FilterCounts(FilterTypes.Windows9xOEMName) -= 1
+                _FilterCounts(FilterTypes.OEMName_Windows9x) -= 1
             End If
             If UpdateFilters Then
-                FilterUpdate(FilterTypes.Windows9xOEMName)
+                FilterUpdate(FilterTypes.OEMName_Windows9x)
             End If
         End If
 
         If Not ImageData.Scanned Or OEMNameMatched <> ImageData.ScanInfo.OEMNameMatched Then
             ImageData.ScanInfo.OEMNameMatched = OEMNameMatched
             If Not OEMNameMatched Then
-                _FilterCounts(FilterTypes.MismatchedOEMName) += 1
+                _FilterCounts(FilterTypes.OEMName_Mismatched) += 1
             ElseIf ImageData.Scanned Then
-                _FilterCounts(FilterTypes.MismatchedOEMName) -= 1
+                _FilterCounts(FilterTypes.OEMName_Mismatched) -= 1
             End If
             If UpdateFilters Then
-                FilterUpdate(FilterTypes.MismatchedOEMName)
+                FilterUpdate(FilterTypes.OEMName_Mismatched)
             End If
         End If
 
         If Not ImageData.Scanned Or OEMNameFound <> ImageData.ScanInfo.OEMNameFound Then
             ImageData.ScanInfo.OEMNameFound = OEMNameFound
             If Not OEMNameFound Then
-                _FilterCounts(FilterTypes.UnknownOEMName) += 1
+                _FilterCounts(FilterTypes.OEMName_Unknown) += 1
             ElseIf ImageData.Scanned Then
-                _FilterCounts(FilterTypes.UnknownOEMName) -= 1
+                _FilterCounts(FilterTypes.OEMName_Unknown) -= 1
             End If
             If UpdateFilters Then
-                FilterUpdate(FilterTypes.UnknownOEMName)
+                FilterUpdate(FilterTypes.OEMName_Unknown)
+            End If
+        End If
+
+        If Not ImageData.Scanned Or OEMNameVerified <> ImageData.ScanInfo.OEMNameVerified Then
+            ImageData.ScanInfo.OEMNameVerified = OEMNameVerified
+            If OEMNameVerified Then
+                _FilterCounts(FilterTypes.OEMName_Verified) += 1
+            ElseIf ImageData.Scanned Then
+                _FilterCounts(FilterTypes.OEMName_Verified) -= 1
+            End If
+            If UpdateFilters Then
+                FilterUpdate(FilterTypes.OEMName_Verified)
+            End If
+        End If
+
+        If Not ImageData.Scanned Or OEMNameUnverified <> ImageData.ScanInfo.OEMNameUnverified Then
+            ImageData.ScanInfo.OEMNameUnverified = OEMNameUnverified
+            If OEMNameUnverified Then
+                _FilterCounts(FilterTypes.OEMName_Unverified) += 1
+            ElseIf ImageData.Scanned Then
+                _FilterCounts(FilterTypes.OEMName_Unverified) -= 1
+            End If
+            If UpdateFilters Then
+                FilterUpdate(FilterTypes.OEMName_Unverified)
             End If
         End If
     End Sub
@@ -526,8 +603,8 @@ Public Class MainForm
         If Disk.BootSector.IsWin9xOEMName Then
             Dim BootstrapType = _BootStrapDB.FindMatch(Disk.BootSector.BootStrapCode)
             If BootstrapType IsNot Nothing Then
-                If BootstrapType.KnownOEMNames.Count > 0 Then
-                    Disk.BootSector.OEMName = BootstrapType.KnownOEMNames.Item(0).Name
+                If BootstrapType.OEMNames.Count > 0 Then
+                    Disk.BootSector.OEMName = BootstrapType.OEMNames.Item(0).Name
                     Result = True
                 End If
             End If
@@ -1924,6 +2001,7 @@ Public Class MainForm
         TxtSearch.Text = ""
         BtnClearFilters.Enabled = False
         _FilterOEMName.Clear()
+        _FilterDiskType.Clear()
         ComboOEMName.Visible = False
         ToolStripOEMName.Visible = False
         ComboDiskType.Visible = False
@@ -2490,7 +2568,7 @@ Public Class MainForm
             Dim BootstrapType = _BootStrapDB.FindMatch(Disk.BootSector.BootStrapCode)
 
             If BootstrapType IsNot Nothing Then
-                For Each KnownOEMName In BootstrapType.KnownOEMNames
+                For Each KnownOEMName In BootstrapType.OEMNames
                     If KnownOEMName.Name.CompareTo(OEMName) Or KnownOEMName.Win9xId Then
                         Return True
                         Exit For
@@ -2862,67 +2940,36 @@ Public Class MainForm
     Private Sub PopulateSummaryPanel(Disk As Disk, MD5 As String)
         Dim Value As String
         Dim ForeColor As Color
-        Dim CopyProtection As String = ""
-        Dim TitleFound As Boolean = False
 
         With ListViewSummary
             .BeginUpdate()
             .Items.Clear()
             .Groups.Clear()
 
-            If Disk IsNot Nothing AndAlso _TitleDB.TitleCount > 0 Then
-                Dim TitleData = _TitleDB.TitleLookup(MD5)
-                If TitleData Is Nothing Then
-                    Dim TrackList = _TitleDB.BooterLookup(Disk.BootSector.Data)
-                    If TrackList IsNot Nothing Then
-                        Dim NormalizedData = GetNormalizedDataByTrackList(Disk, TrackList)
-                        TitleData = _TitleDB.TitleLookup(MD5Hash(NormalizedData))
-                    ElseIf Disk.FATtables.FAT(0).BadClusters.Count > 0 Then
-                        Dim NormalizedData = GetNormalizedDataByBadSectors(Disk)
-                        TitleData = _TitleDB.TitleLookup(MD5Hash(NormalizedData))
-                    End If
-                End If
-                If TitleData IsNot Nothing Then
-                    TitleFound = True
-                    CopyProtection = TitleData.GetCopyProtection
-                    PopulateTitleGroup(TitleData)
-                End If
-            End If
-
-            Dim DiskGroup = .Groups.Add("Disk", "Disk")
-
             If Disk IsNot Nothing Then
-                Dim BootStrapStart As UShort = 0
-                Dim BootstrapType As BootstrapLookup = Nothing
-                Dim KnownOEMNameMatch As KnownOEMName = Nothing
-                Dim OEMName() As Byte = Nothing
+                Dim CopyProtection As String = ""
+                Dim TitleFound As Boolean = False
 
-                If Disk.IsValidImage Then
-                    Dim OEMNameWin9x = Disk.BootSector.IsWin9xOEMName
-                    OEMName = Disk.BootSector.OEMName
-
-                    BootStrapStart = Disk.BootSector.GetBootStrapOffset
-                    BootstrapType = _BootStrapDB.FindMatch(Disk.BootSector.BootStrapCode)
-
-                    If BootstrapType IsNot Nothing Then
-                        Dim Win9xOEMName As KnownOEMName = Nothing
-                        For Each KnownOEMName In BootstrapType.KnownOEMNames
-                            If OEMNameWin9x And KnownOEMName.Win9xId Then
-                                Win9xOEMName = KnownOEMName
-                            End If
-                            If KnownOEMName.Name.CompareTo(OEMName) Then
-                                KnownOEMNameMatch = KnownOEMName
-                                Exit For
-                            End If
-                        Next
-                        If KnownOEMNameMatch Is Nothing And Win9xOEMName IsNot Nothing Then
-                            KnownOEMNameMatch = Win9xOEMName
-                        End If
-                        If KnownOEMNameMatch Is Nothing And BootstrapType.ExactMatch Then
-                            BootstrapType = Nothing
+                If _TitleDB.TitleCount > 0 Then
+                    Dim TitleData = _TitleDB.TitleLookup(MD5)
+                    If TitleData Is Nothing Then
+                        Dim TrackList = _TitleDB.BooterLookup(Disk.BootSector.Data)
+                        If TrackList IsNot Nothing Then
+                            Dim NormalizedData = GetNormalizedDataByTrackList(Disk, TrackList)
+                            TitleData = _TitleDB.TitleLookup(MD5Hash(NormalizedData))
+                        ElseIf Disk.FATTables.FAT(0).BadClusters.Count > 0 Then
+                            Dim NormalizedData = GetNormalizedDataByBadSectors(Disk)
+                            TitleData = _TitleDB.TitleLookup(MD5Hash(NormalizedData))
                         End If
                     End If
+                    If TitleData IsNot Nothing Then
+                        TitleFound = True
+                        CopyProtection = TitleData.GetCopyProtection
+                        PopulateTitleGroup(TitleData)
+                    End If
                 End If
+
+                Dim DiskGroup = .Groups.Add("Disk", "Disk")
 
                 If Disk.IsValidImage AndAlso Disk.CheckImageSize <> 0 Then
                     ForeColor = Color.Red
@@ -2946,55 +2993,49 @@ Public Class MainForm
                     End If
                 End If
 
-                'Dim BroderbundCopyright = ""
                 If Disk.IsValidImage Then
                     Dim BadSectors = GetBadSectors(Disk.BPB, Disk.FAT.BadClusters)
                     If CopyProtection.Length = 0 Then
                         CopyProtection = GetCopyProtection(Disk, BadSectors)
                     End If
-
-                    'If Not TitleFound Then
-                    '    BroderbundCopyright = GetBroderbundCopyright(Disk, BadSectors)
-                    'End If
                 End If
 
                 If CopyProtection.Length > 0 Then
                     .AddItem(DiskGroup, "Copy Protection", CopyProtection)
                 End If
 
-                'If BroderbundCopyright.Length > 0 Then
-                '    .AddItem(DiskGroup, "Broderbund Copyright", Trim(BroderbundCopyright))
-                'End If
-
                 If Not Disk.IsValidImage Then
                     .AddItem(DiskGroup, "File System", "Unknown", Color.Red)
-                ElseIf BootstrapType Is Nothing And Not Disk.BootSector.BPB.IsValid Then
-                    .AddItem(DiskGroup, "Boot Record", "No BPB", Color.Red)
-                    If Not Disk.FATTables.FATsMatch Then
-                        .AddItem(DiskGroup, "FAT", "Mismatched", Color.Red)
-                    End If
-                End If
+                Else
+                    Dim OEMNameResponse = _BootStrapDB.CheckOEMName(Disk.BootSector)
 
-                If Disk.IsValidImage() Then
-                    If Disk.BootSector.BPB.IsValid Or BootstrapType IsNot Nothing Then
+                    If OEMNameResponse.NoBootLoader Then
+                        .AddItem(DiskGroup, "Bootstrap", "Custom Boot Loader", Color.Red)
+                    ElseIf Not Disk.BootSector.BPB.IsValid Then
+                        .AddItem(DiskGroup, "Boot Record", "No BPB", Color.Red)
+                    End If
+
+                    If Not Disk.BootSector.BPB.IsValid Then
+                        If Not Disk.FATTables.FATsMatch Then
+                            .AddItem(DiskGroup, "FAT", "Mismatched", Color.Red)
+                        End If
+                    End If
+
+                    If Disk.BootSector.BPB.IsValid Then
                         Dim DiskTypeBySize = GetFloppyDiskType(Disk.Data.Length)
                         Dim BPBBySize = BuildBPB(DiskTypeBySize)
                         Dim DoBPBCompare = Disk.DiskType = FloppyDiskType.FloppyUnknown And DiskTypeBySize <> FloppyDiskType.FloppyUnknown
 
                         Dim BootRecordGroup = .Groups.Add("BootRecord", "Boot Record")
 
-                        If BootstrapType IsNot Nothing Then
-                            If KnownOEMNameMatch Is Nothing Then
-                                ForeColor = Color.Red
-                            Else
-                                If KnownOEMNameMatch.Verified Then
-                                    ForeColor = Color.Green
-                                Else
-                                    ForeColor = Color.Blue
-                                End If
-                            End If
-                        Else
+                        If Not OEMNameResponse.Found Then
                             ForeColor = SystemColors.WindowText
+                        ElseIf Not OEMNameResponse.Matched Then
+                            ForeColor = Color.Red
+                        ElseIf OEMNameResponse.Verified Then
+                            ForeColor = Color.Green
+                        Else
+                            ForeColor = Color.Blue
                         End If
 
                         .AddItem(BootRecordGroup, BootSectorDescription(BootSectorOffsets.OEMName), Disk.BootSector.GetOEMNameString.TrimEnd(NULL_CHAR), ForeColor)
@@ -3033,7 +3074,7 @@ Public Class MainForm
                             Value = "1 + Compatibility Image"
                         Else
                             Value = Disk.BootSector.BPB.NumberOfFATs
-                            If Disk.IsValidImage AndAlso Not Disk.FATTables.FATsMatch Then
+                            If Not Disk.FATTables.FATsMatch Then
                                 Value &= " (Mismatched)"
                                 ForeColor = Color.Red
                             End If
@@ -3114,6 +3155,8 @@ Public Class MainForm
                         End If
                         'End If
 
+                        Dim BootStrapStart = Disk.BootSector.GetBootStrapOffset
+
                         If BootStrapStart >= BootSectorOffsets.BootStrapCode Then
                             If Disk.BootSector.DriveNumber > 0 Then
                                 .AddItem(BootRecordGroup, BootSectorDescription(BootSectorOffsets.DriveNumber), Disk.BootSector.DriveNumber)
@@ -3142,9 +3185,7 @@ Public Class MainForm
                         .AddItem(BootRecordGroup, BootSectorDescription(BootSectorOffsets.JmpBoot), BitConverter.ToString(Disk.BootSector.JmpBoot), ForeColor)
 #End If
                     End If
-                End If
 
-                If Disk.IsValidImage Then
                     Dim FileSystemGroup = .Groups.Add("FileSystem", "File System")
 
                     If _Disk.FAT.HasMediaDescriptor Then
@@ -3217,43 +3258,55 @@ Public Class MainForm
                         .AddItem(BootStrapGroup, "Bootstrap CRC32", BootStrapCRC32.ToString("X8"))
                     End If
 
-                    If BootstrapType IsNot Nothing Then
-                        If BootstrapType.Language.Length > 0 Then
-                            .AddItem(BootStrapGroup, "Language", BootstrapType.Language)
+                    If OEMNameResponse.Found Then
+                        If OEMNameResponse.Data.Language.Length > 0 Then
+                            .AddItem(BootStrapGroup, "Language", OEMNameResponse.Data.Language)
                         End If
 
-                        If KnownOEMNameMatch Is Nothing And BootstrapType.KnownOEMNames.Count = 1 Then
-                            KnownOEMNameMatch = BootstrapType.KnownOEMNames(0)
+                        Dim OEMName = OEMNameResponse.MatchedOEMName
+
+                        If OEMName Is Nothing And OEMNameResponse.Data.OEMNames.Count = 1 Then
+                            OEMName = OEMNameResponse.Data.OEMNames(0)
                         End If
 
-                        If KnownOEMNameMatch IsNot Nothing Then
-                            If KnownOEMNameMatch.Company <> "" Then
-                                .AddItem(BootStrapGroup, "Company", KnownOEMNameMatch.Company)
+                        If OEMName IsNot Nothing Then
+                            If OEMName.Company <> "" Then
+                                .AddItem(BootStrapGroup, "Company", OEMName.Company)
                             End If
-                            If KnownOEMNameMatch.Description <> "" Then
-                                .AddItem(BootStrapGroup, "Description", KnownOEMNameMatch.Description)
+                            If OEMName.Description <> "" Then
+                                .AddItem(BootStrapGroup, "Description", OEMName.Description)
                             End If
-                            If KnownOEMNameMatch.Note <> "" Then
-                                .AddItem(BootStrapGroup, "Note", KnownOEMNameMatch.Note, Color.Blue)
+                            If OEMName.Note <> "" Then
+                                .AddItem(BootStrapGroup, "Note", OEMName.Note, Color.Blue)
                             End If
                         End If
 
-                        If Not BootstrapType.ExactMatch Then
-                            For Each KnownOEMName In BootstrapType.KnownOEMNames
-                                If KnownOEMName.Name.Length > 0 AndAlso KnownOEMName.Suggestion AndAlso Not KnownOEMName.Name.CompareTo(OEMName) Then
-                                    If KnownOEMName.Verified Then
+                        If Not OEMNameResponse.Data.ExactMatch Then
+                            For Each OEMName In OEMNameResponse.Data.OEMNames
+                                If OEMName.Name.Length > 0 AndAlso OEMName.Suggestion AndAlso OEMName IsNot OEMNameResponse.MatchedOEMName Then
+                                    If OEMName.Verified Then
                                         ForeColor = Color.Green
                                     Else
                                         ForeColor = SystemColors.WindowText
                                     End If
-                                    .AddItem(BootStrapGroup, "Alternative OEM Name", KnownOEMName.GetNameAsString, ForeColor)
+                                    .AddItem(BootStrapGroup, "Alternative OEM Name", OEMName.GetNameAsString, ForeColor)
                                 End If
                             Next
                         End If
                     End If
                 End If
+                .HideSelection = False
+                .TabStop = True
+                btnRetry.Visible = False
             Else
-                .AddItem(DiskGroup, "Error", "Error Loading File", Color.Red)
+                Dim DiskGroup = .Groups.Add("Disk", "Disk")
+                Dim Item = New ListViewItem("  Error Loading File", DiskGroup) With {
+                    .ForeColor = Color.Red
+                }
+                .Items.Add(Item)
+                .HideSelection = True
+                .TabStop = False
+                btnRetry.Visible = True
             End If
 
             .EndUpdate()
@@ -3774,6 +3827,7 @@ Public Class MainForm
 
         BtnSaveAll.Enabled = False
         ToolStripBtnSaveAll.Enabled = BtnSaveAll.Enabled
+        btnRetry.Visible = False
 
         ListViewSummary.Items.Clear()
         ListViewHashes.Items.Clear()
@@ -4232,6 +4286,10 @@ Public Class MainForm
         BootSectorRestore()
     End Sub
 
+    Private Sub BtnRetry_Click(sender As Object, e As EventArgs) Handles btnRetry.Click
+        ReloadCurrentImage(False)
+    End Sub
+
     Private Sub BtnRevert_Click(sender As Object, e As EventArgs) Handles BtnRevert.Click
         ContextMenuEdit.Close()
         RevertChanges()
@@ -4381,13 +4439,18 @@ Public Class MainForm
 
         If LV IsNot Nothing AndAlso LV.FocusedItem IsNot Nothing Then
             Dim Item = LV.FocusedItem
-            Dim Text As String
-            If Item.Tag Is Nothing Then
-                Text = Item.Text
+
+            If Item.SubItems.Count > 1 Then
+                Dim Text As String
+                If Item.Tag Is Nothing Then
+                    Text = Item.Text
+                Else
+                    Text = Item.Tag
+                End If
+                CM.Items(0).Text = "&Copy " & Text
             Else
-                Text = Item.Tag
+                e.Cancel = True
             End If
-            CM.Items(0).Text = "&Copy " & Text
         Else
             e.Cancel = True
         End If
@@ -4579,7 +4642,7 @@ Public Class MainForm
     End Sub
 
     Private Sub ListViewSummary_DrawSubItem(sender As Object, e As DrawListViewSubItemEventArgs) Handles ListViewSummary.DrawSubItem
-        If e.Item.Group.Name = "Title" AndAlso e.Item.Group.Tag <> 0 Then
+        If e.Item.Group IsNot Nothing AndAlso e.Item.Group.Name = "Title" AndAlso e.Item.Group.Tag <> 0 Then
             Dim Offset = e.Item.Group.Tag
             e.DrawBackground()
             Dim rect As Rectangle = Rectangle.Inflate(e.Bounds, -3, -2)

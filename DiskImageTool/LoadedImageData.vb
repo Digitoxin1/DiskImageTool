@@ -20,10 +20,16 @@ Public Class ImageDataScanInfo
     Public Property OEMNameFound As Boolean = False
     Public Property OEMNameMatched As Boolean = False
     Public Property OEMNameWin9x As Boolean = False
+    Public Property OEMNameVerified As Boolean = False
+    Public Property OEMNameUnverified As Boolean = False
     Public Property CustomDiskFormat As Boolean = False
     Public Property HasReservedBytesSet As Boolean = False
-    Public Property IsKnownImage As Boolean = False
-    Public Property IsUnknownImage As Boolean = False
+    Public Property ImageKnown As Boolean = False
+    Public Property ImageUnknown As Boolean = False
+    Public Property ImageVerified As Boolean = False
+    Public Property ImageUnverified As Boolean = False
+    Public Property NoBPB As Boolean = False
+    Public Property CustomBootLoader As Boolean = False
 End Class
 
 Public Class LoadedImageData

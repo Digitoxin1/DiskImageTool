@@ -3,9 +3,6 @@
   <bootstrap crc32="FA8F7D48" jmp="EB3490">
     <oemname namehex="0000000000000000" verified="true"/>
   </bootstrap>
-  <bootstrap crc32="00000000" language="" exactmatch="true">
-    <oemname namehex="0000000000000000" description="No Boot Loader"/>
-  </bootstrap>
   <bootstrap crc32="AEA629C4" jmp="EB3490">
     <oemname namehex="03048849B7160100" suggestion="false" verified="true"/>
     <oemname name="CDM  3.2" suggestion="false" verified="true"/>
@@ -53,7 +50,7 @@
     <oemname name=" PC-MAG " description="PC Magazine Utilities Disk"/>
   </bootstrap>
   <bootstrap crc32="C32BA36A" jmp="EB5190">
-    <oemname name=" VICTOR "/>
+    <oemname name=" VICTOR " verified="true"/>
   </bootstrap>
   <bootstrap crc32="3042486F" jmp="EB4A20">
     <oemname name=" VICTOR " verified="true"/>
@@ -188,6 +185,9 @@
   <bootstrap crc32="F7DD188D" jmp="EB4090">
     <oemname name="CH-FOR15" company="Christo` H. Hochstätter" description="FDFORMAT 1.5" verified="true"/>
   </bootstrap>
+  <bootstrap crc32="D687F9AC" jmp="EB4090" language="German">
+    <oemname name="CH-FOR15" company="Christo` H. Hochstätter" description="FDFORMAT 1.5"/>
+  </bootstrap>
   <bootstrap crc32="E93D9089" jmp="EB4090">
     <oemname name="CH-FOR16" company="Christoph H. Hochstätter" description="FDFORMAT 1.6" verified="true"/>
   </bootstrap>
@@ -202,6 +202,9 @@
   </bootstrap>
   <bootstrap crc32="FA9FCB5C" jmp="E92700">
     <oemname name="DGC 2.11"/>
+  </bootstrap>
+  <bootstrap crc32="8BF30D33" jmp="EB2090">
+    <oemname name="DEC  3.0"/>
   </bootstrap>
   <bootstrap crc32="DCD1230E" jmp="EB2790">
     <oemname name="DIGITAL "/>
@@ -268,6 +271,9 @@
   </bootstrap>
   <bootstrap crc32="CA21AEE5" jmp="EB2990">
     <oemname name="GAZELLE " company="Gazelle Systems" description="Q-DOS" verified="true"/>
+  </bootstrap>
+  <bootstrap crc32="C57A4BE5" jmp="EB3C90">
+    <oemname name="GEOWORKS"/>
   </bootstrap>
   <bootstrap crc32="3E980122" jmp="EB4090">
     <oemname name="HDCPY17R" company="TBH-Softworx" description="HD-Copy 1.7r"/>
@@ -395,9 +401,10 @@
   <bootstrap crc32="4F2A959C" jmp="EB3490">
     <oemname name="IBM  3.3" company="IBM" description="PC-DOS 3.3" verified="true"/>
     <oemname name="MSDOS3.3" verified="true"/>
-    <oemname name="IBMMS3.3"/>
+    <oemname name="IBMMS3.3"/>    
     <oemname name="IBM  3.2"/>
     <oemname name="MSDOS3.2"/>
+    <oemname name="IBM 3.3y" suggestion="false"/>
     <oemname name="KEY DISK" suggestion="false" verified="true"/>
     <oemname namehex="004D4D4900332E33" suggestion="false" verified="true"/>
     <oemname namehex="4432026E30392E33" suggestion="false" verified="true"/>
@@ -432,6 +439,9 @@
   <bootstrap crc32="DD496C0F" jmp="EB3490" language="Swedish">
     <oemname name="IBM  3.3"/>
   </bootstrap>
+  <bootstrap crc32="FA833EB6" jmp="EB2890">
+    <oemname name="IBM  3.3"/>
+  </bootstrap>
   <bootstrap crc32="9CA3E515" jmp="EB3C90">
     <oemname name="IBM  4.0"/>
   </bootstrap>
@@ -448,6 +458,7 @@
     <oemname name="IBM  4.0" company="IBM" description="PC-DOS 4.0" verified="true"/>
     <oemname name="IBMMS4.0" verified="true"/>
     <oemname name="MSDOS4.0" verified="true"/>
+    <oemname name="IBM 4 3y" suggestion="false"/>
   </bootstrap>
   <bootstrap crc32="4304D123" jmp="EB3C90" language="Danish">
     <oemname name="IBM  4.0" company="Olivetti" description="MS-DOS 4.0"/>
@@ -678,6 +689,12 @@
   <bootstrap crc32="3A5A70FC" jmp="EB3490" language="Spanish">
     <oemname name="MSDOS3.2"/>
   </bootstrap>
+  <bootstrap crc32="ED936BBC" jmp="EB3490">
+    <oemname name="MSDOS3.2" verified="true"/>
+  </bootstrap>
+  <bootstrap crc32="D3D4FDCD" jmp="EB3490">
+    <oemname name="MSDOS3.2"/>
+  </bootstrap>
   <bootstrap crc32="8D981783" jmp="EB3490">
     <oemname name="MSDOS3.3"/>
   </bootstrap>
@@ -686,8 +703,8 @@
   </bootstrap>
   <bootstrap crc32="294E370A" jmp="EB3490">
     <oemname name="MSDOS3.3" company="Microsoft" description="MS-DOS 3.3" verified="true"/>
-    <oemname name="INSIGNIA" verified="true"/>
-    <oemname name="I93 1.00"/>
+    <oemname name="INSIGNIA" suggestion="false" verified="true"/>
+    <oemname name="I93 1.00" suggestion="false"/>
   </bootstrap>
   <bootstrap crc32="F89FC8CD" jmp="EB3490" language="French">
     <oemname name="MSDOS3.3"/>
@@ -731,20 +748,20 @@
   <bootstrap crc32="FE944220" jmp="EB3C90">
     <oemname name="MSDOS5.0" company="Microsoft" description="MS-DOS 5.0, MS-DOS 6.0" verified="true"/>
     <oemname name="MSDOS6.0" verified="true"/>
-    <oemname name="MSDBL6.0"/>
-    <oemname name="MSDSP6.0"/>
-    <oemname name="MSDMF3.2" company="Microsoft" description="Microsoft Distribution Media Format"/>
+    <oemname name="MSDBL6.0" suggestion="false"/>
+    <oemname name="MSDSP6.0" suggestion="false"/>
+    <oemname name="MSDMF3.2" suggestion="false" company="Microsoft" description="Microsoft Distribution Media Format"/>
     <oemname name=" RPS 5.0" suggestion="false"/>
     <oemname namehex="443245F330392E30" suggestion="false"/>
     <oemname namehex="443206C630392E30" suggestion="false"/>
     <oemname namehex="4432ED9130392E30" suggestion="false"/>
     <oemname namehex="443245F330392E30" suggestion="false"/>
     <oemname namehex="274A5E2871494843" suggestion="false" company="Sybex, Inc." description="The Lost Episodes of Doom" verified="true"/>
-    <oemname namehex="44323D7A30392E30" suggestion="false"/>
+    <oemname namehex="44323D7A30392E30" suggestion="false" verified="true"/>
     <oemname namehex="44320AB130392E30" suggestion="false"/>
     <oemname namehex="443208AD30392E30" suggestion="false"/>
     <oemname namehex="44324E0630392E30" suggestion="false"/>
-    <oemname namehex="4432A55230392E30" suggestion="false"/>
+    <oemname namehex="4432A55230392E30" suggestion="false" verified="true"/>
     <oemname namehex="27505E4C5A494843" suggestion="false" verified="true"/>
     <oemname namehex="2750416E72494843" suggestion="false" verified="true"/>
   </bootstrap>
@@ -927,7 +944,7 @@
     <oemname name="ProCopy " verified="true"/>
   </bootstrap>
   <bootstrap crc32="7DD9564E" jmp="EB4590">
-    <oemname name="PSA  3.1"/>
+    <oemname name="PSA  3.1" verified="true"/>
   </bootstrap>
   <bootstrap crc32="26305790" jmp="EB3A90">
     <oemname name="PSA  3.1" verified="true"/>
@@ -939,7 +956,7 @@
     <oemname name="PSA  3.2" verified="true"/>
   </bootstrap>
   <bootstrap crc32="EC19E4D9" jmp="EB4290">
-    <oemname name="PSA 1.04"/>
+    <oemname name="PSA 1.04" verified="true"/>
   </bootstrap>
   <bootstrap crc32="1CAABB2D" jmp="EB4290">
     <oemname name="PSA 1.04"/>
@@ -990,10 +1007,10 @@
     <oemname name="SHIPDISK" company="Iomega"/>
   </bootstrap>
   <bootstrap crc32="130A7A20" jmp="E9D800">
-    <oemname name="SpinRite" company="Gibson Research Corporation" description="SpinRite II"/>
+    <oemname name="SpinRite" company="Gibson Research Corporation" description="SpinRite II" verified="true"/>
   </bootstrap>
   <bootstrap crc32="EF3BCBB6" jmp="EB2990">
-    <oemname name="STACKER " company="Stac Electronics"/>
+    <oemname name="STACKER " company="Stac Electronics" verified="true"/>
   </bootstrap>
   <bootstrap crc32="5376FF97" jmp="EB3490">
     <oemname name="StupnDOS" verified="true"/>
@@ -1016,13 +1033,13 @@
     <oemname name="Sysgen 2" verified="true"/>
   </bootstrap>
   <bootstrap crc32="FF71C711" jmp="EB2290">
-    <oemname name="T V2.11 " company="Toshiba"/>
+    <oemname name="T V2.11 " company="Toshiba" verified="true"/>
   </bootstrap>
   <bootstrap crc32="8876F787" jmp="EB2290">
     <oemname name="T V2.11 " company="Toshiba" verified="true"/>
   </bootstrap>
   <bootstrap crc32="8040A228" jmp="EB2A90">
-    <oemname name="T V3.20 " company="Toshiba"/>
+    <oemname name="T V3.20 " company="Toshiba" verified="true"/>
   </bootstrap>
   <bootstrap crc32="14C3F50C" jmp="EB2A90">
     <oemname name="T V3.30 " company="Toshiba"/>
@@ -1049,7 +1066,7 @@
     <oemname name="TAN  3.3" company="Tandy"/>
   </bootstrap>
   <bootstrap crc32="900A3D52" jmp="EB5390">
-    <oemname name="Tandy557"/>
+    <oemname name="Tandy557" company="Tandy" verified="true"/>
   </bootstrap>
   <bootstrap crc32="ED266093" jmp="EB5390">
     <oemname name="Tandy557" company="Tandy" description="MS-DOS 2.11" verified="true"/>
@@ -1146,6 +1163,9 @@
   <bootstrap crc32="0CA33CAD" jmp="EB3C90">
     <oemname name="VGACPY51" company="Thomas Mönkemeier" description="VGA-Copy 5.1"/>
     <oemname name="VGACP520" company="Thomas Mönkemeier" description="VGA-Copy 5.2"/>
+  </bootstrap>
+  <bootstrap crc32="18410907" jmp="E98E00">
+    <oemname name="Wang 2.0"/>
   </bootstrap>
   <bootstrap crc32="B6A45502" jmp="EB5890">
     <oemname name="WINIMAGE" company="WinImage" note="Not imaged from Original Media"/>

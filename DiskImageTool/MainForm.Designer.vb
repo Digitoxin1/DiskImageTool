@@ -162,6 +162,7 @@ Partial Class MainForm
         Me.BtnWriteFloppyB = New System.Windows.Forms.ToolStripMenuItem()
         Me.ComboImagesFiltered = New System.Windows.Forms.ComboBox()
         Me.BtnResetSort = New System.Windows.Forms.Button()
+        Me.btnRetry = New System.Windows.Forms.Button()
         SummaryName = CType(New System.Windows.Forms.ColumnHeader(), System.Windows.Forms.ColumnHeader)
         SummaryValue = CType(New System.Windows.Forms.ColumnHeader(), System.Windows.Forms.ColumnHeader)
         HashName = CType(New System.Windows.Forms.ColumnHeader(), System.Windows.Forms.ColumnHeader)
@@ -344,7 +345,7 @@ Partial Class MainForm
         Me.ContextMenuEdit.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.BtnEditBootSector, Me.BtnEditFAT, Me.ToolStripSeparator4, Me.BtnFileProperties, Me.BtnExportFile, Me.BtnReplaceFile, Me.ToolStripSeparator2, Me.BtnUndo, Me.BtnRedo, Me.BtnRevert, Me.ToolStripSeparator5, Me.btnCreateBackup})
         Me.ContextMenuEdit.Name = "ContextMenuEdit"
         Me.ContextMenuEdit.OwnerItem = MainMenuEdit
-        Me.ContextMenuEdit.Size = New System.Drawing.Size(195, 242)
+        Me.ContextMenuEdit.Size = New System.Drawing.Size(195, 220)
         '
         'BtnEditBootSector
         '
@@ -823,7 +824,7 @@ Partial Class MainForm
         Me.StatusStrip1.Name = "StatusStrip1"
         Me.StatusStrip1.ShowItemToolTips = True
         Me.StatusStrip1.Size = New System.Drawing.Size(1004, 24)
-        Me.StatusStrip1.TabIndex = 7
+        Me.StatusStrip1.TabIndex = 9
         Me.StatusStrip1.Text = "StatusStrip1"
         '
         'ToolStripStatusReadOnly
@@ -940,7 +941,7 @@ Partial Class MainForm
         Me.ListViewHashes.Name = "ListViewHashes"
         Me.ListViewHashes.Scrollable = False
         Me.ListViewHashes.Size = New System.Drawing.Size(305, 101)
-        Me.ListViewHashes.TabIndex = 3
+        Me.ListViewHashes.TabIndex = 4
         Me.ListViewHashes.TileSize = New System.Drawing.Size(295, 30)
         Me.ListViewHashes.UseCompatibleStateImageBehavior = False
         Me.ListViewHashes.View = System.Windows.Forms.View.Tile
@@ -955,7 +956,7 @@ Partial Class MainForm
         Me.LabelDropMessage.Location = New System.Drawing.Point(522, 307)
         Me.LabelDropMessage.Name = "LabelDropMessage"
         Me.LabelDropMessage.Size = New System.Drawing.Size(273, 16)
-        Me.LabelDropMessage.TabIndex = 6
+        Me.LabelDropMessage.TabIndex = 8
         Me.LabelDropMessage.Text = "Drag && Drop Floppy Disk Images Here"
         Me.LabelDropMessage.TextAlign = System.Drawing.ContentAlignment.MiddleCenter
         '
@@ -974,7 +975,7 @@ Partial Class MainForm
         Me.ListViewFiles.Name = "ListViewFiles"
         Me.ListViewFiles.OwnerDraw = True
         Me.ListViewFiles.Size = New System.Drawing.Size(669, 467)
-        Me.ListViewFiles.TabIndex = 5
+        Me.ListViewFiles.TabIndex = 7
         Me.ListViewFiles.UseCompatibleStateImageBehavior = False
         Me.ListViewFiles.View = System.Windows.Forms.View.Details
         '
@@ -1112,6 +1113,7 @@ Partial Class MainForm
         '
         Me.ContextMenuFilters.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.BtnScanNew, Me.BtnScan, Me.BtnClearFilters})
         Me.ContextMenuFilters.Name = "ContextMenuStrip1"
+        Me.ContextMenuFilters.OwnerItem = Me.MainMenuFilters
         Me.ContextMenuFilters.Size = New System.Drawing.Size(168, 70)
         '
         'BtnScanNew
@@ -1180,7 +1182,7 @@ Partial Class MainForm
         Me.ComboImagesFiltered.Name = "ComboImagesFiltered"
         Me.ComboImagesFiltered.Size = New System.Drawing.Size(598, 21)
         Me.ComboImagesFiltered.Sorted = True
-        Me.ComboImagesFiltered.TabIndex = 4
+        Me.ComboImagesFiltered.TabIndex = 5
         '
         'BtnResetSort
         '
@@ -1188,15 +1190,25 @@ Partial Class MainForm
         Me.BtnResetSort.Location = New System.Drawing.Point(927, 54)
         Me.BtnResetSort.Name = "BtnResetSort"
         Me.BtnResetSort.Size = New System.Drawing.Size(65, 23)
-        Me.BtnResetSort.TabIndex = 5
+        Me.BtnResetSort.TabIndex = 6
         Me.BtnResetSort.Text = "Reset Sort"
         Me.BtnResetSort.UseVisualStyleBackColor = True
+        '
+        'btnRetry
+        '
+        Me.btnRetry.Location = New System.Drawing.Point(223, 75)
+        Me.btnRetry.Name = "btnRetry"
+        Me.btnRetry.Size = New System.Drawing.Size(75, 23)
+        Me.btnRetry.TabIndex = 3
+        Me.btnRetry.Text = "Retry"
+        Me.btnRetry.UseVisualStyleBackColor = True
         '
         'MainForm
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
         Me.ClientSize = New System.Drawing.Size(1004, 576)
+        Me.Controls.Add(Me.btnRetry)
         Me.Controls.Add(Me.BtnResetSort)
         Me.Controls.Add(Me.ToolStripTop)
         Me.Controls.Add(Me.ComboImagesFiltered)
@@ -1341,4 +1353,5 @@ Partial Class MainForm
     Friend WithEvents ToolStripSeparator5 As ToolStripSeparator
     Friend WithEvents btnCreateBackup As ToolStripMenuItem
     Friend WithEvents ContextMenuEdit As ContextMenuStrip
+    Friend WithEvents btnRetry As Button
 End Class

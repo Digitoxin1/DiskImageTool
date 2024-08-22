@@ -371,13 +371,13 @@ Public Class BootSectorForm
     End Sub
 
     Private Sub PopulateOEMName()
-        Dim OEMName As New KnownOEMName With {
+        Dim OEMName As New OEMNameData With {
             .Name = _Disk.BootSector.OEMName
         }
 
         Dim BootstrapType = _BootStrap.FindMatch(_Disk.BootSector.BootStrapCode)
         If BootstrapType IsNot Nothing Then
-            For Each KnownOEMName In BootstrapType.KnownOEMNames
+            For Each KnownOEMName In BootstrapType.OEMNames
                 If KnownOEMName.Name.Length > 0 Then
                     Dim IsMatch = KnownOEMName.Name.CompareTo(OEMName.Name)
                     If (KnownOEMName.Suggestion And Not BootstrapType.ExactMatch) Or IsMatch Then
@@ -776,7 +776,7 @@ Public Class BootSectorForm
             Dim OEMNameString As String = Strings.Left(CboOEMName.Text, 8).PadRight(8)
             OEMName = DiskImage.UnicodeToCodePage437(OEMNameString)
         Else
-            OEMName = CType(CboOEMName.SelectedItem, KnownOEMName).Name
+            OEMName = CType(CboOEMName.SelectedItem, OEMNameData).Name
         End If
 
         HexOEMName.SetHex(OEMName)

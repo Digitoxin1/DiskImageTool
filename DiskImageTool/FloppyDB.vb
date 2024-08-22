@@ -21,7 +21,7 @@ Public Class FloppyDB
         ParseXML(FilePath)
     End Sub
 
-    Public Sub AddTile(FileName As String, Media As String, MD5 As String)
+    Public Sub AddTile(FileName As String, Media As String, MD5 As String, MD5_CP As String)
         Dim Title As String = Trim(Regex.Match(FileName, "^[^\\(]+").Value)
         Title = Replace(Title, " - ", ": ")
 
@@ -70,7 +70,17 @@ Public Class FloppyDB
             Status = "U"
         End If
 
-        If Not _TitleDictionary.ContainsKey(MD5) Then
+        If MD5_CP = MD5 Then
+            MD5_CP = ""
+        End If
+
+        Dim MD5Found = _TitleDictionary.ContainsKey(MD5)
+        Dim MD5CPFound = False
+        If Not MD5Found And MD5_CP <> "" Then
+            MD5CPFound = _TitleDictionary.ContainsKey(MD5_CP)
+        End If
+
+        If Not MD5Found And Not MD5CPFound Then
             If Not Cracked And Status <> "M" Then
                 If _NewXMLDoc Is Nothing Then
                     _NewXMLDoc = LoadXML("NewFloppyDB.xml")
@@ -123,6 +133,9 @@ Public Class FloppyDB
 
                     Dim diskNode = _NewXMLDoc.CreateElement("disk")
                     diskNode.AppendAttribute("md5", MD5)
+                    If MD5_CP <> "" Then
+                        diskNode.AppendAttribute("md5_cp", MD5_CP)
+                    End If
                     If Disk <> "" Then
                         diskNode.AppendAttribute("disk", Disk)
                     End If
@@ -134,9 +147,16 @@ Public Class FloppyDB
                 End If
             End If
         Else
-            Dim FloppyData = _TitleDictionary.Item(MD5)
-            If FloppyData.GetStatus <> GetFloppyDBStatus(Status) Then
-                Debug.Print("Check Status: " & MD5 & ", " & FileName)
+            Dim FloppyData As FloppyData = Nothing
+            If MD5Found Then
+                FloppyData = _TitleDictionary.Item(MD5)
+            ElseIf MD5CPFound Then
+                FloppyData = _TitleDictionary.Item(MD5_CP)
+            End If
+            If FloppyData IsNot Nothing Then
+                If FloppyData.GetStatus <> GetFloppyDBStatus(Status) Then
+                    Debug.Print("Check Status: " & MD5 & ", " & FileName)
+                End If
             End If
         End If
     End Sub
@@ -314,6 +334,12 @@ Public Class FloppyDB
                     _TitleDictionary.Add(md5, FloppyData)
                 End If
             End If
+            If DirectCast(Node, XmlElement).HasAttribute("md5_cp") Then
+                Dim md5_cp As String = Node.Attributes("md5_cp").Value
+                If Not _TitleDictionary.ContainsKey(md5_cp) Then
+                    _TitleDictionary.Add(md5_cp, FloppyData)
+                End If
+            End If
             If DirectCast(Node, XmlElement).HasAttribute("bootSectorCRC32") Then
                 Dim crc32String As String = Node.Attributes("bootSectorCRC32").Value
                 If crc32String <> "" Then
@@ -354,7 +380,6 @@ Public Class FloppyDB
     End Sub
 
     Public Class FloppyData
-        Public Property MD5 As String = ""
         Public Property Name As String = ""
         Public Property Variation As String = ""
         Public Property Compilation As String = ""
