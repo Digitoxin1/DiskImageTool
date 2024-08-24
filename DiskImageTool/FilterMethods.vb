@@ -23,8 +23,8 @@
         FileSystem_DirectoryHasBootSector
         FAT_BadSectors
         FAT_LostClusters
-        FATS_MismatchedFATs
-        FATS_ChainingErrors
+        FAT_MismatchedFATs
+        FAT_ChainingErrors
         Image_InDatabase
         Image_NotInDatabase
         Image_Verified
@@ -79,9 +79,9 @@
                 Caption = "FAT - Bad Sectors"
             Case FilterTypes.FAT_LostClusters
                 Caption = "FAT - Lost Clusters"
-            Case FilterTypes.FATS_MismatchedFATs
+            Case FilterTypes.FAT_MismatchedFATs
                 Caption = "FAT - Mismatched FATs"
-            Case FilterTypes.FATS_ChainingErrors
+            Case FilterTypes.FAT_ChainingErrors
                 Caption = "FAT - Chaining Errors"
             Case FilterTypes.Image_InDatabase
                 Caption = "Image - In Database"
@@ -94,189 +94,57 @@
             Case Else
                 Caption = ""
         End Select
-        Caption &= "  [" & Count & "]"
+        If Count > 0 Then
+            Caption &= "  [" & Count & "]"
+        End If
 
         Return Caption
     End Function
 
-    Public Function IsFiltered(ImageData As LoadedImageData, AppliedFilters As FilterTypes) As Boolean
-        If CheckFilter(FilterTypes.ModifiedFiles, AppliedFilters) Then
-            If ImageData.Modified Then
-                Return False
+    Public Function IsFiltered(ImageData As LoadedImageData, AppliedFilters As Integer, ByRef FilterCounts() As FilterCounts) As Boolean
+        Dim Result = False
+        ImageData.AppliedFilters = 0
+
+        Dim FilterCount As Integer = [Enum].GetNames(GetType(FilterTypes)).Length
+        For FilterType As FilterTypes = 0 To FilterCount - 1
+            If Not ImageData.Filter(FilterType) Then
+                ImageData.AppliedFilters += (2 ^ FilterType)
+                If CheckFilter(FilterType, AppliedFilters) Then
+                    Result = True
+                End If
             End If
+        Next
+
+        If Not Result Then
+            For FilterType As FilterTypes = 0 To FilterCount - 1
+                If Not CheckFilter(FilterType, ImageData.AppliedFilters) Then
+                    FilterCounts(FilterType).Available += 1
+                End If
+            Next
         End If
 
-        If Not ImageData.Scanned Then
-            Return True
-        End If
-
-        If CheckFilter(FilterTypes.Disk_UnknownFormat, AppliedFilters) Then
-            If Not ImageData.ScanInfo.IsValidImage Then
-                Return False
-            End If
-        End If
-
-        If CheckFilter(FilterTypes.Image_InDatabase, AppliedFilters) Then
-            If ImageData.ScanInfo.ImageKnown Then
-                Return False
-            End If
-        End If
-
-        If CheckFilter(FilterTypes.Image_NotInDatabase, AppliedFilters) Then
-            If ImageData.ScanInfo.ImageUnknown Then
-                Return False
-            End If
-        End If
-
-        If CheckFilter(FilterTypes.Image_Verified, AppliedFilters) Then
-            If ImageData.ScanInfo.ImageVerified Then
-                Return False
-            End If
-        End If
-
-        If CheckFilter(FilterTypes.Image_Unverified, AppliedFilters) Then
-            If ImageData.ScanInfo.ImageUnverified Then
-                Return False
-            End If
-        End If
-
-        If CheckFilter(FilterTypes.FileSystem_HasCreationDate, AppliedFilters) Then
-            If ImageData.ScanInfo.IsValidImage And ImageData.ScanInfo.HasValidCreated Then
-                Return False
-            End If
-        End If
-
-        If CheckFilter(FilterTypes.FileSystem_HasLastAccessDate, AppliedFilters) Then
-            If ImageData.ScanInfo.IsValidImage And ImageData.ScanInfo.HasValidLastAccessed Then
-                Return False
-            End If
-        End If
-
-        If CheckFilter(FilterTypes.FileSystem_HasReservedBytesSet, AppliedFilters) Then
-            If ImageData.ScanInfo.IsValidImage And ImageData.ScanInfo.HasReservedBytesSet Then
-                Return False
-            End If
-        End If
-
-        If CheckFilter(FilterTypes.OEMName_Mismatched, AppliedFilters) Then
-            If ImageData.ScanInfo.IsValidImage And ImageData.ScanInfo.OEMNameFound And Not ImageData.ScanInfo.OEMNameMatched Then
-                Return False
-            End If
-        End If
-
-        If CheckFilter(FilterTypes.OEMName_Windows9x, AppliedFilters) Then
-            If ImageData.ScanInfo.IsValidImage And ImageData.ScanInfo.OEMNameWin9x Then
-                Return False
-            End If
-        End If
-
-        If CheckFilter(FilterTypes.OEMName_Unknown, AppliedFilters) Then
-            If ImageData.ScanInfo.IsValidImage And Not ImageData.ScanInfo.OEMNameFound Then
-                Return False
-            End If
-        End If
-
-        If CheckFilter(FilterTypes.OEMName_Verified, AppliedFilters) Then
-            If ImageData.ScanInfo.IsValidImage And ImageData.ScanInfo.OEMNameVerified Then
-                Return False
-            End If
-        End If
-
-        If CheckFilter(FilterTypes.OEMName_Unverified, AppliedFilters) Then
-            If ImageData.ScanInfo.IsValidImage And ImageData.ScanInfo.OEMNameUnverified Then
-                Return False
-            End If
-        End If
-
-        If CheckFilter(FilterTypes.FileSystem_HasLongFileNames, AppliedFilters) Then
-            If ImageData.ScanInfo.IsValidImage And ImageData.ScanInfo.HasLongFileNames Then
-                Return False
-            End If
-        End If
-
-        If CheckFilter(FilterTypes.FileSystem_InvalidDirectoryEntries, AppliedFilters) Then
-            If ImageData.ScanInfo.IsValidImage And ImageData.ScanInfo.HasInvalidDirectoryEntries Then
-                Return False
-            End If
-        End If
-
-        If CheckFilter(FilterTypes.FileSystem_DirectoryHasAdditionalData, AppliedFilters) Then
-            If ImageData.ScanInfo.IsValidImage And ImageData.ScanInfo.DirectoryHasAdditionalData Then
-                Return False
-            End If
-        End If
-
-        If CheckFilter(FilterTypes.FileSystem_DirectoryHasBootSector, AppliedFilters) Then
-            If ImageData.ScanInfo.IsValidImage And ImageData.ScanInfo.DirectoryHasBootSector Then
-                Return False
-            End If
-        End If
-
-        If CheckFilter(FilterTypes.Disk_FreeClustersWithData, AppliedFilters) Then
-            If ImageData.ScanInfo.IsValidImage And ImageData.ScanInfo.HasFreeClustersWithData Then
-                Return False
-            End If
-        End If
-
-        If CheckFilter(FilterTypes.FAT_BadSectors, AppliedFilters) Then
-            If ImageData.ScanInfo.IsValidImage And ImageData.ScanInfo.HasBadSectors Then
-                Return False
-            End If
-        End If
-
-        If CheckFilter(FilterTypes.FAT_LostClusters, AppliedFilters) Then
-            If ImageData.ScanInfo.IsValidImage And ImageData.ScanInfo.HasLostClusters Then
-                Return False
-            End If
-        End If
-
-        If CheckFilter(FilterTypes.FATS_MismatchedFATs, AppliedFilters) Then
-            If ImageData.ScanInfo.IsValidImage And ImageData.ScanInfo.HasMismatchedFATs Then
-                Return False
-            End If
-        End If
-
-        If CheckFilter(FilterTypes.Disk_MismatchedMediaDescriptor, AppliedFilters) Then
-            If ImageData.ScanInfo.IsValidImage And ImageData.ScanInfo.HasMismatchedMediaDescriptor Then
-                Return False
-            End If
-        End If
-
-        If CheckFilter(FilterTypes.FATS_ChainingErrors, AppliedFilters) Then
-            If ImageData.ScanInfo.IsValidImage And ImageData.ScanInfo.HasFATChainingErrors Then
-                Return False
-            End If
-        End If
-
-        If CheckFilter(FilterTypes.Disk_MismatchedImageSize, AppliedFilters) Then
-            If ImageData.ScanInfo.IsValidImage And ImageData.ScanInfo.HasInvalidImageSize Then
-                Return False
-            End If
-        End If
-
-        If CheckFilter(FilterTypes.Disk_CustomFormat, AppliedFilters) Then
-            If ImageData.ScanInfo.IsValidImage And ImageData.ScanInfo.CustomDiskFormat Then
-                Return False
-            End If
-        End If
-
-        If CheckFilter(FilterTypes.Disk_NOBPB, AppliedFilters) Then
-            If ImageData.ScanInfo.IsValidImage And ImageData.ScanInfo.NoBPB Then
-                Return False
-            End If
-        End If
-
-        If CheckFilter(FilterTypes.DIsk_CustomBootLoader, AppliedFilters) Then
-            If ImageData.ScanInfo.IsValidImage And ImageData.ScanInfo.CustomBootLoader Then
-                Return False
-            End If
-        End If
-
-        Return True
+        Return Result
     End Function
 
     Private Function CheckFilter(FilterType As FilterTypes, AppliedFilters As Integer) As Boolean
         Return (AppliedFilters And (2 ^ FilterType)) > 0
     End Function
 
+    Public Class FilterCounts
+        Public Sub New()
+            _Total = 0
+            _Available = 0
+        End Sub
+        Public Property Total As Integer
+        Public Property Available As Integer
+    End Class
+
+    Public Class FilterTag
+        Public Sub New(Value As Integer)
+            _Value = Value
+            _Visible = False
+        End Sub
+        Public ReadOnly Property Value As Integer
+        Public Property Visible As Boolean
+    End Class
 End Module

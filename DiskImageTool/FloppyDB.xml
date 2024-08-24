@@ -8247,8 +8247,13 @@
     </release>
   </title>
   <title name="Sherlock: The Riddle of the Crown Jewels" publisher="Infocom, Inc.">
-    <release year="1987" version="r21, Serial 871214, Int. 5F" media="360K" status="V">
-      <disk md5="0AD51A20D847320A212EC2E1692E0C4B"/>
+    <release year="1987" version="r21, Serial 871214, Int. 5F" status="V">
+      <media media="360K">
+        <disk md5="0AD51A20D847320A212EC2E1692E0C4B"/>
+      </media>
+      <media media="720K">
+        <disk md5="4020E1C1654361246423D5CF6F4DE6A8"/>
+      </media>
     </release>
   </title>
   <title name="Sid &amp; Al's Incredible Toons" publisher="Sierra On-Line, Inc.">

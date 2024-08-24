@@ -52,7 +52,7 @@ Public Class MainForm
     Private _CurrentImageData As LoadedImageData = Nothing
     Private _Disk As DiskImage.Disk
     Private _FileVersion As String = ""
-    Private _FilterCounts() As Integer
+    Private _FilterCounts() As FilterCounts
     Private _FilterDiskType As ComboFilter
     Private _FilterOEMName As ComboFilter
     Private _FiltersApplied As Boolean = False
@@ -93,15 +93,15 @@ Public Class MainForm
             End If
         End If
 
-        If Not ImageData.Scanned Or DiskType <> ImageData.ScanInfo.DiskType Then
+        If Not ImageData.Scanned Or DiskType <> ImageData.DiskType Then
             If ImageData.Scanned Then
-                _FilterDiskType.Remove(ImageData.ScanInfo.DiskType, UpdateFilters)
+                _FilterDiskType.Remove(ImageData.DiskType, UpdateFilters)
             End If
 
-            ImageData.ScanInfo.DiskType = DiskType
+            ImageData.DiskType = DiskType
 
             If Not Remove Then
-                _FilterDiskType.Add(ImageData.ScanInfo.DiskType, UpdateFilters)
+                _FilterDiskType.Add(ImageData.DiskType, UpdateFilters)
             End If
         End If
     End Sub
@@ -124,161 +124,62 @@ Public Class MainForm
 
     Friend Function ItemScanDirectory(Disk As DiskImage.Disk, ImageData As LoadedImageData, Optional UpdateFilters As Boolean = False, Optional Remove As Boolean = False) As DirectoryScanResponse
         Dim Response As DirectoryScanResponse
+        Dim HasLostClusters As Boolean = False
 
         If Not Remove And Disk.IsValidImage Then
             Response = ProcessDirectoryEntries(Disk.Directory, True)
+            HasLostClusters = Disk.FAT.GetLostClusterCount > 0
         Else
             Response = New DirectoryScanResponse(Nothing)
         End If
 
-        Dim LostClusterCount As Integer = Disk.FAT.GetLostClusterCount
-        Dim HasLostClusters As Boolean = LostClusterCount <> 0
-
-        If Not ImageData.Scanned Or Response.HasValidCreated <> ImageData.ScanInfo.HasValidCreated Then
-            ImageData.ScanInfo.HasValidCreated = Response.HasValidCreated
-            If Response.HasValidCreated Then
-                _FilterCounts(FilterTypes.FileSystem_HasCreationDate) += 1
-            ElseIf ImageData.Scanned Then
-                _FilterCounts(FilterTypes.FileSystem_HasCreationDate) -= 1
-            End If
-            If UpdateFilters Then
-                FilterUpdate(FilterTypes.FileSystem_HasCreationDate)
-            End If
-        End If
-
-        If Not ImageData.Scanned Or Response.HasValidLastAccessed <> ImageData.ScanInfo.HasValidLastAccessed Then
-            ImageData.ScanInfo.HasValidLastAccessed = Response.HasValidLastAccessed
-            If Response.HasValidLastAccessed Then
-                _FilterCounts(FilterTypes.FileSystem_HasLastAccessDate) += 1
-            ElseIf ImageData.Scanned Then
-                _FilterCounts(FilterTypes.FileSystem_HasLastAccessDate) -= 1
-            End If
-            If UpdateFilters Then
-                FilterUpdate(FilterTypes.FileSystem_HasLastAccessDate)
-            End If
-        End If
-
-        If Not ImageData.Scanned Or Response.HasReserved <> ImageData.ScanInfo.HasReservedBytesSet Then
-            ImageData.ScanInfo.HasReservedBytesSet = Response.HasReserved
-            If Response.HasReserved Then
-                _FilterCounts(FilterTypes.FileSystem_HasReservedBytesSet) += 1
-            ElseIf ImageData.Scanned Then
-                _FilterCounts(FilterTypes.FileSystem_HasReservedBytesSet) -= 1
-            End If
-            If UpdateFilters Then
-                FilterUpdate(FilterTypes.FileSystem_HasReservedBytesSet)
-            End If
-        End If
-
-        If Not ImageData.Scanned Or Response.HasLFN <> ImageData.ScanInfo.HasLongFileNames Then
-            ImageData.ScanInfo.HasLongFileNames = Response.HasLFN
-            If Response.HasLFN Then
-                _FilterCounts(FilterTypes.FileSystem_HasLongFileNames) += 1
-            ElseIf ImageData.Scanned Then
-                _FilterCounts(FilterTypes.FileSystem_HasLongFileNames) -= 1
-            End If
-            If UpdateFilters Then
-                FilterUpdate(FilterTypes.FileSystem_HasLongFileNames)
-            End If
-        End If
-
-        If Not ImageData.Scanned Or Response.HasAdditionalData <> ImageData.ScanInfo.DirectoryHasAdditionalData Then
-            ImageData.ScanInfo.DirectoryHasAdditionalData = Response.HasAdditionalData
-            If Response.HasAdditionalData Then
-                _FilterCounts(FilterTypes.FileSystem_DirectoryHasAdditionalData) += 1
-            ElseIf ImageData.Scanned Then
-                _FilterCounts(FilterTypes.FileSystem_DirectoryHasAdditionalData) -= 1
-            End If
-            If UpdateFilters Then
-                FilterUpdate(FilterTypes.FileSystem_DirectoryHasAdditionalData)
-            End If
-        End If
-
-        If Not ImageData.Scanned Or Response.HasBootSector <> ImageData.ScanInfo.DirectoryHasBootSector Then
-            ImageData.ScanInfo.DirectoryHasBootSector = Response.HasBootSector
-            If Response.HasBootSector Then
-                _FilterCounts(FilterTypes.FileSystem_DirectoryHasBootSector) += 1
-            ElseIf ImageData.Scanned Then
-                _FilterCounts(FilterTypes.FileSystem_DirectoryHasBootSector) -= 1
-            End If
-            If UpdateFilters Then
-                FilterUpdate(FilterTypes.FileSystem_DirectoryHasBootSector)
-            End If
-        End If
-
-        If Not ImageData.Scanned Or Response.HasInvalidDirectoryEntries <> ImageData.ScanInfo.HasInvalidDirectoryEntries Then
-            ImageData.ScanInfo.HasInvalidDirectoryEntries = Response.HasInvalidDirectoryEntries
-            If Response.HasInvalidDirectoryEntries Then
-                _FilterCounts(FilterTypes.FileSystem_InvalidDirectoryEntries) += 1
-            ElseIf ImageData.Scanned Then
-                _FilterCounts(FilterTypes.FileSystem_InvalidDirectoryEntries) -= 1
-            End If
-            If UpdateFilters Then
-                FilterUpdate(FilterTypes.FileSystem_InvalidDirectoryEntries)
-            End If
-        End If
-
-        If Not ImageData.Scanned Or Response.HasFATChainingErrors <> ImageData.ScanInfo.HasFATChainingErrors Then
-            ImageData.ScanInfo.HasFATChainingErrors = Response.HasFATChainingErrors
-            If Response.HasFATChainingErrors Then
-                _FilterCounts(FilterTypes.FATS_ChainingErrors) += 1
-            ElseIf ImageData.Scanned Then
-                _FilterCounts(FilterTypes.FATS_ChainingErrors) -= 1
-            End If
-            If UpdateFilters Then
-                FilterUpdate(FilterTypes.FATS_ChainingErrors)
-            End If
-        End If
-
-        If Not ImageData.Scanned Or HasLostClusters <> ImageData.ScanInfo.HasLostClusters Then
-            ImageData.ScanInfo.HasLostClusters = HasLostClusters
-            If HasLostClusters Then
-                _FilterCounts(FilterTypes.FAT_LostClusters) += 1
-            ElseIf ImageData.Scanned Then
-                _FilterCounts(FilterTypes.FAT_LostClusters) -= 1
-            End If
-            If UpdateFilters Then
-                FilterUpdate(FilterTypes.FAT_LostClusters)
-            End If
-        End If
+        FilterUpdate(ImageData, UpdateFilters, FilterTypes.FileSystem_HasCreationDate, Response.HasValidCreated)
+        FilterUpdate(ImageData, UpdateFilters, FilterTypes.FileSystem_HasLastAccessDate, Response.HasValidLastAccessed)
+        FilterUpdate(ImageData, UpdateFilters, FilterTypes.FileSystem_HasReservedBytesSet, Response.HasReserved)
+        FilterUpdate(ImageData, UpdateFilters, FilterTypes.FileSystem_HasLongFileNames, Response.HasLFN)
+        FilterUpdate(ImageData, UpdateFilters, FilterTypes.FileSystem_DirectoryHasAdditionalData, Response.HasAdditionalData)
+        FilterUpdate(ImageData, UpdateFilters, FilterTypes.FileSystem_DirectoryHasBootSector, Response.HasBootSector)
+        FilterUpdate(ImageData, UpdateFilters, FilterTypes.FileSystem_InvalidDirectoryEntries, Response.HasInvalidDirectoryEntries)
+        FilterUpdate(ImageData, UpdateFilters, FilterTypes.FAT_ChainingErrors, Response.HasFATChainingErrors)
+        FilterUpdate(ImageData, UpdateFilters, FilterTypes.FAT_LostClusters, HasLostClusters)
 
         Return Response
     End Function
 
     Friend Sub ItemScanDisk(Disk As DiskImage.Disk, ImageData As LoadedImageData, Optional UpdateFilters As Boolean = False, Optional Remove As Boolean = False)
-        Dim IsValidImage As Boolean = Disk.IsValidImage
-        Dim HasBadSectors As Boolean = False
-        Dim HasMismatchedFATs As Boolean = False
-        Dim HasMismatchedMediaDescriptor As Boolean = False
-        Dim HasInvalidImageSize As Boolean = False
-        Dim CustomDiskFormat As Boolean = False
-        Dim IsKnownImage As Boolean = False
-        Dim IsUnknownImage As Boolean = False
-        Dim IsVerifiedImage As Boolean = False
-        Dim IsUnverifiedImage As Boolean = False
-        Dim NoBPB As Boolean = False
-        Dim CustomBootLoader As Boolean = False
+        Dim Disk_UnknownFormat As Boolean = Not Disk.IsValidImage
+        Dim FAT_BadSectors As Boolean = False
+        Dim FATS_MismatchedFATs As Boolean = False
+        Dim Disk_MismatchedMediaDescriptor As Boolean = False
+        Dim Disk_MismatchedImageSize As Boolean = False
+        Dim Disk_CustomFormat As Boolean = False
+        Dim Image_InDatabase As Boolean = False
+        Dim Image_NotInDatabase As Boolean = False
+        Dim Image_Verified As Boolean = False
+        Dim Image_Unverified As Boolean = False
+        Dim Disk_NOBPB As Boolean = False
+        Dim DIsk_CustomBootLoader As Boolean = False
 
         If Not Remove Then
-            If IsValidImage Then
+            If Not Disk_UnknownFormat Then
                 Dim MediaDescriptor = GetFloppyDiskMediaDescriptor(Disk.DiskType)
-                HasBadSectors = Disk.FAT.BadClusters.Count > 0
-                HasMismatchedFATs = Disk.DiskType <> FloppyDiskType.FloppyXDF AndAlso Not Disk.FATTables.FATsMatch
+                FAT_BadSectors = Disk.FAT.BadClusters.Count > 0
+                FATS_MismatchedFATs = Disk.DiskType <> FloppyDiskType.FloppyXDF AndAlso Not Disk.FATTables.FATsMatch
                 If Disk.BootSector.BPB.IsValid Then
                     If Disk.BootSector.BPB.MediaDescriptor <> MediaDescriptor Then
-                        HasMismatchedMediaDescriptor = True
+                        Disk_MismatchedMediaDescriptor = True
                     ElseIf Disk.DiskType = FloppyDiskType.FloppyXDF And Disk.FAT.MediaDescriptor = &HF9 Then
-                        HasMismatchedMediaDescriptor = False
+                        Disk_MismatchedMediaDescriptor = False
                     ElseIf Disk.FAT.HasMediaDescriptor AndAlso Disk.FAT.MediaDescriptor <> Disk.BootSector.BPB.MediaDescriptor Then
-                        HasMismatchedMediaDescriptor = True
+                        Disk_MismatchedMediaDescriptor = True
                     ElseIf Disk.FAT.HasMediaDescriptor AndAlso Disk.FAT.MediaDescriptor <> MediaDescriptor Then
-                        HasMismatchedMediaDescriptor = True
+                        Disk_MismatchedMediaDescriptor = True
                     End If
                 End If
-                HasInvalidImageSize = Disk.CheckImageSize <> 0
-                CustomDiskFormat = GetFloppyDiskType(Disk.BPB, False) = FloppyDiskType.FloppyUnknown
-                NoBPB = Not Disk.BootSector.BPB.IsValid
-                CustomBootLoader = Disk.BootSector.BootStrapCode.Length = 0
+                Disk_MismatchedImageSize = Disk.CheckImageSize <> 0
+                Disk_CustomFormat = GetFloppyDiskType(Disk.BPB, False) = FloppyDiskType.FloppyUnknown
+                Disk_NOBPB = Not Disk.BootSector.BPB.IsValid
+                DIsk_CustomBootLoader = Disk.BootSector.BootStrapCode.Length = 0
             End If
 
             If _TitleDB.TitleCount > 0 Then
@@ -295,165 +196,35 @@ Public Class MainForm
                     End If
                 End If
                 If TitleData Is Nothing Then
-                    IsUnknownImage = True
+                    Image_NotInDatabase = True
                 Else
-                    IsKnownImage = True
+                    Image_InDatabase = True
                     If TitleData.GetStatus = FloppyDB.FloppyDBStatus.Verified Then
-                        IsVerifiedImage = True
+                        Image_Verified = True
                     Else
-                        IsUnverifiedImage = True
+                        Image_Unverified = True
                     End If
                 End If
             End If
         Else
-            IsValidImage = True
-        End If
-
-        If Not ImageData.Scanned Or IsValidImage <> ImageData.ScanInfo.IsValidImage Then
-            ImageData.ScanInfo.IsValidImage = IsValidImage
-            If Not IsValidImage Then
-                _FilterCounts(FilterTypes.Disk_UnknownFormat) += 1
-            ElseIf ImageData.Scanned Then
-                _FilterCounts(FilterTypes.Disk_UnknownFormat) -= 1
-            End If
-            If UpdateFilters Then
-                FilterUpdate(FilterTypes.Disk_UnknownFormat)
-            End If
+            Disk_UnknownFormat = False
         End If
 
         If _TitleDB.TitleCount > 0 Then
-            If Not ImageData.Scanned Or IsKnownImage <> ImageData.ScanInfo.ImageKnown Then
-                ImageData.ScanInfo.ImageKnown = IsKnownImage
-                If IsKnownImage Then
-                    _FilterCounts(FilterTypes.Image_InDatabase) += 1
-                ElseIf ImageData.Scanned Then
-                    _FilterCounts(FilterTypes.Image_InDatabase) -= 1
-                End If
-                If UpdateFilters Then
-                    FilterUpdate(FilterTypes.Image_InDatabase)
-                End If
-            End If
-
-            If Not ImageData.Scanned Or IsUnknownImage <> ImageData.ScanInfo.ImageUnknown Then
-                ImageData.ScanInfo.ImageUnknown = IsUnknownImage
-                If IsUnknownImage Then
-                    _FilterCounts(FilterTypes.Image_NotInDatabase) += 1
-                ElseIf ImageData.Scanned Then
-                    _FilterCounts(FilterTypes.Image_NotInDatabase) -= 1
-                End If
-                If UpdateFilters Then
-                    FilterUpdate(FilterTypes.Image_NotInDatabase)
-                End If
-            End If
-
-            If Not ImageData.Scanned Or IsVerifiedImage <> ImageData.ScanInfo.ImageVerified Then
-                ImageData.ScanInfo.ImageVerified = IsVerifiedImage
-                If IsVerifiedImage Then
-                    _FilterCounts(FilterTypes.Image_Verified) += 1
-                ElseIf ImageData.Scanned Then
-                    _FilterCounts(FilterTypes.Image_Verified) -= 1
-                End If
-                If UpdateFilters Then
-                    FilterUpdate(FilterTypes.Image_Verified)
-                End If
-            End If
-
-            If Not ImageData.Scanned Or IsUnverifiedImage <> ImageData.ScanInfo.ImageUnverified Then
-                ImageData.ScanInfo.ImageUnverified = IsUnverifiedImage
-                If IsUnverifiedImage Then
-                    _FilterCounts(FilterTypes.Image_Unverified) += 1
-                ElseIf ImageData.Scanned Then
-                    _FilterCounts(FilterTypes.Image_Unverified) -= 1
-                End If
-                If UpdateFilters Then
-                    FilterUpdate(FilterTypes.Image_Unverified)
-                End If
-            End If
+            FilterUpdate(ImageData, UpdateFilters, FilterTypes.Image_InDatabase, Image_InDatabase)
+            FilterUpdate(ImageData, UpdateFilters, FilterTypes.Image_NotInDatabase, Image_NotInDatabase)
+            FilterUpdate(ImageData, UpdateFilters, FilterTypes.Image_Verified, Image_Verified)
+            FilterUpdate(ImageData, UpdateFilters, FilterTypes.Image_Unverified, Image_Unverified)
         End If
 
-        If Not ImageData.Scanned Or HasBadSectors <> ImageData.ScanInfo.HasBadSectors Then
-            ImageData.ScanInfo.HasBadSectors = HasBadSectors
-            If HasBadSectors Then
-                _FilterCounts(FilterTypes.FAT_BadSectors) += 1
-            ElseIf ImageData.Scanned Then
-                _FilterCounts(FilterTypes.FAT_BadSectors) -= 1
-            End If
-            If UpdateFilters Then
-                FilterUpdate(FilterTypes.FAT_BadSectors)
-            End If
-        End If
-
-        If Not ImageData.Scanned Or HasMismatchedFATs <> ImageData.ScanInfo.HasMismatchedFATs Then
-            ImageData.ScanInfo.HasMismatchedFATs = HasMismatchedFATs
-            If HasMismatchedFATs Then
-                _FilterCounts(FilterTypes.FATS_MismatchedFATs) += 1
-            ElseIf ImageData.Scanned Then
-                _FilterCounts(FilterTypes.FATS_MismatchedFATs) -= 1
-            End If
-            If UpdateFilters Then
-                FilterUpdate(FilterTypes.FATS_MismatchedFATs)
-            End If
-        End If
-
-        If Not ImageData.Scanned Or HasMismatchedMediaDescriptor <> ImageData.ScanInfo.HasMismatchedMediaDescriptor Then
-            ImageData.ScanInfo.HasMismatchedMediaDescriptor = HasMismatchedMediaDescriptor
-            If HasMismatchedMediaDescriptor Then
-                _FilterCounts(FilterTypes.Disk_MismatchedMediaDescriptor) += 1
-            ElseIf ImageData.Scanned Then
-                _FilterCounts(FilterTypes.Disk_MismatchedMediaDescriptor) -= 1
-            End If
-            If UpdateFilters Then
-                FilterUpdate(FilterTypes.Disk_MismatchedMediaDescriptor)
-            End If
-        End If
-
-        If Not ImageData.Scanned Or HasInvalidImageSize <> ImageData.ScanInfo.HasInvalidImageSize Then
-            ImageData.ScanInfo.HasInvalidImageSize = HasInvalidImageSize
-            If HasInvalidImageSize Then
-                _FilterCounts(FilterTypes.Disk_MismatchedImageSize) += 1
-            ElseIf ImageData.Scanned Then
-                _FilterCounts(FilterTypes.Disk_MismatchedImageSize) -= 1
-            End If
-            If UpdateFilters Then
-                FilterUpdate(FilterTypes.Disk_MismatchedImageSize)
-            End If
-        End If
-
-        If Not ImageData.Scanned Or CustomDiskFormat <> ImageData.ScanInfo.CustomDiskFormat Then
-            ImageData.ScanInfo.CustomDiskFormat = CustomDiskFormat
-            If CustomDiskFormat Then
-                _FilterCounts(FilterTypes.Disk_CustomFormat) += 1
-            ElseIf ImageData.Scanned Then
-                _FilterCounts(FilterTypes.Disk_CustomFormat) -= 1
-            End If
-            If UpdateFilters Then
-                FilterUpdate(FilterTypes.Disk_CustomFormat)
-            End If
-        End If
-
-        If Not ImageData.Scanned Or NoBPB <> ImageData.ScanInfo.NoBPB Then
-            ImageData.ScanInfo.NoBPB = NoBPB
-            If NoBPB Then
-                _FilterCounts(FilterTypes.Disk_NOBPB) += 1
-            ElseIf ImageData.Scanned Then
-                _FilterCounts(FilterTypes.Disk_NOBPB) -= 1
-            End If
-            If UpdateFilters Then
-                FilterUpdate(FilterTypes.Disk_NOBPB)
-            End If
-        End If
-
-        If Not ImageData.Scanned Or CustomBootLoader <> ImageData.ScanInfo.CustomBootLoader Then
-            ImageData.ScanInfo.CustomBootLoader = CustomBootLoader
-            If CustomBootLoader Then
-                _FilterCounts(FilterTypes.DIsk_CustomBootLoader) += 1
-            ElseIf ImageData.Scanned Then
-                _FilterCounts(FilterTypes.DIsk_CustomBootLoader) -= 1
-            End If
-            If UpdateFilters Then
-                FilterUpdate(FilterTypes.DIsk_CustomBootLoader)
-            End If
-        End If
+        FilterUpdate(ImageData, UpdateFilters, FilterTypes.FAT_BadSectors, FAT_BadSectors)
+        FilterUpdate(ImageData, UpdateFilters, FilterTypes.FAT_MismatchedFATs, FATS_MismatchedFATs)
+        FilterUpdate(ImageData, UpdateFilters, FilterTypes.Disk_UnknownFormat, Disk_UnknownFormat)
+        FilterUpdate(ImageData, UpdateFilters, FilterTypes.Disk_MismatchedMediaDescriptor, Disk_MismatchedMediaDescriptor)
+        FilterUpdate(ImageData, UpdateFilters, FilterTypes.Disk_MismatchedImageSize, Disk_MismatchedImageSize)
+        FilterUpdate(ImageData, UpdateFilters, FilterTypes.Disk_CustomFormat, Disk_CustomFormat)
+        FilterUpdate(ImageData, UpdateFilters, FilterTypes.Disk_NOBPB, Disk_NOBPB)
+        FilterUpdate(ImageData, UpdateFilters, FilterTypes.DIsk_CustomBootLoader, DIsk_CustomBootLoader)
     End Sub
 
     Friend Sub ItemScanFreeClusters(Disk As DiskImage.Disk, ImageData As LoadedImageData, Optional UpdateFilters As Boolean = False, Optional Remove As Boolean = False)
@@ -463,112 +234,38 @@ Public Class MainForm
             HasFreeClusters = Disk.FAT.HasFreeClusters(True)
         End If
 
-        If Not ImageData.Scanned Or HasFreeClusters <> ImageData.ScanInfo.HasFreeClustersWithData Then
-            ImageData.ScanInfo.HasFreeClustersWithData = HasFreeClusters
-            If HasFreeClusters Then
-                _FilterCounts(FilterTypes.Disk_FreeClustersWithData) += 1
-            ElseIf ImageData.Scanned Then
-                _FilterCounts(FilterTypes.Disk_FreeClustersWithData) -= 1
-            End If
-            If UpdateFilters Then
-                FilterUpdate(FilterTypes.Disk_FreeClustersWithData)
-            End If
-        End If
+        FilterUpdate(ImageData, UpdateFilters, FilterTypes.Disk_FreeClustersWithData, HasFreeClusters)
     End Sub
 
     Friend Sub ItemScanModified(Disk As DiskImage.Disk, ImageData As LoadedImageData, Optional UpdateFilters As Boolean = False, Optional Remove As Boolean = False)
         Dim IsModified As Boolean = Not Remove And (Disk IsNot Nothing AndAlso Disk.Data.Modified)
 
-        If IsModified <> ImageData.Modified Then
-            ImageData.Modified = IsModified
-            If IsModified Then
-                _FilterCounts(FilterTypes.ModifiedFiles) += 1
-            Else
-                _FilterCounts(FilterTypes.ModifiedFiles) -= 1
-            End If
-            If UpdateFilters Then
-                FilterUpdate(FilterTypes.ModifiedFiles)
-            End If
-        End If
+        FilterUpdate(ImageData, UpdateFilters, FilterTypes.ModifiedFiles, IsModified, True)
     End Sub
 
     Friend Sub ItemScanOEMName(Disk As DiskImage.Disk, ImageData As LoadedImageData, Optional UpdateFilters As Boolean = False, Optional Remove As Boolean = False)
         Dim DoOEMNameCheck As Boolean = Disk.BootSector.BPB.IsValid
 
-        Dim OEMNameFound = True
-        Dim OEMNameMatched = True
-        Dim OEMNameVerified = False
-        Dim OEMNameUnverified = False
-        Dim IsWin9x = False
+        Dim OEMName_Unknown = False
+        Dim OEMName_Mismatched = False
+        Dim OEMName_Verified = False
+        Dim OEMName_Unverified = False
+        Dim OEMName_Windows9x = False
 
         If Not Remove And DoOEMNameCheck Then
             Dim OEMNameResponse = _BootStrapDB.CheckOEMName(Disk.BootSector)
-            OEMNameFound = OEMNameResponse.Found Or Not DoOEMNameCheck Or OEMNameResponse.NoBootLoader
-            OEMNameMatched = Not OEMNameResponse.Found Or OEMNameResponse.Matched
-            OEMNameVerified = OEMNameResponse.Matched And OEMNameResponse.Verified
-            OEMNameUnverified = OEMNameResponse.Matched And Not OEMNameResponse.Verified
-            IsWin9x = OEMNameResponse.IsWin9x
+            OEMName_Unknown = Not OEMNameResponse.Found And Not OEMNameResponse.NoBootLoader
+            OEMName_Mismatched = OEMNameResponse.Found And Not OEMNameResponse.Matched
+            OEMName_Verified = OEMNameResponse.Matched And OEMNameResponse.Verified
+            OEMName_Unverified = OEMNameResponse.Matched And Not OEMNameResponse.Verified
+            OEMName_Windows9x = OEMNameResponse.IsWin9x
         End If
 
-        If Not ImageData.Scanned Or IsWin9x <> ImageData.ScanInfo.OEMNameWin9x Then
-            ImageData.ScanInfo.OEMNameWin9x = IsWin9x
-            If IsWin9x Then
-                _FilterCounts(FilterTypes.OEMName_Windows9x) += 1
-            ElseIf ImageData.Scanned Then
-                _FilterCounts(FilterTypes.OEMName_Windows9x) -= 1
-            End If
-            If UpdateFilters Then
-                FilterUpdate(FilterTypes.OEMName_Windows9x)
-            End If
-        End If
-
-        If Not ImageData.Scanned Or OEMNameMatched <> ImageData.ScanInfo.OEMNameMatched Then
-            ImageData.ScanInfo.OEMNameMatched = OEMNameMatched
-            If Not OEMNameMatched Then
-                _FilterCounts(FilterTypes.OEMName_Mismatched) += 1
-            ElseIf ImageData.Scanned Then
-                _FilterCounts(FilterTypes.OEMName_Mismatched) -= 1
-            End If
-            If UpdateFilters Then
-                FilterUpdate(FilterTypes.OEMName_Mismatched)
-            End If
-        End If
-
-        If Not ImageData.Scanned Or OEMNameFound <> ImageData.ScanInfo.OEMNameFound Then
-            ImageData.ScanInfo.OEMNameFound = OEMNameFound
-            If Not OEMNameFound Then
-                _FilterCounts(FilterTypes.OEMName_Unknown) += 1
-            ElseIf ImageData.Scanned Then
-                _FilterCounts(FilterTypes.OEMName_Unknown) -= 1
-            End If
-            If UpdateFilters Then
-                FilterUpdate(FilterTypes.OEMName_Unknown)
-            End If
-        End If
-
-        If Not ImageData.Scanned Or OEMNameVerified <> ImageData.ScanInfo.OEMNameVerified Then
-            ImageData.ScanInfo.OEMNameVerified = OEMNameVerified
-            If OEMNameVerified Then
-                _FilterCounts(FilterTypes.OEMName_Verified) += 1
-            ElseIf ImageData.Scanned Then
-                _FilterCounts(FilterTypes.OEMName_Verified) -= 1
-            End If
-            If UpdateFilters Then
-                FilterUpdate(FilterTypes.OEMName_Verified)
-            End If
-        End If
-
-        If Not ImageData.Scanned Or OEMNameUnverified <> ImageData.ScanInfo.OEMNameUnverified Then
-            ImageData.ScanInfo.OEMNameUnverified = OEMNameUnverified
-            If OEMNameUnverified Then
-                _FilterCounts(FilterTypes.OEMName_Unverified) += 1
-            ElseIf ImageData.Scanned Then
-                _FilterCounts(FilterTypes.OEMName_Unverified) -= 1
-            End If
-            If UpdateFilters Then
-                FilterUpdate(FilterTypes.OEMName_Unverified)
-            End If
-        End If
+        FilterUpdate(ImageData, UpdateFilters, FilterTypes.OEMName_Windows9x, OEMName_Windows9x)
+        FilterUpdate(ImageData, UpdateFilters, FilterTypes.OEMName_Mismatched, OEMName_Mismatched)
+        FilterUpdate(ImageData, UpdateFilters, FilterTypes.OEMName_Unknown, OEMName_Unknown)
+        FilterUpdate(ImageData, UpdateFilters, FilterTypes.OEMName_Verified, OEMName_Verified)
+        FilterUpdate(ImageData, UpdateFilters, FilterTypes.OEMName_Unverified, OEMName_Unverified)
     End Sub
     Friend Sub OEMNameFilterUpdate(Disk As DiskImage.Disk, ImageData As LoadedImageData, Optional UpdateFilters As Boolean = False, Optional Remove As Boolean = False)
         If Disk.IsValidImage Then
@@ -581,15 +278,15 @@ Public Class MainForm
                 End If
             End If
 
-            If Not ImageData.Scanned Or OEMNameString <> ImageData.ScanInfo.OEMName Then
+            If Not ImageData.Scanned Or OEMNameString <> ImageData.OEMName Then
                 If ImageData.Scanned Then
-                    _FilterOEMName.Remove(ImageData.ScanInfo.OEMName, UpdateFilters)
+                    _FilterOEMName.Remove(ImageData.OEMName, UpdateFilters)
                 End If
 
-                ImageData.ScanInfo.OEMName = OEMNameString
+                ImageData.OEMName = OEMNameString
 
                 If Not Remove Then
-                    OEMNameFilterAdd(ImageData.ScanInfo.OEMName, UpdateFilters)
+                    OEMNameFilterAdd(ImageData.OEMName, UpdateFilters)
                 End If
             End If
         End If
@@ -1188,7 +885,7 @@ Public Class MainForm
         Dim CurrentImageData As LoadedImageData = ComboImages.SelectedItem
         Dim Result As MsgBoxResult
 
-        If CurrentImageData.Modified Then
+        If CurrentImageData.Filter(FilterTypes.ModifiedFiles) Then
             Result = MsgBoxSave(CurrentImageData.FileName)
         Else
             Result = MsgBoxResult.No
@@ -1427,9 +1124,7 @@ Public Class MainForm
         ItemScanForm.ShowDialog()
         BtnScanNew.Visible = ItemScanForm.ItemsRemaining > 0
 
-        For Counter = 0 To [Enum].GetNames(GetType(FilterTypes)).Length - 1
-            FilterUpdate(Counter)
-        Next
+        FilterUpdateAllMenuItems()
 
         RefreshModifiedCount()
         SubFiltersPopulate()
@@ -1458,7 +1153,7 @@ Public Class MainForm
     Private Sub DiskTypeFilterReset()
         _FilterDiskType.Clear()
         For Each ImageData As LoadedImageData In ComboImages.Items
-            _FilterDiskType.Add(ImageData.ScanInfo.DiskType, False)
+            _FilterDiskType.Add(ImageData.DiskType, False)
         Next
         _FilterDiskType.Populate()
     End Sub
@@ -1857,23 +1552,26 @@ Public Class MainForm
             ComboImagesFiltered.Items.Clear()
 
             Dim AppliedFilters As Integer = 0
-            For Counter = 0 To FilterCount - 1
-                Dim Item As ToolStripMenuItem = ContextMenuFilters.Items("key_" & Counter)
-                If Item.Checked Then
-                    AppliedFilters += Item.Tag
-                End If
-            Next
+            If FiltersChecked Then
+                For Counter = 0 To FilterCount - 1
+                    Dim Item As ToolStripMenuItem = ContextMenuFilters.Items("key_" & Counter)
+                    If Item.Checked Then
+                        AppliedFilters += CType(Item.Tag, FilterTag).Value
+                    End If
+                    _FilterCounts(Counter).Available = 0
+                Next
+            End If
 
             For Each ImageData As LoadedImageData In ComboImages.Items
                 Dim ShowItem As Boolean = True
 
                 If ShowItem AndAlso FiltersChecked Then
-                    ShowItem = Not IsFiltered(ImageData, AppliedFilters)
+                    ShowItem = Not IsFiltered(ImageData, AppliedFilters, _FilterCounts)
                 End If
 
                 If ShowItem And ResetSubFilters Then
-                    OEMNameFilterAdd(ImageData.ScanInfo.OEMName, False)
-                    _FilterDiskType.Add(ImageData.ScanInfo.DiskType, False)
+                    OEMNameFilterAdd(ImageData.OEMName, False)
+                    _FilterDiskType.Add(ImageData.DiskType, False)
                 End If
 
                 If ShowItem AndAlso TextFilter.Length > 0 Then
@@ -1882,11 +1580,12 @@ Public Class MainForm
                 End If
 
                 If ShowItem AndAlso HasOEMNameFilter Then
-                    ShowItem = ImageData.ScanInfo.IsValidImage And OEMNameItem.Name = ImageData.ScanInfo.OEMName
+                    Dim IsValidImage = Not ImageData.Filter(FilterTypes.Disk_UnknownFormat)
+                    ShowItem = IsValidImage And OEMNameItem.Name = ImageData.OEMName
                 End If
 
                 If ShowItem AndAlso HasDiskTypeFilter Then
-                    ShowItem = DiskTypeItem.Name = ImageData.ScanInfo.DiskType
+                    ShowItem = DiskTypeItem.Name = ImageData.DiskType
                 End If
 
                 If ShowItem Then
@@ -1896,6 +1595,8 @@ Public Class MainForm
                     End If
                 End If
             Next
+
+            FilterUpdateAllMenuItems()
 
             If ResetSubFilters Then
                 SubFiltersPopulate()
@@ -1924,6 +1625,7 @@ Public Class MainForm
         Else
             If _FiltersApplied Then
                 FiltersClear(True)
+                FilterUpdateAllMenuItems()
             End If
         End If
 
@@ -1941,6 +1643,7 @@ Public Class MainForm
             If Item.CheckState = CheckState.Checked Then
                 Item.CheckState = CheckState.Unchecked
             End If
+            _FilterCounts(Counter).Available = _FilterCounts(Counter).Total
         Next
         _SuppressEvent = False
 
@@ -1971,14 +1674,14 @@ Public Class MainForm
 
         Dim FilterCount As Integer = [Enum].GetNames(GetType(FilterTypes)).Length
         ReDim _FilterCounts(FilterCount - 1)
-        For Counter = 0 To FilterCount
+        For Counter = 0 To FilterCount - 1
             Dim Item = New ToolStripMenuItem With {
                 .Text = FilterGetCaption(Counter, 0),
                 .CheckOnClick = True,
                 .Name = "key_" & Counter,
                 .Visible = False,
                 .Enabled = False,
-                .Tag = 2 ^ Counter
+                .Tag = New FilterTag(2 ^ Counter)
             }
             AddHandler Item.CheckStateChanged, AddressOf ContextMenuFilters_CheckStateChanged
             ContextMenuFilters.Items.Add(Item)
@@ -1990,8 +1693,13 @@ Public Class MainForm
 
     Private Sub FiltersReset()
         For Counter = 0 To _FilterCounts.Length - 1
-            _FilterCounts(Counter) = 0
-            FilterUpdate(Counter)
+            If _FilterCounts(Counter) Is Nothing Then
+                _FilterCounts(Counter) = New FilterCounts
+            Else
+                _FilterCounts(Counter).Total = 0
+                _FilterCounts(Counter).Available = 0
+            End If
+            FilterUpdateMenuItem(Counter)
         Next
         RefreshModifiedCount()
 
@@ -2008,25 +1716,59 @@ Public Class MainForm
         ToolStripDiskType.Visible = False
     End Sub
 
-    Private Function FilterUpdate(ID As FilterTypes) As Boolean
-        Dim Count As Integer = _FilterCounts(ID)
+    Private Sub FilterUpdate(ImageData As LoadedImageData, UpdateFilters As Boolean, FilterType As FilterTypes, Value As Boolean)
+        FilterUpdate(ImageData, UpdateFilters, FilterType, Value, ImageData.Scanned)
+    End Sub
+
+    Private Sub FilterUpdate(ImageData As LoadedImageData, UpdateFilters As Boolean, FilterType As FilterTypes, Value As Boolean, Scanned As Boolean)
+        If Not Scanned Or Value <> ImageData.Filter(FilterType) Then
+            ImageData.Filter(FilterType) = Value
+            If Value Then
+                _FilterCounts(FilterType).Total += 1
+                _FilterCounts(FilterType).Available += 1
+            ElseIf Scanned Then
+                _FilterCounts(FilterType).Total -= 1
+                _FilterCounts(FilterType).Available -= 1
+            End If
+            If UpdateFilters Then
+                FilterUpdateMenuItem(FilterType)
+            End If
+        End If
+    End Sub
+
+    Private Sub FilterUpdateAllMenuItems()
+        For Counter = 0 To [Enum].GetNames(GetType(FilterTypes)).Length - 1
+            FilterUpdateMenuItem(Counter)
+        Next
+    End Sub
+
+    Private Function FilterUpdateMenuItem(ID As FilterTypes) As Boolean
+        Dim Count As Integer = _FilterCounts(ID).Total
+        Dim Available As Integer = _FilterCounts(ID).Available
         Dim Item As ToolStripMenuItem = ContextMenuFilters.Items("key_" & ID)
-        Dim Enabled As Boolean = (Count > 0)
+        Dim ItemTag = CType(Item.Tag, FilterTag)
+        Dim Enabled As Boolean = (Available > 0 And Count > 0)
+        Dim Visible As Boolean = (Count > 0)
         Dim CheckstateChanged As Boolean = False
 
-        Item.Text = FilterGetCaption(ID, Count)
+        Item.Text = FilterGetCaption(ID, Available)
+
+        If Visible <> ItemTag.Visible Then
+            Item.Visible = Visible
+            ItemTag.Visible = Visible
+
+            With ContextMenuFilters.Items.Item("FilterSeparator")
+                .Tag = .Tag + IIf(Visible, 1, -1)
+                .Visible = (.Tag > 0)
+            End With
+        End If
 
         If Enabled <> Item.Enabled Then
-            Item.Visible = Enabled
             Item.Enabled = Enabled
             If Not Enabled And Item.CheckState = CheckState.Checked Then
                 Item.CheckState = CheckState.Unchecked
                 CheckstateChanged = True
             End If
-            With ContextMenuFilters.Items.Item("FilterSeparator")
-                .Tag = .Tag + IIf(Enabled, 1, -1)
-                .Visible = (.Tag > 0)
-            End With
         End If
 
         Return CheckstateChanged
@@ -2305,7 +2047,7 @@ Public Class MainForm
         Dim ModifyImageList As New List(Of LoadedImageData)
 
         For Each ImageData As LoadedImageData In ComboImages.Items
-            If ImageData.Modified Then
+            If ImageData.Filter(FilterTypes.ModifiedFiles) Then
                 ModifyImageList.Add(ImageData)
             End If
         Next
@@ -2729,7 +2471,7 @@ Public Class MainForm
     Private Sub OEMNameFilterReset()
         _FilterOEMName.Clear()
         For Each ImageData As LoadedImageData In ComboImages.Items
-            OEMNameFilterAdd(ImageData.ScanInfo.OEMName, False)
+            OEMNameFilterAdd(ImageData.OEMName, False)
         Next
         _FilterOEMName.Populate()
     End Sub
@@ -3738,7 +3480,7 @@ Public Class MainForm
     End Sub
 
     Private Sub RefreshModifiedCount()
-        Dim Count As Integer = _FilterCounts(FilterTypes.ModifiedFiles)
+        Dim Count As Integer = _FilterCounts(FilterTypes.ModifiedFiles).Total
 
         ToolStripModified.Text = $"{Count} {"Image".Pluralize(Count)} Modified"
         ToolStripModified.Visible = (Count > 0)
@@ -3754,8 +3496,9 @@ Public Class MainForm
             BtnSaveAs.Enabled = False
             BtnExportDebug.Enabled = False
         Else
-            BtnSave.Enabled = CurrentImageData.Modified And Not CurrentImageData.ReadOnly
-            BtnSaveAs.Enabled = CurrentImageData.Modified
+            Dim Modified = CurrentImageData.Filter(FilterTypes.ModifiedFiles)
+            BtnSave.Enabled = Modified And Not CurrentImageData.ReadOnly
+            BtnSaveAs.Enabled = Modified
             'BtnExportDebug.Enabled = (CurrentImageData.Modified Or CurrentImageData.SessionModifications.Count > 0)
             BtnExportDebug.Enabled = False
         End If
@@ -3855,7 +3598,7 @@ Public Class MainForm
             Dim NewFilePath As String = ""
             Dim DoSave As Boolean = True
             Dim ImageData As LoadedImageData = ComboImages.Items(Index)
-            If ImageData.Modified Then
+            If ImageData.Filter(FilterTypes.ModifiedFiles) Then
                 If ImageData.ReadOnly Then
                     If MsgBoxNewFileName(ImageData.FileName) = MsgBoxResult.Ok Then
                         NewFilePath = GetNewFilePath(ImageData)
@@ -3881,7 +3624,7 @@ Public Class MainForm
         Next Index
         _SuppressEvent = False
 
-        FilterUpdate(FilterTypes.ModifiedFiles)
+        FilterUpdateMenuItem(FilterTypes.ModifiedFiles)
         RefreshModifiedCount()
     End Sub
 
@@ -3900,7 +3643,7 @@ Public Class MainForm
 
         Dim Result = DiskImageSave(CurrentImageData, NewFilePath)
         If Result Then
-            FilterUpdate(FilterTypes.ModifiedFiles)
+            FilterUpdateMenuItem(FilterTypes.ModifiedFiles)
             RefreshModifiedCount()
 
             If NewFileName Then
@@ -4031,9 +3774,7 @@ Public Class MainForm
         Dim ItemScanForm As New ItemScanForm(Me, ComboImages.Items, CurrentImageData, _Disk, False, ScanType.ScanTypeWin9xClean)
         ItemScanForm.ShowDialog()
 
-        For Counter = 0 To [Enum].GetNames(GetType(FilterTypes)).Length - 1
-            FilterUpdate(Counter)
-        Next
+        FilterUpdateAllMenuItems()
 
         RefreshModifiedCount()
         If _ScanRun Then
@@ -4086,6 +3827,7 @@ Public Class MainForm
     Private Sub BtnClearFilters_Click(sender As Object, e As EventArgs) Handles BtnClearFilters.Click
         If _FiltersApplied Then
             FiltersClear(False)
+            FilterUpdateAllMenuItems()
             ImageCountUpdate()
             ContextMenuFilters.Invalidate()
         End If
@@ -4373,7 +4115,7 @@ Public Class MainForm
                     tBrush = SystemBrushes.HighlightText
                 Else
                     Dim CurrentImageData As LoadedImageData = CB.Items(e.Index)
-                    If CurrentImageData IsNot Nothing AndAlso CurrentImageData.Modified Then
+                    If CurrentImageData IsNot Nothing AndAlso CurrentImageData.Filter(FilterTypes.ModifiedFiles) Then
                         tBrush = Brushes.Blue
                     Else
                         tBrush = SystemBrushes.WindowText

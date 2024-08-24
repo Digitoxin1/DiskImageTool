@@ -18,11 +18,7 @@
             FileBytes = New ImageByteArray(Data)
             _DirectoryCache = New Dictionary(Of UInteger, DirectoryCacheEntry)
             _BootSector = New BootSector(FileBytes)
-            If _BootSector.BPB.IsValid Then
-                _BPB = _BootSector.BPB
-            Else
-                _BPB = BuildBPB(GetFATMediaDescriptor)
-            End If
+            SetBPB()
 
             _FATTables = New FATTables(_BPB, FileBytes, FatIndex)
             _DiskType = InferFloppyDiskType()
@@ -175,11 +171,7 @@
         End Function
 
         Public Sub Reinitialize()
-            If _BootSector.BPB.IsValid Then
-                _BPB = _BootSector.BPB
-            Else
-                _BPB = BuildBPB(GetFATMediaDescriptor)
-            End If
+            SetBPB()
 
             _FATTables.Reinitialize(_BPB)
             _DiskType = InferFloppyDiskType()
@@ -266,6 +258,25 @@
 
             Return DiskType
         End Function
+
+        Private Sub SetBPB()
+            If _BootSector.BPB.IsValid Then
+                _BPB = _BootSector.BPB
+            Else
+                Dim FATMediaDescriptor = GetFATMediaDescriptor()
+
+                Dim DiskTypeFAT = GetFloppyDiskType(FATMediaDescriptor)
+                Dim DiskTypeSize = GetFloppyDiskType(_FileBytes.Length)
+
+                If DiskTypeFAT = FloppyDiskType.Floppy360 And DiskTypeSize = FloppyDiskType.Floppy180 Then
+                    FATMediaDescriptor = GetFloppyDiskMediaDescriptor(DiskTypeSize)
+                ElseIf DiskTypeFAT = FloppyDiskType.Floppy320 And DiskTypeSize = FloppyDiskType.Floppy160 Then
+                    FATMediaDescriptor = GetFloppyDiskMediaDescriptor(DiskTypeSize)
+                End If
+
+                _BPB = BuildBPB(FATMediaDescriptor)
+            End If
+        End Sub
     End Class
 
 End Namespace

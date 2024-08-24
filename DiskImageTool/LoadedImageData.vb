@@ -1,67 +1,55 @@
 ﻿Imports System.IO
 
-Public Class ImageDataScanInfo
-    Public Property DirectoryHasAdditionalData As Boolean = False
-    Public Property DirectoryHasBootSector As Boolean = False
-    Public Property DiskType As String = ""
-    Public Property HasBadSectors As Boolean = False
-    Public Property HasFATChainingErrors As Boolean = False
-    Public Property HasInvalidDirectoryEntries As Boolean = False
-    Public Property HasInvalidImageSize As Boolean = False
-    Public Property HasLongFileNames As Boolean = False
-    Public Property HasLostClusters As Boolean = False
-    Public Property HasMismatchedFATs As Boolean = False
-    Public Property HasMismatchedMediaDescriptor As Boolean = False
-    Public Property HasFreeClustersWithData As Boolean = False
-    Public Property HasValidCreated As Boolean = False
-    Public Property HasValidLastAccessed As Boolean = False
-    Public Property IsValidImage As Boolean = True
-    Public Property OEMName As String = ""
-    Public Property OEMNameFound As Boolean = False
-    Public Property OEMNameMatched As Boolean = False
-    Public Property OEMNameWin9x As Boolean = False
-    Public Property OEMNameVerified As Boolean = False
-    Public Property OEMNameUnverified As Boolean = False
-    Public Property CustomDiskFormat As Boolean = False
-    Public Property HasReservedBytesSet As Boolean = False
-    Public Property ImageKnown As Boolean = False
-    Public Property ImageUnknown As Boolean = False
-    Public Property ImageVerified As Boolean = False
-    Public Property ImageUnverified As Boolean = False
-    Public Property NoBPB As Boolean = False
-    Public Property CustomBootLoader As Boolean = False
-End Class
-
 Public Class LoadedImageData
+    Private ReadOnly _Filters() As Boolean
+
     Public Sub New(SourceFile As String)
+        _AppliedFilters = 0
         _BatchUpdated = False
         _BottomIndex = -1
         _Compressed = False
         _CompressedFile = ""
+        _DiskType = ""
         _FATIndex = 0
         _SourceFile = SourceFile
         _Modifications = Nothing
-        _Modified = False
+        _OEMName = ""
         _ReadOnly = False
-        _ScanInfo = New ImageDataScanInfo
         _Scanned = False
         _SortHistory = Nothing
+
+        Dim FilterCount As Integer = [Enum].GetNames(GetType(FilterTypes)).Length
+        ReDim _Filters(FilterCount - 1)
+        For Counter = 0 To FilterCount - 1
+            _Filters(Counter) = False
+        Next
     End Sub
 
     Public Property [ReadOnly] As Boolean
+    Public Property AppliedFilters As Integer
     Public Property BatchUpdated As Boolean
     Public Property BottomIndex As Integer
     Public Property CachedRootDir As Byte()
     Public Property Compressed As Boolean
     Public Property CompressedFile As String
+    Public Property DiskType As String
     Public Property FATIndex As UShort
     Public Property Modifications As Stack(Of DiskImage.DataChange())
-    Public Property Modified As Boolean
-    Public ReadOnly Property ScanInfo As ImageDataScanInfo
+    Public Property OEMName As String
     Public Property Scanned As Boolean
     Public Property SourceFile As String
     Public Property SortHistory As List(Of SortEntity)
     Public Shared Property StringOffset As Integer = 0
+
+    Public Property Filter(FilterType As FilterTypes) As Boolean
+        Get
+            Return _Filters(FilterType)
+        End Get
+
+        Set(value As Boolean)
+            _Filters(FilterType) = value
+        End Set
+    End Property
 
     Public Function DisplayPath() As String
         Dim FullPath = _SourceFile

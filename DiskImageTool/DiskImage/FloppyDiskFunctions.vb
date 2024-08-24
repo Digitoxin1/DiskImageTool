@@ -60,6 +60,10 @@
             Return BuildBPB(GetFloppyDiskParams(GetFloppyDiskType(MediaDescriptor)))
         End Function
 
+        Public Function GetFloppyDiskMediaDescriptor(Size As Integer) As Byte
+            Return GetFloppyDiskMediaDescriptor(GetFloppyDiskType(Size))
+        End Function
+
         Public Function GetFloppyDiskMediaDescriptor(Type As FloppyDiskType) As Byte
             Select Case Type
                 Case FloppyDiskType.Floppy160
@@ -275,6 +279,33 @@
             Next
 
             Return FloppyDiskType.FloppyUnknown
+        End Function
+
+        Public Function GetFloppyDiskSize(Type As FloppyDiskType) As Integer
+            Select Case Type
+                Case FloppyDiskType.Floppy160
+                    Return 163840
+                Case FloppyDiskType.Floppy180
+                    Return 184320
+                Case FloppyDiskType.Floppy320
+                    Return 327680
+                Case FloppyDiskType.Floppy360
+                    Return 368640
+                Case FloppyDiskType.Floppy720
+                    Return 737280
+                Case FloppyDiskType.Floppy1200
+                    Return 1228800
+                Case FloppyDiskType.Floppy1440
+                    Return 1474560
+                Case FloppyDiskType.FloppyDMF2048
+                    Return 1720320
+                Case FloppyDiskType.Floppy2880
+                    Return 1884160
+                Case FloppyDiskType.FloppyXDF
+                    Return 2949120
+                Case Else
+                    Return 0
+            End Select
         End Function
 
         Public Function GetFloppyDiskType(Size As Integer) As FloppyDiskType
