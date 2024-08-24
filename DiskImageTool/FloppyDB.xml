@@ -1195,8 +1195,11 @@
     </release>
   </title>
   <title name="Chuck Yeager's Advanced Flight Simulator" publisher="Electronic Arts, Inc.">
-    <release year="1987" version="1.0" media="360K" status="V">
+    <release year="1987-05" version="1.0" media="360K" status="V">
       <disk md5="E9BE09934D3F2FE297DE25D2FEF7F4D9" md5_cp="76CCB344A6989DC628D5689B1CD67A85" cp="EA Interlock"/>
+    </release>
+    <release year="1987-07" version="1.0" media="360K" status="V">
+      <disk md5="8A07A20A114B9D9DA692FF8473B72080"/>
     </release>
   </title>
   <title name="Chuck Yeager's Advanced Flight Trainer" publisher="Electronic Arts, Inc.">
@@ -3696,7 +3699,8 @@
   </title>
   <title name="Inca II: Wiracocha" publisher="Coktel Vision">
     <release year="1993" media="1.44M" status="U" region="Europe">
-      <disk md5="D11B6C74D2A3EA2F3AD720EDF930B01F" disk="1"/>
+      <disk md5="D11B6C74D2A3EA2F3AD720EDF930B01F" disk="1" language="English, French, German"/>
+      <disk md5="84E0D41BBD573C633D2F34E4A2D6872A" disk="1" language="English, French, German, Spanish, Italian"/>
       <disk md5="EEE03A3E55336D4D42C1240EB5BF16D4" disk="2"/>
       <disk md5="0821046A398E90DBD8485C8C36512D6A" disk="3"/>
       <disk md5="5E7E4A6853D4E4858C03DEDA5958DBC6" disk="4"/>
@@ -3916,6 +3920,11 @@
       </media>
       <media media="720K" status="V">
         <disk md5="202F79834D6260DFDC2AC99C460CC248"/>
+      </media>
+    </release>
+    <release year="1993">
+      <media media="720K" status="V">
+        <disk md5="30D38CEDF1F10B7B991546E302085595"/>
       </media>
     </release>
   </title>
@@ -9603,13 +9612,19 @@
       <disk md5="719949667D61104BB0A9E4EDBEB925C3" disk="1"/>
       <disk md5="2DCB0915D97D3BDAB050FCB92332FDA0" disk="2"/>
     </release>
-    <release year="1990" status="V">
+    <release year="1990-03" status="V">
       <media media="360K">
         <disk md5="45AF1E1BACF26A4C6056CE034F9E95A2" disk="1"/>
         <disk md5="36B3AA001D4652E805426711C7AE91A6" disk="2"/>
       </media>
       <media media="720K">
         <disk md5="D022C3384A4A215986A9306F2727EFBA"/>
+      </media>
+    </release>
+    <release year="1990-05" status="V">
+      <media media="360K">
+        <disk md5="AED6E946BD4D9C12A65683A84328F7B4" disk="1"/>
+        <disk md5="0CBEEA085A74450416B8FED8E86EC310" disk="2"/>
       </media>
     </release>
   </title>
@@ -11674,6 +11689,17 @@
       <disk md5="8B24C57BD4E00272CD16C534EE0A6511"/>
     </release>
   </title>
+  <title name="Wibarm" publisher="Brøderbund Software, Inc.">
+    <release year="1989" version="1.0">
+      <media media="360K" status="V">
+        <disk md5="0293120C35FFE407647F726B6F7B2775" disk="1"/>
+        <disk md5="3B3AD2E45CC8D6CFC77C004FCB0B14DE" disk="2"/>
+      </media>
+      <media media="720K" status="U">
+        <disk md5="D5E81EA6E1A522413616F58E15B2E8BF"/>
+      </media>
+    </release>
+  </title>
   <title name="Will Harvey's Music Construction Set" publisher="Electronic Arts, Inc.">
     <release year="1984" media="360K" status="V" os="PC Booter">
       <disk md5="5B88FE36275E5659D17E2EB50542576C" cp="Electronic Arts IBM Interlock" bootSectorCRC32="F2A2521C">
@@ -11993,6 +12019,9 @@
   <title name="World Tour Golf" publisher="Electronic Arts, Inc.">
     <release year="1986" media="360K" status="V">
       <disk md5="9785BD4DE40CEB7028ED12483C621360" md5_cp="BB276B3716B88D42019DFA4A3290A066" cp="EA Interlock"/>
+    </release>
+    <release year="1987" media="360K" status="V">
+      <disk md5="983E4B628DA5EDCB55A8536B990797AF"/>
     </release>
   </title>
   <title name="World Tour Tennis" publisher="Electronic Arts, Inc.">

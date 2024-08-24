@@ -2,6 +2,7 @@
 Imports System.IO
 Imports System.Net
 Imports System.Text
+Imports System.Text.RegularExpressions
 Imports DiskImageTool.DiskImage
 Imports BootSectorOffsets = DiskImageTool.DiskImage.BootSector.BootSectorOffsets
 Imports BPBOffsets = DiskImageTool.DiskImage.BiosParameterBlock.BPBOoffsets
@@ -1562,6 +1563,12 @@ Public Class MainForm
                 Next
             End If
 
+            Dim r As Regex = Nothing
+            If TextFilter.Length > 0 Then
+                Dim Pattern As String = "(?:\W|^|_)(" & Regex.Escape(TextFilter) & ")"
+                r = New Regex(Pattern, RegexOptions.IgnoreCase)
+            End If
+
             For Each ImageData As LoadedImageData In ComboImages.Items
                 Dim ShowItem As Boolean = True
 
@@ -1575,8 +1582,7 @@ Public Class MainForm
                 End If
 
                 If ShowItem AndAlso TextFilter.Length > 0 Then
-                    Dim FilePath = ImageData.DisplayPath.ToLower
-                    ShowItem = FilePath.StartsWith(TextFilter) OrElse FilePath.Contains(" " & TextFilter) OrElse FilePath.Contains("\" & TextFilter)
+                    ShowItem = r.IsMatch(ImageData.DisplayPath)
                 End If
 
                 If ShowItem AndAlso HasOEMNameFilter Then
@@ -1598,32 +1604,32 @@ Public Class MainForm
 
             FilterUpdateAllMenuItems()
 
-            If ResetSubFilters Then
-                SubFiltersPopulate()
-            End If
+                If ResetSubFilters Then
+                    SubFiltersPopulate()
+                End If
 
-            If ComboImagesFiltered.SelectedIndex = -1 AndAlso ComboImagesFiltered.Items.Count > 0 Then
-                ComboImagesFiltered.SelectedIndex = 0
-            End If
+                If ComboImagesFiltered.SelectedIndex = -1 AndAlso ComboImagesFiltered.Items.Count > 0 Then
+                    ComboImagesFiltered.SelectedIndex = 0
+                End If
 
-            MainMenuFilters.BackColor = Color.LightGreen
+                MainMenuFilters.BackColor = Color.LightGreen
 
-            ComboImagesFiltered.EndUpdate()
-            ComboImagesFiltered.Visible = True
-            ComboImagesFiltered.Enabled = ComboImagesFiltered.Items.Count > 0
-            If ComboImagesFiltered.Enabled Then
-                ComboImagesFiltered.DrawMode = DrawMode.OwnerDrawFixed
+                ComboImagesFiltered.EndUpdate()
+                ComboImagesFiltered.Visible = True
+                ComboImagesFiltered.Enabled = ComboImagesFiltered.Items.Count > 0
+                If ComboImagesFiltered.Enabled Then
+                    ComboImagesFiltered.DrawMode = DrawMode.OwnerDrawFixed
+                Else
+                    ComboImagesFiltered.DrawMode = DrawMode.Normal
+                End If
+                ComboImages.Visible = False
+
+                _FiltersApplied = True
+                BtnClearFilters.Enabled = True
+
+                Cursor.Current = Cursors.Default
             Else
-                ComboImagesFiltered.DrawMode = DrawMode.Normal
-            End If
-            ComboImages.Visible = False
-
-            _FiltersApplied = True
-            BtnClearFilters.Enabled = True
-
-            Cursor.Current = Cursors.Default
-        Else
-            If _FiltersApplied Then
+                If _FiltersApplied Then
                 FiltersClear(True)
                 FilterUpdateAllMenuItems()
             End If
@@ -2233,11 +2239,7 @@ Public Class MainForm
         }
 
         If DisplayHexViewForm(HexViewSectorData) Then
-            Dim CurrentImageData As LoadedImageData = ComboImages.SelectedItem
-            ItemScan(ItemScanTypes.FreeClusters, _Disk, CurrentImageData, True)
-            Dim MD5 = MD5Hash(_Disk.Data.Data)
-            PopulateHashPanel(_Disk, MD5)
-            RefreshCurrentState()
+            DiskImageRefresh()
         End If
     End Sub
 
