@@ -336,12 +336,20 @@
       <disk md5="BF9BFA1D6C33B3D8C559E85662C667D8" disk="5"/>
     </release>
   </title>
-  <title name="Alter Ego" publisher="Activision">
+  <title name="Alter Ego" publisher="Activision, Inc.">
     <release variation="Male Version" year="1985" media="360K" status="V">
       <disk md5="CDFAE607808E9B49403019E0DF4A4BA6" disk="1" cp="Activision sector overlap"/>
       <disk md5="518BD58619F6A39D55B88928751DDB9C" disk="2"/>
       <disk md5="1A742048B950E805573630C06F7EAE69" disk="3"/>
     </release>
+  </title>
+  <title name="Altered Beast" publisher="Sega Corporation">
+	<release year="1990">
+		<media media="360K" status="V">
+			<disk md5="F5050FC741ACCD807D4468FBABAAF513" md5_cp="776316DB5DA2BF7431BBF8EEB36FF8E6" disk="1" cp="Advanced Software Technologies"/>
+			<disk md5="70A9276087E46F6B0D27DA9873049508" disk="2"/>
+		</media>
+	</release>
   </title>
   <title name="Altered Destiny" publisher="Accolade, Inc.">
     <release year="1990" version="1.01">
@@ -565,7 +573,7 @@
         <disk md5="912F3FBBF4124EDBD7840085226EF152" disk="3"/>
       </media>
     </release>
-    <release year="1992" media="720K" status="U" region="Germany" publisher="Ocean Software, LTD">
+    <release year="1992" media="720K" status="U" region="Germany" publisher="Ocean Software Ltd.">
       <disk md5="CC70A6EE381082E7C32D9157A0F34995" disk="1"/>
       <disk md5="19258BF7F16D25473F7B50DE1D2283F5" disk="2"/>
       <disk md5="2204C46BF9E117A55E1E2A241AD1D000" disk="3"/>
@@ -836,7 +844,7 @@
   </title>
   <title name="Battlezone" publisher="Atarisoft">
     <release year="1983" media="160K" status="V" os="PC Booter">
-      <disk md5="DBF5868E8D0398809E9F99C3686F20A6" cp="Key Disk"/>
+      <disk md5="00053F53E7E5CDCA322FF2DA957873C6"/>
     </release>
   </title>
   <title name="Betrayal at Krondor" publisher="Sierra On-Line, Inc.">
@@ -1152,7 +1160,7 @@
   </title>
   <title name="Centipede" publisher="Atarisoft">
     <release year="1983" media="160K" status="V" os="PC Booter">
-      <disk md5="0A8D7D01B375ADEA19B47F6051E87990" cp="Key Disk"/>
+      <disk md5="6CD051CFCECD925212A9E31AAFE88A21" cp="Non-standard Sector Sizes"/>
     </release>
   </title>
   <title name="Centurion: Defender of Rome" publisher="Electronic Arts, Inc.">
@@ -1582,7 +1590,7 @@
       <disk md5="DE63A80C5E37CE778B85A522132345B1" cp="On-Line Systems"/>
     </release>
     <release year="1984-06" version="PCJr" media="180K" status="V">
-      <disk md5="6F51FA89B6F0938ADEC37FAA0A7D481F" md5_cp="BCE94D05053C3D7DB77B8E1615443E6C" cp="Formaster Copylock v1/v2.0"/>
+      <disk md5="34A94FE8913BA53506A48CF77284029C" md5_cp="BCE94D05053C3D7DB77B8E1615443E6C" cp="Formaster Copylock v1/v2.0"/>
     </release>
   </title>
   <title name="Crossword Magic" publisher="Mindscape, Inc.">
@@ -1632,7 +1640,7 @@
   </title>
   <title name="Cutthroats" publisher="Infocom, Inc.">
     <release year="1984" version="r23, Serial 840809, Int. 3D" media="160K" status="V" os="PC Booter">
-      <disk md5="7CFE9860FD997A99E030607474EA3895" cp="Key Disk"/>
+      <disk md5="7CFE9860FD997A99E030607474EA3895" cp="Non-standard Sector Sizes"/>
     </release>
   </title>
   <title name="Cyber Empires" publisher="Strategic Simulations, Inc.">
@@ -1775,13 +1783,13 @@
   </title>
   <title name="Deadline" publisher="Infocom, Inc.">
     <release year="1982" version="r22, Serial 820809" media="160K" status="U" os="PC Booter">
-      <disk md5="0F4C642BD11A7A682C4940CB1DB1301D" cp="Key Disk"/>
+      <disk md5="0F4C642BD11A7A682C4940CB1DB1301D" cp="Non-standard Sector Sizes"/>
     </release>
     <release year="1982" version="r26, Serial 821108, Int. 3A" media="160K" status="U" os="PC Booter">
-      <disk md5="7903BA78E911DF2048DF59C872D48249" cp="Key Disk"/>
+      <disk md5="7903BA78E911DF2048DF59C872D48249" cp="Non-standard Sector Sizes"/>
     </release>
     <release year="1983" version="r27, Serial 831005, Int. 3B" media="160K" status="U" os="PC Booter">
-      <disk md5="E861DA1F03DEC84480949045CE0FD599" cp="Key Disk"/>
+      <disk md5="E861DA1F03DEC84480949045CE0FD599" cp="Non-standard Sector Sizes"/>
     </release>
     <release year="1985" version="r27, Serial 831005, Int. 3L" media="180K" status="V">
       <disk md5="37EBEE4335B06771921C0216ADF4EADA"/>
@@ -1822,7 +1830,7 @@
   </title>
   <title name="Defender" publisher="Atarisoft">
     <release year="1983" media="160K" status="V" os="PC Booter">
-      <disk md5="5EE9854DDDD8730B970A6B4E63AAF44D" cp="Key Disk"/>
+      <disk md5="DCD6151CDCDA5D70FD49BCBFB5591091" cp="Atarisoft"/>
     </release>
   </title>
   <title name="Defender of the Crown" publisher="Mindscape, Inc.">
@@ -1886,7 +1894,7 @@
   </title>
   <title name="Dig Dug" publisher="Atarisoft">
     <release year="1983" media="160K" status="V" os="PC Booter">
-      <disk md5="F250AF39A31020158E0B7D3214AB2329" cp="Key Disk"/>
+      <disk md5="997229E37DB9CD10EC30B3B694F5E705" cp="Non-standard Sector Sizes"/>
     </release>
   </title>
   <title name="Discworld" publisher="Psygnosis Limited">
@@ -1925,7 +1933,7 @@
   </title>
   <title name="Donkey Kong" publisher="Atarisoft">
     <release year="1983" media="160K" status="V" os="PC Booter">
-      <disk md5="4C9E5157C6FA6921989D8364A1040480" cp="Key Disk"/>
+      <disk md5="8B6F06080D00FCA7431476A3100CC1E4" cp="Non-standard Sector Sizes"/>
     </release>
   </title>
   <title name="Don't Go Alone" publisher="Accolade, Inc.">
@@ -2303,10 +2311,10 @@
   </title>
   <title name="Enchanter" publisher="Infocom, Inc.">
     <release year="1983" version="r10, Serial 830810, Int. 3A" media="160K" status="U" os="PC Booter">
-      <disk md5="238508E805F6D661F39651923BF5C6C0" cp="Key Disk"/>
+      <disk md5="238508E805F6D661F39651923BF5C6C0" cp="Non-standard Sector Sizes"/>
     </release>
     <release year="1983" version="r16, Serial 831118, Int. 3B" media="160K" status="U" os="PC Booter">
-      <disk md5="3FCAE82C72F3748D22D248C275E40D1B" cp="Key Disk"/>
+      <disk md5="3FCAE82C72F3748D22D248C275E40D1B" cp="Non-standard Sector Sizes"/>
     </release>
     <release year="1985" version="r24, Serial 851118, Int. 3M2" media="180K" status="V">
       <disk md5="08D1B6C123E02AF8791178B7F74D0EAC"/>
@@ -2880,7 +2888,7 @@
   </title>
   <title name="Galaxian" publisher="Atarisoft">
     <release year="1983" media="160K" status="V" os="PC Booter">
-      <disk md5="8D997C04F9EFAB0833378E89C8937AE7" cp="Key Disk"/>
+      <disk md5="71CE9394504A5F6B3F1CFBA5EFDB0060" cp="Non-standard Sector Sizes"/>
     </release>
   </title>
   <title name="Galleons of Glory: The Secret Voyage of Magellan" publisher="Brøderbund Software, Inc.">
@@ -2948,7 +2956,7 @@
       <disk md5="74A0EB95394DBDC24F270FDA703421FC"/>
     </release>
   </title>
-  <title name="Ghostbusters" publisher="Activision">
+  <title name="Ghostbusters" publisher="Activision, Inc.">
     <release year="1985" version="Tandy / PCjr" media="160K" status="V" os="PC Booter">
       <disk md5="AD88AEAE559F1067156B7722D0E3A551" cp="Activision sector overlap"/>
     </release>
@@ -3131,7 +3139,7 @@
   </title>
   <title name="Gremlins" publisher="Atarisoft">
     <release year="1984" media="160K" status="V" os="PC Booter">
-      <disk md5="27063693293E6D900311D562444F7C70" cp="Key Disk"/>
+      <disk md5="E59DC4C8B83B704BF399AAF453C3EBF6" cp="Non-standard Sector Sizes"/>
     </release>
   </title>
   <title name="Gunboat" publisher="Accolade, Inc.">
@@ -3186,7 +3194,7 @@
       <disk md5="978D52297C4D7273CB585F78745AA915" disk="C"/>
     </release>
   </title>
-  <title name="Hacker II: The Doomsday Papers" publisher="Activision">
+  <title name="Hacker II: The Doomsday Papers" publisher="Activision, Inc.">
     <release year="1986" media="360K" status="V" os="PC Booter">
       <disk md5="950CE0A2235504760117571C52EFF43C"/>
     </release>
@@ -3930,7 +3938,7 @@
   </title>
   <title name="Infidel" publisher="Infocom, Inc.">
     <release year="1983" version="r22, Serial 830916, Int. 3A" media="160K" status="U" os="PC Booter">
-      <disk md5="5AD2F10843CD724B8526E282AF121207" cp="Key Disk"/>
+      <disk md5="5AD2F10843CD724B8526E282AF121207" cp="Non-standard Sector Sizes"/>
     </release>
     <release year="1985" version="r22, Serial 830916, Int. 3L" media="180K" status="V">
       <disk md5="49BA937B95B0BCC8ECC10429C42DE73E"/>
@@ -4198,7 +4206,7 @@
   </title>
   <title name="Jungle Hunt" publisher="Atarisoft">
     <release year="1984" media="160K" status="V" os="PC Booter">
-      <disk md5="92560B32E0A0608CEE392FBE5813EB39" cp="Key Disk"/>
+      <disk md5="D6DB1092ABE42B5E1526155C2720C55A" cp="Non-standard Sector Sizes"/>
     </release>
   </title>
   <title name="Jungle Strike" publisher="Electronic Arts, Inc.">
@@ -4261,10 +4269,10 @@
       <disk md5="2A1C283F576D51185EB9EE5F6B3F1DC1" cp="Non-standard Sector Sizes"/>
     </release>
     <release year="1984-05" version="CGA" media="360K" status="V" os="PC Booter">
-      <disk md5="AF239CA113E7CF7203F437A80229BD7F" md5_cp="2290A2EE176D9EF8C5B39CBBF951F2A7" cp="Formaster Copylock v1/v2.0"/>
+      <disk md5="232F5B5C607F72B6DFADB2C935653F48" md5_cp="2290A2EE176D9EF8C5B39CBBF951F2A7" cp="Formaster Copylock v1/v2.0"/>
     </release>
     <release year="1984-08" version="CGA / RGB" media="360K" status="V" os="PC Booter">
-      <disk md5="6FCAEB50CFB733B950B1B54E4F7D404A" md5_cp="7F6A7F78DFF25FB3ACE60411EE2CC09C" cp="Formaster Copylock v2.2"/>
+      <disk md5="C037DC8CF106F5FD68171602EF2E782D" md5_cp="7F6A7F78DFF25FB3ACE60411EE2CC09C" cp="Formaster Copylock v2.2"/>
     </release>
     <release year="1985" version="01.01.00" media="360K" status="V" publisher="Tandy Corporation" os="PC Booter">
       <disk md5="A31F40631BEA8394033ED9FEF2CE6498" cp="Sector ID Duplication"/>
@@ -6486,7 +6494,7 @@
   </title>
   <title name="Moon Patrol" publisher="Atarisoft">
     <release year="1983" media="160K" status="V" os="PC Booter">
-      <disk md5="5A07AB6C83F52078994C05627E54448F" cp="Key Disk"/>
+      <disk md5="9E2E5467F6FEE14BC46623C141FCBDFB" cp="Non-standard Sector Sizes"/>
     </release>
   </title>
   <title name="Moonmist" publisher="Infocom, Inc.">
@@ -6507,15 +6515,15 @@
   </title>
   <title name="Mr. Cool" publisher="Sierra On-Line, Inc." os="PC Booter">
     <release year="1984-03" version="CGA" media="180K" status="V">
-      <disk md5="2C5F06428B065ADDA12A5C50631B93E1" md5_cp="24345DB7861ED8B6D7EBDB5679AD7569" cp="Formaster Copylock v1/v2.0"/>
+      <disk md5="4DCF50D6933CFD809D244499E339FEA2" md5_cp="24345DB7861ED8B6D7EBDB5679AD7569" cp="Formaster Copylock v1/v2.0"/>
     </release>
     <release year="1984-04" version="CGA / PCjr" media="180K" status="V">
-      <disk md5="3F01CB96F3D0E572E1E0B9B83FB93784" md5_cp="4E9D29C0BF285E42170288DBE512568C" cp="Formaster Copylock v1/v2.0"/>
+      <disk md5="DDBEBE78F6DE539515EB4412FB3FB313" md5_cp="4E9D29C0BF285E42170288DBE512568C" cp="Formaster Copylock v1/v2.0"/>
     </release>
   </title>
   <title name="Ms. Pac-Man" publisher="Atarisoft">
     <release year="1983" media="160K" status="V" os="PC Booter">
-      <disk md5="D096F5AA21DE145D5D5D4A18955CCE9C" cp="Key Disk"/>
+      <disk md5="473CE4EAD85437DC6919ADA9D08DE7CF"/>
     </release>
   </title>
   <title name="Murder on the Zinderneuf" publisher="Electronic Arts, Inc.">
@@ -6666,7 +6674,7 @@
   </title>
   <title name="Oil's Well" publisher="Sierra On-Line, Inc.">
     <release year="1984" media="180K" status="V" os="PC Booter">
-      <disk md5="0167599F7AC71200A7FD84E5771B61D6" md5_cp="22A69FF2D1E8493F935651616E7CCB1B" cp="Formaster Copylock v2.2"/>
+      <disk md5="BFF2B47F2776A244470BE17B8CB96814" md5_cp="22A69FF2D1E8493F935651616E7CCB1B" cp="Formaster Copylock v2.2"/>
     </release>
     <release year="1990" version="1.15, Int. 9.13.90" media="720K" status="V">
       <disk md5="A74CBB4204DB87ACDFF207C5BB50D359" disk="1"/>
@@ -6773,7 +6781,7 @@
   </title>
   <title name="Pac-Man" publisher="Atarisoft">
     <release year="1983" media="160K" status="V" os="PC Booter">
-      <disk md5="FD0B8E688AF2BFF1E5D99CEBFCF5CCBA" cp="Key Disk"/>
+      <disk md5="CABEF1529A75C51F6054EB8CAEE9CA35" cp="Non-standard Sector Sizes"/>
     </release>
   </title>
   <title name="Paganitzu" publisher="Apogee Software, Ltd.">
@@ -6926,7 +6934,7 @@
       </disk>
     </release>
   </title>
-  <title name="Pinball Wizard" publisher="Accolate, Inc.">
+  <title name="Pinball Wizard" publisher="Accolade, Inc.">
     <release year="1987" media="360K" status="V">
       <disk md5="EBCD85BF044A2B60DD8AC0FD3860C1AA" md5_cp="6DC7AD5106AC8F060F90CD87267AC54C" cp="Formaster Copylock v2.2"/>
     </release>
@@ -6963,10 +6971,10 @@
   </title>
   <title name="Planetfall" publisher="Infocom, Inc.">
     <release year="1983" version="r26, Serial 831014, Int. 3B" media="160K" status="U" os="PC Booter">
-      <disk md5="E84A7B1A8C948100EC6786CEDDC93B06" cp="Key Disk"/>
+      <disk md5="E84A7B1A8C948100EC6786CEDDC93B06" cp="Non-standard Sector Sizes"/>
     </release>
     <release year="1984" version="r29, Serial 840118, Int. 3D" media="160K" status="U" os="PC Booter">
-      <disk md5="DC063EFF3D0F48D11F01EA2270F4C443" cp="Key Disk"/>
+      <disk md5="DC063EFF3D0F48D11F01EA2270F4C443" cp="Non-standard Sector Sizes"/>
     </release>
     <release year="1985" version="r29, Serial 840118, Int. 3L" media="180K" status="V">
       <disk md5="17C3A3B6EECA723834B063B0C2D53112"/>
@@ -7241,7 +7249,7 @@
       <disk md5="82B611EC4D171AD964A20DD791103694"/>
     </release>
   </title>
-  <title name="Power Drift" publisher="Activision">
+  <title name="Power Drift" publisher="Activision, Inc.">
     <release year="1990" media="720K" status="V">
       <disk md5="094FD39534DAFFC9AE14D575025EB8D8" disk="CGA Disk / MCGA Disk"/>
       <disk md5="23B29218E21FA8322F5F659964C43D6A" disk="Game Disk / EGA Disk"/>
@@ -7263,7 +7271,7 @@
       <disk md5="BD41081F72A6B8FC294D99E3E4433720"/>
     </release>
   </title>
-  <title name="PowerHits: Battletech" publisher="Activision">
+  <title name="PowerHits: Battletech" publisher="Activision, Inc.">
     <release year="1992" version="1.01">
       <media media="1.2M" status="U">
         <disk md5="2DF652C1FFFE4AB50E78673E0EB2C540" disk="1"/>
@@ -7276,7 +7284,7 @@
       </media>
     </release>
   </title>
-  <title name="PowerHits: Sci-Fi" publisher="Activision">
+  <title name="PowerHits: Sci-Fi" publisher="Activision, Inc.">
     <release year="1992" status="V">
       <media media="1.2M">
         <disk md5="0080768BB6B6898BC822D506AB14B874" disk="1" status="U"/>
@@ -7571,7 +7579,7 @@
       <disk md5="DCB3A2C14BBD7E590B65360D5065A2AB" disk="B"/>
     </release>
   </title>
-  <title name="Rampage" publisher="Activision">
+  <title name="Rampage" publisher="Activision, Inc.">
     <release year="1988" version="1.0" media="360K" status="V">
       <disk md5="A8380C384CC5EBED8041BDFC54FA1ED5" cp="Xidex Magnetics (XEMAG) XELOK v2"/>
     </release>
@@ -7895,7 +7903,7 @@
   </title>
   <title name="Robotron: 2084" publisher="Atarisoft">
     <release year="1983" media="160K" status="V" os="PC Booter">
-      <disk md5="6A60F273314E3B09A9091D2ED48C5E71" cp="Key Disk"/>
+      <disk md5="3D1A7AD353044990CA6A876DDB6D3134" cp="Non-standard Sector Sizes"/>
     </release>
   </title>
   <title name="Rogue" publisher="Epyx, Inc.">
@@ -8028,7 +8036,7 @@
   </title>
   <title name="Seastalker" publisher="Infocom, Inc.">
     <release year="1984" version="r15, Serial 840501, Int. 3C" media="160K" status="U" os="PC Booter">
-      <disk md5="F01178E593E318D79F25818B6C98FAAC" cp="Key Disk"/>
+      <disk md5="F01178E593E318D79F25818B6C98FAAC" cp="Non-standard Sector Sizes"/>
     </release>
     <release year="1985" version="r16, Serial 850603, Int. 3L" media="180K" status="V">
       <disk md5="8C608E03EE3E0F601AAFC1F8165492EE"/>
@@ -8232,7 +8240,7 @@
       <disk md5="46D4A87E54F55A65CB63760203C2189A" disk="5"/>
     </release>
   </title>
-  <title name="Shanghai II: Dragon's Eye" publisher="Activision">
+  <title name="Shanghai II: Dragon's Eye" publisher="Activision, Inc.">
     <release year="1990" status="V">
       <media media="360K">
         <disk md5="5EEDEC5959802311C895681758977621" disk="1"/>
@@ -8459,7 +8467,7 @@
         <disk md5="D6B1C76EA94C68C078EDB601D2F2E372" disk="Install Disk / Program Disk"/>
       </media>
     </release>
-    <release year="1992" version="1.06G" region="Germany" publisher="Ocean Software, LTD">
+    <release year="1992" version="1.06G" region="Germany" publisher="Ocean Software Ltd.">
       <media media="360K" status="U">
         <disk md5="8878B764637E07334EE8A5432D1371B1" disk="Data Disk"/>
         <disk md5="01A8B49FFD9FB844CBFA3F3C02015166" disk="Install Disk"/>
@@ -8651,7 +8659,7 @@
       <disk md5="540886ADB6C4E13A99ACFA0A272723C0" disk="Data Disk 3"/>
       <disk md5="94D85C14703858639DBBA7673EBCAEA7" disk="Install Disk"/>
     </release>
-    <release year="1991" version="1.0" status="V" region="Europe" publisher="Ocean Software, LTD">
+    <release year="1991" version="1.0" status="V" region="Europe" publisher="Ocean Software Ltd.">
       <media media="360K">
         <disk md5="533AAFE3CFFDDFD7211CD7D97633E02B" disk="Data Disk 1"/>
         <disk md5="482490904FDDD997607B2B84E7CA6573" disk="Data Disk 2"/>
@@ -8807,10 +8815,10 @@
   </title>
   <title name="Sorcerer" publisher="Infocom, Inc.">
     <release year="1984" version="r4, Serial 840131, Int. 3B" media="160K" status="U" os="PC Booter">
-      <disk md5="BC2F0F96FCB70DAB9A2850D6388B95DF" cp="Key Disk"/>
+      <disk md5="BC2F0F96FCB70DAB9A2850D6388B95DF" cp="Non-standard Sector Sizes"/>
     </release>
     <release year="1984" version="r6, Serial 840508, Int. 3D" media="160K" status="U" os="PC Booter">
-      <disk md5="183C00687F1334BCE2FE79BDEE3B7E6A" cp="Key Disk"/>
+      <disk md5="183C00687F1334BCE2FE79BDEE3B7E6A" cp="Non-standard Sector Sizes"/>
     </release>
     <release year="1985" version="r6, Serial 840508, Int. 3L" media="180K" status="V">
       <disk md5="78D2BE98B9362BC77F14B6804EDA004E"/>
@@ -9580,7 +9588,7 @@
   </title>
   <title name="Starcross" publisher="Infocom, Inc.">
     <release year="1982" version="r17, Serial 821021, Int. 3A" media="160K" status="U" os="PC Booter">
-      <disk md5="6BD011439FB48C2A638BDC0231B6272D" cp="Key Disk"/>
+      <disk md5="6BD011439FB48C2A638BDC0231B6272D" cp="Non-standard Sector Sizes"/>
     </release>
     <release year="1985" version="r17, Serial 821021, Int. 3L" media="180K" status="V">
       <disk md5="A9DDE5ADF03C2ABD9F6075C309C5F6F3"/>
@@ -9629,8 +9637,14 @@
     </release>
   </title>
   <title name="Stargate" publisher="Atarisoft">
-    <release year="1983" media="160K" status="U" os="PC Booter">
-      <disk md5="2B8CB6E574E86FBF32B718DEAEE5903C" cp="Key Disk"/>
+	<release year="1983" media="160K" status="V" os="PC Booter">
+      <disk md5="E4A24F296B4F40F953DEC65C63DC0F0D" cp="Atarisoft"/>
+    </release>
+    <release year="1983" media="160K" status="V" os="PC Booter">
+      <disk md5="2B8CB6E574E86FBF32B718DEAEE5903C" cp="Atarisoft"/>
+    </release>
+	 <release year="1983" media="160K" status="V" os="PC Booter">
+      <disk md5="2ABD43D1831678D40F7DFA3C76FFE12F" cp="Atarisoft"/>
     </release>
   </title>
   <title name="Starglider II" publisher="Rainbird Software">
@@ -9830,7 +9844,7 @@
       </disk>
     </release>
   </title>
-  <title name="Super Hang-On" publisher="Data East USA">
+  <title name="Super Hang-On" publisher="Data East USA, Inc.">
     <release year="1989" media="360K" status="V">
       <disk md5="AA0BD4B75DB3986E1A72614555ECCBAB" md5_cp="85A5ABC70AE379186F2D0B5C276BAE13" cp="Xidex Magnetics (XEMAG) XELOK v2 variant"/>
     </release>
@@ -9894,12 +9908,12 @@
   </title>
   <title name="Suspect" publisher="Infocom, Inc.">
     <release year="1984" version="r14, Serial 841005, Int. 3D" media="160K" status="U" os="PC Booter">
-      <disk md5="DEA65EB9694AF02D78FCFBB880F046C5" cp="Key Disk"/>
+      <disk md5="DEA65EB9694AF02D78FCFBB880F046C5" cp="Non-standard Sector Sizes"/>
     </release>
   </title>
   <title name="Suspended" publisher="Infocom, Inc.">
     <release year="1983" version="r8, Serial 830521, Int. 3A" media="160K" status="U" os="PC Booter">
-      <disk md5="85083D8EB2966872850D9F3EF336D5FE" cp="Key Disk"/>
+      <disk md5="85083D8EB2966872850D9F3EF336D5FE" cp="Non-standard Sector Sizes"/>
     </release>
     <release year="1985" version="r8, Serial 830521, Int. 3L" media="180K" status="V">
       <disk md5="577151B9A9167E023F3F64C0719EC328"/>
@@ -10350,7 +10364,7 @@
   </title>
   <title name="The Four-in-One Infocom Sampler" publisher="Infocom, Inc.">
     <release year="1984" version="r26, Serial 840731, Int. 3D" media="160K" status="U" os="PC Booter">
-      <disk md5="B409F12889D1440AE47FE2F77DEBEBFE" cp="Key Disk"/>
+      <disk md5="B409F12889D1440AE47FE2F77DEBEBFE" cp="Non-standard Sector Sizes"/>
     </release>
     <release year="1985" version="r58, Serial 850402, Int. 3L" media="180K" status="V">
       <disk md5="F879A3D4B65ECEFF2FCD40FC4B320D5D"/>
@@ -10405,10 +10419,10 @@
   </title>
   <title name="The Hitchhiker's Guide to the Galaxy" publisher="Infocom, Inc.">
     <release year="1984" version="r47, Serial 840914, Int. 3D" media="160K" status="U" os="PC Booter">
-      <disk md5="730AD344E67227C4167D68992D34A031" cp="Key Disk"/>
+      <disk md5="730AD344E67227C4167D68992D34A031" cp="Non-standard Sector Sizes"/>
     </release>
     <release year="1985" version="r56, Serial 841221, Int. 3D" media="160K" status="U" os="PC Booter">
-      <disk md5="4B0987ABF7FAAB10DA745968A88876A0" cp="Key Disk"/>
+      <disk md5="4B0987ABF7FAAB10DA745968A88876A0" cp="Non-standard Sector Sizes"/>
     </release>
     <release year="1985" version="r56, Serial 841221, Int. 3L" media="180K" status="U">
       <disk md5="B49C2715476761DD78579D1D11F8108F"/>
@@ -10524,7 +10538,7 @@
       </media>
     </release>
   </title>
-  <title name="The Last Ninja" publisher="Activision">
+  <title name="The Last Ninja" publisher="Activision, Inc.">
     <release year="1988" version="1.0" status="V">
       <media media="360K">
         <disk md5="B597AFE1993FBEA610FF8BE0EDE799BC" disk="A" cp="Xidex Magnetics (XEMAG) XELOK v2"/>
@@ -10950,10 +10964,10 @@
   </title>
   <title name="The Witness" publisher="Infocom, Inc.">
     <release year="1983" version="r18, Serial 830910, Int. 3A" media="160K" status="U" os="PC Booter">
-      <disk md5="5FB11A8FF2F83611085907C2F67ABEB9" cp="Key Disk"/>
+      <disk md5="5FB11A8FF2F83611085907C2F67ABEB9" cp="Non-standard Sector Sizes"/>
     </release>
     <release year="1983" version="r21, Serial 831208, Int. 3B" media="160K" status="V" os="PC Booter">
-      <disk md5="77D63F127495B58EA5B4B9F6CFF97DB5" cp="Key Disk"/>
+      <disk md5="77D63F127495B58EA5B4B9F6CFF97DB5" cp="Non-standard Sector Sizes"/>
     </release>
     <release year="1985" version="r22, Serial 840924, Int. 3L" media="180K" status="V">
       <disk md5="128418CAA95AFF3E0EAFFE33B94E6B3D"/>
@@ -11084,7 +11098,7 @@
       </disk>
     </release>
   </title>
-  <title name="Tongue of the Fatman" publisher="Activision">
+  <title name="Tongue of the Fatman" publisher="Activision, Inc.">
     <release year="1989" status="V">
       <media media="360K">
         <disk md5="AD925B1489FEC2C15019CE440969934E" disk="1"/>
@@ -11160,7 +11174,7 @@
   </title>
   <title name="Troll's Tale" publisher="Sierra On-Line, Inc." os="PC Booter">
     <release year="1984" media="160K" status="V">
-      <disk md5="B9D643C2B86611A0AF0A6A33FF07E062" md5_cp="7778294B6EA2EFF5E0A2534F50DF689F" cp="Formaster Copylock v1/v2.0"/>
+      <disk md5="11EA1FEFCF46AC274C98703C8662615D" md5_cp="7778294B6EA2EFF5E0A2534F50DF689F" cp="Formaster Copylock v1/v2.0"/>
     </release>
   </title>
   <title name="Tunnels &amp; Trolls: Crusaders of Khazan" publisher="New World Computing, Inc.">
@@ -11911,7 +11925,7 @@
   </title>
   <title name="Wizard and the Princess" publisher="Sierra On-Line, Inc." os="PC Booter">
     <release year="1984" version="PCjr" media="160K" status="V" publisher="IBM">
-      <disk md5="34D61E04AC897747818867093C63DF57" md5_cp="FDD8F251365F4DE7ECE1D6DBA62A6EA2" cp="Formaster Copylock v1/v2.0"/>
+      <disk md5="8C5CCDD80AC872E3CD13D0C6A5F35CFE" md5_cp="FDD8F251365F4DE7ECE1D6DBA62A6EA2" cp="Formaster Copylock v1/v2.0"/>
     </release>
   </title>
   <title name="Wizard of Id's WizType" publisher="Sierra On-Line, Inc.">
@@ -12153,18 +12167,18 @@
   </title>
   <title name="Zork I Demo" publisher="Infocom, Inc.">
     <release year="1984" version="r15, Serial 840330, Int. 3B" media="160K" status="V" os="PC Booter">
-      <disk md5="A17D0C1BCE9D08A07B9C4943300E338C" cp="Key Disk"/>
+      <disk md5="A17D0C1BCE9D08A07B9C4943300E338C" cp="Non-standard Sector Sizes"/>
     </release>
   </title>
   <title name="Zork II: The Wizard of Frobozz" publisher="Infocom, Inc.">
     <release year="1982" version="r19, Serial 820721" media="160K" status="V" os="PC Booter">
-      <disk md5="C2C22A0D8C2D7A4CE8CC8097F5BB2F7A" cp="Key Disk"/>
+      <disk md5="C2C22A0D8C2D7A4CE8CC8097F5BB2F7A" cp="Non-standard Sector Sizes"/>
     </release>
     <release year="1983" version="r22, Serial 830331, Int. 3B" media="160K" status="U" os="PC Booter">
-      <disk md5="01497B98A4E2525CA6EE3F3B7EFF35F3" cp="Key Disk"/>
+      <disk md5="01497B98A4E2525CA6EE3F3B7EFF35F3" cp="Non-standard Sector Sizes"/>
     </release>
     <release year="1984" version="r48, Serial 840904, Int. 3D" media="160K" status="U" os="PC Booter">
-      <disk md5="6C68DAC06DE6AA2082F4F45580A3D603" cp="Key Disk"/>
+      <disk md5="6C68DAC06DE6AA2082F4F45580A3D603" cp="Non-standard Sector Sizes"/>
     </release>
     <release year="1985" version="r48, Serial 840904, Int. 3L" media="180K" status="V">
       <disk md5="AA255D7CFE77E77C0784CC6C7155CEB2"/>
@@ -12183,10 +12197,10 @@
   </title>
   <title name="Zork III: The Dungeon Master" publisher="Infocom, Inc.">
     <release year="1983" version="r16, Serial 830410, Int. 3B" media="160K" status="V" os="PC Booter">
-      <disk md5="9BF1088D14CAA84B879B624B79C1B4CA" cp="Key Disk"/>
+      <disk md5="9BF1088D14CAA84B879B624B79C1B4CA" cp="Non-standard Sector Sizes"/>
     </release>
     <release year="1984" version="r17, Serial 840727, Int. 3D" media="160K" status="V" os="PC Booter">
-      <disk md5="6D8A4EB64CBEF3FDD136752A14FFBE3E" cp="Key Disk"/>
+      <disk md5="6D8A4EB64CBEF3FDD136752A14FFBE3E" cp="Non-standard Sector Sizes"/>
     </release>
     <release year="1985" version="r17, Serial 840727, Int. 3L" media="180K" status="V">
       <disk md5="E1A716BF27CCF59D427382A8EBED7222"/>
@@ -12220,16 +12234,16 @@
   </title>
   <title name="Zork: The Great Underground Empire" publisher="Infocom, Inc.">
     <release year="1982" version="r26, Serial 820803" media="160K" status="V" os="PC Booter">
-      <disk md5="F4457C09D76F3E9E2FB341C025123213" cp="Key Disk"/>
+      <disk md5="F4457C09D76F3E9E2FB341C025123213" cp="Non-standard Sector Sizes"/>
     </release>
     <release year="1983" version="r30, Serial 830330, Int. 3A" media="160K" status="V" os="PC Booter">
-      <disk md5="5E7BB799ED98F59E965F39A66FA1CC6A" cp="Key Disk"/>
+      <disk md5="5E7BB799ED98F59E965F39A66FA1CC6A" cp="Non-standard Sector Sizes"/>
     </release>
     <release year="1983" version="r75, Serial 830929, Int. 3B" media="160K" status="U" os="PC Booter">
-      <disk md5="F2855A967870284D3ADF508979535CAA" cp="Key Disk"/>
+      <disk md5="F2855A967870284D3ADF508979535CAA" cp="Non-standard Sector Sizes"/>
     </release>
     <release year="1984" version="r88, Serial 840726, Int. 3D" media="160K" status="V" os="PC Booter">
-      <disk md5="E0925A748A640222AA33A76343C565BE" cp="Key Disk"/>
+      <disk md5="E0925A748A640222AA33A76343C565BE" cp="Non-standard Sector Sizes"/>
     </release>
     <release year="1985" version="r88, Serial 840726, Int. 3L" media="180K" status="V">
       <disk md5="0766C190723B49AFEAD59F23DE83A52E"/>

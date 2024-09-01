@@ -18,7 +18,7 @@ Public Class LoadedImageData
         _Scanned = False
         _SortHistory = Nothing
 
-        Dim FilterCount As Integer = [Enum].GetNames(GetType(FilterTypes)).Length
+        Dim FilterCount As Integer = FilterGetCount()
         ReDim _Filters(FilterCount - 1)
         For Counter = 0 To FilterCount - 1
             _Filters(Counter) = False

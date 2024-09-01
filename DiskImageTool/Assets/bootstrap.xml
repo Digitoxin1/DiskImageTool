@@ -86,6 +86,9 @@
   <bootstrap crc32="19B8460E" jmp="EB7F90">
     <oemname name="BFORMAT "/>
   </bootstrap>
+  <bootstrap crc32="A1F62266" jmp="E98400">
+    <oemname name="BOOT v1." company="Sierra On-Line" description="BOOT v1.1" verified="true"/>
+  </bootstrap>
   <bootstrap crc32="86707D98" jmp="EB2590" language="German">
     <oemname name="BOOT 1.2"/>
   </bootstrap>
