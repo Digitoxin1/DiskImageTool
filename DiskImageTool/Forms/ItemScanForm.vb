@@ -75,10 +75,6 @@ Public Class ItemScanForm
                 _Parent.ItemScanFreeClusters(Disk, ImageData)
                 _Parent.ItemScanDirectory(Disk, ImageData)
 
-#If DEBUG Then
-                _Parent.ItemScanTitle(Disk, ImageData)
-#End If
-
                 ImageData.Scanned = True
                 End If
 

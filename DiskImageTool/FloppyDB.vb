@@ -1,9 +1,12 @@
 ﻿Imports System.IO
 Imports System.Text.RegularExpressions
 Imports System.Xml
+Imports DiskImageTool.DiskImage
 Imports DiskImageTool.DiskImage.FloppyDiskFunctions
 
 Public Class FloppyDB
+    Private Const DB_FILE_NAME As String = "FloppyDB.xml"
+    Private Const DB_FILE_NAME_NEW As String = "NewFloppyDB.xml"
     Private ReadOnly _NameSpace As String = New StubClass().GetType.Namespace
     Private _BooterDictionary As Dictionary(Of UInteger, List(Of BooterTrack))
     Private _TitleDictionary As Dictionary(Of String, FloppyData)
@@ -17,148 +20,77 @@ Public Class FloppyDB
     End Enum
 
     Public Sub New()
-        Dim FilePath = Path.Combine(Path.GetDirectoryName(Application.ExecutablePath), "FloppyDB.xml")
+        Dim FilePath = Path.Combine(Path.GetDirectoryName(Application.ExecutablePath), DB_FILE_NAME)
         ParseXML(FilePath)
     End Sub
 
-    Public Sub AddTile(FileName As String, Media As String, MD5 As String, MD5_CP As String)
-        Dim Title As String = Trim(Regex.Match(FileName, "^[^\\(]+").Value)
-        Title = Replace(Title, " - ", ": ")
+    Public Sub AddTile(FileData As FileNameData, Media As String, MD5 As String, MD5_CP As String)
+        If Not FileData.Cracked And FileData.StatusString <> "MM" Then
+            If _NewXMLDoc Is Nothing Then
+                _NewXMLDoc = LoadXML(DB_FILE_NAME_NEW)
+            End If
 
-        Dim Year As String = ""
-        Dim Groups = Regex.Match(FileName, "\((\d{4}-*\d*-*\d*)\)").Groups
-        If Groups.Count > 1 Then
-            Year = Groups.Item(1).Value
-        End If
+            Dim rootNode = _NewXMLDoc.SelectSingleNode("/root")
 
-        Dim Version As String = ""
-        Groups = Regex.Match(FileName, "\(v(.*?)\)").Groups
-        If Groups.Count > 1 Then
-            Version = Groups.Item(1).Value
-        End If
-
-        Dim Disk As String = ""
-        Groups = Regex.Match(FileName, "\(Disk (.*?)\)|\((\w*? Disk)\)").Groups
-        If Groups.Count > 1 Then
-            Disk = Groups.Item(1).Value
-        End If
-
-        Dim Verified As Boolean = False
-        Dim Captures = Regex.Match(FileName, "\[!\]").Captures
-        If Captures.Count > 0 Then
-            Verified = True
-        End If
-
-        Dim Modified As Boolean = False
-        Captures = Regex.Match(FileName, "\[M\]").Captures
-        If Captures.Count > 0 Then
-            Modified = True
-        End If
-
-        Dim Cracked As Boolean = False
-        Captures = Regex.Match(FileName, "\[cr\]").Captures
-        If Captures.Count > 0 Then
-            Cracked = True
-        End If
-
-        Dim Status As String
-        If Verified Then
-            Status = "V"
-        ElseIf Modified Then
-            Status = "M"
-        Else
-            Status = "U"
-        End If
-
-        If MD5_CP = MD5 Then
-            MD5_CP = ""
-        End If
-
-        Dim MD5Found = _TitleDictionary.ContainsKey(MD5)
-        Dim MD5CPFound = False
-        If Not MD5Found And MD5_CP <> "" Then
-            MD5CPFound = _TitleDictionary.ContainsKey(MD5_CP)
-        End If
-
-        If Not MD5Found And Not MD5CPFound Then
-            If Not Cracked And Status <> "M" Then
-                If _NewXMLDoc Is Nothing Then
-                    _NewXMLDoc = LoadXML("NewFloppyDB.xml")
+            Dim node = rootNode.SelectSingleNode("//*[@md5=""" & MD5 & """]")
+            If node Is Nothing Then
+                Dim titleNode = rootNode.SelectSingleNode("title[@name=""" & FileData.Title & """]")
+                If titleNode Is Nothing Then
+                    titleNode = _NewXMLDoc.CreateElement("title")
+                    titleNode.AppendAttribute("name", FileData.Title)
+                    titleNode.AppendAttribute("publisher", "")
+                    rootNode.AppendChild(titleNode)
                 End If
 
-                Dim rootNode = _NewXMLDoc.SelectSingleNode("/root")
-
-                Dim node = rootNode.SelectSingleNode("//*[@md5=""" & MD5 & """]")
-                If node Is Nothing Then
-                    Dim titleNode = rootNode.SelectSingleNode("title[@name=""" & Title & """]")
-                    If titleNode Is Nothing Then
-                        titleNode = _NewXMLDoc.CreateElement("title")
-                        titleNode.AppendAttribute("name", Title)
-                        titleNode.AppendAttribute("publisher", "")
-                        rootNode.AppendChild(titleNode)
-                    End If
-
-                    Dim xPath = "release[@media=""" & Media & """"
-                    If Year <> "" Then
-                        xPath &= " and @year=""" & Year & """"
-                    Else
-                        xPath &= " and not(@year)"
-                    End If
-                    If Version <> "" Then
-                        xPath &= " and @version=""" & Version & """"
-                    Else
-                        xPath &= " and not(@version)"
-                    End If
-                    xPath &= "]"
-
-                    Dim releaseNode = titleNode.SelectSingleNode(xPath)
-                    If releaseNode Is Nothing Then
-                        releaseNode = _NewXMLDoc.CreateElement("release")
-                        If Year <> "" Then
-                            releaseNode.AppendAttribute("year", Year)
-                        End If
-                        If Version <> "" Then
-                            releaseNode.AppendAttribute("version", Version)
-                        End If
-                        releaseNode.AppendAttribute("media", Media)
-                        releaseNode.AppendAttribute("status", Status)
-                        titleNode.AppendChild(releaseNode)
-                    End If
-
-                    Dim ReleaseStatus As String = ""
-                    Dim StatusAttribte As XmlAttribute = releaseNode.Attributes.GetNamedItem("status")
-                    If StatusAttribte IsNot Nothing Then
-                        ReleaseStatus = StatusAttribte.Value
-                    End If
-
-                    Dim diskNode = _NewXMLDoc.CreateElement("disk")
-                    diskNode.AppendAttribute("md5", MD5)
-                    If MD5_CP <> "" Then
-                        diskNode.AppendAttribute("md5_cp", MD5_CP)
-                    End If
-                    If Disk <> "" Then
-                        diskNode.AppendAttribute("disk", Disk)
-                    End If
-                    If ReleaseStatus <> Status Then
-                        diskNode.AppendAttribute("status", Status)
-                    End If
-                    diskNode.AppendAttribute("fileName", FileName)
-                    releaseNode.AppendChild(diskNode)
+                Dim xPath = "release[@media=""" & Media & """"
+                If FileData.Year <> "" Then
+                    xPath &= " and @year=""" & FileData.Year & """"
+                Else
+                    xPath &= " and not(@year)"
                 End If
-            End If
-        Else
-            Dim FloppyData As FloppyData = Nothing
-            If MD5Found Then
-                FloppyData = _TitleDictionary.Item(MD5)
-            ElseIf MD5CPFound Then
-                FloppyData = _TitleDictionary.Item(MD5_CP)
-            End If
-            If FloppyData IsNot Nothing Then
-                If FloppyData.GetStatus <> GetFloppyDBStatus(Status) Then
-                    Debug.Print("Check Status: " & MD5 & ", " & FileName)
+                If FileData.Version <> "" Then
+                    xPath &= " and @version=""" & FileData.Version & """"
+                Else
+                    xPath &= " and not(@version)"
                 End If
+                xPath &= "]"
+
+                Dim releaseNode = titleNode.SelectSingleNode(xPath)
+                If releaseNode Is Nothing Then
+                    releaseNode = _NewXMLDoc.CreateElement("release")
+                    If FileData.Year <> "" Then
+                        releaseNode.AppendAttribute("year", FileData.Year)
+                    End If
+                    If FileData.Version <> "" Then
+                        releaseNode.AppendAttribute("version", FileData.Version)
+                    End If
+                    releaseNode.AppendAttribute("media", Media)
+                    releaseNode.AppendAttribute("status", FileData.StatusString)
+                    titleNode.AppendChild(releaseNode)
+                End If
+
+                Dim ReleaseStatus As String = ""
+                Dim StatusAttribte As XmlAttribute = releaseNode.Attributes.GetNamedItem("status")
+                If StatusAttribte IsNot Nothing Then
+                    ReleaseStatus = StatusAttribte.Value
+                End If
+
+                Dim diskNode = _NewXMLDoc.CreateElement("disk")
+                diskNode.AppendAttribute("md5", MD5)
+                If MD5_CP <> "" Then
+                    diskNode.AppendAttribute("md5_cp", MD5_CP)
+                End If
+                If FileData.Disk <> "" Then
+                    diskNode.AppendAttribute("disk", FileData.Disk)
+                End If
+                If ReleaseStatus <> FileData.StatusString Then
+                    diskNode.AppendAttribute("status", FileData.StatusString)
+                End If
+                diskNode.AppendAttribute("fileName", FileData.FileName)
+                releaseNode.AppendChild(diskNode)
             End If
         End If
+
     End Sub
 
     Public Function BooterLookup(BootSector() As Byte) As List(Of BooterTrack)
@@ -175,14 +107,38 @@ Public Class FloppyDB
         Return _TitleDictionary.Count
     End Function
 
-    Public Function TitleExists(md5 As String) As Boolean
-        Return _TitleDictionary.ContainsKey(md5)
+    Public Function TitleExists(MD5 As String) As Boolean
+        Return _TitleDictionary.ContainsKey(MD5)
     End Function
 
-    Public Function TitleLookup(md5 As String) As FloppyData
+    Public Function TitleFind(Disk As Disk) As TitleFindResult
+        Dim MD5 As String = MD5Hash(Disk.Data.Data)
+        Return TitleFind(Disk, MD5)
+    End Function
 
-        If _TitleDictionary.ContainsKey(md5) Then
-            Return _TitleDictionary.Item(md5)
+    Public Function TitleFind(Disk As Disk, MD5 As String) As TitleFindResult
+        Dim Response As New TitleFindResult With {
+            .TitleData = TitleGet(MD5),
+            .MD5 = MD5
+        }
+        If Response.TitleData Is Nothing Then
+            Dim TrackList = BooterLookup(Disk.BootSector.Data)
+            If TrackList IsNot Nothing Then
+                Response.MD5_CP = MD5Hash(GetNormalizedDataByTrackList(Disk, TrackList))
+                Response.TitleData = TitleGet(Response.MD5_CP)
+            ElseIf Disk.FATTables.FAT(0).BadClusters.Count > 0 Then
+                Response.MD5_CP = MD5Hash(GetNormalizedDataByBadSectors(Disk))
+                Response.TitleData = TitleGet(Response.MD5_CP)
+            End If
+        End If
+
+        Return Response
+    End Function
+
+    Public Function TitleGet(MD5 As String) As FloppyData
+
+        If _TitleDictionary.ContainsKey(MD5) Then
+            Return _TitleDictionary.Item(MD5)
         Else
             Return Nothing
         End If
@@ -202,17 +158,17 @@ Public Class FloppyDB
         Return XMLDoc
     End Function
 
-    Private Sub SaveNewXML(Name As String)
+    Public Sub SaveNewXML()
         If _NewXMLDoc IsNot Nothing Then
-            Dim FilePath As String = Path.Combine(My.Application.Info.DirectoryPath, Name)
+            Dim FilePath As String = Path.Combine(My.Application.Info.DirectoryPath, DB_FILE_NAME_NEW)
             Try
-                _NewXMLDoc.Save(Name)
+                _NewXMLDoc.Save(FilePath)
             Catch
             End Try
         End If
     End Sub
 
-    Private Function GetFloppyDBStatus(Status As String) As FloppyDBStatus
+    Private Shared Function GetFloppyDBStatus(Status As String) As FloppyDBStatus
         Select Case Status
             Case "V"
                 Return FloppyDBStatus.Verified
@@ -223,6 +179,36 @@ Public Class FloppyDB
             Case Else
                 Return FloppyDBStatus.Unknown
         End Select
+    End Function
+
+    Private Function GetNormalizedDataByBadSectors(Disk As Disk) As Byte()
+        Dim Data(Disk.Data.Data.Length - 1) As Byte
+        Disk.Data.Data.CopyTo(Data, 0)
+        Dim BytesPerCluster = Disk.BPB.BytesPerCluster()
+        Dim Buffer(BytesPerCluster - 1) As Byte
+        For Each Cluster In Disk.FATTables.FAT(0).BadClusters
+            Dim Offset = Disk.BPB.ClusterToOffset(Cluster)
+            If Offset + BytesPerCluster <= Data.Length Then
+                Buffer.CopyTo(Data, Offset)
+            End If
+        Next
+        Return Data
+    End Function
+
+    Private Function GetNormalizedDataByTrackList(Disk As Disk, TrackList As List(Of FloppyDB.BooterTrack)) As Byte()
+        Dim BPB As BiosParameterBlock = BuildBPB(Disk.Data.Data.Length)
+
+        Dim Data(Disk.Data.Data.Length - 1) As Byte
+        Disk.Data.Data.CopyTo(Data, 0)
+        Dim BytesPerTrack = BPB.BytesPerSector * BPB.SectorsPerTrack
+        Dim Buffer(BytesPerTrack - 1) As Byte
+        For Each Track In TrackList
+            Dim Offset = Disk.SectorToBytes(BPB.TrackToSector(Track.Track, Track.Side))
+            If Offset + BytesPerTrack <= Data.Length Then
+                Buffer.CopyTo(Data, Offset)
+            End If
+        Next
+        Return Data
     End Function
 
     Private Function GetTitleData(Node As XmlElement, Parent As FloppyData) As FloppyData
@@ -277,7 +263,7 @@ Public Class FloppyDB
 
     Private Sub CheckTitleNodeForErrors(TitleNode As XmlNode)
         If TitleNode.Name <> "title" Then
-            Debug.Print("Invalid top level node: " & TitleNode.OuterXml)
+            Debug.Print("FloppyDB: Invalid top level node: " & TitleNode.OuterXml)
         End If
         Dim NameFound As Boolean = False
         Dim PublisherFound As Boolean = False
@@ -288,14 +274,14 @@ Public Class FloppyDB
                 PublisherFound = True
             ElseIf Attribute.Name = "os" Then
             Else
-                Debug.Print("Check Attribute '" & Attribute.Name & "': " & TitleNode.OuterXml)
+                Debug.Print("FloppyDB: Check Attribute '" & Attribute.Name & "': " & TitleNode.OuterXml)
             End If
         Next
         If Not NameFound Then
-            Debug.Print("Name Missing: " & TitleNode.OuterXml)
+            Debug.Print("FloppyDB: Name Missing: " & TitleNode.OuterXml)
         End If
         If Not PublisherFound Then
-            Debug.Print("Publisher Missing: " & TitleNode.OuterXml)
+            Debug.Print("FloppyDB: Publisher Missing: " & TitleNode.OuterXml)
         End If
     End Sub
 
@@ -319,7 +305,7 @@ Public Class FloppyDB
 #If DEBUG Then
         For Each Value In _TitleDictionary.Values
             If Value.GetYear = "" Then
-                Debug.Print("Missing Year: " & Value.GetName)
+                Debug.Print("FloppyDB: Missing Year: " & Value.GetName)
             End If
         Next
 #End If
@@ -373,11 +359,67 @@ Public Class FloppyDB
         End If
     End Sub
 
-    Protected Overrides Sub Finalize()
-        Dim FilePath = Path.Combine(Path.GetDirectoryName(Application.ExecutablePath), "NewFloppyDB.xml")
-        SaveNewXML(FilePath)
-        MyBase.Finalize()
-    End Sub
+    Public Class FileNameData
+        Public Property Cracked As Boolean = False
+        Public Property Disk As String = ""
+        Public Property FileName As String = ""
+        Public Property Modified As Boolean = False
+        Public Property Status As FloppyDBStatus = FloppyDBStatus.Unknown
+        Public Property StatusString As String = ""
+        Public Property Title As String = ""
+        Public Property Verified As Boolean = False
+        Public Property Version As String = ""
+        Public Property Year As String = ""
+
+        Public Sub New(FileName As String)
+            _FileName = FileName
+            ParseFileName()
+        End Sub
+
+        Private Sub ParseFileName()
+            _Title = Trim(Regex.Match(FileName, "^[^\\(]+").Value)
+            _Title = Replace(_Title, " - ", ": ")
+
+            Dim Groups = Regex.Match(FileName, "\((\d{4}-*\d*-*\d*)\)").Groups
+            If Groups.Count > 1 Then
+                _Year = Groups.Item(1).Value
+            End If
+
+            Groups = Regex.Match(FileName, "\(v(.*?)\)").Groups
+            If Groups.Count > 1 Then
+                _Version = Groups.Item(1).Value
+            End If
+
+            Groups = Regex.Match(FileName, "\(Disk (.*?)\)|\((\w*? Disk)\)").Groups
+            If Groups.Count > 1 Then
+                _Disk = Groups.Item(1).Value
+            End If
+
+            Dim Captures = Regex.Match(FileName, "\[!\]").Captures
+            If Captures.Count > 0 Then
+                _Verified = True
+            End If
+
+            Captures = Regex.Match(FileName, "\[M\]").Captures
+            If Captures.Count > 0 Then
+                _Modified = True
+            End If
+
+            Captures = Regex.Match(FileName, "\[cr\]").Captures
+            If Captures.Count > 0 Then
+                _Cracked = True
+            End If
+
+            If Verified Then
+                _StatusString = "V"
+            ElseIf Modified Then
+                _StatusString = "M"
+            Else
+                _StatusString = "U"
+            End If
+            _Status = GetFloppyDBStatus(_StatusString)
+        End Sub
+    End Class
 
     Public Class FloppyData
         Public Property Name As String = ""
@@ -595,5 +637,11 @@ Public Class FloppyDB
     Public Class BooterTrack
         Public Property Track As UShort
         Public Property Side As UShort
+    End Class
+
+    Public Class TitleFindResult
+        Public Property TitleData As FloppyData = Nothing
+        Public Property MD5 As String = ""
+        Public Property MD5_CP As String = ""
     End Class
 End Class

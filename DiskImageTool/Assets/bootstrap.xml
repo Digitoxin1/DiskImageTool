@@ -284,6 +284,9 @@
   <bootstrap crc32="3899B3D9" jmp="EB2890">
     <oemname name="HILOW1.0" company="Iron Byte" description="BUGGYRANGER"/>
   </bootstrap>
+  <bootstrap crc32="B07527BC" jmp="EB2F14">
+    <oemname namehex="000000600020372D" description="PC-DOS 1.00" suggestion="false" verified="true"/>
+  </bootstrap>
   <bootstrap crc32="0D53994B" jmp="EB2790">
     <oemname name="IBM  2.0"/>
     <oemname namehex="0800140000000000" description="PC-DOS 1.10" suggestion="false" verified="true"/>

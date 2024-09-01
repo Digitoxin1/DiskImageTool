@@ -31,6 +31,7 @@
         Image_NotInDatabase
         Image_Verified
         Image_Unverified
+        Database_MismatchedStatus
     End Enum
 
     Public Function FilterGetCount() As Integer
@@ -70,7 +71,7 @@
         Public Property FilterCounts As FilterCounts()
         Public Property FiltersApplied As Boolean
 
-        Private Shared Function FilterGetCaption(ID As FilterTypes, Count As Integer, Total As Integer) As String
+        Private Shared Function FilterGetCaption(ID As FilterTypes, Count As Integer) As String
             Dim Caption As String
 
             Select Case ID
@@ -132,6 +133,8 @@
                     Caption = "Image - Verified"
                 Case FilterTypes.Image_Unverified
                     Caption = "Image - Unverified"
+                Case FilterTypes.Database_MismatchedStatus
+                    Caption = "Database - Mismatched Status"
                 Case Else
                     Caption = ""
             End Select
@@ -249,7 +252,7 @@
             ReDim _FilterCounts(FilterCount - 1)
             For Counter = 0 To FilterCount - 1
                 Dim Item = New ToolStripMenuItem With {
-                    .Text = FilterGetCaption(Counter, 0, 0),
+                    .Text = FilterGetCaption(Counter, 0),
                     .CheckOnClick = True,
                     .Name = "key_" & Counter,
                     .Visible = False,
@@ -288,7 +291,7 @@
             Dim Visible As Boolean = (Count > 0)
             Dim CheckstateChanged As Boolean = False
 
-            Item.Text = FilterGetCaption(ID, Available, Count)
+            Item.Text = FilterGetCaption(ID, Available)
 
             If Visible <> ItemTag.Visible Then
                 Item.Visible = Visible

@@ -4,6 +4,7 @@ Imports System.Net
 Imports System.Text
 Imports System.Text.RegularExpressions
 Imports DiskImageTool.DiskImage
+Imports DiskImageTool.FloppyDB
 Imports BootSectorOffsets = DiskImageTool.DiskImage.BootSector.BootSectorOffsets
 Imports BPBOffsets = DiskImageTool.DiskImage.BiosParameterBlock.BPBOoffsets
 
@@ -63,6 +64,7 @@ Public Class MainForm
     Private _SuppressEvent As Boolean = False
     Private _DriveAEnabled As Boolean = False
     Private _DriveBEnabled As Boolean = False
+    Private _ExportUnknownImages As Boolean = False
 
     Public Sub New()
         ' This call is required by the designer.
@@ -106,22 +108,6 @@ Public Class MainForm
         End If
     End Sub
 
-    Friend Sub ItemScanTitle(Disk As DiskImage.Disk, ImageData As LoadedImageData)
-        Dim MD5 = MD5Hash(Disk.Data.Data)
-        Dim NormalizedMD5 As String = ""
-
-        Dim TrackList = _TitleDB.BooterLookup(Disk.BootSector.Data)
-        Dim HasBadSectors = Disk.FAT.BadClusters.Count > 0
-
-        If TrackList IsNot Nothing Then
-            NormalizedMD5 = MD5Hash(GetNormalizedDataByTrackList(Disk, TrackList))
-        ElseIf HasBadSectors Then
-            NormalizedMD5 = MD5Hash(GetNormalizedDataByBadSectors(Disk))
-        End If
-        Dim Media = GetFloppyDiskTypeName(Disk.BPB, True)
-        _TitleDB.AddTile(ImageData.FileName, Media, MD5, NormalizedMD5)
-    End Sub
-
     Friend Function ItemScanDirectory(Disk As DiskImage.Disk, ImageData As LoadedImageData, Optional UpdateFilters As Boolean = False, Optional Remove As Boolean = False) As DirectoryScanResponse
         Dim Response As DirectoryScanResponse
         Dim HasLostClusters As Boolean = False
@@ -147,6 +133,8 @@ Public Class MainForm
     End Function
 
     Friend Sub ItemScanDisk(Disk As DiskImage.Disk, ImageData As LoadedImageData, Optional UpdateFilters As Boolean = False, Optional Remove As Boolean = False)
+        Dim TitleFindResult As TitleFindResult = Nothing
+        Dim FileData As FileNameData = Nothing
         Dim Disk_UnknownFormat As Boolean = Not Disk.IsValidImage
         Dim FAT_BadSectors As Boolean = False
         Dim FATS_MismatchedFATs As Boolean = False
@@ -154,11 +142,12 @@ Public Class MainForm
         Dim Disk_MismatchedImageSize As Boolean = False
         Dim Disk_CustomFormat As Boolean = False
         Dim Image_InDatabase As Boolean = False
-        Dim Image_NotInDatabase As Boolean = False
+        Dim Image_NotInDatabase As Boolean = True
         Dim Image_Verified As Boolean = False
         Dim Image_Unverified As Boolean = False
         Dim Disk_NOBPB As Boolean = False
         Dim DIsk_CustomBootLoader As Boolean = False
+        Dim Database_MismatchedStatus As Boolean = False
 
         If Not Remove Then
             If Not Disk_UnknownFormat Then
@@ -183,26 +172,20 @@ Public Class MainForm
             End If
 
             If _TitleDB.TitleCount > 0 Then
-                Dim TitleData = _TitleDB.TitleLookup(MD5Hash(Disk.Data.Data))
-                If TitleData Is Nothing Then
-                    Dim TrackList = _TitleDB.BooterLookup(Disk.BootSector.Data)
-                    If TrackList IsNot Nothing Then
-                        TitleData = _TitleDB.TitleLookup(MD5Hash(GetNormalizedDataByTrackList(Disk, TrackList)))
-                    End If
-                End If
-                If TitleData Is Nothing Then
-                    If Disk.FATTables.FAT(0).BadClusters.Count > 0 Then
-                        TitleData = _TitleDB.TitleLookup(MD5Hash(GetNormalizedDataByBadSectors(Disk)))
-                    End If
-                End If
-                If TitleData Is Nothing Then
-                    Image_NotInDatabase = True
-                Else
+                TitleFindResult = _TitleDB.TitleFind(Disk)
+                If TitleFindResult.TitleData IsNot Nothing Then
+                    Image_NotInDatabase = False
                     Image_InDatabase = True
-                    If TitleData.GetStatus = FloppyDB.FloppyDBStatus.Verified Then
+                    If TitleFindResult.TitleData.GetStatus = FloppyDB.FloppyDBStatus.Verified Then
                         Image_Verified = True
                     Else
                         Image_Unverified = True
+                    End If
+                    If My.Settings.Debug Then
+                        FileData = New FileNameData(ImageData.FileName)
+                        If TitleFindResult.TitleData.GetStatus <> FileData.Status Then
+                            Database_MismatchedStatus = True
+                        End If
                     End If
                 End If
             End If
@@ -225,6 +208,23 @@ Public Class MainForm
         ImageFilters.FilterUpdate(ImageData, UpdateFilters, FilterTypes.Disk_CustomFormat, Disk_CustomFormat)
         ImageFilters.FilterUpdate(ImageData, UpdateFilters, FilterTypes.Disk_NOBPB, Disk_NOBPB)
         ImageFilters.FilterUpdate(ImageData, UpdateFilters, FilterTypes.DIsk_CustomBootLoader, DIsk_CustomBootLoader)
+
+        If My.Settings.Debug Then
+            ImageFilters.FilterUpdate(ImageData, UpdateFilters, FilterTypes.Database_MismatchedStatus, Database_MismatchedStatus)
+
+            If _ExportUnknownImages Then
+                If Image_NotInDatabase Then
+                    If TitleFindResult Is Nothing Then
+                        TitleFindResult = _TitleDB.TitleFind(Disk)
+                    End If
+                    If FileData Is Nothing Then
+                        FileData = New FileNameData(ImageData.FileName)
+                    End If
+                    Dim Media = GetFloppyDiskTypeName(Disk.BPB, True)
+                    _TitleDB.AddTile(FileData, Media, TitleFindResult.MD5, TitleFindResult.MD5_CP)
+                End If
+            End If
+        End If
     End Sub
 
     Friend Sub ItemScanFreeClusters(Disk As DiskImage.Disk, ImageData As LoadedImageData, Optional UpdateFilters As Boolean = False, Optional Remove As Boolean = False)
@@ -1123,6 +1123,10 @@ Public Class MainForm
         Dim ItemScanForm As New ItemScanForm(Me, ComboImages.Items, CurrentImageData, _Disk, NewOnly, ScanType.ScanTypeFilters)
         ItemScanForm.ShowDialog()
         BtnScanNew.Visible = ItemScanForm.ItemsRemaining > 0
+
+        If _ExportUnknownImages Then
+            _TitleDB.SaveNewXML()
+        End If
 
         ImageFilters.UpdateAllMenuItems()
 
@@ -2169,6 +2173,22 @@ Public Class MainForm
             ToolStripTop.Refresh()
         End If
     End Sub
+
+    Private Sub InitDebugFeatures()
+        Dim Separator = New ToolStripSeparator With {
+            .Visible = True
+        }
+        ContextMenuFilters.Items.Add(Separator)
+
+        Dim Item = New ToolStripMenuItem With {
+            .Text = "Export Unknown Images on Scan",
+            .CheckOnClick = True,
+            .Checked = _ExportUnknownImages
+        }
+        AddHandler Item.CheckStateChanged, AddressOf ExportUnknownImages_CheckStateChanged
+        ContextMenuFilters.Items.Add(Item)
+    End Sub
+
     Private Sub InitValidFilters()
         ParseFileTypeFilters()
     End Sub
@@ -2551,21 +2571,11 @@ Public Class MainForm
                 Dim TitleFound As Boolean = False
 
                 If _TitleDB.TitleCount > 0 Then
-                    Dim TitleData = _TitleDB.TitleLookup(MD5)
-                    If TitleData Is Nothing Then
-                        Dim TrackList = _TitleDB.BooterLookup(Disk.BootSector.Data)
-                        If TrackList IsNot Nothing Then
-                            Dim NormalizedData = GetNormalizedDataByTrackList(Disk, TrackList)
-                            TitleData = _TitleDB.TitleLookup(MD5Hash(NormalizedData))
-                        ElseIf Disk.FATTables.FAT(0).BadClusters.Count > 0 Then
-                            Dim NormalizedData = GetNormalizedDataByBadSectors(Disk)
-                            TitleData = _TitleDB.TitleLookup(MD5Hash(NormalizedData))
-                        End If
-                    End If
-                    If TitleData IsNot Nothing Then
+                    Dim TitleFindResult = _TitleDB.TitleFind(Disk, MD5)
+                    If TitleFindResult.TitleData IsNot Nothing Then
                         TitleFound = True
-                        CopyProtection = TitleData.GetCopyProtection
-                        PopulateTitleGroup(TitleData)
+                        CopyProtection = TitleFindResult.TitleData.GetCopyProtection
+                        PopulateTitleGroup(TitleFindResult.TitleData)
                     End If
                 End If
 
@@ -4136,6 +4146,10 @@ Public Class MainForm
         FiltersApply(False)
     End Sub
 
+    Private Sub ExportUnknownImages_CheckStateChanged(sender As Object, e As EventArgs)
+        _ExportUnknownImages = DirectCast(sender, ToolStripMenuItem).Checked
+    End Sub
+
     Private Sub File_DragDrop(sender As Object, e As DragEventArgs) Handles ComboImages.DragDrop, ComboImagesFiltered.DragDrop, LabelDropMessage.DragDrop, ListViewFiles.DragDrop, ListViewHashes.DragDrop, ListViewSummary.DragDrop
         Dim Files As String() = e.Data.GetData(DataFormats.FileDrop)
         ProcessFileDrop(Files)
@@ -4265,6 +4279,10 @@ Public Class MainForm
         }
         ContextMenuCopy2.Items.Add("&Copy Value")
         ListViewHashes.ContextMenuStrip = ContextMenuCopy2
+
+        If My.Settings.Debug Then
+            InitDebugFeatures()
+        End If
 
         DetectFloppyDrives()
         ResetAll()
