@@ -6,6 +6,7 @@
         Disk_UnknownFormat
         Disk_CustomFormat
         Disk_NOBPB
+        Disk_NoBootLoader
         DIsk_CustomBootLoader
         Disk_MismatchedImageSize
         Disk_MismatchedMediaDescriptor
@@ -83,6 +84,8 @@
                     Caption = "Disk - Custom Format"
                 Case FilterTypes.Disk_NOBPB
                     Caption = "Disk - No BPB"
+                Case FilterTypes.Disk_NoBootLoader
+                    Caption = "Disk - No Boot Loader"
                 Case FilterTypes.DIsk_CustomBootLoader
                     Caption = "Disk - Custom Boot Loader"
                 Case FilterTypes.Disk_MismatchedImageSize

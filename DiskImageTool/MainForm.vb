@@ -146,6 +146,7 @@ Public Class MainForm
         Dim Image_Verified As Boolean = False
         Dim Image_Unverified As Boolean = False
         Dim Disk_NOBPB As Boolean = False
+        Dim Disk_NoBootLoader As Boolean = False
         Dim DIsk_CustomBootLoader As Boolean = False
         Dim Database_MismatchedStatus As Boolean = False
 
@@ -168,7 +169,14 @@ Public Class MainForm
                 Disk_MismatchedImageSize = Disk.CheckImageSize <> 0
                 Disk_CustomFormat = GetFloppyDiskType(Disk.BPB, False) = FloppyDiskType.FloppyUnknown
                 Disk_NOBPB = Not Disk.BootSector.BPB.IsValid
-                DIsk_CustomBootLoader = Disk.BootSector.BootStrapCode.Length = 0
+                If Disk.BootSector.BootStrapCode.Length = 0 Then
+                    If Disk.BootSector.CheckJumpInstruction(False, True) Then
+                        Disk_NoBootLoader = True
+                    Else
+                        DIsk_CustomBootLoader = True
+                        Disk_NOBPB = False
+                    End If
+                End If
             End If
 
             If _TitleDB.TitleCount > 0 Then
@@ -207,6 +215,7 @@ Public Class MainForm
         ImageFilters.FilterUpdate(ImageData, UpdateFilters, FilterTypes.Disk_MismatchedImageSize, Disk_MismatchedImageSize)
         ImageFilters.FilterUpdate(ImageData, UpdateFilters, FilterTypes.Disk_CustomFormat, Disk_CustomFormat)
         ImageFilters.FilterUpdate(ImageData, UpdateFilters, FilterTypes.Disk_NOBPB, Disk_NOBPB)
+        ImageFilters.FilterUpdate(ImageData, UpdateFilters, FilterTypes.Disk_NoBootLoader, Disk_NoBootLoader)
         ImageFilters.FilterUpdate(ImageData, UpdateFilters, FilterTypes.DIsk_CustomBootLoader, DIsk_CustomBootLoader)
 
         If My.Settings.Debug Then
@@ -301,6 +310,12 @@ Public Class MainForm
 
     Friend Function Win9xClean(Disk As Disk, Batch As Boolean) As Boolean
         Dim Result As Boolean = False
+
+        If Batch Then
+            If _TitleDB.IsVerifiedImage(Disk) Then
+                Return Result
+            End If
+        End If
 
         Disk.Data.BatchEditMode = True
 
@@ -738,7 +753,7 @@ Public Class MainForm
             End If
             Msg &= $"{vbCrLf}{vbCrLf}Do you wish to download it at this time?"
 
-            If MsgBox(Msg, MsgBoxStyle.Question + MsgBoxStyle.YesNo + MsgBoxStyle.DefaultButton2) = MsgBoxResult.Yes Then
+            If MsgBoxQuestion(Msg) Then
                 Dim Dialog As New SaveFileDialog With {
                     .Filter = FileDialogGetFilter("Zip Archive", ".zip"),
                     .FileName = Path.GetFileName(DownloadURL),
@@ -773,6 +788,12 @@ Public Class MainForm
 
     Private Sub ClearReservedBytes()
         Dim Result As Boolean = False
+
+        If _TitleDB.IsVerifiedImage(_Disk) Then
+            If Not MsgBoxQuestion("This is a verified image.  Are you sure you wish to clear reserved bytes from this image?") Then
+                Exit Sub
+            End If
+        End If
 
         _Disk.Data.BatchEditMode = True
 
@@ -1143,7 +1164,7 @@ Public Class MainForm
         _ScanRun = True
 
         T.Stop()
-        Debug.Print($"ScanImages Time Taken: {T.Elapsed}")
+        Debug.Print($"Image Scan Time Taken: {T.Elapsed}")
         Me.UseWaitCursor = False
 
         Dim Handle = WindowsAPI.GetForegroundWindow()
@@ -1453,7 +1474,7 @@ Public Class MainForm
         End If
         Msg &= $"Do you wish to replace {FileData.DirectoryEntry.GetFullFileName} with {FileInfo.FullName}?"
 
-        If MsgBox(Msg, MsgBoxStyle.Question + MsgBoxStyle.YesNo + MsgBoxStyle.DefaultButton2) = MsgBoxResult.Yes Then
+        If MsgBoxQuestion(Msg) Then
             Dim ClusterSize = _Disk.BPB.BytesPerCluster
             Dim FileSize = Math.Min(FileData.DirectoryEntry.FileSize, FileData.DirectoryEntry.FATChain.Clusters.Count * ClusterSize)
             Dim BytesToFill As Integer
@@ -1667,12 +1688,19 @@ Public Class MainForm
 
     Private Sub FixImageSize()
         Dim Result As Boolean = True
+
+        If _TitleDB.IsVerifiedImage(_Disk) Then
+            If Not MsgBoxQuestion("This is a verified image.  Are you sure you wish to adjust the image size for this image?") Then
+                Exit Sub
+            End If
+        End If
+
         Dim Compare = _Disk.CheckImageSize
 
         If Compare = 0 Then
             Result = False
         ElseIf Compare < 0 Then
-            Result = MsgBox($"The image size is smaller than the detected size.{vbCrLf}{vbCrLf}Are you sure you wish to increase the image size?", MsgBoxStyle.Question + MsgBoxStyle.YesNo + MsgBoxStyle.DefaultButton2) = MsgBoxResult.Yes
+            Result = MsgBoxQuestion($"The image size is smaller than the detected size.{vbCrLf}{vbCrLf}Are you sure you wish to increase the image size?")
         Else
             Dim ReportedSize = _Disk.BPB.ReportedImageSize
             Dim Data = _Disk.Data.GetBytes(ReportedSize, _Disk.Data.Length - ReportedSize)
@@ -1684,7 +1712,7 @@ Public Class MainForm
                 End If
             Next
             If HasData Then
-                Result = MsgBox($"There is data in the overdumped region of the image.{vbCrLf}{vbCrLf}Are you sure you wish to truncate the image?", MsgBoxStyle.Question + MsgBoxStyle.YesNo + MsgBoxStyle.DefaultButton2) = MsgBoxResult.Yes
+                Result = MsgBoxQuestion($"There is data in the overdumped region of the image.{vbCrLf}{vbCrLf}Are you sure you wish to truncate the image?")
             End If
         End If
 
@@ -2620,7 +2648,11 @@ Public Class MainForm
                     Dim OEMNameResponse = _BootStrapDB.CheckOEMName(Disk.BootSector)
 
                     If OEMNameResponse.NoBootLoader Then
-                        .AddItem(DiskGroup, "Bootstrap", "Custom Boot Loader", Color.Red)
+                        If Disk.BootSector.CheckJumpInstruction(False, True) Then
+                            .AddItem(DiskGroup, "Bootstrap", "No Boot Loader", Color.Red)
+                        Else
+                            .AddItem(DiskGroup, "Bootstrap", "Custom Boot Loader", Color.Red)
+                        End If
                     ElseIf Not Disk.BootSector.BPB.IsValid Then
                         .AddItem(DiskGroup, "Boot Record", "No BPB", Color.Red)
                     End If
@@ -2783,13 +2815,12 @@ Public Class MainForm
                             .AddItem(BootRecordGroup, BootSectorDescription(BootSectorOffsets.BootStrapSignature), Disk.BootSector.BootStrapSignature.ToString("X4"))
                         End If
 
-                        If Not Disk.BootSector.HasValidJumpInstruction(True) Then
-                            ForeColor = Color.Red
-                        Else
-                            ForeColor = SystemColors.WindowText
-                        End If
-
                         If My.Settings.Debug Then
+                            If Not Disk.BootSector.CheckJumpInstruction(True, True) Then
+                                ForeColor = Color.Red
+                            Else
+                                ForeColor = SystemColors.WindowText
+                            End If
                             .AddItem(BootRecordGroup, BootSectorDescription(BootSectorOffsets.JmpBoot), BitConverter.ToString(Disk.BootSector.JmpBoot), ForeColor)
                         End If
                     End If
@@ -2888,17 +2919,19 @@ Public Class MainForm
                             End If
                         End If
 
-                        If Not OEMNameResponse.Data.ExactMatch Then
-                            For Each OEMName In OEMNameResponse.Data.OEMNames
-                                If OEMName.Name.Length > 0 AndAlso OEMName.Suggestion AndAlso OEMName IsNot OEMNameResponse.MatchedOEMName Then
-                                    If OEMName.Verified Then
-                                        ForeColor = Color.Green
-                                    Else
-                                        ForeColor = SystemColors.WindowText
+                        If Disk.BootSector.BPB.IsValid Then
+                            If Not OEMNameResponse.Data.ExactMatch Then
+                                For Each OEMName In OEMNameResponse.Data.OEMNames
+                                    If OEMName.Name.Length > 0 AndAlso OEMName.Suggestion AndAlso OEMName IsNot OEMNameResponse.MatchedOEMName Then
+                                        If OEMName.Verified Then
+                                            ForeColor = Color.Green
+                                        Else
+                                            ForeColor = SystemColors.WindowText
+                                        End If
+                                        .AddItem(BootStrapGroup, "Alternative OEM Name", OEMName.GetNameAsString, ForeColor)
                                     End If
-                                    .AddItem(BootStrapGroup, "Alternative OEM Name", OEMName.GetNameAsString, ForeColor)
-                                End If
-                            Next
+                                Next
+                            End If
                         End If
                     End If
                 End If
@@ -3047,9 +3080,12 @@ Public Class MainForm
 
     Private Sub ProcessFileDrop(Files() As String)
         Cursor.Current = Cursors.WaitCursor
+        Dim T = Stopwatch.StartNew
 
         If ImageFilters.FiltersApplied Then
             FiltersClear(False)
+            ImageFilters.UpdateAllMenuItems()
+            ImageCountUpdate()
         End If
 
         ComboImages.BeginUpdate()
@@ -3078,6 +3114,8 @@ Public Class MainForm
 
         ImageLoadForm.Close()
 
+        T.Stop()
+        Debug.Print($"Image Load Time Taken: {T.Elapsed}")
         Cursor.Current = Cursors.Default
     End Sub
     Private Sub RefreshCheckAll()
@@ -3685,9 +3723,9 @@ Public Class MainForm
     End Sub
 
     Private Sub Win9xCleanBatch()
-        Dim Msg = $"This will restore the OEM Name and remove any Creation and Last Accessed Dates from all loaded images.{vbCrLf}{vbCrLf}Do you wish to proceed??"
+        Dim Msg = $"This will restore the OEM Name and remove any Creation and Last Accessed Dates from all unverified loaded images.{vbCrLf}{vbCrLf}Do you wish to proceed??"
 
-        If MsgBox(Msg, MsgBoxStyle.Question + MsgBoxStyle.YesNo + MsgBoxStyle.DefaultButton2) = MsgBoxResult.No Then
+        If Not MsgBoxQuestion(Msg) Then
             Exit Sub
         End If
 
@@ -3723,9 +3761,19 @@ Public Class MainForm
 
         Msg = UpdateCount & " image" & IIf(UpdateCount <> 1, "s", "") & " cleaned."
         MsgBox(Msg, MsgBoxStyle.Information)
+
+        If UpdateCount > 0 Then
+            FiltersApply(True)
+        End If
     End Sub
 
     Private Sub Win9xCleanCurrent()
+        If _TitleDB.IsVerifiedImage(_Disk) Then
+            If Not MsgBoxQuestion("This is a verified image.  Are you sure you wish to remove any windows modifications from this image?") Then
+                Exit Sub
+            End If
+        End If
+
         Dim Result = Win9xClean(_Disk, False)
 
         If Result Then

@@ -103,6 +103,17 @@ Public Class FloppyDB
         End If
     End Function
 
+    Public Function IsVerifiedImage(Disk As Disk) As Boolean
+        Dim Result = TitleFind(Disk)
+        If Result.TitleData IsNot Nothing Then
+            If Result.TitleData.GetStatus = FloppyDBStatus.Verified Then
+                Return True
+            End If
+        End If
+
+        Return False
+    End Function
+
     Public Function TitleCount() As Integer
         Return _TitleDictionary.Count
     End Function

@@ -89,6 +89,10 @@ Module Utility
         Return fInfo.IsReadOnly
     End Function
 
+    Public Function MsgBoxQuestion(Prompt As String) As Boolean
+        Return MsgBox(Prompt, MsgBoxStyle.Question + MsgBoxStyle.YesNo + MsgBoxStyle.DefaultButton2) = MsgBoxResult.Yes
+    End Function
+
     Public Function PathAddBackslash(Path As String) As String
         If Len(Path) > 0 Then
             If Not Path.EndsWith("\") Then

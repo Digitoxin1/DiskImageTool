@@ -107,7 +107,7 @@ Module HexViews
         Dim BootStrapLength = BootSectorOffsets.BootStrapSignature - BootStrapStart
 
         Dim ForeColor As Color
-        If Disk.BootSector.HasValidJumpInstruction(False) Then
+        If Disk.BootSector.CheckJumpInstruction(False, True) Then
             ForeColor = Color.Green
         Else
             ForeColor = Color.Black
@@ -115,31 +115,37 @@ Module HexViews
 
         HighlightedRegions.AddBootSectorOffset(BootSectorOffsets.JmpBoot, ForeColor)
         If Disk.IsValidImage Then
-            HighlightedRegions.AddBootSectorOffset(BootSectorOffsets.OEMName, Color.Red)
-            HighlightedRegions.AddBPBoffset(BPBOoffsets.BytesPerSector, Color.Blue)
-            HighlightedRegions.AddBPBoffset(BPBOoffsets.SectorsPerCluster, Color.Blue)
-            HighlightedRegions.AddBPBoffset(BPBOoffsets.ReservedSectorCount, Color.Blue)
-            HighlightedRegions.AddBPBoffset(BPBOoffsets.NumberOfFATs, Color.Blue)
-            HighlightedRegions.AddBPBoffset(BPBOoffsets.RootEntryCount, Color.Blue)
-            HighlightedRegions.AddBPBoffset(BPBOoffsets.SectorCountSmall, Color.Blue)
-            HighlightedRegions.AddBPBoffset(BPBOoffsets.MediaDescriptor, Color.Blue)
-            HighlightedRegions.AddBPBoffset(BPBOoffsets.SectorsPerFAT, Color.Blue)
-            HighlightedRegions.AddBPBoffset(BPBOoffsets.SectorsPerTrack, Color.Blue)
-            HighlightedRegions.AddBPBoffset(BPBOoffsets.NumberOfHeads, Color.Blue)
-            HighlightedRegions.AddBPBoffset(BPBOoffsets.HiddenSectors, Color.Blue)
+            If Disk.BootSector.CheckJumpInstruction(False) AndAlso Disk.BootSector.BPB.IsValid Then
+                If BootStrapStart < 3 Or BootStrapStart >= BootSectorOffsets.OEMName + BootSectorSizes.OEMName Then
+                    HighlightedRegions.AddBootSectorOffset(BootSectorOffsets.OEMName, Color.Red)
+                End If
+                If BootStrapStart < 3 Or BootStrapStart >= BPBOoffsets.HiddenSectors + BPBSizes.HiddenSectors Then
+                    HighlightedRegions.AddBPBoffset(BPBOoffsets.BytesPerSector, Color.Blue)
+                    HighlightedRegions.AddBPBoffset(BPBOoffsets.SectorsPerCluster, Color.Blue)
+                    HighlightedRegions.AddBPBoffset(BPBOoffsets.ReservedSectorCount, Color.Blue)
+                    HighlightedRegions.AddBPBoffset(BPBOoffsets.NumberOfFATs, Color.Blue)
+                    HighlightedRegions.AddBPBoffset(BPBOoffsets.RootEntryCount, Color.Blue)
+                    HighlightedRegions.AddBPBoffset(BPBOoffsets.SectorCountSmall, Color.Blue)
+                    HighlightedRegions.AddBPBoffset(BPBOoffsets.MediaDescriptor, Color.Blue)
+                    HighlightedRegions.AddBPBoffset(BPBOoffsets.SectorsPerFAT, Color.Blue)
+                    HighlightedRegions.AddBPBoffset(BPBOoffsets.SectorsPerTrack, Color.Blue)
+                    HighlightedRegions.AddBPBoffset(BPBOoffsets.NumberOfHeads, Color.Blue)
+                    HighlightedRegions.AddBPBoffset(BPBOoffsets.HiddenSectors, Color.Blue)
+                End If
 
-            If Disk.BootSector.HasValidExtendedBootSignature And BootStrapStart >= BootSectorOffsets.FileSystemType + BootSectorSizes.FileSystemType Then
-                HighlightedRegions.AddBootSectorOffset(BootSectorOffsets.DriveNumber, Color.Purple)
-                HighlightedRegions.AddBootSectorOffset(BootSectorOffsets.Reserved, Color.Purple)
-                HighlightedRegions.AddBootSectorOffset(BootSectorOffsets.ExtendedBootSignature, Color.Purple)
-                HighlightedRegions.AddBootSectorOffset(BootSectorOffsets.VolumeSerialNumber, Color.Purple)
-                HighlightedRegions.AddBootSectorOffset(BootSectorOffsets.VolumeLabel, Color.Purple)
-                HighlightedRegions.AddBootSectorOffset(BootSectorOffsets.FileSystemType, Color.Purple)
+                If Disk.BootSector.HasValidExtendedBootSignature And BootStrapStart >= BootSectorOffsets.FileSystemType + BootSectorSizes.FileSystemType Then
+                    HighlightedRegions.AddBootSectorOffset(BootSectorOffsets.DriveNumber, Color.Purple)
+                    HighlightedRegions.AddBootSectorOffset(BootSectorOffsets.Reserved, Color.Purple)
+                    HighlightedRegions.AddBootSectorOffset(BootSectorOffsets.ExtendedBootSignature, Color.Purple)
+                    HighlightedRegions.AddBootSectorOffset(BootSectorOffsets.VolumeSerialNumber, Color.Purple)
+                    HighlightedRegions.AddBootSectorOffset(BootSectorOffsets.VolumeLabel, Color.Purple)
+                    HighlightedRegions.AddBootSectorOffset(BootSectorOffsets.FileSystemType, Color.Purple)
+                End If
             End If
         End If
 
         If BootStrapStart > 2 And BootStrapLength > 1 Then
-            If Disk.BootSector.HasValidJumpInstruction(False) Then
+            If Disk.BootSector.CheckJumpInstruction(False, True) Then
                 HighlightedRegions.AddItem(BootStrapStart, BootStrapLength, ForeColor, "Boot Strap Code")
             Else
                 HighlightedRegions.AddItem(BootStrapStart, BootStrapLength, ForeColor)

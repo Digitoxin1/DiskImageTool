@@ -24,6 +24,7 @@ Partial Class ImageLoadForm
     Private Sub InitializeComponent()
         Me.LblScanning = New System.Windows.Forms.Label()
         Me.BackgroundWorker1 = New System.ComponentModel.BackgroundWorker()
+        Me.lblScanning2 = New System.Windows.Forms.Label()
         Me.SuspendLayout()
         '
         'LblScanning
@@ -35,7 +36,7 @@ Partial Class ImageLoadForm
         Me.LblScanning.Name = "LblScanning"
         Me.LblScanning.Size = New System.Drawing.Size(168, 16)
         Me.LblScanning.TabIndex = 0
-        Me.LblScanning.Text = "Scanning ... 100%"
+        Me.LblScanning.Text = "Scanning ... 0 files"
         Me.LblScanning.TextAlign = System.Drawing.ContentAlignment.TopCenter
         '
         'BackgroundWorker1
@@ -43,11 +44,24 @@ Partial Class ImageLoadForm
         Me.BackgroundWorker1.WorkerReportsProgress = True
         Me.BackgroundWorker1.WorkerSupportsCancellation = True
         '
+        'lblScanning2
+        '
+        Me.lblScanning2.Anchor = CType(((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Left) _
+            Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
+        Me.lblScanning2.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.lblScanning2.Location = New System.Drawing.Point(12, 50)
+        Me.lblScanning2.Name = "lblScanning2"
+        Me.lblScanning2.Size = New System.Drawing.Size(168, 16)
+        Me.lblScanning2.TabIndex = 1
+        Me.lblScanning2.Text = "0 images loaded"
+        Me.lblScanning2.TextAlign = System.Drawing.ContentAlignment.TopCenter
+        '
         'ImageLoadForm
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
-        Me.ClientSize = New System.Drawing.Size(192, 67)
+        Me.ClientSize = New System.Drawing.Size(192, 95)
+        Me.Controls.Add(Me.lblScanning2)
         Me.Controls.Add(Me.LblScanning)
         Me.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog
         Me.MaximizeBox = False
@@ -63,4 +77,5 @@ Partial Class ImageLoadForm
 
     Friend WithEvents LblScanning As Label
     Friend WithEvents BackgroundWorker1 As System.ComponentModel.BackgroundWorker
+    Friend WithEvents lblScanning2 As Label
 End Class

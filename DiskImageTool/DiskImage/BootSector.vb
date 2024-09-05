@@ -146,8 +146,38 @@
             End Set
         End Property
 
-        Public Shared Function CheckJumpInstruction(Value() As Byte, CheckNOP As Boolean) As Boolean
-            Return (Value(0) = &HEB And (Not CheckNOP Or Value(2) = &H90)) Or Value(0) = &HE9
+        Public Function CheckJumpInstruction(CheckNOP As Boolean) As Boolean
+            Return CheckJumpInstruction(JmpBoot, CheckNOP)
+        End Function
+
+        Public Function CheckJumpInstruction(CheckNOP As Boolean, CheckDestination As Boolean) As Boolean
+            Return CheckJumpInstruction(JmpBoot, CheckNOP, CheckDestination)
+        End Function
+
+        Public Shared Function CheckJumpInstruction(Jmp() As Byte, CheckNOP As Boolean) As Boolean
+            Return CheckJumpInstruction(Jmp, CheckNOP, False)
+        End Function
+
+        Public Shared Function CheckJumpInstruction(Jmp() As Byte, CheckNOP As Boolean, CheckDestination As Boolean) As Boolean
+            Dim Result As Boolean = False
+
+            If Jmp(0) = &HEB And (Not CheckNOP Or Jmp(2) = &H90) Then
+                If CheckDestination Then
+                    Dim Offset As UShort = Jmp(1) + 2
+                    Result = (Offset < BootSectorOffsets.BootStrapSignature)
+                Else
+                    Result = True
+                End If
+            ElseIf Jmp(0) = &HE9 Then
+                If CheckDestination Then
+                    Dim Offset As UShort = BitConverter.ToUInt16(Jmp, 1) + 3
+                    Result = (Offset < BootSectorOffsets.BootStrapSignature)
+                Else
+                    Result = True
+                End If
+            End If
+
+            Return Result
         End Function
 
         Public Shared Function GenerateVolumeSerialNumber(Value As Date) As UInteger
@@ -172,13 +202,12 @@
             End If
         End Function
 
-        Public Function GetBootStrapOffset(Jmp() As Byte) As UShort
-            Dim JumpInstruction As Byte = Jmp(0)
+        Public Shared Function GetBootStrapOffset(Jmp() As Byte) As UShort
             Dim Offset As UShort
 
-            If JumpInstruction = &HEB Then
+            If Jmp(0) = &HEB Then
                 Offset = Jmp(1) + 2
-            ElseIf JumpInstruction = &HE9 Then
+            ElseIf Jmp(0) = &HE9 Then
                 Offset = BitConverter.ToUInt16(Jmp, 1) + 3
             Else
                 Offset = 0
@@ -217,10 +246,6 @@
 
         Public Function HasValidExtendedBootSignature() As Boolean
             Return ValidExtendedBootSignature.Contains(ExtendedBootSignature)
-        End Function
-
-        Public Function HasValidJumpInstruction(CheckNOP As Boolean) As Boolean
-            Return CheckJumpInstruction(JmpBoot, CheckNOP)
         End Function
 
         Public Function IsBootSectorRegion(Offset As UInteger) As Boolean

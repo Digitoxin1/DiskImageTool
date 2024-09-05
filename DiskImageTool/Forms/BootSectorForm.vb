@@ -243,7 +243,7 @@ Public Class BootSectorForm
         ElseIf Control Is TxtHiddenSectors Then
             Return Control.Text = "0"
         ElseIf Control Is HexJumpInstruction Then
-            Return BootSector.CheckJumpInstruction(HexJumpInstruction.GetHex, True)
+            Return BootSector.CheckJumpInstruction(HexJumpInstruction.GetHex, True, True)
         Else
             Return True
         End If
@@ -281,7 +281,7 @@ Public Class BootSectorForm
             End If
             HexBox1.Height = LineCount * 13 + 4
 
-            If BootSector.HasValidJumpInstruction(False) Then
+            If BootSector.CheckJumpInstruction(False, True) Then
                 If BootStrapStart >= DataStart Then
                     Dim Start = BootStrapStart - DataStart
                     HexBox1.Highlight(Start, DataLength - Start, Color.Green, Color.White)

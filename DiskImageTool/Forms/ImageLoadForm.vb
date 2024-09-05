@@ -10,10 +10,10 @@ Public Class ImageLoadForm
     Private ReadOnly _FileFilterExt As List(Of String)
     Private ReadOnly _Files() As String
     Private ReadOnly _LoadedFileNames As Dictionary(Of String, LoadedImageData)
-    Private ReadOnly _LoadedImages As List(Of LoadedImageData)
     Private ReadOnly _Parent As MainForm
     Private _Activated As Boolean = False
     Private _Counter As Integer = 0
+    Private _ImageCount As Integer = 0
     Private _EndScan As Boolean = False
     Private _SelectedImageData As LoadedImageData = Nothing
     Private _Visible As Boolean = False
@@ -29,14 +29,7 @@ Public Class ImageLoadForm
         _LoadedFileNames = LoadedFileNames
         _FileFilterExt = FileFilterExt
         _ArchiveFilterExt = ArchiveFilterExt
-        _LoadedImages = New List(Of LoadedImageData)
     End Sub
-
-    Public ReadOnly Property LoadedImages As List(Of LoadedImageData)
-        Get
-            Return _LoadedImages
-        End Get
-    End Property
 
     Public ReadOnly Property SelectedImageData As LoadedImageData
         Get
@@ -169,8 +162,12 @@ Public Class ImageLoadForm
             End If
             If _Counter Mod 10 = 0 Then
                 LblScanning.Text = "Scanning... " & _Counter & " files"
+                lblScanning2.Text = _ImageCount & " images loaded"
+                LblScanning.Refresh()
+                lblScanning2.Refresh()
             End If
         ElseIf e.ProgressPercentage = 2 Then
+            _ImageCount += 1
             Dim ImageData As LoadedImageData = e.UserState
             _Parent.ComboImages.Items.Add(ImageData)
         End If
