@@ -9910,6 +9910,9 @@
     <release year="1984" version="r14, Serial 841005, Int. 3D" media="160K" status="U" os="PC Booter">
       <disk md5="DEA65EB9694AF02D78FCFBB880F046C5" cp="Non-standard Sector Sizes"/>
     </release>
+	<release year="1985" version="r14, Serial 841005, Int. L" media="180K" status="V">
+      <disk md5="27BC0A6636A7ED00DF2198D56CEC8C40"/>
+    </release>
   </title>
   <title name="Suspended" publisher="Infocom, Inc.">
     <release year="1983" version="r8, Serial 830521, Int. 3A" media="160K" status="U" os="PC Booter">

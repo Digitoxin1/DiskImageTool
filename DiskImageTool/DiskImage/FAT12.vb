@@ -285,6 +285,8 @@
                         _BadClusters.Add(Cluster)
                     ElseIf Value >= 2 And Value <= Length Then
                         _LostClusters.Add(Cluster)
+                    ElseIf Value >= FAT12.FAT_LAST_CLUSTER_START And Value <= FAT12.FAT_LAST_CLUSTER_END Then
+                        _LostClusters.Add(Cluster)
                     ElseIf Value = 1 Or (Value >= FAT12.FAT_RESERVED_START And Value <= FAT12.FAT_RESERVED_END) Then
                         _ReservedClusters += 1
                     End If
