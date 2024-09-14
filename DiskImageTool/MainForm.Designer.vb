@@ -78,6 +78,7 @@ Partial Class MainForm
         Me.BtnDisplayFile = New System.Windows.Forms.ToolStripMenuItem()
         Me.BtnDisplayBadSectors = New System.Windows.Forms.ToolStripMenuItem()
         Me.BtnDisplayLostClusters = New System.Windows.Forms.ToolStripMenuItem()
+        Me.BtnDisplayOverdumpData = New System.Windows.Forms.ToolStripMenuItem()
         Me.BtnDisplayDisk = New System.Windows.Forms.ToolStripMenuItem()
         Me.BtnExportDebug = New System.Windows.Forms.ToolStripMenuItem()
         Me.BtnCompare = New System.Windows.Forms.ToolStripMenuItem()
@@ -85,8 +86,8 @@ Partial Class MainForm
         Me.BtnClearReservedBytes = New System.Windows.Forms.ToolStripMenuItem()
         Me.BtnFixImageSize = New System.Windows.Forms.ToolStripMenuItem()
         Me.SubMenuFixImageSize = New System.Windows.Forms.ToolStripMenuItem()
-        Me.BtnResizeImage = New System.Windows.Forms.ToolStripMenuItem()
-        Me.BtnConvertSectors = New System.Windows.Forms.ToolStripMenuItem()
+        Me.BtnTruncateImage = New System.Windows.Forms.ToolStripMenuItem()
+        Me.BtnRestructureImage = New System.Windows.Forms.ToolStripMenuItem()
         Me.BtnRestoreBootSector = New System.Windows.Forms.ToolStripMenuItem()
         Me.BtnRemoveBootSector = New System.Windows.Forms.ToolStripMenuItem()
         Me.BtnWin9xCleanBatch = New System.Windows.Forms.ToolStripMenuItem()
@@ -168,7 +169,6 @@ Partial Class MainForm
         Me.ComboImagesFiltered = New System.Windows.Forms.ComboBox()
         Me.BtnResetSort = New System.Windows.Forms.Button()
         Me.btnRetry = New System.Windows.Forms.Button()
-        Me.BtnConvertSingleSided = New System.Windows.Forms.ToolStripMenuItem()
         SummaryName = CType(New System.Windows.Forms.ColumnHeader(), System.Windows.Forms.ColumnHeader)
         SummaryValue = CType(New System.Windows.Forms.ColumnHeader(), System.Windows.Forms.ColumnHeader)
         HashName = CType(New System.Windows.Forms.ColumnHeader(), System.Windows.Forms.ColumnHeader)
@@ -439,7 +439,7 @@ Partial Class MainForm
         '
         'MainMenuView
         '
-        MainMenuView.DropDownItems.AddRange(New System.Windows.Forms.ToolStripItem() {Me.BtnDisplayBootSector, Me.BtnDisplayFAT, Me.BtnDisplayDirectory, Me.BtnDisplayClusters, Me.BtnDisplayFile, Me.BtnDisplayBadSectors, Me.BtnDisplayLostClusters, Me.BtnDisplayDisk})
+        MainMenuView.DropDownItems.AddRange(New System.Windows.Forms.ToolStripItem() {Me.BtnDisplayBootSector, Me.BtnDisplayFAT, Me.BtnDisplayDirectory, Me.BtnDisplayClusters, Me.BtnDisplayFile, Me.BtnDisplayBadSectors, Me.BtnDisplayLostClusters, Me.BtnDisplayOverdumpData, Me.BtnDisplayDisk})
         MainMenuView.Name = "MainMenuView"
         MainMenuView.Size = New System.Drawing.Size(40, 20)
         MainMenuView.Text = "&Hex"
@@ -485,6 +485,12 @@ Partial Class MainForm
         Me.BtnDisplayLostClusters.Name = "BtnDisplayLostClusters"
         Me.BtnDisplayLostClusters.Size = New System.Drawing.Size(194, 22)
         Me.BtnDisplayLostClusters.Text = "&Lost Clusters"
+        '
+        'BtnDisplayOverdumpData
+        '
+        Me.BtnDisplayOverdumpData.Name = "BtnDisplayOverdumpData"
+        Me.BtnDisplayOverdumpData.Size = New System.Drawing.Size(194, 22)
+        Me.BtnDisplayOverdumpData.Text = "&Overdump Data"
         '
         'BtnDisplayDisk
         '
@@ -558,22 +564,22 @@ Partial Class MainForm
         '
         'SubMenuFixImageSize
         '
-        Me.SubMenuFixImageSize.DropDownItems.AddRange(New System.Windows.Forms.ToolStripItem() {Me.BtnResizeImage, Me.BtnConvertSectors, Me.BtnConvertSingleSided})
+        Me.SubMenuFixImageSize.DropDownItems.AddRange(New System.Windows.Forms.ToolStripItem() {Me.BtnTruncateImage, Me.BtnRestructureImage})
         Me.SubMenuFixImageSize.Name = "SubMenuFixImageSize"
         Me.SubMenuFixImageSize.Size = New System.Drawing.Size(289, 22)
         Me.SubMenuFixImageSize.Text = "Fix Image &Size"
         '
-        'BtnResizeImage
+        'BtnTruncateImage
         '
-        Me.BtnResizeImage.Name = "BtnResizeImage"
-        Me.BtnResizeImage.Size = New System.Drawing.Size(230, 22)
-        Me.BtnResizeImage.Text = "&Resize Image"
+        Me.BtnTruncateImage.Name = "BtnTruncateImage"
+        Me.BtnTruncateImage.Size = New System.Drawing.Size(180, 22)
+        Me.BtnTruncateImage.Text = "&Truncate Image"
         '
-        'BtnConvertSectors
+        'BtnRestructureImage
         '
-        Me.BtnConvertSectors.Name = "BtnConvertSectors"
-        Me.BtnConvertSectors.Size = New System.Drawing.Size(230, 22)
-        Me.BtnConvertSectors.Text = "&Convert to 8 Sectors pet Track"
+        Me.BtnRestructureImage.Name = "BtnRestructureImage"
+        Me.BtnRestructureImage.Size = New System.Drawing.Size(180, 22)
+        Me.BtnRestructureImage.Text = "&Restructure Image"
         '
         'BtnRestoreBootSector
         '
@@ -1240,12 +1246,6 @@ Partial Class MainForm
         Me.btnRetry.Text = "Retry"
         Me.btnRetry.UseVisualStyleBackColor = True
         '
-        'BtnConvertSingleSided
-        '
-        Me.BtnConvertSingleSided.Name = "BtnConvertSingleSided"
-        Me.BtnConvertSingleSided.Size = New System.Drawing.Size(230, 22)
-        Me.BtnConvertSingleSided.Text = "Convert to &Single Sided"
-        '
         'MainForm
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
@@ -1400,7 +1400,7 @@ Partial Class MainForm
     Friend WithEvents BtnAddFile As ToolStripMenuItem
     Friend WithEvents BtnFileMenuAddFile As ToolStripMenuItem
     Friend WithEvents SubMenuFixImageSize As ToolStripMenuItem
-    Friend WithEvents BtnResizeImage As ToolStripMenuItem
-    Friend WithEvents BtnConvertSectors As ToolStripMenuItem
-    Friend WithEvents BtnConvertSingleSided As ToolStripMenuItem
+    Friend WithEvents BtnTruncateImage As ToolStripMenuItem
+    Friend WithEvents BtnRestructureImage As ToolStripMenuItem
+    Friend WithEvents BtnDisplayOverdumpData As ToolStripMenuItem
 End Class

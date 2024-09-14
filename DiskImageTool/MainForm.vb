@@ -978,47 +978,25 @@ Public Class MainForm
         frmTextView.ShowDialog()
     End Sub
 
-    Private Sub ConvertImageSectors()
+    Private Sub RestructureImage()
         If _TitleDB.IsVerifiedImage(_Disk) Then
-            If Not MsgBoxQuestion("This is a verified image.  Are you sure you wish to convert this image to 8 sectors per track?") Then
+            If Not MsgBoxQuestion("This is a verified image.  Are you sure you wish to restructure this image?") Then
                 Exit Sub
             End If
         End If
 
         Dim Size = GetFloppyDiskSize(_Disk.DiskType)
         Dim Data(Size - 1) As Byte
-
-        Dim DataOffset As UInteger = 0
-        For Offset As UInteger = 0 To _Disk.Data.Length - 1 Step Disk.BYTES_PER_SECTOR
-            Dim Sector As UInteger = Offset \ Disk.BYTES_PER_SECTOR
-            Dim TrackSector As UShort = Sector Mod 9
-            If TrackSector < 8 Then
-                _Disk.Data.CopyTo(Offset, Data, DataOffset, Disk.BYTES_PER_SECTOR)
-                DataOffset += Disk.BYTES_PER_SECTOR
-            End If
-        Next
-
-        DiskUpdateBytes(Data)
-    End Sub
-
-    Private Sub ConvertImageSingleSided()
-        If _TitleDB.IsVerifiedImage(_Disk) Then
-            If Not MsgBoxQuestion("This is a verified image.  Are you sure you wish to convert this image to a single sided image?") Then
-                Exit Sub
-            End If
-        End If
-
-        Dim Size = GetFloppyDiskSize(_Disk.DiskType)
-        Dim Data(Size - 1) As Byte
-
         Dim Params = GetFloppyDiskParams(_Disk.DiskType)
+        Dim ParamsBySize = GetFloppyDiskParams(_Disk.Data.Length)
 
         Dim DataOffset As UInteger = 0
         For Offset As UInteger = 0 To _Disk.Data.Length - 1 Step Disk.BYTES_PER_SECTOR
             Dim Sector As UInteger = Offset \ Disk.BYTES_PER_SECTOR
-            Dim Track As UShort = Sector \ Params.SectorsPerTrack
+            Dim TrackSector As UShort = Sector Mod ParamsBySize.SectorsPerTrack
+            Dim Track As UShort = Sector \ ParamsBySize.SectorsPerTrack
             Dim Side As UShort = Track Mod 2
-            If Side = 0 Then
+            If TrackSector < Params.SectorsPerTrack And Side < Params.NumberOfHeads Then
                 _Disk.Data.CopyTo(Offset, Data, DataOffset, Disk.BYTES_PER_SECTOR)
                 DataOffset += Disk.BYTES_PER_SECTOR
             End If
@@ -1029,7 +1007,7 @@ Public Class MainForm
 
     Private Sub DiskUpdateBytes(Data() As Byte)
         _Disk.Data.BatchEditMode = True
-        _Disk.Data.SetBytes(Data, 0)
+        _Disk.Data.SetBytes(Data, 0, _Disk.Data.Length, 0)
         _Disk.Data.Resize(Data.Length)
         _Disk.Data.BatchEditMode = False
 
@@ -1914,7 +1892,7 @@ Public Class MainForm
                 End If
             Next
             If HasData Then
-                Result = MsgBoxQuestion($"There is data in the overdumped region of the image.{vbCrLf}{vbCrLf}Are you sure you wish to truncate the image?")
+                Result = MsgBoxQuestion($"There is data in the overdumped region of the image.{vbCrLf}{vbCrLf}Are you sure you wish to truncate this image?")
             End If
         End If
 
@@ -2354,6 +2332,19 @@ Public Class MainForm
             DiskImageRefresh()
         End If
     End Sub
+
+    Private Sub HexDisplayOverdumpData()
+        Dim Offset = _Disk.BPB.ReportedImageSize() + 1
+
+        Dim HexViewSectorData = New HexViewSectorData(_Disk, Offset, _Disk.Data.Length - Offset) With {
+           .Description = "Disk"
+       }
+
+        If DisplayHexViewForm(HexViewSectorData, True, True, False) Then
+            DiskImageRefresh()
+        End If
+    End Sub
+
     Private Sub ImageCountUpdate()
         If ImageFilters.FiltersApplied Then
             ToolStripImageCount.Text = $"{ComboImagesFiltered.Items.Count} of {ComboImages.Items.Count} {"Image".Pluralize(ComboImages.Items.Count)}"
@@ -3351,38 +3342,35 @@ Public Class MainForm
 
     Private Sub RefreshFixImageSubMenu(Disk As Disk)
         Dim EnableSubMenu As Boolean
-        Dim EnableConvertSectors As Boolean = False
-        Dim EnableConvertSingleSided As Boolean = False
+        Dim EnableRestructureImage As Boolean = False
         Dim DiskTypeBySize = GetFloppyDiskType(Disk.Data.Length)
+        Dim SizeByType = GetFloppyDiskSize(Disk.DiskType)
 
         If Disk.DiskType = FloppyDiskType.Floppy160 And DiskTypeBySize = FloppyDiskType.Floppy180 Then
-            EnableConvertSectors = True
-        ElseIf Disk.DiskType = FloppyDiskType.Floppy320 And DiskTypeBySize = FloppyDiskType.Floppy360 Then
-            EnableConvertSectors = True
-        End If
-
-        If Disk.DiskType = FloppyDiskType.Floppy160 And DiskTypeBySize = FloppyDiskType.Floppy320 Then
-            EnableConvertSingleSided = True
+            EnableRestructureImage = True
+        ElseIf Disk.DiskType = FloppyDiskType.Floppy160 And DiskTypeBySize = FloppyDiskType.Floppy320 Then
+            EnableRestructureImage = True
+        ElseIf Disk.DiskType = FloppyDiskType.Floppy160 And DiskTypeBySize = FloppyDiskType.Floppy360 Then
+            EnableRestructureImage = True
         ElseIf Disk.DiskType = FloppyDiskType.Floppy180 And DiskTypeBySize = FloppyDiskType.Floppy360 Then
-            EnableConvertSingleSided = True
+            EnableRestructureImage = True
+        ElseIf Disk.DiskType = FloppyDiskType.Floppy320 And DiskTypeBySize = FloppyDiskType.Floppy360 Then
+            EnableRestructureImage = True
         End If
 
-        EnableSubMenu = EnableConvertSectors Or EnableConvertSingleSided
+        EnableSubMenu = EnableRestructureImage
 
         If EnableSubMenu Then
             BtnFixImageSize.Visible = False
             SubMenuFixImageSize.Visible = True
             SubMenuFixImageSize.Enabled = True
-            BtnConvertSectors.Enabled = EnableConvertSectors
-            BtnConvertSectors.Visible = EnableConvertSectors
-            BtnConvertSingleSided.Enabled = EnableConvertSingleSided
-            BtnConvertSingleSided.Visible = EnableConvertSingleSided
+            BtnRestructureImage.Enabled = EnableRestructureImage
+            BtnRestructureImage.Visible = EnableRestructureImage
         Else
             BtnFixImageSize.Visible = True
             SubMenuFixImageSize.Visible = False
             SubMenuFixImageSize.Enabled = False
-            BtnConvertSectors.Enabled = False
-            BtnConvertSingleSided.Enabled = False
+            BtnRestructureImage.Enabled = False
         End If
     End Sub
 
@@ -3391,7 +3379,8 @@ Public Class MainForm
             BtnDisplayClusters.Enabled = Disk.FAT.HasFreeClusters(FAT12.FreeClusterEmum.WithData)
             BtnDisplayBadSectors.Enabled = Disk.FAT.BadClusters.Count > 0
             BtnDisplayLostClusters.Enabled = Disk.FAT.GetLostClusterCount > 0
-            BtnFixImageSize.Enabled = Disk.CheckImageSize <> 0
+            Dim Compare = Disk.CheckImageSize
+            BtnFixImageSize.Enabled = Compare <> 0
             If Disk.Directory.Data.HasBootSector Then
                 Dim BootSectorBytes = Disk.Data.GetBytes(Disk.Directory.Data.BootSectorOffset, BootSector.BOOT_SECTOR_SIZE)
                 BtnRestoreBootSector.Enabled = Not BootSectorBytes.CompareTo(Disk.BootSector.Data)
@@ -3399,6 +3388,7 @@ Public Class MainForm
                 BtnRestoreBootSector.Enabled = False
             End If
             BtnRemoveBootSector.Enabled = Disk.Directory.Data.HasBootSector
+            BtnDisplayOverdumpData.Enabled = Compare > 0
 
             RefreshFixImageSubMenu(Disk)
         Else
@@ -3406,15 +3396,15 @@ Public Class MainForm
             BtnDisplayBadSectors.Enabled = False
             BtnDisplayLostClusters.Enabled = False
             BtnFixImageSize.Enabled = False
-            BtnConvertSectors.Enabled = False
-            BtnConvertSingleSided.Enabled = False
+            BtnRestructureImage.Enabled = False
             SubMenuFixImageSize.Enabled = False
             SubMenuFixImageSize.Visible = False
             BtnRestoreBootSector.Enabled = False
             BtnRemoveBootSector.Enabled = False
+            BtnDisplayOverdumpData.Enabled = False
         End If
 
-        BtnResizeImage.Enabled = BtnFixImageSize.Enabled
+        BtnTruncateImage.Enabled = BtnFixImageSize.Enabled
 
         If Disk IsNot Nothing Then
             BtnRevert.Enabled = Disk.Data.Modified
@@ -4083,12 +4073,8 @@ Public Class MainForm
         CompareImages()
     End Sub
 
-    Private Sub BtnConvertSectors_Click(sender As Object, e As EventArgs) Handles BtnConvertSectors.Click
-        ConvertImageSectors()
-    End Sub
-
-    Private Sub BtnConvertSingleSided_Click(sender As Object, e As EventArgs) Handles BtnConvertSingleSided.Click
-        ConvertImageSingleSided()
+    Private Sub BtnRestructureImage_Click(sender As Object, e As EventArgs) Handles BtnRestructureImage.Click
+        RestructureImage()
     End Sub
 
     Private Sub BtnCreateBackup_Click(sender As Object, e As EventArgs) Handles btnCreateBackup.Click
@@ -4130,6 +4116,11 @@ Public Class MainForm
     Private Sub BtnDisplayLostClusters_Click(sender As Object, e As EventArgs) Handles BtnDisplayLostClusters.Click
         HexDisplayLostClusters()
     End Sub
+
+    Private Sub BtnDisplayOverdumpData_Click(sender As Object, e As EventArgs) Handles BtnDisplayOverdumpData.Click
+        HexDisplayOverdumpData()
+    End Sub
+
     Private Sub BtnEditBootSector_Click(sender As Object, e As EventArgs) Handles BtnEditBootSector.Click
         ContextMenuEdit.Close()
         BootSectorEdit()
@@ -4215,7 +4206,7 @@ Public Class MainForm
     End Sub
 
 
-    Private Sub BtnFixImageSize_Click(sender As Object, e As EventArgs) Handles BtnFixImageSize.Click, BtnResizeImage.Click
+    Private Sub BtnFixImageSize_Click(sender As Object, e As EventArgs) Handles BtnFixImageSize.Click, BtnTruncateImage.Click
         FixImageSize()
     End Sub
 
