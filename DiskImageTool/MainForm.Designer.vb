@@ -165,6 +165,9 @@ Partial Class MainForm
         Me.ComboImagesFiltered = New System.Windows.Forms.ComboBox()
         Me.BtnResetSort = New System.Windows.Forms.Button()
         Me.btnRetry = New System.Windows.Forms.Button()
+        Me.SubMenuFixImageSize = New System.Windows.Forms.ToolStripMenuItem()
+        Me.BtnResizeImage = New System.Windows.Forms.ToolStripMenuItem()
+        Me.BtnConvertSectors = New System.Windows.Forms.ToolStripMenuItem()
         SummaryName = CType(New System.Windows.Forms.ColumnHeader(), System.Windows.Forms.ColumnHeader)
         SummaryValue = CType(New System.Windows.Forms.ColumnHeader(), System.Windows.Forms.ColumnHeader)
         HashName = CType(New System.Windows.Forms.ColumnHeader(), System.Windows.Forms.ColumnHeader)
@@ -522,7 +525,7 @@ Partial Class MainForm
         '
         'MainMenuTools
         '
-        MainMenuTools.DropDownItems.AddRange(New System.Windows.Forms.ToolStripItem() {Me.BtnCompare, Me.BtnWin9xClean, Me.BtnClearReservedBytes, Me.BtnFixImageSize, Me.BtnRestoreBootSector, Me.BtnRemoveBootSector, ToolStripMenuItem1, Me.BtnWin9xCleanBatch})
+        MainMenuTools.DropDownItems.AddRange(New System.Windows.Forms.ToolStripItem() {Me.BtnCompare, Me.BtnWin9xClean, Me.BtnClearReservedBytes, Me.BtnFixImageSize, Me.SubMenuFixImageSize, Me.BtnRestoreBootSector, Me.BtnRemoveBootSector, ToolStripMenuItem1, Me.BtnWin9xCleanBatch})
         MainMenuTools.Name = "MainMenuTools"
         MainMenuTools.Size = New System.Drawing.Size(46, 20)
         MainMenuTools.Text = "&Tools"
@@ -1014,7 +1017,7 @@ Partial Class MainForm
         '
         Me.ContextMenuFiles.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.BtnFileMenuFileProperties, Me.BtnFileMenuExportFile, Me.BtnFileMenuReplaceFile, Me.BtnFileMenuAddFile, FileMenuSeparatoor1, Me.BtnFileMenuViewDirectory, Me.FileMenuSeparatorDirectory, Me.BtnFileMenuViewFile, Me.BtnFileMenuViewFileText, Me.BtnFileMenuViewCrosslinked, FileMenuSeparatoor2, Me.BtnFileMenuDeleteFile, Me.BtnFileMenuUnDeleteFile, Me.BtnFileMenuRemoveDeletedFile, Me.BtnFileMenuDeleteFileWithFill, FileMenuSeparatoor3, Me.BtnFileMenuFixSize})
         Me.ContextMenuFiles.Name = "ContextMenuFiles"
-        Me.ContextMenuFiles.Size = New System.Drawing.Size(223, 336)
+        Me.ContextMenuFiles.Size = New System.Drawing.Size(223, 314)
         '
         'BtnFileMenuFileProperties
         '
@@ -1215,6 +1218,25 @@ Partial Class MainForm
         Me.btnRetry.Text = "Retry"
         Me.btnRetry.UseVisualStyleBackColor = True
         '
+        'SubMenuFixImageSize
+        '
+        Me.SubMenuFixImageSize.DropDownItems.AddRange(New System.Windows.Forms.ToolStripItem() {Me.BtnResizeImage, Me.BtnConvertSectors})
+        Me.SubMenuFixImageSize.Name = "SubMenuFixImageSize"
+        Me.SubMenuFixImageSize.Size = New System.Drawing.Size(289, 22)
+        Me.SubMenuFixImageSize.Text = "Fix Image &Size"
+        '
+        'BtnResizeImage
+        '
+        Me.BtnResizeImage.Name = "BtnResizeImage"
+        Me.BtnResizeImage.Size = New System.Drawing.Size(230, 22)
+        Me.BtnResizeImage.Text = "&Resize Image"
+        '
+        'BtnConvertSectors
+        '
+        Me.BtnConvertSectors.Name = "BtnConvertSectors"
+        Me.BtnConvertSectors.Size = New System.Drawing.Size(230, 22)
+        Me.BtnConvertSectors.Text = "&Convert to 8 Sectors pet Track"
+        '
         'MainForm
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
@@ -1368,4 +1390,7 @@ Partial Class MainForm
     Friend WithEvents btnRetry As Button
     Friend WithEvents BtnAddFile As ToolStripMenuItem
     Friend WithEvents BtnFileMenuAddFile As ToolStripMenuItem
+    Friend WithEvents SubMenuFixImageSize As ToolStripMenuItem
+    Friend WithEvents BtnResizeImage As ToolStripMenuItem
+    Friend WithEvents BtnConvertSectors As ToolStripMenuItem
 End Class

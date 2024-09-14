@@ -978,6 +978,34 @@ Public Class MainForm
         frmTextView.ShowDialog()
     End Sub
 
+    Private Sub ConvertImageSectors()
+        If _TitleDB.IsVerifiedImage(_Disk) Then
+            If Not MsgBoxQuestion("This is a verified image.  Are you sure you wish to convert this image to 8 sectors per track?") Then
+                Exit Sub
+            End If
+        End If
+
+        Dim Size = GetFloppyDiskSize(_Disk.DiskType)
+        Dim Data(Size - 1) As Byte
+
+        Dim DataOffset As UInteger = 0
+        For Offset As UInteger = 0 To _Disk.Data.Length - 1 Step Disk.BYTES_PER_SECTOR
+            Dim Sector As UInteger = Offset \ Disk.BYTES_PER_SECTOR
+            Dim TrackSector As UShort = Sector Mod 9
+            If TrackSector < 8 Then
+                _Disk.Data.CopyTo(Offset, Data, DataOffset, Disk.BYTES_PER_SECTOR)
+                DataOffset += Disk.BYTES_PER_SECTOR
+            End If
+        Next
+
+        _Disk.Data.BatchEditMode = True
+        _Disk.Data.SetBytes(Data, 0)
+        _Disk.Data.Resize(Data.Length)
+        _Disk.Data.BatchEditMode = False
+
+        DiskImageRefresh()
+    End Sub
+
     Private Sub DeleteSelectedFiles(Clear As Boolean)
         Dim Msg As String
         Dim Title As String
@@ -3291,6 +3319,29 @@ Public Class MainForm
         RefreshSaveButtons()
     End Sub
 
+    Private Sub RefreshFixImageSubMenu(Disk As Disk)
+        Dim EnableConvertSectors As Boolean = False
+        Dim DiskTypeBySize = GetFloppyDiskType(Disk.Data.Length)
+
+        If Disk.DiskType = FloppyDiskType.Floppy160 And DiskTypeBySize = FloppyDiskType.Floppy180 Then
+            EnableConvertSectors = True
+        ElseIf Disk.DiskType = FloppyDiskType.Floppy320 And DiskTypeBySize = FloppyDiskType.Floppy360 Then
+            EnableConvertSectors = True
+        End If
+
+        If EnableConvertSectors Then
+            BtnFixImageSize.Visible = False
+            SubMenuFixImageSize.Visible = True
+            SubMenuFixImageSize.Enabled = True
+            BtnConvertSectors.Enabled = True
+        Else
+            BtnFixImageSize.Visible = True
+            SubMenuFixImageSize.Visible = False
+            SubMenuFixImageSize.Enabled = False
+            BtnConvertSectors.Enabled = False
+        End If
+    End Sub
+
     Private Sub RefreshDiskButtons(Disk As Disk, ImageData As LoadedImageData)
         If Disk IsNot Nothing AndAlso Disk.IsValidImage Then
             BtnDisplayClusters.Enabled = Disk.FAT.HasFreeClusters(FAT12.FreeClusterEmum.WithData)
@@ -3304,14 +3355,21 @@ Public Class MainForm
                 BtnRestoreBootSector.Enabled = False
             End If
             BtnRemoveBootSector.Enabled = Disk.Directory.Data.HasBootSector
+
+            RefreshFixImageSubMenu(Disk)
         Else
             BtnDisplayClusters.Enabled = False
             BtnDisplayBadSectors.Enabled = False
             BtnDisplayLostClusters.Enabled = False
             BtnFixImageSize.Enabled = False
+            BtnConvertSectors.Enabled = False
+            SubMenuFixImageSize.Enabled = False
+            SubMenuFixImageSize.Visible = False
             BtnRestoreBootSector.Enabled = False
             BtnRemoveBootSector.Enabled = False
         End If
+
+        BtnResizeImage.Enabled = BtnFixImageSize.Enabled
 
         If Disk IsNot Nothing Then
             BtnRevert.Enabled = Disk.Data.Modified
@@ -3980,6 +4038,10 @@ Public Class MainForm
         CompareImages()
     End Sub
 
+    Private Sub BtnConvertSectors_Click(sender As Object, e As EventArgs) Handles BtnConvertSectors.Click
+        ConvertImageSectors()
+    End Sub
+
     Private Sub BtnCreateBackup_Click(sender As Object, e As EventArgs) Handles btnCreateBackup.Click
         My.Settings.CreateBackups = btnCreateBackup.Checked
     End Sub
@@ -4103,7 +4165,8 @@ Public Class MainForm
         FilePropertiesEdit()
     End Sub
 
-    Private Sub BtnFixImageSize_Click(sender As Object, e As EventArgs) Handles BtnFixImageSize.Click
+
+    Private Sub BtnFixImageSize_Click(sender As Object, e As EventArgs) Handles BtnFixImageSize.Click, BtnResizeImage.Click
         FixImageSize()
     End Sub
 
