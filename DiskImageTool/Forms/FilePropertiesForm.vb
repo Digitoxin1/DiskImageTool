@@ -1,4 +1,6 @@
-﻿Public Class FilePropertiesForm
+﻿Imports DiskImageTool.DiskImage
+
+Public Class FilePropertiesForm
     Private Const EMPTY_FORMAT As String = "'Empty'"
     Private ReadOnly _Disk As DiskImage.Disk
     Private ReadOnly _Items As ICollection
@@ -25,7 +27,7 @@
         End Get
     End Property
 
-    Private Sub ApplyAttributesUpdate(DirectoryEntry As DiskImage.DirectoryEntry)
+    Private Sub ApplyAttributesUpdate(DirectoryEntry As DiskImage.DirectoryEntryBase)
         Dim Attributes As Byte = DirectoryEntry.Attributes
         Dim BitArray = New BitArray(Attributes)
 
@@ -47,7 +49,8 @@
             _Updated = True
         End If
     End Sub
-    Private Sub ApplyFileDatesUpdate(DirectoryEntry As DiskImage.DirectoryEntry)
+
+    Private Sub ApplyFileDatesUpdate(DirectoryEntry As DiskImage.DirectoryEntryBase)
         Dim LastWritten = GetDateFromPicker(DTLastWritten, DTLastWrittenTime).Value
         Dim Created As Date? = GetDateFromPicker(DTCreated, DTCreatedTime, NumCreatedMS)
         Dim LastAccessed As Date? = GetDateFromPicker(DTLastAccessed)
@@ -94,7 +97,7 @@
         End If
     End Sub
 
-    Private Sub ApplyFileNameUpdate(DirectoryEntry As DiskImage.DirectoryEntry)
+    Private Sub ApplyFileNameUpdate(DirectoryEntry As DiskImage.DirectoryEntryBase)
         Dim FileName() As Byte
         Dim Extension() As Byte
 
@@ -128,20 +131,24 @@
 
         _Disk.Data.BatchEditMode = True
 
-        If _Items.Count = 1 Then
-            Dim Item As ListViewItem = _Items(0)
-            Dim FileData As FileData = Item.Tag
-            Dim DirectoryEntry = FileData.DirectoryEntry
-            ApplyFileNameUpdate(DirectoryEntry)
-        End If
+        Dim UpdateFileName = _Items.Count = 1
 
         For Each Item As ListViewItem In _Items
             Dim FileData As FileData = Item.Tag
             Dim DirectoryEntry = FileData.DirectoryEntry
+            Dim NewDirectoryEntry = New DirectoryEntryBase With {
+                .Data = DirectoryEntry.Data
+            }
 
-            ApplyFileDatesUpdate(DirectoryEntry)
-            ApplyAttributesUpdate(DirectoryEntry)
+            If UpdateFileName Then
+                ApplyFileNameUpdate(NewDirectoryEntry)
+            End If
+            ApplyFileDatesUpdate(NewDirectoryEntry)
+            ApplyAttributesUpdate(NewDirectoryEntry)
+
+            DirectoryEntry.Data = NewDirectoryEntry.Data
         Next
+
 
         _Disk.Data.BatchEditMode = False
     End Sub

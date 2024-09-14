@@ -21,6 +21,12 @@
         Private _MediaDescriptor As Byte
         Private _ReservedClusters As UInteger
 
+        Public Enum FreeClusterEmum
+            WithData
+            WithoutData
+            All
+        End Enum
+
         Sub New(FileBytes As ImageByteArray, BPB As BiosParameterBlock, Index As UShort)
             _BPB = BPB
             _FileBytes = FileBytes
@@ -163,7 +169,7 @@
             Return Math.Min(_FATTable.Length - 1, _BPB.NumberOfFATEntries + 1)
         End Function
 
-        Public Function GetFreeClusters(WithData As Boolean) As List(Of UShort)
+        Public Function GetFreeClusters(FreeClusterType As FreeClusterEmum) As List(Of UShort)
             Dim ClusterChain As New List(Of UShort)
 
             If _FATTable IsNot Nothing Then
@@ -178,10 +184,15 @@
                             ClusterSize = Math.Max(_FileBytes.Length - Offset, 0)
                         End If
                         If ClusterSize > 0 Then
-                            If WithData Then
-                                AddCluster = Not IsDataBlockEmpty(_FileBytes.GetBytes(Offset, ClusterSize))
-                            Else
+                            If FreeClusterType = FreeClusterEmum.All Then
                                 AddCluster = True
+                            Else
+                                Dim Empty = IsDataBlockEmpty(_FileBytes.GetBytes(Offset, ClusterSize))
+                                If FreeClusterType = FreeClusterEmum.WithData Then
+                                    AddCluster = Not Empty
+                                Else
+                                    AddCluster = Empty
+                                End If
                             End If
                             If AddCluster Then
                                 ClusterChain.Add(Cluster)
@@ -209,7 +220,7 @@
             Return Disk.SectorToBytes(SectorStart)
         End Function
 
-        Public Function HasFreeClusters(WithData As Boolean) As Boolean
+        Public Function HasFreeClusters(FreeClusterType As FreeClusterEmum) As Boolean
 
             If _FATTable IsNot Nothing Then
                 Dim ClusterSize As UInteger = _BPB.BytesPerCluster
@@ -222,10 +233,19 @@
                             ClusterSize = Math.Max(_FileBytes.Length - Offset, 0)
                         End If
                         If ClusterSize > 0 Then
-                            If Not WithData Then
+                            If FreeClusterType = FreeClusterEmum.All Then
                                 Return True
-                            ElseIf Not IsDataBlockEmpty(_FileBytes.GetBytes(Offset, ClusterSize)) Then
-                                Return True
+                            Else
+                                Dim Empty = IsDataBlockEmpty(_FileBytes.GetBytes(Offset, ClusterSize))
+                                If FreeClusterType = FreeClusterEmum.WithData Then
+                                    If Not Empty Then
+                                        Return True
+                                    End If
+                                Else
+                                    If Empty Then
+                                        Return True
+                                    End If
+                                End If
                             End If
                         Else
                             Exit For

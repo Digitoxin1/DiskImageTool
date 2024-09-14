@@ -89,8 +89,8 @@ Module Utility
         Return fInfo.IsReadOnly
     End Function
 
-    Public Function MsgBoxQuestion(Prompt As String) As Boolean
-        Return MsgBox(Prompt, MsgBoxStyle.Question + MsgBoxStyle.YesNo + MsgBoxStyle.DefaultButton2) = MsgBoxResult.Yes
+    Public Function MsgBoxQuestion(Prompt As String, Optional Title As Object = Nothing) As Boolean
+        Return MsgBox(Prompt, MsgBoxStyle.Question + MsgBoxStyle.YesNo + MsgBoxStyle.DefaultButton2, Title) = MsgBoxResult.Yes
     End Function
 
     Public Function PathAddBackslash(Path As String) As String

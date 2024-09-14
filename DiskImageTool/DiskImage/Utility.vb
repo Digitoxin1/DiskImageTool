@@ -59,6 +59,23 @@ Namespace DiskImage
             End Select
         End Function
 
+        Public Function CleanDOSFileName(FileName As String) As String
+            Dim FilePart As String = Path.GetFileNameWithoutExtension(FileName).ToUpper
+            Dim Extension As String = Path.GetExtension(FileName).ToUpper
+
+            If FilePart.Length > 8 Then
+                FilePart = FilePart.Substring(0, 8)
+            End If
+
+            If Extension.Length > 4 Then
+                Extension = Extension.Substring(0, 4)
+            End If
+
+            FilePart = FilePart.Replace(" ", "_")
+
+            Return FilePart & Extension
+        End Function
+
         Public Function DirectorytEntryDescription(Offset As DiskImage.DirectoryEntry.DirectoryEntryOffsets) As String
             Select Case Offset
                 Case DiskImage.DirectoryEntry.DirectoryEntryOffsets.FileName

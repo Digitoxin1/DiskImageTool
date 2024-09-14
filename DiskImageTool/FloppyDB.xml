@@ -1204,7 +1204,7 @@
   </title>
   <title name="Chuck Yeager's Advanced Flight Simulator" publisher="Electronic Arts, Inc.">
     <release year="1987-05" version="1.0" media="360K" status="V">
-      <disk md5="E9BE09934D3F2FE297DE25D2FEF7F4D9" md5_cp="76CCB344A6989DC628D5689B1CD67A85" cp="EA Interlock"/>
+      <disk md5="E9BE09934D3F2FE297DE25D2FEF7F4D9" md5_cp="76CCB344A6989DC628D5689B1CD67A85" cp="Electronic Arts IBM Interlock"/>
     </release>
     <release year="1987-07" version="1.0" media="360K" status="V">
       <disk md5="8A07A20A114B9D9DA692FF8473B72080"/>
@@ -1220,7 +1220,7 @@
       </media>
     </release>
     <release year="1987" version="1.2" media="360K" status="V">
-      <disk md5="09D32AED618995665E58A62113C229FF" md5_cp="A9FFFEEF8EA967E063925BA27C84C692" cp="EA Interlock"/>
+      <disk md5="09D32AED618995665E58A62113C229FF" md5_cp="A9FFFEEF8EA967E063925BA27C84C692" cp="Electronic Arts IBM Interlock"/>
     </release>
     <release year="1989-03-08" version="2.0" media="360K" status="V">
       <disk md5="3015F85927567067DBDA63B88D6D7BE1" disk="1"/>
@@ -6364,7 +6364,7 @@
     <release year="1989" status="V">
       <media media="360K">
         <disk md5="E329A67EBDCFA9104896DD4E6B92C87B" disk="1"/>
-        <disk md5="314CC7387DF1474C3D679EFE0943CCB0" disk="2" status="U"/>
+        <disk md5="314CC7387DF1474C3D679EFE0943CCB0" disk="2"/>
       </media>
       <media media="720K">
         <disk md5="8BA910287314E602F35496A78C717814" status="U"/>
@@ -12035,7 +12035,7 @@
   </title>
   <title name="World Tour Golf" publisher="Electronic Arts, Inc.">
     <release year="1986" media="360K" status="V">
-      <disk md5="9785BD4DE40CEB7028ED12483C621360" md5_cp="BB276B3716B88D42019DFA4A3290A066" cp="EA Interlock"/>
+      <disk md5="9785BD4DE40CEB7028ED12483C621360" md5_cp="BB276B3716B88D42019DFA4A3290A066" cp="Electronic Arts IBM Interlock"/>
     </release>
     <release year="1987" media="360K" status="V">
       <disk md5="983E4B628DA5EDCB55A8536B990797AF"/>
