@@ -84,6 +84,9 @@ Partial Class MainForm
         Me.BtnWin9xClean = New System.Windows.Forms.ToolStripMenuItem()
         Me.BtnClearReservedBytes = New System.Windows.Forms.ToolStripMenuItem()
         Me.BtnFixImageSize = New System.Windows.Forms.ToolStripMenuItem()
+        Me.SubMenuFixImageSize = New System.Windows.Forms.ToolStripMenuItem()
+        Me.BtnResizeImage = New System.Windows.Forms.ToolStripMenuItem()
+        Me.BtnConvertSectors = New System.Windows.Forms.ToolStripMenuItem()
         Me.BtnRestoreBootSector = New System.Windows.Forms.ToolStripMenuItem()
         Me.BtnRemoveBootSector = New System.Windows.Forms.ToolStripMenuItem()
         Me.BtnWin9xCleanBatch = New System.Windows.Forms.ToolStripMenuItem()
@@ -165,9 +168,7 @@ Partial Class MainForm
         Me.ComboImagesFiltered = New System.Windows.Forms.ComboBox()
         Me.BtnResetSort = New System.Windows.Forms.Button()
         Me.btnRetry = New System.Windows.Forms.Button()
-        Me.SubMenuFixImageSize = New System.Windows.Forms.ToolStripMenuItem()
-        Me.BtnResizeImage = New System.Windows.Forms.ToolStripMenuItem()
-        Me.BtnConvertSectors = New System.Windows.Forms.ToolStripMenuItem()
+        Me.BtnConvertSingleSided = New System.Windows.Forms.ToolStripMenuItem()
         SummaryName = CType(New System.Windows.Forms.ColumnHeader(), System.Windows.Forms.ColumnHeader)
         SummaryValue = CType(New System.Windows.Forms.ColumnHeader(), System.Windows.Forms.ColumnHeader)
         HashName = CType(New System.Windows.Forms.ColumnHeader(), System.Windows.Forms.ColumnHeader)
@@ -349,6 +350,7 @@ Partial Class MainForm
         '
         Me.ContextMenuEdit.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.BtnEditBootSector, Me.BtnEditFAT, Me.ToolStripSeparator4, Me.BtnFileProperties, Me.BtnExportFile, Me.BtnReplaceFile, Me.BtnAddFile, Me.ToolStripSeparator2, Me.BtnUndo, Me.BtnRedo, Me.BtnRevert, Me.ToolStripSeparator5, Me.btnCreateBackup})
         Me.ContextMenuEdit.Name = "ContextMenuEdit"
+        Me.ContextMenuEdit.OwnerItem = MainMenuEdit
         Me.ContextMenuEdit.Size = New System.Drawing.Size(195, 242)
         '
         'BtnEditBootSector
@@ -553,6 +555,25 @@ Partial Class MainForm
         Me.BtnFixImageSize.Name = "BtnFixImageSize"
         Me.BtnFixImageSize.Size = New System.Drawing.Size(289, 22)
         Me.BtnFixImageSize.Text = "Fix Image &Size"
+        '
+        'SubMenuFixImageSize
+        '
+        Me.SubMenuFixImageSize.DropDownItems.AddRange(New System.Windows.Forms.ToolStripItem() {Me.BtnResizeImage, Me.BtnConvertSectors, Me.BtnConvertSingleSided})
+        Me.SubMenuFixImageSize.Name = "SubMenuFixImageSize"
+        Me.SubMenuFixImageSize.Size = New System.Drawing.Size(289, 22)
+        Me.SubMenuFixImageSize.Text = "Fix Image &Size"
+        '
+        'BtnResizeImage
+        '
+        Me.BtnResizeImage.Name = "BtnResizeImage"
+        Me.BtnResizeImage.Size = New System.Drawing.Size(230, 22)
+        Me.BtnResizeImage.Text = "&Resize Image"
+        '
+        'BtnConvertSectors
+        '
+        Me.BtnConvertSectors.Name = "BtnConvertSectors"
+        Me.BtnConvertSectors.Size = New System.Drawing.Size(230, 22)
+        Me.BtnConvertSectors.Text = "&Convert to 8 Sectors pet Track"
         '
         'BtnRestoreBootSector
         '
@@ -1129,6 +1150,7 @@ Partial Class MainForm
         '
         Me.ContextMenuFilters.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.BtnScanNew, Me.BtnScan, Me.BtnClearFilters})
         Me.ContextMenuFilters.Name = "ContextMenuStrip1"
+        Me.ContextMenuFilters.OwnerItem = Me.MainMenuFilters
         Me.ContextMenuFilters.Size = New System.Drawing.Size(168, 70)
         '
         'BtnScanNew
@@ -1218,24 +1240,11 @@ Partial Class MainForm
         Me.btnRetry.Text = "Retry"
         Me.btnRetry.UseVisualStyleBackColor = True
         '
-        'SubMenuFixImageSize
+        'BtnConvertSingleSided
         '
-        Me.SubMenuFixImageSize.DropDownItems.AddRange(New System.Windows.Forms.ToolStripItem() {Me.BtnResizeImage, Me.BtnConvertSectors})
-        Me.SubMenuFixImageSize.Name = "SubMenuFixImageSize"
-        Me.SubMenuFixImageSize.Size = New System.Drawing.Size(289, 22)
-        Me.SubMenuFixImageSize.Text = "Fix Image &Size"
-        '
-        'BtnResizeImage
-        '
-        Me.BtnResizeImage.Name = "BtnResizeImage"
-        Me.BtnResizeImage.Size = New System.Drawing.Size(230, 22)
-        Me.BtnResizeImage.Text = "&Resize Image"
-        '
-        'BtnConvertSectors
-        '
-        Me.BtnConvertSectors.Name = "BtnConvertSectors"
-        Me.BtnConvertSectors.Size = New System.Drawing.Size(230, 22)
-        Me.BtnConvertSectors.Text = "&Convert to 8 Sectors pet Track"
+        Me.BtnConvertSingleSided.Name = "BtnConvertSingleSided"
+        Me.BtnConvertSingleSided.Size = New System.Drawing.Size(230, 22)
+        Me.BtnConvertSingleSided.Text = "Convert to &Single Sided"
         '
         'MainForm
         '
@@ -1393,4 +1402,5 @@ Partial Class MainForm
     Friend WithEvents SubMenuFixImageSize As ToolStripMenuItem
     Friend WithEvents BtnResizeImage As ToolStripMenuItem
     Friend WithEvents BtnConvertSectors As ToolStripMenuItem
+    Friend WithEvents BtnConvertSingleSided As ToolStripMenuItem
 End Class

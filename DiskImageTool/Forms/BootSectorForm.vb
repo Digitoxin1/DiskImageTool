@@ -124,7 +124,8 @@ Public Class BootSectorForm
             $"{vbCrLf}FC{vbTab}180K Floppy" &
             $"{vbCrLf}FD{vbTab}360K Floppy" &
             $"{vbCrLf}FE{vbTab}160K Floppy" &
-            $"{vbCrLf}FF{vbTab}320K Floppy"
+            $"{vbCrLf}FF{vbTab}320K Floppy" &
+            $"{vbCrLf}ED{vbTab}Tandy 2000 Floppy"
         SetHelpString(Msg, TxtMediaDescriptor, CboMediaDescriptor)
 
         Msg = "Number of sectors allocated to each copy of the File Allocation Table (FAT)" &
@@ -209,10 +210,13 @@ Public Class BootSectorForm
         SetHelpString(Msg, LblJumpInstruction, HexJumpInstruction)
 
         Msg = "Indicated to the BIOS that the sector is executable." &
-            $"{vbCrLf}{vbCrLf}Allowed Values: AA 55, 00 00 (PC DOS 1.x)"
+            $"{vbCrLf}{vbCrLf}Allowed Values:" &
+            $"{vbCrLf}AA 55" &
+            $"{vbCrLf}00 00 (PC DOS 1.x)" &
+            $"{vbCrLf}54 42 (Tandy 2000)"
         SetHelpString(Msg, LblBootSectorSignature, HexBootSectorSignature)
 
-        Msg = $"This is additional data found in the Boot Sector.{vbCrLf}{vbCrLf}Note: Data highlighted in green is the bootstrap code."
+        Msg = $"This Is additional data found in the Boot Sector.{vbCrLf}{vbCrLf}Note: Data highlighted in green is the bootstrap code."
         SetHelpString(Msg, HexBox1)
     End Sub
 
@@ -328,6 +332,7 @@ Public Class BootSectorForm
         CboDiskType.Items.Add(New BootSectorDiskType(FloppyDiskType.FloppyDMF2048))
         CboDiskType.Items.Add(New BootSectorDiskType(FloppyDiskType.FloppyXDF))
         CboDiskType.Items.Add(New BootSectorDiskType(FloppyDiskType.FloppyProCopy))
+        CboDiskType.Items.Add(New BootSectorDiskType(FloppyDiskType.FloppyTandy2000))
         CboDiskType.Items.Add(New BootSectorDiskType(FloppyDiskType.FloppyUnknown))
 
         CboDiskType.SelectedIndex = CboDiskType.Items.Count - 1
@@ -368,6 +373,7 @@ Public Class BootSectorForm
         CboMediaDescriptor.Items.Add(New MediaDescriptorType("F0", "2.88M"))
         CboMediaDescriptor.Items.Add(New MediaDescriptorType("F0", "DNF"))
         CboMediaDescriptor.Items.Add(New MediaDescriptorType("F0", "XDF"))
+        CboMediaDescriptor.Items.Add(New MediaDescriptorType("ED", "Tandy 2000"))
     End Sub
 
     Private Sub PopulateOEMName()

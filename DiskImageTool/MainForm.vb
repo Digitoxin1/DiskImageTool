@@ -998,6 +998,36 @@ Public Class MainForm
             End If
         Next
 
+        DiskUpdateBytes(Data)
+    End Sub
+
+    Private Sub ConvertImageSingleSided()
+        If _TitleDB.IsVerifiedImage(_Disk) Then
+            If Not MsgBoxQuestion("This is a verified image.  Are you sure you wish to convert this image to a single sided image?") Then
+                Exit Sub
+            End If
+        End If
+
+        Dim Size = GetFloppyDiskSize(_Disk.DiskType)
+        Dim Data(Size - 1) As Byte
+
+        Dim Params = GetFloppyDiskParams(_Disk.DiskType)
+
+        Dim DataOffset As UInteger = 0
+        For Offset As UInteger = 0 To _Disk.Data.Length - 1 Step Disk.BYTES_PER_SECTOR
+            Dim Sector As UInteger = Offset \ Disk.BYTES_PER_SECTOR
+            Dim Track As UShort = Sector \ Params.SectorsPerTrack
+            Dim Side As UShort = Track Mod 2
+            If Side = 0 Then
+                _Disk.Data.CopyTo(Offset, Data, DataOffset, Disk.BYTES_PER_SECTOR)
+                DataOffset += Disk.BYTES_PER_SECTOR
+            End If
+        Next
+
+        DiskUpdateBytes(Data)
+    End Sub
+
+    Private Sub DiskUpdateBytes(Data() As Byte)
         _Disk.Data.BatchEditMode = True
         _Disk.Data.SetBytes(Data, 0)
         _Disk.Data.Resize(Data.Length)
@@ -3320,7 +3350,9 @@ Public Class MainForm
     End Sub
 
     Private Sub RefreshFixImageSubMenu(Disk As Disk)
+        Dim EnableSubMenu As Boolean
         Dim EnableConvertSectors As Boolean = False
+        Dim EnableConvertSingleSided As Boolean = False
         Dim DiskTypeBySize = GetFloppyDiskType(Disk.Data.Length)
 
         If Disk.DiskType = FloppyDiskType.Floppy160 And DiskTypeBySize = FloppyDiskType.Floppy180 Then
@@ -3329,16 +3361,28 @@ Public Class MainForm
             EnableConvertSectors = True
         End If
 
-        If EnableConvertSectors Then
+        If Disk.DiskType = FloppyDiskType.Floppy160 And DiskTypeBySize = FloppyDiskType.Floppy320 Then
+            EnableConvertSingleSided = True
+        ElseIf Disk.DiskType = FloppyDiskType.Floppy180 And DiskTypeBySize = FloppyDiskType.Floppy360 Then
+            EnableConvertSingleSided = True
+        End If
+
+        EnableSubMenu = EnableConvertSectors Or EnableConvertSingleSided
+
+        If EnableSubMenu Then
             BtnFixImageSize.Visible = False
             SubMenuFixImageSize.Visible = True
             SubMenuFixImageSize.Enabled = True
-            BtnConvertSectors.Enabled = True
+            BtnConvertSectors.Enabled = EnableConvertSectors
+            BtnConvertSectors.Visible = EnableConvertSectors
+            BtnConvertSingleSided.Enabled = EnableConvertSingleSided
+            BtnConvertSingleSided.Visible = EnableConvertSingleSided
         Else
             BtnFixImageSize.Visible = True
             SubMenuFixImageSize.Visible = False
             SubMenuFixImageSize.Enabled = False
             BtnConvertSectors.Enabled = False
+            BtnConvertSingleSided.Enabled = False
         End If
     End Sub
 
@@ -3363,6 +3407,7 @@ Public Class MainForm
             BtnDisplayLostClusters.Enabled = False
             BtnFixImageSize.Enabled = False
             BtnConvertSectors.Enabled = False
+            BtnConvertSingleSided.Enabled = False
             SubMenuFixImageSize.Enabled = False
             SubMenuFixImageSize.Visible = False
             BtnRestoreBootSector.Enabled = False
@@ -4040,6 +4085,10 @@ Public Class MainForm
 
     Private Sub BtnConvertSectors_Click(sender As Object, e As EventArgs) Handles BtnConvertSectors.Click
         ConvertImageSectors()
+    End Sub
+
+    Private Sub BtnConvertSingleSided_Click(sender As Object, e As EventArgs) Handles BtnConvertSingleSided.Click
+        ConvertImageSingleSided()
     End Sub
 
     Private Sub BtnCreateBackup_Click(sender As Object, e As EventArgs) Handles btnCreateBackup.Click

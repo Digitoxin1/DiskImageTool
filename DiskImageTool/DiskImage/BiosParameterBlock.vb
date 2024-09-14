@@ -3,7 +3,7 @@ Namespace DiskImage
     Public Class BiosParameterBlock
         Public Const BPB_SIZE As UShort = 36
         Public Shared ReadOnly ValidBytesPerSector() As UShort = {512, 1024, 2048, 4096}
-        Public Shared ReadOnly ValidMediaDescriptor() As Byte = {&HF0, &HF8, &HF9, &HFA, &HFB, &HFC, &HFD, &HFE, &HFF}
+        Public Shared ReadOnly ValidMediaDescriptor() As Byte = {&HF0, &HF8, &HF9, &HFA, &HFB, &HFC, &HFD, &HFE, &HFF, &HED}
         Public Shared ReadOnly ValidNumberOfFATS() As Byte = {1, 2}
         Public Shared ReadOnly ValidNumberOfHeads() As UShort = {1, 2}
         Public Shared ReadOnly ValidSectorsPerCluster() As Byte = {1, 2, 4, 8, 16, 32, 64, 128}

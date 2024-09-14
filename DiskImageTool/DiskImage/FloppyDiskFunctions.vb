@@ -14,6 +14,7 @@
             FloppyDMF2048 = 10
             FloppyProCopy = 11
             FloppyXDF = 12
+            FloppyTandy2000 = 13
         End Enum
 
         Public Function BPBCompare(BPB As BiosParameterBlock, Params As FloppyDiskParams, CheckMediaDescriptor As Boolean) As Boolean
@@ -90,6 +91,8 @@
                     Return &HF0
                 Case FloppyDiskType.FloppyXDF
                     Return &HF0
+                Case FloppyDiskType.FloppyTandy2000
+                    Return &HED
                 Case Else
                     Return &HF0
             End Select
@@ -242,6 +245,18 @@
                     Params.SectorsPerCluster = 1
                     Params.SectorsPerFAT = 11
                     Params.SectorsPerTrack = 23
+
+                Case FloppyDiskType.FloppyTandy2000
+                    Params.BytesPerSector = 512
+                    Params.MediaDescriptor = &HED
+                    Params.NumberOfFATs = 2
+                    Params.NumberOfHeads = 2
+                    Params.ReservedSectorCount = 1
+                    Params.RootEntryCount = 112
+                    Params.SectorCountSmall = 1440
+                    Params.SectorsPerCluster = 4
+                    Params.SectorsPerFAT = 2
+                    Params.SectorsPerTrack = 9
             End Select
 
             Return Params
@@ -261,6 +276,8 @@
                     Return FloppyDiskType.Floppy320
                 Case &HFD
                     Return FloppyDiskType.Floppy360
+                Case &HED
+                    Return FloppyDiskType.FloppyTandy2000
                 Case Else
                     Return FloppyDiskType.FloppyUnknown
             End Select
@@ -303,6 +320,8 @@
                     Return 1884160
                 Case FloppyDiskType.FloppyXDF
                     Return 2949120
+                Case FloppyDiskType.FloppyTandy2000
+                    Return 737280
                 Case Else
                     Return 0
             End Select
@@ -361,6 +380,8 @@
                     Return FloppyDiskType.FloppyProCopy
                 Case "XDF"
                     Return FloppyDiskType.FloppyXDF
+                Case "Tandy 2000"
+                    Return FloppyDiskType.FloppyTandy2000
                 Case Else
                     Return FloppyDiskType.FloppyUnknown
             End Select
@@ -400,6 +421,8 @@
                     Return "ProCopy"
                 Case FloppyDiskType.FloppyXDF
                     Return "XDF"
+                Case FloppyDiskType.FloppyTandy2000
+                    Return "Tandy 2000"
                 Case Else
                     Return "Custom"
             End Select

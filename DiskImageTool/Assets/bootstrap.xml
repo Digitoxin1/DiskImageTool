@@ -1071,6 +1071,15 @@
   <bootstrap crc32="52A29B7F" jmp="EB3490" language="French">
     <oemname name="TAN  3.3" company="Tandy"/>
   </bootstrap>
+  <bootstrap crc32="3B8BD8A0" jmp="EB2090">
+    <oemname name="TANDY2.0" company="Tandy" description="Tandy 2000" />
+  </bootstrap>
+  <bootstrap crc32="4E82C8FF" jmp="EB2090">
+    <oemname name="TANDY2.0" company="Tandy" description="Tandy 2000" />
+  </bootstrap>
+  <bootstrap crc32="F3429782" jmp="EB2090">
+    <oemname name="TANDY2.1" company="Tandy" description="Tandy 2000" />
+  </bootstrap>
   <bootstrap crc32="900A3D52" jmp="EB5390">
     <oemname name="Tandy557" company="Tandy" verified="true"/>
   </bootstrap>

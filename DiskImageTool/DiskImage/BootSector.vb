@@ -2,7 +2,7 @@
 
     Public Class BootSector
         Public Const BOOT_SECTOR_SIZE As UShort = 512
-        Public Shared ReadOnly ValidBootStrapSignature() As UShort = {&HAA55, &H0}
+        Public Shared ReadOnly ValidBootStrapSignature() As UShort = {&HAA55, &H0, &H4254}
         Public Shared ReadOnly ValidDriveNumber() As Byte = {&H0, &H80}
         Public Shared ReadOnly ValidExtendedBootSignature() As Byte = {&H28, &H29}
         Public Shared ReadOnly ValidJumpInstructuon() As Byte = {&HEB, &HE9}
