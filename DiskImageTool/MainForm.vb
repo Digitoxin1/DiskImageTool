@@ -702,7 +702,8 @@ Public Class MainForm
     End Sub
 
     Private Sub DisplayChangeLog()
-        Dim TagName As String
+        Dim VersionLine As String
+        Dim PublishedAt As String
         Dim Body As String
         Dim BodyArray() As String
         Dim Changelog = New StringBuilder()
@@ -722,13 +723,20 @@ Public Class MainForm
 
                 For Each Release In JSON
                     If Release.ContainsKey("tag_name") Then
-                        TagName = Release.Item("tag_name").ToString
-                        If Release.ContainsKey("body") Then
-                            Body = Release.Item("body").ToString
-                            Body = Replace(Body, Chr(13) & Chr(10), Chr(10))
-                            BodyArray = Body.Split(Chr(10))
-                            Changelog.AppendLine(TagName)
-                            For Counter = 0 To BodyArray.Length - 1
+                        VersionLine = Release.Item("tag_name").ToString
+                        If Release.ContainsKey("published_at") Then
+                            PublishedAt = Release.Item("published_at").ToString
+                            Dim PublishDate As Date
+                            If Date.TryParse(PublishedAt, PublishDate) Then
+                                VersionLine &= " (" & PublishDate.ToString & ")"
+                            End If
+                        End If
+                            If Release.ContainsKey("body") Then
+                                Body = Release.Item("body").ToString
+                                Body = Replace(Body, Chr(13) & Chr(10), Chr(10))
+                                BodyArray = Body.Split(Chr(10))
+                                Changelog.AppendLine(VersionLine)
+                                For Counter = 0 To BodyArray.Length - 1
                                 Dim ChangeLine = BodyArray(Counter).Trim
                                 If ChangeLine.Length > 0 Then
                                     If ChangeLine.Substring(0, 1) <> "-" Then
