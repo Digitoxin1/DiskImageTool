@@ -995,7 +995,7 @@ Public Class MainForm
             Dim Sector As UInteger = Offset \ Disk.BYTES_PER_SECTOR
             Dim TrackSector As UShort = Sector Mod ParamsBySize.SectorsPerTrack
             Dim Track As UShort = Sector \ ParamsBySize.SectorsPerTrack
-            Dim Side As UShort = Track Mod 2
+            Dim Side As UShort = Track Mod ParamsBySize.NumberOfHeads
             If TrackSector < Params.SectorsPerTrack And Side < Params.NumberOfHeads Then
                 _Disk.Data.CopyTo(Offset, Data, DataOffset, Disk.BYTES_PER_SECTOR)
                 DataOffset += Disk.BYTES_PER_SECTOR
