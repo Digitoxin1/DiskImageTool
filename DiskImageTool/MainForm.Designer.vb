@@ -93,6 +93,7 @@ Partial Class MainForm
         Me.BtnWin9xCleanBatch = New System.Windows.Forms.ToolStripMenuItem()
         Me.BtnHelpProjectPage = New System.Windows.Forms.ToolStripMenuItem()
         Me.BtnHelpUpdateCheck = New System.Windows.Forms.ToolStripMenuItem()
+        Me.BtnHelpChangeLog = New System.Windows.Forms.ToolStripMenuItem()
         Me.ToolStripSeparator12 = New System.Windows.Forms.ToolStripSeparator()
         Me.BtnHelpAbout = New System.Windows.Forms.ToolStripMenuItem()
         Me.ToolStripTop = New System.Windows.Forms.ToolStrip()
@@ -572,13 +573,13 @@ Partial Class MainForm
         'BtnTruncateImage
         '
         Me.BtnTruncateImage.Name = "BtnTruncateImage"
-        Me.BtnTruncateImage.Size = New System.Drawing.Size(180, 22)
+        Me.BtnTruncateImage.Size = New System.Drawing.Size(170, 22)
         Me.BtnTruncateImage.Text = "&Truncate Image"
         '
         'BtnRestructureImage
         '
         Me.BtnRestructureImage.Name = "BtnRestructureImage"
-        Me.BtnRestructureImage.Size = New System.Drawing.Size(180, 22)
+        Me.BtnRestructureImage.Size = New System.Drawing.Size(170, 22)
         Me.BtnRestructureImage.Text = "&Restructure Image"
         '
         'BtnRestoreBootSector
@@ -606,7 +607,7 @@ Partial Class MainForm
         '
         'MainHelp
         '
-        MainHelp.DropDownItems.AddRange(New System.Windows.Forms.ToolStripItem() {Me.BtnHelpProjectPage, Me.BtnHelpUpdateCheck, Me.ToolStripSeparator12, Me.BtnHelpAbout})
+        MainHelp.DropDownItems.AddRange(New System.Windows.Forms.ToolStripItem() {Me.BtnHelpProjectPage, Me.BtnHelpUpdateCheck, Me.BtnHelpChangeLog, Me.ToolStripSeparator12, Me.BtnHelpAbout})
         MainHelp.Name = "MainHelp"
         MainHelp.Size = New System.Drawing.Size(24, 20)
         MainHelp.Text = "?"
@@ -622,6 +623,12 @@ Partial Class MainForm
         Me.BtnHelpUpdateCheck.Name = "BtnHelpUpdateCheck"
         Me.BtnHelpUpdateCheck.Size = New System.Drawing.Size(212, 22)
         Me.BtnHelpUpdateCheck.Text = "Check for &Updates"
+        '
+        'BtnHelpChangeLog
+        '
+        Me.BtnHelpChangeLog.Name = "BtnHelpChangeLog"
+        Me.BtnHelpChangeLog.Size = New System.Drawing.Size(212, 22)
+        Me.BtnHelpChangeLog.Text = "&Change Log"
         '
         'ToolStripSeparator12
         '
@@ -1403,4 +1410,5 @@ Partial Class MainForm
     Friend WithEvents BtnTruncateImage As ToolStripMenuItem
     Friend WithEvents BtnRestructureImage As ToolStripMenuItem
     Friend WithEvents BtnDisplayOverdumpData As ToolStripMenuItem
+    Friend WithEvents BtnHelpChangeLog As ToolStripMenuItem
 End Class

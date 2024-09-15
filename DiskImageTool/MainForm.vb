@@ -46,6 +46,7 @@ Public Class MainForm
     Public Const NULL_CHAR As Char = "�"
     Public Const SITE_URL = "https://github.com/Digitoxin1/DiskImageTool"
     Public Const UPDATE_URL = "https://api.github.com/repos/Digitoxin1/DiskImageTool/releases/latest"
+    Public Const CHANGELOG_URL = "https://api.github.com/repos/Digitoxin1/DiskImageTool/releases"
     Private ReadOnly _ArchiveFilterExt As New List(Of String) From {".zip"}
     Private ReadOnly _lvwColumnSorter As ListViewColumnSorter
     Private ReadOnly _ValidFileExt As New List(Of String) From {".ima", ".img", ".imz", ".vfd", ".flp"}
@@ -65,6 +66,7 @@ Public Class MainForm
     Private _DriveAEnabled As Boolean = False
     Private _DriveBEnabled As Boolean = False
     Private _ExportUnknownImages As Boolean = False
+    Private _CachedChangeLog As String = ""
 
     Public Sub New()
         ' This call is required by the designer.
@@ -699,6 +701,61 @@ Public Class MainForm
         DiskImageRefresh()
     End Sub
 
+    Private Sub DisplayChangeLog()
+        Dim TagName As String
+        Dim Body As String
+        Dim BodyArray() As String
+        Dim Changelog = New StringBuilder()
+
+        If _CachedChangeLog = "" Then
+
+            Cursor.Current = Cursors.WaitCursor
+
+            Try
+                Dim Request As HttpWebRequest = WebRequest.Create(CHANGELOG_URL)
+                Request.UserAgent = "DiskImageTool"
+                Dim Response As HttpWebResponse = Request.GetResponse
+                Dim Reader As New StreamReader(Response.GetResponseStream)
+                Dim ResponseText = Reader.ReadToEnd
+
+                Dim JSON As List(Of Dictionary(Of String, Object)) = CompactJson.Serializer.Parse(Of List(Of Dictionary(Of String, Object)))(ResponseText)
+
+                For Each Release In JSON
+                    If Release.ContainsKey("tag_name") Then
+                        TagName = Release.Item("tag_name").ToString
+                        If Release.ContainsKey("body") Then
+                            Body = Release.Item("body").ToString
+                            Body = Replace(Body, Chr(13) & Chr(10), Chr(10))
+                            BodyArray = Body.Split(Chr(10))
+                            Changelog.AppendLine(TagName)
+                            For Counter = 0 To BodyArray.Length - 1
+                                Dim ChangeLine = BodyArray(Counter).Trim
+                                If ChangeLine.Length > 0 Then
+                                    If ChangeLine.Substring(0, 1) <> "-" Then
+                                        ChangeLine = "- " & ChangeLine
+                                    End If
+                                    Changelog.AppendLine(ChangeLine)
+                                End If
+                            Next
+                            Changelog.AppendLine("")
+                        End If
+                    End If
+                Next
+
+            Catch ex As Exception
+                MsgBox("An error occured while downloading the change log.  Please try again later.", MsgBoxStyle.Exclamation)
+                Exit Sub
+            End Try
+
+            Cursor.Current = Cursors.Default
+
+            _CachedChangeLog = Changelog.ToString
+        End If
+
+        Dim frmTextView = New TextViewForm("Change Log", _CachedChangeLog)
+        frmTextView.ShowDialog()
+    End Sub
+
     Private Sub CheckForUpdates()
         Dim DownloadVersion As String = ""
         Dim DownloadURL As String = ""
@@ -972,7 +1029,6 @@ Public Class MainForm
         Dim ImageData2 As LoadedImageData = ComboImages.Items(1)
 
         Dim Content = ImageCompare.CompareImages(ImageData1, ImageData2)
-
 
         Dim frmTextView = New TextViewForm("Image Comparison", Content)
         frmTextView.ShowDialog()
@@ -4213,6 +4269,10 @@ Public Class MainForm
     Private Sub BtnHelpAbout_Click(sender As Object, e As EventArgs) Handles BtnHelpAbout.Click
         Dim AboutBox As New AboutBox()
         AboutBox.ShowDialog()
+    End Sub
+
+    Private Sub BtnHelpChangeLog_Click(sender As Object, e As EventArgs) Handles BtnHelpChangeLog.Click
+        DisplayChangeLog
     End Sub
 
     Private Sub BtnHelpProjectPage_Click(sender As Object, e As EventArgs) Handles BtnHelpProjectPage.Click
