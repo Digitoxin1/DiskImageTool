@@ -25,6 +25,8 @@ Public Structure FileData
     Dim IsLastEntry As Boolean
     Dim LFNFileName As String
     Dim ParentOffset As Integer
+    Dim DuplicateFileName As Boolean
+    Dim InvalidVolumeName As Boolean
 End Structure
 
 Public Structure FileSystemInfo
@@ -467,7 +469,7 @@ Public Class MainForm
 
         SI = Item.SubItems.Add(FileData.DirectoryEntry.GetFileName)
         SI.Name = "FileName"
-        If Not IsDeleted And FileData.DirectoryEntry.HasInvalidFilename Then
+        If Not IsDeleted And (FileData.DirectoryEntry.HasInvalidFilename Or FileData.DuplicateFileName) Then
             SI.ForeColor = Color.Red
         Else
             SI.ForeColor = ForeColor
@@ -475,7 +477,7 @@ Public Class MainForm
 
         SI = Item.SubItems.Add(FileData.DirectoryEntry.GetFileExtension)
         SI.Name = "FileExtension"
-        If Not IsDeleted And FileData.DirectoryEntry.HasInvalidExtension Then
+        If Not IsDeleted And (FileData.DirectoryEntry.HasInvalidExtension Or FileData.DuplicateFileName) Then
             SI.ForeColor = Color.Red
         Else
             SI.ForeColor = ForeColor
@@ -548,7 +550,7 @@ Public Class MainForm
             Item.SubItems.Add("")
         Else
             SI = Item.SubItems.Add(Attrib)
-            If Not IsDeleted And FileData.DirectoryEntry.HasInvalidAttributes Then
+            If Not IsDeleted And (FileData.DirectoryEntry.HasInvalidAttributes Or FileData.InvalidVolumeName) Then
                 SI.ForeColor = Color.Red
             Else
                 SI.ForeColor = ForeColor
@@ -731,11 +733,11 @@ Public Class MainForm
                                 VersionLine &= " (" & PublishDate.ToString & ")"
                             End If
                         End If
-                            If Release.ContainsKey("body") Then
-                                Body = Release.Item("body").ToString
-                                Body = Replace(Body, Chr(13) & Chr(10), Chr(10))
-                                BodyArray = Body.Split(Chr(10))
-                                Changelog.AppendLine(VersionLine)
+                        If Release.ContainsKey("body") Then
+                            Body = Release.Item("body").ToString
+                            Body = Replace(Body, Chr(13) & Chr(10), Chr(10))
+                            BodyArray = Body.Split(Chr(10))
+                            Changelog.AppendLine(VersionLine)
                                 For Counter = 0 To BodyArray.Length - 1
                                 Dim ChangeLine = BodyArray(Counter).Trim
                                 If ChangeLine.Length > 0 Then
@@ -2129,20 +2131,6 @@ Public Class MainForm
         End If
     End Sub
 
-    Private Function GetFileDataFromDirectoryEntry(Index As Integer, DirectoryEntry As DiskImage.DirectoryEntry, ParentOffset As UInteger, FilePath As String, IsLastEntry As Boolean, LFNFileName As String) As FileData
-        Dim Response As FileData
-        With Response
-            .Index = Index
-            .FilePath = FilePath
-            .DirectoryEntry = DirectoryEntry
-            .IsLastEntry = IsLastEntry
-            .ParentOffset = ParentOffset
-            .LFNFileName = LFNFileName
-        End With
-
-        Return Response
-    End Function
-
     Private Function GetFileSystemInfo(Disk As Disk) As FileSystemInfo
         Dim fsi As FileSystemInfo
 
@@ -2560,9 +2548,7 @@ Public Class MainForm
         Return Group
     End Function
 
-    Private Function ListViewFilesAddItem(FilePath As String, DirectoryEntry As DirectoryEntry, LFNFileName As String, ParentOffset As UInteger, Index As Integer, Count As Integer, Group As ListViewGroup, ItemIndex As Integer) As ListViewItem
-        Dim IsLastEntry = (Index = Count - 1)
-        Dim FileData = GetFileDataFromDirectoryEntry(Index, DirectoryEntry, ParentOffset, FilePath, IsLastEntry, LFNFileName)
+    Private Function ListViewFilesAddItem(FileData As FileData, Group As ListViewGroup, ItemIndex As Integer) As ListViewItem
         Dim Item = ListViewFilesGetItem(Group, FileData)
 
         If ListViewFiles.Items.Count <= ItemIndex Then
@@ -3263,12 +3249,23 @@ Public Class MainForm
                     If DirectoryEntry.IsLFN Then
                         LFNFileName = DirectoryEntry.GetLFNFileName & LFNFileName
                     Else
+                        Dim ProcessResponse = Response.ProcessDirectoryEntry(DirectoryEntry, LFNFileName, Path = "")
+
                         If Not ScanOnly Then
-                            Dim Item = ListViewFilesAddItem(Path, DirectoryEntry, LFNFileName, Offset, Counter, DirectoryEntryCount, Group, ItemIndex)
+                            Dim FileData As FileData
+                            With FileData
+                                .Index = Counter
+                                .FilePath = Path
+                                .DirectoryEntry = DirectoryEntry
+                                .IsLastEntry = (Counter = DirectoryEntryCount - 1)
+                                .ParentOffset = Offset
+                                .LFNFileName = LFNFileName
+                                .DuplicateFileName = ProcessResponse.DuplicateFileName
+                                .InvalidVolumeName = ProcessResponse.InvalidVolumeName
+                            End With
+                            Dim Item = ListViewFilesAddItem(FileData, Group, ItemIndex)
                             ItemIndex += 1
                         End If
-
-                        Response.ProcessDirectoryEntry(DirectoryEntry, LFNFileName)
 
                         LFNFileName = ""
                     End If

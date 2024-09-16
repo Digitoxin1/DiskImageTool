@@ -1,6 +1,14 @@
 ﻿Imports DiskImageTool.DiskImage
 
 Public Class DirectoryScanResponse
+    Public Structure ProcessDirectoryEntryResponse
+        Dim DuplicateFileName As Boolean
+        Dim InvalidVolumeName As Boolean
+    End Structure
+
+    Private ReadOnly _FileNames As HashSet(Of String)
+    Private _VolumeNameFound As Boolean
+
     Public Sub New(Directory As DiskImage.IDirectory)
         If Directory Is Nothing Then
             _HasAdditionalData = False
@@ -18,6 +26,8 @@ Public Class DirectoryScanResponse
         _HasFATChainingErrors = False
         _HasReserved = False
         _ItemCount = 0
+        _FileNames = New HashSet(Of String)
+        _VolumeNameFound = False
     End Sub
 
     Public Property HasAdditionalData As Boolean
@@ -45,11 +55,45 @@ Public Class DirectoryScanResponse
         _HasReserved = _HasReserved Or Response.HasReserved
     End Sub
 
-    Public Sub ProcessDirectoryEntry(DirectoryEntry As DirectoryEntry, LFNFileName As String)
+    Public Function ProcessDirectoryEntry(DirectoryEntry As DirectoryEntry, LFNFileName As String, IsRootDirectory As Boolean) As ProcessDirectoryEntryResponse
+        Dim Response As ProcessDirectoryEntryResponse
+        Response.DuplicateFileName = False
+        Response.InvalidVolumeName = False
+
         Dim IsValid = DirectoryEntry.IsValid
         Dim IsBlank = DirectoryEntry.IsBlank
+        Dim IsDeleted = DirectoryEntry.IsDeleted
         Dim HasCreationDate = DirectoryEntry.HasCreationDate
         Dim HasLastAccessDate = DirectoryEntry.HasLastAccessDate
+        Dim IsVolumeName = DirectoryEntry.IsVolumeName
+        Dim HasInvalidFilename = DirectoryEntry.HasInvalidFilename
+        Dim HasInvalidExtension = DirectoryEntry.HasInvalidExtension
+
+        If Not IsDeleted AndAlso Not IsBlank Then
+            If IsVolumeName Then
+                If IsRootDirectory Then
+                    If DirectoryEntry.IsValidVolumeName Then
+                        If _VolumeNameFound Then
+                            _HasInvalidDirectoryEntries = True
+                            Response.InvalidVolumeName = True
+                        Else
+                            _VolumeNameFound = True
+                        End If
+                    End If
+                Else
+                    _HasInvalidDirectoryEntries = True
+                    Response.InvalidVolumeName = True
+                End If
+            ElseIf Not HasInvalidFilename AndAlso Not HasInvalidExtension Then
+                Dim FileName = DirectoryEntry.GetFullFileName
+                If Not _FileNames.Contains(FileName) Then
+                    _FileNames.Add(FileName)
+                Else
+                    _HasInvalidDirectoryEntries = True
+                    Response.DuplicateFileName = True
+                End If
+            End If
+        End If
 
         Dim HasValidCreationDate = IsValid AndAlso HasCreationDate AndAlso DirectoryEntry.GetCreationDate.IsValidDate
         'AndAlso Not File.HasVendorExceptions
@@ -58,10 +102,10 @@ Public Class DirectoryScanResponse
         'AndAlso Not File.HasVendorExceptions
 
         If Not _HasInvalidDirectoryEntries Then
-            If Not IsBlank And Not DirectoryEntry.IsDeleted Then
+            If Not IsBlank And Not IsDeleted Then
                 If Not IsValid _
-                    OrElse DirectoryEntry.HasInvalidFilename _
-                    OrElse DirectoryEntry.HasInvalidExtension _
+                    OrElse HasInvalidFilename _
+                    OrElse HasInvalidExtension _
                     OrElse DirectoryEntry.HasIncorrectFileSize _
                     OrElse (DirectoryEntry.IsVolumeName And Not DirectoryEntry.IsValidVolumeName) _
                     OrElse Not DirectoryEntry.GetLastWriteDate.IsValidDate Then
@@ -71,7 +115,7 @@ Public Class DirectoryScanResponse
         End If
 
         If Not _HasInvalidDirectoryEntries Then
-            If Not IsBlank AndAlso Not DirectoryEntry.IsDeleted Then
+            If Not IsBlank AndAlso Not IsDeleted Then
                 If (HasCreationDate And Not HasValidCreationDate) Or (HasLastAccessDate And Not HasValidLastAccessDate) Then
                     _HasInvalidDirectoryEntries = True
                 End If
@@ -108,5 +152,7 @@ Public Class DirectoryScanResponse
                 _HasLFN = True
             End If
         End If
-    End Sub
+
+        Return Response
+    End Function
 End Class

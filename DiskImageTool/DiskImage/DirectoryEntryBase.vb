@@ -11,6 +11,22 @@ Namespace DiskImage
         Private ReadOnly _FileBytes As ImageByteArray
         Private ReadOnly _Offset As UInteger
 
+        Private _IsBlankCache As Boolean? = Nothing
+        Private _CreationDateCache As ExpandedDate
+        Private _CreationDateIsCached As Boolean = False
+        Private _LastAccessDateCache As ExpandedDate
+        Private _LastAccessDateIsCached As Boolean = False
+        Private _LastWriteDateCache As ExpandedDate
+        Private _LastWriteDateIsCached As Boolean = False
+        Private _VolumeNameCache As String
+        Private _VolumeNameIsCached As Boolean = False
+        Private _FileExtensionCache As String
+        Private _FileExtensionIsCached As Boolean = False
+        Private _FileNameCache As String
+        Private _FileNameIsCached As Boolean = False
+        Private _HasInvalidExtensionCache As Boolean? = Nothing
+        Private _HasInvalidFileNameCache As Boolean? = Nothing
+
         Public Enum AttributeFlags
             [ReadOnly] = 1
             Hidden = 2
@@ -94,7 +110,9 @@ Namespace DiskImage
                 Return _FileBytes.GetByte(_Offset + DirectoryEntryOffsets.Attributes)
             End Get
             Set
-                _FileBytes.SetBytes(Value, _Offset + DirectoryEntryOffsets.Attributes)
+                If _FileBytes.SetBytes(Value, _Offset + DirectoryEntryOffsets.Attributes) Then
+                    _IsBlankCache = Nothing
+                End If
             End Set
         End Property
 
@@ -103,7 +121,10 @@ Namespace DiskImage
                 Return _FileBytes.GetBytesShort(_Offset + DirectoryEntryOffsets.CreationDate)
             End Get
             Set
-                _FileBytes.SetBytes(Value, _Offset + DirectoryEntryOffsets.CreationDate)
+                If _FileBytes.SetBytes(Value, _Offset + DirectoryEntryOffsets.CreationDate) Then
+                    _IsBlankCache = Nothing
+                    _CreationDateIsCached = False
+                End If
             End Set
         End Property
 
@@ -112,7 +133,10 @@ Namespace DiskImage
                 Return _FileBytes.GetByte(_Offset + DirectoryEntryOffsets.CreationMillisecond)
             End Get
             Set
-                _FileBytes.SetBytes(Value, _Offset + DirectoryEntryOffsets.CreationMillisecond)
+                If _FileBytes.SetBytes(Value, _Offset + DirectoryEntryOffsets.CreationMillisecond) Then
+                    _IsBlankCache = Nothing
+                    _CreationDateIsCached = False
+                End If
             End Set
         End Property
 
@@ -121,7 +145,10 @@ Namespace DiskImage
                 Return _FileBytes.GetBytesShort(_Offset + DirectoryEntryOffsets.CreationTime)
             End Get
             Set
-                _FileBytes.SetBytes(Value, _Offset + DirectoryEntryOffsets.CreationTime)
+                If _FileBytes.SetBytes(Value, _Offset + DirectoryEntryOffsets.CreationTime) Then
+                    _IsBlankCache = Nothing
+                    _CreationDateIsCached = False
+                End If
             End Set
         End Property
 
@@ -130,7 +157,9 @@ Namespace DiskImage
                 Return _FileBytes.GetBytes(_Offset, DIRECTORY_ENTRY_SIZE)
             End Get
             Set(value As Byte())
-                _FileBytes.SetBytes(value, _Offset, DIRECTORY_ENTRY_SIZE, 0)
+                If _FileBytes.SetBytes(value, _Offset, DIRECTORY_ENTRY_SIZE, 0) Then
+                    ClearCache()
+                End If
             End Set
         End Property
 
@@ -139,7 +168,12 @@ Namespace DiskImage
                 Return _FileBytes.GetBytes(_Offset + DirectoryEntryOffsets.Extension, DirectoryEntrySizes.Extension)
             End Get
             Set
-                _FileBytes.SetBytes(Value, _Offset + DirectoryEntryOffsets.Extension, DirectoryEntrySizes.Extension, CHAR_SPACE)
+                If _FileBytes.SetBytes(Value, _Offset + DirectoryEntryOffsets.Extension, DirectoryEntrySizes.Extension, CHAR_SPACE) Then
+                    _IsBlankCache = Nothing
+                    _VolumeNameIsCached = False
+                    _FileExtensionIsCached = False
+                    _HasInvalidExtensionCache = Nothing
+                End If
             End Set
         End Property
 
@@ -148,7 +182,12 @@ Namespace DiskImage
                 Return _FileBytes.GetBytes(_Offset + DirectoryEntryOffsets.FileName, DirectoryEntrySizes.FileName)
             End Get
             Set
-                _FileBytes.SetBytes(Value, _Offset + DirectoryEntryOffsets.FileName, DirectoryEntrySizes.FileName, CHAR_SPACE)
+                If _FileBytes.SetBytes(Value, _Offset + DirectoryEntryOffsets.FileName, DirectoryEntrySizes.FileName, CHAR_SPACE) Then
+                    _IsBlankCache = Nothing
+                    _VolumeNameIsCached = False
+                    _FileNameIsCached = False
+                    _HasInvalidFileNameCache = Nothing
+                End If
             End Set
         End Property
 
@@ -157,7 +196,9 @@ Namespace DiskImage
                 Return _FileBytes.GetBytesInteger(_Offset + DirectoryEntryOffsets.FileSize)
             End Get
             Set
-                _FileBytes.SetBytes(Value, _Offset + DirectoryEntryOffsets.FileSize)
+                If _FileBytes.SetBytes(Value, _Offset + DirectoryEntryOffsets.FileSize) Then
+                    _IsBlankCache = Nothing
+                End If
             End Set
         End Property
 
@@ -166,7 +207,10 @@ Namespace DiskImage
                 Return _FileBytes.GetBytesShort(_Offset + DirectoryEntryOffsets.LastAccessDate)
             End Get
             Set
-                _FileBytes.SetBytes(Value, _Offset + DirectoryEntryOffsets.LastAccessDate)
+                If _FileBytes.SetBytes(Value, _Offset + DirectoryEntryOffsets.LastAccessDate) Then
+                    _IsBlankCache = Nothing
+                    _LastAccessDateIsCached = False
+                End If
             End Set
         End Property
 
@@ -175,7 +219,10 @@ Namespace DiskImage
                 Return _FileBytes.GetBytesShort(_Offset + DirectoryEntryOffsets.LastWriteDate)
             End Get
             Set
-                _FileBytes.SetBytes(Value, _Offset + DirectoryEntryOffsets.LastWriteDate)
+                If _FileBytes.SetBytes(Value, _Offset + DirectoryEntryOffsets.LastWriteDate) Then
+                    _IsBlankCache = Nothing
+                    _LastWriteDateIsCached = False
+                End If
             End Set
         End Property
 
@@ -184,7 +231,10 @@ Namespace DiskImage
                 Return _FileBytes.GetBytesShort(_Offset + DirectoryEntryOffsets.LastWriteTime)
             End Get
             Set
-                _FileBytes.SetBytes(Value, _Offset + DirectoryEntryOffsets.LastWriteTime)
+                If _FileBytes.SetBytes(Value, _Offset + DirectoryEntryOffsets.LastWriteTime) Then
+                    _IsBlankCache = Nothing
+                    _LastWriteDateIsCached = False
+                End If
             End Set
         End Property
 
@@ -205,7 +255,9 @@ Namespace DiskImage
                 Return _FileBytes.GetBytesShort(_Offset + DirectoryEntryOffsets.ReservedForFAT32)
             End Get
             Set
-                _FileBytes.SetBytes(Value, _Offset + DirectoryEntryOffsets.ReservedForFAT32)
+                If _FileBytes.SetBytes(Value, _Offset + DirectoryEntryOffsets.ReservedForFAT32) Then
+                    _IsBlankCache = Nothing
+                End If
             End Set
         End Property
 
@@ -214,7 +266,9 @@ Namespace DiskImage
                 Return _FileBytes.GetByte(_Offset + DirectoryEntryOffsets.ReservedForWinNT)
             End Get
             Set
-                _FileBytes.SetBytes(Value, _Offset + DirectoryEntryOffsets.ReservedForWinNT)
+                If _FileBytes.SetBytes(Value, _Offset + DirectoryEntryOffsets.ReservedForWinNT) Then
+                    _IsBlankCache = Nothing
+                End If
             End Set
         End Property
 
@@ -223,7 +277,9 @@ Namespace DiskImage
                 Return _FileBytes.GetBytesShort(_Offset + DirectoryEntryOffsets.StartingCluster)
             End Get
             Set
-                _FileBytes.SetBytes(Value, _Offset + DirectoryEntryOffsets.StartingCluster)
+                If _FileBytes.SetBytes(Value, _Offset + DirectoryEntryOffsets.StartingCluster) Then
+                    _IsBlankCache = Nothing
+                End If
             End Set
         End Property
 
@@ -244,7 +300,21 @@ Namespace DiskImage
                 Next
             End If
 
-            _FileBytes.SetBytes(b, _Offset)
+            If _FileBytes.SetBytes(b, _Offset) Then
+                ClearCache()
+            End If
+        End Sub
+
+        Private Sub ClearCache()
+            _IsBlankCache = Nothing
+            _CreationDateIsCached = False
+            _LastAccessDateIsCached = False
+            _LastWriteDateIsCached = False
+            _VolumeNameIsCached = False
+            _FileExtensionIsCached = False
+            _FileNameIsCached = False
+            _HasInvalidExtensionCache = Nothing
+            _HasInvalidFileNameCache = Nothing
         End Sub
 
         Public Sub ClearCreationDate()
@@ -263,15 +333,30 @@ Namespace DiskImage
         End Sub
 
         Public Function GetCreationDate() As ExpandedDate
-            Return ExpandDate(CreationDate, CreationTime, CreationMillisecond)
+            If Not _CreationDateIsCached Then
+                _CreationDateCache = ExpandDate(CreationDate, CreationTime, CreationMillisecond)
+                _CreationDateIsCached = True
+            End If
+
+            Return _CreationDateCache
         End Function
 
         Public Function GetFileExtension() As String
-            Return CodePage437ToUnicode(Extension).TrimEnd(" ")
+            If Not _FileExtensionIsCached Then
+                _FileExtensionCache = CodePage437ToUnicode(Extension).TrimEnd(" ")
+                _FileExtensionIsCached = True
+            End If
+
+            Return _FileExtensionCache
         End Function
 
         Public Function GetFileName() As String
-            Return CodePage437ToUnicode(FileName).TrimEnd(" ")
+            If Not _FileNameIsCached Then
+                _FileNameCache = CodePage437ToUnicode(FileName).TrimEnd(" ")
+                _FileNameIsCached = True
+            End If
+
+            Return _FileNameCache
         End Function
 
         Public Function GetFullFileName() As String
@@ -286,11 +371,21 @@ Namespace DiskImage
         End Function
 
         Public Function GetLastAccessDate() As ExpandedDate
-            Return ExpandDate(LastAccessDate)
+            If Not _LastAccessDateIsCached Then
+                _LastAccessDateCache = ExpandDate(LastAccessDate)
+                _LastAccessDateIsCached = True
+            End If
+
+            Return _LastAccessDateCache
         End Function
 
         Public Function GetLastWriteDate() As ExpandedDate
-            Return ExpandDate(LastWriteDate, LastWriteTime)
+            If Not _LastWriteDateIsCached Then
+                _LastWriteDateCache = ExpandDate(LastWriteDate, LastWriteTime)
+                _LastWriteDateIsCached = True
+            End If
+
+            Return _LastWriteDateCache
         End Function
 
         Public Function GetLFNFileName() As String
@@ -311,7 +406,12 @@ Namespace DiskImage
         End Function
 
         Public Function GetVolumeName() As String
-            Return (CodePage437ToUnicode(FileName) & CodePage437ToUnicode(Extension)).TrimEnd(" ")
+            If Not _VolumeNameIsCached Then
+                _VolumeNameCache = (CodePage437ToUnicode(FileName) & CodePage437ToUnicode(Extension)).TrimEnd(" ")
+                _VolumeNameIsCached = True
+            End If
+
+            Return _VolumeNameCache
         End Function
 
         Public Function HasCreationDate() As Boolean
@@ -323,11 +423,19 @@ Namespace DiskImage
         End Function
 
         Public Function HasInvalidExtension() As Boolean
-            Return Not CheckValidFileName(Extension, True, IsVolumeName())
+            If Not _HasInvalidExtensionCache.HasValue Then
+                _HasInvalidExtensionCache = Not CheckValidFileName(Extension, True, IsVolumeName())
+            End If
+
+            Return _HasInvalidExtensionCache
         End Function
 
         Public Function HasInvalidFilename() As Boolean
-            Return Not CheckValidFileName(FileName, False, IsVolumeName())
+            If Not _HasInvalidFileNameCache.HasValue Then
+                _HasInvalidFileNameCache = Not CheckValidFileName(FileName, False, IsVolumeName())
+            End If
+
+            Return _HasInvalidFileNameCache
         End Function
 
         Public Function HasLastAccessDate() As Boolean
@@ -339,17 +447,24 @@ Namespace DiskImage
         End Function
 
         Public Function IsBlank() As Boolean
+            If _IsBlankCache.HasValue Then
+                Return _IsBlankCache.Value
+            End If
+
             Dim Data = Me.Data
             Dim CheckByte = Data(1)
             If Data(0) = CHAR_DELETED And (CheckByte = &H0 Or CheckByte = &HF6) Then
                 For Counter = 2 To Data.Length - 1
                     If Data(Counter) <> CheckByte Then
+                        _IsBlankCache = False
                         Return False
                     End If
                 Next
+                _IsBlankCache = True
                 Return True
             End If
 
+            _IsBlankCache = False
             Return False
         End Function
 
