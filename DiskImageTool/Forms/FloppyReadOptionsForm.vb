@@ -34,7 +34,7 @@ Public Class FloppyReadOptionsForm
 
         Dim Items = System.Enum.GetValues(GetType(FloppyDiskType))
         For Each Type As FloppyDiskType In Items
-            If Type <> FloppyDiskType.FloppyUnknown Or DetectedType = Type Then
+            If (Type <> FloppyDiskType.FloppyUnknown And IsDiskTypeValidForRead(Type)) Or DetectedType = Type Then
                 DiskTypeItem = New ComboDiskTypeItem(Type, Type = DetectedType)
                 Dim Index = ComboDiskType.Items.Add(DiskTypeItem)
                 If Type = DetectedType Then

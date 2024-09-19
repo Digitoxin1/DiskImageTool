@@ -6,31 +6,39 @@ Imports Hb.Windows.Forms
 Public Class BootSectorForm
     Const ValidHexChars = "0123456789ABCDEF"
     Private ReadOnly _BootStrap As BoootstrapDB
-    Private ReadOnly _Disk As DiskImage.Disk
+    Private ReadOnly _BootSector As BootSector
     Private ReadOnly _HasExtended As Boolean
     Private ReadOnly _HelpProvider1 As HelpProvider
     Private _SuppressEvent As Boolean = True
 
-    Public Sub New(Disk As DiskImage.Disk, BootStrap As BoootstrapDB)
+    Public Sub New(Data() As Byte, BootStrap As BoootstrapDB)
 
         ' This call is required by the designer.
         InitializeComponent()
 
         ' Add any initialization after the InitializeComponent() call.
-        _Disk = Disk
+        _BootSector = New BootSector(Data)
         _BootStrap = BootStrap
         _HelpProvider1 = New HelpProvider
 
-        Dim BootStrapStart = _Disk.BootSector.GetBootStrapOffset
+        Dim BootStrapStart = _BootSector.GetBootStrapOffset
         _HasExtended = BootStrapStart >= BootSectorOffsets.FileSystemType + BootSectorSizes.FileSystemType
 
+        Dim DiskType = GetFloppyDiskType(_BootSector.BPB, True, False)
+
         IntitializeHelp()
-        PopulateDiskTypes()
-        SetCurrentDiskType(GetFloppyDiskType(_Disk.BootSector.BPB, True))
+        PopulateDiskTypes(DiskType)
+        SetCurrentDiskType(DiskType)
         PopulateValues()
 
         _SuppressEvent = False
     End Sub
+
+    Public ReadOnly Property Data As Byte()
+        Get
+            Return _BootSector.Data
+        End Get
+    End Property
 
     Private Sub ChangeVolumeSerialNumber()
         Dim VolumeSerialNumberForm As New VolumeSerialNumberForm()
@@ -102,23 +110,24 @@ Public Class BootSectorForm
 
         Msg = "Total number of sectors in the volume" &
             $"{vbCrLf}{vbCrLf}Typical Values:" &
-            $"{vbCrLf}160K Floppy{vbTab}320" &
-            $"{vbCrLf}180K Floppy{vbTab}360" &
-            $"{vbCrLf}320K Floppy{vbTab}640" &
-            $"{vbCrLf}360K Floppy{vbTab}720" &
-            $"{vbCrLf}720K Floppy{vbTab}1440" &
-            $"{vbCrLf}1.2M Floppy{vbTab}2400" &
-            $"{vbCrLf}1.44M Floppy{vbTab}2880" &
-            $"{vbCrLf}2.88M Floppy{vbTab}5760" &
-            $"{vbCrLf}DMF Floppy{vbTab}3360" &
-            $"{vbCrLf}XDF Floppy{vbTab}3680"
+            $"{vbCrLf}160K Floppy{vbTab}{vbTab}320" &
+            $"{vbCrLf}180K Floppy{vbTab}{vbTab}360" &
+            $"{vbCrLf}320K Floppy{vbTab}{vbTab}640" &
+            $"{vbCrLf}360K Floppy{vbTab}{vbTab}720" &
+            $"{vbCrLf}720K Floppy{vbTab}{vbTab}1440" &
+            $"{vbCrLf}1.2M Floppy{vbTab}{vbTab}2400" &
+            $"{vbCrLf}1.44M Floppy{vbTab}{vbTab}2880" &
+            $"{vbCrLf}2.88M Floppy{vbTab}{vbTab}5760" &
+            $"{vbCrLf}DMF Floppy{vbTab}{vbTab}3360" &
+            $"{vbCrLf}5.25"" XDF Floppy{vbTab}3040" &
+            $"{vbCrLf}3.5"" XDF Floppy{vbTab}{vbTab}3680"
         SetHelpString(Msg, LblSectorCountSmall, TxtSectorCountSmall)
 
         Msg = "Media Descriptor" &
             $"{vbCrLf}{vbCrLf}Allowed Values:" &
-            $"{vbCrLf}F0{vbTab}1.44M, 2.88M, DMF, XDF Floppy" &
+            $"{vbCrLf}F0{vbTab}1.44M, 2.88M, DMF, 3.5"" XDF Floppy" &
             $"{vbCrLf}F8{vbTab}Fixed Disk" &
-            $"{vbCrLf}F9{vbTab}720K & 1.2M Floppy" &
+            $"{vbCrLf}F9{vbTab}720K, 1.2M, 5.25"" XDF Floppy" &
             $"{vbCrLf}FA{vbTab}Unused" &
             $"{vbCrLf}FB{vbTab}Unused" &
             $"{vbCrLf}FC{vbTab}180K Floppy" &
@@ -130,30 +139,32 @@ Public Class BootSectorForm
 
         Msg = "Number of sectors allocated to each copy of the File Allocation Table (FAT)" &
             $"{vbCrLf}{vbCrLf}Typical Values:" &
-            $"{vbCrLf}160K Floppy{vbTab}1" &
-            $"{vbCrLf}180K Floppy{vbTab}2" &
-            $"{vbCrLf}320K Floppy{vbTab}1" &
-            $"{vbCrLf}360K Floppy{vbTab}2" &
-            $"{vbCrLf}720K Floppy{vbTab}3" &
-            $"{vbCrLf}1.2M Floppy{vbTab}7" &
-            $"{vbCrLf}1.44M Floppy{vbTab}9" &
-            $"{vbCrLf}2.88M Floppy{vbTab}9" &
-            $"{vbCrLf}DMF Floppy{vbTab}3 or 5" &
-            $"{vbCrLf}XDF Floppy{vbTab}11"
+            $"{vbCrLf}160K Floppy{vbTab}{vbTab}1" &
+            $"{vbCrLf}180K Floppy{vbTab}{vbTab}2" &
+            $"{vbCrLf}320K Floppy{vbTab}{vbTab}1" &
+            $"{vbCrLf}360K Floppy{vbTab}{vbTab}2" &
+            $"{vbCrLf}720K Floppy{vbTab}{vbTab}3" &
+            $"{vbCrLf}1.2M Floppy{vbTab}{vbTab}7" &
+            $"{vbCrLf}1.44M Floppy{vbTab}{vbTab}9" &
+            $"{vbCrLf}2.88M Floppy{vbTab}{vbTab}9" &
+            $"{vbCrLf}DMF Floppy{vbTab}{vbTab}3 or 5" &
+            $"{vbCrLf}5.25"" XDF Floppy{vbTab}9" &
+            $"{vbCrLf}3.5"" XDF Floppy{vbTab}{vbTab}11"
         SetHelpString(Msg, LblSectorsPerFAT, TxtSectorsPerFAT)
 
         Msg = "Number of sectors per track on the disk" &
             $"{vbCrLf}{vbCrLf}Typical Values:" &
-            $"{vbCrLf}160K Floppy{vbTab}8" &
-            $"{vbCrLf}180K Floppy{vbTab}9" &
-            $"{vbCrLf}320K Floppy{vbTab}8" &
-            $"{vbCrLf}360K Floppy{vbTab}9" &
-            $"{vbCrLf}720K Floppy{vbTab}9" &
-            $"{vbCrLf}1.2M Floppy{vbTab}15" &
-            $"{vbCrLf}1.44M Floppy{vbTab}18" &
-            $"{vbCrLf}2.88M Floppy{vbTab}36" &
-            $"{vbCrLf}DMF Floppy{vbTab}21" &
-            $"{vbCrLf}XDF Floppy{vbTab}23"
+            $"{vbCrLf}160K Floppy{vbTab}{vbTab}8" &
+            $"{vbCrLf}180K Floppy{vbTab}{vbTab}9" &
+            $"{vbCrLf}320K Floppy{vbTab}{vbTab}8" &
+            $"{vbCrLf}360K Floppy{vbTab}{vbTab}9" &
+            $"{vbCrLf}720K Floppy{vbTab}{vbTab}9" &
+            $"{vbCrLf}1.2M Floppy{vbTab}{vbTab}15" &
+            $"{vbCrLf}1.44M Floppy{vbTab}{vbTab}18" &
+            $"{vbCrLf}2.88M Floppy{vbTab}{vbTab}36" &
+            $"{vbCrLf}DMF Floppy{vbTab}{vbTab}21" &
+            $"{vbCrLf}5.25"" XDF Floppy{vbTab}19" &
+            $"{vbCrLf}3.5"" XDF Floppy{vbTab}{vbTab}23"
         SetHelpString(Msg, LblSectorsPerTrack, TxtSectorsPerTrack)
 
         Msg = "Number of physical heads (sides) on the disk" &
@@ -318,7 +329,7 @@ Public Class BootSectorForm
         Next
     End Sub
 
-    Private Sub PopulateDiskTypes()
+    Private Sub PopulateDiskTypes(DiskType As FloppyDiskType)
         CboDiskType.Items.Clear()
         CboDiskType.Items.Add(New BootSectorDiskType(FloppyDiskType.Floppy160))
         CboDiskType.Items.Add(New BootSectorDiskType(FloppyDiskType.Floppy180))
@@ -330,9 +341,16 @@ Public Class BootSectorForm
         CboDiskType.Items.Add(New BootSectorDiskType(FloppyDiskType.Floppy2880))
         CboDiskType.Items.Add(New BootSectorDiskType(FloppyDiskType.FloppyDMF1024))
         CboDiskType.Items.Add(New BootSectorDiskType(FloppyDiskType.FloppyDMF2048))
-        CboDiskType.Items.Add(New BootSectorDiskType(FloppyDiskType.FloppyXDF))
+        CboDiskType.Items.Add(New BootSectorDiskType(FloppyDiskType.FloppyXDF525))
+        CboDiskType.Items.Add(New BootSectorDiskType(FloppyDiskType.FloppyXDF35))
+        If DiskType = FloppyDiskType.FloppyXDFMicro Then
+            CboDiskType.Items.Add(New BootSectorDiskType(FloppyDiskType.FloppyXDFMicro))
+        End If
         CboDiskType.Items.Add(New BootSectorDiskType(FloppyDiskType.FloppyProCopy))
         CboDiskType.Items.Add(New BootSectorDiskType(FloppyDiskType.FloppyTandy2000))
+        If DiskType = FloppyDiskType.FloppyNoBPB Then
+            CboDiskType.Items.Add(New BootSectorDiskType(FloppyDiskType.FloppyNoBPB))
+        End If
         CboDiskType.Items.Add(New BootSectorDiskType(FloppyDiskType.FloppyUnknown))
 
         CboDiskType.SelectedIndex = CboDiskType.Items.Count - 1
@@ -372,16 +390,20 @@ Public Class BootSectorForm
         CboMediaDescriptor.Items.Add(New MediaDescriptorType("F0", "1.44M"))
         CboMediaDescriptor.Items.Add(New MediaDescriptorType("F0", "2.88M"))
         CboMediaDescriptor.Items.Add(New MediaDescriptorType("F0", "DNF"))
-        CboMediaDescriptor.Items.Add(New MediaDescriptorType("F0", "XDF"))
+        CboMediaDescriptor.Items.Add(New MediaDescriptorType("F9", "XDF 5.25"""))
+        CboMediaDescriptor.Items.Add(New MediaDescriptorType("F0", "XDF 3.5"""))
         CboMediaDescriptor.Items.Add(New MediaDescriptorType("ED", "Tandy 2000"))
     End Sub
 
     Private Sub PopulateOEMName()
         Dim OEMName As New OEMNameData With {
-            .Name = _Disk.BootSector.OEMName
+            .Name = _BootSector.OEMName
         }
 
-        Dim BootstrapType = _BootStrap.FindMatch(_Disk.BootSector.BootStrapCode)
+        Dim BootstrapType As BootstrapLookup = Nothing
+        If _BootStrap IsNot Nothing Then
+            BootstrapType = _BootStrap.FindMatch(_BootSector.BootStrapCode)
+        End If
         If BootstrapType IsNot Nothing Then
             For Each KnownOEMName In BootstrapType.OEMNames
                 If KnownOEMName.Name.Length > 0 Then
@@ -402,8 +424,8 @@ Public Class BootSectorForm
             End If
         End If
 
-        ControlSetValue(CboOEMName, _Disk.BootSector.GetOEMNameString, False)
-        HexOEMName.SetHex(_Disk.BootSector.OEMName)
+        ControlSetValue(CboOEMName, _BootSector.GetOEMNameString, False)
+        HexOEMName.SetHex(_BootSector.OEMName)
     End Sub
 
     Private Sub PopulateSectorsPerCluster()
@@ -418,23 +440,23 @@ Public Class BootSectorForm
         PopulateBytesPerSector()
         PopulateSectorsPerCluster()
         PopulateMediaDescriptors()
-        PopulateBPB(_Disk.BootSector.BPB)
+        PopulateBPB(_BootSector.BPB)
 
-        ControlSetValue(TxtHiddenSectors, _Disk.BootSector.BPB.HiddenSectors, False)
-        ControlSetValue(HexJumpInstruction, _Disk.BootSector.JmpBoot, False)
-        ControlSetValue(HexBootSectorSignature, _Disk.BootSector.BootStrapSignature.ToString("X4"), Array.ConvertAll(BootSector.ValidBootStrapSignature, Function(x) x.ToString("X4")), False)
+        ControlSetValue(TxtHiddenSectors, _BootSector.BPB.HiddenSectors, False)
+        ControlSetValue(HexJumpInstruction, _BootSector.JmpBoot, False)
+        ControlSetValue(HexBootSectorSignature, _BootSector.BootStrapSignature.ToString("X4"), Array.ConvertAll(BootSector.ValidBootStrapSignature, Function(x) x.ToString("X4")), False)
 
-        PopulateAdditionalData(_Disk.BootSector)
+        PopulateAdditionalData(_BootSector)
 
         If _HasExtended Then
             GroupBoxExtended.Visible = True
-            PopulateExtended(_Disk.BootSector)
+            PopulateExtended(_BootSector)
             SetExtendedState()
         Else
             GroupBoxExtended.Visible = False
         End If
 
-        UpdateBackColors(GetFloppyDiskType(GetBPB(), True))
+        UpdateBackColors(GetFloppyDiskType(GetBPB(), True, False))
     End Sub
 
     Private Sub RefreshFileSystemType()
@@ -591,43 +613,39 @@ Public Class BootSectorForm
     End Sub
 
     Private Sub UpdateBootSector()
-        _Disk.Data.BatchEditMode = True
-
         Dim ByteValue As Byte
 
         Dim OEMNameString As String = Strings.Left(CboOEMName.Text, 8).PadRight(8)
         Dim OEMName = DiskImage.UnicodeToCodePage437(OEMNameString)
-        _Disk.BootSector.OEMName = OEMName
+        _BootSector.OEMName = OEMName
 
-        UpdateBPB(_Disk.BootSector.BPB)
+        UpdateBPB(_BootSector.BPB)
 
-        _Disk.BootSector.JmpBoot = HexJumpInstruction.GetHex
+        _BootSector.JmpBoot = HexJumpInstruction.GetHex
 
         Dim BootStrapSignature = HexBootSectorSignature.GetHex
         Array.Reverse(BootStrapSignature)
-        _Disk.BootSector.BootStrapSignature = BitConverter.ToUInt16(BootStrapSignature, 0)
+        _BootSector.BootStrapSignature = BitConverter.ToUInt16(BootStrapSignature, 0)
 
         If _HasExtended Then
-            _Disk.BootSector.ExtendedBootSignature = HexExtendedBootSignature.GetHex(0)
+            _BootSector.ExtendedBootSignature = HexExtendedBootSignature.GetHex(0)
 
             If Byte.TryParse(TxtDriveNumber.Text, ByteValue) Then
-                _Disk.BootSector.DriveNumber = ByteValue
+                _BootSector.DriveNumber = ByteValue
             End If
 
             Dim VolumeSerial = HexVolumeSerialNumber.GetHex
             Array.Reverse(VolumeSerial)
-            _Disk.BootSector.VolumeSerialNumber = BitConverter.ToUInt32(VolumeSerial, 0)
+            _BootSector.VolumeSerialNumber = BitConverter.ToUInt32(VolumeSerial, 0)
 
             Dim VolumeLabelString As String = Strings.Left(TxtVolumeLabel.Text, 11).PadRight(11)
             Dim VolumeLabel = DiskImage.UnicodeToCodePage437(VolumeLabelString)
-            _Disk.BootSector.VolumeLabel = VolumeLabel
+            _BootSector.VolumeLabel = VolumeLabel
 
             Dim FileSystemTypeString As String = Strings.Left(TxtFileSystemType.Text, 8).PadRight(8)
             Dim FileSystemType = DiskImage.UnicodeToCodePage437(FileSystemTypeString)
-            _Disk.BootSector.FileSystemType = FileSystemType
+            _BootSector.FileSystemType = FileSystemType
         End If
-
-        _Disk.Data.BatchEditMode = False
     End Sub
 
     Private Sub UpdateBackColor(Control As Control, KnownDiskType As Boolean)
@@ -655,7 +673,7 @@ Public Class BootSectorForm
     Private Sub UpdateTag(Control As Control, UpdateDiskType As Boolean)
         ControlSetLastValue(Control, Control.Text)
 
-        Dim DiskType = GetFloppyDiskType(GetBPB(), True)
+        Dim DiskType = GetFloppyDiskType(GetBPB(), True, False)
 
         If UpdateDiskType Then
             SetCurrentDiskType(DiskType)
@@ -667,7 +685,7 @@ Public Class BootSectorForm
 
 #Region "Events"
     Private Sub BtnReset_Click(sender As Object, e As EventArgs) Handles btnReset.Click
-        SetCurrentDiskType(GetFloppyDiskType(_Disk.BootSector.BPB, True))
+        SetCurrentDiskType(GetFloppyDiskType(_BootSector.BPB, True, False))
         PopulateValues()
     End Sub
 
@@ -691,7 +709,7 @@ Public Class BootSectorForm
             Dim BPB = BuildBPB(DiskType)
             PopulateBPB(BPB)
         Else
-            DiskType = GetFloppyDiskType(GetBPB, True)
+            DiskType = GetFloppyDiskType(GetBPB, True, False)
         End If
         UpdateBackColors(DiskType)
         _SuppressEvent = False

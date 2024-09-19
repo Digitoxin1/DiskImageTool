@@ -183,6 +183,12 @@ Namespace DiskImage
                         ImageData.ReadOnly = IsFileReadOnly(ImageData.SourceFile)
                         Data = IO.File.ReadAllBytes(ImageData.SourceFile)
                     End If
+                    If ImageData.XDFMiniDisk Then
+                        ImageData.ReadOnly = True
+                        Dim NewData(ImageData.XDFLength - 1) As Byte
+                        Array.Copy(Data, ImageData.XDFOffset, NewData, 0, ImageData.XDFLength)
+                        Data = NewData
+                    End If
                 Catch ex As Exception
                     Data = Nothing
                 End Try
@@ -262,7 +268,7 @@ Namespace DiskImage
             Return Result
         End Function
 
-        Public Function GetDirectoryData(Data As DirectoryData, FileBytes As ByteArray, OffsetStart As UInteger, OffsetEnd As UInteger, EndOfDirectory As Boolean, CheckBootSector As Boolean) As Boolean
+        Public Sub GetDirectoryData(Data As DirectoryData, FileBytes As ByteArray, OffsetStart As UInteger, OffsetEnd As UInteger, CheckBootSector As Boolean)
             Dim EntryCount = (OffsetEnd - OffsetStart) \ DirectoryEntry.DIRECTORY_ENTRY_SIZE
 
             Data.MaxEntries += EntryCount
@@ -272,22 +278,22 @@ Namespace DiskImage
                     Dim Offset = OffsetStart + (Entry * DirectoryEntry.DIRECTORY_ENTRY_SIZE)
                     Dim FirstByte = FileBytes.GetByte(Offset)
                     If FirstByte = 0 Then
-                        EndOfDirectory = True
+                        Data.EndOfDirectory = True
                     End If
                     If Not Data.HasBootSector And CheckBootSector Then
                         If BootSector.ValidJumpInstructuon.Contains(FirstByte) Then
                             If OffsetEnd - Offset >= BootSector.BOOT_SECTOR_SIZE Then
                                 Dim BootSectorData = FileBytes.GetBytes(Offset, DiskImage.BootSector.BOOT_SECTOR_SIZE)
-                                Dim BootSector = New BootSector(New ImageByteArray(BootSectorData))
-                                If BootSector.IsValidImage Then
+                                Dim BootSector = New BootSector(BootSectorData)
+                                If BootSector.BPB.IsValid Then
                                     Data.HasBootSector = True
                                     Data.BootSectorOffset = Offset
-                                    EndOfDirectory = True
+                                    Data.EndOfDirectory = True
                                 End If
                             End If
                         End If
                     End If
-                    If EndOfDirectory Then
+                    If Data.EndOfDirectory Then
                         If Not Data.HasAdditionalData Then
                             If Not Data.HasBootSector Or Offset < Data.BootSectorOffset Or Offset > Data.BootSectorOffset + DiskImage.BootSector.BOOT_SECTOR_SIZE Then
                                 If DirectoryEntryHasData(FileBytes, Offset) Then
@@ -309,9 +315,7 @@ Namespace DiskImage
                     End If
                 Next
             End If
-
-            Return EndOfDirectory
-        End Function
+        End Sub
 
         Public Sub ResizeArray(ByRef b() As Byte, Length As UInteger, Padding As Byte)
             Dim Size = b.Length - 1
@@ -334,6 +338,35 @@ Namespace DiskImage
             Else
                 Return Nothing
             End If
+        End Function
+
+        Private Function CalcXDFChecksumBlock(Data() As Byte, Start As UInteger, Length As UShort) As UInteger
+            Dim Checksum As UInt32 = &HABDC
+            Dim Loc2 As UInt16
+
+            Start <<= 9
+
+            For i = 0 To Length - 1
+                Loc2 = Data((Data(i + Start) * &H13) Mod Length + Start)
+                Checksum = (Checksum + (Loc2 >> 5) + ((Loc2 And &H1F) << 4)) And &HFFFF&
+            Next
+
+            Return Checksum
+        End Function
+
+        Public Function CalcXDFChecksum(Data() As Byte, SectorsPerFAT As UInteger) As UInteger
+            Dim Checksum As UInteger = &H12345678
+
+            Checksum = (Checksum << 1) + CalcXDFChecksumBlock(Data, 1, &HA00)
+            Checksum = (Checksum << 1) + CalcXDFChecksumBlock(Data, (SectorsPerFAT << 1) + 1, &HA00)
+            Checksum = (Checksum << 1) + CalcXDFChecksumBlock(Data, (SectorsPerFAT << 1) + 6, &HA00)
+
+            For i = 0 To &HB6 - 1
+                Dim Start = ((SectorsPerFAT << 1) + &H15) + Data(&H80 + i) + (Checksum And &H7FF)
+                Checksum = (Checksum << 1) + CalcXDFChecksumBlock(Data, Start, &H200)
+            Next
+
+            Return Checksum
         End Function
     End Module
 End Namespace

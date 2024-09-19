@@ -69,13 +69,12 @@
 
         Private Function GetDirectoryData() As DirectoryData
             Dim Data As New DirectoryData
-            Dim EndOfDirectory As Boolean = False
 
             For Each Cluster In _FatChain.Clusters
                 Dim OffsetStart As UInteger = _BPB.ClusterToOffset(Cluster)
                 Dim OffsetLength As UInteger = _BPB.BytesPerCluster
 
-                EndOfDirectory = Functions.GetDirectoryData(Data, _FileBytes, OffsetStart, OffsetStart + OffsetLength, EndOfDirectory, False)
+                Functions.GetDirectoryData(Data, _FileBytes, OffsetStart, OffsetStart + OffsetLength, False)
             Next
 
             Return Data

@@ -218,7 +218,7 @@ Module HexViews
         Dim OriginalData() As Byte = Nothing
 
         Dim NumberOfFATs As Byte
-        If Disk.DiskType = FloppyDiskType.FloppyXDF Then
+        If IsDiskTypeXDF(Disk.DiskType) Then
             NumberOfFATs = 1
         Else
             NumberOfFATs = Disk.BPB.NumberOfFATs
@@ -279,8 +279,8 @@ Module HexViews
                     If BootSector.ValidJumpInstructuon.Contains(FirstByte) Then
                         If OffsetEnd - Offset + 1 >= BootSector.BOOT_SECTOR_SIZE Then
                             Dim BootSectorData = Disk.Data.GetBytes(Offset, DiskImage.BootSector.BOOT_SECTOR_SIZE)
-                            Dim BootSector = New BootSector(New ImageByteArray(BootSectorData))
-                            If BootSector.IsValidImage Then
+                            Dim BootSector = New BootSector(BootSectorData)
+                            If BootSector.BPB.IsValid Then
                                 HasBootSector = True
                                 BootSectorOffset = Offset
                                 EndOfDirectory = True

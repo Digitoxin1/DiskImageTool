@@ -7,8 +7,9 @@ Namespace DiskImage
         Public Shared ReadOnly ValidNumberOfFATS() As Byte = {1, 2}
         Public Shared ReadOnly ValidNumberOfHeads() As UShort = {1, 2}
         Public Shared ReadOnly ValidSectorsPerCluster() As Byte = {1, 2, 4, 8, 16, 32, 64, 128}
-        Public Shared ReadOnly ValidSectorsPerTrack() As UShort = {8, 9, 15, 18, 21, 23, 36}
-        Private ReadOnly _FileBytes As ImageByteArray
+        Public Shared ReadOnly ValidSectorsPerTrack() As UShort = {8, 9, 15, 18, 19, 21, 23, 36}
+        Private ReadOnly _FileBytes As ByteArray
+        Private ReadOnly _Offset As UInteger
 
         Public Enum BPBOoffsets As UInteger
             BytesPerSector = 11
@@ -42,128 +43,130 @@ Namespace DiskImage
         End Enum
 
         Sub New()
-            Dim Data(BiosParameterBlock.BPB_SIZE - 1) As Byte
-            _FileBytes = New ImageByteArray(Data)
+            Dim Data(BPB_SIZE - 1) As Byte
+            _FileBytes = New ByteArray(Data)
+            _Offset = 0
         End Sub
 
-        Sub New(FileBytes As ImageByteArray)
+        Sub New(FileBytes As ByteArray, Offset As UInteger)
             _FileBytes = FileBytes
+            _Offset = Offset
         End Sub
 
         Public Property BytesPerSector() As UShort
             Get
-                Return _FileBytes.GetBytesShort(BPBOoffsets.BytesPerSector)
+                Return _FileBytes.GetBytesShort(BPBOoffsets.BytesPerSector + _Offset)
             End Get
             Set
-                _FileBytes.SetBytes(Value, BPBOoffsets.BytesPerSector)
+                _FileBytes.SetBytes(Value, BPBOoffsets.BytesPerSector + _Offset)
             End Set
         End Property
 
         Public Property HiddenSectors() As UShort
             Get
-                Return _FileBytes.GetBytesShort(BPBOoffsets.HiddenSectors)
+                Return _FileBytes.GetBytesShort(BPBOoffsets.HiddenSectors + _Offset)
             End Get
             Set
-                _FileBytes.SetBytes(Value, BPBOoffsets.HiddenSectors)
+                _FileBytes.SetBytes(Value, BPBOoffsets.HiddenSectors + _Offset)
             End Set
         End Property
 
         Public Property HiddenSectorsFAT16() As UInteger
             Get
-                Return _FileBytes.GetBytesInteger(BPBOoffsets.HiddenSectors)
+                Return _FileBytes.GetBytesInteger(BPBOoffsets.HiddenSectors + _Offset)
             End Get
             Set
-                _FileBytes.SetBytes(Value, BPBOoffsets.HiddenSectors)
+                _FileBytes.SetBytes(Value, BPBOoffsets.HiddenSectors + _Offset)
             End Set
         End Property
 
         Public Property MediaDescriptor() As Byte
             Get
-                Return _FileBytes.GetByte(BPBOoffsets.MediaDescriptor)
+                Return _FileBytes.GetByte(BPBOoffsets.MediaDescriptor + _Offset)
             End Get
             Set
-                _FileBytes.SetBytes(Value, BPBOoffsets.MediaDescriptor)
+                _FileBytes.SetBytes(Value, BPBOoffsets.MediaDescriptor + _Offset)
             End Set
         End Property
 
         Public Property NumberOfFATs() As Byte
             Get
-                Return _FileBytes.GetByte(BPBOoffsets.NumberOfFATs)
+                Return _FileBytes.GetByte(BPBOoffsets.NumberOfFATs + _Offset)
             End Get
             Set
-                _FileBytes.SetBytes(Value, BPBOoffsets.NumberOfFATs)
+                _FileBytes.SetBytes(Value, BPBOoffsets.NumberOfFATs + _Offset)
             End Set
         End Property
 
         Public Property NumberOfHeads() As UShort
             Get
-                Return _FileBytes.GetBytesShort(BPBOoffsets.NumberOfHeads)
+                Return _FileBytes.GetBytesShort(BPBOoffsets.NumberOfHeads + _Offset)
             End Get
             Set
-                _FileBytes.SetBytes(Value, BPBOoffsets.NumberOfHeads)
+                _FileBytes.SetBytes(Value, BPBOoffsets.NumberOfHeads + _Offset)
             End Set
         End Property
 
         Public Property ReservedSectorCount() As UShort
             Get
-                Return _FileBytes.GetBytesShort(BPBOoffsets.ReservedSectorCount)
+                Return _FileBytes.GetBytesShort(BPBOoffsets.ReservedSectorCount + _Offset)
             End Get
             Set
-                _FileBytes.SetBytes(Value, BPBOoffsets.ReservedSectorCount)
+                _FileBytes.SetBytes(Value, BPBOoffsets.ReservedSectorCount + _Offset)
             End Set
         End Property
 
         Public Property RootEntryCount() As UShort
             Get
-                Return _FileBytes.GetBytesShort(BPBOoffsets.RootEntryCount)
+                Return _FileBytes.GetBytesShort(BPBOoffsets.RootEntryCount + _Offset)
             End Get
             Set
-                _FileBytes.SetBytes(Value, BPBOoffsets.RootEntryCount)
+                _FileBytes.SetBytes(Value, BPBOoffsets.RootEntryCount + _Offset)
             End Set
         End Property
 
         Public Property SectorCountLarge() As UInteger
             Get
-                Return _FileBytes.GetBytesInteger(BPBOoffsets.SectorCountLarge)
+                Return _FileBytes.GetBytesInteger(BPBOoffsets.SectorCountLarge + _Offset)
             End Get
             Set
-                _FileBytes.SetBytes(Value, BPBOoffsets.SectorCountLarge)
+                _FileBytes.SetBytes(Value, BPBOoffsets.SectorCountLarge + _Offset)
             End Set
         End Property
 
         Public Property SectorCountSmall() As UShort
             Get
-                Return _FileBytes.GetBytesShort(BPBOoffsets.SectorCountSmall)
+                Return _FileBytes.GetBytesShort(BPBOoffsets.SectorCountSmall + _Offset)
             End Get
             Set
-                _FileBytes.SetBytes(Value, BPBOoffsets.SectorCountSmall)
+                _FileBytes.SetBytes(Value, BPBOoffsets.SectorCountSmall + _Offset)
             End Set
         End Property
 
         Public Property SectorsPerCluster() As Byte
             Get
-                Return _FileBytes.GetByte(BPBOoffsets.SectorsPerCluster)
+                Return _FileBytes.GetByte(BPBOoffsets.SectorsPerCluster + _Offset)
             End Get
             Set
-                _FileBytes.SetBytes(Value, BPBOoffsets.SectorsPerCluster)
+                _FileBytes.SetBytes(Value, BPBOoffsets.SectorsPerCluster + _Offset)
             End Set
         End Property
 
         Public Property SectorsPerFAT() As UShort
             Get
-                Return _FileBytes.GetBytesShort(BPBOoffsets.SectorsPerFAT)
+                Return _FileBytes.GetBytesShort(BPBOoffsets.SectorsPerFAT + _Offset)
             End Get
             Set
-                _FileBytes.SetBytes(Value, BPBOoffsets.SectorsPerFAT)
+                _FileBytes.SetBytes(Value, BPBOoffsets.SectorsPerFAT + _Offset)
             End Set
         End Property
 
         Public Property SectorsPerTrack() As UShort
             Get
-                Return _FileBytes.GetBytesShort(BPBOoffsets.SectorsPerTrack)
+                Return _FileBytes.GetBytesShort(BPBOoffsets.SectorsPerTrack + _Offset)
             End Get
             Set
-                _FileBytes.SetBytes(Value, BPBOoffsets.SectorsPerTrack)
+                _FileBytes.SetBytes(Value, BPBOoffsets.SectorsPerTrack + _Offset)
             End Set
         End Property
 
@@ -223,6 +226,10 @@ Namespace DiskImage
             Return ValidSectorsPerCluster.Contains(SectorsPerCluster)
         End Function
 
+        Public Function HasValidSectorsPerFAT() As Boolean
+            Return SectorsPerFAT <= 11
+        End Function
+
         Public Function HasValidSectorsPerTrack() As Boolean
             Return ValidSectorsPerTrack.Contains(SectorsPerTrack)
         End Function
@@ -247,9 +254,10 @@ Namespace DiskImage
                 AndAlso HasValidReservedSectorCount() _
                 AndAlso HasValidNumberOfFATs() _
                 AndAlso RootEntryCount > 0 _
+                AndAlso RootEntryCount <= 512 _
                 AndAlso SectorCount() > 0 _
                 AndAlso HasValidMediaDescriptor() _
-                AndAlso SectorsPerFAT > 0 _
+                AndAlso HasValidSectorsPerFAT() _
                 AndAlso HasValidSectorsPerTrack() _
                 AndAlso HasValidNumberOfHeadss()
         End Function

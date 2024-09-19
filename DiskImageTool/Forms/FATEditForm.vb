@@ -45,8 +45,8 @@ Public Class FATEditForm
 
         Me.Text = "File Allocation Table " & Index + 1
 
-        Dim SyncFATS = _Disk.DiskType <> FloppyDiskType.FloppyXDF AndAlso Disk.FATTables.FATsMatch
-        Dim DisplaySync = _Disk.DiskType <> FloppyDiskType.FloppyXDF AndAlso Not Disk.FATTables.FATsMatch
+        Dim SyncFATS = Not IsDiskTypeXDF(_Disk.DiskType) AndAlso Disk.FATTables.FATsMatch
+        Dim DisplaySync = Not IsDiskTypeXDF(_Disk.DiskType) AndAlso Not Disk.FATTables.FATsMatch
 
         ChkSync.Checked = SyncFATS
         ChkSync.Visible = DisplaySync
@@ -501,8 +501,8 @@ Public Class FATEditForm
         CboMediaDescriptor.Items.Add(New MediaDescriptorType("F9", "1.2M"))
         CboMediaDescriptor.Items.Add(New MediaDescriptorType("F0", "1.44M"))
         CboMediaDescriptor.Items.Add(New MediaDescriptorType("F0", "2.88M"))
-        CboMediaDescriptor.Items.Add(New MediaDescriptorType("F0", "DNF"))
-        CboMediaDescriptor.Items.Add(New MediaDescriptorType("F0", "XDF"))
+        CboMediaDescriptor.Items.Add(New MediaDescriptorType("F0", "DMF"))
+        CboMediaDescriptor.Items.Add(New MediaDescriptorType("F9", "XDF"))
     End Sub
 
     Private Sub ProcessFATChains()

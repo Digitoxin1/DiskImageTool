@@ -63,6 +63,7 @@ Public Class ImageLoadForm
                 ImageData.Compressed = True
                 ImageData.CompressedFile = CompressedFile
             End If
+
             _LoadedFileNames.Add(Key, ImageData)
             If _SelectedImageData Is Nothing Then
                 _SelectedImageData = ImageData

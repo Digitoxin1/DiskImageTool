@@ -158,11 +158,11 @@ Public Class MainForm
             If Not Disk_UnknownFormat Then
                 Dim MediaDescriptor = GetFloppyDiskMediaDescriptor(Disk.DiskType)
                 FAT_BadSectors = Disk.FAT.BadClusters.Count > 0
-                FATS_MismatchedFATs = Disk.DiskType <> FloppyDiskType.FloppyXDF AndAlso Not Disk.FATTables.FATsMatch
+                FATS_MismatchedFATs = Not IsDiskTypeXDF(Disk.DiskType) AndAlso Not Disk.FATTables.FATsMatch
                 If Disk.BootSector.BPB.IsValid Then
                     If Disk.BootSector.BPB.MediaDescriptor <> MediaDescriptor Then
                         Disk_MismatchedMediaDescriptor = True
-                    ElseIf Disk.DiskType = FloppyDiskType.FloppyXDF And Disk.FAT.MediaDescriptor = &HF9 Then
+                    ElseIf Disk.DiskType = FloppyDiskType.FloppyXDF35 And Disk.FAT.MediaDescriptor = &HF9 Then
                         Disk_MismatchedMediaDescriptor = False
                     ElseIf Disk.FAT.HasMediaDescriptor AndAlso Disk.FAT.MediaDescriptor <> Disk.BootSector.BPB.MediaDescriptor Then
                         Disk_MismatchedMediaDescriptor = True
@@ -665,14 +665,17 @@ Public Class MainForm
     End Function
 
     Private Sub BootSectorEdit()
-        Dim BootSectorForm As New BootSectorForm(_Disk, _BootStrapDB)
+        Dim BootSectorForm As New BootSectorForm(_Disk.BootSector.Data, _BootStrapDB)
 
         BootSectorForm.ShowDialog()
 
         Dim Result As Boolean = BootSectorForm.DialogResult = DialogResult.OK
 
         If Result Then
-            DiskImageRefresh()
+            If Not _Disk.BootSector.Data.CompareTo(BootSectorForm.Data) Then
+                _Disk.BootSector.Data = BootSectorForm.Data
+                DiskImageRefresh()
+            End If
         End If
     End Sub
 
@@ -1977,7 +1980,7 @@ Public Class MainForm
         Dim Buffer(Disk.BYTES_PER_SECTOR - 1) As Byte
         Dim BytesRead = FloppyDrive.ReadSector(0, Buffer)
         If BytesRead = Buffer.Length Then
-            BootSector = New BootSector(New ImageByteArray(Buffer))
+            BootSector = New BootSector(Buffer)
             DetectedType = GetFloppyDiskType(BootSector.BPB, False)
         Else
             DetectedType = FloppyDiskType.FloppyUnknown
@@ -2060,7 +2063,7 @@ Public Class MainForm
                 Dim Buffer(Disk.BYTES_PER_SECTOR - 1) As Byte
                 Dim BytesRead = FloppyDrive.ReadSector(0, Buffer)
                 If BytesRead = Buffer.Length Then
-                    Dim BootSector = New BootSector(New ImageByteArray(Buffer))
+                    Dim BootSector = New BootSector(Buffer)
                     DetectedType = GetFloppyDiskType(BootSector.BPB, False)
                 Else
                     DetectedType = FloppyDiskType.FloppyUnknown
@@ -2360,7 +2363,7 @@ Public Class MainForm
     Private Sub HexDisplayFAT()
         Dim HexViewSectorData = HexViewFAT(_Disk)
 
-        Dim SyncBlocks = _Disk.BPB.NumberOfFATEntries > 1 AndAlso _Disk.DiskType <> FloppyDiskType.FloppyXDF
+        Dim SyncBlocks = _Disk.BPB.NumberOfFATEntries > 1 AndAlso Not IsDiskTypeXDF(_Disk.DiskType)
 
         If DisplayHexViewForm(HexViewSectorData, SyncBlocks) Then
             DiskImageRefresh()
@@ -2410,7 +2413,7 @@ Public Class MainForm
         Dim PrevVisible = ComboFAT.Visible
 
         If Disk IsNot Nothing Then
-            FATTablesMatch = Disk.DiskType = FloppyDiskType.FloppyXDF OrElse Disk.FATTables.FATsMatch
+            FATTablesMatch = IsDiskTypeXDF(Disk.DiskType) OrElse Disk.FATTables.FATsMatch
             BtnDisplayBootSector.Enabled = Disk.CheckSize
             BtnEditBootSector.Enabled = Disk.CheckSize
             BtnDisplayDisk.Enabled = Disk.CheckSize
@@ -2872,6 +2875,17 @@ Public Class MainForm
                         Dim DiskTypeStringBySize = GetFloppyDiskTypeName(DiskTypeBySize)
                         .AddItem(DiskGroup, "Disk Type", DiskTypeStringBySize & " Floppy (Custom Format)")
                     End If
+
+                    If IsDiskTypeXDF(Disk.DiskType) Then
+                        Dim XDFChecksum = CalcXDFChecksum(Disk.Data.Data, Disk.BPB.SectorsPerFAT)
+                        If XDFChecksum = Disk.GetXDFChecksum Then
+                            ForeColor = Color.Green
+                        Else
+                            ForeColor = Color.Red
+                        End If
+                        .AddItem(DiskGroup, "XDF Checksum", XDFChecksum.ToString("X8"), ForeColor)
+                    End If
+
                     If Disk.BPB.IsValid AndAlso Disk.CheckImageSize > 0 AndAlso Disk.DiskType <> FloppyDiskType.FloppyUnknown Then
                         .AddItem(DiskGroup, DiskTypeString & " CRC32", Crc32.ComputeChecksum(Disk.Data.GetBytes(0, Disk.BPB.ReportedImageSize())).ToString("X8"))
                     End If
@@ -2958,7 +2972,7 @@ Public Class MainForm
                             ForeColor = SystemColors.WindowText
                         End If
 
-                        If Disk.DiskType = FloppyDiskType.FloppyXDF Then
+                        If IsDiskTypeXDF(Disk.DiskType) Then
                             Value = "1 + Compatibility Image"
                         Else
                             Value = Disk.BootSector.BPB.NumberOfFATs
@@ -2999,7 +3013,7 @@ Public Class MainForm
                             If Not Disk.BPB.HasValidMediaDescriptor Then
                                 Value &= " (Invalid)"
                                 ForeColor = Color.Red
-                            ElseIf Disk.DiskType = FloppyDiskType.FloppyXDF AndAlso Disk.FAT.MediaDescriptor = &HF9 Then
+                            ElseIf Disk.DiskType = FloppyDiskType.FloppyXDF35 AndAlso Disk.FAT.MediaDescriptor = &HF9 Then
                                 'Do Nothing - This is normal for XDF
                                 'ElseIf Disk.DiskType <> FloppyDiskType.FloppyUnknown AndAlso Disk.BootSector.BPB.MediaDescriptor <> GetFloppyDiskMediaDescriptor(Disk.DiskType) Then
                             ElseIf Disk.BootSector.BPB.MediaDescriptor <> GetFloppyDiskMediaDescriptor(Disk.DiskType) Then
@@ -3086,7 +3100,7 @@ Public Class MainForm
                             Value &= " (Invalid)"
                             ForeColor = Color.Red
                             Visible = True
-                        ElseIf Disk.DiskType = FloppyDiskType.FloppyXDF AndAlso Disk.FAT.MediaDescriptor = &HF9 Then
+                        ElseIf Disk.DiskType = FloppyDiskType.FloppyXDF35 AndAlso Disk.FAT.MediaDescriptor = &HF9 Then
                             Visible = False
                         ElseIf Disk.DiskType <> FloppyDiskType.FloppyUnknown AndAlso Disk.FAT.MediaDescriptor <> GetFloppyDiskMediaDescriptor(Disk.DiskType) Then
                             Value &= " (Mismatched)"

@@ -7,5 +7,6 @@
         Public Property HasAdditionalData As Boolean = False
         Public Property HasBootSector As Boolean = False
         Public Property MaxEntries As UInteger = 0
+        Public Property EndOfDirectory As Boolean = False
     End Class
 End Namespace

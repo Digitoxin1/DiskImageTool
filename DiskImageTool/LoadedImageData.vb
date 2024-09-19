@@ -17,6 +17,9 @@ Public Class LoadedImageData
         _ReadOnly = False
         _Scanned = False
         _SortHistory = Nothing
+        _XDFMiniDisk = False
+        _XDFOffset = 0
+        _XDFLength = 0
 
         Dim FilterCount As Integer = FilterGetCount()
         ReDim _Filters(FilterCount - 1)
@@ -39,6 +42,10 @@ Public Class LoadedImageData
     Public Property Scanned As Boolean
     Public Property SourceFile As String
     Public Property SortHistory As List(Of SortEntity)
+    Public Property XDFMiniDisk As Boolean
+    Public Property XDFOffset As UInteger
+    Public Property XDFLength As UInteger
+
     Public Shared Property StringOffset As Integer = 0
 
     Public Property Filter(FilterType As FilterTypes) As Boolean

@@ -17,12 +17,12 @@
         Sub New(Data() As Byte, FatIndex As UShort, Optional Modifications As Stack(Of DataChange()) = Nothing)
             FileBytes = New ImageByteArray(Data)
             _DirectoryCache = New Dictionary(Of UInteger, DirectoryCacheEntry)
-            _BootSector = New BootSector(FileBytes)
+            _BootSector = New BootSector(FileBytes, BootSector.BOOT_SECTOR_OFFSET)
             SetBPB()
 
             _FATTables = New FATTables(_BPB, FileBytes, FatIndex)
             _DiskType = InferFloppyDiskType()
-            _FATTables.SyncFATs = _DiskType <> FloppyDiskType.FloppyXDF
+            _FATTables.SyncFATs = Not IsDiskTypeXDF(_DiskType)
 
             _Directory = New RootDirectory(FileBytes, _BPB, _FATTables, _DirectoryCache, False)
 
@@ -166,6 +166,10 @@
             Return VolumeLabel
         End Function
 
+        Public Function GetXDFChecksum() As UInteger
+            Return FileBytes.GetBytesInteger(&H13C)
+        End Function
+
         Public Function IsValidImage(Optional CheckBPB As Boolean = True) As Boolean
             Return _FileBytes.Length >= 512 And (Not CheckBPB OrElse _BPB.IsValid)
         End Function
@@ -175,7 +179,7 @@
 
             _FATTables.Reinitialize(_BPB)
             _DiskType = InferFloppyDiskType()
-            _FATTables.SyncFATs = _DiskType <> FloppyDiskType.FloppyXDF
+            _FATTables.SyncFATs = Not IsDiskTypeXDF(_DiskType)
             _Directory.RefreshData(_BPB)
         End Sub
 

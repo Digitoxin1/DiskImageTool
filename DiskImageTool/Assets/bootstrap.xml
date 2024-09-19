@@ -558,10 +558,10 @@
     <oemname name="IBM 20.0"/>
   </bootstrap>
   <bootstrap crc32="522F8265" jmp="EB4F90">
-    <oemname name="IBM 20.0" description="XDF v1.1a"/>
+    <oemname name="IBM 20.0" description="XDF v1.1a" verified="true"/>
   </bootstrap>
   <bootstrap crc32="A50B246F" jmp="EB4F90">
-    <oemname name="IBM 20.0" description="XDF v1.1a"/>
+    <oemname name="IBM 20.0" description="XDF v1.1a" verified="true"/>
   </bootstrap>
   <bootstrap crc32="A37E972B" jmp="EB4490">
     <oemname name="IBM 20.0" company="IBM" description="OS/2 2.0"/>
