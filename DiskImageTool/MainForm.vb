@@ -742,7 +742,7 @@ Public Class MainForm
                             Body = Replace(Body, Chr(13) & Chr(10), Chr(10))
                             BodyArray = Body.Split(Chr(10))
                             Changelog.AppendLine(VersionLine)
-                                For Counter = 0 To BodyArray.Length - 1
+                            For Counter = 0 To BodyArray.Length - 1
                                 Dim ChangeLine = BodyArray(Counter).Trim
                                 If ChangeLine.Length > 0 Then
                                     If ChangeLine.Substring(0, 1) <> "-" Then
@@ -3766,6 +3766,8 @@ Public Class MainForm
     End Sub
 
     Private Sub ReloadCurrentImage(DoItemScan As Boolean)
+        Cursor.Current = Cursors.WaitCursor
+
         If _CurrentImageData IsNot Nothing Then
             _CurrentImageData.BottomIndex = ListViewFiles.GetBottomIndex
             _CurrentImageData.SortHistory = _lvwColumnSorter.SortHistory
@@ -3778,6 +3780,8 @@ Public Class MainForm
         End If
         ClearSort(False)
         DiskImageProcess(DoItemScan, True)
+
+        Cursor.Current = Cursors.Default
     End Sub
 
     Private Sub RemoveDeletedFile(Item As ListViewItem)
@@ -4313,7 +4317,7 @@ Public Class MainForm
     End Sub
 
     Private Sub BtnHelpChangeLog_Click(sender As Object, e As EventArgs) Handles BtnHelpChangeLog.Click
-        DisplayChangeLog
+        DisplayChangeLog()
     End Sub
 
     Private Sub BtnHelpProjectPage_Click(sender As Object, e As EventArgs) Handles BtnHelpProjectPage.Click

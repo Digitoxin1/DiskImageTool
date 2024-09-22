@@ -157,7 +157,8 @@ Public Class TransCopyImage
 
                     If Cylinder.IsMFMTrackType Then
                         If Cylinder.Side < _Sides Then
-                            Cylinder.DecodedData = MFMDecode(Cylinder.Data, Cylinder.Track, Cylinder.Side)
+                            Cylinder.DecodedData = New MFMTrack(Cylinder.Data)
+                            'MFMTrackDebug(Cylinder.DecodedData, Track.ToString.PadLeft(2, "0") & "." & Side)
                             Cylinder.Decoded = True
                         End If
                     End If
@@ -247,7 +248,7 @@ Public Class TransCopyImage
 
                         If Cylinder.IsMFMTrackType Then
                             If Cylinder.Side < _Sides Then
-                                Cylinder.DecodedData = MFMDecode(Cylinder.Data, Cylinder.Track, Cylinder.Side)
+                                Cylinder.DecodedData = New MFMTrack(Cylinder.Data)
                                 Cylinder.Decoded = True
                             End If
                         End If

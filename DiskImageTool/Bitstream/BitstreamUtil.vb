@@ -3,18 +3,55 @@
     Private Const crcIV As UShort = &HFFFF
 
     Public Function BytesToBits(bytes() As Byte) As BitArray
-        Dim BitStream As New BitArray(bytes.Length * 8)
+        Dim buffer(bytes.Length - 1) As Byte
 
-        Dim i As Integer = 0
-        For Each b As Byte In bytes
-            For j As Integer = 7 To 0 Step -1
-                Dim value As Boolean = (b And (1 << j)) <> 0
-                BitStream.Set(i, value)
-                i += 1
-            Next j
+        For i As Integer = 0 To bytes.Length - 1
+            buffer(i) = ReverseBits(bytes(i))
         Next
 
-        Return BitStream
+        Return New BitArray(buffer)
+    End Function
+
+    'Public Function BytesToBits(bytes() As Byte) As BitArray
+    '    Dim BitStream As New BitArray(bytes.Length * 8)
+
+    '    Dim i As Integer = 0
+    '    For Each b As Byte In bytes
+    '        For j As Integer = 7 To 0 Step -1
+    '            Dim value As Boolean = (b And (1 << j)) <> 0
+    '            BitStream.Set(i, value)
+    '            i += 1
+    '        Next j
+    '    Next
+
+    '    Return BitStream
+    'End Function
+
+    Private Function CheckDoubleSizeSectors(Sectors As List(Of MFMSector)) As Boolean
+        Dim Result As Boolean = True
+        Dim SectorCount As UShort
+
+        SectorCount = 0
+        For Each MFMSector In Sectors
+            If MFMSector.Data IsNot Nothing Then
+                If MFMSector.SectorId >= 1 And MFMSector.SectorId <= 8 Then
+                    If MFMSector.SectorId > 4 Then
+                        Result = False
+                        Exit For
+                    ElseIf MFMSector.Size <> 1024 Then
+                        Result = False
+                        Exit For
+                    Else
+                        SectorCount += 1
+                    End If
+                End If
+            End If
+        Next
+        If SectorCount <> 4 Then
+            Result = False
+        End If
+
+        Return Result
     End Function
 
     Public Function Crc16(data As Byte()) As UShort
@@ -34,10 +71,22 @@
         Return crc
     End Function
 
+    Public Function Crc16BigEndian(data As Byte()) As UShort
+        Return ToBigEndianUInt16(Crc16(data))
+    End Function
+
     Private Function GetImageOffset(ImageParams As DiskImage.FloppyDiskParams, Track As UShort, Side As Byte, Sector As UShort) As UInteger
         Dim Offset = Track * ImageParams.NumberOfHeads * ImageParams.SectorsPerTrack + ImageParams.SectorsPerTrack * Side + Sector
 
         Return Offset * 512
+    End Function
+
+    Public Function ReverseBits(b As Byte) As Byte
+        b = ((b >> 1) And &H55) Or ((b << 1) And &HAA) ' Swap odd and even bits
+        b = ((b >> 2) And &H33) Or ((b << 2) And &HCC) ' Swap consecutive pairs
+        b = ((b >> 4) And &HF) Or ((b << 4) And &HF0)  ' Swap nibbles
+
+        Return b
     End Function
 
     Public Function ToBigEndianUInt16(value() As Byte) As UInt16
@@ -103,33 +152,6 @@
         Return DiskType
     End Function
 
-    Private Function CheckDoubleSizeSectors(Sectors As List(Of MFMSector)) As Boolean
-        Dim Result As Boolean = True
-        Dim SectorCount As UShort
-
-        SectorCount = 0
-        For Each MFMSector In Sectors
-            If MFMSector.Data IsNot Nothing Then
-                If MFMSector.SectorId >= 1 And MFMSector.SectorId <= 8 Then
-                    If MFMSector.SectorId > 4 Then
-                        Result = False
-                        Exit For
-                    ElseIf MFMSector.Size <> 1024 Then
-                        Result = False
-                        Exit For
-                    Else
-                        SectorCount += 1
-                    End If
-                End If
-            End If
-        Next
-        If SectorCount <> 4 Then
-            Result = False
-        End If
-
-        Return Result
-    End Function
-
     Public Function TranscopyToSectorImage(tc As TransCopyImage, DiskType As DiskImage.FloppyDiskType) As Byte()
         Dim ImageSize = DiskImage.GetFloppyDiskSize(DiskType)
         Dim ImageParams = DiskImage.GetFloppyDiskParams(DiskType)
@@ -163,5 +185,70 @@
 
         Return SectorImage
     End Function
+
+    Private Function HexFormat(Data() As Byte) As String
+        Dim HexString = BitConverter.ToString(Data).Replace("-", " ")
+        Dim TempString = ""
+        Do While Len(HexString) > 47
+            If TempString.Length > 0 Then
+                TempString &= vbCrLf
+            End If
+            TempString &= Left(HexString, 47)
+            HexString = Right(HexString, Len(HexString) - 48)
+        Loop
+        If Len(HexString) > 0 Then
+            If TempString.Length > 0 Then
+                TempString &= vbCrLf
+            End If
+            TempString &= HexString
+        End If
+
+        Return TempString
+    End Function
+
+    Public Sub MFMTrackDebug(MFMTrack As MFMTrack, TrackName As String)
+        Dim file = My.Computer.FileSystem.OpenTextFileWriter("H:\debug.log", True)
+        file.Write("Trk: " & TrackName)
+        file.Write(", Gap 4A: " & MFMTrack.Gap4A.Length)
+        If MFMTrack.Gap4A.Length > 0 Then
+            file.Write(", IAM Mark: " & MFMTrack.IAMMark.ToString("X2") & If(MFMTrack.IAMMark <> MFMTrack.MFMAddressMarks.Index, " (Unexpected)", ""))
+        End If
+        file.WriteLine(", Gap 1: " & MFMTrack.Gap1.Length)
+        If MFMTrack.Gap4A.Length > 0 Then
+            file.WriteLine("Gap 4A:")
+            file.WriteLine(HexFormat(MFMTrack.Gap4A))
+            file.WriteLine("")
+        End If
+        If MFMTrack.Gap1.Length > 0 Then
+            file.WriteLine("Gap 1:")
+            file.WriteLine(HexFormat(MFMTrack.Gap1))
+            file.WriteLine("")
+        End If
+
+        For Each Sector In MFMTrack.Sectors
+            Dim ChecksumValid = Sector.Checksum = Sector.CalculatedChecksum
+            Dim DataChecksumValid = Sector.DataChecksum = Sector.CalculatedDataChecksum
+
+            file.Write("Trk: " & Sector.Track & "." & Sector.Side)
+            file.Write(", Id: " & Sector.SectorId)
+            file.Write(", Size: " & Sector.Size)
+            file.Write(", Checksum: " & Sector.Checksum.ToString("X4") & If(ChecksumValid, "", "#"))
+            file.Write(", Data Checksum: " & Sector.DataChecksum.ToString("X4") & If(DataChecksumValid, "", "#"))
+            file.Write(", Gap2: " & Sector.Gap2.Length)
+            file.Write(", Gap3: " & Sector.Gap3.Length)
+            file.WriteLine(", Overlaps: " & Sector.Overlaps)
+            If Sector.Gap2.Length > 0 Then
+                file.WriteLine("Gap 2:")
+                file.WriteLine(HexFormat(Sector.Gap2))
+                file.WriteLine("")
+            End If
+            If Sector.Gap3.Length > 0 Then
+                file.WriteLine("Gap 3:")
+                file.WriteLine(HexFormat(Sector.Gap3))
+                file.WriteLine("")
+            End If
+        Next
+        file.Close()
+    End Sub
 
 End Module
