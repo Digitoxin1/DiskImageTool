@@ -50,8 +50,9 @@ Public Class MainForm
     Public Const UPDATE_URL = "https://api.github.com/repos/Digitoxin1/DiskImageTool/releases/latest"
     Public Const CHANGELOG_URL = "https://api.github.com/repos/Digitoxin1/DiskImageTool/releases"
     Private ReadOnly _ArchiveFilterExt As New List(Of String) From {".zip"}
+    Private ReadOnly _BitstreamFileExt As New List(Of String) From {".tc"}
     Private ReadOnly _lvwColumnSorter As ListViewColumnSorter
-    Private ReadOnly _ValidFileExt As New List(Of String) From {".ima", ".img", ".imz", ".vfd", ".flp"}
+    Private ReadOnly _ValidFileExt As New List(Of String) From {".ima", ".img", ".imz", ".vfd", ".flp", ".tc"}
     Private _BootStrapDB As BoootstrapDB
     Private _TitleDB As FloppyDB
     Private _CheckAll As Boolean = False
@@ -1228,7 +1229,7 @@ Public Class MainForm
             Success = Disk IsNot Nothing
             If Success Then
                 If NewFilePath = "" Then
-                    NewFilePath = ImageData.SaveFile
+                    NewFilePath = ImageData.GetSaveFile
                 End If
                 Success = SaveDiskImageToFile(Disk, NewFilePath)
             End If
@@ -1350,6 +1351,16 @@ Public Class MainForm
         End If
 
         e.DrawFocusRectangle()
+    End Sub
+
+    Private Sub EmptyTempPath()
+        Dim TempPath = Path.Combine(Path.GetTempPath(), "DiskImageTool")
+        For Each File In Directory.EnumerateFiles(TempPath)
+            Try
+                IO.File.Delete(File)
+            Catch ex As Exception
+            End Try
+        Next
     End Sub
 
     Private Sub ExportDebugScript()
@@ -1494,6 +1505,8 @@ Public Class MainForm
     Private Sub FileClose(ImageData As LoadedImageData)
         ItemScan(ItemScanTypes.All, _Disk, ImageData, True, True)
         _LoadedFileNames.Remove(ImageData.DisplayPath)
+
+        ImageData.ClearTempPath()
 
         Dim ActiveComboBox As ComboBox = IIf(ImageFilters.FiltersApplied, ComboImagesFiltered, ComboImages)
 
@@ -2180,6 +2193,9 @@ Public Class MainForm
         ExtensionList = New List(Of String) From {".vfd", ".flp"}
         FileFilter = FileDialogAppendFilter(FileFilter, "Virtual Floppy Disk", ExtensionList)
 
+        ExtensionList = New List(Of String) From {".tc"}
+        FileFilter = FileDialogAppendFilter(FileFilter, "Transcopy Image", ExtensionList)
+
         FileFilter = FileDialogAppendFilter(FileFilter, "Zip Archive", ".zip")
         FileFilter = FileDialogAppendFilter(FileFilter, "All files", ".*")
 
@@ -2201,7 +2217,7 @@ Public Class MainForm
     Private Function GetNewFilePath(ImageData As LoadedImageData) As String
         Dim Disk As DiskImage.Disk
         Dim CurrentImageData As LoadedImageData = ComboImages.SelectedItem
-        Dim FilePath = ImageData.SaveFile
+        Dim FilePath = ImageData.GetSaveFile
         Dim NewFilePath As String = ""
         Dim DiskType As FloppyDiskType = FloppyDiskType.FloppyUnknown
 
@@ -3363,7 +3379,7 @@ Public Class MainForm
 
         LoadedImageData.StringOffset = 0
 
-        Dim ImageLoadForm As New ImageLoadForm(Me, Files, _LoadedFileNames, _ValidFileExt, _ArchiveFilterExt)
+        Dim ImageLoadForm As New ImageLoadForm(Me, Files, _LoadedFileNames, _ValidFileExt, _ArchiveFilterExt, _BitstreamFileExt)
         ImageLoadForm.ShowDialog(Me)
 
         LoadedImageData.StringOffset = GetPathOffset()
@@ -3488,12 +3504,14 @@ Public Class MainForm
             ToolStripStatusModified.Visible = Disk.Data.Modified
             ToolStripStatusReadOnly.Visible = ImageData.ReadOnly
             ToolStripStatusReadOnly.Text = IIf(ImageData.Compressed, "Compressed", "Read Only")
+            ToolStripStatusCached.Visible = ImageData.TempPath <> ""
         Else
             BtnRevert.Enabled = False
             BtnUndo.Enabled = False
             BtnRedo.Enabled = False
             ToolStripStatusModified.Visible = False
             ToolStripStatusReadOnly.Visible = False
+            ToolStripStatusCached.Visible = False
         End If
 
         ToolStripBtnUndo.Enabled = BtnUndo.Enabled
@@ -3724,10 +3742,12 @@ Public Class MainForm
             BtnSave.Enabled = False
             BtnSaveAs.Enabled = False
             BtnExportDebug.Enabled = False
+            BtnReload.Enabled = False
         Else
             Dim Modified = CurrentImageData.Filter(FilterTypes.ModifiedFiles)
             BtnSave.Enabled = Modified And Not CurrentImageData.ReadOnly
-            BtnSaveAs.Enabled = Modified
+            BtnSaveAs.Enabled = True
+            BtnReload.Enabled = True
             'BtnExportDebug.Enabled = (CurrentImageData.Modified Or CurrentImageData.SessionModifications.Count > 0)
             BtnExportDebug.Enabled = False
         End If
@@ -3790,6 +3810,7 @@ Public Class MainForm
     End Sub
 
     Private Sub ResetAll()
+        EmptyTempPath()
         _Disk = Nothing
         Me.Text = GetWindowCaption()
         ImageFilters.FiltersApplied = False
@@ -3930,6 +3951,7 @@ Public Class MainForm
             CurrentImageData.Compressed = False
             CurrentImageData.CompressedFile = ""
             CurrentImageData.ReadOnly = IsFileReadOnly(NewFilePath)
+            CurrentImageData.ClearTempPath()
 
             If _LoadedFileNames.ContainsKey(CurrentImageData.DisplayPath) Then
                 FileClose(_LoadedFileNames.Item(CurrentImageData.DisplayPath))
@@ -4318,6 +4340,13 @@ Public Class MainForm
         ContextMenuEdit.Close()
         _Disk.Data.Redo()
         DiskImageRefresh()
+    End Sub
+
+    Private Sub BtnReload_Click(sender As Object, e As EventArgs) Handles BtnReload.Click
+        If _CurrentImageData IsNot Nothing Then
+            _CurrentImageData.ClearTempPath()
+        End If
+        ReloadCurrentImage(False)
     End Sub
 
     Private Sub BtnRemoveBootSector_Click(sender As Object, e As EventArgs) Handles BtnRemoveBootSector.Click
@@ -4714,6 +4743,10 @@ Public Class MainForm
         Else
             e.DrawDefault = True
         End If
+    End Sub
+
+    Private Sub MainForm_Closed(sender As Object, e As EventArgs) Handles Me.Closed
+        EmptyTempPath()
     End Sub
 
 #End Region

@@ -128,6 +128,9 @@
     <Import Include="System.Threading.Tasks" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Bitstream\BitstreamUtil.vb" />
+    <Compile Include="Bitstream\MFM.vb" />
+    <Compile Include="Bitstream\TransCopyImage.vb" />
     <Compile Include="ComboFilter.vb" />
     <Compile Include="Controls\ToolStripCheckBox.vb">
       <SubType>Component</SubType>

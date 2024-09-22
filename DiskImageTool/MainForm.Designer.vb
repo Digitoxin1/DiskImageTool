@@ -170,6 +170,8 @@ Partial Class MainForm
         Me.ComboImagesFiltered = New System.Windows.Forms.ComboBox()
         Me.BtnResetSort = New System.Windows.Forms.Button()
         Me.btnRetry = New System.Windows.Forms.Button()
+        Me.ToolStripStatusCached = New System.Windows.Forms.ToolStripStatusLabel()
+        Me.BtnReload = New System.Windows.Forms.ToolStripMenuItem()
         SummaryName = CType(New System.Windows.Forms.ColumnHeader(), System.Windows.Forms.ColumnHeader)
         SummaryValue = CType(New System.Windows.Forms.ColumnHeader(), System.Windows.Forms.ColumnHeader)
         HashName = CType(New System.Windows.Forms.ColumnHeader(), System.Windows.Forms.ColumnHeader)
@@ -257,7 +259,7 @@ Partial Class MainForm
         '
         'MainMenuFile
         '
-        MainMenuFile.DropDownItems.AddRange(New System.Windows.Forms.ToolStripItem() {Me.BtnOpen, Me.toolStripSeparator, Me.BtnSave, Me.BtnSaveAs, Me.BtnSaveAll, Me.ToolStripSeparator3, Me.BtnClose, Me.BtnCloseAll, Me.toolStripSeparator1, Me.BtnExit})
+        MainMenuFile.DropDownItems.AddRange(New System.Windows.Forms.ToolStripItem() {Me.BtnOpen, Me.BtnReload, Me.toolStripSeparator, Me.BtnSave, Me.BtnSaveAs, Me.BtnSaveAll, Me.ToolStripSeparator3, Me.BtnClose, Me.BtnCloseAll, Me.toolStripSeparator1, Me.BtnExit})
         MainMenuFile.Name = "MainMenuFile"
         MainMenuFile.ShortcutKeyDisplayString = ""
         MainMenuFile.Size = New System.Drawing.Size(37, 20)
@@ -863,7 +865,7 @@ Partial Class MainForm
         '
         'StatusStrip1
         '
-        Me.StatusStrip1.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.ToolStripStatusReadOnly, Me.ToolStripStatusModified, Me.ToolStripFileName, Me.ToolStripFileCount, Me.ToolStripFileSector, Me.ToolStripFileTrack, Me.ToolStripImageCount, Me.ToolStripModified})
+        Me.StatusStrip1.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.ToolStripStatusReadOnly, Me.ToolStripStatusCached, Me.ToolStripStatusModified, Me.ToolStripFileName, Me.ToolStripFileCount, Me.ToolStripFileSector, Me.ToolStripFileTrack, Me.ToolStripImageCount, Me.ToolStripModified})
         Me.StatusStrip1.Location = New System.Drawing.Point(0, 552)
         Me.StatusStrip1.Name = "StatusStrip1"
         Me.StatusStrip1.ShowItemToolTips = True
@@ -892,7 +894,7 @@ Partial Class MainForm
         Me.ToolStripFileName.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text
         Me.ToolStripFileName.Margin = New System.Windows.Forms.Padding(2, 3, 2, 2)
         Me.ToolStripFileName.Name = "ToolStripFileName"
-        Me.ToolStripFileName.Size = New System.Drawing.Size(530, 19)
+        Me.ToolStripFileName.Size = New System.Drawing.Size(483, 19)
         Me.ToolStripFileName.Spring = True
         Me.ToolStripFileName.Text = "File Name"
         Me.ToolStripFileName.TextAlign = System.Drawing.ContentAlignment.MiddleLeft
@@ -1253,6 +1255,21 @@ Partial Class MainForm
         Me.btnRetry.Text = "Retry"
         Me.btnRetry.UseVisualStyleBackColor = True
         '
+        'ToolStripStatusCached
+        '
+        Me.ToolStripStatusCached.ActiveLinkColor = System.Drawing.Color.Red
+        Me.ToolStripStatusCached.ForeColor = System.Drawing.Color.Green
+        Me.ToolStripStatusCached.Name = "ToolStripStatusCached"
+        Me.ToolStripStatusCached.Size = New System.Drawing.Size(47, 19)
+        Me.ToolStripStatusCached.Text = "Cached"
+        '
+        'BtnReload
+        '
+        Me.BtnReload.Name = "BtnReload"
+        Me.BtnReload.ShortcutKeys = CType((System.Windows.Forms.Keys.Control Or System.Windows.Forms.Keys.R), System.Windows.Forms.Keys)
+        Me.BtnReload.Size = New System.Drawing.Size(212, 22)
+        Me.BtnReload.Text = "&Reload from Disk"
+        '
         'MainForm
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
@@ -1411,4 +1428,6 @@ Partial Class MainForm
     Friend WithEvents BtnRestructureImage As ToolStripMenuItem
     Friend WithEvents BtnDisplayOverdumpData As ToolStripMenuItem
     Friend WithEvents BtnHelpChangeLog As ToolStripMenuItem
+    Friend WithEvents ToolStripStatusCached As ToolStripStatusLabel
+    Friend WithEvents BtnReload As ToolStripMenuItem
 End Class

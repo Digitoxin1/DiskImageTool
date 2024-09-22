@@ -171,10 +171,61 @@ Namespace DiskImage
             Return DTTime
         End Function
 
+        Private Function TranscopyImageLoad(Data() As Byte) As Byte()
+            Dim ImageData() As Byte = Nothing
+
+            Dim tc = New TransCopyImage()
+            Dim Result = tc.Load(Data)
+            If Result Then
+                Dim DiskType = TranscopyGetImageType(tc)
+                If DiskType <> FloppyDiskType.FloppyUnknown Then
+                    ImageData = TranscopyToSectorImage(tc, DiskType)
+                End If
+            End If
+
+            Return ImageData
+        End Function
+
+        Private Function ImageLoadFromTemp(FilePath As String) As Byte()
+            Dim Data() As Byte = Nothing
+
+            If File.Exists(FilePath) Then
+                Try
+                    Data = IO.File.ReadAllBytes(FilePath)
+                Catch ex As Exception
+                    Data = Nothing
+                End Try
+            End If
+
+            Return Data
+        End Function
+
+        Private Function ImageSaveToTemp(Data() As Byte, DisplayPath As String) As String
+            Dim TempPath = Path.Combine(Path.GetTempPath(), "DiskImageTool")
+            Dim TempFileName = HashFunctions.SHA1Hash(System.Text.Encoding.Unicode.GetBytes(DisplayPath)) & ".tmp"
+
+            Try
+                If Not Directory.Exists(TempPath) Then
+                    Directory.CreateDirectory(TempPath)
+                End If
+                TempPath = Path.Combine(TempPath, TempFileName)
+
+                IO.File.WriteAllBytes(TempPath, Data)
+            Catch ex As Exception
+                TempPath = ""
+            End Try
+
+            Return TempPath
+        End Function
+
         Public Function DiskImageLoad(ImageData As LoadedImageData) As DiskImage.Disk
             Dim Data() As Byte = Nothing
 
-            If File.Exists(ImageData.SourceFile) Then
+            If ImageData.TempPath <> "" Then
+                Data = ImageLoadFromTemp(ImageData.TempPath)
+            End If
+
+            If Data Is Nothing AndAlso File.Exists(ImageData.SourceFile) Then
                 Try
                     If ImageData.Compressed Then
                         ImageData.ReadOnly = True
@@ -182,6 +233,11 @@ Namespace DiskImage
                     Else
                         ImageData.ReadOnly = IsFileReadOnly(ImageData.SourceFile)
                         Data = IO.File.ReadAllBytes(ImageData.SourceFile)
+                    End If
+                    If ImageData.ImageType = LoadedImageData.LoadedImageType.TranscopyImage Then
+                        ImageData.ReadOnly = True
+                        Data = TranscopyImageLoad(Data)
+                        ImageData.TempPath = ImageSaveToTemp(Data, ImageData.DisplayPath)
                     End If
                     If ImageData.XDFMiniDisk Then
                         ImageData.ReadOnly = True

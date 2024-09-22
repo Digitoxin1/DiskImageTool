@@ -3,6 +3,11 @@
 Public Class LoadedImageData
     Private ReadOnly _Filters() As Boolean
 
+    Public Enum LoadedImageType
+        SectorImage
+        TranscopyImage
+    End Enum
+
     Public Sub New(SourceFile As String)
         _AppliedFilters = 0
         _BatchUpdated = False
@@ -17,6 +22,7 @@ Public Class LoadedImageData
         _ReadOnly = False
         _Scanned = False
         _SortHistory = Nothing
+        _TempPath = ""
         _XDFMiniDisk = False
         _XDFOffset = 0
         _XDFLength = 0
@@ -42,6 +48,7 @@ Public Class LoadedImageData
     Public Property Scanned As Boolean
     Public Property SourceFile As String
     Public Property SortHistory As List(Of SortEntity)
+    Public Property TempPath As String
     Public Property XDFMiniDisk As Boolean
     Public Property XDFOffset As UInteger
     Public Property XDFLength As UInteger
@@ -73,12 +80,40 @@ Public Class LoadedImageData
         End If
     End Function
 
-    Public Function SaveFile() As String
-        If _Compressed Then
-            Return Path.Combine(Path.GetDirectoryName(_SourceFile), _CompressedFile)
-        Else
-            Return _SourceFile
+    Public Sub ClearTempPath()
+        If _TempPath <> "" Then
+            Try
+                File.Delete(_TempPath)
+            Catch ex As Exception
+            End Try
+            _TempPath = ""
         End If
+    End Sub
+
+    Public Function ImageType() As LoadedImageType
+        Dim FileExt = Path.GetExtension(FileName).ToLower
+
+        If FileExt = ".tc" Then
+            Return LoadedImageType.TranscopyImage
+        Else
+            Return LoadedImageType.SectorImage
+        End If
+    End Function
+
+    Public Function GetSaveFile() As String
+        Dim FilePath As String
+
+        If _Compressed Then
+            FilePath = Path.Combine(Path.GetDirectoryName(_SourceFile), _CompressedFile)
+        Else
+            FilePath = _SourceFile
+        End If
+
+        If ImageType() = LoadedImageType.TranscopyImage Then
+            FilePath = Path.GetFileNameWithoutExtension(FilePath) & ".ima"
+        End If
+
+        Return FilePath
     End Function
     Public Overrides Function ToString() As String
         Return Right(DisplayPath, Len(DisplayPath) - _StringOffset).Replace("\", "  >  ") '& IIf(_Modified, " *", "")
