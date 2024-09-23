@@ -6,6 +6,7 @@ Public Class LoadedImageData
     Public Enum LoadedImageType
         SectorImage
         TranscopyImage
+        PSIImage
     End Enum
 
     Public Sub New(SourceFile As String)
@@ -23,6 +24,7 @@ Public Class LoadedImageData
         _Scanned = False
         _SortHistory = Nothing
         _TempPath = ""
+        _InvalidImage = False
         _XDFMiniDisk = False
         _XDFOffset = 0
         _XDFLength = 0
@@ -49,6 +51,7 @@ Public Class LoadedImageData
     Public Property SourceFile As String
     Public Property SortHistory As List(Of SortEntity)
     Public Property TempPath As String
+    Public Property InvalidImage As Boolean = False
     Public Property XDFMiniDisk As Boolean
     Public Property XDFOffset As UInteger
     Public Property XDFLength As UInteger
@@ -85,6 +88,7 @@ Public Class LoadedImageData
             Try
                 File.Delete(_TempPath)
             Catch ex As Exception
+                Debug.Print("Caught Exception: LoadedImageData.ClearTempPath")
             End Try
             _TempPath = ""
         End If
@@ -95,6 +99,8 @@ Public Class LoadedImageData
 
         If FileExt = ".tc" Then
             Return LoadedImageType.TranscopyImage
+        ElseIf FileExt = ".psi" Then
+            Return LoadedImageType.PSIImage
         Else
             Return LoadedImageType.SectorImage
         End If
@@ -110,6 +116,8 @@ Public Class LoadedImageData
         End If
 
         If ImageType() = LoadedImageType.TranscopyImage Then
+            FilePath = Path.GetFileNameWithoutExtension(FilePath) & ".ima"
+        ElseIf ImageType() = LoadedImageType.PSIImage Then
             FilePath = Path.GetFileNameWithoutExtension(FilePath) & ".ima"
         End If
 

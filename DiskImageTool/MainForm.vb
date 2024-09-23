@@ -50,9 +50,9 @@ Public Class MainForm
     Public Const UPDATE_URL = "https://api.github.com/repos/Digitoxin1/DiskImageTool/releases/latest"
     Public Const CHANGELOG_URL = "https://api.github.com/repos/Digitoxin1/DiskImageTool/releases"
     Private ReadOnly _ArchiveFilterExt As New List(Of String) From {".zip"}
-    Private ReadOnly _BitstreamFileExt As New List(Of String) From {".tc"}
+    Private ReadOnly _BitstreamFileExt As New List(Of String) From {".tc", ".psi"}
     Private ReadOnly _lvwColumnSorter As ListViewColumnSorter
-    Private ReadOnly _ValidFileExt As New List(Of String) From {".ima", ".img", ".imz", ".vfd", ".flp", ".tc"}
+    Private ReadOnly _ValidFileExt As New List(Of String) From {".ima", ".img", ".imz", ".vfd", ".flp", ".tc", ".psi"}
     Private _BootStrapDB As BoootstrapDB
     Private _TitleDB As FloppyDB
     Private _CheckAll As Boolean = False
@@ -428,6 +428,7 @@ Public Class MainForm
                 IO.File.SetLastWriteTime(FilePath, D.DateObject)
             End If
         Catch ex As Exception
+            Debug.Print("Caught Exception: MainForm.FileSave")
             Return False
         End Try
 
@@ -659,6 +660,7 @@ Public Class MainForm
             End If
             Disk.SaveFile(FilePath)
         Catch ex As Exception
+            Debug.Print("Caught Exception: MainForm.SaveDiskImageToFile")
             Return False
         End Try
 
@@ -758,6 +760,7 @@ Public Class MainForm
 
             Catch ex As Exception
                 MsgBox("An error occured while downloading the change log.  Please try again later.", MsgBoxStyle.Exclamation)
+                Debug.Print("Caught Exception: MainForm.DisplayChangeLog")
                 Exit Sub
             End Try
 
@@ -808,6 +811,7 @@ Public Class MainForm
             End If
         Catch ex As Exception
             MsgBox("An error occured while checking for updates.  Please try again later.", MsgBoxStyle.Exclamation)
+            Debug.Print("Caught Exception: MainForm.CheckForUpdates")
             Exit Sub
         End Try
 
@@ -839,6 +843,7 @@ Public Class MainForm
                         Client.DownloadFile(DownloadURL, Dialog.FileName)
                     Catch ex As Exception
                         MsgBox("An error occured while downloading the file.", MsgBoxStyle.Exclamation)
+                        Debug.Print("Caught Exception: MainForm.CheckForUpdates")
                     End Try
                     Cursor.Current = Cursors.Default
                 End If
@@ -1359,6 +1364,7 @@ Public Class MainForm
             Try
                 IO.File.Delete(File)
             Catch ex As Exception
+                Debug.Print("Caught Exception: MainForm.EmptyTempPath")
             End Try
         Next
     End Sub
@@ -2196,6 +2202,9 @@ Public Class MainForm
         ExtensionList = New List(Of String) From {".tc"}
         FileFilter = FileDialogAppendFilter(FileFilter, "Transcopy Image", ExtensionList)
 
+        ExtensionList = New List(Of String) From {".psi"}
+        FileFilter = FileDialogAppendFilter(FileFilter, "PCE sector image", ExtensionList)
+
         FileFilter = FileDialogAppendFilter(FileFilter, "Zip Archive", ".zip")
         FileFilter = FileDialogAppendFilter(FileFilter, "All files", ".*")
 
@@ -2442,6 +2451,7 @@ Public Class MainForm
             BtnWriteFloppyA.Enabled = _DriveAEnabled
             BtnWriteFloppyB.Enabled = _DriveBEnabled
             BtnAddFile.Enabled = Disk.IsValidImage
+            BtnSaveAs.Enabled = True
         Else
             BtnDisplayBootSector.Enabled = False
             BtnDisplayDisk.Enabled = False
@@ -2454,10 +2464,12 @@ Public Class MainForm
             BtnWriteFloppyA.Enabled = False
             BtnWriteFloppyB.Enabled = False
             BtnAddFile.Enabled = False
+            BtnSaveAs.Enabled = False
         End If
         BtnWin9xClean.Enabled = False
         BtnClearReservedBytes.Enabled = False
         BtnAddFile.Tag = 0
+        ToolStripBtnSaveAs.Enabled = BtnSaveAs.Enabled
 
         MenuDisplayDirectorySubMenuClear()
         FATSubMenuRefresh(Disk, CurrentImageData, FATTablesMatch)
@@ -2772,7 +2784,7 @@ Public Class MainForm
         End If
 
         SetCurrentFileName(ImageData)
-        PopulateSummaryPanel(Disk, MD5)
+        PopulateSummaryPanel(Disk, MD5, ImageData.InvalidImage)
         PopulateHashPanel(Disk, MD5)
         RefreshDiskButtons(Disk, ImageData)
     End Sub
@@ -2850,7 +2862,7 @@ Public Class MainForm
             TitleGroup.Tag = TextWidth - ColumnWidth
         End With
     End Sub
-    Private Sub PopulateSummaryPanel(Disk As Disk, MD5 As String)
+    Private Sub PopulateSummaryPanel(Disk As Disk, MD5 As String, InvalidImage As Boolean)
         Dim Value As String
         Dim ForeColor As Color
 
@@ -3216,13 +3228,19 @@ Public Class MainForm
                 btnRetry.Visible = False
             Else
                 Dim DiskGroup = .Groups.Add("Disk", "Disk")
-                Dim Item = New ListViewItem("  Error Loading File", DiskGroup) With {
+                Dim Msg As String
+                If InvalidImage Then
+                    Msg = "Invalid Image Format"
+                Else
+                    Msg = "Error Loading File"
+                End If
+                Dim Item = New ListViewItem("  " & Msg, DiskGroup) With {
                     .ForeColor = Color.Red
                 }
                 .Items.Add(Item)
                 .HideSelection = True
                 .TabStop = False
-                btnRetry.Visible = True
+                btnRetry.Visible = Not InvalidImage
             End If
 
             .EndUpdate()
@@ -3740,19 +3758,16 @@ Public Class MainForm
 
         If CurrentImageData Is Nothing Then
             BtnSave.Enabled = False
-            BtnSaveAs.Enabled = False
             BtnExportDebug.Enabled = False
             BtnReload.Enabled = False
         Else
             Dim Modified = CurrentImageData.Filter(FilterTypes.ModifiedFiles)
             BtnSave.Enabled = Modified And Not CurrentImageData.ReadOnly
-            BtnSaveAs.Enabled = True
             BtnReload.Enabled = True
             'BtnExportDebug.Enabled = (CurrentImageData.Modified Or CurrentImageData.SessionModifications.Count > 0)
             BtnExportDebug.Enabled = False
         End If
         ToolStripBtnSave.Enabled = BtnSave.Enabled
-        ToolStripBtnSaveAs.Enabled = BtnSaveAs.Enabled
     End Sub
 
     Private Sub RefreshSubFilterEnabled(SubFilter As ComboBox)

@@ -34,16 +34,6 @@
     Public Property IAMMark As Byte
     Public Property Sectors As List(Of MFMSector)
 
-    Public Shared Function DecodeTrack(Bitstream As BitArray) As Byte()
-        Bitstream = BitstreamAlign(Bitstream)
-
-        Return MFMGetBytes(Bitstream, 0, Bitstream.Length \ MFM_BYTE_SIZE)
-    End Function
-
-    Public Shared Function DecodeTrack(Data() As Byte) As Byte()
-        Return DecodeTrack(BytesToBits(Data))
-    End Function
-
     Private Sub MFMDecode(Bitstream As BitArray)
         Dim IAMPattern = BytesToBits(IAM_Sync_Bytes)
         Dim Start As UInteger = 0
@@ -93,7 +83,8 @@
                 .Size = SectorGetSize(MFMGetByte(BitStream, SectorOffset + MFMIDFieldOffsets.Size)),
                 .Checksum = MFMGetChecksum(BitStream, SectorOffset + MFMIDFieldOffsets.Checksum),
                 .CalculatedChecksum = Crc16BigEndian(ChecksumData),
-                .Overlaps = False
+                .Overlaps = False,
+                .Offset = SectorOffset \ MFM_BYTE_SIZE
             }
 
             DataOffset = SectorOffset + MFMIDFieldOffsets.Data
@@ -137,7 +128,7 @@
         Next
     End Sub
 
-    Private Shared Function BitstreamAlign(Bitstream As BitArray) As BitArray
+    Public Shared Function BitstreamAlign(Bitstream As BitArray) As BitArray
         Dim MFMPattern = BytesToBits(MFM_Sync_Bytes)
         Dim NewBitstream = Bitstream
 
@@ -157,6 +148,16 @@
         End If
 
         Return NewBitstream
+    End Function
+
+    Public Shared Function DecodeTrack(Bitstream As BitArray) As Byte()
+        Bitstream = BitstreamAlign(Bitstream)
+
+        Return MFMGetBytes(Bitstream, 0, Bitstream.Length \ MFM_BYTE_SIZE)
+    End Function
+
+    Public Shared Function DecodeTrack(Data() As Byte) As Byte()
+        Return DecodeTrack(BytesToBits(Data))
     End Function
 
     Private Shared Function FindPattern(BitStream As BitArray, Pattern As BitArray, Optional Start As Integer = 0) As Integer
@@ -294,6 +295,7 @@ Public Class MFMSector
     Public Property DataChecksum As UShort
     Public Property CalculatedDataChecksum As UShort
     Public Property Overlaps As Boolean
+    Public Property Offset As UInteger
 End Class
 
 

@@ -89,27 +89,102 @@
         Return b
     End Function
 
-    Public Function ToBigEndianUInt16(value() As Byte) As UInt16
-        Return CType(value(0), UInt16) << 8 Or value(1)
+    Public Function ToBigEndianUInt16(value() As Byte, Optional StartIndex As Integer = 0) As UInt16
+        Return CType(value(StartIndex), UInt16) << 8 Or value(StartIndex + 1)
     End Function
 
     Public Function ToBigEndianUInt16(value As UInt16) As UInt16
         Return CUShort((value >> 8) Or (value << 8))
     End Function
 
-    Public Function TranscopyGetImageType(tc As TransCopyImage) As DiskImage.FloppyDiskType
+    Public Function ToBigEndianUInt32(value() As Byte, Optional StartIndex As Integer = 0) As UInt32
+        Return ToBigEndianUInt32(BitConverter.ToUInt32(value, StartIndex))
+    End Function
+
+    Public Function ToBigEndianUInt32(value As UInt32) As UInt32
+        ' Manually reorder the bytes to convert to Big Endian
+        Dim byte1 As UInt32 = (value And &HFF) << 24        ' Get the lowest byte and shift it to the highest byte position
+        Dim byte2 As UInt32 = (value And &HFF00) << 8       ' Get the second lowest byte and shift it
+        Dim byte3 As UInt32 = (value And &HFF0000) >> 8     ' Get the second highest byte and shift it
+        Dim byte4 As UInt32 = (value And &HFF000000UI) >> 24 ' Get the highest byte and shift it to the lowest byte position
+
+        ' Combine the bytes into the final Big Endian UInt32 value
+        Return byte1 Or byte2 Or byte3 Or byte4
+    End Function
+
+    Public Function PSIGetImageType(PSI As PSIImage.PSISectorImage) As DiskImage.FloppyDiskType
+        Dim DiskType As DiskImage.FloppyDiskType
+        Dim MaxSectors As Byte
+
+        If PSI.DefaultSectorFormat = PSIImage.DefaultSectorFormat.IBM_MFM_DD Then
+            MaxSectors = 9
+        ElseIf PSI.DefaultSectorFormat = PSIImage.DefaultSectorFormat.IBM_MFM_HD Then
+            MaxSectors = 18
+        ElseIf PSI.DefaultSectorFormat = PSIImage.DefaultSectorFormat.IBM_MFM_ED Then
+            MaxSectors = 36
+        End If
+
+        Dim SectorCount As Byte = 0
+        Dim CylinderCount As UShort = 0
+        Dim HeadCount As UShort = 0
+
+        For Each Sector In PSI.Sectors
+            If Sector.Sector >= 1 And Sector.Sector <= MaxSectors Then
+                If Sector.Sector > SectorCount Then
+                    SectorCount = Sector.Sector
+                End If
+            End If
+            If Sector.Cylinder + 1 > CylinderCount Then
+                CylinderCount = Sector.Cylinder + 1
+            End If
+            If Sector.Head + 1 > HeadCount Then
+                HeadCount = Sector.Head + 1
+            End If
+        Next
+
+        If PSI.DefaultSectorFormat = PSIImage.DefaultSectorFormat.IBM_MFM_DD Then
+            If CylinderCount >= 79 Then
+                DiskType = DiskImage.FloppyDiskType.Floppy720
+            Else
+                If HeadCount = 1 Then
+                    If SectorCount < 9 Then
+                        DiskType = DiskImage.FloppyDiskType.Floppy160
+                    Else
+                        DiskType = DiskImage.FloppyDiskType.Floppy180
+                    End If
+                Else
+                    If SectorCount < 9 Then
+                        DiskType = DiskImage.FloppyDiskType.Floppy320
+                    Else
+                        DiskType = DiskImage.FloppyDiskType.Floppy360
+                    End If
+                End If
+            End If
+        ElseIf PSI.DefaultSectorFormat = PSIImage.DefaultSectorFormat.IBM_MFM_HD Then
+            If SectorCount > 15 Then
+                DiskType = DiskImage.FloppyDiskType.Floppy1440
+            Else
+                DiskType = DiskImage.FloppyDiskType.Floppy1200
+            End If
+        Else
+            DiskType = DiskImage.FloppyDiskType.Floppy2880
+
+        End If
+
+        Return DiskType
+    End Function
+
+    Public Function TranscopyGetImageType(tc As Transcopy.TransCopyImage) As DiskImage.FloppyDiskType
         Dim DiskType As DiskImage.FloppyDiskType
         Dim MaxSectors As Byte
 
         Dim SectorCount As Byte = 0
         For Each Cylinder In tc.Cylinders
             If Cylinder.DecodedData IsNot Nothing Then
-                If Cylinder.Data.Length > 23000 Then
-                    MaxSectors = 18
-                ElseIf Cylinder.Data.Length > 18000 Then
-                    MaxSectors = 15
-                Else
+                If Cylinder.TrackType = Transcopy.TransCopyDiskType.MFMDoubleDensity Or Cylinder.TrackType = Transcopy.TransCopyDiskType.MFMDoubleDensity360RPM Then
                     MaxSectors = 9
+                Else
+                    MaxSectors = 18
                 End If
                 For Each Sector In Cylinder.DecodedData.Sectors
                     If Sector.SectorId >= 1 And Sector.SectorId <= MaxSectors Then
@@ -126,22 +201,22 @@
         End If
 
         If tc.CylinderEnd >= 79 Then
-            If SectorCount = 15 Then
-                DiskType = DiskImage.FloppyDiskType.Floppy1200
-            ElseIf SectorCount = 18 Then
+            If SectorCount > 15 Then
                 DiskType = DiskImage.FloppyDiskType.Floppy1440
+            ElseIf SectorCount > 9 Then
+                DiskType = DiskImage.FloppyDiskType.Floppy1200
             Else
                 DiskType = DiskImage.FloppyDiskType.Floppy720
             End If
         Else
             If tc.Sides = 1 Then
-                If SectorCount = 8 Then
+                If SectorCount < 9 Then
                     DiskType = DiskImage.FloppyDiskType.Floppy160
                 Else
                     DiskType = DiskImage.FloppyDiskType.Floppy180
                 End If
             Else
-                If SectorCount = 8 Then
+                If SectorCount < 9 Then
                     DiskType = DiskImage.FloppyDiskType.Floppy320
                 Else
                     DiskType = DiskImage.FloppyDiskType.Floppy360
@@ -152,7 +227,45 @@
         Return DiskType
     End Function
 
-    Public Function TranscopyToSectorImage(tc As TransCopyImage, DiskType As DiskImage.FloppyDiskType) As Byte()
+    Public Function PSIToSectorImage(PSI As PSIImage.PSISectorImage, DiskType As DiskImage.FloppyDiskType) As Byte()
+        Dim ImageSize = DiskImage.GetFloppyDiskSize(DiskType)
+        Dim ImageParams = DiskImage.GetFloppyDiskParams(DiskType)
+
+        Dim SectorImage(ImageSize - 1) As Byte
+        Dim TrackCount = Int(ImageParams.SectorCountSmall / ImageParams.SectorsPerTrack / ImageParams.NumberOfHeads)
+
+        For Each PSISector In PSI.Sectors
+            Dim MaxSize As UInteger = ImageParams.BytesPerSector
+            Dim MaxSectors As UShort = ImageParams.SectorsPerTrack
+            Dim SectorStep As Byte = 1
+
+            If Not PSISector.IsAlternateSector Then
+                If PSISector.Cylinder < TrackCount And PSISector.Head < ImageParams.NumberOfHeads Then
+                    If PSISector.Sector >= 1 And PSISector.Sector <= MaxSectors And PSISector.Size <= MaxSize Then
+                        Dim Sector = PSISector.Sector * SectorStep - SectorStep
+                        Dim Offset = GetImageOffset(ImageParams, PSISector.Cylinder, PSISector.Head, Sector)
+                        Dim Size As UShort
+                        Dim Data() As Byte
+                        If PSISector.IsCompressed Then
+                            Data = New Byte(PSISector.Size - 1) {}
+                            For i = 0 To Data.Length - 1
+                                Data(i) = PSISector.CkmpressedSectorData
+                            Next
+                            Size = PSISector.Size
+                        Else
+                            Data = PSISector.Data
+                            Size = Math.Min(PSISector.Size, PSISector.Data.Length)
+                        End If
+                        Array.Copy(Data, 0, SectorImage, Offset, Size)
+                    End If
+                End If
+            End If
+        Next
+
+        Return SectorImage
+    End Function
+
+    Public Function TranscopyToSectorImage(tc As Transcopy.TransCopyImage, DiskType As DiskImage.FloppyDiskType) As Byte()
         Dim ImageSize = DiskImage.GetFloppyDiskSize(DiskType)
         Dim ImageParams = DiskImage.GetFloppyDiskParams(DiskType)
 
@@ -185,70 +298,4 @@
 
         Return SectorImage
     End Function
-
-    Private Function HexFormat(Data() As Byte) As String
-        Dim HexString = BitConverter.ToString(Data).Replace("-", " ")
-        Dim TempString = ""
-        Do While Len(HexString) > 47
-            If TempString.Length > 0 Then
-                TempString &= vbCrLf
-            End If
-            TempString &= Left(HexString, 47)
-            HexString = Right(HexString, Len(HexString) - 48)
-        Loop
-        If Len(HexString) > 0 Then
-            If TempString.Length > 0 Then
-                TempString &= vbCrLf
-            End If
-            TempString &= HexString
-        End If
-
-        Return TempString
-    End Function
-
-    Public Sub MFMTrackDebug(MFMTrack As MFMTrack, TrackName As String)
-        Dim file = My.Computer.FileSystem.OpenTextFileWriter("H:\debug.log", True)
-        file.Write("Trk: " & TrackName)
-        file.Write(", Gap 4A: " & MFMTrack.Gap4A.Length)
-        If MFMTrack.Gap4A.Length > 0 Then
-            file.Write(", IAM Mark: " & MFMTrack.IAMMark.ToString("X2") & If(MFMTrack.IAMMark <> MFMTrack.MFMAddressMarks.Index, " (Unexpected)", ""))
-        End If
-        file.WriteLine(", Gap 1: " & MFMTrack.Gap1.Length)
-        If MFMTrack.Gap4A.Length > 0 Then
-            file.WriteLine("Gap 4A:")
-            file.WriteLine(HexFormat(MFMTrack.Gap4A))
-            file.WriteLine("")
-        End If
-        If MFMTrack.Gap1.Length > 0 Then
-            file.WriteLine("Gap 1:")
-            file.WriteLine(HexFormat(MFMTrack.Gap1))
-            file.WriteLine("")
-        End If
-
-        For Each Sector In MFMTrack.Sectors
-            Dim ChecksumValid = Sector.Checksum = Sector.CalculatedChecksum
-            Dim DataChecksumValid = Sector.DataChecksum = Sector.CalculatedDataChecksum
-
-            file.Write("Trk: " & Sector.Track & "." & Sector.Side)
-            file.Write(", Id: " & Sector.SectorId)
-            file.Write(", Size: " & Sector.Size)
-            file.Write(", Checksum: " & Sector.Checksum.ToString("X4") & If(ChecksumValid, "", "#"))
-            file.Write(", Data Checksum: " & Sector.DataChecksum.ToString("X4") & If(DataChecksumValid, "", "#"))
-            file.Write(", Gap2: " & Sector.Gap2.Length)
-            file.Write(", Gap3: " & Sector.Gap3.Length)
-            file.WriteLine(", Overlaps: " & Sector.Overlaps)
-            If Sector.Gap2.Length > 0 Then
-                file.WriteLine("Gap 2:")
-                file.WriteLine(HexFormat(Sector.Gap2))
-                file.WriteLine("")
-            End If
-            If Sector.Gap3.Length > 0 Then
-                file.WriteLine("Gap 3:")
-                file.WriteLine(HexFormat(Sector.Gap3))
-                file.WriteLine("")
-            End If
-        Next
-        file.Close()
-    End Sub
-
 End Module

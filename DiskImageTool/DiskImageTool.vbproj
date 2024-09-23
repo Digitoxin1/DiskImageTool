@@ -31,7 +31,7 @@
     <ProductName>DiskImageTool</ProductName>
     <PublisherName>Digitoxin</PublisherName>
     <ApplicationRevision>0</ApplicationRevision>
-    <ApplicationVersion>1.52.0.%2a</ApplicationVersion>
+    <ApplicationVersion>1.53.0.%2a</ApplicationVersion>
     <UseApplicationTrust>false</UseApplicationTrust>
     <PublishWizardCompleted>true</PublishWizardCompleted>
     <BootstrapperEnabled>true</BootstrapperEnabled>
@@ -128,8 +128,10 @@
     <Import Include="System.Threading.Tasks" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Bitstream\BitstreamDebug.vb" />
     <Compile Include="Bitstream\BitstreamUtil.vb" />
     <Compile Include="Bitstream\MFMTrack.vb" />
+    <Compile Include="Bitstream\PSISectorImage.vb" />
     <Compile Include="Bitstream\TransCopyImage.vb" />
     <Compile Include="ComboFilter.vb" />
     <Compile Include="Controls\ToolStripCheckBox.vb">

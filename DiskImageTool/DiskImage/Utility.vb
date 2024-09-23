@@ -171,10 +171,31 @@ Namespace DiskImage
             Return DTTime
         End Function
 
+        Private Function PSIImageLoad(Data() As Byte) As Byte()
+            Dim ImageData() As Byte = Nothing
+
+            Dim psi = New PSIImage.PSISectorImage()
+            Dim Result = psi.Load(Data)
+            If Result Then
+                If psi.DefaultSectorFormat = PSIImage.DefaultSectorFormat.IBM_MFM_DD _
+                    Or psi.DefaultSectorFormat = PSIImage.DefaultSectorFormat.IBM_MFM_HD _
+                    Or psi.DefaultSectorFormat = PSIImage.DefaultSectorFormat.IBM_MFM_ED Then
+
+                    Dim DiskType = PSIGetImageType(psi)
+                    If DiskType <> FloppyDiskType.FloppyUnknown Then
+                        ImageData = PSIToSectorImage(psi, DiskType)
+                    End If
+                End If
+            End If
+
+            Return ImageData
+        End Function
+
+
         Private Function TranscopyImageLoad(Data() As Byte) As Byte()
             Dim ImageData() As Byte = Nothing
 
-            Dim tc = New TransCopyImage()
+            Dim tc = New Transcopy.TransCopyImage()
             Dim Result = tc.Load(Data)
             If Result Then
                 Dim DiskType = TranscopyGetImageType(tc)
@@ -193,6 +214,7 @@ Namespace DiskImage
                 Try
                     Data = IO.File.ReadAllBytes(FilePath)
                 Catch ex As Exception
+                    Debug.Print("Caught Exception: Functions.ImageLoadFromTemp")
                     Data = Nothing
                 End Try
             End If
@@ -212,6 +234,7 @@ Namespace DiskImage
 
                 IO.File.WriteAllBytes(TempPath, Data)
             Catch ex As Exception
+                Debug.Print("Caught Exception: Functions.ImageSaveToTemp")
                 TempPath = ""
             End Try
 
@@ -220,6 +243,8 @@ Namespace DiskImage
 
         Public Function DiskImageLoad(ImageData As LoadedImageData) As DiskImage.Disk
             Dim Data() As Byte = Nothing
+
+            ImageData.InvalidImage = False
 
             If ImageData.TempPath <> "" Then
                 Data = ImageLoadFromTemp(ImageData.TempPath)
@@ -237,7 +262,17 @@ Namespace DiskImage
                     If ImageData.ImageType = LoadedImageData.LoadedImageType.TranscopyImage Then
                         ImageData.ReadOnly = True
                         Data = TranscopyImageLoad(Data)
-                        ImageData.TempPath = ImageSaveToTemp(Data, ImageData.DisplayPath)
+                        If Data IsNot Nothing Then
+                            ImageData.TempPath = ImageSaveToTemp(Data, ImageData.DisplayPath)
+                        Else
+                            ImageData.InvalidImage = True
+                        End If
+                    ElseIf ImageData.ImageType = LoadedImageData.LoadedImageType.PSIImage Then
+                        ImageData.ReadOnly = True
+                        Data = PSIImageLoad(Data)
+                        If Data Is Nothing Then
+                            ImageData.InvalidImage = True
+                        End If
                     End If
                     If ImageData.XDFMiniDisk Then
                         ImageData.ReadOnly = True
@@ -246,6 +281,7 @@ Namespace DiskImage
                         Data = NewData
                     End If
                 Catch ex As Exception
+                    Debug.Print("Caught Exception: Functions.DiskImageLoad")
                     Data = Nothing
                 End Try
             End If
