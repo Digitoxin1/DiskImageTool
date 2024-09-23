@@ -144,7 +144,7 @@ Namespace Transcopy
 
                         Cylinder.Skew = BitConverter.ToUInt16(Buffer, TransCopyOffsets.Skews + Offset)
                         Dim OffsetValue = BitConverter.ToUInt16(Buffer, TransCopyOffsets.Offsets + Offset)
-                        Cylinder.Offset = ToBigEndianUInt16(OffsetValue) * 256
+                        Cylinder.Offset = MyBitConverter.SwapEndian(OffsetValue) * 256
                         Cylinder.Length = BitConverter.ToUInt16(Buffer, TransCopyOffsets.Lengths + Offset)
                         Cylinder.Flags = BitConverter.ToUInt16(Buffer, TransCopyOffsets.Flags + Offset)
 

@@ -109,7 +109,7 @@
 
         Dim TrackString As String = Cylinder.Track.ToString.PadLeft(2, "0") & "." & Cylinder.Side
         DebugExportMFMTrack(Cylinder.DecodedData, TrackString, DebugPath & "track" & TrackString & ".log")
-        DebugExportMFMBitstream(MFMTrack.BitstreamAlign(BytesToBits(Cylinder.Data)), DebugPath & "track" & TrackString & "_bitstream" & ".txt")
+        DebugExportMFMBitstream(MFMTrack.BitstreamAlign(MyBitConverter.BytesToBits(Cylinder.Data)), DebugPath & "track" & TrackString & "_bitstream" & ".txt")
         IO.File.WriteAllBytes(DebugPath & "track" & TrackString & ".bin", MFMTrack.DecodeTrack(Cylinder.Data))
     End Sub
 

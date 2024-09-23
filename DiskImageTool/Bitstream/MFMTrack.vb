@@ -22,7 +22,7 @@
     End Enum
 
     Public Sub New(Data() As Byte)
-        MFMDecode(BytesToBits(Data))
+        MFMDecode(MyBitConverter.BytesToBits(Data))
     End Sub
 
     Public Sub New(Bitstream As BitArray)
@@ -35,7 +35,7 @@
     Public Property Sectors As List(Of MFMSector)
 
     Private Sub MFMDecode(Bitstream As BitArray)
-        Dim IAMPattern = BytesToBits(IAM_Sync_Bytes)
+        Dim IAMPattern = MyBitConverter.BytesToBits(IAM_Sync_Bytes)
         Dim Start As UInteger = 0
 
         Bitstream = BitstreamAlign(Bitstream)
@@ -65,8 +65,8 @@
     End Sub
 
     Private Sub ProcessSectorList(BitStream As BitArray, SectorList As List(Of UInteger))
-        Dim DAMPattern = BytesToBits(DAM_Sync_Bytes)
-        Dim IDAMPattern = BytesToBits(IDAM_Sync_Bytes)
+        Dim DAMPattern = MyBitConverter.BytesToBits(DAM_Sync_Bytes)
+        Dim IDAMPattern = MyBitConverter.BytesToBits(IDAM_Sync_Bytes)
         Dim ChecksumData() As Byte
         Dim Pos As Integer
         Dim DataOffset As UInteger
@@ -82,7 +82,7 @@
                 .SectorId = MFMGetByte(BitStream, SectorOffset + MFMIDFieldOffsets.SectorId),
                 .Size = SectorGetSize(MFMGetByte(BitStream, SectorOffset + MFMIDFieldOffsets.Size)),
                 .Checksum = MFMGetChecksum(BitStream, SectorOffset + MFMIDFieldOffsets.Checksum),
-                .CalculatedChecksum = Crc16BigEndian(ChecksumData),
+                .CalculatedChecksum = CRC16(ChecksumData),
                 .Overlaps = False,
                 .Offset = SectorOffset \ MFM_BYTE_SIZE
             }
@@ -109,7 +109,7 @@
                 DataOffset += Sector.Size * MFM_BYTE_SIZE
                 DataOffset = DataOffset Mod BitStream.Length
                 Sector.DataChecksum = MFMGetChecksum(BitStream, DataOffset)
-                Sector.CalculatedDataChecksum = Crc16BigEndian(ChecksumData)
+                Sector.CalculatedDataChecksum = CRC16(ChecksumData)
                 DataOffset += 2 * MFM_BYTE_SIZE
             End If
 
@@ -129,7 +129,7 @@
     End Sub
 
     Public Shared Function BitstreamAlign(Bitstream As BitArray) As BitArray
-        Dim MFMPattern = BytesToBits(MFM_Sync_Bytes)
+        Dim MFMPattern = MyBitConverter.BytesToBits(MFM_Sync_Bytes)
         Dim NewBitstream = Bitstream
 
         Dim Pos = FindPattern(Bitstream, MFMPattern, 0)
@@ -150,6 +150,23 @@
         Return NewBitstream
     End Function
 
+    Public Shared Function CRC16(data As Byte()) As UShort
+        Dim crc As UShort = &HFFFF
+
+        For Each b As Byte In data
+            crc = crc Xor (CUShort(b) << 8)
+            For i As Integer = 0 To 7
+                If (crc And &H8000) <> 0 Then
+                    crc = CUShort((crc << 1) Xor &H1021)
+                Else
+                    crc = CUShort(crc << 1)
+                End If
+            Next
+        Next
+
+        Return MyBitConverter.SwapEndian(crc)
+    End Function
+
     Public Shared Function DecodeTrack(Bitstream As BitArray) As Byte()
         Bitstream = BitstreamAlign(Bitstream)
 
@@ -157,7 +174,7 @@
     End Function
 
     Public Shared Function DecodeTrack(Data() As Byte) As Byte()
-        Return DecodeTrack(BytesToBits(Data))
+        Return DecodeTrack(MyBitConverter.BytesToBits(Data))
     End Function
 
     Private Shared Function FindPattern(BitStream As BitArray, Pattern As BitArray, Optional Start As Integer = 0) As Integer
@@ -206,7 +223,7 @@
     End Function
 
     Private Shared Function GetSectorList(BitStream As BitArray) As List(Of UInteger)
-        Dim IDAMPattern = BytesToBits(IDAM_Sync_Bytes)
+        Dim IDAMPattern = MyBitConverter.BytesToBits(IDAM_Sync_Bytes)
 
         Dim Start As UInteger = 0
         Dim Pos As Integer

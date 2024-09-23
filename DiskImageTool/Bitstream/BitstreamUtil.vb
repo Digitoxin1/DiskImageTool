@@ -1,32 +1,4 @@
 ﻿Module BitstreamUtil
-    Private Const crcPoly As UShort = &H1021
-    Private Const crcIV As UShort = &HFFFF
-
-    Public Function BytesToBits(bytes() As Byte) As BitArray
-        Dim buffer(bytes.Length - 1) As Byte
-
-        For i As Integer = 0 To bytes.Length - 1
-            buffer(i) = ReverseBits(bytes(i))
-        Next
-
-        Return New BitArray(buffer)
-    End Function
-
-    'Public Function BytesToBits(bytes() As Byte) As BitArray
-    '    Dim BitStream As New BitArray(bytes.Length * 8)
-
-    '    Dim i As Integer = 0
-    '    For Each b As Byte In bytes
-    '        For j As Integer = 7 To 0 Step -1
-    '            Dim value As Boolean = (b And (1 << j)) <> 0
-    '            BitStream.Set(i, value)
-    '            i += 1
-    '        Next j
-    '    Next
-
-    '    Return BitStream
-    'End Function
-
     Private Function CheckDoubleSizeSectors(Sectors As List(Of MFMSector)) As Boolean
         Dim Result As Boolean = True
         Dim SectorCount As UShort
@@ -54,73 +26,21 @@
         Return Result
     End Function
 
-    Public Function Crc16(data As Byte()) As UShort
-        Dim crc As UShort = crcIV
-
-        For Each b As Byte In data
-            crc = crc Xor (CUShort(b) << 8)
-            For i As Integer = 0 To 7
-                If (crc And &H8000) <> 0 Then
-                    crc = CUShort((crc << 1) Xor crcPoly)
-                Else
-                    crc = CUShort(crc << 1)
-                End If
-            Next
-        Next
-
-        Return crc
-    End Function
-
-    Public Function Crc16BigEndian(data As Byte()) As UShort
-        Return ToBigEndianUInt16(Crc16(data))
-    End Function
-
     Private Function GetImageOffset(ImageParams As DiskImage.FloppyDiskParams, Track As UShort, Side As Byte, Sector As UShort) As UInteger
         Dim Offset = Track * ImageParams.NumberOfHeads * ImageParams.SectorsPerTrack + ImageParams.SectorsPerTrack * Side + Sector
 
         Return Offset * 512
     End Function
 
-    Public Function ReverseBits(b As Byte) As Byte
-        b = ((b >> 1) And &H55) Or ((b << 1) And &HAA) ' Swap odd and even bits
-        b = ((b >> 2) And &H33) Or ((b << 2) And &HCC) ' Swap consecutive pairs
-        b = ((b >> 4) And &HF) Or ((b << 4) And &HF0)  ' Swap nibbles
-
-        Return b
-    End Function
-
-    Public Function ToBigEndianUInt16(value() As Byte, Optional StartIndex As Integer = 0) As UInt16
-        Return CType(value(StartIndex), UInt16) << 8 Or value(StartIndex + 1)
-    End Function
-
-    Public Function ToBigEndianUInt16(value As UInt16) As UInt16
-        Return CUShort((value >> 8) Or (value << 8))
-    End Function
-
-    Public Function ToBigEndianUInt32(value() As Byte, Optional StartIndex As Integer = 0) As UInt32
-        Return ToBigEndianUInt32(BitConverter.ToUInt32(value, StartIndex))
-    End Function
-
-    Public Function ToBigEndianUInt32(value As UInt32) As UInt32
-        ' Manually reorder the bytes to convert to Big Endian
-        Dim byte1 As UInt32 = (value And &HFF) << 24        ' Get the lowest byte and shift it to the highest byte position
-        Dim byte2 As UInt32 = (value And &HFF00) << 8       ' Get the second lowest byte and shift it
-        Dim byte3 As UInt32 = (value And &HFF0000) >> 8     ' Get the second highest byte and shift it
-        Dim byte4 As UInt32 = (value And &HFF000000UI) >> 24 ' Get the highest byte and shift it to the lowest byte position
-
-        ' Combine the bytes into the final Big Endian UInt32 value
-        Return byte1 Or byte2 Or byte3 Or byte4
-    End Function
-
     Public Function PSIGetImageType(PSI As PSIImage.PSISectorImage) As DiskImage.FloppyDiskType
         Dim DiskType As DiskImage.FloppyDiskType
         Dim MaxSectors As Byte
 
-        If PSI.DefaultSectorFormat = PSIImage.DefaultSectorFormat.IBM_MFM_DD Then
+        If PSI.Header.DefaultSectorFormat = PSIImage.DefaultSectorFormat.IBM_MFM_DD Then
             MaxSectors = 9
-        ElseIf PSI.DefaultSectorFormat = PSIImage.DefaultSectorFormat.IBM_MFM_HD Then
+        ElseIf PSI.Header.DefaultSectorFormat = PSIImage.DefaultSectorFormat.IBM_MFM_HD Then
             MaxSectors = 18
-        ElseIf PSI.DefaultSectorFormat = PSIImage.DefaultSectorFormat.IBM_MFM_ED Then
+        ElseIf PSI.Header.DefaultSectorFormat = PSIImage.DefaultSectorFormat.IBM_MFM_ED Then
             MaxSectors = 36
         End If
 
@@ -142,7 +62,7 @@
             End If
         Next
 
-        If PSI.DefaultSectorFormat = PSIImage.DefaultSectorFormat.IBM_MFM_DD Then
+        If PSI.Header.DefaultSectorFormat = PSIImage.DefaultSectorFormat.IBM_MFM_DD Then
             If CylinderCount >= 79 Then
                 DiskType = DiskImage.FloppyDiskType.Floppy720
             Else
@@ -160,7 +80,7 @@
                     End If
                 End If
             End If
-        ElseIf PSI.DefaultSectorFormat = PSIImage.DefaultSectorFormat.IBM_MFM_HD Then
+        ElseIf PSI.Header.DefaultSectorFormat = PSIImage.DefaultSectorFormat.IBM_MFM_HD Then
             If SectorCount > 15 Then
                 DiskType = DiskImage.FloppyDiskType.Floppy1440
             Else
@@ -249,7 +169,7 @@
                         If PSISector.IsCompressed Then
                             Data = New Byte(PSISector.Size - 1) {}
                             For i = 0 To Data.Length - 1
-                                Data(i) = PSISector.CkmpressedSectorData
+                                Data(i) = PSISector.CompressedSectorData
                             Next
                             Size = PSISector.Size
                         Else

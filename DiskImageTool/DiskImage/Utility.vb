@@ -175,11 +175,11 @@ Namespace DiskImage
             Dim ImageData() As Byte = Nothing
 
             Dim psi = New PSIImage.PSISectorImage()
-            Dim Result = psi.Load(Data)
+            Dim Result = psi.Import(Data)
             If Result Then
-                If psi.DefaultSectorFormat = PSIImage.DefaultSectorFormat.IBM_MFM_DD _
-                    Or psi.DefaultSectorFormat = PSIImage.DefaultSectorFormat.IBM_MFM_HD _
-                    Or psi.DefaultSectorFormat = PSIImage.DefaultSectorFormat.IBM_MFM_ED Then
+                If psi.Header.DefaultSectorFormat = PSIImage.DefaultSectorFormat.IBM_MFM_DD _
+                    Or psi.Header.DefaultSectorFormat = PSIImage.DefaultSectorFormat.IBM_MFM_HD _
+                    Or psi.Header.DefaultSectorFormat = PSIImage.DefaultSectorFormat.IBM_MFM_ED Then
 
                     Dim DiskType = PSIGetImageType(psi)
                     If DiskType <> FloppyDiskType.FloppyUnknown Then

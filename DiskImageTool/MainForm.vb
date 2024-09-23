@@ -1360,13 +1360,20 @@ Public Class MainForm
 
     Private Sub EmptyTempPath()
         Dim TempPath = Path.Combine(Path.GetTempPath(), "DiskImageTool")
-        For Each File In Directory.EnumerateFiles(TempPath)
+
+        If Directory.Exists(TempPath) Then
             Try
-                IO.File.Delete(File)
+                For Each File In Directory.EnumerateFiles(TempPath)
+                    Try
+                        IO.File.Delete(File)
+                    Catch ex As Exception
+                        Debug.Print("Caught Exception: MainForm.EmptyTempPath")
+                    End Try
+                Next
             Catch ex As Exception
                 Debug.Print("Caught Exception: MainForm.EmptyTempPath")
             End Try
-        Next
+        End If
     End Sub
 
     Private Sub ExportDebugScript()
