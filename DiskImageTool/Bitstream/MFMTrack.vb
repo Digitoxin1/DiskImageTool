@@ -1,6 +1,6 @@
 ﻿Public Class MFMTrack
-    Private Const MFM_BYTE_SIZE As Byte = 16
-    Private Const SYNC_NULL_LENGTH As Integer = 12 * MFM_BYTE_SIZE
+    Public Const MFM_BYTE_SIZE As Byte = 16
+    Public Const SYNC_NULL_LENGTH As Integer = 12 * MFM_BYTE_SIZE
     Private Shared ReadOnly IAM_Sync_Bytes() As Byte = {&H52, &H24, &H52, &H24, &H52, &H24}
     Private Shared ReadOnly IDAM_Sync_Bytes() As Byte = {&H44, &H89, &H44, &H89, &H44, &H89, &H55, &H54}
     Private Shared ReadOnly DAM_Sync_Bytes() As Byte = {&H44, &H89, &H44, &H89, &H44, &H89, &H55, &H45}
@@ -33,12 +33,14 @@
     Public Property Gap4A As Byte()
     Public Property IAMMark As Byte
     Public Property Sectors As List(Of MFMSector)
+    Public Property Offset As Integer
+
 
     Private Sub MFMDecode(Bitstream As BitArray)
         Dim IAMPattern = MyBitConverter.BytesToBits(IAM_Sync_Bytes)
         Dim Start As UInteger = 0
 
-        Bitstream = BitstreamAlign(Bitstream)
+        _Offset = BitstreamAlign(Bitstream)
 
         'Index Field Sync
         Dim Pos = FindPattern(Bitstream, IAMPattern, Start)
@@ -84,7 +86,7 @@
                 .Checksum = MFMGetChecksum(BitStream, SectorOffset + MFMIDFieldOffsets.Checksum),
                 .CalculatedChecksum = CRC16(ChecksumData),
                 .Overlaps = False,
-                .Offset = SectorOffset \ MFM_BYTE_SIZE
+                .Offset = SectorOffset
             }
 
             DataOffset = SectorOffset + MFMIDFieldOffsets.Data
@@ -104,9 +106,9 @@
             If Pos > -1 Then
                 Sector.Gap2 = GetGapBytes(BitStream, DataOffset, Pos - SYNC_NULL_LENGTH)
                 ChecksumData = MFMGetBytes(BitStream, Pos, Sector.Size + DAMPattern.Length \ MFM_BYTE_SIZE)
-                DataOffset = Pos + DAMPattern.Length
-                Sector.Data = MFMGetBytes(BitStream, DataOffset, Sector.Size)
-                DataOffset += Sector.Size * MFM_BYTE_SIZE
+                Sector.DataOffset = Pos + DAMPattern.Length
+                Sector.Data = MFMGetBytes(BitStream, Sector.DataOffset, Sector.Size)
+                DataOffset = Sector.DataOffset + Sector.Size * MFM_BYTE_SIZE
                 DataOffset = DataOffset Mod BitStream.Length
                 Sector.DataChecksum = MFMGetChecksum(BitStream, DataOffset)
                 Sector.CalculatedDataChecksum = CRC16(ChecksumData)
@@ -128,26 +130,33 @@
         Next
     End Sub
 
-    Public Shared Function BitstreamAlign(Bitstream As BitArray) As BitArray
+
+    Public Shared Function BitstreamAlign(Bitstream As BitArray) As Integer
         Dim MFMPattern = MyBitConverter.BytesToBits(MFM_Sync_Bytes)
-        Dim NewBitstream = Bitstream
+        Dim Offset As Integer = 0
 
         Dim Pos = FindPattern(Bitstream, MFMPattern, 0)
         If Pos > -1 Then
-            Dim Offset = Pos Mod MFM_BYTE_SIZE
+            Offset = Pos Mod MFM_BYTE_SIZE
             If Offset > 0 Then
-                NewBitstream = New BitArray(Bitstream.Length)
-                For i = 0 To Bitstream.Length - 1
-                    Dim NewOffset = i - Offset
-                    If NewOffset < 0 Then
-                        NewOffset = Bitstream.Length + NewOffset
-                    End If
-                    NewBitstream(NewOffset) = Bitstream(i)
+                Dim TempBitsteam As New BitArray(Offset)
+                For i = 0 To Offset - 1
+                    TempBitsteam(i) = Bitstream(i)
+                Next
+
+                Dim EndPos = Bitstream.Length - Offset
+
+                For i = 0 To EndPos - 1
+                    Bitstream(i) = Bitstream(i + Offset)
+                Next
+
+                For i = 0 To Offset - 1
+                    Bitstream(EndPos + i) = TempBitsteam(i)
                 Next
             End If
         End If
 
-        Return NewBitstream
+        Return Offset
     End Function
 
     Public Shared Function CRC16(data As Byte()) As UShort
@@ -168,7 +177,7 @@
     End Function
 
     Public Shared Function DecodeTrack(Bitstream As BitArray) As Byte()
-        Bitstream = BitstreamAlign(Bitstream)
+        BitstreamAlign(Bitstream)
 
         Return MFMGetBytes(Bitstream, 0, Bitstream.Length \ MFM_BYTE_SIZE)
     End Function
@@ -237,6 +246,32 @@
         Loop Until Pos = -1
 
         Return SectorList
+    End Function
+
+    Public Shared Function MFMEncodeBytes(Data() As Byte, SeedBit As Boolean) As BitArray
+        Dim Bitstream As New BitArray(Data.Length * 16)
+        Dim bitCount As Integer = 0
+        Dim dateBit As Boolean
+        Dim clockBit As Boolean
+
+        Dim prevDataBit = SeedBit
+        For i = 0 To Data.Length - 1
+            For j = 7 To 0 Step -1
+                dateBit = CBool((Data(i) And (1 << j)))
+                If Not dateBit And Not prevDataBit Then
+                    clockBit = True
+                Else
+                    clockBit = False
+                End If
+                Bitstream.Set(bitCount, clockBit)
+                Bitstream.Set(bitCount + 1, dateBit)
+
+                prevDataBit = dateBit
+                bitCount += 2
+            Next
+        Next
+
+        Return Bitstream
     End Function
 
     Private Shared Function MFMGetByte(Bitstream As BitArray, Start As Integer) As Byte
@@ -309,6 +344,7 @@ Public Class MFMSector
     Public Property Checksum As UShort
     Public Property CalculatedChecksum As UShort
     Public Property Data As Byte()
+    Public Property DataOffset As UInteger
     Public Property DataChecksum As UShort
     Public Property CalculatedDataChecksum As UShort
     Public Property Overlaps As Boolean

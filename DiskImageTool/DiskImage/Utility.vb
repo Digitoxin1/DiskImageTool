@@ -241,8 +241,9 @@ Namespace DiskImage
             Return TempPath
         End Function
 
-        Public Function DiskImageLoad(ImageData As LoadedImageData) As DiskImage.Disk
+        Public Function DiskImageLoad(ImageData As LoadedImageData, Optional SetChecksum As Boolean = False) As DiskImage.Disk
             Dim Data() As Byte = Nothing
+            Dim LastChecksum As UInteger
 
             ImageData.InvalidImage = False
 
@@ -259,6 +260,12 @@ Namespace DiskImage
                         ImageData.ReadOnly = IsFileReadOnly(ImageData.SourceFile)
                         Data = IO.File.ReadAllBytes(ImageData.SourceFile)
                     End If
+
+                    LastChecksum = ImageData.Checksum
+                    If SetChecksum Then
+                        ImageData.Checksum = Crc32.ComputeChecksum(Data)
+                    End If
+
                     If ImageData.ImageType = LoadedImageData.LoadedImageType.TranscopyImage Then
                         ImageData.ReadOnly = True
                         Data = TranscopyImageLoad(Data)
@@ -289,7 +296,22 @@ Namespace DiskImage
             If Data Is Nothing Then
                 Return Nothing
             Else
-                Return New DiskImage.Disk(Data, ImageData.FATIndex, ImageData.Modifications)
+                If ImageData.Loaded AndAlso ImageData.Checksum <> LastChecksum Then
+                    If ImageData.Modifications IsNot Nothing AndAlso ImageData.Modifications.Count > 0 Then
+                        ImageData.Modifications.Clear()
+                        ImageData.ExternalModified = True
+                    ElseIf SetChecksum Then
+                        ImageData.ExternalModified = False
+                    End If
+                End If
+                If SetChecksum Then
+                    ImageData.Loaded = True
+                End If
+
+                Dim Disk = New DiskImage.Disk(Data, ImageData.FATIndex, ImageData.Modifications)
+                ImageData.Modifications = Disk.Data.Changes
+
+                Return Disk
             End If
         End Function
 
@@ -425,7 +447,6 @@ Namespace DiskImage
             Dim Entry = Archive.GetEntry(FileName)
             If Entry IsNot Nothing Then
                 Entry.Open.CopyTo(Data)
-
                 Return Data.ToArray
             Else
                 Return Nothing

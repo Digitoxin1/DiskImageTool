@@ -1,4 +1,6 @@
-﻿Module BitstreamUtil
+﻿Imports System.IO
+
+Module BitstreamUtil
     Private Function CheckDoubleSizeSectors(Sectors As List(Of MFMSector)) As Boolean
         Dim Result As Boolean = True
         Dim SectorCount As UShort
@@ -208,6 +210,7 @@
                             If MFMSector.SectorId >= 1 And MFMSector.SectorId <= MaxSectors And Not MFMSector.Overlaps And MFMSector.Size <= MaxSize Then
                                 Dim Sector = MFMSector.SectorId * SectorStep - SectorStep
                                 Dim Offset = GetImageOffset(ImageParams, Cylinder.Track, Cylinder.Side, Sector)
+                                Dim SectorIndex = Offset \ ImageParams.BytesPerSector
                                 Array.Copy(MFMSector.Data, 0, SectorImage, Offset, MFMSector.Size)
                             End If
                         End If

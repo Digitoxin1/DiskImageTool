@@ -25,6 +25,9 @@ Public Class LoadedImageData
         _SortHistory = Nothing
         _TempPath = ""
         _InvalidImage = False
+        _Loaded = False
+        _Checksum = 0
+        _ExternalModified = False
         _XDFMiniDisk = False
         _XDFOffset = 0
         _XDFLength = 0
@@ -51,7 +54,10 @@ Public Class LoadedImageData
     Public Property SourceFile As String
     Public Property SortHistory As List(Of SortEntity)
     Public Property TempPath As String
-    Public Property InvalidImage As Boolean = False
+    Public Property InvalidImage As Boolean
+    Public Property Loaded As Boolean
+    Public Property Checksum As UInteger
+    Public Property ExternalModified As Boolean
     Public Property XDFMiniDisk As Boolean
     Public Property XDFOffset As UInteger
     Public Property XDFLength As UInteger

@@ -86,7 +86,7 @@
             DebugFile.Write(", Gap2: " & Sector.Gap2.Length)
             DebugFile.Write(", Gap3: " & Sector.Gap3.Length)
             DebugFile.Write(", Overlaps: " & Sector.Overlaps)
-            DebugFile.WriteLine(", Offset: " & Sector.Offset)
+            DebugFile.WriteLine(", Offset: " & Sector.Offset \ MFMTrack.MFM_BYTE_SIZE)
             If Sector.Gap2.Length > 0 Then
                 DebugFile.WriteLine("Gap 2:")
                 DebugFile.WriteLine(HexFormat(Sector.Gap2))
@@ -109,7 +109,11 @@
 
         Dim TrackString As String = Cylinder.Track.ToString.PadLeft(2, "0") & "." & Cylinder.Side
         DebugExportMFMTrack(Cylinder.DecodedData, TrackString, DebugPath & "track" & TrackString & ".log")
-        DebugExportMFMBitstream(MFMTrack.BitstreamAlign(MyBitConverter.BytesToBits(Cylinder.Data)), DebugPath & "track" & TrackString & "_bitstream" & ".txt")
+
+        Dim Bitstream = MyBitConverter.BytesToBits(Cylinder.Data)
+        MFMTrack.BitstreamAlign(Bitstream)
+
+        DebugExportMFMBitstream(Bitstream, DebugPath & "track" & TrackString & "_bitstream" & ".txt")
         IO.File.WriteAllBytes(DebugPath & "track" & TrackString & ".bin", MFMTrack.DecodeTrack(Cylinder.Data))
     End Sub
 

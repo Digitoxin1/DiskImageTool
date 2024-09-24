@@ -1248,6 +1248,8 @@ Public Class MainForm
         Loop Until Success
 
         If Success Then
+            ImageData.Checksum = Crc32.ComputeChecksum(Disk.Data.Data)
+            ImageData.ExternalModified = False
             ItemScanModified(Disk, ImageData)
         End If
 
@@ -3787,7 +3789,9 @@ Public Class MainForm
         End If
     End Sub
 
-    Private Sub ReloadCurrentImage(DoItemScan As Boolean)
+    Private Sub ReloadCurrentImage(RevertChanges As Boolean)
+        Dim DoItemScan = RevertChanges
+
         Cursor.Current = Cursors.WaitCursor
 
         If _CurrentImageData IsNot Nothing Then
@@ -3795,12 +3799,21 @@ Public Class MainForm
             _CurrentImageData.SortHistory = _lvwColumnSorter.SortHistory
         End If
         Dim CurrentImageData As LoadedImageData = ComboImages.SelectedItem
-        _CurrentImageData = CurrentImageData
-        _Disk = DiskImageLoad(CurrentImageData)
-        If _Disk IsNot Nothing Then
-            CurrentImageData.Modifications = _Disk.Data.Changes
+        If RevertChanges Then
+            CurrentImageData.Modifications.Clear()
         End If
+        _CurrentImageData = CurrentImageData
+        _Disk = DiskImageLoad(CurrentImageData, True)
+
         ClearSort(False)
+
+        If CurrentImageData.ExternalModified Then
+            CurrentImageData.ExternalModified = False
+            DoItemScan = True
+            Dim Msg = "Image has been modified by another application." & vbCrLf & vbCrLf & "Changes have been discarded."
+            MsgBox(Msg, MsgBoxStyle.Exclamation)
+        End If
+
         DiskImageProcess(DoItemScan, True)
 
         Cursor.Current = Cursors.Default
@@ -3872,8 +3885,6 @@ Public Class MainForm
 
     Private Sub RevertChanges()
         If _Disk.Data.Modified Then
-            Dim CurrentImageData As LoadedImageData = ComboImages.SelectedItem
-            CurrentImageData.Modifications.Clear()
             ReloadCurrentImage(True)
         End If
     End Sub

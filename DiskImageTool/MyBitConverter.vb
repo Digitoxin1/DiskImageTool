@@ -9,6 +9,18 @@
         Return New BitArray(buffer)
     End Function
 
+    Public Shared Function BitsToBytes(Bitstream As BitArray) As Byte()
+        Dim buffer(Bitstream.Length \ 8 - 1) As Byte
+
+        Bitstream.CopyTo(buffer, 0)
+
+        For i As Integer = 0 To buffer.Length - 1
+            buffer(i) = MyBitConverter.ReverseBits(buffer(i))
+        Next
+
+        Return buffer
+    End Function
+
     Public Shared Function ReverseBits(b As Byte) As Byte
         b = ((b >> 1) And &H55) Or ((b << 1) And &HAA) ' Swap odd and even bits
         b = ((b >> 2) And &H33) Or ((b << 2) And &HCC) ' Swap consecutive pairs

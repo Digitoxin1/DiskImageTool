@@ -125,10 +125,7 @@ Public Class ItemScanForm
         If ImageData Is _CurrentImageData Then
             Disk = _CurrentDisk
         Else
-            Disk = DiskImage.DiskImageLoad(ImageData)
-            If Disk IsNot Nothing Then
-                ImageData.Modifications = Disk.Data.Changes
-            End If
+            Disk = DiskImage.DiskImageLoad(ImageData, True)
         End If
 
         If Disk IsNot Nothing Then
