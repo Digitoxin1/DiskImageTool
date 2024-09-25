@@ -8,7 +8,7 @@ Namespace DiskImage
         Private Const CHAR_EMPTY As Byte = &H0
         Private Const CHAR_SPACE As Byte = &H20
 
-        Private ReadOnly _FileBytes As ByteArray
+        Private ReadOnly _FileBytes As IByteArray
         Private ReadOnly _Offset As UInteger
 
         Private _IsBlankCache As Boolean? = Nothing
@@ -100,7 +100,7 @@ Namespace DiskImage
             _Offset = 0
         End Sub
 
-        Sub New(FileBytes As ByteArray, Offset As UInteger)
+        Sub New(FileBytes As IByteArray, Offset As UInteger)
             _FileBytes = FileBytes
             _Offset = Offset
         End Sub

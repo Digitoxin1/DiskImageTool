@@ -55,12 +55,15 @@
         DebugFile.Close()
     End Sub
 
-    Public Sub DebugExportMFMTrack(MFMTrack As MFMTrack, TrackName As String, FileName As String)
+    Public Sub DebugExportMFMTrack(MFMTrack As IBM_MFM.MFMTrack, TrackName As String, FileName As String)
         Dim DebugFile = My.Computer.FileSystem.OpenTextFileWriter(FileName, False)
         DebugFile.Write("Trk: " & TrackName)
         DebugFile.Write(", Gap 4A: " & MFMTrack.Gap4A.Length)
         If MFMTrack.Gap4A.Length > 0 Then
-            DebugFile.Write(", IAM Mark: " & MFMTrack.IAMMark.ToString("X2") & If(MFMTrack.IAMMark <> MFMTrack.MFMAddressMarks.Index, " (Unexpected)", ""))
+            DebugFile.Write(", IAM Mark: " & CByte(MFMTrack.IAM).ToString("X2"))
+            If MFMTrack.IAM <> IBM_MFM.MFMAddressMark.Index Then
+                DebugFile.Write(" (Unexpected)")
+            End If
         End If
         DebugFile.WriteLine(", Gap 1: " & MFMTrack.Gap1.Length)
         If MFMTrack.Gap4A.Length > 0 Then
@@ -75,18 +78,22 @@
         End If
 
         For Each Sector In MFMTrack.Sectors
-            Dim ChecksumValid = Sector.Checksum = Sector.CalculatedChecksum
-            Dim DataChecksumValid = Sector.DataChecksum = Sector.CalculatedDataChecksum
+            Dim ChecksumValid = Sector.IDChecksum = Sector.CalculateIDChecksum
+            Dim DataChecksumValid = Sector.DataChecksum = Sector.CalculateDataChecksum
 
             DebugFile.Write("Trk: " & Sector.Track & "." & Sector.Side)
             DebugFile.Write(", Id: " & Sector.SectorId)
-            DebugFile.Write(", Size: " & Sector.Size)
-            DebugFile.Write(", Checksum: " & Sector.Checksum.ToString("X4") & If(ChecksumValid, "", "#"))
+            DebugFile.Write(", Size: " & Sector.GetSizeBytes)
+            DebugFile.Write(", Checksum: " & Sector.IDChecksum.ToString("X4") & If(ChecksumValid, "", "#"))
             DebugFile.Write(", Data Checksum: " & Sector.DataChecksum.ToString("X4") & If(DataChecksumValid, "", "#"))
+            DebugFile.Write(", DAM Mark: " & CByte(Sector.DAM).ToString("X2"))
+            If Sector.DAM <> IBM_MFM.MFMAddressMark.Data And Sector.DAM <> IBM_MFM.MFMAddressMark.DeletedData Then
+                DebugFile.Write(" (Unexpected)")
+            End If
             DebugFile.Write(", Gap2: " & Sector.Gap2.Length)
             DebugFile.Write(", Gap3: " & Sector.Gap3.Length)
             DebugFile.Write(", Overlaps: " & Sector.Overlaps)
-            DebugFile.WriteLine(", Offset: " & Sector.Offset \ MFMTrack.MFM_BYTE_SIZE)
+            DebugFile.WriteLine(", Offset: " & Sector.Offset \ IBM_MFM.MFM_BYTE_SIZE)
             If Sector.Gap2.Length > 0 Then
                 DebugFile.WriteLine("Gap 2:")
                 DebugFile.WriteLine(HexFormat(Sector.Gap2))
@@ -111,10 +118,9 @@
         DebugExportMFMTrack(Cylinder.DecodedData, TrackString, DebugPath & "track" & TrackString & ".log")
 
         Dim Bitstream = MyBitConverter.BytesToBits(Cylinder.Data)
-        MFMTrack.BitstreamAlign(Bitstream)
 
         DebugExportMFMBitstream(Bitstream, DebugPath & "track" & TrackString & "_bitstream" & ".txt")
-        IO.File.WriteAllBytes(DebugPath & "track" & TrackString & ".bin", MFMTrack.DecodeTrack(Cylinder.Data))
+        IO.File.WriteAllBytes(DebugPath & "track" & TrackString & ".bin", IBM_MFM.DecodeTrack(Cylinder.Data))
     End Sub
 
     Private Function HexFormat(Data() As Byte) As String

@@ -31,7 +31,7 @@
         End Property
 
         Public Function GetContent() As Byte() Implements IDirectory.GetContent
-            Return GetDataFromChain(_FileBytes, SectorChain)
+            Return GetDataFromChain(_FileBytes.Data, SectorChain)
         End Function
 
         Public Function GetFile(Index As UInteger) As DirectoryEntry Implements IDirectory.GetFile
@@ -74,7 +74,7 @@
                 Dim OffsetStart As UInteger = _BPB.ClusterToOffset(Cluster)
                 Dim OffsetLength As UInteger = _BPB.BytesPerCluster
 
-                Functions.GetDirectoryData(Data, _FileBytes, OffsetStart, OffsetStart + OffsetLength, False)
+                Functions.GetDirectoryData(Data, _FileBytes.Data, OffsetStart, OffsetStart + OffsetLength, False)
             Next
 
             Return Data

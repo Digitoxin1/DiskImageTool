@@ -1,82 +1,6 @@
 ﻿Imports System.IO
 
 Namespace Transcopy
-    Public Enum TransCopyTrackFlags As UInt16
-        KeepTrackLength = 1
-        CopyAcrossIndex = 2
-        CopyWeakBits = 4
-        VerifyWrite = 8
-        NoAddressMarks = 128
-    End Enum
-
-    Public Enum TransCopyDiskType As Byte
-        Unknown = &HFF
-        MFMHighDensity = &H2
-        MFMDoubleDensity360RPM = &H3
-        AppleIIGCR = &H4
-        FMSengleDensity = &H5
-        CommodoreGCR = &H6
-        MFMDoubleDensity = &H7
-        CommodoreAmiga = &H8
-        AtariFM = &HC
-    End Enum
-
-    Public Class TransCopyCylinder
-        Public Sub New(Track As UShort, Side As UShort)
-            _Track = Track
-            _Side = Side
-            _AddressMarkingTiming = New List(Of UShort)
-            _Data = New Byte(-1) {}
-            _DecodedData = Nothing
-            _Decoded = False
-        End Sub
-        Public Property Track As UShort
-        Public Property Side As UShort
-        Public Property Skew As UInt16
-        Public Property Offset As UInt32
-        Public Property Length As UInt16
-        Public Property Flags As TransCopyTrackFlags
-        Public ReadOnly Property AddressMarkingTiming As List(Of UShort)
-        Public Property Data As Byte()
-        Public Property DecodedData As MFMTrack
-        Public Property Decoded As Boolean
-
-        Public Function KeepTrackLength() As Boolean
-            Return (_Flags And TransCopyTrackFlags.KeepTrackLength) > 0
-        End Function
-
-        Public Function CopyAcrossIndex() As Boolean
-            Return (_Flags And TransCopyTrackFlags.CopyAcrossIndex) > 0
-        End Function
-
-        Public Function CopyWeakBits() As Boolean
-            Return (_Flags And TransCopyTrackFlags.CopyWeakBits) > 0
-        End Function
-
-        Public Function VerifyWrite() As Boolean
-            Return (_Flags And TransCopyTrackFlags.VerifyWrite) > 0
-        End Function
-
-        Public Function NoAddressMarks() As Boolean
-            Return (_Flags And TransCopyTrackFlags.NoAddressMarks) > 0
-        End Function
-
-        Public Function TrackType() As TransCopyDiskType
-            Dim Value = _Flags And Not (2 ^ 15)
-
-            Return Value >> 8
-        End Function
-
-        Public Function IsMFMTrackType() As Boolean
-            Dim Type = TrackType()
-            If Type = TransCopyDiskType.MFMDoubleDensity Or Type = TransCopyDiskType.MFMDoubleDensity360RPM Or Type = TransCopyDiskType.MFMHighDensity Then
-                Return True
-            Else
-                Return False
-            End If
-        End Function
-    End Class
-
     Public Class TransCopyImage
         Private Enum TransCopyOffsets
             Signature = &H0
@@ -138,7 +62,6 @@ Namespace Transcopy
                 For Track = 0 To _CylinderEnd
                     For Side = 0 To 1
                         Dim Cylinder = New TransCopyCylinder(Track, Side)
-                        _Cylinders.Add(Cylinder)
 
                         Dim Offset = 4 * Track + 2 * Side
 
@@ -148,24 +71,29 @@ Namespace Transcopy
                         Cylinder.Length = BitConverter.ToUInt16(Buffer, TransCopyOffsets.Lengths + Offset)
                         Cylinder.Flags = BitConverter.ToUInt16(Buffer, TransCopyOffsets.Flags + Offset)
 
-                        For i = 0 To 15
-                            Dim TimingOffset = 64 * Track + 32 * Side + 2 * i
-                            Dim Value = BitConverter.ToUInt16(Buffer, TransCopyOffsets.Timings + TimingOffset)
-                            Cylinder.AddressMarkingTiming.Add(Value)
-                        Next
+                        If Cylinder.Offset >= TransCopyOffsets.Data Then
+                            Cylinder.BitstreamOffset = (Cylinder.Offset - TransCopyOffsets.Data) * 8
+                            For i = 0 To 15
+                                Dim TimingOffset = 64 * Track + 32 * Side + 2 * i
+                                Dim Value = BitConverter.ToUInt16(Buffer, TransCopyOffsets.Timings + TimingOffset)
+                                Cylinder.AddressMarkingTiming.Add(Value)
+                            Next
 
-                        If Cylinder.Offset > 0 Then
-                            Dim Data(Cylinder.Length - 1) As Byte
-                            Array.Copy(Buffer, Cylinder.Offset, Data, 0, Data.Length)
-                            Cylinder.Data = Data
-                        End If
-
-                        If Cylinder.IsMFMTrackType Then
-                            If Cylinder.Side < _Sides Then
-                                Cylinder.DecodedData = New MFMTrack(Cylinder.Data)
-                                Cylinder.Decoded = True
-                                'DebugTranscopyCylinder(Cylinder)
+                            If Cylinder.Offset > 0 Then
+                                Dim Data(Cylinder.Length - 1) As Byte
+                                Array.Copy(Buffer, Cylinder.Offset, Data, 0, Data.Length)
+                                Cylinder.Data = Data
                             End If
+
+                            If Cylinder.IsMFMTrackType Then
+                                If Cylinder.Side < _Sides Then
+                                    Cylinder.DecodedData = New IBM_MFM.MFMTrack(Cylinder.Data)
+                                    Cylinder.Decoded = True
+                                    'DebugTranscopyCylinder(Cylinder)
+                                End If
+                            End If
+
+                            _Cylinders.Add(Cylinder)
                         End If
                     Next
                 Next

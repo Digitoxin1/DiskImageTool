@@ -8,7 +8,7 @@ Namespace DiskImage
         Public Shared ReadOnly ValidNumberOfHeads() As UShort = {1, 2}
         Public Shared ReadOnly ValidSectorsPerCluster() As Byte = {1, 2, 4, 8, 16, 32, 64, 128}
         Public Shared ReadOnly ValidSectorsPerTrack() As UShort = {8, 9, 15, 18, 19, 21, 23, 36}
-        Private ReadOnly _FileBytes As ByteArray
+        Private ReadOnly _FileBytes As IByteArray
         Private ReadOnly _Offset As UInteger
 
         Public Enum BPBOoffsets As UInteger
@@ -48,7 +48,7 @@ Namespace DiskImage
             _Offset = 0
         End Sub
 
-        Sub New(FileBytes As ByteArray, Offset As UInteger)
+        Sub New(FileBytes As IByteArray, Offset As UInteger)
             _FileBytes = FileBytes
             _Offset = Offset
         End Sub

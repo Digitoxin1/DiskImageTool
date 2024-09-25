@@ -108,7 +108,7 @@
             Dim OffsetEnd As UInteger = Disk.SectorToBytes(_BPB.DataRegionStart)
             Dim Data As New DirectoryData
 
-            Functions.GetDirectoryData(Data, _FileBytes, OffsetStart, OffsetEnd, True)
+            Functions.GetDirectoryData(Data, _FileBytes.Data, OffsetStart, OffsetEnd, True)
 
             Return Data
         End Function

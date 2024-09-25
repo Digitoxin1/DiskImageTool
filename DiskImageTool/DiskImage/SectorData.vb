@@ -1,6 +1,6 @@
 ﻿Namespace DiskImage
     Public Class SectorData
-        Private WithEvents DataBytes As ByteArray
+        Private WithEvents DataBytes As IByteArray
         Private ReadOnly _BlockList As List(Of SectorBlock)
         Private ReadOnly _FileBytes As ImageByteArray
         Private ReadOnly _SectorList As Dictionary(Of UInteger, SectorBlock)
@@ -18,7 +18,7 @@
             End Get
         End Property
 
-        Public ReadOnly Property Data As ByteArray
+        Public ReadOnly Property Data As IByteArray
             Get
                 Return DataBytes
             End Get

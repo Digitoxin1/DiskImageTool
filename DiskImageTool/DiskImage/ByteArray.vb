@@ -3,28 +3,24 @@
     Public Delegate Sub SizeChangedEventHandler(OriginalLength As Integer, NewLength As Integer)
 
     Public Class ByteArray
+        Implements IByteArray
+
         Private _Data() As Byte
 
-        Public Event DataChanged As DataChangedEventHandler
-        Public Event SizeChanged As SizeChangedEventHandler
+        Public Event DataChanged As DataChangedEventHandler Implements IByteArray.DataChanged
+        Public Event SizeChanged As SizeChangedEventHandler Implements IByteArray.SizeChanged
 
         Sub New(Data() As Byte)
             _Data = Data
         End Sub
 
-        Public ReadOnly Property Data As Byte()
-            Get
-                Return _Data
-            End Get
-        End Property
-
-        Public ReadOnly Property Length As Integer
+        Public ReadOnly Property Length As Integer Implements IByteArray.Length
             Get
                 Return _Data.Length
             End Get
         End Property
 
-        Public Sub Append(Data() As Byte)
+        Public Sub Append(Data() As Byte) Implements IByteArray.Append
             Dim Offset As UInteger = _Data.Length
             Dim Size As UInteger = Data.Length
 
@@ -33,29 +29,37 @@
             Data.CopyTo(_Data, Offset)
         End Sub
 
-        Public Sub CopyTo(SourceIndex As Integer, ByRef DestinationArray() As Byte, DestinationIndex As Integer, Length As Integer)
+        Public Sub CopyTo(SourceIndex As Integer, ByRef DestinationArray() As Byte, DestinationIndex As Integer, Length As Integer) Implements IByteArray.CopyTo
             Array.Copy(_Data, SourceIndex, DestinationArray, DestinationIndex, Length)
         End Sub
 
-        Public Function GetByte(Offset As UInteger) As Byte
+        Public Sub CopyTo(DestinationArray() As Byte, Index As Integer) Implements IByteArray.CopyTo
+            _Data.CopyTo(DestinationArray, Index)
+        End Sub
+
+        Public Function GetByte(Offset As UInteger) As Byte Implements IByteArray.GetByte
             Return _Data(Offset)
         End Function
 
-        Public Function GetBytes(Offset As UInteger, Size As UInteger) As Byte()
+        Public Function GetBytes() As Byte() Implements IByteArray.GetBytes
+            Return _Data
+        End Function
+
+        Public Function GetBytes(Offset As UInteger, Size As UInteger) As Byte() Implements IByteArray.GetBytes
             Dim temp(Size - 1) As Byte
             Array.Copy(_Data, Offset, temp, 0, Size)
             Return temp
         End Function
 
-        Public Function GetBytesInteger(Offset As UInteger) As UInteger
+        Public Function GetBytesInteger(Offset As UInteger) As UInteger Implements IByteArray.GetBytesInteger
             Return BitConverter.ToUInt32(_Data, Offset)
         End Function
 
-        Public Function GetBytesShort(Offset As UInteger) As UShort
+        Public Function GetBytesShort(Offset As UInteger) As UShort Implements IByteArray.GetBytesShort
             Return BitConverter.ToUInt16(_Data, Offset)
         End Function
 
-        Public Function Resize(Length As Integer) As Boolean
+        Public Function Resize(Length As Integer) As Boolean Implements IByteArray.Resize
             Dim Result As Boolean = False
 
             If _Data.Length <> Length Then
@@ -68,7 +72,7 @@
             Return Result
         End Function
 
-        Public Function SetBytes(Value As UShort, Offset As UInteger) As Boolean
+        Public Function SetBytes(Value As UShort, Offset As UInteger) As Boolean Implements IByteArray.SetBytes
             Dim Result As Boolean = False
             Dim CurrentValue = GetBytesShort(Offset)
 
@@ -81,7 +85,7 @@
             Return Result
         End Function
 
-        Public Function SetBytes(Value As UInteger, Offset As UInteger) As Boolean
+        Public Function SetBytes(Value As UInteger, Offset As UInteger) As Boolean Implements IByteArray.SetBytes
             Dim Result As Boolean = False
             Dim CurrentValue = GetBytesInteger(Offset)
 
@@ -94,7 +98,7 @@
             Return Result
         End Function
 
-        Public Function SetBytes(Value As Byte, Offset As UInteger) As Boolean
+        Public Function SetBytes(Value As Byte, Offset As UInteger) As Boolean Implements IByteArray.SetBytes
             Dim Result As Boolean = False
             Dim CurrentValue = GetByte(Offset)
 
@@ -107,11 +111,11 @@
             Return Result
         End Function
 
-        Public Function SetBytes(Value() As Byte, Offset As UInteger) As Boolean
+        Public Function SetBytes(Value() As Byte, Offset As UInteger) As Boolean Implements IByteArray.SetBytes
             Return SetBytes(Value, Offset, Value.Length, 0)
         End Function
 
-        Public Function SetBytes(Value() As Byte, Offset As UInteger, Size As UInteger, Padding As Byte) As Boolean
+        Public Function SetBytes(Value() As Byte, Offset As UInteger, Size As UInteger, Padding As Byte) As Boolean Implements IByteArray.SetBytes
             Dim Result As Boolean = False
 
             If Offset + Size > _Data.Length Then
@@ -139,7 +143,7 @@
             Return Result
         End Function
 
-        Public Function ToUInt16(StartIndex As Integer) As UShort
+        Public Function ToUInt16(StartIndex As Integer) As UShort Implements IByteArray.ToUInt16
             Return BitConverter.ToUInt16(_Data, StartIndex)
         End Function
     End Class

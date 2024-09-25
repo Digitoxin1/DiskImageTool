@@ -12,6 +12,7 @@ Public Class HexViewForm
     Private WithEvents NumericCluster As ToolStripNumericUpDown
     Private WithEvents NumericSector As ToolStripNumericUpDown
     Public Shared ReadOnly ALT_BACK_COLOR As Color = Color.FromArgb(246, 246, 252)
+    Public Shared ReadOnly PROTECTED_BACK_COLOR As Color = Color.LightPink
     Private Const WM_CLIPBOARDUPDATE As Integer = &H31D
     Private ReadOnly _BPB As BiosParameterBlock
     Private ReadOnly _Changes As Stack(Of List(Of HexChange))
@@ -69,7 +70,7 @@ Public Class HexViewForm
         _LastSearch = New HexSearch
 
         If Not _BPB.IsValid Then
-            _BPB = BuildBPB(_HexViewSectorData.Disk.Data.Length)
+            _BPB = BuildBPB(CInt(_HexViewSectorData.Disk.Image.Length))
         End If
 
         If Not _BPB.IsValid Then
@@ -189,28 +190,50 @@ Public Class HexViewForm
         Return ByteArray
     End Function
 
-    Private Shared Function FillRegion(ByteProvider As IByteProvider, Offset As Integer, Length As Integer, Value As Byte) As FillRegionResult
+    Private Function FillRegion(ByteProvider As IByteProvider, Offset As Integer, Length As Integer, Value As Byte) As FillRegionResult
         Dim Result As New FillRegionResult(Length)
+        Dim SectorReadOnly As Boolean = False
+        Dim LastSector As UInteger = 0
+        Dim Sector As UInteger
 
         For Index = 0 To Length - 1
+            Sector = Disk.OffsetToSector(HexBox1.LineInfoOffset + Offset + Index)
+            If Index = 0 Or Sector <> LastSector Then
+                SectorReadOnly = _HexViewSectorData.ProtectedSectors.Contains(Sector)
+                LastSector = Sector
+            End If
+
             Result.OriginalData(Index) = ByteProvider.ReadByte(Offset + Index)
-            If Result.OriginalData(Index) <> Value Then
-                ByteProvider.WriteByte(Offset + Index, Value)
-                Result.Modified = True
+            If Not SectorReadOnly Then
+                If Result.OriginalData(Index) <> Value Then
+                    ByteProvider.WriteByte(Offset + Index, Value)
+                    Result.Modified = True
+                End If
             End If
         Next
 
         Return Result
     End Function
 
-    Private Shared Function FillRegion(ByteProvider As IByteProvider, Offset As Integer, Length As Integer, Value() As Byte) As FillRegionResult
+    Private Function FillRegion(ByteProvider As IByteProvider, Offset As Integer, Length As Integer, Value() As Byte) As FillRegionResult
         Dim Result As New FillRegionResult(Length)
+        Dim SectorReadOnly As Boolean = False
+        Dim LastSector As UInteger = 0
+        Dim Sector As UInteger
 
         For Index = 0 To Length - 1
+            Sector = Disk.OffsetToSector(HexBox1.LineInfoOffset + Offset + Index)
+            If Index = 0 Or Sector <> LastSector Then
+                SectorReadOnly = _HexViewSectorData.ProtectedSectors.Contains(Sector)
+                LastSector = Sector
+            End If
+
             Result.OriginalData(Index) = ByteProvider.ReadByte(Offset + Index)
-            If Result.OriginalData(Index) <> Value(Index) Then
-                ByteProvider.WriteByte(Offset + Index, Value(Index))
-                Result.Modified = True
+            If Not SectorReadOnly Then
+                If Result.OriginalData(Index) <> Value(Index) Then
+                    ByteProvider.WriteByte(Offset + Index, Value(Index))
+                    Result.Modified = True
+                End If
             End If
         Next
 
@@ -712,8 +735,13 @@ Public Class HexViewForm
                     End If
 
                     If Size > 0 Then
-                        If HighlightBackColor = Color.White AndAlso Disk.OffsetToSector(Start) Mod 2 = 1 Then
-                            HighlightBackColor = ALT_BACK_COLOR
+                        Dim Sector = Disk.OffsetToSector(HexBox1.LineInfoOffset + Start)
+                        If HighlightBackColor = Color.White Then
+                            If _HexViewSectorData.ProtectedSectors.Contains(Sector) Then
+                                HighlightBackColor = PROTECTED_BACK_COLOR
+                            ElseIf Sector Mod 2 = 1 Then
+                                HighlightBackColor = ALT_BACK_COLOR
+                            End If
                         End If
                         If HighlightForeColor <> Color.Black Or HighlightBackColor <> Color.White Then
                             .HighlightForeColor = HighlightForeColor
@@ -1120,6 +1148,8 @@ Public Class HexViewForm
 
             Dim Sector = Disk.OffsetToSector(OffsetStart)
 
+            HexBox1.ReadOnly = _HexViewSectorData.ProtectedSectors.Contains(Sector)
+
             ToolStripStatusOffset.Visible = Not OutOfRange
             ToolStripStatusOffset.Text = "Offset(h) :  " & OffsetStart.ToString("X")
 
@@ -1469,6 +1499,7 @@ Public Class HexViewForm
             With .Cells.Item(3)
                 .Value = Invalid
             End With
+            .ReadOnly = HexBox1.ReadOnly
         End With
     End Sub
 

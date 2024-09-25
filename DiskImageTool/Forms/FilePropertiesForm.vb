@@ -129,7 +129,7 @@ Public Class FilePropertiesForm
     Private Sub ApplyUpdates()
         _Updated = False
 
-        _Disk.Data.BatchEditMode = True
+        _Disk.Image.BatchEditMode = True
 
         Dim UpdateFileName = _Items.Count = 1
 
@@ -150,7 +150,7 @@ Public Class FilePropertiesForm
         Next
 
 
-        _Disk.Data.BatchEditMode = False
+        _Disk.Image.BatchEditMode = False
     End Sub
 
     Private Function GetDateFromPicker(DatePicker As DateTimePicker, TimePicker As DateTimePicker, MS As NumericUpDown) As Date?

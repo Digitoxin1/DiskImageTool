@@ -103,8 +103,8 @@ Public Class FloppyDB
         End If
     End Function
 
-    Public Function IsVerifiedImage(Disk As Disk) As Boolean
-        Dim Result = TitleFind(Disk)
+    Public Function IsVerifiedImage(Disk As Disk, ImageData As LoadedImageData) As Boolean
+        Dim Result = TitleFind(Disk, ImageData.ProtectedSectors)
         If Result.TitleData IsNot Nothing Then
             If Result.TitleData.GetStatus = FloppyDBStatus.Verified Then
                 Return True
@@ -122,12 +122,12 @@ Public Class FloppyDB
         Return _TitleDictionary.ContainsKey(MD5)
     End Function
 
-    Public Function TitleFind(Disk As Disk) As TitleFindResult
-        Dim MD5 As String = MD5Hash(Disk.Data.Data)
-        Return TitleFind(Disk, MD5)
+    Public Function TitleFind(Disk As Disk, ProtectedSectors As HashSet(Of UInteger)) As TitleFindResult
+        Dim MD5 As String = MD5Hash(Disk.Image.GetBytes)
+        Return TitleFind(Disk, MD5, ProtectedSectors)
     End Function
 
-    Public Function TitleFind(Disk As Disk, MD5 As String) As TitleFindResult
+    Public Function TitleFind(Disk As Disk, MD5 As String, ProtectedSectors As HashSet(Of UInteger)) As TitleFindResult
         Dim Response As New TitleFindResult With {
             .TitleData = TitleGet(MD5),
             .MD5 = MD5
@@ -139,6 +139,9 @@ Public Class FloppyDB
                 Response.TitleData = TitleGet(Response.MD5_CP)
             ElseIf Disk.FATTables.FAT(0).BadClusters.Count > 0 Then
                 Response.MD5_CP = MD5Hash(GetNormalizedDataByBadSectors(Disk))
+                Response.TitleData = TitleGet(Response.MD5_CP)
+            ElseIf ProtectedSectors IsNot Nothing Then
+                Response.MD5_CP = MD5Hash(GetNormalizedDataByProtectedSectors(Disk, ProtectedSectors))
                 Response.TitleData = TitleGet(Response.MD5_CP)
             End If
         End If
@@ -193,8 +196,8 @@ Public Class FloppyDB
     End Function
 
     Private Function GetNormalizedDataByBadSectors(Disk As Disk) As Byte()
-        Dim Data(Disk.Data.Data.Length - 1) As Byte
-        Disk.Data.Data.CopyTo(Data, 0)
+        Dim Data(Disk.Image.Length - 1) As Byte
+        Disk.Image.CopyTo(Data, 0)
         Dim BytesPerCluster = Disk.BPB.BytesPerCluster()
         Dim Buffer(BytesPerCluster - 1) As Byte
         For Each Cluster In Disk.FATTables.FAT(0).BadClusters
@@ -206,11 +209,25 @@ Public Class FloppyDB
         Return Data
     End Function
 
-    Private Function GetNormalizedDataByTrackList(Disk As Disk, TrackList As List(Of FloppyDB.BooterTrack)) As Byte()
-        Dim BPB As BiosParameterBlock = BuildBPB(Disk.Data.Data.Length)
+    Private Function GetNormalizedDataByProtectedSectors(Disk As Disk, ProtectedSectors As HashSet(Of UInteger)) As Byte()
+        Dim Data(Disk.Image.Length - 1) As Byte
+        Disk.Image.CopyTo(Data, 0)
+        Dim Buffer(Disk.BYTES_PER_SECTOR - 1) As Byte
+        For Each Sector In ProtectedSectors
+            Dim Offset = Disk.SectorToBytes(Sector)
+            If Offset + Disk.BYTES_PER_SECTOR <= Data.Length Then
+                Buffer.CopyTo(Data, Offset)
+            End If
+        Next
 
-        Dim Data(Disk.Data.Data.Length - 1) As Byte
-        Disk.Data.Data.CopyTo(Data, 0)
+        Return Data
+    End Function
+
+    Private Function GetNormalizedDataByTrackList(Disk As Disk, TrackList As List(Of FloppyDB.BooterTrack)) As Byte()
+        Dim BPB As BiosParameterBlock = BuildBPB(Disk.Image.Length)
+
+        Dim Data(Disk.Image.Length - 1) As Byte
+        Disk.Image.CopyTo(Data, 0)
         Dim BytesPerTrack = BPB.BytesPerSector * BPB.SectorsPerTrack
         Dim Buffer(BytesPerTrack - 1) As Byte
         For Each Track In TrackList

@@ -130,9 +130,19 @@
   <ItemGroup>
     <Compile Include="Bitstream\BitstreamDebug.vb" />
     <Compile Include="Bitstream\BitstreamUtil.vb" />
-    <Compile Include="Bitstream\MFMTrack.vb" />
-    <Compile Include="Bitstream\PSISectorImage.vb" />
-    <Compile Include="Bitstream\TransCopyImage.vb" />
+    <Compile Include="Bitstream\IBM_MFM\MFMSector.vb" />
+    <Compile Include="Bitstream\IBM_MFM\MFMTools.vb" />
+    <Compile Include="Bitstream\IBM_MFM\MFMTrack.vb" />
+    <Compile Include="Bitstream\PSI_Image\Enums.vb" />
+    <Compile Include="Bitstream\PSI_Image\GCRSectorHeader.vb" />
+    <Compile Include="Bitstream\PSI_Image\IBMSectorHeader.vb" />
+    <Compile Include="Bitstream\PSI_Image\PSIChunk.vb" />
+    <Compile Include="Bitstream\PSI_Image\PSIFileHeader.vb" />
+    <Compile Include="Bitstream\PSI_Image\PSISector.vb" />
+    <Compile Include="Bitstream\PSI_Image\PSISectorImage.vb" />
+    <Compile Include="Bitstream\Transcopy_Image\Enums.vb" />
+    <Compile Include="Bitstream\Transcopy_Image\TransCopyCylinder.vb" />
+    <Compile Include="Bitstream\Transcopy_Image\TransCopyImage.vb" />
     <Compile Include="ComboFilter.vb" />
     <Compile Include="Controls\ToolStripCheckBox.vb">
       <SubType>Component</SubType>
@@ -146,6 +156,7 @@
     <Compile Include="DiskImage\FATChain.vb" />
     <Compile Include="DiskImage\FATTables.vb" />
     <Compile Include="DiskImage\FloppyDiskFunctions.vb" />
+    <Compile Include="DiskImage\IByteArray.vb" />
     <Compile Include="DiskImage\SectorBlock.vb" />
     <Compile Include="Extensions\ByteArrayExtensions.vb" />
     <Compile Include="Extensions\DataGridViewExtensions.vb" />

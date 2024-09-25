@@ -11,7 +11,7 @@
         Private _SubDirectory As SubDirectory
 
         Sub New(FileBytes As ImageByteArray, BPB As BiosParameterBlock, FATTables As FATTables, DirectoryCache As Dictionary(Of UInteger, DirectoryCacheEntry), Offset As UInteger)
-            MyBase.New(FileBytes, Offset)
+            MyBase.New(FileBytes.Data, Offset)
 
             _FileBytes = FileBytes
             _BPB = BPB
@@ -81,7 +81,7 @@
                     _FileBytes.CopyTo(Offset, Content, 0, Size)
                 End If
             Else
-                Content = GetDataFromChain(_FileBytes, ClusterListToSectorList(_BPB, _FatChain.Clusters))
+                Content = GetDataFromChain(_FileBytes.Data, ClusterListToSectorList(_BPB, _FatChain.Clusters))
 
                 If Content.Length <> Size Then
                     Array.Resize(Of Byte)(Content, Size)

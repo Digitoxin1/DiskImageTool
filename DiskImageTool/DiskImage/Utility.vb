@@ -171,15 +171,15 @@ Namespace DiskImage
             Return DTTime
         End Function
 
-        Private Function PSIImageLoad(Data() As Byte) As Byte()
-            Dim ImageData() As Byte = Nothing
+        Private Function PSIImageLoad(Data() As Byte) As SectorImageData
+            Dim ImageData As SectorImageData = Nothing
 
-            Dim psi = New PSIImage.PSISectorImage()
+            Dim psi = New PSI_Image.PSISectorImage()
             Dim Result = psi.Import(Data)
             If Result Then
-                If psi.Header.DefaultSectorFormat = PSIImage.DefaultSectorFormat.IBM_MFM_DD _
-                    Or psi.Header.DefaultSectorFormat = PSIImage.DefaultSectorFormat.IBM_MFM_HD _
-                    Or psi.Header.DefaultSectorFormat = PSIImage.DefaultSectorFormat.IBM_MFM_ED Then
+                If psi.Header.DefaultSectorFormat = PSI_Image.DefaultSectorFormat.IBM_MFM_DD _
+                    Or psi.Header.DefaultSectorFormat = PSI_Image.DefaultSectorFormat.IBM_MFM_HD _
+                    Or psi.Header.DefaultSectorFormat = PSI_Image.DefaultSectorFormat.IBM_MFM_ED Then
 
                     Dim DiskType = PSIGetImageType(psi)
                     If DiskType <> FloppyDiskType.FloppyUnknown Then
@@ -192,8 +192,8 @@ Namespace DiskImage
         End Function
 
 
-        Private Function TranscopyImageLoad(Data() As Byte) As Byte()
-            Dim ImageData() As Byte = Nothing
+        Private Function TranscopyImageLoad(Data() As Byte) As SectorImageData
+            Dim ImageData As SectorImageData = Nothing
 
             Dim tc = New Transcopy.TransCopyImage()
             Dim Result = tc.Load(Data)
@@ -268,16 +268,25 @@ Namespace DiskImage
 
                     If ImageData.ImageType = LoadedImageData.LoadedImageType.TranscopyImage Then
                         ImageData.ReadOnly = True
-                        Data = TranscopyImageLoad(Data)
-                        If Data IsNot Nothing Then
+                        Dim SectorImageData = TranscopyImageLoad(Data)
+                        If SectorImageData IsNot Nothing Then
+                            Data = SectorImageData.Data
                             ImageData.TempPath = ImageSaveToTemp(Data, ImageData.DisplayPath)
+                            ImageData.SectorMap = SectorImageData.SectorMap
+                            ImageData.ProtectedSectors = SectorImageData.ProtectedSectors
                         Else
+                            Data = Nothing
                             ImageData.InvalidImage = True
                         End If
                     ElseIf ImageData.ImageType = LoadedImageData.LoadedImageType.PSIImage Then
                         ImageData.ReadOnly = True
-                        Data = PSIImageLoad(Data)
-                        If Data Is Nothing Then
+                        Dim SectorImageData = PSIImageLoad(Data)
+                        If SectorImageData IsNot Nothing Then
+                            Data = SectorImageData.Data
+                            ImageData.SectorMap = SectorImageData.SectorMap
+                            ImageData.ProtectedSectors = SectorImageData.ProtectedSectors
+                        Else
+                            Data = Nothing
                             ImageData.InvalidImage = True
                         End If
                     End If
@@ -309,7 +318,7 @@ Namespace DiskImage
                 End If
 
                 Dim Disk = New DiskImage.Disk(Data, ImageData.FATIndex, ImageData.Modifications)
-                ImageData.Modifications = Disk.Data.Changes
+                ImageData.Modifications = Disk.Image.Changes
 
                 Return Disk
             End If
@@ -328,7 +337,7 @@ Namespace DiskImage
             Return BadSectors
         End Function
 
-        Public Function GetDataFromChain(FileBytes As ByteArray, SectorChain As List(Of UInteger)) As Byte()
+        Public Function GetDataFromChain(FileBytes As IByteArray, SectorChain As List(Of UInteger)) As Byte()
             Dim SectorSize As UInteger = Disk.BYTES_PER_SECTOR
             Dim Content(SectorChain.Count * SectorSize - 1) As Byte
             Dim ContentOffset As UInteger = 0
@@ -349,9 +358,8 @@ Namespace DiskImage
             Return Content
         End Function
 
-        Public Function DirectoryEntryHasData(FileBytes As ByteArray, Offset As UInteger) As Boolean
+        Public Function DirectoryEntryHasData(FileBytes As IByteArray, Offset As UInteger) As Boolean
             Dim Result As Boolean = False
-
 
             If FileBytes.GetByte(Offset) = &HE5 Then
                 For Offset2 As UInteger = Offset + 1 To Offset + DirectoryEntry.DIRECTORY_ENTRY_SIZE - 1
@@ -382,7 +390,7 @@ Namespace DiskImage
             Return Result
         End Function
 
-        Public Sub GetDirectoryData(Data As DirectoryData, FileBytes As ByteArray, OffsetStart As UInteger, OffsetEnd As UInteger, CheckBootSector As Boolean)
+        Public Sub GetDirectoryData(Data As DirectoryData, FileBytes As IByteArray, OffsetStart As UInteger, OffsetEnd As UInteger, CheckBootSector As Boolean)
             Dim EntryCount = (OffsetEnd - OffsetStart) \ DirectoryEntry.DIRECTORY_ENTRY_SIZE
 
             Data.MaxEntries += EntryCount

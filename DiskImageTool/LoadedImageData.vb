@@ -31,6 +31,8 @@ Public Class LoadedImageData
         _XDFMiniDisk = False
         _XDFOffset = 0
         _XDFLength = 0
+        _SectorMap = New UInteger(-1) {}
+        _ProtectedSectors = New HashSet(Of UInteger)
 
         Dim FilterCount As Integer = FilterGetCount()
         ReDim _Filters(FilterCount - 1)
@@ -61,6 +63,8 @@ Public Class LoadedImageData
     Public Property XDFMiniDisk As Boolean
     Public Property XDFOffset As UInteger
     Public Property XDFLength As UInteger
+    Public Property SectorMap As UInteger()
+    Public Property ProtectedSectors As HashSet(Of UInteger)
 
     Public Shared Property StringOffset As Integer = 0
 

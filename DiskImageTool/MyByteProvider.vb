@@ -4,14 +4,14 @@ Imports Hb.Windows.Forms
 Public Class MyByteProvider
     Implements IByteProvider
 
-    Private WithEvents DataBytes As ByteArray
+    Private WithEvents DataBytes As IByteArray
     Private ReadOnly _Offset As UInteger
     Private ReadOnly _Size As UInteger
     Private _hasChanges As Boolean
     Public Event Changed As EventHandler Implements IByteProvider.Changed
     Public Event LengthChanged As EventHandler Implements IByteProvider.LengthChanged
 
-    Public Sub New(DataBytes As ByteArray, Offset As UInteger, Size As UInteger)
+    Public Sub New(DataBytes As IByteArray, Offset As UInteger, Size As UInteger)
         Me.DataBytes = DataBytes
         _Offset = Offset
         _Size = Size

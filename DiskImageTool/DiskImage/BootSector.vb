@@ -8,7 +8,7 @@
         Public Shared ReadOnly ValidExtendedBootSignature() As Byte = {&H28, &H29}
         Public Shared ReadOnly ValidJumpInstructuon() As Byte = {&HEB, &HE9}
         Private ReadOnly _BPB As BiosParameterBlock
-        Private ReadOnly _FileBytes As ByteArray
+        Private ReadOnly _FileBytes As IByteArray
         Private ReadOnly _Offset As UInteger
         Public Enum BootSectorOffsets As UInteger
             JmpBoot = 0
@@ -42,7 +42,7 @@
             _BPB = New BiosParameterBlock(_FileBytes, _Offset)
         End Sub
 
-        Sub New(FileBytes As ByteArray, Offset As UInteger)
+        Sub New(FileBytes As IByteArray, Offset As UInteger)
             _FileBytes = FileBytes
             _Offset = Offset
             _BPB = New BiosParameterBlock(FileBytes, _Offset)

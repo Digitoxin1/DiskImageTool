@@ -227,7 +227,7 @@ Module HexViews
         For Index = 0 To NumberOfFATs - 1
             Dim Length As UInteger = Disk.SectorToBytes(Disk.BPB.SectorsPerFAT)
             Dim Start As UInteger = Disk.SectorToBytes(Disk.BPB.FATRegionStart) + Length * Index
-            Dim Data = Disk.Data.GetBytes(Start, Length)
+            Dim Data = Disk.Image.GetBytes(Start, Length)
 
             HexViewSectorData.SectorData.AddBlockByOffset(Start, Length, "FAT " & Index + 1)
             HexViewSectorData.HighlightedRegionList.Add(HighlightedRegions)
@@ -271,14 +271,14 @@ Module HexViews
             Dim OffsetStart As UInteger = Disk.SectorToBytes(SectorBlock.SectorStart)
             Dim OffsetEnd As UInteger = Disk.SectorToBytes(SectorBlock.SectorStart + SectorBlock.SectorCount) - 1
             For Offset As UInteger = OffsetStart To OffsetEnd Step DirectoryEntry.DIRECTORY_ENTRY_SIZE
-                Dim FirstByte = Disk.Data.GetByte(Offset)
+                Dim FirstByte = Disk.Image.GetByte(Offset)
                 If FirstByte = 0 Then
                     EndOfDirectory = True
                 End If
                 If Not HasBootSector And CheckBootSector Then
                     If BootSector.ValidJumpInstructuon.Contains(FirstByte) Then
                         If OffsetEnd - Offset + 1 >= BootSector.BOOT_SECTOR_SIZE Then
-                            Dim BootSectorData = Disk.Data.GetBytes(Offset, DiskImage.BootSector.BOOT_SECTOR_SIZE)
+                            Dim BootSectorData = Disk.Image.GetBytes(Offset, DiskImage.BootSector.BOOT_SECTOR_SIZE)
                             Dim BootSector = New BootSector(BootSectorData)
                             If BootSector.BPB.IsValid Then
                                 HasBootSector = True
@@ -291,12 +291,12 @@ Module HexViews
                 End If
                 If EndOfDirectory Then
                     If Not HasBootSector Or Offset < BootSectorOffset Or Offset > BootSectorOffset + DiskImage.BootSector.BOOT_SECTOR_SIZE Then
-                        If DirectoryEntryHasData(Disk.Data, Offset) Then
+                        If DirectoryEntryHasData(Disk.Image.Data, Offset) Then
                             HighlightedRegions.AddItem(Offset - OffsetStart, DirectoryEntry.DIRECTORY_ENTRY_SIZE, Color.Red)
                         End If
                     End If
                 Else
-                    Dim Attributes As Byte = Disk.Data.GetByte(Offset + DirectoryEntry.DirectoryEntryOffsets.Attributes)
+                    Dim Attributes As Byte = Disk.Image.GetByte(Offset + DirectoryEntry.DirectoryEntryOffsets.Attributes)
                     If (Attributes And AttributeFlags.LongFileName) = AttributeFlags.LongFileName Then
                         HighlightedRegions.AddDirectoryEntryLFNOffset(Offset - OffsetStart, DirectoryEntry.LFNOffsets.Sequence, Color.Purple)
                         HighlightedRegions.AddDirectoryEntryLFNOffset(Offset - OffsetStart, DirectoryEntry.LFNOffsets.FilePart1, Color.Purple)

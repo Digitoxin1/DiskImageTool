@@ -22,6 +22,8 @@ Public Class FATEditForm
     Private _IgnoreEvents As Boolean = True
     Private _OffsetLookup As Dictionary(Of UInteger, UInteger)
     Private _Updated As Boolean = False
+    Private _ProtectedSectors As HashSet(Of UInteger)
+
     Private Enum GridCellType
         Free
         Bad
@@ -30,7 +32,7 @@ Public Class FATEditForm
         Highlight
     End Enum
 
-    Public Sub New(Disk As DiskImage.Disk, Index As UShort)
+    Public Sub New(Disk As DiskImage.Disk, Index As UShort, ProtectedSectors As HashSet(Of UInteger))
 
         ' This call is required by the designer.
         InitializeComponent()
@@ -39,8 +41,9 @@ Public Class FATEditForm
 
         _ToolTip = New ToolTip()
         _Disk = Disk
+        _ProtectedSectors = ProtectedSectors
 
-        _FATTables = New FATTables(_Disk.BPB, _Disk.Data, Index)
+        _FATTables = New FATTables(_Disk.BPB, _Disk.Image, Index)
         ProcessFATChains()
 
         Me.Text = "File Allocation Table " & Index + 1
@@ -364,8 +367,11 @@ Public Class FATEditForm
     End Function
 
     Private Sub HexDisplayDiskImage(Cluster As UShort)
-        Dim HexViewSectorData = New HexViewSectorData(_Disk, 0, _Disk.Data.Length) With {
-            .Description = "Disk"
+        Dim Offset = _Disk.BPB.ClusterToOffset(2)
+
+        Dim HexViewSectorData = New HexViewSectorData(_Disk, Offset, _Disk.Image.Length - Offset) With {
+            .Description = "Disk",
+            .ProtectedSectors = _ProtectedSectors
         }
 
         If DisplayHexViewForm(HexViewSectorData, True, True, False, Cluster) Then
@@ -506,7 +512,7 @@ Public Class FATEditForm
     End Sub
 
     Private Sub ProcessFATChains()
-        Dim Directory = New RootDirectory(_Disk.Data, _Disk.BPB, _FATTables, _Disk.DirectoryCache, True)
+        Dim Directory = New RootDirectory(_Disk.Image, _Disk.BPB, _FATTables, _Disk.DirectoryCache, True)
     End Sub
 
     Private Sub RefreshFAT()

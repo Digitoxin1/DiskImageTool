@@ -5,6 +5,7 @@ Imports System.Text
 Imports System.Text.RegularExpressions
 Imports DiskImageTool.DiskImage
 Imports DiskImageTool.FloppyDB
+Imports DiskImageTool.LoadedImageData
 Imports BootSectorOffsets = DiskImageTool.DiskImage.BootSector.BootSectorOffsets
 Imports BPBOffsets = DiskImageTool.DiskImage.BiosParameterBlock.BPBOoffsets
 
@@ -91,7 +92,7 @@ Public Class MainForm
             'Else
             '    DiskType = GetFloppyDiskTypeName(Disk.Data.Length, True)
             'End If
-            Dim DiskTypeBySize = GetFloppyDiskType(Disk.Data.Length)
+            Dim DiskTypeBySize = GetFloppyDiskType(Disk.Image.Length)
 
             If Disk.DiskType <> FloppyDiskType.FloppyUnknown Or DiskTypeBySize = FloppyDiskType.FloppyUnknown Then
                 DiskType = GetFloppyDiskTypeName(Disk.DiskType)
@@ -185,7 +186,7 @@ Public Class MainForm
             End If
 
             If _TitleDB.TitleCount > 0 Then
-                TitleFindResult = _TitleDB.TitleFind(Disk)
+                TitleFindResult = _TitleDB.TitleFind(Disk, ImageData.ProtectedSectors)
                 If TitleFindResult.TitleData IsNot Nothing Then
                     Image_NotInDatabase = False
                     Image_InDatabase = True
@@ -229,7 +230,7 @@ Public Class MainForm
             If _ExportUnknownImages Then
                 If Image_NotInDatabase Then
                     If TitleFindResult Is Nothing Then
-                        TitleFindResult = _TitleDB.TitleFind(Disk)
+                        TitleFindResult = _TitleDB.TitleFind(Disk, ImageData.ProtectedSectors)
                     End If
                     If FileData Is Nothing Then
                         FileData = New FileNameData(ImageData.FileName)
@@ -252,7 +253,7 @@ Public Class MainForm
     End Sub
 
     Friend Sub ItemScanModified(Disk As DiskImage.Disk, ImageData As LoadedImageData, Optional UpdateFilters As Boolean = False, Optional Remove As Boolean = False)
-        Dim IsModified As Boolean = Not Remove And (Disk IsNot Nothing AndAlso Disk.Data.Modified)
+        Dim IsModified As Boolean = Not Remove And (Disk IsNot Nothing AndAlso Disk.Image.Modified)
 
         ImageFilters.FilterUpdate(ImageData, UpdateFilters, FilterTypes.ModifiedFiles, IsModified, True)
     End Sub
@@ -313,16 +314,16 @@ Public Class MainForm
         End If
     End Sub
 
-    Friend Function Win9xClean(Disk As Disk, Batch As Boolean) As Boolean
+    Friend Function Win9xClean(Disk As Disk, ImageData As LoadedImageData, Batch As Boolean) As Boolean
         Dim Result As Boolean = False
 
         If Batch Then
-            If _TitleDB.IsVerifiedImage(Disk) Then
+            If _TitleDB.IsVerifiedImage(Disk, ImageData) Then
                 Return Result
             End If
         End If
 
-        Disk.Data.BatchEditMode = True
+        Disk.Image.BatchEditMode = True
 
         If Disk.BootSector.IsWin9xOEMName Then
             Dim BootstrapType = _BootStrapDB.FindMatch(Disk.BootSector.BootStrapCode)
@@ -354,7 +355,7 @@ Public Class MainForm
             End If
         Next
 
-        Disk.Data.BatchEditMode = False
+        Disk.Image.BatchEditMode = False
 
 
         Return Result
@@ -652,7 +653,8 @@ Public Class MainForm
         Return SaveAllForm.Result
     End Function
 
-    Private Shared Function SaveDiskImageToFile(Disk As DiskImage.Disk, FilePath As String) As Boolean
+    Private Shared Function SaveDiskImageToFile(Disk As DiskImage.Disk, FilePath As String, ImageType As LoadedImageType) As Boolean
+        Dim FileExt = Path.GetExtension(FilePath)
         Try
             If My.Settings.CreateBackups AndAlso IO.File.Exists(FilePath) Then
                 Dim BackupPath As String = FilePath & ".bak"
@@ -693,7 +695,7 @@ Public Class MainForm
             BootSectorBytes(Counter) = 0
         Next
 
-        _Disk.Data.SetBytes(BootSectorBytes, _Disk.Directory.Data.BootSectorOffset)
+        _Disk.Image.SetBytes(BootSectorBytes, _Disk.Directory.Data.BootSectorOffset)
 
         DiskImageRefresh()
     End Sub
@@ -703,8 +705,8 @@ Public Class MainForm
             Exit Sub
         End If
 
-        Dim BootSectorBytes = _Disk.Data.GetBytes(_Disk.Directory.Data.BootSectorOffset, BootSector.BOOT_SECTOR_SIZE)
-        _Disk.Data.SetBytes(BootSectorBytes, 0)
+        Dim BootSectorBytes = _Disk.Image.GetBytes(_Disk.Directory.Data.BootSectorOffset, BootSector.BOOT_SECTOR_SIZE)
+        _Disk.Image.SetBytes(BootSectorBytes, 0)
 
         DiskImageRefresh()
     End Sub
@@ -865,13 +867,13 @@ Public Class MainForm
     Private Sub ClearReservedBytes()
         Dim Result As Boolean = False
 
-        If _TitleDB.IsVerifiedImage(_Disk) Then
+        If _TitleDB.IsVerifiedImage(_Disk, _CurrentImageData) Then
             If Not MsgBoxQuestion("This is a verified image.  Are you sure you wish to clear reserved bytes from this image?") Then
                 Exit Sub
             End If
         End If
 
-        _Disk.Data.BatchEditMode = True
+        _Disk.Image.BatchEditMode = True
 
         Dim FileList = _Disk.GetFileList()
 
@@ -888,7 +890,7 @@ Public Class MainForm
             End If
         Next
 
-        _Disk.Data.BatchEditMode = False
+        _Disk.Image.BatchEditMode = False
 
         If Result Then
             DiskImageRefresh()
@@ -1054,7 +1056,7 @@ Public Class MainForm
     End Sub
 
     Private Sub RestructureImage()
-        If _TitleDB.IsVerifiedImage(_Disk) Then
+        If _TitleDB.IsVerifiedImage(_Disk, _CurrentImageData) Then
             If Not MsgBoxQuestion("This is a verified image.  Are you sure you wish to restructure this image?") Then
                 Exit Sub
             End If
@@ -1063,16 +1065,16 @@ Public Class MainForm
         Dim Size = GetFloppyDiskSize(_Disk.DiskType)
         Dim Data(Size - 1) As Byte
         Dim Params = GetFloppyDiskParams(_Disk.DiskType)
-        Dim ParamsBySize = GetFloppyDiskParams(_Disk.Data.Length)
+        Dim ParamsBySize = GetFloppyDiskParams(_Disk.Image.Length)
 
         Dim DataOffset As UInteger = 0
-        For Offset As UInteger = 0 To _Disk.Data.Length - 1 Step Disk.BYTES_PER_SECTOR
+        For Offset As UInteger = 0 To _Disk.Image.Length - 1 Step Disk.BYTES_PER_SECTOR
             Dim Sector As UInteger = Offset \ Disk.BYTES_PER_SECTOR
             Dim TrackSector As UShort = Sector Mod ParamsBySize.SectorsPerTrack
             Dim Track As UShort = Sector \ ParamsBySize.SectorsPerTrack
             Dim Side As UShort = Track Mod ParamsBySize.NumberOfHeads
             If TrackSector < Params.SectorsPerTrack And Side < Params.NumberOfHeads Then
-                _Disk.Data.CopyTo(Offset, Data, DataOffset, Disk.BYTES_PER_SECTOR)
+                _Disk.Image.CopyTo(Offset, Data, DataOffset, Disk.BYTES_PER_SECTOR)
                 DataOffset += Disk.BYTES_PER_SECTOR
             End If
         Next
@@ -1081,10 +1083,10 @@ Public Class MainForm
     End Sub
 
     Private Sub DiskUpdateBytes(Data() As Byte)
-        _Disk.Data.BatchEditMode = True
-        _Disk.Data.SetBytes(Data, 0, _Disk.Data.Length, 0)
-        _Disk.Data.Resize(Data.Length)
-        _Disk.Data.BatchEditMode = False
+        _Disk.Image.BatchEditMode = True
+        _Disk.Image.SetBytes(Data, 0, _Disk.Image.Length, 0)
+        _Disk.Image.Resize(Data.Length)
+        _Disk.Image.BatchEditMode = False
 
         DiskImageRefresh()
     End Sub
@@ -1123,7 +1125,7 @@ Public Class MainForm
             Exit Sub
         End If
 
-        _Disk.Data.BatchEditMode = True
+        _Disk.Image.BatchEditMode = True
 
         For Each Item In ListViewFiles.SelectedItems
             FileData = Item.Tag
@@ -1136,7 +1138,7 @@ Public Class MainForm
             End If
         Next
 
-        _Disk.Data.BatchEditMode = False
+        _Disk.Image.BatchEditMode = False
 
         If Result Then
             DiskImageRefresh()
@@ -1236,7 +1238,7 @@ Public Class MainForm
                 If NewFilePath = "" Then
                     NewFilePath = ImageData.GetSaveFile
                 End If
-                Success = SaveDiskImageToFile(Disk, NewFilePath)
+                Success = SaveDiskImageToFile(Disk, NewFilePath, ImageData.ImageType)
             End If
             If Not Success Then
                 Dim Msg As String = $"Error saving file '{IO.Path.GetFileName(NewFilePath)}'."
@@ -1248,7 +1250,7 @@ Public Class MainForm
         Loop Until Success
 
         If Success Then
-            ImageData.Checksum = Crc32.ComputeChecksum(Disk.Data.Data)
+            ImageData.Checksum = Crc32.ComputeChecksum(Disk.Image.GetBytes)
             ImageData.ExternalModified = False
             ItemScanModified(Disk, ImageData)
         End If
@@ -1384,7 +1386,7 @@ Public Class MainForm
     End Sub
 
     Private Sub FATEdit(Index As UShort)
-        Dim frmFATEdit As New FATEditForm(_Disk, Index)
+        Dim frmFATEdit As New FATEditForm(_Disk, Index, _CurrentImageData.ProtectedSectors)
 
         frmFATEdit.ShowDialog()
 
@@ -1464,7 +1466,7 @@ Public Class MainForm
             Exit Sub
         End If
 
-        _Disk.Data.BatchEditMode = True
+        _Disk.Image.BatchEditMode = True
 
         Dim FirstCluster As UShort = 0
 
@@ -1491,9 +1493,9 @@ Public Class MainForm
                     _Disk.FATTables.UpdateTableEntry(LastCluster, Cluster)
                 End If
                 Dim ClusterOffset = _Disk.BPB.ClusterToOffset(Cluster)
-                Dim Buffer = _Disk.Data.GetBytes(ClusterOffset, ClusterSize)
+                Dim Buffer = _Disk.Image.GetBytes(ClusterOffset, ClusterSize)
                 Array.Copy(FileBuffer, Counter, Buffer, 0, ClusterSize)
-                _Disk.Data.SetBytes(Buffer, ClusterOffset)
+                _Disk.Image.SetBytes(Buffer, ClusterOffset)
                 LastCluster = Cluster
                 FreeClusterIndex += 1
             Next
@@ -1512,7 +1514,7 @@ Public Class MainForm
         Dim Entry = Directory.GetFile(Directory.Data.EntryCount)
         Entry.Data = NewEntry.Data
 
-        _Disk.Data.BatchEditMode = False
+        _Disk.Image.BatchEditMode = False
 
         DiskImageRefresh()
     End Sub
@@ -1733,7 +1735,7 @@ Public Class MainForm
                 FreeClusters = _Disk.FAT.GetFreeClusters(FAT12.FreeClusterEmum.All)
             End If
 
-            _Disk.Data.BatchEditMode = True
+            _Disk.Image.BatchEditMode = True
 
             If Result.FileNameChanged Then
                 FileData.DirectoryEntry.SetFileName(Result.FileName)
@@ -1768,9 +1770,9 @@ Public Class MainForm
                 End If
 
                 Dim ClusterOffset = _Disk.BPB.ClusterToOffset(Cluster)
-                Dim Buffer = _Disk.Data.GetBytes(ClusterOffset, ClusterSize)
+                Dim Buffer = _Disk.Image.GetBytes(ClusterOffset, ClusterSize)
                 Array.Copy(FileBuffer, Counter, Buffer, 0, Length)
-                _Disk.Data.SetBytes(Buffer, ClusterOffset)
+                _Disk.Image.SetBytes(Buffer, ClusterOffset)
                 ClusterIndex += 1
                 LastCluster = Cluster
             Next
@@ -1790,7 +1792,7 @@ Public Class MainForm
                 For Index = ClusterIndex To ClusterCount - 1
                     Cluster = FileData.DirectoryEntry.FATChain.Clusters(Index)
                     Dim ClusterOffset = _Disk.BPB.ClusterToOffset(Cluster)
-                    _Disk.Data.SetBytes(Buffer, ClusterOffset)
+                    _Disk.Image.SetBytes(Buffer, ClusterOffset)
 
                     _Disk.FATTables.UpdateTableEntry(Cluster, FAT12.FAT_FREE_CLUSTER)
                     FATUpdated = True
@@ -1801,7 +1803,7 @@ Public Class MainForm
                 _Disk.FATTables.UpdateFAT12()
             End If
 
-            _Disk.Data.BatchEditMode = False
+            _Disk.Image.BatchEditMode = False
 
             DiskImageRefresh()
         End If
@@ -1966,7 +1968,7 @@ Public Class MainForm
     Private Sub FixImageSize()
         Dim Result As Boolean = True
 
-        If _TitleDB.IsVerifiedImage(_Disk) Then
+        If _TitleDB.IsVerifiedImage(_Disk, _CurrentImageData) Then
             If Not MsgBoxQuestion("This is a verified image.  Are you sure you wish to adjust the image size for this image?") Then
                 Exit Sub
             End If
@@ -1980,7 +1982,7 @@ Public Class MainForm
             Result = MsgBoxQuestion($"The image size is smaller than the detected size.{vbCrLf}{vbCrLf}Are you sure you wish to increase the image size?")
         Else
             Dim ReportedSize = _Disk.BPB.ReportedImageSize
-            Dim Data = _Disk.Data.GetBytes(ReportedSize, _Disk.Data.Length - ReportedSize)
+            Dim Data = _Disk.Image.GetBytes(ReportedSize, _Disk.Image.Length - ReportedSize)
             Dim HasData As Boolean = False
             For Each b In Data
                 If b <> 0 Then
@@ -2122,7 +2124,7 @@ Public Class MainForm
                 Dim WriteOptions = FloppyDiskWriteOptions(DoFormat, DetectedType, NewDiskType)
                 If Not WriteOptions.Cancelled Then
                     Dim FloppyAccessForm As New FloppyAccessForm(FloppyDrive, _Disk.BPB, FloppyAccessForm.FloppyAccessType.Write) With {
-                        .DiskBuffer = _Disk.Data.Data,
+                        .DiskBuffer = _Disk.Image.GetBytes,
                         .DoFormat = WriteOptions.Format,
                         .DoVerify = WriteOptions.Verify
                     }
@@ -2138,7 +2140,7 @@ Public Class MainForm
 
     Private Sub FloppyDiskSaveFile(Buffer() As Byte, DiskType As FloppyDiskType)
         Dim FileExt = ".ima"
-        Dim FileFilter = GetSaveDialogFilters(DiskType, FileExt)
+        Dim FileFilter = GetSaveDialogFilters(DiskType, LoadedImageType.SectorImage, FileExt)
 
         Dim Dialog = New SaveFileDialog With {
             .Filter = FileFilter.Filter,
@@ -2250,7 +2252,7 @@ Public Class MainForm
         End If
 
         Dim FileExt = IO.Path.GetExtension(FilePath)
-        Dim FileFilter = GetSaveDialogFilters(DiskType, FileExt)
+        Dim FileFilter = GetSaveDialogFilters(DiskType, ImageData.ImageType, FileExt)
 
         Dim Dialog = New SaveFileDialog With {
             .InitialDirectory = IO.Path.GetDirectoryName(FilePath),
@@ -2304,7 +2306,7 @@ Public Class MainForm
         Return Len(PathName)
     End Function
 
-    Private Function GetSaveDialogFilters(DiskType As FloppyDiskType, FileExt As String) As SaveDialogFilter
+    Private Function GetSaveDialogFilters(DiskType As FloppyDiskType, ImageType As LoadedImageType, FileExt As String) As SaveDialogFilter
         Dim Response As SaveDialogFilter
         Dim CurrentIndex As Integer = 1
         Dim Extension As String
@@ -2329,6 +2331,17 @@ Public Class MainForm
         Next
         Response.Filter = FileDialogAppendFilter(Response.Filter, "Virtual Floppy Disk", ExtensionList)
         CurrentIndex += 1
+
+        'If ImageType = LoadedImageType.TranscopyImage Then
+        '    ExtensionList = New List(Of String) From {".tc"}
+        '    For Each Extension In ExtensionList
+        '        If FileExt.Equals(Extension, StringComparison.OrdinalIgnoreCase) Then
+        '            Response.FilterIndex = CurrentIndex
+        '        End If
+        '    Next
+        '    Response.Filter = FileDialogAppendFilter(Response.Filter, "Transcopy Image", ExtensionList)
+        '    CurrentIndex += 1
+        'End If
 
         Dim Items = System.Enum.GetValues(GetType(FloppyDiskType))
         For Each Item As Integer In Items
@@ -2361,6 +2374,8 @@ Public Class MainForm
     Private Sub HexDisplayBadSectors()
         Dim HexViewSectorData = HexViewBadSectors(_Disk)
 
+        HexViewSectorData.ProtectedSectors = _CurrentImageData.ProtectedSectors
+
         If DisplayHexViewForm(HexViewSectorData) Then
             DiskImageRefresh()
         End If
@@ -2368,6 +2383,8 @@ Public Class MainForm
 
     Private Sub HexDisplayBootSector()
         Dim HexViewSectorData = HexViewBootSector(_Disk)
+
+        HexViewSectorData.ProtectedSectors = _CurrentImageData.ProtectedSectors
 
         If DisplayHexViewForm(HexViewSectorData) Then
             DiskImageRefresh()
@@ -2378,6 +2395,8 @@ Public Class MainForm
         Dim HexViewSectorData = HexViewDirectoryEntry(_Disk, Offset)
 
         If HexViewSectorData IsNot Nothing Then
+            HexViewSectorData.ProtectedSectors = _CurrentImageData.ProtectedSectors
+
             If DisplayHexViewForm(HexViewSectorData) Then
                 DiskImageRefresh()
             End If
@@ -2385,8 +2404,9 @@ Public Class MainForm
     End Sub
 
     Private Sub HexDisplayDiskImage()
-        Dim HexViewSectorData = New HexViewSectorData(_Disk, 0, _Disk.Data.Length) With {
-            .Description = "Disk"
+        Dim HexViewSectorData = New HexViewSectorData(_Disk, 0, _Disk.Image.Length) With {
+            .Description = "Disk",
+            .ProtectedSectors = _CurrentImageData.ProtectedSectors
         }
 
         If DisplayHexViewForm(HexViewSectorData, True, True, False) Then
@@ -2397,6 +2417,8 @@ Public Class MainForm
     Private Sub HexDisplayFAT()
         Dim HexViewSectorData = HexViewFAT(_Disk)
 
+        HexViewSectorData.ProtectedSectors = _CurrentImageData.ProtectedSectors
+
         Dim SyncBlocks = _Disk.BPB.NumberOfFATEntries > 1 AndAlso Not IsDiskTypeXDF(_Disk.DiskType)
 
         If DisplayHexViewForm(HexViewSectorData, SyncBlocks) Then
@@ -2406,7 +2428,8 @@ Public Class MainForm
 
     Private Sub HexDisplayFreeClusters()
         Dim HexViewSectorData = New HexViewSectorData(_Disk, _Disk.FAT.GetFreeClusters(FAT12.FreeClusterEmum.WithData)) With {
-            .Description = "Free Clusters"
+            .Description = "Free Clusters",
+            .ProtectedSectors = _CurrentImageData.ProtectedSectors
         }
 
         If DisplayHexViewForm(HexViewSectorData) Then
@@ -2417,6 +2440,8 @@ Public Class MainForm
     Private Sub HexDisplayLostClusters()
         Dim HexViewSectorData = HexViewLostClusters(_Disk)
 
+        HexViewSectorData.ProtectedSectors = _CurrentImageData.ProtectedSectors
+
         If DisplayHexViewForm(HexViewSectorData) Then
             DiskImageRefresh()
         End If
@@ -2425,9 +2450,10 @@ Public Class MainForm
     Private Sub HexDisplayOverdumpData()
         Dim Offset = _Disk.BPB.ReportedImageSize() + 1
 
-        Dim HexViewSectorData = New HexViewSectorData(_Disk, Offset, _Disk.Data.Length - Offset) With {
-           .Description = "Disk"
-       }
+        Dim HexViewSectorData = New HexViewSectorData(_Disk, Offset, _Disk.Image.Length - Offset) With {
+            .Description = "Disk",
+            .ProtectedSectors = _CurrentImageData.ProtectedSectors
+        }
 
         If DisplayHexViewForm(HexViewSectorData, True, True, False) Then
             DiskImageRefresh()
@@ -2745,9 +2771,9 @@ Public Class MainForm
             .Items.Clear()
 
             If Disk IsNot Nothing Then
-                .AddItem("CRC32", Crc32.ComputeChecksum(Disk.Data.Data).ToString("X8"), False)
+                .AddItem("CRC32", Crc32.ComputeChecksum(Disk.Image.GetBytes).ToString("X8"), False)
                 .AddItem("MD5", MD5, False)
-                .AddItem("SHA-1", SHA1Hash(Disk.Data.Data), False)
+                .AddItem("SHA-1", SHA1Hash(Disk.Image.GetBytes), False)
             End If
 
             .EndUpdate()
@@ -2756,10 +2782,10 @@ Public Class MainForm
     End Sub
 
     Private Function GetNormalizedDataByTrackList(Disk As Disk, TrackList As List(Of FloppyDB.BooterTrack)) As Byte()
-        Dim BPB As BiosParameterBlock = BuildBPB(_Disk.Data.Data.Length)
+        Dim BPB As BiosParameterBlock = BuildBPB(_Disk.Image.Length)
 
-        Dim Data(Disk.Data.Data.Length - 1) As Byte
-        Disk.Data.Data.CopyTo(Data, 0)
+        Dim Data(Disk.Image.Length - 1) As Byte
+        Disk.Image.CopyTo(Data, 0)
         Dim BytesPerTrack = BPB.BytesPerSector * BPB.SectorsPerTrack
         Dim Buffer(BytesPerTrack - 1) As Byte
         For Each Track In TrackList
@@ -2772,8 +2798,8 @@ Public Class MainForm
     End Function
 
     Private Function GetNormalizedDataByBadSectors(Disk As Disk) As Byte()
-        Dim Data(Disk.Data.Data.Length - 1) As Byte
-        Disk.Data.Data.CopyTo(Data, 0)
+        Dim Data(Disk.Image.Length - 1) As Byte
+        Disk.Image.CopyTo(Data, 0)
         Dim BytesPerCluster = Disk.BPB.BytesPerCluster()
         Dim Buffer(BytesPerCluster - 1) As Byte
         For Each Cluster In Disk.FATTables.FAT(0).BadClusters
@@ -2789,11 +2815,11 @@ Public Class MainForm
         Dim MD5 As String = ""
 
         If Disk IsNot Nothing Then
-            MD5 = MD5Hash(Disk.Data.Data)
+            MD5 = MD5Hash(Disk.Image.GetBytes)
         End If
 
         SetCurrentFileName(ImageData)
-        PopulateSummaryPanel(Disk, MD5, ImageData.InvalidImage)
+        PopulateSummaryPanel(Disk, MD5, ImageData)
         PopulateHashPanel(Disk, MD5)
         RefreshDiskButtons(Disk, ImageData)
     End Sub
@@ -2871,7 +2897,7 @@ Public Class MainForm
             TitleGroup.Tag = TextWidth - ColumnWidth
         End With
     End Sub
-    Private Sub PopulateSummaryPanel(Disk As Disk, MD5 As String, InvalidImage As Boolean)
+    Private Sub PopulateSummaryPanel(Disk As Disk, MD5 As String, ImageData As LoadedImageData)
         Dim Value As String
         Dim ForeColor As Color
 
@@ -2885,7 +2911,7 @@ Public Class MainForm
                 Dim TitleFound As Boolean = False
 
                 If _TitleDB.TitleCount > 0 Then
-                    Dim TitleFindResult = _TitleDB.TitleFind(Disk, MD5)
+                    Dim TitleFindResult = _TitleDB.TitleFind(Disk, MD5, ImageData.ProtectedSectors)
                     If TitleFindResult.TitleData IsNot Nothing Then
                         TitleFound = True
                         CopyProtection = TitleFindResult.TitleData.GetCopyProtection
@@ -2900,11 +2926,11 @@ Public Class MainForm
                 Else
                     ForeColor = SystemColors.WindowText
                 End If
-                .AddItem(DiskGroup, "Image Size", Disk.Data.Length.ToString("N0"), ForeColor)
+                .AddItem(DiskGroup, "Image Size", Disk.Image.Length.ToString("N0"), ForeColor)
 
                 If Disk.IsValidImage(False) Then
                     Dim DiskTypeString = GetFloppyDiskTypeName(Disk.DiskType)
-                    Dim DiskTypeBySize = GetFloppyDiskType(Disk.Data.Length)
+                    Dim DiskTypeBySize = GetFloppyDiskType(Disk.Image.Length)
 
                     If Disk.DiskType <> FloppyDiskType.FloppyUnknown Or DiskTypeBySize = FloppyDiskType.FloppyUnknown Then
                         .AddItem(DiskGroup, "Disk Type", DiskTypeString & " Floppy")
@@ -2914,7 +2940,7 @@ Public Class MainForm
                     End If
 
                     If IsDiskTypeXDF(Disk.DiskType) Then
-                        Dim XDFChecksum = CalcXDFChecksum(Disk.Data.Data, Disk.BPB.SectorsPerFAT)
+                        Dim XDFChecksum = CalcXDFChecksum(Disk.Image.GetBytes, Disk.BPB.SectorsPerFAT)
                         If XDFChecksum = Disk.GetXDFChecksum Then
                             ForeColor = Color.Green
                         Else
@@ -2924,7 +2950,7 @@ Public Class MainForm
                     End If
 
                     If Disk.BPB.IsValid AndAlso Disk.CheckImageSize > 0 AndAlso Disk.DiskType <> FloppyDiskType.FloppyUnknown Then
-                        .AddItem(DiskGroup, DiskTypeString & " CRC32", Crc32.ComputeChecksum(Disk.Data.GetBytes(0, Disk.BPB.ReportedImageSize())).ToString("X8"))
+                        .AddItem(DiskGroup, DiskTypeString & " CRC32", Crc32.ComputeChecksum(Disk.Image.GetBytes(0, Disk.BPB.ReportedImageSize())).ToString("X8"))
                     End If
                 End If
 
@@ -2961,7 +2987,7 @@ Public Class MainForm
                     End If
 
                     If Disk.BootSector.BPB.IsValid Then
-                        Dim DiskTypeBySize = GetFloppyDiskType(Disk.Data.Length)
+                        Dim DiskTypeBySize = GetFloppyDiskType(Disk.Image.Length)
                         Dim BPBBySize = BuildBPB(DiskTypeBySize)
                         Dim DoBPBCompare = Disk.DiskType = FloppyDiskType.FloppyUnknown And DiskTypeBySize <> FloppyDiskType.FloppyUnknown
 
@@ -3052,8 +3078,7 @@ Public Class MainForm
                                 ForeColor = Color.Red
                             ElseIf Disk.DiskType = FloppyDiskType.FloppyXDF35 AndAlso Disk.FAT.MediaDescriptor = &HF9 Then
                                 'Do Nothing - This is normal for XDF
-                                'ElseIf Disk.DiskType <> FloppyDiskType.FloppyUnknown AndAlso Disk.BootSector.BPB.MediaDescriptor <> GetFloppyDiskMediaDescriptor(Disk.DiskType) Then
-                            ElseIf Disk.BootSector.BPB.MediaDescriptor <> GetFloppyDiskMediaDescriptor(Disk.DiskType) Then
+                            ElseIf Disk.DiskType <> FloppyDiskType.FloppyUnknown AndAlso Disk.BootSector.BPB.MediaDescriptor <> GetFloppyDiskMediaDescriptor(Disk.DiskType) Then
                                 Value &= " (Mismatched)"
                                 ForeColor = Color.Red
                             ElseIf Disk.FAT.MediaDescriptor <> Disk.BootSector.BPB.MediaDescriptor Then
@@ -3238,7 +3263,7 @@ Public Class MainForm
             Else
                 Dim DiskGroup = .Groups.Add("Disk", "Disk")
                 Dim Msg As String
-                If InvalidImage Then
+                If ImageData.InvalidImage Then
                     Msg = "Invalid Image Format"
                 Else
                     Msg = "Error Loading File"
@@ -3249,7 +3274,7 @@ Public Class MainForm
                 .Items.Add(Item)
                 .HideSelection = True
                 .TabStop = False
-                btnRetry.Visible = Not InvalidImage
+                btnRetry.Visible = Not ImageData.InvalidImage
             End If
 
             .EndUpdate()
@@ -3461,7 +3486,7 @@ Public Class MainForm
     Private Sub RefreshFixImageSubMenu(Disk As Disk)
         Dim EnableSubMenu As Boolean
         Dim EnableRestructureImage As Boolean = False
-        Dim DiskTypeBySize = GetFloppyDiskType(Disk.Data.Length)
+        Dim DiskTypeBySize = GetFloppyDiskType(Disk.Image.Length)
         Dim SizeByType = GetFloppyDiskSize(Disk.DiskType)
 
         If Disk.DiskType = FloppyDiskType.Floppy160 And DiskTypeBySize = FloppyDiskType.Floppy180 Then
@@ -3500,7 +3525,7 @@ Public Class MainForm
             Dim Compare = Disk.CheckImageSize
             BtnFixImageSize.Enabled = Compare <> 0
             If Disk.Directory.Data.HasBootSector Then
-                Dim BootSectorBytes = Disk.Data.GetBytes(Disk.Directory.Data.BootSectorOffset, BootSector.BOOT_SECTOR_SIZE)
+                Dim BootSectorBytes = Disk.Image.GetBytes(Disk.Directory.Data.BootSectorOffset, BootSector.BOOT_SECTOR_SIZE)
                 BtnRestoreBootSector.Enabled = Not BootSectorBytes.CompareTo(Disk.BootSector.Data)
             Else
                 BtnRestoreBootSector.Enabled = False
@@ -3525,10 +3550,10 @@ Public Class MainForm
         BtnTruncateImage.Enabled = BtnFixImageSize.Enabled
 
         If Disk IsNot Nothing Then
-            BtnRevert.Enabled = Disk.Data.Modified
-            BtnUndo.Enabled = Disk.Data.UndoEnabled
-            BtnRedo.Enabled = Disk.Data.RedoEnabled
-            ToolStripStatusModified.Visible = Disk.Data.Modified
+            BtnRevert.Enabled = Disk.Image.Modified
+            BtnUndo.Enabled = Disk.Image.UndoEnabled
+            BtnRedo.Enabled = Disk.Image.RedoEnabled
+            ToolStripStatusModified.Visible = Disk.Image.Modified
             ToolStripStatusReadOnly.Visible = ImageData.ReadOnly
             ToolStripStatusReadOnly.Text = IIf(ImageData.Compressed, "Compressed", "Read Only")
             ToolStripStatusCached.Visible = ImageData.TempPath <> ""
@@ -3884,7 +3909,7 @@ Public Class MainForm
     End Sub
 
     Private Sub RevertChanges()
-        If _Disk.Data.Modified Then
+        If _Disk.Image.Modified Then
             ReloadCurrentImage(True)
         End If
     End Sub
@@ -4145,13 +4170,13 @@ Public Class MainForm
     End Sub
 
     Private Sub Win9xCleanCurrent()
-        If _TitleDB.IsVerifiedImage(_Disk) Then
+        If _TitleDB.IsVerifiedImage(_Disk, _CurrentImageData) Then
             If Not MsgBoxQuestion("This is a verified image.  Are you sure you wish to remove any windows modifications from this image?") Then
                 Exit Sub
             End If
         End If
 
-        Dim Result = Win9xClean(_Disk, False)
+        Dim Result = Win9xClean(_Disk, _CurrentImageData, False)
 
         If Result Then
             DiskImageRefresh()
@@ -4375,14 +4400,12 @@ Public Class MainForm
 
     Private Sub BtnRedo_Click(sender As Object, e As EventArgs) Handles BtnRedo.Click, ToolStripBtnRedo.Click
         ContextMenuEdit.Close()
-        _Disk.Data.Redo()
+        _Disk.Image.Redo()
         DiskImageRefresh()
     End Sub
 
     Private Sub BtnReload_Click(sender As Object, e As EventArgs) Handles BtnReload.Click
-        If _CurrentImageData IsNot Nothing Then
-            _CurrentImageData.ClearTempPath()
-        End If
+        _CurrentImageData?.ClearTempPath()
         ReloadCurrentImage(False)
     End Sub
 
@@ -4440,7 +4463,7 @@ Public Class MainForm
 
     Private Sub BtnUndo_Click(sender As Object, e As EventArgs) Handles BtnUndo.Click, ToolStripBtnUndo.Click
         ContextMenuEdit.Close()
-        _Disk.Data.Undo()
+        _Disk.Image.Undo()
         DiskImageRefresh()
     End Sub
 

@@ -6,7 +6,7 @@ Module Copy_Protection
     Public Function GetCopyProtection(Disk As DiskImage.Disk, BadSectors As HashSet(Of UInteger)) As String
         Dim ProtectionFound As Boolean = False
         Dim ProtectionName As String = ""
-        Dim DataLength = Disk.Data.Length
+        Dim DataLength = Disk.Image.Length
         Dim Offset As UInteger
 
         'H.L.S. Duplication
@@ -18,9 +18,9 @@ Module Copy_Protection
             If CheckBadSectors(BadSectors, {StartingSector, StartingSector + 1}) Then
                 Offset = Disk.SectorToBytes(StartingSector + 1)
                 If Offset + 8 <= DataLength Then
-                    Dim b1 = Disk.Data.GetBytes(Offset, 8)
+                    Dim b1 = Disk.Image.GetBytes(Offset, 8)
                     Offset = Disk.SectorToBytes(StartingSector)
-                    Dim b2 = Disk.Data.GetBytes(Offset, 8)
+                    Dim b2 = Disk.Image.GetBytes(Offset, 8)
 
                     If b1.CompareTo(b2) AndAlso Integer.TryParse(Encoding.UTF8.GetString(b1, 3, 4), 0) Then
                         ProtectionFound = True
@@ -54,7 +54,7 @@ Module Copy_Protection
                 If BadSectors.Contains(Sector) Then
                     Offset = Disk.SectorToBytes(Sector)
                     If Offset + 31 <= DataLength Then
-                        Dim b = Disk.Data.GetBytes(Offset, 31)
+                        Dim b = Disk.Image.GetBytes(Offset, 31)
                         If Encoding.UTF8.GetString(b) = "(c) 1986 for KBI by L. TOURNIER" Then
                             ProtectionFound = True
                             ProtectionName = "KBI"

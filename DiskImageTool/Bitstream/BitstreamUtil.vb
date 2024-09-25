@@ -1,7 +1,5 @@
-﻿Imports System.IO
-
-Module BitstreamUtil
-    Private Function CheckDoubleSizeSectors(Sectors As List(Of MFMSector)) As Boolean
+﻿Module BitstreamUtil
+    Private Function CheckDoubleSizeSectors(Sectors As List(Of IBM_MFM.MFMSector)) As Boolean
         Dim Result As Boolean = True
         Dim SectorCount As UShort
 
@@ -12,7 +10,7 @@ Module BitstreamUtil
                     If MFMSector.SectorId > 4 Then
                         Result = False
                         Exit For
-                    ElseIf MFMSector.Size <> 1024 Then
+                    ElseIf MFMSector.GetSizeBytes <> 1024 Then
                         Result = False
                         Exit For
                     Else
@@ -34,15 +32,15 @@ Module BitstreamUtil
         Return Offset * 512
     End Function
 
-    Public Function PSIGetImageType(PSI As PSIImage.PSISectorImage) As DiskImage.FloppyDiskType
+    Public Function PSIGetImageType(PSI As PSI_Image.PSISectorImage) As DiskImage.FloppyDiskType
         Dim DiskType As DiskImage.FloppyDiskType
         Dim MaxSectors As Byte
 
-        If PSI.Header.DefaultSectorFormat = PSIImage.DefaultSectorFormat.IBM_MFM_DD Then
+        If PSI.Header.DefaultSectorFormat = PSI_Image.DefaultSectorFormat.IBM_MFM_DD Then
             MaxSectors = 9
-        ElseIf PSI.Header.DefaultSectorFormat = PSIImage.DefaultSectorFormat.IBM_MFM_HD Then
+        ElseIf PSI.Header.DefaultSectorFormat = PSI_Image.DefaultSectorFormat.IBM_MFM_HD Then
             MaxSectors = 18
-        ElseIf PSI.Header.DefaultSectorFormat = PSIImage.DefaultSectorFormat.IBM_MFM_ED Then
+        ElseIf PSI.Header.DefaultSectorFormat = PSI_Image.DefaultSectorFormat.IBM_MFM_ED Then
             MaxSectors = 36
         End If
 
@@ -64,7 +62,7 @@ Module BitstreamUtil
             End If
         Next
 
-        If PSI.Header.DefaultSectorFormat = PSIImage.DefaultSectorFormat.IBM_MFM_DD Then
+        If PSI.Header.DefaultSectorFormat = PSI_Image.DefaultSectorFormat.IBM_MFM_DD Then
             If CylinderCount >= 79 Then
                 DiskType = DiskImage.FloppyDiskType.Floppy720
             Else
@@ -82,7 +80,7 @@ Module BitstreamUtil
                     End If
                 End If
             End If
-        ElseIf PSI.Header.DefaultSectorFormat = PSIImage.DefaultSectorFormat.IBM_MFM_HD Then
+        ElseIf PSI.Header.DefaultSectorFormat = PSI_Image.DefaultSectorFormat.IBM_MFM_HD Then
             If SectorCount > 15 Then
                 DiskType = DiskImage.FloppyDiskType.Floppy1440
             Else
@@ -149,69 +147,91 @@ Module BitstreamUtil
         Return DiskType
     End Function
 
-    Public Function PSIToSectorImage(PSI As PSIImage.PSISectorImage, DiskType As DiskImage.FloppyDiskType) As Byte()
+    Public Function PSIToSectorImage(PSI As PSI_Image.PSISectorImage, DiskType As DiskImage.FloppyDiskType) As SectorImageData
         Dim ImageSize = DiskImage.GetFloppyDiskSize(DiskType)
         Dim ImageParams = DiskImage.GetFloppyDiskParams(DiskType)
 
-        Dim SectorImage(ImageSize - 1) As Byte
+        Dim SectorImageData As New SectorImageData(ImageSize)
+
         Dim TrackCount = Int(ImageParams.SectorCountSmall / ImageParams.SectorsPerTrack / ImageParams.NumberOfHeads)
 
         For Each PSISector In PSI.Sectors
             Dim MaxSize As UInteger = ImageParams.BytesPerSector
             Dim MaxSectors As UShort = ImageParams.SectorsPerTrack
-            Dim SectorStep As Byte = 1
 
             If Not PSISector.IsAlternateSector Then
                 If PSISector.Cylinder < TrackCount And PSISector.Head < ImageParams.NumberOfHeads Then
-                    If PSISector.Sector >= 1 And PSISector.Sector <= MaxSectors And PSISector.Size <= MaxSize Then
-                        Dim Sector = PSISector.Sector * SectorStep - SectorStep
-                        Dim Offset = GetImageOffset(ImageParams, PSISector.Cylinder, PSISector.Head, Sector)
-                        Dim Size As UShort
-                        Dim Data() As Byte
-                        If PSISector.IsCompressed Then
-                            Data = New Byte(PSISector.Size - 1) {}
-                            For i = 0 To Data.Length - 1
-                                Data(i) = PSISector.CompressedSectorData
-                            Next
-                            Size = PSISector.Size
+                    If PSISector.Sector >= 1 And PSISector.Sector <= MaxSectors Then
+                        Dim SectorId = PSISector.Sector - 1
+                        Dim Offset = GetImageOffset(ImageParams, PSISector.Cylinder, PSISector.Head, SectorId)
+                        Dim Sector = Offset \ ImageParams.BytesPerSector
+                        If PSISector.Size <= MaxSize Then
+                            Dim Size As UShort
+                            Dim Data() As Byte
+                            If PSISector.IsCompressed Then
+                                Data = New Byte(PSISector.Size - 1) {}
+                                For i = 0 To Data.Length - 1
+                                    Data(i) = PSISector.CompressedSectorData
+                                Next
+                                Size = PSISector.Size
+                            Else
+                                Data = PSISector.Data
+                                Size = Math.Min(PSISector.Size, PSISector.Data.Length)
+                            End If
+                            Array.Copy(Data, 0, SectorImageData.Data, Offset, Size)
+                            If Size <> ImageParams.BytesPerSector Then
+                                If Not SectorImageData.ProtectedSectors.Contains(Sector) Then
+                                    SectorImageData.ProtectedSectors.Add(Sector)
+                                End If
+                            End If
                         Else
-                            Data = PSISector.Data
-                            Size = Math.Min(PSISector.Size, PSISector.Data.Length)
+                            If Not SectorImageData.ProtectedSectors.Contains(Sector) Then
+                                SectorImageData.ProtectedSectors.Add(Sector)
+                            End If
                         End If
-                        Array.Copy(Data, 0, SectorImage, Offset, Size)
                     End If
                 End If
             End If
         Next
 
-        Return SectorImage
+        Return SectorImageData
     End Function
 
-    Public Function TranscopyToSectorImage(tc As Transcopy.TransCopyImage, DiskType As DiskImage.FloppyDiskType) As Byte()
+    Public Function TranscopyToSectorImage(tc As Transcopy.TransCopyImage, DiskType As DiskImage.FloppyDiskType) As SectorImageData
         Dim ImageSize = DiskImage.GetFloppyDiskSize(DiskType)
         Dim ImageParams = DiskImage.GetFloppyDiskParams(DiskType)
 
-        Dim SectorImage(ImageSize - 1) As Byte
+        Dim SectorImageData As New SectorImageData(ImageSize)
+
         Dim TrackCount = Int(ImageParams.SectorCountSmall / ImageParams.SectorsPerTrack / ImageParams.NumberOfHeads)
 
         For Each Cylinder In tc.Cylinders
             Dim MaxSize As UInteger = ImageParams.BytesPerSector
             Dim MaxSectors As UShort = ImageParams.SectorsPerTrack
-            Dim SectorStep As Byte = 1
             If Cylinder.DecodedData IsNot Nothing Then
                 If Cylinder.Track < TrackCount And Cylinder.Side < ImageParams.NumberOfHeads Then
-                    If ImageParams.SectorsPerTrack = 8 AndAlso CheckDoubleSizeSectors(Cylinder.DecodedData.Sectors) Then
-                        MaxSize *= 2
-                        MaxSectors /= 2
-                        SectorStep = 2
-                    End If
                     For Each MFMSector In Cylinder.DecodedData.Sectors
-                        If MFMSector.Data IsNot Nothing Then
-                            If MFMSector.SectorId >= 1 And MFMSector.SectorId <= MaxSectors And Not MFMSector.Overlaps And MFMSector.Size <= MaxSize Then
-                                Dim Sector = MFMSector.SectorId * SectorStep - SectorStep
-                                Dim Offset = GetImageOffset(ImageParams, Cylinder.Track, Cylinder.Side, Sector)
-                                Dim SectorIndex = Offset \ ImageParams.BytesPerSector
-                                Array.Copy(MFMSector.Data, 0, SectorImage, Offset, MFMSector.Size)
+                        If MFMSector.DAMFound Then
+                            If MFMSector.SectorId >= 1 And MFMSector.SectorId <= MaxSectors Then
+                                Dim SectorId = MFMSector.SectorId - 1
+                                Dim Offset = GetImageOffset(ImageParams, Cylinder.Track, Cylinder.Side, SectorId)
+                                Dim Sector = Offset \ ImageParams.BytesPerSector
+                                Dim Size = MFMSector.GetSizeBytes
+                                Dim ValidChecksum = MFMSector.DataChecksum = MFMSector.CalculateDataChecksum
+                                If MFMSector.DAM = IBM_MFM.MFMAddressMark.Data Then
+                                    Array.Copy(MFMSector.Data, 0, SectorImageData.Data, Offset, Math.Min(Size, MaxSize))
+                                    If Not MFMSector.Overlaps And Size = ImageParams.BytesPerSector And ValidChecksum Then
+                                        SectorImageData.SectorMap(Sector) = Cylinder.BitstreamOffset + MFMSector.DataOffset
+                                    Else
+                                        If Not SectorImageData.ProtectedSectors.Contains(Sector) Then
+                                            SectorImageData.ProtectedSectors.Add(Sector)
+                                        End If
+                                    End If
+                                Else
+                                    If Not SectorImageData.ProtectedSectors.Contains(Sector) Then
+                                        SectorImageData.ProtectedSectors.Add(Sector)
+                                    End If
+                                End If
                             End If
                         End If
                     Next
@@ -219,6 +239,18 @@ Module BitstreamUtil
             End If
         Next
 
-        Return SectorImage
+        Return SectorImageData
     End Function
+
+    Public Class SectorImageData
+        Public Sub New(ImageSize As UInteger)
+            _Data = New Byte(ImageSize - 1) {}
+            _SectorMap = New UInteger(ImageSize \ 512 - 1) {}
+            _ProtectedSectors = New HashSet(Of UInteger)
+        End Sub
+
+        Public Property SectorMap As UInteger()
+        Public Property Data As Byte()
+        Public Property ProtectedSectors As HashSet(Of UInteger)
+    End Class
 End Module

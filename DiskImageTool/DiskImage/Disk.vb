@@ -15,9 +15,9 @@
         Private _DiskType As FloppyDiskType
 
         Sub New(Data() As Byte, FatIndex As UShort, Optional Modifications As Stack(Of DataChange()) = Nothing)
-            FileBytes = New ImageByteArray(Data)
+            FileBytes = New ImageByteArray(New ByteArray(Data))
             _DirectoryCache = New Dictionary(Of UInteger, DirectoryCacheEntry)
-            _BootSector = New BootSector(FileBytes, BootSector.BOOT_SECTOR_OFFSET)
+            _BootSector = New BootSector(FileBytes.Data, BootSector.BOOT_SECTOR_OFFSET)
             SetBPB()
 
             _FATTables = New FATTables(_BPB, FileBytes, FatIndex)
@@ -46,7 +46,7 @@
             End Get
         End Property
 
-        Public ReadOnly Property Data As ImageByteArray
+        Public ReadOnly Property Image As ImageByteArray
             Get
                 Return FileBytes
             End Get
@@ -95,7 +95,7 @@
         End Function
         Public Function CheckImageSize() As Integer
             Dim ReportedSize As Integer = _BPB.ReportedImageSize()
-            Return Data.Length.CompareTo(ReportedSize)
+            Return FileBytes.Length.CompareTo(ReportedSize)
         End Function
 
         Public Function CheckSize() As Boolean
@@ -107,17 +107,17 @@
 
             Dim ReportedSize = _BPB.ReportedImageSize()
 
-            If ReportedSize <> Data.Length Then
-                Data.BatchEditMode = True
-                If ReportedSize < Data.Length Then
-                    Dim b(Data.Length - ReportedSize - 1) As Byte
+            If ReportedSize <> FileBytes.Length Then
+                FileBytes.BatchEditMode = True
+                If ReportedSize < FileBytes.Length Then
+                    Dim b(FileBytes.Length - ReportedSize - 1) As Byte
                     For i = 0 To b.Length - 1
                         b(i) = 0
                     Next
-                    Data.SetBytes(b, Data.Length - b.Length)
+                    FileBytes.SetBytes(b, FileBytes.Length - b.Length)
                 End If
-                Data.Resize(ReportedSize)
-                Data.BatchEditMode = False
+                FileBytes.Resize(ReportedSize)
+                FileBytes.BatchEditMode = False
                 Result = True
             End If
 
@@ -184,7 +184,7 @@
         End Sub
 
         Public Sub SaveFile(FilePath As String)
-            IO.File.WriteAllBytes(FilePath, FileBytes.Data)
+            IO.File.WriteAllBytes(FilePath, FileBytes.GetBytes)
             FileBytes.ClearChanges()
             CacheDirectoryEntries()
         End Sub
