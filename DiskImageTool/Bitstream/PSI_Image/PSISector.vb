@@ -1,6 +1,10 @@
 ﻿Namespace PSI_Image
     Public Class PSISector
         Private ReadOnly _ChunkData() As Byte
+        Private _Data As Byte()
+        Private _HasWeakBits As Boolean
+        Private _Weak As Byte()
+
         Public Sub New()
             _ChunkData = New Byte(7) {}
             Initialize()
@@ -11,13 +15,23 @@
         End Sub
 
         Private Sub Initialize()
-            _Data = New Byte(-1) {}
+            Dim Size = Me.Size
+
+            _Data = New Byte(Size - 1) {}
             _Weak = New Byte(-1) {}
+            _HasWeakBits = False
             _Offset = 0
             _SectorReadTime = 0
             _MFMHeader = Nothing
             _FMHeader = Nothing
             _GCRHeader = Nothing
+
+            If IsCompressed() Then
+                Dim CompressedSectorData = Me.CompressedSectorData
+                For i = 0 To Size - 1
+                    _Data(i) = CompressedSectorData
+                Next
+            End If
         End Sub
 
         Public ReadOnly Property ChunkData As Byte()
@@ -76,27 +90,98 @@
                 Return _ChunkData(7)
             End Get
             Set(value As Byte)
-                _ChunkData(7) = CompressedSectorData
+                _ChunkData(7) = value
             End Set
         End Property
+
+        Public Property IsCompressed() As Boolean
+            Get
+                Return (Flags And SectorFlags.Compressed) > 0
+            End Get
+            Set(value As Boolean)
+                Flags = ToggleBit(Flags, SectorFlags.Compressed, value)
+            End Set
+        End Property
+
+        Public Property IsAlternateSector() As Boolean
+            Get
+                Return (Flags And SectorFlags.AlternateSector) > 0
+            End Get
+            Set(value As Boolean)
+                Flags = ToggleBit(Flags, SectorFlags.AlternateSector, value)
+            End Set
+        End Property
+
+        Public Property HasDataCRCError() As Boolean
+            Get
+                Return (Flags And SectorFlags.DataCRCError) > 0
+            End Get
+            Set(value As Boolean)
+                Flags = ToggleBit(Flags, SectorFlags.DataCRCError, value)
+            End Set
+        End Property
+
         Public Property Data As Byte()
+            Get
+                Return _Data
+            End Get
+            Set
+                _Data = Value
+                UpdateDataProperties()
+            End Set
+        End Property
+
+        Private Sub UpdateDataProperties()
+            Dim CompressedSectorData As Byte = 0
+            Dim IsCompressed As Boolean = True
+
+            For i = 0 To _Data.Length - 1
+                If i = 0 Then
+                    CompressedSectorData = _Data(i)
+                ElseIf CompressedSectorData <> _Data(i) Then
+                    IsCompressed = False
+                    CompressedSectorData = 0
+                    Exit For
+                End If
+            Next
+
+            Me.Size = _Data.Length
+            Me.IsCompressed = IsCompressed
+            Me.CompressedSectorData = CompressedSectorData
+        End Sub
+
+        Public Property HasWeakBits As Boolean
+            Get
+                Return _HasWeakBits
+            End Get
+            Set
+                _HasWeakBits = Value
+            End Set
+        End Property
+
         Public Property Weak As Byte()
+            Get
+                Return _Weak
+            End Get
+            Set
+                _Weak = Value
+                _HasWeakBits = True
+            End Set
+        End Property
+
         Public Property Offset As UInt32
         Public Property SectorReadTime As UInt32
         Public Property MFMHeader As IBMSectorHeader
         Public Property FMHeader As IBMSectorHeader
         Public Property GCRHeader As GCRSectorHeader
 
-        Public Function IsCompressed() As Boolean
-            Return (Flags And SectorFlags.Compressed) > 0
-        End Function
 
-        Public Function IsAlternateSector() As Boolean
-            Return (Flags And SectorFlags.AlternateSector) > 0
-        End Function
-
-        Public Function HasDataCRCError() As Boolean
-            Return (Flags And SectorFlags.DataCRCError) > 0
+        Private Function ToggleBit(Data As Byte, Bit As Byte, Value As Boolean) As Byte
+            If Value Then
+                Return Data Or Bit
+            Else
+                Return Data And Not Bit
+            End If
         End Function
     End Class
 End Namespace

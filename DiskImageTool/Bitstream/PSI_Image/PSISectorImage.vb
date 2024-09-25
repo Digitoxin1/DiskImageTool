@@ -9,64 +9,71 @@
         Public Property Sectors As List(Of PSISector)
         Public Property Comment As String
 
-        Public Sub Export(FilePath As String)
+        Public Function Export(FilePath As String) As Boolean
             Dim Buffer() As Byte
 
-            Using fs As IO.FileStream = IO.File.OpenWrite(FilePath)
-                Buffer = New PSIChunk("PSI ", _Header.ChunkData).ToBytes
-                fs.Write(Buffer, 0, Buffer.Length)
-
-                If _Comment.Length > 0 Then
-                    Buffer = New PSIChunk("TEXT", Text.Encoding.UTF8.GetBytes(_Comment)).ToBytes
-                    fs.Write(Buffer, 0, Buffer.Length)
-                End If
-
-                For Each Sector In _Sectors
-                    Buffer = New PSIChunk("SECT", Sector.ChunkData).ToBytes
+            Try
+                Using fs As IO.FileStream = IO.File.OpenWrite(FilePath)
+                    Buffer = New PSIChunk("PSI ", _Header.ChunkData).ToBytes
                     fs.Write(Buffer, 0, Buffer.Length)
 
-                    If Sector.FMHeader IsNot Nothing Then
-                        Buffer = New PSIChunk("IBMF", Sector.FMHeader.ChunkData).ToBytes
+                    If _Comment.Length > 0 Then
+                        Buffer = New PSIChunk("TEXT", Text.Encoding.UTF8.GetBytes(_Comment)).ToBytes
                         fs.Write(Buffer, 0, Buffer.Length)
                     End If
 
-                    If Sector.MFMHeader IsNot Nothing Then
-                        Buffer = New PSIChunk("IBMM", Sector.MFMHeader.ChunkData).ToBytes
+                    For Each Sector In _Sectors
+                        Buffer = New PSIChunk("SECT", Sector.ChunkData).ToBytes
                         fs.Write(Buffer, 0, Buffer.Length)
-                    End If
 
-                    If Sector.GCRHeader IsNot Nothing Then
-                        Buffer = New PSIChunk("MACG", Sector.GCRHeader.ChunkData).ToBytes
-                        fs.Write(Buffer, 0, Buffer.Length)
-                    End If
+                        If Sector.FMHeader IsNot Nothing Then
+                            Buffer = New PSIChunk("IBMF", Sector.FMHeader.ChunkData).ToBytes
+                            fs.Write(Buffer, 0, Buffer.Length)
+                        End If
 
-                    If Sector.Offset > 0 Then
-                        Dim OffsetBuffer = BitConverter.GetBytes(MyBitConverter.SwapEndian(Sector.Offset))
-                        Buffer = New PSIChunk("OFFS", OffsetBuffer).ToBytes
-                        fs.Write(Buffer, 0, Buffer.Length)
-                    End If
+                        If Sector.MFMHeader IsNot Nothing Then
+                            Buffer = New PSIChunk("IBMM", Sector.MFMHeader.ChunkData).ToBytes
+                            fs.Write(Buffer, 0, Buffer.Length)
+                        End If
 
-                    If Sector.SectorReadTime > 0 Then
-                        Dim OffsetBuffer = BitConverter.GetBytes(MyBitConverter.SwapEndian(Sector.SectorReadTime))
-                        Buffer = New PSIChunk("TIME", OffsetBuffer).ToBytes
-                        fs.Write(Buffer, 0, Buffer.Length)
-                    End If
+                        If Sector.GCRHeader IsNot Nothing Then
+                            Buffer = New PSIChunk("MACG", Sector.GCRHeader.ChunkData).ToBytes
+                            fs.Write(Buffer, 0, Buffer.Length)
+                        End If
 
-                    If Sector.Data.Length > 0 Then
-                        Buffer = New PSIChunk("DATA", Sector.Data).ToBytes
-                        fs.Write(Buffer, 0, Buffer.Length)
-                    End If
+                        If Sector.Offset > 0 Then
+                            Dim OffsetBuffer = BitConverter.GetBytes(MyBitConverter.SwapEndian(Sector.Offset))
+                            Buffer = New PSIChunk("OFFS", OffsetBuffer).ToBytes
+                            fs.Write(Buffer, 0, Buffer.Length)
+                        End If
 
-                    If Sector.Weak.Length > 0 Then
-                        Buffer = New PSIChunk("WEAK", Sector.Weak).ToBytes
-                        fs.Write(Buffer, 0, Buffer.Length)
-                    End If
-                Next
+                        If Sector.SectorReadTime > 0 Then
+                            Dim OffsetBuffer = BitConverter.GetBytes(MyBitConverter.SwapEndian(Sector.SectorReadTime))
+                            Buffer = New PSIChunk("TIME", OffsetBuffer).ToBytes
+                            fs.Write(Buffer, 0, Buffer.Length)
+                        End If
 
-                Buffer = New PSIChunk("END ").ToBytes
-                fs.Write(Buffer, 0, Buffer.Length)
-            End Using
-        End Sub
+                        If Not Sector.IsCompressed Then
+                            Buffer = New PSIChunk("DATA", Sector.Data).ToBytes
+                            fs.Write(Buffer, 0, Buffer.Length)
+                        End If
+
+                        If Sector.HasWeakBits Then
+                            Buffer = New PSIChunk("WEAK", Sector.Weak).ToBytes
+                            fs.Write(Buffer, 0, Buffer.Length)
+                        End If
+                    Next
+
+                    Buffer = New PSIChunk("END ").ToBytes
+                    fs.Write(Buffer, 0, Buffer.Length)
+                End Using
+            Catch ex As Exception
+                Return False
+            End Try
+
+
+            Return True
+        End Function
 
         Public Function Import(FilePath As String) As Boolean
             Return Import(IO.File.ReadAllBytes(FilePath))
@@ -124,7 +131,11 @@
 
             ElseIf Chunk.ChunkID = "DATA" Then
                 If _CurrentSector IsNot Nothing Then
-                    _CurrentSector.Data = Chunk.ChunkData
+                    Dim Size = Math.Min(_CurrentSector.Size, Chunk.ChunkData.Length)
+                    Array.Copy(Chunk.ChunkData, 0, _CurrentSector.Data, 0, Size)
+                    If _CurrentSector.IsCompressed Then
+                        _CurrentSector.IsCompressed = False
+                    End If
                 End If
 
             ElseIf Chunk.ChunkID = "WEAK" Then

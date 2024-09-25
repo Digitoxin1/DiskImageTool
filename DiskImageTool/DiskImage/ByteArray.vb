@@ -1,18 +1,35 @@
 ﻿Namespace DiskImage
-    Public Delegate Sub DataChangedEventHandler(Offset As UInteger, OriginalValue As Object, NewValue As Object)
-    Public Delegate Sub SizeChangedEventHandler(OriginalLength As Integer, NewLength As Integer)
-
     Public Class ByteArray
         Implements IByteArray
 
         Private _Data() As Byte
+        Private ReadOnly _ProtectedSectors As HashSet(Of UInteger)
 
         Public Event DataChanged As DataChangedEventHandler Implements IByteArray.DataChanged
         Public Event SizeChanged As SizeChangedEventHandler Implements IByteArray.SizeChanged
 
         Sub New(Data() As Byte)
             _Data = Data
+            _ProtectedSectors = New HashSet(Of UInteger)
         End Sub
+
+        Public ReadOnly Property CanResize As Boolean Implements IByteArray.CanResize
+            Get
+                Return True
+            End Get
+        End Property
+
+        Public ReadOnly Property ProtectedSectors As HashSet(Of UInteger) Implements IByteArray.ProtectedSectors
+            Get
+                Return _ProtectedSectors
+            End Get
+        End Property
+
+        Public ReadOnly Property ImageType As FloppyImageType Implements IByteArray.ImageType
+            Get
+                Return FloppyImageType.BasicSectorImage
+            End Get
+        End Property
 
         Public ReadOnly Property Length As Integer Implements IByteArray.Length
             Get
@@ -145,6 +162,16 @@
 
         Public Function ToUInt16(StartIndex As Integer) As UShort Implements IByteArray.ToUInt16
             Return BitConverter.ToUInt16(_Data, StartIndex)
+        End Function
+
+        Public Function SaveToFile(FilePath As String) As Boolean Implements IByteArray.SaveToFile
+            Try
+                IO.File.WriteAllBytes(FilePath, _Data)
+            Catch ex As Exception
+                Return False
+            End Try
+
+            Return True
         End Function
     End Class
 End Namespace

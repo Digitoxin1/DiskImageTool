@@ -1,5 +1,6 @@
 ﻿Imports System.IO
 Imports System.Runtime.InteropServices
+Imports DiskImageTool.DiskImage
 
 Module Utility
     Public Function CleanFileName(FileName As String) As String
@@ -69,6 +70,18 @@ Module Utility
         Return Result
     End Function
 
+    Public Function GetImageTypeFromFileName(FileName As String) As FloppyImageType
+        Dim FileExt = Path.GetExtension(FileName).ToLower
+
+        If FileExt = ".tc" Then
+            Return FloppyImageType.TranscopyImage
+        ElseIf FileExt = ".psi" Then
+            Return FloppyImageType.PSIImage
+        Else
+            Return FloppyImageType.BasicSectorImage
+        End If
+    End Function
+
     Public Function GetVersionString() As String
         Dim Version = FileVersionInfo.GetVersionInfo(Application.ExecutablePath)
         Return Version.FileMajorPart & "." & Version.FileMinorPart & "." & Version.FilePrivatePart
@@ -100,6 +113,16 @@ Module Utility
             End If
         End If
         Return Path
+    End Function
+
+    Public Function SaveByteArrayToFile(FilePath As String, Data() As Byte) As Boolean
+        Try
+            IO.File.WriteAllBytes(FilePath, Data)
+        Catch ex As Exception
+            Return False
+        End Try
+
+        Return True
     End Function
 
     <DllImport("shell32.dll")>

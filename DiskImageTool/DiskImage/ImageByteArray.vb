@@ -70,10 +70,6 @@
             End Get
         End Property
 
-        Public Sub Append(Data() As Byte)
-            ImageData.Append(Data)
-        End Sub
-
         Public Sub ApplyModifications(Modifications As Stack(Of DataChange()))
             For Each DataChange In Modifications.Reverse
                 BatchEditMode = DataChange.Length > 1

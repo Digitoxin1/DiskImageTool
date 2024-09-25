@@ -103,8 +103,8 @@ Public Class FloppyDB
         End If
     End Function
 
-    Public Function IsVerifiedImage(Disk As Disk, ImageData As LoadedImageData) As Boolean
-        Dim Result = TitleFind(Disk, ImageData.ProtectedSectors)
+    Public Function IsVerifiedImage(Disk As Disk) As Boolean
+        Dim Result = TitleFind(Disk)
         If Result.TitleData IsNot Nothing Then
             If Result.TitleData.GetStatus = FloppyDBStatus.Verified Then
                 Return True
@@ -122,12 +122,12 @@ Public Class FloppyDB
         Return _TitleDictionary.ContainsKey(MD5)
     End Function
 
-    Public Function TitleFind(Disk As Disk, ProtectedSectors As HashSet(Of UInteger)) As TitleFindResult
+    Public Function TitleFind(Disk As Disk) As TitleFindResult
         Dim MD5 As String = MD5Hash(Disk.Image.GetBytes)
-        Return TitleFind(Disk, MD5, ProtectedSectors)
+        Return TitleFind(Disk, MD5)
     End Function
 
-    Public Function TitleFind(Disk As Disk, MD5 As String, ProtectedSectors As HashSet(Of UInteger)) As TitleFindResult
+    Public Function TitleFind(Disk As Disk, MD5 As String) As TitleFindResult
         Dim Response As New TitleFindResult With {
             .TitleData = TitleGet(MD5),
             .MD5 = MD5
@@ -140,8 +140,8 @@ Public Class FloppyDB
             ElseIf Disk.FATTables.FAT(0).BadClusters.Count > 0 Then
                 Response.MD5_CP = MD5Hash(GetNormalizedDataByBadSectors(Disk))
                 Response.TitleData = TitleGet(Response.MD5_CP)
-            ElseIf ProtectedSectors IsNot Nothing Then
-                Response.MD5_CP = MD5Hash(GetNormalizedDataByProtectedSectors(Disk, ProtectedSectors))
+            ElseIf Disk.Image.Data.ProtectedSectors IsNot Nothing Then
+                Response.MD5_CP = MD5Hash(GetNormalizedDataByProtectedSectors(Disk))
                 Response.TitleData = TitleGet(Response.MD5_CP)
             End If
         End If
@@ -209,11 +209,11 @@ Public Class FloppyDB
         Return Data
     End Function
 
-    Private Function GetNormalizedDataByProtectedSectors(Disk As Disk, ProtectedSectors As HashSet(Of UInteger)) As Byte()
+    Private Function GetNormalizedDataByProtectedSectors(Disk As Disk) As Byte()
         Dim Data(Disk.Image.Length - 1) As Byte
         Disk.Image.CopyTo(Data, 0)
         Dim Buffer(Disk.BYTES_PER_SECTOR - 1) As Byte
-        For Each Sector In ProtectedSectors
+        For Each Sector In Disk.Image.Data.ProtectedSectors
             Dim Offset = Disk.SectorToBytes(Sector)
             If Offset + Disk.BYTES_PER_SECTOR <= Data.Length Then
                 Buffer.CopyTo(Data, Offset)
@@ -264,7 +264,7 @@ Public Class FloppyDB
         End If
         If Node.HasAttribute("media") Then
             Dim Media As String = Node.Attributes("media").Value
-            TitleData.Media = GetFloppyDiskType(Media)
+            TitleData.Media = GetFloppyDiskFormat(Media)
         End If
         If Node.HasAttribute("publisher") Then
             TitleData.Publisher = Node.Attributes("publisher").Value
@@ -456,7 +456,7 @@ Public Class FloppyDB
         Public Property Year As String = ""
         Public Property Version As String = ""
         Public Property Disk As String = ""
-        Public Property Media As FloppyDiskType = FloppyDiskType.FloppyUnknown
+        Public Property Media As FloppyDiskFormat = FloppyDiskFormat.FloppyUnknown
         Public Property Publisher As String = ""
         Public Property Status As FloppyDBStatus = FloppyDBStatus.Unknown
         Public Property CopyProtection As String = ""
@@ -555,20 +555,20 @@ Public Class FloppyDB
 
             Return ""
         End Function
-        Public Function GetMedia() As FloppyDiskType
-            If _Media <> FloppyDiskType.FloppyUnknown Then
+        Public Function GetMedia() As FloppyDiskFormat
+            If _Media <> FloppyDiskFormat.FloppyUnknown Then
                 Return _Media
             Else
                 Dim Parent = _Parent
                 Do While Parent IsNot Nothing
-                    If Parent.Media <> FloppyDiskType.FloppyUnknown Then
+                    If Parent.Media <> FloppyDiskFormat.FloppyUnknown Then
                         Return Parent.Media
                     End If
                     Parent = Parent.Parent
                 Loop
             End If
 
-            Return FloppyDiskType.FloppyUnknown
+            Return FloppyDiskFormat.FloppyUnknown
         End Function
         Public Function GetPublisher() As String
             If _Publisher <> "" Then

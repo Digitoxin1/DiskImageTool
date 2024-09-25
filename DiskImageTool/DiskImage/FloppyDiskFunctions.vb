@@ -1,8 +1,7 @@
-﻿Imports System.CodeDom
-
+﻿
 Namespace DiskImage
     Public Module FloppyDiskFunctions
-        Public Enum FloppyDiskType As Byte
+        Public Enum FloppyDiskFormat As Byte
             FloppyUnknown = 0
             Floppy160 = 1
             Floppy180 = 2
@@ -54,8 +53,8 @@ Namespace DiskImage
             Return BPB
         End Function
 
-        Public Function BuildBPB(Type As FloppyDiskType) As BiosParameterBlock
-            Return BuildBPB(GetFloppyDiskParams(Type))
+        Public Function BuildBPB(Format As FloppyDiskFormat) As BiosParameterBlock
+            Return BuildBPB(GetFloppyDiskParams(Format))
         End Function
 
         Public Function BuildBPB(Size As Integer) As BiosParameterBlock
@@ -63,55 +62,55 @@ Namespace DiskImage
         End Function
 
         Public Function BuildBPB(MediaDescriptor As Byte) As BiosParameterBlock
-            Return BuildBPB(GetFloppyDiskParams(GetFloppyDiskType(MediaDescriptor)))
+            Return BuildBPB(GetFloppyDiskParams(GetFloppyDiskFomat(MediaDescriptor)))
         End Function
 
         Public Function GetFloppyDiskMediaDescriptor(Size As Integer) As Byte
-            Return GetFloppyDiskMediaDescriptor(GetFloppyDiskType(Size))
+            Return GetFloppyDiskMediaDescriptor(GetFloppyDiskFormat(Size))
         End Function
 
-        Public Function GetFloppyDiskMediaDescriptor(Type As FloppyDiskType) As Byte
-            Select Case Type
-                Case FloppyDiskType.Floppy160
+        Public Function GetFloppyDiskMediaDescriptor(Format As FloppyDiskFormat) As Byte
+            Select Case Format
+                Case FloppyDiskFormat.Floppy160
                     Return &HFE
-                Case FloppyDiskType.Floppy180
+                Case FloppyDiskFormat.Floppy180
                     Return &HFC
-                Case FloppyDiskType.Floppy320
+                Case FloppyDiskFormat.Floppy320
                     Return &HFF
-                Case FloppyDiskType.Floppy360
+                Case FloppyDiskFormat.Floppy360
                     Return &HFD
-                Case FloppyDiskType.Floppy720
+                Case FloppyDiskFormat.Floppy720
                     Return &HF9
-                Case FloppyDiskType.Floppy1200
+                Case FloppyDiskFormat.Floppy1200
                     Return &HF9
-                Case FloppyDiskType.Floppy1440
+                Case FloppyDiskFormat.Floppy1440
                     Return &HF0
-                Case FloppyDiskType.FloppyDMF1024
+                Case FloppyDiskFormat.FloppyDMF1024
                     Return &HF0
-                Case FloppyDiskType.FloppyDMF2048
+                Case FloppyDiskFormat.FloppyDMF2048
                     Return &HF0
-                Case FloppyDiskType.Floppy2880
+                Case FloppyDiskFormat.Floppy2880
                     Return &HF0
-                Case FloppyDiskType.FloppyProCopy
+                Case FloppyDiskFormat.FloppyProCopy
                     Return &HF0
-                Case FloppyDiskType.FloppyXDF35
+                Case FloppyDiskFormat.FloppyXDF35
                     Return &HF0
-                Case FloppyDiskType.FloppyXDF525
+                Case FloppyDiskFormat.FloppyXDF525
                     Return &HF9
-                Case FloppyDiskType.FloppyXDFMicro
+                Case FloppyDiskFormat.FloppyXDFMicro
                     Return &HF9
-                Case FloppyDiskType.FloppyTandy2000
+                Case FloppyDiskFormat.FloppyTandy2000
                     Return &HED
                 Case Else
                     Return &HF0
             End Select
         End Function
 
-        Public Function GetFloppyDiskParams(Type As FloppyDiskType) As FloppyDiskParams
+        Public Function GetFloppyDiskParams(Format As FloppyDiskFormat) As FloppyDiskParams
             Dim Params As FloppyDiskParams
 
-            Select Case Type
-                Case FloppyDiskType.Floppy160
+            Select Case Format
+                Case FloppyDiskFormat.Floppy160
                     Params.BytesPerSector = 512
                     Params.MediaDescriptor = &HFE
                     Params.NumberOfFATs = 2
@@ -123,7 +122,7 @@ Namespace DiskImage
                     Params.SectorsPerFAT = 1
                     Params.SectorsPerTrack = 8
 
-                Case FloppyDiskType.Floppy180
+                Case FloppyDiskFormat.Floppy180
                     Params.BytesPerSector = 512
                     Params.MediaDescriptor = &HFC
                     Params.NumberOfFATs = 2
@@ -135,7 +134,7 @@ Namespace DiskImage
                     Params.SectorsPerFAT = 2
                     Params.SectorsPerTrack = 9
 
-                Case FloppyDiskType.Floppy320
+                Case FloppyDiskFormat.Floppy320
                     Params.BytesPerSector = 512
                     Params.MediaDescriptor = &HFF
                     Params.NumberOfFATs = 2
@@ -147,7 +146,7 @@ Namespace DiskImage
                     Params.SectorsPerFAT = 1
                     Params.SectorsPerTrack = 8
 
-                Case FloppyDiskType.Floppy360
+                Case FloppyDiskFormat.Floppy360
                     Params.BytesPerSector = 512
                     Params.MediaDescriptor = &HFD
                     Params.NumberOfFATs = 2
@@ -159,7 +158,7 @@ Namespace DiskImage
                     Params.SectorsPerFAT = 2
                     Params.SectorsPerTrack = 9
 
-                Case FloppyDiskType.Floppy720
+                Case FloppyDiskFormat.Floppy720
                     Params.BytesPerSector = 512
                     Params.MediaDescriptor = &HF9
                     Params.NumberOfFATs = 2
@@ -171,7 +170,7 @@ Namespace DiskImage
                     Params.SectorsPerFAT = 3
                     Params.SectorsPerTrack = 9
 
-                Case FloppyDiskType.Floppy1200
+                Case FloppyDiskFormat.Floppy1200
                     Params.BytesPerSector = 512
                     Params.MediaDescriptor = &HF9
                     Params.NumberOfFATs = 2
@@ -183,7 +182,7 @@ Namespace DiskImage
                     Params.SectorsPerFAT = 7
                     Params.SectorsPerTrack = 15
 
-                Case FloppyDiskType.Floppy1440
+                Case FloppyDiskFormat.Floppy1440
                     Params.BytesPerSector = 512
                     Params.MediaDescriptor = &HF0
                     Params.NumberOfFATs = 2
@@ -195,7 +194,7 @@ Namespace DiskImage
                     Params.SectorsPerFAT = 9
                     Params.SectorsPerTrack = 18
 
-                Case FloppyDiskType.FloppyDMF1024
+                Case FloppyDiskFormat.FloppyDMF1024
                     Params.BytesPerSector = 512
                     Params.MediaDescriptor = &HF0
                     Params.NumberOfFATs = 2
@@ -207,7 +206,7 @@ Namespace DiskImage
                     Params.SectorsPerFAT = 5
                     Params.SectorsPerTrack = 21
 
-                Case FloppyDiskType.FloppyDMF2048
+                Case FloppyDiskFormat.FloppyDMF2048
                     Params.BytesPerSector = 512
                     Params.MediaDescriptor = &HF0
                     Params.NumberOfFATs = 2
@@ -219,7 +218,7 @@ Namespace DiskImage
                     Params.SectorsPerFAT = 3
                     Params.SectorsPerTrack = 21
 
-                Case FloppyDiskType.Floppy2880
+                Case FloppyDiskFormat.Floppy2880
                     Params.BytesPerSector = 512
                     Params.MediaDescriptor = &HF0
                     Params.NumberOfFATs = 2
@@ -231,7 +230,7 @@ Namespace DiskImage
                     Params.SectorsPerFAT = 9
                     Params.SectorsPerTrack = 36
 
-                Case FloppyDiskType.FloppyProCopy
+                Case FloppyDiskFormat.FloppyProCopy
                     Params.BytesPerSector = 512
                     Params.MediaDescriptor = &HF0
                     Params.NumberOfFATs = 2
@@ -243,7 +242,7 @@ Namespace DiskImage
                     Params.SectorsPerFAT = 5
                     Params.SectorsPerTrack = 18
 
-                Case FloppyDiskType.FloppyXDF35
+                Case FloppyDiskFormat.FloppyXDF35
                     Params.BytesPerSector = 512
                     Params.MediaDescriptor = &HF0
                     Params.NumberOfFATs = 2
@@ -255,7 +254,7 @@ Namespace DiskImage
                     Params.SectorsPerFAT = 11
                     Params.SectorsPerTrack = 23
 
-                Case FloppyDiskType.FloppyXDF525
+                Case FloppyDiskFormat.FloppyXDF525
                     Params.BytesPerSector = 512
                     Params.MediaDescriptor = &HF9
                     Params.NumberOfFATs = 2
@@ -267,7 +266,7 @@ Namespace DiskImage
                     Params.SectorsPerFAT = 9
                     Params.SectorsPerTrack = 19
 
-                Case FloppyDiskType.FloppyXDFMicro
+                Case FloppyDiskFormat.FloppyXDFMicro
                     Params.BytesPerSector = 512
                     Params.MediaDescriptor = &HF9
                     Params.NumberOfFATs = 2
@@ -279,7 +278,7 @@ Namespace DiskImage
                     Params.SectorsPerFAT = 1
                     Params.SectorsPerTrack = 8
 
-                Case FloppyDiskType.FloppyTandy2000
+                Case FloppyDiskFormat.FloppyTandy2000
                     Params.BytesPerSector = 512
                     Params.MediaDescriptor = &HED
                     Params.NumberOfFATs = 2
@@ -291,7 +290,7 @@ Namespace DiskImage
                     Params.SectorsPerFAT = 2
                     Params.SectorsPerTrack = 9
 
-                Case FloppyDiskType.FloppyNoBPB
+                Case FloppyDiskFormat.FloppyNoBPB
                     Params.BytesPerSector = 0
                     Params.MediaDescriptor = 0
                     Params.NumberOfFATs = 0
@@ -308,238 +307,238 @@ Namespace DiskImage
         End Function
 
         Public Function GetFloppyDiskParams(Size As Integer) As FloppyDiskParams
-            Return GetFloppyDiskParams(GetFloppyDiskType(Size))
+            Return GetFloppyDiskParams(GetFloppyDiskFormat(Size))
         End Function
 
-        Public Function GetFloppyDiskType(MediaDescriptor As Byte) As FloppyDiskType
+        Public Function GetFloppyDiskFomat(MediaDescriptor As Byte) As FloppyDiskFormat
             Select Case MediaDescriptor
                 Case &HFE
-                    Return FloppyDiskType.Floppy160
+                    Return FloppyDiskFormat.Floppy160
                 Case &HFC
-                    Return FloppyDiskType.Floppy180
+                    Return FloppyDiskFormat.Floppy180
                 Case &HFF
-                    Return FloppyDiskType.Floppy320
+                    Return FloppyDiskFormat.Floppy320
                 Case &HFD
-                    Return FloppyDiskType.Floppy360
+                    Return FloppyDiskFormat.Floppy360
                 Case &HED
-                    Return FloppyDiskType.FloppyTandy2000
+                    Return FloppyDiskFormat.FloppyTandy2000
                 Case Else
-                    Return FloppyDiskType.FloppyUnknown
+                    Return FloppyDiskFormat.FloppyUnknown
             End Select
         End Function
 
-        Public Function GetFloppyDiskType(BPB As BiosParameterBlock, CheckMediaDescriptor As Boolean) As FloppyDiskType
-            Return GetFloppyDiskType(BPB, CheckMediaDescriptor, True)
+        Public Function GetFloppyDiskFormat(BPB As BiosParameterBlock, CheckMediaDescriptor As Boolean) As FloppyDiskFormat
+            Return GetFloppyDiskFormat(BPB, CheckMediaDescriptor, True)
         End Function
 
-        Public Function GetFloppyDiskType(BPB As BiosParameterBlock, CheckMediaDescriptor As Boolean, IgnoreNoBPB As Boolean) As FloppyDiskType
-            Dim Items = System.Enum.GetValues(GetType(FloppyDiskType))
+        Public Function GetFloppyDiskFormat(BPB As BiosParameterBlock, CheckMediaDescriptor As Boolean, IgnoreNoBPB As Boolean) As FloppyDiskFormat
+            Dim Items = System.Enum.GetValues(GetType(FloppyDiskFormat))
 
-            For Each Type As FloppyDiskType In Items
-                If Type <> FloppyDiskType.FloppyUnknown Or (IgnoreNoBPB And Type <> FloppyDiskType.FloppyNoBPB) Then
-                    Dim Params = GetFloppyDiskParams(Type)
+            For Each DiskFormat As FloppyDiskFormat In Items
+                If DiskFormat <> FloppyDiskFormat.FloppyUnknown Or (IgnoreNoBPB And DiskFormat <> FloppyDiskFormat.FloppyNoBPB) Then
+                    Dim Params = GetFloppyDiskParams(DiskFormat)
                     If BPBCompare(BPB, Params, CheckMediaDescriptor) Then
-                        Return Type
+                        Return DiskFormat
                     End If
                 End If
             Next
 
-            Return FloppyDiskType.FloppyUnknown
+            Return FloppyDiskFormat.FloppyUnknown
         End Function
 
-        Public Function GetFloppyDiskSize(Type As FloppyDiskType) As Integer
-            Select Case Type
-                Case FloppyDiskType.Floppy160
+        Public Function GetFloppyDiskSize(Format As FloppyDiskFormat) As Integer
+            Select Case Format
+                Case FloppyDiskFormat.Floppy160
                     Return 163840
-                Case FloppyDiskType.Floppy180
+                Case FloppyDiskFormat.Floppy180
                     Return 184320
-                Case FloppyDiskType.Floppy320
+                Case FloppyDiskFormat.Floppy320
                     Return 327680
-                Case FloppyDiskType.Floppy360
+                Case FloppyDiskFormat.Floppy360
                     Return 368640
-                Case FloppyDiskType.Floppy720
+                Case FloppyDiskFormat.Floppy720
                     Return 737280
-                Case FloppyDiskType.Floppy1200
+                Case FloppyDiskFormat.Floppy1200
                     Return 1228800
-                Case FloppyDiskType.Floppy1440
+                Case FloppyDiskFormat.Floppy1440
                     Return 1474560
-                Case FloppyDiskType.FloppyDMF2048
+                Case FloppyDiskFormat.FloppyDMF2048
                     Return 1720320
-                Case FloppyDiskType.FloppyXDF525
+                Case FloppyDiskFormat.FloppyXDF525
                     Return 1556480
-                Case FloppyDiskType.FloppyXDF35
+                Case FloppyDiskFormat.FloppyXDF35
                     Return 1884160
-                Case FloppyDiskType.FloppyXDFMicro
+                Case FloppyDiskFormat.FloppyXDFMicro
                     Return 4096
-                Case FloppyDiskType.Floppy2880
+                Case FloppyDiskFormat.Floppy2880
                     Return 2949120
-                Case FloppyDiskType.FloppyTandy2000
+                Case FloppyDiskFormat.FloppyTandy2000
                     Return 737280
                 Case Else
                     Return 0
             End Select
         End Function
 
-        Public Function GetFloppyDiskType(Size As Integer) As FloppyDiskType
+        Public Function GetFloppyDiskFormat(Size As Integer) As FloppyDiskFormat
             Select Case Size
                 Case 163840
-                    Return FloppyDiskType.Floppy160
+                    Return FloppyDiskFormat.Floppy160
                 Case 184320
-                    Return FloppyDiskType.Floppy180
+                    Return FloppyDiskFormat.Floppy180
                 Case 327680
-                    Return FloppyDiskType.Floppy320
+                    Return FloppyDiskFormat.Floppy320
                 Case 368640
-                    Return FloppyDiskType.Floppy360
+                    Return FloppyDiskFormat.Floppy360
                 Case 737280
-                    Return FloppyDiskType.Floppy720
+                    Return FloppyDiskFormat.Floppy720
                 Case 1228800
-                    Return FloppyDiskType.Floppy1200
+                    Return FloppyDiskFormat.Floppy1200
                 Case 1474560
-                    Return FloppyDiskType.Floppy1440
+                    Return FloppyDiskFormat.Floppy1440
                 Case 1720320
-                    Return FloppyDiskType.FloppyDMF2048
+                    Return FloppyDiskFormat.FloppyDMF2048
                 Case 1556480
-                    Return FloppyDiskType.FloppyXDF525
+                    Return FloppyDiskFormat.FloppyXDF525
                 Case 1884160
-                    Return FloppyDiskType.FloppyXDF35
+                    Return FloppyDiskFormat.FloppyXDF35
                 Case 4096
-                    Return FloppyDiskType.FloppyXDFMicro
+                    Return FloppyDiskFormat.FloppyXDFMicro
                 Case 2949120
-                    Return FloppyDiskType.Floppy2880
+                    Return FloppyDiskFormat.Floppy2880
                 Case Else
-                    Return FloppyDiskType.FloppyUnknown
+                    Return FloppyDiskFormat.FloppyUnknown
             End Select
         End Function
 
-        Public Function GetFloppyDiskType(Name As String) As FloppyDiskType
+        Public Function GetFloppyDiskFormat(Name As String) As FloppyDiskFormat
             Select Case Name
                 Case "160K"
-                    Return FloppyDiskType.Floppy160
+                    Return FloppyDiskFormat.Floppy160
                 Case "180K"
-                    Return FloppyDiskType.Floppy180
+                    Return FloppyDiskFormat.Floppy180
                 Case "320K"
-                    Return FloppyDiskType.Floppy320
+                    Return FloppyDiskFormat.Floppy320
                 Case "360K"
-                    Return FloppyDiskType.Floppy360
+                    Return FloppyDiskFormat.Floppy360
                 Case "720K"
-                    Return FloppyDiskType.Floppy720
+                    Return FloppyDiskFormat.Floppy720
                 Case "1.2M"
-                    Return FloppyDiskType.Floppy1200
+                    Return FloppyDiskFormat.Floppy1200
                 Case "1.44M"
-                    Return FloppyDiskType.Floppy1440
+                    Return FloppyDiskFormat.Floppy1440
                 Case "DMF (1024)"
-                    Return FloppyDiskType.FloppyDMF1024
+                    Return FloppyDiskFormat.FloppyDMF1024
                 Case "DMF (2048)"
-                    Return FloppyDiskType.FloppyDMF2048
+                    Return FloppyDiskFormat.FloppyDMF2048
                 Case "2.88M"
-                    Return FloppyDiskType.Floppy2880
+                    Return FloppyDiskFormat.Floppy2880
                 Case "ProCopy"
-                    Return FloppyDiskType.FloppyProCopy
+                    Return FloppyDiskFormat.FloppyProCopy
                 Case "XDF 5.25"""
-                    Return FloppyDiskType.FloppyXDF525
+                    Return FloppyDiskFormat.FloppyXDF525
                 Case "XDF 3.5"""
-                    Return FloppyDiskType.FloppyXDF35
+                    Return FloppyDiskFormat.FloppyXDF35
                 Case "XDF Micro"
-                    Return FloppyDiskType.FloppyXDFMicro
+                    Return FloppyDiskFormat.FloppyXDFMicro
                 Case "Tandy 2000"
-                    Return FloppyDiskType.FloppyTandy2000
+                    Return FloppyDiskFormat.FloppyTandy2000
                 Case "NO BPB"
-                    Return FloppyDiskType.FloppyNoBPB
+                    Return FloppyDiskFormat.FloppyNoBPB
                 Case Else
-                    Return FloppyDiskType.FloppyUnknown
+                    Return FloppyDiskFormat.FloppyUnknown
             End Select
         End Function
 
-        Public Function GetFloppyDiskTypeName(Type As FloppyDiskType, Optional Extended As Boolean = False) As String
-            Select Case Type
-                Case FloppyDiskType.Floppy160
+        Public Function GetFloppyDiskFormatName(Format As FloppyDiskFormat, Optional Extended As Boolean = False) As String
+            Select Case Format
+                Case FloppyDiskFormat.Floppy160
                     Return "160K"
-                Case FloppyDiskType.Floppy180
+                Case FloppyDiskFormat.Floppy180
                     Return "180K"
-                Case FloppyDiskType.Floppy320
+                Case FloppyDiskFormat.Floppy320
                     Return "320K"
-                Case FloppyDiskType.Floppy360
+                Case FloppyDiskFormat.Floppy360
                     Return "360K"
-                Case FloppyDiskType.Floppy720
+                Case FloppyDiskFormat.Floppy720
                     Return "720K"
-                Case FloppyDiskType.Floppy1200
+                Case FloppyDiskFormat.Floppy1200
                     Return "1.2M"
-                Case FloppyDiskType.Floppy1440
+                Case FloppyDiskFormat.Floppy1440
                     Return "1.44M"
-                Case FloppyDiskType.FloppyDMF1024
+                Case FloppyDiskFormat.FloppyDMF1024
                     If Extended Then
                         Return "DMF (1024)"
                     Else
                         Return "DMF"
                     End If
-                Case FloppyDiskType.FloppyDMF2048
+                Case FloppyDiskFormat.FloppyDMF2048
                     If Extended Then
                         Return "DMF (2048)"
                     Else
                         Return "DMF"
                     End If
-                Case FloppyDiskType.Floppy2880
+                Case FloppyDiskFormat.Floppy2880
                     Return "2.88M"
-                Case FloppyDiskType.FloppyProCopy
+                Case FloppyDiskFormat.FloppyProCopy
                     Return "ProCopy"
-                Case FloppyDiskType.FloppyXDF525
+                Case FloppyDiskFormat.FloppyXDF525
                     Return "XDF 5.25"""
-                Case FloppyDiskType.FloppyXDF35
+                Case FloppyDiskFormat.FloppyXDF35
                     Return "XDF 3.5"""
-                Case FloppyDiskType.FloppyXDFMicro
+                Case FloppyDiskFormat.FloppyXDFMicro
                     Return "XDF Micro"
-                Case FloppyDiskType.FloppyTandy2000
+                Case FloppyDiskFormat.FloppyTandy2000
                     Return "Tandy 2000"
-                Case FloppyDiskType.FloppyNoBPB
+                Case FloppyDiskFormat.FloppyNoBPB
                     Return "No BPB"
                 Case Else
                     Return "Custom"
             End Select
         End Function
 
-        Public Function GetFileFilterExtByType(Type As FloppyDiskType) As String
-            Select Case Type
-                Case FloppyDiskType.Floppy160
+        Public Function GetFileFilterExtByFormat(Format As FloppyDiskFormat) As String
+            Select Case Format
+                Case FloppyDiskFormat.Floppy160
                     Return ".160"
-                Case FloppyDiskType.Floppy180
+                Case FloppyDiskFormat.Floppy180
                     Return ".180"
-                Case FloppyDiskType.Floppy320
+                Case FloppyDiskFormat.Floppy320
                     Return ".320"
-                Case FloppyDiskType.Floppy360
+                Case FloppyDiskFormat.Floppy360
                     Return ".360"
-                Case FloppyDiskType.Floppy720
+                Case FloppyDiskFormat.Floppy720
                     Return ".720"
-                Case FloppyDiskType.Floppy1200
+                Case FloppyDiskFormat.Floppy1200
                     Return ".120"
-                Case FloppyDiskType.Floppy1440
+                Case FloppyDiskFormat.Floppy1440
                     Return ".144"
-                Case FloppyDiskType.FloppyDMF1024
+                Case FloppyDiskFormat.FloppyDMF1024
                     Return ".dmf"
-                Case FloppyDiskType.FloppyDMF2048
+                Case FloppyDiskFormat.FloppyDMF2048
                     Return ".dmf"
-                Case FloppyDiskType.Floppy2880
+                Case FloppyDiskFormat.Floppy2880
                     Return ".288"
-                Case FloppyDiskType.FloppyProCopy
+                Case FloppyDiskFormat.FloppyProCopy
                     Return ""
-                Case FloppyDiskType.FloppyXDF525
+                Case FloppyDiskFormat.FloppyXDF525
                     Return ".xdf"
-                Case FloppyDiskType.FloppyXDF35
+                Case FloppyDiskFormat.FloppyXDF35
                     Return ".xdf"
-                Case FloppyDiskType.FloppyXDFMicro
+                Case FloppyDiskFormat.FloppyXDFMicro
                     Return ".xdf"
                 Case Else
                     Return ""
             End Select
         End Function
 
-        Public Function GetFileFilterDescriptionByType(Type As FloppyDiskType) As String
-            Dim Description As String = GetFloppyDiskTypeName(Type)
-            Select Case Type
-                Case FloppyDiskType.FloppyProCopy
+        Public Function GetFileFilterDescriptionByFormat(Format As FloppyDiskFormat) As String
+            Dim Description As String = GetFloppyDiskFormatName(Format)
+            Select Case Format
+                Case FloppyDiskFormat.FloppyProCopy
                     Description = ""
-                Case FloppyDiskType.FloppyNoBPB
+                Case FloppyDiskFormat.FloppyNoBPB
                     Description = ""
-                Case FloppyDiskType.FloppyUnknown
+                Case FloppyDiskFormat.FloppyUnknown
                     Description = ""
             End Select
 
@@ -550,30 +549,30 @@ Namespace DiskImage
             Return Description
         End Function
 
-        Public Function GetFloppyDiskTypeName(BPB As BiosParameterBlock, CheckMediaDescriptor As Boolean, Optional Extended As Boolean = False) As String
-            Return GetFloppyDiskTypeName(GetFloppyDiskType(BPB, CheckMediaDescriptor), Extended)
+        Public Function GetFloppyDiskFormatName(BPB As BiosParameterBlock, CheckMediaDescriptor As Boolean, Optional Extended As Boolean = False) As String
+            Return GetFloppyDiskFormatName(GetFloppyDiskFormat(BPB, CheckMediaDescriptor), Extended)
         End Function
 
-        Public Function GetFloppyDiskTypeName(Size As Integer, Optional Extended As Boolean = False) As String
-            Return GetFloppyDiskTypeName(GetFloppyDiskType(Size), Extended)
+        Public Function GetFloppyDiskFormatName(Size As Integer, Optional Extended As Boolean = False) As String
+            Return GetFloppyDiskFormatName(GetFloppyDiskFormat(Size), Extended)
         End Function
 
-        Public Function GetFloppyDiskTypeName(MediaDescriptor As Byte, Optional Extended As Boolean = False) As String
-            Return GetFloppyDiskTypeName(GetFloppyDiskType(MediaDescriptor), Extended)
+        Public Function GetFloppyDiskFormatName(MediaDescriptor As Byte, Optional Extended As Boolean = False) As String
+            Return GetFloppyDiskFormatName(GetFloppyDiskFomat(MediaDescriptor), Extended)
         End Function
 
-        Public Function IsDiskTypeXDF(Type As FloppyDiskType) As Boolean
-            Return (Type = FloppyDiskType.FloppyXDF525 Or Type = FloppyDiskType.FloppyXDF35)
+        Public Function IsDiskFormatXDF(Format As FloppyDiskFormat) As Boolean
+            Return (Format = FloppyDiskFormat.FloppyXDF525 Or Format = FloppyDiskFormat.FloppyXDF35)
         End Function
 
-        Public Function IsDiskTypeValidForRead(Type As FloppyDiskType) As Boolean
-            If Type = FloppyDiskType.FloppyDMF1024 _
-                Or Type = FloppyDiskType.FloppyDMF2048 _
-                Or Type = FloppyDiskType.FloppyNoBPB _
-                Or Type = FloppyDiskType.FloppyProCopy _
-                Or Type = FloppyDiskType.FloppyXDF35 _
-                Or Type = FloppyDiskType.FloppyXDF525 _
-                Or Type = FloppyDiskType.FloppyXDFMicro Then
+        Public Function IsDiskFormatValidForRead(Format As FloppyDiskFormat) As Boolean
+            If Format = FloppyDiskFormat.FloppyDMF1024 _
+                Or Format = FloppyDiskFormat.FloppyDMF2048 _
+                Or Format = FloppyDiskFormat.FloppyNoBPB _
+                Or Format = FloppyDiskFormat.FloppyProCopy _
+                Or Format = FloppyDiskFormat.FloppyXDF35 _
+                Or Format = FloppyDiskFormat.FloppyXDF525 _
+                Or Format = FloppyDiskFormat.FloppyXDFMicro Then
                 Return False
             End If
 

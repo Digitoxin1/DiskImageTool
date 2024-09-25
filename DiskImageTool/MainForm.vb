@@ -5,7 +5,7 @@ Imports System.Text
 Imports System.Text.RegularExpressions
 Imports DiskImageTool.DiskImage
 Imports DiskImageTool.FloppyDB
-Imports DiskImageTool.LoadedImageData
+Imports DiskImageTool.PSI_Image
 Imports BootSectorOffsets = DiskImageTool.DiskImage.BootSector.BootSectorOffsets
 Imports BPBOffsets = DiskImageTool.DiskImage.BiosParameterBlock.BPBOoffsets
 
@@ -84,7 +84,7 @@ Public Class MainForm
     End Sub
 
     Friend Sub DiskTypeFilterUpdate(Disk As DiskImage.Disk, ImageData As LoadedImageData, Optional UpdateFilters As Boolean = False, Optional Remove As Boolean = False)
-        Dim DiskType As String = ""
+        Dim DiskFormat As String = ""
 
         If Not Remove Then
             'If Disk.IsValidImage Then
@@ -92,21 +92,21 @@ Public Class MainForm
             'Else
             '    DiskType = GetFloppyDiskTypeName(Disk.Data.Length, True)
             'End If
-            Dim DiskTypeBySize = GetFloppyDiskType(Disk.Image.Length)
+            Dim DiskFormatBySize = GetFloppyDiskFormat(Disk.Image.Length)
 
-            If Disk.DiskType <> FloppyDiskType.FloppyUnknown Or DiskTypeBySize = FloppyDiskType.FloppyUnknown Then
-                DiskType = GetFloppyDiskTypeName(Disk.DiskType)
+            If Disk.DiskFormat <> FloppyDiskFormat.FloppyUnknown Or DiskFormatBySize = FloppyDiskFormat.FloppyUnknown Then
+                DiskFormat = GetFloppyDiskFormatName(Disk.DiskFormat)
             Else
-                DiskType = GetFloppyDiskTypeName(DiskTypeBySize)
+                DiskFormat = GetFloppyDiskFormatName(DiskFormatBySize)
             End If
         End If
 
-        If Not ImageData.Scanned Or DiskType <> ImageData.DiskType Then
+        If Not ImageData.Scanned Or DiskFormat <> ImageData.DiskType Then
             If ImageData.Scanned Then
                 _SubFilterDiskType.Remove(ImageData.DiskType, UpdateFilters)
             End If
 
-            ImageData.DiskType = DiskType
+            ImageData.DiskType = DiskFormat
 
             If Not Remove Then
                 _SubFilterDiskType.Add(ImageData.DiskType, UpdateFilters)
@@ -158,13 +158,13 @@ Public Class MainForm
 
         If Not Remove Then
             If Not Disk_UnknownFormat Then
-                Dim MediaDescriptor = GetFloppyDiskMediaDescriptor(Disk.DiskType)
+                Dim MediaDescriptor = GetFloppyDiskMediaDescriptor(Disk.DiskFormat)
                 FAT_BadSectors = Disk.FAT.BadClusters.Count > 0
-                FATS_MismatchedFATs = Not IsDiskTypeXDF(Disk.DiskType) AndAlso Not Disk.FATTables.FATsMatch
+                FATS_MismatchedFATs = Not IsDiskFormatXDF(Disk.DiskFormat) AndAlso Not Disk.FATTables.FATsMatch
                 If Disk.BootSector.BPB.IsValid Then
                     If Disk.BootSector.BPB.MediaDescriptor <> MediaDescriptor Then
                         Disk_MismatchedMediaDescriptor = True
-                    ElseIf Disk.DiskType = FloppyDiskType.FloppyXDF35 And Disk.FAT.MediaDescriptor = &HF9 Then
+                    ElseIf Disk.DiskFormat = FloppyDiskFormat.FloppyXDF35 And Disk.FAT.MediaDescriptor = &HF9 Then
                         Disk_MismatchedMediaDescriptor = False
                     ElseIf Disk.FAT.HasMediaDescriptor AndAlso Disk.FAT.MediaDescriptor <> Disk.BootSector.BPB.MediaDescriptor Then
                         Disk_MismatchedMediaDescriptor = True
@@ -173,7 +173,7 @@ Public Class MainForm
                     End If
                 End If
                 Disk_MismatchedImageSize = Disk.CheckImageSize <> 0
-                Disk_CustomFormat = GetFloppyDiskType(Disk.BPB, False) = FloppyDiskType.FloppyUnknown
+                Disk_CustomFormat = GetFloppyDiskFormat(Disk.BPB, False) = FloppyDiskFormat.FloppyUnknown
                 Disk_NOBPB = Not Disk.BootSector.BPB.IsValid
                 If Disk.BootSector.BootStrapCode.Length = 0 Then
                     If Disk.BootSector.CheckJumpInstruction(False, True) Then
@@ -186,7 +186,7 @@ Public Class MainForm
             End If
 
             If _TitleDB.TitleCount > 0 Then
-                TitleFindResult = _TitleDB.TitleFind(Disk, ImageData.ProtectedSectors)
+                TitleFindResult = _TitleDB.TitleFind(Disk)
                 If TitleFindResult.TitleData IsNot Nothing Then
                     Image_NotInDatabase = False
                     Image_InDatabase = True
@@ -230,12 +230,12 @@ Public Class MainForm
             If _ExportUnknownImages Then
                 If Image_NotInDatabase Then
                     If TitleFindResult Is Nothing Then
-                        TitleFindResult = _TitleDB.TitleFind(Disk, ImageData.ProtectedSectors)
+                        TitleFindResult = _TitleDB.TitleFind(Disk)
                     End If
                     If FileData Is Nothing Then
                         FileData = New FileNameData(ImageData.FileName)
                     End If
-                    Dim Media = GetFloppyDiskTypeName(Disk.BPB, True)
+                    Dim Media = GetFloppyDiskFormatName(Disk.BPB, True)
                     _TitleDB.AddTile(FileData, Media, TitleFindResult.MD5, TitleFindResult.MD5_CP)
                 End If
             End If
@@ -314,11 +314,11 @@ Public Class MainForm
         End If
     End Sub
 
-    Friend Function Win9xClean(Disk As Disk, ImageData As LoadedImageData, Batch As Boolean) As Boolean
+    Friend Function Win9xClean(Disk As Disk, Batch As Boolean) As Boolean
         Dim Result As Boolean = False
 
         If Batch Then
-            If _TitleDB.IsVerifiedImage(Disk, ImageData) Then
+            If _TitleDB.IsVerifiedImage(Disk) Then
                 Return Result
             End If
         End If
@@ -653,20 +653,53 @@ Public Class MainForm
         Return SaveAllForm.Result
     End Function
 
-    Private Shared Function SaveDiskImageToFile(Disk As DiskImage.Disk, FilePath As String, ImageType As LoadedImageType) As Boolean
-        Dim FileExt = Path.GetExtension(FilePath)
+    Private Shared Function CreateBackup(FilePath As String) As Boolean
         Try
-            If My.Settings.CreateBackups AndAlso IO.File.Exists(FilePath) Then
-                Dim BackupPath As String = FilePath & ".bak"
-                IO.File.Copy(FilePath, BackupPath, True)
-            End If
-            Disk.SaveFile(FilePath)
+            Dim BackupPath As String = FilePath & ".bak"
+            IO.File.Copy(FilePath, BackupPath, True)
         Catch ex As Exception
-            Debug.Print("Caught Exception: MainForm.SaveDiskImageToFile")
+            Debug.Print("Caught Exception: MainForm.CreateBackup")
             Return False
         End Try
 
         Return True
+    End Function
+
+    Private Shared Function SaveDiskImageToFile(Disk As DiskImage.Disk, FilePath As String) As Boolean
+        Dim FileImageType = GetImageTypeFromFileName(FilePath)
+        Dim DiskImageType = Disk.Image.Data.ImageType
+        Dim Result As Boolean = False
+
+        If FileImageType = FloppyImageType.TranscopyImage Then
+            MsgBox("Saving to Transcopy (.tc) is not supported.", MsgBoxStyle.Exclamation)
+            Return False
+        ElseIf FileImageType = FloppyImageType.PSIImage Then
+            If DiskImageType = FloppyImageType.PSIImage Then
+                Result = Disk.Image.Data.SaveToFile(FilePath)
+            ElseIf DiskImageType = FloppyImageType.BasicSectorImage Then
+                If IsDiskFormatValidForRead(Disk.DiskFormat) Then
+                    Dim Data = Disk.Image.Data.GetBytes()
+                    Dim PSI = BasicSectorToPSIImage(Data, Disk.DiskFormat)
+                    Result = PSI.Export(FilePath)
+                Else
+                    MsgBox("Unsupported Disk Type.", MsgBoxStyle.Exclamation)
+                    Return False
+                End If
+            End If
+        Else
+            If DiskImageType = FloppyImageType.BasicSectorImage Then
+                Result = Disk.Image.Data.SaveToFile(FilePath)
+            ElseIf DiskImageType = FloppyImageType.PSIImage Then
+                Dim Data = Disk.Image.Data.GetBytes()
+                Result = SaveByteArrayToFile(FilePath, Data)
+            End If
+        End If
+
+        If Result Then
+            Disk.ClearChanges()
+        End If
+
+        Return Result
     End Function
 
     Private Sub BootSectorEdit()
@@ -867,7 +900,7 @@ Public Class MainForm
     Private Sub ClearReservedBytes()
         Dim Result As Boolean = False
 
-        If _TitleDB.IsVerifiedImage(_Disk, _CurrentImageData) Then
+        If _TitleDB.IsVerifiedImage(_Disk) Then
             If Not MsgBoxQuestion("This is a verified image.  Are you sure you wish to clear reserved bytes from this image?") Then
                 Exit Sub
             End If
@@ -1056,15 +1089,15 @@ Public Class MainForm
     End Sub
 
     Private Sub RestructureImage()
-        If _TitleDB.IsVerifiedImage(_Disk, _CurrentImageData) Then
+        If _TitleDB.IsVerifiedImage(_Disk) Then
             If Not MsgBoxQuestion("This is a verified image.  Are you sure you wish to restructure this image?") Then
                 Exit Sub
             End If
         End If
 
-        Dim Size = GetFloppyDiskSize(_Disk.DiskType)
+        Dim Size = GetFloppyDiskSize(_Disk.DiskFormat)
         Dim Data(Size - 1) As Byte
-        Dim Params = GetFloppyDiskParams(_Disk.DiskType)
+        Dim Params = GetFloppyDiskParams(_Disk.DiskFormat)
         Dim ParamsBySize = GetFloppyDiskParams(_Disk.Image.Length)
 
         Dim DataOffset As UInteger = 0
@@ -1222,6 +1255,7 @@ Public Class MainForm
 
         DiskImageProcess(True, False)
     End Sub
+
     Private Function DiskImageSave(ImageData As LoadedImageData, Optional NewFilePath As String = "") As Boolean
         Dim Disk As DiskImage.Disk
         Dim CurrentImageData As LoadedImageData = ComboImages.SelectedItem
@@ -1238,7 +1272,7 @@ Public Class MainForm
                 If NewFilePath = "" Then
                     NewFilePath = ImageData.GetSaveFile
                 End If
-                Success = SaveDiskImageToFile(Disk, NewFilePath, ImageData.ImageType)
+                Success = SaveDiskImageToFile(Disk, NewFilePath)
             End If
             If Not Success Then
                 Dim Msg As String = $"Error saving file '{IO.Path.GetFileName(NewFilePath)}'."
@@ -1386,7 +1420,7 @@ Public Class MainForm
     End Sub
 
     Private Sub FATEdit(Index As UShort)
-        Dim frmFATEdit As New FATEditForm(_Disk, Index, _CurrentImageData.ProtectedSectors)
+        Dim frmFATEdit As New FATEditForm(_Disk, Index)
 
         frmFATEdit.ShowDialog()
 
@@ -1968,7 +2002,7 @@ Public Class MainForm
     Private Sub FixImageSize()
         Dim Result As Boolean = True
 
-        If _TitleDB.IsVerifiedImage(_Disk, _CurrentImageData) Then
+        If _TitleDB.IsVerifiedImage(_Disk) Then
             If Not MsgBoxQuestion("This is a verified image.  Are you sure you wish to adjust the image size for this image?") Then
                 Exit Sub
             End If
@@ -2003,39 +2037,39 @@ Public Class MainForm
     End Sub
 
     Private Function FloppyDiskGetReadOptions(FloppyDrive As FloppyInterface) As BiosParameterBlock
-        Dim DetectedType As FloppyDiskType
-        Dim ReturnedType As FloppyDiskType
+        Dim DetectedFormat As FloppyDiskFormat
+        Dim ReturnedFormat As FloppyDiskFormat
         Dim BootSector As BootSector = Nothing
 
         Dim Buffer(Disk.BYTES_PER_SECTOR - 1) As Byte
         Dim BytesRead = FloppyDrive.ReadSector(0, Buffer)
         If BytesRead = Buffer.Length Then
             BootSector = New BootSector(Buffer)
-            DetectedType = GetFloppyDiskType(BootSector.BPB, False)
+            DetectedFormat = GetFloppyDiskFormat(BootSector.BPB, False)
         Else
-            DetectedType = FloppyDiskType.FloppyUnknown
+            DetectedFormat = FloppyDiskFormat.FloppyUnknown
         End If
 
-        Dim FloppyReadOptionsForm As New FloppyReadOptionsForm(DetectedType)
+        Dim FloppyReadOptionsForm As New FloppyReadOptionsForm(DetectedFormat)
         FloppyReadOptionsForm.ShowDialog(Me)
-        ReturnedType = FloppyReadOptionsForm.DiskType
+        ReturnedFormat = FloppyReadOptionsForm.DiskFormat
         FloppyReadOptionsForm.Close()
 
         If FloppyReadOptionsForm.DialogResult = DialogResult.Cancel Then
             Return Nothing
-        ElseIf ReturnedType = -1 Then
+        ElseIf ReturnedFormat = -1 Then
             Return Nothing
-        ElseIf BootSector IsNot Nothing AndAlso DetectedType = ReturnedType Then
+        ElseIf BootSector IsNot Nothing AndAlso DetectedFormat = ReturnedFormat Then
             Return BootSector.BPB
         Else
-            Return BuildBPB(ReturnedType)
+            Return BuildBPB(ReturnedFormat)
         End If
     End Function
 
-    Private Function FloppyDiskWriteOptions(DoFormat As Boolean, DetectedType As FloppyDiskType, ImageType As FloppyDiskType) As FloppyWriteOptionsForm.FloppyWriteOptions
+    Private Function FloppyDiskWriteOptions(DoFormat As Boolean, DetectedFormat As FloppyDiskFormat, ImageFormat As FloppyDiskFormat) As FloppyWriteOptionsForm.FloppyWriteOptions
         Dim WriteOptions As FloppyWriteOptionsForm.FloppyWriteOptions
 
-        Dim FloppyWriteOptioonsForm As New FloppyWriteOptionsForm(DoFormat, DetectedType, ImageType)
+        Dim FloppyWriteOptioonsForm As New FloppyWriteOptionsForm(DoFormat, DetectedFormat, ImageFormat)
         FloppyWriteOptioonsForm.ShowDialog(Me)
         WriteOptions = FloppyWriteOptioonsForm.WriteOptions
         FloppyWriteOptioonsForm.Close()
@@ -2060,8 +2094,8 @@ Public Class MainForm
                 Dim FloppyAccessForm As New FloppyAccessForm(FloppyDrive, BPB, FloppyAccessForm.FloppyAccessType.Read)
                 FloppyAccessForm.ShowDialog(Me)
                 If FloppyAccessForm.Complete Then
-                    Dim DiskType = GetFloppyDiskType(BPB, False)
-                    FloppyDiskSaveFile(FloppyAccessForm.DiskBuffer, DiskType)
+                    Dim DiskFormat = GetFloppyDiskFormat(BPB, False)
+                    FloppyDiskSaveFile(FloppyAccessForm.DiskBuffer, DiskFormat)
                 End If
                 FloppyAccessForm.Close()
             End If
@@ -2081,9 +2115,9 @@ Public Class MainForm
         Dim DriveName = DriveLetter & ":\"
         Dim DriveInfo = New DriveInfo(DriveName)
         Dim IsReady = DriveInfo.IsReady
-        Dim NewDiskType = GetFloppyDiskType(_Disk.BPB, False)
-        Dim NewTypeName = GetFloppyDiskTypeName(NewDiskType) & " Floppy"
-        Dim DetectedType As FloppyDiskType = 255
+        Dim NewDiskFormat = GetFloppyDiskFormat(_Disk.BPB, False)
+        Dim NewFormatName = GetFloppyDiskFormatName(NewDiskFormat) & " Floppy"
+        Dim DetectedFormat As FloppyDiskFormat = 255
         Dim DoFormat = Not IsReady
 
         Dim MsgBoxResult As MsgBoxResult
@@ -2094,24 +2128,24 @@ Public Class MainForm
                 Dim BytesRead = FloppyDrive.ReadSector(0, Buffer)
                 If BytesRead = Buffer.Length Then
                     Dim BootSector = New BootSector(Buffer)
-                    DetectedType = GetFloppyDiskType(BootSector.BPB, False)
+                    DetectedFormat = GetFloppyDiskFormat(BootSector.BPB, False)
                 Else
-                    DetectedType = FloppyDiskType.FloppyUnknown
+                    DetectedFormat = FloppyDiskFormat.FloppyUnknown
                 End If
                 FloppyDrive.Close()
             Else
-                DetectedType = FloppyDiskType.FloppyUnknown
+                DetectedFormat = FloppyDiskFormat.FloppyUnknown
             End If
             Dim Msg As String
-            If DetectedType = NewDiskType Then
+            If DetectedFormat = NewDiskFormat Then
                 Msg = $"Warning: The disk in drive {DriveLetter} is not empty.{vbCrLf}{vbCrLf}If you continue, the disk will be overwritten.{vbCrLf}{vbCrLf}Do you wish to continue?"
-            ElseIf DetectedType = -1 Then
+            ElseIf DetectedFormat = -1 Then
                 DoFormat = True
-                Msg = $"Warning: The disk in drive {DriveLetter} is not empty, but I am unable to determine the format type.{vbCrLf}{vbCrLf}The image you are attempting to write is a {NewTypeName} image.{vbCrLf}{vbCrLf}If you continue, the disk will be overwritten and may be unreadable.{vbCrLf}{vbCrLf}Do you wish to continue?"
+                Msg = $"Warning: The disk in drive {DriveLetter} is not empty, but I am unable to determine the format type.{vbCrLf}{vbCrLf}The image you are attempting to write is a {NewFormatName} image.{vbCrLf}{vbCrLf}If you continue, the disk will be overwritten and may be unreadable.{vbCrLf}{vbCrLf}Do you wish to continue?"
             Else
                 DoFormat = True
-                Dim DetectedTypeName = GetFloppyDiskTypeName(DetectedType) & " Floppy"
-                Msg = $"Warning: The disk in drive {DriveLetter} is not empty and is formatted as a {DetectedTypeName}.{vbCrLf}{vbCrLf}The image you are attempting to write is a {NewTypeName} image.{vbCrLf}{vbCrLf}If you continue, the disk will be overwritten and may be unreadable.{vbCrLf}{vbCrLf}Do you wish to continue?"
+                Dim DetectedFormatName = GetFloppyDiskFormatName(DetectedFormat) & " Floppy"
+                Msg = $"Warning: The disk in drive {DriveLetter} is not empty and is formatted as a {DetectedFormatName}.{vbCrLf}{vbCrLf}The image you are attempting to write is a {NewFormatName} image.{vbCrLf}{vbCrLf}If you continue, the disk will be overwritten and may be unreadable.{vbCrLf}{vbCrLf}Do you wish to continue?"
             End If
             MsgBoxResult = MsgBox(Msg, MsgBoxStyle.Exclamation Or MsgBoxStyle.OkCancel Or MsgBoxStyle.DefaultButton2)
         Else
@@ -2121,7 +2155,7 @@ Public Class MainForm
         If MsgBoxResult = MsgBoxResult.Ok Then
             Dim Result = FloppyDrive.OpenWrite(Drive)
             If Result Then
-                Dim WriteOptions = FloppyDiskWriteOptions(DoFormat, DetectedType, NewDiskType)
+                Dim WriteOptions = FloppyDiskWriteOptions(DoFormat, DetectedFormat, NewDiskFormat)
                 If Not WriteOptions.Cancelled Then
                     Dim FloppyAccessForm As New FloppyAccessForm(FloppyDrive, _Disk.BPB, FloppyAccessForm.FloppyAccessType.Write) With {
                         .DiskBuffer = _Disk.Image.GetBytes,
@@ -2138,9 +2172,9 @@ Public Class MainForm
         End If
     End Sub
 
-    Private Sub FloppyDiskSaveFile(Buffer() As Byte, DiskType As FloppyDiskType)
+    Private Sub FloppyDiskSaveFile(Buffer() As Byte, DiskFormat As FloppyDiskFormat)
         Dim FileExt = ".ima"
-        Dim FileFilter = GetSaveDialogFilters(DiskType, LoadedImageType.SectorImage, FileExt)
+        Dim FileFilter = GetSaveDialogFilters(DiskFormat, FileExt)
 
         Dim Dialog = New SaveFileDialog With {
             .Filter = FileFilter.Filter,
@@ -2239,7 +2273,7 @@ Public Class MainForm
         Dim CurrentImageData As LoadedImageData = ComboImages.SelectedItem
         Dim FilePath = ImageData.GetSaveFile
         Dim NewFilePath As String = ""
-        Dim DiskType As FloppyDiskType = FloppyDiskType.FloppyUnknown
+        Dim DiskFormat As FloppyDiskFormat = FloppyDiskFormat.FloppyUnknown
 
         If ImageData Is CurrentImageData Then
             Disk = _Disk
@@ -2248,11 +2282,11 @@ Public Class MainForm
         End If
 
         If Disk IsNot Nothing Then
-            DiskType = Disk.DiskType
+            DiskFormat = Disk.DiskFormat
         End If
 
         Dim FileExt = IO.Path.GetExtension(FilePath)
-        Dim FileFilter = GetSaveDialogFilters(DiskType, ImageData.ImageType, FileExt)
+        Dim FileFilter = GetSaveDialogFilters(DiskFormat, FileExt)
 
         Dim Dialog = New SaveFileDialog With {
             .InitialDirectory = IO.Path.GetDirectoryName(FilePath),
@@ -2306,7 +2340,7 @@ Public Class MainForm
         Return Len(PathName)
     End Function
 
-    Private Function GetSaveDialogFilters(DiskType As FloppyDiskType, ImageType As LoadedImageType, FileExt As String) As SaveDialogFilter
+    Private Function GetSaveDialogFilters(DiskFormat As FloppyDiskFormat, FileExt As String) As SaveDialogFilter
         Dim Response As SaveDialogFilter
         Dim CurrentIndex As Integer = 1
         Dim Extension As String
@@ -2332,27 +2366,26 @@ Public Class MainForm
         Response.Filter = FileDialogAppendFilter(Response.Filter, "Virtual Floppy Disk", ExtensionList)
         CurrentIndex += 1
 
-        'If ImageType = LoadedImageType.TranscopyImage Then
-        '    ExtensionList = New List(Of String) From {".tc"}
-        '    For Each Extension In ExtensionList
-        '        If FileExt.Equals(Extension, StringComparison.OrdinalIgnoreCase) Then
-        '            Response.FilterIndex = CurrentIndex
-        '        End If
-        '    Next
-        '    Response.Filter = FileDialogAppendFilter(Response.Filter, "Transcopy Image", ExtensionList)
-        '    CurrentIndex += 1
-        'End If
+        ExtensionList = New List(Of String) From {".psi"}
+        For Each Extension In ExtensionList
+            If FileExt.Equals(Extension, StringComparison.OrdinalIgnoreCase) Then
+                Response.FilterIndex = CurrentIndex
+            End If
+        Next
+        Response.Filter = FileDialogAppendFilter(Response.Filter, "PCE Sector Image", ExtensionList)
+        CurrentIndex += 1
 
-        Dim Items = System.Enum.GetValues(GetType(FloppyDiskType))
+
+        Dim Items = System.Enum.GetValues(GetType(FloppyDiskFormat))
         For Each Item As Integer In Items
-            Extension = GetFileFilterExtByType(Item)
+            Extension = GetFileFilterExtByFormat(Item)
             If Extension <> "" Then
-                Dim Description = GetFileFilterDescriptionByType(Item)
+                Dim Description = GetFileFilterDescriptionByFormat(Item)
                 If FileExt.Equals(Extension, StringComparison.OrdinalIgnoreCase) Then
                     Response.Filter = FileDialogAppendFilter(Response.Filter, Description, Extension)
                     Response.FilterIndex = CurrentIndex
                     CurrentIndex += 1
-                ElseIf Item = DiskType Then
+                ElseIf Item = DiskFormat Then
                     Response.Filter = FileDialogAppendFilter(Response.Filter, Description, Extension)
                     CurrentIndex += 1
                 End If
@@ -2374,8 +2407,6 @@ Public Class MainForm
     Private Sub HexDisplayBadSectors()
         Dim HexViewSectorData = HexViewBadSectors(_Disk)
 
-        HexViewSectorData.ProtectedSectors = _CurrentImageData.ProtectedSectors
-
         If DisplayHexViewForm(HexViewSectorData) Then
             DiskImageRefresh()
         End If
@@ -2383,8 +2414,6 @@ Public Class MainForm
 
     Private Sub HexDisplayBootSector()
         Dim HexViewSectorData = HexViewBootSector(_Disk)
-
-        HexViewSectorData.ProtectedSectors = _CurrentImageData.ProtectedSectors
 
         If DisplayHexViewForm(HexViewSectorData) Then
             DiskImageRefresh()
@@ -2395,8 +2424,6 @@ Public Class MainForm
         Dim HexViewSectorData = HexViewDirectoryEntry(_Disk, Offset)
 
         If HexViewSectorData IsNot Nothing Then
-            HexViewSectorData.ProtectedSectors = _CurrentImageData.ProtectedSectors
-
             If DisplayHexViewForm(HexViewSectorData) Then
                 DiskImageRefresh()
             End If
@@ -2405,8 +2432,7 @@ Public Class MainForm
 
     Private Sub HexDisplayDiskImage()
         Dim HexViewSectorData = New HexViewSectorData(_Disk, 0, _Disk.Image.Length) With {
-            .Description = "Disk",
-            .ProtectedSectors = _CurrentImageData.ProtectedSectors
+            .Description = "Disk"
         }
 
         If DisplayHexViewForm(HexViewSectorData, True, True, False) Then
@@ -2417,9 +2443,7 @@ Public Class MainForm
     Private Sub HexDisplayFAT()
         Dim HexViewSectorData = HexViewFAT(_Disk)
 
-        HexViewSectorData.ProtectedSectors = _CurrentImageData.ProtectedSectors
-
-        Dim SyncBlocks = _Disk.BPB.NumberOfFATEntries > 1 AndAlso Not IsDiskTypeXDF(_Disk.DiskType)
+        Dim SyncBlocks = _Disk.BPB.NumberOfFATEntries > 1 AndAlso Not IsDiskFormatXDF(_Disk.DiskFormat)
 
         If DisplayHexViewForm(HexViewSectorData, SyncBlocks) Then
             DiskImageRefresh()
@@ -2428,8 +2452,7 @@ Public Class MainForm
 
     Private Sub HexDisplayFreeClusters()
         Dim HexViewSectorData = New HexViewSectorData(_Disk, _Disk.FAT.GetFreeClusters(FAT12.FreeClusterEmum.WithData)) With {
-            .Description = "Free Clusters",
-            .ProtectedSectors = _CurrentImageData.ProtectedSectors
+            .Description = "Free Clusters"
         }
 
         If DisplayHexViewForm(HexViewSectorData) Then
@@ -2440,8 +2463,6 @@ Public Class MainForm
     Private Sub HexDisplayLostClusters()
         Dim HexViewSectorData = HexViewLostClusters(_Disk)
 
-        HexViewSectorData.ProtectedSectors = _CurrentImageData.ProtectedSectors
-
         If DisplayHexViewForm(HexViewSectorData) Then
             DiskImageRefresh()
         End If
@@ -2451,8 +2472,7 @@ Public Class MainForm
         Dim Offset = _Disk.BPB.ReportedImageSize() + 1
 
         Dim HexViewSectorData = New HexViewSectorData(_Disk, Offset, _Disk.Image.Length - Offset) With {
-            .Description = "Disk",
-            .ProtectedSectors = _CurrentImageData.ProtectedSectors
+            .Description = "Disk"
         }
 
         If DisplayHexViewForm(HexViewSectorData, True, True, False) Then
@@ -2473,7 +2493,7 @@ Public Class MainForm
         Dim PrevVisible = ComboFAT.Visible
 
         If Disk IsNot Nothing Then
-            FATTablesMatch = IsDiskTypeXDF(Disk.DiskType) OrElse Disk.FATTables.FATsMatch
+            FATTablesMatch = IsDiskFormatXDF(Disk.DiskFormat) OrElse Disk.FATTables.FATsMatch
             BtnDisplayBootSector.Enabled = Disk.CheckSize
             BtnEditBootSector.Enabled = Disk.CheckSize
             BtnDisplayDisk.Enabled = Disk.CheckSize
@@ -2694,9 +2714,9 @@ Public Class MainForm
     End Sub
 
     Private Sub ParseFileTypeFilters()
-        Dim Items = System.Enum.GetValues(GetType(FloppyDiskType))
+        Dim Items = System.Enum.GetValues(GetType(FloppyDiskFormat))
         For Each Item As Integer In Items
-            Dim FileExt = GetFileFilterExtByType(Item)
+            Dim FileExt = GetFileFilterExtByFormat(Item)
             If FileExt <> "" Then
                 If Not _ValidFileExt.Contains(FileExt) Then
                     _ValidFileExt.Add(FileExt)
@@ -2911,7 +2931,7 @@ Public Class MainForm
                 Dim TitleFound As Boolean = False
 
                 If _TitleDB.TitleCount > 0 Then
-                    Dim TitleFindResult = _TitleDB.TitleFind(Disk, MD5, ImageData.ProtectedSectors)
+                    Dim TitleFindResult = _TitleDB.TitleFind(Disk, MD5)
                     If TitleFindResult.TitleData IsNot Nothing Then
                         TitleFound = True
                         CopyProtection = TitleFindResult.TitleData.GetCopyProtection
@@ -2929,17 +2949,17 @@ Public Class MainForm
                 .AddItem(DiskGroup, "Image Size", Disk.Image.Length.ToString("N0"), ForeColor)
 
                 If Disk.IsValidImage(False) Then
-                    Dim DiskTypeString = GetFloppyDiskTypeName(Disk.DiskType)
-                    Dim DiskTypeBySize = GetFloppyDiskType(Disk.Image.Length)
+                    Dim DiskFormatString = GetFloppyDiskFormatName(Disk.DiskFormat)
+                    Dim DiskFormatBySize = GetFloppyDiskFormat(Disk.Image.Length)
 
-                    If Disk.DiskType <> FloppyDiskType.FloppyUnknown Or DiskTypeBySize = FloppyDiskType.FloppyUnknown Then
-                        .AddItem(DiskGroup, "Disk Type", DiskTypeString & " Floppy")
+                    If Disk.DiskFormat <> FloppyDiskFormat.FloppyUnknown Or DiskFormatBySize = FloppyDiskFormat.FloppyUnknown Then
+                        .AddItem(DiskGroup, "Disk Type", DiskFormatString & " Floppy")
                     Else
-                        Dim DiskTypeStringBySize = GetFloppyDiskTypeName(DiskTypeBySize)
-                        .AddItem(DiskGroup, "Disk Type", DiskTypeStringBySize & " Floppy (Custom Format)")
+                        Dim DiskFormatStringBySize = GetFloppyDiskFormatName(DiskFormatBySize)
+                        .AddItem(DiskGroup, "Disk Type", DiskFormatStringBySize & " Floppy (Custom Format)")
                     End If
 
-                    If IsDiskTypeXDF(Disk.DiskType) Then
+                    If IsDiskFormatXDF(Disk.DiskFormat) Then
                         Dim XDFChecksum = CalcXDFChecksum(Disk.Image.GetBytes, Disk.BPB.SectorsPerFAT)
                         If XDFChecksum = Disk.GetXDFChecksum Then
                             ForeColor = Color.Green
@@ -2949,8 +2969,8 @@ Public Class MainForm
                         .AddItem(DiskGroup, "XDF Checksum", XDFChecksum.ToString("X8"), ForeColor)
                     End If
 
-                    If Disk.BPB.IsValid AndAlso Disk.CheckImageSize > 0 AndAlso Disk.DiskType <> FloppyDiskType.FloppyUnknown Then
-                        .AddItem(DiskGroup, DiskTypeString & " CRC32", Crc32.ComputeChecksum(Disk.Image.GetBytes(0, Disk.BPB.ReportedImageSize())).ToString("X8"))
+                    If Disk.BPB.IsValid AndAlso Disk.CheckImageSize > 0 AndAlso Disk.DiskFormat <> FloppyDiskFormat.FloppyUnknown Then
+                        .AddItem(DiskGroup, DiskFormatString & " CRC32", Crc32.ComputeChecksum(Disk.Image.GetBytes(0, Disk.BPB.ReportedImageSize())).ToString("X8"))
                     End If
                 End If
 
@@ -2987,9 +3007,9 @@ Public Class MainForm
                     End If
 
                     If Disk.BootSector.BPB.IsValid Then
-                        Dim DiskTypeBySize = GetFloppyDiskType(Disk.Image.Length)
-                        Dim BPBBySize = BuildBPB(DiskTypeBySize)
-                        Dim DoBPBCompare = Disk.DiskType = FloppyDiskType.FloppyUnknown And DiskTypeBySize <> FloppyDiskType.FloppyUnknown
+                        Dim DiskFormatBySize = GetFloppyDiskFormat(Disk.Image.Length)
+                        Dim BPBBySize = BuildBPB(DiskFormatBySize)
+                        Dim DoBPBCompare = Disk.DiskFormat = FloppyDiskFormat.FloppyUnknown And DiskFormatBySize <> FloppyDiskFormat.FloppyUnknown
 
                         Dim BootRecordGroup = .Groups.Add("BootRecord", "Boot Record")
 
@@ -3035,7 +3055,7 @@ Public Class MainForm
                             ForeColor = SystemColors.WindowText
                         End If
 
-                        If IsDiskTypeXDF(Disk.DiskType) Then
+                        If IsDiskFormatXDF(Disk.DiskFormat) Then
                             Value = "1 + Compatibility Image"
                         Else
                             Value = Disk.BootSector.BPB.NumberOfFATs
@@ -3076,9 +3096,9 @@ Public Class MainForm
                             If Not Disk.BPB.HasValidMediaDescriptor Then
                                 Value &= " (Invalid)"
                                 ForeColor = Color.Red
-                            ElseIf Disk.DiskType = FloppyDiskType.FloppyXDF35 AndAlso Disk.FAT.MediaDescriptor = &HF9 Then
+                            ElseIf Disk.DiskFormat = FloppyDiskFormat.FloppyXDF35 AndAlso Disk.FAT.MediaDescriptor = &HF9 Then
                                 'Do Nothing - This is normal for XDF
-                            ElseIf Disk.DiskType <> FloppyDiskType.FloppyUnknown AndAlso Disk.BootSector.BPB.MediaDescriptor <> GetFloppyDiskMediaDescriptor(Disk.DiskType) Then
+                            ElseIf Disk.DiskFormat <> FloppyDiskFormat.FloppyUnknown AndAlso Disk.BootSector.BPB.MediaDescriptor <> GetFloppyDiskMediaDescriptor(Disk.DiskFormat) Then
                                 Value &= " (Mismatched)"
                                 ForeColor = Color.Red
                             ElseIf Disk.FAT.MediaDescriptor <> Disk.BootSector.BPB.MediaDescriptor Then
@@ -3162,9 +3182,9 @@ Public Class MainForm
                             Value &= " (Invalid)"
                             ForeColor = Color.Red
                             Visible = True
-                        ElseIf Disk.DiskType = FloppyDiskType.FloppyXDF35 AndAlso Disk.FAT.MediaDescriptor = &HF9 Then
+                        ElseIf Disk.DiskFormat = FloppyDiskFormat.FloppyXDF35 AndAlso Disk.FAT.MediaDescriptor = &HF9 Then
                             Visible = False
-                        ElseIf Disk.DiskType <> FloppyDiskType.FloppyUnknown AndAlso Disk.FAT.MediaDescriptor <> GetFloppyDiskMediaDescriptor(Disk.DiskType) Then
+                        ElseIf Disk.DiskFormat <> FloppyDiskFormat.FloppyUnknown AndAlso Disk.FAT.MediaDescriptor <> GetFloppyDiskMediaDescriptor(Disk.DiskFormat) Then
                             Value &= " (Mismatched)"
                             ForeColor = Color.Red
                             Visible = True
@@ -3486,19 +3506,21 @@ Public Class MainForm
     Private Sub RefreshFixImageSubMenu(Disk As Disk)
         Dim EnableSubMenu As Boolean
         Dim EnableRestructureImage As Boolean = False
-        Dim DiskTypeBySize = GetFloppyDiskType(Disk.Image.Length)
-        Dim SizeByType = GetFloppyDiskSize(Disk.DiskType)
 
-        If Disk.DiskType = FloppyDiskType.Floppy160 And DiskTypeBySize = FloppyDiskType.Floppy180 Then
-            EnableRestructureImage = True
-        ElseIf Disk.DiskType = FloppyDiskType.Floppy160 And DiskTypeBySize = FloppyDiskType.Floppy320 Then
-            EnableRestructureImage = True
-        ElseIf Disk.DiskType = FloppyDiskType.Floppy160 And DiskTypeBySize = FloppyDiskType.Floppy360 Then
-            EnableRestructureImage = True
-        ElseIf Disk.DiskType = FloppyDiskType.Floppy180 And DiskTypeBySize = FloppyDiskType.Floppy360 Then
-            EnableRestructureImage = True
-        ElseIf Disk.DiskType = FloppyDiskType.Floppy320 And DiskTypeBySize = FloppyDiskType.Floppy360 Then
-            EnableRestructureImage = True
+        If Disk.Image.Data.CanResize Then
+            Dim DiskFormatBySize = GetFloppyDiskFormat(Disk.Image.Length)
+
+            If Disk.DiskFormat = FloppyDiskFormat.Floppy160 And DiskFormatBySize = FloppyDiskFormat.Floppy180 Then
+                EnableRestructureImage = True
+            ElseIf Disk.DiskFormat = FloppyDiskFormat.Floppy160 And DiskFormatBySize = FloppyDiskFormat.Floppy320 Then
+                EnableRestructureImage = True
+            ElseIf Disk.DiskFormat = FloppyDiskFormat.Floppy160 And DiskFormatBySize = FloppyDiskFormat.Floppy360 Then
+                EnableRestructureImage = True
+            ElseIf Disk.DiskFormat = FloppyDiskFormat.Floppy180 And DiskFormatBySize = FloppyDiskFormat.Floppy360 Then
+                EnableRestructureImage = True
+            ElseIf Disk.DiskFormat = FloppyDiskFormat.Floppy320 And DiskFormatBySize = FloppyDiskFormat.Floppy360 Then
+                EnableRestructureImage = True
+            End If
         End If
 
         EnableSubMenu = EnableRestructureImage
@@ -3523,7 +3545,7 @@ Public Class MainForm
             BtnDisplayBadSectors.Enabled = Disk.FAT.BadClusters.Count > 0
             BtnDisplayLostClusters.Enabled = Disk.FAT.GetLostClusterCount > 0
             Dim Compare = Disk.CheckImageSize
-            BtnFixImageSize.Enabled = Compare <> 0
+            BtnFixImageSize.Enabled = Disk.Image.Data.CanResize And Compare <> 0
             If Disk.Directory.Data.HasBootSector Then
                 Dim BootSectorBytes = Disk.Image.GetBytes(Disk.Directory.Data.BootSectorOffset, BootSector.BOOT_SECTOR_SIZE)
                 BtnRestoreBootSector.Enabled = Not BootSectorBytes.CompareTo(Disk.BootSector.Data)
@@ -4170,13 +4192,13 @@ Public Class MainForm
     End Sub
 
     Private Sub Win9xCleanCurrent()
-        If _TitleDB.IsVerifiedImage(_Disk, _CurrentImageData) Then
+        If _TitleDB.IsVerifiedImage(_Disk) Then
             If Not MsgBoxQuestion("This is a verified image.  Are you sure you wish to remove any windows modifications from this image?") Then
                 Exit Sub
             End If
         End If
 
-        Dim Result = Win9xClean(_Disk, _CurrentImageData, False)
+        Dim Result = Win9xClean(_Disk, False)
 
         If Result Then
             DiskImageRefresh()

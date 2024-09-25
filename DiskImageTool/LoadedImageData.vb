@@ -1,13 +1,8 @@
 ﻿Imports System.IO
+Imports DiskImageTool.DiskImage
 
 Public Class LoadedImageData
     Private ReadOnly _Filters() As Boolean
-
-    Public Enum LoadedImageType
-        SectorImage
-        TranscopyImage
-        PSIImage
-    End Enum
 
     Public Sub New(SourceFile As String)
         _AppliedFilters = 0
@@ -31,8 +26,6 @@ Public Class LoadedImageData
         _XDFMiniDisk = False
         _XDFOffset = 0
         _XDFLength = 0
-        _SectorMap = New UInteger(-1) {}
-        _ProtectedSectors = New HashSet(Of UInteger)
 
         Dim FilterCount As Integer = FilterGetCount()
         ReDim _Filters(FilterCount - 1)
@@ -63,8 +56,6 @@ Public Class LoadedImageData
     Public Property XDFMiniDisk As Boolean
     Public Property XDFOffset As UInteger
     Public Property XDFLength As UInteger
-    Public Property SectorMap As UInteger()
-    Public Property ProtectedSectors As HashSet(Of UInteger)
 
     Public Shared Property StringOffset As Integer = 0
 
@@ -104,18 +95,6 @@ Public Class LoadedImageData
         End If
     End Sub
 
-    Public Function ImageType() As LoadedImageType
-        Dim FileExt = Path.GetExtension(FileName).ToLower
-
-        If FileExt = ".tc" Then
-            Return LoadedImageType.TranscopyImage
-        ElseIf FileExt = ".psi" Then
-            Return LoadedImageType.PSIImage
-        Else
-            Return LoadedImageType.SectorImage
-        End If
-    End Function
-
     Public Function GetSaveFile() As String
         Dim FilePath As String
 
@@ -125,9 +104,9 @@ Public Class LoadedImageData
             FilePath = _SourceFile
         End If
 
-        If ImageType() = LoadedImageType.TranscopyImage Then
-            FilePath = Path.GetFileNameWithoutExtension(FilePath) & ".ima"
-        ElseIf ImageType() = LoadedImageType.PSIImage Then
+        Dim ImageType = GetImageTypeFromFileName(FileName)
+
+        If ImageType = FloppyImageType.TranscopyImage Then
             FilePath = Path.GetFileNameWithoutExtension(FilePath) & ".ima"
         End If
 

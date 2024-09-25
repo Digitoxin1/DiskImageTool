@@ -1,4 +1,48 @@
-﻿Module BitstreamUtil
+﻿Imports DiskImageTool.DiskImage
+Imports DiskImageTool.PSI_Image
+
+Module BitstreamUtil
+
+    Public Function BasicSectorToPSIImage(Data() As Byte, DiskFormat As DiskImage.FloppyDiskFormat) As PSISectorImage
+        Dim Params = GetFloppyDiskParams(DiskFormat)
+        Dim PSI = New PSISectorImage
+        PSI.Header.FormatVersion = 0
+        If DiskFormat = FloppyDiskFormat.Floppy1200 Then
+            PSI.Header.DefaultSectorFormat = DefaultSectorFormat.IBM_MFM_HD
+        ElseIf DiskFormat = FloppyDiskFormat.Floppy1440 Then
+            PSI.Header.DefaultSectorFormat = DefaultSectorFormat.IBM_MFM_HD
+        ElseIf DiskFormat = FloppyDiskFormat.Floppy2880 Then
+            PSI.Header.DefaultSectorFormat = DefaultSectorFormat.IBM_MFM_ED
+        Else
+            PSI.Header.DefaultSectorFormat = DefaultSectorFormat.IBM_MFM_DD
+        End If
+
+        PSI.Comment = "Created with " & My.Application.Info.ProductName & " v" & GetVersionString()
+
+        For i = 0 To Data.Length - 1 Step Params.BytesPerSector
+            Dim Sector As UInteger = i \ Params.BytesPerSector
+            Dim Cylinder = Sector \ Params.SectorsPerTrack \ Params.NumberOfHeads
+            Dim Head = (Sector \ Params.SectorsPerTrack) Mod Params.NumberOfHeads
+            Dim SectorId = Sector Mod Params.SectorsPerTrack + 1
+            Dim Size = Math.Min(Params.BytesPerSector, Data.Length - i)
+
+            Dim Buffer = New Byte(Size - 1) {}
+            Array.Copy(Data, i, Buffer, 0, Size)
+
+            Dim PSISector = New PSISector With {
+                .HasDataCRCError = False,
+                .IsAlternateSector = False,
+                .Cylinder = Cylinder,
+                .Head = Head,
+                .Sector = SectorId,
+                .Data = Buffer
+            }
+            PSI.Sectors.Add(PSISector)
+        Next
+
+        Return PSI
+    End Function
+
     Private Function CheckDoubleSizeSectors(Sectors As List(Of IBM_MFM.MFMSector)) As Boolean
         Dim Result As Boolean = True
         Dim SectorCount As UShort
@@ -26,14 +70,14 @@
         Return Result
     End Function
 
-    Private Function GetImageOffset(ImageParams As DiskImage.FloppyDiskParams, Track As UShort, Side As Byte, Sector As UShort) As UInteger
+    Private Function GetImageOffset(ImageParams As FloppyDiskParams, Track As UShort, Side As Byte, Sector As UShort) As UInteger
         Dim Offset = Track * ImageParams.NumberOfHeads * ImageParams.SectorsPerTrack + ImageParams.SectorsPerTrack * Side + Sector
 
         Return Offset * 512
     End Function
 
-    Public Function PSIGetImageType(PSI As PSI_Image.PSISectorImage) As DiskImage.FloppyDiskType
-        Dim DiskType As DiskImage.FloppyDiskType
+    Public Function PSIGetImageFormat(PSI As PSI_Image.PSISectorImage) As FloppyDiskFormat
+        Dim DiskFormat As FloppyDiskFormat
         Dim MaxSectors As Byte
 
         If PSI.Header.DefaultSectorFormat = PSI_Image.DefaultSectorFormat.IBM_MFM_DD Then
@@ -64,38 +108,38 @@
 
         If PSI.Header.DefaultSectorFormat = PSI_Image.DefaultSectorFormat.IBM_MFM_DD Then
             If CylinderCount >= 79 Then
-                DiskType = DiskImage.FloppyDiskType.Floppy720
+                DiskFormat = FloppyDiskFormat.Floppy720
             Else
                 If HeadCount = 1 Then
                     If SectorCount < 9 Then
-                        DiskType = DiskImage.FloppyDiskType.Floppy160
+                        DiskFormat = FloppyDiskFormat.Floppy160
                     Else
-                        DiskType = DiskImage.FloppyDiskType.Floppy180
+                        DiskFormat = FloppyDiskFormat.Floppy180
                     End If
                 Else
                     If SectorCount < 9 Then
-                        DiskType = DiskImage.FloppyDiskType.Floppy320
+                        DiskFormat = FloppyDiskFormat.Floppy320
                     Else
-                        DiskType = DiskImage.FloppyDiskType.Floppy360
+                        DiskFormat = FloppyDiskFormat.Floppy360
                     End If
                 End If
             End If
         ElseIf PSI.Header.DefaultSectorFormat = PSI_Image.DefaultSectorFormat.IBM_MFM_HD Then
             If SectorCount > 15 Then
-                DiskType = DiskImage.FloppyDiskType.Floppy1440
+                DiskFormat = FloppyDiskFormat.Floppy1440
             Else
-                DiskType = DiskImage.FloppyDiskType.Floppy1200
+                DiskFormat = FloppyDiskFormat.Floppy1200
             End If
         Else
-            DiskType = DiskImage.FloppyDiskType.Floppy2880
+            DiskFormat = FloppyDiskFormat.Floppy2880
 
         End If
 
-        Return DiskType
+        Return DiskFormat
     End Function
 
-    Public Function TranscopyGetImageType(tc As Transcopy.TransCopyImage) As DiskImage.FloppyDiskType
-        Dim DiskType As DiskImage.FloppyDiskType
+    Public Function TranscopyGetImageFormat(tc As Transcopy.TransCopyImage) As FloppyDiskFormat
+        Dim DiskFormat As FloppyDiskFormat
         Dim MaxSectors As Byte
 
         Dim SectorCount As Byte = 0
@@ -122,84 +166,34 @@
 
         If tc.CylinderEnd >= 79 Then
             If SectorCount > 15 Then
-                DiskType = DiskImage.FloppyDiskType.Floppy1440
+                DiskFormat = FloppyDiskFormat.Floppy1440
             ElseIf SectorCount > 9 Then
-                DiskType = DiskImage.FloppyDiskType.Floppy1200
+                DiskFormat = FloppyDiskFormat.Floppy1200
             Else
-                DiskType = DiskImage.FloppyDiskType.Floppy720
+                DiskFormat = FloppyDiskFormat.Floppy720
             End If
         Else
             If tc.Sides = 1 Then
                 If SectorCount < 9 Then
-                    DiskType = DiskImage.FloppyDiskType.Floppy160
+                    DiskFormat = FloppyDiskFormat.Floppy160
                 Else
-                    DiskType = DiskImage.FloppyDiskType.Floppy180
+                    DiskFormat = FloppyDiskFormat.Floppy180
                 End If
             Else
                 If SectorCount < 9 Then
-                    DiskType = DiskImage.FloppyDiskType.Floppy320
+                    DiskFormat = FloppyDiskFormat.Floppy320
                 Else
-                    DiskType = DiskImage.FloppyDiskType.Floppy360
+                    DiskFormat = FloppyDiskFormat.Floppy360
                 End If
             End If
         End If
 
-        Return DiskType
+        Return DiskFormat
     End Function
 
-    Public Function PSIToSectorImage(PSI As PSI_Image.PSISectorImage, DiskType As DiskImage.FloppyDiskType) As SectorImageData
-        Dim ImageSize = DiskImage.GetFloppyDiskSize(DiskType)
-        Dim ImageParams = DiskImage.GetFloppyDiskParams(DiskType)
-
-        Dim SectorImageData As New SectorImageData(ImageSize)
-
-        Dim TrackCount = Int(ImageParams.SectorCountSmall / ImageParams.SectorsPerTrack / ImageParams.NumberOfHeads)
-
-        For Each PSISector In PSI.Sectors
-            Dim MaxSize As UInteger = ImageParams.BytesPerSector
-            Dim MaxSectors As UShort = ImageParams.SectorsPerTrack
-
-            If Not PSISector.IsAlternateSector Then
-                If PSISector.Cylinder < TrackCount And PSISector.Head < ImageParams.NumberOfHeads Then
-                    If PSISector.Sector >= 1 And PSISector.Sector <= MaxSectors Then
-                        Dim SectorId = PSISector.Sector - 1
-                        Dim Offset = GetImageOffset(ImageParams, PSISector.Cylinder, PSISector.Head, SectorId)
-                        Dim Sector = Offset \ ImageParams.BytesPerSector
-                        If PSISector.Size <= MaxSize Then
-                            Dim Size As UShort
-                            Dim Data() As Byte
-                            If PSISector.IsCompressed Then
-                                Data = New Byte(PSISector.Size - 1) {}
-                                For i = 0 To Data.Length - 1
-                                    Data(i) = PSISector.CompressedSectorData
-                                Next
-                                Size = PSISector.Size
-                            Else
-                                Data = PSISector.Data
-                                Size = Math.Min(PSISector.Size, PSISector.Data.Length)
-                            End If
-                            Array.Copy(Data, 0, SectorImageData.Data, Offset, Size)
-                            If Size <> ImageParams.BytesPerSector Then
-                                If Not SectorImageData.ProtectedSectors.Contains(Sector) Then
-                                    SectorImageData.ProtectedSectors.Add(Sector)
-                                End If
-                            End If
-                        Else
-                            If Not SectorImageData.ProtectedSectors.Contains(Sector) Then
-                                SectorImageData.ProtectedSectors.Add(Sector)
-                            End If
-                        End If
-                    End If
-                End If
-            End If
-        Next
-
-        Return SectorImageData
-    End Function
-
-    Public Function TranscopyToSectorImage(tc As Transcopy.TransCopyImage, DiskType As DiskImage.FloppyDiskType) As SectorImageData
-        Dim ImageSize = DiskImage.GetFloppyDiskSize(DiskType)
-        Dim ImageParams = DiskImage.GetFloppyDiskParams(DiskType)
+    Public Function TranscopyToSectorImage(tc As Transcopy.TransCopyImage, DiskFormat As FloppyDiskFormat) As SectorImageData
+        Dim ImageSize = GetFloppyDiskSize(DiskFormat)
+        Dim ImageParams = GetFloppyDiskParams(DiskFormat)
 
         Dim SectorImageData As New SectorImageData(ImageSize)
 

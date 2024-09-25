@@ -24,11 +24,11 @@ Public Class BootSectorForm
         Dim BootStrapStart = _BootSector.GetBootStrapOffset
         _HasExtended = BootStrapStart >= BootSectorOffsets.FileSystemType + BootSectorSizes.FileSystemType
 
-        Dim DiskType = GetFloppyDiskType(_BootSector.BPB, True, False)
+        Dim DiskFormat = GetFloppyDiskFormat(_BootSector.BPB, True, False)
 
         IntitializeHelp()
-        PopulateDiskTypes(DiskType)
-        SetCurrentDiskType(DiskType)
+        PopulateDiskTypes(DiskFormat)
+        SetCurrentDiskFormat(DiskFormat)
         PopulateValues()
 
         _SuppressEvent = False
@@ -329,29 +329,29 @@ Public Class BootSectorForm
         Next
     End Sub
 
-    Private Sub PopulateDiskTypes(DiskType As FloppyDiskType)
+    Private Sub PopulateDiskTypes(DiskFormat As FloppyDiskFormat)
         CboDiskType.Items.Clear()
-        CboDiskType.Items.Add(New BootSectorDiskType(FloppyDiskType.Floppy160))
-        CboDiskType.Items.Add(New BootSectorDiskType(FloppyDiskType.Floppy180))
-        CboDiskType.Items.Add(New BootSectorDiskType(FloppyDiskType.Floppy320))
-        CboDiskType.Items.Add(New BootSectorDiskType(FloppyDiskType.Floppy360))
-        CboDiskType.Items.Add(New BootSectorDiskType(FloppyDiskType.Floppy720))
-        CboDiskType.Items.Add(New BootSectorDiskType(FloppyDiskType.Floppy1200))
-        CboDiskType.Items.Add(New BootSectorDiskType(FloppyDiskType.Floppy1440))
-        CboDiskType.Items.Add(New BootSectorDiskType(FloppyDiskType.Floppy2880))
-        CboDiskType.Items.Add(New BootSectorDiskType(FloppyDiskType.FloppyDMF1024))
-        CboDiskType.Items.Add(New BootSectorDiskType(FloppyDiskType.FloppyDMF2048))
-        CboDiskType.Items.Add(New BootSectorDiskType(FloppyDiskType.FloppyXDF525))
-        CboDiskType.Items.Add(New BootSectorDiskType(FloppyDiskType.FloppyXDF35))
-        If DiskType = FloppyDiskType.FloppyXDFMicro Then
-            CboDiskType.Items.Add(New BootSectorDiskType(FloppyDiskType.FloppyXDFMicro))
+        CboDiskType.Items.Add(New BootSectorDiskFormat(FloppyDiskFormat.Floppy160))
+        CboDiskType.Items.Add(New BootSectorDiskFormat(FloppyDiskFormat.Floppy180))
+        CboDiskType.Items.Add(New BootSectorDiskFormat(FloppyDiskFormat.Floppy320))
+        CboDiskType.Items.Add(New BootSectorDiskFormat(FloppyDiskFormat.Floppy360))
+        CboDiskType.Items.Add(New BootSectorDiskFormat(FloppyDiskFormat.Floppy720))
+        CboDiskType.Items.Add(New BootSectorDiskFormat(FloppyDiskFormat.Floppy1200))
+        CboDiskType.Items.Add(New BootSectorDiskFormat(FloppyDiskFormat.Floppy1440))
+        CboDiskType.Items.Add(New BootSectorDiskFormat(FloppyDiskFormat.Floppy2880))
+        CboDiskType.Items.Add(New BootSectorDiskFormat(FloppyDiskFormat.FloppyDMF1024))
+        CboDiskType.Items.Add(New BootSectorDiskFormat(FloppyDiskFormat.FloppyDMF2048))
+        CboDiskType.Items.Add(New BootSectorDiskFormat(FloppyDiskFormat.FloppyXDF525))
+        CboDiskType.Items.Add(New BootSectorDiskFormat(FloppyDiskFormat.FloppyXDF35))
+        If DiskFormat = FloppyDiskFormat.FloppyXDFMicro Then
+            CboDiskType.Items.Add(New BootSectorDiskFormat(FloppyDiskFormat.FloppyXDFMicro))
         End If
-        CboDiskType.Items.Add(New BootSectorDiskType(FloppyDiskType.FloppyProCopy))
-        CboDiskType.Items.Add(New BootSectorDiskType(FloppyDiskType.FloppyTandy2000))
-        If DiskType = FloppyDiskType.FloppyNoBPB Then
-            CboDiskType.Items.Add(New BootSectorDiskType(FloppyDiskType.FloppyNoBPB))
+        CboDiskType.Items.Add(New BootSectorDiskFormat(FloppyDiskFormat.FloppyProCopy))
+        CboDiskType.Items.Add(New BootSectorDiskFormat(FloppyDiskFormat.FloppyTandy2000))
+        If DiskFormat = FloppyDiskFormat.FloppyNoBPB Then
+            CboDiskType.Items.Add(New BootSectorDiskFormat(FloppyDiskFormat.FloppyNoBPB))
         End If
-        CboDiskType.Items.Add(New BootSectorDiskType(FloppyDiskType.FloppyUnknown))
+        CboDiskType.Items.Add(New BootSectorDiskFormat(FloppyDiskFormat.FloppyUnknown))
 
         CboDiskType.SelectedIndex = CboDiskType.Items.Count - 1
     End Sub
@@ -456,7 +456,7 @@ Public Class BootSectorForm
             GroupBoxExtended.Visible = False
         End If
 
-        UpdateBackColors(GetFloppyDiskType(GetBPB(), True, False))
+        UpdateBackColors(GetFloppyDiskFormat(GetBPB(), True, False))
     End Sub
 
     Private Sub RefreshFileSystemType()
@@ -487,33 +487,33 @@ Public Class BootSectorForm
     End Sub
 
     Private Sub AddDiskTypeUnknown()
-        Dim LastDiskType As BootSectorDiskType = CboDiskType.Items.Item(CboDiskType.Items.Count - 1)
+        Dim LastDiskFormat As BootSectorDiskFormat = CboDiskType.Items.Item(CboDiskType.Items.Count - 1)
 
-        If LastDiskType.Type <> FloppyDiskType.FloppyUnknown Then
-            CboDiskType.Items.Add(New BootSectorDiskType(FloppyDiskType.FloppyUnknown))
+        If LastDiskFormat.Format <> FloppyDiskFormat.FloppyUnknown Then
+            CboDiskType.Items.Add(New BootSectorDiskFormat(FloppyDiskFormat.FloppyUnknown))
         End If
     End Sub
 
     Private Sub RemoveDiskTypeUnknown()
-        Dim LastDiskType As BootSectorDiskType = CboDiskType.Items.Item(CboDiskType.Items.Count - 1)
+        Dim LastDiskFormat As BootSectorDiskFormat = CboDiskType.Items.Item(CboDiskType.Items.Count - 1)
 
-        If LastDiskType.Type = FloppyDiskType.FloppyUnknown Then
+        If LastDiskFormat.Format = FloppyDiskFormat.FloppyUnknown Then
             CboDiskType.Items.RemoveAt(CboDiskType.Items.Count - 1)
         End If
     End Sub
 
-    Private Sub SetCurrentDiskType(CurrentDiskType As FloppyDiskType)
-        Dim SelectedItem As BootSectorDiskType = Nothing
+    Private Sub SetCurrentDiskFormat(CurrentDiskFormat As FloppyDiskFormat)
+        Dim SelectedItem As BootSectorDiskFormat = Nothing
 
-        If CurrentDiskType = FloppyDiskType.FloppyUnknown Then
+        If CurrentDiskFormat = FloppyDiskFormat.FloppyUnknown Then
             AddDiskTypeUnknown()
         Else
             RemoveDiskTypeUnknown()
         End If
 
-        For Each DiskType As BootSectorDiskType In CboDiskType.Items
-            If DiskType.Type = CurrentDiskType Then
-                SelectedItem = DiskType
+        For Each DiskFormat As BootSectorDiskFormat In CboDiskType.Items
+            If DiskFormat.Format = CurrentDiskFormat Then
+                SelectedItem = DiskFormat
                 Exit For
             End If
         Next
@@ -652,40 +652,40 @@ Public Class BootSectorForm
         ControlUpdateBackColor(Control, KnownDiskType, IsDataValid(Control))
     End Sub
 
-    Private Sub UpdateBackColors(DiskType As FloppyDiskType)
-        Dim KnownDiskType = DiskType <> FloppyDiskType.FloppyUnknown
+    Private Sub UpdateBackColors(DiskFormat As FloppyDiskFormat)
+        Dim KnownDiskFormat = DiskFormat <> FloppyDiskFormat.FloppyUnknown
 
-        UpdateBackColor(CboBytesPerSector, KnownDiskType)
-        UpdateBackColor(CboSectorsPerCluster, KnownDiskType)
-        UpdateBackColor(TxtReservedSectors, KnownDiskType)
-        UpdateBackColor(TxtNumberOfFATs, KnownDiskType)
-        UpdateBackColor(TxtRootDirectoryEntries, KnownDiskType)
-        UpdateBackColor(TxtSectorCountSmall, KnownDiskType)
-        UpdateBackColor(CboMediaDescriptor, KnownDiskType)
-        UpdateBackColor(TxtSectorsPerFAT, KnownDiskType)
-        UpdateBackColor(TxtSectorsPerTrack, KnownDiskType)
-        UpdateBackColor(TxtNumberOfHeads, KnownDiskType)
-        UpdateBackColor(TxtHiddenSectors, KnownDiskType)
-        UpdateBackColor(HexJumpInstruction, KnownDiskType)
-        UpdateBackColor(HexBootSectorSignature, KnownDiskType)
+        UpdateBackColor(CboBytesPerSector, KnownDiskFormat)
+        UpdateBackColor(CboSectorsPerCluster, KnownDiskFormat)
+        UpdateBackColor(TxtReservedSectors, KnownDiskFormat)
+        UpdateBackColor(TxtNumberOfFATs, KnownDiskFormat)
+        UpdateBackColor(TxtRootDirectoryEntries, KnownDiskFormat)
+        UpdateBackColor(TxtSectorCountSmall, KnownDiskFormat)
+        UpdateBackColor(CboMediaDescriptor, KnownDiskFormat)
+        UpdateBackColor(TxtSectorsPerFAT, KnownDiskFormat)
+        UpdateBackColor(TxtSectorsPerTrack, KnownDiskFormat)
+        UpdateBackColor(TxtNumberOfHeads, KnownDiskFormat)
+        UpdateBackColor(TxtHiddenSectors, KnownDiskFormat)
+        UpdateBackColor(HexJumpInstruction, KnownDiskFormat)
+        UpdateBackColor(HexBootSectorSignature, KnownDiskFormat)
     End Sub
 
     Private Sub UpdateTag(Control As Control, UpdateDiskType As Boolean)
         ControlSetLastValue(Control, Control.Text)
 
-        Dim DiskType = GetFloppyDiskType(GetBPB(), True, False)
+        Dim DiskFormat = GetFloppyDiskFormat(GetBPB(), True, False)
 
         If UpdateDiskType Then
-            SetCurrentDiskType(DiskType)
+            SetCurrentDiskFormat(DiskFormat)
         End If
 
-        UpdateBackColors(DiskType)
+        UpdateBackColors(DiskFormat)
         ControlUpdateColor(Control)
     End Sub
 
 #Region "Events"
     Private Sub BtnReset_Click(sender As Object, e As EventArgs) Handles btnReset.Click
-        SetCurrentDiskType(GetFloppyDiskType(_BootSector.BPB, True, False))
+        SetCurrentDiskFormat(GetFloppyDiskFormat(_BootSector.BPB, True, False))
         PopulateValues()
     End Sub
 
@@ -703,15 +703,15 @@ Public Class BootSectorForm
         End If
 
         _SuppressEvent = True
-        Dim DiskType = CType(CboDiskType.SelectedItem, BootSectorDiskType).Type
-        If DiskType <> FloppyDiskType.FloppyUnknown Then
+        Dim DiskFormat = CType(CboDiskType.SelectedItem, BootSectorDiskFormat).Format
+        If DiskFormat <> FloppyDiskFormat.FloppyUnknown Then
             RemoveDiskTypeUnknown()
-            Dim BPB = BuildBPB(DiskType)
+            Dim BPB = BuildBPB(DiskFormat)
             PopulateBPB(BPB)
         Else
-            DiskType = GetFloppyDiskType(GetBPB, True, False)
+            DiskFormat = GetFloppyDiskFormat(GetBPB, True, False)
         End If
-        UpdateBackColors(DiskType)
+        UpdateBackColors(DiskFormat)
         _SuppressEvent = False
     End Sub
 
@@ -1002,15 +1002,15 @@ Public Class BootSectorForm
     End Sub
 
 #End Region
-    Private Class BootSectorDiskType
-        Public Sub New(Type As FloppyDiskType)
-            _Type = Type
+    Private Class BootSectorDiskFormat
+        Public Sub New(Format As FloppyDiskFormat)
+            _Format = Format
         End Sub
 
-        Public Property Type As FloppyDiskType
+        Public Property Format As FloppyDiskFormat
 
         Public Overrides Function ToString() As String
-            Return GetFloppyDiskTypeName(_Type, True)
+            Return GetFloppyDiskFormatName(_Format, True)
         End Function
     End Class
 End Class

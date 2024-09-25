@@ -199,10 +199,9 @@ Public Class HexViewForm
         For Index = 0 To Length - 1
             Sector = Disk.OffsetToSector(HexBox1.LineInfoOffset + Offset + Index)
             If Index = 0 Or Sector <> LastSector Then
-                SectorReadOnly = _HexViewSectorData.ProtectedSectors.Contains(Sector)
+                SectorReadOnly = _HexViewSectorData.Disk.Image.Data.ProtectedSectors.Contains(Sector)
                 LastSector = Sector
             End If
-
             Result.OriginalData(Index) = ByteProvider.ReadByte(Offset + Index)
             If Not SectorReadOnly Then
                 If Result.OriginalData(Index) <> Value Then
@@ -224,7 +223,7 @@ Public Class HexViewForm
         For Index = 0 To Length - 1
             Sector = Disk.OffsetToSector(HexBox1.LineInfoOffset + Offset + Index)
             If Index = 0 Or Sector <> LastSector Then
-                SectorReadOnly = _HexViewSectorData.ProtectedSectors.Contains(Sector)
+                SectorReadOnly = _HexViewSectorData.Disk.Image.Data.ProtectedSectors.Contains(Sector)
                 LastSector = Sector
             End If
 
@@ -737,7 +736,7 @@ Public Class HexViewForm
                     If Size > 0 Then
                         Dim Sector = Disk.OffsetToSector(HexBox1.LineInfoOffset + Start)
                         If HighlightBackColor = Color.White Then
-                            If _HexViewSectorData.ProtectedSectors.Contains(Sector) Then
+                            If _HexViewSectorData.Disk.Image.Data.ProtectedSectors.Contains(Sector) Then
                                 HighlightBackColor = PROTECTED_BACK_COLOR
                             ElseIf Sector Mod 2 = 1 Then
                                 HighlightBackColor = ALT_BACK_COLOR
@@ -881,7 +880,7 @@ Public Class HexViewForm
     End Sub
 
     Private Sub InitializeSyncCheckBox()
-        Dim Checked = Not IsDiskTypeXDF(_HexViewSectorData.Disk.DiskType) AndAlso _HexViewSectorData.Disk.FATTables.FATsMatch
+        Dim Checked = Not IsDiskFormatXDF(_HexViewSectorData.Disk.DiskFormat) AndAlso _HexViewSectorData.Disk.FATTables.FATsMatch
 
         CheckBoxSync = New ToolStripCheckBox With {
             .Alignment = ToolStripItemAlignment.Right,
@@ -1148,7 +1147,7 @@ Public Class HexViewForm
 
             Dim Sector = Disk.OffsetToSector(OffsetStart)
 
-            HexBox1.ReadOnly = _HexViewSectorData.ProtectedSectors.Contains(Sector)
+            HexBox1.ReadOnly = _HexViewSectorData.Disk.Image.Data.ProtectedSectors.Contains(Sector)
 
             ToolStripStatusOffset.Visible = Not OutOfRange
             ToolStripStatusOffset.Text = "Offset(h) :  " & OffsetStart.ToString("X")

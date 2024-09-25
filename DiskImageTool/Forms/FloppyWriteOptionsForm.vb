@@ -9,25 +9,25 @@ Public Class FloppyWriteOptionsForm
 
     Private _WriteOptions As FloppyWriteOptions
 
-    Public Sub New(DoFormat As Boolean, DetectedType As FloppyDiskType, ImageType As FloppyDiskType)
+    Public Sub New(DoFormat As Boolean, DetectedFormat As FloppyDiskFormat, ImageFormat As FloppyDiskFormat)
 
         ' This call is required by the designer.
         InitializeComponent()
 
         ' Add any initialization after the InitializeComponent() call.
         _WriteOptions.Cancelled = True
-        Dim ImageTypeName = GetFloppyDiskTypeName(ImageType) & " Floppy"
+        Dim ImageFormatName = GetFloppyDiskFormatName(ImageFormat) & " Floppy"
 
-        Dim DetectedTypeName As String
-        If DetectedType = -2 Then
-            DetectedTypeName = "Unformatted"
-        ElseIf DetectedType = -1 Then
-            DetectedTypeName = "Unknown"
+        Dim DetectedFormatName As String
+        If DetectedFormat = -2 Then
+            DetectedFormatName = "Unformatted"
+        ElseIf DetectedFormat = -1 Then
+            DetectedFormatName = "Unknown"
         Else
-            DetectedTypeName = GetFloppyDiskTypeName(DetectedType) & " Floppy"
+            DetectedFormatName = GetFloppyDiskFormatName(DetectedFormat) & " Floppy"
         End If
-        lblImageType.Text = ImageTypeName
-        lblDiskFormat.Text = DetectedTypeName
+        lblImageType.Text = ImageFormatName
+        lblDiskFormat.Text = DetectedFormatName
         CheckFormat.Checked = DoFormat
         CheckVerify.Checked = True
     End Sub

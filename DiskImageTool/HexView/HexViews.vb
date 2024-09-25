@@ -218,7 +218,7 @@ Module HexViews
         Dim OriginalData() As Byte = Nothing
 
         Dim NumberOfFATs As Byte
-        If IsDiskTypeXDF(Disk.DiskType) Then
+        If IsDiskFormatXDF(Disk.DiskFormat) Then
             NumberOfFATs = 1
         Else
             NumberOfFATs = Disk.BPB.NumberOfFATs

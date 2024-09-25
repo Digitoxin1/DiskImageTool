@@ -22,7 +22,6 @@ Public Class FATEditForm
     Private _IgnoreEvents As Boolean = True
     Private _OffsetLookup As Dictionary(Of UInteger, UInteger)
     Private _Updated As Boolean = False
-    Private _ProtectedSectors As HashSet(Of UInteger)
 
     Private Enum GridCellType
         Free
@@ -32,7 +31,7 @@ Public Class FATEditForm
         Highlight
     End Enum
 
-    Public Sub New(Disk As DiskImage.Disk, Index As UShort, ProtectedSectors As HashSet(Of UInteger))
+    Public Sub New(Disk As DiskImage.Disk, Index As UShort)
 
         ' This call is required by the designer.
         InitializeComponent()
@@ -41,15 +40,14 @@ Public Class FATEditForm
 
         _ToolTip = New ToolTip()
         _Disk = Disk
-        _ProtectedSectors = ProtectedSectors
 
         _FATTables = New FATTables(_Disk.BPB, _Disk.Image, Index)
         ProcessFATChains()
 
         Me.Text = "File Allocation Table " & Index + 1
 
-        Dim SyncFATS = Not IsDiskTypeXDF(_Disk.DiskType) AndAlso Disk.FATTables.FATsMatch
-        Dim DisplaySync = Not IsDiskTypeXDF(_Disk.DiskType) AndAlso Not Disk.FATTables.FATsMatch
+        Dim SyncFATS = Not IsDiskFormatXDF(_Disk.DiskFormat) AndAlso Disk.FATTables.FATsMatch
+        Dim DisplaySync = Not IsDiskFormatXDF(_Disk.DiskFormat) AndAlso Not Disk.FATTables.FATsMatch
 
         ChkSync.Checked = SyncFATS
         ChkSync.Visible = DisplaySync
@@ -370,8 +368,7 @@ Public Class FATEditForm
         Dim Offset = _Disk.BPB.ClusterToOffset(2)
 
         Dim HexViewSectorData = New HexViewSectorData(_Disk, Offset, _Disk.Image.Length - Offset) With {
-            .Description = "Disk",
-            .ProtectedSectors = _ProtectedSectors
+            .Description = "Disk"
         }
 
         If DisplayHexViewForm(HexViewSectorData, True, True, False, Cluster) Then

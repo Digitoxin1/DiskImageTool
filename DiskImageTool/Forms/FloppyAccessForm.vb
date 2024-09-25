@@ -48,7 +48,7 @@ Public Class FloppyAccessForm
         ReDim _DiskBuffer(_BPB.ImageSize - 1)
         Dim StatusTypeString = IIf(AccessType = FloppyAccessType.Read, "Reading", "Writing")
 
-        Me.Text = StatusTypeString & " " & GetFloppyDiskTypeName(_BPB, False) & " Floppy"
+        Me.Text = StatusTypeString & " " & GetFloppyDiskFormatName(_BPB, False) & " Floppy"
         StatusType.Text = StatusTypeString
 
         InitTables()
@@ -301,7 +301,7 @@ Public Class FloppyAccessForm
     Private Function FormatTrack(Sector As UInteger) As Boolean
         Dim Track = _BPB.SectorToTrack(Sector)
         Dim Side = _BPB.SectorToSide(Sector)
-        Dim MediaType As FloppyInterface.MEDIA_TYPE = GetMediaTypeFromDiskType(GetFloppyDiskType(_BPB, False))
+        Dim MediaType As FloppyInterface.MEDIA_TYPE = GetMediaTypeFromDiskType(GetFloppyDiskFormat(_BPB, False))
 
         If MediaType = FloppyInterface.MEDIA_TYPE.Unknown Then
             Return False
@@ -310,25 +310,25 @@ Public Class FloppyAccessForm
         End If
     End Function
 
-    Private Function GetMediaTypeFromDiskType(DiskType As FloppyDiskType) As FloppyInterface.MEDIA_TYPE
-        Select Case DiskType
-            Case FloppyDiskType.Floppy160
+    Private Function GetMediaTypeFromDiskType(DiskFormat As FloppyDiskFormat) As FloppyInterface.MEDIA_TYPE
+        Select Case DiskFormat
+            Case FloppyDiskFormat.Floppy160
                 Return FloppyInterface.MEDIA_TYPE.F5_160_512
-            Case FloppyDiskType.Floppy180
+            Case FloppyDiskFormat.Floppy180
                 Return FloppyInterface.MEDIA_TYPE.F5_180_512
-            Case FloppyDiskType.Floppy320
+            Case FloppyDiskFormat.Floppy320
                 Return FloppyInterface.MEDIA_TYPE.F5_320_512
-            Case FloppyDiskType.Floppy360
+            Case FloppyDiskFormat.Floppy360
                 Return FloppyInterface.MEDIA_TYPE.F5_360_512
-            Case FloppyDiskType.Floppy720
+            Case FloppyDiskFormat.Floppy720
                 Return FloppyInterface.MEDIA_TYPE.F3_720_512
-            Case FloppyDiskType.Floppy1200
+            Case FloppyDiskFormat.Floppy1200
                 Return FloppyInterface.MEDIA_TYPE.F5_1Pt2_512
-            Case FloppyDiskType.Floppy1440
+            Case FloppyDiskFormat.Floppy1440
                 Return FloppyInterface.MEDIA_TYPE.F3_1Pt44_512
-            Case FloppyDiskType.Floppy2880
+            Case FloppyDiskFormat.Floppy2880
                 Return FloppyInterface.MEDIA_TYPE.F3_2Pt88_512
-            Case FloppyDiskType.FloppyProCopy
+            Case FloppyDiskFormat.FloppyProCopy
                 Return FloppyInterface.MEDIA_TYPE.F3_1Pt44_512
             Case Else
                 Return FloppyInterface.MEDIA_TYPE.Unknown

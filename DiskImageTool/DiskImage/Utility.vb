@@ -171,8 +171,8 @@ Namespace DiskImage
             Return DTTime
         End Function
 
-        Private Function PSIImageLoad(Data() As Byte) As SectorImageData
-            Dim ImageData As SectorImageData = Nothing
+        Private Function PSIImageLoad(Data() As Byte) As PSIByteArray
+            Dim Image As PSIByteArray = Nothing
 
             Dim psi = New PSI_Image.PSISectorImage()
             Dim Result = psi.Import(Data)
@@ -181,14 +181,14 @@ Namespace DiskImage
                     Or psi.Header.DefaultSectorFormat = PSI_Image.DefaultSectorFormat.IBM_MFM_HD _
                     Or psi.Header.DefaultSectorFormat = PSI_Image.DefaultSectorFormat.IBM_MFM_ED Then
 
-                    Dim DiskType = PSIGetImageType(psi)
-                    If DiskType <> FloppyDiskType.FloppyUnknown Then
-                        ImageData = PSIToSectorImage(psi, DiskType)
+                    Dim DiskFormat = PSIGetImageFormat(psi)
+                    If DiskFormat <> FloppyDiskFormat.FloppyUnknown Then
+                        Image = New PSIByteArray(psi, DiskFormat)
                     End If
                 End If
             End If
 
-            Return ImageData
+            Return Image
         End Function
 
 
@@ -198,9 +198,9 @@ Namespace DiskImage
             Dim tc = New Transcopy.TransCopyImage()
             Dim Result = tc.Load(Data)
             If Result Then
-                Dim DiskType = TranscopyGetImageType(tc)
-                If DiskType <> FloppyDiskType.FloppyUnknown Then
-                    ImageData = TranscopyToSectorImage(tc, DiskType)
+                Dim DiskFormat = TranscopyGetImageFormat(tc)
+                If DiskFormat <> FloppyDiskFormat.FloppyUnknown Then
+                    ImageData = TranscopyToSectorImage(tc, DiskFormat)
                 End If
             End If
 
@@ -242,16 +242,18 @@ Namespace DiskImage
         End Function
 
         Public Function DiskImageLoad(ImageData As LoadedImageData, Optional SetChecksum As Boolean = False) As DiskImage.Disk
-            Dim Data() As Byte = Nothing
+            Dim Data() As Byte
             Dim LastChecksum As UInteger
+            Dim Image As IByteArray = Nothing
 
             ImageData.InvalidImage = False
 
             If ImageData.TempPath <> "" Then
                 Data = ImageLoadFromTemp(ImageData.TempPath)
+                Image = New ByteArray(Data)
             End If
 
-            If Data Is Nothing AndAlso File.Exists(ImageData.SourceFile) Then
+            If Image Is Nothing AndAlso File.Exists(ImageData.SourceFile) Then
                 Try
                     If ImageData.Compressed Then
                         ImageData.ReadOnly = True
@@ -261,48 +263,46 @@ Namespace DiskImage
                         Data = IO.File.ReadAllBytes(ImageData.SourceFile)
                     End If
 
+                    Dim ImageType = GetImageTypeFromFileName(ImageData.FileName)
+
                     LastChecksum = ImageData.Checksum
                     If SetChecksum Then
                         ImageData.Checksum = Crc32.ComputeChecksum(Data)
                     End If
 
-                    If ImageData.ImageType = LoadedImageData.LoadedImageType.TranscopyImage Then
+                    If ImageType = FloppyImageType.TranscopyImage Then
                         ImageData.ReadOnly = True
                         Dim SectorImageData = TranscopyImageLoad(Data)
                         If SectorImageData IsNot Nothing Then
-                            Data = SectorImageData.Data
-                            ImageData.TempPath = ImageSaveToTemp(Data, ImageData.DisplayPath)
-                            ImageData.SectorMap = SectorImageData.SectorMap
-                            ImageData.ProtectedSectors = SectorImageData.ProtectedSectors
+                            Image = New ByteArray(SectorImageData.Data)
+                            ImageData.TempPath = ImageSaveToTemp(SectorImageData.Data, ImageData.DisplayPath)
                         Else
-                            Data = Nothing
+                            Image = Nothing
                             ImageData.InvalidImage = True
                         End If
-                    ElseIf ImageData.ImageType = LoadedImageData.LoadedImageType.PSIImage Then
-                        ImageData.ReadOnly = True
-                        Dim SectorImageData = PSIImageLoad(Data)
-                        If SectorImageData IsNot Nothing Then
-                            Data = SectorImageData.Data
-                            ImageData.SectorMap = SectorImageData.SectorMap
-                            ImageData.ProtectedSectors = SectorImageData.ProtectedSectors
+                    ElseIf ImageType = FloppyImageType.PSIImage Then
+                        Dim PSIImage = PSIImageLoad(Data)
+                        If PSIImage IsNot Nothing Then
+                            Image = PSIImage
                         Else
-                            Data = Nothing
                             ImageData.InvalidImage = True
                         End If
+                    Else
+                        Image = New ByteArray(Data)
                     End If
-                    If ImageData.XDFMiniDisk Then
-                        ImageData.ReadOnly = True
-                        Dim NewData(ImageData.XDFLength - 1) As Byte
-                        Array.Copy(Data, ImageData.XDFOffset, NewData, 0, ImageData.XDFLength)
-                        Data = NewData
-                    End If
+                    'If ImageData.XDFMiniDisk Then
+                    '    ImageData.ReadOnly = True
+                    '    Dim NewData(ImageData.XDFLength - 1) As Byte
+                    '    Array.Copy(Data, ImageData.XDFOffset, NewData, 0, ImageData.XDFLength)
+                    '    Data = NewData
+                    'End If
                 Catch ex As Exception
                     Debug.Print("Caught Exception: Functions.DiskImageLoad")
-                    Data = Nothing
+                    Image = Nothing
                 End Try
             End If
 
-            If Data Is Nothing Then
+            If Image Is Nothing Then
                 Return Nothing
             Else
                 If ImageData.Loaded AndAlso ImageData.Checksum <> LastChecksum Then
@@ -317,7 +317,7 @@ Namespace DiskImage
                     ImageData.Loaded = True
                 End If
 
-                Dim Disk = New DiskImage.Disk(Data, ImageData.FATIndex, ImageData.Modifications)
+                Dim Disk = New DiskImage.Disk(Image, ImageData.FATIndex, ImageData.Modifications)
                 ImageData.Modifications = Disk.Image.Changes
 
                 Return Disk
