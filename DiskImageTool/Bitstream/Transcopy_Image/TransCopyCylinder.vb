@@ -4,8 +4,8 @@
             _Track = Track
             _Side = Side
             _AddressMarkingTiming = New List(Of UShort)
-            _Data = New Byte(-1) {}
-            _DecodedData = Nothing
+            _RawData = New Byte(-1) {}
+            _MFMData = Nothing
             _Decoded = False
         End Sub
         Public Property Track As UShort
@@ -15,10 +15,9 @@
         Public Property Length As UInt16
         Public Property Flags As TransCopyTrackFlags
         Public ReadOnly Property AddressMarkingTiming As List(Of UShort)
-        Public Property Data As Byte()
-        Public Property DecodedData As IBM_MFM.MFMTrack
+        Public Property RawData As Byte()
+        Public Property MFMData As IBM_MFM.MFMTrack
         Public Property Decoded As Boolean
-        Public Property BitstreamOffset As UInt32
 
         Public Function KeepTrackLength() As Boolean
             Return (_Flags And TransCopyTrackFlags.KeepTrackLength) > 0

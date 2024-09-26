@@ -5,7 +5,6 @@ Imports System.Text
 Imports System.Text.RegularExpressions
 Imports DiskImageTool.DiskImage
 Imports DiskImageTool.FloppyDB
-Imports DiskImageTool.PSI_Image
 Imports BootSectorOffsets = DiskImageTool.DiskImage.BootSector.BootSectorOffsets
 Imports BPBOffsets = DiskImageTool.DiskImage.BiosParameterBlock.BPBOoffsets
 
@@ -71,6 +70,14 @@ Public Class MainForm
     Private _DriveBEnabled As Boolean = False
     Private _ExportUnknownImages As Boolean = False
     Private _CachedChangeLog As String = ""
+
+    Private Enum SaveImageResponse
+        Success
+        Failed
+        Unsupported
+        Unknown
+    End Enum
+
 
     Public Sub New()
         ' This call is required by the designer.
@@ -665,31 +672,45 @@ Public Class MainForm
         Return True
     End Function
 
-    Private Shared Function SaveDiskImageToFile(Disk As DiskImage.Disk, FilePath As String) As Boolean
+    Private Shared Function SaveDiskImageToFile(Disk As DiskImage.Disk, FilePath As String) As SaveImageResponse
         Dim FileImageType = GetImageTypeFromFileName(FilePath)
         Dim DiskImageType = Disk.Image.Data.ImageType
+        Dim Response As SaveImageResponse = SaveImageResponse.Failed
         Dim Result As Boolean = False
 
         If FileImageType = FloppyImageType.TranscopyImage Then
-            MsgBox("Saving to Transcopy (.tc) is not supported.", MsgBoxStyle.Exclamation)
-            Return False
+            If DiskImageType = FloppyImageType.TranscopyImage Then
+                Result = Disk.Image.Data.SaveToFile(FilePath)
+            Else
+                Return SaveImageResponse.Unsupported
+            End If
+
         ElseIf FileImageType = FloppyImageType.PSIImage Then
             If DiskImageType = FloppyImageType.PSIImage Then
                 Result = Disk.Image.Data.SaveToFile(FilePath)
+
             ElseIf DiskImageType = FloppyImageType.BasicSectorImage Then
                 If IsDiskFormatValidForRead(Disk.DiskFormat) Then
                     Dim Data = Disk.Image.Data.GetBytes()
-                    Dim PSI = BasicSectorToPSIImage(Data, Disk.DiskFormat)
+                    Dim PSI = Bitstream.BasicSectorToPSIImage(Data, Disk.DiskFormat)
                     Result = PSI.Export(FilePath)
                 Else
-                    MsgBox("Unsupported Disk Type.", MsgBoxStyle.Exclamation)
-                    Return False
+                    Return SaveImageResponse.Unknown
                 End If
+
+            ElseIf DiskImageType = FloppyImageType.TranscopyImage Then
+                Return SaveImageResponse.Unsupported
             End If
+
         Else
             If DiskImageType = FloppyImageType.BasicSectorImage Then
                 Result = Disk.Image.Data.SaveToFile(FilePath)
+
             ElseIf DiskImageType = FloppyImageType.PSIImage Then
+                Dim Data = Disk.Image.Data.GetBytes()
+                Result = SaveByteArrayToFile(FilePath, Data)
+
+            ElseIf DiskImageType = FloppyImageType.TranscopyImage Then
                 Dim Data = Disk.Image.Data.GetBytes()
                 Result = SaveByteArrayToFile(FilePath, Data)
             End If
@@ -697,9 +718,10 @@ Public Class MainForm
 
         If Result Then
             Disk.ClearChanges()
+            Response = SaveImageResponse.Success
         End If
 
-        Return Result
+        Return Response
     End Function
 
     Private Sub BootSectorEdit()
@@ -1267,13 +1289,26 @@ Public Class MainForm
             Else
                 Disk = DiskImageLoad(ImageData)
             End If
+
             Success = Disk IsNot Nothing
+
             If Success Then
                 If NewFilePath = "" Then
                     NewFilePath = ImageData.GetSaveFile
                 End If
-                Success = SaveDiskImageToFile(Disk, NewFilePath)
+
+                Dim Response = SaveDiskImageToFile(Disk, NewFilePath)
+                Success = (Response = SaveImageResponse.Success)
+
+                If Response = SaveImageResponse.Unsupported Then
+                    MsgBox("Saving to this image type not supported.", MsgBoxStyle.Exclamation)
+                    Exit Do
+                ElseIf Response = SaveImageResponse.Unknown Then
+                    MsgBox("Unsupported Disk Type.", MsgBoxStyle.Exclamation)
+                    Exit Do
+                End If
             End If
+
             If Not Success Then
                 Dim Msg As String = $"Error saving file '{IO.Path.GetFileName(NewFilePath)}'."
                 Dim ErrorResult = MsgBox(Msg, MsgBoxStyle.Critical + MsgBoxStyle.RetryCancel)
@@ -2374,6 +2409,19 @@ Public Class MainForm
         Next
         Response.Filter = FileDialogAppendFilter(Response.Filter, "PCE Sector Image", ExtensionList)
         CurrentIndex += 1
+
+        Dim Found As Boolean = False
+        ExtensionList = New List(Of String) From {".tc"}
+        For Each Extension In ExtensionList
+            If FileExt.Equals(Extension, StringComparison.OrdinalIgnoreCase) Then
+                Response.FilterIndex = CurrentIndex
+                Found = True
+            End If
+        Next
+        If Found Then
+            Response.Filter = FileDialogAppendFilter(Response.Filter, "Transcopy Image", ExtensionList)
+            CurrentIndex += 1
+        End If
 
 
         Dim Items = System.Enum.GetValues(GetType(FloppyDiskFormat))
@@ -3937,6 +3985,8 @@ Public Class MainForm
     End Sub
 
     Private Sub SaveAll()
+        Dim RefreshCurrent As Boolean = False
+
         _SuppressEvent = True
         For Index = 0 To ComboImages.Items.Count - 1
             Dim NewFilePath As String = ""
@@ -3960,7 +4010,7 @@ Public Class MainForm
                         If ImageData Is ComboImages.SelectedItem Then
                             SetCurrentFileName(ImageData)
                             ListViewFilesClearModifiedFlag()
-                            RefreshCurrentState()
+                            RefreshCurrent = True
                         End If
                     End If
                 End If
@@ -3970,6 +4020,11 @@ Public Class MainForm
 
         ImageFilters.UpdateMenuItem(FilterTypes.ModifiedFiles)
         RefreshModifiedCount()
+
+        If RefreshCurrent Then
+            RefreshCurrentState()
+            ReloadCurrentImage(False)
+        End If
     End Sub
 
     Private Sub SaveCurrent(NewFileName As Boolean)
@@ -3997,6 +4052,7 @@ Public Class MainForm
 
             ListViewFilesClearModifiedFlag()
             RefreshCurrentState()
+            ReloadCurrentImage(False)
         End If
     End Sub
     Private Sub SetCurrentFileName(ImageData As LoadedImageData)

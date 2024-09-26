@@ -104,11 +104,11 @@ Public Class LoadedImageData
             FilePath = _SourceFile
         End If
 
-        Dim ImageType = GetImageTypeFromFileName(FileName)
+        'Dim ImageType = GetImageTypeFromFileName(FileName)
 
-        If ImageType = FloppyImageType.TranscopyImage Then
-            FilePath = Path.GetFileNameWithoutExtension(FilePath) & ".ima"
-        End If
+        'If ImageType = FloppyImageType.TranscopyImage Then
+        '    FilePath = Path.GetFileNameWithoutExtension(FilePath) & ".ima"
+        'End If
 
         Return FilePath
     End Function

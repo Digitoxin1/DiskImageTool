@@ -3,19 +3,41 @@
         Dim buffer(bytes.Length - 1) As Byte
 
         For i As Integer = 0 To bytes.Length - 1
-            buffer(i) = MyBitConverter.ReverseBits(bytes(i))
+            buffer(i) = ReverseBits(bytes(i))
+        Next
+
+        Return New BitArray(buffer)
+    End Function
+
+    Public Shared Function BytesToBits(bytes() As Byte, Offset As UInteger, Length As UInteger) As BitArray
+        Dim buffer(Length - 1) As Byte
+
+        For i As Integer = 0 To Length - 1
+            buffer(i) = ReverseBits(bytes(Offset + i))
         Next
 
         Return New BitArray(buffer)
     End Function
 
     Public Shared Function BitsToBytes(Bitstream As BitArray) As Byte()
-        Dim buffer(Bitstream.Length \ 8 - 1) As Byte
+        Dim Length = Bitstream.Length \ 8
+        Dim PaddedLength = Math.Ceiling(Length / 256) * 256
+        Dim Diff = (PaddedLength - Length) * 8
+
+        Dim buffer(PaddedLength - 1) As Byte
+
+        If Diff > 0 Then
+            Dim Offset = Bitstream.Length
+            Bitstream.Length = Bitstream.Length + Diff
+            For i = Offset To Offset + Diff - 1
+                Bitstream(i) = Bitstream(i - Offset)
+            Next
+        End If
 
         Bitstream.CopyTo(buffer, 0)
 
         For i As Integer = 0 To buffer.Length - 1
-            buffer(i) = MyBitConverter.ReverseBits(buffer(i))
+            buffer(i) = ReverseBits(buffer(i))
         Next
 
         Return buffer

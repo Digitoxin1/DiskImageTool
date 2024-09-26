@@ -181,7 +181,7 @@ Namespace DiskImage
                     Or psi.Header.DefaultSectorFormat = PSI_Image.DefaultSectorFormat.IBM_MFM_HD _
                     Or psi.Header.DefaultSectorFormat = PSI_Image.DefaultSectorFormat.IBM_MFM_ED Then
 
-                    Dim DiskFormat = PSIGetImageFormat(psi)
+                    Dim DiskFormat = Bitstream.PSIGetImageFormat(psi)
                     If DiskFormat <> FloppyDiskFormat.FloppyUnknown Then
                         Image = New PSIByteArray(psi, DiskFormat)
                     End If
@@ -191,20 +191,19 @@ Namespace DiskImage
             Return Image
         End Function
 
-
-        Private Function TranscopyImageLoad(Data() As Byte) As SectorImageData
-            Dim ImageData As SectorImageData = Nothing
+        Private Function TranscopyImageLoad(Data() As Byte) As TranscopyByteArray
+            Dim Image As TranscopyByteArray = Nothing
 
             Dim tc = New Transcopy.TransCopyImage()
             Dim Result = tc.Load(Data)
             If Result Then
-                Dim DiskFormat = TranscopyGetImageFormat(tc)
+                Dim DiskFormat = Bitstream.TranscopyGetImageFormat(tc)
                 If DiskFormat <> FloppyDiskFormat.FloppyUnknown Then
-                    ImageData = TranscopyToSectorImage(tc, DiskFormat)
+                    Image = New TranscopyByteArray(tc, DiskFormat)
                 End If
             End If
 
-            Return ImageData
+            Return Image
         End Function
 
         Private Function ImageLoadFromTemp(FilePath As String) As Byte()
@@ -271,15 +270,13 @@ Namespace DiskImage
                     End If
 
                     If ImageType = FloppyImageType.TranscopyImage Then
-                        ImageData.ReadOnly = True
-                        Dim SectorImageData = TranscopyImageLoad(Data)
-                        If SectorImageData IsNot Nothing Then
-                            Image = New ByteArray(SectorImageData.Data)
-                            ImageData.TempPath = ImageSaveToTemp(SectorImageData.Data, ImageData.DisplayPath)
+                        Dim TCImage = TranscopyImageLoad(Data)
+                        If TCImage IsNot Nothing Then
+                            Image = TCImage
                         Else
-                            Image = Nothing
                             ImageData.InvalidImage = True
                         End If
+
                     ElseIf ImageType = FloppyImageType.PSIImage Then
                         Dim PSIImage = PSIImageLoad(Data)
                         If PSIImage IsNot Nothing Then
@@ -287,6 +284,7 @@ Namespace DiskImage
                         Else
                             ImageData.InvalidImage = True
                         End If
+
                     Else
                         Image = New ByteArray(Data)
                     End If

@@ -4,14 +4,23 @@
         Private _IAM As MFMAddressMark
         Private _Gap1 As Byte()
         Private _Sectors As List(Of MFMSector)
+        Private ReadOnly _Bitstream As BitArray
 
         Public Sub New(Data() As Byte)
-            MFMDecode(MyBitConverter.BytesToBits(Data))
+            _Bitstream = MyBitConverter.BytesToBits(Data)
+            MFMDecode(_Bitstream)
         End Sub
 
         Public Sub New(Bitstream As BitArray)
+            _Bitstream = Bitstream
             MFMDecode(Bitstream)
         End Sub
+
+        Public ReadOnly Property Bitstream As BitArray
+            Get
+                Return _Bitstream
+            End Get
+        End Property
 
         Public ReadOnly Property Gap4A As Byte()
             Get
@@ -36,6 +45,27 @@
                 Return _Sectors
             End Get
         End Property
+
+        Public Function UpdateBitstream() As Boolean
+            Dim Updated As Boolean = False
+
+            For Each Sector In Sectors
+                If Sector.ValidChecksum Then
+                    Dim CurrentChecksum = Sector.CalculateDataChecksum
+                    Dim VerifyChecksum = (Sector.DataChecksum = CurrentChecksum)
+                    If Not VerifyChecksum Then
+                        Sector.DataChecksum = CurrentChecksum
+                        Dim Bitstream = Sector.GetDataBitstream
+                        Dim DataFieldOffset = Sector.DataOffset
+                        For i = 0 To Bitstream.Length - 1
+                            _Bitstream(DataFieldOffset + i) = Bitstream(i)
+                        Next
+                        Updated = True
+                    End If
+                End If
+            Next
+            Return Updated
+        End Function
 
         Private Function GetSectorList(BitStream As BitArray) As List(Of UInteger)
             Dim IDAMPattern = MyBitConverter.BytesToBits(IDAM_Sync_Bytes)
@@ -101,7 +131,6 @@
             Dim SectorIndex As UShort = 0
             Dim NextSectorOffset As UInteger
             Dim DataEnd As UInteger
-            Dim PrevSector As MFMSector = Nothing
 
             For Each SectorOffset In SectorList
                 Dim Sector = New MFMSector(BitStream, SectorOffset)
@@ -117,14 +146,9 @@
                     Sector.Overlaps = True
                 End If
 
-                'If PrevSector IsNot Nothing AndAlso PrevSector.Overlaps Then
-                '    Sector.Overlaps = True
-                'End If
-
                 _Sectors.Add(Sector)
 
                 SectorIndex += 1
-                PrevSector = Sector
             Next
         End Sub
     End Class

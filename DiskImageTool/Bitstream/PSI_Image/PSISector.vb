@@ -67,7 +67,6 @@
             End Set
         End Property
         Public Property Size As UShort
-
             Get
                 Return MyBitConverter.ToUInt16(_ChunkData, True, 4)
             End Get
@@ -174,7 +173,6 @@
         Public Property MFMHeader As IBMSectorHeader
         Public Property FMHeader As IBMSectorHeader
         Public Property GCRHeader As GCRSectorHeader
-
 
         Private Function ToggleBit(Data As Byte, Bit As Byte, Value As Boolean) As Byte
             If Value Then

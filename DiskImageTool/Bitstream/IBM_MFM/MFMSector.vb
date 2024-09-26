@@ -3,6 +3,7 @@
         Private ReadOnly _Offset As UInteger
         Private ReadOnly _IDArea() As Byte
         Private ReadOnly _IDChecksum As UShort
+        Private ReadOnly _ValidChecksum As Boolean
         Private _Gap2 As Byte()
         Private _DataFieldSync() As Byte
         Private _DataOffset As UInteger
@@ -20,6 +21,8 @@
             Dim DataOffset = ProcessDataField(Bitstream, Offset + 160)
 
             ProcessGap3(Bitstream, DataOffset)
+
+            _ValidChecksum = (_DataChecksum = CalculateDataChecksum())
         End Sub
 
         Public ReadOnly Property Gap2 As Byte()
@@ -94,13 +97,22 @@
             End Get
         End Property
 
-        Public ReadOnly Property DataChecksum As UShort
+        Public Property DataChecksum As UShort
             Get
                 Return _DataChecksum
             End Get
+            Set(value As UShort)
+                _DataChecksum = value
+            End Set
         End Property
 
         Public Property Overlaps As Boolean
+
+        Public ReadOnly Property ValidChecksum As Boolean
+            Get
+                Return _ValidChecksum
+            End Get
+        End Property
 
         Public Function CalculateDataChecksum() As UShort
             If _DAMFound Then
@@ -117,6 +129,18 @@
 
         Public Function CalculateIDChecksum() As UShort
             Return CRC16(_IDArea)
+        End Function
+
+        Public Function GetDataBitstream() As BitArray
+            Dim DataSize = GetSizeBytes()
+            Dim Buffer(DataSize + 2 - 1) As Byte
+
+            Dim Offset As UInteger = 0
+            Array.Copy(_Data, 0, Buffer, Offset, DataSize)
+            Offset += DataSize
+            Array.Copy(BitConverter.GetBytes(_DataChecksum), 0, Buffer, Offset, 2)
+
+            Return MFMEncodeBytes(Buffer, 1)
         End Function
 
         Public Function GetSizeBytes() As UInteger
