@@ -130,23 +130,34 @@
   <ItemGroup>
     <Compile Include="Bitstream\BitstreamByteArray.vb" />
     <Compile Include="Bitstream\BitstreamDebug.vb" />
-    <Compile Include="Bitstream\BitstreamUtil.vb" />
     <Compile Include="Bitstream\BitstreamSector.vb" />
-    <Compile Include="Bitstream\IBM_MFM\MFMSector.vb" />
-    <Compile Include="Bitstream\IBM_MFM\MFMTools.vb" />
-    <Compile Include="Bitstream\IBM_MFM\MFMTrack.vb" />
-    <Compile Include="Bitstream\PSI_Image\Enums.vb" />
-    <Compile Include="Bitstream\PSI_Image\GCRSectorHeader.vb" />
-    <Compile Include="Bitstream\PSI_Image\IBMSectorHeader.vb" />
-    <Compile Include="Bitstream\PSIByteArray.vb" />
-    <Compile Include="Bitstream\PSI_Image\PSIChunk.vb" />
-    <Compile Include="Bitstream\PSI_Image\PSIFileHeader.vb" />
-    <Compile Include="Bitstream\PSI_Image\PSISector.vb" />
-    <Compile Include="Bitstream\PSI_Image\PSISectorImage.vb" />
-    <Compile Include="Bitstream\Transcopy_Image\Enums.vb" />
-    <Compile Include="Bitstream\TranscopyByteArray.vb" />
-    <Compile Include="Bitstream\Transcopy_Image\TransCopyCylinder.vb" />
-    <Compile Include="Bitstream\Transcopy_Image\TransCopyImage.vb" />
+    <Compile Include="Bitstream\IBM_MFM\IBM_MFM_Bitstream.vb" />
+    <Compile Include="Bitstream\IBM_MFM\IBM_MFM_Sector.vb" />
+    <Compile Include="Bitstream\IBM_MFM\IBM_MFM_Tools.vb" />
+    <Compile Include="Bitstream\IBM_MFM\IBM_MFM_Track.vb" />
+    <Compile Include="FloppyDiskIO.vb" />
+    <Compile Include="Bitstream\IBitstreamImage.vb" />
+    <Compile Include="Bitstream\IBitstreamTrack.vb" />
+    <Compile Include="ImageIO.vb" />
+    <Compile Include="ImageFormats\ImageConversion.vb" />
+    <Compile Include="ImageFormats\MFM\MFMByteArray.vb" />
+    <Compile Include="ImageFormats\MFM\MFMImage.vb" />
+    <Compile Include="ImageFormats\MFM\MFMLoader.vb" />
+    <Compile Include="ImageFormats\MFM\MFMTrack.vb" />
+    <Compile Include="ImageFormats\PSI\Enums.vb" />
+    <Compile Include="ImageFormats\PSI\GCRSectorHeader.vb" />
+    <Compile Include="ImageFormats\PSI\IBMSectorHeader.vb" />
+    <Compile Include="ImageFormats\PSI\PSIByteArray.vb" />
+    <Compile Include="ImageFormats\PSI\PSIChunk.vb" />
+    <Compile Include="ImageFormats\PSI\PSIFileHeader.vb" />
+    <Compile Include="ImageFormats\PSI\PSILoader.vb" />
+    <Compile Include="ImageFormats\PSI\PSISector.vb" />
+    <Compile Include="ImageFormats\PSI\PSISectorImage.vb" />
+    <Compile Include="ImageFormats\TC\Enums.vb" />
+    <Compile Include="ImageFormats\TC\TCLoader.vb" />
+    <Compile Include="ImageFormats\TC\TranscopyByteArray.vb" />
+    <Compile Include="ImageFormats\TC\TransCopyCylinder.vb" />
+    <Compile Include="ImageFormats\TC\TransCopyImage.vb" />
     <Compile Include="ComboFilter.vb" />
     <Compile Include="Controls\ToolStripCheckBox.vb">
       <SubType>Component</SubType>
@@ -174,7 +185,6 @@
     <Compile Include="Forms\AboutBox.vb">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="ApplicationEvents.vb" />
     <Compile Include="CopyProtection.vb" />
     <Compile Include="DebugScript.vb" />
     <Compile Include="DiskImage\SectorData.vb" />
@@ -261,8 +271,8 @@
     </Compile>
     <Compile Include="HexView\HexViews.vb" />
     <Compile Include="DirectoryScanResponse.vb" />
-    <Compile Include="ImageCompare.vb" />
-    <Compile Include="ListViewHeader.vb" />
+    <Compile Include="Testing\ImageCompare.vb" />
+    <Compile Include="Lib\ListViewHeader.vb" />
     <Compile Include="MyBitConverter.vb" />
     <Compile Include="FloppyDB.vb" />
     <Compile Include="Utility.vb" />
@@ -275,18 +285,18 @@
     <Compile Include="Forms\ItemScanForm.vb">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="HashFunctions.vb" />
+    <Compile Include="Lib\HashFunctions.vb" />
     <Compile Include="HexView\HexViewData.vb" />
     <Compile Include="HexView\HexViewHighlightRegion.vb" />
     <Compile Include="HexView\HexViewRegionDescription.vb" />
     <Compile Include="HexView\HexViewSectorData.vb" />
     <Compile Include="HexView\HighlightedRegions.vb" />
-    <Compile Include="ListViewColumnSorter.vb" />
+    <Compile Include="Lib\ListViewColumnSorter.vb" />
     <Compile Include="Extensions\ListViewExtensions.vb" />
     <Compile Include="MyByteProvider.vb" />
     <Compile Include="BoootstrapDB.vb" />
     <Compile Include="LoadedImageData.vb" />
-    <Compile Include="CRC32.vb" />
+    <Compile Include="Lib\CRC32.vb" />
     <Compile Include="DiskImage\DirectoryEntry.vb" />
     <Compile Include="DiskImage\Disk.vb" />
     <Compile Include="MainForm.vb">
@@ -333,7 +343,7 @@
     <Compile Include="Controls\ToolStripNumericUpDown.vb">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="WindowsAPI.vb" />
+    <Compile Include="Lib\WindowsAPI.vb" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Forms\AboutBox.resx">
@@ -442,5 +452,6 @@
     <EmbeddedResource Include="Assets\License.txt" />
     <EmbeddedResource Include="Assets\bootstrap.xml" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.VisualBasic.targets" />
 </Project>

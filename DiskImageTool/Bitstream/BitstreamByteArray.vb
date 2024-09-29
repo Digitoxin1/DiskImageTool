@@ -1,17 +1,18 @@
 ﻿Imports DiskImageTool.DiskImage
 
 Namespace Bitstream
-
     Public MustInherit Class BitstreamByteArray
         Implements IByteArray
 
-        Private ReadOnly _DiskFormat As FloppyDiskFormat
-        Private ReadOnly _ImageParams As FloppyDiskParams
-        Private ReadOnly _ImageSize As Integer
-        Private ReadOnly _SectorMap() As BitstreamSector
+        Friend Const SECTOR_COUNT As Byte = 36
         Private ReadOnly _ProtectedSectors As HashSet(Of UInteger)
         Private ReadOnly _EmptySector() As Byte
-
+        Private _DiskFormat As FloppyDiskFormat
+        Private _BPB As BiosParameterBlock
+        Private _ImageSize As Integer
+        Private _TrackCount As UShort
+        Private _HeadCount As Byte
+        Private _Sectors() As BitstreamSector
         Public Event DataChanged As DataChangedEventHandler Implements IByteArray.DataChanged
         Public Event SizeChanged As SizeChangedEventHandler Implements IByteArray.SizeChanged
 
@@ -23,13 +24,9 @@ Namespace Bitstream
             Public Property Size As UInteger
         End Class
 
-        Public Sub New(DiskFormat As FloppyDiskFormat)
-            _DiskFormat = DiskFormat
-            _ImageParams = GetFloppyDiskParams(_DiskFormat)
-            _ImageSize = GetFloppyDiskSize(_DiskFormat)
-            _SectorMap = New BitstreamSector(_ImageSize \ _ImageParams.BytesPerSector - 1) {}
+        Public Sub New()
             _ProtectedSectors = New HashSet(Of UInteger)
-            _EmptySector = New Byte(_ImageParams.BytesPerSector - 1) {}
+            _EmptySector = New Byte(Disk.BYTES_PER_SECTOR - 1) {}
         End Sub
 
         Public ReadOnly Property CanResize As Boolean Implements IByteArray.CanResize
@@ -38,9 +35,15 @@ Namespace Bitstream
             End Get
         End Property
 
-        Public ReadOnly Property ImageParams As FloppyDiskParams
+        Public ReadOnly Property DiskFormat As FloppyDiskFormat
             Get
-                Return _ImageParams
+                Return _DiskFormat
+            End Get
+        End Property
+
+        Public ReadOnly Property HeadCount As Byte
+            Get
+                Return _HeadCount
             End Get
         End Property
 
@@ -50,57 +53,184 @@ Namespace Bitstream
             End Get
         End Property
 
-        Public ReadOnly Property SectorMap As BitstreamSector()
+        Public ReadOnly Property Sectors As BitstreamSector()
             Get
-                Return _SectorMap
+                Return _Sectors
             End Get
         End Property
 
-        Friend Function IsProtectedSector(Sector As BitstreamSector) As Boolean
-            Return Sector.Size <> _ImageParams.BytesPerSector Or Not Sector.HasValidChecksum Or Sector.Overlaps
+        Public ReadOnly Property TrackCount As UShort
+            Get
+                Return _TrackCount
+            End Get
+        End Property
+
+        Friend Sub InitDiskFormat(DiskFormat As FloppyDiskFormat)
+            InferFloppyDiskFormat(DiskFormat)
+
+            If _DiskFormat <> FloppyDiskFormat.FloppyUnknown Then
+                InitProtectedSectors()
+            End If
+        End Sub
+
+        Friend Function GetSector(Track As UShort, Head As Byte, SectorId As Byte) As BitstreamSector
+            If Track > _TrackCount - 1 Or Head > _HeadCount - 1 Or SectorId > SECTOR_COUNT Then
+                Throw New System.IndexOutOfRangeException
+            End If
+
+            Dim Index = Track * _HeadCount * SECTOR_COUNT + SECTOR_COUNT * Head + (SectorId - 1)
+
+            Return _Sectors(Index)
         End Function
 
+        Friend Function GetSectorFromParams(Track As UShort, Side As Byte, SectorId As UShort) As UInteger
+            Dim Offset As UInteger = Track * _BPB.NumberOfHeads * _BPB.SectorsPerTrack + _BPB.SectorsPerTrack * Side + (SectorId - 1)
+
+            Return Offset
+        End Function
+
+        Friend Function IsProtectedSector(Sector As BitstreamSector) As Boolean
+            Return Sector.Size <> Disk.BYTES_PER_SECTOR Or Not Sector.IsValid Or Sector.Overlaps
+        End Function
+
+        Friend Sub SetSector(Track As UShort, Head As Byte, SectorId As Byte, Value As BitstreamSector)
+            If Track > _TrackCount - 1 Or Head > _HeadCount - 1 Or SectorId > SECTOR_COUNT Then
+                Throw New System.IndexOutOfRangeException
+            End If
+
+            Dim Index = Track * _HeadCount * SECTOR_COUNT + SECTOR_COUNT * Head + (SectorId - 1)
+
+            _Sectors(Index) = Value
+        End Sub
+
+        Friend Sub SetTracks(TrackCount As UShort, HeadCount As Byte)
+            _TrackCount = TrackCount
+            _HeadCount = HeadCount
+
+            _Sectors = New BitstreamSector(_TrackCount * _HeadCount * SECTOR_COUNT - 1) {}
+        End Sub
+
         Private Function GetMappedData(Offset As UInteger) As MappedData
+            Dim Sector = OffsetToSector(Offset)
+            Dim Track = SectorToTrack(Sector)
+            Dim Head = SectorToHead(Sector)
+            Dim SectorId = SectorToTrackSector(Sector) + 1
+
             Dim MappedData As New MappedData With {
-                .Sector = GetSector(Offset),
-                .Offset = GetSectorOffset(Offset),
-                .Size = _ImageParams.BytesPerSector
+                .Sector = Sector,
+                .Offset = SectorToOffset(Offset),
+                .Size = Disk.BYTES_PER_SECTOR
             }
 
-            If _SectorMap(MappedData.Sector) Is Nothing Then
+            If Track > _TrackCount - 1 Or Head > _HeadCount - 1 Or SectorId > SECTOR_COUNT Then
                 MappedData.Data = _EmptySector
                 MappedData.CanWrite = False
             Else
-                Dim BitstreamSector = _SectorMap(MappedData.Sector)
-                If BitstreamSector.Size < MappedData.Size Then
-                    MappedData.Data = New Byte(MappedData.Size - 1) {}
-                    BitstreamSector.Data.CopyTo(MappedData.Data, 0)
+                Dim BitstreamSector = GetSector(Track, Head, SectorId)
+                If BitstreamSector Is Nothing Then
+                    MappedData.Data = _EmptySector
+                    MappedData.CanWrite = False
                 Else
-                    MappedData.Data = BitstreamSector.Data
+                    If BitstreamSector.Size < MappedData.Size Then
+                        MappedData.Data = New Byte(MappedData.Size - 1) {}
+                        BitstreamSector.Data.CopyTo(MappedData.Data, 0)
+                    Else
+                        MappedData.Data = BitstreamSector.Data
+                    End If
+                    MappedData.CanWrite = Not IsProtectedSector(BitstreamSector)
                 End If
-
-                MappedData.CanWrite = Not IsProtectedSector(BitstreamSector)
             End If
 
             Return MappedData
         End Function
 
-        Friend Function GetOffset(Track As UShort, Side As Byte, SectorId As UShort) As UInteger
-            Dim Offset As UInteger = Track * _ImageParams.NumberOfHeads * _ImageParams.SectorsPerTrack + _ImageParams.SectorsPerTrack * Side + (SectorId - 1)
-
-            Return Offset * _ImageParams.BytesPerSector
+        Private Function GetSectorData(Track As UShort, Head As Byte, SectorId As Byte) As Byte()
+            Dim BitstreamSector = GetSector(Track, Head, SectorId)
+            If BitstreamSector Is Nothing Then
+                Return _EmptySector
+            ElseIf BitstreamSector.Size < Disk.BYTES_PER_SECTOR Then
+                Dim Data = New Byte(Disk.BYTES_PER_SECTOR - 1) {}
+                BitstreamSector.Data.CopyTo(Data, 0)
+                Return Data
+            Else
+                Return BitstreamSector.Data
+            End If
         End Function
 
-        Friend Function GetSector(Offset As UInteger) As UInteger
-            Return Offset \ _ImageParams.BytesPerSector
+        Private Function GetTrackCount() As UInteger
+            Return _BPB.SectorCountSmall \ _BPB.SectorsPerTrack \ _BPB.NumberOfHeads
         End Function
 
-        Friend Function GetSectorOffset(Offset As UInteger) As UInteger
-            Return Offset Mod _ImageParams.BytesPerSector
+        Private Sub InferFloppyDiskFormat(DiskFormat As FloppyDiskFormat)
+            _BPB = BuildBPB(DiskFormat)
+            _DiskFormat = DiskFormat
+            _ImageSize = GetFloppyDiskSize(DiskFormat)
+
+            Dim Data = GetSectorData(0, 0, 1)
+            Dim BPB = New BiosParameterBlock(Data)
+
+            If BPB.IsValid Then
+                _BPB = BPB
+                _DiskFormat = GetFloppyDiskFormat(BPB, False)
+                _ImageSize = _BPB.SectorCount * Disk.BYTES_PER_SECTOR
+            Else
+                Data = GetSectorData(0, 0, 2)
+                Dim MediaDescriptor = Data(0)
+                Dim FATDiskFormat = GetFloppyDiskFomat(MediaDescriptor)
+                If FATDiskFormat <> FloppyDiskFormat.FloppyUnknown Then
+                    If _HeadCount = 1 Then
+                        If FATDiskFormat = FloppyDiskFormat.Floppy360 Then
+                            FATDiskFormat = FloppyDiskFormat.Floppy180
+                        ElseIf FATDiskFormat = FloppyDiskFormat.Floppy320 Then
+                            FATDiskFormat = FloppyDiskFormat.Floppy160
+                        End If
+                    End If
+                    _BPB = BuildBPB(FATDiskFormat)
+                    _DiskFormat = FATDiskFormat
+                    _ImageSize = GetFloppyDiskSize(_DiskFormat)
+                End If
+            End If
+        End Sub
+
+        Private Sub InitProtectedSectors()
+            _ProtectedSectors.Clear()
+
+            Dim TrackCount = GetTrackCount()
+
+            For Cylinder = 0 To TrackCount - 1
+                For Side = 0 To _BPB.NumberOfHeads - 1
+                    For SectorId = 1 To _BPB.SectorsPerTrack
+                        Dim BitstreamSector As BitstreamSector = Nothing
+                        If Cylinder < _TrackCount And Side < _HeadCount Then
+                            BitstreamSector = GetSector(Cylinder, Side, SectorId)
+                        End If
+                        If BitstreamSector Is Nothing OrElse IsProtectedSector(BitstreamSector) Then
+                            Dim Sector = GetSectorFromParams(Cylinder, Side, SectorId)
+                            ProtectedSectors.Add(Sector)
+                        End If
+                    Next
+                Next
+            Next
+        End Sub
+
+        Private Function OffsetToSector(Offset As UInteger) As UInteger
+            Return Offset \ Disk.BYTES_PER_SECTOR
         End Function
 
-        Friend Function GetTrackCount() As UInteger
-            Return _ImageParams.SectorCountSmall \ _ImageParams.SectorsPerTrack \ _ImageParams.NumberOfHeads
+        Private Function SectorToHead(Sector As UInteger) As Byte
+            Return Int(Sector / _BPB.SectorsPerTrack) Mod _BPB.NumberOfHeads
+        End Function
+
+        Private Function SectorToOffset(Offset As UInteger) As UInteger
+            Return Offset Mod Disk.BYTES_PER_SECTOR
+        End Function
+
+        Private Function SectorToTrack(Sector As UInteger) As UShort
+            Return Sector \ _BPB.SectorsPerTrack \ _BPB.NumberOfHeads
+        End Function
+
+        Private Function SectorToTrackSector(Sector As UInteger) As UShort
+            Return Sector Mod _BPB.SectorsPerTrack
         End Function
 
         Public MustOverride ReadOnly Property ImageType As FloppyImageType Implements IByteArray.ImageType

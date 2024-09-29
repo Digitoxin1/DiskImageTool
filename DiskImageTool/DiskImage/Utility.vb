@@ -1,7 +1,4 @@
-﻿Imports System.IO
-Imports System.IO.Compression
-
-Namespace DiskImage
+﻿Namespace DiskImage
     Module Functions
         Public ReadOnly InvalidFileChars() As Byte = {&H22, &H2A, &H2B, &H2C, &H2E, &H2F, &H3A, &H3B, &H3C, &H3D, &H3E, &H3F, &H5B, &H5C, &H5D, &H7C}
 
@@ -60,8 +57,8 @@ Namespace DiskImage
         End Function
 
         Public Function CleanDOSFileName(FileName As String) As String
-            Dim FilePart As String = Path.GetFileNameWithoutExtension(FileName).ToUpper
-            Dim Extension As String = Path.GetExtension(FileName).ToUpper
+            Dim FilePart As String = IO.Path.GetFileNameWithoutExtension(FileName).ToUpper
+            Dim Extension As String = IO.Path.GetExtension(FileName).ToUpper
 
             If FilePart.Length > 8 Then
                 FilePart = FilePart.Substring(0, 8)
@@ -169,157 +166,6 @@ Namespace DiskImage
             DTTime += D.Second \ 2
 
             Return DTTime
-        End Function
-
-        Private Function PSIImageLoad(Data() As Byte) As PSIByteArray
-            Dim Image As PSIByteArray = Nothing
-
-            Dim psi = New PSI_Image.PSISectorImage()
-            Dim Result = psi.Import(Data)
-            If Result Then
-                If psi.Header.DefaultSectorFormat = PSI_Image.DefaultSectorFormat.IBM_MFM_DD _
-                    Or psi.Header.DefaultSectorFormat = PSI_Image.DefaultSectorFormat.IBM_MFM_HD _
-                    Or psi.Header.DefaultSectorFormat = PSI_Image.DefaultSectorFormat.IBM_MFM_ED Then
-
-                    Dim DiskFormat = Bitstream.PSIGetImageFormat(psi)
-                    If DiskFormat <> FloppyDiskFormat.FloppyUnknown Then
-                        Image = New PSIByteArray(psi, DiskFormat)
-                    End If
-                End If
-            End If
-
-            Return Image
-        End Function
-
-        Private Function TranscopyImageLoad(Data() As Byte) As TranscopyByteArray
-            Dim Image As TranscopyByteArray = Nothing
-
-            Dim tc = New Transcopy.TransCopyImage()
-            Dim Result = tc.Load(Data)
-            If Result Then
-                Dim DiskFormat = Bitstream.TranscopyGetImageFormat(tc)
-                If DiskFormat <> FloppyDiskFormat.FloppyUnknown Then
-                    Image = New TranscopyByteArray(tc, DiskFormat)
-                End If
-            End If
-
-            Return Image
-        End Function
-
-        Private Function ImageLoadFromTemp(FilePath As String) As Byte()
-            Dim Data() As Byte = Nothing
-
-            If File.Exists(FilePath) Then
-                Try
-                    Data = IO.File.ReadAllBytes(FilePath)
-                Catch ex As Exception
-                    Debug.Print("Caught Exception: Functions.ImageLoadFromTemp")
-                    Data = Nothing
-                End Try
-            End If
-
-            Return Data
-        End Function
-
-        Private Function ImageSaveToTemp(Data() As Byte, DisplayPath As String) As String
-            Dim TempPath = Path.Combine(Path.GetTempPath(), "DiskImageTool")
-            Dim TempFileName = HashFunctions.SHA1Hash(System.Text.Encoding.Unicode.GetBytes(DisplayPath)) & ".tmp"
-
-            Try
-                If Not Directory.Exists(TempPath) Then
-                    Directory.CreateDirectory(TempPath)
-                End If
-                TempPath = Path.Combine(TempPath, TempFileName)
-
-                IO.File.WriteAllBytes(TempPath, Data)
-            Catch ex As Exception
-                Debug.Print("Caught Exception: Functions.ImageSaveToTemp")
-                TempPath = ""
-            End Try
-
-            Return TempPath
-        End Function
-
-        Public Function DiskImageLoad(ImageData As LoadedImageData, Optional SetChecksum As Boolean = False) As DiskImage.Disk
-            Dim Data() As Byte
-            Dim LastChecksum As UInteger
-            Dim Image As IByteArray = Nothing
-
-            ImageData.InvalidImage = False
-
-            If ImageData.TempPath <> "" Then
-                Data = ImageLoadFromTemp(ImageData.TempPath)
-                Image = New ByteArray(Data)
-            End If
-
-            If Image Is Nothing AndAlso File.Exists(ImageData.SourceFile) Then
-                Try
-                    If ImageData.Compressed Then
-                        ImageData.ReadOnly = True
-                        Data = OpenFileFromZIP(ImageData.SourceFile, ImageData.CompressedFile)
-                    Else
-                        ImageData.ReadOnly = IsFileReadOnly(ImageData.SourceFile)
-                        Data = IO.File.ReadAllBytes(ImageData.SourceFile)
-                    End If
-
-                    Dim ImageType = GetImageTypeFromFileName(ImageData.FileName)
-
-                    LastChecksum = ImageData.Checksum
-                    If SetChecksum Then
-                        ImageData.Checksum = Crc32.ComputeChecksum(Data)
-                    End If
-
-                    If ImageType = FloppyImageType.TranscopyImage Then
-                        Dim TCImage = TranscopyImageLoad(Data)
-                        If TCImage IsNot Nothing Then
-                            Image = TCImage
-                        Else
-                            ImageData.InvalidImage = True
-                        End If
-
-                    ElseIf ImageType = FloppyImageType.PSIImage Then
-                        Dim PSIImage = PSIImageLoad(Data)
-                        If PSIImage IsNot Nothing Then
-                            Image = PSIImage
-                        Else
-                            ImageData.InvalidImage = True
-                        End If
-
-                    Else
-                        Image = New ByteArray(Data)
-                    End If
-                    'If ImageData.XDFMiniDisk Then
-                    '    ImageData.ReadOnly = True
-                    '    Dim NewData(ImageData.XDFLength - 1) As Byte
-                    '    Array.Copy(Data, ImageData.XDFOffset, NewData, 0, ImageData.XDFLength)
-                    '    Data = NewData
-                    'End If
-                Catch ex As Exception
-                    Debug.Print("Caught Exception: Functions.DiskImageLoad")
-                    Image = Nothing
-                End Try
-            End If
-
-            If Image Is Nothing Then
-                Return Nothing
-            Else
-                If ImageData.Loaded AndAlso ImageData.Checksum <> LastChecksum Then
-                    If ImageData.Modifications IsNot Nothing AndAlso ImageData.Modifications.Count > 0 Then
-                        ImageData.Modifications.Clear()
-                        ImageData.ExternalModified = True
-                    ElseIf SetChecksum Then
-                        ImageData.ExternalModified = False
-                    End If
-                End If
-                If SetChecksum Then
-                    ImageData.Loaded = True
-                End If
-
-                Dim Disk = New DiskImage.Disk(Image, ImageData.FATIndex, ImageData.Modifications)
-                ImageData.Modifications = Disk.Image.Changes
-
-                Return Disk
-            End If
         End Function
 
         Public Function GetBadSectors(BPB As BiosParameterBlock, BadClusters As List(Of UShort)) As HashSet(Of UInteger)
@@ -446,18 +292,6 @@ Namespace DiskImage
                 Next
             End If
         End Sub
-
-        Public Function OpenFileFromZIP(ZipFileName As String, FileName As String) As Byte()
-            Dim Data As New MemoryStream()
-            Dim Archive As ZipArchive = ZipFile.OpenRead(ZipFileName)
-            Dim Entry = Archive.GetEntry(FileName)
-            If Entry IsNot Nothing Then
-                Entry.Open.CopyTo(Data)
-                Return Data.ToArray
-            Else
-                Return Nothing
-            End If
-        End Function
 
         Private Function CalcXDFChecksumBlock(Data() As Byte, Start As UInteger, Length As UShort) As UInteger
             Dim Checksum As UInt32 = &HABDC

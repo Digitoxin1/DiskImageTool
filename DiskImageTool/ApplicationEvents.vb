@@ -1,2 +1,0 @@
-﻿Namespace My
-End Namespace

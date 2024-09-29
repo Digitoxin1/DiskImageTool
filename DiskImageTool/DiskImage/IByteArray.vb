@@ -6,6 +6,7 @@
         BasicSectorImage
         TranscopyImage
         PSIImage
+        MFMImage
     End Enum
 
     Public Interface IByteArray

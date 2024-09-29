@@ -6,9 +6,6 @@ Imports System.IO.Compression
 Public Class ImageLoadForm
     Private Const MIN_FILE_SIZE As Long = 163840
     Private Const MAX_FILE_SIZE As Long = 3000000
-    Private ReadOnly _ArchiveFilterExt As List(Of String)
-    Private ReadOnly _FileFilterExt As List(Of String)
-    Private ReadOnly _BitstreamFileExt As List(Of String)
     Private ReadOnly _Files() As String
     Private ReadOnly _LoadedFileNames As Dictionary(Of String, LoadedImageData)
     Private ReadOnly _Parent As MainForm
@@ -19,7 +16,7 @@ Public Class ImageLoadForm
     Private _SelectedImageData As LoadedImageData = Nothing
     Private _Visible As Boolean = False
 
-    Public Sub New(Parent As MainForm, Files() As String, LoadedFileNames As Dictionary(Of String, LoadedImageData), FileFilterExt As List(Of String), ArchiveFilterExt As List(Of String), BitstreamFileExt As List(Of String))
+    Public Sub New(Parent As MainForm, Files() As String, LoadedFileNames As Dictionary(Of String, LoadedImageData))
 
         ' This call is required by the designer.
         InitializeComponent()
@@ -28,9 +25,6 @@ Public Class ImageLoadForm
         _Parent = Parent
         _Files = Files
         _LoadedFileNames = LoadedFileNames
-        _FileFilterExt = FileFilterExt
-        _ArchiveFilterExt = ArchiveFilterExt
-        _BitstreamFileExt = BitstreamFileExt
     End Sub
 
     Public ReadOnly Property SelectedImageData As LoadedImageData
@@ -91,9 +85,9 @@ Public Class ImageLoadForm
             If Entries IsNot Nothing Then
                 For Each Entry In Entries.OrderBy(Function(e) e.FullName)
                     Dim EntryFileExt = Path.GetExtension(Entry.Name).ToLower
-                    If _FileFilterExt.Contains(EntryFileExt) Then
+                    If AllFileExtensions.Contains(EntryFileExt) Then
                         Dim FilePath = Path.Combine(FileName, Entry.FullName)
-                        Dim CheckLength = Not _BitstreamFileExt.Contains(EntryFileExt)
+                        Dim CheckLength = Not BitstreamFileExtensions.Contains(EntryFileExt)
                         If Not CheckLength OrElse (Entry.Length >= MIN_FILE_SIZE And Entry.Length <= MAX_FILE_SIZE) Then
                             LoadedFileAdd(bw, FilePath, FileName, True, Entry.FullName)
                         End If
@@ -101,14 +95,14 @@ Public Class ImageLoadForm
                 Next
             End If
         Else
-            If Not _ArchiveFilterExt.Contains(Extension) Then
+            If Not ArchiveFileExtensions.Contains(Extension) Then
                 Dim Length As Long = 0
                 Try
                     Length = New FileInfo(FileName).Length
                 Catch
                     '
                 End Try
-                Dim CheckLength = Not _BitstreamFileExt.Contains(Extension)
+                Dim CheckLength = Not BitstreamFileExtensions.Contains(Extension)
                 If Not CheckLength OrElse (Length >= MIN_FILE_SIZE And Length <= MAX_FILE_SIZE) Then
                     LoadedFileAdd(bw, FileName, FileName, False)
                 End If
@@ -134,7 +128,7 @@ Public Class ImageLoadForm
                         Return True
                     End If
                     Dim Extension = FileInfo.Extension.ToLower
-                    If _FileFilterExt.Contains(Extension) OrElse _ArchiveFilterExt.Contains(Extension) Then
+                    If AllFileExtensions.Contains(Extension) OrElse ArchiveFileExtensions.Contains(Extension) Then
                         ProcessFile(bw, FileInfo.FullName, Extension)
                     End If
                     bw.ReportProgress(1)

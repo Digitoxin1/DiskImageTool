@@ -49,10 +49,7 @@ Public Class MainForm
     Public Const SITE_URL = "https://github.com/Digitoxin1/DiskImageTool"
     Public Const UPDATE_URL = "https://api.github.com/repos/Digitoxin1/DiskImageTool/releases/latest"
     Public Const CHANGELOG_URL = "https://api.github.com/repos/Digitoxin1/DiskImageTool/releases"
-    Private ReadOnly _ArchiveFilterExt As New List(Of String) From {".zip"}
-    Private ReadOnly _BitstreamFileExt As New List(Of String) From {".tc", ".psi"}
     Private ReadOnly _lvwColumnSorter As ListViewColumnSorter
-    Private ReadOnly _ValidFileExt As New List(Of String) From {".ima", ".img", ".imz", ".vfd", ".flp", ".tc", ".psi"}
     Private _BootStrapDB As BoootstrapDB
     Private _TitleDB As FloppyDB
     Private _CheckAll As Boolean = False
@@ -70,14 +67,6 @@ Public Class MainForm
     Private _DriveBEnabled As Boolean = False
     Private _ExportUnknownImages As Boolean = False
     Private _CachedChangeLog As String = ""
-
-    Private Enum SaveImageResponse
-        Success
-        Failed
-        Unsupported
-        Unknown
-    End Enum
-
 
     Public Sub New()
         ' This call is required by the designer.
@@ -428,21 +417,6 @@ Public Class MainForm
         frmTextView.ShowDialog()
     End Sub
 
-    Private Shared Function FileSave(FilePath As String, DirectoryEntry As DiskImage.DirectoryEntry) As Boolean
-        Try
-            IO.File.WriteAllBytes(FilePath, DirectoryEntry.GetContent)
-            Dim D = DirectoryEntry.GetLastWriteDate
-            If D.IsValidDate Then
-                IO.File.SetLastWriteTime(FilePath, D.DateObject)
-            End If
-        Catch ex As Exception
-            Debug.Print("Caught Exception: MainForm.FileSave")
-            Return False
-        End Try
-
-        Return True
-    End Function
-
     Private Shared Function ListViewFilesGetItem(Group As ListViewGroup, FileData As FileData) As ListViewItem
         Dim SI As ListViewItem.ListViewSubItem
         Dim ForeColor As Color
@@ -658,70 +632,6 @@ Public Class MainForm
         Dim SaveAllForm As New SaveAllForm(Msg)
         SaveAllForm.ShowDialog()
         Return SaveAllForm.Result
-    End Function
-
-    Private Shared Function CreateBackup(FilePath As String) As Boolean
-        Try
-            Dim BackupPath As String = FilePath & ".bak"
-            IO.File.Copy(FilePath, BackupPath, True)
-        Catch ex As Exception
-            Debug.Print("Caught Exception: MainForm.CreateBackup")
-            Return False
-        End Try
-
-        Return True
-    End Function
-
-    Private Shared Function SaveDiskImageToFile(Disk As DiskImage.Disk, FilePath As String) As SaveImageResponse
-        Dim FileImageType = GetImageTypeFromFileName(FilePath)
-        Dim DiskImageType = Disk.Image.Data.ImageType
-        Dim Response As SaveImageResponse = SaveImageResponse.Failed
-        Dim Result As Boolean = False
-
-        If FileImageType = FloppyImageType.TranscopyImage Then
-            If DiskImageType = FloppyImageType.TranscopyImage Then
-                Result = Disk.Image.Data.SaveToFile(FilePath)
-            Else
-                Return SaveImageResponse.Unsupported
-            End If
-
-        ElseIf FileImageType = FloppyImageType.PSIImage Then
-            If DiskImageType = FloppyImageType.PSIImage Then
-                Result = Disk.Image.Data.SaveToFile(FilePath)
-
-            ElseIf DiskImageType = FloppyImageType.BasicSectorImage Then
-                If IsDiskFormatValidForRead(Disk.DiskFormat) Then
-                    Dim Data = Disk.Image.Data.GetBytes()
-                    Dim PSI = Bitstream.BasicSectorToPSIImage(Data, Disk.DiskFormat)
-                    Result = PSI.Export(FilePath)
-                Else
-                    Return SaveImageResponse.Unknown
-                End If
-
-            ElseIf DiskImageType = FloppyImageType.TranscopyImage Then
-                Return SaveImageResponse.Unsupported
-            End If
-
-        Else
-            If DiskImageType = FloppyImageType.BasicSectorImage Then
-                Result = Disk.Image.Data.SaveToFile(FilePath)
-
-            ElseIf DiskImageType = FloppyImageType.PSIImage Then
-                Dim Data = Disk.Image.Data.GetBytes()
-                Result = SaveByteArrayToFile(FilePath, Data)
-
-            ElseIf DiskImageType = FloppyImageType.TranscopyImage Then
-                Dim Data = Disk.Image.Data.GetBytes()
-                Result = SaveByteArrayToFile(FilePath, Data)
-            End If
-        End If
-
-        If Result Then
-            Disk.ClearChanges()
-            Response = SaveImageResponse.Success
-        End If
-
-        Return Response
     End Function
 
     Private Sub BootSectorEdit()
@@ -1301,7 +1211,7 @@ Public Class MainForm
                 Success = (Response = SaveImageResponse.Success)
 
                 If Response = SaveImageResponse.Unsupported Then
-                    MsgBox("Saving to this image type not supported.", MsgBoxStyle.Exclamation)
+                    MsgBox("Saving to this image type is not supported.", MsgBoxStyle.Exclamation)
                     Exit Do
                 ElseIf Response = SaveImageResponse.Unknown Then
                     MsgBox("Unsupported Disk Type.", MsgBoxStyle.Exclamation)
@@ -1429,24 +1339,6 @@ Public Class MainForm
         End If
 
         e.DrawFocusRectangle()
-    End Sub
-
-    Private Sub EmptyTempPath()
-        Dim TempPath = Path.Combine(Path.GetTempPath(), "DiskImageTool")
-
-        If Directory.Exists(TempPath) Then
-            Try
-                For Each File In Directory.EnumerateFiles(TempPath)
-                    Try
-                        IO.File.Delete(File)
-                    Catch ex As Exception
-                        Debug.Print("Caught Exception: MainForm.EmptyTempPath")
-                    End Try
-                Next
-            Catch ex As Exception
-                Debug.Print("Caught Exception: MainForm.EmptyTempPath")
-            End Try
-        End If
     End Sub
 
     Private Sub ExportDebugScript()
@@ -1628,28 +1520,9 @@ Public Class MainForm
 
     Private Sub FileExport()
         If ListViewFiles.SelectedItems.Count = 1 Then
-            FileExportCurrent()
+            DirectoryEntryExport(ListViewFiles.SelectedItems(0).Tag)
         ElseIf ListViewFiles.SelectedItems.Count > 1 Then
             FileExportSelected(True)
-        End If
-    End Sub
-
-    Private Sub FileExportCurrent()
-        Dim FileData As FileData = ListViewFiles.SelectedItems(0).Tag
-        Dim DirectoryEntry = FileData.DirectoryEntry
-
-        Dim Dialog = New SaveFileDialog With {
-            .FileName = DirectoryEntry.GetFullFileName
-        }
-        If Dialog.ShowDialog <> DialogResult.OK Then
-            Exit Sub
-        End If
-
-        Dim Result = FileSave(Dialog.FileName, DirectoryEntry)
-
-        If Not Result Then
-            Dim Msg As String = $"Error saving file '{IO.Path.GetFileName(Dialog.FileName)}'."
-            MsgBox(Msg, MsgBoxStyle.Critical + MsgBoxStyle.OkOnly)
         End If
     End Sub
 
@@ -1695,7 +1568,7 @@ Public Class MainForm
                         End If
                     End If
                     If Result = MyMsgBoxResult.Yes Or Result = MyMsgBoxResult.YesToAll Then
-                        If FileSave(FilePath, DirectoryEntry) Then
+                        If DirectoryEntrySaveToFile(FilePath, DirectoryEntry) Then
                             FileCount += 1
                         End If
                     End If
@@ -2071,168 +1944,6 @@ Public Class MainForm
         End If
     End Sub
 
-    Private Function FloppyDiskGetReadOptions(FloppyDrive As FloppyInterface) As BiosParameterBlock
-        Dim DetectedFormat As FloppyDiskFormat
-        Dim ReturnedFormat As FloppyDiskFormat
-        Dim BootSector As BootSector = Nothing
-
-        Dim Buffer(Disk.BYTES_PER_SECTOR - 1) As Byte
-        Dim BytesRead = FloppyDrive.ReadSector(0, Buffer)
-        If BytesRead = Buffer.Length Then
-            BootSector = New BootSector(Buffer)
-            DetectedFormat = GetFloppyDiskFormat(BootSector.BPB, False)
-        Else
-            DetectedFormat = FloppyDiskFormat.FloppyUnknown
-        End If
-
-        Dim FloppyReadOptionsForm As New FloppyReadOptionsForm(DetectedFormat)
-        FloppyReadOptionsForm.ShowDialog(Me)
-        ReturnedFormat = FloppyReadOptionsForm.DiskFormat
-        FloppyReadOptionsForm.Close()
-
-        If FloppyReadOptionsForm.DialogResult = DialogResult.Cancel Then
-            Return Nothing
-        ElseIf ReturnedFormat = -1 Then
-            Return Nothing
-        ElseIf BootSector IsNot Nothing AndAlso DetectedFormat = ReturnedFormat Then
-            Return BootSector.BPB
-        Else
-            Return BuildBPB(ReturnedFormat)
-        End If
-    End Function
-
-    Private Function FloppyDiskWriteOptions(DoFormat As Boolean, DetectedFormat As FloppyDiskFormat, ImageFormat As FloppyDiskFormat) As FloppyWriteOptionsForm.FloppyWriteOptions
-        Dim WriteOptions As FloppyWriteOptionsForm.FloppyWriteOptions
-
-        Dim FloppyWriteOptioonsForm As New FloppyWriteOptionsForm(DoFormat, DetectedFormat, ImageFormat)
-        FloppyWriteOptioonsForm.ShowDialog(Me)
-        WriteOptions = FloppyWriteOptioonsForm.WriteOptions
-        FloppyWriteOptioonsForm.Close()
-
-        Return WriteOptions
-    End Function
-
-    Private Sub FloppyDiskRead(Drive As FloppyDriveEnum)
-        Dim FloppyDrive = New FloppyInterface
-        Dim DriveLetter = FloppyInterface.GetDriveLetter(Drive)
-        Dim DriveName = DriveLetter & ":\"
-        Dim DriveInfo = New DriveInfo(DriveName)
-        Dim Result = DriveInfo.IsReady
-
-        If Result Then
-            Result = FloppyDrive.OpenRead(Drive)
-        End If
-
-        If Result Then
-            Dim BPB = FloppyDiskGetReadOptions(FloppyDrive)
-            If BPB IsNot Nothing Then
-                Dim FloppyAccessForm As New FloppyAccessForm(FloppyDrive, BPB, FloppyAccessForm.FloppyAccessType.Read)
-                FloppyAccessForm.ShowDialog(Me)
-                If FloppyAccessForm.Complete Then
-                    Dim DiskFormat = GetFloppyDiskFormat(BPB, False)
-                    FloppyDiskSaveFile(FloppyAccessForm.DiskBuffer, DiskFormat)
-                End If
-                FloppyAccessForm.Close()
-            End If
-            FloppyDrive.Close()
-        Else
-            MsgBox($"Floppy drive {DriveLetter} is not ready.{vbCrLf}{vbCrLf}Please verify that a formatted disk is inserted into drive {DriveLetter}.", MsgBoxStyle.Exclamation)
-        End If
-    End Sub
-
-    Private Sub FloppyDiskWrite(Drive As FloppyDriveEnum)
-        If _Disk Is Nothing Then
-            Exit Sub
-        End If
-
-        Dim FloppyDrive = New FloppyInterface
-        Dim DriveLetter = FloppyInterface.GetDriveLetter(Drive)
-        Dim DriveName = DriveLetter & ":\"
-        Dim DriveInfo = New DriveInfo(DriveName)
-        Dim IsReady = DriveInfo.IsReady
-        Dim NewDiskFormat = GetFloppyDiskFormat(_Disk.BPB, False)
-        Dim NewFormatName = GetFloppyDiskFormatName(NewDiskFormat) & " Floppy"
-        Dim DetectedFormat As FloppyDiskFormat = 255
-        Dim DoFormat = Not IsReady
-
-        Dim MsgBoxResult As MsgBoxResult
-        If IsReady Then
-            Dim Result = FloppyDrive.OpenRead(Drive)
-            If Result Then
-                Dim Buffer(Disk.BYTES_PER_SECTOR - 1) As Byte
-                Dim BytesRead = FloppyDrive.ReadSector(0, Buffer)
-                If BytesRead = Buffer.Length Then
-                    Dim BootSector = New BootSector(Buffer)
-                    DetectedFormat = GetFloppyDiskFormat(BootSector.BPB, False)
-                Else
-                    DetectedFormat = FloppyDiskFormat.FloppyUnknown
-                End If
-                FloppyDrive.Close()
-            Else
-                DetectedFormat = FloppyDiskFormat.FloppyUnknown
-            End If
-            Dim Msg As String
-            If DetectedFormat = NewDiskFormat Then
-                Msg = $"Warning: The disk in drive {DriveLetter} is not empty.{vbCrLf}{vbCrLf}If you continue, the disk will be overwritten.{vbCrLf}{vbCrLf}Do you wish to continue?"
-            ElseIf DetectedFormat = -1 Then
-                DoFormat = True
-                Msg = $"Warning: The disk in drive {DriveLetter} is not empty, but I am unable to determine the format type.{vbCrLf}{vbCrLf}The image you are attempting to write is a {NewFormatName} image.{vbCrLf}{vbCrLf}If you continue, the disk will be overwritten and may be unreadable.{vbCrLf}{vbCrLf}Do you wish to continue?"
-            Else
-                DoFormat = True
-                Dim DetectedFormatName = GetFloppyDiskFormatName(DetectedFormat) & " Floppy"
-                Msg = $"Warning: The disk in drive {DriveLetter} is not empty and is formatted as a {DetectedFormatName}.{vbCrLf}{vbCrLf}The image you are attempting to write is a {NewFormatName} image.{vbCrLf}{vbCrLf}If you continue, the disk will be overwritten and may be unreadable.{vbCrLf}{vbCrLf}Do you wish to continue?"
-            End If
-            MsgBoxResult = MsgBox(Msg, MsgBoxStyle.Exclamation Or MsgBoxStyle.OkCancel Or MsgBoxStyle.DefaultButton2)
-        Else
-            MsgBoxResult = MsgBoxResult.Ok
-        End If
-
-        If MsgBoxResult = MsgBoxResult.Ok Then
-            Dim Result = FloppyDrive.OpenWrite(Drive)
-            If Result Then
-                Dim WriteOptions = FloppyDiskWriteOptions(DoFormat, DetectedFormat, NewDiskFormat)
-                If Not WriteOptions.Cancelled Then
-                    Dim FloppyAccessForm As New FloppyAccessForm(FloppyDrive, _Disk.BPB, FloppyAccessForm.FloppyAccessType.Write) With {
-                        .DiskBuffer = _Disk.Image.GetBytes,
-                        .DoFormat = WriteOptions.Format,
-                        .DoVerify = WriteOptions.Verify
-                    }
-                    FloppyAccessForm.ShowDialog(Me)
-                    FloppyAccessForm.Close()
-                End If
-                FloppyDrive.Close()
-            Else
-                MsgBox($"Error: Unable to write to the drive at this time.", MsgBoxStyle.Exclamation)
-            End If
-        End If
-    End Sub
-
-    Private Sub FloppyDiskSaveFile(Buffer() As Byte, DiskFormat As FloppyDiskFormat)
-        Dim FileExt = ".ima"
-        Dim FileFilter = GetSaveDialogFilters(DiskFormat, FileExt)
-
-        Dim Dialog = New SaveFileDialog With {
-            .Filter = FileFilter.Filter,
-            .FilterIndex = FileFilter.FilterIndex,
-            .DefaultExt = FileExt
-        }
-
-        AddHandler Dialog.FileOk, Sub(sender As Object, e As CancelEventArgs)
-                                      If _LoadedFileNames.ContainsKey(Dialog.FileName) Then
-                                          Dim Msg As String = Path.GetFileName(Dialog.FileName) &
-                                            $"{vbCrLf}This file is currently open in {Application.ProductName}." &
-                                            $"Try again with a different file name."
-                                          MsgBox(Msg, MsgBoxStyle.Exclamation, "Save As")
-                                          e.Cancel = True
-                                      End If
-                                  End Sub
-
-        If Dialog.ShowDialog = DialogResult.OK Then
-            IO.File.WriteAllBytes(Dialog.FileName, Buffer)
-            ProcessFileDrop(Dialog.FileName)
-        End If
-    End Sub
-
     Private Function GetFileSystemInfo(Disk As Disk) As FileSystemInfo
         Dim fsi As FileSystemInfo
 
@@ -2266,31 +1977,6 @@ Public Class MainForm
         Return fsi
     End Function
 
-    Private Function GetLoadDialogFilters() As String
-        Dim FileFilter As String
-        Dim ExtensionList As List(Of String)
-
-
-        FileFilter = FileDialogGetFilter("All Floppy Disk Images", _ValidFileExt)
-
-        ExtensionList = New List(Of String) From {".imz"}
-        FileFilter = FileDialogAppendFilter(FileFilter, "Compressed Disk Image", ExtensionList)
-
-        ExtensionList = New List(Of String) From {".vfd", ".flp"}
-        FileFilter = FileDialogAppendFilter(FileFilter, "Virtual Floppy Disk", ExtensionList)
-
-        ExtensionList = New List(Of String) From {".tc"}
-        FileFilter = FileDialogAppendFilter(FileFilter, "Transcopy Image", ExtensionList)
-
-        ExtensionList = New List(Of String) From {".psi"}
-        FileFilter = FileDialogAppendFilter(FileFilter, "PCE sector image", ExtensionList)
-
-        FileFilter = FileDialogAppendFilter(FileFilter, "Zip Archive", ".zip")
-        FileFilter = FileDialogAppendFilter(FileFilter, "All files", ".*")
-
-        Return FileFilter
-    End Function
-
     Private Function GetModifiedImageList() As List(Of LoadedImageData)
         Dim ModifyImageList As New List(Of LoadedImageData)
 
@@ -2321,7 +2007,7 @@ Public Class MainForm
         End If
 
         Dim FileExt = IO.Path.GetExtension(FilePath)
-        Dim FileFilter = GetSaveDialogFilters(DiskFormat, FileExt)
+        Dim FileFilter = GetSaveDialogFilters(DiskFormat, Disk.Image.Data.ImageType, FileExt)
 
         Dim Dialog = New SaveFileDialog With {
             .InitialDirectory = IO.Path.GetDirectoryName(FilePath),
@@ -2373,79 +2059,6 @@ Public Class MainForm
         PathName = PathAddBackslash(PathName)
 
         Return Len(PathName)
-    End Function
-
-    Private Function GetSaveDialogFilters(DiskFormat As FloppyDiskFormat, FileExt As String) As SaveDialogFilter
-        Dim Response As SaveDialogFilter
-        Dim CurrentIndex As Integer = 1
-        Dim Extension As String
-        Dim ExtensionList As List(Of String)
-
-        Response.FilterIndex = 0
-
-        ExtensionList = New List(Of String) From {".ima", ".img"}
-        For Each Extension In ExtensionList
-            If FileExt.Equals(Extension, StringComparison.OrdinalIgnoreCase) Then
-                Response.FilterIndex = CurrentIndex
-            End If
-        Next
-        Response.Filter = FileDialogGetFilter("Floppy Disk Image", ExtensionList)
-        CurrentIndex += 1
-
-        ExtensionList = New List(Of String) From {".vfd", ".flp"}
-        For Each Extension In ExtensionList
-            If FileExt.Equals(Extension, StringComparison.OrdinalIgnoreCase) Then
-                Response.FilterIndex = CurrentIndex
-            End If
-        Next
-        Response.Filter = FileDialogAppendFilter(Response.Filter, "Virtual Floppy Disk", ExtensionList)
-        CurrentIndex += 1
-
-        ExtensionList = New List(Of String) From {".psi"}
-        For Each Extension In ExtensionList
-            If FileExt.Equals(Extension, StringComparison.OrdinalIgnoreCase) Then
-                Response.FilterIndex = CurrentIndex
-            End If
-        Next
-        Response.Filter = FileDialogAppendFilter(Response.Filter, "PCE Sector Image", ExtensionList)
-        CurrentIndex += 1
-
-        Dim Found As Boolean = False
-        ExtensionList = New List(Of String) From {".tc"}
-        For Each Extension In ExtensionList
-            If FileExt.Equals(Extension, StringComparison.OrdinalIgnoreCase) Then
-                Response.FilterIndex = CurrentIndex
-                Found = True
-            End If
-        Next
-        If Found Then
-            Response.Filter = FileDialogAppendFilter(Response.Filter, "Transcopy Image", ExtensionList)
-            CurrentIndex += 1
-        End If
-
-
-        Dim Items = System.Enum.GetValues(GetType(FloppyDiskFormat))
-        For Each Item As Integer In Items
-            Extension = GetFileFilterExtByFormat(Item)
-            If Extension <> "" Then
-                Dim Description = GetFileFilterDescriptionByFormat(Item)
-                If FileExt.Equals(Extension, StringComparison.OrdinalIgnoreCase) Then
-                    Response.Filter = FileDialogAppendFilter(Response.Filter, Description, Extension)
-                    Response.FilterIndex = CurrentIndex
-                    CurrentIndex += 1
-                ElseIf Item = DiskFormat Then
-                    Response.Filter = FileDialogAppendFilter(Response.Filter, Description, Extension)
-                    CurrentIndex += 1
-                End If
-            End If
-        Next
-
-        Response.Filter = FileDialogAppendFilter(Response.Filter, "All files", ".*")
-        If Response.FilterIndex = 0 Then
-            Response.FilterIndex = CurrentIndex
-        End If
-
-        Return Response
     End Function
 
     Private Function GetWindowCaption() As String
@@ -2597,10 +2210,6 @@ Public Class MainForm
         }
         AddHandler Item.CheckStateChanged, AddressOf ExportUnknownImages_CheckStateChanged
         ContextMenuFilters.Items.Add(Item)
-    End Sub
-
-    Private Sub InitValidFilters()
-        ParseFileTypeFilters()
     End Sub
 
     Private Function IsWin9xDisk(Disk As Disk) As Boolean
@@ -2759,18 +2368,6 @@ Public Class MainForm
             BtnDisplayDirectory.DropDownItems.Insert(Index, Item)
         End If
         AddHandler Item.Click, AddressOf BtnDisplayDirectory_Click
-    End Sub
-
-    Private Sub ParseFileTypeFilters()
-        Dim Items = System.Enum.GetValues(GetType(FloppyDiskFormat))
-        For Each Item As Integer In Items
-            Dim FileExt = GetFileFilterExtByFormat(Item)
-            If FileExt <> "" Then
-                If Not _ValidFileExt.Contains(FileExt) Then
-                    _ValidFileExt.Add(FileExt)
-                End If
-            End If
-        Next
     End Sub
 
     Private Function PopulateFilesPanel(ImageData As LoadedImageData, ClearItems As Boolean) As DirectoryScanResponse
@@ -3499,7 +3096,7 @@ Public Class MainForm
 
         LoadedImageData.StringOffset = 0
 
-        Dim ImageLoadForm As New ImageLoadForm(Me, Files, _LoadedFileNames, _ValidFileExt, _ArchiveFilterExt, _BitstreamFileExt)
+        Dim ImageLoadForm As New ImageLoadForm(Me, Files, _LoadedFileNames)
         ImageLoadForm.ShowDialog(Me)
 
         LoadedImageData.StringOffset = GetPathOffset()
@@ -4469,11 +4066,17 @@ Public Class MainForm
     End Sub
 
     Private Sub BtnReadFloppyA_Click(sender As Object, e As EventArgs) Handles BtnReadFloppyA.Click
-        FloppyDiskRead(FloppyDriveEnum.FloppyDriveA)
+        Dim FileName = FloppyDiskRead(Me, FloppyDriveEnum.FloppyDriveA, _LoadedFileNames)
+        If FileName.Length > 0 Then
+            ProcessFileDrop(FileName)
+        End If
     End Sub
 
     Private Sub BtnReadFloppyB_Click(sender As Object, e As EventArgs) Handles BtnReadFloppyB.Click
-        FloppyDiskRead(FloppyDriveEnum.FloppyDriveB)
+        Dim FileName = FloppyDiskRead(Me, FloppyDriveEnum.FloppyDriveB, _LoadedFileNames)
+        If FileName.Length > 0 Then
+            ProcessFileDrop(FileName)
+        End If
     End Sub
 
     Private Sub BtnRedo_Click(sender As Object, e As EventArgs) Handles BtnRedo.Click, ToolStripBtnRedo.Click
@@ -4553,11 +4156,11 @@ Public Class MainForm
     End Sub
 
     Private Sub BtnWriteFloppyA_Click(sender As Object, e As EventArgs) Handles BtnWriteFloppyA.Click
-        FloppyDiskWrite(FloppyDriveEnum.FloppyDriveA)
+        FloppyDiskWrite(Me, _Disk, FloppyDriveEnum.FloppyDriveA)
     End Sub
 
     Private Sub BtnWriteFloppyB_Click(sender As Object, e As EventArgs) Handles BtnWriteFloppyB.Click
-        FloppyDiskWrite(FloppyDriveEnum.FloppyDriveB)
+        FloppyDiskWrite(Me, _Disk, FloppyDriveEnum.FloppyDriveB)
     End Sub
 
     Private Sub ComboFAT_SelectedIndexChanged(sender As Object, e As EventArgs) Handles ComboFAT.SelectedIndexChanged
@@ -4805,7 +4408,7 @@ Public Class MainForm
         _FileVersion = GetVersionString()
         Me.Text = GetWindowCaption()
 
-        InitValidFilters()
+        InitAllFileExtensions()
 
         PositionForm()
 

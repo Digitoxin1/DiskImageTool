@@ -2,6 +2,7 @@
     Module BitstreamDebug
         Public Sub DebugExportMFMBitstream(Bitstream As BitArray, FileName As String)
             Dim DebugFile = My.Computer.FileSystem.OpenTextFileWriter(FileName, False)
+            Dim wordBuffer As UShort
             Dim byteBuffer As Byte
             Dim bitCount As Integer = 0
             Dim byteCount As Integer = 0
@@ -11,12 +12,14 @@
             Dim LostClock As Boolean = False
             For i As UInteger = 0 To Bitstream.Length - 2 Step 2
                 Dim clockBit As Boolean = Bitstream(i)
+                wordBuffer = (wordBuffer << 1) Or (CInt(clockBit) And 1)
                 If Not clockBit Then
                     ZeroCount += 1
                 Else
                     ZeroCount = 0
                 End If
                 Dim dataBit As Boolean = Bitstream(i + 1)
+                wordBuffer = (wordBuffer << 1) Or (CInt(dataBit) And 1)
                 If Not dataBit Then
                     ZeroCount += 1
                 Else
@@ -37,15 +40,16 @@
                 byteBuffer = (byteBuffer << 1) Or (CInt(dataBit) And 1)
                 bitCount += 1
                 If bitCount = 8 Then
-                    DebugFile.Write(": " & byteBuffer.ToString("X2"))
+                    DebugFile.Write(": " & wordBuffer.ToString("X4"))
+                    DebugFile.Write(" > " & byteBuffer.ToString("X2"))
                     If LostClock Then
                         DebugFile.Write(" Lost Clock")
-                    End If
-                    If SyncBit Then
+                    ElseIf SyncBit Then
                         DebugFile.Write(" SYNC")
                     End If
                     DebugFile.WriteLine()
                     byteBuffer = 0
+                    wordBuffer = 0
                     bitCount = 0
                     SyncBit = False
                     LostClock = False
@@ -56,7 +60,7 @@
             DebugFile.Close()
         End Sub
 
-        Public Sub DebugExportMFMTrack(MFMTrack As IBM_MFM.MFMTrack, TrackName As String, FileName As String)
+        Public Sub DebugExportMFMTrack(MFMTrack As IBM_MFM.IBM_MFM_Track, TrackName As String, FileName As String)
             Dim DebugFile = My.Computer.FileSystem.OpenTextFileWriter(FileName, False)
             DebugFile.Write("Trk: " & TrackName)
             DebugFile.Write(", Gap 4A: " & MFMTrack.Gap4A.Length)
@@ -109,19 +113,17 @@
             DebugFile.Close()
         End Sub
 
-        Public Sub DebugTranscopyCylinder(Cylinder As Transcopy.TransCopyCylinder)
+        Public Sub DebugTranscopyCylinder(Cylinder As ImageFormats.TC.TransCopyCylinder)
             Dim DebugPath As String = "H:\Debug\"
-            Console.Write("Track: " & Cylinder.Track)
-            Console.Write(", Side: " & Cylinder.Side)
-            Console.WriteLine(", TrackType: " & Cylinder.TrackType)
+            Debug.Write("Track: " & Cylinder.Track)
+            Debug.Write(", Side: " & Cylinder.Side)
+            Debug.WriteLine(", TrackType: " & Cylinder.TrackType)
 
             Dim TrackString As String = Cylinder.Track.ToString.PadLeft(2, "0") & "." & Cylinder.Side
             DebugExportMFMTrack(Cylinder.MFMData, TrackString, DebugPath & "track" & TrackString & ".log")
 
-            Dim Bitstream = MyBitConverter.BytesToBits(Cylinder.RawData)
-
-            DebugExportMFMBitstream(Bitstream, DebugPath & "track" & TrackString & "_bitstream" & ".txt")
-            IO.File.WriteAllBytes(DebugPath & "track" & TrackString & ".bin", IBM_MFM.DecodeTrack(Cylinder.RawData))
+            DebugExportMFMBitstream(Cylinder.Bitstream, DebugPath & "track" & TrackString & "_bitstream" & ".txt")
+            IO.File.WriteAllBytes(DebugPath & "track" & TrackString & ".bin", IBM_MFM.DecodeTrack(Cylinder.Bitstream))
         End Sub
 
         Private Function HexFormat(Data() As Byte) As String

@@ -53,6 +53,11 @@ Namespace DiskImage
             _Offset = Offset
         End Sub
 
+        Sub New(Data() As Byte)
+            _FileBytes = New ByteArray(Data)
+            _Offset = 0
+        End Sub
+
         Public Property BytesPerSector() As UShort
             Get
                 Return _FileBytes.GetBytesShort(BPBOoffsets.BytesPerSector + _Offset)

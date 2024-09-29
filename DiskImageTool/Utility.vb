@@ -77,6 +77,8 @@ Module Utility
             Return FloppyImageType.TranscopyImage
         ElseIf FileExt = ".psi" Then
             Return FloppyImageType.PSIImage
+        ElseIf FileExt = ".mfm" Then
+            Return FloppyImageType.MFMImage
         Else
             Return FloppyImageType.BasicSectorImage
         End If
