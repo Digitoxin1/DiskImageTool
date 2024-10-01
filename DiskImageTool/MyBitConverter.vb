@@ -14,6 +14,22 @@
         Return byte1 Or byte2 Or byte3 Or byte4
     End Function
 
+    Public Shared Function ToggleBit(Data As Byte, Bit As Byte, Value As Boolean) As Byte
+        If Value Then
+            Return Data Or Bit
+        Else
+            Return Data And Not Bit
+        End If
+    End Function
+
+    Public Shared Function ToggleBit(Data As UShort, Bit As UShort, Value As Boolean) As UShort
+        If Value Then
+            Return Data Or Bit
+        Else
+            Return Data And Not Bit
+        End If
+    End Function
+
     Public Shared Function ToInt16(value As Byte(), bigEndian As Boolean, Optional startIndex As Integer = 0) As Int16
         If bigEndian Then
             Return ToInt16(ToUInt16(value, bigEndian, startIndex))

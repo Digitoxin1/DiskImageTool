@@ -1,46 +1,42 @@
-﻿
-Imports DiskImageTool.DiskImage.FloppyDiskFunctions
+﻿Imports DiskImageTool.DiskImage.FloppyDiskFunctions
 
 Namespace ImageFormats
-    Namespace MFM
-        Module MFMLoader
-            Public Function MFMImageLoad(Data() As Byte) As MFMByteArray
-                Dim Image As MFMByteArray = Nothing
+    Namespace _86F
+        Module _86FLoader
+            Public Function ImageLoad(Data() As Byte) As _86FByteArray
+                Dim Image As _86FByteArray = Nothing
 
-                Dim MFMImage = New MFMImage
-                Dim Result = MFMImage.Load(Data)
+                Dim F86Image = New _86FImage()
+                Dim Result = F86Image.Load(Data)
                 If Result Then
-                    Dim DiskFormat As FloppyDiskFormat = MFMGetImageFormat(MFMImage)
+                    Dim DiskFormat As FloppyDiskFormat = GetImageFormat(F86Image)
                     If DiskFormat <> FloppyDiskFormat.FloppyUnknown Then
-                        Image = New MFMByteArray(MFMImage, DiskFormat)
+                        Image = New _86FByteArray(F86Image, DiskFormat)
                     End If
                 End If
 
                 Return Image
             End Function
 
-            Private Function MFMGetImageFormat(MFMImage As MFMImage) As FloppyDiskFormat
+            Private Function GetImageFormat(F86Image As _86FImage) As FloppyDiskFormat
                 Dim DiskFormat As FloppyDiskFormat
                 Dim MaxSectors As Byte
-                Dim MFMTrack As MFMTrack
-
-                Dim Bitrate As UShort = Bitstream.RoundBitRate(MFMImage.BitRate)
-
-                If Bitrate = 500 Then
-                    MaxSectors = 18
-                ElseIf Bitrate = 1000 Then
-                    MaxSectors = 36
-                Else
-                    MaxSectors = 9
-                End If
+                Dim F86Track As _86FTrack
 
                 Dim SectorCount As Byte = 0
 
-                For Track = 0 To MFMImage.TrackCount - 1 Step MFMImage.TrackStep
-                    For Side = 0 To MFMImage.SideCount - 1
-                        MFMTrack = MFMImage.GetTrack(Track, Side)
-                        If MFMTrack.MFMData IsNot Nothing Then
-                            For Each Sector In MFMTrack.MFMData.Sectors
+                For Track = 0 To F86Image.TrackCount - 1
+                    For Side = 0 To F86Image.Sides - 1
+                        F86Track = F86Image.GetTrack(Track, Side)
+                        If F86Track IsNot Nothing AndAlso F86Track.MFMData IsNot Nothing Then
+                            If F86Track.BitRate = BitRate.BitRate1000 Then
+                                MaxSectors = 36
+                            ElseIf F86Track.BitRate = BitRate.BitRate500 Then
+                                MaxSectors = 18
+                            Else
+                                MaxSectors = 9
+                            End If
+                            For Each Sector In F86Track.MFMData.Sectors
                                 If Sector.SectorId >= 1 And Sector.SectorId <= MaxSectors Then
                                     If Sector.SectorId > SectorCount Then
                                         SectorCount = Sector.SectorId
@@ -51,11 +47,7 @@ Namespace ImageFormats
                     Next
                 Next
 
-                If MFMImage.TrackCount \ MFMImage.TrackStep < 45 And SectorCount > 9 Then
-                    SectorCount = 9
-                End If
-
-                If MFMImage.TrackCount \ MFMImage.TrackStep >= 79 Then
+                If F86Image.TrackCount > 79 Then
                     If SectorCount > 15 Then
                         DiskFormat = FloppyDiskFormat.Floppy1440
                     ElseIf SectorCount > 9 Then
@@ -64,7 +56,7 @@ Namespace ImageFormats
                         DiskFormat = FloppyDiskFormat.Floppy720
                     End If
                 Else
-                    If MFMImage.SideCount = 1 Then
+                    If F86Image.Sides = 1 Then
                         If SectorCount < 9 Then
                             DiskFormat = FloppyDiskFormat.Floppy160
                         Else

@@ -79,6 +79,8 @@ Module Utility
             Return FloppyImageType.PSIImage
         ElseIf FileExt = ".mfm" Then
             Return FloppyImageType.MFMImage
+        ElseIf FileExt = ".86f" Then
+            Return FloppyImageType._86FImage
         Else
             Return FloppyImageType.BasicSectorImage
         End If

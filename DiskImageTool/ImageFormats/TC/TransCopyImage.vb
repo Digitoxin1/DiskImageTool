@@ -100,10 +100,10 @@ Namespace ImageFormats
                                 Next
 
                                 If Cylinder.Offset >= TransCopyOffsets.Data Then
-                                    Cylinder.Bitstream = Bitstream.IBM_MFM.BytesToBits(Buffer, Cylinder.Offset, Cylinder.Length)
+                                    Cylinder.Bitstream = IBM_MFM.BytesToBits(Buffer, Cylinder.Offset, Cylinder.Length)
 
                                     If Cylinder.IsMFMTrackType Then
-                                        Cylinder.MFMData = New Bitstream.IBM_MFM.IBM_MFM_Track(Cylinder.Bitstream)
+                                        Cylinder.MFMData = New IBM_MFM.IBM_MFM_Track(Cylinder.Bitstream)
                                         Cylinder.Decoded = True
                                         'Bitstream.DebugTranscopyCylinder(Cylinder)
                                     End If
@@ -331,7 +331,7 @@ Namespace ImageFormats
                                     If Cylinder IsNot Nothing Then
                                         Dim BitLength = Math.Ceiling(Cylinder.Bitstream.Length / 2048) * 2048
                                         Dim Padding = BitLength - Cylinder.Bitstream.Length
-                                        buffer = Bitstream.IBM_MFM.BitsToBytes(Cylinder.Bitstream, Padding)
+                                        buffer = IBM_MFM.BitsToBytes(Cylinder.Bitstream, Padding)
                                         Dim Offset = fs.Position
                                         Dim NextBoundary = Math.Ceiling(Offset / 65536) * 65536
                                         If Offset + buffer.Length > NextBoundary Then

@@ -31,7 +31,7 @@
     <ProductName>DiskImageTool</ProductName>
     <PublisherName>Digitoxin</PublisherName>
     <ApplicationRevision>0</ApplicationRevision>
-    <ApplicationVersion>1.54.0.%2a</ApplicationVersion>
+    <ApplicationVersion>2.0.0.%2a</ApplicationVersion>
     <UseApplicationTrust>false</UseApplicationTrust>
     <PublishWizardCompleted>true</PublishWizardCompleted>
     <BootstrapperEnabled>true</BootstrapperEnabled>
@@ -131,6 +131,7 @@
     <Compile Include="Bitstream\BitstreamByteArray.vb" />
     <Compile Include="Bitstream\BitstreamDebug.vb" />
     <Compile Include="Bitstream\BitstreamSector.vb" />
+    <Compile Include="Bitstream\Functions.vb" />
     <Compile Include="Bitstream\IBM_MFM\IBM_MFM_Bitstream.vb" />
     <Compile Include="Bitstream\IBM_MFM\IBM_MFM_Sector.vb" />
     <Compile Include="Bitstream\IBM_MFM\IBM_MFM_Tools.vb" />
@@ -138,6 +139,12 @@
     <Compile Include="FloppyDiskIO.vb" />
     <Compile Include="Bitstream\IBitstreamImage.vb" />
     <Compile Include="Bitstream\IBitstreamTrack.vb" />
+    <Compile Include="ImageFormats\86F\86FByteArray.vb" />
+    <Compile Include="ImageFormats\86F\86FImage.vb" />
+    <Compile Include="ImageFormats\86F\86FLoader.vb" />
+    <Compile Include="ImageFormats\86F\86FTrack.vb" />
+    <Compile Include="ImageFormats\86F\Enums.vb" />
+    <Compile Include="ImageFormats\86F\Functions.vb" />
     <Compile Include="ImageIO.vb" />
     <Compile Include="ImageFormats\ImageConversion.vb" />
     <Compile Include="ImageFormats\MFM\MFMByteArray.vb" />

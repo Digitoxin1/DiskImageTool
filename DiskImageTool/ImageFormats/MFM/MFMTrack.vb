@@ -21,8 +21,8 @@ Namespace ImageFormats
             Public Property Side As Byte
             Public Property Offset As UInt32
             Public Property Length As UInt16
-            Public Property RPM As UInt16
-            Public Property BitRate As UInt16
+            Public Property RPM As UInt16 Implements IBitstreamTrack.RPM
+            Public Property BitRate As UInt16 Implements IBitstreamTrack.BitRate
             Public Property Bitstream As BitArray Implements IBitstreamTrack.Bitstream
                 Get
                     Return _Bitstream
@@ -32,7 +32,7 @@ Namespace ImageFormats
                     _Length = _Bitstream.Length \ 8
                 End Set
             End Property
-            Public Property MFMData As Bitstream.IBM_MFM.IBM_MFM_Track Implements IBitstreamTrack.MFMData
+            Public Property MFMData As IBM_MFM.IBM_MFM_Track Implements IBitstreamTrack.MFMData
             Public Property Decoded As Boolean Implements IBitstreamTrack.Decoded
                 Get
                     Return True
@@ -40,6 +40,12 @@ Namespace ImageFormats
                 Set
                     'Do Nothing
                 End Set
+            End Property
+
+            Private ReadOnly Property IBitstreamTrack_TrackType As BitstreamTrackType Implements IBitstreamTrack.TrackType
+                Get
+                    Return BitstreamTrackType.MFM
+                End Get
             End Property
         End Class
     End Namespace

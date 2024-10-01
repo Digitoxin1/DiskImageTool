@@ -99,7 +99,7 @@
                     Return (Flags And SectorFlags.Compressed) > 0
                 End Get
                 Set(value As Boolean)
-                    Flags = ToggleBit(Flags, SectorFlags.Compressed, value)
+                    Flags = MyBitConverter.ToggleBit(Flags, SectorFlags.Compressed, value)
                 End Set
             End Property
 
@@ -108,7 +108,7 @@
                     Return (Flags And SectorFlags.AlternateSector) > 0
                 End Get
                 Set(value As Boolean)
-                    Flags = ToggleBit(Flags, SectorFlags.AlternateSector, value)
+                    Flags = MyBitConverter.ToggleBit(Flags, SectorFlags.AlternateSector, value)
                 End Set
             End Property
 
@@ -117,7 +117,7 @@
                     Return (Flags And SectorFlags.DataCRCError) > 0
                 End Get
                 Set(value As Boolean)
-                    Flags = ToggleBit(Flags, SectorFlags.DataCRCError, value)
+                    Flags = MyBitConverter.ToggleBit(Flags, SectorFlags.DataCRCError, value)
                 End Set
             End Property
 
@@ -174,14 +174,6 @@
             Public Property MFMHeader As IBMSectorHeader
             Public Property FMHeader As IBMSectorHeader
             Public Property GCRHeader As GCRSectorHeader
-
-            Private Function ToggleBit(Data As Byte, Bit As Byte, Value As Boolean) As Byte
-                If Value Then
-                    Return Data Or Bit
-                Else
-                    Return Data And Not Bit
-                End If
-            End Function
         End Class
     End Namespace
 End Namespace

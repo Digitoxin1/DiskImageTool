@@ -7,6 +7,7 @@
         TranscopyImage
         PSIImage
         MFMImage
+        _86FImage
     End Enum
 
     Public Interface IByteArray

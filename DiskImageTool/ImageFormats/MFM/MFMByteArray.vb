@@ -34,8 +34,8 @@ Namespace ImageFormats
                                        .Overlaps = MFMSector.Overlaps,
                                        .IsValid = MFMSector.IsValid,
                                        .Size = MFMSector.GetSizeBytes
-        }
-                                    SetSector(MFMSector.Track, MFMSector.Side, MFMSector.SectorId, BitstreamSector)
+                                    }
+                                    SetSector(Track \ _Image.TrackStep, Side, MFMSector.SectorId, BitstreamSector)
                                 End If
                             End If
                         Next

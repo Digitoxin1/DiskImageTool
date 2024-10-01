@@ -27,7 +27,7 @@ Namespace DiskImage
         Private _HasInvalidExtensionCache As Boolean? = Nothing
         Private _HasInvalidFileNameCache As Boolean? = Nothing
 
-        Public Enum AttributeFlags
+        Public Enum AttributeFlags As Byte
             [ReadOnly] = 1
             Hidden = 2
             System = 4

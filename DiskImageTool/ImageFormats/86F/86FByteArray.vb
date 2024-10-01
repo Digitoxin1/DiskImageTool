@@ -2,15 +2,14 @@
 Imports DiskImageTool.DiskImage
 
 Namespace ImageFormats
-    Namespace TC
-
-        Public Class TranscopyByteArray
+    Namespace _86F
+        Public Class _86FByteArray
             Inherits Bitstream.BitstreamByteArray
             Implements IByteArray
 
-            Private ReadOnly _Image As TransCopyImage
+            Private ReadOnly _Image As _86FImage
 
-            Public Sub New(Image As TransCopyImage, DiskFormat As FloppyDiskFormat)
+            Public Sub New(Image As _86FImage, DiskFormat As FloppyDiskFormat)
                 MyBase.New()
 
                 _Image = Image
@@ -20,15 +19,15 @@ Namespace ImageFormats
             End Sub
 
             Private Sub BuildSectorMap()
-                Dim TranscopyCylinder As TransCopyCylinder
+                Dim F86Track As _86FTrack
 
-                SetTracks(_Image.CylinderEnd + 1, _Image.Sides)
+                SetTracks(_Image.TrackCount, _Image.Sides)
 
-                For Cylinder = 0 To _Image.CylinderEnd
+                For Track = 0 To _Image.TrackCount - 1 Step _Image.TrackStep
                     For Side = 0 To _Image.Sides - 1
-                        TranscopyCylinder = _Image.GetCylinder(Cylinder, Side)
-                        If TranscopyCylinder.MFMData IsNot Nothing Then
-                            For Each MFMSector In TranscopyCylinder.MFMData.Sectors
+                        F86Track = _Image.GetTrack(Track, Side)
+                        If F86Track IsNot Nothing AndAlso F86Track.MFMData IsNot Nothing Then
+                            For Each MFMSector In F86Track.MFMData.Sectors
                                 If MFMSector.DAMFound Then
                                     If MFMSector.SectorId >= 1 And MFMSector.SectorId <= SECTOR_COUNT Then
                                         Dim BitstreamSector As New BitstreamSector With {
@@ -37,7 +36,7 @@ Namespace ImageFormats
                                            .IsValid = MFMSector.IsValid,
                                            .Size = MFMSector.GetSizeBytes
                                         }
-                                        SetSector(Cylinder, Side, MFMSector.SectorId, BitstreamSector)
+                                        SetSector(Track, Side, MFMSector.SectorId, BitstreamSector)
                                     End If
                                 End If
                             Next
@@ -46,7 +45,7 @@ Namespace ImageFormats
                 Next
             End Sub
 
-            Public ReadOnly Property Image As TransCopyImage
+            Public ReadOnly Property Image As _86FImage
                 Get
                     Return _Image
                 End Get
@@ -54,7 +53,7 @@ Namespace ImageFormats
 
             Public Overrides ReadOnly Property ImageType As FloppyImageType Implements IByteArray.ImageType
                 Get
-                    Return FloppyImageType.TranscopyImage
+                    Return FloppyImageType._86FImage
                 End Get
             End Property
 

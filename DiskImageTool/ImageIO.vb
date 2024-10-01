@@ -1,11 +1,12 @@
 ﻿Imports System.IO
 Imports System.IO.Compression
+Imports DiskImageTool.Bitstream
 Imports DiskImageTool.DiskImage
 
 Module ImageIO
     Public ReadOnly AllFileExtensions As New List(Of String) From {".ima", ".img", ".imz", ".vfd", ".flp"}
     Public ReadOnly ArchiveFileExtensions As New List(Of String) From {".zip"}
-    Public ReadOnly BitstreamFileExtensions As New List(Of String) From {".tc", ".psi", ".mfm"}
+    Public ReadOnly BitstreamFileExtensions As New List(Of String) From {".tc", ".psi", ".mfm", ".86f"}
 
     Public Enum SaveImageResponse
         Success
@@ -72,59 +73,67 @@ Module ImageIO
         End If
 
         If Image Is Nothing AndAlso File.Exists(ImageData.SourceFile) Then
-            Try
-                If ImageData.Compressed Then
-                    ImageData.ReadOnly = True
-                    Data = OpenFileFromZIP(ImageData.SourceFile, ImageData.CompressedFile)
+            'Try
+            If ImageData.Compressed Then
+                ImageData.ReadOnly = True
+                Data = OpenFileFromZIP(ImageData.SourceFile, ImageData.CompressedFile)
+            Else
+                ImageData.ReadOnly = IsFileReadOnly(ImageData.SourceFile)
+                Data = IO.File.ReadAllBytes(ImageData.SourceFile)
+            End If
+
+            Dim FloppyImageType = GetImageTypeFromFileName(ImageData.FileName)
+
+            LastChecksum = ImageData.Checksum
+            If SetChecksum Then
+                ImageData.Checksum = Crc32.ComputeChecksum(Data)
+            End If
+
+            If FloppyImageType = FloppyImageType.TranscopyImage Then
+                Dim TCImage = ImageFormats.TC.TranscopyImageLoad(Data)
+                If TCImage IsNot Nothing Then
+                    Image = TCImage
                 Else
-                    ImageData.ReadOnly = IsFileReadOnly(ImageData.SourceFile)
-                    Data = IO.File.ReadAllBytes(ImageData.SourceFile)
+                    ImageData.InvalidImage = True
                 End If
 
-                Dim FloppyImageType = GetImageTypeFromFileName(ImageData.FileName)
-
-                LastChecksum = ImageData.Checksum
-                If SetChecksum Then
-                    ImageData.Checksum = Crc32.ComputeChecksum(Data)
-                End If
-
-                If FloppyImageType = FloppyImageType.TranscopyImage Then
-                    Dim TCImage = ImageFormats.TC.TranscopyImageLoad(Data)
-                    If TCImage IsNot Nothing Then
-                        Image = TCImage
-                    Else
-                        ImageData.InvalidImage = True
-                    End If
-
-                ElseIf FloppyImageType = FloppyImageType.PSIImage Then
-                    Dim PSIImage = ImageFormats.PSI.PSIImageLoad(Data)
-                    If PSIImage IsNot Nothing Then
-                        Image = PSIImage
-                    Else
-                        ImageData.InvalidImage = True
-                    End If
-
-                ElseIf FloppyImageType = FloppyImageType.MFMImage Then
-                    Dim MFMImage = ImageFormats.MFM.MFMImageLoad(Data)
-                    If MFMImage IsNot Nothing Then
-                        Image = MFMImage
-                    Else
-                        ImageData.InvalidImage = True
-                    End If
-
+            ElseIf FloppyImageType = FloppyImageType.PSIImage Then
+                Dim PSIImage = ImageFormats.PSI.PSIImageLoad(Data)
+                If PSIImage IsNot Nothing Then
+                    Image = PSIImage
                 Else
-                    Image = New ByteArray(Data)
+                    ImageData.InvalidImage = True
                 End If
-                'If ImageData.XDFMiniDisk Then
-                '    ImageData.ReadOnly = True
-                '    Dim NewData(ImageData.XDFLength - 1) As Byte
-                '    Array.Copy(Data, ImageData.XDFOffset, NewData, 0, ImageData.XDFLength)
-                '    Data = NewData
-                'End If
-            Catch ex As Exception
-                Debug.Print("Caught Exception: Functions.DiskImageLoad")
-                Image = Nothing
-            End Try
+
+            ElseIf FloppyImageType = FloppyImageType.MFMImage Then
+                Dim MFMImage = ImageFormats.MFM.MFMImageLoad(Data)
+                If MFMImage IsNot Nothing Then
+                    Image = MFMImage
+                Else
+                    ImageData.InvalidImage = True
+                End If
+
+            ElseIf FloppyImageType = FloppyImageType._86FImage Then
+                Dim F86Image = ImageFormats._86F.ImageLoad(Data)
+                If F86Image IsNot Nothing Then
+                    Image = F86Image
+                Else
+                    ImageData.InvalidImage = True
+                End If
+
+            Else
+                Image = New ByteArray(Data)
+            End If
+            'If ImageData.XDFMiniDisk Then
+            '    ImageData.ReadOnly = True
+            '    Dim NewData(ImageData.XDFLength - 1) As Byte
+            '    Array.Copy(Data, ImageData.XDFOffset, NewData, 0, ImageData.XDFLength)
+            '    Data = NewData
+            'End If
+            'Catch ex As Exception
+            'Debug.Print("Caught Exception: Functions.DiskImageLoad")
+            'Image = Nothing
+            'End Try
         End If
 
         If Image Is Nothing Then
@@ -184,10 +193,13 @@ Module ImageIO
         FileFilter = FileDialogAppendFilter(FileFilter, "Transcopy Image", ExtensionList)
 
         ExtensionList = New List(Of String) From {".psi"}
-        FileFilter = FileDialogAppendFilter(FileFilter, "PCE sector image", ExtensionList)
+        FileFilter = FileDialogAppendFilter(FileFilter, "PCE Sector Image", ExtensionList)
 
         ExtensionList = New List(Of String) From {".mfm"}
-        FileFilter = FileDialogAppendFilter(FileFilter, "HXC MFM image", ExtensionList)
+        FileFilter = FileDialogAppendFilter(FileFilter, "HXC MFM Image", ExtensionList)
+
+        ExtensionList = New List(Of String) From {".86f"}
+        FileFilter = FileDialogAppendFilter(FileFilter, "86Box 86F Image", ExtensionList)
 
         FileFilter = FileDialogAppendFilter(FileFilter, "Zip Archive", ".zip")
         FileFilter = FileDialogAppendFilter(FileFilter, "All files", ".*")
@@ -241,15 +253,27 @@ Module ImageIO
             CurrentIndex += 1
         End If
 
-        ExtensionList = New List(Of String) From {".mfm"}
-        For Each Extension In ExtensionList
-            If FileExt.Equals(Extension, StringComparison.OrdinalIgnoreCase) Then
-                Response.FilterIndex = CurrentIndex
-            End If
-        Next
-        Response.Filter = FileDialogAppendFilter(Response.Filter, "HXC MFM Image", ExtensionList)
-        CurrentIndex += 1
+        If ImageType <> FloppyImageType.PSIImage Then
+            ExtensionList = New List(Of String) From {".mfm"}
+            For Each Extension In ExtensionList
+                If FileExt.Equals(Extension, StringComparison.OrdinalIgnoreCase) Then
+                    Response.FilterIndex = CurrentIndex
+                End If
+            Next
+            Response.Filter = FileDialogAppendFilter(Response.Filter, "HXC MFM Image", ExtensionList)
+            CurrentIndex += 1
+        End If
 
+        If ImageType <> FloppyImageType.PSIImage Then
+            ExtensionList = New List(Of String) From {".86f"}
+            For Each Extension In ExtensionList
+                If FileExt.Equals(Extension, StringComparison.OrdinalIgnoreCase) Then
+                    Response.FilterIndex = CurrentIndex
+                End If
+            Next
+            Response.Filter = FileDialogAppendFilter(Response.Filter, "86Box 86F Image", ExtensionList)
+            CurrentIndex += 1
+        End If
 
         Dim Items = System.Enum.GetValues(GetType(FloppyDiskFormat))
         For Each Item As Integer In Items
@@ -364,6 +388,9 @@ Module ImageIO
                 ElseIf FileImageType = FloppyImageType.MFMImage Then
                     Dim MFM = ImageFormats.BasicSectorToMFMImage(Data, Disk.DiskFormat)
                     Result = MFM.Export(FilePath, False)
+                ElseIf FileImageType = FloppyImageType._86FImage Then
+                    Dim F86 = ImageFormats.BasicSectorTo86FImage(Data, Disk.DiskFormat)
+                    Result = F86.Export(FilePath, False)
                 Else
                     Return SaveImageResponse.Unsupported
                 End If
@@ -372,35 +399,37 @@ Module ImageIO
             End If
 
         ElseIf FileImageType = FloppyImageType.TranscopyImage Then
-            If DiskImageType = FloppyImageType.MFMImage Then
-                Dim MFMByteArray = DirectCast(Disk.Image.Data, ImageFormats.MFM.MFMByteArray)
-                Dim Transcopy = ImageFormats.BitstreamToTranscopyImage(MFMByteArray.Image)
+            Dim Image As IBitstreamImage = GetBitstreamImage(Disk.Image.Data)
+            If Image IsNot Nothing Then
+                Dim Transcopy = ImageFormats.BitstreamToTranscopyImage(Image)
                 Result = Transcopy.Export(FilePath, False)
             Else
                 Return SaveImageResponse.Unsupported
             End If
 
         ElseIf FileImageType = FloppyImageType.MFMImage Then
-            If DiskImageType = FloppyImageType.TranscopyImage Then
-                Dim TranscopyByteArray = DirectCast(Disk.Image.Data, ImageFormats.TC.TranscopyByteArray)
-                Dim MFM = ImageFormats.BitstreamToMFMImage(TranscopyByteArray.Image)
+            Dim Image As IBitstreamImage = GetBitstreamImage(Disk.Image.Data)
+            If Image IsNot Nothing Then
+                Dim MFM = ImageFormats.BitstreamToMFMImage(Image)
                 Result = MFM.Export(FilePath, False)
             Else
                 Return SaveImageResponse.Unsupported
             End If
 
-
         ElseIf FileImageType = FloppyImageType.PSIImage Then
-            If DiskImageType = FloppyImageType.TranscopyImage Then
-                Dim TranscopyByteArray = DirectCast(Disk.Image.Data, ImageFormats.TC.TranscopyByteArray)
-                Dim PSI = ImageFormats.BitstreamToPSIImage(TranscopyByteArray.Image)
+            Dim Image As IBitstreamImage = GetBitstreamImage(Disk.Image.Data)
+            If Image IsNot Nothing Then
+                Dim PSI = ImageFormats.BitstreamToPSIImage(Image)
                 Result = PSI.Export(FilePath)
+            Else
+                Return SaveImageResponse.Unsupported
+            End If
 
-            ElseIf DiskImageType = FloppyImageType.MFMImage Then
-                Dim MFMByteArray = DirectCast(Disk.Image.Data, ImageFormats.MFM.MFMByteArray)
-                Dim PSI = ImageFormats.BitstreamToPSIImage(MFMByteArray.Image)
-                Result = PSI.Export(FilePath)
-
+        ElseIf FileImageType = FloppyImageType._86FImage Then
+            Dim Image As IBitstreamImage = GetBitstreamImage(Disk.Image.Data)
+            If Image IsNot Nothing Then
+                Dim F86Image = ImageFormats.BitstreamTo86FImage(Image)
+                Result = F86Image.Export(FilePath, False)
             Else
                 Return SaveImageResponse.Unsupported
             End If
@@ -415,5 +444,19 @@ Module ImageIO
         End If
 
         Return Response
+    End Function
+
+    Private Function GetBitstreamImage(Data As IByteArray) As IBitstreamImage
+        If TypeOf Data Is ImageFormats._86F._86FByteArray Then
+            Return DirectCast(Data, ImageFormats._86F._86FByteArray).Image
+
+        ElseIf TypeOf Data Is ImageFormats.MFM.MFMByteArray Then
+            Return DirectCast(Data, ImageFormats.MFM.MFMByteArray).Image
+
+        ElseIf TypeOf Data Is ImageFormats.TC.TranscopyByteArray Then
+            Return DirectCast(Data, ImageFormats.TC.TranscopyByteArray).Image
+        End If
+
+        Return Nothing
     End Function
 End Module

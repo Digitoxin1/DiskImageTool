@@ -32,16 +32,16 @@ Public Class FilePropertiesForm
         Dim BitArray = New BitArray(Attributes)
 
         If BtnArchive.Tag Then
-            Attributes = ToggleBit(Attributes, DiskImage.DirectoryEntry.AttributeFlags.ArchiveFlag, ChkArchive.Checked)
+            Attributes = MyBitConverter.ToggleBit(Attributes, DiskImage.DirectoryEntry.AttributeFlags.ArchiveFlag, ChkArchive.Checked)
         End If
         If BtnReadOnly.Tag Then
-            Attributes = ToggleBit(Attributes, DiskImage.DirectoryEntry.AttributeFlags.ReadOnly, ChkReadOnly.Checked)
+            Attributes = MyBitConverter.ToggleBit(Attributes, DiskImage.DirectoryEntry.AttributeFlags.ReadOnly, ChkReadOnly.Checked)
         End If
         If BtnHidden.Tag Then
-            Attributes = ToggleBit(Attributes, DiskImage.DirectoryEntry.AttributeFlags.Hidden, ChkHidden.Checked)
+            Attributes = MyBitConverter.ToggleBit(Attributes, DiskImage.DirectoryEntry.AttributeFlags.Hidden, ChkHidden.Checked)
         End If
         If BtnSystem.Tag Then
-            Attributes = ToggleBit(Attributes, DiskImage.DirectoryEntry.AttributeFlags.System, ChkSystem.Checked)
+            Attributes = MyBitConverter.ToggleBit(Attributes, DiskImage.DirectoryEntry.AttributeFlags.System, ChkSystem.Checked)
         End If
 
         If Attributes <> DirectoryEntry.Attributes Then
@@ -386,14 +386,6 @@ Public Class FilePropertiesForm
             DTLastAccessed.Value = Value
         End If
     End Sub
-
-    Private Function ToggleBit(Attributes As Byte, Flag As DiskImage.DirectoryEntry.AttributeFlags, Value As Boolean) As Byte
-        If Value Then
-            Return Attributes Or Flag
-        Else
-            Return Attributes And Not Flag
-        End If
-    End Function
 
     Private Sub ToggleButton(Button As Button, Enabled As Boolean, Optional Visible As Boolean = True)
         Button.Visible = Visible

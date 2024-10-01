@@ -156,7 +156,7 @@ Namespace Bitstream
             End Function
 
             Public Function IsModified() As Boolean
-                Return _InitialDataChecksum
+                Return _InitialDataChecksum <> _DataChecksum
             End Function
 
             Public Sub UpdateChecksum()
