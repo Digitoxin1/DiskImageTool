@@ -18,6 +18,9 @@
         ReadOnly Property ImageType As FloppyImageType
         ReadOnly Property Length As Integer
         ReadOnly Property ProtectedSectors As HashSet(Of UInteger)
+        ReadOnly Property NonStandardTracks As HashSet(Of UShort)
+        ReadOnly Property TrackCount As UShort
+        ReadOnly Property HeadCount As Byte
         Sub Append(Data() As Byte)
         Sub CopyTo(SourceIndex As Integer, ByRef DestinationArray() As Byte, DestinationIndex As Integer, Length As Integer)
         Sub CopyTo(DestinationArray() As Byte, Index As Integer)

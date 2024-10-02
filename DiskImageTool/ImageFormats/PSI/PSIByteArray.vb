@@ -24,13 +24,18 @@ Namespace ImageFormats
                 For Each PSISector In _Image.Sectors
                     If Not PSISector.IsAlternateSector Then
                         If PSISector.Sector >= 1 And PSISector.Sector <= SECTOR_COUNT Then
+                            Dim IsStandard = (PSISector.Size = 512 And Not PSISector.HasDataCRCError)
                             Dim BitstreamSector As New BitstreamSector With {
                                 .Data = PSISector.Data,
-                                .Overlaps = False,
-                                .IsValid = Not PSISector.HasDataCRCError,
-                                .Size = PSISector.Size
+                                .Size = PSISector.Size,
+                                .IsStandard = IsStandard
                             }
-                            SetSector(PSISector.Cylinder, PSISector.Head, PSISector.Sector, BitstreamSector)
+                            Dim Sector = GetSector(PSISector.Cylinder, PSISector.Head, PSISector.Sector)
+                            If Sector Is Nothing Then
+                                SetSector(PSISector.Cylinder, PSISector.Head, PSISector.Sector, BitstreamSector)
+                            Else
+                                Sector.IsStandard = False
+                            End If
                         End If
                     End If
                 Next

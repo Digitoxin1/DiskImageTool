@@ -48,6 +48,7 @@ Partial Class MainForm
         Dim FileMenuSeparatoor2 As System.Windows.Forms.ToolStripSeparator
         Dim FileMenuSeparatoor3 As System.Windows.Forms.ToolStripSeparator
         Me.BtnOpen = New System.Windows.Forms.ToolStripMenuItem()
+        Me.BtnReload = New System.Windows.Forms.ToolStripMenuItem()
         Me.toolStripSeparator = New System.Windows.Forms.ToolStripSeparator()
         Me.BtnSave = New System.Windows.Forms.ToolStripMenuItem()
         Me.BtnSaveAs = New System.Windows.Forms.ToolStripMenuItem()
@@ -123,6 +124,7 @@ Partial Class MainForm
         Me.ComboFAT = New System.Windows.Forms.ToolStripComboBox()
         Me.StatusStrip1 = New System.Windows.Forms.StatusStrip()
         Me.ToolStripStatusReadOnly = New System.Windows.Forms.ToolStripStatusLabel()
+        Me.ToolStripStatusCached = New System.Windows.Forms.ToolStripStatusLabel()
         Me.ToolStripStatusModified = New System.Windows.Forms.ToolStripStatusLabel()
         Me.ToolStripFileName = New System.Windows.Forms.ToolStripStatusLabel()
         Me.ToolStripFileCount = New System.Windows.Forms.ToolStripStatusLabel()
@@ -170,8 +172,7 @@ Partial Class MainForm
         Me.ComboImagesFiltered = New System.Windows.Forms.ComboBox()
         Me.BtnResetSort = New System.Windows.Forms.Button()
         Me.btnRetry = New System.Windows.Forms.Button()
-        Me.ToolStripStatusCached = New System.Windows.Forms.ToolStripStatusLabel()
-        Me.BtnReload = New System.Windows.Forms.ToolStripMenuItem()
+        Me.BtnRawTrackData = New System.Windows.Forms.ToolStripMenuItem()
         SummaryName = CType(New System.Windows.Forms.ColumnHeader(), System.Windows.Forms.ColumnHeader)
         SummaryValue = CType(New System.Windows.Forms.ColumnHeader(), System.Windows.Forms.ColumnHeader)
         HashName = CType(New System.Windows.Forms.ColumnHeader(), System.Windows.Forms.ColumnHeader)
@@ -273,6 +274,13 @@ Partial Class MainForm
         Me.BtnOpen.ShortcutKeys = CType((System.Windows.Forms.Keys.Control Or System.Windows.Forms.Keys.O), System.Windows.Forms.Keys)
         Me.BtnOpen.Size = New System.Drawing.Size(212, 22)
         Me.BtnOpen.Text = "&Open"
+        '
+        'BtnReload
+        '
+        Me.BtnReload.Name = "BtnReload"
+        Me.BtnReload.ShortcutKeys = CType((System.Windows.Forms.Keys.Control Or System.Windows.Forms.Keys.R), System.Windows.Forms.Keys)
+        Me.BtnReload.Size = New System.Drawing.Size(212, 22)
+        Me.BtnReload.Text = "&Reload from Disk"
         '
         'toolStripSeparator
         '
@@ -442,7 +450,7 @@ Partial Class MainForm
         '
         'MainMenuView
         '
-        MainMenuView.DropDownItems.AddRange(New System.Windows.Forms.ToolStripItem() {Me.BtnDisplayBootSector, Me.BtnDisplayFAT, Me.BtnDisplayDirectory, Me.BtnDisplayClusters, Me.BtnDisplayFile, Me.BtnDisplayBadSectors, Me.BtnDisplayLostClusters, Me.BtnDisplayOverdumpData, Me.BtnDisplayDisk})
+        MainMenuView.DropDownItems.AddRange(New System.Windows.Forms.ToolStripItem() {Me.BtnDisplayBootSector, Me.BtnDisplayFAT, Me.BtnDisplayDirectory, Me.BtnDisplayClusters, Me.BtnDisplayFile, Me.BtnDisplayBadSectors, Me.BtnDisplayLostClusters, Me.BtnDisplayOverdumpData, Me.BtnRawTrackData, Me.BtnDisplayDisk})
         MainMenuView.Name = "MainMenuView"
         MainMenuView.Size = New System.Drawing.Size(40, 20)
         MainMenuView.Text = "&Hex"
@@ -881,6 +889,14 @@ Partial Class MainForm
         Me.ToolStripStatusReadOnly.Size = New System.Drawing.Size(61, 19)
         Me.ToolStripStatusReadOnly.Text = "Read Only"
         '
+        'ToolStripStatusCached
+        '
+        Me.ToolStripStatusCached.ActiveLinkColor = System.Drawing.Color.Red
+        Me.ToolStripStatusCached.ForeColor = System.Drawing.Color.Green
+        Me.ToolStripStatusCached.Name = "ToolStripStatusCached"
+        Me.ToolStripStatusCached.Size = New System.Drawing.Size(47, 19)
+        Me.ToolStripStatusCached.Text = "Cached"
+        '
         'ToolStripStatusModified
         '
         Me.ToolStripStatusModified.ForeColor = System.Drawing.Color.Blue
@@ -1255,20 +1271,11 @@ Partial Class MainForm
         Me.btnRetry.Text = "Retry"
         Me.btnRetry.UseVisualStyleBackColor = True
         '
-        'ToolStripStatusCached
+        'BtnRawTrackData
         '
-        Me.ToolStripStatusCached.ActiveLinkColor = System.Drawing.Color.Red
-        Me.ToolStripStatusCached.ForeColor = System.Drawing.Color.Green
-        Me.ToolStripStatusCached.Name = "ToolStripStatusCached"
-        Me.ToolStripStatusCached.Size = New System.Drawing.Size(47, 19)
-        Me.ToolStripStatusCached.Text = "Cached"
-        '
-        'BtnReload
-        '
-        Me.BtnReload.Name = "BtnReload"
-        Me.BtnReload.ShortcutKeys = CType((System.Windows.Forms.Keys.Control Or System.Windows.Forms.Keys.R), System.Windows.Forms.Keys)
-        Me.BtnReload.Size = New System.Drawing.Size(212, 22)
-        Me.BtnReload.Text = "&Reload from Disk"
+        Me.BtnRawTrackData.Name = "BtnRawTrackData"
+        Me.BtnRawTrackData.Size = New System.Drawing.Size(194, 22)
+        Me.BtnRawTrackData.Text = "&Raw Track Data"
         '
         'MainForm
         '
@@ -1430,4 +1437,5 @@ Partial Class MainForm
     Friend WithEvents BtnHelpChangeLog As ToolStripMenuItem
     Friend WithEvents ToolStripStatusCached As ToolStripStatusLabel
     Friend WithEvents BtnReload As ToolStripMenuItem
+    Friend WithEvents BtnRawTrackData As ToolStripMenuItem
 End Class

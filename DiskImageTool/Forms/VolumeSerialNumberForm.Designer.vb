@@ -180,7 +180,6 @@ Partial Class VolumeSerialNumberForm
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
         Me.AutoSize = True
         Me.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink
-        Me.CancelButton = Me.BtnCancel
         Me.ClientSize = New System.Drawing.Size(362, 145)
         Me.Controls.Add(FlowLayoutPanel1)
         Me.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog

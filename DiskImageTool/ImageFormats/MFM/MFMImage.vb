@@ -273,7 +273,7 @@ Namespace ImageFormats
                 For i = 0 To _Tracks.Length - 1
                     Track = _Tracks(i)
                     For Each Sector In Track.MFMData.Sectors
-                        If Sector.IsValid Then
+                        If Sector.InitialChecksumValid Then
                             Sector.UpdateChecksum()
                             If Sector.IsModified Then
                                 Dim Bitstream = Sector.GetDataBitstream

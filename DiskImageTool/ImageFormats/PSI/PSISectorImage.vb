@@ -1,10 +1,15 @@
-﻿Namespace ImageFormats
+﻿Imports DiskImageTool.Bitstream
+
+Namespace ImageFormats
     Namespace PSI
         Public Class PSISectorImage
+            Implements IBitstreamImage
 
             Private _CurrentSector As PSISector
             Private _CylinderCount As UShort = 0
             Private _HeadCount As Byte = 0
+            Private _FirstSector As Integer = -1
+            Private _LastSector As Integer = -1
 
             Public Sub New()
                 Initialize()
@@ -13,15 +18,27 @@
             Public Property Sectors As List(Of PSISector)
             Public Property Comment As String
 
-            Public ReadOnly Property CylinderCount As UShort
+            Public ReadOnly Property CylinderCount As UShort Implements IBitstreamImage.TrackCount
                 Get
                     Return _CylinderCount
                 End Get
             End Property
 
-            Public ReadOnly Property HeadCount As Byte
+            Public ReadOnly Property HeadCount As Byte Implements IBitstreamImage.SideCount
                 Get
                     Return _HeadCount
+                End Get
+            End Property
+
+            Public ReadOnly Property FirstSector As Integer
+                Get
+                    Return _FirstSector
+                End Get
+            End Property
+
+            Public ReadOnly Property LastSector As Integer
+                Get
+                    Return _LastSector
                 End Get
             End Property
 
@@ -155,6 +172,18 @@
                         _HeadCount = Sector.Head + 1
                     End If
 
+                    If _FirstSector = -1 Then
+                        _FirstSector = Sector.Sector
+                    ElseIf Sector.Sector < _FirstSector Then
+                        _FirstSector = Sector.Sector
+                    End If
+
+                    If _LastSector = -1 Then
+                        _LastSector = Sector.Sector
+                    ElseIf Sector.Sector > _LastSector Then
+                        _LastSector = Sector.Sector
+                    End If
+
                 ElseIf Chunk.ChunkID = "DATA" Then
                     If _CurrentSector IsNot Nothing Then
                         Dim Size = Math.Min(_CurrentSector.Size, Chunk.ChunkData.Length)
@@ -195,6 +224,20 @@
                     End If
                 End If
             End Sub
+
+            Private ReadOnly Property IBitstreamImage_TrackStep As Byte Implements IBitstreamImage.TrackStep
+                Get
+                    Return 1
+                End Get
+            End Property
+
+            Private Function IBitstreamImage_GetTrack(Track As UShort, Site As Byte) As IBitstreamTrack Implements IBitstreamImage.GetTrack
+                Return Nothing
+            End Function
+
+            Private Function IBitstreamImage_UpdateBitstream() As Boolean Implements IBitstreamImage.UpdateBitstream
+                Return False
+            End Function
         End Class
     End Namespace
 End Namespace

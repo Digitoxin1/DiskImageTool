@@ -4,6 +4,7 @@
 
         Private _Data() As Byte
         Private ReadOnly _ProtectedSectors As HashSet(Of UInteger)
+        Private ReadOnly _NonStandardTracks As HashSet(Of UShort)
 
         Public Event DataChanged As DataChangedEventHandler Implements IByteArray.DataChanged
         Public Event SizeChanged As SizeChangedEventHandler Implements IByteArray.SizeChanged
@@ -11,17 +12,12 @@
         Sub New(Data() As Byte)
             _Data = Data
             _ProtectedSectors = New HashSet(Of UInteger)
+            _NonStandardTracks = New HashSet(Of UShort)
         End Sub
 
         Public ReadOnly Property CanResize As Boolean Implements IByteArray.CanResize
             Get
                 Return True
-            End Get
-        End Property
-
-        Public ReadOnly Property ProtectedSectors As HashSet(Of UInteger) Implements IByteArray.ProtectedSectors
-            Get
-                Return _ProtectedSectors
             End Get
         End Property
 
@@ -173,5 +169,29 @@
 
             Return True
         End Function
+
+        Private ReadOnly Property IByteArray_NonStandardTracks As HashSet(Of UShort) Implements IByteArray.NonStandardTracks
+            Get
+                Return _NonStandardTracks
+            End Get
+        End Property
+
+        Private ReadOnly Property IByteArray_ProtectedSectors As HashSet(Of UInteger) Implements IByteArray.ProtectedSectors
+            Get
+                Return _ProtectedSectors
+            End Get
+        End Property
+
+        Private ReadOnly Property IByteArray_TrackCount As UShort Implements IByteArray.TrackCount
+            Get
+                Return 0
+            End Get
+        End Property
+
+        Private ReadOnly Property IByteArray_HeadCount As Byte Implements IByteArray.HeadCount
+            Get
+                Return 0
+            End Get
+        End Property
     End Class
 End Namespace

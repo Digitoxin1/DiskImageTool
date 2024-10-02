@@ -375,7 +375,7 @@ Namespace ImageFormats
                     Cylinder = _Cylinders(i)
                     If Cylinder.Decoded Then
                         For Each Sector In Cylinder.MFMData.Sectors
-                            If Sector.IsValid Then
+                            If Sector.InitialChecksumValid Then
                                 Sector.UpdateChecksum()
                                 If Sector.IsModified Then
                                     Dim Bitstream = Sector.GetDataBitstream

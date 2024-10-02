@@ -8,6 +8,8 @@ Namespace Bitstream
             Private _Gap1 As Byte()
             Private _Sectors As List(Of IBM_MFM_Sector)
             Private _Size As UInteger
+            Private _FirstSector As Integer
+            Private _LastSector As Integer
 
             Public Sub New(Data() As Byte)
                 MFMDecode(BytesToBits(Data))
@@ -44,6 +46,18 @@ Namespace Bitstream
             Public ReadOnly Property AddressMarkIndexes As List(Of UInteger)
                 Get
                     Return _AddressMarkIndexes
+                End Get
+            End Property
+
+            Public ReadOnly Property FirstSector As Integer
+                Get
+                    Return _FirstSector
+                End Get
+            End Property
+
+            Public ReadOnly Property LastSector As Integer
+                Get
+                    Return _LastSector
                 End Get
             End Property
 
@@ -90,6 +104,8 @@ Namespace Bitstream
                 _Size = Bitstream.Length
                 _Sectors = New List(Of IBM_MFM_Sector)
                 _AddressMarkIndexes = New List(Of UInteger)
+                _FirstSector = -1
+                _LastSector = -1
 
                 Start = ProcessIndexField(Bitstream, Start)
 
@@ -150,6 +166,18 @@ Namespace Bitstream
                     End If
 
                     _Sectors.Add(Sector)
+
+                    If _FirstSector = -1 Then
+                        _FirstSector = Sector.SectorId
+                    ElseIf Sector.SectorId < _FirstSector Then
+                        _FirstSector = Sector.SectorId
+                    End If
+
+                    If _LastSector = -1 Then
+                        _LastSector = Sector.SectorId
+                    ElseIf Sector.SectorId > _LastSector Then
+                        _LastSector = Sector.SectorId
+                    End If
 
                     SectorIndex += 1
                 Next

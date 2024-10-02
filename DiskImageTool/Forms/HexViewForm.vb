@@ -1,10 +1,8 @@
 ﻿Imports System.ComponentModel
-Imports System.Globalization
 Imports System.Runtime.InteropServices
-Imports System.Text.RegularExpressions
-Imports System.Threading
 Imports DiskImageTool.DiskImage
 Imports Hb.Windows.Forms
+Imports DiskImageTool.HexView
 
 Public Class HexViewForm
     Private WithEvents CheckBoxSync As ToolStripCheckBox
@@ -34,26 +32,7 @@ Public Class HexViewForm
     Private _RegionDescriptions As Dictionary(Of UInteger, HexViewHighlightRegion)
     Private _StartingCluster As UShort = 0
     Private _StoredCellValue As String
-
-    Private Enum DataRowEnum
-        File
-        Description
-        CRC32
-        Binary
-        Int8
-        UInt8
-        Int16
-        UInt16
-        Int24
-        UInt24
-        Int32
-        UInt32
-        Int64
-        UInt64
-        DOSDate
-        DOSTime
-        DOSTimeDate
-    End Enum
+    Private _DataGridInspector As HexViewDataGridInspector
 
     Public Sub New(HexViewSectorData As HexViewSectorData, SectorNavigator As Boolean, ClusterNavigator As Boolean, SyncBlocks As Boolean)
         ' This call is required by the designer.
@@ -93,7 +72,7 @@ Public Class HexViewForm
         BtnSelectTrack.Visible = _ClusterNavigator
         ToolStripBtnSelectTrack.Visible = _ClusterNavigator
 
-        DataInspectorInitialize()
+        BtnCopyValue.Enabled = False
 
         If _ClusterNavigator Then
             InitializeTrackNavigator()
@@ -132,62 +111,6 @@ Public Class HexViewForm
 
     <DllImport("user32.dll", SetLastError:=True)>
     Private Shared Function AddClipboardFormatListener(hwnd As IntPtr) As Boolean
-    End Function
-
-    Private Shared Function ClipboardHasHex() As Boolean
-        Dim DataObject = Clipboard.GetDataObject()
-
-        If DataObject.GetDataPresent(GetType(String)) Then
-            Dim Hex = CStr(DataObject.GetData(GetType(String)))
-            Return ConvertHexToBytes(Hex) IsNot Nothing
-        End If
-
-        Return False
-    End Function
-
-    Private Shared Function ConvertHexToByte(Hex As String, <Out> ByRef b As Byte) As Boolean
-        Return Byte.TryParse(Hex, NumberStyles.HexNumber, Thread.CurrentThread.CurrentCulture, b)
-    End Function
-
-    Private Shared Function ConvertHexToBytes(Hex As String) As Byte()
-        If String.IsNullOrEmpty(Hex) Then
-            Return Nothing
-        End If
-
-        Hex = Hex.Trim()
-        Hex = Hex.Replace(" ", "")
-        Hex = Hex.Replace(Chr(13), "")
-        Hex = Hex.Replace(Chr(10), "")
-        Hex = Hex.Replace(Chr(9), "")
-
-        Dim regex = New Regex("^[0-9A-F]*$", RegexOptions.IgnoreCase)
-
-        Dim HexArray As String()
-        If regex.IsMatch(Hex) Then
-            If Hex.Length Mod 2 = 1 Then
-                Hex = "0" & Hex
-            End If
-            HexArray = New String(Hex.Length / 2 - 1) {}
-            For i As Integer = 0 To Hex.Length / 2 - 1
-                HexArray(i) = Hex.Substring(i * 2, 2)
-            Next
-        Else
-            Return Nothing
-        End If
-
-        Dim ByteArray = New Byte(HexArray.Length - 1) {}
-        Dim b As Byte = Nothing
-        For j = 0 To HexArray.Length - 1
-            Dim HexValue = HexArray(j)
-
-            If Not ConvertHexToByte(HexValue, b) Then
-                Return Nothing
-            End If
-
-            ByteArray(j) = b
-        Next
-
-        Return ByteArray
     End Function
 
     Private Function FillRegion(ByteProvider As IByteProvider, Offset As Integer, Length As Integer, Value As Byte) As FillRegionResult
@@ -268,22 +191,6 @@ Public Class HexViewForm
         End If
     End Sub
 
-    Private Sub CopyHexFormatted()
-        Dim Capacity As Integer = HexBox1.SelectionLength * 2 + HexBox1.SelectionLength + HexBox1.SelectionLength \ 16
-        Dim SB = New System.Text.StringBuilder(Capacity)
-        For Counter = 0 To HexBox1.SelectionLength - 1
-            Dim B = HexBox1.ByteProvider.ReadByte(HexBox1.SelectionStart + Counter)
-            SB.Append(B.ToString("X2"))
-            If (Counter + 1) Mod 16 = 0 Then
-                SB.Append(vbNewLine)
-            Else
-                SB.Append(" ")
-            End If
-        Next
-        Clipboard.SetText(SB.ToString)
-        'RefreshPasteButton()
-    End Sub
-
     Private Sub CopyHexToClipboard()
         HexBox1.CopyHex()
         'RefreshPasteButton()
@@ -292,44 +199,6 @@ Public Class HexViewForm
     Private Sub CopyTextToClipboard()
         HexBox1.Copy()
         'RefreshPasteButton()
-    End Sub
-
-    Private Sub DataInspectorAddRow(Name As String, Length As Integer, Type As DataRowEnum, Optional Editable As Boolean = True, Optional MaxInputLength As Integer = 32767)
-        Dim Row = DataGridDataInspector.Rows.Add(Name, "", Length, True, Editable, Type)
-        Dim Cell As DataGridViewTextBoxCell = DataGridDataInspector.Rows.Item(Row).Cells.Item("DataGridValue")
-        Cell.MaxInputLength = MaxInputLength
-    End Sub
-    Private Sub DataInspectorCopyValueToClipboard()
-        If DataGridDataInspector.SelectedRows.Count > 0 Then
-            Dim Row = DataGridDataInspector.SelectedRows.Item(0)
-            Dim Value = Row.Cells.Item("DataGridValue").Value
-            Dim Invalid = Row.Cells.Item("DataGridInvalid").Value
-            If Not Invalid Then
-                Clipboard.SetText(Value)
-            End If
-        End If
-    End Sub
-    Private Sub DataInspectorInitialize()
-        DataGridDataInspector.Rows.Clear()
-
-        DataInspectorAddRow("File", 0, DataRowEnum.File, False)
-        DataInspectorAddRow("Region", 0, DataRowEnum.Description, False)
-        DataInspectorAddRow("CRC32", 0, DataRowEnum.CRC32, False)
-        DataInspectorAddRow("Binary (8 bit)", 1, DataRowEnum.Binary,, 8)
-        DataInspectorAddRow("Int8", 1, DataRowEnum.Int8,, 4)
-        DataInspectorAddRow("UInt8", 1, DataRowEnum.UInt8,, 3)
-        DataInspectorAddRow("Int16", 2, DataRowEnum.Int16,, 6)
-        DataInspectorAddRow("UInt16", 2, DataRowEnum.UInt16,, 5)
-        DataInspectorAddRow("Int24", 3, DataRowEnum.Int24,, 9)
-        DataInspectorAddRow("UInt24", 3, DataRowEnum.UInt24,, 8)
-        DataInspectorAddRow("Int32", 4, DataRowEnum.Int32,, 11)
-        DataInspectorAddRow("UInt32", 4, DataRowEnum.UInt32,, 10)
-        DataInspectorAddRow("Int64", 8, DataRowEnum.Int64,, 21)
-        DataInspectorAddRow("UInt64", 8, DataRowEnum.UInt64,, 20)
-        DataInspectorAddRow("DOS Date", 2, DataRowEnum.DOSDate,, 10)
-        DataInspectorAddRow("DOS Time", 2, DataRowEnum.DOSTime,, 8)
-        DataInspectorAddRow("DOS Time & Date", 4, DataRowEnum.DOSTimeDate,, 19)
-        BtnCopyValue.Enabled = False
     End Sub
 
     Private Sub DataInspectorRefresh(ForceUpdate As Boolean)
@@ -352,21 +221,8 @@ Public Class HexViewForm
         _CurrentSelectionStart = SelectionStart
         _CurrentSelectionLength = SelectionLength
 
-        Dim Checksum As Object = Nothing
-        Dim Binary As Object = Nothing
-        Dim Int8 As Object = Nothing
-        Dim UInt8 As Object = Nothing
-        Dim Int16 As Object = Nothing
-        Dim UInt16 As Object = Nothing
-        Dim Int24 As Object = Nothing
-        Dim UInt24 As Object = Nothing
-        Dim Int32 As Object = Nothing
-        Dim UInt32 As Object = Nothing
-        Dim Int64 As Object = Nothing
-        Dim UInt64 As Object = Nothing
-        Dim DOSDate As Object = Nothing
-        Dim DosTime As Object = Nothing
-        Dim DosTimeDate As Object = Nothing
+        Dim Bytes() As Byte = Nothing
+        Dim SelectedBytes() As Byte = Nothing
 
         Dim Length As Long
         'Dim BigEndien As Boolean = RadioButtonBigEndien.Checked
@@ -378,7 +234,6 @@ Public Class HexViewForm
         Dim SelectionEnd = SelectionStart + SelectionLength - 1
 
         If SelectionStart > -1 Then
-            Dim DT As ExpandedDate
             Dim OutOfRange As Boolean = SelectionEnd >= HexBox1.ByteProvider.Length
             If Not OutOfRange Then
                 If HasSelection Then
@@ -387,58 +242,12 @@ Public Class HexViewForm
                     Length = Math.Min(HexBox1.ByteProvider.Length - SelectionStart, 8)
                 End If
                 Dim OffsetStart As UInteger = _CurrentHexViewData.SectorBlock.Offset + SelectionStart
-                Dim SelectedBytes = _HexViewSectorData.SectorData.Data.GetBytes(OffsetStart, SelectionLength)
-                Dim Bytes = _HexViewSectorData.SectorData.Data.GetBytes(OffsetStart, Length)
-                Checksum = Crc32.ComputeChecksum(SelectedBytes).ToString("X8")
-                Binary = Convert.ToString(Bytes(0), 2).PadLeft(8, "0")
-                Int8 = MyBitConverter.ToSByte(Bytes(0))
-                UInt8 = Bytes(0)
-                If Bytes.Length >= 2 Then
-                    Int16 = MyBitConverter.ToInt16(Bytes, BigEndien)
-                    UInt16 = MyBitConverter.ToUInt16(Bytes, BigEndien)
-                    DT = ExpandDate(CType(UInt16, UInt16))
-                    If DT.IsValidDate Then
-                        DOSDate = DT.DateObject.ToString("yyyy-MM-dd")
-                    End If
-                    DT = ExpandTime(CType(UInt16, UInt16))
-                    If DT.IsValidDate Then
-                        DosTime = DT.DateObject.ToString("HH:mm:ss")
-                    End If
-                End If
-                If Bytes.Length >= 3 Then
-                    Int24 = MyBitConverter.ToInt24(Bytes, BigEndien)
-                    UInt24 = MyBitConverter.ToUInt24(Bytes, BigEndien)
-                End If
-                If Bytes.Length >= 4 Then
-                    Int32 = MyBitConverter.ToInt32(Bytes, BigEndien)
-                    UInt32 = MyBitConverter.ToUInt32(Bytes, BigEndien)
-                    DT = ExpandTimeDate(CType(UInt32, UInt32))
-                    If DT.IsValidDate Then
-                        DosTimeDate = DT.DateObject.ToString("yyyy-MM-dd HH:mm:ss")
-                    End If
-                End If
-                If Bytes.Length >= 8 Then
-                    Int64 = MyBitConverter.ToInt64(Bytes, BigEndien)
-                    UInt64 = MyBitConverter.ToUInt64(Bytes, BigEndien)
-                End If
+                SelectedBytes = _HexViewSectorData.SectorData.Data.GetBytes(OffsetStart, SelectionLength)
+                Bytes = _HexViewSectorData.SectorData.Data.GetBytes(OffsetStart, Length)
             End If
         End If
 
-        SetDataRow(DataRowEnum.CRC32, Checksum)
-        SetDataRow(DataRowEnum.Binary, Binary)
-        SetDataRow(DataRowEnum.Int8, Int8)
-        SetDataRow(DataRowEnum.UInt8, UInt8)
-        SetDataRow(DataRowEnum.Int16, Int16)
-        SetDataRow(DataRowEnum.UInt16, UInt16)
-        SetDataRow(DataRowEnum.Int24, Int24)
-        SetDataRow(DataRowEnum.UInt24, UInt24)
-        SetDataRow(DataRowEnum.Int32, Int32)
-        SetDataRow(DataRowEnum.UInt32, UInt32)
-        SetDataRow(DataRowEnum.Int64, Int64)
-        SetDataRow(DataRowEnum.UInt64, UInt64)
-        SetDataRow(DataRowEnum.DOSDate, DOSDate)
-        SetDataRow(DataRowEnum.DOSTime, DosTime)
-        SetDataRow(DataRowEnum.DOSTimeDate, DosTimeDate)
+        _DataGridInspector.Refresh(Bytes, SelectedBytes, HexBox1.ReadOnly, BigEndien)
 
         DataInspectorRefreshButtons()
     End Sub
@@ -576,107 +385,6 @@ Public Class HexViewForm
         End If
     End Sub
 
-    Private Sub DataInspectorValidate(e As DataGridViewCellValidatingEventArgs)
-        Dim Row = DataGridDataInspector.Rows(e.RowIndex)
-        Dim CellValue As String = Row.Cells.Item("DataGridValue").Value
-        Dim DataType As DataRowEnum = Row.Cells.Item("DataGridType").Value
-        Dim Invalid As Boolean = Row.Cells.Item("DataGridInvalid").Value
-        Dim Result As Boolean
-        Dim ErrorMsg As String = ""
-
-        If e.FormattedValue = "Invalid" And Invalid Then
-            Exit Sub
-        End If
-
-        Select Case DataType
-            Case DataRowEnum.Binary
-                ErrorMsg = "Please enter a valid 8-bit binary value"
-                Dim cValue As Byte
-                Try
-                    cValue = Convert.ToByte(e.FormattedValue, 2)
-                    Result = True
-                Catch
-                    Result = False
-                End Try
-            Case DataRowEnum.Int8
-                ErrorMsg = "Please enter a valid integer between -128 and 127"
-                Dim cValue As SByte
-                Result = SByte.TryParse(e.FormattedValue, cValue)
-            Case DataRowEnum.UInt8
-                ErrorMsg = "Please enter a valid integer between 0 and 255"
-                Dim cValue As Byte
-                Result = Byte.TryParse(e.FormattedValue, cValue)
-            Case DataRowEnum.Int16
-                ErrorMsg = "Please enter a valid integer between -32,768 and 32,767"
-                Dim cValue As Int16
-                Result = Int16.TryParse(e.FormattedValue, cValue)
-            Case DataRowEnum.UInt16
-                ErrorMsg = "Please enter a valid integer between 0 and 65,535"
-                Dim cValue As UInt16
-                Result = UInt16.TryParse(e.FormattedValue, cValue)
-            Case DataRowEnum.Int32
-                ErrorMsg = "Please enter a valid integer between -2,147,483,648 and 2,147,483,647"
-                Dim cValue As Int32
-                Result = Int32.TryParse(e.FormattedValue, cValue)
-            Case DataRowEnum.Int24
-                ErrorMsg = "Please enter a valid integer between -8,388,608 and 8,388,607"
-                Dim cValue As Int32
-                Result = Int32.TryParse(e.FormattedValue, cValue)
-                If Result Then
-                    Result = cValue >= -8388608 And cValue <= 8388607
-                End If
-            Case DataRowEnum.UInt24
-                ErrorMsg = "Please enter a valid integer between 0 and 16,777,215"
-                Dim cValue As UInt32
-                Result = UInt32.TryParse(e.FormattedValue, cValue)
-                If Result Then
-                    Result = cValue >= 0 And cValue <= 16777215
-                End If
-            Case DataRowEnum.UInt32
-                ErrorMsg = "Please enter a valid integer between 0 and 4,294,967,295"
-                Dim cValue As UInt32
-                Result = UInt32.TryParse(e.FormattedValue, cValue)
-            Case DataRowEnum.Int64
-                ErrorMsg = "Please enter a valid integer between -9,223,372,036,854,775,808 and 9,223,372,036,854,775,807"
-                Dim cValue As Int64
-                Result = Int64.TryParse(e.FormattedValue, cValue)
-            Case DataRowEnum.UInt64
-                ErrorMsg = "Please enter a valid integer between 0 and 18,446,744,073,709,551,615"
-                Dim cValue As UInt64
-                Result = UInt64.TryParse(e.FormattedValue, cValue)
-            Case DataRowEnum.DOSDate
-                ErrorMsg = "Please enter a valid date between 1980-01-01 and 2107-12-31"
-                Dim cValue As Date
-                Result = Date.TryParse(e.FormattedValue, cValue)
-                If Result Then
-                    If cValue.Year < 1980 Or cValue.Year > 2107 Then
-                        Result = False
-                    End If
-                End If
-            Case DataRowEnum.DOSTime
-                ErrorMsg = "Please enter a valid time"
-                Dim cValue As Date
-                Result = Date.TryParse(e.FormattedValue, cValue)
-            Case DataRowEnum.DOSTimeDate
-                ErrorMsg = "Please enter a valid date and time between 1980-01-01 and 2107-12-31"
-                Dim cValue As Date
-                Result = Date.TryParse(e.FormattedValue, cValue)
-                If Result Then
-                    If cValue.Year < 1980 Or cValue.Year > 2107 Then
-                        Result = False
-                    End If
-                End If
-            Case Else
-                Result = True
-        End Select
-
-        If Not Result Then
-            MsgBox(ErrorMsg, MsgBoxStyle.Exclamation)
-
-            e.Cancel = True
-            DataGridDataInspector.CancelEdit()
-        End If
-    End Sub
     Private Sub DisplayBlock(SelectedIndex As Integer)
         If SelectedIndex = _CurrentIndex Then
             Exit Sub
@@ -1005,7 +713,7 @@ Public Class HexViewForm
         If e.Control And e.KeyCode = Keys.C Then
             If HexBox1.CanCopy Then
                 If e.Shift Then
-                    CopyHexFormatted()
+                    CopyHexFormatted(HexBox1)
                 Else
                     CopyHexToClipboard()
                 End If
@@ -1138,7 +846,7 @@ Public Class HexViewForm
             ToolStripBtnSelectTrack.Text = "Track"
             ToolStripBtnSelectTrack.ToolTipText = "Select Track"
             ToolStripBtnSelectTrack.Enabled = BtnSelectTrack.Enabled
-            SetDataRow(DataRowEnum.File, Nothing, True)
+            _DataGridInspector.SetDataRow(DataRowEnum.File, Nothing, True, True)
         Else
             Dim OffsetStart As UInteger = HexBox1.LineInfoOffset + SelectionStart
             Dim OffsetEnd As Integer = HexBox1.LineInfoOffset + SelectionEnd
@@ -1211,9 +919,9 @@ Public Class HexViewForm
                 End If
 
                 If FileName.Length = 0 Or OutOfRange Then
-                    SetDataRow(DataRowEnum.File, Nothing, True)
+                    _DataGridInspector.SetDataRow(DataRowEnum.File, Nothing, True, True)
                 Else
-                    SetDataRow(DataRowEnum.File, FileName, True)
+                    _DataGridInspector.SetDataRow(DataRowEnum.File, FileName, True, True)
                 End If
 
                 BtnSelectSector.Text = "Select &Sector " & Sector
@@ -1239,7 +947,7 @@ Public Class HexViewForm
             End If
 
             If _RegionDescriptions.Count = 0 Then
-                SetDataRow(DataRowEnum.Description, Nothing, True)
+                _DataGridInspector.SetDataRow(DataRowEnum.Description, Nothing, True, True)
             Else
                 Dim RegionStart As HexViewHighlightRegion
                 Dim RegionEnd As HexViewHighlightRegion
@@ -1267,9 +975,9 @@ Public Class HexViewForm
                 End If
 
                 If RegionStart IsNot Nothing AndAlso RegionStart Is RegionEnd AndAlso Not OutOfRange Then
-                    SetDataRow(DataRowEnum.Description, _RegionDescriptions.Item(SelectionStart).Description, True)
+                    _DataGridInspector.SetDataRow(DataRowEnum.Description, _RegionDescriptions.Item(SelectionStart).Description, True, True)
                 Else
-                    SetDataRow(DataRowEnum.Description, Nothing, True)
+                    _DataGridInspector.SetDataRow(DataRowEnum.Description, Nothing, True, True)
                 End If
             End If
         End If
@@ -1471,37 +1179,6 @@ Public Class HexViewForm
         End If
     End Sub
 
-    Private Sub SetDataRow(Index As DataRowEnum, Value As Object, Optional HideIfEmpty As Boolean = False)
-        Dim RowValue As Object
-        Dim ForeColor As Color
-        Dim Visible As Boolean
-        Dim Invalid As Boolean
-
-        If Value Is Nothing Then
-            RowValue = "Invalid"
-            ForeColor = SystemColors.GrayText
-            Visible = Not HideIfEmpty
-            Invalid = True
-        Else
-            RowValue = Value
-            ForeColor = SystemColors.ControlText
-            Visible = True
-            Invalid = False
-        End If
-
-        With DataGridDataInspector.Rows.Item(Index)
-            .Visible = Visible
-            With .Cells.Item(1)
-                .Value = RowValue
-                .Style.ForeColor = ForeColor
-            End With
-            With .Cells.Item(3)
-                .Value = Invalid
-            End With
-            .ReadOnly = HexBox1.ReadOnly
-        End With
-    End Sub
-
 #Region "Events"
 
     Private Sub BtnCopyHex_Click(sender As Object, e As EventArgs) Handles BtnCopyHex.Click, ToolStripBtnCopyHex.Click
@@ -1512,7 +1189,7 @@ Public Class HexViewForm
 
     Private Sub BtnCopyHexFormatted_Click(sender As Object, e As EventArgs) Handles BtnCopyHexFormatted.Click, ToolStripBtnCopyHexFormatted.Click
         If HexBox1.CanCopy Then
-            CopyHexFormatted()
+            CopyHexFormatted(HexBox1)
         End If
     End Sub
 
@@ -1523,7 +1200,7 @@ Public Class HexViewForm
     End Sub
 
     Private Sub BtnCopyValue_Click(sender As Object, e As EventArgs) Handles BtnCopyValue.Click
-        DataInspectorCopyValueToClipboard()
+        _DataGridInspector.CopyValueToClipboard()
     End Sub
 
     Private Sub BtnDelete_Click(sender As Object, e As EventArgs) Handles BtnDelete.Click, ToolStripBtnDelete.Click
@@ -1617,18 +1294,6 @@ Public Class HexViewForm
         End If
     End Sub
 
-    Private Sub DataGridDataInspector_CellValidating(sender As Object, e As DataGridViewCellValidatingEventArgs) Handles DataGridDataInspector.CellValidating
-        If Not DataGridDataInspector.IsCurrentCellInEditMode Then
-            Exit Sub
-        End If
-
-        DataInspectorValidate(e)
-    End Sub
-
-    Private Sub DataGridDataInspector_LostFocus(sender As Object, e As EventArgs) Handles DataGridDataInspector.LostFocus
-        DataGridDataInspector.ClearSelection()
-    End Sub
-
     Private Sub DataGridDataInspector_SelectionChanged(sender As Object, e As EventArgs) Handles DataGridDataInspector.SelectionChanged
         DataInspectorRefreshButtons()
     End Sub
@@ -1718,7 +1383,7 @@ Public Class HexViewForm
 
     Private Sub HexViewForm_KeyDown(sender As Object, e As KeyEventArgs) Handles Me.KeyDown
         If e.KeyCode = Keys.Escape Then
-            Me.Close()
+            ' Me.Close()
         End If
     End Sub
     Private Sub HexViewForm_Load(sender As Object, e As EventArgs) Handles Me.Load
@@ -1729,7 +1394,7 @@ Public Class HexViewForm
             CmbGroups.Items.Add(New HexViewData(_HexViewSectorData, Counter))
         Next
 
-        DataGridDataInspector.DoubleBuffer
+        _DataGridInspector = New HexViewDataGridInspector(DataGridDataInspector)
 
         HexBox1.VScrollBarVisible = True
 

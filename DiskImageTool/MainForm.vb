@@ -2141,6 +2141,32 @@ Public Class MainForm
         End If
     End Sub
 
+    Private Sub HexDisplayRawTrackData(Sector As UShort)
+        Dim Track As UShort = Sector \ _Disk.Image.Data.HeadCount
+        Dim Side As Byte = Sector Mod _Disk.Image.Data.HeadCount
+        Dim Caption = "Track " & Track & "." & Side
+        Dim Image As Bitstream.IBitstreamImage = Nothing
+
+        If _Disk.Image.Data.ImageType = FloppyImageType.MFMImage Then
+            Image = DirectCast(_Disk.Image.Data, ImageFormats.MFM.MFMByteArray).Image
+
+        ElseIf _Disk.Image.Data.ImageType = FloppyImageType._86FImage Then
+            Image = DirectCast(_Disk.Image.Data, ImageFormats._86F._86FByteArray).Image
+
+        ElseIf _Disk.Image.Data.ImageType = FloppyImageType.TranscopyImage Then
+            Image = DirectCast(_Disk.Image.Data, ImageFormats.TC.TranscopyByteArray).Image
+        End If
+
+        If Image IsNot Nothing Then
+            Dim MFMTrack = Image.GetTrack(Track, Side)
+            Dim AlignedBitstream = Bitstream.IBM_MFM.BitstreamAlign(MFMTrack.Bitstream)
+            Dim Data = Bitstream.IBM_MFM.DecodeTrack(AlignedBitstream)
+
+            Dim frmHexView As New HexViewRawForm(Data, Caption)
+            frmHexView.ShowDialog()
+        End If
+    End Sub
+
     Private Sub ImageCountUpdate()
         If ImageFilters.FiltersApplied Then
             ToolStripImageCount.Text = $"{ComboImagesFiltered.Items.Count} of {ComboImages.Items.Count} {"Image".Pluralize(ComboImages.Items.Count)}"
@@ -2370,6 +2396,22 @@ Public Class MainForm
         AddHandler Item.Click, AddressOf BtnDisplayDirectory_Click
     End Sub
 
+    Private Sub MenuRawTrackDataSubMenuClear()
+        For Each Item As ToolStripMenuItem In BtnRawTrackData.DropDownItems
+            RemoveHandler Item.Click, AddressOf BtnRawTrackData_Click
+        Next
+        BtnRawTrackData.DropDownItems.Clear()
+    End Sub
+
+    Private Sub MenuRawTrackDataSubMenuItemAdd(Track As UShort, Text As String)
+        Dim Item As New ToolStripMenuItem With {
+           .Text = Text,
+           .Tag = Track
+       }
+        BtnRawTrackData.DropDownItems.Add(Item)
+        AddHandler Item.Click, AddressOf BtnRawTrackData_Click
+    End Sub
+
     Private Function PopulateFilesPanel(ImageData As LoadedImageData, ClearItems As Boolean) As DirectoryScanResponse
         MenuDisplayDirectorySubMenuClear()
 
@@ -2553,6 +2595,9 @@ Public Class MainForm
             If Value <> "" Then
                 .AddItem(TitleGroup, "Disk", Value, False)
             End If
+            If TitleData.CopyProtection <> "" Then
+                .AddItem(TitleGroup, "Copy Protection", TitleData.CopyProtection)
+            End If
 
             Dim TextWidth As Integer = ColumnWidth
             For Each Item As ListViewItem In TitleGroup.Items
@@ -2562,6 +2607,62 @@ Public Class MainForm
             TitleGroup.Tag = TextWidth - ColumnWidth
         End With
     End Sub
+
+    Private Function GetNonStandardTrackList(NonStandardTracks As HashSet(Of UShort), HeadCount As Byte) As String
+        Dim TrackList(NonStandardTracks.Count - 1) As UShort
+        Dim TrackStartString As String
+        Dim TrackEndString As String
+        Dim Separator As String
+
+        Dim i As UShort = 0
+        For Each Track In NonStandardTracks
+            TrackList(i) = Track
+            i += 1
+        Next
+
+        Array.Sort(TrackList)
+
+        Dim Result As New List(Of String)
+        Dim StartRange As UShort = TrackList(0)
+        Dim Prev As UShort = TrackList(0)
+
+        For i = 1 To TrackList.Length - 1
+            If TrackList(i) = Prev + 1 Then
+                Prev = TrackList(i)
+            Else
+                TrackStartString = (StartRange \ HeadCount) & "." & (StartRange Mod HeadCount)
+                If StartRange = Prev Then
+                    Result.Add(TrackStartString)
+                Else
+                    TrackEndString = (Prev \ HeadCount) & "." & (Prev Mod HeadCount)
+                    If Prev = StartRange + 1 Then
+                        Separator = ", "
+                    Else
+                        Separator = " - "
+                    End If
+                    Result.Add(TrackStartString & Separator & TrackEndString)
+                End If
+                StartRange = TrackList(i)
+                Prev = StartRange
+            End If
+        Next
+
+        TrackStartString = (StartRange \ HeadCount) & "." & (StartRange Mod HeadCount)
+        If StartRange = Prev Then
+            Result.Add(TrackStartString)
+        Else
+            TrackEndString = (Prev \ HeadCount) & "." & (Prev Mod HeadCount)
+            If Prev = StartRange + 1 Then
+                Separator = ", "
+            Else
+                Separator = " - "
+            End If
+            Result.Add(TrackStartString & Separator & TrackEndString)
+        End If
+
+        Return String.Join(", ", Result)
+    End Function
+
     Private Sub PopulateSummaryPanel(Disk As Disk, MD5 As String, ImageData As LoadedImageData)
         Dim Value As String
         Dim ForeColor As Color
@@ -2572,26 +2673,26 @@ Public Class MainForm
             .Groups.Clear()
 
             If Disk IsNot Nothing Then
-                Dim CopyProtection As String = ""
                 Dim TitleFound As Boolean = False
 
                 If _TitleDB.TitleCount > 0 Then
                     Dim TitleFindResult = _TitleDB.TitleFind(Disk, MD5)
                     If TitleFindResult.TitleData IsNot Nothing Then
                         TitleFound = True
-                        CopyProtection = TitleFindResult.TitleData.GetCopyProtection
                         PopulateTitleGroup(TitleFindResult.TitleData)
                     End If
                 End If
 
                 Dim DiskGroup = .Groups.Add("Disk", "Disk")
 
-                If Disk.IsValidImage AndAlso Disk.CheckImageSize <> 0 Then
-                    ForeColor = Color.Red
-                Else
-                    ForeColor = SystemColors.WindowText
+                If Disk.Image.Data.ImageType = FloppyImageType.BasicSectorImage Then
+                    If Disk.IsValidImage AndAlso Disk.CheckImageSize <> 0 Then
+                        ForeColor = Color.Red
+                    Else
+                        ForeColor = SystemColors.WindowText
+                    End If
+                    .AddItem(DiskGroup, "Image Size", Disk.Image.Length.ToString("N0"), ForeColor)
                 End If
-                .AddItem(DiskGroup, "Image Size", Disk.Image.Length.ToString("N0"), ForeColor)
 
                 If Disk.IsValidImage(False) Then
                     Dim DiskFormatString = GetFloppyDiskFormatName(Disk.DiskFormat)
@@ -2619,15 +2720,13 @@ Public Class MainForm
                     End If
                 End If
 
-                If Disk.IsValidImage Then
-                    Dim BadSectors = GetBadSectors(Disk.BPB, Disk.FAT.BadClusters)
-                    If CopyProtection.Length = 0 Then
-                        CopyProtection = GetCopyProtection(Disk, BadSectors)
-                    End If
+                If Disk.Image.Data.NonStandardTracks.Count > 0 Then
+                    .AddItem(DiskGroup, "Non-Standard Tracks", GetNonStandardTrackList(Disk.Image.Data.NonStandardTracks, Disk.Image.Data.HeadCount))
                 End If
 
-                If CopyProtection.Length > 0 Then
-                    .AddItem(DiskGroup, "Copy Protection", CopyProtection)
+                If Disk.Image.Data.ImageType = FloppyImageType._86FImage Then
+                    Dim Image As ImageFormats._86F._86FImage = DirectCast(Disk.Image.Data, ImageFormats._86F._86FByteArray).Image
+                    .AddItem(DiskGroup, "Has Surface Data", If(Image.HasSurfaceData, "Yes", "No"))
                 End If
 
                 If Not Disk.IsValidImage Then
@@ -3184,6 +3283,34 @@ Public Class MainForm
         End If
     End Sub
 
+    Private Sub RefreshRawTrackSubMenu(Disk As Disk)
+        MenuRawTrackDataSubMenuClear()
+        BtnRawTrackData.Enabled = False
+
+        If Disk.Image.Data.ImageType = FloppyImageType.MFMImage Or Disk.Image.Data.ImageType = FloppyImageType._86FImage Or Disk.Image.Data.ImageType = FloppyImageType.TranscopyImage Then
+            If Disk.Image.Data.NonStandardTracks.Count > 0 Then
+                Dim TrackList(Disk.Image.Data.NonStandardTracks.Count - 1) As UShort
+
+                Dim i As UShort = 0
+                For Each Track In Disk.Image.Data.NonStandardTracks
+                    TrackList(i) = Track
+                    i += 1
+                Next
+
+                Array.Sort(TrackList)
+
+                For i = 0 To TrackList.Length - 1
+                    Dim Track = TrackList(i)
+                    Dim TrackString = "Track " & (Track \ Disk.Image.Data.HeadCount) & "." & (Track Mod Disk.Image.Data.HeadCount)
+                    MenuRawTrackDataSubMenuItemAdd(Track, TrackString)
+                Next
+
+                BtnRawTrackData.Enabled = True
+
+            End If
+        End If
+    End Sub
+
     Private Sub RefreshDiskButtons(Disk As Disk, ImageData As LoadedImageData)
         If Disk IsNot Nothing AndAlso Disk.IsValidImage Then
             BtnDisplayClusters.Enabled = Disk.FAT.HasFreeClusters(FAT12.FreeClusterEmum.WithData)
@@ -3201,6 +3328,7 @@ Public Class MainForm
             BtnDisplayOverdumpData.Enabled = Compare > 0
 
             RefreshFixImageSubMenu(Disk)
+            RefreshRawTrackSubMenu(Disk)
         Else
             BtnDisplayClusters.Enabled = False
             BtnDisplayBadSectors.Enabled = False
@@ -3212,6 +3340,8 @@ Public Class MainForm
             BtnRestoreBootSector.Enabled = False
             BtnRemoveBootSector.Enabled = False
             BtnDisplayOverdumpData.Enabled = False
+            BtnRawTrackData.Enabled = False
+            MenuRawTrackDataSubMenuClear()
         End If
 
         BtnTruncateImage.Enabled = BtnFixImageSize.Enabled
@@ -3925,6 +4055,12 @@ Public Class MainForm
 
     Private Sub BtnDisplayClusters_Click(sender As Object, e As EventArgs) Handles BtnDisplayClusters.Click
         HexDisplayFreeClusters()
+    End Sub
+
+    Private Sub BtnRawTrackData_Click(sender As Object, e As EventArgs)
+        If sender.tag IsNot Nothing Then
+            HexDisplayRawTrackData(sender.tag)
+        End If
     End Sub
 
     Private Sub BtnDisplayDirectory_Click(sender As Object, e As EventArgs) Handles BtnDisplayDirectory.Click, BtnFileMenuViewDirectory.Click

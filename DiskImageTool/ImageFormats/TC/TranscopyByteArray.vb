@@ -28,16 +28,24 @@ Namespace ImageFormats
                     For Side = 0 To _Image.Sides - 1
                         TranscopyCylinder = _Image.GetCylinder(Cylinder, Side)
                         If TranscopyCylinder.MFMData IsNot Nothing Then
+
+                            SetTrack(Cylinder, Side, TranscopyCylinder.MFMData.FirstSector, TranscopyCylinder.MFMData.LastSector)
+
                             For Each MFMSector In TranscopyCylinder.MFMData.Sectors
                                 If MFMSector.DAMFound Then
                                     If MFMSector.SectorId >= 1 And MFMSector.SectorId <= SECTOR_COUNT Then
                                         Dim BitstreamSector As New BitstreamSector With {
                                            .Data = MFMSector.Data,
-                                           .Overlaps = MFMSector.Overlaps,
-                                           .IsValid = MFMSector.IsValid,
-                                           .Size = MFMSector.GetSizeBytes
+                                           .Size = MFMSector.GetSizeBytes,
+                                           .IsStandard = IBM_MFM.IsStandardSector(MFMSector, Cylinder, Side)
                                         }
-                                        SetSector(Cylinder, Side, MFMSector.SectorId, BitstreamSector)
+
+                                        Dim Sector = GetSector(Cylinder, Side, MFMSector.SectorId)
+                                        If Sector Is Nothing Then
+                                            SetSector(Cylinder, Side, MFMSector.SectorId, BitstreamSector)
+                                        Else
+                                            Sector.IsStandard = False
+                                        End If
                                     End If
                                 End If
                             Next

@@ -5,7 +5,9 @@ Namespace Bitstream
         Implements IByteArray
 
         Friend Const SECTOR_COUNT As Byte = 36
+        Private ReadOnly _Image As IBitstreamImage
         Private ReadOnly _ProtectedSectors As HashSet(Of UInteger)
+        Private ReadOnly _NonStandardTracks As HashSet(Of UShort)
         Private ReadOnly _EmptySector() As Byte
         Private _DiskFormat As FloppyDiskFormat
         Private _BPB As BiosParameterBlock
@@ -13,8 +15,14 @@ Namespace Bitstream
         Private _TrackCount As UShort
         Private _HeadCount As Byte
         Private _Sectors() As BitstreamSector
+        Private _Tracks() As TrackData
         Public Event DataChanged As DataChangedEventHandler Implements IByteArray.DataChanged
         Public Event SizeChanged As SizeChangedEventHandler Implements IByteArray.SizeChanged
+
+        Private Class TrackData
+            Public Property FirstSector As Integer
+            Public Property LastSector As Integer
+        End Class
 
         Private Class MappedData
             Public Property Sector As UInteger
@@ -26,6 +34,7 @@ Namespace Bitstream
 
         Public Sub New()
             _ProtectedSectors = New HashSet(Of UInteger)
+            _NonStandardTracks = New HashSet(Of UShort)
             _EmptySector = New Byte(Disk.BYTES_PER_SECTOR - 1) {}
         End Sub
 
@@ -41,9 +50,15 @@ Namespace Bitstream
             End Get
         End Property
 
-        Public ReadOnly Property HeadCount As Byte
+        Public ReadOnly Property HeadCount As Byte Implements IByteArray.HeadCount
             Get
                 Return _HeadCount
+            End Get
+        End Property
+
+        Public ReadOnly Property NonStandardTracks As HashSet(Of UShort) Implements IByteArray.NonStandardTracks
+            Get
+                Return _NonStandardTracks
             End Get
         End Property
 
@@ -59,7 +74,7 @@ Namespace Bitstream
             End Get
         End Property
 
-        Public ReadOnly Property TrackCount As UShort
+        Public ReadOnly Property TrackCount As UShort Implements IByteArray.TrackCount
             Get
                 Return _TrackCount
             End Get
@@ -83,14 +98,20 @@ Namespace Bitstream
             Return _Sectors(Index)
         End Function
 
+        Private Function GetTrack(Track As UShort, Head As Byte) As TrackData
+            If Track > _TrackCount - 1 Or Head > _HeadCount - 1 Then
+                Return Nothing
+            End If
+
+            Dim Index = Track * _HeadCount + Head
+
+            Return _Tracks(Index)
+        End Function
+
         Friend Function GetSectorFromParams(Track As UShort, Side As Byte, SectorId As UShort) As UInteger
             Dim Offset As UInteger = Track * _BPB.NumberOfHeads * _BPB.SectorsPerTrack + _BPB.SectorsPerTrack * Side + (SectorId - 1)
 
             Return Offset
-        End Function
-
-        Friend Function IsProtectedSector(Sector As BitstreamSector) As Boolean
-            Return Sector.Size <> Disk.BYTES_PER_SECTOR Or Not Sector.IsValid Or Sector.Overlaps
         End Function
 
         Friend Sub SetSector(Track As UShort, Head As Byte, SectorId As Byte, Value As BitstreamSector)
@@ -103,11 +124,27 @@ Namespace Bitstream
             _Sectors(Index) = Value
         End Sub
 
+        Friend Sub SetTrack(Track As UShort, Head As Byte, FirstSector As Integer, LastSector As Integer)
+            If Track > _TrackCount - 1 Or Head > _HeadCount - 1 Then
+                Throw New System.IndexOutOfRangeException
+            End If
+
+            Dim Index = Track * _HeadCount + Head
+
+            Dim TrackData As New TrackData With {
+                .FirstSector = FirstSector,
+                .LastSector = LastSector
+            }
+
+            _Tracks(Index) = TrackData
+        End Sub
+
         Friend Sub SetTracks(TrackCount As UShort, HeadCount As Byte)
             _TrackCount = TrackCount
             _HeadCount = HeadCount
 
             _Sectors = New BitstreamSector(_TrackCount * _HeadCount * SECTOR_COUNT - 1) {}
+            _Tracks = New TrackData(_TrackCount * _HeadCount - 1) {}
         End Sub
 
         Private Function GetMappedData(Offset As UInteger) As MappedData
@@ -137,7 +174,7 @@ Namespace Bitstream
                     Else
                         MappedData.Data = BitstreamSector.Data
                     End If
-                    MappedData.CanWrite = Not IsProtectedSector(BitstreamSector)
+                    MappedData.CanWrite = BitstreamSector.IsStandard
                 End If
             End If
 
@@ -194,21 +231,31 @@ Namespace Bitstream
 
         Private Sub InitProtectedSectors()
             _ProtectedSectors.Clear()
+            _NonStandardTracks.Clear()
 
             Dim TrackCount = GetTrackCount()
 
             For Cylinder = 0 To TrackCount - 1
                 For Side = 0 To _BPB.NumberOfHeads - 1
+                    Dim TrackData = GetTrack(Cylinder, Side)
+                    Dim TrackIsStandard As Boolean = True
+                    If TrackData IsNot Nothing Then
+                        TrackIsStandard = TrackData.FirstSector >= 1 And TrackData.LastSector <= _BPB.SectorsPerTrack
+                    End If
                     For SectorId = 1 To _BPB.SectorsPerTrack
                         Dim BitstreamSector As BitstreamSector = Nothing
                         If Cylinder < _TrackCount And Side < _HeadCount Then
                             BitstreamSector = GetSector(Cylinder, Side, SectorId)
                         End If
-                        If BitstreamSector Is Nothing OrElse IsProtectedSector(BitstreamSector) Then
+                        If BitstreamSector Is Nothing OrElse Not BitstreamSector.IsStandard Then
                             Dim Sector = GetSectorFromParams(Cylinder, Side, SectorId)
                             ProtectedSectors.Add(Sector)
+                            TrackIsStandard = False
                         End If
                     Next
+                    If Not TrackIsStandard Then
+                        _NonStandardTracks.Add(Cylinder * _BPB.NumberOfHeads + Side)
+                    End If
                 Next
             Next
         End Sub

@@ -90,7 +90,6 @@ Namespace ImageFormats
             Dim PSI = New PSI.PSISectorImage
             PSI.Header.FormatVersion = 0
             PSI.Header.DefaultSectorFormat = GetPSISectorFormat(DiskFormat)
-            PSI.Comment = My.Application.Info.ProductName & " v" & GetVersionString()
 
             For Cylinder As UShort = 0 To CylinderCount - 1
                 For Head = 0 To Params.NumberOfHeads - 1
@@ -156,8 +155,7 @@ Namespace ImageFormats
             Dim CylinderCount = GetTrackCount(Params)
 
             Dim Transcopy = New TC.TransCopyImage With {
-                .DiskType = GetTranscopyDiskType(DiskFormat),
-                .Comment = My.Application.Info.ProductName & " v" & GetVersionString()
+                .DiskType = GetTranscopyDiskType(DiskFormat)
             }
             Transcopy.Initialize(CylinderCount, Params.NumberOfHeads, 1)
 
@@ -266,7 +264,6 @@ Namespace ImageFormats
             End If
 
             PSI.Header.FormatVersion = 0
-            PSI.Comment = My.Application.Info.ProductName & " v" & GetVersionString()
 
             For Track = 0 To TrackCount - 1 Step Image.TrackStep
                 For Side = 0 To Image.SideCount - 1
@@ -299,9 +296,7 @@ Namespace ImageFormats
 
             Image.UpdateBitstream()
 
-            Dim Transcopy = New TC.TransCopyImage With {
-                .Comment = My.Application.Info.ProductName & " v" & GetVersionString()
-            }
+            Dim Transcopy = New TC.TransCopyImage
             Transcopy.Initialize(Image.TrackCount \ Image.TrackStep, Image.SideCount, 1)
 
             For Track = 0 To Image.TrackCount - 1 Step Image.TrackStep
@@ -475,7 +470,7 @@ Namespace ImageFormats
         End Function
 
         Private Function PSISectorFromMFMSector(Sector As IBM_MFM_Sector) As PSI.PSISector
-            If Sector.IsValid Then
+            If Sector.InitialChecksumValid Then
                 Sector.UpdateChecksum()
             End If
 

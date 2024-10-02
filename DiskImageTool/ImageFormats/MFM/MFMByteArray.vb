@@ -25,17 +25,26 @@ Namespace ImageFormats
 
                 For Track = 0 To _Image.TrackCount - 1 Step _Image.TrackStep
                     For Side = 0 To _Image.SideCount - 1
+                        Dim MappedTrack = Track \ _Image.TrackStep
                         MFMTrack = _Image.GetTrack(Track, Side)
+
+                        SetTrack(MappedTrack, Side, MFMTrack.MFMData.FirstSector, MFMTrack.MFMData.LastSector)
+
                         For Each MFMSector In MFMTrack.MFMData.Sectors
                             If MFMSector.DAMFound Then
                                 If MFMSector.SectorId >= 1 And MFMSector.SectorId <= SECTOR_COUNT Then
                                     Dim BitstreamSector As New BitstreamSector With {
                                        .Data = MFMSector.Data,
-                                       .Overlaps = MFMSector.Overlaps,
-                                       .IsValid = MFMSector.IsValid,
-                                       .Size = MFMSector.GetSizeBytes
+                                       .Size = MFMSector.GetSizeBytes,
+                                       .IsStandard = IBM_MFM.IsStandardSector(MFMSector, Track, Side)
                                     }
-                                    SetSector(Track \ _Image.TrackStep, Side, MFMSector.SectorId, BitstreamSector)
+
+                                    Dim Sector = GetSector(MappedTrack, Side, MFMSector.SectorId)
+                                    If Sector Is Nothing Then
+                                        SetSector(MappedTrack, Side, MFMSector.SectorId, BitstreamSector)
+                                    Else
+                                        Sector.IsStandard = False
+                                    End If
                                 End If
                             End If
                         Next

@@ -5,7 +5,7 @@ Namespace Bitstream
             Private ReadOnly _Offset As UInteger
             Private ReadOnly _IDArea() As Byte
             Private ReadOnly _IDChecksum As UShort
-            Private ReadOnly _IsValid As Boolean
+            Private ReadOnly _InitialChecksumValid As Boolean
             Private _Gap2 As Byte()
             Private _DataFieldSync() As Byte
             Private _DataOffset As UInteger
@@ -14,6 +14,7 @@ Namespace Bitstream
             Private _InitialDataChecksum As UShort
             Private _Gap3 As Byte()
             Private _DAMFound As Boolean = False
+            Private _Overlaps As Boolean
 
             Public Sub New(Bitstream As BitArray, Offset As UInteger)
                 _Offset = Offset
@@ -25,7 +26,7 @@ Namespace Bitstream
 
                 ProcessGap3(Bitstream, DataOffset)
 
-                _IsValid = (_DataChecksum = CalculateDataChecksum())
+                _InitialChecksumValid = (_DataChecksum = CalculateDataChecksum())
             End Sub
 
             Public ReadOnly Property Gap2 As Byte()
@@ -110,10 +111,17 @@ Namespace Bitstream
             End Property
 
             Public Property Overlaps As Boolean
-
-            Public ReadOnly Property IsValid As Boolean
                 Get
-                    Return _IsValid
+                    Return _Overlaps
+                End Get
+                Set
+                    _Overlaps = Value
+                End Set
+            End Property
+
+            Public ReadOnly Property InitialChecksumValid As Boolean
+                Get
+                    Return _InitialChecksumValid
                 End Get
             End Property
 

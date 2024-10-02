@@ -50,6 +50,8 @@ Partial Class FilePropertiesForm
         Me.BtnHidden = New System.Windows.Forms.Button()
         Me.ChkReadOnly = New System.Windows.Forms.CheckBox()
         Me.ChkHidden = New System.Windows.Forms.CheckBox()
+        Me.MskExtensionHex = New DiskImageTool.HexTextBox()
+        Me.MskFileHex = New DiskImageTool.HexTextBox()
         Me.LblMultipleFiles = New System.Windows.Forms.Label()
         Me.TxtExtension = New System.Windows.Forms.TextBox()
         Me.TxtFile = New System.Windows.Forms.MaskedTextBox()
@@ -58,8 +60,6 @@ Partial Class FilePropertiesForm
         Me.BtnUpdate = New System.Windows.Forms.Button()
         Me.FlowLayoutPanel1 = New System.Windows.Forms.FlowLayoutPanel()
         Me.FlowLayoutPanel2 = New System.Windows.Forms.FlowLayoutPanel()
-        Me.MskExtensionHex = New DiskImageTool.HexTextBox()
-        Me.MskFileHex = New DiskImageTool.HexTextBox()
         GroupFileDates = New System.Windows.Forms.GroupBox()
         GroupAttributes = New System.Windows.Forms.GroupBox()
         TableLayoutPanel3 = New System.Windows.Forms.TableLayoutPanel()
@@ -169,6 +169,7 @@ Partial Class FilePropertiesForm
         'BtnCreated
         '
         Me.BtnCreated.Anchor = System.Windows.Forms.AnchorStyles.Left
+        Me.BtnCreated.DialogResult = System.Windows.Forms.DialogResult.Cancel
         Me.BtnCreated.Location = New System.Drawing.Point(355, 29)
         Me.BtnCreated.Name = "BtnCreated"
         Me.BtnCreated.Size = New System.Drawing.Size(62, 20)
@@ -369,6 +370,7 @@ Partial Class FilePropertiesForm
         'BtnHidden
         '
         Me.BtnHidden.Anchor = System.Windows.Forms.AnchorStyles.Left
+        Me.BtnHidden.DialogResult = System.Windows.Forms.DialogResult.Cancel
         Me.BtnHidden.Location = New System.Drawing.Point(355, 29)
         Me.BtnHidden.Name = "BtnHidden"
         Me.BtnHidden.Size = New System.Drawing.Size(62, 20)
@@ -419,6 +421,24 @@ Partial Class FilePropertiesForm
         TableLayoutPanel3.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50.0!))
         TableLayoutPanel3.Size = New System.Drawing.Size(370, 52)
         TableLayoutPanel3.TabIndex = 1
+        '
+        'MskExtensionHex
+        '
+        Me.MskExtensionHex.Font = New System.Drawing.Font("Courier New", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.MskExtensionHex.Location = New System.Drawing.Point(179, 29)
+        Me.MskExtensionHex.MaskLength = 3
+        Me.MskExtensionHex.Name = "MskExtensionHex"
+        Me.MskExtensionHex.Size = New System.Drawing.Size(64, 20)
+        Me.MskExtensionHex.TabIndex = 4
+        '
+        'MskFileHex
+        '
+        Me.MskFileHex.Font = New System.Drawing.Font("Courier New", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.MskFileHex.Location = New System.Drawing.Point(3, 29)
+        Me.MskFileHex.MaskLength = 8
+        Me.MskFileHex.Name = "MskFileHex"
+        Me.MskFileHex.Size = New System.Drawing.Size(170, 20)
+        Me.MskFileHex.TabIndex = 3
         '
         'LblMultipleFiles
         '
@@ -509,31 +529,12 @@ Partial Class FilePropertiesForm
         Me.FlowLayoutPanel2.Size = New System.Drawing.Size(444, 346)
         Me.FlowLayoutPanel2.TabIndex = 4
         '
-        'MskExtensionHex
-        '
-        Me.MskExtensionHex.Font = New System.Drawing.Font("Courier New", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.MskExtensionHex.Location = New System.Drawing.Point(179, 29)
-        Me.MskExtensionHex.MaskLength = 3
-        Me.MskExtensionHex.Name = "MskExtensionHex"
-        Me.MskExtensionHex.Size = New System.Drawing.Size(64, 20)
-        Me.MskExtensionHex.TabIndex = 4
-        '
-        'MskFileHex
-        '
-        Me.MskFileHex.Font = New System.Drawing.Font("Courier New", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.MskFileHex.Location = New System.Drawing.Point(3, 29)
-        Me.MskFileHex.MaskLength = 8
-        Me.MskFileHex.Name = "MskFileHex"
-        Me.MskFileHex.Size = New System.Drawing.Size(170, 20)
-        Me.MskFileHex.TabIndex = 3
-        '
         'FilePropertiesForm
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
         Me.AutoSize = True
         Me.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink
-        Me.CancelButton = Me.BtnCancel
         Me.ClientSize = New System.Drawing.Size(484, 396)
         Me.Controls.Add(Me.FlowLayoutPanel2)
         Me.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog

@@ -32,6 +32,7 @@ Partial Class BootSectorForm
         Me.btnReset = New System.Windows.Forms.Button()
         Me.GroupBoxMain = New System.Windows.Forms.GroupBox()
         Me.TableLayoutPanelMain = New System.Windows.Forms.TableLayoutPanel()
+        Me.CboMediaDescriptor = New System.Windows.Forms.ComboBox()
         Me.HexJumpInstruction = New DiskImageTool.HexTextBox()
         Me.LblJumpInstruction = New System.Windows.Forms.Label()
         Me.LblBytesPerSector = New System.Windows.Forms.Label()
@@ -51,7 +52,6 @@ Partial Class BootSectorForm
         Me.TxtRootDirectoryEntries = New System.Windows.Forms.TextBox()
         Me.LblSectorCountSmall = New System.Windows.Forms.Label()
         Me.TxtSectorCountSmall = New System.Windows.Forms.TextBox()
-        Me.CboMediaDescriptor = New System.Windows.Forms.ComboBox()
         Me.LblSectorsPerFAT = New System.Windows.Forms.Label()
         Me.LblSectorsPerTrack = New System.Windows.Forms.Label()
         Me.TxtSectorsPerFAT = New System.Windows.Forms.TextBox()
@@ -223,6 +223,16 @@ Partial Class BootSectorForm
         Me.TableLayoutPanelMain.RowStyles.Add(New System.Windows.Forms.RowStyle())
         Me.TableLayoutPanelMain.Size = New System.Drawing.Size(490, 213)
         Me.TableLayoutPanelMain.TabIndex = 0
+        '
+        'CboMediaDescriptor
+        '
+        Me.CboMediaDescriptor.DrawMode = System.Windows.Forms.DrawMode.OwnerDrawFixed
+        Me.CboMediaDescriptor.FormattingEnabled = True
+        Me.CboMediaDescriptor.Location = New System.Drawing.Point(141, 137)
+        Me.CboMediaDescriptor.MaxLength = 2
+        Me.CboMediaDescriptor.Name = "CboMediaDescriptor"
+        Me.CboMediaDescriptor.Size = New System.Drawing.Size(104, 21)
+        Me.CboMediaDescriptor.TabIndex = 19
         '
         'HexJumpInstruction
         '
@@ -404,16 +414,6 @@ Partial Class BootSectorForm
         Me.TxtSectorCountSmall.Name = "TxtSectorCountSmall"
         Me.TxtSectorCountSmall.Size = New System.Drawing.Size(104, 20)
         Me.TxtSectorCountSmall.TabIndex = 17
-        '
-        'CboMediaDescriptor
-        '
-        Me.CboMediaDescriptor.DrawMode = System.Windows.Forms.DrawMode.OwnerDrawFixed
-        Me.CboMediaDescriptor.FormattingEnabled = True
-        Me.CboMediaDescriptor.Location = New System.Drawing.Point(141, 137)
-        Me.CboMediaDescriptor.MaxLength = 2
-        Me.CboMediaDescriptor.Name = "CboMediaDescriptor"
-        Me.CboMediaDescriptor.Size = New System.Drawing.Size(104, 21)
-        Me.CboMediaDescriptor.TabIndex = 19
         '
         'LblSectorsPerFAT
         '
@@ -790,7 +790,6 @@ Partial Class BootSectorForm
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
         Me.AutoSize = True
         Me.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink
-        Me.CancelButton = Me.BtnCancel
         Me.ClientSize = New System.Drawing.Size(555, 605)
         Me.Controls.Add(FlowLayoutPanel3)
         Me.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle

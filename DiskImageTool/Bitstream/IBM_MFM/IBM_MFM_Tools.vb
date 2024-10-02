@@ -74,6 +74,28 @@ Namespace Bitstream
                 Return buffer
             End Function
 
+            Public Function BitstreamAlign(Bitstream As BitArray) As BitArray
+                Dim MFMPattern = BytesToBits(MFM_Sync_Bytes)
+                Dim NewBitstream = Bitstream
+
+                Dim Pos = FindPattern(Bitstream, MFMPattern, 0)
+                If Pos > -1 Then
+                    Dim Offset = Pos Mod MFM_BYTE_SIZE
+                    If Offset > 0 Then
+                        NewBitstream = New BitArray(Bitstream.Length)
+                        For i = 0 To Bitstream.Length - 1
+                            Dim NewOffset = i - Offset
+                            If NewOffset < 0 Then
+                                NewOffset = Bitstream.Length + NewOffset
+                            End If
+                            NewBitstream(NewOffset) = Bitstream(i)
+                        Next
+                    End If
+                End If
+
+                Return NewBitstream
+            End Function
+
             Public Function ReverseBits(b As Byte) As Byte
                 b = ((b >> 1) And &H55) Or ((b << 1) And &HAA) ' Swap odd and even bits
                 b = ((b >> 2) And &H33) Or ((b << 2) And &HCC) ' Swap consecutive pairs
@@ -133,6 +155,30 @@ Namespace Bitstream
                 End If
 
                 Return New Byte(-1) {}
+            End Function
+
+            Public Function IsStandardSector(Sector As IBM_MFM_Sector, Track As Byte, Side As Byte) As Boolean
+                If Not Sector.InitialChecksumValid Then
+                    Return False
+                End If
+
+                If Sector.Overlaps Then
+                    Return False
+                End If
+
+                If Sector.GetSizeBytes <> 512 Then
+                    Return False
+                End If
+
+                If Sector.Track <> Track Or Sector.Side <> Side Then
+                    Return False
+                End If
+
+                If Sector.DAM <> MFMAddressMark.Data Then
+                    Return False
+                End If
+
+                Return True
             End Function
 
             Public Function MFMCRC16(data As Byte()) As UShort
