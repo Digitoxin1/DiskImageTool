@@ -80,6 +80,7 @@ Partial Class MainForm
         Me.BtnDisplayBadSectors = New System.Windows.Forms.ToolStripMenuItem()
         Me.BtnDisplayLostClusters = New System.Windows.Forms.ToolStripMenuItem()
         Me.BtnDisplayOverdumpData = New System.Windows.Forms.ToolStripMenuItem()
+        Me.BtnRawTrackData = New System.Windows.Forms.ToolStripMenuItem()
         Me.BtnDisplayDisk = New System.Windows.Forms.ToolStripMenuItem()
         Me.BtnExportDebug = New System.Windows.Forms.ToolStripMenuItem()
         Me.BtnCompare = New System.Windows.Forms.ToolStripMenuItem()
@@ -172,7 +173,7 @@ Partial Class MainForm
         Me.ComboImagesFiltered = New System.Windows.Forms.ComboBox()
         Me.BtnResetSort = New System.Windows.Forms.Button()
         Me.btnRetry = New System.Windows.Forms.Button()
-        Me.BtnRawTrackData = New System.Windows.Forms.ToolStripMenuItem()
+        Me.BtnNewImage = New System.Windows.Forms.ToolStripMenuItem()
         SummaryName = CType(New System.Windows.Forms.ColumnHeader(), System.Windows.Forms.ColumnHeader)
         SummaryValue = CType(New System.Windows.Forms.ColumnHeader(), System.Windows.Forms.ColumnHeader)
         HashName = CType(New System.Windows.Forms.ColumnHeader(), System.Windows.Forms.ColumnHeader)
@@ -260,7 +261,7 @@ Partial Class MainForm
         '
         'MainMenuFile
         '
-        MainMenuFile.DropDownItems.AddRange(New System.Windows.Forms.ToolStripItem() {Me.BtnOpen, Me.BtnReload, Me.toolStripSeparator, Me.BtnSave, Me.BtnSaveAs, Me.BtnSaveAll, Me.ToolStripSeparator3, Me.BtnClose, Me.BtnCloseAll, Me.toolStripSeparator1, Me.BtnExit})
+        MainMenuFile.DropDownItems.AddRange(New System.Windows.Forms.ToolStripItem() {Me.BtnOpen, Me.BtnReload, Me.BtnNewImage, Me.toolStripSeparator, Me.BtnSave, Me.BtnSaveAs, Me.BtnSaveAll, Me.ToolStripSeparator3, Me.BtnClose, Me.BtnCloseAll, Me.toolStripSeparator1, Me.BtnExit})
         MainMenuFile.Name = "MainMenuFile"
         MainMenuFile.ShortcutKeyDisplayString = ""
         MainMenuFile.Size = New System.Drawing.Size(37, 20)
@@ -405,7 +406,7 @@ Partial Class MainForm
         '
         Me.BtnAddFile.Name = "BtnAddFile"
         Me.BtnAddFile.Size = New System.Drawing.Size(194, 22)
-        Me.BtnAddFile.Text = "&Add File"
+        Me.BtnAddFile.Text = "&Add Files"
         '
         'ToolStripSeparator2
         '
@@ -502,6 +503,12 @@ Partial Class MainForm
         Me.BtnDisplayOverdumpData.Name = "BtnDisplayOverdumpData"
         Me.BtnDisplayOverdumpData.Size = New System.Drawing.Size(194, 22)
         Me.BtnDisplayOverdumpData.Text = "&Overdump Data"
+        '
+        'BtnRawTrackData
+        '
+        Me.BtnRawTrackData.Name = "BtnRawTrackData"
+        Me.BtnRawTrackData.Size = New System.Drawing.Size(194, 22)
+        Me.BtnRawTrackData.Text = "&Raw Track Data"
         '
         'BtnDisplayDisk
         '
@@ -1095,7 +1102,7 @@ Partial Class MainForm
         '
         Me.BtnFileMenuAddFile.Name = "BtnFileMenuAddFile"
         Me.BtnFileMenuAddFile.Size = New System.Drawing.Size(222, 22)
-        Me.BtnFileMenuAddFile.Text = "&Add File"
+        Me.BtnFileMenuAddFile.Text = "&Add Files"
         '
         'BtnFileMenuViewDirectory
         '
@@ -1271,11 +1278,11 @@ Partial Class MainForm
         Me.btnRetry.Text = "Retry"
         Me.btnRetry.UseVisualStyleBackColor = True
         '
-        'BtnRawTrackData
+        'BtnNewImage
         '
-        Me.BtnRawTrackData.Name = "BtnRawTrackData"
-        Me.BtnRawTrackData.Size = New System.Drawing.Size(194, 22)
-        Me.BtnRawTrackData.Text = "&Raw Track Data"
+        Me.BtnNewImage.Name = "BtnNewImage"
+        Me.BtnNewImage.Size = New System.Drawing.Size(212, 22)
+        Me.BtnNewImage.Text = "&New Image"
         '
         'MainForm
         '
@@ -1438,4 +1445,5 @@ Partial Class MainForm
     Friend WithEvents ToolStripStatusCached As ToolStripStatusLabel
     Friend WithEvents BtnReload As ToolStripMenuItem
     Friend WithEvents BtnRawTrackData As ToolStripMenuItem
+    Friend WithEvents BtnNewImage As ToolStripMenuItem
 End Class

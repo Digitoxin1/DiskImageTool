@@ -136,13 +136,24 @@
     <Compile Include="Bitstream\IBM_MFM\IBM_MFM_Sector.vb" />
     <Compile Include="Bitstream\IBM_MFM\IBM_MFM_Tools.vb" />
     <Compile Include="Bitstream\IBM_MFM\IBM_MFM_Track.vb" />
+    <Compile Include="DiskImage\UpdateFunctions.vb" />
+    <Compile Include="Filters\Enums.vb" />
+    <Compile Include="Filters\FilterCounts.vb" />
+    <Compile Include="Filters\FilterTag.vb" />
+    <Compile Include="Filters\ImageFilters.vb" />
     <Compile Include="FloppyDiskIO.vb" />
-    <Compile Include="Bitstream\IBitstreamImage.vb" />
-    <Compile Include="Bitstream\IBitstreamTrack.vb" />
+    <Compile Include="Bitstream\Interfaces\IBitstreamImage.vb" />
+    <Compile Include="Bitstream\Interfaces\IBitstreamTrack.vb" />
     <Compile Include="Forms\HexViewRawForm.Designer.vb">
       <DependentUpon>HexViewRawForm.vb</DependentUpon>
     </Compile>
     <Compile Include="Forms\HexViewRawForm.vb">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\ImageCreationForm.Designer.vb">
+      <DependentUpon>ImageCreationForm.vb</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\ImageCreationForm.vb">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="HexView\HexViewDataGridInspector.vb" />
@@ -186,13 +197,13 @@
     <Compile Include="DiskImage\FATChain.vb" />
     <Compile Include="DiskImage\FATTables.vb" />
     <Compile Include="DiskImage\FloppyDiskFunctions.vb" />
-    <Compile Include="DiskImage\IByteArray.vb" />
+    <Compile Include="DiskImage\Interfaces\IByteArray.vb" />
     <Compile Include="DiskImage\SectorBlock.vb" />
     <Compile Include="Extensions\ByteArrayExtensions.vb" />
     <Compile Include="Extensions\DataGridViewExtensions.vb" />
     <Compile Include="Extensions\StringExtensions.vb" />
     <Compile Include="Extensions\XMLExtensions.vb" />
-    <Compile Include="FloppyInterface.vb" />
+    <Compile Include="Lib\FloppyInterface.vb" />
     <Compile Include="FormControls.vb" />
     <Compile Include="Forms\AboutBox.Designer.vb">
       <DependentUpon>AboutBox.vb</DependentUpon>
@@ -201,12 +212,12 @@
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="CopyProtection.vb" />
-    <Compile Include="DebugScript.vb" />
+    <Compile Include="Testing\DebugScript.vb" />
     <Compile Include="DiskImage\SectorData.vb" />
     <Compile Include="DiskImage\ByteArray.vb" />
     <Compile Include="DiskImage\FAT12.vb" />
     <Compile Include="DiskImage\Utility.vb" />
-    <Compile Include="DiskImage\IDirectory.vb" />
+    <Compile Include="DiskImage\Interfaces\IDirectory.vb" />
     <Compile Include="DiskImage\ImageByteArray.vb" />
     <Compile Include="DiskImage\RootDirectory.vb" />
     <Compile Include="DiskImage\SubDirectory.vb" />
@@ -234,7 +245,6 @@
     <Compile Include="Forms\FilePropertiesForm.vb">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="FilterMethods.vb" />
     <Compile Include="DiskImage\BootSector.vb" />
     <Compile Include="Forms\FloppyAccessForm.Designer.vb">
       <DependentUpon>FloppyAccessForm.vb</DependentUpon>
@@ -288,7 +298,7 @@
     <Compile Include="DirectoryScanResponse.vb" />
     <Compile Include="Testing\ImageCompare.vb" />
     <Compile Include="Lib\ListViewHeader.vb" />
-    <Compile Include="MyBitConverter.vb" />
+    <Compile Include="Lib\MyBitConverter.vb" />
     <Compile Include="FloppyDB.vb" />
     <Compile Include="Utility.vb" />
     <Compile Include="Controls\HexTextBox.vb">
@@ -397,6 +407,9 @@
     <EmbeddedResource Include="Forms\HexViewRawForm.resx">
       <DependentUpon>HexViewRawForm.vb</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="Forms\ImageCreationForm.resx">
+      <DependentUpon>ImageCreationForm.vb</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Forms\ImageLoadForm.resx">
       <DependentUpon>ImageLoadForm.vb</DependentUpon>
       <SubType>Designer</SubType>
@@ -463,6 +476,7 @@
     </BootstrapperPackage>
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="Assets\bootsector.xml" />
     <Content Include="Assets\floppyDisk.ico" />
     <None Include="FloppyDB.xml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>

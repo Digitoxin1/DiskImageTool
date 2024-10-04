@@ -36,7 +36,7 @@ Namespace ImageFormats
                                     Dim BitstreamSector As New BitstreamSector With {
                                        .Data = MFMSector.Data,
                                        .Size = MFMSector.GetSizeBytes,
-                                       .IsStandard = IBM_MFM.IsStandardSector(MFMSector, Track, Side)
+                                       .IsStandard = IBM_MFM.IsStandardSector(MFMSector, MappedTrack, Side)
                                     }
 
                                     Dim Sector = GetSector(MappedTrack, Side, MFMSector.SectorId)

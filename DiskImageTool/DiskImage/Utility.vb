@@ -1,55 +1,56 @@
 ﻿Namespace DiskImage
     Module Functions
         Public ReadOnly InvalidFileChars() As Byte = {&H22, &H2A, &H2B, &H2C, &H2E, &H2F, &H3A, &H3B, &H3C, &H3D, &H3E, &H3F, &H5B, &H5C, &H5D, &H7C}
+        Public ReadOnly EmptyDirectoryEntry() As Byte = {&HE5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}
 
-        Public Function BootSectorDescription(Offset As DiskImage.BootSector.BootSectorOffsets) As String
+        Public Function BootSectorDescription(Offset As BootSector.BootSectorOffsets) As String
             Select Case Offset
-                Case DiskImage.BootSector.BootSectorOffsets.JmpBoot
+                Case BootSector.BootSectorOffsets.JmpBoot
                     Return "Bootstrap Jump"
-                Case DiskImage.BootSector.BootSectorOffsets.OEMName
+                Case BootSector.BootSectorOffsets.OEMName
                     Return "OEM Name"
-                Case DiskImage.BootSector.BootSectorOffsets.DriveNumber
+                Case BootSector.BootSectorOffsets.DriveNumber
                     Return "Drive Number"
-                Case DiskImage.BootSector.BootSectorOffsets.Reserved
+                Case BootSector.BootSectorOffsets.Reserved
                     Return "Reserved"
-                Case DiskImage.BootSector.BootSectorOffsets.ExtendedBootSignature
+                Case BootSector.BootSectorOffsets.ExtendedBootSignature
                     Return "Extended Boot Signature"
-                Case DiskImage.BootSector.BootSectorOffsets.VolumeSerialNumber
+                Case BootSector.BootSectorOffsets.VolumeSerialNumber
                     Return "Volume Serial Number"
-                Case DiskImage.BootSector.BootSectorOffsets.VolumeLabel
+                Case BootSector.BootSectorOffsets.VolumeLabel
                     Return "Volume Label"
-                Case DiskImage.BootSector.BootSectorOffsets.FileSystemType
+                Case BootSector.BootSectorOffsets.FileSystemType
                     Return "File System ID"
-                Case DiskImage.BootSector.BootSectorOffsets.BootStrapSignature
+                Case BootSector.BootSectorOffsets.BootStrapSignature
                     Return "Boot Sector Signature"
                 Case Else
                     Return Offset.ToString
             End Select
         End Function
 
-        Public Function BPBDescription(Offset As DiskImage.BiosParameterBlock.BPBOoffsets) As String
+        Public Function BPBDescription(Offset As BiosParameterBlock.BPBOoffsets) As String
             Select Case Offset
-                Case DiskImage.BiosParameterBlock.BPBOoffsets.BytesPerSector
+                Case BiosParameterBlock.BPBOoffsets.BytesPerSector
                     Return "Bytes per Sector"
-                Case DiskImage.BiosParameterBlock.BPBOoffsets.SectorsPerCluster
+                Case BiosParameterBlock.BPBOoffsets.SectorsPerCluster
                     Return "Sectors per Cluster"
-                Case DiskImage.BiosParameterBlock.BPBOoffsets.ReservedSectorCount
+                Case BiosParameterBlock.BPBOoffsets.ReservedSectorCount
                     Return "Reserved Sectors"
-                Case DiskImage.BiosParameterBlock.BPBOoffsets.NumberOfFATs
+                Case BiosParameterBlock.BPBOoffsets.NumberOfFATs
                     Return "Number of FATs"
-                Case DiskImage.BiosParameterBlock.BPBOoffsets.RootEntryCount
+                Case BiosParameterBlock.BPBOoffsets.RootEntryCount
                     Return "Root Directory Entries"
-                Case DiskImage.BiosParameterBlock.BPBOoffsets.SectorCountSmall
+                Case BiosParameterBlock.BPBOoffsets.SectorCountSmall
                     Return "Total Sector Count"
-                Case DiskImage.BiosParameterBlock.BPBOoffsets.MediaDescriptor
+                Case BiosParameterBlock.BPBOoffsets.MediaDescriptor
                     Return "Media Descriptor"
-                Case DiskImage.BiosParameterBlock.BPBOoffsets.SectorsPerFAT
+                Case BiosParameterBlock.BPBOoffsets.SectorsPerFAT
                     Return "Sectors per FAT"
-                Case DiskImage.BiosParameterBlock.BPBOoffsets.SectorsPerTrack
+                Case BiosParameterBlock.BPBOoffsets.SectorsPerTrack
                     Return "Sectors per Track"
-                Case DiskImage.BiosParameterBlock.BPBOoffsets.NumberOfHeads
+                Case BiosParameterBlock.BPBOoffsets.NumberOfHeads
                     Return "Number of Heads"
-                Case DiskImage.BiosParameterBlock.BPBOoffsets.HiddenSectors
+                Case BiosParameterBlock.BPBOoffsets.HiddenSectors
                     Return "Hidden Sectors"
                 Case Else
                     Return Offset.ToString
@@ -73,56 +74,56 @@
             Return FilePart & Extension
         End Function
 
-        Public Function DirectorytEntryDescription(Offset As DiskImage.DirectoryEntry.DirectoryEntryOffsets) As String
+        Public Function DirectorytEntryDescription(Offset As DirectoryEntry.DirectoryEntryOffsets) As String
             Select Case Offset
-                Case DiskImage.DirectoryEntry.DirectoryEntryOffsets.FileName
+                Case DirectoryEntry.DirectoryEntryOffsets.FileName
                     Return "Name"
-                Case DiskImage.DirectoryEntry.DirectoryEntryOffsets.Extension
+                Case DirectoryEntry.DirectoryEntryOffsets.Extension
                     Return "Extension"
-                Case DiskImage.DirectoryEntry.DirectoryEntryOffsets.Attributes
+                Case DirectoryEntry.DirectoryEntryOffsets.Attributes
                     Return "Attributes"
-                Case DiskImage.DirectoryEntry.DirectoryEntryOffsets.ReservedForWinNT
+                Case DirectoryEntry.DirectoryEntryOffsets.ReservedForWinNT
                     Return "Reserved For Windows NT"
-                Case DiskImage.DirectoryEntry.DirectoryEntryOffsets.CreationMillisecond
+                Case DirectoryEntry.DirectoryEntryOffsets.CreationMillisecond
                     Return "Creation Time Tenths"
-                Case DiskImage.DirectoryEntry.DirectoryEntryOffsets.CreationTime
+                Case DirectoryEntry.DirectoryEntryOffsets.CreationTime
                     Return "Creation Time"
-                Case DiskImage.DirectoryEntry.DirectoryEntryOffsets.CreationDate
+                Case DirectoryEntry.DirectoryEntryOffsets.CreationDate
                     Return "Creation Date"
-                Case DiskImage.DirectoryEntry.DirectoryEntryOffsets.LastAccessDate
+                Case DirectoryEntry.DirectoryEntryOffsets.LastAccessDate
                     Return "Last Access Date"
-                Case DiskImage.DirectoryEntry.DirectoryEntryOffsets.ReservedForFAT32
+                Case DirectoryEntry.DirectoryEntryOffsets.ReservedForFAT32
                     Return "Reserved for FAT 32"
-                Case DiskImage.DirectoryEntry.DirectoryEntryOffsets.LastWriteTime
+                Case DirectoryEntry.DirectoryEntryOffsets.LastWriteTime
                     Return "Last Write Time"
-                Case DiskImage.DirectoryEntry.DirectoryEntryOffsets.LastWriteDate
+                Case DirectoryEntry.DirectoryEntryOffsets.LastWriteDate
                     Return "Last Write Date"
-                Case DiskImage.DirectoryEntry.DirectoryEntryOffsets.StartingCluster
+                Case DirectoryEntry.DirectoryEntryOffsets.StartingCluster
                     Return "Starting Cluster"
-                Case DiskImage.DirectoryEntry.DirectoryEntryOffsets.FileSize
+                Case DirectoryEntry.DirectoryEntryOffsets.FileSize
                     Return "Size"
                 Case Else
                     Return Offset.ToString
             End Select
         End Function
 
-        Public Function DirectorytEntryLFNDescription(Offset As DiskImage.DirectoryEntry.LFNOffsets) As String
+        Public Function DirectorytEntryLFNDescription(Offset As DirectoryEntry.LFNOffsets) As String
             Select Case Offset
-                Case DiskImage.DirectoryEntry.LFNOffsets.Sequence
+                Case DirectoryEntry.LFNOffsets.Sequence
                     Return "LFN Sequence"
-                Case DiskImage.DirectoryEntry.LFNOffsets.FilePart1
+                Case DirectoryEntry.LFNOffsets.FilePart1
                     Return "LFN Name 1"
-                Case DiskImage.DirectoryEntry.LFNOffsets.Attributes
+                Case DirectoryEntry.LFNOffsets.Attributes
                     Return "LFN Attributes"
-                Case DiskImage.DirectoryEntry.LFNOffsets.Type
+                Case DirectoryEntry.LFNOffsets.Type
                     Return "LFN Type"
-                Case DiskImage.DirectoryEntry.LFNOffsets.Checksum
+                Case DirectoryEntry.LFNOffsets.Checksum
                     Return "LFN Checksum"
-                Case DiskImage.DirectoryEntry.LFNOffsets.FilePart2
+                Case DirectoryEntry.LFNOffsets.FilePart2
                     Return "LFN Name 2"
-                Case DiskImage.DirectoryEntry.LFNOffsets.StartingCluster
+                Case DirectoryEntry.LFNOffsets.StartingCluster
                     Return "LFN Starting Cluster"
-                Case DiskImage.DirectoryEntry.LFNOffsets.FilePart3
+                Case DirectoryEntry.LFNOffsets.FilePart3
                     Return "LFN Name 3"
                 Case Else
                     Return Offset.ToString
@@ -242,7 +243,8 @@
             If EntryCount > 0 Then
                 For Entry As UInteger = 0 To EntryCount - 1
                     Dim Offset = OffsetStart + (Entry * DirectoryEntry.DIRECTORY_ENTRY_SIZE)
-                    Dim FirstByte = FileBytes.GetByte(Offset)
+                    Dim Buffer = FileBytes.GetBytes(Offset, 11)
+                    Dim FirstByte = Buffer(0)
                     If FirstByte = 0 Then
                         Data.EndOfDirectory = True
                     End If
@@ -269,6 +271,9 @@
                         End If
                     Else
                         Data.EntryCount += 1
+                        If Not Buffer.CompareTo(EmptyDirectoryEntry) Then
+                            Data.PopulatedEntryCount += 1
+                        End If
                         If FileBytes.GetByte(Offset + 11) <> &HF Then 'Exclude LFN entries
                             Dim FilePart = FileBytes.ToUInt16(Offset)
                             If FilePart <> &H202E And FilePart <> &H2E2E Then 'Exclude '.' and '..' entries
@@ -283,15 +288,16 @@
             End If
         End Sub
 
-        Public Sub ResizeArray(ByRef b() As Byte, Length As UInteger, Padding As Byte)
-            Dim Size = b.Length - 1
-            If Size <> Length - 1 Then
-                ReDim Preserve b(Length - 1)
-                For Counter As UInteger = Size + 1 To Length - 1
-                    b(Counter) = Padding
-                Next
+        Public Function GetSubDirectoryFromParentOffset(Disk As Disk, Offset As UInteger) As IDirectory
+            Dim Directory As IDirectory
+            If Offset = 0 Then
+                Directory = Disk.Directory
+            Else
+                Directory = Disk.GetDirectoryEntryByOffset(Offset).SubDirectory
             End If
-        End Sub
+
+            Return Directory
+        End Function
 
         Private Function CalcXDFChecksumBlock(Data() As Byte, Start As UInteger, Length As UShort) As UInteger
             Dim Checksum As UInt32 = &HABDC

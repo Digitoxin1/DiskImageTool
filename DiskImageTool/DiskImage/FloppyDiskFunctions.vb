@@ -362,8 +362,12 @@ Namespace DiskImage
                     Return 1228800
                 Case FloppyDiskFormat.Floppy1440
                     Return 1474560
+                Case FloppyDiskFormat.FloppyDMF1024
+                    Return 1720320
                 Case FloppyDiskFormat.FloppyDMF2048
                     Return 1720320
+                Case FloppyDiskFormat.FloppyProCopy
+                    Return 1474560
                 Case FloppyDiskFormat.FloppyXDF525
                     Return 1556480
                 Case FloppyDiskFormat.FloppyXDF35

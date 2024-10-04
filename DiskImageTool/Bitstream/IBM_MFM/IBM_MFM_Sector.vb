@@ -155,12 +155,7 @@ Namespace Bitstream
             End Function
 
             Public Function GetSizeBytes() As UInteger
-                Dim Size = Me.Size
-
-                If Size > 7 Then
-                    Size = 7
-                End If
-                Return (2 ^ Size) * 128
+                Return GetSectorSizeBytes(Size)
             End Function
 
             Public Function IsModified() As Boolean

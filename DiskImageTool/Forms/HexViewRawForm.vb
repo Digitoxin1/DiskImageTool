@@ -11,6 +11,7 @@ Public Class HexViewRawForm
     Private _CurrentSelectionStart As Long = -1
     Private _DataGridInspector As HexViewDataGridInspector
     Private _Data() As Byte
+    Private _Sections As List(Of Bitstream.IBM_MFM.BitstreamSection)
     Private _StoredCellValue As String
     Private _LastSearch As HexSearch
 
@@ -18,18 +19,21 @@ Public Class HexViewRawForm
     Private Shared Function AddClipboardFormatListener(hwnd As IntPtr) As Boolean
     End Function
 
-    Public Sub New(Data() As Byte, Title As String)
+    Public Sub New(Data() As Byte, Title As String, Sections As List(Of Bitstream.IBM_MFM.BitstreamSection))
 
         ' This call is required by the designer.
         InitializeComponent()
 
         ' Add any initialization after the InitializeComponent() call.        
         _Data = Data
+        _Sections = Sections
         HexBox1.ByteProvider = New DynamicByteProvider(Data)
         HexBox1.ReadOnly = True
         HexBox1.LineInfoOffset = 0
         ToolStripStatusBytes.Text = Format(Data.Length, "N0") & " bytes"
         _LastSearch = New HexSearch
+
+        highlightsections
 
         Me.Text = "Hex Viewer"
         If Title <> "" Then
@@ -124,6 +128,36 @@ Public Class HexViewRawForm
         End If
 
         BtnCopyValue.Enabled = Enabled
+    End Sub
+
+    Private Function GetHighlightColor(SectionType As Bitstream.IBM_MFM.MFMSectionType) As Color
+        Select Case SectionType
+            Case Bitstream.IBM_MFM.MFMSectionType.GapBytes
+                Return Color.Green
+            Case Bitstream.IBM_MFM.MFMSectionType.SyncNulls
+                Return Color.Gray
+            Case Bitstream.IBM_MFM.MFMSectionType.SyncBytes
+                Return Color.Red
+            Case Bitstream.IBM_MFM.MFMSectionType.AddressMark
+                Return Color.Blue
+            Case Bitstream.IBM_MFM.MFMSectionType.IDArea
+                Return Color.DarkOrange
+            Case Bitstream.IBM_MFM.MFMSectionType.CRCBytes
+                Return Color.Purple
+            Case Bitstream.IBM_MFM.MFMSectionType.DataArea
+                Return Color.Black
+            Case Else
+                Return Color.Black
+        End Select
+
+    End Function
+
+    Private Sub HighlightSections()
+        For Each Section In _Sections
+            HexBox1.HighlightForeColor = GetHighlightColor(Section.SectionType)
+            HexBox1.HighlightBackColor = Color.White
+            HexBox1.Highlight(Section.StartIndex, Section.Length)
+        Next
     End Sub
 
     Private Sub ProcessKeyPress(e As KeyEventArgs)

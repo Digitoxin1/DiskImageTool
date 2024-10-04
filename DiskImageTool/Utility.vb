@@ -119,6 +119,16 @@ Module Utility
         Return Path
     End Function
 
+    Public Sub ResizeArray(ByRef b() As Byte, Length As UInteger, Padding As Byte)
+        Dim Size = b.Length - 1
+        If Size <> Length - 1 Then
+            ReDim Preserve b(Length - 1)
+            For Counter As UInteger = Size + 1 To Length - 1
+                b(Counter) = Padding
+            Next
+        End If
+    End Sub
+
     Public Function SaveByteArrayToFile(FilePath As String, Data() As Byte) As Boolean
         Try
             IO.File.WriteAllBytes(FilePath, Data)

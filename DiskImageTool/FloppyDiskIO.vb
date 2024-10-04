@@ -132,7 +132,7 @@ Module FloppyDiskIO
         End If
     End Function
 
-    Private Function FloppyDiskSaveFile(Buffer() As Byte, DiskFormat As FloppyDiskFormat, LoadedFileNames As Dictionary(Of String, LoadedImageData)) As String
+    Public Function FloppyDiskSaveFile(Buffer() As Byte, DiskFormat As FloppyDiskFormat, LoadedFileNames As Dictionary(Of String, LoadedImageData)) As String
         Dim FileExt = ".ima"
         Dim FileFilter = GetSaveDialogFilters(DiskFormat, FloppyImageType.BasicSectorImage, FileExt)
 
@@ -145,7 +145,7 @@ Module FloppyDiskIO
         AddHandler Dialog.FileOk, Sub(sender As Object, e As CancelEventArgs)
                                       If LoadedFileNames.ContainsKey(Dialog.FileName) Then
                                           Dim Msg As String = Path.GetFileName(Dialog.FileName) &
-                                            $"{vbCrLf}This file is currently open in {Application.ProductName}." &
+                                            $"{vbCrLf}{vbCrLf}This file is currently open in {Application.ProductName}. " &
                                             $"Try again with a different file name."
                                           MsgBox(Msg, MsgBoxStyle.Exclamation, "Save As")
                                           e.Cancel = True
@@ -153,7 +153,13 @@ Module FloppyDiskIO
                                   End Sub
 
         If Dialog.ShowDialog = DialogResult.OK Then
-            IO.File.WriteAllBytes(Dialog.FileName, Buffer)
+            Try
+                IO.File.WriteAllBytes(Dialog.FileName, Buffer)
+            Catch ex As Exception
+                MsgBox("An error has occurred while attempting to save the file.", MsgBoxStyle.Exclamation)
+                Return ""
+            End Try
+
             Return Dialog.FileName
         Else
             Return ""

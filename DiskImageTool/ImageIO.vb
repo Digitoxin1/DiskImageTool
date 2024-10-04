@@ -73,67 +73,67 @@ Module ImageIO
         End If
 
         If Image Is Nothing AndAlso File.Exists(ImageData.SourceFile) Then
-            'Try
-            If ImageData.Compressed Then
-                ImageData.ReadOnly = True
-                Data = OpenFileFromZIP(ImageData.SourceFile, ImageData.CompressedFile)
-            Else
-                ImageData.ReadOnly = IsFileReadOnly(ImageData.SourceFile)
-                Data = IO.File.ReadAllBytes(ImageData.SourceFile)
-            End If
-
-            Dim FloppyImageType = GetImageTypeFromFileName(ImageData.FileName)
-
-            LastChecksum = ImageData.Checksum
-            If SetChecksum Then
-                ImageData.Checksum = Crc32.ComputeChecksum(Data)
-            End If
-
-            If FloppyImageType = FloppyImageType.TranscopyImage Then
-                Dim TCImage = ImageFormats.TC.TranscopyImageLoad(Data)
-                If TCImage IsNot Nothing Then
-                    Image = TCImage
+            Try
+                If ImageData.Compressed Then
+                    ImageData.ReadOnly = True
+                    Data = OpenFileFromZIP(ImageData.SourceFile, ImageData.CompressedFile)
                 Else
-                    ImageData.InvalidImage = True
+                    ImageData.ReadOnly = IsFileReadOnly(ImageData.SourceFile)
+                    Data = IO.File.ReadAllBytes(ImageData.SourceFile)
                 End If
 
-            ElseIf FloppyImageType = FloppyImageType.PSIImage Then
-                Dim PSIImage = ImageFormats.PSI.PSIImageLoad(Data)
-                If PSIImage IsNot Nothing Then
-                    Image = PSIImage
-                Else
-                    ImageData.InvalidImage = True
+                Dim FloppyImageType = GetImageTypeFromFileName(ImageData.FileName)
+
+                LastChecksum = ImageData.Checksum
+                If SetChecksum Then
+                    ImageData.Checksum = Crc32.ComputeChecksum(Data)
                 End If
 
-            ElseIf FloppyImageType = FloppyImageType.MFMImage Then
-                Dim MFMImage = ImageFormats.MFM.MFMImageLoad(Data)
-                If MFMImage IsNot Nothing Then
-                    Image = MFMImage
-                Else
-                    ImageData.InvalidImage = True
-                End If
+                If FloppyImageType = FloppyImageType.TranscopyImage Then
+                    Dim TCImage = ImageFormats.TC.TranscopyImageLoad(Data)
+                    If TCImage IsNot Nothing Then
+                        Image = TCImage
+                    Else
+                        ImageData.InvalidImage = True
+                    End If
 
-            ElseIf FloppyImageType = FloppyImageType._86FImage Then
-                Dim F86Image = ImageFormats._86F.ImageLoad(Data)
-                If F86Image IsNot Nothing Then
-                    Image = F86Image
-                Else
-                    ImageData.InvalidImage = True
-                End If
+                ElseIf FloppyImageType = FloppyImageType.PSIImage Then
+                    Dim PSIImage = ImageFormats.PSI.PSIImageLoad(Data)
+                    If PSIImage IsNot Nothing Then
+                        Image = PSIImage
+                    Else
+                        ImageData.InvalidImage = True
+                    End If
 
-            Else
-                Image = New ByteArray(Data)
-            End If
-            'If ImageData.XDFMiniDisk Then
-            '    ImageData.ReadOnly = True
-            '    Dim NewData(ImageData.XDFLength - 1) As Byte
-            '    Array.Copy(Data, ImageData.XDFOffset, NewData, 0, ImageData.XDFLength)
-            '    Data = NewData
-            'End If
-            'Catch ex As Exception
-            'Debug.Print("Caught Exception: Functions.DiskImageLoad")
-            'Image = Nothing
-            'End Try
+                ElseIf FloppyImageType = FloppyImageType.MFMImage Then
+                    Dim MFMImage = ImageFormats.MFM.MFMImageLoad(Data)
+                    If MFMImage IsNot Nothing Then
+                        Image = MFMImage
+                    Else
+                        ImageData.InvalidImage = True
+                    End If
+
+                ElseIf FloppyImageType = FloppyImageType._86FImage Then
+                    Dim F86Image = ImageFormats._86F.ImageLoad(Data)
+                    If F86Image IsNot Nothing Then
+                        Image = F86Image
+                    Else
+                        ImageData.InvalidImage = True
+                    End If
+
+                Else
+                    Image = New ByteArray(Data)
+                End If
+                'If ImageData.XDFMiniDisk Then
+                '    ImageData.ReadOnly = True
+                '    Dim NewData(ImageData.XDFLength - 1) As Byte
+                '    Array.Copy(Data, ImageData.XDFOffset, NewData, 0, ImageData.XDFLength)
+                '    Data = NewData
+                'End If
+            Catch ex As Exception
+                Debug.Print("Caught Exception: Functions.DiskImageLoad")
+                Image = Nothing
+            End Try
         End If
 
         If Image Is Nothing Then

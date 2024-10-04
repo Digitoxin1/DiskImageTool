@@ -102,28 +102,6 @@
             Return (FileBytes.Length > 0 And FileBytes.Length < 4423680)
         End Function
 
-        Public Function FixImageSize() As Boolean
-            Dim Result As Boolean = False
-
-            Dim ReportedSize = _BPB.ReportedImageSize()
-
-            If ReportedSize <> FileBytes.Length Then
-                FileBytes.BatchEditMode = True
-                If ReportedSize < FileBytes.Length Then
-                    Dim b(FileBytes.Length - ReportedSize - 1) As Byte
-                    For i = 0 To b.Length - 1
-                        b(i) = 0
-                    Next
-                    FileBytes.SetBytes(b, FileBytes.Length - b.Length)
-                End If
-                FileBytes.Resize(ReportedSize)
-                FileBytes.BatchEditMode = False
-                Result = True
-            End If
-
-            Return Result
-        End Function
-
         Public Function GetDirectoryEntryByOffset(Offset As UInteger) As DirectoryEntry
             Return New DirectoryEntry(FileBytes, _BPB, _FATTables, _DirectoryCache, Offset)
         End Function

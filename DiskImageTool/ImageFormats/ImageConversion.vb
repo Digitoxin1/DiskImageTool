@@ -194,7 +194,7 @@ Namespace ImageFormats
 
                     If Track = 0 And Side = 0 Then
                         If BitstreamTrack.MFMData IsNot Nothing Then
-                            F86Image.Hole = Get86FHole(BitstreamTrack.MFMData.GetTrackFormat)
+                            F86Image.Hole = Get86FHole(GetTrackFormat(BitstreamTrack.MFMData.Size))
                         End If
                     End If
 
@@ -270,7 +270,7 @@ Namespace ImageFormats
                     BitstreamTrack = Image.GetTrack(Track, Side)
 
                     If BitstreamTrack.Decoded Then
-                        Dim TrackFormat = BitstreamTrack.MFMData.GetTrackFormat()
+                        Dim TrackFormat = GetTrackFormat(BitstreamTrack.MFMData.Size)
 
                         If DiskFormat = MFMTrackFormat.TrackFormatUnknown And TrackFormat <> MFMTrackFormat.TrackFormatUnknown Then
                             DiskFormat = TrackFormat
@@ -306,7 +306,7 @@ Namespace ImageFormats
                     Dim TrackType As TC.TransCopyDiskType
 
                     If BitstreamTrack.Decoded Then
-                        TrackType = GetTranscopyDiskType(BitstreamTrack.MFMData.GetTrackFormat)
+                        TrackType = GetTranscopyDiskType(GetTrackFormat(BitstreamTrack.MFMData.Size))
                         If DiskType = TC.TransCopyDiskType.Unknown And TrackType <> TC.TransCopyDiskType.Unknown Then
                             DiskType = TrackType
                         End If

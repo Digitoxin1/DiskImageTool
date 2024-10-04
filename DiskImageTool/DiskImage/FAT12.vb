@@ -169,15 +169,21 @@
             Return Math.Min(_FATTable.Length - 1, _BPB.NumberOfFATEntries + 1)
         End Function
 
-        Public Function GetFreeClusters(FreeClusterType As FreeClusterEmum) As List(Of UShort)
+        Public Function GetFreeClusters(FreeClusterType As FreeClusterEmum, Optional StartingCluster As UShort = 2) As List(Of UShort)
             Dim ClusterChain As New List(Of UShort)
+            Dim Cluster As UShort
 
             If _FATTable IsNot Nothing Then
                 Dim ClusterSize As UInteger = _BPB.BytesPerCluster
                 Dim AddCluster As Boolean
                 Dim Length = GetFATTableLength()
 
-                For Cluster As UShort = 1 To Length
+                If StartingCluster < 2 Then
+                    StartingCluster = 2
+                End If
+
+                For Index As UShort = 0 To Length - 2
+                    Cluster = (StartingCluster - 2 + Index) Mod (Length - 1) + 2
                     If _FATTable(Cluster) = 0 Then
                         Dim Offset = _BPB.ClusterToOffset(Cluster)
                         If _FileBytes.Length < Offset + ClusterSize Then
@@ -226,7 +232,7 @@
                 Dim ClusterSize As UInteger = _BPB.BytesPerCluster
                 Dim Length = GetFATTableLength()
 
-                For Cluster As UShort = 1 To Length
+                For Cluster As UShort = 2 To Length
                     If _FATTable(Cluster) = 0 Then
                         Dim Offset = _BPB.ClusterToOffset(Cluster)
                         If _FileBytes.Length < Offset + ClusterSize Then

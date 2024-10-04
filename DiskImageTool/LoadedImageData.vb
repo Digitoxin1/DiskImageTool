@@ -1,5 +1,4 @@
 ﻿Imports System.IO
-Imports DiskImageTool.DiskImage
 
 Public Class LoadedImageData
     Private ReadOnly _Filters() As Boolean
@@ -27,7 +26,7 @@ Public Class LoadedImageData
         _XDFOffset = 0
         _XDFLength = 0
 
-        Dim FilterCount As Integer = FilterGetCount()
+        Dim FilterCount As Integer = Filters.FilterGetCount()
         ReDim _Filters(FilterCount - 1)
         For Counter = 0 To FilterCount - 1
             _Filters(Counter) = False
@@ -59,7 +58,7 @@ Public Class LoadedImageData
 
     Public Shared Property StringOffset As Integer = 0
 
-    Public Property Filter(FilterType As FilterTypes) As Boolean
+    Public Property Filter(FilterType As Filters.FilterTypes) As Boolean
         Get
             Return _Filters(FilterType)
         End Get

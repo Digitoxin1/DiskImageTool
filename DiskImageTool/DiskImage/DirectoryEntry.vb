@@ -270,7 +270,7 @@
             End If
         End Sub
 
-        Private Sub InitFatChain()
+        Public Sub InitFatChain()
             Dim FAT = _FATTables.FAT
 
             If FAT.FATChains.ContainsKey(Offset) Then

@@ -61,42 +61,15 @@ Namespace Bitstream
                 End Get
             End Property
 
-            Public Function GetTrackFormat() As MFMTrackFormat
-                Dim Size = Math.Round(_Size / 10000) * 10000
-                If Size = 100000 Then
-                    Return MFMTrackFormat.TrackFormatDD
-                ElseIf Size = 170000 Then
-                    Return MFMTrackFormat.TrackFormatHD1200
-                ElseIf Size = 200000 Then
-                    Return MFMTrackFormat.TrackFormatHD
-                ElseIf Size = 400000 Then
-                    Return MFMTrackFormat.TrackFormatED
-                Else
-                    Return MFMTrackFormat.TrackFormatUnknown
-                End If
-            End Function
+            Public ReadOnly Property Size As UInteger
+                Get
+                    Return _Size
+                End Get
+            End Property
 
             Private Sub AddAddressMarkIndex(Offset As UInteger)
                 _AddressMarkIndexes.Add(Offset)
             End Sub
-
-            Private Function GetSectorList(BitStream As BitArray) As List(Of UInteger)
-                Dim IDAMPattern = BytesToBits(IDAM_Sync_Bytes)
-
-                Dim Start As UInteger = 0
-                Dim IDFieldSyncIndex As Integer
-                Dim SectorList As New List(Of UInteger)
-                Do
-                    IDFieldSyncIndex = FindPattern(BitStream, IDAMPattern, Start)
-                    If IDFieldSyncIndex > -1 Then
-                        SectorList.Add(IDFieldSyncIndex)
-                        Start = IDFieldSyncIndex + IDAMPattern.Length
-                        AddAddressMarkIndex(Start)
-                    End If
-                Loop Until IDFieldSyncIndex = -1
-
-                Return SectorList
-            End Function
 
             Private Sub MFMDecode(Bitstream As BitArray)
                 Dim Start As UInteger = 0
@@ -150,8 +123,10 @@ Namespace Bitstream
                 Dim SectorIndex As UShort = 0
                 Dim NextSectorOffset As UInteger
                 Dim DataEnd As UInteger
-
                 For Each SectorOffset In SectorList
+                    Dim Start = SectorOffset + IDAM_Sync_Bytes.Length * 8
+                    AddAddressMarkIndex(Start)
+
                     Dim Sector = New IBM_MFM_Sector(BitStream, SectorOffset)
 
                     DataEnd = SectorOffset + 160 + Sector.GetSizeBytes * MFM_BYTE_SIZE

@@ -1,62 +1,5 @@
-﻿Public Module FilterMethods
+﻿Namespace Filters
     Public Delegate Sub FilterChangedEventHandler()
-
-    Public Enum FilterTypes
-        ModifiedFiles
-        Disk_UnknownFormat
-        Disk_CustomFormat
-        Disk_NOBPB
-        Disk_NoBootLoader
-        DIsk_CustomBootLoader
-        Disk_MismatchedImageSize
-        Disk_MismatchedMediaDescriptor
-        Disk_FreeClustersWithData
-        Bootstrap_Unknown
-        OEMName_Unknown
-        OEMName_Mismatched
-        OEMName_Windows9x
-        OEMName_Verified
-        OEMName_Unverified
-        FileSystem_HasCreationDate
-        FileSystem_HasLastAccessDate
-        FileSystem_HasReservedBytesSet
-        FileSystem_HasLongFileNames
-        FileSystem_InvalidDirectoryEntries
-        FileSystem_DirectoryHasAdditionalData
-        FileSystem_DirectoryHasBootSector
-        FAT_BadSectors
-        FAT_LostClusters
-        FAT_MismatchedFATs
-        FAT_ChainingErrors
-        Image_InDatabase
-        Image_NotInDatabase
-        Image_Verified
-        Image_Unverified
-        Database_MismatchedStatus
-    End Enum
-
-    Public Function FilterGetCount() As Integer
-        Return [Enum].GetNames(GetType(FilterTypes)).Length
-    End Function
-
-    Public Class FilterCounts
-        Public Sub New()
-            _Total = 0
-            _Available = 0
-        End Sub
-        Public Property Total As Integer
-        Public Property Available As Integer
-    End Class
-
-    Public Class FilterTag
-        Public Sub New(Value As Integer)
-            _Value = Value
-            _Visible = False
-        End Sub
-        Public ReadOnly Property Value As Integer
-        Public Property Visible As Boolean
-    End Class
-
     Public Class ImageFilters
         Private ReadOnly _ContextMenuFilters As ContextMenuStrip
         Private _SuppressEvent As Boolean = False
@@ -325,4 +268,4 @@
             RaiseEvent FilterChanged()
         End Sub
     End Class
-End Module
+End Namespace

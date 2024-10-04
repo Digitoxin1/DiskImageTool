@@ -105,14 +105,14 @@ Public Class FilePropertiesForm
             Dim VolumeLabel() As Byte = MskFileHex.GetHex
             ReDim FileName(7)
             ReDim Extension(2)
-            DiskImage.ResizeArray(VolumeLabel, 11, 32)
+            ResizeArray(VolumeLabel, 11, 32)
             Array.Copy(VolumeLabel, 0, FileName, 0, 8)
             Array.Copy(VolumeLabel, 8, Extension, 0, 3)
         Else
             FileName = MskFileHex.GetHex
-            DiskImage.ResizeArray(FileName, 8, 32)
+            ResizeArray(FileName, 8, 32)
             Extension = MskExtensionHex.GetHex
-            DiskImage.ResizeArray(Extension, 3, 32)
+            ResizeArray(Extension, 3, 32)
         End If
 
         If Not FileName.CompareTo(DirectoryEntry.FileName) Then
