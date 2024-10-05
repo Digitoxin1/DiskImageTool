@@ -361,7 +361,7 @@ Namespace DiskImage
         Public Function GetSubDirectoryFromParentOffset(Disk As Disk, Offset As UInteger) As IDirectory
             Dim Directory As IDirectory
             If Offset = 0 Then
-                Directory = Disk.Directory
+                Directory = Disk.RootDirectory
             Else
                 Directory = Disk.GetDirectoryEntryByOffset(Offset).SubDirectory
             End If

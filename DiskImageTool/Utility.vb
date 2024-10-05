@@ -11,20 +11,6 @@ Module Utility
         Return CleanString(FileName, Path.GetInvalidPathChars(), "_")
     End Function
 
-    Private Function CleanString(Value As String, InvalidChars() As Char, ReplaceWith As String) As String
-        Dim NewValue As String = ""
-        For Counter = 0 To Value.Length - 1
-            Dim FileChar = Value.Substring(Counter, 1)
-            If InvalidChars.Contains(FileChar) Then
-                NewValue &= ReplaceWith
-            Else
-                NewValue &= FileChar
-            End If
-        Next
-
-        Return NewValue
-    End Function
-
     Public Function DuplicateHashTable(Table As Hashtable) As Hashtable
         Dim NewTable As New Hashtable
         For Each Key In Table.Keys
@@ -54,6 +40,15 @@ Module Utility
         Next
 
         Return Description & " (" & String.Join("; ", Extensions) & ")|" & String.Join(";", Extensions)
+    End Function
+
+    Public Function FillArray(Length As UInteger, FillChar As Byte) As Byte()
+        Dim b(Length - 1) As Byte
+        For i = 0 To Length - 1
+            b(i) = FillChar
+        Next
+
+        Return b
     End Function
 
     Public Function GetDownloadsFolder() As String
@@ -139,6 +134,19 @@ Module Utility
         Return True
     End Function
 
+    Private Function CleanString(Value As String, InvalidChars() As Char, ReplaceWith As String) As String
+        Dim NewValue As String = ""
+        For Counter = 0 To Value.Length - 1
+            Dim FileChar = Value.Substring(Counter, 1)
+            If InvalidChars.Contains(FileChar) Then
+                NewValue &= ReplaceWith
+            Else
+                NewValue &= FileChar
+            End If
+        Next
+
+        Return NewValue
+    End Function
     <DllImport("shell32.dll")>
     Private Function SHGetKnownFolderPath(<MarshalAs(UnmanagedType.LPStruct)> ByVal rfid As Guid,
         ByVal dwFlags As UInt32,

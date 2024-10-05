@@ -3,7 +3,7 @@
 Namespace DiskImage
     Module UpdateFunctions
         Public Sub BootSectorRemoveFromDirectory(Disk As Disk)
-            If Not Disk.Directory.Data.HasBootSector Then
+            If Not Disk.RootDirectory.Data.HasBootSector Then
                 Exit Sub
             End If
 
@@ -13,15 +13,15 @@ Namespace DiskImage
                 BootSectorBytes(Counter) = 0
             Next
 
-            Disk.Image.SetBytes(BootSectorBytes, Disk.Directory.Data.BootSectorOffset)
+            Disk.Image.SetBytes(BootSectorBytes, Disk.RootDirectory.Data.BootSectorOffset)
         End Sub
 
         Public Sub BootSectorRestoreFromDirectory(Disk As Disk)
-            If Not Disk.Directory.Data.HasBootSector Then
+            If Not Disk.RootDirectory.Data.HasBootSector Then
                 Exit Sub
             End If
 
-            Dim BootSectorBytes = Disk.Image.GetBytes(Disk.Directory.Data.BootSectorOffset, BootSector.BOOT_SECTOR_SIZE)
+            Dim BootSectorBytes = Disk.Image.GetBytes(Disk.RootDirectory.Data.BootSectorOffset, BootSector.BOOT_SECTOR_SIZE)
             Disk.Image.SetBytes(BootSectorBytes, 0)
         End Sub
 

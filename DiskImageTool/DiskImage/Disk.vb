@@ -9,7 +9,7 @@
         Public Const BYTES_PER_SECTOR As UShort = 512
         Private ReadOnly _BootSector As BootSector
         Private _BPB As BiosParameterBlock
-        Private ReadOnly _Directory As RootDirectory
+        Private ReadOnly _RootDirectory As RootDirectory
         Private ReadOnly _DirectoryCache As Dictionary(Of UInteger, DirectoryCacheEntry)
         Private ReadOnly _FATTables As FATTables
         Private _DiskFormat As FloppyDiskFormat
@@ -24,7 +24,7 @@
             _DiskFormat = InferFloppyDiskFormat()
             _FATTables.SyncFATs = Not IsDiskFormatXDF(_DiskFormat)
 
-            _Directory = New RootDirectory(FileBytes, _BPB, _FATTables, _DirectoryCache, False)
+            _RootDirectory = New RootDirectory(FileBytes, _BPB, _FATTables, _DirectoryCache, False)
 
             CacheDirectoryEntries()
 
@@ -52,9 +52,9 @@
             End Get
         End Property
 
-        Public ReadOnly Property Directory As RootDirectory
+        Public ReadOnly Property RootDirectory As RootDirectory
             Get
-                Return _Directory
+                Return _RootDirectory
             End Get
         End Property
 
@@ -122,18 +122,18 @@
         Public Function GetFileList() As List(Of DirectoryEntry)
             Dim DirectoryList As New List(Of DirectoryEntry)
 
-            EnumerateDirectoryEntries(_Directory, DirectoryList)
+            EnumerateDirectoryEntries(_RootDirectory, DirectoryList)
 
             Return DirectoryList
         End Function
 
         Public Function GetVolumeLabel() As DirectoryEntry
             Dim VolumeLabel As DirectoryEntry = Nothing
-            Dim DirectoryEntryCount = _Directory.Data.EntryCount
+            Dim DirectoryEntryCount = _RootDirectory.Data.EntryCount
 
             If DirectoryEntryCount > 0 Then
                 For Counter As UInteger = 0 To DirectoryEntryCount - 1
-                    Dim File = _Directory.GetFile(Counter)
+                    Dim File = _RootDirectory.GetFile(Counter)
                     If File.IsValidVolumeName Then
                         VolumeLabel = File
                         Exit For
@@ -157,7 +157,7 @@
             _FATTables.Reinitialize(_BPB)
             _DiskFormat = InferFloppyDiskFormat()
             _FATTables.SyncFATs = Not IsDiskFormatXDF(_DiskFormat)
-            _Directory.RefreshData(_BPB)
+            _RootDirectory.RefreshData(_BPB)
         End Sub
 
         Public Sub ClearChanges()
@@ -169,7 +169,7 @@
             _DirectoryCache.Clear()
 
             If IsValidImage() Then
-                CacheDirectoryEntries(_Directory)
+                CacheDirectoryEntries(_RootDirectory)
             End If
         End Sub
 

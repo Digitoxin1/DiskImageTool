@@ -36,10 +36,7 @@ Public Class ImageCreationForm
     End Property
 
     Private Sub AddTandy2000RootEntries(Data() As Byte, Params As FloppyDiskParams)
-        Dim Buffer = New Byte(31) {}
-        For Counter = 0 To Buffer.Length - 1
-            Buffer(Counter) = &HF6
-        Next
+        Dim Buffer = FillArray(32, &HF6)
         Buffer(0) = &H0
 
         Dim Offset As UInteger = (Params.ReservedSectorCount + (Params.SectorsPerFAT * Params.NumberOfFATs)) * Params.BytesPerSector

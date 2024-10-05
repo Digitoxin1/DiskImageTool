@@ -122,7 +122,7 @@ Module DebugScript
         Next Index
 
         FileName = Path.Combine(DataPath, "ROOTDIR.CRC")
-        File.WriteAllText(FileName, "ROOTDIR.TMP " & Crc32.ComputeChecksum(Disk.Directory.GetContent()).ToString("X8"))
+        File.WriteAllText(FileName, "ROOTDIR.TMP " & Crc32.ComputeChecksum(Disk.RootDirectory.GetContent()).ToString("X8"))
     End Sub
 
     Private Function ConvertByteToByteArray(Value As Byte) As Byte()

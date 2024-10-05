@@ -18,17 +18,6 @@ Public Enum ItemScanTypes
     All = 31
 End Enum
 
-Public Structure FileData
-    Dim DirectoryEntry As DiskImage.DirectoryEntry
-    Dim FilePath As String
-    Dim Index As Integer
-    Dim IsLastEntry As Boolean
-    Dim LFNFileName As String
-    Dim ParentOffset As Integer
-    Dim DuplicateFileName As Boolean
-    Dim InvalidVolumeName As Boolean
-End Structure
-
 Public Structure FileSystemInfo
     Dim VolumeLabel As DirectoryEntry
     Dim OldestFileDate As Date?
@@ -115,7 +104,7 @@ Public Class MainForm
         Dim HasLostClusters As Boolean = False
 
         If Not Remove And Disk.IsValidImage Then
-            Response = ProcessDirectoryEntries(Disk.Directory, True)
+            Response = ProcessDirectoryEntries(Disk.RootDirectory, True)
             HasLostClusters = Disk.FAT.LostClusters.Count > 0
         Else
             Response = New DirectoryScanResponse(Nothing)
@@ -1061,7 +1050,7 @@ Public Class MainForm
 
         If _Disk IsNot Nothing AndAlso _Disk.IsValidImage Then
             If CurrentImageData.CachedRootDir Is Nothing Then
-                CurrentImageData.CachedRootDir = _Disk.Directory.GetContent
+                CurrentImageData.CachedRootDir = _Disk.RootDirectory.GetContent
             End If
             PopulateFilesPanel(CurrentImageData, ClearItems)
         Else
@@ -2330,7 +2319,7 @@ Public Class MainForm
             BtnDisplayDirectory.Tag = 0
         End If
 
-        Dim Response = ProcessDirectoryEntries(_Disk.Directory, False)
+        Dim Response = ProcessDirectoryEntries(_Disk.RootDirectory, False)
 
         If Not ClearItems Then
             ListViewFilesRemoveUnused(Response.ItemCount)
@@ -3019,17 +3008,16 @@ Public Class MainForm
                         Dim ProcessResponse = Response.ProcessDirectoryEntry(DirectoryEntry, LFNFileName, Path = "")
 
                         If Not ScanOnly Then
-                            Dim FileData As FileData
-                            With FileData
-                                .Index = Counter
-                                .FilePath = Path
-                                .DirectoryEntry = DirectoryEntry
-                                .IsLastEntry = (Counter = DirectoryEntryCount - 1)
-                                .ParentOffset = Offset
-                                .LFNFileName = LFNFileName
-                                .DuplicateFileName = ProcessResponse.DuplicateFileName
+                            Dim FileData As New FileData With {
+                                .Index = Counter,
+                                .FilePath = Path,
+                                .DirectoryEntry = DirectoryEntry,
+                                .IsLastEntry = (Counter = DirectoryEntryCount - 1),
+                                .ParentOffset = Offset,
+                                .LFNFileName = LFNFileName,
+                                .DuplicateFileName = ProcessResponse.DuplicateFileName,
                                 .InvalidVolumeName = ProcessResponse.InvalidVolumeName
-                            End With
+                            }
                             Dim Item = ListViewFilesAddItem(FileData, Group, ItemIndex)
                             ItemIndex += 1
                         End If
@@ -3253,13 +3241,13 @@ Public Class MainForm
             BtnDisplayLostClusters.Enabled = Disk.FAT.LostClusters.Count > 0
             Dim Compare = Disk.CheckImageSize
             BtnFixImageSize.Enabled = Disk.Image.Data.CanResize And Compare <> 0
-            If Disk.Directory.Data.HasBootSector Then
-                Dim BootSectorBytes = Disk.Image.GetBytes(Disk.Directory.Data.BootSectorOffset, BootSector.BOOT_SECTOR_SIZE)
+            If Disk.RootDirectory.Data.HasBootSector Then
+                Dim BootSectorBytes = Disk.Image.GetBytes(Disk.RootDirectory.Data.BootSectorOffset, BootSector.BOOT_SECTOR_SIZE)
                 BtnRestoreBootSector.Enabled = Not BootSectorBytes.CompareTo(Disk.BootSector.Data)
             Else
                 BtnRestoreBootSector.Enabled = False
             End If
-            BtnRemoveBootSector.Enabled = Disk.Directory.Data.HasBootSector
+            BtnRemoveBootSector.Enabled = Disk.RootDirectory.Data.HasBootSector
             BtnDisplayOverdumpData.Enabled = Compare > 0
 
             RefreshFixImageSubMenu(Disk)
@@ -4605,4 +4593,15 @@ Public Class MainForm
             End Get
         End Property
     End Class
+End Class
+
+Public Class FileData
+    Public Property DirectoryEntry As DiskImage.DirectoryEntry
+    Public Property FilePath As String
+    Public Property Index As Integer
+    Public Property IsLastEntry As Boolean
+    Public Property LFNFileName As String
+    Public Property ParentOffset As Integer
+    Public Property DuplicateFileName As Boolean
+    Public Property InvalidVolumeName As Boolean
 End Class

@@ -169,7 +169,7 @@ Module HexViews
 
         If Offset = 0 Then
             Caption = "Root Directory"
-            HexViewSectorData = New HexViewSectorData(Disk, Disk.Directory.SectorChain)
+            HexViewSectorData = New HexViewSectorData(Disk, Disk.RootDirectory.SectorChain)
             HighlightDirectoryData(Disk, HexViewSectorData, True)
         Else
             Dim DirectoryEntry = Disk.GetDirectoryEntryByOffset(Offset)
