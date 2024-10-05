@@ -61,8 +61,8 @@ Public Class FATTables
         End If
 
         For Counter As UShort = 1 To NumFATs - 1
-            Dim FATCopy1 = _FAT12(Counter - 1).GetFAT
-            Dim FATCopy2 = _FAT12(Counter).GetFAT
+            Dim FATCopy1 = _FAT12(Counter - 1).Data
+            Dim FATCopy2 = _FAT12(Counter).Data
 
             If Not FATCopy1.CompareTo(FATCopy2) Then
                 Return False
@@ -119,7 +119,8 @@ Public Class FATTables
                 Result = True
             End If
             If UpdateMediaDescriptor Then
-                If _FAT12(Counter).UpdateMedaDescriptor(MediaDescriptor) Then
+                If _FAT12(Counter).MediaDescriptor <> MediaDescriptor Then
+                    _FAT12(Counter).MediaDescriptor = MediaDescriptor
                     Result = True
                 End If
             End If
@@ -178,7 +179,7 @@ Public Class FATTables
             If Counter > OldNumFATs - 1 Then
                 _FAT12(Counter) = New FAT12(_FileBytes, _BPB, Counter)
             Else
-                _FAT12(Counter).PopulateFAT12(_BPB)
+                _FAT12(Counter).Reinitialize(_BPB)
             End If
         Next
         _FATsMatch = CompareFATTables()

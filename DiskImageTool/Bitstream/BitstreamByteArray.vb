@@ -5,7 +5,6 @@ Namespace Bitstream
         Implements IByteArray
 
         Friend Const SECTOR_COUNT As Byte = 36
-        Private ReadOnly _Image As IBitstreamImage
         Private ReadOnly _ProtectedSectors As HashSet(Of UInteger)
         Private ReadOnly _NonStandardTracks As HashSet(Of UShort)
         Private ReadOnly _EmptySector() As Byte

@@ -136,6 +136,7 @@
     <Compile Include="Bitstream\IBM_MFM\IBM_MFM_Sector.vb" />
     <Compile Include="Bitstream\IBM_MFM\IBM_MFM_Tools.vb" />
     <Compile Include="Bitstream\IBM_MFM\IBM_MFM_Track.vb" />
+    <Compile Include="DiskImage\FAT12Base.vb" />
     <Compile Include="DiskImage\UpdateFunctions.vb" />
     <Compile Include="Filters\Enums.vb" />
     <Compile Include="Filters\FilterCounts.vb" />

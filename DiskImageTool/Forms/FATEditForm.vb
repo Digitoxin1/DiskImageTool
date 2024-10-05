@@ -61,7 +61,7 @@ Public Class FATEditForm
 
         _FATTable = GetDataTable(_FATTables.FAT)
         ReDim _GridCells(_FATTable.Rows.Count - 1)
-        Dim TableLength = _FATTables.FAT.GetFATTableLength()
+        Dim TableLength = _FATTables.FAT.TableLength
         _GridSize = GetGridSize(TableLength)
         LblValid.Text = "Valid Clusters: 2 - " & TableLength
 
@@ -137,7 +137,7 @@ Public Class FATEditForm
         _OffsetLookup = New Dictionary(Of UInteger, UInteger)
         Dim OffsetIndex As UInteger = 1
 
-        For Cluster = 2 To FAT.GetFATTableLength
+        For Cluster = 2 To FAT.TableLength
             Dim OffsetList = GetOffsetsFromCluster(FAT, Cluster)
             Dim Value = FAT.TableEntry(Cluster)
             Dim Row = FATTable.NewRow
@@ -265,7 +265,7 @@ Public Class FATEditForm
             Else
                 Return ""
             End If
-        ElseIf Value > FAT.GetFATTableLength Then
+        ElseIf Value > FAT.TableLength Then
             Return "Invalid Cluster"
         ElseIf FileAllocation Is Nothing Then
             Return "Lost Cluster"
@@ -323,7 +323,7 @@ Public Class FATEditForm
             Return Color.Black
         ElseIf TypeName = "Reserved" Then
             Return Color.Orange
-        ElseIf Value > _FATTables.FAT.GetFATTableLength Then
+        ElseIf Value > _FATTables.FAT.TableLength Then
             Return Color.Red
         Else
             Return Color.Blue
@@ -333,7 +333,7 @@ Public Class FATEditForm
     Private Function GridGetIndex(e As MouseEventArgs) As Integer
         Dim Index As Integer = -1
 
-        Dim Length = _FATTables.FAT.GetFATTableLength - 2
+        Dim Length = _FATTables.FAT.TableLength - 2
         Dim LeftPos As Integer = Int(e.X / _GridSize)
         Dim TopPos As Integer = Int(e.Y / _GridSize)
         Dim MaxWidth As Integer = Int(PictureBoxFAT.Width / _GridSize)
@@ -884,7 +884,7 @@ Public Class FATEditForm
 
     Private Sub PictureBoxFAT_Resize(sender As Object, e As EventArgs) Handles PictureBoxFAT.Resize
         If _FATTables IsNot Nothing Then
-            _GridSize = GetGridSize(_FATTables.FAT.GetFATTableLength)
+            _GridSize = GetGridSize(_FATTables.FAT.TableLength)
             PictureBoxFAT.Refresh()
         End If
     End Sub

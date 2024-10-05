@@ -1,24 +1,14 @@
 ﻿Namespace DiskImage
     Public Class FAT12
-        Public Const FAT_BAD_CLUSTER As UShort = &HFF7
-        Public Const FAT_FREE_CLUSTER As UShort = &H0
-        Public Const FAT_LAST_CLUSTER_END As UShort = &HFFF
-        Public Const FAT_LAST_CLUSTER_START As UShort = &HFF8
-        Public Const FAT_RESERVED_END As UShort = &HFF6
-        Public Const FAT_RESERVED_START As UShort = &HFF0
-        Public Shared ReadOnly ValidMediaDescriptor() As Byte = {&HF0, &HF8, &HF9, &HFA, &HFB, &HFC, &HFD, &HFE, &HFF}
+        Inherits FAT12Base
         Private ReadOnly _BadClusters As List(Of UShort)
         Private ReadOnly _CircularChains As HashSet(Of UShort)
         Private ReadOnly _FATChains As Dictionary(Of UInteger, FATChain)
         Private ReadOnly _FileAllocation As Dictionary(Of UShort, List(Of UInteger))
         Private ReadOnly _FileBytes As ImageByteArray
-        Private ReadOnly _Index As UShort
         Private ReadOnly _LostClusters As SortedSet(Of UShort)
         Private _BPB As BiosParameterBlock
-        Private _FATTable() As UShort
         Private _FreeClusters As UInteger
-        Private _HasMediaDescriptor As Boolean
-        Private _MediaDescriptor As Byte
         Private _ReservedClusters As UInteger
 
         Public Enum FreeClusterEmum
@@ -28,9 +18,9 @@
         End Enum
 
         Sub New(FileBytes As ImageByteArray, BPB As BiosParameterBlock, Index As UShort)
+            MyBase.New(FileBytes, BPB, Index)
             _BPB = BPB
             _FileBytes = FileBytes
-            _Index = Index
             _FATChains = New Dictionary(Of UInteger, FATChain)
             _FileAllocation = New Dictionary(Of UShort, List(Of UInteger))
             _FreeClusters = 0
@@ -39,7 +29,7 @@
             _CircularChains = New HashSet(Of UShort)
             _LostClusters = New SortedSet(Of UShort)
 
-            PopulateFAT12()
+            ProcessFAT12()
         End Sub
 
         Public ReadOnly Property BadClusters As List(Of UShort)
@@ -78,113 +68,32 @@
             End Get
         End Property
 
-        Public ReadOnly Property MediaDescriptor As Byte
-            Get
-                Return _MediaDescriptor
-            End Get
-        End Property
-
         Public ReadOnly Property ReservedClusters As UInteger
             Get
                 Return _ReservedClusters
             End Get
         End Property
 
-        Public Property TableEntry(Cluster As UShort) As UShort
-            Get
-                Return _FATTable(Cluster)
-            End Get
-
-            Set(value As UShort)
-                If _FATTable(Cluster) <> value Then
-                    _FATTable(Cluster) = value
-                End If
-            End Set
-        End Property
-
-        Public Shared Function DecodeFAT12(Data() As Byte, Size As UShort) As UShort()
-            Dim MaxSize As Integer = Int(Data.Length * 2 / 3)
-
-            If MaxSize Mod 2 > 0 Then
-                MaxSize -= 1
-            End If
-
-            If Size Mod 2 > 0 Then
-                Size += 1
-            End If
-
-            If Size > MaxSize Then
-                Size = MaxSize
-            End If
-
-            Dim FATTable(Size - 1) As UShort
-
-            For i = 0 To Size - 1
-                Dim Offset As Integer = Int(i + i / 2)
-                Dim b = BitConverter.ToUInt16(Data, Offset)
-
-                If i Mod 2 = 0 Then
-                    FATTable(i) = b And &HFFF
-                Else
-                    FATTable(i) = b >> 4
-                End If
-            Next
-
-            Return FATTable
-        End Function
-
-        Public Shared Function EncodeFAT12(FATTable() As UShort) As Byte()
-            Dim Size As Integer = Math.Ceiling(FATTable.Length / 2 * 3)
-
-            Dim FatBytes(Size - 1) As Byte
-
-            For i = 0 To Size - 1
-                Dim Offset As Integer = Int(i / 3 * 2)
-                If i Mod 3 = 0 Then
-                    FatBytes(i) = FATTable(Offset) And &HFF
-                ElseIf i Mod 3 = 1 Then
-                    FatBytes(i) = (FATTable(Offset) >> 8)
-                    If Offset < FATTable.Length - 1 Then
-                        FatBytes(i) = FatBytes(i) + (FATTable(Offset + 1) And &HF) * 16
-                    End If
-                Else
-                    FatBytes(i) = FATTable(Offset) >> 4
-                End If
-            Next
-
-            Return FatBytes
-        End Function
-
         Public Function GetAllocatedClusterCount() As Integer
             Return _FileAllocation.Count
         End Function
 
-        Public Function GetFAT() As Byte()
-            Dim SectorStart = _BPB.FATRegionStart + (_BPB.SectorsPerFAT * _Index)
-
-            Return _FileBytes.GetSectors(SectorStart, _BPB.SectorsPerFAT)
-        End Function
-
-        Public Function GetFATTableLength() As UShort
-            Return Math.Min(_FATTable.Length - 1, _BPB.NumberOfFATEntries + 1)
-        End Function
 
         Public Function GetFreeClusters(FreeClusterType As FreeClusterEmum, Optional StartingCluster As UShort = 2) As List(Of UShort)
             Dim ClusterChain As New List(Of UShort)
             Dim Cluster As UShort
 
-            If _FATTable IsNot Nothing Then
+            If TableLength > 0 Then
                 Dim ClusterSize As UInteger = _BPB.BytesPerCluster
                 Dim AddCluster As Boolean
-                Dim Length = GetFATTableLength()
 
                 If StartingCluster < 2 Then
                     StartingCluster = 2
                 End If
 
-                For Index As UShort = 0 To Length - 2
-                    Cluster = (StartingCluster - 2 + Index) Mod (Length - 1) + 2
-                    If _FATTable(Cluster) = 0 Then
+                For Index As UShort = 0 To TableLength - 2
+                    Cluster = (StartingCluster - 2 + Index) Mod (TableLength - 1) + 2
+                    If TableEntry(Cluster) = 0 Then
                         Dim Offset = _BPB.ClusterToOffset(Cluster)
                         If _FileBytes.Length < Offset + ClusterSize Then
                             ClusterSize = Math.Max(_FileBytes.Length - Offset, 0)
@@ -221,19 +130,13 @@
             Return _LostClusters.Count
         End Function
 
-        Public Function GetOffset() As UInteger
-            Dim SectorStart = _BPB.FATRegionStart + (_BPB.SectorsPerFAT * _Index)
-            Return Disk.SectorToBytes(SectorStart)
-        End Function
-
         Public Function HasFreeClusters(FreeClusterType As FreeClusterEmum) As Boolean
 
-            If _FATTable IsNot Nothing Then
+            If TableLength > 0 Then
                 Dim ClusterSize As UInteger = _BPB.BytesPerCluster
-                Dim Length = GetFATTableLength()
 
-                For Cluster As UShort = 2 To Length
-                    If _FATTable(Cluster) = 0 Then
+                For Cluster As UShort = 2 To TableLength
+                    If TableEntry(Cluster) = 0 Then
                         Dim Offset = _BPB.ClusterToOffset(Cluster)
                         If _FileBytes.Length < Offset + ClusterSize Then
                             ClusterSize = Math.Max(_FileBytes.Length - Offset, 0)
@@ -263,31 +166,10 @@
             Return False
         End Function
 
-        Public Function HasMediaDescriptor() As Boolean
-            Return _HasMediaDescriptor
-        End Function
-
-        Public Function HasValidMediaDescriptor() As Boolean
-            Return ValidMediaDescriptor.Contains(MediaDescriptor)
-        End Function
-
-        Public Sub PopulateFAT12()
-            Erase _FATTable
-
-            If _BPB.IsValid Then
-                Dim FATBytes = GetFAT()
-                Dim Size = _BPB.NumberOfFATEntries + 2
-                _FATTable = DecodeFAT12(FATBytes, Size)
-                _HasMediaDescriptor = FATBytes(1) = &HFF And FATBytes(2) = &HFF
-                _MediaDescriptor = FATBytes(0)
-            End If
-
-            ProcessFAT12()
-        End Sub
-
-        Public Sub PopulateFAT12(BPB As BiosParameterBlock)
+        Public Sub Reinitialize(BPB As BiosParameterBlock)
             _BPB = BPB
-            PopulateFAT12()
+            InitializeFAT(BPB)
+            ProcessFAT12()
         End Sub
 
         Public Sub ProcessFAT12()
@@ -300,11 +182,11 @@
             _LostClusters.Clear()
 
             If _BPB.IsValid Then
-                Dim Length As UShort = GetFATTableLength()
+                Dim Length As UShort = TableLength
                 Dim Value As UShort
 
                 For Cluster As UShort = 2 To Length
-                    Value = _FATTable(Cluster)
+                    Value = TableEntry(Cluster)
                     If Value = 0 Then
                         _FreeClusters += 1
                     ElseIf Value = FAT_BAD_CLUSTER Then
@@ -321,41 +203,13 @@
         End Sub
 
         Public Function UpdateFAT12() As Boolean
-            Dim Updated As Boolean = False
-            Dim UseBatchEditMode As Boolean = Not _FileBytes.BatchEditMode
+            Dim Result = UpdateFAT()
 
-            Dim FATBytes = EncodeFAT12(_FATTable)
-
-            If UseBatchEditMode Then
-                _FileBytes.BatchEditMode = True
-            End If
-
-            Dim OldBytes = GetFAT()
-            If Not OldBytes.CompareTo(FATBytes, True) Then
-                SetFAT(FATBytes)
-                Updated = True
-            End If
-
-            If UseBatchEditMode Then
-                _FileBytes.BatchEditMode = False
-            End If
-
-            If Updated Then
+            If Result Then
                 ProcessFAT12()
             End If
 
-            Return Updated
-        End Function
-
-        Public Function UpdateMedaDescriptor(Value As Byte) As Boolean
-            If Value <> _MediaDescriptor Then
-                _MediaDescriptor = Value
-                Dim Offset = GetOffset()
-                _FileBytes.SetBytes(Value, Offset)
-                Return True
-            End If
-
-            Return False
+            Return Result
         End Function
 
         Friend Function InitFATChain(Offset As UInteger, ClusterStart As UShort) As FATChain
@@ -365,8 +219,8 @@
             Dim OffsetList As List(Of UInteger)
             Dim PrevCluster As UShort = 0
 
-            If _FATTable IsNot Nothing Then
-                Dim ClusterCount = GetFATTableLength()
+            If TableLength > 0 Then
+                Dim ClusterCount = TableLength
 
                 Do
                     If Cluster >= 2 And Cluster <= ClusterCount Then
@@ -401,7 +255,7 @@
                             OffsetList.Add(Offset)
                         End If
                         PrevCluster = Cluster
-                        Cluster = _FATTable(Cluster)
+                        Cluster = TableEntry(Cluster)
                         If Cluster >= FAT_LAST_CLUSTER_START And Cluster <= FAT_LAST_CLUSTER_END Then
                             FATChain.OpenChain = False
                         End If
@@ -430,11 +284,5 @@
 
             Return True
         End Function
-
-        Private Sub SetFAT(Data() As Byte)
-            Dim Offset = GetOffset()
-
-            _FileBytes.SetBytes(Data, Offset)
-        End Sub
     End Class
 End Namespace
