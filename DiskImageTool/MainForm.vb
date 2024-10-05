@@ -116,7 +116,7 @@ Public Class MainForm
 
         If Not Remove And Disk.IsValidImage Then
             Response = ProcessDirectoryEntries(Disk.Directory, True)
-            HasLostClusters = Disk.FAT.GetLostClusterCount > 0
+            HasLostClusters = Disk.FAT.LostClusters.Count > 0
         Else
             Response = New DirectoryScanResponse(Nothing)
         End If
@@ -1032,6 +1032,7 @@ Public Class MainForm
         BtnWriteFloppyA.Enabled = False
         BtnWriteFloppyB.Enabled = False
     End Sub
+
     Private Function DirectoryEntryGetStats(DirectoryEntry As DiskImage.DirectoryEntry) As DirectoryStats
         Dim Stats As DirectoryStats
 
@@ -1290,126 +1291,80 @@ Public Class MainForm
         End If
     End Sub
 
-    Private Sub DirectoryEntryAddFile(Disk As Disk, Entry As DirectoryEntry, FileName As String, FreeClusters As List(Of UShort))
-        Dim FileInfo = New IO.FileInfo(FileName)
-        Dim ClusterSize = Disk.BPB.BytesPerCluster
+    Private Sub FileAdd(Disk As Disk, ParentDirectory As IDirectory, DirectoryEntry As DirectoryEntry, Multiselect As Boolean)
+        Dim Dialog = New OpenFileDialog With {
+            .Multiselect = Multiselect
+        }
 
-        Dim FirstCluster As UShort = 0
+        If Dialog.ShowDialog <> DialogResult.OK Then
+            Exit Sub
+        End If
 
-        If FileInfo.Length > 0 Then
-            'Load file into buffer, padding with empty space if needed            
-            Dim FileSize = Math.Ceiling(FileInfo.Length / ClusterSize) * ClusterSize
-            Dim FileBuffer = ReadFileIntoBuffer(FileInfo, FileSize, 0)
+        Dim Updated As Boolean = False
 
-            Dim FreeClusterIndex As Integer = 0
-            Dim LastCluster As UShort = 0
+        Disk.Image.BatchEditMode = True
 
-            For Counter As Integer = 0 To FileBuffer.Length - 1 Step ClusterSize
-                Dim Cluster = FreeClusters(FreeClusterIndex)
-                If Counter = 0 Then
-                    FirstCluster = Cluster
-                Else
-                    Disk.FATTables.UpdateTableEntry(LastCluster, Cluster)
+        Dim FilesAdded As UInteger = 0
+        For Each FileName In Dialog.FileNames
+            If DirectoryEntry Is Nothing Then
+                DirectoryEntry = ParentDirectory.GetNextAvailableEntry
+
+                If DirectoryEntry Is Nothing And ParentDirectory.IsRootDirectory Then
+                    Exit For
                 End If
-                Dim ClusterOffset = Disk.BPB.ClusterToOffset(Cluster)
-                Dim Buffer = Disk.Image.GetBytes(ClusterOffset, ClusterSize)
-                Array.Copy(FileBuffer, Counter, Buffer, 0, ClusterSize)
-                Disk.Image.SetBytes(Buffer, ClusterOffset)
-                LastCluster = Cluster
-                FreeClusterIndex += 1
-            Next
-
-            If LastCluster > 0 Then
-                Disk.FATTables.UpdateTableEntry(LastCluster, FAT12.FAT_LAST_CLUSTER_END)
             End If
 
+            Dim Result As Boolean = True
+
+            Dim FileInfo = New IO.FileInfo(FileName)
+
+            Dim Length = FileInfo.Length
+            If DirectoryEntry Is Nothing Then
+                Length += _Disk.BPB.BytesPerCluster
+            End If
+
+            Dim FreeClusters = New FreeClusters(Disk, Length, FAT12.FreeClusterEmum.WithoutData)
+
+            If Length > FreeClusters.AvailableSpace Then
+                Result = False
+            End If
+
+            If Result Then
+                If DirectoryEntry Is Nothing Then
+                    Result = DirectoryExpand(Disk, ParentDirectory, FreeClusters.ClusterList)
+                    If Result Then
+                        DirectoryEntry = ParentDirectory.GetNextAvailableEntry
+                        If DirectoryEntry Is Nothing Then
+                            Result = False
+                        End If
+                    End If
+                End If
+            End If
+
+            If Result Then
+                DirectoryEntryAddFile(Disk, DirectoryEntry, FileName, FreeClusters.ClusterList)
+                If ParentDirectory IsNot Nothing Then
+                    ParentDirectory.Data.EntryCount += 1
+                End If
+                FilesAdded += 1
+
+                Updated = True
+            End If
+        Next
+
+        If FilesAdded < Dialog.FileNames.Length Then
+            MsgBox($"Warning: Insufficient Disk Space{vbCrLf}{vbCrLf}{FilesAdded} of {Dialog.FileNames.Length} file(s) added successfully", MsgBoxStyle.Exclamation)
+        End If
+
+        If Updated Then
             Disk.FATTables.UpdateFAT12()
         End If
 
-        Dim NewEntry = New DirectoryEntryBase
-        NewEntry.SetFileInfo(FileInfo, False, False)
-        NewEntry.StartingCluster = FirstCluster
-
-        Entry.Data = NewEntry.Data
-        Entry.InitFatChain()
-    End Sub
-
-    Private Sub FileAdd(Disk As Disk, DirectoryEntry As DirectoryEntry)
-        Dim Dialog = New OpenFileDialog With {
-            .Multiselect = False
-        }
-
-        If Dialog.ShowDialog <> DialogResult.OK Then
-            Exit Sub
-        End If
-
-        Dim FileInfo = New IO.FileInfo(Dialog.FileName)
-
-        Dim FreeClusters = New FreeClusters(Disk, FileInfo.Length, DirectoryEntry.StartingCluster)
-
-        If FileInfo.Length > FreeClusters.AvailableSpace Then
-            MsgBox("There is not enough available space on this disk to add this file.", vbExclamation)
-            Exit Sub
-        End If
-
-        Disk.Image.BatchEditMode = True
-
-        DirectoryEntryAddFile(Disk, DirectoryEntry, Dialog.FileName, FreeClusters.ClusterList)
-
         Disk.Image.BatchEditMode = False
 
-        DiskImageRefresh()
-    End Sub
-
-
-    Private Sub FileAdd(Disk As Disk, ParentDirectory As IDirectory)
-        Dim Dialog = New OpenFileDialog With {
-            .Multiselect = True
-        }
-
-        If Dialog.ShowDialog <> DialogResult.OK Then
-            Exit Sub
+        If Updated Then
+            DiskImageRefresh()
         End If
-
-        Dim FileInfo As FileInfo
-
-        Dim TotalLength As Long = 0
-        For Each FileName In Dialog.FileNames
-            FileInfo = New IO.FileInfo(FileName)
-            TotalLength += FileInfo.Length
-        Next
-
-        Dim FreeClusters = New FreeClusters(Disk, TotalLength)
-
-        Dim Msg As String
-        If Dialog.FileNames.Length = 1 Then
-            Msg = "this file."
-        Else
-            Msg = "these files."
-        End If
-
-        If TotalLength > FreeClusters.AvailableSpace Then
-            MsgBox("There is not enough available space on this disk to add " & Msg, vbExclamation)
-            Exit Sub
-        End If
-
-        If ParentDirectory.Data.PopulatedEntryCount > ParentDirectory.Data.MaxEntries - Dialog.FileNames.Length Then
-            MsgBox("There are no more available entries in this directory to add " & Msg, vbExclamation)
-            Exit Sub
-        End If
-
-        Disk.Image.BatchEditMode = True
-
-        For Each FileName In Dialog.FileNames
-            Dim Entry As DirectoryEntry = ParentDirectory.GetFile(ParentDirectory.Data.PopulatedEntryCount)
-            DirectoryEntryAddFile(Disk, Entry, FileName, FreeClusters.ClusterList)
-            ParentDirectory.Data.PopulatedEntryCount += 1
-            FreeClusters.Refresh()
-        Next
-
-        Disk.Image.BatchEditMode = False
-
-        DiskImageRefresh()
     End Sub
 
     Private Sub FileClose(ImageData As LoadedImageData)
@@ -1575,7 +1530,7 @@ Public Class MainForm
 
         Dim FileInfo As New IO.FileInfo(Dialog.FileName)
 
-        Dim AvailableSpace = Disk.FAT.GetFreeSpace(Disk.BPB.BytesPerCluster) + DirectoryEntry.GetSizeOnDisk
+        Dim AvailableSpace = Disk.FAT.GetFreeSpace() + DirectoryEntry.GetSizeOnDisk
 
         Dim ReplaceFileForm As New ReplaceFileForm(AvailableSpace)
         With ReplaceFileForm
@@ -1591,7 +1546,15 @@ Public Class MainForm
             'Load file into buffer, padding with empty space if needed
             Dim FileBuffer = ReadFileIntoBuffer(FileInfo, Result.FileSize, Result.FillChar)
 
-            Dim FreeClusters = New FreeClusters(Disk, Result.FileSize - DirectoryEntry.GetSizeOnDisk)
+            Dim FileLength As Long
+
+            If DirectoryEntry.GetSizeOnDisk > Result.FileSize Then
+                FileLength = 0
+            Else
+                FileLength = Result.FileSize - DirectoryEntry.GetSizeOnDisk
+            End If
+
+            Dim FreeClusters = New FreeClusters(Disk, FileLength, FAT12.FreeClusterEmum.WithoutData)
 
             Disk.Image.BatchEditMode = True
 
@@ -1608,27 +1571,28 @@ Public Class MainForm
             Dim ClusterSize = Disk.BPB.BytesPerCluster
             Dim ClusterCount = DirectoryEntry.FATChain.Clusters.Count
             Dim ClusterIndex As Integer = 0
-            Dim FreeClusterIndex As Integer = 0
             Dim Cluster As UShort
             Dim LastCluster As UShort = 0
             Dim FATUpdated As Boolean = False
 
             'Update assigned clusters and assign new ones if new file is larger
             For Counter As Integer = 0 To FileBuffer.Length - 1 Step ClusterSize
-                Dim Length = Math.Min(ClusterSize, FileBuffer.Length - Counter)
-
                 If ClusterIndex < ClusterCount Then
                     Cluster = DirectoryEntry.FATChain.Clusters(ClusterIndex)
                 Else
-                    Cluster = FreeClusters.ClusterList(FreeClusterIndex)
+                    Cluster = Disk.FAT.GetNextFreeCluster(FreeClusters.ClusterList)
+                    If Cluster = 0 Then
+                        Exit For
+                    End If
+                    FreeClusters.ClusterList.Remove(Cluster)
                     If LastCluster > 0 Then
                         Disk.FATTables.UpdateTableEntry(LastCluster, Cluster)
                         FATUpdated = True
                     End If
-                    FreeClusterIndex += 1
                 End If
 
                 Dim ClusterOffset = Disk.BPB.ClusterToOffset(Cluster)
+                Dim Length = Math.Min(ClusterSize, FileBuffer.Length - Counter)
                 Dim Buffer = Disk.Image.GetBytes(ClusterOffset, ClusterSize)
                 Array.Copy(FileBuffer, Counter, Buffer, 0, Length)
                 Disk.Image.SetBytes(Buffer, ClusterOffset)
@@ -1638,6 +1602,7 @@ Public Class MainForm
 
             If LastCluster > 0 Then
                 Disk.FATTables.UpdateTableEntry(LastCluster, FAT12.FAT_LAST_CLUSTER_END)
+                FreeClusters.ClusterList.Remove(LastCluster)
                 FATUpdated = True
             End If
 
@@ -2028,7 +1993,7 @@ Public Class MainForm
     End Sub
 
     Private Sub HexDisplayFreeClusters()
-        Dim HexViewSectorData = New HexViewSectorData(_Disk, _Disk.FAT.GetFreeClusters(FAT12.FreeClusterEmum.WithData)) With {
+        Dim HexViewSectorData = New HexViewSectorData(_Disk, _Disk.FAT.GetFreeClusters(FAT12.FreeClusterEmum.WithData).ToList) With {
             .Description = "Free Clusters"
         }
 
@@ -2903,7 +2868,7 @@ Public Class MainForm
                     End If
 
                     .AddItem(FileSystemGroup, "Total Space", Format(Disk.SectorToBytes(Disk.BPB.DataRegionSize), "N0") & " bytes")
-                    .AddItem(FileSystemGroup, "Free Space", Format(Disk.FAT.GetFreeSpace(Disk.BPB.BytesPerCluster), "N0") & " bytes")
+                    .AddItem(FileSystemGroup, "Free Space", Format(Disk.FAT.GetFreeSpace(), "N0") & " bytes")
 
                     If Disk.FAT.BadClusters.Count > 0 Then
                         Dim SectorCount = Disk.FAT.BadClusters.Count * Disk.BPB.SectorsPerCluster
@@ -2911,14 +2876,15 @@ Public Class MainForm
                         .AddItem(FileSystemGroup, "Bad Sectors", Value, Color.Red)
                     End If
 
-                    Dim LostClusters = Disk.FAT.GetLostClusterCount
+                    Dim LostClusters = Disk.FAT.LostClusters.Count
                     If LostClusters > 0 Then
                         Value = Format(LostClusters * Disk.BPB.BytesPerCluster, "N0") & " bytes  (" & LostClusters & ")"
                         .AddItem(FileSystemGroup, "Lost Clusters", Value, Color.Red)
                     End If
 
-                    If Disk.FAT.ReservedClusters > 0 Then
-                        Value = Format(Disk.FAT.ReservedClusters * Disk.BPB.BytesPerCluster, "N0") & " bytes  (" & Disk.FAT.ReservedClusters & ")"
+                    Dim ReservedClusters = Disk.FAT.ReservedClusters.Count
+                    If ReservedClusters > 0 Then
+                        Value = Format(ReservedClusters * Disk.BPB.BytesPerCluster, "N0") & " bytes  (" & ReservedClusters & ")"
                         .AddItem(FileSystemGroup, "Reserved Clusters", Value)
                     End If
 
@@ -3284,7 +3250,7 @@ Public Class MainForm
         If Disk IsNot Nothing AndAlso Disk.IsValidImage Then
             BtnDisplayClusters.Enabled = Disk.FAT.HasFreeClusters(FAT12.FreeClusterEmum.WithData)
             BtnDisplayBadSectors.Enabled = Disk.FAT.BadClusters.Count > 0
-            BtnDisplayLostClusters.Enabled = Disk.FAT.GetLostClusterCount > 0
+            BtnDisplayLostClusters.Enabled = Disk.FAT.LostClusters.Count > 0
             Dim Compare = Disk.CheckImageSize
             BtnFixImageSize.Enabled = Disk.Image.Data.CanResize And Compare <> 0
             If Disk.Directory.Data.HasBootSector Then
@@ -3973,7 +3939,7 @@ Public Class MainForm
         ContextMenuEdit.Close()
         If sender.Tag IsNot Nothing Then
             Dim Directory As IDirectory = GetSubDirectoryFromParentOffset(_Disk, sender.tag)
-            FileAdd(_Disk, Directory)
+            FileAdd(_Disk, Directory, Nothing, True)
         End If
     End Sub
 
@@ -4206,7 +4172,7 @@ Public Class MainForm
         If ListViewFiles.SelectedItems.Count = 1 Then
             Dim FileData As FileData = ListViewFiles.SelectedItems(0).Tag
             If FileData.DirectoryEntry.IsDeleted Then
-                FileAdd(_Disk, FileData.DirectoryEntry)
+                FileAdd(_Disk, Nothing, FileData.DirectoryEntry, False)
             Else
                 FileReplace(_Disk, FileData.DirectoryEntry)
             End If
@@ -4608,18 +4574,12 @@ Public Class MainForm
     Private Class FreeClusters
         Private ReadOnly _Disk As Disk
         Private ReadOnly _FreeClusterType As FAT12.FreeClusterEmum
-        Private ReadOnly _StartingCluster As UShort
-        Private _ClusterList As List(Of UShort)
+        Private _ClusterList As SortedSet(Of UShort)
         Private _AvailableSpace As Long
 
-        Public Sub New(Disk As Disk, FileLength As Long, Optional StartingCluster As UShort = 2)
+        Public Sub New(Disk As Disk, FileLength As Long, FreeClusterType As FAT12.FreeClusterEmum)
             _Disk = Disk
-            If StartingCluster > 2 Then
-                _FreeClusterType = FAT12.FreeClusterEmum.All
-            Else
-                _FreeClusterType = FAT12.FreeClusterEmum.WithoutData
-            End If
-            _StartingCluster = StartingCluster
+            _FreeClusterType = FreeClusterType
             Refresh()
 
             If FileLength > _AvailableSpace And _FreeClusterType <> FAT12.FreeClusterEmum.All Then
@@ -4629,7 +4589,7 @@ Public Class MainForm
         End Sub
 
         Public Sub Refresh()
-            _ClusterList = _Disk.FAT.GetFreeClusters(_FreeClusterType, _StartingCluster)
+            _ClusterList = _Disk.FAT.GetFreeClusters(_FreeClusterType)
             _AvailableSpace = _ClusterList.Count * _Disk.BPB.BytesPerCluster
         End Sub
 
@@ -4639,7 +4599,7 @@ Public Class MainForm
             End Get
         End Property
 
-        Public ReadOnly Property ClusterList As List(Of UShort)
+        Public ReadOnly Property ClusterList As SortedSet(Of UShort)
             Get
                 Return _ClusterList
             End Get

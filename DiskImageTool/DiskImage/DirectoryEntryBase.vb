@@ -5,6 +5,8 @@ Namespace DiskImage
     Public Class DirectoryEntryBase
         Public Const CHAR_DELETED As Byte = &HE5
         Public Const DIRECTORY_ENTRY_SIZE As Byte = 32
+        Public Shared ReadOnly EmptyDirectoryEntry() As Byte = {&HE5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}
+
         Private Const CHAR_EMPTY As Byte = &H0
         Private Const CHAR_SPACE As Byte = &H20
 

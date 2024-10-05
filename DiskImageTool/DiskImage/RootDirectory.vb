@@ -29,6 +29,12 @@
             End Get
         End Property
 
+        Public ReadOnly Property ClusterChain As List(Of UShort) Implements IDirectory.ClusterChain
+            Get
+                Return Nothing
+            End Get
+        End Property
+
         Public ReadOnly Property SectorChain As List(Of UInteger) Implements IDirectory.SectorChain
             Get
                 Dim Chain = New List(Of UInteger)
@@ -38,6 +44,12 @@
                 Next
 
                 Return Chain
+            End Get
+        End Property
+
+        Public ReadOnly Property IsRootDirectory As Boolean Implements IDirectory.IsRootDirectory
+            Get
+                Return True
             End Get
         End Property
 
@@ -51,9 +63,24 @@
         End Function
 
         Public Function GetFile(Index As UInteger) As DirectoryEntry Implements IDirectory.GetFile
-            Dim Offset As UInteger = Disk.SectorToBytes(_BPB.RootDirectoryRegionStart) + Index * DirectoryEntry.DIRECTORY_ENTRY_SIZE
+            Return New DirectoryEntry(_FileBytes, _BPB, _FATTables, _DirectoryCache, GetOffset(Index))
+        End Function
 
-            Return New DirectoryEntry(_FileBytes, _BPB, _FATTables, _DirectoryCache, Offset)
+        Public Function GetNextAvailableEntry() As DirectoryEntry Implements IDirectory.GetNextAvailableEntry
+            Dim Buffer(10) As Byte
+
+            For Counter As UInteger = 0 To _DirectoryData.MaxEntries - 1
+                Dim DirectoryEntry = GetFile(Counter)
+                If DirectoryEntry.Data(0) = 0 Then
+                    Return DirectoryEntry
+                End If
+                Array.Copy(DirectoryEntry.Data, 0, Buffer, 0, Buffer.Length)
+                If Buffer.CompareTo(DirectoryEntry.EmptyDirectoryEntry) Then
+                    Return DirectoryEntry
+                End If
+            Next
+
+            Return Nothing
         End Function
 
         Public Function HasFile(Filename As String) As Integer Implements IDirectory.HasFile
@@ -111,6 +138,10 @@
             Functions.GetDirectoryData(Data, _FileBytes.Data, OffsetStart, OffsetEnd, True)
 
             Return Data
+        End Function
+
+        Private Function GetOffset(Index As UInteger) As UInteger
+            Return Disk.SectorToBytes(_BPB.RootDirectoryRegionStart) + Index * DirectoryEntry.DIRECTORY_ENTRY_SIZE
         End Function
     End Class
 End Namespace

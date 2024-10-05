@@ -24,9 +24,21 @@
             End Get
         End Property
 
+        Public ReadOnly Property ClusterChain As List(Of UShort) Implements IDirectory.ClusterChain
+            Get
+                Return _FatChain.Clusters
+            End Get
+        End Property
+
         Public ReadOnly Property SectorChain As List(Of UInteger) Implements IDirectory.SectorChain
             Get
                 Return ClusterListToSectorList(_BPB, _FatChain.Clusters)
+            End Get
+        End Property
+
+        Public ReadOnly Property IsRootDirectory As Boolean Implements IDirectory.IsRootDirectory
+            Get
+                Return False
             End Get
         End Property
 
@@ -41,6 +53,23 @@
             Dim Offset As UInteger = _BPB.ClusterToOffset(_FatChain.Clusters.Item(ChainIndex)) + ClusterIndex * DirectoryEntry.DIRECTORY_ENTRY_SIZE
 
             Return New DirectoryEntry(_FileBytes, _BPB, _FatTables, _DirectoryCache, Offset)
+        End Function
+
+        Public Function GetNextAvailableEntry() As DirectoryEntry Implements IDirectory.GetNextAvailableEntry
+            Dim Buffer(10) As Byte
+
+            For Counter As UInteger = 0 To _DirectoryData.MaxEntries - 1
+                Dim DirectoryEntry = GetFile(Counter)
+                If DirectoryEntry.Data(0) = 0 Then
+                    Return DirectoryEntry
+                End If
+                Array.Copy(DirectoryEntry.Data, 0, Buffer, 0, Buffer.Length)
+                If Buffer.CompareTo(DirectoryEntry.EmptyDirectoryEntry) Then
+                    Return DirectoryEntry
+                End If
+            Next
+
+            Return Nothing
         End Function
 
         Public Function HasFile(Filename As String) As Integer Implements IDirectory.HasFile

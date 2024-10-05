@@ -1,4 +1,6 @@
-﻿Namespace DiskImage
+﻿Imports System.Reflection
+
+Namespace DiskImage
     Module Functions
         Public ReadOnly InvalidFileChars() As Byte = {&H22, &H2A, &H2B, &H2C, &H2E, &H2F, &H3A, &H3B, &H3C, &H3D, &H3E, &H3F, &H5B, &H5C, &H5D, &H7C}
         Public ReadOnly EmptyDirectoryEntry() As Byte = {&HE5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}
@@ -73,6 +75,78 @@
 
             Return FilePart & Extension
         End Function
+
+        Public Function DirectoryExpand(Disk As Disk, Directory As IDirectory, FreeClusters As SortedSet(Of UShort)) As Boolean
+            If Directory.IsRootDirectory Then
+                Return False
+            End If
+
+            Dim Cluster = Disk.FAT.GetNextFreeCluster(FreeClusters)
+            If Cluster = 0 Then
+                Return False
+            End If
+
+            Dim ClusterSize = Disk.BPB.BytesPerCluster
+
+            FreeClusters.Remove(Cluster)
+
+            Dim LastCluster = Directory.ClusterChain.Last
+            Disk.FATTables.UpdateTableEntry(LastCluster, Cluster)
+            Disk.FATTables.UpdateTableEntry(Cluster, FAT12.FAT_LAST_CLUSTER_END)
+
+            Directory.ClusterChain.Add(Cluster)
+            Directory.Data.MaxEntries += Disk.BPB.BytesPerCluster \ DirectoryEntry.DIRECTORY_ENTRY_SIZE
+
+            Dim ClusterOffset = Disk.BPB.ClusterToOffset(Cluster)
+            Dim Buffer = New Byte(ClusterSize - 1) {}
+            Disk.Image.SetBytes(Buffer, ClusterOffset)
+
+            Return True
+        End Function
+
+        Public Sub DirectoryEntryAddFile(Disk As Disk, Entry As DirectoryEntry, FileName As String, FreeClusters As SortedSet(Of UShort), Optional StartingCluster As UShort = 2)
+            Dim FileInfo = New IO.FileInfo(FileName)
+            Dim ClusterSize = Disk.BPB.BytesPerCluster
+
+            Dim FirstCluster As UShort = 0
+
+            If FileInfo.Length > 0 Then
+                'Load file into buffer, padding with empty space if needed            
+                Dim FileSize = Math.Ceiling(FileInfo.Length / ClusterSize) * ClusterSize
+                Dim FileBuffer = ReadFileIntoBuffer(FileInfo, FileSize, 0)
+
+                Dim LastCluster As UShort = 0
+
+                For Counter As Integer = 0 To FileBuffer.Length - 1 Step ClusterSize
+                    Dim Cluster = Disk.FAT.GetNextFreeCluster(FreeClusters, StartingCluster)
+                    If Cluster > 0 Then
+                        FreeClusters.Remove(Cluster)
+                        If Counter = 0 Then
+                            FirstCluster = Cluster
+                        Else
+                            Disk.FATTables.UpdateTableEntry(LastCluster, Cluster)
+                        End If
+                        Dim ClusterOffset = Disk.BPB.ClusterToOffset(Cluster)
+                        Dim Buffer = Disk.Image.GetBytes(ClusterOffset, ClusterSize)
+                        Array.Copy(FileBuffer, Counter, Buffer, 0, ClusterSize)
+                        Disk.Image.SetBytes(Buffer, ClusterOffset)
+                        LastCluster = Cluster
+                        StartingCluster = Cluster + 1
+                    End If
+                Next
+
+                If LastCluster > 0 Then
+                    Disk.FATTables.UpdateTableEntry(LastCluster, FAT12.FAT_LAST_CLUSTER_END)
+                End If
+            End If
+
+            Dim NewEntry = New DirectoryEntryBase
+            NewEntry.SetFileInfo(FileInfo, False, False)
+            NewEntry.StartingCluster = FirstCluster
+
+            Entry.Data = NewEntry.Data
+            Entry.InitFatChain()
+        End Sub
 
         Public Function DirectorytEntryDescription(Offset As DirectoryEntry.DirectoryEntryOffsets) As String
             Select Case Offset
@@ -243,8 +317,7 @@
             If EntryCount > 0 Then
                 For Entry As UInteger = 0 To EntryCount - 1
                     Dim Offset = OffsetStart + (Entry * DirectoryEntry.DIRECTORY_ENTRY_SIZE)
-                    Dim Buffer = FileBytes.GetBytes(Offset, 11)
-                    Dim FirstByte = Buffer(0)
+                    Dim FirstByte = FileBytes.GetByte(Offset)
                     If FirstByte = 0 Then
                         Data.EndOfDirectory = True
                     End If
@@ -271,9 +344,6 @@
                         End If
                     Else
                         Data.EntryCount += 1
-                        If Not Buffer.CompareTo(EmptyDirectoryEntry) Then
-                            Data.PopulatedEntryCount += 1
-                        End If
                         If FileBytes.GetByte(Offset + 11) <> &HF Then 'Exclude LFN entries
                             Dim FilePart = FileBytes.ToUInt16(Offset)
                             If FilePart <> &H202E And FilePart <> &H2E2E Then 'Exclude '.' and '..' entries
@@ -326,6 +396,19 @@
             Next
 
             Return Checksum
+        End Function
+
+        Private Function ReadFileIntoBuffer(FileInfo As IO.FileInfo, FileSize As UInteger, FillChar As Byte) As Byte()
+            Dim FileBuffer(FileSize - 1) As Byte
+            Dim n As Integer
+            Using fs = FileInfo.OpenRead()
+                n = fs.Read(FileBuffer, 0, Math.Min(FileInfo.Length, FileBuffer.Length))
+            End Using
+            For Counter As Integer = n To FileBuffer.Length - 1
+                FileBuffer(Counter) = FillChar
+            Next
+
+            Return FileBuffer
         End Function
     End Module
 End Namespace

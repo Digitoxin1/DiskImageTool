@@ -1,5 +1,4 @@
 ﻿Namespace DiskImage
-
     Public Class FAT12Base
         Public Const FAT_BAD_CLUSTER As UShort = &HFF7
         Public Const FAT_FREE_CLUSTER As UShort = &H0
@@ -11,12 +10,22 @@
 
         Private ReadOnly _FileBytes As ImageByteArray
         Private ReadOnly _Index As UShort
+        Private ReadOnly _AllocatedClusters As SortedSet(Of UShort)
+        Private ReadOnly _BadClusters As SortedSet(Of UShort)
+        Private ReadOnly _FreeClusters As SortedSet(Of UShort)
+        Private ReadOnly _ReservedClusters As SortedSet(Of UShort)
         Private _Offset As UInteger
         Private _Size As UInteger
         Private _Entries As UInteger
+        Private _BytesPerCluster As UInteger
         Private _FATTable() As UShort
 
         Public Sub New(FileBytes As ImageByteArray, BPB As BiosParameterBlock, Index As UShort)
+            _AllocatedClusters = New SortedSet(Of UShort)
+            _BadClusters = New SortedSet(Of UShort)
+            _FreeClusters = New SortedSet(Of UShort)
+            _ReservedClusters = New SortedSet(Of UShort)
+
             _FileBytes = FileBytes
             _Index = Index
 
@@ -28,19 +37,54 @@
                 _Offset = (BPB.FATRegionStart + (BPB.SectorsPerFAT * _Index)) * Disk.BYTES_PER_SECTOR
                 _Size = BPB.SectorsPerFAT * Disk.BYTES_PER_SECTOR
                 _Entries = BPB.NumberOfFATEntries + 2
+                _BytesPerCluster = BPB.BytesPerCluster
 
                 _FATTable = DecodeFAT12(Data, _Entries)
             Else
                 _Offset = 0
                 _Size = 0
                 _Entries = 1
+                _BytesPerCluster = 0
                 _FATTable = New UShort(1) {}
             End If
+
+            ProcessFAT()
         End Sub
+
+        Private Sub ProcessFAT()
+            _AllocatedClusters.Clear()
+            _BadClusters.Clear()
+            _FreeClusters.Clear()
+            _ReservedClusters.Clear()
+
+            If TableLength > 0 Then
+                For Cluster As UShort = 2 To TableLength
+                    AddLookup(Cluster)
+                Next Cluster
+            End If
+        End Sub
+
+        Public ReadOnly Property AllocatedClusters As SortedSet(Of UShort)
+            Get
+                Return _AllocatedClusters
+            End Get
+        End Property
+
+        Public ReadOnly Property BadClusters As SortedSet(Of UShort)
+            Get
+                Return _BadClusters
+            End Get
+        End Property
 
         Public ReadOnly Property Data As Byte()
             Get
                 Return _FileBytes.GetBytes(_Offset, _Size)
+            End Get
+        End Property
+
+        Public ReadOnly Property FreeClusters As SortedSet(Of UShort)
+            Get
+                Return _FreeClusters
             End Get
         End Property
 
@@ -60,6 +104,12 @@
             End Set
         End Property
 
+        Public ReadOnly Property ReservedClusters As SortedSet(Of UShort)
+            Get
+                Return _ReservedClusters
+            End Get
+        End Property
+
         Public Property TableEntry(Cluster As UShort) As UShort
             Get
                 Return _FATTable(Cluster)
@@ -67,7 +117,9 @@
 
             Set(value As UShort)
                 If _FATTable(Cluster) <> value Then
+                    RemoveLookup(Cluster)
                     _FATTable(Cluster) = value
+                    AddLookup(Cluster)
                 End If
             End Set
         End Property
@@ -77,6 +129,10 @@
                 Return _Entries - 1
             End Get
         End Property
+
+        Public Function GetFreeSpace()
+            Return _FreeClusters.Count * _BytesPerCluster
+        End Function
 
         Public Function HasValidMediaDescriptor() As Boolean
             Return ValidMediaDescriptor.Contains(MediaDescriptor)
@@ -144,5 +200,55 @@
 
             Return FatBytes
         End Function
+
+        Private Sub AddLookup(Cluster As UShort)
+            Dim Value As UShort = _FATTable(Cluster)
+            If Value = 0 Then
+                If Not _FreeClusters.Contains(Cluster) Then
+                    _FreeClusters.Add(Cluster)
+                End If
+            ElseIf Value = FAT_BAD_CLUSTER Then
+                If Not _BadClusters.Contains(Cluster) Then
+                    _BadClusters.Add(Cluster)
+                End If
+            ElseIf Value >= 2 And Value <= TableLength Then
+                If Not _AllocatedClusters.Contains(Cluster) Then
+                    _AllocatedClusters.Add(Cluster)
+                End If
+            ElseIf Value >= FAT12.FAT_LAST_CLUSTER_START And Value <= FAT12.FAT_LAST_CLUSTER_END Then
+                If Not _AllocatedClusters.Contains(Cluster) Then
+                    _AllocatedClusters.Add(Cluster)
+                End If
+            ElseIf Value = 1 Or (Value >= FAT12.FAT_RESERVED_START And Value <= FAT12.FAT_RESERVED_END) Then
+                If Not _ReservedClusters.Contains(Cluster) Then
+                    _ReservedClusters.Add(Cluster)
+                End If
+            End If
+        End Sub
+
+        Private Sub RemoveLookup(Cluster As UShort)
+            Dim Value As UShort = _FATTable(Cluster)
+            If Value = 0 Then
+                If _FreeClusters.Contains(Cluster) Then
+                    _FreeClusters.Remove(Cluster)
+                End If
+            ElseIf Value = FAT_BAD_CLUSTER Then
+                If _BadClusters.Contains(Cluster) Then
+                    _BadClusters.Remove(Cluster)
+                End If
+            ElseIf Value >= 2 And Value <= TableLength Then
+                If _AllocatedClusters.Contains(Cluster) Then
+                    _AllocatedClusters.Remove(Cluster)
+                End If
+            ElseIf Value >= FAT12.FAT_LAST_CLUSTER_START And Value <= FAT12.FAT_LAST_CLUSTER_END Then
+                If _AllocatedClusters.Contains(Cluster) Then
+                    _AllocatedClusters.Remove(Cluster)
+                End If
+            ElseIf Value = 1 Or (Value >= FAT12.FAT_RESERVED_START And Value <= FAT12.FAT_RESERVED_END) Then
+                If _ReservedClusters.Contains(Cluster) Then
+                    _ReservedClusters.Remove(Cluster)
+                End If
+            End If
+        End Sub
     End Class
 End Namespace

@@ -60,7 +60,19 @@
 
         Public Function GetBytes(Offset As UInteger, Size As UInteger) As Byte() Implements IByteArray.GetBytes
             Dim temp(Size - 1) As Byte
-            Array.Copy(_Data, Offset, temp, 0, Size)
+
+            If Offset + Size > _Data.Length Then
+                If _Data.Length - Offset >= 0 Then
+                    Size = _Data.Length - Offset
+                Else
+                    Size = 0
+                End If
+            End If
+
+            If Size > 0 Then
+                Array.Copy(_Data, Offset, temp, 0, Size)
+            End If
+
             Return temp
         End Function
 

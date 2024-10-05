@@ -18,7 +18,7 @@
             FileBytes = New ImageByteArray(Image)
             _DirectoryCache = New Dictionary(Of UInteger, DirectoryCacheEntry)
             _BootSector = New BootSector(FileBytes.Data, BootSector.BOOT_SECTOR_OFFSET)
-            SetBPB()
+            _BPB = GetBPB()
 
             _FATTables = New FATTables(_BPB, FileBytes, FatIndex)
             _DiskFormat = InferFloppyDiskFormat()
@@ -153,8 +153,7 @@
         End Function
 
         Public Sub Reinitialize()
-            SetBPB()
-
+            _BPB = GetBPB()
             _FATTables.Reinitialize(_BPB)
             _DiskFormat = InferFloppyDiskFormat()
             _FATTables.SyncFATs = Not IsDiskFormatXDF(_DiskFormat)
@@ -240,9 +239,11 @@
             Return DiskFormat
         End Function
 
-        Private Sub SetBPB()
+        Private Function GetBPB() As BiosParameterBlock
+            Dim BPB As BiosParameterBlock
+
             If _BootSector.BPB.IsValid Then
-                _BPB = _BootSector.BPB
+                BPB = _BootSector.BPB
             Else
                 Dim FATMediaDescriptor = GetFATMediaDescriptor()
 
@@ -255,9 +256,11 @@
                     FATMediaDescriptor = GetFloppyDiskMediaDescriptor(DiskFormatSize)
                 End If
 
-                _BPB = BuildBPB(FATMediaDescriptor)
+                BPB = BuildBPB(FATMediaDescriptor)
             End If
-        End Sub
+
+            Return BPB
+        End Function
     End Class
 
 End Namespace

@@ -149,6 +149,8 @@
                         Return True
                     End If
                 End If
+            Else
+                Return True
             End If
 
             Return False
