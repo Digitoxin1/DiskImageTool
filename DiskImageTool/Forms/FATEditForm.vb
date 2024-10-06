@@ -509,7 +509,7 @@ Public Class FATEditForm
     End Sub
 
     Private Sub ProcessFATChains()
-        Dim Directory = New RootDirectory(_Disk.Image, _Disk.BPB, _FATTables, _Disk.DirectoryCache, True)
+        Dim Directory = New RootDirectory(_Disk, _FATTables, True)
     End Sub
 
     Private Sub RefreshFAT()

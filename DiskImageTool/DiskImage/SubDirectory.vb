@@ -2,25 +2,27 @@
     Public Class SubDirectory
         Implements IDirectory
 
-        Private ReadOnly _BPB As BiosParameterBlock
-        Private ReadOnly _DirectoryCache As Dictionary(Of UInteger, DirectoryCacheEntry)
+        Private ReadOnly _Disk As Disk
         Private ReadOnly _FatTables As FATTables
         Private ReadOnly _FatChain As FATChain
-        Private ReadOnly _FileBytes As ImageByteArray
         Private _DirectoryData As DirectoryData
 
-        Sub New(FileBytes As ImageByteArray, BPB As BiosParameterBlock, FatTables As FATTables, FatChain As FATChain, DirectoryCache As Dictionary(Of UInteger, DirectoryCacheEntry))
-            _BPB = BPB
+        Sub New(Disk As Disk, FatTables As FATTables, FatChain As FATChain)
+            _Disk = Disk
             _FatTables = FatTables
-            _FileBytes = FileBytes
             _FatChain = FatChain
-            _DirectoryCache = DirectoryCache
             _DirectoryData = GetDirectoryData()
         End Sub
 
         Public ReadOnly Property Data As DirectoryData Implements IDirectory.Data
             Get
                 Return _DirectoryData
+            End Get
+        End Property
+
+        Public ReadOnly Property Disk As Disk
+            Get
+                Return _Disk
             End Get
         End Property
 
@@ -32,7 +34,7 @@
 
         Public ReadOnly Property SectorChain As List(Of UInteger) Implements IDirectory.SectorChain
             Get
-                Return ClusterListToSectorList(_BPB, _FatChain.Clusters)
+                Return ClusterListToSectorList(_Disk.BPB, _FatChain.Clusters)
             End Get
         End Property
 
@@ -43,16 +45,16 @@
         End Property
 
         Public Function GetContent() As Byte() Implements IDirectory.GetContent
-            Return GetDataFromChain(_FileBytes.Data, SectorChain)
+            Return GetDataFromChain(_Disk.Image.Data, SectorChain)
         End Function
 
         Public Function GetFile(Index As UInteger) As DirectoryEntry Implements IDirectory.GetFile
-            Dim EntriesPerCluster As UInteger = _BPB.BytesPerCluster / DirectoryEntry.DIRECTORY_ENTRY_SIZE
+            Dim EntriesPerCluster As UInteger = _Disk.BPB.BytesPerCluster / DirectoryEntry.DIRECTORY_ENTRY_SIZE
             Dim ChainIndex As UInteger = Index \ EntriesPerCluster
             Dim ClusterIndex As UInteger = Index Mod EntriesPerCluster
-            Dim Offset As UInteger = _BPB.ClusterToOffset(_FatChain.Clusters.Item(ChainIndex)) + ClusterIndex * DirectoryEntry.DIRECTORY_ENTRY_SIZE
+            Dim Offset As UInteger = _Disk.BPB.ClusterToOffset(_FatChain.Clusters.Item(ChainIndex)) + ClusterIndex * DirectoryEntry.DIRECTORY_ENTRY_SIZE
 
-            Return New DirectoryEntry(_FileBytes, _BPB, _FatTables, _DirectoryCache, Offset)
+            Return New DirectoryEntry(_Disk, _FatTables, Offset)
         End Function
 
         Public Function GetNextAvailableEntry() As DirectoryEntry Implements IDirectory.GetNextAvailableEntry
@@ -89,7 +91,7 @@
         End Function
 
         Public Sub RefreshData() Implements IDirectory.RefreshData
-            If _BPB.isvalid Then
+            If _Disk.BPB.IsValid Then
                 _DirectoryData = GetDirectoryData()
             Else
                 _DirectoryData = New DirectoryData
@@ -100,10 +102,10 @@
             Dim Data As New DirectoryData
 
             For Each Cluster In _FatChain.Clusters
-                Dim OffsetStart As UInteger = _BPB.ClusterToOffset(Cluster)
-                Dim OffsetLength As UInteger = _BPB.BytesPerCluster
+                Dim OffsetStart As UInteger = Disk.BPB.ClusterToOffset(Cluster)
+                Dim OffsetLength As UInteger = Disk.BPB.BytesPerCluster
 
-                Functions.GetDirectoryData(Data, _FileBytes.Data, OffsetStart, OffsetStart + OffsetLength, False)
+                Functions.GetDirectoryData(Data, _Disk.Image.Data, OffsetStart, OffsetStart + OffsetLength, False)
             Next
 
             Return Data

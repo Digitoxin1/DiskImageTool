@@ -2,18 +2,14 @@
     Public Class RootDirectory
         Implements IDirectory
 
-        Private _BPB As BiosParameterBlock
-        Private ReadOnly _DirectoryCache As Dictionary(Of UInteger, DirectoryCacheEntry)
+        Private ReadOnly _Disk As Disk
         Private ReadOnly _FATTables As FATTables
-        Private ReadOnly _FileBytes As ImageByteArray
         Private _DirectoryData As DirectoryData
 
-        Sub New(FileBytes As ImageByteArray, BPB As BiosParameterBlock, FATTables As FATTables, DirectoryCache As Dictionary(Of UInteger, DirectoryCacheEntry), EnumerateEntries As Boolean)
-            _BPB = BPB
+        Sub New(Disk As Disk, FATTables As FATTables, EnumerateEntries As Boolean)
+            _Disk = Disk
             _FATTables = FATTables
-            _FileBytes = FileBytes
-            _DirectoryCache = DirectoryCache
-            If BPB.IsValid Then
+            If _Disk.BPB.IsValid Then
                 _DirectoryData = GetDirectoryData()
                 If EnumerateEntries Then
                     EnumDirectoryEntries(Me)
@@ -29,6 +25,12 @@
             End Get
         End Property
 
+        Public ReadOnly Property Disk As Disk
+            Get
+                Return _Disk
+            End Get
+        End Property
+
         Public ReadOnly Property ClusterChain As List(Of UShort) Implements IDirectory.ClusterChain
             Get
                 Return Nothing
@@ -39,7 +41,7 @@
             Get
                 Dim Chain = New List(Of UInteger)
 
-                For Sector = _BPB.RootDirectoryRegionStart To _BPB.DataRegionStart - 1
+                For Sector = _Disk.BPB.RootDirectoryRegionStart To _Disk.BPB.DataRegionStart - 1
                     Chain.Add(Sector)
                 Next
 
@@ -54,16 +56,16 @@
         End Property
 
         Public Function GetContent() As Byte() Implements IDirectory.GetContent
-            Dim SectorStart = _BPB.RootDirectoryRegionStart
-            Dim SectorEnd = _BPB.DataRegionStart
+            Dim SectorStart = _Disk.BPB.RootDirectoryRegionStart
+            Dim SectorEnd = _Disk.BPB.DataRegionStart
             Dim Length = Disk.SectorToBytes(SectorEnd - SectorStart)
             Dim Offset = Disk.SectorToBytes(SectorStart)
 
-            Return _FileBytes.GetBytes(Offset, Length)
+            Return _Disk.Image.GetBytes(Offset, Length)
         End Function
 
         Public Function GetFile(Index As UInteger) As DirectoryEntry Implements IDirectory.GetFile
-            Return New DirectoryEntry(_FileBytes, _BPB, _FATTables, _DirectoryCache, GetOffset(Index))
+            Return New DirectoryEntry(_Disk, _FATTables, GetOffset(Index))
         End Function
 
         Public Function GetNextAvailableEntry() As DirectoryEntry Implements IDirectory.GetNextAvailableEntry
@@ -100,16 +102,11 @@
         End Function
 
         Public Sub RefreshData() Implements IDirectory.RefreshData
-            If _BPB.IsValid Then
+            If _Disk.BPB.IsValid Then
                 _DirectoryData = GetDirectoryData()
             Else
                 _DirectoryData = New DirectoryData
             End If
-        End Sub
-
-        Public Sub RefreshData(BPB As BiosParameterBlock)
-            _BPB = BPB
-            RefreshData()
         End Sub
 
         Private Shared Sub EnumDirectoryEntries(Directory As DiskImage.IDirectory)
@@ -131,17 +128,17 @@
         End Sub
 
         Private Function GetDirectoryData() As DirectoryData
-            Dim OffsetStart As UInteger = Disk.SectorToBytes(_BPB.RootDirectoryRegionStart)
-            Dim OffsetEnd As UInteger = Disk.SectorToBytes(_BPB.DataRegionStart)
+            Dim OffsetStart As UInteger = Disk.SectorToBytes(_Disk.BPB.RootDirectoryRegionStart)
+            Dim OffsetEnd As UInteger = Disk.SectorToBytes(_Disk.BPB.DataRegionStart)
             Dim Data As New DirectoryData
 
-            Functions.GetDirectoryData(Data, _FileBytes.Data, OffsetStart, OffsetEnd, True)
+            Functions.GetDirectoryData(Data, _Disk.Image.Data, OffsetStart, OffsetEnd, True)
 
             Return Data
         End Function
 
         Private Function GetOffset(Index As UInteger) As UInteger
-            Return Disk.SectorToBytes(_BPB.RootDirectoryRegionStart) + Index * DirectoryEntry.DIRECTORY_ENTRY_SIZE
+            Return Disk.SectorToBytes(_Disk.BPB.RootDirectoryRegionStart) + Index * DirectoryEntry.DIRECTORY_ENTRY_SIZE
         End Function
     End Class
 End Namespace

@@ -94,10 +94,7 @@ Namespace DiskImage
         End Enum
 
         Sub New()
-            Dim Data(DIRECTORY_ENTRY_SIZE - 1) As Byte
-            For i = 0 To Data.Length - 1
-                Data(i) = 0
-            Next
+            Dim Data = FillArray(DIRECTORY_ENTRY_SIZE, 0)
             _FileBytes = New ByteArray(Data)
             _Offset = 0
         End Sub

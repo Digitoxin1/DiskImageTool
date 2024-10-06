@@ -24,7 +24,7 @@
             _DiskFormat = InferFloppyDiskFormat()
             _FATTables.SyncFATs = Not IsDiskFormatXDF(_DiskFormat)
 
-            _RootDirectory = New RootDirectory(FileBytes, _BPB, _FATTables, _DirectoryCache, False)
+            _RootDirectory = New RootDirectory(Me, _FATTables, False)
 
             CacheDirectoryEntries()
 
@@ -103,7 +103,7 @@
         End Function
 
         Public Function GetDirectoryEntryByOffset(Offset As UInteger) As DirectoryEntry
-            Return New DirectoryEntry(FileBytes, _BPB, _FATTables, _DirectoryCache, Offset)
+            Return New DirectoryEntry(Me, _FATTables, Offset)
         End Function
 
         Private Function GetFATMediaDescriptor() As Byte
@@ -157,7 +157,7 @@
             _FATTables.Reinitialize(_BPB)
             _DiskFormat = InferFloppyDiskFormat()
             _FATTables.SyncFATs = Not IsDiskFormatXDF(_DiskFormat)
-            _RootDirectory.RefreshData(_BPB)
+            _RootDirectory.RefreshData()
         End Sub
 
         Public Sub ClearChanges()

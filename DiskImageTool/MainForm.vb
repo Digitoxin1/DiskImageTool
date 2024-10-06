@@ -3570,7 +3570,7 @@ Public Class MainForm
             Exit Sub
         End If
 
-        FileData.DirectoryEntry.BatchEditMode = True
+        FileData.DirectoryEntry.Disk.Image.BatchEditMode = True
 
         FileData.DirectoryEntry.Clear(FileData.IsLastEntry)
         If FileData.IsLastEntry And FileData.Index > 0 Then
@@ -3586,7 +3586,7 @@ Public Class MainForm
             Next
         End If
 
-        FileData.DirectoryEntry.BatchEditMode = False
+        FileData.DirectoryEntry.Disk.Image.BatchEditMode = False
 
         'FilePropertiesRefresh(Item, False, False)
         DiskImageRefresh()

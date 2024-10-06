@@ -3,37 +3,30 @@
     Public Class DirectoryEntry
         Inherits DirectoryEntryBase
 
-        Private ReadOnly _FileBytes As ImageByteArray
-        Private ReadOnly _BPB As BiosParameterBlock
+        Private ReadOnly _Disk As Disk
         Private ReadOnly _FATTables As FATTables
-        Private ReadOnly _DirectoryCache As Dictionary(Of UInteger, DirectoryCacheEntry)
         Private _FatChain As FATChain
         Private _SubDirectory As SubDirectory
 
-        Sub New(FileBytes As ImageByteArray, BPB As BiosParameterBlock, FATTables As FATTables, DirectoryCache As Dictionary(Of UInteger, DirectoryCacheEntry), Offset As UInteger)
-            MyBase.New(FileBytes.Data, Offset)
+        Sub New(Disk As Disk, FATTables As FATTables, Offset As UInteger)
+            MyBase.New(Disk.Image.Data, Offset)
 
-            _FileBytes = FileBytes
-            _BPB = BPB
+            _Disk = Disk
             _FATTables = FATTables
-            _DirectoryCache = DirectoryCache
 
             InitFatChain()
             InitSubDirectory()
         End Sub
 
-        Public Property BatchEditMode() As Boolean
-            Get
-                Return _FileBytes.BatchEditMode
-            End Get
-            Set
-                _FileBytes.BatchEditMode = Value
-            End Set
-        End Property
-
         Public ReadOnly Property CrossLinks() As List(Of UInteger)
             Get
                 Return _FatChain.CrossLinks
+            End Get
+        End Property
+
+        Public ReadOnly Property Disk As Disk
+            Get
+                Return _Disk
             End Get
         End Property
 
@@ -56,11 +49,11 @@
         End Property
 
         Public Function GetAllocatedSize() As UInteger
-            Return Math.Ceiling(FileSize / _BPB.BytesPerCluster) * _BPB.BytesPerCluster
+            Return Math.Ceiling(FileSize / _Disk.BPB.BytesPerCluster) * _Disk.BPB.BytesPerCluster
         End Function
 
         Public Function GetAllocatedSizeFromFAT() As UInteger
-            Return _FatChain.Clusters.Count * _BPB.BytesPerCluster
+            Return _FatChain.Clusters.Count * _Disk.BPB.BytesPerCluster
         End Function
 
         Public Function GetChecksum() As UInteger
@@ -73,15 +66,15 @@
 
             If IsDeleted() Then
                 ReDim Content(Size - 1)
-                Dim Offset As UInteger = _BPB.ClusterToOffset(StartingCluster)
-                If Offset + Size > _FileBytes.Length Then
-                    Size = Math.Max(_FileBytes.Length - Offset, 0)
+                Dim Offset As UInteger = _Disk.BPB.ClusterToOffset(StartingCluster)
+                If Offset + Size > _Disk.Image.Length Then
+                    Size = Math.Max(_Disk.Image.Length - Offset, 0)
                 End If
                 If Size > 0 Then
-                    _FileBytes.CopyTo(Offset, Content, 0, Size)
+                    _Disk.Image.CopyTo(Offset, Content, 0, Size)
                 End If
             Else
-                Content = GetDataFromChain(_FileBytes.Data, ClusterListToSectorList(_BPB, _FatChain.Clusters))
+                Content = GetDataFromChain(_Disk.Image.Data, ClusterListToSectorList(_Disk.BPB, _FatChain.Clusters))
 
                 If Content.Length <> Size Then
                     Array.Resize(Of Byte)(Content, Size)
@@ -92,7 +85,7 @@
         End Function
 
         Public Function GetSizeOnDisk() As UInteger
-            Return _FatChain.Clusters.Count * _BPB.BytesPerCluster
+            Return _FatChain.Clusters.Count * _Disk.BPB.BytesPerCluster
         End Function
 
         Public Function HasIncorrectFileSize() As Boolean
@@ -104,11 +97,11 @@
         End Function
 
         Public Function HasInvalidFileSize() As Boolean
-            Return FileSize > _BPB.ImageSize
+            Return FileSize > _Disk.BPB.ImageSize
         End Function
 
         Public Function HasInvalidStartingCluster() As Boolean
-            Return StartingCluster = 1 Or StartingCluster > _BPB.NumberOfFATEntries + 1
+            Return StartingCluster = 1 Or StartingCluster > _Disk.BPB.NumberOfFATEntries + 1
         End Function
 
         Public Function HasVendorExceptions() As Boolean
@@ -131,13 +124,13 @@
         End Function
 
         Public Function IsInRoot() As Boolean
-            Return _BPB.OffsetToCluster(Offset) = 0
+            Return _Disk.BPB.OffsetToCluster(Offset) = 0
         End Function
 
 
         Public Function IsModified() As Boolean
-            If _DirectoryCache.ContainsKey(Offset) Then
-                Dim CacheEntry = _DirectoryCache.Item(Offset)
+            If _Disk.DirectoryCache.ContainsKey(Offset) Then
+                Dim CacheEntry = _Disk.DirectoryCache.Item(Offset)
                 If Not Data.CompareTo(CacheEntry.Data) Then
                     Return True
                 Else
@@ -173,15 +166,15 @@
         End Function
 
         Public Sub Remove(Clear As Boolean, FillChar As Byte)
-            Dim UseBatchEditMode As Boolean = Not _FileBytes.BatchEditMode
+            Dim UseBatchEditMode As Boolean = Not _Disk.Image.BatchEditMode
 
             If UseBatchEditMode Then
-                _FileBytes.BatchEditMode = True
+                _Disk.Image.BatchEditMode = True
             End If
 
-            _FileBytes.SetBytes(CHAR_DELETED, Offset)
+            _Disk.Image.SetBytes(CHAR_DELETED, Offset)
 
-            Dim b(_BPB.BytesPerCluster - 1) As Byte
+            Dim b(_Disk.BPB.BytesPerCluster - 1) As Byte
             If Clear Then
                 For i = 0 To b.Length - 1
                     b(i) = FillChar
@@ -190,8 +183,8 @@
 
             For Each Cluster In _FatChain.Clusters
                 If Clear Then
-                    Dim Offset = _BPB.ClusterToOffset(Cluster)
-                    _FileBytes.SetBytes(b, Offset)
+                    Dim Offset = _Disk.BPB.ClusterToOffset(Cluster)
+                    _Disk.Image.SetBytes(b, Offset)
                 End If
 
                 _FATTables.UpdateTableEntry(Cluster, FAT12.FAT_FREE_CLUSTER)
@@ -200,7 +193,7 @@
             InitFatChain()
 
             If UseBatchEditMode Then
-                _FileBytes.BatchEditMode = False
+                _Disk.Image.BatchEditMode = False
             End If
         End Sub
 
@@ -209,14 +202,14 @@
                 Return False
             End If
 
-            Dim Size = _BPB.NumberOfFATEntries + 2
+            Dim Size = _Disk.BPB.NumberOfFATEntries + 2
 
             Dim ClusterCount As UShort
 
             If IsDirectory() Then
                 ClusterCount = 1
             Else
-                ClusterCount = Math.Ceiling(FileSize / _BPB.BytesPerCluster)
+                ClusterCount = Math.Ceiling(FileSize / _Disk.BPB.BytesPerCluster)
             End If
 
             If StartingCluster + ClusterCount - 1 > Size Then
@@ -236,20 +229,20 @@
         End Function
 
         Public Sub Restore(FirstChar As Byte)
-            Dim UseBatchEditMode As Boolean = Not _FileBytes.BatchEditMode
+            Dim UseBatchEditMode As Boolean = Not _Disk.Image.BatchEditMode
 
             If UseBatchEditMode Then
-                _FileBytes.BatchEditMode = True
+                _Disk.Image.BatchEditMode = True
             End If
 
-            _FileBytes.SetBytes(FirstChar, Offset)
+            _Disk.Image.SetBytes(FirstChar, Offset)
 
             Dim ClusterCount As UShort
 
             If IsDirectory() Then
                 ClusterCount = 1
             Else
-                ClusterCount = Math.Ceiling(FileSize / _BPB.BytesPerCluster)
+                ClusterCount = Math.Ceiling(FileSize / _Disk.BPB.BytesPerCluster)
             End If
 
             If ClusterCount > 0 Then
@@ -268,7 +261,7 @@
             End If
 
             If UseBatchEditMode Then
-                _FileBytes.BatchEditMode = False
+                _Disk.Image.BatchEditMode = False
             End If
         End Sub
 
@@ -290,7 +283,7 @@
 
         Private Sub InitSubDirectory()
             If IsValidDirectory() AndAlso Not IsLink() AndAlso Not IsDeleted() Then
-                _SubDirectory = New SubDirectory(_FileBytes, _BPB, _FATTables, _FatChain, _DirectoryCache)
+                _SubDirectory = New SubDirectory(_Disk, _FATTables, _FatChain)
             Else
                 _SubDirectory = Nothing
             End If
