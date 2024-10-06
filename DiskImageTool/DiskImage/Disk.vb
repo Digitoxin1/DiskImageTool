@@ -1,22 +1,15 @@
 ﻿Namespace DiskImage
-    Public Structure DirectoryCacheEntry
-        Dim Checksum As UInteger
-        Dim Data() As Byte
-    End Structure
-
     Public Class Disk
         Private WithEvents FileBytes As ImageByteArray
         Public Const BYTES_PER_SECTOR As UShort = 512
         Private ReadOnly _BootSector As BootSector
         Private _BPB As BiosParameterBlock
         Private ReadOnly _RootDirectory As RootDirectory
-        Private ReadOnly _DirectoryCache As Dictionary(Of UInteger, DirectoryCacheEntry)
         Private ReadOnly _FATTables As FATTables
         Private _DiskFormat As FloppyDiskFormat
 
         Sub New(Image As IByteArray, FatIndex As UShort, Optional Modifications As Stack(Of DataChange()) = Nothing)
             FileBytes = New ImageByteArray(Image)
-            _DirectoryCache = New Dictionary(Of UInteger, DirectoryCacheEntry)
             _BootSector = New BootSector(FileBytes.Data, BootSector.BOOT_SECTOR_OFFSET)
             _BPB = GetBPB()
 
@@ -24,9 +17,7 @@
             _DiskFormat = InferFloppyDiskFormat()
             _FATTables.SyncFATs = Not IsDiskFormatXDF(_DiskFormat)
 
-            _RootDirectory = New RootDirectory(Me, _FATTables, False)
-
-            CacheDirectoryEntries()
+            _RootDirectory = New RootDirectory(Me, _FATTables)
 
             If Modifications IsNot Nothing Then
                 FileBytes.ApplyModifications(Modifications)
@@ -55,12 +46,6 @@
         Public ReadOnly Property RootDirectory As RootDirectory
             Get
                 Return _RootDirectory
-            End Get
-        End Property
-
-        Public ReadOnly Property DirectoryCache As Dictionary(Of UInteger, DirectoryCacheEntry)
-            Get
-                Return _DirectoryCache
             End Get
         End Property
 
@@ -93,6 +78,7 @@
         Public Shared Function SectorToBytes(Sector As UInteger) As UInteger
             Return Sector * BYTES_PER_SECTOR
         End Function
+
         Public Function CheckImageSize() As Integer
             Dim ReportedSize As Integer = _BPB.ReportedImageSize()
             Return FileBytes.Length.CompareTo(ReportedSize)
@@ -100,10 +86,6 @@
 
         Public Function CheckSize() As Boolean
             Return (FileBytes.Length > 0 And FileBytes.Length < 4423680)
-        End Function
-
-        Public Function GetDirectoryEntryByOffset(Offset As UInteger) As DirectoryEntry
-            Return New DirectoryEntry(Me, _FATTables, Offset)
         End Function
 
         Private Function GetFATMediaDescriptor() As Byte
@@ -119,37 +101,12 @@
             Return Result
         End Function
 
-        Public Function GetFileList() As List(Of DirectoryEntry)
-            Dim DirectoryList As New List(Of DirectoryEntry)
-
-            EnumerateDirectoryEntries(_RootDirectory, DirectoryList)
-
-            Return DirectoryList
-        End Function
-
-        Public Function GetVolumeLabel() As DirectoryEntry
-            Dim VolumeLabel As DirectoryEntry = Nothing
-            Dim DirectoryEntryCount = _RootDirectory.Data.EntryCount
-
-            If DirectoryEntryCount > 0 Then
-                For Counter As UInteger = 0 To DirectoryEntryCount - 1
-                    Dim File = _RootDirectory.GetFile(Counter)
-                    If File.IsValidVolumeName Then
-                        VolumeLabel = File
-                        Exit For
-                    End If
-                Next
-            End If
-
-            Return VolumeLabel
-        End Function
-
         Public Function GetXDFChecksum() As UInteger
             Return FileBytes.GetBytesInteger(&H13C)
         End Function
 
         Public Function IsValidImage(Optional CheckBPB As Boolean = True) As Boolean
-            Return _FileBytes.Length >= 512 And (Not CheckBPB OrElse _BPB.IsValid)
+            Return FileBytes.Length >= 512 And (Not CheckBPB OrElse _BPB.IsValid)
         End Function
 
         Public Sub Reinitialize()
@@ -162,66 +119,7 @@
 
         Public Sub ClearChanges()
             FileBytes.ClearChanges()
-            CacheDirectoryEntries()
-        End Sub
-
-        Private Sub CacheDirectoryEntries()
-            _DirectoryCache.Clear()
-
-            If IsValidImage() Then
-                CacheDirectoryEntries(_RootDirectory)
-            End If
-        End Sub
-
-        Private Sub CacheDirectoryEntries(Directory As DiskImage.IDirectory)
-            Dim DirectoryEntryCount = Directory.Data.EntryCount
-
-            If DirectoryEntryCount > 0 Then
-                For Counter = 0 To DirectoryEntryCount - 1
-                    Dim DirectoryEntry = Directory.GetFile(Counter)
-
-                    If Not DirectoryEntry.IsLink Then
-                        _DirectoryCache.Item(DirectoryEntry.Offset) = GetDirectoryCacheEntry(DirectoryEntry)
-                        If DirectoryEntry.IsDirectory And DirectoryEntry.SubDirectory IsNot Nothing Then
-                            If DirectoryEntry.SubDirectory.Data.EntryCount > 0 Then
-                                CacheDirectoryEntries(DirectoryEntry.SubDirectory)
-                            End If
-                        End If
-                    End If
-                Next
-            End If
-        End Sub
-
-        Private Function GetDirectoryCacheEntry(DirectoryEntry As DirectoryEntry) As DirectoryCacheEntry
-            Dim CacheEntry As DirectoryCacheEntry
-
-            CacheEntry.Data = DirectoryEntry.Data
-            If DirectoryEntry.IsValidFile Then
-                CacheEntry.Checksum = DirectoryEntry.GetChecksum()
-            Else
-                CacheEntry.Checksum = 0
-            End If
-
-            Return CacheEntry
-        End Function
-
-        Private Sub EnumerateDirectoryEntries(Directory As DiskImage.IDirectory, DirectoryList As List(Of DirectoryEntry))
-            Dim DirectoryEntryCount = Directory.Data.EntryCount
-
-            If DirectoryEntryCount > 0 Then
-                For Counter = 0 To DirectoryEntryCount - 1
-                    Dim DirectoryEntry = Directory.GetFile(Counter)
-
-                    If Not DirectoryEntry.IsLink Then
-                        DirectoryList.Add(DirectoryEntry)
-                        If DirectoryEntry.IsDirectory And DirectoryEntry.SubDirectory IsNot Nothing Then
-                            If DirectoryEntry.SubDirectory.Data.EntryCount > 0 Then
-                                EnumerateDirectoryEntries(DirectoryEntry.SubDirectory, DirectoryList)
-                            End If
-                        End If
-                    End If
-                Next
-            End If
+            _RootDirectory.RefreshCache()
         End Sub
 
         Private Function InferFloppyDiskFormat() As FloppyDiskFormat
@@ -232,7 +130,7 @@
             Else
                 DiskFormat = GetFloppyDiskFomat(_FATTables.FAT.MediaDescriptor)
                 If DiskFormat = FloppyDiskFormat.FloppyUnknown Then
-                    DiskFormat = GetFloppyDiskFormat(_FileBytes.Length)
+                    DiskFormat = GetFloppyDiskFormat(FileBytes.Length)
                 End If
             End If
 
@@ -248,7 +146,7 @@
                 Dim FATMediaDescriptor = GetFATMediaDescriptor()
 
                 Dim DiskFormatFAT = GetFloppyDiskFomat(FATMediaDescriptor)
-                Dim DiskFormatSize = GetFloppyDiskFormat(_FileBytes.Length)
+                Dim DiskFormatSize = GetFloppyDiskFormat(FileBytes.Length)
 
                 If DiskFormatFAT = FloppyDiskFormat.Floppy360 And DiskFormatSize = FloppyDiskFormat.Floppy180 Then
                     FATMediaDescriptor = GetFloppyDiskMediaDescriptor(DiskFormatSize)

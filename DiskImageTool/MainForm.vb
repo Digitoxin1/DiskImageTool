@@ -320,7 +320,7 @@ Public Class MainForm
             End If
         End If
 
-        Dim FileList = Disk.GetFileList()
+        Dim FileList = Disk.RootDirectory.GetFileList()
 
         For Each DirectoryEntry In FileList
             If DirectoryEntry.IsValid Then
@@ -1177,7 +1177,7 @@ Public Class MainForm
 
         For Each Crosslink In DirectoryEntry.CrossLinks
             If Crosslink <> DirectoryEntry.Offset Then
-                Dim CrossLinkedFile = Disk.GetDirectoryEntryByOffset(Crosslink)
+                Dim CrossLinkedFile = Disk.RootDirectory.GetDirectoryEntryByOffset(Crosslink)
                 Msg &= vbCrLf & CrossLinkedFile.GetFullFileName()
             End If
         Next
@@ -1821,7 +1821,7 @@ Public Class MainForm
         fsi.NewestFileDate = Nothing
         fsi.VolumeLabel = Nothing
 
-        Dim FileList = Disk.GetFileList()
+        Dim FileList = Disk.RootDirectory.GetFileList()
 
         For Each DirectoryEntry In FileList
             If DirectoryEntry.IsValid Then
@@ -3025,6 +3025,7 @@ Public Class MainForm
                         LFNFileName = ""
                     End If
 
+
                     If DirectoryEntry.IsDirectory And DirectoryEntry.SubDirectory IsNot Nothing Then
                         If DirectoryEntry.SubDirectory.Data.EntryCount > 0 Then
                             Dim NewPath = DirectoryEntry.GetFullFileName
@@ -3035,7 +3036,6 @@ Public Class MainForm
                             If Not ScanOnly Then
                                 MenuDisplayDirectorySubMenuItemAdd(NewPath, DirectoryEntry.Offset, -1)
                             End If
-
                             Dim SubResponse = ProcessDirectoryEntries(DirectoryEntry.SubDirectory, DirectoryEntry.Offset, NewPath, ScanOnly, GroupIndex, ItemIndex)
                             Response.Combine(SubResponse)
                         End If
@@ -3575,9 +3575,8 @@ Public Class MainForm
         FileData.DirectoryEntry.Clear(FileData.IsLastEntry)
         If FileData.IsLastEntry And FileData.Index > 0 Then
             Dim Offset = FileData.DirectoryEntry.Offset
-            For Counter = FileData.Index - 1 To 0 Step -1
-                Offset -= DirectoryEntry.DIRECTORY_ENTRY_SIZE
-                Dim PrevEntry = _Disk.GetDirectoryEntryByOffset(Offset)
+            For Counter = FileData.DirectoryEntry.Index - 1 To 0 Step -1
+                Dim PrevEntry = FileData.DirectoryEntry.ParentDirectory.GetFile(Counter)
                 If PrevEntry.IsLFN Then
                     PrevEntry.Clear(True)
                 Else

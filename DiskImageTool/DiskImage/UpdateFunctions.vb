@@ -30,7 +30,7 @@ Namespace DiskImage
 
             Disk.Image.BatchEditMode = True
 
-            Dim FileList = Disk.GetFileList()
+            Dim FileList = Disk.RootDirectory.GetFileList()
 
             For Each DirectoryEntry In FileList
                 If DirectoryEntry.IsValid Then

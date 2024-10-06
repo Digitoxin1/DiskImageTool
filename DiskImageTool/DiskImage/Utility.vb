@@ -1,5 +1,4 @@
-﻿Imports System.Reflection
-
+﻿
 Namespace DiskImage
     Module Functions
         Public ReadOnly InvalidFileChars() As Byte = {&H22, &H2A, &H2B, &H2C, &H2E, &H2F, &H3A, &H3B, &H3C, &H3D, &H3E, &H3F, &H5B, &H5C, &H5D, &H7C}
@@ -309,61 +308,12 @@ Namespace DiskImage
             Return Result
         End Function
 
-        Public Sub GetDirectoryData(Data As DirectoryData, FileBytes As IByteArray, OffsetStart As UInteger, OffsetEnd As UInteger, CheckBootSector As Boolean)
-            Dim EntryCount = (OffsetEnd - OffsetStart) \ DirectoryEntry.DIRECTORY_ENTRY_SIZE
-
-            Data.MaxEntries += EntryCount
-
-            If EntryCount > 0 Then
-                For Entry As UInteger = 0 To EntryCount - 1
-                    Dim Offset = OffsetStart + (Entry * DirectoryEntry.DIRECTORY_ENTRY_SIZE)
-                    Dim FirstByte = FileBytes.GetByte(Offset)
-                    If FirstByte = 0 Then
-                        Data.EndOfDirectory = True
-                    End If
-                    If Not Data.HasBootSector And CheckBootSector Then
-                        If BootSector.ValidJumpInstructuon.Contains(FirstByte) Then
-                            If OffsetEnd - Offset >= BootSector.BOOT_SECTOR_SIZE Then
-                                Dim BootSectorData = FileBytes.GetBytes(Offset, DiskImage.BootSector.BOOT_SECTOR_SIZE)
-                                Dim BootSector = New BootSector(BootSectorData)
-                                If BootSector.BPB.IsValid Then
-                                    Data.HasBootSector = True
-                                    Data.BootSectorOffset = Offset
-                                    Data.EndOfDirectory = True
-                                End If
-                            End If
-                        End If
-                    End If
-                    If Data.EndOfDirectory Then
-                        If Not Data.HasAdditionalData Then
-                            If Not Data.HasBootSector Or Offset < Data.BootSectorOffset Or Offset > Data.BootSectorOffset + DiskImage.BootSector.BOOT_SECTOR_SIZE Then
-                                If DirectoryEntryHasData(FileBytes, Offset) Then
-                                    Data.HasAdditionalData = True
-                                End If
-                            End If
-                        End If
-                    Else
-                        Data.EntryCount += 1
-                        If FileBytes.GetByte(Offset + 11) <> &HF Then 'Exclude LFN entries
-                            Dim FilePart = FileBytes.ToUInt16(Offset)
-                            If FilePart <> &H202E And FilePart <> &H2E2E Then 'Exclude '.' and '..' entries
-                                Data.FileCount += 1
-                                If FirstByte = DirectoryEntry.CHAR_DELETED Then
-                                    Data.DeletedFileCount += 1
-                                End If
-                            End If
-                        End If
-                    End If
-                Next
-            End If
-        End Sub
-
         Public Function GetSubDirectoryFromParentOffset(Disk As Disk, Offset As UInteger) As IDirectory
             Dim Directory As IDirectory
             If Offset = 0 Then
                 Directory = Disk.RootDirectory
             Else
-                Directory = Disk.GetDirectoryEntryByOffset(Offset).SubDirectory
+                Directory = Disk.RootDirectory.GetDirectoryEntryByOffset(Offset).SubDirectory
             End If
 
             Return Directory

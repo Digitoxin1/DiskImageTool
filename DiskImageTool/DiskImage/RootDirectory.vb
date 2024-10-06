@@ -1,47 +1,59 @@
 ﻿Namespace DiskImage
+    Public Structure DirectoryCacheEntry
+        Dim Checksum As UInteger
+        Dim Data() As Byte
+    End Structure
+
     Public Class RootDirectory
+        Inherits DirectoryBase
         Implements IDirectory
 
-        Private ReadOnly _Disk As Disk
+        Private ReadOnly _AllDirectoryEntries As Dictionary(Of UInteger, DirectoryEntry)
+        Private ReadOnly _DirectoryCache As Dictionary(Of UInteger, DirectoryCacheEntry)
         Private ReadOnly _FATTables As FATTables
-        Private _DirectoryData As DirectoryData
 
-        Sub New(Disk As Disk, FATTables As FATTables, EnumerateEntries As Boolean)
-            _Disk = Disk
+        Sub New(Disk As Disk, FATTables As FATTables)
+            MyBase.New(Disk, Nothing)
+
+            _AllDirectoryEntries = New Dictionary(Of UInteger, DirectoryEntry)
+            _DirectoryCache = New Dictionary(Of UInteger, DirectoryCacheEntry)
             _FATTables = FATTables
-            If _Disk.BPB.IsValid Then
-                _DirectoryData = GetDirectoryData()
-                If EnumerateEntries Then
-                    EnumDirectoryEntries(Me)
-                End If
-            Else
-                _DirectoryData = New DirectoryData
+
+            If Disk.BPB.IsValid Then
+                InitializeDirectoryData()
+                CacheDirectoryEntries(Me)
             End If
         End Sub
 
-        Public ReadOnly Property Data As DirectoryData Implements IDirectory.Data
+        Public ReadOnly Property AllDirectoryEntries As Dictionary(Of UInteger, DirectoryEntry)
             Get
-                Return _DirectoryData
+                Return _AllDirectoryEntries
             End Get
         End Property
 
-        Public ReadOnly Property Disk As Disk
+        Public ReadOnly Property DirectoryCache As Dictionary(Of UInteger, DirectoryCacheEntry)
             Get
-                Return _Disk
+                Return _DirectoryCache
             End Get
         End Property
 
-        Public ReadOnly Property ClusterChain As List(Of UShort) Implements IDirectory.ClusterChain
+        Public ReadOnly Property FATTables As FATTables
+            Get
+                Return _FATTables
+            End Get
+        End Property
+
+        Public Overrides ReadOnly Property ClusterChain As List(Of UShort) Implements IDirectory.ClusterChain
             Get
                 Return Nothing
             End Get
         End Property
 
-        Public ReadOnly Property SectorChain As List(Of UInteger) Implements IDirectory.SectorChain
+        Public Overrides ReadOnly Property SectorChain As List(Of UInteger) Implements IDirectory.SectorChain
             Get
                 Dim Chain = New List(Of UInteger)
 
-                For Sector = _Disk.BPB.RootDirectoryRegionStart To _Disk.BPB.DataRegionStart - 1
+                For Sector = Disk.BPB.RootDirectoryRegionStart To Disk.BPB.DataRegionStart - 1
                     Chain.Add(Sector)
                 Next
 
@@ -49,77 +61,69 @@
             End Get
         End Property
 
-        Public ReadOnly Property IsRootDirectory As Boolean Implements IDirectory.IsRootDirectory
-            Get
-                Return True
-            End Get
-        End Property
-
-        Public Function GetContent() As Byte() Implements IDirectory.GetContent
-            Dim SectorStart = _Disk.BPB.RootDirectoryRegionStart
-            Dim SectorEnd = _Disk.BPB.DataRegionStart
+        Public Overrides Function GetContent() As Byte() Implements IDirectory.GetContent
+            Dim SectorStart = Disk.BPB.RootDirectoryRegionStart
+            Dim SectorEnd = Disk.BPB.DataRegionStart
             Dim Length = Disk.SectorToBytes(SectorEnd - SectorStart)
             Dim Offset = Disk.SectorToBytes(SectorStart)
 
-            Return _Disk.Image.GetBytes(Offset, Length)
+            Return Disk.Image.GetBytes(Offset, Length)
         End Function
 
-        Public Function GetFile(Index As UInteger) As DirectoryEntry Implements IDirectory.GetFile
-            Return New DirectoryEntry(_Disk, _FATTables, GetOffset(Index))
+        Public Function GetDirectoryEntryByOffset(Offset As UInteger) As DirectoryEntry
+            Return _AllDirectoryEntries.Item(Offset)
         End Function
 
-        Public Function GetNextAvailableEntry() As DirectoryEntry Implements IDirectory.GetNextAvailableEntry
-            Dim Buffer(10) As Byte
+        Public Function GetFileList() As List(Of DirectoryEntry)
+            Dim DirectoryList As New List(Of DirectoryEntry)
 
-            For Counter As UInteger = 0 To _DirectoryData.MaxEntries - 1
-                Dim DirectoryEntry = GetFile(Counter)
-                If DirectoryEntry.Data(0) = 0 Then
-                    Return DirectoryEntry
-                End If
-                Array.Copy(DirectoryEntry.Data, 0, Buffer, 0, Buffer.Length)
-                If Buffer.CompareTo(DirectoryEntry.EmptyDirectoryEntry) Then
-                    Return DirectoryEntry
-                End If
-            Next
+            EnumerateDirectoryEntries(Me, DirectoryList)
 
-            Return Nothing
+            Return DirectoryList
         End Function
 
-        Public Function HasFile(Filename As String) As Integer Implements IDirectory.HasFile
-            Dim Count = _DirectoryData.EntryCount
-            If Count > 0 Then
-                For Counter As UInteger = 0 To Count - 1
-                    Dim File = GetFile(Counter)
-                    If Not File.IsDeleted And Not File.IsVolumeName And Not File.IsDirectory Then
-                        If File.GetFullFileName = Filename Then
-                            Return Counter
-                        End If
+        Public Function GetVolumeLabel() As DirectoryEntry
+            Dim VolumeLabel As DirectoryEntry = Nothing
+
+            If Data.EntryCount > 0 Then
+                For Counter As UInteger = 0 To Data.EntryCount - 1
+                    Dim File = DirectoryEntries.Item(Counter)
+                    If File.IsValidVolumeName Then
+                        VolumeLabel = File
+                        Exit For
                     End If
                 Next
             End If
 
-            Return -1
+            Return VolumeLabel
         End Function
 
-        Public Sub RefreshData() Implements IDirectory.RefreshData
-            If _Disk.BPB.IsValid Then
-                _DirectoryData = GetDirectoryData()
-            Else
-                _DirectoryData = New DirectoryData
+        Public Sub RefreshCache()
+            _DirectoryCache.Clear()
+
+            If Disk.BPB.IsValid Then
+                CacheDirectoryEntries(Me)
             End If
         End Sub
 
-        Private Shared Sub EnumDirectoryEntries(Directory As DiskImage.IDirectory)
-            Dim DirectoryEntryCount = Directory.Data.EntryCount
+        Public Sub RefreshData()
+            MyBase.Data.Clear()
 
-            If DirectoryEntryCount > 0 Then
-                For Counter = 0 To DirectoryEntryCount - 1
-                    Dim File = Directory.GetFile(Counter)
+            If Disk.BPB.IsValid Then
+                InitializeDirectoryData()
+            End If
+        End Sub
 
-                    If Not File.IsLink And Not File.IsVolumeName Then
-                        If File.IsDirectory And File.SubDirectory IsNot Nothing Then
-                            If File.SubDirectory.Data.EntryCount > 0 Then
-                                EnumDirectoryEntries(File.SubDirectory)
+        Private Sub CacheDirectoryEntries(Directory As DiskImage.IDirectory)
+            If Directory.Data.EntryCount > 0 Then
+                For Counter = 0 To Directory.Data.EntryCount - 1
+                    Dim DirectoryEntry = Directory.GetFile(Counter)
+
+                    If Not DirectoryEntry.IsLink Then
+                        _DirectoryCache.Item(DirectoryEntry.Offset) = GetDirectoryCacheEntry(DirectoryEntry)
+                        If DirectoryEntry.IsDirectory And DirectoryEntry.SubDirectory IsNot Nothing Then
+                            If DirectoryEntry.SubDirectory.Data.EntryCount > 0 Then
+                                CacheDirectoryEntries(DirectoryEntry.SubDirectory)
                             End If
                         End If
                     End If
@@ -127,18 +131,44 @@
             End If
         End Sub
 
-        Private Function GetDirectoryData() As DirectoryData
-            Dim OffsetStart As UInteger = Disk.SectorToBytes(_Disk.BPB.RootDirectoryRegionStart)
-            Dim OffsetEnd As UInteger = Disk.SectorToBytes(_Disk.BPB.DataRegionStart)
-            Dim Data As New DirectoryData
+        Private Sub EnumerateDirectoryEntries(Directory As DiskImage.IDirectory, DirectoryList As List(Of DirectoryEntry))
+            If Directory.Data.EntryCount > 0 Then
+                For Counter = 0 To Directory.Data.EntryCount - 1
+                    Dim DirectoryEntry = Directory.GetFile(Counter)
 
-            Functions.GetDirectoryData(Data, _Disk.Image.Data, OffsetStart, OffsetEnd, True)
+                    If Not DirectoryEntry.IsLink Then
+                        DirectoryList.Add(DirectoryEntry)
+                        If DirectoryEntry.IsDirectory And DirectoryEntry.SubDirectory IsNot Nothing Then
+                            If DirectoryEntry.SubDirectory.Data.EntryCount > 0 Then
+                                EnumerateDirectoryEntries(DirectoryEntry.SubDirectory, DirectoryList)
+                            End If
+                        End If
+                    End If
+                Next
+            End If
+        End Sub
 
-            Return Data
+        Private Function GetDirectoryCacheEntry(DirectoryEntry As DirectoryEntry) As DirectoryCacheEntry
+            Dim CacheEntry As DirectoryCacheEntry
+
+            CacheEntry.Data = DirectoryEntry.Data
+            If DirectoryEntry.IsValidFile Then
+                CacheEntry.Checksum = DirectoryEntry.GetChecksum()
+            Else
+                CacheEntry.Checksum = 0
+            End If
+
+            Return CacheEntry
         End Function
 
-        Private Function GetOffset(Index As UInteger) As UInteger
-            Return Disk.SectorToBytes(_Disk.BPB.RootDirectoryRegionStart) + Index * DirectoryEntry.DIRECTORY_ENTRY_SIZE
-        End Function
+        Private Sub InitializeDirectoryData()
+            Dim OffsetStart As UInteger = Disk.SectorToBytes(Disk.BPB.RootDirectoryRegionStart)
+            Dim OffsetEnd As UInteger = Disk.SectorToBytes(Disk.BPB.DataRegionStart)
+
+            _AllDirectoryEntries.Clear()
+            DirectoryEntries.Clear()
+
+            DirectoryBase.GetDirectoryData(Me, Me, OffsetStart, OffsetEnd, True)
+        End Sub
     End Class
 End Namespace

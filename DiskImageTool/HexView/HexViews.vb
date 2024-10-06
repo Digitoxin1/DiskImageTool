@@ -172,7 +172,7 @@ Module HexViews
             HexViewSectorData = New HexViewSectorData(Disk, Disk.RootDirectory.SectorChain)
             HighlightDirectoryData(Disk, HexViewSectorData, True)
         Else
-            Dim DirectoryEntry = Disk.GetDirectoryEntryByOffset(Offset)
+            Dim DirectoryEntry = Disk.RootDirectory.GetDirectoryEntryByOffset(Offset)
             If Not (DirectoryEntry.IsValidFile OrElse DirectoryEntry.IsValidDirectory) Then
                 Return Nothing
             End If
@@ -224,7 +224,7 @@ Module HexViews
             NumberOfFATs = Disk.BPB.NumberOfFATs
         End If
 
-        For Index = 0 To NumberOfFATs - 1
+        For Index As Byte = 0 To NumberOfFATs - 1
             Dim Length As UInteger = Disk.SectorToBytes(Disk.BPB.SectorsPerFAT)
             Dim Start As UInteger = Disk.SectorToBytes(Disk.BPB.FATRegionStart) + Length * Index
             Dim Data = Disk.Image.GetBytes(Start, Length)
@@ -262,7 +262,7 @@ Module HexViews
     Private Sub HighlightDirectoryData(Disk As Disk, HexViewSectorData As HexViewSectorData, CheckBootSector As Boolean)
         Dim EndOfDirectory As Boolean = False
 
-        For Index = 0 To HexViewSectorData.SectorData.BlockCount - 1
+        For Index As UInteger = 0 To HexViewSectorData.SectorData.BlockCount - 1
             Dim HasBootSector As Boolean = False
             Dim BootSectorOffset As UInteger = 0
             Dim SectorBlock = HexViewSectorData.SectorData.GetBlock(Index)
@@ -328,7 +328,7 @@ Module HexViews
     End Sub
 
     Private Sub HighlightSectorData(Disk As Disk, HexViewSectorData As HexViewSectorData, FileSize As UInteger, HighlightAssigned As Boolean)
-        For Index = 0 To HexViewSectorData.SectorData.BlockCount - 1
+        For Index As UInteger = 0 To HexViewSectorData.SectorData.BlockCount - 1
             Dim SectorBlock = HexViewSectorData.SectorData.GetBlock(Index)
             Dim HighlightedRegions As New HighlightedRegions
             HexViewSectorData.HighlightedRegionList.Add(HighlightedRegions)

@@ -171,7 +171,7 @@ Public Class FATEditForm
 
         If OffsetList IsNot Nothing Then
             For Each Offset In OffsetList
-                Dim DirectoryEntry = _Disk.GetDirectoryEntryByOffset(Offset)
+                Dim DirectoryEntry = _Disk.RootDirectory.GetDirectoryEntryByOffset(Offset)
                 If FileName <> "" Then
                     FileName &= ", "
                 End If
@@ -509,7 +509,7 @@ Public Class FATEditForm
     End Sub
 
     Private Sub ProcessFATChains()
-        Dim Directory = New RootDirectory(_Disk, _FATTables, True)
+        Dim Directory = New RootDirectory(_Disk, _FATTables)
     End Sub
 
     Private Sub RefreshFAT()
