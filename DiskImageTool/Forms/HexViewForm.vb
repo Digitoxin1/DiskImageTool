@@ -890,9 +890,9 @@ Public Class HexViewForm
                     ToolStripStatusCluster.Text = "Cluster: " & Cluster
 
                     If _BPB.IsValid Then
-                        If _CurrentHexViewData.Disk.FAT.FileAllocation.ContainsKey(Cluster) Then
-                            Dim OffsetList = _CurrentHexViewData.Disk.FAT.FileAllocation.Item(Cluster)
-                            Dim DirectoryEntry = _CurrentHexViewData.Disk.RootDirectory.GetDirectoryEntryByOffset(OffsetList.Item(0))
+                        If _CurrentHexViewData.Disk.RootDirectory.FATAllocation.FileAllocation.ContainsKey(Cluster) Then
+                            Dim OffsetList = _CurrentHexViewData.Disk.RootDirectory.FATAllocation.FileAllocation.Item(Cluster)
+                            Dim DirectoryEntry = OffsetList.Item(0)
                             FileName = DirectoryEntry.GetFullFileName
                         End If
                     End If

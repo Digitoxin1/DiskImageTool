@@ -1,12 +1,12 @@
 ﻿Namespace DiskImage
     Public Class FATChain
-        Public Sub New(Offset As UInteger)
-            _Offset = Offset
+        Public Sub New(DirectoryEntry As DirectoryEntry)
+            _DirectoryEntry = DirectoryEntry
         End Sub
         Public Property Clusters As New List(Of UShort)
-        Public Property CrossLinks As New List(Of UInteger)
+        Public Property CrossLinks As New List(Of DirectoryEntry)
         Public Property HasCircularChain As Boolean = False
-        Public ReadOnly Property Offset As UInteger
+        Public ReadOnly Property DirectoryEntry As DirectoryEntry
         Public Property OpenChain As Boolean = True
     End Class
 End Namespace

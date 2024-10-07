@@ -58,6 +58,7 @@ Namespace DiskImage
         Public Enum DirectoryEntrySizes As UInteger
             FileName = 8
             Extension = 3
+            FileNameAndExtension = 11
             Attributes = 1
             ReservedForWinNT = 1
             CreationMillisecond = 1
@@ -387,6 +388,18 @@ Namespace DiskImage
             Return _LastWriteDateCache
         End Function
 
+        Public Function GetLFNChecksum() As Byte
+            Dim pFcbName = _FileBytes.GetBytes(_Offset + DirectoryEntryOffsets.FileName, DirectoryEntrySizes.FileNameAndExtension)
+
+            Dim Sum As Byte = 0
+
+            For Index = 0 To 10
+                Sum = ((If((Sum And 1) <> 0, &H80, 0)) + (Sum >> 1) + pFcbName(Index)) And &HFF
+            Next
+
+            Return Sum
+        End Function
+
         Public Function GetLFNFileName() As String
             If IsLFN() Then
                 Dim Size As Integer = LFNSizes.FilePart1 + LFNSizes.FilePart2 + LFNSizes.FilePart3
@@ -515,12 +528,20 @@ Namespace DiskImage
         End Function
 
         Public Sub SetFileInfo(FileInfo As FileInfo, UseCreationDate As Boolean, UseLastAccessDate As Boolean)
-            SetFileName(CleanDOSFileName(FileInfo.Name))
+            Dim NewFileName = DOSTruncateFileName(FileInfo.Name)
+
+            SetFileInfo(FileInfo, NewFileName, UseCreationDate, UseLastAccessDate)
+        End Sub
+
+        Public Sub SetFileInfo(FileInfo As FileInfo, NewFileName As String, UseCreationDate As Boolean, UseLastAccessDate As Boolean)
+            SetFileName(NewFileName)
 
             SetLastWriteDate(FileInfo.LastWriteTime)
+
             If UseCreationDate Then
                 SetCreationDate(FileInfo.CreationTime)
             End If
+
             If UseLastAccessDate Then
                 SetLastAccessDate(FileInfo.LastAccessTime)
             End If

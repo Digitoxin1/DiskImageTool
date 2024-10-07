@@ -115,7 +115,7 @@ Public Class FATTables
         End If
 
         For Counter = Start To Start + Count - 1
-            If _FAT12(Counter).UpdateFAT12() Then
+            If _FAT12(Counter).UpdateFAT() Then
                 Result = True
             End If
             If UpdateMediaDescriptor Then
@@ -179,7 +179,7 @@ Public Class FATTables
             If Counter > OldNumFATs - 1 Then
                 _FAT12(Counter) = New FAT12(_FileBytes, _BPB, Counter)
             Else
-                _FAT12(Counter).Reinitialize(_BPB)
+                _FAT12(Counter).InitializeFAT(_BPB)
             End If
         Next
         _FATsMatch = CompareFATTables()

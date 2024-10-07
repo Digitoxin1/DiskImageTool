@@ -501,7 +501,6 @@
                 _SectionType = SectionType
                 _StartIndex = StartIndex
                 _Length = Length
-                Console.WriteLine(SectionType & "," & StartIndex & "," & Length)
             End Sub
 
             Public Property SectionType As MFMSectionType

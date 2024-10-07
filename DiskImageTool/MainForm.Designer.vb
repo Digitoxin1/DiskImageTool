@@ -49,6 +49,7 @@ Partial Class MainForm
         Dim FileMenuSeparatoor3 As System.Windows.Forms.ToolStripSeparator
         Me.BtnOpen = New System.Windows.Forms.ToolStripMenuItem()
         Me.BtnReload = New System.Windows.Forms.ToolStripMenuItem()
+        Me.BtnNewImage = New System.Windows.Forms.ToolStripMenuItem()
         Me.toolStripSeparator = New System.Windows.Forms.ToolStripSeparator()
         Me.BtnSave = New System.Windows.Forms.ToolStripMenuItem()
         Me.BtnSaveAs = New System.Windows.Forms.ToolStripMenuItem()
@@ -71,7 +72,8 @@ Partial Class MainForm
         Me.BtnRedo = New System.Windows.Forms.ToolStripMenuItem()
         Me.BtnRevert = New System.Windows.Forms.ToolStripMenuItem()
         Me.ToolStripSeparator5 = New System.Windows.Forms.ToolStripSeparator()
-        Me.btnCreateBackup = New System.Windows.Forms.ToolStripMenuItem()
+        Me.BtnCreateBackup = New System.Windows.Forms.ToolStripMenuItem()
+        Me.BtnWindowsExtensions = New System.Windows.Forms.ToolStripMenuItem()
         Me.BtnDisplayBootSector = New System.Windows.Forms.ToolStripMenuItem()
         Me.BtnDisplayFAT = New System.Windows.Forms.ToolStripMenuItem()
         Me.BtnDisplayDirectory = New System.Windows.Forms.ToolStripMenuItem()
@@ -173,7 +175,6 @@ Partial Class MainForm
         Me.ComboImagesFiltered = New System.Windows.Forms.ComboBox()
         Me.BtnResetSort = New System.Windows.Forms.Button()
         Me.btnRetry = New System.Windows.Forms.Button()
-        Me.BtnNewImage = New System.Windows.Forms.ToolStripMenuItem()
         SummaryName = CType(New System.Windows.Forms.ColumnHeader(), System.Windows.Forms.ColumnHeader)
         SummaryValue = CType(New System.Windows.Forms.ColumnHeader(), System.Windows.Forms.ColumnHeader)
         HashName = CType(New System.Windows.Forms.ColumnHeader(), System.Windows.Forms.ColumnHeader)
@@ -283,6 +284,12 @@ Partial Class MainForm
         Me.BtnReload.Size = New System.Drawing.Size(212, 22)
         Me.BtnReload.Text = "&Reload from Disk"
         '
+        'BtnNewImage
+        '
+        Me.BtnNewImage.Name = "BtnNewImage"
+        Me.BtnNewImage.Size = New System.Drawing.Size(212, 22)
+        Me.BtnNewImage.Text = "&New Image"
+        '
         'toolStripSeparator
         '
         Me.toolStripSeparator.Name = "toolStripSeparator"
@@ -360,10 +367,10 @@ Partial Class MainForm
         '
         'ContextMenuEdit
         '
-        Me.ContextMenuEdit.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.BtnEditBootSector, Me.BtnEditFAT, Me.ToolStripSeparator4, Me.BtnFileProperties, Me.BtnExportFile, Me.BtnReplaceFile, Me.BtnAddFile, Me.ToolStripSeparator2, Me.BtnUndo, Me.BtnRedo, Me.BtnRevert, Me.ToolStripSeparator5, Me.btnCreateBackup})
+        Me.ContextMenuEdit.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.BtnEditBootSector, Me.BtnEditFAT, Me.ToolStripSeparator4, Me.BtnFileProperties, Me.BtnExportFile, Me.BtnReplaceFile, Me.BtnAddFile, Me.ToolStripSeparator2, Me.BtnUndo, Me.BtnRedo, Me.BtnRevert, Me.ToolStripSeparator5, Me.BtnCreateBackup, Me.BtnWindowsExtensions})
         Me.ContextMenuEdit.Name = "ContextMenuEdit"
         Me.ContextMenuEdit.OwnerItem = MainMenuEdit
-        Me.ContextMenuEdit.Size = New System.Drawing.Size(195, 242)
+        Me.ContextMenuEdit.Size = New System.Drawing.Size(195, 286)
         '
         'BtnEditBootSector
         '
@@ -442,12 +449,21 @@ Partial Class MainForm
         Me.ToolStripSeparator5.Name = "ToolStripSeparator5"
         Me.ToolStripSeparator5.Size = New System.Drawing.Size(191, 6)
         '
-        'btnCreateBackup
+        'BtnCreateBackup
         '
-        Me.btnCreateBackup.CheckOnClick = True
-        Me.btnCreateBackup.Name = "btnCreateBackup"
-        Me.btnCreateBackup.Size = New System.Drawing.Size(194, 22)
-        Me.btnCreateBackup.Text = "Create Backup on Save"
+        Me.BtnCreateBackup.CheckOnClick = True
+        Me.BtnCreateBackup.Name = "BtnCreateBackup"
+        Me.BtnCreateBackup.Size = New System.Drawing.Size(194, 22)
+        Me.BtnCreateBackup.Text = "Create Backup on Save"
+        '
+        'BtnWindowsExtensions
+        '
+        Me.BtnWindowsExtensions.CheckOnClick = True
+        Me.BtnWindowsExtensions.Name = "BtnWindowsExtensions"
+        Me.BtnWindowsExtensions.Size = New System.Drawing.Size(194, 22)
+        Me.BtnWindowsExtensions.Text = "Windows Extensions"
+        Me.BtnWindowsExtensions.ToolTipText = "Enabled Created and Last Access dates and Long File Name support when adding file" &
+    "s"
         '
         'MainMenuView
         '
@@ -1278,12 +1294,6 @@ Partial Class MainForm
         Me.btnRetry.Text = "Retry"
         Me.btnRetry.UseVisualStyleBackColor = True
         '
-        'BtnNewImage
-        '
-        Me.BtnNewImage.Name = "BtnNewImage"
-        Me.BtnNewImage.Size = New System.Drawing.Size(212, 22)
-        Me.BtnNewImage.Text = "&New Image"
-        '
         'MainForm
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
@@ -1432,7 +1442,7 @@ Partial Class MainForm
     Friend WithEvents BtnWriteFloppyA As ToolStripMenuItem
     Friend WithEvents BtnWriteFloppyB As ToolStripMenuItem
     Friend WithEvents ToolStripSeparator5 As ToolStripSeparator
-    Friend WithEvents btnCreateBackup As ToolStripMenuItem
+    Friend WithEvents BtnCreateBackup As ToolStripMenuItem
     Friend WithEvents ContextMenuEdit As ContextMenuStrip
     Friend WithEvents btnRetry As Button
     Friend WithEvents BtnAddFile As ToolStripMenuItem
@@ -1446,4 +1456,5 @@ Partial Class MainForm
     Friend WithEvents BtnReload As ToolStripMenuItem
     Friend WithEvents BtnRawTrackData As ToolStripMenuItem
     Friend WithEvents BtnNewImage As ToolStripMenuItem
+    Friend WithEvents BtnWindowsExtensions As ToolStripMenuItem
 End Class

@@ -7,9 +7,14 @@
         ReadOnly Property IsRootDirectory As Boolean
         ReadOnly Property ParentEntry As DirectoryEntry
         ReadOnly Property SectorChain As List(Of UInteger)
+        Function AddFile(FilePath As String, LFN As Boolean) As Boolean
+        Function AddFile(FilePath As String, LFN As Boolean, ClusterList As SortedSet(Of UShort)) As Boolean
+        Function GetAvailableFileName(FileName As String) As String
         Function GetContent() As Byte()
         Function GetFile(Index As UInteger) As DirectoryEntry
-        Function GetNextAvailableEntry() As DirectoryEntry
-        Function HasFile(Filename As String) As Integer
+        Function GetIndex(DirectoryEntry As DirectoryEntry) As Integer
+        Function GetAvailableEntry() As DirectoryEntry
+        Function GetAvailableEntries(Count As UInteger) As List(Of DirectoryEntry)
+        Function HasFile(Filename As String, IncludeDirectories As Boolean) As Integer
     End Interface
 End Namespace

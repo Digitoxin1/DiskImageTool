@@ -8,16 +8,14 @@
         Inherits DirectoryBase
         Implements IDirectory
 
-        Private ReadOnly _AllDirectoryEntries As Dictionary(Of UInteger, DirectoryEntry)
         Private ReadOnly _DirectoryCache As Dictionary(Of UInteger, DirectoryCacheEntry)
-        Private ReadOnly _FATTables As FATTables
+        Private ReadOnly _FATAllocation As FATAllocation
 
-        Sub New(Disk As Disk, FATTables As FATTables)
+        Sub New(Disk As Disk, FAT As FAT12)
             MyBase.New(Disk, Nothing)
 
-            _AllDirectoryEntries = New Dictionary(Of UInteger, DirectoryEntry)
             _DirectoryCache = New Dictionary(Of UInteger, DirectoryCacheEntry)
-            _FATTables = FATTables
+            _FATAllocation = New FATAllocation(FAT)
 
             If Disk.BPB.IsValid Then
                 InitializeDirectoryData()
@@ -25,21 +23,15 @@
             End If
         End Sub
 
-        Public ReadOnly Property AllDirectoryEntries As Dictionary(Of UInteger, DirectoryEntry)
-            Get
-                Return _AllDirectoryEntries
-            End Get
-        End Property
-
         Public ReadOnly Property DirectoryCache As Dictionary(Of UInteger, DirectoryCacheEntry)
             Get
                 Return _DirectoryCache
             End Get
         End Property
 
-        Public ReadOnly Property FATTables As FATTables
+        Public ReadOnly Property FATAllocation As FATAllocation
             Get
-                Return _FATTables
+                Return _FATAllocation
             End Get
         End Property
 
@@ -61,6 +53,54 @@
             End Get
         End Property
 
+        Public Overrides Function AddFile(FilePath As String, WindowsAdditions As Boolean) As Boolean Implements IDirectory.AddFile
+            Return AddFile(FilePath, WindowsAdditions, Disk.FAT.FreeClusters)
+        End Function
+
+        Public Overrides Function AddFile(FilePath As String, WindowsAdditions As Boolean, ClusterList As SortedSet(Of UShort)) As Boolean Implements IDirectory.AddFile
+            Dim FileInfo = New IO.FileInfo(FilePath)
+            Dim LFNEntries As List(Of Byte()) = Nothing
+            Dim EntryCount As Integer = 1
+
+            Dim ShortFileName = GetAvailableFileName(FileInfo.Name)
+            If WindowsAdditions Then
+                LFNEntries = GetLFNDirectoryEntries(FileInfo.Name, ShortFileName)
+                EntryCount += LFNEntries.Count
+            End If
+
+            Dim Entries = GetAvailableEntries(EntryCount)
+
+            If Entries Is Nothing Then
+                Return False
+            End If
+
+            Dim ClusterSize = Disk.BPB.BytesPerCluster
+
+            If FileInfo.Length > ClusterList.Count * ClusterSize Then
+                Return False
+            End If
+
+            Dim DirectoryEntry = Entries(Entries.Count - 1)
+            Dim Result = DirectoryEntry.AddFile(FilePath, ShortFileName, WindowsAdditions, ClusterList)
+
+            If Result Then
+                Dim Checksum = DirectoryEntry.GetLFNChecksum
+                If WindowsAdditions Then
+                    For Counter = 0 To LFNEntries.Count - 1
+                        Dim Buffer = LFNEntries(Counter)
+                        Buffer(13) = Checksum
+                        DirectoryEntry = Entries(Counter)
+                        DirectoryEntry.Data = Buffer
+                    Next
+                End If
+
+                Data.EntryCount += EntryCount
+                    Data.AvailableEntries -= EntryCount
+                End If
+
+                Return Result
+        End Function
+
         Public Overrides Function GetContent() As Byte() Implements IDirectory.GetContent
             Dim SectorStart = Disk.BPB.RootDirectoryRegionStart
             Dim SectorEnd = Disk.BPB.DataRegionStart
@@ -68,10 +108,6 @@
             Dim Offset = Disk.SectorToBytes(SectorStart)
 
             Return Disk.Image.GetBytes(Offset, Length)
-        End Function
-
-        Public Function GetDirectoryEntryByOffset(Offset As UInteger) As DirectoryEntry
-            Return _AllDirectoryEntries.Item(Offset)
         End Function
 
         Public Function GetFileList() As List(Of DirectoryEntry)
@@ -108,6 +144,8 @@
 
         Public Sub RefreshData()
             MyBase.Data.Clear()
+            DirectoryEntries.Clear()
+            _FATAllocation.Clear()
 
             If Disk.BPB.IsValid Then
                 InitializeDirectoryData()
@@ -164,9 +202,6 @@
         Private Sub InitializeDirectoryData()
             Dim OffsetStart As UInteger = Disk.SectorToBytes(Disk.BPB.RootDirectoryRegionStart)
             Dim OffsetEnd As UInteger = Disk.SectorToBytes(Disk.BPB.DataRegionStart)
-
-            _AllDirectoryEntries.Clear()
-            DirectoryEntries.Clear()
 
             DirectoryBase.GetDirectoryData(Me, Me, OffsetStart, OffsetEnd, True)
         End Sub

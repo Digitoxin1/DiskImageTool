@@ -17,7 +17,7 @@
             _DiskFormat = InferFloppyDiskFormat()
             _FATTables.SyncFATs = Not IsDiskFormatXDF(_DiskFormat)
 
-            _RootDirectory = New RootDirectory(Me, _FATTables)
+            _RootDirectory = New RootDirectory(Me, _FATTables.FAT)
 
             If Modifications IsNot Nothing Then
                 FileBytes.ApplyModifications(Modifications)

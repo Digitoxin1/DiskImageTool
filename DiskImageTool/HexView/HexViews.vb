@@ -74,7 +74,7 @@ Module HexViews
         Dim Length As UInteger = 0
         Dim LastCluster As UShort = 0
 
-        For Each Cluster In Disk.FAT.LostClusters
+        For Each Cluster In Disk.RootDirectory.FATAllocation.LostClusters
             If Cluster > LastCluster + 1 Then
                 If Length > 0 Then
                     HexViewSectorData.SectorData.AddBlockByOffset(Offset, Length)
@@ -163,44 +163,46 @@ Module HexViews
         Return HexViewSectorData
     End Function
 
-    Public Function HexViewDirectoryEntry(Disk As Disk, Offset As UInteger) As HexViewSectorData
+    Public Function HexViewRootDirectory(Disk As Disk) As HexViewSectorData
+        Dim HexViewSectorData = New HexViewSectorData(Disk, Disk.RootDirectory.SectorChain)
+        HighlightDirectoryData(Disk, HexViewSectorData, True)
+
+        HexViewSectorData.Description = "Root Directory"
+
+        Return HexViewSectorData
+    End Function
+
+    Public Function HexViewDirectoryEntry(Disk As Disk, DirectoryEntry As DirectoryEntry) As HexViewSectorData
         Dim HexViewSectorData As HexViewSectorData
         Dim Caption As String
 
-        If Offset = 0 Then
-            Caption = "Root Directory"
-            HexViewSectorData = New HexViewSectorData(Disk, Disk.RootDirectory.SectorChain)
-            HighlightDirectoryData(Disk, HexViewSectorData, True)
-        Else
-            Dim DirectoryEntry = Disk.RootDirectory.GetDirectoryEntryByOffset(Offset)
-            If Not (DirectoryEntry.IsValidFile OrElse DirectoryEntry.IsValidDirectory) Then
-                Return Nothing
+        If Not (DirectoryEntry.IsValidFile OrElse DirectoryEntry.IsValidDirectory) Then
+            Return Nothing
+        End If
+
+        Caption = IIf(DirectoryEntry.IsDirectory, "Directory", "File") & " - " & DirectoryEntry.GetFullFileName
+
+        If DirectoryEntry.IsDeleted Then
+            Caption = "Deleted " & Caption
+            Dim DataOffset = Disk.BPB.ClusterToOffset(DirectoryEntry.StartingCluster)
+            Dim Length As UInteger
+            Dim FileSize As UInteger
+            If DirectoryEntry.IsDirectory Then
+                Length = Disk.BPB.BytesPerCluster
+                FileSize = Length
+            Else
+                Length = Math.Ceiling(DirectoryEntry.FileSize / Disk.BPB.BytesPerCluster) * Disk.BPB.BytesPerCluster
+                FileSize = DirectoryEntry.FileSize
             End If
 
-            Caption = IIf(DirectoryEntry.IsDirectory, "Directory", "File") & " - " & DirectoryEntry.GetFullFileName
-
-            If DirectoryEntry.IsDeleted Then
-                Caption = "Deleted " & Caption
-                Dim DataOffset = Disk.BPB.ClusterToOffset(DirectoryEntry.StartingCluster)
-                Dim Length As UInteger
-                Dim FileSize As UInteger
-                If DirectoryEntry.IsDirectory Then
-                    Length = Disk.BPB.BytesPerCluster
-                    FileSize = Length
-                Else
-                    Length = Math.Ceiling(DirectoryEntry.FileSize / Disk.BPB.BytesPerCluster) * Disk.BPB.BytesPerCluster
-                    FileSize = DirectoryEntry.FileSize
-                End If
-
-                HexViewSectorData = New HexViewSectorData(Disk, DataOffset, Length)
-                HighlightSectorData(Disk, HexViewSectorData, FileSize, True)
+            HexViewSectorData = New HexViewSectorData(Disk, DataOffset, Length)
+            HighlightSectorData(Disk, HexViewSectorData, FileSize, True)
+        Else
+            HexViewSectorData = New HexViewSectorData(Disk, DirectoryEntry.FATChain.Clusters)
+            If Not DirectoryEntry.IsDirectory Then
+                HighlightSectorData(Disk, HexViewSectorData, DirectoryEntry.FileSize, False)
             Else
-                HexViewSectorData = New HexViewSectorData(Disk, DirectoryEntry.FATChain.Clusters)
-                If Not DirectoryEntry.IsDirectory Then
-                    HighlightSectorData(Disk, HexViewSectorData, DirectoryEntry.FileSize, False)
-                Else
-                    HighlightDirectoryData(Disk, HexViewSectorData, False)
-                End If
+                HighlightDirectoryData(Disk, HexViewSectorData, False)
             End If
         End If
 
@@ -341,7 +343,7 @@ Module HexViews
                     Dim BlockSize = Math.Min(BytesRemaining, Disk.BYTES_PER_SECTOR)
                     If BlockSize > 0 Then
                         Dim Cluster = Disk.BPB.SectorToCluster(Sector)
-                        If Disk.FAT.FileAllocation.ContainsKey(Cluster) Then
+                        If Disk.RootDirectory.FATAllocation.FileAllocation.ContainsKey(Cluster) Then
                             HighlightedRegions.AddItem(BlockOffset, BlockSize, Color.Red)
                         End If
                     End If

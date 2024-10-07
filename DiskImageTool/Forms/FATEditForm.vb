@@ -7,6 +7,7 @@ Public Class FATEditForm
     Private ReadOnly _Disk As DiskImage.Disk
     Private ReadOnly _FATTable As DataTable
     Private ReadOnly _FATTables As FATTables
+    Private ReadOnly _Directory As RootDirectory
     Private ReadOnly _GridCellColors() As Color = {
         Color.White,
         Color.Red,
@@ -20,7 +21,7 @@ Public Class FATEditForm
     Private _GridCells() As GridCellType
     Private _GridSize As Integer
     Private _IgnoreEvents As Boolean = True
-    Private _OffsetLookup As Dictionary(Of UInteger, UInteger)
+    Private _OffsetLookup As Dictionary(Of DirectoryEntry, UInteger)
     Private _Updated As Boolean = False
 
     Private Enum GridCellType
@@ -42,7 +43,7 @@ Public Class FATEditForm
         _Disk = Disk
 
         _FATTables = New FATTables(_Disk.BPB, _Disk.Image, Index)
-        ProcessFATChains()
+        _Directory = New RootDirectory(_Disk, _FATTables.FAT)
 
         Me.Text = "File Allocation Table " & Index + 1
 
@@ -134,27 +135,27 @@ Public Class FATEditForm
         'Column = New DataColumn("StartingCluster", Type.GetType("System.Boolean"))
         'FATTable.Columns.Add(Column)
 
-        _OffsetLookup = New Dictionary(Of UInteger, UInteger)
+        _OffsetLookup = New Dictionary(Of DirectoryEntry, UInteger)
         Dim OffsetIndex As UInteger = 1
 
         For Cluster = 2 To FAT.TableLength
-            Dim OffsetList = GetOffsetsFromCluster(FAT, Cluster)
+            Dim EntreyList = GetEntriesFromCluster(FAT, Cluster)
             Dim Value = FAT.TableEntry(Cluster)
             Dim Row = FATTable.NewRow
             Row.Item("Cluster") = Cluster
             Row.Item("Value") = Value
             Row.Item("Type") = GetTypeFromValue(Value)
-            Row.Item("File") = GetFileFromOffsetList(OffsetList)
+            Row.Item("File") = GetFileFromOffsetList(EntreyList)
             Row.Item("Error") = GetRowError(FAT, Cluster, Value)
-            If OffsetList IsNot Nothing Then
+            If EntreyList IsNot Nothing Then
                 'Dim DirectoryEntry = _Disk.GetDirectoryEntryByOffset(OffsetList(0))
                 'Row.Item("StartingCluster") = (DirectoryEntry.StartingCluster = Cluster)
-                If Not _OffsetLookup.ContainsKey(OffsetList(0)) Then
-                    _OffsetLookup.Add(OffsetList(0), OffsetIndex)
+                If Not _OffsetLookup.ContainsKey(EntreyList(0)) Then
+                    _OffsetLookup.Add(EntreyList(0), OffsetIndex)
                     Row.Item("FileIndex") = OffsetIndex
                     OffsetIndex += 1
                 Else
-                    Row.Item("FileIndex") = _OffsetLookup.Item(OffsetList(0))
+                    Row.Item("FileIndex") = _OffsetLookup.Item(EntreyList(0))
                 End If
             Else
                 Row.Item("FileIndex") = 0
@@ -166,12 +167,11 @@ Public Class FATEditForm
         Return FATTable
     End Function
 
-    Private Function GetFileFromOffsetList(OffsetList As List(Of UInteger)) As String
+    Private Function GetFileFromOffsetList(OffsetList As List(Of DirectoryEntry)) As String
         Dim FileName As String = ""
 
         If OffsetList IsNot Nothing Then
-            For Each Offset In OffsetList
-                Dim DirectoryEntry = _Disk.RootDirectory.GetDirectoryEntryByOffset(Offset)
+            For Each DirectoryEntry In OffsetList
                 If FileName <> "" Then
                     FileName &= ", "
                 End If
@@ -228,19 +228,19 @@ Public Class FATEditForm
         Return Size
     End Function
 
-    Private Function GetOffsetsFromCluster(FAT As FAT12, Cluster As UShort) As List(Of UInteger)
-        If FAT.FileAllocation.ContainsKey(Cluster) Then
-            Return FAT.FileAllocation.Item(Cluster)
+    Private Function GetEntriesFromCluster(FAT As FAT12, Cluster As UShort) As List(Of DirectoryEntry)
+        If _Directory.FATAllocation.FileAllocation.ContainsKey(Cluster) Then
+            Return _Directory.FATAllocation.FileAllocation.Item(Cluster)
         Else
             Return Nothing
         End If
     End Function
 
     Private Function GetRowError(FAT As FAT12, Cluster As UShort, Value As UShort) As String
-        Dim FileAllocation As List(Of UInteger) = Nothing
+        Dim FileAllocation As List(Of DirectoryEntry) = Nothing
 
-        If FAT.FileAllocation.ContainsKey(Cluster) Then
-            FileAllocation = FAT.FileAllocation.Item(Cluster)
+        If _Directory.FATAllocation.FileAllocation.ContainsKey(Cluster) Then
+            FileAllocation = _Directory.FATAllocation.FileAllocation.Item(Cluster)
         End If
 
         If Value = FAT12.FAT_BAD_CLUSTER Then
@@ -271,7 +271,7 @@ Public Class FATEditForm
             Return "Lost Cluster"
         ElseIf FileAllocation.Count > 1 Then
             Return "Cross-Linked"
-        ElseIf FAT.CircularChains.Contains(Cluster) Then
+        ElseIf _Directory.FATAllocation.CircularChains.Contains(Cluster) Then
             Return "Circular Chain"
         Else
             Return ""
@@ -508,13 +508,8 @@ Public Class FATEditForm
         CboMediaDescriptor.Items.Add(New MediaDescriptorType("F9", "XDF"))
     End Sub
 
-    Private Sub ProcessFATChains()
-        Dim Directory = New RootDirectory(_Disk, _FATTables)
-    End Sub
-
     Private Sub RefreshFAT()
-        _FATTables.FAT.ProcessFAT12()
-        ProcessFATChains()
+        _Directory.RefreshData()
 
         RefreshGrid()
         PictureBoxFAT.Refresh()
@@ -527,7 +522,7 @@ Public Class FATEditForm
         Dim OffsetIndex As UInteger = 1
         For Each Row As DataGridViewRow In DataGridViewFAT.Rows
             Dim Cluster As UShort = Row.Cells("GridCluster").Value
-            Dim OffsetList = GetOffsetsFromCluster(_FATTables.FAT, Cluster)
+            Dim OffsetList = GetEntriesFromCluster(_FATTables.FAT, Cluster)
             Dim Value As UShort = Row.Cells("GridValue").Value
             Row.Cells("GridFile").Value = GetFileFromOffsetList(OffsetList)
             Row.Cells("GridError").Value = GetRowError(_FATTables.FAT, Cluster, Value)

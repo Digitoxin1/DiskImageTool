@@ -1,6 +1,4 @@
-﻿Imports System.Runtime.ConstrainedExecution
-
-Namespace DiskImage
+﻿Namespace DiskImage
     Module UpdateFunctions
         Public Sub BootSectorRemoveFromDirectory(Disk As Disk)
             If Not Disk.RootDirectory.Data.HasBootSector Then

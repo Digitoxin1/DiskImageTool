@@ -105,7 +105,7 @@ Public Class MainForm
 
         If Not Remove And Disk.IsValidImage Then
             Response = ProcessDirectoryEntries(Disk.RootDirectory, True)
-            HasLostClusters = Disk.FAT.LostClusters.Count > 0
+            HasLostClusters = Disk.RootDirectory.FATAllocation.LostClusters.Count > 0
         Else
             Response = New DirectoryScanResponse(Nothing)
         End If
@@ -1176,9 +1176,8 @@ Public Class MainForm
         Dim Msg As String = $"{DirectoryEntry.GetFullFileName()} is crosslinked with the following files:{vbCrLf}"
 
         For Each Crosslink In DirectoryEntry.CrossLinks
-            If Crosslink <> DirectoryEntry.Offset Then
-                Dim CrossLinkedFile = Disk.RootDirectory.GetDirectoryEntryByOffset(Crosslink)
-                Msg &= vbCrLf & CrossLinkedFile.GetFullFileName()
+            If Crosslink IsNot DirectoryEntry Then
+                Msg &= vbCrLf & Crosslink.GetFullFileName()
             End If
         Next
         MsgBox(Msg, MsgBoxStyle.Information + MsgBoxStyle.OkOnly)
@@ -1289,52 +1288,31 @@ Public Class MainForm
             Exit Sub
         End If
 
+        Dim WindowsAdditions As Boolean = My.Settings.WindowsExtensions
         Dim Updated As Boolean = False
+        Dim FileReplace As Boolean = DirectoryEntry IsNot Nothing
 
         Disk.Image.BatchEditMode = True
 
         Dim FilesAdded As UInteger = 0
-        For Each FileName In Dialog.FileNames
-            If DirectoryEntry Is Nothing Then
-                DirectoryEntry = ParentDirectory.GetNextAvailableEntry
+        For Each FilePath In Dialog.FileNames
+            Dim Result As Boolean
+            Dim FreeClusters = _Disk.FAT.GetFreeClusters(FAT12.FreeClusterEmum.WithoutData)
 
-                If DirectoryEntry Is Nothing And ParentDirectory.IsRootDirectory Then
-                    Exit For
+            If DirectoryEntry Is Nothing Then
+                Result = ParentDirectory.AddFile(FilePath, WindowsAdditions, FreeClusters)
+                If Not Result Then
+                    Result = ParentDirectory.AddFile(FilePath, WindowsAdditions)
                 End If
-            End If
-
-            Dim Result As Boolean = True
-
-            Dim FileInfo = New IO.FileInfo(FileName)
-
-            Dim Length = FileInfo.Length
-            If DirectoryEntry Is Nothing Then
-                Length += _Disk.BPB.BytesPerCluster
-            End If
-
-            Dim FreeClusters = New FreeClusters(Disk, Length, FAT12.FreeClusterEmum.WithoutData)
-
-            If Length > FreeClusters.AvailableSpace Then
-                Result = False
-            End If
-
-            If Result Then
-                If DirectoryEntry Is Nothing Then
-                    Result = DirectoryExpand(Disk, ParentDirectory, FreeClusters.ClusterList)
-                    If Result Then
-                        DirectoryEntry = ParentDirectory.GetNextAvailableEntry
-                        If DirectoryEntry Is Nothing Then
-                            Result = False
-                        End If
-                    End If
+            Else
+                Dim ShortFileName = DirectoryEntry.ParentDirectory.GetAvailableFileName(FilePath)
+                Result = DirectoryEntry.AddFile(FilePath, ShortFileName, WindowsAdditions, FreeClusters)
+                If Not Result Then
+                    Result = DirectoryEntry.AddFile(FilePath, WindowsAdditions, ShortFileName)
                 End If
             End If
 
             If Result Then
-                DirectoryEntryAddFile(Disk, DirectoryEntry, FileName, FreeClusters.ClusterList)
-                If ParentDirectory IsNot Nothing Then
-                    ParentDirectory.Data.EntryCount += 1
-                End If
                 FilesAdded += 1
 
                 Updated = True
@@ -1511,7 +1489,7 @@ Public Class MainForm
 
     Private Sub FileReplace(Disk As Disk, DirectoryEntry As DirectoryEntry)
         Dim Dialog = New OpenFileDialog
-        Dim Result As ReplaceFileForm.ReplaceFileFormResult
+        Dim FormResult As ReplaceFileForm.ReplaceFileFormResult
 
         If Dialog.ShowDialog <> DialogResult.OK Then
             Exit Sub
@@ -1524,103 +1502,44 @@ Public Class MainForm
         Dim ReplaceFileForm As New ReplaceFileForm(AvailableSpace)
         With ReplaceFileForm
             .SetOriginalFile(DirectoryEntry.GetFullFileName, DirectoryEntry.GetLastWriteDate.DateObject, DirectoryEntry.FileSize)
-            .SetNewFile(CleanDOSFileName(FileInfo.Name), FileInfo.LastWriteTime, FileInfo.Length)
+            .SetNewFile(DOSTruncateFileName(FileInfo.Name), FileInfo.LastWriteTime, FileInfo.Length)
             .RefreshText()
             .ShowDialog(Me)
-            Result = .Result
+            FormResult = .Result
             .Close()
         End With
 
-        If Not Result.Cancelled Then
-            'Load file into buffer, padding with empty space if needed
-            Dim FileBuffer = ReadFileIntoBuffer(FileInfo, Result.FileSize, Result.FillChar)
-
-            Dim FileLength As Long
-
-            If DirectoryEntry.GetSizeOnDisk > Result.FileSize Then
-                FileLength = 0
-            Else
-                FileLength = Result.FileSize - DirectoryEntry.GetSizeOnDisk
-            End If
-
-            Dim FreeClusters = New FreeClusters(Disk, FileLength, FAT12.FreeClusterEmum.WithoutData)
-
+        If Not FormResult.Cancelled Then
             Disk.Image.BatchEditMode = True
 
-            If Result.FileNameChanged Then
-                DirectoryEntry.SetFileName(Result.FileName)
+            Dim Result As Boolean = False
+            Dim FreeClusters = _Disk.FAT.GetFreeClusters(FAT12.FreeClusterEmum.WithoutData)
+
+            Result = DirectoryEntry.UpdateFile(Dialog.FileName, FormResult.FileSize, FormResult.FillChar, FreeClusters)
+            If Not Result Then
+                Result = DirectoryEntry.UpdateFile(Dialog.FileName, FormResult.FileSize, FormResult.FillChar)
             End If
 
-            If Result.FileDateChanged Then
-                DirectoryEntry.SetLastWriteDate(Result.FileDate)
-            End If
-
-            DirectoryEntry.FileSize = Result.FileSize
-
-            Dim ClusterSize = Disk.BPB.BytesPerCluster
-            Dim ClusterCount = DirectoryEntry.FATChain.Clusters.Count
-            Dim ClusterIndex As Integer = 0
-            Dim Cluster As UShort
-            Dim LastCluster As UShort = 0
-            Dim FATUpdated As Boolean = False
-
-            'Update assigned clusters and assign new ones if new file is larger
-            For Counter As Integer = 0 To FileBuffer.Length - 1 Step ClusterSize
-                If ClusterIndex < ClusterCount Then
-                    Cluster = DirectoryEntry.FATChain.Clusters(ClusterIndex)
-                Else
-                    Cluster = Disk.FAT.GetNextFreeCluster(FreeClusters.ClusterList)
-                    If Cluster = 0 Then
-                        Exit For
-                    End If
-                    FreeClusters.ClusterList.Remove(Cluster)
-                    If LastCluster > 0 Then
-                        Disk.FATTables.UpdateTableEntry(LastCluster, Cluster)
-                        FATUpdated = True
-                    End If
+            If Result Then
+                If FormResult.FileNameChanged Then
+                    DirectoryEntry.SetFileName(FormResult.FileName)
                 End If
 
-                Dim ClusterOffset = Disk.BPB.ClusterToOffset(Cluster)
-                Dim Length = Math.Min(ClusterSize, FileBuffer.Length - Counter)
-                Dim Buffer = Disk.Image.GetBytes(ClusterOffset, ClusterSize)
-                Array.Copy(FileBuffer, Counter, Buffer, 0, Length)
-                Disk.Image.SetBytes(Buffer, ClusterOffset)
-                ClusterIndex += 1
-                LastCluster = Cluster
-            Next
+                If FormResult.FileDateChanged Then
+                    DirectoryEntry.SetLastWriteDate(FormResult.FileDate)
+                End If
 
-            If LastCluster > 0 Then
-                Disk.FATTables.UpdateTableEntry(LastCluster, FAT12.FAT_LAST_CLUSTER_END)
-                FreeClusters.ClusterList.Remove(LastCluster)
-                FATUpdated = True
-            End If
-
-            'Free unused clusters if new file is smaller
-            If ClusterIndex < ClusterCount Then
-                Dim Buffer(ClusterSize - 1) As Byte
-                For i = 0 To Buffer.Length - 1
-                    Buffer(i) = Result.FillChar
-                Next
-
-                For Index = ClusterIndex To ClusterCount - 1
-                    Cluster = DirectoryEntry.FATChain.Clusters(Index)
-                    Dim ClusterOffset = Disk.BPB.ClusterToOffset(Cluster)
-                    Disk.Image.SetBytes(Buffer, ClusterOffset)
-
-                    Disk.FATTables.UpdateTableEntry(Cluster, FAT12.FAT_FREE_CLUSTER)
-                    FATUpdated = True
-                Next
-            End If
-
-            If FATUpdated Then
                 Disk.FATTables.UpdateFAT12()
             End If
 
             Disk.Image.BatchEditMode = False
 
-            DiskImageRefresh()
+            If Result Then
+                DiskImageRefresh()
+            End If
         End If
     End Sub
+
     Private Sub FilesOpen()
         Dim FileFilter = GetLoadDialogFilters()
 
@@ -1825,7 +1744,7 @@ Public Class MainForm
 
         For Each DirectoryEntry In FileList
             If DirectoryEntry.IsValid Then
-                If fsi.VolumeLabel Is Nothing AndAlso DirectoryEntry.IsValidVolumeName AndAlso DirectoryEntry.IsInRoot Then
+                If fsi.VolumeLabel Is Nothing AndAlso DirectoryEntry.IsValidVolumeName AndAlso DirectoryEntry.ParentDirectory.IsRootDirectory Then
                     fsi.VolumeLabel = DirectoryEntry
                 End If
                 Dim LastWriteDate = DirectoryEntry.GetLastWriteDate
@@ -1951,8 +1870,18 @@ Public Class MainForm
         End If
     End Sub
 
-    Private Sub HexDisplayDirectoryEntry(Offset As UInteger)
-        Dim HexViewSectorData = HexViewDirectoryEntry(_Disk, Offset)
+    Private Sub HexDisplayDirectoryEntry(DirectoryEntry As DirectoryEntry)
+        Dim HexViewSectorData = HexViewDirectoryEntry(_Disk, DirectoryEntry)
+
+        If HexViewSectorData IsNot Nothing Then
+            If DisplayHexViewForm(HexViewSectorData) Then
+                DiskImageRefresh()
+            End If
+        End If
+    End Sub
+
+    Private Sub HexDisplayRootDirectory()
+        Dim HexViewSectorData = HexViewRootDirectory(_Disk)
 
         If HexViewSectorData IsNot Nothing Then
             If DisplayHexViewForm(HexViewSectorData) Then
@@ -2079,6 +2008,11 @@ Public Class MainForm
             BtnWriteFloppyA.Enabled = _DriveAEnabled
             BtnWriteFloppyB.Enabled = _DriveBEnabled
             BtnAddFile.Enabled = Disk.IsValidImage
+            If Disk.IsValidImage Then
+                BtnAddFile.Tag = _Disk.RootDirectory
+            Else
+                BtnAddFile.Tag = Nothing
+            End If
             BtnSaveAs.Enabled = True
         Else
             BtnDisplayBootSector.Enabled = False
@@ -2092,11 +2026,11 @@ Public Class MainForm
             BtnWriteFloppyA.Enabled = False
             BtnWriteFloppyB.Enabled = False
             BtnAddFile.Enabled = False
+            BtnAddFile.Tag = Nothing
             BtnSaveAs.Enabled = False
         End If
         BtnWin9xClean.Enabled = False
         BtnClearReservedBytes.Enabled = False
-        BtnAddFile.Tag = 0
         ToolStripBtnSaveAs.Enabled = BtnSaveAs.Enabled
 
         MenuDisplayDirectorySubMenuClear()
@@ -2269,10 +2203,10 @@ Public Class MainForm
         BtnDisplayDirectory.Text = "Root &Directory"
     End Sub
 
-    Private Sub MenuDisplayDirectorySubMenuItemAdd(Path As String, Offset As UInteger, Index As Integer)
+    Private Sub MenuDisplayDirectorySubMenuItemAdd(Path As String, Directory As IDirectory, Index As Integer)
         Dim Item As New ToolStripMenuItem With {
             .Text = Path,
-            .Tag = Offset
+            .Tag = Directory
         }
         If Index = -1 Then
             BtnDisplayDirectory.DropDownItems.Add(Item)
@@ -2313,10 +2247,10 @@ Public Class MainForm
 
         If BtnDisplayDirectory.DropDownItems.Count > 0 Then
             BtnDisplayDirectory.Text = "Directory"
-            MenuDisplayDirectorySubMenuItemAdd("(Root)", 0, 0)
+            MenuDisplayDirectorySubMenuItemAdd("(Root)", _Disk.RootDirectory, 0)
             BtnDisplayDirectory.Tag = Nothing
         Else
-            BtnDisplayDirectory.Tag = 0
+            BtnDisplayDirectory.Tag = _Disk.RootDirectory
         End If
 
         Dim Response = ProcessDirectoryEntries(_Disk.RootDirectory, False)
@@ -2865,7 +2799,7 @@ Public Class MainForm
                         .AddItem(FileSystemGroup, "Bad Sectors", Value, Color.Red)
                     End If
 
-                    Dim LostClusters = Disk.FAT.LostClusters.Count
+                    Dim LostClusters = Disk.RootDirectory.FATAllocation.LostClusters.Count
                     If LostClusters > 0 Then
                         Value = Format(LostClusters * Disk.BPB.BytesPerCluster, "N0") & " bytes  (" & LostClusters & ")"
                         .AddItem(FileSystemGroup, "Lost Clusters", Value, Color.Red)
@@ -3013,7 +2947,6 @@ Public Class MainForm
                                 .FilePath = Path,
                                 .DirectoryEntry = DirectoryEntry,
                                 .IsLastEntry = (Counter = DirectoryEntryCount - 1),
-                                .ParentOffset = Offset,
                                 .LFNFileName = LFNFileName,
                                 .DuplicateFileName = ProcessResponse.DuplicateFileName,
                                 .InvalidVolumeName = ProcessResponse.InvalidVolumeName
@@ -3034,7 +2967,7 @@ Public Class MainForm
                             End If
 
                             If Not ScanOnly Then
-                                MenuDisplayDirectorySubMenuItemAdd(NewPath, DirectoryEntry.Offset, -1)
+                                MenuDisplayDirectorySubMenuItemAdd(NewPath, DirectoryEntry.SubDirectory, -1)
                             End If
                             Dim SubResponse = ProcessDirectoryEntries(DirectoryEntry.SubDirectory, DirectoryEntry.Offset, NewPath, ScanOnly, GroupIndex, ItemIndex)
                             Response.Combine(SubResponse)
@@ -3238,7 +3171,7 @@ Public Class MainForm
         If Disk IsNot Nothing AndAlso Disk.IsValidImage Then
             BtnDisplayClusters.Enabled = Disk.FAT.HasFreeClusters(FAT12.FreeClusterEmum.WithData)
             BtnDisplayBadSectors.Enabled = Disk.FAT.BadClusters.Count > 0
-            BtnDisplayLostClusters.Enabled = Disk.FAT.LostClusters.Count > 0
+            BtnDisplayLostClusters.Enabled = Disk.RootDirectory.FATAllocation.LostClusters.Count > 0
             Dim Compare = Disk.CheckImageSize
             BtnFixImageSize.Enabled = Disk.Image.Data.CanResize And Compare <> 0
             If Disk.RootDirectory.Data.HasBootSector Then
@@ -3292,7 +3225,7 @@ Public Class MainForm
 
     Private Sub RefreshFileButtons()
         Dim Stats As DirectoryStats
-        Dim DirectoryOffset As Integer = -1
+        Dim ParentDirectory As IDirectory = Nothing
         Dim Caption As String
 
         If ListViewFiles.SelectedItems.Count = 0 Then
@@ -3329,7 +3262,7 @@ Public Class MainForm
 
         ElseIf ListViewFiles.SelectedItems.Count = 1 Then
             Dim FileData As FileData = ListViewFiles.SelectedItems(0).Tag
-            DirectoryOffset = FileData.ParentOffset
+            ParentDirectory = FileData.DirectoryEntry.ParentDirectory
             Stats = DirectoryEntryGetStats(FileData.DirectoryEntry)
 
             BtnExportFile.Text = "&Export File"
@@ -3383,7 +3316,7 @@ Public Class MainForm
                 Else
                     BtnDisplayFile.Text = "&File:  " & Stats.FullFileName
                 End If
-                BtnDisplayFile.Tag = FileData.DirectoryEntry.Offset
+                BtnDisplayFile.Tag = FileData.DirectoryEntry
                 BtnDisplayFile.Visible = Not Stats.IsDirectory And Stats.FileSize > 0
 
                 Caption = "&View "
@@ -3409,8 +3342,7 @@ Public Class MainForm
             Dim ExportEnabled As Boolean = False
             Dim DeleteEnabled As Boolean = False
             FileData = ListViewFiles.SelectedItems(0).Tag
-            DirectoryOffset = FileData.ParentOffset
-            Dim ParentOffset As UInteger = FileData.ParentOffset
+            ParentDirectory = FileData.DirectoryEntry.ParentDirectory
 
             For Each Item As ListViewItem In ListViewFiles.SelectedItems
                 FileData = Item.Tag
@@ -3421,8 +3353,8 @@ Public Class MainForm
                 If Not Stats.IsDeleted And Stats.CanDelete Then
                     DeleteEnabled = True
                 End If
-                If FileData.ParentOffset <> ParentOffset Then
-                    DirectoryOffset = -1
+                If FileData.DirectoryEntry.ParentDirectory IsNot ParentDirectory Then
+                    ParentDirectory = Nothing
                 End If
             Next
             BtnExportFile.Text = "&Export Selected Files"
@@ -3467,13 +3399,13 @@ Public Class MainForm
         ToolStripBtnViewFileText.Text = BtnFileMenuViewFileText.Text
         ToolStripBtnViewFileText.Enabled = BtnFileMenuViewFileText.Enabled
 
-        If DirectoryOffset = -1 Then
+        If ParentDirectory Is Nothing Then
             BtnFileMenuViewDirectory.Visible = False
             BtnFileMenuViewDirectory.Enabled = False
             FileMenuSeparatorDirectory.Visible = False
             BtnFileMenuAddFile.Enabled = False
         Else
-            If DirectoryOffset = 0 Then
+            If ParentDirectory Is _Disk.RootDirectory Then
                 BtnFileMenuViewDirectory.Visible = True
                 BtnFileMenuViewDirectory.Text = "View Root D&irectory"
                 BtnFileMenuViewDirectory.Enabled = True
@@ -3482,10 +3414,10 @@ Public Class MainForm
                 BtnFileMenuViewDirectory.Text = "View Parent D&irectory"
                 BtnFileMenuViewDirectory.Enabled = True
             End If
-            BtnFileMenuViewDirectory.Tag = DirectoryOffset
+            BtnFileMenuViewDirectory.Tag = ParentDirectory
             FileMenuSeparatorDirectory.Visible = True
             BtnFileMenuAddFile.Enabled = True
-            BtnFileMenuAddFile.Tag = DirectoryOffset
+            BtnFileMenuAddFile.Tag = ParentDirectory
         End If
     End Sub
 
@@ -3574,8 +3506,7 @@ Public Class MainForm
 
         FileData.DirectoryEntry.Clear(FileData.IsLastEntry)
         If FileData.IsLastEntry And FileData.Index > 0 Then
-            Dim Offset = FileData.DirectoryEntry.Offset
-            For Counter = FileData.DirectoryEntry.Index - 1 To 0 Step -1
+            For Counter = FileData.DirectoryEntry.GetIndex() - 1 To 0 Step -1
                 Dim PrevEntry = FileData.DirectoryEntry.ParentDirectory.GetFile(Counter)
                 If PrevEntry.IsLFN Then
                     PrevEntry.Clear(True)
@@ -3600,7 +3531,8 @@ Public Class MainForm
         _LoadedFileNames.Clear()
         _ScanRun = False
 
-        btnCreateBackup.Checked = My.Settings.CreateBackups
+        BtnCreateBackup.Checked = My.Settings.CreateBackups
+        BtnWindowsExtensions.Checked = My.Settings.WindowsExtensions
 
         RefreshDiskButtons(Nothing, Nothing)
 
@@ -3925,7 +3857,7 @@ Public Class MainForm
     Private Sub BtnAddFile_Click(sender As Object, e As EventArgs) Handles BtnAddFile.Click, BtnFileMenuAddFile.Click
         ContextMenuEdit.Close()
         If sender.Tag IsNot Nothing Then
-            Dim Directory As IDirectory = GetSubDirectoryFromParentOffset(_Disk, sender.tag)
+            Dim Directory As IDirectory = sender.Tag
             FileAdd(_Disk, Directory, Nothing, True)
         End If
     End Sub
@@ -3961,8 +3893,8 @@ Public Class MainForm
         RestructureImage()
     End Sub
 
-    Private Sub BtnCreateBackup_Click(sender As Object, e As EventArgs) Handles btnCreateBackup.Click
-        My.Settings.CreateBackups = btnCreateBackup.Checked
+    Private Sub BtnCreateBackup_Click(sender As Object, e As EventArgs) Handles BtnCreateBackup.Click
+        My.Settings.CreateBackups = BtnCreateBackup.Checked
     End Sub
 
     Private Sub BtnDisplayBadSectors_Click(sender As Object, e As EventArgs) Handles BtnDisplayBadSectors.Click
@@ -3985,7 +3917,12 @@ Public Class MainForm
 
     Private Sub BtnDisplayDirectory_Click(sender As Object, e As EventArgs) Handles BtnDisplayDirectory.Click, BtnFileMenuViewDirectory.Click
         If sender.Tag IsNot Nothing Then
-            HexDisplayDirectoryEntry(sender.tag)
+            Dim Directory As IDirectory = sender.tag
+            If Directory Is _Disk.RootDirectory Then
+                HexDisplayRootDirectory()
+            Else
+                HexDisplayDirectoryEntry(Directory.ParentEntry)
+            End If
         End If
     End Sub
 
@@ -4078,7 +4015,7 @@ Public Class MainForm
     Private Sub BtnFileMenuViewFile_Click(sender As Object, e As EventArgs) Handles BtnFileMenuViewFile.Click, ToolStripBtnViewFile.Click
         If ListViewFiles.SelectedItems.Count = 1 Then
             Dim FileData As FileData = ListViewFiles.SelectedItems(0).Tag
-            HexDisplayDirectoryEntry(FileData.DirectoryEntry.Offset)
+            HexDisplayDirectoryEntry(FileData.DirectoryEntry)
         End If
     End Sub
 
@@ -4212,6 +4149,10 @@ Public Class MainForm
         ContextMenuEdit.Close()
         _Disk.Image.Undo()
         DiskImageRefresh()
+    End Sub
+
+    Private Sub BtnWindowsExtensions_Click(sender As Object, e As EventArgs) Handles BtnWindowsExtensions.Click
+        My.Settings.WindowsExtensions = BtnWindowsExtensions.Checked
     End Sub
 
     Private Sub BtnWin9xClean_Click(sender As Object, e As EventArgs) Handles BtnWin9xClean.Click
@@ -4557,41 +4498,6 @@ Public Class MainForm
     End Sub
 
 #End Region
-
-    Private Class FreeClusters
-        Private ReadOnly _Disk As Disk
-        Private ReadOnly _FreeClusterType As FAT12.FreeClusterEmum
-        Private _ClusterList As SortedSet(Of UShort)
-        Private _AvailableSpace As Long
-
-        Public Sub New(Disk As Disk, FileLength As Long, FreeClusterType As FAT12.FreeClusterEmum)
-            _Disk = Disk
-            _FreeClusterType = FreeClusterType
-            Refresh()
-
-            If FileLength > _AvailableSpace And _FreeClusterType <> FAT12.FreeClusterEmum.All Then
-                _FreeClusterType = FAT12.FreeClusterEmum.All
-                Refresh()
-            End If
-        End Sub
-
-        Public Sub Refresh()
-            _ClusterList = _Disk.FAT.GetFreeClusters(_FreeClusterType)
-            _AvailableSpace = _ClusterList.Count * _Disk.BPB.BytesPerCluster
-        End Sub
-
-        Public ReadOnly Property AvailableSpace As Long
-            Get
-                Return _AvailableSpace
-            End Get
-        End Property
-
-        Public ReadOnly Property ClusterList As SortedSet(Of UShort)
-            Get
-                Return _ClusterList
-            End Get
-        End Property
-    End Class
 End Class
 
 Public Class FileData
@@ -4600,7 +4506,6 @@ Public Class FileData
     Public Property Index As Integer
     Public Property IsLastEntry As Boolean
     Public Property LFNFileName As String
-    Public Property ParentOffset As Integer
     Public Property DuplicateFileName As Boolean
     Public Property InvalidVolumeName As Boolean
 End Class

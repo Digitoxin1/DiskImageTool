@@ -32,7 +32,7 @@ Module Copy_Protection
 
         'Softguard Superlok v2
         If Not ProtectionFound AndAlso BadSectors.Count >= 10 Then
-            If CheckBadSectors(BadSectors, {108, 109, 110, 111, 112, 113, 114, 115, 116, 117}) AndAlso Disk.RootDirectory.HasFile("CPC.COM") > -1 Then
+            If CheckBadSectors(BadSectors, {108, 109, 110, 111, 112, 113, 114, 115, 116, 117}) AndAlso Disk.RootDirectory.HasFile("CPC.COM", False) > -1 Then
                 ProtectionFound = True
                 ProtectionName = "Softguard Superlok v2"
             End If
@@ -87,14 +87,14 @@ Module Copy_Protection
         End If
 
         'Softguard Superlok v2/v3
-        If Not ProtectionFound AndAlso Disk.RootDirectory.HasFile("CML0300.FCL") > -1 Then
+        If Not ProtectionFound AndAlso Disk.RootDirectory.HasFile("CML0300.FCL", False) > -1 Then
             ProtectionFound = True
             ProtectionName = "Softguard Superlok v2/v3"
         End If
 
         'Xidex Magnetics (XEMAG) XELOK v2
         If Not ProtectionFound Then
-            Dim Fileindex = Disk.RootDirectory.HasFile("XEMAG.SYS")
+            Dim Fileindex = Disk.RootDirectory.HasFile("XEMAG.SYS", False)
             If Fileindex > -1 Then
                 Dim DirectoryEntry = Disk.RootDirectory.GetFile(Fileindex)
                 If Disk.BPB.ClusterToSector(DirectoryEntry.StartingCluster) = 162 Then
@@ -122,7 +122,7 @@ Module Copy_Protection
 
     Private Function CheckFileList(Disk As DiskImage.Disk, FileList() As String) As Boolean
         For Each File In FileList
-            If Disk.RootDirectory.HasFile(File) > -1 Then
+            If Disk.RootDirectory.HasFile(File, False) > -1 Then
                 Return True
             End If
         Next

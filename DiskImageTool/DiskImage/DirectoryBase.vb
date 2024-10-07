@@ -53,13 +53,17 @@
 
         Public MustOverride ReadOnly Property SectorChain As List(Of UInteger) Implements IDirectory.SectorChain
 
+        Public MustOverride Function AddFile(FilePath As String, LFN As Boolean) As Boolean Implements IDirectory.AddFile
+
+        Public MustOverride Function AddFile(FilePath As String, LFN As Boolean, ClusterList As SortedSet(Of UShort)) As Boolean Implements IDirectory.AddFile
+
         Public MustOverride Function GetContent() As Byte() Implements IDirectory.GetContent
 
-        Public Function HasFile(Filename As String) As Integer Implements IDirectory.HasFile
+        Public Function HasFile(Filename As String, IncludeDirectories As Boolean) As Integer Implements IDirectory.HasFile
             If _DirectoryData.EntryCount > 0 Then
                 For Counter As UInteger = 0 To _DirectoryData.EntryCount - 1
                     Dim File = _DirectoryEntries.Item(Counter)
-                    If Not File.IsDeleted And Not File.IsVolumeName And Not File.IsDirectory Then
+                    If Not File.IsDeleted And Not File.IsVolumeName And (IncludeDirectories Or Not File.IsDirectory) Then
                         If File.GetFullFileName = Filename Then
                             Return Counter
                         End If
@@ -70,15 +74,82 @@
             Return -1
         End Function
 
+        Public Function GetAvailableFileName(FileName As String) As String Implements IDirectory.GetAvailableFileName
+            FileName = DOSCleanFileName(FileName)
+
+            Dim FilePart As String
+            Dim Extension As String = IO.Path.GetExtension(FileName)
+            FileName = IO.Path.GetFileNameWithoutExtension(FileName)
+
+            If Extension.Length > 4 Then
+                Extension = Extension.Substring(0, 4)
+            End If
+
+            Dim Index As UInteger = 1
+
+            If FileName.Length > 8 Then
+                FilePart = TruncateFileName(FileName, Index)
+                Index += 1
+            Else
+                FilePart = FileName
+            End If
+
+            Dim NewFileName = FilePart & Extension
+
+            Do While HasFile(NewFileName, True) > -1
+                FilePart = TruncateFileName(FileName, Index)
+                Index += 1
+                NewFileName = FilePart & Extension
+            Loop
+
+            Return NewFileName
+        End Function
+
+        Public Function GetIndex(DirectoryEntry As DirectoryEntry) As Integer Implements IDirectory.GetIndex
+            Return _DirectoryEntries.IndexOf(DirectoryEntry)
+        End Function
+
         Public Function GetFile(Index As UInteger) As DirectoryEntry Implements IDirectory.GetFile
             Return _DirectoryEntries.Item(Index)
         End Function
 
-        Public Function GetNextAvailableEntry() As DirectoryEntry Implements IDirectory.GetNextAvailableEntry
+        Public Function GetAvailableEntries(Count As UInteger) As List(Of DirectoryEntry) Implements IDirectory.GetAvailableEntries
+            Dim Entries As New List(Of DirectoryEntry)
+
             Dim Buffer(10) As Byte
 
+            Dim Index As UInteger = 0
+
             For Each DirectoryEntry In _DirectoryEntries
-                If DirectoryEntry.Data(0) = 0 Then
+                Dim Found As Boolean = False
+                If Index > Data.EntryCount - 1 Then
+                    Entries.Add(DirectoryEntry)
+                    Found = True
+                Else
+                    Array.Copy(DirectoryEntry.Data, 0, Buffer, 0, Buffer.Length)
+                    If Buffer.CompareTo(DirectoryEntry.EmptyDirectoryEntry) Then
+                        Entries.Add(DirectoryEntry)
+                        Found = True
+                    End If
+                End If
+
+                If Not Found Then
+                    Entries.Clear()
+                ElseIf Entries.Count = Count Then
+                    Return Entries
+                End If
+                Index += 1
+            Next
+
+            Return Nothing
+        End Function
+
+        Public Function GetAvailableEntry() As DirectoryEntry Implements IDirectory.GetAvailableEntry
+            Dim Buffer(10) As Byte
+
+            Dim Index As UInteger = 0
+            For Each DirectoryEntry In _DirectoryEntries
+                If Index > Data.EntryCount - 1 Then
                     Return DirectoryEntry
                 End If
 
@@ -86,6 +157,8 @@
                 If Buffer.CompareTo(DirectoryEntry.EmptyDirectoryEntry) Then
                     Return DirectoryEntry
                 End If
+
+                Index += 1
             Next
 
             Return Nothing
@@ -94,18 +167,17 @@
         Public Shared Sub GetDirectoryData(RootDirectory As RootDirectory, ParentDirectory As IDirectory, OffsetStart As UInteger, OffsetEnd As UInteger, CheckBootSector As Boolean)
             Dim EntryCount = (OffsetEnd - OffsetStart) \ DirectoryEntry.DIRECTORY_ENTRY_SIZE
 
-            ParentDirectory.Data.MaxEntries += EntryCount
-
             If EntryCount > 0 Then
+                Dim Buffer() As Byte
                 For Entry As UInteger = 0 To EntryCount - 1
                     Dim Offset = OffsetStart + (Entry * DirectoryEntry.DIRECTORY_ENTRY_SIZE)
 
-                    Dim FirstByte = RootDirectory.Disk.Image.Data.GetByte(Offset)
-                    If FirstByte = 0 Then
+                    Buffer = RootDirectory.Disk.Image.Data.GetBytes(Offset, 11)
+                    If Buffer(0) = 0 Then
                         ParentDirectory.Data.EndOfDirectory = True
                     End If
                     If Not ParentDirectory.Data.HasBootSector And CheckBootSector Then
-                        If BootSector.ValidJumpInstructuon.Contains(FirstByte) Then
+                        If BootSector.ValidJumpInstructuon.Contains(Buffer(0)) Then
                             If OffsetEnd - Offset >= BootSector.BOOT_SECTOR_SIZE Then
                                 Dim BootSectorData = RootDirectory.Disk.Image.Data.GetBytes(Offset, DiskImage.BootSector.BOOT_SECTOR_SIZE)
                                 Dim BootSector = New BootSector(BootSectorData)
@@ -118,6 +190,8 @@
                         End If
                     End If
                     If ParentDirectory.Data.EndOfDirectory Then
+                        ParentDirectory.Data.AvailableEntries += 1
+
                         If Not ParentDirectory.Data.HasAdditionalData Then
                             If Not ParentDirectory.Data.HasBootSector Or Offset < ParentDirectory.Data.BootSectorOffset Or Offset > ParentDirectory.Data.BootSectorOffset + DiskImage.BootSector.BOOT_SECTOR_SIZE Then
                                 If DirectoryEntryHasData(RootDirectory.Disk.Image.Data, Offset) Then
@@ -126,30 +200,31 @@
                             End If
                         End If
                     Else
-                        'If Not RootDirectory.DirectoryEntries.ContainsKey(Offset) Then
-                        '    RootDirectory.DirectoryEntries.Add(Offset, New DirectoryEntry(RootDirectory, ParentDirectory, Offset, Entry))
-                        'End If
+                        If Buffer.CompareTo(DirectoryEntry.EmptyDirectoryEntry) Then
+                            ParentDirectory.Data.AvailableEntries += 1
+                        End If
                         ParentDirectory.Data.EntryCount += 1
                         If RootDirectory.Disk.Image.Data.GetByte(Offset + 11) <> &HF Then 'Exclude LFN entries
                             Dim FilePart = RootDirectory.Disk.Image.Data.ToUInt16(Offset)
                             If FilePart <> &H202E And FilePart <> &H2E2E Then 'Exclude '.' and '..' entries
                                 ParentDirectory.Data.FileCount += 1
-                                If FirstByte = DirectoryEntry.CHAR_DELETED Then
+                                If Buffer(0) = DirectoryEntry.CHAR_DELETED Then
                                     ParentDirectory.Data.DeletedFileCount += 1
                                 End If
                             End If
                         End If
                     End If
 
-                    Dim NewDirectoryEntry = New DirectoryEntry(RootDirectory, ParentDirectory, Offset, Entry, ParentDirectory.Data.EndOfDirectory)
+                    Dim NewDirectoryEntry = New DirectoryEntry(RootDirectory, ParentDirectory, Offset, ParentDirectory.Data.EndOfDirectory)
 
                     ParentDirectory.DirectoryEntries.Add(NewDirectoryEntry)
-
-                    If Not RootDirectory.AllDirectoryEntries.ContainsKey(Offset) Then
-                        RootDirectory.AllDirectoryEntries.Item(Offset) = NewDirectoryEntry
-                    End If
                 Next
             End If
         End Sub
+
+        Private Function TruncateFileName(FilePart As String, Index As UInteger) As String
+            Dim Suffix = "~" & Index
+            Return FilePart.Substring(0, 8 - Suffix.Length) & Suffix
+        End Function
     End Class
 End Namespace

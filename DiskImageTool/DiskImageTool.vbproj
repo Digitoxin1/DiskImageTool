@@ -137,7 +137,8 @@
     <Compile Include="Bitstream\IBM_MFM\IBM_MFM_Tools.vb" />
     <Compile Include="Bitstream\IBM_MFM\IBM_MFM_Track.vb" />
     <Compile Include="DiskImage\DirectoryBase.vb" />
-    <Compile Include="DiskImage\FAT12Base.vb" />
+    <Compile Include="DiskImage\FAT12.vb" />
+    <Compile Include="DiskImage\FATAllocation.vb" />
     <Compile Include="DiskImage\UpdateFunctions.vb" />
     <Compile Include="Filters\Enums.vb" />
     <Compile Include="Filters\FilterCounts.vb" />
@@ -217,7 +218,6 @@
     <Compile Include="Testing\DebugScript.vb" />
     <Compile Include="DiskImage\SectorData.vb" />
     <Compile Include="DiskImage\ByteArray.vb" />
-    <Compile Include="DiskImage\FAT12.vb" />
     <Compile Include="DiskImage\Utility.vb" />
     <Compile Include="DiskImage\Interfaces\IDirectory.vb" />
     <Compile Include="DiskImage\ImageByteArray.vb" />
