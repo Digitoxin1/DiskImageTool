@@ -59,7 +59,7 @@
 
         Public MustOverride Function GetContent() As Byte() Implements IDirectory.GetContent
 
-        Public Function HasFile(Filename As String, IncludeDirectories As Boolean) As Integer Implements IDirectory.HasFile
+        Public Function GetFileIndex(Filename As String, IncludeDirectories As Boolean) As Integer Implements IDirectory.GetFileIndex
             If _DirectoryData.EntryCount > 0 Then
                 For Counter As UInteger = 0 To _DirectoryData.EntryCount - 1
                     Dim File = _DirectoryEntries.Item(Counter)
@@ -96,7 +96,7 @@
 
             Dim NewFileName = FilePart & Extension
 
-            Do While HasFile(NewFileName, True) > -1
+            Do While GetFileIndex(NewFileName, True) > -1
                 FilePart = TruncateFileName(FileName, Index)
                 Index += 1
                 NewFileName = FilePart & Extension

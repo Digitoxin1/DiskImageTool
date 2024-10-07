@@ -1,5 +1,10 @@
-﻿Public Class ReplaceFileForm
+﻿Imports System.ComponentModel
+Imports DiskImageTool.DiskImage
+
+Public Class ReplaceFileForm
     Private ReadOnly _AvailableSpace As UInteger
+    Private ReadOnly _Directory As IDirectory
+    Private _FileName As String
     Private _FileNameOriginal As String
     Private _FileDateOriginal As Date
     Private _FileSizeOriginal As UInteger
@@ -20,7 +25,7 @@
         Dim FillChar As Byte
     End Structure
 
-    Public Sub New(AvailableSpace As UInteger)
+    Public Sub New(AvailableSpace As UInteger, Directory As IDirectory)
 
         ' This call is required by the designer.
         InitializeComponent()
@@ -28,6 +33,7 @@
         ' Add any initialization after the InitializeComponent() call.
         _Result.Cancelled = True
         _AvailableSpace = AvailableSpace
+        _Directory = Directory
 
         _IgnoreEvent = True
         ChkFilenameOriginal.Checked = False
@@ -46,6 +52,26 @@
         End Get
     End Property
 
+    Public Sub GetFileNameForm()
+        _FileNameNew = TxtFilenameNew.Text
+        If TxtFileExtNew.Text.Length > 0 Then
+            _FileNameNew &= "." & TxtFileExtNew.Text
+        End If
+    End Sub
+
+    Public Sub SetFileNameForm()
+        _IgnoreEvent = True
+
+        TxtFilenameNew.Text = IO.Path.GetFileNameWithoutExtension(_FileNameNew)
+        Dim Extension = IO.Path.GetExtension(_FileNameNew)
+        If Extension.Length > 0 Then
+            Extension = Extension.Substring(1)
+        End If
+        TxtFileExtNew.Text = Extension
+
+        _IgnoreEvent = False
+    End Sub
+
     Public Sub SetOriginalFile(Filename As String, FileDate As Date, FileSize As UInteger)
         _FileNameOriginal = Filename
         _FileDateOriginal = FileDate
@@ -57,13 +83,16 @@
     End Sub
 
     Public Sub SetNewFile(Filename As String, FileDate As Date, FileSize As UInteger)
+        _FileName = Filename
         _FileNameNew = Filename
         _FileDateNew = FileDate
         _FileSizeNew = FileSize
 
-        ChkFilenameNew.Text = Filename
         ChkFileDateNew.Text = FileDate
         ChkFileSizeNew.Text = Format(FileSize, "N0") & " bytes"
+
+        SetFileNameForm()
+        BtnUndo.Visible = False
     End Sub
 
     Public Sub RefreshText()
@@ -131,6 +160,20 @@
     End Sub
 
     Private Sub BtnOK_Click(sender As Object, e As EventArgs) Handles BtnOK.Click
+        If ChkFilenameNew.Checked Then
+            If TxtFilenameNew.Text.Length = 0 Then
+                MsgBox("Filename cannot be blank.", MsgBoxStyle.Exclamation)
+                TxtFilenameNew.Focus()
+                Exit Sub
+            End If
+
+            If _FileNameNew <> _FileNameOriginal AndAlso _Directory.GetFileIndex(_FileNameNew, True) > -1 Then
+                MsgBox("A file with this name already exists in this directory.", MsgBoxStyle.Exclamation)
+                TxtFilenameNew.Focus()
+                Exit Sub
+            End If
+        End If
+
         _Result.Cancelled = False
         If ChkFilenameNew.Checked Then
             _Result.FileName = _FileNameNew
@@ -161,10 +204,21 @@
         Else
             _Result.FillChar = &H0
         End If
+
+        Me.DialogResult = DialogResult.OK
     End Sub
 
     Private Sub BtnCancel_Click(sender As Object, e As EventArgs) Handles BtnCancel.Click
         _Result.Cancelled = True
+    End Sub
+
+    Private Sub BtnUndo_Click(sender As Object, e As EventArgs) Handles BtnUndo.Click
+        _FileNameNew = _FileName
+        SetFileNameForm()
+        BtnUndo.Visible = False
+        If ChkFilenameNew.Checked Then
+            LblFileName.Text = _FileNameNew
+        End If
     End Sub
 
     Private Sub ChkFilenameOriginal_CheckedChanged(sender As Object, e As EventArgs) Handles ChkFilenameOriginal.CheckedChanged
@@ -213,5 +267,31 @@
         End If
 
         ToggleCheckBox(ChkFileDateOriginal, ChkFileDateNew)
+    End Sub
+
+    Private Sub TxtFilenameNew_KeyPress(sender As Object, e As KeyPressEventArgs) Handles TxtFilenameNew.KeyPress, TxtFileExtNew.KeyPress
+        Dim Value = Asc(e.KeyChar)
+
+        If Value > 255 Then
+            e.KeyChar = Chr(0)
+        ElseIf Value < 33 And Value <> 8 Then
+            e.KeyChar = Chr(0)
+        ElseIf DiskImage.InvalidFileChars.Contains(Value) Then
+            e.KeyChar = Chr(0)
+        End If
+    End Sub
+
+    Private Sub TxtFilenameNew_TextChanged(sender As Object, e As EventArgs) Handles TxtFilenameNew.TextChanged, TxtFileExtNew.TextChanged
+        If _IgnoreEvent Then
+            Exit Sub
+        End If
+
+        GetFileNameForm()
+
+        BtnUndo.Visible = _FileNameNew <> _FileName
+
+        If ChkFilenameNew.Checked Then
+            LblFileName.Text = _FileNameNew
+        End If
     End Sub
 End Class

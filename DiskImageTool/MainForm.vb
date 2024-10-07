@@ -1279,9 +1279,9 @@ Public Class MainForm
         End If
     End Sub
 
-    Private Sub FileAdd(Disk As Disk, ParentDirectory As IDirectory, DirectoryEntry As DirectoryEntry, Multiselect As Boolean)
+    Private Sub FileAdd(Disk As Disk, ParentDirectory As IDirectory)
         Dim Dialog = New OpenFileDialog With {
-            .Multiselect = Multiselect
+            .Multiselect = True
         }
 
         If Dialog.ShowDialog <> DialogResult.OK Then
@@ -1290,7 +1290,6 @@ Public Class MainForm
 
         Dim WindowsAdditions As Boolean = My.Settings.WindowsExtensions
         Dim Updated As Boolean = False
-        Dim FileReplace As Boolean = DirectoryEntry IsNot Nothing
 
         Disk.Image.BatchEditMode = True
 
@@ -1299,17 +1298,9 @@ Public Class MainForm
             Dim Result As Boolean
             Dim FreeClusters = _Disk.FAT.GetFreeClusters(FAT12.FreeClusterEmum.WithoutData)
 
-            If DirectoryEntry Is Nothing Then
-                Result = ParentDirectory.AddFile(FilePath, WindowsAdditions, FreeClusters)
-                If Not Result Then
-                    Result = ParentDirectory.AddFile(FilePath, WindowsAdditions)
-                End If
-            Else
-                Dim ShortFileName = DirectoryEntry.ParentDirectory.GetAvailableFileName(FilePath)
-                Result = DirectoryEntry.AddFile(FilePath, ShortFileName, WindowsAdditions, FreeClusters)
-                If Not Result Then
-                    Result = DirectoryEntry.AddFile(FilePath, WindowsAdditions, ShortFileName)
-                End If
+            Result = ParentDirectory.AddFile(FilePath, WindowsAdditions, FreeClusters)
+            If Not Result Then
+                Result = ParentDirectory.AddFile(FilePath, WindowsAdditions)
             End If
 
             If Result Then
@@ -1398,32 +1389,34 @@ Public Class MainForm
         Dim TotalFiles As Integer = 0
         For Each Item As ListViewItem In ListViewFiles.SelectedItems
             Dim FileData As FileData = Item.Tag
-            Dim DirectoryEntry = FileData.DirectoryEntry
-            If DirectoryEntryCanExport(DirectoryEntry) Then
-                TotalFiles += 1
-                If Result <> MyMsgBoxResult.Cancel Then
-                    Dim FilePath = IO.Path.Combine(Path, CleanPathName(FileData.FilePath), CleanFileName(DirectoryEntry.GetFullFileName))
-                    If Not IO.Directory.Exists(IO.Path.GetDirectoryName(FilePath)) Then
-                        IO.Directory.CreateDirectory(IO.Path.GetDirectoryName(FilePath))
-                    End If
-                    If IO.File.Exists(FilePath) Then
-                        If ShowDialog Then
-                            Result = MsgBoxOverwrite(FilePath)
+            If FileData IsNot Nothing Then
+                Dim DirectoryEntry = FileData.DirectoryEntry
+                If DirectoryEntryCanExport(DirectoryEntry) Then
+                    TotalFiles += 1
+                    If Result <> MyMsgBoxResult.Cancel Then
+                        Dim FilePath = IO.Path.Combine(Path, CleanPathName(FileData.FilePath), CleanFileName(DirectoryEntry.GetFullFileName))
+                        If Not IO.Directory.Exists(IO.Path.GetDirectoryName(FilePath)) Then
+                            IO.Directory.CreateDirectory(IO.Path.GetDirectoryName(FilePath))
+                        End If
+                        If IO.File.Exists(FilePath) Then
+                            If ShowDialog Then
+                                Result = MsgBoxOverwrite(FilePath)
+                            Else
+                                Result = BatchResult
+                            End If
                         Else
-                            Result = BatchResult
+                            Result = MyMsgBoxResult.Yes
                         End If
-                    Else
-                        Result = MyMsgBoxResult.Yes
-                    End If
-                    If Result = MyMsgBoxResult.YesToAll Or Result = MyMsgBoxResult.NoToAll Then
-                        ShowDialog = False
-                        If Result = MyMsgBoxResult.NoToAll Then
-                            BatchResult = MyMsgBoxResult.No
+                        If Result = MyMsgBoxResult.YesToAll Or Result = MyMsgBoxResult.NoToAll Then
+                            ShowDialog = False
+                            If Result = MyMsgBoxResult.NoToAll Then
+                                BatchResult = MyMsgBoxResult.No
+                            End If
                         End If
-                    End If
-                    If Result = MyMsgBoxResult.Yes Or Result = MyMsgBoxResult.YesToAll Then
-                        If DirectoryEntrySaveToFile(FilePath, DirectoryEntry) Then
-                            FileCount += 1
+                        If Result = MyMsgBoxResult.Yes Or Result = MyMsgBoxResult.YesToAll Then
+                            If DirectoryEntrySaveToFile(FilePath, DirectoryEntry) Then
+                                FileCount += 1
+                            End If
                         End If
                     End If
                 End If
@@ -1447,7 +1440,7 @@ Public Class MainForm
         If ListViewFiles.SelectedItems.Count = 1 Then
             Dim FileData As FileData = ListViewFiles.SelectedItems(0).Tag
 
-            If FileData.DirectoryEntry.StartingCluster >= 2 Then
+            If FileData IsNot Nothing AndAlso FileData.DirectoryEntry.StartingCluster >= 2 Then
 
                 Dim Sector = _Disk.BPB.ClusterToSector(FileData.DirectoryEntry.StartingCluster)
                 ToolStripFileSector.Text = $"Sector {Sector}"
@@ -1499,10 +1492,10 @@ Public Class MainForm
 
         Dim AvailableSpace = Disk.FAT.GetFreeSpace() + DirectoryEntry.GetSizeOnDisk
 
-        Dim ReplaceFileForm As New ReplaceFileForm(AvailableSpace)
+        Dim ReplaceFileForm As New ReplaceFileForm(AvailableSpace, DirectoryEntry.ParentDirectory)
         With ReplaceFileForm
             .SetOriginalFile(DirectoryEntry.GetFullFileName, DirectoryEntry.GetLastWriteDate.DateObject, DirectoryEntry.FileSize)
-            .SetNewFile(DOSTruncateFileName(FileInfo.Name), FileInfo.LastWriteTime, FileInfo.Length)
+            .SetNewFile(DirectoryEntry.ParentDirectory.GetAvailableFileName(FileInfo.Name), FileInfo.LastWriteTime, FileInfo.Length)
             .RefreshText()
             .ShowDialog(Me)
             FormResult = .Result
@@ -2131,10 +2124,33 @@ Public Class MainForm
             & IIf(Directory.Data.HasAdditionalData, ", Additional Data", "") _
             & ")"
 
-        Dim Group = New ListViewGroup(GroupName)
+        Dim Group = New ListViewGroup(GroupName) With {
+            .Tag = Directory
+        }
         ListViewFiles.Groups.Add(Group)
 
         Return Group
+    End Function
+
+    Private Function ListViewFilesAddEmpty(Group As ListViewGroup, ItemIndex As Integer) As ListViewItem
+        Dim SI As ListViewItem.ListViewSubItem
+
+        Dim Item = New ListViewItem("", Group) With {
+            .UseItemStyleForSubItems = False,
+            .Tag = Nothing
+        }
+        SI = Item.SubItems.Add("No Files")
+        For Counter = 0 To 10
+            Item.SubItems.Add("")
+        Next
+
+        If ListViewFiles.Items.Count <= ItemIndex Then
+            ListViewFiles.Items.Add(Item)
+        Else
+            ListViewFiles.Items.Item(ItemIndex) = Item
+        End If
+
+        Return Item
     End Function
 
     Private Function ListViewFilesAddItem(FileData As FileData, Group As ListViewGroup, ItemIndex As Integer) As ListViewItem
@@ -2932,6 +2948,7 @@ Public Class MainForm
         If DirectoryEntryCount > 0 Then
             Dim LFNFileName As String = ""
 
+            Dim EntryCount = 0
             For Counter = 0 To DirectoryEntryCount - 1
                 Dim DirectoryEntry = Directory.GetFile(Counter)
 
@@ -2973,8 +2990,16 @@ Public Class MainForm
                             Response.Combine(SubResponse)
                         End If
                     End If
+                    EntryCount += 1
                 End If
             Next
+            If Not ScanOnly And EntryCount = 0 Then
+                Dim Item = ListViewFilesAddEmpty(Group, ItemIndex)
+                ItemIndex += 1
+            End If
+        ElseIf Not ScanOnly Then
+            Dim Item = ListViewFilesAddEmpty(Group, ItemIndex)
+            ItemIndex += 1
         End If
 
         Return Response
@@ -3088,9 +3113,11 @@ Public Class MainForm
     Private Sub RefreshClusterErrors()
         For Each Item As ListViewItem In ListViewFiles.Items
             Dim FileData As FileData = Item.Tag
-            If FileData.DirectoryEntry.IsCrossLinked Then
-                Item.SubItems.Item("FileStartingCluster").ForeColor = Color.Red
-                Item.SubItems.Item("FileClusterError").Text = "CL"
+            If FileData IsNot Nothing Then
+                If FileData.DirectoryEntry.IsCrossLinked Then
+                    Item.SubItems.Item("FileStartingCluster").ForeColor = Color.Red
+                    Item.SubItems.Item("FileClusterError").Text = "CL"
+                End If
             End If
         Next
     End Sub
@@ -3262,130 +3289,133 @@ Public Class MainForm
 
         ElseIf ListViewFiles.SelectedItems.Count = 1 Then
             Dim FileData As FileData = ListViewFiles.SelectedItems(0).Tag
-            ParentDirectory = FileData.DirectoryEntry.ParentDirectory
-            Stats = DirectoryEntryGetStats(FileData.DirectoryEntry)
+            ParentDirectory = ListViewFiles.SelectedItems(0).Group.Tag
+            If FileData IsNot Nothing Then
+                Stats = DirectoryEntryGetStats(FileData.DirectoryEntry)
 
-            BtnExportFile.Text = "&Export File"
-            BtnExportFile.Enabled = Stats.CanExport
+                BtnExportFile.Text = "&Export File"
+                BtnExportFile.Enabled = Stats.CanExport
 
-            BtnReplaceFile.Enabled = Stats.IsValidFile Or Stats.IsDeleted
-            BtnFileProperties.Enabled = True
-            BtnFileMenuViewCrosslinked.Visible = FileData.DirectoryEntry.IsCrossLinked
-            BtnFileMenuFixSize.Enabled = FileData.DirectoryEntry.HasIncorrectFileSize
+                BtnReplaceFile.Enabled = Stats.IsValidFile And Not Stats.IsDeleted
+                BtnFileProperties.Enabled = True
+                BtnFileMenuViewCrosslinked.Visible = FileData.DirectoryEntry.IsCrossLinked
+                BtnFileMenuFixSize.Enabled = FileData.DirectoryEntry.HasIncorrectFileSize
 
-            Caption = "View "
-            If Stats.IsDeleted Then
-                Caption &= "Deleted "
-            End If
-            Caption &= "&File as Text"
-            BtnFileMenuViewFileText.Text = Caption
-            BtnFileMenuViewFileText.Visible = Stats.IsValidFile 'And Not Stats.IsDeleted
-            BtnFileMenuViewFileText.Enabled = Stats.FileSize > 0
-
-            If Stats.IsDeleted Then
-                BtnFileMenuRemoveDeletedFile.Visible = True
-                BtnFileMenuRemoveDeletedFile.Enabled = True
-
-                BtnFileMenuDeleteFile.Visible = False
-                BtnFileMenuDeleteFile.Enabled = False
-
-                BtnFileMenuUnDeleteFile.Visible = True
-                BtnFileMenuUnDeleteFile.Enabled = Stats.CanUndelete
-
-                BtnFileMenuDeleteFileWithFill.Visible = False
-                BtnFileMenuDeleteFileWithFill.Enabled = False
-            Else
-                BtnFileMenuRemoveDeletedFile.Visible = False
-                BtnFileMenuRemoveDeletedFile.Enabled = False
-
-                BtnFileMenuDeleteFile.Visible = True
-                BtnFileMenuDeleteFile.Enabled = Stats.CanDelete
-                BtnFileMenuDeleteFile.Text = "&Delete File"
-
-                BtnFileMenuUnDeleteFile.Visible = False
-                BtnFileMenuUnDeleteFile.Enabled = False
-
-                BtnFileMenuDeleteFileWithFill.Visible = Stats.CanDeleteWithFill
-                BtnFileMenuDeleteFileWithFill.Enabled = Stats.CanDeleteWithFill
-                BtnFileMenuDeleteFileWithFill.Text = "&Delete File and Clear Sectors"
-            End If
-
-            If Stats.IsValidFile Or Stats.IsValidDirectory Then
-                If Stats.IsDeleted Then
-                    BtnDisplayFile.Text = "Deleted &File:  " & Stats.FullFileName
-                Else
-                    BtnDisplayFile.Text = "&File:  " & Stats.FullFileName
-                End If
-                BtnDisplayFile.Tag = FileData.DirectoryEntry
-                BtnDisplayFile.Visible = Not Stats.IsDirectory And Stats.FileSize > 0
-
-                Caption = "&View "
+                Caption = "View "
                 If Stats.IsDeleted Then
                     Caption &= "Deleted "
                 End If
-                If Stats.IsDirectory Then
-                    Caption &= "Directory"
-                Else
-                    Caption &= "File"
-                End If
-                BtnFileMenuViewFile.Text = Caption
-                BtnFileMenuViewFile.Enabled = Stats.IsDirectory Or Stats.FileSize > 0
-            Else
-                BtnDisplayFile.Tag = Nothing
-                BtnDisplayFile.Visible = False
+                Caption &= "&File as Text"
+                BtnFileMenuViewFileText.Text = Caption
+                BtnFileMenuViewFileText.Visible = Stats.IsValidFile 'And Not Stats.IsDeleted
+                BtnFileMenuViewFileText.Enabled = Stats.FileSize > 0
 
-                BtnFileMenuViewFile.Text = "&View File"
-                BtnFileMenuViewFile.Enabled = False
+                If Stats.IsDeleted Then
+                    BtnFileMenuRemoveDeletedFile.Visible = True
+                    BtnFileMenuRemoveDeletedFile.Enabled = True
+
+                    BtnFileMenuDeleteFile.Visible = False
+                    BtnFileMenuDeleteFile.Enabled = False
+
+                    BtnFileMenuUnDeleteFile.Visible = True
+                    BtnFileMenuUnDeleteFile.Enabled = Stats.CanUndelete
+
+                    BtnFileMenuDeleteFileWithFill.Visible = False
+                    BtnFileMenuDeleteFileWithFill.Enabled = False
+                Else
+                    BtnFileMenuRemoveDeletedFile.Visible = False
+                    BtnFileMenuRemoveDeletedFile.Enabled = False
+
+                    BtnFileMenuDeleteFile.Visible = True
+                    BtnFileMenuDeleteFile.Enabled = Stats.CanDelete
+                    BtnFileMenuDeleteFile.Text = "&Delete File"
+
+                    BtnFileMenuUnDeleteFile.Visible = False
+                    BtnFileMenuUnDeleteFile.Enabled = False
+
+                    BtnFileMenuDeleteFileWithFill.Visible = Stats.CanDeleteWithFill
+                    BtnFileMenuDeleteFileWithFill.Enabled = Stats.CanDeleteWithFill
+                    BtnFileMenuDeleteFileWithFill.Text = "&Delete File and Clear Sectors"
+                End If
+
+                If Stats.IsValidFile Or Stats.IsValidDirectory Then
+                    If Stats.IsDeleted Then
+                        BtnDisplayFile.Text = "Deleted &File:  " & Stats.FullFileName
+                    Else
+                        BtnDisplayFile.Text = "&File:  " & Stats.FullFileName
+                    End If
+                    BtnDisplayFile.Tag = FileData.DirectoryEntry
+                    BtnDisplayFile.Visible = Not Stats.IsDirectory And Stats.FileSize > 0
+
+                    Caption = "&View "
+                    If Stats.IsDeleted Then
+                        Caption &= "Deleted "
+                    End If
+                    If Stats.IsDirectory Then
+                        Caption &= "Directory"
+                    Else
+                        Caption &= "File"
+                    End If
+                    BtnFileMenuViewFile.Text = Caption
+                    BtnFileMenuViewFile.Enabled = Stats.IsDirectory Or Stats.FileSize > 0
+                Else
+                    BtnDisplayFile.Tag = Nothing
+                    BtnDisplayFile.Visible = False
+
+                    BtnFileMenuViewFile.Text = "&View File"
+                    BtnFileMenuViewFile.Enabled = False
+                End If
             End If
         Else
             Dim FileData As FileData
             Dim ExportEnabled As Boolean = False
             Dim DeleteEnabled As Boolean = False
             FileData = ListViewFiles.SelectedItems(0).Tag
-            ParentDirectory = FileData.DirectoryEntry.ParentDirectory
+            ParentDirectory = ListViewFiles.SelectedItems(0).Group.Tag
+            If FileData IsNot Nothing Then
+                For Each Item As ListViewItem In ListViewFiles.SelectedItems
+                    FileData = Item.Tag
+                    Stats = DirectoryEntryGetStats(FileData.DirectoryEntry)
+                    If Stats.CanExport Then
+                        ExportEnabled = True
+                    End If
+                    If Not Stats.IsDeleted And Stats.CanDelete Then
+                        DeleteEnabled = True
+                    End If
+                    If FileData.DirectoryEntry.ParentDirectory IsNot ParentDirectory Then
+                        ParentDirectory = Nothing
+                    End If
+                Next
+                BtnExportFile.Text = "&Export Selected Files"
+                BtnExportFile.Enabled = ExportEnabled
 
-            For Each Item As ListViewItem In ListViewFiles.SelectedItems
-                FileData = Item.Tag
-                Stats = DirectoryEntryGetStats(FileData.DirectoryEntry)
-                If Stats.CanExport Then
-                    ExportEnabled = True
-                End If
-                If Not Stats.IsDeleted And Stats.CanDelete Then
-                    DeleteEnabled = True
-                End If
-                If FileData.DirectoryEntry.ParentDirectory IsNot ParentDirectory Then
-                    ParentDirectory = Nothing
-                End If
-            Next
-            BtnExportFile.Text = "&Export Selected Files"
-            BtnExportFile.Enabled = ExportEnabled
+                BtnReplaceFile.Enabled = False
+                BtnFileProperties.Enabled = True
+                BtnFileMenuViewCrosslinked.Visible = False
 
-            BtnReplaceFile.Enabled = False
-            BtnFileProperties.Enabled = True
-            BtnFileMenuViewCrosslinked.Visible = False
+                BtnFileMenuViewFileText.Visible = True
+                BtnFileMenuViewFileText.Enabled = False
 
-            BtnFileMenuViewFileText.Visible = True
-            BtnFileMenuViewFileText.Enabled = False
+                BtnDisplayFile.Tag = Nothing
+                BtnDisplayFile.Visible = False
 
-            BtnDisplayFile.Tag = Nothing
-            BtnDisplayFile.Visible = False
+                BtnFileMenuViewFile.Text = "&View File"
+                BtnFileMenuViewFile.Enabled = False
 
-            BtnFileMenuViewFile.Text = "&View File"
-            BtnFileMenuViewFile.Enabled = False
+                BtnFileMenuRemoveDeletedFile.Visible = False
+                BtnFileMenuRemoveDeletedFile.Enabled = False
 
-            BtnFileMenuRemoveDeletedFile.Visible = False
-            BtnFileMenuRemoveDeletedFile.Enabled = False
+                BtnFileMenuDeleteFile.Visible = True
+                BtnFileMenuDeleteFile.Enabled = DeleteEnabled
+                BtnFileMenuDeleteFile.Text = "&Delete Selected Files"
 
-            BtnFileMenuDeleteFile.Visible = True
-            BtnFileMenuDeleteFile.Enabled = DeleteEnabled
-            BtnFileMenuDeleteFile.Text = "&Delete Selected Files"
+                BtnFileMenuUnDeleteFile.Visible = False
+                BtnFileMenuUnDeleteFile.Enabled = False
 
-            BtnFileMenuUnDeleteFile.Visible = False
-            BtnFileMenuUnDeleteFile.Enabled = False
-
-            BtnFileMenuDeleteFileWithFill.Visible = True
-            BtnFileMenuDeleteFileWithFill.Enabled = DeleteEnabled
-            BtnFileMenuDeleteFileWithFill.Text = "&Delete Selected Files and Clear Sectors"
+                BtnFileMenuDeleteFileWithFill.Visible = True
+                BtnFileMenuDeleteFileWithFill.Enabled = DeleteEnabled
+                BtnFileMenuDeleteFileWithFill.Text = "&Delete Selected Files and Clear Sectors"
+            End If
         End If
 
         BtnFileMenuExportFile.Text = BtnExportFile.Text
@@ -3858,7 +3888,7 @@ Public Class MainForm
         ContextMenuEdit.Close()
         If sender.Tag IsNot Nothing Then
             Dim Directory As IDirectory = sender.Tag
-            FileAdd(_Disk, Directory, Nothing, True)
+            FileAdd(_Disk, Directory)
         End If
     End Sub
 
@@ -4095,11 +4125,7 @@ Public Class MainForm
         ContextMenuEdit.Close()
         If ListViewFiles.SelectedItems.Count = 1 Then
             Dim FileData As FileData = ListViewFiles.SelectedItems(0).Tag
-            If FileData.DirectoryEntry.IsDeleted Then
-                FileAdd(_Disk, Nothing, FileData.DirectoryEntry, False)
-            Else
-                FileReplace(_Disk, FileData.DirectoryEntry)
-            End If
+            FileReplace(_Disk, FileData.DirectoryEntry)
         End If
     End Sub
 

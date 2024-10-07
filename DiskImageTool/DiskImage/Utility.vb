@@ -108,6 +108,17 @@ Namespace DiskImage
             Return FilePart & Extension
         End Function
 
+        Public Function ClusterToSectorList(BPB As BiosParameterBlock, Cluster As UShort) As List(Of UInteger)
+            Dim SectorList As New List(Of UInteger)
+
+            Dim Sector = BPB.ClusterToSector(Cluster)
+            For Index = 0 To BPB.SectorsPerCluster - 1
+                SectorList.Add(Sector + Index)
+            Next
+
+            Return SectorList
+        End Function
+
         Public Function ClusterListToSectorList(BPB As BiosParameterBlock, ClusterList As List(Of UShort)) As List(Of UInteger)
             Dim SectorList As New List(Of UInteger)
 

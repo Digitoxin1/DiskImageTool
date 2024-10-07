@@ -15,6 +15,6 @@
         Function GetIndex(DirectoryEntry As DirectoryEntry) As Integer
         Function GetAvailableEntry() As DirectoryEntry
         Function GetAvailableEntries(Count As UInteger) As List(Of DirectoryEntry)
-        Function HasFile(Filename As String, IncludeDirectories As Boolean) As Integer
+        Function GetFileIndex(Filename As String, IncludeDirectories As Boolean) As Integer
     End Interface
 End Namespace

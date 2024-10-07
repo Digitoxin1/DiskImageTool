@@ -139,20 +139,32 @@
         End Property
 
         Public Function GetFreeClusters(FreeClusterType As FreeClusterEmum) As SortedSet(Of UShort)
-            If FreeClusterType = FreeClusterEmum.All Then
-                Return New SortedSet(Of UShort)(_FreeClusters)
-            Else
-                Dim ClusterList = New SortedSet(Of UShort)
-                For Each Cluster In _FreeClusters
-                    Dim ClusterEmpty = IsClusterEmpty(Cluster)
-                    If FreeClusterType = FreeClusterEmum.WithData And Not ClusterEmpty Then
-                        ClusterList.Add(Cluster)
-                    ElseIf FreeClusterType = FreeClusterEmum.WithoutData And ClusterEmpty Then
-                        ClusterList.Add(Cluster)
+            Dim ClusterList = New SortedSet(Of UShort)
+            For Each Cluster In _FreeClusters
+                Dim ProtectedCluster As Boolean = False
+
+                Dim SectorList = ClusterToSectorList(_BPB, Cluster)
+                For Each Sector In SectorList
+                    If _FileBytes.Data.ProtectedSectors.Contains(Sector) Then
+                        ProtectedCluster = True
+                        Exit For
                     End If
                 Next
-                Return ClusterList
-            End If
+
+                If Not ProtectedCluster Then
+                    If FreeClusterType = FreeClusterEmum.All Then
+                        ClusterList.Add(Cluster)
+                    Else
+                        Dim ClusterEmpty = IsClusterEmpty(Cluster)
+                        If FreeClusterType = FreeClusterEmum.WithData And Not ClusterEmpty Then
+                            ClusterList.Add(Cluster)
+                        ElseIf FreeClusterType = FreeClusterEmum.WithoutData And ClusterEmpty Then
+                            ClusterList.Add(Cluster)
+                        End If
+                    End If
+                End If
+            Next
+            Return ClusterList
         End Function
 
         Public Function GetFreeSpace()

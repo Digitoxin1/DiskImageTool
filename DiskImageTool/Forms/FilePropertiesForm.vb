@@ -308,10 +308,10 @@ Public Class FilePropertiesForm
 
         If _Deleted Then
             Caption &= " (Deleted)"
-            TxtFile.Mask = "\" & FileName.Substring(0, 1) & Strings.StrDup(Maxlength - 1, "C")
+            TxtFile.Mask = "\" & FileName.Substring(0, 1) & ">" & Strings.StrDup(Maxlength - 1, "C")
             TxtFile.Text = FileName.Substring(1)
         Else
-            TxtFile.Mask = Strings.StrDup(Maxlength, "C")
+            TxtFile.Mask = ">" & Strings.StrDup(Maxlength, "C")
             TxtFile.Text = FileName
         End If
 
@@ -538,10 +538,7 @@ Public Class FilePropertiesForm
                 e.KeyChar = Chr(0)
             End If
         Else
-            If Value > 96 And Value < 123 Then
-                Value -= 32
-                e.KeyChar = Chr(Value)
-            ElseIf Value > 255 Then
+            If Value > 255 Then
                 e.KeyChar = Chr(0)
             ElseIf Value < 33 And Value <> 8 Then
                 e.KeyChar = Chr(0)

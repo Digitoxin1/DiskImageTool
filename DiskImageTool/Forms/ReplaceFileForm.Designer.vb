@@ -22,6 +22,7 @@ Partial Class ReplaceFileForm
     'Do not modify it using the code editor.
     <System.Diagnostics.DebuggerStepThrough()>
     Private Sub InitializeComponent()
+        Dim resources As System.ComponentModel.ComponentResourceManager = New System.ComponentModel.ComponentResourceManager(GetType(ReplaceFileForm))
         Me.Panel1 = New System.Windows.Forms.Panel()
         Me.BtnOK = New System.Windows.Forms.Button()
         Me.BtnCancel = New System.Windows.Forms.Button()
@@ -30,6 +31,8 @@ Partial Class ReplaceFileForm
         Me.ChkFileDateOriginal = New System.Windows.Forms.CheckBox()
         Me.ChkFilenameOriginal = New System.Windows.Forms.CheckBox()
         Me.GroupBox1 = New System.Windows.Forms.GroupBox()
+        Me.TxtFileExtNew = New System.Windows.Forms.TextBox()
+        Me.TxtFilenameNew = New System.Windows.Forms.TextBox()
         Me.ChkFileSizeNew = New System.Windows.Forms.CheckBox()
         Me.ChkFileDateNew = New System.Windows.Forms.CheckBox()
         Me.ChkFilenameNew = New System.Windows.Forms.CheckBox()
@@ -47,6 +50,7 @@ Partial Class ReplaceFileForm
         Me.LblPadCaption = New System.Windows.Forms.Label()
         Me.RadioFillF6 = New System.Windows.Forms.RadioButton()
         Me.RadioFill00 = New System.Windows.Forms.RadioButton()
+        Me.BtnUndo = New System.Windows.Forms.Button()
         Me.Panel1.SuspendLayout()
         Me.GroupBoxOriginal.SuspendLayout()
         Me.GroupBox1.SuspendLayout()
@@ -72,7 +76,6 @@ Partial Class ReplaceFileForm
         '
         Me.BtnOK.Anchor = CType((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
         Me.BtnOK.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink
-        Me.BtnOK.DialogResult = System.Windows.Forms.DialogResult.OK
         Me.BtnOK.Location = New System.Drawing.Point(338, 10)
         Me.BtnOK.Margin = New System.Windows.Forms.Padding(4, 10, 4, 9)
         Me.BtnOK.Name = "BtnOK"
@@ -142,6 +145,9 @@ Partial Class ReplaceFileForm
         '
         'GroupBox1
         '
+        Me.GroupBox1.Controls.Add(Me.BtnUndo)
+        Me.GroupBox1.Controls.Add(Me.TxtFileExtNew)
+        Me.GroupBox1.Controls.Add(Me.TxtFilenameNew)
         Me.GroupBox1.Controls.Add(Me.ChkFileSizeNew)
         Me.GroupBox1.Controls.Add(Me.ChkFileDateNew)
         Me.GroupBox1.Controls.Add(Me.ChkFilenameNew)
@@ -153,13 +159,33 @@ Partial Class ReplaceFileForm
         Me.GroupBox1.TabStop = False
         Me.GroupBox1.Text = "New File"
         '
+        'TxtFileExtNew
+        '
+        Me.TxtFileExtNew.CharacterCasing = System.Windows.Forms.CharacterCasing.Upper
+        Me.TxtFileExtNew.Location = New System.Drawing.Point(136, 25)
+        Me.TxtFileExtNew.MaxLength = 3
+        Me.TxtFileExtNew.Name = "TxtFileExtNew"
+        Me.TxtFileExtNew.ShortcutsEnabled = False
+        Me.TxtFileExtNew.Size = New System.Drawing.Size(44, 20)
+        Me.TxtFileExtNew.TabIndex = 2
+        '
+        'TxtFilenameNew
+        '
+        Me.TxtFilenameNew.CharacterCasing = System.Windows.Forms.CharacterCasing.Upper
+        Me.TxtFilenameNew.Location = New System.Drawing.Point(30, 25)
+        Me.TxtFilenameNew.MaxLength = 8
+        Me.TxtFilenameNew.Name = "TxtFilenameNew"
+        Me.TxtFilenameNew.ShortcutsEnabled = False
+        Me.TxtFilenameNew.Size = New System.Drawing.Size(100, 20)
+        Me.TxtFilenameNew.TabIndex = 1
+        '
         'ChkFileSizeNew
         '
         Me.ChkFileSizeNew.AutoSize = True
         Me.ChkFileSizeNew.Location = New System.Drawing.Point(10, 75)
         Me.ChkFileSizeNew.Name = "ChkFileSizeNew"
         Me.ChkFileSizeNew.Size = New System.Drawing.Size(60, 17)
-        Me.ChkFileSizeNew.TabIndex = 2
+        Me.ChkFileSizeNew.TabIndex = 5
         Me.ChkFileSizeNew.Text = "0 bytes"
         Me.ChkFileSizeNew.UseMnemonic = False
         Me.ChkFileSizeNew.UseVisualStyleBackColor = True
@@ -170,7 +196,7 @@ Partial Class ReplaceFileForm
         Me.ChkFileDateNew.Location = New System.Drawing.Point(10, 51)
         Me.ChkFileDateNew.Name = "ChkFileDateNew"
         Me.ChkFileDateNew.Size = New System.Drawing.Size(121, 17)
-        Me.ChkFileDateNew.TabIndex = 1
+        Me.ChkFileDateNew.TabIndex = 4
         Me.ChkFileDateNew.Text = "1/1/1980 12:00 AM"
         Me.ChkFileDateNew.UseMnemonic = False
         Me.ChkFileDateNew.UseVisualStyleBackColor = True
@@ -180,9 +206,8 @@ Partial Class ReplaceFileForm
         Me.ChkFilenameNew.AutoSize = True
         Me.ChkFilenameNew.Location = New System.Drawing.Point(10, 28)
         Me.ChkFilenameNew.Name = "ChkFilenameNew"
-        Me.ChkFilenameNew.Size = New System.Drawing.Size(79, 17)
+        Me.ChkFilenameNew.Size = New System.Drawing.Size(15, 14)
         Me.ChkFilenameNew.TabIndex = 0
-        Me.ChkFilenameNew.Text = "FILENAME"
         Me.ChkFilenameNew.UseMnemonic = False
         Me.ChkFilenameNew.UseVisualStyleBackColor = True
         '
@@ -349,6 +374,17 @@ Partial Class ReplaceFileForm
         Me.RadioFill00.UseMnemonic = False
         Me.RadioFill00.UseVisualStyleBackColor = True
         '
+        'BtnUndo
+        '
+        Me.BtnUndo.FlatAppearance.BorderSize = 0
+        Me.BtnUndo.FlatStyle = System.Windows.Forms.FlatStyle.Flat
+        Me.BtnUndo.Image = CType(resources.GetObject("BtnUndo.Image"), System.Drawing.Image)
+        Me.BtnUndo.Location = New System.Drawing.Point(184, 24)
+        Me.BtnUndo.Name = "BtnUndo"
+        Me.BtnUndo.Size = New System.Drawing.Size(22, 22)
+        Me.BtnUndo.TabIndex = 3
+        Me.BtnUndo.UseVisualStyleBackColor = True
+        '
         'ReplaceFileForm
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
@@ -414,4 +450,7 @@ Partial Class ReplaceFileForm
     Friend WithEvents RadioFillF6 As RadioButton
     Friend WithEvents RadioFill00 As RadioButton
     Friend WithEvents LblFileSizeError As Label
+    Friend WithEvents TxtFilenameNew As TextBox
+    Friend WithEvents TxtFileExtNew As TextBox
+    Friend WithEvents BtnUndo As Button
 End Class

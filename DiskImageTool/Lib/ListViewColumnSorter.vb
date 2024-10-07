@@ -62,6 +62,12 @@ Public Class ListViewColumnSorter
             Dim ObjX As Object
             Dim ObjY As Object
 
+            If FileDataX Is Nothing Then
+                Return -1
+            ElseIf FileDataY Is Nothing Then
+                Return 1
+            End If
+
             Select Case ColumnToSort
                 Case 0
                     ObjX = FileDataX.Index

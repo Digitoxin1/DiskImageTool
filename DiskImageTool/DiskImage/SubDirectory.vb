@@ -37,8 +37,6 @@ Namespace DiskImage
             Dim LFNEntries As List(Of Byte()) = Nothing
             Dim EntryCount As Integer = 1
 
-            WindowsAdditions = True
-
             Dim ShortFileName = GetAvailableFileName(FileInfo.Name)
             If WindowsAdditions Then
                 LFNEntries = GetLFNDirectoryEntries(FileInfo.Name, ShortFileName)
