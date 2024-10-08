@@ -3,9 +3,9 @@
         Private WithEvents FileBytes As ImageByteArray
         Public Const BYTES_PER_SECTOR As UShort = 512
         Private ReadOnly _BootSector As BootSector
-        Private _BPB As BiosParameterBlock
-        Private ReadOnly _RootDirectory As RootDirectory
         Private ReadOnly _FATTables As FATTables
+        Private ReadOnly _RootDirectory As RootDirectory
+        Private _BPB As BiosParameterBlock
         Private _DiskFormat As FloppyDiskFormat
 
         Sub New(Image As IByteArray, FatIndex As UShort, Optional Modifications As Stack(Of DataChange()) = Nothing)
@@ -25,15 +25,33 @@
             End If
         End Sub
 
+        Public ReadOnly Property BootSector As BootSector
+            Get
+                Return _BootSector
+            End Get
+        End Property
+
         Public ReadOnly Property BPB As BiosParameterBlock
             Get
                 Return _BPB
             End Get
         End Property
 
-        Public ReadOnly Property BootSector As BootSector
+        Public ReadOnly Property DiskFormat As FloppyDiskFormat
             Get
-                Return _BootSector
+                Return _DiskFormat
+            End Get
+        End Property
+
+        Public ReadOnly Property FAT As FAT12
+            Get
+                Return _FATTables.FAT
+            End Get
+        End Property
+
+        Public ReadOnly Property FATTables As FATTables
+            Get
+                Return _FATTables
             End Get
         End Property
 
@@ -49,24 +67,6 @@
             End Get
         End Property
 
-        Public ReadOnly Property DiskFormat As FloppyDiskFormat
-            Get
-                Return _DiskFormat
-            End Get
-        End Property
-
-        Public ReadOnly Property FATTables As FATTables
-            Get
-                Return _FATTables
-            End Get
-        End Property
-
-        Public ReadOnly Property FAT As FAT12
-            Get
-                Return _FATTables.FAT
-            End Get
-        End Property
-
         Public Shared Function BytesToSector(Bytes As UInteger) As UInteger
             Return Math.Ceiling(Bytes / BYTES_PER_SECTOR)
         End Function
@@ -79,6 +79,17 @@
             Return Sector * BYTES_PER_SECTOR
         End Function
 
+        Public Function BeginTransaction() As Boolean
+            If FileBytes.BatchEditMode Then
+                Return False
+            End If
+
+            _FATTables.BatchUpdates = False
+            FileBytes.BatchEditMode = True
+
+            Return True
+        End Function
+
         Public Function CheckImageSize() As Integer
             Dim ReportedSize As Integer = _BPB.ReportedImageSize()
             Return FileBytes.Length.CompareTo(ReportedSize)
@@ -88,19 +99,19 @@
             Return (FileBytes.Length > 0 And FileBytes.Length < 4423680)
         End Function
 
-        Private Function GetFATMediaDescriptor() As Byte
-            Dim Result As Byte = 0
+        Public Sub ClearChanges()
+            FileBytes.ClearChanges()
+            _RootDirectory.RefreshCache()
+        End Sub
 
-            If FileBytes.Length >= 515 Then
-                Dim b = FileBytes.GetBytes(512, 3)
-                If b(1) = &HFF And b(2) = &HFF Then
-                    Result = b(0)
+        Public Sub EndTransaction()
+            If FileBytes.BatchEditMode Then
+                If _FATTables.BatchUpdates Then
+                    _FATTables.UpdateFAT12()
                 End If
+                FileBytes.BatchEditMode = False
             End If
-
-            Return Result
-        End Function
-
+        End Sub
         Public Function GetXDFChecksum() As UInteger
             Return FileBytes.GetBytesInteger(&H13C)
         End Function
@@ -116,26 +127,6 @@
             _FATTables.SyncFATs = Not IsDiskFormatXDF(_DiskFormat)
             _RootDirectory.RefreshData()
         End Sub
-
-        Public Sub ClearChanges()
-            FileBytes.ClearChanges()
-            _RootDirectory.RefreshCache()
-        End Sub
-
-        Private Function InferFloppyDiskFormat() As FloppyDiskFormat
-            Dim DiskFormat As FloppyDiskFormat
-
-            If _BPB.IsValid Then
-                DiskFormat = GetFloppyDiskFormat(_BPB, False)
-            Else
-                DiskFormat = GetFloppyDiskFomat(_FATTables.FAT.MediaDescriptor)
-                If DiskFormat = FloppyDiskFormat.FloppyUnknown Then
-                    DiskFormat = GetFloppyDiskFormat(FileBytes.Length)
-                End If
-            End If
-
-            Return DiskFormat
-        End Function
 
         Private Function GetBPB() As BiosParameterBlock
             Dim BPB As BiosParameterBlock
@@ -158,6 +149,33 @@
             End If
 
             Return BPB
+        End Function
+
+        Private Function GetFATMediaDescriptor() As Byte
+            Dim Result As Byte = 0
+
+            If FileBytes.Length >= 515 Then
+                Dim b = FileBytes.GetBytes(512, 3)
+                If b(1) = &HFF And b(2) = &HFF Then
+                    Result = b(0)
+                End If
+            End If
+
+            Return Result
+        End Function
+        Private Function InferFloppyDiskFormat() As FloppyDiskFormat
+            Dim DiskFormat As FloppyDiskFormat
+
+            If _BPB.IsValid Then
+                DiskFormat = GetFloppyDiskFormat(_BPB, False)
+            Else
+                DiskFormat = GetFloppyDiskFomat(_FATTables.FAT.MediaDescriptor)
+                If DiskFormat = FloppyDiskFormat.FloppyUnknown Then
+                    DiskFormat = GetFloppyDiskFormat(FileBytes.Length)
+                End If
+            End If
+
+            Return DiskFormat
         End Function
     End Class
 

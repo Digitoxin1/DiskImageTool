@@ -150,6 +150,7 @@ Partial Class MainForm
         Me.BtnFileMenuExportFile = New System.Windows.Forms.ToolStripMenuItem()
         Me.BtnFileMenuReplaceFile = New System.Windows.Forms.ToolStripMenuItem()
         Me.BtnFileMenuAddFile = New System.Windows.Forms.ToolStripMenuItem()
+        Me.BtnFileMenuInsertFile = New System.Windows.Forms.ToolStripMenuItem()
         Me.BtnFileMenuViewDirectory = New System.Windows.Forms.ToolStripMenuItem()
         Me.FileMenuSeparatorDirectory = New System.Windows.Forms.ToolStripSeparator()
         Me.BtnFileMenuViewFile = New System.Windows.Forms.ToolStripMenuItem()
@@ -370,7 +371,7 @@ Partial Class MainForm
         Me.ContextMenuEdit.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.BtnEditBootSector, Me.BtnEditFAT, Me.ToolStripSeparator4, Me.BtnFileProperties, Me.BtnExportFile, Me.BtnReplaceFile, Me.BtnAddFile, Me.ToolStripSeparator2, Me.BtnUndo, Me.BtnRedo, Me.BtnRevert, Me.ToolStripSeparator5, Me.BtnCreateBackup, Me.BtnWindowsExtensions})
         Me.ContextMenuEdit.Name = "ContextMenuEdit"
         Me.ContextMenuEdit.OwnerItem = MainMenuEdit
-        Me.ContextMenuEdit.Size = New System.Drawing.Size(195, 286)
+        Me.ContextMenuEdit.Size = New System.Drawing.Size(195, 264)
         '
         'BtnEditBootSector
         '
@@ -1090,9 +1091,9 @@ Partial Class MainForm
         '
         'ContextMenuFiles
         '
-        Me.ContextMenuFiles.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.BtnFileMenuFileProperties, Me.BtnFileMenuExportFile, Me.BtnFileMenuReplaceFile, Me.BtnFileMenuAddFile, FileMenuSeparatoor1, Me.BtnFileMenuViewDirectory, Me.FileMenuSeparatorDirectory, Me.BtnFileMenuViewFile, Me.BtnFileMenuViewFileText, Me.BtnFileMenuViewCrosslinked, FileMenuSeparatoor2, Me.BtnFileMenuDeleteFile, Me.BtnFileMenuUnDeleteFile, Me.BtnFileMenuRemoveDeletedFile, Me.BtnFileMenuDeleteFileWithFill, FileMenuSeparatoor3, Me.BtnFileMenuFixSize})
+        Me.ContextMenuFiles.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.BtnFileMenuFileProperties, Me.BtnFileMenuExportFile, Me.BtnFileMenuReplaceFile, Me.BtnFileMenuAddFile, Me.BtnFileMenuInsertFile, FileMenuSeparatoor1, Me.BtnFileMenuViewDirectory, Me.FileMenuSeparatorDirectory, Me.BtnFileMenuViewFile, Me.BtnFileMenuViewFileText, Me.BtnFileMenuViewCrosslinked, FileMenuSeparatoor2, Me.BtnFileMenuDeleteFile, Me.BtnFileMenuUnDeleteFile, Me.BtnFileMenuRemoveDeletedFile, Me.BtnFileMenuDeleteFileWithFill, FileMenuSeparatoor3, Me.BtnFileMenuFixSize})
         Me.ContextMenuFiles.Name = "ContextMenuFiles"
-        Me.ContextMenuFiles.Size = New System.Drawing.Size(223, 314)
+        Me.ContextMenuFiles.Size = New System.Drawing.Size(223, 358)
         '
         'BtnFileMenuFileProperties
         '
@@ -1119,6 +1120,12 @@ Partial Class MainForm
         Me.BtnFileMenuAddFile.Name = "BtnFileMenuAddFile"
         Me.BtnFileMenuAddFile.Size = New System.Drawing.Size(222, 22)
         Me.BtnFileMenuAddFile.Text = "&Add Files"
+        '
+        'BtnFileMenuInsertFile
+        '
+        Me.BtnFileMenuInsertFile.Name = "BtnFileMenuInsertFile"
+        Me.BtnFileMenuInsertFile.Size = New System.Drawing.Size(222, 22)
+        Me.BtnFileMenuInsertFile.Text = "&Insert File"
         '
         'BtnFileMenuViewDirectory
         '
@@ -1457,4 +1464,5 @@ Partial Class MainForm
     Friend WithEvents BtnRawTrackData As ToolStripMenuItem
     Friend WithEvents BtnNewImage As ToolStripMenuItem
     Friend WithEvents BtnWindowsExtensions As ToolStripMenuItem
+    Friend WithEvents BtnFileMenuInsertFile As ToolStripMenuItem
 End Class

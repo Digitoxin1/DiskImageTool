@@ -1,13 +1,12 @@
 ﻿Namespace DiskImage
-
     Public Class DirectoryEntry
         Inherits DirectoryEntryBase
 
-        Private ReadOnly _RootDirectory As RootDirectory
-        Private ReadOnly _ParentDirectory As IDirectory
-        Private ReadOnly _Disk As Disk
         Private ReadOnly _BPB As BiosParameterBlock
+        Private ReadOnly _Disk As Disk
         Private ReadOnly _Image As ImageByteArray
+        Private ReadOnly _ParentDirectory As IDirectory
+        Private ReadOnly _RootDirectory As RootDirectory
         Private _FatChain As FATChain
         Private _SubDirectory As SubDirectory
 
@@ -81,6 +80,8 @@
                 Return False
             End If
 
+            Dim UseTransaction As Boolean = _Disk.BeginTransaction
+
             Dim FirstCluster As UShort = 0
 
             If FileInfo.Length > 0 Then
@@ -120,8 +121,70 @@
 
             InitFatChain()
 
+            If UseTransaction Then
+                _Disk.EndTransaction()
+            End If
+
             Return True
         End Function
+
+        Public Function CanUnDelete() As Boolean
+            If FileSize = 0 Or HasInvalidFileSize() Or HasInvalidStartingCluster() Then
+                Return False
+            End If
+
+            Dim Size = _BPB.NumberOfFATEntries + 2
+
+            Dim ClusterCount As UShort
+
+            If IsDirectory() Then
+                ClusterCount = 1
+            Else
+                ClusterCount = Math.Ceiling(FileSize / _BPB.BytesPerCluster)
+            End If
+
+            If StartingCluster + ClusterCount - 1 > Size Then
+                Return False
+            End If
+
+            If ClusterCount > 0 Then
+                For Index As UShort = 0 To ClusterCount - 1
+                    Dim Cluster = StartingCluster + Index
+                    If _Disk.FATTables.FAT.TableEntry(Cluster) <> FAT12.FAT_FREE_CLUSTER Then
+                        Return False
+                    End If
+                Next
+            End If
+
+            Return True
+        End Function
+
+        Public Sub Delete(Clear As Boolean, FillChar As Byte)
+            Dim UseTransaction As Boolean = _Disk.BeginTransaction
+
+            _Image.SetBytes(CHAR_DELETED, Offset)
+
+            Dim b(_BPB.BytesPerCluster - 1) As Byte
+            If Clear Then
+                For i = 0 To b.Length - 1
+                    b(i) = FillChar
+                Next
+            End If
+
+            For Each Cluster In _FatChain.Clusters
+                If Clear Then
+                    Dim Offset = _BPB.ClusterToOffset(Cluster)
+                    _Image.SetBytes(b, Offset)
+                End If
+
+                _Disk.FATTables.UpdateTableEntry(Cluster, FAT12.FAT_FREE_CLUSTER)
+            Next
+            InitFatChain()
+
+            If UseTransaction Then
+                _Disk.EndTransaction()
+            End If
+        End Sub
 
         Public Function GetAllocatedSize() As UInteger
             Return Math.Ceiling(FileSize / _BPB.BytesPerCluster) * _BPB.BytesPerCluster
@@ -183,6 +246,10 @@
             Return StartingCluster = 1 Or StartingCluster > _BPB.NumberOfFATEntries + 1
         End Function
 
+        Public Sub InitFatChain()
+            _FatChain = _RootDirectory.FATAllocation.InitFATChain(Me)
+        End Sub
+
         Public Function IsCrossLinked() As Boolean
             Return _FatChain.CrossLinks.Count > 0
         End Function
@@ -223,76 +290,8 @@
         Public Function IsValidVolumeName() As Boolean
             Return IsVolumeName() AndAlso Not (IsHidden() OrElse IsSystem() OrElse IsDirectory() OrElse IsDeleted()) AndAlso StartingCluster = 0
         End Function
-
-        Public Sub Remove(Clear As Boolean, FillChar As Byte)
-            Dim UseBatchEditMode As Boolean = Not _Image.BatchEditMode
-
-            If UseBatchEditMode Then
-                _Image.BatchEditMode = True
-            End If
-
-            _Image.SetBytes(CHAR_DELETED, Offset)
-
-            Dim b(_BPB.BytesPerCluster - 1) As Byte
-            If Clear Then
-                For i = 0 To b.Length - 1
-                    b(i) = FillChar
-                Next
-            End If
-
-            For Each Cluster In _FatChain.Clusters
-                If Clear Then
-                    Dim Offset = _BPB.ClusterToOffset(Cluster)
-                    _Image.SetBytes(b, Offset)
-                End If
-
-                _Disk.FATTables.UpdateTableEntry(Cluster, FAT12.FAT_FREE_CLUSTER)
-            Next
-            _Disk.FATTables.UpdateFAT12()
-            InitFatChain()
-
-            If UseBatchEditMode Then
-                _Image.BatchEditMode = False
-            End If
-        End Sub
-
-        Public Function CanRestore() As Boolean
-            If FileSize = 0 Or HasInvalidFileSize() Or HasInvalidStartingCluster() Then
-                Return False
-            End If
-
-            Dim Size = _BPB.NumberOfFATEntries + 2
-
-            Dim ClusterCount As UShort
-
-            If IsDirectory() Then
-                ClusterCount = 1
-            Else
-                ClusterCount = Math.Ceiling(FileSize / _BPB.BytesPerCluster)
-            End If
-
-            If StartingCluster + ClusterCount - 1 > Size Then
-                Return False
-            End If
-
-            If ClusterCount > 0 Then
-                For Index As UShort = 0 To ClusterCount - 1
-                    Dim Cluster = StartingCluster + Index
-                    If _Disk.FATTables.FAT.TableEntry(Cluster) <> FAT12.FAT_FREE_CLUSTER Then
-                        Return False
-                    End If
-                Next
-            End If
-
-            Return True
-        End Function
-
-        Public Sub Restore(FirstChar As Byte)
-            Dim UseBatchEditMode As Boolean = Not _Image.BatchEditMode
-
-            If UseBatchEditMode Then
-                _Image.BatchEditMode = True
-            End If
+        Public Sub UnDelete(FirstChar As Byte)
+            Dim UseTransaction As Boolean = _Disk.BeginTransaction
 
             _Image.SetBytes(FirstChar, Offset)
 
@@ -315,19 +314,13 @@
                     End If
                     _Disk.FATTables.UpdateTableEntry(Cluster, TableEntry)
                 Next
-                _Disk.FATTables.UpdateFAT12()
                 InitFatChain()
             End If
 
-            If UseBatchEditMode Then
-                _Image.BatchEditMode = False
+            If UseTransaction Then
+                _Disk.EndTransaction()
             End If
         End Sub
-
-        Public Sub InitFatChain()
-            _FatChain = _RootDirectory.FATAllocation.InitFATChain(Me)
-        End Sub
-
         Public Function UpdateFile(FilePath As String, FileSize As UInteger, FillChar As Byte) As Boolean
             Return UpdateFile(FilePath, FileSize, FillChar, Disk.FAT.FreeClusters)
         End Function
@@ -347,6 +340,8 @@
             If FileLength > ClusterList.Count * ClusterSize Then
                 Return False
             End If
+
+            Dim UseTransaction As Boolean = _Disk.BeginTransaction
 
             'Load file into buffer, padding with empty space if needed            
             Dim FileBuffer = ReadFileIntoBuffer(FileInfo, FileSize, FillChar)
@@ -407,6 +402,10 @@
 
             If FATUpdated Then
                 InitFatChain()
+            End If
+
+            If UseTransaction Then
+                _Disk.EndTransaction()
             End If
 
             Return True

@@ -26,7 +26,7 @@
         Public Function ClearReservedBytes(Disk As Disk) As Boolean
             Dim Result As Boolean = False
 
-            Disk.Image.BatchEditMode = True
+            Dim UseTransaction = Disk.BeginTransaction
 
             Dim FileList = Disk.RootDirectory.GetFileList()
 
@@ -43,7 +43,9 @@
                 End If
             Next
 
-            Disk.Image.BatchEditMode = False
+            If UseTransaction Then
+                Disk.EndTransaction()
+            End If
 
             Return Result
         End Function
@@ -72,17 +74,17 @@
                 Return False
             End If
 
-            Return DirectoryEntry.CanRestore
+            Return DirectoryEntry.CanUnDelete
         End Function
 
         Public Function DirectoryEntryDelete(DirectoryEntry As DirectoryEntry, FillChar As Byte, Clear As Boolean) As Boolean
             Dim Result As Boolean = False
 
             If DirectoryEntryCanDelete(DirectoryEntry, Clear) Then
-                DirectoryEntry.Remove(Clear, FillChar)
+                DirectoryEntry.Delete(Clear, FillChar)
                 Result = True
             ElseIf Clear And DirectoryEntryCanDelete(DirectoryEntry, False) Then
-                DirectoryEntry.Remove(False, FillChar)
+                DirectoryEntry.Delete(False, FillChar)
                 Result = True
             End If
 
@@ -95,7 +97,8 @@
             Dim ReportedSize = Disk.BPB.ReportedImageSize()
 
             If ReportedSize <> Disk.Image.Length Then
-                Disk.Image.BatchEditMode = True
+                Dim UseTransaction = Disk.BeginTransaction
+
                 If ReportedSize < Disk.Image.Length Then
                     Dim b(Disk.Image.Length - ReportedSize - 1) As Byte
                     For i = 0 To b.Length - 1
@@ -104,7 +107,11 @@
                     Disk.Image.SetBytes(b, Disk.Image.Length - b.Length)
                 End If
                 Disk.Image.Resize(ReportedSize)
-                Disk.Image.BatchEditMode = False
+
+                If UseTransaction Then
+                    Disk.EndTransaction()
+                End If
+
                 Result = True
             End If
 
@@ -134,10 +141,14 @@
         End Sub
 
         Private Sub DiskUpdateBytes(Disk As Disk, Data() As Byte)
-            Disk.Image.BatchEditMode = True
+            Dim UseTransaction = Disk.BeginTransaction
+
             Disk.Image.SetBytes(Data, 0, Disk.Image.Length, 0)
             Disk.Image.Resize(Data.Length)
-            Disk.Image.BatchEditMode = False
+
+            If UseTransaction Then
+                Disk.EndTransaction()
+            End If
         End Sub
 
     End Module

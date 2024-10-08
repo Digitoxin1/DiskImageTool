@@ -13,22 +13,21 @@ Namespace DiskImage
         Private ReadOnly _FileBytes As IByteArray
         Private ReadOnly _Offset As UInteger
 
-        Private _IsBlankCache As Boolean? = Nothing
         Private _CreationDateCache As ExpandedDate
         Private _CreationDateIsCached As Boolean = False
-        Private _LastAccessDateCache As ExpandedDate
-        Private _LastAccessDateIsCached As Boolean = False
-        Private _LastWriteDateCache As ExpandedDate
-        Private _LastWriteDateIsCached As Boolean = False
-        Private _VolumeNameCache As String
-        Private _VolumeNameIsCached As Boolean = False
         Private _FileExtensionCache As String
         Private _FileExtensionIsCached As Boolean = False
         Private _FileNameCache As String
         Private _FileNameIsCached As Boolean = False
         Private _HasInvalidExtensionCache As Boolean? = Nothing
         Private _HasInvalidFileNameCache As Boolean? = Nothing
-
+        Private _IsBlankCache As Boolean? = Nothing
+        Private _LastAccessDateCache As ExpandedDate
+        Private _LastAccessDateIsCached As Boolean = False
+        Private _LastWriteDateCache As ExpandedDate
+        Private _LastWriteDateIsCached As Boolean = False
+        Private _VolumeNameCache As String
+        Private _VolumeNameIsCached As Boolean = False
         Public Enum AttributeFlags As Byte
             [ReadOnly] = 1
             Hidden = 2
@@ -305,18 +304,6 @@ Namespace DiskImage
             End If
         End Sub
 
-        Private Sub ClearCache()
-            _IsBlankCache = Nothing
-            _CreationDateIsCached = False
-            _LastAccessDateIsCached = False
-            _LastWriteDateIsCached = False
-            _VolumeNameIsCached = False
-            _FileExtensionIsCached = False
-            _FileNameIsCached = False
-            _HasInvalidExtensionCache = Nothing
-            _HasInvalidFileNameCache = Nothing
-        End Sub
-
         Public Sub ClearCreationDate()
             CreationDate = 0
             CreationTime = 0
@@ -527,6 +514,12 @@ Namespace DiskImage
             Return (Attributes And AttributeFlags.VolumeName) > 0
         End Function
 
+        Public Sub SetCreationDate(Value As Date)
+            CreationDate = DateToFATDate(Value)
+            CreationTime = DateToFATTime(Value)
+            CreationMillisecond = DateToFATMilliseconds(Value)
+        End Sub
+
         Public Sub SetFileInfo(FileInfo As FileInfo, UseCreationDate As Boolean, UseLastAccessDate As Boolean)
             Dim NewFileName = DOSTruncateFileName(FileInfo.Name)
 
@@ -577,12 +570,6 @@ Namespace DiskImage
             Me.Extension = UnicodeToCodePage437(FileExt)
         End Sub
 
-        Public Sub SetCreationDate(Value As Date)
-            CreationDate = DateToFATDate(Value)
-            CreationTime = DateToFATTime(Value)
-            CreationMillisecond = DateToFATMilliseconds(Value)
-        End Sub
-
         Public Sub SetLastAccessDate(Value As Date)
             LastAccessDate = DateToFATDate(Value)
         End Sub
@@ -625,5 +612,17 @@ Namespace DiskImage
 
             Return Result
         End Function
+
+        Private Sub ClearCache()
+            _IsBlankCache = Nothing
+            _CreationDateIsCached = False
+            _LastAccessDateIsCached = False
+            _LastWriteDateIsCached = False
+            _VolumeNameIsCached = False
+            _FileExtensionIsCached = False
+            _FileNameIsCached = False
+            _HasInvalidExtensionCache = Nothing
+            _HasInvalidFileNameCache = Nothing
+        End Sub
     End Class
 End Namespace

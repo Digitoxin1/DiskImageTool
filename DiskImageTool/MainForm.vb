@@ -308,7 +308,7 @@ Public Class MainForm
             End If
         End If
 
-        Disk.Image.BatchEditMode = True
+        Dim UseTransaction = Disk.BeginTransaction
 
         If Disk.BootSector.IsWin9xOEMName Then
             Dim BootstrapType = _BootStrapDB.FindMatch(Disk.BootSector.BootStrapCode)
@@ -340,8 +340,9 @@ Public Class MainForm
             End If
         Next
 
-        Disk.Image.BatchEditMode = False
-
+        If UseTransaction Then
+            Disk.EndTransaction()
+        End If
 
         Return Result
     End Function
@@ -982,7 +983,7 @@ Public Class MainForm
             Exit Sub
         End If
 
-        _Disk.Image.BatchEditMode = True
+        Dim UseTransaction As Boolean = _Disk.BeginTransaction
 
         For Each Item In ListViewFiles.SelectedItems
             FileData = Item.Tag
@@ -991,7 +992,9 @@ Public Class MainForm
             End If
         Next
 
-        _Disk.Image.BatchEditMode = False
+        If UseTransaction Then
+            _Disk.EndTransaction()
+        End If
 
         If Result Then
             DiskImageRefresh()
@@ -1279,9 +1282,9 @@ Public Class MainForm
         End If
     End Sub
 
-    Private Sub FileAdd(Disk As Disk, ParentDirectory As IDirectory)
+    Private Sub FileAdd(ParentDirectory As IDirectory, Multiselect As Boolean, Optional Index As Integer = -1)
         Dim Dialog = New OpenFileDialog With {
-            .Multiselect = True
+            .Multiselect = Multiselect
         }
 
         If Dialog.ShowDialog <> DialogResult.OK Then
@@ -1291,16 +1294,17 @@ Public Class MainForm
         Dim WindowsAdditions As Boolean = My.Settings.WindowsExtensions
         Dim Updated As Boolean = False
 
-        Disk.Image.BatchEditMode = True
+        Dim UseTransaction = ParentDirectory.Disk.BeginTransaction
 
         Dim FilesAdded As UInteger = 0
         For Each FilePath In Dialog.FileNames
             Dim Result As Boolean
-            Dim FreeClusters = _Disk.FAT.GetFreeClusters(FAT12.FreeClusterEmum.WithoutData)
 
-            Result = ParentDirectory.AddFile(FilePath, WindowsAdditions, FreeClusters)
+            Dim FreeClusters = ParentDirectory.Disk.FAT.GetFreeClusters(FAT12.FreeClusterEmum.WithoutData)
+
+            Result = ParentDirectory.AddFile(FilePath, WindowsAdditions, FreeClusters, Index)
             If Not Result Then
-                Result = ParentDirectory.AddFile(FilePath, WindowsAdditions)
+                Result = ParentDirectory.AddFile(FilePath, WindowsAdditions, Index)
             End If
 
             If Result Then
@@ -1314,11 +1318,9 @@ Public Class MainForm
             MsgBox($"Warning: Insufficient Disk Space{vbCrLf}{vbCrLf}{FilesAdded} of {Dialog.FileNames.Length} file(s) added successfully", MsgBoxStyle.Exclamation)
         End If
 
-        If Updated Then
-            Disk.FATTables.UpdateFAT12()
+        If UseTransaction Then
+            ParentDirectory.Disk.EndTransaction()
         End If
-
-        Disk.Image.BatchEditMode = False
 
         If Updated Then
             DiskImageRefresh()
@@ -1480,7 +1482,7 @@ Public Class MainForm
         Return Result
     End Function
 
-    Private Sub FileReplace(Disk As Disk, DirectoryEntry As DirectoryEntry)
+    Private Sub FileReplace(DirectoryEntry As DirectoryEntry)
         Dim Dialog = New OpenFileDialog
         Dim FormResult As ReplaceFileForm.ReplaceFileFormResult
 
@@ -1490,7 +1492,7 @@ Public Class MainForm
 
         Dim FileInfo As New IO.FileInfo(Dialog.FileName)
 
-        Dim AvailableSpace = Disk.FAT.GetFreeSpace() + DirectoryEntry.GetSizeOnDisk
+        Dim AvailableSpace = DirectoryEntry.Disk.FAT.GetFreeSpace() + DirectoryEntry.GetSizeOnDisk
 
         Dim ReplaceFileForm As New ReplaceFileForm(AvailableSpace, DirectoryEntry.ParentDirectory)
         With ReplaceFileForm
@@ -1503,10 +1505,10 @@ Public Class MainForm
         End With
 
         If Not FormResult.Cancelled Then
-            Disk.Image.BatchEditMode = True
+            Dim UseTransaction As Boolean = DirectoryEntry.Disk.BeginTransaction
 
             Dim Result As Boolean = False
-            Dim FreeClusters = _Disk.FAT.GetFreeClusters(FAT12.FreeClusterEmum.WithoutData)
+            Dim FreeClusters = DirectoryEntry.Disk.FAT.GetFreeClusters(FAT12.FreeClusterEmum.WithoutData)
 
             Result = DirectoryEntry.UpdateFile(Dialog.FileName, FormResult.FileSize, FormResult.FillChar, FreeClusters)
             If Not Result Then
@@ -1521,11 +1523,11 @@ Public Class MainForm
                 If FormResult.FileDateChanged Then
                     DirectoryEntry.SetLastWriteDate(FormResult.FileDate)
                 End If
-
-                Disk.FATTables.UpdateFAT12()
             End If
 
-            Disk.Image.BatchEditMode = False
+            If UseTransaction Then
+                DirectoryEntry.Disk.EndTransaction()
+            End If
 
             If Result Then
                 DiskImageRefresh()
@@ -3287,6 +3289,8 @@ Public Class MainForm
             BtnFileMenuDeleteFileWithFill.Enabled = False
             BtnFileMenuDeleteFileWithFill.Text = "&Delete File and Clear Sectors"
 
+            BtnFileMenuInsertFile.Enabled = False
+
         ElseIf ListViewFiles.SelectedItems.Count = 1 Then
             Dim FileData As FileData = ListViewFiles.SelectedItems(0).Tag
             ParentDirectory = ListViewFiles.SelectedItems(0).Group.Tag
@@ -3365,6 +3369,9 @@ Public Class MainForm
                     BtnFileMenuViewFile.Text = "&View File"
                     BtnFileMenuViewFile.Enabled = False
                 End If
+                BtnFileMenuInsertFile.Enabled = True
+            Else
+                BtnFileMenuInsertFile.Enabled = False
             End If
         Else
             Dim FileData As FileData
@@ -3416,6 +3423,7 @@ Public Class MainForm
                 BtnFileMenuDeleteFileWithFill.Enabled = DeleteEnabled
                 BtnFileMenuDeleteFileWithFill.Text = "&Delete Selected Files and Clear Sectors"
             End If
+            BtnFileMenuInsertFile.Enabled = False
         End If
 
         BtnFileMenuExportFile.Text = BtnExportFile.Text
@@ -3527,29 +3535,14 @@ Public Class MainForm
     End Sub
 
     Private Sub RemoveDeletedFile(FileData As FileData)
+        Dim ParentDirectory = FileData.DirectoryEntry.ParentDirectory
+        Dim Index = FileData.DirectoryEntry.GetIndex
 
-        If Not FileData.DirectoryEntry.IsDeleted Then
-            Exit Sub
+        Dim Result = ParentDirectory.RemoveEntry(Index)
+
+        If Result Then
+            DiskImageRefresh()
         End If
-
-        FileData.DirectoryEntry.Disk.Image.BatchEditMode = True
-
-        FileData.DirectoryEntry.Clear(FileData.IsLastEntry)
-        If FileData.IsLastEntry And FileData.Index > 0 Then
-            For Counter = FileData.DirectoryEntry.GetIndex() - 1 To 0 Step -1
-                Dim PrevEntry = FileData.DirectoryEntry.ParentDirectory.GetFile(Counter)
-                If PrevEntry.IsLFN Then
-                    PrevEntry.Clear(True)
-                Else
-                    Exit For
-                End If
-            Next
-        End If
-
-        FileData.DirectoryEntry.Disk.Image.BatchEditMode = False
-
-        'FilePropertiesRefresh(Item, False, False)
-        DiskImageRefresh()
     End Sub
 
     Private Sub ResetAll()
@@ -3803,7 +3796,7 @@ Public Class MainForm
         If UndeleteForm.DialogResult = DialogResult.OK Then
             Dim FirstChar = UndeleteForm.FirstChar
             If FirstChar > 0 Then
-                DirectoryEntry.Restore(FirstChar)
+                DirectoryEntry.UnDelete(FirstChar)
 
                 DiskImageRefresh()
             End If
@@ -3888,7 +3881,7 @@ Public Class MainForm
         ContextMenuEdit.Close()
         If sender.Tag IsNot Nothing Then
             Dim Directory As IDirectory = sender.Tag
-            FileAdd(_Disk, Directory)
+            FileAdd(Directory, True)
         End If
     End Sub
 
@@ -3937,6 +3930,14 @@ Public Class MainForm
 
     Private Sub BtnDisplayClusters_Click(sender As Object, e As EventArgs) Handles BtnDisplayClusters.Click
         HexDisplayFreeClusters()
+    End Sub
+
+    Private Sub BtnInsertFile_Click(sender As Object, e As EventArgs) Handles BtnFileMenuInsertFile.Click
+        ContextMenuEdit.Close()
+        If ListViewFiles.SelectedItems.Count = 1 Then
+            Dim FileData As FileData = ListViewFiles.SelectedItems(0).Tag
+            FileAdd(FileData.DirectoryEntry.ParentDirectory, False, FileData.DirectoryEntry.GetIndex)
+        End If
     End Sub
 
     Private Sub BtnRawTrackData_Click(sender As Object, e As EventArgs)
@@ -4125,7 +4126,7 @@ Public Class MainForm
         ContextMenuEdit.Close()
         If ListViewFiles.SelectedItems.Count = 1 Then
             Dim FileData As FileData = ListViewFiles.SelectedItems(0).Tag
-            FileReplace(_Disk, FileData.DirectoryEntry)
+            FileReplace(FileData.DirectoryEntry)
         End If
     End Sub
 
