@@ -4,7 +4,7 @@ Imports System.Text
 
 Module DebugScript
 
-    Public Sub GenerateDebugPackage(Disk As DiskImage.Disk, ImageData As LoadedImageData)
+    Public Sub GenerateDebugPackage(CurrentImage As CurrentImage)
         Dim TempPath As String = Path.GetTempPath() & Guid.NewGuid().ToString()
         Dim ContentPath As String = Path.Combine(TempPath, "CONTENT")
         Dim ToolsPath As String = Path.Combine(ContentPath, "TOOLS")
@@ -15,7 +15,7 @@ Module DebugScript
         Directory.CreateDirectory(ToolsPath)
 
         'GenerateDebugScripts(DataPath, Disk, ImageData.SessionModifications)
-        GenerateDirectoryDump(DataPath, Disk, ImageData.CachedRootDir)
+        GenerateDirectoryDump(DataPath, CurrentImage)
 
         WriteResourceToFile("CHOICE.COM", Path.Combine(ToolsPath, "CHOICE.COM"))
         WriteResourceToFile("CRC32.COM", Path.Combine(ToolsPath, "CRC32.COM"))
@@ -97,11 +97,11 @@ Module DebugScript
         File.WriteAllText(DriveBFile, SB_B.ToString)
     End Sub
 
-    Public Sub GenerateDirectoryDump(DataPath As String, Disk As DiskImage.Disk, CachedRootDir() As Byte)
+    Public Sub GenerateDirectoryDump(DataPath As String, CurrentImage As CurrentImage)
         Dim FileName As String
 
-        Dim SectorStart = Disk.BootSector.BPB.RootDirectoryRegionStart
-        Dim SectorEnd = Disk.BootSector.BPB.DataRegionStart
+        Dim SectorStart = CurrentImage.Disk.BootSector.BPB.RootDirectoryRegionStart
+        Dim SectorEnd = CurrentImage.Disk.BootSector.BPB.DataRegionStart
         Dim Length = DiskImage.Disk.SectorToBytes(SectorEnd - SectorStart)
         Dim Offset As UInteger = 256
 
@@ -122,7 +122,7 @@ Module DebugScript
         Next Index
 
         FileName = Path.Combine(DataPath, "ROOTDIR.CRC")
-        File.WriteAllText(FileName, "ROOTDIR.TMP " & Crc32.ComputeChecksum(Disk.RootDirectory.GetContent()).ToString("X8"))
+        File.WriteAllText(FileName, "ROOTDIR.TMP " & Crc32.ComputeChecksum(CurrentImage.Disk.RootDirectory.GetContent()).ToString("X8"))
     End Sub
 
     Private Function ConvertByteToByteArray(Value As Byte) As Byte()

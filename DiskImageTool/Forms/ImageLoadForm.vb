@@ -7,16 +7,16 @@ Public Class ImageLoadForm
     Private Const MIN_FILE_SIZE As Long = 163840
     Private Const MAX_FILE_SIZE As Long = 3000000
     Private ReadOnly _Files() As String
-    Private ReadOnly _LoadedFileNames As Dictionary(Of String, LoadedImageData)
+    Private ReadOnly _LoadedFileNames As Dictionary(Of String, ImageData)
     Private ReadOnly _Parent As MainForm
     Private _Activated As Boolean = False
     Private _Counter As Integer = 0
     Private _ImageCount As Integer = 0
     Private _EndScan As Boolean = False
-    Private _SelectedImageData As LoadedImageData = Nothing
+    Private _SelectedImageData As ImageData = Nothing
     Private _Visible As Boolean = False
 
-    Public Sub New(Parent As MainForm, Files() As String, LoadedFileNames As Dictionary(Of String, LoadedImageData))
+    Public Sub New(Parent As MainForm, Files() As String, LoadedFileNames As Dictionary(Of String, ImageData))
 
         ' This call is required by the designer.
         InitializeComponent()
@@ -27,7 +27,7 @@ Public Class ImageLoadForm
         _LoadedFileNames = LoadedFileNames
     End Sub
 
-    Public ReadOnly Property SelectedImageData As LoadedImageData
+    Public ReadOnly Property SelectedImageData As ImageData
         Get
             Return _SelectedImageData
         End Get
@@ -54,7 +54,7 @@ Public Class ImageLoadForm
     Private Sub LoadedFileAdd(bw As BackgroundWorker, Key As String, FileName As String, Compressed As Boolean, Optional CompressedFile As String = "")
 
         If Not _LoadedFileNames.ContainsKey(Key) Then
-            Dim ImageData = New LoadedImageData(FileName)
+            Dim ImageData = New ImageData(FileName)
             If Compressed Then
                 ImageData.Compressed = True
                 ImageData.CompressedFile = CompressedFile
@@ -168,7 +168,7 @@ Public Class ImageLoadForm
             End If
         ElseIf e.ProgressPercentage = 2 Then
             _ImageCount += 1
-            Dim ImageData As LoadedImageData = e.UserState
+            Dim ImageData As ImageData = e.UserState
             _Parent.ComboImages.Items.Add(ImageData)
         End If
     End Sub

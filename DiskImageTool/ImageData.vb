@@ -1,6 +1,6 @@
 ﻿Imports System.IO
 
-Public Class LoadedImageData
+Public Class ImageData
     Private ReadOnly _Filters() As Boolean
 
     Public Sub New(SourceFile As String)

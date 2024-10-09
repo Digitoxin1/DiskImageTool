@@ -3,7 +3,7 @@ Imports DiskImageTool.DiskImage
 Imports DiskImageTool.DiskImage.BootSector
 
 Module ImageCompare
-    Public Function CompareImages(ImageData1 As LoadedImageData, ImageData2 As LoadedImageData) As String
+    Public Function CompareImages(ImageData1 As ImageData, ImageData2 As ImageData) As String
         Dim Builder As New StringBuilder
 
         Dim Disk1 = DiskImageLoad(ImageData1)

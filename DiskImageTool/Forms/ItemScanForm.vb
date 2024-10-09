@@ -6,8 +6,7 @@ Public Enum ScanType
 End Enum
 
 Public Class ItemScanForm
-    Private ReadOnly _CurrentDisk As DiskImage.Disk
-    Private ReadOnly _CurrentImageData As LoadedImageData
+    Private ReadOnly _CurrentImage As CurrentImage
     Private ReadOnly _ImageList As ComboBox.ObjectCollection
     Private ReadOnly _NewOnly As Boolean
     Private ReadOnly _Parent As MainForm
@@ -17,7 +16,7 @@ Public Class ItemScanForm
     Private _EndScan As Boolean = False
     Private _ItemsRemaining As UInteger
     Private _ScanComplete As Boolean = False
-    Public Sub New(Parent As MainForm, ImageList As ComboBox.ObjectCollection, CurrentImageData As LoadedImageData, CurrentDisk As DiskImage.Disk, NewOnly As Boolean, ScanType As ScanType)
+    Public Sub New(Parent As MainForm, ImageList As ComboBox.ObjectCollection, CurrentImage As CurrentImage, NewOnly As Boolean, ScanType As ScanType)
 
         ' This call is required by the designer.
         InitializeComponent()
@@ -25,8 +24,7 @@ Public Class ItemScanForm
         ' Add any initialization after the InitializeComponent() call.
         _Parent = Parent
         _ImageList = ImageList
-        _CurrentImageData = CurrentImageData
-        _CurrentDisk = CurrentDisk
+        _CurrentImage = CurrentImage
         _NewOnly = NewOnly
         _ScanType = ScanType
         _ItemsRemaining = ImageList.Count
@@ -40,7 +38,7 @@ Public Class ItemScanForm
         End If
 
         If ScanType = ScanType.ScanTypeFilters And _NewOnly Then
-            For Each ImageData As LoadedImageData In ImageList
+            For Each ImageData As ImageData In ImageList
                 If ImageData.Scanned Then
                     _ItemsRemaining -= 1
                 End If
@@ -60,11 +58,17 @@ Public Class ItemScanForm
         End Get
     End Property
 
-    Private Function ProcessFilters(ImageData As LoadedImageData) As Boolean
+    Private Function ProcessFilters(ImageData As ImageData) As Boolean
         Dim Result As Boolean = False
 
         If Not _NewOnly Or Not ImageData.Scanned Then
-            Dim Disk = DiskImageLoad(ImageData)
+            Dim Disk As DiskImage.Disk
+
+            If ImageData Is _CurrentImage.ImageData Then
+                Disk = _CurrentImage.Disk
+            Else
+                Disk = DiskImageLoad(ImageData, True)
+            End If
 
             If Disk IsNot Nothing Then
                 _Parent.ItemScanModified(Disk, ImageData)
@@ -76,9 +80,9 @@ Public Class ItemScanForm
                 _Parent.ItemScanDirectory(Disk, ImageData)
 
                 ImageData.Scanned = True
-                End If
+            End If
 
-                Result = True
+            Result = True
         End If
 
         Return Result
@@ -94,7 +98,7 @@ Public Class ItemScanForm
         Dim PrevPercentage As Integer = 0
         Dim Counter As Integer = 0
         Dim Result As Boolean = True
-        For Each ImageData As LoadedImageData In _ImageList
+        For Each ImageData As ImageData In _ImageList
             If bw.CancellationPending Then
                 Return False
             End If
@@ -119,17 +123,17 @@ Public Class ItemScanForm
         Return True
     End Function
 
-    Private Function ProcessWin9XClean(ImageData As LoadedImageData) As Boolean
+    Private Function ProcessWin9XClean(ImageData As ImageData) As Boolean
         Dim Disk As DiskImage.Disk
 
-        If ImageData Is _CurrentImageData Then
-            Disk = _CurrentDisk
+        If ImageData Is _CurrentImage.ImageData Then
+            Disk = _CurrentImage.Disk
         Else
             Disk = DiskImageLoad(ImageData, True)
         End If
 
         If Disk IsNot Nothing Then
-            Dim Result = _Parent.Win9xClean(Disk, True)
+            Dim Result = _Parent.ImageWin9xClean(Disk, True)
             ImageData.BatchUpdated = Result
             If Result Then
                 _Parent.ItemScanModified(Disk, ImageData)

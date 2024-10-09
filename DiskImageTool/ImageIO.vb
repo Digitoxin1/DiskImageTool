@@ -1,4 +1,5 @@
-﻿Imports System.IO
+﻿Imports System.ComponentModel
+Imports System.IO
 Imports System.IO.Compression
 Imports DiskImageTool.Bitstream
 Imports DiskImageTool.DiskImage
@@ -60,7 +61,7 @@ Module ImageIO
         Return True
     End Function
 
-    Public Function DiskImageLoad(ImageData As LoadedImageData, Optional SetChecksum As Boolean = False) As DiskImage.Disk
+    Public Function DiskImageLoad(ImageData As ImageData, Optional SetChecksum As Boolean = False) As DiskImage.Disk
         Dim Data() As Byte
         Dim LastChecksum As UInteger
         Dim Image As IByteArray = Nothing

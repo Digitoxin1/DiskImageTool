@@ -187,7 +187,7 @@
     <Compile Include="ImageFormats\TC\TranscopyByteArray.vb" />
     <Compile Include="ImageFormats\TC\TransCopyCylinder.vb" />
     <Compile Include="ImageFormats\TC\TransCopyImage.vb" />
-    <Compile Include="ComboFilter.vb" />
+    <Compile Include="Filters\ComboFilter.vb" />
     <Compile Include="Controls\ToolStripCheckBox.vb">
       <SubType>Component</SubType>
     </Compile>
@@ -320,9 +320,9 @@
     <Compile Include="HexView\HighlightedRegions.vb" />
     <Compile Include="Lib\ListViewColumnSorter.vb" />
     <Compile Include="Extensions\ListViewExtensions.vb" />
-    <Compile Include="MyByteProvider.vb" />
+    <Compile Include="HexView\MyByteProvider.vb" />
     <Compile Include="BoootstrapDB.vb" />
-    <Compile Include="LoadedImageData.vb" />
+    <Compile Include="ImageData.vb" />
     <Compile Include="Lib\CRC32.vb" />
     <Compile Include="DiskImage\DirectoryEntry.vb" />
     <Compile Include="DiskImage\Disk.vb" />

@@ -95,7 +95,7 @@
             Return (AppliedFilters And (2 ^ FilterType)) > 0
         End Function
 
-        Public Shared Function IsFiltered(ImageData As LoadedImageData, AppliedFilters As Integer, ByRef FilterCounts() As FilterCounts) As Boolean
+        Public Shared Function IsFiltered(ImageData As ImageData, AppliedFilters As Integer, ByRef FilterCounts() As FilterCounts) As Boolean
             Dim Result = False
             ImageData.AppliedFilters = 0
 
@@ -149,11 +149,11 @@
             _FiltersApplied = False
         End Sub
 
-        Public Sub FilterUpdate(ImageData As LoadedImageData, UpdateFilters As Boolean, FilterType As FilterTypes, Value As Boolean)
+        Public Sub FilterUpdate(ImageData As ImageData, UpdateFilters As Boolean, FilterType As FilterTypes, Value As Boolean)
             FilterUpdate(ImageData, UpdateFilters, FilterType, Value, ImageData.Scanned)
         End Sub
 
-        Public Sub FilterUpdate(ImageData As LoadedImageData, UpdateFilters As Boolean, FilterType As FilterTypes, Value As Boolean, Scanned As Boolean)
+        Public Sub FilterUpdate(ImageData As ImageData, UpdateFilters As Boolean, FilterType As FilterTypes, Value As Boolean, Scanned As Boolean)
             If Not Scanned Or Value <> ImageData.Filter(FilterType) Then
                 ImageData.Filter(FilterType) = Value
                 If Value Then

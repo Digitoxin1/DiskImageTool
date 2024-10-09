@@ -4,7 +4,7 @@ Imports DiskImageTool.DiskImage
 Imports DiskImageTool.DiskImage.FloppyDiskFunctions
 
 Module FloppyDiskIO
-    Public Function FloppyDiskRead(Owner As IWin32Window, Drive As FloppyDriveEnum, LoadedFileNames As Dictionary(Of String, LoadedImageData)) As String
+    Public Function FloppyDiskRead(Owner As IWin32Window, Drive As FloppyDriveEnum, LoadedFileNames As Dictionary(Of String, ImageData)) As String
         Dim FloppyDrive = New FloppyInterface
         Dim DriveLetter = FloppyInterface.GetDriveLetter(Drive)
         Dim DriveName = DriveLetter & ":\"
@@ -132,7 +132,7 @@ Module FloppyDiskIO
         End If
     End Function
 
-    Public Function FloppyDiskSaveFile(Buffer() As Byte, DiskFormat As FloppyDiskFormat, LoadedFileNames As Dictionary(Of String, LoadedImageData)) As String
+    Public Function FloppyDiskSaveFile(Buffer() As Byte, DiskFormat As FloppyDiskFormat, LoadedFileNames As Dictionary(Of String, ImageData)) As String
         Dim FileExt = ".ima"
         Dim FileFilter = GetSaveDialogFilters(DiskFormat, FloppyImageType.BasicSectorImage, FileExt)
 
