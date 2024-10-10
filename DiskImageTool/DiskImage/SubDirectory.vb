@@ -188,6 +188,8 @@ Namespace DiskImage
         End Function
 
         Public Overrides Function RemoveEntry(Index As UInteger) As Boolean Implements IDirectory.RemoveEntry
+            Dim UseTransaction As Boolean = Disk.BeginTransaction
+
             Dim Result = MyBase.RemoveEntry(Index)
 
             If Result Then
@@ -195,6 +197,10 @@ Namespace DiskImage
                 If IsClusterEmpty(Cluster) Then
                     ReduceDirectorySize()
                 End If
+            End If
+
+            If UseTransaction Then
+                Disk.EndTransaction()
             End If
 
             Return Result

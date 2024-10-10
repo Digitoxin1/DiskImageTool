@@ -1,7 +1,4 @@
-﻿Imports System.ComponentModel
-Imports System.IO
-Imports System.IO.Compression
-Imports DiskImageTool.Bitstream
+﻿Imports DiskImageTool.Bitstream
 Imports DiskImageTool.DiskImage
 
 Module ImageIO
@@ -73,7 +70,7 @@ Module ImageIO
             Image = New ByteArray(Data)
         End If
 
-        If Image Is Nothing AndAlso File.Exists(ImageData.SourceFile) Then
+        If Image Is Nothing AndAlso IO.File.Exists(ImageData.SourceFile) Then
             Try
                 If ImageData.Compressed Then
                     ImageData.ReadOnly = True
@@ -160,11 +157,11 @@ Module ImageIO
     End Function
 
     Public Sub EmptyTempPath()
-        Dim TempPath = Path.Combine(Path.GetTempPath(), "DiskImageTool")
+        Dim TempPath = IO.Path.Combine(IO.Path.GetTempPath(), "DiskImageTool")
 
-        If Directory.Exists(TempPath) Then
+        If IO.Directory.Exists(TempPath) Then
             Try
-                For Each File In Directory.EnumerateFiles(TempPath)
+                For Each File In IO.Directory.EnumerateFiles(TempPath)
                     Try
                         IO.File.Delete(File)
                     Catch ex As Exception
@@ -303,7 +300,7 @@ Module ImageIO
     Public Function ImageLoadFromTemp(FilePath As String) As Byte()
         Dim Data() As Byte = Nothing
 
-        If File.Exists(FilePath) Then
+        If IO.File.Exists(FilePath) Then
             Try
                 Data = IO.File.ReadAllBytes(FilePath)
             Catch ex As Exception
@@ -316,14 +313,14 @@ Module ImageIO
     End Function
 
     Public Function ImageSaveToTemp(Data() As Byte, DisplayPath As String) As String
-        Dim TempPath = Path.Combine(Path.GetTempPath(), "DiskImageTool")
+        Dim TempPath = IO.Path.Combine(IO.Path.GetTempPath(), "DiskImageTool")
         Dim TempFileName = HashFunctions.SHA1Hash(System.Text.Encoding.Unicode.GetBytes(DisplayPath)) & ".tmp"
 
         Try
-            If Not Directory.Exists(TempPath) Then
-                Directory.CreateDirectory(TempPath)
+            If Not IO.Directory.Exists(TempPath) Then
+                IO.Directory.CreateDirectory(TempPath)
             End If
-            TempPath = Path.Combine(TempPath, TempFileName)
+            TempPath = IO.Path.Combine(TempPath, TempFileName)
 
             IO.File.WriteAllBytes(TempPath, Data)
         Catch ex As Exception
@@ -352,8 +349,8 @@ Module ImageIO
     End Sub
 
     Public Function OpenFileFromZIP(ZipFileName As String, FileName As String) As Byte()
-        Dim Data As New MemoryStream()
-        Dim Archive As ZipArchive = ZipFile.OpenRead(ZipFileName)
+        Dim Data As New IO.MemoryStream()
+        Dim Archive As IO.Compression.ZipArchive = IO.Compression.ZipFile.OpenRead(ZipFileName)
         Dim Entry = Archive.GetEntry(FileName)
         If Entry IsNot Nothing Then
             Entry.Open.CopyTo(Data)

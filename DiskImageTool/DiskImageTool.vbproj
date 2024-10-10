@@ -136,10 +136,12 @@
     <Compile Include="Bitstream\IBM_MFM\IBM_MFM_Sector.vb" />
     <Compile Include="Bitstream\IBM_MFM\IBM_MFM_Tools.vb" />
     <Compile Include="Bitstream\IBM_MFM\IBM_MFM_Track.vb" />
+    <Compile Include="CurrentImage.vb" />
     <Compile Include="DiskImage\DirectoryBase.vb" />
     <Compile Include="DiskImage\FAT12.vb" />
     <Compile Include="DiskImage\FATAllocation.vb" />
     <Compile Include="DiskImage\UpdateFunctions.vb" />
+    <Compile Include="FileData.vb" />
     <Compile Include="Filters\Enums.vb" />
     <Compile Include="Filters\FilterCounts.vb" />
     <Compile Include="Filters\FilterTag.vb" />
@@ -229,10 +231,10 @@
     <Compile Include="Forms\BootSectorForm.vb">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Forms\ClearSectorsForm.Designer.vb">
-      <DependentUpon>ClearSectorsForm.vb</DependentUpon>
+    <Compile Include="Forms\DeleteFileform.Designer.vb">
+      <DependentUpon>DeleteFileform.vb</DependentUpon>
     </Compile>
-    <Compile Include="Forms\ClearSectorsForm.vb">
+    <Compile Include="Forms\DeleteFileform.vb">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="Forms\FATEditForm.Designer.vb">
@@ -381,8 +383,8 @@
       <DependentUpon>BootSectorForm.vb</DependentUpon>
       <SubType>Designer</SubType>
     </EmbeddedResource>
-    <EmbeddedResource Include="Forms\ClearSectorsForm.resx">
-      <DependentUpon>ClearSectorsForm.vb</DependentUpon>
+    <EmbeddedResource Include="Forms\DeleteFileform.resx">
+      <DependentUpon>DeleteFileform.vb</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\FATEditForm.resx">
       <DependentUpon>FATEditForm.vb</DependentUpon>

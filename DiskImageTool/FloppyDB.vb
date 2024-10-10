@@ -1,8 +1,5 @@
-﻿Imports System.IO
-Imports System.Text.RegularExpressions
-Imports System.Xml
+﻿Imports System.Text.RegularExpressions
 Imports DiskImageTool.DiskImage
-Imports DiskImageTool.DiskImage.FloppyDiskFunctions
 
 Public Class FloppyDB
     Private Const DB_FILE_NAME As String = "FloppyDB.xml"
@@ -10,7 +7,7 @@ Public Class FloppyDB
     Private ReadOnly _NameSpace As String = New StubClass().GetType.Namespace
     Private _BooterDictionary As Dictionary(Of UInteger, List(Of BooterTrack))
     Private _TitleDictionary As Dictionary(Of String, FloppyData)
-    Private _NewXMLDoc As XmlDocument
+    Private _NewXMLDoc As Xml.XmlDocument
 
     Public Enum FloppyDBStatus As Byte
         Unknown
@@ -20,7 +17,7 @@ Public Class FloppyDB
     End Enum
 
     Public Sub New()
-        Dim FilePath = Path.Combine(Path.GetDirectoryName(Application.ExecutablePath), DB_FILE_NAME)
+        Dim FilePath = IO.Path.Combine(IO.Path.GetDirectoryName(Application.ExecutablePath), DB_FILE_NAME)
         ParseXML(FilePath)
     End Sub
 
@@ -70,7 +67,7 @@ Public Class FloppyDB
                 End If
 
                 Dim ReleaseStatus As String = ""
-                Dim StatusAttribte As XmlAttribute = releaseNode.Attributes.GetNamedItem("status")
+                Dim StatusAttribte As Xml.XmlAttribute = releaseNode.Attributes.GetNamedItem("status")
                 If StatusAttribte IsNot Nothing Then
                     ReleaseStatus = StatusAttribte.Value
                 End If
@@ -158,10 +155,10 @@ Public Class FloppyDB
         End If
     End Function
 
-    Private Function LoadXML(Name As String) As XmlDocument
-        Dim XMLDoc As New XmlDocument
+    Private Function LoadXML(Name As String) As Xml.XmlDocument
+        Dim XMLDoc As New Xml.XmlDocument
 
-        Dim FilePath As String = Path.Combine(My.Application.Info.DirectoryPath, Name)
+        Dim FilePath As String = IO.Path.Combine(My.Application.Info.DirectoryPath, Name)
 
         Try
             XMLDoc.Load(FilePath)
@@ -174,7 +171,7 @@ Public Class FloppyDB
 
     Public Sub SaveNewXML()
         If _NewXMLDoc IsNot Nothing Then
-            Dim FilePath As String = Path.Combine(My.Application.Info.DirectoryPath, DB_FILE_NAME_NEW)
+            Dim FilePath As String = IO.Path.Combine(My.Application.Info.DirectoryPath, DB_FILE_NAME_NEW)
             Try
                 _NewXMLDoc.Save(FilePath)
             Catch
@@ -239,7 +236,7 @@ Public Class FloppyDB
         Return Data
     End Function
 
-    Private Function GetTitleData(Node As XmlElement, Parent As FloppyData) As FloppyData
+    Private Function GetTitleData(Node As Xml.XmlElement, Parent As FloppyData) As FloppyData
         Dim TitleData As New FloppyData With {
             .Parent = Parent
         }
@@ -289,13 +286,13 @@ Public Class FloppyDB
         Return TitleData
     End Function
 
-    Private Sub CheckTitleNodeForErrors(TitleNode As XmlNode)
+    Private Sub CheckTitleNodeForErrors(TitleNode As Xml.XmlNode)
         If TitleNode.Name <> "title" Then
             Debug.Print("FloppyDB: Invalid top level node: " & TitleNode.OuterXml)
         End If
         Dim NameFound As Boolean = False
         Dim PublisherFound As Boolean = False
-        For Each Attribute As XmlAttribute In TitleNode.Attributes
+        For Each Attribute As Xml.XmlAttribute In TitleNode.Attributes
             If Attribute.Name = "name" Then
                 NameFound = True
             ElseIf Attribute.Name = "publisher" Then
@@ -317,13 +314,13 @@ Public Class FloppyDB
         _TitleDictionary = New Dictionary(Of String, FloppyData)
         _BooterDictionary = New Dictionary(Of UInteger, List(Of BooterTrack))
 
-        If Not File.Exists(Name) Then
+        If Not IO.File.Exists(Name) Then
             Return
         End If
 
         Dim XMLDoc = LoadXML(Name)
 
-        For Each TitleNode As XmlNode In XMLDoc.SelectNodes("/root/title")
+        For Each TitleNode As Xml.XmlNode In XMLDoc.SelectNodes("/root/title")
             ParseNode(TitleNode, Nothing)
 #If DEBUG Then
             CheckTitleNodeForErrors(TitleNode)
@@ -339,22 +336,22 @@ Public Class FloppyDB
 #End If
     End Sub
 
-    Private Sub ParseNode(Node As XmlNode, ParentData As FloppyData)
-        If TypeOf Node Is XmlElement Then
+    Private Sub ParseNode(Node As Xml.XmlNode, ParentData As FloppyData)
+        If TypeOf Node Is Xml.XmlElement Then
             Dim FloppyData = GetTitleData(Node, ParentData)
-            If DirectCast(Node, XmlElement).HasAttribute("md5") Then
+            If DirectCast(Node, Xml.XmlElement).HasAttribute("md5") Then
                 Dim md5 As String = Node.Attributes("md5").Value
                 If Not _TitleDictionary.ContainsKey(md5) Then
                     _TitleDictionary.Add(md5, FloppyData)
                 End If
             End If
-            If DirectCast(Node, XmlElement).HasAttribute("md5_cp") Then
+            If DirectCast(Node, Xml.XmlElement).HasAttribute("md5_cp") Then
                 Dim md5_cp As String = Node.Attributes("md5_cp").Value
                 If Not _TitleDictionary.ContainsKey(md5_cp) Then
                     _TitleDictionary.Add(md5_cp, FloppyData)
                 End If
             End If
-            If DirectCast(Node, XmlElement).HasAttribute("bootSectorCRC32") Then
+            If DirectCast(Node, Xml.XmlElement).HasAttribute("bootSectorCRC32") Then
                 Dim crc32String As String = Node.Attributes("bootSectorCRC32").Value
                 If crc32String <> "" Then
                     Dim crc32 As UInteger = Convert.ToUInt32(crc32String, 16)
@@ -362,7 +359,7 @@ Public Class FloppyDB
                 End If
             End If
             If Node.HasChildNodes Then
-                For Each ChildNode As XmlNode In Node.ChildNodes
+                For Each ChildNode As Xml.XmlNode In Node.ChildNodes
                     If ChildNode.Name <> "cp" Then
                         ParseNode(ChildNode, FloppyData)
                     End If
@@ -371,9 +368,9 @@ Public Class FloppyDB
         End If
     End Sub
 
-    Private Sub ProcessCPNodes(Node As XmlNode, crc32 As UInteger)
+    Private Sub ProcessCPNodes(Node As Xml.XmlNode, crc32 As UInteger)
         Dim cp As New List(Of BooterTrack)
-        For Each cpNode As XmlElement In Node.SelectNodes("cp")
+        For Each cpNode As Xml.XmlElement In Node.SelectNodes("cp")
             If cpNode.HasAttribute("track") And cpNode.HasAttribute("side") Then
                 Dim Track As New BooterTrack With {
                     .Track = cpNode.Attributes("track").Value,

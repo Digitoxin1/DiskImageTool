@@ -1,4 +1,6 @@
-﻿Namespace DiskImage
+﻿Imports System.Runtime.Remoting.Metadata
+
+Namespace DiskImage
     Public MustInherit Class DirectoryBase
         Implements IDirectory
         Private ReadOnly _DirectoryData As DirectoryData
@@ -258,6 +260,7 @@
                 Return False
             End If
 
+
             Dim NewIndex = AdjustIndexForLFN(Index)
             Dim EntryCount = Index - NewIndex + 1
 
@@ -266,28 +269,51 @@
             _DirectoryData.AvailableEntries += EntryCount
             _DirectoryData.EntryCount -= EntryCount
 
+            'For counter = 0 To _DirectoryData.EntryCount - 1
+            '    DirectoryEntry = _DirectoryEntries(counter)
+            '    Console.WriteLine(DirectoryEntry.Offset)
+            'Next
+
             Return True
         End Function
 
         Public Sub ShiftEntries(StartIndex As UInteger, Offset As Integer)
+            Dim DirectoryEntry As DirectoryEntry
+
             Dim UseTransaction As Boolean = _Disk.BeginTransaction
 
             If Offset > 0 Then
                 For Counter = _DirectoryData.EntryCount - 1 To StartIndex Step -1
-                    Dim DirectoryEntry = _DirectoryEntries(Counter)
+                    DirectoryEntry = _DirectoryEntries(Counter)
                     Dim NewDirectoryEntry = _DirectoryEntries(Counter + Offset)
-                    NewDirectoryEntry.Data = DirectoryEntry.Data
+                    NewDirectoryEntry.Offset = DirectoryEntry.Offset
                 Next
             ElseIf Offset < 0 Then
-                For Counter = StartIndex To (_DirectoryData.EntryCount + Offset) - 1
-                    Dim DirectoryEntry = _DirectoryEntries(Counter - Offset)
-                    Dim NewDirectoryEntry = _DirectoryEntries(Counter)
-                    NewDirectoryEntry.Data = DirectoryEntry.Data
+                Dim TempOffsets As New List(Of UInteger)
+
+                For Counter = StartIndex To _DirectoryData.EntryCount - 1
+                    TempOffsets.Add(DirectoryEntries(Counter).Offset)
                 Next
-                For Counter = _DirectoryData.EntryCount + Offset To _DirectoryData.EntryCount - 1
-                    Dim buffer = New Byte(31) {}
-                    Dim DirectoryEntry = _DirectoryEntries(Counter)
-                    DirectoryEntry.Data = buffer
+
+                Dim TempIndex As UInteger = 0
+                For Counter = StartIndex - Offset To _DirectoryData.EntryCount - 1
+                    DirectoryEntry = _DirectoryEntries(Counter)
+                    DirectoryEntry.Offset = TempOffsets.Item(TempIndex)
+                    TempIndex += 1
+                Next
+
+
+                Dim EntryIndex = _DirectoryData.EntryCount
+                For Counter As UInteger = TempIndex To TempOffsets.Count - 1
+                    Dim NewDirectoryEntry = New DirectoryEntry(_Disk.RootDirectory, Me, TempOffsets.Item(Counter), True) With {
+                      .Data = New Byte(31) {}
+                    }
+                    _DirectoryEntries.Insert(EntryIndex, NewDirectoryEntry)
+                    EntryIndex += 1
+                Next
+
+                For Counter = 0 To -Offset - 1
+                    _DirectoryEntries.RemoveAt(StartIndex)
                 Next
             End If
 

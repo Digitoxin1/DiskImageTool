@@ -1,6 +1,4 @@
-﻿Imports System.IO
-Imports System.Text
-Imports DiskImageTool.DiskImage
+﻿Imports DiskImageTool.DiskImage
 
 Module Copy_Protection
     Public Function GetCopyProtection(Disk As DiskImage.Disk, BadSectors As HashSet(Of UInteger)) As String
@@ -22,7 +20,7 @@ Module Copy_Protection
                     Offset = Disk.SectorToBytes(StartingSector)
                     Dim b2 = Disk.Image.GetBytes(Offset, 8)
 
-                    If b1.CompareTo(b2) AndAlso Integer.TryParse(Encoding.UTF8.GetString(b1, 3, 4), 0) Then
+                    If b1.CompareTo(b2) AndAlso Integer.TryParse(Text.Encoding.UTF8.GetString(b1, 3, 4), 0) Then
                         ProtectionFound = True
                         ProtectionName = "H.L.S. Duplication"
                     End If
@@ -55,7 +53,7 @@ Module Copy_Protection
                     Offset = Disk.SectorToBytes(Sector)
                     If Offset + 31 <= DataLength Then
                         Dim b = Disk.Image.GetBytes(Offset, 31)
-                        If Encoding.UTF8.GetString(b) = "(c) 1986 for KBI by L. TOURNIER" Then
+                        If Text.Encoding.UTF8.GetString(b) = "(c) 1986 for KBI by L. TOURNIER" Then
                             ProtectionFound = True
                             ProtectionName = "KBI"
                             Exit For

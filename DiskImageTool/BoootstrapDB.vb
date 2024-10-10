@@ -1,5 +1,4 @@
-﻿Imports System.Xml
-Imports DiskImageTool.DiskImage
+﻿Imports DiskImageTool.DiskImage
 
 Public Class BoootstrapDB
     Private ReadOnly _NameSpace As String = New StubClass().GetType.Namespace
@@ -118,10 +117,10 @@ Public Class BoootstrapDB
         _OEMNameDictionary = New Dictionary(Of UInteger, BootstrapLookup)
         _JmpInst = New HashSet(Of String)
 
-        Dim XMLDoc As New XmlDocument()
+        Dim XMLDoc As New Xml.XmlDocument()
         XMLDoc.LoadXml(GetResource("bootstrap.xml"))
 
-        For Each bootstrapNode As XmlElement In XMLDoc.SelectNodes("/root/bootstrap")
+        For Each bootstrapNode As Xml.XmlElement In XMLDoc.SelectNodes("/root/bootstrap")
             Dim crc32string As String = bootstrapNode.Attributes("crc32").Value
             Dim crc32 As UInteger = Convert.ToUInt32(crc32string, 16)
             Dim BootstrapType As New BootstrapLookup
@@ -134,7 +133,7 @@ Public Class BoootstrapDB
             If bootstrapNode.HasAttribute("jmp") Then
                 BootstrapType.Jmp = bootstrapNode.Attributes("jmp").Value
             End If
-            For Each oemNameNode As XmlElement In bootstrapNode.SelectNodes("oemname")
+            For Each oemNameNode As Xml.XmlElement In bootstrapNode.SelectNodes("oemname")
                 Dim OEMName As New OEMNameData
 
                 If oemNameNode.HasAttribute("namehex") Then

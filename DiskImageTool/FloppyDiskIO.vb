@@ -1,14 +1,12 @@
 ﻿Imports System.ComponentModel
-Imports System.IO
 Imports DiskImageTool.DiskImage
-Imports DiskImageTool.DiskImage.FloppyDiskFunctions
 
 Module FloppyDiskIO
     Public Function FloppyDiskRead(Owner As IWin32Window, Drive As FloppyDriveEnum, LoadedFileNames As Dictionary(Of String, ImageData)) As String
         Dim FloppyDrive = New FloppyInterface
         Dim DriveLetter = FloppyInterface.GetDriveLetter(Drive)
         Dim DriveName = DriveLetter & ":\"
-        Dim DriveInfo = New DriveInfo(DriveName)
+        Dim DriveInfo = New IO.DriveInfo(DriveName)
         Dim Result = DriveInfo.IsReady
         Dim FileName As String = ""
 
@@ -43,7 +41,7 @@ Module FloppyDiskIO
         Dim FloppyDrive = New FloppyInterface
         Dim DriveLetter = FloppyInterface.GetDriveLetter(Drive)
         Dim DriveName = DriveLetter & ":\"
-        Dim DriveInfo = New DriveInfo(DriveName)
+        Dim DriveInfo = New IO.DriveInfo(DriveName)
         Dim IsReady = DriveInfo.IsReady
         Dim NewDiskFormat = GetFloppyDiskFormat(Disk.BPB, False)
         Dim NewFormatName = GetFloppyDiskFormatName(NewDiskFormat) & " Floppy"
@@ -144,7 +142,7 @@ Module FloppyDiskIO
 
         AddHandler Dialog.FileOk, Sub(sender As Object, e As CancelEventArgs)
                                       If LoadedFileNames.ContainsKey(Dialog.FileName) Then
-                                          Dim Msg As String = Path.GetFileName(Dialog.FileName) &
+                                          Dim Msg As String = IO.Path.GetFileName(Dialog.FileName) &
                                             $"{vbCrLf}{vbCrLf}This file is currently open in {Application.ProductName}. " &
                                             $"Try again with a different file name."
                                           MsgBox(Msg, MsgBoxStyle.Exclamation, "Save As")

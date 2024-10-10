@@ -1,6 +1,4 @@
-﻿Imports System.IO
-
-Public Class ImageData
+﻿Public Class ImageData
     Private ReadOnly _Filters() As Boolean
 
     Public Sub New(SourceFile As String)
@@ -71,22 +69,22 @@ Public Class ImageData
     Public Function DisplayPath() As String
         Dim FullPath = _SourceFile
         If _Compressed Then
-            FullPath = Path.Combine(FullPath, Replace(_CompressedFile, "/", "\"))
+            FullPath = IO.Path.Combine(FullPath, Replace(_CompressedFile, "/", "\"))
         End If
         Return FullPath
     End Function
     Public Function FileName() As String
         If _Compressed Then
-            Return Path.GetFileName(_CompressedFile)
+            Return IO.Path.GetFileName(_CompressedFile)
         Else
-            Return Path.GetFileName(_SourceFile)
+            Return IO.Path.GetFileName(_SourceFile)
         End If
     End Function
 
     Public Sub ClearTempPath()
         If _TempPath <> "" Then
             Try
-                File.Delete(_TempPath)
+                IO.File.Delete(_TempPath)
             Catch ex As Exception
                 Debug.Print("Caught Exception: LoadedImageData.ClearTempPath")
             End Try
@@ -98,7 +96,7 @@ Public Class ImageData
         Dim FilePath As String
 
         If _Compressed Then
-            FilePath = Path.Combine(Path.GetDirectoryName(_SourceFile), _CompressedFile)
+            FilePath = IO.Path.Combine(IO.Path.GetDirectoryName(_SourceFile), _CompressedFile)
         Else
             FilePath = _SourceFile
         End If

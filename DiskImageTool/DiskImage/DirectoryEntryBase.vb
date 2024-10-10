@@ -11,7 +11,6 @@ Namespace DiskImage
         Private Const CHAR_SPACE As Byte = &H20
 
         Private ReadOnly _FileBytes As IByteArray
-        Private ReadOnly _Offset As UInteger
 
         Private _CreationDateCache As ExpandedDate
         Private _CreationDateIsCached As Boolean = False
@@ -26,6 +25,7 @@ Namespace DiskImage
         Private _LastAccessDateIsCached As Boolean = False
         Private _LastWriteDateCache As ExpandedDate
         Private _LastWriteDateIsCached As Boolean = False
+        Private _Offset As UInteger
         Private _VolumeNameCache As String
         Private _VolumeNameIsCached As Boolean = False
         Public Enum AttributeFlags As Byte
@@ -243,10 +243,17 @@ Namespace DiskImage
             End Get
         End Property
 
-        Public ReadOnly Property Offset As UInteger
+        Public Property Offset As UInteger
             Get
                 Return _Offset
             End Get
+            Set(value As UInteger)
+                If _Offset <> value Then
+                    Dim CurrentData = Data
+                    _Offset = value
+                    Data = CurrentData
+                End If
+            End Set
         End Property
 
         Public Property ReservedForFAT32() As UShort

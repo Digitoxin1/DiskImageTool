@@ -1,14 +1,13 @@
-﻿Imports System.IO
-Imports System.Runtime.InteropServices
+﻿Imports System.Runtime.InteropServices
 Imports DiskImageTool.DiskImage
 
 Module Utility
     Public Function CleanFileName(FileName As String) As String
-        Return CleanString(FileName, Path.GetInvalidFileNameChars(), "_")
+        Return CleanString(FileName, IO.Path.GetInvalidFileNameChars(), "_")
     End Function
 
     Public Function CleanPathName(FileName As String) As String
-        Return CleanString(FileName, Path.GetInvalidPathChars(), "_")
+        Return CleanString(FileName, IO.Path.GetInvalidPathChars(), "_")
     End Function
 
     Public Function DuplicateHashTable(Table As Hashtable) As Hashtable
@@ -66,7 +65,7 @@ Module Utility
     End Function
 
     Public Function GetImageTypeFromFileName(FileName As String) As FloppyImageType
-        Dim FileExt = Path.GetExtension(FileName).ToLower
+        Dim FileExt = IO.Path.GetExtension(FileName).ToLower
 
         If FileExt = ".tc" Then
             Return FloppyImageType.TranscopyImage
@@ -97,7 +96,7 @@ Module Utility
     End Function
 
     Public Function IsFileReadOnly(fileName As String) As Boolean
-        Dim fInfo As New FileInfo(fileName)
+        Dim fInfo As New IO.FileInfo(fileName)
         Return fInfo.IsReadOnly
     End Function
 
