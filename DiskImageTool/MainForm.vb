@@ -893,6 +893,7 @@ Public Class MainForm
             .FullFileName = DirectoryEntry.GetFullFileName
             .CanDelete = DirectoryEntryCanDelete(DirectoryEntry, False)
             .CanUndelete = DirectoryEntryCanUndelete(DirectoryEntry)
+            .CanInsert = DirectoryEntry.Index < DirectoryEntry.ParentDirectory.DirectoryEntries.Count - DirectoryEntry.ParentDirectory.Data.AvailableEntryCount
         End With
 
         Return Stats
@@ -1759,7 +1760,7 @@ Public Class MainForm
         End If
     End Sub
 
-    Private Sub ImageAddFile(CurrentImage As CurrentImage, ParentDirectory As IDirectory, Multiselect As Boolean, Optional Index As Integer = -1)
+    Private Sub ImageImportFiles(CurrentImage As CurrentImage, ParentDirectory As IDirectory, Multiselect As Boolean, Optional Index As Integer = -1)
         Dim Dialog = New OpenFileDialog With {
             .Multiselect = Multiselect
         }
@@ -1775,17 +1776,20 @@ Public Class MainForm
 
         Dim FilesAdded As UInteger = 0
         For Each FilePath In Dialog.FileNames
-            Dim Result As Boolean
+            Dim Result As Integer
 
             Dim FreeClusters = ParentDirectory.Disk.FAT.GetFreeClusters(FAT12.FreeClusterEmum.WithoutData)
 
             Result = ParentDirectory.AddFile(FilePath, WindowsAdditions, FreeClusters, Index)
-            If Not Result Then
+            If Result = -1 Then
                 Result = ParentDirectory.AddFile(FilePath, WindowsAdditions, Index)
             End If
 
-            If Result Then
+            If Result > -1 Then
                 FilesAdded += 1
+                If Index > -1 Then
+                    Index += Result
+                End If
 
                 Updated = True
             End If
@@ -1894,7 +1898,7 @@ Public Class MainForm
 
             If DoRemove And Remove Then
                 Dim ParentDirectory = FileData.DirectoryEntry.ParentDirectory
-                Dim Index = FileData.DirectoryEntry.GetIndex
+                Dim Index = FileData.DirectoryEntry.Index
 
                 If ParentDirectory.RemoveEntry(Index) Then
                     Result = True
@@ -3318,7 +3322,7 @@ Public Class MainForm
             SetButtonStateUnDeleteFile(False, False)
 
             MenuFileViewCrosslinked.Visible = False
-            MenuFileInsertFile.Enabled = False
+            MenuFileImportFilesHere.Enabled = False
 
         ElseIf ListViewFiles.SelectedItems.Count = 1 Then
             Dim FileData As FileData = ListViewFiles.SelectedItems(0).Tag
@@ -3333,53 +3337,43 @@ Public Class MainForm
                 MenuFileViewCrosslinked.Visible = FileData.DirectoryEntry.IsCrossLinked
                 MenuFileFixSize.Enabled = FileData.DirectoryEntry.HasIncorrectFileSize
 
-                Caption = "View "
-                If Stats.IsDeleted Then
-                    Caption &= "Deleted "
-                End If
-                Caption &= "&File as Text"
+                Caption = "View " & If(Stats.IsDeleted, "Deleted ", "") & "&File as Text"
                 SetButtonStateViewFileText(Stats.FileSize > 0, Stats.IsValidFile, Caption)
 
+                Caption = "&Remove " & If(Stats.IsDeleted, "Deleted ", "") & If(Stats.IsDirectory, "Directory", "File")
                 If Stats.IsDeleted Then
-                    SetButtonStateRemoveFile(True, True, "&Remove Deleted File")
-                    SetButtonStateDeleteFile(False, False)
-                    SetButtonStateUnDeleteFile(Stats.CanUndelete, True)
+                    SetButtonStateRemoveFile(True, True, Caption)
                 Else
-                    SetButtonStateRemoveFile(Stats.CanDelete, True)
-                    SetButtonStateDeleteFile(Stats.CanDelete, True)
+                    SetButtonStateRemoveFile(Stats.CanDelete, True, Caption)
+                End If
+
+                Caption = "&Delete " & If(Stats.IsDirectory, "Directory", "File")
+                If Stats.IsDeleted Then
+                    SetButtonStateDeleteFile(False, False)
+                Else
+                    SetButtonStateDeleteFile(Stats.CanDelete, True, Caption)
+                End If
+
+                Caption = "&Undelete " & If(Stats.IsDirectory, "Directory", "File")
+                If Stats.IsDeleted Then
+                    SetButtonStateUnDeleteFile(Stats.CanUndelete, True, Caption)
+                Else
                     SetButtonStateUnDeleteFile(False, False)
                 End If
 
                 If Stats.IsValidFile Or Stats.IsValidDirectory Then
-                    Caption = ""
-                    If Stats.IsDeleted Then
-                        Caption &= "Deleted "
-                    End If
-                    If Stats.IsDirectory Then
-                        Caption &= "&Directory"
-                    Else
-                        Caption &= "&File"
-                    End If
-                    Caption &= ":  " & Stats.FullFileName
+                    Caption = If(Stats.IsDeleted, "Deleted ", "") & If(Stats.IsDirectory, "&Directory", "&File") & ":  " & Stats.FullFileName
                     SetButtonStateHexFile(Stats.IsDirectory Or Stats.FileSize > 0, FileData.DirectoryEntry, Caption)
 
-                    Caption = "&View "
-                    If Stats.IsDeleted Then
-                        Caption &= "Deleted "
-                    End If
-                    If Stats.IsDirectory Then
-                        Caption &= "Directory"
-                    Else
-                        Caption &= "File"
-                    End If
+                    Caption = "&View " & If(Stats.IsDeleted, "Deleted ", "") & If(Stats.IsDirectory, "Directory", "File")
                     SetButtonStateViewFile(Stats.IsDirectory Or Stats.FileSize > 0, Caption)
                 Else
                     SetButtonStateHexFile(False)
                     SetButtonStateViewFile(False)
                 End If
-                MenuFileInsertFile.Enabled = True
+                MenuFileImportFilesHere.Enabled = Stats.CanInsert
             Else
-                MenuFileInsertFile.Enabled = False
+                MenuFileImportFilesHere.Enabled = False
             End If
         Else
             Dim FileData As FileData
@@ -3426,8 +3420,7 @@ Public Class MainForm
             SetButtonStateUnDeleteFile(False, False)
 
             MenuFileViewCrosslinked.Visible = False
-
-            MenuFileInsertFile.Enabled = False
+            MenuFileImportFilesHere.Enabled = False
         End If
 
         If ParentDirectory Is Nothing Then
@@ -3561,9 +3554,8 @@ Public Class MainForm
     End Sub
     Private Sub RemoveDeletedFile(CurrentImage As CurrentImage, DirectoryEntry As DirectoryEntry)
         Dim ParentDirectory = DirectoryEntry.ParentDirectory
-        Dim Index = DirectoryEntry.GetIndex
 
-        Dim Result = ParentDirectory.RemoveEntry(Index)
+        Dim Result = ParentDirectory.RemoveEntry(DirectoryEntry.Index)
 
         If Result Then
             DiskImageRefresh(CurrentImage)
@@ -3681,8 +3673,8 @@ Public Class MainForm
     End Sub
 
     Private Sub SetButtonStateAddFile(Enabled As Boolean, Optional Tag As Object = Nothing)
-        MenuFileAddFile.Enabled = Enabled
-        MenuFileAddFile.Tag = Tag
+        MenuFileImportFiles.Enabled = Enabled
+        MenuFileImportFiles.Tag = Tag
     End Sub
 
     Private Sub SetButtonStateDeleteFile(Enabled As Boolean, Visible As Boolean, Optional Text As String = "&Delete File")
@@ -3729,6 +3721,7 @@ Public Class MainForm
 
     Private Sub SetButtonStateReplaceFile(Enabled As Boolean)
         MenuFileReplaceFile.Enabled = Enabled
+        MenuEditReplaceFile.Enabled = Enabled
     End Sub
 
     Private Sub SetButtonStateSaveAll(Enabled As Boolean)
@@ -3906,6 +3899,7 @@ Public Class MainForm
         Dim CanDelete As Boolean
         Dim CanExport As Boolean
         Dim CanUndelete As Boolean
+        Dim CanInsert As Boolean
         Dim FileSize As UInteger
         Dim FullFileName As String
         Dim IsDeleted As Boolean
@@ -3916,11 +3910,11 @@ Public Class MainForm
     End Structure
 
 #Region "Events"
-    Private Sub BtnAddFile_Click(sender As Object, e As EventArgs) Handles MenuFileAddFile.Click
+    Private Sub BtnImportFiles_Click(sender As Object, e As EventArgs) Handles MenuFileImportFiles.Click
         ContextMenuEdit.Close()
         If sender.Tag IsNot Nothing Then
             Dim Directory As IDirectory = sender.Tag
-            ImageAddFile(_CurrentImage, Directory, True)
+            ImageImportFiles(_CurrentImage, Directory, True)
         End If
     End Sub
 
@@ -4100,11 +4094,11 @@ Public Class MainForm
         CheckForUpdates()
     End Sub
 
-    Private Sub BtnInsertFile_Click(sender As Object, e As EventArgs) Handles MenuFileInsertFile.Click
+    Private Sub BtnImportFilesHere_Click(sender As Object, e As EventArgs) Handles MenuFileImportFilesHere.Click
         ContextMenuEdit.Close()
         If ListViewFiles.SelectedItems.Count = 1 Then
             Dim FileData As FileData = ListViewFiles.SelectedItems(0).Tag
-            ImageAddFile(_CurrentImage, FileData.DirectoryEntry.ParentDirectory, False, FileData.DirectoryEntry.GetIndex)
+            ImageImportFiles(_CurrentImage, FileData.DirectoryEntry.ParentDirectory, True, FileData.DirectoryEntry.Index)
         End If
     End Sub
 
@@ -4156,7 +4150,7 @@ Public Class MainForm
         DiskImageRefresh(_CurrentImage)
     End Sub
 
-    Private Sub BtnReplaceFile_Click(sender As Object, e As EventArgs) Handles MenuFileReplaceFile.Click
+    Private Sub BtnReplaceFile_Click(sender As Object, e As EventArgs) Handles MenuFileReplaceFile.Click, MenuEditReplaceFile.Click
         ContextMenuEdit.Close()
         If ListViewFiles.SelectedItems.Count = 1 Then
             Dim FileData As FileData = ListViewFiles.SelectedItems(0).Tag

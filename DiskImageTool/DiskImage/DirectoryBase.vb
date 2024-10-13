@@ -1,4 +1,5 @@
-﻿Imports System.Runtime.Remoting.Metadata
+﻿Imports System.Reflection
+Imports System.Runtime.Remoting.Metadata
 
 Namespace DiskImage
     Public MustInherit Class DirectoryBase
@@ -67,6 +68,7 @@ Namespace DiskImage
                     If Buffer(0) = 0 Then
                         ParentDirectory.Data.EndOfDirectory = True
                     End If
+
                     If Not ParentDirectory.Data.HasBootSector And CheckBootSector Then
                         If BootSector.ValidJumpInstructuon.Contains(Buffer(0)) Then
                             If OffsetEnd - Offset >= BootSector.BOOT_SECTOR_SIZE Then
@@ -80,9 +82,9 @@ Namespace DiskImage
                             End If
                         End If
                     End If
-                    If ParentDirectory.Data.EndOfDirectory Then
-                        ParentDirectory.Data.AvailableEntries += 1
 
+                    If ParentDirectory.Data.EndOfDirectory Then
+                        ParentDirectory.Data.AvailableEntryCount += 1
                         If Not ParentDirectory.Data.HasAdditionalData Then
                             If Not ParentDirectory.Data.HasBootSector Or Offset < ParentDirectory.Data.BootSectorOffset Or Offset > ParentDirectory.Data.BootSectorOffset + DiskImage.BootSector.BOOT_SECTOR_SIZE Then
                                 If DirectoryEntryHasData(RootDirectory.Disk.Image.Data, Offset) Then
@@ -91,10 +93,12 @@ Namespace DiskImage
                             End If
                         End If
                     Else
-                        If Buffer.CompareTo(DirectoryEntry.EmptyDirectoryEntry) Then
-                            ParentDirectory.Data.AvailableEntries += 1
-                        End If
                         ParentDirectory.Data.EntryCount += 1
+                        If Buffer.CompareTo(DirectoryEntry.EmptyDirectoryEntry) Then
+                            ParentDirectory.Data.AvailableEntryCount += 1
+                        Else
+                            ParentDirectory.Data.AvailableEntryCount = 0
+                        End If
                         If RootDirectory.Disk.Image.Data.GetByte(Offset + 11) <> &HF Then 'Exclude LFN entries
                             Dim FilePart = RootDirectory.Disk.Image.Data.ToUInt16(Offset)
                             If FilePart <> &H202E And FilePart <> &H2E2E Then 'Exclude '.' and '..' entries
@@ -106,16 +110,16 @@ Namespace DiskImage
                         End If
                     End If
 
-                    Dim NewDirectoryEntry = New DirectoryEntry(RootDirectory, ParentDirectory, Offset, ParentDirectory.Data.EndOfDirectory)
+                    Dim NewDirectoryEntry = New DirectoryEntry(RootDirectory, ParentDirectory, Offset, Entry, ParentDirectory.Data.EndOfDirectory)
 
                     ParentDirectory.DirectoryEntries.Add(NewDirectoryEntry)
                 Next
             End If
         End Sub
 
-        Public MustOverride Function AddFile(FilePath As String, LFN As Boolean, Optional Index As Integer = -1) As Boolean Implements IDirectory.AddFile
+        Public MustOverride Function AddFile(FilePath As String, LFN As Boolean, Optional Index As Integer = -1) As Integer Implements IDirectory.AddFile
 
-        Public MustOverride Function AddFile(FilePath As String, LFN As Boolean, ClusterList As SortedSet(Of UShort), Optional Index As Integer = -1) As Boolean Implements IDirectory.AddFile
+        Public MustOverride Function AddFile(FilePath As String, LFN As Boolean, ClusterList As SortedSet(Of UShort), Optional Index As Integer = -1) As Integer Implements IDirectory.AddFile
 
         Public Function AdjustIndexForLFN(Index As Integer) As Integer
             If Index < 1 Then
@@ -132,40 +136,6 @@ Namespace DiskImage
             Loop
 
             Return Index
-        End Function
-
-        Public Function GetAvailableEntries(Count As UInteger) As List(Of DirectoryEntry) Implements IDirectory.GetAvailableEntries
-            Dim Entries As New List(Of DirectoryEntry)
-
-            Dim Buffer(10) As Byte
-
-
-            Dim Index As UInteger = 0
-
-            For Each DirectoryEntry In _DirectoryEntries
-                Dim Found As Boolean = False
-
-                If Index > Data.EntryCount - 1 Then
-                    Entries.Add(DirectoryEntry)
-                    Found = True
-                Else
-                    Array.Copy(DirectoryEntry.Data, 0, Buffer, 0, Buffer.Length)
-                    If Buffer.CompareTo(DirectoryEntry.EmptyDirectoryEntry) Then
-                        Entries.Add(DirectoryEntry)
-                        Found = True
-                    End If
-                End If
-
-                If Not Found Then
-                    Entries.Clear()
-                ElseIf Entries.Count = Count Then
-                    Return Entries
-                End If
-
-                Index += 1
-            Next
-
-            Return Nothing
         End Function
 
         Public Function GetAvailableEntry() As DirectoryEntry Implements IDirectory.GetAvailableEntry
@@ -260,52 +230,61 @@ Namespace DiskImage
                 Return False
             End If
 
-
             Dim NewIndex = AdjustIndexForLFN(Index)
-            Dim EntryCount = Index - NewIndex + 1
+            Dim EntriesToRemove = Index - NewIndex + 1
 
-            ShiftEntries(NewIndex, EntryCount * -1)
+            ShiftEntries(NewIndex, _DirectoryData.EntryCount, EntriesToRemove * -1)
 
-            _DirectoryData.AvailableEntries += EntryCount
-            _DirectoryData.EntryCount -= EntryCount
-
-            'For counter = 0 To _DirectoryData.EntryCount - 1
-            '    DirectoryEntry = _DirectoryEntries(counter)
-            '    Console.WriteLine(DirectoryEntry.Offset)
-            'Next
+            UpdateEntryCounts()
 
             Return True
         End Function
 
-        Public Sub ShiftEntries(StartIndex As UInteger, Offset As Integer)
+        Public Sub ShiftEntries(StartIndex As UInteger, EntryCount As UInteger, Offset As Integer)
             Dim DirectoryEntry As DirectoryEntry
+            Dim TempOffsets As New List(Of UInteger)
+            Dim Counter As Integer
 
             Dim UseTransaction As Boolean = _Disk.BeginTransaction
 
             If Offset > 0 Then
-                For Counter = _DirectoryData.EntryCount - 1 To StartIndex Step -1
-                    DirectoryEntry = _DirectoryEntries(Counter)
-                    Dim NewDirectoryEntry = _DirectoryEntries(Counter + Offset)
-                    NewDirectoryEntry.Offset = DirectoryEntry.Offset
-                Next
-            ElseIf Offset < 0 Then
-                Dim TempOffsets As New List(Of UInteger)
-
-                For Counter = StartIndex To _DirectoryData.EntryCount - 1
+                For Counter = EntryCount + Offset - 1 To StartIndex Step -1
                     TempOffsets.Add(DirectoryEntries(Counter).Offset)
                 Next
 
                 Dim TempIndex As UInteger = 0
-                For Counter = StartIndex - Offset To _DirectoryData.EntryCount - 1
+                For Counter = EntryCount - 1 To StartIndex Step -1
                     DirectoryEntry = _DirectoryEntries(Counter)
                     DirectoryEntry.Offset = TempOffsets.Item(TempIndex)
                     TempIndex += 1
                 Next
 
+                For Counter = 0 To Offset - 1
+                    _DirectoryEntries.RemoveAt(EntryCount)
+                Next
 
-                Dim EntryIndex = _DirectoryData.EntryCount
-                For Counter As UInteger = TempIndex To TempOffsets.Count - 1
-                    Dim NewDirectoryEntry = New DirectoryEntry(_Disk.RootDirectory, Me, TempOffsets.Item(Counter), True) With {
+                For Counter = TempIndex To TempOffsets.Count - 1
+                    Dim NewDirectoryEntry = New DirectoryEntry(_Disk.RootDirectory, Me, TempOffsets.Item(Counter), StartIndex, True) With {
+                      .Data = New Byte(31) {}
+                    }
+                    _DirectoryEntries.Insert(StartIndex, NewDirectoryEntry)
+                Next
+
+            ElseIf Offset < 0 Then
+                For Counter = StartIndex To EntryCount - 1
+                    TempOffsets.Add(DirectoryEntries(Counter).Offset)
+                Next
+
+                Dim TempIndex As UInteger = 0
+                For Counter = StartIndex - Offset To EntryCount - 1
+                    DirectoryEntry = _DirectoryEntries(Counter)
+                    DirectoryEntry.Offset = TempOffsets.Item(TempIndex)
+                    TempIndex += 1
+                Next
+
+                Dim EntryIndex = EntryCount
+                For Counter = TempIndex To TempOffsets.Count - 1
+                    Dim NewDirectoryEntry = New DirectoryEntry(_Disk.RootDirectory, Me, TempOffsets.Item(Counter), EntryIndex, True) With {
                       .Data = New Byte(31) {}
                     }
                     _DirectoryEntries.Insert(EntryIndex, NewDirectoryEntry)
@@ -320,6 +299,39 @@ Namespace DiskImage
             If UseTransaction Then
                 _Disk.EndTransaction()
             End If
+        End Sub
+
+        Public Sub UpdateEntryCounts() Implements IDirectory.UpdateEntryCounts
+            Dim EntryCount As UInteger
+            Dim Counter As Integer
+            Dim Buffer(10) As Byte
+            Dim EndOfDirectory As Boolean = False
+
+            For Counter = 0 To _DirectoryEntries.Count - 1
+                Dim DirectoryEntry = _DirectoryEntries(Counter)
+                DirectoryEntry.Index = Counter
+                Dim FirstChar = DirectoryEntry.Data(0)
+                If Not EndOfDirectory Then
+                    EntryCount = Counter
+                End If
+                If FirstChar = 0 Then
+                    EndOfDirectory = True
+                End If
+            Next
+
+            _DirectoryData.EntryCount = EntryCount
+
+            For Counter = _DirectoryData.EntryCount - 1 To 0 Step -1
+                Dim DirectoryEntry = _DirectoryEntries(Counter)
+                Array.Copy(DirectoryEntry.Data, 0, Buffer, 0, Buffer.Length)
+                If Buffer.CompareTo(DirectoryEntry.EmptyDirectoryEntry) Then
+                    EntryCount = Counter
+                Else
+                    Exit For
+                End If
+            Next
+
+            Data.AvailableEntryCount = _DirectoryEntries.Count - EntryCount
         End Sub
 
         Private Function TruncateFileName(FilePart As String, Index As UInteger) As String

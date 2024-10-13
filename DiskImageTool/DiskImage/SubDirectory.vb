@@ -1,6 +1,4 @@
-﻿Imports System.IO
-
-Namespace DiskImage
+﻿Namespace DiskImage
     Public Class SubDirectory
         Inherits DirectoryBase
         Implements IDirectory
@@ -27,46 +25,43 @@ Namespace DiskImage
             End Get
         End Property
 
-        Public Overrides Function AddFile(FilePath As String, WindowsAdditions As Boolean, Optional Index As Integer = -1) As Boolean Implements IDirectory.AddFile
-            Return AddFile(FilePath, WindowsAdditions, Disk.FAT.FreeClusters)
+        Public Overrides Function AddFile(FilePath As String, WindowsAdditions As Boolean, Optional Index As Integer = -1) As Integer Implements IDirectory.AddFile
+            Return AddFile(FilePath, WindowsAdditions, Disk.FAT.FreeClusters, Index)
         End Function
 
-        Public Overrides Function AddFile(FilePath As String, WindowsAdditions As Boolean, ClusterList As SortedSet(Of UShort), Optional Index As Integer = -1) As Boolean Implements IDirectory.AddFile
+        Public Overrides Function AddFile(FilePath As String, WindowsAdditions As Boolean, ClusterList As SortedSet(Of UShort), Optional Index As Integer = -1) As Integer Implements IDirectory.AddFile
             Dim ClusterSize = Disk.BPB.BytesPerCluster
             Dim FileInfo = New IO.FileInfo(FilePath)
             Dim LFNEntries As List(Of Byte()) = Nothing
-            Dim EntryCount As Integer = 1
+            Dim EntriesNeeded As Integer = 1
             Dim Entries As List(Of DirectoryEntry)
             Dim Cluster As UShort
 
             Dim ShortFileName = GetAvailableFileName(FileInfo.Name)
             If WindowsAdditions Then
                 LFNEntries = GetLFNDirectoryEntries(FileInfo.Name, ShortFileName)
-                EntryCount += LFNEntries.Count
+                EntriesNeeded += LFNEntries.Count
             End If
 
             Dim Length = FileInfo.Length
 
-            Dim Result As Boolean
-            If Index = -1 Then
-                Result = Data.AvailableEntries >= EntryCount
-            Else
-                Result = DirectoryEntries.Count - Data.EntryCount >= EntryCount
-            End If
+            Dim Result As Boolean = Data.AvailableEntryCount >= EntriesNeeded
+
+            Dim EntryCount = DirectoryEntries.Count - Data.AvailableEntryCount
 
             If Not Result Then
                 Length += ClusterSize
             End If
 
             If Length > ClusterList.Count * ClusterSize Then
-                Return False
+                Return -1
             End If
 
             If Not Result Then
                 Cluster = Disk.FAT.GetNextFreeCluster(ClusterList, True)
 
                 If Cluster = 0 Then
-                    Return False
+                    Return -1
                 End If
             End If
 
@@ -76,12 +71,12 @@ Namespace DiskImage
                 ExpandDirectorySize(Cluster)
             End If
 
-            If Index = -1 Then
-                Entries = GetAvailableEntries(EntryCount)
-            Else
+            If Index > -1 Then
                 Index = AdjustIndexForLFN(Index)
-                Entries = GetEntries(Index, EntryCount)
-                ShiftEntries(Index, EntryCount)
+                ShiftEntries(Index, EntryCount, EntriesNeeded)
+                Entries = GetEntries(Index, EntriesNeeded)
+            Else
+                Entries = GetEntries(EntryCount, EntriesNeeded)
             End If
 
             Dim DirectoryEntry = Entries(Entries.Count - 1)
@@ -96,14 +91,13 @@ Namespace DiskImage
                 Next
             End If
 
-            Data.EntryCount += EntryCount
-            Data.AvailableEntries -= EntryCount
+            UpdateEntryCounts()
 
             If UseTransaction Then
                 Disk.EndTransaction()
             End If
 
-            Return True
+            Return EntriesNeeded
         End Function
 
         Public Function ExpandDirectorySize() As Boolean
@@ -136,11 +130,9 @@ Namespace DiskImage
 
             For Index As UInteger = 0 To EntryCount - 1
                 Dim Offset = ClusterOffset + (Index * DirectoryEntry.DIRECTORY_ENTRY_SIZE)
-                Dim NewDirectoryEntry = New DirectoryEntry(_RootDirectory, Me, Offset, True)
+                Dim NewDirectoryEntry = New DirectoryEntry(_RootDirectory, Me, Offset, DirectoryEntries.Count, True)
                 DirectoryEntries.Add(NewDirectoryEntry)
             Next
-
-            Data.AvailableEntries += EntryCount
 
             If UseTransaction Then
                 Disk.EndTransaction()
@@ -173,8 +165,6 @@ Namespace DiskImage
             For Entry As Integer = DirectoryEntries.Count - 1 To DirectoryEntries.Count - EntryCount Step -1
                 DirectoryEntries.RemoveAt(Entry)
             Next
-
-            Data.AvailableEntries -= EntryCount
 
             If Data.EntryCount > DirectoryEntries.Count Then
                 Data.EntryCount = DirectoryEntries.Count

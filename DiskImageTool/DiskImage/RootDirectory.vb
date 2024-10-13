@@ -52,46 +52,44 @@
             End Get
         End Property
 
-        Public Overrides Function AddFile(FilePath As String, WindowsAdditions As Boolean, Optional Index As Integer = -1) As Boolean Implements IDirectory.AddFile
-            Return AddFile(FilePath, WindowsAdditions, Disk.FAT.FreeClusters)
+        Public Overrides Function AddFile(FilePath As String, WindowsAdditions As Boolean, Optional Index As Integer = -1) As Integer Implements IDirectory.AddFile
+            Return AddFile(FilePath, WindowsAdditions, Disk.FAT.FreeClusters, Index)
         End Function
 
-        Public Overrides Function AddFile(FilePath As String, WindowsAdditions As Boolean, ClusterList As SortedSet(Of UShort), Optional Index As Integer = -1) As Boolean Implements IDirectory.AddFile
+        Public Overrides Function AddFile(FilePath As String, WindowsAdditions As Boolean, ClusterList As SortedSet(Of UShort), Optional Index As Integer = -1) As Integer Implements IDirectory.AddFile
             Dim ClusterSize = Disk.BPB.BytesPerCluster
             Dim FileInfo = New IO.FileInfo(FilePath)
             Dim LFNEntries As List(Of Byte()) = Nothing
-            Dim EntryCount As Integer = 1
+            Dim EntriesNeeded As Integer = 1
             Dim Entries As List(Of DirectoryEntry)
 
             Dim ShortFileName = GetAvailableFileName(FileInfo.Name)
             If WindowsAdditions Then
                 LFNEntries = GetLFNDirectoryEntries(FileInfo.Name, ShortFileName)
-                EntryCount += LFNEntries.Count
+                EntriesNeeded += LFNEntries.Count
             End If
 
             If FileInfo.Length > ClusterList.Count * ClusterSize Then
-                Return False
+                Return -1
             End If
 
-            If Index = -1 Then
-                Entries = GetAvailableEntries(EntryCount)
-
-                If Entries Is Nothing Then
-                    Return False
-                End If
-            Else
-                If DirectoryEntries.Count - Data.EntryCount < EntryCount Then
-                    Return False
-                End If
-
-                Index = AdjustIndexForLFN(Index)
-                Entries = GetEntries(Index, EntryCount)
+            If Data.AvailableEntryCount < EntriesNeeded Then
+                Return -1
             End If
+
+            Dim EntryCount = DirectoryEntries.Count - Data.AvailableEntryCount
 
             Dim UseTransaction As Boolean = Disk.BeginTransaction
 
             If Index > -1 Then
-                ShiftEntries(Index, EntryCount)
+                Index = AdjustIndexForLFN(Index)
+                If EntryCount < Index + 1 Then
+                    EntryCount = Index + 1
+                End If
+                ShiftEntries(Index, EntryCount, EntriesNeeded)
+                Entries = GetEntries(Index, EntriesNeeded)
+            Else
+                Entries = GetEntries(EntryCount, EntriesNeeded)
             End If
 
             Dim DirectoryEntry = Entries(Entries.Count - 1)
@@ -106,14 +104,13 @@
                 Next
             End If
 
-            Data.EntryCount += EntryCount
-            Data.AvailableEntries -= EntryCount
+            UpdateEntryCounts()
 
             If UseTransaction Then
                 Disk.EndTransaction()
             End If
 
-            Return True
+            Return EntriesNeeded
         End Function
 
         Public Overrides Function GetContent() As Byte() Implements IDirectory.GetContent

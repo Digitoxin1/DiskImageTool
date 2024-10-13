@@ -5,7 +5,7 @@
             Clear()
         End Sub
 
-        Public Property AvailableEntries As UInteger
+        Public Property AvailableEntryCount As UInteger
         Public Property BootSectorOffset As UInteger
         Public Property DeletedFileCount As UInteger
         Public Property EndOfDirectory As Boolean
@@ -16,7 +16,7 @@
         Public ReadOnly Property Level As UInteger
 
         Public Sub Clear()
-            _AvailableEntries = 0
+            _AvailableEntryCount = 0
             _BootSectorOffset = 0
             _DeletedFileCount = 0
             _EntryCount = 0

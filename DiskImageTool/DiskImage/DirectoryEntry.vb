@@ -8,9 +8,10 @@
         Private ReadOnly _ParentDirectory As IDirectory
         Private ReadOnly _RootDirectory As RootDirectory
         Private _FatChain As FATChain
+        Private _Index As UInteger
         Private _SubDirectory As SubDirectory
 
-        Sub New(RootDirectory As RootDirectory, ParentDirectory As IDirectory, Offset As UInteger, EmptyEntry As Boolean)
+        Sub New(RootDirectory As RootDirectory, ParentDirectory As IDirectory, Offset As UInteger, Index As UInteger, EmptyEntry As Boolean)
             MyBase.New(RootDirectory.Disk.Image.Data, Offset)
 
             _RootDirectory = RootDirectory
@@ -18,6 +19,7 @@
             _Disk = _RootDirectory.Disk
             _BPB = _RootDirectory.Disk.BPB
             _Image = _RootDirectory.Disk.Image
+            _Index = Index
 
             If Not EmptyEntry Then
                 InitFatChain()
@@ -41,6 +43,15 @@
             Get
                 Return _FatChain
             End Get
+        End Property
+
+        Public Property Index As UInteger
+            Get
+                Return _Index
+            End Get
+            Set(value As UInteger)
+                _Index = value
+            End Set
         End Property
 
         Public ReadOnly Property HasCircularChain As Boolean
@@ -222,10 +233,6 @@
             Return Content
         End Function
 
-        Public Function GetIndex() As Integer
-            Return _ParentDirectory.GetIndex(Me)
-        End Function
-
         Public Function GetSizeOnDisk() As UInteger
             Return _FatChain.Clusters.Count * _BPB.BytesPerCluster
         End Function
@@ -244,6 +251,16 @@
 
         Public Function HasInvalidStartingCluster() As Boolean
             Return StartingCluster = 1 Or StartingCluster > _BPB.NumberOfFATEntries + 1
+        End Function
+
+        Public Function HasLFN() As Boolean
+            If _Index > 0 Then
+                If _ParentDirectory.DirectoryEntries(_Index - 1).IsLFN Then
+                    Return True
+                End If
+            End If
+
+            Return False
         End Function
 
         Public Sub InitFatChain()
