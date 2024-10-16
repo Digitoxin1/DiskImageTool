@@ -239,7 +239,7 @@ Namespace Bitstream
                     Dim TrackData = GetTrack(Cylinder, Side)
                     Dim TrackIsStandard As Boolean = True
                     If TrackData IsNot Nothing Then
-                        TrackIsStandard = TrackData.FirstSector >= 1 And TrackData.LastSector <= _BPB.SectorsPerTrack
+                        TrackIsStandard = TrackData.FirstSector >= 1 And TrackData.LastSector <= Math.Max(_BPB.SectorsPerTrack, 9)
                     End If
                     For SectorId = 1 To _BPB.SectorsPerTrack
                         Dim BitstreamSector As BitstreamSector = Nothing

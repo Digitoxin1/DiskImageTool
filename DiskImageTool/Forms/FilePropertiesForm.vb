@@ -1,4 +1,5 @@
-﻿Imports DiskImageTool.DiskImage
+﻿Imports System.ComponentModel
+Imports DiskImageTool.DiskImage
 
 Public Class FilePropertiesForm
     Private Const EMPTY_FORMAT As String = "'Empty'"
@@ -7,6 +8,7 @@ Public Class FilePropertiesForm
     Private _DeferredChange() As Byte
     Private _Deleted As Boolean = False
     Private _HasDeferredChange As Boolean = False
+    Private _HasLFN As Boolean = False
     Private _IsDirectory As Boolean = False
     Private _IsVolumeLabel As Boolean = False
     Private _SuppressEvent As Boolean = True
@@ -97,7 +99,7 @@ Public Class FilePropertiesForm
         End If
     End Sub
 
-    Private Sub ApplyFileNameUpdate(DirectoryEntry As DiskImage.DirectoryEntryBase)
+    Private Sub ApplyFileNameUpdateShort(DirectoryEntry As DiskImage.DirectoryEntryBase)
         Dim FileName() As Byte
         Dim Extension() As Byte
 
@@ -141,12 +143,28 @@ Public Class FilePropertiesForm
             }
 
             If UpdateFileName Then
-                ApplyFileNameUpdate(NewDirectoryEntry)
+                If RadioFileShort.Checked Then
+                    ApplyFileNameUpdateShort(NewDirectoryEntry)
+                End If
             End If
             ApplyFileDatesUpdate(NewDirectoryEntry)
             ApplyAttributesUpdate(NewDirectoryEntry)
 
             DirectoryEntry.Data = NewDirectoryEntry.Data
+
+            If UpdateFileName Then
+                If RadioFileShort.Checked Then
+                    If Not _IsVolumeLabel And Not _Deleted And _HasLFN Then
+                        If DirectoryEntry.RemoveLFN() Then
+                            _Updated = True
+                        End If
+                    End If
+                Else
+                    If DirectoryEntry.ParentDirectory.UpdateLFN(TxtLFN.Text, DirectoryEntry.Index) Then
+                        _Updated = True
+                    End If
+                End If
+            End If
         Next
 
         If UseTransaction Then
@@ -194,7 +212,7 @@ Public Class FilePropertiesForm
         LblMultipleFiles.Visible = Multiple
         MskFileHex.Visible = Not Multiple
         MskExtensionHex.Visible = Not Multiple
-
+        FlowLayoutFileNameType.Visible = Not Multiple
         InitButtons(Multiple)
     End Sub
 
@@ -211,6 +229,7 @@ Public Class FilePropertiesForm
         _IsDirectory = False
         _IsVolumeLabel = False
         _Deleted = False
+        _HasLFN = False
 
         GroupFileName.Text = "Multiple Files"
         LblMultipleFiles.Text = "(" & _Items.Count & " Files Selected)"
@@ -260,6 +279,8 @@ Public Class FilePropertiesForm
         ChkReadOnly.Checked = SetReadOnly
         ChkHidden.Checked = SetHidden
         ChkSystem.Checked = SetSystem
+
+        TxtLFN.Visible = False
     End Sub
 
     Private Sub PopulateFormSingle()
@@ -271,6 +292,7 @@ Public Class FilePropertiesForm
         _IsDirectory = DirectoryEntry.IsDirectory And Not DirectoryEntry.IsVolumeName
         _IsVolumeLabel = DirectoryEntry.IsValidVolumeName
         _Deleted = DirectoryEntry.IsDeleted
+        _HasLFN = DirectoryEntry.HasLFN
 
         Dim Caption As String
         Dim Maxlength As Integer
@@ -286,6 +308,8 @@ Public Class FilePropertiesForm
             ReDim FileNameHex(Maxlength - 1)
             DirectoryEntry.FileName.CopyTo(FileNameHex, 0)
             DirectoryEntry.Extension.CopyTo(FileNameHex, 8)
+            FlowLayoutFileNameType.Visible = False
+            RadioFileShort.Checked = True
         Else
             Maxlength = 8
             TxtExtension.Visible = True
@@ -298,6 +322,12 @@ Public Class FilePropertiesForm
                 Caption = "Directory Name"
             Else
                 Caption = "File Name"
+            End If
+            FlowLayoutFileNameType.Visible = Not _Deleted
+            If Not _Deleted And _HasLFN Then
+                RadioFileLong.Checked = True
+            Else
+                RadioFileShort.Checked = True
             End If
         End If
 
@@ -314,6 +344,12 @@ Public Class FilePropertiesForm
         Else
             TxtFile.Mask = ">" & Strings.StrDup(Maxlength, "C")
             TxtFile.Text = FileName
+        End If
+
+        If _HasLFN Then
+            TxtLFN.Text = DirectoryEntry.GetLongFileName
+        Else
+            TxtLFN.Text = DirectoryEntry.GetFullFileName
         End If
 
         GroupFileName.Text = Caption
@@ -345,6 +381,8 @@ Public Class FilePropertiesForm
         ChkReadOnly.Checked = DirectoryEntry.IsReadOnly
         ChkHidden.Checked = DirectoryEntry.IsHidden
         ChkSystem.Checked = DirectoryEntry.IsSystem
+
+        ToggleFileType(True)
     End Sub
 
     Private Sub SetCreatedDateValue(Value? As Date)
@@ -394,6 +432,23 @@ Public Class FilePropertiesForm
         Button.BackColor = IIf(Enabled, Color.LightGreen, SystemColors.Control)
         Button.UseVisualStyleBackColor = Not Enabled
         ToggleRelatedControls(Button)
+    End Sub
+
+    Private Sub ToggleFileType(SetFocus As Boolean)
+        If RadioFileShort.Checked Then
+            TableLayoutPanelFile.Visible = True
+            TxtLFN.Visible = False
+            If SetFocus Then
+                TxtFile.Select()
+            End If
+        Else
+            TxtLFN.Visible = True
+            TableLayoutPanelFile.Visible = False
+            If SetFocus Then
+                TxtLFN.SelectionStart = TxtLFN.Text.Length
+                TxtLFN.Select()
+            End If
+        End If
     End Sub
 
     Private Sub ToggleRelatedControls(Button As Button)
@@ -558,6 +613,31 @@ Public Class FilePropertiesForm
         Dim b = DiskImage.UnicodeToCodePage437(Value)
 
         MskFileHex.SetHex(b)
+    End Sub
+
+    Private Sub RadioFile_CheckedChanged(sender As Object, e As EventArgs) Handles RadioFileShort.CheckedChanged, RadioFileLong.CheckedChanged
+        If _SuppressEvent Then
+            Exit Sub
+        End If
+
+        ToggleFileType(False)
+    End Sub
+
+    Private Sub TxtLFN_Validating(sender As Object, e As CancelEventArgs) Handles TxtLFN.Validating
+        Dim InvalidChars = IO.Path.GetInvalidFileNameChars
+        Dim Value = TxtLFN.Text
+        For i = 0 To Value.Length - 1
+            If InvalidChars.Contains(Value.Substring(i, 1)) Then
+                e.Cancel = True
+                Dim msg As String = "A file name can't contain any of the following characters:" & vbCrLf & StrDup(16, " ") & "\ / :  * ? "" < > |"
+                MsgBox(msg, MsgBoxStyle.Exclamation)
+                Exit For
+            End If
+        Next
+    End Sub
+
+    Private Sub TxtLFN_LostFocus(sender As Object, e As EventArgs) Handles TxtLFN.LostFocus
+        TxtLFN.Text = Trim(TxtLFN.Text)
     End Sub
 #End Region
 

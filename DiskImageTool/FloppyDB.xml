@@ -269,8 +269,8 @@
     </release>
   </title>
   <title name="Adventure in Serenia" publisher="IBM" os="PC Booter">
-    <release year="1982" media="160K" status="U" cp="Non-standard Sector Sizes">
-      <disk md5="BF5B86FDE928E56898882075BA3B7A6C"/>
+    <release year="1982" media="160K" status="U">
+      <disk md5="BF5B86FDE928E56898882075BA3B7A6C" md5_cp="66148541C2C9DEEBA874CA10B0565901" cp="Non-standard Sector Sizes"/>
     </release>
   </title>
   <title name="Air Bucks" publisher="Impressions Games">
@@ -280,7 +280,7 @@
   </title>
   <title name="Airborne Ranger" publisher="MicroProse Software, Inc.">
     <release year="1988" version="441.01" media="720K" status="V">
-      <disk md5="9F375F468C39287CAC6F536EDD065E5F" md5_cp="F65C78E73303E5F241B3C6960066B2B6" cp="MicroProse Cloak"/>
+      <disk md5="9F375F468C39287CAC6F536EDD065E5F" md5_cp="B49D344D2D452B1F3F96C3D88B895F5A" cp="MicroProse Cloak"/>
     </release>
     <release year="1988" version="441.03" media="360K" status="V">
       <disk md5="2B5FF63EAFDD33C82645C93ED4BEDFCF" md5_cp="2EE0C81C5C96A2C77971DA04F8F79C9B" cp="MicroProse Cloak"/>
@@ -976,6 +976,11 @@
       <disk md5="82C7684597BD42E8B8211353F2D075DA"/>
     </release>
   </title>
+  <title name="Borrowed Time" publisher="Activision, Inc.">
+    <release year="1985" media="320K" status="V" os="PC Booter">
+      <disk md5="942E4F97B8CE8F698A8D52F8B3D48636" cp="Key Disk"/>
+    </release>
+  </title>
   <title name="Bram Stoker's Dracula" publisher="Psygnosis Limited">
     <release year="1993" media="1.44M" status="U" region="UK">
       <disk md5="41A68D1F5CCBFA7924BB8D705DFB50D3"/>
@@ -1559,7 +1564,7 @@
   </title>
   <title name="Crime and Punishment" publisher="Mindscape, Inc.">
     <release year="1984" media="160K" status="V">
-      <disk md5="883B42F3862697AF4AA755A11CB97A47" md5_cp="F86D13D3CA8A27F9ADEDD8E15B4ABE5F" cp="Data Encore"/>
+      <disk md5="883B42F3862697AF4AA755A11CB97A47" md5_cp="162888D3B2EE5F9F2C792503CAE5CAE1" cp="Data Encore"/>
     </release>
   </title>
   <title name="Crime Wave" publisher="Access Software, Inc.">
@@ -1587,7 +1592,7 @@
   </title>
   <title name="Crossfire" publisher="Sierra On-Line, Inc." os="PC Booter">
     <release year="1982" version="CGA" media="160K" status="V">
-      <disk md5="DE63A80C5E37CE778B85A522132345B1" cp="On-Line Systems"/>
+      <disk md5="DE63A80C5E37CE778B85A522132345B1" md5_cp="99390A54DB63362FD0B3814531C508B5" cp="On-Line Systems"/>
     </release>
     <release year="1984-06" version="PCJr" media="180K" status="V">
       <disk md5="34A94FE8913BA53506A48CF77284029C" md5_cp="BCE94D05053C3D7DB77B8E1615443E6C" cp="Formaster Copylock v1/v2.0"/>
@@ -1640,7 +1645,7 @@
   </title>
   <title name="Cutthroats" publisher="Infocom, Inc.">
     <release year="1984" version="r23, Serial 840809, Int. 3D" media="160K" status="V" os="PC Booter">
-      <disk md5="7CFE9860FD997A99E030607474EA3895" cp="Non-standard Sector Sizes"/>
+      <disk md5="7CFE9860FD997A99E030607474EA3895" md5_cp="B2ED175996D2878AAFF555F746054BF7" cp="Non-standard Sector Sizes"/>
     </release>
   </title>
   <title name="Cyber Empires" publisher="Strategic Simulations, Inc.">
@@ -1783,13 +1788,13 @@
   </title>
   <title name="Deadline" publisher="Infocom, Inc.">
     <release year="1982" version="r22, Serial 820809" media="160K" status="U" os="PC Booter">
-      <disk md5="0F4C642BD11A7A682C4940CB1DB1301D" cp="Non-standard Sector Sizes"/>
+      <disk md5="0F4C642BD11A7A682C4940CB1DB1301D" md5_cp="B95460FF93363CE799E3853656DF6E40" cp="Non-standard Sector Sizes"/>
     </release>
     <release year="1982" version="r26, Serial 821108, Int. 3A" media="160K" status="U" os="PC Booter">
-      <disk md5="7903BA78E911DF2048DF59C872D48249" cp="Non-standard Sector Sizes"/>
+      <disk md5="7903BA78E911DF2048DF59C872D48249" md5_cp="AB9259A9C129B40E29ACF390A235A993" cp="Non-standard Sector Sizes"/>
     </release>
     <release year="1983" version="r27, Serial 831005, Int. 3B" media="160K" status="U" os="PC Booter">
-      <disk md5="E861DA1F03DEC84480949045CE0FD599" cp="Non-standard Sector Sizes"/>
+      <disk md5="E861DA1F03DEC84480949045CE0FD599" md5_cp="C8EF0E828579E20748C9994650D21805" cp="Non-standard Sector Sizes"/>
     </release>
     <release year="1985" version="r27, Serial 831005, Int. 3L" media="180K" status="V">
       <disk md5="37EBEE4335B06771921C0216ADF4EADA"/>
@@ -1825,7 +1830,7 @@
   </title>
   <title name="Decision in the Desert" publisher="MicroProse Software, Inc.">
     <release year="1985" version="419.02" media="320K" status="V">
-      <disk md5="94AAC42F0BBC381F6F8D2ED5A12BBC32" cp="Xidex Magnetics (XEMAG) XELOK v2"/>
+      <disk md5="94AAC42F0BBC381F6F8D2ED5A12BBC32" md5_cp="8C0E36AA24F5DEC695D76BC2579A8544" cp="Xidex Magnetics (XEMAG) XELOK v2"/>
     </release>
   </title>
   <title name="Defender" publisher="Atarisoft">
@@ -1835,7 +1840,7 @@
   </title>
   <title name="Defender of the Crown" publisher="Mindscape, Inc.">
     <release year="1987" media="360K" status="V">
-      <disk md5="0EF0A94125BEC98B79FC2152ADE86378"/>
+      <disk md5="0EF0A94125BEC98B79FC2152ADE86378" cp="Mindscape DEM v1b"/>
     </release>
   </title>
   <title name="Demon Stalkers" publisher="Electronic Arts, Inc.">
@@ -1845,8 +1850,8 @@
     </release>
   </title>
   <title name="Demon's Forge" publisher="Mastertronic Ltd.">
-    <release year="1987" media="160K" status="V" os="PC Booter" cp="Key Disk">
-      <disk md5="CB2F3EF07FC4DD9B14E9ED067928E65E"/>
+    <release year="1987" media="160K" status="V" os="PC Booter">
+      <disk md5="CB2F3EF07FC4DD9B14E9ED067928E65E" md5_cp="3F0B8006B2E280087989FDFD2393F81C" cp="Key Disk"/>
     </release>
   </title>
   <title name="Demon's Tomb: The Awakening" publisher="Mastertronic Ltd.">
@@ -1877,7 +1882,7 @@
   </title>
   <title name="D-Generation" publisher="Mindscape, Inc.">
     <release year="1991" version="1.00" media="720K" status="V">
-      <disk md5="FE0553EF933D1041D08FBD01063064AA" disk="1" cp="Key Disk"/>
+      <disk md5="FE0553EF933D1041D08FBD01063064AA" md5_cp="210B68651B628A7D07A29F0131ACF69D" disk="1" cp="Key Disk"/>
       <disk md5="129B32A6A19C03F0FAB86F778BB0DC9F" disk="2"/>
     </release>
   </title>
@@ -2311,10 +2316,10 @@
   </title>
   <title name="Enchanter" publisher="Infocom, Inc.">
     <release year="1983" version="r10, Serial 830810, Int. 3A" media="160K" status="U" os="PC Booter">
-      <disk md5="238508E805F6D661F39651923BF5C6C0" cp="Non-standard Sector Sizes"/>
+      <disk md5="238508E805F6D661F39651923BF5C6C0" md5_cp="A4928174C59FD850F2C56100132EF20D" cp="Non-standard Sector Sizes"/>
     </release>
     <release year="1983" version="r16, Serial 831118, Int. 3B" media="160K" status="U" os="PC Booter">
-      <disk md5="3FCAE82C72F3748D22D248C275E40D1B" cp="Non-standard Sector Sizes"/>
+      <disk md5="3FCAE82C72F3748D22D248C275E40D1B" md5_cp="2E87471080F04379C8D643CBA6EBE211" cp="Non-standard Sector Sizes"/>
     </release>
     <release year="1985" version="r24, Serial 851118, Int. 3M2" media="180K" status="V">
       <disk md5="08D1B6C123E02AF8791178B7F74D0EAC"/>
@@ -2469,11 +2474,11 @@
         <disk md5="5786077609B52B2E5CCA2671D219A9D7" disk="B" status="V"/>
       </media>
       <media media="720K" status="V">
-        <disk md5="A2DD9B3CB3EBB72A8BB1BFFD991DFA74" cp="MicroProse Cloak"/>
+        <disk md5="A2DD9B3CB3EBB72A8BB1BFFD991DFA74" md5_cp="3C4B22FDF57BF8B1DBDE7211D132132B" cp="MicroProse Cloak"/>
       </media>
     </release>
     <release year="1989" version="451.02" media="360K" status="U">
-      <disk md5="0B1E0C478636DD440E944480BB92DAF3" disk="A" cp="MicroProse Cloak"/>
+      <disk md5="0B1E0C478636DD440E944480BB92DAF3" md5_cp="CC6ED49A7B2C23B36778122948FBF0F9" disk="A" cp="MicroProse Cloak"/>
       <disk md5="8E52EA3EDB78A51E3B4F82B5B494183D" disk="B" status="V"/>
     </release>
   </title>
@@ -2520,12 +2525,12 @@
     </release>
     <release year="1988" version="435.02" status="U">
       <media media="360K">
-        <disk md5="0A9AA37EAB6FA1E9E58DA6FEB580CEC7" md5_cp="B660453F3A2B3C3005CF8DF6AFEE5643" disk="A" cp="MicroProse Cloak"/>
+        <disk md5="0A9AA37EAB6FA1E9E58DA6FEB580CEC7" md5_cp="4F58329940DB007C8F8439157544489D" disk="A" cp="MicroProse Cloak"/>
         <disk md5="C3E01DB13AF788A45CBE135A723B07CA" disk="B" status="V"/>
         <disk md5="BDB8B87D88784846BDC0362DE5F84D6D" disk="C"/>
       </media>
       <media media="720K">
-        <disk md5="86AB2554F00A82B42EE7D47534CF8F63" md5_cp="5F5E913C3C768DC3B6E3115C087488FF" disk="A" cp="MicroProse Cloak"/>
+        <disk md5="86AB2554F00A82B42EE7D47534CF8F63" md5_cp="5E5D197EDF6D42C5AE8B202E65B2D425" disk="A" cp="MicroProse Cloak"/>
         <disk md5="125E63AFD3ED691714C639AF648D66F5" disk="B" status="V"/>
       </media>
     </release>
@@ -2777,7 +2782,7 @@
   </title>
   <title name="Frogger" publisher="Sierra On-Line, Inc." os="PC Booter">
     <release year="1983" media="160K" status="V">
-      <disk md5="087623E073D215EE35FD1996B258B0AD" cp="On-Line Systems"/>
+      <disk md5="087623E073D215EE35FD1996B258B0AD" md5_cp="A68B4688289B1611A8D58F1721F87769" cp="On-Line Systems"/>
     </release>
   </title>
   <title name="Front Page Sports: Baseball '94" publisher="Sierra On-Line, Inc.">
@@ -3157,7 +3162,7 @@
         <disk md5="03FA256D3505801667D05417EE9B13F7" disk="B"/>
       </media>
       <media media="720K" status="U">
-        <disk md5="B31475607FFB41F90F6EF7A63DF0F8D7" cp="Microprose Protection 1"/>
+        <disk md5="B31475607FFB41F90F6EF7A63DF0F8D7" md5_cp="29DF0CB0A36EC75D38A6DFAE0833D7F7" cp="Microprose Protection 1"/>
       </media>
     </release>
   </title>
@@ -3938,7 +3943,7 @@
   </title>
   <title name="Infidel" publisher="Infocom, Inc.">
     <release year="1983" version="r22, Serial 830916, Int. 3A" media="160K" status="U" os="PC Booter">
-      <disk md5="5AD2F10843CD724B8526E282AF121207" cp="Non-standard Sector Sizes"/>
+      <disk md5="5AD2F10843CD724B8526E282AF121207" md5_cp="B6A6CE20DAFD55ACD5A7008FAC5AC537" cp="Non-standard Sector Sizes"/>
     </release>
     <release year="1985" version="r22, Serial 830916, Int. 3L" media="180K" status="V">
       <disk md5="49BA937B95B0BCC8ECC10429C42DE73E"/>
@@ -4266,7 +4271,7 @@
   </title>
   <title name="King's Quest" publisher="Sierra On-Line, Inc.">
     <release year="1984" version="PCjr" media="360K" status="V" publisher="IBM" os="PC Booter">
-      <disk md5="2A1C283F576D51185EB9EE5F6B3F1DC1" cp="Non-standard Sector Sizes"/>
+      <disk md5="2A1C283F576D51185EB9EE5F6B3F1DC1" md5_cp="FD5C330EE8CE95CE5011E3630A210EAB" cp="Non-standard Sector Sizes"/>
     </release>
     <release year="1984-05" version="CGA" media="360K" status="V" os="PC Booter">
       <disk md5="232F5B5C607F72B6DFADB2C935653F48" md5_cp="2290A2EE176D9EF8C5B39CBBF951F2A7" cp="Formaster Copylock v1/v2.0"/>
@@ -6971,10 +6976,10 @@
   </title>
   <title name="Planetfall" publisher="Infocom, Inc.">
     <release year="1983" version="r26, Serial 831014, Int. 3B" media="160K" status="U" os="PC Booter">
-      <disk md5="E84A7B1A8C948100EC6786CEDDC93B06" cp="Non-standard Sector Sizes"/>
+      <disk md5="E84A7B1A8C948100EC6786CEDDC93B06" md5_cp="5631DBF383B10E1C7478D5FB7287C822" cp="Non-standard Sector Sizes"/>
     </release>
     <release year="1984" version="r29, Serial 840118, Int. 3D" media="160K" status="U" os="PC Booter">
-      <disk md5="DC063EFF3D0F48D11F01EA2270F4C443" cp="Non-standard Sector Sizes"/>
+      <disk md5="DC063EFF3D0F48D11F01EA2270F4C443" md5_cp="462225760C56A9F0209D2C337027E691" cp="Non-standard Sector Sizes"/>
     </release>
     <release year="1985" version="r29, Serial 840118, Int. 3L" media="180K" status="V">
       <disk md5="17C3A3B6EECA723834B063B0C2D53112"/>
@@ -7788,7 +7793,7 @@
         <disk md5="124C87294649707B0D1F5FF5142D53D0" md5_cp="76D12F8345E718BEFB41A635810DD26E" cp="MicroProse Cloak"/>
       </media>
       <media media="720K">
-        <disk md5="8B130598F065E439C17D0492D3D6ED8D" md5_cp="F80DD49929BB7DFC35835711AE0EDC87" cp="MicroProse Cloak"/>
+        <disk md5="8B130598F065E439C17D0492D3D6ED8D" md5_cp="2A6D059A3AEBFF0F323F7B2EE737DC21" cp="MicroProse Cloak"/>
       </media>
     </release>
   </title>
@@ -8036,7 +8041,7 @@
   </title>
   <title name="Seastalker" publisher="Infocom, Inc.">
     <release year="1984" version="r15, Serial 840501, Int. 3C" media="160K" status="U" os="PC Booter">
-      <disk md5="F01178E593E318D79F25818B6C98FAAC" cp="Non-standard Sector Sizes"/>
+      <disk md5="F01178E593E318D79F25818B6C98FAAC" md5_cp="9AAE9B53DF75BC91A2C62D8F716F0B85" cp="Non-standard Sector Sizes"/>
     </release>
     <release year="1985" version="r16, Serial 850603, Int. 3L" media="180K" status="V">
       <disk md5="8C608E03EE3E0F601AAFC1F8165492EE"/>
@@ -8341,7 +8346,7 @@
         <disk md5="5B7D8296EB9F4372A87641D1B31B3E93" disk="A" cp="Microprose Protection 1"/>
       </media>
       <media media="720K">
-        <disk md5="824BECA8DE2ED1A340D6566320B78467" cp="Microprose Protection 1"/>
+        <disk md5="824BECA8DE2ED1A340D6566320B78467" md5_cp="D0A5AFF66052D2EDFAFDC88904056BC8" cp="Microprose Protection 1"/>
       </media>
     </release>
   </title>
@@ -8815,10 +8820,10 @@
   </title>
   <title name="Sorcerer" publisher="Infocom, Inc.">
     <release year="1984" version="r4, Serial 840131, Int. 3B" media="160K" status="U" os="PC Booter">
-      <disk md5="BC2F0F96FCB70DAB9A2850D6388B95DF" cp="Non-standard Sector Sizes"/>
+      <disk md5="BC2F0F96FCB70DAB9A2850D6388B95DF" md5_cp="16D47C54814099AEFB6AD2B7A034690D" cp="Non-standard Sector Sizes"/>
     </release>
     <release year="1984" version="r6, Serial 840508, Int. 3D" media="160K" status="U" os="PC Booter">
-      <disk md5="183C00687F1334BCE2FE79BDEE3B7E6A" cp="Non-standard Sector Sizes"/>
+      <disk md5="183C00687F1334BCE2FE79BDEE3B7E6A" md5_cp="1E9750EF2EEFD504F41C523F66CD3B13" cp="Non-standard Sector Sizes"/>
     </release>
     <release year="1985" version="r6, Serial 840508, Int. 3L" media="180K" status="V">
       <disk md5="78D2BE98B9362BC77F14B6804EDA004E"/>
@@ -9588,7 +9593,7 @@
   </title>
   <title name="Starcross" publisher="Infocom, Inc.">
     <release year="1982" version="r17, Serial 821021, Int. 3A" media="160K" status="U" os="PC Booter">
-      <disk md5="6BD011439FB48C2A638BDC0231B6272D" cp="Non-standard Sector Sizes"/>
+      <disk md5="6BD011439FB48C2A638BDC0231B6272D" md5_cp="6D75B232CFB323B1BAF7443F73C091CB" cp="Non-standard Sector Sizes"/>
     </release>
     <release year="1985" version="r17, Serial 821021, Int. 3L" media="180K" status="V">
       <disk md5="A9DDE5ADF03C2ABD9F6075C309C5F6F3"/>
@@ -9908,7 +9913,7 @@
   </title>
   <title name="Suspect" publisher="Infocom, Inc.">
     <release year="1984" version="r14, Serial 841005, Int. 3D" media="160K" status="U" os="PC Booter">
-      <disk md5="DEA65EB9694AF02D78FCFBB880F046C5" cp="Non-standard Sector Sizes"/>
+      <disk md5="DEA65EB9694AF02D78FCFBB880F046C5" md5_cp="62F3CFCC4B6A557DD1E5E78693F4CCAB" cp="Non-standard Sector Sizes"/>
     </release>
 	<release year="1985" version="r14, Serial 841005, Int. L" media="180K" status="V">
       <disk md5="27BC0A6636A7ED00DF2198D56CEC8C40"/>
@@ -9916,7 +9921,7 @@
   </title>
   <title name="Suspended" publisher="Infocom, Inc.">
     <release year="1983" version="r8, Serial 830521, Int. 3A" media="160K" status="U" os="PC Booter">
-      <disk md5="85083D8EB2966872850D9F3EF336D5FE" cp="Non-standard Sector Sizes"/>
+      <disk md5="85083D8EB2966872850D9F3EF336D5FE" md5_cp="7D4B3397D8EB0D33AB45390937315FC5" cp="Non-standard Sector Sizes"/>
     </release>
     <release year="1985" version="r8, Serial 830521, Int. 3L" media="180K" status="V">
       <disk md5="577151B9A9167E023F3F64C0719EC328"/>
@@ -10222,7 +10227,7 @@
   </title>
   <title name="The Chessmaster 3000" publisher="The Software Toolworks, Inc.">
     <release year="1992" version="1.03" media="720K" status="V">
-      <disk md5="092442FCEE42BB19AFBC3A620EA4EFEE" disk="1" cp="Key Disk"/>
+      <disk md5="092442FCEE42BB19AFBC3A620EA4EFEE" md5_cp="08F0A7BCEB9D26E41244E2DA7499AB69" disk="1" cp="Key Disk"/>
       <disk md5="2C001CEE338AFF18016E46F570D48B56" disk="2"/>
       <disk md5="BBF9457B583EFF2A9E46ECDC77AD6BBE" disk="3"/>
     </release>
@@ -10351,11 +10356,11 @@
   <title name="The Fidelity Chessmaster 2100" publisher="The Software Toolworks, Inc.">
     <release year="1989" version="1.15" status="V">
       <media media="360K">
-        <disk md5="9017FB8666ADA78EBBFBF00B967CCA2D" disk="1" cp="Key Disk"/>
+        <disk md5="9017FB8666ADA78EBBFBF00B967CCA2D" md5_cp="8390646F5602BA7D10FE139EC38E9CE7" disk="1" cp="Key Disk"/>
         <disk md5="C1A43308C81FB5E67D6800E4C9AD19EC" disk="2"/>
       </media>
       <media media="720K">
-        <disk md5="E5B14B4B8A805795CC35D68E02716DFD" cp="Key Disk"/>
+        <disk md5="E5B14B4B8A805795CC35D68E02716DFD" md5_cp="16E331E69033090E287AF96710FFD3D6" cp="Key Disk"/>
       </media>
     </release>
   </title>
@@ -10367,7 +10372,7 @@
   </title>
   <title name="The Four-in-One Infocom Sampler" publisher="Infocom, Inc.">
     <release year="1984" version="r26, Serial 840731, Int. 3D" media="160K" status="U" os="PC Booter">
-      <disk md5="B409F12889D1440AE47FE2F77DEBEBFE" cp="Non-standard Sector Sizes"/>
+      <disk md5="B409F12889D1440AE47FE2F77DEBEBFE" md5_cp="F971D000993EEC367B71A858DDE64F59" cp="Non-standard Sector Sizes"/>
     </release>
     <release year="1985" version="r58, Serial 850402, Int. 3L" media="180K" status="V">
       <disk md5="F879A3D4B65ECEFF2FCD40FC4B320D5D"/>
@@ -10422,10 +10427,10 @@
   </title>
   <title name="The Hitchhiker's Guide to the Galaxy" publisher="Infocom, Inc.">
     <release year="1984" version="r47, Serial 840914, Int. 3D" media="160K" status="U" os="PC Booter">
-      <disk md5="730AD344E67227C4167D68992D34A031" cp="Non-standard Sector Sizes"/>
+      <disk md5="730AD344E67227C4167D68992D34A031" md5_cp="F48BBE85E8412D9B8DA539FDF69BFC92" cp="Non-standard Sector Sizes"/>
     </release>
     <release year="1985" version="r56, Serial 841221, Int. 3D" media="160K" status="U" os="PC Booter">
-      <disk md5="4B0987ABF7FAAB10DA745968A88876A0" cp="Non-standard Sector Sizes"/>
+      <disk md5="4B0987ABF7FAAB10DA745968A88876A0" md5_cp="D349525EC8FC30AF1F67362D27DAA7B4" cp="Non-standard Sector Sizes"/>
     </release>
     <release year="1985" version="r56, Serial 841221, Int. 3L" media="180K" status="U">
       <disk md5="B49C2715476761DD78579D1D11F8108F"/>
@@ -10967,10 +10972,10 @@
   </title>
   <title name="The Witness" publisher="Infocom, Inc.">
     <release year="1983" version="r18, Serial 830910, Int. 3A" media="160K" status="U" os="PC Booter">
-      <disk md5="5FB11A8FF2F83611085907C2F67ABEB9" cp="Non-standard Sector Sizes"/>
+      <disk md5="5FB11A8FF2F83611085907C2F67ABEB9" md5_cp="251C3E389DD13A6B5A0219A653EC4D8A" cp="Non-standard Sector Sizes"/>
     </release>
     <release year="1983" version="r21, Serial 831208, Int. 3B" media="160K" status="V" os="PC Booter">
-      <disk md5="77D63F127495B58EA5B4B9F6CFF97DB5" cp="Non-standard Sector Sizes"/>
+      <disk md5="77D63F127495B58EA5B4B9F6CFF97DB5" md5_cp="7435A998DAB2D07FC57B62FC9156E4FF" cp="Non-standard Sector Sizes"/>
     </release>
     <release year="1985" version="r22, Serial 840924, Int. 3L" media="180K" status="V">
       <disk md5="128418CAA95AFF3E0EAFFE33B94E6B3D"/>
@@ -11263,7 +11268,7 @@
   </title>
   <title name="Ultima III: Exodus" publisher="ORIGIN Systems, Inc.">
     <release year="1987" media="360K" status="V">
-      <disk md5="2B98186090D4A2BFD559AEDB5E06D72A" cp="Xidex Magnetics (XEMAG) XELOK v2"/>
+      <disk md5="2B98186090D4A2BFD559AEDB5E06D72A" md5_cp="DAA0BC04BF59D216421E30D6B8561619" cp="Xidex Magnetics (XEMAG) XELOK v2"/>
     </release>
   </title>
   <title name="Ultima IV: Quest of the Avatar" publisher="ORIGIN Systems, Inc.">
@@ -11457,7 +11462,7 @@
   </title>
   <title name="Ulysses and the Golden Fleece" publisher="Sierra On-Line, Inc." os="PC Booter">
     <release year="1982" media="160K" status="V">
-      <disk md5="E6403BC491486C1138A027CDD0D8DFC3" disk="1" cp="On-Line Systems"/>
+      <disk md5="E6403BC491486C1138A027CDD0D8DFC3" md5_cp="856DFB93A1ADC212D27C2A0FA598020C" disk="1" cp="On-Line Systems"/>
       <disk md5="46508AFCF3D308518735863D55635298" disk="2"/>
     </release>
   </title>
@@ -12170,18 +12175,18 @@
   </title>
   <title name="Zork I Demo" publisher="Infocom, Inc.">
     <release year="1984" version="r15, Serial 840330, Int. 3B" media="160K" status="V" os="PC Booter">
-      <disk md5="A17D0C1BCE9D08A07B9C4943300E338C" cp="Non-standard Sector Sizes"/>
+      <disk md5="A17D0C1BCE9D08A07B9C4943300E338C" md5_cp="E89C7A90F907E82609B2CA42E63E4CBA" cp="Non-standard Sector Sizes"/>
     </release>
   </title>
   <title name="Zork II: The Wizard of Frobozz" publisher="Infocom, Inc.">
     <release year="1982" version="r19, Serial 820721" media="160K" status="V" os="PC Booter">
-      <disk md5="C2C22A0D8C2D7A4CE8CC8097F5BB2F7A" cp="Non-standard Sector Sizes"/>
+      <disk md5="C2C22A0D8C2D7A4CE8CC8097F5BB2F7A" md5_cp="29AF012F0D0ECBC2A027F7E93617F202" cp="Non-standard Sector Sizes"/>
     </release>
     <release year="1983" version="r22, Serial 830331, Int. 3B" media="160K" status="U" os="PC Booter">
-      <disk md5="01497B98A4E2525CA6EE3F3B7EFF35F3" cp="Non-standard Sector Sizes"/>
+      <disk md5="01497B98A4E2525CA6EE3F3B7EFF35F3" md5_cp="02FED421BD7FC2978D83627918DFDDE8" cp="Non-standard Sector Sizes"/>
     </release>
     <release year="1984" version="r48, Serial 840904, Int. 3D" media="160K" status="U" os="PC Booter">
-      <disk md5="6C68DAC06DE6AA2082F4F45580A3D603" cp="Non-standard Sector Sizes"/>
+      <disk md5="6C68DAC06DE6AA2082F4F45580A3D603" md5_cp="EABDCB1011B7753D8460E8544C7B5E7C" cp="Non-standard Sector Sizes"/>
     </release>
     <release year="1985" version="r48, Serial 840904, Int. 3L" media="180K" status="V">
       <disk md5="AA255D7CFE77E77C0784CC6C7155CEB2"/>
@@ -12200,10 +12205,10 @@
   </title>
   <title name="Zork III: The Dungeon Master" publisher="Infocom, Inc.">
     <release year="1983" version="r16, Serial 830410, Int. 3B" media="160K" status="V" os="PC Booter">
-      <disk md5="9BF1088D14CAA84B879B624B79C1B4CA" cp="Non-standard Sector Sizes"/>
+      <disk md5="9BF1088D14CAA84B879B624B79C1B4CA" md5_cp="07718C9DA20AEAB2B8E24053F1B63E8C" cp="Non-standard Sector Sizes"/>
     </release>
     <release year="1984" version="r17, Serial 840727, Int. 3D" media="160K" status="V" os="PC Booter">
-      <disk md5="6D8A4EB64CBEF3FDD136752A14FFBE3E" cp="Non-standard Sector Sizes"/>
+      <disk md5="6D8A4EB64CBEF3FDD136752A14FFBE3E" md5_cp="84BAE32B6A8B9901DE7BB33BD6E8F73F" cp="Non-standard Sector Sizes"/>
     </release>
     <release year="1985" version="r17, Serial 840727, Int. 3L" media="180K" status="V">
       <disk md5="E1A716BF27CCF59D427382A8EBED7222"/>
@@ -12237,16 +12242,16 @@
   </title>
   <title name="Zork: The Great Underground Empire" publisher="Infocom, Inc.">
     <release year="1982" version="r26, Serial 820803" media="160K" status="V" os="PC Booter">
-      <disk md5="F4457C09D76F3E9E2FB341C025123213" cp="Non-standard Sector Sizes"/>
+      <disk md5="F4457C09D76F3E9E2FB341C025123213" md5_cp="051B6821AEA5C0AAF0D5B5EC98070774" cp="Non-standard Sector Sizes"/>
     </release>
     <release year="1983" version="r30, Serial 830330, Int. 3A" media="160K" status="V" os="PC Booter">
-      <disk md5="5E7BB799ED98F59E965F39A66FA1CC6A" cp="Non-standard Sector Sizes"/>
+      <disk md5="5E7BB799ED98F59E965F39A66FA1CC6A" md5_cp="07CDC9B9E2696BD9811F7F455D9790CA" cp="Non-standard Sector Sizes"/>
     </release>
     <release year="1983" version="r75, Serial 830929, Int. 3B" media="160K" status="U" os="PC Booter">
-      <disk md5="F2855A967870284D3ADF508979535CAA" cp="Non-standard Sector Sizes"/>
+      <disk md5="F2855A967870284D3ADF508979535CAA" md5_cp="742C0E664BD645336A25ADA7B3B07FE5" cp="Non-standard Sector Sizes"/>
     </release>
     <release year="1984" version="r88, Serial 840726, Int. 3D" media="160K" status="V" os="PC Booter">
-      <disk md5="E0925A748A640222AA33A76343C565BE" cp="Non-standard Sector Sizes"/>
+      <disk md5="E0925A748A640222AA33A76343C565BE" md5_cp="DA6316C1257F6B8F1E5BBED8AD465A4A" cp="Non-standard Sector Sizes"/>
     </release>
     <release year="1985" version="r88, Serial 840726, Int. 3L" media="180K" status="V">
       <disk md5="0766C190723B49AFEAD59F23DE83A52E"/>

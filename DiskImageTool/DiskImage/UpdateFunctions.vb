@@ -53,7 +53,7 @@
         Public Function DirectoryEntryCanDelete(DirectoryEntry As DiskImage.DirectoryEntry, Clear As Boolean) As Boolean
             If DirectoryEntry.IsDeleted Then
                 Return False
-            ElseIf Clear And Not DirectoryEntry.IsValidFile Then
+            ElseIf Clear And Not DirectoryEntry.IsValidFile And Not DirectoryEntry.IsValidDirectory Then
                 Return False
             ElseIf DirectoryEntry.IsValidDirectory Then
                 Return DirectoryEntry.SubDirectory.Data.FileCount - DirectoryEntry.SubDirectory.Data.DeletedFileCount = 0

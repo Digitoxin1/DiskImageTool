@@ -138,6 +138,20 @@
             End Get
         End Property
 
+        Public Function GetFreeClusters(ClustersRequired As UShort) As SortedSet(Of UShort)
+            Dim Clusterlist = GetFreeClusters(FreeClusterEmum.WithoutData)
+
+            If Clusterlist.Count < ClustersRequired Then
+                Clusterlist = GetFreeClusters(FreeClusterEmum.All)
+            End If
+
+            If Clusterlist.Count < ClustersRequired Then
+                Clusterlist = Nothing
+            End If
+
+            Return Clusterlist
+        End Function
+
         Public Function GetFreeClusters(FreeClusterType As FreeClusterEmum) As SortedSet(Of UShort)
             Dim ClusterList = New SortedSet(Of UShort)
             For Each Cluster In _FreeClusters
@@ -202,20 +216,30 @@
         End Function
 
         Public Function HasFreeClusters(FreeClusterType As FreeClusterEmum) As Boolean
-            If FreeClusterType = FreeClusterEmum.All Then
-                Return _FreeClusters.Count > 0
-            Else
-                For Each Cluster In _FreeClusters
-                    Dim ClusterEmpty = IsClusterEmpty(Cluster)
-                    If FreeClusterType = FreeClusterEmum.WithData And Not ClusterEmpty Then
-                        Return True
-                    ElseIf FreeClusterType = FreeClusterEmum.WithoutData And ClusterEmpty Then
-                        Return True
+            For Each Cluster In _FreeClusters
+                Dim ProtectedCluster As Boolean = False
+
+                Dim SectorList = ClusterToSectorList(_BPB, Cluster)
+                For Each Sector In SectorList
+                    If _FileBytes.Data.ProtectedSectors.Contains(Sector) Then
+                        ProtectedCluster = True
+                        Exit For
                     End If
                 Next
 
-                Return False
-            End If
+                If Not ProtectedCluster Then
+                    If FreeClusterType = FreeClusterEmum.All Then
+                        Return True
+                    Else
+                        Dim ClusterEmpty = IsClusterEmpty(Cluster)
+                        If FreeClusterType = FreeClusterEmum.WithData And Not ClusterEmpty Then
+                            Return True
+                        ElseIf FreeClusterType = FreeClusterEmum.WithoutData And ClusterEmpty Then
+                            Return True
+                        End If
+                    End If
+                End If
+            Next
         End Function
 
         Public Function HasValidMediaDescriptor() As Boolean

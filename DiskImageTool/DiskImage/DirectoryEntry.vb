@@ -83,7 +83,7 @@
             Return AddFile(FilePath, ShortFileName, WindowsAdditions, Disk.FAT.FreeClusters, StartingCluster)
         End Function
 
-        Public Function AddFile(FilePath As String, ShortFileName As String, WindowsAdditions As Boolean, ClusterList As SortedSet(Of UShort), Optional StartingCluster As UShort = 2)
+        Public Function AddFile(FilePath As String, ShortFileName As String, WindowsAdditions As Boolean, ClusterList As SortedSet(Of UShort), Optional StartingCluster As UShort = 2) As Boolean
             Dim FileInfo = New IO.FileInfo(FilePath)
             Dim ClusterSize = Disk.BPB.BytesPerCluster
 
@@ -233,6 +233,27 @@
             Return Content
         End Function
 
+        Public Function GetLongFileName() As String
+            Dim FileName As String = ""
+            Dim DirectoryEntry As DirectoryEntry
+            If _Index > 0 Then
+                Dim Index = _Index
+                Do
+                    Index -= 1
+                    DirectoryEntry = _ParentDirectory.DirectoryEntries.Item(Index)
+                    If DirectoryEntry.IsLFN Then
+                        FileName &= DirectoryEntry.GetLFNFileName
+                    End If
+                Loop Until Index = 0 Or Not DirectoryEntry.IsLFN
+            End If
+
+            If FileName.Length > 0 Then
+                Return FileName
+            Else
+                Return GetFullFileName()
+            End If
+        End Function
+
         Public Function GetSizeOnDisk() As UInteger
             Return _FatChain.Clusters.Count * _BPB.BytesPerCluster
         End Function
@@ -307,6 +328,11 @@
         Public Function IsValidVolumeName() As Boolean
             Return IsVolumeName() AndAlso Not (IsHidden() OrElse IsSystem() OrElse IsDirectory() OrElse IsDeleted()) AndAlso StartingCluster = 0
         End Function
+
+        Public Function RemoveLFN() As Boolean
+            Return ParentDirectory.RemoveLFN(_Index)
+        End Function
+
         Public Sub UnDelete(FirstChar As Byte)
             Dim UseTransaction As Boolean = _Disk.BeginTransaction
 

@@ -1,8 +1,28 @@
-﻿
-Namespace DiskImage
+﻿Namespace DiskImage
+    Public Structure AddFileData
+        Dim FilePath As String
+        Dim WindowsAdditions As Boolean
+        Dim Index As Integer
+        Dim EntriesNeeded As Integer
+        Dim ShortFileName As String
+        Dim ClusterList As SortedSet(Of UShort)
+        Dim LFNEntries As List(Of Byte())
+        Dim RequiresExpansion As Boolean
+    End Structure
+
+    Public Structure UpdateLFNData
+        Dim EntriesNeeded As Integer
+        Dim ShortFileName As String
+        Dim CurrentLFNIndex As Integer
+        Dim LFNEntries As List(Of Byte())
+        Dim RequiresExpansion As Boolean
+        Dim DirectoryEntry As DirectoryEntry
+    End Structure
+
     Module Functions
         Public ReadOnly EmptyDirectoryEntry() As Byte = {&HE5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}
         Public ReadOnly InvalidFileChars() As Byte = {&H22, &H2A, &H2B, &H2C, &H2E, &H2F, &H3A, &H3B, &H3C, &H3D, &H3E, &H3F, &H5B, &H5C, &H5D, &H7C}
+
         Public Function BootSectorDescription(Offset As BootSector.BootSectorOffsets) As String
             Select Case Offset
                 Case BootSector.BootSectorOffsets.JmpBoot
@@ -72,53 +92,6 @@ Namespace DiskImage
             Return Checksum
         End Function
 
-        Public Function DOSCleanFileName(FileName As String) As String
-            Dim InvalidChars = New Char() {"+"c, ","c, ";"c, "="c, "["c, "]"c}
-
-            Dim CharList = FileName.ToUpper.ToArray().ToList
-
-            If CharList(0) = "." Then
-                CharList.RemoveAt(0)
-            End If
-            For i = CharList.Count - 1 To 0 Step -1
-                If CharList(i) = " " Then
-                    CharList.RemoveAt(i)
-                ElseIf InvalidChars.Contains(CharList(i)) Then
-                    CharList(i) = "_"c
-                End If
-            Next
-
-            Return New String(CharList.ToArray)
-        End Function
-
-        Public Function DOSTruncateFileName(FileName As String) As String
-            FileName = DOSCleanFileName(FileName)
-
-            Dim FilePart As String = IO.Path.GetFileNameWithoutExtension(FileName)
-            Dim Extension As String = IO.Path.GetExtension(FileName)
-
-            If FilePart.Length > 8 Then
-                FilePart = FilePart.Substring(0, 8)
-            End If
-
-            If Extension.Length > 4 Then
-                Extension = Extension.Substring(0, 4)
-            End If
-
-            Return FilePart & Extension
-        End Function
-
-        Public Function ClusterToSectorList(BPB As BiosParameterBlock, Cluster As UShort) As List(Of UInteger)
-            Dim SectorList As New List(Of UInteger)
-
-            Dim Sector = BPB.ClusterToSector(Cluster)
-            For Index = 0 To BPB.SectorsPerCluster - 1
-                SectorList.Add(Sector + Index)
-            Next
-
-            Return SectorList
-        End Function
-
         Public Function ClusterListToSectorList(BPB As BiosParameterBlock, ClusterList As List(Of UShort)) As List(Of UInteger)
             Dim SectorList As New List(Of UInteger)
 
@@ -127,6 +100,17 @@ Namespace DiskImage
                 For Index = 0 To BPB.SectorsPerCluster - 1
                     SectorList.Add(Sector + Index)
                 Next
+            Next
+
+            Return SectorList
+        End Function
+
+        Public Function ClusterToSectorList(BPB As BiosParameterBlock, Cluster As UShort) As List(Of UInteger)
+            Dim SectorList As New List(Of UInteger)
+
+            Dim Sector = BPB.ClusterToSector(Cluster)
+            For Index = 0 To BPB.SectorsPerCluster - 1
+                SectorList.Add(Sector + Index)
             Next
 
             Return SectorList
@@ -257,6 +241,42 @@ Namespace DiskImage
                     Return Offset.ToString
             End Select
         End Function
+
+        Public Function DOSCleanFileName(FileName As String) As String
+            Dim InvalidChars = New Char() {"+"c, ","c, ";"c, "="c, "["c, "]"c}
+
+            Dim CharList = FileName.ToUpper.ToArray().ToList
+
+            If CharList(0) = "." Then
+                CharList.RemoveAt(0)
+            End If
+            For i = CharList.Count - 1 To 0 Step -1
+                If CharList(i) = " " Then
+                    CharList.RemoveAt(i)
+                ElseIf InvalidChars.Contains(CharList(i)) Then
+                    CharList(i) = "_"c
+                End If
+            Next
+
+            Return New String(CharList.ToArray)
+        End Function
+
+        Public Function DOSTruncateFileName(FileName As String) As String
+            FileName = DOSCleanFileName(FileName)
+
+            Dim FilePart As String = IO.Path.GetFileNameWithoutExtension(FileName)
+            Dim Extension As String = IO.Path.GetExtension(FileName)
+
+            If FilePart.Length > 8 Then
+                FilePart = FilePart.Substring(0, 8)
+            End If
+
+            If Extension.Length > 4 Then
+                Extension = Extension.Substring(0, 4)
+            End If
+
+            Return FilePart & Extension
+        End Function
         Public Function GetBadSectors(BPB As BiosParameterBlock, BadClusters As List(Of UShort)) As HashSet(Of UInteger)
             Dim BadSectors As New HashSet(Of UInteger)
 
@@ -341,6 +361,107 @@ Namespace DiskImage
 
             Return Entries
         End Function
+
+        Public Function InitializeAddFile(Directory As DirectoryBase, FilePath As String, WindowsAdditions As Boolean, Index As Integer) As AddFileData
+            Dim FileInfo = New IO.FileInfo(FilePath)
+            Dim ClustersRequired As UShort = Math.Ceiling(FileInfo.Length / Directory.Disk.BPB.BytesPerCluster)
+
+            Dim AddFileData As AddFileData
+
+            AddFileData.FilePath = FilePath
+            AddFileData.WindowsAdditions = WindowsAdditions
+            AddFileData.Index = Index
+            AddFileData.ShortFileName = Directory.GetAvailableFileName(FileInfo.Name)
+
+            If AddFileData.WindowsAdditions Then
+                AddFileData.LFNEntries = GetLFNDirectoryEntries(FileInfo.Name, AddFileData.ShortFileName)
+                AddFileData.EntriesNeeded = AddFileData.LFNEntries.Count + 1
+            Else
+                AddFileData.LFNEntries = Nothing
+                AddFileData.EntriesNeeded = 1
+            End If
+
+            AddFileData.RequiresExpansion = Directory.Data.AvailableEntryCount < AddFileData.EntriesNeeded
+            If AddFileData.RequiresExpansion Then
+                ClustersRequired += 1
+            End If
+
+            If AddFileData.RequiresExpansion And Directory.IsRootDirectory Then
+                AddFileData.ClusterList = Nothing
+            Else
+                AddFileData.ClusterList = Directory.Disk.FAT.GetFreeClusters(ClustersRequired)
+            End If
+
+            Return AddFileData
+        End Function
+        Public Function InitializeUpdateLFN(Directory As DirectoryBase, FileName As String, Index As Integer) As UpdateLFNData
+            Dim UpdateLFNData As UpdateLFNData
+
+            UpdateLFNData.RequiresExpansion = False
+            UpdateLFNData.DirectoryEntry = Directory.DirectoryEntries.Item(Index)
+            UpdateLFNData.CurrentLFNIndex = Directory.AdjustIndexForLFN(Index)
+            UpdateLFNData.ShortFileName = Directory.GetAvailableFileName(FileName, Index)
+            UpdateLFNData.LFNEntries = GetLFNDirectoryEntries(FileName, UpdateLFNData.ShortFileName)
+
+            Dim CurrentLFNEntryCount = Index - UpdateLFNData.CurrentLFNIndex
+            UpdateLFNData.EntriesNeeded = UpdateLFNData.LFNEntries.Count - CurrentLFNEntryCount
+
+            If UpdateLFNData.EntriesNeeded > 0 Then
+                If Directory.Data.AvailableEntryCount < UpdateLFNData.EntriesNeeded Then
+                    UpdateLFNData.RequiresExpansion = True
+                End If
+            End If
+
+            Return UpdateLFNData
+        End Function
+
+        Public Sub ProcessAddFile(Directory As DirectoryBase, Data As AddFileData)
+            Dim EntryCount = Directory.DirectoryEntries.Count - Directory.Data.AvailableEntryCount
+            Dim Entries As List(Of DirectoryEntry)
+
+            If Data.Index > -1 Then
+                Data.Index = Directory.AdjustIndexForLFN(Data.Index)
+                Directory.ShiftEntries(Data.Index, EntryCount, Data.EntriesNeeded)
+                Entries = Directory.GetEntries(Data.Index, Data.EntriesNeeded)
+            Else
+                Entries = Directory.GetEntries(EntryCount, Data.EntriesNeeded)
+            End If
+
+            Dim DirectoryEntry = Entries(Entries.Count - 1)
+            DirectoryEntry.AddFile(Data.FilePath, Data.ShortFileName, Data.WindowsAdditions, Data.ClusterList)
+
+            If Data.WindowsAdditions Then
+                ProcessLFNEntries(Entries, Data.LFNEntries)
+            End If
+
+            Directory.UpdateEntryCounts()
+        End Sub
+
+        Public Sub ProcessLFNEntries(DirectoryEntries As List(Of DirectoryEntry), LFNEntries As List(Of Byte()))
+            Dim DirectoryEntry = DirectoryEntries(DirectoryEntries.Count - 1)
+            Dim Checksum = DirectoryEntry.GetLFNChecksum
+            For Counter = 0 To LFNEntries.Count - 1
+                Dim Buffer = LFNEntries(Counter)
+                Buffer(13) = Checksum
+                DirectoryEntries(Counter).Data = Buffer
+            Next
+        End Sub
+
+        Public Sub ProcessUpdateLFN(Directory As DirectoryBase, Data As UpdateLFNData)
+            If Data.EntriesNeeded <> 0 Then
+                Dim EntryCount = Directory.DirectoryEntries.Count - Directory.Data.AvailableEntryCount
+                Directory.ShiftEntries(Data.CurrentLFNIndex, EntryCount, Data.EntriesNeeded)
+            End If
+
+            Data.DirectoryEntry.SetFileName(Data.ShortFileName)
+
+            If Data.LFNEntries.Count > 0 Then
+                Dim Entries = Directory.GetEntries(Data.CurrentLFNIndex, Data.LFNEntries.Count + 1)
+                ProcessLFNEntries(Entries, Data.LFNEntries)
+            End If
+
+            Directory.UpdateEntryCounts()
+        End Sub
 
         Public Function ReadFileIntoBuffer(FileInfo As IO.FileInfo, FileSize As UInteger, FillChar As Byte) As Byte()
             Dim FileBuffer(FileSize - 1) As Byte

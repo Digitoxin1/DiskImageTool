@@ -1778,12 +1778,7 @@ Public Class MainForm
         For Each FilePath In Dialog.FileNames
             Dim Result As Integer
 
-            Dim FreeClusters = ParentDirectory.Disk.FAT.GetFreeClusters(FAT12.FreeClusterEmum.WithoutData)
-
-            Result = ParentDirectory.AddFile(FilePath, WindowsAdditions, FreeClusters, Index)
-            If Result = -1 Then
-                Result = ParentDirectory.AddFile(FilePath, WindowsAdditions, Index)
-            End If
+            Result = ParentDirectory.AddFile(FilePath, WindowsAdditions, Index)
 
             If Result > -1 Then
                 FilesAdded += 1
@@ -1861,7 +1856,7 @@ Public Class MainForm
                 FileData = Item.Tag
                 Msg = $"Are you sure you wish to {If(Remove, "remove", "delete")} {FileData.DirectoryEntry.GetFullFileName}?"
                 Title = $"{If(Remove, "Remove", "Delete")} File"
-                CanFill = FileData.DirectoryEntry.IsValidFile
+                CanFill = FileData.DirectoryEntry.IsValidFile Or FileData.DirectoryEntry.IsValidDirectory
             Else
                 Msg = $"Are you sure you wish to {If(Remove, "remove", "delete")} the selected files?"
                 Title = $"{If(Remove, "Remove", "Delete")} {ListViewFiles.SelectedItems.Count} Files"
@@ -2618,12 +2613,20 @@ Public Class MainForm
                     End If
                 End If
 
-                If Disk.Image.Data.NonStandardTracks.Count > 0 Then
-                    .AddItem(DiskGroup, "Non-Standard Tracks", GetNonStandardTrackList(Disk.Image.Data.NonStandardTracks, Disk.Image.Data.HeadCount))
-                End If
-
                 If Disk.Image.Data.ImageType = FloppyImageType._86FImage Then
                     Dim Image As ImageFormats._86F._86FImage = DirectCast(Disk.Image.Data, ImageFormats._86F._86FByteArray).Image
+                    If Image.BitRate = 255 Then
+                        Value = "Variable"
+                    Else
+                        Value = ImageFormats._86F.GetBitRate(Image.BitRate, True)
+                    End If
+                    .AddItem(DiskGroup, "Bitrate", Value)
+                    If Image.RPM = 255 Then
+                        Value = "Variable"
+                    Else
+                        Value = ImageFormats._86F.GetRPM(Image.RPM)
+                    End If
+                    .AddItem(DiskGroup, "RPM", Value)
                     If Image.RPMSlowDown <> 0 Then
                         If Image.AlternateBitcellCalculation Then
                             Value = "Speed up by " & (Image.RPMSlowDown * 100) & "%"
@@ -2633,6 +2636,10 @@ Public Class MainForm
                         .AddItem(DiskGroup, "RPM Adjustment", Value)
                     End If
                     .AddItem(DiskGroup, "Has Surface Data", If(Image.HasSurfaceData, "Yes", "No"))
+                End If
+
+                If Disk.Image.Data.NonStandardTracks.Count > 0 Then
+                    .AddItem(DiskGroup, "Non-Standard Tracks", GetNonStandardTrackList(Disk.Image.Data.NonStandardTracks, Disk.Image.Data.HeadCount))
                 End If
 
                 If Not Disk.IsValidImage Then
@@ -3269,7 +3276,6 @@ Public Class MainForm
             MenuHexLostClusters.Enabled = CurrentImage.Disk.RootDirectory.FATAllocation.LostClusters.Count > 0
 
             RefreshFixImageSubMenu(CurrentImage.Disk)
-            RefreshRawTrackSubMenu(CurrentImage.Disk)
         Else
             MenuToolsFixImageSize.Enabled = False
             MenuToolsRestructureImage.Enabled = False
@@ -3282,7 +3288,6 @@ Public Class MainForm
             MenuHexFreeClusters.Enabled = False
             MenuHexBadSectors.Enabled = False
             MenuHexLostClusters.Enabled = False
-            MenuRawTrackDataSubMenuClear()
         End If
 
         MenuToolsTruncateImage.Enabled = MenuToolsFixImageSize.Enabled
@@ -3295,6 +3300,7 @@ Public Class MainForm
             ToolStripStatusReadOnly.Visible = CurrentImage.ImageData.ReadOnly
             ToolStripStatusReadOnly.Text = IIf(CurrentImage.ImageData.Compressed, "Compressed", "Read Only")
             ToolStripStatusCached.Visible = CurrentImage.ImageData.TempPath <> ""
+            RefreshRawTrackSubMenu(CurrentImage.Disk)
         Else
             MenuEditRevert.Enabled = False
             SetButtonStateUndo(False)
@@ -3302,6 +3308,7 @@ Public Class MainForm
             ToolStripStatusModified.Visible = False
             ToolStripStatusReadOnly.Visible = False
             ToolStripStatusCached.Visible = False
+            MenuRawTrackDataSubMenuClear()
         End If
     End Sub
 

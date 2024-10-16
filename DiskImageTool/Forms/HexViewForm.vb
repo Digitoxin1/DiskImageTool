@@ -1366,6 +1366,25 @@ Public Class HexViewForm
         End If
     End Sub
 
+    Private Sub HexBox1_AfterPaint(sender As Object, e As PaintEventArgs) Handles HexBox1.AfterPaint
+        Const TopPos As Integer = 20
+        Const RowHeight As Integer = 15
+        Const LeftPos As Integer = 7
+        Dim Width As Integer = e.ClipRectangle.Width - 36
+
+        Dim LineCount = HexBox1.VerticalByteCount
+        Dim StartOffset = HexBox1.LineInfoOffset + HexBox1.StartByte
+        Dim Pen = New Pen(Color.Black)
+        For Counter = 1 To LineCount - 2
+            Dim Offset = StartOffset + Counter * HexBox1.BytesPerLine
+            If Offset Mod 512 = 0 Then
+                Dim vPos = TopPos + Counter * RowHeight
+                e.Graphics.DrawLine(Pen, LeftPos, vPos, Width, vPos)
+            End If
+        Next
+        Pen.Dispose()
+    End Sub
+
     Private Sub HexViewForm_Closing(sender As Object, e As CancelEventArgs) Handles Me.Closing
         If _Changes.Count > 0 And Not _Modified Then
             Dim Msg As String = "Changes have been made to this disk image." & vbCrLf & vbCrLf & "Do you wish to commit these changes before closing this window?"
@@ -1441,7 +1460,6 @@ Public Class HexViewForm
         HexBox1.Focus()
     End Sub
 
-
     'Private Sub GroupBoxByteOrder_Resize(sender As Object, e As EventArgs) Handles GroupBoxByteOrder.Resize
     '    RadioButtonBigEndien.Left = GroupBoxByteOrder.Width / 2
     'End Sub
@@ -1473,7 +1491,6 @@ Public Class HexViewForm
     End Class
 
     Private Class HexChange
-
         Public Sub New(BlockIndex As UShort, Index As UInteger, Data As Byte(), SelectionStart As UInteger, SelectionLength As UInteger, IsPrimary As Boolean)
             Me.BlockIndex = BlockIndex
             Me.Index = Index

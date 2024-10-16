@@ -1,7 +1,4 @@
-﻿Imports System.Reflection
-Imports System.Runtime.Remoting.Metadata
-
-Namespace DiskImage
+﻿Namespace DiskImage
     Public MustInherit Class DirectoryBase
         Implements IDirectory
         Private ReadOnly _DirectoryData As DirectoryData
@@ -110,7 +107,7 @@ Namespace DiskImage
                         End If
                     End If
 
-                    Dim NewDirectoryEntry = New DirectoryEntry(RootDirectory, ParentDirectory, Offset, Entry, ParentDirectory.Data.EndOfDirectory)
+                    Dim NewDirectoryEntry = New DirectoryEntry(RootDirectory, ParentDirectory, Offset, ParentDirectory.DirectoryEntries.Count, ParentDirectory.Data.EndOfDirectory)
 
                     ParentDirectory.DirectoryEntries.Add(NewDirectoryEntry)
                 Next
@@ -118,8 +115,6 @@ Namespace DiskImage
         End Sub
 
         Public MustOverride Function AddFile(FilePath As String, LFN As Boolean, Optional Index As Integer = -1) As Integer Implements IDirectory.AddFile
-
-        Public MustOverride Function AddFile(FilePath As String, LFN As Boolean, ClusterList As SortedSet(Of UShort), Optional Index As Integer = -1) As Integer Implements IDirectory.AddFile
 
         Public Function AdjustIndexForLFN(Index As Integer) As Integer
             If Index < 1 Then
@@ -158,7 +153,7 @@ Namespace DiskImage
             Return Nothing
         End Function
 
-        Public Function GetAvailableFileName(FileName As String) As String Implements IDirectory.GetAvailableFileName
+        Public Function GetAvailableFileName(FileName As String, Optional CurrentIndex As Integer = -1) As String Implements IDirectory.GetAvailableFileName
             FileName = DOSCleanFileName(FileName)
 
             Dim FilePart As String
@@ -180,7 +175,7 @@ Namespace DiskImage
 
             Dim NewFileName = FilePart & Extension
 
-            Do While GetFileIndex(NewFileName, True) > -1
+            Do While GetFileIndex(NewFileName, True, CurrentIndex) > -1
                 FilePart = TruncateFileName(FileName, Index)
                 Index += 1
                 NewFileName = FilePart & Extension
@@ -204,13 +199,15 @@ Namespace DiskImage
             Return _DirectoryEntries.Item(Index)
         End Function
 
-        Public Function GetFileIndex(Filename As String, IncludeDirectories As Boolean) As Integer Implements IDirectory.GetFileIndex
+        Public Function GetFileIndex(Filename As String, IncludeDirectories As Boolean, Optional SkipIndex As Integer = -1) As Integer Implements IDirectory.GetFileIndex
             If _DirectoryData.EntryCount > 0 Then
                 For Counter As UInteger = 0 To _DirectoryData.EntryCount - 1
-                    Dim File = _DirectoryEntries.Item(Counter)
-                    If Not File.IsDeleted And Not File.IsVolumeName And (IncludeDirectories Or Not File.IsDirectory) Then
-                        If File.GetFullFileName = Filename Then
-                            Return Counter
+                    If Counter <> SkipIndex Then
+                        Dim File = _DirectoryEntries.Item(Counter)
+                        If Not File.IsDeleted And Not File.IsVolumeName And (IncludeDirectories Or Not File.IsDirectory) Then
+                            If File.GetFullFileName = Filename Then
+                                Return Counter
+                            End If
                         End If
                     End If
                 Next
@@ -232,6 +229,24 @@ Namespace DiskImage
 
             Dim NewIndex = AdjustIndexForLFN(Index)
             Dim EntriesToRemove = Index - NewIndex + 1
+
+            ShiftEntries(NewIndex, _DirectoryData.EntryCount, EntriesToRemove * -1)
+
+            UpdateEntryCounts()
+
+            Return True
+        End Function
+
+        Public Overridable Function RemoveLFN(Index As UInteger) As Boolean Implements IDirectory.RemoveLFN
+            Dim DirectoryEntry = _DirectoryEntries.Item(Index)
+
+            Dim NewIndex = AdjustIndexForLFN(Index)
+
+            If NewIndex = Index Then
+                Return False
+            End If
+
+            Dim EntriesToRemove = Index - NewIndex
 
             ShiftEntries(NewIndex, _DirectoryData.EntryCount, EntriesToRemove * -1)
 
@@ -333,6 +348,8 @@ Namespace DiskImage
 
             Data.AvailableEntryCount = _DirectoryEntries.Count - EntryCount
         End Sub
+
+        Public MustOverride Function UpdateLFN(FileName As String, Index As Integer) As Boolean Implements IDirectory.UpdateLFN
 
         Private Function TruncateFileName(FilePart As String, Index As UInteger) As String
             Dim Suffix = "~" & Index

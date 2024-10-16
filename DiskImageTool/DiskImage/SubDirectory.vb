@@ -26,39 +26,15 @@
         End Property
 
         Public Overrides Function AddFile(FilePath As String, WindowsAdditions As Boolean, Optional Index As Integer = -1) As Integer Implements IDirectory.AddFile
-            Return AddFile(FilePath, WindowsAdditions, Disk.FAT.FreeClusters, Index)
-        End Function
+            Dim Data = InitializeAddFile(Me, FilePath, WindowsAdditions, Index)
 
-        Public Overrides Function AddFile(FilePath As String, WindowsAdditions As Boolean, ClusterList As SortedSet(Of UShort), Optional Index As Integer = -1) As Integer Implements IDirectory.AddFile
-            Dim ClusterSize = Disk.BPB.BytesPerCluster
-            Dim FileInfo = New IO.FileInfo(FilePath)
-            Dim LFNEntries As List(Of Byte()) = Nothing
-            Dim EntriesNeeded As Integer = 1
-            Dim Entries As List(Of DirectoryEntry)
-            Dim Cluster As UShort
-
-            Dim ShortFileName = GetAvailableFileName(FileInfo.Name)
-            If WindowsAdditions Then
-                LFNEntries = GetLFNDirectoryEntries(FileInfo.Name, ShortFileName)
-                EntriesNeeded += LFNEntries.Count
-            End If
-
-            Dim Length = FileInfo.Length
-
-            Dim Result As Boolean = Data.AvailableEntryCount >= EntriesNeeded
-
-            Dim EntryCount = DirectoryEntries.Count - Data.AvailableEntryCount
-
-            If Not Result Then
-                Length += ClusterSize
-            End If
-
-            If Length > ClusterList.Count * ClusterSize Then
+            If Data.ClusterList Is Nothing Then
                 Return -1
             End If
 
-            If Not Result Then
-                Cluster = Disk.FAT.GetNextFreeCluster(ClusterList, True)
+            Dim Cluster As UShort
+            If Data.RequiresExpansion Then
+                Cluster = Disk.FAT.GetNextFreeCluster(Data.ClusterList, True)
 
                 If Cluster = 0 Then
                     Return -1
@@ -67,41 +43,27 @@
 
             Dim UseTransaction As Boolean = Disk.BeginTransaction
 
-            If Not Result Then
+            If Data.RequiresExpansion Then
                 ExpandDirectorySize(Cluster)
             End If
 
-            If Index > -1 Then
-                Index = AdjustIndexForLFN(Index)
-                ShiftEntries(Index, EntryCount, EntriesNeeded)
-                Entries = GetEntries(Index, EntriesNeeded)
-            Else
-                Entries = GetEntries(EntryCount, EntriesNeeded)
-            End If
-
-            Dim DirectoryEntry = Entries(Entries.Count - 1)
-            DirectoryEntry.AddFile(FilePath, ShortFileName, WindowsAdditions, ClusterList)
-
-            Dim Checksum = DirectoryEntry.GetLFNChecksum
-            If WindowsAdditions Then
-                For Counter = 0 To LFNEntries.Count - 1
-                    Dim Buffer = LFNEntries(Counter)
-                    Buffer(13) = Checksum
-                    Entries(Counter).Data = Buffer
-                Next
-            End If
-
-            UpdateEntryCounts()
+            ProcessAddFile(Me, Data)
 
             If UseTransaction Then
                 Disk.EndTransaction()
             End If
 
-            Return EntriesNeeded
+            Return Data.EntriesNeeded
         End Function
 
         Public Function ExpandDirectorySize() As Boolean
-            Dim Cluster = Disk.FAT.GetNextFreeCluster(True)
+            Dim ClusterList = Disk.FAT.GetFreeClusters(CUShort(1))
+
+            If ClusterList Is Nothing Then
+                Return False
+            End If
+
+            Dim Cluster = Disk.FAT.GetNextFreeCluster(ClusterList, True)
 
             If Cluster = 0 Then
                 Return False
@@ -134,6 +96,8 @@
                 DirectoryEntries.Add(NewDirectoryEntry)
             Next
 
+            Data.AvailableEntryCount += EntryCount
+
             If UseTransaction Then
                 Disk.EndTransaction()
             End If
@@ -148,9 +112,13 @@
                 Return False
             End If
 
-            Dim UseTransaction As Boolean = Disk.BeginTransaction
-
             Dim Cluster = ClusterChain.Last
+
+            If Not IsClusterEmpty(Cluster) Then
+                Return False
+            End If
+
+            Dim UseTransaction As Boolean = Disk.BeginTransaction
 
             Dim ClusterSize = Disk.BPB.BytesPerCluster
             Dim EntryCount = ClusterSize \ DirectoryEntry.DIRECTORY_ENTRY_SIZE
@@ -165,6 +133,8 @@
             For Entry As Integer = DirectoryEntries.Count - 1 To DirectoryEntries.Count - EntryCount Step -1
                 DirectoryEntries.RemoveAt(Entry)
             Next
+
+            Data.AvailableEntryCount -= EntryCount
 
             If Data.EntryCount > DirectoryEntries.Count Then
                 Data.EntryCount = DirectoryEntries.Count
@@ -183,8 +153,47 @@
             Dim Result = MyBase.RemoveEntry(Index)
 
             If Result Then
-                Dim Cluster = ClusterChain.Last
-                If IsClusterEmpty(Cluster) Then
+                ReduceDirectorySize()
+            End If
+
+            If UseTransaction Then
+                Disk.EndTransaction()
+            End If
+
+            Return Result
+        End Function
+
+        Public Overrides Function RemoveLFN(Index As UInteger) As Boolean Implements IDirectory.RemoveLFN
+            Dim UseTransaction As Boolean = Disk.BeginTransaction
+
+            Dim Result = MyBase.RemoveLFN(Index)
+
+            If Result Then
+                ReduceDirectorySize()
+            End If
+
+            If UseTransaction Then
+                Disk.EndTransaction()
+            End If
+
+            Return Result
+        End Function
+
+        Public Overrides Function UpdateLFN(FileName As String, Index As Integer) As Boolean Implements IDirectory.UpdateLFN
+            Dim Data = InitializeUpdateLFN(Me, FileName, Index)
+
+            Dim UseTransaction As Boolean = Disk.BeginTransaction
+
+            Dim Result As Boolean = True
+
+            If Data.RequiresExpansion Then
+                Result = ExpandDirectorySize()
+            End If
+
+            If Result Then
+                ProcessUpdateLFN(Me, Data)
+
+                If Data.EntriesNeeded < 0 Then
                     ReduceDirectorySize()
                 End If
             End If

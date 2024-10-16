@@ -11,6 +11,9 @@ Namespace ImageFormats
             Private _DiskFlags As DiskFlags
             Private _TrackCount As UShort
             Private _Tracks() As _86FTrack
+            Private _BitRate As BitRate = 255
+            Private _RPM As RPM = 255
+
 
             Public Sub New()
                 _MajorVersion = 2
@@ -45,6 +48,12 @@ Namespace ImageFormats
                 Set(value As Boolean)
                     _DiskFlags = MyBitConverter.ToggleBit(_DiskFlags, DiskFlags.BitcellMode, value)
                 End Set
+            End Property
+
+            Public ReadOnly Property BitRate As BitRate
+                Get
+                    Return _BitRate
+                End Get
             End Property
 
             Public Property DiskFlags As DiskFlags
@@ -111,6 +120,12 @@ Namespace ImageFormats
                 Set(value As Boolean)
                     _DiskFlags = MyBitConverter.ToggleBit(_DiskFlags, DiskFlags.ReverseEndian, value)
                 End Set
+            End Property
+
+            Public ReadOnly Property RPM As RPM
+                Get
+                    Return _RPM
+                End Get
             End Property
 
             Public Property RPMSlowDown As Single
@@ -278,12 +293,24 @@ Namespace ImageFormats
                                 If F86Track.Encoding = Encoding.MFM Then
                                     F86Track.MFMData = New IBM_MFM.IBM_MFM_Track(F86Track.Bitstream)
                                     F86Track.Decoded = True
+                                    If Index = 0 Then
+                                        _BitRate = F86Track.BitRate
+                                        _RPM = F86Track.RPM
+                                    Else
+                                        If _BitRate <> 255 AndAlso _BitRate <> F86Track.BitRate Then
+                                            _BitRate = 255
+                                        End If
+                                        If _RPM <> 255 AndAlso _RPM <> F86Track.RPM Then
+                                            _RPM = 255
+                                        End If
+                                    End If
                                 End If
                                 SetTrack(Track, F86Track.Side, F86Track)
                                 'Dim FileName = "H:\debug\track" & F86Track.Track & "." & F86Track.Side & ".log"
                                 'DebugExportMFMBitstream(F86Track.Bitstream, FileName)
                             End If
                         End If
+                        Index += 1
                     Next
                 End If
 
@@ -350,77 +377,81 @@ Namespace ImageFormats
 
                 Dim TrackArray = GetTrackArray()
 
-                If IO.File.Exists(FilePath) Then
-                    IO.File.Delete(FilePath)
-                End If
+                Try
+                    If IO.File.Exists(FilePath) Then
+                        IO.File.Delete(FilePath)
+                    End If
 
-                Using fs As IO.FileStream = IO.File.OpenWrite(FilePath)
-                    Buffer = Text.Encoding.UTF8.GetBytes(FILE_SIGNATURE)
-                    fs.Write(Buffer, 0, Buffer.Length)
-
-                    fs.WriteByte(_MinorVersion)
-                    fs.WriteByte(_MajorVersion)
-
-                    Buffer = BitConverter.GetBytes(_DiskFlags)
-                    fs.Write(Buffer, 0, Buffer.Length)
-                    Pos = fs.Position
-                    DataPosition = 256 * Sides * 4 + Pos
-
-                    For Each Track In TrackArray
-                        fs.Position = Pos
-                        If Track Is Nothing Then
-                            Buffer = New Byte(3) {}
-                        Else
-                            Buffer = BitConverter.GetBytes(DataPosition)
-                        End If
+                    Using fs As IO.FileStream = IO.File.OpenWrite(FilePath)
+                        Buffer = Text.Encoding.UTF8.GetBytes(FILE_SIGNATURE)
                         fs.Write(Buffer, 0, Buffer.Length)
-                        Pos += 4
 
-                        If Track IsNot Nothing Then
-                            fs.Position = DataPosition
+                        fs.WriteByte(_MinorVersion)
+                        fs.WriteByte(_MajorVersion)
 
-                            Buffer = BitConverter.GetBytes(Track.Flags)
-                            fs.Write(Buffer, 0, Buffer.Length)
+                        Buffer = BitConverter.GetBytes(_DiskFlags)
+                        fs.Write(Buffer, 0, Buffer.Length)
+                        Pos = fs.Position
+                        DataPosition = 256 * Sides * 4 + Pos
 
-                            If BitcellMode Then
-                                Buffer = BitConverter.GetBytes(Track.BitCellCount)
-                                fs.Write(Buffer, 0, Buffer.Length)
-                            End If
-
-                            Buffer = BitConverter.GetBytes(Track.IndexHolePos)
-                            fs.Write(Buffer, 0, Buffer.Length)
-
-                            If BitcellMode And AlternateBitcellCalculation Then
-                                TrackLength = (Track.Bitstream.Length \ 16) * 2
-                                AllocatedLength = TrackLength
+                        For Each Track In TrackArray
+                            fs.Position = Pos
+                            If Track Is Nothing Then
+                                Buffer = New Byte(3) {}
                             Else
-                                Dim IsMFM = Track.Encoding = Encoding.MFM
-                                TrackLength = GetTrackLength(Track.BitRate, Track.RPM, IsMFM, RPMSlowDown, AlternateBitcellCalculation, Track.BitCellCount)
-                                AllocatedLength = GetAllocatedLength(Hole, RPMSlowDown, AlternateBitcellCalculation, Track.BitCellCount)
+                                Buffer = BitConverter.GetBytes(DataPosition)
                             End If
-
-                            Buffer = IBM_MFM.BitsToBytes(Track.Bitstream, 0)
                             fs.Write(Buffer, 0, Buffer.Length)
+                            Pos += 4
 
-                            If AllocatedLength > TrackLength Then
-                                Buffer = New Byte(AllocatedLength - TrackLength - 1) {}
+                            If Track IsNot Nothing Then
+                                fs.Position = DataPosition
+
+                                Buffer = BitConverter.GetBytes(Track.Flags)
                                 fs.Write(Buffer, 0, Buffer.Length)
-                            End If
 
-                            If HasSurfaceData Then
-                                Buffer = IBM_MFM.BitsToBytes(Track.SurfaceData, 0)
+                                If BitcellMode Then
+                                    Buffer = BitConverter.GetBytes(Track.BitCellCount)
+                                    fs.Write(Buffer, 0, Buffer.Length)
+                                End If
+
+                                Buffer = BitConverter.GetBytes(Track.IndexHolePos)
                                 fs.Write(Buffer, 0, Buffer.Length)
-                            End If
 
-                            If AllocatedLength > TrackLength Then
-                                Buffer = New Byte(AllocatedLength - TrackLength - 1) {}
+                                If BitcellMode And AlternateBitcellCalculation Then
+                                    TrackLength = (Track.Bitstream.Length \ 16) * 2
+                                    AllocatedLength = TrackLength
+                                Else
+                                    Dim IsMFM = Track.Encoding = Encoding.MFM
+                                    TrackLength = GetTrackLength(Track.BitRate, Track.RPM, IsMFM, RPMSlowDown, AlternateBitcellCalculation, Track.BitCellCount)
+                                    AllocatedLength = GetAllocatedLength(Hole, RPMSlowDown, AlternateBitcellCalculation, Track.BitCellCount)
+                                End If
+
+                                Buffer = IBM_MFM.BitsToBytes(Track.Bitstream, 0)
                                 fs.Write(Buffer, 0, Buffer.Length)
-                            End If
 
-                            DataPosition = fs.Position
-                        End If
-                    Next
-                End Using
+                                If AllocatedLength > TrackLength Then
+                                    Buffer = New Byte(AllocatedLength - TrackLength - 1) {}
+                                    fs.Write(Buffer, 0, Buffer.Length)
+                                End If
+
+                                If HasSurfaceData Then
+                                    Buffer = IBM_MFM.BitsToBytes(Track.SurfaceData, 0)
+                                    fs.Write(Buffer, 0, Buffer.Length)
+                                End If
+
+                                If AllocatedLength > TrackLength Then
+                                    Buffer = New Byte(AllocatedLength - TrackLength - 1) {}
+                                    fs.Write(Buffer, 0, Buffer.Length)
+                                End If
+
+                                DataPosition = fs.Position
+                            End If
+                        Next
+                    End Using
+                Catch ex As Exception
+                    Return False
+                End Try
 
                 Return True
             End Function
