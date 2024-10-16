@@ -258,7 +258,7 @@ Namespace ImageFormats
                                 If j = 0 Then
                                     If i < 2 Then
                                         Data = New Byte(TrackLength - 1) {}
-                                        Array.Copy(Buffer, Offset + 10, Data, 0, Data.Length)
+                                        Array.Copy(Buffer, Offset + 6, Data, 0, Data.Length)
                                         If i = 0 Then
                                             Checksum = Crc32.ComputeChecksum(Data)
                                         Else

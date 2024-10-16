@@ -259,21 +259,21 @@
         iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8
         YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAADdSURBVDhPYxh8QEZGRhpEKyoq/kfmEwVUVFSA6mVeKikp
         mQAN6ATRID5IHKqEMFBWVjYGauIEsUE0iA+WIAaAnA3EHVAuA0PELikgfyLMO0QBqLPBLmCI3XWWIWYn
-        N5hNDEAOA7BA7K7/DLE71zAw/GcE84kBQAMQoQ42AIhjdtVDRUgEMANim/8xRO+KhIqSAOAGALH/+u8M
+        N5hNDEAOA7BA7K7/DLE71zAw/GcE84kBQAMQoQ42AIhjdtVDRUgEMANim/4xRO+KhIqSAOAGALH/+u8M
         cTvMoDJEApDG6J13gF44D8SZQH4sVIZIELtrJkPIMU6GqO3XGNI2cUFFyQCxuzqBOArKIwNE79FiiN2d
-        C+VREzAwAABiikaaOd/1GgAAAABJRU5ErkJggg==
+        C+VREzAwAABg6kaZJjTKgwAAAABJRU5ErkJggg==
 </value>
   </data>
   <data name="ToolStripBtnSelectTrack.Image" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
     <value>
         iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8
-        YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAE7SURBVDhPrZI/T8JQFMWvo+Kqnfo3nbrIpH6QGiPlOZo4
-        +BlMxMURmPwOToZEW53dBCcnJxnd1MRNPLc90JAWXPglJ/Scd9/hvbSycoIg2PY879L3/RH0TQ2hjq5x
-        rB4MHbiu+4HfLkr2LMtqqPQZWY9rMcfn4eYxhncYVcB603Gc90qJHk3bl22eoiU6G4bhFiMR3rlL+y8o
-        6GP+gjY//gu0S1tismdppw26GSjYx/yQNg++oijapC0x2URMeiMyWWOSo7O2bX/SiqhZXAC1s3Mm9eA4
-        +s7rrlAUmMGvJNkR0yrY3IF6tCWzAuhw8CPH99U/UaavEWoyKtCNSfqGK4ygU3jDlSo4QYyC8VyJya4l
-        flqX1t2rnNxuMF0MS/QkfUYFJruCWnTL0S8MReVHoiSPkZiHM7pVIvIHmPVmMJzXhU4AAAAASUVORK5C
-        YII=
+        YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAE6SURBVDhPrZIvT8NQFMUvEoaFqv5NVQ1TwAcpJKx7SBIE
+        n4GEYZDbFN8BxQS0oHFsKBSKSRyQ4BjntmdrlnbD7JecrOe8+87eSysrJwiCbc/zLn3fH0Hf1BDq6BrH
+        6sHQgeu6H/jtomTPsqyGSp+R9bgWc3webh5jeIdRBaw3Hcd5r5To0bR92eYpWqKzYRhuMRLhnbu0/4KC
+        PuYvaPPjv0C7tCUme5Z22qCbgYJ9zA9p8+AriqJN2hKTTcSkNyKTNSY5Omvb9ietiJrFBVA7O2dSD46j
+        77zuCkWBGfxKkh0xrYLNHahHWzIrgA4HP3J8X/0TZfoaoSajAt2YpG+4wgg6hTdcqYITxCgYz5WY7Fri
+        p3Vp3b3Kye0G08WwRE/SZ1RgsiuoRbcc/cJQVH4kSvIYiXk4o1slIn+UnmYtb2bv8AAAAABJRU5ErkJg
+        gg==
 </value>
   </data>
   <metadata name="ContextMenuStrip1.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
@@ -362,7 +362,7 @@
   <data name="BtnSelectTrack.Image" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
     <value>
         iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAABGdBTUEAALGPC/xhBQAAAAlwSFlzAAAO
-        vQAADr0BR/uQrQAAAThJREFUOE+tki9PA0EQxQcJxcLJ+5NTZ0ABH6QV0FskCYLPQEIxlW0V3wGF4rZo
+        vAAADrwBlbxySQAAAThJREFUOE+tki9PA0EQxQcJxcLJ+5NTZ0ABH6QV0FskCYLPQEIxlW0V3wGF4rZo
         HC0KhaLyXCHB0b65e+2l2Wsx/SWTvTc78242u7J1oig6DILgPgzDMeKHMUJ0dI9l9aCoheYcaw/rqed5
         DQ39Rq7PvSbLV2HzBHHElIPv+8fY/3JMOHa+qXkBTfI4jg+YEkFCz9yj/BfUD1B/R1mM/444oaww9k3S
         rEG1BFOcoX5EWTh+J0myT1lh7ExM9igy22GmQGvRM6UsDKbrDRCpvWWmHoyjd153hNLAZH/StufMuqC5

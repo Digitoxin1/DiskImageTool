@@ -58,6 +58,8 @@ Public Class HexViewForm
 
         HexBox1.ReadOnly = False
 
+        SetControlSize()
+
         If HexViewSectorData.Description = "" Then
             Me.Text = "Hex Editor"
         Else
@@ -446,8 +448,8 @@ Public Class HexViewForm
                         If HighlightBackColor = Color.White Then
                             If _HexViewSectorData.Disk.Image.Data.ProtectedSectors.Contains(Sector) Then
                                 HighlightBackColor = PROTECTED_BACK_COLOR
-                            ElseIf Sector Mod 2 = 1 Then
-                                HighlightBackColor = ALT_BACK_COLOR
+                                'ElseIf Sector Mod 2 = 1 Then
+                                'HighlightBackColor = ALT_BACK_COLOR
                             End If
                         End If
                         If HighlightForeColor <> Color.Black Or HighlightBackColor <> Color.White Then
@@ -1179,6 +1181,16 @@ Public Class HexViewForm
         End If
     End Sub
 
+    Private Sub SetControlSize()
+        Dim ScreenWidth = Screen.FromControl(Me).WorkingArea.Width
+
+        If ScreenWidth >= Me.MaximumSize.Width Then
+            Me.Width = Me.MaximumSize.Width
+        Else
+            Me.Width = Me.MinimumSize.Width
+        End If
+    End Sub
+
 #Region "Events"
 
     Private Sub BtnCopyHex_Click(sender As Object, e As EventArgs) Handles BtnCopyHex.Click, ToolStripBtnCopyHex.Click
@@ -1367,22 +1379,28 @@ Public Class HexViewForm
     End Sub
 
     Private Sub HexBox1_AfterPaint(sender As Object, e As PaintEventArgs) Handles HexBox1.AfterPaint
-        Const TopPos As Integer = 20
-        Const RowHeight As Integer = 15
-        Const LeftPos As Integer = 7
-        Dim Width As Integer = e.ClipRectangle.Width - 36
-
+        Const LeftPos As Integer = 630
+        Dim RowHeight As Integer = HexBox1.Font.Height
+        Dim TopPos As Integer = RowHeight + 5
         Dim LineCount = HexBox1.VerticalByteCount
         Dim StartOffset = HexBox1.LineInfoOffset + HexBox1.StartByte
-        Dim Pen = New Pen(Color.Black)
-        For Counter = 1 To LineCount - 2
-            Dim Offset = StartOffset + Counter * HexBox1.BytesPerLine
+        Dim Offset As Long
+
+        For Counter = 0 To LineCount - 2
+            Offset = StartOffset + Counter * HexBox1.BytesPerLine
             If Offset Mod 512 = 0 Then
+                Dim Sector = Disk.OffsetToSector(Offset)
+                Dim Track = _BPB.SectorToTrack(Sector)
+                Dim Side = _BPB.SectorToSide(Sector)
+                Dim SectorId = _BPB.SectorToTrackSector(Sector) + 1
                 Dim vPos = TopPos + Counter * RowHeight
-                e.Graphics.DrawLine(Pen, LeftPos, vPos, Width, vPos)
+                If Counter > 0 Then
+                    e.Graphics.DrawLine(Pens.DarkGray, 0, vPos, e.ClipRectangle.Width, vPos)
+                End If
+                Dim r As New Rectangle(LeftPos, vPos, 64, RowHeight)
+                e.Graphics.DrawString(Track & "." & Side & "-" & SectorId, HexBox1.Font, Brushes.DarkGray, r, StringFormat.GenericDefault)
             End If
         Next
-        Pen.Dispose()
     End Sub
 
     Private Sub HexViewForm_Closing(sender As Object, e As CancelEventArgs) Handles Me.Closing

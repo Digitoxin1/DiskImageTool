@@ -142,7 +142,7 @@ Partial Class HexViewForm
         'ToolStripStatusGap
         '
         ToolStripStatusGap.Name = "ToolStripStatusGap"
-        ToolStripStatusGap.Size = New System.Drawing.Size(278, 19)
+        ToolStripStatusGap.Size = New System.Drawing.Size(309, 19)
         ToolStripStatusGap.Spring = True
         '
         'ToolStripStatusLabel1
@@ -168,7 +168,7 @@ Partial Class HexViewForm
         Me.ToolStripMain.Location = New System.Drawing.Point(0, 0)
         Me.ToolStripMain.Name = "ToolStripMain"
         Me.ToolStripMain.Padding = New System.Windows.Forms.Padding(12, 0, 12, 0)
-        Me.ToolStripMain.Size = New System.Drawing.Size(944, 25)
+        Me.ToolStripMain.Size = New System.Drawing.Size(1014, 25)
         Me.ToolStripMain.TabIndex = 0
         Me.ToolStripMain.Text = "ToolStrip1"
         '
@@ -439,7 +439,7 @@ Partial Class HexViewForm
         Me.StatusStrip1.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.ToolStripStatusOffset, Me.ToolStripStatusBlock, Me.ToolStripStatusLength, ToolStripStatusGap, Me.ToolStripStatusCluster, Me.ToolStripStatusSector, ToolStripStatusLabel1, Me.ToolStripStatusTrack, Me.ToolStripStatusSide, Me.ToolStripStatusTrackSector, ToolStripStatusLabel2, Me.ToolStripStatusBytes})
         Me.StatusStrip1.Location = New System.Drawing.Point(0, 549)
         Me.StatusStrip1.Name = "StatusStrip1"
-        Me.StatusStrip1.Size = New System.Drawing.Size(944, 24)
+        Me.StatusStrip1.Size = New System.Drawing.Size(1014, 24)
         Me.StatusStrip1.TabIndex = 5
         Me.StatusStrip1.Text = "StatusStrip1"
         '
@@ -533,8 +533,9 @@ Partial Class HexViewForm
         '
         'HexBox1
         '
-        Me.HexBox1.Anchor = CType(((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Bottom) _
-            Or System.Windows.Forms.AnchorStyles.Left), System.Windows.Forms.AnchorStyles)
+        Me.HexBox1.Anchor = CType((((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Bottom) _
+            Or System.Windows.Forms.AnchorStyles.Left) _
+            Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
         '
         '
         '
@@ -550,7 +551,7 @@ Partial Class HexViewForm
         Me.HexBox1.Name = "HexBox1"
         Me.HexBox1.ReadOnly = True
         Me.HexBox1.ShadowSelectionColor = System.Drawing.Color.FromArgb(CType(CType(100, Byte), Integer), CType(CType(60, Byte), Integer), CType(CType(188, Byte), Integer), CType(CType(255, Byte), Integer))
-        Me.HexBox1.Size = New System.Drawing.Size(650, 517)
+        Me.HexBox1.Size = New System.Drawing.Size(720, 517)
         Me.HexBox1.StringViewVisible = True
         Me.HexBox1.TabIndex = 1
         Me.HexBox1.UseFixedBytesPerLine = True
@@ -562,8 +563,7 @@ Partial Class HexViewForm
         Me.DataGridDataInspector.AllowUserToDeleteRows = False
         Me.DataGridDataInspector.AllowUserToResizeColumns = False
         Me.DataGridDataInspector.AllowUserToResizeRows = False
-        Me.DataGridDataInspector.Anchor = CType((((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Bottom) _
-            Or System.Windows.Forms.AnchorStyles.Left) _
+        Me.DataGridDataInspector.Anchor = CType(((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Bottom) _
             Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
         Me.DataGridDataInspector.BackgroundColor = System.Drawing.SystemColors.Window
         Me.DataGridDataInspector.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D
@@ -574,7 +574,7 @@ Partial Class HexViewForm
         Me.DataGridDataInspector.ContextMenuStrip = Me.ContextMenuStrip2
         Me.DataGridDataInspector.EditMode = System.Windows.Forms.DataGridViewEditMode.EditOnF2
         Me.DataGridDataInspector.GridColor = System.Drawing.SystemColors.ControlLight
-        Me.DataGridDataInspector.Location = New System.Drawing.Point(668, 28)
+        Me.DataGridDataInspector.Location = New System.Drawing.Point(738, 28)
         Me.DataGridDataInspector.MultiSelect = False
         Me.DataGridDataInspector.Name = "DataGridDataInspector"
         Me.DataGridDataInspector.RowHeadersVisible = False
@@ -654,14 +654,14 @@ Partial Class HexViewForm
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
-        Me.ClientSize = New System.Drawing.Size(944, 573)
+        Me.ClientSize = New System.Drawing.Size(1014, 573)
         Me.Controls.Add(Me.DataGridDataInspector)
         Me.Controls.Add(Me.ToolStripMain)
         Me.Controls.Add(Me.StatusStrip1)
         Me.Controls.Add(Me.HexBox1)
         Me.KeyPreview = True
         Me.MaximizeBox = False
-        Me.MaximumSize = New System.Drawing.Size(960, 1280)
+        Me.MaximumSize = New System.Drawing.Size(1030, 1280)
         Me.MinimizeBox = False
         Me.MinimumSize = New System.Drawing.Size(960, 480)
         Me.Name = "HexViewForm"
