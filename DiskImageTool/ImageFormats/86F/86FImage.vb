@@ -260,9 +260,9 @@ Namespace ImageFormats
                                         Data = New Byte(TrackLength - 1) {}
                                         Array.Copy(Buffer, Offset + 6, Data, 0, Data.Length)
                                         If i = 0 Then
-                                            Checksum = Crc32.ComputeChecksum(Data)
+                                            Checksum = CRC32.ComputeChecksum(Data)
                                         Else
-                                            DoubleStep = (Checksum = Crc32.ComputeChecksum(Data))
+                                            DoubleStep = (Checksum = CRC32.ComputeChecksum(Data))
                                         End If
                                     End If
                                 End If

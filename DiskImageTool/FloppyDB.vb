@@ -5,7 +5,6 @@ Public Class FloppyDB
     Private Const DB_FILE_NAME As String = "FloppyDB.xml"
     Private Const DB_FILE_NAME_NEW As String = "NewFloppyDB.xml"
     Private ReadOnly _NameSpace As String = New StubClass().GetType.Namespace
-    Private _BooterDictionary As Dictionary(Of UInteger, List(Of BooterTrack))
     Private _TitleDictionary As Dictionary(Of String, FloppyData)
     Private _NewXMLDoc As Xml.XmlDocument
 
@@ -21,7 +20,7 @@ Public Class FloppyDB
         ParseXML(FilePath)
     End Sub
 
-    Public Sub AddTile(FileData As FileNameData, Media As String, MD5 As String, MD5_CP As String)
+    Public Sub AddTile(FileData As FileNameData, Media As String, MD5 As String)
         If Not FileData.Cracked And FileData.StatusString <> "MM" Then
             If _NewXMLDoc Is Nothing Then
                 _NewXMLDoc = LoadXML(DB_FILE_NAME_NEW)
@@ -74,9 +73,6 @@ Public Class FloppyDB
 
                 Dim diskNode = _NewXMLDoc.CreateElement("disk")
                 diskNode.AppendAttribute("md5", MD5)
-                If MD5_CP <> "" Then
-                    diskNode.AppendAttribute("md5_cp", MD5_CP)
-                End If
                 If FileData.Disk <> "" Then
                     diskNode.AppendAttribute("disk", FileData.Disk)
                 End If
@@ -89,16 +85,6 @@ Public Class FloppyDB
         End If
 
     End Sub
-
-    Public Function BooterLookup(BootSector() As Byte) As List(Of BooterTrack)
-        Dim Checksum = Crc32.ComputeChecksum(BootSector)
-
-        If _BooterDictionary.ContainsKey(Checksum) Then
-            Return _BooterDictionary.Item(Checksum)
-        Else
-            Return Nothing
-        End If
-    End Function
 
     Public Function IsVerifiedImage(Disk As Disk) As Boolean
         Dim Result = TitleFind(Disk)
@@ -120,28 +106,15 @@ Public Class FloppyDB
     End Function
 
     Public Function TitleFind(Disk As Disk) As TitleFindResult
-        Dim MD5 As String = MD5Hash(Disk.Image.GetBytes)
-        Return TitleFind(Disk, MD5)
+        Dim MD5 As String = Disk.Image.Data.GetMD5Hash
+        Return TitleFind(MD5)
     End Function
 
-    Public Function TitleFind(Disk As Disk, MD5 As String) As TitleFindResult
+    Public Function TitleFind(MD5 As String) As TitleFindResult
         Dim Response As New TitleFindResult With {
             .TitleData = TitleGet(MD5),
             .MD5 = MD5
         }
-        If Response.TitleData Is Nothing Then
-            Dim TrackList = BooterLookup(Disk.BootSector.Data)
-            If TrackList IsNot Nothing Then
-                Response.MD5_CP = MD5Hash(GetNormalizedDataByTrackList(Disk, TrackList))
-                Response.TitleData = TitleGet(Response.MD5_CP)
-            ElseIf Disk.FATTables.FAT(0).BadClusters.Count > 0 Then
-                Response.MD5_CP = MD5Hash(GetNormalizedDataByBadSectors(Disk))
-                Response.TitleData = TitleGet(Response.MD5_CP)
-            ElseIf Disk.Image.Data.ProtectedSectors IsNot Nothing Then
-                Response.MD5_CP = MD5Hash(GetNormalizedDataByProtectedSectors(Disk))
-                Response.TitleData = TitleGet(Response.MD5_CP)
-            End If
-        End If
 
         Return Response
     End Function
@@ -312,7 +285,6 @@ Public Class FloppyDB
 
     Private Sub ParseXML(Name As String)
         _TitleDictionary = New Dictionary(Of String, FloppyData)
-        _BooterDictionary = New Dictionary(Of UInteger, List(Of BooterTrack))
 
         If Not IO.File.Exists(Name) Then
             Return
@@ -345,42 +317,11 @@ Public Class FloppyDB
                     _TitleDictionary.Add(md5, FloppyData)
                 End If
             End If
-            If DirectCast(Node, Xml.XmlElement).HasAttribute("md5_cp") Then
-                Dim md5_cp As String = Node.Attributes("md5_cp").Value
-                If Not _TitleDictionary.ContainsKey(md5_cp) Then
-                    _TitleDictionary.Add(md5_cp, FloppyData)
-                End If
-            End If
-            If DirectCast(Node, Xml.XmlElement).HasAttribute("bootSectorCRC32") Then
-                Dim crc32String As String = Node.Attributes("bootSectorCRC32").Value
-                If crc32String <> "" Then
-                    Dim crc32 As UInteger = Convert.ToUInt32(crc32String, 16)
-                    ProcessCPNodes(Node, crc32)
-                End If
-            End If
             If Node.HasChildNodes Then
                 For Each ChildNode As Xml.XmlNode In Node.ChildNodes
-                    If ChildNode.Name <> "cp" Then
-                        ParseNode(ChildNode, FloppyData)
-                    End If
+                    ParseNode(ChildNode, FloppyData)
                 Next
             End If
-        End If
-    End Sub
-
-    Private Sub ProcessCPNodes(Node As Xml.XmlNode, crc32 As UInteger)
-        Dim cp As New List(Of BooterTrack)
-        For Each cpNode As Xml.XmlElement In Node.SelectNodes("cp")
-            If cpNode.HasAttribute("track") And cpNode.HasAttribute("side") Then
-                Dim Track As New BooterTrack With {
-                    .Track = cpNode.Attributes("track").Value,
-                    .Side = cpNode.Attributes("side").Value
-                }
-                cp.Add(Track)
-            End If
-        Next
-        If Not _BooterDictionary.ContainsKey(crc32) Then
-            _BooterDictionary.Add(crc32, cp)
         End If
     End Sub
 
@@ -667,6 +608,5 @@ Public Class FloppyDB
     Public Class TitleFindResult
         Public Property TitleData As FloppyData = Nothing
         Public Property MD5 As String = ""
-        Public Property MD5_CP As String = ""
     End Class
 End Class

@@ -29,6 +29,9 @@
         Function GetBytes(Offset As UInteger, Size As UInteger) As Byte()
         Function GetBytesInteger(Offset As UInteger) As UInteger
         Function GetBytesShort(Offset As UInteger) As UShort
+        Function GetCRC32() As String
+        Function GetMD5Hash() As String
+        Function GetSHA1Hash() As String
         Function Resize(Length As Integer) As Boolean
         Function SetBytes(Value As UShort, Offset As UInteger) As Boolean
         Function SetBytes(Value As UInteger, Offset As UInteger) As Boolean

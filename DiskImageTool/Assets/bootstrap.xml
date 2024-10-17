@@ -180,7 +180,7 @@
     <oemname name="Caldwell" company="New World Computing" description="Might and Magic ]I[ Disk 9  360k Version"/>
   </bootstrap>
   <bootstrap crc32="7E252BCB" jmp="EB3590">
-    <oemname name="CCC  2.0" company="Compaq"/>
+    <oemname name="CCC  2.0" company="Compaq" verified="true"/>
   </bootstrap>
   <bootstrap crc32="ED343F74" jmp="E9A200">
     <oemname name="CDS 2.03" verified="true"/>

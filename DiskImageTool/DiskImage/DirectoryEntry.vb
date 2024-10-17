@@ -206,7 +206,7 @@
         End Function
 
         Public Function GetChecksum() As UInteger
-            Return Crc32.ComputeChecksum(GetContent)
+            Return CRC32.ComputeChecksum(GetContent)
         End Function
 
         Public Function GetContent() As Byte()

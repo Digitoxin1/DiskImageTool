@@ -1,4 +1,5 @@
-﻿Imports DiskImageTool.Bitstream
+﻿Imports System.Security.Cryptography
+Imports DiskImageTool.Bitstream
 Imports DiskImageTool.DiskImage
 
 Namespace ImageFormats
@@ -17,6 +18,48 @@ Namespace ImageFormats
                 BuildSectorMap()
                 InitDiskFormat(DiskFormat)
             End Sub
+
+            Private Function CalculateHash(HashAlgorithm As HashAlgorithm) As String
+                Dim F86Track As _86FTrack
+                Dim OutputBuffer() As Byte
+
+                For Track = 0 To _Image.TrackCount - 1 Step _Image.TrackStep
+                    For Side = 0 To _Image.Sides - 1
+                        F86Track = _Image.GetTrack(Track, Side)
+                        If F86Track IsNot Nothing AndAlso F86Track.MFMData IsNot Nothing Then
+                            For Each MFMSector In F86Track.MFMData.Sectors
+                                If MFMSector.DAMFound Then
+                                    If MFMSector.InitialChecksumValid Then
+                                        OutputBuffer = New Byte(MFMSector.Data.Length - 1) {}
+                                        HashAlgorithm.TransformBlock(MFMSector.Data, 0, MFMSector.Data.Length, OutputBuffer, 0)
+                                    End If
+                                End If
+                            Next
+                        End If
+                    Next
+                Next
+                HashAlgorithm.TransformFinalBlock(New Byte(0) {}, 0, 0)
+
+                Return HashBytesToString(HashAlgorithm.Hash)
+            End Function
+
+            Public Overrides Function GetCRC32() As String Implements IByteArray.GetCRC32
+                Using Hasher As CRC32Hash = CRC32Hash.Create()
+                    Return CalculateHash(Hasher)
+                End Using
+            End Function
+
+            Public Overrides Function GetMD5Hash() As String Implements IByteArray.GetMD5Hash
+                Using Hasher As MD5 = MD5.Create()
+                    Return CalculateHash(Hasher)
+                End Using
+            End Function
+
+            Public Overrides Function GetSHA1Hash() As String Implements IByteArray.GetSHA1Hash
+                Using Hasher As SHA1 = SHA1.Create()
+                    Return CalculateHash(Hasher)
+                End Using
+            End Function
 
             Private Sub BuildSectorMap()
                 Dim F86Track As _86FTrack

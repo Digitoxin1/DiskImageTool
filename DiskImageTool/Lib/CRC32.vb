@@ -1,4 +1,4 @@
-﻿Public Class Crc32
+﻿Public Class CRC32
     Shared ReadOnly table As UInteger()
 
     Shared Sub New()

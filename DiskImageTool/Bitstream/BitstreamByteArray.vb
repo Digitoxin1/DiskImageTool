@@ -458,6 +458,12 @@ Namespace Bitstream
             Return BitConverter.ToUInt16(MappedData.Data, MappedData.Offset)
         End Function
 
+        Public MustOverride Function GetCRC32() As String Implements IByteArray.GetCRC32
+
+        Public MustOverride Function GetMD5Hash() As String Implements IByteArray.GetMD5Hash
+
+        Public MustOverride Function GetSHA1Hash() As String Implements IByteArray.GetSHA1Hash
+
         Public MustOverride Function SaveToFile(FilePath As String) As Boolean Implements IByteArray.SaveToFile
     End Class
 

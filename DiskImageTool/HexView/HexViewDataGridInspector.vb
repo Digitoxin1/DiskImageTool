@@ -84,7 +84,7 @@ Namespace HexView
             If Bytes IsNot Nothing Then
                 Dim DT As ExpandedDate
 
-                Checksum = Crc32.ComputeChecksum(SelectedBytes).ToString("X8")
+                Checksum = CRC32.ComputeChecksum(SelectedBytes).ToString("X8")
                 Binary = Convert.ToString(Bytes(0), 2).PadLeft(8, "0")
                 Int8 = MyBitConverter.ToSByte(Bytes(0))
                 UInt8 = Bytes(0)

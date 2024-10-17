@@ -1,6 +1,6 @@
 ﻿Imports DiskImageTool.DiskImage
 
-Public Class BoootstrapDB
+Public Class BootstrapDB
     Private ReadOnly _NameSpace As String = New StubClass().GetType.Namespace
     Private _OEMNameDictionary As Dictionary(Of UInteger, BootstrapLookup)
     Private _JmpInst As HashSet(Of String)
@@ -58,7 +58,7 @@ Public Class BoootstrapDB
             Return Nothing
         End If
 
-        Dim Checksum = Crc32.ComputeChecksum(BootstrapCode)
+        Dim Checksum = CRC32.ComputeChecksum(BootstrapCode)
 
         If _OEMNameDictionary.ContainsKey(Checksum) Then
             Return _OEMNameDictionary.Item(Checksum)
@@ -75,7 +75,7 @@ Public Class BoootstrapDB
         For Counter = &HE7 To &HEE
             BootstrapCode(Counter) = 0
         Next
-        Dim Checksum = Crc32.ComputeChecksum(BootstrapCode)
+        Dim Checksum = CRC32.ComputeChecksum(BootstrapCode)
 
         If _OEMNameDictionary.ContainsKey(Checksum) Then
             Return _OEMNameDictionary.Item(Checksum)

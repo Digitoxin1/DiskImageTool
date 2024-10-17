@@ -2,29 +2,31 @@
 Imports System.Text
 
 Module HashFunctions
+    Public Function HashBytesToString(b() As Byte) As String
+        Dim sBuilder As New StringBuilder()
+
+        For n As Integer = 0 To b.Length - 1
+            sBuilder.Append(b(n).ToString("X2"))
+        Next n
+
+        Return sBuilder.ToString
+    End Function
+
+    Public Function CRC32Hash(Data() As Byte) As String
+        Using Hasher As CRC32Hash = DiskImageTool.CRC32Hash.Create()
+            Return HashBytesToString(Hasher.ComputeHash(Data))
+        End Using
+    End Function
+
     Public Function MD5Hash(Data() As Byte) As String
-        Using hasher As MD5 = MD5.Create()
-            Dim dbytes As Byte() = hasher.ComputeHash(Data)
-            Dim sBuilder As New StringBuilder()
-
-            For n As Integer = 0 To dbytes.Length - 1
-                sBuilder.Append(dbytes(n).ToString("X2"))
-            Next n
-
-            Return sBuilder.ToString
+        Using Hasher As MD5 = MD5.Create()
+            Return HashBytesToString(Hasher.ComputeHash(Data))
         End Using
     End Function
 
     Public Function SHA1Hash(Data() As Byte) As String
-        Using hasher As SHA1 = SHA1.Create()
-            Dim dbytes As Byte() = hasher.ComputeHash(Data)
-            Dim sBuilder As New StringBuilder()
-
-            For n As Integer = 0 To dbytes.Length - 1
-                sBuilder.Append(dbytes(n).ToString("X2"))
-            Next n
-
-            Return sBuilder.ToString
+        Using Hasher As SHA1 = SHA1.Create()
+            Return HashBytesToString(Hasher.ComputeHash(Data))
         End Using
     End Function
 End Module

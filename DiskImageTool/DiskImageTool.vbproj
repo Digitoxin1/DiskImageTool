@@ -208,6 +208,7 @@
     <Compile Include="Extensions\DataGridViewExtensions.vb" />
     <Compile Include="Extensions\StringExtensions.vb" />
     <Compile Include="Extensions\XMLExtensions.vb" />
+    <Compile Include="Lib\CRC32Hash.vb" />
     <Compile Include="Lib\FloppyInterface.vb" />
     <Compile Include="FormControls.vb" />
     <Compile Include="Forms\AboutBox.Designer.vb">
@@ -217,6 +218,7 @@
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="CopyProtection.vb" />
+    <Compile Include="SummaryPanel.vb" />
     <Compile Include="Testing\DebugScript.vb" />
     <Compile Include="DiskImage\SectorData.vb" />
     <Compile Include="DiskImage\ByteArray.vb" />
@@ -323,7 +325,7 @@
     <Compile Include="Lib\ListViewColumnSorter.vb" />
     <Compile Include="Extensions\ListViewExtensions.vb" />
     <Compile Include="HexView\MyByteProvider.vb" />
-    <Compile Include="BoootstrapDB.vb" />
+    <Compile Include="BootstrapDB.vb" />
     <Compile Include="ImageData.vb" />
     <Compile Include="Lib\CRC32.vb" />
     <Compile Include="DiskImage\DirectoryEntry.vb" />

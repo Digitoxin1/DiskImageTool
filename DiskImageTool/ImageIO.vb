@@ -84,7 +84,7 @@ Module ImageIO
 
                 LastChecksum = ImageData.Checksum
                 If SetChecksum Then
-                    ImageData.Checksum = Crc32.ComputeChecksum(Data)
+                    ImageData.Checksum = CRC32.ComputeChecksum(Data)
                 End If
 
                 If FloppyImageType = FloppyImageType.TranscopyImage Then

@@ -5,13 +5,13 @@ Imports Hb.Windows.Forms
 
 Public Class BootSectorForm
     Const ValidHexChars = "0123456789ABCDEF"
-    Private ReadOnly _BootStrap As BoootstrapDB
+    Private ReadOnly _BootStrap As BootstrapDB
     Private ReadOnly _BootSector As BootSector
     Private ReadOnly _HasExtended As Boolean
     Private ReadOnly _HelpProvider1 As HelpProvider
     Private _SuppressEvent As Boolean = True
 
-    Public Sub New(Data() As Byte, BootStrap As BoootstrapDB)
+    Public Sub New(Data() As Byte, BootStrap As BootstrapDB)
 
         ' This call is required by the designer.
         InitializeComponent()

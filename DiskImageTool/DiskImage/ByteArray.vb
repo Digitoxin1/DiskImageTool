@@ -1,4 +1,5 @@
-﻿Namespace DiskImage
+﻿
+Namespace DiskImage
     Public Class ByteArray
         Implements IByteArray
 
@@ -82,6 +83,18 @@
 
         Public Function GetBytesShort(Offset As UInteger) As UShort Implements IByteArray.GetBytesShort
             Return BitConverter.ToUInt16(_Data, Offset)
+        End Function
+
+        Public Function GetCRC32() As String Implements IByteArray.GetCRC32
+            Return HashFunctions.CRC32Hash(_Data)
+        End Function
+
+        Public Function GetMD5Hash() As String Implements IByteArray.GetMD5Hash
+            Return MD5Hash(_Data)
+        End Function
+
+        Public Function GetSHA1Hash() As String Implements IByteArray.GetSHA1Hash
+            Return SHA1Hash(_Data)
         End Function
 
         Public Function Resize(Length As Integer) As Boolean Implements IByteArray.Resize

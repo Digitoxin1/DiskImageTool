@@ -240,6 +240,8 @@
                     End If
                 End If
             Next
+
+            Return False
         End Function
 
         Public Function HasValidMediaDescriptor() As Boolean
