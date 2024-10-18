@@ -17,7 +17,7 @@
         Public Function InferRPM(BitCount As UInteger) As UShort
             BitCount = Math.Round(BitCount / 10000) * 10000
 
-            If BitCount = 100000 Then
+            If BitCount <= 100000 Then
                 Return 300
             ElseIf BitCount = 170000 Then
                 Return 360
@@ -26,14 +26,14 @@
             ElseIf BitCount = 400000 Then
                 Return 300
             Else
-                Return 0
+                Return 300
             End If
         End Function
 
         Public Function InferBitRate(BitCount As UInteger) As UShort
             BitCount = Math.Round(BitCount / 10000) * 10000
 
-            If BitCount = 100000 Then
+            If BitCount <= 100000 Then
                 Return 250
             ElseIf BitCount = 170000 Then
                 Return 500

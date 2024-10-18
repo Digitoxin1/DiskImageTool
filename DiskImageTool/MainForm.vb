@@ -1,5 +1,4 @@
 ﻿Imports System.ComponentModel
-Imports System.Security.Cryptography
 Imports System.Text
 Imports DiskImageTool.DiskImage
 
@@ -965,6 +964,8 @@ Public Class MainForm
                 ElseIf Response = SaveImageResponse.Unknown Then
                     MsgBox("Unsupported Disk Type.", MsgBoxStyle.Exclamation)
                     Exit Do
+                ElseIf Response = SaveImageResponse.Cancelled Then
+                    Exit Do
                 End If
             End If
 
@@ -1651,13 +1652,20 @@ Public Class MainForm
 
         If Image IsNot Nothing Then
             Dim MFMTrack = Image.GetTrack(Track * Image.TrackStep, Side)
-            Dim AlignedBitstream = Bitstream.IBM_MFM.BitstreamAlign(MFMTrack.Bitstream)
-            Dim Data = Bitstream.IBM_MFM.DecodeTrack(AlignedBitstream)
-            Dim Sections = Bitstream.IBM_MFM.BitstreamGetSectionList(AlignedBitstream)
+            Dim Data() As Byte
+            Dim Sections As List(Of Bitstream.IBM_MFM.BitstreamSection)
+            If MFMTrack.Decoded Then
+                Dim AlignedBitstream = Bitstream.IBM_MFM.BitstreamAlign(MFMTrack.Bitstream)
+                Data = Bitstream.IBM_MFM.DecodeTrack(AlignedBitstream)
+                Sections = Bitstream.IBM_MFM.BitstreamGetSectionList(AlignedBitstream)
+            Else
+                Data = Bitstream.IBM_MFM.FMGetBytes(MFMTrack.Bitstream)
+                Sections = New List(Of Bitstream.IBM_MFM.BitstreamSection)
+            End If
 
             Dim frmHexView As New HexViewRawForm(Data, Caption, Sections)
-            frmHexView.ShowDialog()
-        End If
+                frmHexView.ShowDialog()
+            End If
     End Sub
 
     Private Sub HexDisplayRootDirectory(CurrentImage As CurrentImage)
@@ -2940,11 +2948,17 @@ Public Class MainForm
         MenuHexRawTrackData.Enabled = False
 
         If Disk.Image.Data.ImageType = FloppyImageType.MFMImage Or Disk.Image.Data.ImageType = FloppyImageType._86FImage Or Disk.Image.Data.ImageType = FloppyImageType.TranscopyImage Then
-            If Disk.Image.Data.NonStandardTracks.Count > 0 Then
-                Dim TrackList(Disk.Image.Data.NonStandardTracks.Count - 1) As UShort
+            Dim TrackCount = Disk.Image.Data.NonStandardTracks.Count + Disk.Image.Data.AdditionalTracks.Count
+            If TrackCount > 0 Then
+                Dim TrackList(TrackCount - 1) As UShort
 
                 Dim i As UShort = 0
                 For Each Track In Disk.Image.Data.NonStandardTracks
+                    TrackList(i) = Track
+                    i += 1
+                Next
+
+                For Each Track In Disk.Image.Data.AdditionalTracks
                     TrackList(i) = Track
                     i += 1
                 Next

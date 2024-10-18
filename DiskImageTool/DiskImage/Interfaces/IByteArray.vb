@@ -18,6 +18,7 @@
         ReadOnly Property ImageType As FloppyImageType
         ReadOnly Property Length As Integer
         ReadOnly Property ProtectedSectors As HashSet(Of UInteger)
+        ReadOnly Property AdditionalTracks As HashSet(Of UShort)
         ReadOnly Property NonStandardTracks As HashSet(Of UShort)
         ReadOnly Property TrackCount As UShort
         ReadOnly Property HeadCount As Byte

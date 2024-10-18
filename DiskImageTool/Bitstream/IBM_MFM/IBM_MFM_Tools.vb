@@ -1,4 +1,6 @@
-﻿Namespace Bitstream
+﻿Imports System.Windows.Forms.VisualStyles.VisualStyleElement.TrackBar
+
+Namespace Bitstream
     Namespace IBM_MFM
         Public Enum MFMSectionType
             GapBytes
@@ -52,14 +54,19 @@
                 Return New BitArray(buffer)
             End Function
 
-            Public Function BytesToBits(bytes() As Byte, Offset As UInteger, Length As UInteger) As BitArray
-                Dim buffer(Length - 1) As Byte
+            Public Function BytesToBits(bytes() As Byte, Offset As UInteger, BitLength As UInteger) As BitArray
+                Dim bufferSize = Math.Ceiling(BitLength / 8)
+                Dim buffer(bufferSize - 1) As Byte
 
-                For i As Integer = 0 To Length - 1
+                For i As Integer = 0 To bufferSize - 1
                     buffer(i) = ReverseBits(bytes(Offset + i))
                 Next
 
-                Return New BitArray(buffer)
+                Dim bitArray = New BitArray(buffer) With {
+                    .Length = BitLength
+                }
+
+                Return bitArray
             End Function
 
             Public Function BitsToBytes(Bitstream As BitArray, Padding As UInteger) As Byte()
@@ -115,7 +122,9 @@
             End Function
 
             Public Function DecodeTrack(Bitstream As BitArray) As Byte()
-                Return MFMGetBytes(Bitstream, 0, Bitstream.Length \ MFM_BYTE_SIZE)
+                Dim NumBytes As UInteger = Bitstream.Length \ 16
+
+                Return MFMGetBytes(Bitstream, 0, NumBytes)
             End Function
 
             Public Function DecodeTrack(Data() As Byte) As Byte()
@@ -128,8 +137,8 @@
                 Dim BitstreamIndex As UInteger = 0
                 Dim ByteIndex As UInteger = 0
                 Dim Buffer() As Byte
-                Dim SyncNullCount As UInteger = 0
-                Dim GapCount As UInteger = 0
+                Dim SyncNullCount As UInteger
+                Dim GapCount As UInteger
                 Dim Index As Integer
                 Dim DataIndex As Integer
                 Dim Offset As UInteger
@@ -328,6 +337,37 @@
                 End If
             End Function
 
+            Public Function FMGetBytes(Bitstream As BitArray) As Byte()
+                Dim NumBytes = Bitstream.Length \ 16
+                Dim decodedBytes(NumBytes - 1) As Byte
+                Dim byteBuffer As Byte
+                Dim bitCount As Integer = 0
+                Dim byteCount As Integer = 0
+                Dim clockBit As Boolean
+                Dim dataBit As Boolean
+                Dim Start As UInteger = 0
+
+                If NumBytes > 0 Then
+                    Do
+                        clockBit = Bitstream(Start)
+                        dataBit = Bitstream(Start + 1)
+                        Start += 2
+
+                        byteBuffer = (byteBuffer << 1) Or (CInt(dataBit) And 1)
+                        bitCount += 1
+
+                        If bitCount = 8 Then
+                            decodedBytes(byteCount) = byteBuffer
+                            byteBuffer = 0
+                            bitCount = 0
+                            byteCount += 1
+                        End If
+                    Loop Until byteCount = NumBytes
+                End If
+
+                Return decodedBytes
+            End Function
+
             Public Function GetGapBytes(BitStream As BitArray, OffsetStart As Integer, OffsetEnd As Integer) As Byte()
                 Dim NumBytes As Integer
 
@@ -493,6 +533,13 @@
                 End If
 
                 Return decodedBytes
+            End Function
+
+            Public Function ResizeBitstream(Bitstream As BitArray, Length As UInteger) As BitArray
+                Dim NewBitstream = CType(Bitstream.Clone, BitArray)
+                NewBitstream.Length = Length
+
+                Return NewBitstream
             End Function
         End Module
 

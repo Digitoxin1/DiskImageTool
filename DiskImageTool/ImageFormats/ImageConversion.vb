@@ -1,4 +1,5 @@
-﻿Imports DiskImageTool.Bitstream
+﻿Imports System.Security.Policy
+Imports DiskImageTool.Bitstream
 Imports DiskImageTool.Bitstream.IBM_MFM
 Imports DiskImageTool.DiskImage.FloppyDiskFunctions
 
@@ -180,15 +181,23 @@ Namespace ImageFormats
 
         Public Function BitstreamTo86FImage(Image As IBitstreamImage) As _86F._86FImage
             Dim BitstreamTrack As IBitstreamTrack
+            Dim TrackCount As UShort = 0
 
             Image.UpdateBitstream()
 
-            Dim F86Image = New _86F._86FImage(Image.TrackCount, Image.SideCount) With {
+            For Track = 0 To Image.TrackCount - 1 Step Image.TrackStep
+                BitstreamTrack = Image.GetTrack(Track, 0)
+                If BitstreamTrack.TrackType <> BitstreamTrackType.Other Then
+                    TrackCount = Track + 1
+                End If
+            Next
+
+            Dim F86Image = New _86F._86FImage(TrackCount, Image.SideCount) With {
                 .BitcellMode = True,
                 .AlternateBitcellCalculation = True
             }
 
-            For Track = 0 To Image.TrackCount - 1 Step Image.TrackStep
+            For Track = 0 To TrackCount - 1 Step Image.TrackStep
                 For Side = 0 To Image.SideCount - 1
                     BitstreamTrack = Image.GetTrack(Track, Side)
 
@@ -198,17 +207,32 @@ Namespace ImageFormats
                         End If
                     End If
 
+                    Dim IsMFM As Boolean = BitstreamTrack.TrackType = BitstreamTrackType.MFM Or BitstreamTrack.TrackType = BitstreamTrackType.Other
+                    Dim BitRate As UShort = RoundBitRate(BitstreamTrack.BitRate)
+
+                    If Image.TrackStep = 2 Then
+                        If IsMFM Then
+                            If BitRate = 300 Then
+                                BitRate = 250
+                            End If
+                        Else
+                            If BitRate = 150 Then
+                                BitRate = 125
+                            End If
+                        End If
+                    End If
+
                     Dim F86Track = New _86F._86FTrack(Track, Side, 0) With {
                         .Bitstream = BitstreamTrack.Bitstream,
                         .BitCellCount = BitstreamTrack.Bitstream.Length,
-                        .BitRate = _86F.GetBitRate(BitstreamTrack.BitRate, BitstreamTrack.TrackType = BitstreamTrackType.MFM),
+                        .BitRate = _86F.GetBitRate(BitRate, IsMFM),
                         .RPM = _86F.GetRPM(BitstreamTrack.RPM)
                     }
 
-                    If BitstreamTrack.TrackType = BitstreamTrackType.MFM Then
-                        F86Track.Encoding = _86F.Encoding.MFM
-                    Else
+                    If BitstreamTrack.TrackType = BitstreamTrackType.FM Then
                         F86Track.Encoding = _86F.Encoding.FM
+                    Else
+                        F86Track.Encoding = _86F.Encoding.MFM
                     End If
 
                     F86Image.SetTrack(Track \ Image.TrackStep, Side, F86Track)
@@ -220,15 +244,23 @@ Namespace ImageFormats
 
         Public Function BitstreamToMFMImage(Image As IBitstreamImage) As MFM.MFMImage
             Dim BitstreamTrack As IBitstreamTrack
+            Dim TrackCount As UShort = 0
 
             Image.UpdateBitstream()
 
-            Dim MFM = New MFM.MFMImage(Image.TrackCount, Image.SideCount, Image.TrackStep) With {
+            For Track = 0 To Image.TrackCount - 1 Step Image.TrackStep
+                BitstreamTrack = Image.GetTrack(Track, 0)
+                If BitstreamTrack.TrackType = BitstreamTrackType.MFM Then
+                    TrackCount = Track + 1
+                End If
+            Next
+
+            Dim MFM = New MFM.MFMImage(TrackCount, Image.SideCount, Image.TrackStep) With {
                 .BitRate = 0,
                 .RPM = 0
             }
 
-            For Track = 0 To Image.TrackCount - 1 Step Image.TrackStep
+            For Track = 0 To TrackCount - 1 Step Image.TrackStep
                 For Side = 0 To Image.SideCount - 1
                     BitstreamTrack = Image.GetTrack(Track, Side)
 
@@ -293,33 +325,52 @@ Namespace ImageFormats
         Public Function BitstreamToTranscopyImage(Image As IBitstreamImage) As TC.TransCopyImage
             Dim BitstreamTrack As IBitstreamTrack
             Dim DiskType As TC.TransCopyDiskType = TC.TransCopyDiskType.Unknown
+            Dim TrackCount As UShort = 0
 
             Image.UpdateBitstream()
 
-            Dim Transcopy = New TC.TransCopyImage
-            Transcopy.Initialize(Image.TrackCount \ Image.TrackStep, Image.SideCount, 1)
-
             For Track = 0 To Image.TrackCount - 1 Step Image.TrackStep
+                BitstreamTrack = Image.GetTrack(Track, 0)
+                If BitstreamTrack.TrackType <> BitstreamTrackType.Other Then
+                    TrackCount = Track + 1
+                End If
+            Next
+
+            Dim Transcopy = New TC.TransCopyImage
+            Transcopy.Initialize(TrackCount \ Image.TrackStep, Image.SideCount, 1)
+
+            For Track = 0 To TrackCount - 1 Step Image.TrackStep
                 For Side = 0 To Image.SideCount - 1
                     BitstreamTrack = Image.GetTrack(Track, Side)
 
                     Dim TrackType As TC.TransCopyDiskType
+                    Dim BitCount As Integer = 6250 * 16
 
-                    If BitstreamTrack.Decoded Then
+                    If BitstreamTrack.TrackType = BitstreamTrackType.MFM And BitstreamTrack.Decoded Then
                         TrackType = GetTranscopyDiskType(GetTrackFormat(BitstreamTrack.MFMData.Size))
                         If DiskType = TC.TransCopyDiskType.Unknown And TrackType <> TC.TransCopyDiskType.Unknown Then
                             DiskType = TrackType
                         End If
-                    Else
+                    ElseIf BitstreamTrack.TrackType = BitstreamTrackType.FM Then
+                        BitCount = 3125 * 16
                         TrackType = TC.TransCopyDiskType.FMSingleDensity
+                    Else
+                        TrackType = TC.TransCopyDiskType.Unknown
                     End If
 
                     Dim TransCopyCylinder = New TC.TransCopyCylinder(Track, Side) With {
-                            .TrackType = TrackType,
-                            .CopyAcrossIndex = True,
-                            .Bitstream = BitstreamTrack.Bitstream
-                        }
-                    TransCopyCylinder.SetTimings(BitstreamTrack.MFMData.AddressMarkIndexes)
+                        .TrackType = TrackType,
+                        .CopyAcrossIndex = True
+                    }
+                    If BitstreamTrack.Bitstream.Length > 0 Then
+                        TransCopyCylinder.Bitstream = BitstreamTrack.Bitstream
+                    Else
+                        TransCopyCylinder.Bitstream = New BitArray(BitCount)
+                    End If
+
+                    If BitstreamTrack.MFMData IsNot Nothing Then
+                        TransCopyCylinder.SetTimings(BitstreamTrack.MFMData.AddressMarkIndexes)
+                    End If
                     Transcopy.SetCylinder(Track \ Image.TrackStep, Side, TransCopyCylinder)
                 Next
             Next

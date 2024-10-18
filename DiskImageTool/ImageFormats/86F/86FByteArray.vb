@@ -23,7 +23,7 @@ Namespace ImageFormats
                 Dim F86Track As _86FTrack
                 Dim OutputBuffer() As Byte
 
-                For Track = 0 To _Image.TrackCount - 1 Step _Image.TrackStep
+                For Track = 0 To _Image.TrackCount - 1
                     For Side = 0 To _Image.Sides - 1
                         F86Track = _Image.GetTrack(Track, Side)
                         If F86Track IsNot Nothing AndAlso F86Track.MFMData IsNot Nothing Then
@@ -66,31 +66,45 @@ Namespace ImageFormats
 
                 SetTracks(_Image.TrackCount, _Image.Sides)
 
-                For Track = 0 To _Image.TrackCount - 1 Step _Image.TrackStep
+                For Track = 0 To _Image.TrackCount - 1
                     For Side = 0 To _Image.Sides - 1
                         F86Track = _Image.GetTrack(Track, Side)
-                        If F86Track IsNot Nothing AndAlso F86Track.MFMData IsNot Nothing Then
+                        If F86Track IsNot Nothing Then
+                            Dim FirstSector As Integer = -1
+                            Dim LastSector As Integer = -1
+                            Dim TrackType As BitstreamTrackType = BitstreamTrackType.Other
 
-                            SetTrack(Track, Side, F86Track.MFMData.FirstSector, F86Track.MFMData.LastSector)
+                            If F86Track.MFMData IsNot Nothing Then
+                                FirstSector = F86Track.MFMData.FirstSector
+                                LastSector = F86Track.MFMData.LastSector
+                            End If
 
-                            For Each MFMSector In F86Track.MFMData.Sectors
-                                If MFMSector.DAMFound Then
-                                    If MFMSector.SectorId >= 1 And MFMSector.SectorId <= SECTOR_COUNT Then
-                                        Dim BitstreamSector As New BitstreamSector With {
+                            If F86Track.Bitstream.Length > 0 Then
+                                TrackType = F86Track.BitstreamTrackType
+                            End If
+
+                            SetTrack(Track, Side, FirstSector, LastSector, TrackType)
+
+                            If F86Track.MFMData IsNot Nothing Then
+                                For Each MFMSector In F86Track.MFMData.Sectors
+                                    If MFMSector.DAMFound Then
+                                        If MFMSector.SectorId >= 1 And MFMSector.SectorId <= SECTOR_COUNT Then
+                                            Dim BitstreamSector As New BitstreamSector With {
                                            .Data = MFMSector.Data,
                                            .Size = MFMSector.GetSizeBytes,
                                            .IsStandard = IBM_MFM.IsStandardSector(MFMSector, Track, Side)
                                         }
 
-                                        Dim Sector = GetSector(Track, Side, MFMSector.SectorId)
-                                        If Sector Is Nothing Then
-                                            SetSector(Track, Side, MFMSector.SectorId, BitstreamSector)
-                                        Else
-                                            Sector.IsStandard = False
+                                            Dim Sector = GetSector(Track, Side, MFMSector.SectorId)
+                                            If Sector Is Nothing Then
+                                                SetSector(Track, Side, MFMSector.SectorId, BitstreamSector)
+                                            Else
+                                                Sector.IsStandard = False
+                                            End If
                                         End If
                                     End If
-                                End If
-                            Next
+                                Next
+                            End If
                         End If
                     Next
                 Next

@@ -89,7 +89,7 @@ Namespace ImageFormats
                 End Get
             End Property
 
-            Private ReadOnly Property IBitstreamTrack_TrackType As BitstreamTrackType Implements IBitstreamTrack.TrackType
+            Public ReadOnly Property BitstreamTrackType As BitstreamTrackType Implements IBitstreamTrack.TrackType
                 Get
                     Select Case Encoding
                         Case Encoding.MFM

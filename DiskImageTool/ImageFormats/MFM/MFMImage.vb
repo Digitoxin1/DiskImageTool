@@ -120,7 +120,7 @@ Namespace ImageFormats
                                 End If
                             End If
 
-                            MFMTrack.Bitstream = IBM_MFM.BytesToBits(Buffer, MFMTrack.Offset, Size)
+                            MFMTrack.Bitstream = IBM_MFM.BytesToBits(Buffer, MFMTrack.Offset, Size * 8)
                             MFMTrack.MFMData = New IBM_MFM.IBM_MFM_Track(MFMTrack.Bitstream)
 
                             SetTrack(Track, Side, MFMTrack)
@@ -252,8 +252,9 @@ Namespace ImageFormats
                                 fs.Seek(Pos, IO.SeekOrigin.Begin)
                                 Dim MFMTrack = GetTrack(i, j)
                                 Dim BitLength = Math.Ceiling(MFMTrack.Bitstream.Length / 4096) * 4096
-                                Dim Padding = BitLength - MFMTrack.Bitstream.Length
-                                Buffer = IBM_MFM.BitsToBytes(MFMTrack.Bitstream, Padding)
+                                'Dim Padding = BitLength - MFMTrack.Bitstream.Length
+                                'Buffer = IBM_MFM.BitsToBytes(MFMTrack.Bitstream, Padding)
+                                Buffer = IBM_MFM.BitsToBytes(IBM_MFM.ResizeBitstream(MFMTrack.Bitstream, BitLength), 0)
                                 fs.Write(Buffer, 0, Buffer.Length)
                                 Offset = fs.Position
                             Next

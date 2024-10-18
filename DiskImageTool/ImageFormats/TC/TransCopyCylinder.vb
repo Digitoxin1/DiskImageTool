@@ -21,34 +21,43 @@ Namespace ImageFormats
                 _MFMData = Nothing
                 _Decoded = False
             End Sub
-            Public Property Track As UShort
-            Public Property Side As UShort
-            Public Property Skew As UInt16
-            Public Property Offset As UInt32
-            Public Property Length As UInt16
-            Public Property Flags As TransCopyTrackFlags = 0
-            Public Property TrackType As TransCopyDiskType
+
             Public ReadOnly Property AddressMarkingTiming As List(Of UShort)
+
+            Public ReadOnly Property BitRate As UShort Implements IBitstreamTrack.BitRate
+                Get
+                    Dim Value = InferBitRate(_Bitstream.Length)
+
+                    If TrackType = TransCopyDiskType.FMSingleDensity Then
+                        Value \= 2
+                    End If
+
+                    Return Value
+                End Get
+            End Property
+
             Public Property Bitstream As BitArray Implements IBitstreamTrack.Bitstream
                 Get
                     Return _Bitstream
                 End Get
                 Set
                     _Bitstream = Value
-                    _Length = _Bitstream.Length \ 8
+                    '_Length = _Bitstream.Length \ 8
+                    _Length = Math.Ceiling(_Bitstream.Length / 8)
                 End Set
             End Property
 
-            Public Property MFMData As IBM_MFM.IBM_MFM_Track Implements IBitstreamTrack.MFMData
-            Public Property Decoded As Boolean Implements IBitstreamTrack.Decoded
-
-            Public Property KeepTrackLength() As Boolean
+            Public ReadOnly Property BitstreamTrackType As BitstreamTrackType Implements IBitstreamTrack.TrackType
                 Get
-                    Return (_Flags And TransCopyTrackFlags.KeepTrackLength) > 0
+                    Select Case TrackType
+                        Case TransCopyDiskType.MFMDoubleDensity, TransCopyDiskType.MFMHighDensity, TransCopyDiskType.MFMDoubleDensity360RPM
+                            Return BitstreamTrackType.MFM
+                        Case TransCopyDiskType.FMSingleDensity
+                            Return BitstreamTrackType.FM
+                        Case Else
+                            Return BitstreamTrackType.Other
+                    End Select
                 End Get
-                Set(value As Boolean)
-                    _Flags = MyBitConverter.ToggleBit(_Flags, TransCopyTrackFlags.KeepTrackLength, value)
-                End Set
             End Property
 
             Public Property CopyAcrossIndex() As Boolean
@@ -69,14 +78,34 @@ Namespace ImageFormats
                 End Set
             End Property
 
-            Public Property VerifyWrite() As Boolean
+            Public Property Decoded As Boolean Implements IBitstreamTrack.Decoded
+
+            Public Property Flags As TransCopyTrackFlags = 0
+
+            Public Property KeepTrackLength() As Boolean
                 Get
-                    Return (_Flags And TransCopyTrackFlags.VerifyWrite) > 0
+                    Return (_Flags And TransCopyTrackFlags.KeepTrackLength) > 0
                 End Get
                 Set(value As Boolean)
-                    _Flags = MyBitConverter.ToggleBit(_Flags, TransCopyTrackFlags.VerifyWrite, value)
+                    _Flags = MyBitConverter.ToggleBit(_Flags, TransCopyTrackFlags.KeepTrackLength, value)
                 End Set
             End Property
+
+            Public Property Length As UInt16
+
+            Public Property LengthTolerance() As Boolean
+                Get
+                    Return (_Flags And TransCopyTrackFlags.LengthTolerance) > 0
+                End Get
+                Set(value As Boolean)
+                    _Flags = MyBitConverter.ToggleBit(_Flags, TransCopyTrackFlags.LengthTolerance, value)
+                    If value Then
+                        _Flags = MyBitConverter.ToggleBit(_Flags, TransCopyTrackFlags.Bit6, False)
+                    End If
+                End Set
+            End Property
+
+            Public Property MFMData As IBM_MFM.IBM_MFM_Track Implements IBitstreamTrack.MFMData
 
             Public Property NoAddressMarks() As Boolean
                 Get
@@ -84,6 +113,52 @@ Namespace ImageFormats
                 End Get
                 Set(value As Boolean)
                     _Flags = MyBitConverter.ToggleBit(_Flags, TransCopyTrackFlags.NoAddressMarks, value)
+                End Set
+            End Property
+
+            Public Property Offset As UInt32
+
+            Public ReadOnly Property RPM As UShort Implements IBitstreamTrack.RPM
+                Get
+                    Return InferRPM(_Bitstream.Length)
+                End Get
+            End Property
+
+            Public Property Side As UShort
+
+            Public Property Skew As UInt16
+
+            Public Property Track As UShort
+
+            Public Property TrackType As TransCopyDiskType
+
+            Public Property UnknownFlagBit4() As Boolean
+                Get
+                    Return (_Flags And TransCopyTrackFlags.Bit4) > 0
+                End Get
+                Set(value As Boolean)
+                    _Flags = MyBitConverter.ToggleBit(_Flags, TransCopyTrackFlags.Bit4, value)
+                End Set
+            End Property
+
+            Public Property UnknownFlagBit6() As Boolean
+                Get
+                    Return (_Flags And TransCopyTrackFlags.Bit6) > 0
+                End Get
+                Set(value As Boolean)
+                    _Flags = MyBitConverter.ToggleBit(_Flags, TransCopyTrackFlags.Bit6, value)
+                    If value Then
+                        _Flags = MyBitConverter.ToggleBit(_Flags, TransCopyTrackFlags.LengthTolerance, False)
+                    End If
+                End Set
+            End Property
+
+            Public Property VerifyWrite() As Boolean
+                Get
+                    Return (_Flags And TransCopyTrackFlags.VerifyWrite) > 0
+                End Get
+                Set(value As Boolean)
+                    _Flags = MyBitConverter.ToggleBit(_Flags, TransCopyTrackFlags.VerifyWrite, value)
                 End Set
             End Property
 
@@ -111,31 +186,6 @@ Namespace ImageFormats
                     _AddressMarkingTiming.Add(TimingIndex)
                 End If
             End Sub
-
-            Private ReadOnly Property IBitstreamTrack_BitRate As UShort Implements IBitstreamTrack.BitRate
-                Get
-                    Return InferBitRate(_Bitstream.Length)
-                End Get
-            End Property
-
-            Private ReadOnly Property IBitstreamTrack_RPM As UShort Implements IBitstreamTrack.RPM
-                Get
-                    Return InferRPM(_Bitstream.Length)
-                End Get
-            End Property
-
-            Private ReadOnly Property IBitstreamTrack_TrackType As BitstreamTrackType Implements IBitstreamTrack.TrackType
-                Get
-                    Select Case TrackType
-                        Case TransCopyDiskType.MFMDoubleDensity, TransCopyDiskType.MFMHighDensity, TransCopyDiskType.MFMDoubleDensity360RPM
-                            Return BitstreamTrackType.MFM
-                        Case TransCopyDiskType.FMSingleDensity
-                            Return BitstreamTrackType.FM
-                        Case Else
-                            Return BitstreamTrackType.Other
-                    End Select
-                End Get
-            End Property
         End Class
     End Namespace
 End Namespace

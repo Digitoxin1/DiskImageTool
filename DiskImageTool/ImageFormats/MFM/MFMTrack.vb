@@ -29,22 +29,27 @@ Namespace ImageFormats
                 End Get
                 Set
                     _Bitstream = Value
-                    _Length = _Bitstream.Length \ 8
+                    '_Length = _Bitstream.Length \ 8
+                    _Length = Math.Ceiling(_Bitstream.Length / 8)
                 End Set
             End Property
             Public Property MFMData As IBM_MFM.IBM_MFM_Track Implements IBitstreamTrack.MFMData
             Public Property Decoded As Boolean Implements IBitstreamTrack.Decoded
                 Get
-                    Return True
+                    Return _MFMData IsNot Nothing AndAlso _MFMData.Sectors.Count > 0
                 End Get
                 Set
                     'Do Nothing
                 End Set
             End Property
 
-            Private ReadOnly Property IBitstreamTrack_TrackType As BitstreamTrackType Implements IBitstreamTrack.TrackType
+            Public ReadOnly Property BitstreamTrackType As BitstreamTrackType Implements IBitstreamTrack.TrackType
                 Get
-                    Return BitstreamTrackType.MFM
+                    If _MFMData IsNot Nothing AndAlso _MFMData.Sectors.Count > 0 Then
+                        Return BitstreamTrackType.MFM
+                    Else
+                        Return BitstreamTrackType.Other
+                    End If
                 End Get
             End Property
         End Class

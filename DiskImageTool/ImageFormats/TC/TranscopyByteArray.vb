@@ -70,10 +70,23 @@ Namespace ImageFormats
                 For Cylinder = 0 To _Image.CylinderEnd
                     For Side = 0 To _Image.Sides - 1
                         TranscopyCylinder = _Image.GetCylinder(Cylinder, Side)
+
+                        Dim FirstSector As Integer = -1
+                        Dim LastSector As Integer = -1
+                        Dim TrackType As BitstreamTrackType = BitstreamTrackType.Other
+
                         If TranscopyCylinder.MFMData IsNot Nothing Then
+                            FirstSector = TranscopyCylinder.MFMData.FirstSector
+                            LastSector = TranscopyCylinder.MFMData.LastSector
+                        End If
 
-                            SetTrack(Cylinder, Side, TranscopyCylinder.MFMData.FirstSector, TranscopyCylinder.MFMData.LastSector)
+                        If TranscopyCylinder.Bitstream.Length > 0 Then
+                            TrackType = TranscopyCylinder.BitstreamTrackType
+                        End If
 
+                        SetTrack(Cylinder, Side, FirstSector, LastSector, TrackType)
+
+                        If TranscopyCylinder.MFMData IsNot Nothing Then
                             For Each MFMSector In TranscopyCylinder.MFMData.Sectors
                                 If MFMSector.DAMFound Then
                                     If MFMSector.SectorId >= 1 And MFMSector.SectorId <= SECTOR_COUNT Then

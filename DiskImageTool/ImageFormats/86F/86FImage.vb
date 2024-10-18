@@ -6,15 +6,13 @@ Namespace ImageFormats
             Implements IBitstreamImage
 
             Private Const FILE_SIGNATURE = "86BF"
+            Private _BitRate As BitRate = 255
+            Private _DiskFlags As DiskFlags
             Private _MajorVersion As Byte
             Private _MinorVersion As Byte
-            Private _DiskFlags As DiskFlags
+            Private _RPM As RPM = 255
             Private _TrackCount As UShort
             Private _Tracks() As _86FTrack
-            Private _BitRate As BitRate = 255
-            Private _RPM As RPM = 255
-
-
             Public Sub New()
                 _MajorVersion = 2
                 _MinorVersion = 12
@@ -176,12 +174,6 @@ Namespace ImageFormats
                 End Get
             End Property
 
-            Public ReadOnly Property TrackStep As Byte Implements IBitstreamImage.TrackStep
-                Get
-                    Return 1
-                End Get
-            End Property
-
             Public Property WriteProtect As Boolean
                 Get
                     Return (_DiskFlags And DiskFlags.WriteProtect) > 0
@@ -201,6 +193,121 @@ Namespace ImageFormats
                     _DiskFlags = (_DiskFlags And Not (&H600)) Or (CUShort(value) << 9)
                 End Set
             End Property
+
+            Private ReadOnly Property IBitstreamImage_TrackStep As Byte Implements IBitstreamImage.TrackStep
+                Get
+                    Return 1
+                End Get
+            End Property
+            Public Function Export(FilePath As String, RefreshBitstream As Boolean) As Boolean
+                Dim Buffer() As Byte
+                Dim Pos As UInteger
+                Dim DataPosition As UInteger
+                Dim Track As _86FTrack
+                Dim BitCellCount As UInteger
+                Dim AllocatedLength As UInteger
+
+                If RefreshBitstream Then
+                    UpdateBitstream()
+                End If
+
+                Dim TrackArray = GetTrackArray()
+
+                Try
+                    If IO.File.Exists(FilePath) Then
+                        IO.File.Delete(FilePath)
+                    End If
+
+                    Using fs As IO.FileStream = IO.File.OpenWrite(FilePath)
+                        Buffer = Text.Encoding.UTF8.GetBytes(FILE_SIGNATURE)
+                        fs.Write(Buffer, 0, Buffer.Length)
+
+                        fs.WriteByte(_MinorVersion)
+                        fs.WriteByte(_MajorVersion)
+
+                        Buffer = BitConverter.GetBytes(_DiskFlags)
+                        fs.Write(Buffer, 0, Buffer.Length)
+                        Pos = fs.Position
+                        DataPosition = 256 * Sides * 4 + Pos
+
+                        For Each Track In TrackArray
+                            fs.Position = Pos
+
+                            If Track Is Nothing Then
+                                Buffer = New Byte(3) {}
+                            ElseIf Track.Bitstream.Length = 0 Then
+                                Buffer = New Byte(3) {}
+                            Else
+                                Buffer = BitConverter.GetBytes(DataPosition)
+                            End If
+
+                            fs.Write(Buffer, 0, Buffer.Length)
+
+                            Pos += 4
+
+                            If Track IsNot Nothing AndAlso Track.Bitstream.Length > 0 Then
+                                fs.Position = DataPosition
+
+                                Buffer = BitConverter.GetBytes(Track.Flags)
+                                fs.Write(Buffer, 0, Buffer.Length)
+
+                                If BitcellMode Then
+                                    Buffer = BitConverter.GetBytes(Track.BitCellCount)
+                                    fs.Write(Buffer, 0, Buffer.Length)
+                                End If
+
+                                Buffer = BitConverter.GetBytes(Track.IndexHolePos)
+                                fs.Write(Buffer, 0, Buffer.Length)
+
+                                If BitcellMode And AlternateBitcellCalculation Then
+                                    AllocatedLength = Math.Ceiling(Track.Bitstream.Length / 8)
+                                    BitCellCount = AllocatedLength * 8
+                                Else
+                                    Dim IsMFM = Track.Encoding = Encoding.MFM
+                                    BitCellCount = GetCalculatedBitCellCount(Track.BitRate, Track.RPM, IsMFM, RPMSlowDown, AlternateBitcellCalculation, Track.BitCellCount)
+                                    AllocatedLength = GetAllocatedLength(Hole, RPMSlowDown, AlternateBitcellCalculation, Track.BitCellCount)
+                                End If
+
+                                If BitCellCount > 0 Then
+                                    Buffer = IBM_MFM.BitsToBytes(IBM_MFM.ResizeBitstream(Track.Bitstream, BitCellCount), 0)
+                                    fs.Write(Buffer, 0, Buffer.Length)
+
+                                    If AllocatedLength > Buffer.Length Then
+                                        Buffer = New Byte(AllocatedLength - Buffer.Length - 1) {}
+                                        fs.Write(Buffer, 0, Buffer.Length)
+                                    End If
+
+                                    If HasSurfaceData Then
+                                        Buffer = IBM_MFM.BitsToBytes(IBM_MFM.ResizeBitstream(Track.SurfaceData, BitCellCount), 0)
+                                        fs.Write(Buffer, 0, Buffer.Length)
+
+                                        If AllocatedLength > Buffer.Length Then
+                                            Buffer = New Byte(AllocatedLength - Buffer.Length - 1) {}
+                                            fs.Write(Buffer, 0, Buffer.Length)
+                                        End If
+                                    End If
+                                End If
+
+                                DataPosition = fs.Position
+                            End If
+                        Next
+                    End Using
+                Catch ex As Exception
+                    Return False
+                End Try
+
+                Return True
+            End Function
+
+            Public Function GetTrack(Track As UShort, Side As Byte) As _86FTrack
+                If Track > _TrackCount - 1 Or Side > Sides - 1 Then
+                    Throw New System.IndexOutOfRangeException
+                End If
+
+                Dim Index = Track * Sides + Side
+
+                Return _Tracks(Index)
+            End Function
 
             Public Function Load(FilePath As String) As Boolean
                 Return Load(IO.File.ReadAllBytes(FilePath))
@@ -222,7 +329,7 @@ Namespace ImageFormats
 
                     Dim Data() As Byte
                     Dim Checksum As UInteger
-                    Dim TrackLength As UInteger
+                    Dim BitCellCount As UInteger
                     Dim AllocatedLength As UInteger
                     Dim Offset As UInteger
 
@@ -236,8 +343,8 @@ Namespace ImageFormats
                                 If BitcellMode Then
                                     F86Track.BitCellCount = BitConverter.ToUInt32(Buffer, Offset + 2)
                                     If AlternateBitcellCalculation Then
-                                        TrackLength = (F86Track.BitCellCount \ 16) * 2
-                                        AllocatedLength = TrackLength
+                                        BitCellCount = F86Track.BitCellCount
+                                        AllocatedLength = Math.Ceiling(F86Track.BitCellCount / 8)
                                     End If
                                     Offset += 4
                                 End If
@@ -245,19 +352,20 @@ Namespace ImageFormats
 
                                 If Not BitcellMode Or Not AlternateBitcellCalculation Then
                                     Dim IsMFM = F86Track.Encoding = Encoding.MFM
-                                    TrackLength = GetTrackLength(F86Track.BitRate, F86Track.RPM, IsMFM, RPMSlowDown, AlternateBitcellCalculation, F86Track.BitCellCount)
+                                    BitCellCount = GetCalculatedBitCellCount(F86Track.BitRate, F86Track.RPM, IsMFM, RPMSlowDown, AlternateBitcellCalculation, F86Track.BitCellCount)
                                     AllocatedLength = GetAllocatedLength(Hole, RPMSlowDown, AlternateBitcellCalculation, F86Track.BitCellCount)
                                 End If
 
-                                F86Track.Bitstream = IBM_MFM.BytesToBits(Buffer, Offset + 6, TrackLength)
+                                F86Track.Bitstream = IBM_MFM.BytesToBits(Buffer, Offset + 6, BitCellCount)
+
                                 If HasSurfaceData Then
-                                    F86Track.SurfaceData = IBM_MFM.BytesToBits(Buffer, Offset + 6 + AllocatedLength, TrackLength)
+                                    F86Track.SurfaceData = IBM_MFM.BytesToBits(Buffer, Offset + 6 + AllocatedLength, BitCellCount)
                                 End If
 
                                 'Check for thick tracks
                                 If j = 0 Then
                                     If i < 2 Then
-                                        Data = New Byte(TrackLength - 1) {}
+                                        Data = New Byte(BitCellCount \ 8 - 1) {}
                                         Array.Copy(Buffer, Offset + 6, Data, 0, Data.Length)
                                         If i = 0 Then
                                             Checksum = CRC32.ComputeChecksum(Data)
@@ -316,17 +424,6 @@ Namespace ImageFormats
 
                 Return Result
             End Function
-
-            Public Function GetTrack(Track As UShort, Side As Byte) As _86FTrack
-                If Track > _TrackCount - 1 Or Side > Sides - 1 Then
-                    Throw New System.IndexOutOfRangeException
-                End If
-
-                Dim Index = Track * Sides + Side
-
-                Return _Tracks(Index)
-            End Function
-
             Public Sub SetTrack(Track As UShort, Side As Byte, Value As _86FTrack)
                 If Track > _TrackCount - 1 Or Side > Sides - 1 Then
                     Throw New System.IndexOutOfRangeException
@@ -362,100 +459,6 @@ Namespace ImageFormats
 
                 Return Updated
             End Function
-
-            Public Function Export(FilePath As String, RefreshBitstream As Boolean) As Boolean
-                Dim Buffer() As Byte
-                Dim Pos As UInteger
-                Dim DataPosition As UInteger
-                Dim Track As _86FTrack
-                Dim TrackLength As UInteger
-                Dim AllocatedLength As UInteger
-
-                If RefreshBitstream Then
-                    UpdateBitstream()
-                End If
-
-                Dim TrackArray = GetTrackArray()
-
-                Try
-                    If IO.File.Exists(FilePath) Then
-                        IO.File.Delete(FilePath)
-                    End If
-
-                    Using fs As IO.FileStream = IO.File.OpenWrite(FilePath)
-                        Buffer = Text.Encoding.UTF8.GetBytes(FILE_SIGNATURE)
-                        fs.Write(Buffer, 0, Buffer.Length)
-
-                        fs.WriteByte(_MinorVersion)
-                        fs.WriteByte(_MajorVersion)
-
-                        Buffer = BitConverter.GetBytes(_DiskFlags)
-                        fs.Write(Buffer, 0, Buffer.Length)
-                        Pos = fs.Position
-                        DataPosition = 256 * Sides * 4 + Pos
-
-                        For Each Track In TrackArray
-                            fs.Position = Pos
-                            If Track Is Nothing Then
-                                Buffer = New Byte(3) {}
-                            Else
-                                Buffer = BitConverter.GetBytes(DataPosition)
-                            End If
-                            fs.Write(Buffer, 0, Buffer.Length)
-                            Pos += 4
-
-                            If Track IsNot Nothing Then
-                                fs.Position = DataPosition
-
-                                Buffer = BitConverter.GetBytes(Track.Flags)
-                                fs.Write(Buffer, 0, Buffer.Length)
-
-                                If BitcellMode Then
-                                    Buffer = BitConverter.GetBytes(Track.BitCellCount)
-                                    fs.Write(Buffer, 0, Buffer.Length)
-                                End If
-
-                                Buffer = BitConverter.GetBytes(Track.IndexHolePos)
-                                fs.Write(Buffer, 0, Buffer.Length)
-
-                                If BitcellMode And AlternateBitcellCalculation Then
-                                    TrackLength = (Track.Bitstream.Length \ 16) * 2
-                                    AllocatedLength = TrackLength
-                                Else
-                                    Dim IsMFM = Track.Encoding = Encoding.MFM
-                                    TrackLength = GetTrackLength(Track.BitRate, Track.RPM, IsMFM, RPMSlowDown, AlternateBitcellCalculation, Track.BitCellCount)
-                                    AllocatedLength = GetAllocatedLength(Hole, RPMSlowDown, AlternateBitcellCalculation, Track.BitCellCount)
-                                End If
-
-                                Buffer = IBM_MFM.BitsToBytes(Track.Bitstream, 0)
-                                fs.Write(Buffer, 0, Buffer.Length)
-
-                                If AllocatedLength > TrackLength Then
-                                    Buffer = New Byte(AllocatedLength - TrackLength - 1) {}
-                                    fs.Write(Buffer, 0, Buffer.Length)
-                                End If
-
-                                If HasSurfaceData Then
-                                    Buffer = IBM_MFM.BitsToBytes(Track.SurfaceData, 0)
-                                    fs.Write(Buffer, 0, Buffer.Length)
-                                End If
-
-                                If AllocatedLength > TrackLength Then
-                                    Buffer = New Byte(AllocatedLength - TrackLength - 1) {}
-                                    fs.Write(Buffer, 0, Buffer.Length)
-                                End If
-
-                                DataPosition = fs.Position
-                            End If
-                        Next
-                    End Using
-                Catch ex As Exception
-                    Return False
-                End Try
-
-                Return True
-            End Function
-
             Private Function AdjustRPM(Length As UInteger, RPMSlowDown As Single, SpeedUp As Boolean) As UInteger
                 If SpeedUp Then
                     Return Math.Truncate(Length / (1 + RPMSlowDown))
@@ -512,7 +515,7 @@ Namespace ImageFormats
                 Return TrackArray
             End Function
 
-            Private Function GetTrackLength(BitRate As BitRate, RPM As RPM, IsMFM As Boolean, RPMSlowDown As Single, SpeedUp As Boolean, ExtraBitCellCount As UInteger) As UInteger
+            Private Function GetCalculatedBitCellCount(BitRate As BitRate, RPM As RPM, IsMFM As Boolean, RPMSlowDown As Single, SpeedUp As Boolean, ExtraBitCellCount As UInteger) As UInteger
                 Dim Length As Single = CalculatetBitCount(GetBitRate(BitRate, IsMFM), GetRPM(RPM))
 
                 Length = AdjustRPM(Length, RPMSlowDown, SpeedUp)
@@ -521,7 +524,7 @@ Namespace ImageFormats
 
                 Length += MyBitConverter.ToInt32(ExtraBitCellCount)
 
-                Return Length \ 8
+                Return Length
             End Function
 
             Private Function IBitstreamImage_GetTrack(Track As UShort, Side As Byte) As IBitstreamTrack Implements IBitstreamImage.GetTrack

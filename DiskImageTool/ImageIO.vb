@@ -11,6 +11,7 @@ Module ImageIO
         Failed
         Unsupported
         Unknown
+        Cancelled
     End Enum
 
     Public Function CreateBackup(FilePath As String) As Boolean
@@ -366,6 +367,10 @@ Module ImageIO
         Dim Response As SaveImageResponse = SaveImageResponse.Failed
         Dim Result As Boolean = False
 
+        If Not CheckCompatibility(FileImageType, Disk.Image.Data) Then
+            Return SaveImageResponse.Cancelled
+        End If
+
         If FileImageType = DiskImageType Then
             Result = Disk.Image.Data.SaveToFile(FilePath)
 
@@ -444,6 +449,39 @@ Module ImageIO
         Return Response
     End Function
 
+    Private Function CheckCompatibility(FileImageType As FloppyImageType, Data As IByteArray) As Boolean
+        Dim Msg As String
+
+        If FileImageType = Data.ImageType Then
+            Return True
+        End If
+
+        If FileImageType = FloppyImageType.BasicSectorImage Then
+            If Data.NonStandardTracks.Count > 0 Then
+                Msg = "This image has one or more tracks with a non-standard sector layout." _
+                    & vbCrLf & vbCrLf & "Data loss will occur when saving to this image type." _
+                    & vbCrLf & vbCrLf & "Do you wish to continue?"
+                If MsgBox(Msg, MsgBoxStyle.Exclamation + MsgBoxStyle.YesNo + MsgBoxStyle.DefaultButton2) = MsgBoxResult.No Then
+                    Return False
+                End If
+            End If
+
+        ElseIf Data.ImageType = FloppyImageType._86FImage Then
+            If Data.NonStandardTracks.Count > 0 Then
+                Dim Image = DirectCast(Data, ImageFormats._86F._86FByteArray).Image
+                If Image.HasSurfaceData Then
+                    Msg = "This image contains additional surface data which may be required for copy protection." _
+                        & vbCrLf & vbCrLf & "This data will be lost when saving to this image type." _
+                        & vbCrLf & vbCrLf & "Do you wish to continue?"
+                    If MsgBox(Msg, MsgBoxStyle.Exclamation + MsgBoxStyle.YesNo + MsgBoxStyle.DefaultButton2) = MsgBoxResult.No Then
+                        Return False
+                    End If
+                End If
+            End If
+        End If
+
+        Return True
+    End Function
     Private Function GetBitstreamImage(Data As IByteArray) As IBitstreamImage
         If TypeOf Data Is ImageFormats._86F._86FByteArray Then
             Return DirectCast(Data, ImageFormats._86F._86FByteArray).Image

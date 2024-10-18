@@ -5,17 +5,16 @@ Namespace ImageFormats
         Public Class TransCopyImage
             Implements IBitstreamImage
 
-            Private Const EMPTY_SKU As Byte = &H11
-            Private Const EMPTY_SIZE As Byte = &H33
             Private Const EMPTY_FLAG As Byte = &H44
+            Private Const EMPTY_SIZE As Byte = &H33
+            Private Const EMPTY_SKU As Byte = &H11
             Private _Comment() As Byte
             Private _Comment2() As Byte
+            Private _CylinderEnd As Byte
+            Private _CylinderIncrement As Byte
             Private _Cylinders() As TransCopyCylinder
             Private _CylinderStart As Byte
-            Private _CylinderEnd As Byte
             Private _Sides As Byte
-            Private _CylinderIncrement As Byte
-
             Private Enum TransCopyOffsets
                 Signature = &H0
                 Comment = &H2
@@ -49,78 +48,6 @@ Namespace ImageFormats
                 _CylinderIncrement = 1
             End Sub
 
-            Public Sub Initialize(Cylinders As Byte, Sides As Byte, CylinderIncrement As Byte)
-                _CylinderStart = 0
-                _CylinderEnd = Cylinders - 1
-                _Sides = Sides
-                _CylinderIncrement = CylinderIncrement
-
-                _Cylinders = New TransCopyCylinder((_CylinderEnd + 1) * Sides - 1) {}
-            End Sub
-
-            Public Function Initialize(Buffer() As Byte) As Boolean
-                Dim Result As Boolean
-
-                Dim Signature = BitConverter.ToUInt16(Buffer, TransCopyOffsets.Signature)
-                Result = (Signature = &HA55A)
-
-                If Result Then
-                    Result = Buffer.Length > TransCopyOffsets.Data
-                End If
-
-                If Result Then
-                    Array.Copy(Buffer, TransCopyOffsets.Comment, _Comment, 0, TransCopySizes.Comment)
-                    Array.Copy(Buffer, TransCopyOffsets.Comment2, _Comment2, 0, TransCopySizes.Comment2)
-
-                    _DiskType = Buffer(TransCopyOffsets.DiskType)
-                    _CylinderStart = Buffer(TransCopyOffsets.CylinderStart)
-                    _CylinderEnd = Buffer(TransCopyOffsets.CylinderEnd)
-                    _Sides = Buffer(TransCopyOffsets.Sides)
-                    _CylinderIncrement = Buffer(TransCopyOffsets.CylinderIncrement)
-
-                    _Cylinders = New TransCopyCylinder((_CylinderEnd + 1) * Sides - 1) {}
-
-                    For Track = 0 To _CylinderEnd
-                        For Side = 0 To _Sides - 1
-                            Dim Cylinder = New TransCopyCylinder(Track, Side)
-
-                            Dim Offset = 4 * Track + 2 * Side
-
-                            Dim OffsetValue = BitConverter.ToUInt16(Buffer, TransCopyOffsets.Offsets + Offset)
-                            If OffsetValue > 0 Then
-                                Cylinder.Offset = MyBitConverter.SwapEndian(OffsetValue) * 256
-                                Cylinder.Skew = BitConverter.ToUInt16(Buffer, TransCopyOffsets.Skews + Offset)
-                                Cylinder.Length = BitConverter.ToUInt16(Buffer, TransCopyOffsets.Lengths + Offset)
-                                Cylinder.Flags = Buffer(TransCopyOffsets.Flags + Offset)
-                                Cylinder.TrackType = Buffer(TransCopyOffsets.Flags + Offset + 1)
-                                For i = 0 To 15
-                                    Dim TimingOffset = 64 * Track + 32 * Side + 2 * i
-                                    Dim Value = BitConverter.ToUInt16(Buffer, TransCopyOffsets.Timings + TimingOffset)
-                                    Cylinder.AddressMarkingTiming.Add(Value)
-                                Next
-
-                                If Cylinder.Offset >= TransCopyOffsets.Data Then
-                                    Cylinder.Bitstream = IBM_MFM.BytesToBits(Buffer, Cylinder.Offset, Cylinder.Length)
-
-                                    If Cylinder.IsMFMTrackType Then
-                                        Cylinder.MFMData = New IBM_MFM.IBM_MFM_Track(Cylinder.Bitstream)
-                                        Cylinder.Decoded = True
-                                        'Bitstream.DebugTranscopyCylinder(Cylinder)
-                                    End If
-                                End If
-                            End If
-                            SetCylinder(Track, Side, Cylinder)
-                        Next
-                    Next
-                End If
-
-                Return Result
-            End Function
-
-            Public Function Load(FilePath As String) As Boolean
-                Return Initialize(IO.File.ReadAllBytes(FilePath))
-            End Function
-
             Public Property Comment As String
                 Get
                     Return Text.Encoding.UTF8.GetString(_Comment).TrimEnd(vbNullChar)
@@ -141,10 +68,9 @@ Namespace ImageFormats
                 End Set
             End Property
 
-            Public Property DiskType As TransCopyDiskType
-            Public ReadOnly Property CylinderStart As Byte
+            Public ReadOnly Property CylinderCount As UShort Implements IBitstreamImage.TrackCount
                 Get
-                    Return _CylinderStart
+                    Return _CylinderEnd + 1
                 End Get
             End Property
 
@@ -154,11 +80,19 @@ Namespace ImageFormats
                 End Get
             End Property
 
-            Public ReadOnly Property CylinderCount As UShort Implements IBitstreamImage.TrackCount
+            Public ReadOnly Property CylinderIncrement As Byte
                 Get
-                    Return _CylinderEnd + 1
+                    Return _CylinderIncrement
                 End Get
             End Property
+
+            Public ReadOnly Property CylinderStart As Byte
+                Get
+                    Return _CylinderStart
+                End Get
+            End Property
+
+            Public Property DiskType As TransCopyDiskType
 
             Public ReadOnly Property Sides As Byte Implements IBitstreamImage.SideCount
                 Get
@@ -166,31 +100,11 @@ Namespace ImageFormats
                 End Get
             End Property
 
-            Public ReadOnly Property CylinderIncrement As Byte Implements IBitstreamImage.TrackStep
+            Private ReadOnly Property IBitstreamImage_TrackStep As Byte Implements IBitstreamImage.TrackStep
                 Get
-                    Return _CylinderIncrement
+                    Return 1
                 End Get
             End Property
-
-            Public Function GetCylinder(Cylinder As Byte, Side As Byte) As TransCopyCylinder
-                If Cylinder > _CylinderEnd Or Side > _Sides - 1 Then
-                    Throw New System.IndexOutOfRangeException
-                End If
-
-                Dim Index = Cylinder * _Sides + Side
-
-                Return _Cylinders(Index)
-            End Function
-
-            Public Sub SetCylinder(Cylinder As Byte, Side As Byte, Value As TransCopyCylinder)
-                If Cylinder > _CylinderEnd Or Side > _Sides - 1 Then
-                    Throw New System.IndexOutOfRangeException
-                End If
-
-                Dim Index = Cylinder * _Sides + Side
-
-                _Cylinders(Index) = Value
-            End Sub
 
             Public Function Export(FilePath As String, RefreshBitstream As Boolean) As Boolean
                 Dim buffer() As Byte
@@ -283,8 +197,12 @@ Namespace ImageFormats
                                 If Side < _Sides Then
                                     Cylinder = GetCylinder(Track, Side)
                                     If Cylinder IsNot Nothing Then
+                                        Dim TrackType = Cylinder.TrackType
+                                        If Cylinder.NoAddressMarks Then
+                                            TrackType = TrackType Or &H80
+                                        End If
                                         buffer(Index) = Cylinder.Flags
-                                        buffer(Index + 1) = Cylinder.TrackType
+                                        buffer(Index + 1) = TrackType
                                     End If
                                 End If
                                 Index += 2
@@ -330,8 +248,9 @@ Namespace ImageFormats
                                     Cylinder = GetCylinder(Track, Side)
                                     If Cylinder IsNot Nothing Then
                                         Dim BitLength = Math.Ceiling(Cylinder.Bitstream.Length / 2048) * 2048
-                                        Dim Padding = BitLength - Cylinder.Bitstream.Length
-                                        buffer = IBM_MFM.BitsToBytes(Cylinder.Bitstream, Padding)
+                                        'Dim Padding = BitLength - Cylinder.Bitstream.Length
+                                        'buffer = IBM_MFM.BitsToBytes(Cylinder.Bitstream, Padding)
+                                        buffer = IBM_MFM.BitsToBytes(IBM_MFM.ResizeBitstream(Cylinder.Bitstream, BitLength), 0)
                                         Dim Offset = fs.Position
                                         Dim NextBoundary = Math.Ceiling(Offset / 65536) * 65536
                                         If Offset + buffer.Length > NextBoundary Then
@@ -361,12 +280,101 @@ Namespace ImageFormats
                 Return True
             End Function
 
-            Private Sub FillBuffer(buffer() As Byte, b As Byte)
-                For i = 0 To buffer.Length - 1
-                    buffer(i) = b
-                Next
+            Public Function GetCylinder(Cylinder As Byte, Side As Byte) As TransCopyCylinder
+                If Cylinder > _CylinderEnd Or Side > _Sides - 1 Then
+                    Throw New System.IndexOutOfRangeException
+                End If
+
+                Dim Index = Cylinder * _Sides + Side
+
+                Return _Cylinders(Index)
+            End Function
+
+            Public Function GetTrack(Track As UShort, Side As Byte) As IBitstreamTrack Implements IBitstreamImage.GetTrack
+                Return GetCylinder(Track, Side)
+            End Function
+
+            Public Sub Initialize(Cylinders As Byte, Sides As Byte, CylinderIncrement As Byte)
+                _CylinderStart = 0
+                _CylinderEnd = Cylinders - 1
+                _Sides = Sides
+                _CylinderIncrement = CylinderIncrement
+
+                _Cylinders = New TransCopyCylinder((_CylinderEnd + 1) * Sides - 1) {}
             End Sub
 
+            Public Function Initialize(Buffer() As Byte) As Boolean
+                Dim Result As Boolean
+
+                Dim Signature = BitConverter.ToUInt16(Buffer, TransCopyOffsets.Signature)
+                Result = (Signature = &HA55A)
+
+                If Result Then
+                    Result = Buffer.Length > TransCopyOffsets.Data
+                End If
+
+                If Result Then
+                    Array.Copy(Buffer, TransCopyOffsets.Comment, _Comment, 0, TransCopySizes.Comment)
+                    Array.Copy(Buffer, TransCopyOffsets.Comment2, _Comment2, 0, TransCopySizes.Comment2)
+
+                    _DiskType = Buffer(TransCopyOffsets.DiskType)
+                    _CylinderStart = Buffer(TransCopyOffsets.CylinderStart)
+                    _CylinderEnd = Buffer(TransCopyOffsets.CylinderEnd)
+                    _Sides = Buffer(TransCopyOffsets.Sides)
+                    _CylinderIncrement = Buffer(TransCopyOffsets.CylinderIncrement)
+
+                    _Cylinders = New TransCopyCylinder((_CylinderEnd + 1) * Sides - 1) {}
+
+                    For Track = 0 To _CylinderEnd
+                        For Side = 0 To _Sides - 1
+                            Dim Cylinder = New TransCopyCylinder(Track, Side)
+
+                            Dim Offset = 4 * Track + 2 * Side
+
+                            Dim OffsetValue = BitConverter.ToUInt16(Buffer, TransCopyOffsets.Offsets + Offset)
+                            If OffsetValue > 0 Then
+                                Cylinder.Offset = MyBitConverter.SwapEndian(OffsetValue) * 256
+                                Cylinder.Skew = BitConverter.ToUInt16(Buffer, TransCopyOffsets.Skews + Offset)
+                                Cylinder.Length = BitConverter.ToUInt16(Buffer, TransCopyOffsets.Lengths + Offset)
+                                Cylinder.Flags = Buffer(TransCopyOffsets.Flags + Offset)
+                                Cylinder.TrackType = Buffer(TransCopyOffsets.Flags + Offset + 1) And &H7F
+
+                                For i = 0 To 15
+                                    Dim TimingOffset = 64 * Track + 32 * Side + 2 * i
+                                    Dim Value = BitConverter.ToUInt16(Buffer, TransCopyOffsets.Timings + TimingOffset)
+                                    Cylinder.AddressMarkingTiming.Add(Value)
+                                Next
+
+                                If Cylinder.Offset >= TransCopyOffsets.Data Then
+                                    Cylinder.Bitstream = IBM_MFM.BytesToBits(Buffer, Cylinder.Offset, Cylinder.Length * 8)
+
+                                    If Cylinder.IsMFMTrackType Then
+                                        Cylinder.MFMData = New IBM_MFM.IBM_MFM_Track(Cylinder.Bitstream)
+                                        Cylinder.Decoded = True
+                                        'Bitstream.DebugTranscopyCylinder(Cylinder)
+                                    End If
+                                End If
+                            End If
+                            SetCylinder(Track, Side, Cylinder)
+                        Next
+                    Next
+                End If
+
+                Return Result
+            End Function
+
+            Public Function Load(FilePath As String) As Boolean
+                Return Initialize(IO.File.ReadAllBytes(FilePath))
+            End Function
+            Public Sub SetCylinder(Cylinder As Byte, Side As Byte, Value As TransCopyCylinder)
+                If Cylinder > _CylinderEnd Or Side > _Sides - 1 Then
+                    Throw New System.IndexOutOfRangeException
+                End If
+
+                Dim Index = Cylinder * _Sides + Side
+
+                _Cylinders(Index) = Value
+            End Sub
             Public Function UpdateBitstream() As Boolean Implements IBitstreamImage.UpdateBitstream
                 Dim Updated As Boolean = False
                 Dim Cylinder As TransCopyCylinder
@@ -393,9 +401,11 @@ Namespace ImageFormats
                 Return Updated
             End Function
 
-            Public Function GetTrack(Track As UShort, Side As Byte) As IBitstreamTrack Implements IBitstreamImage.GetTrack
-                Return GetCylinder(Track, Side)
-            End Function
+            Private Sub FillBuffer(buffer() As Byte, b As Byte)
+                For i = 0 To buffer.Length - 1
+                    buffer(i) = b
+                Next
+            End Sub
         End Class
     End Namespace
 End Namespace

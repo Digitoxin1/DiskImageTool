@@ -6,6 +6,7 @@ Namespace Bitstream
 
         Friend Const SECTOR_COUNT As Byte = 36
         Private ReadOnly _ProtectedSectors As HashSet(Of UInteger)
+        Private ReadOnly _AdditionalTracks As HashSet(Of UShort)
         Private ReadOnly _NonStandardTracks As HashSet(Of UShort)
         Private ReadOnly _EmptySector() As Byte
         Private _DiskFormat As FloppyDiskFormat
@@ -21,6 +22,7 @@ Namespace Bitstream
         Private Class TrackData
             Public Property FirstSector As Integer
             Public Property LastSector As Integer
+            Public Property Encoding As BitstreamTrackType
         End Class
 
         Private Class MappedData
@@ -33,6 +35,7 @@ Namespace Bitstream
 
         Public Sub New()
             _ProtectedSectors = New HashSet(Of UInteger)
+            _AdditionalTracks = New HashSet(Of UShort)
             _NonStandardTracks = New HashSet(Of UShort)
             _EmptySector = New Byte(Disk.BYTES_PER_SECTOR - 1) {}
         End Sub
@@ -52,6 +55,12 @@ Namespace Bitstream
         Public ReadOnly Property HeadCount As Byte Implements IByteArray.HeadCount
             Get
                 Return _HeadCount
+            End Get
+        End Property
+
+        Public ReadOnly Property AdditionalTracks As HashSet(Of UShort) Implements IByteArray.AdditionalTracks
+            Get
+                Return _AdditionalTracks
             End Get
         End Property
 
@@ -123,7 +132,7 @@ Namespace Bitstream
             _Sectors(Index) = Value
         End Sub
 
-        Friend Sub SetTrack(Track As UShort, Head As Byte, FirstSector As Integer, LastSector As Integer)
+        Friend Sub SetTrack(Track As UShort, Head As Byte, FirstSector As Integer, LastSector As Integer, Encoding As BitstreamTrackType)
             If Track > _TrackCount - 1 Or Head > _HeadCount - 1 Then
                 Throw New System.IndexOutOfRangeException
             End If
@@ -132,7 +141,8 @@ Namespace Bitstream
 
             Dim TrackData As New TrackData With {
                 .FirstSector = FirstSector,
-                .LastSector = LastSector
+                .LastSector = LastSector,
+                .Encoding = Encoding
             }
 
             _Tracks(Index) = TrackData
@@ -234,19 +244,31 @@ Namespace Bitstream
 
             Dim TrackCount = GetTrackCount()
 
-            For Cylinder = 0 To TrackCount - 1
+            For Cylinder = 0 To _TrackCount - 1
                 For Side = 0 To _BPB.NumberOfHeads - 1
                     Dim TrackData = GetTrack(Cylinder, Side)
                     Dim TrackIsStandard As Boolean = True
                     If TrackData IsNot Nothing Then
-                        TrackIsStandard = TrackData.FirstSector >= 1 And TrackData.LastSector <= Math.Max(_BPB.SectorsPerTrack, 9)
+                        If TrackData.FirstSector > -1 Then
+                            TrackIsStandard = TrackData.FirstSector >= 1 And TrackData.LastSector <= Math.Max(_BPB.SectorsPerTrack, 9)
+                        Else
+                            If TrackData.Encoding = BitstreamTrackType.FM Then
+                                AdditionalTracks.Add(Cylinder * _BPB.NumberOfHeads + Side)
+                            End If
+                        End If
                     End If
                     For SectorId = 1 To _BPB.SectorsPerTrack
                         Dim BitstreamSector As BitstreamSector = Nothing
                         If Cylinder < _TrackCount And Side < _HeadCount Then
                             BitstreamSector = GetSector(Cylinder, Side, SectorId)
                         End If
-                        If BitstreamSector Is Nothing OrElse Not BitstreamSector.IsStandard Then
+                        If BitstreamSector Is Nothing Then
+                            If Cylinder < TrackCount Then
+                                Dim Sector = GetSectorFromParams(Cylinder, Side, SectorId)
+                                ProtectedSectors.Add(Sector)
+                                TrackIsStandard = False
+                            End If
+                        ElseIf Not BitstreamSector.IsStandard Then
                             Dim Sector = GetSectorFromParams(Cylinder, Side, SectorId)
                             ProtectedSectors.Add(Sector)
                             TrackIsStandard = False

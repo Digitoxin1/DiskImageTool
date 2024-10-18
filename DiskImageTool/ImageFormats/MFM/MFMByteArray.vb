@@ -62,14 +62,14 @@ Namespace ImageFormats
             Private Sub BuildSectorMap()
                 Dim MFMTrack As MFMTrack
 
-                SetTracks(_Image.TrackCount, _Image.SideCount)
+                SetTracks(_Image.TrackCount \ _Image.TrackStep, _Image.SideCount)
 
                 For Track = 0 To _Image.TrackCount - 1 Step _Image.TrackStep
                     For Side = 0 To _Image.SideCount - 1
                         Dim MappedTrack = Track \ _Image.TrackStep
                         MFMTrack = _Image.GetTrack(Track, Side)
 
-                        SetTrack(MappedTrack, Side, MFMTrack.MFMData.FirstSector, MFMTrack.MFMData.LastSector)
+                        SetTrack(MappedTrack, Side, MFMTrack.MFMData.FirstSector, MFMTrack.MFMData.LastSector, MFMTrack.BitstreamTrackType)
 
                         For Each MFMSector In MFMTrack.MFMData.Sectors
                             If MFMSector.DAMFound Then

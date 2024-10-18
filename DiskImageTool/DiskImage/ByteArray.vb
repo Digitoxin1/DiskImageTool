@@ -5,6 +5,7 @@ Namespace DiskImage
 
         Private _Data() As Byte
         Private ReadOnly _ProtectedSectors As HashSet(Of UInteger)
+        Private ReadOnly _AdditionalTracks As HashSet(Of UShort)
         Private ReadOnly _NonStandardTracks As HashSet(Of UShort)
 
         Public Event DataChanged As DataChangedEventHandler Implements IByteArray.DataChanged
@@ -13,6 +14,7 @@ Namespace DiskImage
         Sub New(Data() As Byte)
             _Data = Data
             _ProtectedSectors = New HashSet(Of UInteger)
+            _AdditionalTracks = New HashSet(Of UShort)
             _NonStandardTracks = New HashSet(Of UShort)
         End Sub
 
@@ -194,6 +196,12 @@ Namespace DiskImage
 
             Return True
         End Function
+
+        Private ReadOnly Property IByteArray_AdditionalTracks As HashSet(Of UShort) Implements IByteArray.AdditionalTracks
+            Get
+                Return _AdditionalTracks
+            End Get
+        End Property
 
         Private ReadOnly Property IByteArray_NonStandardTracks As HashSet(Of UShort) Implements IByteArray.NonStandardTracks
             Get

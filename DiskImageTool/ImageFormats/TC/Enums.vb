@@ -5,6 +5,9 @@
             CopyAcrossIndex = 2
             CopyWeakBits = 4
             VerifyWrite = 8
+            Bit4 = 16
+            LengthTolerance = 32
+            Bit6 = 64
             NoAddressMarks = 128
         End Enum
 
