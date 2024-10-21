@@ -119,7 +119,6 @@ Module ImageIO
                     Else
                         ImageData.InvalidImage = True
                     End If
-
                 Else
                     Image = New ByteArray(Data)
                 End If
@@ -178,7 +177,6 @@ Module ImageIO
     Public Function GetLoadDialogFilters() As String
         Dim FileFilter As String
         Dim ExtensionList As List(Of String)
-
 
         FileFilter = FileDialogGetFilter("All Floppy Disk Images", AllFileExtensions)
 
@@ -436,7 +434,6 @@ Module ImageIO
             Else
                 Return SaveImageResponse.Unsupported
             End If
-
         Else
             Return SaveImageResponse.Unsupported
         End If
@@ -482,6 +479,7 @@ Module ImageIO
 
         Return True
     End Function
+
     Private Function GetBitstreamImage(Data As IByteArray) As IBitstreamImage
         If TypeOf Data Is ImageFormats._86F._86FByteArray Then
             Return DirectCast(Data, ImageFormats._86F._86FByteArray).Image
@@ -495,4 +493,5 @@ Module ImageIO
 
         Return Nothing
     End Function
+
 End Module

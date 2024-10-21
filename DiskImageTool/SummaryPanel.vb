@@ -23,7 +23,7 @@ Module SummaryPanel
         End With
     End Sub
 
-    Public Sub PopulateSummaryPanelMain(ListViewSummary As ListView, Disk As Disk, TitleDB As FloppyDB, BootStrapDB As BootStrapDB, MD5 As String)
+    Public Sub PopulateSummaryPanelMain(ListViewSummary As ListView, Disk As Disk, TitleDB As FloppyDB, BootStrapDB As BootstrapDB, MD5 As String)
         Dim TitleFound As Boolean = False
 
         If TitleDB.TitleCount > 0 Then
@@ -67,6 +67,94 @@ Module SummaryPanel
             End If
         End With
     End Sub
+
+    Private Function GetFileSystemInfo(Disk As Disk) As FileSystemInfo
+        Dim fsi As FileSystemInfo
+
+        fsi.OldestFileDate = Nothing
+        fsi.NewestFileDate = Nothing
+        fsi.VolumeLabel = Nothing
+
+        Dim FileList = Disk.RootDirectory.GetFileList()
+
+        For Each DirectoryEntry In FileList
+            If DirectoryEntry.IsValid Then
+                If fsi.VolumeLabel Is Nothing AndAlso DirectoryEntry.IsValidVolumeName AndAlso DirectoryEntry.ParentDirectory.IsRootDirectory Then
+                    fsi.VolumeLabel = DirectoryEntry
+                End If
+                Dim LastWriteDate = DirectoryEntry.GetLastWriteDate
+                If LastWriteDate.IsValidDate Then
+                    If fsi.OldestFileDate Is Nothing Then
+                        fsi.OldestFileDate = LastWriteDate.DateObject
+                    ElseIf fsi.OldestFileDate.Value.CompareTo(LastWriteDate.DateObject) > 0 Then
+                        fsi.OldestFileDate = LastWriteDate.DateObject
+                    End If
+                    If fsi.NewestFileDate Is Nothing Then
+                        fsi.NewestFileDate = LastWriteDate.DateObject
+                    ElseIf fsi.NewestFileDate.Value.CompareTo(LastWriteDate.DateObject) < 0 Then
+                        fsi.NewestFileDate = LastWriteDate.DateObject
+                    End If
+                End If
+            End If
+        Next
+
+        Return fsi
+    End Function
+
+    Private Function GetNonStandardTrackList(NonStandardTracks As HashSet(Of UShort), HeadCount As Byte) As String
+        Dim TrackList(NonStandardTracks.Count - 1) As UShort
+        Dim TrackStartString As String
+        Dim TrackEndString As String
+        Dim Separator As String
+
+        Dim i As UShort = 0
+        For Each Track In NonStandardTracks
+            TrackList(i) = Track
+            i += 1
+        Next
+
+        Array.Sort(TrackList)
+
+        Dim Result As New List(Of String)
+        Dim StartRange As UShort = TrackList(0)
+        Dim Prev As UShort = TrackList(0)
+
+        For i = 1 To TrackList.Length - 1
+            If TrackList(i) = Prev + 1 Then
+                Prev = TrackList(i)
+            Else
+                TrackStartString = (StartRange \ HeadCount) & "." & (StartRange Mod HeadCount)
+                If StartRange = Prev Then
+                    Result.Add(TrackStartString)
+                Else
+                    TrackEndString = (Prev \ HeadCount) & "." & (Prev Mod HeadCount)
+                    If Prev = StartRange + 1 Then
+                        Separator = ", "
+                    Else
+                        Separator = " - "
+                    End If
+                    Result.Add(TrackStartString & Separator & TrackEndString)
+                End If
+                StartRange = TrackList(i)
+                Prev = StartRange
+            End If
+        Next
+
+        TrackStartString = (StartRange \ HeadCount) & "." & (StartRange Mod HeadCount)
+        If StartRange = Prev Then
+            Result.Add(TrackStartString)
+        Else
+            TrackEndString = (Prev \ HeadCount) & "." & (Prev Mod HeadCount)
+            If Prev = StartRange + 1 Then
+                Separator = ", "
+            Else
+                Separator = " - "
+            End If
+            Result.Add(TrackStartString & Separator & TrackEndString)
+        End If
+
+        Return String.Join(", ", Result)
+    End Function
 
     Private Sub PopulateSummaryPanelBootRecord(ListViewSummary As ListView, Disk As Disk, OEMNameResponse As OEMNameResponse)
         Dim Value As String
@@ -148,7 +236,6 @@ Module SummaryPanel
             End If
 
             .AddItem(BootRecordGroup, BPBDescription(BPBOffsets.SectorCountSmall), Disk.BootSector.BPB.SectorCount, ForeColor)
-
 
             If DoBPBCompare AndAlso Disk.BootSector.BPB.MediaDescriptor <> BPBBySize.MediaDescriptor Then
                 ForeColor = Color.Blue
@@ -530,91 +617,4 @@ Module SummaryPanel
         End With
     End Sub
 
-    Private Function GetFileSystemInfo(Disk As Disk) As FileSystemInfo
-        Dim fsi As FileSystemInfo
-
-        fsi.OldestFileDate = Nothing
-        fsi.NewestFileDate = Nothing
-        fsi.VolumeLabel = Nothing
-
-        Dim FileList = Disk.RootDirectory.GetFileList()
-
-        For Each DirectoryEntry In FileList
-            If DirectoryEntry.IsValid Then
-                If fsi.VolumeLabel Is Nothing AndAlso DirectoryEntry.IsValidVolumeName AndAlso DirectoryEntry.ParentDirectory.IsRootDirectory Then
-                    fsi.VolumeLabel = DirectoryEntry
-                End If
-                Dim LastWriteDate = DirectoryEntry.GetLastWriteDate
-                If LastWriteDate.IsValidDate Then
-                    If fsi.OldestFileDate Is Nothing Then
-                        fsi.OldestFileDate = LastWriteDate.DateObject
-                    ElseIf fsi.OldestFileDate.Value.CompareTo(LastWriteDate.DateObject) > 0 Then
-                        fsi.OldestFileDate = LastWriteDate.DateObject
-                    End If
-                    If fsi.NewestFileDate Is Nothing Then
-                        fsi.NewestFileDate = LastWriteDate.DateObject
-                    ElseIf fsi.NewestFileDate.Value.CompareTo(LastWriteDate.DateObject) < 0 Then
-                        fsi.NewestFileDate = LastWriteDate.DateObject
-                    End If
-                End If
-            End If
-        Next
-
-        Return fsi
-    End Function
-
-    Private Function GetNonStandardTrackList(NonStandardTracks As HashSet(Of UShort), HeadCount As Byte) As String
-        Dim TrackList(NonStandardTracks.Count - 1) As UShort
-        Dim TrackStartString As String
-        Dim TrackEndString As String
-        Dim Separator As String
-
-        Dim i As UShort = 0
-        For Each Track In NonStandardTracks
-            TrackList(i) = Track
-            i += 1
-        Next
-
-        Array.Sort(TrackList)
-
-        Dim Result As New List(Of String)
-        Dim StartRange As UShort = TrackList(0)
-        Dim Prev As UShort = TrackList(0)
-
-        For i = 1 To TrackList.Length - 1
-            If TrackList(i) = Prev + 1 Then
-                Prev = TrackList(i)
-            Else
-                TrackStartString = (StartRange \ HeadCount) & "." & (StartRange Mod HeadCount)
-                If StartRange = Prev Then
-                    Result.Add(TrackStartString)
-                Else
-                    TrackEndString = (Prev \ HeadCount) & "." & (Prev Mod HeadCount)
-                    If Prev = StartRange + 1 Then
-                        Separator = ", "
-                    Else
-                        Separator = " - "
-                    End If
-                    Result.Add(TrackStartString & Separator & TrackEndString)
-                End If
-                StartRange = TrackList(i)
-                Prev = StartRange
-            End If
-        Next
-
-        TrackStartString = (StartRange \ HeadCount) & "." & (StartRange Mod HeadCount)
-        If StartRange = Prev Then
-            Result.Add(TrackStartString)
-        Else
-            TrackEndString = (Prev \ HeadCount) & "." & (Prev Mod HeadCount)
-            If Prev = StartRange + 1 Then
-                Separator = ", "
-            Else
-                Separator = " - "
-            End If
-            Result.Add(TrackStartString & Separator & TrackEndString)
-        End If
-
-        Return String.Join(", ", Result)
-    End Function
 End Module

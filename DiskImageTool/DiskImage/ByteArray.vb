@@ -1,4 +1,5 @@
-﻿
+﻿Imports DiskImageTool.Bitstream
+
 Namespace DiskImage
     Public Class ByteArray
         Implements IByteArray
@@ -17,6 +18,12 @@ Namespace DiskImage
             _AdditionalTracks = New HashSet(Of UShort)
             _NonStandardTracks = New HashSet(Of UShort)
         End Sub
+
+        Public ReadOnly Property BitstreamImage As IBitstreamImage Implements IByteArray.BitstreamImage
+            Get
+                Return Nothing
+            End Get
+        End Property
 
         Public ReadOnly Property CanResize As Boolean Implements IByteArray.CanResize
             Get

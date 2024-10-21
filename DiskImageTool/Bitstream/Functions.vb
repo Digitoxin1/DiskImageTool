@@ -1,5 +1,51 @@
-﻿Namespace Bitstream
+﻿Imports DiskImageTool.DiskImage.FloppyDiskFunctions
+
+Namespace Bitstream
     Module Functions
+        Public Function BitstreamGetImageFormat(Image As IBitstreamImage) As FloppyDiskFormat
+            Dim DiskFormat As FloppyDiskFormat
+            Dim Track As IBitstreamTrack
+            Dim SectorCount As Byte = 0
+
+            If Image.TrackCount > 0 Then
+                Track = Image.GetTrack(0, 0)
+                If Track IsNot Nothing AndAlso Track.MFMData IsNot Nothing Then
+                    Dim TotalSize As UShort = 0
+                    For Each Sector In Track.MFMData.Sectors
+                        If Not Sector.Overlaps And Sector.InitialChecksumValid Then
+                            TotalSize += Sector.GetSizeBytes
+                        End If
+                    Next
+                    SectorCount = TotalSize \ 512
+                End If
+            End If
+
+            If Image.TrackCount \ Image.TrackStep >= 79 Then
+                If SectorCount > 15 Then
+                    DiskFormat = FloppyDiskFormat.Floppy1440
+                ElseIf SectorCount > 9 Then
+                    DiskFormat = FloppyDiskFormat.Floppy1200
+                Else
+                    DiskFormat = FloppyDiskFormat.Floppy720
+                End If
+            Else
+                If Image.SideCount = 1 Then
+                    If SectorCount < 9 Then
+                        DiskFormat = FloppyDiskFormat.Floppy160
+                    Else
+                        DiskFormat = FloppyDiskFormat.Floppy180
+                    End If
+                Else
+                    If SectorCount < 9 Then
+                        DiskFormat = FloppyDiskFormat.Floppy320
+                    Else
+                        DiskFormat = FloppyDiskFormat.Floppy360
+                    End If
+                End If
+            End If
+
+            Return DiskFormat
+        End Function
         Public Function CalculatetBitCount(BitRate As UShort, RPM As UShort) As UInteger
             Dim MicrosecondsPerRev As Single = 1 / RPM * 60 * 1000000
             Dim MicrossecondsPerBit As Single = BitRate / 1000

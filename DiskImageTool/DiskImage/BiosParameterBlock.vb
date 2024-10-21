@@ -232,7 +232,7 @@ Namespace DiskImage
         End Function
 
         Public Function HasValidSectorsPerFAT() As Boolean
-            Return SectorsPerFAT <= 11
+            Return SectorsPerFAT > 0 And SectorsPerFAT <= 11
         End Function
 
         Public Function HasValidSectorsPerTrack() As Boolean

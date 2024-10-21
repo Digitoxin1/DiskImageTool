@@ -36,25 +36,24 @@
     Public Property BatchUpdated As Boolean
     Public Property BottomIndex As Integer
     Public Property CachedRootDir As Byte()
+    Public Property Checksum As UInteger
     Public Property Compressed As Boolean
     Public Property CompressedFile As String
     Public Property DiskType As String
+    Public Property ExternalModified As Boolean
     Public Property FATIndex As UShort
+    Public Property InvalidImage As Boolean
+    Public Property Loaded As Boolean
     Public Property Modifications As Stack(Of DiskImage.DataChange())
     Public Property OEMName As String
     Public Property Scanned As Boolean
-    Public Property SourceFile As String
     Public Property SortHistory As List(Of SortEntity)
+    Public Property SourceFile As String
+    Public Shared Property StringOffset As Integer = 0
     Public Property TempPath As String
-    Public Property InvalidImage As Boolean
-    Public Property Loaded As Boolean
-    Public Property Checksum As UInteger
-    Public Property ExternalModified As Boolean
+    Public Property XDFLength As UInteger
     Public Property XDFMiniDisk As Boolean
     Public Property XDFOffset As UInteger
-    Public Property XDFLength As UInteger
-
-    Public Shared Property StringOffset As Integer = 0
 
     Public Property Filter(FilterType As Filters.FilterTypes) As Boolean
         Get
@@ -66,21 +65,6 @@
         End Set
     End Property
 
-    Public Function DisplayPath() As String
-        Dim FullPath = _SourceFile
-        If _Compressed Then
-            FullPath = IO.Path.Combine(FullPath, Replace(_CompressedFile, "/", "\"))
-        End If
-        Return FullPath
-    End Function
-    Public Function FileName() As String
-        If _Compressed Then
-            Return IO.Path.GetFileName(_CompressedFile)
-        Else
-            Return IO.Path.GetFileName(_SourceFile)
-        End If
-    End Function
-
     Public Sub ClearTempPath()
         If _TempPath <> "" Then
             Try
@@ -91,6 +75,22 @@
             _TempPath = ""
         End If
     End Sub
+
+    Public Function DisplayPath() As String
+        Dim FullPath = _SourceFile
+        If _Compressed Then
+            FullPath = IO.Path.Combine(FullPath, Replace(_CompressedFile, "/", "\"))
+        End If
+        Return FullPath
+    End Function
+
+    Public Function FileName() As String
+        If _Compressed Then
+            Return IO.Path.GetFileName(_CompressedFile)
+        Else
+            Return IO.Path.GetFileName(_SourceFile)
+        End If
+    End Function
 
     Public Function GetSaveFile() As String
         Dim FilePath As String
@@ -109,7 +109,9 @@
 
         Return FilePath
     End Function
+
     Public Overrides Function ToString() As String
         Return Right(DisplayPath, Len(DisplayPath) - _StringOffset).Replace("\", "  >  ") '& IIf(_Modified, " *", "")
     End Function
+
 End Class

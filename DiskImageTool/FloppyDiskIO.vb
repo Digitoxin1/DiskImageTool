@@ -2,6 +2,7 @@
 Imports DiskImageTool.DiskImage
 
 Module FloppyDiskIO
+
     Public Function FloppyDiskRead(Owner As IWin32Window, Drive As FloppyDriveEnum, LoadedFileNames As Dictionary(Of String, ImageData)) As String
         Dim FloppyDrive = New FloppyInterface
         Dim DriveLetter = FloppyInterface.GetDriveLetter(Drive)
@@ -31,6 +32,40 @@ Module FloppyDiskIO
         End If
 
         Return FileName
+    End Function
+
+    Public Function FloppyDiskSaveFile(Buffer() As Byte, DiskFormat As FloppyDiskFormat, LoadedFileNames As Dictionary(Of String, ImageData)) As String
+        Dim FileExt = ".ima"
+        Dim FileFilter = GetSaveDialogFilters(DiskFormat, FloppyImageType.BasicSectorImage, FileExt)
+
+        Dim Dialog = New SaveFileDialog With {
+            .Filter = FileFilter.Filter,
+            .FilterIndex = FileFilter.FilterIndex,
+            .DefaultExt = FileExt
+        }
+
+        AddHandler Dialog.FileOk, Sub(sender As Object, e As CancelEventArgs)
+                                      If LoadedFileNames.ContainsKey(Dialog.FileName) Then
+                                          Dim Msg As String = IO.Path.GetFileName(Dialog.FileName) &
+                                            $"{vbCrLf}{vbCrLf}This file is currently open in {Application.ProductName}. " &
+                                            $"Try again with a different file name."
+                                          MsgBox(Msg, MsgBoxStyle.Exclamation, "Save As")
+                                          e.Cancel = True
+                                      End If
+                                  End Sub
+
+        If Dialog.ShowDialog = DialogResult.OK Then
+            Try
+                IO.File.WriteAllBytes(Dialog.FileName, Buffer)
+            Catch ex As Exception
+                MsgBox("An error has occurred while attempting to save the file.", MsgBoxStyle.Exclamation)
+                Return ""
+            End Try
+
+            Return Dialog.FileName
+        Else
+            Return ""
+        End If
     End Function
 
     Public Sub FloppyDiskWrite(Owner As IWin32Window, Disk As Disk, Drive As FloppyDriveEnum)
@@ -129,41 +164,6 @@ Module FloppyDiskIO
             Return BuildBPB(ReturnedFormat)
         End If
     End Function
-
-    Public Function FloppyDiskSaveFile(Buffer() As Byte, DiskFormat As FloppyDiskFormat, LoadedFileNames As Dictionary(Of String, ImageData)) As String
-        Dim FileExt = ".ima"
-        Dim FileFilter = GetSaveDialogFilters(DiskFormat, FloppyImageType.BasicSectorImage, FileExt)
-
-        Dim Dialog = New SaveFileDialog With {
-            .Filter = FileFilter.Filter,
-            .FilterIndex = FileFilter.FilterIndex,
-            .DefaultExt = FileExt
-        }
-
-        AddHandler Dialog.FileOk, Sub(sender As Object, e As CancelEventArgs)
-                                      If LoadedFileNames.ContainsKey(Dialog.FileName) Then
-                                          Dim Msg As String = IO.Path.GetFileName(Dialog.FileName) &
-                                            $"{vbCrLf}{vbCrLf}This file is currently open in {Application.ProductName}. " &
-                                            $"Try again with a different file name."
-                                          MsgBox(Msg, MsgBoxStyle.Exclamation, "Save As")
-                                          e.Cancel = True
-                                      End If
-                                  End Sub
-
-        If Dialog.ShowDialog = DialogResult.OK Then
-            Try
-                IO.File.WriteAllBytes(Dialog.FileName, Buffer)
-            Catch ex As Exception
-                MsgBox("An error has occurred while attempting to save the file.", MsgBoxStyle.Exclamation)
-                Return ""
-            End Try
-
-            Return Dialog.FileName
-        Else
-            Return ""
-        End If
-    End Function
-
     Private Function FloppyDiskWriteOptions(Owner As IWin32Window, DoFormat As Boolean, DetectedFormat As FloppyDiskFormat, DiskFormat As FloppyDiskFormat) As FloppyWriteOptionsForm.FloppyWriteOptions
         Dim WriteOptions As FloppyWriteOptionsForm.FloppyWriteOptions
 
@@ -174,4 +174,5 @@ Module FloppyDiskIO
 
         Return WriteOptions
     End Function
+
 End Module

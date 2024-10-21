@@ -2,6 +2,7 @@
 Imports DiskImageTool.DiskImage
 
 Module Utility
+
     Public Function CleanFileName(FileName As String) As String
         Return CleanString(FileName, IO.Path.GetInvalidFileNameChars(), "_")
     End Function
@@ -146,10 +147,12 @@ Module Utility
 
         Return NewValue
     End Function
+
     <DllImport("shell32.dll")>
     Private Function SHGetKnownFolderPath(<MarshalAs(UnmanagedType.LPStruct)> ByVal rfid As Guid,
         ByVal dwFlags As UInt32,
         ByVal hToken As IntPtr,
         ByRef pszPath As IntPtr) As Int32
     End Function
+
 End Module

@@ -2,8 +2,8 @@
 
 Public Class BootstrapDB
     Private ReadOnly _NameSpace As String = New StubClass().GetType.Namespace
-    Private _OEMNameDictionary As Dictionary(Of UInteger, BootstrapLookup)
     Private _JmpInst As HashSet(Of String)
+    Private _OEMNameDictionary As Dictionary(Of UInteger, BootstrapLookup)
 
     Public Sub New()
         ParseXML()
@@ -71,19 +71,6 @@ Public Class BootstrapDB
         End If
     End Function
 
-    Private Function FindXDFMatch(BootstrapCode() As Byte) As BootstrapLookup
-        For Counter = &HE7 To &HEE
-            BootstrapCode(Counter) = 0
-        Next
-        Dim Checksum = CRC32.ComputeChecksum(BootstrapCode)
-
-        If _OEMNameDictionary.ContainsKey(Checksum) Then
-            Return _OEMNameDictionary.Item(Checksum)
-        Else
-            Return Nothing
-        End If
-    End Function
-
     Public Function SearchBootSector(BootSector As BootSector) As BootstrapLookup
         For Each JmpString In _JmpInst
             Dim Jmp = HexStringToBytes(JmpString)
@@ -95,6 +82,19 @@ Public Class BootstrapDB
         Next
 
         Return Nothing
+    End Function
+
+    Private Function FindXDFMatch(BootstrapCode() As Byte) As BootstrapLookup
+        For Counter = &HE7 To &HEE
+            BootstrapCode(Counter) = 0
+        Next
+        Dim Checksum = CRC32.ComputeChecksum(BootstrapCode)
+
+        If _OEMNameDictionary.ContainsKey(Checksum) Then
+            Return _OEMNameDictionary.Item(Checksum)
+        Else
+            Return Nothing
+        End If
     End Function
 
     Private Function GetResource(Name As String) As String
@@ -170,24 +170,14 @@ Public Class BootstrapDB
             End If
         Next
     End Sub
-End Class
 
-Public Class OEMNameResponse
-    Public Property Data As BootstrapLookup = Nothing
-    Public Property Found As Boolean = False
-    Public Property IsWin9x As Boolean = False
-    Public Property Matched As Boolean = False
-    Public Property MatchedOEMName As OEMNameData = Nothing
-    Public Property NoBootLoader As Boolean = False
-    Public Property OEMName As Byte()
-    Public Property Verified As Boolean = False
 End Class
 
 Public Class BootstrapLookup
     Public Property ExactMatch As Boolean = False
     Public Property Jmp As String
-    Public Property OEMNames As New List(Of OEMNameData)
     Public Property Language As String = "English"
+    Public Property OEMNames As New List(Of OEMNameData)
 End Class
 
 Public Class OEMNameData
@@ -206,6 +196,18 @@ Public Class OEMNameData
     Public Overrides Function ToString() As String
         Return GetNameAsString()
     End Function
+
+End Class
+
+Public Class OEMNameResponse
+    Public Property Data As BootstrapLookup = Nothing
+    Public Property Found As Boolean = False
+    Public Property IsWin9x As Boolean = False
+    Public Property Matched As Boolean = False
+    Public Property MatchedOEMName As OEMNameData = Nothing
+    Public Property NoBootLoader As Boolean = False
+    Public Property OEMName As Byte()
+    Public Property Verified As Boolean = False
 End Class
 
 Public Class StubClass

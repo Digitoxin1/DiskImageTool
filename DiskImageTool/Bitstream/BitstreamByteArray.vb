@@ -5,6 +5,7 @@ Namespace Bitstream
         Implements IByteArray
 
         Friend Const SECTOR_COUNT As Byte = 36
+        Private ReadOnly _Image As IBitstreamImage
         Private ReadOnly _ProtectedSectors As HashSet(Of UInteger)
         Private ReadOnly _AdditionalTracks As HashSet(Of UShort)
         Private ReadOnly _NonStandardTracks As HashSet(Of UShort)
@@ -19,7 +20,7 @@ Namespace Bitstream
         Public Event DataChanged As DataChangedEventHandler Implements IByteArray.DataChanged
         Public Event SizeChanged As SizeChangedEventHandler Implements IByteArray.SizeChanged
 
-        Private Class TrackData
+        Friend Class TrackData
             Public Property FirstSector As Integer
             Public Property LastSector As Integer
             Public Property Encoding As BitstreamTrackType
@@ -33,12 +34,19 @@ Namespace Bitstream
             Public Property Size As UInteger
         End Class
 
-        Public Sub New()
+        Public Sub New(Image As IBitstreamImage)
+            _Image = Image
             _ProtectedSectors = New HashSet(Of UInteger)
             _AdditionalTracks = New HashSet(Of UShort)
             _NonStandardTracks = New HashSet(Of UShort)
             _EmptySector = New Byte(Disk.BYTES_PER_SECTOR - 1) {}
         End Sub
+
+        Public ReadOnly Property BitStreamImage As IBitstreamImage Implements IByteArray.BitstreamImage
+            Get
+                Return _Image
+            End Get
+        End Property
 
         Public ReadOnly Property CanResize As Boolean Implements IByteArray.CanResize
             Get
@@ -106,7 +114,7 @@ Namespace Bitstream
             Return _Sectors(Index)
         End Function
 
-        Private Function GetTrack(Track As UShort, Head As Byte) As TrackData
+        Friend Function GetTrack(Track As UShort, Head As Byte) As TrackData
             If Track > _TrackCount - 1 Or Head > _HeadCount - 1 Then
                 Return Nothing
             End If
@@ -132,7 +140,7 @@ Namespace Bitstream
             _Sectors(Index) = Value
         End Sub
 
-        Friend Sub SetTrack(Track As UShort, Head As Byte, FirstSector As Integer, LastSector As Integer, Encoding As BitstreamTrackType)
+        Friend Function SetTrack(Track As UShort, Head As Byte, FirstSector As Integer, LastSector As Integer, Encoding As BitstreamTrackType) As TrackData
             If Track > _TrackCount - 1 Or Head > _HeadCount - 1 Then
                 Throw New System.IndexOutOfRangeException
             End If
@@ -146,7 +154,9 @@ Namespace Bitstream
             }
 
             _Tracks(Index) = TrackData
-        End Sub
+
+            Return TrackData
+        End Function
 
         Friend Sub SetTracks(TrackCount As UShort, HeadCount As Byte)
             _TrackCount = TrackCount

@@ -1,5 +1,4 @@
-﻿Imports System.Security.Policy
-Imports DiskImageTool.Bitstream
+﻿Imports DiskImageTool.Bitstream
 Imports DiskImageTool.Bitstream.IBM_MFM
 Imports DiskImageTool.DiskImage.FloppyDiskFunctions
 
@@ -288,12 +287,12 @@ Namespace ImageFormats
             Dim DiskFormat As MFMTrackFormat = MFMTrackFormat.TrackFormatUnknown
             Dim TrackCount As UShort
 
-            TrackCount = Image.TrackCount
-            If TrackCount > 80 Then
-                TrackCount = 80
-            ElseIf TrackCount > 40 Then
-                TrackCount = 40
-            End If
+            For Track = 0 To Image.TrackCount - 1 Step Image.TrackStep
+                BitstreamTrack = Image.GetTrack(Track, 0)
+                If BitstreamTrack.TrackType = BitstreamTrackType.MFM Then
+                    TrackCount = Track + 1
+                End If
+            Next
 
             PSI.Header.FormatVersion = 0
 

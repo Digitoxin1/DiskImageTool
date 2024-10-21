@@ -12,7 +12,7 @@ Namespace ImageFormats
             Private ReadOnly _Image As TransCopyImage
 
             Public Sub New(Image As TransCopyImage, DiskFormat As FloppyDiskFormat)
-                MyBase.New()
+                MyBase.New(Image)
 
                 _Image = Image
 

@@ -1,4 +1,6 @@
-﻿Namespace DiskImage
+﻿Imports DiskImageTool.Bitstream
+
+Namespace DiskImage
     Public Delegate Sub DataChangedEventHandler(Offset As UInteger, OriginalValue As Object, NewValue As Object)
     Public Delegate Sub SizeChangedEventHandler(OriginalLength As Integer, NewLength As Integer)
 
@@ -14,6 +16,7 @@
         Event DataChanged As DataChangedEventHandler
         Event SizeChanged As SizeChangedEventHandler
 
+        ReadOnly Property BitstreamImage As IBitstreamImage
         ReadOnly Property CanResize As Boolean
         ReadOnly Property ImageType As FloppyImageType
         ReadOnly Property Length As Integer

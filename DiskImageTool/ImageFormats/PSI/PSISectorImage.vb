@@ -8,8 +8,6 @@ Namespace ImageFormats
             Private _CurrentSector As PSISector
             Private _CylinderCount As UShort = 0
             Private _HeadCount As Byte = 0
-            Private _FirstSector As Integer = -1
-            Private _LastSector As Integer = -1
 
             Public Sub New()
                 Initialize()
@@ -27,18 +25,6 @@ Namespace ImageFormats
             Public ReadOnly Property HeadCount As Byte Implements IBitstreamImage.SideCount
                 Get
                     Return _HeadCount
-                End Get
-            End Property
-
-            Public ReadOnly Property FirstSector As Integer
-                Get
-                    Return _FirstSector
-                End Get
-            End Property
-
-            Public ReadOnly Property LastSector As Integer
-                Get
-                    Return _LastSector
                 End Get
             End Property
 
@@ -170,18 +156,6 @@ Namespace ImageFormats
                     End If
                     If Sector.Head > _HeadCount - 1 Then
                         _HeadCount = Sector.Head + 1
-                    End If
-
-                    If _FirstSector = -1 Then
-                        _FirstSector = Sector.Sector
-                    ElseIf Sector.Sector < _FirstSector Then
-                        _FirstSector = Sector.Sector
-                    End If
-
-                    If _LastSector = -1 Then
-                        _LastSector = Sector.Sector
-                    ElseIf Sector.Sector > _LastSector Then
-                        _LastSector = Sector.Sector
                     End If
 
                 ElseIf Chunk.ChunkID = "DATA" Then

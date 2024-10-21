@@ -1,5 +1,4 @@
-﻿Imports System.ComponentModel
-Imports DiskImageTool.DiskImage
+﻿Imports DiskImageTool.DiskImage
 
 Public Class ReplaceFileForm
     Private ReadOnly _AvailableSpace As UInteger

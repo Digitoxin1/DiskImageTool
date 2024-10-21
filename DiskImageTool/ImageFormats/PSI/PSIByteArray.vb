@@ -11,7 +11,7 @@ Namespace ImageFormats
             Private ReadOnly _Image As PSISectorImage
 
             Public Sub New(Image As PSISectorImage, DiskFormat As FloppyDiskFormat)
-                MyBase.New()
+                MyBase.New(Nothing)
 
                 _Image = Image
 
@@ -52,12 +52,36 @@ Namespace ImageFormats
             End Function
 
             Private Sub BuildSectorMap()
+                Dim MaxSectors As UShort
+
                 SetTracks(_Image.CylinderCount, _Image.HeadCount)
+
+                If _Image.Header.DefaultSectorFormat = DefaultSectorFormat.IBM_MFM_DD Then
+                    MaxSectors = 9
+                ElseIf _Image.Header.DefaultSectorFormat = DefaultSectorFormat.IBM_MFM_HD Then
+                    MaxSectors = 18
+                Else
+                    MaxSectors = 36
+                End If
 
                 For Each PSISector In _Image.Sectors
                     If Not PSISector.IsAlternateSector Then
+                        Dim Track = GetTrack(PSISector.Cylinder, PSISector.Head)
+
+                        If Track Is Nothing Then
+                            SetTrack(PSISector.Cylinder, PSISector.Head, PSISector.Sector, PSISector.Sector, BitstreamTrackType.MFM)
+                        Else
+                            If PSISector.Sector < Track.FirstSector Then
+                                Track.FirstSector = PSISector.Sector
+                            End If
+
+                            If PSISector.Sector > Track.LastSector Then
+                                Track.LastSector = PSISector.Sector
+                            End If
+                        End If
+
                         If PSISector.Sector >= 1 And PSISector.Sector <= SECTOR_COUNT Then
-                            Dim IsStandard = (PSISector.Size = 512 And Not PSISector.HasDataCRCError)
+                            Dim IsStandard = (PSISector.Size = 512 And Not PSISector.HasDataCRCError And PSISector.Sector <= MaxSectors)
                             Dim BitstreamSector As New BitstreamSector With {
                                 .Data = PSISector.Data,
                                 .Size = PSISector.Size,

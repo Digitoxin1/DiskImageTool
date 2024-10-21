@@ -1,5 +1,4 @@
-﻿
-Namespace Bitstream
+﻿Namespace Bitstream
     Namespace IBM_MFM
         Public Class IBM_MFM_Sector
             Private ReadOnly _Offset As UInteger
@@ -187,7 +186,7 @@ Namespace Bitstream
                 If _DAMFound Then
                     _DataFieldSync = MFMGetBytes(BitStream, DataFieldSyncIndex, 4)
                     Dim Size = GetSizeBytes()
-                    _Gap2 = GetGapBytes(BitStream, Start, DataFieldSyncIndex - MFM_SYNC_SIZE_BITS)
+                    _Gap2 = MFMGetBytesByRange(BitStream, Start, DataFieldSyncIndex - MFM_SYNC_SIZE_BITS)
                     _DataOffset = DataFieldSyncIndex + MFMPattern.Length + MFM_BYTE_SIZE
                     _Data = MFMGetBytes(BitStream, _DataOffset, Size)
                     Start = _DataOffset + Size * MFM_BYTE_SIZE
@@ -216,7 +215,7 @@ Namespace Bitstream
                     IDAMFieldSyncIndex -= MFM_SYNC_SIZE_BITS
                 End If
 
-                _Gap3 = GetGapBytes(Bitstream, Offset, IDAMFieldSyncIndex)
+                _Gap3 = MFMGetBytesByRange(Bitstream, Offset, IDAMFieldSyncIndex)
             End Sub
         End Class
     End Namespace

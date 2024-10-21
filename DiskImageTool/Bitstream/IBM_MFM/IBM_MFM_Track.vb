@@ -1,5 +1,4 @@
-﻿
-Namespace Bitstream
+﻿Namespace Bitstream
     Namespace IBM_MFM
         Public Class IBM_MFM_Track
             Private _AddressMarkIndexes As List(Of UInteger)
@@ -92,7 +91,7 @@ Namespace Bitstream
                     Else
                         Offset = 0
                     End If
-                    _Gap1 = GetGapBytes(Bitstream, Start + Offset, IDFieldSyncIndex - MFM_SYNC_SIZE_BITS)
+                    _Gap1 = MFMGetBytesByRange(Bitstream, Start + Offset, IDFieldSyncIndex - MFM_SYNC_SIZE_BITS)
 
                     ProcessSectorList(Bitstream, SectorList)
                 Else
@@ -106,7 +105,7 @@ Namespace Bitstream
                 Dim IndexFieldSyncIndex = FindPattern(BitStream, IAMPattern, Start)
                 If IndexFieldSyncIndex > -1 Then
                     Dim Offset = IndexFieldSyncIndex Mod MFM_BYTE_SIZE
-                    _Gap4A = GetGapBytes(BitStream, Start + Offset, IndexFieldSyncIndex - MFM_SYNC_SIZE_BITS)
+                    _Gap4A = MFMGetBytesByRange(BitStream, Start + Offset, IndexFieldSyncIndex - MFM_SYNC_SIZE_BITS)
                     Start = IndexFieldSyncIndex + IAMPattern.Length
                     _IAM = MFMGetByte(BitStream, Start)
                     Start += MFM_BYTE_SIZE

@@ -4,6 +4,7 @@ Namespace HexView
     Public Enum DataRowEnum
         File
         Description
+        CRC16
         CRC32
         Binary
         Int8
@@ -47,6 +48,7 @@ Namespace HexView
 
             AddRow("File", 0, DataRowEnum.File, False)
             AddRow("Region", 0, DataRowEnum.Description, False)
+            AddRow("CRC16", 0, DataRowEnum.CRC16, False)
             AddRow("CRC32", 0, DataRowEnum.CRC32, False)
             AddRow("Binary (8 bit)", 1, DataRowEnum.Binary,, 8)
             AddRow("Int8", 1, DataRowEnum.Int8,, 4)
@@ -64,8 +66,9 @@ Namespace HexView
             AddRow("DOS Time & Date", 4, DataRowEnum.DOSTimeDate,, 19)
         End Sub
 
-        Public Sub Refresh(Bytes() As Byte, SelectedBytes() As Byte, [ReadOnly] As Boolean, BigEndien As Boolean)
-            Dim Checksum As Object = Nothing
+        Public Sub Refresh(Bytes() As Byte, SelectedBytes() As Byte, [ReadOnly] As Boolean, BigEndien As Boolean, ShowCRC16 As Boolean)
+            Dim CRC16Checksum As Object = Nothing
+            Dim CRC32Checksum As Object = Nothing
             Dim Binary As Object = Nothing
             Dim Int8 As Object = Nothing
             Dim UInt8 As Object = Nothing
@@ -84,7 +87,10 @@ Namespace HexView
             If Bytes IsNot Nothing Then
                 Dim DT As ExpandedDate
 
-                Checksum = CRC32.ComputeChecksum(SelectedBytes).ToString("X8")
+                If ShowCRC16 Then
+                    CRC16Checksum = Bitstream.IBM_MFM.MFMCRC16(SelectedBytes).ToString("X4")
+                End If
+                CRC32Checksum = CRC32.ComputeChecksum(SelectedBytes).ToString("X8")
                 Binary = Convert.ToString(Bytes(0), 2).PadLeft(8, "0")
                 Int8 = MyBitConverter.ToSByte(Bytes(0))
                 UInt8 = Bytes(0)
@@ -118,7 +124,8 @@ Namespace HexView
                 End If
             End If
 
-            SetDataRow(DataRowEnum.CRC32, Checksum, True)
+            SetDataRow(DataRowEnum.CRC16, CRC16Checksum, True, Not ShowCRC16)
+            SetDataRow(DataRowEnum.CRC32, CRC32Checksum, True)
             SetDataRow(DataRowEnum.Binary, Binary, [ReadOnly])
             SetDataRow(DataRowEnum.Int8, Int8, [ReadOnly])
             SetDataRow(DataRowEnum.UInt8, UInt8, [ReadOnly])

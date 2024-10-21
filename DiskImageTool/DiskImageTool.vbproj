@@ -130,6 +130,8 @@
   <ItemGroup>
     <Compile Include="Bitstream\BitstreamByteArray.vb" />
     <Compile Include="Bitstream\BitstreamDebug.vb" />
+    <Compile Include="Bitstream\BitstreamRegion.vb" />
+    <Compile Include="Bitstream\BitstreamRegionSector.vb" />
     <Compile Include="Bitstream\BitstreamSector.vb" />
     <Compile Include="Bitstream\Functions.vb" />
     <Compile Include="Bitstream\IBM_MFM\IBM_MFM_Bitstream.vb" />

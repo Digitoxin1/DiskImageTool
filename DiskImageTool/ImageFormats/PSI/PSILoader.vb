@@ -25,25 +25,17 @@ Namespace ImageFormats
 
             Private Function PSIGetImageFormat(PSI As PSISectorImage) As FloppyDiskFormat
                 Dim DiskFormat As FloppyDiskFormat
-                Dim MaxSectors As Byte
+                Dim SectorCount As Byte
 
-                If PSI.Header.DefaultSectorFormat = DefaultSectorFormat.IBM_MFM_HD Then
-                    MaxSectors = 18
-                ElseIf PSI.Header.DefaultSectorFormat = DefaultSectorFormat.IBM_MFM_ED Then
-                    MaxSectors = 36
-                Else
-                    MaxSectors = 9
-                End If
-
-                Dim SectorCount As Byte = 0
-
+                Dim TotalSize As UShort = 0
                 For Each Sector In PSI.Sectors
-                    If Sector.Sector >= 1 And Sector.Sector <= MaxSectors Then
-                        If Sector.Sector > SectorCount Then
-                            SectorCount = Sector.Sector
+                    If Sector.Cylinder = 0 And Sector.Head = 0 Then
+                        If Not Sector.HasDataCRCError Then
+                            TotalSize += Sector.Size
                         End If
                     End If
                 Next
+                SectorCount = TotalSize \ 512
 
                 If PSI.Header.DefaultSectorFormat = DefaultSectorFormat.IBM_MFM_DD Then
                     If PSI.CylinderCount >= 79 Then

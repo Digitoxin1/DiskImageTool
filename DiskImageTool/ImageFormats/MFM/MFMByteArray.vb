@@ -11,7 +11,7 @@ Namespace ImageFormats
             Private ReadOnly _Image As MFMImage
 
             Public Sub New(Image As MFMImage, DiskFormat As FloppyDiskFormat)
-                MyBase.New()
+                MyBase.New(Image)
 
                 _Image = Image
 
@@ -62,7 +62,9 @@ Namespace ImageFormats
             Private Sub BuildSectorMap()
                 Dim MFMTrack As MFMTrack
 
-                SetTracks(_Image.TrackCount \ _Image.TrackStep, _Image.SideCount)
+                Dim TrackCount = Math.Ceiling(_Image.TrackCount / _Image.TrackStep)
+
+                SetTracks(TrackCount, _Image.SideCount)
 
                 For Track = 0 To _Image.TrackCount - 1 Step _Image.TrackStep
                     For Side = 0 To _Image.SideCount - 1

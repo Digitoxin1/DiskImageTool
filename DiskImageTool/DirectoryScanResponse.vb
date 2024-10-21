@@ -1,12 +1,8 @@
 ﻿Imports DiskImageTool.DiskImage
 
 Public Class DirectoryScanResponse
-    Public Structure ProcessDirectoryEntryResponse
-        Dim DuplicateFileName As Boolean
-        Dim InvalidVolumeName As Boolean
-    End Structure
-
     Private ReadOnly _FileNames As HashSet(Of String)
+
     Private _VolumeNameFound As Boolean
 
     Public Sub New(Directory As DiskImage.IDirectory)
@@ -31,15 +27,25 @@ Public Class DirectoryScanResponse
     End Sub
 
     Public Property HasAdditionalData As Boolean
+
     Public Property HasBootSector As Boolean
+
     Public Property HasCreated As Boolean
+
     Public Property HasFATChainingErrors As Boolean
+
     Public Property HasInvalidDirectoryEntries As Boolean
+
     Public Property HasLastAccessed As Boolean
+
     Public Property HasLFN As Boolean
-    Public Property HasValidCreated As Boolean
-    Public Property HasValidLastAccessed As Boolean
+
     Public Property HasReserved As Boolean
+
+    Public Property HasValidCreated As Boolean
+
+    Public Property HasValidLastAccessed As Boolean
+
     Public Property ItemCount As Integer
 
     Public Sub Combine(Response As DirectoryScanResponse)
@@ -155,4 +161,10 @@ Public Class DirectoryScanResponse
 
         Return Response
     End Function
+
+    Public Structure ProcessDirectoryEntryResponse
+        Dim DuplicateFileName As Boolean
+        Dim InvalidVolumeName As Boolean
+    End Structure
+
 End Class

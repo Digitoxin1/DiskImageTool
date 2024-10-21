@@ -249,7 +249,7 @@ Public Class HexViewForm
             End If
         End If
 
-        _DataGridInspector.Refresh(Bytes, SelectedBytes, HexBox1.ReadOnly, BigEndien)
+        _DataGridInspector.Refresh(Bytes, SelectedBytes, HexBox1.ReadOnly, BigEndien, False)
 
         DataInspectorRefreshButtons()
     End Sub
@@ -1054,7 +1054,7 @@ Public Class HexViewForm
         _IgnoreEvent = False
     End Sub
 
-    Private Sub RefresSelectorValues()
+    Private Sub RefreshSelectorValues()
         If _CurrentHexViewData Is Nothing Then
             Exit Sub
         End If
@@ -1118,7 +1118,7 @@ Public Class HexViewForm
         Else
             RefreshSelection(False)
             DataInspectorRefresh(False)
-            RefresSelectorValues()
+            RefreshSelectorValues()
         End If
     End Sub
 
@@ -1374,7 +1374,7 @@ Public Class HexViewForm
         End If
 
         If _SectorNavigator Or _ClusterNavigator Then
-            RefresSelectorValues()
+            RefreshSelectorValues()
         End If
     End Sub
 

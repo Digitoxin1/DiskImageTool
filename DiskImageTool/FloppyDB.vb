@@ -385,6 +385,7 @@ Public Class FloppyDB
             End If
             _Status = GetFloppyDBStatus(_StatusString)
         End Sub
+
     End Class
 
     Public Class FloppyData
@@ -418,6 +419,7 @@ Public Class FloppyDB
 
             Return ""
         End Function
+
         Public Function GetVariation() As String
             If _Variation <> "" Then
                 Return _Variation
@@ -433,6 +435,7 @@ Public Class FloppyDB
 
             Return ""
         End Function
+
         Public Function GetCompilation() As String
             If _Compilation <> "" Then
                 Return _Compilation
@@ -448,6 +451,7 @@ Public Class FloppyDB
 
             Return ""
         End Function
+
         Public Function GetYear() As String
             If _Year <> "" Then
                 Return _Year
@@ -463,6 +467,7 @@ Public Class FloppyDB
 
             Return ""
         End Function
+
         Public Function GetVersion() As String
             If _Version <> "" Then
                 Return _Version
@@ -478,6 +483,7 @@ Public Class FloppyDB
 
             Return ""
         End Function
+
         Public Function GetDisk() As String
             If _Disk <> "" Then
                 Return _Disk
@@ -493,6 +499,7 @@ Public Class FloppyDB
 
             Return ""
         End Function
+
         Public Function GetMedia() As FloppyDiskFormat
             If _Media <> FloppyDiskFormat.FloppyUnknown Then
                 Return _Media
@@ -508,6 +515,7 @@ Public Class FloppyDB
 
             Return FloppyDiskFormat.FloppyUnknown
         End Function
+
         Public Function GetPublisher() As String
             If _Publisher <> "" Then
                 Return _Publisher
@@ -523,6 +531,7 @@ Public Class FloppyDB
 
             Return ""
         End Function
+
         Public Function GetStatus() As FloppyDBStatus
             If _Status <> FloppyDBStatus.Unknown Then
                 Return _Status
@@ -538,6 +547,7 @@ Public Class FloppyDB
 
             Return FloppyDBStatus.Unverified
         End Function
+
         Public Function GetRegion() As String
             If _Region <> "" Then
                 Return _Region
@@ -553,6 +563,7 @@ Public Class FloppyDB
 
             Return ""
         End Function
+
         Public Function GetLanguage() As String
             If _Language <> "" Then
                 Return _Language
@@ -568,6 +579,7 @@ Public Class FloppyDB
 
             Return ""
         End Function
+
         Public Function GetCopyProtection() As String
             If _CopyProtection <> "" Then
                 Return _CopyProtection
@@ -583,6 +595,7 @@ Public Class FloppyDB
 
             Return ""
         End Function
+
         Public Function GetOperatingSystem() As String
             If _OperatingSystem <> "" Then
                 Return _OperatingSystem
@@ -598,6 +611,7 @@ Public Class FloppyDB
 
             Return "MS-DOS"
         End Function
+
     End Class
 
     Public Class BooterTrack
@@ -609,4 +623,5 @@ Public Class FloppyDB
         Public Property TitleData As FloppyData = Nothing
         Public Property MD5 As String = ""
     End Class
+
 End Class

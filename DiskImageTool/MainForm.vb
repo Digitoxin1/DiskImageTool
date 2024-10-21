@@ -1634,38 +1634,27 @@ Public Class MainForm
         End If
     End Sub
 
-    Private Sub HexDisplayRawTrackData(Disk As Disk, Sector As UShort)
-        Dim Track As UShort = Sector \ Disk.Image.Data.HeadCount
-        Dim Side As Byte = Sector Mod Disk.Image.Data.HeadCount
-        Dim Caption = "Track " & Track & "." & Side
-        Dim Image As Bitstream.IBitstreamImage = Nothing
+    Private Sub HexDisplayRawTrackData(Disk As Disk, TrackIndex As Integer)
+        Dim Track As UShort
+        Dim Side As Byte
+        Dim AllTracks As Boolean
 
-        If Disk.Image.Data.ImageType = FloppyImageType.MFMImage Then
-            Image = DirectCast(Disk.Image.Data, ImageFormats.MFM.MFMByteArray).Image
-
-        ElseIf Disk.Image.Data.ImageType = FloppyImageType._86FImage Then
-            Image = DirectCast(Disk.Image.Data, ImageFormats._86F._86FByteArray).Image
-
-        ElseIf Disk.Image.Data.ImageType = FloppyImageType.TranscopyImage Then
-            Image = DirectCast(Disk.Image.Data, ImageFormats.TC.TranscopyByteArray).Image
+        If TrackIndex = -1 Then
+            Track = 0
+            Side = 0
+            AllTracks = True
+        Else
+            Track = TrackIndex \ Disk.Image.Data.HeadCount
+            Side = TrackIndex Mod Disk.Image.Data.HeadCount
+            AllTracks = False
         End If
 
-        If Image IsNot Nothing Then
-            Dim MFMTrack = Image.GetTrack(Track * Image.TrackStep, Side)
-            Dim Data() As Byte
-            Dim Sections As List(Of Bitstream.IBM_MFM.BitstreamSection)
-            If MFMTrack.Decoded Then
-                Dim AlignedBitstream = Bitstream.IBM_MFM.BitstreamAlign(MFMTrack.Bitstream)
-                Data = Bitstream.IBM_MFM.DecodeTrack(AlignedBitstream)
-                Sections = Bitstream.IBM_MFM.BitstreamGetSectionList(AlignedBitstream)
-            Else
-                Data = Bitstream.IBM_MFM.FMGetBytes(MFMTrack.Bitstream)
-                Sections = New List(Of Bitstream.IBM_MFM.BitstreamSection)
-            End If
+        Dim Image = Disk.Image.Data.BitstreamImage
 
-            Dim frmHexView As New HexViewRawForm(Data, Caption, Sections)
-                frmHexView.ShowDialog()
-            End If
+        If Image IsNot Nothing Then
+            Dim frmHexView As New HexViewRawForm(Disk.Image.Data, Track, Side, AllTracks)
+            frmHexView.ShowDialog()
+        End If
     End Sub
 
     Private Sub HexDisplayRootDirectory(CurrentImage As CurrentImage)
@@ -2361,7 +2350,7 @@ Public Class MainForm
         MenuHexRawTrackData.DropDownItems.Clear()
     End Sub
 
-    Private Sub MenuRawTrackDataSubMenuItemAdd(Track As UShort, Text As String)
+    Private Sub MenuRawTrackDataSubMenuItemAdd(Track As Integer, Text As String)
         Dim Item As New ToolStripMenuItem With {
            .Text = Text,
            .Tag = Track
@@ -2965,6 +2954,8 @@ Public Class MainForm
 
                 Array.Sort(TrackList)
 
+                MenuRawTrackDataSubMenuItemAdd(-1, "All Tracks")
+
                 For i = 0 To TrackList.Length - 1
                     Dim Track = TrackList(i)
                     Dim TrackString = "Track " & (Track \ Disk.Image.Data.HeadCount) & "." & (Track Mod Disk.Image.Data.HeadCount)
@@ -2972,7 +2963,10 @@ Public Class MainForm
                 Next
 
                 MenuHexRawTrackData.Enabled = True
-
+                MenuHexRawTrackData.Tag = Nothing
+            Else
+                MenuHexRawTrackData.Enabled = True
+                MenuHexRawTrackData.Tag = -1
             End If
         End If
     End Sub
@@ -3573,7 +3567,7 @@ Public Class MainForm
         FilesOpen()
     End Sub
 
-    Private Sub BtnRawTrackData_Click(sender As Object, e As EventArgs)
+    Private Sub BtnRawTrackData_Click(sender As Object, e As EventArgs) Handles MenuHexRawTrackData.Click
         If sender.tag IsNot Nothing Then
             HexDisplayRawTrackData(_CurrentImage.Disk, sender.tag)
         End If
