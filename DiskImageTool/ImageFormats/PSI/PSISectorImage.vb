@@ -205,13 +205,15 @@ Namespace ImageFormats
                 End Get
             End Property
 
-            Private Function IBitstreamImage_GetTrack(Track As UShort, Site As Byte) As IBitstreamTrack Implements IBitstreamImage.GetTrack
+            Private Function IBitstreamImage_GetTrack(Track As UShort, Side As Byte) As IBitstreamTrack Implements IBitstreamImage.GetTrack
                 Return Nothing
             End Function
 
-            Private Function IBitstreamImage_UpdateBitstream() As Boolean Implements IBitstreamImage.UpdateBitstream
-                Return False
-            End Function
+            Private ReadOnly Property IBitstreamImage_HasSurfaceData As Boolean Implements IBitstreamImage.HasSurfaceData
+                Get
+                    Return False
+                End Get
+            End Property
         End Class
     End Namespace
 End Namespace

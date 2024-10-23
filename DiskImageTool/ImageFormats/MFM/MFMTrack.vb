@@ -52,6 +52,12 @@ Namespace ImageFormats
                     End If
                 End Get
             End Property
+
+            Private ReadOnly Property IBitstreamTrack_SurfaceData As BitArray Implements IBitstreamTrack.SurfaceData
+                Get
+                    Return Nothing
+                End Get
+            End Property
         End Class
     End Namespace
 End Namespace

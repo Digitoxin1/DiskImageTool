@@ -3,9 +3,8 @@
         ReadOnly Property TrackCount As UShort
         ReadOnly Property SideCount As Byte
         ReadOnly Property TrackStep As Byte
-
+        ReadOnly Property HasSurfaceData As Boolean
 
         Function GetTrack(Track As UShort, Side As Byte) As IBitstreamTrack
-        Function UpdateBitstream() As Boolean
     End Interface
 End Namespace

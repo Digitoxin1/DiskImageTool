@@ -382,16 +382,16 @@ Module ImageIO
 
                 If FileImageType = FloppyImageType.TranscopyImage Then
                     Dim Transcopy = ImageFormats.BasicSectorToTranscopyImage(Data, Disk.DiskFormat)
-                    Result = Transcopy.Export(FilePath, False)
+                    Result = Transcopy.Export(FilePath)
                 ElseIf FileImageType = FloppyImageType.PSIImage Then
                     Dim PSI = ImageFormats.BasicSectorToPSIImage(Data, Disk.DiskFormat)
                     Result = PSI.Export(FilePath)
                 ElseIf FileImageType = FloppyImageType.MFMImage Then
                     Dim MFM = ImageFormats.BasicSectorToMFMImage(Data, Disk.DiskFormat)
-                    Result = MFM.Export(FilePath, False)
+                    Result = MFM.Export(FilePath)
                 ElseIf FileImageType = FloppyImageType._86FImage Then
                     Dim F86 = ImageFormats.BasicSectorTo86FImage(Data, Disk.DiskFormat)
-                    Result = F86.Export(FilePath, False)
+                    Result = F86.Export(FilePath)
                 Else
                     Return SaveImageResponse.Unsupported
                 End If
@@ -403,7 +403,7 @@ Module ImageIO
             Dim Image As IBitstreamImage = GetBitstreamImage(Disk.Image.Data)
             If Image IsNot Nothing Then
                 Dim Transcopy = ImageFormats.BitstreamToTranscopyImage(Image)
-                Result = Transcopy.Export(FilePath, False)
+                Result = Transcopy.Export(FilePath)
             Else
                 Return SaveImageResponse.Unsupported
             End If
@@ -412,7 +412,7 @@ Module ImageIO
             Dim Image As IBitstreamImage = GetBitstreamImage(Disk.Image.Data)
             If Image IsNot Nothing Then
                 Dim MFM = ImageFormats.BitstreamToMFMImage(Image)
-                Result = MFM.Export(FilePath, False)
+                Result = MFM.Export(FilePath)
             Else
                 Return SaveImageResponse.Unsupported
             End If
@@ -430,7 +430,7 @@ Module ImageIO
             Dim Image As IBitstreamImage = GetBitstreamImage(Disk.Image.Data)
             If Image IsNot Nothing Then
                 Dim F86Image = ImageFormats.BitstreamTo86FImage(Image)
-                Result = F86Image.Export(FilePath, False)
+                Result = F86Image.Export(FilePath)
             Else
                 Return SaveImageResponse.Unsupported
             End If

@@ -20,6 +20,8 @@ Namespace HexView
         DOSDate
         DOSTime
         DOSTimeDate
+        Bitstream
+        WeakBits
     End Enum
 
     Class HexViewDataGridInspector
@@ -64,6 +66,11 @@ Namespace HexView
             AddRow("DOS Date", 2, DataRowEnum.DOSDate,, 10)
             AddRow("DOS Time", 2, DataRowEnum.DOSTime,, 8)
             AddRow("DOS Time & Date", 4, DataRowEnum.DOSTimeDate,, 19)
+            AddRow("Bitstream", 0, DataRowEnum.Bitstream, False)
+            AddRow("Weak Bits", 0, DataRowEnum.WeakBits, False)
+
+            SetDataRow(DataRowEnum.Bitstream, Nothing, True, True)
+            SetDataRow(DataRowEnum.WeakBits, Nothing, True, True)
         End Sub
 
         Public Sub Refresh(Bytes() As Byte, SelectedBytes() As Byte, [ReadOnly] As Boolean, BigEndien As Boolean, ShowCRC16 As Boolean)

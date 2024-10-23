@@ -1,6 +1,4 @@
-﻿Imports System.Text.RegularExpressions
-
-Namespace Bitstream
+﻿Namespace Bitstream
     Namespace IBM_MFM
         Public Enum MFMRegionType
             Gap1
@@ -23,6 +21,7 @@ Namespace Bitstream
             DataArea
             DataChecksumValid
             DataChecksumInvalid
+            Overflow
         End Enum
         Public Enum MFMAddressMark As Byte
             Index = &HFC
@@ -44,6 +43,7 @@ Namespace Bitstream
             Dim Sectors As List(Of BitstreamRegionSector)
             Dim Track As UShort
             Dim Side As Byte
+            Dim NumBytes As UInteger
         End Structure
 
         Module IBM_MFM_Tools
@@ -146,22 +146,6 @@ Namespace Bitstream
                 Return b
             End Function
 
-            Public Function DecodeTrack(Bitstream As BitArray) As Byte()
-                Dim NumBytes As UInteger = Bitstream.Length \ 16
-
-                Return MFMGetBytes(Bitstream, 0, NumBytes)
-            End Function
-
-            Public Function DecodeTrack(Bitstream As BitArray, Offset As Integer) As Byte()
-                Dim NumBytes As UInteger = Bitstream.Length \ 16
-
-                Return MFMGetBytes(Bitstream, Offset, NumBytes)
-            End Function
-
-            Public Function DecodeTrack(Data() As Byte) As Byte()
-                Return DecodeTrack(BytesToBits(Data), 0)
-            End Function
-
             Public Function BitstreamGetRegionList(Bitstream As BitArray) As RegionData
                 Dim IAMPattern = BytesToBits(IAM_Sync_Bytes)
                 Dim MFMPattern = BytesToBits(MFM_Sync_Bytes)
@@ -184,6 +168,7 @@ Namespace Bitstream
                 Dim RegionData As RegionData
                 RegionData.Regions = New List(Of BitstreamRegion)
                 RegionData.Sectors = New List(Of BitstreamRegionSector)
+                RegionData.NumBytes = Bitstream.Length \ MFM_BYTE_SIZE
 
                 Index = FindPattern(Bitstream, IAMPattern, BitstreamIndex)
                 If Index > -1 Then
@@ -359,6 +344,9 @@ Namespace Bitstream
 
                         RegionSector.DataStartIndex = ByteIndex
                         RegionData.Regions.Add(New BitstreamRegion(MFMRegionType.DataArea, ByteIndex, SectorSize, RegionSector, BitOffset))
+                        If ByteIndex + RegionSector.DataLength > RegionData.NumBytes Then
+                            RegionData.NumBytes = ByteIndex + RegionSector.DataLength
+                        End If
 
                         Buffer = MFMGetBytes(Bitstream, BitstreamIndex + RegionSector.DataLength * MFM_BYTE_SIZE, 2)
                         Checksum = BitConverter.ToUInt16(Buffer, 0)
@@ -389,6 +377,13 @@ Namespace Bitstream
                         RegionSector.Length = Bitstream.Length \ MFM_BYTE_SIZE - RegionSector.StartIndex
                     End If
                 End If
+
+                ByteIndex = Bitstream.Length \ MFM_BYTE_SIZE
+                If RegionData.NumBytes > ByteIndex Then
+                    Dim Length = RegionData.NumBytes - ByteIndex
+                    RegionData.Regions.Add(New BitstreamRegion(MFMRegionType.Overflow, ByteIndex, Length, Nothing, BitOffset))
+                End If
+
 
                 Return RegionData
             End Function
@@ -596,6 +591,18 @@ Namespace Bitstream
 
             Public Function MFMGetByte(Bitstream As BitArray, Start As Integer) As Byte
                 Return MFMGetBytes(Bitstream, Start, 1)(0)
+            End Function
+
+            Public Function MFMGetBytes(Bitstream As BitArray) As Byte()
+                Dim NumBytes As UInteger = Bitstream.Length \ 16
+
+                Return MFMGetBytes(Bitstream, 0, NumBytes)
+            End Function
+
+            Public Function MFMGetBytes(Bitstream As BitArray, Start As Integer) As Byte()
+                Dim NumBytes As UInteger = Bitstream.Length \ 16
+
+                Return MFMGetBytes(Bitstream, Start, NumBytes)
             End Function
 
             Public Function MFMGetBytes(Bitstream As BitArray, Start As UInteger, NumBytes As UInteger) As Byte()

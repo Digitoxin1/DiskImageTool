@@ -1,6 +1,7 @@
 ﻿Namespace Bitstream
     Namespace IBM_MFM
         Public Class IBM_MFM_Sector
+            Private ReadOnly _Bitstream As BitArray
             Private ReadOnly _Offset As UInteger
             Private ReadOnly _IDArea() As Byte
             Private ReadOnly _IDChecksum As UShort
@@ -16,6 +17,7 @@
             Private _Overlaps As Boolean
 
             Public Sub New(Bitstream As BitArray, Offset As UInteger)
+                _Bitstream = Bitstream
                 _Offset = Offset
                 _IDArea = MFMGetBytes(Bitstream, Offset, 8)
                 _IDChecksum = GetChecksum(Bitstream, Offset + 128)
@@ -160,6 +162,16 @@
             Public Function IsModified() As Boolean
                 Return _InitialDataChecksum <> _DataChecksum
             End Function
+
+            Public Sub UpdateBitstream()
+                UpdateChecksum()
+
+                Dim Bitstream = GetDataBitstream()
+
+                For i = 0 To Bitstream.Length - 1
+                    _Bitstream(_DataOffset + i) = Bitstream(i)
+                Next
+            End Sub
 
             Public Sub UpdateChecksum()
                 _DataChecksum = CalculateDataChecksum()

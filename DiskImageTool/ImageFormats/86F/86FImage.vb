@@ -73,7 +73,7 @@ Namespace ImageFormats
                 End Set
             End Property
 
-            Public Property HasSurfaceData As Boolean
+            Public Property HasSurfaceData As Boolean Implements IBitstreamImage.HasSurfaceData
                 Get
                     Return (_DiskFlags And DiskFlags.HasSurfaceData) > 0
                 End Get
@@ -199,17 +199,13 @@ Namespace ImageFormats
                     Return 1
                 End Get
             End Property
-            Public Function Export(FilePath As String, RefreshBitstream As Boolean) As Boolean
+            Public Function Export(FilePath As String) As Boolean
                 Dim Buffer() As Byte
                 Dim Pos As UInteger
                 Dim DataPosition As UInteger
                 Dim Track As _86FTrack
                 Dim BitCellCount As UInteger
                 Dim AllocatedLength As UInteger
-
-                If RefreshBitstream Then
-                    UpdateBitstream()
-                End If
 
                 Dim TrackArray = GetTrackArray()
 
@@ -434,31 +430,6 @@ Namespace ImageFormats
                 _Tracks(Index) = Value
             End Sub
 
-            Public Function UpdateBitstream() As Boolean Implements IBitstreamImage.UpdateBitstream
-                Dim Updated As Boolean = False
-                Dim Track As _86FTrack
-
-                For i = 0 To _Tracks.Length - 1
-                    Track = _Tracks(i)
-                    If Track.Decoded Then
-                        For Each Sector In Track.MFMData.Sectors
-                            If Sector.InitialChecksumValid Then
-                                Sector.UpdateChecksum()
-                                If Sector.IsModified Then
-                                    Dim Bitstream = Sector.GetDataBitstream
-                                    Dim DataFieldOffset = Sector.DataOffset
-                                    For j = 0 To Bitstream.Length - 1
-                                        Track.Bitstream(DataFieldOffset + j) = Bitstream(j)
-                                    Next
-                                    Updated = True
-                                End If
-                            End If
-                        Next
-                    End If
-                Next i
-
-                Return Updated
-            End Function
             Private Function AdjustRPM(Length As UInteger, RPMSlowDown As Single, SpeedUp As Boolean) As UInteger
                 If SpeedUp Then
                     Return Math.Truncate(Length / (1 + RPMSlowDown))

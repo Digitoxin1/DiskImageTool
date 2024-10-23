@@ -1,7 +1,20 @@
 ﻿Namespace Bitstream
     Public Class BitstreamSector
-        Public Property Data As Byte()
-        Public Property Size As UInteger
+        Public Sub New(MFMSector As IBM_MFM.IBM_MFM_Sector)
+            _MFMSector = MFMSector
+            _Data = MFMSector.Data
+            _Size = MFMSector.GetSizeBytes
+        End Sub
+
+        Public Sub New(Data() As Byte, Size As UInteger)
+            _MFMSector = Nothing
+            _Data = Data
+            _Size = Size
+        End Sub
+
+        Public ReadOnly Property MFMSector As IBM_MFM.IBM_MFM_Sector
+        Public ReadOnly Property Data As Byte()
+        Public ReadOnly Property Size As UInteger
         Public Property IsStandard As Boolean
     End Class
 End Namespace

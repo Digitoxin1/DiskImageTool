@@ -82,9 +82,7 @@ Namespace ImageFormats
 
                         If PSISector.Sector >= 1 And PSISector.Sector <= SECTOR_COUNT Then
                             Dim IsStandard = (PSISector.Size = 512 And Not PSISector.HasDataCRCError And PSISector.Sector <= MaxSectors)
-                            Dim BitstreamSector As New BitstreamSector With {
-                                .Data = PSISector.Data,
-                                .Size = PSISector.Size,
+                            Dim BitstreamSector As New BitstreamSector(PSISector.Data, PSISector.Size) With {
                                 .IsStandard = IsStandard
                             }
                             Dim Sector = GetSector(PSISector.Cylinder, PSISector.Head, PSISector.Sector)

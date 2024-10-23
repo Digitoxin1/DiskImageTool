@@ -16,7 +16,7 @@ Namespace ImageFormats
                 _BitCellCount = 0
                 _IndexHolePos = 0
                 _Bitstream = New BitArray(0)
-                _SurfaceData = New BitArray(0)
+                _SurfaceData = Nothing
                 _MFMData = Nothing
             End Sub
 
@@ -65,7 +65,7 @@ Namespace ImageFormats
                 End Set
             End Property
 
-            Public Property SurfaceData As BitArray
+            Public Property SurfaceData As BitArray Implements IBitstreamTrack.SurfaceData
                 Get
                     Return _SurfaceData
                 End Get

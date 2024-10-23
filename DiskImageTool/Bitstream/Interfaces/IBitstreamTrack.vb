@@ -1,6 +1,7 @@
 ﻿Namespace Bitstream
     Public Interface IBitstreamTrack
         Property Bitstream As BitArray
+        ReadOnly Property SurfaceData As BitArray
         Property MFMData As IBM_MFM.IBM_MFM_Track
         Property Decoded As Boolean
         ReadOnly Property BitRate As UInt16

@@ -90,9 +90,7 @@ Namespace ImageFormats
                             For Each MFMSector In TranscopyCylinder.MFMData.Sectors
                                 If MFMSector.DAMFound Then
                                     If MFMSector.SectorId >= 1 And MFMSector.SectorId <= SECTOR_COUNT Then
-                                        Dim BitstreamSector As New BitstreamSector With {
-                                           .Data = MFMSector.Data,
-                                           .Size = MFMSector.GetSizeBytes,
+                                        Dim BitstreamSector As New BitstreamSector(MFMSector) With {
                                            .IsStandard = IBM_MFM.IsStandardSector(MFMSector, Cylinder, Side)
                                         }
 
@@ -123,7 +121,7 @@ Namespace ImageFormats
             End Property
 
             Public Overrides Function SaveToFile(FilePath As String) As Boolean Implements IByteArray.SaveToFile
-                Return _Image.Export(FilePath, True)
+                Return _Image.Export(FilePath)
             End Function
         End Class
     End Namespace

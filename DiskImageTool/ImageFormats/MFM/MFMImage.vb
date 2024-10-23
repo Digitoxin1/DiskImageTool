@@ -178,12 +178,8 @@ Namespace ImageFormats
                 _Tracks(Index) = Value
             End Sub
 
-            Public Function Export(FilePath As String, RefreshBitstream As Boolean) As Boolean
+            Public Function Export(FilePath As String) As Boolean
                 Dim Buffer() As Byte
-
-                If RefreshBitstream Then
-                    UpdateBitstream()
-                End If
 
                 Try
                     If IO.File.Exists(FilePath) Then
@@ -267,33 +263,15 @@ Namespace ImageFormats
                 Return True
             End Function
 
-            Public Function UpdateBitstream() As Boolean Implements IBitstreamImage.UpdateBitstream
-                Dim Updated As Boolean = False
-                Dim Track As MFMTrack
-
-                For i = 0 To _Tracks.Length - 1
-                    Track = _Tracks(i)
-                    For Each Sector In Track.MFMData.Sectors
-                        If Sector.InitialChecksumValid Then
-                            Sector.UpdateChecksum()
-                            If Sector.IsModified Then
-                                Dim Bitstream = Sector.GetDataBitstream
-                                Dim DataFieldOffset = Sector.DataOffset
-                                For j = 0 To Bitstream.Length - 1
-                                    Track.Bitstream(DataFieldOffset + j) = Bitstream(j)
-                                Next
-                                Updated = True
-                            End If
-                        End If
-                    Next
-                Next i
-
-                Return Updated
-            End Function
-
             Private Function IBitstreamImage_GetTrack(Track As UShort, Side As Byte) As IBitstreamTrack Implements IBitstreamImage.GetTrack
                 Return GetTrack(Track, Side)
             End Function
+
+            Private ReadOnly Property IBitstreamImage_HasSurfaceData As Boolean Implements IBitstreamImage.HasSurfaceData
+                Get
+                    Return False
+                End Get
+            End Property
         End Class
     End Namespace
 End Namespace

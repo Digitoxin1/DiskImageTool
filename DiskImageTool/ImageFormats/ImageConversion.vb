@@ -182,8 +182,6 @@ Namespace ImageFormats
             Dim BitstreamTrack As IBitstreamTrack
             Dim TrackCount As UShort = 0
 
-            Image.UpdateBitstream()
-
             For Track = 0 To Image.TrackCount - 1 Step Image.TrackStep
                 BitstreamTrack = Image.GetTrack(Track, 0)
                 If BitstreamTrack.TrackType <> BitstreamTrackType.Other Then
@@ -244,8 +242,6 @@ Namespace ImageFormats
         Public Function BitstreamToMFMImage(Image As IBitstreamImage) As MFM.MFMImage
             Dim BitstreamTrack As IBitstreamTrack
             Dim TrackCount As UShort = 0
-
-            Image.UpdateBitstream()
 
             For Track = 0 To Image.TrackCount - 1 Step Image.TrackStep
                 BitstreamTrack = Image.GetTrack(Track, 0)
@@ -325,8 +321,6 @@ Namespace ImageFormats
             Dim BitstreamTrack As IBitstreamTrack
             Dim DiskType As TC.TransCopyDiskType = TC.TransCopyDiskType.Unknown
             Dim TrackCount As UShort = 0
-
-            Image.UpdateBitstream()
 
             For Track = 0 To Image.TrackCount - 1 Step Image.TrackStep
                 BitstreamTrack = Image.GetTrack(Track, 0)
@@ -520,10 +514,6 @@ Namespace ImageFormats
         End Function
 
         Private Function PSISectorFromMFMSector(Sector As IBM_MFM_Sector) As PSI.PSISector
-            If Sector.InitialChecksumValid Then
-                Sector.UpdateChecksum()
-            End If
-
             Dim DataChecksumValid = Sector.DataChecksum = Sector.CalculateDataChecksum
 
             Dim PSISector = New PSI.PSISector With {

@@ -123,7 +123,7 @@
             DebugExportMFMTrack(Cylinder.MFMData, TrackString, DebugPath & "track" & TrackString & ".log")
 
             DebugExportMFMBitstream(Cylinder.Bitstream, DebugPath & "track" & TrackString & "_bitstream" & ".txt")
-            IO.File.WriteAllBytes(DebugPath & "track" & TrackString & ".bin", IBM_MFM.DecodeTrack(Cylinder.Bitstream))
+            IO.File.WriteAllBytes(DebugPath & "track" & TrackString & ".bin", IBM_MFM.MFMGetBytes(Cylinder.Bitstream))
         End Sub
 
         Private Function HexFormat(Data() As Byte) As String

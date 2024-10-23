@@ -32,6 +32,7 @@ Namespace Bitstream
             Public Property Data As Byte()
             Public Property CanWrite As Boolean
             Public Property Size As UInteger
+            Public Property MFMSector As IBM_MFM.IBM_MFM_Sector = Nothing
         End Class
 
         Public Sub New(Image As IBitstreamImage)
@@ -175,25 +176,25 @@ Namespace Bitstream
             Dim MappedData As New MappedData With {
                 .Sector = Sector,
                 .Offset = SectorToOffset(Offset),
-                .Size = Disk.BYTES_PER_SECTOR
+                .Size = Disk.BYTES_PER_SECTOR,
+                .CanWrite = False
             }
 
             If Track > _TrackCount - 1 Or Head > _HeadCount - 1 Or SectorId > SECTOR_COUNT Then
                 MappedData.Data = _EmptySector
-                MappedData.CanWrite = False
             Else
                 Dim BitstreamSector = GetSector(Track, Head, SectorId)
                 If BitstreamSector Is Nothing Then
                     MappedData.Data = _EmptySector
-                    MappedData.CanWrite = False
                 Else
                     If BitstreamSector.Size < MappedData.Size Then
                         MappedData.Data = New Byte(MappedData.Size - 1) {}
                         BitstreamSector.Data.CopyTo(MappedData.Data, 0)
                     Else
                         MappedData.Data = BitstreamSector.Data
+                        MappedData.MFMSector = BitstreamSector.MFMSector
+                        MappedData.CanWrite = BitstreamSector.IsStandard
                     End If
-                    MappedData.CanWrite = BitstreamSector.IsStandard
                 End If
             End If
 
@@ -392,12 +393,15 @@ Namespace Bitstream
             Dim CurrentValue = BitConverter.ToUInt16(MappedData.Data, MappedData.Offset)
 
             If CurrentValue <> Value Then
-                Array.Copy(BitConverter.GetBytes(Value), 0, MappedData.Data, MappedData.Offset, 2)
-                Result = True
-                RaiseEvent DataChanged(Offset, CurrentValue, Value)
+                If MappedData.CanWrite Then
+                    Array.Copy(BitConverter.GetBytes(Value), 0, MappedData.Data, MappedData.Offset, 2)
+                    MappedData.MFMSector?.UpdateBitstream()
+                    Result = True
+                    RaiseEvent DataChanged(Offset, CurrentValue, Value)
+                End If
             End If
 
-            Return Result
+                Return Result
         End Function
 
         Public Function SetBytes(Value As UInteger, Offset As UInteger) As Boolean Implements IByteArray.SetBytes
@@ -411,12 +415,15 @@ Namespace Bitstream
             Dim CurrentValue = BitConverter.ToUInt32(MappedData.Data, MappedData.Offset)
 
             If CurrentValue <> Value Then
-                Array.Copy(BitConverter.GetBytes(Value), 0, MappedData.Data, MappedData.Offset, 4)
-                Result = True
-                RaiseEvent DataChanged(Offset, CurrentValue, Value)
+                If MappedData.CanWrite Then
+                    Array.Copy(BitConverter.GetBytes(Value), 0, MappedData.Data, MappedData.Offset, 4)
+                    MappedData.MFMSector?.UpdateBitstream()
+                    Result = True
+                    RaiseEvent DataChanged(Offset, CurrentValue, Value)
+                End If
             End If
 
-            Return Result
+                Return Result
         End Function
 
         Public Function SetBytes(Value As Byte, Offset As UInteger) As Boolean Implements IByteArray.SetBytes
@@ -430,12 +437,15 @@ Namespace Bitstream
             Dim CurrentValue = MappedData.Data(MappedData.Offset)
 
             If CurrentValue <> Value Then
-                MappedData.Data(MappedData.Offset) = Value
-                Result = True
-                RaiseEvent DataChanged(Offset, CurrentValue, Value)
+                If MappedData.CanWrite Then
+                    MappedData.Data(MappedData.Offset) = Value
+                    MappedData.MFMSector?.UpdateBitstream()
+                    Result = True
+                    RaiseEvent DataChanged(Offset, CurrentValue, Value)
+                End If
             End If
 
-            Return Result
+                Return Result
         End Function
 
         Public Function SetBytes(Value() As Byte, Offset As UInteger) As Boolean Implements IByteArray.SetBytes
@@ -468,6 +478,7 @@ Namespace Bitstream
                         Dim ActualSize = Math.Min(Size, MappedData.Size)
                         If MappedData.CanWrite Then
                             Array.Copy(Value, Index, MappedData.Data, MappedData.Offset, ActualSize)
+                            MappedData.MFMSector?.UpdateBitstream()
                             Result = True
                         End If
                         NewOffset += ActualSize

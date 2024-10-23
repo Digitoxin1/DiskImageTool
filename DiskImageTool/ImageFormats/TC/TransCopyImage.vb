@@ -106,15 +106,11 @@ Namespace ImageFormats
                 End Get
             End Property
 
-            Public Function Export(FilePath As String, RefreshBitstream As Boolean) As Boolean
+            Public Function Export(FilePath As String) As Boolean
                 Dim buffer() As Byte
                 Dim OffsetList As New List(Of UShort)
                 Dim Index As Integer
                 Dim Cylinder As TransCopyCylinder
-
-                If RefreshBitstream Then
-                    UpdateBitstream()
-                End If
 
                 Try
                     If IO.File.Exists(FilePath) Then
@@ -290,10 +286,6 @@ Namespace ImageFormats
                 Return _Cylinders(Index)
             End Function
 
-            Public Function GetTrack(Track As UShort, Side As Byte) As IBitstreamTrack Implements IBitstreamImage.GetTrack
-                Return GetCylinder(Track, Side)
-            End Function
-
             Public Sub Initialize(Cylinders As Byte, Sides As Byte, CylinderIncrement As Byte)
                 _CylinderStart = 0
                 _CylinderEnd = Cylinders - 1
@@ -375,37 +367,22 @@ Namespace ImageFormats
 
                 _Cylinders(Index) = Value
             End Sub
-            Public Function UpdateBitstream() As Boolean Implements IBitstreamImage.UpdateBitstream
-                Dim Updated As Boolean = False
-                Dim Cylinder As TransCopyCylinder
-
-                For i = 0 To _Cylinders.Length - 1
-                    Cylinder = _Cylinders(i)
-                    If Cylinder.Decoded Then
-                        For Each Sector In Cylinder.MFMData.Sectors
-                            If Sector.InitialChecksumValid Then
-                                Sector.UpdateChecksum()
-                                If Sector.IsModified Then
-                                    Dim Bitstream = Sector.GetDataBitstream
-                                    Dim DataFieldOffset = Sector.DataOffset
-                                    For j = 0 To Bitstream.Length - 1
-                                        Cylinder.Bitstream(DataFieldOffset + j) = Bitstream(j)
-                                    Next
-                                    Updated = True
-                                End If
-                            End If
-                        Next
-                    End If
-                Next i
-
-                Return Updated
-            End Function
 
             Private Sub FillBuffer(buffer() As Byte, b As Byte)
                 For i = 0 To buffer.Length - 1
                     buffer(i) = b
                 Next
             End Sub
+
+            Private Function IBitstreamImage_GetTrack(Track As UShort, Side As Byte) As IBitstreamTrack Implements IBitstreamImage.GetTrack
+                Return GetCylinder(Track, Side)
+            End Function
+
+            Private ReadOnly Property IBitstreamImage_HasSurfaceData As Boolean Implements IBitstreamImage.HasSurfaceData
+                Get
+                    Return False
+                End Get
+            End Property
         End Class
     End Namespace
 End Namespace
