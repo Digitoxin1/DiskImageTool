@@ -43,6 +43,7 @@ Public Class MainForm
     Private _ListViewCheckAll As Boolean = False
     Private _ListViewHeader As ListViewHeader
     Private _ListViewWidths() As Integer
+    Private _ListViewClickedGroup As ListViewGroup = Nothing
     Private _ScanRun As Boolean = False
     Private _SubFilterDiskType As ComboFilter
     Private _SubFilterOEMName As ComboFilter
@@ -1105,6 +1106,13 @@ Public Class MainForm
             End If
         Next
         MsgBox(Msg, MsgBoxStyle.Information + MsgBoxStyle.OkOnly)
+    End Sub
+
+    Private Sub DisplayDirectoryContextMenu(Directory As IDirectory)
+        MenuDirectoryView.Tag = Directory
+        MenuDirectoryImportFiles.Tag = Directory
+        MenuDirectoryNewDirectory.Tag = Directory
+        ContextMenuDirectory.Show(MousePosition)
     End Sub
 
     Private Sub DragDropSelectedFiles()
@@ -3389,22 +3397,19 @@ Public Class MainForm
     End Structure
 
 #Region "Events"
-    Private Sub BtnAddDirectory_Click(sender As Object, e As EventArgs) Handles MenuFileNewDirectory.Click
-        ContextMenuEdit.Close()
+    Private Sub BtnAddDirectory_Click(sender As Object, e As EventArgs) Handles MenuFileNewDirectory.Click, MenuDirectoryNewDirectory.Click
         If sender.Tag IsNot Nothing Then
             Dim Directory As IDirectory = sender.Tag
             ImageAddDirectory(_CurrentImage, Directory)
         End If
     End Sub
     Private Sub BtnAddDirectoryHere_Click(sender As Object, e As EventArgs) Handles MenuFileNewDirectoryHere.Click
-        ContextMenuEdit.Close()
         If ListViewFiles.SelectedItems.Count = 1 Then
             Dim FileData As FileData = ListViewFiles.SelectedItems(0).Tag
             ImageAddDirectory(_CurrentImage, FileData.DirectoryEntry.ParentDirectory, FileData.DirectoryEntry.Index)
         End If
     End Sub
-    Private Sub BtnImportFiles_Click(sender As Object, e As EventArgs) Handles MenuFileImportFiles.Click
-        ContextMenuEdit.Close()
+    Private Sub BtnImportFiles_Click(sender As Object, e As EventArgs) Handles MenuFileImportFiles.Click, MenuDirectoryImportFiles.Click
         If sender.Tag IsNot Nothing Then
             Dim Directory As IDirectory = sender.Tag
             ImageImportFiles(_CurrentImage, Directory, True)
@@ -3454,7 +3459,7 @@ Public Class MainForm
         HexDisplayFreeClusters(_CurrentImage)
     End Sub
 
-    Private Sub BtnDisplayDirectory_Click(sender As Object, e As EventArgs) Handles MenuHexDirectory.Click, MenuFileViewDirectory.Click
+    Private Sub BtnDisplayDirectory_Click(sender As Object, e As EventArgs) Handles MenuHexDirectory.Click, MenuFileViewDirectory.Click, MenuDirectoryView.Click
         If sender.Tag IsNot Nothing Then
             Dim Directory As IDirectory = sender.tag
             If Directory Is _CurrentImage.Disk.RootDirectory Then
@@ -4042,5 +4047,19 @@ Public Class MainForm
         Debounce.Start()
     End Sub
 
+    Private Sub ListViewFiles_MouseUp(sender As Object, e As MouseEventArgs) Handles ListViewFiles.MouseUp
+        If _ListViewClickedGroup IsNot Nothing Then
+            DisplayDirectoryContextMenu(_ListViewClickedGroup.Tag)
+            _ListViewClickedGroup = Nothing
+        End If
+    End Sub
+
+    Private Sub ListViewFiles_MouseDown(sender As Object, e As MouseEventArgs) Handles ListViewFiles.MouseDown
+        _ListViewClickedGroup = Nothing
+
+        If e.Button And MouseButtons.Right Then
+            _ListViewClickedGroup = ListViewFiles.GetGroupAtPoint(e.Location)
+        End If
+    End Sub
 #End Region
 End Class
