@@ -6,6 +6,8 @@ Namespace DiskImage
         Public Const CHAR_DELETED As Byte = &HE5
         Public Const DIRECTORY_ENTRY_SIZE As Byte = 32
         Public Shared ReadOnly EmptyDirectoryEntry() As Byte = {&HE5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}
+        Public Shared ReadOnly CurrentDirectoryEntry() As Byte = {&H2E, &H20, &H20, &H20, &H20, &H20, &H20, &H20, &H20, &H20, &H20}
+        Public Shared ReadOnly ParentDirectoryEntry() As Byte = {&H2E, &H2E, &H20, &H20, &H20, &H20, &H20, &H20, &H20, &H20, &H20}
 
         Private Const CHAR_EMPTY As Byte = &H0
         Private Const CHAR_SPACE As Byte = &H20
@@ -99,6 +101,11 @@ Namespace DiskImage
             _Offset = 0
         End Sub
 
+        Sub New(Data() As Byte)
+            _FileBytes = New ByteArray(Data)
+            _Offset = 0
+        End Sub
+
         Sub New(FileBytes As IByteArray, Offset As UInteger)
             _FileBytes = FileBytes
             _Offset = Offset
@@ -182,6 +189,20 @@ Namespace DiskImage
             End Get
             Set
                 If _FileBytes.SetBytes(Value, _Offset + DirectoryEntryOffsets.FileName, DirectoryEntrySizes.FileName, CHAR_SPACE) Then
+                    _IsBlankCache = Nothing
+                    _VolumeNameIsCached = False
+                    _FileNameIsCached = False
+                    _HasInvalidFileNameCache = Nothing
+                End If
+            End Set
+        End Property
+
+        Public Property FileNameWithExtension() As Byte()
+            Get
+                Return _FileBytes.GetBytes(_Offset + DirectoryEntryOffsets.FileName, DirectoryEntrySizes.FileName + DirectoryEntrySizes.Extension)
+            End Get
+            Set
+                If _FileBytes.SetBytes(Value, _Offset + DirectoryEntryOffsets.FileName, DirectoryEntrySizes.FileName + DirectoryEntrySizes.Extension, CHAR_SPACE) Then
                     _IsBlankCache = Nothing
                     _VolumeNameIsCached = False
                     _FileNameIsCached = False
@@ -326,6 +347,10 @@ Namespace DiskImage
             LastWriteTime = 0
         End Sub
 
+        Public Function Clone() As DirectoryEntryBase
+            Return New DirectoryEntryBase(Data)
+        End Function
+
         Public Function GetCreationDate() As ExpandedDate
             If Not _CreationDateIsCached Then
                 _CreationDateCache = ExpandDate(CreationDate, CreationTime, CreationMillisecond)
@@ -413,7 +438,7 @@ Namespace DiskImage
 
         Public Function GetVolumeName() As String
             If Not _VolumeNameIsCached Then
-                _VolumeNameCache = (CodePage437ToUnicode(FileName) & CodePage437ToUnicode(Extension)).TrimEnd(" ")
+                _VolumeNameCache = CodePage437ToUnicode(FileNameWithExtension).TrimEnd(" ")
                 _VolumeNameIsCached = True
             End If
 
@@ -515,6 +540,10 @@ Namespace DiskImage
 
         Public Function IsSystem() As Boolean
             Return (Attributes And AttributeFlags.System) > 0
+        End Function
+
+        Public Function IsValidVolumeName() As Boolean
+            Return IsVolumeName() AndAlso Not (IsHidden() OrElse IsSystem() OrElse IsDirectory() OrElse IsDeleted()) AndAlso StartingCluster = 0
         End Function
 
         Public Function IsVolumeName() As Boolean

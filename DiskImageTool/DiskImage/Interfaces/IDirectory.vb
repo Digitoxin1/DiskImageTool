@@ -7,6 +7,7 @@
         ReadOnly Property IsRootDirectory As Boolean
         ReadOnly Property ParentEntry As DirectoryEntry
         ReadOnly Property SectorChain As List(Of UInteger)
+        Function AddDirectory(DirectoryData() As Byte, UseLFN As Boolean, LFNFileName As String, Optional Index As Integer = -1) As Integer
         Function AddFile(FilePath As String, LFN As Boolean, Optional Index As Integer = -1) As Integer
         Function GetAvailableFileName(FileName As String, Optional CurrentIndex As Integer = -1) As String
         Function GetContent() As Byte()

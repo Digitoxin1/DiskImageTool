@@ -1,4 +1,16 @@
-﻿Namespace DiskImage
+﻿Imports System.IO
+
+Namespace DiskImage
+    Public Structure AddDirectoryData
+        Dim Index As Integer
+        Dim EntriesNeeded As Integer
+        Dim ShortFileName As String
+        Dim ClusterList As SortedSet(Of UShort)
+        Dim UseLFN As Boolean
+        Dim LFNEntries As List(Of Byte())
+        Dim RequiresExpansion As Boolean
+    End Structure
+
     Public Structure AddFileData
         Dim FilePath As String
         Dim WindowsAdditions As Boolean
@@ -362,6 +374,38 @@
             Return Entries
         End Function
 
+        Public Function InitializeAddDirectory(Directory As DirectoryBase, UseLFN As Boolean, LFNFileName As String, Index As Integer) As AddDirectoryData
+            Dim ClustersRequired As UShort = 1
+
+            Dim AddDirectoryData As AddDirectoryData
+
+            AddDirectoryData.Index = Index
+            AddDirectoryData.UseLFN = UseLFN
+            If UseLFN Then
+                AddDirectoryData.ShortFileName = Directory.GetAvailableFileName(LFNFileName)
+                AddDirectoryData.LFNEntries = GetLFNDirectoryEntries(LFNFileName, AddDirectoryData.ShortFileName)
+                AddDirectoryData.EntriesNeeded = AddDirectoryData.LFNEntries.Count + 1
+            Else
+                AddDirectoryData.ShortFileName = ""
+                AddDirectoryData.LFNEntries = Nothing
+                AddDirectoryData.EntriesNeeded = 1
+            End If
+
+
+            AddDirectoryData.RequiresExpansion = Directory.Data.AvailableEntryCount < AddDirectoryData.EntriesNeeded
+            If AddDirectoryData.RequiresExpansion Then
+                ClustersRequired += 1
+            End If
+
+            If AddDirectoryData.RequiresExpansion And Directory.IsRootDirectory Then
+                AddDirectoryData.ClusterList = Nothing
+            Else
+                AddDirectoryData.ClusterList = Directory.Disk.FAT.GetFreeClusters(ClustersRequired)
+            End If
+
+            Return AddDirectoryData
+        End Function
+
         Public Function InitializeAddFile(Directory As DirectoryBase, FilePath As String, WindowsAdditions As Boolean, Index As Integer) As AddFileData
             Dim FileInfo = New IO.FileInfo(FilePath)
             Dim ClustersRequired As UShort = Math.Ceiling(FileInfo.Length / Directory.Disk.BPB.BytesPerCluster)
@@ -414,6 +458,42 @@
 
             Return UpdateLFNData
         End Function
+
+        Public Sub ProcessAddDirectory(Directory As DirectoryBase, DirectoryData() As Byte, Data As AddDirectoryData)
+            Dim EntryCount = Directory.DirectoryEntries.Count - Directory.Data.AvailableEntryCount
+            Dim Entries As List(Of DirectoryEntry)
+
+            If Data.Index > -1 Then
+                Data.Index = Directory.AdjustIndexForLFN(Data.Index)
+                Directory.ShiftEntries(Data.Index, EntryCount, Data.EntriesNeeded)
+                Entries = Directory.GetEntries(Data.Index, Data.EntriesNeeded)
+            Else
+                Entries = Directory.GetEntries(EntryCount, Data.EntriesNeeded)
+            End If
+
+            Dim Cluster = Directory.Disk.FAT.GetNextFreeCluster(Data.ClusterList, True)
+            Directory.Disk.FATTables.UpdateTableEntry(Cluster, FAT12.FAT_LAST_CLUSTER_END)
+
+            Dim Entry = New DirectoryEntryBase(DirectoryData) With {
+                .StartingCluster = Cluster
+            }
+            If Data.UseLFN Then
+                Entry.SetFileName(Data.ShortFileName)
+            End If
+
+            Dim DirectoryEntry = Entries(Entries.Count - 1)
+            DirectoryEntry.Data = Entry.Data
+            DirectoryEntry.InitFatChain()
+            DirectoryEntry.InitSubDirectory()
+
+            If Data.UseLFN Then
+                ProcessLFNEntries(Entries, Data.LFNEntries)
+            End If
+
+            Directory.UpdateEntryCounts()
+
+            DirectoryEntry.SubDirectory.Initialize()
+        End Sub
 
         Public Sub ProcessAddFile(Directory As DirectoryBase, Data As AddFileData)
             Dim EntryCount = Directory.DirectoryEntries.Count - Directory.Data.AvailableEntryCount

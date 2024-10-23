@@ -52,6 +52,24 @@
             End Get
         End Property
 
+        Public Overrides Function AddDirectory(DirectoryData() As Byte, UseLFN As Boolean, LFNFileName As String, Optional Index As Integer = -1) As Integer Implements IDirectory.AddDirectory
+            Dim Data = InitializeAddDirectory(Me, UseLFN, LFNFileName, Index)
+
+            If Data.ClusterList Is Nothing Then
+                Return -1
+            End If
+
+            Dim UseTransaction As Boolean = Disk.BeginTransaction
+
+            ProcessAddDirectory(Me, DirectoryData, Data)
+
+            If UseTransaction Then
+                Disk.EndTransaction()
+            End If
+
+            Return Data.EntriesNeeded
+        End Function
+
         Public Overrides Function AddFile(FilePath As String, WindowsAdditions As Boolean, Optional Index As Integer = -1) As Integer Implements IDirectory.AddFile
             Dim Data = InitializeAddFile(Me, FilePath, WindowsAdditions, Index)
 

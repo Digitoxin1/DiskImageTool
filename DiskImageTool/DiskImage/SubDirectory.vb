@@ -25,6 +25,37 @@
             End Get
         End Property
 
+        Public Overrides Function AddDirectory(DirectoryData() As Byte, UseLFN As Boolean, LFNFileName As String, Optional Index As Integer = -1) As Integer Implements IDirectory.AddDirectory
+            Dim Data = InitializeAddDirectory(Me, UseLFN, LFNFileName, Index)
+
+            If Data.ClusterList Is Nothing Then
+                Return -1
+            End If
+
+            Dim Cluster As UShort
+            If Data.RequiresExpansion Then
+                Cluster = Disk.FAT.GetNextFreeCluster(Data.ClusterList, True)
+
+                If Cluster = 0 Then
+                    Return -1
+                End If
+            End If
+
+            Dim UseTransaction As Boolean = Disk.BeginTransaction
+
+            If Data.RequiresExpansion Then
+                ExpandDirectorySize(Cluster)
+            End If
+
+            ProcessAddDirectory(Me, DirectoryData, Data)
+
+            If UseTransaction Then
+                Disk.EndTransaction()
+            End If
+
+            Return Data.EntriesNeeded
+        End Function
+
         Public Overrides Function AddFile(FilePath As String, WindowsAdditions As Boolean, Optional Index As Integer = -1) As Integer Implements IDirectory.AddFile
             Dim Data = InitializeAddFile(Me, FilePath, WindowsAdditions, Index)
 
@@ -106,6 +137,39 @@
         Public Overrides Function GetContent() As Byte() Implements IDirectory.GetContent
             Return GetDataFromChain(Disk.Image.Data, SectorChain)
         End Function
+
+        Public Sub Initialize()
+            Dim ClusterSize = Disk.BPB.BytesPerCluster
+            Dim Entry As DirectoryEntryBase
+
+            For Each Cluster In ParentEntry.FATChain.Clusters
+                Dim OffsetStart As UInteger = Disk.BPB.ClusterToOffset(Cluster)
+
+                Dim Buffer = New Byte(ClusterSize - 1) {}
+                Disk.Image.SetBytes(Buffer, OffsetStart)
+            Next
+
+            Entry = New DirectoryEntryBase With {
+                .StartingCluster = ParentEntry.StartingCluster,
+                .FileNameWithExtension = DirectoryEntryBase.CurrentDirectoryEntry
+            }
+            Entry.Attributes = MyBitConverter.ToggleBit(Entry.Attributes, DirectoryEntry.AttributeFlags.Directory, True)
+            SetEntryDates(Entry)
+            DirectoryEntries.Item(0).Data = Entry.Data
+
+            Dim StartingCluster As UShort = 0
+            If ParentEntry.ParentDirectory.ParentEntry IsNot Nothing Then
+                StartingCluster = ParentEntry.ParentDirectory.ParentEntry.StartingCluster
+            End If
+
+            Entry = New DirectoryEntryBase With {
+                .StartingCluster = StartingCluster,
+                .FileNameWithExtension = DirectoryEntryBase.ParentDirectoryEntry
+            }
+            Entry.Attributes = MyBitConverter.ToggleBit(Entry.Attributes, DirectoryEntry.AttributeFlags.Directory, True)
+            SetEntryDates(Entry)
+            DirectoryEntries.Item(1).Data = Entry.Data
+        End Sub
 
         Public Function ReduceDirectorySize() As Boolean
             If ClusterChain.Count < 2 Then
@@ -205,6 +269,16 @@
             Return Result
         End Function
 
+        Public Sub UpdateLinkDates()
+            Dim Entry As DirectoryEntryBase
+
+            For i = 0 To 1
+                Entry = DirectoryEntries.Item(i).Clone
+                SetEntryDates(Entry)
+                DirectoryEntries.Item(i).Data = Entry.Data
+            Next i
+        End Sub
+
         Private Sub InitializeDirectoryData()
             DirectoryEntries.Clear()
 
@@ -231,5 +305,14 @@
 
             Return True
         End Function
+
+        Private Sub SetEntryDates(Entry As DirectoryEntryBase)
+            Entry.LastAccessDate = ParentEntry.LastAccessDate
+            Entry.LastWriteDate = ParentEntry.LastWriteDate
+            Entry.LastWriteTime = ParentEntry.LastWriteTime
+            Entry.CreationDate = ParentEntry.CreationDate
+            Entry.CreationTime = ParentEntry.CreationTime
+            Entry.CreationMillisecond = ParentEntry.CreationMillisecond
+        End Sub
     End Class
 End Namespace

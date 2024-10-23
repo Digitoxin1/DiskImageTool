@@ -99,7 +99,6 @@ Public Class ItemScanForm
         Dim Counter As Integer = 0
         Dim Result As Boolean = True
         For Each ImageData As ImageData In _ImageList
-            Console.WriteLine(ImageData.FileName)
             If bw.CancellationPending Then
                 Return False
             End If

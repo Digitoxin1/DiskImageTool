@@ -1274,8 +1274,8 @@ Public Class MainForm
         End If
     End Sub
 
-    Private Function FilePropertiesEdit(CurrentImage As CurrentImage) As Boolean
-        Dim Result As Boolean = False
+    Private Sub FilePropertiesEdit(CurrentImage As CurrentImage)
+        Dim Result As Boolean
 
         Dim frmFileProperties As New FilePropertiesForm(CurrentImage.Disk, ListViewFiles.SelectedItems)
         frmFileProperties.ShowDialog()
@@ -1287,9 +1287,7 @@ Public Class MainForm
                 DiskImageRefresh(CurrentImage)
             End If
         End If
-
-        Return Result
-    End Function
+    End Sub
 
     Private Sub FilesOpen()
         Dim FileFilter = GetLoadDialogFilters()
@@ -1663,6 +1661,27 @@ Public Class MainForm
         If HexViewSectorData IsNot Nothing Then
             If DisplayHexViewForm(HexViewSectorData) Then
                 DiskImageRefresh(CurrentImage)
+            End If
+        End If
+    End Sub
+
+    Private Sub ImageAddDirectory(CurrentImage As CurrentImage, ParentDirectory As IDirectory, Optional Index As Integer = -1)
+        Dim Updated As Boolean
+
+        Dim frmFileProperties As New FilePropertiesForm(CurrentImage.Disk)
+        frmFileProperties.ShowDialog()
+
+        If frmFileProperties.DialogResult = DialogResult.OK Then
+            Updated = frmFileProperties.Updated
+
+            If Updated Then
+                Dim Result = ParentDirectory.AddDirectory(frmFileProperties.NewDirectoryData, frmFileProperties.HasLFN, frmFileProperties.LFN, Index)
+
+                If Result > -1 Then
+                    DiskImageRefresh(CurrentImage)
+                Else
+                    MsgBox($"Warning: Insufficient Disk Space", MsgBoxStyle.Exclamation)
+                End If
             End If
         End If
     End Sub
@@ -2765,6 +2784,7 @@ Public Class MainForm
 
             MenuFileViewCrosslinked.Visible = False
             MenuFileImportFilesHere.Enabled = False
+            MenuFileNewDirectoryHere.Enabled = False
 
         ElseIf ListViewFiles.SelectedItems.Count = 1 Then
             Dim FileData As FileData = ListViewFiles.SelectedItems(0).Tag
@@ -2814,8 +2834,10 @@ Public Class MainForm
                     SetButtonStateViewFile(False)
                 End If
                 MenuFileImportFilesHere.Enabled = Stats.CanInsert
+                MenuFileNewDirectoryHere.Enabled = Stats.CanInsert
             Else
                 MenuFileImportFilesHere.Enabled = False
+                MenuFileNewDirectoryHere.Enabled = False
             End If
         Else
             Dim FileData As FileData
@@ -2863,6 +2885,7 @@ Public Class MainForm
 
             MenuFileViewCrosslinked.Visible = False
             MenuFileImportFilesHere.Enabled = False
+            MenuFileNewDirectoryHere.Enabled = False
         End If
 
         If ParentDirectory Is Nothing Then
@@ -3128,6 +3151,9 @@ Public Class MainForm
     Private Sub SetButtonStateAddFile(Enabled As Boolean, Optional Tag As Object = Nothing)
         MenuFileImportFiles.Enabled = Enabled
         MenuFileImportFiles.Tag = Tag
+
+        MenuFileNewDirectory.Enabled = Enabled
+        MenuFileNewDirectory.Tag = Tag
     End Sub
 
     Private Sub SetButtonStateDeleteFile(Enabled As Boolean, Visible As Boolean, Optional Text As String = "&Delete File")
@@ -3363,6 +3389,20 @@ Public Class MainForm
     End Structure
 
 #Region "Events"
+    Private Sub BtnAddDirectory_Click(sender As Object, e As EventArgs) Handles MenuFileNewDirectory.Click
+        ContextMenuEdit.Close()
+        If sender.Tag IsNot Nothing Then
+            Dim Directory As IDirectory = sender.Tag
+            ImageAddDirectory(_CurrentImage, Directory)
+        End If
+    End Sub
+    Private Sub BtnAddDirectoryHere_Click(sender As Object, e As EventArgs) Handles MenuFileNewDirectoryHere.Click
+        ContextMenuEdit.Close()
+        If ListViewFiles.SelectedItems.Count = 1 Then
+            Dim FileData As FileData = ListViewFiles.SelectedItems(0).Tag
+            ImageAddDirectory(_CurrentImage, FileData.DirectoryEntry.ParentDirectory, FileData.DirectoryEntry.Index)
+        End If
+    End Sub
     Private Sub BtnImportFiles_Click(sender As Object, e As EventArgs) Handles MenuFileImportFiles.Click
         ContextMenuEdit.Close()
         If sender.Tag IsNot Nothing Then
@@ -4001,5 +4041,6 @@ Public Class MainForm
         Debounce.Stop()
         Debounce.Start()
     End Sub
+
 #End Region
 End Class

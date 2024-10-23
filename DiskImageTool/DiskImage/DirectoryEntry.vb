@@ -325,10 +325,6 @@
             Return Not (IsDirectory() OrElse IsVolumeName() OrElse HasInvalidStartingCluster() OrElse HasInvalidFileSize()) AndAlso StartingCluster > 1
         End Function
 
-        Public Function IsValidVolumeName() As Boolean
-            Return IsVolumeName() AndAlso Not (IsHidden() OrElse IsSystem() OrElse IsDirectory() OrElse IsDeleted()) AndAlso StartingCluster = 0
-        End Function
-
         Public Function RemoveLFN() As Boolean
             Return ParentDirectory.RemoveLFN(_Index)
         End Function
@@ -454,7 +450,7 @@
             Return True
         End Function
 
-        Private Sub InitSubDirectory()
+        Public Sub InitSubDirectory()
             If IsValidDirectory() AndAlso Not IsLink() AndAlso Not IsDeleted() Then
                 _SubDirectory = New SubDirectory(_RootDirectory, Me)
             Else

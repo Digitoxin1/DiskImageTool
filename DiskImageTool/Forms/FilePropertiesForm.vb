@@ -8,11 +8,11 @@ Public Class FilePropertiesForm
     Private _DeferredChange() As Byte
     Private _Deleted As Boolean = False
     Private _HasDeferredChange As Boolean = False
-    Private _HasLFN As Boolean = False
-    Private _IsDirectory As Boolean = False
     Private _IsVolumeLabel As Boolean = False
     Private _SuppressEvent As Boolean = True
     Private _Updated As Boolean = False
+    Private _NewDirectoryEntry As DirectoryEntryBase
+
     Public Sub New(Disk As DiskImage.Disk, Items As ICollection)
 
         ' This call is required by the designer.
@@ -21,7 +21,41 @@ Public Class FilePropertiesForm
         ' Add any initialization after the InitializeComponent() call.
         _Disk = Disk
         _Items = Items
+
+        Me.Text = "File Properties"
+        BtnUpdate.Text = "Update"
     End Sub
+
+    Public Sub New(Disk As DiskImage.Disk)
+
+        ' This call is required by the designer.
+        InitializeComponent()
+
+        ' Add any initialization after the InitializeComponent() call.
+        _Disk = Disk
+        _Items = Nothing
+
+        Me.Text = "New Directory"
+        BtnUpdate.Text = "Add"
+    End Sub
+
+    Public ReadOnly Property HasLFN As Boolean
+        Get
+            Return RadioFileLong.Checked
+        End Get
+    End Property
+
+    Public ReadOnly Property LFN As String
+        Get
+            Return TxtLFN.Text
+        End Get
+    End Property
+
+    Public ReadOnly Property NewDirectoryData As Byte()
+        Get
+            Return _NewDirectoryEntry.Data
+        End Get
+    End Property
 
     Public ReadOnly Property Updated As Boolean
         Get
@@ -103,7 +137,7 @@ Public Class FilePropertiesForm
         Dim FileName() As Byte
         Dim Extension() As Byte
 
-        If _IsVolumeLabel Then
+        If DirectoryEntry.IsValidVolumeName Then
             Dim VolumeLabel() As Byte = MskFileHex.GetHex
             ReDim FileName(7)
             ReDim Extension(2)
@@ -128,7 +162,7 @@ Public Class FilePropertiesForm
         End If
     End Sub
 
-    Private Sub ApplyUpdates()
+    Private Sub ApplyFilePropertiesUpdate()
         _Updated = False
 
         Dim UseTransaction = _Disk.BeginTransaction
@@ -138,9 +172,7 @@ Public Class FilePropertiesForm
         For Each Item As ListViewItem In _Items
             Dim FileData As FileData = Item.Tag
             Dim DirectoryEntry = FileData.DirectoryEntry
-            Dim NewDirectoryEntry = New DirectoryEntryBase With {
-                .Data = DirectoryEntry.Data
-            }
+            Dim NewDirectoryEntry = DirectoryEntry.Clone
 
             If UpdateFileName Then
                 If RadioFileShort.Checked Then
@@ -152,9 +184,13 @@ Public Class FilePropertiesForm
 
             DirectoryEntry.Data = NewDirectoryEntry.Data
 
+            If DirectoryEntry.IsDirectory And Not DirectoryEntry.IsDeleted And Not DirectoryEntry.IsVolumeName Then
+                DirectoryEntry.SubDirectory.UpdateLinkDates()
+            End If
+
             If UpdateFileName Then
                 If RadioFileShort.Checked Then
-                    If Not _IsVolumeLabel And Not _Deleted And _HasLFN Then
+                    If Not DirectoryEntry.IsValidVolumeName And Not DirectoryEntry.IsDeleted And DirectoryEntry.HasLFN Then
                         If DirectoryEntry.RemoveLFN() Then
                             _Updated = True
                         End If
@@ -170,6 +206,23 @@ Public Class FilePropertiesForm
         If UseTransaction Then
             _Disk.EndTransaction()
         End If
+    End Sub
+
+    Private Sub ApplyNewDirectoryUpdate()
+        _Updated = True
+
+        _NewDirectoryEntry = New DirectoryEntryBase With {
+            .FileSize = 0
+        }
+
+        If RadioFileShort.Checked Then
+            ApplyFileNameUpdateShort(_NewDirectoryEntry)
+        End If
+
+        ApplyFileDatesUpdate(_NewDirectoryEntry)
+        ApplyAttributesUpdate(_NewDirectoryEntry)
+
+        _NewDirectoryEntry.Attributes = MyBitConverter.ToggleBit(_NewDirectoryEntry.Attributes, DiskImage.DirectoryEntry.AttributeFlags.Directory, True)
     End Sub
 
     Private Function GetDateFromPicker(DatePicker As DateTimePicker, TimePicker As DateTimePicker, MS As NumericUpDown) As Date?
@@ -226,10 +279,8 @@ Public Class FilePropertiesForm
         Dim SetSystem As Boolean = True
         Dim SetHidden As Boolean = True
 
-        _IsDirectory = False
         _IsVolumeLabel = False
         _Deleted = False
-        _HasLFN = False
 
         GroupFileName.Text = "Multiple Files"
         LblMultipleFiles.Text = "(" & _Items.Count & " Files Selected)"
@@ -283,16 +334,51 @@ Public Class FilePropertiesForm
         TxtLFN.Visible = False
     End Sub
 
+    Private Sub PopulateFormNewDirectory()
+        Dim Maxlength As Integer = 8
+        _IsVolumeLabel = False
+        _Deleted = False
+
+        TxtExtension.Visible = True
+        MskExtensionHex.Visible = True
+        TxtExtension.Text = ""
+        MskExtensionHex.SetHex(New Byte(2) {32, 32, 32})
+
+        FlowLayoutFileNameType.Visible = True
+        RadioFileShort.Checked = True
+
+        MskFileHex.MaskLength = Maxlength
+        MskFileHex.Width = (Maxlength * 3 - 1) * 7 + 8
+        MskFileHex.SetHex(New Byte(7) {32, 32, 32, 32, 32, 32, 32, 32})
+        TxtFile.PromptChar = " "
+        TxtFile.Width = MskFileHex.Width
+
+        TxtFile.Mask = ">" & Strings.StrDup(8, "C")
+        TxtFile.Text = ""
+
+        TxtLFN.Text = ""
+
+        GroupFileName.Text = "Directory Name"
+
+        ChkArchive.Checked = False
+        ChkReadOnly.Checked = False
+        ChkHidden.Checked = False
+        ChkSystem.Checked = False
+
+        ToggleFileType(True)
+    End Sub
+
     Private Sub PopulateFormSingle()
         Dim Item As ListViewItem = _Items(0)
         Dim FileData As FileData = Item.Tag
         Dim DirectoryEntry = FileData.DirectoryEntry
         Dim DT As DiskImage.ExpandedDate
 
-        _IsDirectory = DirectoryEntry.IsDirectory And Not DirectoryEntry.IsVolumeName
+        Dim IsDirectory = DirectoryEntry.IsDirectory And Not DirectoryEntry.IsVolumeName
+        Dim HasLFN = DirectoryEntry.HasLFN
+
         _IsVolumeLabel = DirectoryEntry.IsValidVolumeName
         _Deleted = DirectoryEntry.IsDeleted
-        _HasLFN = DirectoryEntry.HasLFN
 
         Dim Caption As String
         Dim Maxlength As Integer
@@ -318,13 +404,13 @@ Public Class FilePropertiesForm
             FileNameHex = DirectoryEntry.FileName
             TxtExtension.Text = DirectoryEntry.GetFileExtension
             MskExtensionHex.SetHex(DirectoryEntry.Extension)
-            If _IsDirectory Then
+            If IsDirectory Then
                 Caption = "Directory Name"
             Else
                 Caption = "File Name"
             End If
             FlowLayoutFileNameType.Visible = Not _Deleted
-            If Not _Deleted And _HasLFN Then
+            If Not _Deleted And HasLFN Then
                 RadioFileLong.Checked = True
             Else
                 RadioFileShort.Checked = True
@@ -346,7 +432,7 @@ Public Class FilePropertiesForm
             TxtFile.Text = FileName
         End If
 
-        If _HasLFN Then
+        If HasLFN Then
             TxtLFN.Text = DirectoryEntry.GetLongFileName
         Else
             TxtLFN.Text = DirectoryEntry.GetFullFileName
@@ -482,7 +568,11 @@ Public Class FilePropertiesForm
     End Sub
 
     Private Sub BtnUpdate_Click(sender As Object, e As EventArgs) Handles BtnUpdate.Click
-        ApplyUpdates()
+        If _Items IsNot Nothing Then
+            ApplyFilePropertiesUpdate()
+        Else
+            ApplyNewDirectoryUpdate()
+        End If
     End Sub
 
     Private Sub DTCreated_ValueChanged(sender As Object, e As EventArgs) Handles DTCreated.ValueChanged
@@ -514,17 +604,27 @@ Public Class FilePropertiesForm
     Private Sub FilePropertiesForm_Load(sender As Object, e As EventArgs) Handles Me.Load
         _SuppressEvent = True
 
-        DTLastWritten.Value = New Date(1980, 1, 1)
-        DTLastWrittenTime.Value = New Date(1980, 1, 1, 0, 0, 0)
         SetCreatedDateValue(Nothing)
         SetLastAccessedDateValue(Nothing)
 
-        InitMultiple(_Items.Count > 1)
+        If _Items IsNot Nothing Then
+            DTLastWritten.Value = New Date(1980, 1, 1)
+            DTLastWrittenTime.Value = New Date(1980, 1, 1, 0, 0, 0)
 
-        If _Items.Count = 1 Then
-            PopulateFormSingle()
+            InitMultiple(_Items.Count > 1)
+
+            If _Items.Count = 1 Then
+                PopulateFormSingle()
+            Else
+                PopulateFormMultiple()
+            End If
         Else
-            PopulateFormMultiple()
+            DTLastWritten.Value = Now.Date
+            DTLastWrittenTime.Value = Now
+
+            InitMultiple(False)
+
+            PopulateFormNewDirectory()
         End If
 
         _SuppressEvent = False
@@ -575,6 +675,14 @@ Public Class FilePropertiesForm
         End If
         _SuppressEvent = False
     End Sub
+    Private Sub RadioFile_CheckedChanged(sender As Object, e As EventArgs) Handles RadioFileShort.CheckedChanged, RadioFileLong.CheckedChanged
+        If _SuppressEvent Then
+            Exit Sub
+        End If
+
+        ToggleFileType(False)
+    End Sub
+
     Private Sub TxtExtension_TextChanged(sender As Object, e As EventArgs) Handles TxtExtension.TextChanged
         If _SuppressEvent Then
             Exit Sub
@@ -614,13 +722,8 @@ Public Class FilePropertiesForm
 
         MskFileHex.SetHex(b)
     End Sub
-
-    Private Sub RadioFile_CheckedChanged(sender As Object, e As EventArgs) Handles RadioFileShort.CheckedChanged, RadioFileLong.CheckedChanged
-        If _SuppressEvent Then
-            Exit Sub
-        End If
-
-        ToggleFileType(False)
+    Private Sub TxtLFN_LostFocus(sender As Object, e As EventArgs) Handles TxtLFN.LostFocus
+        TxtLFN.Text = Trim(TxtLFN.Text)
     End Sub
 
     Private Sub TxtLFN_Validating(sender As Object, e As CancelEventArgs) Handles TxtLFN.Validating
@@ -634,10 +737,6 @@ Public Class FilePropertiesForm
                 Exit For
             End If
         Next
-    End Sub
-
-    Private Sub TxtLFN_LostFocus(sender As Object, e As EventArgs) Handles TxtLFN.LostFocus
-        TxtLFN.Text = Trim(TxtLFN.Text)
     End Sub
 #End Region
 

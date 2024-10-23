@@ -83,7 +83,7 @@ Module Utility
 
     Public Function GetVersionString() As String
         Dim Version = FileVersionInfo.GetVersionInfo(Application.ExecutablePath)
-        Return Version.FileMajorPart & "." & Version.FileMinorPart & "." & Version.FilePrivatePart
+        Return Version.FileMajorPart & "." & Version.FileMinorPart.ToString.PadLeft(2, "0") & "." & Version.FilePrivatePart.ToString.PadLeft(2, "0")
     End Function
 
     Public Function HexStringToBytes(ByVal HexString As String) As Byte()

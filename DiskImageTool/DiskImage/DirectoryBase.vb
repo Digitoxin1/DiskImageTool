@@ -114,6 +114,8 @@
             End If
         End Sub
 
+        Public MustOverride Function AddDirectory(DirectoryData() As Byte, UseLFN As Boolean, LFNFileName As String, Optional Index As Integer = -1) As Integer Implements IDirectory.AddDirectory
+
         Public MustOverride Function AddFile(FilePath As String, LFN As Boolean, Optional Index As Integer = -1) As Integer Implements IDirectory.AddFile
 
         Public Function AdjustIndexForLFN(Index As Integer) As Integer
