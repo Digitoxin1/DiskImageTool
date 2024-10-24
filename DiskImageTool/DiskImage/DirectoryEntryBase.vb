@@ -565,6 +565,8 @@ Namespace DiskImage
         Public Sub SetFileInfo(FileInfo As FileInfo, NewFileName As String, UseCreationDate As Boolean, UseLastAccessDate As Boolean)
             SetFileName(NewFileName)
 
+            FileSize = FileInfo.Length
+
             SetLastWriteDate(FileInfo.LastWriteTime)
 
             If UseCreationDate Then
@@ -574,8 +576,6 @@ Namespace DiskImage
             If UseLastAccessDate Then
                 SetLastAccessDate(FileInfo.LastAccessTime)
             End If
-
-            FileSize = FileInfo.Length
 
             Dim Attrib As AttributeFlags = 0
             If (FileInfo.Attributes And FileAttributes.Archive) > 0 Then
@@ -589,6 +589,44 @@ Namespace DiskImage
             End If
             If (FileInfo.Attributes And FileAttributes.Hidden) > 0 Then
                 Attrib = Attrib Or AttributeFlags.Hidden
+            End If
+            If (FileInfo.Attributes And FileAttributes.Directory) > 0 Then
+                Attrib = Attrib Or AttributeFlags.Directory
+            End If
+
+            Attributes = Attrib
+        End Sub
+
+        Public Sub SetFileInfo(FolderInfo As DirectoryInfo, NewFileName As String, UseCreationDate As Boolean, UseLastAccessDate As Boolean)
+            SetFileName(NewFileName)
+
+            FileSize = 0
+
+            SetLastWriteDate(FolderInfo.LastWriteTime)
+
+            If UseCreationDate Then
+                SetCreationDate(FolderInfo.CreationTime)
+            End If
+
+            If UseLastAccessDate Then
+                SetLastAccessDate(FolderInfo.LastAccessTime)
+            End If
+
+            Dim Attrib As AttributeFlags = 0
+            If (FolderInfo.Attributes And FileAttributes.Archive) > 0 Then
+                Attrib = Attrib Or AttributeFlags.ArchiveFlag
+            End If
+            If (FolderInfo.Attributes And FileAttributes.ReadOnly) > 0 Then
+                Attrib = Attrib Or AttributeFlags.ReadOnly
+            End If
+            If (FolderInfo.Attributes And FileAttributes.System) > 0 Then
+                Attrib = Attrib Or AttributeFlags.System
+            End If
+            If (FolderInfo.Attributes And FileAttributes.Hidden) > 0 Then
+                Attrib = Attrib Or AttributeFlags.Hidden
+            End If
+            If (FolderInfo.Attributes And FileAttributes.Directory) > 0 Then
+                Attrib = Attrib Or AttributeFlags.Directory
             End If
 
             Attributes = Attrib

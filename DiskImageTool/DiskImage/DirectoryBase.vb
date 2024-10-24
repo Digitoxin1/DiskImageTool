@@ -114,9 +114,11 @@
             End If
         End Sub
 
-        Public MustOverride Function AddDirectory(DirectoryData() As Byte, UseLFN As Boolean, LFNFileName As String, Optional Index As Integer = -1) As Integer Implements IDirectory.AddDirectory
+        Public MustOverride Function AddDirectory(DirectoryData() As Byte, UseLFN As Boolean, LFNFileName As String, Optional Index As Integer = -1) As AddDirectoryData Implements IDirectory.AddDirectory
 
         Public MustOverride Function AddFile(FilePath As String, LFN As Boolean, Optional Index As Integer = -1) As Integer Implements IDirectory.AddFile
+
+        Public MustOverride Function AddFile(FileInfo As IO.FileInfo, LFN As Boolean, Optional Index As Integer = -1) As Integer Implements IDirectory.AddFile
 
         Public Function AdjustIndexForLFN(Index As Integer) As Integer
             If Index < 1 Then
@@ -322,18 +324,16 @@
             Dim EntryCount As UInteger
             Dim Counter As Integer
             Dim Buffer(10) As Byte
-            Dim EndOfDirectory As Boolean = False
 
+            EntryCount = 0
             For Counter = 0 To _DirectoryEntries.Count - 1
                 Dim DirectoryEntry = _DirectoryEntries(Counter)
                 DirectoryEntry.Index = Counter
                 Dim FirstChar = DirectoryEntry.Data(0)
-                If Not EndOfDirectory Then
-                    EntryCount = Counter
-                End If
                 If FirstChar = 0 Then
-                    EndOfDirectory = True
+                    Exit For
                 End If
+                EntryCount += 1
             Next
 
             _DirectoryData.EntryCount = EntryCount
@@ -355,7 +355,11 @@
 
         Private Function TruncateFileName(FilePart As String, Index As UInteger) As String
             Dim Suffix = "~" & Index
-            Return FilePart.Substring(0, 8 - Suffix.Length) & Suffix
+            Dim Length = 8 - Suffix.Length
+            If Length > FilePart.Length Then
+                Length = FilePart.Length
+            End If
+            Return FilePart.Substring(0, Length) & Suffix
         End Function
     End Class
 End Namespace

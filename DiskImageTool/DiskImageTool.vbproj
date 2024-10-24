@@ -151,6 +151,12 @@
     <Compile Include="FloppyDiskIO.vb" />
     <Compile Include="Bitstream\Interfaces\IBitstreamImage.vb" />
     <Compile Include="Bitstream\Interfaces\IBitstreamTrack.vb" />
+    <Compile Include="Forms\FileDropForm.Designer.vb">
+      <DependentUpon>FileDropForm.vb</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\FileDropForm.vb">
+      <SubType>Form</SubType>
+    </Compile>
     <Compile Include="Forms\HexViewRawForm.Designer.vb">
       <DependentUpon>HexViewRawForm.vb</DependentUpon>
     </Compile>
@@ -393,6 +399,9 @@
     <EmbeddedResource Include="Forms\FATEditForm.resx">
       <DependentUpon>FATEditForm.vb</DependentUpon>
       <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\FileDropForm.resx">
+      <DependentUpon>FileDropForm.vb</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\FilePropertiesForm.resx">
       <DependentUpon>FilePropertiesForm.vb</DependentUpon>

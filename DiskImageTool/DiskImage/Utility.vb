@@ -9,6 +9,7 @@ Namespace DiskImage
         Dim UseLFN As Boolean
         Dim LFNEntries As List(Of Byte())
         Dim RequiresExpansion As Boolean
+        Dim Entry As DirectoryEntry
     End Structure
 
     Public Structure AddFileData
@@ -379,6 +380,7 @@ Namespace DiskImage
 
             Dim AddDirectoryData As AddDirectoryData
 
+            AddDirectoryData.Entry = Nothing
             AddDirectoryData.Index = Index
             AddDirectoryData.UseLFN = UseLFN
             If UseLFN Then
@@ -406,13 +408,12 @@ Namespace DiskImage
             Return AddDirectoryData
         End Function
 
-        Public Function InitializeAddFile(Directory As DirectoryBase, FilePath As String, WindowsAdditions As Boolean, Index As Integer) As AddFileData
-            Dim FileInfo = New IO.FileInfo(FilePath)
+        Public Function InitializeAddFile(Directory As DirectoryBase, FileInfo As FileInfo, WindowsAdditions As Boolean, Index As Integer) As AddFileData
             Dim ClustersRequired As UShort = Math.Ceiling(FileInfo.Length / Directory.Disk.BPB.BytesPerCluster)
 
             Dim AddFileData As AddFileData
 
-            AddFileData.FilePath = FilePath
+            AddFileData.FilePath = FileInfo.FullName
             AddFileData.WindowsAdditions = WindowsAdditions
             AddFileData.Index = Index
             AddFileData.ShortFileName = Directory.GetAvailableFileName(FileInfo.Name)
@@ -459,7 +460,7 @@ Namespace DiskImage
             Return UpdateLFNData
         End Function
 
-        Public Sub ProcessAddDirectory(Directory As DirectoryBase, DirectoryData() As Byte, Data As AddDirectoryData)
+        Public Function ProcessAddDirectory(Directory As DirectoryBase, DirectoryData() As Byte, Data As AddDirectoryData) As DirectoryEntry
             Dim EntryCount = Directory.DirectoryEntries.Count - Directory.Data.AvailableEntryCount
             Dim Entries As List(Of DirectoryEntry)
 
@@ -490,10 +491,12 @@ Namespace DiskImage
                 ProcessLFNEntries(Entries, Data.LFNEntries)
             End If
 
+            DirectoryEntry.SubDirectory.Initialize()
+
             Directory.UpdateEntryCounts()
 
-            DirectoryEntry.SubDirectory.Initialize()
-        End Sub
+            Return DirectoryEntry
+        End Function
 
         Public Sub ProcessAddFile(Directory As DirectoryBase, Data As AddFileData)
             Dim EntryCount = Directory.DirectoryEntries.Count - Directory.Data.AvailableEntryCount

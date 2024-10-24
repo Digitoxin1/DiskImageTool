@@ -25,39 +25,53 @@
             End Get
         End Property
 
-        Public Overrides Function AddDirectory(DirectoryData() As Byte, UseLFN As Boolean, LFNFileName As String, Optional Index As Integer = -1) As Integer Implements IDirectory.AddDirectory
+        Public Overrides Function AddDirectory(DirectoryData() As Byte, UseLFN As Boolean, LFNFileName As String, Optional Index As Integer = -1) As AddDirectoryData Implements IDirectory.AddDirectory
+            Dim Result As Boolean = True
             Dim Data = InitializeAddDirectory(Me, UseLFN, LFNFileName, Index)
 
             If Data.ClusterList Is Nothing Then
-                Return -1
+                Result = False
             End If
 
-            Dim Cluster As UShort
-            If Data.RequiresExpansion Then
-                Cluster = Disk.FAT.GetNextFreeCluster(Data.ClusterList, True)
+            If Result Then
+                Dim Cluster As UShort
+                If Data.RequiresExpansion Then
+                    Cluster = Disk.FAT.GetNextFreeCluster(Data.ClusterList, True)
 
-                If Cluster = 0 Then
-                    Return -1
+                    If Cluster = 0 Then
+                        Result = False
+                    End If
+                End If
+
+                If Result Then
+                    Dim UseTransaction As Boolean = Disk.BeginTransaction
+
+                    If Data.RequiresExpansion Then
+                        ExpandDirectorySize(Cluster)
+                    End If
+
+                    Data.Entry = ProcessAddDirectory(Me, DirectoryData, Data)
+
+                    If UseTransaction Then
+                        Disk.EndTransaction()
+                    End If
                 End If
             End If
 
-            Dim UseTransaction As Boolean = Disk.BeginTransaction
-
-            If Data.RequiresExpansion Then
-                ExpandDirectorySize(Cluster)
-            End If
-
-            ProcessAddDirectory(Me, DirectoryData, Data)
-
-            If UseTransaction Then
-                Disk.EndTransaction()
-            End If
-
-            Return Data.EntriesNeeded
+            Return Data
         End Function
 
         Public Overrides Function AddFile(FilePath As String, WindowsAdditions As Boolean, Optional Index As Integer = -1) As Integer Implements IDirectory.AddFile
-            Dim Data = InitializeAddFile(Me, FilePath, WindowsAdditions, Index)
+            Return AddFile(New IO.FileInfo(FilePath), WindowsAdditions, Index)
+        End Function
+
+        Public Overrides Function AddFile(FileInfo As IO.FileInfo, WindowsAdditions As Boolean, Optional Index As Integer = -1) As Integer Implements IDirectory.AddFile
+
+            If FileInfo.Length > Disk.Image.Length Then
+                Return -1
+            End If
+
+            Dim Data = InitializeAddFile(Me, FileInfo, WindowsAdditions, Index)
 
             If Data.ClusterList Is Nothing Then
                 Return -1
@@ -169,6 +183,8 @@
             Entry.Attributes = MyBitConverter.ToggleBit(Entry.Attributes, DirectoryEntry.AttributeFlags.Directory, True)
             SetEntryDates(Entry)
             DirectoryEntries.Item(1).Data = Entry.Data
+
+            UpdateEntryCounts()
         End Sub
 
         Public Function ReduceDirectorySize() As Boolean

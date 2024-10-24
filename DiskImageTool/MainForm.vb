@@ -1,4 +1,5 @@
 ﻿Imports System.ComponentModel
+Imports System.IO
 Imports System.Text
 Imports DiskImageTool.DiskImage
 
@@ -1683,9 +1684,9 @@ Public Class MainForm
             Updated = frmFileProperties.Updated
 
             If Updated Then
-                Dim Result = ParentDirectory.AddDirectory(frmFileProperties.NewDirectoryData, frmFileProperties.HasLFN, frmFileProperties.LFN, Index)
+                Dim AddDirectoryResponse = ParentDirectory.AddDirectory(frmFileProperties.NewDirectoryData, frmFileProperties.HasLFN, frmFileProperties.LFN, Index)
 
-                If Result > -1 Then
+                If AddDirectoryResponse.Entry IsNot Nothing Then
                     DiskImageRefresh(CurrentImage)
                 Else
                     MsgBox($"Warning: Insufficient Disk Space", MsgBoxStyle.Exclamation)
@@ -1694,45 +1695,102 @@ Public Class MainForm
         End If
     End Sub
 
-    Private Sub ImageImportFiles(CurrentImage As CurrentImage, ParentDirectory As IDirectory, Multiselect As Boolean, Optional Index As Integer = -1)
-        Dim Dialog = New OpenFileDialog With {
-            .Multiselect = Multiselect
-        }
-
-        If Dialog.ShowDialog <> DialogResult.OK Then
-            Exit Sub
-        End If
-
+    Private Sub ImageImportFolders(FolderList As List(Of DirectoryInfo), ParentDirectory As IDirectory, Index As Integer, ByRef FileCount As UInteger, ByRef FilesAdded As UInteger)
         Dim WindowsAdditions As Boolean = My.Settings.WindowsExtensions
-        Dim Updated As Boolean = False
+
+        FileCount += FolderList.Count
+
+        For Each Folder In FolderList
+            Dim ShortFileName = ParentDirectory.GetAvailableFileName(Folder.Name)
+            Dim DirectoryEntry = New DirectoryEntryBase
+            DirectoryEntry.SetFileInfo(Folder, ShortFileName, WindowsAdditions, WindowsAdditions)
+
+            Dim AddDirectoryResponse = ParentDirectory.AddDirectory(DirectoryEntry.Data, WindowsAdditions, Folder.Name, Index)
+            If AddDirectoryResponse.Entry IsNot Nothing Then
+                FilesAdded += 1
+                If Index > -1 Then
+                    Index += AddDirectoryResponse.EntriesNeeded
+                End If
+
+                Dim SubFolderList = Folder.GetDirectories.ToList
+                Dim FileList = Folder.GetFiles.ToList
+
+                ImageImportFolders(SubFolderList, AddDirectoryResponse.Entry.SubDirectory, -1, FileCount, FilesAdded)
+                ImageImportFiles(FileList, AddDirectoryResponse.Entry.SubDirectory, -1, FileCount, FilesAdded)
+            End If
+        Next
+    End Sub
+
+    Private Sub ImageImportFiles(FileList As List(Of FileInfo), ParentDirectory As IDirectory, Index As Integer, ByRef FileCount As UInteger, ByRef FilesAdded As UInteger)
+        Dim WindowsAdditions As Boolean = My.Settings.WindowsExtensions
+
+        FileCount += FileList.Count
+
+        For Each File In FileList
+            Dim EntriesAdded = ParentDirectory.AddFile(File, WindowsAdditions, Index)
+            If EntriesAdded > -1 Then
+                FilesAdded += 1
+                If Index > -1 Then
+                    Index += EntriesAdded
+                End If
+            End If
+        Next
+    End Sub
+
+    Private Sub ImageImport(CurrentImage As CurrentImage, ParentDirectory As IDirectory, Multiselect As Boolean, Optional Index As Integer = -1)
+        Dim FileNames() As String = New String(-1) {}
+
+        If My.Settings.DragAndDrop Then
+            Dim frmFileDrop As New FileDropForm()
+
+            If frmFileDrop.ShowDialog() <> DialogResult.OK Then
+                Exit Sub
+            End If
+
+            FileNames = frmFileDrop.FileNames
+        Else
+            Dim Dialog = New OpenFileDialog With {
+               .Multiselect = Multiselect
+           }
+            If Dialog.ShowDialog <> DialogResult.OK Then
+                Exit Sub
+            End If
+
+            FileNames = Dialog.FileNames
+        End If
 
         Dim UseTransaction = ParentDirectory.Disk.BeginTransaction
 
         Dim FilesAdded As UInteger = 0
-        For Each FilePath In Dialog.FileNames
-            Dim Result As Integer
+        Dim FileCount As UInteger = 0
 
-            Result = ParentDirectory.AddFile(FilePath, WindowsAdditions, Index)
+        Dim FolderList As New List(Of DirectoryInfo)
+        Dim FileList As New List(Of FileInfo)
 
-            If Result > -1 Then
-                FilesAdded += 1
-                If Index > -1 Then
-                    Index += Result
-                End If
-
-                Updated = True
+        For Each FilePath In FileNames
+            Dim IsDirectory = File.GetAttributes(FilePath).HasFlag(FileAttributes.Directory)
+            If IsDirectory Then
+                FolderList.Add(New DirectoryInfo(FilePath))
+            Else
+                FileList.Add(New FileInfo(FilePath))
             End If
         Next
 
-        If FilesAdded < Dialog.FileNames.Length Then
-            MsgBox($"Warning: Insufficient Disk Space{vbCrLf}{vbCrLf}{FilesAdded} of {Dialog.FileNames.Length} file(s) added successfully", MsgBoxStyle.Exclamation)
+        FolderList = FolderList.OrderBy(Function(dir) dir.FullName).ToList()
+        FileList = FileList.OrderBy(Function(file) file.FullName).ToList()
+
+        ImageImportFolders(FolderList, ParentDirectory, Index, FileCount, FilesAdded)
+        ImageImportFiles(FileList, ParentDirectory, Index, FileCount, FilesAdded)
+
+        If FilesAdded < FileCount Then
+            MsgBox($"Warning: Insufficient Disk Space{vbCrLf}{vbCrLf}{FilesAdded} of {FileCount} file(s) added successfully", MsgBoxStyle.Exclamation)
         End If
 
         If UseTransaction Then
             ParentDirectory.Disk.EndTransaction()
         End If
 
-        If Updated Then
+        If FilesAdded > 0 Then
             DiskImageRefresh(CurrentImage)
         End If
     End Sub
@@ -3409,7 +3467,7 @@ Public Class MainForm
     Private Sub BtnImportFiles_Click(sender As Object, e As EventArgs) Handles MenuFileImportFiles.Click, MenuDirectoryImportFiles.Click
         If sender.Tag IsNot Nothing Then
             Dim Directory As IDirectory = sender.Tag
-            ImageImportFiles(_CurrentImage, Directory, True)
+            ImageImport(_CurrentImage, Directory, True)
         End If
     End Sub
 
@@ -3584,7 +3642,7 @@ Public Class MainForm
     Private Sub BtnImportFilesHere_Click(sender As Object, e As EventArgs) Handles MenuFileImportFilesHere.Click
         If ListViewFiles.SelectedItems.Count = 1 Then
             Dim FileData As FileData = ListViewFiles.SelectedItems(0).Tag
-            ImageImportFiles(_CurrentImage, FileData.DirectoryEntry.ParentDirectory, True, FileData.DirectoryEntry.Index)
+            ImageImport(_CurrentImage, FileData.DirectoryEntry.ParentDirectory, True, FileData.DirectoryEntry.Index)
         End If
     End Sub
 
