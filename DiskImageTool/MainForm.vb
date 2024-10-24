@@ -911,7 +911,7 @@ Public Class MainForm
         End If
 
         PopulateSummary(CurrentImage)
-        StatusStripMain.Refresh()
+        StatusStripBottom.Refresh()
 
         If DoItemScan Then
             ImageFiltersUpdate(CurrentImage)
@@ -2196,19 +2196,15 @@ Public Class MainForm
         End If
     End Sub
 
-    Private Sub InitDebugFeatures()
-        Dim Separator = New ToolStripSeparator With {
-            .Visible = True
-        }
-        ContextMenuFilters.Items.Add(Separator)
-
-        Dim Item = New ToolStripMenuItem With {
-            .Text = "Export Unknown Images on Scan",
-            .CheckOnClick = True,
-            .Checked = _ExportUnknownImages
-        }
-        AddHandler Item.CheckStateChanged, AddressOf ExportUnknownImages_CheckStateChanged
-        ContextMenuFilters.Items.Add(Item)
+    Private Sub InitDebugFeatures(Enabled As Boolean)
+        If Enabled Then
+            MenuOptionsSeparatorDebug.Visible = True
+            MenuOptionsExportUnknown.Visible = True
+            MenuOptionsExportUnknown.Checked = _ExportUnknownImages
+        Else
+            MenuOptionsSeparatorDebug.Visible = False
+            MenuOptionsExportUnknown.Visible = False
+        End If
     End Sub
 
     Private Sub ItemFiltersRemove(ImageData As ImageData)
@@ -3055,8 +3051,9 @@ Public Class MainForm
         _FileNames.Clear()
         _ScanRun = False
 
-        MenuEditCreateBackup.Checked = My.Settings.CreateBackups
-        MenuEditWindowsExtensions.Checked = My.Settings.WindowsExtensions
+        MenuOptionsCreateBackup.Checked = My.Settings.CreateBackups
+        MenuOptionsWindowsExtensions.Checked = My.Settings.WindowsExtensions
+        MenuOptionsDragDrop.Checked = My.Settings.DragAndDrop
 
         RefreshDiskButtons(Nothing)
 
@@ -3192,7 +3189,7 @@ Public Class MainForm
         MenuHexFile.Text = Text
         MenuHexFile.Tag = Tag
 
-        ToolStripSeparatorFile.Visible = Visible
+        MenuHexSeparatorFile.Visible = Visible
     End Sub
 
     Private Sub SetButtonStateRedo(Enabled As Boolean)
@@ -3443,10 +3440,6 @@ Public Class MainForm
         CompareImages()
     End Sub
 
-    Private Sub BtnCreateBackup_Click(sender As Object, e As EventArgs) Handles MenuEditCreateBackup.Click
-        My.Settings.CreateBackups = MenuEditCreateBackup.Checked
-    End Sub
-
     Private Sub BtnDisplayBadSectors_Click(sender As Object, e As EventArgs) Handles MenuHexBadSectors.Click
         HexDisplayBadSectors(_CurrentImage)
     End Sub
@@ -3493,13 +3486,11 @@ Public Class MainForm
     End Sub
 
     Private Sub BtnEditBootSector_Click(sender As Object, e As EventArgs) Handles MenuEditBootSector.Click
-        ContextMenuEdit.Close()
         BootSectorEdit(_CurrentImage)
     End Sub
 
     Private Sub BtnEditFAT_Click(sender As Object, e As EventArgs) Handles MenuEditFAT.Click
         If sender.tag IsNot Nothing Then
-            ContextMenuEdit.Close()
             If sender.tag = -1 Then
                 FATEdit(_CurrentImage, 0)
             Else
@@ -3519,7 +3510,6 @@ Public Class MainForm
     End Sub
 
     Private Sub BtnExportFile_Click(sender As Object, e As EventArgs) Handles MenuEditExportFile.Click, MenuFileExportFile.Click, ToolStripExportFile.Click
-        ContextMenuEdit.Close()
         ImageFileExport()
     End Sub
 
@@ -3567,7 +3557,6 @@ Public Class MainForm
     End Sub
 
     Private Sub BtnFileProperties_Click(sender As Object, e As EventArgs) Handles MenuEditFileProperties.Click, MenuFileFileProperties.Click, ToolStripFileProperties.Click
-        ContextMenuEdit.Close()
         FilePropertiesEdit(_CurrentImage)
     End Sub
 
@@ -3593,7 +3582,6 @@ Public Class MainForm
     End Sub
 
     Private Sub BtnImportFilesHere_Click(sender As Object, e As EventArgs) Handles MenuFileImportFilesHere.Click
-        ContextMenuEdit.Close()
         If ListViewFiles.SelectedItems.Count = 1 Then
             Dim FileData As FileData = ListViewFiles.SelectedItems(0).Tag
             ImageImportFiles(_CurrentImage, FileData.DirectoryEntry.ParentDirectory, True, FileData.DirectoryEntry.Index)
@@ -3633,7 +3621,6 @@ Public Class MainForm
     End Sub
 
     Private Sub BtnRedo_Click(sender As Object, e As EventArgs) Handles MenuEditRedo.Click, ToolStripRedo.Click
-        ContextMenuEdit.Close()
         _CurrentImage.Disk.Image.Redo()
         DiskImageRefresh(_CurrentImage)
     End Sub
@@ -3649,7 +3636,6 @@ Public Class MainForm
     End Sub
 
     Private Sub BtnReplaceFile_Click(sender As Object, e As EventArgs) Handles MenuFileReplaceFile.Click, MenuEditReplaceFile.Click
-        ContextMenuEdit.Close()
         If ListViewFiles.SelectedItems.Count = 1 Then
             Dim FileData As FileData = ListViewFiles.SelectedItems(0).Tag
             ImageReplaceFile(_CurrentImage, FileData.DirectoryEntry)
@@ -3673,7 +3659,6 @@ Public Class MainForm
     End Sub
 
     Private Sub BtnRevert_Click(sender As Object, e As EventArgs) Handles MenuEditRevert.Click
-        ContextMenuEdit.Close()
         RevertChanges(_CurrentImage)
     End Sub
 
@@ -3702,7 +3687,6 @@ Public Class MainForm
     End Sub
 
     Private Sub BtnUndo_Click(sender As Object, e As EventArgs) Handles MenuEditUndo.Click, ToolStripUndo.Click
-        ContextMenuEdit.Close()
         _CurrentImage.Disk.Image.Undo()
         DiskImageRefresh(_CurrentImage)
     End Sub
@@ -3715,9 +3699,6 @@ Public Class MainForm
         ImageWin9xCleanBatch(_CurrentImage)
     End Sub
 
-    Private Sub BtnWindowsExtensions_Click(sender As Object, e As EventArgs) Handles MenuEditWindowsExtensions.Click
-        My.Settings.WindowsExtensions = MenuEditWindowsExtensions.Checked
-    End Sub
     Private Sub BtnWriteFloppyB_Click(sender As Object, e As EventArgs) Handles MenuDiskWriteFloppyB.Click
         FloppyDiskWrite(Me, _CurrentImage.Disk, FloppyDriveEnum.FloppyDriveB)
     End Sub
@@ -3818,7 +3799,7 @@ Public Class MainForm
         End If
     End Sub
 
-    Private Sub ContextMenuEdit_Closing(sender As Object, e As ToolStripDropDownClosingEventArgs) Handles ContextMenuEdit.Closing
+    Private Sub ContextMenuOptions_Closing(sender As Object, e As ToolStripDropDownClosingEventArgs)
         If e.CloseReason = ToolStripDropDownCloseReason.ItemClicked Then
             e.Cancel = True
         End If
@@ -3840,10 +3821,6 @@ Public Class MainForm
         Debounce.Stop()
 
         FiltersApply(False)
-    End Sub
-
-    Private Sub ExportUnknownImages_CheckStateChanged(sender As Object, e As EventArgs)
-        _ExportUnknownImages = DirectCast(sender, ToolStripMenuItem).Checked
     End Sub
 
     Private Sub File_DragDrop(sender As Object, e As DragEventArgs) Handles ComboImages.DragDrop, ComboImagesFiltered.DragDrop, LabelDropMessage.DragDrop, ListViewFiles.DragDrop, ListViewHashes.DragDrop, ListViewSummary.DragDrop
@@ -3976,6 +3953,8 @@ Public Class MainForm
 
         PositionForm()
 
+        AddHandler MainMenuOptions.DropDown.Closing, AddressOf ContextMenuOptions_Closing
+
         MenuToolsCompare.Visible = False
         ListViewFiles.DoubleBuffer
         ListViewSummary.DoubleBuffer
@@ -4001,9 +3980,7 @@ Public Class MainForm
         ContextMenuCopy2.Items.Add("&Copy Value")
         ListViewHashes.ContextMenuStrip = ContextMenuCopy2
 
-        If My.Settings.Debug Then
-            InitDebugFeatures()
-        End If
+        InitDebugFeatures(My.Settings.Debug)
 
         DetectFloppyDrives()
         ResetAll()
@@ -4018,6 +3995,22 @@ Public Class MainForm
     Private Sub MainForm_ResizeEnd(sender As Object, e As EventArgs) Handles Me.ResizeEnd
         My.Settings.WindowWidth = Me.Width
         My.Settings.WindowHeight = Me.Height
+    End Sub
+
+    Private Sub MenuOptionsCreateBackup_CheckStateChanged(sender As Object, e As EventArgs) Handles MenuOptionsCreateBackup.CheckStateChanged
+        My.Settings.CreateBackups = MenuOptionsCreateBackup.Checked
+    End Sub
+
+    Private Sub MenuOptionsDragDrop_CheckStateChanged(sender As Object, e As EventArgs) Handles MenuOptionsDragDrop.CheckStateChanged
+        My.Settings.DragAndDrop = MenuOptionsDragDrop.Checked
+    End Sub
+
+    Private Sub MenuOptionsExportUnknown_CheckStateChanged(sender As Object, e As EventArgs) Handles MenuOptionsExportUnknown.CheckStateChanged
+        _ExportUnknownImages = MenuOptionsExportUnknown.Checked
+    End Sub
+
+    Private Sub MenuOptionsWindowsExtensions_CheckStateChanged(sender As Object, e As EventArgs) Handles MenuOptionsWindowsExtensions.CheckStateChanged
+        My.Settings.WindowsExtensions = MenuOptionsWindowsExtensions.Checked
     End Sub
 
     Private Sub ToolStripCombo_SelectedIndexChanged(sender As Object, e As EventArgs) Handles ToolStripOEMNameCombo.SelectedIndexChanged, ToolStripDiskTypeCombo.SelectedIndexChanged
@@ -4061,5 +4054,6 @@ Public Class MainForm
             _ListViewClickedGroup = ListViewFiles.GetGroupAtPoint(e.Location)
         End If
     End Sub
+
 #End Region
 End Class

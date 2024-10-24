@@ -36,22 +36,21 @@ Partial Class MainForm
         Dim FileModified As System.Windows.Forms.ColumnHeader
         Dim MainMenuFile As System.Windows.Forms.ToolStripMenuItem
         Dim resources As System.ComponentModel.ComponentResourceManager = New System.ComponentModel.ComponentResourceManager(GetType(MainForm))
-        Dim ToolStripSeparator As System.Windows.Forms.ToolStripSeparator
-        Dim ToolStripSeparator3 As System.Windows.Forms.ToolStripSeparator
-        Dim ToolStripSeparator1 As System.Windows.Forms.ToolStripSeparator
+        Dim MenuFileSeparator1 As System.Windows.Forms.ToolStripSeparator
+        Dim MenuFileSeparator2 As System.Windows.Forms.ToolStripSeparator
+        Dim MenuFileSeparator3 As System.Windows.Forms.ToolStripSeparator
         Dim MainMenuEdit As System.Windows.Forms.ToolStripMenuItem
-        Dim ToolStripSeparator4 As System.Windows.Forms.ToolStripSeparator
-        Dim ToolStripSeparator2 As System.Windows.Forms.ToolStripSeparator
-        Dim ToolStripSeparator5 As System.Windows.Forms.ToolStripSeparator
+        Dim MenuEditSeparator1 As System.Windows.Forms.ToolStripSeparator
+        Dim MenuEditSeparator2 As System.Windows.Forms.ToolStripSeparator
         Dim MainMenuView As System.Windows.Forms.ToolStripMenuItem
         Dim MainMenuExperimental As System.Windows.Forms.ToolStripMenuItem
         Dim FileMenuSeparator1 As System.Windows.Forms.ToolStripSeparator
         Dim FileCRC32 As System.Windows.Forms.ColumnHeader
         Dim ToolStripSearchLabel As System.Windows.Forms.ToolStripLabel
         Dim MainMenuTools As System.Windows.Forms.ToolStripMenuItem
-        Dim ToolStripMenuItem1 As System.Windows.Forms.ToolStripSeparator
-        Dim MainHelp As System.Windows.Forms.ToolStripMenuItem
-        Dim ToolStripSeparator12 As System.Windows.Forms.ToolStripSeparator
+        Dim MenuToolsSeparator As System.Windows.Forms.ToolStripSeparator
+        Dim MainMenuHelp As System.Windows.Forms.ToolStripMenuItem
+        Dim MenuHelpSeparator As System.Windows.Forms.ToolStripSeparator
         Dim FileMenuSeparator2 As System.Windows.Forms.ToolStripSeparator
         Dim FileMenuSeparator3 As System.Windows.Forms.ToolStripSeparator
         Dim FileMenuSeparator4 As System.Windows.Forms.ToolStripSeparator
@@ -60,9 +59,11 @@ Partial Class MainForm
         Dim ToolStripSeparator7 As System.Windows.Forms.ToolStripSeparator
         Dim ToolStripSeparator8 As System.Windows.Forms.ToolStripSeparator
         Dim ToolStripSeparator10 As System.Windows.Forms.ToolStripSeparator
-        Dim ToolStripMenuItem2 As System.Windows.Forms.ToolStripSeparator
+        Dim MenuDiskSeparator As System.Windows.Forms.ToolStripSeparator
         Dim ToolStripSeparator9 As System.Windows.Forms.ToolStripSeparator
         Dim ToolStripSeparator11 As System.Windows.Forms.ToolStripSeparator
+        Dim MainMenuDisk As System.Windows.Forms.ToolStripMenuItem
+        Dim MenuStripTop As System.Windows.Forms.MenuStrip
         Me.MenuFileOpen = New System.Windows.Forms.ToolStripMenuItem()
         Me.MenuFileReload = New System.Windows.Forms.ToolStripMenuItem()
         Me.MenuFileNewImage = New System.Windows.Forms.ToolStripMenuItem()
@@ -72,7 +73,6 @@ Partial Class MainForm
         Me.MenuFileClose = New System.Windows.Forms.ToolStripMenuItem()
         Me.MenuFileCloseAll = New System.Windows.Forms.ToolStripMenuItem()
         Me.MenuFileExit = New System.Windows.Forms.ToolStripMenuItem()
-        Me.ContextMenuEdit = New System.Windows.Forms.ContextMenuStrip(Me.components)
         Me.MenuEditBootSector = New System.Windows.Forms.ToolStripMenuItem()
         Me.MenuEditFAT = New System.Windows.Forms.ToolStripMenuItem()
         Me.MenuEditFileProperties = New System.Windows.Forms.ToolStripMenuItem()
@@ -81,8 +81,6 @@ Partial Class MainForm
         Me.MenuEditUndo = New System.Windows.Forms.ToolStripMenuItem()
         Me.MenuEditRedo = New System.Windows.Forms.ToolStripMenuItem()
         Me.MenuEditRevert = New System.Windows.Forms.ToolStripMenuItem()
-        Me.MenuEditCreateBackup = New System.Windows.Forms.ToolStripMenuItem()
-        Me.MenuEditWindowsExtensions = New System.Windows.Forms.ToolStripMenuItem()
         Me.MenuHexBootSector = New System.Windows.Forms.ToolStripMenuItem()
         Me.MenuHexFAT = New System.Windows.Forms.ToolStripMenuItem()
         Me.MenuHexDirectory = New System.Windows.Forms.ToolStripMenuItem()
@@ -92,7 +90,7 @@ Partial Class MainForm
         Me.MenuHexOverdumpData = New System.Windows.Forms.ToolStripMenuItem()
         Me.MenuHexRawTrackData = New System.Windows.Forms.ToolStripMenuItem()
         Me.MenuHexDisk = New System.Windows.Forms.ToolStripMenuItem()
-        Me.ToolStripSeparatorFile = New System.Windows.Forms.ToolStripSeparator()
+        Me.MenuHexSeparatorFile = New System.Windows.Forms.ToolStripSeparator()
         Me.MenuHexFile = New System.Windows.Forms.ToolStripMenuItem()
         Me.BtnExportDebug = New System.Windows.Forms.ToolStripMenuItem()
         Me.MenuToolsCompare = New System.Windows.Forms.ToolStripMenuItem()
@@ -109,6 +107,21 @@ Partial Class MainForm
         Me.MenuHelpUpdateCheck = New System.Windows.Forms.ToolStripMenuItem()
         Me.MenuHelpChangeLog = New System.Windows.Forms.ToolStripMenuItem()
         Me.MenuHelpAbout = New System.Windows.Forms.ToolStripMenuItem()
+        Me.MenuDiskReadFloppyA = New System.Windows.Forms.ToolStripMenuItem()
+        Me.MenuDiskReadFloppyB = New System.Windows.Forms.ToolStripMenuItem()
+        Me.MenuDiskWriteFloppyA = New System.Windows.Forms.ToolStripMenuItem()
+        Me.MenuDiskWriteFloppyB = New System.Windows.Forms.ToolStripMenuItem()
+        Me.MainMenuFilters = New System.Windows.Forms.ToolStripMenuItem()
+        Me.ContextMenuFilters = New System.Windows.Forms.ContextMenuStrip(Me.components)
+        Me.MenuFiltersScanNew = New System.Windows.Forms.ToolStripMenuItem()
+        Me.MenuFiltersScan = New System.Windows.Forms.ToolStripMenuItem()
+        Me.MenuFiltersClear = New System.Windows.Forms.ToolStripMenuItem()
+        Me.MainMenuOptions = New System.Windows.Forms.ToolStripMenuItem()
+        Me.MenuOptionsCreateBackup = New System.Windows.Forms.ToolStripMenuItem()
+        Me.MenuOptionsDragDrop = New System.Windows.Forms.ToolStripMenuItem()
+        Me.MenuOptionsWindowsExtensions = New System.Windows.Forms.ToolStripMenuItem()
+        Me.MenuOptionsSeparatorDebug = New System.Windows.Forms.ToolStripSeparator()
+        Me.MenuOptionsExportUnknown = New System.Windows.Forms.ToolStripMenuItem()
         Me.ToolStripTop = New System.Windows.Forms.ToolStrip()
         Me.ToolStripSearchText = New System.Windows.Forms.ToolStripTextBox()
         Me.ToolStripOEMNameCombo = New System.Windows.Forms.ToolStripComboBox()
@@ -129,7 +142,7 @@ Partial Class MainForm
         Me.ToolStripViewFile = New System.Windows.Forms.ToolStripButton()
         Me.ToolStripSeparatorFAT = New System.Windows.Forms.ToolStripSeparator()
         Me.ToolStripFATCombo = New System.Windows.Forms.ToolStripComboBox()
-        Me.StatusStripMain = New System.Windows.Forms.StatusStrip()
+        Me.StatusStripBottom = New System.Windows.Forms.StatusStrip()
         Me.ToolStripStatusReadOnly = New System.Windows.Forms.ToolStripStatusLabel()
         Me.ToolStripStatusCached = New System.Windows.Forms.ToolStripStatusLabel()
         Me.ToolStripStatusModified = New System.Windows.Forms.ToolStripStatusLabel()
@@ -166,17 +179,6 @@ Partial Class MainForm
         Me.MenuFileUnDeleteFile = New System.Windows.Forms.ToolStripMenuItem()
         Me.MenuFileRemove = New System.Windows.Forms.ToolStripMenuItem()
         Me.MenuFileFixSize = New System.Windows.Forms.ToolStripMenuItem()
-        Me.MenuStripMain = New System.Windows.Forms.MenuStrip()
-        Me.MainMenuFilters = New System.Windows.Forms.ToolStripMenuItem()
-        Me.ContextMenuFilters = New System.Windows.Forms.ContextMenuStrip(Me.components)
-        Me.MenuFiltersScanNew = New System.Windows.Forms.ToolStripMenuItem()
-        Me.MenuFiltersScan = New System.Windows.Forms.ToolStripMenuItem()
-        Me.MenuFiltersClear = New System.Windows.Forms.ToolStripMenuItem()
-        Me.DiskToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem()
-        Me.MenuDiskReadFloppyA = New System.Windows.Forms.ToolStripMenuItem()
-        Me.MenuDiskReadFloppyB = New System.Windows.Forms.ToolStripMenuItem()
-        Me.MenuDiskWriteFloppyA = New System.Windows.Forms.ToolStripMenuItem()
-        Me.MenuDiskWriteFloppyB = New System.Windows.Forms.ToolStripMenuItem()
         Me.ComboImagesFiltered = New System.Windows.Forms.ComboBox()
         Me.BtnResetSort = New System.Windows.Forms.Button()
         Me.btnRetry = New System.Windows.Forms.Button()
@@ -196,22 +198,21 @@ Partial Class MainForm
         FileAttrib = CType(New System.Windows.Forms.ColumnHeader(), System.Windows.Forms.ColumnHeader)
         FileModified = CType(New System.Windows.Forms.ColumnHeader(), System.Windows.Forms.ColumnHeader)
         MainMenuFile = New System.Windows.Forms.ToolStripMenuItem()
-        ToolStripSeparator = New System.Windows.Forms.ToolStripSeparator()
-        ToolStripSeparator3 = New System.Windows.Forms.ToolStripSeparator()
-        ToolStripSeparator1 = New System.Windows.Forms.ToolStripSeparator()
+        MenuFileSeparator1 = New System.Windows.Forms.ToolStripSeparator()
+        MenuFileSeparator2 = New System.Windows.Forms.ToolStripSeparator()
+        MenuFileSeparator3 = New System.Windows.Forms.ToolStripSeparator()
         MainMenuEdit = New System.Windows.Forms.ToolStripMenuItem()
-        ToolStripSeparator4 = New System.Windows.Forms.ToolStripSeparator()
-        ToolStripSeparator2 = New System.Windows.Forms.ToolStripSeparator()
-        ToolStripSeparator5 = New System.Windows.Forms.ToolStripSeparator()
+        MenuEditSeparator1 = New System.Windows.Forms.ToolStripSeparator()
+        MenuEditSeparator2 = New System.Windows.Forms.ToolStripSeparator()
         MainMenuView = New System.Windows.Forms.ToolStripMenuItem()
         MainMenuExperimental = New System.Windows.Forms.ToolStripMenuItem()
         FileMenuSeparator1 = New System.Windows.Forms.ToolStripSeparator()
         FileCRC32 = CType(New System.Windows.Forms.ColumnHeader(), System.Windows.Forms.ColumnHeader)
         ToolStripSearchLabel = New System.Windows.Forms.ToolStripLabel()
         MainMenuTools = New System.Windows.Forms.ToolStripMenuItem()
-        ToolStripMenuItem1 = New System.Windows.Forms.ToolStripSeparator()
-        MainHelp = New System.Windows.Forms.ToolStripMenuItem()
-        ToolStripSeparator12 = New System.Windows.Forms.ToolStripSeparator()
+        MenuToolsSeparator = New System.Windows.Forms.ToolStripSeparator()
+        MainMenuHelp = New System.Windows.Forms.ToolStripMenuItem()
+        MenuHelpSeparator = New System.Windows.Forms.ToolStripSeparator()
         FileMenuSeparator2 = New System.Windows.Forms.ToolStripSeparator()
         FileMenuSeparator3 = New System.Windows.Forms.ToolStripSeparator()
         FileMenuSeparator4 = New System.Windows.Forms.ToolStripSeparator()
@@ -220,15 +221,16 @@ Partial Class MainForm
         ToolStripSeparator7 = New System.Windows.Forms.ToolStripSeparator()
         ToolStripSeparator8 = New System.Windows.Forms.ToolStripSeparator()
         ToolStripSeparator10 = New System.Windows.Forms.ToolStripSeparator()
-        ToolStripMenuItem2 = New System.Windows.Forms.ToolStripSeparator()
+        MenuDiskSeparator = New System.Windows.Forms.ToolStripSeparator()
         ToolStripSeparator9 = New System.Windows.Forms.ToolStripSeparator()
         ToolStripSeparator11 = New System.Windows.Forms.ToolStripSeparator()
-        Me.ContextMenuEdit.SuspendLayout()
-        Me.ToolStripTop.SuspendLayout()
-        Me.StatusStripMain.SuspendLayout()
-        Me.ContextMenuFiles.SuspendLayout()
-        Me.MenuStripMain.SuspendLayout()
+        MainMenuDisk = New System.Windows.Forms.ToolStripMenuItem()
+        MenuStripTop = New System.Windows.Forms.MenuStrip()
+        MenuStripTop.SuspendLayout()
         Me.ContextMenuFilters.SuspendLayout()
+        Me.ToolStripTop.SuspendLayout()
+        Me.StatusStripBottom.SuspendLayout()
+        Me.ContextMenuFiles.SuspendLayout()
         Me.ContextMenuDirectory.SuspendLayout()
         Me.SuspendLayout()
         '
@@ -288,7 +290,7 @@ Partial Class MainForm
         '
         'MainMenuFile
         '
-        MainMenuFile.DropDownItems.AddRange(New System.Windows.Forms.ToolStripItem() {Me.MenuFileOpen, Me.MenuFileReload, Me.MenuFileNewImage, ToolStripSeparator, Me.MenuFileSave, Me.MenuFileSaveAs, Me.MenuFileSaveAll, ToolStripSeparator3, Me.MenuFileClose, Me.MenuFileCloseAll, ToolStripSeparator1, Me.MenuFileExit})
+        MainMenuFile.DropDownItems.AddRange(New System.Windows.Forms.ToolStripItem() {Me.MenuFileOpen, Me.MenuFileReload, Me.MenuFileNewImage, MenuFileSeparator1, Me.MenuFileSave, Me.MenuFileSaveAs, Me.MenuFileSaveAll, MenuFileSeparator2, Me.MenuFileClose, Me.MenuFileCloseAll, MenuFileSeparator3, Me.MenuFileExit})
         MainMenuFile.Name = "MainMenuFile"
         MainMenuFile.ShortcutKeyDisplayString = ""
         MainMenuFile.Size = New System.Drawing.Size(37, 20)
@@ -316,10 +318,10 @@ Partial Class MainForm
         Me.MenuFileNewImage.Size = New System.Drawing.Size(212, 22)
         Me.MenuFileNewImage.Text = "&New Image"
         '
-        'ToolStripSeparator
+        'MenuFileSeparator1
         '
-        ToolStripSeparator.Name = "ToolStripSeparator"
-        ToolStripSeparator.Size = New System.Drawing.Size(209, 6)
+        MenuFileSeparator1.Name = "MenuFileSeparator1"
+        MenuFileSeparator1.Size = New System.Drawing.Size(209, 6)
         '
         'MenuFileSave
         '
@@ -348,10 +350,10 @@ Partial Class MainForm
         Me.MenuFileSaveAll.Size = New System.Drawing.Size(212, 22)
         Me.MenuFileSaveAll.Text = "Save All"
         '
-        'ToolStripSeparator3
+        'MenuFileSeparator2
         '
-        ToolStripSeparator3.Name = "ToolStripSeparator3"
-        ToolStripSeparator3.Size = New System.Drawing.Size(209, 6)
+        MenuFileSeparator2.Name = "MenuFileSeparator2"
+        MenuFileSeparator2.Size = New System.Drawing.Size(209, 6)
         '
         'MenuFileClose
         '
@@ -371,10 +373,10 @@ Partial Class MainForm
         Me.MenuFileCloseAll.Size = New System.Drawing.Size(212, 22)
         Me.MenuFileCloseAll.Text = "Close All"
         '
-        'ToolStripSeparator1
+        'MenuFileSeparator3
         '
-        ToolStripSeparator1.Name = "ToolStripSeparator1"
-        ToolStripSeparator1.Size = New System.Drawing.Size(209, 6)
+        MenuFileSeparator3.Name = "MenuFileSeparator3"
+        MenuFileSeparator3.Size = New System.Drawing.Size(209, 6)
         '
         'MenuFileExit
         '
@@ -386,66 +388,59 @@ Partial Class MainForm
         '
         'MainMenuEdit
         '
-        MainMenuEdit.DropDown = Me.ContextMenuEdit
+        MainMenuEdit.DropDownItems.AddRange(New System.Windows.Forms.ToolStripItem() {Me.MenuEditBootSector, Me.MenuEditFAT, MenuEditSeparator1, Me.MenuEditFileProperties, Me.MenuEditExportFile, Me.MenuEditReplaceFile, MenuEditSeparator2, Me.MenuEditUndo, Me.MenuEditRedo, Me.MenuEditRevert})
         MainMenuEdit.Name = "MainMenuEdit"
         MainMenuEdit.Size = New System.Drawing.Size(39, 20)
         MainMenuEdit.Text = "&Edit"
         '
-        'ContextMenuEdit
-        '
-        Me.ContextMenuEdit.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.MenuEditBootSector, Me.MenuEditFAT, ToolStripSeparator4, Me.MenuEditFileProperties, Me.MenuEditExportFile, Me.MenuEditReplaceFile, ToolStripSeparator2, Me.MenuEditUndo, Me.MenuEditRedo, Me.MenuEditRevert, ToolStripSeparator5, Me.MenuEditCreateBackup, Me.MenuEditWindowsExtensions})
-        Me.ContextMenuEdit.Name = "ContextMenuEdit"
-        Me.ContextMenuEdit.OwnerItem = MainMenuEdit
-        Me.ContextMenuEdit.Size = New System.Drawing.Size(195, 242)
-        '
         'MenuEditBootSector
         '
         Me.MenuEditBootSector.Name = "MenuEditBootSector"
-        Me.MenuEditBootSector.Size = New System.Drawing.Size(194, 22)
+        Me.MenuEditBootSector.Size = New System.Drawing.Size(179, 22)
         Me.MenuEditBootSector.Text = "&Boot Sector"
         '
         'MenuEditFAT
         '
         Me.MenuEditFAT.Name = "MenuEditFAT"
-        Me.MenuEditFAT.Size = New System.Drawing.Size(194, 22)
+        Me.MenuEditFAT.Size = New System.Drawing.Size(179, 22)
         Me.MenuEditFAT.Text = "File &Allocation Table"
         '
-        'ToolStripSeparator4
+        'MenuEditSeparator1
         '
-        ToolStripSeparator4.Name = "ToolStripSeparator4"
-        ToolStripSeparator4.Size = New System.Drawing.Size(191, 6)
+        MenuEditSeparator1.Name = "MenuEditSeparator1"
+        MenuEditSeparator1.Size = New System.Drawing.Size(176, 6)
         '
         'MenuEditFileProperties
         '
         Me.MenuEditFileProperties.Image = CType(resources.GetObject("MenuEditFileProperties.Image"), System.Drawing.Image)
         Me.MenuEditFileProperties.Name = "MenuEditFileProperties"
-        Me.MenuEditFileProperties.Size = New System.Drawing.Size(194, 22)
+        Me.MenuEditFileProperties.Size = New System.Drawing.Size(179, 22)
         Me.MenuEditFileProperties.Text = "File &Properties"
         '
         'MenuEditExportFile
         '
         Me.MenuEditExportFile.Image = CType(resources.GetObject("MenuEditExportFile.Image"), System.Drawing.Image)
         Me.MenuEditExportFile.Name = "MenuEditExportFile"
-        Me.MenuEditExportFile.Size = New System.Drawing.Size(194, 22)
+        Me.MenuEditExportFile.Size = New System.Drawing.Size(179, 22)
         Me.MenuEditExportFile.Text = "&Export File"
         '
         'MenuEditReplaceFile
         '
         Me.MenuEditReplaceFile.Name = "MenuEditReplaceFile"
-        Me.MenuEditReplaceFile.Size = New System.Drawing.Size(194, 22)
+        Me.MenuEditReplaceFile.Size = New System.Drawing.Size(179, 22)
         Me.MenuEditReplaceFile.Text = "&Replace File"
         '
-        'ToolStripSeparator2
+        'MenuEditSeparator2
         '
-        ToolStripSeparator2.Name = "ToolStripSeparator2"
-        ToolStripSeparator2.Size = New System.Drawing.Size(191, 6)
+        MenuEditSeparator2.Name = "MenuEditSeparator2"
+        MenuEditSeparator2.Size = New System.Drawing.Size(176, 6)
         '
         'MenuEditUndo
         '
         Me.MenuEditUndo.Image = CType(resources.GetObject("MenuEditUndo.Image"), System.Drawing.Image)
         Me.MenuEditUndo.Name = "MenuEditUndo"
         Me.MenuEditUndo.ShortcutKeys = CType((System.Windows.Forms.Keys.Control Or System.Windows.Forms.Keys.Z), System.Windows.Forms.Keys)
-        Me.MenuEditUndo.Size = New System.Drawing.Size(194, 22)
+        Me.MenuEditUndo.Size = New System.Drawing.Size(179, 22)
         Me.MenuEditUndo.Text = "&Undo"
         '
         'MenuEditRedo
@@ -454,40 +449,19 @@ Partial Class MainForm
         Me.MenuEditRedo.Name = "MenuEditRedo"
         Me.MenuEditRedo.ShortcutKeys = CType(((System.Windows.Forms.Keys.Control Or System.Windows.Forms.Keys.Shift) _
             Or System.Windows.Forms.Keys.Z), System.Windows.Forms.Keys)
-        Me.MenuEditRedo.Size = New System.Drawing.Size(194, 22)
+        Me.MenuEditRedo.Size = New System.Drawing.Size(179, 22)
         Me.MenuEditRedo.Text = "&Redo"
         '
         'MenuEditRevert
         '
         Me.MenuEditRevert.Name = "MenuEditRevert"
-        Me.MenuEditRevert.Size = New System.Drawing.Size(194, 22)
+        Me.MenuEditRevert.Size = New System.Drawing.Size(179, 22)
         Me.MenuEditRevert.Text = "&Revert Changes"
         Me.MenuEditRevert.TextAlign = System.Drawing.ContentAlignment.MiddleLeft
         '
-        'ToolStripSeparator5
-        '
-        ToolStripSeparator5.Name = "ToolStripSeparator5"
-        ToolStripSeparator5.Size = New System.Drawing.Size(191, 6)
-        '
-        'MenuEditCreateBackup
-        '
-        Me.MenuEditCreateBackup.CheckOnClick = True
-        Me.MenuEditCreateBackup.Name = "MenuEditCreateBackup"
-        Me.MenuEditCreateBackup.Size = New System.Drawing.Size(194, 22)
-        Me.MenuEditCreateBackup.Text = "Create Backup on Save"
-        '
-        'MenuEditWindowsExtensions
-        '
-        Me.MenuEditWindowsExtensions.CheckOnClick = True
-        Me.MenuEditWindowsExtensions.Name = "MenuEditWindowsExtensions"
-        Me.MenuEditWindowsExtensions.Size = New System.Drawing.Size(194, 22)
-        Me.MenuEditWindowsExtensions.Text = "Windows Extensions"
-        Me.MenuEditWindowsExtensions.ToolTipText = "Enabled Created and Last Access dates and Long File Name support when adding file" &
-    "s"
-        '
         'MainMenuView
         '
-        MainMenuView.DropDownItems.AddRange(New System.Windows.Forms.ToolStripItem() {Me.MenuHexBootSector, Me.MenuHexFAT, Me.MenuHexDirectory, Me.MenuHexFreeClusters, Me.MenuHexBadSectors, Me.MenuHexLostClusters, Me.MenuHexOverdumpData, Me.MenuHexRawTrackData, Me.MenuHexDisk, Me.ToolStripSeparatorFile, Me.MenuHexFile})
+        MainMenuView.DropDownItems.AddRange(New System.Windows.Forms.ToolStripItem() {Me.MenuHexBootSector, Me.MenuHexFAT, Me.MenuHexDirectory, Me.MenuHexFreeClusters, Me.MenuHexBadSectors, Me.MenuHexLostClusters, Me.MenuHexOverdumpData, Me.MenuHexRawTrackData, Me.MenuHexDisk, Me.MenuHexSeparatorFile, Me.MenuHexFile})
         MainMenuView.Name = "MainMenuView"
         MainMenuView.Size = New System.Drawing.Size(40, 20)
         MainMenuView.Text = "&Hex"
@@ -546,10 +520,10 @@ Partial Class MainForm
         Me.MenuHexDisk.Size = New System.Drawing.Size(194, 22)
         Me.MenuHexDisk.Text = "Entire &Disk"
         '
-        'ToolStripSeparatorFile
+        'MenuHexSeparatorFile
         '
-        Me.ToolStripSeparatorFile.Name = "ToolStripSeparatorFile"
-        Me.ToolStripSeparatorFile.Size = New System.Drawing.Size(191, 6)
+        Me.MenuHexSeparatorFile.Name = "MenuHexSeparatorFile"
+        Me.MenuHexSeparatorFile.Size = New System.Drawing.Size(191, 6)
         '
         'MenuHexFile
         '
@@ -592,7 +566,7 @@ Partial Class MainForm
         '
         'MainMenuTools
         '
-        MainMenuTools.DropDownItems.AddRange(New System.Windows.Forms.ToolStripItem() {Me.MenuToolsCompare, Me.MenuToolsWin9xClean, Me.MenuToolsClearReservedBytes, Me.MenuToolsFixImageSize, Me.MenuToolsFixImageSizeSubMenu, Me.MenuToolsRestoreBootSector, Me.MenuToolsRemoveBootSector, ToolStripMenuItem1, Me.MenuToolsWin9xCleanBatch})
+        MainMenuTools.DropDownItems.AddRange(New System.Windows.Forms.ToolStripItem() {Me.MenuToolsCompare, Me.MenuToolsWin9xClean, Me.MenuToolsClearReservedBytes, Me.MenuToolsFixImageSize, Me.MenuToolsFixImageSizeSubMenu, Me.MenuToolsRestoreBootSector, Me.MenuToolsRemoveBootSector, MenuToolsSeparator, Me.MenuToolsWin9xCleanBatch})
         MainMenuTools.Name = "MainMenuTools"
         MainMenuTools.Size = New System.Drawing.Size(46, 20)
         MainMenuTools.Text = "&Tools"
@@ -652,10 +626,10 @@ Partial Class MainForm
         Me.MenuToolsRemoveBootSector.Size = New System.Drawing.Size(289, 22)
         Me.MenuToolsRemoveBootSector.Text = "Remove &Boot Sector from Root Directory"
         '
-        'ToolStripMenuItem1
+        'MenuToolsSeparator
         '
-        ToolStripMenuItem1.Name = "ToolStripMenuItem1"
-        ToolStripMenuItem1.Size = New System.Drawing.Size(286, 6)
+        MenuToolsSeparator.Name = "MenuToolsSeparator"
+        MenuToolsSeparator.Size = New System.Drawing.Size(286, 6)
         '
         'MenuToolsWin9xCleanBatch
         '
@@ -663,12 +637,12 @@ Partial Class MainForm
         Me.MenuToolsWin9xCleanBatch.Size = New System.Drawing.Size(289, 22)
         Me.MenuToolsWin9xCleanBatch.Text = "Batch Remove Windows Modifications"
         '
-        'MainHelp
+        'MainMenuHelp
         '
-        MainHelp.DropDownItems.AddRange(New System.Windows.Forms.ToolStripItem() {Me.MenuHelpProjectPage, Me.MenuHelpUpdateCheck, Me.MenuHelpChangeLog, ToolStripSeparator12, Me.MenuHelpAbout})
-        MainHelp.Name = "MainHelp"
-        MainHelp.Size = New System.Drawing.Size(24, 20)
-        MainHelp.Text = "?"
+        MainMenuHelp.DropDownItems.AddRange(New System.Windows.Forms.ToolStripItem() {Me.MenuHelpProjectPage, Me.MenuHelpUpdateCheck, Me.MenuHelpChangeLog, MenuHelpSeparator, Me.MenuHelpAbout})
+        MainMenuHelp.Name = "MainMenuHelp"
+        MainMenuHelp.Size = New System.Drawing.Size(24, 20)
+        MainMenuHelp.Text = "?"
         '
         'MenuHelpProjectPage
         '
@@ -688,10 +662,10 @@ Partial Class MainForm
         Me.MenuHelpChangeLog.Size = New System.Drawing.Size(212, 22)
         Me.MenuHelpChangeLog.Text = "&Change Log"
         '
-        'ToolStripSeparator12
+        'MenuHelpSeparator
         '
-        ToolStripSeparator12.Name = "ToolStripSeparator12"
-        ToolStripSeparator12.Size = New System.Drawing.Size(209, 6)
+        MenuHelpSeparator.Name = "MenuHelpSeparator"
+        MenuHelpSeparator.Size = New System.Drawing.Size(209, 6)
         '
         'MenuHelpAbout
         '
@@ -741,10 +715,10 @@ Partial Class MainForm
         ToolStripSeparator10.Name = "ToolStripSeparator10"
         ToolStripSeparator10.Size = New System.Drawing.Size(6, 25)
         '
-        'ToolStripMenuItem2
+        'MenuDiskSeparator
         '
-        ToolStripMenuItem2.Name = "ToolStripMenuItem2"
-        ToolStripMenuItem2.Size = New System.Drawing.Size(178, 6)
+        MenuDiskSeparator.Name = "MenuDiskSeparator"
+        MenuDiskSeparator.Size = New System.Drawing.Size(178, 6)
         '
         'ToolStripSeparator9
         '
@@ -754,7 +728,123 @@ Partial Class MainForm
         'ToolStripSeparator11
         '
         ToolStripSeparator11.Name = "ToolStripSeparator11"
-        ToolStripSeparator11.Size = New System.Drawing.Size(177, 6)
+        ToolStripSeparator11.Size = New System.Drawing.Size(147, 6)
+        '
+        'MainMenuDisk
+        '
+        MainMenuDisk.DropDownItems.AddRange(New System.Windows.Forms.ToolStripItem() {Me.MenuDiskReadFloppyA, Me.MenuDiskReadFloppyB, MenuDiskSeparator, Me.MenuDiskWriteFloppyA, Me.MenuDiskWriteFloppyB})
+        MainMenuDisk.Name = "MainMenuDisk"
+        MainMenuDisk.Size = New System.Drawing.Size(41, 20)
+        MainMenuDisk.Text = "&Disk"
+        '
+        'MenuDiskReadFloppyA
+        '
+        Me.MenuDiskReadFloppyA.Name = "MenuDiskReadFloppyA"
+        Me.MenuDiskReadFloppyA.Size = New System.Drawing.Size(181, 22)
+        Me.MenuDiskReadFloppyA.Text = "&Read Disk in Drive A"
+        '
+        'MenuDiskReadFloppyB
+        '
+        Me.MenuDiskReadFloppyB.Name = "MenuDiskReadFloppyB"
+        Me.MenuDiskReadFloppyB.Size = New System.Drawing.Size(181, 22)
+        Me.MenuDiskReadFloppyB.Text = "&Read Disk in Drive B"
+        '
+        'MenuDiskWriteFloppyA
+        '
+        Me.MenuDiskWriteFloppyA.Name = "MenuDiskWriteFloppyA"
+        Me.MenuDiskWriteFloppyA.Size = New System.Drawing.Size(181, 22)
+        Me.MenuDiskWriteFloppyA.Text = "&Write Disk in Drive A"
+        '
+        'MenuDiskWriteFloppyB
+        '
+        Me.MenuDiskWriteFloppyB.Name = "MenuDiskWriteFloppyB"
+        Me.MenuDiskWriteFloppyB.Size = New System.Drawing.Size(181, 22)
+        Me.MenuDiskWriteFloppyB.Text = "&Write Disk in Drive B"
+        '
+        'MenuStripTop
+        '
+        MenuStripTop.Items.AddRange(New System.Windows.Forms.ToolStripItem() {MainMenuFile, MainMenuEdit, Me.MainMenuFilters, MainMenuView, MainMenuTools, MainMenuDisk, Me.MainMenuOptions, MainMenuHelp, MainMenuExperimental})
+        MenuStripTop.Location = New System.Drawing.Point(0, 0)
+        MenuStripTop.Name = "MenuStripTop"
+        MenuStripTop.Padding = New System.Windows.Forms.Padding(6, 2, 12, 2)
+        MenuStripTop.Size = New System.Drawing.Size(1004, 24)
+        MenuStripTop.TabIndex = 0
+        MenuStripTop.Text = "MenuStrip1"
+        '
+        'MainMenuFilters
+        '
+        Me.MainMenuFilters.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text
+        Me.MainMenuFilters.DropDown = Me.ContextMenuFilters
+        Me.MainMenuFilters.Name = "MainMenuFilters"
+        Me.MainMenuFilters.Size = New System.Drawing.Size(50, 20)
+        Me.MainMenuFilters.Text = "F&ilters"
+        '
+        'ContextMenuFilters
+        '
+        Me.ContextMenuFilters.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.MenuFiltersScanNew, Me.MenuFiltersScan, Me.MenuFiltersClear})
+        Me.ContextMenuFilters.Name = "ContextMenuStrip1"
+        Me.ContextMenuFilters.OwnerItem = Me.MainMenuFilters
+        Me.ContextMenuFilters.Size = New System.Drawing.Size(168, 70)
+        '
+        'MenuFiltersScanNew
+        '
+        Me.MenuFiltersScanNew.Name = "MenuFiltersScanNew"
+        Me.MenuFiltersScanNew.Size = New System.Drawing.Size(167, 22)
+        Me.MenuFiltersScanNew.Text = "Scan &New Images"
+        '
+        'MenuFiltersScan
+        '
+        Me.MenuFiltersScan.Name = "MenuFiltersScan"
+        Me.MenuFiltersScan.Size = New System.Drawing.Size(167, 22)
+        Me.MenuFiltersScan.Text = "&Scan Images"
+        '
+        'MenuFiltersClear
+        '
+        Me.MenuFiltersClear.Name = "MenuFiltersClear"
+        Me.MenuFiltersClear.Size = New System.Drawing.Size(167, 22)
+        Me.MenuFiltersClear.Text = "Clear Filters"
+        '
+        'MainMenuOptions
+        '
+        Me.MainMenuOptions.DropDownItems.AddRange(New System.Windows.Forms.ToolStripItem() {Me.MenuOptionsCreateBackup, Me.MenuOptionsDragDrop, Me.MenuOptionsWindowsExtensions, Me.MenuOptionsSeparatorDebug, Me.MenuOptionsExportUnknown})
+        Me.MainMenuOptions.Name = "MainMenuOptions"
+        Me.MainMenuOptions.Size = New System.Drawing.Size(61, 20)
+        Me.MainMenuOptions.Text = "&Options"
+        '
+        'MenuOptionsCreateBackup
+        '
+        Me.MenuOptionsCreateBackup.CheckOnClick = True
+        Me.MenuOptionsCreateBackup.Name = "MenuOptionsCreateBackup"
+        Me.MenuOptionsCreateBackup.Size = New System.Drawing.Size(248, 22)
+        Me.MenuOptionsCreateBackup.Text = "Create Backup on Save"
+        '
+        'MenuOptionsDragDrop
+        '
+        Me.MenuOptionsDragDrop.CheckOnClick = True
+        Me.MenuOptionsDragDrop.Name = "MenuOptionsDragDrop"
+        Me.MenuOptionsDragDrop.Size = New System.Drawing.Size(248, 22)
+        Me.MenuOptionsDragDrop.Text = "Import using Drag and Drop"
+        '
+        'MenuOptionsWindowsExtensions
+        '
+        Me.MenuOptionsWindowsExtensions.CheckOnClick = True
+        Me.MenuOptionsWindowsExtensions.Name = "MenuOptionsWindowsExtensions"
+        Me.MenuOptionsWindowsExtensions.Size = New System.Drawing.Size(248, 22)
+        Me.MenuOptionsWindowsExtensions.Text = "Enable Windows Extensions"
+        Me.MenuOptionsWindowsExtensions.ToolTipText = "Enabled Created and Last Access dates and Long File Name support when adding file" &
+    "s"
+        '
+        'MenuOptionsSeparatorDebug
+        '
+        Me.MenuOptionsSeparatorDebug.Name = "MenuOptionsSeparatorDebug"
+        Me.MenuOptionsSeparatorDebug.Size = New System.Drawing.Size(245, 6)
+        '
+        'MenuOptionsExportUnknown
+        '
+        Me.MenuOptionsExportUnknown.CheckOnClick = True
+        Me.MenuOptionsExportUnknown.Name = "MenuOptionsExportUnknown"
+        Me.MenuOptionsExportUnknown.Size = New System.Drawing.Size(248, 22)
+        Me.MenuOptionsExportUnknown.Text = "Export Unknown Images on Scan"
         '
         'ToolStripTop
         '
@@ -939,15 +1029,15 @@ Partial Class MainForm
         Me.ToolStripFATCombo.Overflow = System.Windows.Forms.ToolStripItemOverflow.Never
         Me.ToolStripFATCombo.Size = New System.Drawing.Size(25, 23)
         '
-        'StatusStripMain
+        'StatusStripBottom
         '
-        Me.StatusStripMain.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.ToolStripStatusReadOnly, Me.ToolStripStatusCached, Me.ToolStripStatusModified, Me.ToolStripFileName, Me.ToolStripFileCount, Me.ToolStripFileSector, Me.ToolStripFileTrack, Me.ToolStripImageCount, Me.ToolStripModified})
-        Me.StatusStripMain.Location = New System.Drawing.Point(0, 552)
-        Me.StatusStripMain.Name = "StatusStripMain"
-        Me.StatusStripMain.ShowItemToolTips = True
-        Me.StatusStripMain.Size = New System.Drawing.Size(1004, 24)
-        Me.StatusStripMain.TabIndex = 9
-        Me.StatusStripMain.Text = "StatusStripMain"
+        Me.StatusStripBottom.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.ToolStripStatusReadOnly, Me.ToolStripStatusCached, Me.ToolStripStatusModified, Me.ToolStripFileName, Me.ToolStripFileCount, Me.ToolStripFileSector, Me.ToolStripFileTrack, Me.ToolStripImageCount, Me.ToolStripModified})
+        Me.StatusStripBottom.Location = New System.Drawing.Point(0, 552)
+        Me.StatusStripBottom.Name = "StatusStripBottom"
+        Me.StatusStripBottom.ShowItemToolTips = True
+        Me.StatusStripBottom.Size = New System.Drawing.Size(1004, 24)
+        Me.StatusStripBottom.TabIndex = 9
+        Me.StatusStripBottom.Text = "StatusStripMain"
         '
         'ToolStripStatusReadOnly
         '
@@ -1239,80 +1329,6 @@ Partial Class MainForm
         Me.MenuFileFixSize.Text = "Fix File &Size"
         Me.MenuFileFixSize.Visible = False
         '
-        'MenuStripMain
-        '
-        Me.MenuStripMain.Items.AddRange(New System.Windows.Forms.ToolStripItem() {MainMenuFile, MainMenuEdit, Me.MainMenuFilters, MainMenuView, MainMenuTools, Me.DiskToolStripMenuItem, MainHelp, MainMenuExperimental})
-        Me.MenuStripMain.Location = New System.Drawing.Point(0, 0)
-        Me.MenuStripMain.Name = "MenuStripMain"
-        Me.MenuStripMain.Padding = New System.Windows.Forms.Padding(6, 2, 12, 2)
-        Me.MenuStripMain.Size = New System.Drawing.Size(1004, 24)
-        Me.MenuStripMain.TabIndex = 0
-        Me.MenuStripMain.Text = "MenuStrip1"
-        '
-        'MainMenuFilters
-        '
-        Me.MainMenuFilters.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text
-        Me.MainMenuFilters.DropDown = Me.ContextMenuFilters
-        Me.MainMenuFilters.Name = "MainMenuFilters"
-        Me.MainMenuFilters.Size = New System.Drawing.Size(50, 20)
-        Me.MainMenuFilters.Text = "F&ilters"
-        '
-        'ContextMenuFilters
-        '
-        Me.ContextMenuFilters.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.MenuFiltersScanNew, Me.MenuFiltersScan, Me.MenuFiltersClear})
-        Me.ContextMenuFilters.Name = "ContextMenuStrip1"
-        Me.ContextMenuFilters.OwnerItem = Me.MainMenuFilters
-        Me.ContextMenuFilters.Size = New System.Drawing.Size(168, 70)
-        '
-        'MenuFiltersScanNew
-        '
-        Me.MenuFiltersScanNew.Name = "MenuFiltersScanNew"
-        Me.MenuFiltersScanNew.Size = New System.Drawing.Size(167, 22)
-        Me.MenuFiltersScanNew.Text = "Scan &New Images"
-        '
-        'MenuFiltersScan
-        '
-        Me.MenuFiltersScan.Name = "MenuFiltersScan"
-        Me.MenuFiltersScan.Size = New System.Drawing.Size(167, 22)
-        Me.MenuFiltersScan.Text = "&Scan Images"
-        '
-        'MenuFiltersClear
-        '
-        Me.MenuFiltersClear.Name = "MenuFiltersClear"
-        Me.MenuFiltersClear.Size = New System.Drawing.Size(167, 22)
-        Me.MenuFiltersClear.Text = "Clear Filters"
-        '
-        'DiskToolStripMenuItem
-        '
-        Me.DiskToolStripMenuItem.DropDownItems.AddRange(New System.Windows.Forms.ToolStripItem() {Me.MenuDiskReadFloppyA, Me.MenuDiskReadFloppyB, ToolStripMenuItem2, Me.MenuDiskWriteFloppyA, Me.MenuDiskWriteFloppyB})
-        Me.DiskToolStripMenuItem.Name = "DiskToolStripMenuItem"
-        Me.DiskToolStripMenuItem.Size = New System.Drawing.Size(41, 20)
-        Me.DiskToolStripMenuItem.Text = "Disk"
-        '
-        'MenuDiskReadFloppyA
-        '
-        Me.MenuDiskReadFloppyA.Name = "MenuDiskReadFloppyA"
-        Me.MenuDiskReadFloppyA.Size = New System.Drawing.Size(181, 22)
-        Me.MenuDiskReadFloppyA.Text = "&Read Disk in Drive A"
-        '
-        'MenuDiskReadFloppyB
-        '
-        Me.MenuDiskReadFloppyB.Name = "MenuDiskReadFloppyB"
-        Me.MenuDiskReadFloppyB.Size = New System.Drawing.Size(181, 22)
-        Me.MenuDiskReadFloppyB.Text = "&Read Disk in Drive B"
-        '
-        'MenuDiskWriteFloppyA
-        '
-        Me.MenuDiskWriteFloppyA.Name = "MenuDiskWriteFloppyA"
-        Me.MenuDiskWriteFloppyA.Size = New System.Drawing.Size(181, 22)
-        Me.MenuDiskWriteFloppyA.Text = "&Write Disk in Drive A"
-        '
-        'MenuDiskWriteFloppyB
-        '
-        Me.MenuDiskWriteFloppyB.Name = "MenuDiskWriteFloppyB"
-        Me.MenuDiskWriteFloppyB.Size = New System.Drawing.Size(181, 22)
-        Me.MenuDiskWriteFloppyB.Text = "&Write Disk in Drive B"
-        '
         'ComboImagesFiltered
         '
         Me.ComboImagesFiltered.AllowDrop = True
@@ -1350,24 +1366,24 @@ Partial Class MainForm
         '
         Me.ContextMenuDirectory.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.MenuDirectoryView, ToolStripSeparator11, Me.MenuDirectoryImportFiles, Me.MenuDirectoryNewDirectory})
         Me.ContextMenuDirectory.Name = "ContextMenuDirectory"
-        Me.ContextMenuDirectory.Size = New System.Drawing.Size(181, 98)
+        Me.ContextMenuDirectory.Size = New System.Drawing.Size(151, 76)
         '
         'MenuDirectoryView
         '
         Me.MenuDirectoryView.Name = "MenuDirectoryView"
-        Me.MenuDirectoryView.Size = New System.Drawing.Size(180, 22)
+        Me.MenuDirectoryView.Size = New System.Drawing.Size(150, 22)
         Me.MenuDirectoryView.Text = "View D&irectory"
         '
         'MenuDirectoryImportFiles
         '
         Me.MenuDirectoryImportFiles.Name = "MenuDirectoryImportFiles"
-        Me.MenuDirectoryImportFiles.Size = New System.Drawing.Size(180, 22)
+        Me.MenuDirectoryImportFiles.Size = New System.Drawing.Size(150, 22)
         Me.MenuDirectoryImportFiles.Text = "&Import Files"
         '
         'MenuDirectoryNewDirectory
         '
         Me.MenuDirectoryNewDirectory.Name = "MenuDirectoryNewDirectory"
-        Me.MenuDirectoryNewDirectory.Size = New System.Drawing.Size(180, 22)
+        Me.MenuDirectoryNewDirectory.Size = New System.Drawing.Size(150, 22)
         Me.MenuDirectoryNewDirectory.Text = "&New Directory"
         '
         'MainForm
@@ -1379,28 +1395,27 @@ Partial Class MainForm
         Me.Controls.Add(Me.BtnResetSort)
         Me.Controls.Add(Me.ToolStripTop)
         Me.Controls.Add(Me.ComboImagesFiltered)
-        Me.Controls.Add(Me.StatusStripMain)
-        Me.Controls.Add(Me.MenuStripMain)
+        Me.Controls.Add(Me.StatusStripBottom)
+        Me.Controls.Add(MenuStripTop)
         Me.Controls.Add(Me.LabelDropMessage)
         Me.Controls.Add(Me.ListViewHashes)
         Me.Controls.Add(Me.ComboImages)
         Me.Controls.Add(Me.ListViewSummary)
         Me.Controls.Add(Me.ListViewFiles)
         Me.Icon = CType(resources.GetObject("$this.Icon"), System.Drawing.Icon)
-        Me.MainMenuStrip = Me.MenuStripMain
+        Me.MainMenuStrip = MenuStripTop
         Me.MinimumSize = New System.Drawing.Size(1020, 600)
         Me.Name = "MainForm"
         Me.StartPosition = System.Windows.Forms.FormStartPosition.Manual
         Me.Text = "Disk Image Tool"
-        Me.ContextMenuEdit.ResumeLayout(False)
+        MenuStripTop.ResumeLayout(False)
+        MenuStripTop.PerformLayout()
+        Me.ContextMenuFilters.ResumeLayout(False)
         Me.ToolStripTop.ResumeLayout(False)
         Me.ToolStripTop.PerformLayout()
-        Me.StatusStripMain.ResumeLayout(False)
-        Me.StatusStripMain.PerformLayout()
+        Me.StatusStripBottom.ResumeLayout(False)
+        Me.StatusStripBottom.PerformLayout()
         Me.ContextMenuFiles.ResumeLayout(False)
-        Me.MenuStripMain.ResumeLayout(False)
-        Me.MenuStripMain.PerformLayout()
-        Me.ContextMenuFilters.ResumeLayout(False)
         Me.ContextMenuDirectory.ResumeLayout(False)
         Me.ResumeLayout(False)
         Me.PerformLayout()
@@ -1413,7 +1428,6 @@ Partial Class MainForm
     Friend WithEvents ToolStripFileName As ToolStripStatusLabel
     Friend WithEvents ToolStripModified As ToolStripStatusLabel
     Friend WithEvents ListViewFiles As ListView
-    Friend WithEvents MenuStripMain As MenuStrip
     Friend WithEvents MenuFileOpen As ToolStripMenuItem
     Friend WithEvents MenuFileSave As ToolStripMenuItem
     Friend WithEvents MenuFileSaveAs As ToolStripMenuItem
@@ -1495,17 +1509,13 @@ Partial Class MainForm
     Friend WithEvents FileReserved As ColumnHeader
     Friend WithEvents MenuToolsClearReservedBytes As ToolStripMenuItem
     Friend WithEvents MenuHexLostClusters As ToolStripMenuItem
-    Friend WithEvents StatusStripMain As StatusStrip
     Friend WithEvents ToolStripSeparatorFAT As ToolStripSeparator
     Friend WithEvents ToolStripFATCombo As ToolStripComboBox
-    Friend WithEvents ToolStripTop As ToolStrip
-    Friend WithEvents DiskToolStripMenuItem As ToolStripMenuItem
     Friend WithEvents MenuDiskReadFloppyA As ToolStripMenuItem
     Friend WithEvents MenuDiskReadFloppyB As ToolStripMenuItem
     Friend WithEvents MenuDiskWriteFloppyA As ToolStripMenuItem
     Friend WithEvents MenuDiskWriteFloppyB As ToolStripMenuItem
-    Friend WithEvents MenuEditCreateBackup As ToolStripMenuItem
-    Friend WithEvents ContextMenuEdit As ContextMenuStrip
+    Friend WithEvents MenuOptionsCreateBackup As ToolStripMenuItem
     Friend WithEvents btnRetry As Button
     Friend WithEvents MenuFileImportFiles As ToolStripMenuItem
     Friend WithEvents MenuToolsFixImageSizeSubMenu As ToolStripMenuItem
@@ -1517,9 +1527,9 @@ Partial Class MainForm
     Friend WithEvents MenuFileReload As ToolStripMenuItem
     Friend WithEvents MenuHexRawTrackData As ToolStripMenuItem
     Friend WithEvents MenuFileNewImage As ToolStripMenuItem
-    Friend WithEvents MenuEditWindowsExtensions As ToolStripMenuItem
+    Friend WithEvents MenuOptionsWindowsExtensions As ToolStripMenuItem
     Friend WithEvents MenuFileImportFilesHere As ToolStripMenuItem
-    Friend WithEvents ToolStripSeparatorFile As ToolStripSeparator
+    Friend WithEvents MenuHexSeparatorFile As ToolStripSeparator
     Friend WithEvents MenuEditReplaceFile As ToolStripMenuItem
     Friend WithEvents MenuFileNewDirectory As ToolStripMenuItem
     Friend WithEvents MenuFileNewDirectoryHere As ToolStripMenuItem
@@ -1527,4 +1537,10 @@ Partial Class MainForm
     Friend WithEvents MenuDirectoryView As ToolStripMenuItem
     Friend WithEvents MenuDirectoryImportFiles As ToolStripMenuItem
     Friend WithEvents MenuDirectoryNewDirectory As ToolStripMenuItem
+    Friend WithEvents MainMenuOptions As ToolStripMenuItem
+    Friend WithEvents MenuOptionsSeparatorDebug As ToolStripSeparator
+    Friend WithEvents MenuOptionsExportUnknown As ToolStripMenuItem
+    Friend WithEvents StatusStripBottom As StatusStrip
+    Friend WithEvents ToolStripTop As ToolStrip
+    Friend WithEvents MenuOptionsDragDrop As ToolStripMenuItem
 End Class
