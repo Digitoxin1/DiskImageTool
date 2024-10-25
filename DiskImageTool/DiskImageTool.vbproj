@@ -31,7 +31,7 @@
     <ProductName>DiskImageTool</ProductName>
     <PublisherName>Digitoxin</PublisherName>
     <ApplicationRevision>0</ApplicationRevision>
-    <ApplicationVersion>2.2.0.%2a</ApplicationVersion>
+    <ApplicationVersion>2.3.0.%2a</ApplicationVersion>
     <UseApplicationTrust>false</UseApplicationTrust>
     <PublishWizardCompleted>true</PublishWizardCompleted>
     <BootstrapperEnabled>true</BootstrapperEnabled>
@@ -157,6 +157,12 @@
     <Compile Include="Forms\FileDropForm.vb">
       <SubType>Form</SubType>
     </Compile>
+    <Compile Include="Forms\Derived\FilePropertiesFormMultiple.vb">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\Derived\FilePropertiesFormSingle.vb">
+      <SubType>Form</SubType>
+    </Compile>
     <Compile Include="Forms\HexViewRawForm.Designer.vb">
       <DependentUpon>HexViewRawForm.vb</DependentUpon>
     </Compile>
@@ -167,6 +173,9 @@
       <DependentUpon>ImageCreationForm.vb</DependentUpon>
     </Compile>
     <Compile Include="Forms\ImageCreationForm.vb">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\Derived\NewDirectoryForm.vb">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="HexView\HexViewDataGridInspector.vb" />
@@ -406,6 +415,9 @@
     <EmbeddedResource Include="Forms\FilePropertiesForm.resx">
       <DependentUpon>FilePropertiesForm.vb</DependentUpon>
       <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\Derived\FilePropertiesFormMultiple.resx">
+      <DependentUpon>FilePropertiesFormMultiple.vb</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\FloppyAccessForm.resx">
       <DependentUpon>FloppyAccessForm.vb</DependentUpon>

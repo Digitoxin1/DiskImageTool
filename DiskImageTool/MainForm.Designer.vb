@@ -160,7 +160,7 @@ Partial Class MainForm
         Me.FileClusterError = CType(New System.Windows.Forms.ColumnHeader(), System.Windows.Forms.ColumnHeader)
         Me.FileCreationDate = CType(New System.Windows.Forms.ColumnHeader(), System.Windows.Forms.ColumnHeader)
         Me.FileLastAccessDate = CType(New System.Windows.Forms.ColumnHeader(), System.Windows.Forms.ColumnHeader)
-        Me.FileReserved = CType(New System.Windows.Forms.ColumnHeader(), System.Windows.Forms.ColumnHeader)
+        Me.FileNTReserved = CType(New System.Windows.Forms.ColumnHeader(), System.Windows.Forms.ColumnHeader)
         Me.FileLFN = CType(New System.Windows.Forms.ColumnHeader(), System.Windows.Forms.ColumnHeader)
         Me.ContextMenuFiles = New System.Windows.Forms.ContextMenuStrip(Me.components)
         Me.MenuFileFileProperties = New System.Windows.Forms.ToolStripMenuItem()
@@ -186,6 +186,7 @@ Partial Class MainForm
         Me.MenuDirectoryView = New System.Windows.Forms.ToolStripMenuItem()
         Me.MenuDirectoryImportFiles = New System.Windows.Forms.ToolStripMenuItem()
         Me.MenuDirectoryNewDirectory = New System.Windows.Forms.ToolStripMenuItem()
+        Me.FileFAT32Cluster = CType(New System.Windows.Forms.ColumnHeader(), System.Windows.Forms.ColumnHeader)
         SummaryName = CType(New System.Windows.Forms.ColumnHeader(), System.Windows.Forms.ColumnHeader)
         SummaryValue = CType(New System.Windows.Forms.ColumnHeader(), System.Windows.Forms.ColumnHeader)
         HashName = CType(New System.Windows.Forms.ColumnHeader(), System.Windows.Forms.ColumnHeader)
@@ -1186,7 +1187,7 @@ Partial Class MainForm
         Me.ListViewFiles.Anchor = CType((((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Bottom) _
             Or System.Windows.Forms.AnchorStyles.Left) _
             Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
-        Me.ListViewFiles.Columns.AddRange(New System.Windows.Forms.ColumnHeader() {FileModified, FileName, FileExt, FileSize, FileLastWriteDate, FileStartingCluster, Me.FileClusterError, FileAttrib, FileCRC32, Me.FileCreationDate, Me.FileLastAccessDate, Me.FileReserved, Me.FileLFN})
+        Me.ListViewFiles.Columns.AddRange(New System.Windows.Forms.ColumnHeader() {FileModified, FileName, FileExt, FileSize, FileLastWriteDate, FileStartingCluster, Me.FileClusterError, FileAttrib, FileCRC32, Me.FileCreationDate, Me.FileLastAccessDate, Me.FileNTReserved, Me.FileFAT32Cluster, Me.FileLFN})
         Me.ListViewFiles.ContextMenuStrip = Me.ContextMenuFiles
         Me.ListViewFiles.Font = New System.Drawing.Font("Microsoft Sans Serif", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.ListViewFiles.FullRowSelect = True
@@ -1214,9 +1215,10 @@ Partial Class MainForm
         Me.FileLastAccessDate.Text = "Last Accessed"
         Me.FileLastAccessDate.Width = 90
         '
-        'FileReserved
+        'FileNTReserved
         '
-        Me.FileReserved.Text = "Reserved"
+        Me.FileNTReserved.Text = "NT"
+        Me.FileNTReserved.Width = 30
         '
         'FileLFN
         '
@@ -1386,6 +1388,11 @@ Partial Class MainForm
         Me.MenuDirectoryNewDirectory.Size = New System.Drawing.Size(150, 22)
         Me.MenuDirectoryNewDirectory.Text = "&New Directory"
         '
+        'FileFAT32Cluster
+        '
+        Me.FileFAT32Cluster.Text = "FAT32"
+        Me.FileFAT32Cluster.Width = 50
+        '
         'MainForm
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
@@ -1506,7 +1513,7 @@ Partial Class MainForm
     Friend WithEvents MenuToolsWin9xCleanBatch As ToolStripMenuItem
     Friend WithEvents MenuToolsCompare As ToolStripMenuItem
     Friend WithEvents MenuFileUnDeleteFile As ToolStripMenuItem
-    Friend WithEvents FileReserved As ColumnHeader
+    Friend WithEvents FileNTReserved As ColumnHeader
     Friend WithEvents MenuToolsClearReservedBytes As ToolStripMenuItem
     Friend WithEvents MenuHexLostClusters As ToolStripMenuItem
     Friend WithEvents ToolStripSeparatorFAT As ToolStripSeparator
@@ -1543,4 +1550,5 @@ Partial Class MainForm
     Friend WithEvents StatusStripBottom As StatusStrip
     Friend WithEvents ToolStripTop As ToolStrip
     Friend WithEvents MenuOptionsDragDrop As ToolStripMenuItem
+    Friend WithEvents FileFAT32Cluster As ColumnHeader
 End Class

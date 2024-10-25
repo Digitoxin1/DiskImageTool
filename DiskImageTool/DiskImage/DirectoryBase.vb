@@ -157,38 +157,47 @@
             Return Nothing
         End Function
 
-        Public Function GetAvailableFileName(FileName As String, Optional CurrentIndex As Integer = -1) As String Implements IDirectory.GetAvailableFileName
-            FileName = DOSCleanFileName(FileName)
+        Public Function GetAvailableFileName(FileName As String, UseNTExtensions As Boolean, Optional CurrentIndex As Integer = -1) As String Implements IDirectory.GetAvailableFileName
+            Dim FilePart = IO.Path.GetFileNameWithoutExtension(FileName)
+            Dim ExtPart = IO.Path.GetExtension(FileName)
 
-            Dim FilePart As String
-            Dim Extension As String = IO.Path.GetExtension(FileName)
-            FileName = IO.Path.GetFileNameWithoutExtension(FileName)
+            Dim CleanFileName = DOSCleanFileName(FilePart)
+            Dim CleanExtension = DOSCleanFileName(ExtPart)
 
-            If Extension.Length > 4 Then
-                Extension = Extension.Substring(0, 4)
+            If CleanExtension.Length > 3 Then
+                CleanExtension = CleanExtension.Substring(0, 3)
             End If
 
             Dim Index As UInteger = 1
+            Dim Checksum As String = ""
 
-            If FileName.Length > 8 Then
-                FilePart = TruncateFileName(FileName, Index)
+            If CleanFileName.Length > 8 Or CleanFileName.Length <> FilePart.Length Then
+                If UseNTExtensions And CleanFileName.Length < 3 Then
+                    Checksum = GetShortFileChecksum(FileName).ToString("X4")
+                End If
+                FilePart = TruncateFileName(CleanFileName, Checksum, Index)
                 Index += 1
             Else
-                FilePart = FileName
+                FilePart = CleanFileName
             End If
 
-            Dim NewFileName = FilePart & Extension
+            Dim NewFileName = CombineFileParts(FilePart, CleanExtension)
 
             Do While GetFileIndex(NewFileName, True, CurrentIndex) > -1
-                FilePart = TruncateFileName(FileName, Index)
+                If UseNTExtensions And Index > 4 Then
+                    Checksum = GetShortFileChecksum(FileName).ToString("X4")
+                    Index = 1
+                End If
+                FilePart = TruncateFileName(CleanFileName, Checksum, Index)
                 Index += 1
-                NewFileName = FilePart & Extension
+                NewFileName = CombineFileParts(FilePart, CleanExtension)
             Loop
 
             Return NewFileName
         End Function
 
         Public MustOverride Function GetContent() As Byte() Implements IDirectory.GetContent
+
         Public Function GetEntries(Index As UInteger, Count As UInteger) As List(Of DirectoryEntry)
             Dim Entries As New List(Of DirectoryEntry)
 
@@ -201,6 +210,23 @@
 
         Public Function GetFile(Index As UInteger) As DirectoryEntry Implements IDirectory.GetFile
             Return _DirectoryEntries.Item(Index)
+        End Function
+
+        Public Function GetFileIndex(FileBytes() As Byte, IncludeDirectories As Boolean, Optional SkipIndex As Integer = -1) As Integer Implements IDirectory.GetFileIndex
+            If _DirectoryData.EntryCount > 0 Then
+                For Counter As UInteger = 0 To _DirectoryData.EntryCount - 1
+                    If Counter <> SkipIndex Then
+                        Dim File = _DirectoryEntries.Item(Counter)
+                        If Not File.IsDeleted And Not File.IsVolumeName And (IncludeDirectories Or Not File.IsDirectory) Then
+                            If FileBytes.CompareTo(File.FileNameWithExtension) Then
+                                Return Counter
+                            End If
+                        End If
+                    End If
+                Next
+            End If
+
+            Return -1
         End Function
 
         Public Function GetFileIndex(Filename As String, IncludeDirectories As Boolean, Optional SkipIndex As Integer = -1) As Integer Implements IDirectory.GetFileIndex
@@ -351,10 +377,41 @@
             Data.AvailableEntryCount = _DirectoryEntries.Count - EntryCount
         End Sub
 
-        Public MustOverride Function UpdateLFN(FileName As String, Index As Integer) As Boolean Implements IDirectory.UpdateLFN
+        Public MustOverride Function UpdateLFN(FileName As String, Index As Integer, UseNTExtensions As Boolean) As Boolean Implements IDirectory.UpdateLFN
 
-        Private Function TruncateFileName(FilePart As String, Index As UInteger) As String
-            Dim Suffix = "~" & Index
+        Private Function GetShortFileChecksum(Filename As String) As UShort
+            Dim Checksum As UShort = 0
+
+            For i As Integer = 0 To Filename.Length - 1
+                Checksum = (Checksum * &H25 + AscW(Filename(i))) And &HFFFF&
+            Next
+
+            Dim temp As UInteger = CLng(Checksum) * 314159269 And &HFFFFFFFF&
+
+            Dim temp2 As Integer
+
+            If temp > Integer.MaxValue Then
+                temp2 = (UInteger.MaxValue - temp + 1)
+            Else
+                temp2 = temp
+            End If
+
+            temp2 -= (CType((CLng(temp2) * 1152921497) >> 60, ULong) * 1000000007)
+
+            Checksum = temp2 And &HFFFF&
+
+            ' Reverse nibble order
+            Checksum = CUShort(
+                ((Checksum And &HF000) >> 12) Or
+                ((Checksum And &HF00) >> 4) Or
+                ((Checksum And &HF0) << 4) Or
+                ((Checksum And &HF) << 12)
+            )
+
+            Return Checksum
+        End Function
+        Private Function TruncateFileName(FilePart As String, Checksum As String, Index As UInteger) As String
+            Dim Suffix = Checksum & "~" & Index
             Dim Length = 8 - Suffix.Length
             If Length > FilePart.Length Then
                 Length = FilePart.Length

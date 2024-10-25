@@ -33,7 +33,7 @@
             For Each DirectoryEntry In FileList
                 If DirectoryEntry.IsValid Then
                     If DirectoryEntry.ReservedForWinNT <> 0 Then
-                        DirectoryEntry.ReservedForWinNT = 0
+                        DirectoryEntry.ReservedForWinNT = DirectoryEntry.ReservedForWinNT And Not &HE7
                         Result = True
                     End If
                     If DirectoryEntry.ReservedForFAT32 <> 0 Then

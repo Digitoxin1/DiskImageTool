@@ -76,7 +76,7 @@ Public Class MainForm
 
         ImageFilters.FilterUpdate(ImageData, UpdateFilters, Filters.FilterTypes.FileSystem_HasCreationDate, Response.HasValidCreated)
         ImageFilters.FilterUpdate(ImageData, UpdateFilters, Filters.FilterTypes.FileSystem_HasLastAccessDate, Response.HasValidLastAccessed)
-        ImageFilters.FilterUpdate(ImageData, UpdateFilters, Filters.FilterTypes.FileSystem_HasReservedBytesSet, Response.HasReserved)
+        ImageFilters.FilterUpdate(ImageData, UpdateFilters, Filters.FilterTypes.FileSystem_HasReservedBytesSet, Response.HasNTUnknownFlags Or Response.HasFAT32Cluster)
         ImageFilters.FilterUpdate(ImageData, UpdateFilters, Filters.FilterTypes.FileSystem_HasLongFileNames, Response.HasLFN)
         ImageFilters.FilterUpdate(ImageData, UpdateFilters, Filters.FilterTypes.FileSystem_DirectoryHasAdditionalData, Response.HasAdditionalData)
         ImageFilters.FilterUpdate(ImageData, UpdateFilters, Filters.FilterTypes.FileSystem_DirectoryHasBootSector, Response.HasBootSector)
@@ -548,12 +548,26 @@ Public Class MainForm
             Item.SubItems.Add("")
         Else
             Dim Reserved As String = ""
-            If FileData.DirectoryEntry.ReservedForWinNT <> 0 Or FileData.DirectoryEntry.ReservedForFAT32 <> 0 Then
+            If FileData.DirectoryEntry.ReservedForWinNT <> 0 Then
                 Reserved = FileData.DirectoryEntry.ReservedForWinNT.ToString("X2")
-                Reserved &= "-" & BitConverter.ToString(BitConverter.GetBytes(FileData.DirectoryEntry.ReservedForFAT32))
             End If
             SI = Item.SubItems.Add(Reserved)
-            SI.ForeColor = ForeColor
+            If FileData.DirectoryEntry.HasNTUnknownFlags Then
+                SI.ForeColor = Color.Red
+            Else
+                SI.ForeColor = ForeColor
+            End If
+        End If
+
+        If IsBlank Then
+            Item.SubItems.Add("")
+        Else
+            Dim FAT32Cluster As String = ""
+            If FileData.DirectoryEntry.ReservedForFAT32 <> 0 Then
+                FAT32Cluster = BitConverter.ToString(BitConverter.GetBytes(FileData.DirectoryEntry.ReservedForFAT32))
+            End If
+            SI = Item.SubItems.Add(FAT32Cluster)
+            SI.ForeColor = Color.Red
         End If
 
         If IsBlank Then
@@ -1284,17 +1298,33 @@ Public Class MainForm
     End Sub
 
     Private Sub FilePropertiesEdit(CurrentImage As CurrentImage)
-        Dim Result As Boolean
+        Dim Result As Boolean = False
 
-        Dim frmFileProperties As New FilePropertiesForm(CurrentImage.Disk, ListViewFiles.SelectedItems)
-        frmFileProperties.ShowDialog()
+        If ListViewFiles.SelectedItems.Count = 1 Then
+            Dim Item As ListViewItem = ListViewFiles.SelectedItems.Item(0)
+            Dim FileData As FileData = Item.Tag
 
-        If frmFileProperties.DialogResult = DialogResult.OK Then
-            Result = frmFileProperties.Updated
-
-            If Result Then
-                DiskImageRefresh(CurrentImage)
+            Dim frmFilePropertiesEdit As New FilePropertiesFormSingle(FileData.DirectoryEntry)
+            frmFilePropertiesEdit.ShowDialog()
+            If frmFilePropertiesEdit.DialogResult = DialogResult.OK Then
+                Result = frmFilePropertiesEdit.Updated
             End If
+        Else
+            Dim Entries As New List(Of DirectoryEntry)
+            For Each Item As ListViewItem In ListViewFiles.SelectedItems
+                Dim FileData As FileData = Item.Tag
+                Entries.Add(FileData.DirectoryEntry)
+            Next
+
+            Dim frmFilePropertiesEdit As New FilePropertiesFormMultiple(CurrentImage.Disk, Entries)
+            frmFilePropertiesEdit.ShowDialog()
+            If frmFilePropertiesEdit.DialogResult = DialogResult.OK Then
+                Result = frmFilePropertiesEdit.Updated
+            End If
+        End If
+
+        If Result Then
+            DiskImageRefresh(CurrentImage)
         End If
     End Sub
 
@@ -1677,14 +1707,14 @@ Public Class MainForm
     Private Sub ImageAddDirectory(CurrentImage As CurrentImage, ParentDirectory As IDirectory, Optional Index As Integer = -1)
         Dim Updated As Boolean
 
-        Dim frmFileProperties As New FilePropertiesForm(CurrentImage.Disk)
-        frmFileProperties.ShowDialog()
+        Dim frmNewDirectory As New NewDirectoryForm()
+        frmNewDirectory.ShowDialog()
 
-        If frmFileProperties.DialogResult = DialogResult.OK Then
-            Updated = frmFileProperties.Updated
+        If frmNewDirectory.DialogResult = DialogResult.OK Then
+            Updated = frmNewDirectory.Updated
 
             If Updated Then
-                Dim AddDirectoryResponse = ParentDirectory.AddDirectory(frmFileProperties.NewDirectoryData, frmFileProperties.HasLFN, frmFileProperties.LFN, Index)
+                Dim AddDirectoryResponse = ParentDirectory.AddDirectory(frmNewDirectory.NewDirectoryData, frmNewDirectory.HasLFN, frmNewDirectory.LFN, Index)
 
                 If AddDirectoryResponse.Entry IsNot Nothing Then
                     DiskImageRefresh(CurrentImage)
@@ -1701,7 +1731,7 @@ Public Class MainForm
         FileCount += FolderList.Count
 
         For Each Folder In FolderList
-            Dim ShortFileName = ParentDirectory.GetAvailableFileName(Folder.Name)
+            Dim ShortFileName = ParentDirectory.GetAvailableFileName(Folder.Name, False)
             Dim DirectoryEntry = New DirectoryEntryBase
             DirectoryEntry.SetFileInfo(Folder, ShortFileName, WindowsAdditions, WindowsAdditions)
 
@@ -2083,7 +2113,7 @@ Public Class MainForm
         Dim ReplaceFileForm As New ReplaceFileForm(AvailableSpace, DirectoryEntry.ParentDirectory)
         With ReplaceFileForm
             .SetOriginalFile(DirectoryEntry.GetFullFileName, DirectoryEntry.GetLastWriteDate.DateObject, DirectoryEntry.FileSize)
-            .SetNewFile(DirectoryEntry.ParentDirectory.GetAvailableFileName(FileInfo.Name), FileInfo.LastWriteTime, FileInfo.Length)
+            .SetNewFile(DirectoryEntry.ParentDirectory.GetAvailableFileName(FileInfo.Name, False), FileInfo.LastWriteTime, FileInfo.Length)
             .RefreshText()
             .ShowDialog(Me)
             FormResult = .Result
@@ -2377,7 +2407,8 @@ Public Class MainForm
         FileLastAccessDate.Width = 0
         FileLFN.Width = 0
         FileClusterError.Width = 0
-        FileReserved.Width = 0
+        FileNTReserved.Width = 0
+        FileFAT32Cluster.Width = 0
     End Sub
 
     Private Sub LoadCurrentImage(ImageData As ImageData, DoItemScan As Boolean)
@@ -2603,6 +2634,11 @@ Public Class MainForm
                     If DirectoryEntry.IsLFN Then
                         LFNFileName = DirectoryEntry.GetLFNFileName & LFNFileName
                     Else
+                        If LFNFileName = "" Then
+                            If Not DirectoryEntry.HasNTUnknownFlags And (DirectoryEntry.HasNTLowerCaseFileName Or DirectoryEntry.HasNTLowerCaseExtension) Then
+                                LFNFileName = DirectoryEntry.GetNTFileName
+                            End If
+                        End If
                         Dim ProcessResponse = Response.ProcessDirectoryEntry(DirectoryEntry, LFNFileName, Path = "")
 
                         If Not ScanOnly Then
@@ -2671,10 +2707,16 @@ Public Class MainForm
             FileLFN.Width = 0
         End If
 
-        If Response.HasReserved Then
-            FileReserved.Width = 60
+        If Response.HasNTReserved Then
+            FileNTReserved.Width = 30
         Else
-            FileReserved.Width = 0
+            FileNTReserved.Width = 0
+        End If
+
+        If Response.HasFAT32Cluster Then
+            FileFAT32Cluster.Width = 50
+        Else
+            FileFAT32Cluster.Width = 0
         End If
 
         If Response.HasFATChainingErrors Then
@@ -2685,7 +2727,7 @@ Public Class MainForm
         End If
 
         MenuToolsWin9xClean.Enabled = Response.HasValidCreated Or Response.HasValidLastAccessed Or CurrentImage.Disk.BootSector.IsWin9xOEMName
-        MenuToolsClearReservedBytes.Enabled = Response.HasReserved
+        MenuToolsClearReservedBytes.Enabled = Response.HasNTUnknownFlags Or Response.HasFAT32Cluster
     End Sub
 
     Private Sub ProcessFileDrop(File As String)

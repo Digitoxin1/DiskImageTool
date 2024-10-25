@@ -20,7 +20,9 @@ Public Class DirectoryScanResponse
         _HasValidLastAccessed = False
         _HasInvalidDirectoryEntries = False
         _HasFATChainingErrors = False
-        _HasReserved = False
+        _HasNTReserved = False
+        _HasNTUnknownFlags = False
+        _HasFAT32Cluster = False
         _ItemCount = 0
         _FileNames = New HashSet(Of String)
         _VolumeNameFound = False
@@ -32,6 +34,8 @@ Public Class DirectoryScanResponse
 
     Public Property HasCreated As Boolean
 
+    Public Property HasFAT32Cluster As Boolean
+
     Public Property HasFATChainingErrors As Boolean
 
     Public Property HasInvalidDirectoryEntries As Boolean
@@ -40,7 +44,9 @@ Public Class DirectoryScanResponse
 
     Public Property HasLFN As Boolean
 
-    Public Property HasReserved As Boolean
+    Public Property HasNTReserved As Boolean
+
+    Public Property HasNTUnknownFlags As Boolean
 
     Public Property HasValidCreated As Boolean
 
@@ -58,7 +64,9 @@ Public Class DirectoryScanResponse
         _HasFATChainingErrors = _HasFATChainingErrors Or Response.HasFATChainingErrors
         _HasAdditionalData = _HasAdditionalData Or Response.HasAdditionalData
         _HasBootSector = _HasBootSector Or Response.HasBootSector
-        _HasReserved = _HasReserved Or Response.HasReserved
+        _HasNTReserved = _HasNTReserved Or Response.HasNTReserved
+        _HasNTUnknownFlags = _HasNTUnknownFlags Or Response.HasNTUnknownFlags
+        _HasFAT32Cluster = _HasFAT32Cluster Or Response.HasFAT32Cluster
     End Sub
 
     Public Function ProcessDirectoryEntry(DirectoryEntry As DirectoryEntry, LFNFileName As String, IsRootDirectory As Boolean) As ProcessDirectoryEntryResponse
@@ -147,9 +155,21 @@ Public Class DirectoryScanResponse
             End If
         End If
 
-        If Not _HasReserved Then
-            If IsValid And Not IsBlank And (DirectoryEntry.ReservedForWinNT <> 0 Or DirectoryEntry.ReservedForFAT32 <> 0) Then
-                _HasReserved = True
+        If Not _HasNTReserved Then
+            If IsValid And Not IsBlank And DirectoryEntry.ReservedForWinNT <> 0 Then
+                _HasNTReserved = True
+            End If
+        End If
+
+        If Not _HasNTUnknownFlags Then
+            If IsValid And Not IsBlank And DirectoryEntry.HasNTUnknownFlags <> 0 Then
+                _HasNTUnknownFlags = True
+            End If
+        End If
+
+        If Not _HasFAT32Cluster Then
+            If IsValid And Not IsBlank And DirectoryEntry.ReservedForFAT32 <> 0 Then
+                _HasFAT32Cluster = True
             End If
         End If
 

@@ -144,8 +144,8 @@
             End If
         End Sub
 
-        Public Overrides Function UpdateLFN(FileName As String, Index As Integer) As Boolean Implements IDirectory.UpdateLFN
-            Dim Data = InitializeUpdateLFN(Me, FileName, Index)
+        Public Overrides Function UpdateLFN(FileName As String, Index As Integer, UseNTExtensions As Boolean) As Boolean Implements IDirectory.UpdateLFN
+            Dim Data = InitializeUpdateLFN(Me, FileName, Index, UseNTExtensions)
 
             If Data.RequiresExpansion Then
                 Return False

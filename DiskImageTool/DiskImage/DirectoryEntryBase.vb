@@ -8,6 +8,7 @@ Namespace DiskImage
         Public Shared ReadOnly EmptyDirectoryEntry() As Byte = {&HE5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}
         Public Shared ReadOnly CurrentDirectoryEntry() As Byte = {&H2E, &H20, &H20, &H20, &H20, &H20, &H20, &H20, &H20, &H20, &H20}
         Public Shared ReadOnly ParentDirectoryEntry() As Byte = {&H2E, &H2E, &H20, &H20, &H20, &H20, &H20, &H20, &H20, &H20, &H20}
+        Public Shared ReadOnly InvalidFileChars() As Byte = {&H22, &H2A, &H2B, &H2C, &H2E, &H2F, &H3A, &H3B, &H3C, &H3D, &H3E, &H3F, &H5B, &H5C, &H5D, &H7C}
 
         Private Const CHAR_EMPTY As Byte = &H0
         Private Const CHAR_SPACE As Byte = &H20
@@ -93,6 +94,11 @@ Namespace DiskImage
             FilePart2 = 12
             StartingCluster = 2
             FilePart3 = 4
+        End Enum
+
+        Public Enum NTFlags As Byte
+            LowerCaseFileName = 8
+            LowerCaseExtension = 16
         End Enum
 
         Sub New()
@@ -389,6 +395,24 @@ Namespace DiskImage
             Return File
         End Function
 
+        Public Function GetNTFileName() As String
+            Dim File = GetFileName()
+            Dim Ext = GetFileExtension()
+
+            If HasNTLowerCaseFileName() Then
+                File = File.ToLower
+            End If
+
+            If Ext <> "" Then
+                If HasNTLowerCaseExtension() Then
+                    Ext = Ext.ToLower
+                End If
+                File = File & "." & Ext
+            End If
+
+            Return File
+        End Function
+
         Public Function GetLastAccessDate() As ExpandedDate
             If Not _LastAccessDateIsCached Then
                 _LastAccessDateCache = ExpandDate(LastAccessDate)
@@ -473,6 +497,18 @@ Namespace DiskImage
             Return LastAccessDate <> 0
         End Function
 
+        Public Function HasNTLowerCaseFileName() As Boolean
+            Return (ReservedForWinNT And NTFlags.LowerCaseFileName) > 0
+        End Function
+
+        Public Function HasNTLowerCaseExtension() As Boolean
+            Return (ReservedForWinNT And NTFlags.LowerCaseExtension) > 0
+        End Function
+
+        Public Function HasNTUnknownFlags() As Boolean
+            Return (ReservedForWinNT And &HE7) > 0
+        End Function
+
         Public Function IsArchive() As Boolean
             Return (Attributes And AttributeFlags.ArchiveFlag) > 0
         End Function
@@ -550,16 +586,14 @@ Namespace DiskImage
             Return (Attributes And AttributeFlags.VolumeName) > 0
         End Function
 
+        Public Sub RemoveNTExtensions()
+            ReservedForWinNT = ReservedForWinNT And Not &H18
+        End Sub
+
         Public Sub SetCreationDate(Value As Date)
             CreationDate = DateToFATDate(Value)
             CreationTime = DateToFATTime(Value)
             CreationMillisecond = DateToFATMilliseconds(Value)
-        End Sub
-
-        Public Sub SetFileInfo(FileInfo As FileInfo, UseCreationDate As Boolean, UseLastAccessDate As Boolean)
-            Dim NewFileName = DOSTruncateFileName(FileInfo.Name)
-
-            SetFileInfo(FileInfo, NewFileName, UseCreationDate, UseLastAccessDate)
         End Sub
 
         Public Sub SetFileInfo(FileInfo As FileInfo, NewFileName As String, UseCreationDate As Boolean, UseLastAccessDate As Boolean)
@@ -640,8 +674,11 @@ Namespace DiskImage
                 FileExt = FileExt.Remove(0, 1)
             End If
 
-            Me.FileName = UnicodeToCodePage437(FileName)
-            Me.Extension = UnicodeToCodePage437(FileExt)
+            Me.FileName = Encoding.UTF8.GetBytes(FileName)
+            Me.Extension = Encoding.UTF8.GetBytes(FileExt)
+
+            'Me.FileName = UnicodeToCodePage437(FileName)
+            'Me.Extension = UnicodeToCodePage437(FileExt)
         End Sub
 
         Public Sub SetLastAccessDate(Value As Date)

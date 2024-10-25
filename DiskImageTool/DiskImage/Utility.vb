@@ -1,4 +1,5 @@
 ﻿Imports System.IO
+Imports System.Text
 
 Namespace DiskImage
     Public Structure AddDirectoryData
@@ -30,12 +31,11 @@ Namespace DiskImage
         Dim LFNEntries As List(Of Byte())
         Dim RequiresExpansion As Boolean
         Dim DirectoryEntry As DirectoryEntry
+        Dim NTLowerCaseFileName As Boolean
+        Dim NTLowerCaseExtension As Boolean
     End Structure
 
     Module Functions
-        Public ReadOnly EmptyDirectoryEntry() As Byte = {&HE5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}
-        Public ReadOnly InvalidFileChars() As Byte = {&H22, &H2A, &H2B, &H2C, &H2E, &H2F, &H3A, &H3B, &H3C, &H3D, &H3E, &H3F, &H5B, &H5C, &H5D, &H7C}
-
         Public Function BootSectorDescription(Offset As BootSector.BootSectorOffsets) As String
             Select Case Offset
                 Case BootSector.BootSectorOffsets.JmpBoot
@@ -127,6 +127,10 @@ Namespace DiskImage
             Next
 
             Return SectorList
+        End Function
+
+        Public Function CombineFileParts(Filename As String, Extension As String) As String
+            Return Filename & If(Extension.Length > 0, ".", "") & Extension
         End Function
 
         Public Function DateToFATDate(D As Date) As UShort
@@ -256,40 +260,25 @@ Namespace DiskImage
         End Function
 
         Public Function DOSCleanFileName(FileName As String) As String
-            Dim InvalidChars = New Char() {"+"c, ","c, ";"c, "="c, "["c, "]"c}
+            FileName = RemoveDiacritics(FileName)
 
-            Dim CharList = FileName.ToUpper.ToArray().ToList
+            Dim FileBytes = Encoding.UTF8.GetBytes(FileName).ToList
 
-            If CharList(0) = "." Then
-                CharList.RemoveAt(0)
-            End If
-            For i = CharList.Count - 1 To 0 Step -1
-                If CharList(i) = " " Then
-                    CharList.RemoveAt(i)
-                ElseIf InvalidChars.Contains(CharList(i)) Then
-                    CharList(i) = "_"c
+            For i = FileBytes.Count - 1 To 0 Step -1
+                If FileBytes(i) = &H20 Then 'Remove spaces
+                    FileBytes.RemoveAt(i)
+                ElseIf FileBytes(i) = &H2E Then 'Remove periods
+                    FileBytes.RemoveAt(i)
+                ElseIf DirectoryEntry.InvalidFileChars.Contains(FileBytes(i)) Then 'Replace invalid characters with underscores
+                    FileBytes(i) = &H95
+                ElseIf FileBytes(i) > 96 And FileBytes(i) < 123 Then 'Convert lowercase to uppercase
+                    FileBytes(i) = FileBytes(i) - 32
                 End If
             Next
 
-            Return New String(CharList.ToArray)
+            Return Encoding.UTF8.GetString(FileBytes.ToArray)
         End Function
 
-        Public Function DOSTruncateFileName(FileName As String) As String
-            FileName = DOSCleanFileName(FileName)
-
-            Dim FilePart As String = IO.Path.GetFileNameWithoutExtension(FileName)
-            Dim Extension As String = IO.Path.GetExtension(FileName)
-
-            If FilePart.Length > 8 Then
-                FilePart = FilePart.Substring(0, 8)
-            End If
-
-            If Extension.Length > 4 Then
-                Extension = Extension.Substring(0, 4)
-            End If
-
-            Return FilePart & Extension
-        End Function
         Public Function GetBadSectors(BPB As BiosParameterBlock, BadClusters As List(Of UShort)) As HashSet(Of UInteger)
             Dim BadSectors As New HashSet(Of UInteger)
 
@@ -349,12 +338,13 @@ Namespace DiskImage
                 Next
                 Array.Copy(FileBytes, Offset, Buffer, 0, Length)
                 If Length < 26 Then
-                    Buffer(Length - 1) = 0
+                    Buffer(Length) = 0
+                    Buffer(Length + 1) = 0
                 End If
 
                 LFNBuffer = New Byte(31) {}
                 If i = Count - 1 Then
-                    LFNBuffer(0) = &H42
+                    LFNBuffer(0) = (i + 1) Or &H40
                 Else
                     LFNBuffer(0) = i + 1
                 End If
@@ -384,7 +374,7 @@ Namespace DiskImage
             AddDirectoryData.Index = Index
             AddDirectoryData.UseLFN = UseLFN
             If UseLFN Then
-                AddDirectoryData.ShortFileName = Directory.GetAvailableFileName(LFNFileName)
+                AddDirectoryData.ShortFileName = Directory.GetAvailableFileName(LFNFileName, False)
                 AddDirectoryData.LFNEntries = GetLFNDirectoryEntries(LFNFileName, AddDirectoryData.ShortFileName)
                 AddDirectoryData.EntriesNeeded = AddDirectoryData.LFNEntries.Count + 1
             Else
@@ -416,7 +406,7 @@ Namespace DiskImage
             AddFileData.FilePath = FileInfo.FullName
             AddFileData.WindowsAdditions = WindowsAdditions
             AddFileData.Index = Index
-            AddFileData.ShortFileName = Directory.GetAvailableFileName(FileInfo.Name)
+            AddFileData.ShortFileName = Directory.GetAvailableFileName(FileInfo.Name, False)
 
             If AddFileData.WindowsAdditions Then
                 AddFileData.LFNEntries = GetLFNDirectoryEntries(FileInfo.Name, AddFileData.ShortFileName)
@@ -439,14 +429,37 @@ Namespace DiskImage
 
             Return AddFileData
         End Function
-        Public Function InitializeUpdateLFN(Directory As DirectoryBase, FileName As String, Index As Integer) As UpdateLFNData
+        Public Function InitializeUpdateLFN(Directory As DirectoryBase, FileName As String, Index As Integer, UseNTExtensions As Boolean) As UpdateLFNData
             Dim UpdateLFNData As UpdateLFNData
 
             UpdateLFNData.RequiresExpansion = False
             UpdateLFNData.DirectoryEntry = Directory.DirectoryEntries.Item(Index)
             UpdateLFNData.CurrentLFNIndex = Directory.AdjustIndexForLFN(Index)
-            UpdateLFNData.ShortFileName = Directory.GetAvailableFileName(FileName, Index)
-            UpdateLFNData.LFNEntries = GetLFNDirectoryEntries(FileName, UpdateLFNData.ShortFileName)
+            UpdateLFNData.ShortFileName = Directory.GetAvailableFileName(FileName, UseNTExtensions, Index)
+
+            If FileName.ToUpper <> UpdateLFNData.ShortFileName Then
+                UseNTExtensions = False
+            End If
+
+            If UseNTExtensions Then
+                Dim ShortFilePart = IO.Path.GetFileNameWithoutExtension(UpdateLFNData.ShortFileName)
+                Dim ShortExtPart = IO.Path.GetExtension(UpdateLFNData.ShortFileName)
+                Dim LongFilePart = IO.Path.GetFileNameWithoutExtension(FileName)
+                Dim LongExtPart = IO.Path.GetExtension(FileName)
+
+                UpdateLFNData.NTLowerCaseFileName = ShortFilePart.ToLower = LongFilePart
+                UpdateLFNData.NTLowerCaseExtension = ShortExtPart.ToLower = LongExtPart
+                UseNTExtensions = UpdateLFNData.NTLowerCaseFileName Or UpdateLFNData.NTLowerCaseExtension
+            Else
+                UpdateLFNData.NTLowerCaseFileName = False
+                UpdateLFNData.NTLowerCaseExtension = False
+            End If
+
+            If UseNTExtensions Then
+                UpdateLFNData.LFNEntries = New List(Of Byte())
+            Else
+                UpdateLFNData.LFNEntries = GetLFNDirectoryEntries(FileName, UpdateLFNData.ShortFileName)
+            End If
 
             Dim CurrentLFNEntryCount = Index - UpdateLFNData.CurrentLFNIndex
             UpdateLFNData.EntriesNeeded = UpdateLFNData.LFNEntries.Count - CurrentLFNEntryCount
@@ -536,7 +549,12 @@ Namespace DiskImage
                 Directory.ShiftEntries(Data.CurrentLFNIndex, EntryCount, Data.EntriesNeeded)
             End If
 
-            Data.DirectoryEntry.SetFileName(Data.ShortFileName)
+            Dim NewEntry = Data.DirectoryEntry.Clone
+            NewEntry.SetFileName(Data.ShortFileName)
+            NewEntry.ReservedForWinNT = MyBitConverter.ToggleBit(NewEntry.ReservedForWinNT, DirectoryEntry.NTFlags.LowerCaseFileName, Data.NTLowerCaseFileName)
+            NewEntry.ReservedForWinNT = MyBitConverter.ToggleBit(NewEntry.ReservedForWinNT, DirectoryEntry.NTFlags.LowerCaseExtension, Data.NTLowerCaseExtension)
+
+            Data.DirectoryEntry.Data = NewEntry.Data
 
             If Data.LFNEntries.Count > 0 Then
                 Dim Entries = Directory.GetEntries(Data.CurrentLFNIndex, Data.LFNEntries.Count + 1)
@@ -571,6 +589,21 @@ Namespace DiskImage
             Next
 
             Return Checksum
+        End Function
+
+        Private Function RemoveDiacritics(value As String) As String
+            Dim NormalizedString = value.Normalize(NormalizationForm.FormD)
+            Dim SB = New StringBuilder(NormalizedString.Length)
+
+            For i = 0 To NormalizedString.Length - 1
+                Dim c = NormalizedString(i)
+                Dim UnicodeCategory = Globalization.CharUnicodeInfo.GetUnicodeCategory(c)
+                If UnicodeCategory <> Globalization.UnicodeCategory.NonSpacingMark Then
+                    SB.Append(c)
+                End If
+            Next
+
+            Return SB.ToString.Normalize(NormalizationForm.FormC)
         End Function
     End Module
 End Namespace

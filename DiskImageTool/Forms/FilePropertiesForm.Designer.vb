@@ -50,10 +50,10 @@ Partial Class FilePropertiesForm
         Me.ChkReadOnly = New System.Windows.Forms.CheckBox()
         Me.ChkHidden = New System.Windows.Forms.CheckBox()
         Me.TableLayoutPanelFile = New System.Windows.Forms.TableLayoutPanel()
-        Me.LblMultipleFiles = New System.Windows.Forms.Label()
         Me.TxtExtension = New System.Windows.Forms.TextBox()
         Me.TxtFile = New System.Windows.Forms.MaskedTextBox()
         Me.GroupFileName = New System.Windows.Forms.GroupBox()
+        Me.TxtLFN = New System.Windows.Forms.TextBox()
         Me.FlowLayoutFileNameType = New System.Windows.Forms.FlowLayoutPanel()
         Me.RadioFileShort = New System.Windows.Forms.RadioButton()
         Me.RadioFileLong = New System.Windows.Forms.RadioButton()
@@ -61,7 +61,8 @@ Partial Class FilePropertiesForm
         Me.BtnUpdate = New System.Windows.Forms.Button()
         Me.FlowLayoutPanel1 = New System.Windows.Forms.FlowLayoutPanel()
         Me.FlowLayoutPanel2 = New System.Windows.Forms.FlowLayoutPanel()
-        Me.TxtLFN = New System.Windows.Forms.TextBox()
+        Me.LblMultipleFiles = New System.Windows.Forms.Label()
+        Me.ChkNTExtensions = New System.Windows.Forms.CheckBox()
         Me.MskExtensionHex = New DiskImageTool.HexTextBox()
         Me.MskFileHex = New DiskImageTool.HexTextBox()
         GroupFileDates = New System.Windows.Forms.GroupBox()
@@ -87,7 +88,7 @@ Partial Class FilePropertiesForm
         GroupFileDates.AutoSize = True
         GroupFileDates.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink
         GroupFileDates.Controls.Add(Me.TableLayoutPanel1)
-        GroupFileDates.Location = New System.Drawing.Point(3, 99)
+        GroupFileDates.Location = New System.Drawing.Point(3, 112)
         GroupFileDates.Name = "GroupFileDates"
         GroupFileDates.Padding = New System.Windows.Forms.Padding(3, 3, 3, 0)
         GroupFileDates.Size = New System.Drawing.Size(438, 113)
@@ -285,7 +286,7 @@ Partial Class FilePropertiesForm
         GroupAttributes.AutoSize = True
         GroupAttributes.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink
         GroupAttributes.Controls.Add(Me.TableLayoutPanel2)
-        GroupAttributes.Location = New System.Drawing.Point(3, 218)
+        GroupAttributes.Location = New System.Drawing.Point(3, 231)
         GroupAttributes.Name = "GroupAttributes"
         GroupAttributes.Padding = New System.Windows.Forms.Padding(3, 3, 3, 0)
         GroupAttributes.Size = New System.Drawing.Size(438, 90)
@@ -408,34 +409,23 @@ Partial Class FilePropertiesForm
         '
         Me.TableLayoutPanelFile.AutoSize = True
         Me.TableLayoutPanelFile.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink
-        Me.TableLayoutPanelFile.ColumnCount = 3
+        Me.TableLayoutPanelFile.ColumnCount = 2
         Me.TableLayoutPanelFile.ColumnStyles.Add(New System.Windows.Forms.ColumnStyle())
         Me.TableLayoutPanelFile.ColumnStyles.Add(New System.Windows.Forms.ColumnStyle())
-        Me.TableLayoutPanelFile.ColumnStyles.Add(New System.Windows.Forms.ColumnStyle())
+        Me.TableLayoutPanelFile.ColumnStyles.Add(New System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 20.0!))
         Me.TableLayoutPanelFile.Controls.Add(Me.MskExtensionHex, 1, 1)
         Me.TableLayoutPanelFile.Controls.Add(Me.MskFileHex, 0, 1)
-        Me.TableLayoutPanelFile.Controls.Add(Me.LblMultipleFiles, 2, 0)
         Me.TableLayoutPanelFile.Controls.Add(Me.TxtExtension, 1, 0)
         Me.TableLayoutPanelFile.Controls.Add(Me.TxtFile, 0, 0)
-        Me.TableLayoutPanelFile.Location = New System.Drawing.Point(9, 22)
+        Me.TableLayoutPanelFile.Location = New System.Drawing.Point(9, 35)
         Me.TableLayoutPanelFile.Margin = New System.Windows.Forms.Padding(3, 3, 3, 0)
         Me.TableLayoutPanelFile.Name = "TableLayoutPanelFile"
         Me.TableLayoutPanelFile.RowCount = 3
         Me.TableLayoutPanelFile.RowStyles.Add(New System.Windows.Forms.RowStyle())
         Me.TableLayoutPanelFile.RowStyles.Add(New System.Windows.Forms.RowStyle())
         Me.TableLayoutPanelFile.RowStyles.Add(New System.Windows.Forms.RowStyle())
-        Me.TableLayoutPanelFile.Size = New System.Drawing.Size(370, 52)
+        Me.TableLayoutPanelFile.Size = New System.Drawing.Size(246, 52)
         Me.TableLayoutPanelFile.TabIndex = 1
-        '
-        'LblMultipleFiles
-        '
-        Me.LblMultipleFiles.Anchor = System.Windows.Forms.AnchorStyles.Left
-        Me.LblMultipleFiles.AutoSize = True
-        Me.LblMultipleFiles.Location = New System.Drawing.Point(249, 6)
-        Me.LblMultipleFiles.Name = "LblMultipleFiles"
-        Me.LblMultipleFiles.Size = New System.Drawing.Size(118, 13)
-        Me.LblMultipleFiles.TabIndex = 2
-        Me.LblMultipleFiles.Text = "(Multiple Files Selected)"
         '
         'TxtExtension
         '
@@ -458,15 +448,25 @@ Partial Class FilePropertiesForm
             Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
         Me.GroupFileName.AutoSize = True
         Me.GroupFileName.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink
+        Me.GroupFileName.Controls.Add(Me.LblMultipleFiles)
         Me.GroupFileName.Controls.Add(Me.TxtLFN)
         Me.GroupFileName.Controls.Add(Me.FlowLayoutFileNameType)
         Me.GroupFileName.Controls.Add(Me.TableLayoutPanelFile)
         Me.GroupFileName.Location = New System.Drawing.Point(3, 3)
         Me.GroupFileName.Name = "GroupFileName"
-        Me.GroupFileName.Size = New System.Drawing.Size(438, 90)
+        Me.GroupFileName.Size = New System.Drawing.Size(438, 103)
         Me.GroupFileName.TabIndex = 0
         Me.GroupFileName.TabStop = False
         Me.GroupFileName.Text = "File Name"
+        '
+        'TxtLFN
+        '
+        Me.TxtLFN.Location = New System.Drawing.Point(12, 38)
+        Me.TxtLFN.Margin = New System.Windows.Forms.Padding(3, 3, 3, 29)
+        Me.TxtLFN.MaxLength = 256
+        Me.TxtLFN.Name = "TxtLFN"
+        Me.TxtLFN.Size = New System.Drawing.Size(347, 20)
+        Me.TxtLFN.TabIndex = 2
         '
         'FlowLayoutFileNameType
         '
@@ -474,9 +474,10 @@ Partial Class FilePropertiesForm
         Me.FlowLayoutFileNameType.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink
         Me.FlowLayoutFileNameType.Controls.Add(Me.RadioFileShort)
         Me.FlowLayoutFileNameType.Controls.Add(Me.RadioFileLong)
-        Me.FlowLayoutFileNameType.Location = New System.Drawing.Point(261, 9)
+        Me.FlowLayoutFileNameType.Controls.Add(Me.ChkNTExtensions)
+        Me.FlowLayoutFileNameType.Location = New System.Drawing.Point(157, 9)
         Me.FlowLayoutFileNameType.Name = "FlowLayoutFileNameType"
-        Me.FlowLayoutFileNameType.Size = New System.Drawing.Size(101, 23)
+        Me.FlowLayoutFileNameType.Size = New System.Drawing.Size(205, 23)
         Me.FlowLayoutFileNameType.TabIndex = 0
         '
         'RadioFileShort
@@ -516,7 +517,6 @@ Partial Class FilePropertiesForm
         'BtnUpdate
         '
         Me.BtnUpdate.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink
-        Me.BtnUpdate.DialogResult = System.Windows.Forms.DialogResult.OK
         Me.BtnUpdate.Location = New System.Drawing.Point(3, 3)
         Me.BtnUpdate.Name = "BtnUpdate"
         Me.BtnUpdate.Size = New System.Drawing.Size(90, 23)
@@ -532,7 +532,7 @@ Partial Class FilePropertiesForm
         Me.FlowLayoutPanel1.CausesValidation = False
         Me.FlowLayoutPanel1.Controls.Add(Me.BtnUpdate)
         Me.FlowLayoutPanel1.Controls.Add(Me.BtnCancel)
-        Me.FlowLayoutPanel1.Location = New System.Drawing.Point(126, 314)
+        Me.FlowLayoutPanel1.Location = New System.Drawing.Point(126, 327)
         Me.FlowLayoutPanel1.Name = "FlowLayoutPanel1"
         Me.FlowLayoutPanel1.Size = New System.Drawing.Size(192, 29)
         Me.FlowLayoutPanel1.TabIndex = 3
@@ -548,17 +548,29 @@ Partial Class FilePropertiesForm
         Me.FlowLayoutPanel2.FlowDirection = System.Windows.Forms.FlowDirection.TopDown
         Me.FlowLayoutPanel2.Location = New System.Drawing.Point(21, 21)
         Me.FlowLayoutPanel2.Name = "FlowLayoutPanel2"
-        Me.FlowLayoutPanel2.Size = New System.Drawing.Size(444, 346)
+        Me.FlowLayoutPanel2.Size = New System.Drawing.Size(444, 359)
         Me.FlowLayoutPanel2.TabIndex = 0
         '
-        'TxtLFN
+        'LblMultipleFiles
         '
-        Me.TxtLFN.Location = New System.Drawing.Point(11, 38)
-        Me.TxtLFN.Margin = New System.Windows.Forms.Padding(3, 3, 3, 16)
-        Me.TxtLFN.MaxLength = 256
-        Me.TxtLFN.Name = "TxtLFN"
-        Me.TxtLFN.Size = New System.Drawing.Size(347, 20)
-        Me.TxtLFN.TabIndex = 2
+        Me.LblMultipleFiles.Anchor = System.Windows.Forms.AnchorStyles.Left
+        Me.LblMultipleFiles.AutoSize = True
+        Me.LblMultipleFiles.Location = New System.Drawing.Point(11, 49)
+        Me.LblMultipleFiles.Name = "LblMultipleFiles"
+        Me.LblMultipleFiles.Size = New System.Drawing.Size(118, 13)
+        Me.LblMultipleFiles.TabIndex = 4
+        Me.LblMultipleFiles.Text = "(Multiple Files Selected)"
+        '
+        'ChkNTExtensions
+        '
+        Me.ChkNTExtensions.AutoSize = True
+        Me.ChkNTExtensions.Location = New System.Drawing.Point(107, 4)
+        Me.ChkNTExtensions.Margin = New System.Windows.Forms.Padding(6, 4, 3, 2)
+        Me.ChkNTExtensions.Name = "ChkNTExtensions"
+        Me.ChkNTExtensions.Size = New System.Drawing.Size(95, 17)
+        Me.ChkNTExtensions.TabIndex = 2
+        Me.ChkNTExtensions.Text = "NT Extensions"
+        Me.ChkNTExtensions.UseVisualStyleBackColor = True
         '
         'MskExtensionHex
         '
@@ -641,7 +653,6 @@ Partial Class FilePropertiesForm
     Friend WithEvents LblLastWritten As Label
     Friend WithEvents LblCreated As Label
     Friend WithEvents LblLastAccessed As Label
-    Friend WithEvents LblMultipleFiles As Label
     Friend WithEvents BtnReadOnly As Button
     Friend WithEvents BtnHidden As Button
     Friend WithEvents GroupFileName As GroupBox
@@ -658,4 +669,6 @@ Partial Class FilePropertiesForm
     Friend WithEvents RadioFileLong As RadioButton
     Friend WithEvents TableLayoutPanelFile As TableLayoutPanel
     Friend WithEvents TxtLFN As TextBox
+    Friend WithEvents LblMultipleFiles As Label
+    Friend WithEvents ChkNTExtensions As CheckBox
 End Class

@@ -259,8 +259,8 @@
             Return Result
         End Function
 
-        Public Overrides Function UpdateLFN(FileName As String, Index As Integer) As Boolean Implements IDirectory.UpdateLFN
-            Dim Data = InitializeUpdateLFN(Me, FileName, Index)
+        Public Overrides Function UpdateLFN(FileName As String, Index As Integer, UseNTExtensions As Boolean) As Boolean Implements IDirectory.UpdateLFN
+            Dim Data = InitializeUpdateLFN(Me, FileName, Index, UseNTExtensions)
 
             Dim UseTransaction As Boolean = Disk.BeginTransaction
 

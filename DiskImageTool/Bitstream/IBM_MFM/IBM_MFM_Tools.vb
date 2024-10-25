@@ -175,6 +175,7 @@
                     PrevByteIndex = ByteIndex
                     ByteIndex = Index \ MFM_BYTE_SIZE
                     BitstreamIndex = Index Mod MFM_BYTE_SIZE
+                    BitOffset = BitstreamIndex
 
                     If Index >= BitstreamIndex + MFM_BYTE_SIZE Then
                         SyncNullCount = GetSyncNullCount(Bitstream, BitstreamIndex, Index)

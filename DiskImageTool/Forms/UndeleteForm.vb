@@ -30,7 +30,7 @@
             e.KeyChar = Chr(0)
         ElseIf Value < 33 And Value <> 8 Then
             e.KeyChar = Chr(0)
-        ElseIf DiskImage.InvalidFileChars.Contains(Value) Then
+        ElseIf DiskImage.DirectoryEntry.InvalidFileChars.Contains(Value) Then
             e.KeyChar = Chr(0)
         End If
     End Sub
