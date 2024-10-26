@@ -895,7 +895,7 @@ Public Class HexViewForm
                         If _CurrentHexViewData.Disk.RootDirectory.FATAllocation.FileAllocation.ContainsKey(Cluster) Then
                             Dim OffsetList = _CurrentHexViewData.Disk.RootDirectory.FATAllocation.FileAllocation.Item(Cluster)
                             Dim DirectoryEntry = OffsetList.Item(0)
-                            FileName = DirectoryEntry.GetFullFileName
+                            FileName = DirectoryEntry.GetFullFileName(True)
                         End If
                     End If
                 End If

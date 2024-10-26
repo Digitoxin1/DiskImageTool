@@ -17,10 +17,6 @@ Namespace DiskImage
 
         Private _CreationDateCache As ExpandedDate
         Private _CreationDateIsCached As Boolean = False
-        Private _FileExtensionCache As String
-        Private _FileExtensionIsCached As Boolean = False
-        Private _FileNameCache As String
-        Private _FileNameIsCached As Boolean = False
         Private _HasInvalidExtensionCache As Boolean? = Nothing
         Private _HasInvalidFileNameCache As Boolean? = Nothing
         Private _IsBlankCache As Boolean? = Nothing
@@ -183,7 +179,6 @@ Namespace DiskImage
                 If _FileBytes.SetBytes(Value, _Offset + DirectoryEntryOffsets.Extension, DirectoryEntrySizes.Extension, CHAR_SPACE) Then
                     _IsBlankCache = Nothing
                     _VolumeNameIsCached = False
-                    _FileExtensionIsCached = False
                     _HasInvalidExtensionCache = Nothing
                 End If
             End Set
@@ -197,7 +192,6 @@ Namespace DiskImage
                 If _FileBytes.SetBytes(Value, _Offset + DirectoryEntryOffsets.FileName, DirectoryEntrySizes.FileName, CHAR_SPACE) Then
                     _IsBlankCache = Nothing
                     _VolumeNameIsCached = False
-                    _FileNameIsCached = False
                     _HasInvalidFileNameCache = Nothing
                 End If
             End Set
@@ -211,7 +205,6 @@ Namespace DiskImage
                 If _FileBytes.SetBytes(Value, _Offset + DirectoryEntryOffsets.FileName, DirectoryEntrySizes.FileName + DirectoryEntrySizes.Extension, CHAR_SPACE) Then
                     _IsBlankCache = Nothing
                     _VolumeNameIsCached = False
-                    _FileNameIsCached = False
                     _HasInvalidFileNameCache = Nothing
                 End If
             End Set
@@ -366,27 +359,25 @@ Namespace DiskImage
             Return _CreationDateCache
         End Function
 
-        Public Function GetFileExtension() As String
-            If Not _FileExtensionIsCached Then
-                _FileExtensionCache = CodePage437ToUnicode(Extension).TrimEnd(" ")
-                _FileExtensionIsCached = True
+        Public Function GetFileExtension(Optional ForDisplay As Boolean = False) As String
+            If ForDisplay Then
+                Return CodePage437ToUnicode(Extension).TrimEnd(" ")
+            Else
+                Return Encoding.GetEncoding(437).GetString(Extension).TrimEnd(" ")
             End If
-
-            Return _FileExtensionCache
         End Function
 
-        Public Function GetFileName() As String
-            If Not _FileNameIsCached Then
-                _FileNameCache = CodePage437ToUnicode(FileName).TrimEnd(" ")
-                _FileNameIsCached = True
+        Public Function GetFileName(Optional ForDisplay As Boolean = False) As String
+            If ForDisplay Then
+                Return CodePage437ToUnicode(FileName).TrimEnd(" ")
+            Else
+                Return Encoding.GetEncoding(437).GetString(FileName).TrimEnd(" ")
             End If
-
-            Return _FileNameCache
         End Function
 
-        Public Function GetFullFileName() As String
-            Dim File = GetFileName()
-            Dim Ext = GetFileExtension()
+        Public Function GetFullFileName(Optional ForDisplay As Boolean = False) As String
+            Dim File = GetFileName(ForDisplay)
+            Dim Ext = GetFileExtension(ForDisplay)
 
             If Ext <> "" Then
                 File = File & "." & Ext
@@ -674,11 +665,8 @@ Namespace DiskImage
                 FileExt = FileExt.Remove(0, 1)
             End If
 
-            Me.FileName = Encoding.UTF8.GetBytes(FileName)
-            Me.Extension = Encoding.UTF8.GetBytes(FileExt)
-
-            'Me.FileName = UnicodeToCodePage437(FileName)
-            'Me.Extension = UnicodeToCodePage437(FileExt)
+            Me.FileName = Encoding.GetEncoding(437).GetBytes(FileName)
+            Me.Extension = Encoding.GetEncoding(437).GetBytes(FileExt)
         End Sub
 
         Public Sub SetLastAccessDate(Value As Date)
@@ -730,8 +718,6 @@ Namespace DiskImage
             _LastAccessDateIsCached = False
             _LastWriteDateIsCached = False
             _VolumeNameIsCached = False
-            _FileExtensionIsCached = False
-            _FileNameIsCached = False
             _HasInvalidExtensionCache = Nothing
             _HasInvalidFileNameCache = Nothing
         End Sub

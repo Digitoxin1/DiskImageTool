@@ -186,6 +186,11 @@
     <Compile Include="ImageFormats\86F\86FTrack.vb" />
     <Compile Include="ImageFormats\86F\Enums.vb" />
     <Compile Include="ImageFormats\86F\Functions.vb" />
+    <Compile Include="ImageFormats\HFE\Enums.vb" />
+    <Compile Include="ImageFormats\HFE\HFEByteArray.vb" />
+    <Compile Include="ImageFormats\HFE\HFEImage.vb" />
+    <Compile Include="ImageFormats\HFE\HFELoader.vb" />
+    <Compile Include="ImageFormats\HFE\HFETrack.vb" />
     <Compile Include="ImageIO.vb" />
     <Compile Include="ImageFormats\ImageConversion.vb" />
     <Compile Include="ImageFormats\MFM\MFMByteArray.vb" />

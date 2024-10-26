@@ -10,6 +10,7 @@ Namespace DiskImage
         PSIImage
         MFMImage
         _86FImage
+        HFEImage
     End Enum
 
     Public Interface IByteArray
@@ -19,6 +20,7 @@ Namespace DiskImage
         ReadOnly Property BitstreamImage As IBitstreamImage
         ReadOnly Property CanResize As Boolean
         ReadOnly Property ImageType As FloppyImageType
+        ReadOnly Property IsBitstreamImage As Boolean
         ReadOnly Property Length As Integer
         ReadOnly Property ProtectedSectors As HashSet(Of UInteger)
         ReadOnly Property AdditionalTracks As HashSet(Of UShort)

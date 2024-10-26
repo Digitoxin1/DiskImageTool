@@ -3,14 +3,14 @@ Imports DiskImageTool.Bitstream
 Imports DiskImageTool.DiskImage
 
 Namespace ImageFormats
-    Namespace MFM
-        Public Class MFMByteArray
+    Namespace HFE
+        Public Class HFEByteArray
             Inherits Bitstream.BitstreamByteArray
             Implements IByteArray
 
-            Private ReadOnly _Image As MFMImage
+            Private ReadOnly _Image As HFEImage
 
-            Public Sub New(Image As MFMImage, DiskFormat As FloppyDiskFormat)
+            Public Sub New(Image As HFEImage, DiskFormat As FloppyDiskFormat)
                 MyBase.New(Image)
 
                 _Image = Image
@@ -20,13 +20,13 @@ Namespace ImageFormats
             End Sub
 
             Private Function CalculateHash(HashAlgorithm As HashAlgorithm) As String
-                Dim MFMTrack As MFMTrack
+                Dim HFETrack As HFETrack
                 Dim OutputBuffer() As Byte
 
                 For Track = 0 To _Image.TrackCount - 1 Step _Image.TrackStep
                     For Side = 0 To _Image.SideCount - 1
-                        MFMTrack = _Image.GetTrack(Track, Side)
-                        For Each MFMSector In MFMTrack.MFMData.Sectors
+                        HFETrack = _Image.GetTrack(Track, Side)
+                        For Each MFMSector In HFETrack.MFMData.Sectors
                             If MFMSector.DAMFound Then
                                 If MFMSector.InitialChecksumValid Then
                                     OutputBuffer = New Byte(MFMSector.Data.Length - 1) {}
@@ -60,7 +60,7 @@ Namespace ImageFormats
             End Function
 
             Private Sub BuildSectorMap()
-                Dim MFMTrack As MFMTrack
+                Dim HFETrack As HFETrack
 
                 Dim TrackCount = Math.Ceiling(_Image.TrackCount / _Image.TrackStep)
 
@@ -69,11 +69,11 @@ Namespace ImageFormats
                 For Track = 0 To _Image.TrackCount - 1 Step _Image.TrackStep
                     For Side = 0 To _Image.SideCount - 1
                         Dim MappedTrack = Track \ _Image.TrackStep
-                        MFMTrack = _Image.GetTrack(Track, Side)
+                        HFETrack = _Image.GetTrack(Track, Side)
 
-                        SetTrack(MappedTrack, Side, MFMTrack.MFMData.FirstSector, MFMTrack.MFMData.LastSector, MFMTrack.BitstreamTrackType)
+                        SetTrack(MappedTrack, Side, HFETrack.MFMData.FirstSector, HFETrack.MFMData.LastSector, HFETrack.BitstreamTrackType)
 
-                        For Each MFMSector In MFMTrack.MFMData.Sectors
+                        For Each MFMSector In HFETrack.MFMData.Sectors
                             If MFMSector.DAMFound Then
                                 If MFMSector.SectorId >= 1 And MFMSector.SectorId <= SECTOR_COUNT Then
                                     Dim BitstreamSector As New BitstreamSector(MFMSector) With {
@@ -93,7 +93,7 @@ Namespace ImageFormats
                 Next
             End Sub
 
-            Public ReadOnly Property Image As MFMImage
+            Public ReadOnly Property Image As HFEImage
                 Get
                     Return _Image
                 End Get
@@ -101,7 +101,7 @@ Namespace ImageFormats
 
             Public Overrides ReadOnly Property ImageType As FloppyImageType Implements IByteArray.ImageType
                 Get
-                    Return FloppyImageType.MFMImage
+                    Return FloppyImageType.HFEImage
                 End Get
             End Property
 
@@ -117,3 +117,5 @@ Namespace ImageFormats
         End Class
     End Namespace
 End Namespace
+
+

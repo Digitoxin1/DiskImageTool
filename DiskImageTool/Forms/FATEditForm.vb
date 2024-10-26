@@ -175,7 +175,7 @@ Public Class FATEditForm
                 If FileName <> "" Then
                     FileName &= ", "
                 End If
-                FileName &= DirectoryEntry.GetFullFileName()
+                FileName &= DirectoryEntry.GetFullFileName(True)
             Next
         End If
 

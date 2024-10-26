@@ -180,7 +180,7 @@ Module HexViews
             Return Nothing
         End If
 
-        Caption = IIf(DirectoryEntry.IsDirectory, "Directory", "File") & " - " & DirectoryEntry.GetFullFileName
+        Caption = IIf(DirectoryEntry.IsDirectory, "Directory", "File") & " - " & DirectoryEntry.GetFullFileName(True)
 
         If DirectoryEntry.IsDeleted Then
             Caption = "Deleted " & Caption

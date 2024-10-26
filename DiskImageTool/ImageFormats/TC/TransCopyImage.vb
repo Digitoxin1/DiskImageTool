@@ -150,7 +150,7 @@ Namespace ImageFormats
                         buffer = New Byte(511) {}
 
                         '0x105      word[256]   Track skew (One entry per track)                
-                        FillBuffer(buffer, EMPTY_SKU)
+                        FillArray(buffer, EMPTY_SKU)
                         Index = 0
                         For Track = 0 To _CylinderEnd
                             For Side = 0 To 1
@@ -166,11 +166,11 @@ Namespace ImageFormats
                         fs.Write(buffer, 0, buffer.Length)
 
                         '0x305      word[256]   Start of track data (One entry per track)                
-                        FillBuffer(buffer, &H0)
+                        FillArray(buffer, &H0)
                         fs.Write(buffer, 0, buffer.Length)
 
                         '0x505      word[256]   Size of track data (One entry per track)
-                        FillBuffer(buffer, EMPTY_SIZE)
+                        FillArray(buffer, EMPTY_SIZE)
                         Index = 0
                         For Track = 0 To _CylinderEnd
                             For Side = 0 To 1
@@ -186,7 +186,7 @@ Namespace ImageFormats
                         fs.Write(buffer, 0, buffer.Length)
 
                         '0x705      word[256]   Track flags (One entry per track)
-                        FillBuffer(buffer, EMPTY_FLAG)
+                        FillArray(buffer, EMPTY_FLAG)
                         Index = 0
                         For Track = 0 To _CylinderEnd
                             For Side = 0 To 1
@@ -208,7 +208,7 @@ Namespace ImageFormats
 
                         '0x905      word[4096]  Address mark timing (16 entries per track)
                         buffer = New Byte(8191) {}
-                        FillBuffer(buffer, &H0)
+                        FillArray(buffer, &H0)
                         Index = 0
                         For Track = 0 To _CylinderEnd
                             For Side = 0 To 1
@@ -366,12 +366,6 @@ Namespace ImageFormats
                 Dim Index = Cylinder * _Sides + Side
 
                 _Cylinders(Index) = Value
-            End Sub
-
-            Private Sub FillBuffer(buffer() As Byte, b As Byte)
-                For i = 0 To buffer.Length - 1
-                    buffer(i) = b
-                Next
             End Sub
 
             Private Function IBitstreamImage_GetTrack(Track As UShort, Side As Byte) As IBitstreamTrack Implements IBitstreamImage.GetTrack

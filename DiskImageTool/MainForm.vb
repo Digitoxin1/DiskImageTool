@@ -348,7 +348,7 @@ Public Class MainForm
             Exit Sub
         End If
 
-        Dim Caption As String = $"File - {DirectoryEntry.GetFullFileName}"
+        Dim Caption As String = $"File - {DirectoryEntry.GetFullFileName(True)}"
         If DirectoryEntry.IsDeleted Then
             Caption = "Deleted " & Caption
         End If
@@ -410,7 +410,7 @@ Public Class MainForm
             Item.ForeColor = Color.Blue
         End If
 
-        SI = Item.SubItems.Add(FileData.DirectoryEntry.GetFileName)
+        SI = Item.SubItems.Add(FileData.DirectoryEntry.GetFileName(True))
         SI.Name = "FileName"
         If Not IsDeleted And (FileData.DirectoryEntry.HasInvalidFilename Or FileData.DuplicateFileName) Then
             SI.ForeColor = Color.Red
@@ -418,7 +418,7 @@ Public Class MainForm
             SI.ForeColor = ForeColor
         End If
 
-        SI = Item.SubItems.Add(FileData.DirectoryEntry.GetFileExtension)
+        SI = Item.SubItems.Add(FileData.DirectoryEntry.GetFileExtension(True))
         SI.Name = "FileExtension"
         If Not IsDeleted And (FileData.DirectoryEntry.HasInvalidExtension Or FileData.DuplicateFileName) Then
             SI.ForeColor = Color.Red
@@ -903,7 +903,7 @@ Public Class MainForm
             .IsValidDirectory = DirectoryEntry.IsValidDirectory
             .CanExport = DirectoryEntryCanExport(DirectoryEntry)
             .FileSize = DirectoryEntry.FileSize
-            .FullFileName = DirectoryEntry.GetFullFileName
+            .FullFileName = DirectoryEntry.GetFullFileName(True)
             .CanDelete = DirectoryEntryCanDelete(DirectoryEntry, False)
             .CanUndelete = DirectoryEntryCanUndelete(DirectoryEntry)
             .CanInsert = DirectoryEntry.Index < DirectoryEntry.ParentDirectory.DirectoryEntries.Count - DirectoryEntry.ParentDirectory.Data.AvailableEntryCount
@@ -1113,11 +1113,11 @@ Public Class MainForm
     End Sub
 
     Private Sub DisplayCrossLinkedFiles(Disk As Disk, DirectoryEntry As DiskImage.DirectoryEntry)
-        Dim Msg As String = $"{DirectoryEntry.GetFullFileName()} is crosslinked with the following files:{vbCrLf}"
+        Dim Msg As String = $"{DirectoryEntry.GetFullFileName(True)} is crosslinked with the following files:{vbCrLf}"
 
         For Each Crosslink In DirectoryEntry.CrossLinks
             If Crosslink IsNot DirectoryEntry Then
-                Msg &= vbCrLf & Crosslink.GetFullFileName()
+                Msg &= vbCrLf & Crosslink.GetFullFileName(True)
             End If
         Next
         MsgBox(Msg, MsgBoxStyle.Information + MsgBoxStyle.OkOnly)
@@ -1876,7 +1876,7 @@ Public Class MainForm
             If ListViewFiles.SelectedItems.Count = 1 Then
                 Item = ListViewFiles.SelectedItems(0)
                 FileData = Item.Tag
-                Msg = $"Are you sure you wish to {If(Remove, "remove", "delete")} {FileData.DirectoryEntry.GetFullFileName}?"
+                Msg = $"Are you sure you wish to {If(Remove, "remove", "delete")} {FileData.DirectoryEntry.GetFullFileName(True)}?"
                 Title = $"{If(Remove, "Remove", "Delete")} File"
                 CanFill = FileData.DirectoryEntry.IsValidFile Or FileData.DirectoryEntry.IsValidDirectory
             Else
@@ -3063,7 +3063,7 @@ Public Class MainForm
         MenuRawTrackDataSubMenuClear()
         MenuHexRawTrackData.Enabled = False
 
-        If Disk.Image.Data.ImageType = FloppyImageType.MFMImage Or Disk.Image.Data.ImageType = FloppyImageType._86FImage Or Disk.Image.Data.ImageType = FloppyImageType.TranscopyImage Then
+        If Disk.Image.Data.IsBitstreamImage Then
             Dim TrackCount = Disk.Image.Data.NonStandardTracks.Count + Disk.Image.Data.AdditionalTracks.Count
             If TrackCount > 0 Then
                 Dim TrackList(TrackCount - 1) As UShort

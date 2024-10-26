@@ -313,6 +313,7 @@ Namespace Bitstream
         End Function
 
         Public MustOverride ReadOnly Property ImageType As FloppyImageType Implements IByteArray.ImageType
+        Public MustOverride ReadOnly Property IsbitstreamImage As Boolean Implements IByteArray.IsBitstreamImage
 
         Public ReadOnly Property Length As Integer Implements IByteArray.Length
             Get

@@ -3,6 +3,14 @@ Imports DiskImageTool.DiskImage
 
 Module Utility
 
+    Public Function ByteArrayToString(b() As Byte) As String
+        Dim SB As New Text.StringBuilder(b.Length)
+        For counter = 0 To b.Length - 1
+            SB.Append(Chr(b(counter)))
+        Next
+        Return SB.ToString
+    End Function
+
     Public Function CleanFileName(FileName As String) As String
         Return CleanString(FileName, IO.Path.GetInvalidFileNameChars(), "_")
     End Function
@@ -51,6 +59,12 @@ Module Utility
         Return b
     End Function
 
+    Public Sub FillArray(b() As Byte, FillChar As Byte)
+        For i = 0 To b.Length - 1
+            b(i) = FillChar
+        Next
+    End Sub
+
     Public Function GetDownloadsFolder() As String
 
         Dim Result As String = ""
@@ -74,6 +88,8 @@ Module Utility
             Return FloppyImageType.PSIImage
         ElseIf FileExt = ".mfm" Then
             Return FloppyImageType.MFMImage
+        ElseIf FileExt = ".hfe" Then
+            Return FloppyImageType.HFEImage
         ElseIf FileExt = ".86f" Then
             Return FloppyImageType._86FImage
         Else

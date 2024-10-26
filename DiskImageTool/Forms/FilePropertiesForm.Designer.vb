@@ -53,16 +53,16 @@ Partial Class FilePropertiesForm
         Me.TxtExtension = New System.Windows.Forms.TextBox()
         Me.TxtFile = New System.Windows.Forms.MaskedTextBox()
         Me.GroupFileName = New System.Windows.Forms.GroupBox()
+        Me.LblMultipleFiles = New System.Windows.Forms.Label()
         Me.TxtLFN = New System.Windows.Forms.TextBox()
         Me.FlowLayoutFileNameType = New System.Windows.Forms.FlowLayoutPanel()
         Me.RadioFileShort = New System.Windows.Forms.RadioButton()
         Me.RadioFileLong = New System.Windows.Forms.RadioButton()
+        Me.ChkNTExtensions = New System.Windows.Forms.CheckBox()
         Me.BtnCancel = New System.Windows.Forms.Button()
         Me.BtnUpdate = New System.Windows.Forms.Button()
         Me.FlowLayoutPanel1 = New System.Windows.Forms.FlowLayoutPanel()
         Me.FlowLayoutPanel2 = New System.Windows.Forms.FlowLayoutPanel()
-        Me.LblMultipleFiles = New System.Windows.Forms.Label()
-        Me.ChkNTExtensions = New System.Windows.Forms.CheckBox()
         Me.MskExtensionHex = New DiskImageTool.HexTextBox()
         Me.MskFileHex = New DiskImageTool.HexTextBox()
         GroupFileDates = New System.Windows.Forms.GroupBox()
@@ -459,6 +459,16 @@ Partial Class FilePropertiesForm
         Me.GroupFileName.TabStop = False
         Me.GroupFileName.Text = "File Name"
         '
+        'LblMultipleFiles
+        '
+        Me.LblMultipleFiles.Anchor = System.Windows.Forms.AnchorStyles.Left
+        Me.LblMultipleFiles.AutoSize = True
+        Me.LblMultipleFiles.Location = New System.Drawing.Point(11, 49)
+        Me.LblMultipleFiles.Name = "LblMultipleFiles"
+        Me.LblMultipleFiles.Size = New System.Drawing.Size(118, 13)
+        Me.LblMultipleFiles.TabIndex = 4
+        Me.LblMultipleFiles.Text = "(Multiple Files Selected)"
+        '
         'TxtLFN
         '
         Me.TxtLFN.Location = New System.Drawing.Point(12, 38)
@@ -501,6 +511,17 @@ Partial Class FilePropertiesForm
         Me.RadioFileLong.TabStop = True
         Me.RadioFileLong.Text = "Long"
         Me.RadioFileLong.UseVisualStyleBackColor = True
+        '
+        'ChkNTExtensions
+        '
+        Me.ChkNTExtensions.AutoSize = True
+        Me.ChkNTExtensions.Location = New System.Drawing.Point(107, 4)
+        Me.ChkNTExtensions.Margin = New System.Windows.Forms.Padding(6, 4, 3, 2)
+        Me.ChkNTExtensions.Name = "ChkNTExtensions"
+        Me.ChkNTExtensions.Size = New System.Drawing.Size(95, 17)
+        Me.ChkNTExtensions.TabIndex = 2
+        Me.ChkNTExtensions.Text = "NT Extensions"
+        Me.ChkNTExtensions.UseVisualStyleBackColor = True
         '
         'BtnCancel
         '
@@ -550,27 +571,6 @@ Partial Class FilePropertiesForm
         Me.FlowLayoutPanel2.Name = "FlowLayoutPanel2"
         Me.FlowLayoutPanel2.Size = New System.Drawing.Size(444, 359)
         Me.FlowLayoutPanel2.TabIndex = 0
-        '
-        'LblMultipleFiles
-        '
-        Me.LblMultipleFiles.Anchor = System.Windows.Forms.AnchorStyles.Left
-        Me.LblMultipleFiles.AutoSize = True
-        Me.LblMultipleFiles.Location = New System.Drawing.Point(11, 49)
-        Me.LblMultipleFiles.Name = "LblMultipleFiles"
-        Me.LblMultipleFiles.Size = New System.Drawing.Size(118, 13)
-        Me.LblMultipleFiles.TabIndex = 4
-        Me.LblMultipleFiles.Text = "(Multiple Files Selected)"
-        '
-        'ChkNTExtensions
-        '
-        Me.ChkNTExtensions.AutoSize = True
-        Me.ChkNTExtensions.Location = New System.Drawing.Point(107, 4)
-        Me.ChkNTExtensions.Margin = New System.Windows.Forms.Padding(6, 4, 3, 2)
-        Me.ChkNTExtensions.Name = "ChkNTExtensions"
-        Me.ChkNTExtensions.Size = New System.Drawing.Size(95, 17)
-        Me.ChkNTExtensions.TabIndex = 2
-        Me.ChkNTExtensions.Text = "NT Extensions"
-        Me.ChkNTExtensions.UseVisualStyleBackColor = True
         '
         'MskExtensionHex
         '

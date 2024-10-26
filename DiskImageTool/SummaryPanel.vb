@@ -429,9 +429,17 @@ Module SummaryPanel
                 If Image.RPM > 0 Then
                     .AddItem(DiskGroup, "RPM", Bitstream.RoundRPM(Image.RPM))
                 End If
-            End If
 
-            If Disk.Image.Data.ImageType = FloppyImageType._86FImage Then
+            ElseIf Disk.Image.Data.ImageType = FloppyImageType.HFEImage Then
+                Dim Image As ImageFormats.HFE.HFEImage = DirectCast(Disk.Image.Data, ImageFormats.HFE.HFEByteArray).Image
+                If Image.BitRate > 0 Then
+                    .AddItem(DiskGroup, "Bitrate", Bitstream.RoundBitRate(Image.BitRate))
+                End If
+                If Image.FloppyRPM > 0 Then
+                    .AddItem(DiskGroup, "RPM", Bitstream.RoundRPM(Image.FloppyRPM))
+                End If
+
+            ElseIf Disk.Image.Data.ImageType = FloppyImageType._86FImage Then
                 Dim Image As ImageFormats._86F._86FImage = DirectCast(Disk.Image.Data, ImageFormats._86F._86FByteArray).Image
                 If Image.BitRate = 255 Then
                     Value = "Variable"
@@ -454,9 +462,8 @@ Module SummaryPanel
                     .AddItem(DiskGroup, "RPM Adjustment", Value)
                 End If
                 .AddItem(DiskGroup, "Has Surface Data", If(Image.HasSurfaceData, "Yes", "No"))
-            End If
 
-            If Disk.Image.Data.ImageType = FloppyImageType.TranscopyImage Then
+            ElseIf Disk.Image.Data.ImageType = FloppyImageType.TranscopyImage Then
                 Dim Image As ImageFormats.TC.TransCopyImage = DirectCast(Disk.Image.Data, ImageFormats.TC.TranscopyByteArray).Image
             End If
 

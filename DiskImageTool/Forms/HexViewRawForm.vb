@@ -22,6 +22,7 @@ Public Class HexViewRawForm
     Private _IgnoreEvent As Boolean = False
     Private _Initialized As Boolean = False
     Private _LabelBitOffset As ToolStripLabel
+    Private _LabelBitOffsetAligned As ToolStripLabel
     Private _LabelSector As ToolStripLabel
     Private _LastSearch As HexSearch
     Private _RegionData As RegionData
@@ -385,9 +386,17 @@ Public Class HexViewRawForm
         NumericBitOffset = New ToolStripNumericUpDown() With {
             .Alignment = ToolStripItemAlignment.Right,
             .AutoSize = False,
-            .Size = New Drawing.Size(55, 23),
+            .Size = New Drawing.Size(55, 21),
             .Minimum = 0,
             .Maximum = 15
+        }
+
+        _LabelBitOffsetAligned = New ToolStripLabel("Aligned") With {
+            .Alignment = ToolStripItemAlignment.Right,
+            .AutoSize = True,
+            .Padding = New Padding(0, 0, 36, 0),
+            .ForeColor = Color.Green,
+            .TextAlign = ContentAlignment.MiddleLeft
         }
 
         _LabelBitOffset = New ToolStripLabel("Bit Offset") With {
@@ -400,6 +409,7 @@ Public Class HexViewRawForm
 
         ToolStripMain.Items.Add(Button)
         ToolStripMain.Items.Add(NumericBitOffset)
+        ToolStripMain.Items.Add(_LabelBitOffsetAligned)
         ToolStripMain.Items.Add(_LabelBitOffset)
     End Sub
 
@@ -460,13 +470,15 @@ Public Class HexViewRawForm
             _LabelSector.Visible = False
             NumericBitOffset.Visible = False
             _LabelBitOffset.Visible = False
+            _LabelBitOffsetAligned.Visible = False
             ToolStripBtnAdjustOffset.Visible = False
         Else
             ComboSector.Visible = True
             _LabelSector.Visible = True
-            NumericBitOffset.Visible = True
+            NumericBitOffset.Visible = Not _RegionData.Aligned
             _LabelBitOffset.Visible = True
-            ToolStripBtnAdjustOffset.Visible = True
+            _LabelBitOffsetAligned.Visible = _RegionData.Aligned
+            ToolStripBtnAdjustOffset.Visible = Not _RegionData.Aligned
         End If
     End Sub
     Private Sub JumpToSector(Sector As BitstreamRegionSector)

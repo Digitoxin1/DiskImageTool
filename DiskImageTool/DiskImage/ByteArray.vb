@@ -37,6 +37,12 @@ Namespace DiskImage
             End Get
         End Property
 
+        Public ReadOnly Property IsBitstreamImage As Boolean Implements IByteArray.IsBitstreamImage
+            Get
+                Return False
+            End Get
+        End Property
+
         Public ReadOnly Property Length As Integer Implements IByteArray.Length
             Get
                 Return _Data.Length

@@ -44,6 +44,7 @@
             Dim Track As UShort
             Dim Side As Byte
             Dim NumBytes As UInteger
+            Dim Aligned As Boolean
         End Structure
 
         Module IBM_MFM_Tools
@@ -67,23 +68,31 @@
             Public ReadOnly FM_IDAM_Sync_Bytes() As Byte = {&HF5, &H7E}
             Public ReadOnly FM_DAM_Sync_Bytes() As Byte = {&HF5, &H6F}
 
-            Public Function BytesToBits(bytes() As Byte) As BitArray
+            Public Function BytesToBits(bytes() As Byte, Optional Reverse As Boolean = True) As BitArray
                 Dim buffer(bytes.Length - 1) As Byte
 
-                For i As Integer = 0 To bytes.Length - 1
-                    buffer(i) = ReverseBits(bytes(i))
-                Next
+                If Reverse Then
+                    For i As Integer = 0 To bytes.Length - 1
+                        buffer(i) = ReverseBits(bytes(i))
+                    Next
+                Else
+                    buffer = bytes
+                End If
 
                 Return New BitArray(buffer)
             End Function
 
-            Public Function BytesToBits(bytes() As Byte, Offset As UInteger, BitLength As UInteger) As BitArray
+            Public Function BytesToBits(bytes() As Byte, Offset As UInteger, BitLength As UInteger, Optional Reverse As Boolean = True) As BitArray
                 Dim bufferSize = Math.Ceiling(BitLength / 8)
                 Dim buffer(bufferSize - 1) As Byte
 
-                For i As Integer = 0 To bufferSize - 1
-                    buffer(i) = ReverseBits(bytes(Offset + i))
-                Next
+                If Reverse Then
+                    For i As Integer = 0 To bufferSize - 1
+                        buffer(i) = ReverseBits(bytes(Offset + i))
+                    Next
+                Else
+                    buffer = bytes
+                End If
 
                 Dim bitArray = New BitArray(buffer) With {
                     .Length = BitLength
@@ -92,7 +101,7 @@
                 Return bitArray
             End Function
 
-            Public Function BitsToBytes(Bitstream As BitArray, Padding As UInteger) As Byte()
+            Public Function BitsToBytes(Bitstream As BitArray, Padding As UInteger, Optional Reverse As Boolean = True) As Byte()
                 Dim Length = (Bitstream.Length + Padding) \ 8
 
                 Dim buffer(Length - 1) As Byte
@@ -107,9 +116,11 @@
 
                 Bitstream.CopyTo(buffer, 0)
 
-                For i As Integer = 0 To buffer.Length - 1
-                    buffer(i) = ReverseBits(buffer(i))
-                Next
+                If Reverse Then
+                    For i As Integer = 0 To buffer.Length - 1
+                        buffer(i) = ReverseBits(buffer(i))
+                    Next
+                End If
 
                 Return buffer
             End Function
@@ -199,6 +210,7 @@
                 RegionData.Regions = New List(Of BitstreamRegion)
                 RegionData.Sectors = New List(Of BitstreamRegionSector)
                 RegionData.NumBytes = Bitstream.Length \ MFM_BYTE_SIZE
+                RegionData.Aligned = True
 
                 Index = FindPattern(Bitstream, IAMPattern, BitstreamIndex)
                 If Index > -1 Then
@@ -206,6 +218,9 @@
                     ByteIndex = Index \ MFM_BYTE_SIZE
                     BitstreamIndex = Index Mod MFM_BYTE_SIZE
                     BitOffset = BitstreamIndex
+                    If BitOffset > 0 Then
+                        RegionData.Aligned = False
+                    End If
 
                     If Index >= BitstreamIndex + MFM_BYTE_SIZE Then
                         SyncNullCount = GetSyncNullCount(Bitstream, BitstreamIndex, Index, MaxSyncNulls)
@@ -246,6 +261,9 @@
                     PrevBitOffset = BitOffset
                     ByteIndex = Index \ MFM_BYTE_SIZE
                     BitOffset = Index Mod MFM_BYTE_SIZE
+                    If BitOffset > 0 Then
+                        RegionData.Aligned = False
+                    End If
 
                     PrevRegionSector = RegionSector
                     If PrevRegionSector IsNot Nothing Then
@@ -335,6 +353,9 @@
                         PrevBitOffset = BitOffset
                         ByteIndex = DataIndex \ MFM_BYTE_SIZE
                         BitOffset = DataIndex Mod MFM_BYTE_SIZE
+                        If BitOffset > 0 Then
+                            RegionData.Aligned = False
+                        End If
 
                         If DataIndex >= BitstreamIndex + MFM_BYTE_SIZE Then
                             SyncNullCount = GetSyncNullCount(Bitstream, BitstreamIndex, DataIndex, MaxSyncNulls)

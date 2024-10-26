@@ -1,10 +1,11 @@
-﻿Imports DiskImageTool.Bitstream
+﻿Imports System.IO
+Imports DiskImageTool.Bitstream
 Imports DiskImageTool.DiskImage
 
 Module ImageIO
     Public ReadOnly AllFileExtensions As New List(Of String) From {".ima", ".img", ".imz", ".vfd", ".flp"}
     Public ReadOnly ArchiveFileExtensions As New List(Of String) From {".zip"}
-    Public ReadOnly BitstreamFileExtensions As New List(Of String) From {".tc", ".psi", ".mfm", ".86f"}
+    Public ReadOnly BitstreamFileExtensions As New List(Of String) From {".tc", ".psi", ".mfm", ".86f", ".hfe"}
 
     Public Enum SaveImageResponse
         Success
@@ -30,7 +31,7 @@ Module ImageIO
         Dim DirectoryEntry = FileData.DirectoryEntry
 
         Dim Dialog = New SaveFileDialog With {
-            .FileName = DirectoryEntry.GetFullFileName
+            .FileName = CleanFileName(DirectoryEntry.GetFullFileName)
         }
         If Dialog.ShowDialog <> DialogResult.OK Then
             Exit Sub
@@ -50,6 +51,16 @@ Module ImageIO
             Dim D = DirectoryEntry.GetLastWriteDate
             If D.IsValidDate Then
                 IO.File.SetLastWriteTime(FilePath, D.DateObject)
+            End If
+
+            D = DirectoryEntry.GetCreationDate
+            If D.IsValidDate Then
+                IO.File.SetCreationTime(FilePath, D.DateObject)
+            End If
+
+            D = DirectoryEntry.GetLastAccessDate
+            If D.IsValidDate Then
+                IO.File.SetLastAccessTime(FilePath, D.DateObject)
             End If
         Catch ex As Exception
             Debug.Print("Caught Exception: DirectoryEntrySaveToFile")
@@ -119,6 +130,15 @@ Module ImageIO
                     Else
                         ImageData.InvalidImage = True
                     End If
+
+                ElseIf FloppyImageType = FloppyImageType.HFEImage Then
+                    Dim HFEImage = ImageFormats.HFE.HFEImageLoad(Data)
+                    If HFEImage IsNot Nothing Then
+                        Image = HFEImage
+                    Else
+                        ImageData.InvalidImage = True
+                    End If
+
                 Else
                     Image = New ByteArray(Data)
                 End If
@@ -195,6 +215,9 @@ Module ImageIO
         ExtensionList = New List(Of String) From {".mfm"}
         FileFilter = FileDialogAppendFilter(FileFilter, "HXC MFM Image", ExtensionList)
 
+        ExtensionList = New List(Of String) From {"..hfe"}
+        FileFilter = FileDialogAppendFilter(FileFilter, "HXC HFE Image", ExtensionList)
+
         ExtensionList = New List(Of String) From {".86f"}
         FileFilter = FileDialogAppendFilter(FileFilter, "86Box 86F Image", ExtensionList)
 
@@ -258,6 +281,17 @@ Module ImageIO
                 End If
             Next
             Response.Filter = FileDialogAppendFilter(Response.Filter, "HXC MFM Image", ExtensionList)
+            CurrentIndex += 1
+        End If
+
+        If ImageType <> FloppyImageType.PSIImage Then
+            ExtensionList = New List(Of String) From {".hfe"}
+            For Each Extension In ExtensionList
+                If FileExt.Equals(Extension, StringComparison.OrdinalIgnoreCase) Then
+                    Response.FilterIndex = CurrentIndex
+                End If
+            Next
+            Response.Filter = FileDialogAppendFilter(Response.Filter, "HXC HFE Image", ExtensionList)
             CurrentIndex += 1
         End If
 
@@ -389,6 +423,9 @@ Module ImageIO
                 ElseIf FileImageType = FloppyImageType.MFMImage Then
                     Dim MFM = ImageFormats.BasicSectorToMFMImage(Data, Disk.DiskFormat)
                     Result = MFM.Export(FilePath)
+                ElseIf FileImageType = FloppyImageType.HFEImage Then
+                    Dim HFE = ImageFormats.BasicSectorToHFEImage(Data, Disk.DiskFormat)
+                    Result = HFE.Export(FilePath)
                 ElseIf FileImageType = FloppyImageType._86FImage Then
                     Dim F86 = ImageFormats.BasicSectorTo86FImage(Data, Disk.DiskFormat)
                     Result = F86.Export(FilePath)
@@ -413,6 +450,15 @@ Module ImageIO
             If Image IsNot Nothing Then
                 Dim MFM = ImageFormats.BitstreamToMFMImage(Image)
                 Result = MFM.Export(FilePath)
+            Else
+                Return SaveImageResponse.Unsupported
+            End If
+
+        ElseIf FileImageType = FloppyImageType.HFEImage Then
+            Dim Image As IBitstreamImage = GetBitstreamImage(Disk.Image.Data)
+            If Image IsNot Nothing Then
+                Dim HFE = ImageFormats.BitstreamToHFEImage(Image)
+                Result = HFE.Export(FilePath)
             Else
                 Return SaveImageResponse.Unsupported
             End If
@@ -486,6 +532,9 @@ Module ImageIO
 
         ElseIf TypeOf Data Is ImageFormats.MFM.MFMByteArray Then
             Return DirectCast(Data, ImageFormats.MFM.MFMByteArray).Image
+
+        ElseIf TypeOf Data Is ImageFormats.HFE.hfeByteArray Then
+            Return DirectCast(Data, ImageFormats.HFE.HFEByteArray).Image
 
         ElseIf TypeOf Data Is ImageFormats.TC.TranscopyByteArray Then
             Return DirectCast(Data, ImageFormats.TC.TranscopyByteArray).Image

@@ -109,9 +109,9 @@ Public Class FilePropertiesFormSingle
             Maxlength = 8
             TxtExtension.Visible = True
             MskExtensionHex.Visible = True
-            FileName = _DirectoryEntry.GetFileName
+            FileName = _DirectoryEntry.GetFileName(True)
             FileNameHex = _DirectoryEntry.FileName
-            TxtExtension.Text = _DirectoryEntry.GetFileExtension
+            TxtExtension.Text = _DirectoryEntry.GetFileExtension(True)
             MskExtensionHex.SetHex(_DirectoryEntry.Extension)
             If IsDirectory Then
                 Caption = "Directory Name"

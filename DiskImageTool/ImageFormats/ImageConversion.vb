@@ -149,6 +149,34 @@ Namespace ImageFormats
             Return MFM
         End Function
 
+        Public Function BasicSectorToHFEImage(Data() As Byte, DiskFormat As FloppyDiskFormat) As HFE.HFEImage
+            Dim Params = GetFloppyDiskParams(DiskFormat)
+            Dim DriveSpeed = GetDriveSpeed(DiskFormat)
+            Dim TrackCount = GetTrackCount(Params)
+
+            Dim HFE = New HFE.HFEImage(TrackCount, Params.NumberOfHeads) With {
+                .BitRate = DriveSpeed.BitRate,
+                .FloppyRPM = DriveSpeed.RPM
+            }
+
+            For Track As UShort = 0 To TrackCount - 1
+                For Side As UShort = 0 To Params.NumberOfHeads - 1
+                    Dim HFETrack = New HFE.HFETrack(Track, Side) With {
+                        .BitRate = DriveSpeed.BitRate,
+                        .RPM = DriveSpeed.RPM
+                    }
+
+                    Dim MFMBitstream = MFMBitstreamFromSectorImage(Data, Params, Track, Side, DriveSpeed.RPM, DriveSpeed.BitRate)
+
+                    HFETrack.Bitstream = MFMBitstream.Bitstream
+
+                    HFE.SetTrack(Track, Side, HFETrack)
+                Next
+            Next
+
+            Return HFE
+        End Function
+
         Public Function BasicSectorToTranscopyImage(Data() As Byte, DiskFormat As FloppyDiskFormat) As TC.TransCopyImage
             Dim Params = GetFloppyDiskParams(DiskFormat)
             Dim DriveSpeed = GetDriveSpeed(DiskFormat)
@@ -275,6 +303,44 @@ Namespace ImageFormats
             Next
 
             Return MFM
+        End Function
+
+        Public Function BitstreamToHFEImage(Image As IBitstreamImage) As HFE.HFEImage
+            Dim BitstreamTrack As IBitstreamTrack
+            Dim TrackCount As UShort = 0
+
+            For Track = 0 To Image.TrackCount - 1 Step Image.TrackStep
+                BitstreamTrack = Image.GetTrack(Track, 0)
+                If BitstreamTrack.TrackType = BitstreamTrackType.MFM Then
+                    TrackCount = Track + 1
+                End If
+            Next
+
+            Dim HFE = New HFE.HFEImage(TrackCount, Image.SideCount) With {
+                .BitRate = 0,
+                .FloppyRPM = 0
+            }
+
+            For Track = 0 To TrackCount - 1 Step Image.TrackStep
+                For Side = 0 To Image.SideCount - 1
+                    BitstreamTrack = Image.GetTrack(Track, Side)
+
+                    If Track = 0 And Side = 0 Then
+                        HFE.BitRate = BitstreamTrack.BitRate
+                        HFE.FloppyRPM = BitstreamTrack.RPM
+                    End If
+
+                    Dim HFETrack = New HFE.HFETrack(Track, Side) With {
+                        .Bitstream = BitstreamTrack.Bitstream,
+                        .BitRate = BitstreamTrack.BitRate,
+                        .RPM = BitstreamTrack.RPM
+                    }
+
+                    HFE.SetTrack(Track \ Image.TrackStep, Side, HFETrack)
+                Next
+            Next
+
+            Return HFE
         End Function
 
         Public Function BitstreamToPSIImage(Image As IBitstreamImage) As PSI.PSISectorImage

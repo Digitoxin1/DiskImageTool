@@ -102,6 +102,12 @@ Namespace ImageFormats
                 End Get
             End Property
 
+            Public Overrides ReadOnly Property IsBitstreamImage As Boolean Implements IByteArray.IsBitstreamImage
+                Get
+                    Return False
+                End Get
+            End Property
+
             Public Overrides Function SaveToFile(FilePath As String) As Boolean Implements IByteArray.SaveToFile
                 Return _Image.Export(FilePath)
             End Function

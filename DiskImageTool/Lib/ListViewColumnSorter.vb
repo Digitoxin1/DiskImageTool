@@ -73,11 +73,11 @@ Public Class ListViewColumnSorter
                     ObjX = FileDataX.Index
                     ObjY = FileDataY.Index
                 Case ListViewX.SubItems.IndexOfKey("FileName")
-                    ObjX = FileDataX.DirectoryEntry.GetFileName
-                    ObjY = FileDataY.DirectoryEntry.GetFileName
+                    ObjX = FileDataX.DirectoryEntry.GetFileName(True)
+                    ObjY = FileDataY.DirectoryEntry.GetFileName(True)
                 Case ListViewX.SubItems.IndexOfKey("FileExtension")
-                    ObjX = FileDataX.DirectoryEntry.GetFileExtension
-                    ObjY = FileDataY.DirectoryEntry.GetFileExtension
+                    ObjX = FileDataX.DirectoryEntry.GetFileExtension(True)
+                    ObjY = FileDataY.DirectoryEntry.GetFileExtension(True)
                 Case ListViewX.SubItems.IndexOfKey("FileSize")
                     ObjX = FileDataX.DirectoryEntry.FileSize
                     ObjY = FileDataY.DirectoryEntry.FileSize

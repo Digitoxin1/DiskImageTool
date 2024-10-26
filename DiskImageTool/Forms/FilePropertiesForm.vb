@@ -1,4 +1,5 @@
 ﻿Imports System.ComponentModel
+Imports System.Text
 Imports DiskImageTool.DiskImage
 
 Public Class FilePropertiesForm
@@ -279,8 +280,8 @@ Public Class FilePropertiesForm
         Dim ExtensionBytes = MskExtensionHex.GetHex
         ResizeArray(ExtensionBytes, 3, 32)
 
-        Dim FileName = CodePage437ToUnicode(FileNameBytes).TrimEnd(" ")
-        Dim Extension = CodePage437ToUnicode(ExtensionBytes).TrimEnd(" ")
+        Dim FileName = Encoding.GetEncoding(437).GetString(FileNameBytes).TrimEnd(" ")
+        Dim Extension = Encoding.GetEncoding(437).GetString(ExtensionBytes).TrimEnd(" ")
 
         If Extension <> "" Then
             FileName = FileName & "." & Extension
