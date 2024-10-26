@@ -121,7 +121,7 @@
             End Sub
 
             Private Sub AddIAM()
-                Dim Newbits = BytesToBits(IAM_Sync_Bytes)
+                Dim Newbits = BytesToBits(MFM_IAM_Sync_Bytes)
                 AppendBits(Newbits)
                 AppendByte(MFMAddressMark.Index)
             End Sub

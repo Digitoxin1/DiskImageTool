@@ -264,7 +264,7 @@ Namespace Bitstream
                             TrackIsStandard = TrackData.FirstSector >= 1 And TrackData.LastSector <= Math.Max(_BPB.SectorsPerTrack, 9)
                         Else
                             If TrackData.Encoding = BitstreamTrackType.FM Then
-                                AdditionalTracks.Add(Cylinder * _BPB.NumberOfHeads + Side)
+                                AdditionalTracks.Add(Cylinder * _HeadCount + Side)
                             End If
                         End If
                     End If

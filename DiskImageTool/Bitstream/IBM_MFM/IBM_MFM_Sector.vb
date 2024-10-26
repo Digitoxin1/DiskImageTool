@@ -218,7 +218,7 @@
             End Function
 
             Private Sub ProcessGap3(Bitstream As BitArray, Offset As UInteger)
-                Dim IDAMPattern = BytesToBits(IDAM_Sync_Bytes)
+                Dim IDAMPattern = BytesToBits(MFM_IDAM_Sync_Bytes)
 
                 Dim IDAMFieldSyncIndex = FindPattern(Bitstream, IDAMPattern, Offset)
                 If IDAMFieldSyncIndex = -1 Then

@@ -3,6 +3,7 @@ Imports DiskImageTool.HexView
 Imports Hb.Windows.Forms
 Imports DiskImageTool.Bitstream.IBM_MFM
 Imports DiskImageTool.DiskImage
+Imports DiskImageTool.Bitstream
 
 Public Class HexViewRawForm
     Private WithEvents CheckBoxAllTracks As ToolStripCheckBox
@@ -27,6 +28,7 @@ Public Class HexViewRawForm
     Private _RegionMap() As BitstreamRegion
     Private _Side As Byte
     Private _StoredCellValue As String
+    Private _TrackType As BitstreamTrackType
     Private _Bitstream As BitArray
     Private _SurfaceData As BitArray
     Private _Track As UShort
@@ -530,13 +532,17 @@ Public Class HexViewRawForm
 
         Dim Data() As Byte
         Dim RegionData As RegionData
-        If MFMTrack.Decoded Then
+        _TrackType = MFMTrack.TrackType
+        If MFMTrack.TrackType = BitstreamTrackType.MFM Or MFMTrack.TrackType = BitstreamTrackType.FM Then
             If TrackData.Offset = -1 Then
-                TrackData.Offset = BitstreamGetOffset(MFMTrack.Bitstream)
+                If MFMTrack.TrackType = BitstreamTrackType.MFM Then
+                    TrackData.Offset = MFMGetOffset(MFMTrack.Bitstream)
+                Else
+                    TrackData.Offset = FMGetOffset(MFMTrack.Bitstream)
+                End If
             End If
-            'Dim AlignedBitstream = BitstreamAlign(MFMTrack.Bitstream, TrackData.Offset)
             Dim NumBytes = MFMTrack.Bitstream.Length \ 16
-            RegionData = BitstreamGetRegionList(MFMTrack.Bitstream)
+            RegionData = MFMGetRegionList(MFMTrack.Bitstream, MFMTrack.TrackType)
             Data = MFMGetBytes(MFMTrack.Bitstream, TrackData.Offset, RegionData.NumBytes)
             _IgnoreEvent = True
             NumericBitOffset.Value = TrackData.Offset
@@ -545,7 +551,7 @@ Public Class HexViewRawForm
             _SurfaceData = MFMTrack.SurfaceData
             _WeakBitRegions = GetWeakBitRegions(MFMTrack.Bitstream, TrackData.Offset)
         Else
-            Data = FMGetBytes(MFMTrack.Bitstream)
+            Data = BitsToBytes(MFMTrack.Bitstream, 0)
             RegionData.Regions = New List(Of BitstreamRegion)
             RegionData.Sectors = New List(Of BitstreamRegionSector)
             _Bitstream = Nothing

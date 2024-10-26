@@ -81,7 +81,7 @@
 
                 Start = ProcessIndexField(Bitstream, Start)
 
-                Dim SectorList = GetSectorList(Bitstream)
+                Dim SectorList = MFMGetSectorList(Bitstream)
 
                 If SectorList.Count > 0 Then
                     Dim IDFieldSyncIndex = SectorList.Item(0)
@@ -100,7 +100,7 @@
             End Sub
 
             Private Function ProcessIndexField(BitStream As BitArray, Start As UInteger) As UInteger
-                Dim IAMPattern = BytesToBits(IAM_Sync_Bytes)
+                Dim IAMPattern = BytesToBits(MFM_IAM_Sync_Bytes)
 
                 Dim IndexFieldSyncIndex = FindPattern(BitStream, IAMPattern, Start)
                 If IndexFieldSyncIndex > -1 Then
@@ -123,7 +123,7 @@
                 Dim NextSectorOffset As UInteger
                 Dim DataEnd As UInteger
                 For Each SectorOffset In SectorList
-                    Dim Start = SectorOffset + IDAM_Sync_Bytes.Length * 8
+                    Dim Start = SectorOffset + MFM_IDAM_Sync_Bytes.Length * 8
                     AddAddressMarkIndex(Start)
 
                     Dim Sector = New IBM_MFM_Sector(BitStream, SectorOffset)
