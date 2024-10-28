@@ -260,8 +260,12 @@ Public Class HexViewRawForm
         Dim Value As String = ""
         For i = 0 To 15
             BitValue = BitArray(BitIndex)
-            If i > 0 And i Mod 2 = 0 Then
-                Value &= " "
+            If i > 0 Then
+                If BitIndex = 0 Then
+                    Value &= " > "
+                ElseIf i Mod 2 = 0 Then
+                    Value &= " "
+                End If
             End If
             Value &= If(BitValue, 1, 0)
             BitIndex += 1
@@ -453,7 +457,17 @@ Public Class HexViewRawForm
     Private Sub InitRegionMap()
         _RegionMap = New BitstreamRegion(HexBox1.ByteProvider.Length - 1) {}
 
+        Dim BitOffset = -1
+        Dim OffsetsMatch As Boolean = True
+
         For Each BitstreamRegion In _RegionData.Regions
+            If BitOffset = -1 Then
+                BitOffset = BitstreamRegion.BitOffset
+            Else
+                If BitstreamRegion.BitOffset <> BitOffset Then
+                    OffsetsMatch = False
+                End If
+            End If
             For Counter = 0 To BitstreamRegion.Length - 1
                 _RegionMap(BitstreamRegion.StartIndex + Counter) = BitstreamRegion
             Next
@@ -473,12 +487,14 @@ Public Class HexViewRawForm
             _LabelBitOffsetAligned.Visible = False
             ToolStripBtnAdjustOffset.Visible = False
         Else
+            Dim Aligned = _RegionData.Aligned And _RegionData.NumBits Mod 16 = 0
             ComboSector.Visible = True
             _LabelSector.Visible = True
-            NumericBitOffset.Visible = Not _RegionData.Aligned
+            NumericBitOffset.Visible = Not Aligned
+            NumericBitOffset.Enabled = Not OffsetsMatch
             _LabelBitOffset.Visible = True
-            _LabelBitOffsetAligned.Visible = _RegionData.Aligned
-            ToolStripBtnAdjustOffset.Visible = Not _RegionData.Aligned
+            _LabelBitOffsetAligned.Visible = Aligned
+            ToolStripBtnAdjustOffset.Visible = Not Aligned
         End If
     End Sub
     Private Sub JumpToSector(Sector As BitstreamRegionSector)
@@ -516,7 +532,8 @@ Public Class HexViewRawForm
             HexBox1.Select(SelectionStart, SelectionLength)
         End If
 
-        ToolStripStatusBytes.Text = Format(Data.Length, "N0") & " bytes"
+        ToolStripStatusBits.Text = Format(RegionData.NumBits, "N0") & " bits"
+        ToolStripStatusBytes.Text = Format(Math.Ceiling(RegionData.NumBits / 16), "N0") & " bytes"
         _LastSearch = New HexSearch
 
         InitRegionMap()
@@ -564,6 +581,7 @@ Public Class HexViewRawForm
             _WeakBitRegions = GetWeakBitRegions(MFMTrack.Bitstream, TrackData.Offset)
         Else
             Data = BitsToBytes(MFMTrack.Bitstream, 0)
+            RegionData.NumBits = MFMTrack.Bitstream.Length
             RegionData.Regions = New List(Of BitstreamRegion)
             RegionData.Sectors = New List(Of BitstreamRegionSector)
             _Bitstream = Nothing
@@ -752,6 +770,11 @@ Public Class HexViewRawForm
 
     Private Sub RefreshSelectorValues()
         Dim Offset = HexBox1.LineInfoOffset + HexBox1.StartByte + HexBox1.BytesPerLine
+
+        If Offset > _RegionMap.Length - 1 Then
+            Exit Sub
+        End If
+
         Dim RegionData = _RegionMap(Offset)
 
         If RegionData Is Nothing Then

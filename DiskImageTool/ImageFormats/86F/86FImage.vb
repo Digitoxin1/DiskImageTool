@@ -351,7 +351,6 @@ Namespace ImageFormats
                                     BitCellCount = GetCalculatedBitCellCount(F86Track.BitRate, F86Track.RPM, IsMFM, RPMSlowDown, AlternateBitcellCalculation, F86Track.BitCellCount)
                                     AllocatedLength = GetAllocatedLength(Hole, RPMSlowDown, AlternateBitcellCalculation, F86Track.BitCellCount)
                                 End If
-
                                 F86Track.Bitstream = IBM_MFM.BytesToBits(Buffer, Offset + 6, BitCellCount)
 
                                 If HasSurfaceData Then

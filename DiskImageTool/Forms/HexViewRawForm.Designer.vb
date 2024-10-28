@@ -74,6 +74,7 @@ Partial Class HexViewRawForm
         Me.ToolStripBtnSelectSector = New System.Windows.Forms.ToolStripButton()
         Me.ToolStripBtnSelectData = New System.Windows.Forms.ToolStripButton()
         Me.ToolStripBtnAdjustOffset = New System.Windows.Forms.ToolStripButton()
+        Me.ToolStripStatusBits = New System.Windows.Forms.ToolStripStatusLabel()
         ToolStripStatusGap = New System.Windows.Forms.ToolStripStatusLabel()
         ToolStripSeparator2 = New System.Windows.Forms.ToolStripSeparator()
         ToolStripSeparator5 = New System.Windows.Forms.ToolStripSeparator()
@@ -88,7 +89,7 @@ Partial Class HexViewRawForm
         'ToolStripStatusGap
         '
         ToolStripStatusGap.Name = "ToolStripStatusGap"
-        ToolStripStatusGap.Size = New System.Drawing.Size(301, 19)
+        ToolStripStatusGap.Size = New System.Drawing.Size(227, 19)
         ToolStripStatusGap.Spring = True
         '
         'ToolStripSeparator2
@@ -205,7 +206,7 @@ Partial Class HexViewRawForm
         '
         'StatusStrip1
         '
-        Me.StatusStrip1.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.ToolStripStatusOffset, Me.ToolStripStatusBlock, Me.ToolStripStatusLength, ToolStripStatusGap, Me.ToolStripStatusTrack, Me.ToolStripStatusSide, Me.ToolStripStatusTrackSector, Me.ToolStripStatusTrackSize, Me.ToolStripStatusChecksumText, Me.ToolStripStatusChecksum, ToolStripStatusLabel2, Me.ToolStripStatusBytes})
+        Me.StatusStrip1.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.ToolStripStatusOffset, Me.ToolStripStatusBlock, Me.ToolStripStatusLength, ToolStripStatusGap, Me.ToolStripStatusTrack, Me.ToolStripStatusSide, Me.ToolStripStatusTrackSector, Me.ToolStripStatusTrackSize, Me.ToolStripStatusChecksumText, Me.ToolStripStatusChecksum, ToolStripStatusLabel2, Me.ToolStripStatusBits, Me.ToolStripStatusBytes})
         Me.StatusStrip1.Location = New System.Drawing.Point(0, 549)
         Me.StatusStrip1.Name = "StatusStrip1"
         Me.StatusStrip1.Size = New System.Drawing.Size(944, 24)
@@ -536,6 +537,16 @@ Partial Class HexViewRawForm
         Me.ToolStripBtnAdjustOffset.Size = New System.Drawing.Size(23, 22)
         Me.ToolStripBtnAdjustOffset.Text = "Adjust Bit Offset"
         '
+        'ToolStripStatusBits
+        '
+        Me.ToolStripStatusBits.BorderSides = System.Windows.Forms.ToolStripStatusLabelBorderSides.Left
+        Me.ToolStripStatusBits.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text
+        Me.ToolStripStatusBits.Margin = New System.Windows.Forms.Padding(2, 3, 2, 2)
+        Me.ToolStripStatusBits.Name = "ToolStripStatusBits"
+        Me.ToolStripStatusBits.Size = New System.Drawing.Size(39, 19)
+        Me.ToolStripStatusBits.Text = "0 Bits"
+        Me.ToolStripStatusBits.TextAlign = System.Drawing.ContentAlignment.MiddleRight
+        '
         'HexViewRawForm
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
@@ -613,4 +624,5 @@ Partial Class HexViewRawForm
     Friend WithEvents ToolStripSeparator1 As ToolStripSeparator
     Friend WithEvents BtnAdjustOffset As ToolStripMenuItem
     Friend WithEvents ToolStripBtnAdjustOffset As ToolStripButton
+    Friend WithEvents ToolStripStatusBits As ToolStripStatusLabel
 End Class

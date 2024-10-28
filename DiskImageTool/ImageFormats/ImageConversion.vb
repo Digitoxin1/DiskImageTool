@@ -156,7 +156,8 @@ Namespace ImageFormats
 
             Dim HFE = New HFE.HFEImage(TrackCount, Params.NumberOfHeads) With {
                 .BitRate = DriveSpeed.BitRate,
-                .FloppyRPM = DriveSpeed.RPM
+                .FloppyRPM = DriveSpeed.RPM,
+                .FloppyInterfaceMode = GetHFEFloppyInterfaceMode(DiskFormat)
             }
 
             For Track As UShort = 0 To TrackCount - 1
@@ -328,6 +329,7 @@ Namespace ImageFormats
                     If Track = 0 And Side = 0 Then
                         HFE.BitRate = BitstreamTrack.BitRate
                         HFE.FloppyRPM = BitstreamTrack.RPM
+                        HFE.FloppyInterfaceMode = GetHFEFloppyInterfaceMode(GetTrackFormat(BitstreamTrack.Bitstream.Length))
                     End If
 
                     Dim HFETrack = New HFE.HFETrack(Track, Side) With {
@@ -385,7 +387,6 @@ Namespace ImageFormats
 
         Public Function BitstreamToTranscopyImage(Image As IBitstreamImage) As TC.TransCopyImage
             Dim BitstreamTrack As IBitstreamTrack
-            Dim DiskType As TC.TransCopyDiskType = TC.TransCopyDiskType.Unknown
             Dim TrackCount As UShort = 0
 
             For Track = 0 To Image.TrackCount - 1 Step Image.TrackStep
@@ -406,15 +407,16 @@ Namespace ImageFormats
                     Dim BitCount As Integer = 6250 * 16
 
                     If BitstreamTrack.TrackType = BitstreamTrackType.MFM And BitstreamTrack.Decoded Then
-                        TrackType = GetTranscopyDiskType(GetTrackFormat(BitstreamTrack.MFMData.Size))
-                        If DiskType = TC.TransCopyDiskType.Unknown And TrackType <> TC.TransCopyDiskType.Unknown Then
-                            DiskType = TrackType
-                        End If
+                        TrackType = GetTranscopyDiskType(GetTrackFormat(BitstreamTrack.Bitstream.Length))
                     ElseIf BitstreamTrack.TrackType = BitstreamTrackType.FM Then
                         BitCount = 3125 * 16
                         TrackType = TC.TransCopyDiskType.FMSingleDensity
                     Else
                         TrackType = TC.TransCopyDiskType.Unknown
+                    End If
+
+                    If Track = 0 And Side = 0 Then
+                        Transcopy.DiskType = TrackType
                     End If
 
                     Dim TransCopyCylinder = New TC.TransCopyCylinder(Track, Side) With {
@@ -433,8 +435,6 @@ Namespace ImageFormats
                     Transcopy.SetCylinder(Track \ Image.TrackStep, Side, TransCopyCylinder)
                 Next
             Next
-
-            Transcopy.DiskType = DiskType
 
             Return Transcopy
         End Function
@@ -531,6 +531,34 @@ Namespace ImageFormats
             End Select
 
             Return DriveSpeed
+        End Function
+
+        Private Function GetHFEFloppyInterfaceMode(TrackFormat As MFMTrackFormat) As HFE.HFEFloppyinterfaceMode
+            Select Case TrackFormat
+                Case MFMTrackFormat.TrackFormatDD
+                    Return HFE.HFEFloppyinterfaceMode.IBMPC_DD_FLOPPYMODE
+                Case MFMTrackFormat.TrackFormatHD
+                    Return HFE.HFEFloppyinterfaceMode.IBMPC_HD_FLOPPYMODE
+                Case MFMTrackFormat.TrackFormatHD1200
+                    Return HFE.HFEFloppyinterfaceMode.IBMPC_HD_FLOPPYMODE
+                Case MFMTrackFormat.TrackFormatED
+                    Return HFE.HFEFloppyinterfaceMode.IBMPC_ED_FLOPPYMODE
+                Case Else
+                    Return HFE.HFEFloppyinterfaceMode.IBMPC_DD_FLOPPYMODE
+            End Select
+        End Function
+
+        Private Function GetHFEFloppyInterfaceMode(DiskFormat As FloppyDiskFormat) As HFE.HFEFloppyinterfaceMode
+            Select Case DiskFormat
+                Case FloppyDiskFormat.Floppy1200
+                    Return HFE.HFEFloppyinterfaceMode.IBMPC_HD_FLOPPYMODE
+                Case FloppyDiskFormat.Floppy1440
+                    Return HFE.HFEFloppyinterfaceMode.IBMPC_HD_FLOPPYMODE
+                Case FloppyDiskFormat.Floppy2880
+                    Return HFE.HFEFloppyinterfaceMode.IBMPC_ED_FLOPPYMODE
+                Case Else
+                    Return HFE.HFEFloppyinterfaceMode.IBMPC_DD_FLOPPYMODE
+            End Select
         End Function
 
         Private Function GetTranscopyDiskType(TrackFormat As MFMTrackFormat) As TC.TransCopyDiskType

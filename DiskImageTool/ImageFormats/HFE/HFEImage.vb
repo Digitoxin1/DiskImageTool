@@ -1,13 +1,13 @@
 ﻿Imports System.Text
 Imports DiskImageTool.Bitstream
-Imports DiskImageTool.ImageFormats.MFM
 
 Namespace ImageFormats
     Namespace HFE
         Public Class HFEImage
             Implements IBitstreamImage
 
-            Private Const FILE_SIGNATURE = "HXCPICFE"
+            Private Const FILE_SIGNATURE_V1 = "HXCPICFE"
+            Private Const FILE_SIGNATURE_V3 = "HXCHFEV3"
             Private _Header() As Byte
             Private _Tracks() As HFETrack
 
@@ -20,6 +20,7 @@ Namespace ImageFormats
                 BitRate = &HC
                 FloppyRPM = &HE
                 FloppyInterfaceMode = &H10
+                DNU = &H11
                 TrackListOffset = &H12
                 WriteAllowed = &H14
                 SingleStep = &H15
@@ -35,7 +36,7 @@ Namespace ImageFormats
 
             Public Sub New()
                 _Header = New Byte(25) {}
-                Encoding.UTF8.GetBytes(FILE_SIGNATURE).CopyTo(_Header, 0)
+                Encoding.UTF8.GetBytes(FILE_SIGNATURE_V1).CopyTo(_Header, 0)
                 FormatRevision = 0
                 TrackCount = 0
                 SideCount = 0
@@ -43,17 +44,19 @@ Namespace ImageFormats
                 BitRate = 0
                 FloppyRPM = 0
                 FloppyInterfaceMode = HFEFloppyinterfaceMode.DISABLE_FLOPPYMODE
+                DNU = &HFF
                 TrackListOffset = 1
                 WriteAllowed = &HFF
                 SingleStep = &HFF
                 Track0S0_AltEncoding = &HFF
+                Track0S0_Encoding = &HFF
                 Track0S1_AltEncoding = &HFF
                 Track0S1_Encoding = &HFF
             End Sub
 
             Public Sub New(TrackCount As Byte, SideCount As Byte)
                 _Header = New Byte(25) {}
-                Encoding.UTF8.GetBytes(FILE_SIGNATURE).CopyTo(_Header, 0)
+                Encoding.UTF8.GetBytes(FILE_SIGNATURE_V1).CopyTo(_Header, 0)
                 FormatRevision = 0
                 Me.TrackCount = TrackCount
                 Me.SideCount = SideCount
@@ -61,10 +64,12 @@ Namespace ImageFormats
                 BitRate = 0
                 FloppyRPM = 0
                 FloppyInterfaceMode = HFEFloppyinterfaceMode.DISABLE_FLOPPYMODE
+                DNU = &HFF
                 TrackListOffset = 1
                 WriteAllowed = &HFF
                 SingleStep = &HFF
                 Track0S0_AltEncoding = &HFF
+                Track0S0_Encoding = &HFF
                 Track0S1_AltEncoding = &HFF
                 Track0S1_Encoding = &HFF
 
@@ -77,6 +82,15 @@ Namespace ImageFormats
                 End Get
                 Set(value As UShort)
                     Array.Copy(BitConverter.GetBytes(value), 0, _Header, HFEHeaderOffsets.BitRate, 2)
+                End Set
+            End Property
+
+            Public Property DNU As Byte
+                Get
+                    Return _Header(HFEHeaderOffsets.DNU)
+                End Get
+                Set(value As Byte)
+                    _Header(HFEHeaderOffsets.DNU) = value
                 End Set
             End Property
 
@@ -202,6 +216,30 @@ Namespace ImageFormats
                 End Get
             End Property
 
+            Public Property Version As HFEVersion
+                Get
+                    If Signature = FILE_SIGNATURE_V3 Then
+                        Return HFEVersion.HFE_V3
+                    ElseIf FormatRevision = 1 Then
+                        Return HFEVersion.HFE_V2
+                    Else
+                        Return HFEVersion.HFE_V1
+                    End If
+                End Get
+                Set(value As HFEVersion)
+                    If value = HFEVersion.HFE_V2 Then
+                        Encoding.UTF8.GetBytes(FILE_SIGNATURE_V1).CopyTo(_Header, 0)
+                        FormatRevision = 1
+                    ElseIf value = HFEVersion.HFE_V3 Then
+                        Encoding.UTF8.GetBytes(FILE_SIGNATURE_V3).CopyTo(_Header, 0)
+                        FormatRevision = 0
+                    Else
+                        Encoding.UTF8.GetBytes(FILE_SIGNATURE_V1).CopyTo(_Header, 0)
+                        FormatRevision = 0
+                    End If
+                End Set
+            End Property
+
             Public Property WriteAllowed As Byte
                 Get
                     Return _Header(HFEHeaderOffsets.WriteAllowed)
@@ -219,11 +257,16 @@ Namespace ImageFormats
                 Dim Result As Boolean
 
                 Dim Signature = Text.Encoding.UTF8.GetString(Buffer, HFEHeaderOffsets.Signature, HFEHeadeSizes.Signature)
-                Result = (Signature = FILE_SIGNATURE)
+                Result = (Signature = FILE_SIGNATURE_V1 Or Signature = FILE_SIGNATURE_V3)
 
                 If Result Then
                     _Header = New Byte(25) {}
                     Array.Copy(Buffer, 0, _Header, 0, _Header.Length)
+
+                    If Version <> HFEVersion.HFE_V1 Then
+                        'Unsupported Version
+                        Return False
+                    End If
 
                     _Tracks = New HFETrack(TrackCount * SideCount - 1) {}
 
@@ -322,8 +365,16 @@ Namespace ImageFormats
                     Dim TrackDataLength As UShort
 
                     For i = 0 To TrackCount - 1
-                        Dim Track = GetTrack(i, 0)
-                        TrackDataLength = Track.Length * 2
+                        Dim Track0 = GetTrack(i, 0)
+                        Dim TrackLength = Track0.Length
+                        If SideCount > 1 Then
+                            Dim Track1 = GetTrack(i, 1)
+                            If Track1.Length > TrackLength Then
+                                TrackLength = Track1.Length
+                            End If
+                        End If
+
+                        TrackDataLength = TrackLength * 2
 
                         TrackOffsets(i) = TrackDataOffset
                         BlockCount = Math.Ceiling(TrackDataLength / 512)
@@ -343,20 +394,26 @@ Namespace ImageFormats
                     fs.Write(Buffer, 0, Buffer.Length)
 
                     For i = 0 To TrackCount - 1
-                        Dim Track = GetTrack(i, 0)
-                        Dim TrackLength As UShort = Track.Length
-                        TrackDataLength = Track.Length * 2
-                        BlockCount = Math.Ceiling(TrackDataLength / 512)
-
-                        Dim DataSide0 = IBM_MFM.BitsToBytes(IBM_MFM.ResizeBitstream(Track.Bitstream, Track.Length * 8), 0, False)
+                        Dim DataSide0() As Byte
                         Dim DataSide1() As Byte
+
+                        Dim Track0 = GetTrack(i, 0)
+                        Dim TrackLength As UShort = Track0.Length
+
                         If SideCount > 1 Then
-                            Track = GetTrack(i, 1)
-                            DataSide1 = IBM_MFM.BitsToBytes(IBM_MFM.ResizeBitstream(Track.Bitstream, Track.Length * 8), 0, False)
+                            Dim Track1 = GetTrack(i, 1)
+                            If Track1.Length > TrackLength Then
+                                TrackLength = Track1.Length
+                            End If
+                            DataSide1 = IBM_MFM.BitsToBytes(IBM_MFM.ResizeBitstream(Track1.Bitstream, TrackLength * 8), 0, False)
                         Else
                             DataSide1 = New Byte(TrackLength - 1) {}
-                            FillArray(DataSide1, &HFF)
                         End If
+
+                        DataSide0 = IBM_MFM.BitsToBytes(IBM_MFM.ResizeBitstream(Track0.Bitstream, TrackLength * 8), 0, False)
+
+                        TrackDataLength = TrackLength * 2
+                        BlockCount = Math.Ceiling(TrackDataLength / 512)
 
                         For j = 0 To BlockCount - 1
                             Dim DataOffset = j * 256

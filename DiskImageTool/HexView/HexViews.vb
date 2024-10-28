@@ -299,7 +299,7 @@ Module HexViews
                     End If
                 Else
                     Dim Attributes As Byte = Disk.Image.GetByte(Offset + DirectoryEntry.DirectoryEntryOffsets.Attributes)
-                    If (Attributes And AttributeFlags.LongFileName) = AttributeFlags.LongFileName Then
+                    If (Attributes And DirectoryEntry.AttributeFlags.LongFileName) = DirectoryEntry.AttributeFlags.LongFileName Then
                         HighlightedRegions.AddDirectoryEntryLFNOffset(Offset - OffsetStart, DirectoryEntry.LFNOffsets.Sequence, Color.Purple)
                         HighlightedRegions.AddDirectoryEntryLFNOffset(Offset - OffsetStart, DirectoryEntry.LFNOffsets.FilePart1, Color.Purple)
                         HighlightedRegions.AddDirectoryEntryLFNOffset(Offset - OffsetStart, DirectoryEntry.LFNOffsets.Attributes, Color.Purple)

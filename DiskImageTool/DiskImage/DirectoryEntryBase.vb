@@ -5,11 +5,10 @@ Namespace DiskImage
     Public Class DirectoryEntryBase
         Public Const CHAR_DELETED As Byte = &HE5
         Public Const DIRECTORY_ENTRY_SIZE As Byte = 32
-        Public Shared ReadOnly EmptyDirectoryEntry() As Byte = {&HE5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}
         Public Shared ReadOnly CurrentDirectoryEntry() As Byte = {&H2E, &H20, &H20, &H20, &H20, &H20, &H20, &H20, &H20, &H20, &H20}
-        Public Shared ReadOnly ParentDirectoryEntry() As Byte = {&H2E, &H2E, &H20, &H20, &H20, &H20, &H20, &H20, &H20, &H20, &H20}
+        Public Shared ReadOnly EmptyDirectoryEntry() As Byte = {&HE5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}
         Public Shared ReadOnly InvalidFileChars() As Byte = {&H22, &H2A, &H2B, &H2C, &H2E, &H2F, &H3A, &H3B, &H3C, &H3D, &H3E, &H3F, &H5B, &H5C, &H5D, &H7C}
-
+        Public Shared ReadOnly ParentDirectoryEntry() As Byte = {&H2E, &H2E, &H20, &H20, &H20, &H20, &H20, &H20, &H20, &H20, &H20}
         Private Const CHAR_EMPTY As Byte = &H0
         Private Const CHAR_SPACE As Byte = &H20
 
@@ -27,6 +26,7 @@ Namespace DiskImage
         Private _Offset As UInteger
         Private _VolumeNameCache As String
         Private _VolumeNameIsCached As Boolean = False
+
         Public Enum AttributeFlags As Byte
             [ReadOnly] = 1
             Hidden = 2
@@ -221,6 +221,84 @@ Namespace DiskImage
             End Set
         End Property
 
+        Public Property HasNTLowerCaseExtension As Boolean
+            Get
+                Return (ReservedForWinNT And NTFlags.LowerCaseExtension) > 0
+            End Get
+            Set(value As Boolean)
+                ReservedForWinNT = MyBitConverter.ToggleBit(ReservedForWinNT, NTFlags.LowerCaseExtension, value)
+            End Set
+        End Property
+
+        Public Property HasNTLowerCaseFileName As Boolean
+            Get
+                Return (ReservedForWinNT And NTFlags.LowerCaseFileName) > 0
+            End Get
+            Set(value As Boolean)
+                ReservedForWinNT = MyBitConverter.ToggleBit(ReservedForWinNT, NTFlags.LowerCaseFileName, value)
+            End Set
+        End Property
+
+        Public Property IsArchive As Boolean
+            Get
+                Return (Attributes And AttributeFlags.ArchiveFlag) > 0
+            End Get
+            Set(value As Boolean)
+                Attributes = MyBitConverter.ToggleBit(Attributes, AttributeFlags.ArchiveFlag, value)
+            End Set
+        End Property
+
+        Public Property IsDirectory As Boolean
+            Get
+                Return (Attributes And AttributeFlags.Directory) > 0
+            End Get
+            Set(value As Boolean)
+                Attributes = MyBitConverter.ToggleBit(Attributes, AttributeFlags.Directory, value)
+            End Set
+        End Property
+
+        Public Property IsHidden As Boolean
+            Get
+                Return (Attributes And AttributeFlags.Hidden) > 0
+            End Get
+            Set(value As Boolean)
+                Attributes = MyBitConverter.ToggleBit(Attributes, AttributeFlags.Hidden, value)
+            End Set
+        End Property
+
+        Public ReadOnly Property IsLFN As Boolean
+            Get
+                Return (Attributes And AttributeFlags.LongFileName) = AttributeFlags.LongFileName
+            End Get
+        End Property
+
+        Public Property IsReadOnly As Boolean
+            Get
+                Return (Attributes And AttributeFlags.ReadOnly) > 0
+            End Get
+            Set(value As Boolean)
+                Attributes = MyBitConverter.ToggleBit(Attributes, AttributeFlags.ReadOnly, value)
+            End Set
+        End Property
+
+        Public Property IsSystem As Boolean
+            Get
+                Return (Attributes And AttributeFlags.System) > 0
+            End Get
+            Set(value As Boolean)
+                Attributes = MyBitConverter.ToggleBit(Attributes, AttributeFlags.System, value)
+            End Set
+        End Property
+
+        Public Property IsVolumeName As Boolean
+            Get
+                Return (Attributes And AttributeFlags.VolumeName) > 0
+            End Get
+            Set(value As Boolean)
+                Attributes = MyBitConverter.ToggleBit(Attributes, AttributeFlags.VolumeName, value)
+            End Set
+        End Property
+
         Public Property LastAccessDate() As UShort
             Get
                 Return _FileBytes.GetBytesShort(_Offset + DirectoryEntryOffsets.LastAccessDate)
@@ -386,24 +464,6 @@ Namespace DiskImage
             Return File
         End Function
 
-        Public Function GetNTFileName() As String
-            Dim File = GetFileName()
-            Dim Ext = GetFileExtension()
-
-            If HasNTLowerCaseFileName() Then
-                File = File.ToLower
-            End If
-
-            If Ext <> "" Then
-                If HasNTLowerCaseExtension() Then
-                    Ext = Ext.ToLower
-                End If
-                File = File & "." & Ext
-            End If
-
-            Return File
-        End Function
-
         Public Function GetLastAccessDate() As ExpandedDate
             If Not _LastAccessDateIsCached Then
                 _LastAccessDateCache = ExpandDate(LastAccessDate)
@@ -435,7 +495,7 @@ Namespace DiskImage
         End Function
 
         Public Function GetLFNFileName() As String
-            If IsLFN() Then
+            If IsLFN Then
                 Dim Size As Integer = LFNSizes.FilePart1 + LFNSizes.FilePart2 + LFNSizes.FilePart3
                 Dim LFN(Size - 1) As Byte
 
@@ -451,6 +511,23 @@ Namespace DiskImage
             End If
         End Function
 
+        Public Function GetNTFileName() As String
+            Dim File = GetFileName()
+            Dim Ext = GetFileExtension()
+
+            If HasNTLowerCaseFileName() Then
+                File = File.ToLower
+            End If
+
+            If Ext <> "" Then
+                If HasNTLowerCaseExtension() Then
+                    Ext = Ext.ToLower
+                End If
+                File = File & "." & Ext
+            End If
+
+            Return File
+        End Function
         Public Function GetVolumeName() As String
             If Not _VolumeNameIsCached Then
                 _VolumeNameCache = CodePage437ToUnicode(FileNameWithExtension).TrimEnd(" ")
@@ -470,7 +547,7 @@ Namespace DiskImage
 
         Public Function HasInvalidExtension() As Boolean
             If Not _HasInvalidExtensionCache.HasValue Then
-                _HasInvalidExtensionCache = Not CheckValidFileName(Extension, True, IsVolumeName())
+                _HasInvalidExtensionCache = Not CheckValidFileName(Extension, True, IsVolumeName)
             End If
 
             Return _HasInvalidExtensionCache
@@ -478,7 +555,7 @@ Namespace DiskImage
 
         Public Function HasInvalidFilename() As Boolean
             If Not _HasInvalidFileNameCache.HasValue Then
-                _HasInvalidFileNameCache = Not CheckValidFileName(FileName, False, IsVolumeName())
+                _HasInvalidFileNameCache = Not CheckValidFileName(FileName, False, IsVolumeName)
             End If
 
             Return _HasInvalidFileNameCache
@@ -487,21 +564,8 @@ Namespace DiskImage
         Public Function HasLastAccessDate() As Boolean
             Return LastAccessDate <> 0
         End Function
-
-        Public Function HasNTLowerCaseFileName() As Boolean
-            Return (ReservedForWinNT And NTFlags.LowerCaseFileName) > 0
-        End Function
-
-        Public Function HasNTLowerCaseExtension() As Boolean
-            Return (ReservedForWinNT And NTFlags.LowerCaseExtension) > 0
-        End Function
-
         Public Function HasNTUnknownFlags() As Boolean
             Return (ReservedForWinNT And &HE7) > 0
-        End Function
-
-        Public Function IsArchive() As Boolean
-            Return (Attributes And AttributeFlags.ArchiveFlag) > 0
         End Function
 
         Public Function IsBlank() As Boolean
@@ -535,20 +599,8 @@ Namespace DiskImage
             Return FileName(0) = CHAR_DELETED
         End Function
 
-        Public Function IsDirectory() As Boolean
-            Return (Attributes And AttributeFlags.Directory) > 0
-        End Function
-
         Public Function IsEmpty() As Boolean
             Return FileName(0) = CHAR_EMPTY
-        End Function
-
-        Public Function IsHidden() As Boolean
-            Return (Attributes And AttributeFlags.Hidden) > 0
-        End Function
-
-        Public Function IsLFN() As Boolean
-            Return (Attributes And AttributeFlags.LongFileName) = AttributeFlags.LongFileName
         End Function
 
         Public Function IsLink() As Boolean
@@ -561,20 +613,8 @@ Namespace DiskImage
             Return (FilePart = &H2E2E)
         End Function
 
-        Public Function IsReadOnly() As Boolean
-            Return (Attributes And AttributeFlags.ReadOnly) > 0
-        End Function
-
-        Public Function IsSystem() As Boolean
-            Return (Attributes And AttributeFlags.System) > 0
-        End Function
-
         Public Function IsValidVolumeName() As Boolean
-            Return IsVolumeName() AndAlso Not (IsHidden() OrElse IsSystem() OrElse IsDirectory() OrElse IsDeleted()) AndAlso StartingCluster = 0
-        End Function
-
-        Public Function IsVolumeName() As Boolean
-            Return (Attributes And AttributeFlags.VolumeName) > 0
+            Return IsVolumeName AndAlso Not (IsHidden OrElse IsSystem OrElse IsDirectory OrElse IsDeleted()) AndAlso StartingCluster = 0
         End Function
 
         Public Sub RemoveNTExtensions()

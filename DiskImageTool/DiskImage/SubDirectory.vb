@@ -165,9 +165,9 @@
 
             Entry = New DirectoryEntryBase With {
                 .StartingCluster = ParentEntry.StartingCluster,
-                .FileNameWithExtension = DirectoryEntryBase.CurrentDirectoryEntry
+                .FileNameWithExtension = DirectoryEntryBase.CurrentDirectoryEntry,
+                .IsDirectory = True
             }
-            Entry.Attributes = MyBitConverter.ToggleBit(Entry.Attributes, DirectoryEntry.AttributeFlags.Directory, True)
             SetEntryDates(Entry)
             DirectoryEntries.Item(0).Data = Entry.Data
 
@@ -178,9 +178,9 @@
 
             Entry = New DirectoryEntryBase With {
                 .StartingCluster = StartingCluster,
-                .FileNameWithExtension = DirectoryEntryBase.ParentDirectoryEntry
+                .FileNameWithExtension = DirectoryEntryBase.ParentDirectoryEntry,
+                .IsDirectory = True
             }
-            Entry.Attributes = MyBitConverter.ToggleBit(Entry.Attributes, DirectoryEntry.AttributeFlags.Directory, True)
             SetEntryDates(Entry)
             DirectoryEntries.Item(1).Data = Entry.Data
 

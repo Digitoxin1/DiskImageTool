@@ -551,8 +551,8 @@ Namespace DiskImage
 
             Dim NewEntry = Data.DirectoryEntry.Clone
             NewEntry.SetFileName(Data.ShortFileName)
-            NewEntry.ReservedForWinNT = MyBitConverter.ToggleBit(NewEntry.ReservedForWinNT, DirectoryEntry.NTFlags.LowerCaseFileName, Data.NTLowerCaseFileName)
-            NewEntry.ReservedForWinNT = MyBitConverter.ToggleBit(NewEntry.ReservedForWinNT, DirectoryEntry.NTFlags.LowerCaseExtension, Data.NTLowerCaseExtension)
+            NewEntry.HasNTLowerCaseFileName = Data.NTLowerCaseFileName
+            NewEntry.HasNTLowerCaseExtension = Data.NTLowerCaseExtension
 
             Data.DirectoryEntry.Data = NewEntry.Data
 

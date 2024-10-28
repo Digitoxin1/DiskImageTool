@@ -215,8 +215,8 @@ Module ImageIO
         ExtensionList = New List(Of String) From {".mfm"}
         FileFilter = FileDialogAppendFilter(FileFilter, "HXC MFM Image", ExtensionList)
 
-        ExtensionList = New List(Of String) From {"..hfe"}
-        FileFilter = FileDialogAppendFilter(FileFilter, "HXC HFE Image", ExtensionList)
+        ExtensionList = New List(Of String) From {".hfe"}
+        FileFilter = FileDialogAppendFilter(FileFilter, "HXC HFE (v1) Image", ExtensionList)
 
         ExtensionList = New List(Of String) From {".86f"}
         FileFilter = FileDialogAppendFilter(FileFilter, "86Box 86F Image", ExtensionList)
@@ -291,7 +291,7 @@ Module ImageIO
                     Response.FilterIndex = CurrentIndex
                 End If
             Next
-            Response.Filter = FileDialogAppendFilter(Response.Filter, "HXC HFE Image", ExtensionList)
+            Response.Filter = FileDialogAppendFilter(Response.Filter, "HXC HFE (v1) Image", ExtensionList)
             CurrentIndex += 1
         End If
 

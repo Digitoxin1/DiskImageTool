@@ -55,7 +55,7 @@
             If _FAT.TableLength > 0 Then
                 If DirectoryEntry.IsDeleted() Then
                     Cluster = 0
-                ElseIf DirectoryEntry.IsDirectory() AndAlso DirectoryEntry.IsLink() Then
+                ElseIf DirectoryEntry.IsDirectory AndAlso DirectoryEntry.IsLink() Then
                     Cluster = 0
                 Else
                     Cluster = DirectoryEntry.StartingCluster

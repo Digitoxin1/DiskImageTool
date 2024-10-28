@@ -1,6 +1,11 @@
 ﻿Namespace ImageFormats
     Namespace HFE
         Public Module Enums
+            Public Enum HFEVersion As Byte
+                HFE_V1 = 1
+                HFE_V2 = 2
+                HFE_V3 = 3
+            End Enum
             Public Enum HFEFloppyinterfaceMode As Byte
                 IBMPC_DD_FLOPPYMODE = &H0
                 IBMPC_HD_FLOPPYMODE = &H1

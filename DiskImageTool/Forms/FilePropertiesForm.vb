@@ -52,24 +52,17 @@ Public Class FilePropertiesForm
     End Property
 
     Public Sub ApplyAttributesUpdate(DirectoryEntry As DiskImage.DirectoryEntryBase)
-        Dim Attributes As Byte = DirectoryEntry.Attributes
-        Dim BitArray = New BitArray(Attributes)
-
         If BtnArchive.Tag Then
-            Attributes = MyBitConverter.ToggleBit(Attributes, DiskImage.DirectoryEntry.AttributeFlags.ArchiveFlag, ChkArchive.Checked)
+            DirectoryEntry.IsArchive = ChkArchive.Checked
         End If
         If BtnReadOnly.Tag Then
-            Attributes = MyBitConverter.ToggleBit(Attributes, DiskImage.DirectoryEntry.AttributeFlags.ReadOnly, ChkReadOnly.Checked)
+            DirectoryEntry.IsReadOnly = ChkReadOnly.Checked
         End If
         If BtnHidden.Tag Then
-            Attributes = MyBitConverter.ToggleBit(Attributes, DiskImage.DirectoryEntry.AttributeFlags.Hidden, ChkHidden.Checked)
+            DirectoryEntry.IsHidden = ChkHidden.Checked
         End If
         If BtnSystem.Tag Then
-            Attributes = MyBitConverter.ToggleBit(Attributes, DiskImage.DirectoryEntry.AttributeFlags.System, ChkSystem.Checked)
-        End If
-
-        If Attributes <> DirectoryEntry.Attributes Then
-            DirectoryEntry.Attributes = Attributes
+            DirectoryEntry.IsSystem = ChkSystem.Checked
         End If
     End Sub
 

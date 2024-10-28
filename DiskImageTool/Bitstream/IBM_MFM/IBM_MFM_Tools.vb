@@ -44,6 +44,7 @@
             Dim Track As UShort
             Dim Side As Byte
             Dim NumBytes As UInteger
+            Dim NumBits As UInteger
             Dim Aligned As Boolean
         End Structure
 
@@ -209,7 +210,8 @@
                 Dim RegionData As RegionData
                 RegionData.Regions = New List(Of BitstreamRegion)
                 RegionData.Sectors = New List(Of BitstreamRegionSector)
-                RegionData.NumBytes = Bitstream.Length \ MFM_BYTE_SIZE
+                RegionData.NumBytes = Math.Ceiling(Bitstream.Length / MFM_BYTE_SIZE)
+                RegionData.NumBits = Bitstream.Length
                 RegionData.Aligned = True
 
                 Index = FindPattern(Bitstream, IAMPattern, BitstreamIndex)
@@ -433,15 +435,15 @@
                     SectorIndex += 1
                 Next
 
-                If BitstreamIndex > 0 And BitstreamIndex <= Bitstream.Length Then
-                    GapCount = (Bitstream.Length - BitstreamIndex) \ MFM_BYTE_SIZE
+                If BitstreamIndex > 0 And BitstreamIndex < Bitstream.Length Then
+                    GapCount = Math.Ceiling((Bitstream.Length - BitstreamIndex) / MFM_BYTE_SIZE)
                     RegionData.Regions.Add(New BitstreamRegion(MFMRegionType.Gap4B, ByteIndex, GapCount, RegionSector, BitOffset))
                     If RegionSector IsNot Nothing Then
-                        RegionSector.Length = Bitstream.Length \ MFM_BYTE_SIZE - RegionSector.StartIndex
+                        RegionSector.Length = Math.Ceiling(Bitstream.Length / MFM_BYTE_SIZE) - RegionSector.StartIndex
                     End If
                 End If
 
-                ByteIndex = Bitstream.Length \ MFM_BYTE_SIZE
+                ByteIndex = Math.Ceiling(Bitstream.Length / MFM_BYTE_SIZE)
                 If RegionData.NumBytes > ByteIndex Then
                     Dim Length = RegionData.NumBytes - ByteIndex
                     RegionData.Regions.Add(New BitstreamRegion(MFMRegionType.Overflow, ByteIndex, Length, Nothing, BitOffset))
@@ -663,7 +665,7 @@
                 Dim dataBit As Boolean
 
                 If NumBytes > 0 Then
-                    Dim Length = Bitstream.Length - 1
+                    Dim Length = Bitstream.Length
 
                     If Start > Length - 1 Then
                         Start = Start Mod Length
@@ -672,12 +674,12 @@
                     Do
                         clockBit = Bitstream(Start)
                         Start += 1
-                        If Start > Length Then
+                        If Start > Length - 1 Then
                             Start = 0
                         End If
                         dataBit = Bitstream(Start)
                         Start += 1
-                        If Start > Length Then
+                        If Start > Length - 1 Then
                             Start = 0
                         End If
 

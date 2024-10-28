@@ -148,7 +148,7 @@
 
             Dim ClusterCount As UShort
 
-            If IsDirectory() Then
+            If IsDirectory Then
                 ClusterCount = 1
             Else
                 ClusterCount = Math.Ceiling(FileSize / _BPB.BytesPerCluster)
@@ -259,7 +259,7 @@
         End Function
 
         Public Function HasIncorrectFileSize() As Boolean
-            If IsDirectory() Or IsVolumeName() Then
+            If IsDirectory Or IsVolumeName Then
                 Return FileSize > 0
             Else
                 Return GetAllocatedSize() <> GetAllocatedSizeFromFAT()
@@ -318,11 +318,11 @@
         End Function
 
         Public Function IsValidDirectory() As Boolean
-            Return IsDirectory() AndAlso Not (IsVolumeName() OrElse HasInvalidStartingCluster()) AndAlso StartingCluster > 1
+            Return IsDirectory AndAlso Not (IsVolumeName OrElse HasInvalidStartingCluster()) AndAlso StartingCluster > 1
         End Function
 
         Public Function IsValidFile() As Boolean
-            Return Not (IsDirectory() OrElse IsVolumeName() OrElse HasInvalidStartingCluster() OrElse HasInvalidFileSize()) AndAlso StartingCluster > 1
+            Return Not (IsDirectory OrElse IsVolumeName OrElse HasInvalidStartingCluster() OrElse HasInvalidFileSize()) AndAlso StartingCluster > 1
         End Function
 
         Public Function RemoveLFN() As Boolean
@@ -336,7 +336,7 @@
 
             Dim ClusterCount As UShort
 
-            If IsDirectory() Then
+            If IsDirectory Then
                 ClusterCount = 1
             Else
                 ClusterCount = Math.Ceiling(FileSize / _BPB.BytesPerCluster)

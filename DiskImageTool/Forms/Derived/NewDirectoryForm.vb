@@ -28,7 +28,8 @@ Public Class NewDirectoryForm
         _Updated = True
 
         _NewDirectoryEntry = New DirectoryEntryBase With {
-            .FileSize = 0
+            .FileSize = 0,
+            .IsDirectory = True
         }
 
         If RadioFileShort.Checked Then
@@ -37,8 +38,6 @@ Public Class NewDirectoryForm
 
         ApplyFileDatesUpdate(_NewDirectoryEntry)
         ApplyAttributesUpdate(_NewDirectoryEntry)
-
-        _NewDirectoryEntry.Attributes = MyBitConverter.ToggleBit(_NewDirectoryEntry.Attributes, DiskImage.DirectoryEntry.AttributeFlags.Directory, True)
     End Sub
 
     Private Sub PopulateForm()
