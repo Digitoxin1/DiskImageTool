@@ -51,7 +51,11 @@ Namespace ImageFormats
                 Get
                     Select Case TrackType
                         Case TransCopyDiskType.MFMDoubleDensity, TransCopyDiskType.MFMHighDensity, TransCopyDiskType.MFMDoubleDensity360RPM
-                            Return BitstreamTrackType.MFM
+                            If MFMData IsNot Nothing AndAlso MFMData.Sectors.Count > 0 Then
+                                Return BitstreamTrackType.MFM
+                            Else
+                                Return BitstreamTrackType.Other
+                            End If
                         Case TransCopyDiskType.FMSingleDensity
                             Return BitstreamTrackType.FM
                         Case Else

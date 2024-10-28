@@ -90,15 +90,17 @@ Namespace ImageFormats
                             For Each MFMSector In TranscopyCylinder.MFMData.Sectors
                                 If MFMSector.DAMFound Then
                                     If MFMSector.SectorId >= 1 And MFMSector.SectorId <= SECTOR_COUNT Then
-                                        Dim BitstreamSector As New BitstreamSector(MFMSector) With {
-                                           .IsStandard = IBM_MFM.IsStandardSector(MFMSector, Cylinder, Side)
-                                        }
-
-                                        Dim Sector = GetSector(Cylinder, Side, MFMSector.SectorId)
-                                        If Sector Is Nothing Then
-                                            SetSector(Cylinder, Side, MFMSector.SectorId, BitstreamSector)
-                                        Else
-                                            Sector.IsStandard = False
+                                        Dim IsStandard = IBM_MFM.IsStandardSector(MFMSector, Cylinder, Side)
+                                        If IsStandard Then
+                                            Dim BitstreamSector As New BitstreamSector(MFMSector) With {
+                                                .IsStandard = IsStandard
+                                            }
+                                            Dim Sector = GetSector(Cylinder, Side, MFMSector.SectorId)
+                                            If Sector Is Nothing Then
+                                                SetSector(Cylinder, Side, MFMSector.SectorId, BitstreamSector)
+                                            Else
+                                                Sector.IsStandard = False
+                                            End If
                                         End If
                                     End If
                                 End If

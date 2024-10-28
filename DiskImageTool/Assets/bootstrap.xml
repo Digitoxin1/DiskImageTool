@@ -496,7 +496,7 @@
   <bootstrap crc32="3F6176DF" jmp="EB3C90">
     <oemname name="IBM  5.0" company="IBM" description="PC-DOS 5.0" verified="true"/>
     <oemname name="IBM  6.0" company="IBM" description="PC-DOS 6.0"/>
-    <oemname name="IBM  7.0" company="IBM"/>
+    <oemname name="IBM  7.0" company="IBM" description="PC-DOS 7.0" verified="true"/>
     <oemname name="IBMMS5.0" suggestion="false"/>
   </bootstrap>
   <bootstrap crc32="788A185C" jmp="EB3C90" language="Danish">
@@ -558,10 +558,11 @@
     <oemname name="IBM 20.0"/>
   </bootstrap>
   <bootstrap crc32="522F8265" jmp="EB4F90">
-    <oemname name="IBM 20.0" description="XDF v1.1a" verified="true"/>
+    <oemname name="IBM 20.0" description="XDF v1.1a" verified="true"/>    
   </bootstrap>
   <bootstrap crc32="A50B246F" jmp="EB4F90">
     <oemname name="IBM 20.0" description="XDF v1.1a" verified="true"/>
+    <oemname name="XDFv1.3i" description="XDF v1.3i" verified="true"/>
   </bootstrap>
   <bootstrap crc32="A37E972B" jmp="EB4490">
     <oemname name="IBM 20.0" company="IBM" description="OS/2 2.0"/>

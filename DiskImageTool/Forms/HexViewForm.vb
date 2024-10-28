@@ -445,13 +445,17 @@ Public Class HexViewForm
 
                     If Size > 0 Then
                         Dim Sector = Disk.OffsetToSector(HexBox1.LineInfoOffset + Start)
-                        If HighlightBackColor = Color.White Then
-                            If _HexViewSectorData.Disk.Image.Data.ProtectedSectors.Contains(Sector) Then
-                                HighlightBackColor = PROTECTED_BACK_COLOR
-                                'ElseIf Sector Mod 2 = 1 Then
-                                'HighlightBackColor = ALT_BACK_COLOR
-                            End If
+                        If _HexViewSectorData.Disk.Image.Data.ProtectedSectors.Contains(Sector) Then
+                            HighlightForeColor = Color.Gray
+                            HighlightBackColor = Color.White
                         End If
+                        'If HighlightBackColor = Color.White Then
+                        '    If _HexViewSectorData.Disk.Image.Data.ProtectedSectors.Contains(Sector) Then
+                        '        HighlightBackColor = PROTECTED_BACK_COLOR
+                        '        'ElseIf Sector Mod 2 = 1 Then
+                        '        'HighlightBackColor = ALT_BACK_COLOR
+                        '    End If
+                        'End If
                         If HighlightForeColor <> Color.Black Or HighlightBackColor <> Color.White Then
                             .HighlightForeColor = HighlightForeColor
                             .HighlightBackColor = HighlightBackColor

@@ -76,15 +76,17 @@ Namespace ImageFormats
                         For Each MFMSector In MFMTrack.MFMData.Sectors
                             If MFMSector.DAMFound Then
                                 If MFMSector.SectorId >= 1 And MFMSector.SectorId <= SECTOR_COUNT Then
-                                    Dim BitstreamSector As New BitstreamSector(MFMSector) With {
-                                       .IsStandard = IBM_MFM.IsStandardSector(MFMSector, MappedTrack, Side)
-                                    }
-
-                                    Dim Sector = GetSector(MappedTrack, Side, MFMSector.SectorId)
-                                    If Sector Is Nothing Then
-                                        SetSector(MappedTrack, Side, MFMSector.SectorId, BitstreamSector)
-                                    Else
-                                        Sector.IsStandard = False
+                                    Dim IsStandard = IBM_MFM.IsStandardSector(MFMSector, MappedTrack, Side)
+                                    If IsStandard Then
+                                        Dim BitstreamSector As New BitstreamSector(MFMSector) With {
+                                            .IsStandard = IsStandard
+                                        }
+                                        Dim Sector = GetSector(MappedTrack, Side, MFMSector.SectorId)
+                                        If Sector Is Nothing Then
+                                            SetSector(MappedTrack, Side, MFMSector.SectorId, BitstreamSector)
+                                        Else
+                                            Sector.IsStandard = False
+                                        End If
                                     End If
                                 End If
                             End If

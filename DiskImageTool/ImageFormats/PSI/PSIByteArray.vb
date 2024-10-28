@@ -82,14 +82,16 @@ Namespace ImageFormats
 
                         If PSISector.Sector >= 1 And PSISector.Sector <= SECTOR_COUNT Then
                             Dim IsStandard = (PSISector.Size = 512 And Not PSISector.HasDataCRCError And PSISector.Sector <= MaxSectors)
-                            Dim BitstreamSector As New BitstreamSector(PSISector.Data, PSISector.Size) With {
-                                .IsStandard = IsStandard
-                            }
-                            Dim Sector = GetSector(PSISector.Cylinder, PSISector.Head, PSISector.Sector)
-                            If Sector Is Nothing Then
-                                SetSector(PSISector.Cylinder, PSISector.Head, PSISector.Sector, BitstreamSector)
-                            Else
-                                Sector.IsStandard = False
+                            If IsStandard Then
+                                Dim BitstreamSector As New BitstreamSector(PSISector.Data, PSISector.Size) With {
+                                    .IsStandard = IsStandard
+                                }
+                                Dim Sector = GetSector(PSISector.Cylinder, PSISector.Head, PSISector.Sector)
+                                If Sector Is Nothing Then
+                                    SetSector(PSISector.Cylinder, PSISector.Head, PSISector.Sector, BitstreamSector)
+                                Else
+                                    Sector.IsStandard = False
+                                End If
                             End If
                         End If
                     End If
