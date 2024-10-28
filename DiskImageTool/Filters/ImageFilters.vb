@@ -198,7 +198,7 @@
             ReDim _FilterCounts(FilterCount - 1)
             For Counter = 0 To FilterCount - 1
                 Dim Item = New ToolStripMenuItem With {
-                    .Text = FilterGetCaption(Counter, 0),
+                    .Text = "",
                     .CheckOnClick = True,
                     .Name = "key_" & Counter,
                     .Visible = False,
@@ -237,7 +237,11 @@
             Dim Visible As Boolean = (Count > 0)
             Dim CheckstateChanged As Boolean = False
 
-            Item.Text = FilterGetCaption(ID, Available)
+            If Visible Then
+                Item.Text = FilterGetCaption(ID, Available)
+            Else
+                Item.Text = ""
+            End If
 
             If Visible <> ItemTag.Visible Then
                 Item.Visible = Visible

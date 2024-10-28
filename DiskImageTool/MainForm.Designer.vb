@@ -161,6 +161,7 @@ Partial Class MainForm
         Me.FileCreationDate = CType(New System.Windows.Forms.ColumnHeader(), System.Windows.Forms.ColumnHeader)
         Me.FileLastAccessDate = CType(New System.Windows.Forms.ColumnHeader(), System.Windows.Forms.ColumnHeader)
         Me.FileNTReserved = CType(New System.Windows.Forms.ColumnHeader(), System.Windows.Forms.ColumnHeader)
+        Me.FileFAT32Cluster = CType(New System.Windows.Forms.ColumnHeader(), System.Windows.Forms.ColumnHeader)
         Me.FileLFN = CType(New System.Windows.Forms.ColumnHeader(), System.Windows.Forms.ColumnHeader)
         Me.ContextMenuFiles = New System.Windows.Forms.ContextMenuStrip(Me.components)
         Me.MenuFileFileProperties = New System.Windows.Forms.ToolStripMenuItem()
@@ -186,7 +187,6 @@ Partial Class MainForm
         Me.MenuDirectoryView = New System.Windows.Forms.ToolStripMenuItem()
         Me.MenuDirectoryImportFiles = New System.Windows.Forms.ToolStripMenuItem()
         Me.MenuDirectoryNewDirectory = New System.Windows.Forms.ToolStripMenuItem()
-        Me.FileFAT32Cluster = CType(New System.Windows.Forms.ColumnHeader(), System.Windows.Forms.ColumnHeader)
         SummaryName = CType(New System.Windows.Forms.ColumnHeader(), System.Windows.Forms.ColumnHeader)
         SummaryValue = CType(New System.Windows.Forms.ColumnHeader(), System.Windows.Forms.ColumnHeader)
         HashName = CType(New System.Windows.Forms.ColumnHeader(), System.Windows.Forms.ColumnHeader)
@@ -785,24 +785,24 @@ Partial Class MainForm
         Me.ContextMenuFilters.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.MenuFiltersScanNew, Me.MenuFiltersScan, Me.MenuFiltersClear})
         Me.ContextMenuFilters.Name = "ContextMenuStrip1"
         Me.ContextMenuFilters.OwnerItem = Me.MainMenuFilters
-        Me.ContextMenuFilters.Size = New System.Drawing.Size(168, 70)
+        Me.ContextMenuFilters.Size = New System.Drawing.Size(181, 92)
         '
         'MenuFiltersScanNew
         '
         Me.MenuFiltersScanNew.Name = "MenuFiltersScanNew"
-        Me.MenuFiltersScanNew.Size = New System.Drawing.Size(167, 22)
+        Me.MenuFiltersScanNew.Size = New System.Drawing.Size(180, 22)
         Me.MenuFiltersScanNew.Text = "Scan &New Images"
         '
         'MenuFiltersScan
         '
         Me.MenuFiltersScan.Name = "MenuFiltersScan"
-        Me.MenuFiltersScan.Size = New System.Drawing.Size(167, 22)
+        Me.MenuFiltersScan.Size = New System.Drawing.Size(180, 22)
         Me.MenuFiltersScan.Text = "&Scan Images"
         '
         'MenuFiltersClear
         '
         Me.MenuFiltersClear.Name = "MenuFiltersClear"
-        Me.MenuFiltersClear.Size = New System.Drawing.Size(167, 22)
+        Me.MenuFiltersClear.Size = New System.Drawing.Size(180, 22)
         Me.MenuFiltersClear.Text = "Clear Filters"
         '
         'MainMenuOptions
@@ -1220,6 +1220,11 @@ Partial Class MainForm
         Me.FileNTReserved.Text = "NT"
         Me.FileNTReserved.Width = 30
         '
+        'FileFAT32Cluster
+        '
+        Me.FileFAT32Cluster.Text = "FAT32"
+        Me.FileFAT32Cluster.Width = 50
+        '
         'FileLFN
         '
         Me.FileLFN.Text = "Long File Name"
@@ -1387,11 +1392,6 @@ Partial Class MainForm
         Me.MenuDirectoryNewDirectory.Name = "MenuDirectoryNewDirectory"
         Me.MenuDirectoryNewDirectory.Size = New System.Drawing.Size(150, 22)
         Me.MenuDirectoryNewDirectory.Text = "&New Directory"
-        '
-        'FileFAT32Cluster
-        '
-        Me.FileFAT32Cluster.Text = "FAT32"
-        Me.FileFAT32Cluster.Width = 50
         '
         'MainForm
         '
