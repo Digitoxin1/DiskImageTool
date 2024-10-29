@@ -381,6 +381,8 @@ Module SummaryPanel
         With ListViewSummary
             DiskGroup = .Groups.Add("Disk", "Disk")
 
+            .AddItem(DiskGroup, "Image Type", GetImageTypeName(Disk.Image.Data.ImageType))
+
             If Disk.Image.Data.ImageType = FloppyImageType.BasicSectorImage Then
                 If Disk.IsValidImage AndAlso Disk.CheckImageSize <> 0 Then
                     ForeColor = Color.Red

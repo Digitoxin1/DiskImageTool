@@ -100,9 +100,9 @@ Namespace Bitstream
         Friend Sub InitDiskFormat(DiskFormat As FloppyDiskFormat)
             InferFloppyDiskFormat(DiskFormat)
 
-            If _DiskFormat <> FloppyDiskFormat.FloppyUnknown Then
-                InitProtectedSectors()
-            End If
+            'If _DiskFormat <> FloppyDiskFormat.FloppyUnknown Then
+            InitProtectedSectors()
+            'End If
         End Sub
 
         Friend Function GetSector(Track As UShort, Head As Byte, SectorId As Byte) As BitstreamSector

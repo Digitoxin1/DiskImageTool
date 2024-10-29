@@ -92,7 +92,8 @@ Module ImageIO
                     Data = IO.File.ReadAllBytes(ImageData.SourceFile)
                 End If
 
-                Dim FloppyImageType = GetImageTypeFromFileName(ImageData.FileName)
+                Dim FloppyImageType = GetImageTypeFromHeader(Data)
+                'Dim FloppyImageType = GetImageTypeFromFileName(ImageData.FileName)
 
                 LastChecksum = ImageData.Checksum
                 If SetChecksum Then
@@ -213,10 +214,10 @@ Module ImageIO
         FileFilter = FileDialogAppendFilter(FileFilter, "PCE Sector Image", ExtensionList)
 
         ExtensionList = New List(Of String) From {".mfm"}
-        FileFilter = FileDialogAppendFilter(FileFilter, "HXC MFM Image", ExtensionList)
+        FileFilter = FileDialogAppendFilter(FileFilter, "HxC MFM Image", ExtensionList)
 
         ExtensionList = New List(Of String) From {".hfe"}
-        FileFilter = FileDialogAppendFilter(FileFilter, "HXC HFE (v1) Image", ExtensionList)
+        FileFilter = FileDialogAppendFilter(FileFilter, "HxC HFE (v1) Image", ExtensionList)
 
         ExtensionList = New List(Of String) From {".86f"}
         FileFilter = FileDialogAppendFilter(FileFilter, "86Box 86F Image", ExtensionList)
@@ -280,7 +281,7 @@ Module ImageIO
                     Response.FilterIndex = CurrentIndex
                 End If
             Next
-            Response.Filter = FileDialogAppendFilter(Response.Filter, "HXC MFM Image", ExtensionList)
+            Response.Filter = FileDialogAppendFilter(Response.Filter, "HxC MFM Image", ExtensionList)
             CurrentIndex += 1
         End If
 
@@ -291,7 +292,7 @@ Module ImageIO
                     Response.FilterIndex = CurrentIndex
                 End If
             Next
-            Response.Filter = FileDialogAppendFilter(Response.Filter, "HXC HFE (v1) Image", ExtensionList)
+            Response.Filter = FileDialogAppendFilter(Response.Filter, "HxC HFE (v1) Image", ExtensionList)
             CurrentIndex += 1
         End If
 

@@ -1,4 +1,5 @@
 ﻿Imports System.IO
+Imports System.Runtime.Remoting.Messaging
 Imports System.Text
 
 Namespace DiskImage
@@ -363,6 +364,25 @@ Namespace DiskImage
             Entries.Reverse()
 
             Return Entries
+        End Function
+
+        Public Function GetImageTypeName(ImageType As FloppyImageType) As String
+            Select Case ImageType
+                Case FloppyImageType.BasicSectorImage
+                    Return "Basic Sector Image"
+                Case FloppyImageType.HFEImage
+                    Return "HxC HFE Image"
+                Case FloppyImageType.MFMImage
+                    Return "HxC MFM Image"
+                Case FloppyImageType.PSIImage
+                    Return "PCE Sector Image"
+                Case FloppyImageType.TranscopyImage
+                    Return "Transcopy Image"
+                Case FloppyImageType._86FImage
+                    Return "86Box 86F Image"
+                Case Else
+                    Return "Unknown"
+            End Select
         End Function
 
         Public Function InitializeAddDirectory(Directory As DirectoryBase, UseLFN As Boolean, LFNFileName As String, Index As Integer) As AddDirectoryData

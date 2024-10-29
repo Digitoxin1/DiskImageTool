@@ -1,4 +1,5 @@
 ﻿Imports System.Runtime.InteropServices
+Imports System.Text
 Imports DiskImageTool.DiskImage
 
 Module Utility
@@ -77,6 +78,24 @@ Module Utility
         End If
 
         Return Result
+    End Function
+
+    Public Function GetImageTypeFromHeader(Data() As Byte) As FloppyImageType
+        If Encoding.UTF8.GetString(Data, 0, 8) = "HXCPICFE" Then
+            Return FloppyImageType.HFEImage
+        ElseIf Encoding.UTF8.GetString(Data, 0, 8) = "HXCHFEV3" Then
+            Return FloppyImageType.HFEImage
+        ElseIf Encoding.UTF8.GetString(Data, 0, 4) = "86BF" Then
+            Return FloppyImageType._86FImage
+        ElseIf Encoding.UTF8.GetString(Data, 0, 6) = "HXCMFM" Then
+            Return FloppyImageType.MFMImage
+        ElseIf Encoding.UTF8.GetString(Data, 0, 4) = "PSI " Then
+            Return FloppyImageType.PSIImage
+        ElseIf BitConverter.ToUInt16(Data, 0) = &HA55A Then
+            Return FloppyImageType.TranscopyImage
+        Else
+            Return FloppyImageType.BasicSectorImage
+        End If
     End Function
 
     Public Function GetImageTypeFromFileName(FileName As String) As FloppyImageType
