@@ -87,7 +87,7 @@ Public Class ImageLoadForm
                     Dim EntryFileExt = Path.GetExtension(Entry.Name).ToLower
                     If AllFileExtensions.Contains(EntryFileExt) Then
                         Dim FilePath = Path.Combine(FileName, Entry.FullName)
-                        Dim CheckLength = Not BitstreamFileExtensions.Contains(EntryFileExt)
+                        Dim CheckLength = Not BitstreamFileExtensions.Contains(EntryFileExt) And Not AdvancedSectorFileExtensions.Contains(EntryFileExt)
                         If Not CheckLength OrElse (Entry.Length >= MIN_FILE_SIZE And Entry.Length <= MAX_FILE_SIZE) Then
                             LoadedFileAdd(bw, FilePath, FileName, True, Entry.FullName)
                         End If
@@ -102,7 +102,7 @@ Public Class ImageLoadForm
                 Catch
                     '
                 End Try
-                Dim CheckLength = Not BitstreamFileExtensions.Contains(Extension)
+                Dim CheckLength = Not BitstreamFileExtensions.Contains(Extension) And Not AdvancedSectorFileExtensions.Contains(Extension)
                 If Not CheckLength OrElse (Length >= MIN_FILE_SIZE And Length <= MAX_FILE_SIZE) Then
                     LoadedFileAdd(bw, FileName, FileName, False)
                 End If

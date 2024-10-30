@@ -3,9 +3,11 @@ Imports DiskImageTool.Bitstream
 Imports DiskImageTool.DiskImage
 
 Module ImageIO
-    Public ReadOnly AllFileExtensions As New List(Of String) From {".ima", ".img", ".imz", ".vfd", ".flp"}
+    Public ReadOnly AllFileExtensions As New List(Of String)
+    Public ReadOnly BasicSectorFileExtensions As New List(Of String) From {".ima", ".img", ".imz", ".vfd", ".flp"}
     Public ReadOnly ArchiveFileExtensions As New List(Of String) From {".zip"}
-    Public ReadOnly BitstreamFileExtensions As New List(Of String) From {".tc", ".psi", ".mfm", ".86f", ".hfe"}
+    Public ReadOnly BitstreamFileExtensions As New List(Of String) From {".86f", ".hfe", ".mfm", ".tc"}
+    Public ReadOnly AdvancedSectorFileExtensions As New List(Of String) From {".psi"}
 
     Public Enum SaveImageResponse
         Success
@@ -201,26 +203,32 @@ Module ImageIO
 
         FileFilter = FileDialogGetFilter("All Floppy Disk Images", AllFileExtensions)
 
+        FileFilter = FileDialogAppendFilter(FileFilter, "Basic Sector Images", BasicSectorFileExtensions)
+
+        FileFilter = FileDialogAppendFilter(FileFilter, "Advanced Sector Images", AdvancedSectorFileExtensions)
+
+        FileFilter = FileDialogAppendFilter(FileFilter, "Bitstream Images", BitstreamFileExtensions)
+
         ExtensionList = New List(Of String) From {".imz"}
         FileFilter = FileDialogAppendFilter(FileFilter, "Compressed Disk Image", ExtensionList)
 
         ExtensionList = New List(Of String) From {".vfd", ".flp"}
         FileFilter = FileDialogAppendFilter(FileFilter, "Virtual Floppy Disk", ExtensionList)
 
-        ExtensionList = New List(Of String) From {".tc"}
-        FileFilter = FileDialogAppendFilter(FileFilter, "Transcopy Image", ExtensionList)
-
         ExtensionList = New List(Of String) From {".psi"}
         FileFilter = FileDialogAppendFilter(FileFilter, "PCE Sector Image", ExtensionList)
 
-        ExtensionList = New List(Of String) From {".mfm"}
-        FileFilter = FileDialogAppendFilter(FileFilter, "HxC MFM Image", ExtensionList)
+        ExtensionList = New List(Of String) From {".86f"}
+        FileFilter = FileDialogAppendFilter(FileFilter, "86Box 86F Image", ExtensionList)
 
         ExtensionList = New List(Of String) From {".hfe"}
         FileFilter = FileDialogAppendFilter(FileFilter, "HxC HFE (v1) Image", ExtensionList)
 
-        ExtensionList = New List(Of String) From {".86f"}
-        FileFilter = FileDialogAppendFilter(FileFilter, "86Box 86F Image", ExtensionList)
+        ExtensionList = New List(Of String) From {".mfm"}
+        FileFilter = FileDialogAppendFilter(FileFilter, "HxC MFM Image", ExtensionList)
+
+        ExtensionList = New List(Of String) From {".tc"}
+        FileFilter = FileDialogAppendFilter(FileFilter, "Transcopy Image", ExtensionList)
 
         FileFilter = FileDialogAppendFilter(FileFilter, "Zip Archive", ".zip")
         FileFilter = FileDialogAppendFilter(FileFilter, "All files", ".*")
@@ -264,24 +272,13 @@ Module ImageIO
         CurrentIndex += 1
 
         If ImageType <> FloppyImageType.PSIImage Then
-            ExtensionList = New List(Of String) From {".tc"}
+            ExtensionList = New List(Of String) From {".86f"}
             For Each Extension In ExtensionList
                 If FileExt.Equals(Extension, StringComparison.OrdinalIgnoreCase) Then
                     Response.FilterIndex = CurrentIndex
                 End If
             Next
-            Response.Filter = FileDialogAppendFilter(Response.Filter, "Transcopy Image", ExtensionList)
-            CurrentIndex += 1
-        End If
-
-        If ImageType <> FloppyImageType.PSIImage Then
-            ExtensionList = New List(Of String) From {".mfm"}
-            For Each Extension In ExtensionList
-                If FileExt.Equals(Extension, StringComparison.OrdinalIgnoreCase) Then
-                    Response.FilterIndex = CurrentIndex
-                End If
-            Next
-            Response.Filter = FileDialogAppendFilter(Response.Filter, "HxC MFM Image", ExtensionList)
+            Response.Filter = FileDialogAppendFilter(Response.Filter, "86Box 86F Image", ExtensionList)
             CurrentIndex += 1
         End If
 
@@ -297,13 +294,24 @@ Module ImageIO
         End If
 
         If ImageType <> FloppyImageType.PSIImage Then
-            ExtensionList = New List(Of String) From {".86f"}
+            ExtensionList = New List(Of String) From {".mfm"}
             For Each Extension In ExtensionList
                 If FileExt.Equals(Extension, StringComparison.OrdinalIgnoreCase) Then
                     Response.FilterIndex = CurrentIndex
                 End If
             Next
-            Response.Filter = FileDialogAppendFilter(Response.Filter, "86Box 86F Image", ExtensionList)
+            Response.Filter = FileDialogAppendFilter(Response.Filter, "HxC MFM Image", ExtensionList)
+            CurrentIndex += 1
+        End If
+
+        If ImageType <> FloppyImageType.PSIImage Then
+            ExtensionList = New List(Of String) From {".tc"}
+            For Each Extension In ExtensionList
+                If FileExt.Equals(Extension, StringComparison.OrdinalIgnoreCase) Then
+                    Response.FilterIndex = CurrentIndex
+                End If
+            Next
+            Response.Filter = FileDialogAppendFilter(Response.Filter, "Transcopy Image", ExtensionList)
             CurrentIndex += 1
         End If
 
@@ -370,11 +378,24 @@ Module ImageIO
         For Each Item As Integer In Items
             Dim FileExt = GetImageFileExtensionByFormat(Item)
             If FileExt <> "" Then
-                If Not AllFileExtensions.Contains(FileExt) Then
-                    AllFileExtensions.Add(FileExt)
+                If Not BasicSectorFileExtensions.Contains(FileExt) Then
+                    BasicSectorFileExtensions.Add(FileExt)
                 End If
             End If
         Next
+
+        For Each Item In BasicSectorFileExtensions
+            If Not AllFileExtensions.Contains(Item) Then
+                AllFileExtensions.Add(Item)
+            End If
+        Next
+
+        For Each Item In AdvancedSectorFileExtensions
+            If Not AllFileExtensions.Contains(Item) Then
+                AllFileExtensions.Add(Item)
+            End If
+        Next
+
         For Each Item In BitstreamFileExtensions
             If Not AllFileExtensions.Contains(Item) Then
                 AllFileExtensions.Add(Item)
@@ -534,7 +555,7 @@ Module ImageIO
         ElseIf TypeOf Data Is ImageFormats.MFM.MFMByteArray Then
             Return DirectCast(Data, ImageFormats.MFM.MFMByteArray).Image
 
-        ElseIf TypeOf Data Is ImageFormats.HFE.hfeByteArray Then
+        ElseIf TypeOf Data Is ImageFormats.HFE.HFEByteArray Then
             Return DirectCast(Data, ImageFormats.HFE.HFEByteArray).Image
 
         ElseIf TypeOf Data Is ImageFormats.TC.TranscopyByteArray Then
