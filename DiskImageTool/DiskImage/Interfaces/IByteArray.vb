@@ -11,6 +11,7 @@ Namespace DiskImage
         MFMImage
         _86FImage
         HFEImage
+        IMDImage
     End Enum
 
     Public Interface IByteArray

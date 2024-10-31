@@ -249,11 +249,11 @@ Namespace ImageFormats
                 End Set
             End Property
 
-            Public Function Load(FilePath As String) As Boolean
+            Public Function Load(FilePath As String) As Boolean Implements IBitstreamImage.Load
                 Return Load(IO.File.ReadAllBytes(FilePath))
             End Function
 
-            Public Function Load(Buffer() As Byte) As Boolean
+            Public Function Load(Buffer() As Byte) As Boolean Implements IBitstreamImage.Load
                 Dim Result As Boolean
 
                 Dim Signature = Text.Encoding.UTF8.GetString(Buffer, HFEHeaderOffsets.Signature, HFEHeadeSizes.Signature)
@@ -342,7 +342,7 @@ Namespace ImageFormats
                 _Tracks(Index) = Value
             End Sub
 
-            Public Function Export(FilePath As String) As Boolean
+            Public Function Export(FilePath As String) As Boolean Implements IBitstreamImage.Export
                 Dim Buffer() As Byte
 
                 If IO.File.Exists(FilePath) Then

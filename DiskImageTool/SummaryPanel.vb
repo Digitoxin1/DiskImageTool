@@ -187,7 +187,9 @@ Module SummaryPanel
 
             .AddItem(BootRecordGroup, BPBDescription(BPBOffsets.BytesPerSector), Disk.BootSector.BPB.BytesPerSector, ForeColor)
 
-            If DoBPBCompare AndAlso Disk.BootSector.BPB.SectorsPerCluster <> BPBBySize.SectorsPerCluster Then
+            If Not Disk.BootSector.BPB.HasValidSectorsPerCluster(True) Then
+                ForeColor = Color.Red
+            ElseIf DoBPBCompare AndAlso Disk.BootSector.BPB.SectorsPerCluster <> BPBBySize.SectorsPerCluster Then
                 ForeColor = Color.Blue
             Else
                 ForeColor = SystemColors.WindowText

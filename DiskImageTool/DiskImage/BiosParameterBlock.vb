@@ -227,7 +227,14 @@ Namespace DiskImage
             Return (RootEntryCount * 32) Mod Disk.BYTES_PER_SECTOR = 0
         End Function
 
-        Public Function HasValidSectorsPerCluster() As Boolean
+        Public Function HasValidSectorsPerCluster(CheckMediaDescriptor As Boolean) As Boolean
+            If CheckMediaDescriptor Then
+                If MediaDescriptor = &HFC Or MediaDescriptor = &HFE Then
+                    If SectorsPerCluster <> 1 Then
+                        Return False
+                    End If
+                End If
+            End If
             Return ValidSectorsPerCluster.Contains(SectorsPerCluster)
         End Function
 
@@ -255,7 +262,7 @@ Namespace DiskImage
 
         Public Function IsValid() As Boolean
             Return _FileBytes.Length >= BPB_SIZE _
-                AndAlso HasValidSectorsPerCluster() _
+                AndAlso HasValidSectorsPerCluster(False) _
                 AndAlso HasValidReservedSectorCount() _
                 AndAlso HasValidNumberOfFATs() _
                 AndAlso RootEntryCount > 0 _

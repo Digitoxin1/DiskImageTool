@@ -380,6 +380,8 @@ Namespace DiskImage
                     Return "Transcopy Image"
                 Case FloppyImageType._86FImage
                     Return "86Box 86F Image"
+                Case FloppyImageType.IMDImage
+                    Return "ImageDisk Sector Image"
                 Case Else
                     Return "Unknown"
             End Select

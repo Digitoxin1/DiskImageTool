@@ -7,7 +7,7 @@ Module ImageIO
     Public ReadOnly BasicSectorFileExtensions As New List(Of String) From {".ima", ".img", ".imz", ".vfd", ".flp"}
     Public ReadOnly ArchiveFileExtensions As New List(Of String) From {".zip"}
     Public ReadOnly BitstreamFileExtensions As New List(Of String) From {".86f", ".hfe", ".mfm", ".tc"}
-    Public ReadOnly AdvancedSectorFileExtensions As New List(Of String) From {".psi"}
+    Public ReadOnly AdvancedSectorFileExtensions As New List(Of String) From {".imd", ".psi"}
 
     Public Enum SaveImageResponse
         Success
@@ -118,6 +118,14 @@ Module ImageIO
                         ImageData.InvalidImage = True
                     End If
 
+                ElseIf FloppyImageType = FloppyImageType.IMDImage Then
+                    Dim IMDImage = ImageFormats.IMD.IMDImageLoad(Data)
+                    If IMDImage IsNot Nothing Then
+                        Image = IMDImage
+                    Else
+                        ImageData.InvalidImage = True
+                    End If
+
                 ElseIf FloppyImageType = FloppyImageType.MFMImage Then
                     Dim MFMImage = ImageFormats.MFM.MFMImageLoad(Data)
                     If MFMImage IsNot Nothing Then
@@ -203,17 +211,20 @@ Module ImageIO
 
         FileFilter = FileDialogGetFilter("All Floppy Disk Images", AllFileExtensions)
 
-        FileFilter = FileDialogAppendFilter(FileFilter, "Basic Sector Images", BasicSectorFileExtensions)
+        FileFilter = FileDialogAppendFilter(FileFilter, "Basic Sector Image", BasicSectorFileExtensions)
 
-        FileFilter = FileDialogAppendFilter(FileFilter, "Advanced Sector Images", AdvancedSectorFileExtensions)
+        FileFilter = FileDialogAppendFilter(FileFilter, "Advanced Sector Image", AdvancedSectorFileExtensions)
 
-        FileFilter = FileDialogAppendFilter(FileFilter, "Bitstream Images", BitstreamFileExtensions)
+        FileFilter = FileDialogAppendFilter(FileFilter, "Bitstream Image", BitstreamFileExtensions)
 
         ExtensionList = New List(Of String) From {".imz"}
-        FileFilter = FileDialogAppendFilter(FileFilter, "Compressed Disk Image", ExtensionList)
+        FileFilter = FileDialogAppendFilter(FileFilter, "WinImage Compressed Disk Image", ExtensionList)
 
         ExtensionList = New List(Of String) From {".vfd", ".flp"}
         FileFilter = FileDialogAppendFilter(FileFilter, "Virtual Floppy Disk", ExtensionList)
+
+        ExtensionList = New List(Of String) From {".imd"}
+        FileFilter = FileDialogAppendFilter(FileFilter, "ImageDisk Sector Image", ExtensionList)
 
         ExtensionList = New List(Of String) From {".psi"}
         FileFilter = FileDialogAppendFilter(FileFilter, "PCE Sector Image", ExtensionList)
@@ -262,6 +273,15 @@ Module ImageIO
         Response.Filter = FileDialogAppendFilter(Response.Filter, "Virtual Floppy Disk", ExtensionList)
         CurrentIndex += 1
 
+        ExtensionList = New List(Of String) From {".imd"}
+        For Each Extension In ExtensionList
+            If FileExt.Equals(Extension, StringComparison.OrdinalIgnoreCase) Then
+                Response.FilterIndex = CurrentIndex
+            End If
+        Next
+        Response.Filter = FileDialogAppendFilter(Response.Filter, "ImageDisk Sector Image", ExtensionList)
+        CurrentIndex += 1
+
         ExtensionList = New List(Of String) From {".psi"}
         For Each Extension In ExtensionList
             If FileExt.Equals(Extension, StringComparison.OrdinalIgnoreCase) Then
@@ -271,7 +291,7 @@ Module ImageIO
         Response.Filter = FileDialogAppendFilter(Response.Filter, "PCE Sector Image", ExtensionList)
         CurrentIndex += 1
 
-        If ImageType <> FloppyImageType.PSIImage Then
+        If ImageType <> FloppyImageType.PSIImage And ImageType <> FloppyImageType.IMDImage Then
             ExtensionList = New List(Of String) From {".86f"}
             For Each Extension In ExtensionList
                 If FileExt.Equals(Extension, StringComparison.OrdinalIgnoreCase) Then
@@ -280,9 +300,7 @@ Module ImageIO
             Next
             Response.Filter = FileDialogAppendFilter(Response.Filter, "86Box 86F Image", ExtensionList)
             CurrentIndex += 1
-        End If
 
-        If ImageType <> FloppyImageType.PSIImage Then
             ExtensionList = New List(Of String) From {".hfe"}
             For Each Extension In ExtensionList
                 If FileExt.Equals(Extension, StringComparison.OrdinalIgnoreCase) Then
@@ -291,9 +309,7 @@ Module ImageIO
             Next
             Response.Filter = FileDialogAppendFilter(Response.Filter, "HxC HFE (v1) Image", ExtensionList)
             CurrentIndex += 1
-        End If
 
-        If ImageType <> FloppyImageType.PSIImage Then
             ExtensionList = New List(Of String) From {".mfm"}
             For Each Extension In ExtensionList
                 If FileExt.Equals(Extension, StringComparison.OrdinalIgnoreCase) Then
@@ -302,9 +318,7 @@ Module ImageIO
             Next
             Response.Filter = FileDialogAppendFilter(Response.Filter, "HxC MFM Image", ExtensionList)
             CurrentIndex += 1
-        End If
 
-        If ImageType <> FloppyImageType.PSIImage Then
             ExtensionList = New List(Of String) From {".tc"}
             For Each Extension In ExtensionList
                 If FileExt.Equals(Extension, StringComparison.OrdinalIgnoreCase) Then

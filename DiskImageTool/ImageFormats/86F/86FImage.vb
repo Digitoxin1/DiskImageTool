@@ -199,7 +199,7 @@ Namespace ImageFormats
                     Return 1
                 End Get
             End Property
-            Public Function Export(FilePath As String) As Boolean
+            Public Function Export(FilePath As String) As Boolean Implements IBitstreamImage.Export
                 Dim Buffer() As Byte
                 Dim Pos As UInteger
                 Dim DataPosition As UInteger
@@ -305,11 +305,11 @@ Namespace ImageFormats
                 Return _Tracks(Index)
             End Function
 
-            Public Function Load(FilePath As String) As Boolean
+            Public Function Load(FilePath As String) As Boolean Implements IBitstreamImage.Load
                 Return Load(IO.File.ReadAllBytes(FilePath))
             End Function
 
-            Public Function Load(Buffer() As Byte) As Boolean
+            Public Function Load(Buffer() As Byte) As Boolean Implements IBitstreamImage.Load
                 Dim TrackList As New List(Of _86FTrack)
                 Dim Result As Boolean
                 Dim DoubleStep As Boolean = False

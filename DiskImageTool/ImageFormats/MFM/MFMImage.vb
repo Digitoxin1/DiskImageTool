@@ -56,11 +56,11 @@ Namespace ImageFormats
                 _Tracks = New MFMTrack((_TrackCount) * _SideCount - 1) {}
             End Sub
 
-            Public Function Load(FilePath As String) As Boolean
+            Public Function Load(FilePath As String) As Boolean Implements IBitstreamImage.Load
                 Return Load(IO.File.ReadAllBytes(FilePath))
             End Function
 
-            Public Function Load(Buffer() As Byte) As Boolean
+            Public Function Load(Buffer() As Byte) As Boolean Implements IBitstreamImage.Load
                 Dim Result As Boolean
 
                 Dim Signature = Text.Encoding.UTF8.GetString(Buffer, MFMImageOffsets.Signature, MFMImageSizes.Signature)
@@ -178,7 +178,7 @@ Namespace ImageFormats
                 _Tracks(Index) = Value
             End Sub
 
-            Public Function Export(FilePath As String) As Boolean
+            Public Function Export(FilePath As String) As Boolean Implements IBitstreamImage.Export
                 Dim Buffer() As Byte
 
                 Try

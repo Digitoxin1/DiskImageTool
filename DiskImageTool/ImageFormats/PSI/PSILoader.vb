@@ -7,7 +7,7 @@ Namespace ImageFormats
                 Dim Image As PSIByteArray = Nothing
 
                 Dim PSI = New PSISectorImage()
-                Dim Result = PSI.Import(Data)
+                Dim Result = PSI.Load(Data)
                 If Result Then
                     If PSI.Header.DefaultSectorFormat = DefaultSectorFormat.IBM_MFM_DD _
                         Or PSI.Header.DefaultSectorFormat = DefaultSectorFormat.IBM_MFM_HD _

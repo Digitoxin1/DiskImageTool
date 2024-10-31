@@ -48,6 +48,18 @@ Namespace ImageFormats
                 _CylinderIncrement = 1
             End Sub
 
+            Public Sub New(Cylinders As Byte, Sides As Byte, CylinderIncrement As Byte)
+                _Comment = New Byte(31) {}
+                _Comment2 = New Byte(31) {}
+                _DiskType = TransCopyDiskType.Unknown
+                _CylinderStart = 0
+                _CylinderEnd = Cylinders - 1
+                _Sides = Sides
+                _CylinderIncrement = CylinderIncrement
+
+                _Cylinders = New TransCopyCylinder((_CylinderEnd + 1) * Sides - 1) {}
+            End Sub
+
             Public Property Comment As String
                 Get
                     Return Text.Encoding.UTF8.GetString(_Comment).TrimEnd(vbNullChar)
@@ -106,7 +118,7 @@ Namespace ImageFormats
                 End Get
             End Property
 
-            Public Function Export(FilePath As String) As Boolean
+            Public Function Export(FilePath As String) As Boolean Implements IBitstreamImage.Export
                 Dim buffer() As Byte
                 Dim OffsetList As New List(Of UShort)
                 Dim Index As Integer
@@ -286,16 +298,11 @@ Namespace ImageFormats
                 Return _Cylinders(Index)
             End Function
 
-            Public Sub Initialize(Cylinders As Byte, Sides As Byte, CylinderIncrement As Byte)
-                _CylinderStart = 0
-                _CylinderEnd = Cylinders - 1
-                _Sides = Sides
-                _CylinderIncrement = CylinderIncrement
+            Public Function Load(FilePath As String) As Boolean Implements IBitstreamImage.Load
+                Return Load(IO.File.ReadAllBytes(FilePath))
+            End Function
 
-                _Cylinders = New TransCopyCylinder((_CylinderEnd + 1) * Sides - 1) {}
-            End Sub
-
-            Public Function Initialize(Buffer() As Byte) As Boolean
+            Public Function Load(Buffer() As Byte) As Boolean Implements IBitstreamImage.Load
                 Dim Result As Boolean
 
                 Dim Signature = BitConverter.ToUInt16(Buffer, TransCopyOffsets.Signature)
@@ -355,9 +362,6 @@ Namespace ImageFormats
                 Return Result
             End Function
 
-            Public Function Load(FilePath As String) As Boolean
-                Return Initialize(IO.File.ReadAllBytes(FilePath))
-            End Function
             Public Sub SetCylinder(Cylinder As Byte, Side As Byte, Value As TransCopyCylinder)
                 If Cylinder > _CylinderEnd Or Side > _Sides - 1 Then
                     Throw New System.IndexOutOfRangeException

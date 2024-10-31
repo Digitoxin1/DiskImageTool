@@ -191,6 +191,12 @@
     <Compile Include="ImageFormats\HFE\HFEImage.vb" />
     <Compile Include="ImageFormats\HFE\HFELoader.vb" />
     <Compile Include="ImageFormats\HFE\HFETrack.vb" />
+    <Compile Include="ImageFormats\IMD\Enums.vb" />
+    <Compile Include="ImageFormats\IMD\IMDByteArray.vb" />
+    <Compile Include="ImageFormats\IMD\IMDImage.vb" />
+    <Compile Include="ImageFormats\IMD\IMDLoader.vb" />
+    <Compile Include="ImageFormats\IMD\IMDSector.vb" />
+    <Compile Include="ImageFormats\IMD\IMDTrack.vb" />
     <Compile Include="ImageIO.vb" />
     <Compile Include="ImageFormats\ImageConversion.vb" />
     <Compile Include="ImageFormats\MFM\MFMByteArray.vb" />

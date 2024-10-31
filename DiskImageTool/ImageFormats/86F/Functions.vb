@@ -70,7 +70,7 @@
                 Select Case RPM
                     Case 300
                         Return _86F.RPM.RPM300
-                    Case 350
+                    Case 360
                         Return _86F.RPM.RPM360
                     Case Else
                         Return _86F.RPM.RPM300

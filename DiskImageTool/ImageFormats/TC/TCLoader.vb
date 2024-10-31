@@ -7,7 +7,7 @@ Namespace ImageFormats
                 Dim Image As TranscopyByteArray = Nothing
 
                 Dim tc = New TransCopyImage()
-                Dim Result = tc.Initialize(Data)
+                Dim Result = tc.Load(Data)
                 If Result Then
                     Dim DiskFormat = Bitstream.BitstreamGetImageFormat(tc)
                     If DiskFormat <> FloppyDiskFormat.FloppyUnknown Then

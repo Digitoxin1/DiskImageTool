@@ -2,14 +2,13 @@
     Namespace IBM_MFM
         Public Class IBM_MFM_Track
             Private _AddressMarkIndexes As List(Of UInteger)
+            Private _FirstSector As Integer
+            Private _Gap1 As Byte()
             Private _Gap4A As Byte()
             Private _IAM As MFMAddressMark
-            Private _Gap1 As Byte()
+            Private _LastSector As Integer
             Private _Sectors As List(Of IBM_MFM_Sector)
             Private _Size As UInteger
-            Private _FirstSector As Integer
-            Private _LastSector As Integer
-
             Public Sub New(Data() As Byte)
                 MFMDecode(BytesToBits(Data))
             End Sub
@@ -17,30 +16,6 @@
             Public Sub New(Bitstream As BitArray)
                 MFMDecode(Bitstream)
             End Sub
-
-            Public ReadOnly Property Gap4A As Byte()
-                Get
-                    Return _Gap4A
-                End Get
-            End Property
-
-            Public ReadOnly Property IAM As MFMAddressMark
-                Get
-                    Return _IAM
-                End Get
-            End Property
-
-            Public ReadOnly Property Gap1 As Byte()
-                Get
-                    Return _Gap1
-                End Get
-            End Property
-
-            Public ReadOnly Property Sectors As List(Of IBM_MFM_Sector)
-                Get
-                    Return _Sectors
-                End Get
-            End Property
 
             Public ReadOnly Property AddressMarkIndexes As List(Of UInteger)
                 Get
@@ -54,12 +29,34 @@
                 End Get
             End Property
 
+            Public ReadOnly Property Gap1 As Byte()
+                Get
+                    Return _Gap1
+                End Get
+            End Property
+
+            Public ReadOnly Property Gap4A As Byte()
+                Get
+                    Return _Gap4A
+                End Get
+            End Property
+
+            Public ReadOnly Property IAM As MFMAddressMark
+                Get
+                    Return _IAM
+                End Get
+            End Property
             Public ReadOnly Property LastSector As Integer
                 Get
                     Return _LastSector
                 End Get
             End Property
 
+            Public ReadOnly Property Sectors As List(Of IBM_MFM_Sector)
+                Get
+                    Return _Sectors
+                End Get
+            End Property
             Public ReadOnly Property Size As UInteger
                 Get
                     Return _Size
@@ -121,14 +118,17 @@
             Private Sub ProcessSectorList(BitStream As BitArray, SectorList As List(Of UInteger))
                 Dim SectorIndex As UShort = 0
                 Dim NextSectorOffset As UInteger
+                Dim DataStart As UInteger
                 Dim DataEnd As UInteger
+
                 For Each SectorOffset In SectorList
                     Dim Start = SectorOffset + MFM_IDAM_Sync_Bytes.Length * 8
                     AddAddressMarkIndex(Start)
 
                     Dim Sector = New IBM_MFM_Sector(BitStream, SectorOffset)
 
-                    DataEnd = SectorOffset + 160 + Sector.GetSizeBytes * MFM_BYTE_SIZE
+                    DataStart = SectorOffset + 160
+                    DataEnd = DataStart + Sector.GetSizeBytes * MFM_BYTE_SIZE
 
                     If SectorIndex < SectorList.Count - 1 Then
                         NextSectorOffset = SectorList.Item(SectorIndex + 1)

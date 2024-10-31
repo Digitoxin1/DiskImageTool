@@ -28,7 +28,7 @@ Namespace ImageFormats
                 End Get
             End Property
 
-            Public Function Export(FilePath As String) As Boolean
+            Public Function Export(FilePath As String) As Boolean Implements IBitstreamImage.Export
                 Dim Buffer() As Byte
 
                 Try
@@ -98,11 +98,11 @@ Namespace ImageFormats
                 Return True
             End Function
 
-            Public Function Import(FilePath As String) As Boolean
-                Return Import(IO.File.ReadAllBytes(FilePath))
+            Public Function Load(FilePath As String) As Boolean Implements IBitstreamImage.Load
+                Return Load(IO.File.ReadAllBytes(FilePath))
             End Function
 
-            Public Function Import(Buffer() As Byte) As Boolean
+            Public Function Load(Buffer() As Byte) As Boolean Implements IBitstreamImage.Load
                 Dim Result As Boolean = False
                 Dim Chunk As PSIChunk
                 Dim ChunkCount As UInteger = 0

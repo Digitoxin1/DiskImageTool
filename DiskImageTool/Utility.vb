@@ -91,6 +91,8 @@ Module Utility
             Return FloppyImageType.MFMImage
         ElseIf Encoding.UTF8.GetString(Data, 0, 4) = "PSI " Then
             Return FloppyImageType.PSIImage
+        ElseIf Encoding.UTF8.GetString(Data, 0, 4) = "IMD " Then
+            Return FloppyImageType.IMDImage
         ElseIf BitConverter.ToUInt16(Data, 0) = &HA55A Then
             Return FloppyImageType.TranscopyImage
         Else
