@@ -59,7 +59,10 @@ Namespace ImageFormats
                 SetTracks(_Image.TrackCount, _Image.SideCount)
 
                 For Each Track In _Image.Tracks
-                    Dim TrackData = SetTrack(Track.Cylinder, Track.Head, -1, -1, GetEncoding(Track.Mode))
+                    Dim TrackData = SetTrack(Track.Cylinder, Track.Head)
+                    TrackData.SectorSize = Track.GetSizeBytes
+                    TrackData.Encoding = GetEncoding(Track.Mode)
+
                     For Each Sector In Track.Sectors
                         If TrackData.FirstSector = -1 Or Sector.SectorId < TrackData.FirstSector Then
                             TrackData.FirstSector = Sector.SectorId

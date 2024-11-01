@@ -204,6 +204,7 @@ Namespace DiskImage
             Try
                 IO.File.WriteAllBytes(FilePath, _Data)
             Catch ex As Exception
+                DebugException(ex)
                 Return False
             End Try
 

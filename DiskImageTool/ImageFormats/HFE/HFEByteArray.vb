@@ -71,7 +71,7 @@ Namespace ImageFormats
                         Dim MappedTrack = Track \ _Image.TrackStep
                         HFETrack = _Image.GetTrack(Track, Side)
 
-                        SetTrack(MappedTrack, Side, HFETrack.MFMData.FirstSector, HFETrack.MFMData.LastSector, HFETrack.BitstreamTrackType)
+                        SetTrack(MappedTrack, Side, HFETrack.MFMData, HFETrack.BitstreamTrackType)
 
                         For Each MFMSector In HFETrack.MFMData.Sectors
                             If MFMSector.DAMFound Then

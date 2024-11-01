@@ -69,7 +69,11 @@ Namespace ImageFormats
                         Dim Track = GetTrack(PSISector.Cylinder, PSISector.Head)
 
                         If Track Is Nothing Then
-                            SetTrack(PSISector.Cylinder, PSISector.Head, PSISector.Sector, PSISector.Sector, BitstreamTrackType.MFM)
+                            Track = SetTrack(PSISector.Cylinder, PSISector.Head)
+                            Track.FirstSector = PSISector.Sector
+                            Track.LastSector = PSISector.Sector
+                            Track.SectorSize = PSISector.Size
+                            Track.Encoding = BitstreamTrackType.MFM
                         Else
                             If PSISector.Sector < Track.FirstSector Then
                                 Track.FirstSector = PSISector.Sector
@@ -77,6 +81,9 @@ Namespace ImageFormats
 
                             If PSISector.Sector > Track.LastSector Then
                                 Track.LastSector = PSISector.Sector
+                            End If
+                            If PSISector.Size <> Track.SectorSize Then
+                                Track.SectorSize = -1
                             End If
                         End If
 

@@ -58,6 +58,7 @@ Module FloppyDiskIO
             Try
                 IO.File.WriteAllBytes(Dialog.FileName, Buffer)
             Catch ex As Exception
+                DebugException(ex)
                 MsgBox("An error has occurred while attempting to save the file.", MsgBoxStyle.Exclamation)
                 Return ""
             End Try

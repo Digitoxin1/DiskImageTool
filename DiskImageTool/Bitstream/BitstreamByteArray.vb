@@ -1,4 +1,5 @@
 ﻿Imports DiskImageTool.DiskImage
+Imports DiskImageTool.ImageFormats.MFM
 
 Namespace Bitstream
     Public MustInherit Class BitstreamByteArray
@@ -21,8 +22,19 @@ Namespace Bitstream
         Public Event SizeChanged As SizeChangedEventHandler Implements IByteArray.SizeChanged
 
         Friend Class TrackData
+            Public Sub New()
+                _DuplicateSectors = False
+                _FirstSector = -1
+                _LastSector = -1
+                _OverlappingSectors = False
+                _Encoding = BitstreamTrackType.Other
+            End Sub
+
+            Public Property DuplicateSectors As Boolean
             Public Property FirstSector As Integer
             Public Property LastSector As Integer
+            Public Property OverlappingSectors As Boolean
+            Public Property SectorSize As Integer
             Public Property Encoding As BitstreamTrackType
         End Class
 
@@ -141,7 +153,7 @@ Namespace Bitstream
             _Sectors(Index) = Value
         End Sub
 
-        Friend Function SetTrack(Track As UShort, Head As Byte, FirstSector As Integer, LastSector As Integer, Encoding As BitstreamTrackType) As TrackData
+        Friend Function SetTrack(Track As UShort, Head As Byte, MFMData As IBM_MFM.IBM_MFM_Track, Encoding As BitstreamTrackType) As TrackData
             If Track > _TrackCount - 1 Or Head > _HeadCount - 1 Then
                 Throw New System.IndexOutOfRangeException
             End If
@@ -149,10 +161,29 @@ Namespace Bitstream
             Dim Index = Track * _HeadCount + Head
 
             Dim TrackData As New TrackData With {
-                .FirstSector = FirstSector,
-                .LastSector = LastSector,
                 .Encoding = Encoding
             }
+            If MFMData IsNot Nothing Then
+                TrackData.FirstSector = MFMData.FirstSector
+                TrackData.LastSector = MFMData.LastSector
+                TrackData.SectorSize = MFMData.SectorSize
+                TrackData.DuplicateSectors = MFMData.DuplicateSectors
+                TrackData.OverlappingSectors = MFMData.OverlappingSectors
+            End If
+
+            _Tracks(Index) = TrackData
+
+            Return TrackData
+        End Function
+
+        Friend Function SetTrack(Track As UShort, Head As Byte) As TrackData
+            If Track > _TrackCount - 1 Or Head > _HeadCount - 1 Then
+                Throw New System.IndexOutOfRangeException
+            End If
+
+            Dim Index = Track * _HeadCount + Head
+
+            Dim TrackData As New TrackData
 
             _Tracks(Index) = TrackData
 

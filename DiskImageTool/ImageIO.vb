@@ -9,6 +9,12 @@ Module ImageIO
     Public ReadOnly BitstreamFileExtensions As New List(Of String) From {".86f", ".hfe", ".mfm", ".tc"}
     Public ReadOnly AdvancedSectorFileExtensions As New List(Of String) From {".imd", ".psi"}
 
+    Private Enum FloppyImageGroup
+        BasicSectorImage
+        AdvancedSectorImage
+        BitstreamImage
+    End Enum
+
     Public Enum SaveImageResponse
         Success
         Failed
@@ -22,7 +28,7 @@ Module ImageIO
             Dim BackupPath As String = FilePath & ".bak"
             IO.File.Copy(FilePath, BackupPath, True)
         Catch ex As Exception
-            Debug.Print("Caught Exception: CreateBackup")
+            DebugException(ex)
             Return False
         End Try
 
@@ -65,7 +71,7 @@ Module ImageIO
                 IO.File.SetLastAccessTime(FilePath, D.DateObject)
             End If
         Catch ex As Exception
-            Debug.Print("Caught Exception: DirectoryEntrySaveToFile")
+            DebugException(ex)
             Return False
         End Try
 
@@ -160,7 +166,7 @@ Module ImageIO
                 '    Data = NewData
                 'End If
             Catch ex As Exception
-                Debug.Print("Caught Exception: Functions.DiskImageLoad")
+                DebugException(ex)
                 Image = Nothing
             End Try
         End If
@@ -196,11 +202,11 @@ Module ImageIO
                     Try
                         IO.File.Delete(File)
                     Catch ex As Exception
-                        Debug.Print("Caught Exception: EmptyTempPath")
+                        DebugException(ex)
                     End Try
                 Next
             Catch ex As Exception
-                Debug.Print("Caught Exception: EmptyTempPath")
+                DebugException(ex)
             End Try
         End If
     End Sub
@@ -252,6 +258,7 @@ Module ImageIO
         Dim CurrentIndex As Integer = 1
         Dim Extension As String
         Dim ExtensionList As List(Of String)
+        Dim ImageGroup = GetImageGroup(ImageType)
 
         Response.FilterIndex = 0
 
@@ -273,25 +280,29 @@ Module ImageIO
         Response.Filter = FileDialogAppendFilter(Response.Filter, "Virtual Floppy Disk", ExtensionList)
         CurrentIndex += 1
 
-        ExtensionList = New List(Of String) From {".imd"}
-        For Each Extension In ExtensionList
-            If FileExt.Equals(Extension, StringComparison.OrdinalIgnoreCase) Then
-                Response.FilterIndex = CurrentIndex
-            End If
-        Next
-        Response.Filter = FileDialogAppendFilter(Response.Filter, "ImageDisk Sector Image", ExtensionList)
-        CurrentIndex += 1
+        If ImageType = FloppyImageType.IMDImage Or ImageGroup <> FloppyImageGroup.AdvancedSectorImage Then
+            ExtensionList = New List(Of String) From {".imd"}
+            For Each Extension In ExtensionList
+                If FileExt.Equals(Extension, StringComparison.OrdinalIgnoreCase) Then
+                    Response.FilterIndex = CurrentIndex
+                End If
+            Next
+            Response.Filter = FileDialogAppendFilter(Response.Filter, "ImageDisk Sector Image", ExtensionList)
+            CurrentIndex += 1
+        End If
 
-        ExtensionList = New List(Of String) From {".psi"}
-        For Each Extension In ExtensionList
-            If FileExt.Equals(Extension, StringComparison.OrdinalIgnoreCase) Then
-                Response.FilterIndex = CurrentIndex
-            End If
-        Next
-        Response.Filter = FileDialogAppendFilter(Response.Filter, "PCE Sector Image", ExtensionList)
-        CurrentIndex += 1
+        If ImageType = FloppyImageType.PSIImage Or ImageGroup <> FloppyImageGroup.AdvancedSectorImage Then
+            ExtensionList = New List(Of String) From {".psi"}
+            For Each Extension In ExtensionList
+                If FileExt.Equals(Extension, StringComparison.OrdinalIgnoreCase) Then
+                    Response.FilterIndex = CurrentIndex
+                End If
+            Next
+            Response.Filter = FileDialogAppendFilter(Response.Filter, "PCE Sector Image", ExtensionList)
+            CurrentIndex += 1
+        End If
 
-        If ImageType <> FloppyImageType.PSIImage And ImageType <> FloppyImageType.IMDImage Then
+        If ImageGroup <> FloppyImageGroup.AdvancedSectorImage Then
             ExtensionList = New List(Of String) From {".86f"}
             For Each Extension In ExtensionList
                 If FileExt.Equals(Extension, StringComparison.OrdinalIgnoreCase) Then
@@ -360,7 +371,7 @@ Module ImageIO
             Try
                 Data = IO.File.ReadAllBytes(FilePath)
             Catch ex As Exception
-                Debug.Print("Caught Exception: ImageLoadFromTemp")
+                DebugException(ex)
                 Data = Nothing
             End Try
         End If
@@ -380,7 +391,7 @@ Module ImageIO
 
             IO.File.WriteAllBytes(TempPath, Data)
         Catch ex As Exception
-            Debug.Print("Caught Exception: ImageSaveToTemp")
+            DebugException(ex)
             TempPath = ""
         End Try
 
@@ -465,6 +476,9 @@ Module ImageIO
                 ElseIf FileImageType = FloppyImageType._86FImage Then
                     Dim F86 = ImageFormats.BasicSectorTo86FImage(Data, Disk.DiskFormat)
                     Result = F86.Export(FilePath)
+                ElseIf FileImageType = FloppyImageType.IMDImage Then
+                    Dim IMD = ImageFormats.BasicSectorToIMDImage(Data, Disk.DiskFormat)
+                    Result = IMD.Export(FilePath)
                 Else
                     Return SaveImageResponse.Unsupported
                 End If
@@ -508,6 +522,15 @@ Module ImageIO
                 Return SaveImageResponse.Unsupported
             End If
 
+        ElseIf FileImageType = FloppyImageType.IMDImage Then
+            Dim Image As IBitstreamImage = GetBitstreamImage(Disk.Image.Data)
+            If Image IsNot Nothing Then
+                Dim IMD = ImageFormats.BitstreamToIMDImage(Image)
+                Result = IMD.Export(FilePath)
+            Else
+                Return SaveImageResponse.Unsupported
+            End If
+
         ElseIf FileImageType = FloppyImageType._86FImage Then
             Dim Image As IBitstreamImage = GetBitstreamImage(Disk.Image.Data)
             If Image IsNot Nothing Then
@@ -535,6 +558,34 @@ Module ImageIO
             Return True
         End If
 
+        If FileImageType = FloppyImageType.IMDImage Then
+            If TypeOf Data Is BitstreamByteArray Then
+                Dim BitstreamData = DirectCast(Data, BitstreamByteArray)
+                Dim CompatibleSectors As Boolean = True
+                For i = 0 To BitstreamData.TrackCount - 1
+                    For j = 0 To BitstreamData.HeadCount - 1
+                        Dim TrackData = BitstreamData.GetTrack(i, j)
+                        If TrackData IsNot Nothing Then
+                            If TrackData.FirstSector > -1 Then
+                                If TrackData.SectorSize = -1 Or TrackData.OverlappingSectors Or TrackData.DuplicateSectors Then
+                                    CompatibleSectors = False
+                                    Exit For
+                                End If
+                            End If
+                        End If
+                    Next
+                    If Not CompatibleSectors Then
+                        Exit For
+                    End If
+                Next
+                If Not CompatibleSectors Then
+                    Msg = "This image has one or more tracks that are not compatible with this image type."
+                    MsgBox(Msg, MsgBoxStyle.Exclamation)
+                    Return False
+                End If
+            End If
+        End If
+
         If FileImageType = FloppyImageType.BasicSectorImage Then
             If Data.NonStandardTracks.Count > 0 Then
                 Msg = "This image has one or more tracks with a non-standard sector layout." _
@@ -557,6 +608,7 @@ Module ImageIO
                     End If
                 End If
             End If
+
         End If
 
         Return True
@@ -579,4 +631,14 @@ Module ImageIO
         Return Nothing
     End Function
 
+    Private Function GetImageGroup(ImageType As FloppyImageType) As FloppyImageGroup
+        Select Case ImageType
+            Case FloppyImageType.HFEImage, FloppyImageType.MFMImage, FloppyImageType.TranscopyImage, FloppyImageType._86FImage
+                Return FloppyImageGroup.BitstreamImage
+            Case FloppyImageType.IMDImage, FloppyImageType.PSIImage
+                Return FloppyImageGroup.AdvancedSectorImage
+            Case Else
+                Return FloppyImageGroup.BasicSectorImage
+        End Select
+    End Function
 End Module

@@ -70,7 +70,7 @@
             Try
                 IO.File.Delete(_TempPath)
             Catch ex As Exception
-                Debug.Print("Caught Exception: LoadedImageData.ClearTempPath")
+                DebugException(ex)
             End Try
             _TempPath = ""
         End If

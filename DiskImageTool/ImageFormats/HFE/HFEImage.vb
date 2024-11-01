@@ -1,4 +1,5 @@
-﻿Imports System.Text
+﻿Imports System.Runtime.Remoting.Messaging
+Imports System.Text
 Imports DiskImageTool.Bitstream
 
 Namespace ImageFormats
@@ -256,67 +257,76 @@ Namespace ImageFormats
             Public Function Load(Buffer() As Byte) As Boolean Implements IBitstreamImage.Load
                 Dim Result As Boolean
 
+                If Buffer.Length < HFEHeadeSizes.Signature Then
+                    Return False
+                End If
+
                 Dim Signature = Text.Encoding.UTF8.GetString(Buffer, HFEHeaderOffsets.Signature, HFEHeadeSizes.Signature)
                 Result = (Signature = FILE_SIGNATURE_V1 Or Signature = FILE_SIGNATURE_V3)
 
                 If Result Then
-                    _Header = New Byte(25) {}
-                    Array.Copy(Buffer, 0, _Header, 0, _Header.Length)
+                    Try
+                        _Header = New Byte(25) {}
+                        Array.Copy(Buffer, 0, _Header, 0, _Header.Length)
 
-                    If Version <> HFEVersion.HFE_V1 Then
-                        'Unsupported Version
-                        Return False
-                    End If
-
-                    _Tracks = New HFETrack(TrackCount * SideCount - 1) {}
-
-                    Dim Offset = TrackListOffset * 512
-                    Dim DataSide0() As Byte
-                    Dim DataSide1() As Byte = Nothing
-
-                    For i = 0 To TrackCount - 1
-                        Dim TrackDataOffset = BitConverter.ToUInt16(Buffer, Offset)
-                        Dim TrackDataLength = BitConverter.ToUInt16(Buffer, Offset + 2)
-                        DataSide0 = New Byte(TrackDataLength / 2 - 1) {}
-                        If SideCount > 1 Then
-                            DataSide1 = New Byte(TrackDataLength / 2 - 1) {}
+                        If Version <> HFEVersion.HFE_V1 Then
+                            'Unsupported Version
+                            Return False
                         End If
 
-                        Dim BlockCount As UInteger = Math.Ceiling(TrackDataLength / 512)
+                        _Tracks = New HFETrack(TrackCount * SideCount - 1) {}
 
-                        For j = 0 To BlockCount - 1
-                            Dim BlockOffset = j * 512
-                            Dim DataOffset = j * 256
-                            Dim BlockSize As Integer = Math.Min(512, TrackDataLength - BlockOffset)
-                            Dim DataSide0Offset = BlockOffset
-                            Dim DataSide1Offset = BlockOffset + 256
-                            Dim DataSize = BlockSize \ 2
-                            Array.Copy(Buffer, TrackDataOffset * 512 + DataSide0Offset, DataSide0, DataOffset, DataSize)
+                        Dim Offset = TrackListOffset * 512
+                        Dim DataSide0() As Byte
+                        Dim DataSide1() As Byte = Nothing
+
+                        For i = 0 To TrackCount - 1
+                            Dim TrackDataOffset = BitConverter.ToUInt16(Buffer, Offset)
+                            Dim TrackDataLength = BitConverter.ToUInt16(Buffer, Offset + 2)
+                            DataSide0 = New Byte(TrackDataLength / 2 - 1) {}
                             If SideCount > 1 Then
-                                Array.Copy(Buffer, TrackDataOffset * 512 + DataSide1Offset, DataSide1, DataOffset, DataSize)
+                                DataSide1 = New Byte(TrackDataLength / 2 - 1) {}
                             End If
-                        Next
 
-                        Dim HFETrack = New HFETrack(i, 0) With {
-                            .Bitstream = IBM_MFM.BytesToBits(DataSide0, 0, DataSide0.Length * 8, False),
-                            .BitRate = BitRate,
-                            .RPM = FloppyRPM
-                        }
-                        HFETrack.MFMData = New IBM_MFM.IBM_MFM_Track(HFETrack.Bitstream)
-                        SetTrack(i, 0, HFETrack)
+                            Dim BlockCount As UInteger = Math.Ceiling(TrackDataLength / 512)
 
-                        If SideCount > 1 Then
-                            HFETrack = New HFETrack(i, 1) With {
-                                .Bitstream = IBM_MFM.BytesToBits(DataSide1, 0, DataSide1.Length * 8, False),
+                            For j = 0 To BlockCount - 1
+                                Dim BlockOffset = j * 512
+                                Dim DataOffset = j * 256
+                                Dim BlockSize As Integer = Math.Min(512, TrackDataLength - BlockOffset)
+                                Dim DataSide0Offset = BlockOffset
+                                Dim DataSide1Offset = BlockOffset + 256
+                                Dim DataSize = BlockSize \ 2
+                                Array.Copy(Buffer, TrackDataOffset * 512 + DataSide0Offset, DataSide0, DataOffset, DataSize)
+                                If SideCount > 1 Then
+                                    Array.Copy(Buffer, TrackDataOffset * 512 + DataSide1Offset, DataSide1, DataOffset, DataSize)
+                                End If
+                            Next
+
+                            Dim HFETrack = New HFETrack(i, 0) With {
+                                .Bitstream = IBM_MFM.BytesToBits(DataSide0, 0, DataSide0.Length * 8, False),
                                 .BitRate = BitRate,
                                 .RPM = FloppyRPM
                             }
                             HFETrack.MFMData = New IBM_MFM.IBM_MFM_Track(HFETrack.Bitstream)
-                            SetTrack(i, 1, HFETrack)
-                        End If
+                            SetTrack(i, 0, HFETrack)
 
-                        Offset += 4
-                    Next
+                            If SideCount > 1 Then
+                                HFETrack = New HFETrack(i, 1) With {
+                                    .Bitstream = IBM_MFM.BytesToBits(DataSide1, 0, DataSide1.Length * 8, False),
+                                    .BitRate = BitRate,
+                                    .RPM = FloppyRPM
+                                }
+                                HFETrack.MFMData = New IBM_MFM.IBM_MFM_Track(HFETrack.Bitstream)
+                                SetTrack(i, 1, HFETrack)
+                            End If
+
+                            Offset += 4
+                        Next
+                    Catch ex As Exception
+                        DebugException(ex)
+                        Return False
+                    End Try
                 End If
 
                 Return Result
@@ -345,97 +355,102 @@ Namespace ImageFormats
             Public Function Export(FilePath As String) As Boolean Implements IBitstreamImage.Export
                 Dim Buffer() As Byte
 
-                If IO.File.Exists(FilePath) Then
-                    IO.File.Delete(FilePath)
-                End If
+                Try
+                    If IO.File.Exists(FilePath) Then
+                        IO.File.Delete(FilePath)
+                    End If
 
-                Using fs As IO.FileStream = IO.File.OpenWrite(FilePath)
-                    fs.Write(_Header, 0, _Header.Length)
+                    Using fs As IO.FileStream = IO.File.OpenWrite(FilePath)
+                        fs.Write(_Header, 0, _Header.Length)
 
-                    Dim Offset = TrackListOffset * 512
+                        Dim Offset = TrackListOffset * 512
 
-                    Buffer = New Byte(Offset - _Header.Length - 1) {}
-                    FillArray(Buffer, &HFF)
-                    fs.Write(Buffer, 0, Buffer.Length)
-
-                    Dim OffsetBlockSize = Math.Ceiling(TrackCount * 4 / 512) * 512
-                    Dim TrackDataOffset As UShort = (fs.Position + OffsetBlockSize) \ 512
-                    Dim TrackOffsets(TrackCount - 1) As UShort
-                    Dim BlockCount As UShort
-                    Dim TrackDataLength As UShort
-
-                    For i = 0 To TrackCount - 1
-                        Dim Track0 = GetTrack(i, 0)
-                        Dim TrackLength = Track0.Length
-                        If SideCount > 1 Then
-                            Dim Track1 = GetTrack(i, 1)
-                            If Track1.Length > TrackLength Then
-                                TrackLength = Track1.Length
-                            End If
-                        End If
-
-                        TrackDataLength = TrackLength * 2
-
-                        TrackOffsets(i) = TrackDataOffset
-                        BlockCount = Math.Ceiling(TrackDataLength / 512)
-
-                        Buffer = BitConverter.GetBytes(TrackDataOffset)
+                        Buffer = New Byte(Offset - _Header.Length - 1) {}
+                        FillArray(Buffer, &HFF)
                         fs.Write(Buffer, 0, Buffer.Length)
 
-                        Buffer = BitConverter.GetBytes(TrackDataLength)
-                        fs.Write(Buffer, 0, Buffer.Length)
+                        Dim OffsetBlockSize = Math.Ceiling(TrackCount * 4 / 512) * 512
+                        Dim TrackDataOffset As UShort = (fs.Position + OffsetBlockSize) \ 512
+                        Dim TrackOffsets(TrackCount - 1) As UShort
+                        Dim BlockCount As UShort
+                        Dim TrackDataLength As UShort
 
-                        TrackDataOffset += BlockCount
-                        OffsetBlockSize -= 4
-                    Next
-
-                    Buffer = New Byte(OffsetBlockSize - 1) {}
-                    FillArray(Buffer, &HFF)
-                    fs.Write(Buffer, 0, Buffer.Length)
-
-                    For i = 0 To TrackCount - 1
-                        Dim DataSide0() As Byte
-                        Dim DataSide1() As Byte
-
-                        Dim Track0 = GetTrack(i, 0)
-                        Dim TrackLength As UShort = Track0.Length
-
-                        If SideCount > 1 Then
-                            Dim Track1 = GetTrack(i, 1)
-                            If Track1.Length > TrackLength Then
-                                TrackLength = Track1.Length
-                            End If
-                            DataSide1 = IBM_MFM.BitsToBytes(IBM_MFM.ResizeBitstream(Track1.Bitstream, TrackLength * 8), 0, False)
-                        Else
-                            DataSide1 = New Byte(TrackLength - 1) {}
-                        End If
-
-                        DataSide0 = IBM_MFM.BitsToBytes(IBM_MFM.ResizeBitstream(Track0.Bitstream, TrackLength * 8), 0, False)
-
-                        TrackDataLength = TrackLength * 2
-                        BlockCount = Math.Ceiling(TrackDataLength / 512)
-
-                        For j = 0 To BlockCount - 1
-                            Dim DataOffset = j * 256
-                            Dim BlockSize As Integer = Math.Min(512, TrackDataLength)
-                            Dim DataSize = BlockSize \ 2
-
-                            fs.Write(DataSide0, DataOffset, DataSize)
-                            If DataSize < 256 Then
-                                Buffer = New Byte(256 - DataSize - 1) {}
-                                fs.Write(Buffer, 0, Buffer.Length)
+                        For i = 0 To TrackCount - 1
+                            Dim Track0 = GetTrack(i, 0)
+                            Dim TrackLength = Track0.Length
+                            If SideCount > 1 Then
+                                Dim Track1 = GetTrack(i, 1)
+                                If Track1.Length > TrackLength Then
+                                    TrackLength = Track1.Length
+                                End If
                             End If
 
-                            fs.Write(DataSide1, DataOffset, DataSize)
-                            If DataSize < 256 Then
-                                Buffer = New Byte(256 - DataSize - 1) {}
-                                fs.Write(Buffer, 0, Buffer.Length)
-                            End If
+                            TrackDataLength = TrackLength * 2
 
-                            TrackDataLength -= BlockSize
+                            TrackOffsets(i) = TrackDataOffset
+                            BlockCount = Math.Ceiling(TrackDataLength / 512)
+
+                            Buffer = BitConverter.GetBytes(TrackDataOffset)
+                            fs.Write(Buffer, 0, Buffer.Length)
+
+                            Buffer = BitConverter.GetBytes(TrackDataLength)
+                            fs.Write(Buffer, 0, Buffer.Length)
+
+                            TrackDataOffset += BlockCount
+                            OffsetBlockSize -= 4
                         Next
-                    Next
-                End Using
+
+                        Buffer = New Byte(OffsetBlockSize - 1) {}
+                        FillArray(Buffer, &HFF)
+                        fs.Write(Buffer, 0, Buffer.Length)
+
+                        For i = 0 To TrackCount - 1
+                            Dim DataSide0() As Byte
+                            Dim DataSide1() As Byte
+
+                            Dim Track0 = GetTrack(i, 0)
+                            Dim TrackLength As UShort = Track0.Length
+
+                            If SideCount > 1 Then
+                                Dim Track1 = GetTrack(i, 1)
+                                If Track1.Length > TrackLength Then
+                                    TrackLength = Track1.Length
+                                End If
+                                DataSide1 = IBM_MFM.BitsToBytes(IBM_MFM.ResizeBitstream(Track1.Bitstream, TrackLength * 8), 0, False)
+                            Else
+                                DataSide1 = New Byte(TrackLength - 1) {}
+                            End If
+
+                            DataSide0 = IBM_MFM.BitsToBytes(IBM_MFM.ResizeBitstream(Track0.Bitstream, TrackLength * 8), 0, False)
+
+                            TrackDataLength = TrackLength * 2
+                            BlockCount = Math.Ceiling(TrackDataLength / 512)
+
+                            For j = 0 To BlockCount - 1
+                                Dim DataOffset = j * 256
+                                Dim BlockSize As Integer = Math.Min(512, TrackDataLength)
+                                Dim DataSize = BlockSize \ 2
+
+                                fs.Write(DataSide0, DataOffset, DataSize)
+                                If DataSize < 256 Then
+                                    Buffer = New Byte(256 - DataSize - 1) {}
+                                    fs.Write(Buffer, 0, Buffer.Length)
+                                End If
+
+                                fs.Write(DataSide1, DataOffset, DataSize)
+                                If DataSize < 256 Then
+                                    Buffer = New Byte(256 - DataSize - 1) {}
+                                    fs.Write(Buffer, 0, Buffer.Length)
+                                End If
+
+                                TrackDataLength -= BlockSize
+                            Next
+                        Next
+                    End Using
+                Catch ex As Exception
+                    DebugException(ex)
+                    Return False
+                End Try
 
                 Return True
             End Function

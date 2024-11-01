@@ -289,6 +289,7 @@ Namespace ImageFormats
                         Next
                     End Using
                 Catch ex As Exception
+                    DebugException(ex)
                     Return False
                 End Try
 
@@ -314,107 +315,116 @@ Namespace ImageFormats
                 Dim Result As Boolean
                 Dim DoubleStep As Boolean = False
 
-                Dim Signature = Text.Encoding.UTF8.GetString(Buffer, 0, 4)
+                If Buffer.Length < FILE_SIGNATURE.Length Then
+                    Return False
+                End If
+
+                Dim Signature = Text.Encoding.UTF8.GetString(Buffer, 0, FILE_SIGNATURE.Length)
                 Result = (Signature = FILE_SIGNATURE)
 
                 If Result Then
-                    _MinorVersion = Buffer(4)
-                    _MajorVersion = Buffer(5)
-                    _DiskFlags = BitConverter.ToUInt16(Buffer, 6)
-                    _TrackCount = 0
+                    Try
+                        _MinorVersion = Buffer(4)
+                        _MajorVersion = Buffer(5)
+                        _DiskFlags = BitConverter.ToUInt16(Buffer, 6)
+                        _TrackCount = 0
 
-                    Dim Data() As Byte
-                    Dim Checksum As UInteger
-                    Dim BitCellCount As UInteger
-                    Dim AllocatedLength As UInteger
-                    Dim Offset As UInteger
+                        Dim Data() As Byte
+                        Dim Checksum As UInteger
+                        Dim BitCellCount As UInteger
+                        Dim AllocatedLength As UInteger
+                        Dim Offset As UInteger
 
-                    Dim Pos = 8
-                    For i = 0 To 255
-                        For j = 0 To Sides - 1
-                            Offset = BitConverter.ToUInt32(Buffer, Pos)
-                            Dim F86Track = New _86FTrack(i, j, Offset)
-                            If Offset > 0 Then
-                                F86Track.Flags = BitConverter.ToUInt16(Buffer, Offset)
-                                If BitcellMode Then
-                                    F86Track.BitCellCount = BitConverter.ToUInt32(Buffer, Offset + 2)
-                                    If AlternateBitcellCalculation Then
-                                        BitCellCount = F86Track.BitCellCount
-                                        AllocatedLength = Math.Ceiling(F86Track.BitCellCount / 8)
+                        Dim Pos = 8
+                        For i = 0 To 255
+                            For j = 0 To Sides - 1
+                                Offset = BitConverter.ToUInt32(Buffer, Pos)
+                                Dim F86Track = New _86FTrack(i, j, Offset)
+                                If Offset > 0 Then
+                                    F86Track.Flags = BitConverter.ToUInt16(Buffer, Offset)
+                                    If BitcellMode Then
+                                        F86Track.BitCellCount = BitConverter.ToUInt32(Buffer, Offset + 2)
+                                        If AlternateBitcellCalculation Then
+                                            BitCellCount = F86Track.BitCellCount
+                                            AllocatedLength = Math.Ceiling(F86Track.BitCellCount / 8)
+                                        End If
+                                        Offset += 4
                                     End If
-                                    Offset += 4
-                                End If
-                                F86Track.IndexHolePos = BitConverter.ToUInt32(Buffer, Offset + 2)
+                                    F86Track.IndexHolePos = BitConverter.ToUInt32(Buffer, Offset + 2)
 
-                                If Not BitcellMode Or Not AlternateBitcellCalculation Then
-                                    Dim IsMFM = F86Track.Encoding = Encoding.MFM
-                                    BitCellCount = GetCalculatedBitCellCount(F86Track.BitRate, F86Track.RPM, IsMFM, RPMSlowDown, AlternateBitcellCalculation, F86Track.BitCellCount)
-                                    AllocatedLength = GetAllocatedLength(Hole, RPMSlowDown, AlternateBitcellCalculation, F86Track.BitCellCount)
-                                End If
-                                F86Track.Bitstream = IBM_MFM.BytesToBits(Buffer, Offset + 6, BitCellCount)
+                                    If Not BitcellMode Or Not AlternateBitcellCalculation Then
+                                        Dim IsMFM = F86Track.Encoding = Encoding.MFM
+                                        BitCellCount = GetCalculatedBitCellCount(F86Track.BitRate, F86Track.RPM, IsMFM, RPMSlowDown, AlternateBitcellCalculation, F86Track.BitCellCount)
+                                        AllocatedLength = GetAllocatedLength(Hole, RPMSlowDown, AlternateBitcellCalculation, F86Track.BitCellCount)
+                                    End If
+                                    F86Track.Bitstream = IBM_MFM.BytesToBits(Buffer, Offset + 6, BitCellCount)
 
-                                If HasSurfaceData Then
-                                    F86Track.SurfaceData = IBM_MFM.BytesToBits(Buffer, Offset + 6 + AllocatedLength, BitCellCount)
-                                End If
+                                    If HasSurfaceData Then
+                                        F86Track.SurfaceData = IBM_MFM.BytesToBits(Buffer, Offset + 6 + AllocatedLength, BitCellCount)
+                                    End If
 
-                                'Check for thick tracks
-                                If j = 0 Then
-                                    If i < 2 Then
-                                        Data = New Byte(BitCellCount \ 8 - 1) {}
-                                        Array.Copy(Buffer, Offset + 6, Data, 0, Data.Length)
-                                        If i = 0 Then
-                                            Checksum = CRC32.ComputeChecksum(Data)
-                                        Else
-                                            DoubleStep = (Checksum = CRC32.ComputeChecksum(Data))
+                                    'Check for thick tracks
+                                    If j = 0 Then
+                                        If i < 2 Then
+                                            Data = New Byte(BitCellCount \ 8 - 1) {}
+                                            Array.Copy(Buffer, Offset + 6, Data, 0, Data.Length)
+                                            If i = 0 Then
+                                                Checksum = CRC32.ComputeChecksum(Data)
+                                            Else
+                                                DoubleStep = (Checksum = CRC32.ComputeChecksum(Data))
+                                            End If
                                         End If
                                     End If
-                                End If
 
-                                _TrackCount = i + 1
-                            End If
-                            TrackList.Add(F86Track)
-                            Pos += 4
+                                    _TrackCount = i + 1
+                                End If
+                                TrackList.Add(F86Track)
+                                Pos += 4
+                            Next
                         Next
-                    Next
 
-                    If DoubleStep Then
-                        _TrackCount \= 2
-                    End If
+                        If DoubleStep Then
+                            _TrackCount \= 2
+                        End If
 
-                    _Tracks = New _86FTrack((_TrackCount) * Sides - 1) {}
+                        _Tracks = New _86FTrack((_TrackCount) * Sides - 1) {}
 
-                    Dim Index As UShort = 0
-                    Dim Track As UShort
-                    For Each F86Track In TrackList
-                        If Not DoubleStep OrElse (Index \ Sides) Mod 2 = 0 Then
-                            Track = F86Track.Track
-                            If DoubleStep Then
-                                Track \= 2
-                            End If
+                        Dim Index As UShort = 0
+                        Dim Track As UShort
+                        For Each F86Track In TrackList
+                            If Not DoubleStep OrElse (Index \ Sides) Mod 2 = 0 Then
+                                Track = F86Track.Track
+                                If DoubleStep Then
+                                    Track \= 2
+                                End If
 
-                            If Track < _TrackCount Then
-                                If F86Track.Encoding = Encoding.MFM Then
-                                    F86Track.MFMData = New IBM_MFM.IBM_MFM_Track(F86Track.Bitstream)
-                                    F86Track.Decoded = True
-                                    If Index = 0 Then
-                                        _BitRate = F86Track.BitRate
-                                        _RPM = F86Track.RPM
-                                    Else
-                                        If _BitRate <> 255 AndAlso _BitRate <> F86Track.BitRate Then
-                                            _BitRate = 255
-                                        End If
-                                        If _RPM <> 255 AndAlso _RPM <> F86Track.RPM Then
-                                            _RPM = 255
+                                If Track < _TrackCount Then
+                                    If F86Track.Encoding = Encoding.MFM Then
+                                        F86Track.MFMData = New IBM_MFM.IBM_MFM_Track(F86Track.Bitstream)
+                                        F86Track.Decoded = True
+                                        If Index = 0 Then
+                                            _BitRate = F86Track.BitRate
+                                            _RPM = F86Track.RPM
+                                        Else
+                                            If _BitRate <> 255 AndAlso _BitRate <> F86Track.BitRate Then
+                                                _BitRate = 255
+                                            End If
+                                            If _RPM <> 255 AndAlso _RPM <> F86Track.RPM Then
+                                                _RPM = 255
+                                            End If
                                         End If
                                     End If
+                                    SetTrack(Track, F86Track.Side, F86Track)
+                                    'Dim FileName = "H:\debug\track" & F86Track.Track & "." & F86Track.Side & ".log"
+                                    'DebugExportMFMBitstream(F86Track.Bitstream, FileName)
                                 End If
-                                SetTrack(Track, F86Track.Side, F86Track)
-                                'Dim FileName = "H:\debug\track" & F86Track.Track & "." & F86Track.Side & ".log"
-                                'DebugExportMFMBitstream(F86Track.Bitstream, FileName)
                             End If
-                        End If
-                        Index += 1
-                    Next
+                            Index += 1
+                        Next
+                    Catch ex As Exception
+                        DebugException(ex)
+                        Return False
+                    End Try
                 End If
 
                 Return Result

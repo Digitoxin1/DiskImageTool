@@ -91,6 +91,7 @@ Namespace ImageFormats
                         fs.Write(Buffer, 0, Buffer.Length)
                     End Using
                 Catch ex As Exception
+                    DebugException(ex)
                     Return False
                 End Try
 
@@ -112,23 +113,28 @@ Namespace ImageFormats
 
                 Response.Offset = 0
 
-                Do While Response.Offset + 8 < Buffer.Length
-                    Chunk = New PSIChunk()
-                    Response = Chunk.ReadFromBuffer(Buffer, Response.Offset)
-                    If Response.ChecksumVerified Then
-                        If ChunkCount = 0 AndAlso Chunk.ChunkID <> "PSI " Then
-                            Exit Do
-                        ElseIf Chunk.ChunkID = "END " Then
-                            Result = True
-                            Exit Do
+                Try
+                    Do While Response.Offset + 8 < Buffer.Length
+                        Chunk = New PSIChunk()
+                        Response = Chunk.ReadFromBuffer(Buffer, Response.Offset)
+                        If Response.ChecksumVerified Then
+                            If ChunkCount = 0 AndAlso Chunk.ChunkID <> "PSI " Then
+                                Exit Do
+                            ElseIf Chunk.ChunkID = "END " Then
+                                Result = True
+                                Exit Do
+                            Else
+                                ProcessChunk(Chunk)
+                            End If
                         Else
-                            ProcessChunk(Chunk)
+                            Exit Do
                         End If
-                    Else
-                        Exit Do
-                    End If
-                    ChunkCount += 1
-                Loop
+                        ChunkCount += 1
+                    Loop
+                Catch ex As Exception
+                    DebugException(ex)
+                    Return False
+                End Try
 
                 Return Result
             End Function

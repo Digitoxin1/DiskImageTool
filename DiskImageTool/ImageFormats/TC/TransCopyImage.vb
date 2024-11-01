@@ -282,6 +282,7 @@ Namespace ImageFormats
                         Next
                     End Using
                 Catch ex As Exception
+                    DebugException(ex)
                     Return False
                 End Try
 
@@ -305,6 +306,10 @@ Namespace ImageFormats
             Public Function Load(Buffer() As Byte) As Boolean Implements IBitstreamImage.Load
                 Dim Result As Boolean
 
+                If Buffer.Length < 2 Then
+                    Return False
+                End If
+
                 Dim Signature = BitConverter.ToUInt16(Buffer, TransCopyOffsets.Signature)
                 Result = (Signature = &HA55A)
 
@@ -313,50 +318,55 @@ Namespace ImageFormats
                 End If
 
                 If Result Then
-                    Array.Copy(Buffer, TransCopyOffsets.Comment, _Comment, 0, TransCopySizes.Comment)
-                    Array.Copy(Buffer, TransCopyOffsets.Comment2, _Comment2, 0, TransCopySizes.Comment2)
+                    Try
+                        Array.Copy(Buffer, TransCopyOffsets.Comment, _Comment, 0, TransCopySizes.Comment)
+                        Array.Copy(Buffer, TransCopyOffsets.Comment2, _Comment2, 0, TransCopySizes.Comment2)
 
-                    _DiskType = Buffer(TransCopyOffsets.DiskType)
-                    _CylinderStart = Buffer(TransCopyOffsets.CylinderStart)
-                    _CylinderEnd = Buffer(TransCopyOffsets.CylinderEnd)
-                    _Sides = Buffer(TransCopyOffsets.Sides)
-                    _CylinderIncrement = Buffer(TransCopyOffsets.CylinderIncrement)
+                        _DiskType = Buffer(TransCopyOffsets.DiskType)
+                        _CylinderStart = Buffer(TransCopyOffsets.CylinderStart)
+                        _CylinderEnd = Buffer(TransCopyOffsets.CylinderEnd)
+                        _Sides = Buffer(TransCopyOffsets.Sides)
+                        _CylinderIncrement = Buffer(TransCopyOffsets.CylinderIncrement)
 
-                    _Cylinders = New TransCopyCylinder((_CylinderEnd + 1) * Sides - 1) {}
+                        _Cylinders = New TransCopyCylinder((_CylinderEnd + 1) * Sides - 1) {}
 
-                    For Track = 0 To _CylinderEnd
-                        For Side = 0 To _Sides - 1
-                            Dim Cylinder = New TransCopyCylinder(Track, Side)
+                        For Track = 0 To _CylinderEnd
+                            For Side = 0 To _Sides - 1
+                                Dim Cylinder = New TransCopyCylinder(Track, Side)
 
-                            Dim Offset = 4 * Track + 2 * Side
+                                Dim Offset = 4 * Track + 2 * Side
 
-                            Dim OffsetValue = BitConverter.ToUInt16(Buffer, TransCopyOffsets.Offsets + Offset)
-                            If OffsetValue > 0 Then
-                                Cylinder.Offset = MyBitConverter.SwapEndian(OffsetValue) * 256
-                                Cylinder.Skew = BitConverter.ToUInt16(Buffer, TransCopyOffsets.Skews + Offset)
-                                Cylinder.Length = BitConverter.ToUInt16(Buffer, TransCopyOffsets.Lengths + Offset)
-                                Cylinder.Flags = Buffer(TransCopyOffsets.Flags + Offset)
-                                Cylinder.TrackType = Buffer(TransCopyOffsets.Flags + Offset + 1) And &H7F
+                                Dim OffsetValue = BitConverter.ToUInt16(Buffer, TransCopyOffsets.Offsets + Offset)
+                                If OffsetValue > 0 Then
+                                    Cylinder.Offset = MyBitConverter.SwapEndian(OffsetValue) * 256
+                                    Cylinder.Skew = BitConverter.ToUInt16(Buffer, TransCopyOffsets.Skews + Offset)
+                                    Cylinder.Length = BitConverter.ToUInt16(Buffer, TransCopyOffsets.Lengths + Offset)
+                                    Cylinder.Flags = Buffer(TransCopyOffsets.Flags + Offset)
+                                    Cylinder.TrackType = Buffer(TransCopyOffsets.Flags + Offset + 1) And &H7F
 
-                                For i = 0 To 15
-                                    Dim TimingOffset = 64 * Track + 32 * Side + 2 * i
-                                    Dim Value = BitConverter.ToUInt16(Buffer, TransCopyOffsets.Timings + TimingOffset)
-                                    Cylinder.AddressMarkingTiming.Add(Value)
-                                Next
+                                    For i = 0 To 15
+                                        Dim TimingOffset = 64 * Track + 32 * Side + 2 * i
+                                        Dim Value = BitConverter.ToUInt16(Buffer, TransCopyOffsets.Timings + TimingOffset)
+                                        Cylinder.AddressMarkingTiming.Add(Value)
+                                    Next
 
-                                If Cylinder.Offset >= TransCopyOffsets.Data Then
-                                    Cylinder.Bitstream = IBM_MFM.BytesToBits(Buffer, Cylinder.Offset, Cylinder.Length * 8)
+                                    If Cylinder.Offset >= TransCopyOffsets.Data Then
+                                        Cylinder.Bitstream = IBM_MFM.BytesToBits(Buffer, Cylinder.Offset, Cylinder.Length * 8)
 
-                                    If Cylinder.IsMFMTrackType Then
-                                        Cylinder.MFMData = New IBM_MFM.IBM_MFM_Track(Cylinder.Bitstream)
-                                        Cylinder.Decoded = True
-                                        'Bitstream.DebugTranscopyCylinder(Cylinder)
+                                        If Cylinder.IsMFMTrackType Then
+                                            Cylinder.MFMData = New IBM_MFM.IBM_MFM_Track(Cylinder.Bitstream)
+                                            Cylinder.Decoded = True
+                                            'Bitstream.DebugTranscopyCylinder(Cylinder)
+                                        End If
                                     End If
                                 End If
-                            End If
-                            SetCylinder(Track, Side, Cylinder)
+                                SetCylinder(Track, Side, Cylinder)
+                            Next
                         Next
-                    Next
+                    Catch ex As Exception
+                        DebugException(ex)
+                        Return False
+                    End Try
                 End If
 
                 Return Result

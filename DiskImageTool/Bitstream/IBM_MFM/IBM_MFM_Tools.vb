@@ -214,8 +214,20 @@
                 RegionData.NumBits = Bitstream.Length
                 RegionData.Aligned = True
 
+                Dim SectorList As List(Of UInteger)
+                If TrackType = BitstreamTrackType.MFM Then
+                    SectorList = MFMGetSectorList(Bitstream)
+                Else
+                    SectorList = FMGetSectorList(Bitstream)
+                End If
+
+                Dim EndIndex = Bitstream.Length
+                If SectorList.Count > 0 Then
+                    EndIndex = SectorList.Item(0)
+                End If
+
                 Index = FindPattern(Bitstream, IAMPattern, BitstreamIndex)
-                If Index > -1 Then
+                If Index > -1 And Index < EndIndex Then
                     PrevByteIndex = ByteIndex
                     ByteIndex = Index \ MFM_BYTE_SIZE
                     BitstreamIndex = Index Mod MFM_BYTE_SIZE
@@ -248,13 +260,6 @@
                     RegionData.Regions.Add(New BitstreamRegion(MFMRegionType.IAM, ByteIndex, 1, Nothing, BitOffset))
                     ByteIndex += 1
                     BitstreamIndex += MFM_BYTE_SIZE
-                End If
-
-                Dim SectorList As List(Of UInteger)
-                If TrackType = BitstreamTrackType.MFM Then
-                    SectorList = MFMGetSectorList(Bitstream)
-                Else
-                    SectorList = FMGetSectorList(Bitstream)
                 End If
 
                 Dim SectorIndex = 0
@@ -448,7 +453,6 @@
                     Dim Length = RegionData.NumBytes - ByteIndex
                     RegionData.Regions.Add(New BitstreamRegion(MFMRegionType.Overflow, ByteIndex, Length, Nothing, BitOffset))
                 End If
-
 
                 Return RegionData
             End Function

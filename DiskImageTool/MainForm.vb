@@ -660,7 +660,7 @@ Public Class MainForm
             End If
         Catch ex As Exception
             MsgBox("An error occurred while checking for updates.  Please try again later.", MsgBoxStyle.Exclamation)
-            Debug.Print("Caught Exception: MainForm.CheckForUpdates")
+            DebugException(ex)
             Exit Sub
         End Try
 
@@ -692,7 +692,7 @@ Public Class MainForm
                         Client.DownloadFile(DownloadURL, Dialog.FileName)
                     Catch ex As Exception
                         MsgBox("An error occurred while downloading the file.", MsgBoxStyle.Exclamation)
-                        Debug.Print("Caught Exception: MainForm.CheckForUpdates")
+                        DebugException(ex)
                     End Try
                     Cursor.Current = Cursors.Default
                 End If
@@ -1099,7 +1099,7 @@ Public Class MainForm
 
             Catch ex As Exception
                 MsgBox("An error occurred while downloading the change log.  Please try again later.", MsgBoxStyle.Exclamation)
-                Debug.Print("Caught Exception: MainForm.DisplayChangeLog")
+                DebugException(ex)
                 Exit Sub
             End Try
 

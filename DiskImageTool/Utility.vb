@@ -20,6 +20,12 @@ Module Utility
         Return CleanString(FileName, IO.Path.GetInvalidPathChars(), "_")
     End Function
 
+    Public Sub DebugException(ex As Exception)
+        Debug.Write("Caught Exception: ")
+        Debug.Write("0x" & ex.HResult.ToString("X8"))
+        Debug.WriteLine(" - " & ex.Message)
+        Debug.WriteLine(ex.StackTrace)
+    End Sub
     Public Function DuplicateHashTable(Table As Hashtable) As Hashtable
         Dim NewTable As New Hashtable
         For Each Key In Table.Keys
@@ -113,6 +119,8 @@ Module Utility
             Return FloppyImageType.HFEImage
         ElseIf FileExt = ".86f" Then
             Return FloppyImageType._86FImage
+        ElseIf FileExt = ".imd" Then
+            Return FloppyImageType.IMDImage
         Else
             Return FloppyImageType.BasicSectorImage
         End If
@@ -165,6 +173,7 @@ Module Utility
         Try
             IO.File.WriteAllBytes(FilePath, Data)
         Catch ex As Exception
+            DebugException(ex)
             Return False
         End Try
 

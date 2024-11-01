@@ -70,20 +70,11 @@ Namespace ImageFormats
                     For Side = 0 To _Image.Sides - 1
                         F86Track = _Image.GetTrack(Track, Side)
                         If F86Track IsNot Nothing Then
-                            Dim FirstSector As Integer = -1
-                            Dim LastSector As Integer = -1
-                            Dim TrackType As BitstreamTrackType = BitstreamTrackType.Other
-
-                            If F86Track.MFMData IsNot Nothing Then
-                                FirstSector = F86Track.MFMData.FirstSector
-                                LastSector = F86Track.MFMData.LastSector
-                            End If
+                            Dim TrackData = SetTrack(Track, Side, F86Track.MFMData, BitstreamTrackType.Other)
 
                             If F86Track.Bitstream.Length > 0 Then
-                                TrackType = F86Track.BitstreamTrackType
+                                TrackData.Encoding = F86Track.BitstreamTrackType
                             End If
-
-                            SetTrack(Track, Side, FirstSector, LastSector, TrackType)
 
                             If F86Track.MFMData IsNot Nothing Then
                                 For Each MFMSector In F86Track.MFMData.Sectors

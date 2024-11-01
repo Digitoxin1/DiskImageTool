@@ -1,14 +1,20 @@
-﻿Namespace Bitstream
+﻿Imports System.Net.NetworkInformation
+
+Namespace Bitstream
     Namespace IBM_MFM
         Public Class IBM_MFM_Track
             Private _AddressMarkIndexes As List(Of UInteger)
+            Private _DuplicateSectors As Boolean
             Private _FirstSector As Integer
             Private _Gap1 As Byte()
             Private _Gap4A As Byte()
             Private _IAM As MFMAddressMark
             Private _LastSector As Integer
+            Private _OverlappingSectors As Boolean
             Private _Sectors As List(Of IBM_MFM_Sector)
             Private _Size As UInteger
+            Private _SectorSize As Integer
+
             Public Sub New(Data() As Byte)
                 MFMDecode(BytesToBits(Data))
             End Sub
@@ -20,6 +26,12 @@
             Public ReadOnly Property AddressMarkIndexes As List(Of UInteger)
                 Get
                     Return _AddressMarkIndexes
+                End Get
+            End Property
+
+            Public ReadOnly Property DuplicateSectors As Boolean
+                Get
+                    Return _DuplicateSectors
                 End Get
             End Property
 
@@ -52,11 +64,24 @@
                 End Get
             End Property
 
+            Public ReadOnly Property OverlappingSectors As Boolean
+                Get
+                    Return _OverlappingSectors
+                End Get
+            End Property
+
             Public ReadOnly Property Sectors As List(Of IBM_MFM_Sector)
                 Get
                     Return _Sectors
                 End Get
             End Property
+
+            Public ReadOnly Property SectorSize As Integer
+                Get
+                    Return _SectorSize
+                End Get
+            End Property
+
             Public ReadOnly Property Size As UInteger
                 Get
                     Return _Size
@@ -75,6 +100,9 @@
                 _AddressMarkIndexes = New List(Of UInteger)
                 _FirstSector = -1
                 _LastSector = -1
+                _SectorSize = -1
+                _OverlappingSectors = False
+                _DuplicateSectors = False
 
                 Start = ProcessIndexField(Bitstream, Start)
 
@@ -120,37 +148,54 @@
                 Dim NextSectorOffset As UInteger
                 Dim DataStart As UInteger
                 Dim DataEnd As UInteger
+                Dim SectorIds As New HashSet(Of Byte)
 
                 For Each SectorOffset In SectorList
                     Dim Start = SectorOffset + MFM_IDAM_Sync_Bytes.Length * 8
                     AddAddressMarkIndex(Start)
 
                     Dim Sector = New IBM_MFM_Sector(BitStream, SectorOffset)
+                    Dim SectorSize = Sector.GetSizeBytes
 
                     DataStart = SectorOffset + 160
-                    DataEnd = DataStart + Sector.GetSizeBytes * MFM_BYTE_SIZE
+                    DataEnd = DataStart + SectorSize * MFM_BYTE_SIZE
 
                     If SectorIndex < SectorList.Count - 1 Then
                         NextSectorOffset = SectorList.Item(SectorIndex + 1)
                         If DataEnd >= NextSectorOffset Then
                             Sector.Overlaps = True
+                            _OverlappingSectors = True
                         End If
                     ElseIf DataEnd > BitStream.Length Then
                         Sector.Overlaps = True
+                        _OverlappingSectors = True
                     End If
 
                     _Sectors.Add(Sector)
 
                     If _FirstSector = -1 Then
                         _FirstSector = Sector.SectorId
-                    ElseIf Sector.SectorId < _FirstSector Then
-                        _FirstSector = Sector.SectorId
+                        _SectorSize = SectorSize
+                    Else
+                        If Sector.SectorId < _FirstSector Then
+                            _FirstSector = Sector.SectorId
+                        End If
+
+                        If SectorSize <> _SectorSize Then
+                            _SectorSize = -1
+                        End If
                     End If
 
                     If _LastSector = -1 Then
                         _LastSector = Sector.SectorId
                     ElseIf Sector.SectorId > _LastSector Then
                         _LastSector = Sector.SectorId
+                    End If
+
+                    If Not SectorIds.Contains(Sector.SectorId) Then
+                        SectorIds.Add(Sector.SectorId)
+                    Else
+                        _DuplicateSectors = True
                     End If
 
                     SectorIndex += 1

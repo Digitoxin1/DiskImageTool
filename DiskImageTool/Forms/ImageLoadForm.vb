@@ -45,6 +45,7 @@ Public Class ImageLoadForm
                 Return ZipFile.OpenRead(FileName)
             End If
         Catch ex As Exception
+            DebugException(ex)
             Return Nothing
         End Try
 

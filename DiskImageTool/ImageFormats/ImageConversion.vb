@@ -1,42 +1,10 @@
 ﻿Imports DiskImageTool.Bitstream
 Imports DiskImageTool.Bitstream.IBM_MFM
 Imports DiskImageTool.DiskImage.FloppyDiskFunctions
+Imports DiskImageTool.ImageFormats.IMD
 
 Namespace ImageFormats
     Module ImageConversion
-        Private Class DriveSpeed
-            Private _RPM As UShort
-            Private _BitRate As UShort
-
-            Public Sub New()
-                _RPM = 0
-                _BitRate = 0
-            End Sub
-
-            Public Sub SetValue(RPM As UShort, BitRate As UShort)
-                _RPM = RPM
-                _BitRate = BitRate
-            End Sub
-
-            Public Property RPM As UShort
-                Get
-                    Return _RPM
-                End Get
-                Set
-                    _RPM = Value
-                End Set
-            End Property
-
-            Public Property BitRate As UShort
-                Get
-                    Return _BitRate
-                End Get
-                Set
-                    _BitRate = Value
-                End Set
-            End Property
-        End Class
-
         Public Function BasicSectorTo86FImage(Data() As Byte, DiskFormat As FloppyDiskFormat) As _86F._86FImage
             Dim Params = GetFloppyDiskParams(DiskFormat)
             Dim DriveSpeed = GetDriveSpeed(DiskFormat)
@@ -83,6 +51,102 @@ Namespace ImageFormats
             Return Image
         End Function
 
+        Public Function BasicSectorToHFEImage(Data() As Byte, DiskFormat As FloppyDiskFormat) As HFE.HFEImage
+            Dim Params = GetFloppyDiskParams(DiskFormat)
+            Dim DriveSpeed = GetDriveSpeed(DiskFormat)
+            Dim TrackCount = GetTrackCount(Params)
+
+            Dim HFE = New HFE.HFEImage(TrackCount, Params.NumberOfHeads) With {
+                .BitRate = DriveSpeed.BitRate,
+                .FloppyRPM = DriveSpeed.RPM,
+                .FloppyInterfaceMode = GetHFEFloppyInterfaceMode(DiskFormat)
+            }
+
+            For Track As UShort = 0 To TrackCount - 1
+                For Side As UShort = 0 To Params.NumberOfHeads - 1
+                    Dim HFETrack = New HFE.HFETrack(Track, Side) With {
+                        .BitRate = DriveSpeed.BitRate,
+                        .RPM = DriveSpeed.RPM
+                    }
+
+                    Dim MFMBitstream = MFMBitstreamFromSectorImage(Data, Params, Track, Side, DriveSpeed.RPM, DriveSpeed.BitRate)
+
+                    HFETrack.Bitstream = MFMBitstream.Bitstream
+
+                    HFE.SetTrack(Track, Side, HFETrack)
+                Next
+            Next
+
+            Return HFE
+        End Function
+
+        Public Function BasicSectorToIMDImage(Data() As Byte, DiskFormat As FloppyDiskFormat) As IMD.IMDImage
+            Dim Params = GetFloppyDiskParams(DiskFormat)
+            Dim CylinderCount = GetTrackCount(Params)
+
+            Dim IMD = New IMD.IMDImage With {
+                .Comment = "",
+                .TrackCount = CylinderCount,
+                .SideCount = Params.NumberOfHeads
+            }
+
+            For Cylinder As UShort = 0 To CylinderCount - 1
+                For Head = 0 To Params.NumberOfHeads - 1
+                    Dim IMDTrack = New IMDTrack With {
+                        .Cylinder = Cylinder,
+                        .Head = Head,
+                        .Mode = GetIMDMode(DiskFormat),
+                        .SectorSize = SectorSize.Sectorsize512
+                    }
+                    For SectorId = 1 To Params.SectorsPerTrack
+                        Dim IMDSector = New IMDSector(Params.BytesPerSector) With {
+                            .Cylinder = Cylinder,
+                            .Head = Head,
+                            .SectorId = SectorId
+                        }
+
+                        Dim ImageOffset = GetImageOffset(Params, Cylinder, Head, SectorId)
+                        Dim Size = Math.Min(Params.BytesPerSector, Data.Length - ImageOffset)
+                        Dim Buffer(Params.BytesPerSector - 1) As Byte
+                        Array.Copy(Data, ImageOffset, Buffer, 0, Size)
+                        IMDSector.Data = Buffer
+                        IMDTrack.Sectors.Add(IMDSector)
+                    Next
+                    IMD.Tracks.Add(IMDTrack)
+                Next
+            Next
+
+            Return IMD
+        End Function
+
+        Public Function BasicSectorToMFMImage(Data() As Byte, DiskFormat As FloppyDiskFormat) As MFM.MFMImage
+            Dim Params = GetFloppyDiskParams(DiskFormat)
+            Dim DriveSpeed = GetDriveSpeed(DiskFormat)
+            Dim TrackCount = GetTrackCount(Params)
+
+            Dim MFM = New MFM.MFMImage(TrackCount, Params.NumberOfHeads, 1) With {
+                .BitRate = DriveSpeed.BitRate,
+                .RPM = DriveSpeed.RPM
+            }
+
+            For Track As UShort = 0 To TrackCount - 1
+                For Side As UShort = 0 To Params.NumberOfHeads - 1
+                    Dim MFMTrack = New MFM.MFMTrack(Track, Side) With {
+                        .BitRate = DriveSpeed.BitRate,
+                        .RPM = DriveSpeed.RPM
+                    }
+
+                    Dim MFMBitstream = MFMBitstreamFromSectorImage(Data, Params, Track, Side, DriveSpeed.RPM, DriveSpeed.BitRate)
+
+                    MFMTrack.Bitstream = MFMBitstream.Bitstream
+
+                    MFM.SetTrack(Track, Side, MFMTrack)
+                Next
+            Next
+
+            Return MFM
+        End Function
+
         Public Function BasicSectorToPSIImage(Data() As Byte, DiskFormat As FloppyDiskFormat) As PSI.PSISectorImage
             Dim Params = GetFloppyDiskParams(DiskFormat)
             Dim CylinderCount = GetTrackCount(Params)
@@ -119,63 +183,6 @@ Namespace ImageFormats
             Next
 
             Return PSI
-        End Function
-
-        Public Function BasicSectorToMFMImage(Data() As Byte, DiskFormat As FloppyDiskFormat) As MFM.MFMImage
-            Dim Params = GetFloppyDiskParams(DiskFormat)
-            Dim DriveSpeed = GetDriveSpeed(DiskFormat)
-            Dim TrackCount = GetTrackCount(Params)
-
-            Dim MFM = New MFM.MFMImage(TrackCount, Params.NumberOfHeads, 1) With {
-                .BitRate = DriveSpeed.BitRate,
-                .RPM = DriveSpeed.RPM
-            }
-
-            For Track As UShort = 0 To TrackCount - 1
-                For Side As UShort = 0 To Params.NumberOfHeads - 1
-                    Dim MFMTrack = New MFM.MFMTrack(Track, Side) With {
-                        .BitRate = DriveSpeed.BitRate,
-                        .RPM = DriveSpeed.RPM
-                    }
-
-                    Dim MFMBitstream = MFMBitstreamFromSectorImage(Data, Params, Track, Side, DriveSpeed.RPM, DriveSpeed.BitRate)
-
-                    MFMTrack.Bitstream = MFMBitstream.Bitstream
-
-                    MFM.SetTrack(Track, Side, MFMTrack)
-                Next
-            Next
-
-            Return MFM
-        End Function
-
-        Public Function BasicSectorToHFEImage(Data() As Byte, DiskFormat As FloppyDiskFormat) As HFE.HFEImage
-            Dim Params = GetFloppyDiskParams(DiskFormat)
-            Dim DriveSpeed = GetDriveSpeed(DiskFormat)
-            Dim TrackCount = GetTrackCount(Params)
-
-            Dim HFE = New HFE.HFEImage(TrackCount, Params.NumberOfHeads) With {
-                .BitRate = DriveSpeed.BitRate,
-                .FloppyRPM = DriveSpeed.RPM,
-                .FloppyInterfaceMode = GetHFEFloppyInterfaceMode(DiskFormat)
-            }
-
-            For Track As UShort = 0 To TrackCount - 1
-                For Side As UShort = 0 To Params.NumberOfHeads - 1
-                    Dim HFETrack = New HFE.HFETrack(Track, Side) With {
-                        .BitRate = DriveSpeed.BitRate,
-                        .RPM = DriveSpeed.RPM
-                    }
-
-                    Dim MFMBitstream = MFMBitstreamFromSectorImage(Data, Params, Track, Side, DriveSpeed.RPM, DriveSpeed.BitRate)
-
-                    HFETrack.Bitstream = MFMBitstream.Bitstream
-
-                    HFE.SetTrack(Track, Side, HFETrack)
-                Next
-            Next
-
-            Return HFE
         End Function
 
         Public Function BasicSectorToTranscopyImage(Data() As Byte, DiskFormat As FloppyDiskFormat) As TC.TransCopyImage
@@ -252,42 +259,6 @@ Namespace ImageFormats
             Return F86Image
         End Function
 
-        Public Function BitstreamToMFMImage(Image As IBitstreamImage) As MFM.MFMImage
-            Dim BitstreamTrack As IBitstreamTrack
-
-            Dim TrackCount = GetValidTrackCount(Image, True)
-            Dim NewTrackCount = TrackCount \ Image.TrackStep
-
-            Dim MFM = New MFM.MFMImage(NewTrackCount, Image.SideCount, 1) With {
-                .BitRate = 0,
-                .RPM = 0
-            }
-
-            For Track = 0 To TrackCount - 1 Step Image.TrackStep
-                Dim NewTrack = Track \ Image.TrackStep
-                For Side = 0 To Image.SideCount - 1
-                    BitstreamTrack = Image.GetTrack(Track, Side)
-
-                    Dim DriveSpeed = GetDriveSpeed(BitstreamTrack, Image.TrackStep)
-
-                    If Track = 0 And Side = 0 Then
-                        MFM.BitRate = DriveSpeed.BitRate
-                        MFM.RPM = DriveSpeed.RPM
-                    End If
-
-                    Dim MFMTrack = New MFM.MFMTrack(NewTrack, Side) With {
-                        .Bitstream = BitstreamTrack.Bitstream,
-                        .BitRate = DriveSpeed.BitRate,
-                        .RPM = DriveSpeed.RPM
-                    }
-
-                    MFM.SetTrack(NewTrack, Side, MFMTrack)
-                Next
-            Next
-
-            Return MFM
-        End Function
-
         Public Function BitstreamToHFEImage(Image As IBitstreamImage) As HFE.HFEImage
             Dim BitstreamTrack As IBitstreamTrack
 
@@ -323,6 +294,103 @@ Namespace ImageFormats
             Next
 
             Return HFE
+        End Function
+
+        Public Function BitstreamToIMDImage(Image As IBitstreamImage) As IMD.IMDImage
+            Dim BitstreamTrack As IBitstreamTrack
+
+            Dim CylinderCount = GetValidTrackCount(Image, True)
+
+            Dim IMD = New IMD.IMDImage With {
+                .Comment = "",
+                .TrackCount = CylinderCount,
+                .SideCount = Image.SideCount
+            }
+
+            For Cylinder As UShort = 0 To CylinderCount - 1
+                For Head = 0 To Image.SideCount - 1
+                    BitstreamTrack = Image.GetTrack(Cylinder, Head)
+
+                    Dim DriveSpeed = GetDriveSpeed(BitstreamTrack, Image.TrackStep)
+                    Dim IsMFM = BitstreamTrack.TrackType = BitstreamTrackType.MFM
+
+                    Dim IMDTrack = New IMDTrack With {
+                        .Cylinder = Cylinder,
+                        .Head = Head,
+                        .Mode = GetIMDMode(DriveSpeed.BitRate, IsMFM)
+                    }
+
+                    Dim TrackSectorSize As UInteger = 0
+
+                    If BitstreamTrack.MFMData IsNot Nothing Then
+                        For Each Sector In BitstreamTrack.MFMData.Sectors
+                            Dim SectorSize = Sector.GetSizeBytes
+
+                            If SectorSize > TrackSectorSize Then
+                                TrackSectorSize = SectorSize
+                            End If
+
+                            Dim IMDSector = New IMDSector(SectorSize) With {
+                            .Cylinder = Sector.Track,
+                            .Head = Sector.Side,
+                            .SectorId = Sector.SectorId
+                        }
+                            If Sector.DAMFound Then
+                                IMDSector.Unavailable = False
+                                IMDSector.Data = Sector.Data
+                                IMDSector.ChecksumError = Not Sector.InitialChecksumValid
+                                IMDSector.Deleted = (Sector.DAM = MFMAddressMark.DeletedData)
+                            Else
+                                IMDSector.Unavailable = True
+                            End If
+
+                            IMDTrack.Sectors.Add(IMDSector)
+                        Next
+                    End If
+
+                    IMDTrack.SectorSize = GetIMDSectorSize(TrackSectorSize)
+
+                    IMD.Tracks.Add(IMDTrack)
+                Next
+            Next
+
+            Return IMD
+        End Function
+
+        Public Function BitstreamToMFMImage(Image As IBitstreamImage) As MFM.MFMImage
+            Dim BitstreamTrack As IBitstreamTrack
+
+            Dim TrackCount = GetValidTrackCount(Image, True)
+            Dim NewTrackCount = TrackCount \ Image.TrackStep
+
+            Dim MFM = New MFM.MFMImage(NewTrackCount, Image.SideCount, 1) With {
+                .BitRate = 0,
+                .RPM = 0
+            }
+
+            For Track = 0 To TrackCount - 1 Step Image.TrackStep
+                Dim NewTrack = Track \ Image.TrackStep
+                For Side = 0 To Image.SideCount - 1
+                    BitstreamTrack = Image.GetTrack(Track, Side)
+
+                    Dim DriveSpeed = GetDriveSpeed(BitstreamTrack, Image.TrackStep)
+
+                    If Track = 0 And Side = 0 Then
+                        MFM.BitRate = DriveSpeed.BitRate
+                        MFM.RPM = DriveSpeed.RPM
+                    End If
+
+                    Dim MFMTrack = New MFM.MFMTrack(NewTrack, Side) With {
+                        .Bitstream = BitstreamTrack.Bitstream,
+                        .BitRate = DriveSpeed.BitRate,
+                        .RPM = DriveSpeed.RPM
+                    }
+
+                    MFM.SetTrack(NewTrack, Side, MFMTrack)
+                Next
+            Next
+
+            Return MFM
         End Function
 
         Public Function BitstreamToPSIImage(Image As IBitstreamImage) As PSI.PSISectorImage
@@ -408,15 +476,6 @@ Namespace ImageFormats
             Return Transcopy
         End Function
 
-        Private Function GetTrackCount(Params As FloppyDiskParams) As UShort
-            Return Params.SectorCountSmall \ Params.SectorsPerTrack \ Params.NumberOfHeads
-        End Function
-
-
-        Private Function GetImageOffset(Params As FloppyDiskParams, Track As UShort, Side As UShort, SectorId As UShort) As UInteger
-            Return (Track * Params.NumberOfHeads * Params.SectorsPerTrack + Params.SectorsPerTrack * Side + (SectorId - 1)) * Params.BytesPerSector
-        End Function
-
         Private Function Get86FHole(TrackFormat As MFMTrackFormat) As _86F.DiskHole
             Select Case TrackFormat
                 Case MFMTrackFormat.TrackFormatDD
@@ -429,35 +488,6 @@ Namespace ImageFormats
                     Return _86F.DiskHole.ED
                 Case Else
                     Return _86F.DiskHole.DD
-            End Select
-        End Function
-
-        Private Function GetPSISectorFormat(TrackFormat As MFMTrackFormat) As PSI.DefaultSectorFormat
-            Select Case TrackFormat
-                Case MFMTrackFormat.TrackFormatDD
-                    Return PSI.DefaultSectorFormat.IBM_MFM_DD
-                Case MFMTrackFormat.TrackFormatHD
-                    Return PSI.DefaultSectorFormat.IBM_MFM_HD
-                Case MFMTrackFormat.TrackFormatHD1200
-                    Return PSI.DefaultSectorFormat.IBM_MFM_HD
-                Case MFMTrackFormat.TrackFormatED
-                    Return PSI.DefaultSectorFormat.IBM_MFM_ED
-                Case Else
-                    Return 0
-            End Select
-
-        End Function
-
-        Private Function GetPSISectorFormat(DiskFormat As FloppyDiskFormat) As PSI.DefaultSectorFormat
-            Select Case DiskFormat
-                Case FloppyDiskFormat.Floppy1200
-                    Return PSI.DefaultSectorFormat.IBM_MFM_HD
-                Case FloppyDiskFormat.Floppy1440
-                    Return PSI.DefaultSectorFormat.IBM_MFM_HD
-                Case FloppyDiskFormat.Floppy2880
-                    Return PSI.DefaultSectorFormat.IBM_MFM_ED
-                Case Else
-                    Return PSI.DefaultSectorFormat.IBM_MFM_DD
             End Select
         End Function
 
@@ -554,6 +584,99 @@ Namespace ImageFormats
             End Select
         End Function
 
+        Private Function GetIMDMode(DiskFormat As FloppyDiskFormat) As TrackMode
+            Select Case DiskFormat
+                Case FloppyDiskFormat.Floppy1200
+                    Return TrackMode.MFM500kbps
+                Case FloppyDiskFormat.Floppy1440
+                    Return TrackMode.MFM500kbps
+                Case FloppyDiskFormat.Floppy2880
+                    Return TrackMode.MFM500kbps
+                Case Else
+                    Return TrackMode.MFM250kbps
+            End Select
+        End Function
+
+        Private Function GetIMDMode(Bitrate As UShort, IsMFM As Boolean) As TrackMode
+            If IsMFM Then
+                If Bitrate = 500 Then
+                    Return TrackMode.MFM500kbps
+                ElseIf Bitrate = 300 Then
+                    Return TrackMode.MFM300kbps
+                Else
+                    Return TrackMode.MFM250kbps
+                End If
+            Else
+                If Bitrate = 500 Then
+                    Return TrackMode.FM500kbps
+                ElseIf Bitrate = 300 Then
+                    Return TrackMode.FM300kbps
+                Else
+                    Return TrackMode.FM250kbps
+                End If
+            End If
+
+            Return TrackMode.FM250kbps
+        End Function
+
+        Private Function GetIMDSectorSize(Size As UInteger) As IMD.SectorSize
+            Select Case Size
+                Case 128
+                    Return SectorSize.SectorSize128
+                Case 256
+                    Return SectorSize.SectorSize256
+                Case 512
+                    Return SectorSize.Sectorsize512
+                Case 1024
+                    Return SectorSize.SectorSize1024
+                Case 2048
+                    Return SectorSize.SectorSize2048
+                Case 4096
+                    Return SectorSize.SectorSize4096
+                Case 8192
+                    Return SectorSize.SectorSize8192
+                Case Else
+                    Return SectorSize.Sectorsize512
+            End Select
+        End Function
+
+        Private Function GetImageOffset(Params As FloppyDiskParams, Track As UShort, Side As UShort, SectorId As UShort) As UInteger
+            Return (Track * Params.NumberOfHeads * Params.SectorsPerTrack + Params.SectorsPerTrack * Side + (SectorId - 1)) * Params.BytesPerSector
+        End Function
+
+        Private Function GetPSISectorFormat(TrackFormat As MFMTrackFormat) As PSI.DefaultSectorFormat
+            Select Case TrackFormat
+                Case MFMTrackFormat.TrackFormatDD
+                    Return PSI.DefaultSectorFormat.IBM_MFM_DD
+                Case MFMTrackFormat.TrackFormatHD
+                    Return PSI.DefaultSectorFormat.IBM_MFM_HD
+                Case MFMTrackFormat.TrackFormatHD1200
+                    Return PSI.DefaultSectorFormat.IBM_MFM_HD
+                Case MFMTrackFormat.TrackFormatED
+                    Return PSI.DefaultSectorFormat.IBM_MFM_ED
+                Case Else
+                    Return 0
+            End Select
+
+        End Function
+
+        Private Function GetPSISectorFormat(DiskFormat As FloppyDiskFormat) As PSI.DefaultSectorFormat
+            Select Case DiskFormat
+                Case FloppyDiskFormat.Floppy1200
+                    Return PSI.DefaultSectorFormat.IBM_MFM_HD
+                Case FloppyDiskFormat.Floppy1440
+                    Return PSI.DefaultSectorFormat.IBM_MFM_HD
+                Case FloppyDiskFormat.Floppy2880
+                    Return PSI.DefaultSectorFormat.IBM_MFM_ED
+                Case Else
+                    Return PSI.DefaultSectorFormat.IBM_MFM_DD
+            End Select
+        End Function
+
+        Private Function GetTrackCount(Params As FloppyDiskParams) As UShort
+            Return Params.SectorCountSmall \ Params.SectorsPerTrack \ Params.NumberOfHeads
+        End Function
+
         Private Function GetTranscopyDiskType(TrackFormat As MFMTrackFormat) As TC.TransCopyDiskType
             Select Case TrackFormat
                 Case MFMTrackFormat.TrackFormatDD
@@ -566,6 +689,19 @@ Namespace ImageFormats
                     Return TC.TransCopyDiskType.MFMHighDensity
                 Case Else
                     Return TC.TransCopyDiskType.Unknown
+            End Select
+        End Function
+
+        Private Function GetTranscopyDiskType(DiskFormat As FloppyDiskFormat) As TC.TransCopyDiskType
+            Select Case DiskFormat
+                Case FloppyDiskFormat.Floppy1200
+                    Return TC.TransCopyDiskType.MFMHighDensity
+                Case FloppyDiskFormat.Floppy1440
+                    Return TC.TransCopyDiskType.MFMHighDensity
+                Case FloppyDiskFormat.Floppy2880
+                    Return TC.TransCopyDiskType.MFMHighDensity
+                Case Else
+                    Return TC.TransCopyDiskType.MFMDoubleDensity
             End Select
         End Function
 
@@ -589,19 +725,6 @@ Namespace ImageFormats
             Next
 
             Return TrackCount
-        End Function
-
-        Private Function GetTranscopyDiskType(DiskFormat As FloppyDiskFormat) As TC.TransCopyDiskType
-            Select Case DiskFormat
-                Case FloppyDiskFormat.Floppy1200
-                    Return TC.TransCopyDiskType.MFMHighDensity
-                Case FloppyDiskFormat.Floppy1440
-                    Return TC.TransCopyDiskType.MFMHighDensity
-                Case FloppyDiskFormat.Floppy2880
-                    Return TC.TransCopyDiskType.MFMHighDensity
-                Case Else
-                    Return TC.TransCopyDiskType.MFMDoubleDensity
-            End Select
         End Function
 
         Private Function MFMBitstreamFromSectorImage(Data() As Byte, Params As FloppyDiskParams, Track As UShort, Side As Byte, RPM As UShort, BitRate As UShort) As IBM_MFM_Bitstream
@@ -637,5 +760,37 @@ Namespace ImageFormats
 
             Return PSISector
         End Function
+
+        Private Class DriveSpeed
+            Private _BitRate As UShort
+            Private _RPM As UShort
+            Public Sub New()
+                _RPM = 0
+                _BitRate = 0
+            End Sub
+
+            Public Property BitRate As UShort
+                Get
+                    Return _BitRate
+                End Get
+                Set
+                    _BitRate = Value
+                End Set
+            End Property
+
+            Public Property RPM As UShort
+                Get
+                    Return _RPM
+                End Get
+                Set
+                    _RPM = Value
+                End Set
+            End Property
+
+            Public Sub SetValue(RPM As UShort, BitRate As UShort)
+                _RPM = RPM
+                _BitRate = BitRate
+            End Sub
+        End Class
     End Module
 End Namespace
