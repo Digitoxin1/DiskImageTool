@@ -187,6 +187,7 @@ Partial Class MainForm
         Me.MenuDirectoryView = New System.Windows.Forms.ToolStripMenuItem()
         Me.MenuDirectoryImportFiles = New System.Windows.Forms.ToolStripMenuItem()
         Me.MenuDirectoryNewDirectory = New System.Windows.Forms.ToolStripMenuItem()
+        Me.MenuToolsTrackLayout = New System.Windows.Forms.ToolStripMenuItem()
         SummaryName = CType(New System.Windows.Forms.ColumnHeader(), System.Windows.Forms.ColumnHeader)
         SummaryValue = CType(New System.Windows.Forms.ColumnHeader(), System.Windows.Forms.ColumnHeader)
         HashName = CType(New System.Windows.Forms.ColumnHeader(), System.Windows.Forms.ColumnHeader)
@@ -567,7 +568,7 @@ Partial Class MainForm
         '
         'MainMenuTools
         '
-        MainMenuTools.DropDownItems.AddRange(New System.Windows.Forms.ToolStripItem() {Me.MenuToolsCompare, Me.MenuToolsWin9xClean, Me.MenuToolsClearReservedBytes, Me.MenuToolsFixImageSize, Me.MenuToolsFixImageSizeSubMenu, Me.MenuToolsRestoreBootSector, Me.MenuToolsRemoveBootSector, MenuToolsSeparator, Me.MenuToolsWin9xCleanBatch})
+        MainMenuTools.DropDownItems.AddRange(New System.Windows.Forms.ToolStripItem() {Me.MenuToolsCompare, Me.MenuToolsWin9xClean, Me.MenuToolsClearReservedBytes, Me.MenuToolsFixImageSize, Me.MenuToolsFixImageSizeSubMenu, Me.MenuToolsRestoreBootSector, Me.MenuToolsRemoveBootSector, MenuToolsSeparator, Me.MenuToolsWin9xCleanBatch, Me.MenuToolsTrackLayout})
         MainMenuTools.Name = "MainMenuTools"
         MainMenuTools.Size = New System.Drawing.Size(46, 20)
         MainMenuTools.Text = "&Tools"
@@ -785,24 +786,24 @@ Partial Class MainForm
         Me.ContextMenuFilters.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.MenuFiltersScanNew, Me.MenuFiltersScan, Me.MenuFiltersClear})
         Me.ContextMenuFilters.Name = "ContextMenuStrip1"
         Me.ContextMenuFilters.OwnerItem = Me.MainMenuFilters
-        Me.ContextMenuFilters.Size = New System.Drawing.Size(181, 92)
+        Me.ContextMenuFilters.Size = New System.Drawing.Size(168, 70)
         '
         'MenuFiltersScanNew
         '
         Me.MenuFiltersScanNew.Name = "MenuFiltersScanNew"
-        Me.MenuFiltersScanNew.Size = New System.Drawing.Size(180, 22)
+        Me.MenuFiltersScanNew.Size = New System.Drawing.Size(167, 22)
         Me.MenuFiltersScanNew.Text = "Scan &New Images"
         '
         'MenuFiltersScan
         '
         Me.MenuFiltersScan.Name = "MenuFiltersScan"
-        Me.MenuFiltersScan.Size = New System.Drawing.Size(180, 22)
+        Me.MenuFiltersScan.Size = New System.Drawing.Size(167, 22)
         Me.MenuFiltersScan.Text = "&Scan Images"
         '
         'MenuFiltersClear
         '
         Me.MenuFiltersClear.Name = "MenuFiltersClear"
-        Me.MenuFiltersClear.Size = New System.Drawing.Size(180, 22)
+        Me.MenuFiltersClear.Size = New System.Drawing.Size(167, 22)
         Me.MenuFiltersClear.Text = "Clear Filters"
         '
         'MainMenuOptions
@@ -1393,6 +1394,12 @@ Partial Class MainForm
         Me.MenuDirectoryNewDirectory.Size = New System.Drawing.Size(150, 22)
         Me.MenuDirectoryNewDirectory.Text = "&New Directory"
         '
+        'MenuToolsTrackLayout
+        '
+        Me.MenuToolsTrackLayout.Name = "MenuToolsTrackLayout"
+        Me.MenuToolsTrackLayout.Size = New System.Drawing.Size(289, 22)
+        Me.MenuToolsTrackLayout.Text = "Generate tracklayout.txt"
+        '
         'MainForm
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
@@ -1551,4 +1558,5 @@ Partial Class MainForm
     Friend WithEvents ToolStripTop As ToolStrip
     Friend WithEvents MenuOptionsDragDrop As ToolStripMenuItem
     Friend WithEvents FileFAT32Cluster As ColumnHeader
+    Friend WithEvents MenuToolsTrackLayout As ToolStripMenuItem
 End Class

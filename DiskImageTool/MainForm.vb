@@ -1474,6 +1474,89 @@ Public Class MainForm
         RefreshFilterButtons(False)
     End Sub
 
+    Private Sub GenerateTrackLayout()
+        If _CurrentImage Is Nothing Then Exit Sub
+
+        If Not _CurrentImage.Disk.Image.Data.IsBitstreamImage Then
+            Exit Sub
+        End If
+
+        Dim BitstreamImage = _CurrentImage.Disk.Image.Data.BitstreamImage
+        Dim Gap4A As UShort
+        Dim Gap1 As UShort
+        Dim Gap3List() As UShort
+        Dim Gap3 As UShort
+        Dim Gap3Match As Boolean
+        Dim SectorCount As UShort
+        Dim GapString As String
+        Dim TrackString As String
+        Dim PrevTrackString As String = ""
+        Dim FirstTrack As UShort
+        Dim Track As UShort
+        Dim Side As UShort
+        Dim TrackLayout As New StringBuilder
+
+        For Track = 0 To BitstreamImage.TrackCount - 1 Step BitstreamImage.TrackStep
+            TrackString = ""
+            For Side = 0 To BitstreamImage.SideCount - 1
+                Gap4A = 80
+                Gap1 = 50
+                Gap3List = New UShort(0) {80}
+                Gap3Match = True
+                Dim BitstreamTrack = BitstreamImage.GetTrack(Track, Side)
+                Dim RegionList = Bitstream.IBM_MFM.MFMGetRegionList(BitstreamTrack.Bitstream, BitstreamTrack.TrackType)
+                SectorCount = RegionList.Sectors.Count
+                Gap4A = RegionList.Gap4A
+                Gap1 = RegionList.Gap1
+                If SectorCount > 1 Then
+                    Gap3List = New UShort(SectorCount - 1) {}
+                    For k = 0 To SectorCount - 2
+                        Dim Sector = RegionList.Sectors.Item(k)
+                        Gap3List(k) = Sector.Gap3
+                        If k > 0 Then
+                            If Gap3 <> Gap3List(k) Then
+                                Gap3Match = False
+                            End If
+                        End If
+                        Gap3 = Gap3List(k)
+                    Next
+                    Gap3List(SectorCount - 1) = Gap3List(SectorCount - 2)
+                End If
+                GapString = Gap4A & "," & Gap1 & ","
+                If Gap3Match Then
+                    GapString &= Gap3List(0)
+                Else
+                    GapString &= "["
+                    For k = 0 To Gap3List.Length - 1
+                        If k > 0 Then
+                            GapString &= ","
+                        End If
+                        GapString &= Gap3List(k)
+                    Next
+                    GapString &= "]"
+                End If
+
+                If Side = 0 Then
+                    TrackString = GapString
+                ElseIf TrackString <> GapString Then
+                    TrackString &= "." & GapString
+                End If
+            Next
+
+            If Track = 0 Then
+                FirstTrack = Track
+            ElseIf TrackString <> PrevTrackString Then
+                TrackLayout.AppendLine(FirstTrack & "-" & Track - 1 & ":" & PrevTrackString)
+                FirstTrack = Track
+            End If
+            PrevTrackString = TrackString
+        Next
+        TrackLayout.AppendLine(FirstTrack & "-" & Track - 1 & ":" & PrevTrackString)
+
+        Dim frmTextView = New TextViewForm("Tracklayout", TrackLayout.ToString)
+        frmTextView.ShowDialog()
+    End Sub
+
     Private Function GetModifiedImageList() As List(Of ImageData)
         Dim ModifyImageList As New List(Of ImageData)
 
@@ -2859,6 +2942,7 @@ Public Class MainForm
             ToolStripStatusReadOnly.Text = IIf(CurrentImage.ImageData.Compressed, "Compressed", "Read Only")
             ToolStripStatusCached.Visible = CurrentImage.ImageData.TempPath <> ""
             RefreshRawTrackSubMenu(CurrentImage.Disk)
+            MenuToolsTrackLayout.Visible = My.Settings.Debug AndAlso CurrentImage.Disk.Image.Data.IsBitstreamImage
         Else
             MenuEditRevert.Enabled = False
             SetButtonStateUndo(False)
@@ -2867,6 +2951,7 @@ Public Class MainForm
             ToolStripStatusReadOnly.Visible = False
             ToolStripStatusCached.Visible = False
             MenuRawTrackDataSubMenuClear()
+            MenuToolsTrackLayout.Visible = False
         End If
     End Sub
 
@@ -4111,6 +4196,10 @@ Public Class MainForm
 
     Private Sub MenuOptionsWindowsExtensions_CheckStateChanged(sender As Object, e As EventArgs) Handles MenuOptionsWindowsExtensions.CheckStateChanged
         My.Settings.WindowsExtensions = MenuOptionsWindowsExtensions.Checked
+    End Sub
+
+    Private Sub MenuToolsTrackLayout_Click(sender As Object, e As EventArgs) Handles MenuToolsTrackLayout.Click
+        GenerateTrackLayout
     End Sub
 
     Private Sub ToolStripCombo_SelectedIndexChanged(sender As Object, e As EventArgs) Handles ToolStripOEMNameCombo.SelectedIndexChanged, ToolStripDiskTypeCombo.SelectedIndexChanged

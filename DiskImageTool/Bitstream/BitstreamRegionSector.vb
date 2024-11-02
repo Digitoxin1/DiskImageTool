@@ -10,6 +10,7 @@
             Public Property StartIndex As UInteger
             Public Property Length As UInteger
             Public Property DataChecksumValid As Boolean
+            Public Property Gap3 As UShort
 
             Public Overrides Function ToString() As String
                 'Return _SectorIndex & " (" & _SectorId & ")"

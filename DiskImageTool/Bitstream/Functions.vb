@@ -125,7 +125,7 @@ Namespace Bitstream
 
             If SectorCount < 8 Then
                 SectorCount = 8
-            ElseIf SectorCount < 11 Then
+            ElseIf SectorCount > 9 And SectorCount < 11 Then
                 SectorCount = 9
             End If
 

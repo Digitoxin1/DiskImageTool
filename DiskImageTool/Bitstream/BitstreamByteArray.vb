@@ -1,5 +1,4 @@
 ﻿Imports DiskImageTool.DiskImage
-Imports DiskImageTool.ImageFormats.MFM
 
 Namespace Bitstream
     Public MustInherit Class BitstreamByteArray

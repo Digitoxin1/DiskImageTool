@@ -1,6 +1,4 @@
-﻿Imports System.Net.NetworkInformation
-
-Namespace Bitstream
+﻿Namespace Bitstream
     Namespace IBM_MFM
         Public Class IBM_MFM_Track
             Private _AddressMarkIndexes As List(Of UInteger)
