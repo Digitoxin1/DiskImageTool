@@ -3,7 +3,7 @@
 Namespace ImageFormats
     Namespace PSI
         Module PSILoader
-            Public Function PSIImageLoad(Data() As Byte) As PSIByteArray
+            Public Function ImageLoad(Data() As Byte) As PSIByteArray
                 Dim Image As PSIByteArray = Nothing
 
                 Dim PSI = New PSISectorImage()
@@ -13,7 +13,7 @@ Namespace ImageFormats
                         Or PSI.Header.DefaultSectorFormat = DefaultSectorFormat.IBM_MFM_HD _
                         Or PSI.Header.DefaultSectorFormat = DefaultSectorFormat.IBM_MFM_ED Then
 
-                        Dim DiskFormat = PSIGetImageFormat(PSI)
+                        Dim DiskFormat = GetImageFormat(PSI)
                         If DiskFormat <> FloppyDiskFormat.FloppyUnknown Then
                             Image = New PSIByteArray(PSI, DiskFormat)
                         End If
@@ -23,13 +23,13 @@ Namespace ImageFormats
                 Return Image
             End Function
 
-            Private Function PSIGetImageFormat(PSI As PSISectorImage) As FloppyDiskFormat
+            Private Function GetImageFormat(PSI As PSISectorImage) As FloppyDiskFormat
                 Dim DiskFormat As FloppyDiskFormat
                 Dim SectorCount As Byte
 
                 Dim TotalSize As UShort = 0
                 For Each Sector In PSI.Sectors
-                    If Sector.Cylinder = 0 And Sector.Head = 0 Then
+                    If Sector.Track = 0 And Sector.Side = 0 Then
                         If Not Sector.HasDataCRCError Then
                             TotalSize += Sector.Size
                         End If
@@ -38,10 +38,10 @@ Namespace ImageFormats
                 SectorCount = TotalSize \ 512
 
                 If PSI.Header.DefaultSectorFormat = DefaultSectorFormat.IBM_MFM_DD Then
-                    If PSI.CylinderCount >= 79 Then
+                    If PSI.TrackCount >= 79 Then
                         DiskFormat = FloppyDiskFormat.Floppy720
                     Else
-                        If PSI.HeadCount = 1 Then
+                        If PSI.SideCount = 1 Then
                             If SectorCount < 9 Then
                                 DiskFormat = FloppyDiskFormat.Floppy160
                             Else

@@ -19,23 +19,17 @@ Namespace ImageFormats
                 InitDiskFormat(DiskFormat)
             End Sub
 
-            Private Function CalculateHash(HashAlgorithm As HashAlgorithm) As String
-                Dim OutputBuffer() As Byte
+            Public ReadOnly Property Image As IMDImage
+                Get
+                    Return _Image
+                End Get
+            End Property
 
-                For Each Track In _Image.Tracks
-                    If Track.IsMFM Then
-                        For Each Sector In Track.Sectors
-                            If Not Sector.Unavailable And Not Sector.ChecksumError Then
-                                OutputBuffer = New Byte(Sector.Data.Length - 1) {}
-                                HashAlgorithm.TransformBlock(Sector.Data, 0, Sector.Data.Length, OutputBuffer, 0)
-                            End If
-                        Next
-                    End If
-                Next
-                HashAlgorithm.TransformFinalBlock(New Byte(0) {}, 0, 0)
-
-                Return HashBytesToString(HashAlgorithm.Hash)
-            End Function
+            Public Overrides ReadOnly Property ImageType As FloppyImageType Implements IByteArray.ImageType
+                Get
+                    Return FloppyImageType.IMDImage
+                End Get
+            End Property
 
             Public Overrides Function GetCRC32() As String Implements IByteArray.GetCRC32
                 Using Hasher As CRC32Hash = CRC32Hash.Create()
@@ -59,7 +53,7 @@ Namespace ImageFormats
                 SetTracks(_Image.TrackCount, _Image.SideCount)
 
                 For Each Track In _Image.Tracks
-                    Dim TrackData = SetTrack(Track.Cylinder, Track.Head)
+                    Dim TrackData = SetTrack(Track.Track, Track.Side)
                     TrackData.SectorSize = Track.GetSizeBytes
                     TrackData.Encoding = GetEncoding(Track.Mode)
 
@@ -75,12 +69,12 @@ Namespace ImageFormats
                         If Sector.SectorId >= 1 And Sector.SectorId <= SECTOR_COUNT Then
                             Dim IsStandard = IsStandardSector(Track, Sector)
                             If IsStandard Then
-                                Dim BitstreamSector = GetSector(Track.Cylinder, Track.Head, Sector.SectorId)
+                                Dim BitstreamSector = GetSector(Track.Track, Track.Side, Sector.SectorId)
                                 If BitstreamSector Is Nothing Then
                                     BitstreamSector = New BitstreamSector(Sector.Data, Sector.Data.Length) With {
                                         .IsStandard = IsStandard
                                     }
-                                    SetSector(Track.Cylinder, Track.Head, Sector.SectorId, BitstreamSector)
+                                    SetSector(Track.Track, Track.Side, Sector.SectorId, BitstreamSector)
                                 Else
                                     BitstreamSector.IsStandard = False
                                 End If
@@ -89,6 +83,24 @@ Namespace ImageFormats
                     Next
                 Next
             End Sub
+
+            Private Function CalculateHash(HashAlgorithm As HashAlgorithm) As String
+                Dim OutputBuffer() As Byte
+
+                For Each Track In _Image.Tracks
+                    If Track.IsMFM Then
+                        For Each Sector In Track.Sectors
+                            If Not Sector.Unavailable And Not Sector.ChecksumError Then
+                                OutputBuffer = New Byte(Sector.Data.Length - 1) {}
+                                HashAlgorithm.TransformBlock(Sector.Data, 0, Sector.Data.Length, OutputBuffer, 0)
+                            End If
+                        Next
+                    End If
+                Next
+                HashAlgorithm.TransformFinalBlock(New Byte(0) {}, 0, 0)
+
+                Return HashBytesToString(HashAlgorithm.Hash)
+            End Function
 
             Private Function GetEncoding(Mode As TrackMode) As BitstreamTrackType
                 If Mode = TrackMode.FM250kbps Or Mode = TrackMode.FM300kbps Or Mode = TrackMode.FM500kbps Then
@@ -109,29 +121,12 @@ Namespace ImageFormats
                     Return False
                 End If
 
-                If Sector.Cylinder <> Track.Cylinder Or Sector.Head <> Track.Head Then
+                If Sector.Track <> Track.Track Or Sector.Side <> Track.Side Then
                     Return False
                 End If
 
                 Return True
             End Function
-
-            Public Overrides ReadOnly Property ImageType As FloppyImageType Implements IByteArray.ImageType
-                Get
-                    Return FloppyImageType.IMDImage
-                End Get
-            End Property
-
-            Public Overrides ReadOnly Property IsBitstreamImage As Boolean Implements IByteArray.IsBitstreamImage
-                Get
-                    Return False
-                End Get
-            End Property
-
-            Public Overrides Function SaveToFile(FilePath As String) As Boolean Implements IByteArray.SaveToFile
-                Return _Image.Export(FilePath)
-            End Function
-
         End Class
     End Namespace
 End Namespace

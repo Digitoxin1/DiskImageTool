@@ -3,7 +3,7 @@
 Namespace ImageFormats
     Namespace HFE
         Module HFELoader
-            Public Function HFEImageLoad(Data() As Byte) As HFEByteArray
+            Public Function ImageLoad(Data() As Byte) As HFEByteArray
                 Dim Image As HFEByteArray = Nothing
 
                 Dim HFEImage = New HFEImage

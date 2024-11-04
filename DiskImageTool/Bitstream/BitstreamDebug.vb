@@ -113,7 +113,7 @@
             DebugFile.Close()
         End Sub
 
-        Public Sub DebugTranscopyCylinder(Cylinder As ImageFormats.TC.TransCopyCylinder)
+        Public Sub DebugTranscopyCylinder(Cylinder As ImageFormats.TC.TransCopyTrack)
             Dim DebugPath As String = "H:\Debug\"
             Debug.Write("Track: " & Cylinder.Track)
             Debug.Write(", Side: " & Cylinder.Side)

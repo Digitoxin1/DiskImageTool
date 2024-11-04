@@ -3,7 +3,7 @@
 Namespace ImageFormats
     Namespace TC
         Module TCLoader
-            Public Function TranscopyImageLoad(Data() As Byte) As TranscopyByteArray
+            Public Function ImageLoad(Data() As Byte) As TranscopyByteArray
                 Dim Image As TranscopyByteArray = Nothing
 
                 Dim tc = New TransCopyImage()

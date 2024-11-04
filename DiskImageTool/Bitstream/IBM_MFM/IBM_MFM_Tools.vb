@@ -71,6 +71,17 @@
             Public ReadOnly FM_IDAM_Sync_Bytes() As Byte = {&HF5, &H7E}
             Public ReadOnly FM_DAM_Sync_Bytes() As Byte = {&HF5, &H6F}
 
+            Public Function AdjustBitIndex(Index As Integer, Length As UInteger) As Integer
+                If Index < 0 Then
+                    Index = Index Mod Length
+                    Index = Length + Index
+                ElseIf Index > Length - 1 Then
+                    Index = Index Mod Length
+                End If
+
+                Return Index
+            End Function
+
             Public Function BytesToBits(bytes() As Byte, Optional Reverse As Boolean = True) As BitArray
                 Dim buffer(bytes.Length - 1) As Byte
 
@@ -89,13 +100,13 @@
                 Dim bufferSize = Math.Ceiling(BitLength / 8)
                 Dim buffer(bufferSize - 1) As Byte
 
-                If Reverse Then
-                    For i As Integer = 0 To bufferSize - 1
+                For i As Integer = 0 To bufferSize - 1
+                    If Reverse Then
                         buffer(i) = ReverseBits(bytes(Offset + i))
-                    Next
-                Else
-                    buffer = bytes
-                End If
+                    Else
+                        buffer(i) = bytes(Offset + i)
+                    End If
+                Next
 
                 Dim bitArray = New BitArray(buffer) With {
                     .Length = BitLength
@@ -220,12 +231,14 @@
                 RegionData.Gap4A = 0
                 RegionData.Gap1 = 0
 
-                Dim SectorList As List(Of UInteger)
+                Dim Pattern As BitArray
                 If TrackType = BitstreamTrackType.MFM Then
-                    SectorList = MFMGetSectorList(Bitstream)
+                    Pattern = BytesToBits(MFM_IDAM_Sync_Bytes)
                 Else
-                    SectorList = FMGetSectorList(Bitstream)
+                    Pattern = BytesToBits(FM_IDAM_Sync_Bytes)
                 End If
+
+                Dim SectorList = MFMGetSectorList(Bitstream, Pattern)
 
                 Dim EndIndex = Bitstream.Length
                 If SectorList.Count > 0 Then
@@ -553,26 +566,7 @@
                 End If
             End Function
 
-            Public Function FMGetSectorList(BitStream As BitArray) As List(Of UInteger)
-                Dim IDAMPattern = BytesToBits(FM_IDAM_Sync_Bytes)
-
-                Dim Start As UInteger = 0
-                Dim IDFieldSyncIndex As Integer
-                Dim SectorList As New List(Of UInteger)
-                Do
-                    IDFieldSyncIndex = FindPattern(BitStream, IDAMPattern, Start)
-                    If IDFieldSyncIndex > -1 Then
-                        SectorList.Add(IDFieldSyncIndex)
-                        Start = IDFieldSyncIndex + IDAMPattern.Length
-                    End If
-                Loop Until IDFieldSyncIndex = -1
-
-                Return SectorList
-            End Function
-
-            Public Function MFMGetSectorList(BitStream As BitArray) As List(Of UInteger)
-                Dim IDAMPattern = BytesToBits(MFM_IDAM_Sync_Bytes)
-
+            Public Function MFMGetSectorList(BitStream As BitArray, IDAMPattern As BitArray) As List(Of UInteger)
                 Dim Start As UInteger = 0
                 Dim IDFieldSyncIndex As Integer
                 Dim SectorList As New List(Of UInteger)
@@ -693,7 +687,7 @@
                 Return MFMGetBytes(Bitstream, Start, NumBytes)
             End Function
 
-            Public Function MFMGetBytes(Bitstream As BitArray, Start As UInteger, NumBytes As UInteger) As Byte()
+            Public Function MFMGetBytes(Bitstream As BitArray, Start As Integer, NumBytes As UInteger) As Byte()
                 Dim decodedBytes(NumBytes - 1) As Byte
                 Dim byteBuffer As Byte
                 Dim bitCount As Integer = 0
@@ -704,9 +698,7 @@
                 If NumBytes > 0 Then
                     Dim Length = Bitstream.Length
 
-                    If Start > Length - 1 Then
-                        Start = Start Mod Length
-                    End If
+                    Start = AdjustBitIndex(Start, Length)
 
                     Do
                         clockBit = Bitstream(Start)

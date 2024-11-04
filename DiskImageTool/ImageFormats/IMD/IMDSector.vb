@@ -22,9 +22,12 @@ Namespace ImageFormats
                 _CompressedValue = 0
             End Sub
 
-            Public Property SectorId As Byte
-            Public Property Cylinder As Byte
-            Public Property Head As Byte
+            Public Property ChecksumError As Boolean
+
+            Public Property Compressed As Boolean
+
+            Public Property CompressedValue As Byte
+
             Public Property Data As Byte()
                 Get
                     Return _Data
@@ -35,11 +38,11 @@ Namespace ImageFormats
                 End Set
             End Property
 
-            Public Property Unavailable As Boolean
-            Public Property Compressed As Boolean
-            Public Property CompressedValue As Byte
             Public Property Deleted As Boolean
-            Public Property ChecksumError As Boolean
+            Public Property SectorId As Byte
+            Public Property Side As Byte
+            Public Property Track As Byte
+            Public Property Unavailable As Boolean
 
             Public Function GetFormat() As DataFormat
                 If _Unavailable Then

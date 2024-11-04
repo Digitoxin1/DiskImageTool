@@ -3,7 +3,7 @@
 Namespace ImageFormats
     Namespace MFM
         Module MFMLoader
-            Public Function MFMImageLoad(Data() As Byte) As MFMByteArray
+            Public Function ImageLoad(Data() As Byte) As MFMByteArray
                 Dim Image As MFMByteArray = Nothing
 
                 Dim MFMImage = New MFMImage

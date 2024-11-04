@@ -20,12 +20,7 @@ Namespace ImageFormats
                 _MFMData = Nothing
             End Sub
 
-            Public Property Flags As UShort
-            Public Property Track As UShort
-            Public Property Side As Byte
-            Public Property Offset As UInt32
             Public Property BitCellCount As UInt32
-            Public Property IndexHolePos As UInt32
 
             Public Property BitRate As BitRate
                 Get
@@ -34,25 +29,6 @@ Namespace ImageFormats
                 Set(value As BitRate)
                     value = value And &H7
                     _Flags = (_Flags And Not (&H7)) Or value
-                End Set
-            End Property
-
-            Public Property Encoding As Encoding
-                Get
-                    Return (_Flags >> 3) And &H3
-                End Get
-                Set(value As Encoding)
-                    _Flags = (_Flags And Not (&H18)) Or (value << 3)
-                End Set
-            End Property
-
-            Public Property RPM As RPM
-                Get
-                    Return (_Flags >> 5) And &H7
-                End Get
-                Set(value As RPM)
-                    value = value And &H7
-                    _Flags = (_Flags And Not (&HE0)) Or (value << 5)
                 End Set
             End Property
 
@@ -65,6 +41,62 @@ Namespace ImageFormats
                 End Set
             End Property
 
+            Public ReadOnly Property BitstreamTrackType As BitstreamTrackType Implements IBitstreamTrack.TrackType
+                Get
+                    Select Case Encoding
+                        Case Encoding.MFM
+                            If MFMData IsNot Nothing AndAlso _MFMData.Sectors.Count > 0 Then
+                                Return BitstreamTrackType.MFM
+                            Else
+                                Return BitstreamTrackType.Other
+                            End If
+                        Case Encoding.FM
+                            If _Bitstream.Length > 0 Then
+                                Return BitstreamTrackType.FM
+                            Else
+                                Return BitstreamTrackType.Other
+                            End If
+                        Case Else
+                            Return BitstreamTrackType.Other
+                    End Select
+                End Get
+            End Property
+
+            Public ReadOnly Property Decoded As Boolean Implements IBitstreamTrack.Decoded
+                Get
+                    Return _MFMData IsNot Nothing AndAlso _MFMData.Sectors.Count > 0
+                End Get
+            End Property
+
+            Public Property Encoding As Encoding
+                Get
+                    Return (_Flags >> 3) And &H3
+                End Get
+                Set(value As Encoding)
+                    _Flags = (_Flags And Not (&H18)) Or (value << 3)
+                End Set
+            End Property
+
+            Public Property Flags As UShort
+
+            Public Property IndexHolePos As UInt32
+
+            Public Property MFMData As IBM_MFM.IBM_MFM_Track Implements IBitstreamTrack.MFMData
+
+            Public Property Offset As UInt32
+
+            Public Property RPM As RPM
+                Get
+                    Return (_Flags >> 5) And &H7
+                End Get
+                Set(value As RPM)
+                    value = value And &H7
+                    _Flags = (_Flags And Not (&HE0)) Or (value << 5)
+                End Set
+            End Property
+
+            Public Property Side As Byte Implements IBitstreamTrack.Side
+
             Public Property SurfaceData As BitArray Implements IBitstreamTrack.SurfaceData
                 Get
                     Return _SurfaceData
@@ -74,8 +106,7 @@ Namespace ImageFormats
                 End Set
             End Property
 
-            Public Property MFMData As IBM_MFM.IBM_MFM_Track Implements IBitstreamTrack.MFMData
-            Public Property Decoded As Boolean Implements IBitstreamTrack.Decoded
+            Public Property Track As UShort Implements IBitstreamTrack.Track
 
             Private ReadOnly Property IBitstreamTrack_BitRate As UShort Implements IBitstreamTrack.BitRate
                 Get
@@ -86,19 +117,6 @@ Namespace ImageFormats
             Private ReadOnly Property IBitstreamTrack_RPM As UShort Implements IBitstreamTrack.RPM
                 Get
                     Return GetRPM(RPM)
-                End Get
-            End Property
-
-            Public ReadOnly Property BitstreamTrackType As BitstreamTrackType Implements IBitstreamTrack.TrackType
-                Get
-                    Select Case Encoding
-                        Case Encoding.MFM
-                            Return BitstreamTrackType.MFM
-                        Case Encoding.FM
-                            Return BitstreamTrackType.FM
-                        Case Else
-                            Return BitstreamTrackType.Other
-                    End Select
                 End Get
             End Property
         End Class

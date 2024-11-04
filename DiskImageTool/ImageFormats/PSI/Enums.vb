@@ -8,19 +8,6 @@
             MAG_GCR = 768
         End Enum
 
-        Public Enum SectorFlags As Byte
-            Compressed = 1
-            AlternateSector = 2
-            DataCRCError = 4
-        End Enum
-
-        Public Enum MFMSectorFlags As Byte
-            IDFieldCRCError = 1
-            DataFieldCRCError = 2
-            DeletedDAM = 4
-            MissingDAM = 8
-        End Enum
-
         Public Enum GCRSectorFlags As Byte
             IDFieldChecksumError = 1
             DataFieldCChecksumError = 2
@@ -33,9 +20,22 @@
             ExtraDensity = 2
         End Enum
 
+        Public Enum MFMSectorFlags As Byte
+            IDFieldCRCError = 1
+            DataFieldCRCError = 2
+            DeletedDAM = 4
+            MissingDAM = 8
+        End Enum
+
+        Public Enum SectorFlags As Byte
+            Compressed = 1
+            AlternateSector = 2
+            DataCRCError = 4
+        End Enum
+
         Public Structure ReadResponse
-            Dim Offset As UInt32
             Dim ChecksumVerified As Boolean
+            Dim Offset As UInt32
         End Structure
     End Namespace
 End Namespace

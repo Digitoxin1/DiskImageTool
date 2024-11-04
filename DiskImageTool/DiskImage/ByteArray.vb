@@ -37,7 +37,7 @@ Namespace DiskImage
             End Get
         End Property
 
-        Public ReadOnly Property IsBitstreamImage As Boolean Implements IByteArray.IsBitstreamImage
+        Public ReadOnly Property IsBitStreamImage As Boolean Implements IByteArray.IsBitStreamImage
             Get
                 Return False
             End Get
@@ -235,7 +235,7 @@ Namespace DiskImage
             End Get
         End Property
 
-        Private ReadOnly Property IByteArray_HeadCount As Byte Implements IByteArray.HeadCount
+        Private ReadOnly Property IByteArray_HeadCount As Byte Implements IByteArray.SideCount
             Get
                 Return 0
             End Get

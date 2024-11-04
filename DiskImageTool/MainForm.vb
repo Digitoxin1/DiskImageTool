@@ -1477,7 +1477,7 @@ Public Class MainForm
     Private Sub GenerateTrackLayout()
         If _CurrentImage Is Nothing Then Exit Sub
 
-        If Not _CurrentImage.Disk.Image.Data.IsBitstreamImage Then
+        If Not _CurrentImage.Disk.Image.Data.IsBitStreamImage Then
             Exit Sub
         End If
 
@@ -1764,8 +1764,8 @@ Public Class MainForm
             Side = 0
             AllTracks = True
         Else
-            Track = TrackIndex \ Disk.Image.Data.HeadCount
-            Side = TrackIndex Mod Disk.Image.Data.HeadCount
+            Track = TrackIndex \ Disk.Image.Data.SideCount
+            Side = TrackIndex Mod Disk.Image.Data.SideCount
             AllTracks = False
         End If
 
@@ -2942,7 +2942,7 @@ Public Class MainForm
             ToolStripStatusReadOnly.Text = IIf(CurrentImage.ImageData.Compressed, "Compressed", "Read Only")
             ToolStripStatusCached.Visible = CurrentImage.ImageData.TempPath <> ""
             RefreshRawTrackSubMenu(CurrentImage.Disk)
-            MenuToolsTrackLayout.Visible = My.Settings.Debug AndAlso CurrentImage.Disk.Image.Data.IsBitstreamImage
+            MenuToolsTrackLayout.Visible = My.Settings.Debug AndAlso CurrentImage.Disk.Image.Data.IsBitStreamImage
         Else
             MenuEditRevert.Enabled = False
             SetButtonStateUndo(False)
@@ -3148,7 +3148,7 @@ Public Class MainForm
         MenuRawTrackDataSubMenuClear()
         MenuHexRawTrackData.Enabled = False
 
-        If Disk.Image.Data.IsBitstreamImage Then
+        If Disk.Image.Data.IsBitStreamImage Then
             Dim TrackCount = Disk.Image.Data.NonStandardTracks.Count + Disk.Image.Data.AdditionalTracks.Count
             If TrackCount > 0 Then
                 Dim TrackList(TrackCount - 1) As UShort
@@ -3170,7 +3170,7 @@ Public Class MainForm
 
                 For i = 0 To TrackList.Length - 1
                     Dim Track = TrackList(i)
-                    Dim TrackString = "Track " & (Track \ Disk.Image.Data.HeadCount) & "." & (Track Mod Disk.Image.Data.HeadCount)
+                    Dim TrackString = "Track " & (Track \ Disk.Image.Data.SideCount) & "." & (Track Mod Disk.Image.Data.SideCount)
                     MenuRawTrackDataSubMenuItemAdd(Track, TrackString)
                 Next
 
@@ -3921,6 +3921,11 @@ Public Class MainForm
     Private Sub ComboImages_SelectedIndexChanged(sender As Object, e As EventArgs) Handles ComboImages.SelectedIndexChanged
         If _SuppressEvent Then
             Exit Sub
+        End If
+
+        If _CurrentImage IsNot Nothing Then
+            _CurrentImage.ImageData.BottomIndex = ListViewFiles.GetBottomIndex
+            _CurrentImage.ImageData.SortHistory = _lvwColumnSorter.SortHistory
         End If
 
         LoadCurrentImage(ComboImages.SelectedItem, False)

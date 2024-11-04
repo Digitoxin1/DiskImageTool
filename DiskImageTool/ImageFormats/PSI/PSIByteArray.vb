@@ -19,19 +19,17 @@ Namespace ImageFormats
                 InitDiskFormat(DiskFormat)
             End Sub
 
-            Private Function CalculateHash(HashAlgorithm As HashAlgorithm) As String
-                Dim OutputBuffer() As Byte
+            Public ReadOnly Property Image As PSISectorImage
+                Get
+                    Return _Image
+                End Get
+            End Property
 
-                For Each PSISector In _Image.Sectors
-                    If Not PSISector.IsAlternateSector And Not PSISector.HasDataCRCError Then
-                        OutputBuffer = New Byte(PSISector.Data.Length - 1) {}
-                        HashAlgorithm.TransformBlock(PSISector.Data, 0, PSISector.Data.Length, OutputBuffer, 0)
-                    End If
-                Next
-                HashAlgorithm.TransformFinalBlock(New Byte(0) {}, 0, 0)
-
-                Return HashBytesToString(HashAlgorithm.Hash)
-            End Function
+            Public Overrides ReadOnly Property ImageType As FloppyImageType Implements IByteArray.ImageType
+                Get
+                    Return FloppyImageType.PSIImage
+                End Get
+            End Property
 
             Public Overrides Function GetCRC32() As String Implements IByteArray.GetCRC32
                 Using Hasher As CRC32Hash = CRC32Hash.Create()
@@ -54,7 +52,7 @@ Namespace ImageFormats
             Private Sub BuildSectorMap()
                 Dim MaxSectors As UShort
 
-                SetTracks(_Image.CylinderCount, _Image.HeadCount)
+                SetTracks(_Image.TrackCount, _Image.SideCount)
 
                 If _Image.Header.DefaultSectorFormat = DefaultSectorFormat.IBM_MFM_DD Then
                     MaxSectors = 9
@@ -66,10 +64,10 @@ Namespace ImageFormats
 
                 For Each PSISector In _Image.Sectors
                     If Not PSISector.IsAlternateSector Then
-                        Dim Track = GetTrack(PSISector.Cylinder, PSISector.Head)
+                        Dim Track = GetTrack(PSISector.Track, PSISector.Side)
 
                         If Track Is Nothing Then
-                            Track = SetTrack(PSISector.Cylinder, PSISector.Head)
+                            Track = SetTrack(PSISector.Track, PSISector.Side)
                             Track.FirstSector = PSISector.Sector
                             Track.LastSector = PSISector.Sector
                             Track.SectorSize = PSISector.Size
@@ -93,9 +91,9 @@ Namespace ImageFormats
                                 Dim BitstreamSector As New BitstreamSector(PSISector.Data, PSISector.Size) With {
                                     .IsStandard = IsStandard
                                 }
-                                Dim Sector = GetSector(PSISector.Cylinder, PSISector.Head, PSISector.Sector)
+                                Dim Sector = GetSector(PSISector.Track, PSISector.Side, PSISector.Sector)
                                 If Sector Is Nothing Then
-                                    SetSector(PSISector.Cylinder, PSISector.Head, PSISector.Sector, BitstreamSector)
+                                    SetSector(PSISector.Track, PSISector.Side, PSISector.Sector, BitstreamSector)
                                 Else
                                     Sector.IsStandard = False
                                 End If
@@ -105,20 +103,18 @@ Namespace ImageFormats
                 Next
             End Sub
 
-            Public Overrides ReadOnly Property ImageType As FloppyImageType Implements IByteArray.ImageType
-                Get
-                    Return FloppyImageType.PSIImage
-                End Get
-            End Property
+            Private Function CalculateHash(HashAlgorithm As HashAlgorithm) As String
+                Dim OutputBuffer() As Byte
 
-            Public Overrides ReadOnly Property IsBitstreamImage As Boolean Implements IByteArray.IsBitstreamImage
-                Get
-                    Return False
-                End Get
-            End Property
+                For Each PSISector In _Image.Sectors
+                    If Not PSISector.IsAlternateSector And Not PSISector.HasDataCRCError Then
+                        OutputBuffer = New Byte(PSISector.Data.Length - 1) {}
+                        HashAlgorithm.TransformBlock(PSISector.Data, 0, PSISector.Data.Length, OutputBuffer, 0)
+                    End If
+                Next
+                HashAlgorithm.TransformFinalBlock(New Byte(0) {}, 0, 0)
 
-            Public Overrides Function SaveToFile(FilePath As String) As Boolean Implements IByteArray.SaveToFile
-                Return _Image.Export(FilePath)
+                Return HashBytesToString(HashAlgorithm.Hash)
             End Function
         End Class
     End Namespace

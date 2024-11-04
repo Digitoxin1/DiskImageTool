@@ -128,8 +128,10 @@
     <Import Include="System.Threading.Tasks" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Bitstream\Bitstream.vb" />
     <Compile Include="Bitstream\BitstreamByteArray.vb" />
     <Compile Include="Bitstream\BitstreamDebug.vb" />
+    <Compile Include="Bitstream\BitStreamImageBase.vb" />
     <Compile Include="Bitstream\BitstreamRegion.vb" />
     <Compile Include="Bitstream\BitstreamRegionSector.vb" />
     <Compile Include="Bitstream\BitstreamSector.vb" />
@@ -215,7 +217,7 @@
     <Compile Include="ImageFormats\TC\Enums.vb" />
     <Compile Include="ImageFormats\TC\TCLoader.vb" />
     <Compile Include="ImageFormats\TC\TranscopyByteArray.vb" />
-    <Compile Include="ImageFormats\TC\TransCopyCylinder.vb" />
+    <Compile Include="ImageFormats\TC\TransCopyTrack.vb" />
     <Compile Include="ImageFormats\TC\TransCopyImage.vb" />
     <Compile Include="Filters\ComboFilter.vb" />
     <Compile Include="Controls\ToolStripCheckBox.vb">

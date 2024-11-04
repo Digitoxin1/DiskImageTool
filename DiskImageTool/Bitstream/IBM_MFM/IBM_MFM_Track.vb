@@ -104,7 +104,8 @@
 
                 Start = ProcessIndexField(Bitstream, Start)
 
-                Dim SectorList = MFMGetSectorList(Bitstream)
+                Dim IDAMPattern = BytesToBits(MFM_IDAM_Sync_Bytes)
+                Dim SectorList = MFMGetSectorList(Bitstream, IDAMPattern)
 
                 If SectorList.Count > 0 Then
                     Dim IDFieldSyncIndex = SectorList.Item(0)

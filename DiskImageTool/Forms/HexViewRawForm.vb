@@ -164,18 +164,18 @@ Public Class HexViewRawForm
         End Select
     End Function
 
-    Private Function GetRegionDescription(RegionType As MFMRegionType) As String
-        Select Case RegionType
+    Private Function GetRegionDescription(Region As BitstreamRegion) As String
+        Select Case Region.RegionType
             Case MFMRegionType.Gap1
-                Return "GAP 1"
+                Return "GAP 1" & "  (" & Region.Length & ")"
             Case MFMRegionType.Gap2
-                Return "GAP 2"
+                Return "GAP 2" & "  (" & Region.Length & ")"
             Case MFMRegionType.Gap3
-                Return "GAP 3"
+                Return "GAP 3" & "  (" & Region.Length & ")"
             Case MFMRegionType.Gap4A
-                Return "GAP 4A"
+                Return "GAP 4A" & "  (" & Region.Length & ")"
             Case MFMRegionType.Gap4B
-                Return "GAP 3+4B"
+                Return "GAP 3+4B" & "  (" & Region.Length & ")"
             Case MFMRegionType.IAMNulls, MFMRegionType.IAMSync
                 Return "Index Field Sync"
             Case MFMRegionType.IAM
@@ -193,7 +193,7 @@ Public Class HexViewRawForm
             Case MFMRegionType.DAM
                 Return "Data Address Mark"
             Case MFMRegionType.DataArea
-                Return "Data Area"
+                Return "Data Area" & "  (" & Region.Length & ")"
             Case MFMRegionType.DataChecksumValid, MFMRegionType.DataChecksumInvalid
                 Return "Data Checksum"
             Case MFMRegionType.Overflow
@@ -245,33 +245,67 @@ Public Class HexViewRawForm
         Return RangeList
     End Function
 
-    Private Function GetBits(BitArray As BitArray, Offset As UInteger) As String
+    Private Function GetBits(BitArray As BitArray, Offset As UInteger, CheckSync As Boolean) As String
         If BitArray Is Nothing Then
             Return ""
         End If
 
-        Dim BitValue As Boolean
-        Dim BitIndex = Offset * 16 + _CurrentTrackData.Offset
+        Dim lastBit As Boolean
+        Dim clockBit As Boolean
+        Dim dataBit As Boolean
+        Dim clockSeparator As String
+        Dim dataSeparator As String
+        Dim Value As String = ""
+        Dim hasSyncBit As Boolean
+        Dim BitIndex = Offset * 16 + _CurrentTrackData.Offset - 1
 
+        BitIndex = AdjustBitIndex(BitIndex, BitArray.Length)
+
+        lastBit = BitArray(BitIndex)
+        BitIndex += 1
         If BitIndex > BitArray.Length - 1 Then
-            BitIndex = BitIndex Mod BitArray.Length
+            BitIndex = 0
         End If
 
-        Dim Value As String = ""
-        For i = 0 To 15
-            BitValue = BitArray(BitIndex)
+        For i = 0 To 7
+            clockSeparator = ""
+            dataSeparator = ""
             If i > 0 Then
                 If BitIndex = 0 Then
-                    Value &= " > "
-                ElseIf i Mod 2 = 0 Then
-                    Value &= " "
+                    clockSeparator = " > "
+                Else
+                    clockSeparator = " "
                 End If
             End If
-            Value &= If(BitValue, 1, 0)
+            clockBit = BitArray(BitIndex)
             BitIndex += 1
             If BitIndex > BitArray.Length - 1 Then
                 BitIndex = 0
             End If
+
+            If BitIndex = 0 Then
+                dataSeparator = " > "
+            End If
+            dataBit = BitArray(BitIndex)
+            BitIndex += 1
+            If BitIndex > BitArray.Length - 1 Then
+                BitIndex = 0
+            End If
+
+            hasSyncBit = CheckSync And Not lastBit And Not clockBit And Not dataBit
+
+
+            Value &= clockSeparator
+            If hasSyncBit Then
+                Value &= "["
+            End If
+            Value &= If(clockBit, 1, 0)
+            Value &= dataSeparator
+            Value &= If(dataBit, 1, 0)
+            If hasSyncBit Then
+                Value &= "]"
+            End If
+            lastBit = dataBit
         Next
 
         Return Value
@@ -598,8 +632,8 @@ Public Class HexViewRawForm
         Dim SelectedIndex As Integer = -1
         ComboTrack.Items.Clear()
         For i = 0 To _ByteArray.TrackCount - 1
-            For j = 0 To _ByteArray.HeadCount - 1
-                Dim TrackIndex = i * _ByteArray.HeadCount + j
+            For j = 0 To _ByteArray.SideCount - 1
+                Dim TrackIndex = i * _ByteArray.SideCount + j
                 If AllTracks OrElse (_ByteArray.NonStandardTracks.Contains(TrackIndex) Or _ByteArray.AdditionalTracks.Contains(TrackIndex)) Then
                     Dim TrackData As New TrackData With {
                         .Track = i,
@@ -686,7 +720,7 @@ Public Class HexViewRawForm
         End If
 
         If RegionStart IsNot Nothing Then
-            Dim Description = GetRegionDescription(RegionStart.RegionType)
+            Dim Description = GetRegionDescription(RegionStart)
             If RegionStart Is RegionEnd AndAlso Description.Length > 0 Then
                 _DataGridInspector.SetDataRow(DataRowEnum.Description, Description, True, True)
                 BtnSelectRegion.Enabled = True
@@ -760,8 +794,8 @@ Public Class HexViewRawForm
         BtnCopyHexFormatted.Enabled = HexBox1.CanCopy
         ToolStripBtnCopyHexFormatted.Enabled = BtnCopyHexFormatted.Enabled
 
-        RefreshBits(_Bitstream, DataRowEnum.Bitstream)
-        RefreshBits(_SurfaceData, DataRowEnum.WeakBits)
+        RefreshBits(_Bitstream, DataRowEnum.Bitstream, True)
+        RefreshBits(_SurfaceData, DataRowEnum.WeakBits, False)
 
         _IgnoreEvent = False
 
@@ -788,7 +822,7 @@ Public Class HexViewRawForm
         _IgnoreEvent = False
     End Sub
 
-    Private Sub RefreshBits(BitArray As BitArray, DataRow As DataRowEnum)
+    Private Sub RefreshBits(BitArray As BitArray, DataRow As DataRowEnum, CheckSync As Boolean)
         If BitArray Is Nothing Then
             _DataGridInspector.SetDataRow(DataRow, Nothing, True, True)
         Else
@@ -797,7 +831,7 @@ Public Class HexViewRawForm
             Dim OutOfRange As Boolean = SelectionStart >= HexBox1.ByteProvider.Length
 
             If SelectionStart > -1 And SelectionLength < 2 And Not OutOfRange Then
-                Dim Bits = GetBits(BitArray, SelectionStart)
+                Dim Bits = GetBits(BitArray, SelectionStart, CheckSync)
                 _DataGridInspector.SetDataRow(DataRow, Bits, True, False)
             Else
                 _DataGridInspector.SetDataRow(DataRow, Nothing, True, False)

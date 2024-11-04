@@ -1,8 +1,34 @@
 ﻿Imports DiskImageTool.DiskImage.FloppyDiskFunctions
+Imports System.Security.Cryptography
 
 Namespace Bitstream
     Module Functions
         Private ReadOnly ValidSectorCount() As Byte = {8, 9, 15, 18, 36}
+
+        Public Function BitstreamCalculateHash(Image As IBitstreamImage, HashAlgorithm As HashAlgorithm) As String
+            Dim BitstreamTrack As IBitstreamTrack
+            Dim OutputBuffer() As Byte
+
+            For Track = 0 To Image.TrackCount - 1 Step Image.TrackStep
+                For Side = 0 To Image.SideCount - 1
+                    BitstreamTrack = Image.GetTrack(Track, Side)
+                    If BitstreamTrack IsNot Nothing AndAlso BitstreamTrack.MFMData IsNot Nothing Then
+                        For Each MFMSector In BitstreamTrack.MFMData.Sectors
+                            If MFMSector.DAMFound Then
+                                If MFMSector.InitialChecksumValid Then
+                                    OutputBuffer = New Byte(MFMSector.Data.Length - 1) {}
+                                    HashAlgorithm.TransformBlock(MFMSector.Data, 0, MFMSector.Data.Length, OutputBuffer, 0)
+                                End If
+                            End If
+                        Next
+                    End If
+                Next
+            Next
+            HashAlgorithm.TransformFinalBlock(New Byte(0) {}, 0, 0)
+
+            Return HashBytesToString(HashAlgorithm.Hash)
+        End Function
+
         Public Function BitstreamGetImageFormat(Image As IBitstreamImage) As FloppyDiskFormat
             Dim DiskFormat As FloppyDiskFormat
 

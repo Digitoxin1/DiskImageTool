@@ -109,7 +109,7 @@ Module ImageIO
                 End If
 
                 If FloppyImageType = FloppyImageType.TranscopyImage Then
-                    Dim TCImage = ImageFormats.TC.TranscopyImageLoad(Data)
+                    Dim TCImage = ImageFormats.TC.ImageLoad(Data)
                     If TCImage IsNot Nothing Then
                         Image = TCImage
                     Else
@@ -117,7 +117,7 @@ Module ImageIO
                     End If
 
                 ElseIf FloppyImageType = FloppyImageType.PSIImage Then
-                    Dim PSIImage = ImageFormats.PSI.PSIImageLoad(Data)
+                    Dim PSIImage = ImageFormats.PSI.ImageLoad(Data)
                     If PSIImage IsNot Nothing Then
                         Image = PSIImage
                     Else
@@ -125,7 +125,7 @@ Module ImageIO
                     End If
 
                 ElseIf FloppyImageType = FloppyImageType.IMDImage Then
-                    Dim IMDImage = ImageFormats.IMD.IMDImageLoad(Data)
+                    Dim IMDImage = ImageFormats.IMD.ImageLoad(Data)
                     If IMDImage IsNot Nothing Then
                         Image = IMDImage
                     Else
@@ -133,7 +133,7 @@ Module ImageIO
                     End If
 
                 ElseIf FloppyImageType = FloppyImageType.MFMImage Then
-                    Dim MFMImage = ImageFormats.MFM.MFMImageLoad(Data)
+                    Dim MFMImage = ImageFormats.MFM.ImageLoad(Data)
                     If MFMImage IsNot Nothing Then
                         Image = MFMImage
                     Else
@@ -149,7 +149,7 @@ Module ImageIO
                     End If
 
                 ElseIf FloppyImageType = FloppyImageType.HFEImage Then
-                    Dim HFEImage = ImageFormats.HFE.HFEImageLoad(Data)
+                    Dim HFEImage = ImageFormats.HFE.ImageLoad(Data)
                     If HFEImage IsNot Nothing Then
                         Image = HFEImage
                     Else
@@ -487,7 +487,7 @@ Module ImageIO
             End If
 
         ElseIf FileImageType = FloppyImageType.TranscopyImage Then
-            Dim Image As IBitstreamImage = GetBitstreamImage(Disk.Image.Data)
+            Dim Image As IBitstreamImage = Disk.Image.Data.BitstreamImage
             If Image IsNot Nothing Then
                 Dim Transcopy = ImageFormats.BitstreamToTranscopyImage(Image)
                 Result = Transcopy.Export(FilePath)
@@ -496,7 +496,7 @@ Module ImageIO
             End If
 
         ElseIf FileImageType = FloppyImageType.MFMImage Then
-            Dim Image As IBitstreamImage = GetBitstreamImage(Disk.Image.Data)
+            Dim Image As IBitstreamImage = Disk.Image.Data.BitstreamImage
             If Image IsNot Nothing Then
                 Dim MFM = ImageFormats.BitstreamToMFMImage(Image)
                 Result = MFM.Export(FilePath)
@@ -505,7 +505,7 @@ Module ImageIO
             End If
 
         ElseIf FileImageType = FloppyImageType.HFEImage Then
-            Dim Image As IBitstreamImage = GetBitstreamImage(Disk.Image.Data)
+            Dim Image As IBitstreamImage = Disk.Image.Data.BitstreamImage
             If Image IsNot Nothing Then
                 Dim HFE = ImageFormats.BitstreamToHFEImage(Image)
                 Result = HFE.Export(FilePath)
@@ -514,7 +514,7 @@ Module ImageIO
             End If
 
         ElseIf FileImageType = FloppyImageType.PSIImage Then
-            Dim Image As IBitstreamImage = GetBitstreamImage(Disk.Image.Data)
+            Dim Image As IBitstreamImage = Disk.Image.Data.BitstreamImage
             If Image IsNot Nothing Then
                 Dim PSI = ImageFormats.BitstreamToPSIImage(Image)
                 Result = PSI.Export(FilePath)
@@ -523,7 +523,7 @@ Module ImageIO
             End If
 
         ElseIf FileImageType = FloppyImageType.IMDImage Then
-            Dim Image As IBitstreamImage = GetBitstreamImage(Disk.Image.Data)
+            Dim Image As IBitstreamImage = Disk.Image.Data.BitstreamImage
             If Image IsNot Nothing Then
                 Dim IMD = ImageFormats.BitstreamToIMDImage(Image)
                 Result = IMD.Export(FilePath)
@@ -532,7 +532,7 @@ Module ImageIO
             End If
 
         ElseIf FileImageType = FloppyImageType._86FImage Then
-            Dim Image As IBitstreamImage = GetBitstreamImage(Disk.Image.Data)
+            Dim Image As IBitstreamImage = Disk.Image.Data.BitstreamImage
             If Image IsNot Nothing Then
                 Dim F86Image = ImageFormats.BitstreamTo86FImage(Image)
                 Result = F86Image.Export(FilePath)
@@ -563,7 +563,7 @@ Module ImageIO
                 Dim BitstreamData = DirectCast(Data, BitstreamByteArray)
                 Dim CompatibleSectors As Boolean = True
                 For i = 0 To BitstreamData.TrackCount - 1
-                    For j = 0 To BitstreamData.HeadCount - 1
+                    For j = 0 To BitstreamData.SideCount - 1
                         Dim TrackData = BitstreamData.GetTrack(i, j)
                         If TrackData IsNot Nothing Then
                             If TrackData.FirstSector > -1 Then
@@ -612,23 +612,6 @@ Module ImageIO
         End If
 
         Return True
-    End Function
-
-    Private Function GetBitstreamImage(Data As IByteArray) As IBitstreamImage
-        If TypeOf Data Is ImageFormats._86F._86FByteArray Then
-            Return DirectCast(Data, ImageFormats._86F._86FByteArray).Image
-
-        ElseIf TypeOf Data Is ImageFormats.MFM.MFMByteArray Then
-            Return DirectCast(Data, ImageFormats.MFM.MFMByteArray).Image
-
-        ElseIf TypeOf Data Is ImageFormats.HFE.HFEByteArray Then
-            Return DirectCast(Data, ImageFormats.HFE.HFEByteArray).Image
-
-        ElseIf TypeOf Data Is ImageFormats.TC.TranscopyByteArray Then
-            Return DirectCast(Data, ImageFormats.TC.TranscopyByteArray).Image
-        End If
-
-        Return Nothing
     End Function
 
     Private Function GetImageGroup(ImageType As FloppyImageType) As FloppyImageGroup

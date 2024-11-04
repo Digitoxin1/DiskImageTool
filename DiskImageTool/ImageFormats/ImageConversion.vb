@@ -58,7 +58,7 @@ Namespace ImageFormats
 
             Dim HFE = New HFE.HFEImage(TrackCount, Params.NumberOfHeads) With {
                 .BitRate = DriveSpeed.BitRate,
-                .FloppyRPM = DriveSpeed.RPM,
+                .RPM = DriveSpeed.RPM,
                 .FloppyInterfaceMode = GetHFEFloppyInterfaceMode(DiskFormat)
             }
 
@@ -82,30 +82,30 @@ Namespace ImageFormats
 
         Public Function BasicSectorToIMDImage(Data() As Byte, DiskFormat As FloppyDiskFormat) As IMD.IMDImage
             Dim Params = GetFloppyDiskParams(DiskFormat)
-            Dim CylinderCount = GetTrackCount(Params)
+            Dim TrackCount = GetTrackCount(Params)
 
             Dim IMD = New IMD.IMDImage With {
                 .Comment = "",
-                .TrackCount = CylinderCount,
+                .TrackCount = TrackCount,
                 .SideCount = Params.NumberOfHeads
             }
 
-            For Cylinder As UShort = 0 To CylinderCount - 1
-                For Head = 0 To Params.NumberOfHeads - 1
+            For Track As UShort = 0 To TrackCount - 1
+                For Side = 0 To Params.NumberOfHeads - 1
                     Dim IMDTrack = New IMDTrack With {
-                        .Cylinder = Cylinder,
-                        .Head = Head,
+                        .Track = Track,
+                        .Side = Side,
                         .Mode = GetIMDMode(DiskFormat),
                         .SectorSize = SectorSize.Sectorsize512
                     }
                     For SectorId = 1 To Params.SectorsPerTrack
                         Dim IMDSector = New IMDSector(Params.BytesPerSector) With {
-                            .Cylinder = Cylinder,
-                            .Head = Head,
+                            .Track = Track,
+                            .Side = Side,
                             .SectorId = SectorId
                         }
 
-                        Dim ImageOffset = GetImageOffset(Params, Cylinder, Head, SectorId)
+                        Dim ImageOffset = GetImageOffset(Params, Track, Side, SectorId)
                         Dim Size = Math.Min(Params.BytesPerSector, Data.Length - ImageOffset)
                         Dim Buffer(Params.BytesPerSector - 1) As Byte
                         Array.Copy(Data, ImageOffset, Buffer, 0, Size)
@@ -149,18 +149,18 @@ Namespace ImageFormats
 
         Public Function BasicSectorToPSIImage(Data() As Byte, DiskFormat As FloppyDiskFormat) As PSI.PSISectorImage
             Dim Params = GetFloppyDiskParams(DiskFormat)
-            Dim CylinderCount = GetTrackCount(Params)
+            Dim TrackCount = GetTrackCount(Params)
 
             Dim PSI = New PSI.PSISectorImage
             PSI.Header.FormatVersion = 0
             PSI.Header.DefaultSectorFormat = GetPSISectorFormat(DiskFormat)
 
-            For Cylinder As UShort = 0 To CylinderCount - 1
-                For Head = 0 To Params.NumberOfHeads - 1
+            For Track As UShort = 0 To TrackCount - 1
+                For Side = 0 To Params.NumberOfHeads - 1
                     Dim TrackOffset As UInteger = MFM_GAP4A_SIZE + MFM_SYNC_SIZE + MFM_ADDRESS_MARK_SIZE + MFM_GAP1_SIZE
                     For SectorId = 1 To Params.SectorsPerTrack
                         TrackOffset += MFM_SYNC_SIZE + MFM_ADDRESS_MARK_SIZE
-                        Dim ImageOffset = GetImageOffset(Params, Cylinder, Head, SectorId)
+                        Dim ImageOffset = GetImageOffset(Params, Track, Side, SectorId)
                         Dim Size = Math.Min(Params.BytesPerSector, Data.Length - ImageOffset)
                         Dim Buffer = New Byte(Size - 1) {}
                         Array.Copy(Data, ImageOffset, Buffer, 0, Size)
@@ -168,8 +168,8 @@ Namespace ImageFormats
                         Dim PSISector = New PSI.PSISector With {
                                 .HasDataCRCError = False,
                                 .IsAlternateSector = False,
-                                .Cylinder = Cylinder,
-                                .Head = Head,
+                                .Track = Track,
+                                .Side = Side,
                                 .Sector = SectorId,
                                 .Data = Buffer,
                                 .Offset = TrackOffset * 8
@@ -188,25 +188,25 @@ Namespace ImageFormats
         Public Function BasicSectorToTranscopyImage(Data() As Byte, DiskFormat As FloppyDiskFormat) As TC.TransCopyImage
             Dim Params = GetFloppyDiskParams(DiskFormat)
             Dim DriveSpeed = GetDriveSpeed(DiskFormat)
-            Dim CylinderCount = GetTrackCount(Params)
+            Dim TrackCount = GetTrackCount(Params)
 
-            Dim Transcopy = New TC.TransCopyImage(CylinderCount, Params.NumberOfHeads, 1) With {
+            Dim Transcopy = New TC.TransCopyImage(TrackCount, Params.NumberOfHeads, 1) With {
                 .DiskType = GetTranscopyDiskType(DiskFormat)
             }
 
-            For Cylinder As UShort = 0 To CylinderCount - 1
-                For Head As UShort = 0 To Params.NumberOfHeads - 1
-                    Dim TransCopyCylinder = New TC.TransCopyCylinder(Cylinder, Head) With {
+            For Track As UShort = 0 To TrackCount - 1
+                For Side As UShort = 0 To Params.NumberOfHeads - 1
+                    Dim TransCopyTrack = New TC.TransCopyTrack(Track, Side) With {
                         .TrackType = GetTranscopyDiskType(DiskFormat),
                         .CopyAcrossIndex = True
                     }
 
-                    Dim MFMBitstream = MFMBitstreamFromSectorImage(Data, Params, Cylinder, Head, DriveSpeed.RPM, DriveSpeed.BitRate)
+                    Dim MFMBitstream = MFMBitstreamFromSectorImage(Data, Params, Track, Side, DriveSpeed.RPM, DriveSpeed.BitRate)
 
-                    TransCopyCylinder.Bitstream = MFMBitstream.Bitstream
-                    TransCopyCylinder.SetTimings(MFMBitstream.AddressMarkIndexes)
+                    TransCopyTrack.Bitstream = MFMBitstream.Bitstream
+                    TransCopyTrack.SetTimings(MFMBitstream.AddressMarkIndexes)
 
-                    Transcopy.SetCylinder(Cylinder, Head, TransCopyCylinder)
+                    Transcopy.SetTrack(Track, Side, TransCopyTrack)
                 Next
             Next
 
@@ -267,7 +267,7 @@ Namespace ImageFormats
 
             Dim HFE = New HFE.HFEImage(NewTrackCount, Image.SideCount) With {
                 .BitRate = 0,
-                .FloppyRPM = 0
+                .RPM = 0
             }
 
             For Track = 0 To TrackCount - 1 Step Image.TrackStep
@@ -279,7 +279,7 @@ Namespace ImageFormats
 
                     If Track = 0 And Side = 0 Then
                         HFE.BitRate = DriveSpeed.BitRate
-                        HFE.FloppyRPM = DriveSpeed.RPM
+                        HFE.RPM = DriveSpeed.RPM
                         HFE.FloppyInterfaceMode = GetHFEFloppyInterfaceMode(GetTrackFormat(BitstreamTrack.Bitstream.Length))
                     End If
 
@@ -299,24 +299,24 @@ Namespace ImageFormats
         Public Function BitstreamToIMDImage(Image As IBitstreamImage) As IMD.IMDImage
             Dim BitstreamTrack As IBitstreamTrack
 
-            Dim CylinderCount = GetValidTrackCount(Image, True)
+            Dim TrackCount = GetValidTrackCount(Image, True)
 
             Dim IMD = New IMD.IMDImage With {
                 .Comment = "",
-                .TrackCount = CylinderCount,
+                .TrackCount = TrackCount,
                 .SideCount = Image.SideCount
             }
 
-            For Cylinder As UShort = 0 To CylinderCount - 1
-                For Head = 0 To Image.SideCount - 1
-                    BitstreamTrack = Image.GetTrack(Cylinder, Head)
+            For Track As UShort = 0 To TrackCount - 1
+                For Side = 0 To Image.SideCount - 1
+                    BitstreamTrack = Image.GetTrack(Track, Side)
 
                     Dim DriveSpeed = GetDriveSpeed(BitstreamTrack, Image.TrackStep)
                     Dim IsMFM = BitstreamTrack.TrackType = BitstreamTrackType.MFM
 
                     Dim IMDTrack = New IMDTrack With {
-                        .Cylinder = Cylinder,
-                        .Head = Head,
+                        .Track = Track,
+                        .Side = Side,
                         .Mode = GetIMDMode(DriveSpeed.BitRate, IsMFM)
                     }
 
@@ -331,8 +331,8 @@ Namespace ImageFormats
                             End If
 
                             Dim IMDSector = New IMDSector(SectorSize) With {
-                            .Cylinder = Sector.Track,
-                            .Head = Sector.Side,
+                            .Track = Sector.Track,
+                            .Side = Sector.Side,
                             .SectorId = Sector.SectorId
                         }
                             If Sector.DAMFound Then
@@ -456,20 +456,20 @@ Namespace ImageFormats
                         Transcopy.DiskType = TrackType
                     End If
 
-                    Dim TransCopyCylinder = New TC.TransCopyCylinder(NewTrack, Side) With {
+                    Dim TransCopyTrack = New TC.TransCopyTrack(NewTrack, Side) With {
                         .TrackType = TrackType,
                         .CopyAcrossIndex = True
                     }
                     If BitstreamTrack.Bitstream.Length > 0 Then
-                        TransCopyCylinder.Bitstream = BitstreamTrack.Bitstream
+                        TransCopyTrack.Bitstream = BitstreamTrack.Bitstream
                     Else
-                        TransCopyCylinder.Bitstream = New BitArray(BitCount)
+                        TransCopyTrack.Bitstream = New BitArray(BitCount)
                     End If
 
                     If BitstreamTrack.MFMData IsNot Nothing Then
-                        TransCopyCylinder.SetTimings(BitstreamTrack.MFMData.AddressMarkIndexes)
+                        TransCopyTrack.SetTimings(BitstreamTrack.MFMData.AddressMarkIndexes)
                     End If
-                    Transcopy.SetCylinder(NewTrack, Side, TransCopyCylinder)
+                    Transcopy.SetTrack(NewTrack, Side, TransCopyTrack)
                 Next
             Next
 
@@ -751,8 +751,8 @@ Namespace ImageFormats
             Dim PSISector = New PSI.PSISector With {
                    .HasDataCRCError = Not DataChecksumValid,
                    .IsAlternateSector = False,
-                   .Cylinder = Sector.Track,
-                   .Head = Sector.Side,
+                   .Track = Sector.Track,
+                   .Side = Sector.Side,
                    .Sector = Sector.SectorId,
                    .Data = Sector.Data,
                    .Offset = (Sector.Offset + 64) / 2

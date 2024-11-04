@@ -3,32 +3,36 @@
 Namespace ImageFormats
     Namespace PSI
         Public Class PSISectorImage
+            Inherits BitStreamImageBase
             Implements IBitstreamImage
 
             Private _CurrentSector As PSISector
-            Private _CylinderCount As UShort = 0
-            Private _HeadCount As Byte = 0
+            Private _SideCount As Byte = 0
+            Private _TrackCount As UShort = 0
 
             Public Sub New()
                 Initialize()
             End Sub
-            Public Property Header As PSIFileHeader
-            Public Property Sectors As List(Of PSISector)
+
             Public Property Comment As String
 
-            Public ReadOnly Property CylinderCount As UShort Implements IBitstreamImage.TrackCount
+            Public Property Header As PSIFileHeader
+
+            Public Property Sectors As List(Of PSISector)
+
+            Public Overloads ReadOnly Property SideCount As Byte Implements IBitstreamImage.SideCount
                 Get
-                    Return _CylinderCount
+                    Return _SideCount
                 End Get
             End Property
 
-            Public ReadOnly Property HeadCount As Byte Implements IBitstreamImage.SideCount
+            Public Overloads ReadOnly Property TrackCount As UShort Implements IBitstreamImage.TrackCount
                 Get
-                    Return _HeadCount
+                    Return _TrackCount
                 End Get
             End Property
 
-            Public Function Export(FilePath As String) As Boolean Implements IBitstreamImage.Export
+            Public Overrides Function Export(FilePath As String) As Boolean Implements IBitstreamImage.Export
                 Dim Buffer() As Byte
 
                 Try
@@ -99,11 +103,11 @@ Namespace ImageFormats
                 Return True
             End Function
 
-            Public Function Load(FilePath As String) As Boolean Implements IBitstreamImage.Load
+            Public Overrides Function Load(FilePath As String) As Boolean Implements IBitstreamImage.Load
                 Return Load(IO.File.ReadAllBytes(FilePath))
             End Function
 
-            Public Function Load(Buffer() As Byte) As Boolean Implements IBitstreamImage.Load
+            Public Overrides Function Load(Buffer() As Byte) As Boolean Implements IBitstreamImage.Load
                 Dim Result As Boolean = False
                 Dim Chunk As PSIChunk
                 Dim ChunkCount As UInteger = 0
@@ -157,11 +161,11 @@ Namespace ImageFormats
                     Dim Sector = New PSISector(Chunk.ChunkData)
                     _Sectors.Add(Sector)
                     _CurrentSector = Sector
-                    If Sector.Cylinder > _CylinderCount - 1 Then
-                        _CylinderCount = Sector.Cylinder + 1
+                    If Sector.Track > _TrackCount - 1 Then
+                        _TrackCount = Sector.Track + 1
                     End If
-                    If Sector.Head > _HeadCount - 1 Then
-                        _HeadCount = Sector.Head + 1
+                    If Sector.Side > _SideCount - 1 Then
+                        _SideCount = Sector.Side + 1
                     End If
 
                 ElseIf Chunk.ChunkID = "DATA" Then
@@ -204,22 +208,6 @@ Namespace ImageFormats
                     End If
                 End If
             End Sub
-
-            Private ReadOnly Property IBitstreamImage_TrackStep As Byte Implements IBitstreamImage.TrackStep
-                Get
-                    Return 1
-                End Get
-            End Property
-
-            Private Function IBitstreamImage_GetTrack(Track As UShort, Side As Byte) As IBitstreamTrack Implements IBitstreamImage.GetTrack
-                Return Nothing
-            End Function
-
-            Private ReadOnly Property IBitstreamImage_HasSurfaceData As Boolean Implements IBitstreamImage.HasSurfaceData
-                Get
-                    Return False
-                End Get
-            End Property
         End Class
     End Namespace
 End Namespace

@@ -3,12 +3,13 @@
 Namespace ImageFormats
     Namespace MFM
         Public Class MFMImage
+            Inherits BitStreamImageBase
             Implements IBitstreamImage
 
             Private Const FILE_SIGNATURE = "HXCMFM"
-            Private _Tracks() As MFMTrack
-            Private _TrackCount As UShort
             Private _SideCount As Byte
+            Private _TrackCount As UShort
+            Private _Tracks() As MFMTrack
             Private _TrackStep As Byte
 
             Private Enum MFMImageOffsets
@@ -56,138 +57,31 @@ Namespace ImageFormats
                 _Tracks = New MFMTrack((_TrackCount) * _SideCount - 1) {}
             End Sub
 
-            Public Function Load(FilePath As String) As Boolean Implements IBitstreamImage.Load
-                Return Load(IO.File.ReadAllBytes(FilePath))
-            End Function
+            Public Overloads Property BitRate As UShort Implements IBitstreamImage.BitRate
 
-            Public Function Load(Buffer() As Byte) As Boolean Implements IBitstreamImage.Load
-                Dim Result As Boolean
+            Public Property IFType As Byte
 
-                If Buffer.Length < MFMImageSizes.Signature Then
-                    Return False
-                End If
+            Public Overloads Property RPM As UShort Implements IBitstreamImage.RPM
 
-                Dim Signature = Text.Encoding.UTF8.GetString(Buffer, MFMImageOffsets.Signature, MFMImageSizes.Signature)
-                Result = (Signature = FILE_SIGNATURE)
-
-                If Result Then
-                    Try
-                        _TrackCount = BitConverter.ToUInt16(Buffer, MFMImageOffsets.TrackCount)
-                        _SideCount = Buffer(MFMImageOffsets.SideCount)
-
-                        _Tracks = New MFMTrack(_TrackCount * _SideCount - 1) {}
-
-                        _RPM = BitConverter.ToUInt16(Buffer, MFMImageOffsets.RPM)
-                        _BitRate = BitConverter.ToUInt16(Buffer, MFMImageOffsets.BitRate)
-                        _IFType = Buffer(MFMImageOffsets.IFType)
-
-                        Dim TrackListOffset = BitConverter.ToUInt32(Buffer, MFMImageOffsets.TrackList)
-
-                        For i = 0 To _TrackCount - 1
-                            For j = 0 To _SideCount - 1
-                                Dim Track = BitConverter.ToUInt16(Buffer, TrackListOffset + MFMTrackListOffsets.Track)
-                                Dim Side = Buffer(TrackListOffset + MFMTrackListOffsets.Side)
-                                Dim MFMTrack = New MFMTrack(Track, Side)
-                                Dim Size As UInteger
-                                If _IFType And &H80 Then
-                                    MFMTrack.RPM = BitConverter.ToUInt16(Buffer, TrackListOffset + MFMTrackListOffsets.Advanced_RPM)
-                                    MFMTrack.BitRate = BitConverter.ToUInt16(Buffer, TrackListOffset + MFMTrackListOffsets.Advanced_BitRate)
-                                    Size = BitConverter.ToUInt32(Buffer, TrackListOffset + MFMTrackListOffsets.Advanced_Size)
-                                    MFMTrack.Offset = BitConverter.ToUInt32(Buffer, TrackListOffset + MFMTrackListOffsets.Advanced_Offset)
-                                    TrackListOffset += MFMImageSizes.Advanced_TrackList
-                                Else
-                                    MFMTrack.RPM = RoundRPM(_RPM)
-                                    MFMTrack.BitRate = RoundBitRate(_BitRate)
-                                    Size = BitConverter.ToUInt32(Buffer, TrackListOffset + MFMTrackListOffsets.Size)
-                                    MFMTrack.Offset = BitConverter.ToUInt32(Buffer, TrackListOffset + MFMTrackListOffsets.Offset)
-                                    TrackListOffset += MFMImageSizes.TrackList
-
-                                    'Infer RPM
-                                    If MFMTrack.RPM = 0 Then
-                                        If MFMTrack.BitRate = 250 Then
-                                            MFMTrack.RPM = 300
-                                        Else
-                                            MFMTrack.RPM = CalculatetRPM(MFMTrack.BitRate, Size * 8)
-
-                                            If MFMTrack.BitRate = 300 And MFMTrack.RPM = 240 Then
-                                                MFMTrack.BitRate = 500
-                                                MFMTrack.RPM = 360
-                                            End If
-
-                                            If MFMTrack.BitRate = 300 And MFMTrack.RPM <> 360 Then
-                                                MFMTrack.RPM = 360
-                                            End If
-
-                                            If MFMTrack.RPM <> 300 And MFMTrack.RPM <> 360 Then
-                                                MFMTrack.RPM = 300
-                                            End If
-                                        End If
-                                    End If
-                                End If
-
-                                MFMTrack.Bitstream = IBM_MFM.BytesToBits(Buffer, MFMTrack.Offset, Size * 8)
-                                MFMTrack.MFMData = New IBM_MFM.IBM_MFM_Track(MFMTrack.Bitstream)
-
-                                SetTrack(Track, Side, MFMTrack)
-                            Next j
-                        Next i
-
-                        Dim BitRate = RoundBitRate(_BitRate)
-                        If BitRate = 300 And _TrackCount > 79 Then
-                            _TrackStep = 2
-                        End If
-                    Catch ex As Exception
-                        DebugException(ex)
-                        Return False
-                    End Try
-                End If
-
-                Return Result
-            End Function
-
-            Public ReadOnly Property TrackCount As UShort Implements IBitstreamImage.TrackCount
-                Get
-                    Return _TrackCount
-                End Get
-            End Property
-
-            Public ReadOnly Property SideCount As Byte Implements IBitstreamImage.SideCount
+            Public Overloads ReadOnly Property SideCount As Byte Implements IBitstreamImage.SideCount
                 Get
                     Return _SideCount
                 End Get
             End Property
 
-            Public ReadOnly Property TrackStep As Byte Implements IBitstreamImage.TrackStep
+            Public Overloads ReadOnly Property TrackCount As UShort Implements IBitstreamImage.TrackCount
+                Get
+                    Return _TrackCount
+                End Get
+            End Property
+
+            Public Overloads ReadOnly Property TrackStep As Byte Implements IBitstreamImage.TrackStep
                 Get
                     Return _TrackStep
                 End Get
             End Property
 
-            Public Property RPM As UShort
-            Public Property BitRate As UShort
-            Public Property IFType As Byte
-
-            Public Function GetTrack(Track As UShort, Side As Byte) As MFMTrack
-                If Track > _TrackCount - 1 Or Side > _SideCount - 1 Then
-                    Throw New System.IndexOutOfRangeException
-                End If
-
-                Dim Index = Track * _SideCount + Side
-
-                Return _Tracks(Index)
-            End Function
-
-            Public Sub SetTrack(Track As UShort, Side As Byte, Value As MFMTrack)
-                If Track > _TrackCount - 1 Or Side > _SideCount - 1 Then
-                    Throw New System.IndexOutOfRangeException
-                End If
-
-                Dim Index = Track * _SideCount + Side
-
-                _Tracks(Index) = Value
-            End Sub
-
-            Public Function Export(FilePath As String) As Boolean Implements IBitstreamImage.Export
+            Public Overrides Function Export(FilePath As String) As Boolean Implements IBitstreamImage.Export
                 Dim Buffer() As Byte
 
                 Try
@@ -273,15 +167,118 @@ Namespace ImageFormats
                 Return True
             End Function
 
+            Public Function GetTrack(Track As UShort, Side As Byte) As MFMTrack
+                If Track > _TrackCount - 1 Or Side > _SideCount - 1 Then
+                    Throw New System.IndexOutOfRangeException
+                End If
+
+                Dim Index = Track * _SideCount + Side
+
+                Return _Tracks(Index)
+            End Function
+
+            Public Overrides Function Load(FilePath As String) As Boolean Implements IBitstreamImage.Load
+                Return Load(IO.File.ReadAllBytes(FilePath))
+            End Function
+
+            Public Overrides Function Load(Buffer() As Byte) As Boolean Implements IBitstreamImage.Load
+                Dim Result As Boolean
+
+                If Buffer.Length < MFMImageSizes.Signature Then
+                    Return False
+                End If
+
+                Dim Signature = Text.Encoding.UTF8.GetString(Buffer, MFMImageOffsets.Signature, MFMImageSizes.Signature)
+                Result = (Signature = FILE_SIGNATURE)
+
+                If Result Then
+                    Try
+                        _TrackCount = BitConverter.ToUInt16(Buffer, MFMImageOffsets.TrackCount)
+                        _SideCount = Buffer(MFMImageOffsets.SideCount)
+
+                        _Tracks = New MFMTrack(_TrackCount * _SideCount - 1) {}
+
+                        _RPM = BitConverter.ToUInt16(Buffer, MFMImageOffsets.RPM)
+                        _BitRate = BitConverter.ToUInt16(Buffer, MFMImageOffsets.BitRate)
+                        _IFType = Buffer(MFMImageOffsets.IFType)
+
+                        Dim TrackListOffset = BitConverter.ToUInt32(Buffer, MFMImageOffsets.TrackList)
+
+                        For i = 0 To _TrackCount - 1
+                            For j = 0 To _SideCount - 1
+                                Dim Track = BitConverter.ToUInt16(Buffer, TrackListOffset + MFMTrackListOffsets.Track)
+                                Dim Side = Buffer(TrackListOffset + MFMTrackListOffsets.Side)
+                                Dim MFMTrack = New MFMTrack(Track, Side)
+                                Dim Size As UInteger
+                                If _IFType And &H80 Then
+                                    MFMTrack.RPM = BitConverter.ToUInt16(Buffer, TrackListOffset + MFMTrackListOffsets.Advanced_RPM)
+                                    MFMTrack.BitRate = BitConverter.ToUInt16(Buffer, TrackListOffset + MFMTrackListOffsets.Advanced_BitRate)
+                                    Size = BitConverter.ToUInt32(Buffer, TrackListOffset + MFMTrackListOffsets.Advanced_Size)
+                                    MFMTrack.Offset = BitConverter.ToUInt32(Buffer, TrackListOffset + MFMTrackListOffsets.Advanced_Offset)
+                                    TrackListOffset += MFMImageSizes.Advanced_TrackList
+                                Else
+                                    MFMTrack.RPM = RoundRPM(_RPM)
+                                    MFMTrack.BitRate = RoundBitRate(_BitRate)
+                                    Size = BitConverter.ToUInt32(Buffer, TrackListOffset + MFMTrackListOffsets.Size)
+                                    MFMTrack.Offset = BitConverter.ToUInt32(Buffer, TrackListOffset + MFMTrackListOffsets.Offset)
+                                    TrackListOffset += MFMImageSizes.TrackList
+
+                                    'Infer RPM
+                                    If MFMTrack.RPM = 0 Then
+                                        If MFMTrack.BitRate = 250 Then
+                                            MFMTrack.RPM = 300
+                                        Else
+                                            MFMTrack.RPM = CalculatetRPM(MFMTrack.BitRate, Size * 8)
+
+                                            If MFMTrack.BitRate = 300 And MFMTrack.RPM = 240 Then
+                                                MFMTrack.BitRate = 500
+                                                MFMTrack.RPM = 360
+                                            End If
+
+                                            If MFMTrack.BitRate = 300 And MFMTrack.RPM <> 360 Then
+                                                MFMTrack.RPM = 360
+                                            End If
+
+                                            If MFMTrack.RPM <> 300 And MFMTrack.RPM <> 360 Then
+                                                MFMTrack.RPM = 300
+                                            End If
+                                        End If
+                                    End If
+                                End If
+
+                                MFMTrack.Bitstream = IBM_MFM.BytesToBits(Buffer, MFMTrack.Offset, Size * 8)
+                                MFMTrack.MFMData = New IBM_MFM.IBM_MFM_Track(MFMTrack.Bitstream)
+
+                                SetTrack(Track, Side, MFMTrack)
+                            Next j
+                        Next i
+
+                        Dim BitRate = RoundBitRate(_BitRate)
+                        If BitRate = 300 And _TrackCount > 79 Then
+                            _TrackStep = 2
+                        End If
+                    Catch ex As Exception
+                        DebugException(ex)
+                        Return False
+                    End Try
+                End If
+
+                Return Result
+            End Function
+
+            Public Sub SetTrack(Track As UShort, Side As Byte, Value As MFMTrack)
+                If Track > _TrackCount - 1 Or Side > _SideCount - 1 Then
+                    Throw New System.IndexOutOfRangeException
+                End If
+
+                Dim Index = Track * _SideCount + Side
+
+                _Tracks(Index) = Value
+            End Sub
+
             Private Function IBitstreamImage_GetTrack(Track As UShort, Side As Byte) As IBitstreamTrack Implements IBitstreamImage.GetTrack
                 Return GetTrack(Track, Side)
             End Function
-
-            Private ReadOnly Property IBitstreamImage_HasSurfaceData As Boolean Implements IBitstreamImage.HasSurfaceData
-                Get
-                    Return False
-                End Get
-            End Property
         End Class
     End Namespace
 End Namespace

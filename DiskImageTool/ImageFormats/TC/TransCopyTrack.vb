@@ -2,13 +2,13 @@
 
 Namespace ImageFormats
     Namespace TC
-        Public Class TransCopyCylinder
+        Public Class TransCopyTrack
             Implements IBitstreamTrack
 
             Private Const ROTATION_LENGTH As UShort = 40000
             Private _Bitstream As BitArray
 
-            Public Sub New(Track As UShort, Side As UShort)
+            Public Sub New(Track As UShort, Side As Byte)
                 _Track = Track
                 _Side = Side
                 _Offset = 0
@@ -19,7 +19,6 @@ Namespace ImageFormats
                 _AddressMarkingTiming = New List(Of UShort)
                 _Bitstream = New BitArray(0)
                 _MFMData = Nothing
-                _Decoded = False
             End Sub
 
             Public ReadOnly Property AddressMarkingTiming As List(Of UShort)
@@ -57,7 +56,11 @@ Namespace ImageFormats
                                 Return BitstreamTrackType.Other
                             End If
                         Case TransCopyDiskType.FMSingleDensity
-                            Return BitstreamTrackType.FM
+                            If _Bitstream.Length > 0 Then
+                                Return BitstreamTrackType.FM
+                            Else
+                                Return BitstreamTrackType.Other
+                            End If
                         Case Else
                             Return BitstreamTrackType.Other
                     End Select
@@ -82,7 +85,11 @@ Namespace ImageFormats
                 End Set
             End Property
 
-            Public Property Decoded As Boolean Implements IBitstreamTrack.Decoded
+            Public ReadOnly Property Decoded As Boolean Implements IBitstreamTrack.Decoded
+                Get
+                    Return _MFMData IsNot Nothing AndAlso _MFMData.Sectors.Count > 0
+                End Get
+            End Property
 
             Public Property Flags As TransCopyTrackFlags = 0
 
@@ -128,11 +135,11 @@ Namespace ImageFormats
                 End Get
             End Property
 
-            Public Property Side As UShort
+            Public Property Side As Byte Implements IBitstreamTrack.Side
 
             Public Property Skew As UInt16
 
-            Public Property Track As UShort
+            Public Property Track As UShort Implements IBitstreamTrack.Track
 
             Public Property TrackType As TransCopyDiskType
 
@@ -166,6 +173,12 @@ Namespace ImageFormats
                 End Set
             End Property
 
+            Private ReadOnly Property IBitstreamTrack_SurfaceData As BitArray Implements IBitstreamTrack.SurfaceData
+                Get
+                    Return Nothing
+                End Get
+            End Property
+
             Public Function IsMFMTrackType() As Boolean
                 Select Case TrackType
                     Case TransCopyDiskType.MFMDoubleDensity, TransCopyDiskType.MFMHighDensity, TransCopyDiskType.MFMDoubleDensity360RPM
@@ -190,12 +203,6 @@ Namespace ImageFormats
                     _AddressMarkingTiming.Add(TimingIndex)
                 End If
             End Sub
-
-            Private ReadOnly Property IBitstreamTrack_SurfaceData As BitArray Implements IBitstreamTrack.SurfaceData
-                Get
-                    Return Nothing
-                End Get
-            End Property
         End Class
     End Namespace
 End Namespace

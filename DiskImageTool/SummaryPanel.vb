@@ -101,6 +101,60 @@ Module SummaryPanel
         Return fsi
     End Function
 
+    Private Function GetBitRateColor(BitRate As Integer, Format As FloppyDiskFormat) As Color
+        Dim ForeColor = SystemColors.WindowText
+
+        Select Case Format
+            Case FloppyDiskFormat.Floppy160, FloppyDiskFormat.Floppy180, FloppyDiskFormat.Floppy320, FloppyDiskFormat.Floppy360
+                If BitRate = 300 Then
+                    ForeColor = Color.Blue
+                ElseIf BitRate <> 250 Then
+                    ForeColor = Color.Red
+                End If
+            Case FloppyDiskFormat.Floppy720, FloppyDiskFormat.FloppyTandy2000
+                If BitRate <> 250 Then
+                    ForeColor = Color.Red
+                End If
+            Case FloppyDiskFormat.Floppy2880
+                If BitRate <> 1000 Then
+                    ForeColor = Color.Red
+                End If
+            Case FloppyDiskFormat.FloppyUnknown, FloppyDiskFormat.FloppyNoBPB
+                '
+            Case Else
+                If BitRate <> 500 Then
+                    ForeColor = Color.Red
+                End If
+        End Select
+
+        Return ForeColor
+    End Function
+
+    Private Function GetRPMColor(RPM As Integer, Format As FloppyDiskFormat) As Color
+        Dim ForeColor = SystemColors.WindowText
+
+        Select Case Format
+            Case FloppyDiskFormat.Floppy160, FloppyDiskFormat.Floppy180, FloppyDiskFormat.Floppy320, FloppyDiskFormat.Floppy360
+                If RPM = 360 Then
+                    ForeColor = Color.Blue
+                ElseIf RPM <> 300 Then
+                    ForeColor = Color.Red
+                End If
+            Case FloppyDiskFormat.Floppy1200
+                If RPM <> 360 Then
+                    ForeColor = Color.Red
+                End If
+            Case FloppyDiskFormat.FloppyUnknown, FloppyDiskFormat.FloppyNoBPB
+                'Return True'
+            Case Else
+                If RPM <> 300 Then
+                    ForeColor = Color.Red
+                End If
+        End Select
+
+        Return ForeColor
+    End Function
+
     Private Function GetNonStandardTrackList(NonStandardTracks As HashSet(Of UShort), HeadCount As Byte) As String
         Dim TrackList(NonStandardTracks.Count - 1) As UShort
         Dim TrackStartString As String
@@ -422,41 +476,27 @@ Module SummaryPanel
 
             If Disk.Image.Data.ImageType <> FloppyImageType.BasicSectorImage Then
                 .AddItem(DiskGroup, "Tracks", Disk.Image.Data.TrackCount)
-                .AddItem(DiskGroup, "Heads", Disk.Image.Data.HeadCount)
+                .AddItem(DiskGroup, "Heads", Disk.Image.Data.SideCount)
             End If
 
-            If Disk.Image.Data.ImageType = FloppyImageType.MFMImage Then
-                Dim Image As ImageFormats.MFM.MFMImage = DirectCast(Disk.Image.Data, ImageFormats.MFM.MFMByteArray).Image
-                If Image.BitRate > 0 Then
-                    .AddItem(DiskGroup, "Bitrate", Bitstream.RoundBitRate(Image.BitRate))
-                End If
-                If Image.RPM > 0 Then
-                    .AddItem(DiskGroup, "RPM", Bitstream.RoundRPM(Image.RPM))
-                End If
-
-            ElseIf Disk.Image.Data.ImageType = FloppyImageType.HFEImage Then
-                Dim Image As ImageFormats.HFE.HFEImage = DirectCast(Disk.Image.Data, ImageFormats.HFE.HFEByteArray).Image
-                If Image.BitRate > 0 Then
-                    .AddItem(DiskGroup, "Bitrate", Bitstream.RoundBitRate(Image.BitRate))
-                End If
-                If Image.FloppyRPM > 0 Then
-                    .AddItem(DiskGroup, "RPM", Bitstream.RoundRPM(Image.FloppyRPM))
+            If Disk.Image.Data.IsBitStreamImage Then
+                If Disk.Image.Data.BitstreamImage.VariableBitRate Then
+                    .AddItem(DiskGroup, "Bitrate", "Variable")
+                ElseIf Disk.Image.Data.BitstreamImage.BitRate <> 0 Then
+                    ForeColor = GetBitRateColor(Disk.Image.Data.BitstreamImage.BitRate, Disk.DiskFormat)
+                    .AddItem(DiskGroup, "Bitrate", Disk.Image.Data.BitstreamImage.BitRate, ForeColor)
                 End If
 
-            ElseIf Disk.Image.Data.ImageType = FloppyImageType._86FImage Then
+                If Disk.Image.Data.BitstreamImage.VariableRPM Then
+                    .AddItem(DiskGroup, "RPM", "Variable")
+                ElseIf Disk.Image.Data.BitstreamImage.RPM <> 0 Then
+                    ForeColor = GetRPMColor(Disk.Image.Data.BitstreamImage.RPM, Disk.DiskFormat)
+                    .AddItem(DiskGroup, "RPM", Disk.Image.Data.BitstreamImage.RPM, ForeColor)
+                End If
+            End If
+
+            If Disk.Image.Data.ImageType = FloppyImageType._86FImage Then
                 Dim Image As ImageFormats._86F._86FImage = DirectCast(Disk.Image.Data, ImageFormats._86F._86FByteArray).Image
-                If Image.BitRate = 255 Then
-                    Value = "Variable"
-                Else
-                    Value = ImageFormats._86F.GetBitRate(Image.BitRate, True)
-                End If
-                .AddItem(DiskGroup, "Bitrate", Value)
-                If Image.RPM = 255 Then
-                    Value = "Variable"
-                Else
-                    Value = ImageFormats._86F.GetRPM(Image.RPM)
-                End If
-                .AddItem(DiskGroup, "RPM", Value)
                 If Image.RPMSlowDown <> 0 Then
                     If Image.AlternateBitcellCalculation Then
                         Value = "Speed up by " & (Image.RPMSlowDown * 100) & "%"
@@ -466,13 +506,10 @@ Module SummaryPanel
                     .AddItem(DiskGroup, "RPM Adjustment", Value)
                 End If
                 .AddItem(DiskGroup, "Has Surface Data", If(Image.HasSurfaceData, "Yes", "No"))
-
-            ElseIf Disk.Image.Data.ImageType = FloppyImageType.TranscopyImage Then
-                Dim Image As ImageFormats.TC.TransCopyImage = DirectCast(Disk.Image.Data, ImageFormats.TC.TranscopyByteArray).Image
             End If
 
             If Disk.Image.Data.NonStandardTracks.Count > 0 Then
-                .AddItem(DiskGroup, "Non-Standard Tracks", GetNonStandardTrackList(Disk.Image.Data.NonStandardTracks, Disk.Image.Data.HeadCount))
+                .AddItem(DiskGroup, "Non-Standard Tracks", GetNonStandardTrackList(Disk.Image.Data.NonStandardTracks, Disk.Image.Data.SideCount))
             End If
         End With
 

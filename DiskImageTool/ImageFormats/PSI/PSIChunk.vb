@@ -1,9 +1,9 @@
 ﻿Namespace ImageFormats
     Namespace PSI
         Public Class PSIChunk
-            Private _ChunkID As Byte()
-            Private _ChunkData As Byte()
             Private _ChunkCRC As UInt32 = 0
+            Private _ChunkData As Byte()
+            Private _ChunkID As Byte()
 
             Public Sub New()
                 _ChunkID = New Byte(3) {}
@@ -20,6 +20,15 @@
                 _ChunkData = ChunkData
             End Sub
 
+            Public Property ChunkData As Byte()
+                Get
+                    Return _ChunkData
+                End Get
+                Set
+                    _ChunkData = Value
+                End Set
+            End Property
+
             Public Property ChunkID As String
                 Get
                     Return Text.Encoding.UTF8.GetString(_ChunkID, 0, 4)
@@ -33,15 +42,6 @@
                 Get
                     Return _ChunkData.Length
                 End Get
-            End Property
-
-            Public Property ChunkData As Byte()
-                Get
-                    Return _ChunkData
-                End Get
-                Set
-                    _ChunkData = Value
-                End Set
             End Property
 
             Public Function ReadFromBuffer(Buffer() As Byte, Offset As UInt32) As ReadResponse

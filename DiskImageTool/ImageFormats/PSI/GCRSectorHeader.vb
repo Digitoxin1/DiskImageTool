@@ -2,9 +2,11 @@
     Namespace PSI
         Public Class GCRSectorHeader
             Private ReadOnly _ChunkData() As Byte
+
             Public Sub New()
                 _ChunkData = New Byte(17) {}
             End Sub
+
             Public Sub New(ChunkData() As Byte)
                 _ChunkData = ChunkData
             End Sub
@@ -24,30 +26,7 @@
                     Array.Copy(Buffer, 0, _ChunkData, 0, 2)
                 End Set
             End Property
-            Public Property Head As Byte
-                Get
-                    Return _ChunkData(2)
-                End Get
-                Set(value As Byte)
-                    _ChunkData(2) = value
-                End Set
-            End Property
-            Public Property Sector As Byte
-                Get
-                    Return _ChunkData(3)
-                End Get
-                Set(value As Byte)
-                    _ChunkData(3) = value
-                End Set
-            End Property
-            Public Property SectorFormat As Byte
-                Get
-                    Return _ChunkData(4)
-                End Get
-                Set(value As Byte)
-                    _ChunkData(4) = value
-                End Set
-            End Property
+
             Public Property Flags As GCRSectorFlags
                 Get
                     Return _ChunkData(5)
@@ -56,6 +35,34 @@
                     _ChunkData(5) = value
                 End Set
             End Property
+
+            Public Property Head As Byte
+                Get
+                    Return _ChunkData(2)
+                End Get
+                Set(value As Byte)
+                    _ChunkData(2) = value
+                End Set
+            End Property
+
+            Public Property Sector As Byte
+                Get
+                    Return _ChunkData(3)
+                End Get
+                Set(value As Byte)
+                    _ChunkData(3) = value
+                End Set
+            End Property
+
+            Public Property SectorFormat As Byte
+                Get
+                    Return _ChunkData(4)
+                End Get
+                Set(value As Byte)
+                    _ChunkData(4) = value
+                End Set
+            End Property
+
             Public Property TagData As Byte()
                 Get
                     Dim Buffer(11) As Byte

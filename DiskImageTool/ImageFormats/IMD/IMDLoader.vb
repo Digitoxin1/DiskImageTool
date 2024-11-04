@@ -3,13 +3,13 @@
 Namespace ImageFormats
     Namespace IMD
         Module IMDLoader
-            Public Function IMDImageLoad(Data() As Byte) As IMDByteArray
+            Public Function ImageLoad(Data() As Byte) As IMDByteArray
                 Dim Image As IMDByteArray = Nothing
 
                 Dim IMD = New IMDImage()
                 Dim Result = IMD.Load(Data)
                 If Result Then
-                    Dim DiskFormat = IMDGetImageFormat(IMD)
+                    Dim DiskFormat = GetImageFormat(IMD)
                     If DiskFormat <> FloppyDiskFormat.FloppyUnknown Then
                         Image = New IMDByteArray(IMD, DiskFormat)
                     End If
@@ -18,7 +18,7 @@ Namespace ImageFormats
                 Return Image
             End Function
 
-            Private Function IMDGetImageFormat(IMD As IMDImage) As FloppyDiskFormat
+            Private Function GetImageFormat(IMD As IMDImage) As FloppyDiskFormat
                 Dim DiskFormat As FloppyDiskFormat
                 Dim SectorCount As Byte
 

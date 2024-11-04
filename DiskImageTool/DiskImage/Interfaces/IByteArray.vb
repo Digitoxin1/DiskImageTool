@@ -1,9 +1,6 @@
 ﻿Imports DiskImageTool.Bitstream
 
 Namespace DiskImage
-    Public Delegate Sub DataChangedEventHandler(Offset As UInteger, OriginalValue As Object, NewValue As Object)
-    Public Delegate Sub SizeChangedEventHandler(OriginalLength As Integer, NewLength As Integer)
-
     Public Enum FloppyImageType
         BasicSectorImage
         TranscopyImage
@@ -14,20 +11,23 @@ Namespace DiskImage
         IMDImage
     End Enum
 
+    Public Delegate Sub DataChangedEventHandler(Offset As UInteger, OriginalValue As Object, NewValue As Object)
+    Public Delegate Sub SizeChangedEventHandler(OriginalLength As Integer, NewLength As Integer)
+
     Public Interface IByteArray
         Event DataChanged As DataChangedEventHandler
         Event SizeChanged As SizeChangedEventHandler
 
+        ReadOnly Property AdditionalTracks As HashSet(Of UShort)
         ReadOnly Property BitstreamImage As IBitstreamImage
         ReadOnly Property CanResize As Boolean
         ReadOnly Property ImageType As FloppyImageType
-        ReadOnly Property IsBitstreamImage As Boolean
+        ReadOnly Property IsBitStreamImage As Boolean
         ReadOnly Property Length As Integer
-        ReadOnly Property ProtectedSectors As HashSet(Of UInteger)
-        ReadOnly Property AdditionalTracks As HashSet(Of UShort)
         ReadOnly Property NonStandardTracks As HashSet(Of UShort)
+        ReadOnly Property ProtectedSectors As HashSet(Of UInteger)
+        ReadOnly Property SideCount As Byte
         ReadOnly Property TrackCount As UShort
-        ReadOnly Property HeadCount As Byte
         Sub Append(Data() As Byte)
         Sub CopyTo(SourceIndex As Integer, ByRef DestinationArray() As Byte, DestinationIndex As Integer, Length As Integer)
         Sub CopyTo(DestinationArray() As Byte, Index As Integer)
@@ -40,13 +40,12 @@ Namespace DiskImage
         Function GetMD5Hash() As String
         Function GetSHA1Hash() As String
         Function Resize(Length As Integer) As Boolean
+        Function SaveToFile(FilePath As String) As Boolean
         Function SetBytes(Value As UShort, Offset As UInteger) As Boolean
         Function SetBytes(Value As UInteger, Offset As UInteger) As Boolean
         Function SetBytes(Value As Byte, Offset As UInteger) As Boolean
         Function SetBytes(Value() As Byte, Offset As UInteger) As Boolean
         Function SetBytes(Value() As Byte, Offset As UInteger, Size As UInteger, Padding As Byte) As Boolean
         Function ToUInt16(StartIndex As Integer) As UShort
-        Function SaveToFile(FilePath As String) As Boolean
-
     End Interface
 End Namespace

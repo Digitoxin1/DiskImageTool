@@ -3,29 +3,41 @@
 Namespace ImageFormats
     Namespace _86F
         Public Class _86FImage
+            Inherits BitStreamImageBase
             Implements IBitstreamImage
 
             Private Const FILE_SIGNATURE = "86BF"
-            Private _BitRate As BitRate = 255
+            Private _BitRate As UShort
             Private _DiskFlags As DiskFlags
             Private _MajorVersion As Byte
             Private _MinorVersion As Byte
-            Private _RPM As RPM = 255
+            Private _RPM As UShort
             Private _TrackCount As UShort
             Private _Tracks() As _86FTrack
+            Private _VariableBitRate As Boolean
+            Private _VariableRPM As Boolean
+
             Public Sub New()
                 _MajorVersion = 2
                 _MinorVersion = 12
+                _BitRate = 0
                 _DiskFlags = 0
+                _RPM = 0
                 _TrackCount = 0
+                _VariableBitRate = False
+                _VariableRPM = False
             End Sub
 
             Public Sub New(TrackCount As UShort, SideCount As Byte)
                 _MajorVersion = 2
                 _MinorVersion = 12
+                _BitRate = 0
                 _DiskFlags = 0
+                _RPM = 0
                 _TrackCount = TrackCount
-                Sides = SideCount
+                Me.SideCount = SideCount
+                _VariableBitRate = False
+                _VariableRPM = False
 
                 _Tracks = New _86FTrack(TrackCount * SideCount - 1) {}
             End Sub
@@ -48,7 +60,7 @@ Namespace ImageFormats
                 End Set
             End Property
 
-            Public ReadOnly Property BitRate As BitRate
+            Public Overloads ReadOnly Property BitRate As UShort Implements IBitstreamImage.BitRate
                 Get
                     Return _BitRate
                 End Get
@@ -73,7 +85,7 @@ Namespace ImageFormats
                 End Set
             End Property
 
-            Public Property HasSurfaceData As Boolean Implements IBitstreamImage.HasSurfaceData
+            Public Overloads Property HasSurfaceData As Boolean Implements IBitstreamImage.HasSurfaceData
                 Get
                     Return (_DiskFlags And DiskFlags.HasSurfaceData) > 0
                 End Get
@@ -120,7 +132,7 @@ Namespace ImageFormats
                 End Set
             End Property
 
-            Public ReadOnly Property RPM As RPM
+            Public Overloads ReadOnly Property RPM As UShort Implements IBitstreamImage.RPM
                 Get
                     Return _RPM
                 End Get
@@ -155,7 +167,7 @@ Namespace ImageFormats
                 End Set
             End Property
 
-            Public Property Sides As Byte Implements IBitstreamImage.SideCount
+            Public Overloads Property SideCount As Byte Implements IBitstreamImage.SideCount
                 Get
                     If (_DiskFlags And DiskFlags.Sides) > 0 Then
                         Return 2
@@ -168,9 +180,21 @@ Namespace ImageFormats
                 End Set
             End Property
 
-            Public ReadOnly Property TrackCount As UShort Implements IBitstreamImage.TrackCount
+            Public Overloads ReadOnly Property TrackCount As UShort Implements IBitstreamImage.TrackCount
                 Get
                     Return _TrackCount
+                End Get
+            End Property
+
+            Public Overloads ReadOnly Property VariableBitRate As Boolean Implements IBitstreamImage.VariableBitRate
+                Get
+                    Return _VariableBitRate
+                End Get
+            End Property
+
+            Public Overloads ReadOnly Property VariableRPM As Boolean Implements IBitstreamImage.VariableRPM
+                Get
+                    Return _VariableRPM
                 End Get
             End Property
 
@@ -199,7 +223,7 @@ Namespace ImageFormats
                     Return 1
                 End Get
             End Property
-            Public Function Export(FilePath As String) As Boolean Implements IBitstreamImage.Export
+            Public Overrides Function Export(FilePath As String) As Boolean Implements IBitstreamImage.Export
                 Dim Buffer() As Byte
                 Dim Pos As UInteger
                 Dim DataPosition As UInteger
@@ -224,7 +248,7 @@ Namespace ImageFormats
                         Buffer = BitConverter.GetBytes(_DiskFlags)
                         fs.Write(Buffer, 0, Buffer.Length)
                         Pos = fs.Position
-                        DataPosition = 256 * Sides * 4 + Pos
+                        DataPosition = 256 * SideCount * 4 + Pos
 
                         For Each Track In TrackArray
                             fs.Position = Pos
@@ -297,20 +321,20 @@ Namespace ImageFormats
             End Function
 
             Public Function GetTrack(Track As UShort, Side As Byte) As _86FTrack
-                If Track > _TrackCount - 1 Or Side > Sides - 1 Then
+                If Track > _TrackCount - 1 Or Side > SideCount - 1 Then
                     Throw New System.IndexOutOfRangeException
                 End If
 
-                Dim Index = Track * Sides + Side
+                Dim Index = Track * SideCount + Side
 
                 Return _Tracks(Index)
             End Function
 
-            Public Function Load(FilePath As String) As Boolean Implements IBitstreamImage.Load
+            Public Overrides Function Load(FilePath As String) As Boolean Implements IBitstreamImage.Load
                 Return Load(IO.File.ReadAllBytes(FilePath))
             End Function
 
-            Public Function Load(Buffer() As Byte) As Boolean Implements IBitstreamImage.Load
+            Public Overrides Function Load(Buffer() As Byte) As Boolean Implements IBitstreamImage.Load
                 Dim TrackList As New List(Of _86FTrack)
                 Dim Result As Boolean
                 Dim DoubleStep As Boolean = False
@@ -337,7 +361,7 @@ Namespace ImageFormats
 
                         Dim Pos = 8
                         For i = 0 To 255
-                            For j = 0 To Sides - 1
+                            For j = 0 To SideCount - 1
                                 Offset = BitConverter.ToUInt32(Buffer, Pos)
                                 Dim F86Track = New _86FTrack(i, j, Offset)
                                 If Offset > 0 Then
@@ -387,12 +411,12 @@ Namespace ImageFormats
                             _TrackCount \= 2
                         End If
 
-                        _Tracks = New _86FTrack((_TrackCount) * Sides - 1) {}
+                        _Tracks = New _86FTrack((_TrackCount) * SideCount - 1) {}
 
                         Dim Index As UShort = 0
                         Dim Track As UShort
                         For Each F86Track In TrackList
-                            If Not DoubleStep OrElse (Index \ Sides) Mod 2 = 0 Then
+                            If Not DoubleStep OrElse (Index \ SideCount) Mod 2 = 0 Then
                                 Track = F86Track.Track
                                 If DoubleStep Then
                                     Track \= 2
@@ -401,16 +425,17 @@ Namespace ImageFormats
                                 If Track < _TrackCount Then
                                     If F86Track.Encoding = Encoding.MFM Then
                                         F86Track.MFMData = New IBM_MFM.IBM_MFM_Track(F86Track.Bitstream)
-                                        F86Track.Decoded = True
                                         If Index = 0 Then
-                                            _BitRate = F86Track.BitRate
-                                            _RPM = F86Track.RPM
+                                            _BitRate = GetBitRate(F86Track.BitRate, True)
+                                            _RPM = GetRPM(F86Track.RPM)
                                         Else
-                                            If _BitRate <> 255 AndAlso _BitRate <> F86Track.BitRate Then
-                                                _BitRate = 255
+                                            If Not _VariableBitRate AndAlso _BitRate <> GetBitRate(F86Track.BitRate, True) Then
+                                                _VariableBitRate = True
+                                                _BitRate = 0
                                             End If
-                                            If _RPM <> 255 AndAlso _RPM <> F86Track.RPM Then
-                                                _RPM = 255
+                                            If Not _VariableRPM AndAlso _RPM <> GetRPM(F86Track.RPM) Then
+                                                _VariableRPM = True
+                                                _RPM = 0
                                             End If
                                         End If
                                     End If
@@ -429,12 +454,13 @@ Namespace ImageFormats
 
                 Return Result
             End Function
+
             Public Sub SetTrack(Track As UShort, Side As Byte, Value As _86FTrack)
-                If Track > _TrackCount - 1 Or Side > Sides - 1 Then
+                If Track > _TrackCount - 1 Or Side > SideCount - 1 Then
                     Throw New System.IndexOutOfRangeException
                 End If
 
-                Dim Index = Track * Sides + Side
+                Dim Index = Track * SideCount + Side
 
                 _Tracks(Index) = Value
             End Sub
@@ -470,31 +496,6 @@ Namespace ImageFormats
                 Return Length \ 8
             End Function
 
-            Private Function GetTrackArray() As _86FTrack()
-                Dim TrackArray() As _86FTrack
-                Dim TrackCount = _TrackCount
-                Dim TrackStep As UShort = 1
-
-                If TrackCount < 45 Then
-                    TrackStep = 2
-                    TrackCount *= 2
-                End If
-
-                TrackArray = New _86FTrack(TrackCount * Sides - 1) {}
-
-                Dim Index As UShort = 0
-                For i = 0 To _TrackCount - 1
-                    For j = 1 To TrackStep
-                        For k = 0 To Sides - 1
-                            TrackArray(Index) = GetTrack(i, k)
-                            Index += 1
-                        Next
-                    Next
-                Next
-
-                Return TrackArray
-            End Function
-
             Private Function GetCalculatedBitCellCount(BitRate As BitRate, RPM As RPM, IsMFM As Boolean, RPMSlowDown As Single, SpeedUp As Boolean, ExtraBitCellCount As UInteger) As UInteger
                 Dim Length As Single = CalculatetBitCount(GetBitRate(BitRate, IsMFM), GetRPM(RPM))
 
@@ -505,6 +506,31 @@ Namespace ImageFormats
                 Length += MyBitConverter.ToInt32(ExtraBitCellCount)
 
                 Return Length
+            End Function
+
+            Private Function GetTrackArray() As _86FTrack()
+                Dim TrackArray() As _86FTrack
+                Dim TrackCount = _TrackCount
+                Dim TrackStep As UShort = 1
+
+                If TrackCount < 45 Then
+                    TrackStep = 2
+                    TrackCount *= 2
+                End If
+
+                TrackArray = New _86FTrack(TrackCount * SideCount - 1) {}
+
+                Dim Index As UShort = 0
+                For i = 0 To _TrackCount - 1
+                    For j = 1 To TrackStep
+                        For k = 0 To SideCount - 1
+                            TrackArray(Index) = GetTrack(i, k)
+                            Index += 1
+                        Next
+                    Next
+                Next
+
+                Return TrackArray
             End Function
 
             Private Function IBitstreamImage_GetTrack(Track As UShort, Side As Byte) As IBitstreamTrack Implements IBitstreamImage.GetTrack

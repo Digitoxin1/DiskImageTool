@@ -5,11 +5,15 @@
                 _Sectors = New List(Of IMDSector)
             End Sub
 
+            Public Property Track As Byte
+
+            Public Property Side As Byte
+
             Public Property Mode As TrackMode
-            Public Property Cylinder As Byte
-            Public Property Head As Byte
-            Public Property SectorSize As SectorSize
+
             Public Property Sectors As List(Of IMDSector)
+
+            Public Property SectorSize As SectorSize
 
             Public Function GetSizeBytes() As UShort
                 Select Case _SectorSize

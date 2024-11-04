@@ -4,6 +4,7 @@ Imports DiskImageTool.Bitstream
 Namespace ImageFormats
     Namespace IMD
         Public Class IMDImage
+            Inherits BitStreamImageBase
             Implements IBitstreamImage
 
             Private Const VERSION As String = "1.19"
@@ -15,15 +16,16 @@ Namespace ImageFormats
             End Sub
 
             Public Property Comment As String
+
             Public ReadOnly Property Header As String
+
+            Public Overloads Property SideCount As Byte Implements IBitstreamImage.SideCount
+
+            Public Overloads Property TrackCount As UShort Implements IBitstreamImage.TrackCount
 
             Public Property Tracks As List(Of IMDTrack)
 
-            Public Property TrackCount As UShort Implements IBitstreamImage.TrackCount
-
-            Public Property SideCount As Byte Implements IBitstreamImage.SideCount
-
-            Public Function Export(FilePath As String) As Boolean Implements IBitstreamImage.Export
+            Public Overrides Function Export(FilePath As String) As Boolean Implements IBitstreamImage.Export
                 Dim Buffer() As Byte
                 Dim SectorMap() As Byte
                 Dim CylinderMap() As Byte
@@ -58,17 +60,17 @@ Namespace ImageFormats
                             For i = 0 To Track.Sectors.Count - 1
                                 Dim Sector = Track.Sectors.Item(i)
                                 SectorMap(i) = Sector.SectorId
-                                CylinderMap(i) = Sector.Cylinder
-                                HeadMap(i) = Sector.Head
-                                If Sector.Cylinder <> Track.Cylinder Then
+                                CylinderMap(i) = Sector.Track
+                                HeadMap(i) = Sector.Side
+                                If Sector.Track <> Track.Track Then
                                     HasCylinderMap = True
                                 End If
-                                If Sector.Head <> Track.Head Then
+                                If Sector.Side <> Track.Side Then
                                     HasHeadMap = True
                                 End If
                             Next
 
-                            Dim Head = Track.Head
+                            Dim Head = Track.Side
                             If HasHeadMap Then
                                 Head = Head Or 64
                             End If
@@ -77,7 +79,7 @@ Namespace ImageFormats
                             End If
 
                             fs.WriteByte(Track.Mode)
-                            fs.WriteByte(Track.Cylinder)
+                            fs.WriteByte(Track.Track)
                             fs.WriteByte(Head)
                             fs.WriteByte(Track.Sectors.Count)
                             fs.WriteByte(Track.SectorSize)
@@ -111,11 +113,11 @@ Namespace ImageFormats
                 Return True
             End Function
 
-            Public Function Load(FilePath As String) As Boolean Implements IBitstreamImage.Load
+            Public Overrides Function Load(FilePath As String) As Boolean Implements IBitstreamImage.Load
                 Return Load(IO.File.ReadAllBytes(FilePath))
             End Function
 
-            Public Function Load(Buffer() As Byte) As Boolean Implements IBitstreamImage.Load
+            Public Overrides Function Load(Buffer() As Byte) As Boolean Implements IBitstreamImage.Load
                 Dim Result As Boolean
 
                 If Buffer.Length < 32 Then
@@ -157,8 +159,8 @@ Namespace ImageFormats
                             HeadMap = New Byte(SectorCount - 1) {}
                             Dim Track As New IMDTrack With {
                                 .Mode = Buffer(Offset),
-                                .Cylinder = Buffer(Offset + 1),
-                                .Head = HeadValue And &H1,
+                                .Track = Buffer(Offset + 1),
+                                .Side = HeadValue And &H1,
                                 .SectorSize = Buffer(Offset + 4)
                             }
                             Offset += 5
@@ -175,7 +177,7 @@ Namespace ImageFormats
                                 Offset += SectorCount
                             Else
                                 For i = 0 To SectorCount - 1
-                                    CylinderMap(i) = Track.Cylinder
+                                    CylinderMap(i) = Track.Track
                                 Next
                             End If
 
@@ -186,7 +188,7 @@ Namespace ImageFormats
                                 Offset += SectorCount
                             Else
                                 For i = 0 To SectorCount - 1
-                                    HeadMap(i) = Track.Head
+                                    HeadMap(i) = Track.Side
                                 Next
                             End If
 
@@ -195,8 +197,8 @@ Namespace ImageFormats
                                 Dim Format As DataFormat = Buffer(Offset)
                                 Dim Sector = New IMDSector(SectorSize, Format) With {
                                     .SectorId = SectorMap(i),
-                                    .Cylinder = CylinderMap(i),
-                                    .Head = HeadMap(i)
+                                    .Track = CylinderMap(i),
+                                    .Side = HeadMap(i)
                                 }
                                 Offset += 1
 
@@ -218,12 +220,12 @@ Namespace ImageFormats
 
                             _Tracks.Add(Track)
 
-                            If Track.Cylinder >= _TrackCount Then
-                                _TrackCount = Track.Cylinder + 1
+                            If Track.Track >= _TrackCount Then
+                                _TrackCount = Track.Track + 1
                             End If
 
-                            If Track.Head >= _SideCount Then
-                                _SideCount = Track.Head + 1
+                            If Track.Side >= _SideCount Then
+                                _SideCount = Track.Side + 1
                             End If
                         Loop
                     Catch ex As Exception
@@ -234,27 +236,9 @@ Namespace ImageFormats
 
                 Return Result
             End Function
-
-            Private ReadOnly Property IBitstreamImage_TrackStep As Byte Implements IBitstreamImage.TrackStep
-                Get
-                    Return 1
-                End Get
-            End Property
-
-            Private Function IBitstreamImage_GetTrack(Track As UShort, Side As Byte) As IBitstreamTrack Implements IBitstreamImage.GetTrack
-                Return Nothing
-            End Function
-
-            Private ReadOnly Property IBitstreamImage_HasSurfaceData As Boolean Implements IBitstreamImage.HasSurfaceData
-                Get
-                    Return False
-                End Get
-            End Property
-
             Private Function GetHeader() As String
                 Return "IMD " & VERSION & ": " & Now.ToString("dd/MM/yyyy HH:mm:ss", New CultureInfo("en-US"))
             End Function
-
         End Class
     End Namespace
 End Namespace
