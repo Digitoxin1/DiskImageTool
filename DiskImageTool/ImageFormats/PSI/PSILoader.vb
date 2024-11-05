@@ -3,8 +3,8 @@
 Namespace ImageFormats
     Namespace PSI
         Module PSILoader
-            Public Function ImageLoad(Data() As Byte) As PSIByteArray
-                Dim Image As PSIByteArray = Nothing
+            Public Function ImageLoad(Data() As Byte) As PSIFloppyImage
+                Dim Image As PSIFloppyImage = Nothing
 
                 Dim PSI = New PSISectorImage()
                 Dim Result = PSI.Load(Data)
@@ -15,7 +15,7 @@ Namespace ImageFormats
 
                         Dim DiskFormat = GetImageFormat(PSI)
                         If DiskFormat <> FloppyDiskFormat.FloppyUnknown Then
-                            Image = New PSIByteArray(PSI, DiskFormat)
+                            Image = New PSIFloppyImage(PSI, DiskFormat)
                         End If
                     End If
                 End If

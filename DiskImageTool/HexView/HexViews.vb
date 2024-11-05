@@ -293,7 +293,7 @@ Module HexViews
                 End If
                 If EndOfDirectory Then
                     If Not HasBootSector Or Offset < BootSectorOffset Or Offset > BootSectorOffset + DiskImage.BootSector.BOOT_SECTOR_SIZE Then
-                        If DirectoryEntryHasData(Disk.Image.Data, Offset) Then
+                        If DirectoryEntryHasData(Disk.Image, Offset) Then
                             HighlightedRegions.AddItem(Offset - OffsetStart, DirectoryEntry.DIRECTORY_ENTRY_SIZE, Color.Red)
                         End If
                     End If

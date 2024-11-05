@@ -104,7 +104,8 @@
                     For i = 0 To b.Length - 1
                         b(i) = 0
                     Next
-                    Disk.Image.SetBytes(b, Disk.Image.Length - b.Length)
+                    Dim Offset As UInteger = Disk.Image.Length - b.Length
+                    Disk.Image.SetBytes(b, Offset)
                 End If
                 Disk.Image.Resize(ReportedSize)
 

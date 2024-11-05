@@ -12,9 +12,9 @@
             _Size = Size
         End Sub
 
-        Public ReadOnly Property MFMSector As IBM_MFM.IBM_MFM_Sector
         Public ReadOnly Property Data As Byte()
-        Public ReadOnly Property Size As UInteger
         Public Property IsStandard As Boolean
+        Public ReadOnly Property MFMSector As IBM_MFM.IBM_MFM_Sector
+        Public ReadOnly Property Size As UInteger
     End Class
 End Namespace

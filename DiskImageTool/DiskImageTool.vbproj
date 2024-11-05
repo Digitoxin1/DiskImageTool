@@ -129,7 +129,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Bitstream\Bitstream.vb" />
-    <Compile Include="Bitstream\BitstreamByteArray.vb" />
+    <Compile Include="DiskImage\MappedFloppyImage.vb" />
     <Compile Include="Bitstream\BitstreamDebug.vb" />
     <Compile Include="Bitstream\BitStreamImageBase.vb" />
     <Compile Include="Bitstream\BitstreamRegion.vb" />
@@ -144,6 +144,7 @@
     <Compile Include="DiskImage\DirectoryBase.vb" />
     <Compile Include="DiskImage\FAT12.vb" />
     <Compile Include="DiskImage\FATAllocation.vb" />
+    <Compile Include="DiskImage\FloppyImageHistory.vb" />
     <Compile Include="DiskImage\UpdateFunctions.vb" />
     <Compile Include="FileData.vb" />
     <Compile Include="Filters\Enums.vb" />
@@ -182,33 +183,33 @@
     </Compile>
     <Compile Include="HexView\HexViewDataGridInspector.vb" />
     <Compile Include="HexView\HexViewFunctions.vb" />
-    <Compile Include="ImageFormats\86F\86FByteArray.vb" />
+    <Compile Include="ImageFormats\86F\86FFloppyImage.vb" />
     <Compile Include="ImageFormats\86F\86FImage.vb" />
     <Compile Include="ImageFormats\86F\86FLoader.vb" />
     <Compile Include="ImageFormats\86F\86FTrack.vb" />
     <Compile Include="ImageFormats\86F\Enums.vb" />
     <Compile Include="ImageFormats\86F\Functions.vb" />
     <Compile Include="ImageFormats\HFE\Enums.vb" />
-    <Compile Include="ImageFormats\HFE\HFEByteArray.vb" />
+    <Compile Include="ImageFormats\HFE\HFEFloppyImage.vb" />
     <Compile Include="ImageFormats\HFE\HFEImage.vb" />
     <Compile Include="ImageFormats\HFE\HFELoader.vb" />
     <Compile Include="ImageFormats\HFE\HFETrack.vb" />
     <Compile Include="ImageFormats\IMD\Enums.vb" />
-    <Compile Include="ImageFormats\IMD\IMDByteArray.vb" />
+    <Compile Include="ImageFormats\IMD\IMDFloppyImage.vb" />
     <Compile Include="ImageFormats\IMD\IMDImage.vb" />
     <Compile Include="ImageFormats\IMD\IMDLoader.vb" />
     <Compile Include="ImageFormats\IMD\IMDSector.vb" />
     <Compile Include="ImageFormats\IMD\IMDTrack.vb" />
     <Compile Include="ImageIO.vb" />
     <Compile Include="ImageFormats\ImageConversion.vb" />
-    <Compile Include="ImageFormats\MFM\MFMByteArray.vb" />
+    <Compile Include="ImageFormats\MFM\MFMFloppyImage.vb" />
     <Compile Include="ImageFormats\MFM\MFMImage.vb" />
     <Compile Include="ImageFormats\MFM\MFMLoader.vb" />
     <Compile Include="ImageFormats\MFM\MFMTrack.vb" />
     <Compile Include="ImageFormats\PSI\Enums.vb" />
     <Compile Include="ImageFormats\PSI\GCRSectorHeader.vb" />
     <Compile Include="ImageFormats\PSI\IBMSectorHeader.vb" />
-    <Compile Include="ImageFormats\PSI\PSIByteArray.vb" />
+    <Compile Include="ImageFormats\PSI\PSIFloppyImage.vb" />
     <Compile Include="ImageFormats\PSI\PSIChunk.vb" />
     <Compile Include="ImageFormats\PSI\PSIFileHeader.vb" />
     <Compile Include="ImageFormats\PSI\PSILoader.vb" />
@@ -216,7 +217,7 @@
     <Compile Include="ImageFormats\PSI\PSISectorImage.vb" />
     <Compile Include="ImageFormats\TC\Enums.vb" />
     <Compile Include="ImageFormats\TC\TCLoader.vb" />
-    <Compile Include="ImageFormats\TC\TranscopyByteArray.vb" />
+    <Compile Include="ImageFormats\TC\TranscopyFloppyImage.vb" />
     <Compile Include="ImageFormats\TC\TransCopyTrack.vb" />
     <Compile Include="ImageFormats\TC\TransCopyImage.vb" />
     <Compile Include="Filters\ComboFilter.vb" />
@@ -232,7 +233,7 @@
     <Compile Include="DiskImage\FATChain.vb" />
     <Compile Include="DiskImage\FATTables.vb" />
     <Compile Include="DiskImage\FloppyDiskFunctions.vb" />
-    <Compile Include="DiskImage\Interfaces\IByteArray.vb" />
+    <Compile Include="DiskImage\Interfaces\IFloppyImage.vb" />
     <Compile Include="DiskImage\SectorBlock.vb" />
     <Compile Include="Extensions\ByteArrayExtensions.vb" />
     <Compile Include="Extensions\DataGridViewExtensions.vb" />
@@ -251,10 +252,9 @@
     <Compile Include="SummaryPanel.vb" />
     <Compile Include="Testing\DebugScript.vb" />
     <Compile Include="DiskImage\SectorData.vb" />
-    <Compile Include="DiskImage\ByteArray.vb" />
+    <Compile Include="DiskImage\BasicSectorImage.vb" />
     <Compile Include="DiskImage\Utility.vb" />
     <Compile Include="DiskImage\Interfaces\IDirectory.vb" />
-    <Compile Include="DiskImage\ImageByteArray.vb" />
     <Compile Include="DiskImage\RootDirectory.vb" />
     <Compile Include="DiskImage\SubDirectory.vb" />
     <Compile Include="Forms\BootSectorForm.Designer.vb">

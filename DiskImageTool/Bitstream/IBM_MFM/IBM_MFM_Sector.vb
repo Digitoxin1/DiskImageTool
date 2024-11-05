@@ -2,18 +2,18 @@
     Namespace IBM_MFM
         Public Class IBM_MFM_Sector
             Private ReadOnly _Bitstream As BitArray
-            Private ReadOnly _Offset As UInteger
             Private ReadOnly _IDArea() As Byte
             Private ReadOnly _IDChecksum As UShort
             Private ReadOnly _InitialChecksumValid As Boolean
-            Private _Gap2 As Byte()
-            Private _DataFieldSync() As Byte
-            Private _DataOffset As UInteger
+            Private ReadOnly _Offset As UInteger
+            Private _DAMFound As Boolean = False
             Private _Data As Byte()
             Private _DataChecksum As UShort
-            Private _InitialDataChecksum As UShort
+            Private _DataFieldSync() As Byte
+            Private _DataOffset As UInteger
+            Private _Gap2 As Byte()
             Private _Gap3 As Byte()
-            Private _DAMFound As Boolean = False
+            Private _InitialDataChecksum As UShort
             Private _Overlaps As Boolean
 
             Public Sub New(Bitstream As BitArray, Offset As UInteger)
@@ -30,51 +30,9 @@
                 _InitialChecksumValid = (_DataChecksum = CalculateDataChecksum())
             End Sub
 
-            Public ReadOnly Property Gap2 As Byte()
+            Public ReadOnly Property DAM As MFMAddressMark
                 Get
-                    Return _Gap2
-                End Get
-            End Property
-
-            Public ReadOnly Property Gap3 As Byte()
-                Get
-                    Return _Gap3
-                End Get
-            End Property
-
-            Public ReadOnly Property Offset As UInteger
-                Get
-                    Return _Offset
-                End Get
-            End Property
-
-            Public ReadOnly Property Track As Byte
-                Get
-                    Return _IDArea(4)
-                End Get
-            End Property
-
-            Public ReadOnly Property Side As Byte
-                Get
-                    Return _IDArea(5)
-                End Get
-            End Property
-
-            Public ReadOnly Property SectorId As Byte
-                Get
-                    Return _IDArea(6)
-                End Get
-            End Property
-
-            Public ReadOnly Property Size As Byte
-                Get
-                    Return _IDArea(7)
-                End Get
-            End Property
-
-            Public ReadOnly Property IDChecksum As UShort
-                Get
-                    Return _IDChecksum
+                    Return _DataFieldSync(3)
                 End Get
             End Property
 
@@ -84,21 +42,9 @@
                 End Get
             End Property
 
-            Public ReadOnly Property DAM As MFMAddressMark
-                Get
-                    Return _DataFieldSync(3)
-                End Get
-            End Property
-
             Public ReadOnly Property Data As Byte()
                 Get
                     Return _Data
-                End Get
-            End Property
-
-            Public ReadOnly Property DataOffset As UInteger
-                Get
-                    Return _DataOffset
                 End Get
             End Property
 
@@ -111,6 +57,42 @@
                 End Set
             End Property
 
+            Public ReadOnly Property DataOffset As UInteger
+                Get
+                    Return _DataOffset
+                End Get
+            End Property
+
+            Public ReadOnly Property Gap2 As Byte()
+                Get
+                    Return _Gap2
+                End Get
+            End Property
+
+            Public ReadOnly Property Gap3 As Byte()
+                Get
+                    Return _Gap3
+                End Get
+            End Property
+
+            Public ReadOnly Property IDChecksum As UShort
+                Get
+                    Return _IDChecksum
+                End Get
+            End Property
+
+            Public ReadOnly Property InitialChecksumValid As Boolean
+                Get
+                    Return _InitialChecksumValid
+                End Get
+            End Property
+
+            Public ReadOnly Property Offset As UInteger
+                Get
+                    Return _Offset
+                End Get
+            End Property
+
             Public Property Overlaps As Boolean
                 Get
                     Return _Overlaps
@@ -120,12 +102,29 @@
                 End Set
             End Property
 
-            Public ReadOnly Property InitialChecksumValid As Boolean
+            Public ReadOnly Property SectorId As Byte
                 Get
-                    Return _InitialChecksumValid
+                    Return _IDArea(6)
                 End Get
             End Property
 
+            Public ReadOnly Property Side As Byte
+                Get
+                    Return _IDArea(5)
+                End Get
+            End Property
+
+            Public ReadOnly Property Size As Byte
+                Get
+                    Return _IDArea(7)
+                End Get
+            End Property
+
+            Public ReadOnly Property Track As Byte
+                Get
+                    Return _IDArea(4)
+                End Get
+            End Property
             Public Function CalculateDataChecksum() As UShort
                 If _DAMFound Then
                     Dim DataSize = GetSizeBytes()

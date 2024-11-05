@@ -160,24 +160,24 @@ Namespace DiskImage
             Return DTTime
         End Function
 
-        Public Function DirectoryEntryHasData(FileBytes As IByteArray, Offset As UInteger) As Boolean
+        Public Function DirectoryEntryHasData(FloppyImage As IFloppyImage, Offset As UInteger) As Boolean
             Dim Result As Boolean = False
 
-            If FileBytes.GetByte(Offset) = &HE5 Then
+            If FloppyImage.GetByte(Offset) = &HE5 Then
                 For Offset2 As UInteger = Offset + 1 To Offset + DirectoryEntry.DIRECTORY_ENTRY_SIZE - 1
-                    If FileBytes.GetByte(Offset2) <> 0 Then
+                    If FloppyImage.GetByte(Offset2) <> 0 Then
                         Result = True
                         Exit For
                     End If
                 Next
-            ElseIf FileBytes.GetByte(Offset) <> 0 Then
+            ElseIf FloppyImage.GetByte(Offset) <> 0 Then
                 Result = True
             Else
                 Dim HexF6Count As UInteger = 0
                 For Offset2 As UInteger = Offset + 1 To Offset + DirectoryEntry.DIRECTORY_ENTRY_SIZE - 1
-                    If FileBytes.GetByte(Offset2) = &HF6 Then
+                    If FloppyImage.GetByte(Offset2) = &HF6 Then
                         HexF6Count += 1
-                    ElseIf FileBytes.GetByte(Offset2) <> 0 Then
+                    ElseIf FloppyImage.GetByte(Offset2) <> 0 Then
                         Result = True
                         Exit For
                     End If
@@ -293,18 +293,18 @@ Namespace DiskImage
             Return BadSectors
         End Function
 
-        Public Function GetDataFromChain(FileBytes As IByteArray, SectorChain As List(Of UInteger)) As Byte()
+        Public Function GetDataFromChain(FloppyImage As IFloppyImage, SectorChain As List(Of UInteger)) As Byte()
             Dim SectorSize As UInteger = Disk.BYTES_PER_SECTOR
             Dim Content(SectorChain.Count * SectorSize - 1) As Byte
             Dim ContentOffset As UInteger = 0
 
             For Each Sector In SectorChain
                 Dim Offset As UInteger = Disk.SectorToBytes(Sector)
-                If FileBytes.Length < Offset + SectorSize Then
-                    SectorSize = Math.Max(FileBytes.Length - Offset, 0)
+                If FloppyImage.Length < Offset + SectorSize Then
+                    SectorSize = Math.Max(FloppyImage.Length - Offset, 0)
                 End If
                 If SectorSize > 0 Then
-                    FileBytes.CopyTo(Offset, Content, ContentOffset, SectorSize)
+                    FloppyImage.CopyTo(Offset, Content, ContentOffset, SectorSize)
                     ContentOffset += SectorSize
                 Else
                     Exit For

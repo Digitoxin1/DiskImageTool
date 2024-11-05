@@ -62,6 +62,7 @@ Namespace Bitstream
 
             Return DiskFormat
         End Function
+
         Public Function CalculatetBitCount(BitRate As UShort, RPM As UShort) As UInteger
             Dim MicrosecondsPerRev As Single = 1 / RPM * 60 * 1000000
             Dim MicrossecondsPerBit As Single = BitRate / 1000
@@ -74,22 +75,6 @@ Namespace Bitstream
             Dim MicrosecondsPerRev As Single = BitCount / (2 * MicrossecondsPerBit)
 
             Return RoundRPM((60 * 1000000) / MicrosecondsPerRev)
-        End Function
-
-        Public Function InferRPM(BitCount As UInteger) As UShort
-            BitCount = Math.Round(BitCount / 10000) * 10000
-
-            If BitCount <= 130000 Then
-                Return 300
-            ElseIf BitCount = 170000 Then
-                Return 360
-            ElseIf BitCount = 200000 Then
-                Return 300
-            ElseIf BitCount = 400000 Then
-                Return 300
-            Else
-                Return 300
-            End If
         End Function
 
         Public Function InferBitRate(BitCount As UInteger) As UShort
@@ -110,6 +95,21 @@ Namespace Bitstream
             End If
         End Function
 
+        Public Function InferRPM(BitCount As UInteger) As UShort
+            BitCount = Math.Round(BitCount / 10000) * 10000
+
+            If BitCount <= 130000 Then
+                Return 300
+            ElseIf BitCount = 170000 Then
+                Return 360
+            ElseIf BitCount = 200000 Then
+                Return 300
+            ElseIf BitCount = 400000 Then
+                Return 300
+            Else
+                Return 300
+            End If
+        End Function
         Public Function InferSectorCount(BitCount As UInteger) As UShort
             BitCount = Math.Round(BitCount / 10000) * 10000
 

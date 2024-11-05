@@ -4,7 +4,7 @@
 
         Private ReadOnly _BPB As BiosParameterBlock
         Private ReadOnly _Disk As Disk
-        Private ReadOnly _Image As ImageByteArray
+        Private ReadOnly _FloppyImage As IFloppyImage
         Private ReadOnly _ParentDirectory As IDirectory
         Private ReadOnly _RootDirectory As RootDirectory
         Private _FatChain As FATChain
@@ -12,13 +12,13 @@
         Private _SubDirectory As SubDirectory
 
         Sub New(RootDirectory As RootDirectory, ParentDirectory As IDirectory, Offset As UInteger, Index As UInteger, EmptyEntry As Boolean)
-            MyBase.New(RootDirectory.Disk.Image.Data, Offset)
+            MyBase.New(RootDirectory.Disk.Image, Offset)
 
             _RootDirectory = RootDirectory
             _ParentDirectory = ParentDirectory
             _Disk = _RootDirectory.Disk
             _BPB = _RootDirectory.Disk.BPB
-            _Image = _RootDirectory.Disk.Image
+            _FloppyImage = _RootDirectory.Disk.Image
             _Index = Index
 
             If Not EmptyEntry Then
@@ -173,7 +173,7 @@
         Public Sub Delete(Clear As Boolean, FillChar As Byte)
             Dim UseTransaction As Boolean = _Disk.BeginTransaction
 
-            _Image.SetBytes(CHAR_DELETED, Offset)
+            _FloppyImage.SetBytes(CHAR_DELETED, Offset)
 
             Dim b(_BPB.BytesPerCluster - 1) As Byte
             If Clear Then
@@ -185,7 +185,7 @@
             For Each Cluster In _FatChain.Clusters
                 If Clear Then
                     Dim Offset = _BPB.ClusterToOffset(Cluster)
-                    _Image.SetBytes(b, Offset)
+                    _FloppyImage.SetBytes(b, Offset)
                 End If
 
                 _Disk.FATTables.UpdateTableEntry(Cluster, FAT12.FAT_FREE_CLUSTER)
@@ -216,14 +216,14 @@
             If IsDeleted() Then
                 ReDim Content(Size - 1)
                 Dim Offset As UInteger = _BPB.ClusterToOffset(StartingCluster)
-                If Offset + Size > _Image.Length Then
-                    Size = Math.Max(_Image.Length - Offset, 0)
+                If Offset + Size > _FloppyImage.Length Then
+                    Size = Math.Max(_FloppyImage.Length - Offset, 0)
                 End If
                 If Size > 0 Then
-                    _Image.CopyTo(Offset, Content, 0, Size)
+                    _FloppyImage.CopyTo(Offset, Content, 0, Size)
                 End If
             Else
-                Content = GetDataFromChain(_Image.Data, ClusterListToSectorList(_BPB, _FatChain.Clusters))
+                Content = GetDataFromChain(_FloppyImage, ClusterListToSectorList(_BPB, _FatChain.Clusters))
 
                 If Content.Length <> Size Then
                     Array.Resize(Of Byte)(Content, Size)
@@ -332,7 +332,7 @@
         Public Sub UnDelete(FirstChar As Byte)
             Dim UseTransaction As Boolean = _Disk.BeginTransaction
 
-            _Image.SetBytes(FirstChar, Offset)
+            _FloppyImage.SetBytes(FirstChar, Offset)
 
             Dim ClusterCount As UShort
 

@@ -204,7 +204,7 @@ Public Class MainForm
     End Sub
 
     Friend Sub ImageFiltersScanModified(Disk As DiskImage.Disk, ImageData As ImageData, Optional UpdateFilters As Boolean = False, Optional Remove As Boolean = False)
-        Dim IsModified As Boolean = Not Remove And (Disk IsNot Nothing AndAlso Disk.Image.Modified)
+        Dim IsModified As Boolean = Not Remove And (Disk IsNot Nothing AndAlso Disk.Image.History.Modified)
 
         ImageFilters.FilterUpdate(ImageData, UpdateFilters, Filters.FilterTypes.ModifiedFiles, IsModified, True)
     End Sub
@@ -1477,11 +1477,11 @@ Public Class MainForm
     Private Sub GenerateTrackLayout()
         If _CurrentImage Is Nothing Then Exit Sub
 
-        If Not _CurrentImage.Disk.Image.Data.IsBitStreamImage Then
+        If Not _CurrentImage.Disk.Image.IsBitstreamImage Then
             Exit Sub
         End If
 
-        Dim BitstreamImage = _CurrentImage.Disk.Image.Data.BitstreamImage
+        Dim BitstreamImage = _CurrentImage.Disk.Image.BitstreamImage
         Dim Gap4A As UShort
         Dim Gap1 As UShort
         Dim Gap3List() As UShort
@@ -1590,7 +1590,7 @@ Public Class MainForm
         End If
 
         Dim FileExt = IO.Path.GetExtension(FilePath)
-        Dim FileFilter = GetSaveDialogFilters(DiskFormat, Disk.Image.Data.ImageType, FileExt)
+        Dim FileFilter = GetSaveDialogFilters(DiskFormat, Disk.Image.ImageType, FileExt)
 
         Dim Dialog = New SaveFileDialog With {
             .InitialDirectory = IO.Path.GetDirectoryName(FilePath),
@@ -1764,15 +1764,15 @@ Public Class MainForm
             Side = 0
             AllTracks = True
         Else
-            Track = TrackIndex \ Disk.Image.Data.SideCount
-            Side = TrackIndex Mod Disk.Image.Data.SideCount
+            Track = TrackIndex \ Disk.Image.SideCount
+            Side = TrackIndex Mod Disk.Image.SideCount
             AllTracks = False
         End If
 
-        Dim Image = Disk.Image.Data.BitstreamImage
+        Dim Image = Disk.Image.BitstreamImage
 
         If Image IsNot Nothing Then
-            Dim frmHexView As New HexViewRawForm(Disk.Image.Data, Track, Side, AllTracks)
+            Dim frmHexView As New HexViewRawForm(Disk.Image, Track, Side, AllTracks)
             frmHexView.ShowDialog()
         End If
     End Sub
@@ -2620,9 +2620,9 @@ Public Class MainForm
             .Items.Clear()
 
             If Disk IsNot Nothing Then
-                .AddItem("CRC32", Disk.Image.Data.GetCRC32, False)
+                .AddItem("CRC32", Disk.Image.GetCRC32, False)
                 .AddItem("MD5", MD5, False)
-                .AddItem("SHA-1", Disk.Image.Data.GetSHA1Hash, False)
+                .AddItem("SHA-1", Disk.Image.GetSHA1Hash, False)
             End If
             .EndUpdate()
             .Refresh()
@@ -2633,7 +2633,7 @@ Public Class MainForm
         Dim MD5 As String = ""
 
         If CurrentImage IsNot Nothing AndAlso CurrentImage.Disk IsNot Nothing Then
-            MD5 = CurrentImage.Disk.Image.Data.GetMD5Hash
+            MD5 = CurrentImage.Disk.Image.GetMD5Hash
         End If
 
         SetCurrentFileName(CurrentImage.ImageData)
@@ -2903,7 +2903,7 @@ Public Class MainForm
     Private Sub RefreshDiskButtons(CurrentImage As CurrentImage)
         If CurrentImage IsNot Nothing AndAlso CurrentImage.Disk IsNot Nothing AndAlso CurrentImage.Disk.IsValidImage Then
             Dim Compare = CurrentImage.Disk.CheckImageSize
-            MenuToolsFixImageSize.Enabled = CurrentImage.Disk.Image.Data.CanResize And Compare <> 0
+            MenuToolsFixImageSize.Enabled = CurrentImage.Disk.Image.CanResize And Compare <> 0
             If CurrentImage.Disk.RootDirectory.Data.HasBootSector Then
                 Dim BootSectorBytes = CurrentImage.Disk.Image.GetBytes(CurrentImage.Disk.RootDirectory.Data.BootSectorOffset, BootSector.BOOT_SECTOR_SIZE)
                 MenuToolsRestoreBootSector.Enabled = Not BootSectorBytes.CompareTo(CurrentImage.Disk.BootSector.Data)
@@ -2934,15 +2934,15 @@ Public Class MainForm
         MenuToolsTruncateImage.Enabled = MenuToolsFixImageSize.Enabled
 
         If CurrentImage IsNot Nothing AndAlso CurrentImage.Disk IsNot Nothing Then
-            MenuEditRevert.Enabled = CurrentImage.Disk.Image.Modified
-            SetButtonStateUndo(CurrentImage.Disk.Image.UndoEnabled)
-            SetButtonStateRedo(CurrentImage.Disk.Image.RedoEnabled)
-            ToolStripStatusModified.Visible = CurrentImage.Disk.Image.Modified
+            MenuEditRevert.Enabled = CurrentImage.Disk.Image.History.Modified
+            SetButtonStateUndo(CurrentImage.Disk.Image.History.UndoEnabled)
+            SetButtonStateRedo(CurrentImage.Disk.Image.History.RedoEnabled)
+            ToolStripStatusModified.Visible = CurrentImage.Disk.Image.History.Modified
             ToolStripStatusReadOnly.Visible = CurrentImage.ImageData.ReadOnly
             ToolStripStatusReadOnly.Text = IIf(CurrentImage.ImageData.Compressed, "Compressed", "Read Only")
             ToolStripStatusCached.Visible = CurrentImage.ImageData.TempPath <> ""
             RefreshRawTrackSubMenu(CurrentImage.Disk)
-            MenuToolsTrackLayout.Visible = My.Settings.Debug AndAlso CurrentImage.Disk.Image.Data.IsBitStreamImage
+            MenuToolsTrackLayout.Visible = My.Settings.Debug AndAlso CurrentImage.Disk.Image.IsBitstreamImage
         Else
             MenuEditRevert.Enabled = False
             SetButtonStateUndo(False)
@@ -3104,7 +3104,7 @@ Public Class MainForm
         Dim EnableSubMenu As Boolean
         Dim EnableRestructureImage As Boolean = False
 
-        If Disk.Image.Data.CanResize Then
+        If Disk.Image.CanResize Then
             Dim DiskFormatBySize = GetFloppyDiskFormat(Disk.Image.Length)
 
             If Disk.DiskFormat = FloppyDiskFormat.Floppy160 And DiskFormatBySize = FloppyDiskFormat.Floppy180 Then
@@ -3148,18 +3148,18 @@ Public Class MainForm
         MenuRawTrackDataSubMenuClear()
         MenuHexRawTrackData.Enabled = False
 
-        If Disk.Image.Data.IsBitStreamImage Then
-            Dim TrackCount = Disk.Image.Data.NonStandardTracks.Count + Disk.Image.Data.AdditionalTracks.Count
+        If Disk.Image.IsBitstreamImage Then
+            Dim TrackCount = Disk.Image.NonStandardTracks.Count + Disk.Image.AdditionalTracks.Count
             If TrackCount > 0 Then
                 Dim TrackList(TrackCount - 1) As UShort
 
                 Dim i As UShort = 0
-                For Each Track In Disk.Image.Data.NonStandardTracks
+                For Each Track In Disk.Image.NonStandardTracks
                     TrackList(i) = Track
                     i += 1
                 Next
 
-                For Each Track In Disk.Image.Data.AdditionalTracks
+                For Each Track In Disk.Image.AdditionalTracks
                     TrackList(i) = Track
                     i += 1
                 Next
@@ -3170,7 +3170,7 @@ Public Class MainForm
 
                 For i = 0 To TrackList.Length - 1
                     Dim Track = TrackList(i)
-                    Dim TrackString = "Track " & (Track \ Disk.Image.Data.SideCount) & "." & (Track Mod Disk.Image.Data.SideCount)
+                    Dim TrackString = "Track " & (Track \ Disk.Image.SideCount) & "." & (Track Mod Disk.Image.SideCount)
                     MenuRawTrackDataSubMenuItemAdd(Track, TrackString)
                 Next
 
@@ -3263,7 +3263,7 @@ Public Class MainForm
         InitButtonState(Nothing)
     End Sub
     Private Sub RevertChanges(CurrentImage As CurrentImage)
-        If CurrentImage.Disk.Image.Modified Then
+        If CurrentImage.Disk.Image.History.Modified Then
             ReloadCurrentImage(True)
         End If
     End Sub
@@ -3806,7 +3806,7 @@ Public Class MainForm
     End Sub
 
     Private Sub BtnRedo_Click(sender As Object, e As EventArgs) Handles MenuEditRedo.Click, ToolStripRedo.Click
-        _CurrentImage.Disk.Image.Redo()
+        _CurrentImage.Disk.Image.History.Redo()
         DiskImageRefresh(_CurrentImage)
     End Sub
 
@@ -3872,7 +3872,7 @@ Public Class MainForm
     End Sub
 
     Private Sub BtnUndo_Click(sender As Object, e As EventArgs) Handles MenuEditUndo.Click, ToolStripUndo.Click
-        _CurrentImage.Disk.Image.Undo()
+        _CurrentImage.Disk.Image.History.Undo()
         DiskImageRefresh(_CurrentImage)
     End Sub
 

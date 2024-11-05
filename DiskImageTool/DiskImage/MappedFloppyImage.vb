@@ -1,8 +1,8 @@
-﻿Imports DiskImageTool.DiskImage
+﻿Imports DiskImageTool.Bitstream
 
-Namespace Bitstream
-    Public MustInherit Class BitstreamByteArray
-        Implements IByteArray
+Namespace DiskImage
+    Public MustInherit Class MappedFloppyImage
+        Implements IFloppyImage
 
         Friend Const SECTOR_COUNT As Byte = 36
         Private ReadOnly _AdditionalTracks As HashSet(Of UShort)
@@ -10,17 +10,17 @@ Namespace Bitstream
         Private ReadOnly _Image As IBitstreamImage
         Private ReadOnly _NonStandardTracks As HashSet(Of UShort)
         Private ReadOnly _ProtectedSectors As HashSet(Of UInteger)
+        Private ReadOnly _History As FloppyImageHistory
         Private _BPB As BiosParameterBlock
-        Private _SideCount As Byte
         Private _ImageSize As Integer
         Private _Sectors() As BitstreamSector
+        Private _SideCount As Byte
         Private _TrackCount As UShort
         Private _Tracks() As TrackData
-        Public Event DataChanged As DataChangedEventHandler Implements IByteArray.DataChanged
-        Public Event SizeChanged As SizeChangedEventHandler Implements IByteArray.SizeChanged
 
         Public Sub New(Image As IBitstreamImage)
             _Image = Image
+            _History = New FloppyImageHistory(Me)
             _ProtectedSectors = New HashSet(Of UInteger)
             _AdditionalTracks = New HashSet(Of UShort)
             _NonStandardTracks = New HashSet(Of UShort)
@@ -31,51 +31,51 @@ Namespace Bitstream
             End If
         End Sub
 
-        Public ReadOnly Property AdditionalTracks As HashSet(Of UShort) Implements IByteArray.AdditionalTracks
+        Public ReadOnly Property AdditionalTracks As HashSet(Of UShort) Implements IFloppyImage.AdditionalTracks
             Get
                 Return _AdditionalTracks
             End Get
         End Property
 
-        Public ReadOnly Property BitStreamImage As IBitstreamImage Implements IByteArray.BitstreamImage
+        Public ReadOnly Property BitStreamImage As IBitstreamImage Implements IFloppyImage.BitstreamImage
             Get
                 Return _Image
             End Get
         End Property
 
-        Public ReadOnly Property CanResize As Boolean Implements IByteArray.CanResize
+        Public ReadOnly Property CanResize As Boolean Implements IFloppyImage.CanResize
             Get
                 Return False
             End Get
         End Property
 
-        Public ReadOnly Property SideCount As Byte Implements IByteArray.SideCount
+        Public ReadOnly Property History As FloppyImageHistory Implements IFloppyImage.History
             Get
-                Return _SideCount
+                Return _History
             End Get
         End Property
 
-        Public MustOverride ReadOnly Property ImageType As FloppyImageType Implements IByteArray.ImageType
+        Public MustOverride ReadOnly Property ImageType As FloppyImageType Implements IFloppyImage.ImageType
 
-        Public ReadOnly Property IsBitStreamImage As Boolean Implements IByteArray.IsBitStreamImage
+        Public ReadOnly Property IsBitstreamImage As Boolean Implements IFloppyImage.IsBitstreamImage
             Get
                 Return _Image IsNot Nothing
             End Get
         End Property
 
-        Public ReadOnly Property Length As Integer Implements IByteArray.Length
+        Public ReadOnly Property Length As Integer Implements IFloppyImage.Length
             Get
                 Return _ImageSize
             End Get
         End Property
 
-        Public ReadOnly Property NonStandardTracks As HashSet(Of UShort) Implements IByteArray.NonStandardTracks
+        Public ReadOnly Property NonStandardTracks As HashSet(Of UShort) Implements IFloppyImage.NonStandardTracks
             Get
                 Return _NonStandardTracks
             End Get
         End Property
 
-        Public ReadOnly Property ProtectedSectors As HashSet(Of UInteger) Implements IByteArray.ProtectedSectors
+        Public ReadOnly Property ProtectedSectors As HashSet(Of UInteger) Implements IFloppyImage.ProtectedSectors
             Get
                 Return _ProtectedSectors
             End Get
@@ -87,17 +87,22 @@ Namespace Bitstream
             End Get
         End Property
 
-        Public ReadOnly Property TrackCount As UShort Implements IByteArray.TrackCount
+        Public ReadOnly Property SideCount As Byte Implements IFloppyImage.SideCount
+            Get
+                Return _SideCount
+            End Get
+        End Property
+        Public ReadOnly Property TrackCount As UShort Implements IFloppyImage.TrackCount
             Get
                 Return _TrackCount
             End Get
         End Property
 
-        Public Sub Append(Data() As Byte) Implements IByteArray.Append
+        Public Sub Append(Data() As Byte) Implements IFloppyImage.Append
             ' Unsupported - Do Nothing
         End Sub
 
-        Public Sub CopyTo(SourceIndex As Integer, ByRef DestinationArray() As Byte, DestinationIndex As Integer, Length As Integer) Implements IByteArray.CopyTo
+        Public Sub CopyTo(SourceIndex As Integer, ByRef DestinationArray() As Byte, DestinationIndex As Integer, Length As Integer) Implements IFloppyImage.CopyTo
 
             Do While Length > 0
                 Dim MappedData = GetMappedData(SourceIndex)
@@ -109,22 +114,21 @@ Namespace Bitstream
             Loop
         End Sub
 
-        Public Sub CopyTo(DestinationArray() As Byte, Index As Integer) Implements IByteArray.CopyTo
+        Public Sub CopyTo(DestinationArray() As Byte, Index As Integer) Implements IFloppyImage.CopyTo
             CopyTo(0, DestinationArray, 0, _ImageSize)
         End Sub
 
-        Public Function GetByte(Offset As UInteger) As Byte Implements IByteArray.GetByte
+        Public Function GetByte(Offset As UInteger) As Byte Implements IFloppyImage.GetByte
             Dim MappedData = GetMappedData(Offset)
 
             Return MappedData.Data(MappedData.Offset)
         End Function
 
-        Public Function GetBytes() As Byte() Implements IByteArray.GetBytes
+        Public Function GetBytes() As Byte() Implements IFloppyImage.GetBytes
             Return GetBytes(0, _ImageSize)
         End Function
 
-        Public Function GetBytes(Offset As UInteger, Size As UInteger) As Byte() Implements IByteArray.GetBytes
-
+        Public Function GetBytes(Offset As UInteger, Size As UInteger) As Byte() Implements IFloppyImage.GetBytes
             Dim temp(Size - 1) As Byte
             Dim Index As Long = 0
             Do While Size > 0
@@ -139,33 +143,78 @@ Namespace Bitstream
             Return temp
         End Function
 
-        Public Function GetBytesInteger(Offset As UInteger) As UInteger Implements IByteArray.GetBytesInteger
+        Public Function GetBytesInteger(Offset As UInteger) As UInteger Implements IFloppyImage.GetBytesInteger
             Dim MappedData = GetMappedData(Offset)
 
             Return BitConverter.ToUInt32(MappedData.Data, MappedData.Offset)
         End Function
 
-        Public Function GetBytesShort(Offset As UInteger) As UShort Implements IByteArray.GetBytesShort
+        Public Function GetBytesShort(Offset As UInteger) As UShort Implements IFloppyImage.GetBytesShort
             Dim MappedData = GetMappedData(Offset)
 
             Return BitConverter.ToUInt16(MappedData.Data, MappedData.Offset)
         End Function
 
-        Public MustOverride Function GetCRC32() As String Implements IByteArray.GetCRC32
+        Public MustOverride Function GetCRC32() As String Implements IFloppyImage.GetCRC32
 
-        Public MustOverride Function GetMD5Hash() As String Implements IByteArray.GetMD5Hash
+        Public MustOverride Function GetMD5Hash() As String Implements IFloppyImage.GetMD5Hash
 
-        Public MustOverride Function GetSHA1Hash() As String Implements IByteArray.GetSHA1Hash
+        Public Function GetSector(Track As UShort, Head As Byte, SectorId As Byte) As BitstreamSector
+            If Track > _TrackCount - 1 Or Head > _SideCount - 1 Or SectorId > SECTOR_COUNT Then
+                Throw New System.IndexOutOfRangeException
+            End If
 
-        Public Function Resize(Length As Integer) As Boolean Implements IByteArray.Resize
+            Dim Index = Track * _SideCount * SECTOR_COUNT + SECTOR_COUNT * Head + (SectorId - 1)
+
+            Return _Sectors(Index)
+        End Function
+
+        Public Function GetSectorFromParams(Track As UShort, Side As Byte, SectorId As UShort) As UInteger
+            Dim Offset As UInteger = Track * _BPB.NumberOfHeads * _BPB.SectorsPerTrack + _BPB.SectorsPerTrack * Side + (SectorId - 1)
+
+            Return Offset
+        End Function
+
+        Public MustOverride Function GetSHA1Hash() As String Implements IFloppyImage.GetSHA1Hash
+
+        Public Function GetTrack(Track As UShort, Head As Byte) As TrackData
+            If Track > _TrackCount - 1 Or Head > _SideCount - 1 Then
+                Return Nothing
+            End If
+
+            Dim Index = Track * _SideCount + Head
+
+            Return _Tracks(Index)
+        End Function
+
+        Public Sub InitDiskFormat(DiskFormat As FloppyDiskFormat)
+            InferFloppyDiskFormat(DiskFormat)
+            InitProtectedSectors()
+        End Sub
+
+        Public Function Resize(Length As Integer) As Boolean Implements IFloppyImage.Resize
             Return False
         End Function
 
-        Public Function SaveToFile(FilePath As String) As Boolean Implements IByteArray.SaveToFile
+        Public Function SaveToFile(FilePath As String) As Boolean Implements IFloppyImage.SaveToFile
             Return _Image.Export(FilePath)
         End Function
 
-        Public Function SetBytes(Value As UShort, Offset As UInteger) As Boolean Implements IByteArray.SetBytes
+        Public Function SetBytes(Value As Object, Offset As UInteger) As Boolean Implements IFloppyImage.SetBytes
+            If TypeOf Value Is UShort Then
+                Return SetBytes(DirectCast(Value, UShort), Offset)
+            ElseIf TypeOf Value Is UInteger Then
+                Return SetBytes(DirectCast(Value, UInteger), Offset)
+            ElseIf TypeOf Value Is Byte Then
+                Return SetBytes(DirectCast(Value, Byte), Offset)
+            ElseIf TypeOf Value Is Byte() Then
+                Return SetBytes(DirectCast(Value, Byte()), Offset)
+            Else
+                Return False
+            End If
+        End Function
+
+        Public Function SetBytes(Value As UShort, Offset As UInteger) As Boolean Implements IFloppyImage.SetBytes
             Dim MappedData = GetMappedData(Offset)
 
             If Not MappedData.CanWrite Then
@@ -180,14 +229,16 @@ Namespace Bitstream
                     Array.Copy(BitConverter.GetBytes(Value), 0, MappedData.Data, MappedData.Offset, 2)
                     MappedData.MFMSector?.UpdateBitstream()
                     Result = True
-                    RaiseEvent DataChanged(Offset, CurrentValue, Value)
+                    If _History.Enabled Then
+                        _History.AddDataChange(Offset, CurrentValue, Value)
+                    End If
                 End If
             End If
 
             Return Result
         End Function
 
-        Public Function SetBytes(Value As UInteger, Offset As UInteger) As Boolean Implements IByteArray.SetBytes
+        Public Function SetBytes(Value As UInteger, Offset As UInteger) As Boolean Implements IFloppyImage.SetBytes
             Dim MappedData = GetMappedData(Offset)
 
             If Not MappedData.CanWrite Then
@@ -202,14 +253,16 @@ Namespace Bitstream
                     Array.Copy(BitConverter.GetBytes(Value), 0, MappedData.Data, MappedData.Offset, 4)
                     MappedData.MFMSector?.UpdateBitstream()
                     Result = True
-                    RaiseEvent DataChanged(Offset, CurrentValue, Value)
+                    If _History.Enabled Then
+                        _History.AddDataChange(Offset, CurrentValue, Value)
+                    End If
                 End If
             End If
 
             Return Result
         End Function
 
-        Public Function SetBytes(Value As Byte, Offset As UInteger) As Boolean Implements IByteArray.SetBytes
+        Public Function SetBytes(Value As Byte, Offset As UInteger) As Boolean Implements IFloppyImage.SetBytes
             Dim MappedData = GetMappedData(Offset)
 
             If Not MappedData.CanWrite Then
@@ -224,18 +277,20 @@ Namespace Bitstream
                     MappedData.Data(MappedData.Offset) = Value
                     MappedData.MFMSector?.UpdateBitstream()
                     Result = True
-                    RaiseEvent DataChanged(Offset, CurrentValue, Value)
+                    If _History.Enabled Then
+                        _History.AddDataChange(Offset, CurrentValue, Value)
+                    End If
                 End If
             End If
 
             Return Result
         End Function
 
-        Public Function SetBytes(Value() As Byte, Offset As UInteger) As Boolean Implements IByteArray.SetBytes
+        Public Function SetBytes(Value() As Byte, Offset As UInteger) As Boolean Implements IFloppyImage.SetBytes
             Return SetBytes(Value, Offset, Value.Length, 0)
         End Function
 
-        Public Function SetBytes(Value() As Byte, Offset As UInteger, Size As UInteger, Padding As Byte) As Boolean Implements IByteArray.SetBytes
+        Public Function SetBytes(Value() As Byte, Offset As UInteger, Size As UInteger, Padding As Byte) As Boolean Implements IFloppyImage.SetBytes
             Dim Result As Boolean = False
 
             If Offset + Size > _ImageSize Then
@@ -270,7 +325,9 @@ Namespace Bitstream
                     Loop
 
                     If Result Then
-                        RaiseEvent DataChanged(Offset, CurrentValue, Value)
+                        If _History.Enabled Then
+                            _History.AddDataChange(Offset, CurrentValue, Value)
+                        End If
                     End If
                 End If
             End If
@@ -278,47 +335,7 @@ Namespace Bitstream
             Return Result
         End Function
 
-        Public Function ToUInt16(StartIndex As Integer) As UShort Implements IByteArray.ToUInt16
-            Dim MappedData = GetMappedData(StartIndex)
-
-            Return BitConverter.ToUInt16(MappedData.Data, MappedData.Offset)
-        End Function
-
-        Friend Function GetSector(Track As UShort, Head As Byte, SectorId As Byte) As BitstreamSector
-            If Track > _TrackCount - 1 Or Head > _SideCount - 1 Or SectorId > SECTOR_COUNT Then
-                Throw New System.IndexOutOfRangeException
-            End If
-
-            Dim Index = Track * _SideCount * SECTOR_COUNT + SECTOR_COUNT * Head + (SectorId - 1)
-
-            Return _Sectors(Index)
-        End Function
-
-        Friend Function GetSectorFromParams(Track As UShort, Side As Byte, SectorId As UShort) As UInteger
-            Dim Offset As UInteger = Track * _BPB.NumberOfHeads * _BPB.SectorsPerTrack + _BPB.SectorsPerTrack * Side + (SectorId - 1)
-
-            Return Offset
-        End Function
-
-        Friend Function GetTrack(Track As UShort, Head As Byte) As TrackData
-            If Track > _TrackCount - 1 Or Head > _SideCount - 1 Then
-                Return Nothing
-            End If
-
-            Dim Index = Track * _SideCount + Head
-
-            Return _Tracks(Index)
-        End Function
-
-        Friend Sub InitDiskFormat(DiskFormat As FloppyDiskFormat)
-            InferFloppyDiskFormat(DiskFormat)
-
-            'If _DiskFormat <> FloppyDiskFormat.FloppyUnknown Then
-            InitProtectedSectors()
-            'End If
-        End Sub
-
-        Friend Sub SetSector(Track As UShort, Head As Byte, SectorId As Byte, Value As BitstreamSector)
+        Public Sub SetSector(Track As UShort, Head As Byte, SectorId As Byte, Value As BitstreamSector)
             If Track > _TrackCount - 1 Or Head > _SideCount - 1 Or SectorId > SECTOR_COUNT Then
                 Throw New System.IndexOutOfRangeException
             End If
@@ -328,30 +345,7 @@ Namespace Bitstream
             _Sectors(Index) = Value
         End Sub
 
-        Friend Function SetTrack(Track As UShort, Head As Byte, MFMData As IBM_MFM.IBM_MFM_Track, Encoding As BitstreamTrackType) As TrackData
-            If Track > _TrackCount - 1 Or Head > _SideCount - 1 Then
-                Throw New System.IndexOutOfRangeException
-            End If
-
-            Dim Index = Track * _SideCount + Head
-
-            Dim TrackData As New TrackData With {
-                .Encoding = Encoding
-            }
-            If MFMData IsNot Nothing Then
-                TrackData.FirstSector = MFMData.FirstSector
-                TrackData.LastSector = MFMData.LastSector
-                TrackData.SectorSize = MFMData.SectorSize
-                TrackData.DuplicateSectors = MFMData.DuplicateSectors
-                TrackData.OverlappingSectors = MFMData.OverlappingSectors
-            End If
-
-            _Tracks(Index) = TrackData
-
-            Return TrackData
-        End Function
-
-        Friend Function SetTrack(Track As UShort, Head As Byte) As TrackData
+        Public Function SetTrack(Track As UShort, Head As Byte) As TrackData
             If Track > _TrackCount - 1 Or Head > _SideCount - 1 Then
                 Throw New System.IndexOutOfRangeException
             End If
@@ -365,13 +359,19 @@ Namespace Bitstream
             Return TrackData
         End Function
 
-        Friend Sub SetTracks(TrackCount As UShort, HeadCount As Byte)
+        Public Sub SetTracks(TrackCount As UShort, HeadCount As Byte)
             _TrackCount = TrackCount
             _SideCount = HeadCount
 
             _Sectors = New BitstreamSector(_TrackCount * _SideCount * SECTOR_COUNT - 1) {}
             _Tracks = New TrackData(_TrackCount * _SideCount - 1) {}
         End Sub
+
+        Public Function ToUInt16(StartIndex As Integer) As UShort Implements IFloppyImage.ToUInt16
+            Dim MappedData = GetMappedData(StartIndex)
+
+            Return BitConverter.ToUInt16(MappedData.Data, MappedData.Offset)
+        End Function
 
         Private Sub BuildSectorMap()
             Dim BitstreamTrack As IBitstreamTrack
@@ -564,7 +564,28 @@ Namespace Bitstream
             Return Sector Mod _BPB.SectorsPerTrack
         End Function
 
-        Friend Class TrackData
+        Private Sub SetTrack(Track As UShort, Head As Byte, MFMData As IBM_MFM.IBM_MFM_Track, Encoding As BitstreamTrackType)
+            If Track > _TrackCount - 1 Or Head > _SideCount - 1 Then
+                Throw New System.IndexOutOfRangeException
+            End If
+
+            Dim Index = Track * _SideCount + Head
+
+            Dim TrackData As New TrackData With {
+                .Encoding = Encoding
+            }
+            If MFMData IsNot Nothing Then
+                TrackData.FirstSector = MFMData.FirstSector
+                TrackData.LastSector = MFMData.LastSector
+                TrackData.SectorSize = MFMData.SectorSize
+                TrackData.DuplicateSectors = MFMData.DuplicateSectors
+                TrackData.OverlappingSectors = MFMData.OverlappingSectors
+            End If
+
+            _Tracks(Index) = TrackData
+        End Sub
+
+        Public Class TrackData
             Public Sub New()
                 _DuplicateSectors = False
                 _FirstSector = -1

@@ -61,7 +61,7 @@
                 For Entry As UInteger = 0 To EntryCount - 1
                     Dim Offset = OffsetStart + (Entry * DirectoryEntry.DIRECTORY_ENTRY_SIZE)
 
-                    Buffer = RootDirectory.Disk.Image.Data.GetBytes(Offset, 11)
+                    Buffer = RootDirectory.Disk.Image.GetBytes(Offset, 11)
                     If Buffer(0) = 0 Then
                         ParentDirectory.Data.EndOfDirectory = True
                     End If
@@ -69,7 +69,7 @@
                     If Not ParentDirectory.Data.HasBootSector And CheckBootSector Then
                         If BootSector.ValidJumpInstructuon.Contains(Buffer(0)) Then
                             If OffsetEnd - Offset >= BootSector.BOOT_SECTOR_SIZE Then
-                                Dim BootSectorData = RootDirectory.Disk.Image.Data.GetBytes(Offset, DiskImage.BootSector.BOOT_SECTOR_SIZE)
+                                Dim BootSectorData = RootDirectory.Disk.Image.GetBytes(Offset, DiskImage.BootSector.BOOT_SECTOR_SIZE)
                                 Dim BootSector = New BootSector(BootSectorData)
                                 If BootSector.BPB.IsValid Then
                                     ParentDirectory.Data.HasBootSector = True
@@ -84,7 +84,7 @@
                         ParentDirectory.Data.AvailableEntryCount += 1
                         If Not ParentDirectory.Data.HasAdditionalData Then
                             If Not ParentDirectory.Data.HasBootSector Or Offset < ParentDirectory.Data.BootSectorOffset Or Offset > ParentDirectory.Data.BootSectorOffset + DiskImage.BootSector.BOOT_SECTOR_SIZE Then
-                                If DirectoryEntryHasData(RootDirectory.Disk.Image.Data, Offset) Then
+                                If DirectoryEntryHasData(RootDirectory.Disk.Image, Offset) Then
                                     ParentDirectory.Data.HasAdditionalData = True
                                 End If
                             End If
@@ -96,8 +96,8 @@
                         Else
                             ParentDirectory.Data.AvailableEntryCount = 0
                         End If
-                        If RootDirectory.Disk.Image.Data.GetByte(Offset + 11) <> &HF Then 'Exclude LFN entries
-                            Dim FilePart = RootDirectory.Disk.Image.Data.ToUInt16(Offset)
+                        If RootDirectory.Disk.Image.GetByte(Offset + 11) <> &HF Then 'Exclude LFN entries
+                            Dim FilePart = RootDirectory.Disk.Image.ToUInt16(Offset)
                             If FilePart <> &H202E And FilePart <> &H2E2E Then 'Exclude '.' and '..' entries
                                 ParentDirectory.Data.FileCount += 1
                                 If Buffer(0) = DirectoryEntry.CHAR_DELETED Then

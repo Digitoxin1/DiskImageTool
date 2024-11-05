@@ -149,7 +149,7 @@
         End Sub
 
         Public Overrides Function GetContent() As Byte() Implements IDirectory.GetContent
-            Return GetDataFromChain(Disk.Image.Data, SectorChain)
+            Return GetDataFromChain(Disk.Image, SectorChain)
         End Function
 
         Public Sub Initialize()

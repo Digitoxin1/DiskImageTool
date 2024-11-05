@@ -12,7 +12,7 @@ Namespace DiskImage
         Private Const CHAR_EMPTY As Byte = &H0
         Private Const CHAR_SPACE As Byte = &H20
 
-        Private ReadOnly _FileBytes As IByteArray
+        Private ReadOnly _FloppyImage As IFloppyImage
 
         Private _CreationDateCache As ExpandedDate
         Private _CreationDateIsCached As Boolean = False
@@ -99,26 +99,26 @@ Namespace DiskImage
 
         Sub New()
             Dim Data = FillArray(DIRECTORY_ENTRY_SIZE, 0)
-            _FileBytes = New ByteArray(Data)
+            _FloppyImage = New BasicSectorImage(Data)
             _Offset = 0
         End Sub
 
         Sub New(Data() As Byte)
-            _FileBytes = New ByteArray(Data)
+            _FloppyImage = New BasicSectorImage(Data)
             _Offset = 0
         End Sub
 
-        Sub New(FileBytes As IByteArray, Offset As UInteger)
-            _FileBytes = FileBytes
+        Sub New(FloppyImage As IFloppyImage, Offset As UInteger)
+            _FloppyImage = FloppyImage
             _Offset = Offset
         End Sub
 
         Public Property Attributes() As Byte
             Get
-                Return _FileBytes.GetByte(_Offset + DirectoryEntryOffsets.Attributes)
+                Return _FloppyImage.GetByte(_Offset + DirectoryEntryOffsets.Attributes)
             End Get
             Set
-                If _FileBytes.SetBytes(Value, _Offset + DirectoryEntryOffsets.Attributes) Then
+                If _FloppyImage.SetBytes(Value, _Offset + DirectoryEntryOffsets.Attributes) Then
                     _IsBlankCache = Nothing
                 End If
             End Set
@@ -126,10 +126,10 @@ Namespace DiskImage
 
         Public Property CreationDate() As UShort
             Get
-                Return _FileBytes.GetBytesShort(_Offset + DirectoryEntryOffsets.CreationDate)
+                Return _FloppyImage.GetBytesShort(_Offset + DirectoryEntryOffsets.CreationDate)
             End Get
             Set
-                If _FileBytes.SetBytes(Value, _Offset + DirectoryEntryOffsets.CreationDate) Then
+                If _FloppyImage.SetBytes(Value, _Offset + DirectoryEntryOffsets.CreationDate) Then
                     _IsBlankCache = Nothing
                     _CreationDateIsCached = False
                 End If
@@ -138,10 +138,10 @@ Namespace DiskImage
 
         Public Property CreationMillisecond() As Byte
             Get
-                Return _FileBytes.GetByte(_Offset + DirectoryEntryOffsets.CreationMillisecond)
+                Return _FloppyImage.GetByte(_Offset + DirectoryEntryOffsets.CreationMillisecond)
             End Get
             Set
-                If _FileBytes.SetBytes(Value, _Offset + DirectoryEntryOffsets.CreationMillisecond) Then
+                If _FloppyImage.SetBytes(Value, _Offset + DirectoryEntryOffsets.CreationMillisecond) Then
                     _IsBlankCache = Nothing
                     _CreationDateIsCached = False
                 End If
@@ -150,10 +150,10 @@ Namespace DiskImage
 
         Public Property CreationTime() As UShort
             Get
-                Return _FileBytes.GetBytesShort(_Offset + DirectoryEntryOffsets.CreationTime)
+                Return _FloppyImage.GetBytesShort(_Offset + DirectoryEntryOffsets.CreationTime)
             End Get
             Set
-                If _FileBytes.SetBytes(Value, _Offset + DirectoryEntryOffsets.CreationTime) Then
+                If _FloppyImage.SetBytes(Value, _Offset + DirectoryEntryOffsets.CreationTime) Then
                     _IsBlankCache = Nothing
                     _CreationDateIsCached = False
                 End If
@@ -162,10 +162,10 @@ Namespace DiskImage
 
         Public Property Data As Byte()
             Get
-                Return _FileBytes.GetBytes(_Offset, DIRECTORY_ENTRY_SIZE)
+                Return _FloppyImage.GetBytes(_Offset, DIRECTORY_ENTRY_SIZE)
             End Get
             Set(value As Byte())
-                If _FileBytes.SetBytes(value, _Offset, DIRECTORY_ENTRY_SIZE, 0) Then
+                If _FloppyImage.SetBytes(value, _Offset, DIRECTORY_ENTRY_SIZE, 0) Then
                     ClearCache()
                 End If
             End Set
@@ -173,10 +173,10 @@ Namespace DiskImage
 
         Public Property Extension() As Byte()
             Get
-                Return _FileBytes.GetBytes(_Offset + DirectoryEntryOffsets.Extension, DirectoryEntrySizes.Extension)
+                Return _FloppyImage.GetBytes(_Offset + DirectoryEntryOffsets.Extension, DirectoryEntrySizes.Extension)
             End Get
             Set
-                If _FileBytes.SetBytes(Value, _Offset + DirectoryEntryOffsets.Extension, DirectoryEntrySizes.Extension, CHAR_SPACE) Then
+                If _FloppyImage.SetBytes(Value, _Offset + DirectoryEntryOffsets.Extension, DirectoryEntrySizes.Extension, CHAR_SPACE) Then
                     _IsBlankCache = Nothing
                     _VolumeNameIsCached = False
                     _HasInvalidExtensionCache = Nothing
@@ -186,10 +186,10 @@ Namespace DiskImage
 
         Public Property FileName() As Byte()
             Get
-                Return _FileBytes.GetBytes(_Offset + DirectoryEntryOffsets.FileName, DirectoryEntrySizes.FileName)
+                Return _FloppyImage.GetBytes(_Offset + DirectoryEntryOffsets.FileName, DirectoryEntrySizes.FileName)
             End Get
             Set
-                If _FileBytes.SetBytes(Value, _Offset + DirectoryEntryOffsets.FileName, DirectoryEntrySizes.FileName, CHAR_SPACE) Then
+                If _FloppyImage.SetBytes(Value, _Offset + DirectoryEntryOffsets.FileName, DirectoryEntrySizes.FileName, CHAR_SPACE) Then
                     _IsBlankCache = Nothing
                     _VolumeNameIsCached = False
                     _HasInvalidFileNameCache = Nothing
@@ -199,10 +199,10 @@ Namespace DiskImage
 
         Public Property FileNameWithExtension() As Byte()
             Get
-                Return _FileBytes.GetBytes(_Offset + DirectoryEntryOffsets.FileName, DirectoryEntrySizes.FileName + DirectoryEntrySizes.Extension)
+                Return _FloppyImage.GetBytes(_Offset + DirectoryEntryOffsets.FileName, DirectoryEntrySizes.FileName + DirectoryEntrySizes.Extension)
             End Get
             Set
-                If _FileBytes.SetBytes(Value, _Offset + DirectoryEntryOffsets.FileName, DirectoryEntrySizes.FileName + DirectoryEntrySizes.Extension, CHAR_SPACE) Then
+                If _FloppyImage.SetBytes(Value, _Offset + DirectoryEntryOffsets.FileName, DirectoryEntrySizes.FileName + DirectoryEntrySizes.Extension, CHAR_SPACE) Then
                     _IsBlankCache = Nothing
                     _VolumeNameIsCached = False
                     _HasInvalidFileNameCache = Nothing
@@ -212,10 +212,10 @@ Namespace DiskImage
 
         Public Property FileSize() As UInteger
             Get
-                Return _FileBytes.GetBytesInteger(_Offset + DirectoryEntryOffsets.FileSize)
+                Return _FloppyImage.GetBytesInteger(_Offset + DirectoryEntryOffsets.FileSize)
             End Get
             Set
-                If _FileBytes.SetBytes(Value, _Offset + DirectoryEntryOffsets.FileSize) Then
+                If _FloppyImage.SetBytes(Value, _Offset + DirectoryEntryOffsets.FileSize) Then
                     _IsBlankCache = Nothing
                 End If
             End Set
@@ -301,10 +301,10 @@ Namespace DiskImage
 
         Public Property LastAccessDate() As UShort
             Get
-                Return _FileBytes.GetBytesShort(_Offset + DirectoryEntryOffsets.LastAccessDate)
+                Return _FloppyImage.GetBytesShort(_Offset + DirectoryEntryOffsets.LastAccessDate)
             End Get
             Set
-                If _FileBytes.SetBytes(Value, _Offset + DirectoryEntryOffsets.LastAccessDate) Then
+                If _FloppyImage.SetBytes(Value, _Offset + DirectoryEntryOffsets.LastAccessDate) Then
                     _IsBlankCache = Nothing
                     _LastAccessDateIsCached = False
                 End If
@@ -313,10 +313,10 @@ Namespace DiskImage
 
         Public Property LastWriteDate() As UShort
             Get
-                Return _FileBytes.GetBytesShort(_Offset + DirectoryEntryOffsets.LastWriteDate)
+                Return _FloppyImage.GetBytesShort(_Offset + DirectoryEntryOffsets.LastWriteDate)
             End Get
             Set
-                If _FileBytes.SetBytes(Value, _Offset + DirectoryEntryOffsets.LastWriteDate) Then
+                If _FloppyImage.SetBytes(Value, _Offset + DirectoryEntryOffsets.LastWriteDate) Then
                     _IsBlankCache = Nothing
                     _LastWriteDateIsCached = False
                 End If
@@ -325,10 +325,10 @@ Namespace DiskImage
 
         Public Property LastWriteTime() As UShort
             Get
-                Return _FileBytes.GetBytesShort(_Offset + DirectoryEntryOffsets.LastWriteTime)
+                Return _FloppyImage.GetBytesShort(_Offset + DirectoryEntryOffsets.LastWriteTime)
             End Get
             Set
-                If _FileBytes.SetBytes(Value, _Offset + DirectoryEntryOffsets.LastWriteTime) Then
+                If _FloppyImage.SetBytes(Value, _Offset + DirectoryEntryOffsets.LastWriteTime) Then
                     _IsBlankCache = Nothing
                     _LastWriteDateIsCached = False
                 End If
@@ -337,7 +337,7 @@ Namespace DiskImage
 
         Public ReadOnly Property LFNSequence As Byte
             Get
-                Return _FileBytes.GetByte(_Offset + LFNOffsets.Sequence)
+                Return _FloppyImage.GetByte(_Offset + LFNOffsets.Sequence)
             End Get
         End Property
 
@@ -356,10 +356,10 @@ Namespace DiskImage
 
         Public Property ReservedForFAT32() As UShort
             Get
-                Return _FileBytes.GetBytesShort(_Offset + DirectoryEntryOffsets.ReservedForFAT32)
+                Return _FloppyImage.GetBytesShort(_Offset + DirectoryEntryOffsets.ReservedForFAT32)
             End Get
             Set
-                If _FileBytes.SetBytes(Value, _Offset + DirectoryEntryOffsets.ReservedForFAT32) Then
+                If _FloppyImage.SetBytes(Value, _Offset + DirectoryEntryOffsets.ReservedForFAT32) Then
                     _IsBlankCache = Nothing
                 End If
             End Set
@@ -367,10 +367,10 @@ Namespace DiskImage
 
         Public Property ReservedForWinNT() As Byte
             Get
-                Return _FileBytes.GetByte(_Offset + DirectoryEntryOffsets.ReservedForWinNT)
+                Return _FloppyImage.GetByte(_Offset + DirectoryEntryOffsets.ReservedForWinNT)
             End Get
             Set
-                If _FileBytes.SetBytes(Value, _Offset + DirectoryEntryOffsets.ReservedForWinNT) Then
+                If _FloppyImage.SetBytes(Value, _Offset + DirectoryEntryOffsets.ReservedForWinNT) Then
                     _IsBlankCache = Nothing
                 End If
             End Set
@@ -378,10 +378,10 @@ Namespace DiskImage
 
         Public Property StartingCluster() As UShort
             Get
-                Return _FileBytes.GetBytesShort(_Offset + DirectoryEntryOffsets.StartingCluster)
+                Return _FloppyImage.GetBytesShort(_Offset + DirectoryEntryOffsets.StartingCluster)
             End Get
             Set
-                If _FileBytes.SetBytes(Value, _Offset + DirectoryEntryOffsets.StartingCluster) Then
+                If _FloppyImage.SetBytes(Value, _Offset + DirectoryEntryOffsets.StartingCluster) Then
                     _IsBlankCache = Nothing
                 End If
             End Set
@@ -404,7 +404,7 @@ Namespace DiskImage
                 Next
             End If
 
-            If _FileBytes.SetBytes(b, _Offset) Then
+            If _FloppyImage.SetBytes(b, _Offset) Then
                 ClearCache()
             End If
         End Sub
@@ -483,7 +483,7 @@ Namespace DiskImage
         End Function
 
         Public Function GetLFNChecksum() As Byte
-            Dim pFcbName = _FileBytes.GetBytes(_Offset + DirectoryEntryOffsets.FileName, DirectoryEntrySizes.FileNameAndExtension)
+            Dim pFcbName = _FloppyImage.GetBytes(_Offset + DirectoryEntryOffsets.FileName, DirectoryEntrySizes.FileNameAndExtension)
 
             Dim Sum As Byte = 0
 
@@ -499,9 +499,9 @@ Namespace DiskImage
                 Dim Size As Integer = LFNSizes.FilePart1 + LFNSizes.FilePart2 + LFNSizes.FilePart3
                 Dim LFN(Size - 1) As Byte
 
-                _FileBytes.CopyTo(_Offset + LFNOffsets.FilePart1, LFN, 0, LFNSizes.FilePart1)
-                _FileBytes.CopyTo(_Offset + LFNOffsets.FilePart2, LFN, LFNSizes.FilePart1, LFNSizes.FilePart2)
-                _FileBytes.CopyTo(_Offset + LFNOffsets.FilePart3, LFN, LFNSizes.FilePart1 + LFNSizes.FilePart2, LFNSizes.FilePart3)
+                _FloppyImage.CopyTo(_Offset + LFNOffsets.FilePart1, LFN, 0, LFNSizes.FilePart1)
+                _FloppyImage.CopyTo(_Offset + LFNOffsets.FilePart2, LFN, LFNSizes.FilePart1, LFNSizes.FilePart2)
+                _FloppyImage.CopyTo(_Offset + LFNOffsets.FilePart3, LFN, LFNSizes.FilePart1 + LFNSizes.FilePart2, LFNSizes.FilePart3)
 
                 Return Encoding.Unicode.GetString(LFN)
             Else
@@ -591,7 +591,7 @@ Namespace DiskImage
         End Function
 
         Public Function IsCurrentLink() As Boolean
-            Dim FilePart = _FileBytes.ToUInt16(_Offset)
+            Dim FilePart = _FloppyImage.ToUInt16(_Offset)
             Return (FilePart = &H202E)
         End Function
 
@@ -604,12 +604,12 @@ Namespace DiskImage
         End Function
 
         Public Function IsLink() As Boolean
-            Dim FilePart = _FileBytes.ToUInt16(_Offset)
+            Dim FilePart = _FloppyImage.ToUInt16(_Offset)
             Return (FilePart = &H202E Or FilePart = &H2E2E)
         End Function
 
         Public Function ISParentLink() As Boolean
-            Dim FilePart = _FileBytes.ToUInt16(_Offset)
+            Dim FilePart = _FloppyImage.ToUInt16(_Offset)
             Return (FilePart = &H2E2E)
         End Function
 

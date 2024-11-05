@@ -1,10 +1,21 @@
 ﻿Namespace Bitstream
     Namespace IBM_MFM
         Public Class IBM_MFM_Bitstream
-            Private ReadOnly _Bitstream As BitArray
             Private ReadOnly _AddressMarkIndexes As List(Of UInteger)
-            Private _RPM As UShort
+            Private ReadOnly _Bitstream As BitArray
             Private _DataRate As UShort
+            Private _RPM As UShort
+
+            Public Enum MFMFloppyDiskDataRate As UShort
+                FloppyDiskDD = 250
+                FloppyDiskHD = 500
+            End Enum
+
+            Public Enum MFMFloppyDiskRPM As UShort
+                FloppyDisk35 = 300
+                FloppyDisk525DD = 300
+                FloppyDisk525HD = 360
+            End Enum
 
             Public Enum MFMSectorSize As Byte
                 SectorSize_128 = 0
@@ -15,17 +26,6 @@
                 SectorSize_4096 = 5
                 SectorSize_8192 = 6
                 SectorSize_16384 = 7
-            End Enum
-
-            Public Enum MFMFloppyDiskRPM As UShort
-                FloppyDisk35 = 300
-                FloppyDisk525DD = 300
-                FloppyDisk525HD = 360
-            End Enum
-
-            Public Enum MFMFloppyDiskDataRate As UShort
-                FloppyDiskDD = 250
-                FloppyDiskHD = 500
             End Enum
 
             Public Sub New(Gap4A As UInteger, Gap1 As UInteger)
@@ -93,6 +93,12 @@
                 AppendBytes(BitConverter.GetBytes(Checksum))
                 AddGap(MFM_GAP2_SIZE)
             End Sub
+
+            Public Function CalculateChecksum(Start As UInteger, Length As UInteger) As UShort
+                Dim Buffer = MFMGetBytes(_Bitstream, Start, Length \ 16)
+
+                Return MFMCRC16(Buffer)
+            End Function
 
             Public Function Finish(RPM As UShort, DataRate As UShort) As Boolean
                 _RPM = RPM
@@ -170,13 +176,6 @@
 
                 Return buffer
             End Function
-
-            Public Function CalculateChecksum(Start As UInteger, Length As UInteger) As UShort
-                Dim Buffer = MFMGetBytes(_Bitstream, Start, Length \ 16)
-
-                Return MFMCRC16(Buffer)
-            End Function
-
             Private Function FillBytes(Value As Byte, Length As UInteger) As Byte()
                 Dim buffer(Length - 1) As Byte
                 For i = 0 To Length - 1

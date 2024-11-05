@@ -106,7 +106,7 @@ Public Class FloppyDB
     End Function
 
     Public Function TitleFind(Disk As Disk) As TitleFindResult
-        Dim MD5 As String = Disk.Image.Data.GetMD5Hash
+        Dim MD5 As String = Disk.Image.GetMD5Hash
         Return TitleFind(MD5)
     End Function
 
@@ -183,7 +183,7 @@ Public Class FloppyDB
         Dim Data(Disk.Image.Length - 1) As Byte
         Disk.Image.CopyTo(Data, 0)
         Dim Buffer(Disk.BYTES_PER_SECTOR - 1) As Byte
-        For Each Sector In Disk.Image.Data.ProtectedSectors
+        For Each Sector In Disk.Image.ProtectedSectors
             Dim Offset = Disk.SectorToBytes(Sector)
             If Offset + Disk.BYTES_PER_SECTOR <= Data.Length Then
                 Buffer.CopyTo(Data, Offset)

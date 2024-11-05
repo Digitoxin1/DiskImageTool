@@ -1,16 +1,16 @@
 ﻿Imports DiskImageTool.DiskImage
 
 Public Class FATTables
-    Private ReadOnly _FileBytes As ImageByteArray
+    Private ReadOnly _FloppyImage As IFloppyImage
     Private _BatchUpdates As Boolean = False
     Private _BPB As BiosParameterBlock
     Private _FAT12() As FAT12
     Private _FATIndex As UShort
     Private _FATsMatch As Boolean
     Private _SyncFATs As Boolean
-    Sub New(BPB As BiosParameterBlock, FileBytes As ImageByteArray, FATIndex As UShort)
+    Sub New(BPB As BiosParameterBlock, FloppyImage As IFloppyImage, FATIndex As UShort)
         _BPB = BPB
-        _FileBytes = FileBytes
+        _FloppyImage = FloppyImage
 
         Dim NumFATs = FATCount()
 
@@ -22,7 +22,7 @@ Public Class FATTables
 
         ReDim _FAT12(NumFATs - 1)
         For Counter = 0 To NumFATs - 1
-            _FAT12(Counter) = New FAT12(_FileBytes, _BPB, Counter)
+            _FAT12(Counter) = New FAT12(_FloppyImage, _BPB, Counter)
         Next
         _FATsMatch = CompareFATTables()
         _SyncFATs = True
@@ -92,7 +92,7 @@ Public Class FATTables
         End If
         For Counter = 0 To NumFATs - 1
             If Counter > OldNumFATs - 1 Then
-                _FAT12(Counter) = New FAT12(_FileBytes, _BPB, Counter)
+                _FAT12(Counter) = New FAT12(_FloppyImage, _BPB, Counter)
             Else
                 _FAT12(Counter).InitializeFAT(_BPB)
             End If
@@ -167,10 +167,10 @@ Public Class FATTables
             Count = 1
         End If
 
-        Dim UseBatchEditMode As Boolean = Not _FileBytes.BatchEditMode And Count > 1
+        Dim UseBatchEditMode As Boolean = Not _FloppyImage.History.BatchEditMode And Count > 1
 
         If UseBatchEditMode Then
-            _FileBytes.BatchEditMode = True
+            _FloppyImage.History.BatchEditMode = True
         End If
 
         For Counter = Start To Start + Count - 1
@@ -186,7 +186,7 @@ Public Class FATTables
         Next
 
         If UseBatchEditMode Then
-            _FileBytes.BatchEditMode = False
+            _FloppyImage.History.BatchEditMode = False
         End If
 
         If Result Then

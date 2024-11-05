@@ -11,18 +11,13 @@ Namespace DiskImage
         IMDImage
     End Enum
 
-    Public Delegate Sub DataChangedEventHandler(Offset As UInteger, OriginalValue As Object, NewValue As Object)
-    Public Delegate Sub SizeChangedEventHandler(OriginalLength As Integer, NewLength As Integer)
-
-    Public Interface IByteArray
-        Event DataChanged As DataChangedEventHandler
-        Event SizeChanged As SizeChangedEventHandler
-
+    Public Interface IFloppyImage
         ReadOnly Property AdditionalTracks As HashSet(Of UShort)
         ReadOnly Property BitstreamImage As IBitstreamImage
         ReadOnly Property CanResize As Boolean
+        ReadOnly Property History As FloppyImageHistory
         ReadOnly Property ImageType As FloppyImageType
-        ReadOnly Property IsBitStreamImage As Boolean
+        ReadOnly Property IsBitstreamImage As Boolean
         ReadOnly Property Length As Integer
         ReadOnly Property NonStandardTracks As HashSet(Of UShort)
         ReadOnly Property ProtectedSectors As HashSet(Of UInteger)
@@ -41,6 +36,7 @@ Namespace DiskImage
         Function GetSHA1Hash() As String
         Function Resize(Length As Integer) As Boolean
         Function SaveToFile(FilePath As String) As Boolean
+        Function SetBytes(Value As Object, Offset As UInteger) As Boolean
         Function SetBytes(Value As UShort, Offset As UInteger) As Boolean
         Function SetBytes(Value As UInteger, Offset As UInteger) As Boolean
         Function SetBytes(Value As Byte, Offset As UInteger) As Boolean

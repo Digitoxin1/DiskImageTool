@@ -1,26 +1,28 @@
 ﻿Namespace DiskImage
     Public Class Disk
-        Private WithEvents FileBytes As ImageByteArray
         Public Const BYTES_PER_SECTOR As UShort = 512
         Private ReadOnly _BootSector As BootSector
         Private ReadOnly _FATTables As FATTables
+        Private ReadOnly _FloppyImage As IFloppyImage
         Private ReadOnly _RootDirectory As RootDirectory
         Private _BPB As BiosParameterBlock
         Private _DiskFormat As FloppyDiskFormat
 
-        Sub New(Image As IByteArray, FatIndex As UShort, Optional Modifications As Stack(Of DataChange()) = Nothing)
-            FileBytes = New ImageByteArray(Image)
-            _BootSector = New BootSector(FileBytes.Data, BootSector.BOOT_SECTOR_OFFSET)
+        Sub New(FloppyImage As IFloppyImage, FatIndex As UShort, Optional Modifications As Stack(Of DataChange()) = Nothing)
+            _FloppyImage = FloppyImage
+            _FloppyImage.History.Enabled = True
+
+            _BootSector = New BootSector(_FloppyImage, BootSector.BOOT_SECTOR_OFFSET)
             _BPB = GetBPB()
 
-            _FATTables = New FATTables(_BPB, FileBytes, FatIndex)
+            _FATTables = New FATTables(_BPB, _FloppyImage, FatIndex)
             _DiskFormat = InferFloppyDiskFormat()
             _FATTables.SyncFATs = Not IsDiskFormatXDF(_DiskFormat)
 
             _RootDirectory = New RootDirectory(Me, _FATTables.FAT)
 
             If Modifications IsNot Nothing Then
-                FileBytes.ApplyModifications(Modifications)
+                _FloppyImage.History.ApplyModifications(Modifications)
                 Reinitialize()
             End If
         End Sub
@@ -55,9 +57,9 @@
             End Get
         End Property
 
-        Public ReadOnly Property Image As ImageByteArray
+        Public ReadOnly Property Image As IFloppyImage
             Get
-                Return FileBytes
+                Return _FloppyImage
             End Get
         End Property
 
@@ -80,44 +82,62 @@
         End Function
 
         Public Function BeginTransaction() As Boolean
-            If FileBytes.BatchEditMode Then
+            If _FloppyImage.History.BatchEditMode Then
                 Return False
             End If
 
             _FATTables.BatchUpdates = False
-            FileBytes.BatchEditMode = True
+            _FloppyImage.History.BatchEditMode = True
 
             Return True
         End Function
 
         Public Function CheckImageSize() As Integer
             Dim ReportedSize As Integer = _BPB.ReportedImageSize()
-            Return FileBytes.Length.CompareTo(ReportedSize)
+            Return _FloppyImage.Length.CompareTo(ReportedSize)
         End Function
 
         Public Function CheckSize() As Boolean
-            Return (FileBytes.Length > 0 And FileBytes.Length < 4423680)
+            Return (_FloppyImage.Length > 0 And _FloppyImage.Length < 4423680)
         End Function
 
         Public Sub ClearChanges()
-            FileBytes.ClearChanges()
+            _FloppyImage.History.ClearChanges()
             _RootDirectory.RefreshCache()
         End Sub
 
         Public Sub EndTransaction()
-            If FileBytes.BatchEditMode Then
+            If _FloppyImage.History.BatchEditMode Then
                 If _FATTables.BatchUpdates Then
                     _FATTables.UpdateFAT12()
                 End If
-                FileBytes.BatchEditMode = False
+                _FloppyImage.History.BatchEditMode = False
             End If
         End Sub
+
+        Public Function GetSector(Sector As UInteger) As Byte()
+            Dim Offset = SectorToBytes(Sector)
+
+            Return GetSectors(Sector, 1)
+        End Function
+
+        Public Function GetSectors(SectorStart As UInteger, Count As UShort) As Byte()
+            Dim Offset = Disk.SectorToBytes(SectorStart)
+            Dim Size = Disk.SectorToBytes(Count)
+
+            If Size + Offset > _FloppyImage.Length Then
+                Size = _FloppyImage.Length - Offset
+            End If
+
+            Return _FloppyImage.GetBytes(Offset, Size)
+        End Function
+
         Public Function GetXDFChecksum() As UInteger
-            Return FileBytes.GetBytesInteger(&H13C)
+            Return _FloppyImage.GetBytesInteger(&H13C)
         End Function
 
         Public Function IsValidImage(Optional CheckBPB As Boolean = True) As Boolean
-            Return FileBytes.Length >= 512 And (Not CheckBPB OrElse _BPB.IsValid)
+            Return _FloppyImage.Length >= 512 And (Not CheckBPB OrElse _BPB.IsValid)
         End Function
 
         Public Sub Reinitialize()
@@ -127,6 +147,12 @@
             _FATTables.SyncFATs = Not IsDiskFormatXDF(_DiskFormat)
             _RootDirectory.RefreshData()
         End Sub
+
+        Public Function SetSector(Value() As Byte, Sector As UInteger) As Boolean
+            Dim Offset = SectorToBytes(Sector)
+
+            Return _FloppyImage.SetBytes(Value, Offset, Disk.BYTES_PER_SECTOR, 0)
+        End Function
 
         Private Function GetBPB() As BiosParameterBlock
             Dim BPB As BiosParameterBlock
@@ -142,7 +168,7 @@
                 Dim FATMediaDescriptor = GetFATMediaDescriptor()
 
                 Dim DiskFormatFAT = GetFloppyDiskFomat(FATMediaDescriptor)
-                Dim DiskFormatSize = GetFloppyDiskFormat(FileBytes.Length)
+                Dim DiskFormatSize = GetFloppyDiskFormat(_FloppyImage.Length)
 
                 If DiskFormatFAT = FloppyDiskFormat.Floppy360 And DiskFormatSize = FloppyDiskFormat.Floppy180 Then
                     FATMediaDescriptor = GetFloppyDiskMediaDescriptor(DiskFormatSize)
@@ -159,8 +185,8 @@
         Private Function GetFATMediaDescriptor() As Byte
             Dim Result As Byte = 0
 
-            If FileBytes.Length >= 515 Then
-                Dim b = FileBytes.GetBytes(512, 3)
+            If _FloppyImage.Length >= 515 Then
+                Dim b = _FloppyImage.GetBytes(512, 3)
                 If b(1) = &HFF And b(2) = &HFF Then
                     Result = b(0)
                 End If
@@ -176,7 +202,7 @@
             Else
                 DiskFormat = GetFloppyDiskFomat(_FATTables.FAT.MediaDescriptor)
                 If DiskFormat = FloppyDiskFormat.FloppyUnknown Then
-                    DiskFormat = GetFloppyDiskFormat(FileBytes.Length)
+                    DiskFormat = GetFloppyDiskFormat(_FloppyImage.Length)
                 End If
             End If
 

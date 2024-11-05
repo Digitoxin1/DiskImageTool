@@ -10,8 +10,8 @@
             Private _LastSector As Integer
             Private _OverlappingSectors As Boolean
             Private _Sectors As List(Of IBM_MFM_Sector)
-            Private _Size As UInteger
             Private _SectorSize As Integer
+            Private _Size As UInteger
 
             Public Sub New(Data() As Byte)
                 MFMDecode(BytesToBits(Data))
@@ -56,6 +56,7 @@
                     Return _IAM
                 End Get
             End Property
+
             Public ReadOnly Property LastSector As Integer
                 Get
                     Return _LastSector

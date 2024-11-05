@@ -3,15 +3,15 @@
 Namespace ImageFormats
     Namespace _86F
         Module _86FLoader
-            Public Function ImageLoad(Data() As Byte) As _86FByteArray
-                Dim Image As _86FByteArray = Nothing
+            Public Function ImageLoad(Data() As Byte) As _86FFloppyImage
+                Dim Image As _86FFloppyImage = Nothing
 
                 Dim F86Image = New _86FImage()
                 Dim Result = F86Image.Load(Data)
                 If Result Then
                     Dim DiskFormat As FloppyDiskFormat = Bitstream.BitstreamGetImageFormat(F86Image)
                     If DiskFormat <> FloppyDiskFormat.FloppyUnknown Then
-                        Image = New _86FByteArray(F86Image, DiskFormat)
+                        Image = New _86FFloppyImage(F86Image, DiskFormat)
                     End If
                 End If
 

@@ -9,11 +9,11 @@
                 _BitOffset = BitOffset
             End Sub
 
-            Public Property RegionType As MFMRegionType
-            Public Property StartIndex As UInteger
-            Public Property Length As UInteger
-            Public Property Sector As BitstreamRegionSector
             Public Property BitOffset As UInteger
+            Public Property Length As UInteger
+            Public Property RegionType As MFMRegionType
+            Public Property Sector As BitstreamRegionSector
+            Public Property StartIndex As UInteger
         End Class
     End Namespace
 End Namespace

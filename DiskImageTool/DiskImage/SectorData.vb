@@ -1,14 +1,14 @@
 ﻿Namespace DiskImage
     Public Class SectorData
-        Private WithEvents DataBytes As IByteArray
         Private ReadOnly _BlockList As List(Of SectorBlock)
-        Private ReadOnly _FileBytes As ImageByteArray
+        Private ReadOnly _FloppyImage As IFloppyImage
+        Private ReadOnly _SectorData As IFloppyImage
         Private ReadOnly _SectorList As Dictionary(Of UInteger, SectorBlock)
 
-        Sub New(FileBytes As ImageByteArray)
+        Sub New(FloppyImage As IFloppyImage)
             _BlockList = New List(Of SectorBlock)
-            DataBytes = New ByteArray({})
-            _FileBytes = FileBytes
+            _SectorData = New BasicSectorImage({})
+            _FloppyImage = FloppyImage
             _SectorList = New Dictionary(Of UInteger, SectorBlock)
         End Sub
 
@@ -18,9 +18,9 @@
             End Get
         End Property
 
-        Public ReadOnly Property Data As IByteArray
+        Public ReadOnly Property SectorData As IFloppyImage
             Get
-                Return DataBytes
+                Return _SectorData
             End Get
         End Property
 
@@ -35,16 +35,16 @@
         End Sub
 
         Public Sub AddBlock(SectorStart As UInteger, SectorCount As UInteger, Description As String)
-            Dim Offset As UInteger = DataBytes.Length
+            Dim Offset As UInteger = _SectorData.Length
             Dim SourceOffset = Disk.SectorToBytes(SectorStart)
             Dim Size As UInteger = Disk.SectorToBytes(SectorCount)
 
-            If SourceOffset + Size > _FileBytes.Length Then
-                Size = Math.Max(0, _FileBytes.Length - SourceOffset)
+            If SourceOffset + Size > _FloppyImage.Length Then
+                Size = Math.Max(0, _FloppyImage.Length - SourceOffset)
             End If
 
             If Size > 0 Then
-                DataBytes.Append(_FileBytes.GetBytes(SourceOffset, Size))
+                _SectorData.Append(_FloppyImage.GetBytes(SourceOffset, Size))
 
                 _BlockList.Add(New SectorBlock(_BlockList.Count, SectorStart, SectorCount, Offset, Size, Description))
 
@@ -87,23 +87,23 @@
         End Sub
 
         Public Sub CommitChanges()
-            Dim UseBatchEditMode = Not _FileBytes.BatchEditMode
+            Dim UseBatchEditMode = Not _FloppyImage.History.BatchEditMode
 
             If UseBatchEditMode Then
-                _FileBytes.BatchEditMode = True
+                _FloppyImage.History.BatchEditMode = True
             End If
 
             For Each SectorBlock In _SectorList.Values
                 Dim Offset = Disk.SectorToBytes(SectorBlock.SectorStart)
-                Dim OriginalData = _FileBytes.GetBytes(Offset, SectorBlock.Size)
-                Dim NewData = DataBytes.GetBytes(SectorBlock.Offset, SectorBlock.Size)
+                Dim OriginalData = _FloppyImage.GetBytes(Offset, SectorBlock.Size)
+                Dim NewData = _SectorData.GetBytes(SectorBlock.Offset, SectorBlock.Size)
                 If Not OriginalData.CompareTo(NewData) Then
-                    _FileBytes.SetBytes(NewData, Offset)
+                    _FloppyImage.SetBytes(NewData, Offset)
                 End If
             Next
 
             If UseBatchEditMode Then
-                _FileBytes.BatchEditMode = False
+                _FloppyImage.History.BatchEditMode = False
             End If
         End Sub
 
@@ -114,13 +114,13 @@
         Public Function GetBlockData(Index As Integer) As Byte()
             Dim SectorBlock = _BlockList(Index)
 
-            Return DataBytes.GetBytes(SectorBlock.Offset, SectorBlock.Size)
+            Return _SectorData.GetBytes(SectorBlock.Offset, SectorBlock.Size)
         End Function
 
         Public Function GetSectorData(Sector As UInteger) As Byte()
             Dim SectorBlock = _SectorList(Sector)
 
-            Return DataBytes.GetBytes(SectorBlock.Offset, SectorBlock.Size)
+            Return _SectorData.GetBytes(SectorBlock.Offset, SectorBlock.Size)
         End Function
     End Class
 End Namespace

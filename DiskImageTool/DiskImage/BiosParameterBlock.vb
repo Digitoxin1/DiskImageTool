@@ -8,7 +8,7 @@ Namespace DiskImage
         Public Shared ReadOnly ValidNumberOfHeads() As UShort = {1, 2}
         Public Shared ReadOnly ValidSectorsPerCluster() As Byte = {1, 2, 4, 8, 16, 32, 64, 128}
         Public Shared ReadOnly ValidSectorsPerTrack() As UShort = {8, 9, 15, 18, 19, 21, 23, 36}
-        Private ReadOnly _FileBytes As IByteArray
+        Private ReadOnly _FloppyImage As IFloppyImage
         Private ReadOnly _Offset As UInteger
 
         Public Enum BPBOoffsets As UInteger
@@ -44,134 +44,134 @@ Namespace DiskImage
 
         Sub New()
             Dim Data(BPB_SIZE - 1) As Byte
-            _FileBytes = New ByteArray(Data)
+            _FloppyImage = New BasicSectorImage(Data)
             _Offset = 0
         End Sub
 
-        Sub New(FileBytes As IByteArray, Offset As UInteger)
-            _FileBytes = FileBytes
+        Sub New(FloppyImage As IFloppyImage, Offset As UInteger)
+            _FloppyImage = FloppyImage
             _Offset = Offset
         End Sub
 
         Sub New(Data() As Byte)
-            _FileBytes = New ByteArray(Data)
+            _FloppyImage = New BasicSectorImage(Data)
             _Offset = 0
         End Sub
 
         Public Property BytesPerSector() As UShort
             Get
-                Return _FileBytes.GetBytesShort(BPBOoffsets.BytesPerSector + _Offset)
+                Return _FloppyImage.GetBytesShort(BPBOoffsets.BytesPerSector + _Offset)
             End Get
             Set
-                _FileBytes.SetBytes(Value, BPBOoffsets.BytesPerSector + _Offset)
+                _FloppyImage.SetBytes(Value, BPBOoffsets.BytesPerSector + _Offset)
             End Set
         End Property
 
         Public Property HiddenSectors() As UShort
             Get
-                Return _FileBytes.GetBytesShort(BPBOoffsets.HiddenSectors + _Offset)
+                Return _FloppyImage.GetBytesShort(BPBOoffsets.HiddenSectors + _Offset)
             End Get
             Set
-                _FileBytes.SetBytes(Value, BPBOoffsets.HiddenSectors + _Offset)
+                _FloppyImage.SetBytes(Value, BPBOoffsets.HiddenSectors + _Offset)
             End Set
         End Property
 
         Public Property HiddenSectorsFAT16() As UInteger
             Get
-                Return _FileBytes.GetBytesInteger(BPBOoffsets.HiddenSectors + _Offset)
+                Return _FloppyImage.GetBytesInteger(BPBOoffsets.HiddenSectors + _Offset)
             End Get
             Set
-                _FileBytes.SetBytes(Value, BPBOoffsets.HiddenSectors + _Offset)
+                _FloppyImage.SetBytes(Value, BPBOoffsets.HiddenSectors + _Offset)
             End Set
         End Property
 
         Public Property MediaDescriptor() As Byte
             Get
-                Return _FileBytes.GetByte(BPBOoffsets.MediaDescriptor + _Offset)
+                Return _FloppyImage.GetByte(BPBOoffsets.MediaDescriptor + _Offset)
             End Get
             Set
-                _FileBytes.SetBytes(Value, BPBOoffsets.MediaDescriptor + _Offset)
+                _FloppyImage.SetBytes(Value, BPBOoffsets.MediaDescriptor + _Offset)
             End Set
         End Property
 
         Public Property NumberOfFATs() As Byte
             Get
-                Return _FileBytes.GetByte(BPBOoffsets.NumberOfFATs + _Offset)
+                Return _FloppyImage.GetByte(BPBOoffsets.NumberOfFATs + _Offset)
             End Get
             Set
-                _FileBytes.SetBytes(Value, BPBOoffsets.NumberOfFATs + _Offset)
+                _FloppyImage.SetBytes(Value, BPBOoffsets.NumberOfFATs + _Offset)
             End Set
         End Property
 
         Public Property NumberOfHeads() As UShort
             Get
-                Return _FileBytes.GetBytesShort(BPBOoffsets.NumberOfHeads + _Offset)
+                Return _FloppyImage.GetBytesShort(BPBOoffsets.NumberOfHeads + _Offset)
             End Get
             Set
-                _FileBytes.SetBytes(Value, BPBOoffsets.NumberOfHeads + _Offset)
+                _FloppyImage.SetBytes(Value, BPBOoffsets.NumberOfHeads + _Offset)
             End Set
         End Property
 
         Public Property ReservedSectorCount() As UShort
             Get
-                Return _FileBytes.GetBytesShort(BPBOoffsets.ReservedSectorCount + _Offset)
+                Return _FloppyImage.GetBytesShort(BPBOoffsets.ReservedSectorCount + _Offset)
             End Get
             Set
-                _FileBytes.SetBytes(Value, BPBOoffsets.ReservedSectorCount + _Offset)
+                _FloppyImage.SetBytes(Value, BPBOoffsets.ReservedSectorCount + _Offset)
             End Set
         End Property
 
         Public Property RootEntryCount() As UShort
             Get
-                Return _FileBytes.GetBytesShort(BPBOoffsets.RootEntryCount + _Offset)
+                Return _FloppyImage.GetBytesShort(BPBOoffsets.RootEntryCount + _Offset)
             End Get
             Set
-                _FileBytes.SetBytes(Value, BPBOoffsets.RootEntryCount + _Offset)
+                _FloppyImage.SetBytes(Value, BPBOoffsets.RootEntryCount + _Offset)
             End Set
         End Property
 
         Public Property SectorCountLarge() As UInteger
             Get
-                Return _FileBytes.GetBytesInteger(BPBOoffsets.SectorCountLarge + _Offset)
+                Return _FloppyImage.GetBytesInteger(BPBOoffsets.SectorCountLarge + _Offset)
             End Get
             Set
-                _FileBytes.SetBytes(Value, BPBOoffsets.SectorCountLarge + _Offset)
+                _FloppyImage.SetBytes(Value, BPBOoffsets.SectorCountLarge + _Offset)
             End Set
         End Property
 
         Public Property SectorCountSmall() As UShort
             Get
-                Return _FileBytes.GetBytesShort(BPBOoffsets.SectorCountSmall + _Offset)
+                Return _FloppyImage.GetBytesShort(BPBOoffsets.SectorCountSmall + _Offset)
             End Get
             Set
-                _FileBytes.SetBytes(Value, BPBOoffsets.SectorCountSmall + _Offset)
+                _FloppyImage.SetBytes(Value, BPBOoffsets.SectorCountSmall + _Offset)
             End Set
         End Property
 
         Public Property SectorsPerCluster() As Byte
             Get
-                Return _FileBytes.GetByte(BPBOoffsets.SectorsPerCluster + _Offset)
+                Return _FloppyImage.GetByte(BPBOoffsets.SectorsPerCluster + _Offset)
             End Get
             Set
-                _FileBytes.SetBytes(Value, BPBOoffsets.SectorsPerCluster + _Offset)
+                _FloppyImage.SetBytes(Value, BPBOoffsets.SectorsPerCluster + _Offset)
             End Set
         End Property
 
         Public Property SectorsPerFAT() As UShort
             Get
-                Return _FileBytes.GetBytesShort(BPBOoffsets.SectorsPerFAT + _Offset)
+                Return _FloppyImage.GetBytesShort(BPBOoffsets.SectorsPerFAT + _Offset)
             End Get
             Set
-                _FileBytes.SetBytes(Value, BPBOoffsets.SectorsPerFAT + _Offset)
+                _FloppyImage.SetBytes(Value, BPBOoffsets.SectorsPerFAT + _Offset)
             End Set
         End Property
 
         Public Property SectorsPerTrack() As UShort
             Get
-                Return _FileBytes.GetBytesShort(BPBOoffsets.SectorsPerTrack + _Offset)
+                Return _FloppyImage.GetBytesShort(BPBOoffsets.SectorsPerTrack + _Offset)
             End Get
             Set
-                _FileBytes.SetBytes(Value, BPBOoffsets.SectorsPerTrack + _Offset)
+                _FloppyImage.SetBytes(Value, BPBOoffsets.SectorsPerTrack + _Offset)
             End Set
         End Property
 
@@ -261,7 +261,7 @@ Namespace DiskImage
         End Function
 
         Public Function IsValid() As Boolean
-            Return _FileBytes.Length >= BPB_SIZE _
+            Return _FloppyImage.Length >= BPB_SIZE _
                 AndAlso HasValidSectorsPerCluster(False) _
                 AndAlso HasValidReservedSectorCount() _
                 AndAlso HasValidNumberOfFATs() _

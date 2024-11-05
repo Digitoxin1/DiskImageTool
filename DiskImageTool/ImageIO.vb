@@ -81,16 +81,16 @@ Module ImageIO
     Public Function DiskImageLoad(ImageData As ImageData, Optional SetChecksum As Boolean = False) As DiskImage.Disk
         Dim Data() As Byte
         Dim LastChecksum As UInteger
-        Dim Image As IByteArray = Nothing
+        Dim FloppyImage As IFloppyImage = Nothing
 
         ImageData.InvalidImage = False
 
         If ImageData.TempPath <> "" Then
             Data = ImageLoadFromTemp(ImageData.TempPath)
-            Image = New ByteArray(Data)
+            FloppyImage = New BasicSectorImage(Data)
         End If
 
-        If Image Is Nothing AndAlso IO.File.Exists(ImageData.SourceFile) Then
+        If FloppyImage Is Nothing AndAlso IO.File.Exists(ImageData.SourceFile) Then
             Try
                 If ImageData.Compressed Then
                     ImageData.ReadOnly = True
@@ -111,7 +111,7 @@ Module ImageIO
                 If FloppyImageType = FloppyImageType.TranscopyImage Then
                     Dim TCImage = ImageFormats.TC.ImageLoad(Data)
                     If TCImage IsNot Nothing Then
-                        Image = TCImage
+                        FloppyImage = TCImage
                     Else
                         ImageData.InvalidImage = True
                     End If
@@ -119,7 +119,7 @@ Module ImageIO
                 ElseIf FloppyImageType = FloppyImageType.PSIImage Then
                     Dim PSIImage = ImageFormats.PSI.ImageLoad(Data)
                     If PSIImage IsNot Nothing Then
-                        Image = PSIImage
+                        FloppyImage = PSIImage
                     Else
                         ImageData.InvalidImage = True
                     End If
@@ -127,7 +127,7 @@ Module ImageIO
                 ElseIf FloppyImageType = FloppyImageType.IMDImage Then
                     Dim IMDImage = ImageFormats.IMD.ImageLoad(Data)
                     If IMDImage IsNot Nothing Then
-                        Image = IMDImage
+                        FloppyImage = IMDImage
                     Else
                         ImageData.InvalidImage = True
                     End If
@@ -135,7 +135,7 @@ Module ImageIO
                 ElseIf FloppyImageType = FloppyImageType.MFMImage Then
                     Dim MFMImage = ImageFormats.MFM.ImageLoad(Data)
                     If MFMImage IsNot Nothing Then
-                        Image = MFMImage
+                        FloppyImage = MFMImage
                     Else
                         ImageData.InvalidImage = True
                     End If
@@ -143,7 +143,7 @@ Module ImageIO
                 ElseIf FloppyImageType = FloppyImageType._86FImage Then
                     Dim F86Image = ImageFormats._86F.ImageLoad(Data)
                     If F86Image IsNot Nothing Then
-                        Image = F86Image
+                        FloppyImage = F86Image
                     Else
                         ImageData.InvalidImage = True
                     End If
@@ -151,13 +151,13 @@ Module ImageIO
                 ElseIf FloppyImageType = FloppyImageType.HFEImage Then
                     Dim HFEImage = ImageFormats.HFE.ImageLoad(Data)
                     If HFEImage IsNot Nothing Then
-                        Image = HFEImage
+                        FloppyImage = HFEImage
                     Else
                         ImageData.InvalidImage = True
                     End If
 
                 Else
-                    Image = New ByteArray(Data)
+                    FloppyImage = New BasicSectorImage(Data)
                 End If
                 'If ImageData.XDFMiniDisk Then
                 '    ImageData.ReadOnly = True
@@ -167,11 +167,11 @@ Module ImageIO
                 'End If
             Catch ex As Exception
                 DebugException(ex)
-                Image = Nothing
+                FloppyImage = Nothing
             End Try
         End If
 
-        If Image Is Nothing Then
+        If FloppyImage Is Nothing Then
             Return Nothing
         Else
             If ImageData.Loaded AndAlso ImageData.Checksum <> LastChecksum Then
@@ -186,8 +186,8 @@ Module ImageIO
                 ImageData.Loaded = True
             End If
 
-            Dim Disk = New DiskImage.Disk(Image, ImageData.FATIndex, ImageData.Modifications)
-            ImageData.Modifications = Disk.Image.Changes
+            Dim Disk = New DiskImage.Disk(FloppyImage, ImageData.FATIndex, ImageData.Modifications)
+            ImageData.Modifications = Disk.Image.History.Changes
 
             Return Disk
         End If
@@ -442,24 +442,24 @@ Module ImageIO
 
     Public Function SaveDiskImageToFile(Disk As DiskImage.Disk, FilePath As String) As SaveImageResponse
         Dim FileImageType = GetImageTypeFromFileName(FilePath)
-        Dim DiskImageType = Disk.Image.Data.ImageType
+        Dim DiskImageType = Disk.Image.ImageType
         Dim Response As SaveImageResponse = SaveImageResponse.Failed
         Dim Result As Boolean = False
 
-        If Not CheckCompatibility(FileImageType, Disk.Image.Data) Then
+        If Not CheckCompatibility(FileImageType, Disk.Image) Then
             Return SaveImageResponse.Cancelled
         End If
 
         If FileImageType = DiskImageType Then
-            Result = Disk.Image.Data.SaveToFile(FilePath)
+            Result = Disk.Image.SaveToFile(FilePath)
 
         ElseIf FileImageType = FloppyImageType.BasicSectorImage Then
-            Dim Data = Disk.Image.Data.GetBytes()
+            Dim Data = Disk.Image.GetBytes()
             Result = SaveByteArrayToFile(FilePath, Data)
 
         ElseIf DiskImageType = FloppyImageType.BasicSectorImage Then
             If IsDiskFormatValidForRead(Disk.DiskFormat) Then
-                Dim Data = Disk.Image.Data.GetBytes()
+                Dim Data = Disk.Image.GetBytes()
 
                 If FileImageType = FloppyImageType.TranscopyImage Then
                     Dim Transcopy = ImageFormats.BasicSectorToTranscopyImage(Data, Disk.DiskFormat)
@@ -487,7 +487,7 @@ Module ImageIO
             End If
 
         ElseIf FileImageType = FloppyImageType.TranscopyImage Then
-            Dim Image As IBitstreamImage = Disk.Image.Data.BitstreamImage
+            Dim Image As IBitstreamImage = Disk.Image.BitstreamImage
             If Image IsNot Nothing Then
                 Dim Transcopy = ImageFormats.BitstreamToTranscopyImage(Image)
                 Result = Transcopy.Export(FilePath)
@@ -496,7 +496,7 @@ Module ImageIO
             End If
 
         ElseIf FileImageType = FloppyImageType.MFMImage Then
-            Dim Image As IBitstreamImage = Disk.Image.Data.BitstreamImage
+            Dim Image As IBitstreamImage = Disk.Image.BitstreamImage
             If Image IsNot Nothing Then
                 Dim MFM = ImageFormats.BitstreamToMFMImage(Image)
                 Result = MFM.Export(FilePath)
@@ -505,7 +505,7 @@ Module ImageIO
             End If
 
         ElseIf FileImageType = FloppyImageType.HFEImage Then
-            Dim Image As IBitstreamImage = Disk.Image.Data.BitstreamImage
+            Dim Image As IBitstreamImage = Disk.Image.BitstreamImage
             If Image IsNot Nothing Then
                 Dim HFE = ImageFormats.BitstreamToHFEImage(Image)
                 Result = HFE.Export(FilePath)
@@ -514,7 +514,7 @@ Module ImageIO
             End If
 
         ElseIf FileImageType = FloppyImageType.PSIImage Then
-            Dim Image As IBitstreamImage = Disk.Image.Data.BitstreamImage
+            Dim Image As IBitstreamImage = Disk.Image.BitstreamImage
             If Image IsNot Nothing Then
                 Dim PSI = ImageFormats.BitstreamToPSIImage(Image)
                 Result = PSI.Export(FilePath)
@@ -523,7 +523,7 @@ Module ImageIO
             End If
 
         ElseIf FileImageType = FloppyImageType.IMDImage Then
-            Dim Image As IBitstreamImage = Disk.Image.Data.BitstreamImage
+            Dim Image As IBitstreamImage = Disk.Image.BitstreamImage
             If Image IsNot Nothing Then
                 Dim IMD = ImageFormats.BitstreamToIMDImage(Image)
                 Result = IMD.Export(FilePath)
@@ -532,7 +532,7 @@ Module ImageIO
             End If
 
         ElseIf FileImageType = FloppyImageType._86FImage Then
-            Dim Image As IBitstreamImage = Disk.Image.Data.BitstreamImage
+            Dim Image As IBitstreamImage = Disk.Image.BitstreamImage
             If Image IsNot Nothing Then
                 Dim F86Image = ImageFormats.BitstreamTo86FImage(Image)
                 Result = F86Image.Export(FilePath)
@@ -551,16 +551,16 @@ Module ImageIO
         Return Response
     End Function
 
-    Private Function CheckCompatibility(FileImageType As FloppyImageType, Data As IByteArray) As Boolean
+    Private Function CheckCompatibility(FileImageType As FloppyImageType, FloppyImage As IFloppyImage) As Boolean
         Dim Msg As String
 
-        If FileImageType = Data.ImageType Then
+        If FileImageType = FloppyImage.ImageType Then
             Return True
         End If
 
         If FileImageType = FloppyImageType.IMDImage Then
-            If TypeOf Data Is BitstreamByteArray Then
-                Dim BitstreamData = DirectCast(Data, BitstreamByteArray)
+            If TypeOf FloppyImage Is MappedFloppyImage Then
+                Dim BitstreamData = DirectCast(FloppyImage, MappedFloppyImage)
                 Dim CompatibleSectors As Boolean = True
                 For i = 0 To BitstreamData.TrackCount - 1
                     For j = 0 To BitstreamData.SideCount - 1
@@ -587,7 +587,7 @@ Module ImageIO
         End If
 
         If FileImageType = FloppyImageType.BasicSectorImage Then
-            If Data.NonStandardTracks.Count > 0 Then
+            If FloppyImage.NonStandardTracks.Count > 0 Then
                 Msg = "This image has one or more tracks with a non-standard sector layout." _
                     & vbCrLf & vbCrLf & "Data loss will occur when saving to this image type." _
                     & vbCrLf & vbCrLf & "Do you wish to continue?"
@@ -596,9 +596,9 @@ Module ImageIO
                 End If
             End If
 
-        ElseIf Data.ImageType = FloppyImageType._86FImage Then
-            If Data.NonStandardTracks.Count > 0 Then
-                Dim Image = DirectCast(Data, ImageFormats._86F._86FByteArray).Image
+        ElseIf FloppyImage.ImageType = FloppyImageType._86FImage Then
+            If FloppyImage.NonStandardTracks.Count > 0 Then
+                Dim Image = DirectCast(FloppyImage, ImageFormats._86F._86FFloppyImage).Image
                 If Image.HasSurfaceData Then
                     Msg = "This image contains additional surface data which may be required for copy protection." _
                         & vbCrLf & vbCrLf & "This data will be lost when saving to this image type." _

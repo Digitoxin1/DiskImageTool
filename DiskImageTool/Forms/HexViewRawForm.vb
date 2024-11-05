@@ -11,7 +11,7 @@ Public Class HexViewRawForm
     Private WithEvents ComboTrack As ToolStripComboBox
     Private WithEvents NumericBitOffset As ToolStripNumericUpDown
     Private _AllTracks As Boolean
-    Private _ByteArray As IByteArray
+    Private _FloppyImage As IFloppyImage
     Private _CachedSelectedLength As Long = -1
     Private _CurrentRegionSector As BitstreamRegionSector = Nothing
     Private _CurrentSelectionLength As Long = -1
@@ -34,12 +34,12 @@ Public Class HexViewRawForm
     Private _SurfaceData As BitArray
     Private _Track As UShort
     Private _WeakBitRegions As List(Of HighlightRange)
-    Public Sub New(ByteArray As IByteArray, Track As UShort, Side As Byte, AllTracks As Boolean)
+    Public Sub New(FloppyImage As IFloppyImage, Track As UShort, Side As Byte, AllTracks As Boolean)
         ' This call is required by the designer.
         InitializeComponent()
 
         ' Add any initialization after the InitializeComponent() call.
-        _ByteArray = ByteArray
+        _FloppyImage = FloppyImage
         _Track = Track
         _Side = Side
         _AllTracks = AllTracks
@@ -326,7 +326,7 @@ Public Class HexViewRawForm
         HexBox1.VScrollBarVisible = True
 
         Dim ShowAllTracks As Boolean = True
-        If _ByteArray.AdditionalTracks.Count = 0 And _ByteArray.NonStandardTracks.Count = 0 Then
+        If _FloppyImage.AdditionalTracks.Count = 0 And _FloppyImage.NonStandardTracks.Count = 0 Then
             _AllTracks = True
             ShowAllTracks = False
         End If
@@ -591,7 +591,7 @@ Public Class HexViewRawForm
         _Track = TrackData.Track
         _Side = TrackData.Side
 
-        Dim MFMTrack = _ByteArray.BitstreamImage.GetTrack(TrackData.Track * _ByteArray.BitstreamImage.TrackStep, TrackData.Side)
+        Dim MFMTrack = _FloppyImage.BitstreamImage.GetTrack(TrackData.Track * _FloppyImage.BitstreamImage.TrackStep, TrackData.Side)
 
         Dim Data() As Byte
         Dim RegionData As RegionData
@@ -631,10 +631,10 @@ Public Class HexViewRawForm
     Private Sub PopulateTracks(AllTracks As Boolean)
         Dim SelectedIndex As Integer = -1
         ComboTrack.Items.Clear()
-        For i = 0 To _ByteArray.TrackCount - 1
-            For j = 0 To _ByteArray.SideCount - 1
-                Dim TrackIndex = i * _ByteArray.SideCount + j
-                If AllTracks OrElse (_ByteArray.NonStandardTracks.Contains(TrackIndex) Or _ByteArray.AdditionalTracks.Contains(TrackIndex)) Then
+        For i = 0 To _FloppyImage.TrackCount - 1
+            For j = 0 To _FloppyImage.SideCount - 1
+                Dim TrackIndex = i * _FloppyImage.SideCount + j
+                If AllTracks OrElse (_FloppyImage.NonStandardTracks.Contains(TrackIndex) Or _FloppyImage.AdditionalTracks.Contains(TrackIndex)) Then
                     Dim TrackData As New TrackData With {
                         .Track = i,
                         .Side = j,

@@ -8,7 +8,7 @@
         Public Shared ReadOnly ValidExtendedBootSignature() As Byte = {&H28, &H29}
         Public Shared ReadOnly ValidJumpInstructuon() As Byte = {&HEB, &HE9}
         Private ReadOnly _BPB As BiosParameterBlock
-        Private ReadOnly _FileBytes As IByteArray
+        Private ReadOnly _FloppyImage As IFloppyImage
         Private ReadOnly _Offset As UInteger
         Public Enum BootSectorOffsets As UInteger
             JmpBoot = 0
@@ -37,15 +37,15 @@
         End Enum
 
         Sub New(buffer() As Byte)
-            _FileBytes = New ByteArray(buffer)
+            _FloppyImage = New BasicSectorImage(buffer)
             _Offset = 0
-            _BPB = New BiosParameterBlock(_FileBytes, _Offset)
+            _BPB = New BiosParameterBlock(_FloppyImage, _Offset)
         End Sub
 
-        Sub New(FileBytes As IByteArray, Offset As UInteger)
-            _FileBytes = FileBytes
+        Sub New(FloppyImage As IFloppyImage, Offset As UInteger)
+            _FloppyImage = FloppyImage
             _Offset = Offset
-            _BPB = New BiosParameterBlock(FileBytes, _Offset)
+            _BPB = New BiosParameterBlock(FloppyImage, _Offset)
         End Sub
 
         Public Property BootStrapCode() As Byte()
@@ -56,17 +56,17 @@
                 Dim BootStrapStart = GetBootStrapOffset()
                 Dim BootStrapLength = BootSectorOffsets.BootStrapSignature - BootStrapStart
                 If BootStrapStart > 2 And BootStrapLength > 0 Then
-                    _FileBytes.SetBytes(Value, BootStrapStart + _Offset, BootSectorOffsets.BootStrapSignature - BootStrapStart, 0)
+                    _FloppyImage.SetBytes(Value, BootStrapStart + _Offset, BootSectorOffsets.BootStrapSignature - BootStrapStart, 0)
                 End If
             End Set
         End Property
 
         Public Property BootStrapSignature() As UShort
             Get
-                Return _FileBytes.GetBytesShort(BootSectorOffsets.BootStrapSignature + _Offset)
+                Return _FloppyImage.GetBytesShort(BootSectorOffsets.BootStrapSignature + _Offset)
             End Get
             Set
-                _FileBytes.SetBytes(Value, BootSectorOffsets.BootStrapSignature + _Offset)
+                _FloppyImage.SetBytes(Value, BootSectorOffsets.BootStrapSignature + _Offset)
             End Set
         End Property
 
@@ -78,82 +78,82 @@
 
         Public Property Data As Byte()
             Get
-                Return _FileBytes.GetBytes(_Offset, BOOT_SECTOR_SIZE)
+                Return _FloppyImage.GetBytes(_Offset, BOOT_SECTOR_SIZE)
             End Get
             Set(value As Byte())
-                _FileBytes.SetBytes(value, _Offset, BOOT_SECTOR_SIZE, 0)
+                _FloppyImage.SetBytes(value, _Offset, BOOT_SECTOR_SIZE, 0)
             End Set
         End Property
 
         Public Property DriveNumber() As Byte
             Get
-                Return _FileBytes.GetByte(BootSectorOffsets.DriveNumber + _Offset)
+                Return _FloppyImage.GetByte(BootSectorOffsets.DriveNumber + _Offset)
             End Get
             Set
-                _FileBytes.SetBytes(Value, BootSectorOffsets.DriveNumber + _Offset)
+                _FloppyImage.SetBytes(Value, BootSectorOffsets.DriveNumber + _Offset)
             End Set
         End Property
 
         Public Property ExtendedBootSignature() As Byte
             Get
-                Return _FileBytes.GetByte(BootSectorOffsets.ExtendedBootSignature + _Offset)
+                Return _FloppyImage.GetByte(BootSectorOffsets.ExtendedBootSignature + _Offset)
             End Get
             Set
-                _FileBytes.SetBytes(Value, BootSectorOffsets.ExtendedBootSignature + _Offset)
+                _FloppyImage.SetBytes(Value, BootSectorOffsets.ExtendedBootSignature + _Offset)
             End Set
         End Property
 
         Public Property FileSystemType() As Byte()
             Get
-                Return _FileBytes.GetBytes(BootSectorOffsets.FileSystemType + _Offset, BootSectorSizes.FileSystemType)
+                Return _FloppyImage.GetBytes(BootSectorOffsets.FileSystemType + _Offset, BootSectorSizes.FileSystemType)
             End Get
             Set
-                _FileBytes.SetBytes(Value, BootSectorOffsets.FileSystemType + _Offset, BootSectorSizes.FileSystemType, 0)
+                _FloppyImage.SetBytes(Value, BootSectorOffsets.FileSystemType + _Offset, BootSectorSizes.FileSystemType, 0)
             End Set
         End Property
 
         Public Property JmpBoot() As Byte()
             Get
-                Return _FileBytes.GetBytes(BootSectorOffsets.JmpBoot + _Offset, BootSectorSizes.JmpBoot)
+                Return _FloppyImage.GetBytes(BootSectorOffsets.JmpBoot + _Offset, BootSectorSizes.JmpBoot)
             End Get
             Set
-                _FileBytes.SetBytes(Value, BootSectorOffsets.JmpBoot + _Offset, BootSectorSizes.JmpBoot, 0)
+                _FloppyImage.SetBytes(Value, BootSectorOffsets.JmpBoot + _Offset, BootSectorSizes.JmpBoot, 0)
             End Set
         End Property
 
         Public Property OEMName() As Byte()
             Get
-                Return _FileBytes.GetBytes(BootSectorOffsets.OEMName + _Offset, BootSectorSizes.OEMName)
+                Return _FloppyImage.GetBytes(BootSectorOffsets.OEMName + _Offset, BootSectorSizes.OEMName)
             End Get
             Set
-                _FileBytes.SetBytes(Value, BootSectorOffsets.OEMName + _Offset, BootSectorSizes.OEMName, 0)
+                _FloppyImage.SetBytes(Value, BootSectorOffsets.OEMName + _Offset, BootSectorSizes.OEMName, 0)
             End Set
         End Property
 
         Public Property Reserved() As Byte
             Get
-                Return _FileBytes.GetByte(BootSectorOffsets.Reserved + _Offset)
+                Return _FloppyImage.GetByte(BootSectorOffsets.Reserved + _Offset)
             End Get
             Set
-                _FileBytes.SetBytes(Value, BootSectorOffsets.Reserved + _Offset)
+                _FloppyImage.SetBytes(Value, BootSectorOffsets.Reserved + _Offset)
             End Set
         End Property
 
         Public Property VolumeLabel() As Byte()
             Get
-                Return _FileBytes.GetBytes(BootSectorOffsets.VolumeLabel + _Offset, BootSectorSizes.VolumeLabel)
+                Return _FloppyImage.GetBytes(BootSectorOffsets.VolumeLabel + _Offset, BootSectorSizes.VolumeLabel)
             End Get
             Set
-                _FileBytes.SetBytes(Value, BootSectorOffsets.VolumeLabel + _Offset, BootSectorSizes.VolumeLabel, 0)
+                _FloppyImage.SetBytes(Value, BootSectorOffsets.VolumeLabel + _Offset, BootSectorSizes.VolumeLabel, 0)
             End Set
         End Property
 
         Public Property VolumeSerialNumber() As UInteger
             Get
-                Return _FileBytes.GetBytesInteger(BootSectorOffsets.VolumeSerialNumber + _Offset)
+                Return _FloppyImage.GetBytesInteger(BootSectorOffsets.VolumeSerialNumber + _Offset)
             End Get
             Set
-                _FileBytes.SetBytes(Value, BootSectorOffsets.VolumeSerialNumber + _Offset)
+                _FloppyImage.SetBytes(Value, BootSectorOffsets.VolumeSerialNumber + _Offset)
             End Set
         End Property
 
@@ -207,7 +207,7 @@
         Private Function GetBootStrapCode(Offset As UShort) As Byte()
             Dim BootStrapLength = BootSectorOffsets.BootStrapSignature - Offset
             If Offset > 2 And BootStrapLength > 0 Then
-                Return _FileBytes.GetBytes(Offset + _Offset, BootStrapLength)
+                Return _FloppyImage.GetBytes(Offset + _Offset, BootStrapLength)
             Else
                 Return {}
             End If

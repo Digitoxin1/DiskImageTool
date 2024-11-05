@@ -124,7 +124,7 @@ Public Class HexViewForm
         For Index = 0 To Length - 1
             Sector = Disk.OffsetToSector(HexBox1.LineInfoOffset + Offset + Index)
             If Index = 0 Or Sector <> LastSector Then
-                SectorReadOnly = _HexViewSectorData.Disk.Image.Data.ProtectedSectors.Contains(Sector)
+                SectorReadOnly = _HexViewSectorData.Disk.Image.ProtectedSectors.Contains(Sector)
                 LastSector = Sector
             End If
             Result.OriginalData(Index) = ByteProvider.ReadByte(Offset + Index)
@@ -148,7 +148,7 @@ Public Class HexViewForm
         For Index = 0 To Length - 1
             Sector = Disk.OffsetToSector(HexBox1.LineInfoOffset + Offset + Index)
             If Index = 0 Or Sector <> LastSector Then
-                SectorReadOnly = _HexViewSectorData.Disk.Image.Data.ProtectedSectors.Contains(Sector)
+                SectorReadOnly = _HexViewSectorData.Disk.Image.ProtectedSectors.Contains(Sector)
                 LastSector = Sector
             End If
 
@@ -244,8 +244,8 @@ Public Class HexViewForm
                     Length = Math.Min(HexBox1.ByteProvider.Length - SelectionStart, 8)
                 End If
                 Dim OffsetStart As UInteger = _CurrentHexViewData.SectorBlock.Offset + SelectionStart
-                SelectedBytes = _HexViewSectorData.SectorData.Data.GetBytes(OffsetStart, SelectionLength)
-                Bytes = _HexViewSectorData.SectorData.Data.GetBytes(OffsetStart, Length)
+                SelectedBytes = _HexViewSectorData.SectorData.SectorData.GetBytes(OffsetStart, SelectionLength)
+                Bytes = _HexViewSectorData.SectorData.SectorData.GetBytes(OffsetStart, Length)
             End If
         End If
 
@@ -445,7 +445,7 @@ Public Class HexViewForm
 
                     If Size > 0 Then
                         Dim Sector = Disk.OffsetToSector(HexBox1.LineInfoOffset + Start)
-                        If _HexViewSectorData.Disk.Image.Data.ProtectedSectors.Contains(Sector) Then
+                        If _HexViewSectorData.Disk.Image.ProtectedSectors.Contains(Sector) Then
                             HighlightForeColor = Color.Gray
                             HighlightBackColor = Color.White
                         End If
@@ -861,7 +861,7 @@ Public Class HexViewForm
 
             Dim Sector = Disk.OffsetToSector(OffsetStart)
 
-            HexBox1.ReadOnly = _HexViewSectorData.Disk.Image.Data.ProtectedSectors.Contains(Sector)
+            HexBox1.ReadOnly = _HexViewSectorData.Disk.Image.ProtectedSectors.Contains(Sector)
 
             ToolStripStatusOffset.Visible = Not OutOfRange
             ToolStripStatusOffset.Text = "Offset(h) :  " & OffsetStart.ToString("X")

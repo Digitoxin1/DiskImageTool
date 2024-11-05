@@ -7,7 +7,7 @@ Public Class HexViewData
         _HexViewSectorData = HexViewSectorData
         _Index = Index
         _SectorBlock = _HexViewSectorData.SectorData.GetBlock(Index)
-        _ByteProvider = New MyByteProvider(_HexViewSectorData.SectorData.Data, _SectorBlock.Offset, _SectorBlock.Size)
+        _ByteProvider = New MyByteProvider(_HexViewSectorData.SectorData.SectorData, _SectorBlock.Offset, _SectorBlock.Size)
     End Sub
     Public ReadOnly Property ByteProvider As IByteProvider
 

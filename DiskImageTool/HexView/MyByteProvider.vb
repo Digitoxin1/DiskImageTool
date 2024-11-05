@@ -4,17 +4,25 @@ Imports Hb.Windows.Forms
 Public Class MyByteProvider
     Implements IByteProvider
 
-    Private WithEvents DataBytes As IByteArray
+    Private ReadOnly _FloppyImage As IFloppyImage
     Private ReadOnly _Offset As UInteger
     Private ReadOnly _Size As UInteger
     Private _hasChanges As Boolean
     Public Event Changed As EventHandler Implements IByteProvider.Changed
     Public Event LengthChanged As EventHandler Implements IByteProvider.LengthChanged
 
-    Public Sub New(DataBytes As IByteArray, Offset As UInteger, Size As UInteger)
-        Me.DataBytes = DataBytes
+    Public Sub New(FloppyImage As IFloppyImage, Offset As UInteger, Size As UInteger)
+        _FloppyImage = FloppyImage
         _Offset = Offset
         _Size = Size
+
+        AddHandler FloppyImage.History.DataChanged, AddressOf DataBytes_DataChanged
+    End Sub
+
+    Protected Overrides Sub Finalize()
+        MyBase.Finalize()
+
+        RemoveHandler _FloppyImage.History.DataChanged, AddressOf DataBytes_DataChanged
     End Sub
 
     Public ReadOnly Property Length As Long Implements IByteProvider.Length
@@ -40,7 +48,7 @@ Public Class MyByteProvider
     End Sub
 
     Public Function ReadByte(index As Long) As Byte Implements IByteProvider.ReadByte
-        Return DataBytes.GetByte(_Offset + index)
+        Return _FloppyImage.GetByte(_Offset + index)
     End Function
 
     Public Function SupportsDeleteBytes() As Boolean Implements IByteProvider.SupportsDeleteBytes
@@ -57,10 +65,10 @@ Public Class MyByteProvider
 
     Public Sub WriteByte(index As Long, value As Byte) Implements IByteProvider.WriteByte
         Dim Offset As UInteger = _Offset + index
-        DataBytes.SetBytes(value, Offset)
+        _FloppyImage.SetBytes(value, Offset)
     End Sub
 
-    Private Sub DataBytes_DataChanged(Offset As UInteger, OriginalValue As Object, NewValue As Object) Handles DataBytes.DataChanged
+    Private Sub DataBytes_DataChanged(sender As Object, e As EventArgs)
         _hasChanges = True
         RaiseEvent Changed(Me, EventArgs.Empty)
     End Sub

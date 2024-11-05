@@ -14,7 +14,7 @@
         Public Const FAT_RESERVED_START As UShort = &HFF0
         Public Shared ReadOnly ValidMediaDescriptor() As Byte = {&HF0, &HF8, &HF9, &HFA, &HFB, &HFC, &HFD, &HFE, &HFF}
 
-        Private ReadOnly _FileBytes As ImageByteArray
+        Private ReadOnly _FloppyImage As IFloppyImage
         Private ReadOnly _Index As UShort
         Private ReadOnly _AllocatedClusters As SortedSet(Of UShort)
         Private ReadOnly _BadClusters As SortedSet(Of UShort)
@@ -27,13 +27,13 @@
         Private _BytesPerCluster As UInteger
         Private _FATTable() As UShort
 
-        Public Sub New(FileBytes As ImageByteArray, BPB As BiosParameterBlock, Index As UShort)
+        Public Sub New(FloppyImage As IFloppyImage, BPB As BiosParameterBlock, Index As UShort)
             _AllocatedClusters = New SortedSet(Of UShort)
             _BadClusters = New SortedSet(Of UShort)
             _FreeClusters = New SortedSet(Of UShort)
             _ReservedClusters = New SortedSet(Of UShort)
 
-            _FileBytes = FileBytes
+            _FloppyImage = FloppyImage
             _BPB = BPB
             _Index = Index
 
@@ -87,7 +87,7 @@
 
         Public ReadOnly Property Data As Byte()
             Get
-                Return _FileBytes.GetBytes(_Offset, _Size)
+                Return _FloppyImage.GetBytes(_Offset, _Size)
             End Get
         End Property
 
@@ -99,16 +99,16 @@
 
         Public ReadOnly Property HasMediaDescriptor As Boolean
             Get
-                Return _FileBytes.GetBytesShort(_Offset + 1) = &HFFFF
+                Return _FloppyImage.GetBytesShort(_Offset + 1) = &HFFFF
             End Get
         End Property
 
         Public Property MediaDescriptor As Byte
             Get
-                Return _FileBytes.GetByte(_Offset)
+                Return _FloppyImage.GetByte(_Offset)
             End Get
             Set(value As Byte)
-                _FileBytes.SetBytes(value, _Offset)
+                _FloppyImage.SetBytes(value, _Offset)
             End Set
         End Property
 
@@ -159,7 +159,7 @@
 
                 Dim SectorList = ClusterToSectorList(_BPB, Cluster)
                 For Each Sector In SectorList
-                    If _FileBytes.Data.ProtectedSectors.Contains(Sector) Then
+                    If _FloppyImage.ProtectedSectors.Contains(Sector) Then
                         ProtectedCluster = True
                         Exit For
                     End If
@@ -221,7 +221,7 @@
 
                 Dim SectorList = ClusterToSectorList(_BPB, Cluster)
                 For Each Sector In SectorList
-                    If _FileBytes.Data.ProtectedSectors.Contains(Sector) Then
+                    If _FloppyImage.ProtectedSectors.Contains(Sector) Then
                         ProtectedCluster = True
                         Exit For
                     End If
@@ -251,7 +251,7 @@
         Public Function UpdateFAT() As Boolean
             Dim FATBytes = EncodeFAT12(_FATTable)
             If Not Data.CompareTo(FATBytes, True) Then
-                _FileBytes.SetBytes(FATBytes, _Offset)
+                _FloppyImage.SetBytes(FATBytes, _Offset)
                 Return True
             End If
 
@@ -340,7 +340,7 @@
             Dim Offset = _BPB.ClusterToOffset(Cluster)
             Dim ClusterSize As UInteger = _BPB.BytesPerCluster
 
-            Dim Data = _FileBytes.GetBytes(Offset, ClusterSize)
+            Dim Data = _FloppyImage.GetBytes(Offset, ClusterSize)
             Dim EmptyByte As Byte = Data(0)
             If EmptyByte <> &HF6 And EmptyByte <> &H0 Then
                 Return False
