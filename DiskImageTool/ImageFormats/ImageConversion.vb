@@ -221,7 +221,8 @@ Namespace ImageFormats
 
             Dim D86FImage = New D86F.D86FImage(NewTrackCount, Image.SideCount) With {
                 .BitcellMode = True,
-                .AlternateBitcellCalculation = True
+                .AlternateBitcellCalculation = True,
+                .HasSurfaceData = Image.HasSurfaceData
             }
 
             For Track = 0 To TrackCount - 1 Step Image.TrackStep
@@ -243,7 +244,8 @@ Namespace ImageFormats
                         .Bitstream = BitstreamTrack.Bitstream,
                         .BitCellCount = BitstreamTrack.Bitstream.Length,
                         .BitRate = D86F.GetBitRate(DriveSpeed.BitRate, IsMFM),
-                        .RPM = D86F.GetRPM(DriveSpeed.RPM)
+                        .RPM = D86F.GetRPM(DriveSpeed.RPM),
+                        .SurfaceData = BitstreamTrack.SurfaceData
                     }
 
                     If BitstreamTrack.TrackType = BitstreamTrackType.MFM Then

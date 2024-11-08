@@ -116,7 +116,7 @@
             End Function
 
             Public Function BitsToBytes(Bitstream As BitArray, Padding As UInteger, Optional Reverse As Boolean = True) As Byte()
-                Dim Length = (Bitstream.Length + Padding) \ 8
+                Dim Length = Math.Ceiling((Bitstream.Length + Padding) / 8)
 
                 Dim buffer(Length - 1) As Byte
 

@@ -200,6 +200,13 @@
     <Compile Include="ImageFormats\IMD\IMDLoader.vb" />
     <Compile Include="ImageFormats\IMD\IMDSector.vb" />
     <Compile Include="ImageFormats\IMD\IMDTrack.vb" />
+    <Compile Include="ImageFormats\PRI\Enums.vb" />
+    <Compile Include="ImageFormats\PRI\PRIChunk.vb" />
+    <Compile Include="ImageFormats\PRI\PRIFloppyImage.vb" />
+    <Compile Include="ImageFormats\PRI\PRIImage.vb" />
+    <Compile Include="ImageFormats\PRI\PRIFileHeader.vb" />
+    <Compile Include="ImageFormats\PRI\PRILoader.vb" />
+    <Compile Include="ImageFormats\PRI\PRITrack.vb" />
     <Compile Include="ImageIO.vb" />
     <Compile Include="ImageFormats\ImageConversion.vb" />
     <Compile Include="ImageFormats\MFM\MFMFloppyImage.vb" />

@@ -4,6 +4,7 @@ Namespace DiskImage
     Public Enum FloppyImageType
         BasicSectorImage
         TranscopyImage
+        PRIImage
         PSIImage
         MFMImage
         D86FImage

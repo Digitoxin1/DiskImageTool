@@ -375,6 +375,8 @@ Namespace DiskImage
                     Return "HxC MFM Image"
                 Case FloppyImageType.PSIImage
                     Return "PCE Sector Image"
+                Case FloppyImageType.PRIImage
+                    Return "PCE Bitstream Image"
                 Case FloppyImageType.TranscopyImage
                     Return "Transcopy Image"
                 Case FloppyImageType.D86FImage

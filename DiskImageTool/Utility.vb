@@ -97,6 +97,8 @@ Module Utility
             Return FloppyImageType.MFMImage
         ElseIf Encoding.UTF8.GetString(Data, 0, 4) = "PSI " Then
             Return FloppyImageType.PSIImage
+        ElseIf Encoding.UTF8.GetString(Data, 0, 4) = "PRI " Then
+            Return FloppyImageType.PRIImage
         ElseIf Encoding.UTF8.GetString(Data, 0, 4) = "IMD " Then
             Return FloppyImageType.IMDImage
         ElseIf BitConverter.ToUInt16(Data, 0) = &HA55A Then
@@ -113,6 +115,8 @@ Module Utility
             Return FloppyImageType.TranscopyImage
         ElseIf FileExt = ".psi" Then
             Return FloppyImageType.PSIImage
+        ElseIf FileExt = ".pri" Then
+            Return FloppyImageType.PRIImage
         ElseIf FileExt = ".mfm" Then
             Return FloppyImageType.MFMImage
         ElseIf FileExt = ".hfe" Then

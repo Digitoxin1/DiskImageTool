@@ -506,6 +506,10 @@ Module SummaryPanel
                     .AddItem(DiskGroup, "RPM Adjustment", Value)
                 End If
                 .AddItem(DiskGroup, "Has Surface Data", If(Image.HasSurfaceData, "Yes", "No"))
+
+            ElseIf Disk.Image.ImageType = FloppyImageType.PRIImage Then
+                Dim Image As ImageFormats.PRI.PRIImage = DirectCast(Disk.Image, ImageFormats.PRI.PRIFloppyImage).Image
+                .AddItem(DiskGroup, "Has Weak Bits", If(Image.HasWeakBits, "Yes", "No"))
             End If
 
             If Disk.Image.NonStandardTracks.Count > 0 Then

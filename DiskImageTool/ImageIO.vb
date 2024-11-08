@@ -6,7 +6,7 @@ Module ImageIO
     Public ReadOnly AllFileExtensions As New List(Of String)
     Public ReadOnly BasicSectorFileExtensions As New List(Of String) From {".ima", ".img", ".imz", ".vfd", ".flp"}
     Public ReadOnly ArchiveFileExtensions As New List(Of String) From {".zip"}
-    Public ReadOnly BitstreamFileExtensions As New List(Of String) From {".86f", ".hfe", ".mfm", ".tc"}
+    Public ReadOnly BitstreamFileExtensions As New List(Of String) From {".86f", ".hfe", ".mfm", ".pri", ".tc"}
     Public ReadOnly AdvancedSectorFileExtensions As New List(Of String) From {".imd", ".psi"}
 
     Private Enum FloppyImageGroup
@@ -119,6 +119,14 @@ Module ImageIO
                         ImageData.InvalidImage = True
                     End If
 
+                ElseIf FloppyImageType = FloppyImageType.PRIImage Then
+                    Dim PRIImage = ImageFormats.PRI.ImageLoad(Data)
+                    If PRIImage IsNot Nothing Then
+                        FloppyImage = PRIImage
+                    Else
+                        ImageData.InvalidImage = True
+                    End If
+
                 ElseIf FloppyImageType = FloppyImageType.IMDImage Then
                     Dim IMDImage = ImageFormats.IMD.ImageLoad(Data)
                     If IMDImage IsNot Nothing Then
@@ -227,6 +235,9 @@ Module ImageIO
         ExtensionList = New List(Of String) From {".imd"}
         FileFilter = FileDialogAppendFilter(FileFilter, "ImageDisk Sector Image", ExtensionList)
 
+        ExtensionList = New List(Of String) From {".pri"}
+        FileFilter = FileDialogAppendFilter(FileFilter, "PCE Bitstream Image", ExtensionList)
+
         ExtensionList = New List(Of String) From {".psi"}
         FileFilter = FileDialogAppendFilter(FileFilter, "PCE Sector Image", ExtensionList)
 
@@ -323,6 +334,15 @@ Module ImageIO
                 End If
             Next
             Response.Filter = FileDialogAppendFilter(Response.Filter, "HxC MFM Image", ExtensionList)
+            CurrentIndex += 1
+
+            ExtensionList = New List(Of String) From {".pri"}
+            For Each Extension In ExtensionList
+                If FileExt.Equals(Extension, StringComparison.OrdinalIgnoreCase) Then
+                    Response.FilterIndex = CurrentIndex
+                End If
+            Next
+            Response.Filter = FileDialogAppendFilter(Response.Filter, "PCE Bitstream Image", ExtensionList)
             CurrentIndex += 1
 
             ExtensionList = New List(Of String) From {".tc"}
@@ -611,7 +631,7 @@ Module ImageIO
 
     Private Function GetImageGroup(ImageType As FloppyImageType) As FloppyImageGroup
         Select Case ImageType
-            Case FloppyImageType.HFEImage, FloppyImageType.MFMImage, FloppyImageType.TranscopyImage, FloppyImageType.D86FImage
+            Case FloppyImageType.HFEImage, FloppyImageType.MFMImage, FloppyImageType.TranscopyImage, FloppyImageType.D86FImage, FloppyImageType.PRIImage
                 Return FloppyImageGroup.BitstreamImage
             Case FloppyImageType.IMDImage, FloppyImageType.PSIImage
                 Return FloppyImageGroup.AdvancedSectorImage

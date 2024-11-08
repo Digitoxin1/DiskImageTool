@@ -293,7 +293,12 @@ Namespace ImageFormats
                                     End If
 
                                     If HasSurfaceData Then
-                                        Buffer = IBM_MFM.BitsToBytes(IBM_MFM.ResizeBitstream(Track.SurfaceData, BitCellCount), 0)
+                                        If Track.SurfaceData IsNot Nothing Then
+                                            Buffer = IBM_MFM.BitsToBytes(IBM_MFM.ResizeBitstream(Track.SurfaceData, BitCellCount), 0)
+                                        Else
+                                            Buffer = New Byte(Math.Ceiling(BitCellCount / 8)) {}
+                                        End If
+
                                         fs.Write(Buffer, 0, Buffer.Length)
 
                                         If AllocatedLength > Buffer.Length Then
