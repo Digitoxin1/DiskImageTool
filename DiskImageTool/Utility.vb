@@ -92,7 +92,7 @@ Module Utility
         ElseIf Encoding.UTF8.GetString(Data, 0, 8) = "HXCHFEV3" Then
             Return FloppyImageType.HFEImage
         ElseIf Encoding.UTF8.GetString(Data, 0, 4) = "86BF" Then
-            Return FloppyImageType._86FImage
+            Return FloppyImageType.D86FImage
         ElseIf Encoding.UTF8.GetString(Data, 0, 6) = "HXCMFM" Then
             Return FloppyImageType.MFMImage
         ElseIf Encoding.UTF8.GetString(Data, 0, 4) = "PSI " Then
@@ -118,7 +118,7 @@ Module Utility
         ElseIf FileExt = ".hfe" Then
             Return FloppyImageType.HFEImage
         ElseIf FileExt = ".86f" Then
-            Return FloppyImageType._86FImage
+            Return FloppyImageType.D86FImage
         ElseIf FileExt = ".imd" Then
             Return FloppyImageType.IMDImage
         Else

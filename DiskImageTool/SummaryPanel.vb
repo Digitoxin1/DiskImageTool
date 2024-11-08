@@ -495,8 +495,8 @@ Module SummaryPanel
                 End If
             End If
 
-            If Disk.Image.ImageType = FloppyImageType._86FImage Then
-                Dim Image As ImageFormats._86F._86FImage = DirectCast(Disk.Image, ImageFormats._86F._86FFloppyImage).Image
+            If Disk.Image.ImageType = FloppyImageType.D86FImage Then
+                Dim Image As ImageFormats.D86F.D86FImage = DirectCast(Disk.Image, ImageFormats.D86F.D86FFloppyImage).Image
                 If Image.RPMSlowDown <> 0 Then
                     If Image.AlternateBitcellCalculation Then
                         Value = "Speed up by " & (Image.RPMSlowDown * 100) & "%"

@@ -1,8 +1,8 @@
 ﻿Imports DiskImageTool.Bitstream
 
 Namespace ImageFormats
-    Namespace _86F
-        Public Class _86FTrack
+    Namespace D86F
+        Public Class D86FTrack
             Implements IBitstreamTrack
 
             Private _Bitstream As BitArray

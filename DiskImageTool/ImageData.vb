@@ -15,7 +15,6 @@
         _ReadOnly = False
         _Scanned = False
         _SortHistory = Nothing
-        _TempPath = ""
         _InvalidImage = False
         _Loaded = False
         _Checksum = 0
@@ -50,7 +49,6 @@
     Public Property SortHistory As List(Of SortEntity)
     Public Property SourceFile As String
     Public Shared Property StringOffset As Integer = 0
-    Public Property TempPath As String
     Public Property XDFLength As UInteger
     Public Property XDFMiniDisk As Boolean
     Public Property XDFOffset As UInteger
@@ -64,17 +62,6 @@
             _Filters(FilterType) = value
         End Set
     End Property
-
-    Public Sub ClearTempPath()
-        If _TempPath <> "" Then
-            Try
-                IO.File.Delete(_TempPath)
-            Catch ex As Exception
-                DebugException(ex)
-            End Try
-            _TempPath = ""
-        End If
-    End Sub
 
     Public Function DisplayPath() As String
         Dim FullPath = _SourceFile

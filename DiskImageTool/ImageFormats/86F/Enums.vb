@@ -1,5 +1,5 @@
 ﻿Namespace ImageFormats
-    Namespace _86F
+    Namespace D86F
         Public Enum BitRate As Byte
             BitRate500 = 0
             BitRate300 = 1

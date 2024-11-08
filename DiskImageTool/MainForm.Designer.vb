@@ -103,6 +103,7 @@ Partial Class MainForm
         Me.MenuToolsRestoreBootSector = New System.Windows.Forms.ToolStripMenuItem()
         Me.MenuToolsRemoveBootSector = New System.Windows.Forms.ToolStripMenuItem()
         Me.MenuToolsWin9xCleanBatch = New System.Windows.Forms.ToolStripMenuItem()
+        Me.MenuToolsTrackLayout = New System.Windows.Forms.ToolStripMenuItem()
         Me.MenuHelpProjectPage = New System.Windows.Forms.ToolStripMenuItem()
         Me.MenuHelpUpdateCheck = New System.Windows.Forms.ToolStripMenuItem()
         Me.MenuHelpChangeLog = New System.Windows.Forms.ToolStripMenuItem()
@@ -144,7 +145,6 @@ Partial Class MainForm
         Me.ToolStripFATCombo = New System.Windows.Forms.ToolStripComboBox()
         Me.StatusStripBottom = New System.Windows.Forms.StatusStrip()
         Me.ToolStripStatusReadOnly = New System.Windows.Forms.ToolStripStatusLabel()
-        Me.ToolStripStatusCached = New System.Windows.Forms.ToolStripStatusLabel()
         Me.ToolStripStatusModified = New System.Windows.Forms.ToolStripStatusLabel()
         Me.ToolStripFileName = New System.Windows.Forms.ToolStripStatusLabel()
         Me.ToolStripFileCount = New System.Windows.Forms.ToolStripStatusLabel()
@@ -187,7 +187,6 @@ Partial Class MainForm
         Me.MenuDirectoryView = New System.Windows.Forms.ToolStripMenuItem()
         Me.MenuDirectoryImportFiles = New System.Windows.Forms.ToolStripMenuItem()
         Me.MenuDirectoryNewDirectory = New System.Windows.Forms.ToolStripMenuItem()
-        Me.MenuToolsTrackLayout = New System.Windows.Forms.ToolStripMenuItem()
         SummaryName = CType(New System.Windows.Forms.ColumnHeader(), System.Windows.Forms.ColumnHeader)
         SummaryValue = CType(New System.Windows.Forms.ColumnHeader(), System.Windows.Forms.ColumnHeader)
         HashName = CType(New System.Windows.Forms.ColumnHeader(), System.Windows.Forms.ColumnHeader)
@@ -639,6 +638,12 @@ Partial Class MainForm
         Me.MenuToolsWin9xCleanBatch.Size = New System.Drawing.Size(289, 22)
         Me.MenuToolsWin9xCleanBatch.Text = "Batch Remove Windows Modifications"
         '
+        'MenuToolsTrackLayout
+        '
+        Me.MenuToolsTrackLayout.Name = "MenuToolsTrackLayout"
+        Me.MenuToolsTrackLayout.Size = New System.Drawing.Size(289, 22)
+        Me.MenuToolsTrackLayout.Text = "Generate tracklayout.txt"
+        '
         'MainMenuHelp
         '
         MainMenuHelp.DropDownItems.AddRange(New System.Windows.Forms.ToolStripItem() {Me.MenuHelpProjectPage, Me.MenuHelpUpdateCheck, Me.MenuHelpChangeLog, MenuHelpSeparator, Me.MenuHelpAbout})
@@ -1033,7 +1038,7 @@ Partial Class MainForm
         '
         'StatusStripBottom
         '
-        Me.StatusStripBottom.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.ToolStripStatusReadOnly, Me.ToolStripStatusCached, Me.ToolStripStatusModified, Me.ToolStripFileName, Me.ToolStripFileCount, Me.ToolStripFileSector, Me.ToolStripFileTrack, Me.ToolStripImageCount, Me.ToolStripModified})
+        Me.StatusStripBottom.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.ToolStripStatusReadOnly, Me.ToolStripStatusModified, Me.ToolStripFileName, Me.ToolStripFileCount, Me.ToolStripFileSector, Me.ToolStripFileTrack, Me.ToolStripImageCount, Me.ToolStripModified})
         Me.StatusStripBottom.Location = New System.Drawing.Point(0, 552)
         Me.StatusStripBottom.Name = "StatusStripBottom"
         Me.StatusStripBottom.ShowItemToolTips = True
@@ -1049,14 +1054,6 @@ Partial Class MainForm
         Me.ToolStripStatusReadOnly.Size = New System.Drawing.Size(61, 19)
         Me.ToolStripStatusReadOnly.Text = "Read Only"
         '
-        'ToolStripStatusCached
-        '
-        Me.ToolStripStatusCached.ActiveLinkColor = System.Drawing.Color.Red
-        Me.ToolStripStatusCached.ForeColor = System.Drawing.Color.Green
-        Me.ToolStripStatusCached.Name = "ToolStripStatusCached"
-        Me.ToolStripStatusCached.Size = New System.Drawing.Size(47, 19)
-        Me.ToolStripStatusCached.Text = "Cached"
-        '
         'ToolStripStatusModified
         '
         Me.ToolStripStatusModified.ForeColor = System.Drawing.Color.Blue
@@ -1070,7 +1067,7 @@ Partial Class MainForm
         Me.ToolStripFileName.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text
         Me.ToolStripFileName.Margin = New System.Windows.Forms.Padding(2, 3, 2, 2)
         Me.ToolStripFileName.Name = "ToolStripFileName"
-        Me.ToolStripFileName.Size = New System.Drawing.Size(483, 19)
+        Me.ToolStripFileName.Size = New System.Drawing.Size(499, 19)
         Me.ToolStripFileName.Spring = True
         Me.ToolStripFileName.Text = "File Name"
         Me.ToolStripFileName.TextAlign = System.Drawing.ContentAlignment.MiddleLeft
@@ -1394,12 +1391,6 @@ Partial Class MainForm
         Me.MenuDirectoryNewDirectory.Size = New System.Drawing.Size(150, 22)
         Me.MenuDirectoryNewDirectory.Text = "&New Directory"
         '
-        'MenuToolsTrackLayout
-        '
-        Me.MenuToolsTrackLayout.Name = "MenuToolsTrackLayout"
-        Me.MenuToolsTrackLayout.Size = New System.Drawing.Size(289, 22)
-        Me.MenuToolsTrackLayout.Text = "Generate tracklayout.txt"
-        '
         'MainForm
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
@@ -1537,7 +1528,6 @@ Partial Class MainForm
     Friend WithEvents MenuToolsRestructureImage As ToolStripMenuItem
     Friend WithEvents MenuHexOverdumpData As ToolStripMenuItem
     Friend WithEvents MenuHelpChangeLog As ToolStripMenuItem
-    Friend WithEvents ToolStripStatusCached As ToolStripStatusLabel
     Friend WithEvents MenuFileReload As ToolStripMenuItem
     Friend WithEvents MenuHexRawTrackData As ToolStripMenuItem
     Friend WithEvents MenuFileNewImage As ToolStripMenuItem

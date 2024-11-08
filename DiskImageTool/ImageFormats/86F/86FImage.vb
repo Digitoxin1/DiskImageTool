@@ -1,8 +1,8 @@
 ﻿Imports DiskImageTool.Bitstream
 
 Namespace ImageFormats
-    Namespace _86F
-        Public Class _86FImage
+    Namespace D86F
+        Public Class D86FImage
             Inherits BitStreamImageBase
             Implements IBitstreamImage
 
@@ -13,7 +13,7 @@ Namespace ImageFormats
             Private _MinorVersion As Byte
             Private _RPM As UShort
             Private _TrackCount As UShort
-            Private _Tracks() As _86FTrack
+            Private _Tracks() As D86FTrack
             Private _VariableBitRate As Boolean
             Private _VariableRPM As Boolean
 
@@ -39,7 +39,7 @@ Namespace ImageFormats
                 _VariableBitRate = False
                 _VariableRPM = False
 
-                _Tracks = New _86FTrack(TrackCount * SideCount - 1) {}
+                _Tracks = New D86FTrack(TrackCount * SideCount - 1) {}
             End Sub
 
             Public Property AlternateBitcellCalculation As Boolean
@@ -218,16 +218,11 @@ Namespace ImageFormats
                 End Set
             End Property
 
-            Private ReadOnly Property IBitstreamImage_TrackStep As Byte Implements IBitstreamImage.TrackStep
-                Get
-                    Return 1
-                End Get
-            End Property
             Public Overrides Function Export(FilePath As String) As Boolean Implements IBitstreamImage.Export
                 Dim Buffer() As Byte
                 Dim Pos As UInteger
                 Dim DataPosition As UInteger
-                Dim Track As _86FTrack
+                Dim Track As D86FTrack
                 Dim BitCellCount As UInteger
                 Dim AllocatedLength As UInteger
 
@@ -320,7 +315,7 @@ Namespace ImageFormats
                 Return True
             End Function
 
-            Public Function GetTrack(Track As UShort, Side As Byte) As _86FTrack
+            Public Function GetTrack(Track As UShort, Side As Byte) As D86FTrack
                 If Track > _TrackCount - 1 Or Side > SideCount - 1 Then
                     Throw New System.IndexOutOfRangeException
                 End If
@@ -335,7 +330,7 @@ Namespace ImageFormats
             End Function
 
             Public Overrides Function Load(Buffer() As Byte) As Boolean Implements IBitstreamImage.Load
-                Dim TrackList As New List(Of _86FTrack)
+                Dim TrackList As New List(Of D86FTrack)
                 Dim Result As Boolean
                 Dim DoubleStep As Boolean = False
 
@@ -363,28 +358,28 @@ Namespace ImageFormats
                         For i = 0 To 255
                             For j = 0 To SideCount - 1
                                 Offset = BitConverter.ToUInt32(Buffer, Pos)
-                                Dim F86Track = New _86FTrack(i, j, Offset)
+                                Dim D86FTrack = New D86FTrack(i, j, Offset)
                                 If Offset > 0 Then
-                                    F86Track.Flags = BitConverter.ToUInt16(Buffer, Offset)
+                                    D86FTrack.Flags = BitConverter.ToUInt16(Buffer, Offset)
                                     If BitcellMode Then
-                                        F86Track.BitCellCount = BitConverter.ToUInt32(Buffer, Offset + 2)
+                                        D86FTrack.BitCellCount = BitConverter.ToUInt32(Buffer, Offset + 2)
                                         If AlternateBitcellCalculation Then
-                                            BitCellCount = F86Track.BitCellCount
-                                            AllocatedLength = Math.Ceiling(F86Track.BitCellCount / 8)
+                                            BitCellCount = D86FTrack.BitCellCount
+                                            AllocatedLength = Math.Ceiling(D86FTrack.BitCellCount / 8)
                                         End If
                                         Offset += 4
                                     End If
-                                    F86Track.IndexHolePos = BitConverter.ToUInt32(Buffer, Offset + 2)
+                                    D86FTrack.IndexHolePos = BitConverter.ToUInt32(Buffer, Offset + 2)
 
                                     If Not BitcellMode Or Not AlternateBitcellCalculation Then
-                                        Dim IsMFM = F86Track.Encoding = Encoding.MFM
-                                        BitCellCount = GetCalculatedBitCellCount(F86Track.BitRate, F86Track.RPM, IsMFM, RPMSlowDown, AlternateBitcellCalculation, F86Track.BitCellCount)
-                                        AllocatedLength = GetAllocatedLength(Hole, RPMSlowDown, AlternateBitcellCalculation, F86Track.BitCellCount)
+                                        Dim IsMFM = D86FTrack.Encoding = Encoding.MFM
+                                        BitCellCount = GetCalculatedBitCellCount(D86FTrack.BitRate, D86FTrack.RPM, IsMFM, RPMSlowDown, AlternateBitcellCalculation, D86FTrack.BitCellCount)
+                                        AllocatedLength = GetAllocatedLength(Hole, RPMSlowDown, AlternateBitcellCalculation, D86FTrack.BitCellCount)
                                     End If
-                                    F86Track.Bitstream = IBM_MFM.BytesToBits(Buffer, Offset + 6, BitCellCount)
+                                    D86FTrack.Bitstream = IBM_MFM.BytesToBits(Buffer, Offset + 6, BitCellCount)
 
                                     If HasSurfaceData Then
-                                        F86Track.SurfaceData = IBM_MFM.BytesToBits(Buffer, Offset + 6 + AllocatedLength, BitCellCount)
+                                        D86FTrack.SurfaceData = IBM_MFM.BytesToBits(Buffer, Offset + 6 + AllocatedLength, BitCellCount)
                                     End If
 
                                     'Check for thick tracks
@@ -402,7 +397,7 @@ Namespace ImageFormats
 
                                     _TrackCount = i + 1
                                 End If
-                                TrackList.Add(F86Track)
+                                TrackList.Add(D86FTrack)
                                 Pos += 4
                             Next
                         Next
@@ -411,35 +406,35 @@ Namespace ImageFormats
                             _TrackCount \= 2
                         End If
 
-                        _Tracks = New _86FTrack((_TrackCount) * SideCount - 1) {}
+                        _Tracks = New D86FTrack((_TrackCount) * SideCount - 1) {}
 
                         Dim Index As UShort = 0
                         Dim Track As UShort
-                        For Each F86Track In TrackList
+                        For Each D86FTrack In TrackList
                             If Not DoubleStep OrElse (Index \ SideCount) Mod 2 = 0 Then
-                                Track = F86Track.Track
+                                Track = D86FTrack.Track
                                 If DoubleStep Then
                                     Track \= 2
                                 End If
 
                                 If Track < _TrackCount Then
-                                    If F86Track.Encoding = Encoding.MFM Then
-                                        F86Track.MFMData = New IBM_MFM.IBM_MFM_Track(F86Track.Bitstream)
+                                    If D86FTrack.Encoding = Encoding.MFM Then
+                                        D86FTrack.MFMData = New IBM_MFM.IBM_MFM_Track(D86FTrack.Bitstream)
                                         If Index = 0 Then
-                                            _BitRate = GetBitRate(F86Track.BitRate, True)
-                                            _RPM = GetRPM(F86Track.RPM)
+                                            _BitRate = GetBitRate(D86FTrack.BitRate, True)
+                                            _RPM = GetRPM(D86FTrack.RPM)
                                         Else
-                                            If Not _VariableBitRate AndAlso _BitRate <> GetBitRate(F86Track.BitRate, True) Then
+                                            If Not _VariableBitRate AndAlso _BitRate <> GetBitRate(D86FTrack.BitRate, True) Then
                                                 _VariableBitRate = True
                                                 _BitRate = 0
                                             End If
-                                            If Not _VariableRPM AndAlso _RPM <> GetRPM(F86Track.RPM) Then
+                                            If Not _VariableRPM AndAlso _RPM <> GetRPM(D86FTrack.RPM) Then
                                                 _VariableRPM = True
                                                 _RPM = 0
                                             End If
                                         End If
                                     End If
-                                    SetTrack(Track, F86Track.Side, F86Track)
+                                    SetTrack(Track, D86FTrack.Side, D86FTrack)
                                     'Dim FileName = "H:\debug\track" & F86Track.Track & "." & F86Track.Side & ".log"
                                     'DebugExportMFMBitstream(F86Track.Bitstream, FileName)
                                 End If
@@ -455,7 +450,7 @@ Namespace ImageFormats
                 Return Result
             End Function
 
-            Public Sub SetTrack(Track As UShort, Side As Byte, Value As _86FTrack)
+            Public Sub SetTrack(Track As UShort, Side As Byte, Value As D86FTrack)
                 If Track > _TrackCount - 1 Or Side > SideCount - 1 Then
                     Throw New System.IndexOutOfRangeException
                 End If
@@ -508,8 +503,8 @@ Namespace ImageFormats
                 Return Length
             End Function
 
-            Private Function GetTrackArray() As _86FTrack()
-                Dim TrackArray() As _86FTrack
+            Private Function GetTrackArray() As D86FTrack()
+                Dim TrackArray() As D86FTrack
                 Dim TrackCount = _TrackCount
                 Dim TrackStep As UShort = 1
 
@@ -518,7 +513,7 @@ Namespace ImageFormats
                     TrackCount *= 2
                 End If
 
-                TrackArray = New _86FTrack(TrackCount * SideCount - 1) {}
+                TrackArray = New D86FTrack(TrackCount * SideCount - 1) {}
 
                 Dim Index As UShort = 0
                 For i = 0 To _TrackCount - 1

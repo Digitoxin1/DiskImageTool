@@ -6,7 +6,7 @@ Namespace DiskImage
         TranscopyImage
         PSIImage
         MFMImage
-        _86FImage
+        D86FImage
         HFEImage
         IMDImage
     End Enum
@@ -15,7 +15,7 @@ Namespace DiskImage
         ReadOnly Property AdditionalTracks As HashSet(Of UShort)
         ReadOnly Property BitstreamImage As IBitstreamImage
         ReadOnly Property CanResize As Boolean
-        ReadOnly Property History As FloppyImageHistory
+        ReadOnly Property History As ImageHistory
         ReadOnly Property ImageType As FloppyImageType
         ReadOnly Property IsBitstreamImage As Boolean
         ReadOnly Property Length As Integer

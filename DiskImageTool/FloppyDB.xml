@@ -11660,7 +11660,7 @@
       <disk md5="BE33F0B5FA5E88C9D0D494D57D546FB9" disk="Country Disk 2" version="1.0, 1.01"/>
     </release>
     <release year="1989" version="1.01" media="360K" status="V">
-      <disk md5="7E2E653DD62F0C9FDC87824ACBB226D0" disk="Program Disk"/>
+      <disk md5="07D4463D8335E3C77F8F5BB6C6969CB8" disk="Program Disk" cp="H.L.S. Duplication"/>
     </release>
     <release year="1991" version="1.2" media="720K" status="U">
       <disk md5="8B24C57BD4E00272CD16C534EE0A6511"/>

@@ -10,7 +10,7 @@ Namespace DiskImage
         Private ReadOnly _Image As IBitstreamImage
         Private ReadOnly _NonStandardTracks As HashSet(Of UShort)
         Private ReadOnly _ProtectedSectors As HashSet(Of UInteger)
-        Private ReadOnly _History As FloppyImageHistory
+        Private ReadOnly _History As ImageHistory
         Private _BPB As BiosParameterBlock
         Private _ImageSize As Integer
         Private _Sectors() As BitstreamSector
@@ -20,7 +20,7 @@ Namespace DiskImage
 
         Public Sub New(Image As IBitstreamImage)
             _Image = Image
-            _History = New FloppyImageHistory(Me)
+            _History = New ImageHistory(Me)
             _ProtectedSectors = New HashSet(Of UInteger)
             _AdditionalTracks = New HashSet(Of UShort)
             _NonStandardTracks = New HashSet(Of UShort)
@@ -49,7 +49,7 @@ Namespace DiskImage
             End Get
         End Property
 
-        Public ReadOnly Property History As FloppyImageHistory Implements IFloppyImage.History
+        Public ReadOnly Property History As ImageHistory Implements IFloppyImage.History
             Get
                 Return _History
             End Get

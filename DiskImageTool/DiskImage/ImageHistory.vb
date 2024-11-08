@@ -1,5 +1,5 @@
 ﻿Namespace DiskImage
-    Public Class FloppyImageHistory
+    Public Class ImageHistory
         Private ReadOnly _Changes As Stack(Of DataChange())
         Private ReadOnly _FloppyImage As IFloppyImage
         Private ReadOnly _RedoChanges As Stack(Of DataChange())

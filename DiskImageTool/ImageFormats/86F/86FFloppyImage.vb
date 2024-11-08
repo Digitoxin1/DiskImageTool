@@ -3,14 +3,14 @@ Imports DiskImageTool.Bitstream
 Imports DiskImageTool.DiskImage
 
 Namespace ImageFormats
-    Namespace _86F
-        Public Class _86FFloppyImage
+    Namespace D86F
+        Public Class D86FFloppyImage
             Inherits MappedFloppyImage
             Implements IFloppyImage
 
-            Private ReadOnly _Image As _86FImage
+            Private ReadOnly _Image As D86FImage
 
-            Public Sub New(Image As _86FImage, DiskFormat As FloppyDiskFormat)
+            Public Sub New(Image As D86FImage, DiskFormat As FloppyDiskFormat)
                 MyBase.New(Image)
 
                 _Image = Image
@@ -18,7 +18,7 @@ Namespace ImageFormats
                 InitDiskFormat(DiskFormat)
             End Sub
 
-            Public ReadOnly Property Image As _86FImage
+            Public ReadOnly Property Image As D86FImage
                 Get
                     Return _Image
                 End Get
@@ -26,7 +26,7 @@ Namespace ImageFormats
 
             Public Overrides ReadOnly Property ImageType As FloppyImageType Implements IFloppyImage.ImageType
                 Get
-                    Return FloppyImageType._86FImage
+                    Return FloppyImageType.D86FImage
                 End Get
             End Property
 

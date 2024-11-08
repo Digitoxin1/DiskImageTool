@@ -5,27 +5,27 @@ Imports DiskImageTool.ImageFormats.IMD
 
 Namespace ImageFormats
     Module ImageConversion
-        Public Function BasicSectorTo86FImage(Data() As Byte, DiskFormat As FloppyDiskFormat) As _86F._86FImage
+        Public Function BasicSectorTo86FImage(Data() As Byte, DiskFormat As FloppyDiskFormat) As D86F.D86FImage
             Dim Params = GetFloppyDiskParams(DiskFormat)
             Dim DriveSpeed = GetDriveSpeed(DiskFormat)
             Dim TrackCount = GetTrackCount(Params)
-            Dim Hole As _86F.DiskHole
+            Dim Hole As D86F.DiskHole
 
-            Dim RPM As _86F.RPM = _86F.GetRPM(DriveSpeed.RPM)
-            Dim BitRate As _86F.BitRate = _86F.GetBitRate(DriveSpeed.BitRate, True)
+            Dim RPM As D86F.RPM = D86F.GetRPM(DriveSpeed.RPM)
+            Dim BitRate As D86F.BitRate = D86F.GetBitRate(DriveSpeed.BitRate, True)
 
             Select Case DiskFormat
                 Case FloppyDiskFormat.Floppy160, FloppyDiskFormat.Floppy180, FloppyDiskFormat.Floppy320, FloppyDiskFormat.Floppy360, FloppyDiskFormat.Floppy720
-                    Hole = _86F.DiskHole.DD
+                    Hole = D86F.DiskHole.DD
                 Case FloppyDiskFormat.Floppy1200, FloppyDiskFormat.Floppy1440
-                    Hole = _86F.DiskHole.HD
+                    Hole = D86F.DiskHole.HD
                 Case FloppyDiskFormat.Floppy2880
-                    Hole = _86F.DiskHole.ED
+                    Hole = D86F.DiskHole.ED
                 Case Else
-                    Hole = _86F.DiskHole.DD
+                    Hole = D86F.DiskHole.DD
             End Select
 
-            Dim Image = New _86F._86FImage(TrackCount, Params.NumberOfHeads) With {
+            Dim Image = New D86F.D86FImage(TrackCount, Params.NumberOfHeads) With {
                 .BitcellMode = True,
                 .AlternateBitcellCalculation = True,
                 .Hole = Hole
@@ -33,18 +33,18 @@ Namespace ImageFormats
 
             For Track As UShort = 0 To TrackCount - 1
                 For Side As UShort = 0 To Params.NumberOfHeads - 1
-                    Dim F86Track = New _86F._86FTrack(Track, Side, 0) With {
+                    Dim D86FTrack = New D86F.D86FTrack(Track, Side, 0) With {
                         .RPM = RPM,
                         .BitRate = BitRate,
-                        .Encoding = _86F.Encoding.MFM
+                        .Encoding = D86F.Encoding.MFM
                     }
 
                     Dim MFMBitstream = MFMBitstreamFromSectorImage(Data, Params, Track, Side, DriveSpeed.RPM, DriveSpeed.BitRate)
 
-                    F86Track.Bitstream = MFMBitstream.Bitstream
-                    F86Track.BitCellCount = MFMBitstream.Bitstream.Length
+                    D86FTrack.Bitstream = MFMBitstream.Bitstream
+                    D86FTrack.BitCellCount = MFMBitstream.Bitstream.Length
 
-                    Image.SetTrack(Track, Side, F86Track)
+                    Image.SetTrack(Track, Side, D86FTrack)
                 Next
             Next
 
@@ -213,13 +213,13 @@ Namespace ImageFormats
             Return Transcopy
         End Function
 
-        Public Function BitstreamTo86FImage(Image As IBitstreamImage) As _86F._86FImage
+        Public Function BitstreamTo86FImage(Image As IBitstreamImage) As D86F.D86FImage
             Dim BitstreamTrack As IBitstreamTrack
 
             Dim TrackCount = GetValidTrackCount(Image, False)
             Dim NewTrackCount = TrackCount \ Image.TrackStep
 
-            Dim F86Image = New _86F._86FImage(NewTrackCount, Image.SideCount) With {
+            Dim D86FImage = New D86F.D86FImage(NewTrackCount, Image.SideCount) With {
                 .BitcellMode = True,
                 .AlternateBitcellCalculation = True
             }
@@ -231,7 +231,7 @@ Namespace ImageFormats
 
                     If Track = 0 And Side = 0 Then
                         If BitstreamTrack.MFMData IsNot Nothing Then
-                            F86Image.Hole = Get86FHole(GetTrackFormat(BitstreamTrack.MFMData.Size))
+                            D86FImage.Hole = Get86FHole(GetTrackFormat(BitstreamTrack.MFMData.Size))
                         End If
                     End If
 
@@ -239,24 +239,24 @@ Namespace ImageFormats
 
                     Dim IsMFM As Boolean = BitstreamTrack.TrackType = BitstreamTrackType.MFM
 
-                    Dim F86Track = New _86F._86FTrack(NewTrack, Side, 0) With {
+                    Dim D86FTrack = New D86F.D86FTrack(NewTrack, Side, 0) With {
                         .Bitstream = BitstreamTrack.Bitstream,
                         .BitCellCount = BitstreamTrack.Bitstream.Length,
-                        .BitRate = _86F.GetBitRate(DriveSpeed.BitRate, IsMFM),
-                        .RPM = _86F.GetRPM(DriveSpeed.RPM)
+                        .BitRate = D86F.GetBitRate(DriveSpeed.BitRate, IsMFM),
+                        .RPM = D86F.GetRPM(DriveSpeed.RPM)
                     }
 
                     If BitstreamTrack.TrackType = BitstreamTrackType.MFM Then
-                        F86Track.Encoding = _86F.Encoding.MFM
+                        D86FTrack.Encoding = D86F.Encoding.MFM
                     Else
-                        F86Track.Encoding = _86F.Encoding.FM
+                        D86FTrack.Encoding = D86F.Encoding.FM
                     End If
 
-                    F86Image.SetTrack(NewTrack, Side, F86Track)
+                    D86FImage.SetTrack(NewTrack, Side, D86FTrack)
                 Next
             Next
 
-            Return F86Image
+            Return D86FImage
         End Function
 
         Public Function BitstreamToHFEImage(Image As IBitstreamImage) As HFE.HFEImage
@@ -476,18 +476,18 @@ Namespace ImageFormats
             Return Transcopy
         End Function
 
-        Private Function Get86FHole(TrackFormat As MFMTrackFormat) As _86F.DiskHole
+        Private Function Get86FHole(TrackFormat As MFMTrackFormat) As D86F.DiskHole
             Select Case TrackFormat
                 Case MFMTrackFormat.TrackFormatDD
-                    Return _86F.DiskHole.DD
+                    Return D86F.DiskHole.DD
                 Case MFMTrackFormat.TrackFormatHD
-                    Return _86F.DiskHole.HD
+                    Return D86F.DiskHole.HD
                 Case MFMTrackFormat.TrackFormatHD1200
-                    Return _86F.DiskHole.HD
+                    Return D86F.DiskHole.HD
                 Case MFMTrackFormat.TrackFormatED
-                    Return _86F.DiskHole.ED
+                    Return D86F.DiskHole.ED
                 Case Else
-                    Return _86F.DiskHole.DD
+                    Return D86F.DiskHole.DD
             End Select
         End Function
 

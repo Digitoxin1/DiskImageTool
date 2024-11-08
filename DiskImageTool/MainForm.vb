@@ -1229,8 +1229,6 @@ Public Class MainForm
         ItemFiltersRemove(ImageData)
         _FileNames.Remove(ImageData.DisplayPath)
 
-        ImageData.ClearTempPath()
-
         Dim ActiveComboBox As ComboBox = IIf(ImageFilters.FiltersApplied, ComboImagesFiltered, ComboImages)
 
         Dim SelectedIndex = ActiveComboBox.SelectedIndex
@@ -2940,7 +2938,6 @@ Public Class MainForm
             ToolStripStatusModified.Visible = CurrentImage.Disk.Image.History.Modified
             ToolStripStatusReadOnly.Visible = CurrentImage.ImageData.ReadOnly
             ToolStripStatusReadOnly.Text = IIf(CurrentImage.ImageData.Compressed, "Compressed", "Read Only")
-            ToolStripStatusCached.Visible = CurrentImage.ImageData.TempPath <> ""
             RefreshRawTrackSubMenu(CurrentImage.Disk)
             MenuToolsTrackLayout.Visible = My.Settings.Debug AndAlso CurrentImage.Disk.Image.IsBitstreamImage
         Else
@@ -2949,7 +2946,6 @@ Public Class MainForm
             SetButtonStateRedo(False)
             ToolStripStatusModified.Visible = False
             ToolStripStatusReadOnly.Visible = False
-            ToolStripStatusCached.Visible = False
             MenuRawTrackDataSubMenuClear()
             MenuToolsTrackLayout.Visible = False
         End If
@@ -3228,7 +3224,7 @@ Public Class MainForm
     End Sub
 
     Private Sub ResetAll()
-        EmptyTempPath()
+        'EmptyTempPath()
         _CurrentImage = Nothing
         Me.Text = GetWindowCaption()
         ImageFilters.FiltersApplied = False
@@ -3475,7 +3471,6 @@ Public Class MainForm
             ImageData.Compressed = False
             ImageData.CompressedFile = ""
             ImageData.ReadOnly = IsFileReadOnly(NewFilePath)
-            ImageData.ClearTempPath()
 
             If _FileNames.ContainsKey(ImageData.DisplayPath) Then
                 FileClose(_FileNames.Item(ImageData.DisplayPath))
@@ -3811,7 +3806,6 @@ Public Class MainForm
     End Sub
 
     Private Sub BtnReload_Click(sender As Object, e As EventArgs) Handles MenuFileReload.Click
-        _CurrentImage.ImageData?.ClearTempPath()
         ReloadCurrentImage(False)
     End Sub
 
@@ -4126,7 +4120,7 @@ Public Class MainForm
     End Sub
 
     Private Sub MainForm_Closed(sender As Object, e As EventArgs) Handles Me.Closed
-        EmptyTempPath()
+        'EmptyTempPath()
     End Sub
 
     Private Sub MainForm_Closing(sender As Object, e As CancelEventArgs) Handles Me.Closing

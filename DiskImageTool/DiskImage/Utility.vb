@@ -1,5 +1,4 @@
 ﻿Imports System.IO
-Imports System.Runtime.Remoting.Messaging
 Imports System.Text
 
 Namespace DiskImage
@@ -378,7 +377,7 @@ Namespace DiskImage
                     Return "PCE Sector Image"
                 Case FloppyImageType.TranscopyImage
                     Return "Transcopy Image"
-                Case FloppyImageType._86FImage
+                Case FloppyImageType.D86FImage
                     Return "86Box 86F Image"
                 Case FloppyImageType.IMDImage
                     Return "ImageDisk Sector Image"
