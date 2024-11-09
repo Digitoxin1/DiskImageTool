@@ -16,6 +16,8 @@ Namespace DiskImage
         ReadOnly Property AdditionalTracks As HashSet(Of UShort)
         ReadOnly Property BitstreamImage As IBitstreamImage
         ReadOnly Property CanResize As Boolean
+        ReadOnly Property HasWeakBitsSupport As Boolean
+        ReadOnly Property HasWeakBits As Boolean
         ReadOnly Property History As ImageHistory
         ReadOnly Property ImageType As FloppyImageType
         ReadOnly Property IsBitstreamImage As Boolean

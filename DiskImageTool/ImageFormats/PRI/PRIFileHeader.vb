@@ -5,6 +5,8 @@
 
             Public Sub New()
                 _ChunkData = New Byte(3) {}
+                Version = 0
+                Reserved = 0
             End Sub
 
             Public Sub New(ChunkData() As Byte)

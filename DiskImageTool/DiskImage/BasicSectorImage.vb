@@ -28,6 +28,18 @@
             End Get
         End Property
 
+        Public ReadOnly Property HasWeakBits As Boolean Implements IFloppyImage.HasWeakBits
+            Get
+                Return False
+            End Get
+        End Property
+
+        Public ReadOnly Property HasWeakBitsSupport As Boolean Implements IFloppyImage.HasWeakBitsSupport
+            Get
+                Return False
+            End Get
+        End Property
+
         Public ReadOnly Property History As ImageHistory Implements IFloppyImage.History
             Get
                 Return _History

@@ -2,16 +2,11 @@
 
 Namespace ImageFormats
     Namespace PRI
-        Public Structure AltBitClock
-            Dim BitOffset As UInteger
-            Dim NewBitClock As UInteger
-        End Structure
-
         Public Class PRITrack
             Implements IBitstreamTrack
 
             Private ReadOnly _ChunkData() As Byte
-            Private _AltBitClockList As List(Of AltBitClock)
+            Private _AltBitClockList As List(Of PRIAltBitClock)
             Private _Bitstream As BitArray
             Private _SurfaceData As BitArray
 
@@ -25,7 +20,7 @@ Namespace ImageFormats
                 Initialize()
             End Sub
 
-            Public ReadOnly Property AltBitClockList As List(Of AltBitClock)
+            Public ReadOnly Property AltBitClockList As List(Of PRIAltBitClock)
                 Get
                     Return _AltBitClockList
                 End Get
@@ -54,6 +49,12 @@ Namespace ImageFormats
                 Set(value As BitArray)
                     _Bitstream = value
                 End Set
+            End Property
+
+            Public ReadOnly Property ChunkData As Byte()
+                Get
+                    Return _ChunkData
+                End Get
             End Property
 
             Public ReadOnly Property Decoded As Boolean Implements IBitstreamTrack.Decoded
@@ -90,10 +91,13 @@ Namespace ImageFormats
                 End Set
             End Property
 
-            Public ReadOnly Property SurfaceData As BitArray Implements IBitstreamTrack.SurfaceData
+            Public Property SurfaceData As BitArray Implements IBitstreamTrack.SurfaceData
                 Get
                     Return _SurfaceData
                 End Get
+                Set(value As BitArray)
+                    _SurfaceData = value
+                End Set
             End Property
 
             Public Property Track As UInteger
@@ -128,10 +132,11 @@ Namespace ImageFormats
                 End Get
             End Property
 
-            Public Function AddAltBitClock(BitOffset As UInteger, NewBitClock As UInteger) As AltBitClock
-                Dim AltBitClock As AltBitClock
-                AltBitClock.BitOffset = BitOffset
-                AltBitClock.NewBitClock = NewBitClock
+            Public Function AddAltBitClock(BitOffset As UInteger, NewBitClock As UInteger) As PRIAltBitClock
+                Dim AltBitClock As New PRIAltBitClock With {
+                    .BitOffset = BitOffset,
+                    .NewBitClock = NewBitClock
+                }
 
                 _AltBitClockList.Add(AltBitClock)
 
@@ -146,12 +151,66 @@ Namespace ImageFormats
                 Dim Buffer = BitConverter.GetBytes(MyBitConverter.SwapEndian(WeakBitMask))
                 Dim WeakBits = IBM_MFM.BytesToBits(Buffer)
                 For i = 0 To WeakBits.Length - 1
-                    _SurfaceData(BitOffset + i) = WeakBits(i)
+                    If BitOffset + i < _SurfaceData.Length Then
+                        _SurfaceData(BitOffset + i) = WeakBits(i)
+                    End If
                 Next
             End Sub
 
+            Public Function GetAltBitClockData() As Byte()
+                Dim Buffer() As Byte
+
+                Dim ChunkData = New Byte(_AltBitClockList.Count * 8 - 1) {}
+                Dim Offset As Integer = 0
+                For Each AltBitClock In _AltBitClockList
+                    Buffer = BitConverter.GetBytes(MyBitConverter.SwapEndian(AltBitClock.BitOffset))
+                    Array.Copy(Buffer, 0, ChunkData, Offset, Buffer.Length)
+                    Buffer = BitConverter.GetBytes(MyBitConverter.SwapEndian(AltBitClock.NewBitClock))
+                    Array.Copy(Buffer, 0, ChunkData, Offset + 4, Buffer.Length)
+                    Offset += 8
+                Next
+
+                Return ChunkData
+            End Function
+
+            Public Function GetWeakBitData() As Byte()
+                Dim WeakBits As BitArray
+                Dim Found As Boolean
+                Dim Buffer() As Byte
+                Dim ChunkData() As Byte
+                Dim WeakBitsList As New SortedDictionary(Of UInteger, Byte())
+
+                For BitOffset = 0 To _SurfaceData.Length - 1 Step 32
+                    WeakBits = New BitArray(32)
+                    Found = False
+                    For i = 0 To WeakBits.Length - 1
+                        If BitOffset + i < _SurfaceData.Length Then
+                            WeakBits(i) = _SurfaceData(BitOffset + i)
+                            If WeakBits(i) Then
+                                Found = True
+                            End If
+                        End If
+                    Next
+                    If Found Then
+                        Buffer = IBM_MFM.BitsToBytes(WeakBits, 0)
+                        WeakBitsList.Add(BitOffset, Buffer)
+                    End If
+                Next
+
+                ChunkData = New Byte(WeakBitsList.Count * 8 - 1) {}
+                Dim Offset As Integer = 0
+                For Each kvp As KeyValuePair(Of UInteger, Byte()) In WeakBitsList
+                    Buffer = BitConverter.GetBytes(MyBitConverter.SwapEndian(kvp.Key))
+                    Array.Copy(Buffer, 0, ChunkData, Offset, Buffer.Length)
+                    Array.Copy(kvp.Value, 0, ChunkData, Offset + 4, kvp.Value.Length)
+                    Offset += 8
+                Next
+
+                Return ChunkData
+            End Function
+
             Private Sub Initialize()
-                _AltBitClockList = New List(Of AltBitClock)
+                _AltBitClockList = New List(Of PRIAltBitClock)
                 _Bitstream = New BitArray(Length)
                 _MFMData = Nothing
                 _SurfaceData = Nothing

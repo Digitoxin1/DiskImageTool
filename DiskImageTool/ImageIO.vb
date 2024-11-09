@@ -482,6 +482,9 @@ Module ImageIO
                 ElseIf FileImageType = FloppyImageType.PSIImage Then
                     Dim PSI = ImageFormats.BasicSectorToPSIImage(Data, Disk.DiskFormat)
                     Result = PSI.Export(FilePath)
+                ElseIf FileImageType = FloppyImageType.PRIImage Then
+                    Dim PRI = ImageFormats.BasicSectorToPRIImage(Data, Disk.DiskFormat)
+                    Result = PRI.Export(FilePath)
                 ElseIf FileImageType = FloppyImageType.MFMImage Then
                     Dim MFM = ImageFormats.BasicSectorToMFMImage(Data, Disk.DiskFormat)
                     Result = MFM.Export(FilePath)
@@ -533,6 +536,15 @@ Module ImageIO
             If Image IsNot Nothing Then
                 Dim PSI = ImageFormats.BitstreamToPSIImage(Image)
                 Result = PSI.Export(FilePath)
+            Else
+                Return SaveImageResponse.Unsupported
+            End If
+
+        ElseIf FileImageType = FloppyImageType.PRIImage Then
+            Dim Image As IBitstreamImage = Disk.Image.BitstreamImage
+            If Image IsNot Nothing Then
+                Dim PRI = ImageFormats.BitstreamToPRIImage(Image)
+                Result = PRI.Export(FilePath)
             Else
                 Return SaveImageResponse.Unsupported
             End If
@@ -611,19 +623,19 @@ Module ImageIO
                 End If
             End If
 
-        ElseIf FloppyImage.ImageType = FloppyImageType.D86FImage Then
-            If FloppyImage.NonStandardTracks.Count > 0 Then
-                Dim Image = DirectCast(FloppyImage, ImageFormats.D86F.D86FFloppyImage).Image
-                If Image.HasSurfaceData Then
-                    Msg = "This image contains additional surface data which may be required for copy protection." _
+        ElseIf FloppyImage.HasWeakBitsSupport Then
+            If Not HasWeakBitsSupport(FileImageType) Then
+                If FloppyImage.NonStandardTracks.Count > 0 Then
+                    If FloppyImage.HasWeakBits Then
+                        Msg = "This image contains additional surface data which may be required for copy protection." _
                         & vbCrLf & vbCrLf & "This data will be lost when saving to this image type." _
                         & vbCrLf & vbCrLf & "Do you wish to continue?"
-                    If MsgBox(Msg, MsgBoxStyle.Exclamation + MsgBoxStyle.YesNo + MsgBoxStyle.DefaultButton2) = MsgBoxResult.No Then
-                        Return False
+                        If MsgBox(Msg, MsgBoxStyle.Exclamation + MsgBoxStyle.YesNo + MsgBoxStyle.DefaultButton2) = MsgBoxResult.No Then
+                            Return False
+                        End If
                     End If
                 End If
             End If
-
         End If
 
         Return True
@@ -638,5 +650,9 @@ Module ImageIO
             Case Else
                 Return FloppyImageGroup.BasicSectorImage
         End Select
+    End Function
+
+    Private Function HasWeakBitsSupport(ImageType As FloppyImageType) As Boolean
+        Return (ImageType = FloppyImageType.PSIImage Or ImageType = FloppyImageType.PRIImage Or ImageType = FloppyImageType.D86FImage)
     End Function
 End Module

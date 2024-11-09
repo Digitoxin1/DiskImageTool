@@ -104,6 +104,8 @@ Module SummaryPanel
     Private Function GetBitRateColor(BitRate As Integer, Format As FloppyDiskFormat) As Color
         Dim ForeColor = SystemColors.WindowText
 
+        BitRate = Bitstream.RoundBitRate(BitRate)
+
         Select Case Format
             Case FloppyDiskFormat.Floppy160, FloppyDiskFormat.Floppy180, FloppyDiskFormat.Floppy320, FloppyDiskFormat.Floppy360
                 If BitRate = 300 Then
@@ -507,9 +509,8 @@ Module SummaryPanel
                 End If
                 .AddItem(DiskGroup, "Has Surface Data", If(Image.HasSurfaceData, "Yes", "No"))
 
-            ElseIf Disk.Image.ImageType = FloppyImageType.PRIImage Then
-                Dim Image As ImageFormats.PRI.PRIImage = DirectCast(Disk.Image, ImageFormats.PRI.PRIFloppyImage).Image
-                .AddItem(DiskGroup, "Has Weak Bits", If(Image.HasWeakBits, "Yes", "No"))
+            ElseIf Disk.Image.HasWeakBitsSupport Then
+                .AddItem(DiskGroup, "Has Weak Bits", If(Disk.Image.HasWeakBits, "Yes", "No"))
             End If
 
             If Disk.Image.NonStandardTracks.Count > 0 Then

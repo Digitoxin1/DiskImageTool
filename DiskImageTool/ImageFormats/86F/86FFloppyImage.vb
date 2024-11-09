@@ -18,6 +18,18 @@ Namespace ImageFormats
                 InitDiskFormat(DiskFormat)
             End Sub
 
+            Public Overrides ReadOnly Property HasWeakBits As Boolean Implements IFloppyImage.HasWeakBits
+                Get
+                    Return _Image.HasSurfaceData
+                End Get
+            End Property
+
+            Public Overrides ReadOnly Property HasWeakBitsSupport As Boolean Implements IFloppyImage.HasWeakBitsSupport
+                Get
+                    Return True
+                End Get
+            End Property
+
             Public ReadOnly Property Image As D86FImage
                 Get
                     Return _Image

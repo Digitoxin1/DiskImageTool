@@ -1,7 +1,6 @@
 ﻿Imports DiskImageTool.Bitstream
 Imports DiskImageTool.Bitstream.IBM_MFM
 Imports DiskImageTool.DiskImage.FloppyDiskFunctions
-Imports DiskImageTool.ImageFormats.IMD
 
 Namespace ImageFormats
     Module ImageConversion
@@ -92,14 +91,14 @@ Namespace ImageFormats
 
             For Track As UShort = 0 To TrackCount - 1
                 For Side = 0 To Params.NumberOfHeads - 1
-                    Dim IMDTrack = New IMDTrack With {
+                    Dim IMDTrack = New IMD.IMDTrack With {
                         .Track = Track,
                         .Side = Side,
                         .Mode = GetIMDMode(DiskFormat),
-                        .SectorSize = SectorSize.Sectorsize512
+                        .SectorSize = ImageFormats.IMD.SectorSize.Sectorsize512
                     }
                     For SectorId = 1 To Params.SectorsPerTrack
-                        Dim IMDSector = New IMDSector(Params.BytesPerSector) With {
+                        Dim IMDSector = New IMD.IMDSector(Params.BytesPerSector) With {
                             .Track = Track,
                             .Side = Side,
                             .SectorId = SectorId
@@ -145,6 +144,31 @@ Namespace ImageFormats
             Next
 
             Return MFM
+        End Function
+
+        Public Function BasicSectorToPRIImage(Data() As Byte, DiskFormat As FloppyDiskFormat) As PRI.PRIImage
+            Dim Params = GetFloppyDiskParams(DiskFormat)
+            Dim DriveSpeed = GetDriveSpeed(DiskFormat)
+            Dim TrackCount = GetTrackCount(Params)
+
+            Dim PRI = New PRI.PRIImage(TrackCount, Params.NumberOfHeads)
+
+            For Track As UShort = 0 To TrackCount - 1
+                For Side = 0 To Params.NumberOfHeads - 1
+                    Dim MFMBitstream = MFMBitstreamFromSectorImage(Data, Params, Track, Side, DriveSpeed.RPM, DriveSpeed.BitRate)
+
+                    Dim PRITrack = New PRI.PRITrack With {
+                        .Track = Track,
+                        .Side = Side,
+                        .Length = MFMBitstream.Bitstream.Length,
+                        .BitClockRate = DriveSpeed.BitRate * 2000,
+                        .Bitstream = MFMBitstream.Bitstream
+                    }
+                    PRI.AddTrack(PRITrack)
+                Next
+            Next
+
+            Return PRI
         End Function
 
         Public Function BasicSectorToPSIImage(Data() As Byte, DiskFormat As FloppyDiskFormat) As PSI.PSISectorImage
@@ -302,22 +326,24 @@ Namespace ImageFormats
             Dim BitstreamTrack As IBitstreamTrack
 
             Dim TrackCount = GetValidTrackCount(Image, True)
+            Dim NewTrackCount = TrackCount \ Image.TrackStep
 
             Dim IMD = New IMD.IMDImage With {
                 .Comment = "",
-                .TrackCount = TrackCount,
+                .TrackCount = NewTrackCount,
                 .SideCount = Image.SideCount
             }
 
-            For Track As UShort = 0 To TrackCount - 1
+            For Track As UShort = 0 To TrackCount - 1 Step Image.TrackStep
+                Dim NewTrack = Track \ Image.TrackStep
                 For Side = 0 To Image.SideCount - 1
                     BitstreamTrack = Image.GetTrack(Track, Side)
 
                     Dim DriveSpeed = GetDriveSpeed(BitstreamTrack, Image.TrackStep)
                     Dim IsMFM = BitstreamTrack.TrackType = BitstreamTrackType.MFM
 
-                    Dim IMDTrack = New IMDTrack With {
-                        .Track = Track,
+                    Dim IMDTrack = New IMD.IMDTrack With {
+                        .Track = NewTrack,
                         .Side = Side,
                         .Mode = GetIMDMode(DriveSpeed.BitRate, IsMFM)
                     }
@@ -332,7 +358,7 @@ Namespace ImageFormats
                                 TrackSectorSize = SectorSize
                             End If
 
-                            Dim IMDSector = New IMDSector(SectorSize) With {
+                            Dim IMDSector = New IMD.IMDSector(SectorSize) With {
                             .Track = Sector.Track,
                             .Side = Sector.Side,
                             .SectorId = Sector.SectorId
@@ -395,6 +421,36 @@ Namespace ImageFormats
             Return MFM
         End Function
 
+        Public Function BitstreamToPRIImage(Image As IBitstreamImage) As PRI.PRIImage
+            Dim BitstreamTrack As IBitstreamTrack
+
+            Dim TrackCount = GetValidTrackCount(Image, True)
+            Dim NewTrackCount = TrackCount \ Image.TrackStep
+
+            Dim PRI = New PRI.PRIImage(NewTrackCount, Image.SideCount)
+
+            For Track = 0 To TrackCount - 1 Step Image.TrackStep
+                Dim NewTrack = Track \ Image.TrackStep
+                For Side = 0 To Image.SideCount - 1
+                    BitstreamTrack = Image.GetTrack(Track, Side)
+
+                    If BitstreamTrack.Decoded Then
+                        Dim PRITrack = New PRI.PRITrack With {
+                            .Track = NewTrack,
+                            .Side = Side,
+                            .Length = BitstreamTrack.Bitstream.Length,
+                            .BitClockRate = BitstreamTrack.BitRate * 2000,
+                            .Bitstream = BitstreamTrack.Bitstream,
+                            .SurfaceData = BitstreamTrack.SurfaceData
+                        }
+                        PRI.AddTrack(PRITrack)
+                    End If
+                Next
+            Next
+
+            Return PRI
+        End Function
+
         Public Function BitstreamToPSIImage(Image As IBitstreamImage) As PSI.PSISectorImage
             Dim PSI = New PSI.PSISectorImage
             Dim BitstreamTrack As IBitstreamTrack
@@ -417,6 +473,20 @@ Namespace ImageFormats
 
                         For Each Sector In BitstreamTrack.MFMData.Sectors
                             Dim PSISector = PSISectorFromMFMSector(Sector)
+
+                            If BitstreamTrack.SurfaceData IsNot Nothing Then
+                                Dim Buffer = MFMGetBytes(BitstreamTrack.SurfaceData, Sector.DataOffset, Sector.Data.Length)
+                                Dim HasWeakBits As Boolean = False
+                                For Each b In Buffer
+                                    If b > 0 Then
+                                        HasWeakBits = True
+                                        Exit For
+                                    End If
+                                Next
+                                If HasWeakBits Then
+                                    PSISector.Weak = Buffer
+                                End If
+                            End If
 
                             PSI.Sectors.Add(PSISector)
                         Next
@@ -586,59 +656,59 @@ Namespace ImageFormats
             End Select
         End Function
 
-        Private Function GetIMDMode(DiskFormat As FloppyDiskFormat) As TrackMode
+        Private Function GetIMDMode(DiskFormat As FloppyDiskFormat) As IMD.TrackMode
             Select Case DiskFormat
                 Case FloppyDiskFormat.Floppy1200
-                    Return TrackMode.MFM500kbps
+                    Return IMD.TrackMode.MFM500kbps
                 Case FloppyDiskFormat.Floppy1440
-                    Return TrackMode.MFM500kbps
+                    Return IMD.TrackMode.MFM500kbps
                 Case FloppyDiskFormat.Floppy2880
-                    Return TrackMode.MFM500kbps
+                    Return IMD.TrackMode.MFM500kbps
                 Case Else
-                    Return TrackMode.MFM250kbps
+                    Return IMD.TrackMode.MFM250kbps
             End Select
         End Function
 
-        Private Function GetIMDMode(Bitrate As UShort, IsMFM As Boolean) As TrackMode
+        Private Function GetIMDMode(Bitrate As UShort, IsMFM As Boolean) As IMD.TrackMode
             If IsMFM Then
                 If Bitrate = 500 Then
-                    Return TrackMode.MFM500kbps
+                    Return IMD.TrackMode.MFM500kbps
                 ElseIf Bitrate = 300 Then
-                    Return TrackMode.MFM300kbps
+                    Return IMD.TrackMode.MFM300kbps
                 Else
-                    Return TrackMode.MFM250kbps
+                    Return IMD.TrackMode.MFM250kbps
                 End If
             Else
                 If Bitrate = 500 Then
-                    Return TrackMode.FM500kbps
+                    Return IMD.TrackMode.FM500kbps
                 ElseIf Bitrate = 300 Then
-                    Return TrackMode.FM300kbps
+                    Return IMD.TrackMode.FM300kbps
                 Else
-                    Return TrackMode.FM250kbps
+                    Return IMD.TrackMode.FM250kbps
                 End If
             End If
 
-            Return TrackMode.FM250kbps
+            Return IMD.TrackMode.FM250kbps
         End Function
 
         Private Function GetIMDSectorSize(Size As UInteger) As IMD.SectorSize
             Select Case Size
                 Case 128
-                    Return SectorSize.SectorSize128
+                    Return IMD.SectorSize.SectorSize128
                 Case 256
-                    Return SectorSize.SectorSize256
+                    Return IMD.SectorSize.SectorSize256
                 Case 512
-                    Return SectorSize.Sectorsize512
+                    Return IMD.SectorSize.Sectorsize512
                 Case 1024
-                    Return SectorSize.SectorSize1024
+                    Return IMD.SectorSize.SectorSize1024
                 Case 2048
-                    Return SectorSize.SectorSize2048
+                    Return IMD.SectorSize.SectorSize2048
                 Case 4096
-                    Return SectorSize.SectorSize4096
+                    Return IMD.SectorSize.SectorSize4096
                 Case 8192
-                    Return SectorSize.SectorSize8192
+                    Return IMD.SectorSize.SectorSize8192
                 Case Else
-                    Return SectorSize.Sectorsize512
+                    Return IMD.SectorSize.Sectorsize512
             End Select
         End Function
 

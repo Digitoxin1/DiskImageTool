@@ -9,12 +9,19 @@ Namespace ImageFormats
             Private _CurrentSector As PSISector
             Private _SideCount As Byte = 0
             Private _TrackCount As UShort = 0
+            Private _HasWeakBits As Boolean
 
             Public Sub New()
                 Initialize()
             End Sub
 
             Public Property Comment As String
+
+            Public ReadOnly Property HasWeakBits As Boolean Implements IBitstreamImage.HasSurfaceData
+                Get
+                    Return _HasWeakBits
+                End Get
+            End Property
 
             Public Property Header As PSIFileHeader
 
@@ -99,7 +106,6 @@ Namespace ImageFormats
                     Return False
                 End Try
 
-
                 Return True
             End Function
 
@@ -148,6 +154,7 @@ Namespace ImageFormats
                 _Sectors = New List(Of PSISector)
                 _CurrentSector = Nothing
                 _Comment = ""
+                _HasWeakBits = False
             End Sub
 
             Private Sub ProcessChunk(Chunk As PSIChunk)
@@ -179,6 +186,7 @@ Namespace ImageFormats
 
                 ElseIf Chunk.ChunkID = "WEAK" Then
                     If _CurrentSector IsNot Nothing Then
+                        _HasWeakBits = True
                         _CurrentSector.Weak = Chunk.ChunkData
                     End If
 

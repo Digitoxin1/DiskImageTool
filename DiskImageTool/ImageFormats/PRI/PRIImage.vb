@@ -12,7 +12,14 @@ Namespace ImageFormats
             Private _SideCount As Byte = 0
             Private _TrackCount As UShort = 0
             Private _VariableBitRate As Boolean
+
             Public Sub New()
+                Initialize()
+            End Sub
+
+            Public Sub New(TrackCount As UShort, SideCount As Byte)
+                _TrackCount = TrackCount
+                _SideCount = SideCount
                 Initialize()
             End Sub
 
@@ -52,10 +59,71 @@ Namespace ImageFormats
                 End Get
             End Property
 
-            Public Overrides Function Export(FilePath As String) As Boolean Implements IBitstreamImage.Export
-                Return False
-            End Function
+            Public Sub AddTrack(PRITrack As PRITrack)
+                Dim Key As String = PRITrack.Track & "." & PRITrack.Side
+                _Tracks.Add(Key, PRITrack)
+            End Sub
 
+            Public Overrides Function Export(FilePath As String) As Boolean Implements IBitstreamImage.Export
+                Dim Buffer() As Byte
+                Dim ChunkData() As Byte
+
+                Try
+                    If IO.File.Exists(FilePath) Then
+                        IO.File.Delete(FilePath)
+                    End If
+
+                    Using fs As IO.FileStream = IO.File.OpenWrite(FilePath)
+                        Buffer = New PRIChunk("PRI ", _Header.ChunkData).ToBytes
+                        fs.Write(Buffer, 0, Buffer.Length)
+
+                        If _Comment.Length > 0 Then
+                            Buffer = New PRIChunk("TEXT", Text.Encoding.UTF8.GetBytes(_Comment)).ToBytes
+                            fs.Write(Buffer, 0, Buffer.Length)
+                        End If
+
+                        For Track = 0 To _TrackCount - 1
+                            For Side = 0 To _SideCount - 1
+                                Dim Key = Track & "." & Side
+                                If _Tracks.ContainsKey(Key) Then
+                                    Dim PRITrack = _Tracks.Item(Key)
+
+                                    Buffer = New PRIChunk("TRAK", PRITrack.ChunkData).ToBytes
+                                    fs.Write(Buffer, 0, Buffer.Length)
+
+                                    ChunkData = IBM_MFM.BitsToBytes(IBM_MFM.ResizeBitstream(PRITrack.Bitstream, PRITrack.Length), 0)
+
+                                    Buffer = New PRIChunk("DATA", ChunkData).ToBytes
+                                    fs.Write(Buffer, 0, Buffer.Length)
+
+                                    If PRITrack.SurfaceData IsNot Nothing Then
+                                        ChunkData = PRITrack.GetWeakBitData
+                                        If ChunkData.Length > 0 Then
+                                            Buffer = New PRIChunk("WEAK", ChunkData).ToBytes
+                                            fs.Write(Buffer, 0, Buffer.Length)
+                                        End If
+                                    End If
+
+                                    If PRITrack.AltBitClockList.Count > 0 Then
+                                        ChunkData = PRITrack.GetAltBitClockData
+                                        Buffer = New PRIChunk("BCLK", ChunkData).ToBytes
+                                        fs.Write(Buffer, 0, Buffer.Length)
+                                    End If
+                                End If
+                            Next
+                        Next
+
+                        Buffer = New PRIChunk("END ").ToBytes
+                        fs.Write(Buffer, 0, Buffer.Length)
+                    End Using
+
+                Catch ex As Exception
+                    DebugException(ex)
+                    Return False
+                End Try
+
+                Return True
+            End Function
             Public Function GetTrack(Track As Byte, Side As Byte) As PRITrack
                 If Track > _TrackCount - 1 Or Side > _SideCount - 1 Then
                     Throw New System.IndexOutOfRangeException
@@ -142,8 +210,7 @@ Namespace ImageFormats
 
                 ElseIf Chunk.ChunkID = "TRAK" Then
                     Dim Track = New PRITrack(Chunk.ChunkData)
-                    Dim Key = Track.Track & "." & Track.Side
-                    _Tracks.Item(Key) = Track
+                    AddTrack(Track)
                     _CurrentTrack = Track
                     If Track.Track > _TrackCount - 1 Then
                         _TrackCount = Track.Track + 1

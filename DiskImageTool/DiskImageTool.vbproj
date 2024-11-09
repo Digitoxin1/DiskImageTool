@@ -30,8 +30,8 @@
     <TargetCulture>en-US</TargetCulture>
     <ProductName>DiskImageTool</ProductName>
     <PublisherName>Digitoxin</PublisherName>
-    <ApplicationRevision>1</ApplicationRevision>
-    <ApplicationVersion>2.5.0.%2a</ApplicationVersion>
+    <ApplicationRevision>0</ApplicationRevision>
+    <ApplicationVersion>2.6.0.%2a</ApplicationVersion>
     <UseApplicationTrust>false</UseApplicationTrust>
     <PublishWizardCompleted>true</PublishWizardCompleted>
     <BootstrapperEnabled>true</BootstrapperEnabled>
@@ -201,6 +201,7 @@
     <Compile Include="ImageFormats\IMD\IMDSector.vb" />
     <Compile Include="ImageFormats\IMD\IMDTrack.vb" />
     <Compile Include="ImageFormats\PRI\Enums.vb" />
+    <Compile Include="ImageFormats\PRI\PRIAltBitClock.vb" />
     <Compile Include="ImageFormats\PRI\PRIChunk.vb" />
     <Compile Include="ImageFormats\PRI\PRIFloppyImage.vb" />
     <Compile Include="ImageFormats\PRI\PRIImage.vb" />
