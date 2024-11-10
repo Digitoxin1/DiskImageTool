@@ -3160,18 +3160,23 @@ Public Class MainForm
                     i += 1
                 Next
 
-                Array.Sort(TrackList)
+                If TrackList.Length <= 30 Then
+                    Array.Sort(TrackList)
 
-                MenuRawTrackDataSubMenuItemAdd(-1, "All Tracks")
+                    MenuRawTrackDataSubMenuItemAdd(-1, "All Tracks")
 
-                For i = 0 To TrackList.Length - 1
-                    Dim Track = TrackList(i)
-                    Dim TrackString = "Track " & (Track \ Disk.Image.SideCount) & "." & (Track Mod Disk.Image.SideCount)
-                    MenuRawTrackDataSubMenuItemAdd(Track, TrackString)
-                Next
+                    For i = 0 To TrackList.Length - 1
+                        Dim Track = TrackList(i)
+                        Dim TrackString = "Track " & (Track \ Disk.Image.SideCount) & "." & (Track Mod Disk.Image.SideCount)
+                        MenuRawTrackDataSubMenuItemAdd(Track, TrackString)
+                    Next
 
-                MenuHexRawTrackData.Enabled = True
-                MenuHexRawTrackData.Tag = Nothing
+                    MenuHexRawTrackData.Enabled = True
+                    MenuHexRawTrackData.Tag = Nothing
+                Else
+                    MenuHexRawTrackData.Enabled = True
+                    MenuHexRawTrackData.Tag = -1
+                End If
             Else
                 MenuHexRawTrackData.Enabled = True
                 MenuHexRawTrackData.Tag = -1

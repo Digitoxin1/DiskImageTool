@@ -26,6 +26,24 @@
                 End Set
             End Property
 
+            Public Property DataFieldCRCError() As Boolean
+                Get
+                    Return (Flags And MFMSectorFlags.DataFieldCRCError) > 0
+                End Get
+                Set(value As Boolean)
+                    Flags = MyBitConverter.ToggleBit(Flags, MFMSectorFlags.DataFieldCRCError, value)
+                End Set
+            End Property
+
+            Public Property DeletedDAM() As Boolean
+                Get
+                    Return (Flags And MFMSectorFlags.DeletedDAM) > 0
+                End Get
+                Set(value As Boolean)
+                    Flags = MyBitConverter.ToggleBit(Flags, MFMSectorFlags.DeletedDAM, value)
+                End Set
+            End Property
+
             Public Property EncodingSubType As MFMEncodingSubtype
                 Get
                     Return _ChunkData(5)
@@ -50,6 +68,24 @@
                 End Get
                 Set(value As Byte)
                     _ChunkData(1) = value
+                End Set
+            End Property
+
+            Public Property IDFieldCRCError() As Boolean
+                Get
+                    Return (Flags And MFMSectorFlags.IDFieldCRCError) > 0
+                End Get
+                Set(value As Boolean)
+                    Flags = MyBitConverter.ToggleBit(Flags, MFMSectorFlags.IDFieldCRCError, value)
+                End Set
+            End Property
+
+            Public Property MissingDAM() As Boolean
+                Get
+                    Return (Flags And MFMSectorFlags.MissingDAM) > 0
+                End Get
+                Set(value As Boolean)
+                    Flags = MyBitConverter.ToggleBit(Flags, MFMSectorFlags.MissingDAM, value)
                 End Set
             End Property
 

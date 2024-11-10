@@ -604,7 +604,7 @@
             End Function
 
             Public Function IsStandardSector(Sector As IBM_MFM_Sector, Track As Byte, Side As Byte) As Boolean
-                If Not Sector.InitialChecksumValid Then
+                If Not Sector.InitialDataChecksumValid Or Not Sector.IDChecksumValid Then
                     Return False
                 End If
 
@@ -620,7 +620,7 @@
                     Return False
                 End If
 
-                If Sector.DAM <> MFMAddressMark.Data Then
+                If Not Sector.DAMFound Or Sector.DAM <> MFMAddressMark.Data Then
                     Return False
                 End If
 

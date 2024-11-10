@@ -98,7 +98,7 @@ Namespace ImageFormats
                         End If
 
                         If PSISector.Sector >= 1 And PSISector.Sector <= SECTOR_COUNT Then
-                            Dim IsStandard = (PSISector.Size = 512 And Not PSISector.HasDataCRCError And PSISector.Sector <= MaxSectors)
+                            Dim IsStandard = IsStandardSector(PSISector, MaxSectors)
                             If IsStandard Then
                                 Dim BitstreamSector As New BitstreamSector(PSISector.Data, PSISector.Size) With {
                                     .IsStandard = IsStandard
@@ -114,6 +114,36 @@ Namespace ImageFormats
                     End If
                 Next
             End Sub
+
+            Private Function IsStandardSector(PSISector As PSISector, MaxSectors As UShort) As Boolean
+                If PSISector.Sector > MaxSectors Then
+                    Return False
+                End If
+
+                If PSISector.Size <> 512 Then
+                    Return False
+                End If
+
+                If PSISector.HasDataCRCError Then
+                    Return False
+                End If
+
+                If PSISector.MFMHeader IsNot Nothing Then
+                    If PSISector.MFMHeader.Cylinder <> PSISector.Track Then
+                        Return False
+                    End If
+
+                    If PSISector.MFMHeader.Head <> PSISector.Side Then
+                        Return False
+                    End If
+
+                    If PSISector.MFMHeader.DeletedDAM Or PSISector.MFMHeader.MissingDAM Or PSISector.MFMHeader.IDFieldCRCError Or PSISector.MFMHeader.DataFieldCRCError Then
+                        Return False
+                    End If
+                End If
+
+                Return True
+            End Function
 
             Private Function CalculateHash(HashAlgorithm As HashAlgorithm) As String
                 Dim OutputBuffer() As Byte

@@ -15,7 +15,7 @@ Namespace Bitstream
                     If BitstreamTrack IsNot Nothing AndAlso BitstreamTrack.MFMData IsNot Nothing Then
                         For Each MFMSector In BitstreamTrack.MFMData.Sectors
                             If MFMSector.DAMFound Then
-                                If MFMSector.InitialChecksumValid Then
+                                If MFMSector.InitialDataChecksumValid Then
                                     OutputBuffer = New Byte(MFMSector.Data.Length - 1) {}
                                     HashAlgorithm.TransformBlock(MFMSector.Data, 0, MFMSector.Data.Length, OutputBuffer, 0)
                                 End If

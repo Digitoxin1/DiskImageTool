@@ -4,7 +4,8 @@
             Private ReadOnly _Bitstream As BitArray
             Private ReadOnly _IDArea() As Byte
             Private ReadOnly _IDChecksum As UShort
-            Private ReadOnly _InitialChecksumValid As Boolean
+            Private ReadOnly _IDChecksumValid As Boolean
+            Private ReadOnly _InitialDataChecksumValid As Boolean
             Private ReadOnly _Offset As UInteger
             Private _DAMFound As Boolean = False
             Private _Data As Byte()
@@ -27,7 +28,8 @@
 
                 ProcessGap3(Bitstream, DataOffset)
 
-                _InitialChecksumValid = (_DataChecksum = CalculateDataChecksum())
+                _InitialDataChecksumValid = (_DataChecksum = CalculateDataChecksum())
+                _IDChecksumValid = (_IDChecksum = CalculateIDChecksum())
             End Sub
 
             Public ReadOnly Property DAM As MFMAddressMark
@@ -81,9 +83,15 @@
                 End Get
             End Property
 
-            Public ReadOnly Property InitialChecksumValid As Boolean
+            Public ReadOnly Property IDChecksumValid As Boolean
                 Get
-                    Return _InitialChecksumValid
+                    Return _IDChecksumValid
+                End Get
+            End Property
+
+            Public ReadOnly Property InitialDataChecksumValid As Boolean
+                Get
+                    Return _InitialDataChecksumValid
                 End Get
             End Property
 

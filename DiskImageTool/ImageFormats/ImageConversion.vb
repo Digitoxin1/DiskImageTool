@@ -366,7 +366,7 @@ Namespace ImageFormats
                             If Sector.DAMFound Then
                                 IMDSector.Unavailable = False
                                 IMDSector.Data = Sector.Data
-                                IMDSector.ChecksumError = Not Sector.InitialChecksumValid
+                                IMDSector.ChecksumError = Not Sector.InitialDataChecksumValid
                                 IMDSector.Deleted = (Sector.DAM = MFMAddressMark.DeletedData)
                             Else
                                 IMDSector.Unavailable = True
@@ -461,6 +461,7 @@ Namespace ImageFormats
             PSI.Header.FormatVersion = 0
 
             For Track = 0 To TrackCount - 1 Step Image.TrackStep
+                Dim NewTrack = Track \ Image.TrackStep
                 For Side = 0 To Image.SideCount - 1
                     BitstreamTrack = Image.GetTrack(Track, Side)
 
@@ -472,7 +473,7 @@ Namespace ImageFormats
                         End If
 
                         For Each Sector In BitstreamTrack.MFMData.Sectors
-                            Dim PSISector = PSISectorFromMFMSector(Sector)
+                            Dim PSISector = PSISectorFromMFMSector(NewTrack, Side, Sector, TrackFormat)
 
                             If BitstreamTrack.SurfaceData IsNot Nothing Then
                                 Dim Buffer = MFMGetBytes(BitstreamTrack.SurfaceData, Sector.DataOffset, Sector.Data.Length)
@@ -716,6 +717,22 @@ Namespace ImageFormats
             Return (Track * Params.NumberOfHeads * Params.SectorsPerTrack + Params.SectorsPerTrack * Side + (SectorId - 1)) * Params.BytesPerSector
         End Function
 
+        Private Function GETPSIEncodingSubType(TrackFormat As MFMTrackFormat) As PSI.MFMEncodingSubtype
+            Select Case TrackFormat
+                Case MFMTrackFormat.TrackFormatDD
+                    Return PSI.MFMEncodingSubtype.DoubleDensity
+                Case MFMTrackFormat.TrackFormatHD
+                    Return PSI.MFMEncodingSubtype.HighDensity
+                Case MFMTrackFormat.TrackFormatHD1200
+                    Return PSI.MFMEncodingSubtype.HighDensity
+                Case MFMTrackFormat.TrackFormatED
+                    Return PSI.MFMEncodingSubtype.ExtraDensity
+                Case Else
+                    Return PSI.MFMEncodingSubtype.DoubleDensity
+            End Select
+
+        End Function
+
         Private Function GetPSISectorFormat(TrackFormat As MFMTrackFormat) As PSI.DefaultSectorFormat
             Select Case TrackFormat
                 Case MFMTrackFormat.TrackFormatDD
@@ -817,18 +834,35 @@ Namespace ImageFormats
             Return MFMBitstream
         End Function
 
-        Private Function PSISectorFromMFMSector(Sector As IBM_MFM_Sector) As PSI.PSISector
-            Dim DataChecksumValid = Sector.DataChecksum = Sector.CalculateDataChecksum
+        Private Function PSISectorFromMFMSector(Track As UShort, Side As Byte, Sector As IBM_MFM_Sector, TrackFormat As MFMTrackFormat) As PSI.PSISector
+            Dim DataFieldCRCError = Sector.DataChecksum <> Sector.CalculateDataChecksum
+            Dim IDFieldCRCError = Sector.IDChecksum <> Sector.CalculateIDChecksum
+            Dim DeletedDAM = Sector.DAM = MFMAddressMark.DeletedData
+            Dim MissingDAM = Not Sector.DAMFound
 
             Dim PSISector = New PSI.PSISector With {
-                   .HasDataCRCError = Not DataChecksumValid,
-                   .IsAlternateSector = False,
-                   .Track = Sector.Track,
-                   .Side = Sector.Side,
-                   .Sector = Sector.SectorId,
-                   .Data = Sector.Data,
-                   .Offset = (Sector.Offset + 64) / 2
+                .HasDataCRCError = DataFieldCRCError,
+                .IsAlternateSector = False,
+                .Track = Track,
+                .Side = Side,
+                .Sector = Sector.SectorId,
+                .Data = Sector.Data,
+                .Offset = (Sector.Offset + 64) / 2
+            }
+            If Sector.Track <> Track Or Sector.Side <> Side Or DeletedDAM Or MissingDAM Or IDFieldCRCError Then
+                PSISector.MFMHeader = New PSI.IBMSectorHeader With {
+                    .Cylinder = Sector.Track,
+                    .Head = Sector.Side,
+                    .Sector = Sector.SectorId,
+                    .Size = Sector.Size,
+                    .EncodingSubType = GETPSIEncodingSubType(TrackFormat),
+                    .IDFieldCRCError = IDFieldCRCError,
+                    .DataFieldCRCError = DataFieldCRCError,
+                    .DeletedDAM = DeletedDAM,
+                    .MissingDAM = MissingDAM
                 }
+
+            End If
 
             Return PSISector
         End Function
