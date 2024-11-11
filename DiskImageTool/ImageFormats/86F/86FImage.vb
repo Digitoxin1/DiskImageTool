@@ -227,6 +227,7 @@ Namespace ImageFormats
                 Dim AllocatedLength As UInteger
 
                 Dim TrackArray = GetTrackArray()
+                Dim Reverse As Boolean = Not ReverseEndian
 
                 Try
                     If IO.File.Exists(FilePath) Then
@@ -284,7 +285,7 @@ Namespace ImageFormats
                                 End If
 
                                 If BitCellCount > 0 Then
-                                    Buffer = IBM_MFM.BitsToBytes(IBM_MFM.ResizeBitstream(Track.Bitstream, BitCellCount), 0)
+                                    Buffer = IBM_MFM.BitsToBytes(IBM_MFM.ResizeBitstream(Track.Bitstream, BitCellCount), 0, Reverse)
                                     fs.Write(Buffer, 0, Buffer.Length)
 
                                     If AllocatedLength > Buffer.Length Then
@@ -294,7 +295,7 @@ Namespace ImageFormats
 
                                     If HasSurfaceData Then
                                         If Track.SurfaceData IsNot Nothing Then
-                                            Buffer = IBM_MFM.BitsToBytes(IBM_MFM.ResizeBitstream(Track.SurfaceData, BitCellCount), 0)
+                                            Buffer = IBM_MFM.BitsToBytes(IBM_MFM.ResizeBitstream(Track.SurfaceData, BitCellCount), 0, Reverse)
                                         Else
                                             Buffer = New Byte(Math.Ceiling(BitCellCount / 8)) {}
                                         End If
@@ -358,6 +359,7 @@ Namespace ImageFormats
                         Dim BitCellCount As UInteger
                         Dim AllocatedLength As UInteger
                         Dim Offset As UInteger
+                        Dim Reverse As Boolean = Not ReverseEndian
 
                         Dim Pos = 8
                         For i = 0 To 255
@@ -381,10 +383,10 @@ Namespace ImageFormats
                                         BitCellCount = GetCalculatedBitCellCount(D86FTrack.BitRate, D86FTrack.RPM, IsMFM, RPMSlowDown, AlternateBitcellCalculation, D86FTrack.BitCellCount)
                                         AllocatedLength = GetAllocatedLength(Hole, RPMSlowDown, AlternateBitcellCalculation, D86FTrack.BitCellCount)
                                     End If
-                                    D86FTrack.Bitstream = IBM_MFM.BytesToBits(Buffer, Offset + 6, BitCellCount)
+                                    D86FTrack.Bitstream = IBM_MFM.BytesToBits(Buffer, Offset + 6, BitCellCount, Reverse)
 
                                     If HasSurfaceData Then
-                                        D86FTrack.SurfaceData = IBM_MFM.BytesToBits(Buffer, Offset + 6 + AllocatedLength, BitCellCount)
+                                        D86FTrack.SurfaceData = IBM_MFM.BytesToBits(Buffer, Offset + 6 + AllocatedLength, BitCellCount, Reverse)
                                     End If
 
                                     'Check for thick tracks

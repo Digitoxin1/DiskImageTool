@@ -125,6 +125,42 @@ Namespace My
                 Me("DragAndDrop") = value
             End Set
         End Property
+        
+        <Global.System.Configuration.UserScopedSettingAttribute(),  _
+         Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
+         Global.System.Configuration.DefaultSettingValueAttribute("")>  _
+        Public Property ChangeLogETag() As String
+            Get
+                Return CType(Me("ChangeLogETag"),String)
+            End Get
+            Set
+                Me("ChangeLogETag") = value
+            End Set
+        End Property
+        
+        <Global.System.Configuration.UserScopedSettingAttribute(),  _
+         Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
+         Global.System.Configuration.DefaultSettingValueAttribute("")>  _
+        Public Property AppUpdateETag() As String
+            Get
+                Return CType(Me("AppUpdateETag"),String)
+            End Get
+            Set
+                Me("AppUpdateETag") = value
+            End Set
+        End Property
+        
+        <Global.System.Configuration.UserScopedSettingAttribute(),  _
+         Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
+         Global.System.Configuration.DefaultSettingValueAttribute("True")>  _
+        Public Property CheckUpdateOnStartup() As Boolean
+            Get
+                Return CType(Me("CheckUpdateOnStartup"),Boolean)
+            End Get
+            Set
+                Me("CheckUpdateOnStartup") = value
+            End Set
+        End Property
     End Class
 End Namespace
 

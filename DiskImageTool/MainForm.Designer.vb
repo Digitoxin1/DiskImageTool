@@ -119,6 +119,7 @@ Partial Class MainForm
         Me.MenuFiltersClear = New System.Windows.Forms.ToolStripMenuItem()
         Me.MainMenuOptions = New System.Windows.Forms.ToolStripMenuItem()
         Me.MenuOptionsCreateBackup = New System.Windows.Forms.ToolStripMenuItem()
+        Me.MenuOptionsCheckUpdate = New System.Windows.Forms.ToolStripMenuItem()
         Me.MenuOptionsDragDrop = New System.Windows.Forms.ToolStripMenuItem()
         Me.MenuOptionsWindowsExtensions = New System.Windows.Forms.ToolStripMenuItem()
         Me.MenuOptionsSeparatorDebug = New System.Windows.Forms.ToolStripSeparator()
@@ -187,6 +188,7 @@ Partial Class MainForm
         Me.MenuDirectoryView = New System.Windows.Forms.ToolStripMenuItem()
         Me.MenuDirectoryImportFiles = New System.Windows.Forms.ToolStripMenuItem()
         Me.MenuDirectoryNewDirectory = New System.Windows.Forms.ToolStripMenuItem()
+        Me.MainMenuUpdateAvailable = New System.Windows.Forms.ToolStripMenuItem()
         SummaryName = CType(New System.Windows.Forms.ColumnHeader(), System.Windows.Forms.ColumnHeader)
         SummaryValue = CType(New System.Windows.Forms.ColumnHeader(), System.Windows.Forms.ColumnHeader)
         HashName = CType(New System.Windows.Forms.ColumnHeader(), System.Windows.Forms.ColumnHeader)
@@ -661,7 +663,7 @@ Partial Class MainForm
         '
         Me.MenuHelpUpdateCheck.Name = "MenuHelpUpdateCheck"
         Me.MenuHelpUpdateCheck.Size = New System.Drawing.Size(212, 22)
-        Me.MenuHelpUpdateCheck.Text = "Check for &Updates"
+        Me.MenuHelpUpdateCheck.Text = "Check for &Update"
         '
         'MenuHelpChangeLog
         '
@@ -770,7 +772,7 @@ Partial Class MainForm
         '
         'MenuStripTop
         '
-        MenuStripTop.Items.AddRange(New System.Windows.Forms.ToolStripItem() {MainMenuFile, MainMenuEdit, Me.MainMenuFilters, MainMenuView, MainMenuTools, MainMenuDisk, Me.MainMenuOptions, MainMenuHelp, MainMenuExperimental})
+        MenuStripTop.Items.AddRange(New System.Windows.Forms.ToolStripItem() {MainMenuFile, MainMenuEdit, Me.MainMenuFilters, MainMenuView, MainMenuTools, MainMenuDisk, Me.MainMenuOptions, MainMenuHelp, MainMenuExperimental, Me.MainMenuUpdateAvailable})
         MenuStripTop.Location = New System.Drawing.Point(0, 0)
         MenuStripTop.Name = "MenuStripTop"
         MenuStripTop.Padding = New System.Windows.Forms.Padding(6, 2, 12, 2)
@@ -813,7 +815,7 @@ Partial Class MainForm
         '
         'MainMenuOptions
         '
-        Me.MainMenuOptions.DropDownItems.AddRange(New System.Windows.Forms.ToolStripItem() {Me.MenuOptionsCreateBackup, Me.MenuOptionsDragDrop, Me.MenuOptionsWindowsExtensions, Me.MenuOptionsSeparatorDebug, Me.MenuOptionsExportUnknown})
+        Me.MainMenuOptions.DropDownItems.AddRange(New System.Windows.Forms.ToolStripItem() {Me.MenuOptionsCreateBackup, Me.MenuOptionsCheckUpdate, Me.MenuOptionsDragDrop, Me.MenuOptionsWindowsExtensions, Me.MenuOptionsSeparatorDebug, Me.MenuOptionsExportUnknown})
         Me.MainMenuOptions.Name = "MainMenuOptions"
         Me.MainMenuOptions.Size = New System.Drawing.Size(61, 20)
         Me.MainMenuOptions.Text = "&Options"
@@ -824,6 +826,13 @@ Partial Class MainForm
         Me.MenuOptionsCreateBackup.Name = "MenuOptionsCreateBackup"
         Me.MenuOptionsCreateBackup.Size = New System.Drawing.Size(248, 22)
         Me.MenuOptionsCreateBackup.Text = "Create Backup on Save"
+        '
+        'MenuOptionsCheckUpdate
+        '
+        Me.MenuOptionsCheckUpdate.CheckOnClick = True
+        Me.MenuOptionsCheckUpdate.Name = "MenuOptionsCheckUpdate"
+        Me.MenuOptionsCheckUpdate.Size = New System.Drawing.Size(248, 22)
+        Me.MenuOptionsCheckUpdate.Text = "Check for Update on Startup"
         '
         'MenuOptionsDragDrop
         '
@@ -1067,7 +1076,7 @@ Partial Class MainForm
         Me.ToolStripFileName.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text
         Me.ToolStripFileName.Margin = New System.Windows.Forms.Padding(2, 3, 2, 2)
         Me.ToolStripFileName.Name = "ToolStripFileName"
-        Me.ToolStripFileName.Size = New System.Drawing.Size(499, 19)
+        Me.ToolStripFileName.Size = New System.Drawing.Size(530, 19)
         Me.ToolStripFileName.Spring = True
         Me.ToolStripFileName.Text = "File Name"
         Me.ToolStripFileName.TextAlign = System.Drawing.ContentAlignment.MiddleLeft
@@ -1391,6 +1400,14 @@ Partial Class MainForm
         Me.MenuDirectoryNewDirectory.Size = New System.Drawing.Size(150, 22)
         Me.MenuDirectoryNewDirectory.Text = "&New Directory"
         '
+        'MainMenuUpdateAvailable
+        '
+        Me.MainMenuUpdateAvailable.ForeColor = System.Drawing.Color.Blue
+        Me.MainMenuUpdateAvailable.Margin = New System.Windows.Forms.Padding(12, 0, 0, 0)
+        Me.MainMenuUpdateAvailable.Name = "MainMenuUpdateAvailable"
+        Me.MainMenuUpdateAvailable.Size = New System.Drawing.Size(108, 20)
+        Me.MainMenuUpdateAvailable.Text = "Update Available"
+        '
         'MainForm
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
@@ -1549,4 +1566,6 @@ Partial Class MainForm
     Friend WithEvents MenuOptionsDragDrop As ToolStripMenuItem
     Friend WithEvents FileFAT32Cluster As ColumnHeader
     Friend WithEvents MenuToolsTrackLayout As ToolStripMenuItem
+    Friend WithEvents MenuOptionsCheckUpdate As ToolStripMenuItem
+    Friend WithEvents MainMenuUpdateAvailable As ToolStripMenuItem
 End Class

@@ -29,12 +29,9 @@ Public Class MainForm
     Private WithEvents ContextMenuCopy2 As ContextMenuStrip
     Private WithEvents Debounce As Timer
     Private WithEvents ImageFilters As Filters.ImageFilters
-    Public Const CHANGELOG_URL = "https://api.github.com/repos/Digitoxin1/DiskImageTool/releases"
     Public Const SITE_URL = "https://github.com/Digitoxin1/DiskImageTool"
-    Public Const UPDATE_URL = "https://api.github.com/repos/Digitoxin1/DiskImageTool/releases/latest"
     Private ReadOnly _lvwColumnSorter As ListViewColumnSorter
     Private _BootStrapDB As BootstrapDB
-    Private _CachedChangeLog As String = ""
     Private _CurrentImage As CurrentImage
     Private _DriveAEnabled As Boolean = False
     Private _DriveBEnabled As Boolean = False
@@ -627,16 +624,18 @@ Public Class MainForm
         Dim DownloadURL As String = ""
         Dim Body As String = ""
         Dim UpdateAvailable As Boolean = False
+        Dim ErrMsg As String = "An error occurred while checking for updates.  Please try again later."
 
         Cursor.Current = Cursors.WaitCursor
+        Dim ResponseText = GetAppUpdateResponse()
+        Cursor.Current = Cursors.Default
+
+        If ResponseText = "" Then
+            MsgBox(ErrMsg, MsgBoxStyle.Exclamation)
+            Exit Sub
+        End If
 
         Try
-            Dim Request As Net.HttpWebRequest = Net.WebRequest.Create(UPDATE_URL)
-            Request.UserAgent = "DiskImageTool"
-            Dim Response As Net.HttpWebResponse = Request.GetResponse
-            Dim Reader As New IO.StreamReader(Response.GetResponseStream)
-            Dim ResponseText = Reader.ReadToEnd
-
             Dim JSON As Dictionary(Of String, Object) = CompactJson.Serializer.Parse(Of Dictionary(Of String, Object))(ResponseText)
 
             If JSON.ContainsKey("tag_name") Then
@@ -658,17 +657,17 @@ Public Class MainForm
             If JSON.ContainsKey("body") Then
                 Body = JSON.Item("body").ToString
             End If
+
+            If DownloadVersion <> "" And DownloadURL <> "" Then
+                Dim CurrentVersion = GetVersionString()
+                UpdateAvailable = Version.Parse(DownloadVersion) > Version.Parse(CurrentVersion)
+            End If
+
         Catch ex As Exception
-            MsgBox("An error occurred while checking for updates.  Please try again later.", MsgBoxStyle.Exclamation)
+            MsgBox(ErrMsg, MsgBoxStyle.Exclamation)
             DebugException(ex)
             Exit Sub
         End Try
-
-        Cursor.Current = Cursors.Default
-        If DownloadVersion <> "" And DownloadURL <> "" Then
-            Dim CurrentVersion = GetVersionString()
-            UpdateAvailable = Version.Parse(DownloadVersion) > Version.Parse(CurrentVersion)
-        End If
 
         If UpdateAvailable Then
             Dim Msg = $"{My.Application.Info.Title} v{DownloadVersion} is available."
@@ -700,6 +699,49 @@ Public Class MainForm
         Else
             MsgBox($"You are running the latest version of {My.Application.Info.Title}.", MsgBoxStyle.Information)
         End If
+    End Sub
+
+    Private Async Sub CheckForUpdatesStartup()
+        Dim DownloadVersion As String = ""
+        Dim DownloadURL As String = ""
+        Dim UpdateAvailable As Boolean = False
+        Dim ResponseText As String = ""
+
+        Await Task.Run(Sub()
+                           ResponseText = GetAppUpdateResponse()
+                       End Sub)
+
+        If ResponseText <> "" Then
+            Try
+                Dim JSON As Dictionary(Of String, Object) = CompactJson.Serializer.Parse(Of Dictionary(Of String, Object))(ResponseText)
+
+                If JSON.ContainsKey("tag_name") Then
+                    DownloadVersion = JSON.Item("tag_name").ToString
+                    If DownloadVersion.StartsWith("v", StringComparison.OrdinalIgnoreCase) Then
+                        DownloadVersion = DownloadVersion.Remove(0, 1)
+                    End If
+                End If
+
+                If JSON.ContainsKey("assets") Then
+                    Dim assets() As Dictionary(Of String, Object) = CompactJson.Serializer.Parse(Of Dictionary(Of String, Object)())(JSON.Item("assets").ToString)
+                    If assets.Length > 0 Then
+                        If assets(0).ContainsKey("browser_download_url") Then
+                            DownloadURL = assets(0).Item("browser_download_url").ToString
+                        End If
+                    End If
+                End If
+
+                If DownloadVersion <> "" And DownloadURL <> "" Then
+                    Dim CurrentVersion = GetVersionString()
+                    UpdateAvailable = Version.Parse(DownloadVersion) > Version.Parse(CurrentVersion)
+                End If
+
+            Catch ex As Exception
+                DebugException(ex)
+            End Try
+        End If
+
+        MainMenuUpdateAvailable.Visible = UpdateAvailable
     End Sub
 
     Private Sub ClearFilesPanel(CurrentImage As CurrentImage)
@@ -1054,32 +1096,34 @@ Public Class MainForm
         Dim Body As String
         Dim BodyArray() As String
         Dim Changelog = New StringBuilder()
+        Dim ChangeLogString As String
+        Dim ErrMsg As String = "An error occurred while downloading the change log.  Please try again later."
 
-        If _CachedChangeLog = "" Then
+        Cursor.Current = Cursors.WaitCursor
+        Dim ResponseText = GetChangeLogResponse()
+        Cursor.Current = Cursors.Default
 
-            Cursor.Current = Cursors.WaitCursor
+        If ResponseText = "" Then
+            MsgBox(ErrMsg, MsgBoxStyle.Exclamation)
+            Exit Sub
+        End If
 
-            Try
-                Dim Request As Net.HttpWebRequest = Net.WebRequest.Create(CHANGELOG_URL)
-                Request.UserAgent = "DiskImageTool"
-                Dim Response As Net.HttpWebResponse = Request.GetResponse
-                Dim Reader As New IO.StreamReader(Response.GetResponseStream)
-                Dim ResponseText = Reader.ReadToEnd
+        Try
+            Dim JSON As List(Of Dictionary(Of String, Object)) = CompactJson.Serializer.Parse(Of List(Of Dictionary(Of String, Object)))(ResponseText)
 
-                Dim JSON As List(Of Dictionary(Of String, Object)) = CompactJson.Serializer.Parse(Of List(Of Dictionary(Of String, Object)))(ResponseText)
-
-                For Each Release In JSON
-                    If Release.ContainsKey("tag_name") Then
-                        VersionLine = Release.Item("tag_name").ToString
-                        If Release.ContainsKey("published_at") Then
-                            PublishedAt = Release.Item("published_at").ToString
-                            Dim PublishDate As Date
-                            If Date.TryParse(PublishedAt, PublishDate) Then
-                                VersionLine &= " (" & PublishDate.ToString & ")"
-                            End If
+            For Each Release In JSON
+                If Release.ContainsKey("tag_name") Then
+                    VersionLine = Release.Item("tag_name").ToString
+                    If Release.ContainsKey("published_at") Then
+                        PublishedAt = Release.Item("published_at").ToString
+                        Dim PublishDate As Date
+                        If Date.TryParse(PublishedAt, PublishDate) Then
+                            VersionLine &= " (" & PublishDate.ToString & ")"
                         End If
-                        If Release.ContainsKey("body") Then
-                            Body = Release.Item("body").ToString
+                    End If
+                    If Release.ContainsKey("body") Then
+                        Body = Release.Item("body").ToString
+                        If Body <> "" Then
                             Body = Replace(Body, Chr(13) & Chr(10), Chr(10))
                             BodyArray = Body.Split(Chr(10))
                             Changelog.AppendLine(VersionLine)
@@ -1095,20 +1139,18 @@ Public Class MainForm
                             Changelog.AppendLine("")
                         End If
                     End If
-                Next
+                End If
+            Next
 
-            Catch ex As Exception
-                MsgBox("An error occurred while downloading the change log.  Please try again later.", MsgBoxStyle.Exclamation)
-                DebugException(ex)
-                Exit Sub
-            End Try
+            ChangeLogString = Changelog.ToString
 
-            Cursor.Current = Cursors.Default
+        Catch ex As Exception
+            MsgBox(ErrMsg, MsgBoxStyle.Exclamation)
+            DebugException(ex)
+            Exit Sub
+        End Try
 
-            _CachedChangeLog = Changelog.ToString
-        End If
-
-        Dim frmTextView = New TextViewForm("Change Log", _CachedChangeLog)
+        Dim frmTextView = New TextViewForm("Change Log", ChangeLogString)
         frmTextView.ShowDialog()
     End Sub
 
@@ -3238,6 +3280,7 @@ Public Class MainForm
         _ScanRun = False
 
         MenuOptionsCreateBackup.Checked = My.Settings.CreateBackups
+        MenuOptionsCheckUpdate.Checked = My.Settings.CheckUpdateOnStartup
         MenuOptionsWindowsExtensions.Checked = My.Settings.WindowsExtensions
         MenuOptionsDragDrop.Checked = My.Settings.DragAndDrop
 
@@ -3762,7 +3805,7 @@ Public Class MainForm
         Process.Start(SITE_URL)
     End Sub
 
-    Private Sub BtnHelpUpdateCheck_Click(sender As Object, e As EventArgs) Handles MenuHelpUpdateCheck.Click
+    Private Sub BtnHelpUpdateCheck_Click(sender As Object, e As EventArgs) Handles MenuHelpUpdateCheck.Click, MainMenuUpdateAvailable.Click
         CheckForUpdates()
     End Sub
 
@@ -4144,6 +4187,7 @@ Public Class MainForm
 
         AddHandler MainMenuOptions.DropDown.Closing, AddressOf ContextMenuOptions_Closing
 
+        MainMenuUpdateAvailable.Visible = False
         MenuToolsCompare.Visible = False
         ListViewFiles.DoubleBuffer
         ListViewSummary.DoubleBuffer
@@ -4179,11 +4223,19 @@ Public Class MainForm
         If Args.Length > 0 Then
             ProcessFileDrop(Args)
         End If
+
+        If My.Settings.CheckUpdateOnStartup Then
+            CheckForUpdatesStartup()
+        End If
     End Sub
 
     Private Sub MainForm_ResizeEnd(sender As Object, e As EventArgs) Handles Me.ResizeEnd
         My.Settings.WindowWidth = Me.Width
         My.Settings.WindowHeight = Me.Height
+    End Sub
+
+    Private Sub MenuOptionsCheckUpdate_CheckStateChanged(sender As Object, e As EventArgs) Handles MenuOptionsCheckUpdate.CheckStateChanged
+        My.Settings.CheckUpdateOnStartup = MenuOptionsCheckUpdate.Checked
     End Sub
 
     Private Sub MenuOptionsCreateBackup_CheckStateChanged(sender As Object, e As EventArgs) Handles MenuOptionsCreateBackup.CheckStateChanged
