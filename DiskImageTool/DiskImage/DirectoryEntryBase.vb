@@ -335,6 +335,12 @@ Namespace DiskImage
             End Set
         End Property
 
+        Public ReadOnly Property LFNChecksum As Byte
+            Get
+                Return _FloppyImage.GetByte(_Offset + LFNOffsets.Checksum)
+            End Get
+        End Property
+
         Public ReadOnly Property LFNSequence As Byte
             Get
                 Return _FloppyImage.GetByte(_Offset + LFNOffsets.Sequence)
@@ -482,7 +488,7 @@ Namespace DiskImage
             Return _LastWriteDateCache
         End Function
 
-        Public Function GetLFNChecksum() As Byte
+        Public Function CalculateLFNChecksum() As Byte
             Dim pFcbName = _FloppyImage.GetBytes(_Offset + DirectoryEntryOffsets.FileName, DirectoryEntrySizes.FileNameAndExtension)
 
             Dim Sum As Byte = 0
@@ -503,7 +509,14 @@ Namespace DiskImage
                 _FloppyImage.CopyTo(_Offset + LFNOffsets.FilePart2, LFN, LFNSizes.FilePart1, LFNSizes.FilePart2)
                 _FloppyImage.CopyTo(_Offset + LFNOffsets.FilePart3, LFN, LFNSizes.FilePart1 + LFNSizes.FilePart2, LFNSizes.FilePart3)
 
-                Return Encoding.Unicode.GetString(LFN)
+                Dim FileName = Encoding.Unicode.GetString(LFN)
+
+                Dim Pos = FileName.IndexOf(vbNullChar)
+                If Pos > 0 Then
+                    FileName = FileName.Substring(0, Pos)
+                End If
+
+                Return FileName
             Else
                 Dim LFN(1) As Byte
 

@@ -7,7 +7,7 @@ Namespace DiskImage
         Dim EntriesNeeded As Integer
         Dim ShortFileName As String
         Dim ClusterList As SortedSet(Of UShort)
-        Dim UseLFN As Boolean
+        Dim Options As AddFileOptions
         Dim LFNEntries As List(Of Byte())
         Dim RequiresExpansion As Boolean
         Dim Entry As DirectoryEntry
@@ -15,7 +15,7 @@ Namespace DiskImage
 
     Public Structure AddFileData
         Dim FilePath As String
-        Dim WindowsAdditions As Boolean
+        Dim Options As AddFileOptions
         Dim Index As Integer
         Dim EntriesNeeded As Integer
         Dim ShortFileName As String
@@ -388,16 +388,16 @@ Namespace DiskImage
             End Select
         End Function
 
-        Public Function InitializeAddDirectory(Directory As DirectoryBase, UseLFN As Boolean, LFNFileName As String, Index As Integer) As AddDirectoryData
+        Public Function InitializeAddDirectory(Directory As DirectoryBase, Options As AddFileOptions, LFNFileName As String, Index As Integer) As AddDirectoryData
             Dim ClustersRequired As UShort = 1
 
             Dim AddDirectoryData As AddDirectoryData
 
             AddDirectoryData.Entry = Nothing
             AddDirectoryData.Index = Index
-            AddDirectoryData.UseLFN = UseLFN
-            If UseLFN Then
-                AddDirectoryData.ShortFileName = Directory.GetAvailableFileName(LFNFileName, False)
+            AddDirectoryData.Options = Options
+            If Options.LFN Then
+                AddDirectoryData.ShortFileName = Directory.GetAvailableFileName(LFNFileName, Options.NTExtensions)
                 AddDirectoryData.LFNEntries = GetLFNDirectoryEntries(LFNFileName, AddDirectoryData.ShortFileName)
                 AddDirectoryData.EntriesNeeded = AddDirectoryData.LFNEntries.Count + 1
             Else
@@ -421,17 +421,17 @@ Namespace DiskImage
             Return AddDirectoryData
         End Function
 
-        Public Function InitializeAddFile(Directory As DirectoryBase, FileInfo As FileInfo, WindowsAdditions As Boolean, Index As Integer) As AddFileData
+        Public Function InitializeAddFile(Directory As DirectoryBase, FileInfo As FileInfo, Options As AddFileOptions, Index As Integer) As AddFileData
             Dim ClustersRequired As UShort = Math.Ceiling(FileInfo.Length / Directory.Disk.BPB.BytesPerCluster)
 
             Dim AddFileData As AddFileData
 
             AddFileData.FilePath = FileInfo.FullName
-            AddFileData.WindowsAdditions = WindowsAdditions
+            AddFileData.Options = Options
             AddFileData.Index = Index
-            AddFileData.ShortFileName = Directory.GetAvailableFileName(FileInfo.Name, False)
+            AddFileData.ShortFileName = Directory.GetAvailableFileName(FileInfo.Name, Options.NTExtensions)
 
-            If AddFileData.WindowsAdditions Then
+            If Options.LFN Then
                 AddFileData.LFNEntries = GetLFNDirectoryEntries(FileInfo.Name, AddFileData.ShortFileName)
                 AddFileData.EntriesNeeded = AddFileData.LFNEntries.Count + 1
             Else
@@ -514,7 +514,7 @@ Namespace DiskImage
             Dim Entry = New DirectoryEntryBase(DirectoryData) With {
                 .StartingCluster = Cluster
             }
-            If Data.UseLFN Then
+            If Data.Options.LFN Then
                 Entry.SetFileName(Data.ShortFileName)
             End If
 
@@ -523,7 +523,7 @@ Namespace DiskImage
             DirectoryEntry.InitFatChain()
             DirectoryEntry.InitSubDirectory()
 
-            If Data.UseLFN Then
+            If Data.Options.LFN Then
                 ProcessLFNEntries(Entries, Data.LFNEntries)
             End If
 
@@ -547,9 +547,9 @@ Namespace DiskImage
             End If
 
             Dim DirectoryEntry = Entries(Entries.Count - 1)
-            DirectoryEntry.AddFile(Data.FilePath, Data.ShortFileName, Data.WindowsAdditions, Data.ClusterList)
+            DirectoryEntry.AddFile(Data.FilePath, Data.ShortFileName, Data.Options.CreatedDate, Data.Options.LastAccessedDate, Data.ClusterList)
 
-            If Data.WindowsAdditions Then
+            If Data.Options.LFN Then
                 ProcessLFNEntries(Entries, Data.LFNEntries)
             End If
 
@@ -558,7 +558,7 @@ Namespace DiskImage
 
         Public Sub ProcessLFNEntries(DirectoryEntries As List(Of DirectoryEntry), LFNEntries As List(Of Byte()))
             Dim DirectoryEntry = DirectoryEntries(DirectoryEntries.Count - 1)
-            Dim Checksum = DirectoryEntry.GetLFNChecksum
+            Dim Checksum = DirectoryEntry.CalculateLFNChecksum
             For Counter = 0 To LFNEntries.Count - 1
                 Dim Buffer = LFNEntries(Counter)
                 Buffer(13) = Checksum

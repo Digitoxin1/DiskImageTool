@@ -25,9 +25,9 @@
             End Get
         End Property
 
-        Public Overrides Function AddDirectory(DirectoryData() As Byte, UseLFN As Boolean, LFNFileName As String, Optional Index As Integer = -1) As AddDirectoryData Implements IDirectory.AddDirectory
+        Public Overrides Function AddDirectory(DirectoryData() As Byte, Options As AddFileOptions, LFNFileName As String, Optional Index As Integer = -1) As AddDirectoryData Implements IDirectory.AddDirectory
             Dim Result As Boolean = True
-            Dim Data = InitializeAddDirectory(Me, UseLFN, LFNFileName, Index)
+            Dim Data = InitializeAddDirectory(Me, Options, LFNFileName, Index)
 
             If Data.ClusterList Is Nothing Then
                 Result = False
@@ -61,17 +61,17 @@
             Return Data
         End Function
 
-        Public Overrides Function AddFile(FilePath As String, WindowsAdditions As Boolean, Optional Index As Integer = -1) As Integer Implements IDirectory.AddFile
-            Return AddFile(New IO.FileInfo(FilePath), WindowsAdditions, Index)
+        Public Overrides Function AddFile(FilePath As String, Options As AddFileOptions, Optional Index As Integer = -1) As Integer Implements IDirectory.AddFile
+            Return AddFile(New IO.FileInfo(FilePath), Options, Index)
         End Function
 
-        Public Overrides Function AddFile(FileInfo As IO.FileInfo, WindowsAdditions As Boolean, Optional Index As Integer = -1) As Integer Implements IDirectory.AddFile
+        Public Overrides Function AddFile(FileInfo As IO.FileInfo, Options As AddFileOptions, Optional Index As Integer = -1) As Integer Implements IDirectory.AddFile
 
             If FileInfo.Length > Disk.Image.Length Then
                 Return -1
             End If
 
-            Dim Data = InitializeAddFile(Me, FileInfo, WindowsAdditions, Index)
+            Dim Data = InitializeAddFile(Me, FileInfo, Options, Index)
 
             If Data.ClusterList Is Nothing Then
                 Return -1

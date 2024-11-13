@@ -121,9 +121,9 @@ Partial Class MainForm
         Me.MenuOptionsCreateBackup = New System.Windows.Forms.ToolStripMenuItem()
         Me.MenuOptionsCheckUpdate = New System.Windows.Forms.ToolStripMenuItem()
         Me.MenuOptionsDragDrop = New System.Windows.Forms.ToolStripMenuItem()
-        Me.MenuOptionsWindowsExtensions = New System.Windows.Forms.ToolStripMenuItem()
         Me.MenuOptionsSeparatorDebug = New System.Windows.Forms.ToolStripSeparator()
         Me.MenuOptionsExportUnknown = New System.Windows.Forms.ToolStripMenuItem()
+        Me.MainMenuUpdateAvailable = New System.Windows.Forms.ToolStripMenuItem()
         Me.ToolStripTop = New System.Windows.Forms.ToolStrip()
         Me.ToolStripSearchText = New System.Windows.Forms.ToolStripTextBox()
         Me.ToolStripOEMNameCombo = New System.Windows.Forms.ToolStripComboBox()
@@ -188,7 +188,6 @@ Partial Class MainForm
         Me.MenuDirectoryView = New System.Windows.Forms.ToolStripMenuItem()
         Me.MenuDirectoryImportFiles = New System.Windows.Forms.ToolStripMenuItem()
         Me.MenuDirectoryNewDirectory = New System.Windows.Forms.ToolStripMenuItem()
-        Me.MainMenuUpdateAvailable = New System.Windows.Forms.ToolStripMenuItem()
         SummaryName = CType(New System.Windows.Forms.ColumnHeader(), System.Windows.Forms.ColumnHeader)
         SummaryValue = CType(New System.Windows.Forms.ColumnHeader(), System.Windows.Forms.ColumnHeader)
         HashName = CType(New System.Windows.Forms.ColumnHeader(), System.Windows.Forms.ColumnHeader)
@@ -815,7 +814,7 @@ Partial Class MainForm
         '
         'MainMenuOptions
         '
-        Me.MainMenuOptions.DropDownItems.AddRange(New System.Windows.Forms.ToolStripItem() {Me.MenuOptionsCreateBackup, Me.MenuOptionsCheckUpdate, Me.MenuOptionsDragDrop, Me.MenuOptionsWindowsExtensions, Me.MenuOptionsSeparatorDebug, Me.MenuOptionsExportUnknown})
+        Me.MainMenuOptions.DropDownItems.AddRange(New System.Windows.Forms.ToolStripItem() {Me.MenuOptionsCreateBackup, Me.MenuOptionsCheckUpdate, Me.MenuOptionsDragDrop, Me.MenuOptionsSeparatorDebug, Me.MenuOptionsExportUnknown})
         Me.MainMenuOptions.Name = "MainMenuOptions"
         Me.MainMenuOptions.Size = New System.Drawing.Size(61, 20)
         Me.MainMenuOptions.Text = "&Options"
@@ -841,15 +840,6 @@ Partial Class MainForm
         Me.MenuOptionsDragDrop.Size = New System.Drawing.Size(248, 22)
         Me.MenuOptionsDragDrop.Text = "Import using Drag and Drop"
         '
-        'MenuOptionsWindowsExtensions
-        '
-        Me.MenuOptionsWindowsExtensions.CheckOnClick = True
-        Me.MenuOptionsWindowsExtensions.Name = "MenuOptionsWindowsExtensions"
-        Me.MenuOptionsWindowsExtensions.Size = New System.Drawing.Size(248, 22)
-        Me.MenuOptionsWindowsExtensions.Text = "Enable Windows Extensions"
-        Me.MenuOptionsWindowsExtensions.ToolTipText = "Enabled Created and Last Access dates and Long File Name support when adding file" &
-    "s"
-        '
         'MenuOptionsSeparatorDebug
         '
         Me.MenuOptionsSeparatorDebug.Name = "MenuOptionsSeparatorDebug"
@@ -861,6 +851,14 @@ Partial Class MainForm
         Me.MenuOptionsExportUnknown.Name = "MenuOptionsExportUnknown"
         Me.MenuOptionsExportUnknown.Size = New System.Drawing.Size(248, 22)
         Me.MenuOptionsExportUnknown.Text = "Export Unknown Images on Scan"
+        '
+        'MainMenuUpdateAvailable
+        '
+        Me.MainMenuUpdateAvailable.ForeColor = System.Drawing.Color.Blue
+        Me.MainMenuUpdateAvailable.Margin = New System.Windows.Forms.Padding(12, 0, 0, 0)
+        Me.MainMenuUpdateAvailable.Name = "MainMenuUpdateAvailable"
+        Me.MainMenuUpdateAvailable.Size = New System.Drawing.Size(108, 20)
+        Me.MainMenuUpdateAvailable.Text = "Update Available"
         '
         'ToolStripTop
         '
@@ -1400,14 +1398,6 @@ Partial Class MainForm
         Me.MenuDirectoryNewDirectory.Size = New System.Drawing.Size(150, 22)
         Me.MenuDirectoryNewDirectory.Text = "&New Directory"
         '
-        'MainMenuUpdateAvailable
-        '
-        Me.MainMenuUpdateAvailable.ForeColor = System.Drawing.Color.Blue
-        Me.MainMenuUpdateAvailable.Margin = New System.Windows.Forms.Padding(12, 0, 0, 0)
-        Me.MainMenuUpdateAvailable.Name = "MainMenuUpdateAvailable"
-        Me.MainMenuUpdateAvailable.Size = New System.Drawing.Size(108, 20)
-        Me.MainMenuUpdateAvailable.Text = "Update Available"
-        '
         'MainForm
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
@@ -1548,7 +1538,6 @@ Partial Class MainForm
     Friend WithEvents MenuFileReload As ToolStripMenuItem
     Friend WithEvents MenuHexRawTrackData As ToolStripMenuItem
     Friend WithEvents MenuFileNewImage As ToolStripMenuItem
-    Friend WithEvents MenuOptionsWindowsExtensions As ToolStripMenuItem
     Friend WithEvents MenuFileImportFilesHere As ToolStripMenuItem
     Friend WithEvents MenuHexSeparatorFile As ToolStripSeparator
     Friend WithEvents MenuEditReplaceFile As ToolStripMenuItem

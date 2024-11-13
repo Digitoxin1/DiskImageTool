@@ -35,7 +35,6 @@ Public Class FilePropertiesForm
         End Get
     End Property
 
-
     Public Property IsVolumeLabel As Boolean
         Get
             Return _IsVolumeLabel
@@ -48,6 +47,12 @@ Public Class FilePropertiesForm
     Public ReadOnly Property LFN As String
         Get
             Return TxtLFN.Text
+        End Get
+    End Property
+
+    Public ReadOnly Property UseNTExtensions As Boolean
+        Get
+            Return ChkNTExtensions.Checked
         End Get
     End Property
 

@@ -1837,7 +1837,12 @@ Public Class MainForm
             Updated = frmNewDirectory.Updated
 
             If Updated Then
-                Dim AddDirectoryResponse = ParentDirectory.AddDirectory(frmNewDirectory.NewDirectoryData, frmNewDirectory.HasLFN, frmNewDirectory.LFN, Index)
+                Dim Options As New AddFileOptions With {
+                    .LFN = frmNewDirectory.HasLFN,
+                    .NTExtensions = frmNewDirectory.UseNTExtensions
+                }
+
+                Dim AddDirectoryResponse = ParentDirectory.AddDirectory(frmNewDirectory.NewDirectoryData, Options, frmNewDirectory.LFN, Index)
 
                 If AddDirectoryResponse.Entry IsNot Nothing Then
                     DiskImageRefresh(CurrentImage)
@@ -1848,43 +1853,38 @@ Public Class MainForm
         End If
     End Sub
 
-    Private Sub ImageImportFolders(FolderList As List(Of DirectoryInfo), ParentDirectory As IDirectory, Index As Integer, ByRef FileCount As UInteger, ByRef FilesAdded As UInteger)
-        Dim WindowsAdditions As Boolean = My.Settings.WindowsExtensions
-
-        FileCount += FolderList.Count
-
+    Private Sub ImageImportFolders(FolderList As List(Of ImportDirectory), ParentDirectory As IDirectory, Index As Integer, Options As AddFileOptions, ByRef FilesAdded As UInteger)
         For Each Folder In FolderList
-            Dim ShortFileName = ParentDirectory.GetAvailableFileName(Folder.Name, False)
-            Dim DirectoryEntry = New DirectoryEntryBase
-            DirectoryEntry.SetFileInfo(Folder, ShortFileName, WindowsAdditions, WindowsAdditions)
+            If Folder.SelectedFiles > 0 Then
+                Dim DirectoryInfo As New IO.DirectoryInfo(Folder.FilePath)
+                Dim ShortFileName = ParentDirectory.GetAvailableFileName(DirectoryInfo.Name, False)
+                Dim DirectoryEntry = New DirectoryEntryBase
+                DirectoryEntry.SetFileInfo(DirectoryInfo, ShortFileName, Options.CreatedDate, Options.LastAccessedDate)
 
-            Dim AddDirectoryResponse = ParentDirectory.AddDirectory(DirectoryEntry.Data, WindowsAdditions, Folder.Name, Index)
-            If AddDirectoryResponse.Entry IsNot Nothing Then
-                FilesAdded += 1
-                If Index > -1 Then
-                    Index += AddDirectoryResponse.EntriesNeeded
+                Dim AddDirectoryResponse = ParentDirectory.AddDirectory(DirectoryEntry.Data, Options, DirectoryInfo.Name, Index)
+                If AddDirectoryResponse.Entry IsNot Nothing Then
+                    FilesAdded += 1
+                    If Index > -1 Then
+                        Index += AddDirectoryResponse.EntriesNeeded
+                    End If
+
+                    ImageImportFolders(Folder.DirectoryList, AddDirectoryResponse.Entry.SubDirectory, -1, Options, FilesAdded)
+                    ImageImportFiles(Folder.FileList, AddDirectoryResponse.Entry.SubDirectory, -1, Options, FilesAdded)
                 End If
-
-                Dim SubFolderList = Folder.GetDirectories.ToList
-                Dim FileList = Folder.GetFiles.ToList
-
-                ImageImportFolders(SubFolderList, AddDirectoryResponse.Entry.SubDirectory, -1, FileCount, FilesAdded)
-                ImageImportFiles(FileList, AddDirectoryResponse.Entry.SubDirectory, -1, FileCount, FilesAdded)
             End If
         Next
     End Sub
 
-    Private Sub ImageImportFiles(FileList As List(Of FileInfo), ParentDirectory As IDirectory, Index As Integer, ByRef FileCount As UInteger, ByRef FilesAdded As UInteger)
-        Dim WindowsAdditions As Boolean = My.Settings.WindowsExtensions
-
-        FileCount += FileList.Count
-
+    Private Sub ImageImportFiles(FileList As List(Of ImportFile), ParentDirectory As IDirectory, Index As Integer, Options As AddFileOptions, ByRef FilesAdded As UInteger)
         For Each File In FileList
-            Dim EntriesAdded = ParentDirectory.AddFile(File, WindowsAdditions, Index)
-            If EntriesAdded > -1 Then
-                FilesAdded += 1
-                If Index > -1 Then
-                    Index += EntriesAdded
+            If File.IsSelected Then
+                Dim FileInfo As New IO.FileInfo(File.FilePath)
+                Dim EntriesAdded = ParentDirectory.AddFile(FileInfo, Options, Index)
+                If EntriesAdded > -1 Then
+                    FilesAdded += 1
+                    If Index > -1 Then
+                        Index += EntriesAdded
+                    End If
                 End If
             End If
         Next
@@ -1912,28 +1912,26 @@ Public Class MainForm
             FileNames = Dialog.FileNames
         End If
 
+        Dim ImportFilesForm As New ImportFileForm(ParentDirectory, FileNames)
+        Dim Result = ImportFilesForm.ShowDialog()
+
+        If Result = DialogResult.Cancel Then
+            Exit Sub
+        End If
+
+        Dim FileList = ImportFilesForm.FileList
+
+        If FileList.SelectedFiles < 1 Then
+            Exit Sub
+        End If
+
         Dim UseTransaction = ParentDirectory.Disk.BeginTransaction
 
         Dim FilesAdded As UInteger = 0
-        Dim FileCount As UInteger = 0
+        Dim FileCount As UInteger = FileList.SelectedFiles
 
-        Dim FolderList As New List(Of DirectoryInfo)
-        Dim FileList As New List(Of FileInfo)
-
-        For Each FilePath In FileNames
-            Dim IsDirectory = File.GetAttributes(FilePath).HasFlag(FileAttributes.Directory)
-            If IsDirectory Then
-                FolderList.Add(New DirectoryInfo(FilePath))
-            Else
-                FileList.Add(New FileInfo(FilePath))
-            End If
-        Next
-
-        FolderList = FolderList.OrderBy(Function(dir) dir.FullName).ToList()
-        FileList = FileList.OrderBy(Function(file) file.FullName).ToList()
-
-        ImageImportFolders(FolderList, ParentDirectory, Index, FileCount, FilesAdded)
-        ImageImportFiles(FileList, ParentDirectory, Index, FileCount, FilesAdded)
+        ImageImportFolders(FileList.DirectoryList, ParentDirectory, Index, FileList.Options, FilesAdded)
+        ImageImportFiles(FileList.FileList, ParentDirectory, Index, FileList.Options, FilesAdded)
 
         If FilesAdded < FileCount Then
             MsgBox($"Warning: Insufficient Disk Space{vbCrLf}{vbCrLf}{FilesAdded} of {FileCount} file(s) added successfully", MsgBoxStyle.Exclamation)
@@ -1947,6 +1945,7 @@ Public Class MainForm
             DiskImageRefresh(CurrentImage)
         End If
     End Sub
+
     Private Sub ImageClearReservedBytes(CurrentImage As CurrentImage)
         If _TitleDB.IsVerifiedImage(CurrentImage.Disk) Then
             If Not MsgBoxQuestion("This is a verified image.  Are you sure you wish to clear reserved bytes from this image?") Then
@@ -2747,7 +2746,10 @@ Public Class MainForm
         Dim DirectoryEntryCount = Directory.Data.EntryCount
 
         If DirectoryEntryCount > 0 Then
+            Dim HasLFN As Boolean = False
             Dim LFNFileName As String = ""
+            Dim LFNIndex As Byte = 0
+            Dim LFNChecksum As Byte = 0
 
             Dim EntryCount = 0
             For Counter = 0 To DirectoryEntryCount - 1
@@ -2755,9 +2757,31 @@ Public Class MainForm
 
                 If Not DirectoryEntry.IsLink Then
                     If DirectoryEntry.IsLFN Then
-                        LFNFileName = DirectoryEntry.GetLFNFileName & LFNFileName
+                        If LFNIndex > 0 Then
+                            LFNIndex -= 1
+                        End If
+                        LFNIndex = DirectoryEntry.LFNGetNextSequence(LFNIndex, LFNChecksum, True)
+                        If LFNIndex > 0 Then
+                            LFNChecksum = DirectoryEntry.LFNChecksum
+                            If (LFNIndex And &H40) > 0 Then
+                                LFNIndex = LFNIndex And Not &H40
+                                LFNFileName = DirectoryEntry.GetLFNFileName
+                            Else
+                                LFNFileName = DirectoryEntry.GetLFNFileName & LFNFileName
+                            End If
+                            HasLFN = True
+                        Else
+                            LFNFileName = ""
+                            HasLFN = False
+                        End If
                     Else
-                        If LFNFileName = "" Then
+                        If HasLFN Then
+                            If LFNIndex <> 1 Or LFNChecksum <> DirectoryEntry.CalculateLFNChecksum Then
+                                LFNFileName = ""
+                                HasLFN = False
+                            End If
+                        End If
+                        If Not HasLFN Then
                             If Not DirectoryEntry.HasNTUnknownFlags And (DirectoryEntry.HasNTLowerCaseFileName Or DirectoryEntry.HasNTLowerCaseExtension) Then
                                 LFNFileName = DirectoryEntry.GetNTFileName
                             End If
@@ -2778,31 +2802,40 @@ Public Class MainForm
                             ItemIndex += 1
                         End If
 
-                        LFNFileName = ""
-                    End If
+                        If DirectoryEntry.IsDirectory And DirectoryEntry.SubDirectory IsNot Nothing Then
+                            If DirectoryEntry.SubDirectory.Data.EntryCount > 0 Then
+                                Dim NewPath As String
+                                If HasLFN Then
+                                    NewPath = LFNFileName
+                                Else
+                                    NewPath = DirectoryEntry.GetFullFileName
+                                End If
+                                If Path <> "" Then
+                                    NewPath = Path & "\" & NewPath
+                                End If
 
-
-                    If DirectoryEntry.IsDirectory And DirectoryEntry.SubDirectory IsNot Nothing Then
-                        If DirectoryEntry.SubDirectory.Data.EntryCount > 0 Then
-                            Dim NewPath = DirectoryEntry.GetFullFileName
-                            If Path <> "" Then
-                                NewPath = Path & "\" & NewPath
+                                If Not ScanOnly Then
+                                    MenuDisplayDirectorySubMenuItemAdd(NewPath, DirectoryEntry.SubDirectory, -1)
+                                End If
+                                Dim SubResponse = ProcessDirectoryEntries(DirectoryEntry.SubDirectory, DirectoryEntry.Offset, NewPath, ScanOnly, GroupIndex, ItemIndex)
+                                Response.Combine(SubResponse)
                             End If
-
-                            If Not ScanOnly Then
-                                MenuDisplayDirectorySubMenuItemAdd(NewPath, DirectoryEntry.SubDirectory, -1)
-                            End If
-                            Dim SubResponse = ProcessDirectoryEntries(DirectoryEntry.SubDirectory, DirectoryEntry.Offset, NewPath, ScanOnly, GroupIndex, ItemIndex)
-                            Response.Combine(SubResponse)
                         End If
+
+                        LFNFileName = ""
+                        LFNIndex = 0
+                        LFNChecksum = 0
+                        HasLFN = False
                     End If
                     EntryCount += 1
                 End If
             Next
+
             If Not ScanOnly And EntryCount = 0 Then
                 Dim Item = ListViewFilesAddEmpty(Group, ItemIndex)
                 ItemIndex += 1
             End If
+
         ElseIf Not ScanOnly Then
             Dim Item = ListViewFilesAddEmpty(Group, ItemIndex)
             ItemIndex += 1
@@ -3281,7 +3314,6 @@ Public Class MainForm
 
         MenuOptionsCreateBackup.Checked = My.Settings.CreateBackups
         MenuOptionsCheckUpdate.Checked = My.Settings.CheckUpdateOnStartup
-        MenuOptionsWindowsExtensions.Checked = My.Settings.WindowsExtensions
         MenuOptionsDragDrop.Checked = My.Settings.DragAndDrop
 
         RefreshDiskButtons(Nothing)
@@ -4248,10 +4280,6 @@ Public Class MainForm
 
     Private Sub MenuOptionsExportUnknown_CheckStateChanged(sender As Object, e As EventArgs) Handles MenuOptionsExportUnknown.CheckStateChanged
         _ExportUnknownImages = MenuOptionsExportUnknown.Checked
-    End Sub
-
-    Private Sub MenuOptionsWindowsExtensions_CheckStateChanged(sender As Object, e As EventArgs) Handles MenuOptionsWindowsExtensions.CheckStateChanged
-        My.Settings.WindowsExtensions = MenuOptionsWindowsExtensions.Checked
     End Sub
 
     Private Sub MenuToolsTrackLayout_Click(sender As Object, e As EventArgs) Handles MenuToolsTrackLayout.Click

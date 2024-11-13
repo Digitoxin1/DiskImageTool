@@ -181,7 +181,7 @@
             Return ClusterList
         End Function
 
-        Public Function GetFreeSpace()
+        Public Function GetFreeSpace() As UInteger
             Return _FreeClusters.Count * _BytesPerCluster
         End Function
 

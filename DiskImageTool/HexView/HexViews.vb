@@ -1,7 +1,6 @@
 ﻿Imports DiskImageTool.DiskImage
 Imports DiskImageTool.DiskImage.BootSector
 Imports DiskImageTool.DiskImage.BiosParameterBlock
-Imports DiskImageTool.DiskImage.DirectoryEntry
 
 Module HexViews
     Public Function DisplayHexViewForm(HexViewSectorData As HexViewSectorData) As Boolean

@@ -45,7 +45,8 @@ Public Class FilePropertiesFormSingle
         End If
 
         If RadioFileShort.Checked Then
-            If Not _DirectoryEntry.IsVolumeName And Not _DirectoryEntry.IsDeleted And _DirectoryEntry.HasLFN Then
+            Dim LFN = _DirectoryEntry.GetLongFileName
+            If Not _DirectoryEntry.IsVolumeName And Not _DirectoryEntry.IsDeleted And LFN.Length > 0 Then
                 If _DirectoryEntry.RemoveLFN() Then
                     _Updated = True
                 End If
@@ -89,8 +90,9 @@ Public Class FilePropertiesFormSingle
             Dim IsDirectory = _DirectoryEntry.IsDirectory And Not _DirectoryEntry.IsVolumeName
 
             If Not Deleted Then
-                If _DirectoryEntry.HasLFN Then
-                    TxtLFN.Text = _DirectoryEntry.GetLongFileName
+                Dim LFN = _DirectoryEntry.GetLongFileName
+                If LFN.Length > 0 Then
+                    TxtLFN.Text = LFN
                     RadioFileLong.Checked = True
                     ChkNTExtensions.Checked = False
                     ChkNTExtensions.Enabled = True

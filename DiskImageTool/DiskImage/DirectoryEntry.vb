@@ -79,11 +79,11 @@
             End Get
         End Property
 
-        Public Function AddFile(FilePath As String, ShortFileName As String, WindowsAdditions As Boolean, Optional StartingCluster As UShort = 2) As Boolean
-            Return AddFile(FilePath, ShortFileName, WindowsAdditions, Disk.FAT.FreeClusters, StartingCluster)
+        Public Function AddFile(FilePath As String, ShortFileName As String, UseCreationDate As Boolean, UseLastAccessDate As Boolean, Optional StartingCluster As UShort = 2) As Boolean
+            Return AddFile(FilePath, ShortFileName, UseCreationDate, UseLastAccessDate, Disk.FAT.FreeClusters, StartingCluster)
         End Function
 
-        Public Function AddFile(FilePath As String, ShortFileName As String, WindowsAdditions As Boolean, ClusterList As SortedSet(Of UShort), Optional StartingCluster As UShort = 2) As Boolean
+        Public Function AddFile(FilePath As String, ShortFileName As String, UseCreationDate As Boolean, UseLastAccessDate As Boolean, ClusterList As SortedSet(Of UShort), Optional StartingCluster As UShort = 2) As Boolean
             Dim FileInfo = New IO.FileInfo(FilePath)
             Dim ClusterSize = Disk.BPB.BytesPerCluster
 
@@ -125,7 +125,7 @@
             End If
 
             Dim NewEntry = New DirectoryEntryBase
-            NewEntry.SetFileInfo(FileInfo, ShortFileName, WindowsAdditions, WindowsAdditions)
+            NewEntry.SetFileInfo(FileInfo, ShortFileName, UseCreationDate, UseLastAccessDate)
             NewEntry.StartingCluster = FirstCluster
 
             Data = NewEntry.Data
@@ -236,22 +236,34 @@
         Public Function GetLongFileName() As String
             Dim FileName As String = ""
             Dim DirectoryEntry As DirectoryEntry
+            Dim LFNChecksum As Byte = CalculateLFNChecksum()
+            Dim LFNIndex As Byte = 1
+            Dim IsLFN As Boolean
+
             If _Index > 0 Then
                 Dim Index = _Index
                 Do
                     Index -= 1
                     DirectoryEntry = _ParentDirectory.DirectoryEntries.Item(Index)
-                    If DirectoryEntry.IsLFN Then
-                        FileName &= DirectoryEntry.GetLFNFileName
+                    IsLFN = DirectoryEntry.IsLFN
+                    If IsLFN Then
+                        LFNIndex = DirectoryEntry.LFNGetNextSequence(LFNIndex, LFNChecksum, False)
+                        If LFNIndex > 0 Then
+                            FileName &= DirectoryEntry.GetLFNFileName
+                            If (LFNIndex And &H40) > 0 Then
+                                Exit Do
+                            Else
+                                LFNIndex += 1
+                            End If
+                        Else
+                            FileName = ""
+                            IsLFN = False
+                        End If
                     End If
-                Loop Until Index = 0 Or Not DirectoryEntry.IsLFN
+                Loop Until Index = 0 Or Not IsLFN
             End If
 
-            If FileName.Length > 0 Then
-                Return FileName
-            Else
-                Return GetFullFileName()
-            End If
+            Return FileName
         End Function
 
         Public Function GetSizeOnDisk() As UInteger
@@ -272,16 +284,6 @@
 
         Public Function HasInvalidStartingCluster() As Boolean
             Return StartingCluster = 1 Or StartingCluster > _BPB.NumberOfFATEntries + 1
-        End Function
-
-        Public Function HasLFN() As Boolean
-            If _Index > 0 Then
-                If _ParentDirectory.DirectoryEntries(_Index - 1).IsLFN Then
-                    Return True
-                End If
-            End If
-
-            Return False
         End Function
 
         Public Sub InitFatChain()
@@ -323,6 +325,24 @@
 
         Public Function IsValidFile() As Boolean
             Return Not (IsDirectory OrElse IsVolumeName OrElse HasInvalidStartingCluster() OrElse HasInvalidFileSize()) AndAlso StartingCluster > 1
+        End Function
+
+        Public Function LFNGetNextSequence(Index As Byte, Checksum As Byte, StepForward As Boolean) As Byte
+            Dim Sequence = LFNSequence
+            Dim SequenceStart = (Sequence And &H40) > 0
+            Dim SequenceIndex = Sequence And Not &H40
+
+            If Sequence = 0 Then
+                Return 0
+            ElseIf SequenceStart And StepForward Then
+                Return Sequence
+            ElseIf SequenceIndex = Index Then
+                If Checksum = LFNChecksum Then
+                    Return Sequence
+                End If
+            End If
+
+            Return 0
         End Function
 
         Public Function RemoveLFN() As Boolean
