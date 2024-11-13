@@ -39,14 +39,15 @@ Public Class MainForm
     Private _FileNames As Dictionary(Of String, ImageData)
     Private _FileVersion As String = ""
     Private _ListViewCheckAll As Boolean = False
+    Private _ListViewClickedGroup As ListViewGroup = Nothing
     Private _ListViewHeader As ListViewHeader
     Private _ListViewWidths() As Integer
-    Private _ListViewClickedGroup As ListViewGroup = Nothing
     Private _ScanRun As Boolean = False
     Private _SubFilterDiskType As ComboFilter
     Private _SubFilterOEMName As ComboFilter
     Private _SuppressEvent As Boolean = False
     Private _TitleDB As FloppyDB
+
     Public Sub New()
         ' This call is required by the designer.
         InitializeComponent()
@@ -60,7 +61,7 @@ Public Class MainForm
         _CurrentImage = Nothing
     End Sub
 
-    Friend Function ImageFiltersScanDirectory(Disk As DiskImage.Disk, ImageData As ImageData, Optional UpdateFilters As Boolean = False, Optional Remove As Boolean = False) As DirectoryScanResponse
+    Public Function ImageFiltersScanDirectory(Disk As DiskImage.Disk, ImageData As ImageData, Optional UpdateFilters As Boolean = False, Optional Remove As Boolean = False) As DirectoryScanResponse
         Dim Response As DirectoryScanResponse
         Dim HasLostClusters As Boolean = False
 
@@ -84,7 +85,7 @@ Public Class MainForm
         Return Response
     End Function
 
-    Friend Sub ImageFiltersScanDisk(Disk As DiskImage.Disk, ImageData As ImageData, Optional UpdateFilters As Boolean = False, Optional Remove As Boolean = False)
+    Public Sub ImageFiltersScanDisk(Disk As DiskImage.Disk, ImageData As ImageData, Optional UpdateFilters As Boolean = False, Optional Remove As Boolean = False)
         Dim TitleFindResult As FloppyDB.TitleFindResult = Nothing
         Dim FileData As FloppyDB.FileNameData = Nothing
         Dim Disk_UnknownFormat As Boolean
@@ -190,7 +191,7 @@ Public Class MainForm
         End If
     End Sub
 
-    Friend Sub ImageFiltersScanFreeClusters(Disk As DiskImage.Disk, ImageData As ImageData, Optional UpdateFilters As Boolean = False, Optional Remove As Boolean = False)
+    Public Sub ImageFiltersScanFreeClusters(Disk As DiskImage.Disk, ImageData As ImageData, Optional UpdateFilters As Boolean = False, Optional Remove As Boolean = False)
         Dim HasFreeClusters As Boolean = False
 
         If Not Remove AndAlso Disk.IsValidImage Then
@@ -200,13 +201,13 @@ Public Class MainForm
         ImageFilters.FilterUpdate(ImageData, UpdateFilters, Filters.FilterTypes.Disk_FreeClustersWithData, HasFreeClusters)
     End Sub
 
-    Friend Sub ImageFiltersScanModified(Disk As DiskImage.Disk, ImageData As ImageData, Optional UpdateFilters As Boolean = False, Optional Remove As Boolean = False)
+    Public Sub ImageFiltersScanModified(Disk As DiskImage.Disk, ImageData As ImageData, Optional UpdateFilters As Boolean = False, Optional Remove As Boolean = False)
         Dim IsModified As Boolean = Not Remove And (Disk IsNot Nothing AndAlso Disk.Image.History.Modified)
 
         ImageFilters.FilterUpdate(ImageData, UpdateFilters, Filters.FilterTypes.ModifiedFiles, IsModified, True)
     End Sub
 
-    Friend Sub ImageFiltersScanOEMName(Disk As DiskImage.Disk, ImageData As ImageData, Optional UpdateFilters As Boolean = False, Optional Remove As Boolean = False)
+    Public Sub ImageFiltersScanOEMName(Disk As DiskImage.Disk, ImageData As ImageData, Optional UpdateFilters As Boolean = False, Optional Remove As Boolean = False)
         Dim Bootstrap_Unknown = False
         Dim OEMName_Unknown = False
         Dim OEMName_Mismatched = False
@@ -237,7 +238,7 @@ Public Class MainForm
         ImageFilters.FilterUpdate(ImageData, UpdateFilters, Filters.FilterTypes.OEMName_Unverified, OEMName_Unverified)
     End Sub
 
-    Friend Sub ImageSubFilterDiskTypeUpdate(Disk As DiskImage.Disk, ImageData As ImageData, Optional UpdateFilters As Boolean = False, Optional Remove As Boolean = False)
+    Public Sub ImageSubFilterDiskTypeUpdate(Disk As DiskImage.Disk, ImageData As ImageData, Optional UpdateFilters As Boolean = False, Optional Remove As Boolean = False)
         Dim DiskFormat As String = ""
 
         If Not Remove Then
@@ -268,7 +269,7 @@ Public Class MainForm
         End If
     End Sub
 
-    Friend Sub ImageSubFilterOEMNameUpdate(Disk As DiskImage.Disk, ImageData As ImageData, Optional UpdateFilters As Boolean = False, Optional Remove As Boolean = False)
+    Public Sub ImageSubFilterOEMNameUpdate(Disk As DiskImage.Disk, ImageData As ImageData, Optional UpdateFilters As Boolean = False, Optional Remove As Boolean = False)
         If Disk IsNot Nothing AndAlso Disk.IsValidImage Then
             Dim OEMNameString As String = ""
 
@@ -293,7 +294,7 @@ Public Class MainForm
         End If
     End Sub
 
-    Friend Function ImageWin9xClean(Disk As Disk, Batch As Boolean) As Boolean
+    Public Function ImageWin9xClean(Disk As Disk, Batch As Boolean) As Boolean
         Dim Result As Boolean = False
 
         If Batch Then
@@ -340,6 +341,7 @@ Public Class MainForm
 
         Return Result
     End Function
+
     Private Shared Sub DirectoryEntryDisplayText(DirectoryEntry As DiskImage.DirectoryEntry)
         If Not DirectoryEntry.IsValidFile Then 'Or DirectoryEntry.IsDeleted Then
             Exit Sub
@@ -1853,99 +1855,6 @@ Public Class MainForm
         End If
     End Sub
 
-    Private Sub ImageImportFolders(FolderList As List(Of ImportDirectory), ParentDirectory As IDirectory, Index As Integer, Options As AddFileOptions, ByRef FilesAdded As UInteger)
-        For Each Folder In FolderList
-            If Folder.SelectedFiles > 0 Then
-                Dim DirectoryInfo As New IO.DirectoryInfo(Folder.FilePath)
-                Dim ShortFileName = ParentDirectory.GetAvailableFileName(DirectoryInfo.Name, False)
-                Dim DirectoryEntry = New DirectoryEntryBase
-                DirectoryEntry.SetFileInfo(DirectoryInfo, ShortFileName, Options.CreatedDate, Options.LastAccessedDate)
-
-                Dim AddDirectoryResponse = ParentDirectory.AddDirectory(DirectoryEntry.Data, Options, DirectoryInfo.Name, Index)
-                If AddDirectoryResponse.Entry IsNot Nothing Then
-                    FilesAdded += 1
-                    If Index > -1 Then
-                        Index += AddDirectoryResponse.EntriesNeeded
-                    End If
-
-                    ImageImportFolders(Folder.DirectoryList, AddDirectoryResponse.Entry.SubDirectory, -1, Options, FilesAdded)
-                    ImageImportFiles(Folder.FileList, AddDirectoryResponse.Entry.SubDirectory, -1, Options, FilesAdded)
-                End If
-            End If
-        Next
-    End Sub
-
-    Private Sub ImageImportFiles(FileList As List(Of ImportFile), ParentDirectory As IDirectory, Index As Integer, Options As AddFileOptions, ByRef FilesAdded As UInteger)
-        For Each File In FileList
-            If File.IsSelected Then
-                Dim FileInfo As New IO.FileInfo(File.FilePath)
-                Dim EntriesAdded = ParentDirectory.AddFile(FileInfo, Options, Index)
-                If EntriesAdded > -1 Then
-                    FilesAdded += 1
-                    If Index > -1 Then
-                        Index += EntriesAdded
-                    End If
-                End If
-            End If
-        Next
-    End Sub
-
-    Private Sub ImageImport(CurrentImage As CurrentImage, ParentDirectory As IDirectory, Multiselect As Boolean, Optional Index As Integer = -1)
-        Dim FileNames() As String = New String(-1) {}
-
-        If My.Settings.DragAndDrop Then
-            Dim frmFileDrop As New FileDropForm()
-
-            If frmFileDrop.ShowDialog() <> DialogResult.OK Then
-                Exit Sub
-            End If
-
-            FileNames = frmFileDrop.FileNames
-        Else
-            Dim Dialog = New OpenFileDialog With {
-               .Multiselect = Multiselect
-           }
-            If Dialog.ShowDialog <> DialogResult.OK Then
-                Exit Sub
-            End If
-
-            FileNames = Dialog.FileNames
-        End If
-
-        Dim ImportFilesForm As New ImportFileForm(ParentDirectory, FileNames)
-        Dim Result = ImportFilesForm.ShowDialog()
-
-        If Result = DialogResult.Cancel Then
-            Exit Sub
-        End If
-
-        Dim FileList = ImportFilesForm.FileList
-
-        If FileList.SelectedFiles < 1 Then
-            Exit Sub
-        End If
-
-        Dim UseTransaction = ParentDirectory.Disk.BeginTransaction
-
-        Dim FilesAdded As UInteger = 0
-        Dim FileCount As UInteger = FileList.SelectedFiles
-
-        ImageImportFolders(FileList.DirectoryList, ParentDirectory, Index, FileList.Options, FilesAdded)
-        ImageImportFiles(FileList.FileList, ParentDirectory, Index, FileList.Options, FilesAdded)
-
-        If FilesAdded < FileCount Then
-            MsgBox($"Warning: Insufficient Disk Space{vbCrLf}{vbCrLf}{FilesAdded} of {FileCount} file(s) added successfully", MsgBoxStyle.Exclamation)
-        End If
-
-        If UseTransaction Then
-            ParentDirectory.Disk.EndTransaction()
-        End If
-
-        If FilesAdded > 0 Then
-            DiskImageRefresh(CurrentImage)
-        End If
-    End Sub
-
     Private Sub ImageClearReservedBytes(CurrentImage As CurrentImage)
         If _TitleDB.IsVerifiedImage(CurrentImage.Disk) Then
             If Not MsgBoxQuestion("This is a verified image.  Are you sure you wish to clear reserved bytes from this image?") Then
@@ -2119,6 +2028,7 @@ Public Class MainForm
             MsgBox(Msg, MsgBoxStyle.Information + MsgBoxStyle.OkOnly)
         End If
     End Sub
+
     Private Sub ImageFiltersScan(Disk As Disk, ImageData As ImageData, Remove As Boolean)
         ImageFiltersScanModified(Disk, ImageData, True, Remove)
 
@@ -2184,6 +2094,98 @@ Public Class MainForm
         End If
     End Sub
 
+    Private Sub ImageImport(CurrentImage As CurrentImage, ParentDirectory As IDirectory, Multiselect As Boolean, Optional Index As Integer = -1)
+        Dim FileNames() As String = New String(-1) {}
+
+        If My.Settings.DragAndDrop Then
+            Dim frmFileDrop As New FileDropForm()
+
+            If frmFileDrop.ShowDialog() <> DialogResult.OK Then
+                Exit Sub
+            End If
+
+            FileNames = frmFileDrop.FileNames
+        Else
+            Dim Dialog = New OpenFileDialog With {
+               .Multiselect = Multiselect
+           }
+            If Dialog.ShowDialog <> DialogResult.OK Then
+                Exit Sub
+            End If
+
+            FileNames = Dialog.FileNames
+        End If
+
+        Dim ImportFilesForm As New ImportFileForm(ParentDirectory, FileNames)
+        Dim Result = ImportFilesForm.ShowDialog()
+
+        If Result = DialogResult.Cancel Then
+            Exit Sub
+        End If
+
+        Dim FileList = ImportFilesForm.FileList
+
+        If FileList.SelectedFiles < 1 Then
+            Exit Sub
+        End If
+
+        Dim UseTransaction = ParentDirectory.Disk.BeginTransaction
+
+        Dim FilesAdded As UInteger = 0
+        Dim FileCount As UInteger = FileList.SelectedFiles
+
+        ImageImportFolders(FileList.DirectoryList, ParentDirectory, Index, FileList.Options, FilesAdded)
+        ImageImportFiles(FileList.FileList, ParentDirectory, Index, FileList.Options, FilesAdded)
+
+        If FilesAdded < FileCount Then
+            MsgBox($"Warning: Insufficient Disk Space{vbCrLf}{vbCrLf}{FilesAdded} of {FileCount} file(s) added successfully", MsgBoxStyle.Exclamation)
+        End If
+
+        If UseTransaction Then
+            ParentDirectory.Disk.EndTransaction()
+        End If
+
+        If FilesAdded > 0 Then
+            DiskImageRefresh(CurrentImage)
+        End If
+    End Sub
+
+    Private Sub ImageImportFiles(FileList As List(Of ImportFile), ParentDirectory As IDirectory, Index As Integer, Options As AddFileOptions, ByRef FilesAdded As UInteger)
+        For Each File In FileList
+            If File.IsSelected Then
+                Dim FileInfo As New IO.FileInfo(File.FilePath)
+                Dim EntriesAdded = ParentDirectory.AddFile(FileInfo, Options, Index)
+                If EntriesAdded > -1 Then
+                    FilesAdded += 1
+                    If Index > -1 Then
+                        Index += EntriesAdded
+                    End If
+                End If
+            End If
+        Next
+    End Sub
+
+    Private Sub ImageImportFolders(FolderList As List(Of ImportDirectory), ParentDirectory As IDirectory, Index As Integer, Options As AddFileOptions, ByRef FilesAdded As UInteger)
+        For Each Folder In FolderList
+            If Folder.SelectedFiles > 0 Then
+                Dim DirectoryInfo As New IO.DirectoryInfo(Folder.FilePath)
+                Dim ShortFileName = ParentDirectory.GetAvailableFileName(DirectoryInfo.Name, False)
+                Dim DirectoryEntry = New DirectoryEntryBase
+                DirectoryEntry.SetFileInfo(DirectoryInfo, ShortFileName, Options.CreatedDate, Options.LastAccessedDate)
+
+                Dim AddDirectoryResponse = ParentDirectory.AddDirectory(DirectoryEntry.Data, Options, DirectoryInfo.Name, Index)
+                If AddDirectoryResponse.Entry IsNot Nothing Then
+                    FilesAdded += 1
+                    If Index > -1 Then
+                        Index += AddDirectoryResponse.EntriesNeeded
+                    End If
+
+                    ImageImportFolders(Folder.DirectoryList, AddDirectoryResponse.Entry.SubDirectory, -1, Options, FilesAdded)
+                    ImageImportFiles(Folder.FileList, AddDirectoryResponse.Entry.SubDirectory, -1, Options, FilesAdded)
+                End If
+            End If
+        Next
+    End Sub
     Private Function ImageIsWin9xDisk(Disk As Disk) As Boolean
         Dim Response As Boolean = False
         Dim OEMNameWin9x = Disk.BootSector.IsWin9xOEMName
@@ -3639,11 +3641,12 @@ Public Class MainForm
         ToolStripDiskTypeCombo.Visible = False
         ToolStripDiskTypeLabel.Visible = False
     End Sub
+
     Private Structure DirectoryStats
         Dim CanDelete As Boolean
         Dim CanExport As Boolean
-        Dim CanUndelete As Boolean
         Dim CanInsert As Boolean
+        Dim CanUndelete As Boolean
         Dim FileSize As UInteger
         Dim FullFileName As String
         Dim IsDeleted As Boolean
@@ -3666,13 +3669,6 @@ Public Class MainForm
             ImageAddDirectory(_CurrentImage, FileData.DirectoryEntry.ParentDirectory, FileData.DirectoryEntry.Index)
         End If
     End Sub
-    Private Sub BtnImportFiles_Click(sender As Object, e As EventArgs) Handles MenuFileImportFiles.Click, MenuDirectoryImportFiles.Click
-        If sender.Tag IsNot Nothing Then
-            Dim Directory As IDirectory = sender.Tag
-            ImageImport(_CurrentImage, Directory, True)
-        End If
-    End Sub
-
     Private Sub BtnClearFilters_Click(sender As Object, e As EventArgs) Handles MenuFiltersClear.Click
         If ImageFilters.FiltersApplied Then
             FiltersClear(False)
@@ -3841,6 +3837,12 @@ Public Class MainForm
         CheckForUpdates()
     End Sub
 
+    Private Sub BtnImportFiles_Click(sender As Object, e As EventArgs) Handles MenuFileImportFiles.Click, MenuDirectoryImportFiles.Click
+        If sender.Tag IsNot Nothing Then
+            Dim Directory As IDirectory = sender.Tag
+            ImageImport(_CurrentImage, Directory, True)
+        End If
+    End Sub
     Private Sub BtnImportFilesHere_Click(sender As Object, e As EventArgs) Handles MenuFileImportFilesHere.Click
         If ListViewFiles.SelectedItems.Count = 1 Then
             Dim FileData As FileData = ListViewFiles.SelectedItems(0).Tag
@@ -4063,12 +4065,6 @@ Public Class MainForm
         End If
     End Sub
 
-    Private Sub ContextMenuOptions_Closing(sender As Object, e As ToolStripDropDownClosingEventArgs)
-        If e.CloseReason = ToolStripDropDownCloseReason.ItemClicked Then
-            e.Cancel = True
-        End If
-    End Sub
-
     Private Sub ContextMenuFiles_Opening(sender As Object, e As CancelEventArgs) Handles ContextMenuFiles.Opening
         If ListViewFiles.SelectedItems.Count = 0 Then
             e.Cancel = True
@@ -4076,6 +4072,12 @@ Public Class MainForm
     End Sub
 
     Private Sub ContextMenuFilters_Closing(sender As Object, e As ToolStripDropDownClosingEventArgs) Handles ContextMenuFilters.Closing
+        If e.CloseReason = ToolStripDropDownCloseReason.ItemClicked Then
+            e.Cancel = True
+        End If
+    End Sub
+
+    Private Sub ContextMenuOptions_Closing(sender As Object, e As ToolStripDropDownClosingEventArgs)
         If e.CloseReason = ToolStripDropDownCloseReason.ItemClicked Then
             e.Cancel = True
         End If
@@ -4168,6 +4170,21 @@ Public Class MainForm
         End If
 
         ItemSelectionChanged(_CurrentImage)
+    End Sub
+
+    Private Sub ListViewFiles_MouseDown(sender As Object, e As MouseEventArgs) Handles ListViewFiles.MouseDown
+        _ListViewClickedGroup = Nothing
+
+        If e.Button And MouseButtons.Right Then
+            _ListViewClickedGroup = ListViewFiles.GetGroupAtPoint(e.Location)
+        End If
+    End Sub
+
+    Private Sub ListViewFiles_MouseUp(sender As Object, e As MouseEventArgs) Handles ListViewFiles.MouseUp
+        If _ListViewClickedGroup IsNot Nothing Then
+            DisplayDirectoryContextMenu(_ListViewClickedGroup.Tag)
+            _ListViewClickedGroup = Nothing
+        End If
     End Sub
 
     Private Sub ListViewHashes_ItemSelectionChanged(sender As Object, e As ListViewItemSelectionChangedEventArgs) Handles ListViewHashes.ItemSelectionChanged
@@ -4283,7 +4300,7 @@ Public Class MainForm
     End Sub
 
     Private Sub MenuToolsTrackLayout_Click(sender As Object, e As EventArgs) Handles MenuToolsTrackLayout.Click
-        GenerateTrackLayout
+        GenerateTrackLayout()
     End Sub
 
     Private Sub ToolStripCombo_SelectedIndexChanged(sender As Object, e As EventArgs) Handles ToolStripOEMNameCombo.SelectedIndexChanged, ToolStripDiskTypeCombo.SelectedIndexChanged
@@ -4304,6 +4321,7 @@ Public Class MainForm
             ReloadCurrentImage(False)
         End If
     End Sub
+
     Private Sub ToolStripSearchText_TextChanged(sender As Object, e As EventArgs) Handles ToolStripSearchText.TextChanged
         If _SuppressEvent Then
             Exit Sub
@@ -4312,21 +4330,5 @@ Public Class MainForm
         Debounce.Stop()
         Debounce.Start()
     End Sub
-
-    Private Sub ListViewFiles_MouseUp(sender As Object, e As MouseEventArgs) Handles ListViewFiles.MouseUp
-        If _ListViewClickedGroup IsNot Nothing Then
-            DisplayDirectoryContextMenu(_ListViewClickedGroup.Tag)
-            _ListViewClickedGroup = Nothing
-        End If
-    End Sub
-
-    Private Sub ListViewFiles_MouseDown(sender As Object, e As MouseEventArgs) Handles ListViewFiles.MouseDown
-        _ListViewClickedGroup = Nothing
-
-        If e.Button And MouseButtons.Right Then
-            _ListViewClickedGroup = ListViewFiles.GetGroupAtPoint(e.Location)
-        End If
-    End Sub
-
 #End Region
 End Class

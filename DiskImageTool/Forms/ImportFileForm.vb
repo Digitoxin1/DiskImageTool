@@ -6,6 +6,7 @@ Public Class ImportFileForm
     Private _HasLFN As Boolean
     Private _HasNTExtensions As Boolean
     Private _IgnoreEvent As Boolean = False
+    Private _ListViewHeader As ListViewHeader
 
     Public Sub New(Directory As IDirectory, FileNames() As String)
 
@@ -28,12 +29,21 @@ Public Class ImportFileForm
     Private Function GetPathString(Directory As IDirectory) As String
         Dim PathString As String = ""
         Dim Parent As IDirectory
+        Dim FileName As String
 
         If Not Directory.IsRootDirectory Then
-            PathString = Directory.ParentEntry.GetFullFileName
+            FileName = Directory.ParentEntry.GetLongFileName
+            If FileName.Length = 0 Then
+                FileName = Directory.ParentEntry.GetFullFileName
+            End If
+            PathString = FileName
             Parent = Directory.ParentEntry.ParentDirectory
             Do While Not Parent.IsRootDirectory
-                PathString = Parent.ParentEntry.GetFullFileName & "\" & PathString
+                FileName = Parent.ParentEntry.GetLongFileName
+                If FileName.Length = 0 Then
+                    FileName = Parent.ParentEntry.GetFullFileName
+                End If
+                PathString = FileName & "\" & PathString
                 Parent = Parent.ParentEntry.ParentDirectory
             Loop
         End If
@@ -264,63 +274,64 @@ Public Class ImportFileForm
             If _IgnoreEvent Then Exit Sub
 
             _FileList.Options.CreatedDate = ChkCreated.Checked
-            RefreshCreated()
-        End Sub
+        RefreshCreated()
+    End Sub
 
-        Private Sub ChkLastAccessed_CheckedChanged(sender As Object, e As EventArgs) Handles ChkLastAccessed.CheckedChanged
-            If _IgnoreEvent Then Exit Sub
+    Private Sub ChkLastAccessed_CheckedChanged(sender As Object, e As EventArgs) Handles ChkLastAccessed.CheckedChanged
+        If _IgnoreEvent Then Exit Sub
 
-            _FileList.Options.LastAccessedDate = ChkLastAccessed.Checked
-            RefreshLastAccessed()
-        End Sub
+        _FileList.Options.LastAccessedDate = ChkLastAccessed.Checked
+        RefreshLastAccessed()
+    End Sub
 
-        Private Sub ChkLFN_CheckedChanged(sender As Object, e As EventArgs) Handles ChkLFN.CheckedChanged
-            If _IgnoreEvent Then Exit Sub
+    Private Sub ChkLFN_CheckedChanged(sender As Object, e As EventArgs) Handles ChkLFN.CheckedChanged
+        If _IgnoreEvent Then Exit Sub
 
-            _FileList.SetOptions(ChkLFN.Checked, ChkLFN.Checked And ChkNTExtensions.Checked)
-            RefreshTotals()
-        End Sub
+        _FileList.SetOptions(ChkLFN.Checked, ChkLFN.Checked And ChkNTExtensions.Checked)
+        RefreshTotals()
+    End Sub
 
-        Private Sub ChkNTExtensions_CheckedChanged(sender As Object, e As EventArgs) Handles ChkNTExtensions.CheckedChanged
-            If _IgnoreEvent Then Exit Sub
+    Private Sub ChkNTExtensions_CheckedChanged(sender As Object, e As EventArgs) Handles ChkNTExtensions.CheckedChanged
+        If _IgnoreEvent Then Exit Sub
 
-            _FileList.SetOptions(ChkLFN.Checked, ChkLFN.Checked And ChkNTExtensions.Checked)
-            RefreshTotals()
-        End Sub
+        _FileList.SetOptions(ChkLFN.Checked, ChkLFN.Checked And ChkNTExtensions.Checked)
+        RefreshTotals()
+    End Sub
 
-        Private Sub ImportFileForm_Load(sender As Object, e As EventArgs) Handles Me.Load
-            ListViewFiles.DoubleBuffer
-        End Sub
+    Private Sub ImportFileForm_Load(sender As Object, e As EventArgs) Handles Me.Load
+        ListViewFiles.DoubleBuffer
+        _ListViewHeader = New ListViewHeader(ListViewFiles.Handle)
+    End Sub
 
-        Private Sub ListViewFiles_ColumnWidthChanging(sender As Object, e As ColumnWidthChangingEventArgs) Handles ListViewFiles.ColumnWidthChanging
-            If e.ColumnIndex = 6 Then
-                e.Cancel = True
+
+    Private Sub ListViewFiles_ColumnWidthChanging(sender As Object, e As ColumnWidthChangingEventArgs) Handles ListViewFiles.ColumnWidthChanging
+        e.NewWidth = Me.ListViewFiles.Columns(e.ColumnIndex).Width
+        e.Cancel = True
+    End Sub
+
+    Private Sub ListViewFiles_ItemCheck(sender As Object, e As ItemCheckEventArgs) Handles ListViewFiles.ItemCheck
+        If _IgnoreEvent Then Exit Sub
+
+        If e.NewValue = e.CurrentValue Then
+            Exit Sub
+        End If
+
+        Dim Item As ListViewItem = ListViewFiles.Items(e.Index)
+
+        Dim FileData As ImportFile = Item.Tag
+
+        If FileData.IsFileTooLarge Then
+            If e.NewValue Then
+                e.NewValue = False
             End If
-        End Sub
+        Else
+            FileData.IsSelected = e.NewValue
+        End If
 
-        Private Sub ListViewFiles_ItemCheck(sender As Object, e As ItemCheckEventArgs) Handles ListViewFiles.ItemCheck
-            If _IgnoreEvent Then Exit Sub
-
-            If e.NewValue = e.CurrentValue Then
-                Exit Sub
-            End If
-
-            Dim Item As ListViewItem = ListViewFiles.Items(e.Index)
-
-            Dim FileData As ImportFile = Item.Tag
-
-            If FileData.IsFileTooLarge Then
-                If e.NewValue Then
-                    e.NewValue = False
-                End If
-            Else
-                FileData.IsSelected = e.NewValue
-            End If
-
-            RefreshTotals()
-        End Sub
+        RefreshTotals()
+    End Sub
 #End Region
-    End Class
+End Class
 
 #Region "Classes"
     Public Class ImportDirectory
