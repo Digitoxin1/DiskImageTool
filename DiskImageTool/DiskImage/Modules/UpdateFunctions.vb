@@ -63,7 +63,7 @@
         End Function
 
         Public Function DirectoryEntryCanExport(DirectoryEntry As DiskImage.DirectoryEntry) As Boolean
-            Return (DirectoryEntry.IsValidFile Or DirectoryEntry.IsValidVolumeName) _
+            Return (DirectoryEntry.IsValidFile(False) Or DirectoryEntry.IsValidVolumeName) _
             And Not DirectoryEntry.IsDeleted _
             And Not DirectoryEntry.HasInvalidFilename _
             And Not DirectoryEntry.HasInvalidExtension

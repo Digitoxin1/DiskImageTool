@@ -1,74 +1,67 @@
 ﻿Namespace DiskImage
-    Public Structure ExpandedDate
-        Dim DateObject As Date
-        Dim Day As Byte
-        Dim Hour As Byte
-        Dim Hour12 As Byte
-        Dim IsPM As Boolean
-        Dim IsValidDate As Boolean
-        Dim Milliseconds As UShort
-        Dim Minute As Byte
-        Dim Month As Byte
-        Dim Second As Byte
-        Dim Year As UShort
-    End Structure
-    Module EpandedDate
-        Public Function ExpandDate(FATDate As UShort) As ExpandedDate
-            Return ExpandDate(FATDate, 0, 0)
-        End Function
-
-        Public Function ExpandDate(FATDate As UShort, FATTime As UShort) As ExpandedDate
-            Return ExpandDate(FATDate, FATTime, 0)
-        End Function
-
-        Public Function ExpandDate(FATDate As UShort, FATTime As UShort, Milliseconds As Byte) As ExpandedDate
-            Dim DT As ExpandedDate
-
-            DT.Day = FATDate Mod 32
+    Public Class ExpandedDate
+        Public Sub New(FATDate As UShort, FATTime As UShort, Milliseconds As Byte)
+            _Day = FATDate Mod 32
             FATDate >>= 5
-            DT.Month = FATDate Mod 16
+            _Month = FATDate Mod 16
             FATDate >>= 4
-            DT.Year = 1980 + FATDate Mod 128
+            _Year = 1980 + FATDate Mod 128
 
-            DT.Second = (FATTime Mod 32) * 2
+            _Second = (FATTime Mod 32) * 2
             FATTime >>= 5
-            DT.Minute = FATTime Mod 64
+            _Minute = FATTime Mod 64
             FATTime >>= 6
-            DT.Hour = FATTime Mod 32
+            _Hour = FATTime Mod 32
 
             If Milliseconds < 200 Then
-                DT.Second += (Milliseconds \ 100)
-                DT.Milliseconds = (Milliseconds Mod 100) * 10
+                _Second += (Milliseconds \ 100)
+                _Milliseconds = (Milliseconds Mod 100) * 10
             Else
-                DT.Milliseconds = 0
+                _Milliseconds = 0
             End If
 
-            Dim DateString As String = DT.Year & "-" & Format(DT.Month, "00") & "-" & Format(DT.Day, "00") & " " & DT.Hour & ":" & Format(DT.Minute, "00") & ":" & Format(DT.Second, "00") & "." & DT.Milliseconds.ToString.PadLeft(3, "0")
+            _IsPM = (_Hour > 11)
 
-            DT.IsValidDate = IsDate(DateString)
-
-            DT.IsPM = (DT.Hour > 11)
-
-            If DT.Hour > 12 Then
-                DT.Hour12 = DT.Hour - 12
-            ElseIf DT.Hour = 0 Then
-                DT.Hour12 = 12
+            If _Hour > 12 Then
+                _Hour12 = _Hour - 12
+            ElseIf _Hour = 0 Then
+                _Hour12 = 12
             Else
-                DT.Hour12 = DT.Hour
+                _Hour12 = _Hour
             End If
 
-            If DT.IsValidDate Then
-                DT.DateObject = New Date(DT.Year, DT.Month, DT.Day, DT.Hour, DT.Minute, DT.Second, DT.Milliseconds)
-            End If
+            SetDateObject()
+        End Sub
 
-            Return DT
+        Public ReadOnly Property DateObject As Date
+        Public ReadOnly Property Day As Byte
+        Public ReadOnly Property Hour As Byte
+        Public ReadOnly Property Hour12 As Byte
+        Public ReadOnly Property IsPM As Boolean
+        Public ReadOnly Property IsValidDate As Boolean
+        Public ReadOnly Property Milliseconds As UShort
+        Public ReadOnly Property Minute As Byte
+        Public ReadOnly Property Month As Byte
+        Public ReadOnly Property Second As Byte
+        Public ReadOnly Property Year As UShort
+
+        Public Shared Function ExpandDate(FATDate As UShort) As ExpandedDate
+            Return New ExpandedDate(FATDate, 0, 0)
         End Function
 
-        Public Function ExpandTime(FATTime As UShort) As ExpandedDate
-            Return ExpandDate(33, FATTime, 0)
+        Public Shared Function ExpandDate(FATDate As UShort, FATTime As UShort) As ExpandedDate
+            Return New ExpandedDate(FATDate, FATTime, 0)
         End Function
 
-        Public Function ExpandTimeDate(FATTimeDate As UInteger) As ExpandedDate
+        Public Shared Function ExpandDate(FATDate As UShort, FATTime As UShort, Milliseconds As Byte) As ExpandedDate
+            Return New ExpandedDate(FATDate, FATTime, Milliseconds)
+        End Function
+
+        Public Shared Function ExpandTime(FATTime As UShort) As ExpandedDate
+            Return New ExpandedDate(33, FATTime, 0)
+        End Function
+
+        Public Shared Function ExpandTimeDate(FATTimeDate As UInteger) As ExpandedDate
             Dim FATDate As UShort
             Dim FATTime As UShort
 
@@ -76,33 +69,107 @@
             FATTimeDate >>= 16
             FATDate = FATTimeDate
 
-            Return ExpandDate(FATDate, FATTime)
+            Return New ExpandedDate(FATDate, FATTime, 0)
         End Function
 
-        Public Function ExpandedDateToString(D As DiskImage.ExpandedDate) As String
-            Return ExpandedDateToString(D, False, False, False, False)
+        Public Overloads Function ToString() As String
+            Return ToString(False, False, False, False)
         End Function
 
-        Public Function ExpandedDateToString(D As DiskImage.ExpandedDate, IncludeTime As Boolean, IncludeSeconds As Boolean, IncludeMilliseconds As Boolean, Use24Hour As Boolean) As String
-            Dim Response As String = Format(D.Year, "0000") & "-" & Format(D.Month, "00") & "-" & Format(D.Day, "00")
+        Public Overloads Function ToString(IncludeTime As Boolean, IncludeSeconds As Boolean, IncludeMilliseconds As Boolean, Use24Hour As Boolean) As String
+            Dim Response As String = Format(_Year, "0000") & "-" & Format(_Month, "00") & "-" & Format(_Day, "00")
             If IncludeTime Then
-                Response &= "  " & Format(IIf(Use24Hour, D.Hour, D.Hour12), "00") _
-                    & ":" & Format(D.Minute, "00")
+                Response &= "  " & Format(IIf(Use24Hour, _Hour, _Hour12), "00") _
+                    & ":" & Format(_Minute, "00")
 
                 If IncludeSeconds Then
-                    Response &= ":" & Format(D.Second, "00")
+                    Response &= ":" & Format(_Second, "00")
                 End If
 
                 If IncludeMilliseconds Then
-                    Response &= Format(D.Milliseconds / 1000, ".000")
+                    Response &= Format(_Milliseconds / 1000, ".000")
                 End If
 
                 If Not Use24Hour Then
-                    Response &= IIf(D.IsPM, " PM", " AM")
+                    Response &= IIf(_IsPM, " PM", " AM")
                 End If
             End If
 
             Return Response
         End Function
-    End Module
+
+        Private Sub SetDateObject()
+            Dim Year As UShort
+            Dim Month As Byte
+            Dim Day As Byte
+            Dim Hour As Byte
+            Dim Minute As Byte
+            Dim Second As Byte
+            Dim Milliseconds As UShort
+
+            _IsValidDate = True
+
+            If _Year < 1 Then
+                Year = 1
+                _IsValidDate = False
+            ElseIf _Year > 9999 Then
+                Year = 9999
+                _IsValidDate = False
+            Else
+                Year = _Year
+            End If
+
+            If _Month < 1 Then
+                Month = 1
+                _IsValidDate = False
+            ElseIf _Month > 12 Then
+                Month = 12
+                _IsValidDate = False
+            Else
+                Month = _Month
+            End If
+
+            Dim DaysInMonth = DateTime.DaysInMonth(Year, Month)
+
+            If _Day < 1 Then
+                Day = 1
+                _IsValidDate = False
+            ElseIf _Day > DaysInMonth Then
+                Day = DaysInMonth
+                _IsValidDate = False
+            Else
+                Day = _Day
+            End If
+
+            If _Hour > 23 Then
+                Hour = 23
+                _IsValidDate = False
+            Else
+                Hour = _Hour
+            End If
+
+            If _Minute > 59 Then
+                Minute = 59
+                _IsValidDate = False
+            Else
+                Minute = _Minute
+            End If
+
+            If _Second > 59 Then
+                Second = 59
+                _IsValidDate = False
+            Else
+                Second = _Second
+            End If
+
+            If _Milliseconds > 999 Then
+                Milliseconds = 999
+                _IsValidDate = False
+            Else
+                Milliseconds = _Milliseconds
+            End If
+
+            _DateObject = New Date(Year, Month, Day, Hour, Minute, Second, Milliseconds)
+        End Sub
+    End Class
 End Namespace

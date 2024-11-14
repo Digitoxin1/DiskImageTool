@@ -141,26 +141,17 @@ Public Class FilePropertiesFormSingle
         GroupFileName.Text = Caption
 
         DT = _DirectoryEntry.GetLastWriteDate
-        If DT.IsValidDate Then
-            DTLastWritten.Value = DT.DateObject.Date
-            DTLastWrittenTime.Value = DT.DateObject
-        Else
-            DTLastWritten.Value = New Date(1980, 1, 1)
-            DTLastWrittenTime.Value = New Date(1980, 1, 1, 0, 0, 0)
-        End If
+        DTLastWritten.Value = DT.DateObject.Date
+        DTLastWrittenTime.Value = DT.DateObject
 
         If _DirectoryEntry.HasCreationDate() Then
             DT = _DirectoryEntry.GetCreationDate
-            If DT.IsValidDate Then
-                SetCreatedDateValue(DT.DateObject)
-            End If
+            SetCreatedDateValue(DT.DateObject)
         End If
 
         If _DirectoryEntry.HasLastAccessDate() Then
             DT = _DirectoryEntry.GetLastAccessDate
-            If DT.IsValidDate Then
-                SetLastAccessedDateValue(DT.DateObject)
-            End If
+            SetLastAccessedDateValue(DT.DateObject)
         End If
 
         ChkArchive.Checked = _DirectoryEntry.IsArchive

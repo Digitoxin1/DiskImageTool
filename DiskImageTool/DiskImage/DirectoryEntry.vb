@@ -323,8 +323,8 @@
             Return IsDirectory AndAlso Not (IsVolumeName OrElse HasInvalidStartingCluster()) AndAlso StartingCluster > 1
         End Function
 
-        Public Function IsValidFile() As Boolean
-            Return Not (IsDirectory OrElse IsVolumeName OrElse HasInvalidStartingCluster() OrElse HasInvalidFileSize()) AndAlso StartingCluster > 1
+        Public Function IsValidFile(Optional CheckFileSize As Boolean = True) As Boolean
+            Return Not (IsDirectory OrElse IsVolumeName OrElse HasInvalidStartingCluster() OrElse HasInvalidFileSize()) AndAlso (Not CheckFileSize OrElse (StartingCluster > 1 AndAlso FileSize > 0))
         End Function
 
         Public Function LFNGetNextSequence(Index As Byte, Checksum As Byte, StepForward As Boolean) As Byte

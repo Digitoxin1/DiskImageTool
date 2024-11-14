@@ -104,11 +104,11 @@ Namespace HexView
                 If Bytes.Length >= 2 Then
                     Int16 = MyBitConverter.ToInt16(Bytes, BigEndien)
                     UInt16 = MyBitConverter.ToUInt16(Bytes, BigEndien)
-                    DT = ExpandDate(CType(UInt16, UInt16))
+                    DT = ExpandedDate.ExpandDate(CType(UInt16, UInt16))
                     If DT.IsValidDate Then
                         DOSDate = DT.DateObject.ToString("yyyy-MM-dd")
                     End If
-                    DT = ExpandTime(CType(UInt16, UInt16))
+                    DT = ExpandedDate.ExpandTime(CType(UInt16, UInt16))
                     If DT.IsValidDate Then
                         DosTime = DT.DateObject.ToString("HH:mm:ss")
                     End If
@@ -120,7 +120,7 @@ Namespace HexView
                 If Bytes.Length >= 4 Then
                     Int32 = MyBitConverter.ToInt32(Bytes, BigEndien)
                     UInt32 = MyBitConverter.ToUInt32(Bytes, BigEndien)
-                    DT = ExpandTimeDate(CType(UInt32, UInt32))
+                    DT = ExpandedDate.ExpandTimeDate(CType(UInt32, UInt32))
                     If DT.IsValidDate Then
                         DosTimeDate = DT.DateObject.ToString("yyyy-MM-dd HH:mm:ss")
                     End If

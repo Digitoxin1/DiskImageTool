@@ -61,12 +61,10 @@ Public Class ReplaceFileForm
     Public Sub SetFileNameForm()
         _IgnoreEvent = True
 
-        TxtFilenameNew.Text = IO.Path.GetFileNameWithoutExtension(_FileNameNew)
-        Dim Extension = IO.Path.GetExtension(_FileNameNew)
-        If Extension.Length > 0 Then
-            Extension = Extension.Substring(1)
-        End If
-        TxtFileExtNew.Text = Extension
+        Dim FileParts = SplitFilename(_FileNameNew)
+
+        TxtFilenameNew.Text = FileParts.Name
+        TxtFileExtNew.Text = FileParts.Extension
 
         _IgnoreEvent = False
     End Sub

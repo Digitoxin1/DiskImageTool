@@ -1,9 +1,4 @@
 ﻿Namespace DiskImage
-    Public Structure DirectoryCacheEntry
-        Dim Checksum As UInteger
-        Dim Data() As Byte
-    End Structure
-
     Public Class RootDirectory
         Inherits DirectoryBase
         Implements IDirectory

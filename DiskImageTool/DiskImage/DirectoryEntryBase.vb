@@ -436,7 +436,7 @@ Namespace DiskImage
 
         Public Function GetCreationDate() As ExpandedDate
             If Not _CreationDateIsCached Then
-                _CreationDateCache = ExpandDate(CreationDate, CreationTime, CreationMillisecond)
+                _CreationDateCache = ExpandedDate.ExpandDate(CreationDate, CreationTime, CreationMillisecond)
                 _CreationDateIsCached = True
             End If
 
@@ -472,7 +472,7 @@ Namespace DiskImage
 
         Public Function GetLastAccessDate() As ExpandedDate
             If Not _LastAccessDateIsCached Then
-                _LastAccessDateCache = ExpandDate(LastAccessDate)
+                _LastAccessDateCache = ExpandedDate.ExpandDate(LastAccessDate)
                 _LastAccessDateIsCached = True
             End If
 
@@ -481,7 +481,7 @@ Namespace DiskImage
 
         Public Function GetLastWriteDate() As ExpandedDate
             If Not _LastWriteDateIsCached Then
-                _LastWriteDateCache = ExpandDate(LastWriteDate, LastWriteTime)
+                _LastWriteDateCache = ExpandedDate.ExpandDate(LastWriteDate, LastWriteTime)
                 _LastWriteDateIsCached = True
             End If
 

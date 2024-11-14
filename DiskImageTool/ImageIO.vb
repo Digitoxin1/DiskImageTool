@@ -38,8 +38,14 @@ Module ImageIO
     Public Sub DirectoryEntryExport(FileData As FileData)
         Dim DirectoryEntry = FileData.DirectoryEntry
 
+        Dim FileName = DirectoryEntry.GetLongFileName
+        If FileName = "" Then
+            FileName = DirectoryEntry.GetFullFileName
+        End If
+
+
         Dim Dialog = New SaveFileDialog With {
-            .FileName = CleanFileName(DirectoryEntry.GetFullFileName)
+            .FileName = CleanFileName(FileName)
         }
         If Dialog.ShowDialog <> DialogResult.OK Then
             Exit Sub
@@ -57,17 +63,15 @@ Module ImageIO
         Try
             IO.File.WriteAllBytes(FilePath, DirectoryEntry.GetContent)
             Dim D = DirectoryEntry.GetLastWriteDate
-            If D.IsValidDate Then
-                IO.File.SetLastWriteTime(FilePath, D.DateObject)
-            End If
+            IO.File.SetLastWriteTime(FilePath, D.DateObject)
 
-            D = DirectoryEntry.GetCreationDate
-            If D.IsValidDate Then
+            If DirectoryEntry.HasCreationDate Then
+                D = DirectoryEntry.GetCreationDate
                 IO.File.SetCreationTime(FilePath, D.DateObject)
             End If
 
-            D = DirectoryEntry.GetLastAccessDate
-            If D.IsValidDate Then
+            If DirectoryEntry.HasLastAccessDate Then
+                D = DirectoryEntry.GetLastAccessDate
                 IO.File.SetLastAccessTime(FilePath, D.DateObject)
             End If
         Catch ex As Exception

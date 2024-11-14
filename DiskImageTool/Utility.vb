@@ -3,6 +3,10 @@ Imports System.Text
 Imports DiskImageTool.DiskImage
 
 Module Utility
+    Public Structure FileParts
+        Dim Name As String
+        Dim Extension As String
+    End Structure
 
     Public Function ByteArrayToString(b() As Byte) As String
         Dim SB As New Text.StringBuilder(b.Length)
@@ -182,6 +186,19 @@ Module Utility
         End Try
 
         Return True
+    End Function
+
+    Public Function SplitFilename(FileName As String) As FileParts
+        Dim FileParts As FileParts
+
+        FileParts.Name = IO.Path.GetFileNameWithoutExtension(FileName)
+        FileParts.Extension = IO.Path.GetExtension(FileName)
+
+        If FileParts.Extension.Length > 0 Then
+            FileParts.Extension = FileParts.Extension.Substring(1)
+        End If
+
+        Return FileParts
     End Function
 
     Private Function CleanString(Value As String, InvalidChars() As Char, ReplaceWith As String) As String

@@ -2,94 +2,7 @@
 Imports System.Text
 
 Namespace DiskImage
-    Public Structure AddDirectoryData
-        Dim Index As Integer
-        Dim EntriesNeeded As Integer
-        Dim ShortFileName As String
-        Dim ClusterList As SortedSet(Of UShort)
-        Dim Options As AddFileOptions
-        Dim LFNEntries As List(Of Byte())
-        Dim RequiresExpansion As Boolean
-        Dim Entry As DirectoryEntry
-    End Structure
-
-    Public Structure AddFileData
-        Dim FilePath As String
-        Dim Options As AddFileOptions
-        Dim Index As Integer
-        Dim EntriesNeeded As Integer
-        Dim ShortFileName As String
-        Dim ClusterList As SortedSet(Of UShort)
-        Dim LFNEntries As List(Of Byte())
-        Dim RequiresExpansion As Boolean
-    End Structure
-
-    Public Structure UpdateLFNData
-        Dim EntriesNeeded As Integer
-        Dim ShortFileName As String
-        Dim CurrentLFNIndex As Integer
-        Dim LFNEntries As List(Of Byte())
-        Dim RequiresExpansion As Boolean
-        Dim DirectoryEntry As DirectoryEntry
-        Dim NTLowerCaseFileName As Boolean
-        Dim NTLowerCaseExtension As Boolean
-    End Structure
-
     Module Functions
-        Public Function BootSectorDescription(Offset As BootSector.BootSectorOffsets) As String
-            Select Case Offset
-                Case BootSector.BootSectorOffsets.JmpBoot
-                    Return "Bootstrap Jump"
-                Case BootSector.BootSectorOffsets.OEMName
-                    Return "OEM Name"
-                Case BootSector.BootSectorOffsets.DriveNumber
-                    Return "Drive Number"
-                Case BootSector.BootSectorOffsets.Reserved
-                    Return "Reserved"
-                Case BootSector.BootSectorOffsets.ExtendedBootSignature
-                    Return "Extended Boot Signature"
-                Case BootSector.BootSectorOffsets.VolumeSerialNumber
-                    Return "Volume Serial Number"
-                Case BootSector.BootSectorOffsets.VolumeLabel
-                    Return "Volume Label"
-                Case BootSector.BootSectorOffsets.FileSystemType
-                    Return "File System ID"
-                Case BootSector.BootSectorOffsets.BootStrapSignature
-                    Return "Boot Sector Signature"
-                Case Else
-                    Return Offset.ToString
-            End Select
-        End Function
-
-        Public Function BPBDescription(Offset As BiosParameterBlock.BPBOoffsets) As String
-            Select Case Offset
-                Case BiosParameterBlock.BPBOoffsets.BytesPerSector
-                    Return "Bytes per Sector"
-                Case BiosParameterBlock.BPBOoffsets.SectorsPerCluster
-                    Return "Sectors per Cluster"
-                Case BiosParameterBlock.BPBOoffsets.ReservedSectorCount
-                    Return "Reserved Sectors"
-                Case BiosParameterBlock.BPBOoffsets.NumberOfFATs
-                    Return "Number of FATs"
-                Case BiosParameterBlock.BPBOoffsets.RootEntryCount
-                    Return "Root Directory Entries"
-                Case BiosParameterBlock.BPBOoffsets.SectorCountSmall
-                    Return "Total Sector Count"
-                Case BiosParameterBlock.BPBOoffsets.MediaDescriptor
-                    Return "Media Descriptor"
-                Case BiosParameterBlock.BPBOoffsets.SectorsPerFAT
-                    Return "Sectors per FAT"
-                Case BiosParameterBlock.BPBOoffsets.SectorsPerTrack
-                    Return "Sectors per Track"
-                Case BiosParameterBlock.BPBOoffsets.NumberOfHeads
-                    Return "Number of Heads"
-                Case BiosParameterBlock.BPBOoffsets.HiddenSectors
-                    Return "Hidden Sectors"
-                Case Else
-                    Return Offset.ToString
-            End Select
-        End Function
-
         Public Function CalcXDFChecksum(Data() As Byte, SectorsPerFAT As UInteger) As UInteger
             Dim Checksum As UInteger = &H12345678
 
@@ -203,63 +116,7 @@ Namespace DiskImage
             Return True
         End Function
 
-        Public Function DirectorytEntryDescription(Offset As DirectoryEntry.DirectoryEntryOffsets) As String
-            Select Case Offset
-                Case DirectoryEntry.DirectoryEntryOffsets.FileName
-                    Return "Name"
-                Case DirectoryEntry.DirectoryEntryOffsets.Extension
-                    Return "Extension"
-                Case DirectoryEntry.DirectoryEntryOffsets.Attributes
-                    Return "Attributes"
-                Case DirectoryEntry.DirectoryEntryOffsets.ReservedForWinNT
-                    Return "Reserved For Windows NT"
-                Case DirectoryEntry.DirectoryEntryOffsets.CreationMillisecond
-                    Return "Creation Time Tenths"
-                Case DirectoryEntry.DirectoryEntryOffsets.CreationTime
-                    Return "Creation Time"
-                Case DirectoryEntry.DirectoryEntryOffsets.CreationDate
-                    Return "Creation Date"
-                Case DirectoryEntry.DirectoryEntryOffsets.LastAccessDate
-                    Return "Last Access Date"
-                Case DirectoryEntry.DirectoryEntryOffsets.ReservedForFAT32
-                    Return "Reserved for FAT 32"
-                Case DirectoryEntry.DirectoryEntryOffsets.LastWriteTime
-                    Return "Last Write Time"
-                Case DirectoryEntry.DirectoryEntryOffsets.LastWriteDate
-                    Return "Last Write Date"
-                Case DirectoryEntry.DirectoryEntryOffsets.StartingCluster
-                    Return "Starting Cluster"
-                Case DirectoryEntry.DirectoryEntryOffsets.FileSize
-                    Return "Size"
-                Case Else
-                    Return Offset.ToString
-            End Select
-        End Function
-
-        Public Function DirectorytEntryLFNDescription(Offset As DirectoryEntry.LFNOffsets) As String
-            Select Case Offset
-                Case DirectoryEntry.LFNOffsets.Sequence
-                    Return "LFN Sequence"
-                Case DirectoryEntry.LFNOffsets.FilePart1
-                    Return "LFN Name 1"
-                Case DirectoryEntry.LFNOffsets.Attributes
-                    Return "LFN Attributes"
-                Case DirectoryEntry.LFNOffsets.Type
-                    Return "LFN Type"
-                Case DirectoryEntry.LFNOffsets.Checksum
-                    Return "LFN Checksum"
-                Case DirectoryEntry.LFNOffsets.FilePart2
-                    Return "LFN Name 2"
-                Case DirectoryEntry.LFNOffsets.StartingCluster
-                    Return "LFN Starting Cluster"
-                Case DirectoryEntry.LFNOffsets.FilePart3
-                    Return "LFN Name 3"
-                Case Else
-                    Return Offset.ToString
-            End Select
-        End Function
-
-        Public Function DOSCleanFileName(FileName As String) As String
+        Public Function DOSCleanFileName(FileName As String, Optional MaxLength As Integer = -1) As String
             FileName = RemoveDiacritics(FileName)
 
             Dim FileBytes = Encoding.UTF8.GetBytes(FileName).ToList
@@ -276,7 +133,11 @@ Namespace DiskImage
                 End If
             Next
 
-            Return Encoding.UTF8.GetString(FileBytes.ToArray)
+            If MaxLength > -1 And FileBytes.Count > MaxLength Then
+                Return Encoding.UTF8.GetString(FileBytes.ToArray, 0, MaxLength)
+            Else
+                Return Encoding.UTF8.GetString(FileBytes.ToArray)
+            End If
         End Function
 
         Public Function GetBadSectors(BPB As BiosParameterBlock, BadClusters As List(Of UShort)) As HashSet(Of UInteger)
@@ -365,27 +226,40 @@ Namespace DiskImage
             Return Entries
         End Function
 
-        Public Function GetImageTypeName(ImageType As FloppyImageType) As String
-            Select Case ImageType
-                Case FloppyImageType.BasicSectorImage
-                    Return "Basic Sector Image"
-                Case FloppyImageType.HFEImage
-                    Return "HxC HFE Image"
-                Case FloppyImageType.MFMImage
-                    Return "HxC MFM Image"
-                Case FloppyImageType.PSIImage
-                    Return "PCE Sector Image"
-                Case FloppyImageType.PRIImage
-                    Return "PCE Bitstream Image"
-                Case FloppyImageType.TranscopyImage
-                    Return "Transcopy Image"
-                Case FloppyImageType.D86FImage
-                    Return "86Box 86F Image"
-                Case FloppyImageType.IMDImage
-                    Return "ImageDisk Sector Image"
-                Case Else
-                    Return "Unknown"
-            End Select
+        Public Function GetShortFileChecksum(Filename As String) As UShort
+            Dim Checksum As UShort = 0
+
+            For i As Integer = 0 To Filename.Length - 1
+                Checksum = (Checksum * &H25 + AscW(Filename(i))) And &HFFFF&
+            Next
+
+            Dim temp As UInteger = CLng(Checksum) * 314159269 And &HFFFFFFFF&
+
+            Dim temp2 As Integer
+
+            If temp > Integer.MaxValue Then
+                temp2 = (UInteger.MaxValue - temp + 1)
+            Else
+                temp2 = temp
+            End If
+
+            temp2 -= (CType((CLng(temp2) * 1152921497) >> 60, ULong) * 1000000007)
+
+            Checksum = temp2 And &HFFFF&
+
+            ' Reverse nibble order
+            Checksum = CUShort(
+                ((Checksum And &HF000) >> 12) Or
+                ((Checksum And &HF00) >> 4) Or
+                ((Checksum And &HF0) << 4) Or
+                ((Checksum And &HF) << 12)
+            )
+
+            Return Checksum
+        End Function
+
+        Public Function GetShortFileChecksumString(Filename As String) As String
+            Return GetShortFileChecksum(Filename).ToString("X4")
         End Function
 
         Public Function InitializeAddDirectory(Directory As DirectoryBase, Options As AddFileOptions, LFNFileName As String, Index As Integer) As AddDirectoryData
@@ -465,13 +339,11 @@ Namespace DiskImage
             End If
 
             If UseNTExtensions Then
-                Dim ShortFilePart = IO.Path.GetFileNameWithoutExtension(UpdateLFNData.ShortFileName)
-                Dim ShortExtPart = IO.Path.GetExtension(UpdateLFNData.ShortFileName)
-                Dim LongFilePart = IO.Path.GetFileNameWithoutExtension(FileName)
-                Dim LongExtPart = IO.Path.GetExtension(FileName)
+                Dim ShortFileParts = SplitFilename(UpdateLFNData.ShortFileName)
+                Dim LongFileParts = SplitFilename(FileName)
 
-                UpdateLFNData.NTLowerCaseFileName = ShortFilePart.ToLower = LongFilePart
-                UpdateLFNData.NTLowerCaseExtension = ShortExtPart.ToLower = LongExtPart
+                UpdateLFNData.NTLowerCaseFileName = ShortFileParts.Name.ToLower = LongFileParts.Name
+                UpdateLFNData.NTLowerCaseExtension = ShortFileParts.Extension.ToLower = LongFileParts.Extension
                 UseNTExtensions = UpdateLFNData.NTLowerCaseFileName Or UpdateLFNData.NTLowerCaseExtension
             Else
                 UpdateLFNData.NTLowerCaseFileName = False
@@ -598,6 +470,33 @@ Namespace DiskImage
             Next
 
             Return FileBuffer
+        End Function
+
+        Public Function TruncateFileName(Filename As String, Extension As String, Checksum As String, Index As UInteger, UseNTExtensions As Boolean) As String
+            Dim Suffix = ""
+            Dim UseChecksum As Boolean = False
+
+            If UseNTExtensions Then
+                If Filename.Length < 3 Or Index > 4 Then
+                    UseChecksum = True
+                End If
+                If Index > 4 Then
+                    Index -= 4
+                End If
+            End If
+
+            If UseChecksum Then
+                Suffix &= Checksum
+            End If
+            Suffix = Suffix & "~" & Index
+            Dim Length = 8 - Suffix.Length
+            If Length > Filename.Length Then
+                Length = Filename.Length
+            End If
+
+            Filename = Filename.Substring(0, Length) & Suffix
+
+            Return CombineFileParts(Filename, Extension)
         End Function
 
         Private Function CalcXDFChecksumBlock(Data() As Byte, Start As UInteger, Length As UShort) As UInteger

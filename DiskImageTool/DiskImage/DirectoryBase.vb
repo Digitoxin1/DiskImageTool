@@ -158,39 +158,30 @@
         End Function
 
         Public Function GetAvailableFileName(FileName As String, UseNTExtensions As Boolean, Optional CurrentIndex As Integer = -1) As String Implements IDirectory.GetAvailableFileName
-            Dim FilePart = IO.Path.GetFileNameWithoutExtension(FileName)
-            Dim ExtPart = IO.Path.GetExtension(FileName)
+            Dim FileParts = SplitFilename(FileName)
 
-            Dim CleanFileName = DOSCleanFileName(FilePart)
-            Dim CleanExtension = DOSCleanFileName(ExtPart)
+            Dim CleanFileName = DOSCleanFileName(FileParts.Name)
+            Dim CleanExtension = DOSCleanFileName(FileParts.Extension, 3)
 
-            If CleanExtension.Length > 3 Then
-                CleanExtension = CleanExtension.Substring(0, 3)
+            Dim Checksum As String = ""
+
+            If UseNTExtensions Then
+                Checksum = GetShortFileChecksumString(FileName)
             End If
 
             Dim Index As UInteger = 1
-            Dim Checksum As String = ""
+            Dim NewFileName As String
 
-            If CleanFileName.Length > 8 Or CleanFileName.Length <> FilePart.Length Then
-                If UseNTExtensions And CleanFileName.Length < 3 Then
-                    Checksum = GetShortFileChecksum(FileName).ToString("X4")
-                End If
-                FilePart = TruncateFileName(CleanFileName, Checksum, Index)
+            If CleanFileName.Length > 8 Or CleanFileName.Length <> FileParts.Name.Length Then
+                NewFileName = TruncateFileName(CleanFileName, CleanExtension, Checksum, Index, UseNTExtensions)
                 Index += 1
             Else
-                FilePart = CleanFileName
+                NewFileName = CombineFileParts(CleanFileName, CleanExtension)
             End If
 
-            Dim NewFileName = CombineFileParts(FilePart, CleanExtension)
-
             Do While GetFileIndex(NewFileName, True, CurrentIndex) > -1
-                If UseNTExtensions And Index > 4 Then
-                    Checksum = GetShortFileChecksum(FileName).ToString("X4")
-                    Index = 1
-                End If
-                FilePart = TruncateFileName(CleanFileName, Checksum, Index)
+                NewFileName = TruncateFileName(CleanFileName, CleanExtension, Checksum, Index, UseNTExtensions)
                 Index += 1
-                NewFileName = CombineFileParts(FilePart, CleanExtension)
             Loop
 
             Return NewFileName
@@ -378,45 +369,5 @@
         End Sub
 
         Public MustOverride Function UpdateLFN(FileName As String, Index As Integer, UseNTExtensions As Boolean) As Boolean Implements IDirectory.UpdateLFN
-
-        Private Function GetShortFileChecksum(Filename As String) As UShort
-            Dim Checksum As UShort = 0
-
-            For i As Integer = 0 To Filename.Length - 1
-                Checksum = (Checksum * &H25 + AscW(Filename(i))) And &HFFFF&
-            Next
-
-            Dim temp As UInteger = CLng(Checksum) * 314159269 And &HFFFFFFFF&
-
-            Dim temp2 As Integer
-
-            If temp > Integer.MaxValue Then
-                temp2 = (UInteger.MaxValue - temp + 1)
-            Else
-                temp2 = temp
-            End If
-
-            temp2 -= (CType((CLng(temp2) * 1152921497) >> 60, ULong) * 1000000007)
-
-            Checksum = temp2 And &HFFFF&
-
-            ' Reverse nibble order
-            Checksum = CUShort(
-                ((Checksum And &HF000) >> 12) Or
-                ((Checksum And &HF00) >> 4) Or
-                ((Checksum And &HF0) << 4) Or
-                ((Checksum And &HF) << 12)
-            )
-
-            Return Checksum
-        End Function
-        Private Function TruncateFileName(FilePart As String, Checksum As String, Index As UInteger) As String
-            Dim Suffix = Checksum & "~" & Index
-            Dim Length = 8 - Suffix.Length
-            If Length > FilePart.Length Then
-                Length = FilePart.Length
-            End If
-            Return FilePart.Substring(0, Length) & Suffix
-        End Function
     End Class
 End Namespace

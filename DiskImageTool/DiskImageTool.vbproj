@@ -131,6 +131,7 @@
   <ItemGroup>
     <Compile Include="Bitstream\Bitstream.vb" />
     <Compile Include="DiskImage\AddFileOptions.vb" />
+    <Compile Include="DiskImage\Modules\EnumDescriptions.vb" />
     <Compile Include="DiskImage\MappedFloppyImage.vb" />
     <Compile Include="Bitstream\BitstreamDebug.vb" />
     <Compile Include="Bitstream\BitStreamImageBase.vb" />
@@ -147,7 +148,8 @@
     <Compile Include="DiskImage\FAT12.vb" />
     <Compile Include="DiskImage\FATAllocation.vb" />
     <Compile Include="DiskImage\ImageHistory.vb" />
-    <Compile Include="DiskImage\UpdateFunctions.vb" />
+    <Compile Include="DiskImage\Modules\Structures.vb" />
+    <Compile Include="DiskImage\Modules\UpdateFunctions.vb" />
     <Compile Include="FileData.vb" />
     <Compile Include="Filters\Enums.vb" />
     <Compile Include="Filters\FilterCounts.vb" />
@@ -242,14 +244,14 @@
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="DiskImage\BiosParameterBlock.vb" />
-    <Compile Include="DiskImage\CodePage437.vb" />
+    <Compile Include="DiskImage\Modules\CodePage437.vb" />
     <Compile Include="DiskImage\DataChange.vb" />
     <Compile Include="DiskImage\DirectoryData.vb" />
     <Compile Include="DiskImage\DirectoryEntryBase.vb" />
     <Compile Include="DiskImage\EpandedDate.vb" />
     <Compile Include="DiskImage\FATChain.vb" />
     <Compile Include="DiskImage\FATTables.vb" />
-    <Compile Include="DiskImage\FloppyDiskFunctions.vb" />
+    <Compile Include="DiskImage\Modules\FloppyDiskFunctions.vb" />
     <Compile Include="DiskImage\Interfaces\IFloppyImage.vb" />
     <Compile Include="DiskImage\SectorBlock.vb" />
     <Compile Include="Extensions\ByteArrayExtensions.vb" />
@@ -270,7 +272,7 @@
     <Compile Include="Testing\DebugScript.vb" />
     <Compile Include="DiskImage\SectorData.vb" />
     <Compile Include="DiskImage\BasicSectorImage.vb" />
-    <Compile Include="DiskImage\Utility.vb" />
+    <Compile Include="DiskImage\Modules\SharedFunctions.vb" />
     <Compile Include="DiskImage\Interfaces\IDirectory.vb" />
     <Compile Include="DiskImage\RootDirectory.vb" />
     <Compile Include="DiskImage\SubDirectory.vb" />

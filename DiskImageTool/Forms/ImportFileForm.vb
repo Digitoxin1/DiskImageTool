@@ -679,20 +679,16 @@ Public MustInherit Class ImportFileBase
     End Function
 
     Private Function CalcCanUseNTExtensions() As Boolean
-        Dim FilePart = IO.Path.GetFileNameWithoutExtension(_FileName)
-        Dim ExtPart = IO.Path.GetExtension(_FileName)
-        If ExtPart.Length > 0 Then
-            ExtPart = ExtPart.Substring(1)
-        End If
+        Dim FileParts = SplitFilename(_FileName)
 
-        If FilePart.Length > 8 Or ExtPart.Length > 3 Then
+        If FileParts.Name.Length > 8 Or FileParts.Extension.Length > 3 Then
             Return False
         Else
-            Dim CleanFileName = DOSCleanFileName(FilePart)
-            Dim CleanExtension = DOSCleanFileName(ExtPart)
+            Dim CleanFileName = DOSCleanFileName(FileParts.Name)
+            Dim CleanExtension = DOSCleanFileName(FileParts.Extension)
 
-            If CleanFileName = FilePart.ToUpper And CleanExtension = ExtPart.ToUpper Then
-                If (CleanFileName = FilePart Or FilePart.ToLower = FilePart) And (CleanExtension = ExtPart Or ExtPart.ToLower = ExtPart) Then
+            If CleanFileName = FileParts.Name.ToUpper And CleanExtension = FileParts.Extension.ToUpper Then
+                If (CleanFileName = FileParts.Name Or FileParts.Name.ToLower = FileParts.Name) And (CleanExtension = FileParts.Extension Or FileParts.Extension.ToLower = FileParts.Extension) Then
                     Return True
                 End If
             End If
@@ -702,19 +698,15 @@ Public MustInherit Class ImportFileBase
     End Function
 
     Private Function CalcIsLongFileName() As Boolean
-        Dim FilePart = IO.Path.GetFileNameWithoutExtension(_FileName)
-        Dim ExtPart = IO.Path.GetExtension(_FileName)
-        If ExtPart.Length > 0 Then
-            ExtPart = ExtPart.Substring(1)
-        End If
+        Dim FileParts = SplitFilename(_FileName)
 
-        If FilePart.Length > 8 Or ExtPart.Length > 3 Then
+        If FileParts.Name.Length > 8 Or FileParts.Extension.Length > 3 Then
             Return True
         Else
-            Dim CleanFileName = DOSCleanFileName(FilePart)
-            Dim CleanExtension = DOSCleanFileName(ExtPart)
+            Dim CleanFileName = DOSCleanFileName(FileParts.Name)
+            Dim CleanExtension = DOSCleanFileName(FileParts.Extension)
 
-            If CleanFileName <> FilePart Or CleanExtension <> ExtPart Then
+            If CleanFileName <> FileParts.Name Or CleanExtension <> FileParts.Extension Then
                 Return True
             End If
         End If

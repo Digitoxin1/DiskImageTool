@@ -559,7 +559,7 @@ Module SummaryPanel
             If fsi.VolumeLabel IsNot Nothing Then
                 .AddItem(FileSystemGroup, "Volume Label", fsi.VolumeLabel.GetVolumeName.TrimEnd(NULL_CHAR))
                 Dim VolumeDate = fsi.VolumeLabel.GetLastWriteDate
-                .AddItem(FileSystemGroup, "Volume Date", ExpandedDateToString(VolumeDate, True, False, False, False))
+                .AddItem(FileSystemGroup, "Volume Date", VolumeDate.ToString(True, False, False, False))
             End If
 
             .AddItem(FileSystemGroup, "Total Space", Format(Disk.SectorToBytes(Disk.BPB.DataRegionSize), "N0") & " bytes")

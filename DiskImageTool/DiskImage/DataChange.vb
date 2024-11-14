@@ -1,9 +1,9 @@
 ﻿Namespace DiskImage
-
     Public Enum DataChangeType
         Data
         Size
     End Enum
+
     Public Class DataChange
         Public Sub New(Type As DataChangeType, Offset As UInteger, OriginalValue As Object, NewValue As Object)
             Me.Type = Type

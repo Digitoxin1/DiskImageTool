@@ -66,22 +66,16 @@ Public Class FilePropertiesFormMultiple
 
         For Each DirectoryEntry In _DirectoryEntries
             DT = DirectoryEntry.GetLastWriteDate
-            If DT.IsValidDate Then
-                If DT.DateObject > LastWritten Then
-                    LastWritten = DT.DateObject
-                End If
+            If DT.DateObject > LastWritten Then
+                LastWritten = DT.DateObject
             End If
             DT = DirectoryEntry.GetCreationDate
-            If DT.IsValidDate Then
-                If Created Is Nothing Or DT.DateObject > Created Then
-                    Created = DT.DateObject
-                End If
+            If Created Is Nothing Or DT.DateObject > Created Then
+                Created = DT.DateObject
             End If
             DT = DirectoryEntry.GetLastAccessDate
-            If DT.IsValidDate Then
-                If LastAccessed Is Nothing Or DT.DateObject > LastAccessed Then
-                    LastAccessed = DT.DateObject
-                End If
+            If LastAccessed Is Nothing Or DT.DateObject > LastAccessed Then
+                LastAccessed = DT.DateObject
             End If
 
             If Not DirectoryEntry.IsArchive Then

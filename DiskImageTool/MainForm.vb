@@ -446,7 +446,7 @@ Public Class MainForm
         If IsBlank Then
             SI = Item.SubItems.Add("")
         Else
-            SI = Item.SubItems.Add(ExpandedDateToString(FileData.DirectoryEntry.GetLastWriteDate, True, True, False, True))
+            SI = Item.SubItems.Add(FileData.DirectoryEntry.GetLastWriteDate.ToString(True, True, False, True))
             If FileData.DirectoryEntry.GetLastWriteDate.IsValidDate Or IsDeleted Then
                 SI.ForeColor = ForeColor
             Else
@@ -514,7 +514,7 @@ Public Class MainForm
             SI = Item.SubItems.Add("")
         Else
             If FileData.DirectoryEntry.HasCreationDate Then
-                SI = Item.SubItems.Add(ExpandedDateToString(FileData.DirectoryEntry.GetCreationDate, True, True, True, True))
+                SI = Item.SubItems.Add(FileData.DirectoryEntry.GetCreationDate.ToString(True, True, True, True))
                 If FileData.DirectoryEntry.GetCreationDate.IsValidDate Or IsDeleted Then
                     SI.ForeColor = ForeColor
                 Else
@@ -530,7 +530,7 @@ Public Class MainForm
             SI = Item.SubItems.Add("")
         Else
             If FileData.DirectoryEntry.HasLastAccessDate Then
-                SI = Item.SubItems.Add(ExpandedDateToString(FileData.DirectoryEntry.GetLastAccessDate))
+                SI = Item.SubItems.Add(FileData.DirectoryEntry.GetLastAccessDate.ToString())
                 If FileData.DirectoryEntry.GetLastAccessDate.IsValidDate Or IsDeleted Then
                     SI.ForeColor = ForeColor
                 Else
@@ -1994,7 +1994,11 @@ Public Class MainForm
                 If DirectoryEntryCanExport(DirectoryEntry) Then
                     TotalFiles += 1
                     If Result <> MyMsgBoxResult.Cancel Then
-                        Dim FilePath = IO.Path.Combine(Path, CleanPathName(FileData.FilePath), CleanFileName(DirectoryEntry.GetFullFileName))
+                        Dim FileName = DirectoryEntry.GetLongFileName
+                        If FileName = "" Then
+                            FileName = DirectoryEntry.GetFullFileName
+                        End If
+                        Dim FilePath = IO.Path.Combine(Path, CleanPathName(FileData.FilePath), CleanFileName(FileName))
                         If Not IO.Directory.Exists(IO.Path.GetDirectoryName(FilePath)) Then
                             IO.Directory.CreateDirectory(IO.Path.GetDirectoryName(FilePath))
                         End If
