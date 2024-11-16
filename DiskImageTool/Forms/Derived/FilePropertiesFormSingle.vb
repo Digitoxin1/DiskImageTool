@@ -102,7 +102,7 @@ Public Class FilePropertiesFormSingle
                     ChkNTExtensions.Checked = True
                     ChkNTExtensions.Enabled = True
                 Else
-                    TxtLFN.Text = _DirectoryEntry.GetFullFileName
+                    TxtLFN.Text = _DirectoryEntry.GetShortFileName
                     ChkNTExtensions.Checked = False
                     ChkNTExtensions.Enabled = False
                 End If

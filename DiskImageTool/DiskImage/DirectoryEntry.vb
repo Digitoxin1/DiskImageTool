@@ -233,6 +233,15 @@
             Return Content
         End Function
 
+        Public Function GetFullFileName() As String
+            Dim FileName = GetLongFileName()
+            If FileName.Length = 0 Then
+                FileName = GetShortFileName()
+            End If
+
+            Return FileName
+        End Function
+
         Public Function GetLongFileName() As String
             Dim FileName As String = ""
             Dim DirectoryEntry As DirectoryEntry

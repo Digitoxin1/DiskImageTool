@@ -99,7 +99,7 @@ Public Class DirectoryScanResponse
                     Response.InvalidVolumeName = True
                 End If
             ElseIf Not HasInvalidFilename AndAlso Not HasInvalidExtension Then
-                Dim FileName = DirectoryEntry.GetFullFileName
+                Dim FileName = DirectoryEntry.GetShortFileName
                 If Not _FileNames.Contains(FileName) Then
                     _FileNames.Add(FileName)
                 Else

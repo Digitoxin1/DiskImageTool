@@ -226,7 +226,7 @@
                     If Counter <> SkipIndex Then
                         Dim File = _DirectoryEntries.Item(Counter)
                         If Not File.IsDeleted And Not File.IsVolumeName And (IncludeDirectories Or Not File.IsDirectory) Then
-                            If File.GetFullFileName = Filename Then
+                            If File.GetShortFileName = Filename Then
                                 Return Counter
                             End If
                         End If

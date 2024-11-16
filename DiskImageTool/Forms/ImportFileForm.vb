@@ -32,17 +32,11 @@ Public Class ImportFileForm
         Dim FileName As String
 
         If Not Directory.IsRootDirectory Then
-            FileName = Directory.ParentEntry.GetLongFileName
-            If FileName.Length = 0 Then
-                FileName = Directory.ParentEntry.GetFullFileName
-            End If
+            FileName = Directory.ParentEntry.GetFullFileName
             PathString = FileName
             Parent = Directory.ParentEntry.ParentDirectory
             Do While Not Parent.IsRootDirectory
-                FileName = Parent.ParentEntry.GetLongFileName
-                If FileName.Length = 0 Then
-                    FileName = Parent.ParentEntry.GetFullFileName
-                End If
+                FileName = Parent.ParentEntry.GetFullFileName
                 PathString = FileName & "\" & PathString
                 Parent = Parent.ParentEntry.ParentDirectory
             Loop

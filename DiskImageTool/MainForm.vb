@@ -347,7 +347,7 @@ Public Class MainForm
             Exit Sub
         End If
 
-        Dim Caption As String = $"File - {DirectoryEntry.GetFullFileName(True)}"
+        Dim Caption As String = $"File - {DirectoryEntry.GetShortFileName(True)}"
         If DirectoryEntry.IsDeleted Then
             Caption = "Deleted " & Caption
         End If
@@ -947,7 +947,7 @@ Public Class MainForm
             .IsValidDirectory = DirectoryEntry.IsValidDirectory
             .CanExport = DirectoryEntryCanExport(DirectoryEntry)
             .FileSize = DirectoryEntry.FileSize
-            .FullFileName = DirectoryEntry.GetFullFileName(True)
+            .FullFileName = DirectoryEntry.GetShortFileName(True)
             .CanDelete = DirectoryEntryCanDelete(DirectoryEntry, False)
             .CanUndelete = DirectoryEntryCanUndelete(DirectoryEntry)
             .CanInsert = DirectoryEntry.Index < DirectoryEntry.ParentDirectory.DirectoryEntries.Count - DirectoryEntry.ParentDirectory.Data.AvailableEntryCount
@@ -1157,11 +1157,11 @@ Public Class MainForm
     End Sub
 
     Private Sub DisplayCrossLinkedFiles(Disk As Disk, DirectoryEntry As DiskImage.DirectoryEntry)
-        Dim Msg As String = $"{DirectoryEntry.GetFullFileName(True)} is crosslinked with the following files:{vbCrLf}"
+        Dim Msg As String = $"{DirectoryEntry.GetShortFileName(True)} is crosslinked with the following files:{vbCrLf}"
 
         For Each Crosslink In DirectoryEntry.CrossLinks
             If Crosslink IsNot DirectoryEntry Then
-                Msg &= vbCrLf & Crosslink.GetFullFileName(True)
+                Msg &= vbCrLf & Crosslink.GetShortFileName(True)
             End If
         Next
         MsgBox(Msg, MsgBoxStyle.Information + MsgBoxStyle.OkOnly)
@@ -1181,7 +1181,7 @@ Public Class MainForm
 
         Dim TempPath As String = IO.Path.GetTempPath() & Guid.NewGuid().ToString() & "\"
 
-        ImageFileExportSelected(False, TempPath)
+        ImageFileExportToTemp(TempPath)
 
         If IO.Directory.Exists(TempPath) Then
             Dim FileList = IO.Directory.EnumerateDirectories(TempPath)
@@ -1190,7 +1190,7 @@ Public Class MainForm
             Next
             If FileList.Count > 0 Then
                 Dim Data = New DataObject(DataFormats.FileDrop, FileList.ToArray)
-                ListViewFiles.DoDragDrop(Data, DragDropEffects.Copy)
+                ListViewFiles.DoDragDrop(Data, DragDropEffects.Move)
             End If
             IO.Directory.Delete(TempPath, True)
         End If
@@ -1907,7 +1907,7 @@ Public Class MainForm
             If ListViewFiles.SelectedItems.Count = 1 Then
                 Item = ListViewFiles.SelectedItems(0)
                 FileData = Item.Tag
-                Msg = $"Are you sure you wish to {If(Remove, "remove", "delete")} {FileData.DirectoryEntry.GetFullFileName(True)}?"
+                Msg = $"Are you sure you wish to {If(Remove, "remove", "delete")} {FileData.DirectoryEntry.GetShortFileName(True)}?"
                 Title = $"{If(Remove, "Remove", "Delete")} File"
                 CanFill = FileData.DirectoryEntry.IsValidFile Or FileData.DirectoryEntry.IsValidDirectory
             Else
@@ -1967,22 +1967,19 @@ Public Class MainForm
         If ListViewFiles.SelectedItems.Count = 1 Then
             DirectoryEntryExport(ListViewFiles.SelectedItems(0).Tag)
         ElseIf ListViewFiles.SelectedItems.Count > 1 Then
-            ImageFileExportSelected(True)
+            ImageFileExportSelected()
         End If
     End Sub
 
-    Private Sub ImageFileExportSelected(ShowDialog As Boolean, Optional Path As String = "")
-        Dim ShowResults As Boolean = ShowDialog
+    Private Sub ImageFileExportSelected()
+        Dim Dialog = New FolderBrowserDialog
 
-        If Path = "" Then
-            Dim Dialog = New FolderBrowserDialog
-
-            If Dialog.ShowDialog <> DialogResult.OK Then
-                Exit Sub
-            End If
-            Path = Dialog.SelectedPath
+        If Dialog.ShowDialog <> DialogResult.OK Then
+            Exit Sub
         End If
+        Dim Path = Dialog.SelectedPath
 
+        Dim ShowDialog As Boolean = True
         Dim BatchResult As MyMsgBoxResult = MyMsgBoxResult.Yes
         Dim Result As MyMsgBoxResult = MyMsgBoxResult.Yes
         Dim FileCount As Integer = 0
@@ -1994,32 +1991,45 @@ Public Class MainForm
                 If DirectoryEntryCanExport(DirectoryEntry) Then
                     TotalFiles += 1
                     If Result <> MyMsgBoxResult.Cancel Then
-                        Dim FileName = DirectoryEntry.GetLongFileName
-                        If FileName = "" Then
-                            FileName = DirectoryEntry.GetFullFileName
-                        End If
-                        Dim FilePath = IO.Path.Combine(Path, CleanPathName(FileData.FilePath), CleanFileName(FileName))
-                        If Not IO.Directory.Exists(IO.Path.GetDirectoryName(FilePath)) Then
-                            IO.Directory.CreateDirectory(IO.Path.GetDirectoryName(FilePath))
-                        End If
-                        If IO.File.Exists(FilePath) Then
-                            If ShowDialog Then
-                                Result = MsgBoxOverwrite(FilePath)
-                            Else
-                                Result = BatchResult
+                        If DirectoryEntry.IsDirectory Then
+                            Dim PathName = IO.Path.Combine(Path, CleanPathName(FileData.FilePath), CleanFileName(DirectoryEntry.GetFullFileName))
+
+                            If Not IO.Directory.Exists(PathName) Then
+                                IO.Directory.CreateDirectory(PathName)
                             End If
+                            FileCount += 1
                         Else
-                            Result = MyMsgBoxResult.Yes
-                        End If
-                        If Result = MyMsgBoxResult.YesToAll Or Result = MyMsgBoxResult.NoToAll Then
-                            ShowDialog = False
-                            If Result = MyMsgBoxResult.NoToAll Then
-                                BatchResult = MyMsgBoxResult.No
+                            Dim PathName = IO.Path.Combine(Path, CleanPathName(FileData.FilePath))
+
+                            If Not IO.Directory.Exists(PathName) Then
+                                IO.Directory.CreateDirectory(PathName)
                             End If
-                        End If
-                        If Result = MyMsgBoxResult.Yes Or Result = MyMsgBoxResult.YesToAll Then
-                            If DirectoryEntrySaveToFile(FilePath, DirectoryEntry) Then
-                                FileCount += 1
+
+                            Dim FileName = CleanFileName(DirectoryEntry.GetFullFileName)
+
+                            Dim FilePath = IO.Path.Combine(PathName, FileName)
+
+                            If IO.File.Exists(FilePath) Then
+                                If ShowDialog Then
+                                    Result = MsgBoxOverwrite(FilePath)
+                                Else
+                                    Result = BatchResult
+                                End If
+                            Else
+                                Result = MyMsgBoxResult.Yes
+                            End If
+
+                            If Result = MyMsgBoxResult.YesToAll Or Result = MyMsgBoxResult.NoToAll Then
+                                ShowDialog = False
+                                If Result = MyMsgBoxResult.NoToAll Then
+                                    BatchResult = MyMsgBoxResult.No
+                                End If
+                            End If
+
+                            If Result = MyMsgBoxResult.Yes Or Result = MyMsgBoxResult.YesToAll Then
+                                If DirectoryEntrySaveToFile(FilePath, DirectoryEntry) Then
+                                    FileCount += 1
+                                End If
                             End If
                         End If
                     End If
@@ -2027,10 +2037,39 @@ Public Class MainForm
             End If
         Next
 
-        If ShowResults Then
-            Dim Msg As String = $"{FileCount} of {TotalFiles} {"file".Pluralize(TotalFiles)} exported successfully."
-            MsgBox(Msg, MsgBoxStyle.Information + MsgBoxStyle.OkOnly)
-        End If
+        Dim Msg As String = $"{FileCount} of {TotalFiles} {"file".Pluralize(TotalFiles)} exported successfully."
+        MsgBox(Msg, MsgBoxStyle.Information + MsgBoxStyle.OkOnly)
+    End Sub
+
+    Private Sub ImageFileExportToTemp(TempPath As String)
+        For Each Item As ListViewItem In ListViewFiles.SelectedItems
+            Dim FileData As FileData = Item.Tag
+            If FileData IsNot Nothing Then
+                Dim DirectoryEntry = FileData.DirectoryEntry
+
+                If DirectoryEntryCanExport(DirectoryEntry) Then
+                    If DirectoryEntry.IsDirectory Then
+                        Dim PathName = IO.Path.Combine(TempPath, CleanPathName(FileData.FilePath), CleanFileName(DirectoryEntry.GetFullFileName))
+
+                        If Not IO.Directory.Exists(PathName) Then
+                            IO.Directory.CreateDirectory(PathName)
+                        End If
+                    Else
+                        Dim PathName = IO.Path.Combine(TempPath, CleanPathName(FileData.FilePath))
+
+                        If Not IO.Directory.Exists(PathName) Then
+                            IO.Directory.CreateDirectory(PathName)
+                        End If
+
+                        Dim FileName = CleanFileName(DirectoryEntry.GetFullFileName)
+
+                        Dim FilePath = IO.Path.Combine(PathName, FileName)
+
+                        DirectoryEntrySaveToFile(FilePath, DirectoryEntry)
+                    End If
+                End If
+            End If
+        Next
     End Sub
 
     Private Sub ImageFiltersScan(Disk As Disk, ImageData As ImageData, Remove As Boolean)
@@ -2240,7 +2279,7 @@ Public Class MainForm
 
         Dim ReplaceFileForm As New ReplaceFileForm(AvailableSpace, DirectoryEntry.ParentDirectory)
         With ReplaceFileForm
-            .SetOriginalFile(DirectoryEntry.GetFullFileName, DirectoryEntry.GetLastWriteDate.DateObject, DirectoryEntry.FileSize)
+            .SetOriginalFile(DirectoryEntry.GetShortFileName, DirectoryEntry.GetLastWriteDate.DateObject, DirectoryEntry.FileSize)
             .SetNewFile(DirectoryEntry.ParentDirectory.GetAvailableFileName(FileInfo.Name, False), FileInfo.LastWriteTime, FileInfo.Length)
             .RefreshText()
             .ShowDialog(Me)
@@ -2295,7 +2334,7 @@ Public Class MainForm
             Exit Sub
         End If
 
-        Dim UndeleteForm As New UndeleteForm(DirectoryEntry.GetFullFileName)
+        Dim UndeleteForm As New UndeleteForm(DirectoryEntry.GetShortFileName)
 
         UndeleteForm.ShowDialog()
 
@@ -2814,7 +2853,7 @@ Public Class MainForm
                                 If HasLFN Then
                                     NewPath = LFNFileName
                                 Else
-                                    NewPath = DirectoryEntry.GetFullFileName
+                                    NewPath = DirectoryEntry.GetShortFileName
                                 End If
                                 If Path <> "" Then
                                     NewPath = Path & "\" & NewPath
@@ -3058,7 +3097,7 @@ Public Class MainForm
             If FileData IsNot Nothing Then
                 Stats = DirectoryEntryGetStats(FileData.DirectoryEntry)
 
-                SetButtonStateExportFile(Stats.CanExport)
+                SetButtonStateExportFile(Stats.CanExport And Not Stats.IsDirectory)
                 SetButtonStateReplaceFile(Stats.IsValidFile And Not Stats.IsDeleted)
                 SetButtonStateFileProperties(True)
 

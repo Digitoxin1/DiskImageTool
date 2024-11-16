@@ -459,7 +459,7 @@ Namespace DiskImage
             End If
         End Function
 
-        Public Function GetFullFileName(Optional ForDisplay As Boolean = False) As String
+        Public Function GetShortFileName(Optional ForDisplay As Boolean = False) As String
             Dim File = GetFileName(ForDisplay)
             Dim Ext = GetFileExtension(ForDisplay)
 

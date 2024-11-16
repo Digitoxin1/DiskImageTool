@@ -38,11 +38,7 @@ Module ImageIO
     Public Sub DirectoryEntryExport(FileData As FileData)
         Dim DirectoryEntry = FileData.DirectoryEntry
 
-        Dim FileName = DirectoryEntry.GetLongFileName
-        If FileName = "" Then
-            FileName = DirectoryEntry.GetFullFileName
-        End If
-
+        Dim FileName = DirectoryEntry.GetFullFileName
 
         Dim Dialog = New SaveFileDialog With {
             .FileName = CleanFileName(FileName)
@@ -62,18 +58,9 @@ Module ImageIO
     Public Function DirectoryEntrySaveToFile(FilePath As String, DirectoryEntry As DiskImage.DirectoryEntry) As Boolean
         Try
             IO.File.WriteAllBytes(FilePath, DirectoryEntry.GetContent)
-            Dim D = DirectoryEntry.GetLastWriteDate
-            IO.File.SetLastWriteTime(FilePath, D.DateObject)
 
-            If DirectoryEntry.HasCreationDate Then
-                D = DirectoryEntry.GetCreationDate
-                IO.File.SetCreationTime(FilePath, D.DateObject)
-            End If
-
-            If DirectoryEntry.HasLastAccessDate Then
-                D = DirectoryEntry.GetLastAccessDate
-                IO.File.SetLastAccessTime(FilePath, D.DateObject)
-            End If
+            Dim FileInfo = New FileInfo(FilePath)
+            DirectoryEntrySetFileDates(FileInfo, DirectoryEntry)
         Catch ex As Exception
             DebugException(ex)
             Return False
@@ -81,6 +68,30 @@ Module ImageIO
 
         Return True
     End Function
+
+    Public Sub DirectoryEntrySetFileDates(DirectoryInfo As DirectoryInfo, DirectoryEntry As DiskImage.DirectoryEntry)
+        DirectoryInfo.LastWriteTime = DirectoryEntry.GetLastWriteDate.DateObject
+
+        If DirectoryEntry.HasCreationDate Then
+            DirectoryInfo.CreationTime = DirectoryEntry.GetCreationDate.DateObject
+        End If
+
+        If DirectoryEntry.HasLastAccessDate Then
+            DirectoryInfo.LastAccessTime = DirectoryEntry.GetLastAccessDate.DateObject
+        End If
+    End Sub
+
+    Public Sub DirectoryEntrySetFileDates(FileInfo As FileInfo, DirectoryEntry As DiskImage.DirectoryEntry)
+        FileInfo.LastWriteTime = DirectoryEntry.GetLastWriteDate.DateObject
+
+        If DirectoryEntry.HasCreationDate Then
+            FileInfo.CreationTime = DirectoryEntry.GetCreationDate.DateObject
+        End If
+
+        If DirectoryEntry.HasLastAccessDate Then
+            FileInfo.LastAccessTime = DirectoryEntry.GetLastAccessDate.DateObject
+        End If
+    End Sub
 
     Public Function DiskImageLoad(ImageData As ImageData, Optional SetChecksum As Boolean = False) As DiskImage.Disk
         Dim Data() As Byte
