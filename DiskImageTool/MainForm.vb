@@ -1840,11 +1840,10 @@ Public Class MainForm
 
             If Updated Then
                 Dim Options As New AddFileOptions With {
-                    .LFN = frmNewDirectory.HasLFN,
-                    .NTExtensions = frmNewDirectory.UseNTExtensions
+                    .UseLFN = frmNewDirectory.HasLFN,
+                    .UseNTExtensions = frmNewDirectory.UseNTExtensions
                 }
-
-                Dim AddDirectoryResponse = ParentDirectory.AddDirectory(frmNewDirectory.NewDirectoryData, Options, frmNewDirectory.LFN, Index)
+                Dim AddDirectoryResponse = ParentDirectory.AddDirectory(frmNewDirectory.NewDirectoryData, Options, frmNewDirectory.NewFilename, Index)
 
                 If AddDirectoryResponse.Entry IsNot Nothing Then
                     DiskImageRefresh(CurrentImage)
@@ -2212,9 +2211,9 @@ Public Class MainForm
         For Each Folder In FolderList
             If Folder.SelectedFiles > 0 Then
                 Dim DirectoryInfo As New IO.DirectoryInfo(Folder.FilePath)
-                Dim ShortFileName = ParentDirectory.GetAvailableFileName(DirectoryInfo.Name, False)
+
                 Dim DirectoryEntry = New DirectoryEntryBase
-                DirectoryEntry.SetFileInfo(DirectoryInfo, ShortFileName, Options.CreatedDate, Options.LastAccessedDate)
+                DirectoryEntry.SetFileInfo(DirectoryInfo, Options.UseCreatedDate, Options.UseLastAccessedDate)
 
                 Dim AddDirectoryResponse = ParentDirectory.AddDirectory(DirectoryEntry.Data, Options, DirectoryInfo.Name, Index)
                 If AddDirectoryResponse.Entry IsNot Nothing Then
@@ -2280,7 +2279,7 @@ Public Class MainForm
         Dim ReplaceFileForm As New ReplaceFileForm(AvailableSpace, DirectoryEntry.ParentDirectory)
         With ReplaceFileForm
             .SetOriginalFile(DirectoryEntry.GetShortFileName, DirectoryEntry.GetLastWriteDate.DateObject, DirectoryEntry.FileSize)
-            .SetNewFile(DirectoryEntry.ParentDirectory.GetAvailableFileName(FileInfo.Name, False), FileInfo.LastWriteTime, FileInfo.Length)
+            .SetNewFile(DirectoryEntry.ParentDirectory.GetAvailableShortFileName(FileInfo.Name, False), FileInfo.LastWriteTime, FileInfo.Length)
             .RefreshText()
             .ShowDialog(Me)
             FormResult = .Result

@@ -1,8 +1,8 @@
 ﻿Namespace DiskImage
     Public Class AddFileOptions
-        Public Property CreatedDate As Boolean
-        Public Property LastAccessedDate As Boolean
-        Public Property LFN As Boolean
-        Public Property NTExtensions As Boolean
+        Public Property UseLFN As Boolean
+        Public Property UseNTExtensions As Boolean
+        Public Property UseCreatedDate As Boolean
+        Public Property UseLastAccessedDate As Boolean
     End Class
 End Namespace

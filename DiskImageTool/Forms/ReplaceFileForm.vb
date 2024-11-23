@@ -164,7 +164,7 @@ Public Class ReplaceFileForm
                 Exit Sub
             End If
 
-            If _FileNameNew <> _FileNameOriginal AndAlso _Directory.GetFileIndex(_FileNameNew, True) > -1 Then
+            If _FileNameNew <> _FileNameOriginal AndAlso _Directory.FindShortFileName(_FileNameNew, True) > -1 Then
                 MsgBox("A file with this name already exists in this directory.", MsgBoxStyle.Exclamation)
                 TxtFilenameNew.Focus()
                 Exit Sub

@@ -1,39 +1,26 @@
 ﻿Namespace DiskImage
-    Public Structure AddDirectoryData
-        Dim Index As Integer
-        Dim EntriesNeeded As Integer
-        Dim ShortFileName As String
-        Dim ClusterList As SortedSet(Of UShort)
-        Dim Options As AddFileOptions
-        Dim LFNEntries As List(Of Byte())
-        Dim RequiresExpansion As Boolean
-        Dim Entry As DirectoryEntry
-    End Structure
+    Public Class AddFileData
+        Public Sub New()
+            _ClusterList = Nothing
+            _Entry = Nothing
+            _FileInfo = Nothing
+        End Sub
 
-    Public Structure AddFileData
-        Dim FilePath As String
-        Dim Options As AddFileOptions
-        Dim Index As Integer
-        Dim EntriesNeeded As Integer
-        Dim ShortFileName As String
-        Dim ClusterList As SortedSet(Of UShort)
-        Dim LFNEntries As List(Of Byte())
-        Dim RequiresExpansion As Boolean
-    End Structure
+        Public Property ClusterList As SortedSet(Of UShort)
+        Public Property EntriesNeeded As Integer
+        Public Property Entry As DirectoryEntry
+        Public Property FileInfo As IO.FileInfo
+        Public Property HasNTLowerCaseExtension As Boolean
+        Public Property HasNTLowerCaseFileName As Boolean
+        Public Property Index As Integer
+        Public Property LFNEntries As List(Of Byte())
+        Public Property Options As AddFileOptions
+        Public Property RequiresExpansion As Boolean
+        Public Property ShortFileName As String
+    End Class
 
     Public Structure DirectoryCacheEntry
         Dim Checksum As UInteger
         Dim Data() As Byte
-    End Structure
-
-    Public Structure UpdateLFNData
-        Dim EntriesNeeded As Integer
-        Dim ShortFileName As String
-        Dim CurrentLFNIndex As Integer
-        Dim LFNEntries As List(Of Byte())
-        Dim RequiresExpansion As Boolean
-        Dim DirectoryEntry As DirectoryEntry
-        Dim NTLowerCaseFileName As Boolean
-        Dim NTLowerCaseExtension As Boolean
     End Structure
 End Namespace

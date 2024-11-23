@@ -44,12 +44,6 @@ Public Class FilePropertiesForm
         End Set
     End Property
 
-    Public ReadOnly Property LFN As String
-        Get
-            Return TxtLFN.Text
-        End Get
-    End Property
-
     Public ReadOnly Property UseNTExtensions As Boolean
         Get
             Return ChkNTExtensions.Checked

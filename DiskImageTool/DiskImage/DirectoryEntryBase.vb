@@ -675,9 +675,7 @@ Namespace DiskImage
             Attributes = Attrib
         End Sub
 
-        Public Sub SetFileInfo(FolderInfo As DirectoryInfo, NewFileName As String, UseCreationDate As Boolean, UseLastAccessDate As Boolean)
-            SetFileName(NewFileName)
-
+        Public Sub SetFileInfo(FolderInfo As DirectoryInfo, UseCreationDate As Boolean, UseLastAccessDate As Boolean)
             FileSize = 0
 
             SetLastWriteDate(FolderInfo.LastWriteTime)

@@ -47,13 +47,13 @@
             End Get
         End Property
 
-        Public Overrides Function AddDirectory(DirectoryData() As Byte, Options As AddFileOptions, LFNFileName As String, Optional Index As Integer = -1) As AddDirectoryData Implements IDirectory.AddDirectory
-            Dim Data = InitializeAddDirectory(Me, Options, LFNFileName, Index)
+        Public Overrides Function AddDirectory(EntryData() As Byte, Options As AddFileOptions, Filename As String, Optional Index As Integer = -1) As AddFileData Implements IDirectory.AddDirectory
+            Dim Data = InitializeAddDirectory(Me, Options, Index, Filename)
 
             If Data.ClusterList IsNot Nothing Then
                 Dim UseTransaction As Boolean = Disk.BeginTransaction
 
-                Data.Entry = ProcessAddDirectory(Me, DirectoryData, Data)
+                ProcessAddDirectory(Me, Data, EntryData)
 
                 If UseTransaction Then
                     Disk.EndTransaction()
@@ -71,7 +71,7 @@
                 Return -1
             End If
 
-            Dim Data = InitializeAddFile(Me, FileInfo, Options, Index)
+            Dim Data = InitializeAddFile(Me, Options, Index, FileInfo)
 
             If Data.ClusterList Is Nothing Then
                 Return -1

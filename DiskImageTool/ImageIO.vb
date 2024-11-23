@@ -59,7 +59,7 @@ Module ImageIO
         Try
             IO.File.WriteAllBytes(FilePath, DirectoryEntry.GetContent)
 
-            Dim FileInfo = New FileInfo(FilePath)
+            Dim FileInfo = New IO.FileInfo(FilePath)
             DirectoryEntrySetFileDates(FileInfo, DirectoryEntry)
         Catch ex As Exception
             DebugException(ex)
@@ -81,7 +81,7 @@ Module ImageIO
         End If
     End Sub
 
-    Public Sub DirectoryEntrySetFileDates(FileInfo As FileInfo, DirectoryEntry As DiskImage.DirectoryEntry)
+    Public Sub DirectoryEntrySetFileDates(FileInfo As IO.FileInfo, DirectoryEntry As DiskImage.DirectoryEntry)
         FileInfo.LastWriteTime = DirectoryEntry.GetLastWriteDate.DateObject
 
         If DirectoryEntry.HasCreationDate Then

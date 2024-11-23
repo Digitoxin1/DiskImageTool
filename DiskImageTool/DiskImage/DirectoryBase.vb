@@ -114,7 +114,7 @@
             End If
         End Sub
 
-        Public MustOverride Function AddDirectory(DirectoryData() As Byte, Options As AddFileOptions, LFNFileName As String, Optional Index As Integer = -1) As AddDirectoryData Implements IDirectory.AddDirectory
+        Public MustOverride Function AddDirectory(EntryData() As Byte, Options As AddFileOptions, Filename As String, Optional Index As Integer = -1) As AddFileData Implements IDirectory.AddDirectory
 
         Public MustOverride Function AddFile(FilePath As String, Options As AddFileOptions, Optional Index As Integer = -1) As Integer Implements IDirectory.AddFile
 
@@ -137,6 +137,57 @@
             Return Index
         End Function
 
+        Public Function FindFileName(Filename As String, IncludeDirectories As Boolean, Optional SkipIndex As Integer = -1) As Integer Implements IDirectory.FindFileName
+            If _DirectoryData.EntryCount > 0 Then
+                For Counter As UInteger = 0 To _DirectoryData.EntryCount - 1
+                    If Counter <> SkipIndex Then
+                        Dim File = _DirectoryEntries.Item(Counter)
+                        If Not File.IsDeleted And Not File.IsVolumeName And (IncludeDirectories Or Not File.IsDirectory) Then
+                            If File.GetFullFileName = Filename Then
+                                Return Counter
+                            End If
+                        End If
+                    End If
+                Next
+            End If
+
+            Return -1
+        End Function
+
+        Public Function FindShortFileName(FileBytes() As Byte, IncludeDirectories As Boolean, Optional SkipIndex As Integer = -1) As Integer Implements IDirectory.FindShortFileName
+            If _DirectoryData.EntryCount > 0 Then
+                For Counter As UInteger = 0 To _DirectoryData.EntryCount - 1
+                    If Counter <> SkipIndex Then
+                        Dim File = _DirectoryEntries.Item(Counter)
+                        If Not File.IsDeleted And Not File.IsVolumeName And (IncludeDirectories Or Not File.IsDirectory) Then
+                            If FileBytes.CompareTo(File.FileNameWithExtension) Then
+                                Return Counter
+                            End If
+                        End If
+                    End If
+                Next
+            End If
+
+            Return -1
+        End Function
+
+        Public Function FindShortFileName(Filename As String, IncludeDirectories As Boolean, Optional SkipIndex As Integer = -1) As Integer Implements IDirectory.FindShortFileName
+            If _DirectoryData.EntryCount > 0 Then
+                For Counter As UInteger = 0 To _DirectoryData.EntryCount - 1
+                    If Counter <> SkipIndex Then
+                        Dim File = _DirectoryEntries.Item(Counter)
+                        If Not File.IsDeleted And Not File.IsVolumeName And (IncludeDirectories Or Not File.IsDirectory) Then
+                            If File.GetShortFileName = Filename Then
+                                Return Counter
+                            End If
+                        End If
+                    End If
+                Next
+            End If
+
+            Return -1
+        End Function
+
         Public Function GetAvailableEntry() As DirectoryEntry Implements IDirectory.GetAvailableEntry
             Dim Buffer(10) As Byte
 
@@ -157,7 +208,21 @@
             Return Nothing
         End Function
 
-        Public Function GetAvailableFileName(FileName As String, UseNTExtensions As Boolean, Optional CurrentIndex As Integer = -1) As String Implements IDirectory.GetAvailableFileName
+        Public Function GetAvailableFileName(FileName As String, Optional CurrentIndex As Integer = -1) As String Implements IDirectory.GetAvailableFileName
+            Dim FileParts = SplitFilename(FileName)
+
+            Dim NewFileName As String = FileName
+            Dim Index As UInteger = 1
+
+            Do While FindFileName(NewFileName, True, CurrentIndex) > -1
+                NewFileName = CombineFileParts(FileParts.Name & " (" & Index & ")", FileParts.Extension)
+                Index += 1
+            Loop
+
+            Return NewFileName
+        End Function
+
+        Public Function GetAvailableShortFileName(FileName As String, UseNTExtensions As Boolean, Optional CurrentIndex As Integer = -1) As String Implements IDirectory.GetAvailableShortFileName
             Dim FileParts = SplitFilename(FileName)
 
             Dim CleanFileName = DOSCleanFileName(FileParts.Name)
@@ -179,7 +244,7 @@
                 NewFileName = CombineFileParts(CleanFileName, CleanExtension)
             End If
 
-            Do While GetFileIndex(NewFileName, True, CurrentIndex) > -1
+            Do While FindShortFileName(NewFileName, True, CurrentIndex) > -1
                 NewFileName = TruncateFileName(CleanFileName, CleanExtension, Checksum, Index, UseNTExtensions)
                 Index += 1
             Loop
@@ -202,41 +267,6 @@
         Public Function GetFile(Index As UInteger) As DirectoryEntry Implements IDirectory.GetFile
             Return _DirectoryEntries.Item(Index)
         End Function
-
-        Public Function GetFileIndex(FileBytes() As Byte, IncludeDirectories As Boolean, Optional SkipIndex As Integer = -1) As Integer Implements IDirectory.GetFileIndex
-            If _DirectoryData.EntryCount > 0 Then
-                For Counter As UInteger = 0 To _DirectoryData.EntryCount - 1
-                    If Counter <> SkipIndex Then
-                        Dim File = _DirectoryEntries.Item(Counter)
-                        If Not File.IsDeleted And Not File.IsVolumeName And (IncludeDirectories Or Not File.IsDirectory) Then
-                            If FileBytes.CompareTo(File.FileNameWithExtension) Then
-                                Return Counter
-                            End If
-                        End If
-                    End If
-                Next
-            End If
-
-            Return -1
-        End Function
-
-        Public Function GetFileIndex(Filename As String, IncludeDirectories As Boolean, Optional SkipIndex As Integer = -1) As Integer Implements IDirectory.GetFileIndex
-            If _DirectoryData.EntryCount > 0 Then
-                For Counter As UInteger = 0 To _DirectoryData.EntryCount - 1
-                    If Counter <> SkipIndex Then
-                        Dim File = _DirectoryEntries.Item(Counter)
-                        If Not File.IsDeleted And Not File.IsVolumeName And (IncludeDirectories Or Not File.IsDirectory) Then
-                            If File.GetShortFileName = Filename Then
-                                Return Counter
-                            End If
-                        End If
-                    End If
-                Next
-            End If
-
-            Return -1
-        End Function
-
         Public Function GetIndex(DirectoryEntry As DirectoryEntry) As Integer Implements IDirectory.GetIndex
             Return _DirectoryEntries.IndexOf(DirectoryEntry)
         End Function

@@ -25,6 +25,7 @@ Public Class FilePropertiesFormSingle
 
         Dim UseTransaction = _DirectoryEntry.Disk.BeginTransaction
 
+        Dim LFN = _DirectoryEntry.GetLongFileName
         Dim NewDirectoryEntry = _DirectoryEntry.Clone
 
         If RadioFileShort.Checked Then
@@ -45,7 +46,6 @@ Public Class FilePropertiesFormSingle
         End If
 
         If RadioFileShort.Checked Then
-            Dim LFN = _DirectoryEntry.GetLongFileName
             If Not _DirectoryEntry.IsVolumeName And Not _DirectoryEntry.IsDeleted And LFN.Length > 0 Then
                 If _DirectoryEntry.RemoveLFN() Then
                     _Updated = True

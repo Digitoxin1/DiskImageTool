@@ -3,6 +3,7 @@ Public Class NewDirectoryForm
     Inherits FilePropertiesForm
 
     Private _NewDirectoryEntry As DirectoryEntryBase
+    Private _NewFilename As String
     Private _Updated As Boolean = False
 
     Public Sub New()
@@ -15,6 +16,12 @@ Public Class NewDirectoryForm
     Public ReadOnly Property NewDirectoryData As Byte()
         Get
             Return _NewDirectoryEntry.Data
+        End Get
+    End Property
+
+    Public ReadOnly Property NewFilename As String
+        Get
+            Return _NewFilename
         End Get
     End Property
 
@@ -34,6 +41,9 @@ Public Class NewDirectoryForm
 
         If RadioFileShort.Checked Then
             ApplyFileNameUpdateShort(_NewDirectoryEntry)
+            _NewFilename = _NewDirectoryEntry.GetFileName
+        Else
+            _NewFilename = TxtLFN.Text
         End If
 
         ApplyFileDatesUpdate(_NewDirectoryEntry)

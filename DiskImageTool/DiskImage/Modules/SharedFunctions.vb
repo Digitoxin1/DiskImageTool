@@ -262,166 +262,62 @@ Namespace DiskImage
             Return GetShortFileChecksum(Filename).ToString("X4")
         End Function
 
-        Public Function InitializeAddDirectory(Directory As DirectoryBase, Options As AddFileOptions, LFNFileName As String, Index As Integer) As AddDirectoryData
-            Dim ClustersRequired As UShort = 1
-
-            Dim AddDirectoryData As AddDirectoryData
-
-            AddDirectoryData.Entry = Nothing
-            AddDirectoryData.Index = Index
-            AddDirectoryData.Options = Options
-            If Options.LFN Then
-                AddDirectoryData.ShortFileName = Directory.GetAvailableFileName(LFNFileName, Options.NTExtensions)
-                AddDirectoryData.LFNEntries = GetLFNDirectoryEntries(LFNFileName, AddDirectoryData.ShortFileName)
-                AddDirectoryData.EntriesNeeded = AddDirectoryData.LFNEntries.Count + 1
-            Else
-                AddDirectoryData.ShortFileName = ""
-                AddDirectoryData.LFNEntries = Nothing
-                AddDirectoryData.EntriesNeeded = 1
-            End If
-
-
-            AddDirectoryData.RequiresExpansion = Directory.Data.AvailableEntryCount < AddDirectoryData.EntriesNeeded
-            If AddDirectoryData.RequiresExpansion Then
-                ClustersRequired += 1
-            End If
-
-            If AddDirectoryData.RequiresExpansion And Directory.IsRootDirectory Then
-                AddDirectoryData.ClusterList = Nothing
-            Else
-                AddDirectoryData.ClusterList = Directory.Disk.FAT.GetFreeClusters(ClustersRequired)
-            End If
-
-            Return AddDirectoryData
+        Public Function InitializeAddDirectory(Directory As DirectoryBase, Options As AddFileOptions, Index As Integer, FileName As String) As AddFileData
+            Return InitializeAddFile(Directory, Options, Index, FileName, 1)
         End Function
 
-        Public Function InitializeAddFile(Directory As DirectoryBase, FileInfo As FileInfo, Options As AddFileOptions, Index As Integer) As AddFileData
+        Public Function InitializeAddFile(Directory As DirectoryBase, Options As AddFileOptions, Index As Integer, FileInfo As IO.FileInfo) As AddFileData
             Dim ClustersRequired As UShort = Math.Ceiling(FileInfo.Length / Directory.Disk.BPB.BytesPerCluster)
 
-            Dim AddFileData As AddFileData
+            Dim AddFileData = InitializeAddFile(Directory, Options, Index, FileInfo.Name, ClustersRequired)
+            AddFileData.FileInfo = FileInfo
 
-            AddFileData.FilePath = FileInfo.FullName
-            AddFileData.Options = Options
-            AddFileData.Index = Index
-            AddFileData.ShortFileName = Directory.GetAvailableFileName(FileInfo.Name, Options.NTExtensions)
+            Return AddFileData
+        End Function
 
-            If Options.LFN Then
-                AddFileData.LFNEntries = GetLFNDirectoryEntries(FileInfo.Name, AddFileData.ShortFileName)
-                AddFileData.EntriesNeeded = AddFileData.LFNEntries.Count + 1
-            Else
-                AddFileData.LFNEntries = Nothing
-                AddFileData.EntriesNeeded = 1
-            End If
+        Public Function InitializeUpdateLFN(Directory As DirectoryBase, FileName As String, Index As Integer, UseNTExtensions As Boolean) As AddFileData
+            Dim AddFileData As New AddFileData With {
+                .RequiresExpansion = False,
+                .Entry = Directory.DirectoryEntries.Item(Index),
+                .Index = Directory.AdjustIndexForLFN(Index)
+            }
 
-            AddFileData.RequiresExpansion = Directory.Data.AvailableEntryCount < AddFileData.EntriesNeeded
-            If AddFileData.RequiresExpansion Then
-                ClustersRequired += 1
-            End If
+            InitializeFileNames(AddFileData, Directory, FileName, UseNTExtensions, True, Index)
 
-            If AddFileData.RequiresExpansion And Directory.IsRootDirectory Then
-                AddFileData.ClusterList = Nothing
-            Else
-                AddFileData.ClusterList = Directory.Disk.FAT.GetFreeClusters(ClustersRequired)
+            Dim CurrentLFNEntryCount = Index - AddFileData.Index
+            AddFileData.EntriesNeeded = AddFileData.LFNEntries.Count - CurrentLFNEntryCount
+
+            If AddFileData.EntriesNeeded > 0 Then
+                If Directory.Data.AvailableEntryCount < AddFileData.EntriesNeeded Then
+                    AddFileData.RequiresExpansion = True
+                End If
             End If
 
             Return AddFileData
         End Function
-        Public Function InitializeUpdateLFN(Directory As DirectoryBase, FileName As String, Index As Integer, UseNTExtensions As Boolean) As UpdateLFNData
-            Dim UpdateLFNData As UpdateLFNData
 
-            UpdateLFNData.RequiresExpansion = False
-            UpdateLFNData.DirectoryEntry = Directory.DirectoryEntries.Item(Index)
-            UpdateLFNData.CurrentLFNIndex = Directory.AdjustIndexForLFN(Index)
-            UpdateLFNData.ShortFileName = Directory.GetAvailableFileName(FileName, UseNTExtensions, Index)
+        Public Sub ProcessAddDirectory(Directory As DirectoryBase, Data As AddFileData, EntryData() As Byte)
+            Dim Entries = GetEntryList(Directory, Data.EntriesNeeded, Data.Index)
 
-            If FileName.ToUpper <> UpdateLFNData.ShortFileName Then
-                UseNTExtensions = False
-            End If
+            Data.Entry = Entries(Entries.Count - 1)
 
-            If UseNTExtensions Then
-                Dim ShortFileParts = SplitFilename(UpdateLFNData.ShortFileName)
-                Dim LongFileParts = SplitFilename(FileName)
+            DirectoryEntrySetDirectory(Data.Entry, Data, EntryData)
 
-                UpdateLFNData.NTLowerCaseFileName = ShortFileParts.Name.ToLower = LongFileParts.Name
-                UpdateLFNData.NTLowerCaseExtension = ShortFileParts.Extension.ToLower = LongFileParts.Extension
-                UseNTExtensions = UpdateLFNData.NTLowerCaseFileName Or UpdateLFNData.NTLowerCaseExtension
-            Else
-                UpdateLFNData.NTLowerCaseFileName = False
-                UpdateLFNData.NTLowerCaseExtension = False
-            End If
-
-            If UseNTExtensions Then
-                UpdateLFNData.LFNEntries = New List(Of Byte())
-            Else
-                UpdateLFNData.LFNEntries = GetLFNDirectoryEntries(FileName, UpdateLFNData.ShortFileName)
-            End If
-
-            Dim CurrentLFNEntryCount = Index - UpdateLFNData.CurrentLFNIndex
-            UpdateLFNData.EntriesNeeded = UpdateLFNData.LFNEntries.Count - CurrentLFNEntryCount
-
-            If UpdateLFNData.EntriesNeeded > 0 Then
-                If Directory.Data.AvailableEntryCount < UpdateLFNData.EntriesNeeded Then
-                    UpdateLFNData.RequiresExpansion = True
-                End If
-            End If
-
-            Return UpdateLFNData
-        End Function
-
-        Public Function ProcessAddDirectory(Directory As DirectoryBase, DirectoryData() As Byte, Data As AddDirectoryData) As DirectoryEntry
-            Dim EntryCount = Directory.DirectoryEntries.Count - Directory.Data.AvailableEntryCount
-            Dim Entries As List(Of DirectoryEntry)
-
-            If Data.Index > -1 Then
-                Data.Index = Directory.AdjustIndexForLFN(Data.Index)
-                Directory.ShiftEntries(Data.Index, EntryCount, Data.EntriesNeeded)
-                Entries = Directory.GetEntries(Data.Index, Data.EntriesNeeded)
-            Else
-                Entries = Directory.GetEntries(EntryCount, Data.EntriesNeeded)
-            End If
-
-            Dim Cluster = Directory.Disk.FAT.GetNextFreeCluster(Data.ClusterList, True)
-            Directory.Disk.FATTables.UpdateTableEntry(Cluster, FAT12.FAT_LAST_CLUSTER_END)
-
-            Dim Entry = New DirectoryEntryBase(DirectoryData) With {
-                .StartingCluster = Cluster
-            }
-            If Data.Options.LFN Then
-                Entry.SetFileName(Data.ShortFileName)
-            End If
-
-            Dim DirectoryEntry = Entries(Entries.Count - 1)
-            DirectoryEntry.Data = Entry.Data
-            DirectoryEntry.InitFatChain()
-            DirectoryEntry.InitSubDirectory()
-
-            If Data.Options.LFN Then
+            If Data.Options.UseLFN Then
                 ProcessLFNEntries(Entries, Data.LFNEntries)
             End If
 
-            DirectoryEntry.SubDirectory.Initialize()
-
             Directory.UpdateEntryCounts()
-
-            Return DirectoryEntry
-        End Function
+        End Sub
 
         Public Sub ProcessAddFile(Directory As DirectoryBase, Data As AddFileData)
-            Dim EntryCount = Directory.DirectoryEntries.Count - Directory.Data.AvailableEntryCount
-            Dim Entries As List(Of DirectoryEntry)
+            Dim Entries = GetEntryList(Directory, Data.EntriesNeeded, Data.Index)
 
-            If Data.Index > -1 Then
-                Data.Index = Directory.AdjustIndexForLFN(Data.Index)
-                Directory.ShiftEntries(Data.Index, EntryCount, Data.EntriesNeeded)
-                Entries = Directory.GetEntries(Data.Index, Data.EntriesNeeded)
-            Else
-                Entries = Directory.GetEntries(EntryCount, Data.EntriesNeeded)
-            End If
+            Data.Entry = Entries(Entries.Count - 1)
 
-            Dim DirectoryEntry = Entries(Entries.Count - 1)
-            DirectoryEntry.AddFile(Data.FilePath, Data.ShortFileName, Data.Options.CreatedDate, Data.Options.LastAccessedDate, Data.ClusterList)
+            DirectoryEntrySetFile(Data.Entry, Data)
 
-            If Data.Options.LFN Then
+            If Data.Options.UseLFN Then
                 ProcessLFNEntries(Entries, Data.LFNEntries)
             End If
 
@@ -438,21 +334,21 @@ Namespace DiskImage
             Next
         End Sub
 
-        Public Sub ProcessUpdateLFN(Directory As DirectoryBase, Data As UpdateLFNData)
+        Public Sub ProcessUpdateLFN(Directory As DirectoryBase, Data As AddFileData)
             If Data.EntriesNeeded <> 0 Then
                 Dim EntryCount = Directory.DirectoryEntries.Count - Directory.Data.AvailableEntryCount
-                Directory.ShiftEntries(Data.CurrentLFNIndex, EntryCount, Data.EntriesNeeded)
+                Directory.ShiftEntries(Data.Index, EntryCount, Data.EntriesNeeded)
             End If
 
-            Dim NewEntry = Data.DirectoryEntry.Clone
+            Dim NewEntry = Data.Entry.Clone
             NewEntry.SetFileName(Data.ShortFileName)
-            NewEntry.HasNTLowerCaseFileName = Data.NTLowerCaseFileName
-            NewEntry.HasNTLowerCaseExtension = Data.NTLowerCaseExtension
+            NewEntry.HasNTLowerCaseFileName = Data.HasNTLowerCaseFileName
+            NewEntry.HasNTLowerCaseExtension = Data.HasNTLowerCaseExtension
 
-            Data.DirectoryEntry.Data = NewEntry.Data
+            Data.Entry.Data = NewEntry.Data
 
             If Data.LFNEntries.Count > 0 Then
-                Dim Entries = Directory.GetEntries(Data.CurrentLFNIndex, Data.LFNEntries.Count + 1)
+                Dim Entries = Directory.GetEntries(Data.Index, Data.LFNEntries.Count + 1)
                 ProcessLFNEntries(Entries, Data.LFNEntries)
             End If
 
@@ -512,6 +408,156 @@ Namespace DiskImage
 
             Return Checksum
         End Function
+
+        Private Sub DirectoryEntrySetDirectory(DirectoryEntry As DirectoryEntry, DirectoryData As AddFileData, EntryData() As Byte)
+            Dim UseTransaction As Boolean = DirectoryEntry.Disk.BeginTransaction
+
+            Dim Cluster = DirectoryEntry.Disk.FAT.GetNextFreeCluster(DirectoryData.ClusterList, True)
+            DirectoryEntry.Disk.FATTables.UpdateTableEntry(Cluster, FAT12.FAT_LAST_CLUSTER_END)
+
+            Dim NewEntry = New DirectoryEntryBase(EntryData) With {
+                .StartingCluster = Cluster,
+                .HasNTLowerCaseExtension = DirectoryData.HasNTLowerCaseExtension,
+                .HasNTLowerCaseFileName = DirectoryData.HasNTLowerCaseFileName
+            }
+            NewEntry.SetFileName(DirectoryData.ShortFileName)
+
+            DirectoryEntry.Data = NewEntry.Data
+
+            DirectoryEntry.InitFatChain()
+            DirectoryEntry.InitSubDirectory()
+            DirectoryEntry.SubDirectory.Initialize()
+
+            If UseTransaction Then
+                DirectoryEntry.Disk.EndTransaction()
+            End If
+        End Sub
+
+        Private Function DirectoryEntrySetFile(DirectoryEntry As DirectoryEntry, FileData As AddFileData) As Boolean
+            Dim ClusterSize = DirectoryEntry.Disk.BPB.BytesPerCluster
+            Dim StartingCluster As UShort = 2
+
+            If FileData.FileInfo.Length > FileData.ClusterList.Count * ClusterSize Then
+                Return False
+            End If
+
+            Dim UseTransaction As Boolean = DirectoryEntry.Disk.BeginTransaction
+
+            Dim FirstCluster As UShort = 0
+
+            If FileData.FileInfo.Length > 0 Then
+                'Load file into buffer, padding with empty space if needed            
+                Dim FileSize = Math.Ceiling(FileData.FileInfo.Length / ClusterSize) * ClusterSize
+                Dim FileBuffer = ReadFileIntoBuffer(FileData.FileInfo, FileSize, 0)
+
+                Dim LastCluster As UShort = 0
+
+                For Counter As Integer = 0 To FileBuffer.Length - 1 Step ClusterSize
+                    Dim Cluster = DirectoryEntry.Disk.FAT.GetNextFreeCluster(FileData.ClusterList, True, StartingCluster)
+                    If Cluster > 0 Then
+                        If Counter = 0 Then
+                            FirstCluster = Cluster
+                        Else
+                            DirectoryEntry.Disk.FATTables.UpdateTableEntry(LastCluster, Cluster)
+                        End If
+                        Dim ClusterOffset = DirectoryEntry.Disk.BPB.ClusterToOffset(Cluster)
+                        Dim Buffer = DirectoryEntry.Disk.Image.GetBytes(ClusterOffset, ClusterSize)
+                        Array.Copy(FileBuffer, Counter, Buffer, 0, ClusterSize)
+                        DirectoryEntry.Disk.Image.SetBytes(Buffer, ClusterOffset)
+                        LastCluster = Cluster
+                        StartingCluster = Cluster + 1
+                    End If
+                Next
+
+                If LastCluster > 0 Then
+                    DirectoryEntry.Disk.FATTables.UpdateTableEntry(LastCluster, FAT12.FAT_LAST_CLUSTER_END)
+                End If
+            End If
+
+            Dim NewEntry = New DirectoryEntryBase With {
+                .StartingCluster = FirstCluster,
+                .HasNTLowerCaseExtension = FileData.HasNTLowerCaseExtension,
+                .HasNTLowerCaseFileName = FileData.HasNTLowerCaseFileName
+            }
+            NewEntry.SetFileInfo(FileData.FileInfo, FileData.ShortFileName, FileData.Options.UseCreatedDate, FileData.Options.UseLastAccessedDate)
+
+            DirectoryEntry.Data = NewEntry.Data
+
+            DirectoryEntry.InitFatChain()
+
+            If UseTransaction Then
+                DirectoryEntry.Disk.EndTransaction()
+            End If
+
+            Return True
+        End Function
+
+        Private Function GetEntryList(Directory As DirectoryBase, EntriesNeeded As Integer, Index As Integer) As List(Of DirectoryEntry)
+            Dim EntryCount = Directory.DirectoryEntries.Count - Directory.Data.AvailableEntryCount
+            Dim Entries As List(Of DirectoryEntry)
+
+            If Index > -1 Then
+                Index = Directory.AdjustIndexForLFN(Index)
+                Directory.ShiftEntries(Index, EntryCount, EntriesNeeded)
+                Entries = Directory.GetEntries(Index, EntriesNeeded)
+            Else
+                Entries = Directory.GetEntries(EntryCount, EntriesNeeded)
+            End If
+
+            Return Entries
+        End Function
+
+        Private Function InitializeAddFile(Directory As DirectoryBase, Options As AddFileOptions, Index As Integer, FileName As String, ClustersRequired As UShort) As AddFileData
+            Dim AddFileData As New AddFileData With {
+                .Options = Options,
+                .Index = Index
+            }
+
+            InitializeFileNames(AddFileData, Directory, FileName, Options.UseNTExtensions, Options.UseLFN)
+
+            AddFileData.RequiresExpansion = Directory.Data.AvailableEntryCount < AddFileData.EntriesNeeded
+
+            If AddFileData.RequiresExpansion Then
+                ClustersRequired += 1
+            End If
+
+            If AddFileData.RequiresExpansion And Directory.IsRootDirectory Then
+                AddFileData.ClusterList = Nothing
+            Else
+                AddFileData.ClusterList = Directory.Disk.FAT.GetFreeClusters(ClustersRequired)
+            End If
+
+            Return AddFileData
+        End Function
+
+        Private Sub InitializeFileNames(AddFileData As AddFileData, Directory As DirectoryBase, FileName As String, UseNTExtensions As Boolean, UseLFN As Boolean, Optional CurrentIndex As Integer = -1)
+            FileName = Directory.GetAvailableFileName(FileName, CurrentIndex)
+
+            AddFileData.ShortFileName = Directory.GetAvailableShortFileName(FileName, UseNTExtensions, CurrentIndex)
+
+            If UseNTExtensions And FileName.ToUpper = AddFileData.ShortFileName Then
+                Dim ShortFileParts = SplitFilename(AddFileData.ShortFileName)
+                Dim LongFileParts = SplitFilename(FileName)
+
+                AddFileData.HasNTLowerCaseFileName = LongFileParts.Name.Length > 0 AndAlso ShortFileParts.Name.ToLower = LongFileParts.Name
+                AddFileData.HasNTLowerCaseExtension = LongFileParts.Extension.Length > 0 AndAlso ShortFileParts.Extension.ToLower = LongFileParts.Extension
+            Else
+                AddFileData.HasNTLowerCaseFileName = False
+                AddFileData.HasNTLowerCaseExtension = False
+            End If
+
+            If UseLFN Then
+                If AddFileData.HasNTLowerCaseFileName Or AddFileData.HasNTLowerCaseExtension Then
+                    AddFileData.LFNEntries = New List(Of Byte())
+                Else
+                    AddFileData.LFNEntries = GetLFNDirectoryEntries(FileName, AddFileData.ShortFileName)
+                End If
+                AddFileData.EntriesNeeded = AddFileData.LFNEntries.Count + 1
+            Else
+                AddFileData.LFNEntries = Nothing
+                AddFileData.EntriesNeeded = 1
+            End If
+        End Sub
 
         Private Function RemoveDiacritics(value As String) As String
             Dim NormalizedString = value.Normalize(NormalizationForm.FormD)
