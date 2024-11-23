@@ -280,7 +280,7 @@ Public Class ImportFileForm
             ChkLFN.Enabled = True
             ChkLFN.Checked = True
         Else
-            ChkLFN.Enabled = False
+            ChkLFN.Enabled = True
             ChkLFN.Checked = False
         End If
 
