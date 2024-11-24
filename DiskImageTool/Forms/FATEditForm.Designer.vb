@@ -65,7 +65,7 @@ Partial Class FATEditForm
         Me.DataGridViewFAT.RowHeadersWidthSizeMode = System.Windows.Forms.DataGridViewRowHeadersWidthSizeMode.DisableResizing
         Me.DataGridViewFAT.ScrollBars = System.Windows.Forms.ScrollBars.Vertical
         Me.DataGridViewFAT.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.CellSelect
-        Me.DataGridViewFAT.Size = New System.Drawing.Size(562, 318)
+        Me.DataGridViewFAT.Size = New System.Drawing.Size(564, 318)
         Me.DataGridViewFAT.TabIndex = 2
         '
         'ContextMenuGrid
@@ -81,7 +81,7 @@ Partial Class FATEditForm
         Me.FlowLayoutPanelBottom.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink
         Me.FlowLayoutPanelBottom.Controls.Add(Me.BtnUpdate)
         Me.FlowLayoutPanelBottom.Controls.Add(Me.BtnCancel)
-        Me.FlowLayoutPanelBottom.Location = New System.Drawing.Point(206, 547)
+        Me.FlowLayoutPanelBottom.Location = New System.Drawing.Point(207, 547)
         Me.FlowLayoutPanelBottom.Name = "FlowLayoutPanelBottom"
         Me.FlowLayoutPanelBottom.Size = New System.Drawing.Size(192, 29)
         Me.FlowLayoutPanelBottom.TabIndex = 4
@@ -112,7 +112,7 @@ Partial Class FATEditForm
         '
         Me.ChkSync.Anchor = System.Windows.Forms.AnchorStyles.Bottom
         Me.ChkSync.AutoSize = True
-        Me.ChkSync.Location = New System.Drawing.Point(246, 524)
+        Me.ChkSync.Location = New System.Drawing.Point(247, 524)
         Me.ChkSync.Name = "ChkSync"
         Me.ChkSync.Size = New System.Drawing.Size(112, 17)
         Me.ChkSync.TabIndex = 3
@@ -198,7 +198,7 @@ Partial Class FATEditForm
             Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
         Me.PictureBoxFAT.Location = New System.Drawing.Point(24, 21)
         Me.PictureBoxFAT.Name = "PictureBoxFAT"
-        Me.PictureBoxFAT.Size = New System.Drawing.Size(559, 138)
+        Me.PictureBoxFAT.Size = New System.Drawing.Size(561, 138)
         Me.PictureBoxFAT.TabIndex = 4
         Me.PictureBoxFAT.TabStop = False
         '
@@ -209,7 +209,7 @@ Partial Class FATEditForm
         Me.FlowLayoutPanel1.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink
         Me.FlowLayoutPanel1.Controls.Add(Me.TxtMediaDescriptor)
         Me.FlowLayoutPanel1.Controls.Add(Me.CboMediaDescriptor)
-        Me.FlowLayoutPanel1.Location = New System.Drawing.Point(419, 166)
+        Me.FlowLayoutPanel1.Location = New System.Drawing.Point(421, 166)
         Me.FlowLayoutPanel1.Name = "FlowLayoutPanel1"
         Me.FlowLayoutPanel1.Size = New System.Drawing.Size(164, 27)
         Me.FlowLayoutPanel1.TabIndex = 1
@@ -238,7 +238,7 @@ Partial Class FATEditForm
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
-        Me.ClientSize = New System.Drawing.Size(604, 597)
+        Me.ClientSize = New System.Drawing.Size(606, 597)
         Me.Controls.Add(Me.FlowLayoutPanel1)
         Me.Controls.Add(Me.PictureBoxFAT)
         Me.Controls.Add(Me.FlowLayoutPanelTop)
@@ -247,7 +247,7 @@ Partial Class FATEditForm
         Me.Controls.Add(Me.DataGridViewFAT)
         Me.MaximizeBox = False
         Me.MinimizeBox = False
-        Me.MinimumSize = New System.Drawing.Size(620, 450)
+        Me.MinimumSize = New System.Drawing.Size(622, 450)
         Me.Name = "FATEditForm"
         Me.Padding = New System.Windows.Forms.Padding(18)
         Me.ShowIcon = False

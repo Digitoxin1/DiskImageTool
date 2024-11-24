@@ -603,7 +603,7 @@
                 End If
             End Function
 
-            Public Function IsStandardSector(Sector As IBM_MFM_Sector, Track As Byte, Side As Byte) As Boolean
+            Public Function IsStandardSector(Sector As IBM_MFM_Sector, Track As Byte, Side As Byte, Optional Size As UInteger = 512) As Boolean
                 If Not Sector.InitialDataChecksumValid Or Not Sector.IDChecksumValid Then
                     Return False
                 End If
@@ -612,7 +612,7 @@
                     Return False
                 End If
 
-                If Sector.GetSizeBytes <> 512 Then
+                If Sector.GetSizeBytes <> Size Then
                     Return False
                 End If
 

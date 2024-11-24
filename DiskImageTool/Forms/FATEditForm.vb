@@ -844,6 +844,7 @@ Public Class FATEditForm
 
         If _FATTable IsNot Nothing Then
             Dim Width = PictureBoxFAT.Width
+            Dim Height = PictureBoxFAT.Height
             Dim Size As Integer = _GridSize
 
             Dim Pen As New Pen(Color.FromArgb(160, 160, 160))
@@ -855,14 +856,24 @@ Public Class FATEditForm
             Dim Brush As Brush
             Dim Left As Integer = 0
             Dim Top As Integer = 0
+            Dim CellWidth As Integer
+            Dim CellHeight As Integer
             Dim CellType As GridCellType
             Dim RowIndex As Integer = 0
             For Each Row As DataRow In _FATTable.Rows
                 CellType = GetGridCellType(Row)
+                CellWidth = Size
+                If Left + CellWidth >= Width Then
+                    CellWidth = Width - Left - 1
+                End If
+                CellHeight = Size
+                If Top + CellHeight >= Height Then
+                    CellHeight = Height - Top - 1
+                End If
                 _GridCells(RowIndex) = CellType
                 Brush = Brushes(CellType)
-                e.Graphics.FillRectangle(Brush, Left, Top, Size, Size)
-                e.Graphics.DrawRectangle(Pen, Left, Top, Size, Size)
+                e.Graphics.FillRectangle(Brush, Left, Top, CellWidth, CellHeight)
+                e.Graphics.DrawRectangle(Pen, Left, Top, CellWidth, CellHeight)
                 Left += Size
                 If Left + Size > Width Then
                     Left = 0
