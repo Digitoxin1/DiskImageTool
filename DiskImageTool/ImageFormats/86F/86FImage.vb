@@ -276,7 +276,7 @@ Namespace ImageFormats
                                 fs.Write(Buffer, 0, Buffer.Length)
 
                                 If BitcellMode And AlternateBitcellCalculation Then
-                                    AllocatedLength = Math.Ceiling(Track.Bitstream.Length / 8)
+                                    AllocatedLength = Math.Ceiling(Track.Bitstream.Length / 16) * 2
                                     BitCellCount = AllocatedLength * 8
                                 Else
                                     Dim IsMFM = Track.Encoding = Encoding.MFM

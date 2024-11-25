@@ -1814,7 +1814,7 @@ Public Class MainForm
         Dim Image = Disk.Image.BitstreamImage
 
         If Image IsNot Nothing Then
-            Dim frmHexView As New HexViewRawForm(Disk.Image, Track, Side, AllTracks)
+            Dim frmHexView As New HexViewRawForm(Disk, Track, Side, AllTracks)
             frmHexView.ShowDialog()
         End If
     End Sub

@@ -361,7 +361,9 @@
 
                     Buffer = MFMGetBytes(Bitstream, BitstreamIndex, 2)
                     Checksum = BitConverter.ToUInt16(Buffer, 0)
-                    If Checksum = CalculatedChecksum Then
+                    RegionSector.IDAMChecksumValid = (Checksum = CalculatedChecksum)
+
+                    If RegionSector.IDAMChecksumValid Then
                         RegionType = MFMRegionType.IDAMChecksumValid
                     Else
                         RegionType = MFMRegionType.IDAMChecksumInvalid
@@ -419,6 +421,7 @@
                             BitstreamIndex += DAMPattern.Length
                         End If
 
+                        RegionSector.DAM = MFMGetByte(Bitstream, BitstreamIndex)
                         RegionData.Regions.Add(New BitstreamRegion(MFMRegionType.DAM, ByteIndex, 1, RegionSector, BitOffset))
                         ByteIndex += 1
                         BitstreamIndex += MFM_BYTE_SIZE
@@ -466,6 +469,10 @@
                             ByteIndex += MFM_CRC_SIZE
                             BitstreamIndex += MFM_CRC_SIZE * MFM_BYTE_SIZE
                         End If
+
+                        RegionSector.HasData = True
+                    Else
+                        RegionSector.HasData = False
                     End If
                     SectorIndex += 1
                 Next

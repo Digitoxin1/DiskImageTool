@@ -31,7 +31,7 @@
     <ProductName>DiskImageTool</ProductName>
     <PublisherName>Digitoxin</PublisherName>
     <ApplicationRevision>0</ApplicationRevision>
-    <ApplicationVersion>2.7.0.%2a</ApplicationVersion>
+    <ApplicationVersion>2.8.0.%2a</ApplicationVersion>
     <UseApplicationTrust>false</UseApplicationTrust>
     <PublishWizardCompleted>true</PublishWizardCompleted>
     <BootstrapperEnabled>true</BootstrapperEnabled>
@@ -130,6 +130,9 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Bitstream\Bitstream.vb" />
+    <Compile Include="Controls\SelectablePanel.vb">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="DiskImage\AddFileOptions.vb" />
     <Compile Include="DiskImage\Modules\EnumDescriptions.vb" />
     <Compile Include="DiskImage\MappedFloppyImage.vb" />
