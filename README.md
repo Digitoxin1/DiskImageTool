@@ -6,15 +6,31 @@ This is a personal project of mine.  I decided to make the source code available
 What does DiskImageTool do?
 
 1. It allows you to view and perform simple repairs on IBM PC formatted floppy disk images.
-2. You can easily copy files out of the images by dragging and dropping.
-3. File properties editor
-4. Boot sector editor
-5. File Allocation Table (FAT) editor
-6. Full featured Hex editor.  Focus on individual regions of the disk or view and edit the entire disk.
-7. Text file viewer
-8. Easily repair a modified boot sector OEM Name using a built in database of suggestions.
-9. Clean up modifications made by Windows to the boot sector and directory entries with one click.
-10. Open hundreds of images at one time and use powerful filters to narrow down your search to the ones that need your attention.
+2. You can easily copy files and folders in and out of images by dragging and dropping.
+3. Convert between multiple image formats
+4. Create new disk images
+5. File properties editor
+6. Boot sector editor
+7. File Allocation Table (FAT) editor
+8. Full featured Hex editor.  Focus on individual regions of the disk or view and edit the entire disk.
+9. Text file viewer
+10. Raw track viewer
+11. Easily repair a modified boot sector OEM Name using a built in database of suggestions.
+12. Clean up modifications made by Windows to the boot sector and directory entries with one click.
+13. Open hundreds of images at one time and use powerful filters to narrow down your search to the ones that need your attention.
+
+DiskImageTool suports the following image formats:
+1. Basic Sector Images (.ima, .img, .vfd, .flp, .160, .180, .320, .360, .720, .120, .144, .288, .dmf, .xdf)
+2. WinImage Compressed Disk Image (.imz)
+3. ImageDisk Sector Image (.imd)
+4. PCE Sector Image (.psi)
+5. PCE Bitstream Image (.pri)
+6. 86Box 86F Image (.86f)
+7. HxC HFE v1 Image (.hfe)
+8. HxC MFM Image (.mfm)
+9. Transcopy Image (.tc)
+
+DiskImageTool can also open the above image types from within Zip files.
 
 Suggestions for new features are welcome.
 
