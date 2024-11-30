@@ -24,10 +24,10 @@ I have a discord channel set up for the discussion of DiskImageTool at [#diskima
 
 ---
 
-<img src="https://github.com/user-attachments/assets/0fcb62da-5853-4f97-a20e-7e5db8e23aad" height="204">
-<img src="https://github.com/user-attachments/assets/4e4afab9-e869-42bd-a2d3-ffb9cb93b836" height="204">
+<img src="https://github.com/user-attachments/assets/0fcb62da-5853-4f97-a20e-7e5db8e23aad" height="204">&nbsp;&nbsp;
+<img src="https://github.com/user-attachments/assets/4e4afab9-e869-42bd-a2d3-ffb9cb93b836" height="204">&nbsp;&nbsp;
 <img src="https://github.com/user-attachments/assets/71d62245-b98b-4e5c-88a8-81ebbdb2b045" height="204">
-<br>
-<img src="https://github.com/user-attachments/assets/91a56793-4cec-4cda-ba8c-70af06b8ede2" height="190">
-<img src="https://github.com/user-attachments/assets/4bee7e29-0faf-4418-8488-031c3814becc" height="190">
+<br><br>
+<img src="https://github.com/user-attachments/assets/91a56793-4cec-4cda-ba8c-70af06b8ede2" height="193">&nbsp;&nbsp;
+<img src="https://github.com/user-attachments/assets/4bee7e29-0faf-4418-8488-031c3814becc" height="193">
 
