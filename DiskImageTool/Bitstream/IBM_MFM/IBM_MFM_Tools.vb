@@ -428,16 +428,17 @@
 
                         Dim SectorSize = DataLength
                         Dim SectorLength = (SectorEnd - BitstreamIndex) \ MFM_BYTE_SIZE
-                        Dim Overlaps As Boolean = False
 
                         If SectorSize > SectorLength Then
                             SectorSize = SectorLength
-                            Overlaps = True
+                            RegionSector.Overlaps = True
+                        Else
+                            RegionSector.Overlaps = False
                         End If
 
                         SyncNullCount = 0
                         GapCount = 0
-                        If Overlaps Then
+                        If RegionSector.Overlaps Then
                             Buffer = MFMGetBytes(Bitstream, BitstreamIndex, SectorSize)
                             SyncNullCount = GetByteCount(Buffer, 0, 0)
                             SectorSize -= SyncNullCount
@@ -464,7 +465,7 @@
                         ByteIndex += SectorSize
                         BitstreamIndex += SectorSize * MFM_BYTE_SIZE
 
-                        If Not Overlaps And SectorSize < SectorLength - 2 Then
+                        If Not RegionSector.Overlaps And SectorSize < SectorLength - 2 Then
                             RegionData.Regions.Add(New BitstreamRegion(RegionType, ByteIndex, MFM_CRC_SIZE, RegionSector, BitOffset))
                             ByteIndex += MFM_CRC_SIZE
                             BitstreamIndex += MFM_CRC_SIZE * MFM_BYTE_SIZE
@@ -655,22 +656,18 @@
             Public Function MFMEncodeBytes(Data() As Byte, SeedBit As Boolean) As BitArray
                 Dim Bitstream As New BitArray(Data.Length * 16)
                 Dim bitCount As Integer = 0
-                Dim dateBit As Boolean
+                Dim dataBit As Boolean
                 Dim clockBit As Boolean
 
                 Dim prevDataBit = SeedBit
                 For i = 0 To Data.Length - 1
                     For j = 7 To 0 Step -1
-                        dateBit = CBool((Data(i) And (1 << j)))
-                        If Not dateBit And Not prevDataBit Then
-                            clockBit = True
-                        Else
-                            clockBit = False
-                        End If
+                        dataBit = CBool((Data(i) And (1 << j)))
+                        clockBit = (Not dataBit And Not prevDataBit)
                         Bitstream.Set(bitCount, clockBit)
-                        Bitstream.Set(bitCount + 1, dateBit)
+                        Bitstream.Set(bitCount + 1, dataBit)
 
-                        prevDataBit = dateBit
+                        prevDataBit = dataBit
                         bitCount += 2
                     Next
                 Next

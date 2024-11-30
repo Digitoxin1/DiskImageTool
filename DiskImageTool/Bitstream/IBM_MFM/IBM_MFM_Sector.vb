@@ -150,7 +150,7 @@
                 Return MFMCRC16(_IDArea)
             End Function
 
-            Public Function GetDataBitstream() As BitArray
+            Public Function GetDataBitstream(SeedBit As Boolean) As BitArray
                 Dim DataSize = GetSizeBytes()
                 Dim Buffer(DataSize + 2 - 1) As Byte
 
@@ -159,7 +159,7 @@
                 Offset += DataSize
                 Array.Copy(BitConverter.GetBytes(_DataChecksum), 0, Buffer, Offset, 2)
 
-                Return MFMEncodeBytes(Buffer, 1)
+                Return MFMEncodeBytes(Buffer, SeedBit)
             End Function
 
             Public Function GetSizeBytes() As UInteger
@@ -173,11 +173,22 @@
             Public Sub UpdateBitstream()
                 UpdateChecksum()
 
-                Dim Bitstream = GetDataBitstream()
+                Dim SeedBit = GetSeedBit(_DataOffset)
+
+                Dim Bitstream = GetDataBitstream(SeedBit)
 
                 For i = 0 To Bitstream.Length - 1
                     _Bitstream(_DataOffset + i) = Bitstream(i)
                 Next
+
+                Dim Offset = _DataOffset + Bitstream.Length - 1
+                If Offset < _Bitstream.Length - 2 Then
+                    Dim PrevDataBit = _Bitstream(Offset)
+                    Dim DataBit = _Bitstream(Offset + 2)
+                    Dim ClockBit = (Not DataBit And Not PrevDataBit)
+                    _Bitstream(Offset + 1) = ClockBit
+                End If
+
             End Sub
 
             Public Sub UpdateChecksum()
@@ -190,6 +201,13 @@
                 Return BitConverter.ToUInt16(Checksum, 0)
             End Function
 
+            Private Function GetSeedBit(Offset As UInteger) As Boolean
+                If Offset > 0 Then
+                    Return _Bitstream(Offset - 1)
+                Else
+                    Return True
+                End If
+            End Function
             Private Function ProcessDataField(BitStream As BitArray, Start As UInteger) As Integer
                 Dim MFMPattern = BytesToBits(MFM_Sync_Bytes)
 

@@ -1300,14 +1300,17 @@ Public Class HexViewRawForm
             Dim Sector = _RegionData.Sectors(SectorIndex)
             TooltipText = "Sector Id: " & vbTab & vbTab & Sector.SectorId
             TooltipText &= vbCrLf & "Size: " & vbTab & vbTab & vbTab & Sector.DataLength
+
             If Sector.Track <> _Track Then
                 TooltipText &= vbCrLf & "Track: " & vbTab & vbTab & vbTab & Sector.Track
             End If
+
             If Sector.Side <> _Side Then
                 TooltipText &= vbCrLf & "Side: " & vbTab & vbTab & vbTab & Sector.Side
             End If
 
             TooltipText &= vbCrLf & "Address Checksum: " & vbTab & If(Sector.IDAMChecksumValid, "Valid", "Invalid")
+
             If Sector.HasData Then
                 TooltipText &= vbCrLf & "Data Checksum: " & vbTab & vbTab & If(Sector.DataChecksumValid, "Valid", "Invalid")
             End If
@@ -1323,6 +1326,10 @@ Public Class HexViewRawForm
                 DAMText = "Unknown"
             End If
             TooltipText &= vbCrLf & "Data Address Mark: " & vbTab & DAMText
+
+            If Sector.Overlaps Then
+                TooltipText &= vbCrLf & "Overlaps"
+            End If
         End If
 
         If TooltipText <> _ToolTip.GetToolTip(PanelSectors) Then

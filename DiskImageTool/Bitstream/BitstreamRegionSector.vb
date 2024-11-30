@@ -9,15 +9,12 @@
             Public Property HasData As Boolean
             Public Property IDAMChecksumValid As Boolean
             Public Property Length As UInteger
+            Public Property Overlaps As Boolean
             Public Property SectorId As Byte
             Public Property SectorIndex As UShort
             Public Property Side As Byte
             Public Property StartIndex As UInteger
             Public Property Track As Byte
-            Public Overrides Function ToString() As String
-                'Return _SectorIndex & " (" & _SectorId & ")"
-                Return _SectorId
-            End Function
         End Class
     End Namespace
 End Namespace
