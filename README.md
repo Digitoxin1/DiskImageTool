@@ -24,5 +24,12 @@ I have a discord channel set up for the discussion of DiskImageTool at [#diskima
 
 ---
 
+![Screenshot 2024-11-29 200556](https://github.com/user-attachments/assets/0fcb62da-5853-4f97-a20e-7e5db8e23aad)
+![Screenshot 2024-11-29 200740](https://github.com/user-attachments/assets/4e4afab9-e869-42bd-a2d3-ffb9cb93b836)
+![Screenshot 2024-11-29 200804](https://github.com/user-attachments/assets/71d62245-b98b-4e5c-88a8-81ebbdb2b045)
+![Screenshot 2024-11-29 200711](https://github.com/user-attachments/assets/91a56793-4cec-4cda-ba8c-70af06b8ede2)
+![Screenshot 2024-11-29 200859](https://github.com/user-attachments/assets/4bee7e29-0faf-4418-8488-031c3814becc)
+
+
 <img src="https://user-images.githubusercontent.com/5696659/227692756-913a5702-80d2-4915-8634-a8b5fc689e98.png" height="190">&nbsp;&nbsp;&nbsp;&nbsp;<img src="https://user-images.githubusercontent.com/5696659/227693418-8df385b5-96cf-4b7e-a48c-8e24defdf4f4.png" height="190">&nbsp;&nbsp;&nbsp;&nbsp;<img src="https://user-images.githubusercontent.com/5696659/231385191-f68e8599-1453-43f1-87ad-d13920848cdb.png" height="190">&nbsp;&nbsp;&nbsp;&nbsp;<img src="https://user-images.githubusercontent.com/5696659/227693425-5dfd4978-b390-4d2d-afc6-5aaf87ad36e9.png" height="190">
 
