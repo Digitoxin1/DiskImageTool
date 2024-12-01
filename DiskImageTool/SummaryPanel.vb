@@ -584,11 +584,11 @@ Module SummaryPanel
             End If
 
             If fsi.OldestFileDate IsNot Nothing Then
-                .AddItem(FileSystemGroup, "Oldest Date", fsi.OldestFileDate.Value.ToString("yyyy-MM-dd  hh:mm tt"))
+                .AddItem(FileSystemGroup, "Oldest Date", fsi.OldestFileDate.Value.ToString("yyyy-MM-dd  HH:mm:ss"))
             End If
 
             If fsi.NewestFileDate IsNot Nothing Then
-                .AddItem(FileSystemGroup, "Newest Date", fsi.NewestFileDate.Value.ToString("yyyy-MM-dd  hh:mm tt"))
+                .AddItem(FileSystemGroup, "Newest Date", fsi.NewestFileDate.Value.ToString("yyyy-MM-dd  HH:mm:ss"))
             End If
         End With
     End Sub
