@@ -7,9 +7,10 @@ Namespace ImageFormats
             Implements IBitstreamImage
 
             Private _CurrentSector As PSISector
+            Private _HasWeakBits As Boolean
             Private _SideCount As Byte = 0
             Private _TrackCount As UShort = 0
-            Private _HasWeakBits As Boolean
+            Private _TrackInfo As Dictionary(Of String, PSITrackInfo)
 
             Public Sub New()
                 Initialize()
@@ -109,6 +110,18 @@ Namespace ImageFormats
                 Return True
             End Function
 
+            Public Function GetTrackInfo(Track As UShort, Side As Byte) As PSITrackInfo
+                Dim Key = Track & "." & Side
+
+                If _TrackInfo.ContainsKey(Key) Then
+                    Return _TrackInfo.Item(Key)
+                Else
+                    Dim TrackInfo = New PSITrackInfo
+                    _TrackInfo.Add(Key, TrackInfo)
+                    Return TrackInfo
+                End If
+            End Function
+
             Public Overrides Function Load(FilePath As String) As Boolean Implements IBitstreamImage.Load
                 Return Load(IO.File.ReadAllBytes(FilePath))
             End Function
@@ -155,6 +168,7 @@ Namespace ImageFormats
                 _CurrentSector = Nothing
                 _Comment = ""
                 _HasWeakBits = False
+                _TrackInfo = New Dictionary(Of String, PSITrackInfo)
             End Sub
 
             Private Sub ProcessChunk(Chunk As PSIChunk)
@@ -173,6 +187,10 @@ Namespace ImageFormats
                     End If
                     If Sector.Side > _SideCount - 1 Then
                         _SideCount = Sector.Side + 1
+                    End If
+
+                    If Not Sector.IsAlternateSector Then
+                        UpdateTrackInfo(Sector)
                     End If
 
                 ElseIf Chunk.ChunkID = "DATA" Then
@@ -214,6 +232,29 @@ Namespace ImageFormats
                     If _CurrentSector IsNot Nothing Then
                         _CurrentSector.GCRHeader = New GCRSectorHeader(Chunk.ChunkData)
                     End If
+                End If
+            End Sub
+
+            Private Sub UpdateTrackInfo(Sector As PSISector)
+                Dim TrackInfo = GetTrackInfo(Sector.Track, Sector.Side)
+
+                If TrackInfo.FirstSector = -1 Then
+                    TrackInfo.FirstSector = Sector.Sector
+                    TrackInfo.SectorSize = Sector.Size
+                Else
+                    If Sector.Sector < TrackInfo.FirstSector Then
+                        TrackInfo.FirstSector = Sector.Sector
+                    End If
+
+                    If Sector.Size <> TrackInfo.SectorSize Then
+                        TrackInfo.SectorSize = -1
+                    End If
+                End If
+
+                If TrackInfo.LastSector = -1 Then
+                    TrackInfo.LastSector = Sector.Sector
+                ElseIf Sector.Sector > TrackInfo.LastSector Then
+                    TrackInfo.LastSector = Sector.Sector
                 End If
             End Sub
         End Class

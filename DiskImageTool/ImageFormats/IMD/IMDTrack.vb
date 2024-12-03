@@ -3,17 +3,29 @@
         Public Class IMDTrack
             Public Sub New()
                 _Sectors = New List(Of IMDSector)
+                _FirstSector = -1
+                _LastSector = -1
             End Sub
 
+            Public Property FirstSector As Integer
+            Public Property LastSector As Integer
+            Public Property Mode As TrackMode
+            Public Property Sectors As List(Of IMDSector)
+            Public Property SectorSize As SectorSize
+            Public Property Side As Byte
             Public Property Track As Byte
 
-            Public Property Side As Byte
+            Public Sub AddSector(Sector As IMDSector)
+                _Sectors.Add(Sector)
 
-            Public Property Mode As TrackMode
+                If _FirstSector = -1 Or Sector.SectorId < _FirstSector Then
+                    _FirstSector = Sector.SectorId
+                End If
 
-            Public Property Sectors As List(Of IMDSector)
-
-            Public Property SectorSize As SectorSize
+                If Sector.SectorId > _LastSector Then
+                    _LastSector = Sector.SectorId
+                End If
+            End Sub
 
             Public Function GetSizeBytes() As UShort
                 Select Case _SectorSize

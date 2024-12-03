@@ -50,37 +50,22 @@ Namespace ImageFormats
             End Function
 
             Private Sub BuildSectorMap()
+                Dim TrackData As TrackData
+
                 SetTracks(_Image.TrackCount, _Image.SideCount)
 
                 For Each Track In _Image.Tracks
-                    Dim TrackData = SetTrack(Track.Track, Track.Side)
+                    TrackData = SetTrack(Track.Track, Track.Side)
                     TrackData.SectorSize = Track.GetSizeBytes
                     TrackData.Encoding = GetEncoding(Track.Mode)
+                    TrackData.FirstSector = Track.FirstSector
+                    TrackData.LastSector = Track.LastSector
 
-                    For Each Sector In Track.Sectors
-                        If TrackData.FirstSector = -1 Or Sector.SectorId < TrackData.FirstSector Then
-                            TrackData.FirstSector = Sector.SectorId
-                        End If
-
-                        If Sector.SectorId > TrackData.LastSector Then
-                            TrackData.LastSector = Sector.SectorId
-                        End If
-
-                        If Sector.SectorId >= 1 And Sector.SectorId <= SECTOR_COUNT Then
-                            Dim IsStandard = IsStandardSector(Track, Sector)
-                            If IsStandard Then
-                                Dim BitstreamSector = GetSector(Track.Track, Track.Side, Sector.SectorId)
-                                If BitstreamSector Is Nothing Then
-                                    BitstreamSector = New BitstreamSector(Sector.Data, Sector.Data.Length) With {
-                                        .IsStandard = IsStandard
-                                    }
-                                    SetSector(Track.Track, Track.Side, Sector.SectorId, BitstreamSector)
-                                Else
-                                    BitstreamSector.IsStandard = False
-                                End If
-                            End If
-                        End If
-                    Next
+                    If TrackData.FirstSector = 1 And TrackData.LastSector = 4 And TrackData.SectorSize = 1024 Then
+                        ProcessSectors1024(Track)
+                    Else
+                        ProcessSectors(Track)
+                    End If
                 Next
             End Sub
 
@@ -112,12 +97,12 @@ Namespace ImageFormats
                 End If
             End Function
 
-            Private Function IsStandardSector(Track As IMDTrack, Sector As IMDSector) As Boolean
+            Private Function IsStandardSector(Track As IMDTrack, Sector As IMDSector, Optional Size As UInteger = 512) As Boolean
                 If Sector.Unavailable Or Sector.Deleted Or Sector.ChecksumError Then
                     Return False
                 End If
 
-                If Sector.Data.Length <> 512 Then
+                If Sector.Data.Length <> Size Then
                     Return False
                 End If
 
@@ -127,6 +112,57 @@ Namespace ImageFormats
 
                 Return True
             End Function
+
+            Private Sub ProcessSectors(Track As IMDTrack)
+                Dim BitstreamSector As BitstreamSector
+                Dim IsStandard As Boolean
+
+                For Each Sector In Track.Sectors
+                    If Sector.SectorId >= 1 And Sector.SectorId <= SECTOR_COUNT Then
+                        IsStandard = IsStandardSector(Track, Sector)
+                        If IsStandard Then
+                            BitstreamSector = GetSector(Track.Track, Track.Side, Sector.SectorId)
+                            If BitstreamSector Is Nothing Then
+                                BitstreamSector = New BitstreamSector(Sector.Data, Sector.Data.Length) With {
+                                    .IsStandard = IsStandard
+                                }
+                                SetSector(Track.Track, Track.Side, Sector.SectorId, BitstreamSector)
+                            Else
+                                BitstreamSector.IsStandard = False
+                            End If
+                        End If
+                    End If
+                Next
+            End Sub
+
+            Private Sub ProcessSectors1024(Track As IMDTrack)
+                Dim BitstreamSector As BitstreamSector
+                Dim NewSectorId As Integer
+                Dim IsStandard As Boolean
+                Dim Buffer() As Byte
+
+                For Each Sector In Track.Sectors
+                    If Sector.SectorId >= 1 And Sector.SectorId <= 4 Then
+                        IsStandard = IsStandardSector(Track, Sector, 1024)
+                        If IsStandard Then
+                            For i = 0 To 1
+                                NewSectorId = (Sector.SectorId - 1) * 2 + 1 + i
+                                BitstreamSector = GetSector(Track.Track, Track.Side, NewSectorId)
+                                If BitstreamSector Is Nothing Then
+                                    Buffer = New Byte(511) {}
+                                    Array.Copy(Sector.Data, 512 * i, Buffer, 0, 512)
+                                    BitstreamSector = New BitstreamSector(Buffer, 512) With {
+                                        .IsStandard = False
+                                    }
+                                    SetSector(Track.Track, Track.Side, NewSectorId, BitstreamSector)
+                                Else
+                                    BitstreamSector.IsStandard = False
+                                End If
+                            Next
+                        End If
+                    End If
+                Next
+            End Sub
         End Class
     End Namespace
 End Namespace

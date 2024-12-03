@@ -553,7 +553,7 @@
       <media media="360K" status="U">
         <disk md5="78FFA40A5CE85471280CF76F1E40585A" disk="1"/>
         <disk md5="304C7BF1E1F87B10C45F9B113AD58122" disk="2"/>
-        <disk md5="A0E9BF46A180EEF6D29C1C0E840BD03E" disk="3"/>
+        <disk md5="E62650F74A7FB2C01D70B1E09344244F" disk="3"/>
         <disk md5="DAB8A3B8E9978B38233D9781116B2D8E" disk="4"/>
         <disk md5="F6247C7EF672FAEB47DA80710F82C1DE" disk="5"/>
         <disk md5="BA1479983D95EAB48848B999C525D2AB" disk="6"/>
@@ -2346,6 +2346,11 @@
       <disk md5="4CC6E95A3E0362310365C6961AC040E4" disk="3"/>
     </release>
   </title>
+  <title name="Exploring the IBM Personal Computer" publisher="IBM">
+    <release year="1983" media="160K" status="V">
+      <disk md5="C6874C90F165B61489B7770A74276C43" />
+    </release>
+  </title>
   <title name="Eye of the Beholder" publisher="Strategic Simulations, Inc.">
     <release year="1991" version="1.4" status="V">
       <media media="360K">
@@ -3262,8 +3267,8 @@
     </release>
     <release year="1987" media="360K" status="V" publisher="U.S. Gold Ltd." region="UK">
       <disk md5="FCDFF2B9B5DDD58BF1627FC96C178244" disk="1"/>
-      <disk md5="44B8CDFCF4CF1BD2603ED52252B00550" disk="2"/>
-      <disk md5="6529DD6C9EC34E9FB61349FDFA693901" disk="3"/>
+      <disk md5="12693B84F1628685EB3D2E6171A2BCCA" disk="2"/>
+      <disk md5="7FBDD689C89EE89FE2AA7781252FF5C4" disk="3"/>
     </release>
     <release year="1988" media="720K" status="V">
       <disk md5="B013101FC9FFBF3E1CFC2A3B2C5B06AF" cp="H.L.S. Duplication"/>
@@ -3477,6 +3482,11 @@
   <title name="Holiday Lemmings 1993" publisher="Psygnosis Limited">
     <release year="1993" media="1.44M" status="U">
       <disk md5="ABE5CCEBB5742B0DF0FF4A3A59EF7421"/>
+    </release>
+  </title>
+  <title name="Holiday Lemmings 1993 Demo" publisher="Psygnosis Limited">
+    <release year="1993" media="720K" status="V">
+      <disk md5="CF0355683B6F90DE247A866993E0E634" />
     </release>
   </title>
   <title name="Holiday Lemmings 1994" publisher="Psygnosis Limited">
@@ -3955,6 +3965,11 @@
       <disk md5="70E4408FA67718D5CB3E352CB36088E8" disk="7"/>
     </release>
   </title>
+  <title name="Into the Eagle's Nest" publisher="Mindscape, Inc.">
+    <release year="1987" media="360K" status="U">
+      <disk md5="A5DF5C464EB66FC86DD01F1E1F38C05C" cp="Mindscape DEM"/>
+    </release>
+  </title>
   <title name="Iron Cross" publisher="New World Computing, Inc.">
     <release year="1994" media="1.44M" status="U">
       <disk md5="07196C3D7BB39E6B392451C446254DDF" disk="1"/>
@@ -4320,6 +4335,9 @@
     </release>
   </title>
   <title name="King's Quest II: Romancing the Throne" publisher="Sierra On-Line, Inc.">
+    <release year="1985" version="1.0W" media="360K" status="U" os="PC Booter">
+      <disk md5="95F13A90953292CA492C6370AEFD7AD7" disk="2"/>
+    </release>
     <release year="1985" version="1.1H" media="360K" status="V" os="PC Booter">
       <disk md5="81CFFA320F7B7E15DEC45F6CEFDE7F77" disk="1" cp="Softguard Superlok v2"/>
       <disk md5="9BE35324E698065B30B3DB6F1B6C52BC" disk="2"/>
@@ -4658,6 +4676,11 @@
       <disk md5="52D4C557AFBD9ED7FDDE6B2349A3B861" disk="8"/>
       <disk md5="EB205CB2331CDE545EA8CED0510AFD84" disk="9"/>
       <disk md5="63015042A8684E4A6BC250EFC47DC311" disk="Message"/>
+    </release>
+  </title>
+  <title name="King's Quest VII: The Princeless Bride" publisher="Sierra On-Line, Inc.">
+    <release year="1994" version="1.4, Int. 11.23.94" media="1.44M" status="V">
+      <disk md5="5F35E5CF338149A2810CDCFD1EB38752" disk="Startup / Disk 1" />
     </release>
   </title>
   <title name="Klik &amp; Play" publisher="Maxis Software, Inc.">
@@ -5045,6 +5068,7 @@
         <disk md5="382A67B786A2C46401A335CC07FE040C" disk="1" cp="Rob Northern Copylock PC"/>
         <disk md5="832692590121841007D51F4AB069C6D4" disk="2"/>
         <disk md5="C0553A231E581216D1316C73AF3F7A6F" disk="3" media="320K"/>
+        <disk md5="36B6887DBB77B97C7C1898232940E822" disk="3"/>
       </media>
       <media media="720K">
         <disk md5="AF3F826B6BACBCDD6DCD90D597AB7DC9" cp="Rob Northern Copylock PC"/>
@@ -5703,6 +5727,11 @@
       <disk md5="2A8D07AEFCF8064E3402E39AB0A63E06" disk="7" media="720K"/>
     </release>
   </title>
+  <title name="M.U.L.E." publisher="IBM">
+    <release year="1985" media="180K" status="U">
+      <disk md5="89FAD20BB425E46D67FAD6105D27BED4" cp="Key Disk"/>
+    </release>
+  </title>
   <title name="M1 Tank Platoon" publisher="MicroProse Software, Inc.">
     <release year="1989" version="449.01" media="360K">
       <release media="360K" status="V">
@@ -5812,9 +5841,14 @@
         <disk md5="7CE4B3D572BD25CEBF59EA8AE3BA705E"/>
       </media>
     </release>
-    <release variation="Enhanced" year="1989" media="360K" status="U" region="France">
-      <disk md5="912F0892AC2E9128C2E027780A9BBE65" disk="1"/>
-      <disk md5="9A25683154A18BDFEBCDAE3D18E49E79" disk="2"/>
+    <release variation="Enhanced" year="1989" region="France">
+      <media media="360K" status="U">
+        <disk md5="912F0892AC2E9128C2E027780A9BBE65" disk="1"/>
+        <disk md5="9A25683154A18BDFEBCDAE3D18E49E79" disk="2"/>
+      </media>
+      <media media="720K" status="V">
+        <disk md5="C688AC3E21012954F2EB673F06C2B6BD"/>
+      </media>
     </release>
     <release variation="Enhanced" year="1990" media="360K" status="U" region="Germany">
       <disk md5="C07196D363331F0C1EF87A5B9C2D7AF0" disk="1"/>
@@ -7253,7 +7287,7 @@
     <release year="1992" version="1.01">
       <media media="1.2M" status="U">
         <disk md5="2DF652C1FFFE4AB50E78673E0EB2C540" disk="1"/>
-        <disk md5="D94F2738A350CADE6B9E91B26F4EE4D4" disk="2"/>
+        <disk md5="E611A782E7B5CF0BFFB8367CD5867276" disk="2"/>
         <disk md5="2D75BD4734630D38D43A6938513264BC" disk="3"/>
       </media>
       <media media="1.44M" status="V">
@@ -7876,7 +7910,7 @@
   </title>
   <title name="Robot Rascals" publisher="Electronic Arts, Inc.">
     <release year="1987" media="360K" status="V">
-      <disk md5="645DE0A3F19BFF10F4580BE462D047D4"/>
+      <disk md5="C2BE58D76E9A622D2CB7BB186BCA088A"/>
     </release>
   </title>
   <title name="Robotron: 2084" publisher="Atarisoft">
@@ -8352,9 +8386,19 @@
       <disk md5="3E3B14316F1AFB65CA6B0D28760138CD"/>
     </release>
   </title>
+  <title name="Sierra Boot Disk Maker" publisher="Sierra On-Line, Inc.">
+    <release year="1995" media="1.44M" status="V">
+      <disk md5="6FB6A174C9A4A60002FEFEDE985A24CC" />
+    </release>
+  </title>
   <title name="Sierra Championship Boxing" publisher="Sierra On-Line, Inc." os="PC Booter">
     <release year="1985" media="360K" status="V">
       <disk md5="3907A5D21A6CC6B6DE8B9F3EBC2984A2" cp="Softguard Superlok v2"/>
+    </release>
+  </title>
+  <title name="Story Maker" publisher="Sierra On-Line, Inc.">
+    <release year="1985" media="360K" status="V">
+      <disk md5="C5327B955771B93CBEC982E4585942A5" cp="Sector Id Duplication"/>
     </release>
   </title>
   <title name="Silent Service II" publisher="MicroProse Software, Inc.">
@@ -8787,6 +8831,11 @@
   <title name="Snoopy's Game Club" publisher="Accolade, Inc.">
     <release year="1992" media="1.44M" status="U">
       <disk md5="1A86FAEE320D5D7E3CE868CE939D96BD"/>
+    </release>
+  </title>
+  <title name="Solitaire's Journey" publisher="Quantum Quality Productions">
+    <release year="1993" version="1.03" media="720K" status="V">
+      <disk md5="AFA979B31082296A87CBFC786F3912BE"/>
     </release>
   </title>
   <title name="Sorcerer" publisher="Infocom, Inc.">
@@ -10005,14 +10054,24 @@
     </release>
   </title>
   <title name="The Adventures of Willy Beamish" publisher="Sierra On-Line, Inc.">
-    <release year="1991" version="1.0, Int. 9.25.91" media="1.2M" status="U">
-      <disk md5="E0CBA62FB857A804035E104AFAD9172E" disk="1"/>
-      <disk md5="1E23CA547EEB8CF2FB8A236E628EB035" disk="2"/>
-      <disk md5="5A2189EC841381EFFFD242D0BFB323B7" disk="3"/>
-      <disk md5="7D1C89B6E96AEE1B44C38444D8E99C00" disk="4"/>
-      <disk md5="DEA9CEFE0CBAE1AEB2BA56845E6ED925" disk="5"/>
-      <disk md5="D15EDE74BBB1A04304DBC2185652B57E" disk="6"/>
-      <disk md5="1958509ADC68D530D2A39626AF946960" disk="7"/>
+    <release year="1991" version="1.0, Int. 9.25.91">
+      <media media="1.2M" status="U">
+        <disk md5="E0CBA62FB857A804035E104AFAD9172E" disk="1"/>
+        <disk md5="1E23CA547EEB8CF2FB8A236E628EB035" disk="2"/>
+        <disk md5="5A2189EC841381EFFFD242D0BFB323B7" disk="3"/>
+        <disk md5="7D1C89B6E96AEE1B44C38444D8E99C00" disk="4"/>
+        <disk md5="DEA9CEFE0CBAE1AEB2BA56845E6ED925" disk="5"/>
+        <disk md5="D15EDE74BBB1A04304DBC2185652B57E" disk="6"/>
+        <disk md5="1958509ADC68D530D2A39626AF946960" disk="7"/>
+      </media>
+      <media media="1.44M" status="V">
+        <disk md5="49EF7010541B079A574AAB3C11ABE80E" disk="1"/>
+        <disk md5="F839B3F5B5C4747A3E3C6BF37119A226" disk="2"/>
+        <disk md5="6E80FFEA0ACABCCEC1A7000288EBB956" disk="3"/>
+        <disk md5="C4D535A63C7E5CC866B2DF1C844FD69B" disk="4"/>
+        <disk md5="6040E72B3DA35B311F37DF3143949C5B" disk="5"/>
+        <disk md5="CDC8A09B89C478C5BB4FA570DEE57D52" disk="6"/>
+      </media>
     </release>
     <release year="1991" version="1.01, Int. 10.11.91">
       <media media="1.2M" status="V">
@@ -10790,10 +10849,19 @@
       <disk md5="07BD61C679AE88159A68F1FE964320A8" disk="3"/>
       <disk md5="0D1ED8CCEAAF5ADD1D3AAE1B1F551432" disk="4"/>
     </release>
-    <release variation="EGA" year="1992" version="1.0, Int. 4.0.67" media="720K" status="V" region="France" publisher="Ubisoft Entertainment SA">
-      <disk md5="AC54FF0418793CBAF78A46206AB2A878" disk="1"/>
-      <disk md5="92663DF72CBE2E830D7B8B74BD0D90CF" disk="2"/>
-      <disk md5="781CD4A6742A5EA66FEFE0FD9BCDC74F" disk="3"/>
+    <release variation="EGA" year="1992" version="1.0, Int. 4.0.67" region="France" publisher="Ubisoft Entertainment SA">
+      <media media="360K" status="U">
+        <disk md5="3AFCB41321ED7C4E498CC6C1FE9C2D5C" disk="1"/>
+        <disk md5="1924EF9DD44ABADA508DD72587B08119" disk="2"/>
+        <disk md5="3A4B8261A6E028F4431302E9F1F75971" disk="3"/>
+        <disk md5="851CF1551C1E4CBC1F8E6A26A31ABD76" disk="4"/>
+        <disk md5="FAF0814080307ED51F288FA08EDB7025" disk="5"/>
+      </media>
+      <media media="720K" status="V">
+        <disk md5="AC54FF0418793CBAF78A46206AB2A878" disk="1"/>
+        <disk md5="92663DF72CBE2E830D7B8B74BD0D90CF" disk="2"/>
+        <disk md5="781CD4A6742A5EA66FEFE0FD9BCDC74F" disk="3"/>
+      </media>
     </release>
     <release variation="VGA" year="1990" version="1.0, Int. 5.0.12" media="720K" status="U">
       <disk md5="0B89B86858B622709096A1746FA05C83" disk="1"/>
@@ -10816,6 +10884,12 @@
       <disk md5="408139160736932A6508E91127EF88BA" disk="2"/>
       <disk md5="6CE6A8CB2FA4BDB8C05D9F8785F67793" disk="3"/>
       <disk md5="DDA01CCA0AF401475FF6AF61EE83CEF1" disk="4"/>
+    </release>
+    <release variation="VGA" year="1991" version="1.0, Int. 5.0.16" media="1.2M" status="U" region="France" publisher="Ubisoft Entertainment SA">
+      <disk md5="0A7E8210985084E2452A879B0F2F295A" disk="1" />
+      <disk md5="387488F7D13C775A247D48E61CF977DE" disk="2" />
+      <disk md5="27A1A5BDA48D12791BD8ED052A6E8B6F" disk="3" />
+      <disk md5="03312108E1B2F9BCB0944701DE97DCBC" disk="4" />
     </release>
     <release variation="VGA" year="1991" version="1.0, Int. 5.0.16" media="1.44M" status="V" region="Italy">
       <disk md5="F1D519CDF229F213F3F7C543A8B008CE" disk="1"/>
@@ -10872,6 +10946,11 @@
       <disk md5="24F1DAC7449D83A0586800C49B32361A" disk="2"/>
       <disk md5="84D2E2F9BC5A7AB4E6781D83400B4503" disk="3"/>
       <disk md5="2F491701385636F1E5B3E28C33692E89" disk="4"/>
+    </release>
+  </title>
+  <title name="Sierra Network, The: Constant Companion" publisher="Sierra On-Line, Inc.">
+    <release year="1992" version="10.4c, Int. 6.25.92" media="1.2M" status="V">
+      <disk md5="FFD49AAC81C952EF2E477E158A13A253" />
     </release>
   </title>
   <title name="The Software Toolworks Game Pack III" publisher="The Software Toolworks, Inc.">
@@ -11534,6 +11613,11 @@
     </release>
   </title>
   <title name="Weird Dreams" publisher="MicroProse Software, Inc.">
+    <release year="1990" media="720K" status="U">
+      <disk md5="F26627F09534C90201D87A3D91BC1AD6"/>
+    </release>
+  </title>
+  <title name="Weird Dreams" publisher="MicroProse Software, Inc.">
     <release year="1991" media="360K" status="V">
       <disk md5="99B642FEF8DD94DF9A7B0365D17EA67C" disk="1" cp="Rob Northern Copylock PC"/>
       <disk md5="4A587C4B447EF47CBC21D50D1AE6B4D4" disk="2" cp="Rob Northern Copylock PC"/>
@@ -12157,6 +12241,9 @@
     </release>
   </title>
   <title name="Zork III: The Dungeon Master" publisher="Infocom, Inc.">
+    <release year="1982" version="r12, Serial 821025, Int. 3" media="160K" status="V">
+      <disk md5="F1349A9A0731C92D11168A796D2F1B32" cp="Non-standard Sector Sizes"/>
+    </release>
     <release year="1983" version="r16, Serial 830410, Int. 3B" media="160K" status="V" os="PC Booter">
       <disk md5="9BF1088D14CAA84B879B624B79C1B4CA" cp="Non-standard Sector Sizes"/>
     </release>

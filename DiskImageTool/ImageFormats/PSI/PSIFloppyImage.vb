@@ -62,6 +62,8 @@ Namespace ImageFormats
             End Function
 
             Private Sub BuildSectorMap()
+                Dim TrackInfo As PSITrackInfo
+                Dim TrackData As TrackData
                 Dim MaxSectors As UShort
 
                 SetTracks(_Image.TrackCount, _Image.SideCount)
@@ -76,51 +78,47 @@ Namespace ImageFormats
 
                 For Each PSISector In _Image.Sectors
                     If Not PSISector.IsAlternateSector Then
-                        Dim Track = GetTrack(PSISector.Track, PSISector.Side)
+                        TrackData = GetTrack(PSISector.Track, PSISector.Side)
 
-                        If Track Is Nothing Then
-                            Track = SetTrack(PSISector.Track, PSISector.Side)
-                            Track.FirstSector = PSISector.Sector
-                            Track.LastSector = PSISector.Sector
-                            Track.SectorSize = PSISector.Size
-                            Track.Encoding = BitstreamTrackType.MFM
+                        If TrackData Is Nothing Then
+                            TrackInfo = _Image.GetTrackInfo(PSISector.Track, PSISector.Side)
+                            TrackData = SetTrack(PSISector.Track, PSISector.Side)
+                            TrackData.FirstSector = TrackInfo.FirstSector
+                            TrackData.LastSector = TrackInfo.LastSector
+                            TrackData.SectorSize = TrackInfo.SectorSize
+                            TrackData.Encoding = BitstreamTrackType.MFM
+                        End If
+
+                        If TrackData.FirstSector = 1 And TrackData.LastSector = 4 And TrackData.SectorSize = 1024 Then
+                            ProcessSector1024(PSISector, MaxSectors)
                         Else
-                            If PSISector.Sector < Track.FirstSector Then
-                                Track.FirstSector = PSISector.Sector
-                            End If
-
-                            If PSISector.Sector > Track.LastSector Then
-                                Track.LastSector = PSISector.Sector
-                            End If
-                            If PSISector.Size <> Track.SectorSize Then
-                                Track.SectorSize = -1
-                            End If
+                            ProcessSector(PSISector, MaxSectors)
                         End If
 
-                        If PSISector.Sector >= 1 And PSISector.Sector <= SECTOR_COUNT Then
-                            Dim IsStandard = IsStandardSector(PSISector, MaxSectors)
-                            If IsStandard Then
-                                Dim BitstreamSector As New BitstreamSector(PSISector.Data, PSISector.Size) With {
-                                    .IsStandard = IsStandard
-                                }
-                                Dim Sector = GetSector(PSISector.Track, PSISector.Side, PSISector.Sector)
-                                If Sector Is Nothing Then
-                                    SetSector(PSISector.Track, PSISector.Side, PSISector.Sector, BitstreamSector)
-                                Else
-                                    Sector.IsStandard = False
-                                End If
-                            End If
-                        End If
                     End If
                 Next
             End Sub
 
-            Private Function IsStandardSector(PSISector As PSISector, MaxSectors As UShort) As Boolean
+            Private Function CalculateHash(HashAlgorithm As HashAlgorithm) As String
+                Dim OutputBuffer() As Byte
+
+                For Each PSISector In _Image.Sectors
+                    If Not PSISector.IsAlternateSector And Not PSISector.HasDataCRCError Then
+                        OutputBuffer = New Byte(PSISector.Data.Length - 1) {}
+                        HashAlgorithm.TransformBlock(PSISector.Data, 0, PSISector.Data.Length, OutputBuffer, 0)
+                    End If
+                Next
+                HashAlgorithm.TransformFinalBlock(New Byte(0) {}, 0, 0)
+
+                Return HashBytesToString(HashAlgorithm.Hash)
+            End Function
+
+            Private Function IsStandardSector(PSISector As PSISector, MaxSectors As UShort, Optional Size As UInteger = 512) As Boolean
                 If PSISector.Sector > MaxSectors Then
                     Return False
                 End If
 
-                If PSISector.Size <> 512 Then
+                If PSISector.Size <> Size Then
                     Return False
                 End If
 
@@ -145,19 +143,48 @@ Namespace ImageFormats
                 Return True
             End Function
 
-            Private Function CalculateHash(HashAlgorithm As HashAlgorithm) As String
-                Dim OutputBuffer() As Byte
+            Private Sub ProcessSector(PSISector As PSISector, MaxSectors As UShort)
+                Dim BitstreamSector As BitstreamSector
 
-                For Each PSISector In _Image.Sectors
-                    If Not PSISector.IsAlternateSector And Not PSISector.HasDataCRCError Then
-                        OutputBuffer = New Byte(PSISector.Data.Length - 1) {}
-                        HashAlgorithm.TransformBlock(PSISector.Data, 0, PSISector.Data.Length, OutputBuffer, 0)
+                If PSISector.Sector >= 1 And PSISector.Sector <= SECTOR_COUNT Then
+                    Dim IsStandard = IsStandardSector(PSISector, MaxSectors)
+                    If IsStandard Then
+                        BitstreamSector = GetSector(PSISector.Track, PSISector.Side, PSISector.Sector)
+                        If BitstreamSector Is Nothing Then
+                            BitstreamSector = New BitstreamSector(PSISector.Data, PSISector.Size) With {
+                                .IsStandard = IsStandard
+                            }
+                            SetSector(PSISector.Track, PSISector.Side, PSISector.Sector, BitstreamSector)
+                        Else
+                            BitstreamSector.IsStandard = False
+                        End If
                     End If
-                Next
-                HashAlgorithm.TransformFinalBlock(New Byte(0) {}, 0, 0)
+                End If
+            End Sub
 
-                Return HashBytesToString(HashAlgorithm.Hash)
-            End Function
+            Private Sub ProcessSector1024(PSISector As PSISector, MaxSectors As UShort)
+                Dim BitstreamSector As BitstreamSector
+
+                If PSISector.Sector >= 1 And PSISector.Sector <= 4 Then
+                    Dim IsStandard = IsStandardSector(PSISector, MaxSectors, 1024)
+                    If IsStandard Then
+                        For i = 0 To 1
+                            Dim NewSectorId = (PSISector.Sector - 1) * 2 + 1 + i
+                            BitstreamSector = GetSector(PSISector.Track, PSISector.Side, NewSectorId)
+                            If BitstreamSector Is Nothing Then
+                                Dim Buffer = New Byte(511) {}
+                                Array.Copy(PSISector.Data, 512 * i, Buffer, 0, 512)
+                                BitstreamSector = New BitstreamSector(Buffer, 512) With {
+                                    .IsStandard = False
+                                }
+                                SetSector(PSISector.Track, PSISector.Side, NewSectorId, BitstreamSector)
+                            Else
+                                BitstreamSector.IsStandard = False
+                            End If
+                        Next
+                    End If
+                End If
+            End Sub
         End Class
     End Namespace
 End Namespace

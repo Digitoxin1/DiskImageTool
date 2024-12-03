@@ -215,7 +215,7 @@ Namespace ImageFormats
                                     Offset += Sector.Data.Length
                                 End If
 
-                                Track.Sectors.Add(Sector)
+                                Track.AddSector(Sector)
                             Next
 
                             _Tracks.Add(Track)

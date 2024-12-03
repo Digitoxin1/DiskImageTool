@@ -546,17 +546,18 @@ Namespace DiskImage
         Private Sub ProcessMFMSectors(Track As UShort, Side As Byte, MFMData As IBM_MFM.IBM_MFM_Track)
             Dim BitstreamSector As BitstreamSector
             Dim Sector As BitstreamSector
+            Dim IsStandard As Boolean
 
             For Each MFMSector In MFMData.Sectors
                 If MFMSector.DAMFound Then
                     If MFMSector.SectorId >= 1 And MFMSector.SectorId <= SECTOR_COUNT Then
-                        Dim IsStandard = IBM_MFM.IsStandardSector(MFMSector, Track, Side)
+                        IsStandard = IBM_MFM.IsStandardSector(MFMSector, Track, Side)
                         If IsStandard Then
-                            BitstreamSector = New BitstreamSector(MFMSector) With {
-                               .IsStandard = IsStandard
-                            }
                             Sector = GetSector(Track, Side, MFMSector.SectorId)
                             If Sector Is Nothing Then
+                                BitstreamSector = New BitstreamSector(MFMSector) With {
+                                   .IsStandard = IsStandard
+                                }
                                 SetSector(Track, Side, MFMSector.SectorId, BitstreamSector)
                             Else
                                 Sector.IsStandard = False
@@ -570,22 +571,24 @@ Namespace DiskImage
         Private Sub ProcessMFMSectors1024(Track As UShort, Side As Byte, MFMData As IBM_MFM.IBM_MFM_Track)
             Dim BitstreamSector As BitstreamSector
             Dim Sector As BitstreamSector
+            Dim NewSectorId As Integer
+            Dim IsStandard As Boolean
             Dim Buffer() As Byte
 
             For Each MFMSector In MFMData.Sectors
                 If MFMSector.DAMFound Then
                     If MFMSector.SectorId >= 1 And MFMSector.SectorId <= 4 Then
-                        Dim IsStandard = IBM_MFM.IsStandardSector(MFMSector, Track, Side, 1024)
+                        IsStandard = IBM_MFM.IsStandardSector(MFMSector, Track, Side, 1024)
                         If IsStandard Then
                             For i = 0 To 1
-                                Dim NewSectorId = (MFMSector.SectorId - 1) * 2 + 1 + i
-                                Buffer = New Byte(511) {}
-                                Array.Copy(MFMSector.Data, 512 * i, Buffer, 0, 512)
-                                BitstreamSector = New BitstreamSector(Buffer, 512) With {
-                                    .IsStandard = False
-                                }
+                                NewSectorId = (MFMSector.SectorId - 1) * 2 + 1 + i
                                 Sector = GetSector(Track, Side, NewSectorId)
                                 If Sector Is Nothing Then
+                                    Buffer = New Byte(511) {}
+                                    Array.Copy(MFMSector.Data, 512 * i, Buffer, 0, 512)
+                                    BitstreamSector = New BitstreamSector(Buffer, 512) With {
+                                        .IsStandard = False
+                                    }
                                     SetSector(Track, Side, NewSectorId, BitstreamSector)
                                 End If
                             Next
