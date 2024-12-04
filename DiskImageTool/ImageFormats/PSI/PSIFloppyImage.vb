@@ -90,7 +90,7 @@ Namespace ImageFormats
                         End If
 
                         If TrackData.FirstSector = 1 And TrackData.LastSector = 4 And TrackData.SectorSize = 1024 Then
-                            ProcessSector1024(PSISector, MaxSectors)
+                            ProcessSector1024(PSISector)
                         Else
                             ProcessSector(PSISector, MaxSectors)
                         End If
@@ -113,12 +113,8 @@ Namespace ImageFormats
                 Return HashBytesToString(HashAlgorithm.Hash)
             End Function
 
-            Private Function IsStandardSector(PSISector As PSISector, MaxSectors As UShort, Optional Size As UInteger = 512) As Boolean
-                If PSISector.Sector > MaxSectors Then
-                    Return False
-                End If
-
-                If PSISector.Size <> Size Then
+            Private Function IsStandardSector(PSISector As PSISector, MaxSectors As UShort) As Boolean
+                If PSISector.Sector < 1 Or PSISector.Sector > MaxSectors Then
                     Return False
                 End If
 
@@ -146,43 +142,42 @@ Namespace ImageFormats
             Private Sub ProcessSector(PSISector As PSISector, MaxSectors As UShort)
                 Dim BitstreamSector As BitstreamSector
 
-                If PSISector.Sector >= 1 And PSISector.Sector <= SECTOR_COUNT Then
-                    Dim IsStandard = IsStandardSector(PSISector, MaxSectors)
-                    If IsStandard Then
-                        BitstreamSector = GetSector(PSISector.Track, PSISector.Side, PSISector.Sector)
-                        If BitstreamSector Is Nothing Then
-                            BitstreamSector = New BitstreamSector(PSISector.Data, PSISector.Size) With {
-                                .IsStandard = IsStandard
-                            }
+                Dim IsStandard = IsStandardSector(PSISector, MaxSectors)
+                If IsStandard Then
+                    BitstreamSector = GetSector(PSISector.Track, PSISector.Side, PSISector.Sector)
+                    If BitstreamSector Is Nothing Then
+                        If PSISector.Size > 0 And PSISector.Size < 512 Then
+                            Dim Buffer = New Byte(511) {}
+                            Array.Copy(PSISector.Data, 0, Buffer, 0, PSISector.Size)
+                            BitstreamSector = New BitstreamSector(Buffer, Buffer.Length, False)
                             SetSector(PSISector.Track, PSISector.Side, PSISector.Sector, BitstreamSector)
-                        Else
-                            BitstreamSector.IsStandard = False
+                        ElseIf PSISector.Size = 512 Then
+                            BitstreamSector = New BitstreamSector(PSISector.Data, PSISector.Size, IsStandard)
+                            SetSector(PSISector.Track, PSISector.Side, PSISector.Sector, BitstreamSector)
                         End If
+                    Else
+                        BitstreamSector.IsStandard = False
                     End If
                 End If
             End Sub
 
-            Private Sub ProcessSector1024(PSISector As PSISector, MaxSectors As UShort)
+            Private Sub ProcessSector1024(PSISector As PSISector)
                 Dim BitstreamSector As BitstreamSector
 
-                If PSISector.Sector >= 1 And PSISector.Sector <= 4 Then
-                    Dim IsStandard = IsStandardSector(PSISector, MaxSectors, 1024)
-                    If IsStandard Then
-                        For i = 0 To 1
-                            Dim NewSectorId = (PSISector.Sector - 1) * 2 + 1 + i
-                            BitstreamSector = GetSector(PSISector.Track, PSISector.Side, NewSectorId)
-                            If BitstreamSector Is Nothing Then
-                                Dim Buffer = New Byte(511) {}
-                                Array.Copy(PSISector.Data, 512 * i, Buffer, 0, 512)
-                                BitstreamSector = New BitstreamSector(Buffer, 512) With {
-                                    .IsStandard = False
-                                }
-                                SetSector(PSISector.Track, PSISector.Side, NewSectorId, BitstreamSector)
-                            Else
-                                BitstreamSector.IsStandard = False
-                            End If
-                        Next
-                    End If
+                Dim IsStandard = IsStandardSector(PSISector, 4)
+                If IsStandard And PSISector.Size = 1024 Then
+                    For i = 0 To 1
+                        Dim NewSectorId = (PSISector.Sector - 1) * 2 + 1 + i
+                        BitstreamSector = GetSector(PSISector.Track, PSISector.Side, NewSectorId)
+                        If BitstreamSector Is Nothing Then
+                            Dim Buffer = New Byte(511) {}
+                            Array.Copy(PSISector.Data, Buffer.Length * i, Buffer, 0, Buffer.Length)
+                            BitstreamSector = New BitstreamSector(Buffer, Buffer.Length, False)
+                            SetSector(PSISector.Track, PSISector.Side, NewSectorId, BitstreamSector)
+                        Else
+                            BitstreamSector.IsStandard = False
+                        End If
+                    Next
                 End If
             End Sub
         End Class

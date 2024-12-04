@@ -611,7 +611,15 @@
                 End If
             End Function
 
-            Public Function IsStandardSector(Sector As IBM_MFM_Sector, Track As Byte, Side As Byte, Optional Size As UInteger = 512) As Boolean
+            Public Function IsStandardSector(Sector As IBM_MFM_Sector, Track As Byte, Side As Byte, MaxSectors As Byte) As Boolean
+                If Sector.SectorId < 1 Or Sector.SectorId > MaxSectors Then
+                    Return False
+                End If
+
+                If Not Sector.DAMFound Then
+                    Return False
+                End If
+
                 If Not Sector.InitialDataChecksumValid Or Not Sector.IDChecksumValid Then
                     Return False
                 End If
@@ -620,15 +628,11 @@
                     Return False
                 End If
 
-                If Sector.GetSizeBytes <> Size Then
-                    Return False
-                End If
-
                 If Sector.Track <> Track Or Sector.Side <> Side Then
                     Return False
                 End If
 
-                If Not Sector.DAMFound Or Sector.DAM <> MFMAddressMark.Data Then
+                If Sector.DAM <> MFMAddressMark.Data Then
                     Return False
                 End If
 
