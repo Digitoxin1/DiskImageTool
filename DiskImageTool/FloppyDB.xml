@@ -3263,7 +3263,7 @@
   <title name="HardBall!" publisher="Accolade, Inc.">
     <release year="1987" media="360K" status="V">
       <disk md5="2498FDC7CDA59FD13056CD0E0453E5D3" disk="1"/>
-      <disk md5="5028320BBB18A759E9C4D080ADDDE89F" disk="2" cp="H.L.S. Duplication"/>
+      <disk md5="5028320BBB18A759E9C4D080ADDDE89F" disk="2" cp="Formaster Copylock v2.2"/>
     </release>
     <release year="1987" media="360K" status="V" publisher="U.S. Gold Ltd." region="UK">
       <disk md5="FCDFF2B9B5DDD58BF1627FC96C178244" disk="1"/>
@@ -6035,7 +6035,7 @@
   </title>
   <title name="Mean 18" publisher="Accolade, Inc.">
     <release year="1986" media="360K" status="V">
-      <disk md5="D3AE8A45D8B79554ADC656D71D3BCCD0" disk="Program" cp="H.L.S. Duplication"/>
+      <disk md5="D3AE8A45D8B79554ADC656D71D3BCCD0" disk="Program" cp="Formaster Copylock v2.2"/>
       <disk md5="061346DB4CC428203BF1C9A091A62CE5" disk="Famous Course Disk Vol. I"/>
     </release>
     <release year="1988" media="360K" status="V">
