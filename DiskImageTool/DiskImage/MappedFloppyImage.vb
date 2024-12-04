@@ -498,19 +498,16 @@ Namespace DiskImage
 
             Dim TrackCount = GetTrackCount()
 
-            For Cylinder = 0 To _TrackCount - 1
+            For Cylinder = 0 To Math.Max(_TrackCount, TrackCount) - 1
                 For Side = 0 To _SideCount - 1
-                    Dim TrackData = GetTrack(Cylinder, Side)
-                    Dim TrackIsStandard As Boolean = True
-                    If TrackData IsNot Nothing Then
-                        If TrackData.Encoding <> BitstreamTrackType.Other Then
+                    If Cylinder < TrackCount Then
+                        Dim TrackData = GetTrack(Cylinder, Side)
+                        Dim TrackIsStandard As Boolean = False
+                        If TrackData IsNot Nothing Then
                             If TrackData.Encoding = BitstreamTrackType.MFM Then
                                 If TrackData.FirstSector > -1 Then
                                     TrackIsStandard = TrackData.FirstSector >= 1 And TrackData.LastSector <= Math.Max(_BPB.SectorsPerTrack, 9)
                                 End If
-
-                            ElseIf TrackData.Encoding = BitstreamTrackType.FM Then
-                                AdditionalTracks.Add(Cylinder * _SideCount + Side)
                             End If
 
                             For SectorId = 1 To _BPB.SectorsPerTrack
@@ -519,21 +516,27 @@ Namespace DiskImage
                                     BitstreamSector = GetSector(Cylinder, Side, SectorId)
                                 End If
                                 If BitstreamSector Is Nothing Then
-                                    If Cylinder < TrackCount Then
-                                        Dim Sector = GetSectorFromParams(Cylinder, Side, SectorId)
-                                        ProtectedSectors.Add(Sector)
-                                        TrackIsStandard = False
-                                    End If
+                                    Dim Sector = GetSectorFromParams(Cylinder, Side, SectorId)
+                                    ProtectedSectors.Add(Sector)
+                                    TrackIsStandard = False
                                 ElseIf Not BitstreamSector.IsStandard Then
                                     Dim Sector = GetSectorFromParams(Cylinder, Side, SectorId)
                                     ProtectedSectors.Add(Sector)
                                     TrackIsStandard = False
                                 End If
                             Next
-                            If Not TrackIsStandard Then
-                                _NonStandardTracks.Add(Cylinder * _SideCount + Side)
-                            End If
+                        Else
+                            For SectorId = 1 To _BPB.SectorsPerTrack
+                                Dim Sector = GetSectorFromParams(Cylinder, Side, SectorId)
+                                ProtectedSectors.Add(Sector)
+                            Next
                         End If
+
+                        If Not TrackIsStandard Then
+                            _NonStandardTracks.Add(Cylinder * _SideCount + Side)
+                        End If
+                    Else
+                        AdditionalTracks.Add(Cylinder * _SideCount + Side)
                     End If
                 Next
             Next
