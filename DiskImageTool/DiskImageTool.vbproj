@@ -30,7 +30,7 @@
     <TargetCulture>en-US</TargetCulture>
     <ProductName>DiskImageTool</ProductName>
     <PublisherName>Digitoxin</PublisherName>
-    <ApplicationRevision>0</ApplicationRevision>
+    <ApplicationRevision>1</ApplicationRevision>
     <ApplicationVersion>2.9.0.%2a</ApplicationVersion>
     <UseApplicationTrust>false</UseApplicationTrust>
     <PublishWizardCompleted>true</PublishWizardCompleted>
@@ -272,6 +272,7 @@
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="CopyProtection.vb" />
+    <Compile Include="LoadedFiles.vb" />
     <Compile Include="SummaryPanel.vb" />
     <Compile Include="Testing\DebugScript.vb" />
     <Compile Include="DiskImage\SectorData.vb" />

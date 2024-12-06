@@ -7,7 +7,7 @@ Public Class ImageLoadForm
     Private Const MIN_FILE_SIZE As Long = 163840
     Private Const MAX_FILE_SIZE As Long = 3000000
     Private ReadOnly _Files() As String
-    Private ReadOnly _LoadedFileNames As Dictionary(Of String, ImageData)
+    Private ReadOnly _LoadedFiles As LoadedFiles
     Private ReadOnly _Parent As MainForm
     Private _Activated As Boolean = False
     Private _Counter As Integer = 0
@@ -16,7 +16,7 @@ Public Class ImageLoadForm
     Private _SelectedImageData As ImageData = Nothing
     Private _Visible As Boolean = False
 
-    Public Sub New(Parent As MainForm, Files() As String, LoadedFileNames As Dictionary(Of String, ImageData))
+    Public Sub New(Parent As MainForm, Files() As String, LoadedFiles As LoadedFiles)
 
         ' This call is required by the designer.
         InitializeComponent()
@@ -24,7 +24,7 @@ Public Class ImageLoadForm
         ' Add any initialization after the InitializeComponent() call.
         _Parent = Parent
         _Files = Files
-        _LoadedFileNames = LoadedFileNames
+        _LoadedFiles = LoadedFiles
     End Sub
 
     Public ReadOnly Property SelectedImageData As ImageData
@@ -53,19 +53,17 @@ Public Class ImageLoadForm
     End Function
 
     Private Sub LoadedFileAdd(bw As BackgroundWorker, Key As String, FileName As String, Compressed As Boolean, Optional CompressedFile As String = "")
-
-        If Not _LoadedFileNames.ContainsKey(Key) Then
-            Dim ImageData = New ImageData(FileName)
-            If Compressed Then
-                ImageData.Compressed = True
-                ImageData.CompressedFile = CompressedFile
-            End If
-
-            _LoadedFileNames.Add(Key, ImageData)
+        Dim ImageData = _LoadedFiles.Add(Key, FileName, Compressed, CompressedFile)
+        If ImageData IsNot Nothing Then
             If _SelectedImageData Is Nothing Then
                 _SelectedImageData = ImageData
             End If
-            bw.ReportProgress(2, ImageData)
+
+            If bw Is Nothing Then
+                _Parent.ComboImages.Items.Add(ImageData)
+            Else
+                bw.ReportProgress(2, ImageData)
+            End If
         End If
     End Sub
 
@@ -111,13 +109,13 @@ Public Class ImageLoadForm
         End If
     End Sub
 
-    Private Function ProcessScan(bw As BackgroundWorker) As Boolean
+    Public Function ProcessScan(bw As BackgroundWorker) As Boolean
         If _Files.Count = 0 Then
             Return True
         End If
 
         For Each FilePath In _Files.OrderBy(Function(f) f)
-            If bw.CancellationPending Then
+            If bw IsNot Nothing AndAlso bw.CancellationPending Then
                 Return True
             End If
             Dim FAttributes = IO.File.GetAttributes(FilePath)
@@ -125,20 +123,20 @@ Public Class ImageLoadForm
                 Dim DirectoryInfo As New IO.DirectoryInfo(FilePath)
                 Dim Files = DirectoryInfo.GetFiles("*.*", IO.SearchOption.AllDirectories)
                 For Each FileInfo In Files
-                    If bw.CancellationPending Then
+                    If bw IsNot Nothing AndAlso bw.CancellationPending Then
                         Return True
                     End If
                     Dim Extension = FileInfo.Extension.ToLower
                     If AllFileExtensions.Contains(Extension) OrElse ArchiveFileExtensions.Contains(Extension) Then
                         ProcessFile(bw, FileInfo.FullName, Extension)
                     End If
-                    bw.ReportProgress(1)
+                    bw?.ReportProgress(1)
                 Next
             Else
                 Dim Extension = Path.GetExtension(FilePath).ToLower
                 ProcessFile(bw, FilePath, Extension)
             End If
-            bw.ReportProgress(1)
+            bw?.ReportProgress(1)
         Next
 
         Return True

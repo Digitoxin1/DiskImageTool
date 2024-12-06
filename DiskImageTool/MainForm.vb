@@ -36,12 +36,12 @@ Public Class MainForm
     Private _DriveAEnabled As Boolean = False
     Private _DriveBEnabled As Boolean = False
     Private _ExportUnknownImages As Boolean = False
-    Private _FileNames As Dictionary(Of String, ImageData)
     Private _FileVersion As String = ""
     Private _ListViewCheckAll As Boolean = False
     Private _ListViewClickedGroup As ListViewGroup = Nothing
     Private _ListViewHeader As ListViewHeader
     Private _ListViewWidths() As Integer
+    Private _LoadedFiles As LoadedFiles
     Private _ScanRun As Boolean = False
     Private _SubFilterDiskType As ComboFilter
     Private _SubFilterOEMName As ComboFilter
@@ -1271,7 +1271,7 @@ Public Class MainForm
 
     Private Sub FileClose(ImageData As ImageData)
         ItemFiltersRemove(ImageData)
-        _FileNames.Remove(ImageData.DisplayPath)
+        _LoadedFiles.FileNames.Remove(ImageData.DisplayPath)
 
         Dim ActiveComboBox As ComboBox = IIf(ImageFilters.FiltersApplied, ComboImagesFiltered, ComboImages)
 
@@ -1381,7 +1381,7 @@ Public Class MainForm
             Exit Sub
         End If
 
-        ProcessFileDrop(Dialog.FileNames)
+        ProcessFileDrop(Dialog.FileNames, True)
     End Sub
 
     Private Sub FiltersApply(ResetSubFilters As Boolean)
@@ -1643,7 +1643,7 @@ Public Class MainForm
         }
 
         AddHandler Dialog.FileOk, Sub(sender As Object, e As CancelEventArgs)
-                                      If Dialog.FileName <> FilePath AndAlso _FileNames.ContainsKey(Dialog.FileName) Then
+                                      If Dialog.FileName <> FilePath AndAlso _LoadedFiles.FileNames.ContainsKey(Dialog.FileName) Then
                                           Dim Msg As String = IO.Path.GetFileName(Dialog.FileName) &
                                             $"{vbCrLf}This file is currently open in {Application.ProductName}." &
                                             $"Try again with a different file name."
@@ -2257,7 +2257,7 @@ Public Class MainForm
         Dim DiskFormat = frmImageCreationForm.DiskFormat
 
         If Data IsNot Nothing Then
-            Dim FileName = FloppyDiskSaveFile(Data, DiskFormat, _FileNames)
+            Dim FileName = FloppyDiskSaveFile(Data, DiskFormat, _LoadedFiles.FileNames)
             If FileName.Length > 0 Then
                 ProcessFileDrop(FileName)
             End If
@@ -2934,10 +2934,10 @@ Public Class MainForm
         Dim Files(0) As String
         Files(0) = File
 
-        ProcessFileDrop(Files)
+        ProcessFileDrop(Files, False)
     End Sub
 
-    Private Sub ProcessFileDrop(Files() As String)
+    Private Sub ProcessFileDrop(Files() As String, ShowDialog As Boolean)
         Cursor.Current = Cursors.WaitCursor
         Dim T = Stopwatch.StartNew
 
@@ -2951,12 +2951,18 @@ Public Class MainForm
 
         ImageData.StringOffset = 0
 
-        Dim ImageLoadForm As New ImageLoadForm(Me, Files, _FileNames)
-        ImageLoadForm.ShowDialog(Me)
+        Dim ImageLoadForm As New ImageLoadForm(Me, Files, _LoadedFiles)
+        If ShowDialog Then
+            ImageLoadForm.ShowDialog(Me)
+        Else
+            ImageLoadForm.ProcessScan(Nothing)
+        End If
 
         ImageData.StringOffset = GetPathOffset()
 
         If ImageLoadForm.SelectedImageData IsNot Nothing Then
+            LabelDropMessage.Visible = False
+
             RefreshSubFilterEnabled(ComboImages)
             ComboImagesRefreshItemText()
             ImageCountUpdate()
@@ -3353,7 +3359,7 @@ Public Class MainForm
         Me.Text = GetWindowCaption()
         ImageFilters.FiltersApplied = False
         _ListViewCheckAll = False
-        _FileNames.Clear()
+        _LoadedFiles.FileNames.Clear()
         _ScanRun = False
 
         MenuOptionsCreateBackup.Checked = My.Settings.CreateBackups
@@ -3589,18 +3595,18 @@ Public Class MainForm
 
     Private Sub SetNewFilePath(ImageData As ImageData, NewFilePath As String)
         If ImageData.SourceFile <> NewFilePath Then
-            _FileNames.Remove(ImageData.DisplayPath)
+            _LoadedFiles.FileNames.Remove(ImageData.DisplayPath)
 
             ImageData.SourceFile = NewFilePath
             ImageData.Compressed = False
             ImageData.CompressedFile = ""
             ImageData.ReadOnly = IsFileReadOnly(NewFilePath)
 
-            If _FileNames.ContainsKey(ImageData.DisplayPath) Then
-                FileClose(_FileNames.Item(ImageData.DisplayPath))
+            If _LoadedFiles.FileNames.ContainsKey(ImageData.DisplayPath) Then
+                FileClose(_LoadedFiles.FileNames.Item(ImageData.DisplayPath))
             End If
 
-            _FileNames.Add(ImageData.DisplayPath, ImageData)
+            _LoadedFiles.FileNames.Add(ImageData.DisplayPath, ImageData)
 
             ComboImagesRefreshPaths()
         End If
@@ -3911,14 +3917,14 @@ Public Class MainForm
     End Sub
 
     Private Sub BtnReadFloppyA_Click(sender As Object, e As EventArgs) Handles MenuDiskReadFloppyA.Click
-        Dim FileName = FloppyDiskRead(Me, FloppyDriveEnum.FloppyDriveA, _FileNames)
+        Dim FileName = FloppyDiskRead(Me, FloppyDriveEnum.FloppyDriveA, _LoadedFiles.FileNames)
         If FileName.Length > 0 Then
             ProcessFileDrop(FileName)
         End If
     End Sub
 
     Private Sub BtnReadFloppyB_Click(sender As Object, e As EventArgs) Handles MenuDiskReadFloppyB.Click
-        Dim FileName = FloppyDiskRead(Me, FloppyDriveEnum.FloppyDriveB, _FileNames)
+        Dim FileName = FloppyDiskRead(Me, FloppyDriveEnum.FloppyDriveB, _LoadedFiles.FileNames)
         If FileName.Length > 0 Then
             ProcessFileDrop(FileName)
         End If
@@ -4133,7 +4139,7 @@ Public Class MainForm
 
     Private Sub File_DragDrop(sender As Object, e As DragEventArgs) Handles ComboImages.DragDrop, ComboImagesFiltered.DragDrop, LabelDropMessage.DragDrop, ListViewFiles.DragDrop, ListViewHashes.DragDrop, ListViewSummary.DragDrop
         Dim Files As String() = e.Data.GetData(DataFormats.FileDrop)
-        ProcessFileDrop(Files)
+        ProcessFileDrop(Files, True)
     End Sub
 
     Private Sub File_DragEnter(sender As Object, e As DragEventArgs) Handles ComboImages.DragEnter, ComboImagesFiltered.DragEnter, LabelDropMessage.DragEnter, ListViewFiles.DragEnter, ListViewHashes.DragEnter, ListViewSummary.DragEnter
@@ -4286,7 +4292,7 @@ Public Class MainForm
         ListViewSummary.AutoResizeColumnsContstrained(ColumnHeaderAutoResizeStyle.None)
         ImageFilters = New Filters.ImageFilters(ContextMenuFilters)
         SubFiltersInitialize()
-        _FileNames = New Dictionary(Of String, ImageData)
+        _LoadedFiles = New LoadedFiles
         _BootStrapDB = New BootstrapDB
         _TitleDB = New FloppyDB
         Debounce = New Timer With {
@@ -4312,7 +4318,7 @@ Public Class MainForm
         Dim Args = Environment.GetCommandLineArgs.Skip(1).ToArray
 
         If Args.Length > 0 Then
-            ProcessFileDrop(Args)
+            ProcessFileDrop(Args, True)
         End If
 
         If My.Settings.CheckUpdateOnStartup Then

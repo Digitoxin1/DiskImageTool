@@ -55,15 +55,23 @@ Module FloppyDiskIO
                                   End Sub
 
         If Dialog.ShowDialog = DialogResult.OK Then
+            Dim Success As Boolean
             Try
-                IO.File.WriteAllBytes(Dialog.FileName, Buffer)
+                Dim FloppyImage = New BasicSectorImage(Buffer)
+                Dim Disk = New DiskImage.Disk(FloppyImage, 0)
+                Dim Response = SaveDiskImageToFile(Disk, Dialog.FileName)
+                Success = (Response = SaveImageResponse.Success)
             Catch ex As Exception
                 DebugException(ex)
-                MsgBox("An error has occurred while attempting to save the file.", MsgBoxStyle.Exclamation)
-                Return ""
+                Success = False
             End Try
 
-            Return Dialog.FileName
+            If Success Then
+                Return Dialog.FileName
+            Else
+                MsgBox("An error has occurred while attempting to save the file.", MsgBoxStyle.Exclamation)
+                Return ""
+            End If
         Else
             Return ""
         End If

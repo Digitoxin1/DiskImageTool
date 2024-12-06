@@ -611,17 +611,17 @@ Namespace ImageFormats
                 Case FloppyDiskFormat.Floppy1200
                     DriveSpeed.SetValue(360, 500)
                 Case FloppyDiskFormat.Floppy1440
-                    DriveSpeed.SetValue(360, 500)
+                    DriveSpeed.SetValue(300, 500)
                 Case FloppyDiskFormat.Floppy2880
                     DriveSpeed.SetValue(300, 1000)
                 Case FloppyDiskFormat.FloppyDMF1024
-                    DriveSpeed.SetValue(360, 500)
+                    DriveSpeed.SetValue(300, 500)
                 Case FloppyDiskFormat.FloppyDMF2048
-                    DriveSpeed.SetValue(360, 500)
+                    DriveSpeed.SetValue(300, 500)
                 Case FloppyDiskFormat.FloppyXDF525
                     DriveSpeed.SetValue(360, 500)
                 Case FloppyDiskFormat.FloppyXDF35
-                    DriveSpeed.SetValue(360, 500)
+                    DriveSpeed.SetValue(300, 500)
                 Case Else
                     DriveSpeed.SetValue(300, 250)
             End Select
