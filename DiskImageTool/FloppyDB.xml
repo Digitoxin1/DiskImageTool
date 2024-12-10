@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <root>
   <title name="007: James Bond: The Stealth Affair" publisher="Interplay Productions, Inc.">
-    <release year="1990">
-      <media media="360K" status="U">
+    <release year="1990" status="V">
+      <media media="360K">
         <disk md5="8EECAFF8224AEB9A9FB1EDAC78CB3560" disk="1"/>
         <disk md5="02E9E6EE0DE31BE2E1968F5A663B4AE1" disk="2"/>
         <disk md5="C2ED906C6063E46192964453E774C4DF" disk="3"/>
@@ -10,7 +10,7 @@
         <disk md5="666671004505329E5EC55F3233A1A403" disk="5"/>
         <disk md5="A489BD4C7E662DEC48BC3693DEC9D5B9" disk="6"/>
       </media>
-      <media media="720K" status="V">
+      <media media="720K">
         <disk md5="5585C2718E6BCF16DE9FE2D0E67AAE84" disk="1"/>
         <disk md5="D4B3321229E78E59E330238582C4D55F" disk="2"/>
         <disk md5="38222988638B38F5AFCA02A6424C7998" disk="3"/>
@@ -319,7 +319,7 @@
   <title name="All New World of Lemmings" publisher="Psygnosis Limited">
     <release year="1994" media="1.44M" status="V" region="Europe">
       <disk md5="26DF3C55E7C4621E6B8EC0F10B706AB1" name="The Lemmings Chronicles / All New World of Lemmings" disk="1" region="USA, Europe"/>
-      <disk md5="5597985B9CFD7FF604C539E6BCD9D6D5" name="The Lemmings Chronicles / All New World of Lemmings" disk="2" status="U" region="USA, Europe"/>
+      <disk md5="5597985B9CFD7FF604C539E6BCD9D6D5" name="The Lemmings Chronicles / All New World of Lemmings" disk="2" region="USA, Europe"/>
       <disk md5="E06836461125398642ED708AD14952A3" disk="3"/>
       <disk md5="F4B0B3BEB92C77870A0E39AABE7617DE" name="The Lemmings Chronicles / All New World of Lemmings" disk="4" region="USA, Europe"/>
     </release>
@@ -1045,10 +1045,15 @@
       <disk md5="6B69E146B31C3470FF681C737FDF786D" disk="1"/>
       <disk md5="352896FF1D42DD8CB30330DF450BBFE6" disk="2"/>
     </release>
-    <release year="1993" media="720K" status="U">
+    <release year="1993-03" media="720K" status="U">
       <disk md5="B3A2A49502D4B36498F8F0A360C80209" disk="1"/>
       <disk md5="AB2FAA123060D6B5BC94B0E4E2D2C5ED" disk="2"/>
       <disk md5="D6B9583D0B425107EDB549D014C4DD94" disk="3"/>
+    </release>
+    <release year="1993-05" media="720K" status="V">
+      <disk md5="5611EF4CEC11F792A3EAFC0CFABE4DEB" disk="1"/>
+      <disk md5="9774C3AFF8CF309F204B6D6621FCD3F1" disk="2"/>
+      <disk md5="12ED3F0F4B37C349296FBF5743531BEC" disk="3"/>
     </release>
   </title>
   <title name="California Games II" publisher="Epyx, Inc.">
@@ -1615,14 +1620,14 @@
       <disk md5="42ECB69FF9AC75DC60FDECC1A789817D" disk="C"/>
       <disk md5="D4A80949190D0CA3B8B9E28E2F70E0B3" disk="D"/>
     </release>
-    <release year="1989" version="1.1" status="U">
-      <media media="360K">
+    <release year="1989" version="1.1">
+      <media media="360K" status="V">
         <disk md5="B7FB64FD30479E6C94997B5F003E7B68" disk="A"/>
         <disk md5="5FBAFEE2B330B8220602F26AE37D42DB" disk="B"/>
         <disk md5="EE3FC39491CB89D1FC780C0F93912A10" disk="C"/>
         <disk md5="1785F2B68B451B70244B86DED590CBCC" disk="D"/>
       </media>
-      <media media="720K">
+      <media media="720K" status="U">
         <disk md5="BB123E17F6ACFCF5DBB49CC5E8C122A9" disk="A &amp; B"/>
         <disk md5="BD94B323FCA20C31621011060B0DEE73" disk="C &amp; D"/>
       </media>
@@ -3020,6 +3025,10 @@
       <disk md5="95F2557472CD5790CDD74D262CB789DF" disk="1"/>
       <disk md5="D9D47D345FECC504DDAE44CD32451C29" disk="2"/>
     </release>
+    <release year="1992" version="1.02" media="1.44M" status="U" region="Italy">
+      <disk md5="CC0ECE7D42038A25FDDE79C75995A1E0" disk="1"/>
+      <disk md5="59F1009D03B00EB329390E6813868342" disk="2"/>
+    </release>
     <release year="1993" version="1.0, Int. 2.10.93" media="1.44M" status="V" publisher="Sierra On-Line, Inc.">
       <disk md5="006AB97948F2F1AAE03124B86B701996" disk="1" status="U"/>
       <disk md5="4D1FBC7DDA895F9CC1153DB6F56C1A95" disk="2"/>
@@ -3443,7 +3452,7 @@
         <disk md5="949D68013DDBBCC0BE6CFB2A4687FCAA"/>
       </media>
     </release>
-    <release year="1989" version="1.1" status="U">
+    <release year="1989" version="1.1" status="V">
       <media media="360K">
         <disk md5="206057D2464285983A589F269308764F" disk="1"/>
         <disk md5="E8F65A2536544987136A11ED67BE51EE" disk="2"/>
@@ -5082,6 +5091,11 @@
         <disk md5="7CBCE10F7F47B4EDB294199907EBC88A" cp="Rob Northern Copylock PC"/>
       </media>
     </release>
+    <release variation="Book Club" year="1991" status="V">
+      <disk md5="C8AA2FB148384D73515451F636A9473B" disk="2"/>
+      <disk md5="7483F7B0C50A463A66B989122F7882DE" disk="3" media="320K"/>
+      <disk md5="A2774DC1641A16E942860667279560AD" disk="3"/>
+    </release>
   </title>
   <title name="Lemmings 2: The Tribes" publisher="Psygnosis Limited">
     <release year="1993" status="V">
@@ -6573,13 +6587,13 @@
     </release>
   </title>
   <title name="Night Shift" publisher="Lucasfilm Games LLC">
-    <release year="1990" version="1.1" status="U">
-      <media media="360K">
+    <release year="1990" version="1.1">
+      <media media="360K" status="U">
         <disk md5="C500A9B6E7CC97B49F6CE1B5A7778001" disk="1"/>
         <disk md5="BB439AC8AA722EA12CF630DE886B3B1E" disk="2"/>
         <disk md5="6A96303CBF97A2D15206B5824A2B453B" disk="3"/>
       </media>
-      <media media="720K">
+      <media media="720K" status="V">
         <disk md5="5C7C6240A6506384C1FE1C71FCC3D435" disk="1"/>
         <disk md5="0198A6A319B238D89AB5D909D4DF9C5A" disk="2"/>
       </media>
@@ -8812,6 +8826,13 @@
       <disk md5="889CC71471F2F7E3B4DBB0AA4D643E24" disk="2"/>
     </release>
   </title>
+  <title name="Skyfox II: The Cygnus Conflict" publisher="Electronic Arts, Inc.">
+    <release year="1988" media="360K" status="V">
+      <disk md5="E5D42D43B5D68757AF19C41621133C26" disk="1"/>
+      <disk md5="872BD9A81C568DE913EE2CB52396A71F" disk="2"/>
+    </release>
+    
+  </title>
   <title name="Sky Shark" publisher="Taito, Inc.">
     <release year="1989" media="360K" status="V">
       <disk md5="C646655A24AC7B6821B58986F7D5599C" disk="A" cp="Softguard Superlok v3"/>
@@ -11029,7 +11050,7 @@
   </title>
   <title name="Their Finest Hour: The Battle of Britain" publisher="Lucasfilm Games LLC">
     <release year="1989" version="1.0">
-      <media media="360K" status="U">
+      <media media="360K" status="V">
         <disk md5="665270AC8E1ADE7B6B0C24381853C440" disk="1"/>
         <disk md5="DFF16D027BE2B13BBE315D3CBCECFE22" disk="2" version="1.0, 1.1"/>
         <disk md5="7C7EC2814CC9704AD4C7C8195DC23EB2" disk="3" version="1.0, 1.1"/>
@@ -11613,6 +11634,10 @@
     </release>
   </title>
   <title name="Weird Dreams" publisher="MicroProse Software, Inc.">
+    <release year="1990" media="360K" status="U">
+      <disk md5="73AE4312F1AE609FAE2D746B9C4F0A9D" disk="1"/>
+      <disk md5="9C3CEDB733A451C89D072C90C0DDD8E4" disk="2"/>
+    </release>
     <release year="1990" media="720K" status="U">
       <disk md5="F26627F09534C90201D87A3D91BC1AD6"/>
     </release>
