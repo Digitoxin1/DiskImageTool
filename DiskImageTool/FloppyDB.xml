@@ -1075,7 +1075,7 @@
   </title>
   <title name="Captain Blood" publisher="Mindscape, Inc.">
     <release year="1988" media="360K" status="U">
-      <disk md5="B18A6D6CCB73603155CC3ED8599378C4" disk="1" cp="Mindscape DEM v3"/>
+      <disk md5="B18A6D6CCB73603155CC3ED8599378C4" disk="1" status="V" cp="Mindscape DEM v3"/>
       <disk md5="20ABFEF0FA4806E903650B97BED0122E" disk="2"/>
     </release>
   </title>
@@ -2318,7 +2318,7 @@
   </title>
   <title name="Enchanter" publisher="Infocom, Inc.">
     <release year="1983" version="r10, Serial 830810, Int. 3A" media="160K" status="U" os="PC Booter">
-      <disk md5="238508E805F6D661F39651923BF5C6C0" cp="Non-standard Sector Sizes"/>
+      <disk md5="C7CF36F06F02777F1FE49F69CD63413E" cp="Non-standard Sector Sizes"/>
     </release>
     <release year="1983" version="r16, Serial 831118, Int. 3B" media="160K" status="U" os="PC Booter">
       <disk md5="3FCAE82C72F3748D22D248C275E40D1B" cp="Non-standard Sector Sizes"/>

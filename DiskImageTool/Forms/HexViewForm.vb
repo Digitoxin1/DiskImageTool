@@ -193,16 +193,6 @@ Public Class HexViewForm
         End If
     End Sub
 
-    Private Sub CopyHexToClipboard()
-        HexBox1.CopyHex()
-        'RefreshPasteButton()
-    End Sub
-
-    Private Sub CopyTextToClipboard()
-        HexBox1.Copy()
-        'RefreshPasteButton()
-    End Sub
-
     Private Sub DataInspectorRefresh(ForceUpdate As Boolean)
         If Not _Initialized Then
             Exit Sub
@@ -719,9 +709,9 @@ Public Class HexViewForm
         If e.Control And e.KeyCode = Keys.C Then
             If HexBox1.CanCopy Then
                 If e.Shift Then
-                    CopyHexFormatted(HexBox1)
+                    CopyHex(HexBox1, True)
                 Else
-                    CopyHexToClipboard()
+                    CopyHex(HexBox1, False)
                 End If
             End If
             e.SuppressKeyPress = True
@@ -1199,19 +1189,19 @@ Public Class HexViewForm
 
     Private Sub BtnCopyHex_Click(sender As Object, e As EventArgs) Handles BtnCopyHex.Click, ToolStripBtnCopyHex.Click
         If HexBox1.CanCopy Then
-            CopyHexToClipboard()
+            CopyHex(HexBox1, False)
         End If
     End Sub
 
     Private Sub BtnCopyHexFormatted_Click(sender As Object, e As EventArgs) Handles BtnCopyHexFormatted.Click, ToolStripBtnCopyHexFormatted.Click
         If HexBox1.CanCopy Then
-            CopyHexFormatted(HexBox1)
+            CopyHex(HexBox1, True)
         End If
     End Sub
 
     Private Sub BtnCopyText_Click(sender As Object, e As EventArgs) Handles BtnCopyText.Click, ToolStripBtnCopyText.Click
         If HexBox1.CanCopy Then
-            CopyTextToClipboard()
+            HexBox1.Copy()
         End If
     End Sub
 

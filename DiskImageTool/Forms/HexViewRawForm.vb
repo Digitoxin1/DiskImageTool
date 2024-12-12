@@ -58,6 +58,8 @@ Public Class HexViewRawForm
         HexBox1.ReadOnly = True
         HexBox1.LineInfoOffset = 0
 
+        BtnCopyEncoded.Visible = My.Settings.Debug
+
         EnableDoubleBuffering(PanelSectors)
 
         Me.Text = "Raw Track Data"
@@ -72,14 +74,6 @@ Public Class HexViewRawForm
 
             LoadTrack(_CurrentTrackData, True, True)
         End If
-    End Sub
-
-    Private Sub CopyHexToClipboard()
-        HexBox1.CopyHex()
-    End Sub
-
-    Private Sub CopyTextToClipboard()
-        HexBox1.Copy()
     End Sub
 
     Private Sub DataInspectorRefresh(ForceUpdate As Boolean)
@@ -159,6 +153,35 @@ Public Class HexViewRawForm
 
         ' Set the property value to True
         propertyInfo?.SetValue(panel, True, Nothing)
+    End Sub
+
+    Public Sub CopyHexEncoded(HexBox As HexBox, Formatted As Boolean)
+        Dim Bitstream = BitstreamAlign(_Bitstream, _CurrentTrackData.Offset)
+        Dim Data = BitsToBytes(_Bitstream, 0)
+
+        Dim StartIndex = HexBox.SelectionStart * 2
+        Dim Length = HexBox.SelectionLength * 2
+
+        If StartIndex + Length > Data.Length Then
+            Length = Data.Length - StartIndex
+        End If
+
+        Dim Capacity As Integer = Length * 2 + Length
+        If Formatted Then
+            Capacity += Length \ 16
+        End If
+
+        Dim SB = New System.Text.StringBuilder(Capacity)
+        For Counter = 0 To Length - 1
+            Dim B = Data(StartIndex + Counter)
+            SB.Append(B.ToString("X2"))
+            If Formatted AndAlso (Counter + 1) Mod 16 = 0 Then
+                SB.Append(vbNewLine)
+            Else
+                SB.Append(" ")
+            End If
+        Next
+        Clipboard.SetText(SB.ToString)
     End Sub
 
     Private Function GetBits(BitArray As BitArray, Offset As UInteger, CheckSync As Boolean) As String
@@ -679,9 +702,9 @@ Public Class HexViewRawForm
         If e.Control And e.KeyCode = Keys.C Then
             If HexBox1.CanCopy Then
                 If e.Shift Then
-                    CopyHexFormatted(HexBox1)
+                    CopyHex(HexBox1, True)
                 Else
-                    CopyHexToClipboard()
+                    CopyHex(HexBox1, False)
                 End If
             End If
             e.SuppressKeyPress = True
@@ -831,6 +854,8 @@ Public Class HexViewRawForm
 
         BtnCopyHexFormatted.Enabled = HexBox1.CanCopy
         ToolStripBtnCopyHexFormatted.Enabled = BtnCopyHexFormatted.Enabled
+
+        BtnCopyEncoded.Enabled = HexBox1.CanCopy
 
         RefreshBits(_Bitstream, DataRowEnum.Bitstream, True)
         RefreshBits(_SurfaceData, DataRowEnum.WeakBits, False)
@@ -1044,21 +1069,27 @@ Public Class HexViewRawForm
         End If
     End Sub
 
+    Private Sub BtnCopyEncoded_Click(sender As Object, e As EventArgs) Handles BtnCopyEncoded.Click
+        If HexBox1.CanCopy Then
+            CopyHexEncoded(HexBox1, False)
+        End If
+    End Sub
+
     Private Sub BtnCopyHex_Click(sender As Object, e As EventArgs) Handles BtnCopyHex.Click, ToolStripBtnCopyHex.Click
         If HexBox1.CanCopy Then
-            CopyHexToClipboard()
+            CopyHex(HexBox1, False)
         End If
     End Sub
 
     Private Sub BtnCopyHexFormatted_Click(sender As Object, e As EventArgs) Handles BtnCopyHexFormatted.Click, ToolStripBtnCopyHexFormatted.Click
         If HexBox1.CanCopy Then
-            CopyHexFormatted(HexBox1)
+            CopyHex(HexBox1, True)
         End If
     End Sub
 
     Private Sub BtnCopyText_Click(sender As Object, e As EventArgs) Handles BtnCopyText.Click, ToolStripBtnCopyText.Click
         If HexBox1.CanCopy Then
-            CopyTextToClipboard()
+            HexBox1.Copy()
         End If
     End Sub
 

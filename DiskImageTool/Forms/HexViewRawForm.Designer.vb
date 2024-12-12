@@ -75,7 +75,8 @@ Partial Class HexViewRawForm
         Me.ToolStripBtnSelectSector = New System.Windows.Forms.ToolStripButton()
         Me.ToolStripBtnSelectData = New System.Windows.Forms.ToolStripButton()
         Me.ToolStripBtnAdjustOffset = New System.Windows.Forms.ToolStripButton()
-        Me.PanelSectors = New DiskImageTool.SelectablePanel
+        Me.PanelSectors = New DiskImageTool.SelectablePanel()
+        Me.BtnCopyEncoded = New System.Windows.Forms.ToolStripMenuItem()
         ToolStripStatusGap = New System.Windows.Forms.ToolStripStatusLabel()
         ToolStripSeparator2 = New System.Windows.Forms.ToolStripSeparator()
         ToolStripSeparator5 = New System.Windows.Forms.ToolStripSeparator()
@@ -348,9 +349,9 @@ Partial Class HexViewRawForm
         '
         'ContextMenuStrip1
         '
-        Me.ContextMenuStrip1.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.BtnCopyText, Me.BtnCopyHex, Me.BtnCopyHexFormatted, ToolStripSeparator2, Me.BtnFind, Me.BtnFindNext, Me.ToolStripMenuItem1, Me.BtnSelectAll, Me.BtnSelectRegion, Me.BtnSelectSector, Me.BtnSelectData, Me.ToolStripSeparator1, Me.BtnAdjustOffset})
+        Me.ContextMenuStrip1.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.BtnCopyHex, Me.BtnCopyText, Me.BtnCopyHexFormatted, Me.BtnCopyEncoded, ToolStripSeparator2, Me.BtnFind, Me.BtnFindNext, Me.ToolStripMenuItem1, Me.BtnSelectAll, Me.BtnSelectRegion, Me.BtnSelectSector, Me.BtnSelectData, Me.ToolStripSeparator1, Me.BtnAdjustOffset})
         Me.ContextMenuStrip1.Name = "ContextMenuStrip1"
-        Me.ContextMenuStrip1.Size = New System.Drawing.Size(259, 242)
+        Me.ContextMenuStrip1.Size = New System.Drawing.Size(259, 286)
         '
         'BtnCopyText
         '
@@ -558,6 +559,12 @@ Partial Class HexViewRawForm
         Me.PanelSectors.TabIndex = 1
         Me.PanelSectors.TabStop = True
         '
+        'BtnCopyEncoded
+        '
+        Me.BtnCopyEncoded.Name = "BtnCopyEncoded"
+        Me.BtnCopyEncoded.Size = New System.Drawing.Size(258, 22)
+        Me.BtnCopyEncoded.Text = "Copy Encoded"
+        '
         'HexViewRawForm
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
@@ -638,4 +645,5 @@ Partial Class HexViewRawForm
     Friend WithEvents ToolStripBtnAdjustOffset As ToolStripButton
     Friend WithEvents ToolStripStatusBits As ToolStripStatusLabel
     Friend WithEvents PanelSectors As DiskImageTool.SelectablePanel
+    Friend WithEvents BtnCopyEncoded As ToolStripMenuItem
 End Class
