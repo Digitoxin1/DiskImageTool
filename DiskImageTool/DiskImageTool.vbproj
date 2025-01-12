@@ -133,6 +133,9 @@
     <Compile Include="Controls\SelectablePanel.vb">
       <SubType>Component</SubType>
     </Compile>
+    <Compile Include="Controls\ToolStripSpringTextBox.vb">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="DiskImage\AddFileOptions.vb" />
     <Compile Include="DiskImage\Modules\EnumDescriptions.vb" />
     <Compile Include="DiskImage\MappedFloppyImage.vb" />

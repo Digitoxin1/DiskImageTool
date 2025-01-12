@@ -688,7 +688,7 @@
     <oemname name="MSDOS3.2"/>
   </bootstrap>
   <bootstrap crc32="AD7A1931" jmp="EB3490" language="German">
-    <oemname name="MSDOS3.2"/>
+    <oemname name="MSDOS3.2" verified="true"/>
   </bootstrap>
   <bootstrap crc32="ECB53499" jmp="EB3490" language="German">
     <oemname name="MSDOS3.2" company="Siemens" description="MS-DOS 3.2"/>

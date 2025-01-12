@@ -125,7 +125,7 @@ Partial Class MainForm
         Me.MenuOptionsExportUnknown = New System.Windows.Forms.ToolStripMenuItem()
         Me.MainMenuUpdateAvailable = New System.Windows.Forms.ToolStripMenuItem()
         Me.ToolStripTop = New System.Windows.Forms.ToolStrip()
-        Me.ToolStripSearchText = New System.Windows.Forms.ToolStripTextBox()
+        Me.ToolStripSearchText = New DiskImageTool.ToolStripSpringTextBox()
         Me.ToolStripOEMNameCombo = New System.Windows.Forms.ToolStripComboBox()
         Me.ToolStripOEMNameLabel = New System.Windows.Forms.ToolStripLabel()
         Me.ToolStripDiskTypeCombo = New System.Windows.Forms.ToolStripComboBox()
@@ -244,7 +244,7 @@ Partial Class MainForm
         'SummaryValue
         '
         SummaryValue.Text = "Value"
-        SummaryValue.Width = 183
+        SummaryValue.Width = 176
         '
         'HashName
         '
@@ -279,11 +279,12 @@ Partial Class MainForm
         '
         FileStartingCluster.Text = "Cluster"
         FileStartingCluster.TextAlign = System.Windows.Forms.HorizontalAlignment.Right
+        FileStartingCluster.Width = 57
         '
         'FileAttrib
         '
         FileAttrib.Text = "Attrib"
-        FileAttrib.Width = 75
+        FileAttrib.Width = 72
         '
         'FileModified
         '
@@ -706,16 +707,19 @@ Partial Class MainForm
         'ToolStripSeparator6
         '
         ToolStripSeparator6.Name = "ToolStripSeparator6"
+        ToolStripSeparator6.Overflow = System.Windows.Forms.ToolStripItemOverflow.Never
         ToolStripSeparator6.Size = New System.Drawing.Size(6, 25)
         '
         'ToolStripSeparator7
         '
         ToolStripSeparator7.Name = "ToolStripSeparator7"
+        ToolStripSeparator7.Overflow = System.Windows.Forms.ToolStripItemOverflow.Never
         ToolStripSeparator7.Size = New System.Drawing.Size(6, 25)
         '
         'ToolStripSeparator8
         '
         ToolStripSeparator8.Name = "ToolStripSeparator8"
+        ToolStripSeparator8.Overflow = System.Windows.Forms.ToolStripItemOverflow.Never
         ToolStripSeparator8.Size = New System.Drawing.Size(6, 25)
         '
         'ToolStripSeparator10
@@ -731,6 +735,7 @@ Partial Class MainForm
         'ToolStripSeparator9
         '
         ToolStripSeparator9.Name = "ToolStripSeparator9"
+        ToolStripSeparator9.Overflow = System.Windows.Forms.ToolStripItemOverflow.Never
         ToolStripSeparator9.Size = New System.Drawing.Size(6, 25)
         '
         'ToolStripSeparator11
@@ -862,6 +867,7 @@ Partial Class MainForm
         '
         'ToolStripTop
         '
+        Me.ToolStripTop.CanOverflow = False
         Me.ToolStripTop.GripStyle = System.Windows.Forms.ToolStripGripStyle.Hidden
         Me.ToolStripTop.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.ToolStripSearchText, ToolStripSearchLabel, Me.ToolStripOEMNameCombo, Me.ToolStripOEMNameLabel, Me.ToolStripDiskTypeCombo, Me.ToolStripDiskTypeLabel, Me.ToolStripOpen, ToolStripSeparator6, Me.ToolStripSave, Me.ToolStripSaveAs, Me.ToolStripSaveAll, ToolStripSeparator7, Me.ToolStripClose, Me.ToolStripCloseAll, ToolStripSeparator8, Me.ToolStripFileProperties, Me.ToolStripExportFile, ToolStripSeparator9, Me.ToolStripUndo, Me.ToolStripRedo, ToolStripSeparator10, Me.ToolStripViewFileText, Me.ToolStripViewFile, Me.ToolStripSeparatorFAT, Me.ToolStripFATCombo})
         Me.ToolStripTop.Location = New System.Drawing.Point(0, 24)
@@ -878,6 +884,7 @@ Partial Class MainForm
         Me.ToolStripSearchText.Font = New System.Drawing.Font("Segoe UI", 9.0!)
         Me.ToolStripSearchText.Margin = New System.Windows.Forms.Padding(1, 0, 0, 0)
         Me.ToolStripSearchText.MaxLength = 255
+        Me.ToolStripSearchText.MaxWidth = 195.0!
         Me.ToolStripSearchText.Name = "ToolStripSearchText"
         Me.ToolStripSearchText.Overflow = System.Windows.Forms.ToolStripItemOverflow.Never
         Me.ToolStripSearchText.Size = New System.Drawing.Size(195, 25)
@@ -915,6 +922,7 @@ Partial Class MainForm
         'ToolStripDiskTypeLabel
         '
         Me.ToolStripDiskTypeLabel.Alignment = System.Windows.Forms.ToolStripItemAlignment.Right
+        Me.ToolStripDiskTypeLabel.Margin = New System.Windows.Forms.Padding(8, 1, 0, 2)
         Me.ToolStripDiskTypeLabel.Name = "ToolStripDiskTypeLabel"
         Me.ToolStripDiskTypeLabel.Overflow = System.Windows.Forms.ToolStripItemOverflow.Never
         Me.ToolStripDiskTypeLabel.Size = New System.Drawing.Size(56, 22)
@@ -926,6 +934,7 @@ Partial Class MainForm
         Me.ToolStripOpen.Image = CType(resources.GetObject("ToolStripOpen.Image"), System.Drawing.Image)
         Me.ToolStripOpen.ImageTransparentColor = System.Drawing.Color.Magenta
         Me.ToolStripOpen.Name = "ToolStripOpen"
+        Me.ToolStripOpen.Overflow = System.Windows.Forms.ToolStripItemOverflow.Never
         Me.ToolStripOpen.Size = New System.Drawing.Size(23, 22)
         Me.ToolStripOpen.Text = "Open"
         '
@@ -935,6 +944,7 @@ Partial Class MainForm
         Me.ToolStripSave.Image = CType(resources.GetObject("ToolStripSave.Image"), System.Drawing.Image)
         Me.ToolStripSave.ImageTransparentColor = System.Drawing.Color.Magenta
         Me.ToolStripSave.Name = "ToolStripSave"
+        Me.ToolStripSave.Overflow = System.Windows.Forms.ToolStripItemOverflow.Never
         Me.ToolStripSave.Size = New System.Drawing.Size(23, 22)
         Me.ToolStripSave.Text = "Save"
         '
@@ -944,6 +954,7 @@ Partial Class MainForm
         Me.ToolStripSaveAs.Image = CType(resources.GetObject("ToolStripSaveAs.Image"), System.Drawing.Image)
         Me.ToolStripSaveAs.ImageTransparentColor = System.Drawing.Color.Magenta
         Me.ToolStripSaveAs.Name = "ToolStripSaveAs"
+        Me.ToolStripSaveAs.Overflow = System.Windows.Forms.ToolStripItemOverflow.Never
         Me.ToolStripSaveAs.Size = New System.Drawing.Size(23, 22)
         Me.ToolStripSaveAs.Text = "Save As"
         '
@@ -953,6 +964,7 @@ Partial Class MainForm
         Me.ToolStripSaveAll.Image = CType(resources.GetObject("ToolStripSaveAll.Image"), System.Drawing.Image)
         Me.ToolStripSaveAll.ImageTransparentColor = System.Drawing.Color.Magenta
         Me.ToolStripSaveAll.Name = "ToolStripSaveAll"
+        Me.ToolStripSaveAll.Overflow = System.Windows.Forms.ToolStripItemOverflow.Never
         Me.ToolStripSaveAll.Size = New System.Drawing.Size(23, 22)
         Me.ToolStripSaveAll.Text = "Save All"
         '
@@ -962,6 +974,7 @@ Partial Class MainForm
         Me.ToolStripClose.Image = CType(resources.GetObject("ToolStripClose.Image"), System.Drawing.Image)
         Me.ToolStripClose.ImageTransparentColor = System.Drawing.Color.Magenta
         Me.ToolStripClose.Name = "ToolStripClose"
+        Me.ToolStripClose.Overflow = System.Windows.Forms.ToolStripItemOverflow.Never
         Me.ToolStripClose.Size = New System.Drawing.Size(23, 22)
         Me.ToolStripClose.Text = "Close"
         '
@@ -971,6 +984,7 @@ Partial Class MainForm
         Me.ToolStripCloseAll.Image = CType(resources.GetObject("ToolStripCloseAll.Image"), System.Drawing.Image)
         Me.ToolStripCloseAll.ImageTransparentColor = System.Drawing.Color.Magenta
         Me.ToolStripCloseAll.Name = "ToolStripCloseAll"
+        Me.ToolStripCloseAll.Overflow = System.Windows.Forms.ToolStripItemOverflow.Never
         Me.ToolStripCloseAll.Size = New System.Drawing.Size(23, 22)
         Me.ToolStripCloseAll.Text = "Close All"
         '
@@ -980,6 +994,7 @@ Partial Class MainForm
         Me.ToolStripFileProperties.Image = CType(resources.GetObject("ToolStripFileProperties.Image"), System.Drawing.Image)
         Me.ToolStripFileProperties.ImageTransparentColor = System.Drawing.Color.Magenta
         Me.ToolStripFileProperties.Name = "ToolStripFileProperties"
+        Me.ToolStripFileProperties.Overflow = System.Windows.Forms.ToolStripItemOverflow.Never
         Me.ToolStripFileProperties.Size = New System.Drawing.Size(23, 22)
         Me.ToolStripFileProperties.Text = "File Properties"
         '
@@ -989,6 +1004,7 @@ Partial Class MainForm
         Me.ToolStripExportFile.Image = CType(resources.GetObject("ToolStripExportFile.Image"), System.Drawing.Image)
         Me.ToolStripExportFile.ImageTransparentColor = System.Drawing.Color.Magenta
         Me.ToolStripExportFile.Name = "ToolStripExportFile"
+        Me.ToolStripExportFile.Overflow = System.Windows.Forms.ToolStripItemOverflow.Never
         Me.ToolStripExportFile.Size = New System.Drawing.Size(23, 22)
         Me.ToolStripExportFile.Text = "Export File"
         '
@@ -998,6 +1014,7 @@ Partial Class MainForm
         Me.ToolStripUndo.Image = CType(resources.GetObject("ToolStripUndo.Image"), System.Drawing.Image)
         Me.ToolStripUndo.ImageTransparentColor = System.Drawing.Color.Magenta
         Me.ToolStripUndo.Name = "ToolStripUndo"
+        Me.ToolStripUndo.Overflow = System.Windows.Forms.ToolStripItemOverflow.Never
         Me.ToolStripUndo.Size = New System.Drawing.Size(23, 22)
         Me.ToolStripUndo.Text = "Undo"
         '
@@ -1007,6 +1024,7 @@ Partial Class MainForm
         Me.ToolStripRedo.Image = CType(resources.GetObject("ToolStripRedo.Image"), System.Drawing.Image)
         Me.ToolStripRedo.ImageTransparentColor = System.Drawing.Color.Magenta
         Me.ToolStripRedo.Name = "ToolStripRedo"
+        Me.ToolStripRedo.Overflow = System.Windows.Forms.ToolStripItemOverflow.Never
         Me.ToolStripRedo.Size = New System.Drawing.Size(23, 22)
         Me.ToolStripRedo.Text = "Redo"
         '
@@ -1016,6 +1034,7 @@ Partial Class MainForm
         Me.ToolStripViewFileText.Image = CType(resources.GetObject("ToolStripViewFileText.Image"), System.Drawing.Image)
         Me.ToolStripViewFileText.ImageTransparentColor = System.Drawing.Color.Magenta
         Me.ToolStripViewFileText.Name = "ToolStripViewFileText"
+        Me.ToolStripViewFileText.Overflow = System.Windows.Forms.ToolStripItemOverflow.Never
         Me.ToolStripViewFileText.Size = New System.Drawing.Size(23, 22)
         Me.ToolStripViewFileText.Text = "View File as Text"
         '
@@ -1025,6 +1044,7 @@ Partial Class MainForm
         Me.ToolStripViewFile.Image = CType(resources.GetObject("ToolStripViewFile.Image"), System.Drawing.Image)
         Me.ToolStripViewFile.ImageTransparentColor = System.Drawing.Color.Magenta
         Me.ToolStripViewFile.Name = "ToolStripViewFile"
+        Me.ToolStripViewFile.Overflow = System.Windows.Forms.ToolStripItemOverflow.Never
         Me.ToolStripViewFile.Size = New System.Drawing.Size(23, 22)
         Me.ToolStripViewFile.Text = "View File"
         '
@@ -1040,7 +1060,6 @@ Partial Class MainForm
         Me.ToolStripFATCombo.DropDownWidth = 25
         Me.ToolStripFATCombo.FlatStyle = System.Windows.Forms.FlatStyle.System
         Me.ToolStripFATCombo.Name = "ToolStripFATCombo"
-        Me.ToolStripFATCombo.Overflow = System.Windows.Forms.ToolStripItemOverflow.Never
         Me.ToolStripFATCombo.Size = New System.Drawing.Size(25, 23)
         '
         'StatusStripBottom
@@ -1135,7 +1154,7 @@ Partial Class MainForm
         Me.ListViewSummary.MultiSelect = False
         Me.ListViewSummary.Name = "ListViewSummary"
         Me.ListViewSummary.OwnerDraw = True
-        Me.ListViewSummary.Size = New System.Drawing.Size(305, 387)
+        Me.ListViewSummary.Size = New System.Drawing.Size(298, 387)
         Me.ListViewSummary.TabIndex = 2
         Me.ListViewSummary.UseCompatibleStateImageBehavior = False
         Me.ListViewSummary.View = System.Windows.Forms.View.Details
@@ -1147,9 +1166,9 @@ Partial Class MainForm
             Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
         Me.ComboImages.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList
         Me.ComboImages.DropDownWidth = 523
-        Me.ComboImages.Location = New System.Drawing.Point(323, 55)
+        Me.ComboImages.Location = New System.Drawing.Point(316, 55)
         Me.ComboImages.Name = "ComboImages"
-        Me.ComboImages.Size = New System.Drawing.Size(598, 21)
+        Me.ComboImages.Size = New System.Drawing.Size(606, 21)
         Me.ComboImages.Sorted = True
         Me.ComboImages.TabIndex = 3
         Me.ComboImages.Visible = False
@@ -1166,7 +1185,7 @@ Partial Class MainForm
         Me.ListViewHashes.MultiSelect = False
         Me.ListViewHashes.Name = "ListViewHashes"
         Me.ListViewHashes.Scrollable = False
-        Me.ListViewHashes.Size = New System.Drawing.Size(305, 101)
+        Me.ListViewHashes.Size = New System.Drawing.Size(298, 101)
         Me.ListViewHashes.TabIndex = 4
         Me.ListViewHashes.TileSize = New System.Drawing.Size(295, 30)
         Me.ListViewHashes.UseCompatibleStateImageBehavior = False
@@ -1179,7 +1198,7 @@ Partial Class MainForm
         Me.LabelDropMessage.AutoSize = True
         Me.LabelDropMessage.BackColor = System.Drawing.SystemColors.Window
         Me.LabelDropMessage.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.75!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.LabelDropMessage.Location = New System.Drawing.Point(522, 307)
+        Me.LabelDropMessage.Location = New System.Drawing.Point(518, 307)
         Me.LabelDropMessage.Name = "LabelDropMessage"
         Me.LabelDropMessage.Size = New System.Drawing.Size(273, 16)
         Me.LabelDropMessage.TabIndex = 8
@@ -1197,10 +1216,10 @@ Partial Class MainForm
         Me.ListViewFiles.Font = New System.Drawing.Font("Microsoft Sans Serif", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.ListViewFiles.FullRowSelect = True
         Me.ListViewFiles.HideSelection = False
-        Me.ListViewFiles.Location = New System.Drawing.Point(323, 82)
+        Me.ListViewFiles.Location = New System.Drawing.Point(316, 82)
         Me.ListViewFiles.Name = "ListViewFiles"
         Me.ListViewFiles.OwnerDraw = True
-        Me.ListViewFiles.Size = New System.Drawing.Size(669, 467)
+        Me.ListViewFiles.Size = New System.Drawing.Size(677, 467)
         Me.ListViewFiles.TabIndex = 7
         Me.ListViewFiles.UseCompatibleStateImageBehavior = False
         Me.ListViewFiles.View = System.Windows.Forms.View.Details
@@ -1349,16 +1368,16 @@ Partial Class MainForm
         Me.ComboImagesFiltered.BackColor = System.Drawing.SystemColors.Window
         Me.ComboImagesFiltered.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList
         Me.ComboImagesFiltered.DropDownWidth = 523
-        Me.ComboImagesFiltered.Location = New System.Drawing.Point(323, 55)
+        Me.ComboImagesFiltered.Location = New System.Drawing.Point(316, 55)
         Me.ComboImagesFiltered.Name = "ComboImagesFiltered"
-        Me.ComboImagesFiltered.Size = New System.Drawing.Size(598, 21)
+        Me.ComboImagesFiltered.Size = New System.Drawing.Size(606, 21)
         Me.ComboImagesFiltered.Sorted = True
         Me.ComboImagesFiltered.TabIndex = 5
         '
         'BtnResetSort
         '
         Me.BtnResetSort.Anchor = CType((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
-        Me.BtnResetSort.Location = New System.Drawing.Point(927, 54)
+        Me.BtnResetSort.Location = New System.Drawing.Point(928, 54)
         Me.BtnResetSort.Name = "BtnResetSort"
         Me.BtnResetSort.Size = New System.Drawing.Size(65, 23)
         Me.BtnResetSort.TabIndex = 6
@@ -1367,7 +1386,7 @@ Partial Class MainForm
         '
         'btnRetry
         '
-        Me.btnRetry.Location = New System.Drawing.Point(223, 75)
+        Me.btnRetry.Location = New System.Drawing.Point(216, 75)
         Me.btnRetry.Name = "btnRetry"
         Me.btnRetry.Size = New System.Drawing.Size(75, 23)
         Me.btnRetry.TabIndex = 3
@@ -1416,7 +1435,7 @@ Partial Class MainForm
         Me.Controls.Add(Me.ListViewFiles)
         Me.Icon = CType(resources.GetObject("$this.Icon"), System.Drawing.Icon)
         Me.MainMenuStrip = MenuStripTop
-        Me.MinimumSize = New System.Drawing.Size(1020, 600)
+        Me.MinimumSize = New System.Drawing.Size(960, 600)
         Me.Name = "MainForm"
         Me.StartPosition = System.Windows.Forms.FormStartPosition.Manual
         Me.Text = "Disk Image Tool"
@@ -1472,7 +1491,7 @@ Partial Class MainForm
     Friend WithEvents MenuFileViewCrosslinked As ToolStripMenuItem
     Friend WithEvents MenuEditExportFile As ToolStripMenuItem
     Friend WithEvents MenuFileExportFile As ToolStripMenuItem
-    Friend WithEvents ToolStripSearchText As ToolStripTextBox
+    Friend WithEvents ToolStripSearchText As ToolStripSpringTextBox
     Friend WithEvents ComboImagesFiltered As ComboBox
     Friend WithEvents MenuFiltersClear As ToolStripMenuItem
     Friend WithEvents ToolStripOEMNameCombo As ToolStripComboBox
