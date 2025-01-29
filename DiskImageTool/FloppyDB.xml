@@ -97,17 +97,22 @@
       <disk md5="08223BB189BD109938D1AE8190E73AB5" disk="1"/>
       <disk md5="B9804935D95DADD510C8047F581F8CD4" disk="2"/>
     </release>
-    <release year="1991" version="1.5, Int. 7.1.91" media="720K" status="V">
-      <disk md5="899FC331FB780F9F5555E53CBF7A2E7B" disk="1" status="U"/>
-      <disk md5="671A3DC0E7C69565D60050270E019439" disk="2" version="1.5, Int. 7.1.91, 1.51, Int. 8.22.91"/>
-      <disk md5="E5EAAC338C6BACABE917E4A7B60AD0F5" disk="3" version="1.5, Int. 7.1.91, 1.51, Int. 8.22.91"/>
-      <disk md5="6D67747ACD6D3A1C118695D000809FFA" disk="4" version="1.5, Int. 7.1.91, 1.51, Int. 8.22.91"/>
+    <release year="1991" version="1.5, Int. 7.1.91">
+      <media media="1.2M" status="V">
+        <disk md5="F7B7A0E352276BD6A0B04F32F8753C71" disk="1"/>"
+        <disk md5="E0FDC283DE1625B5A9F5C6C3C987A4A0" disk="2" version="1.5, Int. 7.1.91, 1.51, Int. 8.22.91"/>
+        <disk md5="1389B6C6927B810A9B16EBAFE66B1DEB" disk="3" version="1.5, Int. 7.1.91, 1.51, Int. 8.22.91"/>
+      </media>
+      <media media="720K" status="V">
+        <disk md5="899FC331FB780F9F5555E53CBF7A2E7B" disk="1"/>
+        <disk md5="671A3DC0E7C69565D60050270E019439" disk="2" version="1.5, Int. 7.1.91, 1.51, Int. 8.22.91"/>
+        <disk md5="E5EAAC338C6BACABE917E4A7B60AD0F5" disk="3" version="1.5, Int. 7.1.91, 1.51, Int. 8.22.91"/>
+        <disk md5="6D67747ACD6D3A1C118695D000809FFA" disk="4" version="1.5, Int. 7.1.91, 1.51, Int. 8.22.91"/>
+      </media>      
     </release>
     <release year="1991" version="1.51, Int. 8.22.91">
       <media media="1.2M" status="U">
-        <disk md5="2B1C4810954FA51432B2115C18D16242" disk="1"/>
-        <disk md5="E0FDC283DE1625B5A9F5C6C3C987A4A0" disk="2"/>
-        <disk md5="1389B6C6927B810A9B16EBAFE66B1DEB" disk="3"/>
+        <disk md5="2B1C4810954FA51432B2115C18D16242" disk="1"/>        
       </media>
       <media media="720K" status="V">
         <disk md5="8C83F4EAD1BCE3ECB7F337183BF6CC55" disk="1"/>
@@ -297,7 +302,7 @@
     </release>
   </title>
   <title name="Alien Legacy" publisher="Sierra On-Line, Inc.">
-    <release year="1994" version="1.0, Int. 5.14.94" media="1.44M" status="U">
+    <release year="1994" version="1.0, Int. 5.14.94" media="1.44M" status="V">
       <disk md5="63829096EE27748916B27820976CF81B" disk="1"/>
       <disk md5="3CB704DED28F1DFB42221F7FD2DC18F0" disk="2"/>
       <disk md5="9A7CA1B1EA461E0668102D3311A0B6BD" disk="3"/>
@@ -3718,7 +3723,7 @@
       <disk md5="46FC067879694EF6831DF48F021F9FA5" disk="9" status="U"/>
       <disk md5="5D88C1BD6793EB048CA942D643A39783" disk="10"/>
     </release>
-    <release year="1993" version="1.0, Int. 2.17.93" media="1.44M" status="U">
+    <release year="1993" version="1.0, Int. 2.17.93" media="1.44M" status="V">
       <disk md5="0A06AA8B5C6FD5442D494729EC96852D" disk="1"/>
       <disk md5="B5EBA5BD1829595DE91E7BFE3FF8E750" disk="2"/>
       <disk md5="CC3BF598D7F1F6B4109A92BAD0CF4A7A" disk="3"/>

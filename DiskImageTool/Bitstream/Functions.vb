@@ -78,17 +78,17 @@ Namespace Bitstream
         End Function
 
         Public Function InferBitRate(BitCount As UInteger) As UShort
-            BitCount = Math.Round(BitCount / 10000) * 10000
+            BitCount = Math.Round(BitCount / 5000) * 5000
 
-            If BitCount <= 130000 Then
+            If BitCount <= 135000 Then
                 Return 250
-            ElseIf BitCount = 170000 Then
+            ElseIf BitCount >= 165000 And BitCount <= 175000 Then
                 Return 500
-            ElseIf BitCount = 200000 Then
+            ElseIf BitCount >= 195000 And BitCount <= 205000 Then
                 Return 500
-            ElseIf BitCount = 400000 Then
+            ElseIf BitCount >= 395000 And BitCount <= 405000 Then
                 Return 1000
-            ElseIf BitCount = 800000 Then
+            ElseIf BitCount >= 795000 And BitCount <= 805000 Then
                 Return 2000
             Else
                 Return 0
@@ -96,30 +96,30 @@ Namespace Bitstream
         End Function
 
         Public Function InferRPM(BitCount As UInteger) As UShort
-            BitCount = Math.Round(BitCount / 10000) * 10000
+            BitCount = Math.Round(BitCount / 5000) * 5000
 
-            If BitCount <= 130000 Then
+            If BitCount <= 135000 Then
                 Return 300
-            ElseIf BitCount = 170000 Then
+            ElseIf BitCount >= 165000 And BitCount <= 175000 Then
                 Return 360
-            ElseIf BitCount = 200000 Then
+            ElseIf BitCount >= 195000 And BitCount <= 205000 Then
                 Return 300
-            ElseIf BitCount = 400000 Then
+            ElseIf BitCount >= 395000 And BitCount <= 405000 Then
                 Return 300
             Else
                 Return 300
             End If
         End Function
         Public Function InferSectorCount(BitCount As UInteger) As UShort
-            BitCount = Math.Round(BitCount / 10000) * 10000
+            BitCount = Math.Round(BitCount / 5000) * 5000
 
-            If BitCount <= 130000 Then
+            If BitCount <= 135000 Then
                 Return 9
-            ElseIf BitCount = 170000 Then
+            ElseIf BitCount >= 165000 And BitCount <= 175000 Then
                 Return 15
-            ElseIf BitCount = 200000 Then
+            ElseIf BitCount >= 195000 And BitCount <= 205000 Then
                 Return 18
-            ElseIf BitCount = 400000 Then
+            ElseIf BitCount >= 395000 And BitCount <= 405000 Then
                 Return 36
             Else
                 Return 0

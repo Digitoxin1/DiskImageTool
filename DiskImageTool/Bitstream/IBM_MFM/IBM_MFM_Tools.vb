@@ -596,15 +596,16 @@
                 Return (2 ^ Size) * 128
             End Function
 
-            Public Function GetTrackFormat(Size As UInteger) As MFMTrackFormat
-                Size = Math.Round(Size / 10000) * 10000
-                If Size = 100000 Then
+            Public Function GetTrackFormat(BitCount As UInteger) As MFMTrackFormat
+                BitCount = Math.Round(BitCount / 5000) * 5000
+
+                If BitCount <= 135000 Then
                     Return MFMTrackFormat.TrackFormatDD
-                ElseIf Size = 170000 Then
+                ElseIf BitCount >= 165000 And BitCount <= 175000 Then
                     Return MFMTrackFormat.TrackFormatHD1200
-                ElseIf Size = 200000 Then
+                ElseIf BitCount >= 195000 And BitCount <= 205000 Then
                     Return MFMTrackFormat.TrackFormatHD
-                ElseIf Size = 400000 Then
+                ElseIf BitCount >= 395000 And BitCount <= 405000 Then
                     Return MFMTrackFormat.TrackFormatED
                 Else
                     Return MFMTrackFormat.TrackFormatUnknown

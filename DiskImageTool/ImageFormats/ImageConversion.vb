@@ -466,7 +466,7 @@ Namespace ImageFormats
                     BitstreamTrack = Image.GetTrack(Track, Side)
 
                     If BitstreamTrack.Decoded Then
-                        Dim TrackFormat = GetTrackFormat(BitstreamTrack.MFMData.Size)
+                        Dim TrackFormat = GetTrackFormat(BitstreamTrack.Bitstream.Length)
 
                         If DiskFormat = MFMTrackFormat.TrackFormatUnknown And TrackFormat <> MFMTrackFormat.TrackFormatUnknown Then
                             DiskFormat = TrackFormat

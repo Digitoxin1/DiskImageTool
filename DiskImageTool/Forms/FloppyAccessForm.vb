@@ -15,6 +15,8 @@ Public Class FloppyAccessForm
     Private _SectorData As SectorData = Nothing
     Private _SectorError As Boolean = False
     Private _TotalBadSectors As UInteger = 0
+    Private _LoadedFileNames As New Dictionary(Of String, ImageData)
+    Private _FileName As String = ""
 
     Public Enum FloppyAccessType
         Read
@@ -51,6 +53,8 @@ Public Class FloppyAccessForm
         Me.Text = StatusTypeString & " " & GetFloppyDiskFormatName(_BPB, False) & " Floppy"
         StatusType.Text = StatusTypeString
 
+        btnAbort.Text = "Abort"
+
         InitTables()
     End Sub
 
@@ -84,6 +88,21 @@ Public Class FloppyAccessForm
         End Get
         Set(value As Boolean)
             _DoVerify = value
+        End Set
+    End Property
+
+    Public ReadOnly Property FileName As String
+        Get
+            Return _FileName
+        End Get
+    End Property
+
+    Public Property LoadedFileNames As Dictionary(Of String, ImageData)
+        Get
+            Return _LoadedFileNames
+        End Get
+        Set(value As Dictionary(Of String, ImageData))
+            _LoadedFileNames = value
         End Set
     End Property
 
@@ -569,10 +588,14 @@ Public Class FloppyAccessForm
                 Exit Sub
             End If
         End If
+
         If Not _Complete Then
             If Not ConfirmAbort() Then
                 Exit Sub
             End If
+            StatusType.Text = "Aborted"
+        Else
+            StatusType.Text = "Complete"
         End If
 
         If _AccessType = FloppyAccessType.Write Then
@@ -580,9 +603,16 @@ Public Class FloppyAccessForm
                 Dim Msg As String = $"Your disk has been written successfully.{vbCrLf}{vbCrLf}Please remove the disk from the drive and write protect it now.{vbCrLf}{vbCrLf}Warning: If you continue without write protecting the disk, The operating system may make modifications to the disk as soon as you close this window."
                 MsgBox(Msg, MsgBoxStyle.Information)
             End If
+        Else
+            If _Complete Then
+                Dim DiskFormat = GetFloppyDiskFormat(_BPB, False)
+                _FileName = FloppyDiskSaveFile(_DiskBuffer, DiskFormat, _LoadedFileNames)
+            End If
         End If
 
-        Me.Hide()
+        btnAbort.Text = "Close"
+
+        'Me.Hide()
     End Sub
 
     Private Sub FloppyAccessForm_Activated(sender As Object, e As EventArgs) Handles Me.Activated
@@ -641,5 +671,4 @@ Public Class FloppyAccessForm
         Public ReadOnly Property Sector As UInteger
         Public Property Status As TrackStatus
     End Class
-
 End Class

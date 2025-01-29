@@ -18,12 +18,11 @@ Module FloppyDiskIO
         If Result Then
             Dim BPB = FloppyDiskGetReadOptions(Owner, FloppyDrive)
             If BPB IsNot Nothing Then
-                Dim FloppyAccessForm As New FloppyAccessForm(FloppyDrive, BPB, FloppyAccessForm.FloppyAccessType.Read)
+                Dim FloppyAccessForm As New FloppyAccessForm(FloppyDrive, BPB, FloppyAccessForm.FloppyAccessType.Read) With {
+                    .LoadedFileNames = LoadedFileNames
+                }
                 FloppyAccessForm.ShowDialog(Owner)
-                If FloppyAccessForm.Complete Then
-                    Dim DiskFormat = GetFloppyDiskFormat(BPB, False)
-                    FileName = FloppyDiskSaveFile(FloppyAccessForm.DiskBuffer, DiskFormat, LoadedFileNames)
-                End If
+                FileName = FloppyAccessForm.FileName
                 FloppyAccessForm.Close()
             End If
             FloppyDrive.Close()
