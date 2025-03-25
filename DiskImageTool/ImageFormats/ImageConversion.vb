@@ -292,8 +292,8 @@ Namespace ImageFormats
             Dim NewTrackCount = TrackCount \ Image.TrackStep
 
             Dim HFE = New HFE.HFEImage(NewTrackCount, Image.SideCount) With {
-                .BitRate = 0,
-                .RPM = 0
+                .BitRate = 250,
+                .RPM = 300
             }
 
             For Track = 0 To TrackCount - 1 Step Image.TrackStep
@@ -392,8 +392,8 @@ Namespace ImageFormats
             Dim NewTrackCount = TrackCount \ Image.TrackStep
 
             Dim MFM = New MFM.MFMImage(NewTrackCount, Image.SideCount, 1) With {
-                .BitRate = 0,
-                .RPM = 0
+                .BitRate = 250,
+                .RPM = 300
             }
 
             For Track = 0 To TrackCount - 1 Step Image.TrackStep
@@ -401,18 +401,28 @@ Namespace ImageFormats
                 For Side = 0 To Image.SideCount - 1
                     BitstreamTrack = Image.GetTrack(Track, Side)
 
-                    Dim DriveSpeed = GetDriveSpeed(BitstreamTrack, Image.TrackStep)
+                    Dim MFMTrack As ImageFormats.MFM.MFMTrack
 
-                    If Track = 0 And Side = 0 Then
-                        MFM.BitRate = DriveSpeed.BitRate
-                        MFM.RPM = DriveSpeed.RPM
+                    If BitstreamTrack.TrackType = BitstreamTrackType.MFM Then
+                        Dim DriveSpeed = GetDriveSpeed(BitstreamTrack, Image.TrackStep)
+
+                        If Track = 0 And Side = 0 Then
+                            MFM.BitRate = DriveSpeed.BitRate
+                            MFM.RPM = DriveSpeed.RPM
+                        End If
+
+                        MFMTrack = New MFM.MFMTrack(NewTrack, Side) With {
+                            .Bitstream = BitstreamTrack.Bitstream,
+                            .BitRate = DriveSpeed.BitRate,
+                            .RPM = DriveSpeed.RPM
+                        }
+                    Else
+                        MFMTrack = New MFM.MFMTrack(NewTrack, Side) With {
+                            .Bitstream = New BitArray(MFMGetSize(MFM.RPM, MFM.BitRate)),
+                            .BitRate = MFM.BitRate,
+                            .RPM = MFM.RPM
+                        }
                     End If
-
-                    Dim MFMTrack = New MFM.MFMTrack(NewTrack, Side) With {
-                        .Bitstream = BitstreamTrack.Bitstream,
-                        .BitRate = DriveSpeed.BitRate,
-                        .RPM = DriveSpeed.RPM
-                    }
 
                     MFM.SetTrack(NewTrack, Side, MFMTrack)
                 Next

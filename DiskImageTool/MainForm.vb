@@ -2279,7 +2279,7 @@ Public Class MainForm
         Dim ReplaceFileForm As New ReplaceFileForm(AvailableSpace, DirectoryEntry.ParentDirectory)
         With ReplaceFileForm
             .SetOriginalFile(DirectoryEntry.GetShortFileName, DirectoryEntry.GetLastWriteDate.DateObject, DirectoryEntry.FileSize)
-            .SetNewFile(DirectoryEntry.ParentDirectory.GetAvailableShortFileName(FileInfo.Name, False), FileInfo.LastWriteTime, FileInfo.Length)
+            .SetNewFile(DirectoryEntry.ParentDirectory.GetAvailableShortFileName(FileInfo.Name, False, DirectoryEntry.Index), FileInfo.LastWriteTime, FileInfo.Length)
             .RefreshText()
             .ShowDialog(Me)
             FormResult = .Result

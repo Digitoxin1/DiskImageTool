@@ -104,7 +104,7 @@
                 _RPM = RPM
                 _DataRate = DataRate
 
-                Dim MaxSize = GetMaxSize(RPM, DataRate)
+                Dim MaxSize = MFMGetSize(RPM, DataRate)
                 Dim Diff = MaxSize - _Bitstream.Length
                 If Diff > 0 Then
                     AddGap(Diff \ 16)
@@ -191,13 +191,6 @@
                 Else
                     Return _Bitstream.Get(_Bitstream.Length - 1)
                 End If
-            End Function
-
-            Private Function GetMaxSize(RPM As UShort, DataRate As UShort) As UInteger
-                Dim MicrosecondsPerRev As Single = 1 / RPM * 60 * 1000000
-                Dim MicrossecondsPerBit As Single = DataRate / 1000
-
-                Return Math.Ceiling(MicrosecondsPerRev * MicrossecondsPerBit / 8) * 16
             End Function
         End Class
     End Namespace

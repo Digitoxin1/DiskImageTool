@@ -754,6 +754,13 @@
                 Return New Byte(-1) {}
             End Function
 
+            Public Function MFMGetSize(RPM As UShort, DataRate As UShort) As UInteger
+                Dim MicrosecondsPerRev As Single = 1 / RPM * 60 * 1000000
+                Dim MicrossecondsPerBit As Single = DataRate / 1000
+
+                Return Math.Ceiling(MicrosecondsPerRev * MicrossecondsPerBit / 8) * 16
+            End Function
+
             Public Function ResizeBitstream(Bitstream As BitArray, Length As UInteger) As BitArray
                 Dim NewBitstream = CType(Bitstream.Clone, BitArray)
                 NewBitstream.Length = Length
