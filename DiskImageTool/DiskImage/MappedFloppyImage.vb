@@ -476,7 +476,10 @@ Namespace DiskImage
                 _ImageSize = _BPB.SectorCount * Disk.BYTES_PER_SECTOR
             Else
                 Data = GetSectorData(0, 0, 2)
-                Dim MediaDescriptor = Data(0)
+                Dim MediaDescriptor = 0
+                If Data(1) = &HFF And Data(2) = &HFF Then
+                    MediaDescriptor = Data(0)
+                End If
                 Dim FATDiskFormat = GetFloppyDiskFomat(MediaDescriptor)
                 If FATDiskFormat <> FloppyDiskFormat.FloppyUnknown Then
                     If _SideCount = 1 Then

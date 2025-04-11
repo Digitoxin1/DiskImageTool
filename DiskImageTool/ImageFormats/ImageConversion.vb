@@ -239,6 +239,8 @@ Namespace ImageFormats
 
         Public Function BitstreamTo86FImage(Image As IBitstreamImage) As D86F.D86FImage
             Dim BitstreamTrack As IBitstreamTrack
+            Dim BitRate As UShort = 250
+            Dim RPM As UShort = 300
 
             Dim TrackCount = GetValidTrackCount(Image, False)
             Dim NewTrackCount = TrackCount \ Image.TrackStep
@@ -246,7 +248,8 @@ Namespace ImageFormats
             Dim D86FImage = New D86F.D86FImage(NewTrackCount, Image.SideCount) With {
                 .BitcellMode = True,
                 .AlternateBitcellCalculation = True,
-                .HasSurfaceData = Image.HasSurfaceData
+                .HasSurfaceData = Image.HasSurfaceData,
+                .Hole = D86F.DiskHole.DD
             }
 
             For Track = 0 To TrackCount - 1 Step Image.TrackStep
@@ -254,28 +257,36 @@ Namespace ImageFormats
                 For Side = 0 To Image.SideCount - 1
                     BitstreamTrack = Image.GetTrack(Track, Side)
 
-                    If Track = 0 And Side = 0 Then
-                        If BitstreamTrack.MFMData IsNot Nothing Then
-                            D86FImage.Hole = Get86FHole(GetTrackFormat(BitstreamTrack.MFMData.Size))
+                    Dim D86FTrack As ImageFormats.D86F.D86FTrack
+
+                    If BitstreamTrack.TrackType = BitstreamTrackType.MFM Or BitstreamTrack.TrackType = BitstreamTrackType.FM Then
+                        Dim DriveSpeed = GetDriveSpeed(BitstreamTrack, Image.TrackStep)
+
+                        If Track = 0 And Side = 0 Then
+                            If BitstreamTrack.MFMData IsNot Nothing Then
+                                D86FImage.Hole = Get86FHole(GetTrackFormat(BitstreamTrack.MFMData.Size))
+                            End If
+                            BitRate = DriveSpeed.BitRate
+                            RPM = DriveSpeed.RPM
                         End If
-                    End If
 
-                    Dim DriveSpeed = GetDriveSpeed(BitstreamTrack, Image.TrackStep)
+                        Dim IsMFM As Boolean = BitstreamTrack.TrackType = BitstreamTrackType.MFM
 
-                    Dim IsMFM As Boolean = BitstreamTrack.TrackType = BitstreamTrackType.MFM
+                        D86FTrack = New D86F.D86FTrack(NewTrack, Side, 0) With {
+                            .Bitstream = BitstreamTrack.Bitstream,
+                            .BitCellCount = BitstreamTrack.Bitstream.Length,
+                            .BitRate = D86F.GetBitRate(DriveSpeed.BitRate, IsMFM),
+                            .RPM = D86F.GetRPM(DriveSpeed.RPM),
+                            .SurfaceData = BitstreamTrack.SurfaceData
+                        }
 
-                    Dim D86FTrack = New D86F.D86FTrack(NewTrack, Side, 0) With {
-                        .Bitstream = BitstreamTrack.Bitstream,
-                        .BitCellCount = BitstreamTrack.Bitstream.Length,
-                        .BitRate = D86F.GetBitRate(DriveSpeed.BitRate, IsMFM),
-                        .RPM = D86F.GetRPM(DriveSpeed.RPM),
-                        .SurfaceData = BitstreamTrack.SurfaceData
-                    }
-
-                    If BitstreamTrack.TrackType = BitstreamTrackType.MFM Then
-                        D86FTrack.Encoding = D86F.Encoding.MFM
+                        If BitstreamTrack.TrackType = BitstreamTrackType.MFM Then
+                            D86FTrack.Encoding = D86F.Encoding.MFM
+                        Else
+                            D86FTrack.Encoding = D86F.Encoding.FM
+                        End If
                     Else
-                        D86FTrack.Encoding = D86F.Encoding.FM
+                        D86FTrack = GetEmpty86FTrack(Track, Side, BitRate, RPM)
                     End If
 
                     D86FImage.SetTrack(NewTrack, Side, D86FTrack)
@@ -291,7 +302,9 @@ Namespace ImageFormats
             Dim TrackCount = GetValidTrackCount(Image, False)
             Dim NewTrackCount = TrackCount \ Image.TrackStep
 
-            Dim HFE = New HFE.HFEImage(NewTrackCount, Image.SideCount) With {
+            Dim TotalTrackCount = AdjustTrackCount(NewTrackCount)
+
+            Dim HFE = New HFE.HFEImage(TotalTrackCount, Image.SideCount) With {
                 .BitRate = 250,
                 .RPM = 300
             }
@@ -301,23 +314,38 @@ Namespace ImageFormats
                 For Side = 0 To Image.SideCount - 1
                     BitstreamTrack = Image.GetTrack(Track, Side)
 
-                    Dim DriveSpeed = GetDriveSpeed(BitstreamTrack, Image.TrackStep)
+                    Dim HFETrack As ImageFormats.HFE.HFETrack
 
-                    If Track = 0 And Side = 0 Then
-                        HFE.BitRate = DriveSpeed.BitRate
-                        HFE.RPM = DriveSpeed.RPM
-                        HFE.FloppyInterfaceMode = GetHFEFloppyInterfaceMode(GetTrackFormat(BitstreamTrack.Bitstream.Length))
+                    If BitstreamTrack.TrackType = BitstreamTrackType.MFM Or BitstreamTrack.TrackType = BitstreamTrackType.FM Then
+                        Dim DriveSpeed = GetDriveSpeed(BitstreamTrack, Image.TrackStep)
+
+                        If Track = 0 And Side = 0 Then
+                            HFE.BitRate = DriveSpeed.BitRate
+                            HFE.RPM = DriveSpeed.RPM
+                            HFE.FloppyInterfaceMode = GetHFEFloppyInterfaceMode(GetTrackFormat(BitstreamTrack.Bitstream.Length))
+                        End If
+
+                        HFETrack = New HFE.HFETrack(NewTrack, Side) With {
+                            .Bitstream = BitstreamTrack.Bitstream,
+                            .BitRate = DriveSpeed.BitRate,
+                            .RPM = DriveSpeed.RPM
+                        }
+                    Else
+                        HFETrack = GetEmptyHFETrack(NewTrack, Side, HFE.BitRate, HFE.RPM)
                     End If
-
-                    Dim HFETrack = New HFE.HFETrack(NewTrack, Side) With {
-                        .Bitstream = BitstreamTrack.Bitstream,
-                        .BitRate = DriveSpeed.BitRate,
-                        .RPM = DriveSpeed.RPM
-                    }
 
                     HFE.SetTrack(NewTrack, Side, HFETrack)
                 Next
             Next
+
+            If NewTrackCount < TotalTrackCount Then
+                For Track = NewTrackCount To TotalTrackCount - 1
+                    For Side = 0 To Image.SideCount - 1
+                        Dim HFETrack = GetEmptyHFETrack(Track, Side, HFE.BitRate, HFE.RPM)
+                        HFE.SetTrack(Track, Side, HFETrack)
+                    Next
+                Next
+            End If
 
             Return HFE
         End Function
@@ -391,7 +419,9 @@ Namespace ImageFormats
             Dim TrackCount = GetValidTrackCount(Image, True)
             Dim NewTrackCount = TrackCount \ Image.TrackStep
 
-            Dim MFM = New MFM.MFMImage(NewTrackCount, Image.SideCount, 1) With {
+            Dim TotalTrackCount = AdjustTrackCount(NewTrackCount)
+
+            Dim MFM = New MFM.MFMImage(TotalTrackCount, Image.SideCount, 1) With {
                 .BitRate = 250,
                 .RPM = 300
             }
@@ -417,22 +447,29 @@ Namespace ImageFormats
                             .RPM = DriveSpeed.RPM
                         }
                     Else
-                        MFMTrack = New MFM.MFMTrack(NewTrack, Side) With {
-                            .Bitstream = New BitArray(MFMGetSize(MFM.RPM, MFM.BitRate)),
-                            .BitRate = MFM.BitRate,
-                            .RPM = MFM.RPM
-                        }
+                        MFMTrack = GetEmptyMFMTrack(NewTrack, Side, MFM.BitRate, MFM.RPM)
                     End If
 
                     MFM.SetTrack(NewTrack, Side, MFMTrack)
                 Next
             Next
 
+            If NewTrackCount < TotalTrackCount Then
+                For Track = NewTrackCount To TotalTrackCount - 1
+                    For Side = 0 To Image.SideCount - 1
+                        Dim MFMTrack = GetEmptyMFMTrack(Track, Side, MFM.BitRate, MFM.RPM)
+                        MFM.SetTrack(Track, Side, MFMTrack)
+                    Next
+                Next
+            End If
+
             Return MFM
         End Function
 
         Public Function BitstreamToPRIImage(Image As IBitstreamImage) As PRI.PRIImage
             Dim BitstreamTrack As IBitstreamTrack
+            Dim BitRate As UShort = 250
+            Dim RPM As UShort = 300
 
             Dim TrackCount = GetValidTrackCount(Image, True)
             Dim NewTrackCount = TrackCount \ Image.TrackStep
@@ -444,8 +481,17 @@ Namespace ImageFormats
                 For Side = 0 To Image.SideCount - 1
                     BitstreamTrack = Image.GetTrack(Track, Side)
 
+                    Dim PRITrack As ImageFormats.PRI.PRITrack
+
                     If BitstreamTrack.Decoded Then
-                        Dim PRITrack = New PRI.PRITrack With {
+                        Dim DriveSpeed = GetDriveSpeed(BitstreamTrack, Image.TrackStep)
+
+                        If Track = 0 And Side = 0 Then
+                            BitRate = DriveSpeed.BitRate
+                            RPM = DriveSpeed.RPM
+                        End If
+
+                        PRITrack = New PRI.PRITrack With {
                             .Track = NewTrack,
                             .Side = Side,
                             .Length = BitstreamTrack.Bitstream.Length,
@@ -453,8 +499,11 @@ Namespace ImageFormats
                             .Bitstream = BitstreamTrack.Bitstream,
                             .SurfaceData = BitstreamTrack.SurfaceData
                         }
-                        PRI.AddTrack(PRITrack)
+                    Else
+                        PRITrack = GetEmptyPRITrack(NewTrack, Side, BitRate, RPM)
                     End If
+
+                    PRI.AddTrack(PRITrack)
                 Next
             Next
 
@@ -559,6 +608,20 @@ Namespace ImageFormats
             Return Transcopy
         End Function
 
+        Private Function AdjustTrackCount(TrackCount As UShort) As UShort
+            Dim NewTrackCount As UShort
+
+            If TrackCount < 40 Then
+                NewTrackCount = 40
+            ElseIf TrackCount > 41 And TrackCount < 80 Then
+                NewTrackCount = 80
+            Else
+                NewTrackCount = TrackCount
+            End If
+
+            Return NewTrackCount
+        End Function
+
         Private Function Get86FHole(TrackFormat As MFMTrackFormat) As D86F.DiskHole
             Select Case TrackFormat
                 Case MFMTrackFormat.TrackFormatDD
@@ -637,6 +700,51 @@ Namespace ImageFormats
             End Select
 
             Return DriveSpeed
+        End Function
+
+        Private Function GetEmpty86FTrack(Track As UShort, Side As Byte, BitRate As UShort, RPM As UShort) As D86F.D86FTrack
+            Dim Bitstream = New BitArray(MFMGetSize(RPM, BitRate))
+
+            Dim D86FTrack = New D86F.D86FTrack(Track, Side, 0) With {
+                .Bitstream = Bitstream,
+                .BitCellCount = Bitstream.Length,
+                .BitRate = D86F.GetBitRate(BitRate, True),
+                .RPM = D86F.GetRPM(RPM)
+            }
+
+            Return D86FTrack
+        End Function
+
+        Private Function GetEmptyHFETrack(Track As UShort, Side As Byte, BitRate As UShort, RPM As UShort) As HFE.HFETrack
+            Dim HFETrack = New HFE.HFETrack(Track, Side) With {
+                .Bitstream = New BitArray(MFMGetSize(RPM, BitRate)),
+                .BitRate = BitRate,
+                .RPM = RPM
+            }
+            Return HFETrack
+        End Function
+
+        Private Function GetEmptyMFMTrack(Track As UShort, Side As Byte, BitRate As UShort, RPM As UShort) As MFM.MFMTrack
+            Dim MFMTrack = New MFM.MFMTrack(Track, Side) With {
+                .Bitstream = New BitArray(MFMGetSize(RPM, BitRate)),
+                .BitRate = BitRate,
+                .RPM = RPM
+            }
+            Return MFMTrack
+        End Function
+
+        Private Function GetEmptyPRITrack(Track As UShort, Side As Byte, BitRate As UShort, RPM As UShort) As PRI.PRITrack
+            Dim Bitstream = New BitArray(MFMGetSize(RPM, BitRate))
+
+            Dim PRITrack = New PRI.PRITrack With {
+                .Track = Track,
+                .Side = Side,
+                .Length = Bitstream.Length,
+                .BitClockRate = BitRate * 2000,
+                .Bitstream = Bitstream,
+                .SurfaceData = Nothing
+            }
+            Return PRITrack
         End Function
 
         Private Function GetHFEFloppyInterfaceMode(TrackFormat As MFMTrackFormat) As HFE.HFEFloppyinterfaceMode
