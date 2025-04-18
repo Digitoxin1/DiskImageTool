@@ -26,7 +26,7 @@ Module SummaryPanel
     Public Sub PopulateSummaryPanelMain(ListViewSummary As ListView, Disk As Disk, TitleDB As FloppyDB, BootStrapDB As BootstrapDB, MD5 As String)
         Dim TitleFound As Boolean = False
 
-        If TitleDB.TitleCount > 0 Then
+        If My.Settings.DisplayTitles AndAlso TitleDB.TitleCount > 0 Then
             Dim TitleFindResult = TitleDB.TitleFind(MD5)
             If TitleFindResult.TitleData IsNot Nothing Then
                 TitleFound = True

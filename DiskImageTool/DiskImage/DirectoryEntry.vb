@@ -351,7 +351,12 @@
 
             Dim UseTransaction As Boolean = _Disk.BeginTransaction
 
-            'Load file into buffer, padding with empty space if needed            
+
+            'Load file into buffer, padding with empty space if needed
+            'Dim NewFileSize = Math.Ceiling(FileSize / ClusterSize) * ClusterSize
+            'If NewFileSize > Me.FileSize Then
+            '    NewFileSize = Me.FileSize
+            'End If
             Dim FileBuffer = ReadFileIntoBuffer(FileInfo, FileSize, FillChar)
 
             Me.FileSize = FileSize

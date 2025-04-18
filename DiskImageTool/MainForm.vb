@@ -371,7 +371,7 @@ Public Class MainForm
             Content = Encoding.UTF7.GetString(Stream.GetBuffer)
         End Using
 
-        Dim frmTextView = New TextViewForm(Caption, Content)
+        Dim frmTextView = New TextViewForm(Caption, Content, False, False)
         frmTextView.ShowDialog()
     End Sub
 
@@ -908,7 +908,7 @@ Public Class MainForm
 
         Dim Content = ImageCompare.CompareImages(ImageData1, ImageData2)
 
-        Dim frmTextView = New TextViewForm("Image Comparison", Content)
+        Dim frmTextView = New TextViewForm("Image Comparison", Content, False, False)
         frmTextView.ShowDialog()
     End Sub
 
@@ -1152,7 +1152,7 @@ Public Class MainForm
             Exit Sub
         End Try
 
-        Dim frmTextView = New TextViewForm("Change Log", ChangeLogString)
+        Dim frmTextView = New TextViewForm("Change Log", ChangeLogString, False, False)
         frmTextView.ShowDialog()
     End Sub
 
@@ -1595,7 +1595,7 @@ Public Class MainForm
         Next
         TrackLayout.AppendLine(FirstTrack & "-" & Track - 1 & ":" & PrevTrackString)
 
-        Dim frmTextView = New TextViewForm("Tracklayout", TrackLayout.ToString)
+        Dim frmTextView = New TextViewForm("Tracklayout", TrackLayout.ToString, True, True, "tracklayout.txt")
         frmTextView.ShowDialog()
     End Sub
 
@@ -3365,6 +3365,7 @@ Public Class MainForm
         MenuOptionsCreateBackup.Checked = My.Settings.CreateBackups
         MenuOptionsCheckUpdate.Checked = My.Settings.CheckUpdateOnStartup
         MenuOptionsDragDrop.Checked = My.Settings.DragAndDrop
+        MenuOptionsDisplayTitles.Checked = My.Settings.DisplayTitles
 
         RefreshDiskButtons(Nothing)
 
@@ -4341,6 +4342,14 @@ Public Class MainForm
 
     Private Sub MenuOptionsDragDrop_CheckStateChanged(sender As Object, e As EventArgs) Handles MenuOptionsDragDrop.CheckStateChanged
         My.Settings.DragAndDrop = MenuOptionsDragDrop.Checked
+    End Sub
+
+    Private Sub MenuOptionsDisplayTitles_CheckStateChanged(sender As Object, e As EventArgs) Handles MenuOptionsDisplayTitles.CheckStateChanged
+        My.Settings.DisplayTitles = MenuOptionsDisplayTitles.Checked
+
+        If _CurrentImage IsNot Nothing Then
+            PopulateSummary(_CurrentImage)
+        End If
     End Sub
 
     Private Sub MenuOptionsExportUnknown_CheckStateChanged(sender As Object, e As EventArgs) Handles MenuOptionsExportUnknown.CheckStateChanged

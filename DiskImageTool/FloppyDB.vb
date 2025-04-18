@@ -21,7 +21,7 @@ Public Class FloppyDB
     End Sub
 
     Public Sub AddTile(FileData As FileNameData, Media As String, MD5 As String)
-        If Not FileData.Cracked And FileData.StatusString <> "MM" Then
+        If Not FileData.Cracked And FileData.StatusString <> "M" Then
             If _NewXMLDoc Is Nothing Then
                 _NewXMLDoc = LoadXML(DB_FILE_NAME_NEW)
             End If

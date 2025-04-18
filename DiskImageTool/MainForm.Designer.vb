@@ -188,6 +188,7 @@ Partial Class MainForm
         Me.MenuDirectoryView = New System.Windows.Forms.ToolStripMenuItem()
         Me.MenuDirectoryImportFiles = New System.Windows.Forms.ToolStripMenuItem()
         Me.MenuDirectoryNewDirectory = New System.Windows.Forms.ToolStripMenuItem()
+        Me.MenuOptionsDisplayTitles = New System.Windows.Forms.ToolStripMenuItem()
         SummaryName = CType(New System.Windows.Forms.ColumnHeader(), System.Windows.Forms.ColumnHeader)
         SummaryValue = CType(New System.Windows.Forms.ColumnHeader(), System.Windows.Forms.ColumnHeader)
         HashName = CType(New System.Windows.Forms.ColumnHeader(), System.Windows.Forms.ColumnHeader)
@@ -819,7 +820,7 @@ Partial Class MainForm
         '
         'MainMenuOptions
         '
-        Me.MainMenuOptions.DropDownItems.AddRange(New System.Windows.Forms.ToolStripItem() {Me.MenuOptionsCreateBackup, Me.MenuOptionsCheckUpdate, Me.MenuOptionsDragDrop, Me.MenuOptionsSeparatorDebug, Me.MenuOptionsExportUnknown})
+        Me.MainMenuOptions.DropDownItems.AddRange(New System.Windows.Forms.ToolStripItem() {Me.MenuOptionsCreateBackup, Me.MenuOptionsCheckUpdate, Me.MenuOptionsDragDrop, Me.MenuOptionsDisplayTitles, Me.MenuOptionsSeparatorDebug, Me.MenuOptionsExportUnknown})
         Me.MainMenuOptions.Name = "MainMenuOptions"
         Me.MainMenuOptions.Size = New System.Drawing.Size(61, 20)
         Me.MainMenuOptions.Text = "&Options"
@@ -1417,6 +1418,13 @@ Partial Class MainForm
         Me.MenuDirectoryNewDirectory.Size = New System.Drawing.Size(150, 22)
         Me.MenuDirectoryNewDirectory.Text = "&New Directory"
         '
+        'MenuOptionsDisplayTitles
+        '
+        Me.MenuOptionsDisplayTitles.CheckOnClick = True
+        Me.MenuOptionsDisplayTitles.Name = "MenuOptionsDisplayTitles"
+        Me.MenuOptionsDisplayTitles.Size = New System.Drawing.Size(248, 22)
+        Me.MenuOptionsDisplayTitles.Text = "Display Titles"
+        '
         'MainForm
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
@@ -1576,4 +1584,5 @@ Partial Class MainForm
     Friend WithEvents MenuToolsTrackLayout As ToolStripMenuItem
     Friend WithEvents MenuOptionsCheckUpdate As ToolStripMenuItem
     Friend WithEvents MainMenuUpdateAvailable As ToolStripMenuItem
+    Friend WithEvents MenuOptionsDisplayTitles As ToolStripMenuItem
 End Class
