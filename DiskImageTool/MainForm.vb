@@ -3027,6 +3027,7 @@ Public Class MainForm
         If CurrentImage IsNot Nothing AndAlso CurrentImage.Disk IsNot Nothing AndAlso CurrentImage.Disk.IsValidImage Then
             Dim Compare = CurrentImage.Disk.CheckImageSize
             MenuToolsFixImageSize.Enabled = CurrentImage.Disk.Image.CanResize And Compare <> 0
+            MenuToolsFixImageSize.Text = IIf(Compare < 0, "&Pad Image Size", "&Truncate Image")
             If CurrentImage.Disk.RootDirectory.Data.HasBootSector Then
                 Dim BootSectorBytes = CurrentImage.Disk.Image.GetBytes(CurrentImage.Disk.RootDirectory.Data.BootSectorOffset, BootSector.BOOT_SECTOR_SIZE)
                 MenuToolsRestoreBootSector.Enabled = Not BootSectorBytes.CompareTo(CurrentImage.Disk.BootSector.Data)
@@ -3042,6 +3043,7 @@ Public Class MainForm
             RefreshFixImageSubMenu(CurrentImage.Disk)
         Else
             MenuToolsFixImageSize.Enabled = False
+            MenuToolsFixImageSize.Text = "&Truncate Image"
             MenuToolsRestructureImage.Enabled = False
             MenuToolsFixImageSizeSubMenu.Enabled = False
             MenuToolsFixImageSizeSubMenu.Visible = False
@@ -3237,6 +3239,8 @@ Public Class MainForm
             ElseIf Disk.DiskFormat = FloppyDiskFormat.Floppy180 And DiskFormatBySize = FloppyDiskFormat.Floppy360 Then
                 EnableRestructureImage = True
             ElseIf Disk.DiskFormat = FloppyDiskFormat.Floppy320 And DiskFormatBySize = FloppyDiskFormat.Floppy360 Then
+                EnableRestructureImage = True
+            ElseIf Disk.DiskFormat = FloppyDiskFormat.Floppy720 And DiskFormatBySize = FloppyDiskFormat.Floppy1440 Then
                 EnableRestructureImage = True
             End If
         End If

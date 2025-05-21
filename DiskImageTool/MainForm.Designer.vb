@@ -121,6 +121,7 @@ Partial Class MainForm
         Me.MenuOptionsCreateBackup = New System.Windows.Forms.ToolStripMenuItem()
         Me.MenuOptionsCheckUpdate = New System.Windows.Forms.ToolStripMenuItem()
         Me.MenuOptionsDragDrop = New System.Windows.Forms.ToolStripMenuItem()
+        Me.MenuOptionsDisplayTitles = New System.Windows.Forms.ToolStripMenuItem()
         Me.MenuOptionsSeparatorDebug = New System.Windows.Forms.ToolStripSeparator()
         Me.MenuOptionsExportUnknown = New System.Windows.Forms.ToolStripMenuItem()
         Me.MainMenuUpdateAvailable = New System.Windows.Forms.ToolStripMenuItem()
@@ -188,7 +189,6 @@ Partial Class MainForm
         Me.MenuDirectoryView = New System.Windows.Forms.ToolStripMenuItem()
         Me.MenuDirectoryImportFiles = New System.Windows.Forms.ToolStripMenuItem()
         Me.MenuDirectoryNewDirectory = New System.Windows.Forms.ToolStripMenuItem()
-        Me.MenuOptionsDisplayTitles = New System.Windows.Forms.ToolStripMenuItem()
         SummaryName = CType(New System.Windows.Forms.ColumnHeader(), System.Windows.Forms.ColumnHeader)
         SummaryValue = CType(New System.Windows.Forms.ColumnHeader(), System.Windows.Forms.ColumnHeader)
         HashName = CType(New System.Windows.Forms.ColumnHeader(), System.Windows.Forms.ColumnHeader)
@@ -597,7 +597,7 @@ Partial Class MainForm
         '
         Me.MenuToolsFixImageSize.Name = "MenuToolsFixImageSize"
         Me.MenuToolsFixImageSize.Size = New System.Drawing.Size(289, 22)
-        Me.MenuToolsFixImageSize.Text = "Fix Image &Size"
+        Me.MenuToolsFixImageSize.Text = "&Truncate Image"
         '
         'MenuToolsFixImageSizeSubMenu
         '
@@ -845,6 +845,13 @@ Partial Class MainForm
         Me.MenuOptionsDragDrop.Name = "MenuOptionsDragDrop"
         Me.MenuOptionsDragDrop.Size = New System.Drawing.Size(248, 22)
         Me.MenuOptionsDragDrop.Text = "Import using Drag and Drop"
+        '
+        'MenuOptionsDisplayTitles
+        '
+        Me.MenuOptionsDisplayTitles.CheckOnClick = True
+        Me.MenuOptionsDisplayTitles.Name = "MenuOptionsDisplayTitles"
+        Me.MenuOptionsDisplayTitles.Size = New System.Drawing.Size(248, 22)
+        Me.MenuOptionsDisplayTitles.Text = "Display Titles"
         '
         'MenuOptionsSeparatorDebug
         '
@@ -1417,13 +1424,6 @@ Partial Class MainForm
         Me.MenuDirectoryNewDirectory.Name = "MenuDirectoryNewDirectory"
         Me.MenuDirectoryNewDirectory.Size = New System.Drawing.Size(150, 22)
         Me.MenuDirectoryNewDirectory.Text = "&New Directory"
-        '
-        'MenuOptionsDisplayTitles
-        '
-        Me.MenuOptionsDisplayTitles.CheckOnClick = True
-        Me.MenuOptionsDisplayTitles.Name = "MenuOptionsDisplayTitles"
-        Me.MenuOptionsDisplayTitles.Size = New System.Drawing.Size(248, 22)
-        Me.MenuOptionsDisplayTitles.Text = "Display Titles"
         '
         'MainForm
         '
