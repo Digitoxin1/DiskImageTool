@@ -91,8 +91,8 @@
         Public Overrides Function GetContent() As Byte() Implements IDirectory.GetContent
             Dim SectorStart = Disk.BPB.RootDirectoryRegionStart
             Dim SectorEnd = Disk.BPB.DataRegionStart
-            Dim Length = Disk.SectorToBytes(SectorEnd - SectorStart)
-            Dim Offset = Disk.SectorToBytes(SectorStart)
+            Dim Length = Disk.BPB.SectorToBytes(SectorEnd - SectorStart)
+            Dim Offset = Disk.BPB.SectorToBytes(SectorStart)
 
             Return Disk.Image.GetBytes(Offset, Length)
         End Function
@@ -205,8 +205,8 @@
         End Function
 
         Private Sub InitializeDirectoryData()
-            Dim OffsetStart As UInteger = Disk.SectorToBytes(Disk.BPB.RootDirectoryRegionStart)
-            Dim OffsetEnd As UInteger = Disk.SectorToBytes(Disk.BPB.DataRegionStart)
+            Dim OffsetStart As UInteger = Disk.BPB.SectorToBytes(Disk.BPB.RootDirectoryRegionStart)
+            Dim OffsetEnd As UInteger = Disk.BPB.SectorToBytes(Disk.BPB.DataRegionStart)
 
             DirectoryBase.GetDirectoryData(Me, Me, OffsetStart, OffsetEnd, True)
         End Sub

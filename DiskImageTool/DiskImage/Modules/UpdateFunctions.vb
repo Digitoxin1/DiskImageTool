@@ -127,14 +127,14 @@
             Dim ParamsBySize = GetFloppyDiskParams(Disk.Image.Length)
 
             Dim DataOffset As UInteger = 0
-            For Offset As UInteger = 0 To Disk.Image.Length - 1 Step Disk.BYTES_PER_SECTOR
-                Dim Sector As UInteger = Offset \ Disk.BYTES_PER_SECTOR
+            For Offset As UInteger = 0 To Disk.Image.Length - 1 Step Disk.BPB.BytesPerSector
+                Dim Sector As UInteger = Offset \ Disk.BPB.BytesPerSector
                 Dim TrackSector As UShort = Sector Mod ParamsBySize.SectorsPerTrack
                 Dim Track As UShort = Sector \ ParamsBySize.SectorsPerTrack
                 Dim Side As UShort = Track Mod ParamsBySize.NumberOfHeads
                 If TrackSector < Params.SectorsPerTrack And Side < Params.NumberOfHeads Then
-                    Disk.Image.CopyTo(Offset, Data, DataOffset, Disk.BYTES_PER_SECTOR)
-                    DataOffset += Disk.BYTES_PER_SECTOR
+                    Disk.Image.CopyTo(Offset, Data, DataOffset, Disk.BPB.BytesPerSector)
+                    DataOffset += Disk.BPB.BytesPerSector
                 End If
             Next
 

@@ -226,8 +226,8 @@ Module HexViews
         End If
 
         For Index As Byte = 0 To NumberOfFATs - 1
-            Dim Length As UInteger = Disk.SectorToBytes(Disk.BPB.SectorsPerFAT)
-            Dim Start As UInteger = Disk.SectorToBytes(Disk.BPB.FATRegionStart) + Length * Index
+            Dim Length As UInteger = Disk.BPB.SectorToBytes(Disk.BPB.SectorsPerFAT)
+            Dim Start As UInteger = Disk.BPB.SectorToBytes(Disk.BPB.FATRegionStart) + Length * Index
             Dim Data = Disk.Image.GetBytes(Start, Length)
 
             HexViewSectorData.SectorData.AddBlockByOffset(Start, Length, "FAT " & Index + 1)
@@ -269,8 +269,8 @@ Module HexViews
             Dim SectorBlock = HexViewSectorData.SectorData.GetBlock(Index)
             Dim HighlightedRegions As New HighlightedRegions
             HexViewSectorData.HighlightedRegionList.Add(HighlightedRegions)
-            Dim OffsetStart As UInteger = Disk.SectorToBytes(SectorBlock.SectorStart)
-            Dim OffsetEnd As UInteger = Disk.SectorToBytes(SectorBlock.SectorStart + SectorBlock.SectorCount) - 1
+            Dim OffsetStart As UInteger = Disk.BPB.SectorToBytes(SectorBlock.SectorStart)
+            Dim OffsetEnd As UInteger = Disk.BPB.SectorToBytes(SectorBlock.SectorStart + SectorBlock.SectorCount) - 1
             For Offset As UInteger = OffsetStart To OffsetEnd Step DirectoryEntry.DIRECTORY_ENTRY_SIZE
                 Dim FirstByte = Disk.Image.GetByte(Offset)
                 If FirstByte = 0 Then
@@ -338,8 +338,8 @@ Module HexViews
                 Dim BytesRemaining = FileSize
                 For J = 0 To SectorBlock.SectorCount - 1
                     Dim Sector = SectorBlock.SectorStart + J
-                    Dim BlockOffset = J * Disk.BYTES_PER_SECTOR
-                    Dim BlockSize = Math.Min(BytesRemaining, Disk.BYTES_PER_SECTOR)
+                    Dim BlockOffset = J * Disk.BPB.BytesPerSector
+                    Dim BlockSize = Math.Min(BytesRemaining, Disk.BPB.BytesPerSector)
                     If BlockSize > 0 Then
                         Dim Cluster = Disk.BPB.SectorToCluster(Sector)
                         If Disk.RootDirectory.FATAllocation.FileAllocation.ContainsKey(Cluster) Then

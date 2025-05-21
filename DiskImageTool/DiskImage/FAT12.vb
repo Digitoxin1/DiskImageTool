@@ -43,8 +43,8 @@
         Public Sub InitializeFAT(BPB As BiosParameterBlock)
             _BPB = BPB
             If BPB.IsValid Then
-                _Offset = (BPB.FATRegionStart + (BPB.SectorsPerFAT * _Index)) * Disk.BYTES_PER_SECTOR
-                _Size = BPB.SectorsPerFAT * Disk.BYTES_PER_SECTOR
+                _Offset = (BPB.FATRegionStart + (BPB.SectorsPerFAT * _Index)) * BPB.BytesPerSector
+                _Size = BPB.SectorsPerFAT * BPB.BytesPerSector
                 _Entries = BPB.NumberOfFATEntries + 2
                 _BytesPerCluster = BPB.BytesPerCluster
 

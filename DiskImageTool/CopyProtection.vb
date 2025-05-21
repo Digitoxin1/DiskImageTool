@@ -14,10 +14,10 @@ Module Copy_Protection
         End If
         If Not ProtectionFound AndAlso BadSectors.Count >= 2 Then
             If CheckBadSectors(BadSectors, {StartingSector, StartingSector + 1}) Then
-                Offset = Disk.SectorToBytes(StartingSector + 1)
+                Offset = Disk.BPB.SectorToBytes(StartingSector + 1)
                 If Offset + 8 <= DataLength Then
                     Dim b1 = Disk.Image.GetBytes(Offset, 8)
-                    Offset = Disk.SectorToBytes(StartingSector)
+                    Offset = Disk.BPB.SectorToBytes(StartingSector)
                     Dim b2 = Disk.Image.GetBytes(Offset, 8)
 
                     If b1.CompareTo(b2) AndAlso Integer.TryParse(Text.Encoding.UTF8.GetString(b1, 3, 4), 0) Then
@@ -50,7 +50,7 @@ Module Copy_Protection
         If Not ProtectionFound AndAlso BadSectors.Count >= 10 Then
             For Sector As UInteger = 710 To 729
                 If BadSectors.Contains(Sector) Then
-                    Offset = Disk.SectorToBytes(Sector)
+                    Offset = Disk.BPB.SectorToBytes(Sector)
                     If Offset + 31 <= DataLength Then
                         Dim b = Disk.Image.GetBytes(Offset, 31)
                         If Text.Encoding.UTF8.GetString(b) = "(c) 1986 for KBI by L. TOURNIER" Then

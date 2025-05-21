@@ -562,7 +562,7 @@ Module SummaryPanel
                 .AddItem(FileSystemGroup, "Volume Date", VolumeDate.ToString(True, True, False, True))
             End If
 
-            .AddItem(FileSystemGroup, "Total Space", Format(Disk.SectorToBytes(Disk.BPB.DataRegionSize), "N0") & " bytes")
+            .AddItem(FileSystemGroup, "Total Space", Format(Disk.BPB.SectorToBytes(Disk.BPB.DataRegionSize), "N0") & " bytes")
             .AddItem(FileSystemGroup, "Free Space", Format(Disk.FAT.GetFreeSpace(), "N0") & " bytes")
 
             If Disk.FAT.BadClusters.Count > 0 Then

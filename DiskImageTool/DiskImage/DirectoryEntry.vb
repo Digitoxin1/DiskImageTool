@@ -163,7 +163,7 @@
                     _FloppyImage.CopyTo(Offset, Content, 0, Size)
                 End If
             Else
-                Content = GetDataFromChain(_FloppyImage, ClusterListToSectorList(_BPB, _FatChain.Clusters))
+                Content = GetDataFromChain(_FloppyImage, _BPB, ClusterListToSectorList(_BPB, _FatChain.Clusters))
 
                 If Content.Length <> Size Then
                     Array.Resize(Of Byte)(Content, Size)

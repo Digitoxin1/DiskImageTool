@@ -1681,7 +1681,7 @@ Public Class MainForm
         Dim BytesPerTrack = BPB.BytesPerSector * BPB.SectorsPerTrack
         Dim Buffer(BytesPerTrack - 1) As Byte
         For Each Track In TrackList
-            Dim Offset = Disk.SectorToBytes(BPB.TrackToSector(Track.Track, Track.Side))
+            Dim Offset = BPB.SectorToBytes(BPB.TrackToSector(Track.Track, Track.Side))
             If Offset + BytesPerTrack <= Data.Length Then
                 Buffer.CopyTo(Data, Offset)
             End If

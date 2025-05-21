@@ -153,13 +153,13 @@ Namespace DiskImage
             Return BadSectors
         End Function
 
-        Public Function GetDataFromChain(FloppyImage As IFloppyImage, SectorChain As List(Of UInteger)) As Byte()
-            Dim SectorSize As UInteger = Disk.BYTES_PER_SECTOR
+        Public Function GetDataFromChain(FloppyImage As IFloppyImage, BPB As BiosParameterBlock, SectorChain As List(Of UInteger)) As Byte()
+            Dim SectorSize As UInteger = BPB.BytesPerSector
             Dim Content(SectorChain.Count * SectorSize - 1) As Byte
             Dim ContentOffset As UInteger = 0
 
             For Each Sector In SectorChain
-                Dim Offset As UInteger = Disk.SectorToBytes(Sector)
+                Dim Offset As UInteger = BPB.SectorToBytes(Sector)
                 If FloppyImage.Length < Offset + SectorSize Then
                     SectorSize = Math.Max(FloppyImage.Length - Offset, 0)
                 End If

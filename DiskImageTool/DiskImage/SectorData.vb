@@ -1,14 +1,14 @@
 ﻿Namespace DiskImage
     Public Class SectorData
         Private ReadOnly _BlockList As List(Of SectorBlock)
-        Private ReadOnly _FloppyImage As IFloppyImage
+        Private ReadOnly _Disk As Disk
         Private ReadOnly _SectorData As IFloppyImage
         Private ReadOnly _SectorList As Dictionary(Of UInteger, SectorBlock)
 
-        Sub New(FloppyImage As IFloppyImage)
+        Sub New(Disk As Disk)
             _BlockList = New List(Of SectorBlock)
+            _Disk = Disk
             _SectorData = New BasicSectorImage({})
-            _FloppyImage = FloppyImage
             _SectorList = New Dictionary(Of UInteger, SectorBlock)
         End Sub
 
@@ -36,20 +36,20 @@
 
         Public Sub AddBlock(SectorStart As UInteger, SectorCount As UInteger, Description As String)
             Dim Offset As UInteger = _SectorData.Length
-            Dim SourceOffset = Disk.SectorToBytes(SectorStart)
-            Dim Size As UInteger = Disk.SectorToBytes(SectorCount)
+            Dim SourceOffset = _Disk.BPB.SectorToBytes(SectorStart)
+            Dim Size As UInteger = _Disk.BPB.SectorToBytes(SectorCount)
 
-            If SourceOffset + Size > _FloppyImage.Length Then
-                Size = Math.Max(0, _FloppyImage.Length - SourceOffset)
+            If SourceOffset + Size > _Disk.Image.Length Then
+                Size = Math.Max(0, _Disk.Image.Length - SourceOffset)
             End If
 
             If Size > 0 Then
-                _SectorData.Append(_FloppyImage.GetBytes(SourceOffset, Size))
+                _SectorData.Append(_Disk.Image.GetBytes(SourceOffset, Size))
 
                 _BlockList.Add(New SectorBlock(_BlockList.Count, SectorStart, SectorCount, Offset, Size, Description))
 
                 Do While Size > 0
-                    Dim SectorSize = Math.Min(Size, Disk.BYTES_PER_SECTOR)
+                    Dim SectorSize = Math.Min(Size, _Disk.BPB.BytesPerSector)
                     _SectorList.Add(SectorStart, New SectorBlock(_SectorList.Count, SectorStart, 1, Offset, SectorSize, ""))
                     Offset += SectorSize
                     Size -= SectorSize
@@ -63,8 +63,8 @@
         End Sub
 
         Public Sub AddBlockByOffset(Offset As UInteger, Length As UInteger, Description As String)
-            Dim SectorStart = Disk.OffsetToSector(Offset)
-            Dim SectorCount = Disk.BytesToSector(Length)
+            Dim SectorStart = _Disk.BPB.OffsetToSector(Offset)
+            Dim SectorCount = _Disk.BPB.BytesToSector(Length)
 
             AddBlock(SectorStart, SectorCount, Description)
         End Sub
@@ -87,23 +87,23 @@
         End Sub
 
         Public Sub CommitChanges()
-            Dim UseBatchEditMode = Not _FloppyImage.History.BatchEditMode
+            Dim UseBatchEditMode = Not _Disk.Image.History.BatchEditMode
 
             If UseBatchEditMode Then
-                _FloppyImage.History.BatchEditMode = True
+                _Disk.Image.History.BatchEditMode = True
             End If
 
             For Each SectorBlock In _SectorList.Values
-                Dim Offset = Disk.SectorToBytes(SectorBlock.SectorStart)
-                Dim OriginalData = _FloppyImage.GetBytes(Offset, SectorBlock.Size)
+                Dim Offset = _Disk.BPB.SectorToBytes(SectorBlock.SectorStart)
+                Dim OriginalData = _Disk.Image.GetBytes(Offset, SectorBlock.Size)
                 Dim NewData = _SectorData.GetBytes(SectorBlock.Offset, SectorBlock.Size)
                 If Not OriginalData.CompareTo(NewData) Then
-                    _FloppyImage.SetBytes(NewData, Offset)
+                    _Disk.Image.SetBytes(NewData, Offset)
                 End If
             Next
 
             If UseBatchEditMode Then
-                _FloppyImage.History.BatchEditMode = False
+                _Disk.Image.History.BatchEditMode = False
             End If
         End Sub
 

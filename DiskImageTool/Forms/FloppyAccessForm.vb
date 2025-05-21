@@ -2,6 +2,7 @@
 Imports System.ComponentModel
 
 Public Class FloppyAccessForm
+    Private Const BYTES_PER_SECTOR As UShort = 512
     Private ReadOnly _AccessType As FloppyAccessType
     Private ReadOnly _BPB As BiosParameterBlock
     Private ReadOnly _FloppyDrive As FloppyInterface
@@ -463,14 +464,14 @@ Public Class FloppyAccessForm
         Next
     End Sub
     Private Sub ReadSectorsBySector(DiskBuffer() As Byte, SectorData As SectorData)
-        Dim BufferSize = Disk.BYTES_PER_SECTOR
+        Dim BufferSize = BYTES_PER_SECTOR
         Dim Buffer(BufferSize - 1) As Byte
         For Count = 0 To SectorData.SectorCount - 1
             If Not SectorData.SectorStatus(Count) Then
                 Dim Sector = SectorData.SectorStart + Count
                 Dim BytesRead = _FloppyDrive.ReadSector(Sector, Buffer)
                 If BytesRead = Buffer.Length Then
-                    Buffer.CopyTo(DiskBuffer, Disk.SectorToBytes(Sector))
+                    Buffer.CopyTo(DiskBuffer, SectorToBytes(Sector))
                     SectorData.SectorsProcessed += 1
                     SectorData.SectorStatus(Count) = True
                 End If
@@ -479,12 +480,12 @@ Public Class FloppyAccessForm
     End Sub
 
     Private Function ReadSectorsByTrack(DiskBuffer() As Byte, SectorData As SectorData) As Byte()
-        Dim BufferSize = Disk.BYTES_PER_SECTOR * SectorData.SectorCount
+        Dim BufferSize = BYTES_PER_SECTOR * SectorData.SectorCount
         Dim Buffer(BufferSize - 1) As Byte
         Dim BytesRead = _FloppyDrive.ReadSector(SectorData.SectorStart, Buffer)
         If BytesRead = Buffer.Length Then
             If DiskBuffer IsNot Nothing Then
-                Buffer.CopyTo(DiskBuffer, Disk.SectorToBytes(SectorData.SectorStart))
+                Buffer.CopyTo(DiskBuffer, SectorToBytes(SectorData.SectorStart))
             End If
             SectorData.SectorsProcessed = SectorData.SectorCount
             For Count = 0 To SectorData.SectorCount - 1
@@ -499,13 +500,18 @@ Public Class FloppyAccessForm
 
         Return Buffer
     End Function
+
+    Public Function SectorToBytes(Sector As UInteger) As UInteger
+        Return Sector * BYTES_PER_SECTOR
+    End Function
+
     Private Sub WriteSectorsBySector(DiskBuffer() As Byte, SectorData As SectorData)
-        Dim BufferSize = Disk.BYTES_PER_SECTOR
+        Dim BufferSize = BYTES_PER_SECTOR
         Dim Buffer(BufferSize - 1) As Byte
         For Count = 0 To SectorData.SectorCount - 1
             If Not SectorData.SectorStatus(Count) Then
                 Dim Sector = SectorData.SectorStart + Count
-                Array.Copy(_DiskBuffer, Disk.SectorToBytes(Sector), Buffer, 0, Buffer.Length)
+                Array.Copy(_DiskBuffer, SectorToBytes(Sector), Buffer, 0, Buffer.Length)
                 Dim BytesWritten = _FloppyDrive.WriteSector(Sector, Buffer)
                 If BytesWritten = Buffer.Length Then
                     SectorData.SectorsProcessed += 1
@@ -516,9 +522,9 @@ Public Class FloppyAccessForm
     End Sub
 
     Private Function WriteSectorsByTrack(DiskBuffer() As Byte, SectorData As SectorData) As Byte()
-        Dim BufferSize = Disk.BYTES_PER_SECTOR * SectorData.SectorCount
+        Dim BufferSize = BYTES_PER_SECTOR * SectorData.SectorCount
         Dim Buffer(BufferSize - 1) As Byte
-        Array.Copy(_DiskBuffer, Disk.SectorToBytes(SectorData.SectorStart), Buffer, 0, Buffer.Length)
+        Array.Copy(_DiskBuffer, SectorToBytes(SectorData.SectorStart), Buffer, 0, Buffer.Length)
         Dim BytesWritten = _FloppyDrive.WriteSector(SectorData.SectorStart, Buffer)
         If BytesWritten = Buffer.Length Then
             SectorData.SectorsProcessed = SectorData.SectorCount

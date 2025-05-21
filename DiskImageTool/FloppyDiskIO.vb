@@ -2,7 +2,7 @@
 Imports DiskImageTool.DiskImage
 
 Module FloppyDiskIO
-
+    Private Const BYTES_PER_SECTOR As UShort = 512
     Public Function FloppyDiskRead(Owner As IWin32Window, Drive As FloppyDriveEnum, LoadedFileNames As Dictionary(Of String, ImageData)) As String
         Dim FloppyDrive = New FloppyInterface
         Dim DriveLetter = FloppyInterface.GetDriveLetter(Drive)
@@ -95,7 +95,7 @@ Module FloppyDiskIO
         If IsReady Then
             Dim Result = FloppyDrive.OpenRead(Drive)
             If Result Then
-                Dim Buffer(Disk.BYTES_PER_SECTOR - 1) As Byte
+                Dim Buffer(BYTES_PER_SECTOR - 1) As Byte
                 Dim BytesRead = FloppyDrive.ReadSector(0, Buffer)
                 If BytesRead = Buffer.Length Then
                     Dim BootSector = New BootSector(Buffer)
@@ -148,7 +148,7 @@ Module FloppyDiskIO
         Dim ReturnedFormat As FloppyDiskFormat
         Dim BootSector As BootSector = Nothing
 
-        Dim Buffer(Disk.BYTES_PER_SECTOR - 1) As Byte
+        Dim Buffer(BYTES_PER_SECTOR - 1) As Byte
         Dim BytesRead = FloppyDrive.ReadSector(0, Buffer)
         If BytesRead = Buffer.Length Then
             BootSector = New BootSector(Buffer)

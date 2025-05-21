@@ -182,10 +182,10 @@ Public Class FloppyDB
     Private Function GetNormalizedDataByProtectedSectors(Disk As Disk) As Byte()
         Dim Data(Disk.Image.Length - 1) As Byte
         Disk.Image.CopyTo(Data, 0)
-        Dim Buffer(Disk.BYTES_PER_SECTOR - 1) As Byte
+        Dim Buffer(Disk.BPB.BytesPerSector - 1) As Byte
         For Each Sector In Disk.Image.ProtectedSectors
-            Dim Offset = Disk.SectorToBytes(Sector)
-            If Offset + Disk.BYTES_PER_SECTOR <= Data.Length Then
+            Dim Offset = Disk.BPB.SectorToBytes(Sector)
+            If Offset + Disk.BPB.BytesPerSector <= Data.Length Then
                 Buffer.CopyTo(Data, Offset)
             End If
         Next
@@ -201,7 +201,7 @@ Public Class FloppyDB
         Dim BytesPerTrack = BPB.BytesPerSector * BPB.SectorsPerTrack
         Dim Buffer(BytesPerTrack - 1) As Byte
         For Each Track In TrackList
-            Dim Offset = Disk.SectorToBytes(BPB.TrackToSector(Track.Track, Track.Side))
+            Dim Offset = BPB.SectorToBytes(BPB.TrackToSector(Track.Track, Track.Side))
             If Offset + BytesPerTrack <= Data.Length Then
                 Buffer.CopyTo(Data, Offset)
             End If

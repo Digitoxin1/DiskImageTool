@@ -6,12 +6,12 @@ Namespace DiskImage
 
         Friend Const SECTOR_COUNT As Byte = 36
         Private ReadOnly _AdditionalTracks As HashSet(Of UShort)
-        Private ReadOnly _EmptySector() As Byte
         Private ReadOnly _Image As IBitstreamImage
         Private ReadOnly _NonStandardTracks As HashSet(Of UShort)
         Private ReadOnly _ProtectedSectors As HashSet(Of UInteger)
         Private ReadOnly _History As ImageHistory
         Private _BPB As BiosParameterBlock
+        Private _EmptySector() As Byte
         Private _ImageSize As Integer
         Private _Sectors() As BitstreamSector
         Private _SideCount As Byte
@@ -24,7 +24,6 @@ Namespace DiskImage
             _ProtectedSectors = New HashSet(Of UInteger)
             _AdditionalTracks = New HashSet(Of UShort)
             _NonStandardTracks = New HashSet(Of UShort)
-            _EmptySector = New Byte(Disk.BYTES_PER_SECTOR - 1) {}
 
             If _Image IsNot Nothing Then
                 BuildSectorMap()
@@ -422,7 +421,7 @@ Namespace DiskImage
             Dim MappedData As New MappedData With {
                 .Sector = Sector,
                 .Offset = SectorToOffset(Offset),
-                .Size = Disk.BYTES_PER_SECTOR,
+                .Size = _BPB.BytesPerSector,
                 .CanWrite = False
             }
 
@@ -451,8 +450,8 @@ Namespace DiskImage
             Dim BitstreamSector = GetSector(Track, Head, SectorId)
             If BitstreamSector Is Nothing Then
                 Return _EmptySector
-            ElseIf BitstreamSector.Size < Disk.BYTES_PER_SECTOR Then
-                Dim Data = New Byte(Disk.BYTES_PER_SECTOR - 1) {}
+            ElseIf BitstreamSector.Size < _BPB.BytesPerSector Then
+                Dim Data = New Byte(_BPB.BytesPerSector - 1) {}
                 BitstreamSector.Data.CopyTo(Data, 0)
                 Return Data
             Else
@@ -467,13 +466,14 @@ Namespace DiskImage
         Private Sub InferFloppyDiskFormat(DiskFormat As FloppyDiskFormat)
             _BPB = BuildBPB(DiskFormat)
             _ImageSize = GetFloppyDiskSize(DiskFormat)
+            _EmptySector = New Byte(_BPB.BytesPerSector - 1) {}
 
             Dim Data = GetSectorData(0, 0, 1)
             Dim BPB = New BiosParameterBlock(Data)
 
             If BPB.IsValid Then
                 _BPB = BPB
-                _ImageSize = _BPB.SectorCount * Disk.BYTES_PER_SECTOR
+                _ImageSize = _BPB.SectorCount * _BPB.BytesPerSector
             Else
                 Data = GetSectorData(0, 0, 2)
                 Dim MediaDescriptor = 0
@@ -546,7 +546,7 @@ Namespace DiskImage
         End Sub
 
         Private Function OffsetToSector(Offset As UInteger) As UInteger
-            Return Offset \ Disk.BYTES_PER_SECTOR
+            Return Offset \ _BPB.BytesPerSector
         End Function
 
         Private Sub ProcessMFMSectors(Track As UShort, Side As Byte, MFMData As IBM_MFM.IBM_MFM_Track)
@@ -609,7 +609,7 @@ Namespace DiskImage
         End Function
 
         Private Function SectorToOffset(Offset As UInteger) As UInteger
-            Return Offset Mod Disk.BYTES_PER_SECTOR
+            Return Offset Mod _BPB.BytesPerSector
         End Function
 
         Private Function SectorToTrack(Sector As UInteger) As UShort

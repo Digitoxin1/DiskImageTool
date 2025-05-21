@@ -1,6 +1,5 @@
 ﻿Namespace DiskImage
     Public Class Disk
-        Public Const BYTES_PER_SECTOR As UShort = 512
         Private ReadOnly _BootSector As BootSector
         Private ReadOnly _FATTables As FATTables
         Private ReadOnly _FloppyImage As IFloppyImage
@@ -69,18 +68,6 @@
             End Get
         End Property
 
-        Public Shared Function BytesToSector(Bytes As UInteger) As UInteger
-            Return Math.Ceiling(Bytes / BYTES_PER_SECTOR)
-        End Function
-
-        Public Shared Function OffsetToSector(Offset As UInteger) As UInteger
-            Return Offset \ BYTES_PER_SECTOR
-        End Function
-
-        Public Shared Function SectorToBytes(Sector As UInteger) As UInteger
-            Return Sector * BYTES_PER_SECTOR
-        End Function
-
         Public Function BeginTransaction() As Boolean
             If _FloppyImage.History.BatchEditMode Then
                 Return False
@@ -116,14 +103,14 @@
         End Sub
 
         Public Function GetSector(Sector As UInteger) As Byte()
-            Dim Offset = SectorToBytes(Sector)
+            Dim Offset = _BPB.SectorToBytes(Sector)
 
             Return GetSectors(Sector, 1)
         End Function
 
         Public Function GetSectors(SectorStart As UInteger, Count As UShort) As Byte()
-            Dim Offset = Disk.SectorToBytes(SectorStart)
-            Dim Size = Disk.SectorToBytes(Count)
+            Dim Offset = _BPB.SectorToBytes(SectorStart)
+            Dim Size = _BPB.SectorToBytes(Count)
 
             If Size + Offset > _FloppyImage.Length Then
                 Size = _FloppyImage.Length - Offset
@@ -149,9 +136,9 @@
         End Sub
 
         Public Function SetSector(Value() As Byte, Sector As UInteger) As Boolean
-            Dim Offset = SectorToBytes(Sector)
+            Dim Offset = _BPB.SectorToBytes(Sector)
 
-            Return _FloppyImage.SetBytes(Value, Offset, Disk.BYTES_PER_SECTOR, 0)
+            Return _FloppyImage.SetBytes(Value, Offset, _BPB.BytesPerSector, 0)
         End Function
 
         Private Function GetBPB() As BiosParameterBlock

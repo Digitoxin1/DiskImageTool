@@ -122,11 +122,12 @@ Public Class HexViewForm
         Dim Sector As UInteger
 
         For Index = 0 To Length - 1
-            Sector = Disk.OffsetToSector(HexBox1.LineInfoOffset + Offset + Index)
+            Sector = _BPB.OffsetToSector(HexBox1.LineInfoOffset + Offset + Index)
             If Index = 0 Or Sector <> LastSector Then
                 SectorReadOnly = _HexViewSectorData.Disk.Image.ProtectedSectors.Contains(Sector)
                 LastSector = Sector
             End If
+
             Result.OriginalData(Index) = ByteProvider.ReadByte(Offset + Index)
             If Not SectorReadOnly Then
                 If Result.OriginalData(Index) <> Value Then
@@ -146,7 +147,7 @@ Public Class HexViewForm
         Dim Sector As UInteger
 
         For Index = 0 To Length - 1
-            Sector = Disk.OffsetToSector(HexBox1.LineInfoOffset + Offset + Index)
+            Sector = _BPB.OffsetToSector(HexBox1.LineInfoOffset + Offset + Index)
             If Index = 0 Or Sector <> LastSector Then
                 SectorReadOnly = _HexViewSectorData.Disk.Image.ProtectedSectors.Contains(Sector)
                 LastSector = Sector
@@ -396,13 +397,13 @@ Public Class HexViewForm
 
             If _CurrentHexViewData.SectorBlock.Size > 0 Then
                 .ByteProvider = _CurrentHexViewData.ByteProvider
-                .LineInfoOffset = Disk.SectorToBytes(_CurrentHexViewData.SectorBlock.SectorStart)
+                .LineInfoOffset = _BPB.SectorToBytes(_CurrentHexViewData.SectorBlock.SectorStart)
 
                 HighlightedRegions.Sort()
 
                 Dim TotalLength As UInteger = .ByteProvider.Length
                 Dim Start As UInteger = 0
-                Dim Length = Disk.BYTES_PER_SECTOR - (Start Mod Disk.BYTES_PER_SECTOR)
+                Dim Length = _BPB.BytesPerSector - (Start Mod _BPB.BytesPerSector)
                 Dim Size As UInteger = Math.Min(Length, TotalLength - Start)
                 Dim CurrentRegion As HexViewHighlightRegion
                 Dim Index As Integer = 0
@@ -434,7 +435,7 @@ Public Class HexViewForm
                     End If
 
                     If Size > 0 Then
-                        Dim Sector = Disk.OffsetToSector(HexBox1.LineInfoOffset + Start)
+                        Dim Sector = _BPB.OffsetToSector(HexBox1.LineInfoOffset + Start)
                         If _HexViewSectorData.Disk.Image.ProtectedSectors.Contains(Sector) Then
                             HighlightForeColor = Color.Gray
                             HighlightBackColor = Color.White
@@ -454,7 +455,7 @@ Public Class HexViewForm
                     End If
 
                     Start += Size
-                    Length = Disk.BYTES_PER_SECTOR - (Start Mod Disk.BYTES_PER_SECTOR)
+                    Length = _BPB.BytesPerSector - (Start Mod _BPB.BytesPerSector)
                     Size = Math.Min(Length, TotalLength - Start)
                 Loop
             End If
@@ -635,7 +636,7 @@ Public Class HexViewForm
         Dim Sector = _BPB.ClusterToSector(Cluster)
 
         If Cluster > 1 And Cluster >= ClusterStart And Cluster <= ClusterEnd Then
-            Dim Offset = Disk.SectorToBytes(Sector) - HexBox1.LineInfoOffset
+            Dim Offset = _BPB.SectorToBytes(Sector) - HexBox1.LineInfoOffset
             Dim Line = Offset \ HexBox1.BytesPerLine
             HexBox1.PerformScrollToLine(Line)
             HexBox1.Select(Offset, 0)
@@ -647,7 +648,7 @@ Public Class HexViewForm
         Dim SectorEnd = SectorStart + _CurrentHexViewData.SectorBlock.SectorCount - 1
 
         If Sector >= SectorStart And Sector <= SectorEnd Then
-            Dim Offset = Disk.SectorToBytes(Sector) - HexBox1.LineInfoOffset
+            Dim Offset = _BPB.SectorToBytes(Sector) - HexBox1.LineInfoOffset
             Dim Line = Offset \ HexBox1.BytesPerLine
             HexBox1.PerformScrollToLine(Line)
             HexBox1.Select(Offset, 0)
@@ -666,7 +667,7 @@ Public Class HexViewForm
         Dim Sector = _BPB.TrackToSector(Track, Side)
 
         If Track >= TrackStart And Track <= TrackEnd Then
-            Dim Offset = Disk.SectorToBytes(Sector) - HexBox1.LineInfoOffset
+            Dim Offset = _BPB.SectorToBytes(Sector) - HexBox1.LineInfoOffset
             Dim Line = Offset \ HexBox1.BytesPerLine
             HexBox1.PerformScrollToLine(Line)
             HexBox1.Select(Offset, 0)
@@ -849,7 +850,7 @@ Public Class HexViewForm
             Dim FileName As String = ""
             Dim OutOfRange As Boolean = SelectionStart >= HexBox1.ByteProvider.Length
 
-            Dim Sector = Disk.OffsetToSector(OffsetStart)
+            Dim Sector = _BPB.OffsetToSector(OffsetStart)
 
             HexBox1.ReadOnly = _HexViewSectorData.Disk.Image.ProtectedSectors.Contains(Sector)
 
@@ -1054,7 +1055,7 @@ Public Class HexViewForm
         End If
 
         Dim Offset = HexBox1.LineInfoOffset + HexBox1.StartByte
-        Dim Sector = Disk.OffsetToSector(Offset)
+        Dim Sector = _BPB.OffsetToSector(Offset)
 
         _IgnoreEvent = True
 
@@ -1157,8 +1158,8 @@ Public Class HexViewForm
 
         Dim OutOfRange As Boolean = HexBox1.SelectionStart >= HexBox1.ByteProvider.Length
         If Not OutOfRange Then
-            Dim Offset = Disk.SectorToBytes(_CurrentSector) - HexBox1.LineInfoOffset
-            Dim Length = Disk.BYTES_PER_SECTOR
+            Dim Offset = _BPB.SectorToBytes(_CurrentSector) - HexBox1.LineInfoOffset
+            Dim Length = _BPB.BytesPerSector
             HexBox1.Select(Offset, Length)
         End If
     End Sub
@@ -1169,8 +1170,8 @@ Public Class HexViewForm
             Dim Track = _BPB.SectorToTrack(_CurrentSector)
             Dim Side = _BPB.SectorToSide(_CurrentSector)
             Dim Sector = _BPB.TrackToSector(Track, Side)
-            Dim Offset = Disk.SectorToBytes(Sector) - HexBox1.LineInfoOffset
-            Dim Length = Disk.BYTES_PER_SECTOR * _BPB.SectorsPerTrack
+            Dim Offset = _BPB.SectorToBytes(Sector) - HexBox1.LineInfoOffset
+            Dim Length = _BPB.BytesPerSector * _BPB.SectorsPerTrack
             HexBox1.Select(Offset, Length)
         End If
     End Sub
@@ -1382,8 +1383,8 @@ Public Class HexViewForm
 
         For Counter = 0 To LineCount - 2
             Offset = StartOffset + Counter * HexBox1.BytesPerLine
-            If Offset Mod 512 = 0 Then
-                Dim Sector = Disk.OffsetToSector(Offset)
+            If Offset Mod _BPB.BytesPerSector = 0 Then
+                Dim Sector = _BPB.OffsetToSector(Offset)
                 Dim Track = _BPB.SectorToTrack(Sector)
                 Dim Side = _BPB.SectorToSide(Sector)
                 Dim SectorId = _BPB.SectorToTrackSector(Sector) + 1
