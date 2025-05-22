@@ -348,6 +348,7 @@ Public Class BootSectorForm
         End If
         CboDiskType.Items.Add(New BootSectorDiskFormat(FloppyDiskFormat.FloppyProCopy))
         CboDiskType.Items.Add(New BootSectorDiskFormat(FloppyDiskFormat.FloppyTandy2000))
+        CboDiskType.Items.Add(New BootSectorDiskFormat(FloppyDiskFormat.FloppyJapanese))
         If DiskFormat = FloppyDiskFormat.FloppyNoBPB Then
             CboDiskType.Items.Add(New BootSectorDiskFormat(FloppyDiskFormat.FloppyNoBPB))
         End If
@@ -381,18 +382,19 @@ Public Class BootSectorForm
 
     Private Sub PopulateMediaDescriptors()
         CboMediaDescriptor.Items.Clear()
-        CboMediaDescriptor.Items.Add(New MediaDescriptorType("FE", "160K"))
-        CboMediaDescriptor.Items.Add(New MediaDescriptorType("FC", "180K"))
-        CboMediaDescriptor.Items.Add(New MediaDescriptorType("FF", "320K"))
-        CboMediaDescriptor.Items.Add(New MediaDescriptorType("FD", "360K"))
-        CboMediaDescriptor.Items.Add(New MediaDescriptorType("F9", "720K"))
-        CboMediaDescriptor.Items.Add(New MediaDescriptorType("F9", "1.2M"))
-        CboMediaDescriptor.Items.Add(New MediaDescriptorType("F0", "1.44M"))
-        CboMediaDescriptor.Items.Add(New MediaDescriptorType("F0", "2.88M"))
-        CboMediaDescriptor.Items.Add(New MediaDescriptorType("F0", "DNF"))
-        CboMediaDescriptor.Items.Add(New MediaDescriptorType("F9", "XDF 5.25"""))
-        CboMediaDescriptor.Items.Add(New MediaDescriptorType("F0", "XDF 3.5"""))
-        CboMediaDescriptor.Items.Add(New MediaDescriptorType("ED", "Tandy 2000"))
+        CboMediaDescriptor.Items.Add(New MediaDescriptorType("FE", GetFloppyDiskFormatName(FloppyDiskFormat.Floppy160)))
+        CboMediaDescriptor.Items.Add(New MediaDescriptorType("FC", GetFloppyDiskFormatName(FloppyDiskFormat.Floppy180)))
+        CboMediaDescriptor.Items.Add(New MediaDescriptorType("FF", GetFloppyDiskFormatName(FloppyDiskFormat.Floppy320)))
+        CboMediaDescriptor.Items.Add(New MediaDescriptorType("FD", GetFloppyDiskFormatName(FloppyDiskFormat.Floppy360)))
+        CboMediaDescriptor.Items.Add(New MediaDescriptorType("F9", GetFloppyDiskFormatName(FloppyDiskFormat.Floppy720)))
+        CboMediaDescriptor.Items.Add(New MediaDescriptorType("F9", GetFloppyDiskFormatName(FloppyDiskFormat.Floppy1200)))
+        CboMediaDescriptor.Items.Add(New MediaDescriptorType("F0", GetFloppyDiskFormatName(FloppyDiskFormat.Floppy1440)))
+        CboMediaDescriptor.Items.Add(New MediaDescriptorType("F0", GetFloppyDiskFormatName(FloppyDiskFormat.Floppy2880)))
+        CboMediaDescriptor.Items.Add(New MediaDescriptorType("F0", GetFloppyDiskFormatName(FloppyDiskFormat.FloppyDMF1024)))
+        CboMediaDescriptor.Items.Add(New MediaDescriptorType("F9", GetFloppyDiskFormatName(FloppyDiskFormat.FloppyXDF525)))
+        CboMediaDescriptor.Items.Add(New MediaDescriptorType("F0", GetFloppyDiskFormatName(FloppyDiskFormat.FloppyXDF35)))
+        CboMediaDescriptor.Items.Add(New MediaDescriptorType("ED", GetFloppyDiskFormatName(FloppyDiskFormat.FloppyTandy2000)))
+        CboMediaDescriptor.Items.Add(New MediaDescriptorType("FE", GetFloppyDiskFormatName(FloppyDiskFormat.FloppyJapanese)))
     End Sub
 
     Private Sub PopulateOEMName()

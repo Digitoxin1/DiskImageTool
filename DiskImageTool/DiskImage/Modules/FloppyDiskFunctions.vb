@@ -19,6 +19,7 @@ Namespace DiskImage
             FloppyXDFMicro = 14
             FloppyTandy2000 = 15
             FloppyNoBPB = 16
+            FloppyJapanese = 17
         End Enum
 
         Public Function BPBCompare(BPB As BiosParameterBlock, Params As FloppyDiskParams, CheckMediaDescriptor As Boolean) As Boolean
@@ -101,6 +102,8 @@ Namespace DiskImage
                     Return &HF9
                 Case FloppyDiskFormat.FloppyTandy2000
                     Return &HED
+                Case FloppyDiskFormat.FloppyJapanese
+                    Return &HFE
                 Case Else
                     Return &HF0
             End Select
@@ -290,6 +293,18 @@ Namespace DiskImage
                     Params.SectorsPerFAT = 2
                     Params.SectorsPerTrack = 9
 
+                Case FloppyDiskFormat.FloppyJapanese
+                    Params.BytesPerSector = 1024
+                    Params.MediaDescriptor = &HFE
+                    Params.NumberOfFATs = 2
+                    Params.NumberOfHeads = 2
+                    Params.ReservedSectorCount = 1
+                    Params.RootEntryCount = 192
+                    Params.SectorCountSmall = 1232
+                    Params.SectorsPerCluster = 1
+                    Params.SectorsPerFAT = 2
+                    Params.SectorsPerTrack = 8
+
                 Case FloppyDiskFormat.FloppyNoBPB
                     Params.BytesPerSector = 0
                     Params.MediaDescriptor = 0
@@ -378,6 +393,8 @@ Namespace DiskImage
                     Return 2949120
                 Case FloppyDiskFormat.FloppyTandy2000
                     Return 737280
+                Case FloppyDiskFormat.FloppyJapanese
+                    Return 1261568
                 Case Else
                     Return 0
             End Select
@@ -409,6 +426,8 @@ Namespace DiskImage
                     Return FloppyDiskFormat.FloppyXDFMicro
                 Case 2949120
                     Return FloppyDiskFormat.Floppy2880
+                Case 1261568
+                    Return FloppyDiskFormat.FloppyJapanese
                 Case Else
                     Return FloppyDiskFormat.FloppyUnknown
             End Select
@@ -446,6 +465,8 @@ Namespace DiskImage
                     Return FloppyDiskFormat.FloppyXDFMicro
                 Case "Tandy 2000"
                     Return FloppyDiskFormat.FloppyTandy2000
+                Case "2HD (1.23M)"
+                    Return FloppyDiskFormat.FloppyJapanese
                 Case "NO BPB"
                     Return FloppyDiskFormat.FloppyNoBPB
                 Case Else
@@ -493,6 +514,8 @@ Namespace DiskImage
                     Return "XDF Micro"
                 Case FloppyDiskFormat.FloppyTandy2000
                     Return "Tandy 2000"
+                Case FloppyDiskFormat.FloppyJapanese
+                    Return "2HD (1.23M)"
                 Case FloppyDiskFormat.FloppyNoBPB
                     Return "No BPB"
                 Case Else
@@ -530,6 +553,8 @@ Namespace DiskImage
                     Return ".xdf"
                 Case FloppyDiskFormat.FloppyXDFMicro
                     Return ".xdf"
+                Case FloppyDiskFormat.FloppyJapanese
+                    Return ".hdm"
                 Case Else
                     Return ""
             End Select
@@ -576,6 +601,7 @@ Namespace DiskImage
                 Or DiskFormat = FloppyDiskFormat.FloppyProCopy _
                 Or DiskFormat = FloppyDiskFormat.FloppyXDF35 _
                 Or DiskFormat = FloppyDiskFormat.FloppyXDF525 _
+                Or DiskFormat = FloppyDiskFormat.FloppyJapanese _
                 Or DiskFormat = FloppyDiskFormat.FloppyXDFMicro Then
                 Return False
             End If
