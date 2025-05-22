@@ -59,7 +59,7 @@
     <oemname name=" WATCOM " company="WATCOM International Corp" description="WATCOM SQL for OS/2"/>
   </bootstrap>
   <bootstrap crc32="C6CE8A87" jmp="EB3C90">
-    <oemname name="..DOS4.0"/>
+    <oemname name="..DOS4.0" verified="true"/>
   </bootstrap>
   <bootstrap crc32="6103A675" jmp="EB2A90">
     <oemname name="688AS EA" company="Electronic Arts" description="688 Attack Sub Master Disk"/>
@@ -313,6 +313,9 @@
   <bootstrap crc32="495551E6" jmp="EB2990" language="German">
     <oemname name="IBM  3.0" company="IBM" description="PC-DOS 3.0"/>
   </bootstrap>
+  <bootstrap crc32="8E81944E" jmp="EB2990" language="French">
+    <oemname name="IBM  3.0" company="IBM" description="PC-DOS 3.0" verified="true"/>
+  </bootstrap>
   <bootstrap crc32="CB2078CC" jmp="E9EF00">
     <oemname name="IBM  3.1" verified="true"/>
     <oemname name="MSDOS3.0"/>
@@ -407,7 +410,7 @@
   <bootstrap crc32="4F2A959C" jmp="EB3490">
     <oemname name="IBM  3.3" company="IBM" description="PC-DOS 3.3" verified="true"/>
     <oemname name="MSDOS3.3" verified="true"/>
-    <oemname name="IBMMS3.3"/>    
+    <oemname name="IBMMS3.3" verified="true"/>    
     <oemname name="IBM  3.2"/>
     <oemname name="MSDOS3.2"/>
     <oemname name="IBM 3.3y" suggestion="false"/>
@@ -655,7 +658,7 @@
     <oemname name="MSDMF3.2" company="Microsoft" description="Microsoft Distribution Media Format"/>
   </bootstrap>
   <bootstrap crc32="4D47BE99" jmp="EB3490">
-    <oemname name="MSDOS3.2"/>
+    <oemname name="MSDOS3.2"  verified="true"/>
     <oemname name="MSDOS3.3"/>
   </bootstrap>
   <bootstrap crc32="B7BE2F89" jmp="EB3490">
@@ -1082,6 +1085,9 @@
     <oemname name="TANDY2.1" company="Tandy" description="Tandy 2000" />
   </bootstrap>
   <bootstrap crc32="900A3D52" jmp="EB5390">
+    <oemname name="Tandy557" company="Tandy" verified="true"/>
+  </bootstrap>
+  <bootstrap crc32="62544610" jmp="EB5190">
     <oemname name="Tandy557" company="Tandy" verified="true"/>
   </bootstrap>
   <bootstrap crc32="ED266093" jmp="EB5390">

@@ -7697,7 +7697,7 @@
     </release>
   </title>
   <title name="Outpost: 1.1 Patch" publisher="Sierra On-Line, Inc.">
-    <release version="1.1, Int. 7.15.94" media="1.44M" status="V">
+    <release year="1994" version="1.1, Int. 7.15.94" media="1.44M" status="V">
       <disk md5="748D8E2A415F43A6EB5504FC4506E4DD"/>
     </release>
   </title>
@@ -7712,7 +7712,7 @@
     </release>
   </title>
   <title name="Outpost: Launch Control Disk" publisher="Sierra On-Line, Inc.">
-    <release version="1.0, Int. 6.24.94" media="1.44M" status="V">
+    <release year="1994" version="1.0, Int. 6.24.94" media="1.44M" status="V">
       <disk md5="094FCC60243FCC2AB9C0CDF40F6A7995"/>
     </release>
   </title>
@@ -8728,7 +8728,7 @@
     </release>
   </title>
   <title name="Red Baron: Customer Service Joystick Patch" publisher="Sierra On-Line, Inc.">
-    <release version="1.0, Int. 3.19.92" media="720K" status="V">
+    <release year="1992" version="1.0, Int. 3.19.92" media="720K" status="V">
       <disk md5="8977FE97105A77A675885440E73037BE"/>
     </release>
   </title>
@@ -14076,7 +14076,7 @@
     </release>
   </title>
   <title name="Matterhorn Screamer!" publisher="Hi-Tech Expressions, Inc.">
-    <release media="360K" status="U">
+    <release year="1988" media="360K" status="U">
       <disk md5="7EEF7A78BDEBC4A44BC15AC227B7B861"/>
     </release>
   </title>
@@ -14530,13 +14530,15 @@
       <disk md5="D704D49BD809A2D3789C37CC078B5482" disk="2"/>
     </release>
   </title>
-  <title name="Double Dragon III: The Rosetta Stone" status="U" publisher="Tradewest, Inc.">
-    <release year="1992" media="360K">
-      <disk md5="2FF0E0BF273C043BBC2F8C6216E609F1" disk="1"/>
-      <disk md5="85E478D4DB793A79DAF207406E7E436F" disk="2"/>
-    </release>
-    <release year="1992" media="720K">
-      <disk md5="0C47D816F6B73FAEBD591FE95227A9FE"/>
+  <title name="Double Dragon III: The Rosetta Stone" publisher="Tradewest, Inc.">
+    <release year="1992" status="U">
+      <media media="360K">
+        <disk md5="2FF0E0BF273C043BBC2F8C6216E609F1" disk="1"/>
+        <disk md5="85E478D4DB793A79DAF207406E7E436F" disk="2"/>
+      </media>
+      <media media="720K">
+        <disk md5="0C47D816F6B73FAEBD591FE95227A9FE"/>
+      </media>
     </release>
   </title>
   <title name="Dune" publisher="Virgin Games, Inc.">

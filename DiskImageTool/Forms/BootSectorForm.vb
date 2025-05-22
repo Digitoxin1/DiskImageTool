@@ -398,6 +398,9 @@ Public Class BootSectorForm
     End Sub
 
     Private Sub PopulateOEMName()
+        CboOEMName.MaxLength = _BootSector.GetOEMNameSize
+        HexOEMName.MaskLength = _BootSector.GetOEMNameSize
+
         Dim OEMName As New OEMNameData With {
             .Name = _BootSector.OEMName
         }

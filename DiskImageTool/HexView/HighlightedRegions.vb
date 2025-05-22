@@ -12,6 +12,10 @@
         Me.Add(New HexViewHighlightRegion(Offset, Size, ForeColor, DiskImage.BootSectorDescription(Offset)))
     End Sub
 
+    Public Sub AddBootSectorOffset(Description As String, Offset As DiskImage.BootSector.BootSectorOffsets, Size As DiskImage.BootSector.BootSectorSizes, ForeColor As Color)
+        Me.Add(New HexViewHighlightRegion(Offset, Size, ForeColor, Description))
+    End Sub
+
     Public Sub AddBPBoffset(Offset As DiskImage.BiosParameterBlock.BPBOoffsets, ForeColor As Color)
         Dim Name As String = [Enum].GetName(GetType(DiskImage.BiosParameterBlock.BPBOoffsets), Offset)
         Dim Size As DiskImage.BiosParameterBlock.BPBSizes

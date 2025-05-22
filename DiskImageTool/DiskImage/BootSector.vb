@@ -10,7 +10,9 @@
         Private ReadOnly _BPB As BiosParameterBlock
         Private ReadOnly _FloppyImage As IFloppyImage
         Private ReadOnly _Offset As UInteger
+
         Public Enum BootSectorOffsets As UInteger
+            FMTownsSignature = 0
             JmpBoot = 0
             OEMName = 3
             DriveNumber = 36
@@ -24,6 +26,7 @@
         End Enum
 
         Public Enum BootSectorSizes As UInteger
+            FMTownsSignature = 4
             JmpBoot = 3
             OEMName = 8
             DriveNumber = 1
@@ -114,19 +117,19 @@
 
         Public Property JmpBoot() As Byte()
             Get
-                Return _FloppyImage.GetBytes(BootSectorOffsets.JmpBoot + _Offset, BootSectorSizes.JmpBoot)
+                Return _FloppyImage.GetBytes(GetJmpBootOffset() + _Offset, BootSectorSizes.JmpBoot)
             End Get
             Set
-                _FloppyImage.SetBytes(Value, BootSectorOffsets.JmpBoot + _Offset, BootSectorSizes.JmpBoot, 0)
+                _FloppyImage.SetBytes(Value, GetJmpBootOffset() + _Offset, BootSectorSizes.JmpBoot, 0)
             End Set
         End Property
 
         Public Property OEMName() As Byte()
             Get
-                Return _FloppyImage.GetBytes(BootSectorOffsets.OEMName + _Offset, BootSectorSizes.OEMName)
+                Return _FloppyImage.GetBytes(GetOEMNameOffset() + _Offset, GetOEMNameSize())
             End Get
             Set
-                _FloppyImage.SetBytes(Value, BootSectorOffsets.OEMName + _Offset, BootSectorSizes.OEMName, 0)
+                _FloppyImage.SetBytes(Value, GetOEMNameOffset() + _Offset, GetOEMNameSize(), 0)
             End Set
         End Property
 
@@ -158,30 +161,30 @@
         End Property
 
         Public Function CheckJumpInstruction(CheckNOP As Boolean) As Boolean
-            Return CheckJumpInstruction(JmpBoot, CheckNOP)
+            Return CheckJumpInstruction(JmpBoot, GetJmpBootOffset(), CheckNOP)
         End Function
 
         Public Function CheckJumpInstruction(CheckNOP As Boolean, CheckDestination As Boolean) As Boolean
-            Return CheckJumpInstruction(JmpBoot, CheckNOP, CheckDestination)
+            Return CheckJumpInstruction(JmpBoot, GetJmpBootOffset(), CheckNOP, CheckDestination)
         End Function
 
-        Public Shared Function CheckJumpInstruction(Jmp() As Byte, CheckNOP As Boolean) As Boolean
-            Return CheckJumpInstruction(Jmp, CheckNOP, False)
+        Public Shared Function CheckJumpInstruction(Jmp() As Byte, JmpOffset As UInteger, CheckNOP As Boolean) As Boolean
+            Return CheckJumpInstruction(Jmp, JmpOffset, CheckNOP, False)
         End Function
 
-        Public Shared Function CheckJumpInstruction(Jmp() As Byte, CheckNOP As Boolean, CheckDestination As Boolean) As Boolean
+        Public Shared Function CheckJumpInstruction(Jmp() As Byte, JmpOffset As UInteger, CheckNOP As Boolean, CheckDestination As Boolean) As Boolean
             Dim Result As Boolean = False
 
             If Jmp(0) = &HEB And (Not CheckNOP Or Jmp(2) = &H90) Then
                 If CheckDestination Then
-                    Dim Offset As UShort = Jmp(1) + 2
+                    Dim Offset As UShort = Jmp(1) + JmpOffset + 2
                     Result = (Offset < BootSectorOffsets.BootStrapSignature)
                 Else
                     Result = True
                 End If
             ElseIf Jmp(0) = &HE9 Then
                 If CheckDestination Then
-                    Dim Offset As UShort = BitConverter.ToUInt16(Jmp, 1) + 3
+                    Dim Offset As UShort = BitConverter.ToUInt16(Jmp, 1) + JmpOffset + 3
                     Result = (Offset < BootSectorOffsets.BootStrapSignature)
                 Else
                     Result = True
@@ -199,7 +202,7 @@
         End Function
 
         Public Function GetBootStrapCode(Jmp() As Byte) As Byte()
-            Dim Offset = GetBootStrapOffset(Jmp)
+            Dim Offset = GetBootStrapOffset(Jmp, GetBootStrapOffset())
 
             Return GetBootStrapCode(Offset)
         End Function
@@ -213,30 +216,54 @@
             End If
         End Function
 
-        Public Shared Function GetBootStrapOffset(Jmp() As Byte) As UShort
+        Private Shared Function GetBootStrapOffset(Jmp() As Byte, JmpOffset As UInteger) As UShort
             Dim Offset As UShort
 
             If Jmp(0) = &HEB Then
-                Offset = Jmp(1) + 2
+                Offset = Jmp(1) + JmpOffset + 2
             ElseIf Jmp(0) = &HE9 Then
-                Offset = BitConverter.ToUInt16(Jmp, 1) + 3
+                Offset = BitConverter.ToUInt16(Jmp, 1) + JmpOffset + 3
             Else
-                Offset = 0
+                Offset = JmpOffset
             End If
 
             If Offset >= BootSectorOffsets.BootStrapSignature Then
-                Offset = 0
+                Offset = JmpOffset
             End If
 
             Return Offset
         End Function
 
         Public Function GetBootStrapOffset() As UShort
-            Return GetBootStrapOffset(JmpBoot)
+            Return GetBootStrapOffset(JmpBoot, GetJmpBootOffset())
         End Function
 
         Public Function GetFileSystemTypeString() As String
             Return CodePage437ToUnicode(FileSystemType)
+        End Function
+
+        Public Function GetJmpBootOffset() As UInteger
+            Dim Offset = BootSectorOffsets.JmpBoot
+            If IsFMTowns() Then
+                Offset += BootSectorSizes.FMTownsSignature
+            End If
+            Return Offset
+        End Function
+
+        Public Function GetOEMNameOffset() As UInteger
+            Dim Offset = BootSectorOffsets.OEMName
+            If IsFMTowns() Then
+                Offset += BootSectorSizes.FMTownsSignature
+            End If
+            Return Offset
+        End Function
+
+        Public Function GetOEMNameSize() As UInteger
+            Dim Size = BootSectorSizes.OEMName
+            If IsFMTowns() Then
+                Size -= BootSectorSizes.FMTownsSignature
+            End If
+            Return Size
         End Function
 
         Public Function GetOEMNameString() As String
@@ -259,8 +286,22 @@
             Return ValidExtendedBootSignature.Contains(ExtendedBootSignature)
         End Function
 
+        Public Function IsFMTowns() As Boolean
+            Dim Signature = _FloppyImage.GetBytes(BootSectorOffsets.FMTownsSignature, BootSectorSizes.FMTownsSignature)
+
+            If Signature(0) = &H49 AndAlso Signature(1) = &H50 AndAlso Signature(2) = &H4C AndAlso Signature(3) = &H34 Then
+                Return True
+            End If
+
+            Return False
+        End Function
+
         Public Function IsWin9xOEMName() As Boolean
             Dim OEMNameLocal = OEMName
+
+            If OEMNameLocal.Length < 8 Then
+                Return False
+            End If
 
             Return OEMNameLocal(5) = &H49 And OEMNameLocal(6) = &H48 And OEMNameLocal(7) = &H43
         End Function
