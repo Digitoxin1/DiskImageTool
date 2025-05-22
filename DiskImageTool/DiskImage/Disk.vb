@@ -1,5 +1,6 @@
 ﻿Namespace DiskImage
     Public Class Disk
+        Public Shared ReadOnly FreeClusterBytes() As Byte = {&HF6, &H0, &HE5}
         Private ReadOnly _BootSector As BootSector
         Private ReadOnly _FATTables As FATTables
         Private ReadOnly _FloppyImage As IFloppyImage

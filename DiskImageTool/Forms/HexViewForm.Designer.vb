@@ -87,6 +87,7 @@ Partial Class HexViewForm
         Me.DataGridType = New System.Windows.Forms.DataGridViewTextBoxColumn()
         Me.ContextMenuStrip2 = New System.Windows.Forms.ContextMenuStrip(Me.components)
         Me.BtnCopyValue = New System.Windows.Forms.ToolStripMenuItem()
+        Me.BtnFill = New System.Windows.Forms.ToolStripMenuItem()
         ToolStripSeparator1 = New System.Windows.Forms.ToolStripSeparator()
         ToolStripSeparator3 = New System.Windows.Forms.ToolStripSeparator()
         ToolStripSeparator2 = New System.Windows.Forms.ToolStripSeparator()
@@ -142,7 +143,7 @@ Partial Class HexViewForm
         'ToolStripStatusGap
         '
         ToolStripStatusGap.Name = "ToolStripStatusGap"
-        ToolStripStatusGap.Size = New System.Drawing.Size(348, 19)
+        ToolStripStatusGap.Size = New System.Drawing.Size(379, 19)
         ToolStripStatusGap.Spring = True
         '
         'ToolStripStatusLabel1
@@ -321,9 +322,9 @@ Partial Class HexViewForm
         '
         'ContextMenuStrip1
         '
-        Me.ContextMenuStrip1.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.BtnUndo, Me.BtnRedo, ToolStripSeparator3, Me.BtnCopyText, Me.BtnCopyHex, Me.BtnCopyHexFormatted, Me.BtnPaste, ToolStripSeparator2, Me.BtnFind, Me.BtnFindNext, Me.ToolStripMenuItem1, Me.BtnDelete, Me.BtnFillF6, ToolStripSeparator1, Me.BtnSelectSector, Me.BtnSelectTrack, Me.BtnSelectAll})
+        Me.ContextMenuStrip1.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.BtnUndo, Me.BtnRedo, ToolStripSeparator3, Me.BtnCopyText, Me.BtnCopyHex, Me.BtnCopyHexFormatted, Me.BtnPaste, ToolStripSeparator2, Me.BtnFind, Me.BtnFindNext, Me.ToolStripMenuItem1, Me.BtnDelete, Me.BtnFillF6, Me.BtnFill, ToolStripSeparator1, Me.BtnSelectSector, Me.BtnSelectTrack, Me.BtnSelectAll})
         Me.ContextMenuStrip1.Name = "ContextMenuStrip1"
-        Me.ContextMenuStrip1.Size = New System.Drawing.Size(259, 314)
+        Me.ContextMenuStrip1.Size = New System.Drawing.Size(259, 358)
         '
         'BtnUndo
         '
@@ -650,6 +651,12 @@ Partial Class HexViewForm
         Me.BtnCopyValue.Size = New System.Drawing.Size(175, 22)
         Me.BtnCopyValue.Text = "&Copy Value"
         '
+        'BtnFill
+        '
+        Me.BtnFill.Name = "BtnFill"
+        Me.BtnFill.Size = New System.Drawing.Size(258, 22)
+        Me.BtnFill.Text = "Fill Selection"
+        '
         'HexViewForm
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
@@ -736,4 +743,5 @@ Partial Class HexViewForm
     Friend WithEvents DataGridType As DataGridViewTextBoxColumn
     Friend WithEvents ToolStripBtnSelectTrack As ToolStripButton
     Friend WithEvents ToolStripStatusTrackSector As ToolStripStatusLabel
+    Friend WithEvents BtnFill As ToolStripMenuItem
 End Class

@@ -75,29 +75,28 @@ Namespace DiskImage
         Public Function DirectoryEntryHasData(FloppyImage As IFloppyImage, Offset As UInteger) As Boolean
             Dim Result As Boolean = False
 
-            If FloppyImage.GetByte(Offset) = &HE5 Then
+            Dim FirstByte = FloppyImage.GetByte(Offset)
+
+            If FirstByte = &HE5 Then
                 For Offset2 As UInteger = Offset + 1 To Offset + DirectoryEntry.DIRECTORY_ENTRY_SIZE - 1
                     If FloppyImage.GetByte(Offset2) <> 0 Then
                         Result = True
                         Exit For
                     End If
                 Next
-            ElseIf FloppyImage.GetByte(Offset) <> 0 Then
+            ElseIf FirstByte <> 0 Then
                 Result = True
             Else
-                Dim HexF6Count As UInteger = 0
-                For Offset2 As UInteger = Offset + 1 To Offset + DirectoryEntry.DIRECTORY_ENTRY_SIZE - 1
-                    If FloppyImage.GetByte(Offset2) = &HF6 Then
-                        HexF6Count += 1
-                    ElseIf FloppyImage.GetByte(Offset2) <> 0 Then
-                        Result = True
-                        Exit For
-                    End If
-                Next
-                If Not Result Then
-                    If HexF6Count > 0 And HexF6Count < DirectoryEntry.DIRECTORY_ENTRY_SIZE - 2 Then
-                        Result = True
-                    End If
+                Dim NextByte As Byte = FloppyImage.GetByte(Offset + 1)
+
+                If Not Disk.FreeClusterBytes.Contains(NextByte) Then
+                    Result = True
+                Else
+                    For Offset2 As UInteger = Offset + 2 To Offset + DirectoryEntry.DIRECTORY_ENTRY_SIZE - 1
+                        If FloppyImage.GetByte(Offset2) <> NextByte Then
+                            Result = True
+                        End If
+                    Next
                 End If
             End If
 

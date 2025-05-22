@@ -588,7 +588,7 @@ Namespace DiskImage
 
             Dim Data = Me.Data
             Dim CheckByte = Data(1)
-            If Data(0) = CHAR_DELETED And (CheckByte = &H0 Or CheckByte = &HF6) Then
+            If Data(0) = CHAR_DELETED And Disk.FreeClusterBytes.Contains(CheckByte) Then
                 For Counter = 2 To Data.Length - 1
                     If Data(Counter) <> CheckByte Then
                         _IsBlankCache = False

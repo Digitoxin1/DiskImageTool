@@ -342,7 +342,7 @@
 
             Dim Data = _FloppyImage.GetBytes(Offset, ClusterSize)
             Dim EmptyByte As Byte = Data(0)
-            If EmptyByte <> &HF6 And EmptyByte <> &H0 Then
+            If Not Disk.FreeClusterBytes.Contains(EmptyByte) Then
                 Return False
             Else
                 For Each B In Data

@@ -59,6 +59,7 @@ Public Class HexViewForm
         HexBox1.ReadOnly = False
 
         SetControlSize()
+        PopulateFillValues()
 
         If HexViewSectorData.Description = "" Then
             Me.Text = "Hex Editor"
@@ -706,6 +707,21 @@ Public Class HexViewForm
         End If
     End Sub
 
+    Private Sub PopulateFillValues()
+        BtnFill.DropDownItems.Clear()
+        For Counter = 0 To 15
+            Dim Item = New ToolStripMenuItem(Counter.ToString("X"))
+            BtnFill.DropDownItems.Add(Item)
+            For Counter2 = 0 To 15
+                Dim Value = Counter * 16 + Counter2
+                Dim Item2 = New ToolStripMenuItem("0x" & Value.ToString("X2"), Nothing, AddressOf BtnFill_Click) With {
+                    .Tag = Value
+                }
+                Item.DropDownItems.Add(Item2)
+            Next
+        Next
+    End Sub
+
     Private Sub ProcessKeyPress(e As KeyEventArgs)
         If e.Control And e.KeyCode = Keys.C Then
             If HexBox1.CanCopy Then
@@ -994,6 +1010,8 @@ Public Class HexViewForm
         BtnFillF6.Enabled = HexBox1.SelectionLength > 0
         ToolStripBtnFillF6.Enabled = BtnFillF6.Enabled
 
+        BtnFill.Enabled = HexBox1.SelectionLength > 0
+
         RefreshPasteButton()
         RefreshUndoButtons()
 
@@ -1213,6 +1231,13 @@ Public Class HexViewForm
     Private Sub BtnDelete_Click(sender As Object, e As EventArgs) Handles BtnDelete.Click, ToolStripBtnDelete.Click
         If HexBox1.SelectionLength > 0 Then
             FillSelected(0)
+        End If
+    End Sub
+
+    Private Sub BtnFill_Click(sender As Object, e As EventArgs)
+        If HexBox1.SelectionLength > 0 Then
+            Dim Value As Byte = sender.tag
+            FillSelected(Value)
         End If
     End Sub
 
