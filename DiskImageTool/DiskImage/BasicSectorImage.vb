@@ -22,6 +22,12 @@
             End Get
         End Property
 
+        Public ReadOnly Property BytesPerSector As UInteger Implements IFloppyImage.BytesPerSector
+            Get
+                Return 512
+            End Get
+        End Property
+
         Public ReadOnly Property CanResize As Boolean Implements IFloppyImage.CanResize
             Get
                 Return True

@@ -8,21 +8,10 @@ Namespace ImageFormats
             Dim Params = GetFloppyDiskParams(DiskFormat)
             Dim DriveSpeed = GetDriveSpeed(DiskFormat)
             Dim TrackCount = GetTrackCount(Params)
-            Dim Hole As D86F.DiskHole
+            Dim Hole = Get86FHole(DiskFormat)
 
             Dim RPM As D86F.RPM = D86F.GetRPM(DriveSpeed.RPM)
             Dim BitRate As D86F.BitRate = D86F.GetBitRate(DriveSpeed.BitRate, True)
-
-            Select Case DiskFormat
-                Case FloppyDiskFormat.Floppy160, FloppyDiskFormat.Floppy180, FloppyDiskFormat.Floppy320, FloppyDiskFormat.Floppy360, FloppyDiskFormat.Floppy720
-                    Hole = D86F.DiskHole.DD
-                Case FloppyDiskFormat.Floppy1200, FloppyDiskFormat.Floppy1440
-                    Hole = D86F.DiskHole.HD
-                Case FloppyDiskFormat.Floppy2880
-                    Hole = D86F.DiskHole.ED
-                Case Else
-                    Hole = D86F.DiskHole.DD
-            End Select
 
             Dim Image = New D86F.D86FImage(TrackCount, Params.NumberOfHeads) With {
                 .BitcellMode = True,
@@ -624,13 +613,20 @@ Namespace ImageFormats
 
         Private Function Get86FHole(TrackFormat As MFMTrackFormat) As D86F.DiskHole
             Select Case TrackFormat
-                Case MFMTrackFormat.TrackFormatDD
-                    Return D86F.DiskHole.DD
-                Case MFMTrackFormat.TrackFormatHD
-                    Return D86F.DiskHole.HD
-                Case MFMTrackFormat.TrackFormatHD1200
+                Case MFMTrackFormat.TrackFormatHD, MFMTrackFormat.TrackFormatHD1200
                     Return D86F.DiskHole.HD
                 Case MFMTrackFormat.TrackFormatED
+                    Return D86F.DiskHole.ED
+                Case Else
+                    Return D86F.DiskHole.DD
+            End Select
+        End Function
+
+        Private Function Get86FHole(DiskFormat As FloppyDiskFormat) As D86F.DiskHole
+            Select Case DiskFormat
+                Case FloppyDiskFormat.Floppy1200, FloppyDiskFormat.Floppy1440, FloppyDiskFormat.Floppy2HD
+                    Return D86F.DiskHole.HD
+                Case FloppyDiskFormat.Floppy2880
                     Return D86F.DiskHole.ED
                 Case Else
                     Return D86F.DiskHole.DD
@@ -681,20 +677,12 @@ Namespace ImageFormats
             Dim DriveSpeed As New DriveSpeed
 
             Select Case DiskFormat
-                Case FloppyDiskFormat.Floppy1200
+                Case FloppyDiskFormat.Floppy1200, FloppyDiskFormat.FloppyXDF525
                     DriveSpeed.SetValue(360, 500)
-                Case FloppyDiskFormat.Floppy1440
+                Case FloppyDiskFormat.Floppy1440, FloppyDiskFormat.FloppyDMF1024, FloppyDiskFormat.FloppyDMF2048, FloppyDiskFormat.FloppyXDF35, FloppyDiskFormat.Floppy2HD
                     DriveSpeed.SetValue(300, 500)
                 Case FloppyDiskFormat.Floppy2880
                     DriveSpeed.SetValue(300, 1000)
-                Case FloppyDiskFormat.FloppyDMF1024
-                    DriveSpeed.SetValue(300, 500)
-                Case FloppyDiskFormat.FloppyDMF2048
-                    DriveSpeed.SetValue(300, 500)
-                Case FloppyDiskFormat.FloppyXDF525
-                    DriveSpeed.SetValue(360, 500)
-                Case FloppyDiskFormat.FloppyXDF35
-                    DriveSpeed.SetValue(300, 500)
                 Case Else
                     DriveSpeed.SetValue(300, 250)
             End Select
@@ -749,11 +737,7 @@ Namespace ImageFormats
 
         Private Function GetHFEFloppyInterfaceMode(TrackFormat As MFMTrackFormat) As HFE.HFEFloppyinterfaceMode
             Select Case TrackFormat
-                Case MFMTrackFormat.TrackFormatDD
-                    Return HFE.HFEFloppyinterfaceMode.IBMPC_DD_FLOPPYMODE
-                Case MFMTrackFormat.TrackFormatHD
-                    Return HFE.HFEFloppyinterfaceMode.IBMPC_HD_FLOPPYMODE
-                Case MFMTrackFormat.TrackFormatHD1200
+                Case MFMTrackFormat.TrackFormatHD, MFMTrackFormat.TrackFormatHD1200
                     Return HFE.HFEFloppyinterfaceMode.IBMPC_HD_FLOPPYMODE
                 Case MFMTrackFormat.TrackFormatED
                     Return HFE.HFEFloppyinterfaceMode.IBMPC_ED_FLOPPYMODE
@@ -764,9 +748,7 @@ Namespace ImageFormats
 
         Private Function GetHFEFloppyInterfaceMode(DiskFormat As FloppyDiskFormat) As HFE.HFEFloppyinterfaceMode
             Select Case DiskFormat
-                Case FloppyDiskFormat.Floppy1200
-                    Return HFE.HFEFloppyinterfaceMode.IBMPC_HD_FLOPPYMODE
-                Case FloppyDiskFormat.Floppy1440
+                Case FloppyDiskFormat.Floppy1200, FloppyDiskFormat.Floppy1440, FloppyDiskFormat.Floppy2HD
                     Return HFE.HFEFloppyinterfaceMode.IBMPC_HD_FLOPPYMODE
                 Case FloppyDiskFormat.Floppy2880
                     Return HFE.HFEFloppyinterfaceMode.IBMPC_ED_FLOPPYMODE
@@ -777,11 +759,7 @@ Namespace ImageFormats
 
         Private Function GetIMDMode(DiskFormat As FloppyDiskFormat) As IMD.TrackMode
             Select Case DiskFormat
-                Case FloppyDiskFormat.Floppy1200
-                    Return IMD.TrackMode.MFM500kbps
-                Case FloppyDiskFormat.Floppy1440
-                    Return IMD.TrackMode.MFM500kbps
-                Case FloppyDiskFormat.Floppy2880
+                Case FloppyDiskFormat.Floppy1200, FloppyDiskFormat.Floppy1440, FloppyDiskFormat.Floppy2880, FloppyDiskFormat.Floppy2HD
                     Return IMD.TrackMode.MFM500kbps
                 Case Else
                     Return IMD.TrackMode.MFM250kbps
@@ -835,13 +813,33 @@ Namespace ImageFormats
             Return (Track * Params.NumberOfHeads * Params.SectorsPerTrack + Params.SectorsPerTrack * Side + (SectorId - 1)) * Params.BytesPerSector
         End Function
 
+        Private Function GetMFMSectorSize(BytesPerSector As UInteger) As IBM_MFM_Bitstream.MFMSectorSize
+            Select Case BytesPerSector
+                Case 128
+                    Return IBM_MFM_Bitstream.MFMSectorSize.SectorSize_128
+                Case 256
+                    Return IBM_MFM_Bitstream.MFMSectorSize.SectorSize_256
+                Case 512
+                    Return IBM_MFM_Bitstream.MFMSectorSize.SectorSize_512
+                Case 1024
+                    Return IBM_MFM_Bitstream.MFMSectorSize.SectorSize_1024
+                Case 2048
+                    Return IBM_MFM_Bitstream.MFMSectorSize.SectorSize_2048
+                Case 4096
+                    Return IBM_MFM_Bitstream.MFMSectorSize.SectorSize_4096
+                Case 8192
+                    Return IBM_MFM_Bitstream.MFMSectorSize.SectorSize_8192
+                Case 16384
+                    Return IBM_MFM_Bitstream.MFMSectorSize.SectorSize_16384
+                Case Else
+                    Return IBM_MFM_Bitstream.MFMSectorSize.SectorSize_512
+            End Select
+        End Function
+
+
         Private Function GETPSIEncodingSubType(TrackFormat As MFMTrackFormat) As PSI.MFMEncodingSubtype
             Select Case TrackFormat
-                Case MFMTrackFormat.TrackFormatDD
-                    Return PSI.MFMEncodingSubtype.DoubleDensity
-                Case MFMTrackFormat.TrackFormatHD
-                    Return PSI.MFMEncodingSubtype.HighDensity
-                Case MFMTrackFormat.TrackFormatHD1200
+                Case MFMTrackFormat.TrackFormatHD, MFMTrackFormat.TrackFormatHD1200
                     Return PSI.MFMEncodingSubtype.HighDensity
                 Case MFMTrackFormat.TrackFormatED
                     Return PSI.MFMEncodingSubtype.ExtraDensity
@@ -855,9 +853,7 @@ Namespace ImageFormats
             Select Case TrackFormat
                 Case MFMTrackFormat.TrackFormatDD
                     Return PSI.DefaultSectorFormat.IBM_MFM_DD
-                Case MFMTrackFormat.TrackFormatHD
-                    Return PSI.DefaultSectorFormat.IBM_MFM_HD
-                Case MFMTrackFormat.TrackFormatHD1200
+                Case MFMTrackFormat.TrackFormatHD, MFMTrackFormat.TrackFormatHD1200
                     Return PSI.DefaultSectorFormat.IBM_MFM_HD
                 Case MFMTrackFormat.TrackFormatED
                     Return PSI.DefaultSectorFormat.IBM_MFM_ED
@@ -869,9 +865,7 @@ Namespace ImageFormats
 
         Private Function GetPSISectorFormat(DiskFormat As FloppyDiskFormat) As PSI.DefaultSectorFormat
             Select Case DiskFormat
-                Case FloppyDiskFormat.Floppy1200
-                    Return PSI.DefaultSectorFormat.IBM_MFM_HD
-                Case FloppyDiskFormat.Floppy1440
+                Case FloppyDiskFormat.Floppy1200, FloppyDiskFormat.Floppy1440, FloppyDiskFormat.Floppy2HD
                     Return PSI.DefaultSectorFormat.IBM_MFM_HD
                 Case FloppyDiskFormat.Floppy2880
                     Return PSI.DefaultSectorFormat.IBM_MFM_ED
@@ -888,11 +882,7 @@ Namespace ImageFormats
             Select Case TrackFormat
                 Case MFMTrackFormat.TrackFormatDD
                     Return TC.TransCopyDiskType.MFMDoubleDensity
-                Case MFMTrackFormat.TrackFormatHD
-                    Return TC.TransCopyDiskType.MFMHighDensity
-                Case MFMTrackFormat.TrackFormatHD1200
-                    Return TC.TransCopyDiskType.MFMHighDensity
-                Case MFMTrackFormat.TrackFormatED
+                Case MFMTrackFormat.TrackFormatHD, MFMTrackFormat.TrackFormatHD1200, MFMTrackFormat.TrackFormatED
                     Return TC.TransCopyDiskType.MFMHighDensity
                 Case Else
                     Return TC.TransCopyDiskType.Unknown
@@ -901,11 +891,7 @@ Namespace ImageFormats
 
         Private Function GetTranscopyDiskType(DiskFormat As FloppyDiskFormat) As TC.TransCopyDiskType
             Select Case DiskFormat
-                Case FloppyDiskFormat.Floppy1200
-                    Return TC.TransCopyDiskType.MFMHighDensity
-                Case FloppyDiskFormat.Floppy1440
-                    Return TC.TransCopyDiskType.MFMHighDensity
-                Case FloppyDiskFormat.Floppy2880
+                Case FloppyDiskFormat.Floppy1200, FloppyDiskFormat.Floppy1440, FloppyDiskFormat.Floppy2880, FloppyDiskFormat.Floppy2HD
                     Return TC.TransCopyDiskType.MFMHighDensity
                 Case Else
                     Return TC.TransCopyDiskType.MFMDoubleDensity
@@ -943,7 +929,7 @@ Namespace ImageFormats
                 Dim Buffer = New Byte(Size - 1) {}
                 Array.Copy(Data, ImageOffset, Buffer, 0, Size)
 
-                MFMBitstream.AddSectorId(Track, Side, SectorId, IBM_MFM_Bitstream.MFMSectorSize.SectorSize_512)
+                MFMBitstream.AddSectorId(Track, Side, SectorId, GetMFMSectorSize(Params.BytesPerSector))
                 MFMBitstream.AddData(Buffer, MFM_GAP3_SIZE)
             Next
 

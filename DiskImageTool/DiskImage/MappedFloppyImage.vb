@@ -6,6 +6,7 @@ Namespace DiskImage
 
         Friend Const SECTOR_COUNT As Byte = 36
         Private ReadOnly _AdditionalTracks As HashSet(Of UShort)
+        Private ReadOnly _BytesPerSector As UInteger
         Private ReadOnly _Image As IBitstreamImage
         Private ReadOnly _NonStandardTracks As HashSet(Of UShort)
         Private ReadOnly _ProtectedSectors As HashSet(Of UInteger)
@@ -18,12 +19,13 @@ Namespace DiskImage
         Private _TrackCount As UShort
         Private _Tracks() As TrackData
 
-        Public Sub New(Image As IBitstreamImage)
+        Public Sub New(Image As IBitstreamImage, BytesPerSector As UInteger)
             _Image = Image
             _History = New ImageHistory(Me)
             _ProtectedSectors = New HashSet(Of UInteger)
             _AdditionalTracks = New HashSet(Of UShort)
             _NonStandardTracks = New HashSet(Of UShort)
+            _BytesPerSector = BytesPerSector
 
             If _Image IsNot Nothing Then
                 BuildSectorMap()
@@ -39,6 +41,12 @@ Namespace DiskImage
         Public ReadOnly Property BitStreamImage As IBitstreamImage Implements IFloppyImage.BitstreamImage
             Get
                 Return _Image
+            End Get
+        End Property
+
+        Public ReadOnly Property BytesPerSector As UInteger Implements IFloppyImage.BytesPerSector
+            Get
+                Return _BytesPerSector
             End Get
         End Property
 
@@ -401,7 +409,7 @@ Namespace DiskImage
                         SetTrack(MappedTrack, Side, BitstreamTrack.MFMData, BitstreamTrack.TrackType)
 
                         If BitstreamTrack.MFMData IsNot Nothing Then
-                            If BitstreamTrack.MFMData.FirstSector = 1 And BitstreamTrack.MFMData.LastSector = 4 And BitstreamTrack.MFMData.SectorSize = 1024 Then
+                            If _BytesPerSector = 512 And BitstreamTrack.MFMData.FirstSector = 1 And BitstreamTrack.MFMData.LastSector = 4 And BitstreamTrack.MFMData.SectorSize = 1024 Then
                                 ProcessMFMSectors1024(Track, Side, BitstreamTrack.MFMData)
                             Else
                                 ProcessMFMSectors(MappedTrack, Side, BitstreamTrack.MFMData)
@@ -562,12 +570,12 @@ Namespace DiskImage
                     Sector = GetSector(Track, Side, MFMSector.SectorId)
                     If Sector Is Nothing Then
                         SectorSize = MFMSector.GetSizeBytes
-                        If SectorSize > 0 And SectorSize < 512 Then
-                            Buffer = New Byte(511) {}
+                        If SectorSize > 0 And SectorSize < _BytesPerSector Then
+                            Buffer = New Byte(_BytesPerSector - 1) {}
                             Array.Copy(MFMSector.Data, 0, Buffer, 0, SectorSize)
                             BitstreamSector = New BitstreamSector(Buffer, Buffer.Length, False)
                             SetSector(Track, Side, MFMSector.SectorId, BitstreamSector)
-                        ElseIf SectorSize = 512 Then
+                        ElseIf SectorSize = _BytesPerSector Then
                             BitstreamSector = New BitstreamSector(MFMSector, IsStandard)
                             SetSector(Track, Side, MFMSector.SectorId, BitstreamSector)
                         End If

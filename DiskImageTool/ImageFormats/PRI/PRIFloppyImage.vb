@@ -10,8 +10,8 @@ Namespace ImageFormats
 
             Private ReadOnly _Image As PRIImage
 
-            Public Sub New(Image As PRIImage, DiskFormat As FloppyDiskFormat)
-                MyBase.New(Image)
+            Public Sub New(Image As PRIImage, DiskFormat As FloppyDiskFormat, BytesPerSector As UInteger)
+                MyBase.New(Image, BytesPerSector)
 
                 _Image = Image
 

@@ -54,6 +54,9 @@ Public Class HexViewForm
 
         If Not _BPB.IsValid Then
             _ClusterNavigator = False
+            If _BPB.BytesPerSector = 0 Then
+                _BPB.BytesPerSector = 512
+            End If
         End If
 
         HexBox1.ReadOnly = False
@@ -1178,6 +1181,11 @@ Public Class HexViewForm
         If Not OutOfRange Then
             Dim Offset = _BPB.SectorToBytes(_CurrentSector) - HexBox1.LineInfoOffset
             Dim Length = _BPB.BytesPerSector
+
+            If Offset + Length > HexBox1.ByteProvider.Length Then
+                Length = HexBox1.ByteProvider.Length - Offset
+            End If
+
             HexBox1.Select(Offset, Length)
         End If
     End Sub
@@ -1190,6 +1198,11 @@ Public Class HexViewForm
             Dim Sector = _BPB.TrackToSector(Track, Side)
             Dim Offset = _BPB.SectorToBytes(Sector) - HexBox1.LineInfoOffset
             Dim Length = _BPB.BytesPerSector * _BPB.SectorsPerTrack
+
+            If Offset + Length > HexBox1.ByteProvider.Length Then
+                Length = HexBox1.ByteProvider.Length - Offset
+            End If
+
             HexBox1.Select(Offset, Length)
         End If
     End Sub
@@ -1409,16 +1422,23 @@ Public Class HexViewForm
         For Counter = 0 To LineCount - 2
             Offset = StartOffset + Counter * HexBox1.BytesPerLine
             If Offset Mod _BPB.BytesPerSector = 0 Then
-                Dim Sector = _BPB.OffsetToSector(Offset)
-                Dim Track = _BPB.SectorToTrack(Sector)
-                Dim Side = _BPB.SectorToSide(Sector)
-                Dim SectorId = _BPB.SectorToTrackSector(Sector) + 1
                 Dim vPos = TopPos + Counter * RowHeight
                 If Counter > 0 Then
                     e.Graphics.DrawLine(Pens.DarkGray, 0, vPos, e.ClipRectangle.Width, vPos)
                 End If
+
+                Dim Sector = _BPB.OffsetToSector(Offset)
+
                 Dim r As New Rectangle(LeftPos, vPos, 64, RowHeight)
-                e.Graphics.DrawString(Track & "." & Side & "-" & SectorId, HexBox1.Font, Brushes.DarkGray, r, StringFormat.GenericDefault)
+                If _BPB.IsValid Then
+                    Dim Track = _BPB.SectorToTrack(Sector)
+                    Dim Side = _BPB.SectorToSide(Sector)
+                    Dim SectorId = _BPB.SectorToTrackSector(Sector) + 1
+
+                    e.Graphics.DrawString(Track & "." & Side & "-" & SectorId, HexBox1.Font, Brushes.DarkGray, r, StringFormat.GenericDefault)
+                Else
+                    e.Graphics.DrawString(Sector, HexBox1.Font, Brushes.DarkGray, r, StringFormat.GenericDefault)
+                End If
             End If
         Next
     End Sub

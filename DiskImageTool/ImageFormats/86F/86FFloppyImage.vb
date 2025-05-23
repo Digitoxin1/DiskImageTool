@@ -10,8 +10,8 @@ Namespace ImageFormats
 
             Private ReadOnly _Image As D86FImage
 
-            Public Sub New(Image As D86FImage, DiskFormat As FloppyDiskFormat)
-                MyBase.New(Image)
+            Public Sub New(Image As D86FImage, DiskFormat As FloppyDiskFormat, BytesPerSector As UInteger)
+                MyBase.New(Image, BytesPerSector)
 
                 _Image = Image
 

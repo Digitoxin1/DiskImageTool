@@ -348,7 +348,7 @@ Public Class BootSectorForm
         End If
         CboDiskType.Items.Add(New BootSectorDiskFormat(FloppyDiskFormat.FloppyProCopy))
         CboDiskType.Items.Add(New BootSectorDiskFormat(FloppyDiskFormat.FloppyTandy2000))
-        CboDiskType.Items.Add(New BootSectorDiskFormat(FloppyDiskFormat.FloppyJapanese))
+        CboDiskType.Items.Add(New BootSectorDiskFormat(FloppyDiskFormat.Floppy2HD))
         If DiskFormat = FloppyDiskFormat.FloppyNoBPB Then
             CboDiskType.Items.Add(New BootSectorDiskFormat(FloppyDiskFormat.FloppyNoBPB))
         End If
@@ -394,7 +394,7 @@ Public Class BootSectorForm
         CboMediaDescriptor.Items.Add(New MediaDescriptorType("F9", GetFloppyDiskFormatName(FloppyDiskFormat.FloppyXDF525)))
         CboMediaDescriptor.Items.Add(New MediaDescriptorType("F0", GetFloppyDiskFormatName(FloppyDiskFormat.FloppyXDF35)))
         CboMediaDescriptor.Items.Add(New MediaDescriptorType("ED", GetFloppyDiskFormatName(FloppyDiskFormat.FloppyTandy2000)))
-        CboMediaDescriptor.Items.Add(New MediaDescriptorType("FE", GetFloppyDiskFormatName(FloppyDiskFormat.FloppyJapanese)))
+        CboMediaDescriptor.Items.Add(New MediaDescriptorType("FE", GetFloppyDiskFormatName(FloppyDiskFormat.Floppy2HD)))
     End Sub
 
     Private Sub PopulateOEMName()

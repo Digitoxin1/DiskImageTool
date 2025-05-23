@@ -10,8 +10,8 @@ Namespace ImageFormats
 
             Private ReadOnly _Image As IMDImage
 
-            Public Sub New(Image As IMDImage, DiskFormat As FloppyDiskFormat)
-                MyBase.New(Nothing)
+            Public Sub New(Image As IMDImage, DiskFormat As FloppyDiskFormat, BytesPerSector As UInteger)
+                MyBase.New(Nothing, BytesPerSector)
 
                 _Image = Image
 

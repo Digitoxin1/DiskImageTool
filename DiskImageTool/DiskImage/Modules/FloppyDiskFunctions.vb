@@ -19,7 +19,7 @@ Namespace DiskImage
             FloppyXDFMicro = 14
             FloppyTandy2000 = 15
             FloppyNoBPB = 16
-            FloppyJapanese = 17
+            Floppy2HD = 17
         End Enum
 
         Public Function BPBCompare(BPB As BiosParameterBlock, Params As FloppyDiskParams, CheckMediaDescriptor As Boolean) As Boolean
@@ -102,7 +102,7 @@ Namespace DiskImage
                     Return &HF9
                 Case FloppyDiskFormat.FloppyTandy2000
                     Return &HED
-                Case FloppyDiskFormat.FloppyJapanese
+                Case FloppyDiskFormat.Floppy2HD
                     Return &HFE
                 Case Else
                     Return &HF0
@@ -293,7 +293,7 @@ Namespace DiskImage
                     Params.SectorsPerFAT = 2
                     Params.SectorsPerTrack = 9
 
-                Case FloppyDiskFormat.FloppyJapanese
+                Case FloppyDiskFormat.Floppy2HD
                     Params.BytesPerSector = 1024
                     Params.MediaDescriptor = &HFE
                     Params.NumberOfFATs = 2
@@ -305,7 +305,7 @@ Namespace DiskImage
                     Params.SectorsPerFAT = 2
                     Params.SectorsPerTrack = 8
 
-                Case FloppyDiskFormat.FloppyNoBPB
+                Case Else
                     Params.BytesPerSector = 0
                     Params.MediaDescriptor = 0
                     Params.NumberOfFATs = 0
@@ -362,72 +362,78 @@ Namespace DiskImage
         End Function
 
         Public Function GetFloppyDiskSize(DiskFormat As FloppyDiskFormat) As Integer
+            Dim Size As Integer
+
             Select Case DiskFormat
                 Case FloppyDiskFormat.Floppy160
-                    Return 163840
+                    Size = 160
                 Case FloppyDiskFormat.Floppy180
-                    Return 184320
+                    Size = 180
                 Case FloppyDiskFormat.Floppy320
-                    Return 327680
+                    Size = 320
                 Case FloppyDiskFormat.Floppy360
-                    Return 368640
+                    Size = 360
                 Case FloppyDiskFormat.Floppy720
-                    Return 737280
+                    Size = 720
                 Case FloppyDiskFormat.Floppy1200
-                    Return 1228800
+                    Size = 1200
                 Case FloppyDiskFormat.Floppy1440
-                    Return 1474560
+                    Size = 1440
                 Case FloppyDiskFormat.FloppyDMF1024
-                    Return 1720320
+                    Size = 1680
                 Case FloppyDiskFormat.FloppyDMF2048
-                    Return 1720320
+                    Size = 1680
                 Case FloppyDiskFormat.FloppyProCopy
-                    Return 1474560
+                    Size = 1440
                 Case FloppyDiskFormat.FloppyXDF525
-                    Return 1556480
+                    Size = 1520
                 Case FloppyDiskFormat.FloppyXDF35
-                    Return 1884160
+                    Size = 1840
                 Case FloppyDiskFormat.FloppyXDFMicro
-                    Return 4096
+                    Size = 4
                 Case FloppyDiskFormat.Floppy2880
-                    Return 2949120
+                    Size = 2880
                 Case FloppyDiskFormat.FloppyTandy2000
-                    Return 737280
-                Case FloppyDiskFormat.FloppyJapanese
-                    Return 1261568
+                    Size = 720
+                Case FloppyDiskFormat.Floppy2HD
+                    Size = 1232
                 Case Else
-                    Return 0
+                    Size = 0
             End Select
+
+            Return Size * 1024
         End Function
 
         Public Function GetFloppyDiskFormat(Size As Integer) As FloppyDiskFormat
+            Size = Math.Round(Size / 2048, 0, MidpointRounding.AwayFromZero) * 2
+
             Select Case Size
-                Case 163840
+                Case 160
                     Return FloppyDiskFormat.Floppy160
-                Case 184320
+                Case 180
                     Return FloppyDiskFormat.Floppy180
-                Case 327680
+                Case 320
                     Return FloppyDiskFormat.Floppy320
-                Case 368640
+                Case 360
                     Return FloppyDiskFormat.Floppy360
-                Case 737280
+                Case 720
                     Return FloppyDiskFormat.Floppy720
-                Case 1228800
+                Case 1200
                     Return FloppyDiskFormat.Floppy1200
-                Case 1474560
+                Case 1440
                     Return FloppyDiskFormat.Floppy1440
-                Case 1720320
+                Case 1680
                     Return FloppyDiskFormat.FloppyDMF2048
-                Case 1556480
+                Case 1520
                     Return FloppyDiskFormat.FloppyXDF525
-                Case 1884160
+                Case 1840
                     Return FloppyDiskFormat.FloppyXDF35
-                Case 4096
+                Case 4
                     Return FloppyDiskFormat.FloppyXDFMicro
-                Case 2949120
+                Case 2880
                     Return FloppyDiskFormat.Floppy2880
-                Case 1261568
-                    Return FloppyDiskFormat.FloppyJapanese
+                Case 1232
+                    Return FloppyDiskFormat.Floppy2HD
                 Case Else
                     Return FloppyDiskFormat.FloppyUnknown
             End Select
@@ -466,7 +472,7 @@ Namespace DiskImage
                 Case "Tandy 2000"
                     Return FloppyDiskFormat.FloppyTandy2000
                 Case "2HD (1.23M)"
-                    Return FloppyDiskFormat.FloppyJapanese
+                    Return FloppyDiskFormat.Floppy2HD
                 Case "NO BPB"
                     Return FloppyDiskFormat.FloppyNoBPB
                 Case Else
@@ -514,7 +520,7 @@ Namespace DiskImage
                     Return "XDF Micro"
                 Case FloppyDiskFormat.FloppyTandy2000
                     Return "Tandy 2000"
-                Case FloppyDiskFormat.FloppyJapanese
+                Case FloppyDiskFormat.Floppy2HD
                     Return "2HD (1.23M)"
                 Case FloppyDiskFormat.FloppyNoBPB
                     Return "No BPB"
@@ -553,7 +559,7 @@ Namespace DiskImage
                     Return ".xdf"
                 Case FloppyDiskFormat.FloppyXDFMicro
                     Return ".xdf"
-                Case FloppyDiskFormat.FloppyJapanese
+                Case FloppyDiskFormat.Floppy2HD
                     Return ".hdm"
                 Case Else
                     Return ""
@@ -601,7 +607,6 @@ Namespace DiskImage
                 Or DiskFormat = FloppyDiskFormat.FloppyProCopy _
                 Or DiskFormat = FloppyDiskFormat.FloppyXDF35 _
                 Or DiskFormat = FloppyDiskFormat.FloppyXDF525 _
-                Or DiskFormat = FloppyDiskFormat.FloppyJapanese _
                 Or DiskFormat = FloppyDiskFormat.FloppyXDFMicro Then
                 Return False
             End If

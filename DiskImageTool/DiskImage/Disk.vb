@@ -13,7 +13,7 @@
             _FloppyImage.History.Enabled = True
 
             _BootSector = New BootSector(_FloppyImage, BootSector.BOOT_SECTOR_OFFSET)
-            _BPB = GetBPB()
+            _BPB = GetBPB(FloppyImage.BytesPerSector)
 
             _FATTables = New FATTables(_BPB, _FloppyImage, FatIndex)
             _DiskFormat = InferFloppyDiskFormat()
@@ -129,7 +129,7 @@
         End Function
 
         Public Sub Reinitialize()
-            _BPB = GetBPB()
+            _BPB = GetBPB(_FloppyImage.BytesPerSector)
             _FATTables.Reinitialize(_BPB)
             _DiskFormat = InferFloppyDiskFormat()
             _FATTables.SyncFATs = Not IsDiskFormatXDF(_DiskFormat)
@@ -142,7 +142,7 @@
             Return _FloppyImage.SetBytes(Value, Offset, _BPB.BytesPerSector, 0)
         End Function
 
-        Private Function GetBPB() As BiosParameterBlock
+        Private Function GetBPB(BytesPerSector As UInteger) As BiosParameterBlock
             Dim BPB As BiosParameterBlock
 
             If _BootSector.BPB.IsValid Then
@@ -155,8 +155,8 @@
             Else
                 Dim FATMediaDescriptor = GetFATMediaDescriptor()
 
-                Dim DiskFormatFAT = GetFloppyDiskFomat(FATMediaDescriptor)
                 Dim DiskFormatSize = GetFloppyDiskFormat(_FloppyImage.Length)
+                Dim DiskFormatFAT = GetFloppyDiskFomat(FATMediaDescriptor)
 
                 If DiskFormatFAT = FloppyDiskFormat.Floppy360 And DiskFormatSize = FloppyDiskFormat.Floppy180 Then
                     FATMediaDescriptor = GetFloppyDiskMediaDescriptor(DiskFormatSize)
@@ -165,6 +165,14 @@
                 End If
 
                 BPB = BuildBPB(FATMediaDescriptor)
+
+                If BPB.BytesPerSector = 0 Then
+                    BPB.BytesPerSector = BuildBPB(DiskFormatSize).BytesPerSector
+                End If
+
+                If BPB.BytesPerSector = 0 Then
+                    BPB.BytesPerSector = BytesPerSector
+                End If
             End If
 
             Return BPB
@@ -173,8 +181,8 @@
         Private Function GetFATMediaDescriptor() As Byte
             Dim Result As Byte = 0
 
-            If _FloppyImage.Length >= 515 Then
-                Dim b = _FloppyImage.GetBytes(512, 3)
+            If _FloppyImage.Length >= _FloppyImage.BytesPerSector + 3 Then
+                Dim b = _FloppyImage.GetBytes(_FloppyImage.BytesPerSector, 3)
                 If b(1) = &HFF And b(2) = &HFF Then
                     Result = b(0)
                 End If

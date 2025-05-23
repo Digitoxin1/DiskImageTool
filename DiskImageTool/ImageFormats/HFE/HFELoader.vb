@@ -9,9 +9,10 @@ Namespace ImageFormats
                 Dim HFEImage = New HFEImage
                 Dim Result = HFEImage.Load(Data)
                 If Result Then
-                    Dim DiskFormat As FloppyDiskFormat = Bitstream.BitstreamGetImageFormat(HFEImage)
+                    Dim BytesPerSector As UInteger = Bitstream.GetBytesPerSector(HFEImage)
+                    Dim DiskFormat As FloppyDiskFormat = Bitstream.BitstreamGetImageFormat(HFEImage, BytesPerSector)
                     If DiskFormat <> FloppyDiskFormat.FloppyUnknown Then
-                        Image = New HFEFloppyImage(HFEImage, DiskFormat)
+                        Image = New HFEFloppyImage(HFEImage, DiskFormat, BytesPerSector)
                     End If
                 End If
 

@@ -29,12 +29,15 @@ Namespace Bitstream
             Return HashBytesToString(HashAlgorithm.Hash)
         End Function
 
-        Public Function BitstreamGetImageFormat(Image As IBitstreamImage) As FloppyDiskFormat
+        Public Function BitstreamGetImageFormat(Image As IBitstreamImage, BytesPerSector As UInteger) As FloppyDiskFormat
             Dim DiskFormat As FloppyDiskFormat
 
-            Dim SectorCount = InferSectorCount(Image)
+            Dim SectorCount = InferSectorCount(Image, BytesPerSector)
 
-            If Image.TrackCount \ Image.TrackStep >= 79 Then
+            If BytesPerSector = 1024 And SectorCount = 8 Then
+                DiskFormat = FloppyDiskFormat.Floppy2HD
+
+            ElseIf Image.TrackCount \ Image.TrackStep >= 79 Then
                 If SectorCount >= 36 Then
                     DiskFormat = FloppyDiskFormat.Floppy2880
                 ElseIf SectorCount >= 18 Then
@@ -75,6 +78,25 @@ Namespace Bitstream
             Dim MicrosecondsPerRev As Single = BitCount / (2 * MicrossecondsPerBit)
 
             Return RoundRPM((60 * 1000000) / MicrosecondsPerRev)
+        End Function
+
+        Public Function GetBytesPerSector(Image As IBitstreamImage) As UInteger
+            Dim BytesPerSector As UInteger = 512
+
+            Dim Track = Image.GetTrack(0, 0)
+            If Track IsNot Nothing Then
+                Dim MFMData = Track.MFMData
+                If MFMData IsNot Nothing Then
+                    For Each Sector In MFMData.Sectors
+                        If Sector.SectorId = 1 Then
+                            BytesPerSector = Sector.GetSizeBytes
+                            Exit For
+                        End If
+                    Next
+                End If
+            End If
+
+            Return BytesPerSector
         End Function
 
         Public Function InferBitRate(BitCount As UInteger) As UShort
@@ -126,7 +148,7 @@ Namespace Bitstream
             End If
         End Function
 
-        Public Function InferSectorCount(Image As IBitstreamImage) As UShort
+        Public Function InferSectorCount(Image As IBitstreamImage, BytesPerSector As UInteger) As UShort
             Dim Track As IBitstreamTrack
             Dim SectorCount As Byte = 0
             Dim TotalSize As UShort
@@ -137,7 +159,7 @@ Namespace Bitstream
                     Track = Image.GetTrack(i, j)
                     If Track IsNot Nothing AndAlso Track.MFMData IsNot Nothing Then
                         TotalSize = GetSectorSize(Track.MFMData.Sectors)
-                        SectorCount = TotalSize \ 512
+                        SectorCount = TotalSize \ BytesPerSector
                         If ValidSectorCount.Contains(SectorCount) Then
                             CountFound = True
                             Exit For

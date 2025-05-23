@@ -13,9 +13,10 @@ Namespace ImageFormats
                         Or PSI.Header.DefaultSectorFormat = DefaultSectorFormat.IBM_MFM_HD _
                         Or PSI.Header.DefaultSectorFormat = DefaultSectorFormat.IBM_MFM_ED Then
 
+                        Dim BytesPerSector As UInteger = Bitstream.GetBytesPerSector(PSI)
                         Dim DiskFormat = GetImageFormat(PSI)
                         If DiskFormat <> FloppyDiskFormat.FloppyUnknown Then
-                            Image = New PSIFloppyImage(PSI, DiskFormat)
+                            Image = New PSIFloppyImage(PSI, DiskFormat, BytesPerSector)
                         End If
                     End If
                 End If

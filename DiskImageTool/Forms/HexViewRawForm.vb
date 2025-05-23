@@ -1032,7 +1032,7 @@ Public Class HexViewRawForm
     End Sub
 
     Private Function IsStandardSector(Sector As BitstreamRegionSector) As Boolean
-        If Sector.DataLength <> 512 Then
+        If Sector.DataLength <> _FloppyImage.BytesPerSector Then
             Return False
         End If
 

@@ -9,9 +9,10 @@ Namespace ImageFormats
                 Dim MFMImage = New MFMImage
                 Dim Result = MFMImage.Load(Data)
                 If Result Then
-                    Dim DiskFormat As FloppyDiskFormat = Bitstream.BitstreamGetImageFormat(MFMImage)
+                    Dim BytesPerSector As UInteger = Bitstream.GetBytesPerSector(MFMImage)
+                    Dim DiskFormat As FloppyDiskFormat = Bitstream.BitstreamGetImageFormat(MFMImage, BytesPerSector)
                     If DiskFormat <> FloppyDiskFormat.FloppyUnknown Then
-                        Image = New MFMFloppyImage(MFMImage, DiskFormat)
+                        Image = New MFMFloppyImage(MFMImage, DiskFormat, BytesPerSector)
                     End If
                 End If
 

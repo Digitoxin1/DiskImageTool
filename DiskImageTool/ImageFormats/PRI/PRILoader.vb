@@ -9,9 +9,10 @@ Namespace ImageFormats
                 Dim PRI = New PRIImage()
                 Dim Result = PRI.Load(Data)
                 If Result Then
-                    Dim DiskFormat = Bitstream.BitstreamGetImageFormat(PRI)
+                    Dim BytesPerSector As UInteger = Bitstream.GetBytesPerSector(PRI)
+                    Dim DiskFormat = Bitstream.BitstreamGetImageFormat(PRI, BytesPerSector)
                     If DiskFormat <> FloppyDiskFormat.FloppyUnknown Then
-                        Image = New PRIFloppyImage(PRI, DiskFormat)
+                        Image = New PRIFloppyImage(PRI, DiskFormat, BytesPerSector)
                     End If
                 End If
 

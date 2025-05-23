@@ -15,6 +15,7 @@ Namespace DiskImage
     Public Interface IFloppyImage
         ReadOnly Property AdditionalTracks As HashSet(Of UShort)
         ReadOnly Property BitstreamImage As IBitstreamImage
+        ReadOnly Property BytesPerSector As UInteger
         ReadOnly Property CanResize As Boolean
         ReadOnly Property HasWeakBitsSupport As Boolean
         ReadOnly Property HasWeakBits As Boolean

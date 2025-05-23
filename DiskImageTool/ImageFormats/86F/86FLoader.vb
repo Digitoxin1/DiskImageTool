@@ -9,9 +9,10 @@ Namespace ImageFormats
                 Dim D86FImage = New D86FImage()
                 Dim Result = D86FImage.Load(Data)
                 If Result Then
-                    Dim DiskFormat As FloppyDiskFormat = Bitstream.BitstreamGetImageFormat(D86FImage)
+                    Dim BytesPerSector As UInteger = Bitstream.GetBytesPerSector(D86FImage)
+                    Dim DiskFormat As FloppyDiskFormat = Bitstream.BitstreamGetImageFormat(D86FImage, BytesPerSector)
                     If DiskFormat <> FloppyDiskFormat.FloppyUnknown Then
-                        Image = New D86FFloppyImage(D86FImage, DiskFormat)
+                        Image = New D86FFloppyImage(D86FImage, DiskFormat, BytesPerSector)
                     End If
                 End If
 
