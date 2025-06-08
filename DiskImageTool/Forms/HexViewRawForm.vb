@@ -1415,6 +1415,14 @@ Public Class HexViewRawForm
             If Sector.Overlaps Then
                 TooltipText &= vbCrLf & "Overlaps"
             End If
+
+            If Sector.HasWeakBits Then
+                TooltipText &= vbCrLf & "Weak Bits"
+            End If
+
+            If Sector.WriteSplice Then
+                TooltipText &= vbCrLf & "Write Splice"
+            End If
         End If
 
         If TooltipText <> _ToolTip.GetToolTip(PanelSectors) Then
