@@ -1800,8 +1800,8 @@ Namespace Hb.Windows.Forms
             Debug.WriteLine("CreateCaret()", "HexBox")
 
             ' define the caret width depending on InsertActive mode
-            Dim caretWidth = If(InsertActive, 1, CInt(_charSize.Width))
-            Dim caretHeight As Integer = _charSize.Height
+            Dim caretWidth = If(InsertActive, 1, Fix(_charSize.Width))
+            Dim caretHeight As Integer = Fix(_charSize.Height)
             Forms.NativeMethods.CreateCaret(Handle, IntPtr.Zero, caretWidth, caretHeight)
 
             UpdateCaret()
@@ -1828,8 +1828,8 @@ Namespace Hb.Windows.Forms
 
             Dim x = (p.X - _recHex.X) / _charSize.Width
             Dim y = (p.Y - _recHex.Y) / _charSize.Height
-            Dim iX As Integer = x
-            Dim iY As Integer = y
+            Dim iX As Integer = Fix(x)
+            Dim iY As Integer = Fix(y)
 
             Dim hPos As Integer = iX / 3 + 1
 
@@ -1851,8 +1851,8 @@ Namespace Hb.Windows.Forms
 
             Dim x = (p.X - _recStringView.X) / _charSize.Width
             Dim y = (p.Y - _recStringView.Y) / _charSize.Height
-            Dim iX As Integer = x
-            Dim iY As Integer = y
+            Dim iX As Integer = Fix(x)
+            Dim iY As Integer = Fix(y)
 
             Dim hPos = iX + 1
 
@@ -1871,7 +1871,7 @@ Namespace Hb.Windows.Forms
             Dim byteIndex = _bytePos - _startByte
             Dim p = _keyInterpreter.GetCaretPointF(byteIndex)
             p.X += _byteCharacterPos * _charSize.Width
-            Forms.NativeMethods.SetCaretPos(p.X, p.Y)
+            SetCaretPos(Fix(p.X), Fix(p.Y))
         End Sub
 #End Region
 
@@ -2470,14 +2470,14 @@ Namespace Hb.Windows.Forms
                     If _selectionLength = 0 Then
                         Dim gp = GetGridBytePoint(_bytePos - _startByte)
                         Dim pf = GetByteStringPointF(gp)
-                        Dim s As New Size(_charSize.Width, _charSize.Height)
-                        Dim r As New Rectangle(pf.X, pf.Y, s.Width, s.Height)
+                        Dim s As New Size(Fix(_charSize.Width), Fix(_charSize.Height))
+                        Dim r As New Rectangle(Fix(pf.X), Fix(pf.Y), s.Width, s.Height)
                         If r.IntersectsWith(_recStringView) Then
                             r.Intersect(_recStringView)
                             PaintCurrentByteSign(g, r)
                         End If
                     Else
-                        Dim lineWidth As Integer = _recStringView.Width - _charSize.Width
+                        Dim lineWidth As Integer = Fix(_recStringView.Width - _charSize.Width)
 
                         Dim startSelGridPoint = GetGridBytePoint(_bytePos - _startByte)
                         Dim startSelPointF = GetByteStringPointF(startSelGridPoint)
@@ -2488,20 +2488,20 @@ Namespace Hb.Windows.Forms
                         Dim multiLine = endSelGridPoint.Y - startSelGridPoint.Y
                         If multiLine = 0 Then
 
-                            Dim singleLine As New Rectangle(startSelPointF.X, startSelPointF.Y, endSelPointF.X - startSelPointF.X + _charSize.Width, _charSize.Height)
+                            Dim singleLine As New Rectangle(Fix(startSelPointF.X), Fix(startSelPointF.Y), Fix(endSelPointF.X - startSelPointF.X + _charSize.Width), Fix(_charSize.Height))
                             If singleLine.IntersectsWith(_recStringView) Then
                                 singleLine.Intersect(_recStringView)
                                 PaintCurrentByteSign(g, singleLine)
                             End If
                         Else
-                            Dim firstLine As New Rectangle(startSelPointF.X, startSelPointF.Y, _recStringView.X + lineWidth - startSelPointF.X + _charSize.Width, _charSize.Height)
+                            Dim firstLine As New Rectangle(Fix(startSelPointF.X), Fix(startSelPointF.Y), Fix(_recStringView.X + lineWidth - startSelPointF.X + _charSize.Width), Fix(_charSize.Height))
                             If firstLine.IntersectsWith(_recStringView) Then
                                 firstLine.Intersect(_recStringView)
                                 PaintCurrentByteSign(g, firstLine)
                             End If
 
                             If multiLine > 1 Then
-                                Dim betweenLines As New Rectangle(_recStringView.X, startSelPointF.Y + _charSize.Height, _recStringView.Width, _charSize.Height * (multiLine - 1))
+                                Dim betweenLines As New Rectangle(_recStringView.X, Fix(startSelPointF.Y + _charSize.Height), _recStringView.Width, Fix(_charSize.Height * (multiLine - 1)))
                                 If betweenLines.IntersectsWith(_recStringView) Then
                                     betweenLines.Intersect(_recStringView)
                                     PaintCurrentByteSign(g, betweenLines)
@@ -2509,7 +2509,7 @@ Namespace Hb.Windows.Forms
 
                             End If
 
-                            Dim lastLine As New Rectangle(_recStringView.X, endSelPointF.Y, endSelPointF.X - _recStringView.X + _charSize.Width, _charSize.Height)
+                            Dim lastLine As New Rectangle(_recStringView.X, Fix(endSelPointF.Y), Fix(endSelPointF.X - _recStringView.X + _charSize.Width), Fix(_charSize.Height))
                             If lastLine.IntersectsWith(_recStringView) Then
                                 lastLine.Intersect(_recStringView)
                                 PaintCurrentByteSign(g, lastLine)
@@ -2520,11 +2520,11 @@ Namespace Hb.Windows.Forms
                     If _selectionLength = 0 Then
                         Dim gp = GetGridBytePoint(_bytePos - _startByte)
                         Dim pf = GetBytePointF(gp)
-                        Dim s As New Size(CInt(_charSize.Width) * 2, _charSize.Height)
-                        Dim r As New Rectangle(pf.X, pf.Y, s.Width, s.Height)
+                        Dim s As New Size(Fix(_charSize.Width) * 2, Fix(_charSize.Height))
+                        Dim r As New Rectangle(Fix(pf.X), Fix(pf.Y), s.Width, s.Height)
                         PaintCurrentByteSign(g, r)
                     Else
-                        Dim lineWidth As Integer = _recHex.Width - _charSize.Width * 5
+                        Dim lineWidth As Integer = Fix(_recHex.Width - _charSize.Width * 5)
 
                         Dim startSelGridPoint = GetGridBytePoint(_bytePos - _startByte)
                         Dim startSelPointF = GetBytePointF(startSelGridPoint)
@@ -2534,20 +2534,20 @@ Namespace Hb.Windows.Forms
 
                         Dim multiLine = endSelGridPoint.Y - startSelGridPoint.Y
                         If multiLine = 0 Then
-                            Dim singleLine As New Rectangle(startSelPointF.X, startSelPointF.Y, endSelPointF.X - startSelPointF.X + _charSize.Width * 2, _charSize.Height)
+                            Dim singleLine As New Rectangle(Fix(startSelPointF.X), Fix(startSelPointF.Y), Fix(endSelPointF.X - startSelPointF.X + _charSize.Width * 2), Fix(_charSize.Height))
                             If singleLine.IntersectsWith(_recHex) Then
                                 singleLine.Intersect(_recHex)
                                 PaintCurrentByteSign(g, singleLine)
                             End If
                         Else
-                            Dim firstLine As New Rectangle(startSelPointF.X, startSelPointF.Y, _recHex.X + lineWidth - startSelPointF.X + _charSize.Width * 2, _charSize.Height)
+                            Dim firstLine As New Rectangle(Fix(startSelPointF.X), Fix(startSelPointF.Y), Fix(_recHex.X + lineWidth - startSelPointF.X + _charSize.Width * 2), Fix(_charSize.Height))
                             If firstLine.IntersectsWith(_recHex) Then
                                 firstLine.Intersect(_recHex)
                                 PaintCurrentByteSign(g, firstLine)
                             End If
 
                             If multiLine > 1 Then
-                                Dim betweenLines As New Rectangle(_recHex.X, startSelPointF.Y + _charSize.Height, lineWidth + _charSize.Width * 2, _charSize.Height * (multiLine - 1))
+                                Dim betweenLines As New Rectangle(_recHex.X, Fix(startSelPointF.Y + _charSize.Height), Fix(lineWidth + _charSize.Width * 2), Fix(_charSize.Height * (multiLine - 1)))
                                 If betweenLines.IntersectsWith(_recHex) Then
                                     betweenLines.Intersect(_recHex)
                                     PaintCurrentByteSign(g, betweenLines)
@@ -2555,7 +2555,7 @@ Namespace Hb.Windows.Forms
 
                             End If
 
-                            Dim lastLine As New Rectangle(_recHex.X, endSelPointF.Y, endSelPointF.X - _recHex.X + _charSize.Width * 2, _charSize.Height)
+                            Dim lastLine As New Rectangle(_recHex.X, Fix(endSelPointF.Y), Fix(endSelPointF.X - _recHex.X + _charSize.Width * 2), Fix(_charSize.Height))
                             If lastLine.IntersectsWith(_recHex) Then
                                 lastLine.Intersect(_recHex)
                                 PaintCurrentByteSign(g, lastLine)
@@ -2786,7 +2786,7 @@ Namespace Hb.Windows.Forms
 
             ' calc line info bounds
             If _lineInfoVisible Then
-                _recLineInfo = New Rectangle(_recContent.X + marginLeft, _recContent.Y, _charSize.Width * 10, _recContent.Height)
+                _recLineInfo = New Rectangle(_recContent.X + marginLeft, _recContent.Y, Fix(_charSize.Width * 10), _recContent.Height)
                 requiredWidth += _recLineInfo.Width
             Else
                 _recLineInfo = Rectangle.Empty
@@ -2795,10 +2795,10 @@ Namespace Hb.Windows.Forms
             End If
 
             ' calc Column info bounds
-            _recColumnInfo = New Rectangle(_recLineInfo.X + _recLineInfo.Width, _recContent.Y, _recContent.Width - _recLineInfo.Width, CInt(charSize.Height) + 4)
+            _recColumnInfo = New Rectangle(_recLineInfo.X + _recLineInfo.Width, _recContent.Y, _recContent.Width - _recLineInfo.Width, Fix(charSize.Height) + 4)
             If _columnInfoVisible Then
-                _recLineInfo.Y += CInt(charSize.Height) + 4
-                _recLineInfo.Height -= CInt(charSize.Height) + 4
+                _recLineInfo.Y += Fix(charSize.Height) + 4
+                _recLineInfo.Height -= Fix(charSize.Height) + 4
             Else
                 _recColumnInfo.Height = 0
             End If
