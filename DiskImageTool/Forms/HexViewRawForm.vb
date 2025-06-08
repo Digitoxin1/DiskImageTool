@@ -28,6 +28,8 @@ Public Class HexViewRawForm
     Private _Initialized As Boolean = False
     Private _LabelBitOffset As ToolStripLabel
     Private _LabelBitOffsetAligned As ToolStripLabel
+    Private _LabelGap4A As ToolStripLabel
+    Private _LabelGap1 As ToolStripLabel
     Private _LastSearch As HexSearch
     Private _RegionData As RegionData
     Private _RegionMap() As BitstreamRegion
@@ -398,6 +400,7 @@ Public Class HexViewRawForm
             InitializeAllTracksCheckBox()
         End If
         InitializeBitOffsetNavigator()
+        InitializeToolstripLabels
         PopulateTracks(_AllTracks)
     End Sub
     Private Sub HighlightRegions()
@@ -490,10 +493,10 @@ Public Class HexViewRawForm
             .Maximum = 15
         }
 
-        _LabelBitOffsetAligned = New ToolStripLabel("Aligned") With {
+        _LabelBitOffsetAligned = New ToolStripLabel("Byte-Aligned") With {
             .Alignment = ToolStripItemAlignment.Right,
             .AutoSize = True,
-            .Padding = New Padding(0, 0, 36, 0),
+            .Padding = New Padding(0, 0, 8, 0),
             .ForeColor = Color.Green,
             .TextAlign = ContentAlignment.MiddleLeft
         }
@@ -510,6 +513,21 @@ Public Class HexViewRawForm
         ToolStripMain.Items.Add(NumericBitOffset)
         ToolStripMain.Items.Add(_LabelBitOffsetAligned)
         ToolStripMain.Items.Add(_LabelBitOffset)
+    End Sub
+
+    Private Sub InitializeToolstripLabels()
+        _LabelGap4A = New ToolStripLabel("Gap 4A: 0") With {
+           .Alignment = ToolStripItemAlignment.Right,
+           .Padding = New Padding(12, 0, 0, 0)
+        }
+
+        _LabelGap1 = New ToolStripLabel("Gap 1: 0") With {
+           .Alignment = ToolStripItemAlignment.Right,
+           .Padding = New Padding(12, 0, 0, 0)
+        }
+
+        ToolStripMain.Items.Add(_LabelGap1)
+        ToolStripMain.Items.Add(_LabelGap4A)
     End Sub
 
     Private Sub InitializeTrackNavigator()
@@ -606,6 +624,9 @@ Public Class HexViewRawForm
         ToolStripStatusBytes.Text = Format(Math.Ceiling(RegionData.NumBits / 16), "N0") & " bytes"
         _LastSearch = New HexSearch
 
+        _LabelGap4A.Text = "Gap 4A: " & RegionData.Gap4A
+        _LabelGap1.Text = "Gap 1: " & RegionData.Gap1
+
         RefreshSize()
         InitRegionMap()
         HighlightRegions()
@@ -650,6 +671,21 @@ Public Class HexViewRawForm
             _Bitstream = MFMTrack.Bitstream
             _SurfaceData = MFMTrack.SurfaceData
             _WeakBitRegions = GetWeakBitRegions(MFMTrack.Bitstream, TrackData.Offset)
+
+            If _SurfaceData IsNot Nothing Then
+                For Each Range In _WeakBitRegions
+                    For Each Sector In RegionData.Sectors
+                        Dim SectorLength = Sector.Length
+                        If SectorLength = 0 Then
+                            SectorLength = NumBytes - Sector.StartIndex
+                        End If
+                        Dim SectorEnd As Integer = Sector.StartIndex + SectorLength - 1
+                        If Range.StartIndex <= SectorEnd AndAlso Range.EndIndex >= Sector.StartIndex Then
+                            Sector.HasWeakBits = True
+                        End If
+                    Next
+                Next
+            End If
         Else
             Data = BitsToBytes(MFMTrack.Bitstream, 0)
             RegionData.NumBits = MFMTrack.Bitstream.Length
@@ -1292,12 +1328,30 @@ Public Class HexViewRawForm
                     SectorBrush = Brushes.LightBlue
                 End If
 
+                If Sector.HasWeakBits Then
+                    SectorBrush = New Drawing2D.HatchBrush(Drawing2D.HatchStyle.ForwardDiagonal, Color.Gray, CType(SectorBrush, SolidBrush).Color)
+                End If
+
                 e.Graphics.FillRectangle(SectorBrush, LeftPos, TopPos, SECTOR_WIDTH, SECTOR_HEIGHT)
+
+                If Sector.HasWeakBits Then
+                    CType(SectorBrush, Drawing2D.HatchBrush).Dispose()
+                End If
+
                 If _TopSector Is Sector Then
                     e.Graphics.DrawRectangle(SelectedPen, LeftPos - 1, TopPos - 1, SECTOR_WIDTH + 2, SECTOR_HEIGHT + 2)
                 Else
                     e.Graphics.DrawRectangle(SystemPens.WindowFrame, LeftPos, TopPos, SECTOR_WIDTH, SECTOR_HEIGHT)
                 End If
+
+                If Sector.WriteSplice Then
+                    Dim dotSize As Integer = 4
+                    Dim dotBrush As Brush = Brushes.Blue
+                    Dim dotX As Integer = LeftPos + SECTOR_WIDTH - dotSize - 2
+                    Dim dotY As Integer = TopPos + 1
+                    e.Graphics.FillEllipse(dotBrush, dotX, dotY, dotSize, dotSize)
+                End If
+
                 Value = Sector.SectorId
                 TextSize = e.Graphics.MeasureString(Value, SectorFont)
                 e.Graphics.DrawString(Value, SectorFont, SystemBrushes.WindowText, LeftPos + (SECTOR_WIDTH - TextSize.Width) / 2, TopPos + (SECTOR_HEIGHT - TextSize.Height) / 2)

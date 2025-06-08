@@ -9638,9 +9638,6 @@
         <disk md5="E47EF9E0B6FF8824CB9C96933B6C1745" region="USA, Europe"/>
       </media>
     </release>
-    <release year="1989" version="1.02" media="720K" status="U" region="Europe" publisher="Infogrames Europe SA" compilation="SimCity De Luxe">
-      <disk md5="5CE0975A6CF066ADA4F26100DF21CB6A"/>
-    </release>
     <release year="1990" version="1.07">
       <media media="360K" status="V">
         <disk md5="3F22E924561A84F2F24341265A1176C4" disk="1"/>
@@ -9752,16 +9749,7 @@
       </media>
     </release>
   </title>
-  <title name="SimCity: Architecture 1" publisher="Maxis Software, Inc.">
-    <release year="1990" media="720K" status="U" region="Europe" publisher="Infogrames Europe SA" compilation="SimCity De Luxe">
-      <disk md5="0FFAB3078F367E9A40A4BCDEDAA60C07" disk="1"/>
-      <disk md5="1FF9ABCDD3B3702126166EBE107D268D" disk="2"/>
-    </release>
-  </title>
   <title name="SimCity: Terrain Editor" publisher="Maxis Software, Inc.">
-    <release year="1989" media="720K" status="U" region="Europe" publisher="Infogrames Europe SA" compilation="SimCity De Luxe">
-      <disk md5="A7ABAD9024406EF7A278712AA44A45C3"/>
-    </release>
     <release year="1989" version="1.0" media="720K" status="U">
       <disk md5="1A98B9C52AA269FBFFA5B078BF44D429"/>
     </release>

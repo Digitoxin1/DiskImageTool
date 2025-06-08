@@ -300,7 +300,9 @@
                     RegionSector = New BitstreamRegionSector With {
                         .StartIndex = Index \ MFM_BYTE_SIZE,
                         .SectorIndex = SectorIndex,
-                        .Gap3 = 0
+                        .Gap3 = 0,
+                        .HasWeakBits = False,
+                        .WriteSplice = False
                     }
                     RegionData.Sectors.Add(RegionSector)
 
@@ -469,6 +471,13 @@
                             RegionData.Regions.Add(New BitstreamRegion(RegionType, ByteIndex, MFM_CRC_SIZE, RegionSector, BitOffset))
                             ByteIndex += MFM_CRC_SIZE
                             BitstreamIndex += MFM_CRC_SIZE * MFM_BYTE_SIZE
+
+                            If TrackType = BitstreamTrackType.MFM Then
+                                Buffer = MFMGetBytes(Bitstream, BitstreamIndex, 3)
+                                If Buffer(0) <> &H4E Or Buffer(1) <> &H4E Or Buffer(2) <> &H4E Then
+                                    RegionSector.WriteSplice = True
+                                End If
+                            End If
                         End If
 
                         RegionSector.HasData = True
