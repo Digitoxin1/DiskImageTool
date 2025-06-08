@@ -1,5 +1,5 @@
 ﻿Imports DiskImageTool.DiskImage
-Imports Hb.Windows.Forms
+Imports DiskImageTool.Hb.Windows.Forms
 
 Public Class MyByteProvider
     Implements IByteProvider

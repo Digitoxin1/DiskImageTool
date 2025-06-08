@@ -2,7 +2,7 @@
 Imports System.Runtime.InteropServices
 Imports System.Text.RegularExpressions
 Imports System.Threading
-Imports Hb.Windows.Forms
+Imports DiskImageTool.Hb.Windows.Forms
 
 Namespace HexView
     Module HexViewFunctions

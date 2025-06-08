@@ -96,10 +96,6 @@
     <Reference Include="CompactJson, Version=1.2.3.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\CompactJson.1.2.3\lib\net472\CompactJson.dll</HintPath>
     </Reference>
-    <Reference Include="Hb.Windows.Forms.HexBox2, Version=2.0.1.35160, Culture=neutral, PublicKeyToken=e0e5adf0ebc99863, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\Hb.Hexeditor2\sources\Hb.Windows.Forms.HexBox\bin\Release\Hb.Windows.Forms.HexBox2.dll</HintPath>
-    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
     <Reference Include="System.Deployment" />
@@ -198,6 +194,28 @@
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="Github.vb" />
+    <Compile Include="HexBox2\BuiltInContextMenu.vb">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="HexBox2\ByteCharConverters.vb" />
+    <Compile Include="HexBox2\ByteCollection.vb" />
+    <Compile Include="HexBox2\BytePositionInfo.vb" />
+    <Compile Include="HexBox2\DataBlock.vb" />
+    <Compile Include="HexBox2\DataMap.vb" />
+    <Compile Include="HexBox2\DynamicByteProvider.vb" />
+    <Compile Include="HexBox2\DynamicFileByteProvider.vb" />
+    <Compile Include="HexBox2\FileByteProvider.vb" />
+    <Compile Include="HexBox2\FileDataBlock.vb" />
+    <Compile Include="HexBox2\FindOptions.vb" />
+    <Compile Include="HexBox2\HexBox.vb">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="HexBox2\HexCasing.vb" />
+    <Compile Include="HexBox2\IByteCharConverter.vb" />
+    <Compile Include="HexBox2\IByteProvider.vb" />
+    <Compile Include="HexBox2\MemoryDataBlock.vb" />
+    <Compile Include="HexBox2\NativeMethods.vb" />
+    <Compile Include="HexBox2\Util.vb" />
     <Compile Include="HexView\HexViewDataGridInspector.vb" />
     <Compile Include="HexView\HexViewFunctions.vb" />
     <Compile Include="ImageFormats\86F\86FFloppyImage.vb" />

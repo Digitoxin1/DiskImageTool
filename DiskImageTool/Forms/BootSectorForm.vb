@@ -1,7 +1,7 @@
 ﻿Imports System.Globalization
 Imports DiskImageTool.DiskImage
 Imports DiskImageTool.DiskImage.BootSector
-Imports Hb.Windows.Forms
+Imports DiskImageTool.Hb.Windows.Forms
 
 Public Class BootSectorForm
     Const ValidHexChars = "0123456789ABCDEF"

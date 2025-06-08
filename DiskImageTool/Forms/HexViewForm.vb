@@ -1,7 +1,7 @@
 ﻿Imports System.ComponentModel
 Imports System.Runtime.InteropServices
 Imports DiskImageTool.DiskImage
-Imports Hb.Windows.Forms
+Imports DiskImageTool.Hb.Windows.Forms
 Imports DiskImageTool.HexView
 
 Public Class HexViewForm

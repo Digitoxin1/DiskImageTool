@@ -1,6 +1,6 @@
 ﻿Imports System.Runtime.InteropServices
 Imports DiskImageTool.HexView
-Imports Hb.Windows.Forms
+Imports DiskImageTool.Hb.Windows.Forms
 Imports DiskImageTool.Bitstream.IBM_MFM
 Imports DiskImageTool.DiskImage
 Imports DiskImageTool.Bitstream
