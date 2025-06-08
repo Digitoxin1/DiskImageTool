@@ -657,32 +657,32 @@ Partial Class MainForm
         'MenuHelpProjectPage
         '
         Me.MenuHelpProjectPage.Name = "MenuHelpProjectPage"
-        Me.MenuHelpProjectPage.Size = New System.Drawing.Size(212, 22)
+        Me.MenuHelpProjectPage.Size = New System.Drawing.Size(206, 22)
         Me.MenuHelpProjectPage.Text = "&Project Page"
         '
         'MenuHelpUpdateCheck
         '
         Me.MenuHelpUpdateCheck.Name = "MenuHelpUpdateCheck"
-        Me.MenuHelpUpdateCheck.Size = New System.Drawing.Size(212, 22)
+        Me.MenuHelpUpdateCheck.Size = New System.Drawing.Size(206, 22)
         Me.MenuHelpUpdateCheck.Text = "Check for &Update"
         '
         'MenuHelpChangeLog
         '
         Me.MenuHelpChangeLog.Name = "MenuHelpChangeLog"
-        Me.MenuHelpChangeLog.Size = New System.Drawing.Size(212, 22)
+        Me.MenuHelpChangeLog.Size = New System.Drawing.Size(206, 22)
         Me.MenuHelpChangeLog.Text = "&Change Log"
         '
         'MenuHelpSeparator
         '
         MenuHelpSeparator.Name = "MenuHelpSeparator"
-        MenuHelpSeparator.Size = New System.Drawing.Size(209, 6)
+        MenuHelpSeparator.Size = New System.Drawing.Size(203, 6)
         '
         'MenuHelpAbout
         '
         Me.MenuHelpAbout.Name = "MenuHelpAbout"
         Me.MenuHelpAbout.ShortcutKeys = System.Windows.Forms.Keys.F1
-        Me.MenuHelpAbout.Size = New System.Drawing.Size(212, 22)
-        Me.MenuHelpAbout.Text = "About Disk Image Tool"
+        Me.MenuHelpAbout.Size = New System.Drawing.Size(206, 22)
+        Me.MenuHelpAbout.Text = "About DiskImageTool"
         '
         'FileMenuSeparator2
         '
