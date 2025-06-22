@@ -48,6 +48,7 @@
             Dim Aligned As Boolean
             Dim Gap4A As UShort
             Dim Gap1 As UShort
+            Dim Encoding As String
         End Structure
 
         Module IBM_MFM_Tools
@@ -230,6 +231,13 @@
                 RegionData.Aligned = True
                 RegionData.Gap4A = 0
                 RegionData.Gap1 = 0
+                If TrackType = BitstreamTrackType.MFM Then
+                    RegionData.Encoding = "MFM"
+                ElseIf TrackType = BitstreamTrackType.FM Then
+                    RegionData.Encoding = "FM"
+                Else
+                    RegionData.Encoding = ""
+                End If
 
                 Dim Pattern As BitArray
                 If TrackType = BitstreamTrackType.MFM Then

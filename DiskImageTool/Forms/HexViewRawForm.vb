@@ -30,6 +30,7 @@ Public Class HexViewRawForm
     Private _LabelBitOffsetAligned As ToolStripLabel
     Private _LabelGap4A As ToolStripLabel
     Private _LabelGap1 As ToolStripLabel
+    Private _labelEncoding As ToolStripLabel
     Private _LastSearch As HexSearch
     Private _RegionData As RegionData
     Private _RegionMap() As BitstreamRegion
@@ -516,18 +517,24 @@ Public Class HexViewRawForm
     End Sub
 
     Private Sub InitializeToolstripLabels()
+        _labelEncoding = New ToolStripLabel("") With {
+           .Alignment = ToolStripItemAlignment.Right,
+           .Padding = New Padding(10, 0, 0, 0)
+        }
+
         _LabelGap4A = New ToolStripLabel("Gap 4A: 0") With {
            .Alignment = ToolStripItemAlignment.Right,
-           .Padding = New Padding(12, 0, 0, 0)
+           .Padding = New Padding(10, 0, 0, 0)
         }
 
         _LabelGap1 = New ToolStripLabel("Gap 1: 0") With {
            .Alignment = ToolStripItemAlignment.Right,
-           .Padding = New Padding(12, 0, 0, 0)
+           .Padding = New Padding(10, 0, 0, 0)
         }
 
         ToolStripMain.Items.Add(_LabelGap1)
         ToolStripMain.Items.Add(_LabelGap4A)
+        ToolStripMain.Items.Add(_labelEncoding)
     End Sub
 
     Private Sub InitializeTrackNavigator()
@@ -626,6 +633,10 @@ Public Class HexViewRawForm
 
         _LabelGap4A.Text = "Gap 4A: " & RegionData.Gap4A
         _LabelGap1.Text = "Gap 1: " & RegionData.Gap1
+        _labelEncoding.Text = "Encoding: " & RegionData.Encoding
+        _labelEncoding.Visible = RegionData.Encoding.Length > 0
+        _LabelGap4A.Visible = RegionData.Encoding = "MFM"
+        _LabelGap1.Visible = RegionData.Encoding = "MFM"
 
         RefreshSize()
         InitRegionMap()

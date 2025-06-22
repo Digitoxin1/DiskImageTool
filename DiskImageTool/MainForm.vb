@@ -2461,6 +2461,21 @@ Public Class MainForm
         End If
     End Sub
 
+    Private Function IsBinaryData(data As Byte()) As Boolean
+        Dim allowedControlChars As Byte() = {7, 9, 10, 13, 26}
+        Dim maxBytesToCheck As Integer = Math.Min(4096, data.Length)
+
+        For i As Integer = 0 To maxBytesToCheck - 1
+            Dim b As Byte = data(i)
+
+            If (b < 32 AndAlso Not allowedControlChars.Contains(b)) OrElse b = 0 Then
+                Return True
+            End If
+        Next
+
+        Return False
+    End Function
+
     Private Sub ItemFiltersRemove(ImageData As ImageData)
         ImageFiltersScan(Nothing, ImageData, True)
     End Sub
@@ -4183,6 +4198,23 @@ Public Class MainForm
     Private Sub ListViewFiles_ColumnWidthChanging(sender As Object, e As ColumnWidthChangingEventArgs) Handles ListViewFiles.ColumnWidthChanging
         e.NewWidth = Me.ListViewFiles.Columns(e.ColumnIndex).Width
         e.Cancel = True
+    End Sub
+
+    Private Sub ListViewFiles_MouseDoubleClick(sender As Object, e As MouseEventArgs) Handles ListViewFiles.MouseDoubleClick
+        If e.Button = MouseButtons.Left Then
+            If ListViewFiles.SelectedItems.Count = 1 Then
+                Dim FileData As FileData = ListViewFiles.SelectedItems(0).Tag
+                If FileData IsNot Nothing Then
+                    If FileData.DirectoryEntry.IsValidFile And FileData.DirectoryEntry.FileSize > 0 Then
+                        If IsBinaryData(FileData.DirectoryEntry.GetContent) Then
+                            HexDisplayDirectoryEntry(_CurrentImage, FileData.DirectoryEntry)
+                        Else
+                            DirectoryEntryDisplayText(FileData.DirectoryEntry)
+                        End If
+                    End If
+                End If
+            End If
+        End If
     End Sub
 
     Private Sub ListViewFiles_DrawColumnHeader(sender As Object, e As DrawListViewColumnHeaderEventArgs) Handles ListViewFiles.DrawColumnHeader
