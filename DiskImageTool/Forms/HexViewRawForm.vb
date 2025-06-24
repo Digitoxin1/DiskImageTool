@@ -702,6 +702,9 @@ Public Class HexViewRawForm
             RegionData.NumBits = MFMTrack.Bitstream.Length
             RegionData.Regions = New List(Of BitstreamRegion)
             RegionData.Sectors = New List(Of BitstreamRegionSector)
+            RegionData.Aligned = False
+            RegionData.Encoding = ""
+
             _Bitstream = Nothing
             _SurfaceData = Nothing
         End If

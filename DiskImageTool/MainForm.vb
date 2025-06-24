@@ -30,6 +30,8 @@ Public Class MainForm
     Private WithEvents Debounce As Timer
     Private WithEvents ImageFilters As Filters.ImageFilters
     Public Const SITE_URL = "https://github.com/Digitoxin1/DiskImageTool"
+    Private Const CONTEXT_MENU_SUMMARY_KEY As String = "Summary"
+    Private Const CONTEXT_MENU_HASH_KEY As String = "Hashes"
     Private ReadOnly _lvwColumnSorter As ListViewColumnSorter
     Private _BootStrapDB As BootstrapDB
     Private _CurrentImage As CurrentImage
@@ -47,6 +49,17 @@ Public Class MainForm
     Private _SubFilterOEMName As ComboFilter
     Private _SuppressEvent As Boolean = False
     Private _TitleDB As FloppyDB
+
+    Private NotInheritable Class ListViewColumns
+        Public Const FileName As String = "FileName"
+        Public Const FileExtension As String = "FileExtension"
+        Public Const FileSize As String = "FileSize"
+        Public Const FileLastWriteDate As String = "FileLastWriteDate"
+        Public Const FileStartingCluster As String = "FileStartingCluster"
+        Public Const FileClusterError As String = "FileClusterError"
+        Public Const FileCreationDate As String = "FileCreationDate"
+        Public Const FileLastAccessDate As String = "FileLastAccessDate"
+    End Class
 
     Public Sub New()
         ' This call is required by the designer.
@@ -347,10 +360,14 @@ Public Class MainForm
             Exit Sub
         End If
 
-        Dim Caption As String = $"File - {DirectoryEntry.GetShortFileName(True)}"
+        Dim Caption As String
+
         If DirectoryEntry.IsDeleted Then
-            Caption = "Deleted " & Caption
+            Caption = String.Format(My.Resources.Caption_DeletedFileWithName, DirectoryEntry.GetShortFileName(True))
+        Else
+            Caption = String.Format(My.Resources.Caption_FileWithName, DirectoryEntry.GetShortFileName(True))
         End If
+
         Dim Bytes = DirectoryEntry.GetContent
         Dim Content As String
 
@@ -410,7 +427,7 @@ Public Class MainForm
         End If
 
         SI = Item.SubItems.Add(FileData.DirectoryEntry.GetFileName(True))
-        SI.Name = "FileName"
+        SI.Name = ListViewColumns.FileName
         If Not IsDeleted And (FileData.DirectoryEntry.HasInvalidFilename Or FileData.DuplicateFileName) Then
             SI.ForeColor = Color.Red
         Else
@@ -418,7 +435,7 @@ Public Class MainForm
         End If
 
         SI = Item.SubItems.Add(FileData.DirectoryEntry.GetFileExtension(True))
-        SI.Name = "FileExtension"
+        SI.Name = ListViewColumns.FileExtension
         If Not IsDeleted And (FileData.DirectoryEntry.HasInvalidExtension Or FileData.DuplicateFileName) Then
             SI.ForeColor = Color.Red
         Else
@@ -428,7 +445,7 @@ Public Class MainForm
         If IsBlank Then
             SI = Item.SubItems.Add("")
         ElseIf HasInvalidFileSize Then
-            SI = Item.SubItems.Add("Invalid")
+            SI = Item.SubItems.Add(My.Resources.Label_Invalid)
             If Not IsDeleted Then
                 SI.ForeColor = Color.Red
             Else
@@ -441,7 +458,7 @@ Public Class MainForm
             SI = Item.SubItems.Add(Format(FileData.DirectoryEntry.FileSize, "N0"))
             SI.ForeColor = ForeColor
         End If
-        SI.Name = "FileSize"
+        SI.Name = ListViewColumns.FileSize
 
         If IsBlank Then
             SI = Item.SubItems.Add("")
@@ -453,14 +470,14 @@ Public Class MainForm
                 SI.ForeColor = Color.Red
             End If
         End If
-        SI.Name = "FileLastWriteDate"
+        SI.Name = ListViewColumns.FileLastWriteDate
 
         Dim SubItemForeColor As Color = ForeColor
         If IsBlank Then
             SI = Item.SubItems.Add("")
         Else
             If FileData.DirectoryEntry.HasInvalidStartingCluster Then
-                SI = Item.SubItems.Add("Invalid")
+                SI = Item.SubItems.Add(My.Resources.Label_Invalid)
                 If Not IsDeleted Then
                     SubItemForeColor = Color.Red
                 End If
@@ -468,7 +485,7 @@ Public Class MainForm
                 SI = Item.SubItems.Add(Format(FileData.DirectoryEntry.StartingCluster, "N0"))
             End If
         End If
-        SI.Name = "FileStartingCluster"
+        SI.Name = ListViewColumns.FileStartingCluster
 
         If IsBlank Then
             SI = Item.SubItems.Add("")
@@ -486,7 +503,7 @@ Public Class MainForm
             SI = Item.SubItems.Add(ErrorText)
             SI.ForeColor = Color.Red
         End If
-        SI.Name = "FileClusterError"
+        SI.Name = ListViewColumns.FileClusterError
 
         If IsBlank Then
             Item.SubItems.Add("")
@@ -524,7 +541,7 @@ Public Class MainForm
                 SI = Item.SubItems.Add("")
             End If
         End If
-        SI.Name = "FileCreationDate"
+        SI.Name = ListViewColumns.FileCreationDate
 
         If IsBlank Then
             SI = Item.SubItems.Add("")
@@ -540,7 +557,7 @@ Public Class MainForm
                 SI = Item.SubItems.Add("")
             End If
         End If
-        SI.Name = "FileLastAccessDate"
+        SI.Name = ListViewColumns.FileLastAccessDate
 
 
         If IsBlank Then
@@ -580,26 +597,26 @@ Public Class MainForm
     End Function
 
     Private Shared Function MsgBoxNewFileName(FileName As String) As MsgBoxResult
-        Dim Msg As String = $"'{FileName}' is a read-only file.  Please specify a new file name."
+        Dim Msg As String = String.Format(My.Resources.Dialog_NewFileName, FileName)
         Return MsgBox(Msg, MsgBoxStyle.OkCancel)
     End Function
 
     Private Shared Function MsgBoxOverwrite(FilePath As String) As MyMsgBoxResult
-        Dim Msg As String = $"{IO.Path.GetFileName(FilePath)} already exists.{vbCrLf}Do you wish to replace it?"
+        Dim msg As String = String.Format(My.Resources.Dialog_ReplaceFile, IO.Path.GetFileName(FilePath), Environment.NewLine)
 
-        Dim SaveAllForm As New SaveAllForm(Msg)
+        Dim SaveAllForm As New SaveAllForm(msg)
         SaveAllForm.ShowDialog()
         Return SaveAllForm.Result
     End Function
 
     Private Shared Function MsgBoxSave(FileName As String) As MsgBoxResult
-        Dim Msg As String = $"Save file '{FileName}'?"
+        Dim Msg As String = String.Format(My.Resources.Dialog_SaveFile, FileName)
 
         Return MsgBox(Msg, MsgBoxStyle.Question + MsgBoxStyle.YesNoCancel + MsgBoxStyle.DefaultButton3, "Save")
     End Function
 
     Private Shared Function MsgBoxSaveAll(FileName As String) As MyMsgBoxResult
-        Dim Msg As String = $"Save file '{FileName}'?"
+        Dim Msg As String = String.Format(My.Resources.Dialog_SaveFile, FileName)
 
         Dim SaveAllForm As New SaveAllForm(Msg)
         SaveAllForm.ShowDialog()
@@ -626,7 +643,7 @@ Public Class MainForm
         Dim DownloadURL As String = ""
         Dim Body As String = ""
         Dim UpdateAvailable As Boolean = False
-        Dim ErrMsg As String = "An error occurred while checking for updates.  Please try again later."
+        Dim ErrMsg As String = My.Resources.Dialog_UpdateError
 
         Cursor.Current = Cursors.WaitCursor
         Dim ResponseText = GetAppUpdateResponse()
@@ -672,15 +689,15 @@ Public Class MainForm
         End Try
 
         If UpdateAvailable Then
-            Dim Msg = $"{My.Application.Info.Title} v{DownloadVersion} is available."
+            Dim Msg = String.Format(My.Resources.Dialog_UpdateAvailable, My.Application.Info.Title, DownloadVersion)
             If Body <> "" Then
-                Msg &= $"{vbCrLf}{vbCrLf}Whats New{vbCrLf}{New String("—", 6)}{vbCrLf}{Body}{vbCrLf}"
+                Msg &= String.Format(My.Resources.Dialog_UpdateWhatsNew, Environment.NewLine, New String("—", 6), Body)
             End If
-            Msg &= $"{vbCrLf}{vbCrLf}Do you wish to download it at this time?"
+            Msg &= String.Format(My.Resources.Dialog_UpdateDownload, Environment.NewLine)
 
             If MsgBoxQuestion(Msg) Then
                 Dim Dialog As New SaveFileDialog With {
-                    .Filter = FileDialogGetFilter("Zip Archive", ".zip"),
+                    .Filter = FileDialogGetFilter(My.Resources.FileType_ZipArchive, ".zip"),
                     .FileName = IO.Path.GetFileName(DownloadURL),
                     .InitialDirectory = GetDownloadsFolder(),
                     .RestoreDirectory = True
@@ -692,14 +709,14 @@ Public Class MainForm
                         Dim Client As New Net.WebClient()
                         Client.DownloadFile(DownloadURL, Dialog.FileName)
                     Catch ex As Exception
-                        MsgBox("An error occurred while downloading the file.", MsgBoxStyle.Exclamation)
+                        MsgBox(My.Resources.Dialog_FileDownloadError, MsgBoxStyle.Exclamation)
                         DebugException(ex)
                     End Try
                     Cursor.Current = Cursors.Default
                 End If
             End If
         Else
-            MsgBox($"You are running the latest version of {My.Application.Info.Title}.", MsgBoxStyle.Information)
+            MsgBox(String.Format(My.Resources.Dialog_LatestVersion, My.Application.Info.Title), MsgBoxStyle.Information)
         End If
     End Sub
 
@@ -908,7 +925,7 @@ Public Class MainForm
 
         Dim Content = ImageCompare.CompareImages(ImageData1, ImageData2)
 
-        Dim frmTextView = New TextViewForm("Image Comparison", Content, False, False)
+        Dim frmTextView = New TextViewForm(My.Resources.Caption_ImageComparison, Content, False, False)
         frmTextView.ShowDialog()
     End Sub
 
@@ -1019,10 +1036,10 @@ Public Class MainForm
                 Success = (Response = SaveImageResponse.Success)
 
                 If Response = SaveImageResponse.Unsupported Then
-                    MsgBox("Saving to this image type is not supported.", MsgBoxStyle.Exclamation)
+                    MsgBox(My.Resources.Dialog_SaveNotSupported, MsgBoxStyle.Exclamation)
                     Exit Do
                 ElseIf Response = SaveImageResponse.Unknown Then
-                    MsgBox("Unsupported Disk Type.", MsgBoxStyle.Exclamation)
+                    MsgBox(My.Resources.Dialog_UnsupportedDiskType, MsgBoxStyle.Exclamation)
                     Exit Do
                 ElseIf Response = SaveImageResponse.Cancelled Then
                     Exit Do
@@ -1030,7 +1047,7 @@ Public Class MainForm
             End If
 
             If Not Success Then
-                Dim Msg As String = $"Error saving file '{IO.Path.GetFileName(NewFilePath)}'."
+                Dim Msg As String = String.Format(My.Resources.Dialog_SaveFileError, IO.Path.GetFileName(NewFilePath))
                 Dim ErrorResult = MsgBox(Msg, MsgBoxStyle.Critical + MsgBoxStyle.RetryCancel)
                 If ErrorResult = MsgBoxResult.Cancel Then
                     Exit Do
@@ -1076,12 +1093,12 @@ Public Class MainForm
         ToolStripDiskTypeCombo.Visible = True
         ToolStripDiskTypeLabel.Visible = True
 
-        MenuFiltersScan.Text = "Rescan Images"
+        MenuFiltersScan.Text = My.Resources.Caption_RescanImages
         MenuFiltersScan.Enabled = True
         _ScanRun = True
 
         T.Stop()
-        Debug.Print($"Image Scan Time Taken: {T.Elapsed}")
+        Debug.Print(String.Format(My.Resources.Debug_ScanTimeTaken, T.Elapsed))
         Me.UseWaitCursor = False
 
         Dim Handle = WindowsAPI.GetForegroundWindow()
@@ -1099,7 +1116,7 @@ Public Class MainForm
         Dim BodyArray() As String
         Dim Changelog = New StringBuilder()
         Dim ChangeLogString As String
-        Dim ErrMsg As String = "An error occurred while downloading the change log.  Please try again later."
+        Dim ErrMsg As String = My.Resources.Dialog_ChangeLogDownloadError
 
         Cursor.Current = Cursors.WaitCursor
         Dim ResponseText = GetChangeLogResponse()
@@ -1152,16 +1169,16 @@ Public Class MainForm
             Exit Sub
         End Try
 
-        Dim frmTextView = New TextViewForm("Change Log", ChangeLogString, False, False)
+        Dim frmTextView = New TextViewForm(My.Resources.Caption_ChangeLog, ChangeLogString, False, False)
         frmTextView.ShowDialog()
     End Sub
 
     Private Sub DisplayCrossLinkedFiles(Disk As Disk, DirectoryEntry As DiskImage.DirectoryEntry)
-        Dim Msg As String = $"{DirectoryEntry.GetShortFileName(True)} is crosslinked with the following files:{vbCrLf}"
+        Dim Msg = String.Format(My.Resources.Dialog_CrossLinked, DirectoryEntry.GetShortFileName(True), Environment.NewLine)
 
         For Each Crosslink In DirectoryEntry.CrossLinks
             If Crosslink IsNot DirectoryEntry Then
-                Msg &= vbCrLf & Crosslink.GetShortFileName(True)
+                Msg &= Environment.NewLine & Crosslink.GetShortFileName(True)
             End If
         Next
         MsgBox(Msg, MsgBoxStyle.Information + MsgBoxStyle.OkOnly)
@@ -1306,26 +1323,39 @@ Public Class MainForm
     End Sub
 
     Private Sub FileInfoUpdate(Disk As DiskImage.Disk)
-        If ListViewFiles.SelectedItems.Count > 0 Then
-            ToolStripFileCount.Text = $"{ListViewFiles.SelectedItems.Count} of {ListViewFiles.Items.Count} {"File".Pluralize(ListViewFiles.Items.Count)} Selected"
+        Dim Text As String
+        Dim Total As Integer = ListViewFiles.Items.Count
+        Dim Selected As Integer = ListViewFiles.SelectedItems.Count
+
+        If Selected > 0 Then
+            If Total = 1 Then
+                Text = String.Format(My.Resources.Label_SelectedFileCountSingular, Selected, Total)
+            Else
+                Text = String.Format(My.Resources.Label_SelectedFileCountPlural, Selected, Total)
+            End If
         Else
-            ToolStripFileCount.Text = $"{ListViewFiles.Items.Count} {"File".Pluralize(ListViewFiles.Items.Count)}"
+            If Total = 1 Then
+                Text = String.Format(My.Resources.Label_FileCountSingular, Total)
+            Else
+                Text = String.Format(My.Resources.Label_FileCountPlural, Total)
+            End If
         End If
+        ToolStripFileCount.Text = Text
         ToolStripFileCount.Visible = True
 
-        If ListViewFiles.SelectedItems.Count = 1 Then
+        If Selected = 1 Then
             Dim FileData As FileData = ListViewFiles.SelectedItems(0).Tag
 
             If FileData IsNot Nothing AndAlso FileData.DirectoryEntry.StartingCluster >= 2 Then
 
                 Dim Sector = Disk.BPB.ClusterToSector(FileData.DirectoryEntry.StartingCluster)
-                ToolStripFileSector.Text = $"Sector {Sector}"
+                ToolStripFileSector.Text = String.Format(My.Resources.Label_Sector, Sector)
                 ToolStripFileSector.Visible = True
 
                 Dim Track = Disk.BPB.SectorToTrack(Sector)
                 Dim Side = Disk.BPB.SectorToSide(Sector)
 
-                ToolStripFileTrack.Text = $"Track {Track}.{Side}"
+                ToolStripFileTrack.Text = String.Format(My.Resources.Label_Track, Track, Side)
                 ToolStripFileTrack.Visible = True
 
                 ToolStripFileTrack.GetCurrentParent.Refresh()
@@ -1512,7 +1542,7 @@ Public Class MainForm
 
         RefreshModifiedCount()
 
-        MenuFiltersScan.Text = "Scan Images"
+        MenuFiltersScan.Text = My.Resources.Caption_ScanImages
         RefreshFilterButtons(False)
     End Sub
 
@@ -1595,7 +1625,7 @@ Public Class MainForm
         Next
         TrackLayout.AppendLine(FirstTrack & "-" & Track - 1 & ":" & PrevTrackString)
 
-        Dim frmTextView = New TextViewForm("Tracklayout", TrackLayout.ToString, True, True, "tracklayout.txt")
+        Dim frmTextView = New TextViewForm(My.Resources.Caption_TrackLayout, TrackLayout.ToString, True, True, "tracklayout.txt")
         frmTextView.ShowDialog()
     End Sub
 
@@ -1644,10 +1674,8 @@ Public Class MainForm
 
         AddHandler Dialog.FileOk, Sub(sender As Object, e As CancelEventArgs)
                                       If Dialog.FileName <> FilePath AndAlso _LoadedFiles.FileNames.ContainsKey(Dialog.FileName) Then
-                                          Dim Msg As String = IO.Path.GetFileName(Dialog.FileName) &
-                                            $"{vbCrLf}This file is currently open in {Application.ProductName}." &
-                                            $"Try again with a different file name."
-                                          MsgBox(Msg, MsgBoxStyle.Exclamation, "Save As")
+                                          Dim Msg = String.Format(My.Resources.Dialog_FileCurrentlyOpen, IO.Path.GetFileName(Dialog.FileName), Environment.NewLine, Application.ProductName)
+                                          MsgBox(Msg, MsgBoxStyle.Exclamation, My.Resources.Caption_SaveAs)
                                           e.Cancel = True
                                       End If
                                   End Sub
@@ -1848,7 +1876,7 @@ Public Class MainForm
                 If AddDirectoryResponse.Entry IsNot Nothing Then
                     DiskImageRefresh(CurrentImage)
                 Else
-                    MsgBox($"Warning: Insufficient Disk Space", MsgBoxStyle.Exclamation)
+                    MsgBox(My.Resources.Dialog_DiskSpaceWarning, MsgBoxStyle.Exclamation)
                 End If
             End If
         End If
@@ -1856,7 +1884,7 @@ Public Class MainForm
 
     Private Sub ImageClearReservedBytes(CurrentImage As CurrentImage)
         If _TitleDB.IsVerifiedImage(CurrentImage.Disk) Then
-            If Not MsgBoxQuestion("This is a verified image.  Are you sure you wish to clear reserved bytes from this image?") Then
+            If Not MsgBoxQuestion(My.Resources.Dialog_ClearReservedBytes) Then
                 Exit Sub
             End If
         End If
@@ -1869,11 +1897,26 @@ Public Class MainForm
     End Sub
 
     Private Sub ImageCountUpdate()
+        Dim Text As String
+        Dim Total As Integer = ComboImages.Items.Count
+
         If ImageFilters.FiltersApplied Then
-            ToolStripImageCount.Text = $"{ComboImagesFiltered.Items.Count} of {ComboImages.Items.Count} {"Image".Pluralize(ComboImages.Items.Count)}"
+            Dim Filtered As Integer = ComboImagesFiltered.Items.Count
+
+            If Total = 1 Then
+                Text = String.Format(My.Resources.Label_FilteredImageCountSingular, Filtered, Total)
+            Else
+                Text = String.Format(My.Resources.Label_FilteredImageCountPlural, Filtered, Total)
+            End If
         Else
-            ToolStripImageCount.Text = $"{ComboImages.Items.Count} {"Image".Pluralize(ComboImages.Items.Count)}"
+            If Total = 1 Then
+                Text = String.Format(My.Resources.Label_ImageCountSingular, Total)
+            Else
+                Text = String.Format(My.Resources.Label_ImageCountPlural, Total)
+            End If
         End If
+
+        ToolStripImageCount.Text = Text
     End Sub
 
     Private Sub ImageDeleteSelectedFiles(CurrentImage As CurrentImage, Remove As Boolean)
@@ -1906,12 +1949,22 @@ Public Class MainForm
             If ListViewFiles.SelectedItems.Count = 1 Then
                 Item = ListViewFiles.SelectedItems(0)
                 FileData = Item.Tag
-                Msg = $"Are you sure you wish to {If(Remove, "remove", "delete")} {FileData.DirectoryEntry.GetShortFileName(True)}?"
-                Title = $"{If(Remove, "Remove", "Delete")} File"
+                If Remove Then
+                    Msg = String.Format(My.Resources.Dialog_RemoveFile, FileData.DirectoryEntry.GetShortFileName(True))
+                    Title = My.Resources.Caption_RemoveFile
+                Else
+                    Msg = String.Format(My.Resources.Dialog_DeleteFile, FileData.DirectoryEntry.GetShortFileName(True))
+                    Title = My.Resources.Caption_DeleteFile
+                End If
                 CanFill = FileData.DirectoryEntry.IsValidFile Or FileData.DirectoryEntry.IsValidDirectory
             Else
-                Msg = $"Are you sure you wish to {If(Remove, "remove", "delete")} the selected files?"
-                Title = $"{If(Remove, "Remove", "Delete")} {ListViewFiles.SelectedItems.Count} Files"
+                If Remove Then
+                    Msg = My.Resources.Dialog_RemoveSelectedFiles
+                    Title = String.Format(My.Resources.Caption_RemoveFiles, ListViewFiles.SelectedItems.Count)
+                Else
+                    Msg = My.Resources.Dialog_DeleteSelectedFiles
+                    Title = String.Format(My.Resources.Caption_DeleteFiles, ListViewFiles.SelectedItems.Count)
+                End If
                 CanFill = True
             End If
 
@@ -2036,7 +2089,13 @@ Public Class MainForm
             End If
         Next
 
-        Dim Msg As String = $"{FileCount} of {TotalFiles} {"file".Pluralize(TotalFiles)} exported successfully."
+        Dim Msg As String
+        If TotalFiles = 1 Then
+            Msg = String.Format(My.Resources.Dialog_SuccessfulExportSingular, FileCount, TotalFiles)
+        Else
+            Msg = String.Format(My.Resources.Dialog_SuccessfulExportPlural, FileCount, TotalFiles)
+        End If
+
         MsgBox(Msg, MsgBoxStyle.Information + MsgBoxStyle.OkOnly)
     End Sub
 
@@ -2103,7 +2162,7 @@ Public Class MainForm
         Dim Result As Boolean = True
 
         If _TitleDB.IsVerifiedImage(CurrentImage.Disk) Then
-            If Not MsgBoxQuestion("This is a verified image.  Are you sure you wish to adjust the image size for this image?") Then
+            If Not MsgBoxQuestion(My.Resources.Dialog_AdjustImageSize) Then
                 Exit Sub
             End If
         End If
@@ -2113,7 +2172,7 @@ Public Class MainForm
         If Compare = 0 Then
             Result = False
         ElseIf Compare < 0 Then
-            Result = MsgBoxQuestion($"The image size is smaller than the detected size.{vbCrLf}{vbCrLf}Are you sure you wish to increase the image size?")
+            Result = MsgBoxQuestion(String.Format(My.Resources.Dialog_IncreaseImageSize, Environment.NewLine))
         Else
             Dim ReportedSize = CurrentImage.Disk.BPB.ReportedImageSize
             Dim Data = CurrentImage.Disk.Image.GetBytes(ReportedSize, CurrentImage.Disk.Image.Length - ReportedSize)
@@ -2125,7 +2184,7 @@ Public Class MainForm
                 End If
             Next
             If HasData Then
-                Result = MsgBoxQuestion($"There is data in the overdumped region of the image.{vbCrLf}{vbCrLf}Are you sure you wish to truncate this image?")
+                Result = MsgBoxQuestion(String.Format(My.Resources.Dialog_TruncateImage, Environment.NewLine))
             End If
         End If
 
@@ -2180,7 +2239,7 @@ Public Class MainForm
         ImageImportFiles(FileList.FileList, ParentDirectory, Index, FileList.Options, FilesAdded)
 
         If FilesAdded < FileCount Then
-            MsgBox($"Warning: Insufficient Disk Space{vbCrLf}{vbCrLf}{FilesAdded} of {FileCount} file(s) added successfully", MsgBoxStyle.Exclamation)
+            MsgBox(String.Format(My.Resources.Dialog_InsufficientDiskSpaceWarning, Environment.NewLine, FilesAdded, FileCount), MsgBoxStyle.Exclamation)
         End If
 
         If UseTransaction Then
@@ -2318,7 +2377,7 @@ Public Class MainForm
     End Sub
     Private Sub ImageRestructure(CurrentImage As CurrentImage)
         If _TitleDB.IsVerifiedImage(CurrentImage.Disk) Then
-            If Not MsgBoxQuestion("This is a verified image.  Are you sure you wish to restructure this image?") Then
+            If Not MsgBoxQuestion(My.Resources.Dialog_RestructureImage) Then
                 Exit Sub
             End If
         End If
@@ -2348,7 +2407,7 @@ Public Class MainForm
     End Sub
 
     Private Sub ImageWin9xCleanBatch(CurrentImage As CurrentImage)
-        Dim Msg = $"This will restore the OEM Name and remove any Creation and Last Accessed Dates from all unverified loaded images.{vbCrLf}{vbCrLf}Do you wish to proceed??"
+        Dim Msg = String.Format(My.Resources.Dialog_Win9xCleanBatch, Environment.NewLine)
 
         If Not MsgBoxQuestion(Msg) Then
             Exit Sub
@@ -2380,10 +2439,15 @@ Public Class MainForm
         Next Index
 
         T.Stop()
-        Debug.Print($"Batch Process Time Taken: {T.Elapsed}")
+        Debug.Print(String.Format(My.Resources.Debug_BatchProcessTimeTaken, T.Elapsed))
         Me.UseWaitCursor = False
 
-        Msg = UpdateCount & " image" & IIf(UpdateCount <> 1, "s", "") & " cleaned."
+        If UpdateCount = 1 Then
+            Msg = String.Format(My.Resources.Dialog_SuccessfulCleanCountSingular, UpdateCount)
+        Else
+            Msg = String.Format(My.Resources.Dialog_SuccessfulCleanCountPlural, UpdateCount)
+        End If
+
         MsgBox(Msg, MsgBoxStyle.Information)
 
         If UpdateCount > 0 Then
@@ -2393,7 +2457,7 @@ Public Class MainForm
 
     Private Sub ImageWin9xCleanCurrent(CurrentImage As CurrentImage)
         If _TitleDB.IsVerifiedImage(CurrentImage.Disk) Then
-            If Not MsgBoxQuestion("This is a verified image.  Are you sure you wish to remove any windows modifications from this image?") Then
+            If Not MsgBoxQuestion(My.Resources.Dialog_Win9xClean) Then
                 Exit Sub
             End If
         End If
@@ -2461,9 +2525,9 @@ Public Class MainForm
         End If
     End Sub
 
-    Private Function IsBinaryData(data As Byte()) As Boolean
+    Private Function IsBinaryData(data As Byte(), Optional BytesToCheck As Integer = 4096) As Boolean
         Dim allowedControlChars As Byte() = {7, 9, 10, 13, 26}
-        Dim maxBytesToCheck As Integer = Math.Min(4096, data.Length)
+        Dim maxBytesToCheck As Integer = Math.Min(BytesToCheck, data.Length)
 
         For i As Integer = 0 To maxBytesToCheck - 1
             Dim b As Byte = data(i)
@@ -2503,7 +2567,7 @@ Public Class MainForm
             .UseItemStyleForSubItems = False,
             .Tag = Nothing
         }
-        SI = Item.SubItems.Add("No Files")
+        SI = Item.SubItems.Add(My.Resources.Label_NoFiles)
         For Counter = 0 To 10
             Item.SubItems.Add("")
         Next
@@ -2519,11 +2583,24 @@ Public Class MainForm
 
     Private Function ListViewFilesAddGroup(Directory As DiskImage.IDirectory, Path As String, GroupIndex As Integer) As ListViewGroup
         Dim FileCount As UInteger = Directory.Data.FileCount
-        Dim GroupName As String = IIf(Path = "", "(Root)", Path)
-        GroupName = GroupName & "  (" & FileCount & IIf(FileCount <> 1, " entries", " entry") _
-            & IIf(Directory.Data.HasBootSector, ", Boot Sector", "") _
-            & IIf(Directory.Data.HasAdditionalData, ", Additional Data", "") _
-            & ")"
+
+        Dim GroupName As String = IIf(Path = "", My.Resources.Label_Root, Path) & "  ("
+
+        If FileCount = 1 Then
+            GroupName &= String.Format(My.Resources.Label_FileCountSingular, FileCount)
+        Else
+            GroupName &= String.Format(My.Resources.Label_FileCountPlural, FileCount)
+        End If
+
+        If Directory.Data.HasBootSector Then
+            GroupName &= ", " & My.Resources.Label_BootSector
+        End If
+
+        If Directory.Data.HasAdditionalData Then
+            GroupName &= ", " & My.Resources.Label_AdditionalData
+        End If
+
+        GroupName &= ")"
 
         Dim Group = New ListViewGroup(GroupName) With {
             .Tag = Directory
@@ -2605,7 +2682,7 @@ Public Class MainForm
             If _CurrentImage.ImageData.ExternalModified Then
                 _CurrentImage.ImageData.ExternalModified = False
                 DoItemScan = True
-                Dim Msg = "Image has been modified by another application." & vbCrLf & vbCrLf & "Changes have been discarded."
+                Dim Msg = String.Format(My.Resources.Dialog_ChangesDiscarded, Environment.NewLine)
                 MsgBox(Msg, MsgBoxStyle.Exclamation)
             End If
 
@@ -2620,7 +2697,7 @@ Public Class MainForm
             RemoveHandler Item.Click, AddressOf BtnDisplayDirectory_Click
         Next
         MenuHexDirectory.DropDownItems.Clear()
-        MenuHexDirectory.Text = "Root &Directory"
+        MenuHexDirectory.Text = My.Resources.Menu_RootDirectory
     End Sub
 
     Private Sub MenuDisplayDirectorySubMenuItemAdd(Path As String, Directory As IDirectory, Index As Integer)
@@ -2668,8 +2745,8 @@ Public Class MainForm
         Dim Response = ProcessDirectoryEntries(CurrentImage.Disk.RootDirectory, False)
 
         If MenuHexDirectory.DropDownItems.Count > 0 Then
-            MenuHexDirectory.Text = "Directory"
-            MenuDisplayDirectorySubMenuItemAdd("(Root)", CurrentImage.Disk.RootDirectory, 0)
+            MenuHexDirectory.Text = My.Resources.Menu_Directory
+            MenuDisplayDirectorySubMenuItemAdd(My.Resources.Label_Root, CurrentImage.Disk.RootDirectory, 0)
             MenuHexDirectory.Tag = Nothing
         Else
             MenuHexDirectory.Tag = CurrentImage.Disk.RootDirectory
@@ -2718,9 +2795,9 @@ Public Class MainForm
             .Items.Clear()
 
             If Disk IsNot Nothing Then
-                .AddItem("CRC32", Disk.Image.GetCRC32, False)
-                .AddItem("MD5", MD5, False)
-                .AddItem("SHA-1", Disk.Image.GetSHA1Hash, False)
+                .AddItem(My.Resources.Label_Hash_CRC32, Disk.Image.GetCRC32, False)
+                .AddItem(My.Resources.Label_Hash_MD5, MD5, False)
+                .AddItem(My.Resources.Label_Hash_SHA1, Disk.Image.GetSHA1Hash, False)
             End If
             .EndUpdate()
             .Refresh()
@@ -2995,7 +3072,7 @@ Public Class MainForm
         ImageLoadForm.Close()
 
         T.Stop()
-        Debug.Print($"Image Load Time Taken: {T.Elapsed}")
+        Debug.Print(String.Format(My.Resources.Debug_LoadTimeTaken, T.Elapsed))
         Cursor.Current = Cursors.Default
     End Sub
 
@@ -3025,8 +3102,8 @@ Public Class MainForm
             Dim FileData As FileData = Item.Tag
             If FileData IsNot Nothing Then
                 If FileData.DirectoryEntry.IsCrossLinked Then
-                    Item.SubItems.Item("FileStartingCluster").ForeColor = Color.Red
-                    Item.SubItems.Item("FileClusterError").Text = "CL"
+                    Item.SubItems.Item(ListViewColumns.FileStartingCluster).ForeColor = Color.Red
+                    Item.SubItems.Item(ListViewColumns.FileClusterError).Text = "CL"
                 End If
             End If
         Next
@@ -3042,7 +3119,7 @@ Public Class MainForm
         If CurrentImage IsNot Nothing AndAlso CurrentImage.Disk IsNot Nothing AndAlso CurrentImage.Disk.IsValidImage Then
             Dim Compare = CurrentImage.Disk.CheckImageSize
             MenuToolsFixImageSize.Enabled = CurrentImage.Disk.Image.CanResize And Compare <> 0
-            MenuToolsFixImageSize.Text = IIf(Compare < 0, "&Pad Image Size", "&Truncate Image")
+            MenuToolsFixImageSize.Text = IIf(Compare < 0, My.Resources.Menu_PadImageSize, My.Resources.Menu_TruncateImage)
             If CurrentImage.Disk.RootDirectory.Data.HasBootSector Then
                 Dim BootSectorBytes = CurrentImage.Disk.Image.GetBytes(CurrentImage.Disk.RootDirectory.Data.BootSectorOffset, BootSector.BOOT_SECTOR_SIZE)
                 MenuToolsRestoreBootSector.Enabled = Not BootSectorBytes.CompareTo(CurrentImage.Disk.BootSector.Data)
@@ -3058,7 +3135,7 @@ Public Class MainForm
             RefreshFixImageSubMenu(CurrentImage.Disk)
         Else
             MenuToolsFixImageSize.Enabled = False
-            MenuToolsFixImageSize.Text = "&Truncate Image"
+            MenuToolsFixImageSize.Text = My.Resources.Menu_TruncateImage
             MenuToolsRestructureImage.Enabled = False
             MenuToolsFixImageSizeSubMenu.Enabled = False
             MenuToolsFixImageSizeSubMenu.Visible = False
@@ -3079,7 +3156,7 @@ Public Class MainForm
             SetButtonStateRedo(CurrentImage.Disk.Image.History.RedoEnabled)
             ToolStripStatusModified.Visible = CurrentImage.Disk.Image.History.Modified
             ToolStripStatusReadOnly.Visible = CurrentImage.ImageData.ReadOnly
-            ToolStripStatusReadOnly.Text = IIf(CurrentImage.ImageData.Compressed, "Compressed", "Read Only")
+            ToolStripStatusReadOnly.Text = IIf(CurrentImage.ImageData.Compressed, My.Resources.Label_Compressed, My.Resources.Label_ReadOnly)
             RefreshRawTrackSubMenu(CurrentImage.Disk)
             MenuToolsTrackLayout.Visible = My.Settings.Debug AndAlso CurrentImage.Disk.Image.IsBitstreamImage
         Else
@@ -3126,24 +3203,52 @@ Public Class MainForm
                 MenuFileViewCrosslinked.Visible = FileData.DirectoryEntry.IsCrossLinked
                 MenuFileFixSize.Enabled = FileData.DirectoryEntry.HasIncorrectFileSize
 
-                Caption = "View " & If(Stats.IsDeleted, "Deleted ", "") & "&File as Text"
+                If Stats.IsDeleted Then
+                    Caption = My.Resources.Menu_ViewDeletedFileAsText
+                Else
+                    Caption = My.Resources.Menu_ViewFileAsText
+                End If
+
                 SetButtonStateViewFileText(Stats.FileSize > 0, Stats.IsValidFile, Caption)
 
-                Caption = "&Remove " & If(Stats.IsDeleted, "Deleted ", "") & If(Stats.IsDirectory, "Directory", "File")
+                If Stats.IsDirectory Then
+                    If Stats.IsDeleted Then
+                        Caption = My.Resources.Menu_RemoveDeletedDirectory
+                    Else
+                        Caption = My.Resources.Menu_RemoveDirectory
+                    End If
+                Else
+                    If Stats.IsDeleted Then
+                        Caption = My.Resources.Menu_RemoveDeletedFile
+                    Else
+                        Caption = My.Resources.Menu_RemoveFile
+                    End If
+                End If
+
                 If Stats.IsDeleted Then
                     SetButtonStateRemoveFile(True, True, Caption)
                 Else
                     SetButtonStateRemoveFile(Stats.CanDelete, True, Caption)
                 End If
 
-                Caption = "&Delete " & If(Stats.IsDirectory, "Directory", "File")
+                If Stats.IsDirectory Then
+                    Caption = My.Resources.Menu_DeleteDirectory
+                Else
+                    Caption = My.Resources.Menu_DeleteFile
+                End If
+
                 If Stats.IsDeleted Then
                     SetButtonStateDeleteFile(False, False)
                 Else
                     SetButtonStateDeleteFile(Stats.CanDelete, True, Caption)
                 End If
 
-                Caption = "&Undelete " & If(Stats.IsDirectory, "Directory", "File")
+                If Stats.IsDirectory Then
+                    Caption = My.Resources.Menu_UndeleteDirectory
+                Else
+                    Caption = My.Resources.Menu_UndeleteFile
+                End If
+
                 If Stats.IsDeleted Then
                     SetButtonStateUnDeleteFile(Stats.CanUndelete, True, Caption)
                 Else
@@ -3151,10 +3256,36 @@ Public Class MainForm
                 End If
 
                 If Stats.IsValidFile Or Stats.IsValidDirectory Then
-                    Caption = If(Stats.IsDeleted, "Deleted ", "") & If(Stats.IsDirectory, "&Directory", "&File") & ":  " & Stats.FullFileName
+                    If Stats.IsDirectory Then
+                        If Stats.IsDeleted Then
+                            Caption = String.Format(My.Resources.Menu_DeletedDirectoryWithName, Stats.FullFileName)
+                        Else
+                            Caption = String.Format(My.Resources.Menu_DirectoryWithName, Stats.FullFileName)
+                        End If
+                    Else
+                        If Stats.IsDeleted Then
+                            Caption = String.Format(My.Resources.Menu_DeletedFileWithName, Stats.FullFileName)
+                        Else
+                            Caption = String.Format(My.Resources.Menu_FileWithName, Stats.FullFileName)
+                        End If
+                    End If
+
                     SetButtonStateHexFile(Stats.IsDirectory Or Stats.FileSize > 0, FileData.DirectoryEntry, Caption)
 
-                    Caption = "&View " & If(Stats.IsDeleted, "Deleted ", "") & If(Stats.IsDirectory, "Directory", "File")
+                    If Stats.IsDirectory Then
+                        If Stats.IsDeleted Then
+                            Caption = My.Resources.Menu_ViewDeletedDirectory
+                        Else
+                            Caption = My.Resources.Menu_ViewDirectory
+                        End If
+                    Else
+                        If Stats.IsDeleted Then
+                            Caption = My.Resources.Menu_ViewDeletedFile
+                        Else
+                            Caption = My.Resources.Menu_ViewFile
+                        End If
+                    End If
+
                     SetButtonStateViewFile(Stats.IsDirectory Or Stats.FileSize > 0, Caption)
                 Else
                     SetButtonStateHexFile(False)
@@ -3200,14 +3331,14 @@ Public Class MainForm
                 ParentDirectory = Nothing
             End If
 
-            SetButtonStateExportFile(ExportEnabled, "&Export Selected Files")
+            SetButtonStateExportFile(ExportEnabled, My.Resources.Menu_ExportSelected)
             SetButtonStateReplaceFile(False)
             SetButtonStateFileProperties(True)
             SetButtonStateViewFileText(False, True)
             SetButtonStateHexFile(False)
             SetButtonStateViewFile(False)
-            SetButtonStateRemoveFile(RemoveEnabled, True, "&Remove Selected Files")
-            SetButtonStateDeleteFile(DeleteEnabled, True, "&Delete Selected Files")
+            SetButtonStateRemoveFile(RemoveEnabled, True, My.Resources.Menu_RemoveSelected)
+            SetButtonStateDeleteFile(DeleteEnabled, True, My.Resources.Menu_DeleteSelected)
             SetButtonStateUnDeleteFile(False, False)
 
             MenuFileViewCrosslinked.Visible = False
@@ -3220,9 +3351,9 @@ Public Class MainForm
             SetButtonStateAddFile(False)
         Else
             If ParentDirectory Is CurrentImage.Disk.RootDirectory Then
-                Caption = "View Root D&irectory"
+                Caption = My.Resources.Menu_ViewRootDirectory
             Else
-                Caption = "View Parent D&irectory"
+                Caption = My.Resources.Menu_ViewParentDirectory
             End If
             SetButtonStateViewDirectory(True, True, ParentDirectory, Caption)
             SetButtonStateAddFile(True, ParentDirectory)
@@ -3279,7 +3410,12 @@ Public Class MainForm
     Private Sub RefreshModifiedCount()
         Dim Count As Integer = ImageFilters.FilterCounts(Filters.FilterTypes.ModifiedFiles).Total
 
-        ToolStripModified.Text = $"{Count} {"Image".Pluralize(Count)} Modified"
+        If Count = 1 Then
+            ToolStripModified.Text = String.Format(My.Resources.Label_ModifiedImageCountSingular, Count)
+        Else
+            ToolStripModified.Text = String.Format(My.Resources.Label_ModifiedImageCountPlural, Count)
+        End If
+
         ToolStripModified.Visible = (Count > 0)
         SetButtonStateSaveAll(Count > 0)
     End Sub
@@ -3307,12 +3443,12 @@ Public Class MainForm
                 If TrackList.Length <= 30 Then
                     Array.Sort(TrackList)
 
-                    MenuRawTrackDataSubMenuItemAdd(-1, "All Tracks")
+                    MenuRawTrackDataSubMenuItemAdd(-1, My.Resources.Menu_AllTracks)
 
                     For i = 0 To TrackList.Length - 1
                         Dim Track = TrackList(i)
-                        Dim TrackString = "Track " & (Track \ Disk.Image.SideCount) & "." & (Track Mod Disk.Image.SideCount)
-                        MenuRawTrackDataSubMenuItemAdd(Track, TrackString)
+                        Dim Trackstring = String.Format(My.Resources.Label_Track, Track \ Disk.Image.SideCount, Track Mod Disk.Image.SideCount)
+                        MenuRawTrackDataSubMenuItemAdd(Track, Trackstring)
                     Next
 
                     MenuHexRawTrackData.Enabled = True
@@ -3492,13 +3628,21 @@ Public Class MainForm
         MenuFileNewDirectory.Tag = Tag
     End Sub
 
-    Private Sub SetButtonStateDeleteFile(Enabled As Boolean, Visible As Boolean, Optional Text As String = "&Delete File")
+    Private Sub SetButtonStateDeleteFile(Enabled As Boolean, Visible As Boolean, Optional Text As String = "")
+        If Text = "" Then
+            Text = My.Resources.Menu_DeleteFile
+        End If
+
         MenuFileDeleteFile.Visible = Visible
         MenuFileDeleteFile.Enabled = Enabled
         MenuFileDeleteFile.Text = Text
     End Sub
 
-    Private Sub SetButtonStateExportFile(Enabled As Boolean, Optional Text As String = "&Export File")
+    Private Sub SetButtonStateExportFile(Enabled As Boolean, Optional Text As String = "")
+        If Text = "" Then
+            Text = My.Resources.Menu_ExportFile
+        End If
+
         MenuEditExportFile.Enabled = Enabled
         MenuEditExportFile.Text = Text
 
@@ -3515,7 +3659,11 @@ Public Class MainForm
         ToolStripFileProperties.Enabled = Enabled
     End Sub
 
-    Private Sub SetButtonStateHexFile(Visible As Boolean, Optional Tag As Object = Nothing, Optional Text As String = "&File")
+    Private Sub SetButtonStateHexFile(Visible As Boolean, Optional Tag As Object = Nothing, Optional Text As String = "")
+        If Text = "" Then
+            Text = My.Resources.Menu_File
+        End If
+
         MenuHexFile.Visible = Visible
         MenuHexFile.Text = Text
         MenuHexFile.Tag = Tag
@@ -3528,7 +3676,11 @@ Public Class MainForm
         ToolStripRedo.Enabled = Enabled
     End Sub
 
-    Private Sub SetButtonStateRemoveFile(Enabled As Boolean, Visible As Boolean, Optional Text As String = "&Remove File")
+    Private Sub SetButtonStateRemoveFile(Enabled As Boolean, Visible As Boolean, Optional Text As String = "")
+        If Text = "" Then
+            Text = My.Resources.Menu_RemoveFile
+        End If
+
         MenuFileRemove.Enabled = Enabled
         MenuFileRemove.Visible = Visible
         MenuFileRemove.Text = Text
@@ -3549,7 +3701,11 @@ Public Class MainForm
         ToolStripSave.Enabled = Enabled
     End Sub
 
-    Private Sub SetButtonStateUnDeleteFile(Enabled As Boolean, Visible As Boolean, Optional Text As String = "&Undelete File")
+    Private Sub SetButtonStateUnDeleteFile(Enabled As Boolean, Visible As Boolean, Optional Text As String = "")
+        If Text = "" Then
+            Text = My.Resources.Menu_UndeleteFile
+        End If
+
         MenuFileUnDeleteFile.Visible = Visible
         MenuFileUnDeleteFile.Enabled = Enabled
         MenuFileUnDeleteFile.Text = Text
@@ -3560,7 +3716,11 @@ Public Class MainForm
         ToolStripUndo.Enabled = Enabled
     End Sub
 
-    Private Sub SetButtonStateViewDirectory(Enabled As Boolean, Visible As Boolean, Optional Tag As Object = Nothing, Optional Text As String = "View D&irectory")
+    Private Sub SetButtonStateViewDirectory(Enabled As Boolean, Visible As Boolean, Optional Tag As Object = Nothing, Optional Text As String = "")
+        If Text = "" Then
+            Text = My.Resources.Menu_ViewDirectoryAlt
+        End If
+
         MenuFileViewDirectory.Enabled = Enabled
         MenuFileViewDirectory.Visible = Visible
         MenuFileViewDirectory.Tag = Tag
@@ -3569,7 +3729,11 @@ Public Class MainForm
         FileMenuSeparatorDirectory.Visible = Visible
     End Sub
 
-    Private Sub SetButtonStateViewFile(Enabled As Boolean, Optional Text As String = "&View File")
+    Private Sub SetButtonStateViewFile(Enabled As Boolean, Optional Text As String = "")
+        If Text = "" Then
+            Text = My.Resources.Menu_ViewFile
+        End If
+
         MenuFileViewFile.Enabled = Enabled
         MenuFileViewFile.Text = Text
 
@@ -3577,7 +3741,11 @@ Public Class MainForm
         ToolStripViewFile.Text = Text
     End Sub
 
-    Private Sub SetButtonStateViewFileText(Enabled As Boolean, Visible As Boolean, Optional Text As String = "View File as &Text")
+    Private Sub SetButtonStateViewFileText(Enabled As Boolean, Visible As Boolean, Optional Text As String = "")
+        If Text = "" Then
+            Text = My.Resources.Menu_ViewFileAsText
+        End If
+
         MenuFileViewFileText.Visible = Visible
         MenuFileViewFileText.Enabled = Enabled
         MenuFileViewFileText.Text = Text
@@ -3755,7 +3923,7 @@ Public Class MainForm
     End Sub
 
     Private Sub BtnCloseAll_Click(sender As Object, e As EventArgs) Handles MenuFileCloseAll.Click, ToolStripCloseAll.Click
-        If MsgBox("Are you sure you wish to close all open files?", MsgBoxStyle.YesNo + MsgBoxStyle.DefaultButton2) = MsgBoxResult.Yes Then
+        If MsgBox(My.Resources.Dialog_CloseAll, MsgBoxStyle.YesNo + MsgBoxStyle.DefaultButton2) = MsgBoxResult.Yes Then
             CloseAll(_CurrentImage)
         End If
     End Sub
@@ -3996,7 +4164,7 @@ Public Class MainForm
     End Sub
 
     Private Sub BtnSaveAll_Click(sender As Object, e As EventArgs) Handles MenuFileSaveAll.Click, ToolStripSaveAll.Click
-        If MsgBox("Are you sure you wish to save all modified files?", MsgBoxStyle.YesNo + MsgBoxStyle.DefaultButton2) = MsgBoxResult.Yes Then
+        If MsgBox(My.Resources.Dialog_SaveAll, MsgBoxStyle.YesNo + MsgBoxStyle.DefaultButton2) = MsgBoxResult.Yes Then
             SaveAll(_CurrentImage)
         End If
     End Sub
@@ -4086,9 +4254,9 @@ Public Class MainForm
     Private Sub ContextMenuCopy_ItemClicked(sender As Object, e As ToolStripItemClickedEventArgs) Handles ContextMenuCopy1.ItemClicked, ContextMenuCopy2.ItemClicked
         Dim LV As ListView = Nothing
 
-        If sender.name = "Summary" Then
+        If sender.name = CONTEXT_MENU_SUMMARY_KEY Then
             LV = ListViewSummary
-        ElseIf sender.name = "Hashes" Then
+        ElseIf sender.name = CONTEXT_MENU_HASH_KEY Then
             LV = ListViewHashes
         End If
 
@@ -4108,9 +4276,9 @@ Public Class MainForm
         Dim LV As ListView = Nothing
         Dim CM As ContextMenuStrip = sender
 
-        If CM.Name = "Summary" Then
+        If CM.Name = CONTEXT_MENU_SUMMARY_KEY Then
             LV = ListViewSummary
-        ElseIf CM.Name = "Hashes" Then
+        ElseIf CM.Name = CONTEXT_MENU_HASH_KEY Then
             LV = ListViewHashes
         End If
 
@@ -4124,7 +4292,7 @@ Public Class MainForm
                 Else
                     Text = Item.Tag
                 End If
-                CM.Items(0).Text = "&Copy " & Text
+                CM.Items(0).Text = String.Format(My.Resources.Menu_CopyValueByName, Text)
             Else
                 e.Cancel = True
             End If
@@ -4336,15 +4504,15 @@ Public Class MainForm
             .Interval = 750
         }
         ContextMenuCopy1 = New ContextMenuStrip With {
-            .Name = "Summary"
+            .Name = CONTEXT_MENU_SUMMARY_KEY
         }
-        ContextMenuCopy1.Items.Add("&Copy Value")
+        ContextMenuCopy1.Items.Add(My.Resources.Menu_CopyValue)
         ListViewSummary.ContextMenuStrip = ContextMenuCopy1
 
         ContextMenuCopy2 = New ContextMenuStrip With {
-            .Name = "Hashes"
+            .Name = CONTEXT_MENU_HASH_KEY
         }
-        ContextMenuCopy2.Items.Add("&Copy Value")
+        ContextMenuCopy1.Items.Add(My.Resources.Menu_CopyValue)
         ListViewHashes.ContextMenuStrip = ContextMenuCopy2
 
         InitDebugFeatures(My.Settings.Debug)

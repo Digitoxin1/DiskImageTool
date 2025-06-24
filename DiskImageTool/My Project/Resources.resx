@@ -46,7 +46,7 @@
     
     mimetype: application/x-microsoft.net.object.binary.base64
     value   : The object must be serialized with 
-            : System.Serialization.Formatters.Binary.BinaryFormatter
+            : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
             : and then encoded with base64 encoding.
     
     mimetype: application/x-microsoft.net.object.soap.base64
@@ -60,6 +60,7 @@
             : and then encoded with base64 encoding.
     -->
   <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
     <xsd:element name="root" msdata:IsDataSet="true">
       <xsd:complexType>
         <xsd:choice maxOccurs="unbounded">
@@ -68,9 +69,10 @@
               <xsd:sequence>
                 <xsd:element name="value" type="xsd:string" minOccurs="0" />
               </xsd:sequence>
-              <xsd:attribute name="name" type="xsd:string" />
+              <xsd:attribute name="name" use="required" type="xsd:string" />
               <xsd:attribute name="type" type="xsd:string" />
               <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
             </xsd:complexType>
           </xsd:element>
           <xsd:element name="assembly">
@@ -85,9 +87,10 @@
                 <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
                 <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
               </xsd:sequence>
-              <xsd:attribute name="name" type="xsd:string" msdata:Ordinal="1" />
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
               <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
               <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
             </xsd:complexType>
           </xsd:element>
           <xsd:element name="resheader">
@@ -109,9 +112,333 @@
     <value>2.0</value>
   </resheader>
   <resheader name="reader">
-    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <resheader name="writer">
-    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="Menu_CopyValue" xml:space="preserve">
+    <value>&amp;Copy Value</value>
+  </data>
+  <data name="Dialog_SaveAll" xml:space="preserve">
+    <value>Are you sure you wish to save all modified files?</value>
+  </data>
+  <data name="Dialog_CloseAll" xml:space="preserve">
+    <value>Are you sure you wish to close all open files?</value>
+  </data>
+  <data name="Dialog_AdjustImageSize" xml:space="preserve">
+    <value>This is a verified image.  Are you sure you wish to adjust the image size for this image?</value>
+  </data>
+  <data name="Dialog_ChangeLogDownloadError" xml:space="preserve">
+    <value>An error occurred while downloading the change log.  Please try again later.</value>
+  </data>
+  <data name="Dialog_ClearReservedBytes" xml:space="preserve">
+    <value>This is a verified image.  Are you sure you wish to clear reserved bytes from this image?</value>
+  </data>
+  <data name="Dialog_DiskSpaceWarning" xml:space="preserve">
+    <value>Warning: Insufficient Disk Space</value>
+  </data>
+  <data name="Dialog_FileDownloadError" xml:space="preserve">
+    <value>An error occurred while downloading the file.</value>
+  </data>
+  <data name="Dialog_IncreaseImageSize" xml:space="preserve">
+    <value>The image size is smaller than the detected size.{0}{0}Are you sure you wish to increase the image size?</value>
+  </data>
+  <data name="Dialog_LatestVersion" xml:space="preserve">
+    <value>You are running the latest version of {0}.</value>
+  </data>
+  <data name="Dialog_NewFileName" xml:space="preserve">
+    <value>'{0}' is a read-only file.  Please specify a new file name.</value>
+  </data>
+  <data name="Dialog_ReplaceFile" xml:space="preserve">
+    <value>{0} already exists.{1}Do you wish to replace it?</value>
+  </data>
+  <data name="Dialog_SaveFile" xml:space="preserve">
+    <value>Save file '{0}'?</value>
+  </data>
+  <data name="Dialog_SaveFileError" xml:space="preserve">
+    <value>Error saving file '{0}'.</value>
+  </data>
+  <data name="Dialog_SaveNotSupported" xml:space="preserve">
+    <value>Saving to this image type is not supported.</value>
+  </data>
+  <data name="Dialog_TruncateImage" xml:space="preserve">
+    <value>There is data in the overdumped region of the image.{0}{0}Are you sure you wish to truncate this image?</value>
+  </data>
+  <data name="Dialog_UnsupportedDiskType" xml:space="preserve">
+    <value>Unsupported Disk Type.</value>
+  </data>
+  <data name="Dialog_UpdateError" xml:space="preserve">
+    <value>An error occurred while checking for updates.  Please try again later.</value>
+  </data>
+  <data name="Caption_ChangeLog" xml:space="preserve">
+    <value>Change Log</value>
+  </data>
+  <data name="Caption_DeletedFileWithName" xml:space="preserve">
+    <value>Deleted File - {0}</value>
+  </data>
+  <data name="Caption_DeleteFile" xml:space="preserve">
+    <value>Delete File</value>
+  </data>
+  <data name="Caption_DeleteFiles" xml:space="preserve">
+    <value>Delete {0} Files</value>
+  </data>
+  <data name="Caption_FileWithName" xml:space="preserve">
+    <value>File - {0}</value>
+  </data>
+  <data name="Caption_ImageComparison" xml:space="preserve">
+    <value>Image Comparison</value>
+  </data>
+  <data name="Caption_RemoveFile" xml:space="preserve">
+    <value>Remove File</value>
+  </data>
+  <data name="Caption_RemoveFiles" xml:space="preserve">
+    <value>Remove {0} Files</value>
+  </data>
+  <data name="Caption_RescanImages" xml:space="preserve">
+    <value>Rescan Images</value>
+  </data>
+  <data name="Caption_SaveAs" xml:space="preserve">
+    <value>Save As</value>
+  </data>
+  <data name="Caption_ScanImages" xml:space="preserve">
+    <value>Scan Images</value>
+  </data>
+  <data name="Caption_TrackLayout" xml:space="preserve">
+    <value>Tracklayout</value>
+  </data>
+  <data name="Debug_BatchProcessTimeTaken" xml:space="preserve">
+    <value>Batch Process Time Taken: {0}</value>
+  </data>
+  <data name="Debug_LoadTimeTaken" xml:space="preserve">
+    <value>Image Load Time Taken: {0}</value>
+  </data>
+  <data name="Debug_ScanTimeTaken" xml:space="preserve">
+    <value>Image Scan Time Taken: {0}</value>
+  </data>
+  <data name="Dialog_ChangesDiscarded" xml:space="preserve">
+    <value>Image has been modified by another application.{0}{0}Changes have been discarded.</value>
+  </data>
+  <data name="Dialog_CrossLinked" xml:space="preserve">
+    <value>{0} is crosslinked with the following files:{1}</value>
+  </data>
+  <data name="Dialog_DeleteFile" xml:space="preserve">
+    <value>Are you sure you wish to delete {0}?</value>
+  </data>
+  <data name="Dialog_DeleteSelectedFiles" xml:space="preserve">
+    <value>Are you sure you wish to delete the selected files?</value>
+  </data>
+  <data name="Dialog_FileCurrentlyOpen" xml:space="preserve">
+    <value>{0}{1}This file is currently open in {2}. Try again with a different file name.</value>
+  </data>
+  <data name="Dialog_InsufficientDiskSpaceWarning" xml:space="preserve">
+    <value>Warning: Insufficient Disk Space{0}{0}{1} of {2} file(s) added successfully</value>
+  </data>
+  <data name="Dialog_RemoveFile" xml:space="preserve">
+    <value>Are you sure you wish to remove {0}?</value>
+  </data>
+  <data name="Dialog_RemoveSelectedFiles" xml:space="preserve">
+    <value>Are you sure you wish to remove the selected files?</value>
+  </data>
+  <data name="Dialog_RestructureImage" xml:space="preserve">
+    <value>This is a verified image.  Are you sure you wish to restructure this image?</value>
+  </data>
+  <data name="Dialog_SuccessfulCleanCountPlural" xml:space="preserve">
+    <value>{0} images cleaned.</value>
+  </data>
+  <data name="Dialog_SuccessfulCleanCountSingular" xml:space="preserve">
+    <value>{0} image cleaned.</value>
+  </data>
+  <data name="Dialog_SuccessfulExportPlural" xml:space="preserve">
+    <value>{0} of {1} files exported successfully.</value>
+  </data>
+  <data name="Dialog_SuccessfulExportSingular" xml:space="preserve">
+    <value>{0} of {1} file exported successfully.</value>
+  </data>
+  <data name="Dialog_UpdateAvailable" xml:space="preserve">
+    <value>{0} v{1} is available.</value>
+  </data>
+  <data name="Dialog_UpdateDownload" xml:space="preserve">
+    <value>{0}{0}Do you wish to download it at this time?</value>
+  </data>
+  <data name="Dialog_UpdateWhatsNew" xml:space="preserve">
+    <value>{0}{0}Whats New{0}{1)}{0}{2}{0}</value>
+  </data>
+  <data name="Dialog_Win9xClean" xml:space="preserve">
+    <value>This is a verified image.  Are you sure you wish to remove any windows modifications from this image?</value>
+  </data>
+  <data name="Dialog_Win9xCleanBatch" xml:space="preserve">
+    <value>This will restore the OEM Name and remove any Creation and Last Accessed Dates from all unverified loaded images.{0}{0}Do you wish to proceed?</value>
+  </data>
+  <data name="FileType_ZipArchive" xml:space="preserve">
+    <value>Zip Archive</value>
+  </data>
+  <data name="Label_AdditionalData" xml:space="preserve">
+    <value>Additional Data</value>
+  </data>
+  <data name="Label_BootSector" xml:space="preserve">
+    <value>Boot Sector</value>
+  </data>
+  <data name="Label_Compressed" xml:space="preserve">
+    <value>Compressed</value>
+  </data>
+  <data name="Label_Entries" xml:space="preserve">
+    <value>{0} entries</value>
+  </data>
+  <data name="Label_Entry" xml:space="preserve">
+    <value>{0} entry</value>
+  </data>
+  <data name="Label_FileCountPlural" xml:space="preserve">
+    <value>{0} Files</value>
+  </data>
+  <data name="Label_FileCountSingular" xml:space="preserve">
+    <value>{0} File</value>
+  </data>
+  <data name="Label_FilteredImageCountPlural" xml:space="preserve">
+    <value>{0} of {1} Images</value>
+  </data>
+  <data name="Label_FilteredImageCountSingular" xml:space="preserve">
+    <value>{0} of {1} Image</value>
+  </data>
+  <data name="Label_Hash_CRC32" xml:space="preserve">
+    <value>CRC32</value>
+  </data>
+  <data name="Label_Hash_MD5" xml:space="preserve">
+    <value>MD5</value>
+  </data>
+  <data name="Label_Hash_SHA1" xml:space="preserve">
+    <value>SHA-1</value>
+  </data>
+  <data name="Label_ImageCountPlural" xml:space="preserve">
+    <value>{0} Images</value>
+  </data>
+  <data name="Label_ImageCountSingular" xml:space="preserve">
+    <value>{0} Image</value>
+  </data>
+  <data name="Label_Invalid" xml:space="preserve">
+    <value>Invalid</value>
+  </data>
+  <data name="Label_ModifiedImageCountPlural" xml:space="preserve">
+    <value>{0} Images Modified</value>
+  </data>
+  <data name="Label_ModifiedImageCountSingular" xml:space="preserve">
+    <value>{0} Image Modified</value>
+  </data>
+  <data name="Label_NoFiles" xml:space="preserve">
+    <value>No Files</value>
+  </data>
+  <data name="Label_ReadOnly" xml:space="preserve">
+    <value>Read Only</value>
+  </data>
+  <data name="Label_Root" xml:space="preserve">
+    <value>(Root)</value>
+  </data>
+  <data name="Label_Sector" xml:space="preserve">
+    <value>Sector {0}</value>
+  </data>
+  <data name="Label_SelectedFileCountPlural" xml:space="preserve">
+    <value>{0} of {1} Files Selected</value>
+  </data>
+  <data name="Label_SelectedFileCountSingular" xml:space="preserve">
+    <value>{0} of {1} File Selected</value>
+  </data>
+  <data name="Label_Track" xml:space="preserve">
+    <value>Track {0}.{1}</value>
+  </data>
+  <data name="Menu_AllTracks" xml:space="preserve">
+    <value>All Tracks</value>
+  </data>
+  <data name="Menu_CopyValueByName" xml:space="preserve">
+    <value>&amp;Copy {0}</value>
+  </data>
+  <data name="Menu_DeletedDirectoryWithName" xml:space="preserve">
+    <value>Deleted &amp;Directory:   {0}</value>
+  </data>
+  <data name="Menu_DeletedFileWithName" xml:space="preserve">
+    <value>Deleted &amp;File:   {0}</value>
+  </data>
+  <data name="Menu_DeleteDirectory" xml:space="preserve">
+    <value>&amp;Delete Directory</value>
+  </data>
+  <data name="Menu_DeleteFile" xml:space="preserve">
+    <value>&amp;Delete File</value>
+  </data>
+  <data name="Menu_DeleteSelected" xml:space="preserve">
+    <value>&amp;Delete Selected Files</value>
+  </data>
+  <data name="Menu_Directory" xml:space="preserve">
+    <value>Directory</value>
+  </data>
+  <data name="Menu_DirectoryWithName" xml:space="preserve">
+    <value>&amp;Directory:   {0}</value>
+  </data>
+  <data name="Menu_ExportFile" xml:space="preserve">
+    <value>&amp;Export File</value>
+  </data>
+  <data name="Menu_ExportSelected" xml:space="preserve">
+    <value>&amp;Export Selected Files</value>
+  </data>
+  <data name="Menu_File" xml:space="preserve">
+    <value>&amp;File</value>
+  </data>
+  <data name="Menu_FileWithName" xml:space="preserve">
+    <value>&amp;File:   {0}</value>
+  </data>
+  <data name="Menu_PadImageSize" xml:space="preserve">
+    <value>&amp;Pad Image Size</value>
+  </data>
+  <data name="Menu_RemoveDeletedDirectory" xml:space="preserve">
+    <value>&amp;Remove Deleted Directory</value>
+  </data>
+  <data name="Menu_RemoveDeletedFile" xml:space="preserve">
+    <value>&amp;Remove Deleted File</value>
+  </data>
+  <data name="Menu_RemoveDirectory" xml:space="preserve">
+    <value>&amp;Remove Directory</value>
+  </data>
+  <data name="Menu_RemoveFile" xml:space="preserve">
+    <value>&amp;Remove File</value>
+  </data>
+  <data name="Menu_RemoveSelected" xml:space="preserve">
+    <value>&amp;Remove Selected Files</value>
+  </data>
+  <data name="Menu_RootDirectory" xml:space="preserve">
+    <value>Root &amp;Directory</value>
+  </data>
+  <data name="Menu_TruncateImage" xml:space="preserve">
+    <value>&amp;Truncate Image</value>
+  </data>
+  <data name="Menu_UndeleteDirectory" xml:space="preserve">
+    <value>&amp;Undelete Directory</value>
+  </data>
+  <data name="Menu_UndeleteFile" xml:space="preserve">
+    <value>&amp;Undelete File</value>
+  </data>
+  <data name="Menu_ViewDeletedDirectory" xml:space="preserve">
+    <value>&amp;View Deleted Directory</value>
+  </data>
+  <data name="Menu_ViewDeletedFile" xml:space="preserve">
+    <value>&amp;View Deleted File</value>
+  </data>
+  <data name="Menu_ViewDeletedFileAsText" xml:space="preserve">
+    <value>View Deleted &amp;File as Text</value>
+  </data>
+  <data name="Menu_ViewDirectory" xml:space="preserve">
+    <value>&amp;View Directory</value>
+  </data>
+  <data name="Menu_ViewDirectoryAlt" xml:space="preserve">
+    <value>View D&amp;irectory</value>
+  </data>
+  <data name="Menu_ViewFile" xml:space="preserve">
+    <value>&amp;View File</value>
+  </data>
+  <data name="Menu_ViewFileAsText" xml:space="preserve">
+    <value>View &amp;File as Text</value>
+  </data>
+  <data name="Menu_ViewParentDirectory" xml:space="preserve">
+    <value>View Parent D&amp;irectory</value>
+  </data>
+  <data name="Menu_ViewRootDirectory" xml:space="preserve">
+    <value>View Root D&amp;irectory</value>
+  </data>
 </root>

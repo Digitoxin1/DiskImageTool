@@ -59,5 +59,977 @@ Namespace My.Resources
                 resourceCulture = value
             End Set
         End Property
+        
+        '''<summary>
+        '''  Looks up a localized string similar to Change Log.
+        '''</summary>
+        Friend ReadOnly Property Caption_ChangeLog() As String
+            Get
+                Return ResourceManager.GetString("Caption_ChangeLog", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  Looks up a localized string similar to Deleted File - {0}.
+        '''</summary>
+        Friend ReadOnly Property Caption_DeletedFileWithName() As String
+            Get
+                Return ResourceManager.GetString("Caption_DeletedFileWithName", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  Looks up a localized string similar to Delete File.
+        '''</summary>
+        Friend ReadOnly Property Caption_DeleteFile() As String
+            Get
+                Return ResourceManager.GetString("Caption_DeleteFile", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  Looks up a localized string similar to Delete {0} Files.
+        '''</summary>
+        Friend ReadOnly Property Caption_DeleteFiles() As String
+            Get
+                Return ResourceManager.GetString("Caption_DeleteFiles", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  Looks up a localized string similar to File - {0}.
+        '''</summary>
+        Friend ReadOnly Property Caption_FileWithName() As String
+            Get
+                Return ResourceManager.GetString("Caption_FileWithName", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  Looks up a localized string similar to Image Comparison.
+        '''</summary>
+        Friend ReadOnly Property Caption_ImageComparison() As String
+            Get
+                Return ResourceManager.GetString("Caption_ImageComparison", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  Looks up a localized string similar to Remove File.
+        '''</summary>
+        Friend ReadOnly Property Caption_RemoveFile() As String
+            Get
+                Return ResourceManager.GetString("Caption_RemoveFile", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  Looks up a localized string similar to Remove {0} Files.
+        '''</summary>
+        Friend ReadOnly Property Caption_RemoveFiles() As String
+            Get
+                Return ResourceManager.GetString("Caption_RemoveFiles", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  Looks up a localized string similar to Rescan Images.
+        '''</summary>
+        Friend ReadOnly Property Caption_RescanImages() As String
+            Get
+                Return ResourceManager.GetString("Caption_RescanImages", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  Looks up a localized string similar to Save As.
+        '''</summary>
+        Friend ReadOnly Property Caption_SaveAs() As String
+            Get
+                Return ResourceManager.GetString("Caption_SaveAs", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  Looks up a localized string similar to Scan Images.
+        '''</summary>
+        Friend ReadOnly Property Caption_ScanImages() As String
+            Get
+                Return ResourceManager.GetString("Caption_ScanImages", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  Looks up a localized string similar to Tracklayout.
+        '''</summary>
+        Friend ReadOnly Property Caption_TrackLayout() As String
+            Get
+                Return ResourceManager.GetString("Caption_TrackLayout", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  Looks up a localized string similar to Batch Process Time Taken: {0}.
+        '''</summary>
+        Friend ReadOnly Property Debug_BatchProcessTimeTaken() As String
+            Get
+                Return ResourceManager.GetString("Debug_BatchProcessTimeTaken", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  Looks up a localized string similar to Image Load Time Taken: {0}.
+        '''</summary>
+        Friend ReadOnly Property Debug_LoadTimeTaken() As String
+            Get
+                Return ResourceManager.GetString("Debug_LoadTimeTaken", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  Looks up a localized string similar to Image Scan Time Taken: {0}.
+        '''</summary>
+        Friend ReadOnly Property Debug_ScanTimeTaken() As String
+            Get
+                Return ResourceManager.GetString("Debug_ScanTimeTaken", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  Looks up a localized string similar to This is a verified image.  Are you sure you wish to adjust the image size for this image?.
+        '''</summary>
+        Friend ReadOnly Property Dialog_AdjustImageSize() As String
+            Get
+                Return ResourceManager.GetString("Dialog_AdjustImageSize", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  Looks up a localized string similar to An error occurred while downloading the change log.  Please try again later..
+        '''</summary>
+        Friend ReadOnly Property Dialog_ChangeLogDownloadError() As String
+            Get
+                Return ResourceManager.GetString("Dialog_ChangeLogDownloadError", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  Looks up a localized string similar to Image has been modified by another application.{0}{0}Changes have been discarded..
+        '''</summary>
+        Friend ReadOnly Property Dialog_ChangesDiscarded() As String
+            Get
+                Return ResourceManager.GetString("Dialog_ChangesDiscarded", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  Looks up a localized string similar to This is a verified image.  Are you sure you wish to clear reserved bytes from this image?.
+        '''</summary>
+        Friend ReadOnly Property Dialog_ClearReservedBytes() As String
+            Get
+                Return ResourceManager.GetString("Dialog_ClearReservedBytes", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  Looks up a localized string similar to Are you sure you wish to close all open files?.
+        '''</summary>
+        Friend ReadOnly Property Dialog_CloseAll() As String
+            Get
+                Return ResourceManager.GetString("Dialog_CloseAll", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  Looks up a localized string similar to {0} is crosslinked with the following files:{1}.
+        '''</summary>
+        Friend ReadOnly Property Dialog_CrossLinked() As String
+            Get
+                Return ResourceManager.GetString("Dialog_CrossLinked", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  Looks up a localized string similar to Are you sure you wish to delete {0}?.
+        '''</summary>
+        Friend ReadOnly Property Dialog_DeleteFile() As String
+            Get
+                Return ResourceManager.GetString("Dialog_DeleteFile", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  Looks up a localized string similar to Are you sure you wish to delete the selected files?.
+        '''</summary>
+        Friend ReadOnly Property Dialog_DeleteSelectedFiles() As String
+            Get
+                Return ResourceManager.GetString("Dialog_DeleteSelectedFiles", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  Looks up a localized string similar to Warning: Insufficient Disk Space.
+        '''</summary>
+        Friend ReadOnly Property Dialog_DiskSpaceWarning() As String
+            Get
+                Return ResourceManager.GetString("Dialog_DiskSpaceWarning", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  Looks up a localized string similar to {0}{1}This file is currently open in {2}. Try again with a different file name..
+        '''</summary>
+        Friend ReadOnly Property Dialog_FileCurrentlyOpen() As String
+            Get
+                Return ResourceManager.GetString("Dialog_FileCurrentlyOpen", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  Looks up a localized string similar to An error occurred while downloading the file..
+        '''</summary>
+        Friend ReadOnly Property Dialog_FileDownloadError() As String
+            Get
+                Return ResourceManager.GetString("Dialog_FileDownloadError", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  Looks up a localized string similar to The image size is smaller than the detected size.{0}{0}Are you sure you wish to increase the image size?.
+        '''</summary>
+        Friend ReadOnly Property Dialog_IncreaseImageSize() As String
+            Get
+                Return ResourceManager.GetString("Dialog_IncreaseImageSize", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  Looks up a localized string similar to Warning: Insufficient Disk Space{0}{0}{1} of {2} file(s) added successfully.
+        '''</summary>
+        Friend ReadOnly Property Dialog_InsufficientDiskSpaceWarning() As String
+            Get
+                Return ResourceManager.GetString("Dialog_InsufficientDiskSpaceWarning", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  Looks up a localized string similar to You are running the latest version of {0}..
+        '''</summary>
+        Friend ReadOnly Property Dialog_LatestVersion() As String
+            Get
+                Return ResourceManager.GetString("Dialog_LatestVersion", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  Looks up a localized string similar to &apos;{0}&apos; is a read-only file.  Please specify a new file name..
+        '''</summary>
+        Friend ReadOnly Property Dialog_NewFileName() As String
+            Get
+                Return ResourceManager.GetString("Dialog_NewFileName", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  Looks up a localized string similar to Are you sure you wish to remove {0}?.
+        '''</summary>
+        Friend ReadOnly Property Dialog_RemoveFile() As String
+            Get
+                Return ResourceManager.GetString("Dialog_RemoveFile", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  Looks up a localized string similar to Are you sure you wish to remove the selected files?.
+        '''</summary>
+        Friend ReadOnly Property Dialog_RemoveSelectedFiles() As String
+            Get
+                Return ResourceManager.GetString("Dialog_RemoveSelectedFiles", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  Looks up a localized string similar to {0} already exists.{1}Do you wish to replace it?.
+        '''</summary>
+        Friend ReadOnly Property Dialog_ReplaceFile() As String
+            Get
+                Return ResourceManager.GetString("Dialog_ReplaceFile", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  Looks up a localized string similar to This is a verified image.  Are you sure you wish to restructure this image?.
+        '''</summary>
+        Friend ReadOnly Property Dialog_RestructureImage() As String
+            Get
+                Return ResourceManager.GetString("Dialog_RestructureImage", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  Looks up a localized string similar to Are you sure you wish to save all modified files?.
+        '''</summary>
+        Friend ReadOnly Property Dialog_SaveAll() As String
+            Get
+                Return ResourceManager.GetString("Dialog_SaveAll", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  Looks up a localized string similar to Save file &apos;{0}&apos;?.
+        '''</summary>
+        Friend ReadOnly Property Dialog_SaveFile() As String
+            Get
+                Return ResourceManager.GetString("Dialog_SaveFile", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  Looks up a localized string similar to Error saving file &apos;{0}&apos;..
+        '''</summary>
+        Friend ReadOnly Property Dialog_SaveFileError() As String
+            Get
+                Return ResourceManager.GetString("Dialog_SaveFileError", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  Looks up a localized string similar to Saving to this image type is not supported..
+        '''</summary>
+        Friend ReadOnly Property Dialog_SaveNotSupported() As String
+            Get
+                Return ResourceManager.GetString("Dialog_SaveNotSupported", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  Looks up a localized string similar to {0} images cleaned..
+        '''</summary>
+        Friend ReadOnly Property Dialog_SuccessfulCleanCountPlural() As String
+            Get
+                Return ResourceManager.GetString("Dialog_SuccessfulCleanCountPlural", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  Looks up a localized string similar to {0} image cleaned..
+        '''</summary>
+        Friend ReadOnly Property Dialog_SuccessfulCleanCountSingular() As String
+            Get
+                Return ResourceManager.GetString("Dialog_SuccessfulCleanCountSingular", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  Looks up a localized string similar to {0} of {1} files exported successfully..
+        '''</summary>
+        Friend ReadOnly Property Dialog_SuccessfulExportPlural() As String
+            Get
+                Return ResourceManager.GetString("Dialog_SuccessfulExportPlural", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  Looks up a localized string similar to {0} of {1} file exported successfully..
+        '''</summary>
+        Friend ReadOnly Property Dialog_SuccessfulExportSingular() As String
+            Get
+                Return ResourceManager.GetString("Dialog_SuccessfulExportSingular", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  Looks up a localized string similar to There is data in the overdumped region of the image.{0}{0}Are you sure you wish to truncate this image?.
+        '''</summary>
+        Friend ReadOnly Property Dialog_TruncateImage() As String
+            Get
+                Return ResourceManager.GetString("Dialog_TruncateImage", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  Looks up a localized string similar to Unsupported Disk Type..
+        '''</summary>
+        Friend ReadOnly Property Dialog_UnsupportedDiskType() As String
+            Get
+                Return ResourceManager.GetString("Dialog_UnsupportedDiskType", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  Looks up a localized string similar to {0} v{1} is available..
+        '''</summary>
+        Friend ReadOnly Property Dialog_UpdateAvailable() As String
+            Get
+                Return ResourceManager.GetString("Dialog_UpdateAvailable", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  Looks up a localized string similar to {0}{0}Do you wish to download it at this time?.
+        '''</summary>
+        Friend ReadOnly Property Dialog_UpdateDownload() As String
+            Get
+                Return ResourceManager.GetString("Dialog_UpdateDownload", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  Looks up a localized string similar to An error occurred while checking for updates.  Please try again later..
+        '''</summary>
+        Friend ReadOnly Property Dialog_UpdateError() As String
+            Get
+                Return ResourceManager.GetString("Dialog_UpdateError", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  Looks up a localized string similar to {0}{0}Whats New{0}{1)}{0}{2}{0}.
+        '''</summary>
+        Friend ReadOnly Property Dialog_UpdateWhatsNew() As String
+            Get
+                Return ResourceManager.GetString("Dialog_UpdateWhatsNew", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  Looks up a localized string similar to This is a verified image.  Are you sure you wish to remove any windows modifications from this image?.
+        '''</summary>
+        Friend ReadOnly Property Dialog_Win9xClean() As String
+            Get
+                Return ResourceManager.GetString("Dialog_Win9xClean", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  Looks up a localized string similar to This will restore the OEM Name and remove any Creation and Last Accessed Dates from all unverified loaded images.{0}{0}Do you wish to proceed?.
+        '''</summary>
+        Friend ReadOnly Property Dialog_Win9xCleanBatch() As String
+            Get
+                Return ResourceManager.GetString("Dialog_Win9xCleanBatch", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  Looks up a localized string similar to Zip Archive.
+        '''</summary>
+        Friend ReadOnly Property FileType_ZipArchive() As String
+            Get
+                Return ResourceManager.GetString("FileType_ZipArchive", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  Looks up a localized string similar to Additional Data.
+        '''</summary>
+        Friend ReadOnly Property Label_AdditionalData() As String
+            Get
+                Return ResourceManager.GetString("Label_AdditionalData", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  Looks up a localized string similar to Boot Sector.
+        '''</summary>
+        Friend ReadOnly Property Label_BootSector() As String
+            Get
+                Return ResourceManager.GetString("Label_BootSector", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  Looks up a localized string similar to Compressed.
+        '''</summary>
+        Friend ReadOnly Property Label_Compressed() As String
+            Get
+                Return ResourceManager.GetString("Label_Compressed", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  Looks up a localized string similar to {0} entries.
+        '''</summary>
+        Friend ReadOnly Property Label_Entries() As String
+            Get
+                Return ResourceManager.GetString("Label_Entries", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  Looks up a localized string similar to {0} entry.
+        '''</summary>
+        Friend ReadOnly Property Label_Entry() As String
+            Get
+                Return ResourceManager.GetString("Label_Entry", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  Looks up a localized string similar to {0} Files.
+        '''</summary>
+        Friend ReadOnly Property Label_FileCountPlural() As String
+            Get
+                Return ResourceManager.GetString("Label_FileCountPlural", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  Looks up a localized string similar to {0} File.
+        '''</summary>
+        Friend ReadOnly Property Label_FileCountSingular() As String
+            Get
+                Return ResourceManager.GetString("Label_FileCountSingular", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  Looks up a localized string similar to {0} of {1} Images.
+        '''</summary>
+        Friend ReadOnly Property Label_FilteredImageCountPlural() As String
+            Get
+                Return ResourceManager.GetString("Label_FilteredImageCountPlural", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  Looks up a localized string similar to {0} of {1} Image.
+        '''</summary>
+        Friend ReadOnly Property Label_FilteredImageCountSingular() As String
+            Get
+                Return ResourceManager.GetString("Label_FilteredImageCountSingular", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  Looks up a localized string similar to CRC32.
+        '''</summary>
+        Friend ReadOnly Property Label_Hash_CRC32() As String
+            Get
+                Return ResourceManager.GetString("Label_Hash_CRC32", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  Looks up a localized string similar to MD5.
+        '''</summary>
+        Friend ReadOnly Property Label_Hash_MD5() As String
+            Get
+                Return ResourceManager.GetString("Label_Hash_MD5", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  Looks up a localized string similar to SHA-1.
+        '''</summary>
+        Friend ReadOnly Property Label_Hash_SHA1() As String
+            Get
+                Return ResourceManager.GetString("Label_Hash_SHA1", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  Looks up a localized string similar to {0} Images.
+        '''</summary>
+        Friend ReadOnly Property Label_ImageCountPlural() As String
+            Get
+                Return ResourceManager.GetString("Label_ImageCountPlural", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  Looks up a localized string similar to {0} Image.
+        '''</summary>
+        Friend ReadOnly Property Label_ImageCountSingular() As String
+            Get
+                Return ResourceManager.GetString("Label_ImageCountSingular", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  Looks up a localized string similar to Invalid.
+        '''</summary>
+        Friend ReadOnly Property Label_Invalid() As String
+            Get
+                Return ResourceManager.GetString("Label_Invalid", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  Looks up a localized string similar to {0} Images Modified.
+        '''</summary>
+        Friend ReadOnly Property Label_ModifiedImageCountPlural() As String
+            Get
+                Return ResourceManager.GetString("Label_ModifiedImageCountPlural", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  Looks up a localized string similar to {0} Image Modified.
+        '''</summary>
+        Friend ReadOnly Property Label_ModifiedImageCountSingular() As String
+            Get
+                Return ResourceManager.GetString("Label_ModifiedImageCountSingular", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  Looks up a localized string similar to No Files.
+        '''</summary>
+        Friend ReadOnly Property Label_NoFiles() As String
+            Get
+                Return ResourceManager.GetString("Label_NoFiles", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  Looks up a localized string similar to Read Only.
+        '''</summary>
+        Friend ReadOnly Property Label_ReadOnly() As String
+            Get
+                Return ResourceManager.GetString("Label_ReadOnly", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  Looks up a localized string similar to (Root).
+        '''</summary>
+        Friend ReadOnly Property Label_Root() As String
+            Get
+                Return ResourceManager.GetString("Label_Root", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  Looks up a localized string similar to Sector {0}.
+        '''</summary>
+        Friend ReadOnly Property Label_Sector() As String
+            Get
+                Return ResourceManager.GetString("Label_Sector", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  Looks up a localized string similar to {0} of {1} Files Selected.
+        '''</summary>
+        Friend ReadOnly Property Label_SelectedFileCountPlural() As String
+            Get
+                Return ResourceManager.GetString("Label_SelectedFileCountPlural", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  Looks up a localized string similar to {0} of {1} File Selected.
+        '''</summary>
+        Friend ReadOnly Property Label_SelectedFileCountSingular() As String
+            Get
+                Return ResourceManager.GetString("Label_SelectedFileCountSingular", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  Looks up a localized string similar to Track {0}.{1}.
+        '''</summary>
+        Friend ReadOnly Property Label_Track() As String
+            Get
+                Return ResourceManager.GetString("Label_Track", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  Looks up a localized string similar to All Tracks.
+        '''</summary>
+        Friend ReadOnly Property Menu_AllTracks() As String
+            Get
+                Return ResourceManager.GetString("Menu_AllTracks", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  Looks up a localized string similar to &amp;Copy Value.
+        '''</summary>
+        Friend ReadOnly Property Menu_CopyValue() As String
+            Get
+                Return ResourceManager.GetString("Menu_CopyValue", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  Looks up a localized string similar to &amp;Copy {0}.
+        '''</summary>
+        Friend ReadOnly Property Menu_CopyValueByName() As String
+            Get
+                Return ResourceManager.GetString("Menu_CopyValueByName", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  Looks up a localized string similar to Deleted &amp;Directory:   {0}.
+        '''</summary>
+        Friend ReadOnly Property Menu_DeletedDirectoryWithName() As String
+            Get
+                Return ResourceManager.GetString("Menu_DeletedDirectoryWithName", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  Looks up a localized string similar to Deleted &amp;File:   {0}.
+        '''</summary>
+        Friend ReadOnly Property Menu_DeletedFileWithName() As String
+            Get
+                Return ResourceManager.GetString("Menu_DeletedFileWithName", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  Looks up a localized string similar to &amp;Delete Directory.
+        '''</summary>
+        Friend ReadOnly Property Menu_DeleteDirectory() As String
+            Get
+                Return ResourceManager.GetString("Menu_DeleteDirectory", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  Looks up a localized string similar to &amp;Delete File.
+        '''</summary>
+        Friend ReadOnly Property Menu_DeleteFile() As String
+            Get
+                Return ResourceManager.GetString("Menu_DeleteFile", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  Looks up a localized string similar to &amp;Delete Selected Files.
+        '''</summary>
+        Friend ReadOnly Property Menu_DeleteSelected() As String
+            Get
+                Return ResourceManager.GetString("Menu_DeleteSelected", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  Looks up a localized string similar to Directory.
+        '''</summary>
+        Friend ReadOnly Property Menu_Directory() As String
+            Get
+                Return ResourceManager.GetString("Menu_Directory", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  Looks up a localized string similar to &amp;Directory:   {0}.
+        '''</summary>
+        Friend ReadOnly Property Menu_DirectoryWithName() As String
+            Get
+                Return ResourceManager.GetString("Menu_DirectoryWithName", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  Looks up a localized string similar to &amp;Export File.
+        '''</summary>
+        Friend ReadOnly Property Menu_ExportFile() As String
+            Get
+                Return ResourceManager.GetString("Menu_ExportFile", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  Looks up a localized string similar to &amp;Export Selected Files.
+        '''</summary>
+        Friend ReadOnly Property Menu_ExportSelected() As String
+            Get
+                Return ResourceManager.GetString("Menu_ExportSelected", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  Looks up a localized string similar to &amp;File.
+        '''</summary>
+        Friend ReadOnly Property Menu_File() As String
+            Get
+                Return ResourceManager.GetString("Menu_File", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  Looks up a localized string similar to &amp;File:   {0}.
+        '''</summary>
+        Friend ReadOnly Property Menu_FileWithName() As String
+            Get
+                Return ResourceManager.GetString("Menu_FileWithName", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  Looks up a localized string similar to &amp;Pad Image Size.
+        '''</summary>
+        Friend ReadOnly Property Menu_PadImageSize() As String
+            Get
+                Return ResourceManager.GetString("Menu_PadImageSize", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  Looks up a localized string similar to &amp;Remove Deleted Directory.
+        '''</summary>
+        Friend ReadOnly Property Menu_RemoveDeletedDirectory() As String
+            Get
+                Return ResourceManager.GetString("Menu_RemoveDeletedDirectory", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  Looks up a localized string similar to &amp;Remove Deleted File.
+        '''</summary>
+        Friend ReadOnly Property Menu_RemoveDeletedFile() As String
+            Get
+                Return ResourceManager.GetString("Menu_RemoveDeletedFile", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  Looks up a localized string similar to &amp;Remove Directory.
+        '''</summary>
+        Friend ReadOnly Property Menu_RemoveDirectory() As String
+            Get
+                Return ResourceManager.GetString("Menu_RemoveDirectory", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  Looks up a localized string similar to &amp;Remove File.
+        '''</summary>
+        Friend ReadOnly Property Menu_RemoveFile() As String
+            Get
+                Return ResourceManager.GetString("Menu_RemoveFile", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  Looks up a localized string similar to &amp;Remove Selected Files.
+        '''</summary>
+        Friend ReadOnly Property Menu_RemoveSelected() As String
+            Get
+                Return ResourceManager.GetString("Menu_RemoveSelected", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  Looks up a localized string similar to Root &amp;Directory.
+        '''</summary>
+        Friend ReadOnly Property Menu_RootDirectory() As String
+            Get
+                Return ResourceManager.GetString("Menu_RootDirectory", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  Looks up a localized string similar to &amp;Truncate Image.
+        '''</summary>
+        Friend ReadOnly Property Menu_TruncateImage() As String
+            Get
+                Return ResourceManager.GetString("Menu_TruncateImage", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  Looks up a localized string similar to &amp;Undelete Directory.
+        '''</summary>
+        Friend ReadOnly Property Menu_UndeleteDirectory() As String
+            Get
+                Return ResourceManager.GetString("Menu_UndeleteDirectory", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  Looks up a localized string similar to &amp;Undelete File.
+        '''</summary>
+        Friend ReadOnly Property Menu_UndeleteFile() As String
+            Get
+                Return ResourceManager.GetString("Menu_UndeleteFile", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  Looks up a localized string similar to &amp;View Deleted Directory.
+        '''</summary>
+        Friend ReadOnly Property Menu_ViewDeletedDirectory() As String
+            Get
+                Return ResourceManager.GetString("Menu_ViewDeletedDirectory", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  Looks up a localized string similar to &amp;View Deleted File.
+        '''</summary>
+        Friend ReadOnly Property Menu_ViewDeletedFile() As String
+            Get
+                Return ResourceManager.GetString("Menu_ViewDeletedFile", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  Looks up a localized string similar to View Deleted &amp;File as Text.
+        '''</summary>
+        Friend ReadOnly Property Menu_ViewDeletedFileAsText() As String
+            Get
+                Return ResourceManager.GetString("Menu_ViewDeletedFileAsText", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  Looks up a localized string similar to &amp;View Directory.
+        '''</summary>
+        Friend ReadOnly Property Menu_ViewDirectory() As String
+            Get
+                Return ResourceManager.GetString("Menu_ViewDirectory", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  Looks up a localized string similar to View D&amp;irectory.
+        '''</summary>
+        Friend ReadOnly Property Menu_ViewDirectoryAlt() As String
+            Get
+                Return ResourceManager.GetString("Menu_ViewDirectoryAlt", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  Looks up a localized string similar to &amp;View File.
+        '''</summary>
+        Friend ReadOnly Property Menu_ViewFile() As String
+            Get
+                Return ResourceManager.GetString("Menu_ViewFile", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  Looks up a localized string similar to View &amp;File as Text.
+        '''</summary>
+        Friend ReadOnly Property Menu_ViewFileAsText() As String
+            Get
+                Return ResourceManager.GetString("Menu_ViewFileAsText", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  Looks up a localized string similar to View Parent D&amp;irectory.
+        '''</summary>
+        Friend ReadOnly Property Menu_ViewParentDirectory() As String
+            Get
+                Return ResourceManager.GetString("Menu_ViewParentDirectory", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  Looks up a localized string similar to View Root D&amp;irectory.
+        '''</summary>
+        Friend ReadOnly Property Menu_ViewRootDirectory() As String
+            Get
+                Return ResourceManager.GetString("Menu_ViewRootDirectory", resourceCulture)
+            End Get
+        End Property
     End Module
 End Namespace
