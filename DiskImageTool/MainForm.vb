@@ -2587,9 +2587,9 @@ Public Class MainForm
         Dim GroupName As String = IIf(Path = "", My.Resources.Label_Root, Path) & "  ("
 
         If FileCount = 1 Then
-            GroupName &= String.Format(My.Resources.Label_FileCountSingular, FileCount)
+            GroupName &= String.Format(My.Resources.Label_Entry, FileCount)
         Else
-            GroupName &= String.Format(My.Resources.Label_FileCountPlural, FileCount)
+            GroupName &= String.Format(My.Resources.Label_Entries, FileCount)
         End If
 
         If Directory.Data.HasBootSector Then
