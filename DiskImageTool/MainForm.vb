@@ -363,9 +363,9 @@ Public Class MainForm
         Dim Caption As String
 
         If DirectoryEntry.IsDeleted Then
-            Caption = String.Format(My.Resources.Caption_DeletedFileWithName, DirectoryEntry.GetShortFileName(True))
+            Caption = My.Resources.Caption_DeleteFile & " - " & DirectoryEntry.GetShortFileName(True)
         Else
-            Caption = String.Format(My.Resources.Caption_FileWithName, DirectoryEntry.GetShortFileName(True))
+            Caption = My.Resources.Caption_File & " - " & DirectoryEntry.GetShortFileName(True)
         End If
 
         Dim Bytes = DirectoryEntry.GetContent

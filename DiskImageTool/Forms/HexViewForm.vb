@@ -65,7 +65,7 @@ Public Class HexViewForm
         PopulateFillValues()
 
         If HexViewSectorData.Description = "" Then
-            Me.Text = "Hex Editor"
+            Me.Text = My.Resources.Caption_HexEditor
         Else
             Me.Text = HexViewSectorData.Description
         End If
@@ -1130,7 +1130,7 @@ Public Class HexViewForm
             HexBox1.PerformScrollToLine(TopLine)
             HexBox1.SelectionStart = SelectionStart
             HexBox1.SelectionLength = SelectionLength
-            MsgBox("Can't Find '" & _LastSearch.SearchString & "'", MsgBoxStyle.Information)
+            MsgBox(String.Format(My.Resources.Dialog_SearchNotFound, _LastSearch.SearchString), MsgBoxStyle.Information)
         Else
             RefreshSelection(False)
             DataInspectorRefresh(False)
@@ -1445,7 +1445,7 @@ Public Class HexViewForm
 
     Private Sub HexViewForm_Closing(sender As Object, e As CancelEventArgs) Handles Me.Closing
         If _Changes.Count > 0 And Not _Modified Then
-            Dim Msg As String = "Changes have been made to this disk image." & vbCrLf & vbCrLf & "Do you wish to commit these changes before closing this window?"
+            Dim Msg = String.Format(My.Resources.Dialog_CommitChanges, Environment.NewLine)
             Dim Response = MsgBox(Msg, MsgBoxStyle.Question + MsgBoxStyle.YesNoCancel + MsgBoxStyle.DefaultButton3)
             If Response = MsgBoxResult.Cancel Then
                 e.Cancel = True

@@ -192,7 +192,7 @@ Public Class ImportFileForm
 
         'PopulateExistingFileNames(Directory, _FileList)
 
-        Dim Group = New ListViewGroup(If(GroupPath = "", "(Root)", GroupPath)) With {
+        Dim Group = New ListViewGroup(If(GroupPath = "", My.Resources.Label_Root, GroupPath)) With {
             .Tag = _FileList
         }
 

@@ -30,7 +30,7 @@
         Dim Dialog = New SaveFileDialog With {
            .FileName = m_SaveFileName,
            .DefaultExt = "txt",
-           .Filter = "Text files (*.txt)|*.txt|All files (*.*)|*.*"
+           .Filter = My.Resources.FileType_Text & " (*.txt)|*.txt|" & My.Resources.FileType_All & " (*.*)|*.*"
         }
 
         If Dialog.ShowDialog = DialogResult.OK Then

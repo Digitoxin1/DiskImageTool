@@ -174,17 +174,14 @@
   <data name="Caption_ChangeLog" xml:space="preserve">
     <value>Change Log</value>
   </data>
-  <data name="Caption_DeletedFileWithName" xml:space="preserve">
-    <value>Deleted File - {0}</value>
-  </data>
   <data name="Caption_DeleteFile" xml:space="preserve">
     <value>Delete File</value>
   </data>
   <data name="Caption_DeleteFiles" xml:space="preserve">
     <value>Delete {0} Files</value>
   </data>
-  <data name="Caption_FileWithName" xml:space="preserve">
-    <value>File - {0}</value>
+  <data name="Caption_File" xml:space="preserve">
+    <value>File</value>
   </data>
   <data name="Caption_ImageComparison" xml:space="preserve">
     <value>Image Comparison</value>
@@ -229,7 +226,7 @@
     <value>Are you sure you wish to delete the selected files?</value>
   </data>
   <data name="Dialog_FileCurrentlyOpen" xml:space="preserve">
-    <value>{0}{1}This file is currently open in {2}. Try again with a different file name.</value>
+    <value>{0}{1}{1}This file is currently open in {2}. Try again with a different file name.</value>
   </data>
   <data name="Dialog_InsufficientDiskSpaceWarning" xml:space="preserve">
     <value>Warning: Insufficient Disk Space{0}{0}{1} of {2} file(s) added successfully</value>
@@ -440,5 +437,83 @@
   </data>
   <data name="Menu_ViewRootDirectory" xml:space="preserve">
     <value>View Root D&amp;irectory</value>
+  </data>
+  <data name="Dialog_Abort" xml:space="preserve">
+    <value>Are you sure you wish to abort?</value>
+  </data>
+  <data name="Dialog_CommitChanges" xml:space="preserve">
+    <value>Changes have been made to this disk image.{0}{0}Do you wish to commit these changes before closing this window?</value>
+  </data>
+  <data name="Dialog_DiskNotEmptyWarning" xml:space="preserve">
+    <value>Warning: The disk in drive {0} is not empty.{1}{1}If you continue, the disk will be overwritten.{1}{1}Do you wish to continue?</value>
+  </data>
+  <data name="Dialog_DiskNotEmptyWarning_Mismatched" xml:space="preserve">
+    <value>Warning: The disk in drive {0} is not empty and is formatted as a {1}.{2}{2}The image you are attempting to write is a {3} image.{2}{2}If you continue, the disk will be overwritten and may be unreadable.{2}{2}Do you wish to continue?</value>
+  </data>
+  <data name="Dialog_DiskNotEmptyWarning_UnknownFormat" xml:space="preserve">
+    <value>Warning: The disk in drive {0} is not empty, but I am unable to determine the format type.{1}{1}The image you are attempting to write is a {2} image.{1}{1}If you continue, the disk will be overwritten and may be unreadable.{1}{1}Do you wish to continue?</value>
+  </data>
+  <data name="Dialog_DiskWriteError" xml:space="preserve">
+    <value>Error: Unable to write to the drive at this time.</value>
+  </data>
+  <data name="Dialog_DiskWrittenSuccessfully" xml:space="preserve">
+    <value>Your disk has been written successfully.{0}{0}Please remove the disk from the drive and write protect it now.{0}{0}Warning: If you continue without write protecting the disk, The operating system may make modifications to the disk as soon as you close this window.</value>
+  </data>
+  <data name="Dialog_FloppyDriveNotReady" xml:space="preserve">
+    <value>Floppy drive {0} is not ready.{1}{1}Please verify that a formatted disk is inserted into drive {0}.</value>
+  </data>
+  <data name="Dialog_SaveFileError2" xml:space="preserve">
+    <value>An error has occurred while attempting to save the file.</value>
+  </data>
+  <data name="Dialog_SearchNotFound" xml:space="preserve">
+    <value>Can't Find '{0}'</value>
+  </data>
+  <data name="Caption_FAT" xml:space="preserve">
+    <value>File Allocation Table</value>
+  </data>
+  <data name="Caption_HexEditor" xml:space="preserve">
+    <value>Hex Editor</value>
+  </data>
+  <data name="Caption_RawTrackData" xml:space="preserve">
+    <value>Raw Track Data</value>
+  </data>
+  <data name="Caption_ValidClusters" xml:space="preserve">
+    <value>Valid Clusters</value>
+  </data>
+  <data name="Dialog_DiskTypeWarning" xml:space="preserve">
+    <value>Warning: Unable to determine the floppy disk type.</value>
+  </data>
+  <data name="Dialog_InvalidCharacters" xml:space="preserve">
+    <value>A file name can't contain any of the following characters</value>
+  </data>
+  <data name="Dialog_InvalidSearchString" xml:space="preserve">
+    <value>Invalid Search String</value>
+  </data>
+  <data name="FileType_All" xml:space="preserve">
+    <value>All files</value>
+  </data>
+  <data name="FileType_Text" xml:space="preserve">
+    <value>Text files</value>
+  </data>
+  <data name="Label_BadSector" xml:space="preserve">
+    <value>Bad Sector</value>
+  </data>
+  <data name="Label_CircularChain" xml:space="preserve">
+    <value>Circular Chain</value>
+  </data>
+  <data name="Label_CrossLinked" xml:space="preserve">
+    <value>Cross-Linked</value>
+  </data>
+  <data name="Label_FileDrop" xml:space="preserve">
+    <value>Drag &amp; Drop Files and Folders Here</value>
+  </data>
+  <data name="Label_InvalidAllocation" xml:space="preserve">
+    <value>Invalid Allocation</value>
+  </data>
+  <data name="Label_InvalidCluster" xml:space="preserve">
+    <value>Invalid Cluster</value>
+  </data>
+  <data name="Label_LostCluster" xml:space="preserve">
+    <value>Lost Cluster</value>
   </data>
 </root>

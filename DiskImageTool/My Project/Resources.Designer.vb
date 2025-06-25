@@ -70,15 +70,6 @@ Namespace My.Resources
         End Property
         
         '''<summary>
-        '''  Looks up a localized string similar to Deleted File - {0}.
-        '''</summary>
-        Friend ReadOnly Property Caption_DeletedFileWithName() As String
-            Get
-                Return ResourceManager.GetString("Caption_DeletedFileWithName", resourceCulture)
-            End Get
-        End Property
-        
-        '''<summary>
         '''  Looks up a localized string similar to Delete File.
         '''</summary>
         Friend ReadOnly Property Caption_DeleteFile() As String
@@ -97,11 +88,29 @@ Namespace My.Resources
         End Property
         
         '''<summary>
-        '''  Looks up a localized string similar to File - {0}.
+        '''  Looks up a localized string similar to File Allocation Table.
         '''</summary>
-        Friend ReadOnly Property Caption_FileWithName() As String
+        Friend ReadOnly Property Caption_FAT() As String
             Get
-                Return ResourceManager.GetString("Caption_FileWithName", resourceCulture)
+                Return ResourceManager.GetString("Caption_FAT", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  Looks up a localized string similar to File.
+        '''</summary>
+        Friend ReadOnly Property Caption_File() As String
+            Get
+                Return ResourceManager.GetString("Caption_File", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  Looks up a localized string similar to Hex Editor.
+        '''</summary>
+        Friend ReadOnly Property Caption_HexEditor() As String
+            Get
+                Return ResourceManager.GetString("Caption_HexEditor", resourceCulture)
             End Get
         End Property
         
@@ -111,6 +120,15 @@ Namespace My.Resources
         Friend ReadOnly Property Caption_ImageComparison() As String
             Get
                 Return ResourceManager.GetString("Caption_ImageComparison", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  Looks up a localized string similar to Raw Track Data.
+        '''</summary>
+        Friend ReadOnly Property Caption_RawTrackData() As String
+            Get
+                Return ResourceManager.GetString("Caption_RawTrackData", resourceCulture)
             End Get
         End Property
         
@@ -169,6 +187,15 @@ Namespace My.Resources
         End Property
         
         '''<summary>
+        '''  Looks up a localized string similar to Valid Clusters.
+        '''</summary>
+        Friend ReadOnly Property Caption_ValidClusters() As String
+            Get
+                Return ResourceManager.GetString("Caption_ValidClusters", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
         '''  Looks up a localized string similar to Batch Process Time Taken: {0}.
         '''</summary>
         Friend ReadOnly Property Debug_BatchProcessTimeTaken() As String
@@ -192,6 +219,15 @@ Namespace My.Resources
         Friend ReadOnly Property Debug_ScanTimeTaken() As String
             Get
                 Return ResourceManager.GetString("Debug_ScanTimeTaken", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  Looks up a localized string similar to Are you sure you wish to abort?.
+        '''</summary>
+        Friend ReadOnly Property Dialog_Abort() As String
+            Get
+                Return ResourceManager.GetString("Dialog_Abort", resourceCulture)
             End Get
         End Property
         
@@ -241,6 +277,15 @@ Namespace My.Resources
         End Property
         
         '''<summary>
+        '''  Looks up a localized string similar to Changes have been made to this disk image.{0}{0}Do you wish to commit these changes before closing this window?.
+        '''</summary>
+        Friend ReadOnly Property Dialog_CommitChanges() As String
+            Get
+                Return ResourceManager.GetString("Dialog_CommitChanges", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
         '''  Looks up a localized string similar to {0} is crosslinked with the following files:{1}.
         '''</summary>
         Friend ReadOnly Property Dialog_CrossLinked() As String
@@ -268,6 +313,33 @@ Namespace My.Resources
         End Property
         
         '''<summary>
+        '''  Looks up a localized string similar to Warning: The disk in drive {0} is not empty.{1}{1}If you continue, the disk will be overwritten.{1}{1}Do you wish to continue?.
+        '''</summary>
+        Friend ReadOnly Property Dialog_DiskNotEmptyWarning() As String
+            Get
+                Return ResourceManager.GetString("Dialog_DiskNotEmptyWarning", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  Looks up a localized string similar to Warning: The disk in drive {0} is not empty and is formatted as a {1}.{2}{2}The image you are attempting to write is a {3} image.{2}{2}If you continue, the disk will be overwritten and may be unreadable.{2}{2}Do you wish to continue?.
+        '''</summary>
+        Friend ReadOnly Property Dialog_DiskNotEmptyWarning_Mismatched() As String
+            Get
+                Return ResourceManager.GetString("Dialog_DiskNotEmptyWarning_Mismatched", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  Looks up a localized string similar to Warning: The disk in drive {0} is not empty, but I am unable to determine the format type.{1}{1}The image you are attempting to write is a {2} image.{1}{1}If you continue, the disk will be overwritten and may be unreadable.{1}{1}Do you wish to continue?.
+        '''</summary>
+        Friend ReadOnly Property Dialog_DiskNotEmptyWarning_UnknownFormat() As String
+            Get
+                Return ResourceManager.GetString("Dialog_DiskNotEmptyWarning_UnknownFormat", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
         '''  Looks up a localized string similar to Warning: Insufficient Disk Space.
         '''</summary>
         Friend ReadOnly Property Dialog_DiskSpaceWarning() As String
@@ -277,7 +349,34 @@ Namespace My.Resources
         End Property
         
         '''<summary>
-        '''  Looks up a localized string similar to {0}{1}This file is currently open in {2}. Try again with a different file name..
+        '''  Looks up a localized string similar to Warning: Unable to determine the floppy disk type..
+        '''</summary>
+        Friend ReadOnly Property Dialog_DiskTypeWarning() As String
+            Get
+                Return ResourceManager.GetString("Dialog_DiskTypeWarning", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  Looks up a localized string similar to Error: Unable to write to the drive at this time..
+        '''</summary>
+        Friend ReadOnly Property Dialog_DiskWriteError() As String
+            Get
+                Return ResourceManager.GetString("Dialog_DiskWriteError", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  Looks up a localized string similar to Your disk has been written successfully.{0}{0}Please remove the disk from the drive and write protect it now.{0}{0}Warning: If you continue without write protecting the disk, The operating system may make modifications to the disk as soon as you close this window..
+        '''</summary>
+        Friend ReadOnly Property Dialog_DiskWrittenSuccessfully() As String
+            Get
+                Return ResourceManager.GetString("Dialog_DiskWrittenSuccessfully", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  Looks up a localized string similar to {0}{1}{1}This file is currently open in {2}. Try again with a different file name..
         '''</summary>
         Friend ReadOnly Property Dialog_FileCurrentlyOpen() As String
             Get
@@ -291,6 +390,15 @@ Namespace My.Resources
         Friend ReadOnly Property Dialog_FileDownloadError() As String
             Get
                 Return ResourceManager.GetString("Dialog_FileDownloadError", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  Looks up a localized string similar to Floppy drive {0} is not ready.{1}{1}Please verify that a formatted disk is inserted into drive {0}..
+        '''</summary>
+        Friend ReadOnly Property Dialog_FloppyDriveNotReady() As String
+            Get
+                Return ResourceManager.GetString("Dialog_FloppyDriveNotReady", resourceCulture)
             End Get
         End Property
         
@@ -309,6 +417,24 @@ Namespace My.Resources
         Friend ReadOnly Property Dialog_InsufficientDiskSpaceWarning() As String
             Get
                 Return ResourceManager.GetString("Dialog_InsufficientDiskSpaceWarning", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  Looks up a localized string similar to A file name can&apos;t contain any of the following characters.
+        '''</summary>
+        Friend ReadOnly Property Dialog_InvalidCharacters() As String
+            Get
+                Return ResourceManager.GetString("Dialog_InvalidCharacters", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  Looks up a localized string similar to Invalid Search String.
+        '''</summary>
+        Friend ReadOnly Property Dialog_InvalidSearchString() As String
+            Get
+                Return ResourceManager.GetString("Dialog_InvalidSearchString", resourceCulture)
             End Get
         End Property
         
@@ -394,11 +520,29 @@ Namespace My.Resources
         End Property
         
         '''<summary>
+        '''  Looks up a localized string similar to An error has occurred while attempting to save the file..
+        '''</summary>
+        Friend ReadOnly Property Dialog_SaveFileError2() As String
+            Get
+                Return ResourceManager.GetString("Dialog_SaveFileError2", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
         '''  Looks up a localized string similar to Saving to this image type is not supported..
         '''</summary>
         Friend ReadOnly Property Dialog_SaveNotSupported() As String
             Get
                 Return ResourceManager.GetString("Dialog_SaveNotSupported", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  Looks up a localized string similar to Can&apos;t Find &apos;{0}&apos;.
+        '''</summary>
+        Friend ReadOnly Property Dialog_SearchNotFound() As String
+            Get
+                Return ResourceManager.GetString("Dialog_SearchNotFound", resourceCulture)
             End Get
         End Property
         
@@ -511,6 +655,24 @@ Namespace My.Resources
         End Property
         
         '''<summary>
+        '''  Looks up a localized string similar to All files.
+        '''</summary>
+        Friend ReadOnly Property FileType_All() As String
+            Get
+                Return ResourceManager.GetString("FileType_All", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  Looks up a localized string similar to Text files.
+        '''</summary>
+        Friend ReadOnly Property FileType_Text() As String
+            Get
+                Return ResourceManager.GetString("FileType_Text", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
         '''  Looks up a localized string similar to Zip Archive.
         '''</summary>
         Friend ReadOnly Property FileType_ZipArchive() As String
@@ -529,6 +691,15 @@ Namespace My.Resources
         End Property
         
         '''<summary>
+        '''  Looks up a localized string similar to Bad Sector.
+        '''</summary>
+        Friend ReadOnly Property Label_BadSector() As String
+            Get
+                Return ResourceManager.GetString("Label_BadSector", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
         '''  Looks up a localized string similar to Boot Sector.
         '''</summary>
         Friend ReadOnly Property Label_BootSector() As String
@@ -538,11 +709,29 @@ Namespace My.Resources
         End Property
         
         '''<summary>
+        '''  Looks up a localized string similar to Circular Chain.
+        '''</summary>
+        Friend ReadOnly Property Label_CircularChain() As String
+            Get
+                Return ResourceManager.GetString("Label_CircularChain", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
         '''  Looks up a localized string similar to Compressed.
         '''</summary>
         Friend ReadOnly Property Label_Compressed() As String
             Get
                 Return ResourceManager.GetString("Label_Compressed", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  Looks up a localized string similar to Cross-Linked.
+        '''</summary>
+        Friend ReadOnly Property Label_CrossLinked() As String
+            Get
+                Return ResourceManager.GetString("Label_CrossLinked", resourceCulture)
             End Get
         End Property
         
@@ -579,6 +768,15 @@ Namespace My.Resources
         Friend ReadOnly Property Label_FileCountSingular() As String
             Get
                 Return ResourceManager.GetString("Label_FileCountSingular", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  Looks up a localized string similar to Drag &amp; Drop Files and Folders Here.
+        '''</summary>
+        Friend ReadOnly Property Label_FileDrop() As String
+            Get
+                Return ResourceManager.GetString("Label_FileDrop", resourceCulture)
             End Get
         End Property
         
@@ -651,6 +849,33 @@ Namespace My.Resources
         Friend ReadOnly Property Label_Invalid() As String
             Get
                 Return ResourceManager.GetString("Label_Invalid", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  Looks up a localized string similar to Invalid Allocation.
+        '''</summary>
+        Friend ReadOnly Property Label_InvalidAllocation() As String
+            Get
+                Return ResourceManager.GetString("Label_InvalidAllocation", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  Looks up a localized string similar to Invalid Cluster.
+        '''</summary>
+        Friend ReadOnly Property Label_InvalidCluster() As String
+            Get
+                Return ResourceManager.GetString("Label_InvalidCluster", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  Looks up a localized string similar to Lost Cluster.
+        '''</summary>
+        Friend ReadOnly Property Label_LostCluster() As String
+            Get
+                Return ResourceManager.GetString("Label_LostCluster", resourceCulture)
             End Get
         End Property
         

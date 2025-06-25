@@ -1,4 +1,5 @@
 ﻿Imports System.ComponentModel
+Imports System.Net.Http.Headers
 Imports DiskImageTool.DiskImage
 
 Module FloppyDiskIO
@@ -27,7 +28,7 @@ Module FloppyDiskIO
             End If
             FloppyDrive.Close()
         Else
-            MsgBox($"Floppy drive {DriveLetter} is not ready.{vbCrLf}{vbCrLf}Please verify that a formatted disk is inserted into drive {DriveLetter}.", MsgBoxStyle.Exclamation)
+            MsgBox(String.Format(My.Resources.Dialog_FloppyDriveNotReady, DriveLetter, Environment.NewLine), MsgBoxStyle.Exclamation)
         End If
 
         Return FileName
@@ -45,10 +46,8 @@ Module FloppyDiskIO
 
         AddHandler Dialog.FileOk, Sub(sender As Object, e As CancelEventArgs)
                                       If LoadedFileNames.ContainsKey(Dialog.FileName) Then
-                                          Dim Msg As String = IO.Path.GetFileName(Dialog.FileName) &
-                                            $"{vbCrLf}{vbCrLf}This file is currently open in {Application.ProductName}. " &
-                                            $"Try again with a different file name."
-                                          MsgBox(Msg, MsgBoxStyle.Exclamation, "Save As")
+                                          Dim Msg = String.Format(My.Resources.Dialog_FileCurrentlyOpen, IO.Path.GetFileName(Dialog.FileName), Environment.NewLine, Application.ProductName)
+                                          MsgBox(Msg, MsgBoxStyle.Exclamation, My.Resources.Caption_SaveAs)
                                           e.Cancel = True
                                       End If
                                   End Sub
@@ -68,7 +67,7 @@ Module FloppyDiskIO
             If Success Then
                 Return Dialog.FileName
             Else
-                MsgBox("An error has occurred while attempting to save the file.", MsgBoxStyle.Exclamation)
+                MsgBox(My.Resources.Dialog_SaveFileError2, MsgBoxStyle.Exclamation)
                 Return ""
             End If
         Else
@@ -109,14 +108,14 @@ Module FloppyDiskIO
             End If
             Dim Msg As String
             If DetectedFormat = NewDiskFormat Then
-                Msg = $"Warning: The disk in drive {DriveLetter} is not empty.{vbCrLf}{vbCrLf}If you continue, the disk will be overwritten.{vbCrLf}{vbCrLf}Do you wish to continue?"
+                Msg = String.Format(My.Resources.Dialog_DiskNotEmptyWarning, DriveLetter, Environment.NewLine)
             ElseIf DetectedFormat = -1 Then
                 DoFormat = True
-                Msg = $"Warning: The disk in drive {DriveLetter} is not empty, but I am unable to determine the format type.{vbCrLf}{vbCrLf}The image you are attempting to write is a {NewFormatName} image.{vbCrLf}{vbCrLf}If you continue, the disk will be overwritten and may be unreadable.{vbCrLf}{vbCrLf}Do you wish to continue?"
+                Msg = String.Format(My.Resources.Dialog_DiskNotEmptyWarning_UnknownFormat, DriveLetter, Environment.NewLine, NewFormatName)
             Else
                 DoFormat = True
                 Dim DetectedFormatName = GetFloppyDiskFormatName(DetectedFormat) & " Floppy"
-                Msg = $"Warning: The disk in drive {DriveLetter} is not empty and is formatted as a {DetectedFormatName}.{vbCrLf}{vbCrLf}The image you are attempting to write is a {NewFormatName} image.{vbCrLf}{vbCrLf}If you continue, the disk will be overwritten and may be unreadable.{vbCrLf}{vbCrLf}Do you wish to continue?"
+                Msg = String.Format(My.Resources.Dialog_DiskNotEmptyWarning_Mismatched, DriveLetter, DetectedFormatName, Environment.NewLine, NewFormatName)
             End If
             MsgBoxResult = MsgBox(Msg, MsgBoxStyle.Exclamation Or MsgBoxStyle.OkCancel Or MsgBoxStyle.DefaultButton2)
         Else
@@ -138,7 +137,7 @@ Module FloppyDiskIO
                 End If
                 FloppyDrive.Close()
             Else
-                MsgBox($"Error: Unable to write to the drive at this time.", MsgBoxStyle.Exclamation)
+                MsgBox(My.Resources.Dialog_DiskWriteError, MsgBoxStyle.Exclamation)
             End If
         End If
     End Sub

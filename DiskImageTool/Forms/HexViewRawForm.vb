@@ -65,7 +65,7 @@ Public Class HexViewRawForm
 
         EnableDoubleBuffering(PanelSectors)
 
-        Me.Text = "Raw Track Data"
+        Me.Text = My.Resources.Caption_RawTrackData
     End Sub
 
     <DllImport("user32.dll", SetLastError:=True)>
@@ -1001,7 +1001,7 @@ Public Class HexViewRawForm
             HexBox1.PerformScrollToLine(TopLine)
             HexBox1.SelectionStart = SelectionStart
             HexBox1.SelectionLength = SelectionLength
-            MsgBox("Can't Find '" & _LastSearch.SearchString & "'", MsgBoxStyle.Information)
+            MsgBox(String.Format(My.Resources.Dialog_SearchNotFound, _LastSearch.SearchString), MsgBoxStyle.Information)
         Else
             RefreshSelection(False)
             DataInspectorRefresh(False)

@@ -136,7 +136,7 @@ Public Class FloppyAccessForm
     End Sub
 
     Private Function ConfirmAbort() As Boolean
-        Dim Msg = "Are you sure you wish to abort?"
+        Dim Msg = My.Resources.Dialog_Abort
         Dim MsgBoxResult = MsgBox(Msg, MsgBoxStyle.YesNo Or MsgBoxStyle.DefaultButton2)
 
         If MsgBoxResult = MsgBoxResult.No Then
@@ -606,7 +606,7 @@ Public Class FloppyAccessForm
 
         If _AccessType = FloppyAccessType.Write Then
             If _Complete Then
-                Dim Msg As String = $"Your disk has been written successfully.{vbCrLf}{vbCrLf}Please remove the disk from the drive and write protect it now.{vbCrLf}{vbCrLf}Warning: If you continue without write protecting the disk, The operating system may make modifications to the disk as soon as you close this window."
+                Dim Msg = String.Format(My.Resources.Dialog_DiskWrittenSuccessfully, Environment.NewLine)
                 MsgBox(Msg, MsgBoxStyle.Information)
             End If
         Else

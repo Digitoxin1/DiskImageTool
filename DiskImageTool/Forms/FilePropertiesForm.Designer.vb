@@ -207,7 +207,6 @@ Partial Class FilePropertiesForm
         'DTLastAccessed
         '
         Me.DTLastAccessed.Anchor = System.Windows.Forms.AnchorStyles.Left
-        Me.DTLastAccessed.CustomFormat = ""
         Me.DTLastAccessed.Format = System.Windows.Forms.DateTimePickerFormat.[Short]
         Me.DTLastAccessed.Location = New System.Drawing.Point(86, 55)
         Me.DTLastAccessed.MaxDate = New Date(2107, 12, 31, 0, 0, 0, 0)
@@ -220,7 +219,6 @@ Partial Class FilePropertiesForm
         'DTCreated
         '
         Me.DTCreated.Anchor = System.Windows.Forms.AnchorStyles.Left
-        Me.DTCreated.CustomFormat = ""
         Me.DTCreated.Format = System.Windows.Forms.DateTimePickerFormat.[Short]
         Me.DTCreated.Location = New System.Drawing.Point(86, 29)
         Me.DTCreated.MaxDate = New Date(2107, 12, 31, 0, 0, 0, 0)
@@ -233,7 +231,6 @@ Partial Class FilePropertiesForm
         'DTLastWritten
         '
         Me.DTLastWritten.Anchor = System.Windows.Forms.AnchorStyles.Left
-        Me.DTLastWritten.CustomFormat = ""
         Me.DTLastWritten.Format = System.Windows.Forms.DateTimePickerFormat.[Short]
         Me.DTLastWritten.Location = New System.Drawing.Point(86, 3)
         Me.DTLastWritten.MaxDate = New Date(2107, 12, 31, 0, 0, 0, 0)

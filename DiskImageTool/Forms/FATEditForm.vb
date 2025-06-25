@@ -45,7 +45,7 @@ Public Class FATEditForm
         _FATTables = New FATTables(_Disk.BPB, _Disk.Image, Index)
         _Directory = New RootDirectory(_Disk, _FATTables.FAT)
 
-        Me.Text = "File Allocation Table " & Index + 1
+        Me.Text = My.Resources.Caption_FAT & " " & Index + 1
 
         Dim SyncFATS = Not IsDiskFormatXDF(_Disk.DiskFormat) AndAlso Disk.FATTables.FATsMatch
         Dim DisplaySync = Not IsDiskFormatXDF(_Disk.DiskFormat) AndAlso Not Disk.FATTables.FATsMatch
@@ -64,7 +64,7 @@ Public Class FATEditForm
         ReDim _GridCells(_FATTable.Rows.Count - 1)
         Dim TableLength = _FATTables.FAT.TableLength
         _GridSize = GetGridSize(TableLength)
-        LblValid.Text = "Valid Clusters: 2 - " & TableLength
+        LblValid.Text = My.Resources.Caption_ValidClusters & ": 2 - " & TableLength
 
         DataGridViewFAT.DataSource = _FATTable
 
@@ -244,35 +244,35 @@ Public Class FATEditForm
         End If
 
         If Value = FAT12.FAT_BAD_CLUSTER Then
-            Return "Bad Sector"
+            Return My.Resources.Label_BadSector
         ElseIf Value = FAT12.FAT_FREE_CLUSTER Then
             If FileAllocation Is Nothing Then
                 Return ""
             Else
-                Return "Invalid Allocation"
+                Return My.Resources.Label_InvalidAllocation
             End If
         ElseIf Value = 1 Or (Value >= FAT12.FAT_RESERVED_START And Value <= FAT12.FAT_RESERVED_END) Then
             If FileAllocation Is Nothing Then
                 Return ""
             Else
-                Return "Invalid Allocation"
+                Return My.Resources.Label_InvalidAllocation
             End If
         ElseIf Value >= FAT12.FAT_LAST_CLUSTER_START And Value <= FAT12.FAT_LAST_CLUSTER_END Then
             If FileAllocation Is Nothing Then
-                Return "Lost Cluster"
+                Return My.Resources.Label_LostCluster
             ElseIf FileAllocation.Count > 1 Then
-                Return "Cross-Linked"
+                Return My.Resources.Label_CrossLinked
             Else
                 Return ""
             End If
         ElseIf Value > FAT.TableLength Then
-            Return "Invalid Cluster"
+            Return My.Resources.Label_InvalidCluster
         ElseIf FileAllocation Is Nothing Then
-            Return "Lost Cluster"
+            Return My.Resources.Label_LostCluster
         ElseIf FileAllocation.Count > 1 Then
-            Return "Cross-Linked"
+            Return My.Resources.Label_CrossLinked
         ElseIf _Directory.FATAllocation.CircularChains.Contains(Cluster) Then
-            Return "Circular Chain"
+            Return My.Resources.Label_CircularChain
         Else
             Return ""
         End If

@@ -24,7 +24,7 @@ Public Class FloppyReadOptionsForm
         ComboDiskType.Items.Clear()
 
         If DetectedType = FloppyDiskFormat.FloppyUnknown Then
-            lblMessage.Text = "Warning: Unable to determine the floppy disk type."
+            lblMessage.Text = My.Resources.Dialog_DiskTypeWarning
             DiskTypeItem = New ComboDiskTypeItem(DetectedType, False)
             Dim Index = ComboDiskType.Items.Add(DiskTypeItem)
             ComboDiskType.SelectedIndex = Index

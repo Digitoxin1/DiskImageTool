@@ -15,15 +15,26 @@
         End If
     End Sub
 
-    Private Sub FileDropForm_DragEnter(sender As Object, e As DragEventArgs) Handles Me.DragEnter, LabelDropMessage.DragEnter
+    Private Sub FileDropForm_DragEnter(sender As Object, e As DragEventArgs) Handles Me.DragEnter
         If e.Data.GetDataPresent(DataFormats.FileDrop) Then
             e.Effect = DragDropEffects.Copy
         End If
     End Sub
 
-    Private Sub LabelDropMessage_DragDrop(sender As Object, e As DragEventArgs) Handles Me.DragDrop, LabelDropMessage.DragDrop
+    Private Sub LabelDropMessage_DragDrop(sender As Object, e As DragEventArgs) Handles Me.DragDrop
         _FileNames = e.Data.GetData(DataFormats.FileDrop)
         Me.DialogResult = DialogResult.OK
         Me.Close()
+    End Sub
+
+    Private Sub FileDropForm_Paint(sender As Object, e As PaintEventArgs) Handles Me.Paint
+        Dim text As String = My.Resources.Label_FileDrop
+
+        Dim textSize As Size = TextRenderer.MeasureText(text, Me.Font, New Size(Integer.MaxValue, Integer.MaxValue), TextFormatFlags.SingleLine Or TextFormatFlags.NoPrefix)
+
+        Dim x As Single = (Me.ClientSize.Width - textSize.Width) / 2
+        Dim y As Single = (Me.ClientSize.Height - textSize.Height) / 2
+
+        TextRenderer.DrawText(e.Graphics, text, Me.Font, New Point(x, y), Color.Black, TextFormatFlags.SingleLine Or TextFormatFlags.NoPrefix)
     End Sub
 End Class

@@ -461,7 +461,7 @@ Public Class FilePropertiesForm
         For i = 0 To Value.Length - 1
             If InvalidChars.Contains(Value.Substring(i, 1)) Then
                 e.Cancel = True
-                Dim msg As String = "A file name can't contain any of the following characters:" & vbCrLf & StrDup(16, " ") & "\ / :  * ? "" < > |"
+                Dim msg As String = My.Resources.Dialog_InvalidCharacters & ":" & vbCrLf & StrDup(16, " ") & "\ / :  * ? "" < > |"
                 MsgBox(msg, MsgBoxStyle.Exclamation)
                 Exit For
             End If

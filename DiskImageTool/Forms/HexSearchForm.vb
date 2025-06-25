@@ -46,7 +46,7 @@ Public Class HexSearchForm
         If Me.DialogResult = DialogResult.OK Then
             If RadBtnHex.Checked Then
                 If Not CheckHex() Then
-                    MsgBox("Invalid Search String", MsgBoxStyle.Exclamation)
+                    MsgBox(My.Resources.Dialog_InvalidSearchString, MsgBoxStyle.Exclamation)
                     e.Cancel = True
                 End If
             End If
