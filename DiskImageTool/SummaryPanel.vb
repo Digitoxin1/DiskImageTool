@@ -4,16 +4,21 @@ Imports BPBOffsets = DiskImageTool.DiskImage.BiosParameterBlock.BPBOoffsets
 
 Module SummaryPanel
     Public Const NULL_CHAR As Char = "�"
+    Private Const GROUP_DISK As String = "Disk"
+    Private Const GROUP_BOOTRECORD As String = "BootRecord"
+    Private Const GROUP_BOOTSTRAP As String = "Bootstrap"
+    Private Const GROUP_FILE_SYSTEM As String = "FileSystem"
+    Private Const GROUP_TITLE As String = "Title"
 
     Public Sub PopulateSummaryPanelError(ListViewSummary As ListView, InvalidImage As Boolean)
         With ListViewSummary
-            Dim DiskGroup = .Groups.Add("Disk", "Disk")
+            Dim DiskGroup = .Groups.Add(GROUP_DISK, My.Resources.SummaryPanel_Disk)
             Dim Msg As String
 
             If InvalidImage Then
-                Msg = "Invalid Image Format"
+                Msg = My.Resources.SummaryPanel_InvalidFormat
             Else
-                Msg = "Error Loading File"
+                Msg = My.Resources.SummaryPanel_Error
             End If
 
             Dim Item = New ListViewItem("  " & Msg, DiskGroup) With {
@@ -38,23 +43,23 @@ Module SummaryPanel
 
         With ListViewSummary
             If Not Disk.IsValidImage Then
-                .AddItem(DiskGroup, "File System", "Unknown", Color.Red)
+                .AddItem(DiskGroup, My.Resources.SummaryPanel_FileSystem, My.Resources.Caption_Unknown, Color.Red)
             Else
                 Dim OEMNameResponse = BootStrapDB.CheckOEMName(Disk.BootSector)
 
                 If OEMNameResponse.NoBootLoader Then
                     If Disk.BootSector.CheckJumpInstruction(False, True) Then
-                        .AddItem(DiskGroup, "Bootstrap", "No Boot Loader", Color.Red)
+                        .AddItem(DiskGroup, My.Resources.SummaryPanel_Bootstrap, My.Resources.SummaryPanel_NoBootLoader, Color.Red)
                     Else
-                        .AddItem(DiskGroup, "Bootstrap", "Custom Boot Loader", Color.Red)
+                        .AddItem(DiskGroup, My.Resources.SummaryPanel_Bootstrap, My.Resources.SummaryPanel_CustomBootLoader, Color.Red)
                     End If
                 ElseIf Not Disk.BootSector.BPB.IsValid Then
-                    .AddItem(DiskGroup, "Boot Record", "No BPB", Color.Red)
+                    .AddItem(DiskGroup, My.Resources.SummaryPanel_BootRecord, My.Resources.SummaryPanel_NoBPB, Color.Red)
                 End If
 
                 If Not Disk.BootSector.BPB.IsValid Then
                     If Not Disk.FATTables.FATsMatch Then
-                        .AddItem(DiskGroup, "FAT", "Mismatched", Color.Red)
+                        .AddItem(DiskGroup, My.Resources.SummaryPanel_FAT, My.Resources.Label_Mismatched, Color.Red)
                     End If
                 End If
 
@@ -221,7 +226,7 @@ Module SummaryPanel
         Dim DoBPBCompare = Disk.DiskFormat = FloppyDiskFormat.FloppyUnknown And DiskFormatBySize <> FloppyDiskFormat.FloppyUnknown
 
         With ListViewSummary
-            Dim BootRecordGroup = .Groups.Add("BootRecord", "Boot Record")
+            Dim BootRecordGroup = .Groups.Add(GROUP_BOOTRECORD, My.Resources.SummaryPanel_BootRecord)
 
             If Not OEMNameResponse.Found Then
                 ForeColor = SystemColors.WindowText
@@ -268,11 +273,11 @@ Module SummaryPanel
             End If
 
             If IsDiskFormatXDF(Disk.DiskFormat) Then
-                Value = "1 + Compatibility Image"
+                Value = "1 + " & My.Resources.SummaryPanel_CompatibilityImage
             Else
                 Value = Disk.BootSector.BPB.NumberOfFATs
                 If Not Disk.FATTables.FATsMatch Then
-                    Value &= " (Mismatched)"
+                    Value &= " " & InParens(My.Resources.Label_Mismatched)
                     ForeColor = Color.Red
                 End If
             End If
@@ -305,15 +310,15 @@ Module SummaryPanel
 
             If Disk.BootSector.BPB.IsValid Then
                 If Not Disk.BPB.HasValidMediaDescriptor Then
-                    Value &= " (Invalid)"
+                    Value &= " " & InParens(My.Resources.Label_Invalid)
                     ForeColor = Color.Red
                 ElseIf Disk.DiskFormat = FloppyDiskFormat.FloppyXDF35 AndAlso Disk.FAT.MediaDescriptor = &HF9 Then
                     'Do Nothing - This is normal for XDF
                 ElseIf Disk.DiskFormat <> FloppyDiskFormat.FloppyUnknown AndAlso Disk.BootSector.BPB.MediaDescriptor <> GetFloppyDiskMediaDescriptor(Disk.DiskFormat) Then
-                    Value &= " (Mismatched)"
+                    Value &= " " & InParens(My.Resources.Label_Mismatched)
                     ForeColor = Color.Red
                 ElseIf Disk.FAT.MediaDescriptor <> Disk.BootSector.BPB.MediaDescriptor Then
-                    Value &= " (Mismatched)"
+                    Value &= " " & InParens(My.Resources.Label_Mismatched)
                     ForeColor = Color.Red
                 End If
             End If
@@ -383,16 +388,16 @@ Module SummaryPanel
         Dim ForeColor As Color
 
         With ListViewSummary
-            Dim BootStrapGroup = .Groups.Add("Bootstrap", "Bootstrap")
+            Dim BootStrapGroup = .Groups.Add(GROUP_BOOTSTRAP, My.Resources.SummaryPanel_Bootstrap)
 
             If Not OEMNameResponse.NoBootLoader Then
                 Dim BootStrapCRC32 = CRC32.ComputeChecksum(Disk.BootSector.BootStrapCode)
-                .AddItem(BootStrapGroup, "Bootstrap CRC32", BootStrapCRC32.ToString("X8"))
+                .AddItem(BootStrapGroup, My.Resources.SummaryPanel_Bootstrap & " CRC32", BootStrapCRC32.ToString("X8"))
             End If
 
             If OEMNameResponse.Found Then
                 If OEMNameResponse.Data.Language.Length > 0 Then
-                    .AddItem(BootStrapGroup, "Language", OEMNameResponse.Data.Language)
+                    .AddItem(BootStrapGroup, My.Resources.SummaryPanel_Language, OEMNameResponse.Data.Language)
                 End If
 
                 Dim OEMName = OEMNameResponse.MatchedOEMName
@@ -403,13 +408,13 @@ Module SummaryPanel
 
                 If OEMName IsNot Nothing Then
                     If OEMName.Company <> "" Then
-                        .AddItem(BootStrapGroup, "Company", OEMName.Company)
+                        .AddItem(BootStrapGroup, My.Resources.SummaryPanel_Company, OEMName.Company)
                     End If
                     If OEMName.Description <> "" Then
-                        .AddItem(BootStrapGroup, "Description", OEMName.Description)
+                        .AddItem(BootStrapGroup, My.Resources.SummaryPanel_Description, OEMName.Description)
                     End If
                     If OEMName.Note <> "" Then
-                        .AddItem(BootStrapGroup, "Note", OEMName.Note, Color.Blue)
+                        .AddItem(BootStrapGroup, My.Resources.SummaryPanel_Note, OEMName.Note, Color.Blue)
                     End If
                 End If
 
@@ -422,7 +427,7 @@ Module SummaryPanel
                                 Else
                                     ForeColor = SystemColors.WindowText
                                 End If
-                                .AddItem(BootStrapGroup, "Alternative OEM Name", OEMName.GetNameAsString, ForeColor)
+                                .AddItem(BootStrapGroup, My.Resources.SummaryPanel_AltOEMName, OEMName.GetNameAsString, ForeColor)
                             End If
                         Next
                     End If
@@ -437,9 +442,9 @@ Module SummaryPanel
         Dim ForeColor As Color
 
         With ListViewSummary
-            DiskGroup = .Groups.Add("Disk", "Disk")
+            DiskGroup = .Groups.Add(GROUP_DISK, My.Resources.SummaryPanel_Disk)
 
-            .AddItem(DiskGroup, "Image Type", GetImageTypeName(Disk.Image.ImageType))
+            .AddItem(DiskGroup, My.Resources.SummaryPanel_ImageType, GetImageTypeName(Disk.Image.ImageType))
 
             If Disk.Image.ImageType = FloppyImageType.BasicSectorImage Then
                 If Disk.IsValidImage AndAlso Disk.CheckImageSize <> 0 Then
@@ -447,7 +452,7 @@ Module SummaryPanel
                 Else
                     ForeColor = SystemColors.WindowText
                 End If
-                .AddItem(DiskGroup, "Image Size", Disk.Image.Length.ToString("N0"), ForeColor)
+                .AddItem(DiskGroup, My.Resources.SummaryPanel_ImageSize, Disk.Image.Length.ToString("N0"), ForeColor)
             End If
 
             If Disk.IsValidImage(False) Then
@@ -455,10 +460,10 @@ Module SummaryPanel
                 Dim DiskFormatBySize = GetFloppyDiskFormat(Disk.Image.Length)
 
                 If Disk.DiskFormat <> FloppyDiskFormat.FloppyUnknown Or DiskFormatBySize = FloppyDiskFormat.FloppyUnknown Then
-                    .AddItem(DiskGroup, "Disk Type", DiskFormatString & " Floppy")
+                    .AddItem(DiskGroup, My.Resources.SummaryPanel_DiskType, DiskFormatString & " " & My.Resources.Label_Floppy)
                 Else
                     Dim DiskFormatStringBySize = GetFloppyDiskFormatName(DiskFormatBySize)
-                    .AddItem(DiskGroup, "Disk Type", DiskFormatStringBySize & " Floppy (Custom Format)")
+                    .AddItem(DiskGroup, My.Resources.SummaryPanel_DiskType, DiskFormatStringBySize & " " & My.Resources.Label_Floppy & " " & InParens(My.Resources.SummaryPanel_CustomFormat))
                 End If
 
                 If IsDiskFormatXDF(Disk.DiskFormat) Then
@@ -468,7 +473,7 @@ Module SummaryPanel
                     Else
                         ForeColor = Color.Red
                     End If
-                    .AddItem(DiskGroup, "XDF Checksum", XDFChecksum.ToString("X8"), ForeColor)
+                    .AddItem(DiskGroup, My.Resources.SummaryPanel_XDFChecksum, XDFChecksum.ToString("X8"), ForeColor)
                 End If
 
                 If Disk.BPB.IsValid AndAlso Disk.CheckImageSize > 0 AndAlso Disk.DiskFormat <> FloppyDiskFormat.FloppyUnknown Then
@@ -477,23 +482,23 @@ Module SummaryPanel
             End If
 
             If Disk.Image.ImageType <> FloppyImageType.BasicSectorImage Then
-                .AddItem(DiskGroup, "Tracks", Disk.Image.TrackCount)
-                .AddItem(DiskGroup, "Heads", Disk.Image.SideCount)
+                .AddItem(DiskGroup, My.Resources.SummaryPanel_Tracks, Disk.Image.TrackCount)
+                .AddItem(DiskGroup, My.Resources.SummaryPanel_Heads, Disk.Image.SideCount)
             End If
 
             If Disk.Image.IsBitstreamImage Then
                 If Disk.Image.BitstreamImage.VariableBitRate Then
-                    .AddItem(DiskGroup, "Bitrate", "Variable")
+                    .AddItem(DiskGroup, My.Resources.SummaryPanel_Bitrate, My.Resources.Label_Variable)
                 ElseIf Disk.Image.BitstreamImage.BitRate <> 0 Then
                     ForeColor = GetBitRateColor(Disk.Image.BitstreamImage.BitRate, Disk.DiskFormat)
-                    .AddItem(DiskGroup, "Bitrate", Disk.Image.BitstreamImage.BitRate, ForeColor)
+                    .AddItem(DiskGroup, My.Resources.SummaryPanel_Bitrate, Disk.Image.BitstreamImage.BitRate, ForeColor)
                 End If
 
                 If Disk.Image.BitstreamImage.VariableRPM Then
-                    .AddItem(DiskGroup, "RPM", "Variable")
+                    .AddItem(DiskGroup, My.Resources.SummaryPanel_RPM, My.Resources.Label_Variable)
                 ElseIf Disk.Image.BitstreamImage.RPM <> 0 Then
                     ForeColor = GetRPMColor(Disk.Image.BitstreamImage.RPM, Disk.DiskFormat)
-                    .AddItem(DiskGroup, "RPM", Disk.Image.BitstreamImage.RPM, ForeColor)
+                    .AddItem(DiskGroup, My.Resources.SummaryPanel_RPM, Disk.Image.BitstreamImage.RPM, ForeColor)
                 End If
             End If
 
@@ -501,20 +506,20 @@ Module SummaryPanel
                 Dim Image As ImageFormats.D86F.D86FImage = DirectCast(Disk.Image, ImageFormats.D86F.D86FFloppyImage).Image
                 If Image.RPMSlowDown <> 0 Then
                     If Image.AlternateBitcellCalculation Then
-                        Value = "Speed up by " & (Image.RPMSlowDown * 100) & "%"
+                        Value = My.Resources.SummaryPanel_SpeedUp & " " & (Image.RPMSlowDown * 100) & "%"
                     Else
-                        Value = "Slow down by " & (Image.RPMSlowDown * 100) & "%"
+                        Value = My.Resources.SummaryPanel_SlowDown & " " & (Image.RPMSlowDown * 100) & "%"
                     End If
-                    .AddItem(DiskGroup, "RPM Adjustment", Value)
+                    .AddItem(DiskGroup, My.Resources.SummaryPanel_RPMAdjustment, Value)
                 End If
-                .AddItem(DiskGroup, "Has Surface Data", If(Image.HasSurfaceData, "Yes", "No"))
+                .AddItem(DiskGroup, My.Resources.SummaryPanel_SurfaceData, If(Image.HasSurfaceData, My.Resources.Label_Yes, My.Resources.Label_No))
 
             ElseIf Disk.Image.HasWeakBitsSupport Then
-                .AddItem(DiskGroup, "Has Weak Bits", If(Disk.Image.HasWeakBits, "Yes", "No"))
+                .AddItem(DiskGroup, My.Resources.SummaryPanel_WeakBits, If(Disk.Image.HasWeakBits, My.Resources.Label_Yes, My.Resources.Label_No))
             End If
 
             If Disk.Image.NonStandardTracks.Count > 0 Then
-                .AddItem(DiskGroup, "Non-Standard Tracks", GetNonStandardTrackList(Disk.Image.NonStandardTracks, Disk.Image.SideCount))
+                .AddItem(DiskGroup, My.Resources.SummaryPanel_NonStandardTracks, GetNonStandardTrackList(Disk.Image.NonStandardTracks, Disk.Image.SideCount))
             End If
         End With
 
@@ -526,7 +531,7 @@ Module SummaryPanel
         Dim ForeColor As Color
 
         With ListViewSummary
-            Dim FileSystemGroup = .Groups.Add("FileSystem", "File System")
+            Dim FileSystemGroup = .Groups.Add(GROUP_FILE_SYSTEM, My.Resources.SummaryPanel_FileSystem)
 
             If Disk.FAT.HasMediaDescriptor Then
                 Value = Disk.FAT.MediaDescriptor.ToString("X2") & " Hex"
@@ -538,57 +543,57 @@ Module SummaryPanel
                     Visible = True
                 End If
                 If Not Disk.FAT.HasValidMediaDescriptor Then
-                    Value &= " (Invalid)"
+                    Value &= " " & InParens(My.Resources.Label_Invalid)
                     ForeColor = Color.Red
                     Visible = True
                 ElseIf Disk.DiskFormat = FloppyDiskFormat.FloppyXDF35 AndAlso Disk.FAT.MediaDescriptor = &HF9 Then
                     Visible = False
                 ElseIf Disk.DiskFormat <> FloppyDiskFormat.FloppyUnknown AndAlso Disk.FAT.MediaDescriptor <> GetFloppyDiskMediaDescriptor(Disk.DiskFormat) Then
-                    Value &= " (Mismatched)"
+                    Value &= " " & InParens(My.Resources.Label_Mismatched)
                     ForeColor = Color.Red
                     Visible = True
                 End If
 
                 If Visible Then
-                    .AddItem(FileSystemGroup, "Media Descriptor", Value, ForeColor)
+                    .AddItem(FileSystemGroup, My.Resources.SummaryPanel_MediaDescriptor, Value, ForeColor)
                 End If
             End If
 
             Dim fsi = GetFileSystemInfo(Disk)
 
             If fsi.VolumeLabel IsNot Nothing Then
-                .AddItem(FileSystemGroup, "Volume Label", fsi.VolumeLabel.GetVolumeName.TrimEnd(NULL_CHAR))
+                .AddItem(FileSystemGroup, My.Resources.SummaryPanel_VolumeLabel, fsi.VolumeLabel.GetVolumeName.TrimEnd(NULL_CHAR))
                 Dim VolumeDate = fsi.VolumeLabel.GetLastWriteDate
-                .AddItem(FileSystemGroup, "Volume Date", VolumeDate.ToString(True, True, False, True))
+                .AddItem(FileSystemGroup, My.Resources.SummaryPanel_VolumeDate, VolumeDate.ToString(True, True, False, True))
             End If
 
-            .AddItem(FileSystemGroup, "Total Space", Format(Disk.BPB.SectorToBytes(Disk.BPB.DataRegionSize), "N0") & " bytes")
-            .AddItem(FileSystemGroup, "Free Space", Format(Disk.FAT.GetFreeSpace(), "N0") & " bytes")
+            .AddItem(FileSystemGroup, My.Resources.SummaryPanel_TotalSpace, FormatThousands(Disk.BPB.SectorToBytes(Disk.BPB.DataRegionSize)) & " " & My.Resources.Label_Bytes)
+            .AddItem(FileSystemGroup, My.Resources.SummaryPanel_FreeSpace, FormatThousands(Disk.FAT.GetFreeSpace()) & " " & My.Resources.Label_Bytes)
 
             If Disk.FAT.BadClusters.Count > 0 Then
                 Dim SectorCount = Disk.FAT.BadClusters.Count * Disk.BPB.SectorsPerCluster
-                Value = Format(Disk.FAT.BadClusters.Count * Disk.BPB.BytesPerCluster, "N0") & " bytes  (" & SectorCount & ")"
-                .AddItem(FileSystemGroup, "Bad Sectors", Value, Color.Red)
+                Value = FormatThousands(Disk.FAT.BadClusters.Count * Disk.BPB.BytesPerCluster) & " " & My.Resources.Label_Bytes & "  " & InParens(SectorCount)
+                .AddItem(FileSystemGroup, My.Resources.SummaryPanel_BadSectors, Value, Color.Red)
             End If
 
             Dim LostClusters = Disk.RootDirectory.FATAllocation.LostClusters.Count
             If LostClusters > 0 Then
-                Value = Format(LostClusters * Disk.BPB.BytesPerCluster, "N0") & " bytes  (" & LostClusters & ")"
-                .AddItem(FileSystemGroup, "Lost Clusters", Value, Color.Red)
+                Value = FormatThousands(LostClusters * Disk.BPB.BytesPerCluster) & " " & My.Resources.Label_Bytes & "  " & InParens(LostClusters)
+                .AddItem(FileSystemGroup, My.Resources.SummaryPanel_LostClusters, Value, Color.Red)
             End If
 
             Dim ReservedClusters = Disk.FAT.ReservedClusters.Count
             If ReservedClusters > 0 Then
-                Value = Format(ReservedClusters * Disk.BPB.BytesPerCluster, "N0") & " bytes  (" & ReservedClusters & ")"
-                .AddItem(FileSystemGroup, "Reserved Clusters", Value)
+                Value = FormatThousands(ReservedClusters * Disk.BPB.BytesPerCluster) & " " & My.Resources.Label_Bytes & "  " & InParens(ReservedClusters)
+                .AddItem(FileSystemGroup, My.Resources.SummaryPanel_ReservedClusters, Value)
             End If
 
             If fsi.OldestFileDate IsNot Nothing Then
-                .AddItem(FileSystemGroup, "Oldest Date", fsi.OldestFileDate.Value.ToString("yyyy-MM-dd  HH:mm:ss"))
+                .AddItem(FileSystemGroup, My.Resources.SummaryPanel_OldestDate, fsi.OldestFileDate.Value.ToString(My.Resources.IsoDateTimeFormat))
             End If
 
             If fsi.NewestFileDate IsNot Nothing Then
-                .AddItem(FileSystemGroup, "Newest Date", fsi.NewestFileDate.Value.ToString("yyyy-MM-dd  HH:mm:ss"))
+                .AddItem(FileSystemGroup, My.Resources.SummaryPanel_NewestDate, fsi.NewestFileDate.Value.ToString(My.Resources.IsoDateTimeFormat))
             End If
         End With
     End Sub
@@ -611,7 +616,7 @@ Module SummaryPanel
             Dim ColumnWidth As Integer = .Columns.Item(1).Width - 5
             Dim MaxWidth = ColumnWidth + MAxOffset
 
-            Dim TitleGroup = .Groups.Add("Title", "Title")
+            Dim TitleGroup = .Groups.Add(GROUP_TITLE, My.Resources.SummaryPanel_Title)
 
             If Name <> "" Then
                 Dim Status = TitleData.GetStatus
@@ -623,42 +628,42 @@ Module SummaryPanel
                     ForeColor = Color.Blue
                 End If
 
-                .AddItem(TitleGroup, "Title", Name, ForeColor, True, MaxWidth)
+                .AddItem(TitleGroup, My.Resources.SummaryPanel_Title, Name, ForeColor, True, MaxWidth)
             End If
             If Variation <> "" Then
-                .AddItem(TitleGroup, "Variant", Variation, False)
+                .AddItem(TitleGroup, My.Resources.SummaryPanel_Variant, Variation, False)
             End If
             If Compilation <> "" Then
-                .AddItem(TitleGroup, "Compilation", Compilation, SystemColors.WindowText, True, MaxWidth)
+                .AddItem(TitleGroup, My.Resources.SummaryPanel_Compilation, Compilation, SystemColors.WindowText, True, MaxWidth)
             End If
             If Publisher <> "" Then
-                .AddItem(TitleGroup, "Publisher", Publisher, SystemColors.WindowText, True, MaxWidth)
+                .AddItem(TitleGroup, My.Resources.SummaryPanel_Publisher, Publisher, SystemColors.WindowText, True, MaxWidth)
             End If
             Value = TitleData.GetYear
             If Value <> "" Then
-                .AddItem(TitleGroup, "Year", Value, False)
+                .AddItem(TitleGroup, My.Resources.SummaryPanel_Year, Value, False)
             End If
             Value = TitleData.GetOperatingSystem
             If Value <> "" Then
-                .AddItem(TitleGroup, "OS", Value, False)
+                .AddItem(TitleGroup, My.Resources.SummaryPanel_OperatingSystem, Value, False)
             End If
             Value = TitleData.GetRegion
             If Value <> "" Then
-                .AddItem(TitleGroup, "Region", Value, False)
+                .AddItem(TitleGroup, My.Resources.SummaryPanel_Region, Value, False)
             End If
             Value = TitleData.GetLanguage
             If Value <> "" Then
-                .AddItem(TitleGroup, "Language", Value, False)
+                .AddItem(TitleGroup, My.Resources.SummaryPanel_Language, Value, False)
             End If
             If Version <> "" Then
-                .AddItem(TitleGroup, "Version", Version, SystemColors.WindowText, True, MaxWidth)
+                .AddItem(TitleGroup, My.Resources.SummaryPanel_Version, Version, SystemColors.WindowText, True, MaxWidth)
             End If
             Value = TitleData.GetDisk
             If Value <> "" Then
-                .AddItem(TitleGroup, "Disk", Value, False)
+                .AddItem(TitleGroup, My.Resources.SummaryPanel_Disk, Value, False)
             End If
             If TitleData.CopyProtection <> "" Then
-                .AddItem(TitleGroup, "Copy Protection", TitleData.CopyProtection)
+                .AddItem(TitleGroup, My.Resources.SummaryPanel_CopyProtection, TitleData.CopyProtection)
             End If
 
             Dim TextWidth As Integer = ColumnWidth

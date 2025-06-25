@@ -293,6 +293,7 @@
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="CopyProtection.vb" />
+    <Compile Include="Lib\ListViewColumns.vb" />
     <Compile Include="LoadedFiles.vb" />
     <Compile Include="SummaryPanel.vb" />
     <Compile Include="Testing\DebugScript.vb" />

@@ -121,20 +121,20 @@ Public Class ImportFileForm
         'SubItem.ForeColor = RowForeColor
         'SubItem.Name = "ShortName"
 
-        SubItem = Item.SubItems.Add(Format(File.Length, "N0"))
+        SubItem = Item.SubItems.Add(FormatThousands(File.Length))
         SubItem.ForeColor = RowForeColor
 
-        SubItem = Item.SubItems.Add(Format(ImportFile.SizeOnDisk, "N0"))
+        SubItem = Item.SubItems.Add(FormatThousands(ImportFile.SizeOnDisk))
         SubItem.ForeColor = RowForeColor
 
-        SubItem = Item.SubItems.Add(Format(File.LastWriteTime, "yyyy-MM-dd  HH:mm:ss"))
+        SubItem = Item.SubItems.Add(Format(File.LastWriteTime, My.Resources.IsoDateTimeFormat))
         SubItem.ForeColor = RowForeColor
 
-        SubItem = Item.SubItems.Add(Format(File.CreationTime, "yyyy-MM-dd  HH:mm:ss"))
+        SubItem = Item.SubItems.Add(Format(File.CreationTime, My.Resources.IsoDateTimeFormat))
         SubItem.ForeColor = Color.Gray
         SubItem.Name = "CreationTime"
 
-        SubItem = Item.SubItems.Add(Format(File.LastAccessTime, "yyyy-MM-dd"))
+        SubItem = Item.SubItems.Add(Format(File.LastAccessTime, My.Resources.IsoDateFormat))
         SubItem.ForeColor = Color.Gray
         SubItem.Name = "LastAccessTime"
 
@@ -192,7 +192,7 @@ Public Class ImportFileForm
 
         'PopulateExistingFileNames(Directory, _FileList)
 
-        Dim Group = New ListViewGroup(If(GroupPath = "", My.Resources.Label_Root, GroupPath)) With {
+        Dim Group = New ListViewGroup(If(GroupPath = "", InParens(My.Resources.Label_Root), GroupPath)) With {
             .Tag = _FileList
         }
 
@@ -302,9 +302,9 @@ Public Class ImportFileForm
     End Sub
 
     Private Sub RefreshTotals()
-        LblSelected.Text = Format(_FileList.SelectedFiles, "N0") & " of " & Format(ListViewFiles.Items.Count, "N0")
-        LblBytesRequired.Text = Format(_FileList.TotalSpaceRequired, "N0")
-        LblBytesFree.Text = Format(_FileList.FreeSpace, "N0")
+        LblSelected.Text = FormatThousands(_FileList.SelectedFiles) & " of " & FormatThousands(ListViewFiles.Items.Count)
+        LblBytesRequired.Text = FormatThousands(_FileList.TotalSpaceRequired)
+        LblBytesFree.Text = FormatThousands(_FileList.FreeSpace)
         If _FileList.TotalSpaceRequired > _FileList.FreeSpace Then
             LblBytesRequired.ForeColor = Color.Red
         Else

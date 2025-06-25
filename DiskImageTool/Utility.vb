@@ -24,6 +24,10 @@ Module Utility
         Return CleanString(FileName, IO.Path.GetInvalidPathChars(), "_")
     End Function
 
+    Public Function FormatThousands(Value As Object) As String
+        Return Format(Value, "N0")
+    End Function
+
     Public Sub DebugException(ex As Exception)
         Debug.Write("Caught Exception: ")
         Debug.Write("0x" & ex.HResult.ToString("X8"))
@@ -147,6 +151,10 @@ Module Utility
         Next
 
         Return b
+    End Function
+
+    Public Function InParens(text As String) As String
+        Return "(" & text & ")"
     End Function
 
     Public Function IsFileReadOnly(fileName As String) As Boolean

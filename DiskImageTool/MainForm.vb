@@ -50,17 +50,6 @@ Public Class MainForm
     Private _SuppressEvent As Boolean = False
     Private _TitleDB As FloppyDB
 
-    Private NotInheritable Class ListViewColumns
-        Public Const FileName As String = "FileName"
-        Public Const FileExtension As String = "FileExtension"
-        Public Const FileSize As String = "FileSize"
-        Public Const FileLastWriteDate As String = "FileLastWriteDate"
-        Public Const FileStartingCluster As String = "FileStartingCluster"
-        Public Const FileClusterError As String = "FileClusterError"
-        Public Const FileCreationDate As String = "FileCreationDate"
-        Public Const FileLastAccessDate As String = "FileLastAccessDate"
-    End Class
-
     Public Sub New()
         ' This call is required by the designer.
         InitializeComponent()
@@ -452,10 +441,10 @@ Public Class MainForm
                 SI.ForeColor = ForeColor
             End If
         ElseIf Not IsDeleted And FileData.DirectoryEntry.HasIncorrectFileSize Then
-            SI = Item.SubItems.Add(Format(FileData.DirectoryEntry.FileSize, "N0"))
+            SI = Item.SubItems.Add(FormatThousands(FileData.DirectoryEntry.FileSize))
             SI.ForeColor = Color.Red
         Else
-            SI = Item.SubItems.Add(Format(FileData.DirectoryEntry.FileSize, "N0"))
+            SI = Item.SubItems.Add(FormatThousands(FileData.DirectoryEntry.FileSize))
             SI.ForeColor = ForeColor
         End If
         SI.Name = ListViewColumns.FileSize
@@ -482,7 +471,7 @@ Public Class MainForm
                     SubItemForeColor = Color.Red
                 End If
             Else
-                SI = Item.SubItems.Add(Format(FileData.DirectoryEntry.StartingCluster, "N0"))
+                SI = Item.SubItems.Add(FormatThousands(FileData.DirectoryEntry.StartingCluster))
             End If
         End If
         SI.Name = ListViewColumns.FileStartingCluster
@@ -1137,7 +1126,7 @@ Public Class MainForm
                         PublishedAt = Release.Item("published_at").ToString
                         Dim PublishDate As Date
                         If Date.TryParse(PublishedAt, PublishDate) Then
-                            VersionLine &= " (" & PublishDate.ToString & ")"
+                            VersionLine &= " " & InParens(PublishDate.ToString)
                         End If
                     End If
                     If Release.ContainsKey("body") Then
@@ -1349,7 +1338,7 @@ Public Class MainForm
             If FileData IsNot Nothing AndAlso FileData.DirectoryEntry.StartingCluster >= 2 Then
 
                 Dim Sector = Disk.BPB.ClusterToSector(FileData.DirectoryEntry.StartingCluster)
-                ToolStripFileSector.Text = String.Format(My.Resources.Label_Sector, Sector)
+                ToolStripFileSector.Text = My.Resources.Label_Sector & " " & Sector
                 ToolStripFileSector.Visible = True
 
                 Dim Track = Disk.BPB.SectorToTrack(Sector)
@@ -2584,7 +2573,7 @@ Public Class MainForm
     Private Function ListViewFilesAddGroup(Directory As DiskImage.IDirectory, Path As String, GroupIndex As Integer) As ListViewGroup
         Dim FileCount As UInteger = Directory.Data.FileCount
 
-        Dim GroupName As String = IIf(Path = "", My.Resources.Label_Root, Path) & "  ("
+        Dim GroupName As String = IIf(Path = "", InParens(My.Resources.Label_Root), Path) & "  ("
 
         If FileCount = 1 Then
             GroupName &= String.Format(My.Resources.Label_Entry, FileCount)
@@ -2746,7 +2735,7 @@ Public Class MainForm
 
         If MenuHexDirectory.DropDownItems.Count > 0 Then
             MenuHexDirectory.Text = My.Resources.Menu_Directory
-            MenuDisplayDirectorySubMenuItemAdd(My.Resources.Label_Root, CurrentImage.Disk.RootDirectory, 0)
+            MenuDisplayDirectorySubMenuItemAdd(InParens(My.Resources.Label_Root), CurrentImage.Disk.RootDirectory, 0)
             MenuHexDirectory.Tag = Nothing
         Else
             MenuHexDirectory.Tag = CurrentImage.Disk.RootDirectory
@@ -3258,17 +3247,19 @@ Public Class MainForm
                 If Stats.IsValidFile Or Stats.IsValidDirectory Then
                     If Stats.IsDirectory Then
                         If Stats.IsDeleted Then
-                            Caption = String.Format(My.Resources.Menu_DeletedDirectoryWithName, Stats.FullFileName)
+                            Caption = My.Resources.Menu_DeletedDirectory
                         Else
-                            Caption = String.Format(My.Resources.Menu_DirectoryWithName, Stats.FullFileName)
+                            Caption = My.Resources.Menu_Directory2
                         End If
                     Else
                         If Stats.IsDeleted Then
-                            Caption = String.Format(My.Resources.Menu_DeletedFileWithName, Stats.FullFileName)
+                            Caption = My.Resources.Menu_DeletedFile
                         Else
-                            Caption = String.Format(My.Resources.Menu_FileWithName, Stats.FullFileName)
+                            Caption = My.Resources.Menu_File
                         End If
                     End If
+
+                    Caption &= ":   " & Stats.FullFileName
 
                     SetButtonStateHexFile(Stats.IsDirectory Or Stats.FileSize > 0, FileData.DirectoryEntry, Caption)
 
@@ -4591,5 +4582,6 @@ Public Class MainForm
         Debounce.Stop()
         Debounce.Start()
     End Sub
+
 #End Region
 End Class

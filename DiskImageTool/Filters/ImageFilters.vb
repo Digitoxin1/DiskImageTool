@@ -20,67 +20,67 @@
 
             Select Case ID
                 Case FilterTypes.ModifiedFiles
-                    Caption = "Modified Files"
+                    Caption = My.Resources.Filter_ModifiedFiles
                 Case FilterTypes.Disk_UnknownFormat
-                    Caption = "Disk - Unknown Format"
+                    Caption = My.Resources.Filter_Disk_UnknownFormat
                 Case FilterTypes.Disk_CustomFormat
-                    Caption = "Disk - Custom Format"
+                    Caption = My.Resources.Filter_Disk_CustomFormat
                 Case FilterTypes.Disk_NOBPB
-                    Caption = "Disk - No BPB"
+                    Caption = My.Resources.Filter_Disk_NOBPB
                 Case FilterTypes.Disk_NoBootLoader
-                    Caption = "Disk - No Boot Loader"
+                    Caption = My.Resources.Filter_Disk_NoBootLoader
                 Case FilterTypes.DIsk_CustomBootLoader
-                    Caption = "Disk - Custom Boot Loader"
+                    Caption = My.Resources.Filter_Disk_CustomBootLoader
                 Case FilterTypes.Disk_MismatchedImageSize
-                    Caption = "Disk - Mismatched Image Size"
+                    Caption = My.Resources.Filter_Disk_MismatchedImageSize
                 Case FilterTypes.Disk_MismatchedMediaDescriptor
-                    Caption = "Disk - Mismatched Media Descriptor"
+                    Caption = My.Resources.Filter_Disk_MismatchedMediaDescriptor
                 Case FilterTypes.Disk_FreeClustersWithData
-                    Caption = "Disk - Free Clusters with Data"
+                    Caption = My.Resources.Filter_Disk_FreeClustersWithData
                 Case FilterTypes.Bootstrap_Unknown
-                    Caption = "Bootstrap - Unknown"
+                    Caption = My.Resources.Filter_Bootstrap_Unknown
                 Case FilterTypes.OEMName_Unknown
-                    Caption = "OEM Name - Unknown"
+                    Caption = My.Resources.Filter_OEMName_Unknown
                 Case FilterTypes.OEMName_Mismatched
-                    Caption = "OEM Name - Mismatched"
+                    Caption = My.Resources.Filter_OEMName_Mismatched
                 Case FilterTypes.OEMName_Windows9x
-                    Caption = "OEM Name - Windows 9x"
+                    Caption = My.Resources.Filter_OEMName_Windows9x
                 Case FilterTypes.OEMName_Verified
-                    Caption = "OEM Name - Verified"
+                    Caption = My.Resources.Filter_OEMName_Verified
                 Case FilterTypes.OEMName_Unverified
-                    Caption = "OEM Name - Unverified"
+                    Caption = My.Resources.Filter_OEMName_Unverified
                 Case FilterTypes.FileSystem_HasCreationDate
-                    Caption = "File System - Has Creation Date"
+                    Caption = My.Resources.Filter_FileSystem_HasCreationDate
                 Case FilterTypes.FileSystem_HasLastAccessDate
-                    Caption = "File System - Has Last Access Date"
+                    Caption = My.Resources.Filter_FileSystem_HasLastAccessDate
                 Case FilterTypes.FileSystem_HasReservedBytesSet
-                    Caption = "File System - Has Reserved Bytes Set"
+                    Caption = My.Resources.Filter_FileSystem_HasReservedBytesSet
                 Case FilterTypes.FileSystem_HasLongFileNames
-                    Caption = "File System - Has Long File Names"
+                    Caption = My.Resources.Filter_FileSystem_HasLongFileNames
                 Case FilterTypes.FileSystem_InvalidDirectoryEntries
-                    Caption = "File System - Invalid Directory Entries"
+                    Caption = My.Resources.Filter_FileSystem_InvalidDirectoryEntries
                 Case FilterTypes.FileSystem_DirectoryHasAdditionalData
-                    Caption = "File System - Directory has Additional Data"
+                    Caption = My.Resources.Filter_FileSystem_DirectoryHasAdditionalData
                 Case FilterTypes.FileSystem_DirectoryHasBootSector
-                    Caption = "File System - Directory has Boot Sector"
+                    Caption = My.Resources.Filter_FileSystem_DirectoryHasBootSector
                 Case FilterTypes.FAT_BadSectors
-                    Caption = "FAT - Bad Sectors"
+                    Caption = My.Resources.Filter_FAT_BadSectors
                 Case FilterTypes.FAT_LostClusters
-                    Caption = "FAT - Lost Clusters"
+                    Caption = My.Resources.Filter_FAT_LostClusters
                 Case FilterTypes.FAT_MismatchedFATs
-                    Caption = "FAT - Mismatched FATs"
+                    Caption = My.Resources.Filter_FAT_MismatchedFATs
                 Case FilterTypes.FAT_ChainingErrors
-                    Caption = "FAT - Chaining Errors"
+                    Caption = My.Resources.Filter_FAT_ChainingErrors
                 Case FilterTypes.Image_InDatabase
-                    Caption = "Image - In Database"
+                    Caption = My.Resources.Filter_Image_InDatabase
                 Case FilterTypes.Image_NotInDatabase
-                    Caption = "Image - Not in Database"
+                    Caption = My.Resources.Filter_Image_NotInDatabase
                 Case FilterTypes.Image_Verified
-                    Caption = "Image - Verified"
+                    Caption = My.Resources.Filter_Image_Verified
                 Case FilterTypes.Image_Unverified
-                    Caption = "Image - Unverified"
+                    Caption = My.Resources.Filter_Image_Unverified
                 Case FilterTypes.Database_MismatchedStatus
-                    Caption = "Database - Mismatched Status"
+                    Caption = My.Resources.Filter_Database_MismatchedStatus
                 Case Else
                     Caption = ""
             End Select

@@ -328,10 +328,10 @@
     <value>Read Only</value>
   </data>
   <data name="Label_Root" xml:space="preserve">
-    <value>(Root)</value>
+    <value>Root</value>
   </data>
   <data name="Label_Sector" xml:space="preserve">
-    <value>Sector {0}</value>
+    <value>Sector</value>
   </data>
   <data name="Label_SelectedFileCountPlural" xml:space="preserve">
     <value>{0} of {1} Files Selected</value>
@@ -348,11 +348,11 @@
   <data name="Menu_CopyValueByName" xml:space="preserve">
     <value>&amp;Copy {0}</value>
   </data>
-  <data name="Menu_DeletedDirectoryWithName" xml:space="preserve">
-    <value>Deleted &amp;Directory:   {0}</value>
+  <data name="Menu_DeletedDirectory" xml:space="preserve">
+    <value>Deleted &amp;Directory</value>
   </data>
-  <data name="Menu_DeletedFileWithName" xml:space="preserve">
-    <value>Deleted &amp;File:   {0}</value>
+  <data name="Menu_DeletedFile" xml:space="preserve">
+    <value>Deleted &amp;File</value>
   </data>
   <data name="Menu_DeleteDirectory" xml:space="preserve">
     <value>&amp;Delete Directory</value>
@@ -366,8 +366,8 @@
   <data name="Menu_Directory" xml:space="preserve">
     <value>Directory</value>
   </data>
-  <data name="Menu_DirectoryWithName" xml:space="preserve">
-    <value>&amp;Directory:   {0}</value>
+  <data name="Menu_Directory2" xml:space="preserve">
+    <value>&amp;Directory</value>
   </data>
   <data name="Menu_ExportFile" xml:space="preserve">
     <value>&amp;Export File</value>
@@ -377,9 +377,6 @@
   </data>
   <data name="Menu_File" xml:space="preserve">
     <value>&amp;File</value>
-  </data>
-  <data name="Menu_FileWithName" xml:space="preserve">
-    <value>&amp;File:   {0}</value>
   </data>
   <data name="Menu_PadImageSize" xml:space="preserve">
     <value>&amp;Pad Image Size</value>
@@ -515,5 +512,575 @@
   </data>
   <data name="Label_LostCluster" xml:space="preserve">
     <value>Lost Cluster</value>
+  </data>
+  <data name="BootSector_BootStrapSignature" xml:space="preserve">
+    <value>Boot Sector Signature</value>
+  </data>
+  <data name="BootSector_DriveNumber" xml:space="preserve">
+    <value>Drive Number</value>
+  </data>
+  <data name="BootSector_ExtendedBootSignature" xml:space="preserve">
+    <value>Extended Boot Signature</value>
+  </data>
+  <data name="BootSector_FileSystemType" xml:space="preserve">
+    <value>File System ID</value>
+  </data>
+  <data name="BootSector_JmpBoot" xml:space="preserve">
+    <value>Bootstrap Jump</value>
+  </data>
+  <data name="BootSector_OEMName" xml:space="preserve">
+    <value>OEM Name</value>
+  </data>
+  <data name="BootSector_Reserved" xml:space="preserve">
+    <value>Reserved</value>
+  </data>
+  <data name="BootSector_VolumeLabel" xml:space="preserve">
+    <value>Volume Label</value>
+  </data>
+  <data name="BootSector_VolumeSerialNumber" xml:space="preserve">
+    <value>Volume Serial Number</value>
+  </data>
+  <data name="BPB.RootEntryCount" xml:space="preserve">
+    <value>Root Directory Entries</value>
+  </data>
+  <data name="BPB_BytesPerSector" xml:space="preserve">
+    <value>Bytes per Sector</value>
+  </data>
+  <data name="BPB_HiddenSectors" xml:space="preserve">
+    <value>Hidden Sectors</value>
+  </data>
+  <data name="BPB_MediaDescriptor" xml:space="preserve">
+    <value>Media Descriptor</value>
+  </data>
+  <data name="BPB_NumberOfFATs" xml:space="preserve">
+    <value>Number of FATs</value>
+  </data>
+  <data name="BPB_NumberOfHeads" xml:space="preserve">
+    <value>Number of Heads</value>
+  </data>
+  <data name="BPB_ReservedSectorCount" xml:space="preserve">
+    <value>Reserved Sectors</value>
+  </data>
+  <data name="BPB_SectorCountSmall" xml:space="preserve">
+    <value>Total Sector Count</value>
+  </data>
+  <data name="BPB_SectorsPerCluster" xml:space="preserve">
+    <value>Sectors per Cluster</value>
+  </data>
+  <data name="BPB_SectorsPerFAT" xml:space="preserve">
+    <value>Sectors per FAT</value>
+  </data>
+  <data name="BPB_SectorsPerTrack" xml:space="preserve">
+    <value>Sectors per Track</value>
+  </data>
+  <data name="Caption_Unknown" xml:space="preserve">
+    <value>Unknown</value>
+  </data>
+  <data name="DataInspector_Error_Binary" xml:space="preserve">
+    <value>Please enter a valid 8-bit binary value</value>
+  </data>
+  <data name="DataInspector_Error_DOSDate" xml:space="preserve">
+    <value>Please enter a valid date between 1980-01-01 and 2107-12-31</value>
+  </data>
+  <data name="DataInspector_Error_DOSDateTime" xml:space="preserve">
+    <value>Please enter a valid date and time between 1980-01-01 and 2107-12-31</value>
+  </data>
+  <data name="DataInspector_Error_DOSTime" xml:space="preserve">
+    <value>Please enter a valid time</value>
+  </data>
+  <data name="DataInspector_Error_Integer" xml:space="preserve">
+    <value>Please enter a valid integer between {0} and {1}</value>
+  </data>
+  <data name="DataInspector_ISODate" xml:space="preserve">
+    <value>yyyy-MM-dd</value>
+  </data>
+  <data name="DataInspector_ISODateTime" xml:space="preserve">
+    <value>yyyy-MM-dd HH:mm:ss</value>
+  </data>
+  <data name="DataInspector_ISOTime" xml:space="preserve">
+    <value>HH:mm:ss</value>
+  </data>
+  <data name="DataInspector_Label_Binary" xml:space="preserve">
+    <value>Binary (8 bit)</value>
+  </data>
+  <data name="DataInspector_Label_Bitstream" xml:space="preserve">
+    <value>Bitstream</value>
+  </data>
+  <data name="DataInspector_Label_CRC16" xml:space="preserve">
+    <value>CRC16</value>
+  </data>
+  <data name="DataInspector_Label_CRC32" xml:space="preserve">
+    <value>CRC32</value>
+  </data>
+  <data name="DataInspector_Label_DOSDate" xml:space="preserve">
+    <value>DOS Date</value>
+  </data>
+  <data name="DataInspector_Label_DOSDateTime" xml:space="preserve">
+    <value>DOS Time &amp; Date</value>
+  </data>
+  <data name="DataInspector_Label_DOSTime" xml:space="preserve">
+    <value>DOS Time</value>
+  </data>
+  <data name="DataInspector_Label_File" xml:space="preserve">
+    <value>File</value>
+  </data>
+  <data name="DataInspector_Label_Int16" xml:space="preserve">
+    <value>Int16</value>
+  </data>
+  <data name="DataInspector_Label_Int24" xml:space="preserve">
+    <value>Int24</value>
+  </data>
+  <data name="DataInspector_Label_Int32" xml:space="preserve">
+    <value>Int32</value>
+  </data>
+  <data name="DataInspector_Label_Int64" xml:space="preserve">
+    <value>Int64</value>
+  </data>
+  <data name="DataInspector_Label_Int8" xml:space="preserve">
+    <value>Int8</value>
+  </data>
+  <data name="DataInspector_Label_Invalid" xml:space="preserve">
+    <value>Invalid</value>
+  </data>
+  <data name="DataInspector_Label_Region" xml:space="preserve">
+    <value>Region</value>
+  </data>
+  <data name="DataInspector_Label_UInt16" xml:space="preserve">
+    <value>UInt16</value>
+  </data>
+  <data name="DataInspector_Label_UInt24" xml:space="preserve">
+    <value>UInt24</value>
+  </data>
+  <data name="DataInspector_Label_UInt32" xml:space="preserve">
+    <value>UInt32</value>
+  </data>
+  <data name="DataInspector_Label_UInt64" xml:space="preserve">
+    <value>UInt64</value>
+  </data>
+  <data name="DataInspector_Label_UInt8" xml:space="preserve">
+    <value>UInt8</value>
+  </data>
+  <data name="DataInspector_Label_WeakBits" xml:space="preserve">
+    <value>Weak Bits</value>
+  </data>
+  <data name="Dialog_CheckImageSize" xml:space="preserve">
+    <value>No Data Available at this location. Check the image size.</value>
+  </data>
+  <data name="Dialog_Image_NonCompatibleSectors" xml:space="preserve">
+    <value>This image has one or more tracks that are not compatible with this image type.</value>
+  </data>
+  <data name="Dialog_Image_NonStandardTracks" xml:space="preserve">
+    <value>This image has one or more tracks with a non-standard sector layout.{0}{0}Data loss will occur when saving to this image type.{0}{0}Do you wish to continue?</value>
+  </data>
+  <data name="Dialog_Image_SurfaceData" xml:space="preserve">
+    <value>This image contains additional surface data which may be required for copy protection.{0}{0}This data will be lost when saving to this image type.{0}{0}Do you wish to continue?</value>
+  </data>
+  <data name="DirectorytEntryLFN_Attributes" xml:space="preserve">
+    <value>LFN Attributes</value>
+  </data>
+  <data name="DirectorytEntryLFN_Checksum" xml:space="preserve">
+    <value>LFN Checksum</value>
+  </data>
+  <data name="DirectorytEntryLFN_FilePart1" xml:space="preserve">
+    <value>LFN Name 1</value>
+  </data>
+  <data name="DirectorytEntryLFN_FilePart2" xml:space="preserve">
+    <value>LFN Name 2</value>
+  </data>
+  <data name="DirectorytEntryLFN_FilePart3" xml:space="preserve">
+    <value>LFN Name 3</value>
+  </data>
+  <data name="DirectorytEntryLFN_Sequence" xml:space="preserve">
+    <value>LFN Sequence</value>
+  </data>
+  <data name="DirectorytEntryLFN_StartingCluster" xml:space="preserve">
+    <value>LFN Starting Cluster</value>
+  </data>
+  <data name="DirectorytEntryLFN_Type" xml:space="preserve">
+    <value>LFN Type</value>
+  </data>
+  <data name="DirectorytEntry_Attributes" xml:space="preserve">
+    <value>Attributes</value>
+  </data>
+  <data name="DirectorytEntry_CreationDate" xml:space="preserve">
+    <value>Creation Date</value>
+  </data>
+  <data name="DirectorytEntry_CreationMillisecond" xml:space="preserve">
+    <value>Creation Time Tenths</value>
+  </data>
+  <data name="DirectorytEntry_CreationTime" xml:space="preserve">
+    <value>Creation Time</value>
+  </data>
+  <data name="DirectorytEntry_Extension" xml:space="preserve">
+    <value>Extension</value>
+  </data>
+  <data name="DirectorytEntry_FileName" xml:space="preserve">
+    <value>Name</value>
+  </data>
+  <data name="DirectorytEntry_FileSize" xml:space="preserve">
+    <value>Size</value>
+  </data>
+  <data name="DirectorytEntry_LastAccessDate" xml:space="preserve">
+    <value>Last Access Date</value>
+  </data>
+  <data name="DirectorytEntry_LastWriteDate" xml:space="preserve">
+    <value>Last Write Date</value>
+  </data>
+  <data name="DirectorytEntry_LastWriteTime" xml:space="preserve">
+    <value>Last Write Time</value>
+  </data>
+  <data name="DirectorytEntry_ReservedForFAT32" xml:space="preserve">
+    <value>Reserved for FAT 32</value>
+  </data>
+  <data name="DirectorytEntry_ReservedForWinNT" xml:space="preserve">
+    <value>Reserved For Windows NT</value>
+  </data>
+  <data name="DirectorytEntry_StartingCluster" xml:space="preserve">
+    <value>Starting Cluster</value>
+  </data>
+  <data name="FileType_AdvancedSectorImage" xml:space="preserve">
+    <value>Advanced Sector Image</value>
+  </data>
+  <data name="FileType_AllDiskImages" xml:space="preserve">
+    <value>All Floppy Disk Images</value>
+  </data>
+  <data name="FileType_BitstreamImage" xml:space="preserve">
+    <value>Bitstream Image</value>
+  </data>
+  <data name="FileType_FloppyDiskImage" xml:space="preserve">
+    <value>Floppy Disk Image</value>
+  </data>
+  <data name="FileType_IMZ" xml:space="preserve">
+    <value>WinImage Compressed Disk Image</value>
+  </data>
+  <data name="FileType_VFD" xml:space="preserve">
+    <value>Virtual Floppy Disk</value>
+  </data>
+  <data name="Filter_AllItems" xml:space="preserve">
+    <value>All</value>
+  </data>
+  <data name="Filter_Bootstrap_Unknown" xml:space="preserve">
+    <value>Bootstrap - Unknown</value>
+  </data>
+  <data name="Filter_Database_MismatchedStatus" xml:space="preserve">
+    <value>Database - Mismatched Status</value>
+  </data>
+  <data name="Filter_Disk_CustomBootLoader" xml:space="preserve">
+    <value>Disk - Custom Boot Loader</value>
+  </data>
+  <data name="Filter_Disk_CustomFormat" xml:space="preserve">
+    <value>Disk - Custom Format</value>
+  </data>
+  <data name="Filter_Disk_FreeClustersWithData" xml:space="preserve">
+    <value>Disk - Free Clusters with Data</value>
+  </data>
+  <data name="Filter_Disk_MismatchedImageSize" xml:space="preserve">
+    <value>Disk - Mismatched Image Size</value>
+  </data>
+  <data name="Filter_Disk_MismatchedMediaDescriptor" xml:space="preserve">
+    <value>Disk - Mismatched Media Descriptor</value>
+  </data>
+  <data name="Filter_Disk_NoBootLoader" xml:space="preserve">
+    <value>Disk - No Boot Loader</value>
+  </data>
+  <data name="Filter_Disk_NOBPB" xml:space="preserve">
+    <value>Disk - No BPB</value>
+  </data>
+  <data name="Filter_Disk_UnknownFormat" xml:space="preserve">
+    <value>Disk - Unknown Format</value>
+  </data>
+  <data name="Filter_FAT_BadSectors" xml:space="preserve">
+    <value>FAT - Bad Sectors</value>
+  </data>
+  <data name="Filter_FAT_ChainingErrors" xml:space="preserve">
+    <value>FAT - Chaining Errors</value>
+  </data>
+  <data name="Filter_FAT_LostClusters" xml:space="preserve">
+    <value>FAT - Lost Clusters</value>
+  </data>
+  <data name="Filter_FAT_MismatchedFATs" xml:space="preserve">
+    <value>FAT - Mismatched FATs</value>
+  </data>
+  <data name="Filter_FileSystem_DirectoryHasAdditionalData" xml:space="preserve">
+    <value>File System - Directory has Additional Data</value>
+  </data>
+  <data name="Filter_FileSystem_DirectoryHasBootSector" xml:space="preserve">
+    <value>File System - Directory has Boot Sector</value>
+  </data>
+  <data name="Filter_FileSystem_HasCreationDate" xml:space="preserve">
+    <value>File System - Has Creation Date</value>
+  </data>
+  <data name="Filter_FileSystem_HasLastAccessDate" xml:space="preserve">
+    <value>File System - Has Last Access Date</value>
+  </data>
+  <data name="Filter_FileSystem_HasLongFileNames" xml:space="preserve">
+    <value>File System - Has Long File Names</value>
+  </data>
+  <data name="Filter_FileSystem_HasReservedBytesSet" xml:space="preserve">
+    <value>File System - Has Reserved Bytes Set</value>
+  </data>
+  <data name="Filter_FileSystem_InvalidDirectoryEntries" xml:space="preserve">
+    <value>File System - Invalid Directory Entries</value>
+  </data>
+  <data name="Filter_Image_InDatabase" xml:space="preserve">
+    <value>Image - In Database</value>
+  </data>
+  <data name="Filter_Image_NotInDatabase" xml:space="preserve">
+    <value>Image - Not in Database</value>
+  </data>
+  <data name="Filter_Image_Unverified" xml:space="preserve">
+    <value>Image - Unverified</value>
+  </data>
+  <data name="Filter_Image_Verified" xml:space="preserve">
+    <value>Image - Verified</value>
+  </data>
+  <data name="Filter_ModifiedFiles" xml:space="preserve">
+    <value>Modified Files</value>
+  </data>
+  <data name="Filter_OEMName_Mismatched" xml:space="preserve">
+    <value>OEM Name - Mismatched</value>
+  </data>
+  <data name="Filter_OEMName_Unknown" xml:space="preserve">
+    <value>OEM Name - Unknown</value>
+  </data>
+  <data name="Filter_OEMName_Unverified" xml:space="preserve">
+    <value>OEM Name - Unverified</value>
+  </data>
+  <data name="Filter_OEMName_Verified" xml:space="preserve">
+    <value>OEM Name - Verified</value>
+  </data>
+  <data name="Filter_OEMName_Windows9x" xml:space="preserve">
+    <value>OEM Name - Windows 9x</value>
+  </data>
+  <data name="FloppyImageType_BasicSectorImage" xml:space="preserve">
+    <value>Basic Sector Image</value>
+  </data>
+  <data name="FloppyImageType_D86FImage" xml:space="preserve">
+    <value>86Box 86F Image</value>
+  </data>
+  <data name="FloppyImageType_HFEImage" xml:space="preserve">
+    <value>HxC HFE (v1) Image</value>
+  </data>
+  <data name="FloppyImageType_IMDImage" xml:space="preserve">
+    <value>ImageDisk Sector Image</value>
+  </data>
+  <data name="FloppyImageType_MFMImage" xml:space="preserve">
+    <value>HxC MFM Image</value>
+  </data>
+  <data name="FloppyImageType_PRIImage" xml:space="preserve">
+    <value>PCE Bitstream Image</value>
+  </data>
+  <data name="FloppyImageType_PSIImage" xml:space="preserve">
+    <value>PCE Sector Image</value>
+  </data>
+  <data name="FloppyImageType_TranscopyImage" xml:space="preserve">
+    <value>Transcopy Image</value>
+  </data>
+  <data name="FloppyImageType_Unknown" xml:space="preserve">
+    <value>Unknown</value>
+  </data>
+  <data name="HexView_BadSectors" xml:space="preserve">
+    <value>Bad Sectors</value>
+  </data>
+  <data name="HexView_BootSector" xml:space="preserve">
+    <value>Boot Sector</value>
+  </data>
+  <data name="HexView_DeletedDirectory" xml:space="preserve">
+    <value>Deleted Directory</value>
+  </data>
+  <data name="HexView_DeletedFile" xml:space="preserve">
+    <value>Deleted File</value>
+  </data>
+  <data name="HexView_Directory" xml:space="preserve">
+    <value>Directory</value>
+  </data>
+  <data name="HexView_FAT" xml:space="preserve">
+    <value>File Allocation Table</value>
+  </data>
+  <data name="HexView_File" xml:space="preserve">
+    <value>File</value>
+  </data>
+  <data name="HexView_LostClusters" xml:space="preserve">
+    <value>Lost Clusters</value>
+  </data>
+  <data name="HexView_RootDirectory" xml:space="preserve">
+    <value>Root Directory</value>
+  </data>
+  <data name="IsoDateFormat" xml:space="preserve">
+    <value>yyyy-MM-dd</value>
+  </data>
+  <data name="IsoDateTimeFormat" xml:space="preserve">
+    <value>yyyy-MM-dd  HH:mm:ss</value>
+  </data>
+  <data name="Label_Bytes" xml:space="preserve">
+    <value>bytes</value>
+  </data>
+  <data name="Label_Cluster" xml:space="preserve">
+    <value>Cluster</value>
+  </data>
+  <data name="Label_Floppy" xml:space="preserve">
+    <value>Floppy</value>
+  </data>
+  <data name="Label_Mismatched" xml:space="preserve">
+    <value>Mismatched</value>
+  </data>
+  <data name="Label_No" xml:space="preserve">
+    <value>No</value>
+  </data>
+  <data name="Label_Variable" xml:space="preserve">
+    <value>Variable</value>
+  </data>
+  <data name="Label_Yes" xml:space="preserve">
+    <value>Yes</value>
+  </data>
+  <data name="SummaryPanel_AltOEMName" xml:space="preserve">
+    <value>Alternative OEM Name</value>
+  </data>
+  <data name="SummaryPanel_BadSectors" xml:space="preserve">
+    <value>Bad Sectors</value>
+  </data>
+  <data name="SummaryPanel_Bitrate" xml:space="preserve">
+    <value>Bitrate</value>
+  </data>
+  <data name="SummaryPanel_BootRecord" xml:space="preserve">
+    <value>Boot Record</value>
+  </data>
+  <data name="SummaryPanel_Bootstrap" xml:space="preserve">
+    <value>Bootstrap</value>
+  </data>
+  <data name="SummaryPanel_Company" xml:space="preserve">
+    <value>Company</value>
+  </data>
+  <data name="SummaryPanel_CompatibilityImage" xml:space="preserve">
+    <value>Compatibility Image</value>
+  </data>
+  <data name="SummaryPanel_Compilation" xml:space="preserve">
+    <value>Compilation</value>
+  </data>
+  <data name="SummaryPanel_CopyProtection" xml:space="preserve">
+    <value>Copy Protection</value>
+  </data>
+  <data name="SummaryPanel_CustomBootLoader" xml:space="preserve">
+    <value>Custom Boot Loader</value>
+  </data>
+  <data name="SummaryPanel_CustomFormat" xml:space="preserve">
+    <value>Custom Format</value>
+  </data>
+  <data name="SummaryPanel_Description" xml:space="preserve">
+    <value>Description</value>
+  </data>
+  <data name="SummaryPanel_Disk" xml:space="preserve">
+    <value>Disk</value>
+  </data>
+  <data name="SummaryPanel_DiskType" xml:space="preserve">
+    <value>Disk Type</value>
+  </data>
+  <data name="SummaryPanel_Error" xml:space="preserve">
+    <value>Error Loading File</value>
+  </data>
+  <data name="SummaryPanel_FAT" xml:space="preserve">
+    <value>FAT</value>
+  </data>
+  <data name="SummaryPanel_FileSystem" xml:space="preserve">
+    <value>File System</value>
+  </data>
+  <data name="SummaryPanel_FreeSpace" xml:space="preserve">
+    <value>Free Space</value>
+  </data>
+  <data name="SummaryPanel_Heads" xml:space="preserve">
+    <value>Heads</value>
+  </data>
+  <data name="SummaryPanel_ImageSize" xml:space="preserve">
+    <value>Image Size</value>
+  </data>
+  <data name="SummaryPanel_ImageType" xml:space="preserve">
+    <value>Image Type</value>
+  </data>
+  <data name="SummaryPanel_InvalidFormat" xml:space="preserve">
+    <value>Invalid Image Format</value>
+  </data>
+  <data name="SummaryPanel_Language" xml:space="preserve">
+    <value>Language</value>
+  </data>
+  <data name="SummaryPanel_LostClusters" xml:space="preserve">
+    <value>Lost Clusters</value>
+  </data>
+  <data name="SummaryPanel_MediaDescriptor" xml:space="preserve">
+    <value>Media Descriptor</value>
+  </data>
+  <data name="SummaryPanel_NewestDate" xml:space="preserve">
+    <value>Newest Date</value>
+  </data>
+  <data name="SummaryPanel_NoBootLoader" xml:space="preserve">
+    <value>No Boot Loader</value>
+  </data>
+  <data name="SummaryPanel_NoBPB" xml:space="preserve">
+    <value>No BPB</value>
+  </data>
+  <data name="SummaryPanel_NonStandardTracks" xml:space="preserve">
+    <value>Non-Standard Tracks</value>
+  </data>
+  <data name="SummaryPanel_Note" xml:space="preserve">
+    <value>Note</value>
+  </data>
+  <data name="SummaryPanel_OldestDate" xml:space="preserve">
+    <value>Oldest Date</value>
+  </data>
+  <data name="SummaryPanel_OperatingSystem" xml:space="preserve">
+    <value>OS</value>
+  </data>
+  <data name="SummaryPanel_Publisher" xml:space="preserve">
+    <value>Publisher</value>
+  </data>
+  <data name="SummaryPanel_Region" xml:space="preserve">
+    <value>Region</value>
+  </data>
+  <data name="SummaryPanel_ReservedClusters" xml:space="preserve">
+    <value>Reserved Clusters</value>
+  </data>
+  <data name="SummaryPanel_RPM" xml:space="preserve">
+    <value>RPM</value>
+  </data>
+  <data name="SummaryPanel_RPMAdjustment" xml:space="preserve">
+    <value>RPM Adjustment</value>
+  </data>
+  <data name="SummaryPanel_SlowDown" xml:space="preserve">
+    <value>Slow down by</value>
+  </data>
+  <data name="SummaryPanel_SpeedUp" xml:space="preserve">
+    <value>Speed up by</value>
+  </data>
+  <data name="SummaryPanel_SurfaceData" xml:space="preserve">
+    <value>Has Surface Data</value>
+  </data>
+  <data name="SummaryPanel_Title" xml:space="preserve">
+    <value>Title</value>
+  </data>
+  <data name="SummaryPanel_TotalSpace" xml:space="preserve">
+    <value>Total Space</value>
+  </data>
+  <data name="SummaryPanel_Tracks" xml:space="preserve">
+    <value>Tracks</value>
+  </data>
+  <data name="SummaryPanel_Variant" xml:space="preserve">
+    <value>Variant</value>
+  </data>
+  <data name="SummaryPanel_Version" xml:space="preserve">
+    <value>Version</value>
+  </data>
+  <data name="SummaryPanel_VolumeDate" xml:space="preserve">
+    <value>Volume Date</value>
+  </data>
+  <data name="SummaryPanel_VolumeLabel" xml:space="preserve">
+    <value>Volume Label</value>
+  </data>
+  <data name="SummaryPanel_WeakBits" xml:space="preserve">
+    <value>Has Weak Bits</value>
+  </data>
+  <data name="SummaryPanel_XDFChecksum" xml:space="preserve">
+    <value>XDF Checksum</value>
+  </data>
+  <data name="SummaryPanel_Year" xml:space="preserve">
+    <value>Year</value>
   </data>
 </root>

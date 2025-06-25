@@ -48,26 +48,26 @@ Namespace HexView
         Public Sub Initialize()
             DataGridView.Rows.Clear()
 
-            AddRow("File", 0, DataRowEnum.File, False)
-            AddRow("Region", 0, DataRowEnum.Description, False)
-            AddRow("CRC16", 0, DataRowEnum.CRC16, False)
-            AddRow("CRC32", 0, DataRowEnum.CRC32, False)
-            AddRow("Binary (8 bit)", 1, DataRowEnum.Binary,, 8)
-            AddRow("Int8", 1, DataRowEnum.Int8,, 4)
-            AddRow("UInt8", 1, DataRowEnum.UInt8,, 3)
-            AddRow("Int16", 2, DataRowEnum.Int16,, 6)
-            AddRow("UInt16", 2, DataRowEnum.UInt16,, 5)
-            AddRow("Int24", 3, DataRowEnum.Int24,, 9)
-            AddRow("UInt24", 3, DataRowEnum.UInt24,, 8)
-            AddRow("Int32", 4, DataRowEnum.Int32,, 11)
-            AddRow("UInt32", 4, DataRowEnum.UInt32,, 10)
-            AddRow("Int64", 8, DataRowEnum.Int64,, 21)
-            AddRow("UInt64", 8, DataRowEnum.UInt64,, 20)
-            AddRow("DOS Date", 2, DataRowEnum.DOSDate,, 10)
-            AddRow("DOS Time", 2, DataRowEnum.DOSTime,, 8)
-            AddRow("DOS Time & Date", 4, DataRowEnum.DOSTimeDate,, 19)
-            AddRow("Bitstream", 0, DataRowEnum.Bitstream, False)
-            AddRow("Weak Bits", 0, DataRowEnum.WeakBits, False)
+            AddRow(My.Resources.DataInspector_Label_File, 0, DataRowEnum.File, False)
+            AddRow(My.Resources.DataInspector_Label_Region, 0, DataRowEnum.Description, False)
+            AddRow(My.Resources.DataInspector_Label_CRC16, 0, DataRowEnum.CRC16, False)
+            AddRow(My.Resources.DataInspector_Label_CRC32, 0, DataRowEnum.CRC32, False)
+            AddRow(My.Resources.DataInspector_Label_Binary, 1, DataRowEnum.Binary,, 8)
+            AddRow(My.Resources.DataInspector_Label_Int8, 1, DataRowEnum.Int8,, 4)
+            AddRow(My.Resources.DataInspector_Label_UInt8, 1, DataRowEnum.UInt8,, 3)
+            AddRow(My.Resources.DataInspector_Label_Int16, 2, DataRowEnum.Int16,, 6)
+            AddRow(My.Resources.DataInspector_Label_UInt16, 2, DataRowEnum.UInt16,, 5)
+            AddRow(My.Resources.DataInspector_Label_Int24, 3, DataRowEnum.Int24,, 9)
+            AddRow(My.Resources.DataInspector_Label_UInt24, 3, DataRowEnum.UInt24,, 8)
+            AddRow(My.Resources.DataInspector_Label_Int32, 4, DataRowEnum.Int32,, 11)
+            AddRow(My.Resources.DataInspector_Label_UInt32, 4, DataRowEnum.UInt32,, 10)
+            AddRow(My.Resources.DataInspector_Label_Int64, 8, DataRowEnum.Int64,, 21)
+            AddRow(My.Resources.DataInspector_Label_UInt64, 8, DataRowEnum.UInt64,, 20)
+            AddRow(My.Resources.DataInspector_Label_DOSDate, 2, DataRowEnum.DOSDate,, 10)
+            AddRow(My.Resources.DataInspector_Label_DOSTime, 2, DataRowEnum.DOSTime,, 8)
+            AddRow(My.Resources.DataInspector_Label_DOSDateTime, 4, DataRowEnum.DOSTimeDate,, 19)
+            AddRow(My.Resources.DataInspector_Label_Bitstream, 0, DataRowEnum.Bitstream, False)
+            AddRow(My.Resources.DataInspector_Label_WeakBits, 0, DataRowEnum.WeakBits, False)
 
             SetDataRow(DataRowEnum.Bitstream, Nothing, True, True)
             SetDataRow(DataRowEnum.WeakBits, Nothing, True, True)
@@ -106,11 +106,11 @@ Namespace HexView
                     UInt16 = MyBitConverter.ToUInt16(Bytes, BigEndien)
                     DT = ExpandedDate.ExpandDate(CType(UInt16, UInt16))
                     If DT.IsValidDate Then
-                        DOSDate = DT.DateObject.ToString("yyyy-MM-dd")
+                        DOSDate = DT.DateObject.ToString(My.Resources.DataInspector_ISODate)
                     End If
                     DT = ExpandedDate.ExpandTime(CType(UInt16, UInt16))
                     If DT.IsValidDate Then
-                        DosTime = DT.DateObject.ToString("HH:mm:ss")
+                        DosTime = DT.DateObject.ToString(My.Resources.DataInspector_ISOTime)
                     End If
                 End If
                 If Bytes.Length >= 3 Then
@@ -122,7 +122,7 @@ Namespace HexView
                     UInt32 = MyBitConverter.ToUInt32(Bytes, BigEndien)
                     DT = ExpandedDate.ExpandTimeDate(CType(UInt32, UInt32))
                     If DT.IsValidDate Then
-                        DosTimeDate = DT.DateObject.ToString("yyyy-MM-dd HH:mm:ss")
+                        DosTimeDate = DT.DateObject.ToString(My.Resources.DataInspector_ISODateTime)
                     End If
                 End If
                 If Bytes.Length >= 8 Then
@@ -156,7 +156,7 @@ Namespace HexView
             Dim Invalid As Boolean
 
             If Value Is Nothing Then
-                RowValue = "Invalid"
+                RowValue = My.Resources.DataInspector_Label_Invalid
                 ForeColor = SystemColors.GrayText
                 Visible = Not HideIfEmpty
                 Invalid = True
@@ -181,6 +181,13 @@ Namespace HexView
         End Sub
 
         Public Sub Validate(e As DataGridViewCellValidatingEventArgs)
+            Const INT24_MIN As Int32 = -8388608
+            Const INT24_MAX As Int32 = 8388607
+            Const UINT24_MIN As Int32 = 0
+            Const UINT24_MAX As Int32 = 16777215
+            Const YEAR_MIN As Integer = 1980
+            Const YEAR_MAX As Integer = 2107
+
             Dim Row = DataGridView.Rows(e.RowIndex)
             Dim CellValue As String = Row.Cells.Item("DataGridValue").Value
             Dim DataType As DataRowEnum = Row.Cells.Item("DataGridType").Value
@@ -188,13 +195,13 @@ Namespace HexView
             Dim Result As Boolean
             Dim ErrorMsg As String = ""
 
-            If e.FormattedValue = "Invalid" And Invalid Then
+            If e.FormattedValue = My.Resources.DataInspector_Label_Invalid And Invalid Then
                 Exit Sub
             End If
 
             Select Case DataType
                 Case DataRowEnum.Binary
-                    ErrorMsg = "Please enter a valid 8-bit binary value"
+                    ErrorMsg = My.Resources.DataInspector_Error_Binary
                     Dim cValue As Byte
                     Try
                         cValue = Convert.ToByte(e.FormattedValue, 2)
@@ -203,70 +210,70 @@ Namespace HexView
                         Result = False
                     End Try
                 Case DataRowEnum.Int8
-                    ErrorMsg = "Please enter a valid integer between -128 and 127"
+                    ErrorMsg = String.Format(My.Resources.DataInspector_Error_Integer, FormatThousands(SByte.MinValue), FormatThousands(SByte.MaxValue))
                     Dim cValue As SByte
                     Result = SByte.TryParse(e.FormattedValue, cValue)
                 Case DataRowEnum.UInt8
-                    ErrorMsg = "Please enter a valid integer between 0 and 255"
+                    ErrorMsg = String.Format(My.Resources.DataInspector_Error_Integer, FormatThousands(Byte.MinValue), FormatThousands(Byte.MaxValue))
                     Dim cValue As Byte
                     Result = Byte.TryParse(e.FormattedValue, cValue)
                 Case DataRowEnum.Int16
-                    ErrorMsg = "Please enter a valid integer between -32,768 and 32,767"
+                    ErrorMsg = String.Format(My.Resources.DataInspector_Error_Integer, FormatThousands(Int16.MinValue), FormatThousands(Int16.MaxValue))
                     Dim cValue As Int16
                     Result = Int16.TryParse(e.FormattedValue, cValue)
                 Case DataRowEnum.UInt16
-                    ErrorMsg = "Please enter a valid integer between 0 and 65,535"
+                    ErrorMsg = String.Format(My.Resources.DataInspector_Error_Integer, FormatThousands(UInt16.MinValue), FormatThousands(UInt16.MaxValue))
                     Dim cValue As UInt16
                     Result = UInt16.TryParse(e.FormattedValue, cValue)
                 Case DataRowEnum.Int32
-                    ErrorMsg = "Please enter a valid integer between -2,147,483,648 and 2,147,483,647"
+                    ErrorMsg = String.Format(My.Resources.DataInspector_Error_Integer, FormatThousands(Int32.MinValue), FormatThousands(Int32.MaxValue))
                     Dim cValue As Int32
                     Result = Int32.TryParse(e.FormattedValue, cValue)
                 Case DataRowEnum.Int24
-                    ErrorMsg = "Please enter a valid integer between -8,388,608 and 8,388,607"
+                    ErrorMsg = String.Format(My.Resources.DataInspector_Error_Integer, FormatThousands(INT24_MIN), FormatThousands(INT24_MAX))
                     Dim cValue As Int32
                     Result = Int32.TryParse(e.FormattedValue, cValue)
                     If Result Then
-                        Result = cValue >= -8388608 And cValue <= 8388607
+                        Result = cValue >= INT24_MIN And cValue <= INT24_MAX
                     End If
                 Case DataRowEnum.UInt24
-                    ErrorMsg = "Please enter a valid integer between 0 and 16,777,215"
+                    ErrorMsg = String.Format(My.Resources.DataInspector_Error_Integer, FormatThousands(UINT24_MIN), FormatThousands(UINT24_MAX))
                     Dim cValue As UInt32
                     Result = UInt32.TryParse(e.FormattedValue, cValue)
                     If Result Then
-                        Result = cValue >= 0 And cValue <= 16777215
+                        Result = cValue >= UINT24_MIN And cValue <= UINT24_MAX
                     End If
                 Case DataRowEnum.UInt32
-                    ErrorMsg = "Please enter a valid integer between 0 and 4,294,967,295"
+                    ErrorMsg = String.Format(My.Resources.DataInspector_Error_Integer, FormatThousands(UInt32.MinValue), FormatThousands(UInt32.MaxValue))
                     Dim cValue As UInt32
                     Result = UInt32.TryParse(e.FormattedValue, cValue)
                 Case DataRowEnum.Int64
-                    ErrorMsg = "Please enter a valid integer between -9,223,372,036,854,775,808 and 9,223,372,036,854,775,807"
+                    ErrorMsg = String.Format(My.Resources.DataInspector_Error_Integer, FormatThousands(Int64.MinValue), FormatThousands(Int64.MaxValue))
                     Dim cValue As Int64
                     Result = Int64.TryParse(e.FormattedValue, cValue)
                 Case DataRowEnum.UInt64
-                    ErrorMsg = "Please enter a valid integer between 0 and 18,446,744,073,709,551,615"
+                    ErrorMsg = String.Format(My.Resources.DataInspector_Error_Integer, FormatThousands(UInt64.MinValue), FormatThousands(UInt64.MaxValue))
                     Dim cValue As UInt64
                     Result = UInt64.TryParse(e.FormattedValue, cValue)
                 Case DataRowEnum.DOSDate
-                    ErrorMsg = "Please enter a valid date between 1980-01-01 and 2107-12-31"
+                    ErrorMsg = My.Resources.DataInspector_Error_DOSDate
                     Dim cValue As Date
                     Result = Date.TryParse(e.FormattedValue, cValue)
                     If Result Then
-                        If cValue.Year < 1980 Or cValue.Year > 2107 Then
+                        If cValue.Year < YEAR_MIN Or cValue.Year > YEAR_MAX Then
                             Result = False
                         End If
                     End If
                 Case DataRowEnum.DOSTime
-                    ErrorMsg = "Please enter a valid time"
+                    ErrorMsg = My.Resources.DataInspector_Error_DOSTime
                     Dim cValue As Date
                     Result = Date.TryParse(e.FormattedValue, cValue)
                 Case DataRowEnum.DOSTimeDate
-                    ErrorMsg = "Please enter a valid date and time between 1980-01-01 and 2107-12-31"
+                    ErrorMsg = My.Resources.DataInspector_Error_DOSDateTime
                     Dim cValue As Date
                     Result = Date.TryParse(e.FormattedValue, cValue)
                     If Result Then
-                        If cValue.Year < 1980 Or cValue.Year > 2107 Then
+                        If cValue.Year < YEAR_MIN Or cValue.Year > YEAR_MAX Then
                             Result = False
                         End If
                     End If

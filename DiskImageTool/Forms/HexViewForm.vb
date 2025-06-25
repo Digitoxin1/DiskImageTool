@@ -471,7 +471,7 @@ Public Class HexViewForm
         RefreshSelectors()
         DataGridDataInspector.ClearSelection()
 
-        ToolStripStatusBytes.Text = Format(_CurrentHexViewData.SectorBlock.Size, "N0") & " bytes"
+        ToolStripStatusBytes.Text = FormatThousands(_CurrentHexViewData.SectorBlock.Size) & " bytes"
     End Sub
     Private Sub FillSelected(Value As Byte)
         Dim ChangeList As New List(Of HexChange)
@@ -885,7 +885,7 @@ Public Class HexViewForm
                 ToolStripStatusBlock.Visible = True
                 ToolStripStatusBlock.Text = "Block(h): " & OffsetStart.ToString("X") & "-" & OffsetEnd.ToString("X")
                 ToolStripStatusLength.Visible = True
-                ToolStripStatusLength.Text = "Length(h): " & SelectionLength.ToString("X") & "  (" & SelectionLength & ")"
+                ToolStripStatusLength.Text = "Length(h): " & SelectionLength.ToString("X") & "  " & InParens(SelectionLength)
             End If
 
             If _CurrentSector <> Sector Or ForceUpdate Then

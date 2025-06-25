@@ -18,7 +18,7 @@ Module HexViews
 
             Return frmHexView.Modified
         Else
-            MsgBox("No Data Available at this location. Check the image size.", MsgBoxStyle.Exclamation)
+            MsgBox(My.Resources.Dialog_CheckImageSize, MsgBoxStyle.Exclamation)
             Return False
         End If
     End Function
@@ -31,14 +31,14 @@ Module HexViews
 
             Return frmHexView.Modified
         Else
-            MsgBox("No Data Available at this location. Check the image size.", MsgBoxStyle.Exclamation)
+            MsgBox(My.Resources.Dialog_CheckImageSize, MsgBoxStyle.Exclamation)
             Return False
         End If
     End Function
 
     Public Function HexViewBadSectors(Disk As Disk) As HexViewSectorData
         Dim HexViewSectorData As New HexViewSectorData(Disk) With {
-            .Description = "Bad Sectors"
+            .Description = My.Resources.HexView_BadSectors
         }
 
         Dim Offset As UInteger = 0
@@ -66,7 +66,7 @@ Module HexViews
 
     Public Function HexViewLostClusters(Disk As Disk) As HexViewSectorData
         Dim HexViewSectorData As New HexViewSectorData(Disk) With {
-            .Description = "Lost Clusters"
+            .Description = My.Resources.HexView_LostClusters
         }
 
         Dim Offset As UInteger = 0
@@ -94,7 +94,7 @@ Module HexViews
 
     Public Function HexViewBootSector(Disk As Disk) As HexViewSectorData
         Dim HexViewSectorData As New HexViewSectorData(Disk) With {
-            .Description = "Boot Sector"
+            .Description = My.Resources.HexView_BootSector
         }
 
         Dim HighlightedRegions As New HighlightedRegions
@@ -166,7 +166,7 @@ Module HexViews
         Dim HexViewSectorData = New HexViewSectorData(Disk, Disk.RootDirectory.SectorChain)
         HighlightDirectoryData(Disk, HexViewSectorData, True)
 
-        HexViewSectorData.Description = "Root Directory"
+        HexViewSectorData.Description = My.Resources.HexView_RootDirectory
 
         Return HexViewSectorData
     End Function
@@ -179,10 +179,23 @@ Module HexViews
             Return Nothing
         End If
 
-        Caption = IIf(DirectoryEntry.IsDirectory, "Directory", "File") & " - " & DirectoryEntry.GetShortFileName(True)
+        If DirectoryEntry.IsDirectory Then
+            If DirectoryEntry.IsDeleted Then
+                Caption = My.Resources.HexView_DeletedDirectory
+            Else
+                Caption = My.Resources.HexView_Directory
+            End If
+        Else
+            If DirectoryEntry.IsDeleted Then
+                Caption = My.Resources.HexView_DeletedFile
+            Else
+                Caption = My.Resources.HexView_File
+            End If
+        End If
+
+        Caption &= " - " & DirectoryEntry.GetShortFileName(True)
 
         If DirectoryEntry.IsDeleted Then
-            Caption = "Deleted " & Caption
             Dim DataOffset = Disk.BPB.ClusterToOffset(DirectoryEntry.StartingCluster)
             Dim Length As UInteger
             Dim FileSize As UInteger
@@ -212,7 +225,7 @@ Module HexViews
 
     Public Function HexViewFAT(Disk As Disk) As HexViewSectorData
         Dim HexViewSectorData = New HexViewSectorData(Disk) With {
-            .Description = "File Allocation Table"
+            .Description = My.Resources.HexView_FAT
         }
 
         Dim HighlightedRegions As New HighlightedRegions

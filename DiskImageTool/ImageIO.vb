@@ -50,7 +50,7 @@ Module ImageIO
         Dim Result = DirectoryEntrySaveToFile(Dialog.FileName, DirectoryEntry)
 
         If Not Result Then
-            Dim Msg As String = $"Error saving file '{IO.Path.GetFileName(Dialog.FileName)}'."
+            Dim Msg = String.Format(My.Resources.Dialog_SaveFileError, IO.Path.GetFileName(Dialog.FileName))
             MsgBox(Msg, MsgBoxStyle.Critical + MsgBoxStyle.OkOnly)
         End If
     End Sub
@@ -233,43 +233,43 @@ Module ImageIO
         Dim FileFilter As String
         Dim ExtensionList As List(Of String)
 
-        FileFilter = FileDialogGetFilter("All Floppy Disk Images", AllFileExtensions)
+        FileFilter = FileDialogGetFilter(My.Resources.FileType_AllDiskImages, AllFileExtensions)
 
-        FileFilter = FileDialogAppendFilter(FileFilter, "Basic Sector Image", BasicSectorFileExtensions)
+        FileFilter = FileDialogAppendFilter(FileFilter, My.Resources.FloppyImageType_BasicSectorImage, BasicSectorFileExtensions)
 
-        FileFilter = FileDialogAppendFilter(FileFilter, "Advanced Sector Image", AdvancedSectorFileExtensions)
+        FileFilter = FileDialogAppendFilter(FileFilter, My.Resources.FileType_AdvancedSectorImage, AdvancedSectorFileExtensions)
 
-        FileFilter = FileDialogAppendFilter(FileFilter, "Bitstream Image", BitstreamFileExtensions)
+        FileFilter = FileDialogAppendFilter(FileFilter, My.Resources.FileType_BitstreamImage, BitstreamFileExtensions)
 
         ExtensionList = New List(Of String) From {".imz"}
-        FileFilter = FileDialogAppendFilter(FileFilter, "WinImage Compressed Disk Image", ExtensionList)
+        FileFilter = FileDialogAppendFilter(FileFilter, My.Resources.FileType_IMZ, ExtensionList)
 
         ExtensionList = New List(Of String) From {".vfd", ".flp"}
-        FileFilter = FileDialogAppendFilter(FileFilter, "Virtual Floppy Disk", ExtensionList)
+        FileFilter = FileDialogAppendFilter(FileFilter, My.Resources.FileType_VFD, ExtensionList)
 
         ExtensionList = New List(Of String) From {".imd"}
-        FileFilter = FileDialogAppendFilter(FileFilter, "ImageDisk Sector Image", ExtensionList)
+        FileFilter = FileDialogAppendFilter(FileFilter, GetImageTypeName(FloppyImageType.IMDImage), ExtensionList)
 
         ExtensionList = New List(Of String) From {".pri"}
-        FileFilter = FileDialogAppendFilter(FileFilter, "PCE Bitstream Image", ExtensionList)
+        FileFilter = FileDialogAppendFilter(FileFilter, GetImageTypeName(FloppyImageType.PRIImage), ExtensionList)
 
         ExtensionList = New List(Of String) From {".psi"}
-        FileFilter = FileDialogAppendFilter(FileFilter, "PCE Sector Image", ExtensionList)
+        FileFilter = FileDialogAppendFilter(FileFilter, GetImageTypeName(FloppyImageType.PSIImage), ExtensionList)
 
         ExtensionList = New List(Of String) From {".86f"}
-        FileFilter = FileDialogAppendFilter(FileFilter, "86Box 86F Image", ExtensionList)
+        FileFilter = FileDialogAppendFilter(FileFilter, GetImageTypeName(FloppyImageType.D86FImage), ExtensionList)
 
         ExtensionList = New List(Of String) From {".hfe"}
-        FileFilter = FileDialogAppendFilter(FileFilter, "HxC HFE (v1) Image", ExtensionList)
+        FileFilter = FileDialogAppendFilter(FileFilter, GetImageTypeName(FloppyImageType.HFEImage), ExtensionList)
 
         ExtensionList = New List(Of String) From {".mfm"}
-        FileFilter = FileDialogAppendFilter(FileFilter, "HxC MFM Image", ExtensionList)
+        FileFilter = FileDialogAppendFilter(FileFilter, GetImageTypeName(FloppyImageType.MFMImage), ExtensionList)
 
         ExtensionList = New List(Of String) From {".tc"}
-        FileFilter = FileDialogAppendFilter(FileFilter, "Transcopy Image", ExtensionList)
+        FileFilter = FileDialogAppendFilter(FileFilter, GetImageTypeName(FloppyImageType.TranscopyImage), ExtensionList)
 
-        FileFilter = FileDialogAppendFilter(FileFilter, "Zip Archive", ".zip")
-        FileFilter = FileDialogAppendFilter(FileFilter, "All files", ".*")
+        FileFilter = FileDialogAppendFilter(FileFilter, My.Resources.FileType_ZipArchive, ".zip")
+        FileFilter = FileDialogAppendFilter(FileFilter, My.Resources.FileType_All, ".*")
 
         Return FileFilter
     End Function
@@ -289,7 +289,7 @@ Module ImageIO
                 Response.FilterIndex = CurrentIndex
             End If
         Next
-        Response.Filter = FileDialogGetFilter("Floppy Disk Image", ExtensionList)
+        Response.Filter = FileDialogGetFilter(My.Resources.FileType_FloppyDiskImage, ExtensionList)
         CurrentIndex += 1
 
         ExtensionList = New List(Of String) From {".vfd", ".flp"}
@@ -298,7 +298,7 @@ Module ImageIO
                 Response.FilterIndex = CurrentIndex
             End If
         Next
-        Response.Filter = FileDialogAppendFilter(Response.Filter, "Virtual Floppy Disk", ExtensionList)
+        Response.Filter = FileDialogAppendFilter(Response.Filter, My.Resources.FileType_VFD, ExtensionList)
         CurrentIndex += 1
 
         If ImageType = FloppyImageType.IMDImage Or ImageGroup <> FloppyImageGroup.AdvancedSectorImage Then
@@ -308,7 +308,7 @@ Module ImageIO
                     Response.FilterIndex = CurrentIndex
                 End If
             Next
-            Response.Filter = FileDialogAppendFilter(Response.Filter, "ImageDisk Sector Image", ExtensionList)
+            Response.Filter = FileDialogAppendFilter(Response.Filter, GetImageTypeName(FloppyImageType.IMDImage), ExtensionList)
             CurrentIndex += 1
         End If
 
@@ -319,7 +319,7 @@ Module ImageIO
                     Response.FilterIndex = CurrentIndex
                 End If
             Next
-            Response.Filter = FileDialogAppendFilter(Response.Filter, "PCE Sector Image", ExtensionList)
+            Response.Filter = FileDialogAppendFilter(Response.Filter, GetImageTypeName(FloppyImageType.PSIImage), ExtensionList)
             CurrentIndex += 1
         End If
 
@@ -330,7 +330,7 @@ Module ImageIO
                     Response.FilterIndex = CurrentIndex
                 End If
             Next
-            Response.Filter = FileDialogAppendFilter(Response.Filter, "86Box 86F Image", ExtensionList)
+            Response.Filter = FileDialogAppendFilter(Response.Filter, GetImageTypeName(FloppyImageType.D86FImage), ExtensionList)
             CurrentIndex += 1
 
             ExtensionList = New List(Of String) From {".hfe"}
@@ -339,7 +339,7 @@ Module ImageIO
                     Response.FilterIndex = CurrentIndex
                 End If
             Next
-            Response.Filter = FileDialogAppendFilter(Response.Filter, "HxC HFE (v1) Image", ExtensionList)
+            Response.Filter = FileDialogAppendFilter(Response.Filter, GetImageTypeName(FloppyImageType.HFEImage), ExtensionList)
             CurrentIndex += 1
 
             ExtensionList = New List(Of String) From {".mfm"}
@@ -348,7 +348,7 @@ Module ImageIO
                     Response.FilterIndex = CurrentIndex
                 End If
             Next
-            Response.Filter = FileDialogAppendFilter(Response.Filter, "HxC MFM Image", ExtensionList)
+            Response.Filter = FileDialogAppendFilter(Response.Filter, GetImageTypeName(FloppyImageType.MFMImage), ExtensionList)
             CurrentIndex += 1
 
             ExtensionList = New List(Of String) From {".pri"}
@@ -357,7 +357,7 @@ Module ImageIO
                     Response.FilterIndex = CurrentIndex
                 End If
             Next
-            Response.Filter = FileDialogAppendFilter(Response.Filter, "PCE Bitstream Image", ExtensionList)
+            Response.Filter = FileDialogAppendFilter(Response.Filter, GetImageTypeName(FloppyImageType.PRIImage), ExtensionList)
             CurrentIndex += 1
 
             ExtensionList = New List(Of String) From {".tc"}
@@ -366,7 +366,7 @@ Module ImageIO
                     Response.FilterIndex = CurrentIndex
                 End If
             Next
-            Response.Filter = FileDialogAppendFilter(Response.Filter, "Transcopy Image", ExtensionList)
+            Response.Filter = FileDialogAppendFilter(Response.Filter, GetImageTypeName(FloppyImageType.TranscopyImage), ExtensionList)
             CurrentIndex += 1
         End If
 
@@ -386,7 +386,7 @@ Module ImageIO
             End If
         Next
 
-        Response.Filter = FileDialogAppendFilter(Response.Filter, "All files", ".*")
+        Response.Filter = FileDialogAppendFilter(Response.Filter, My.Resources.FileType_All, ".*")
         If Response.FilterIndex = 0 Then
             Response.FilterIndex = CurrentIndex
         End If
@@ -621,7 +621,7 @@ Module ImageIO
                     End If
                 Next
                 If Not CompatibleSectors Then
-                    Msg = "This image has one or more tracks that are not compatible with this image type."
+                    Msg = My.Resources.Dialog_Image_NonCompatibleSectors
                     MsgBox(Msg, MsgBoxStyle.Exclamation)
                     Return False
                 End If
@@ -630,9 +630,7 @@ Module ImageIO
 
         If FileImageType = FloppyImageType.BasicSectorImage Then
             If FloppyImage.NonStandardTracks.Count > 0 Then
-                Msg = "This image has one or more tracks with a non-standard sector layout." _
-                    & vbCrLf & vbCrLf & "Data loss will occur when saving to this image type." _
-                    & vbCrLf & vbCrLf & "Do you wish to continue?"
+                Msg = String.Format(My.Resources.Dialog_Image_NonStandardTracks, Environment.NewLine)
                 If MsgBox(Msg, MsgBoxStyle.Exclamation + MsgBoxStyle.YesNo + MsgBoxStyle.DefaultButton2) = MsgBoxResult.No Then
                     Return False
                 End If
@@ -642,9 +640,7 @@ Module ImageIO
             If Not HasWeakBitsSupport(FileImageType) Then
                 If FloppyImage.NonStandardTracks.Count > 0 Then
                     If FloppyImage.HasWeakBits Then
-                        Msg = "This image contains additional surface data which may be required for copy protection." _
-                        & vbCrLf & vbCrLf & "This data will be lost when saving to this image type." _
-                        & vbCrLf & vbCrLf & "Do you wish to continue?"
+                        Msg = String.Format(My.Resources.Dialog_Image_SurfaceData, Environment.NewLine)
                         If MsgBox(Msg, MsgBoxStyle.Exclamation + MsgBoxStyle.YesNo + MsgBoxStyle.DefaultButton2) = MsgBoxResult.No Then
                             Return False
                         End If

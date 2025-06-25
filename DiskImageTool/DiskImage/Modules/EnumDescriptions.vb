@@ -3,23 +3,23 @@
         Public Function BootSectorDescription(Offset As BootSector.BootSectorOffsets) As String
             Select Case Offset
                 Case BootSector.BootSectorOffsets.JmpBoot
-                    Return "Bootstrap Jump"
+                    Return My.Resources.BootSector_JmpBoot
                 Case BootSector.BootSectorOffsets.OEMName
-                    Return "OEM Name"
+                    Return My.Resources.BootSector_OEMName
                 Case BootSector.BootSectorOffsets.DriveNumber
-                    Return "Drive Number"
+                    Return My.Resources.BootSector_DriveNumber
                 Case BootSector.BootSectorOffsets.Reserved
-                    Return "Reserved"
+                    Return My.Resources.BootSector_Reserved
                 Case BootSector.BootSectorOffsets.ExtendedBootSignature
-                    Return "Extended Boot Signature"
+                    Return My.Resources.BootSector_ExtendedBootSignature
                 Case BootSector.BootSectorOffsets.VolumeSerialNumber
-                    Return "Volume Serial Number"
+                    Return My.Resources.BootSector_VolumeSerialNumber
                 Case BootSector.BootSectorOffsets.VolumeLabel
-                    Return "Volume Label"
+                    Return My.Resources.BootSector_VolumeLabel
                 Case BootSector.BootSectorOffsets.FileSystemType
-                    Return "File System ID"
+                    Return My.Resources.BootSector_FileSystemType
                 Case BootSector.BootSectorOffsets.BootStrapSignature
-                    Return "Boot Sector Signature"
+                    Return My.Resources.BootSector_BootStrapSignature
                 Case Else
                     Return Offset.ToString
             End Select
@@ -28,27 +28,27 @@
         Public Function BPBDescription(Offset As BiosParameterBlock.BPBOoffsets) As String
             Select Case Offset
                 Case BiosParameterBlock.BPBOoffsets.BytesPerSector
-                    Return "Bytes per Sector"
+                    Return My.Resources.BPB_BytesPerSector
                 Case BiosParameterBlock.BPBOoffsets.SectorsPerCluster
-                    Return "Sectors per Cluster"
+                    Return My.Resources.BPB_SectorsPerCluster
                 Case BiosParameterBlock.BPBOoffsets.ReservedSectorCount
-                    Return "Reserved Sectors"
+                    Return My.Resources.BPB_ReservedSectorCount
                 Case BiosParameterBlock.BPBOoffsets.NumberOfFATs
-                    Return "Number of FATs"
+                    Return My.Resources.BPB_NumberOfFATs
                 Case BiosParameterBlock.BPBOoffsets.RootEntryCount
-                    Return "Root Directory Entries"
+                    Return My.Resources.BPB_RootEntryCount
                 Case BiosParameterBlock.BPBOoffsets.SectorCountSmall
-                    Return "Total Sector Count"
+                    Return My.Resources.BPB_SectorCountSmall
                 Case BiosParameterBlock.BPBOoffsets.MediaDescriptor
-                    Return "Media Descriptor"
+                    Return My.Resources.BPB_MediaDescriptor
                 Case BiosParameterBlock.BPBOoffsets.SectorsPerFAT
-                    Return "Sectors per FAT"
+                    Return My.Resources.BPB_SectorsPerFAT
                 Case BiosParameterBlock.BPBOoffsets.SectorsPerTrack
-                    Return "Sectors per Track"
+                    Return My.Resources.BPB_SectorsPerTrack
                 Case BiosParameterBlock.BPBOoffsets.NumberOfHeads
-                    Return "Number of Heads"
+                    Return My.Resources.BPB_NumberOfHeads
                 Case BiosParameterBlock.BPBOoffsets.HiddenSectors
-                    Return "Hidden Sectors"
+                    Return My.Resources.BPB_HiddenSectors
                 Case Else
                     Return Offset.ToString
             End Select
@@ -57,31 +57,31 @@
         Public Function DirectorytEntryDescription(Offset As DirectoryEntry.DirectoryEntryOffsets) As String
             Select Case Offset
                 Case DirectoryEntry.DirectoryEntryOffsets.FileName
-                    Return "Name"
+                    Return My.Resources.DirectorytEntry_FileName
                 Case DirectoryEntry.DirectoryEntryOffsets.Extension
-                    Return "Extension"
+                    Return My.Resources.DirectorytEntry_Extension
                 Case DirectoryEntry.DirectoryEntryOffsets.Attributes
-                    Return "Attributes"
+                    Return My.Resources.DirectorytEntry_Attributes
                 Case DirectoryEntry.DirectoryEntryOffsets.ReservedForWinNT
-                    Return "Reserved For Windows NT"
+                    Return My.Resources.DirectorytEntry_ReservedForWinNT
                 Case DirectoryEntry.DirectoryEntryOffsets.CreationMillisecond
-                    Return "Creation Time Tenths"
+                    Return My.Resources.DirectorytEntry_CreationMillisecond
                 Case DirectoryEntry.DirectoryEntryOffsets.CreationTime
-                    Return "Creation Time"
+                    Return My.Resources.DirectorytEntry_CreationTime
                 Case DirectoryEntry.DirectoryEntryOffsets.CreationDate
-                    Return "Creation Date"
+                    Return My.Resources.DirectorytEntry_CreationDate
                 Case DirectoryEntry.DirectoryEntryOffsets.LastAccessDate
-                    Return "Last Access Date"
+                    Return My.Resources.DirectorytEntry_LastAccessDate
                 Case DirectoryEntry.DirectoryEntryOffsets.ReservedForFAT32
-                    Return "Reserved for FAT 32"
+                    Return My.Resources.DirectorytEntry_ReservedForFAT32
                 Case DirectoryEntry.DirectoryEntryOffsets.LastWriteTime
-                    Return "Last Write Time"
+                    Return My.Resources.DirectorytEntry_LastWriteTime
                 Case DirectoryEntry.DirectoryEntryOffsets.LastWriteDate
-                    Return "Last Write Date"
+                    Return My.Resources.DirectorytEntry_LastWriteDate
                 Case DirectoryEntry.DirectoryEntryOffsets.StartingCluster
-                    Return "Starting Cluster"
+                    Return My.Resources.DirectorytEntry_StartingCluster
                 Case DirectoryEntry.DirectoryEntryOffsets.FileSize
-                    Return "Size"
+                    Return My.Resources.DirectorytEntry_FileSize
                 Case Else
                     Return Offset.ToString
             End Select
@@ -90,21 +90,21 @@
         Public Function DirectorytEntryLFNDescription(Offset As DirectoryEntry.LFNOffsets) As String
             Select Case Offset
                 Case DirectoryEntry.LFNOffsets.Sequence
-                    Return "LFN Sequence"
+                    Return My.Resources.DirectorytEntryLFN_Sequence
                 Case DirectoryEntry.LFNOffsets.FilePart1
-                    Return "LFN Name 1"
+                    Return My.Resources.DirectorytEntryLFN_FilePart1
                 Case DirectoryEntry.LFNOffsets.Attributes
-                    Return "LFN Attributes"
+                    Return My.Resources.DirectorytEntryLFN_Attributes
                 Case DirectoryEntry.LFNOffsets.Type
-                    Return "LFN Type"
+                    Return My.Resources.DirectorytEntryLFN_Type
                 Case DirectoryEntry.LFNOffsets.Checksum
-                    Return "LFN Checksum"
+                    Return My.Resources.DirectorytEntryLFN_Checksum
                 Case DirectoryEntry.LFNOffsets.FilePart2
-                    Return "LFN Name 2"
+                    Return My.Resources.DirectorytEntryLFN_FilePart2
                 Case DirectoryEntry.LFNOffsets.StartingCluster
-                    Return "LFN Starting Cluster"
+                    Return My.Resources.DirectorytEntryLFN_StartingCluster
                 Case DirectoryEntry.LFNOffsets.FilePart3
-                    Return "LFN Name 3"
+                    Return My.Resources.DirectorytEntryLFN_FilePart3
                 Case Else
                     Return Offset.ToString
             End Select
@@ -113,23 +113,23 @@
         Public Function GetImageTypeName(ImageType As FloppyImageType) As String
             Select Case ImageType
                 Case FloppyImageType.BasicSectorImage
-                    Return "Basic Sector Image"
+                    Return My.Resources.FloppyImageType_BasicSectorImage
                 Case FloppyImageType.HFEImage
-                    Return "HxC HFE Image"
+                    Return My.Resources.FloppyImageType_HFEImage
                 Case FloppyImageType.MFMImage
-                    Return "HxC MFM Image"
+                    Return My.Resources.FloppyImageType_MFMImage
                 Case FloppyImageType.PSIImage
-                    Return "PCE Sector Image"
+                    Return My.Resources.FloppyImageType_PSIImage
                 Case FloppyImageType.PRIImage
-                    Return "PCE Bitstream Image"
+                    Return My.Resources.FloppyImageType_PRIImage
                 Case FloppyImageType.TranscopyImage
-                    Return "Transcopy Image"
+                    Return My.Resources.FloppyImageType_TranscopyImage
                 Case FloppyImageType.D86FImage
-                    Return "86Box 86F Image"
+                    Return My.Resources.FloppyImageType_D86FImage
                 Case FloppyImageType.IMDImage
-                    Return "ImageDisk Sector Image"
+                    Return My.Resources.FloppyImageType_IMDImage
                 Case Else
-                    Return "Unknown"
+                    Return My.Resources.FloppyImageType_Unknown
             End Select
         End Function
     End Module

@@ -33,12 +33,12 @@ Public Class HexViewData
             ClusterEnd = 0
         End If
 
-        Dim Header As String = "Sector " & Sector & IIf(SectorEnd > Sector, "-" & SectorEnd, "")
+        Dim Header As String = My.Resources.Label_Sector & " " & Sector & IIf(SectorEnd > Sector, "-" & SectorEnd, "")
         If Cluster > 0 Then
-            Header = "Cluster " & Cluster & IIf(ClusterEnd > Cluster, "-" & ClusterEnd, "") & "; " & Header
+            Header = My.Resources.Label_Cluster & " " & Cluster & IIf(ClusterEnd > Cluster, "-" & ClusterEnd, "") & "; " & Header
         End If
         If _SectorBlock.Description <> "" Then
-            Header = _SectorBlock.Description & "  (" & Header & ")"
+            Header = _SectorBlock.Description & "  " & InParens(Header)
         End If
 
         Return Header

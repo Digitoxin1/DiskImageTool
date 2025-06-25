@@ -115,7 +115,7 @@
             Dim Name As String
             Dim Count As String
             If Item.AllItems Then
-                Name = "(ALL)"
+                Name = InParens(My.Resources.Filter_AllItems)
                 Count = ""
             Else
                 Name = Item.Name
@@ -148,7 +148,7 @@ Public Class ComboFilterItem
 
     Public Overrides Function ToString() As String
         If AllItems Then
-            Return "(ALL)"
+            Return InParens(My.Resources.Filter_AllItems)
         Else
             Return Name & "  [" & _Count & "]"
         End If

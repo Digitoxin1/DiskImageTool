@@ -215,7 +215,7 @@
             Dim Index As UInteger = 1
 
             Do While FindFileName(NewFileName, True, CurrentIndex) > -1
-                NewFileName = CombineFileParts(FileParts.Name & " (" & Index & ")", FileParts.Extension)
+                NewFileName = CombineFileParts(FileParts.Name & " " & InParens(Index), FileParts.Extension)
                 Index += 1
             Loop
 

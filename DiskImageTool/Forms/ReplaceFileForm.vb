@@ -76,7 +76,7 @@ Public Class ReplaceFileForm
 
         ChkFilenameOriginal.Text = Filename
         ChkFileDateOriginal.Text = FileDate
-        ChkFileSizeOriginal.Text = Format(FileSize, "N0") & " bytes"
+        ChkFileSizeOriginal.Text = FormatThousands(FileSize) & " bytes"
     End Sub
 
     Public Sub SetNewFile(Filename As String, FileDate As Date, FileSize As UInteger)
@@ -86,7 +86,7 @@ Public Class ReplaceFileForm
         _FileSizeNew = FileSize
 
         ChkFileDateNew.Text = FileDate
-        ChkFileSizeNew.Text = Format(FileSize, "N0") & " bytes"
+        ChkFileSizeNew.Text = FormatThousands(FileSize) & " bytes"
 
         SetFileNameForm()
         BtnUndo.Visible = False
@@ -113,7 +113,7 @@ Public Class ReplaceFileForm
         BtnOK.Enabled = True
 
         If ChkFileSizeOriginal.Checked Then
-            LblFileSize.Text = Format(_FileSizeOriginal, "N0") & " bytes"
+            LblFileSize.Text = FormatThousands(_FileSizeOriginal) & " bytes"
             If _FileSizeNew = _FileSizeOriginal Then
                 AdjustmentType = "set"
             ElseIf _FileSizeNew > _FileSizeOriginal Then
@@ -124,7 +124,7 @@ Public Class ReplaceFileForm
                 LblPadCaption.Text = "Pad file with:"
             End If
         Else
-            LblFileSize.Text = Format(_FileSizeNew, "N0") & " bytes"
+            LblFileSize.Text = FormatThousands(_FileSizeNew) & " bytes"
             If _FileSizeOriginal = _FileSizeNew Then
                 AdjustmentType = "set"
             ElseIf _FileSizeOriginal > _FileSizeNew Then

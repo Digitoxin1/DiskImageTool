@@ -280,15 +280,15 @@ Public Class HexViewRawForm
     Private Function GetRegionDescription(Region As BitstreamRegion) As String
         Select Case Region.RegionType
             Case MFMRegionType.Gap1
-                Return "GAP 1" & "  (" & Region.Length & ")"
+                Return "GAP 1" & "  " & InParens(Region.Length)
             Case MFMRegionType.Gap2
-                Return "GAP 2" & "  (" & Region.Length & ")"
+                Return "GAP 2" & "  " & InParens(Region.Length)
             Case MFMRegionType.Gap3
-                Return "GAP 3" & "  (" & Region.Length & ")"
+                Return "GAP 3" & "  " & InParens(Region.Length)
             Case MFMRegionType.Gap4A
-                Return "GAP 4A" & "  (" & Region.Length & ")"
+                Return "GAP 4A" & "  " & InParens(Region.Length)
             Case MFMRegionType.Gap4B
-                Return "GAP 3+4B" & "  (" & Region.Length & ")"
+                Return "GAP 3+4B" & "  " & InParens(Region.Length)
             Case MFMRegionType.IAMNulls, MFMRegionType.IAMSync
                 Return "Index Field Sync"
             Case MFMRegionType.IAM
@@ -306,7 +306,7 @@ Public Class HexViewRawForm
             Case MFMRegionType.DAM
                 Return "Data Address Mark"
             Case MFMRegionType.DataArea
-                Return "Data Area" & "  (" & Region.Length & ")"
+                Return "Data Area" & "  " & InParens(Region.Length)
             Case MFMRegionType.DataChecksumValid, MFMRegionType.DataChecksumInvalid
                 Return "Data Checksum"
             Case MFMRegionType.Overflow
@@ -627,8 +627,8 @@ Public Class HexViewRawForm
             HexBox1.Select(SelectionStart, SelectionLength)
         End If
 
-        ToolStripStatusBits.Text = Format(RegionData.NumBits, "N0") & " bits"
-        ToolStripStatusBytes.Text = Format(Math.Ceiling(RegionData.NumBits / 16), "N0") & " bytes"
+        ToolStripStatusBits.Text = FormatThousands(RegionData.NumBits) & " bits"
+        ToolStripStatusBytes.Text = FormatThousands(Math.Ceiling(RegionData.NumBits / 16)) & " bytes"
         _LastSearch = New HexSearch
 
         _LabelGap4A.Text = "Gap 4A: " & RegionData.Gap4A
@@ -821,7 +821,7 @@ Public Class HexViewRawForm
                 ToolStripStatusBlock.Visible = True
                 ToolStripStatusBlock.Text = "Block(h): " & OffsetStart.ToString("X") & "-" & OffsetEnd.ToString("X")
                 ToolStripStatusLength.Visible = True
-                ToolStripStatusLength.Text = "Length(h): " & SelectionLength.ToString("X") & "  (" & SelectionLength & ")"
+                ToolStripStatusLength.Text = "Length(h): " & SelectionLength.ToString("X") & "  " & InParens(SelectionLength)
             End If
 
             If Not OutOfRange Then
