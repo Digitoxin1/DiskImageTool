@@ -1,4 +1,5 @@
 ﻿Imports System.ComponentModel
+Imports System.Globalization
 Imports System.IO
 Imports System.Text
 Imports DiskImageTool.DiskImage
@@ -2793,6 +2794,35 @@ Public Class MainForm
         End With
     End Sub
 
+    Private Sub AddLanguageMenuItem(Text As String, Tag As String)
+        Dim Item As New ToolStripMenuItem With {
+            .Text = Text,
+            .Tag = Tag
+        }
+
+        If My.Settings.Language = Item.Tag Then
+            Item.Checked = True
+        End If
+
+        AddHandler Item.Click, AddressOf BtnLanguage_Click
+        MenuOptionsDisplayLanguage.DropDownItems.Add(Item)
+    End Sub
+
+    Private Sub PopulateLanguages()
+        MenuOptionsDisplayLanguage.DropDownItems.Clear()
+
+        AddLanguageMenuItem(My.Resources.Menu_SystemDefault, "")
+        AddLanguageMenuItem(My.Resources.Menu_English, "en")
+
+        Dim Languages = GetAvailableLanguages()
+
+        For Each Language In Languages
+            If Language.Name <> "en" Then
+                AddLanguageMenuItem(Language.TextInfo.ToTitleCase(Language.NativeName), Language.Name)
+            End If
+        Next
+    End Sub
+
     Private Sub PopulateSummary(CurrentImage As CurrentImage)
         Dim MD5 As String = ""
 
@@ -4077,6 +4107,26 @@ Public Class MainForm
         End If
     End Sub
 
+    Private Sub BtnLanguage_Click(sender As Object, e As EventArgs)
+        Dim ClickedItem = CType(sender, ToolStripMenuItem)
+
+        If ClickedItem.Checked Then
+            Exit Sub
+        End If
+
+        For Each item As ToolStripItem In ClickedItem.GetCurrentParent().Items
+            If TypeOf item Is ToolStripMenuItem Then
+                CType(item, ToolStripMenuItem).Checked = False
+            End If
+        Next
+
+        ClickedItem.Checked = True
+
+        My.Settings.Language = ClickedItem.Tag.ToString()
+
+        MsgBox(My.Resources.Dialog_LanguageSettings, MsgBoxStyle.Information)
+    End Sub
+
     Private Sub BtnkWriteFloppyA_Click(sender As Object, e As EventArgs) Handles MenuDiskWriteFloppyA.Click
         FloppyDiskWrite(Me, _CurrentImage.Disk, FloppyDriveEnum.FloppyDriveA)
     End Sub
@@ -4479,6 +4529,7 @@ Public Class MainForm
         PositionForm()
 
         AddHandler MainMenuOptions.DropDown.Closing, AddressOf ContextMenuOptions_Closing
+        AddHandler MenuOptionsDisplayLanguage.DropDown.Closing, AddressOf ContextMenuOptions_Closing
 
         MainMenuUpdateAvailable.Visible = False
         MenuToolsCompare.Visible = False
@@ -4488,6 +4539,7 @@ Public Class MainForm
         ListViewSummary.AutoResizeColumnsContstrained(ColumnHeaderAutoResizeStyle.None)
         ImageFilters = New Filters.ImageFilters(ContextMenuFilters)
         SubFiltersInitialize()
+        PopulateLanguages()
         _LoadedFiles = New LoadedFiles
         _BootStrapDB = New BootstrapDB
         _TitleDB = New FloppyDB
@@ -4503,7 +4555,7 @@ Public Class MainForm
         ContextMenuCopy2 = New ContextMenuStrip With {
             .Name = CONTEXT_MENU_HASH_KEY
         }
-        ContextMenuCopy1.Items.Add(My.Resources.Menu_CopyValue)
+        ContextMenuCopy2.Items.Add(My.Resources.Menu_CopyValue)
         ListViewHashes.ContextMenuStrip = ContextMenuCopy2
 
         InitDebugFeatures(My.Settings.Debug)

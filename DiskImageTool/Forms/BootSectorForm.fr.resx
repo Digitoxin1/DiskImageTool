@@ -1,0 +1,210 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <!-- 
+    Microsoft ResX Schema 
+    
+    Version 2.0
+    
+    The primary goals of this format is to allow a simple XML format 
+    that is mostly human readable. The generation and parsing of the 
+    various data types are done through the TypeConverter classes 
+    associated with the data types.
+    
+    Example:
+    
+    ... ado.net/XML headers & schema ...
+    <resheader name="resmimetype">text/microsoft-resx</resheader>
+    <resheader name="version">2.0</resheader>
+    <resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+    <resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+    <data name="Name1"><value>this is my long string</value><comment>this is a comment</comment></data>
+    <data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+    <data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+        <value>[base64 mime encoded serialized .NET Framework object]</value>
+    </data>
+    <data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+        <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
+        <comment>This is a comment</comment>
+    </data>
+                
+    There are any number of "resheader" rows that contain simple 
+    name/value pairs.
+    
+    Each data row contains a name, and value. The row also contains a 
+    type or mimetype. Type corresponds to a .NET class that support 
+    text/value conversion through the TypeConverter architecture. 
+    Classes that don't support this are serialized and stored with the 
+    mimetype set.
+    
+    The mimetype is used for serialized objects, and tells the 
+    ResXResourceReader how to depersist the object. This is currently not 
+    extensible. For a given mimetype the value must be set accordingly:
+    
+    Note - application/x-microsoft.net.object.binary.base64 is the format 
+    that the ResXResourceWriter will generate, however the reader can 
+    read any of the formats listed below.
+    
+    mimetype: application/x-microsoft.net.object.binary.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
+            : and then encoded with base64 encoding.
+    
+    mimetype: application/x-microsoft.net.object.soap.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+            : and then encoded with base64 encoding.
+
+    mimetype: application/x-microsoft.net.object.bytearray.base64
+    value   : The object must be serialized into a byte array 
+            : using a System.ComponentModel.TypeConverter
+            : and then encoded with base64 encoding.
+    -->
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="BtnCancel.Text" xml:space="preserve">
+    <value>&amp;Annuler</value>
+  </data>
+  <data name="BtnUpdate.Text" xml:space="preserve">
+    <value>&amp;Mettre à jour</value>
+  </data>
+  <data name="GroupBoxAdditionalData.Text" xml:space="preserve">
+    <value>Données supplémentaires</value>
+  </data>
+  <data name="$this.Text" xml:space="preserve">
+    <value>Secteur de démarrage</value>
+  </data>
+  <data name="GroupBoxMain.Text" xml:space="preserve">
+    <value>Enregistrement de démarrage</value>
+  </data>
+  <data name="LblBootSectorSignature.Text" xml:space="preserve">
+    <value>Signature du secteur de démarrage</value>
+  </data>
+  <data name="LblBytesPerSector.Text" xml:space="preserve">
+    <value>Octets par secteur</value>
+  </data>
+  <data name="HexBox1.BuiltInContextMenu.CopyMenuItemText" xml:space="preserve">
+    <value>Copier le texte</value>
+  </data>
+  <data name="LblDiskType.Text" xml:space="preserve">
+    <value>Type de disquette</value>
+  </data>
+  <data name="LblDriveNumber.Text" xml:space="preserve">
+    <value>Numéro de lecteur</value>
+  </data>
+  <data name="lblExtendedBootSignature.Text" xml:space="preserve">
+    <value>Signature de démarrage étendue</value>
+  </data>
+  <data name="GroupBoxExtended.Text" xml:space="preserve">
+    <value>Bloc de paramètres étendu</value>
+  </data>
+  <data name="LblFileSystemType.Text" xml:space="preserve">
+    <value>ID du système de fichiers</value>
+  </data>
+  <data name="LblHiddenSectors.Text" xml:space="preserve">
+    <value>Secteurs masqués</value>
+  </data>
+  <data name="LblJumpInstruction.Text" xml:space="preserve">
+    <value>Instruction de saut</value>
+  </data>
+  <data name="TxtMediaDescriptor.Text" xml:space="preserve">
+    <value>Descripteur de média</value>
+  </data>
+  <data name="LblNumberOfFATS.Text" xml:space="preserve">
+    <value>Nombre de FAT</value>
+  </data>
+  <data name="LblNumberOfHeads.Text" xml:space="preserve">
+    <value>Nombre de têtes</value>
+  </data>
+  <data name="LblOEMName.Text" xml:space="preserve">
+    <value>Nom OEM</value>
+  </data>
+  <data name="LblReservedSectors.Text" xml:space="preserve">
+    <value>Secteurs réservés</value>
+  </data>
+  <data name="LblRootDirectoryEntries.Text" xml:space="preserve">
+    <value>Entrées du répertoire racine</value>
+  </data>
+  <data name="LblSectorsPerCluster.Text" xml:space="preserve">
+    <value>Secteurs par cluster</value>
+  </data>
+  <data name="LblSectorsPerFAT.Text" xml:space="preserve">
+    <value>Secteurs par FAT</value>
+  </data>
+  <data name="LblSectorsPerTrack.Text" xml:space="preserve">
+    <value>Secteurs par piste</value>
+  </data>
+  <data name="HexBox1.BuiltInContextMenu.SelectAllMenuItemText" xml:space="preserve">
+    <value>Tout sélectionner</value>
+  </data>
+  <data name="LblExtendedMsg.Text" xml:space="preserve">
+    <value>Il semble que des données soient stockées dans le bloc de paramètres étendu de ce secteur de démarrage. Cela signifie généralement que le bloc de paramètres étendu n’est pas défini pour cette disquette.</value>
+  </data>
+  <data name="LblSectorCountSmall.Text" xml:space="preserve">
+    <value>Nombre total de secteurs</value>
+  </data>
+  <data name="LblSectorCountLarge.Text" xml:space="preserve">
+    <value>Nombre total de secteurs (grand format)</value>
+  </data>
+  <data name="LblVolumeLabel.Text" xml:space="preserve">
+    <value>Étiquette du volume</value>
+  </data>
+  <data name="LblVolumeSerialNumber.Text" xml:space="preserve">
+    <value>Numéro de série du volume</value>
+  </data>
+</root>

@@ -347,8 +347,8 @@ Namespace My.Resources
         '''  Looks up a localized string similar to Extended Boot Signature
         '''
         '''Typical Values:
-        '''28h	Volume Serial Number is present
-        '''29h	Volume Serial Number, Volume Label, and File System ID are present.
+        '''28h\tVolume Serial Number is present
+        '''29h\tVolume Serial Number, Volume Label, and File System ID are present.
         '''</summary>
         Friend ReadOnly Property BootSectorForm_Help_ExtendedBootSignature() As String
             Get
@@ -393,16 +393,16 @@ Namespace My.Resources
         '''  Looks up a localized string similar to Media Descriptor
         '''
         '''Allowed Values:
-        '''F0	1.44M, 2.88M, DMF, 3.5 XDF Floppy
-        '''F8	Fixed Disk
-        '''F9	720K, 1.2M, 5.25 XDF Floppy
-        '''FA	Unused
-        '''FB	Unused
-        '''FC	180K Floppy
-        '''FD	360K Floppy
-        '''FE	160K Floppy
-        '''FF	320K Floppy
-        '''ED	Tandy 2000 Floppy.
+        '''F0\t1.44M, 2.88M, DMF, 3.5 XDF Floppy
+        '''F8\tFixed Disk
+        '''F9\t720K, 1.2M, 5.25 XDF Floppy
+        '''FA\tUnused
+        '''FB\tUnused
+        '''FC\t180K Floppy
+        '''FD\t360K Floppy
+        '''FE\t160K Floppy
+        '''FF\t320K Floppy
+        '''ED\tTandy 2000 Floppy.
         '''</summary>
         Friend ReadOnly Property BootSectorForm_Help_MediaDescriptor() As String
             Get
@@ -427,16 +427,16 @@ Namespace My.Resources
         '''  Looks up a localized string similar to Number of physical heads (sides) on the disk
         '''
         '''Typical Values:
-        '''160K Floppy	1
-        '''180K Floppy	1
-        '''320K Floppy	2
-        '''360K Floppy	2
-        '''720K Floppy	2
-        '''1.2M Floppy	2
-        '''1.44M Floppy	2
-        '''2.88M Floppy	2
-        '''DMF Floppy	2
-        '''XDF Floppy	2.
+        '''160K Floppy\t1
+        '''180K Floppy\t1
+        '''320K Floppy\t2
+        '''360K Floppy\t2
+        '''720K Floppy\t2
+        '''1.2M Floppy\t2
+        '''1.44M Floppy\t2
+        '''2.88M Floppy\t2
+        '''DMF Floppy\t2
+        '''XDF Floppy\t2.
         '''</summary>
         Friend ReadOnly Property BootSectorForm_Help_NumberOfHeads() As String
             Get
@@ -476,16 +476,16 @@ Namespace My.Resources
         '''Allowed Values: Value multiplied by 32 should be an even multiple of Bytes Per Sector
         '''
         '''Typical Values:
-        '''160K Floppy	64
-        '''180K Floppy	64
-        '''320K Floppy	112
-        '''360K Floppy	112
-        '''720K Floppy	112
-        '''1.2M Floppy	224
-        '''1.44M Floppy	224
-        '''2.88M Floppy	240
-        '''DMF Floppy	16
-        '''XDF Floppy	224.
+        '''160K Floppy\t64
+        '''180K Floppy\t64
+        '''320K Floppy\t112
+        '''360K Floppy\t112
+        '''720K Floppy\t112
+        '''1.2M Floppy\t224
+        '''1.44M Floppy\t224
+        '''2.88M Floppy\t240
+        '''DMF Floppy\t16
+        '''XDF Floppy\t224.
         '''</summary>
         Friend ReadOnly Property BootSectorForm_Help_RootDirectoryEntries() As String
             Get
@@ -508,17 +508,17 @@ Namespace My.Resources
         '''  Looks up a localized string similar to Total number of sectors in the volume
         '''
         '''Typical Values:
-        '''160K Floppy		320
-        '''180K Floppy		360
-        '''320K Floppy		640
-        '''360K Floppy		720
-        '''720K Floppy		1440
-        '''1.2M Floppy		2400
-        '''1.44M Floppy		2880
-        '''2.88M Floppy		5760
-        '''DMF Floppy		3360
-        '''5.25 XDF Floppy		3040
-        '''3.5 XDF Floppy		3680.
+        '''160K Floppy\t\t320
+        '''180K Floppy\t\t360
+        '''320K Floppy\t\t640
+        '''360K Floppy\t\t720
+        '''720K Floppy\t\t1440
+        '''1.2M Floppy\t\t2400
+        '''1.44M Floppy\t\t2880
+        '''2.88M Floppy\t\t5760
+        '''DMF Floppy\t\t3360
+        '''5.25 XDF Floppy\t\t3040
+        '''3.5 XDF Floppy\t\t3680.
         '''</summary>
         Friend ReadOnly Property BootSectorForm_Help_SectorCountSmall() As String
             Get
@@ -532,16 +532,16 @@ Namespace My.Resources
         '''Allowed Values: 1, 2, 4, 8, 16, 32, 128
         '''
         '''Typical Values:
-        '''160K Floppy	1
-        '''180K Floppy	1
-        '''320K Floppy	2
-        '''360K Floppy	2
-        '''720K Floppy	2
-        '''1.2M Floppy	1
-        '''1.44M Floppy	1
-        '''2.88M Floppy	2
-        '''DMF Floppy	2 or 4
-        '''XDF Floppy	1.
+        '''160K Floppy\t1
+        '''180K Floppy\t1
+        '''320K Floppy\t2
+        '''360K Floppy\t2
+        '''720K Floppy\t2
+        '''1.2M Floppy\t1
+        '''1.44M Floppy\t1
+        '''2.88M Floppy\t2
+        '''DMF Floppy\t2 or 4
+        '''XDF Floppy\t1.
         '''</summary>
         Friend ReadOnly Property BootSectorForm_Help_SectorsPerCluster() As String
             Get
@@ -553,17 +553,17 @@ Namespace My.Resources
         '''  Looks up a localized string similar to Number of sectors allocated to each copy of the File Allocation Table (FAT)
         '''
         '''Typical Values:
-        '''160K Floppy		1
-        '''180K Floppy		2
-        '''320K Floppy		1
-        '''360K Floppy		2
-        '''720K Floppy		3
-        '''1.2M Floppy		7
-        '''1.44M Floppy		9
-        '''2.88M Floppy		9
-        '''DMF Floppy		3 or 5
-        '''5.25 XDF Floppy		9
-        '''3.5 XDF Floppy		11.
+        '''160K Floppy\t\t1
+        '''180K Floppy\t\t2
+        '''320K Floppy\t\t1
+        '''360K Floppy\t\t2
+        '''720K Floppy\t\t3
+        '''1.2M Floppy\t\t7
+        '''1.44M Floppy\t\t9
+        '''2.88M Floppy\t\t9
+        '''DMF Floppy\t\t3 or 5
+        '''5.25 XDF Floppy\t\t9
+        '''3.5 XDF Floppy\t\t11.
         '''</summary>
         Friend ReadOnly Property BootSectorForm_Help_SectorsPerFAT() As String
             Get
@@ -575,17 +575,17 @@ Namespace My.Resources
         '''  Looks up a localized string similar to Number of sectors per track on the disk
         '''
         '''Typical Values:
-        '''160K Floppy		8
-        '''180K Floppy		9
-        '''320K Floppy		8
-        '''360K Floppy		9
-        '''720K Floppy		9
-        '''1.2M Floppy		15
-        '''1.44M Floppy		18
-        '''2.88M Floppy		36
-        '''DMF Floppy		21
-        '''5.25 XDF Floppy		19
-        '''3.5 XDF Floppy		23.
+        '''160K Floppy\t\t8
+        '''180K Floppy\t\t9
+        '''320K Floppy\t\t8
+        '''360K Floppy\t\t9
+        '''720K Floppy\t\t9
+        '''1.2M Floppy\t\t15
+        '''1.44M Floppy\t\t18
+        '''2.88M Floppy\t\t36
+        '''DMF Floppy\t\t21
+        '''5.25 XDF Floppy\t\t19
+        '''3.5 XDF Floppy\t\t23.
         '''</summary>
         Friend ReadOnly Property BootSectorForm_Help_SectorsPerTrack() As String
             Get
@@ -722,6 +722,24 @@ Namespace My.Resources
         End Property
         
         '''<summary>
+        '''  Looks up a localized string similar to &amp;Add.
+        '''</summary>
+        Friend ReadOnly Property Button_Add() As String
+            Get
+                Return ResourceManager.GetString("Button_Add", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  Looks up a localized string similar to &amp;Update.
+        '''</summary>
+        Friend ReadOnly Property Button_Update() As String
+            Get
+                Return ResourceManager.GetString("Button_Update", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
         '''  Looks up a localized string similar to Change Log.
         '''</summary>
         Friend ReadOnly Property Caption_ChangeLog() As String
@@ -785,6 +803,15 @@ Namespace My.Resources
         End Property
         
         '''<summary>
+        '''  Looks up a localized string similar to File Properties.
+        '''</summary>
+        Friend ReadOnly Property Caption_FileProperties() As String
+            Get
+                Return ResourceManager.GetString("Caption_FileProperties", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
         '''  Looks up a localized string similar to Hex Editor.
         '''</summary>
         Friend ReadOnly Property Caption_HexEditor() As String
@@ -799,6 +826,15 @@ Namespace My.Resources
         Friend ReadOnly Property Caption_ImageComparison() As String
             Get
                 Return ResourceManager.GetString("Caption_ImageComparison", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  Looks up a localized string similar to New Directory.
+        '''</summary>
+        Friend ReadOnly Property Caption_NewDirectory() As String
+            Get
+                Return ResourceManager.GetString("Caption_NewDirectory", resourceCulture)
             End Get
         End Property
         
@@ -1501,6 +1537,15 @@ Namespace My.Resources
         Friend ReadOnly Property Dialog_InvalidSearchString() As String
             Get
                 Return ResourceManager.GetString("Dialog_InvalidSearchString", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  Looks up a localized string similar to Language settings will take effect after the application is restarted..
+        '''</summary>
+        Friend ReadOnly Property Dialog_LanguageSettings() As String
+            Get
+                Return ResourceManager.GetString("Dialog_LanguageSettings", resourceCulture)
             End Get
         End Property
         
@@ -2648,6 +2693,15 @@ Namespace My.Resources
         End Property
         
         '''<summary>
+        '''  Looks up a localized string similar to Directory Name.
+        '''</summary>
+        Friend ReadOnly Property Label_DirectoryName() As String
+            Get
+                Return ResourceManager.GetString("Label_DirectoryName", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
         '''  Looks up a localized string similar to Encoding.
         '''</summary>
         Friend ReadOnly Property Label_Encoding() As String
@@ -2765,6 +2819,15 @@ Namespace My.Resources
         End Property
         
         '''<summary>
+        '''  Looks up a localized string similar to File Name.
+        '''</summary>
+        Friend ReadOnly Property Label_FileName() As String
+            Get
+                Return ResourceManager.GetString("Label_FileName", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
         '''  Looks up a localized string similar to files.
         '''</summary>
         Friend ReadOnly Property Label_Files() As String
@@ -2815,6 +2878,15 @@ Namespace My.Resources
         Friend ReadOnly Property Label_FileSizeTruncated() As String
             Get
                 Return ResourceManager.GetString("Label_FileSizeTruncated", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  Looks up a localized string similar to Files Selected.
+        '''</summary>
+        Friend ReadOnly Property Label_FilesSelected() As String
+            Get
+                Return ResourceManager.GetString("Label_FilesSelected", resourceCulture)
             End Get
         End Property
         
@@ -3004,6 +3076,15 @@ Namespace My.Resources
         Friend ReadOnly Property Label_ModifiedImageCountSingular() As String
             Get
                 Return ResourceManager.GetString("Label_ModifiedImageCountSingular", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  Looks up a localized string similar to Multiple Files.
+        '''</summary>
+        Friend ReadOnly Property Label_MultipleFiles() As String
+            Get
+                Return ResourceManager.GetString("Label_MultipleFiles", resourceCulture)
             End Get
         End Property
         
@@ -3269,6 +3350,15 @@ Namespace My.Resources
         End Property
         
         '''<summary>
+        '''  Looks up a localized string similar to Volume Label.
+        '''</summary>
+        Friend ReadOnly Property Label_VolumeLabel() As String
+            Get
+                Return ResourceManager.GetString("Label_VolumeLabel", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
         '''  Looks up a localized string similar to Writing.
         '''</summary>
         Friend ReadOnly Property Label_Writing() As String
@@ -3373,6 +3463,15 @@ Namespace My.Resources
         Friend ReadOnly Property Menu_Directory2() As String
             Get
                 Return ResourceManager.GetString("Menu_Directory2", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  Looks up a localized string similar to English.
+        '''</summary>
+        Friend ReadOnly Property Menu_English() As String
+            Get
+                Return ResourceManager.GetString("Menu_English", resourceCulture)
             End Get
         End Property
         
@@ -3535,6 +3634,15 @@ Namespace My.Resources
         Friend ReadOnly Property Menu_SelectTrack() As String
             Get
                 Return ResourceManager.GetString("Menu_SelectTrack", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  Looks up a localized string similar to System Default.
+        '''</summary>
+        Friend ReadOnly Property Menu_SystemDefault() As String
+            Get
+                Return ResourceManager.GetString("Menu_SystemDefault", resourceCulture)
             End Get
         End Property
         

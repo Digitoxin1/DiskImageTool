@@ -238,7 +238,7 @@
     <value>Ctrl+O</value>
   </data>
   <data name="MenuFileOpen.Size" type="System.Drawing.Size, System.Drawing">
-    <value>212, 22</value>
+    <value>205, 22</value>
   </data>
   <data name="MenuFileOpen.Text" xml:space="preserve">
     <value>&amp;Open</value>
@@ -247,13 +247,13 @@
     <value>Ctrl+R</value>
   </data>
   <data name="MenuFileReload.Size" type="System.Drawing.Size, System.Drawing">
-    <value>212, 22</value>
+    <value>205, 22</value>
   </data>
   <data name="MenuFileReload.Text" xml:space="preserve">
     <value>&amp;Reload from Disk</value>
   </data>
   <data name="MenuFileNewImage.Size" type="System.Drawing.Size, System.Drawing">
-    <value>212, 22</value>
+    <value>205, 22</value>
   </data>
   <data name="MenuFileNewImage.Text" xml:space="preserve">
     <value>&amp;New Image</value>
@@ -262,7 +262,7 @@
     <value>False</value>
   </metadata>
   <data name="MenuFileSeparator1.Size" type="System.Drawing.Size, System.Drawing">
-    <value>209, 6</value>
+    <value>202, 6</value>
   </data>
   <data name="MenuFileSave.Image" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
     <value>
@@ -279,7 +279,7 @@
     <value>Ctrl+S</value>
   </data>
   <data name="MenuFileSave.Size" type="System.Drawing.Size, System.Drawing">
-    <value>212, 22</value>
+    <value>205, 22</value>
   </data>
   <data name="MenuFileSave.Text" xml:space="preserve">
     <value>&amp;Save</value>
@@ -299,7 +299,7 @@
     <value>Ctrl+Alt+S</value>
   </data>
   <data name="MenuFileSaveAs.Size" type="System.Drawing.Size, System.Drawing">
-    <value>212, 22</value>
+    <value>205, 22</value>
   </data>
   <data name="MenuFileSaveAs.Text" xml:space="preserve">
     <value>Save &amp;As</value>
@@ -317,7 +317,7 @@
     <value>Ctrl+Shift+S</value>
   </data>
   <data name="MenuFileSaveAll.Size" type="System.Drawing.Size, System.Drawing">
-    <value>212, 22</value>
+    <value>205, 22</value>
   </data>
   <data name="MenuFileSaveAll.Text" xml:space="preserve">
     <value>Save All</value>
@@ -326,7 +326,7 @@
     <value>False</value>
   </metadata>
   <data name="MenuFileSeparator2.Size" type="System.Drawing.Size, System.Drawing">
-    <value>209, 6</value>
+    <value>202, 6</value>
   </data>
   <data name="MenuFileClose.Image" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
     <value>
@@ -341,7 +341,7 @@
     <value>Ctrl+W</value>
   </data>
   <data name="MenuFileClose.Size" type="System.Drawing.Size, System.Drawing">
-    <value>212, 22</value>
+    <value>205, 22</value>
   </data>
   <data name="MenuFileClose.Text" xml:space="preserve">
     <value>&amp;Close</value>
@@ -359,7 +359,7 @@
     <value>Ctrl+Shift+W</value>
   </data>
   <data name="MenuFileCloseAll.Size" type="System.Drawing.Size, System.Drawing">
-    <value>212, 22</value>
+    <value>205, 22</value>
   </data>
   <data name="MenuFileCloseAll.Text" xml:space="preserve">
     <value>Close All</value>
@@ -368,7 +368,7 @@
     <value>False</value>
   </metadata>
   <data name="MenuFileSeparator3.Size" type="System.Drawing.Size, System.Drawing">
-    <value>209, 6</value>
+    <value>202, 6</value>
   </data>
   <data name="MenuFileExit.Image" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
     <value>
@@ -386,7 +386,7 @@
     <value>Alt+F4</value>
   </data>
   <data name="MenuFileExit.Size" type="System.Drawing.Size, System.Drawing">
-    <value>212, 22</value>
+    <value>205, 22</value>
   </data>
   <data name="MenuFileExit.Text" xml:space="preserve">
     <value>E&amp;xit</value>
@@ -923,6 +923,12 @@
   </data>
   <data name="MenuOptionsDisplayTitles.Text" xml:space="preserve">
     <value>Display Titles</value>
+  </data>
+  <data name="MenuOptionsDisplayLanguage.Size" type="System.Drawing.Size, System.Drawing">
+    <value>248, 22</value>
+  </data>
+  <data name="MenuOptionsDisplayLanguage.Text" xml:space="preserve">
+    <value>Language</value>
   </data>
   <data name="MenuOptionsSeparatorDebug.Size" type="System.Drawing.Size, System.Drawing">
     <value>245, 6</value>
@@ -3542,6 +3548,12 @@
     <value>MenuOptionsDisplayTitles</value>
   </data>
   <data name="&gt;&gt;MenuOptionsDisplayTitles.Type" xml:space="preserve">
+    <value>System.Windows.Forms.ToolStripMenuItem, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;MenuOptionsDisplayLanguage.Name" xml:space="preserve">
+    <value>MenuOptionsDisplayLanguage</value>
+  </data>
+  <data name="&gt;&gt;MenuOptionsDisplayLanguage.Type" xml:space="preserve">
     <value>System.Windows.Forms.ToolStripMenuItem, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
   <data name="&gt;&gt;MenuOptionsSeparatorDebug.Name" xml:space="preserve">

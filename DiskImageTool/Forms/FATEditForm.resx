@@ -141,7 +141,7 @@
     <value>Vertical</value>
   </data>
   <data name="DataGridViewFAT.Size" type="System.Drawing.Size, System.Drawing">
-    <value>564, 318</value>
+    <value>592, 318</value>
   </data>
   <assembly alias="mscorlib" name="mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
   <data name="DataGridViewFAT.TabIndex" type="System.Int32, mscorlib">
@@ -223,7 +223,7 @@
     <value>1</value>
   </data>
   <data name="FlowLayoutPanelBottom.Location" type="System.Drawing.Point, System.Drawing">
-    <value>207, 547</value>
+    <value>221, 547</value>
   </data>
   <data name="FlowLayoutPanelBottom.Size" type="System.Drawing.Size, System.Drawing">
     <value>192, 29</value>
@@ -250,7 +250,7 @@
     <value>True</value>
   </data>
   <data name="ChkSync.Location" type="System.Drawing.Point, System.Drawing">
-    <value>247, 524</value>
+    <value>261, 524</value>
   </data>
   <data name="ChkSync.Size" type="System.Drawing.Size, System.Drawing">
     <value>112, 17</value>
@@ -279,6 +279,9 @@
   <data name="FlowLayoutPanelTop.AutoSizeMode" type="System.Windows.Forms.AutoSizeMode, System.Windows.Forms">
     <value>GrowAndShrink</value>
   </data>
+  <data name="BtnFree.AutoSize" type="System.Boolean, mscorlib">
+    <value>True</value>
+  </data>
   <data name="BtnFree.Location" type="System.Drawing.Point, System.Drawing">
     <value>3, 3</value>
   </data>
@@ -302,6 +305,9 @@
   </data>
   <data name="&gt;&gt;BtnFree.ZOrder" xml:space="preserve">
     <value>0</value>
+  </data>
+  <data name="BtnBad.AutoSize" type="System.Boolean, mscorlib">
+    <value>True</value>
   </data>
   <data name="BtnBad.Location" type="System.Drawing.Point, System.Drawing">
     <value>59, 3</value>
@@ -327,6 +333,9 @@
   <data name="&gt;&gt;BtnBad.ZOrder" xml:space="preserve">
     <value>1</value>
   </data>
+  <data name="BtnLast.AutoSize" type="System.Boolean, mscorlib">
+    <value>True</value>
+  </data>
   <data name="BtnLast.Location" type="System.Drawing.Point, System.Drawing">
     <value>115, 3</value>
   </data>
@@ -350,6 +359,9 @@
   </data>
   <data name="&gt;&gt;BtnLast.ZOrder" xml:space="preserve">
     <value>2</value>
+  </data>
+  <data name="BtnReserved.AutoSize" type="System.Boolean, mscorlib">
+    <value>True</value>
   </data>
   <data name="BtnReserved.Location" type="System.Drawing.Point, System.Drawing">
     <value>171, 3</value>
@@ -460,7 +472,7 @@
     <value>24, 21</value>
   </data>
   <data name="PictureBoxFAT.Size" type="System.Drawing.Size, System.Drawing">
-    <value>561, 138</value>
+    <value>589, 138</value>
   </data>
   <data name="PictureBoxFAT.TabIndex" type="System.Int32, mscorlib">
     <value>4</value>
@@ -544,7 +556,7 @@
     <value>1</value>
   </data>
   <data name="FlowLayoutPanel1.Location" type="System.Drawing.Point, System.Drawing">
-    <value>421, 166</value>
+    <value>449, 166</value>
   </data>
   <data name="FlowLayoutPanel1.Size" type="System.Drawing.Size, System.Drawing">
     <value>164, 27</value>
@@ -574,10 +586,10 @@
     <value>6, 13</value>
   </data>
   <data name="$this.ClientSize" type="System.Drawing.Size, System.Drawing">
-    <value>606, 597</value>
+    <value>634, 597</value>
   </data>
   <data name="$this.MinimumSize" type="System.Drawing.Size, System.Drawing">
-    <value>622, 450</value>
+    <value>650, 450</value>
   </data>
   <data name="$this.Padding" type="System.Windows.Forms.Padding, System.Windows.Forms">
     <value>18, 18, 18, 18</value>

@@ -10,8 +10,8 @@ Public Class FilePropertiesFormSingle
 
         _DirectoryEntry = DirectoryEntry
 
-        MyBase.Text = "File Properties"
-        BtnUpdate.Text = "Update"
+        MyBase.Text = My.Resources.Caption_FileProperties
+        BtnUpdate.Text = My.Resources.Button_Update
     End Sub
 
     Public ReadOnly Property Updated As Boolean
@@ -77,7 +77,7 @@ Public Class FilePropertiesFormSingle
         RadioFileShort.Checked = True
 
         If IsVolumeLabel Then
-            Caption = "Volume Label"
+            Caption = My.Resources.Label_VolumeLabel
             Maxlength = 11
             TxtExtension.Visible = False
             MskExtensionHex.Visible = False
@@ -116,9 +116,9 @@ Public Class FilePropertiesFormSingle
             TxtExtension.Text = _DirectoryEntry.GetFileExtension(True)
             MskExtensionHex.SetHex(_DirectoryEntry.Extension)
             If IsDirectory Then
-                Caption = "Directory Name"
+                Caption = My.Resources.Label_DirectoryName
             Else
-                Caption = "File Name"
+                Caption = My.Resources.Label_FileName
             End If
             FlowLayoutFileNameType.Visible = Not Deleted
         End If
@@ -130,7 +130,7 @@ Public Class FilePropertiesFormSingle
         TxtFile.Width = MskFileHex.Width
 
         If Deleted Then
-            Caption &= " (Deleted)"
+            Caption &= " " & InParens(My.Resources.Label_Deleted)
             TxtFile.Mask = "\" & FileName.Substring(0, 1) & Strings.StrDup(Maxlength - 1, "C")
             TxtFile.Text = FileName.Substring(1)
         Else

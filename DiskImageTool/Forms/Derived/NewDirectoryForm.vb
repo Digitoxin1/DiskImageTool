@@ -9,8 +9,8 @@ Public Class NewDirectoryForm
     Public Sub New()
         MyBase.New()
 
-        MyBase.Text = "New Directory"
-        BtnUpdate.Text = "Add"
+        MyBase.Text = My.Resources.Caption_NewDirectory
+        BtnUpdate.Text = My.Resources.Button_Add
     End Sub
 
     Public ReadOnly Property NewDirectoryData As Byte()
@@ -74,7 +74,7 @@ Public Class NewDirectoryForm
 
         TxtLFN.Text = ""
 
-        GroupFileName.Text = "Directory Name"
+        GroupFileName.Text = My.Resources.Label_DirectoryName
 
         ChkArchive.Checked = False
         ChkReadOnly.Checked = False

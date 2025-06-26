@@ -12,8 +12,8 @@ Public Class FilePropertiesFormMultiple
         _Disk = Disk
         _DirectoryEntries = DirectoryEntries
 
-        MyBase.Text = "File Properties"
-        BtnUpdate.Text = "Update"
+        MyBase.Text = My.Resources.Caption_FileProperties
+        BtnUpdate.Text = My.Resources.Button_Update
     End Sub
 
     Public ReadOnly Property Updated As Boolean
@@ -61,8 +61,8 @@ Public Class FilePropertiesFormMultiple
         IsVolumeLabel = False
         Deleted = False
 
-        GroupFileName.Text = "Multiple Files"
-        LblMultipleFiles.Text = "(" & _DirectoryEntries.Count & " Files Selected)"
+        GroupFileName.Text = My.Resources.Label_MultipleFiles
+        LblMultipleFiles.Text = InParens(_DirectoryEntries.Count & " " & My.Resources.Label_FilesSelected)
 
         For Each DirectoryEntry In _DirectoryEntries
             DT = DirectoryEntry.GetLastWriteDate

@@ -122,6 +122,7 @@ Partial Class MainForm
         Me.MenuOptionsCheckUpdate = New System.Windows.Forms.ToolStripMenuItem()
         Me.MenuOptionsDragDrop = New System.Windows.Forms.ToolStripMenuItem()
         Me.MenuOptionsDisplayTitles = New System.Windows.Forms.ToolStripMenuItem()
+        Me.MenuOptionsDisplayLanguage = New System.Windows.Forms.ToolStripMenuItem()
         Me.MenuOptionsSeparatorDebug = New System.Windows.Forms.ToolStripSeparator()
         Me.MenuOptionsExportUnknown = New System.Windows.Forms.ToolStripMenuItem()
         Me.MainMenuUpdateAvailable = New System.Windows.Forms.ToolStripMenuItem()
@@ -712,7 +713,7 @@ Partial Class MainForm
         '
         'MainMenuOptions
         '
-        Me.MainMenuOptions.DropDownItems.AddRange(New System.Windows.Forms.ToolStripItem() {Me.MenuOptionsCreateBackup, Me.MenuOptionsCheckUpdate, Me.MenuOptionsDragDrop, Me.MenuOptionsDisplayTitles, Me.MenuOptionsSeparatorDebug, Me.MenuOptionsExportUnknown})
+        Me.MainMenuOptions.DropDownItems.AddRange(New System.Windows.Forms.ToolStripItem() {Me.MenuOptionsCreateBackup, Me.MenuOptionsCheckUpdate, Me.MenuOptionsDragDrop, Me.MenuOptionsDisplayTitles, Me.MenuOptionsDisplayLanguage, Me.MenuOptionsSeparatorDebug, Me.MenuOptionsExportUnknown})
         Me.MainMenuOptions.Name = "MainMenuOptions"
         resources.ApplyResources(Me.MainMenuOptions, "MainMenuOptions")
         '
@@ -739,6 +740,11 @@ Partial Class MainForm
         Me.MenuOptionsDisplayTitles.CheckOnClick = True
         Me.MenuOptionsDisplayTitles.Name = "MenuOptionsDisplayTitles"
         resources.ApplyResources(Me.MenuOptionsDisplayTitles, "MenuOptionsDisplayTitles")
+        '
+        'MenuOptionsDisplayLanguage
+        '
+        Me.MenuOptionsDisplayLanguage.Name = "MenuOptionsDisplayLanguage"
+        resources.ApplyResources(Me.MenuOptionsDisplayLanguage, "MenuOptionsDisplayLanguage")
         '
         'MenuOptionsSeparatorDebug
         '
@@ -1336,4 +1342,5 @@ Partial Class MainForm
     Friend WithEvents MenuOptionsCheckUpdate As ToolStripMenuItem
     Friend WithEvents MainMenuUpdateAvailable As ToolStripMenuItem
     Friend WithEvents MenuOptionsDisplayTitles As ToolStripMenuItem
+    Friend WithEvents MenuOptionsDisplayLanguage As ToolStripMenuItem
 End Class

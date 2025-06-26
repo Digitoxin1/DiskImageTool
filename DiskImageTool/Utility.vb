@@ -1,4 +1,5 @@
-﻿Imports System.Runtime.InteropServices
+﻿Imports System.Globalization
+Imports System.Runtime.InteropServices
 Imports System.Text
 Imports DiskImageTool.DiskImage
 
@@ -7,6 +8,14 @@ Module Utility
         Dim Name As String
         Dim Extension As String
     End Structure
+
+    Public Sub ApplyResourcesToControls(ctrl As Control, res As System.ComponentModel.ComponentResourceManager)
+        res.ApplyResources(ctrl, ctrl.Name)
+
+        For Each child As Control In ctrl.Controls
+            ApplyResourcesToControls(child, res)
+        Next
+    End Sub
 
     Public Function ByteArrayToString(b() As Byte) As String
         Dim SB As New Text.StringBuilder(b.Length)
@@ -91,6 +100,29 @@ Module Utility
             b(i) = FillChar
         Next
     End Sub
+
+    Public Function GetAvailableLanguages() As List(Of CultureInfo)
+        Dim result As New List(Of CultureInfo)()
+        Dim baseDir As String = AppDomain.CurrentDomain.BaseDirectory
+        Dim assemblyName As String = Reflection.Assembly.GetExecutingAssembly().GetName().Name
+
+        For Each dir As String In IO.Directory.GetDirectories(baseDir)
+            Try
+                Dim cultureName As String = IO.Path.GetFileName(dir)
+                Dim culture As New CultureInfo(cultureName)
+
+                ' Check if satellite assembly exists for the culture
+                Dim satPath As String = IO.Path.Combine(dir, $"{assemblyName}.resources.dll")
+                If IO.File.Exists(satPath) Then
+                    result.Add(culture)
+                End If
+            Catch ex As CultureNotFoundException
+                ' Ignore folders that aren't valid cultures
+            End Try
+        Next
+
+        Return result
+    End Function
 
     Public Function GetDownloadsFolder() As String
 

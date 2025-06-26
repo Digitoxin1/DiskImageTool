@@ -397,7 +397,7 @@ Public Class BootSectorForm
 
     Private Sub SetHelpString(HelpString As String, ParamArray ControlArray() As Control)
         For Each Control In ControlArray
-            _HelpProvider1.SetHelpString(Control, HelpString)
+            _HelpProvider1.SetHelpString(Control, HelpString.Replace("\t", vbTab))
             _HelpProvider1.SetShowHelp(Control, True)
         Next
     End Sub

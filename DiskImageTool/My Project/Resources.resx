@@ -1389,8 +1389,8 @@ Allowed Values: 0, 128</value>
     <value>Extended Boot Signature
 
 Typical Values:
-28h	Volume Serial Number is present
-29h	Volume Serial Number, Volume Label, and File System ID are present</value>
+28h\tVolume Serial Number is present
+29h\tVolume Serial Number, Volume Label, and File System ID are present</value>
   </data>
   <data name="BootSectorForm_Help_FileSystemType" xml:space="preserve">
     <value>The File System ID is informational only
@@ -1411,16 +1411,16 @@ Allowed Values: EB xx 90, E9 xx xx</value>
     <value>Media Descriptor
 
 Allowed Values:
-F0	1.44M, 2.88M, DMF, 3.5 XDF Floppy
-F8	Fixed Disk
-F9	720K, 1.2M, 5.25 XDF Floppy
-FA	Unused
-FB	Unused
-FC	180K Floppy
-FD	360K Floppy
-FE	160K Floppy
-FF	320K Floppy
-ED	Tandy 2000 Floppy</value>
+F0\t1.44M, 2.88M, DMF, 3.5 XDF Floppy
+F8\tFixed Disk
+F9\t720K, 1.2M, 5.25 XDF Floppy
+FA\tUnused
+FB\tUnused
+FC\t180K Floppy
+FD\t360K Floppy
+FE\t160K Floppy
+FF\t320K Floppy
+ED\tTandy 2000 Floppy</value>
   </data>
   <data name="BootSectorForm_Help_NumberOfFATs" xml:space="preserve">
     <value>Number of File Allocation Table (FAT) copies on the volume
@@ -1433,16 +1433,16 @@ Note: This value should typically be set to 2.</value>
     <value>Number of physical heads (sides) on the disk
 
 Typical Values:
-160K Floppy	1
-180K Floppy	1
-320K Floppy	2
-360K Floppy	2
-720K Floppy	2
-1.2M Floppy	2
-1.44M Floppy	2
-2.88M Floppy	2
-DMF Floppy	2
-XDF Floppy	2</value>
+160K Floppy\t1
+180K Floppy\t1
+320K Floppy\t2
+360K Floppy\t2
+720K Floppy\t2
+1.2M Floppy\t2
+1.44M Floppy\t2
+2.88M Floppy\t2
+DMF Floppy\t2
+XDF Floppy\t2</value>
   </data>
   <data name="BootSectorForm_Help_ReservedSectors" xml:space="preserve">
     <value>Number of reserved sectors in the reserved region of the volume starting at the first sector of the volume
@@ -1457,16 +1457,16 @@ Note: This value should typically be set to 1.</value>
 Allowed Values: Value multiplied by 32 should be an even multiple of Bytes Per Sector
 
 Typical Values:
-160K Floppy	64
-180K Floppy	64
-320K Floppy	112
-360K Floppy	112
-720K Floppy	112
-1.2M Floppy	224
-1.44M Floppy	224
-2.88M Floppy	240
-DMF Floppy	16
-XDF Floppy	224</value>
+160K Floppy\t64
+180K Floppy\t64
+320K Floppy\t112
+360K Floppy\t112
+720K Floppy\t112
+1.2M Floppy\t224
+1.44M Floppy\t224
+2.88M Floppy\t240
+DMF Floppy\t16
+XDF Floppy\t224</value>
   </data>
   <data name="BootSectorForm_Help_SectorCountLarge" xml:space="preserve">
     <value>Total number of sectors in a FAT16 volume larger than 65535 sectors
@@ -1477,17 +1477,17 @@ Note: This value should be 0 for all floppy disks</value>
     <value>Total number of sectors in the volume
 
 Typical Values:
-160K Floppy		320
-180K Floppy		360
-320K Floppy		640
-360K Floppy		720
-720K Floppy		1440
-1.2M Floppy		2400
-1.44M Floppy		2880
-2.88M Floppy		5760
-DMF Floppy		3360
-5.25 XDF Floppy		3040
-3.5 XDF Floppy		3680</value>
+160K Floppy\t\t320
+180K Floppy\t\t360
+320K Floppy\t\t640
+360K Floppy\t\t720
+720K Floppy\t\t1440
+1.2M Floppy\t\t2400
+1.44M Floppy\t\t2880
+2.88M Floppy\t\t5760
+DMF Floppy\t\t3360
+5.25 XDF Floppy\t\t3040
+3.5 XDF Floppy\t\t3680</value>
   </data>
   <data name="BootSectorForm_Help_SectorsPerCluster" xml:space="preserve">
     <value>Number of sectors per cluster
@@ -1495,48 +1495,48 @@ DMF Floppy		3360
 Allowed Values: 1, 2, 4, 8, 16, 32, 128
 
 Typical Values:
-160K Floppy	1
-180K Floppy	1
-320K Floppy	2
-360K Floppy	2
-720K Floppy	2
-1.2M Floppy	1
-1.44M Floppy	1
-2.88M Floppy	2
-DMF Floppy	2 or 4
-XDF Floppy	1</value>
+160K Floppy\t1
+180K Floppy\t1
+320K Floppy\t2
+360K Floppy\t2
+720K Floppy\t2
+1.2M Floppy\t1
+1.44M Floppy\t1
+2.88M Floppy\t2
+DMF Floppy\t2 or 4
+XDF Floppy\t1</value>
   </data>
   <data name="BootSectorForm_Help_SectorsPerFAT" xml:space="preserve">
     <value>Number of sectors allocated to each copy of the File Allocation Table (FAT)
 
 Typical Values:
-160K Floppy		1
-180K Floppy		2
-320K Floppy		1
-360K Floppy		2
-720K Floppy		3
-1.2M Floppy		7
-1.44M Floppy		9
-2.88M Floppy		9
-DMF Floppy		3 or 5
-5.25 XDF Floppy		9
-3.5 XDF Floppy		11</value>
+160K Floppy\t\t1
+180K Floppy\t\t2
+320K Floppy\t\t1
+360K Floppy\t\t2
+720K Floppy\t\t3
+1.2M Floppy\t\t7
+1.44M Floppy\t\t9
+2.88M Floppy\t\t9
+DMF Floppy\t\t3 or 5
+5.25 XDF Floppy\t\t9
+3.5 XDF Floppy\t\t11</value>
   </data>
   <data name="BootSectorForm_Help_SectorsPerTrack" xml:space="preserve">
     <value>Number of sectors per track on the disk
 
 Typical Values:
-160K Floppy		8
-180K Floppy		9
-320K Floppy		8
-360K Floppy		9
-720K Floppy		9
-1.2M Floppy		15
-1.44M Floppy		18
-2.88M Floppy		36
-DMF Floppy		21
-5.25 XDF Floppy		19
-3.5 XDF Floppy		23</value>
+160K Floppy\t\t8
+180K Floppy\t\t9
+320K Floppy\t\t8
+360K Floppy\t\t9
+720K Floppy\t\t9
+1.2M Floppy\t\t15
+1.44M Floppy\t\t18
+2.88M Floppy\t\t36
+DMF Floppy\t\t21
+5.25 XDF Floppy\t\t19
+3.5 XDF Floppy\t\t23</value>
   </data>
   <data name="BootSectorForm_Help_VolumeLabel" xml:space="preserve">
     <value>This field typically matches the 11-byte volume label in the root directory of the disk or has the value "NO NAME    " if the volume label does not exist.</value>
@@ -1548,5 +1548,41 @@ Note: This id is typically generated by converting the current date and time int
   </data>
   <data name="BootSectorForm_Help_VolumeSerialNumberButton" xml:space="preserve">
     <value>Generate a new volume serial number based on a user supplied date and time</value>
+  </data>
+  <data name="Button_Add" xml:space="preserve">
+    <value>&amp;Add</value>
+  </data>
+  <data name="Button_Update" xml:space="preserve">
+    <value>&amp;Update</value>
+  </data>
+  <data name="Caption_FileProperties" xml:space="preserve">
+    <value>File Properties</value>
+  </data>
+  <data name="Caption_NewDirectory" xml:space="preserve">
+    <value>New Directory</value>
+  </data>
+  <data name="Label_DirectoryName" xml:space="preserve">
+    <value>Directory Name</value>
+  </data>
+  <data name="Label_FileName" xml:space="preserve">
+    <value>File Name</value>
+  </data>
+  <data name="Label_FilesSelected" xml:space="preserve">
+    <value>Files Selected</value>
+  </data>
+  <data name="Label_MultipleFiles" xml:space="preserve">
+    <value>Multiple Files</value>
+  </data>
+  <data name="Label_VolumeLabel" xml:space="preserve">
+    <value>Volume Label</value>
+  </data>
+  <data name="Dialog_LanguageSettings" xml:space="preserve">
+    <value>Language settings will take effect after the application is restarted.</value>
+  </data>
+  <data name="Menu_English" xml:space="preserve">
+    <value>English</value>
+  </data>
+  <data name="Menu_SystemDefault" xml:space="preserve">
+    <value>System Default</value>
   </data>
 </root>
