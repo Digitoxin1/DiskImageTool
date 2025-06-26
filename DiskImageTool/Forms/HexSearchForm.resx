@@ -229,7 +229,7 @@
     <value>0</value>
   </data>
   <data name="BtnOK.Text" xml:space="preserve">
-    <value>&amp;OK</value>
+    <value>&amp;Ok</value>
   </data>
   <data name="&gt;&gt;BtnOK.Name" xml:space="preserve">
     <value>BtnOK</value>

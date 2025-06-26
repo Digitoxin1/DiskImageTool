@@ -86,7 +86,7 @@ Module FloppyDiskIO
         Dim DriveInfo = New IO.DriveInfo(DriveName)
         Dim IsReady = DriveInfo.IsReady
         Dim NewDiskFormat = GetFloppyDiskFormat(Disk.BPB, False)
-        Dim NewFormatName = GetFloppyDiskFormatName(NewDiskFormat) & " " & My.Resources.Label_Floppy
+        Dim NewFormatName = String.Format(My.Resources.Label_Floppy, GetFloppyDiskFormatName(NewDiskFormat))
         Dim DetectedFormat As FloppyDiskFormat = 255
         Dim DoFormat = Not IsReady
 
@@ -114,7 +114,7 @@ Module FloppyDiskIO
                 Msg = String.Format(My.Resources.Dialog_DiskNotEmptyWarning_UnknownFormat, DriveLetter, Environment.NewLine, NewFormatName)
             Else
                 DoFormat = True
-                Dim DetectedFormatName = GetFloppyDiskFormatName(DetectedFormat) & " " & My.Resources.Label_Floppy
+                Dim DetectedFormatName = String.Format(My.Resources.Label_Floppy, GetFloppyDiskFormatName(DetectedFormat))
                 Msg = String.Format(My.Resources.Dialog_DiskNotEmptyWarning_Mismatched, DriveLetter, DetectedFormatName, Environment.NewLine, NewFormatName)
             End If
             MsgBoxResult = MsgBox(Msg, MsgBoxStyle.Exclamation Or MsgBoxStyle.OkCancel Or MsgBoxStyle.DefaultButton2)

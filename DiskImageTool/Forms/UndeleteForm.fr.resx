@@ -129,7 +129,4 @@
   <data name="$this.Text" xml:space="preserve">
     <value>Récupérer le fichier supprimé</value>
   </data>
-  <data name="LabelFileName.Text" xml:space="preserve">
-    <value>{FILENAME}</value>
-  </data>
 </root>

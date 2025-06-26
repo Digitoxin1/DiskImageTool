@@ -133,6 +133,7 @@
   </data>
   <data name="LblCaption.Text" xml:space="preserve">
     <value>{Caption}</value>
+    <comment>@Invariant</comment>
   </data>
   <data name="LblCaption.TextAlign" type="System.Drawing.ContentAlignment, System.Drawing">
     <value>TopCenter</value>
@@ -194,6 +195,7 @@
   </data>
   <data name="RadioFill00.Text" xml:space="preserve">
     <value>0x00</value>
+    <comment>@Invariant</comment>
   </data>
   <data name="&gt;&gt;RadioFill00.Name" xml:space="preserve">
     <value>RadioFill00</value>
@@ -221,6 +223,7 @@
   </data>
   <data name="RadioFillF6.Text" xml:space="preserve">
     <value>0xF6</value>
+    <comment>@Invariant</comment>
   </data>
   <data name="&gt;&gt;RadioFillF6.Name" xml:space="preserve">
     <value>RadioFillF6</value>

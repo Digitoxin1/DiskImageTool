@@ -297,6 +297,15 @@ Namespace My.Resources
         End Property
         
         '''<summary>
+        '''  Looks up a localized string similar to Allowed Values:.
+        '''</summary>
+        Friend ReadOnly Property BootSectorForm_Help_AllowedValues() As String
+            Get
+                Return ResourceManager.GetString("BootSectorForm_Help_AllowedValues", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
         '''  Looks up a localized string similar to Indicated to the BIOS that the sector is executable.
         '''
         '''Allowed Values:
@@ -424,19 +433,7 @@ Namespace My.Resources
         End Property
         
         '''<summary>
-        '''  Looks up a localized string similar to Number of physical heads (sides) on the disk
-        '''
-        '''Typical Values:
-        '''160K Floppy\t1
-        '''180K Floppy\t1
-        '''320K Floppy\t2
-        '''360K Floppy\t2
-        '''720K Floppy\t2
-        '''1.2M Floppy\t2
-        '''1.44M Floppy\t2
-        '''2.88M Floppy\t2
-        '''DMF Floppy\t2
-        '''XDF Floppy\t2.
+        '''  Looks up a localized string similar to Number of physical heads (sides) on the disk.
         '''</summary>
         Friend ReadOnly Property BootSectorForm_Help_NumberOfHeads() As String
             Get
@@ -473,19 +470,7 @@ Namespace My.Resources
         '''<summary>
         '''  Looks up a localized string similar to Number of entries in the root directory
         '''
-        '''Allowed Values: Value multiplied by 32 should be an even multiple of Bytes Per Sector
-        '''
-        '''Typical Values:
-        '''160K Floppy\t64
-        '''180K Floppy\t64
-        '''320K Floppy\t112
-        '''360K Floppy\t112
-        '''720K Floppy\t112
-        '''1.2M Floppy\t224
-        '''1.44M Floppy\t224
-        '''2.88M Floppy\t240
-        '''DMF Floppy\t16
-        '''XDF Floppy\t224.
+        '''Allowed Values: Value multiplied by 32 should be an even multiple of Bytes Per Sector.
         '''</summary>
         Friend ReadOnly Property BootSectorForm_Help_RootDirectoryEntries() As String
             Get
@@ -505,20 +490,7 @@ Namespace My.Resources
         End Property
         
         '''<summary>
-        '''  Looks up a localized string similar to Total number of sectors in the volume
-        '''
-        '''Typical Values:
-        '''160K Floppy\t\t320
-        '''180K Floppy\t\t360
-        '''320K Floppy\t\t640
-        '''360K Floppy\t\t720
-        '''720K Floppy\t\t1440
-        '''1.2M Floppy\t\t2400
-        '''1.44M Floppy\t\t2880
-        '''2.88M Floppy\t\t5760
-        '''DMF Floppy\t\t3360
-        '''5.25 XDF Floppy\t\t3040
-        '''3.5 XDF Floppy\t\t3680.
+        '''  Looks up a localized string similar to Total number of sectors in the volume.
         '''</summary>
         Friend ReadOnly Property BootSectorForm_Help_SectorCountSmall() As String
             Get
@@ -529,19 +501,7 @@ Namespace My.Resources
         '''<summary>
         '''  Looks up a localized string similar to Number of sectors per cluster
         '''
-        '''Allowed Values: 1, 2, 4, 8, 16, 32, 128
-        '''
-        '''Typical Values:
-        '''160K Floppy\t1
-        '''180K Floppy\t1
-        '''320K Floppy\t2
-        '''360K Floppy\t2
-        '''720K Floppy\t2
-        '''1.2M Floppy\t1
-        '''1.44M Floppy\t1
-        '''2.88M Floppy\t2
-        '''DMF Floppy\t2 or 4
-        '''XDF Floppy\t1.
+        '''Allowed Values: 1, 2, 4, 8, 16, 32, 128.
         '''</summary>
         Friend ReadOnly Property BootSectorForm_Help_SectorsPerCluster() As String
             Get
@@ -550,20 +510,7 @@ Namespace My.Resources
         End Property
         
         '''<summary>
-        '''  Looks up a localized string similar to Number of sectors allocated to each copy of the File Allocation Table (FAT)
-        '''
-        '''Typical Values:
-        '''160K Floppy\t\t1
-        '''180K Floppy\t\t2
-        '''320K Floppy\t\t1
-        '''360K Floppy\t\t2
-        '''720K Floppy\t\t3
-        '''1.2M Floppy\t\t7
-        '''1.44M Floppy\t\t9
-        '''2.88M Floppy\t\t9
-        '''DMF Floppy\t\t3 or 5
-        '''5.25 XDF Floppy\t\t9
-        '''3.5 XDF Floppy\t\t11.
+        '''  Looks up a localized string similar to Number of sectors allocated to each copy of the File Allocation Table (FAT).
         '''</summary>
         Friend ReadOnly Property BootSectorForm_Help_SectorsPerFAT() As String
             Get
@@ -572,24 +519,20 @@ Namespace My.Resources
         End Property
         
         '''<summary>
-        '''  Looks up a localized string similar to Number of sectors per track on the disk
-        '''
-        '''Typical Values:
-        '''160K Floppy\t\t8
-        '''180K Floppy\t\t9
-        '''320K Floppy\t\t8
-        '''360K Floppy\t\t9
-        '''720K Floppy\t\t9
-        '''1.2M Floppy\t\t15
-        '''1.44M Floppy\t\t18
-        '''2.88M Floppy\t\t36
-        '''DMF Floppy\t\t21
-        '''5.25 XDF Floppy\t\t19
-        '''3.5 XDF Floppy\t\t23.
+        '''  Looks up a localized string similar to Number of sectors per track on the disk.
         '''</summary>
         Friend ReadOnly Property BootSectorForm_Help_SectorsPerTrack() As String
             Get
                 Return ResourceManager.GetString("BootSectorForm_Help_SectorsPerTrack", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  Looks up a localized string similar to Typical Values:.
+        '''</summary>
+        Friend ReadOnly Property BootSectorForm_Help_TypicalValues() As String
+            Get
+                Return ResourceManager.GetString("BootSectorForm_Help_TypicalValues", resourceCulture)
             End Get
         End Property
         
@@ -2918,7 +2861,7 @@ Namespace My.Resources
         End Property
         
         '''<summary>
-        '''  Looks up a localized string similar to Floppy.
+        '''  Looks up a localized string similar to {0} Floppy.
         '''</summary>
         Friend ReadOnly Property Label_Floppy() As String
             Get

@@ -299,12 +299,15 @@
   </data>
   <data name="Label_Hash_CRC32" xml:space="preserve">
     <value>CRC32</value>
+    <comment>@Invariant</comment>
   </data>
   <data name="Label_Hash_MD5" xml:space="preserve">
     <value>MD5</value>
+    <comment>@Invariant</comment>
   </data>
   <data name="Label_Hash_SHA1" xml:space="preserve">
     <value>SHA-1</value>
+    <comment>@Invariant</comment>
   </data>
   <data name="Label_ImageCountPlural" xml:space="preserve">
     <value>{0} Images</value>
@@ -593,12 +596,15 @@
   </data>
   <data name="DataInspector_ISODate" xml:space="preserve">
     <value>yyyy-MM-dd</value>
+    <comment>@Invariant</comment>
   </data>
   <data name="DataInspector_ISODateTime" xml:space="preserve">
     <value>yyyy-MM-dd HH:mm:ss</value>
+    <comment>@Invariant</comment>
   </data>
   <data name="DataInspector_ISOTime" xml:space="preserve">
     <value>HH:mm:ss</value>
+    <comment>@Invariant</comment>
   </data>
   <data name="DataInspector_Label_Binary" xml:space="preserve">
     <value>Binary (8 bit)</value>
@@ -608,9 +614,11 @@
   </data>
   <data name="DataInspector_Label_CRC16" xml:space="preserve">
     <value>CRC16</value>
+    <comment>@Invariant</comment>
   </data>
   <data name="DataInspector_Label_CRC32" xml:space="preserve">
     <value>CRC32</value>
+    <comment>@Invariant</comment>
   </data>
   <data name="DataInspector_Label_DOSDate" xml:space="preserve">
     <value>DOS Date</value>
@@ -626,18 +634,23 @@
   </data>
   <data name="DataInspector_Label_Int16" xml:space="preserve">
     <value>Int16</value>
+    <comment>@Invariant</comment>
   </data>
   <data name="DataInspector_Label_Int24" xml:space="preserve">
     <value>Int24</value>
+    <comment>@Invariant</comment>
   </data>
   <data name="DataInspector_Label_Int32" xml:space="preserve">
     <value>Int32</value>
+    <comment>@Invariant</comment>
   </data>
   <data name="DataInspector_Label_Int64" xml:space="preserve">
     <value>Int64</value>
+    <comment>@Invariant</comment>
   </data>
   <data name="DataInspector_Label_Int8" xml:space="preserve">
     <value>Int8</value>
+    <comment>@Invariant</comment>
   </data>
   <data name="DataInspector_Label_Invalid" xml:space="preserve">
     <value>Invalid</value>
@@ -647,18 +660,23 @@
   </data>
   <data name="DataInspector_Label_UInt16" xml:space="preserve">
     <value>UInt16</value>
+    <comment>@Invariant</comment>
   </data>
   <data name="DataInspector_Label_UInt24" xml:space="preserve">
     <value>UInt24</value>
+    <comment>@Invariant</comment>
   </data>
   <data name="DataInspector_Label_UInt32" xml:space="preserve">
     <value>UInt32</value>
+    <comment>@Invariant</comment>
   </data>
   <data name="DataInspector_Label_UInt64" xml:space="preserve">
     <value>UInt64</value>
+    <comment>@Invariant</comment>
   </data>
   <data name="DataInspector_Label_UInt8" xml:space="preserve">
     <value>UInt8</value>
+    <comment>@Invariant</comment>
   </data>
   <data name="DataInspector_Label_WeakBits" xml:space="preserve">
     <value>Weak Bits</value>
@@ -908,9 +926,11 @@
   </data>
   <data name="IsoDateFormat" xml:space="preserve">
     <value>yyyy-MM-dd</value>
+    <comment>@Invariant</comment>
   </data>
   <data name="IsoDateTimeFormat" xml:space="preserve">
     <value>yyyy-MM-dd  HH:mm:ss</value>
+    <comment>@Invariant</comment>
   </data>
   <data name="Label_Bytes" xml:space="preserve">
     <value>bytes</value>
@@ -919,7 +939,7 @@
     <value>Cluster</value>
   </data>
   <data name="Label_Floppy" xml:space="preserve">
-    <value>Floppy</value>
+    <value>{0} Floppy</value>
   </data>
   <data name="Label_Mismatched" xml:space="preserve">
     <value>Mismatched</value>
@@ -1363,12 +1383,7 @@ Typically this is some indication of what system formatted the volume.</value>
 Note: Data highlighted in green is the bootstrap code.</value>
   </data>
   <data name="BootSectorForm_Help_BootSectorSignature" xml:space="preserve">
-    <value>Indicated to the BIOS that the sector is executable.
-
-Allowed Values:
-AA 55
-00 00 (PC DOS 1.x)
-54 42 (Tandy 2000)</value>
+    <value>Indicated to the BIOS that the sector is executable.</value>
   </data>
   <data name="BootSectorForm_Help_BytesPerSector" xml:space="preserve">
     <value>Number of bytes in each physical sector
@@ -1430,19 +1445,7 @@ Allowed Values: Any non-zero value
 Note: This value should typically be set to 2.</value>
   </data>
   <data name="BootSectorForm_Help_NumberOfHeads" xml:space="preserve">
-    <value>Number of physical heads (sides) on the disk
-
-Typical Values:
-160K Floppy\t1
-180K Floppy\t1
-320K Floppy\t2
-360K Floppy\t2
-720K Floppy\t2
-1.2M Floppy\t2
-1.44M Floppy\t2
-2.88M Floppy\t2
-DMF Floppy\t2
-XDF Floppy\t2</value>
+    <value>Number of physical heads (sides) on the disk</value>
   </data>
   <data name="BootSectorForm_Help_ReservedSectors" xml:space="preserve">
     <value>Number of reserved sectors in the reserved region of the volume starting at the first sector of the volume
@@ -1454,19 +1457,7 @@ Note: This value should typically be set to 1.</value>
   <data name="BootSectorForm_Help_RootDirectoryEntries" xml:space="preserve">
     <value>Number of entries in the root directory
 
-Allowed Values: Value multiplied by 32 should be an even multiple of Bytes Per Sector
-
-Typical Values:
-160K Floppy\t64
-180K Floppy\t64
-320K Floppy\t112
-360K Floppy\t112
-720K Floppy\t112
-1.2M Floppy\t224
-1.44M Floppy\t224
-2.88M Floppy\t240
-DMF Floppy\t16
-XDF Floppy\t224</value>
+Allowed Values: Value multiplied by 32 should be an even multiple of Bytes Per Sector</value>
   </data>
   <data name="BootSectorForm_Help_SectorCountLarge" xml:space="preserve">
     <value>Total number of sectors in a FAT16 volume larger than 65535 sectors
@@ -1474,69 +1465,18 @@ XDF Floppy\t224</value>
 Note: This value should be 0 for all floppy disks</value>
   </data>
   <data name="BootSectorForm_Help_SectorCountSmall" xml:space="preserve">
-    <value>Total number of sectors in the volume
-
-Typical Values:
-160K Floppy\t\t320
-180K Floppy\t\t360
-320K Floppy\t\t640
-360K Floppy\t\t720
-720K Floppy\t\t1440
-1.2M Floppy\t\t2400
-1.44M Floppy\t\t2880
-2.88M Floppy\t\t5760
-DMF Floppy\t\t3360
-5.25 XDF Floppy\t\t3040
-3.5 XDF Floppy\t\t3680</value>
+    <value>Total number of sectors in the volume</value>
   </data>
   <data name="BootSectorForm_Help_SectorsPerCluster" xml:space="preserve">
     <value>Number of sectors per cluster
 
-Allowed Values: 1, 2, 4, 8, 16, 32, 128
-
-Typical Values:
-160K Floppy\t1
-180K Floppy\t1
-320K Floppy\t2
-360K Floppy\t2
-720K Floppy\t2
-1.2M Floppy\t1
-1.44M Floppy\t1
-2.88M Floppy\t2
-DMF Floppy\t2 or 4
-XDF Floppy\t1</value>
+Allowed Values: 1, 2, 4, 8, 16, 32, 128</value>
   </data>
   <data name="BootSectorForm_Help_SectorsPerFAT" xml:space="preserve">
-    <value>Number of sectors allocated to each copy of the File Allocation Table (FAT)
-
-Typical Values:
-160K Floppy\t\t1
-180K Floppy\t\t2
-320K Floppy\t\t1
-360K Floppy\t\t2
-720K Floppy\t\t3
-1.2M Floppy\t\t7
-1.44M Floppy\t\t9
-2.88M Floppy\t\t9
-DMF Floppy\t\t3 or 5
-5.25 XDF Floppy\t\t9
-3.5 XDF Floppy\t\t11</value>
+    <value>Number of sectors allocated to each copy of the File Allocation Table (FAT)</value>
   </data>
   <data name="BootSectorForm_Help_SectorsPerTrack" xml:space="preserve">
-    <value>Number of sectors per track on the disk
-
-Typical Values:
-160K Floppy\t\t8
-180K Floppy\t\t9
-320K Floppy\t\t8
-360K Floppy\t\t9
-720K Floppy\t\t9
-1.2M Floppy\t\t15
-1.44M Floppy\t\t18
-2.88M Floppy\t\t36
-DMF Floppy\t\t21
-5.25 XDF Floppy\t\t19
-3.5 XDF Floppy\t\t23</value>
+    <value>Number of sectors per track on the disk</value>
   </data>
   <data name="BootSectorForm_Help_VolumeLabel" xml:space="preserve">
     <value>This field typically matches the 11-byte volume label in the root directory of the disk or has the value "NO NAME    " if the volume label does not exist.</value>
@@ -1581,8 +1521,15 @@ Note: This id is typically generated by converting the current date and time int
   </data>
   <data name="Menu_English" xml:space="preserve">
     <value>English</value>
+    <comment>@Invariant</comment>
   </data>
   <data name="Menu_SystemDefault" xml:space="preserve">
     <value>System Default</value>
+  </data>
+  <data name="BootSectorForm_Help_TypicalValues" xml:space="preserve">
+    <value>Typical Values:</value>
+  </data>
+  <data name="BootSectorForm_Help_AllowedValues" xml:space="preserve">
+    <value>Allowed Values:</value>
   </data>
 </root>

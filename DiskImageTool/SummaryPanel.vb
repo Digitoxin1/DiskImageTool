@@ -460,10 +460,10 @@ Module SummaryPanel
                 Dim DiskFormatBySize = GetFloppyDiskFormat(Disk.Image.Length)
 
                 If Disk.DiskFormat <> FloppyDiskFormat.FloppyUnknown Or DiskFormatBySize = FloppyDiskFormat.FloppyUnknown Then
-                    .AddItem(DiskGroup, My.Resources.SummaryPanel_DiskType, DiskFormatString & " " & My.Resources.Label_Floppy)
+                    .AddItem(DiskGroup, My.Resources.SummaryPanel_DiskType, String.Format(My.Resources.Label_Floppy, DiskFormatString))
                 Else
                     Dim DiskFormatStringBySize = GetFloppyDiskFormatName(DiskFormatBySize)
-                    .AddItem(DiskGroup, My.Resources.SummaryPanel_DiskType, DiskFormatStringBySize & " " & My.Resources.Label_Floppy & " " & InParens(My.Resources.SummaryPanel_CustomFormat))
+                    .AddItem(DiskGroup, My.Resources.SummaryPanel_DiskType, String.Format(My.Resources.Label_Floppy, DiskFormatStringBySize) & " " & InParens(My.Resources.SummaryPanel_CustomFormat))
                 End If
 
                 If IsDiskFormatXDF(Disk.DiskFormat) Then

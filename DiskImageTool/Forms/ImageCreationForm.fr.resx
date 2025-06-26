@@ -138,37 +138,10 @@
   <data name="GroupBoxStandard.Text" xml:space="preserve">
     <value>Formats standards</value>
   </data>
-  <data name="RadioFormatTandy2000.Text" xml:space="preserve">
-    <value>Tandy 2000</value>
-  </data>
   <data name="RadioFormatDMF2048.Text" xml:space="preserve">
     <value>DMF (2048 Clusters)</value>
   </data>
   <data name="RadioFormatDMF1024.Text" xml:space="preserve">
     <value>DMF (1024 Clusters)</value>
-  </data>
-  <data name="RadioFormat720.Text" xml:space="preserve">
-    <value>720K</value>
-  </data>
-  <data name="RadioFormat360.Text" xml:space="preserve">
-    <value>360K</value>
-  </data>
-  <data name="RadioFormat320.Text" xml:space="preserve">
-    <value>320K</value>
-  </data>
-  <data name="RadioFormat2880.Text" xml:space="preserve">
-    <value>2.88M</value>
-  </data>
-  <data name="RadioFormat180.Text" xml:space="preserve">
-    <value>180K</value>
-  </data>
-  <data name="RadioFormat160.Text" xml:space="preserve">
-    <value>160K</value>
-  </data>
-  <data name="RadioFormat1440.Text" xml:space="preserve">
-    <value>1.44M</value>
-  </data>
-  <data name="RadioFormat1200.Text" xml:space="preserve">
-    <value>1.2M</value>
   </data>
 </root>

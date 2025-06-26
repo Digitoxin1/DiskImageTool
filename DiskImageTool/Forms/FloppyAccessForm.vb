@@ -51,7 +51,7 @@ Public Class FloppyAccessForm
         ReDim _DiskBuffer(_BPB.ImageSize - 1)
         Dim StatusTypeString = IIf(AccessType = FloppyAccessType.Read, My.Resources.Label_Reading, My.Resources.Label_Writing)
 
-        Me.Text = StatusTypeString & " " & GetFloppyDiskFormatName(_BPB, False) & " " & My.Resources.Label_Floppy
+        Me.Text = StatusTypeString & " " & String.Format(My.Resources.Label_Floppy, GetFloppyDiskFormatName(_BPB, False))
         StatusType.Text = StatusTypeString
 
         btnAbort.Text = My.Resources.Label_Abort

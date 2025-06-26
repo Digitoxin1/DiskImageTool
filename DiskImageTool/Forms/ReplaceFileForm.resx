@@ -278,6 +278,7 @@
   </data>
   <data name="ChkFileDateOriginal.Text" xml:space="preserve">
     <value>{1/1/1980 12:00 AM}</value>
+    <comment>@Invariant</comment>
   </data>
   <data name="&gt;&gt;ChkFileDateOriginal.Name" xml:space="preserve">
     <value>ChkFileDateOriginal</value>
@@ -305,6 +306,7 @@
   </data>
   <data name="ChkFilenameOriginal.Text" xml:space="preserve">
     <value>{FILENAME}</value>
+    <comment>@Invariant</comment>
   </data>
   <data name="&gt;&gt;ChkFilenameOriginal.Name" xml:space="preserve">
     <value>ChkFilenameOriginal</value>
@@ -468,6 +470,7 @@
   </data>
   <data name="ChkFileDateNew.Text" xml:space="preserve">
     <value>{1/1/1980 12:00 AM}</value>
+    <comment>@Invariant</comment>
   </data>
   <data name="&gt;&gt;ChkFileDateNew.Name" xml:space="preserve">
     <value>ChkFileDateNew</value>
@@ -585,6 +588,7 @@
   </data>
   <data name="LblFileName.Text" xml:space="preserve">
     <value>{FILENAME}</value>
+    <comment>@Invariant</comment>
   </data>
   <data name="&gt;&gt;LblFileName.Name" xml:space="preserve">
     <value>LblFileName</value>
@@ -672,6 +676,7 @@
   </data>
   <data name="LblFileDate.Text" xml:space="preserve">
     <value>{1/1/1980 12:00 AM}</value>
+    <comment>@Invariant</comment>
   </data>
   <data name="&gt;&gt;LblFileDate.Name" xml:space="preserve">
     <value>LblFileDate</value>
@@ -930,6 +935,7 @@
   </data>
   <data name="RadioFillF6.Text" xml:space="preserve">
     <value>0xF6</value>
+    <comment>@Invariant</comment>
   </data>
   <data name="&gt;&gt;RadioFillF6.Name" xml:space="preserve">
     <value>RadioFillF6</value>
@@ -957,6 +963,7 @@
   </data>
   <data name="RadioFill00.Text" xml:space="preserve">
     <value>0x00</value>
+    <comment>@Invariant</comment>
   </data>
   <data name="&gt;&gt;RadioFill00.Name" xml:space="preserve">
     <value>RadioFill00</value>

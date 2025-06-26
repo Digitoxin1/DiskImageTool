@@ -228,12 +228,6 @@
   <data name="ToolStripStatusTrackSize.Text" xml:space="preserve">
     <value>Taille 0</value>
   </data>
-  <data name="StatusStripBottom.Text" xml:space="preserve">
-    <value>StatusStrip1</value>
-  </data>
-  <data name="ToolStripMain.Text" xml:space="preserve">
-    <value>ToolStrip1</value>
-  </data>
   <data name="ToolStripStatusTrack.Text" xml:space="preserve">
     <value>Piste 0</value>
   </data>

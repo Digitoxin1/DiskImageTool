@@ -135,7 +135,4 @@
   <data name="BtnYesToAll.Text" xml:space="preserve">
     <value>Oui pour &amp;tout</value>
   </data>
-  <data name="LblCaption.Text" xml:space="preserve">
-    <value>{CAPTION}</value>
-  </data>
 </root>

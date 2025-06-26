@@ -469,6 +469,7 @@
   </data>
   <data name="ToolStripMain.Text" xml:space="preserve">
     <value>ToolStrip1</value>
+    <comment>@Invariant</comment>
   </data>
   <data name="&gt;&gt;ToolStripMain.Name" xml:space="preserve">
     <value>ToolStripMain</value>
@@ -820,6 +821,7 @@
   </data>
   <data name="StatusStrip1.Text" xml:space="preserve">
     <value>StatusStrip1</value>
+    <comment>@Invariant</comment>
   </data>
   <data name="&gt;&gt;StatusStrip1.Name" xml:space="preserve">
     <value>StatusStrip1</value>

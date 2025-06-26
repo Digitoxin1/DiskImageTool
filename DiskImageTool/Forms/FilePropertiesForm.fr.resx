@@ -183,9 +183,6 @@
   <data name="ChkSystem.Text" xml:space="preserve">
     <value>Système</value>
   </data>
-  <data name="RadioFileShort.Text" xml:space="preserve">
-    <value>8.3</value>
-  </data>
   <data name="BtnUpdate.Text" xml:space="preserve">
     <value>&amp;Mettre à jour</value>
   </data>

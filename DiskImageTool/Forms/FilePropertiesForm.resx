@@ -1190,6 +1190,7 @@
   </data>
   <data name="RadioFileShort.Text" xml:space="preserve">
     <value>8.3</value>
+    <comment>@Invariant</comment>
   </data>
   <data name="&gt;&gt;RadioFileShort.Name" xml:space="preserve">
     <value>RadioFileShort</value>

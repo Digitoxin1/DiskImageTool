@@ -536,6 +536,7 @@
   </data>
   <data name="LblSelected.Text" xml:space="preserve">
     <value>{00000 of 00000}</value>
+    <comment>@Invariant</comment>
   </data>
   <data name="&gt;&gt;LblSelected.Name" xml:space="preserve">
     <value>LblSelected</value>
@@ -566,6 +567,7 @@
   </data>
   <data name="LblBytesFree.Text" xml:space="preserve">
     <value>{9,999,999}</value>
+    <comment>@Invariant</comment>
   </data>
   <data name="&gt;&gt;LblBytesFree.Name" xml:space="preserve">
     <value>LblBytesFree</value>
@@ -596,6 +598,7 @@
   </data>
   <data name="LblBytesRequired.Text" xml:space="preserve">
     <value>{9,999,999,999}</value>
+    <comment>@Invariant</comment>
   </data>
   <data name="&gt;&gt;LblBytesRequired.Name" xml:space="preserve">
     <value>LblBytesRequired</value>

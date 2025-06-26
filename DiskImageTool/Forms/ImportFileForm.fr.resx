@@ -171,13 +171,4 @@
   <data name="FileSizeOnDisk.Text" xml:space="preserve">
     <value>Taille sur la disquette</value>
   </data>
-  <data name="LblBytesFree.Text" xml:space="preserve">
-    <value>{9,999,999}</value>
-  </data>
-  <data name="LblBytesRequired.Text" xml:space="preserve">
-    <value>{9,999,999,999}</value>
-  </data>
-  <data name="LblSelected.Text" xml:space="preserve">
-    <value>{00000 of 00000}</value>
-  </data>
 </root>

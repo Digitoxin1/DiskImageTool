@@ -299,6 +299,7 @@
   </data>
   <data name="LabelFileName.Text" xml:space="preserve">
     <value>{FILENAME}</value>
+    <comment>@Invariant</comment>
   </data>
   <data name="&gt;&gt;LabelFileName.Name" xml:space="preserve">
     <value>LabelFileName</value>

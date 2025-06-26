@@ -139,6 +139,7 @@
   </data>
   <data name="RadioFormat2880.Text" xml:space="preserve">
     <value>2.88M</value>
+    <comment>@Invariant</comment>
   </data>
   <data name="&gt;&gt;RadioFormat2880.Name" xml:space="preserve">
     <value>RadioFormat2880</value>
@@ -172,6 +173,7 @@
   </data>
   <data name="RadioFormat1440.Text" xml:space="preserve">
     <value>1.44M</value>
+    <comment>@Invariant</comment>
   </data>
   <data name="&gt;&gt;RadioFormat1440.Name" xml:space="preserve">
     <value>RadioFormat1440</value>
@@ -205,6 +207,7 @@
   </data>
   <data name="RadioFormat1200.Text" xml:space="preserve">
     <value>1.2M</value>
+    <comment>@Invariant</comment>
   </data>
   <data name="&gt;&gt;RadioFormat1200.Name" xml:space="preserve">
     <value>RadioFormat1200</value>
@@ -238,6 +241,7 @@
   </data>
   <data name="RadioFormat720.Text" xml:space="preserve">
     <value>720K</value>
+    <comment>@Invariant</comment>
   </data>
   <data name="&gt;&gt;RadioFormat720.Name" xml:space="preserve">
     <value>RadioFormat720</value>
@@ -271,6 +275,7 @@
   </data>
   <data name="RadioFormat360.Text" xml:space="preserve">
     <value>360K</value>
+    <comment>@Invariant</comment>
   </data>
   <data name="&gt;&gt;RadioFormat360.Name" xml:space="preserve">
     <value>RadioFormat360</value>
@@ -304,6 +309,7 @@
   </data>
   <data name="RadioFormat320.Text" xml:space="preserve">
     <value>320K</value>
+    <comment>@Invariant</comment>
   </data>
   <data name="&gt;&gt;RadioFormat320.Name" xml:space="preserve">
     <value>RadioFormat320</value>
@@ -337,6 +343,7 @@
   </data>
   <data name="RadioFormat180.Text" xml:space="preserve">
     <value>180K</value>
+    <comment>@Invariant</comment>
   </data>
   <data name="&gt;&gt;RadioFormat180.Name" xml:space="preserve">
     <value>RadioFormat180</value>
@@ -370,6 +377,7 @@
   </data>
   <data name="RadioFormat160.Text" xml:space="preserve">
     <value>160K</value>
+    <comment>@Invariant</comment>
   </data>
   <data name="&gt;&gt;RadioFormat160.Name" xml:space="preserve">
     <value>RadioFormat160</value>
@@ -403,6 +411,7 @@
   </data>
   <data name="RadioFormatTandy2000.Text" xml:space="preserve">
     <value>Tandy 2000</value>
+    <comment>@Invariant</comment>
   </data>
   <data name="&gt;&gt;RadioFormatTandy2000.Name" xml:space="preserve">
     <value>RadioFormatTandy2000</value>

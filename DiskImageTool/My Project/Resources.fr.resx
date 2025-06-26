@@ -225,12 +225,6 @@
   <data name="Label_FilteredImageCountSingular" xml:space="preserve">
     <value>{0} image sur {1}</value>
   </data>
-  <data name="Label_Hash_CRC32" xml:space="preserve">
-    <value>CRC32</value>
-  </data>
-  <data name="Label_Hash_SHA1" xml:space="preserve">
-    <value>SHA-1</value>
-  </data>
   <data name="Label_ImageCountPlural" xml:space="preserve">
     <value>{0} images</value>
   </data>
@@ -432,12 +426,6 @@
   <data name="DataInspector_Label_Bitstream" xml:space="preserve">
     <value>Flux binaire</value>
   </data>
-  <data name="DataInspector_Label_CRC16" xml:space="preserve">
-    <value>CRC16</value>
-  </data>
-  <data name="DataInspector_Label_CRC32" xml:space="preserve">
-    <value>CRC32</value>
-  </data>
   <data name="DataInspector_Label_DOSDate" xml:space="preserve">
     <value>Date DOS</value>
   </data>
@@ -447,38 +435,8 @@
   <data name="DataInspector_Label_DOSTime" xml:space="preserve">
     <value>Heure DOS</value>
   </data>
-  <data name="DataInspector_Label_Int16" xml:space="preserve">
-    <value>Int16</value>
-  </data>
-  <data name="DataInspector_Label_Int24" xml:space="preserve">
-    <value>Int24</value>
-  </data>
-  <data name="DataInspector_Label_Int32" xml:space="preserve">
-    <value>Int32</value>
-  </data>
-  <data name="DataInspector_Label_Int64" xml:space="preserve">
-    <value>Int64</value>
-  </data>
-  <data name="DataInspector_Label_Int8" xml:space="preserve">
-    <value>Int8</value>
-  </data>
   <data name="DataInspector_Label_Region" xml:space="preserve">
     <value>Région</value>
-  </data>
-  <data name="DataInspector_Label_UInt16" xml:space="preserve">
-    <value>UInt16</value>
-  </data>
-  <data name="DataInspector_Label_UInt24" xml:space="preserve">
-    <value>UInt24</value>
-  </data>
-  <data name="DataInspector_Label_UInt32" xml:space="preserve">
-    <value>UInt32</value>
-  </data>
-  <data name="DataInspector_Label_UInt64" xml:space="preserve">
-    <value>UInt64</value>
-  </data>
-  <data name="DataInspector_Label_UInt8" xml:space="preserve">
-    <value>UInt8</value>
   </data>
   <data name="DirectorytEntry_Attributes" xml:space="preserve">
     <value>Attributs</value>
@@ -574,7 +532,7 @@
     <value>Cluster</value>
   </data>
   <data name="Label_Floppy" xml:space="preserve">
-    <value>Disquette</value>
+    <value>Disquette {0}</value>
   </data>
   <data name="SummaryPanel_AltOEMName" xml:space="preserve">
     <value>Nom OEM alternatif</value>
@@ -901,9 +859,6 @@ Valeurs typiques:
   <data name="Caption_HexEditor" xml:space="preserve">
     <value>Éditeur hexadécimal</value>
   </data>
-  <data name="DataInspector_ISOTime" xml:space="preserve">
-    <value>HH:mm:ss</value>
-  </data>
   <data name="FloppyImageType_HFEImage" xml:space="preserve">
     <value>HxC HFE (v1) Image</value>
   </data>
@@ -959,12 +914,7 @@ Valeurs typiques:
     <value>Synchronisation du champ d’index</value>
   </data>
   <data name="BootSectorForm_Help_BootSectorSignature" xml:space="preserve">
-    <value>Indique au BIOS que le secteur est exécutable.
-
-Valeurs autorisées:
-AA 55
-00 00 (PC DOS 1.x)
-54 42 (Tandy 2000)</value>
+    <value>Indique au BIOS que le secteur est exécutable.</value>
   </data>
   <data name="BootSectorForm_Help_DriveNumber" xml:space="preserve">
     <value>Numéro de lecteur pour l’interruption 13h
@@ -1034,9 +984,6 @@ Valeurs autorisées: 0, 128</value>
   <data name="HexView_LostClusters" xml:space="preserve">
     <value>Clusters perdus</value>
   </data>
-  <data name="Label_Hash_MD5" xml:space="preserve">
-    <value>MD5</value>
-  </data>
   <data name="BootSectorForm_Help_MediaDescriptor" xml:space="preserve">
     <value>Descripteur de média
 
@@ -1104,19 +1051,7 @@ Remarque: doit être 512 pour toutes les disquettes.</value>
   <data name="BootSectorForm_Help_RootDirectoryEntries" xml:space="preserve">
     <value>Nombre d’entrées dans le répertoire racine
 
-Valeurs autorisées: la valeur × 32 doit être un multiple pair du nombre d’octets par secteur
-
-Valeurs typiques :
-Disquette 160K\t\t64
-Disquette 180K\t\t64
-Disquette 320K\t\t112
-Disquette 360K\t\t112
-Disquette 720K\t\t112
-Disquette 1.2M\t\t224
-Disquette 1.44M\t\t224
-Disquette 2.88M\t\t240
-Disquette DMF\t\t16
-Disquette XDF\t\t224</value>
+Valeurs autorisées: la valeur × 32 doit être un multiple pair du nombre d’octets par secteur</value>
   </data>
   <data name="BPB_NumberOfFATs" xml:space="preserve">
     <value>Nombre de FAT</value>
@@ -1132,19 +1067,7 @@ Remarque: normalement, cette valeur est fixée à 2.</value>
     <value>Nombre de têtes</value>
   </data>
   <data name="BootSectorForm_Help_NumberOfHeads" xml:space="preserve">
-    <value>Nombre de têtes physiques (faces) sur la disquette
-
-Valeurs typiques:
-Disquette 160K\t\t1
-Disquette 180K\t\t1
-Disquette 320K\t\t2
-Disquette 360K\t\t2
-Disquette 720K\t\t2
-Disquette 1.2M\t\t2
-Disquette 1.44M\t\t2
-Disquette 2.88M\t\t2
-Disquette DMF\t\t2
-Disquette XDF\t\t2</value>
+    <value>Nombre de têtes physiques (faces) sur la disquette</value>
   </data>
   <data name="BootSectorForm_Help_ReservedSectors" xml:space="preserve">
     <value>Nombre de secteurs réservés au début du volume
@@ -1154,53 +1077,15 @@ Valeurs autorisées: toute valeur non nulle
 Remarque: normalement, cette valeur est fixée à 1.</value>
   </data>
   <data name="BootSectorForm_Help_SectorsPerFAT" xml:space="preserve">
-    <value>Nombre de secteurs alloués à chaque copie de la FAT
-
-Valeurs typiques:
-Disquette 160K\t\t1
-Disquette 180K\t\t2
-Disquette 320K\t\t1
-Disquette 360K\t\t2
-Disquette 720K\t\t3
-Disquette 1.2M\t\t7
-Disquette 1.44M\t\t9
-Disquette 2.88M\t\t9
-Disquette DMF 3 ou\t5
-Disquette XDF 5.25\t9
-Disquette XDF 3.5\t11</value>
+    <value>Nombre de secteurs alloués à chaque copie de la FAT</value>
   </data>
   <data name="BootSectorForm_Help_SectorsPerCluster" xml:space="preserve">
     <value>Nombre de secteurs par cluster
 
-Valeurs autorisées: 1, 2, 4, 8, 16, 32, 128
-
-Valeurs typiques:
-Disquette 160K\t\t1
-Disquette 180K\t\t1
-Disquette 320K\t\t2
-Disquette 360K\t\t2
-Disquette 720K\t\t2
-Disquette 1.2M\t\t1
-Disquette 1.44M\t\t1
-Disquette 2.88M\t\t2
-Disquette DMF\t\t2 ou 4
-Disquette XDF\t\t1</value>
+Valeurs autorisées: 1, 2, 4, 8, 16, 32, 128</value>
   </data>
   <data name="BootSectorForm_Help_SectorsPerTrack" xml:space="preserve">
-    <value>Nombre de secteurs par piste
-
-Valeurs typiques:
-Disquette 160K\t\t8
-Disquette 180K\t\t9
-Disquette 320K\t\t8
-Disquette 360K\t\t9
-Disquette 720K\t\t9
-Disquette 1.2M\t\t15
-Disquette 1.44M\t\t18
-Disquette 2.88M\t\t36
-Disquette DMF\t\t21
-Disquette XDF 5.25\t19
-Disquette XDF 3.5\t23</value>
+    <value>Nombre de secteurs par piste</value>
   </data>
   <data name="BootSectorForm_Help_HiddenSectors" xml:space="preserve">
     <value>Nombre de secteurs précédant le premier secteur du volume
@@ -1408,20 +1293,7 @@ Remarque : les données surlignées en vert sont le code du chargeur.</value>
 Remarque : cette valeur doit être 0 pour toutes les disquettes</value>
   </data>
   <data name="BootSectorForm_Help_SectorCountSmall" xml:space="preserve">
-    <value>Nombre total de secteurs dans le volume
-
-Valeurs typiques:
-Disquette 160K\t\t320
-Disquette 180K\t\t360
-Disquette 320K\t\t640
-Disquette 360K\t\t720
-Disquette 720K\t\t1440
-Disquette 1.2M\t\t2400
-Disquette 1.44M\t\t2880
-Disquette 2.88M\t\t5760
-Disquette DMF\t\t3360
-Disquette XDF 5.25\t3040
-Disquette XDF 3.5\t3680</value>
+    <value>Nombre total de secteurs dans le volume</value>
   </data>
   <data name="BPB_SectorCountSmall" xml:space="preserve">
     <value>Nombre total de secteurs</value>
@@ -1534,18 +1406,6 @@ Disquette XDF 3.5\t3680</value>
   <data name="Dialog_DiskWrittenSuccessfully" xml:space="preserve">
     <value>Votre disquette a été écrite avec succès.{0}{0}Veuillez retirer la disquette du lecteur et l’écrire-protéger maintenant.{0}{0}Avertissement : si vous continuez sans écrire-protéger la disquette, le système d’exploitation pourrait y apporter des modifications dès que vous fermerez cette fenêtre.</value>
   </data>
-  <data name="IsoDateFormat" xml:space="preserve">
-    <value>yyyy-MM-dd</value>
-  </data>
-  <data name="DataInspector_ISODate" xml:space="preserve">
-    <value>yyyy-MM-dd</value>
-  </data>
-  <data name="IsoDateTimeFormat" xml:space="preserve">
-    <value>yyyy-MM-dd  HH:mm:ss</value>
-  </data>
-  <data name="DataInspector_ISODateTime" xml:space="preserve">
-    <value>yyyy-MM-dd HH:mm:ss</value>
-  </data>
   <data name="FileType_ZipArchive" xml:space="preserve">
     <value>Archive Zip</value>
   </data>
@@ -1576,13 +1436,16 @@ Disquette XDF 3.5\t3680</value>
   <data name="Label_MultipleFiles" xml:space="preserve">
     <value>Fichiers multiples</value>
   </data>
-  <data name="Menu_English" xml:space="preserve">
-    <value>English</value>
-  </data>
   <data name="Dialog_LanguageSettings" xml:space="preserve">
     <value>Les paramètres de langue prendront effet après le redémarrage de l'application.</value>
   </data>
   <data name="Menu_SystemDefault" xml:space="preserve">
     <value>Langue système</value>
+  </data>
+  <data name="BootSectorForm_Help_TypicalValues" xml:space="preserve">
+    <value>Valeurs typiques:</value>
+  </data>
+  <data name="BootSectorForm_Help_AllowedValues" xml:space="preserve">
+    <value>Valeurs autorisées:</value>
   </data>
 </root>

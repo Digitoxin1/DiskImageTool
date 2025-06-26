@@ -214,6 +214,7 @@
   </metadata>
   <data name="FileModified.Text" xml:space="preserve">
     <value />
+    <comment>@Invariant</comment>
   </data>
   <data name="FileModified.Width" type="System.Int32, mscorlib">
     <value>27</value>
@@ -617,6 +618,7 @@
   </metadata>
   <data name="FileCRC32.Text" xml:space="preserve">
     <value>CRC32</value>
+    <comment>@Invariant</comment>
   </data>
   <data name="FileCRC32.Width" type="System.Int32, mscorlib">
     <value>70</value>
@@ -752,6 +754,7 @@
   </data>
   <data name="MainMenuHelp.Text" xml:space="preserve">
     <value>?</value>
+    <comment>@Invariant</comment>
   </data>
   <metadata name="FileMenuSeparator2.GenerateMember" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
     <value>False</value>
@@ -965,6 +968,7 @@
   </data>
   <data name="MenuStripTop.Text" xml:space="preserve">
     <value>MenuStrip1</value>
+    <comment>@Invariant</comment>
   </data>
   <data name="&gt;&gt;MenuStripTop.Name" xml:space="preserve">
     <value>MenuStripTop</value>
@@ -1264,6 +1268,7 @@
   </data>
   <data name="ToolStripTop.Text" xml:space="preserve">
     <value>ToolStrip1</value>
+    <comment>@Invariant</comment>
   </data>
   <data name="&gt;&gt;ToolStripTop.Name" xml:space="preserve">
     <value>ToolStripTop</value>
@@ -1351,6 +1356,7 @@
   </data>
   <data name="StatusStripBottom.Text" xml:space="preserve">
     <value>StatusStripMain</value>
+    <comment>@Invariant</comment>
   </data>
   <data name="&gt;&gt;StatusStripBottom.Name" xml:space="preserve">
     <value>StatusStripBottom</value>
@@ -1516,12 +1522,14 @@
   </data>
   <data name="FileNTReserved.Text" xml:space="preserve">
     <value>NT</value>
+    <comment>@Invariant</comment>
   </data>
   <data name="FileNTReserved.Width" type="System.Int32, mscorlib">
     <value>30</value>
   </data>
   <data name="FileFAT32Cluster.Text" xml:space="preserve">
     <value>FAT32</value>
+    <comment>@Invariant</comment>
   </data>
   <data name="FileFAT32Cluster.Width" type="System.Int32, mscorlib">
     <value>50</value>

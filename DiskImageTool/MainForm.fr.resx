@@ -258,9 +258,6 @@
   <data name="ToolStripModified.Text" xml:space="preserve">
     <value>0 image(s) modifiée(s)</value>
   </data>
-  <data name="MainMenuHelp.Text" xml:space="preserve">
-    <value>?</value>
-  </data>
   <data name="MenuHelpAbout.Text" xml:space="preserve">
     <value>À propos de DiskImageTool</value>
   </data>
@@ -296,9 +293,6 @@
   </data>
   <data name="FileStartingCluster.Text" xml:space="preserve">
     <value>Cluster</value>
-  </data>
-  <data name="FileCRC32.Text" xml:space="preserve">
-    <value>CRC32</value>
   </data>
   <data name="MenuOptionsCreateBackup.Text" xml:space="preserve">
     <value>Créer une sauvegarde lors de l’enregistrement</value>
@@ -345,9 +339,6 @@
   <data name="MainMenuFilters.Text" xml:space="preserve">
     <value>&amp;Filtres</value>
   </data>
-  <data name="FileFAT32Cluster.Text" xml:space="preserve">
-    <value>FAT32</value>
-  </data>
   <data name="MenuHexFAT.Text" xml:space="preserve">
     <value>Table d’&amp;allocation de fichiers</value>
   </data>
@@ -390,9 +381,6 @@
   <data name="FileLFN.Text" xml:space="preserve">
     <value>Nom long de fichier</value>
   </data>
-  <data name="MenuStripTop.Text" xml:space="preserve">
-    <value>MenuStrip1</value>
-  </data>
   <data name="ToolStripStatusModified.Text" xml:space="preserve">
     <value>Modifié</value>
   </data>
@@ -401,9 +389,6 @@
   </data>
   <data name="FileName.Text" xml:space="preserve">
     <value>Nom</value>
-  </data>
-  <data name="FileNTReserved.Text" xml:space="preserve">
-    <value>NT</value>
   </data>
   <data name="ToolStripOEMNameLabel.Text" xml:space="preserve">
     <value>Nom OEM</value>
@@ -464,12 +449,6 @@
   </data>
   <data name="FileSize.Text" xml:space="preserve">
     <value>Taille</value>
-  </data>
-  <data name="StatusStripBottom.Text" xml:space="preserve">
-    <value>StatusStripMain</value>
-  </data>
-  <data name="ToolStripTop.Text" xml:space="preserve">
-    <value>ToolStrip1</value>
   </data>
   <data name="ToolStripFileTrack.Text" xml:space="preserve">
     <value>Piste 0.0</value>

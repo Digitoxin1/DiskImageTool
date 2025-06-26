@@ -80,7 +80,7 @@ Public Class FloppyReadOptionsForm
             If _Format = FloppyDiskFormat.FloppyUnknown Then
                 FormatName = My.Resources.Label_Unknown
             Else
-                FormatName = GetFloppyDiskFormatName(_Format) & " " & My.Resources.Label_Floppy
+                FormatName = String.Format(My.Resources.Label_Floppy, GetFloppyDiskFormatName(_Format))
             End If
 
             Return FormatName & IIf(_Detected, " " & InParens(My.Resources.Label_Detected), "")

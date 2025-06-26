@@ -237,12 +237,6 @@
   <data name="ToolStripStatusSide.Text" xml:space="preserve">
     <value>Face 0</value>
   </data>
-  <data name="StatusStrip1.Text" xml:space="preserve">
-    <value>StatusStrip1</value>
-  </data>
-  <data name="ToolStripMain.Text" xml:space="preserve">
-    <value>ToolStrip1</value>
-  </data>
   <data name="ToolStripBtnSelectTrack.ToolTipText" xml:space="preserve">
     <value>Piste</value>
   </data>

@@ -120,12 +120,6 @@
   <data name="LblFileSizeError.Text" xml:space="preserve">
     <value>(Erreur)</value>
   </data>
-  <data name="RadioFill00.Text" xml:space="preserve">
-    <value>0x00</value>
-  </data>
-  <data name="RadioFillF6.Text" xml:space="preserve">
-    <value>0xF6</value>
-  </data>
   <data name="BtnCancel.Text" xml:space="preserve">
     <value>Annuler</value>
   </data>
@@ -152,21 +146,6 @@
   </data>
   <data name="$this.Text" xml:space="preserve">
     <value>Remplacer le fichier</value>
-  </data>
-  <data name="LblFileName.Text" xml:space="preserve">
-    <value>{FILENAME}</value>
-  </data>
-  <data name="ChkFilenameOriginal.Text" xml:space="preserve">
-    <value>{FILENAME}</value>
-  </data>
-  <data name="LblFileDate.Text" xml:space="preserve">
-    <value>{1/1/1980 12:00 AM}</value>
-  </data>
-  <data name="ChkFileDateNew.Text" xml:space="preserve">
-    <value>{1/1/1980 12:00 AM}</value>
-  </data>
-  <data name="ChkFileDateOriginal.Text" xml:space="preserve">
-    <value>{1/1/1980 12:00 AM}</value>
   </data>
   <data name="LblFileSize.Text" xml:space="preserve">
     <value>{0 bytes}</value>

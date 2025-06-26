@@ -332,6 +332,7 @@
   </data>
   <data name="LblCaption.Text" xml:space="preserve">
     <value>{CAPTION}</value>
+    <comment>@Invariant</comment>
   </data>
   <data name="&gt;&gt;LblCaption.Name" xml:space="preserve">
     <value>LblCaption</value>

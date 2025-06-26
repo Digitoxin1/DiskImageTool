@@ -129,7 +129,4 @@
   <data name="Label1.Text" xml:space="preserve">
     <value>Type de disquette</value>
   </data>
-  <data name="lblMessage.Text" xml:space="preserve">
-    <value>{Message}</value>
-  </data>
 </root>
