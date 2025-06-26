@@ -2,6 +2,9 @@
 Imports DiskImageTool.DiskImage
 
 Public Class ImportFileForm
+    Private Const COLUMN_CREATION_TIME As String = "CreationTime"
+    Private Const COLUMN_LAST_ACCESS_TIME As String = "LastAccessTime"
+    Private Const COLUMN_IS_SELECTED As String = "IsSelected"
     Private ReadOnly _Directory As IDirectory
     Private _FileList As ImportDirectoryRoot
     Private _HasLFN As Boolean
@@ -132,14 +135,14 @@ Public Class ImportFileForm
 
         SubItem = Item.SubItems.Add(Format(File.CreationTime, My.Resources.IsoDateTimeFormat))
         SubItem.ForeColor = Color.Gray
-        SubItem.Name = "CreationTime"
+        SubItem.Name = COLUMN_CREATION_TIME
 
         SubItem = Item.SubItems.Add(Format(File.LastAccessTime, My.Resources.IsoDateFormat))
         SubItem.ForeColor = Color.Gray
-        SubItem.Name = "LastAccessTime"
+        SubItem.Name = COLUMN_LAST_ACCESS_TIME
 
         SubItem = Item.SubItems.Add(If(ImportFile.IsSelected, 0, 1))
-        SubItem.Name = "IsSelected"
+        SubItem.Name = COLUMN_IS_SELECTED
 
         ListViewFiles.Items.Add(Item)
     End Sub
@@ -254,7 +257,7 @@ Public Class ImportFileForm
             Else
                 ForeColor = SystemColors.WindowText
             End If
-            Item.SubItems.Item("CreationTime").ForeColor = ForeColor
+            Item.SubItems.Item(COLUMN_CREATION_TIME).ForeColor = ForeColor
         Next
     End Sub
 
@@ -271,7 +274,7 @@ Public Class ImportFileForm
             Else
                 ForeColor = SystemColors.WindowText
             End If
-            Item.SubItems.Item("LastAccessTime").ForeColor = ForeColor
+            Item.SubItems.Item(COLUMN_LAST_ACCESS_TIME).ForeColor = ForeColor
         Next
     End Sub
 
@@ -318,8 +321,8 @@ Public Class ImportFileForm
         Implements IComparer
 
         Public Function Compare(x As Object, y As Object) As Integer Implements IComparer.Compare
-            Dim Value1 As Integer = DirectCast(x, ListViewItem).SubItems("IsSelected").Text
-            Dim Value2 As Integer = DirectCast(y, ListViewItem).SubItems("IsSelected").Text
+            Dim Value1 As Integer = DirectCast(x, ListViewItem).SubItems(COLUMN_IS_SELECTED).Text
+            Dim Value2 As Integer = DirectCast(y, ListViewItem).SubItems(COLUMN_IS_SELECTED).Text
 
             Return Value1.CompareTo(Value2)
         End Function

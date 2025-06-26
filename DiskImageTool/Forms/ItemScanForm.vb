@@ -30,11 +30,11 @@ Public Class ItemScanForm
         _ItemsRemaining = ImageList.Count
 
         If ScanType = ScanType.ScanTypeFilters Then
-            Me.Text = "Scan Images"
-            _ProgressLabel = "Scanning"
+            Me.Text = My.Resources.Caption_ScanImages
+            _ProgressLabel = My.Resources.Label_Scanning
         Else
-            Me.Text = "Clean Images"
-            _ProgressLabel = "Processing"
+            Me.Text = My.Resources.Caption_CleanImages
+            _ProgressLabel = My.Resources.Label_Processing
         End If
 
         If ScanType = ScanType.ScanTypeFilters And _NewOnly Then
@@ -174,7 +174,7 @@ Public Class ItemScanForm
         If Not _Activated Then
             _EndScan = False
             _ScanComplete = False
-            LblScanning.Text = "Scanning"
+            LblScanning.Text = My.Resources.Label_Scanning
             BackgroundWorker1.RunWorkerAsync()
         End If
         _Activated = True

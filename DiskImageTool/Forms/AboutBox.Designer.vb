@@ -139,7 +139,7 @@ Partial Class AboutBox
         Me.OKButton.Name = "OKButton"
         Me.OKButton.Size = New System.Drawing.Size(75, 23)
         Me.OKButton.TabIndex = 0
-        Me.OKButton.Text = "&OK"
+        Me.OKButton.Text = "&Ok"
         '
         'AboutBox
         '

@@ -78,12 +78,12 @@ Public Class FloppyReadOptionsForm
             Dim FormatName As String
 
             If _Format = FloppyDiskFormat.FloppyUnknown Then
-                FormatName = "Unknown"
+                FormatName = My.Resources.Label_Unknown
             Else
-                FormatName = GetFloppyDiskFormatName(_Format) & " Floppy"
+                FormatName = GetFloppyDiskFormatName(_Format) & " " & My.Resources.Label_Floppy
             End If
 
-            Return FormatName & IIf(_Detected, " (Detected)", "")
+            Return FormatName & IIf(_Detected, " " & InParens(My.Resources.Label_Detected), "")
         End Function
     End Class
 

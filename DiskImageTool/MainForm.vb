@@ -1344,7 +1344,7 @@ Public Class MainForm
                 Dim Track = Disk.BPB.SectorToTrack(Sector)
                 Dim Side = Disk.BPB.SectorToSide(Sector)
 
-                ToolStripFileTrack.Text = String.Format(My.Resources.Label_Track, Track, Side)
+                ToolStripFileTrack.Text = FormatTrackSide(My.Resources.Label_Track, Track, Side)
                 ToolStripFileTrack.Visible = True
 
                 ToolStripFileTrack.GetCurrentParent.Refresh()
@@ -3438,8 +3438,8 @@ Public Class MainForm
 
                     For i = 0 To TrackList.Length - 1
                         Dim Track = TrackList(i)
-                        Dim Trackstring = String.Format(My.Resources.Label_Track, Track \ Disk.Image.SideCount, Track Mod Disk.Image.SideCount)
-                        MenuRawTrackDataSubMenuItemAdd(Track, Trackstring)
+                        Dim TrackString = FormatTrackSide(My.Resources.Label_Track, Track \ Disk.Image.SideCount, Track Mod Disk.Image.SideCount)
+                        MenuRawTrackDataSubMenuItemAdd(Track, TrackString)
                     Next
 
                     MenuHexRawTrackData.Enabled = True

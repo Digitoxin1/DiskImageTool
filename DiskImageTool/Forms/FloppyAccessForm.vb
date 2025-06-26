@@ -49,12 +49,12 @@ Public Class FloppyAccessForm
         _FloppyDrive = FloppyDrive
         _BPB = BPB
         ReDim _DiskBuffer(_BPB.ImageSize - 1)
-        Dim StatusTypeString = IIf(AccessType = FloppyAccessType.Read, "Reading", "Writing")
+        Dim StatusTypeString = IIf(AccessType = FloppyAccessType.Read, My.Resources.Label_Reading, My.Resources.Label_Writing)
 
-        Me.Text = StatusTypeString & " " & GetFloppyDiskFormatName(_BPB, False) & " Floppy"
+        Me.Text = StatusTypeString & " " & GetFloppyDiskFormatName(_BPB, False) & " " & My.Resources.Label_Floppy
         StatusType.Text = StatusTypeString
 
-        btnAbort.Text = "Abort"
+        btnAbort.Text = My.Resources.Label_Abort
 
         InitTables()
     End Sub
@@ -374,16 +374,31 @@ Public Class FloppyAccessForm
         End Select
     End Function
 
+    Private Function GetStatusError(Status As TrackStatus, Track As UShort, Side As UShort) As String
+        Select Case Status
+            Case TrackStatus.Reading
+                Return String.Format(My.Resources.Dialog_FloppyError_Reading, Track, Side)
+            Case TrackStatus.Writing
+                Return String.Format(My.Resources.Dialog_FloppyError_Writing, Track, Side)
+            Case TrackStatus.Verifying
+                Return String.Format(My.Resources.Dialog_FloppyError_Verifying, Track, Side)
+            Case TrackStatus.Formatting
+                Return String.Format(My.Resources.Dialog_FloppyError_Formatting, Track, Side)
+            Case Else
+                Return ""
+        End Select
+    End Function
+
     Private Function GetStatusText(Status As TrackStatus) As String
         Select Case Status
             Case TrackStatus.Reading
-                Return "Reading"
+                Return My.Resources.Label_Reading
             Case TrackStatus.Writing
-                Return "Writing"
+                Return My.Resources.Label_Writing
             Case TrackStatus.Verifying
-                Return "Verifying"
+                Return My.Resources.Label_Verifying
             Case TrackStatus.Formatting
-                Return "Formatting"
+                Return My.Resources.Label_Formatting
             Case Else
                 Return ""
         End Select
@@ -394,19 +409,31 @@ Public Class FloppyAccessForm
         Dim BadSectors = _SectorData.SectorCount - _SectorData.SectorsProcessed
         Dim Msg As String
         If _AccessType = FloppyAccessType.Read Then
-            Msg = "Error Reading " & BadSectors & " Sector".Pluralize(BadSectors) & " in Track " & Track & ", Side " & Side & "."
+            If BadSectors = 1 Then
+                Msg = String.Format(My.Resources.Dialog_FloppyError_Sector, BadSectors, Track, Side)
+            Else
+                Msg = String.Format(My.Resources.Dialog_FloppyError_Sectors, BadSectors, Track, Side)
+            End If
         Else
-            Msg = "Error " & GetStatusText(_LastStatus) & " Track " & Track & ", Side " & Side & "."
+            Msg = GetStatusError(_LastStatus, Track, Side)
         End If
         Dim MsgBoxResult = MsgBox(Msg, MsgBoxStyle.AbortRetryIgnore Or MsgBoxStyle.DefaultButton2)
 
         If MsgBoxResult = MsgBoxResult.Abort Then
             _TotalBadSectors += BadSectors
-            StatusBadSectors.Text = _TotalBadSectors & " Bad Sector".Pluralize(_TotalBadSectors)
+            If _TotalBadSectors = 1 Then
+                StatusBadSectors.Text = _TotalBadSectors & " " & My.Resources.Label_BadSector
+            Else
+                StatusBadSectors.Text = _TotalBadSectors & " " & My.Resources.Label_BadSectors
+            End If
             Return False
         ElseIf MsgBoxResult = MsgBoxResult.Ignore Then
             _TotalBadSectors += BadSectors
-            StatusBadSectors.Text = _TotalBadSectors & " Bad Sector".Pluralize(_TotalBadSectors)
+            If _TotalBadSectors = 1 Then
+                StatusBadSectors.Text = _TotalBadSectors & " " & My.Resources.Label_BadSector
+            Else
+                StatusBadSectors.Text = _TotalBadSectors & " " & My.Resources.Label_BadSectors
+            End If
             Dim SectorStart = _SectorData.SectorStart + _BPB.SectorsPerTrack
             If SectorStart < _BPB.SectorCount Then
                 _SectorData = New SectorData(SectorStart, _BPB.SectorsPerTrack)
@@ -582,8 +609,8 @@ Public Class FloppyAccessForm
             End If
         End If
 
-        StatusTrack.Text = "Track " & Track
-        StatusSide.Text = "Side " & Side
+        StatusTrack.Text = My.Resources.Label_Track & " " & Track
+        StatusSide.Text = My.Resources.Label_Side & " " & Side
     End Sub
 
     Private Sub BackgroundWorker1_RunWorkerCompleted(sender As Object, e As RunWorkerCompletedEventArgs) Handles BackgroundWorker1.RunWorkerCompleted
@@ -599,9 +626,9 @@ Public Class FloppyAccessForm
             If Not ConfirmAbort() Then
                 Exit Sub
             End If
-            StatusType.Text = "Aborted"
+            StatusType.Text = My.Resources.Label_Aborted
         Else
-            StatusType.Text = "Complete"
+            StatusType.Text = My.Resources.Label_Complete
         End If
 
         If _AccessType = FloppyAccessType.Write Then
@@ -616,7 +643,7 @@ Public Class FloppyAccessForm
             End If
         End If
 
-        btnAbort.Text = "Close"
+        btnAbort.Text = My.Resources.Label_Close
 
         'Me.Hide()
     End Sub

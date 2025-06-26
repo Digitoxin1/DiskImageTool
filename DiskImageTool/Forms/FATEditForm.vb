@@ -4,6 +4,15 @@ Imports DiskImageTool.DiskImage
 
 Public Class FATEditForm
     Const ValidHexChars = "0123456789ABCDEF"
+
+    Private Const GRID_COLUMN_CLUSTER As String = "GridCluster"
+    Private Const GRID_COLUMN_TYPE As String = "GridType"
+    Private Const GRID_COLUMN_VALUE As String = "GridValue"
+    Private Const GRID_COLUMN_ERROR As String = "GridError"
+    Private Const GRID_COLUMN_FILE As String = "GridFile"
+    Private Const GRID_COLUMN_FILE_INDEX As String = "GridFileIndex"
+    Private Const LABEL_CLUSTER As String = "lblCluster"
+
     Private ReadOnly _Disk As DiskImage.Disk
     Private ReadOnly _FATTable As DataTable
     Private ReadOnly _FATTables As FATTables
@@ -89,8 +98,8 @@ Public Class FATEditForm
         Dim Result As Boolean
 
         For Each Row As DataGridViewRow In DataGridViewFAT.Rows
-            Dim Cluster As UShort = Row.Cells("GridCluster").Value
-            Dim Value As UShort = Row.Cells("GridValue").Value
+            Dim Cluster As UShort = Row.Cells(GRID_COLUMN_CLUSTER).Value
+            Dim Value As UShort = Row.Cells(GRID_COLUMN_VALUE).Value
             If _Disk.FATTables.FAT(_FATTables.FATIndex).TableEntry(Cluster) <> Value Then
                 _FATTables.UpdateTableEntry(Cluster, Value, SyncFATs)
             End If
@@ -112,24 +121,24 @@ Public Class FATEditForm
         Dim FATTable = New DataTable("FATTable")
         Dim Column As DataColumn
 
-        Column = New DataColumn("Cluster", Type.GetType("System.UInt16")) With {
+        Column = New DataColumn(GRID_COLUMN_CLUSTER, Type.GetType("System.UInt16")) With {
             .ReadOnly = True
         }
         FATTable.Columns.Add(Column)
 
-        Column = New DataColumn("Type", Type.GetType("System.String"))
+        Column = New DataColumn(GRID_COLUMN_TYPE, Type.GetType("System.String"))
         FATTable.Columns.Add(Column)
 
-        Column = New DataColumn("Value", Type.GetType("System.UInt16"))
+        Column = New DataColumn(GRID_COLUMN_VALUE, Type.GetType("System.UInt16"))
         FATTable.Columns.Add(Column)
 
-        Column = New DataColumn("Error", Type.GetType("System.String"))
+        Column = New DataColumn(GRID_COLUMN_ERROR, Type.GetType("System.String"))
         FATTable.Columns.Add(Column)
 
-        Column = New DataColumn("File", Type.GetType("System.String"))
+        Column = New DataColumn(GRID_COLUMN_FILE, Type.GetType("System.String"))
         FATTable.Columns.Add(Column)
 
-        Column = New DataColumn("FileIndex", Type.GetType("System.UInt16"))
+        Column = New DataColumn(GRID_COLUMN_FILE_INDEX, Type.GetType("System.UInt16"))
         FATTable.Columns.Add(Column)
 
         'Column = New DataColumn("StartingCluster", Type.GetType("System.Boolean"))
@@ -142,23 +151,23 @@ Public Class FATEditForm
             Dim EntreyList = GetEntriesFromCluster(FAT, Cluster)
             Dim Value = FAT.TableEntry(Cluster)
             Dim Row = FATTable.NewRow
-            Row.Item("Cluster") = Cluster
-            Row.Item("Value") = Value
-            Row.Item("Type") = GetTypeFromValue(Value)
-            Row.Item("File") = GetFileFromOffsetList(EntreyList)
-            Row.Item("Error") = GetRowError(FAT, Cluster, Value)
+            Row.Item(GRID_COLUMN_CLUSTER) = Cluster
+            Row.Item(GRID_COLUMN_VALUE) = Value
+            Row.Item(GRID_COLUMN_TYPE) = GetTypeNameFromValue(Value)
+            Row.Item(GRID_COLUMN_FILE) = GetFileFromOffsetList(EntreyList)
+            Row.Item(GRID_COLUMN_ERROR) = GetRowError(FAT, Cluster, Value)
             If EntreyList IsNot Nothing Then
                 'Dim DirectoryEntry = _Disk.GetDirectoryEntryByOffset(OffsetList(0))
                 'Row.Item("StartingCluster") = (DirectoryEntry.StartingCluster = Cluster)
                 If Not _OffsetLookup.ContainsKey(EntreyList(0)) Then
                     _OffsetLookup.Add(EntreyList(0), OffsetIndex)
-                    Row.Item("FileIndex") = OffsetIndex
+                    Row.Item(GRID_COLUMN_FILE_INDEX) = OffsetIndex
                     OffsetIndex += 1
                 Else
-                    Row.Item("FileIndex") = _OffsetLookup.Item(EntreyList(0))
+                    Row.Item(GRID_COLUMN_FILE_INDEX) = _OffsetLookup.Item(EntreyList(0))
                 End If
             Else
-                Row.Item("FileIndex") = 0
+                Row.Item(GRID_COLUMN_FILE_INDEX) = 0
                 'Row.Item("StartingCluster") = False
             End If
             FATTable.Rows.Add(Row)
@@ -183,10 +192,10 @@ Public Class FATEditForm
     End Function
 
     Private Function GetGridCellType(Row As DataRow) As GridCellType
-        Dim Value As UShort = Row.Item("Value")
-        Dim FileIndex As UInteger = Row.Item("FileIndex")
+        Dim Value As UShort = Row.Item(GRID_COLUMN_VALUE)
+        Dim FileIndex As UInteger = Row.Item(GRID_COLUMN_FILE_INDEX)
         'Dim StartingCluster As Boolean = Row.Item("StartingCluster")
-        Dim HasError As Boolean = (Row.Item("Error") <> "")
+        Dim HasError As Boolean = (Row.Item(GRID_COLUMN_ERROR) <> "")
 
         If HasError Then
             Return GridCellType.Bad
@@ -284,44 +293,44 @@ Public Class FATEditForm
         If DataGridViewFAT.CurrentRow IsNot Nothing Then
             Dim RowIndex = DataGridViewFAT.CurrentRow.Index
             If RowIndex >= 0 Then
-                FileIndex = DataGridViewFAT.Rows(RowIndex).Cells("GridFileIndex").Value
+                FileIndex = DataGridViewFAT.Rows(RowIndex).Cells(GRID_COLUMN_FILE_INDEX).Value
             End If
         End If
 
         Return FileIndex
     End Function
 
-    Private Function GetTypeFromValue(Value As UShort) As String
+    Private Function GetTypeNameFromValue(Value As UShort) As String
         If Value = FAT12.FAT_FREE_CLUSTER Then
-            Return "Free"
+            Return My.Resources.Label_FATType_Free
         ElseIf Value = FAT12.FAT_BAD_CLUSTER Then
-            Return "Bad"
+            Return My.Resources.Label_FATType_Bad
         ElseIf Value >= FAT12.FAT_LAST_CLUSTER_START And Value <= FAT12.FAT_LAST_CLUSTER_END Then
-            Return "Last"
+            Return My.Resources.Label_FATType_Last
         ElseIf Value = 1 Or (Value >= FAT12.FAT_RESERVED_START And Value <= FAT12.FAT_RESERVED_END) Then
-            Return "Reserved"
+            Return My.Resources.Label_FATType_Reserved
         Else
-            Return "Next"
+            Return My.Resources.Label_FATType_Next
         End If
     End Function
 
     Private Function GetValueForeColor(RowIndex As Integer) As Color
         Dim Row = DataGridViewFAT.Rows(RowIndex)
-        Dim Value As UShort = Row.Cells("GridValue").Value
-        Dim ErrorString As String = Row.Cells("GridError").Value
+        Dim Value As UShort = Row.Cells(GRID_COLUMN_VALUE).Value
+        Dim ErrorString As String = Row.Cells(GRID_COLUMN_ERROR).Value
 
         Dim Style = New DataGridViewCellStyle
 
-        Dim TypeName = GetTypeFromValue(Value)
+        Dim TypeName = GetTypeNameFromValue(Value)
         If ErrorString <> "" Then
             Return Color.Red
-        ElseIf TypeName = "Free" Then
+        ElseIf TypeName = My.Resources.Label_FATType_Free Then
             Return Color.Gray
-        ElseIf TypeName = "Bad" Then
+        ElseIf TypeName = My.Resources.Label_FATType_Bad Then
             Return Color.Red
-        ElseIf TypeName = "Last" Then
+        ElseIf TypeName = My.Resources.Label_FATType_Last Then
             Return Color.Black
-        ElseIf TypeName = "Reserved" Then
+        ElseIf TypeName = My.Resources.Label_FATType_Reserved Then
             Return Color.Orange
         ElseIf Value > _FATTables.FAT.TableLength Then
             Return Color.Red
@@ -354,7 +363,7 @@ Public Class FATEditForm
 
         If Index > -1 Then
             For Each Row As DataGridViewRow In DataGridViewFAT.Rows
-                If Row.Cells("GridCluster").Value = Index + 2 Then
+                If Row.Cells(GRID_COLUMN_CLUSTER).Value = Index + 2 Then
                     RowIndex = Row.Index
                     Exit For
                 End If
@@ -368,7 +377,7 @@ Public Class FATEditForm
         Dim Offset = _Disk.BPB.ClusterToOffset(2)
 
         Dim HexViewSectorData = New HexViewSectorData(_Disk, Offset, _Disk.Image.Length - Offset) With {
-            .Description = "Disk"
+            .Description = My.Resources.Caption_Disk
         }
 
         If DisplayHexViewForm(HexViewSectorData, True, True, False, Cluster) Then
@@ -382,10 +391,10 @@ Public Class FATEditForm
         DataGridViewFAT.Columns.Clear()
 
         GridViewColumn = New DataGridViewTextBoxColumn With {
-            .Name = "GridCluster",
-            .HeaderText = "Cluster",
+            .Name = GRID_COLUMN_CLUSTER,
+            .HeaderText = My.Resources.Label_Cluster,
             .ReadOnly = True,
-            .DataPropertyName = "Cluster",
+            .DataPropertyName = GRID_COLUMN_CLUSTER,
             .Width = 65,
             .DefaultCellStyle = New DataGridViewCellStyle()
         }
@@ -394,12 +403,12 @@ Public Class FATEditForm
         DataGridViewFAT.Columns.Add(GridViewColumn)
 
         GridViewColumn = New DataGridViewTextBoxColumn With {
-            .Name = "GridType",
-            .HeaderText = "Type",
+            .Name = GRID_COLUMN_TYPE,
+            .HeaderText = My.Resources.Label_Type,
             .ReadOnly = True,
             .Resizable = False,
             .SortMode = DataGridViewColumnSortMode.NotSortable,
-            .DataPropertyName = "Type",
+            .DataPropertyName = GRID_COLUMN_TYPE,
             .Width = 75,
             .DefaultCellStyle = New DataGridViewCellStyle()
         }
@@ -408,21 +417,21 @@ Public Class FATEditForm
         DataGridViewFAT.Columns.Add(GridViewColumn)
 
         GridViewColumn = New DataGridViewTextBoxColumn With {
-           .Name = "GridValue",
-           .HeaderText = "Value",
+           .Name = GRID_COLUMN_VALUE,
+           .HeaderText = My.Resources.Label_Value,
            .SortMode = DataGridViewColumnSortMode.NotSortable,
-           .DataPropertyName = "Value",
+           .DataPropertyName = GRID_COLUMN_VALUE,
            .Width = 60
        }
         DataGridViewFAT.Columns.Add(GridViewColumn)
 
         GridViewColumn = New DataGridViewTextBoxColumn With {
-            .Name = "GridError",
-            .HeaderText = "Error",
+            .Name = GRID_COLUMN_ERROR,
+            .HeaderText = My.Resources.Label_Error,
             .ReadOnly = True,
             .Resizable = False,
             .SortMode = DataGridViewColumnSortMode.NotSortable,
-            .DataPropertyName = "Error",
+            .DataPropertyName = GRID_COLUMN_ERROR,
             .Width = 100,
             .DefaultCellStyle = New DataGridViewCellStyle()
         }
@@ -432,10 +441,10 @@ Public Class FATEditForm
         DataGridViewFAT.Columns.Add(GridViewColumn)
 
         GridViewColumn = New DataGridViewTextBoxColumn With {
-            .Name = "GridFile",
-            .HeaderText = "File",
+            .Name = GRID_COLUMN_FILE,
+            .HeaderText = My.Resources.Label_File,
             .ReadOnly = True,
-            .DataPropertyName = "File",
+            .DataPropertyName = GRID_COLUMN_FILE,
             .Width = 200,
             .AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill,
             .DefaultCellStyle = New DataGridViewCellStyle()
@@ -445,10 +454,9 @@ Public Class FATEditForm
         DataGridViewFAT.Columns.Add(GridViewColumn)
 
         GridViewColumn = New DataGridViewTextBoxColumn With {
-            .Name = "GridFileIndex",
-            .HeaderText = "FileIndex",
+            .Name = GRID_COLUMN_FILE_INDEX,
             .Visible = False,
-            .DataPropertyName = "FileIndex"
+            .DataPropertyName = GRID_COLUMN_FILE_INDEX
         }
         DataGridViewFAT.Columns.Add(GridViewColumn)
     End Sub
@@ -457,19 +465,19 @@ Public Class FATEditForm
         Dim Item As ToolStripMenuItem
         Dim SubItem As ToolStripMenuItem
 
-        Dim Label = New ToolStripLabel("Cluster:  0") With {
-            .Name = "lblCluster"
+        Dim Label = New ToolStripLabel(FormatLabelPair(My.Resources.Label_Cluster, 0)) With {
+            .Name = LABEL_CLUSTER
         }
         ContextMenuGrid.Items.Add(Label)
         ContextMenuGrid.Items.Add(New ToolStripSeparator)
 
-        Item = ContextMenuGrid.Items.Add("&Free")
+        Item = ContextMenuGrid.Items.Add(My.Resources.Menu_FATEdit_Free)
         Item.Tag = FAT12.FAT_FREE_CLUSTER
 
-        Item = ContextMenuGrid.Items.Add("&Bad")
+        Item = ContextMenuGrid.Items.Add(My.Resources.Menu_FATEdit_Bad)
         Item.Tag = FAT12.FAT_BAD_CLUSTER
 
-        Item = ContextMenuGrid.Items.Add("&Last")
+        Item = ContextMenuGrid.Items.Add(My.Resources.Menu_FATEdit_Last)
         Item.DropDown = ContextMenuLast
         SubItem = ContextMenuLast.Items.Add(FAT12.FAT_LAST_CLUSTER_END)
         SubItem.Tag = FAT12.FAT_LAST_CLUSTER_END
@@ -479,7 +487,7 @@ Public Class FATEditForm
             SubItem.Tag = Counter
         Next
 
-        Item = ContextMenuGrid.Items.Add("&Reserved")
+        Item = ContextMenuGrid.Items.Add(My.Resources.Menu_FATEdit_Reserved)
         Item.DropDown = ContextMenuReserved
         For Counter = FAT12.FAT_RESERVED_START To FAT12.FAT_RESERVED_END
             SubItem = ContextMenuReserved.Items.Add(Counter)
@@ -490,7 +498,7 @@ Public Class FATEditForm
 
         ContextMenuGrid.Items.Add(New ToolStripSeparator)
 
-        Item = ContextMenuGrid.Items.Add("&View in Hex Editor")
+        Item = ContextMenuGrid.Items.Add(My.Resources.Menu_FATEdit_ViewHexEditor)
         Item.Tag = -1
     End Sub
 
@@ -521,24 +529,24 @@ Public Class FATEditForm
         _OffsetLookup.Clear()
         Dim OffsetIndex As UInteger = 1
         For Each Row As DataGridViewRow In DataGridViewFAT.Rows
-            Dim Cluster As UShort = Row.Cells("GridCluster").Value
+            Dim Cluster As UShort = Row.Cells(GRID_COLUMN_CLUSTER).Value
             Dim OffsetList = GetEntriesFromCluster(_FATTables.FAT, Cluster)
-            Dim Value As UShort = Row.Cells("GridValue").Value
-            Row.Cells("GridFile").Value = GetFileFromOffsetList(OffsetList)
-            Row.Cells("GridError").Value = GetRowError(_FATTables.FAT, Cluster, Value)
+            Dim Value As UShort = Row.Cells(GRID_COLUMN_VALUE).Value
+            Row.Cells(GRID_COLUMN_FILE).Value = GetFileFromOffsetList(OffsetList)
+            Row.Cells(GRID_COLUMN_ERROR).Value = GetRowError(_FATTables.FAT, Cluster, Value)
             If OffsetList IsNot Nothing Then
                 If Not _OffsetLookup.ContainsKey(OffsetList(0)) Then
                     'Dim DirectoryEntry = _Disk.GetDirectoryEntryByOffset(OffsetList(0))
                     'Row.Cells("GridStartingCluster").Value = (DirectoryEntry.StartingCluster = Cluster)
                     _OffsetLookup.Add(OffsetList(0), OffsetIndex)
-                    Row.Cells("GridFileIndex").Value = OffsetIndex
+                    Row.Cells(GRID_COLUMN_FILE_INDEX).Value = OffsetIndex
                     OffsetIndex += 1
                 Else
-                    Row.Cells("GridFileIndex").Value = _OffsetLookup.Item(OffsetList(0))
+                    Row.Cells(GRID_COLUMN_FILE_INDEX).Value = _OffsetLookup.Item(OffsetList(0))
                     'Row.Cells("GridStartingCluster").Value = False
                 End If
             Else
-                Row.Cells("GridFileIndex").Value = 0
+                Row.Cells(GRID_COLUMN_FILE_INDEX).Value = 0
             End If
             DataGridViewFAT.InvalidateCell(2, Row.Index)
         Next
@@ -554,7 +562,7 @@ Public Class FATEditForm
 
     Private Sub SetCurrentCellValue(Value As UShort)
         If DataGridViewFAT.CurrentCellAddress.Y >= 0 Then
-            DataGridViewFAT.Rows(DataGridViewFAT.CurrentCellAddress.Y).Cells("GridValue").Value = Value
+            DataGridViewFAT.Rows(DataGridViewFAT.CurrentCellAddress.Y).Cells(GRID_COLUMN_VALUE).Value = Value
         End If
     End Sub
 
@@ -571,11 +579,11 @@ Public Class FATEditForm
         _IgnoreEvents = True
 
         Dim Row = DataGridViewFAT.Rows(RowIndex)
-        Dim Value As UShort = Row.Cells.Item("GridValue").Value
-        Dim TypeName = GetTypeFromValue(Value)
+        Dim Value As UShort = Row.Cells.Item(GRID_COLUMN_VALUE).Value
+        Dim TypeName = GetTypeNameFromValue(Value)
 
-        If Row.Cells.Item("GridType").Value <> TypeName Then
-            Row.Cells.Item("GridType").Value = TypeName
+        If Row.Cells.Item(GRID_COLUMN_TYPE).Value <> TypeName Then
+            Row.Cells.Item(GRID_COLUMN_TYPE).Value = TypeName
             Changed = True
         End If
 
@@ -586,8 +594,8 @@ Public Class FATEditForm
 
     Private Sub UpdateFAT(RowIndex As Integer)
         Dim Row = DataGridViewFAT.Rows(RowIndex)
-        Dim Cluster As UShort = Row.Cells("GridCluster").Value
-        Dim Value As UShort = Row.Cells("GridValue").Value
+        Dim Cluster As UShort = Row.Cells(GRID_COLUMN_CLUSTER).Value
+        Dim Value As UShort = Row.Cells(GRID_COLUMN_VALUE).Value
 
         _FATTables.FAT.TableEntry(Cluster) = Value
         RefreshFAT()
@@ -700,7 +708,7 @@ Public Class FATEditForm
         If e.ClickedItem.Tag IsNot Nothing Then
             Dim Value As Short = e.ClickedItem.Tag
             If Value = -1 Then
-                Dim Cluster As UShort = DataGridViewFAT.CurrentRow.Cells("GridCluster").Value
+                Dim Cluster As UShort = DataGridViewFAT.CurrentRow.Cells(GRID_COLUMN_CLUSTER).Value
                 HexDisplayDiskImage(Cluster)
             Else
                 SetCurrentCellValue(Value)
@@ -712,8 +720,8 @@ Public Class FATEditForm
         If DataGridViewFAT.CurrentCellAddress.Y < 0 Then
             e.Cancel = True
         Else
-            Dim Cluster As UShort = DataGridViewFAT.CurrentRow.Cells("GridCluster").Value
-            ContextMenuGrid.Items("lblCluster").Text = "Cluster:  " & Cluster
+            Dim Cluster As UShort = DataGridViewFAT.CurrentRow.Cells(GRID_COLUMN_CLUSTER).Value
+            ContextMenuGrid.Items(LABEL_CLUSTER).Text = FormatLabelPair(My.Resources.Label_Cluster, Cluster)
         End If
     End Sub
 
@@ -770,7 +778,7 @@ Public Class FATEditForm
         SetButtonStatus(Enabled)
 
         If Enabled Then
-            Fileindex = DataGridViewFAT.Rows(e.RowIndex).Cells("GridFileIndex").Value
+            Fileindex = DataGridViewFAT.Rows(e.RowIndex).Cells(GRID_COLUMN_FILE_INDEX).Value
         Else
             Fileindex = 0
         End If
@@ -795,7 +803,7 @@ Public Class FATEditForm
 
         If RowIndex > -1 Then
             DataGridViewFAT.FirstDisplayedScrollingRowIndex = RowIndex
-            DataGridViewFAT.CurrentCell = DataGridViewFAT.Rows(RowIndex).Cells("GridValue")
+            DataGridViewFAT.CurrentCell = DataGridViewFAT.Rows(RowIndex).Cells(GRID_COLUMN_VALUE)
         End If
     End Sub
 
@@ -810,17 +818,17 @@ Public Class FATEditForm
 
         If Index > -1 Then
             Dim Row = _FATTable.Rows(Index)
-            Dim Cluster As UShort = Row.Item("Cluster")
-            Dim File As String = Row.Item("File")
-            Dim ErrorString As String = Row.Item("Error")
-            FileIndex = Row.Item("FileIndex")
+            Dim Cluster As UShort = Row.Item(GRID_COLUMN_CLUSTER)
+            Dim File As String = Row.Item(GRID_COLUMN_FILE)
+            Dim ErrorString As String = Row.Item(GRID_COLUMN_ERROR)
+            FileIndex = Row.Item(GRID_COLUMN_FILE_INDEX)
 
-            TooltipText = "Cluster: " & vbTab & Cluster
+            TooltipText = FormatLabelPair(My.Resources.Label_Cluster, vbTab & Cluster)
             If File <> "" Then
-                TooltipText &= vbCrLf & "File: " & vbTab & File
+                TooltipText &= Environment.NewLine & FormatLabelPair(My.Resources.Label_File, vbTab & File)
             End If
             If ErrorString <> "" Then
-                TooltipText &= vbCrLf & "Error: " & vbTab & ErrorString
+                TooltipText &= Environment.NewLine & FormatLabelPair(My.Resources.Label_Error, vbTab & ErrorString)
             End If
         End If
 

@@ -340,7 +340,7 @@
     <value>{0} of {1} File Selected</value>
   </data>
   <data name="Label_Track" xml:space="preserve">
-    <value>Track {0}.{1}</value>
+    <value>Track</value>
   </data>
   <data name="Menu_AllTracks" xml:space="preserve">
     <value>All Tracks</value>
@@ -1082,5 +1082,471 @@
   </data>
   <data name="SummaryPanel_Year" xml:space="preserve">
     <value>Year</value>
+  </data>
+  <data name="Caption_CleanImages" xml:space="preserve">
+    <value>Clean Images</value>
+  </data>
+  <data name="Dialog_FileBlankWarning" xml:space="preserve">
+    <value>Filename cannot be blank.</value>
+  </data>
+  <data name="Dialog_FileExists" xml:space="preserve">
+    <value>A file with this name already exists in this directory.</value>
+  </data>
+  <data name="Label_FileSizeExpanded" xml:space="preserve">
+    <value>File size will be expanded to</value>
+  </data>
+  <data name="Label_FileSizePadded" xml:space="preserve">
+    <value>File size will be padded to</value>
+  </data>
+  <data name="Label_FileSizeReduced" xml:space="preserve">
+    <value>File size will be reduced to</value>
+  </data>
+  <data name="Label_FileSizeSet" xml:space="preserve">
+    <value>File size will be set to</value>
+  </data>
+  <data name="Label_FileSizeTruncated" xml:space="preserve">
+    <value>File size will be truncated to</value>
+  </data>
+  <data name="Label_FillFreeSpace" xml:space="preserve">
+    <value>Fill free space with</value>
+  </data>
+  <data name="Label_NotEnoughSpace" xml:space="preserve">
+    <value>Not enough available space on disk</value>
+  </data>
+  <data name="Label_PadFile" xml:space="preserve">
+    <value>Pad file with</value>
+  </data>
+  <data name="Label_Processing" xml:space="preserve">
+    <value>Processing</value>
+  </data>
+  <data name="Label_Scanning" xml:space="preserve">
+    <value>Scanning</value>
+  </data>
+  <data name="Bitstream_AddressChecksum" xml:space="preserve">
+    <value>Address Checksum</value>
+  </data>
+  <data name="Bitstream_DAM" xml:space="preserve">
+    <value>Data Address Mark</value>
+  </data>
+  <data name="Bitstream_DAMSync" xml:space="preserve">
+    <value>Data Field Sync</value>
+  </data>
+  <data name="Bitstream_DataArea" xml:space="preserve">
+    <value>Data Area</value>
+  </data>
+  <data name="Bitstream_DataChecksum" xml:space="preserve">
+    <value>Data Checksum</value>
+  </data>
+  <data name="Bitstream_Gap" xml:space="preserve">
+    <value>GAP</value>
+  </data>
+  <data name="Bitstream_IAM" xml:space="preserve">
+    <value>Index Address Mark</value>
+  </data>
+  <data name="Bitstream_IAMSync" xml:space="preserve">
+    <value>Index Field Sync</value>
+  </data>
+  <data name="Bitstream_IDAM" xml:space="preserve">
+    <value>ID Address Mark</value>
+  </data>
+  <data name="Bitstream_IDAMChecksum" xml:space="preserve">
+    <value>ID Area Checksum</value>
+  </data>
+  <data name="Bitstream_IDAMSync" xml:space="preserve">
+    <value>ID Field Sync</value>
+  </data>
+  <data name="Bitstream_IDArea" xml:space="preserve">
+    <value>ID Area</value>
+  </data>
+  <data name="Bitstream_Overflow" xml:space="preserve">
+    <value>Overflow</value>
+  </data>
+  <data name="Bitstream_Overlaps" xml:space="preserve">
+    <value>Overlaps</value>
+  </data>
+  <data name="Bitstream_WeakBits" xml:space="preserve">
+    <value>Weak Bits</value>
+  </data>
+  <data name="Bitstream_WriteSplice" xml:space="preserve">
+    <value>Write Splice</value>
+  </data>
+  <data name="Caption_ScanFiles" xml:space="preserve">
+    <value>Scan Files</value>
+  </data>
+  <data name="Label_AllTracks" xml:space="preserve">
+    <value>All Tracks</value>
+  </data>
+  <data name="Label_BitOffset" xml:space="preserve">
+    <value>Bit Offset</value>
+  </data>
+  <data name="Label_Bits" xml:space="preserve">
+    <value>bits</value>
+  </data>
+  <data name="Label_BlockHex" xml:space="preserve">
+    <value>Block(h)</value>
+  </data>
+  <data name="Label_ByteAligned" xml:space="preserve">
+    <value>Byte-Aligned</value>
+  </data>
+  <data name="Label_Deleted" xml:space="preserve">
+    <value>Deleted</value>
+  </data>
+  <data name="Label_Encoding" xml:space="preserve">
+    <value>Encoding</value>
+  </data>
+  <data name="Label_Files" xml:space="preserve">
+    <value>files</value>
+  </data>
+  <data name="Label_Gap" xml:space="preserve">
+    <value>Gap</value>
+  </data>
+  <data name="Label_ImagesLoaded" xml:space="preserve">
+    <value>{0} images loaded</value>
+  </data>
+  <data name="Label_LengthHex" xml:space="preserve">
+    <value>Length(h)</value>
+  </data>
+  <data name="Label_Missing" xml:space="preserve">
+    <value>Missing</value>
+  </data>
+  <data name="Label_Normal" xml:space="preserve">
+    <value>Normal</value>
+  </data>
+  <data name="Label_OffsetHex" xml:space="preserve">
+    <value>Offset(h)</value>
+  </data>
+  <data name="Label_SectorId" xml:space="preserve">
+    <value>Sector Id</value>
+  </data>
+  <data name="Label_Side" xml:space="preserve">
+    <value>Side</value>
+  </data>
+  <data name="Label_Size" xml:space="preserve">
+    <value>Size</value>
+  </data>
+  <data name="Label_Unknown" xml:space="preserve">
+    <value>Unknown</value>
+  </data>
+  <data name="Label_Valid" xml:space="preserve">
+    <value>Valid</value>
+  </data>
+  <data name="Label_SelectSector" xml:space="preserve">
+    <value>Select Sector</value>
+  </data>
+  <data name="Label_SelectTrack" xml:space="preserve">
+    <value>Select Track</value>
+  </data>
+  <data name="Label_SyncFATs" xml:space="preserve">
+    <value>Sync FATs</value>
+  </data>
+  <data name="Menu_SelectSector" xml:space="preserve">
+    <value>Select &amp;Sector</value>
+  </data>
+  <data name="Menu_SelectTrack" xml:space="preserve">
+    <value>Select T&amp;rack</value>
+  </data>
+  <data name="Caption_Disk" xml:space="preserve">
+    <value>Disk</value>
+  </data>
+  <data name="Dialog_FloppyError_Formatting" xml:space="preserve">
+    <value>Error Formatting Track {0}, Side {1}.</value>
+  </data>
+  <data name="Dialog_FloppyError_Reading" xml:space="preserve">
+    <value>Error Reading Track {0}, Side {1}.</value>
+  </data>
+  <data name="Dialog_FloppyError_Sector" xml:space="preserve">
+    <value>Error Reading {0} Sector in Track {1}, Side {2}.</value>
+  </data>
+  <data name="Dialog_FloppyError_Sectors" xml:space="preserve">
+    <value>Error Reading {0} Sectors in Track {1}, Side {2}.</value>
+  </data>
+  <data name="Dialog_FloppyError_Verifying" xml:space="preserve">
+    <value>Error Verifying Track {0}, Side {1}.</value>
+  </data>
+  <data name="Dialog_FloppyError_Writing" xml:space="preserve">
+    <value>Error Writing Track {0}, Side {1}.</value>
+  </data>
+  <data name="Label_Abort" xml:space="preserve">
+    <value>Abort</value>
+  </data>
+  <data name="Label_Aborted" xml:space="preserve">
+    <value>Aborted</value>
+  </data>
+  <data name="Label_BadSectors" xml:space="preserve">
+    <value>Bad Sectors</value>
+  </data>
+  <data name="Label_Close" xml:space="preserve">
+    <value>Close</value>
+  </data>
+  <data name="Label_Complete" xml:space="preserve">
+    <value>Complete</value>
+  </data>
+  <data name="Label_Detected" xml:space="preserve">
+    <value>Detected</value>
+  </data>
+  <data name="Label_Error" xml:space="preserve">
+    <value>Error</value>
+  </data>
+  <data name="Label_FATType_Bad" xml:space="preserve">
+    <value>Bad</value>
+  </data>
+  <data name="Label_FATType_Free" xml:space="preserve">
+    <value>Free</value>
+  </data>
+  <data name="Label_FATType_Last" xml:space="preserve">
+    <value>Last</value>
+  </data>
+  <data name="Label_FATType_Next" xml:space="preserve">
+    <value>Next</value>
+  </data>
+  <data name="Label_FATType_Reserved" xml:space="preserve">
+    <value>Reserved</value>
+  </data>
+  <data name="Label_File" xml:space="preserve">
+    <value>File</value>
+  </data>
+  <data name="Label_Formatting" xml:space="preserve">
+    <value>Formatting</value>
+  </data>
+  <data name="Label_Reading" xml:space="preserve">
+    <value>Reading</value>
+  </data>
+  <data name="Label_Type" xml:space="preserve">
+    <value>Type</value>
+  </data>
+  <data name="Label_Unformatted" xml:space="preserve">
+    <value>Unformatted</value>
+  </data>
+  <data name="Label_Value" xml:space="preserve">
+    <value>Value</value>
+  </data>
+  <data name="Label_Verifying" xml:space="preserve">
+    <value>Verifying</value>
+  </data>
+  <data name="Label_Writing" xml:space="preserve">
+    <value>Writing</value>
+  </data>
+  <data name="Menu_FATEdit_Bad" xml:space="preserve">
+    <value>&amp;Bad</value>
+  </data>
+  <data name="Menu_FATEdit_Free" xml:space="preserve">
+    <value>&amp;Free</value>
+  </data>
+  <data name="Menu_FATEdit_Last" xml:space="preserve">
+    <value>&amp;Last</value>
+  </data>
+  <data name="Menu_FATEdit_Reserved" xml:space="preserve">
+    <value>&amp;Reserved</value>
+  </data>
+  <data name="Menu_FATEdit_ViewHexEditor" xml:space="preserve">
+    <value>&amp;View in Hex Editor</value>
+  </data>
+  <data name="Label_About" xml:space="preserve">
+    <value>About</value>
+  </data>
+  <data name="Label_Version" xml:space="preserve">
+    <value>Version</value>
+  </data>
+  <data name="Menu_Ok" xml:space="preserve">
+    <value>&amp;Ok</value>
+  </data>
+  <data name="BootSectorForm_Help_OEMName" xml:space="preserve">
+    <value>OEM Name Identifier
+
+Can be set by a FAT implementation to any desired value
+
+Typically this is some indication of what system formatted the volume.</value>
+  </data>
+  <data name="BootSectorForm_Help_AdditionalData" xml:space="preserve">
+    <value>This Is additional data found in the Boot Sector.
+
+Note: Data highlighted in green is the bootstrap code.</value>
+  </data>
+  <data name="BootSectorForm_Help_BootSectorSignature" xml:space="preserve">
+    <value>Indicated to the BIOS that the sector is executable.
+
+Allowed Values:
+AA 55
+00 00 (PC DOS 1.x)
+54 42 (Tandy 2000)</value>
+  </data>
+  <data name="BootSectorForm_Help_BytesPerSector" xml:space="preserve">
+    <value>Number of bytes in each physical sector
+
+Allowed Values: 512, 1024, 2048, 4096
+
+Note: This value should be 512 for all floppy disks.</value>
+  </data>
+  <data name="BootSectorForm_Help_DiskType" xml:space="preserve">
+    <value>The disk type detected based on the current values in the Boot Record.  Changing this will set the values in the boot record to those of the selected disk type.</value>
+  </data>
+  <data name="BootSectorForm_Help_DriveNumber" xml:space="preserve">
+    <value>Interrupt 13h drive number
+
+Allowed Values: 0, 128</value>
+  </data>
+  <data name="BootSectorForm_Help_ExtendedBootSignature" xml:space="preserve">
+    <value>Extended Boot Signature
+
+Typical Values:
+28h	Volume Serial Number is present
+29h	Volume Serial Number, Volume Label, and File System ID are present</value>
+  </data>
+  <data name="BootSectorForm_Help_FileSystemType" xml:space="preserve">
+    <value>The File System ID is informational only
+
+Typical Values: FAT12, FAT16, FAT</value>
+  </data>
+  <data name="BootSectorForm_Help_HiddenSectors" xml:space="preserve">
+    <value>Number of sectors preceeding the first sector of a partitioned volume
+
+Note: This value should be 0 for all floppy disks</value>
+  </data>
+  <data name="BootSectorForm_Help_JumpInstruction" xml:space="preserve">
+    <value>This instruction indicates where the bootstrap code starts.
+
+Allowed Values: EB xx 90, E9 xx xx</value>
+  </data>
+  <data name="BootSectorForm_Help_MediaDescriptor" xml:space="preserve">
+    <value>Media Descriptor
+
+Allowed Values:
+F0	1.44M, 2.88M, DMF, 3.5 XDF Floppy
+F8	Fixed Disk
+F9	720K, 1.2M, 5.25 XDF Floppy
+FA	Unused
+FB	Unused
+FC	180K Floppy
+FD	360K Floppy
+FE	160K Floppy
+FF	320K Floppy
+ED	Tandy 2000 Floppy</value>
+  </data>
+  <data name="BootSectorForm_Help_NumberOfFATs" xml:space="preserve">
+    <value>Number of File Allocation Table (FAT) copies on the volume
+
+Allowed Values: Any non-zero value
+
+Note: This value should typically be set to 2.</value>
+  </data>
+  <data name="BootSectorForm_Help_NumberOfHeads" xml:space="preserve">
+    <value>Number of physical heads (sides) on the disk
+
+Typical Values:
+160K Floppy	1
+180K Floppy	1
+320K Floppy	2
+360K Floppy	2
+720K Floppy	2
+1.2M Floppy	2
+1.44M Floppy	2
+2.88M Floppy	2
+DMF Floppy	2
+XDF Floppy	2</value>
+  </data>
+  <data name="BootSectorForm_Help_ReservedSectors" xml:space="preserve">
+    <value>Number of reserved sectors in the reserved region of the volume starting at the first sector of the volume
+
+Allowed Values: Any non-zero value
+
+Note: This value should typically be set to 1.</value>
+  </data>
+  <data name="BootSectorForm_Help_RootDirectoryEntries" xml:space="preserve">
+    <value>Number of entries in the root directory
+
+Allowed Values: Value multiplied by 32 should be an even multiple of Bytes Per Sector
+
+Typical Values:
+160K Floppy	64
+180K Floppy	64
+320K Floppy	112
+360K Floppy	112
+720K Floppy	112
+1.2M Floppy	224
+1.44M Floppy	224
+2.88M Floppy	240
+DMF Floppy	16
+XDF Floppy	224</value>
+  </data>
+  <data name="BootSectorForm_Help_SectorCountLarge" xml:space="preserve">
+    <value>Total number of sectors in a FAT16 volume larger than 65535 sectors
+
+Note: This value should be 0 for all floppy disks</value>
+  </data>
+  <data name="BootSectorForm_Help_SectorCountSmall" xml:space="preserve">
+    <value>Total number of sectors in the volume
+
+Typical Values:
+160K Floppy		320
+180K Floppy		360
+320K Floppy		640
+360K Floppy		720
+720K Floppy		1440
+1.2M Floppy		2400
+1.44M Floppy		2880
+2.88M Floppy		5760
+DMF Floppy		3360
+5.25 XDF Floppy		3040
+3.5 XDF Floppy		3680</value>
+  </data>
+  <data name="BootSectorForm_Help_SectorsPerCluster" xml:space="preserve">
+    <value>Number of sectors per cluster
+
+Allowed Values: 1, 2, 4, 8, 16, 32, 128
+
+Typical Values:
+160K Floppy	1
+180K Floppy	1
+320K Floppy	2
+360K Floppy	2
+720K Floppy	2
+1.2M Floppy	1
+1.44M Floppy	1
+2.88M Floppy	2
+DMF Floppy	2 or 4
+XDF Floppy	1</value>
+  </data>
+  <data name="BootSectorForm_Help_SectorsPerFAT" xml:space="preserve">
+    <value>Number of sectors allocated to each copy of the File Allocation Table (FAT)
+
+Typical Values:
+160K Floppy		1
+180K Floppy		2
+320K Floppy		1
+360K Floppy		2
+720K Floppy		3
+1.2M Floppy		7
+1.44M Floppy		9
+2.88M Floppy		9
+DMF Floppy		3 or 5
+5.25 XDF Floppy		9
+3.5 XDF Floppy		11</value>
+  </data>
+  <data name="BootSectorForm_Help_SectorsPerTrack" xml:space="preserve">
+    <value>Number of sectors per track on the disk
+
+Typical Values:
+160K Floppy		8
+180K Floppy		9
+320K Floppy		8
+360K Floppy		9
+720K Floppy		9
+1.2M Floppy		15
+1.44M Floppy		18
+2.88M Floppy		36
+DMF Floppy		21
+5.25 XDF Floppy		19
+3.5 XDF Floppy		23</value>
+  </data>
+  <data name="BootSectorForm_Help_VolumeLabel" xml:space="preserve">
+    <value>This field typically matches the 11-byte volume label in the root directory of the disk or has the value "NO NAME    " if the volume label does not exist.</value>
+  </data>
+  <data name="BootSectorForm_Help_VolumeSerialNumber" xml:space="preserve">
+    <value>The Volume Serial Number is a 32-bit random number used in conjunction with the Volume Label for removable media tracking
+
+Note: This id is typically generated by converting the current date and time into a 32-bit value</value>
+  </data>
+  <data name="BootSectorForm_Help_VolumeSerialNumberButton" xml:space="preserve">
+    <value>Generate a new volume serial number based on a user supplied date and time</value>
   </data>
 </root>

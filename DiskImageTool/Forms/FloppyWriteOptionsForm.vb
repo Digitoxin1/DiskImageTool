@@ -16,15 +16,15 @@ Public Class FloppyWriteOptionsForm
 
         ' Add any initialization after the InitializeComponent() call.
         _WriteOptions.Cancelled = True
-        Dim ImageFormatName = GetFloppyDiskFormatName(DiskFormat) & " Floppy"
+        Dim ImageFormatName = GetFloppyDiskFormatName(DiskFormat) & " " & My.Resources.Label_Floppy
 
         Dim DetectedFormatName As String
         If DetectedFormat = -2 Then
-            DetectedFormatName = "Unformatted"
+            DetectedFormatName = My.Resources.Label_Unformatted
         ElseIf DetectedFormat = -1 Then
-            DetectedFormatName = "Unknown"
+            DetectedFormatName = My.Resources.Label_Unknown
         Else
-            DetectedFormatName = GetFloppyDiskFormatName(DetectedFormat) & " Floppy"
+            DetectedFormatName = GetFloppyDiskFormatName(DetectedFormat) & " " & My.Resources.Label_Floppy
         End If
         lblImageType.Text = ImageFormatName
         lblDiskFormat.Text = DetectedFormatName

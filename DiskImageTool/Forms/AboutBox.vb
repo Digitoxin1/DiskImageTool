@@ -9,14 +9,16 @@
         Else
             ApplicationTitle = System.IO.Path.GetFileNameWithoutExtension(My.Application.Info.AssemblyName)
         End If
-        Me.Text = String.Format("About {0}", ApplicationTitle)
+        Me.Text = My.Resources.Label_About & " " & ApplicationTitle
         ' Initialize all of the text displayed on the About Box.
         ' TODO: Customize the application's assembly information in the "Application" pane of the project 
         '    properties dialog (under the "Project" menu).
         Me.LabelProductName.Text = My.Application.Info.ProductName
-        Me.LabelVersion.Text = String.Format("Version {0}", GetVersionString)
+        Me.LabelVersion.Text = My.Resources.Label_Version & " " & GetVersionString()
         Me.LabelURL.Text = MainForm.SITE_URL
         Me.TextBoxDescription.Text = GetResource("License.txt")
+
+        OKButton.Text = My.Resources.Menu_Ok
     End Sub
 
     Private Function GetResource(Name As String) As String

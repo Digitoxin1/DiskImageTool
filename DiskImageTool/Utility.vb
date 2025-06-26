@@ -24,8 +24,20 @@ Module Utility
         Return CleanString(FileName, IO.Path.GetInvalidPathChars(), "_")
     End Function
 
+    Public Function FormatLabelPair(Label As String, Value As String, Optional Separator As String = ": ") As String
+        If Label.Length > 0 Then
+            Return Label & Separator & Value
+        Else
+            Return Value
+        End If
+    End Function
+
     Public Function FormatThousands(Value As Object) As String
         Return Format(Value, "N0")
+    End Function
+
+    Public Function FormatTrackSide(Caption As String, Track As String, Side As String) As String
+        Return Caption & " " & Track & "." & Side
     End Function
 
     Public Sub DebugException(ex As Exception)

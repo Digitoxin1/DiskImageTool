@@ -138,7 +138,7 @@ Public Class HexViewRawForm
 
         If DataGridDataInspector.SelectedRows.Count > 0 Then
             Dim Row = DataGridDataInspector.SelectedRows.Item(0)
-            Dim Invalid As Boolean = Row.Cells.Item("DataGridInvalid").Value
+            Dim Invalid As Boolean = Row.Cells.Item(HexViewDataGridInspector.COLUMN_INVALID).Value
             If Not Invalid Then
                 Enabled = True
             End If
@@ -280,37 +280,37 @@ Public Class HexViewRawForm
     Private Function GetRegionDescription(Region As BitstreamRegion) As String
         Select Case Region.RegionType
             Case MFMRegionType.Gap1
-                Return "GAP 1" & "  " & InParens(Region.Length)
+                Return My.Resources.Bitstream_Gap & " 1" & "  " & InParens(Region.Length)
             Case MFMRegionType.Gap2
-                Return "GAP 2" & "  " & InParens(Region.Length)
+                Return My.Resources.Bitstream_Gap & " 2" & "  " & InParens(Region.Length)
             Case MFMRegionType.Gap3
-                Return "GAP 3" & "  " & InParens(Region.Length)
+                Return My.Resources.Bitstream_Gap & " 3" & "  " & InParens(Region.Length)
             Case MFMRegionType.Gap4A
-                Return "GAP 4A" & "  " & InParens(Region.Length)
+                Return My.Resources.Bitstream_Gap & " 4A" & "  " & InParens(Region.Length)
             Case MFMRegionType.Gap4B
-                Return "GAP 3+4B" & "  " & InParens(Region.Length)
+                Return My.Resources.Bitstream_Gap & " 3+4B" & "  " & InParens(Region.Length)
             Case MFMRegionType.IAMNulls, MFMRegionType.IAMSync
-                Return "Index Field Sync"
+                Return My.Resources.Bitstream_IAMSync
             Case MFMRegionType.IAM
-                Return "Index Address Mark"
+                Return My.Resources.Bitstream_IAM
             Case MFMRegionType.IDAMNulls, MFMRegionType.IDAMSync
-                Return "ID Field Sync"
+                Return My.Resources.Bitstream_IDAMSync
             Case MFMRegionType.IDAM
-                Return "ID Address Mark"
+                Return My.Resources.Bitstream_IDAM
             Case MFMRegionType.IDArea
-                Return "ID Area"
+                Return My.Resources.Bitstream_IDArea
             Case MFMRegionType.IDAMChecksumValid, MFMRegionType.IDAMChecksumInvalid
-                Return "ID Area Checksum"
+                Return My.Resources.Bitstream_IDAMChecksum
             Case MFMRegionType.DAMNulls, MFMRegionType.DAMSync
-                Return "Data Field Sync"
+                Return My.Resources.Bitstream_DAMSync
             Case MFMRegionType.DAM
-                Return "Data Address Mark"
+                Return My.Resources.Bitstream_DAM
             Case MFMRegionType.DataArea
-                Return "Data Area" & "  " & InParens(Region.Length)
+                Return My.Resources.Bitstream_DataArea & "  " & InParens(Region.Length)
             Case MFMRegionType.DataChecksumValid, MFMRegionType.DataChecksumInvalid
-                Return "Data Checksum"
+                Return My.Resources.Bitstream_DataChecksum
             Case MFMRegionType.Overflow
-                Return "Overflow"
+                Return My.Resources.Bitstream_Overflow
             Case Else
                 Return ""
         End Select
@@ -479,7 +479,7 @@ Public Class HexViewRawForm
             .Alignment = ToolStripItemAlignment.Right,
             .Checked = _AllTracks,
             .Margin = New Padding(12, 3, 0, 2),
-            .Text = "All Tracks"
+            .Text = My.Resources.Label_AllTracks
         }
 
         ToolStripMain.Items.Add(CheckBoxAllTracks)
@@ -494,7 +494,7 @@ Public Class HexViewRawForm
             .Maximum = 15
         }
 
-        _LabelBitOffsetAligned = New ToolStripLabel("Byte-Aligned") With {
+        _LabelBitOffsetAligned = New ToolStripLabel(My.Resources.Label_ByteAligned) With {
             .Alignment = ToolStripItemAlignment.Right,
             .AutoSize = True,
             .Padding = New Padding(0, 0, 8, 0),
@@ -502,7 +502,7 @@ Public Class HexViewRawForm
             .TextAlign = ContentAlignment.MiddleLeft
         }
 
-        _LabelBitOffset = New ToolStripLabel("Bit Offset") With {
+        _LabelBitOffset = New ToolStripLabel(My.Resources.Label_BitOffset) With {
             .Alignment = ToolStripItemAlignment.Right,
             .Padding = New Padding(12, 0, 0, 0)
         }
@@ -522,12 +522,12 @@ Public Class HexViewRawForm
            .Padding = New Padding(10, 0, 0, 0)
         }
 
-        _LabelGap4A = New ToolStripLabel("Gap 4A: 0") With {
+        _LabelGap4A = New ToolStripLabel(FormatLabelPair(My.Resources.Label_Gap & " 4A", 0)) With {
            .Alignment = ToolStripItemAlignment.Right,
            .Padding = New Padding(10, 0, 0, 0)
         }
 
-        _LabelGap1 = New ToolStripLabel("Gap 1: 0") With {
+        _LabelGap1 = New ToolStripLabel(FormatLabelPair(My.Resources.Label_Gap & " 1", 0)) With {
            .Alignment = ToolStripItemAlignment.Right,
            .Padding = New Padding(10, 0, 0, 0)
         }
@@ -546,7 +546,7 @@ Public Class HexViewRawForm
             .Size = New Drawing.Size(50, 23)
         }
 
-        Dim LabelTrack = New ToolStripLabel("Track") With {
+        Dim LabelTrack = New ToolStripLabel(My.Resources.Label_Track) With {
             .Alignment = ToolStripItemAlignment.Right,
             .Padding = New Padding(6, 0, 0, 0)
         }
@@ -627,13 +627,13 @@ Public Class HexViewRawForm
             HexBox1.Select(SelectionStart, SelectionLength)
         End If
 
-        ToolStripStatusBits.Text = FormatThousands(RegionData.NumBits) & " bits"
-        ToolStripStatusBytes.Text = FormatThousands(Math.Ceiling(RegionData.NumBits / 16)) & " bytes"
+        ToolStripStatusBits.Text = FormatThousands(RegionData.NumBits) & " " & My.Resources.Label_Bits
+        ToolStripStatusBytes.Text = FormatThousands(Math.Ceiling(RegionData.NumBits / 16)) & " " & My.Resources.Label_Bytes
         _LastSearch = New HexSearch
 
-        _LabelGap4A.Text = "Gap 4A: " & RegionData.Gap4A
-        _LabelGap1.Text = "Gap 1: " & RegionData.Gap1
-        _labelEncoding.Text = "Encoding: " & RegionData.Encoding
+        _LabelGap4A.Text = FormatLabelPair(My.Resources.Label_Gap & " 4A", RegionData.Gap4A)
+        _LabelGap1.Text = FormatLabelPair(My.Resources.Label_Gap & " 1", RegionData.Gap1)
+        _labelEncoding.Text = FormatLabelPair(My.Resources.Label_Encoding, RegionData.Encoding)
         _labelEncoding.Visible = RegionData.Encoding.Length > 0
         _LabelGap4A.Visible = RegionData.Encoding = "MFM"
         _LabelGap1.Visible = RegionData.Encoding = "MFM"
@@ -653,7 +653,7 @@ Public Class HexViewRawForm
             Exit Sub
         End If
 
-        Me.Text = "Raw Track Data - Track " & TrackData.Track & "." & TrackData.Side
+        Me.Text = My.Resources.Caption_RawTrackData & " - " & FormatTrackSide(My.Resources.Label_Track, TrackData.Track, TrackData.Side)
 
         _CurrentTrackData = TrackData
 
@@ -810,7 +810,7 @@ Public Class HexViewRawForm
             Dim OutOfRange As Boolean = SelectionStart >= HexBox1.ByteProvider.Length
 
             ToolStripStatusOffset.Visible = Not OutOfRange
-            ToolStripStatusOffset.Text = "Offset(h) :  " & OffsetStart.ToString("X")
+            ToolStripStatusOffset.Text = FormatLabelPair(My.Resources.Label_OffsetHex, OffsetStart.ToString("X"), " :  ")
 
             If SelectionLength = 0 Then
                 ToolStripStatusBlock.Visible = False
@@ -819,9 +819,9 @@ Public Class HexViewRawForm
                 ToolStripStatusLength.Text = ""
             Else
                 ToolStripStatusBlock.Visible = True
-                ToolStripStatusBlock.Text = "Block(h): " & OffsetStart.ToString("X") & "-" & OffsetEnd.ToString("X")
+                ToolStripStatusLength.Text = FormatLabelPair(My.Resources.Label_BlockHex, OffsetStart.ToString("X") & "-" & OffsetEnd.ToString("X"))
                 ToolStripStatusLength.Visible = True
-                ToolStripStatusLength.Text = "Length(h): " & SelectionLength.ToString("X") & "  " & InParens(SelectionLength)
+                ToolStripStatusLength.Text = FormatLabelPair(My.Resources.Label_LengthHex, SelectionLength.ToString("X") & "  " & InParens(SelectionLength))
             End If
 
             If Not OutOfRange Then
@@ -855,9 +855,9 @@ Public Class HexViewRawForm
 
         If _CurrentRegionSector Is Nothing Then
             ToolStripStatusTrack.Visible = True
-            ToolStripStatusTrack.Text = "Track: " & _RegionData.Track
+            ToolStripStatusTrack.Text = FormatLabelPair(My.Resources.Label_Track, _RegionData.Track)
             ToolStripStatusSide.Visible = True
-            ToolStripStatusSide.Text = "Side: " & _RegionData.Side
+            ToolStripStatusSide.Text = FormatLabelPair(My.Resources.Label_Side, _RegionData.Side)
             ToolStripStatusTrackSector.Visible = False
             ToolStripStatusTrackSize.Visible = False
             ToolStripStatusChecksumText.Visible = False
@@ -866,20 +866,20 @@ Public Class HexViewRawForm
             BtnSelectSector.Enabled = False
         Else
             ToolStripStatusTrack.Visible = True
-            ToolStripStatusTrack.Text = "Track: " & _CurrentRegionSector.Track
+            ToolStripStatusTrack.Text = FormatLabelPair(My.Resources.Label_Track, _CurrentRegionSector.Track)
             ToolStripStatusSide.Visible = True
-            ToolStripStatusSide.Text = "Side: " & _CurrentRegionSector.Side
+            ToolStripStatusSide.Text = FormatLabelPair(My.Resources.Label_Side, _CurrentRegionSector.Side)
             ToolStripStatusTrackSector.Visible = True
-            ToolStripStatusTrackSector.Text = "Sector Id: " & _CurrentRegionSector.SectorId
+            ToolStripStatusTrackSector.Text = FormatLabelPair(My.Resources.Label_SectorId, _CurrentRegionSector.SectorId)
             ToolStripStatusTrackSize.Visible = True
-            ToolStripStatusTrackSize.Text = "Size: " & _CurrentRegionSector.DataLength
+            ToolStripStatusTrackSize.Text = FormatLabelPair(My.Resources.Label_Size, _CurrentRegionSector.DataLength)
             ToolStripStatusChecksumText.Visible = True
             ToolStripStatusChecksum.Visible = True
             If _CurrentRegionSector.DataChecksumValid Then
-                ToolStripStatusChecksum.Text = "Valid"
+                ToolStripStatusChecksum.Text = My.Resources.Label_Valid
                 ToolStripStatusChecksum.ForeColor = Color.Green
             Else
-                ToolStripStatusChecksum.Text = "Invalid"
+                ToolStripStatusChecksum.Text = My.Resources.Label_Invalid
                 ToolStripStatusChecksum.ForeColor = Color.Red
             End If
             If RegionEnd IsNot Nothing Then
@@ -1189,9 +1189,9 @@ Public Class HexViewRawForm
 
     Private Sub DataGridDataInspector_CellBeginEdit(sender As Object, e As DataGridViewCellCancelEventArgs) Handles DataGridDataInspector.CellBeginEdit
         Dim Row = DataGridDataInspector.Rows(e.RowIndex)
-        Dim Invalid As Boolean = Row.Cells.Item("DataGridInvalid").Value
-        Dim Editable As Boolean = Row.Cells.Item("DataGridEditable").Value
-        Dim Length As Integer = Row.Cells.Item("DataGridLength").Value
+        Dim Invalid As Boolean = Row.Cells.Item(HexViewDataGridInspector.COLUMN_INVALID).Value
+        Dim Editable As Boolean = Row.Cells.Item(HexViewDataGridInspector.COLUMN_EDITABLE).Value
+        Dim Length As Integer = Row.Cells.Item(HexViewDataGridInspector.COLUMN_LENGTH).Value
 
         If Not Editable Then
             e.Cancel = True
@@ -1201,13 +1201,13 @@ Public Class HexViewRawForm
         _CachedSelectedLength = HexBox1.SelectionLength
         HexBox1.SelectionLength = Length
 
-        _StoredCellValue = Row.Cells.Item("DataGridValue").Value
+        _StoredCellValue = Row.Cells.Item(HexViewDataGridInspector.COLUMN_VALUE).Value
     End Sub
 
     Private Sub DataGridDataInspector_CellEndEdit(sender As Object, e As DataGridViewCellEventArgs) Handles DataGridDataInspector.CellEndEdit
         Dim Row = DataGridDataInspector.Rows(e.RowIndex)
-        Dim CellValue As String = Row.Cells.Item("DataGridValue").Value
-        Dim DataType As DataRowEnum = Row.Cells.Item("DataGridType").Value
+        Dim CellValue As String = Row.Cells.Item(HexViewDataGridInspector.COLUMN_VALUE).Value
+        Dim DataType As DataRowEnum = Row.Cells.Item(HexViewDataGridInspector.COLUMN_TYPE).Value
 
         If CellValue <> _StoredCellValue Then
             _CachedSelectedLength = -1
@@ -1397,45 +1397,45 @@ Public Class HexViewRawForm
 
         If SectorIndex > -1 And SectorIndex < _RegionData.Sectors.Count Then
             Dim Sector = _RegionData.Sectors(SectorIndex)
-            TooltipText = "Sector Id: " & vbTab & vbTab & Sector.SectorId
-            TooltipText &= vbCrLf & "Size: " & vbTab & vbTab & vbTab & Sector.DataLength
+            TooltipText = FormatLabelPair(My.Resources.Label_SectorId, vbTab & vbTab & Sector.SectorId)
+            TooltipText &= Environment.NewLine & FormatLabelPair(My.Resources.Label_Size, vbTab & vbTab & vbTab & Sector.DataLength)
 
             If Sector.Track <> _Track Then
-                TooltipText &= vbCrLf & "Track: " & vbTab & vbTab & vbTab & Sector.Track
+                TooltipText &= Environment.NewLine & FormatLabelPair(My.Resources.Label_Track, vbTab & vbTab & vbTab & Sector.Track)
             End If
 
             If Sector.Side <> _Side Then
-                TooltipText &= vbCrLf & "Side: " & vbTab & vbTab & vbTab & Sector.Side
+                TooltipText &= Environment.NewLine & FormatLabelPair(My.Resources.Label_Side, vbTab & vbTab & vbTab & Sector.Side)
             End If
 
-            TooltipText &= vbCrLf & "Address Checksum: " & vbTab & If(Sector.IDAMChecksumValid, "Valid", "Invalid")
+            TooltipText &= Environment.NewLine & FormatLabelPair(My.Resources.Bitstream_AddressChecksum, vbTab & If(Sector.IDAMChecksumValid, My.Resources.Label_Valid, My.Resources.Label_Invalid))
 
             If Sector.HasData Then
-                TooltipText &= vbCrLf & "Data Checksum: " & vbTab & vbTab & If(Sector.DataChecksumValid, "Valid", "Invalid")
+                TooltipText &= Environment.NewLine & FormatLabelPair(My.Resources.Bitstream_DataChecksum, vbTab & vbTab & If(Sector.DataChecksumValid, My.Resources.Label_Valid, My.Resources.Label_Invalid))
             End If
 
             Dim DAMText As String
             If Not Sector.HasData Then
-                DAMText = "Missing"
+                DAMText = My.Resources.Label_Missing
             ElseIf Sector.DAM = MFMAddressMark.Data Then
-                DAMText = "Normal"
+                DAMText = My.Resources.Label_Normal
             ElseIf Sector.DAM = MFMAddressMark.DeletedData Then
-                DAMText = "Deleted"
+                DAMText = My.Resources.Label_Deleted
             Else
-                DAMText = "Unknown"
+                DAMText = My.Resources.Label_Unknown
             End If
-            TooltipText &= vbCrLf & "Data Address Mark: " & vbTab & DAMText
+            TooltipText &= Environment.NewLine & FormatLabelPair(My.Resources.Bitstream_DAM, vbTab & DAMText)
 
             If Sector.Overlaps Then
-                TooltipText &= vbCrLf & "Overlaps"
+                TooltipText &= Environment.NewLine & My.Resources.Bitstream_Overlaps
             End If
 
             If Sector.HasWeakBits Then
-                TooltipText &= vbCrLf & "Weak Bits"
+                TooltipText &= Environment.NewLine & My.Resources.Bitstream_WeakBits
             End If
 
             If Sector.WriteSplice Then
-                TooltipText &= vbCrLf & "Write Splice"
+                TooltipText &= Environment.NewLine & My.Resources.Bitstream_WriteSplice
             End If
         End If
 

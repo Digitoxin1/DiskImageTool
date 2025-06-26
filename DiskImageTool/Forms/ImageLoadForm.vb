@@ -22,6 +22,7 @@ Public Class ImageLoadForm
         InitializeComponent()
 
         ' Add any initialization after the InitializeComponent() call.
+        Me.Text = My.Resources.Caption_ScanFiles
         _Parent = Parent
         _Files = Files
         _LoadedFiles = LoadedFiles
@@ -160,8 +161,8 @@ Public Class ImageLoadForm
                 Me.Opacity = 1
             End If
             If _Counter Mod 10 = 0 Then
-                LblScanning.Text = "Scanning... " & _Counter & " files"
-                lblScanning2.Text = _ImageCount & " images loaded"
+                LblScanning.Text = My.Resources.Label_Scanning & "... " & _Counter & " " & My.Resources.Label_Files
+                lblScanning2.Text = String.Format(My.Resources.Label_ImagesLoaded, _ImageCount)
                 LblScanning.Refresh()
                 lblScanning2.Refresh()
             End If
@@ -181,7 +182,7 @@ Public Class ImageLoadForm
     Private Sub ImageLoadForm_Activated(sender As Object, e As EventArgs) Handles Me.Activated
         If Not _Activated Then
             _EndScan = False
-            LblScanning.Text = "Scanning"
+            LblScanning.Text = My.Resources.Label_Scanning
             BackgroundWorker1.RunWorkerAsync()
         End If
         _Activated = True

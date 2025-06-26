@@ -76,7 +76,7 @@ Public Class ReplaceFileForm
 
         ChkFilenameOriginal.Text = Filename
         ChkFileDateOriginal.Text = FileDate
-        ChkFileSizeOriginal.Text = FormatThousands(FileSize) & " bytes"
+        ChkFileSizeOriginal.Text = FormatThousands(FileSize) & " " & My.Resources.Label_Bytes
     End Sub
 
     Public Sub SetNewFile(Filename As String, FileDate As Date, FileSize As UInteger)
@@ -86,14 +86,14 @@ Public Class ReplaceFileForm
         _FileSizeNew = FileSize
 
         ChkFileDateNew.Text = FileDate
-        ChkFileSizeNew.Text = FormatThousands(FileSize) & " bytes"
+        ChkFileSizeNew.Text = FormatThousands(FileSize) & " " & My.Resources.Label_Bytes
 
         SetFileNameForm()
         BtnUndo.Visible = False
     End Sub
 
     Public Sub RefreshText()
-        Dim AdjustmentType As String
+        Dim FileSizeCaption As String
 
         If ChkFilenameOriginal.Checked Then
             LblFileName.Text = _FileNameOriginal
@@ -113,34 +113,34 @@ Public Class ReplaceFileForm
         BtnOK.Enabled = True
 
         If ChkFileSizeOriginal.Checked Then
-            LblFileSize.Text = FormatThousands(_FileSizeOriginal) & " bytes"
+            LblFileSize.Text = FormatThousands(_FileSizeOriginal) & " " & My.Resources.Label_Bytes
             If _FileSizeNew = _FileSizeOriginal Then
-                AdjustmentType = "set"
+                FileSizeCaption = My.Resources.Label_FileSizeSet
             ElseIf _FileSizeNew > _FileSizeOriginal Then
-                AdjustmentType = "truncated"
+                FileSizeCaption = My.Resources.Label_FileSizeTruncated
             Else
-                AdjustmentType = "padded"
+                FileSizeCaption = My.Resources.Label_FileSizePadded
                 FlowLayoutPad.Visible = True
-                LblPadCaption.Text = "Pad file with:"
+                LblPadCaption.Text = My.Resources.Label_PadFile & ":"
             End If
         Else
-            LblFileSize.Text = FormatThousands(_FileSizeNew) & " bytes"
+            LblFileSize.Text = FormatThousands(_FileSizeNew) & " " & My.Resources.Label_Bytes
             If _FileSizeOriginal = _FileSizeNew Then
-                AdjustmentType = "set"
+                FileSizeCaption = My.Resources.Label_FileSizeSet
             ElseIf _FileSizeOriginal > _FileSizeNew Then
-                AdjustmentType = "reduced"
+                FileSizeCaption = My.Resources.Label_FileSizeReduced
                 FlowLayoutPad.Visible = True
-                LblPadCaption.Text = "Fill free space with:"
+                LblPadCaption.Text = My.Resources.Label_FillFreeSpace & ":"
             Else
-                AdjustmentType = "expanded"
+                FileSizeCaption = My.Resources.Label_FileSizeExpanded
                 If _FileSizeNew > _AvailableSpace Then
-                    LblFileSizeError.Text = "(Not enough available space on disk)"
+                    LblFileSizeError.Text = InParens(My.Resources.Label_NotEnoughSpace)
                     LblFileSizeError.Visible = True
                     BtnOK.Enabled = False
                 End If
             End If
         End If
-        LblFileSizeCaption.Text = "File size will be " & AdjustmentType & " to:"
+        LblFileSizeCaption.Text = FileSizeCaption & ":"
     End Sub
 
     Private Sub ToggleCheckBox(Current As CheckBox, Linked As CheckBox)
@@ -159,13 +159,13 @@ Public Class ReplaceFileForm
     Private Sub BtnOK_Click(sender As Object, e As EventArgs) Handles BtnOK.Click
         If ChkFilenameNew.Checked Then
             If TxtFilenameNew.Text.Length = 0 Then
-                MsgBox("Filename cannot be blank.", MsgBoxStyle.Exclamation)
+                MsgBox(My.Resources.Dialog_FileBlankWarning, MsgBoxStyle.Exclamation)
                 TxtFilenameNew.Focus()
                 Exit Sub
             End If
 
             If _FileNameNew <> _FileNameOriginal AndAlso _Directory.FindShortFileName(_FileNameNew, True) > -1 Then
-                MsgBox("A file with this name already exists in this directory.", MsgBoxStyle.Exclamation)
+                MsgBox(My.Resources.Dialog_FileExists, MsgBoxStyle.Exclamation)
                 TxtFilenameNew.Focus()
                 Exit Sub
             End If

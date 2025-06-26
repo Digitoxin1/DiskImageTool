@@ -23,6 +23,7 @@ Partial Class FATEditForm
     <System.Diagnostics.DebuggerStepThrough()>
     Private Sub InitializeComponent()
         Me.components = New System.ComponentModel.Container()
+        Dim resources As System.ComponentModel.ComponentResourceManager = New System.ComponentModel.ComponentResourceManager(GetType(FATEditForm))
         Me.DataGridViewFAT = New System.Windows.Forms.DataGridView()
         Me.ContextMenuGrid = New System.Windows.Forms.ContextMenuStrip(Me.components)
         Me.FlowLayoutPanelBottom = New System.Windows.Forms.FlowLayoutPanel()
@@ -54,191 +55,127 @@ Partial Class FATEditForm
         Me.DataGridViewFAT.AllowUserToDeleteRows = False
         Me.DataGridViewFAT.AllowUserToResizeColumns = False
         Me.DataGridViewFAT.AllowUserToResizeRows = False
-        Me.DataGridViewFAT.Anchor = CType((((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Bottom) _
-            Or System.Windows.Forms.AnchorStyles.Left) _
-            Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
+        resources.ApplyResources(Me.DataGridViewFAT, "DataGridViewFAT")
         Me.DataGridViewFAT.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize
         Me.DataGridViewFAT.ContextMenuStrip = Me.ContextMenuGrid
-        Me.DataGridViewFAT.Location = New System.Drawing.Point(21, 200)
         Me.DataGridViewFAT.MultiSelect = False
         Me.DataGridViewFAT.Name = "DataGridViewFAT"
         Me.DataGridViewFAT.RowHeadersWidthSizeMode = System.Windows.Forms.DataGridViewRowHeadersWidthSizeMode.DisableResizing
-        Me.DataGridViewFAT.ScrollBars = System.Windows.Forms.ScrollBars.Vertical
         Me.DataGridViewFAT.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.CellSelect
-        Me.DataGridViewFAT.Size = New System.Drawing.Size(564, 318)
-        Me.DataGridViewFAT.TabIndex = 2
         '
         'ContextMenuGrid
         '
         Me.ContextMenuGrid.Name = "ContextMenuGrid"
         Me.ContextMenuGrid.ShowImageMargin = False
-        Me.ContextMenuGrid.Size = New System.Drawing.Size(36, 4)
+        resources.ApplyResources(Me.ContextMenuGrid, "ContextMenuGrid")
         '
         'FlowLayoutPanelBottom
         '
-        Me.FlowLayoutPanelBottom.Anchor = System.Windows.Forms.AnchorStyles.Bottom
-        Me.FlowLayoutPanelBottom.AutoSize = True
-        Me.FlowLayoutPanelBottom.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink
+        resources.ApplyResources(Me.FlowLayoutPanelBottom, "FlowLayoutPanelBottom")
         Me.FlowLayoutPanelBottom.Controls.Add(Me.BtnUpdate)
         Me.FlowLayoutPanelBottom.Controls.Add(Me.BtnCancel)
-        Me.FlowLayoutPanelBottom.Location = New System.Drawing.Point(207, 547)
         Me.FlowLayoutPanelBottom.Name = "FlowLayoutPanelBottom"
-        Me.FlowLayoutPanelBottom.Size = New System.Drawing.Size(192, 29)
-        Me.FlowLayoutPanelBottom.TabIndex = 4
         '
         'BtnUpdate
         '
-        Me.BtnUpdate.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink
+        resources.ApplyResources(Me.BtnUpdate, "BtnUpdate")
         Me.BtnUpdate.DialogResult = System.Windows.Forms.DialogResult.OK
-        Me.BtnUpdate.Location = New System.Drawing.Point(3, 3)
         Me.BtnUpdate.Name = "BtnUpdate"
-        Me.BtnUpdate.Size = New System.Drawing.Size(90, 23)
-        Me.BtnUpdate.TabIndex = 0
-        Me.BtnUpdate.Text = "&Update"
         Me.BtnUpdate.UseVisualStyleBackColor = True
         '
         'BtnCancel
         '
-        Me.BtnCancel.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink
+        resources.ApplyResources(Me.BtnCancel, "BtnCancel")
         Me.BtnCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel
-        Me.BtnCancel.Location = New System.Drawing.Point(99, 3)
         Me.BtnCancel.Name = "BtnCancel"
-        Me.BtnCancel.Size = New System.Drawing.Size(90, 23)
-        Me.BtnCancel.TabIndex = 1
-        Me.BtnCancel.Text = "&Cancel"
         Me.BtnCancel.UseVisualStyleBackColor = True
         '
         'ChkSync
         '
-        Me.ChkSync.Anchor = System.Windows.Forms.AnchorStyles.Bottom
-        Me.ChkSync.AutoSize = True
-        Me.ChkSync.Location = New System.Drawing.Point(247, 524)
+        resources.ApplyResources(Me.ChkSync, "ChkSync")
         Me.ChkSync.Name = "ChkSync"
-        Me.ChkSync.Size = New System.Drawing.Size(112, 17)
-        Me.ChkSync.TabIndex = 3
-        Me.ChkSync.Text = "Synchronize FATs"
         Me.ChkSync.UseVisualStyleBackColor = True
         '
         'FlowLayoutPanelTop
         '
-        Me.FlowLayoutPanelTop.AutoSize = True
-        Me.FlowLayoutPanelTop.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink
+        resources.ApplyResources(Me.FlowLayoutPanelTop, "FlowLayoutPanelTop")
         Me.FlowLayoutPanelTop.Controls.Add(Me.BtnFree)
         Me.FlowLayoutPanelTop.Controls.Add(Me.BtnBad)
         Me.FlowLayoutPanelTop.Controls.Add(Me.BtnLast)
         Me.FlowLayoutPanelTop.Controls.Add(Me.BtnReserved)
         Me.FlowLayoutPanelTop.Controls.Add(Me.LblValid)
-        Me.FlowLayoutPanelTop.Location = New System.Drawing.Point(21, 165)
         Me.FlowLayoutPanelTop.Name = "FlowLayoutPanelTop"
-        Me.FlowLayoutPanelTop.Size = New System.Drawing.Size(333, 29)
-        Me.FlowLayoutPanelTop.TabIndex = 0
         '
         'BtnFree
         '
-        Me.BtnFree.Location = New System.Drawing.Point(3, 3)
+        resources.ApplyResources(Me.BtnFree, "BtnFree")
         Me.BtnFree.Name = "BtnFree"
-        Me.BtnFree.Size = New System.Drawing.Size(50, 23)
-        Me.BtnFree.TabIndex = 0
-        Me.BtnFree.Text = "Free"
         Me.BtnFree.UseVisualStyleBackColor = True
         '
         'BtnBad
         '
-        Me.BtnBad.Location = New System.Drawing.Point(59, 3)
+        resources.ApplyResources(Me.BtnBad, "BtnBad")
         Me.BtnBad.Name = "BtnBad"
-        Me.BtnBad.Size = New System.Drawing.Size(50, 23)
-        Me.BtnBad.TabIndex = 1
-        Me.BtnBad.Text = "Bad"
         Me.BtnBad.UseVisualStyleBackColor = True
         '
         'BtnLast
         '
-        Me.BtnLast.Location = New System.Drawing.Point(115, 3)
+        resources.ApplyResources(Me.BtnLast, "BtnLast")
         Me.BtnLast.Name = "BtnLast"
-        Me.BtnLast.Size = New System.Drawing.Size(50, 23)
-        Me.BtnLast.TabIndex = 2
-        Me.BtnLast.Text = "Last"
         Me.BtnLast.UseVisualStyleBackColor = True
         '
         'BtnReserved
         '
-        Me.BtnReserved.Location = New System.Drawing.Point(171, 3)
+        resources.ApplyResources(Me.BtnReserved, "BtnReserved")
         Me.BtnReserved.Name = "BtnReserved"
-        Me.BtnReserved.Size = New System.Drawing.Size(75, 23)
-        Me.BtnReserved.TabIndex = 3
-        Me.BtnReserved.Text = "Reserved"
         Me.BtnReserved.UseVisualStyleBackColor = True
         '
         'LblValid
         '
-        Me.LblValid.Anchor = System.Windows.Forms.AnchorStyles.Left
-        Me.LblValid.AutoSize = True
-        Me.LblValid.Location = New System.Drawing.Point(257, 8)
-        Me.LblValid.Margin = New System.Windows.Forms.Padding(8, 0, 3, 0)
+        resources.ApplyResources(Me.LblValid, "LblValid")
         Me.LblValid.Name = "LblValid"
-        Me.LblValid.Size = New System.Drawing.Size(73, 13)
-        Me.LblValid.TabIndex = 4
-        Me.LblValid.Text = "Valid Clusters:"
         '
         'ContextMenuLast
         '
         Me.ContextMenuLast.Name = "ContextMenuLast"
         Me.ContextMenuLast.ShowImageMargin = False
-        Me.ContextMenuLast.Size = New System.Drawing.Size(36, 4)
+        resources.ApplyResources(Me.ContextMenuLast, "ContextMenuLast")
         '
         'ContextMenuReserved
         '
         Me.ContextMenuReserved.Name = "ContextMenuReserved"
         Me.ContextMenuReserved.ShowImageMargin = False
-        Me.ContextMenuReserved.Size = New System.Drawing.Size(36, 4)
+        resources.ApplyResources(Me.ContextMenuReserved, "ContextMenuReserved")
         '
         'PictureBoxFAT
         '
-        Me.PictureBoxFAT.Anchor = CType(((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Left) _
-            Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
-        Me.PictureBoxFAT.Location = New System.Drawing.Point(24, 21)
+        resources.ApplyResources(Me.PictureBoxFAT, "PictureBoxFAT")
         Me.PictureBoxFAT.Name = "PictureBoxFAT"
-        Me.PictureBoxFAT.Size = New System.Drawing.Size(561, 138)
-        Me.PictureBoxFAT.TabIndex = 4
         Me.PictureBoxFAT.TabStop = False
         '
         'FlowLayoutPanel1
         '
-        Me.FlowLayoutPanel1.Anchor = CType((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
-        Me.FlowLayoutPanel1.AutoSize = True
-        Me.FlowLayoutPanel1.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink
+        resources.ApplyResources(Me.FlowLayoutPanel1, "FlowLayoutPanel1")
         Me.FlowLayoutPanel1.Controls.Add(Me.TxtMediaDescriptor)
         Me.FlowLayoutPanel1.Controls.Add(Me.CboMediaDescriptor)
-        Me.FlowLayoutPanel1.Location = New System.Drawing.Point(421, 166)
         Me.FlowLayoutPanel1.Name = "FlowLayoutPanel1"
-        Me.FlowLayoutPanel1.Size = New System.Drawing.Size(164, 27)
-        Me.FlowLayoutPanel1.TabIndex = 1
         '
         'TxtMediaDescriptor
         '
-        Me.TxtMediaDescriptor.Anchor = System.Windows.Forms.AnchorStyles.Left
-        Me.TxtMediaDescriptor.AutoSize = True
-        Me.TxtMediaDescriptor.Location = New System.Drawing.Point(3, 7)
+        resources.ApplyResources(Me.TxtMediaDescriptor, "TxtMediaDescriptor")
         Me.TxtMediaDescriptor.Name = "TxtMediaDescriptor"
-        Me.TxtMediaDescriptor.Size = New System.Drawing.Size(87, 13)
-        Me.TxtMediaDescriptor.TabIndex = 20
-        Me.TxtMediaDescriptor.Text = "Media Descriptor"
         '
         'CboMediaDescriptor
         '
         Me.CboMediaDescriptor.DrawMode = System.Windows.Forms.DrawMode.OwnerDrawFixed
         Me.CboMediaDescriptor.FormattingEnabled = True
-        Me.CboMediaDescriptor.Location = New System.Drawing.Point(96, 3)
-        Me.CboMediaDescriptor.MaxLength = 2
+        resources.ApplyResources(Me.CboMediaDescriptor, "CboMediaDescriptor")
         Me.CboMediaDescriptor.Name = "CboMediaDescriptor"
-        Me.CboMediaDescriptor.Size = New System.Drawing.Size(65, 21)
-        Me.CboMediaDescriptor.TabIndex = 22
         '
         'FATEditForm
         '
-        Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
+        resources.ApplyResources(Me, "$this")
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
-        Me.ClientSize = New System.Drawing.Size(606, 597)
         Me.Controls.Add(Me.FlowLayoutPanel1)
         Me.Controls.Add(Me.PictureBoxFAT)
         Me.Controls.Add(Me.FlowLayoutPanelTop)
@@ -247,13 +184,9 @@ Partial Class FATEditForm
         Me.Controls.Add(Me.DataGridViewFAT)
         Me.MaximizeBox = False
         Me.MinimizeBox = False
-        Me.MinimumSize = New System.Drawing.Size(622, 450)
         Me.Name = "FATEditForm"
-        Me.Padding = New System.Windows.Forms.Padding(18)
         Me.ShowIcon = False
         Me.ShowInTaskbar = False
-        Me.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent
-        Me.Text = "File Allocation Table"
         CType(Me.DataGridViewFAT, System.ComponentModel.ISupportInitialize).EndInit()
         Me.FlowLayoutPanelBottom.ResumeLayout(False)
         Me.FlowLayoutPanelTop.ResumeLayout(False)

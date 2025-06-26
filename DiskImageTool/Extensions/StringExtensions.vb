@@ -2,11 +2,6 @@
 
 Module StringExtensions
     <Extension()>
-    Public Function Pluralize(Value As String, Count As Integer) As String
-        Return Value & IIf(Count <> 1, "s", "")
-    End Function
-
-    <Extension()>
     Public Function WordWrap(Text As String, Width As Integer, Font As Font) As List(Of String)
         Dim StringList = New List(Of String)
         Dim Size = TextRenderer.MeasureText(Text, Font)

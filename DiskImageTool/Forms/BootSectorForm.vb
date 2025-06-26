@@ -56,179 +56,29 @@ Public Class BootSectorForm
     End Sub
 
     Private Sub IntitializeHelp()
-        Dim Msg As String
-
-        Msg = "OEM Name Identifier" &
-            $"{vbCrLf}{vbCrLf}Can be set by a FAT implementation to any desired value" &
-            $"{vbCrLf}{vbCrLf}Typically this is some indication of what system formatted the volume."
-        SetHelpString(Msg, LblOEMName, CboOEMName, HexOEMName)
-
-        Msg = "Number of bytes in each physical sector" &
-             $"{vbCrLf}{vbCrLf}Allowed Values: 512, 1024, 2048, 4096" &
-             $"{vbCrLf}{vbCrLf}Note: This value should be 512 for all floppy disks."
-        SetHelpString(Msg, LblBytesPerSector, CboBytesPerSector)
-
-        Msg = "Number of sectors per cluster" &
-            $"{vbCrLf}{vbCrLf}Allowed Values: 1, 2, 4, 8, 16, 32, 128" &
-            $"{vbCrLf}{vbCrLf}Typical Values:" &
-            $"{vbCrLf}160K Floppy{vbTab}1" &
-            $"{vbCrLf}180K Floppy{vbTab}1" &
-            $"{vbCrLf}320K Floppy{vbTab}2" &
-            $"{vbCrLf}360K Floppy{vbTab}2" &
-            $"{vbCrLf}720K Floppy{vbTab}2" &
-            $"{vbCrLf}1.2M Floppy{vbTab}1" &
-            $"{vbCrLf}1.44M Floppy{vbTab}1" &
-            $"{vbCrLf}2.88M Floppy{vbTab}2" &
-            $"{vbCrLf}DMF Floppy{vbTab}2 or 4" &
-            $"{vbCrLf}XDF Floppy{vbTab}1"
-        SetHelpString(Msg, LblSectorsPerCluster, CboSectorsPerCluster)
-
-        Msg = "Number of reserved sectors in the reserved region of the volume starting at the first sector of the volume" &
-            $"{vbCrLf}{vbCrLf}Allowed Values: Any non-zero value" &
-            $"{vbCrLf}{vbCrLf}Note: This value should typically be set to 1."
-        SetHelpString(Msg, LblReservedSectors, TxtReservedSectors)
-
-        Msg = "Number of File Allocation Table (FAT) copies on the volume" &
-            $"{vbCrLf}{vbCrLf}Allowed Values: Any non-zero value" &
-            $"{vbCrLf}{vbCrLf}Note: This value should typically be set to 2."
-        SetHelpString(Msg, LblNumberOfFATS, TxtNumberOfFATs)
-
-        Msg = "Number of entries in the root directory" &
-            $"{vbCrLf}{vbCrLf}Allowed Values: Value multiplied by 32 should be an even multiple of Bytes Per Sector" &
-            $"{vbCrLf}{vbCrLf}Typical Values:" &
-            $"{vbCrLf}160K Floppy{vbTab}64" &
-            $"{vbCrLf}180K Floppy{vbTab}64" &
-            $"{vbCrLf}320K Floppy{vbTab}112" &
-            $"{vbCrLf}360K Floppy{vbTab}112" &
-            $"{vbCrLf}720K Floppy{vbTab}112" &
-            $"{vbCrLf}1.2M Floppy{vbTab}224" &
-            $"{vbCrLf}1.44M Floppy{vbTab}224" &
-            $"{vbCrLf}2.88M Floppy{vbTab}240" &
-            $"{vbCrLf}DMF Floppy{vbTab}16" &
-            $"{vbCrLf}XDF Floppy{vbTab}224"
-        SetHelpString(Msg, LblRootDirectoryEntries, TxtRootDirectoryEntries)
-
-        Msg = "Total number of sectors in the volume" &
-            $"{vbCrLf}{vbCrLf}Typical Values:" &
-            $"{vbCrLf}160K Floppy{vbTab}{vbTab}320" &
-            $"{vbCrLf}180K Floppy{vbTab}{vbTab}360" &
-            $"{vbCrLf}320K Floppy{vbTab}{vbTab}640" &
-            $"{vbCrLf}360K Floppy{vbTab}{vbTab}720" &
-            $"{vbCrLf}720K Floppy{vbTab}{vbTab}1440" &
-            $"{vbCrLf}1.2M Floppy{vbTab}{vbTab}2400" &
-            $"{vbCrLf}1.44M Floppy{vbTab}{vbTab}2880" &
-            $"{vbCrLf}2.88M Floppy{vbTab}{vbTab}5760" &
-            $"{vbCrLf}DMF Floppy{vbTab}{vbTab}3360" &
-            $"{vbCrLf}5.25"" XDF Floppy{vbTab}3040" &
-            $"{vbCrLf}3.5"" XDF Floppy{vbTab}{vbTab}3680"
-        SetHelpString(Msg, LblSectorCountSmall, TxtSectorCountSmall)
-
-        Msg = "Media Descriptor" &
-            $"{vbCrLf}{vbCrLf}Allowed Values:" &
-            $"{vbCrLf}F0{vbTab}1.44M, 2.88M, DMF, 3.5"" XDF Floppy" &
-            $"{vbCrLf}F8{vbTab}Fixed Disk" &
-            $"{vbCrLf}F9{vbTab}720K, 1.2M, 5.25"" XDF Floppy" &
-            $"{vbCrLf}FA{vbTab}Unused" &
-            $"{vbCrLf}FB{vbTab}Unused" &
-            $"{vbCrLf}FC{vbTab}180K Floppy" &
-            $"{vbCrLf}FD{vbTab}360K Floppy" &
-            $"{vbCrLf}FE{vbTab}160K Floppy" &
-            $"{vbCrLf}FF{vbTab}320K Floppy" &
-            $"{vbCrLf}ED{vbTab}Tandy 2000 Floppy"
-        SetHelpString(Msg, TxtMediaDescriptor, CboMediaDescriptor)
-
-        Msg = "Number of sectors allocated to each copy of the File Allocation Table (FAT)" &
-            $"{vbCrLf}{vbCrLf}Typical Values:" &
-            $"{vbCrLf}160K Floppy{vbTab}{vbTab}1" &
-            $"{vbCrLf}180K Floppy{vbTab}{vbTab}2" &
-            $"{vbCrLf}320K Floppy{vbTab}{vbTab}1" &
-            $"{vbCrLf}360K Floppy{vbTab}{vbTab}2" &
-            $"{vbCrLf}720K Floppy{vbTab}{vbTab}3" &
-            $"{vbCrLf}1.2M Floppy{vbTab}{vbTab}7" &
-            $"{vbCrLf}1.44M Floppy{vbTab}{vbTab}9" &
-            $"{vbCrLf}2.88M Floppy{vbTab}{vbTab}9" &
-            $"{vbCrLf}DMF Floppy{vbTab}{vbTab}3 or 5" &
-            $"{vbCrLf}5.25"" XDF Floppy{vbTab}9" &
-            $"{vbCrLf}3.5"" XDF Floppy{vbTab}{vbTab}11"
-        SetHelpString(Msg, LblSectorsPerFAT, TxtSectorsPerFAT)
-
-        Msg = "Number of sectors per track on the disk" &
-            $"{vbCrLf}{vbCrLf}Typical Values:" &
-            $"{vbCrLf}160K Floppy{vbTab}{vbTab}8" &
-            $"{vbCrLf}180K Floppy{vbTab}{vbTab}9" &
-            $"{vbCrLf}320K Floppy{vbTab}{vbTab}8" &
-            $"{vbCrLf}360K Floppy{vbTab}{vbTab}9" &
-            $"{vbCrLf}720K Floppy{vbTab}{vbTab}9" &
-            $"{vbCrLf}1.2M Floppy{vbTab}{vbTab}15" &
-            $"{vbCrLf}1.44M Floppy{vbTab}{vbTab}18" &
-            $"{vbCrLf}2.88M Floppy{vbTab}{vbTab}36" &
-            $"{vbCrLf}DMF Floppy{vbTab}{vbTab}21" &
-            $"{vbCrLf}5.25"" XDF Floppy{vbTab}19" &
-            $"{vbCrLf}3.5"" XDF Floppy{vbTab}{vbTab}23"
-        SetHelpString(Msg, LblSectorsPerTrack, TxtSectorsPerTrack)
-
-        Msg = "Number of physical heads (sides) on the disk" &
-            $"{vbCrLf}{vbCrLf}Typical Values:" &
-            $"{vbCrLf}160K Floppy{vbTab}1" &
-            $"{vbCrLf}180K Floppy{vbTab}1" &
-            $"{vbCrLf}320K Floppy{vbTab}2" &
-            $"{vbCrLf}360K Floppy{vbTab}2" &
-            $"{vbCrLf}720K Floppy{vbTab}2" &
-            $"{vbCrLf}1.2M Floppy{vbTab}2" &
-            $"{vbCrLf}1.44M Floppy{vbTab}2" &
-            $"{vbCrLf}2.88M Floppy{vbTab}2" &
-            $"{vbCrLf}DMF Floppy{vbTab}2" &
-            $"{vbCrLf}XDF Floppy{vbTab}2"
-        SetHelpString(Msg, LblNumberOfHeads, TxtNumberOfHeads)
-
-        Msg = "Number of sectors preceeding the first sector of a partitioned volume" &
-             $"{vbCrLf}{vbCrLf}Note: This value should be 0 for all floppy disks"
-        SetHelpString(Msg, LblHiddenSectors, TxtHiddenSectors)
-
-        Msg = "Total number of sectors in a FAT16 volume larger than 65535 sectors" &
-             $"{vbCrLf}{vbCrLf}Note: This value should be 0 for all floppy disks"
-        SetHelpString(Msg, LblSectorCountLarge, TxtSectorCountLarge)
-
-        Msg = "Interrupt 13h drive number" &
-            $"{vbCrLf}{vbCrLf}Allowed Values: 0, 128"
-        SetHelpString(Msg, LblDriveNumber, TxtDriveNumber)
-
-        Msg = "Extended Boot Signature" &
-            $"{vbCrLf}{vbCrLf}Typical Values:" &
-            $"{vbCrLf}28h{vbTab}Volume Serial Number is present" &
-            $"{vbCrLf}29h{vbTab}Volume Serial Number, Volume Label, and File System ID are present"
-        SetHelpString(Msg, lblExtendedBootSignature, HexExtendedBootSignature)
-
-        Msg = "The Volume Serial Number is a 32-bit random number used in conjunction with the Volume Label for removable media tracking" &
-            $"{vbCrLf}{vbCrLf}Note: This id is typically generated by converting the current date and time into a 32-bit value"
-        SetHelpString(Msg, LblVolumeSerialNumber, HexVolumeSerialNumber)
-
-        Msg = "This field typically matches the 11-byte volume label in the root directory of the disk or has the value ""NO NAME    "" if the volume label does not exist."
-        SetHelpString(Msg, LblVolumeLabel, TxtVolumeLabel, HexVolumeLabel)
-
-        Msg = "The File System ID is informational only" &
-            $"{vbCrLf}{vbCrLf}Typical Values: FAT12, FAT16, FAT"
-        SetHelpString(Msg, LblFileSystemType, TxtFileSystemType, HexFileSystemType)
-
-        Msg = "The disk type detected based on the current values in the Boot Record.  Changing this will set the values in the boot record to those of the selected disk type."
-        SetHelpString(Msg, LblDiskType, CboDiskType)
-
-        Msg = "Generate a new volume serial number based on a user supplied date and time"
-        SetHelpString(Msg, BtnVolumeSerialNumber)
-
-        Msg = "This instruction indicates where the bootstrap code starts." &
-            $"{vbCrLf}{vbCrLf}Allowed Values: EB xx 90, E9 xx xx"
-        SetHelpString(Msg, LblJumpInstruction, HexJumpInstruction)
-
-        Msg = "Indicated to the BIOS that the sector is executable." &
-            $"{vbCrLf}{vbCrLf}Allowed Values:" &
-            $"{vbCrLf}AA 55" &
-            $"{vbCrLf}00 00 (PC DOS 1.x)" &
-            $"{vbCrLf}54 42 (Tandy 2000)"
-        SetHelpString(Msg, LblBootSectorSignature, HexBootSectorSignature)
-
-        Msg = $"This Is additional data found in the Boot Sector.{vbCrLf}{vbCrLf}Note: Data highlighted in green is the bootstrap code."
-        SetHelpString(Msg, HexBox1)
+        SetHelpString(My.Resources.BootSectorForm_Help_OEMName, LblOEMName, CboOEMName, HexOEMName)
+        SetHelpString(My.Resources.BootSectorForm_Help_BytesPerSector, LblBytesPerSector, CboBytesPerSector)
+        SetHelpString(My.Resources.BootSectorForm_Help_SectorsPerCluster, LblSectorsPerCluster, CboSectorsPerCluster)
+        SetHelpString(My.Resources.BootSectorForm_Help_ReservedSectors, LblReservedSectors, TxtReservedSectors)
+        SetHelpString(My.Resources.BootSectorForm_Help_NumberOfFATs, LblNumberOfFATS, TxtNumberOfFATs)
+        SetHelpString(My.Resources.BootSectorForm_Help_RootDirectoryEntries, LblRootDirectoryEntries, TxtRootDirectoryEntries)
+        SetHelpString(My.Resources.BootSectorForm_Help_SectorCountSmall, LblSectorCountSmall, TxtSectorCountSmall)
+        SetHelpString(My.Resources.BootSectorForm_Help_MediaDescriptor, TxtMediaDescriptor, CboMediaDescriptor)
+        SetHelpString(My.Resources.BootSectorForm_Help_SectorsPerFAT, LblSectorsPerFAT, TxtSectorsPerFAT)
+        SetHelpString(My.Resources.BootSectorForm_Help_SectorsPerTrack, LblSectorsPerTrack, TxtSectorsPerTrack)
+        SetHelpString(My.Resources.BootSectorForm_Help_NumberOfHeads, LblNumberOfHeads, TxtNumberOfHeads)
+        SetHelpString(My.Resources.BootSectorForm_Help_HiddenSectors, LblHiddenSectors, TxtHiddenSectors)
+        SetHelpString(My.Resources.BootSectorForm_Help_SectorCountLarge, LblSectorCountLarge, TxtSectorCountLarge)
+        SetHelpString(My.Resources.BootSectorForm_Help_DriveNumber, LblDriveNumber, TxtDriveNumber)
+        SetHelpString(My.Resources.BootSectorForm_Help_ExtendedBootSignature, lblExtendedBootSignature, HexExtendedBootSignature)
+        SetHelpString(My.Resources.BootSectorForm_Help_VolumeSerialNumber, LblVolumeSerialNumber, HexVolumeSerialNumber)
+        SetHelpString(My.Resources.BootSectorForm_Help_VolumeLabel, LblVolumeLabel, TxtVolumeLabel, HexVolumeLabel)
+        SetHelpString(My.Resources.BootSectorForm_Help_FileSystemType, LblFileSystemType, TxtFileSystemType, HexFileSystemType)
+        SetHelpString(My.Resources.BootSectorForm_Help_DiskType, LblDiskType, CboDiskType)
+        SetHelpString(My.Resources.BootSectorForm_Help_VolumeSerialNumberButton, BtnVolumeSerialNumber)
+        SetHelpString(My.Resources.BootSectorForm_Help_JumpInstruction, LblJumpInstruction, HexJumpInstruction)
+        SetHelpString(My.Resources.BootSectorForm_Help_BootSectorSignature, LblBootSectorSignature, HexBootSectorSignature)
+        SetHelpString(My.Resources.BootSectorForm_Help_AdditionalData, HexBox1)
     End Sub
 
     Private Function IsByteArrayNull(b() As Byte) As Boolean

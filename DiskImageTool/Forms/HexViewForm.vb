@@ -254,7 +254,7 @@ Public Class HexViewForm
 
         If DataGridDataInspector.SelectedRows.Count > 0 Then
             Dim Row = DataGridDataInspector.SelectedRows.Item(0)
-            Dim Invalid As Boolean = Row.Cells.Item("DataGridInvalid").Value
+            Dim Invalid As Boolean = Row.Cells.Item(HexViewDataGridInspector.COLUMN_INVALID).Value
             If Not Invalid Then
                 Enabled = True
             End If
@@ -564,7 +564,7 @@ Public Class HexViewForm
             .Size = New Drawing.Size(55, 23)
         }
 
-        Dim LabelCluster = New ToolStripLabel("Cluster") With {
+        Dim LabelCluster = New ToolStripLabel(My.Resources.Label_Cluster) With {
             .Alignment = ToolStripItemAlignment.Right,
             .Padding = New Padding(12, 0, 0, 0)
         }
@@ -579,7 +579,7 @@ Public Class HexViewForm
             .Size = New Drawing.Size(55, 23)
         }
 
-        Dim LabelSector = New ToolStripLabel("Sector") With {
+        Dim LabelSector = New ToolStripLabel(My.Resources.Label_Sector) With {
             .Alignment = ToolStripItemAlignment.Right,
             .Padding = New Padding(12, 0, 0, 0)
         }
@@ -595,7 +595,7 @@ Public Class HexViewForm
             .Alignment = ToolStripItemAlignment.Right,
             .Checked = Checked,
             .Margin = New Padding(0, 3, 6, 2),
-            .Text = "Sync FATs"
+            .Text = My.Resources.Label_SyncFATs
         }
 
         ToolStripMain.Items.Add(CheckBoxSync)
@@ -611,7 +611,7 @@ Public Class HexViewForm
             .Size = New Drawing.Size(50, 23)
         }
 
-        Dim LabelTrack = New ToolStripLabel("Track") With {
+        Dim LabelTrack = New ToolStripLabel(My.Resources.Label_Track) With {
             .Alignment = ToolStripItemAlignment.Right,
             .Padding = New Padding(12, 0, 0, 0)
         }
@@ -852,15 +852,15 @@ Public Class HexViewForm
             ToolStripStatusTrack.Visible = False
             ToolStripStatusSide.Visible = False
             ToolStripStatusTrackSector.Visible = False
-            BtnSelectSector.Text = "Select &Sector"
+            BtnSelectSector.Text = My.Resources.Menu_SelectSector
             BtnSelectSector.Enabled = False
-            ToolStripBtnSelectSector.Text = "Sector"
-            ToolStripBtnSelectSector.ToolTipText = "Select Sector"
+            ToolStripBtnSelectSector.Text = My.Resources.Label_Sector
+            ToolStripBtnSelectSector.ToolTipText = My.Resources.Label_SelectSector
             ToolStripBtnSelectSector.Enabled = BtnSelectSector.Enabled
-            BtnSelectTrack.Text = "Select T&rack"
+            BtnSelectTrack.Text = My.Resources.Menu_SelectTrack
             BtnSelectTrack.Enabled = False
-            ToolStripBtnSelectTrack.Text = "Track"
-            ToolStripBtnSelectTrack.ToolTipText = "Select Track"
+            ToolStripBtnSelectTrack.Text = My.Resources.Label_Track
+            ToolStripBtnSelectTrack.ToolTipText = My.Resources.Label_SelectTrack
             ToolStripBtnSelectTrack.Enabled = BtnSelectTrack.Enabled
             _DataGridInspector.SetDataRow(DataRowEnum.File, Nothing, True, True)
         Else
@@ -874,7 +874,7 @@ Public Class HexViewForm
             HexBox1.ReadOnly = _HexViewSectorData.Disk.Image.ProtectedSectors.Contains(Sector)
 
             ToolStripStatusOffset.Visible = Not OutOfRange
-            ToolStripStatusOffset.Text = "Offset(h) :  " & OffsetStart.ToString("X")
+            ToolStripStatusOffset.Text = FormatLabelPair(My.Resources.Label_OffsetHex, OffsetStart.ToString("X"), " :  ")
 
             If SelectionLength = 0 Then
                 ToolStripStatusBlock.Visible = False
@@ -883,9 +883,9 @@ Public Class HexViewForm
                 ToolStripStatusLength.Text = ""
             Else
                 ToolStripStatusBlock.Visible = True
-                ToolStripStatusBlock.Text = "Block(h): " & OffsetStart.ToString("X") & "-" & OffsetEnd.ToString("X")
+                ToolStripStatusBlock.Text = FormatLabelPair(My.Resources.Label_BlockHex, OffsetStart.ToString("X") & "-" & OffsetEnd.ToString("X"))
                 ToolStripStatusLength.Visible = True
-                ToolStripStatusLength.Text = "Length(h): " & SelectionLength.ToString("X") & "  " & InParens(SelectionLength)
+                ToolStripStatusLength.Text = FormatLabelPair(My.Resources.Label_LengthHex, SelectionLength.ToString("X") & "  " & InParens(SelectionLength))
             End If
 
             If _CurrentSector <> Sector Or ForceUpdate Then
@@ -897,13 +897,13 @@ Public Class HexViewForm
                 End If
 
                 ToolStripStatusSector.Visible = Not OutOfRange
-                ToolStripStatusSector.Text = "Sector: " & Sector
+                ToolStripStatusSector.Text = FormatLabelPair(My.Resources.Label_Sector, Sector)
                 If Cluster < 2 Then
                     ToolStripStatusCluster.Visible = False
                     ToolStripStatusCluster.Text = ""
                 Else
                     ToolStripStatusCluster.Visible = Not OutOfRange
-                    ToolStripStatusCluster.Text = "Cluster: " & Cluster
+                    ToolStripStatusCluster.Text = FormatLabelPair(My.Resources.Label_Cluster, Cluster)
 
                     If _BPB.IsValid Then
                         If _CurrentHexViewData.Disk.RootDirectory.FATAllocation.FileAllocation.ContainsKey(Cluster) Then
@@ -916,13 +916,13 @@ Public Class HexViewForm
 
                 If _BPB.IsValid Then
                     ToolStripStatusTrack.Visible = Not OutOfRange
-                    ToolStripStatusTrack.Text = "Track: " & _BPB.SectorToTrack(Sector)
+                    ToolStripStatusTrack.Text = FormatLabelPair(My.Resources.Label_Track, _BPB.SectorToTrack(Sector))
 
                     ToolStripStatusSide.Visible = Not OutOfRange
-                    ToolStripStatusSide.Text = "Side: " & _BPB.SectorToSide(Sector)
+                    ToolStripStatusSide.Text = FormatLabelPair(My.Resources.Label_Side, _BPB.SectorToSide(Sector))
 
                     ToolStripStatusTrackSector.Visible = Not OutOfRange
-                    ToolStripStatusTrackSector.Text = "Sector Id: " & _BPB.SectorToTrackSector(Sector) + 1
+                    ToolStripStatusTrackSector.Text = FormatLabelPair(My.Resources.Label_SectorId, _BPB.SectorToTrackSector(Sector) + 1)
                 Else
                     ToolStripStatusTrack.Visible = False
                     ToolStripStatusTrack.Text = ""
@@ -940,10 +940,10 @@ Public Class HexViewForm
                     _DataGridInspector.SetDataRow(DataRowEnum.File, FileName, True, True)
                 End If
 
-                BtnSelectSector.Text = "Select &Sector " & Sector
+                BtnSelectSector.Text = My.Resources.Menu_SelectSector & " " & Sector
                 BtnSelectSector.Enabled = Not OutOfRange
-                ToolStripBtnSelectSector.Text = "Sector " & Sector
-                ToolStripBtnSelectSector.ToolTipText = "Select Sector " & Sector
+                ToolStripBtnSelectSector.Text = My.Resources.Label_Sector & " " & Sector
+                ToolStripBtnSelectSector.ToolTipText = My.Resources.Label_SelectSector & " " & Sector
                 ToolStripBtnSelectSector.Enabled = BtnSelectSector.Enabled
 
                 If _BPB.IsValid Then
@@ -951,10 +951,10 @@ Public Class HexViewForm
                     Dim Side = _BPB.SectorToSide(Sector)
                     Dim Value = Track.ToString & "." & Side.ToString
 
-                    BtnSelectTrack.Text = "Select T&rack " & Value
+                    BtnSelectTrack.Text = My.Resources.Menu_SelectTrack & " " & Value
                     BtnSelectTrack.Enabled = _ClusterNavigator And Not OutOfRange
-                    ToolStripBtnSelectTrack.Text = "Track " & Value
-                    ToolStripBtnSelectTrack.ToolTipText = "Select Track " & Value
+                    ToolStripBtnSelectTrack.Text = My.Resources.Label_Track & " " & Value
+                    ToolStripBtnSelectTrack.ToolTipText = My.Resources.Label_SelectTrack & " " & Value
                     ToolStripBtnSelectTrack.Enabled = BtnSelectTrack.Enabled
                 End If
 
@@ -1310,9 +1310,9 @@ Public Class HexViewForm
 
     Private Sub DataGridDataInspector_CellBeginEdit(sender As Object, e As DataGridViewCellCancelEventArgs) Handles DataGridDataInspector.CellBeginEdit
         Dim Row = DataGridDataInspector.Rows(e.RowIndex)
-        Dim Invalid As Boolean = Row.Cells.Item("DataGridInvalid").Value
-        Dim Editable As Boolean = Row.Cells.Item("DataGridEditable").Value
-        Dim Length As Integer = Row.Cells.Item("DataGridLength").Value
+        Dim Invalid As Boolean = Row.Cells.Item(HexViewDataGridInspector.COLUMN_INVALID).Value
+        Dim Editable As Boolean = Row.Cells.Item(HexViewDataGridInspector.COLUMN_EDITABLE).Value
+        Dim Length As Integer = Row.Cells.Item(HexViewDataGridInspector.COLUMN_LENGTH).Value
 
         If Not Editable Then
             e.Cancel = True
@@ -1322,13 +1322,13 @@ Public Class HexViewForm
         _CachedSelectedLength = HexBox1.SelectionLength
         HexBox1.SelectionLength = Length
 
-        _StoredCellValue = Row.Cells.Item("DataGridValue").Value
+        _StoredCellValue = Row.Cells.Item(HexViewDataGridInspector.COLUMN_VALUE).Value
     End Sub
 
     Private Sub DataGridDataInspector_CellEndEdit(sender As Object, e As DataGridViewCellEventArgs) Handles DataGridDataInspector.CellEndEdit
         Dim Row = DataGridDataInspector.Rows(e.RowIndex)
-        Dim CellValue As String = Row.Cells.Item("DataGridValue").Value
-        Dim DataType As DataRowEnum = Row.Cells.Item("DataGridType").Value
+        Dim CellValue As String = Row.Cells.Item(HexViewDataGridInspector.COLUMN_VALUE).Value
+        Dim DataType As DataRowEnum = Row.Cells.Item(HexViewDataGridInspector.COLUMN_TYPE).Value
 
         If CellValue <> _StoredCellValue Then
             _CachedSelectedLength = -1

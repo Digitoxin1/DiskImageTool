@@ -25,6 +25,13 @@ Namespace HexView
     End Enum
 
     Class HexViewDataGridInspector
+        Public Const COLUMN_NAME As String = "DataGridName"
+        Public Const COLUMN_VALUE As String = "DataGridValue"
+        Public Const COLUMN_LENGTH As String = "DataGridLength"
+        Public Const COLUMN_INVALID As String = "DataGridInvalid"
+        Public Const COLUMN_EDITABLE As String = "DataGridEditable"
+        Public Const COLUMN_TYPE As String = "DataGridType"
+
         Private WithEvents DataGridView As DataGridView
         Public Sub New(DataGridView As DataGridView)
             Me.DataGridView = DataGridView
@@ -37,8 +44,8 @@ Namespace HexView
         Public Sub CopyValueToClipboard()
             If DataGridView.SelectedRows.Count > 0 Then
                 Dim Row = DataGridView.SelectedRows.Item(0)
-                Dim Value = Row.Cells.Item("DataGridValue").Value
-                Dim Invalid = Row.Cells.Item("DataGridInvalid").Value
+                Dim Value = Row.Cells.Item(COLUMN_VALUE).Value
+                Dim Invalid = Row.Cells.Item(COLUMN_INVALID).Value
                 If Not Invalid Then
                     Clipboard.SetText(Value)
                 End If
@@ -47,6 +54,63 @@ Namespace HexView
 
         Public Sub Initialize()
             DataGridView.Rows.Clear()
+            DataGridView.Columns.Clear()
+
+            DataGridView.ColumnHeadersVisible = False
+            DataGridView.RowHeadersVisible = False
+            DataGridView.AllowUserToAddRows = False
+            DataGridView.AllowUserToDeleteRows = False
+            DataGridView.AllowUserToResizeColumns = False
+            DataGridView.AllowUserToResizeRows = False
+            DataGridView.ClipboardCopyMode = DataGridViewClipboardCopyMode.Disable
+            DataGridView.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.DisableResizing
+            DataGridView.EditMode = DataGridViewEditMode.EditOnF2
+            DataGridView.MultiSelect = False
+            DataGridView.RowHeadersWidthSizeMode = DataGridViewRowHeadersWidthSizeMode.DisableResizing
+            DataGridView.SelectionMode = DataGridViewSelectionMode.FullRowSelect
+            DataGridView.StandardTab = True
+
+
+            DataGridView.Columns.Add(New DataGridViewTextBoxColumn With {
+                .Name = COLUMN_NAME,
+                .ReadOnly = True,
+                .Resizable = False,
+                .SortMode = DataGridViewColumnSortMode.NotSortable
+            })
+            DataGridView.Columns.Add(New DataGridViewTextBoxColumn With {
+                .Name = COLUMN_VALUE,
+                .Resizable = False,
+                .SortMode = DataGridViewColumnSortMode.NotSortable,
+                .AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill
+            })
+            DataGridView.Columns.Add(New DataGridViewTextBoxColumn With {
+                .Visible = False,
+                .Name = COLUMN_LENGTH,
+                .ReadOnly = True,
+                .Resizable = False,
+                .SortMode = DataGridViewColumnSortMode.NotSortable
+            })
+            DataGridView.Columns.Add(New DataGridViewTextBoxColumn With {
+                .Visible = False,
+                .Name = COLUMN_INVALID,
+                .ReadOnly = True,
+                .Resizable = False,
+                .SortMode = DataGridViewColumnSortMode.NotSortable
+            })
+            DataGridView.Columns.Add(New DataGridViewTextBoxColumn With {
+                .Visible = False,
+                .Name = COLUMN_EDITABLE,
+                .ReadOnly = True,
+                .Resizable = False,
+                .SortMode = DataGridViewColumnSortMode.NotSortable
+            })
+            DataGridView.Columns.Add(New DataGridViewTextBoxColumn With {
+                .Visible = False,
+                .Name = COLUMN_TYPE,
+                .ReadOnly = True,
+                .Resizable = False,
+                .SortMode = DataGridViewColumnSortMode.NotSortable
+            })
 
             AddRow(My.Resources.DataInspector_Label_File, 0, DataRowEnum.File, False)
             AddRow(My.Resources.DataInspector_Label_Region, 0, DataRowEnum.Description, False)
@@ -189,9 +253,9 @@ Namespace HexView
             Const YEAR_MAX As Integer = 2107
 
             Dim Row = DataGridView.Rows(e.RowIndex)
-            Dim CellValue As String = Row.Cells.Item("DataGridValue").Value
-            Dim DataType As DataRowEnum = Row.Cells.Item("DataGridType").Value
-            Dim Invalid As Boolean = Row.Cells.Item("DataGridInvalid").Value
+            Dim CellValue As String = Row.Cells.Item(COLUMN_VALUE).Value
+            Dim DataType As DataRowEnum = Row.Cells.Item(COLUMN_TYPE).Value
+            Dim Invalid As Boolean = Row.Cells.Item(COLUMN_INVALID).Value
             Dim Result As Boolean
             Dim ErrorMsg As String = ""
 
@@ -291,7 +355,7 @@ Namespace HexView
 
         Private Sub AddRow(Name As String, Length As Integer, Type As DataRowEnum, Optional Editable As Boolean = True, Optional MaxInputLength As Integer = 32767)
             Dim Row = DataGridView.Rows.Add(Name, "", Length, True, Editable, Type)
-            Dim Cell As DataGridViewTextBoxCell = DataGridView.Rows.Item(Row).Cells.Item("DataGridValue")
+            Dim Cell As DataGridViewTextBoxCell = DataGridView.Rows.Item(Row).Cells.Item(COLUMN_VALUE)
             Cell.MaxInputLength = MaxInputLength
         End Sub
 
