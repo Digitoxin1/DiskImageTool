@@ -205,7 +205,7 @@
     <value>Dateizu&amp;ordnungstabelle</value>
   </data>
   <data name="MenuHexDirectory.Text" xml:space="preserve">
-    <value>&amp;Stammverzeichnis</value>
+    <value>Stamm&amp;verzeichnis</value>
   </data>
   <data name="MenuHexFreeClusters.Text" xml:space="preserve">
     <value>Freie &amp;Cluster mit Daten</value>
@@ -409,7 +409,7 @@
     <value>Diskettenabbilder hierher ziehen (Drag &amp;&amp; Drop)</value>
   </data>
   <data name="FileClusterError.Text" xml:space="preserve">
-    <value>Fehler</value>
+    <value>Err</value>
   </data>
   <data name="FileCreationDate.Text" xml:space="preserve">
     <value>Erstellt</value>
@@ -442,10 +442,10 @@
     <value>&amp;Verknüpfte Dateien anzeigen</value>
   </data>
   <data name="MenuFileImportFiles.Text" xml:space="preserve">
-    <value>&amp;Dateien importieren</value>
+    <value>Dateien &amp;importieren</value>
   </data>
   <data name="MenuFileImportFilesHere.Text" xml:space="preserve">
-    <value>Dateien &amp;hier importieren</value>
+    <value>Dateien hier &amp;importieren</value>
   </data>
   <data name="MenuFileNewDirectory.Text" xml:space="preserve">
     <value>&amp;Neues Verzeichnis</value>
@@ -475,7 +475,7 @@
     <value>&amp;Verzeichnis anzeigen</value>
   </data>
   <data name="MenuDirectoryImportFiles.Text" xml:space="preserve">
-    <value>&amp;Dateien importieren</value>
+    <value>Dateien &amp;importieren</value>
   </data>
   <data name="MenuDirectoryNewDirectory.Text" xml:space="preserve">
     <value>&amp;Neues Verzeichnis</value>

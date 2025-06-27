@@ -31,7 +31,7 @@
     <ProductName>DiskImageTool</ProductName>
     <PublisherName>Digitoxin</PublisherName>
     <ApplicationRevision>0</ApplicationRevision>
-    <ApplicationVersion>2.16.0.%2a</ApplicationVersion>
+    <ApplicationVersion>2.17.0.%2a</ApplicationVersion>
     <UseApplicationTrust>false</UseApplicationTrust>
     <PublishWizardCompleted>true</PublishWizardCompleted>
     <BootstrapperEnabled>true</BootstrapperEnabled>
@@ -461,6 +461,9 @@
     <EmbeddedResource Include="Forms\BootSectorForm.de.resx">
       <DependentUpon>BootSectorForm.vb</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="Forms\BootSectorForm.es.resx">
+      <DependentUpon>BootSectorForm.vb</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Forms\BootSectorForm.fr.resx">
       <DependentUpon>BootSectorForm.vb</DependentUpon>
     </EmbeddedResource>
@@ -471,6 +474,9 @@
     <EmbeddedResource Include="Forms\DeleteFileform.de.resx">
       <DependentUpon>DeleteFileform.vb</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="Forms\DeleteFileform.es.resx">
+      <DependentUpon>DeleteFileform.vb</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Forms\DeleteFileform.fr.resx">
       <DependentUpon>DeleteFileform.vb</DependentUpon>
     </EmbeddedResource>
@@ -478,6 +484,9 @@
       <DependentUpon>DeleteFileform.vb</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\FATEditForm.de.resx">
+      <DependentUpon>FATEditForm.vb</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\FATEditForm.es.resx">
       <DependentUpon>FATEditForm.vb</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\FATEditForm.fr.resx">
@@ -491,6 +500,9 @@
       <DependentUpon>FileDropForm.vb</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\FilePropertiesForm.de.resx">
+      <DependentUpon>FilePropertiesForm.vb</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\FilePropertiesForm.es.resx">
       <DependentUpon>FilePropertiesForm.vb</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\FilePropertiesForm.fr.resx">
@@ -510,6 +522,9 @@
     <EmbeddedResource Include="Forms\FloppyReadOptionsForm.de.resx">
       <DependentUpon>FloppyReadOptionsForm.vb</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="Forms\FloppyReadOptionsForm.es.resx">
+      <DependentUpon>FloppyReadOptionsForm.vb</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Forms\FloppyReadOptionsForm.fr.resx">
       <DependentUpon>FloppyReadOptionsForm.vb</DependentUpon>
     </EmbeddedResource>
@@ -519,6 +534,9 @@
     <EmbeddedResource Include="Forms\FloppyWriteOptionsForm.de.resx">
       <DependentUpon>FloppyWriteOptionsForm.vb</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="Forms\FloppyWriteOptionsForm.es.resx">
+      <DependentUpon>FloppyWriteOptionsForm.vb</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Forms\FloppyWriteOptionsForm.fr.resx">
       <DependentUpon>FloppyWriteOptionsForm.vb</DependentUpon>
     </EmbeddedResource>
@@ -526,6 +544,9 @@
       <DependentUpon>FloppyWriteOptionsForm.vb</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\HexSearchForm.de.resx">
+      <DependentUpon>HexSearchForm.vb</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\HexSearchForm.es.resx">
       <DependentUpon>HexSearchForm.vb</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\HexSearchForm.fr.resx">
@@ -538,10 +559,16 @@
     <EmbeddedResource Include="Forms\HexViewForm.de.resx">
       <DependentUpon>HexViewForm.vb</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="Forms\HexViewForm.es.resx">
+      <DependentUpon>HexViewForm.vb</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Forms\HexViewForm.fr.resx">
       <DependentUpon>HexViewForm.vb</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\HexViewRawForm.de.resx">
+      <DependentUpon>HexViewRawForm.vb</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\HexViewRawForm.es.resx">
       <DependentUpon>HexViewRawForm.vb</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\HexViewRawForm.fr.resx">
@@ -551,6 +578,9 @@
       <DependentUpon>HexViewRawForm.vb</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\ImageCreationForm.de.resx">
+      <DependentUpon>ImageCreationForm.vb</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\ImageCreationForm.es.resx">
       <DependentUpon>ImageCreationForm.vb</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\ImageCreationForm.fr.resx">
@@ -566,6 +596,9 @@
     <EmbeddedResource Include="Forms\ImportFileForm.de.resx">
       <DependentUpon>ImportFileForm.vb</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="Forms\ImportFileForm.es.resx">
+      <DependentUpon>ImportFileForm.vb</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Forms\ImportFileForm.fr.resx">
       <DependentUpon>ImportFileForm.vb</DependentUpon>
     </EmbeddedResource>
@@ -579,6 +612,9 @@
     <EmbeddedResource Include="Forms\ReplaceFileForm.de.resx">
       <DependentUpon>ReplaceFileForm.vb</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="Forms\ReplaceFileForm.es.resx">
+      <DependentUpon>ReplaceFileForm.vb</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Forms\ReplaceFileForm.fr.resx">
       <DependentUpon>ReplaceFileForm.vb</DependentUpon>
     </EmbeddedResource>
@@ -588,16 +624,25 @@
     <EmbeddedResource Include="Forms\SaveAllForm.de.resx">
       <DependentUpon>SaveAllForm.vb</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="Forms\SaveAllForm.es.resx">
+      <DependentUpon>SaveAllForm.vb</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Forms\SaveAllForm.fr.resx">
       <DependentUpon>SaveAllForm.vb</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\TextViewForm.de.resx">
       <DependentUpon>TextViewForm.vb</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="Forms\TextViewForm.es.resx">
+      <DependentUpon>TextViewForm.vb</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Forms\TextViewForm.fr.resx">
       <DependentUpon>TextViewForm.vb</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\UndeleteForm.de.resx">
+      <DependentUpon>UndeleteForm.vb</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\UndeleteForm.es.resx">
       <DependentUpon>UndeleteForm.vb</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\UndeleteForm.fr.resx">
@@ -609,6 +654,9 @@
     <EmbeddedResource Include="Forms\VolumeSerialNumberForm.de.resx">
       <DependentUpon>VolumeSerialNumberForm.vb</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="Forms\VolumeSerialNumberForm.es.resx">
+      <DependentUpon>VolumeSerialNumberForm.vb</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Forms\VolumeSerialNumberForm.fr.resx">
       <DependentUpon>VolumeSerialNumberForm.vb</DependentUpon>
     </EmbeddedResource>
@@ -616,6 +664,9 @@
       <DependentUpon>VolumeSerialNumberForm.vb</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="MainForm.de.resx">
+      <DependentUpon>MainForm.vb</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="MainForm.es.resx">
       <DependentUpon>MainForm.vb</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="MainForm.fr.resx">
@@ -630,12 +681,13 @@
       <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="My Project\Resources.de.resx" />
+    <EmbeddedResource Include="My Project\Resources.es.resx" />
     <EmbeddedResource Include="My Project\Resources.fr.resx" />
     <EmbeddedResource Include="My Project\Resources.resx">
       <Generator>VbMyResourcesResXFileCodeGenerator</Generator>
-      <LastGenOutput>Resources.Designer.vb</LastGenOutput>
       <CustomToolNamespace>My.Resources</CustomToolNamespace>
       <SubType>Designer</SubType>
+      <LastGenOutput>Resources.Designer.vb</LastGenOutput>
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\SaveAllForm.resx">
       <DependentUpon>SaveAllForm.vb</DependentUpon>

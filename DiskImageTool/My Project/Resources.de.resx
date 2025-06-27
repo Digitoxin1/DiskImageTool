@@ -361,7 +361,7 @@
     <value>&amp;Verzeichnis</value>
   </data>
   <data name="Menu_ExportFile" xml:space="preserve">
-    <value>&amp;Datei exportieren</value>
+    <value>Datei &amp;exportieren</value>
   </data>
   <data name="Menu_ExportSelected" xml:space="preserve">
     <value>&amp;Ausgewählte Dateien exportieren</value>
@@ -484,7 +484,7 @@
     <value>Textdateien</value>
   </data>
   <data name="Label_BadSector" xml:space="preserve">
-    <value>Defekter Sektor</value>
+    <value>Fehlerhafter Sektor</value>
   </data>
   <data name="Label_CircularChain" xml:space="preserve">
     <value>Zirkuläre Verknüpfung</value>
@@ -652,7 +652,7 @@
     <value>Erstellungsdatum</value>
   </data>
   <data name="DirectorytEntry_CreationMillisecond" xml:space="preserve">
-    <value>Erstellungszeit (Zehntel)</value>
+    <value>Erstellungszeit (Zehntelsekunden)</value>
   </data>
   <data name="DirectorytEntry_CreationTime" xml:space="preserve">
     <value>Erstellungszeit</value>
@@ -967,7 +967,7 @@
     <value>Ältestes Datum</value>
   </data>
   <data name="SummaryPanel_OperatingSystem" xml:space="preserve">
-    <value>Betriebssystem</value>
+    <value>BS</value>
   </data>
   <data name="SummaryPanel_Publisher" xml:space="preserve">
     <value>Herausgeber</value>
@@ -1228,13 +1228,13 @@
     <value>Fehler</value>
   </data>
   <data name="Label_FATType_Bad" xml:space="preserve">
-    <value>Defekt</value>
+    <value>Fehlerhaft</value>
   </data>
   <data name="Label_FATType_Free" xml:space="preserve">
     <value>Frei</value>
   </data>
   <data name="Label_FATType_Last" xml:space="preserve">
-    <value>Letzte</value>
+    <value>Letzter</value>
   </data>
   <data name="Label_FATType_Next" xml:space="preserve">
     <value>Nächste</value>

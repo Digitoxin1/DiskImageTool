@@ -445,7 +445,7 @@
     <value>Date de création</value>
   </data>
   <data name="DirectorytEntry_CreationMillisecond" xml:space="preserve">
-    <value>Dixièmes de seconde de l’heure de création</value>
+    <value>Heure de création (dixièmes)</value>
   </data>
   <data name="DirectorytEntry_CreationTime" xml:space="preserve">
     <value>Heure de création</value>
@@ -1112,7 +1112,7 @@ Souvent une indication du système ayant formaté le volume.</value>
     <value>Date la plus ancienne</value>
   </data>
   <data name="SummaryPanel_OperatingSystem" xml:space="preserve">
-    <value>Système d’exploitation</value>
+    <value>SE</value>
   </data>
   <data name="Bitstream_Overflow" xml:space="preserve">
     <value>Débordement</value>

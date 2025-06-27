@@ -205,7 +205,7 @@
     <value>Alles auswählen</value>
   </data>
   <data name="ToolStripBtnSelectRegion.Text" xml:space="preserve">
-    <value>Region</value>
+    <value>Bereich</value>
   </data>
   <data name="ToolStripBtnSelectRegion.ToolTipText" xml:space="preserve">
     <value>Region auswählen</value>

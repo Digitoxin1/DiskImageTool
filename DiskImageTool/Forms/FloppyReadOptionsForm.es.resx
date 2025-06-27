@@ -117,22 +117,16 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="BtnYes.Text" xml:space="preserve">
-    <value>&amp;Ja</value>
-  </data>
-  <data name="BtnNo.Text" xml:space="preserve">
-    <value>&amp;Nein</value>
-  </data>
   <data name="BtnCancel.Text" xml:space="preserve">
-    <value>&amp;Abbrechen</value>
+    <value>&amp;Cancelar</value>
   </data>
-  <data name="BtnYesToAll.Text" xml:space="preserve">
-    <value>Alle &amp;Ja</value>
-  </data>
-  <data name="BtnNoToall.Text" xml:space="preserve">
-    <value>Alle &amp;Nein</value>
+  <data name="BtnOK.Text" xml:space="preserve">
+    <value>&amp;Aceptar</value>
   </data>
   <data name="$this.Text" xml:space="preserve">
-    <value>Speichern</value>
+    <value>Elegir tipo de disco</value>
+  </data>
+  <data name="Label1.Text" xml:space="preserve">
+    <value>Tipo de disquete</value>
   </data>
 </root>

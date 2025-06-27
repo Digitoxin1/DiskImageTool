@@ -139,10 +139,10 @@
     <value>Somme de contrôle:</value>
   </data>
   <data name="BtnCopyHex.Text" xml:space="preserve">
-    <value>Copier en &amp;hex</value>
+    <value>Copier &amp;hex</value>
   </data>
   <data name="BtnCopyText.Text" xml:space="preserve">
-    <value>Copier en &amp;texte</value>
+    <value>Copier &amp;texte</value>
   </data>
   <data name="BtnCopyEncoded.Text" xml:space="preserve">
     <value>Copier encodé</value>

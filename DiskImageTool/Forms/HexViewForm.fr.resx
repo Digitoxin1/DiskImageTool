@@ -145,10 +145,10 @@
     <value>Valider les modifications</value>
   </data>
   <data name="BtnCopyHex.Text" xml:space="preserve">
-    <value>Copier en &amp;hex</value>
+    <value>Copier &amp;hex</value>
   </data>
   <data name="BtnCopyText.Text" xml:space="preserve">
-    <value>Copier en &amp;texte</value>
+    <value>Copier &amp;texte</value>
   </data>
   <data name="ToolStripBtnCopyHex.Text" xml:space="preserve">
     <value>Copier hex</value>

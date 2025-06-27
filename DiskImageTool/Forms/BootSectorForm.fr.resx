@@ -139,7 +139,7 @@
     <value>Octets par secteur</value>
   </data>
   <data name="HexBox1.BuiltInContextMenu.CopyMenuItemText" xml:space="preserve">
-    <value>Copier le texte</value>
+    <value>Copier texte</value>
   </data>
   <data name="LblDiskType.Text" xml:space="preserve">
     <value>Type de disquette</value>
