@@ -117,28 +117,73 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="Label1.Text" xml:space="preserve">
-    <value>Secteur de démarrage</value>
+  <data name="BtnLastAccessed.Text" xml:space="preserve">
+    <value>Bearbeiten</value>
+  </data>
+  <data name="LblLastWritten.Text" xml:space="preserve">
+    <value>Zuletzt geschrieben</value>
+  </data>
+  <data name="BtnCreated.Text" xml:space="preserve">
+    <value>Bearbeiten</value>
+  </data>
+  <data name="LblCreated.Text" xml:space="preserve">
+    <value>Erstellt</value>
+  </data>
+  <data name="LblLastAccessed.Text" xml:space="preserve">
+    <value>Zuletzt zugegriffen</value>
+  </data>
+  <data name="BtnLastWritten.Text" xml:space="preserve">
+    <value>Bearbeiten</value>
+  </data>
+  <data name="GroupFileDates.Text" xml:space="preserve">
+    <value>Dateidaten</value>
+  </data>
+  <data name="ChkArchive.Text" xml:space="preserve">
+    <value>Archiv</value>
+  </data>
+  <data name="ChkSystem.Text" xml:space="preserve">
+    <value>System</value>
+  </data>
+  <data name="BtnArchive.Text" xml:space="preserve">
+    <value>Bearbeiten</value>
+  </data>
+  <data name="BtnSystem.Text" xml:space="preserve">
+    <value>Bearbeiten</value>
+  </data>
+  <data name="BtnReadOnly.Text" xml:space="preserve">
+    <value>Bearbeiten</value>
+  </data>
+  <data name="BtnHidden.Text" xml:space="preserve">
+    <value>Bearbeiten</value>
+  </data>
+  <data name="ChkReadOnly.Text" xml:space="preserve">
+    <value>Schreibgeschützt</value>
+  </data>
+  <data name="ChkHidden.Text" xml:space="preserve">
+    <value>Ausgeblendet</value>
+  </data>
+  <data name="GroupAttributes.Text" xml:space="preserve">
+    <value>Attribute</value>
+  </data>
+  <data name="LblMultipleFiles.Text" xml:space="preserve">
+    <value>(Mehrere Dateien ausgewählt)</value>
+  </data>
+  <data name="RadioFileLong.Text" xml:space="preserve">
+    <value>Lang</value>
+  </data>
+  <data name="ChkNTExtensions.Text" xml:space="preserve">
+    <value>NT-Erweiterungen</value>
+  </data>
+  <data name="GroupFileName.Text" xml:space="preserve">
+    <value>Dateiname</value>
   </data>
   <data name="BtnCancel.Text" xml:space="preserve">
-    <value>Annuler</value>
+    <value>&amp;Abbrechen</value>
+  </data>
+  <data name="BtnUpdate.Text" xml:space="preserve">
+    <value>&amp;Aktualisieren</value>
   </data>
   <data name="$this.Text" xml:space="preserve">
-    <value>Nouvelle image de disquette</value>
-  </data>
-  <data name="BtnOK.Text" xml:space="preserve">
-    <value>OK</value>
-  </data>
-  <data name="GroupBoxSpecial.Text" xml:space="preserve">
-    <value>Formats spéciaux</value>
-  </data>
-  <data name="GroupBoxStandard.Text" xml:space="preserve">
-    <value>Formats standards</value>
-  </data>
-  <data name="RadioFormatDMF2048.Text" xml:space="preserve">
-    <value>DMF (2048 Clusters)</value>
-  </data>
-  <data name="RadioFormatDMF1024.Text" xml:space="preserve">
-    <value>DMF (1024 Clusters)</value>
+    <value>Dateieigenschaften</value>
   </data>
 </root>

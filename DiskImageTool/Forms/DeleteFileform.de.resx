@@ -117,28 +117,19 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="Label1.Text" xml:space="preserve">
-    <value>Secteur de démarrage</value>
+  <data name="RadioFillKeep.Text" xml:space="preserve">
+    <value>Daten behalten</value>
   </data>
-  <data name="BtnCancel.Text" xml:space="preserve">
-    <value>Annuler</value>
-  </data>
-  <data name="$this.Text" xml:space="preserve">
-    <value>Nouvelle image de disquette</value>
+  <data name="GroupBox1.Text" xml:space="preserve">
+    <value>Sektoren füllen mit</value>
   </data>
   <data name="BtnOK.Text" xml:space="preserve">
-    <value>OK</value>
+    <value>&amp;Ja</value>
   </data>
-  <data name="GroupBoxSpecial.Text" xml:space="preserve">
-    <value>Formats spéciaux</value>
+  <data name="BtnCancel.Text" xml:space="preserve">
+    <value>&amp;Nein</value>
   </data>
-  <data name="GroupBoxStandard.Text" xml:space="preserve">
-    <value>Formats standards</value>
-  </data>
-  <data name="RadioFormatDMF2048.Text" xml:space="preserve">
-    <value>DMF (2048 Clusters)</value>
-  </data>
-  <data name="RadioFormatDMF1024.Text" xml:space="preserve">
-    <value>DMF (1024 Clusters)</value>
+  <data name="$this.Text" xml:space="preserve">
+    <value>Datei löschen</value>
   </data>
 </root>

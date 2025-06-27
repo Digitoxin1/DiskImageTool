@@ -117,28 +117,43 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="Label1.Text" xml:space="preserve">
-    <value>Secteur de démarrage</value>
+  <data name="BtnOK.Text" xml:space="preserve">
+    <value>Ersetzen</value>
   </data>
   <data name="BtnCancel.Text" xml:space="preserve">
-    <value>Annuler</value>
+    <value>Abbrechen</value>
+  </data>
+  <data name="ChkFileSizeOriginal.Text" xml:space="preserve">
+    <value>{0 Bytes}</value>
+  </data>
+  <data name="GroupBoxOriginal.Text" xml:space="preserve">
+    <value>Originaldatei</value>
+  </data>
+  <data name="ChkFileSizeNew.Text" xml:space="preserve">
+    <value>{0 Bytes}</value>
+  </data>
+  <data name="GroupBox1.Text" xml:space="preserve">
+    <value>Neue Datei</value>
+  </data>
+  <data name="LblFileNameCaption.Text" xml:space="preserve">
+    <value>Dateiname wird festgelegt auf:</value>
+  </data>
+  <data name="LblFileDateCaption.Text" xml:space="preserve">
+    <value>Zuletzt geändert wird festgelegt auf:</value>
+  </data>
+  <data name="LblFileSizeCaption.Text" xml:space="preserve">
+    <value>Dateigröße wird festgelegt auf:</value>
+  </data>
+  <data name="LblFileSize.Text" xml:space="preserve">
+    <value>{0 Bytes}</value>
+  </data>
+  <data name="LblFileSizeError.Text" xml:space="preserve">
+    <value>(Fehler)</value>
+  </data>
+  <data name="LblPadCaption.Text" xml:space="preserve">
+    <value>Datei auffüllen mit:</value>
   </data>
   <data name="$this.Text" xml:space="preserve">
-    <value>Nouvelle image de disquette</value>
-  </data>
-  <data name="BtnOK.Text" xml:space="preserve">
-    <value>OK</value>
-  </data>
-  <data name="GroupBoxSpecial.Text" xml:space="preserve">
-    <value>Formats spéciaux</value>
-  </data>
-  <data name="GroupBoxStandard.Text" xml:space="preserve">
-    <value>Formats standards</value>
-  </data>
-  <data name="RadioFormatDMF2048.Text" xml:space="preserve">
-    <value>DMF (2048 Clusters)</value>
-  </data>
-  <data name="RadioFormatDMF1024.Text" xml:space="preserve">
-    <value>DMF (1024 Clusters)</value>
+    <value>Datei ersetzen</value>
   </data>
 </root>

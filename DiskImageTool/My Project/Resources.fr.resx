@@ -742,7 +742,7 @@
     <value>À propos</value>
   </data>
   <data name="Menu_Ok" xml:space="preserve">
-    <value>&amp;Non</value>
+    <value>&amp;OK</value>
   </data>
   <data name="BootSectorForm_Help_ExtendedBootSignature" xml:space="preserve">
     <value>Signature de démarrage étendue

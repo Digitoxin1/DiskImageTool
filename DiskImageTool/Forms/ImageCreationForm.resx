@@ -445,6 +445,7 @@
   </data>
   <data name="RadioFormatProCopy.Text" xml:space="preserve">
     <value>ProCopy</value>
+    <comment>@Invariant</comment>
   </data>
   <data name="&gt;&gt;RadioFormatProCopy.Name" xml:space="preserve">
     <value>RadioFormatProCopy</value>

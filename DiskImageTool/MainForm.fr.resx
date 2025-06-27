@@ -300,9 +300,6 @@
   <data name="FileCreationDate.Text" xml:space="preserve">
     <value>Créé</value>
   </data>
-  <data name="$this.Text" xml:space="preserve">
-    <value>Disk Image Tool</value>
-  </data>
   <data name="ToolStripDiskTypeLabel.Text" xml:space="preserve">
     <value>Type de disquette</value>
   </data>

@@ -1,0 +1,483 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <!-- 
+    Microsoft ResX Schema 
+    
+    Version 2.0
+    
+    The primary goals of this format is to allow a simple XML format 
+    that is mostly human readable. The generation and parsing of the 
+    various data types are done through the TypeConverter classes 
+    associated with the data types.
+    
+    Example:
+    
+    ... ado.net/XML headers & schema ...
+    <resheader name="resmimetype">text/microsoft-resx</resheader>
+    <resheader name="version">2.0</resheader>
+    <resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+    <resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+    <data name="Name1"><value>this is my long string</value><comment>this is a comment</comment></data>
+    <data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+    <data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+        <value>[base64 mime encoded serialized .NET Framework object]</value>
+    </data>
+    <data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+        <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
+        <comment>This is a comment</comment>
+    </data>
+                
+    There are any number of "resheader" rows that contain simple 
+    name/value pairs.
+    
+    Each data row contains a name, and value. The row also contains a 
+    type or mimetype. Type corresponds to a .NET class that support 
+    text/value conversion through the TypeConverter architecture. 
+    Classes that don't support this are serialized and stored with the 
+    mimetype set.
+    
+    The mimetype is used for serialized objects, and tells the 
+    ResXResourceReader how to depersist the object. This is currently not 
+    extensible. For a given mimetype the value must be set accordingly:
+    
+    Note - application/x-microsoft.net.object.binary.base64 is the format 
+    that the ResXResourceWriter will generate, however the reader can 
+    read any of the formats listed below.
+    
+    mimetype: application/x-microsoft.net.object.binary.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
+            : and then encoded with base64 encoding.
+    
+    mimetype: application/x-microsoft.net.object.soap.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+            : and then encoded with base64 encoding.
+
+    mimetype: application/x-microsoft.net.object.bytearray.base64
+    value   : The object must be serialized into a byte array 
+            : using a System.ComponentModel.TypeConverter
+            : and then encoded with base64 encoding.
+    -->
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="SummaryName.Text" xml:space="preserve">
+    <value>Name</value>
+  </data>
+  <data name="SummaryValue.Text" xml:space="preserve">
+    <value>Wert</value>
+  </data>
+  <data name="FileName.Text" xml:space="preserve">
+    <value>Name</value>
+  </data>
+  <data name="FileExt.Text" xml:space="preserve">
+    <value>Erw</value>
+  </data>
+  <data name="FileSize.Text" xml:space="preserve">
+    <value>Größe</value>
+  </data>
+  <data name="FileLastWriteDate.Text" xml:space="preserve">
+    <value>Zuletzt geschrieben</value>
+  </data>
+  <data name="FileStartingCluster.Text" xml:space="preserve">
+    <value>Cluster</value>
+  </data>
+  <data name="FileAttrib.Text" xml:space="preserve">
+    <value>Attribute</value>
+  </data>
+  <data name="MenuFileOpen.Text" xml:space="preserve">
+    <value>&amp;Öffnen</value>
+  </data>
+  <data name="MenuFileReload.Text" xml:space="preserve">
+    <value>&amp;Von Datenträger neu laden</value>
+  </data>
+  <data name="MenuFileNewImage.Text" xml:space="preserve">
+    <value>&amp;Neues Abbild</value>
+  </data>
+  <data name="MenuFileSave.Text" xml:space="preserve">
+    <value>&amp;Speichern</value>
+  </data>
+  <data name="MenuFileSaveAs.Text" xml:space="preserve">
+    <value>Speichern &amp;unter</value>
+  </data>
+  <data name="MenuFileSaveAll.Text" xml:space="preserve">
+    <value>Alle speichern</value>
+  </data>
+  <data name="MenuFileClose.Text" xml:space="preserve">
+    <value>&amp;Schließen</value>
+  </data>
+  <data name="MenuFileCloseAll.Text" xml:space="preserve">
+    <value>Alle schließen</value>
+  </data>
+  <data name="MenuFileExit.Text" xml:space="preserve">
+    <value>&amp;Beenden</value>
+  </data>
+  <data name="MainMenuFile.Text" xml:space="preserve">
+    <value>&amp;Datei</value>
+  </data>
+  <data name="MenuEditBootSector.Text" xml:space="preserve">
+    <value>&amp;Bootsektor</value>
+  </data>
+  <data name="MenuEditFAT.Text" xml:space="preserve">
+    <value>Dateizu&amp;ordnungstabelle</value>
+  </data>
+  <data name="MenuEditFileProperties.Text" xml:space="preserve">
+    <value>Datei&amp;eigenschaften</value>
+  </data>
+  <data name="MenuEditExportFile.Text" xml:space="preserve">
+    <value>Datei &amp;exportieren</value>
+  </data>
+  <data name="MenuEditReplaceFile.Text" xml:space="preserve">
+    <value>Datei &amp;ersetzen</value>
+  </data>
+  <data name="MenuEditUndo.Text" xml:space="preserve">
+    <value>&amp;Rückgängig</value>
+  </data>
+  <data name="MenuEditRedo.Text" xml:space="preserve">
+    <value>&amp;Wiederholen</value>
+  </data>
+  <data name="MenuEditRevert.Text" xml:space="preserve">
+    <value>&amp;Änderungen verwerfen</value>
+  </data>
+  <data name="MainMenuEdit.Text" xml:space="preserve">
+    <value>&amp;Bearbeiten</value>
+  </data>
+  <data name="MenuHexBootSector.Text" xml:space="preserve">
+    <value>&amp;Bootsektor</value>
+  </data>
+  <data name="MenuHexFAT.Text" xml:space="preserve">
+    <value>Dateizu&amp;ordnungstabelle</value>
+  </data>
+  <data name="MenuHexDirectory.Text" xml:space="preserve">
+    <value>&amp;Stammverzeichnis</value>
+  </data>
+  <data name="MenuHexFreeClusters.Text" xml:space="preserve">
+    <value>Freie &amp;Cluster mit Daten</value>
+  </data>
+  <data name="MenuHexBadSectors.Text" xml:space="preserve">
+    <value>Defekte &amp;Sektoren</value>
+  </data>
+  <data name="MenuHexLostClusters.Text" xml:space="preserve">
+    <value>&amp;Verlorene Cluster</value>
+  </data>
+  <data name="MenuHexOverdumpData.Text" xml:space="preserve">
+    <value>&amp;Überdump-Daten</value>
+  </data>
+  <data name="MenuHexRawTrackData.Text" xml:space="preserve">
+    <value>&amp;Rohspur-Daten</value>
+  </data>
+  <data name="MenuHexDisk.Text" xml:space="preserve">
+    <value>Gesamte &amp;Diskette</value>
+  </data>
+  <data name="MenuHexFile.Text" xml:space="preserve">
+    <value>&amp;Datei</value>
+  </data>
+  <data name="MainMenuView.Text" xml:space="preserve">
+    <value>&amp;Hex</value>
+  </data>
+  <data name="BtnExportDebug.Text" xml:space="preserve">
+    <value>Physikalischen Datenträger-Patch generieren</value>
+  </data>
+  <data name="MainMenuExperimental.Text" xml:space="preserve">
+    <value>Experimentell</value>
+  </data>
+  <data name="ToolStripSearchLabel.Text" xml:space="preserve">
+    <value>Suchen</value>
+  </data>
+  <data name="MenuToolsCompare.Text" xml:space="preserve">
+    <value>&amp;Abbilder vergleichen</value>
+  </data>
+  <data name="MenuToolsWin9xClean.Text" xml:space="preserve">
+    <value>&amp;Windows-Änderungen entfernen</value>
+  </data>
+  <data name="MenuToolsClearReservedBytes.Text" xml:space="preserve">
+    <value>&amp;Reservierte Bytes löschen</value>
+  </data>
+  <data name="MenuToolsFixImageSize.Text" xml:space="preserve">
+    <value>&amp;Abbild kürzen</value>
+  </data>
+  <data name="MenuToolsTruncateImage.Text" xml:space="preserve">
+    <value>&amp;Abbild kürzen</value>
+  </data>
+  <data name="MenuToolsRestructureImage.Text" xml:space="preserve">
+    <value>&amp;Abbild restrukturieren</value>
+  </data>
+  <data name="MenuToolsFixImageSizeSubMenu.Text" xml:space="preserve">
+    <value>Abbildgröße &amp;korrigieren</value>
+  </data>
+  <data name="MenuToolsRestoreBootSector.Text" xml:space="preserve">
+    <value>&amp;Bootsektor aus dem Stammverzeichnis wiederherstellen</value>
+  </data>
+  <data name="MenuToolsRemoveBootSector.Text" xml:space="preserve">
+    <value>&amp;Bootsektor aus dem Stammverzeichnis entfernen</value>
+  </data>
+  <data name="MenuToolsWin9xCleanBatch.Text" xml:space="preserve">
+    <value>Windows-Änderungen im Stapel entfernen</value>
+  </data>
+  <data name="MenuToolsTrackLayout.Text" xml:space="preserve">
+    <value>tracklayout.txt generieren</value>
+  </data>
+  <data name="MainMenuTools.Text" xml:space="preserve">
+    <value>&amp;Extras</value>
+  </data>
+  <data name="MenuHelpProjectPage.Text" xml:space="preserve">
+    <value>&amp;Projektseite</value>
+  </data>
+  <data name="MenuHelpUpdateCheck.Text" xml:space="preserve">
+    <value>Nach &amp;Updates suchen</value>
+  </data>
+  <data name="MenuHelpChangeLog.Text" xml:space="preserve">
+    <value>&amp;Änderungsprotokoll</value>
+  </data>
+  <data name="MenuHelpAbout.Text" xml:space="preserve">
+    <value>Über DiskImageTool</value>
+  </data>
+  <data name="MenuDiskReadFloppyA.Text" xml:space="preserve">
+    <value>&amp;Lese Diskette in Laufwerk A</value>
+  </data>
+  <data name="MenuDiskReadFloppyB.Text" xml:space="preserve">
+    <value>&amp;Lese Diskette in Laufwerk B</value>
+  </data>
+  <data name="MenuDiskWriteFloppyA.Text" xml:space="preserve">
+    <value>&amp;Schreibe Diskette in Laufwerk A</value>
+  </data>
+  <data name="MenuDiskWriteFloppyB.Text" xml:space="preserve">
+    <value>&amp;Schreibe Diskette in Laufwerk B</value>
+  </data>
+  <data name="MainMenuDisk.Text" xml:space="preserve">
+    <value>&amp;Diskette</value>
+  </data>
+  <data name="MenuFiltersScanNew.Text" xml:space="preserve">
+    <value>&amp;Neue Abbilder scannen</value>
+  </data>
+  <data name="MenuFiltersScan.Text" xml:space="preserve">
+    <value>&amp;Abbilder scannen</value>
+  </data>
+  <data name="MenuFiltersClear.Text" xml:space="preserve">
+    <value>Filter löschen</value>
+  </data>
+  <data name="MainMenuFilters.Text" xml:space="preserve">
+    <value>F&amp;ilter</value>
+  </data>
+  <data name="MenuOptionsCreateBackup.Text" xml:space="preserve">
+    <value>Sicherung beim Speichern erstellen</value>
+  </data>
+  <data name="MenuOptionsCheckUpdate.Text" xml:space="preserve">
+    <value>Beim Start nach Updates suchen</value>
+  </data>
+  <data name="MenuOptionsDragDrop.Text" xml:space="preserve">
+    <value>Import per Drag &amp; Drop</value>
+  </data>
+  <data name="MenuOptionsDisplayTitles.Text" xml:space="preserve">
+    <value>Titel anzeigen</value>
+  </data>
+  <data name="MenuOptionsDisplayLanguage.Text" xml:space="preserve">
+    <value>Sprache</value>
+  </data>
+  <data name="MenuOptionsExportUnknown.Text" xml:space="preserve">
+    <value>Unbekannte Abbilder beim Scannen exportieren</value>
+  </data>
+  <data name="MainMenuOptions.Text" xml:space="preserve">
+    <value>&amp;Optionen</value>
+  </data>
+  <data name="MainMenuUpdateAvailable.Text" xml:space="preserve">
+    <value>Update verfügbar</value>
+  </data>
+  <data name="ToolStripOEMNameLabel.Text" xml:space="preserve">
+    <value>OEM-Name</value>
+  </data>
+  <data name="ToolStripDiskTypeLabel.Text" xml:space="preserve">
+    <value>Diskettentyp</value>
+  </data>
+  <data name="ToolStripOpen.Text" xml:space="preserve">
+    <value>Öffnen</value>
+  </data>
+  <data name="ToolStripSave.Text" xml:space="preserve">
+    <value>Speichern</value>
+  </data>
+  <data name="ToolStripSaveAs.Text" xml:space="preserve">
+    <value>Speichern unter</value>
+  </data>
+  <data name="ToolStripSaveAll.Text" xml:space="preserve">
+    <value>Alle speichern</value>
+  </data>
+  <data name="ToolStripClose.Text" xml:space="preserve">
+    <value>Schließen</value>
+  </data>
+  <data name="ToolStripCloseAll.Text" xml:space="preserve">
+    <value>Alle schließen</value>
+  </data>
+  <data name="ToolStripFileProperties.Text" xml:space="preserve">
+    <value>Dateieigenschaften</value>
+  </data>
+  <data name="ToolStripExportFile.Text" xml:space="preserve">
+    <value>Datei exportieren</value>
+  </data>
+  <data name="ToolStripUndo.Text" xml:space="preserve">
+    <value>Rückgängig</value>
+  </data>
+  <data name="ToolStripRedo.Text" xml:space="preserve">
+    <value>Wiederholen</value>
+  </data>
+  <data name="ToolStripViewFileText.Text" xml:space="preserve">
+    <value>Datei als Text anzeigen</value>
+  </data>
+  <data name="ToolStripViewFile.Text" xml:space="preserve">
+    <value>Datei anzeigen</value>
+  </data>
+  <data name="ToolStripStatusReadOnly.Text" xml:space="preserve">
+    <value>Schreibgeschützt</value>
+  </data>
+  <data name="ToolStripStatusModified.Text" xml:space="preserve">
+    <value>Geändert</value>
+  </data>
+  <data name="ToolStripFileName.Text" xml:space="preserve">
+    <value>Dateiname</value>
+  </data>
+  <data name="ToolStripFileCount.Text" xml:space="preserve">
+    <value>0 Dateien</value>
+  </data>
+  <data name="ToolStripFileSector.Text" xml:space="preserve">
+    <value>Sektor 0</value>
+  </data>
+  <data name="ToolStripFileTrack.Text" xml:space="preserve">
+    <value>Spur 0.0</value>
+  </data>
+  <data name="ToolStripImageCount.Text" xml:space="preserve">
+    <value>0 Abbilder</value>
+  </data>
+  <data name="ToolStripModified.Text" xml:space="preserve">
+    <value>0 Abbilder geändert</value>
+  </data>
+  <data name="LabelDropMessage.Text" xml:space="preserve">
+    <value>Diskettenabbilder hierher ziehen (Drag &amp;&amp; Drop)</value>
+  </data>
+  <data name="FileClusterError.Text" xml:space="preserve">
+    <value>Fehler</value>
+  </data>
+  <data name="FileCreationDate.Text" xml:space="preserve">
+    <value>Erstellt</value>
+  </data>
+  <data name="FileLastAccessDate.Text" xml:space="preserve">
+    <value>Letzter Zugriff</value>
+  </data>
+  <data name="FileLFN.Text" xml:space="preserve">
+    <value>Langer Dateiname</value>
+  </data>
+  <data name="MenuFileFileProperties.Text" xml:space="preserve">
+    <value>Datei&amp;eigenschaften bearbeiten</value>
+  </data>
+  <data name="MenuFileExportFile.Text" xml:space="preserve">
+    <value>Datei &amp;exportieren</value>
+  </data>
+  <data name="MenuFileReplaceFile.Text" xml:space="preserve">
+    <value>Datei &amp;ersetzen</value>
+  </data>
+  <data name="MenuFileViewDirectory.Text" xml:space="preserve">
+    <value>&amp;Übergeordnetes Verzeichnis anzeigen</value>
+  </data>
+  <data name="MenuFileViewFile.Text" xml:space="preserve">
+    <value>&amp;Datei anzeigen</value>
+  </data>
+  <data name="MenuFileViewFileText.Text" xml:space="preserve">
+    <value>Datei als &amp;Text anzeigen</value>
+  </data>
+  <data name="MenuFileViewCrosslinked.Text" xml:space="preserve">
+    <value>&amp;Verknüpfte Dateien anzeigen</value>
+  </data>
+  <data name="MenuFileImportFiles.Text" xml:space="preserve">
+    <value>&amp;Dateien importieren</value>
+  </data>
+  <data name="MenuFileImportFilesHere.Text" xml:space="preserve">
+    <value>Dateien &amp;hier importieren</value>
+  </data>
+  <data name="MenuFileNewDirectory.Text" xml:space="preserve">
+    <value>&amp;Neues Verzeichnis</value>
+  </data>
+  <data name="MenuFileNewDirectoryHere.Text" xml:space="preserve">
+    <value>&amp;Neues Verzeichnis hier</value>
+  </data>
+  <data name="MenuFileDeleteFile.Text" xml:space="preserve">
+    <value>&amp;Datei löschen</value>
+  </data>
+  <data name="MenuFileUnDeleteFile.Text" xml:space="preserve">
+    <value>Datei &amp;wiederherstellen</value>
+  </data>
+  <data name="MenuFileRemove.Text" xml:space="preserve">
+    <value>&amp;Gelöschte Datei entfernen</value>
+  </data>
+  <data name="MenuFileFixSize.Text" xml:space="preserve">
+    <value>Dateigröße &amp;korrigieren</value>
+  </data>
+  <data name="BtnResetSort.Text" xml:space="preserve">
+    <value>Sortierung zurücksetzen</value>
+  </data>
+  <data name="btnRetry.Text" xml:space="preserve">
+    <value>Wiederholen</value>
+  </data>
+  <data name="MenuDirectoryView.Text" xml:space="preserve">
+    <value>&amp;Verzeichnis anzeigen</value>
+  </data>
+  <data name="MenuDirectoryImportFiles.Text" xml:space="preserve">
+    <value>&amp;Dateien importieren</value>
+  </data>
+  <data name="MenuDirectoryNewDirectory.Text" xml:space="preserve">
+    <value>&amp;Neues Verzeichnis</value>
+  </data>
+</root>

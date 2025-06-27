@@ -2981,6 +2981,7 @@
   </data>
   <data name="$this.Text" xml:space="preserve">
     <value>Disk Image Tool</value>
+    <comment>@Invariant</comment>
   </data>
   <data name="&gt;&gt;SummaryName.Name" xml:space="preserve">
     <value>SummaryName</value>

@@ -117,28 +117,136 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="Label1.Text" xml:space="preserve">
-    <value>Secteur de démarrage</value>
+  <data name="ToolStripBtnCommit.Text" xml:space="preserve">
+    <value>Übernehmen</value>
   </data>
-  <data name="BtnCancel.Text" xml:space="preserve">
-    <value>Annuler</value>
+  <data name="ToolStripBtnCommit.ToolTipText" xml:space="preserve">
+    <value>Änderungen übernehmen</value>
+  </data>
+  <data name="ToolStripBtnUndo.Text" xml:space="preserve">
+    <value>Rückgängig</value>
+  </data>
+  <data name="ToolStripBtnRedo.Text" xml:space="preserve">
+    <value>Wiederholen</value>
+  </data>
+  <data name="ToolStripBtnCopyText.Text" xml:space="preserve">
+    <value>Text kopieren</value>
+  </data>
+  <data name="ToolStripBtnCopyHex.Text" xml:space="preserve">
+    <value>Hex kopieren</value>
+  </data>
+  <data name="ToolStripBtnCopyHexFormatted.Text" xml:space="preserve">
+    <value>Formatiertes Hex kopieren</value>
+  </data>
+  <data name="ToolStripBtnPaste.Text" xml:space="preserve">
+    <value>Einfügen überschreiben</value>
+  </data>
+  <data name="ToolStripBtnFind.Text" xml:space="preserve">
+    <value>Suchen</value>
+  </data>
+  <data name="ToolStripBtnFindNext.Text" xml:space="preserve">
+    <value>Weitersuchen</value>
+  </data>
+  <data name="ToolStripBtnDelete.Text" xml:space="preserve">
+    <value>Auswahl mit 0x00 füllen</value>
+  </data>
+  <data name="ToolStripBtnFillF6.Text" xml:space="preserve">
+    <value>Auswahl mit 0xF6 füllen</value>
+  </data>
+  <data name="ToolStripBtnSelectAll.Text" xml:space="preserve">
+    <value>Alles auswählen</value>
+  </data>
+  <data name="ToolStripBtnSelectSector.Text" xml:space="preserve">
+    <value>Sektor</value>
+  </data>
+  <data name="LblGroups.Text" xml:space="preserve">
+    <value>Anzeige</value>
+  </data>
+  <data name="ToolStripBtnSelectTrack.Text" xml:space="preserve">
+    <value>Spur</value>
+  </data>
+  <data name="ToolStripBtnSelectTrack.ToolTipText" xml:space="preserve">
+    <value>Spur</value>
+  </data>
+  <data name="BtnUndo.Text" xml:space="preserve">
+    <value>&amp;Rückgängig</value>
+  </data>
+  <data name="BtnRedo.Text" xml:space="preserve">
+    <value>&amp;Wiederholen</value>
+  </data>
+  <data name="BtnCopyText.Text" xml:space="preserve">
+    <value>&amp;Text kopieren</value>
+  </data>
+  <data name="BtnCopyHex.Text" xml:space="preserve">
+    <value>&amp;Hex kopieren</value>
+  </data>
+  <data name="BtnCopyHexFormatted.Text" xml:space="preserve">
+    <value>Formatiertes Hex &amp;kopieren</value>
+  </data>
+  <data name="BtnPaste.Text" xml:space="preserve">
+    <value>&amp;Überschreiben einfügen</value>
+  </data>
+  <data name="BtnFind.Text" xml:space="preserve">
+    <value>Suchen</value>
+  </data>
+  <data name="BtnFindNext.Text" xml:space="preserve">
+    <value>Weitersuchen</value>
+  </data>
+  <data name="BtnDelete.Text" xml:space="preserve">
+    <value>Auswahl mit 0x00 füllen</value>
+  </data>
+  <data name="BtnFillF6.Text" xml:space="preserve">
+    <value>Auswahl mit 0xF6 füllen</value>
+  </data>
+  <data name="BtnFill.Text" xml:space="preserve">
+    <value>Auswahl füllen</value>
+  </data>
+  <data name="BtnSelectSector.Text" xml:space="preserve">
+    <value>&amp;Sektor auswählen</value>
+  </data>
+  <data name="BtnSelectTrack.Text" xml:space="preserve">
+    <value>Spu&amp;r auswählen</value>
+  </data>
+  <data name="BtnSelectAll.Text" xml:space="preserve">
+    <value>&amp;Alles auswählen</value>
+  </data>
+  <data name="ToolStripStatusOffset.Text" xml:space="preserve">
+    <value>Offset(h): 0</value>
+  </data>
+  <data name="ToolStripStatusBlock.Text" xml:space="preserve">
+    <value>Block(h): 0–0</value>
+  </data>
+  <data name="ToolStripStatusLength.Text" xml:space="preserve">
+    <value>Länge(h): 0</value>
+  </data>
+  <data name="ToolStripStatusCluster.Text" xml:space="preserve">
+    <value>Cluster 0</value>
+  </data>
+  <data name="ToolStripStatusSector.Text" xml:space="preserve">
+    <value>Sektor 0</value>
+  </data>
+  <data name="ToolStripStatusTrack.Text" xml:space="preserve">
+    <value>Spur 0</value>
+  </data>
+  <data name="ToolStripStatusSide.Text" xml:space="preserve">
+    <value>Seite 0</value>
+  </data>
+  <data name="ToolStripStatusTrackSector.Text" xml:space="preserve">
+    <value>Sektor-ID 0</value>
+  </data>
+  <data name="ToolStripStatusBytes.Text" xml:space="preserve">
+    <value>0 Bytes</value>
+  </data>
+  <data name="HexBox1.BuiltInContextMenu.CopyMenuItemText" xml:space="preserve">
+    <value>Text kopieren</value>
+  </data>
+  <data name="HexBox1.BuiltInContextMenu.SelectAllMenuItemText" xml:space="preserve">
+    <value>Alles auswählen</value>
+  </data>
+  <data name="BtnCopyValue.Text" xml:space="preserve">
+    <value>&amp;Wert kopieren</value>
   </data>
   <data name="$this.Text" xml:space="preserve">
-    <value>Nouvelle image de disquette</value>
-  </data>
-  <data name="BtnOK.Text" xml:space="preserve">
-    <value>OK</value>
-  </data>
-  <data name="GroupBoxSpecial.Text" xml:space="preserve">
-    <value>Formats spéciaux</value>
-  </data>
-  <data name="GroupBoxStandard.Text" xml:space="preserve">
-    <value>Formats standards</value>
-  </data>
-  <data name="RadioFormatDMF2048.Text" xml:space="preserve">
-    <value>DMF (2048 Clusters)</value>
-  </data>
-  <data name="RadioFormatDMF1024.Text" xml:space="preserve">
-    <value>DMF (1024 Clusters)</value>
+    <value>Hex-Viewer</value>
   </data>
 </root>
