@@ -306,12 +306,7 @@ Namespace My.Resources
         End Property
         
         '''<summary>
-        '''  Looks up a localized string similar to Indicated to the BIOS that the sector is executable.
-        '''
-        '''Allowed Values:
-        '''AA 55
-        '''00 00 (PC DOS 1.x)
-        '''54 42 (Tandy 2000).
+        '''  Looks up a localized string similar to Indicated to the BIOS that the sector is executable..
         '''</summary>
         Friend ReadOnly Property BootSectorForm_Help_BootSectorSignature() As String
             Get
@@ -322,9 +317,9 @@ Namespace My.Resources
         '''<summary>
         '''  Looks up a localized string similar to Number of bytes in each physical sector
         '''
-        '''Allowed Values: 512, 1024, 2048, 4096
+        '''Allowed Values: {0}
         '''
-        '''Note: This value should be 512 for all floppy disks..
+        '''Note: This value should be {1} for all floppy disks..
         '''</summary>
         Friend ReadOnly Property BootSectorForm_Help_BytesPerSector() As String
             Get
@@ -344,7 +339,7 @@ Namespace My.Resources
         '''<summary>
         '''  Looks up a localized string similar to Interrupt 13h drive number
         '''
-        '''Allowed Values: 0, 128.
+        '''Allowed Values: {0}.
         '''</summary>
         Friend ReadOnly Property BootSectorForm_Help_DriveNumber() As String
             Get
@@ -368,7 +363,7 @@ Namespace My.Resources
         '''<summary>
         '''  Looks up a localized string similar to The File System ID is informational only
         '''
-        '''Typical Values: FAT12, FAT16, FAT.
+        '''Typical Values: {0}.
         '''</summary>
         Friend ReadOnly Property BootSectorForm_Help_FileSystemType() As String
             Get
@@ -377,9 +372,18 @@ Namespace My.Resources
         End Property
         
         '''<summary>
+        '''  Looks up a localized string similar to Fixed Disk.
+        '''</summary>
+        Friend ReadOnly Property BootSectorForm_Help_FixedDisk() As String
+            Get
+                Return ResourceManager.GetString("BootSectorForm_Help_FixedDisk", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
         '''  Looks up a localized string similar to Number of sectors preceeding the first sector of a partitioned volume
         '''
-        '''Note: This value should be 0 for all floppy disks.
+        '''Note: This value should be {0} for all floppy disks.
         '''</summary>
         Friend ReadOnly Property BootSectorForm_Help_HiddenSectors() As String
             Get
@@ -390,7 +394,7 @@ Namespace My.Resources
         '''<summary>
         '''  Looks up a localized string similar to This instruction indicates where the bootstrap code starts.
         '''
-        '''Allowed Values: EB xx 90, E9 xx xx.
+        '''Allowed Values: {0}.
         '''</summary>
         Friend ReadOnly Property BootSectorForm_Help_JumpInstruction() As String
             Get
@@ -399,19 +403,7 @@ Namespace My.Resources
         End Property
         
         '''<summary>
-        '''  Looks up a localized string similar to Media Descriptor
-        '''
-        '''Allowed Values:
-        '''F0\t1.44M, 2.88M, DMF, 3.5 XDF Floppy
-        '''F8\tFixed Disk
-        '''F9\t720K, 1.2M, 5.25 XDF Floppy
-        '''FA\tUnused
-        '''FB\tUnused
-        '''FC\t180K Floppy
-        '''FD\t360K Floppy
-        '''FE\t160K Floppy
-        '''FF\t320K Floppy
-        '''ED\tTandy 2000 Floppy.
+        '''  Looks up a localized string similar to Media Descriptor.
         '''</summary>
         Friend ReadOnly Property BootSectorForm_Help_MediaDescriptor() As String
             Get
@@ -424,7 +416,7 @@ Namespace My.Resources
         '''
         '''Allowed Values: Any non-zero value
         '''
-        '''Note: This value should typically be set to 2..
+        '''Note: This value should typically be set to {0}..
         '''</summary>
         Friend ReadOnly Property BootSectorForm_Help_NumberOfFATs() As String
             Get
@@ -459,7 +451,7 @@ Namespace My.Resources
         '''
         '''Allowed Values: Any non-zero value
         '''
-        '''Note: This value should typically be set to 1..
+        '''Note: This value should typically be set to {0}..
         '''</summary>
         Friend ReadOnly Property BootSectorForm_Help_ReservedSectors() As String
             Get
@@ -470,7 +462,7 @@ Namespace My.Resources
         '''<summary>
         '''  Looks up a localized string similar to Number of entries in the root directory
         '''
-        '''Allowed Values: Value multiplied by 32 should be an even multiple of Bytes Per Sector.
+        '''Allowed Values: Value multiplied by {0} should be an even multiple of Bytes Per Sector.
         '''</summary>
         Friend ReadOnly Property BootSectorForm_Help_RootDirectoryEntries() As String
             Get
@@ -479,9 +471,9 @@ Namespace My.Resources
         End Property
         
         '''<summary>
-        '''  Looks up a localized string similar to Total number of sectors in a FAT16 volume larger than 65535 sectors
+        '''  Looks up a localized string similar to Total number of sectors in a FAT16 volume larger than {0} sectors
         '''
-        '''Note: This value should be 0 for all floppy disks.
+        '''Note: This value should be {1} for all floppy disks.
         '''</summary>
         Friend ReadOnly Property BootSectorForm_Help_SectorCountLarge() As String
             Get
@@ -501,7 +493,7 @@ Namespace My.Resources
         '''<summary>
         '''  Looks up a localized string similar to Number of sectors per cluster
         '''
-        '''Allowed Values: 1, 2, 4, 8, 16, 32, 128.
+        '''Allowed Values: {0}.
         '''</summary>
         Friend ReadOnly Property BootSectorForm_Help_SectorsPerCluster() As String
             Get
@@ -537,7 +529,16 @@ Namespace My.Resources
         End Property
         
         '''<summary>
-        '''  Looks up a localized string similar to This field typically matches the 11-byte volume label in the root directory of the disk or has the value &quot;NO NAME    &quot; if the volume label does not exist..
+        '''  Looks up a localized string similar to Unused.
+        '''</summary>
+        Friend ReadOnly Property BootSectorForm_Help_Unused() As String
+            Get
+                Return ResourceManager.GetString("BootSectorForm_Help_Unused", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  Looks up a localized string similar to This field typically matches the 11-byte volume label in the root directory of the disk or has the value &quot;{0}&quot; if the volume label does not exist..
         '''</summary>
         Friend ReadOnly Property BootSectorForm_Help_VolumeLabel() As String
             Get

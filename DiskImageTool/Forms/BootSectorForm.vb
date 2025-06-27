@@ -4,31 +4,68 @@ Imports DiskImageTool.DiskImage.BootSector
 Imports DiskImageTool.Hb.Windows.Forms
 
 Public Class BootSectorForm
-    Const ValidHexChars = "0123456789ABCDEF"
+    Private Const VALID_HEX_CHARS = "0123456789ABCDEF"
+    Private Const ALLOWED_JMP_INSTRUCTION As String = "EB xx 90, E9 xx xx"
+    Private Const ALLOWED_DRIVE_NUMBER As String = "0, 128"
+    Private Const ALLOWED_HIDDEN_SECTORS As UInteger = 0
+    Private Const ALLOWED_SECTOR_COUNT_LARGE As UInteger = 0
+    Private Const TYPICAL_FILE_SYSTEM_TYPE As String = "FAT12, FAT16, FAT"
+    Private Const TYPICAL_NUMBER_OF_FATS As Byte = 2
+    Private Const TYPICAL_RESERVED_SECTORS As UShort = 1
+    Private Const TYPICAL_BYTES_PER_SECTOR As UShort = 512
+    Private Const VOLUME_LABEL_NO_NAME As String = "NO NAME    "
+    Private Const MAX_SECTOR_COUNT_SMALL As UShort = 65535
+    Private Const ROOT_DIRECTORY_ENTRIES_MULTIPLE As UShort = 32
+
     Private ReadOnly _BootStrap As BootstrapDB
     Private ReadOnly _BootSector As BootSector
     Private ReadOnly _HasExtended As Boolean
     Private ReadOnly _HelpProvider1 As HelpProvider
     Private _SuppressEvent As Boolean = True
 
-    Private Shared ReadOnly _TypicalValues As BPBValues() = {
-        New BPBValues With {.Tabs = 1, .Format = FloppyDiskFormat.Floppy160, .RootDirectoryEntries = "64", .SectorCountSmall = "320", .SectorsPerCluster = "1", .SectorsPerFAT = "1", .SectorsPerTrack = "8", .NumberOfHeads = "1"},
-        New BPBValues With {.Tabs = 1, .Format = FloppyDiskFormat.Floppy180, .RootDirectoryEntries = "64", .SectorCountSmall = "360", .SectorsPerCluster = "1", .SectorsPerFAT = "2", .SectorsPerTrack = "9", .NumberOfHeads = "1"},
-        New BPBValues With {.Tabs = 1, .Format = FloppyDiskFormat.Floppy320, .RootDirectoryEntries = "112", .SectorCountSmall = "640", .SectorsPerCluster = "2", .SectorsPerFAT = "1", .SectorsPerTrack = "8", .NumberOfHeads = "2"},
-        New BPBValues With {.Tabs = 1, .Format = FloppyDiskFormat.Floppy360, .RootDirectoryEntries = "112", .SectorCountSmall = "720", .SectorsPerCluster = "2", .SectorsPerFAT = "2", .SectorsPerTrack = "9", .NumberOfHeads = "2"},
-        New BPBValues With {.Tabs = 1, .Format = FloppyDiskFormat.Floppy720, .RootDirectoryEntries = "112", .SectorCountSmall = "1440", .SectorsPerCluster = "2", .SectorsPerFAT = "3", .SectorsPerTrack = "9", .NumberOfHeads = "2"},
-        New BPBValues With {.Tabs = 1, .Format = FloppyDiskFormat.Floppy1200, .RootDirectoryEntries = "224", .SectorCountSmall = "2400", .SectorsPerCluster = "1", .SectorsPerFAT = "7", .SectorsPerTrack = "15", .NumberOfHeads = "2"},
-        New BPBValues With {.Tabs = 1, .Format = FloppyDiskFormat.Floppy1440, .RootDirectoryEntries = "224", .SectorCountSmall = "2880", .SectorsPerCluster = "1", .SectorsPerFAT = "9", .SectorsPerTrack = "18", .NumberOfHeads = "2"},
-        New BPBValues With {.Tabs = 1, .Format = FloppyDiskFormat.Floppy2880, .RootDirectoryEntries = "240", .SectorCountSmall = "5760", .SectorsPerCluster = "2", .SectorsPerFAT = "9", .SectorsPerTrack = "36", .NumberOfHeads = "2"},
-        New BPBValues With {.Tabs = 1, .Format = FloppyDiskFormat.FloppyDMF1024, .RootDirectoryEntries = "16", .SectorCountSmall = "3360", .SectorsPerCluster = "2, 4", .SectorsPerFAT = "3, 5", .SectorsPerTrack = "21", .NumberOfHeads = "2"},
-        New BPBValues With {.Tabs = 0, .Format = FloppyDiskFormat.FloppyXDF525, .Extended = True, .RootDirectoryEntries = "224", .SectorCountSmall = "3040", .SectorsPerCluster = "1", .SectorsPerFAT = "9", .SectorsPerTrack = "19", .NumberOfHeads = "2"},
-        New BPBValues With {.Tabs = 1, .Format = FloppyDiskFormat.FloppyXDF35, .Extended = True, .RootDirectoryEntries = "224", .SectorCountSmall = "3680", .SectorsPerCluster = "1", .SectorsPerFAT = "11", .SectorsPerTrack = "23", .NumberOfHeads = "2"}
+    Private Shared ReadOnly AllowedSectorsPerTrack As String() = {"8", "9", "15", "18", "21", "23", "36"}
+
+    Private Shared ReadOnly _FormatList As FormatParams() = {
+        New FormatParams With {.Format = FloppyDiskFormat.Floppy160, .ToolTip = True, .Tabs = 1, .RootDirectoryEntries = "64", .SectorCountSmall = "320", .SectorsPerCluster = "1", .SectorsPerFAT = "1", .SectorsPerTrack = "8", .NumberOfHeads = "1"},
+        New FormatParams With {.Format = FloppyDiskFormat.Floppy180, .ToolTip = True, .Tabs = 1, .RootDirectoryEntries = "64", .SectorCountSmall = "360", .SectorsPerCluster = "1", .SectorsPerFAT = "2", .SectorsPerTrack = "9", .NumberOfHeads = "1"},
+        New FormatParams With {.Format = FloppyDiskFormat.Floppy320, .ToolTip = True, .Tabs = 1, .RootDirectoryEntries = "112", .SectorCountSmall = "640", .SectorsPerCluster = "2", .SectorsPerFAT = "1", .SectorsPerTrack = "8", .NumberOfHeads = "2"},
+        New FormatParams With {.Format = FloppyDiskFormat.Floppy360, .ToolTip = True, .Tabs = 1, .RootDirectoryEntries = "112", .SectorCountSmall = "720", .SectorsPerCluster = "2", .SectorsPerFAT = "2", .SectorsPerTrack = "9", .NumberOfHeads = "2"},
+        New FormatParams With {.Format = FloppyDiskFormat.Floppy720, .ToolTip = True, .Tabs = 1, .RootDirectoryEntries = "112", .SectorCountSmall = "1440", .SectorsPerCluster = "2", .SectorsPerFAT = "3", .SectorsPerTrack = "9", .NumberOfHeads = "2"},
+        New FormatParams With {.Format = FloppyDiskFormat.Floppy1200, .ToolTip = True, .Tabs = 1, .RootDirectoryEntries = "224", .SectorCountSmall = "2400", .SectorsPerCluster = "1", .SectorsPerFAT = "7", .SectorsPerTrack = "15", .NumberOfHeads = "2"},
+        New FormatParams With {.Format = FloppyDiskFormat.Floppy1440, .ToolTip = True, .Tabs = 1, .RootDirectoryEntries = "224", .SectorCountSmall = "2880", .SectorsPerCluster = "1", .SectorsPerFAT = "9", .SectorsPerTrack = "18", .NumberOfHeads = "2"},
+        New FormatParams With {.Format = FloppyDiskFormat.Floppy2880, .ToolTip = True, .Tabs = 1, .RootDirectoryEntries = "240", .SectorCountSmall = "5760", .SectorsPerCluster = "2", .SectorsPerFAT = "9", .SectorsPerTrack = "36", .NumberOfHeads = "2"},
+        New FormatParams With {.Format = FloppyDiskFormat.FloppyDMF1024, .ToolTip = True, .Tabs = 1, .RootDirectoryEntries = "16", .SectorCountSmall = "3360", .SectorsPerCluster = "2, 4", .SectorsPerFAT = "3, 5", .SectorsPerTrack = "21", .NumberOfHeads = "2"},
+        New FormatParams With {.Format = FloppyDiskFormat.FloppyDMF2048, .ToolTip = False},
+        New FormatParams With {.Format = FloppyDiskFormat.FloppyXDF525, .ToolTip = True, .Tabs = 0, .RootDirectoryEntries = "224", .SectorCountSmall = "3040", .SectorsPerCluster = "1", .SectorsPerFAT = "9", .SectorsPerTrack = "19", .NumberOfHeads = "2", .Extended = True},
+        New FormatParams With {.Format = FloppyDiskFormat.FloppyXDF35, .ToolTip = True, .Tabs = 0, .RootDirectoryEntries = "224", .SectorCountSmall = "3680", .SectorsPerCluster = "1", .SectorsPerFAT = "11", .SectorsPerTrack = "23", .NumberOfHeads = "2", .Extended = True},
+        New FormatParams With {.Format = FloppyDiskFormat.FloppyXDFMicro, .ToolTip = False, .MustMatch = True},
+        New FormatParams With {.Format = FloppyDiskFormat.FloppyProCopy, .ToolTip = False},
+        New FormatParams With {.Format = FloppyDiskFormat.FloppyTandy2000, .ToolTip = False},
+        New FormatParams With {.Format = FloppyDiskFormat.Floppy2HD, .ToolTip = False},
+        New FormatParams With {.Format = FloppyDiskFormat.FloppyNoBPB, .ToolTip = False, .MustMatch = True},
+        New FormatParams With {.Format = FloppyDiskFormat.FloppyUnknown, .ToolTip = False}
     }
 
     Private Shared ReadOnly _BootSectorSignatureAllowedValues As KeyValuePair(Of String, String)() = {
         New KeyValuePair(Of String, String)("AA 55", ""),
         New KeyValuePair(Of String, String)("00 00", "PC DOS 1.x"),
         New KeyValuePair(Of String, String)("54 42", "Tandy 2000")
+    }
+
+    Private Shared ReadOnly _MediaDescriptorList As KeyValuePair(Of String, FloppyDiskFormat)() = {
+        New KeyValuePair(Of String, FloppyDiskFormat)("FE", FloppyDiskFormat.Floppy160),
+        New KeyValuePair(Of String, FloppyDiskFormat)("FC", FloppyDiskFormat.Floppy180),
+        New KeyValuePair(Of String, FloppyDiskFormat)("FF", FloppyDiskFormat.Floppy320),
+        New KeyValuePair(Of String, FloppyDiskFormat)("FD", FloppyDiskFormat.Floppy360),
+        New KeyValuePair(Of String, FloppyDiskFormat)("F9", FloppyDiskFormat.Floppy720),
+        New KeyValuePair(Of String, FloppyDiskFormat)("F9", FloppyDiskFormat.Floppy1200),
+        New KeyValuePair(Of String, FloppyDiskFormat)("F0", FloppyDiskFormat.Floppy1440),
+        New KeyValuePair(Of String, FloppyDiskFormat)("F0", FloppyDiskFormat.Floppy2880),
+        New KeyValuePair(Of String, FloppyDiskFormat)("F0", FloppyDiskFormat.FloppyDMF1024),
+        New KeyValuePair(Of String, FloppyDiskFormat)("F9", FloppyDiskFormat.FloppyXDF525),
+        New KeyValuePair(Of String, FloppyDiskFormat)("F0", FloppyDiskFormat.FloppyXDF35),
+        New KeyValuePair(Of String, FloppyDiskFormat)("ED", FloppyDiskFormat.FloppyTandy2000),
+        New KeyValuePair(Of String, FloppyDiskFormat)("FE", FloppyDiskFormat.Floppy2HD)
     }
 
     Public Sub New(Data() As Byte, BootStrap As BootstrapDB)
@@ -79,43 +116,66 @@ Public Class BootSectorForm
         Dim HelpString As String
 
         SetHelpString(My.Resources.BootSectorForm_Help_OEMName, LblOEMName, CboOEMName, HexOEMName)
-        SetHelpString(My.Resources.BootSectorForm_Help_BytesPerSector, LblBytesPerSector, CboBytesPerSector)
 
-        HelpString = My.Resources.BootSectorForm_Help_SectorsPerCluster & Environment.NewLine & Environment.NewLine & GetHelpTypicalValues(Function(x) x.SectorsPerCluster)
+        HelpString = String.Format(My.Resources.BootSectorForm_Help_BytesPerSector, String.Join(", ", BiosParameterBlock.ValidBytesPerSector), TYPICAL_BYTES_PER_SECTOR)
+        SetHelpString(HelpString, LblBytesPerSector, CboBytesPerSector)
+
+        HelpString = String.Format(My.Resources.BootSectorForm_Help_SectorsPerCluster, String.Join(", ", BiosParameterBlock.ValidSectorsPerCluster)) _
+            & Environment.NewLine & Environment.NewLine & GetHelpValueList(Function(x) x.SectorsPerCluster)
         SetHelpString(HelpString, LblSectorsPerCluster, CboSectorsPerCluster)
 
-        SetHelpString(My.Resources.BootSectorForm_Help_ReservedSectors, LblReservedSectors, TxtReservedSectors)
-        SetHelpString(My.Resources.BootSectorForm_Help_NumberOfFATs, LblNumberOfFATS, TxtNumberOfFATs)
+        HelpString = String.Format(My.Resources.BootSectorForm_Help_ReservedSectors, TYPICAL_RESERVED_SECTORS)
+        SetHelpString(HelpString, LblReservedSectors, TxtReservedSectors)
 
-        HelpString = My.Resources.BootSectorForm_Help_RootDirectoryEntries & Environment.NewLine & Environment.NewLine & GetHelpTypicalValues(Function(x) x.RootDirectoryEntries)
+        HelpString = String.Format(My.Resources.BootSectorForm_Help_NumberOfFATs, TYPICAL_NUMBER_OF_FATS)
+        SetHelpString(HelpString, LblNumberOfFATS, TxtNumberOfFATs)
+
+        HelpString = String.Format(My.Resources.BootSectorForm_Help_RootDirectoryEntries, ROOT_DIRECTORY_ENTRIES_MULTIPLE) _
+            & Environment.NewLine & Environment.NewLine & GetHelpValueList(Function(x) x.RootDirectoryEntries)
         SetHelpString(HelpString, LblRootDirectoryEntries, TxtRootDirectoryEntries)
 
-        HelpString = My.Resources.BootSectorForm_Help_SectorCountSmall & Environment.NewLine & Environment.NewLine & GetHelpTypicalValues(Function(x) x.SectorCountSmall)
+        HelpString = My.Resources.BootSectorForm_Help_SectorCountSmall & Environment.NewLine & Environment.NewLine & GetHelpValueList(Function(x) x.SectorCountSmall)
         SetHelpString(HelpString, LblSectorCountSmall, TxtSectorCountSmall)
 
-        SetHelpString(My.Resources.BootSectorForm_Help_MediaDescriptor, TxtMediaDescriptor, CboMediaDescriptor)
+        HelpString = My.Resources.BootSectorForm_Help_MediaDescriptor & Environment.NewLine & Environment.NewLine & GetMediaDescriptorValueList()
+        SetHelpString(HelpString, TxtMediaDescriptor, CboMediaDescriptor)
 
-        HelpString = My.Resources.BootSectorForm_Help_SectorsPerFAT & Environment.NewLine & Environment.NewLine & GetHelpTypicalValues(Function(x) x.SectorsPerFAT)
+        HelpString = My.Resources.BootSectorForm_Help_SectorsPerFAT & Environment.NewLine & Environment.NewLine & GetHelpValueList(Function(x) x.SectorsPerFAT)
         SetHelpString(HelpString, LblSectorsPerFAT, TxtSectorsPerFAT)
 
-        HelpString = My.Resources.BootSectorForm_Help_SectorsPerTrack & Environment.NewLine & Environment.NewLine & GetHelpTypicalValues(Function(x) x.SectorsPerTrack)
+        HelpString = My.Resources.BootSectorForm_Help_SectorsPerTrack & Environment.NewLine & Environment.NewLine & GetHelpValueList(Function(x) x.SectorsPerTrack)
         SetHelpString(HelpString, LblSectorsPerTrack, TxtSectorsPerTrack)
 
-        HelpString = My.Resources.BootSectorForm_Help_NumberOfHeads & Environment.NewLine & Environment.NewLine & GetHelpTypicalValues(Function(x) x.NumberOfHeads)
+        HelpString = My.Resources.BootSectorForm_Help_NumberOfHeads & Environment.NewLine & Environment.NewLine & GetHelpValueList(Function(x) x.NumberOfHeads)
         SetHelpString(HelpString, LblNumberOfHeads, TxtNumberOfHeads)
 
-        SetHelpString(My.Resources.BootSectorForm_Help_HiddenSectors, LblHiddenSectors, TxtHiddenSectors)
-        SetHelpString(My.Resources.BootSectorForm_Help_SectorCountLarge, LblSectorCountLarge, TxtSectorCountLarge)
-        SetHelpString(My.Resources.BootSectorForm_Help_DriveNumber, LblDriveNumber, TxtDriveNumber)
-        SetHelpString(My.Resources.BootSectorForm_Help_ExtendedBootSignature, lblExtendedBootSignature, HexExtendedBootSignature)
-        SetHelpString(My.Resources.BootSectorForm_Help_VolumeSerialNumber, LblVolumeSerialNumber, HexVolumeSerialNumber)
-        SetHelpString(My.Resources.BootSectorForm_Help_VolumeLabel, LblVolumeLabel, TxtVolumeLabel, HexVolumeLabel)
-        SetHelpString(My.Resources.BootSectorForm_Help_FileSystemType, LblFileSystemType, TxtFileSystemType, HexFileSystemType)
-        SetHelpString(My.Resources.BootSectorForm_Help_DiskType, LblDiskType, CboDiskType)
-        SetHelpString(My.Resources.BootSectorForm_Help_VolumeSerialNumberButton, BtnVolumeSerialNumber)
-        SetHelpString(My.Resources.BootSectorForm_Help_JumpInstruction, LblJumpInstruction, HexJumpInstruction)
+        HelpString = String.Format(My.Resources.BootSectorForm_Help_HiddenSectors, ALLOWED_HIDDEN_SECTORS)
+        SetHelpString(HelpString, LblHiddenSectors, TxtHiddenSectors)
 
-        HelpString = My.Resources.BootSectorForm_Help_BootSectorSignature & Environment.NewLine & Environment.NewLine & GetBootSectorSignatureAllowedValues()
+        HelpString = String.Format(My.Resources.BootSectorForm_Help_SectorCountLarge, FormatThousands(MAX_SECTOR_COUNT_SMALL), ALLOWED_SECTOR_COUNT_LARGE)
+        SetHelpString(HelpString, LblSectorCountLarge, TxtSectorCountLarge)
+
+        HelpString = String.Format(My.Resources.BootSectorForm_Help_DriveNumber, ALLOWED_DRIVE_NUMBER)
+        SetHelpString(HelpString, LblDriveNumber, TxtDriveNumber)
+
+        SetHelpString(My.Resources.BootSectorForm_Help_ExtendedBootSignature, lblExtendedBootSignature, HexExtendedBootSignature)
+
+        SetHelpString(My.Resources.BootSectorForm_Help_VolumeSerialNumber, LblVolumeSerialNumber, HexVolumeSerialNumber)
+
+        HelpString = String.Format(My.Resources.BootSectorForm_Help_VolumeLabel, VOLUME_LABEL_NO_NAME)
+        SetHelpString(HelpString, LblVolumeLabel, TxtVolumeLabel, HexVolumeLabel)
+
+        HelpString = String.Format(My.Resources.BootSectorForm_Help_FileSystemType, TYPICAL_FILE_SYSTEM_TYPE)
+        SetHelpString(HelpString, LblFileSystemType, TxtFileSystemType, HexFileSystemType)
+
+        SetHelpString(My.Resources.BootSectorForm_Help_DiskType, LblDiskType, CboDiskType)
+
+        SetHelpString(My.Resources.BootSectorForm_Help_VolumeSerialNumberButton, BtnVolumeSerialNumber)
+
+        HelpString = String.Format(My.Resources.BootSectorForm_Help_JumpInstruction, ALLOWED_JMP_INSTRUCTION)
+        SetHelpString(HelpString, LblJumpInstruction, HexJumpInstruction)
+
+        HelpString = My.Resources.BootSectorForm_Help_BootSectorSignature & Environment.NewLine & Environment.NewLine & GetBootSectorSignatureValueList()
         SetHelpString(HelpString, LblBootSectorSignature, HexBootSectorSignature)
 
         SetHelpString(My.Resources.BootSectorForm_Help_AdditionalData, HexBox1)
@@ -208,12 +268,13 @@ Public Class BootSectorForm
         ControlSetValue(TxtSectorCountSmall, BPB.SectorCountSmall, True)
         ControlSetValue(CboMediaDescriptor, BPB.MediaDescriptor.ToString("X2"), Array.ConvertAll(BiosParameterBlock.ValidMediaDescriptor, Function(x) x.ToString("X2")), True)
         ControlSetValue(TxtSectorsPerFAT, BPB.SectorsPerFAT, True)
-        ControlSetValue(TxtSectorsPerTrack, BPB.SectorsPerTrack, {"8", "9", "15", "18", "21", "23", "36"}, True)
-        ControlSetValue(TxtNumberOfHeads, BPB.NumberOfHeads, {"1", "2"}, True)
+        ControlSetValue(TxtSectorsPerTrack, BPB.SectorsPerTrack, AllowedSectorsPerTrack, True)
+        ControlSetValue(TxtNumberOfHeads, BPB.NumberOfHeads, Array.ConvertAll(BiosParameterBlock.ValidNumberOfHeads, Function(x) x.ToString()), True)
     End Sub
 
     Private Sub PopulateBytesPerSector()
         CboBytesPerSector.Items.Clear()
+
         For Each Value In BiosParameterBlock.ValidBytesPerSector
             CboBytesPerSector.Items.Add(Value)
         Next
@@ -221,28 +282,12 @@ Public Class BootSectorForm
 
     Private Sub PopulateDiskTypes(DiskFormat As FloppyDiskFormat)
         CboDiskType.Items.Clear()
-        CboDiskType.Items.Add(New BootSectorDiskFormat(FloppyDiskFormat.Floppy160))
-        CboDiskType.Items.Add(New BootSectorDiskFormat(FloppyDiskFormat.Floppy180))
-        CboDiskType.Items.Add(New BootSectorDiskFormat(FloppyDiskFormat.Floppy320))
-        CboDiskType.Items.Add(New BootSectorDiskFormat(FloppyDiskFormat.Floppy360))
-        CboDiskType.Items.Add(New BootSectorDiskFormat(FloppyDiskFormat.Floppy720))
-        CboDiskType.Items.Add(New BootSectorDiskFormat(FloppyDiskFormat.Floppy1200))
-        CboDiskType.Items.Add(New BootSectorDiskFormat(FloppyDiskFormat.Floppy1440))
-        CboDiskType.Items.Add(New BootSectorDiskFormat(FloppyDiskFormat.Floppy2880))
-        CboDiskType.Items.Add(New BootSectorDiskFormat(FloppyDiskFormat.FloppyDMF1024))
-        CboDiskType.Items.Add(New BootSectorDiskFormat(FloppyDiskFormat.FloppyDMF2048))
-        CboDiskType.Items.Add(New BootSectorDiskFormat(FloppyDiskFormat.FloppyXDF525))
-        CboDiskType.Items.Add(New BootSectorDiskFormat(FloppyDiskFormat.FloppyXDF35))
-        If DiskFormat = FloppyDiskFormat.FloppyXDFMicro Then
-            CboDiskType.Items.Add(New BootSectorDiskFormat(FloppyDiskFormat.FloppyXDFMicro))
-        End If
-        CboDiskType.Items.Add(New BootSectorDiskFormat(FloppyDiskFormat.FloppyProCopy))
-        CboDiskType.Items.Add(New BootSectorDiskFormat(FloppyDiskFormat.FloppyTandy2000))
-        CboDiskType.Items.Add(New BootSectorDiskFormat(FloppyDiskFormat.Floppy2HD))
-        If DiskFormat = FloppyDiskFormat.FloppyNoBPB Then
-            CboDiskType.Items.Add(New BootSectorDiskFormat(FloppyDiskFormat.FloppyNoBPB))
-        End If
-        CboDiskType.Items.Add(New BootSectorDiskFormat(FloppyDiskFormat.FloppyUnknown))
+
+        For Each Item In _FormatList
+            If Not Item.MustMatch OrElse Item.Format = DiskFormat Then
+                CboDiskType.Items.Add(New BootSectorDiskFormat(Item.Format))
+            End If
+        Next
 
         CboDiskType.SelectedIndex = CboDiskType.Items.Count - 1
     End Sub
@@ -272,19 +317,10 @@ Public Class BootSectorForm
 
     Private Sub PopulateMediaDescriptors()
         CboMediaDescriptor.Items.Clear()
-        CboMediaDescriptor.Items.Add(New MediaDescriptorType("FE", GetFloppyDiskFormatName(FloppyDiskFormat.Floppy160)))
-        CboMediaDescriptor.Items.Add(New MediaDescriptorType("FC", GetFloppyDiskFormatName(FloppyDiskFormat.Floppy180)))
-        CboMediaDescriptor.Items.Add(New MediaDescriptorType("FF", GetFloppyDiskFormatName(FloppyDiskFormat.Floppy320)))
-        CboMediaDescriptor.Items.Add(New MediaDescriptorType("FD", GetFloppyDiskFormatName(FloppyDiskFormat.Floppy360)))
-        CboMediaDescriptor.Items.Add(New MediaDescriptorType("F9", GetFloppyDiskFormatName(FloppyDiskFormat.Floppy720)))
-        CboMediaDescriptor.Items.Add(New MediaDescriptorType("F9", GetFloppyDiskFormatName(FloppyDiskFormat.Floppy1200)))
-        CboMediaDescriptor.Items.Add(New MediaDescriptorType("F0", GetFloppyDiskFormatName(FloppyDiskFormat.Floppy1440)))
-        CboMediaDescriptor.Items.Add(New MediaDescriptorType("F0", GetFloppyDiskFormatName(FloppyDiskFormat.Floppy2880)))
-        CboMediaDescriptor.Items.Add(New MediaDescriptorType("F0", GetFloppyDiskFormatName(FloppyDiskFormat.FloppyDMF1024)))
-        CboMediaDescriptor.Items.Add(New MediaDescriptorType("F9", GetFloppyDiskFormatName(FloppyDiskFormat.FloppyXDF525)))
-        CboMediaDescriptor.Items.Add(New MediaDescriptorType("F0", GetFloppyDiskFormatName(FloppyDiskFormat.FloppyXDF35)))
-        CboMediaDescriptor.Items.Add(New MediaDescriptorType("ED", GetFloppyDiskFormatName(FloppyDiskFormat.FloppyTandy2000)))
-        CboMediaDescriptor.Items.Add(New MediaDescriptorType("FE", GetFloppyDiskFormatName(FloppyDiskFormat.Floppy2HD)))
+
+        For Each item In _MediaDescriptorList
+            CboMediaDescriptor.Items.Add(New MediaDescriptorType(item.Key, GetFloppyDiskFormatName(item.Value)))
+        Next
     End Sub
 
     Private Sub PopulateOEMName()
@@ -578,24 +614,67 @@ Public Class BootSectorForm
         ControlUpdateColor(Control)
     End Sub
 
-    Private Shared Function GetBootSectorSignatureAllowedValues() As String
+    Private Shared Function GetFloppyNameList(ParamArray FormatList As FloppyDiskFormat()) As String
+        Dim Result As String = ""
+
+        For Each DiskFormat In FormatList
+            Dim Extended As Boolean = (DiskFormat = FloppyDiskFormat.FloppyXDF35 Or DiskFormat = FloppyDiskFormat.FloppyXDF525)
+            If Result.Length > 0 Then
+                Result &= ", "
+            End If
+            Result &= GetFloppyDiskFormatName(DiskFormat, Extended)
+        Next
+
+        Return Result
+    End Function
+
+    Private Shared Function GetHelpValueString(Name As String, Value As String, TabCount As Integer) As String
+        Return Environment.NewLine & Name & StrDup(TabCount, vbTab) & Value
+    End Function
+
+    Private Shared Function GetBootSectorSignatureValueList() As String
         Dim Result As String = My.Resources.BootSectorForm_Help_AllowedValues
 
         For Each item In _BootSectorSignatureAllowedValues
             Result &= Environment.NewLine & item.Key
             If item.Value <> "" Then
-                Result &= " " & InParens(item.Value)
+                Result &= vbTab & item.Value
             End If
         Next
 
         Return Result
     End Function
 
-    Private Shared Function GetHelpTypicalValues(Of T)(Selector As Func(Of BPBValues, T)) As String
+    Private Shared Function GetMediaDescriptorValueList() As String
+        Dim FormatList As String
+
+        Dim Result As String = My.Resources.BootSectorForm_Help_AllowedValues
+
+        FormatList = GetFloppyNameList(FloppyDiskFormat.Floppy1440, FloppyDiskFormat.Floppy2880, FloppyDiskFormat.FloppyDMF1024, FloppyDiskFormat.FloppyXDF35)
+        Result &= GetHelpValueString("F0", FormatList, 1)
+
+        Result &= GetHelpValueString("F8", My.Resources.BootSectorForm_Help_FixedDisk, 1)
+
+        FormatList = GetFloppyNameList(FloppyDiskFormat.Floppy720, FloppyDiskFormat.Floppy1200, FloppyDiskFormat.FloppyXDF525)
+        Result &= GetHelpValueString("F9", FormatList, 1)
+
+        Result &= GetHelpValueString("FA", My.Resources.BootSectorForm_Help_Unused, 1)
+        Result &= GetHelpValueString("FB", My.Resources.BootSectorForm_Help_Unused, 1)
+        Result &= GetHelpValueString("FC", GetFloppyDiskFormatName(FloppyDiskFormat.Floppy180), 1)
+        Result &= GetHelpValueString("FD", GetFloppyDiskFormatName(FloppyDiskFormat.Floppy360), 1)
+        Result &= GetHelpValueString("FE", GetFloppyDiskFormatName(FloppyDiskFormat.Floppy160), 1)
+        Result &= GetHelpValueString("FF", GetFloppyDiskFormatName(FloppyDiskFormat.Floppy320), 1)
+        Result &= GetHelpValueString("ED", GetFloppyDiskFormatName(FloppyDiskFormat.FloppyTandy2000), 1)
+
+        Return Result
+    End Function
+
+    Private Shared Function GetHelpValueList(Of T)(Selector As Func(Of FormatParams, T)) As String
         Dim Result As String = My.Resources.BootSectorForm_Help_TypicalValues
-        For Each item In _TypicalValues
-            Result &= Environment.NewLine & String.Format(My.Resources.Label_Floppy, GetFloppyDiskFormatName(item.Format, item.Extended))
-            Result &= StrDup(item.Tabs + 1, vbTab) & Selector(item).ToString
+        For Each item In _FormatList
+            If item.ToolTip Then
+                Result &= GetHelpValueString(GetFloppyDiskFormatName(item.Format, item.Extended), Selector(item).ToString, item.Tabs + 1)
+            End If
         Next
 
         Return Result
@@ -672,7 +751,7 @@ Public Class BootSectorForm
 
     Private Sub CboMediaDescriptor_KeyPress(sender As Object, e As KeyPressEventArgs) Handles CboMediaDescriptor.KeyPress
         e.KeyChar = UCase(e.KeyChar)
-        If Not ValidHexChars.Contains(e.KeyChar) And Not Char.IsControl(e.KeyChar) Then
+        If Not VALID_HEX_CHARS.Contains(e.KeyChar) And Not Char.IsControl(e.KeyChar) Then
             e.Handled = True
         End If
     End Sub
@@ -932,9 +1011,10 @@ Public Class BootSectorForm
         End Function
     End Class
 
-    Private Structure BPBValues
+    Private Structure FormatParams
         Public Format As FloppyDiskFormat
         Public Extended As Boolean
+        Public ToolTip As Boolean
         Public Tabs As Integer
         Public RootDirectoryEntries As String
         Public SectorCountSmall As String
@@ -942,5 +1022,6 @@ Public Class BootSectorForm
         Public SectorsPerFAT As String
         Public SectorsPerTrack As String
         Public NumberOfHeads As String
+        Public MustMatch As Boolean
     End Structure
 End Class

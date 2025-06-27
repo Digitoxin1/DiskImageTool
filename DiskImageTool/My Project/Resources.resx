@@ -1388,9 +1388,9 @@ Note: Data highlighted in green is the bootstrap code.</value>
   <data name="BootSectorForm_Help_BytesPerSector" xml:space="preserve">
     <value>Number of bytes in each physical sector
 
-Allowed Values: 512, 1024, 2048, 4096
+Allowed Values: {0}
 
-Note: This value should be 512 for all floppy disks.</value>
+Note: This value should be {1} for all floppy disks.</value>
   </data>
   <data name="BootSectorForm_Help_DiskType" xml:space="preserve">
     <value>The disk type detected based on the current values in the Boot Record.  Changing this will set the values in the boot record to those of the selected disk type.</value>
@@ -1398,7 +1398,7 @@ Note: This value should be 512 for all floppy disks.</value>
   <data name="BootSectorForm_Help_DriveNumber" xml:space="preserve">
     <value>Interrupt 13h drive number
 
-Allowed Values: 0, 128</value>
+Allowed Values: {0}</value>
   </data>
   <data name="BootSectorForm_Help_ExtendedBootSignature" xml:space="preserve">
     <value>Extended Boot Signature
@@ -1410,39 +1410,27 @@ Typical Values:
   <data name="BootSectorForm_Help_FileSystemType" xml:space="preserve">
     <value>The File System ID is informational only
 
-Typical Values: FAT12, FAT16, FAT</value>
+Typical Values: {0}</value>
   </data>
   <data name="BootSectorForm_Help_HiddenSectors" xml:space="preserve">
     <value>Number of sectors preceeding the first sector of a partitioned volume
 
-Note: This value should be 0 for all floppy disks</value>
+Note: This value should be {0} for all floppy disks</value>
   </data>
   <data name="BootSectorForm_Help_JumpInstruction" xml:space="preserve">
     <value>This instruction indicates where the bootstrap code starts.
 
-Allowed Values: EB xx 90, E9 xx xx</value>
+Allowed Values: {0}</value>
   </data>
   <data name="BootSectorForm_Help_MediaDescriptor" xml:space="preserve">
-    <value>Media Descriptor
-
-Allowed Values:
-F0\t1.44M, 2.88M, DMF, 3.5 XDF Floppy
-F8\tFixed Disk
-F9\t720K, 1.2M, 5.25 XDF Floppy
-FA\tUnused
-FB\tUnused
-FC\t180K Floppy
-FD\t360K Floppy
-FE\t160K Floppy
-FF\t320K Floppy
-ED\tTandy 2000 Floppy</value>
+    <value>Media Descriptor</value>
   </data>
   <data name="BootSectorForm_Help_NumberOfFATs" xml:space="preserve">
     <value>Number of File Allocation Table (FAT) copies on the volume
 
 Allowed Values: Any non-zero value
 
-Note: This value should typically be set to 2.</value>
+Note: This value should typically be set to {0}.</value>
   </data>
   <data name="BootSectorForm_Help_NumberOfHeads" xml:space="preserve">
     <value>Number of physical heads (sides) on the disk</value>
@@ -1452,17 +1440,17 @@ Note: This value should typically be set to 2.</value>
 
 Allowed Values: Any non-zero value
 
-Note: This value should typically be set to 1.</value>
+Note: This value should typically be set to {0}.</value>
   </data>
   <data name="BootSectorForm_Help_RootDirectoryEntries" xml:space="preserve">
     <value>Number of entries in the root directory
 
-Allowed Values: Value multiplied by 32 should be an even multiple of Bytes Per Sector</value>
+Allowed Values: Value multiplied by {0} should be an even multiple of Bytes Per Sector</value>
   </data>
   <data name="BootSectorForm_Help_SectorCountLarge" xml:space="preserve">
-    <value>Total number of sectors in a FAT16 volume larger than 65535 sectors
+    <value>Total number of sectors in a FAT16 volume larger than {0} sectors
 
-Note: This value should be 0 for all floppy disks</value>
+Note: This value should be {1} for all floppy disks</value>
   </data>
   <data name="BootSectorForm_Help_SectorCountSmall" xml:space="preserve">
     <value>Total number of sectors in the volume</value>
@@ -1470,7 +1458,7 @@ Note: This value should be 0 for all floppy disks</value>
   <data name="BootSectorForm_Help_SectorsPerCluster" xml:space="preserve">
     <value>Number of sectors per cluster
 
-Allowed Values: 1, 2, 4, 8, 16, 32, 128</value>
+Allowed Values: {0}</value>
   </data>
   <data name="BootSectorForm_Help_SectorsPerFAT" xml:space="preserve">
     <value>Number of sectors allocated to each copy of the File Allocation Table (FAT)</value>
@@ -1479,7 +1467,7 @@ Allowed Values: 1, 2, 4, 8, 16, 32, 128</value>
     <value>Number of sectors per track on the disk</value>
   </data>
   <data name="BootSectorForm_Help_VolumeLabel" xml:space="preserve">
-    <value>This field typically matches the 11-byte volume label in the root directory of the disk or has the value "NO NAME    " if the volume label does not exist.</value>
+    <value>This field typically matches the 11-byte volume label in the root directory of the disk or has the value "{0}" if the volume label does not exist.</value>
   </data>
   <data name="BootSectorForm_Help_VolumeSerialNumber" xml:space="preserve">
     <value>The Volume Serial Number is a 32-bit random number used in conjunction with the Volume Label for removable media tracking
@@ -1531,5 +1519,11 @@ Note: This id is typically generated by converting the current date and time int
   </data>
   <data name="BootSectorForm_Help_AllowedValues" xml:space="preserve">
     <value>Allowed Values:</value>
+  </data>
+  <data name="BootSectorForm_Help_FixedDisk" xml:space="preserve">
+    <value>Fixed Disk</value>
+  </data>
+  <data name="BootSectorForm_Help_Unused" xml:space="preserve">
+    <value>Unused</value>
   </data>
 </root>
