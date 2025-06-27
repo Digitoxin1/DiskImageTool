@@ -196,7 +196,7 @@
     <value>{0}{0}Souhaitez-vous le télécharger maintenant ?</value>
   </data>
   <data name="Dialog_UpdateWhatsNew" xml:space="preserve">
-    <value>{0}{0}Nouveautés{0}{1)}{0}{2}{0}</value>
+    <value>{0}{0}Nouveautés{0}{1}{0}{2}{0}</value>
   </data>
   <data name="Label_AdditionalData" xml:space="preserve">
     <value>Données supplémentaires</value>

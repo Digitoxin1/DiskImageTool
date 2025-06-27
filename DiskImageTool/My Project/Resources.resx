@@ -259,7 +259,7 @@
     <value>{0}{0}Do you wish to download it at this time?</value>
   </data>
   <data name="Dialog_UpdateWhatsNew" xml:space="preserve">
-    <value>{0}{0}Whats New{0}{1)}{0}{2}{0}</value>
+    <value>{0}{0}Whats New{0}{1}{0}{2}{0}</value>
   </data>
   <data name="Dialog_Win9xClean" xml:space="preserve">
     <value>This is a verified image.  Are you sure you wish to remove any windows modifications from this image?</value>

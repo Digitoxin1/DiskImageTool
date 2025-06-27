@@ -277,7 +277,7 @@
     <value>{0}{0}¿Desea descargarlo ahora?</value>
   </data>
   <data name="Dialog_UpdateWhatsNew" xml:space="preserve">
-    <value>{0}{0}Novedades{0}{1)}{0}{2}{0}</value>
+    <value>{0}{0}Novedades{0}{1}{0}{2}{0}</value>
   </data>
   <data name="Dialog_FileCurrentlyOpen" xml:space="preserve">
     <value>{0}{1}{1}Este archivo está abierto actualmente en {2}. Inténtelo nuevamente con un nombre de archivo diferente.</value>

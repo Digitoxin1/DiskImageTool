@@ -259,7 +259,7 @@
     <value>{0}{0}Möchten Sie es jetzt herunterladen?</value>
   </data>
   <data name="Dialog_UpdateWhatsNew" xml:space="preserve">
-    <value>{0}{0}Was ist neu{0}{1)}{0}{2}{0}</value>
+    <value>{0}{0}Was ist neu{0}{1}{0}{2}{0}</value>
   </data>
   <data name="Dialog_Win9xClean" xml:space="preserve">
     <value>Dies ist ein verifiziertes Abbild. Möchten Sie wirklich alle Windows-Änderungen entfernen?</value>

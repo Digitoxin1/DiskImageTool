@@ -1683,7 +1683,7 @@ Namespace My.Resources
         End Property
         
         '''<summary>
-        '''  Looks up a localized string similar to {0}{0}Whats New{0}{1)}{0}{2}{0}.
+        '''  Looks up a localized string similar to {0}{0}Whats New{0}{1}{0}{2}{0}.
         '''</summary>
         Friend ReadOnly Property Dialog_UpdateWhatsNew() As String
             Get
