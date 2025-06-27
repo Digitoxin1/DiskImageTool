@@ -120,15 +120,6 @@
   <data name="LblFileSizeError.Text" xml:space="preserve">
     <value>(Error)</value>
   </data>
-  <data name="ChkFileSizeOriginal.Text" xml:space="preserve">
-    <value>{0 bytes}</value>
-  </data>
-  <data name="ChkFileSizeNew.Text" xml:space="preserve">
-    <value>{0 bytes}</value>
-  </data>
-  <data name="LblFileSize.Text" xml:space="preserve">
-    <value>{0 bytes}</value>
-  </data>
   <data name="BtnCancel.Text" xml:space="preserve">
     <value>Cancelar</value>
   </data>

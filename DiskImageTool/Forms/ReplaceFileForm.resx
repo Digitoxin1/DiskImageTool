@@ -250,7 +250,8 @@
     <value>2</value>
   </data>
   <data name="ChkFileSizeOriginal.Text" xml:space="preserve">
-    <value>{0 bytes}</value>
+    <value>{Bytes}</value>
+    <comment>@Invariant</comment>
   </data>
   <data name="&gt;&gt;ChkFileSizeOriginal.Name" xml:space="preserve">
     <value>ChkFileSizeOriginal</value>
@@ -277,7 +278,7 @@
     <value>1</value>
   </data>
   <data name="ChkFileDateOriginal.Text" xml:space="preserve">
-    <value>{1/1/1980 12:00 AM}</value>
+    <value>{FileDate}</value>
     <comment>@Invariant</comment>
   </data>
   <data name="&gt;&gt;ChkFileDateOriginal.Name" xml:space="preserve">
@@ -305,7 +306,7 @@
     <value>0</value>
   </data>
   <data name="ChkFilenameOriginal.Text" xml:space="preserve">
-    <value>{FILENAME}</value>
+    <value>{FileName}</value>
     <comment>@Invariant</comment>
   </data>
   <data name="&gt;&gt;ChkFilenameOriginal.Name" xml:space="preserve">
@@ -442,7 +443,8 @@
     <value>5</value>
   </data>
   <data name="ChkFileSizeNew.Text" xml:space="preserve">
-    <value>{0 bytes}</value>
+    <value>{Bytes}</value>
+    <comment>@Invariant</comment>
   </data>
   <data name="&gt;&gt;ChkFileSizeNew.Name" xml:space="preserve">
     <value>ChkFileSizeNew</value>
@@ -469,7 +471,7 @@
     <value>4</value>
   </data>
   <data name="ChkFileDateNew.Text" xml:space="preserve">
-    <value>{1/1/1980 12:00 AM}</value>
+    <value>{FileDate}</value>
     <comment>@Invariant</comment>
   </data>
   <data name="&gt;&gt;ChkFileDateNew.Name" xml:space="preserve">
@@ -587,7 +589,7 @@
     <value>5</value>
   </data>
   <data name="LblFileName.Text" xml:space="preserve">
-    <value>{FILENAME}</value>
+    <value>{FileName}</value>
     <comment>@Invariant</comment>
   </data>
   <data name="&gt;&gt;LblFileName.Name" xml:space="preserve">
@@ -675,7 +677,7 @@
     <value>8</value>
   </data>
   <data name="LblFileDate.Text" xml:space="preserve">
-    <value>{1/1/1980 12:00 AM}</value>
+    <value>{FileDate}</value>
     <comment>@Invariant</comment>
   </data>
   <data name="&gt;&gt;LblFileDate.Name" xml:space="preserve">
@@ -763,7 +765,8 @@
     <value>11</value>
   </data>
   <data name="LblFileSize.Text" xml:space="preserve">
-    <value>{0 bytes}</value>
+    <value>{Bytes}</value>
+    <comment>@Invariant</comment>
   </data>
   <data name="&gt;&gt;LblFileSize.Name" xml:space="preserve">
     <value>LblFileSize</value>

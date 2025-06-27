@@ -126,9 +126,6 @@
   <data name="BtnBad.Text" xml:space="preserve">
     <value>Défectueux</value>
   </data>
-  <data name="$this.Text" xml:space="preserve">
-    <value>Table d’allocation de fichiers</value>
-  </data>
   <data name="BtnFree.Text" xml:space="preserve">
     <value>Libre</value>
   </data>
@@ -143,8 +140,5 @@
   </data>
   <data name="ChkSync.Text" xml:space="preserve">
     <value>Synchroniser les FAT</value>
-  </data>
-  <data name="LblValid.Text" xml:space="preserve">
-    <value>Clusters valides:</value>
   </data>
 </root>

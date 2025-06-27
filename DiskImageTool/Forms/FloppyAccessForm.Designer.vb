@@ -61,7 +61,7 @@ Partial Class FloppyAccessForm
         Me.TableSide0.ColumnStyles.Add(New System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 19.0!))
         Me.TableSide0.ColumnStyles.Add(New System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 19.0!))
         Me.TableSide0.ColumnStyles.Add(New System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 19.0!))
-        Me.TableSide0.ColumnStyles.Add(New System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 22.0!))
+        Me.TableSide0.ColumnStyles.Add(New System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 24.0!))
         Me.TableSide0.Location = New System.Drawing.Point(17, 21)
         Me.TableSide0.Margin = New System.Windows.Forms.Padding(0)
         Me.TableSide0.Name = "TableSide0"
@@ -75,7 +75,7 @@ Partial Class FloppyAccessForm
         Me.TableSide0.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 21.0!))
         Me.TableSide0.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 21.0!))
         Me.TableSide0.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 21.0!))
-        Me.TableSide0.Size = New System.Drawing.Size(204, 177)
+        Me.TableSide0.Size = New System.Drawing.Size(206, 177)
         Me.TableSide0.TabIndex = 1
         '
         'TableSide0Outer
@@ -111,7 +111,7 @@ Partial Class FloppyAccessForm
         Me.TableSide0Outer.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 22.0!))
         Me.TableSide0Outer.RowStyles.Add(New System.Windows.Forms.RowStyle())
         Me.TableSide0Outer.RowStyles.Add(New System.Windows.Forms.RowStyle())
-        Me.TableSide0Outer.Size = New System.Drawing.Size(221, 221)
+        Me.TableSide0Outer.Size = New System.Drawing.Size(223, 221)
         Me.TableSide0Outer.TabIndex = 3
         '
         'Label2
@@ -124,7 +124,7 @@ Partial Class FloppyAccessForm
         Me.Label2.Location = New System.Drawing.Point(20, 208)
         Me.Label2.Margin = New System.Windows.Forms.Padding(3, 10, 3, 0)
         Me.Label2.Name = "Label2"
-        Me.Label2.Size = New System.Drawing.Size(198, 13)
+        Me.Label2.Size = New System.Drawing.Size(200, 13)
         Me.Label2.TabIndex = 5
         Me.Label2.Text = "Side 0"
         Me.Label2.TextAlign = System.Drawing.ContentAlignment.MiddleCenter
@@ -162,7 +162,7 @@ Partial Class FloppyAccessForm
         Me.TableSide1Outer.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 22.0!))
         Me.TableSide1Outer.RowStyles.Add(New System.Windows.Forms.RowStyle())
         Me.TableSide1Outer.RowStyles.Add(New System.Windows.Forms.RowStyle())
-        Me.TableSide1Outer.Size = New System.Drawing.Size(221, 221)
+        Me.TableSide1Outer.Size = New System.Drawing.Size(223, 221)
         Me.TableSide1Outer.TabIndex = 4
         '
         'Label3
@@ -175,7 +175,7 @@ Partial Class FloppyAccessForm
         Me.Label3.Location = New System.Drawing.Point(20, 208)
         Me.Label3.Margin = New System.Windows.Forms.Padding(3, 10, 3, 0)
         Me.Label3.Name = "Label3"
-        Me.Label3.Size = New System.Drawing.Size(198, 13)
+        Me.Label3.Size = New System.Drawing.Size(200, 13)
         Me.Label3.TabIndex = 6
         Me.Label3.Text = "Side 1"
         Me.Label3.TextAlign = System.Drawing.ContentAlignment.MiddleCenter
@@ -196,7 +196,7 @@ Partial Class FloppyAccessForm
         Me.TableSide1.ColumnStyles.Add(New System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 19.0!))
         Me.TableSide1.ColumnStyles.Add(New System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 19.0!))
         Me.TableSide1.ColumnStyles.Add(New System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 19.0!))
-        Me.TableSide1.ColumnStyles.Add(New System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 22.0!))
+        Me.TableSide1.ColumnStyles.Add(New System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 24.0!))
         Me.TableSide1.Location = New System.Drawing.Point(17, 21)
         Me.TableSide1.Margin = New System.Windows.Forms.Padding(0)
         Me.TableSide1.Name = "TableSide1"
@@ -210,7 +210,7 @@ Partial Class FloppyAccessForm
         Me.TableSide1.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 21.0!))
         Me.TableSide1.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 21.0!))
         Me.TableSide1.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 21.0!))
-        Me.TableSide1.Size = New System.Drawing.Size(204, 177)
+        Me.TableSide1.Size = New System.Drawing.Size(206, 177)
         Me.TableSide1.TabIndex = 1
         '
         'StatusStrip1
@@ -228,29 +228,29 @@ Partial Class FloppyAccessForm
         Me.StatusType.AutoSize = False
         Me.StatusType.Name = "StatusType"
         Me.StatusType.Size = New System.Drawing.Size(66, 17)
-        Me.StatusType.Text = "Reading"
+        Me.StatusType.Text = "{Status}"
         Me.StatusType.TextAlign = System.Drawing.ContentAlignment.MiddleLeft
         '
         'StatusTrack
         '
         Me.StatusTrack.Name = "StatusTrack"
-        Me.StatusTrack.Size = New System.Drawing.Size(43, 17)
-        Me.StatusTrack.Text = "Track 0"
+        Me.StatusTrack.Size = New System.Drawing.Size(42, 17)
+        Me.StatusTrack.Text = "{Track}"
         Me.StatusTrack.TextAlign = System.Drawing.ContentAlignment.MiddleLeft
         '
         'StatusSide
         '
         Me.StatusSide.Name = "StatusSide"
-        Me.StatusSide.Size = New System.Drawing.Size(313, 17)
+        Me.StatusSide.Size = New System.Drawing.Size(315, 17)
         Me.StatusSide.Spring = True
-        Me.StatusSide.Text = "Side 0"
+        Me.StatusSide.Text = "{Side}"
         Me.StatusSide.TextAlign = System.Drawing.ContentAlignment.MiddleLeft
         '
         'StatusBadSectors
         '
         Me.StatusBadSectors.Name = "StatusBadSectors"
-        Me.StatusBadSectors.Size = New System.Drawing.Size(77, 17)
-        Me.StatusBadSectors.Text = "0 Bad Sectors"
+        Me.StatusBadSectors.Size = New System.Drawing.Size(76, 17)
+        Me.StatusBadSectors.Text = "{Bad Sectors}"
         Me.StatusBadSectors.TextAlign = System.Drawing.ContentAlignment.MiddleRight
         '
         'btnAbort
@@ -280,7 +280,7 @@ Partial Class FloppyAccessForm
         Me.ShowIcon = False
         Me.ShowInTaskbar = False
         Me.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent
-        Me.Text = "FloppyAccessForm"
+        Me.Text = "{Caption}"
         Me.TableSide0Outer.ResumeLayout(False)
         Me.TableSide0Outer.PerformLayout()
         Me.TableSide1Outer.ResumeLayout(False)

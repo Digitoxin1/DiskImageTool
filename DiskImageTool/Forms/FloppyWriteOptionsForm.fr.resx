@@ -129,12 +129,6 @@
   <data name="$this.Text" xml:space="preserve">
     <value>Options d’écriture sur disquette</value>
   </data>
-  <data name="lblImageType.Text" xml:space="preserve">
-    <value>Disquette</value>
-  </data>
-  <data name="lblDiskFormat.Text" xml:space="preserve">
-    <value>Disquette</value>
-  </data>
   <data name="CheckFormat.Text" xml:space="preserve">
     <value>Formater la disquette</value>
   </data>

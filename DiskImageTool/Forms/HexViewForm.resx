@@ -164,7 +164,7 @@
     <value>False</value>
   </metadata>
   <data name="ToolStripStatusGap.Size" type="System.Drawing.Size, System.Drawing">
-    <value>379, 19</value>
+    <value>456, 19</value>
   </data>
   <metadata name="ToolStripStatusLabel1.GenerateMember" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
     <value>False</value>
@@ -415,7 +415,8 @@
     <value>60, 22</value>
   </data>
   <data name="ToolStripBtnSelectSector.Text" xml:space="preserve">
-    <value>Sector</value>
+    <value>{Sector}</value>
+    <comment>@Invariant</comment>
   </data>
   <assembly alias="System.Windows.Forms" name="System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
   <data name="CmbGroups.FlatStyle" type="System.Windows.Forms.FlatStyle, System.Windows.Forms">
@@ -433,12 +434,12 @@
   <data name="ToolStripBtnSelectTrack.Image" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
     <value>
         iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8
-        YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAE8SURBVDhPrZIvT8NQFMUvEoaFqv5NVQ1TwNcgKYJ1D0mC
-        4DOQMAxym+I7EEgw0ILGsaFQKCZxQIJjnNuerVnaDbNfcrKe8+47ey+tLJ0gCDY9zzv3fX8IfVMDqKNr
-        HKsHQ/uu637gt4uSHcuyGip9RtbjWszxWbh5hOEtRhWw3nQc571SokfT9kWbJ2iJzoZhuMFIhHfu0v4L
-        CvqYP6PNj/8CbdOWmOxZ2mmDbgoKdjE/oM2DryiK1mlLTDYWk16JjFeY5OisbduftCJq5hdA7eyUST04
-        jr7zuisUBeb6V5LsgGkVbO5APdqSaQG0d/Mjh/fVP1EmrxFqMirQjUn6hisMoWN4w5UqOEGMgtFMicku
-        JX5aldbdqxzdrjGdD0v0JH1GBSa7gFp0i9EvDEXlR6Ikj5GYhxO6ZSLyB4BGZh9vLGANAAAAAElFTkSu
+        YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAE8SURBVDhPrZIvT8NQFMUvEoaFqv5NVQ1TwLfAFMG6hyRB
+        8BlIGAa5TfEdlpBgoAWNY0OhUEzigATHOLc9W7O0G2a/5GQ959139l5aWTlBEGx7nnfp+/4I+qaGUEfX
+        OFYPhg5d1/3Abxcle5ZlNVT6jKzHtZjj83DzGMM7jCpgvek4znulRI+m7cs2T9ESnQ3DcIuRCO/cpf0X
+        FPQxf0GbH/8F2qUtMdmztNMG3QwU7GN+SJsHX1EUbdKWmGwiJh2ITNaY5OisbduftCJqFhdA7eycST04
+        jr7zuisUBWbwK0l2xLQKNnegHm3JrAA6uPmR4/vqnyjT1wg1GRXoxiR9wxVG0Cm84UoVnCBGwXiuxGTX
+        Ej+tS+vuVU5uN5guhiV6kj6jApNdQS265egXhqLyI1GSx0jMwxndKhH5A3pOZhvhfeqtAAAAAElFTkSu
         QmCC
 </value>
   </data>
@@ -449,7 +450,8 @@
     <value>54, 22</value>
   </data>
   <data name="ToolStripBtnSelectTrack.Text" xml:space="preserve">
-    <value>Track</value>
+    <value>{Track}</value>
+    <comment>@Invariant</comment>
   </data>
   <data name="ToolStripBtnSelectTrack.ToolTipText" xml:space="preserve">
     <value>Track</value>
@@ -466,10 +468,6 @@
   <assembly alias="mscorlib" name="mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
   <data name="ToolStripMain.TabIndex" type="System.Int32, mscorlib">
     <value>0</value>
-  </data>
-  <data name="ToolStripMain.Text" xml:space="preserve">
-    <value>ToolStrip1</value>
-    <comment>@Invariant</comment>
   </data>
   <data name="&gt;&gt;ToolStripMain.Name" xml:space="preserve">
     <value>ToolStripMain</value>
@@ -672,7 +670,8 @@
     <value>258, 22</value>
   </data>
   <data name="BtnSelectSector.Text" xml:space="preserve">
-    <value>Select &amp;Sector</value>
+    <value>{SelectSector}</value>
+    <comment>@Invariant</comment>
   </data>
   <data name="BtnSelectTrack.Image" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
     <value>
@@ -692,7 +691,8 @@
     <value>258, 22</value>
   </data>
   <data name="BtnSelectTrack.Text" xml:space="preserve">
-    <value>Select T&amp;rack</value>
+    <value>{SelectTrack}</value>
+    <comment>@Invariant</comment>
   </data>
   <data name="BtnSelectAll.Image" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
     <value>
@@ -730,82 +730,91 @@
     <value>True</value>
   </metadata>
   <data name="ToolStripStatusOffset.Size" type="System.Drawing.Size, System.Drawing">
-    <value>70, 19</value>
+    <value>51, 19</value>
   </data>
   <data name="ToolStripStatusOffset.Text" xml:space="preserve">
-    <value>Offset(h): 0</value>
+    <value>{Offset}</value>
+    <comment>@Invariant</comment>
   </data>
   <data name="ToolStripStatusOffset.TextAlign" type="System.Drawing.ContentAlignment, System.Drawing">
     <value>MiddleLeft</value>
   </data>
   <data name="ToolStripStatusBlock.Size" type="System.Drawing.Size, System.Drawing">
-    <value>78, 19</value>
+    <value>48, 19</value>
   </data>
   <data name="ToolStripStatusBlock.Text" xml:space="preserve">
-    <value>Block(h): 0-0</value>
+    <value>{Block}</value>
+    <comment>@Invariant</comment>
   </data>
   <data name="ToolStripStatusBlock.TextAlign" type="System.Drawing.ContentAlignment, System.Drawing">
     <value>MiddleLeft</value>
   </data>
   <data name="ToolStripStatusLength.Size" type="System.Drawing.Size, System.Drawing">
-    <value>75, 19</value>
+    <value>56, 19</value>
   </data>
   <data name="ToolStripStatusLength.Text" xml:space="preserve">
-    <value>Length(h): 0</value>
+    <value>{Length}</value>
+    <comment>@Invariant</comment>
   </data>
   <data name="ToolStripStatusLength.TextAlign" type="System.Drawing.ContentAlignment, System.Drawing">
     <value>MiddleLeft</value>
   </data>
   <data name="ToolStripStatusCluster.Size" type="System.Drawing.Size, System.Drawing">
-    <value>57, 19</value>
+    <value>56, 19</value>
   </data>
   <data name="ToolStripStatusCluster.Text" xml:space="preserve">
-    <value>Cluster 0</value>
+    <value>{Cluster}</value>
+    <comment>@Invariant</comment>
   </data>
   <data name="ToolStripStatusCluster.TextAlign" type="System.Drawing.ContentAlignment, System.Drawing">
     <value>MiddleRight</value>
   </data>
   <data name="ToolStripStatusSector.Size" type="System.Drawing.Size, System.Drawing">
-    <value>53, 19</value>
+    <value>52, 19</value>
   </data>
   <data name="ToolStripStatusSector.Text" xml:space="preserve">
-    <value>Sector 0</value>
+    <value>{Sector}</value>
+    <comment>@Invariant</comment>
   </data>
   <data name="ToolStripStatusSector.TextAlign" type="System.Drawing.ContentAlignment, System.Drawing">
     <value>MiddleRight</value>
   </data>
   <data name="ToolStripStatusTrack.Size" type="System.Drawing.Size, System.Drawing">
-    <value>47, 19</value>
+    <value>46, 19</value>
   </data>
   <data name="ToolStripStatusTrack.Text" xml:space="preserve">
-    <value>Track 0</value>
+    <value>{Track}</value>
+    <comment>@Invariant</comment>
   </data>
   <data name="ToolStripStatusTrack.TextAlign" type="System.Drawing.ContentAlignment, System.Drawing">
     <value>MiddleRight</value>
   </data>
   <data name="ToolStripStatusSide.Size" type="System.Drawing.Size, System.Drawing">
-    <value>42, 19</value>
+    <value>41, 19</value>
   </data>
   <data name="ToolStripStatusSide.Text" xml:space="preserve">
-    <value>Side 0</value>
+    <value>{Side}</value>
+    <comment>@Invariant</comment>
   </data>
   <data name="ToolStripStatusSide.TextAlign" type="System.Drawing.ContentAlignment, System.Drawing">
     <value>MiddleRight</value>
   </data>
   <data name="ToolStripStatusTrackSector.Size" type="System.Drawing.Size, System.Drawing">
-    <value>66, 19</value>
+    <value>62, 19</value>
   </data>
   <data name="ToolStripStatusTrackSector.Text" xml:space="preserve">
-    <value>Sector Id 0</value>
+    <value>{SectorId}</value>
+    <comment>@Invariant</comment>
   </data>
   <data name="ToolStripStatusTrackSector.TextAlign" type="System.Drawing.ContentAlignment, System.Drawing">
     <value>MiddleRight</value>
   </data>
   <data name="ToolStripStatusBytes.Size" type="System.Drawing.Size, System.Drawing">
-    <value>48, 19</value>
+    <value>47, 19</value>
   </data>
   <data name="ToolStripStatusBytes.Text" xml:space="preserve">
-    <value>0 Bytes</value>
+    <value>{Bytes}</value>
+    <comment>@Invariant</comment>
   </data>
   <data name="ToolStripStatusBytes.TextAlign" type="System.Drawing.ContentAlignment, System.Drawing">
     <value>MiddleRight</value>
@@ -820,7 +829,7 @@
     <value>5</value>
   </data>
   <data name="StatusStrip1.Text" xml:space="preserve">
-    <value>StatusStrip1</value>
+    <value></value>
     <comment>@Invariant</comment>
   </data>
   <data name="&gt;&gt;StatusStrip1.Name" xml:space="preserve">
@@ -950,7 +959,8 @@
     <value>CenterParent</value>
   </data>
   <data name="$this.Text" xml:space="preserve">
-    <value>Hex Viewer</value>
+    <value>{Caption}</value>
+    <comment>@Invariant</comment>
   </data>
   <data name="&gt;&gt;ToolStripSeparator1.Name" xml:space="preserve">
     <value>ToolStripSeparator1</value>

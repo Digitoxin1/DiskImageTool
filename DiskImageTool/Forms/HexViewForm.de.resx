@@ -156,14 +156,8 @@
   <data name="ToolStripBtnSelectAll.Text" xml:space="preserve">
     <value>Alles auswählen</value>
   </data>
-  <data name="ToolStripBtnSelectSector.Text" xml:space="preserve">
-    <value>Sektor</value>
-  </data>
   <data name="LblGroups.Text" xml:space="preserve">
     <value>Anzeige</value>
-  </data>
-  <data name="ToolStripBtnSelectTrack.Text" xml:space="preserve">
-    <value>Spur</value>
   </data>
   <data name="ToolStripBtnSelectTrack.ToolTipText" xml:space="preserve">
     <value>Spur</value>
@@ -201,41 +195,8 @@
   <data name="BtnFill.Text" xml:space="preserve">
     <value>Auswahl füllen</value>
   </data>
-  <data name="BtnSelectSector.Text" xml:space="preserve">
-    <value>&amp;Sektor auswählen</value>
-  </data>
-  <data name="BtnSelectTrack.Text" xml:space="preserve">
-    <value>Spu&amp;r auswählen</value>
-  </data>
   <data name="BtnSelectAll.Text" xml:space="preserve">
     <value>&amp;Alles auswählen</value>
-  </data>
-  <data name="ToolStripStatusOffset.Text" xml:space="preserve">
-    <value>Offset(h): 0</value>
-  </data>
-  <data name="ToolStripStatusBlock.Text" xml:space="preserve">
-    <value>Block(h): 0–0</value>
-  </data>
-  <data name="ToolStripStatusLength.Text" xml:space="preserve">
-    <value>Länge(h): 0</value>
-  </data>
-  <data name="ToolStripStatusCluster.Text" xml:space="preserve">
-    <value>Cluster 0</value>
-  </data>
-  <data name="ToolStripStatusSector.Text" xml:space="preserve">
-    <value>Sektor 0</value>
-  </data>
-  <data name="ToolStripStatusTrack.Text" xml:space="preserve">
-    <value>Spur 0</value>
-  </data>
-  <data name="ToolStripStatusSide.Text" xml:space="preserve">
-    <value>Seite 0</value>
-  </data>
-  <data name="ToolStripStatusTrackSector.Text" xml:space="preserve">
-    <value>Sektor-ID 0</value>
-  </data>
-  <data name="ToolStripStatusBytes.Text" xml:space="preserve">
-    <value>0 Bytes</value>
   </data>
   <data name="HexBox1.BuiltInContextMenu.CopyMenuItemText" xml:space="preserve">
     <value>Text kopieren</value>
@@ -245,8 +206,5 @@
   </data>
   <data name="BtnCopyValue.Text" xml:space="preserve">
     <value>&amp;Wert kopieren</value>
-  </data>
-  <data name="$this.Text" xml:space="preserve">
-    <value>Hex-Viewer</value>
   </data>
 </root>

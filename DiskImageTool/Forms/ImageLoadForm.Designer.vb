@@ -36,7 +36,7 @@ Partial Class ImageLoadForm
         Me.LblScanning.Name = "LblScanning"
         Me.LblScanning.Size = New System.Drawing.Size(168, 16)
         Me.LblScanning.TabIndex = 0
-        Me.LblScanning.Text = "Scanning ... 0 files"
+        Me.LblScanning.Text = "{Scanning}"
         Me.LblScanning.TextAlign = System.Drawing.ContentAlignment.TopCenter
         '
         'BackgroundWorker1
@@ -53,7 +53,7 @@ Partial Class ImageLoadForm
         Me.lblScanning2.Name = "lblScanning2"
         Me.lblScanning2.Size = New System.Drawing.Size(168, 16)
         Me.lblScanning2.TabIndex = 1
-        Me.lblScanning2.Text = "0 images loaded"
+        Me.lblScanning2.Text = "{ImagesLoaded}"
         Me.lblScanning2.TextAlign = System.Drawing.ContentAlignment.TopCenter
         '
         'ImageLoadForm
@@ -70,7 +70,7 @@ Partial Class ImageLoadForm
         Me.ShowIcon = False
         Me.ShowInTaskbar = False
         Me.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent
-        Me.Text = "Scan Files"
+        Me.Text = "{Caption}"
         Me.ResumeLayout(False)
 
     End Sub

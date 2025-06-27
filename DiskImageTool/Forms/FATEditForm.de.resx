@@ -138,13 +138,7 @@
   <data name="BtnReserved.Text" xml:space="preserve">
     <value>Reserviert</value>
   </data>
-  <data name="LblValid.Text" xml:space="preserve">
-    <value>Gültige Cluster:</value>
-  </data>
   <data name="TxtMediaDescriptor.Text" xml:space="preserve">
     <value>Medienkennung</value>
-  </data>
-  <data name="$this.Text" xml:space="preserve">
-    <value>Dateizuordnungstabelle</value>
   </data>
 </root>

@@ -370,7 +370,8 @@
     <value>CenterParent</value>
   </data>
   <data name="$this.Text" xml:space="preserve">
-    <value>Delete File</value>
+    <value>{Caption}</value>
+    <comment>@Invariant</comment>
   </data>
   <data name="&gt;&gt;$this.Name" xml:space="preserve">
     <value>DeleteFileForm</value>

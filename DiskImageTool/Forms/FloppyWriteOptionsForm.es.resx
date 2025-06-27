@@ -129,12 +129,6 @@
   <data name="$this.Text" xml:space="preserve">
     <value>Opciones de escritura del disco</value>
   </data>
-  <data name="lblDiskFormat.Text" xml:space="preserve">
-    <value>Disquete</value>
-  </data>
-  <data name="lblImageType.Text" xml:space="preserve">
-    <value>Disquete</value>
-  </data>
   <data name="CheckFormat.Text" xml:space="preserve">
     <value>Formatear disco</value>
   </data>

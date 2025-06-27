@@ -123,9 +123,6 @@
   <data name="BtnOK.Text" xml:space="preserve">
     <value>&amp;OUI</value>
   </data>
-  <data name="$this.Text" xml:space="preserve">
-    <value>Supprimer le fichier</value>
-  </data>
   <data name="GroupBox1.Text" xml:space="preserve">
     <value>Remplir les secteurs avec</value>
   </data>

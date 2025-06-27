@@ -88,7 +88,7 @@ Partial Class AboutBox
         Me.LabelProductName.Name = "LabelProductName"
         Me.LabelProductName.Size = New System.Drawing.Size(251, 17)
         Me.LabelProductName.TabIndex = 0
-        Me.LabelProductName.Text = "Product Name"
+        Me.LabelProductName.Text = "{ProductName}"
         Me.LabelProductName.TextAlign = System.Drawing.ContentAlignment.MiddleLeft
         '
         'LabelVersion
@@ -100,7 +100,7 @@ Partial Class AboutBox
         Me.LabelVersion.Name = "LabelVersion"
         Me.LabelVersion.Size = New System.Drawing.Size(251, 17)
         Me.LabelVersion.TabIndex = 0
-        Me.LabelVersion.Text = "Version"
+        Me.LabelVersion.Text = "{Version}"
         Me.LabelVersion.TextAlign = System.Drawing.ContentAlignment.MiddleLeft
         '
         'LabelURL
@@ -113,7 +113,7 @@ Partial Class AboutBox
         Me.LabelURL.Size = New System.Drawing.Size(251, 17)
         Me.LabelURL.TabIndex = 0
         Me.LabelURL.TabStop = True
-        Me.LabelURL.Text = "Project Page"
+        Me.LabelURL.Text = "{ProjectPage}"
         Me.LabelURL.TextAlign = System.Drawing.ContentAlignment.MiddleLeft
         '
         'TextBoxDescription
@@ -155,7 +155,7 @@ Partial Class AboutBox
         Me.Padding = New System.Windows.Forms.Padding(9)
         Me.ShowInTaskbar = False
         Me.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent
-        Me.Text = "AboutBox1"
+        Me.Text = "{Caption}"
         Me.TableLayoutPanel.ResumeLayout(False)
         Me.TableLayoutPanel.PerformLayout()
         CType(Me.LogoPictureBox, System.ComponentModel.ISupportInitialize).EndInit()

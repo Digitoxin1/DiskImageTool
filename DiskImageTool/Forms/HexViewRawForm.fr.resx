@@ -120,20 +120,11 @@
   <data name="BtnCopyValue.Text" xml:space="preserve">
     <value>&amp;Copier la valeur</value>
   </data>
-  <data name="ToolStripStatusBits.Text" xml:space="preserve">
-    <value>0 Bits</value>
-  </data>
-  <data name="ToolStripStatusBytes.Text" xml:space="preserve">
-    <value>0 Octets</value>
-  </data>
   <data name="BtnAdjustOffset.Text" xml:space="preserve">
     <value>Ajuster le &amp;décalage de bit</value>
   </data>
   <data name="ToolStripBtnAdjustOffset.Text" xml:space="preserve">
     <value>Ajuster le décalage de bit</value>
-  </data>
-  <data name="ToolStripStatusBlock.Text" xml:space="preserve">
-    <value>Bloc(h): 0-0</value>
   </data>
   <data name="ToolStripStatusChecksumText.Text" xml:space="preserve">
     <value>Somme de contrôle:</value>
@@ -177,23 +168,11 @@
   <data name="ToolStripBtnFindNext.Text" xml:space="preserve">
     <value>Rechercher suivant</value>
   </data>
-  <data name="$this.Text" xml:space="preserve">
-    <value>Visionneuse Hexa</value>
-  </data>
-  <data name="ToolStripStatusLength.Text" xml:space="preserve">
-    <value>Longueur(h): 0</value>
-  </data>
-  <data name="ToolStripStatusOffset.Text" xml:space="preserve">
-    <value>Décalage(h): 0</value>
-  </data>
   <data name="ToolStripBtnSelectRegion.Text" xml:space="preserve">
     <value>Région</value>
   </data>
   <data name="ToolStripBtnSelectSector.Text" xml:space="preserve">
     <value>Secteur</value>
-  </data>
-  <data name="ToolStripStatusTrackSector.Text" xml:space="preserve">
-    <value>ID de secteur 0</value>
   </data>
   <data name="BtnSelectAll.Text" xml:space="preserve">
     <value>Tout &amp;sélectionner</value>
@@ -221,17 +200,5 @@
   </data>
   <data name="ToolStripBtnSelectSector.ToolTipText" xml:space="preserve">
     <value>Sélectionner le secteur</value>
-  </data>
-  <data name="ToolStripStatusSide.Text" xml:space="preserve">
-    <value>Face 0</value>
-  </data>
-  <data name="ToolStripStatusTrackSize.Text" xml:space="preserve">
-    <value>Taille 0</value>
-  </data>
-  <data name="ToolStripStatusTrack.Text" xml:space="preserve">
-    <value>Piste 0</value>
-  </data>
-  <data name="ToolStripStatusChecksum.Text" xml:space="preserve">
-    <value>Valide</value>
   </data>
 </root>

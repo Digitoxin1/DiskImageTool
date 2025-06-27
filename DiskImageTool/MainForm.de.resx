@@ -180,9 +180,6 @@
   <data name="MenuEditFileProperties.Text" xml:space="preserve">
     <value>Datei&amp;eigenschaften</value>
   </data>
-  <data name="MenuEditExportFile.Text" xml:space="preserve">
-    <value>Datei &amp;exportieren</value>
-  </data>
   <data name="MenuEditReplaceFile.Text" xml:space="preserve">
     <value>Datei &amp;ersetzen</value>
   </data>
@@ -204,9 +201,6 @@
   <data name="MenuHexFAT.Text" xml:space="preserve">
     <value>Dateizu&amp;ordnungstabelle</value>
   </data>
-  <data name="MenuHexDirectory.Text" xml:space="preserve">
-    <value>Stamm&amp;verzeichnis</value>
-  </data>
   <data name="MenuHexFreeClusters.Text" xml:space="preserve">
     <value>Freie &amp;Cluster mit Daten</value>
   </data>
@@ -224,9 +218,6 @@
   </data>
   <data name="MenuHexDisk.Text" xml:space="preserve">
     <value>Gesamte &amp;Diskette</value>
-  </data>
-  <data name="MenuHexFile.Text" xml:space="preserve">
-    <value>&amp;Datei</value>
   </data>
   <data name="MainMenuView.Text" xml:space="preserve">
     <value>&amp;Hex</value>
@@ -248,9 +239,6 @@
   </data>
   <data name="MenuToolsClearReservedBytes.Text" xml:space="preserve">
     <value>&amp;Reservierte Bytes löschen</value>
-  </data>
-  <data name="MenuToolsFixImageSize.Text" xml:space="preserve">
-    <value>&amp;Abbild kürzen</value>
   </data>
   <data name="MenuToolsTruncateImage.Text" xml:space="preserve">
     <value>&amp;Abbild kürzen</value>
@@ -305,9 +293,6 @@
   </data>
   <data name="MenuFiltersScanNew.Text" xml:space="preserve">
     <value>&amp;Neue Abbilder scannen</value>
-  </data>
-  <data name="MenuFiltersScan.Text" xml:space="preserve">
-    <value>&amp;Abbilder scannen</value>
   </data>
   <data name="MenuFiltersClear.Text" xml:space="preserve">
     <value>Filter löschen</value>
@@ -366,44 +351,14 @@
   <data name="ToolStripFileProperties.Text" xml:space="preserve">
     <value>Dateieigenschaften</value>
   </data>
-  <data name="ToolStripExportFile.Text" xml:space="preserve">
-    <value>Datei exportieren</value>
-  </data>
   <data name="ToolStripUndo.Text" xml:space="preserve">
     <value>Rückgängig</value>
   </data>
   <data name="ToolStripRedo.Text" xml:space="preserve">
     <value>Wiederholen</value>
   </data>
-  <data name="ToolStripViewFileText.Text" xml:space="preserve">
-    <value>Datei als Text anzeigen</value>
-  </data>
-  <data name="ToolStripViewFile.Text" xml:space="preserve">
-    <value>Datei anzeigen</value>
-  </data>
-  <data name="ToolStripStatusReadOnly.Text" xml:space="preserve">
-    <value>Schreibgeschützt</value>
-  </data>
   <data name="ToolStripStatusModified.Text" xml:space="preserve">
     <value>Geändert</value>
-  </data>
-  <data name="ToolStripFileName.Text" xml:space="preserve">
-    <value>Dateiname</value>
-  </data>
-  <data name="ToolStripFileCount.Text" xml:space="preserve">
-    <value>0 Dateien</value>
-  </data>
-  <data name="ToolStripFileSector.Text" xml:space="preserve">
-    <value>Sektor 0</value>
-  </data>
-  <data name="ToolStripFileTrack.Text" xml:space="preserve">
-    <value>Spur 0.0</value>
-  </data>
-  <data name="ToolStripImageCount.Text" xml:space="preserve">
-    <value>0 Abbilder</value>
-  </data>
-  <data name="ToolStripModified.Text" xml:space="preserve">
-    <value>0 Abbilder geändert</value>
   </data>
   <data name="LabelDropMessage.Text" xml:space="preserve">
     <value>Diskettenabbilder hierher ziehen (Drag &amp;&amp; Drop)</value>
@@ -423,20 +378,8 @@
   <data name="MenuFileFileProperties.Text" xml:space="preserve">
     <value>Datei&amp;eigenschaften bearbeiten</value>
   </data>
-  <data name="MenuFileExportFile.Text" xml:space="preserve">
-    <value>Datei &amp;exportieren</value>
-  </data>
   <data name="MenuFileReplaceFile.Text" xml:space="preserve">
     <value>Datei &amp;ersetzen</value>
-  </data>
-  <data name="MenuFileViewDirectory.Text" xml:space="preserve">
-    <value>&amp;Übergeordnetes Verzeichnis anzeigen</value>
-  </data>
-  <data name="MenuFileViewFile.Text" xml:space="preserve">
-    <value>&amp;Datei anzeigen</value>
-  </data>
-  <data name="MenuFileViewFileText.Text" xml:space="preserve">
-    <value>Datei als &amp;Text anzeigen</value>
   </data>
   <data name="MenuFileViewCrosslinked.Text" xml:space="preserve">
     <value>&amp;Verknüpfte Dateien anzeigen</value>
@@ -453,14 +396,8 @@
   <data name="MenuFileNewDirectoryHere.Text" xml:space="preserve">
     <value>&amp;Neues Verzeichnis hier</value>
   </data>
-  <data name="MenuFileDeleteFile.Text" xml:space="preserve">
-    <value>&amp;Datei löschen</value>
-  </data>
   <data name="MenuFileUnDeleteFile.Text" xml:space="preserve">
     <value>Datei &amp;wiederherstellen</value>
-  </data>
-  <data name="MenuFileRemove.Text" xml:space="preserve">
-    <value>&amp;Gelöschte Datei entfernen</value>
   </data>
   <data name="MenuFileFixSize.Text" xml:space="preserve">
     <value>Dateigröße &amp;korrigieren</value>

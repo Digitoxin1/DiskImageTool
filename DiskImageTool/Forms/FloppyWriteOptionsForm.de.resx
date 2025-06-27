@@ -138,12 +138,6 @@
   <data name="GroupBox1.Text" xml:space="preserve">
     <value>Optionen</value>
   </data>
-  <data name="lblImageType.Text" xml:space="preserve">
-    <value>Diskette</value>
-  </data>
-  <data name="lblDiskFormat.Text" xml:space="preserve">
-    <value>Diskette</value>
-  </data>
   <data name="$this.Text" xml:space="preserve">
     <value>Schreiboptionen für Diskette</value>
   </data>

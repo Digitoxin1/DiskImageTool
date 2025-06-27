@@ -129,15 +129,6 @@
   <data name="BtnUndo.Text" xml:space="preserve">
     <value>&amp;Annuler</value>
   </data>
-  <data name="ToolStripStatusBytes.Text" xml:space="preserve">
-    <value>0 Octets</value>
-  </data>
-  <data name="ToolStripStatusBlock.Text" xml:space="preserve">
-    <value>Bloc(h): 0-0</value>
-  </data>
-  <data name="ToolStripStatusCluster.Text" xml:space="preserve">
-    <value>Cluster 0</value>
-  </data>
   <data name="ToolStripBtnCommit.Text" xml:space="preserve">
     <value>Valider</value>
   </data>
@@ -195,35 +186,14 @@
   <data name="ToolStripBtnFindNext.Text" xml:space="preserve">
     <value>Rechercher suivant</value>
   </data>
-  <data name="$this.Text" xml:space="preserve">
-    <value>Visionneuse Hexa</value>
-  </data>
-  <data name="ToolStripStatusLength.Text" xml:space="preserve">
-    <value>Longueur(h): 0</value>
-  </data>
-  <data name="ToolStripStatusOffset.Text" xml:space="preserve">
-    <value>Décalage(h): 0</value>
-  </data>
   <data name="ToolStripBtnPaste.Text" xml:space="preserve">
     <value>Coller par-dessus</value>
   </data>
   <data name="ToolStripBtnRedo.Text" xml:space="preserve">
     <value>Rétablir</value>
   </data>
-  <data name="ToolStripBtnSelectSector.Text" xml:space="preserve">
-    <value>Secteur</value>
-  </data>
-  <data name="ToolStripStatusSector.Text" xml:space="preserve">
-    <value>Secteur 0</value>
-  </data>
-  <data name="ToolStripStatusTrackSector.Text" xml:space="preserve">
-    <value>ID de secteur 0</value>
-  </data>
   <data name="BtnSelectAll.Text" xml:space="preserve">
     <value>Tout &amp;sélectionner</value>
-  </data>
-  <data name="BtnSelectSector.Text" xml:space="preserve">
-    <value>Sélectionner &amp;secteur</value>
   </data>
   <data name="ToolStripBtnSelectAll.Text" xml:space="preserve">
     <value>Tout sélectionner</value>
@@ -231,20 +201,8 @@
   <data name="HexBox1.BuiltInContextMenu.SelectAllMenuItemText" xml:space="preserve">
     <value>Tout sélectionner</value>
   </data>
-  <data name="BtnSelectTrack.Text" xml:space="preserve">
-    <value>Sélectionner la &amp;piste</value>
-  </data>
-  <data name="ToolStripStatusSide.Text" xml:space="preserve">
-    <value>Face 0</value>
-  </data>
   <data name="ToolStripBtnSelectTrack.ToolTipText" xml:space="preserve">
     <value>Piste</value>
-  </data>
-  <data name="ToolStripBtnSelectTrack.Text" xml:space="preserve">
-    <value>Piste</value>
-  </data>
-  <data name="ToolStripStatusTrack.Text" xml:space="preserve">
-    <value>Piste 0</value>
   </data>
   <data name="ToolStripBtnUndo.Text" xml:space="preserve">
     <value>Annuler</value>

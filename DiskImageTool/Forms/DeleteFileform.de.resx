@@ -129,7 +129,4 @@
   <data name="BtnCancel.Text" xml:space="preserve">
     <value>&amp;Nein</value>
   </data>
-  <data name="$this.Text" xml:space="preserve">
-    <value>Datei löschen</value>
-  </data>
 </root>

@@ -120,38 +120,8 @@
   <data name="BtnCopyValue.Text" xml:space="preserve">
     <value>&amp;Wert kopieren</value>
   </data>
-  <data name="ToolStripStatusOffset.Text" xml:space="preserve">
-    <value>Offset(h): 0</value>
-  </data>
-  <data name="ToolStripStatusBlock.Text" xml:space="preserve">
-    <value>Block(h): 0–0</value>
-  </data>
-  <data name="ToolStripStatusLength.Text" xml:space="preserve">
-    <value>Länge(h): 0</value>
-  </data>
-  <data name="ToolStripStatusTrack.Text" xml:space="preserve">
-    <value>Spur 0</value>
-  </data>
-  <data name="ToolStripStatusSide.Text" xml:space="preserve">
-    <value>Seite 0</value>
-  </data>
-  <data name="ToolStripStatusTrackSector.Text" xml:space="preserve">
-    <value>Sektor-ID 0</value>
-  </data>
-  <data name="ToolStripStatusTrackSize.Text" xml:space="preserve">
-    <value>Größe 0</value>
-  </data>
   <data name="ToolStripStatusChecksumText.Text" xml:space="preserve">
     <value>Prüfsumme:</value>
-  </data>
-  <data name="ToolStripStatusChecksum.Text" xml:space="preserve">
-    <value>Gültig</value>
-  </data>
-  <data name="ToolStripStatusBits.Text" xml:space="preserve">
-    <value>0 Bits</value>
-  </data>
-  <data name="ToolStripStatusBytes.Text" xml:space="preserve">
-    <value>0 Bytes</value>
   </data>
   <data name="BtnCopyHex.Text" xml:space="preserve">
     <value>&amp;Hex kopieren</value>
@@ -230,8 +200,5 @@
   </data>
   <data name="HexBox1.BuiltInContextMenu.SelectAllMenuItemText" xml:space="preserve">
     <value>Alles auswählen</value>
-  </data>
-  <data name="$this.Text" xml:space="preserve">
-    <value>Hex-Viewer</value>
   </data>
 </root>

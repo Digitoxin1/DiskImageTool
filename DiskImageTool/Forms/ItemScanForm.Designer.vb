@@ -33,9 +33,9 @@ Partial Class ItemScanForm
         Me.LblScanning.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.LblScanning.Location = New System.Drawing.Point(40, 25)
         Me.LblScanning.Name = "LblScanning"
-        Me.LblScanning.Size = New System.Drawing.Size(111, 16)
+        Me.LblScanning.Size = New System.Drawing.Size(63, 16)
         Me.LblScanning.TabIndex = 0
-        Me.LblScanning.Text = "Scanning ... 100%"
+        Me.LblScanning.Text = "{Caption}"
         '
         'BackgroundWorker1
         '
@@ -55,7 +55,7 @@ Partial Class ItemScanForm
         Me.ShowIcon = False
         Me.ShowInTaskbar = False
         Me.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent
-        Me.Text = "Scan Images"
+        Me.Text = "{Caption}"
         Me.ResumeLayout(False)
         Me.PerformLayout()
 

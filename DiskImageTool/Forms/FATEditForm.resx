@@ -406,7 +406,8 @@
     <value>4</value>
   </data>
   <data name="LblValid.Text" xml:space="preserve">
-    <value>Valid Clusters:</value>
+    <value>{ValidClusters}</value>
+    <comment>@Invariant</comment>
   </data>
   <data name="&gt;&gt;LblValid.Name" xml:space="preserve">
     <value>LblValid</value>
@@ -598,7 +599,8 @@
     <value>CenterParent</value>
   </data>
   <data name="$this.Text" xml:space="preserve">
-    <value>File Allocation Table</value>
+    <value>{Caption}</value>
+    <comment>@Invariant</comment>
   </data>
   <data name="&gt;&gt;$this.Name" xml:space="preserve">
     <value>FATEditForm</value>

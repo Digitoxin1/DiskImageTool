@@ -450,7 +450,8 @@
     <value>179, 22</value>
   </data>
   <data name="MenuEditExportFile.Text" xml:space="preserve">
-    <value>&amp;Export File</value>
+    <value>{ExportFile}</value>
+    <comment>@Invariant</comment>
   </data>
   <data name="MenuEditReplaceFile.Size" type="System.Drawing.Size, System.Drawing">
     <value>179, 22</value>
@@ -536,7 +537,8 @@
     <value>194, 22</value>
   </data>
   <data name="MenuHexDirectory.Text" xml:space="preserve">
-    <value>Root &amp;Directory</value>
+    <value>{RootDirectory}</value>
+    <comment>@Invariant</comment>
   </data>
   <data name="MenuHexFreeClusters.Size" type="System.Drawing.Size, System.Drawing">
     <value>194, 22</value>
@@ -581,7 +583,8 @@
     <value>194, 22</value>
   </data>
   <data name="MenuHexFile.Text" xml:space="preserve">
-    <value>&amp;File</value>
+    <value>{File}</value>
+    <comment>@Invariant</comment>
   </data>
   <data name="MainMenuView.Size" type="System.Drawing.Size, System.Drawing">
     <value>40, 20</value>
@@ -657,7 +660,8 @@
     <value>289, 22</value>
   </data>
   <data name="MenuToolsFixImageSize.Text" xml:space="preserve">
-    <value>&amp;Truncate Image</value>
+    <value>{TruncateImage}</value>
+    <comment>@Invariant</comment>
   </data>
   <data name="MenuToolsTruncateImage.Size" type="System.Drawing.Size, System.Drawing">
     <value>170, 22</value>
@@ -880,7 +884,8 @@
     <value>167, 22</value>
   </data>
   <data name="MenuFiltersScan.Text" xml:space="preserve">
-    <value>&amp;Scan Images</value>
+    <value>{ScanImages}</value>
+    <comment>@Invariant</comment>
   </data>
   <data name="MenuFiltersClear.Size" type="System.Drawing.Size, System.Drawing">
     <value>167, 22</value>
@@ -965,10 +970,6 @@
   </data>
   <data name="MenuStripTop.TabIndex" type="System.Int32, mscorlib">
     <value>0</value>
-  </data>
-  <data name="MenuStripTop.Text" xml:space="preserve">
-    <value>MenuStrip1</value>
-    <comment>@Invariant</comment>
   </data>
   <data name="&gt;&gt;MenuStripTop.Name" xml:space="preserve">
     <value>MenuStripTop</value>
@@ -1168,7 +1169,8 @@
     <value>23, 22</value>
   </data>
   <data name="ToolStripExportFile.Text" xml:space="preserve">
-    <value>Export File</value>
+    <value>{ExportFile}</value>
+    <comment>@Invariant</comment>
   </data>
   <data name="ToolStripUndo.Image" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
     <value>
@@ -1222,7 +1224,8 @@
     <value>23, 22</value>
   </data>
   <data name="ToolStripViewFileText.Text" xml:space="preserve">
-    <value>View File as Text</value>
+    <value>{ViewFileText}</value>
+    <comment>@Invariant</comment>
   </data>
   <data name="ToolStripViewFile.Image" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
     <value>
@@ -1240,7 +1243,8 @@
     <value>23, 22</value>
   </data>
   <data name="ToolStripViewFile.Text" xml:space="preserve">
-    <value>View File</value>
+    <value>{ViewFile}</value>
+    <comment>@Invariant</comment>
   </data>
   <data name="ToolStripSeparatorFAT.Size" type="System.Drawing.Size, System.Drawing">
     <value>6, 25</value>
@@ -1265,10 +1269,6 @@
   </data>
   <data name="ToolStripTop.TabIndex" type="System.Int32, mscorlib">
     <value>1</value>
-  </data>
-  <data name="ToolStripTop.Text" xml:space="preserve">
-    <value>ToolStrip1</value>
-    <comment>@Invariant</comment>
   </data>
   <data name="&gt;&gt;ToolStripTop.Name" xml:space="preserve">
     <value>ToolStripTop</value>
@@ -1295,7 +1295,8 @@
     <value>61, 19</value>
   </data>
   <data name="ToolStripStatusReadOnly.Text" xml:space="preserve">
-    <value>Read Only</value>
+    <value>{Status}</value>
+    <comment>@Invariant</comment>
   </data>
   <data name="ToolStripStatusModified.Size" type="System.Drawing.Size, System.Drawing">
     <value>55, 19</value>
@@ -1304,46 +1305,52 @@
     <value>Modified</value>
   </data>
   <data name="ToolStripFileName.Size" type="System.Drawing.Size, System.Drawing">
-    <value>530, 19</value>
+    <value>544, 19</value>
   </data>
   <data name="ToolStripFileName.Text" xml:space="preserve">
-    <value>File Name</value>
+    <value>{FileName}</value>
+    <comment>@Invariant</comment>
   </data>
   <data name="ToolStripFileName.TextAlign" type="System.Drawing.ContentAlignment, System.Drawing">
     <value>MiddleLeft</value>
   </data>
   <data name="ToolStripFileCount.Size" type="System.Drawing.Size, System.Drawing">
-    <value>43, 19</value>
+    <value>42, 19</value>
   </data>
   <data name="ToolStripFileCount.Text" xml:space="preserve">
-    <value>0 Files</value>
+    <value>{Files}</value>
+    <comment>@Invariant</comment>
   </data>
   <data name="ToolStripFileSector.Size" type="System.Drawing.Size, System.Drawing">
-    <value>53, 19</value>
+    <value>52, 19</value>
   </data>
   <data name="ToolStripFileSector.Text" xml:space="preserve">
-    <value>Sector 0</value>
+    <value>{Sector}</value>
+    <comment>@Invariant</comment>
   </data>
   <data name="ToolStripFileTrack.Size" type="System.Drawing.Size, System.Drawing">
-    <value>56, 19</value>
+    <value>46, 19</value>
   </data>
   <data name="ToolStripFileTrack.Text" xml:space="preserve">
-    <value>Track 0.0</value>
+    <value>{Track}</value>
+    <comment>@Invariant</comment>
   </data>
   <data name="ToolStripImageCount.Size" type="System.Drawing.Size, System.Drawing">
-    <value>58, 19</value>
+    <value>57, 19</value>
   </data>
   <data name="ToolStripImageCount.Text" xml:space="preserve">
-    <value>0 Images</value>
+    <value>{Images}</value>
+    <comment>@Invariant</comment>
   </data>
   <data name="ToolStripImageCount.TextAlign" type="System.Drawing.ContentAlignment, System.Drawing">
     <value>MiddleRight</value>
   </data>
   <data name="ToolStripModified.Size" type="System.Drawing.Size, System.Drawing">
-    <value>109, 19</value>
+    <value>108, 19</value>
   </data>
   <data name="ToolStripModified.Text" xml:space="preserve">
-    <value>0 Images Modified</value>
+    <value>{Images Modified}</value>
+    <comment>@Invariant</comment>
   </data>
   <data name="StatusStripBottom.Location" type="System.Drawing.Point, System.Drawing">
     <value>0, 552</value>
@@ -1353,10 +1360,6 @@
   </data>
   <data name="StatusStripBottom.TabIndex" type="System.Int32, mscorlib">
     <value>9</value>
-  </data>
-  <data name="StatusStripBottom.Text" xml:space="preserve">
-    <value>StatusStripMain</value>
-    <comment>@Invariant</comment>
   </data>
   <data name="&gt;&gt;StatusStripBottom.Name" xml:space="preserve">
     <value>StatusStripBottom</value>
@@ -1574,7 +1577,8 @@
     <value>189, 22</value>
   </data>
   <data name="MenuFileExportFile.Text" xml:space="preserve">
-    <value>&amp;Export File</value>
+    <value>{ExportFile}</value>
+    <comment>@Invariant</comment>
   </data>
   <data name="MenuFileReplaceFile.Size" type="System.Drawing.Size, System.Drawing">
     <value>189, 22</value>
@@ -1586,7 +1590,8 @@
     <value>189, 22</value>
   </data>
   <data name="MenuFileViewDirectory.Text" xml:space="preserve">
-    <value>View Parent D&amp;irectory</value>
+    <value>{ViewDirectory}</value>
+    <comment>@Invariant</comment>
   </data>
   <data name="FileMenuSeparatorDirectory.Size" type="System.Drawing.Size, System.Drawing">
     <value>186, 6</value>
@@ -1605,7 +1610,8 @@
     <value>189, 22</value>
   </data>
   <data name="MenuFileViewFile.Text" xml:space="preserve">
-    <value>&amp;View File</value>
+    <value>{ViewFile}</value>
+    <comment>@Invariant</comment>
   </data>
   <data name="MenuFileViewFileText.Image" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
     <value>
@@ -1620,7 +1626,8 @@
     <value>189, 22</value>
   </data>
   <data name="MenuFileViewFileText.Text" xml:space="preserve">
-    <value>View File as &amp;Text</value>
+    <value>{ViewFileText}</value>
+    <comment>@Invariant</comment>
   </data>
   <data name="MenuFileViewCrosslinked.Size" type="System.Drawing.Size, System.Drawing">
     <value>189, 22</value>
@@ -1656,7 +1663,8 @@
     <value>189, 22</value>
   </data>
   <data name="MenuFileDeleteFile.Text" xml:space="preserve">
-    <value>&amp;Delete File</value>
+    <value>{DeleteFile}</value>
+    <comment>@Invariant</comment>
   </data>
   <data name="MenuFileUnDeleteFile.Size" type="System.Drawing.Size, System.Drawing">
     <value>189, 22</value>
@@ -1668,7 +1676,8 @@
     <value>189, 22</value>
   </data>
   <data name="MenuFileRemove.Text" xml:space="preserve">
-    <value>Remove &amp;Deleted File</value>
+    <value>{RemoveFile}</value>
+    <comment>@Invariant</comment>
   </data>
   <data name="MenuFileFixSize.Size" type="System.Drawing.Size, System.Drawing">
     <value>189, 22</value>
@@ -1680,7 +1689,7 @@
     <value>False</value>
   </data>
   <data name="ContextMenuFiles.Size" type="System.Drawing.Size, System.Drawing">
-    <value>190, 370</value>
+    <value>190, 392</value>
   </data>
   <data name="&gt;&gt;ContextMenuFiles.Name" xml:space="preserve">
     <value>ContextMenuFiles</value>

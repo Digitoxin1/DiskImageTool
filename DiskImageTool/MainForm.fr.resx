@@ -132,23 +132,11 @@
   <data name="MenuToolsCompare.Text" xml:space="preserve">
     <value>&amp;Comparer les images</value>
   </data>
-  <data name="MenuFileDeleteFile.Text" xml:space="preserve">
-    <value>&amp;Supprimer le fichier</value>
-  </data>
   <data name="MainMenuDisk.Text" xml:space="preserve">
     <value>&amp;Disquette</value>
   </data>
   <data name="MainMenuEdit.Text" xml:space="preserve">
     <value>&amp;Édition</value>
-  </data>
-  <data name="MenuEditExportFile.Text" xml:space="preserve">
-    <value>&amp;Exporter le fichier</value>
-  </data>
-  <data name="MenuFileExportFile.Text" xml:space="preserve">
-    <value>&amp;Exporter le fichier</value>
-  </data>
-  <data name="MenuHexFile.Text" xml:space="preserve">
-    <value>&amp;Fichier</value>
   </data>
   <data name="MainMenuFile.Text" xml:space="preserve">
     <value>&amp;Fichier</value>
@@ -222,16 +210,10 @@
   <data name="MenuFileSave.Text" xml:space="preserve">
     <value>&amp;Enregistrer</value>
   </data>
-  <data name="MenuFiltersScan.Text" xml:space="preserve">
-    <value>&amp;Analyser les images</value>
-  </data>
   <data name="MainMenuTools.Text" xml:space="preserve">
     <value>&amp;Outils</value>
   </data>
   <data name="MenuToolsTruncateImage.Text" xml:space="preserve">
-    <value>&amp;Tronquer l’image</value>
-  </data>
-  <data name="MenuToolsFixImageSize.Text" xml:space="preserve">
     <value>&amp;Tronquer l’image</value>
   </data>
   <data name="MenuFileUnDeleteFile.Text" xml:space="preserve">
@@ -240,23 +222,11 @@
   <data name="MenuEditUndo.Text" xml:space="preserve">
     <value>&amp;Annuler</value>
   </data>
-  <data name="MenuFileViewFile.Text" xml:space="preserve">
-    <value>&amp;Voir le fichier</value>
-  </data>
   <data name="MenuDiskWriteFloppyA.Text" xml:space="preserve">
     <value>&amp;Écrire la disquette dans le lecteur A</value>
   </data>
   <data name="MenuDiskWriteFloppyB.Text" xml:space="preserve">
     <value>&amp;Écrire la disquette dans le lecteur B</value>
-  </data>
-  <data name="ToolStripFileCount.Text" xml:space="preserve">
-    <value>0 fichiers</value>
-  </data>
-  <data name="ToolStripImageCount.Text" xml:space="preserve">
-    <value>0 images</value>
-  </data>
-  <data name="ToolStripModified.Text" xml:space="preserve">
-    <value>0 Images modifiées</value>
   </data>
   <data name="MenuHelpAbout.Text" xml:space="preserve">
     <value>À propos de DiskImageTool</value>
@@ -324,9 +294,6 @@
   <data name="MainMenuExperimental.Text" xml:space="preserve">
     <value>Expérimental</value>
   </data>
-  <data name="ToolStripExportFile.Text" xml:space="preserve">
-    <value>Exporter le fichier</value>
-  </data>
   <data name="MenuOptionsExportUnknown.Text" xml:space="preserve">
     <value>Exporter les images inconnues lors de l’analyse</value>
   </data>
@@ -344,9 +311,6 @@
   </data>
   <data name="MenuEditFileProperties.Text" xml:space="preserve">
     <value>Propriétés du &amp;fichier</value>
-  </data>
-  <data name="ToolStripFileName.Text" xml:space="preserve">
-    <value>Nom du fichier</value>
   </data>
   <data name="ToolStripFileProperties.Text" xml:space="preserve">
     <value>Propriétés du fichier</value>
@@ -393,17 +357,11 @@
   <data name="ToolStripOpen.Text" xml:space="preserve">
     <value>Ouvrir</value>
   </data>
-  <data name="ToolStripStatusReadOnly.Text" xml:space="preserve">
-    <value>Lecture seule</value>
-  </data>
   <data name="ToolStripRedo.Text" xml:space="preserve">
     <value>Rétablir</value>
   </data>
   <data name="MenuToolsRemoveBootSector.Text" xml:space="preserve">
     <value>Retirer le secteur de démarrage du répertoire racine</value>
-  </data>
-  <data name="MenuFileRemove.Text" xml:space="preserve">
-    <value>Retirer le fichier &amp;supprimé</value>
   </data>
   <data name="MenuToolsWin9xClean.Text" xml:space="preserve">
     <value>Retirer les modifications &amp;Windows</value>
@@ -416,9 +374,6 @@
   </data>
   <data name="btnRetry.Text" xml:space="preserve">
     <value>Réessayer</value>
-  </data>
-  <data name="MenuHexDirectory.Text" xml:space="preserve">
-    <value>Répertoire &amp;racine</value>
   </data>
   <data name="ToolStripSave.Text" xml:space="preserve">
     <value>Enregistrer</value>
@@ -441,14 +396,8 @@
   <data name="ToolStripSearchLabel.Text" xml:space="preserve">
     <value>Rechercher</value>
   </data>
-  <data name="ToolStripFileSector.Text" xml:space="preserve">
-    <value>Secteur 0</value>
-  </data>
   <data name="FileSize.Text" xml:space="preserve">
     <value>Taille</value>
-  </data>
-  <data name="ToolStripFileTrack.Text" xml:space="preserve">
-    <value>Piste 0.0</value>
   </data>
   <data name="ToolStripUndo.Text" xml:space="preserve">
     <value>Annuler</value>
@@ -464,18 +413,6 @@
   </data>
   <data name="MenuDirectoryView.Text" xml:space="preserve">
     <value>Voir le &amp;répertoire</value>
-  </data>
-  <data name="ToolStripViewFile.Text" xml:space="preserve">
-    <value>Voir le fichier</value>
-  </data>
-  <data name="MenuFileViewFileText.Text" xml:space="preserve">
-    <value>Voir le fichier en &amp;texte</value>
-  </data>
-  <data name="ToolStripViewFileText.Text" xml:space="preserve">
-    <value>Voir le fichier en texte</value>
-  </data>
-  <data name="MenuFileViewDirectory.Text" xml:space="preserve">
-    <value>Voir le répertoire &amp;parent</value>
   </data>
   <data name="MenuOptionsDisplayLanguage.Text" xml:space="preserve">
     <value>Langue</value>

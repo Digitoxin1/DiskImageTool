@@ -535,7 +535,7 @@
     <value>3</value>
   </data>
   <data name="LblSelected.Text" xml:space="preserve">
-    <value>{00000 of 00000}</value>
+    <value>{FilesSelected}</value>
     <comment>@Invariant</comment>
   </data>
   <data name="&gt;&gt;LblSelected.Name" xml:space="preserve">
@@ -566,7 +566,7 @@
     <value>4</value>
   </data>
   <data name="LblBytesFree.Text" xml:space="preserve">
-    <value>{9,999,999}</value>
+    <value>{BytesFree}</value>
     <comment>@Invariant</comment>
   </data>
   <data name="&gt;&gt;LblBytesFree.Name" xml:space="preserve">
@@ -597,7 +597,7 @@
     <value>5</value>
   </data>
   <data name="LblBytesRequired.Text" xml:space="preserve">
-    <value>{9,999,999,999}</value>
+    <value>{BytesRequired}</value>
     <comment>@Invariant</comment>
   </data>
   <data name="&gt;&gt;LblBytesRequired.Name" xml:space="preserve">

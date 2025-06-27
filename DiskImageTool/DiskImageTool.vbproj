@@ -195,28 +195,28 @@
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="Github.vb" />
-    <Compile Include="HexBox2\BuiltInContextMenu.vb">
+    <Compile Include="HexBox\BuiltInContextMenu.vb">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="HexBox2\ByteCharConverters.vb" />
-    <Compile Include="HexBox2\ByteCollection.vb" />
-    <Compile Include="HexBox2\BytePositionInfo.vb" />
-    <Compile Include="HexBox2\DataBlock.vb" />
-    <Compile Include="HexBox2\DataMap.vb" />
-    <Compile Include="HexBox2\DynamicByteProvider.vb" />
-    <Compile Include="HexBox2\DynamicFileByteProvider.vb" />
-    <Compile Include="HexBox2\FileByteProvider.vb" />
-    <Compile Include="HexBox2\FileDataBlock.vb" />
-    <Compile Include="HexBox2\FindOptions.vb" />
-    <Compile Include="HexBox2\HexBox.vb">
+    <Compile Include="HexBox\ByteCharConverters.vb" />
+    <Compile Include="HexBox\ByteCollection.vb" />
+    <Compile Include="HexBox\BytePositionInfo.vb" />
+    <Compile Include="HexBox\DataBlock.vb" />
+    <Compile Include="HexBox\DataMap.vb" />
+    <Compile Include="HexBox\DynamicByteProvider.vb" />
+    <Compile Include="HexBox\DynamicFileByteProvider.vb" />
+    <Compile Include="HexBox\FileByteProvider.vb" />
+    <Compile Include="HexBox\FileDataBlock.vb" />
+    <Compile Include="HexBox\FindOptions.vb" />
+    <Compile Include="HexBox\HexBox.vb">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="HexBox2\HexCasing.vb" />
-    <Compile Include="HexBox2\IByteCharConverter.vb" />
-    <Compile Include="HexBox2\IByteProvider.vb" />
-    <Compile Include="HexBox2\MemoryDataBlock.vb" />
-    <Compile Include="HexBox2\NativeMethods.vb" />
-    <Compile Include="HexBox2\Util.vb" />
+    <Compile Include="HexBox\HexCasing.vb" />
+    <Compile Include="HexBox\IByteCharConverter.vb" />
+    <Compile Include="HexBox\IByteProvider.vb" />
+    <Compile Include="HexBox\MemoryDataBlock.vb" />
+    <Compile Include="HexBox\NativeMethods.vb" />
+    <Compile Include="HexBox\Util.vb" />
     <Compile Include="HexView\HexViewDataGridInspector.vb" />
     <Compile Include="HexView\HexViewFunctions.vb" />
     <Compile Include="ImageFormats\86F\86FFloppyImage.vb" />

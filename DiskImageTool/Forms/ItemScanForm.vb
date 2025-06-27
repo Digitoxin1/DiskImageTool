@@ -189,6 +189,10 @@ Public Class ItemScanForm
         End If
     End Sub
 
+    Private Sub LblScanning_Click(sender As Object, e As EventArgs) Handles LblScanning.Click
+
+    End Sub
+
 #End Region
 
 End Class
