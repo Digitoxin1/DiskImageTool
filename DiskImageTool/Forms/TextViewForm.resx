@@ -278,6 +278,7 @@
   </data>
   <data name="$this.Text" xml:space="preserve">
     <value>{Caption}</value>
+    <comment>@Invariant</comment>
   </data>
   <data name="&gt;&gt;$this.Name" xml:space="preserve">
     <value>TextViewForm</value>

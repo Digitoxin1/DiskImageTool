@@ -123,7 +123,4 @@
   <data name="BtnSave.Text" xml:space="preserve">
     <value>Enregistrer</value>
   </data>
-  <data name="$this.Text" xml:space="preserve">
-    <value>Visionneuse de texte</value>
-  </data>
 </root>
