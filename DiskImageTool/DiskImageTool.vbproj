@@ -30,7 +30,7 @@
     <TargetCulture>en-US</TargetCulture>
     <ProductName>DiskImageTool</ProductName>
     <PublisherName>Digitoxin</PublisherName>
-    <ApplicationRevision>1</ApplicationRevision>
+    <ApplicationRevision>2</ApplicationRevision>
     <ApplicationVersion>2.17.0.%2a</ApplicationVersion>
     <UseApplicationTrust>false</UseApplicationTrust>
     <PublishWizardCompleted>true</PublishWizardCompleted>
@@ -131,6 +131,9 @@
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="Controls\ToolStripSpringTextBox.vb">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Controls\TwoColumnTooltip.vb">
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="DiskImage\AddFileOptions.vb" />
@@ -604,6 +607,7 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\ImportFileForm.resx">
       <DependentUpon>ImportFileForm.vb</DependentUpon>
+      <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\ItemScanForm.resx">
       <DependentUpon>ItemScanForm.vb</DependentUpon>

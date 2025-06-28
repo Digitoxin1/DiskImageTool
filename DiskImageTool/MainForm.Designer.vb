@@ -190,6 +190,7 @@ Partial Class MainForm
         Me.MenuDirectoryView = New System.Windows.Forms.ToolStripMenuItem()
         Me.MenuDirectoryImportFiles = New System.Windows.Forms.ToolStripMenuItem()
         Me.MenuDirectoryNewDirectory = New System.Windows.Forms.ToolStripMenuItem()
+        Me.SplitContainer1 = New System.Windows.Forms.SplitContainer()
         SummaryName = CType(New System.Windows.Forms.ColumnHeader(), System.Windows.Forms.ColumnHeader)
         SummaryValue = CType(New System.Windows.Forms.ColumnHeader(), System.Windows.Forms.ColumnHeader)
         HashName = CType(New System.Windows.Forms.ColumnHeader(), System.Windows.Forms.ColumnHeader)
@@ -236,6 +237,10 @@ Partial Class MainForm
         Me.StatusStripBottom.SuspendLayout()
         Me.ContextMenuFiles.SuspendLayout()
         Me.ContextMenuDirectory.SuspendLayout()
+        CType(Me.SplitContainer1, System.ComponentModel.ISupportInitialize).BeginInit()
+        Me.SplitContainer1.Panel1.SuspendLayout()
+        Me.SplitContainer1.Panel2.SuspendLayout()
+        Me.SplitContainer1.SuspendLayout()
         Me.SuspendLayout()
         '
         'SummaryName
@@ -1187,21 +1192,34 @@ Partial Class MainForm
         Me.MenuDirectoryNewDirectory.Name = "MenuDirectoryNewDirectory"
         resources.ApplyResources(Me.MenuDirectoryNewDirectory, "MenuDirectoryNewDirectory")
         '
+        'SplitContainer1
+        '
+        resources.ApplyResources(Me.SplitContainer1, "SplitContainer1")
+        Me.SplitContainer1.FixedPanel = System.Windows.Forms.FixedPanel.Panel1
+        Me.SplitContainer1.Name = "SplitContainer1"
+        '
+        'SplitContainer1.Panel1
+        '
+        Me.SplitContainer1.Panel1.Controls.Add(Me.btnRetry)
+        Me.SplitContainer1.Panel1.Controls.Add(Me.ListViewHashes)
+        Me.SplitContainer1.Panel1.Controls.Add(Me.ListViewSummary)
+        '
+        'SplitContainer1.Panel2
+        '
+        Me.SplitContainer1.Panel2.Controls.Add(Me.BtnResetSort)
+        Me.SplitContainer1.Panel2.Controls.Add(Me.ComboImagesFiltered)
+        Me.SplitContainer1.Panel2.Controls.Add(Me.LabelDropMessage)
+        Me.SplitContainer1.Panel2.Controls.Add(Me.ComboImages)
+        Me.SplitContainer1.Panel2.Controls.Add(Me.ListViewFiles)
+        '
         'MainForm
         '
         resources.ApplyResources(Me, "$this")
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
-        Me.Controls.Add(Me.btnRetry)
-        Me.Controls.Add(Me.BtnResetSort)
+        Me.Controls.Add(Me.SplitContainer1)
         Me.Controls.Add(Me.ToolStripTop)
-        Me.Controls.Add(Me.ComboImagesFiltered)
         Me.Controls.Add(Me.StatusStripBottom)
         Me.Controls.Add(MenuStripTop)
-        Me.Controls.Add(Me.LabelDropMessage)
-        Me.Controls.Add(Me.ListViewHashes)
-        Me.Controls.Add(Me.ComboImages)
-        Me.Controls.Add(Me.ListViewSummary)
-        Me.Controls.Add(Me.ListViewFiles)
         Me.MainMenuStrip = MenuStripTop
         Me.Name = "MainForm"
         MenuStripTop.ResumeLayout(False)
@@ -1213,6 +1231,11 @@ Partial Class MainForm
         Me.StatusStripBottom.PerformLayout()
         Me.ContextMenuFiles.ResumeLayout(False)
         Me.ContextMenuDirectory.ResumeLayout(False)
+        Me.SplitContainer1.Panel1.ResumeLayout(False)
+        Me.SplitContainer1.Panel2.ResumeLayout(False)
+        Me.SplitContainer1.Panel2.PerformLayout()
+        CType(Me.SplitContainer1, System.ComponentModel.ISupportInitialize).EndInit()
+        Me.SplitContainer1.ResumeLayout(False)
         Me.ResumeLayout(False)
         Me.PerformLayout()
 
@@ -1343,4 +1366,5 @@ Partial Class MainForm
     Friend WithEvents MainMenuUpdateAvailable As ToolStripMenuItem
     Friend WithEvents MenuOptionsDisplayTitles As ToolStripMenuItem
     Friend WithEvents MenuOptionsDisplayLanguage As ToolStripMenuItem
+    Friend WithEvents SplitContainer1 As SplitContainer
 End Class

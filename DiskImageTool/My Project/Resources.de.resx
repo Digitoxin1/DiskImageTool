@@ -517,7 +517,7 @@
     <value>Dateisystem-ID</value>
   </data>
   <data name="BootSector_JmpBoot" xml:space="preserve">
-    <value>Bootstrap-Sprung</value>
+    <value>Startsprung</value>
   </data>
   <data name="BootSector_OEMName" xml:space="preserve">
     <value>OEM-Name</value>
@@ -532,7 +532,7 @@
     <value>Volume-Bezeichnung</value>
   </data>
   <data name="BPB.RootEntryCount" xml:space="preserve">
-    <value>Einträge im Stammverzeichnis</value>
+    <value>Einträge Stammverzeichnis</value>
   </data>
   <data name="BPB_BytesPerSector" xml:space="preserve">
     <value>Bytes pro Sektor</value>
@@ -706,7 +706,7 @@
     <value>Alle</value>
   </data>
   <data name="Filter_Bootstrap_Unknown" xml:space="preserve">
-    <value>Bootstrap – Unbekannt</value>
+    <value>Startcode – Unbekannt</value>
   </data>
   <data name="Filter_Database_MismatchedStatus" xml:space="preserve">
     <value>Datenbank – Status stimmt nicht überein</value>
@@ -886,7 +886,7 @@
     <value>Boot-Datensatz</value>
   </data>
   <data name="SummaryPanel_Bootstrap" xml:space="preserve">
-    <value>Bootstrap</value>
+    <value>Startcode</value>
   </data>
   <data name="SummaryPanel_Company" xml:space="preserve">
     <value>Firma</value>
@@ -958,7 +958,7 @@
     <value>Keine BPB</value>
   </data>
   <data name="SummaryPanel_NonStandardTracks" xml:space="preserve">
-    <value>Nicht standardmäßige Spuren</value>
+    <value>Nichtstandard-Spuren</value>
   </data>
   <data name="SummaryPanel_Note" xml:space="preserve">
     <value>Hinweis</value>
@@ -991,7 +991,7 @@
     <value>Beschleunigen um</value>
   </data>
   <data name="SummaryPanel_SurfaceData" xml:space="preserve">
-    <value>Oberflächendaten vorhanden</value>
+    <value>Oberflächendaten</value>
   </data>
   <data name="SummaryPanel_Title" xml:space="preserve">
     <value>Titel</value>
@@ -1078,7 +1078,7 @@
     <value>Daten-Prüfsumme</value>
   </data>
   <data name="Bitstream_Gap" xml:space="preserve">
-    <value>Lücke</value>
+    <value>GAP</value>
   </data>
   <data name="Bitstream_IAM" xml:space="preserve">
     <value>Index-Adressmarkierung</value>
@@ -1117,7 +1117,7 @@
     <value>Alle Spuren</value>
   </data>
   <data name="Label_BitOffset" xml:space="preserve">
-    <value>Bit-Offset</value>
+    <value>Bit-Versatz</value>
   </data>
   <data name="Label_Bits" xml:space="preserve">
     <value>Bits</value>
@@ -1126,7 +1126,7 @@
     <value>Block(h)</value>
   </data>
   <data name="Label_ByteAligned" xml:space="preserve">
-    <value>Byte-ausgerichtet</value>
+    <value>Byte-align.</value>
   </data>
   <data name="Label_Deleted" xml:space="preserve">
     <value>Gelöscht</value>
@@ -1138,7 +1138,7 @@
     <value>Dateien</value>
   </data>
   <data name="Label_Gap" xml:space="preserve">
-    <value>Lücke</value>
+    <value>Gap</value>
   </data>
   <data name="Label_ImagesLoaded" xml:space="preserve">
     <value>{0} Abbilder geladen</value>

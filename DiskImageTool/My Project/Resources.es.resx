@@ -328,7 +328,7 @@
     <value>Valores Permitidos:</value>
   </data>
   <data name="SummaryPanel_AltOEMName" xml:space="preserve">
-    <value>Nombre OEM Alternativo</value>
+    <value>Nombre OEM alternativo</value>
   </data>
   <data name="Dialog_SaveFileError2" xml:space="preserve">
     <value>Ocurrió un error al intentar guardar el archivo.</value>
@@ -391,7 +391,7 @@
     <value>Binario (8 bits)</value>
   </data>
   <data name="Label_BitOffset" xml:space="preserve">
-    <value>Desplazamiento de bits</value>
+    <value>Despl. bit</value>
   </data>
   <data name="SummaryPanel_Bitrate" xml:space="preserve">
     <value>Tasa de bits</value>
@@ -421,16 +421,16 @@
     <value>Firma del sector de arranque</value>
   </data>
   <data name="SummaryPanel_Bootstrap" xml:space="preserve">
-    <value>Bootstrap</value>
+    <value>Arranque</value>
   </data>
   <data name="Filter_Bootstrap_Unknown" xml:space="preserve">
-    <value>Bootstrap - Desconocido</value>
+    <value>Arranque - Desconocido</value>
   </data>
   <data name="BootSector_JmpBoot" xml:space="preserve">
-    <value>Salto de bootstrap</value>
+    <value>Salto de arranque</value>
   </data>
   <data name="Label_ByteAligned" xml:space="preserve">
-    <value>Alineado a bytes</value>
+    <value>Byte alineado</value>
   </data>
   <data name="Label_Bytes" xml:space="preserve">
     <value>bytes</value>
@@ -475,7 +475,7 @@
     <value>Comprimido</value>
   </data>
   <data name="SummaryPanel_CopyProtection" xml:space="preserve">
-    <value>Protección contra copia</value>
+    <value>Protección de copia</value>
   </data>
   <data name="DirectorytEntry_CreationDate" xml:space="preserve">
     <value>Fecha de creación</value>
@@ -761,7 +761,7 @@ Valores típicos:
     <value>Generar un nuevo número de serie del volumen basado en una fecha y hora proporcionadas</value>
   </data>
   <data name="SummaryPanel_SurfaceData" xml:space="preserve">
-    <value>Contiene datos de superficie</value>
+    <value>Datos superficie</value>
   </data>
   <data name="SummaryPanel_WeakBits" xml:space="preserve">
     <value>Contiene bits débiles</value>
@@ -1145,7 +1145,7 @@ Típicamente indica qué sistema formateó el volumen.</value>
     <value>Directorio raíz</value>
   </data>
   <data name="BPB.RootEntryCount" xml:space="preserve">
-    <value>Entradas en el directorio raíz</value>
+    <value>Entradas dir. raíz</value>
   </data>
   <data name="SummaryPanel_RPM" xml:space="preserve">
     <value>RPM</value>
@@ -1293,7 +1293,7 @@ Nota: Este valor debe ser {1} para todos los disquetes</value>
     <value>Número total de sectores en el volumen</value>
   </data>
   <data name="BPB_SectorCountSmall" xml:space="preserve">
-    <value>Recuento total de sectores</value>
+    <value>Sectores totales</value>
   </data>
   <data name="SummaryPanel_TotalSpace" xml:space="preserve">
     <value>Espacio total</value>

@@ -2841,6 +2841,9 @@ Public Class MainForm
             .Items.Clear()
             .Groups.Clear()
 
+            .Columns.Item(0).Width = 124
+            .Columns.Item(1).Width = .ClientSize.Width - .Columns.Item(0).Width - SystemInformation.VerticalScrollBarWidth
+
             If CurrentImage.Disk IsNot Nothing Then
                 PopulateSummaryPanelMain(ListViewSummary, CurrentImage.Disk, _TitleDB, _BootStrapDB, MD5)
 
@@ -2855,9 +2858,24 @@ Public Class MainForm
                 btnRetry.Visible = Not CurrentImage.ImageData.InvalidImage
             End If
 
+            '.AutoResizeColumn(0, ColumnHeaderAutoResizeStyle.ColumnContent)
+
             .EndUpdate()
             .Refresh()
         End With
+    End Sub
+
+    Private Sub PositionControls()
+        ListViewSummary.Width = ListViewSummary.Parent.Width
+        ListViewHashes.Width = ListViewHashes.Parent.Width
+        btnRetry.Left = btnRetry.Parent.Width - btnRetry.Width - 20
+        ListViewFiles.Width = ListViewFiles.Parent.Width
+        BtnResetSort.Left = BtnResetSort.Parent.Width - BtnResetSort.Width
+        ComboImagesFiltered.Width = BtnResetSort.Left - 6
+        ComboImages.Width = BtnResetSort.Left - 6
+
+        LabelDropMessage.Left = ListViewFiles.Left + (ListViewFiles.Width - LabelDropMessage.Width) \ 2
+        LabelDropMessage.Top = ListViewFiles.Top + (ListViewFiles.Height - LabelDropMessage.Height) \ 2
     End Sub
 
     Private Sub PositionForm()
@@ -4509,6 +4527,14 @@ Public Class MainForm
         e.Item.Selected = False
     End Sub
 
+    'Private Sub ListViewSummary_Resize(sender As Object, e As EventArgs) Handles ListViewSummary.Resize
+    '    If ListViewSummary.Columns.Count < 2 Then
+    '        Exit Sub
+    '    End If
+
+    '    ListViewSummary.Columns.Item(1).Width = ListViewSummary.ClientSize.Width - ListViewSummary.Columns.Item(0).Width
+    'End Sub
+
     Private Sub MainForm_Closed(sender As Object, e As EventArgs) Handles Me.Closed
         'EmptyTempPath()
     End Sub
@@ -4523,12 +4549,14 @@ Public Class MainForm
         _FileVersion = GetVersionString()
         Me.Text = GetWindowCaption()
 
+        PositionControls()
+
         InitAllFileExtensions()
 
         PositionForm()
 
         AddHandler MainMenuOptions.DropDown.Closing, AddressOf ContextMenuOptions_Closing
-        AddHandler MenuOptionsDisplayLanguage.DropDown.Closing, AddressOf ContextMenuOptions_Closing
+        'AddHandler MenuOptionsDisplayLanguage.DropDown.Closing, AddressOf ContextMenuOptions_Closing
 
         MainMenuUpdateAvailable.Visible = False
         MenuToolsCompare.Visible = False

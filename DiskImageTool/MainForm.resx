@@ -981,7 +981,7 @@
     <value>$this</value>
   </data>
   <data name="&gt;&gt;MenuStripTop.ZOrder" xml:space="preserve">
-    <value>8</value>
+    <value>6</value>
   </data>
   <metadata name="ToolStripTop.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
     <value>145, 17</value>
@@ -1280,7 +1280,7 @@
     <value>$this</value>
   </data>
   <data name="&gt;&gt;ToolStripTop.ZOrder" xml:space="preserve">
-    <value>5</value>
+    <value>4</value>
   </data>
   <metadata name="StatusStripBottom.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
     <value>264, 17</value>
@@ -1292,7 +1292,7 @@
     <value>Segoe UI, 9pt</value>
   </data>
   <data name="ToolStripStatusReadOnly.Size" type="System.Drawing.Size, System.Drawing">
-    <value>61, 19</value>
+    <value>47, 19</value>
   </data>
   <data name="ToolStripStatusReadOnly.Text" xml:space="preserve">
     <value>{Status}</value>
@@ -1305,7 +1305,7 @@
     <value>Modified</value>
   </data>
   <data name="ToolStripFileName.Size" type="System.Drawing.Size, System.Drawing">
-    <value>544, 19</value>
+    <value>558, 19</value>
   </data>
   <data name="ToolStripFileName.Text" xml:space="preserve">
     <value>{FileName}</value>
@@ -1371,22 +1371,22 @@
     <value>$this</value>
   </data>
   <data name="&gt;&gt;StatusStripBottom.ZOrder" xml:space="preserve">
-    <value>7</value>
+    <value>5</value>
   </data>
   <metadata name="ListViewSummary.Locked" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
     <value>True</value>
   </metadata>
   <data name="ListViewSummary.Anchor" type="System.Windows.Forms.AnchorStyles, System.Windows.Forms">
-    <value>Top, Bottom, Left</value>
+    <value>Top, Bottom, Left, Right</value>
   </data>
   <data name="ListViewSummary.Location" type="System.Drawing.Point, System.Drawing">
-    <value>12, 55</value>
+    <value>0, 0</value>
   </data>
   <data name="ListViewSummary.Size" type="System.Drawing.Size, System.Drawing">
     <value>298, 387</value>
   </data>
   <data name="ListViewSummary.TabIndex" type="System.Int32, mscorlib">
-    <value>2</value>
+    <value>1</value>
   </data>
   <data name="&gt;&gt;ListViewSummary.Name" xml:space="preserve">
     <value>ListViewSummary</value>
@@ -1395,10 +1395,10 @@
     <value>System.Windows.Forms.ListView, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
   <data name="&gt;&gt;ListViewSummary.Parent" xml:space="preserve">
-    <value>$this</value>
+    <value>SplitContainer1.Panel1</value>
   </data>
   <data name="&gt;&gt;ListViewSummary.ZOrder" xml:space="preserve">
-    <value>12</value>
+    <value>2</value>
   </data>
   <metadata name="ComboImages.Locked" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
     <value>True</value>
@@ -1407,13 +1407,13 @@
     <value>Top, Left, Right</value>
   </data>
   <data name="ComboImages.Location" type="System.Drawing.Point, System.Drawing">
-    <value>316, 55</value>
+    <value>0, 0</value>
   </data>
   <data name="ComboImages.Size" type="System.Drawing.Size, System.Drawing">
-    <value>606, 21</value>
+    <value>601, 21</value>
   </data>
   <data name="ComboImages.TabIndex" type="System.Int32, mscorlib">
-    <value>3</value>
+    <value>4</value>
   </data>
   <data name="ComboImages.Visible" type="System.Boolean, mscorlib">
     <value>False</value>
@@ -1425,28 +1425,28 @@
     <value>System.Windows.Forms.ComboBox, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
   <data name="&gt;&gt;ComboImages.Parent" xml:space="preserve">
-    <value>$this</value>
+    <value>SplitContainer1.Panel2</value>
   </data>
   <data name="&gt;&gt;ComboImages.ZOrder" xml:space="preserve">
-    <value>11</value>
+    <value>3</value>
   </data>
   <metadata name="ListViewHashes.Locked" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
     <value>True</value>
   </metadata>
   <data name="ListViewHashes.Anchor" type="System.Windows.Forms.AnchorStyles, System.Windows.Forms">
-    <value>Bottom, Left</value>
+    <value>Bottom, Left, Right</value>
   </data>
   <data name="ListViewHashes.Font" type="System.Drawing.Font, System.Drawing">
     <value>Microsoft Sans Serif, 8.25pt</value>
   </data>
   <data name="ListViewHashes.Location" type="System.Drawing.Point, System.Drawing">
-    <value>12, 448</value>
+    <value>0, 393</value>
   </data>
   <data name="ListViewHashes.Size" type="System.Drawing.Size, System.Drawing">
     <value>298, 101</value>
   </data>
   <data name="ListViewHashes.TabIndex" type="System.Int32, mscorlib">
-    <value>4</value>
+    <value>2</value>
   </data>
   <data name="&gt;&gt;ListViewHashes.Name" xml:space="preserve">
     <value>ListViewHashes</value>
@@ -1455,10 +1455,10 @@
     <value>System.Windows.Forms.ListView, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
   <data name="&gt;&gt;ListViewHashes.Parent" xml:space="preserve">
-    <value>$this</value>
+    <value>SplitContainer1.Panel1</value>
   </data>
   <data name="&gt;&gt;ListViewHashes.ZOrder" xml:space="preserve">
-    <value>10</value>
+    <value>1</value>
   </data>
   <metadata name="LabelDropMessage.Locked" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
     <value>True</value>
@@ -1473,7 +1473,7 @@
     <value>Microsoft Sans Serif, 9.75pt, style=Bold</value>
   </data>
   <data name="LabelDropMessage.Location" type="System.Drawing.Point, System.Drawing">
-    <value>518, 307</value>
+    <value>186, 253</value>
   </data>
   <data name="LabelDropMessage.Size" type="System.Drawing.Size, System.Drawing">
     <value>273, 16</value>
@@ -1494,10 +1494,10 @@
     <value>System.Windows.Forms.Label, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
   <data name="&gt;&gt;LabelDropMessage.Parent" xml:space="preserve">
-    <value>$this</value>
+    <value>SplitContainer1.Panel2</value>
   </data>
   <data name="&gt;&gt;LabelDropMessage.ZOrder" xml:space="preserve">
-    <value>9</value>
+    <value>2</value>
   </data>
   <metadata name="ListViewFiles.Locked" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
     <value>True</value>
@@ -1689,7 +1689,7 @@
     <value>False</value>
   </data>
   <data name="ContextMenuFiles.Size" type="System.Drawing.Size, System.Drawing">
-    <value>190, 392</value>
+    <value>190, 370</value>
   </data>
   <data name="&gt;&gt;ContextMenuFiles.Name" xml:space="preserve">
     <value>ContextMenuFiles</value>
@@ -1701,13 +1701,13 @@
     <value>Microsoft Sans Serif, 8.25pt</value>
   </data>
   <data name="ListViewFiles.Location" type="System.Drawing.Point, System.Drawing">
-    <value>316, 82</value>
+    <value>0, 27</value>
   </data>
   <data name="ListViewFiles.Size" type="System.Drawing.Size, System.Drawing">
-    <value>677, 467</value>
+    <value>674, 467</value>
   </data>
   <data name="ListViewFiles.TabIndex" type="System.Int32, mscorlib">
-    <value>7</value>
+    <value>6</value>
   </data>
   <data name="&gt;&gt;ListViewFiles.Name" xml:space="preserve">
     <value>ListViewFiles</value>
@@ -1716,10 +1716,10 @@
     <value>System.Windows.Forms.ListView, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
   <data name="&gt;&gt;ListViewFiles.Parent" xml:space="preserve">
-    <value>$this</value>
+    <value>SplitContainer1.Panel2</value>
   </data>
   <data name="&gt;&gt;ListViewFiles.ZOrder" xml:space="preserve">
-    <value>13</value>
+    <value>4</value>
   </data>
   <metadata name="ComboImagesFiltered.Locked" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
     <value>True</value>
@@ -1728,13 +1728,13 @@
     <value>Top, Left, Right</value>
   </data>
   <data name="ComboImagesFiltered.Location" type="System.Drawing.Point, System.Drawing">
-    <value>316, 55</value>
+    <value>0, 0</value>
   </data>
   <data name="ComboImagesFiltered.Size" type="System.Drawing.Size, System.Drawing">
-    <value>606, 21</value>
+    <value>601, 21</value>
   </data>
   <data name="ComboImagesFiltered.TabIndex" type="System.Int32, mscorlib">
-    <value>5</value>
+    <value>3</value>
   </data>
   <data name="&gt;&gt;ComboImagesFiltered.Name" xml:space="preserve">
     <value>ComboImagesFiltered</value>
@@ -1743,10 +1743,10 @@
     <value>System.Windows.Forms.ComboBox, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
   <data name="&gt;&gt;ComboImagesFiltered.Parent" xml:space="preserve">
-    <value>$this</value>
+    <value>SplitContainer1.Panel2</value>
   </data>
   <data name="&gt;&gt;ComboImagesFiltered.ZOrder" xml:space="preserve">
-    <value>6</value>
+    <value>1</value>
   </data>
   <metadata name="BtnResetSort.Locked" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
     <value>True</value>
@@ -1755,13 +1755,13 @@
     <value>Top, Right</value>
   </data>
   <data name="BtnResetSort.Location" type="System.Drawing.Point, System.Drawing">
-    <value>928, 54</value>
+    <value>605, -1</value>
   </data>
   <data name="BtnResetSort.Size" type="System.Drawing.Size, System.Drawing">
     <value>65, 23</value>
   </data>
   <data name="BtnResetSort.TabIndex" type="System.Int32, mscorlib">
-    <value>6</value>
+    <value>5</value>
   </data>
   <data name="BtnResetSort.Text" xml:space="preserve">
     <value>Reset Sort</value>
@@ -1773,22 +1773,25 @@
     <value>System.Windows.Forms.Button, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
   <data name="&gt;&gt;BtnResetSort.Parent" xml:space="preserve">
-    <value>$this</value>
+    <value>SplitContainer1.Panel2</value>
   </data>
   <data name="&gt;&gt;BtnResetSort.ZOrder" xml:space="preserve">
-    <value>4</value>
+    <value>0</value>
   </data>
   <metadata name="btnRetry.Locked" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
     <value>True</value>
   </metadata>
+  <data name="btnRetry.Anchor" type="System.Windows.Forms.AnchorStyles, System.Windows.Forms">
+    <value>Top, Left, Right</value>
+  </data>
   <data name="btnRetry.Location" type="System.Drawing.Point, System.Drawing">
-    <value>216, 75</value>
+    <value>204, 20</value>
   </data>
   <data name="btnRetry.Size" type="System.Drawing.Size, System.Drawing">
     <value>75, 23</value>
   </data>
   <data name="btnRetry.TabIndex" type="System.Int32, mscorlib">
-    <value>3</value>
+    <value>0</value>
   </data>
   <data name="btnRetry.Text" xml:space="preserve">
     <value>Retry</value>
@@ -1800,10 +1803,10 @@
     <value>System.Windows.Forms.Button, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
   <data name="&gt;&gt;btnRetry.Parent" xml:space="preserve">
-    <value>$this</value>
+    <value>SplitContainer1.Panel1</value>
   </data>
   <data name="&gt;&gt;btnRetry.ZOrder" xml:space="preserve">
-    <value>3</value>
+    <value>0</value>
   </data>
   <metadata name="ContextMenuDirectory.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
     <value>717, 17</value>
@@ -1834,6 +1837,63 @@
   </data>
   <data name="&gt;&gt;ContextMenuDirectory.Type" xml:space="preserve">
     <value>System.Windows.Forms.ContextMenuStrip, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="SplitContainer1.Anchor" type="System.Windows.Forms.AnchorStyles, System.Windows.Forms">
+    <value>Top, Bottom, Left, Right</value>
+  </data>
+  <data name="SplitContainer1.IsSplitterFixed" type="System.Boolean, mscorlib">
+    <value>True</value>
+  </data>
+  <data name="SplitContainer1.Location" type="System.Drawing.Point, System.Drawing">
+    <value>12, 55</value>
+  </data>
+  <data name="&gt;&gt;SplitContainer1.Panel1.Name" xml:space="preserve">
+    <value>SplitContainer1.Panel1</value>
+  </data>
+  <data name="&gt;&gt;SplitContainer1.Panel1.Type" xml:space="preserve">
+    <value>System.Windows.Forms.SplitterPanel, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;SplitContainer1.Panel1.Parent" xml:space="preserve">
+    <value>SplitContainer1</value>
+  </data>
+  <data name="&gt;&gt;SplitContainer1.Panel1.ZOrder" xml:space="preserve">
+    <value>0</value>
+  </data>
+  <data name="&gt;&gt;SplitContainer1.Panel2.Name" xml:space="preserve">
+    <value>SplitContainer1.Panel2</value>
+  </data>
+  <data name="&gt;&gt;SplitContainer1.Panel2.Type" xml:space="preserve">
+    <value>System.Windows.Forms.SplitterPanel, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;SplitContainer1.Panel2.Parent" xml:space="preserve">
+    <value>SplitContainer1</value>
+  </data>
+  <data name="&gt;&gt;SplitContainer1.Panel2.ZOrder" xml:space="preserve">
+    <value>1</value>
+  </data>
+  <data name="SplitContainer1.Size" type="System.Drawing.Size, System.Drawing">
+    <value>981, 494</value>
+  </data>
+  <data name="SplitContainer1.SplitterDistance" type="System.Int32, mscorlib">
+    <value>298</value>
+  </data>
+  <data name="SplitContainer1.SplitterWidth" type="System.Int32, mscorlib">
+    <value>6</value>
+  </data>
+  <data name="SplitContainer1.TabIndex" type="System.Int32, mscorlib">
+    <value>2</value>
+  </data>
+  <data name="&gt;&gt;SplitContainer1.Name" xml:space="preserve">
+    <value>SplitContainer1</value>
+  </data>
+  <data name="&gt;&gt;SplitContainer1.Type" xml:space="preserve">
+    <value>System.Windows.Forms.SplitContainer, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;SplitContainer1.Parent" xml:space="preserve">
+    <value>$this</value>
+  </data>
+  <data name="&gt;&gt;SplitContainer1.ZOrder" xml:space="preserve">
+    <value>3</value>
   </data>
   <metadata name="$this.Localizable" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
     <value>True</value>

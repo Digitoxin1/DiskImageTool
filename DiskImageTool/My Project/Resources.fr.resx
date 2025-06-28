@@ -388,7 +388,7 @@
     <value>ID du système de fichiers</value>
   </data>
   <data name="BootSector_JmpBoot" xml:space="preserve">
-    <value>Saut du chargeur de démarrage</value>
+    <value>Saut d’amorçage</value>
   </data>
   <data name="BootSector_Reserved" xml:space="preserve">
     <value>Réservé</value>
@@ -400,7 +400,7 @@
     <value>Numéro de série du volume</value>
   </data>
   <data name="BPB.RootEntryCount" xml:space="preserve">
-    <value>Entrées du répertoire racine</value>
+    <value>Entrées répertoire racine</value>
   </data>
   <data name="BPB_BytesPerSector" xml:space="preserve">
     <value>Octets par secteur</value>
@@ -469,7 +469,7 @@
     <value>Tous</value>
   </data>
   <data name="Filter_Bootstrap_Unknown" xml:space="preserve">
-    <value>Chargeur de démarrage - Inconnu</value>
+    <value>Amorçage - Inconnu</value>
   </data>
   <data name="Filter_Database_MismatchedStatus" xml:space="preserve">
     <value>Base de données - État incohérent</value>
@@ -547,7 +547,7 @@
     <value>Enregistrement de démarrage</value>
   </data>
   <data name="SummaryPanel_Bootstrap" xml:space="preserve">
-    <value>Chargeur de démarrage</value>
+    <value>Amorçage</value>
   </data>
   <data name="SummaryPanel_Company" xml:space="preserve">
     <value>Société</value>
@@ -559,7 +559,7 @@
     <value>Compilation</value>
   </data>
   <data name="SummaryPanel_CopyProtection" xml:space="preserve">
-    <value>Protection contre la copie</value>
+    <value>Protection copie</value>
   </data>
   <data name="SummaryPanel_CustomBootLoader" xml:space="preserve">
     <value>Chargeur de démarrage personnalisé</value>
@@ -619,7 +619,7 @@
     <value>Toutes les pistes</value>
   </data>
   <data name="Label_BitOffset" xml:space="preserve">
-    <value>Décalage de bit</value>
+    <value>Déc. bit</value>
   </data>
   <data name="Label_Bits" xml:space="preserve">
     <value>bits</value>
@@ -628,7 +628,7 @@
     <value>Bloc(h)</value>
   </data>
   <data name="Label_ByteAligned" xml:space="preserve">
-    <value>Aligné sur un octet</value>
+    <value>Align. octet</value>
   </data>
   <data name="Label_Deleted" xml:space="preserve">
     <value>Supprimé</value>
@@ -839,16 +839,16 @@ Valeurs typiques:
     <value>Espace libre</value>
   </data>
   <data name="Label_Gap" xml:space="preserve">
-    <value>Intervalle</value>
+    <value>Gap</value>
   </data>
   <data name="Bitstream_Gap" xml:space="preserve">
-    <value>INTERVALLE</value>
+    <value>GAP</value>
   </data>
   <data name="BootSectorForm_Help_VolumeSerialNumberButton" xml:space="preserve">
     <value>Générer un nouveau numéro de série de volume à partir d’une date et d’une heure fournies</value>
   </data>
   <data name="SummaryPanel_SurfaceData" xml:space="preserve">
-    <value>Contient des données de surface</value>
+    <value>Données surface</value>
   </data>
   <data name="SummaryPanel_WeakBits" xml:space="preserve">
     <value>Contient des bits faibles</value>
@@ -1284,7 +1284,7 @@ Remarque : cette valeur doit être {1} pour toutes les disquettes</value>
     <value>Nombre total de secteurs dans le volume</value>
   </data>
   <data name="BPB_SectorCountSmall" xml:space="preserve">
-    <value>Nombre total de secteurs</value>
+    <value>Secteurs totaux</value>
   </data>
   <data name="SummaryPanel_TotalSpace" xml:space="preserve">
     <value>Espace total</value>

@@ -13,7 +13,7 @@ Public Class HexViewRawForm
     Private Const PADDING_ROWS As Integer = 6
     Private Const SECTOR_HEIGHT As Integer = 16
     Private Const SECTOR_WIDTH As Integer = 24
-    Private ReadOnly _ToolTip As ToolTip
+    Private ReadOnly _ToolTip As TwoColumnToolTip
     Private _AllTracks As Boolean
     Private _Bitstream As BitArray
     Private _CachedSelectedLength As Long = -1
@@ -48,7 +48,7 @@ Public Class HexViewRawForm
         InitializeComponent()
 
         ' Add any initialization after the InitializeComponent() call.
-        _ToolTip = New ToolTip()
+        _ToolTip = New TwoColumnToolTip()
         _FloppyImage = Disk.Image
         _SectorsPerTrack = BuildBPB(Disk.DiskFormat).SectorsPerTrack
         _Track = Track
@@ -1397,21 +1397,21 @@ Public Class HexViewRawForm
 
         If SectorIndex > -1 And SectorIndex < _RegionData.Sectors.Count Then
             Dim Sector = _RegionData.Sectors(SectorIndex)
-            TooltipText = FormatLabelPair(My.Resources.Label_SectorId, vbTab & vbTab & Sector.SectorId)
-            TooltipText &= Environment.NewLine & FormatLabelPair(My.Resources.Label_Size, vbTab & vbTab & vbTab & Sector.DataLength)
+            TooltipText = FormatLabelPair(My.Resources.Label_SectorId, vbTab & Sector.SectorId)
+            TooltipText &= Environment.NewLine & FormatLabelPair(My.Resources.Label_Size, vbTab & Sector.DataLength)
 
             If Sector.Track <> _Track Then
-                TooltipText &= Environment.NewLine & FormatLabelPair(My.Resources.Label_Track, vbTab & vbTab & vbTab & Sector.Track)
+                TooltipText &= Environment.NewLine & FormatLabelPair(My.Resources.Label_Track, vbTab & Sector.Track)
             End If
 
             If Sector.Side <> _Side Then
-                TooltipText &= Environment.NewLine & FormatLabelPair(My.Resources.Label_Side, vbTab & vbTab & vbTab & Sector.Side)
+                TooltipText &= Environment.NewLine & FormatLabelPair(My.Resources.Label_Side, vbTab & Sector.Side)
             End If
 
             TooltipText &= Environment.NewLine & FormatLabelPair(My.Resources.Bitstream_AddressChecksum, vbTab & If(Sector.IDAMChecksumValid, My.Resources.Label_Valid, My.Resources.Label_Invalid))
 
             If Sector.HasData Then
-                TooltipText &= Environment.NewLine & FormatLabelPair(My.Resources.Bitstream_DataChecksum, vbTab & vbTab & If(Sector.DataChecksumValid, My.Resources.Label_Valid, My.Resources.Label_Invalid))
+                TooltipText &= Environment.NewLine & FormatLabelPair(My.Resources.Bitstream_DataChecksum, vbTab & If(Sector.DataChecksumValid, My.Resources.Label_Valid, My.Resources.Label_Invalid))
             End If
 
             Dim DAMText As String
