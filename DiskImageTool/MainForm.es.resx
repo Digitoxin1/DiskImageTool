@@ -294,9 +294,6 @@
   <data name="MainMenuExperimental.Text" xml:space="preserve">
     <value>Experimental</value>
   </data>
-  <data name="MenuOptionsExportUnknown.Text" xml:space="preserve">
-    <value>Exportar imágenes desconocidas al escanear</value>
-  </data>
   <data name="FileExt.Text" xml:space="preserve">
     <value>Ext</value>
   </data>

@@ -909,43 +909,34 @@
     <value>F&amp;ilters</value>
   </data>
   <data name="MenuOptionsCreateBackup.Size" type="System.Drawing.Size, System.Drawing">
-    <value>248, 22</value>
+    <value>224, 22</value>
   </data>
   <data name="MenuOptionsCreateBackup.Text" xml:space="preserve">
     <value>Create Backup on Save</value>
   </data>
   <data name="MenuOptionsCheckUpdate.Size" type="System.Drawing.Size, System.Drawing">
-    <value>248, 22</value>
+    <value>224, 22</value>
   </data>
   <data name="MenuOptionsCheckUpdate.Text" xml:space="preserve">
     <value>Check for Update on Startup</value>
   </data>
   <data name="MenuOptionsDragDrop.Size" type="System.Drawing.Size, System.Drawing">
-    <value>248, 22</value>
+    <value>224, 22</value>
   </data>
   <data name="MenuOptionsDragDrop.Text" xml:space="preserve">
     <value>Import using Drag and Drop</value>
   </data>
   <data name="MenuOptionsDisplayTitles.Size" type="System.Drawing.Size, System.Drawing">
-    <value>248, 22</value>
+    <value>224, 22</value>
   </data>
   <data name="MenuOptionsDisplayTitles.Text" xml:space="preserve">
     <value>Display Titles</value>
   </data>
   <data name="MenuOptionsDisplayLanguage.Size" type="System.Drawing.Size, System.Drawing">
-    <value>248, 22</value>
+    <value>224, 22</value>
   </data>
   <data name="MenuOptionsDisplayLanguage.Text" xml:space="preserve">
     <value>Language</value>
-  </data>
-  <data name="MenuOptionsSeparatorDebug.Size" type="System.Drawing.Size, System.Drawing">
-    <value>245, 6</value>
-  </data>
-  <data name="MenuOptionsExportUnknown.Size" type="System.Drawing.Size, System.Drawing">
-    <value>248, 22</value>
-  </data>
-  <data name="MenuOptionsExportUnknown.Text" xml:space="preserve">
-    <value>Export Unknown Images on Scan</value>
   </data>
   <data name="MainMenuOptions.Size" type="System.Drawing.Size, System.Drawing">
     <value>61, 20</value>
@@ -1410,7 +1401,7 @@
     <value>0, 0</value>
   </data>
   <data name="ComboImages.Size" type="System.Drawing.Size, System.Drawing">
-    <value>601, 21</value>
+    <value>599, 21</value>
   </data>
   <data name="ComboImages.TabIndex" type="System.Int32, mscorlib">
     <value>4</value>
@@ -1473,7 +1464,7 @@
     <value>Microsoft Sans Serif, 9.75pt, style=Bold</value>
   </data>
   <data name="LabelDropMessage.Location" type="System.Drawing.Point, System.Drawing">
-    <value>186, 253</value>
+    <value>185, 253</value>
   </data>
   <data name="LabelDropMessage.Size" type="System.Drawing.Size, System.Drawing">
     <value>273, 16</value>
@@ -1704,7 +1695,7 @@
     <value>0, 27</value>
   </data>
   <data name="ListViewFiles.Size" type="System.Drawing.Size, System.Drawing">
-    <value>674, 467</value>
+    <value>672, 467</value>
   </data>
   <data name="ListViewFiles.TabIndex" type="System.Int32, mscorlib">
     <value>6</value>
@@ -1731,7 +1722,7 @@
     <value>0, 0</value>
   </data>
   <data name="ComboImagesFiltered.Size" type="System.Drawing.Size, System.Drawing">
-    <value>601, 21</value>
+    <value>599, 21</value>
   </data>
   <data name="ComboImagesFiltered.TabIndex" type="System.Int32, mscorlib">
     <value>3</value>
@@ -1755,7 +1746,7 @@
     <value>Top, Right</value>
   </data>
   <data name="BtnResetSort.Location" type="System.Drawing.Point, System.Drawing">
-    <value>605, -1</value>
+    <value>603, -1</value>
   </data>
   <data name="BtnResetSort.Size" type="System.Drawing.Size, System.Drawing">
     <value>65, 23</value>
@@ -3632,18 +3623,6 @@
     <value>MenuOptionsDisplayLanguage</value>
   </data>
   <data name="&gt;&gt;MenuOptionsDisplayLanguage.Type" xml:space="preserve">
-    <value>System.Windows.Forms.ToolStripMenuItem, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="&gt;&gt;MenuOptionsSeparatorDebug.Name" xml:space="preserve">
-    <value>MenuOptionsSeparatorDebug</value>
-  </data>
-  <data name="&gt;&gt;MenuOptionsSeparatorDebug.Type" xml:space="preserve">
-    <value>System.Windows.Forms.ToolStripSeparator, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="&gt;&gt;MenuOptionsExportUnknown.Name" xml:space="preserve">
-    <value>MenuOptionsExportUnknown</value>
-  </data>
-  <data name="&gt;&gt;MenuOptionsExportUnknown.Type" xml:space="preserve">
     <value>System.Windows.Forms.ToolStripMenuItem, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
   <data name="&gt;&gt;MainMenuUpdateAvailable.Name" xml:space="preserve">

@@ -1442,4 +1442,7 @@ Hinweis: Diese ID wird normalerweise erzeugt, indem das aktuelle Datum und die a
   <data name="BootSectorForm_Help_VolumeSerialNumberButton" xml:space="preserve">
     <value>Neue Volume-Seriennummer basierend auf einem vom Benutzer angegebenen Datum und Uhrzeit generieren</value>
   </data>
+  <data name="Menu_ExportUnknown" xml:space="preserve">
+    <value>Unbekannte Abbilder beim Scannen exportieren</value>
+  </data>
 </root>

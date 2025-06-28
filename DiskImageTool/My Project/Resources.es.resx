@@ -1442,4 +1442,7 @@ Nota: Este valor debe ser {1} para todos los disquetes</value>
   <data name="FileType_ZipArchive" xml:space="preserve">
     <value>Archivo Zip</value>
   </data>
+  <data name="Menu_ExportUnknown" xml:space="preserve">
+    <value>Exportar imágenes desconocidas al escanear</value>
+  </data>
 </root>

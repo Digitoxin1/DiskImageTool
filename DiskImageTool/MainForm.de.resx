@@ -315,9 +315,6 @@
   <data name="MenuOptionsDisplayLanguage.Text" xml:space="preserve">
     <value>Sprache</value>
   </data>
-  <data name="MenuOptionsExportUnknown.Text" xml:space="preserve">
-    <value>Unbekannte Abbilder beim Scannen exportieren</value>
-  </data>
   <data name="MainMenuOptions.Text" xml:space="preserve">
     <value>&amp;Optionen</value>
   </data>

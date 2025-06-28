@@ -1442,4 +1442,7 @@ Remarque : cette valeur doit être {1} pour toutes les disquettes</value>
   <data name="BootSectorForm_Help_Unused" xml:space="preserve">
     <value>Non utilisé</value>
   </data>
+  <data name="Menu_ExportUnknown" xml:space="preserve">
+    <value>Exporter les images inconnues lors de l’analyse</value>
+  </data>
 </root>

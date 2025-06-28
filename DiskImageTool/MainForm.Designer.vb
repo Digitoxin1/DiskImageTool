@@ -123,8 +123,6 @@ Partial Class MainForm
         Me.MenuOptionsDragDrop = New System.Windows.Forms.ToolStripMenuItem()
         Me.MenuOptionsDisplayTitles = New System.Windows.Forms.ToolStripMenuItem()
         Me.MenuOptionsDisplayLanguage = New System.Windows.Forms.ToolStripMenuItem()
-        Me.MenuOptionsSeparatorDebug = New System.Windows.Forms.ToolStripSeparator()
-        Me.MenuOptionsExportUnknown = New System.Windows.Forms.ToolStripMenuItem()
         Me.MainMenuUpdateAvailable = New System.Windows.Forms.ToolStripMenuItem()
         Me.ToolStripTop = New System.Windows.Forms.ToolStrip()
         Me.ToolStripSearchText = New DiskImageTool.ToolStripSpringTextBox()
@@ -718,7 +716,7 @@ Partial Class MainForm
         '
         'MainMenuOptions
         '
-        Me.MainMenuOptions.DropDownItems.AddRange(New System.Windows.Forms.ToolStripItem() {Me.MenuOptionsCreateBackup, Me.MenuOptionsCheckUpdate, Me.MenuOptionsDragDrop, Me.MenuOptionsDisplayTitles, Me.MenuOptionsDisplayLanguage, Me.MenuOptionsSeparatorDebug, Me.MenuOptionsExportUnknown})
+        Me.MainMenuOptions.DropDownItems.AddRange(New System.Windows.Forms.ToolStripItem() {Me.MenuOptionsCreateBackup, Me.MenuOptionsCheckUpdate, Me.MenuOptionsDragDrop, Me.MenuOptionsDisplayTitles, Me.MenuOptionsDisplayLanguage})
         Me.MainMenuOptions.Name = "MainMenuOptions"
         resources.ApplyResources(Me.MainMenuOptions, "MainMenuOptions")
         '
@@ -750,17 +748,6 @@ Partial Class MainForm
         '
         Me.MenuOptionsDisplayLanguage.Name = "MenuOptionsDisplayLanguage"
         resources.ApplyResources(Me.MenuOptionsDisplayLanguage, "MenuOptionsDisplayLanguage")
-        '
-        'MenuOptionsSeparatorDebug
-        '
-        Me.MenuOptionsSeparatorDebug.Name = "MenuOptionsSeparatorDebug"
-        resources.ApplyResources(Me.MenuOptionsSeparatorDebug, "MenuOptionsSeparatorDebug")
-        '
-        'MenuOptionsExportUnknown
-        '
-        Me.MenuOptionsExportUnknown.CheckOnClick = True
-        Me.MenuOptionsExportUnknown.Name = "MenuOptionsExportUnknown"
-        resources.ApplyResources(Me.MenuOptionsExportUnknown, "MenuOptionsExportUnknown")
         '
         'MainMenuUpdateAvailable
         '
@@ -1355,8 +1342,6 @@ Partial Class MainForm
     Friend WithEvents MenuDirectoryImportFiles As ToolStripMenuItem
     Friend WithEvents MenuDirectoryNewDirectory As ToolStripMenuItem
     Friend WithEvents MainMenuOptions As ToolStripMenuItem
-    Friend WithEvents MenuOptionsSeparatorDebug As ToolStripSeparator
-    Friend WithEvents MenuOptionsExportUnknown As ToolStripMenuItem
     Friend WithEvents StatusStripBottom As StatusStrip
     Friend WithEvents ToolStripTop As ToolStrip
     Friend WithEvents MenuOptionsDragDrop As ToolStripMenuItem

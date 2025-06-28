@@ -3438,6 +3438,15 @@ Namespace My.Resources
         End Property
         
         '''<summary>
+        '''  Looks up a localized string similar to Export Unknown Images on Scan.
+        '''</summary>
+        Friend ReadOnly Property Menu_ExportUnknown() As String
+            Get
+                Return ResourceManager.GetString("Menu_ExportUnknown", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
         '''  Looks up a localized string similar to &amp;Bad.
         '''</summary>
         Friend ReadOnly Property Menu_FATEdit_Bad() As String

@@ -2505,12 +2505,18 @@ Public Class MainForm
 
     Private Sub InitDebugFeatures(Enabled As Boolean)
         If Enabled Then
-            MenuOptionsSeparatorDebug.Visible = True
-            MenuOptionsExportUnknown.Visible = True
-            MenuOptionsExportUnknown.Checked = _ExportUnknownImages
-        Else
-            MenuOptionsSeparatorDebug.Visible = False
-            MenuOptionsExportUnknown.Visible = False
+            MainMenuOptions.DropDownItems.Add(New ToolStripSeparator)
+
+            Dim Item = New ToolStripMenuItem With {
+                .Name = "MenuOptionsExportUnknown",
+                .Text = My.Resources.Menu_ExportUnknown,
+                .CheckOnClick = True,
+                .Checked = _ExportUnknownImages
+            }
+
+            AddHandler Item.CheckStateChanged, AddressOf MenuOptionsExportUnknown_CheckStateChanged
+
+            MainMenuOptions.DropDownItems.Add(Item)
         End If
     End Sub
 
@@ -4626,8 +4632,8 @@ Public Class MainForm
         End If
     End Sub
 
-    Private Sub MenuOptionsExportUnknown_CheckStateChanged(sender As Object, e As EventArgs) Handles MenuOptionsExportUnknown.CheckStateChanged
-        _ExportUnknownImages = MenuOptionsExportUnknown.Checked
+    Private Sub MenuOptionsExportUnknown_CheckStateChanged(sender As Object, e As EventArgs)
+        _ExportUnknownImages = DirectCast(sender, ToolStripMenuItem).Checked
     End Sub
 
     Private Sub MenuToolsTrackLayout_Click(sender As Object, e As EventArgs) Handles MenuToolsTrackLayout.Click
