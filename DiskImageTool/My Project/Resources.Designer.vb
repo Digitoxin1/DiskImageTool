@@ -625,7 +625,7 @@ Namespace My.Resources
         '''</summary>
         Friend ReadOnly Property BPB_RootEntryCount() As String
             Get
-                Return ResourceManager.GetString("BPB.RootEntryCount", resourceCulture)
+                Return ResourceManager.GetString("BPB_RootEntryCount", resourceCulture)
             End Get
         End Property
         
@@ -2885,33 +2885,6 @@ Namespace My.Resources
         Friend ReadOnly Property Label_Gap() As String
             Get
                 Return ResourceManager.GetString("Label_Gap", resourceCulture)
-            End Get
-        End Property
-        
-        '''<summary>
-        '''  Looks up a localized string similar to CRC32.
-        '''</summary>
-        Friend ReadOnly Property Label_Hash_CRC32() As String
-            Get
-                Return ResourceManager.GetString("Label_Hash_CRC32", resourceCulture)
-            End Get
-        End Property
-        
-        '''<summary>
-        '''  Looks up a localized string similar to MD5.
-        '''</summary>
-        Friend ReadOnly Property Label_Hash_MD5() As String
-            Get
-                Return ResourceManager.GetString("Label_Hash_MD5", resourceCulture)
-            End Get
-        End Property
-        
-        '''<summary>
-        '''  Looks up a localized string similar to SHA-1.
-        '''</summary>
-        Friend ReadOnly Property Label_Hash_SHA1() As String
-            Get
-                Return ResourceManager.GetString("Label_Hash_SHA1", resourceCulture)
             End Get
         End Property
         

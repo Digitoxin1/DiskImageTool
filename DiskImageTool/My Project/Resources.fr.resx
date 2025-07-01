@@ -399,7 +399,7 @@
   <data name="BootSector_VolumeSerialNumber" xml:space="preserve">
     <value>Numéro de série du volume</value>
   </data>
-  <data name="BPB.RootEntryCount" xml:space="preserve">
+  <data name="BPB_RootEntryCount" xml:space="preserve">
     <value>Entrées répertoire racine</value>
   </data>
   <data name="BPB_BytesPerSector" xml:space="preserve">

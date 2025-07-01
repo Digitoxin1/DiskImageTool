@@ -1144,7 +1144,7 @@ Típicamente indica qué sistema formateó el volumen.</value>
   <data name="HexView_RootDirectory" xml:space="preserve">
     <value>Directorio raíz</value>
   </data>
-  <data name="BPB.RootEntryCount" xml:space="preserve">
+  <data name="BPB_RootEntryCount" xml:space="preserve">
     <value>Entradas dir. raíz</value>
   </data>
   <data name="SummaryPanel_RPM" xml:space="preserve">

@@ -2784,19 +2784,25 @@ Public Class MainForm
         Return Response
     End Function
 
-    Private Sub PopulateHashPanel(Disk As Disk, MD5 As String)
-        With ListViewHashes
-            .BeginUpdate()
-            .Items.Clear()
+    Private Sub ToggleHashPanelVisible(Visible As Boolean)
+        For Each Control As Control In FlowLayoutPanelHashes.Controls
+            Control.Visible = Visible
+        Next
+    End Sub
 
-            If Disk IsNot Nothing Then
-                .AddItem(My.Resources.Label_Hash_CRC32, Disk.Image.GetCRC32, False)
-                .AddItem(My.Resources.Label_Hash_MD5, MD5, False)
-                .AddItem(My.Resources.Label_Hash_SHA1, Disk.Image.GetSHA1Hash, False)
-            End If
-            .EndUpdate()
-            .Refresh()
-        End With
+    Private Sub PopulateHashPanel(Disk As Disk, MD5 As String)
+        If Disk IsNot Nothing Then
+            LabelCRC32.Text = Disk.Image.GetCRC32
+            LabelMD5.Text = MD5
+            LabelSHA1.Text = Disk.Image.GetSHA1Hash
+            ToggleHashPanelVisible(True)
+        Else
+            LabelCRC32.Text = ""
+            LabelMD5.Text = ""
+            LabelSHA1.Text = ""
+            ToggleHashPanelVisible(False)
+        End If
+        FlowLayoutPanelHashes.Refresh()
     End Sub
 
     Private Sub AddLanguageMenuItem(Text As String, Tag As String)
@@ -2873,7 +2879,7 @@ Public Class MainForm
 
     Private Sub PositionControls()
         ListViewSummary.Width = ListViewSummary.Parent.Width
-        ListViewHashes.Width = ListViewHashes.Parent.Width
+        FlowLayoutPanelHashes.Width = FlowLayoutPanelHashes.Parent.Width
         btnRetry.Left = btnRetry.Parent.Width - btnRetry.Width - 20
         ListViewFiles.Width = ListViewFiles.Parent.Width
         BtnResetSort.Left = BtnResetSort.Parent.Width - BtnResetSort.Width
@@ -3578,7 +3584,7 @@ Public Class MainForm
         btnRetry.Visible = False
 
         ListViewSummary.Items.Clear()
-        ListViewHashes.Items.Clear()
+        ToggleHashPanelVisible(False)
 
         ComboImagesReset()
         ListViewFilesReset()
@@ -4315,17 +4321,9 @@ Public Class MainForm
         ComboImages.SelectedItem = ComboImagesFiltered.SelectedItem
     End Sub
 
-    Private Sub ContextMenuCopy_ItemClicked(sender As Object, e As ToolStripItemClickedEventArgs) Handles ContextMenuCopy1.ItemClicked, ContextMenuCopy2.ItemClicked
-        Dim LV As ListView = Nothing
-
-        If sender.name = CONTEXT_MENU_SUMMARY_KEY Then
-            LV = ListViewSummary
-        ElseIf sender.name = CONTEXT_MENU_HASH_KEY Then
-            LV = ListViewHashes
-        End If
-
-        If LV IsNot Nothing AndAlso LV.FocusedItem IsNot Nothing Then
-            Dim Item = LV.FocusedItem.SubItems.Item(1)
+    Private Sub ContextMenuCopy_ItemClicked(sender As Object, e As ToolStripItemClickedEventArgs) Handles ContextMenuCopy1.ItemClicked
+        If ListViewSummary IsNot Nothing AndAlso ListViewSummary.FocusedItem IsNot Nothing Then
+            Dim Item = ListViewSummary.FocusedItem.SubItems.Item(1)
             Dim Value As String
             If Item.Tag Is Nothing Then
                 Value = Item.Text
@@ -4336,18 +4334,28 @@ Public Class MainForm
         End If
     End Sub
 
-    Private Sub ContextMenuCopy_Opening(sender As Object, e As CancelEventArgs) Handles ContextMenuCopy1.Opening, ContextMenuCopy2.Opening
-        Dim LV As ListView = Nothing
-        Dim CM As ContextMenuStrip = sender
+    Private Sub ContextMenuCopy2_ItemClicked(sender As Object, e As ToolStripItemClickedEventArgs) Handles ContextMenuCopy2.ItemClicked
+        Dim Label As Label = CType(sender.SourceControl, Label)
+        Dim Value As String
 
-        If CM.Name = CONTEXT_MENU_SUMMARY_KEY Then
-            LV = ListViewSummary
-        ElseIf CM.Name = CONTEXT_MENU_HASH_KEY Then
-            LV = ListViewHashes
+        If Label Is LabelCRC32 Or Label Is LabelCRC32Caption Then
+            Value = LabelCRC32.Text
+        ElseIf Label Is LabelMD5 Or Label Is LabelMD5Caption Then
+            Value = LabelMD5.Text
+        ElseIf Label Is LabelSHA1 Or Label Is LabelSHA1Caption Then
+            Value = LabelSHA1.Text
+        Else
+            Exit Sub
         End If
 
-        If LV IsNot Nothing AndAlso LV.FocusedItem IsNot Nothing Then
-            Dim Item = LV.FocusedItem
+        Clipboard.SetText(Value)
+    End Sub
+
+    Private Sub ContextMenuCopy_Opening(sender As Object, e As CancelEventArgs) Handles ContextMenuCopy1.Opening
+        Dim CM As ContextMenuStrip = sender
+
+        If ListViewSummary IsNot Nothing AndAlso ListViewSummary.FocusedItem IsNot Nothing Then
+            Dim Item = ListViewSummary.FocusedItem
 
             If Item.SubItems.Count > 1 Then
                 Dim Text As String
@@ -4363,6 +4371,25 @@ Public Class MainForm
         Else
             e.Cancel = True
         End If
+    End Sub
+
+    Private Sub ContextMenuCopy2_Opening(sender As Object, e As CancelEventArgs) Handles ContextMenuCopy2.Opening
+        Dim CM As ContextMenuStrip = sender
+        Dim Label As Label = CType(sender.SourceControl, Label)
+        Dim Text As String
+
+        If Label Is LabelCRC32 Or Label Is LabelCRC32Caption Then
+            Text = LabelCRC32Caption.Text
+        ElseIf Label Is LabelMD5 Or Label Is LabelMD5Caption Then
+            Text = LabelMD5Caption.Text
+        ElseIf Label Is LabelSHA1 Or Label Is LabelSHA1Caption Then
+            Text = LabelSHA1Caption.Text
+        Else
+            e.Cancel = True
+            Exit Sub
+        End If
+
+        CM.Items(0).Text = String.Format(My.Resources.Menu_CopyValueByName, Text)
     End Sub
 
     Private Sub ContextMenuFiles_Opening(sender As Object, e As CancelEventArgs) Handles ContextMenuFiles.Opening
@@ -4389,12 +4416,12 @@ Public Class MainForm
         FiltersApply(False)
     End Sub
 
-    Private Sub File_DragDrop(sender As Object, e As DragEventArgs) Handles ComboImages.DragDrop, ComboImagesFiltered.DragDrop, LabelDropMessage.DragDrop, ListViewFiles.DragDrop, ListViewHashes.DragDrop, ListViewSummary.DragDrop
+    Private Sub File_DragDrop(sender As Object, e As DragEventArgs) Handles ComboImages.DragDrop, ComboImagesFiltered.DragDrop, LabelDropMessage.DragDrop, ListViewFiles.DragDrop, ListViewSummary.DragDrop, FlowLayoutPanelHashes.DragDrop
         Dim Files As String() = e.Data.GetData(DataFormats.FileDrop)
         ProcessFileDrop(Files, True)
     End Sub
 
-    Private Sub File_DragEnter(sender As Object, e As DragEventArgs) Handles ComboImages.DragEnter, ComboImagesFiltered.DragEnter, LabelDropMessage.DragEnter, ListViewFiles.DragEnter, ListViewHashes.DragEnter, ListViewSummary.DragEnter
+    Private Sub File_DragEnter(sender As Object, e As DragEventArgs) Handles ComboImages.DragEnter, ComboImagesFiltered.DragEnter, LabelDropMessage.DragEnter, ListViewFiles.DragEnter, ListViewSummary.DragEnter, FlowLayoutPanelHashes.DragEnter
         FileDropStart(e)
     End Sub
 
@@ -4504,10 +4531,6 @@ Public Class MainForm
         End If
     End Sub
 
-    Private Sub ListViewHashes_ItemSelectionChanged(sender As Object, e As ListViewItemSelectionChangedEventArgs) Handles ListViewHashes.ItemSelectionChanged
-        e.Item.Selected = False
-    End Sub
-
     Private Sub ListViewSummary_DrawItem(sender As Object, e As DrawListViewItemEventArgs) Handles ListViewSummary.DrawItem
         e.DrawDefault = True
     End Sub
@@ -4589,7 +4612,9 @@ Public Class MainForm
             .Name = CONTEXT_MENU_HASH_KEY
         }
         ContextMenuCopy2.Items.Add(My.Resources.Menu_CopyValue)
-        ListViewHashes.ContextMenuStrip = ContextMenuCopy2
+        For Each Control As Control In FlowLayoutPanelHashes.Controls
+            Control.ContextMenuStrip = ContextMenuCopy2
+        Next
 
         InitDebugFeatures(My.Settings.Debug)
 

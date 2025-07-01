@@ -297,18 +297,6 @@
   <data name="Label_FilteredImageCountSingular" xml:space="preserve">
     <value>{0} of {1} Image</value>
   </data>
-  <data name="Label_Hash_CRC32" xml:space="preserve">
-    <value>CRC32</value>
-    <comment>@Invariant</comment>
-  </data>
-  <data name="Label_Hash_MD5" xml:space="preserve">
-    <value>MD5</value>
-    <comment>@Invariant</comment>
-  </data>
-  <data name="Label_Hash_SHA1" xml:space="preserve">
-    <value>SHA-1</value>
-    <comment>@Invariant</comment>
-  </data>
   <data name="Label_ImageCountPlural" xml:space="preserve">
     <value>{0} Images</value>
   </data>
@@ -543,7 +531,7 @@
   <data name="BootSector_VolumeSerialNumber" xml:space="preserve">
     <value>Volume Serial Number</value>
   </data>
-  <data name="BPB.RootEntryCount" xml:space="preserve">
+  <data name="BPB_RootEntryCount" xml:space="preserve">
     <value>Root Directory Entries</value>
   </data>
   <data name="BPB_BytesPerSector" xml:space="preserve">

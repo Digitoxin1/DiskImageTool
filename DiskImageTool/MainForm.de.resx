@@ -307,7 +307,7 @@
     <value>Beim Start nach Updates suchen</value>
   </data>
   <data name="MenuOptionsDragDrop.Text" xml:space="preserve">
-    <value>Import per Drag &amp; Drop</value>
+    <value>Import per Drag &amp;&amp; Drop</value>
   </data>
   <data name="MenuOptionsDisplayTitles.Text" xml:space="preserve">
     <value>Titel anzeigen</value>
