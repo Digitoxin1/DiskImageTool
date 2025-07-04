@@ -1283,9 +1283,21 @@
     </release>
   </title>
   <title name="Castle of Dr. Brain" publisher="Sierra On-Line, Inc.">
-    <release year="1991" version="1.0, Int. 10.30.91" media="1.44M" status="U">
-      <disk md5="17091A2865643BCC7E973257D844E665" disk="1"/>
-      <disk md5="E4E48AB40EB7E703749BADAB480E678D" disk="2"/>
+    <release year="1991" version="1.0, Int. 10.30.91">
+      <media media="360K" status="V">
+        <disk md5="63BFD011E79EE16A2C7FDA9C4F5FA3D4" disk="1" />
+        <disk md5="C461CD69BED3D750FB38E03C90D534ED" disk="2" />
+        <disk md5="2F94C5F453A7294EAEFF39740183E9B1" disk="3" />
+        <disk md5="521A5FAC371005487A3E9287D1933974" disk="4" />
+        <disk md5="4800434BC1FFFA2D0D0A8C4752EC3EB0" disk="5" />
+        <disk md5="EE6E8F52D2CC58524737D7CFE0097337" disk="6" />
+        <disk md5="5D7F635C5A910908557897E26970C50B" disk="7" />
+        <disk md5="E60E35821769CB4291AF8D0F00FB77D9" disk="8" />
+      </media>
+      <media media="1.44M" status="U">
+        <disk md5="17091A2865643BCC7E973257D844E665" disk="1"/>
+        <disk md5="E4E48AB40EB7E703749BADAB480E678D" disk="2"/>
+      </media>
     </release>
     <release year="1992" version="1.1, Int. 1.16.92" media="1.44M" status="V">
       <disk md5="26359CE2DEA6075683EA2750C82CCF76" disk="1"/>
@@ -6970,9 +6982,13 @@
       <disk md5="D091B2D5A6DB5048C02780E4A612D4A4" disk="C"/>
     </release>
   </title>
+  <title name="Microprose Formula One Grand Prix: Modem Update" publisher="MicroProse Software, Inc.">
+    <release year="1993" version="1.05" media="1.44M" status="V">
+      <disk md5="AA67EC91A3B5388651F9B08443DF19CD"/>
+    </release>
+  </title>
   <title name="MicroProse Pro Soccer" publisher="MicroProse Software, Inc.">
     <release year="1989" media="720K" status="V">
-      MicroProse Protection 2
       <disk md5="8086F63E6FCF7544BC8953A8FE96007A" cp="MicroProse Cloak"/>
     </release>
   </title>
@@ -7938,6 +7954,9 @@
     </release>
   </title>
   <title name="Planetfall" publisher="Infocom, Inc.">
+    <release year="1983" version="r20, Serial 830708, Int. 3A" media="160K" status="V" os="PC Booter">
+      <disk md5="F5C84C168C6868A99CC806E73D9C27EF" cp="Non-standard Sector Sizes"/>
+    </release>
     <release year="1983" version="r26, Serial 831014, Int. 3B" media="160K" status="U" os="PC Booter">
       <disk md5="E84A7B1A8C948100EC6786CEDDC93B06" cp="Non-standard Sector Sizes"/>
     </release>
@@ -8440,7 +8459,7 @@
         <disk md5="2B61DAE78C9830262D8E696AA13C1216" disk="2"/>
         <disk md5="360399DCCFF10C80A9C922706ABDA0CD" disk="3"/>
         <disk md5="FC939C28C735D4E3FED96BB7D4FE7ACE" disk="4"/>
-        <disk md5="77231B91A483C334A532E39FB51DE883" disk="5 / Startup" media="360K" status="U"/>
+        <disk md5="E4E28834B0EDDBB7292A5FE8695F39A3" disk="5 / Startup" media="360K" status="U"/>
       </media>
       <media media="720K">
         <disk md5="790235508BC3DE95F0FD831CF8AC2F7C" disk="1"/>
@@ -8453,6 +8472,9 @@
         <disk md5="680200B16DEC0FC1D9F862AFE301BC64" disk="8"/>
         <disk md5="242269320D42EBD242224B6F77BBE2E4" disk="9"/>
       </media>
+    </release>
+    <release year="1990" version="1.000, Int. 11.15.90" status="V">
+      <disk md5="1F5C2690B8DEE6856DB20DCF17367068" disk="5 / Startup" media="360K"/>
     </release>
     <release year="1990" version="1.102, Int. 11.20.90" status="V">
       <media media="1.2M">
@@ -9749,6 +9771,18 @@
       </media>
     </release>
   </title>
+  <title name="SimCity Architecture 2" publisher="Maxis Software, Inc." region="Europe">
+    <release year="1990" media="360K" status="V">
+      <disk md5="C2D281F431A2CED5AD30468B28973FB7" disk="Ancient Asia"/>
+      <disk md5="F87743581629E7B532734646ED297BAE" disk="Install Disk"/>
+      <disk md5="3E0DC1895B0838546ABA518B3F895140" disk="Medieval Times"/>
+      <disk md5="C391D5BF91589316B70A9F7C2A313F7D" disk="Wild-West"/>
+    </release>
+    <release year="1990" media="720K" status="V">
+      <disk md5="6EB1AFA6BE6026184B17714D72A14F64" disk="Install / Ancient Asia"/>
+      <disk md5="533313C4BA14A02CFAF8040B3740DA7A" disk="Medieval Times / Wild West"/>
+    </release>
+  </title>
   <title name="SimCity: Terrain Editor" publisher="Maxis Software, Inc.">
     <release year="1989" version="1.0" media="720K" status="U">
       <disk md5="1A98B9C52AA269FBFFA5B078BF44D429"/>
@@ -9919,6 +9953,13 @@
       <disk md5="872BD9A81C568DE913EE2CB52396A71F" disk="2"/>
     </release>
   </title>
+  <title name="Slater &amp; Charlie Go Camping" publisher="Sierra On-Line, Inc.">
+    <release year="1993" version="1.0, Int. 5.19.93" media="1.44M" status="V">
+      <disk md5="A5B7E55209229717134C7318C32E4A65" disk="1"/>
+      <disk md5="BD5446B3D2FE5DA23D85FFCB5A241718" disk="2"/>
+      <disk md5="011CB5CFCDE2DAFF28AF3D20FC8722D7" disk="3"/>
+    </release>
+  </title>
   <title name="The Slugger" publisher="Mastertronic Ltd.">
     <release year="1986" media="360K" status="V" os="PC Booter">
       <disk md5="5761AF56E0C55F0DEED35C5375B346F8"/>
@@ -10006,6 +10047,12 @@
     </release>
   </title>
   <title name="Space Quest I: Roger Wilco in the Sarien Encounter" publisher="Sierra On-Line, Inc.">
+    <release variation="16 Color" year="1991" version="2.0, Int. 8.28.91" media="1.2M" status="V">
+      <disk md5="CE7AF242686666D1540D192399C87BF0" disk="1" />
+      <disk md5="1FCDD7B3DDFC9F41E62D641B0F31542C" disk="2" />
+      <disk md5="9F906AE912DEBDCD360611D72392373C" disk="3" />
+      <disk md5="EC65E2F1762C4E74342766636752945B" disk="Startup" />
+    </release>
     <release variation="16 Color" year="1992" version="2.0, Int. 8.11.92" media="720K" status="V">
       <disk md5="CF654B28F6D34A12BD4A60BF03BA30D6" disk="Startup"/>
       <disk md5="764288A3FED1670C766FB1395B781160" disk="1"/>
@@ -10270,17 +10317,24 @@
       <disk md5="327575441929C07E7564AEAD367C01ED" disk="3" region="USA, France, Germany"/>
       <disk md5="B5BB643E2E803C9495D7A1F8EBC6510D" disk="4" region="USA, France, Germany"/>
       <disk md5="29B8EF7FDA52F6725520258BC535D4FC" disk="5" region="USA, France, Germany"/>
-    </release>
-    <title name="Space Quest V: The Next Mutation: Patch Disk" publisher="Sierra On-Line, Inc.">
-      <release year="1993" media="1.44M" status="U">
-        <disk md5="0F52D100CAE1996AD781A3F1E8578BF0"/>
-      </release>
-    </title>
+    </release>    
     <release year="1993" version="1.01, Int. 3.1.93" media="1.44M" status="V" region="France">
       <disk md5="A17AD081E535A01024502218C41D3D36" disk="1"/>
     </release>
     <release year="1993" version="1.01, Int. 3.1.93" media="1.44M" status="V" region="Germany">
       <disk md5="250B309B9EF39C95560D4E8011E6097C" disk="1"/>
+    </release>
+    <release year="1993" version="1.000" media="1.44M" status="U" region="Spain">
+      <disk md5="F4D8C1369DE8E86671A94F32D9BEB10C" disk="1"/>
+      <disk md5="900A600008A28887CCE3F13FB37D45F1" disk="2"/>
+      <disk md5="4B5C442A2E39B671193D6B74F2DD1F8E" disk="3"/>
+      <disk md5="FDFBDEDD1A13202742D59AF3BB9165FF" disk="4"/>
+      <disk md5="8E1ECA4EEFCD7EEC1AE5C9F0C8B30823" disk="5"/>
+    </release>
+  </title>
+  <title name="Space Quest V: The Next Mutation: Patch Disk" publisher="Sierra On-Line, Inc.">
+    <release year="1993" media="1.44M" status="U">
+      <disk md5="0F52D100CAE1996AD781A3F1E8578BF0"/>
     </release>
   </title>
   <title name="Space Quest: Chapter I: The Sarien Encounter" publisher="Sierra On-Line, Inc.">
@@ -11384,6 +11438,10 @@
       <media media="1.44M" status="U">
         <disk md5="CA180D8781A31A41E0B056C588C11277" disk="1"/>
         <disk md5="A34D54087C634255064D2432874B1A8A" disk="2" media="720K"/>
+      </media>
+      <media media="1.2M" status="V">
+        <disk md5="67367AD46E56F6FD07CC783DBA920781" disk="1"/>
+        <disk md5="6D842971E8461DD2F8EFA560EB8F1284" disk="2"/>
       </media>
     </release>
   </title>
@@ -13430,6 +13488,15 @@
         <disk md5="47473E7C8651789C82A30D3709E017F9" disk="14"/>
       </media>
     </release>
+    <release year="1992" media="1.44M" status="V" region="Germany">
+      <disk md5="FB3772C61098D7AF31E46AEB51E09D43" disk="1"/>
+      <disk md5="6E7DE3CB0F3D2539503B521A8F7A6BBF" disk="2"/>
+      <disk md5="2A34B1E1A798866DEFBF0458980DF145" disk="3"/>
+      <disk md5="034E91133EFCCFC231E578595C64F76A" disk="4"/>
+      <disk md5="7323129C7CD79CF8BCD7F66E67D3CFF8" disk="5"/>
+      <disk md5="17BAC8A6DFD826B692C74AF487635649" disk="6"/>
+      <disk md5="BBF0F5301BA8820916CC1EB153B9932A" disk="7"/>
+    </release>
   </title>
   <title name="Wing Commander: Armada" publisher="ORIGIN Systems, Inc.">
     <release year="1994" media="1.44M" status="V">
@@ -14841,7 +14908,10 @@
     </release>
   </title>
   <title name="Xenon" publisher="Mastertronic Ltd.">
-    <release year="1989" media="360K" status="V">
+    <release year="1989-08" media="720K" status="V">
+      <disk md5="916BA08B2691EB53A5DAF43B2A89E99A"/>
+    </release>
+    <release year="1989-09" media="360K" status="V">
       <disk md5="488A1389B5C089FCA552DDDEA3CE560E" disk="1"/>
       <disk md5="4684754F053D719E3DC385F72D01AE35" disk="2"/>
     </release>
@@ -15007,6 +15077,16 @@
   <title name="The Lost Episodes Of Doom" publisher="Sybex Inc">
     <release year="1995" media="1.44M" status="V">
       <disk md5="7B458D56729040102F5C064A009666C9"/>
+    </release>
+  </title>
+  <title name="Jack in the Dark" publisher="Infogrames Europe SA">
+    <release year="1993" media="1.44M" status="V">
+      <disk md5="E746F74661B7224D3647504A04D1F089"/>
+    </release>
+  </title>
+  <title name="Tower Toppler" publisher="U.S. Gold Ltd.">
+    <release year="1989" media="720K" status="V">
+      <disk md5="5662031FBE3393673DA3B5A2510C3B54" cp="H.L.S. Duplication"/>
     </release>
   </title>
 </root>

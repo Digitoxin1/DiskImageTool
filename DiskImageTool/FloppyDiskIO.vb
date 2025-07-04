@@ -57,7 +57,7 @@ Module FloppyDiskIO
             Try
                 Dim FloppyImage = New BasicSectorImage(Buffer)
                 Dim Disk = New DiskImage.Disk(FloppyImage, 0)
-                Dim Response = SaveDiskImageToFile(Disk, Dialog.FileName)
+                Dim Response = SaveDiskImageToFile(Disk, Dialog.FileName, False)
                 Success = (Response = SaveImageResponse.Success)
             Catch ex As Exception
                 DebugException(ex)

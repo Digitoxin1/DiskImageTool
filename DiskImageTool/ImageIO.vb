@@ -23,7 +23,11 @@ Module ImageIO
         Cancelled
     End Enum
 
-    Public Function CreateBackup(FilePath As String) As Boolean
+    Public Function CreateBackupIfExists(FilePath As String) As Boolean
+        If Not IO.File.Exists(FilePath) Then
+            Return True
+        End If
+
         Try
             Dim BackupPath As String = FilePath & ".bak"
             IO.File.Copy(FilePath, BackupPath, True)
@@ -470,7 +474,7 @@ Module ImageIO
         End If
     End Function
 
-    Public Function SaveDiskImageToFile(Disk As DiskImage.Disk, FilePath As String) As SaveImageResponse
+    Public Function SaveDiskImageToFile(Disk As DiskImage.Disk, FilePath As String, DoBackup As Boolean) As SaveImageResponse
         Dim FileImageType = GetImageTypeFromFileName(FilePath)
         Dim DiskImageType = Disk.Image.ImageType
         Dim Response As SaveImageResponse = SaveImageResponse.Failed
@@ -481,108 +485,92 @@ Module ImageIO
         End If
 
         If FileImageType = DiskImageType Then
-            Result = Disk.Image.SaveToFile(FilePath)
+            If Not DoBackup OrElse CreateBackupIfExists(FilePath) Then
+                Result = Disk.Image.SaveToFile(FilePath)
+            End If
 
         ElseIf FileImageType = FloppyImageType.BasicSectorImage Then
             Dim Data = Disk.Image.GetBytes()
-            Result = SaveByteArrayToFile(FilePath, Data)
 
-        ElseIf DiskImageType = FloppyImageType.BasicSectorImage Then
-            If IsDiskFormatValidForRead(Disk.DiskFormat) Then
-                Dim Data = Disk.Image.GetBytes()
-
-                If FileImageType = FloppyImageType.TranscopyImage Then
-                    Dim Transcopy = ImageFormats.BasicSectorToTranscopyImage(Data, Disk.DiskFormat)
-                    Result = Transcopy.Export(FilePath)
-                ElseIf FileImageType = FloppyImageType.PSIImage Then
-                    Dim PSI = ImageFormats.BasicSectorToPSIImage(Data, Disk.DiskFormat)
-                    Result = PSI.Export(FilePath)
-                ElseIf FileImageType = FloppyImageType.PRIImage Then
-                    Dim PRI = ImageFormats.BasicSectorToPRIImage(Data, Disk.DiskFormat)
-                    Result = PRI.Export(FilePath)
-                ElseIf FileImageType = FloppyImageType.MFMImage Then
-                    Dim MFM = ImageFormats.BasicSectorToMFMImage(Data, Disk.DiskFormat)
-                    Result = MFM.Export(FilePath)
-                ElseIf FileImageType = FloppyImageType.HFEImage Then
-                    Dim HFE = ImageFormats.BasicSectorToHFEImage(Data, Disk.DiskFormat)
-                    Result = HFE.Export(FilePath)
-                ElseIf FileImageType = FloppyImageType.D86FImage Then
-                    Dim D86F = ImageFormats.BasicSectorTo86FImage(Data, Disk.DiskFormat)
-                    Result = D86F.Export(FilePath)
-                ElseIf FileImageType = FloppyImageType.IMDImage Then
-                    Dim IMD = ImageFormats.BasicSectorToIMDImage(Data, Disk.DiskFormat)
-                    Result = IMD.Export(FilePath)
-                Else
-                    Return SaveImageResponse.Unsupported
-                End If
-            Else
-                Return SaveImageResponse.Unknown
-            End If
-
-        ElseIf FileImageType = FloppyImageType.TranscopyImage Then
-            Dim Image As IBitstreamImage = Disk.Image.BitstreamImage
-            If Image IsNot Nothing Then
-                Dim Transcopy = ImageFormats.BitstreamToTranscopyImage(Image)
-                Result = Transcopy.Export(FilePath)
-            Else
-                Return SaveImageResponse.Unsupported
-            End If
-
-        ElseIf FileImageType = FloppyImageType.MFMImage Then
-            Dim Image As IBitstreamImage = Disk.Image.BitstreamImage
-            If Image IsNot Nothing Then
-                Dim MFM = ImageFormats.BitstreamToMFMImage(Image)
-                Result = MFM.Export(FilePath)
-            Else
-                Return SaveImageResponse.Unsupported
-            End If
-
-        ElseIf FileImageType = FloppyImageType.HFEImage Then
-            Dim Image As IBitstreamImage = Disk.Image.BitstreamImage
-            If Image IsNot Nothing Then
-                Dim HFE = ImageFormats.BitstreamToHFEImage(Image)
-                Result = HFE.Export(FilePath)
-            Else
-                Return SaveImageResponse.Unsupported
-            End If
-
-        ElseIf FileImageType = FloppyImageType.PSIImage Then
-            Dim Image As IBitstreamImage = Disk.Image.BitstreamImage
-            If Image IsNot Nothing Then
-                Dim PSI = ImageFormats.BitstreamToPSIImage(Image)
-                Result = PSI.Export(FilePath)
-            Else
-                Return SaveImageResponse.Unsupported
-            End If
-
-        ElseIf FileImageType = FloppyImageType.PRIImage Then
-            Dim Image As IBitstreamImage = Disk.Image.BitstreamImage
-            If Image IsNot Nothing Then
-                Dim PRI = ImageFormats.BitstreamToPRIImage(Image)
-                Result = PRI.Export(FilePath)
-            Else
-                Return SaveImageResponse.Unsupported
-            End If
-
-        ElseIf FileImageType = FloppyImageType.IMDImage Then
-            Dim Image As IBitstreamImage = Disk.Image.BitstreamImage
-            If Image IsNot Nothing Then
-                Dim IMD = ImageFormats.BitstreamToIMDImage(Image)
-                Result = IMD.Export(FilePath)
-            Else
-                Return SaveImageResponse.Unsupported
-            End If
-
-        ElseIf FileImageType = FloppyImageType.D86FImage Then
-            Dim Image As IBitstreamImage = Disk.Image.BitstreamImage
-            If Image IsNot Nothing Then
-                Dim D86FImage = ImageFormats.BitstreamTo86FImage(Image)
-                Result = D86FImage.Export(FilePath)
-            Else
-                Return SaveImageResponse.Unsupported
+            If Not DoBackup OrElse CreateBackupIfExists(FilePath) Then
+                Result = SaveByteArrayToFile(FilePath, Data)
             End If
         Else
-            Return SaveImageResponse.Unsupported
+            Dim NewImage As IBitstreamImage = Nothing
+
+            If DiskImageType = FloppyImageType.BasicSectorImage Then
+                If IsDiskFormatValidForRead(Disk.DiskFormat) Then
+                    Dim Data = Disk.Image.GetBytes()
+
+                    If FileImageType = FloppyImageType.TranscopyImage Then
+                        NewImage = ImageFormats.BasicSectorToTranscopyImage(Data, Disk.DiskFormat)
+                    ElseIf FileImageType = FloppyImageType.PSIImage Then
+                        NewImage = ImageFormats.BasicSectorToPSIImage(Data, Disk.DiskFormat)
+                    ElseIf FileImageType = FloppyImageType.PRIImage Then
+                        NewImage = ImageFormats.BasicSectorToPRIImage(Data, Disk.DiskFormat)
+                    ElseIf FileImageType = FloppyImageType.MFMImage Then
+                        NewImage = ImageFormats.BasicSectorToMFMImage(Data, Disk.DiskFormat)
+                    ElseIf FileImageType = FloppyImageType.HFEImage Then
+                        NewImage = ImageFormats.BasicSectorToHFEImage(Data, Disk.DiskFormat)
+                    ElseIf FileImageType = FloppyImageType.D86FImage Then
+                        NewImage = ImageFormats.BasicSectorTo86FImage(Data, Disk.DiskFormat)
+                    ElseIf FileImageType = FloppyImageType.IMDImage Then
+                        NewImage = ImageFormats.BasicSectorToIMDImage(Data, Disk.DiskFormat)
+                    End If
+                Else
+                    Return SaveImageResponse.Unknown
+                End If
+
+            ElseIf FileImageType = FloppyImageType.TranscopyImage Then
+                Dim Image As IBitstreamImage = Disk.Image.BitstreamImage
+                If Image IsNot Nothing Then
+                    NewImage = ImageFormats.BitstreamToTranscopyImage(Image)
+                End If
+
+            ElseIf FileImageType = FloppyImageType.MFMImage Then
+                Dim Image As IBitstreamImage = Disk.Image.BitstreamImage
+                If Image IsNot Nothing Then
+                    NewImage = ImageFormats.BitstreamToMFMImage(Image)
+                End If
+
+            ElseIf FileImageType = FloppyImageType.HFEImage Then
+                Dim Image As IBitstreamImage = Disk.Image.BitstreamImage
+                If Image IsNot Nothing Then
+                    NewImage = ImageFormats.BitstreamToHFEImage(Image)
+                End If
+
+            ElseIf FileImageType = FloppyImageType.PSIImage Then
+                Dim Image As IBitstreamImage = Disk.Image.BitstreamImage
+                If Image IsNot Nothing Then
+                    NewImage = ImageFormats.BitstreamToPSIImage(Image)
+                End If
+
+            ElseIf FileImageType = FloppyImageType.PRIImage Then
+                Dim Image As IBitstreamImage = Disk.Image.BitstreamImage
+                If Image IsNot Nothing Then
+                    NewImage = ImageFormats.BitstreamToPRIImage(Image)
+                End If
+
+            ElseIf FileImageType = FloppyImageType.IMDImage Then
+                Dim Image As IBitstreamImage = Disk.Image.BitstreamImage
+                If Image IsNot Nothing Then
+                    NewImage = ImageFormats.BitstreamToIMDImage(Image)
+                End If
+
+            ElseIf FileImageType = FloppyImageType.D86FImage Then
+                Dim Image As IBitstreamImage = Disk.Image.BitstreamImage
+                If Image IsNot Nothing Then
+                    NewImage = ImageFormats.BitstreamTo86FImage(Image)
+                End If
+            End If
+
+            If NewImage IsNot Nothing Then
+                If Not DoBackup OrElse CreateBackupIfExists(FilePath) Then
+                    Result = NewImage.Export(FilePath)
+                End If
+            Else
+                Return SaveImageResponse.Unsupported
+            End If
         End If
 
         If Result Then

@@ -1021,7 +1021,7 @@ Public Class MainForm
                     NewFilePath = Image.ImageData.GetSaveFile
                 End If
 
-                Dim Response = SaveDiskImageToFile(Image.Disk, NewFilePath)
+                Dim Response = SaveDiskImageToFile(Image.Disk, NewFilePath, My.Settings.CreateBackups)
                 Success = (Response = SaveImageResponse.Success)
 
                 If Response = SaveImageResponse.Unsupported Then
