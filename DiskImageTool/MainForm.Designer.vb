@@ -196,6 +196,8 @@ Partial Class MainForm
         Me.LabelCRC32 = New System.Windows.Forms.Label()
         Me.LabelMD5 = New System.Windows.Forms.Label()
         Me.LabelSHA1 = New System.Windows.Forms.Label()
+        Me.MenuEditImportFiles = New System.Windows.Forms.ToolStripMenuItem()
+        Me.ToolStripSeparator1 = New System.Windows.Forms.ToolStripSeparator()
         SummaryName = CType(New System.Windows.Forms.ColumnHeader(), System.Windows.Forms.ColumnHeader)
         SummaryValue = CType(New System.Windows.Forms.ColumnHeader(), System.Windows.Forms.ColumnHeader)
         HashName = CType(New System.Windows.Forms.ColumnHeader(), System.Windows.Forms.ColumnHeader)
@@ -368,7 +370,7 @@ Partial Class MainForm
         '
         'MainMenuEdit
         '
-        MainMenuEdit.DropDownItems.AddRange(New System.Windows.Forms.ToolStripItem() {Me.MenuEditBootSector, Me.MenuEditFAT, MenuEditSeparator1, Me.MenuEditFileProperties, Me.MenuEditExportFile, Me.MenuEditReplaceFile, MenuEditSeparator2, Me.MenuEditUndo, Me.MenuEditRedo, Me.MenuEditRevert})
+        MainMenuEdit.DropDownItems.AddRange(New System.Windows.Forms.ToolStripItem() {Me.MenuEditBootSector, Me.MenuEditFAT, MenuEditSeparator1, Me.MenuEditFileProperties, Me.MenuEditExportFile, Me.MenuEditReplaceFile, MenuEditSeparator2, Me.MenuEditImportFiles, Me.ToolStripSeparator1, Me.MenuEditUndo, Me.MenuEditRedo, Me.MenuEditRevert})
         MainMenuEdit.Name = "MainMenuEdit"
         resources.ApplyResources(MainMenuEdit, "MainMenuEdit")
         '
@@ -715,6 +717,7 @@ Partial Class MainForm
         '
         Me.ContextMenuFilters.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.MenuFiltersScanNew, Me.MenuFiltersScan, Me.MenuFiltersClear})
         Me.ContextMenuFilters.Name = "ContextMenuStrip1"
+        Me.ContextMenuFilters.OwnerItem = Me.MainMenuFilters
         resources.ApplyResources(Me.ContextMenuFilters, "ContextMenuFilters")
         '
         'MenuFiltersScanNew
@@ -1278,6 +1281,17 @@ Partial Class MainForm
         Me.LabelSHA1.Name = "LabelSHA1"
         Me.LabelSHA1.UseMnemonic = False
         '
+        'MenuEditImportFiles
+        '
+        Me.MenuEditImportFiles.Image = Global.DiskImageTool.My.Resources.Resources.Import
+        Me.MenuEditImportFiles.Name = "MenuEditImportFiles"
+        resources.ApplyResources(Me.MenuEditImportFiles, "MenuEditImportFiles")
+        '
+        'ToolStripSeparator1
+        '
+        Me.ToolStripSeparator1.Name = "ToolStripSeparator1"
+        resources.ApplyResources(Me.ToolStripSeparator1, "ToolStripSeparator1")
+        '
         'MainForm
         '
         resources.ApplyResources(Me, "$this")
@@ -1440,4 +1454,6 @@ Partial Class MainForm
     Friend WithEvents LabelMD5Caption As Label
     Friend WithEvents LabelSHA1Caption As Label
     Friend WithEvents ToolStripImportFiles As ToolStripButton
+    Friend WithEvents MenuEditImportFiles As ToolStripMenuItem
+    Friend WithEvents ToolStripSeparator1 As ToolStripSeparator
 End Class

@@ -417,4 +417,7 @@
   <data name="ToolStripImportFiles.ToolTipText" xml:space="preserve">
     <value>Importer des fichiers</value>
   </data>
+  <data name="MenuEditImportFiles.Text" xml:space="preserve">
+    <value>&amp;Importer des fichiers</value>
+  </data>
 </root>

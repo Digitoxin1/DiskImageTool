@@ -3681,6 +3681,9 @@ Public Class MainForm
         ToolStripImportFiles.Enabled = Enabled
         ToolStripImportFiles.Tag = Tag
 
+        MenuEditImportFiles.Enabled = Enabled
+        MenuEditImportFiles.Tag = Tag
+
         MenuFileNewDirectory.Enabled = Enabled
         MenuFileNewDirectory.Tag = Tag
     End Sub
@@ -4130,7 +4133,7 @@ Public Class MainForm
         CheckForUpdates()
     End Sub
 
-    Private Sub BtnImportFiles_Click(sender As Object, e As EventArgs) Handles MenuFileImportFiles.Click, MenuDirectoryImportFiles.Click, ToolStripImportFiles.Click
+    Private Sub BtnImportFiles_Click(sender As Object, e As EventArgs) Handles MenuFileImportFiles.Click, MenuDirectoryImportFiles.Click, ToolStripImportFiles.Click, MenuEditImportFiles.Click
         If sender.Tag IsNot Nothing Then
             Dim Directory As IDirectory = sender.Tag
             ImageImport(_CurrentImage, Directory, True)
