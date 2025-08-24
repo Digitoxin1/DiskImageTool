@@ -1445,4 +1445,7 @@ Nota: Este valor debe ser {1} para todos los disquetes</value>
   <data name="Menu_ExportUnknown" xml:space="preserve">
     <value>Exportar imágenes desconocidas al escanear</value>
   </data>
+  <data name="Label_Search" xml:space="preserve">
+    <value>Buscar</value>
+  </data>
 </root>

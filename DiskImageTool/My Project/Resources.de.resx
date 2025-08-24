@@ -1445,4 +1445,7 @@ Hinweis: Diese ID wird normalerweise erzeugt, indem das aktuelle Datum und die a
   <data name="Menu_ExportUnknown" xml:space="preserve">
     <value>Unbekannte Abbilder beim Scannen exportieren</value>
   </data>
+  <data name="Label_Search" xml:space="preserve">
+    <value>Suchen</value>
+  </data>
 </root>

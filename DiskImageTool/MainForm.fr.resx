@@ -270,9 +270,6 @@
   <data name="FileCreationDate.Text" xml:space="preserve">
     <value>Créé</value>
   </data>
-  <data name="ToolStripDiskTypeLabel.Text" xml:space="preserve">
-    <value>Type de disquette</value>
-  </data>
   <data name="MenuOptionsDisplayTitles.Text" xml:space="preserve">
     <value>Afficher les titres</value>
   </data>
@@ -348,9 +345,6 @@
   <data name="FileName.Text" xml:space="preserve">
     <value>Nom</value>
   </data>
-  <data name="ToolStripOEMNameLabel.Text" xml:space="preserve">
-    <value>Nom OEM</value>
-  </data>
   <data name="ToolStripOpen.Text" xml:space="preserve">
     <value>Ouvrir</value>
   </data>
@@ -389,9 +383,6 @@
   </data>
   <data name="MenuFiltersScanNew.Text" xml:space="preserve">
     <value>Analyser les &amp;nouvelles images</value>
-  </data>
-  <data name="ToolStripSearchLabel.Text" xml:space="preserve">
-    <value>Rechercher</value>
   </data>
   <data name="FileSize.Text" xml:space="preserve">
     <value>Taille</value>

@@ -46,7 +46,6 @@ Partial Class MainForm
         Dim MainMenuExperimental As System.Windows.Forms.ToolStripMenuItem
         Dim FileMenuSeparator1 As System.Windows.Forms.ToolStripSeparator
         Dim FileCRC32 As System.Windows.Forms.ColumnHeader
-        Dim ToolStripSearchLabel As System.Windows.Forms.ToolStripLabel
         Dim MainMenuTools As System.Windows.Forms.ToolStripMenuItem
         Dim MenuToolsSeparator As System.Windows.Forms.ToolStripSeparator
         Dim MainMenuHelp As System.Windows.Forms.ToolStripMenuItem
@@ -78,6 +77,8 @@ Partial Class MainForm
         Me.MenuEditFileProperties = New System.Windows.Forms.ToolStripMenuItem()
         Me.MenuEditExportFile = New System.Windows.Forms.ToolStripMenuItem()
         Me.MenuEditReplaceFile = New System.Windows.Forms.ToolStripMenuItem()
+        Me.MenuEditImportFiles = New System.Windows.Forms.ToolStripMenuItem()
+        Me.ToolStripSeparator1 = New System.Windows.Forms.ToolStripSeparator()
         Me.MenuEditUndo = New System.Windows.Forms.ToolStripMenuItem()
         Me.MenuEditRedo = New System.Windows.Forms.ToolStripMenuItem()
         Me.MenuEditRevert = New System.Windows.Forms.ToolStripMenuItem()
@@ -128,11 +129,6 @@ Partial Class MainForm
         Me.LabelMD5Caption = New System.Windows.Forms.Label()
         Me.LabelSHA1Caption = New System.Windows.Forms.Label()
         Me.ToolStripTop = New System.Windows.Forms.ToolStrip()
-        Me.ToolStripSearchText = New DiskImageTool.ToolStripSpringTextBox()
-        Me.ToolStripOEMNameCombo = New System.Windows.Forms.ToolStripComboBox()
-        Me.ToolStripOEMNameLabel = New System.Windows.Forms.ToolStripLabel()
-        Me.ToolStripDiskTypeCombo = New System.Windows.Forms.ToolStripComboBox()
-        Me.ToolStripDiskTypeLabel = New System.Windows.Forms.ToolStripLabel()
         Me.ToolStripOpen = New System.Windows.Forms.ToolStripButton()
         Me.ToolStripSave = New System.Windows.Forms.ToolStripButton()
         Me.ToolStripSaveAs = New System.Windows.Forms.ToolStripButton()
@@ -147,7 +143,6 @@ Partial Class MainForm
         Me.ToolStripViewFileText = New System.Windows.Forms.ToolStripButton()
         Me.ToolStripViewFile = New System.Windows.Forms.ToolStripButton()
         Me.ToolStripSeparatorFAT = New System.Windows.Forms.ToolStripSeparator()
-        Me.ToolStripFATCombo = New System.Windows.Forms.ToolStripComboBox()
         Me.StatusStripBottom = New System.Windows.Forms.StatusStrip()
         Me.ToolStripStatusReadOnly = New System.Windows.Forms.ToolStripStatusLabel()
         Me.ToolStripStatusModified = New System.Windows.Forms.ToolStripStatusLabel()
@@ -196,8 +191,6 @@ Partial Class MainForm
         Me.LabelCRC32 = New System.Windows.Forms.Label()
         Me.LabelMD5 = New System.Windows.Forms.Label()
         Me.LabelSHA1 = New System.Windows.Forms.Label()
-        Me.MenuEditImportFiles = New System.Windows.Forms.ToolStripMenuItem()
-        Me.ToolStripSeparator1 = New System.Windows.Forms.ToolStripSeparator()
         SummaryName = CType(New System.Windows.Forms.ColumnHeader(), System.Windows.Forms.ColumnHeader)
         SummaryValue = CType(New System.Windows.Forms.ColumnHeader(), System.Windows.Forms.ColumnHeader)
         HashName = CType(New System.Windows.Forms.ColumnHeader(), System.Windows.Forms.ColumnHeader)
@@ -220,7 +213,6 @@ Partial Class MainForm
         MainMenuExperimental = New System.Windows.Forms.ToolStripMenuItem()
         FileMenuSeparator1 = New System.Windows.Forms.ToolStripSeparator()
         FileCRC32 = CType(New System.Windows.Forms.ColumnHeader(), System.Windows.Forms.ColumnHeader)
-        ToolStripSearchLabel = New System.Windows.Forms.ToolStripLabel()
         MainMenuTools = New System.Windows.Forms.ToolStripMenuItem()
         MenuToolsSeparator = New System.Windows.Forms.ToolStripSeparator()
         MainMenuHelp = New System.Windows.Forms.ToolStripMenuItem()
@@ -411,6 +403,17 @@ Partial Class MainForm
         MenuEditSeparator2.Name = "MenuEditSeparator2"
         resources.ApplyResources(MenuEditSeparator2, "MenuEditSeparator2")
         '
+        'MenuEditImportFiles
+        '
+        Me.MenuEditImportFiles.Image = Global.DiskImageTool.My.Resources.Resources.Import
+        Me.MenuEditImportFiles.Name = "MenuEditImportFiles"
+        resources.ApplyResources(Me.MenuEditImportFiles, "MenuEditImportFiles")
+        '
+        'ToolStripSeparator1
+        '
+        Me.ToolStripSeparator1.Name = "ToolStripSeparator1"
+        resources.ApplyResources(Me.ToolStripSeparator1, "ToolStripSeparator1")
+        '
         'MenuEditUndo
         '
         Me.MenuEditUndo.Image = Global.DiskImageTool.My.Resources.Resources.Undo
@@ -508,14 +511,6 @@ Partial Class MainForm
         'FileCRC32
         '
         resources.ApplyResources(FileCRC32, "FileCRC32")
-        '
-        'ToolStripSearchLabel
-        '
-        ToolStripSearchLabel.Alignment = System.Windows.Forms.ToolStripItemAlignment.Right
-        ToolStripSearchLabel.Margin = New System.Windows.Forms.Padding(8, 1, 0, 2)
-        ToolStripSearchLabel.Name = "ToolStripSearchLabel"
-        ToolStripSearchLabel.Overflow = System.Windows.Forms.ToolStripItemOverflow.Never
-        resources.ApplyResources(ToolStripSearchLabel, "ToolStripSearchLabel")
         '
         'MainMenuTools
         '
@@ -799,53 +794,9 @@ Partial Class MainForm
         '
         Me.ToolStripTop.CanOverflow = False
         Me.ToolStripTop.GripStyle = System.Windows.Forms.ToolStripGripStyle.Hidden
-        Me.ToolStripTop.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.ToolStripSearchText, ToolStripSearchLabel, Me.ToolStripOEMNameCombo, Me.ToolStripOEMNameLabel, Me.ToolStripDiskTypeCombo, Me.ToolStripDiskTypeLabel, Me.ToolStripOpen, ToolStripSeparator6, Me.ToolStripSave, Me.ToolStripSaveAs, Me.ToolStripSaveAll, ToolStripSeparator7, Me.ToolStripClose, Me.ToolStripCloseAll, ToolStripSeparator8, Me.ToolStripFileProperties, Me.ToolStripExportFile, Me.ToolStripImportFiles, ToolStripSeparator9, Me.ToolStripUndo, Me.ToolStripRedo, ToolStripSeparator10, Me.ToolStripViewFileText, Me.ToolStripViewFile, Me.ToolStripSeparatorFAT, Me.ToolStripFATCombo})
+        Me.ToolStripTop.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.ToolStripOpen, ToolStripSeparator6, Me.ToolStripSave, Me.ToolStripSaveAs, Me.ToolStripSaveAll, ToolStripSeparator7, Me.ToolStripClose, Me.ToolStripCloseAll, ToolStripSeparator8, Me.ToolStripFileProperties, Me.ToolStripExportFile, Me.ToolStripImportFiles, ToolStripSeparator9, Me.ToolStripUndo, Me.ToolStripRedo, ToolStripSeparator10, Me.ToolStripViewFileText, Me.ToolStripViewFile, Me.ToolStripSeparatorFAT})
         resources.ApplyResources(Me.ToolStripTop, "ToolStripTop")
         Me.ToolStripTop.Name = "ToolStripTop"
-        '
-        'ToolStripSearchText
-        '
-        Me.ToolStripSearchText.Alignment = System.Windows.Forms.ToolStripItemAlignment.Right
-        Me.ToolStripSearchText.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle
-        resources.ApplyResources(Me.ToolStripSearchText, "ToolStripSearchText")
-        Me.ToolStripSearchText.Margin = New System.Windows.Forms.Padding(1, 0, 0, 0)
-        Me.ToolStripSearchText.MaxWidth = 195.0!
-        Me.ToolStripSearchText.Name = "ToolStripSearchText"
-        Me.ToolStripSearchText.Overflow = System.Windows.Forms.ToolStripItemOverflow.Never
-        '
-        'ToolStripOEMNameCombo
-        '
-        Me.ToolStripOEMNameCombo.Alignment = System.Windows.Forms.ToolStripItemAlignment.Right
-        Me.ToolStripOEMNameCombo.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList
-        resources.ApplyResources(Me.ToolStripOEMNameCombo, "ToolStripOEMNameCombo")
-        Me.ToolStripOEMNameCombo.Name = "ToolStripOEMNameCombo"
-        Me.ToolStripOEMNameCombo.Overflow = System.Windows.Forms.ToolStripItemOverflow.Never
-        Me.ToolStripOEMNameCombo.Sorted = True
-        '
-        'ToolStripOEMNameLabel
-        '
-        Me.ToolStripOEMNameLabel.Alignment = System.Windows.Forms.ToolStripItemAlignment.Right
-        Me.ToolStripOEMNameLabel.Margin = New System.Windows.Forms.Padding(8, 1, 0, 2)
-        Me.ToolStripOEMNameLabel.Name = "ToolStripOEMNameLabel"
-        Me.ToolStripOEMNameLabel.Overflow = System.Windows.Forms.ToolStripItemOverflow.Never
-        resources.ApplyResources(Me.ToolStripOEMNameLabel, "ToolStripOEMNameLabel")
-        '
-        'ToolStripDiskTypeCombo
-        '
-        Me.ToolStripDiskTypeCombo.Alignment = System.Windows.Forms.ToolStripItemAlignment.Right
-        resources.ApplyResources(Me.ToolStripDiskTypeCombo, "ToolStripDiskTypeCombo")
-        Me.ToolStripDiskTypeCombo.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList
-        Me.ToolStripDiskTypeCombo.DropDownWidth = 95
-        Me.ToolStripDiskTypeCombo.Name = "ToolStripDiskTypeCombo"
-        Me.ToolStripDiskTypeCombo.Overflow = System.Windows.Forms.ToolStripItemOverflow.Never
-        '
-        'ToolStripDiskTypeLabel
-        '
-        Me.ToolStripDiskTypeLabel.Alignment = System.Windows.Forms.ToolStripItemAlignment.Right
-        Me.ToolStripDiskTypeLabel.Margin = New System.Windows.Forms.Padding(8, 1, 0, 2)
-        Me.ToolStripDiskTypeLabel.Name = "ToolStripDiskTypeLabel"
-        Me.ToolStripDiskTypeLabel.Overflow = System.Windows.Forms.ToolStripItemOverflow.Never
-        resources.ApplyResources(Me.ToolStripDiskTypeLabel, "ToolStripDiskTypeLabel")
         '
         'ToolStripOpen
         '
@@ -954,13 +905,6 @@ Partial Class MainForm
         '
         Me.ToolStripSeparatorFAT.Name = "ToolStripSeparatorFAT"
         resources.ApplyResources(Me.ToolStripSeparatorFAT, "ToolStripSeparatorFAT")
-        '
-        'ToolStripFATCombo
-        '
-        resources.ApplyResources(Me.ToolStripFATCombo, "ToolStripFATCombo")
-        Me.ToolStripFATCombo.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList
-        Me.ToolStripFATCombo.DropDownWidth = 25
-        Me.ToolStripFATCombo.Name = "ToolStripFATCombo"
         '
         'StatusStripBottom
         '
@@ -1281,17 +1225,6 @@ Partial Class MainForm
         Me.LabelSHA1.Name = "LabelSHA1"
         Me.LabelSHA1.UseMnemonic = False
         '
-        'MenuEditImportFiles
-        '
-        Me.MenuEditImportFiles.Image = Global.DiskImageTool.My.Resources.Resources.Import
-        Me.MenuEditImportFiles.Name = "MenuEditImportFiles"
-        resources.ApplyResources(Me.MenuEditImportFiles, "MenuEditImportFiles")
-        '
-        'ToolStripSeparator1
-        '
-        Me.ToolStripSeparator1.Name = "ToolStripSeparator1"
-        resources.ApplyResources(Me.ToolStripSeparator1, "ToolStripSeparator1")
-        '
         'MainForm
         '
         resources.ApplyResources(Me, "$this")
@@ -1360,11 +1293,8 @@ Partial Class MainForm
     Friend WithEvents MenuFileViewCrosslinked As ToolStripMenuItem
     Friend WithEvents MenuEditExportFile As ToolStripMenuItem
     Friend WithEvents MenuFileExportFile As ToolStripMenuItem
-    Friend WithEvents ToolStripSearchText As ToolStripSpringTextBox
     Friend WithEvents ComboImagesFiltered As ComboBox
     Friend WithEvents MenuFiltersClear As ToolStripMenuItem
-    Friend WithEvents ToolStripOEMNameCombo As ToolStripComboBox
-    Friend WithEvents ToolStripOEMNameLabel As ToolStripLabel
     Friend WithEvents ToolStripStatusModified As ToolStripStatusLabel
     Friend WithEvents MenuHexBadSectors As ToolStripMenuItem
     Friend WithEvents MenuEditUndo As ToolStripMenuItem
@@ -1401,8 +1331,6 @@ Partial Class MainForm
     Friend WithEvents MenuToolsRemoveBootSector As ToolStripMenuItem
     Friend WithEvents MenuFileViewDirectory As ToolStripMenuItem
     Friend WithEvents FileMenuSeparatorDirectory As ToolStripSeparator
-    Friend WithEvents ToolStripDiskTypeCombo As ToolStripComboBox
-    Friend WithEvents ToolStripDiskTypeLabel As ToolStripLabel
     Friend WithEvents MenuToolsWin9xCleanBatch As ToolStripMenuItem
     Friend WithEvents MenuToolsCompare As ToolStripMenuItem
     Friend WithEvents MenuFileUnDeleteFile As ToolStripMenuItem
@@ -1410,7 +1338,6 @@ Partial Class MainForm
     Friend WithEvents MenuToolsClearReservedBytes As ToolStripMenuItem
     Friend WithEvents MenuHexLostClusters As ToolStripMenuItem
     Friend WithEvents ToolStripSeparatorFAT As ToolStripSeparator
-    Friend WithEvents ToolStripFATCombo As ToolStripComboBox
     Friend WithEvents MenuDiskReadFloppyA As ToolStripMenuItem
     Friend WithEvents MenuDiskReadFloppyB As ToolStripMenuItem
     Friend WithEvents MenuDiskWriteFloppyA As ToolStripMenuItem

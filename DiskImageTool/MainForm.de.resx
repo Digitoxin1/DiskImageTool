@@ -228,9 +228,6 @@
   <data name="MainMenuExperimental.Text" xml:space="preserve">
     <value>Experimentell</value>
   </data>
-  <data name="ToolStripSearchLabel.Text" xml:space="preserve">
-    <value>Suchen</value>
-  </data>
   <data name="MenuToolsCompare.Text" xml:space="preserve">
     <value>&amp;Abbilder vergleichen</value>
   </data>
@@ -320,12 +317,6 @@
   </data>
   <data name="MainMenuUpdateAvailable.Text" xml:space="preserve">
     <value>Update verfügbar</value>
-  </data>
-  <data name="ToolStripOEMNameLabel.Text" xml:space="preserve">
-    <value>OEM-Name</value>
-  </data>
-  <data name="ToolStripDiskTypeLabel.Text" xml:space="preserve">
-    <value>Diskettentyp</value>
   </data>
   <data name="ToolStripOpen.Text" xml:space="preserve">
     <value>Öffnen</value>

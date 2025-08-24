@@ -215,12 +215,25 @@ Module ImageIO
         End If
     End Function
 
+    Public Function InitTempPath() As String
+        Dim TempPath = IO.Path.Combine(IO.Path.GetTempPath(), "DiskImageTool")
+        If Not IO.Directory.Exists(TempPath) Then
+            Try
+                IO.Directory.CreateDirectory(TempPath)
+            Catch ex As Exception
+                DebugException(ex)
+            End Try
+        End If
+
+        Return TempPath
+    End Function
+
     Public Sub EmptyTempPath()
         Dim TempPath = IO.Path.Combine(IO.Path.GetTempPath(), "DiskImageTool")
 
         If IO.Directory.Exists(TempPath) Then
             Try
-                For Each File In IO.Directory.EnumerateFiles(TempPath)
+                For Each File In IO.Directory.EnumerateFiles(TempPath, "*.ima")
                     Try
                         IO.File.Delete(File)
                     Catch ex As Exception

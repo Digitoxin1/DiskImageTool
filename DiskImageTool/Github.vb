@@ -7,7 +7,8 @@
     Public Function GetAppUpdateResponse() As String
         Dim Response As Net.HttpWebResponse
         Dim ResponseText As String = ""
-        Dim CachePath = IO.Path.Combine(IO.Path.GetTempPath(), "DiskImageTool", "AppUpdateResponse.cache")
+        Dim TempPath = InitTempPath()
+        Dim CachePath = IO.Path.Combine(TempPath, "AppUpdateResponse.cache")
         Dim ETag = My.Settings.AppUpdateETag
         Dim NotModified As Boolean = False
 
@@ -26,8 +27,8 @@
             Dim Reader As New IO.StreamReader(Response.GetResponseStream)
             ResponseText = Reader.ReadToEnd
 
-            My.Settings.AppUpdateETag = Response.Headers.Item("etag")
             IO.File.WriteAllText(CachePath, ResponseText)
+            My.Settings.AppUpdateETag = Response.Headers.Item("etag")
 
         Catch ex As Net.WebException
             If ex.Response IsNot Nothing Then
@@ -54,7 +55,8 @@
     Public Function GetChangeLogResponse() As String
         Dim Response As Net.HttpWebResponse
         Dim ResponseText As String = ""
-        Dim CachePath = IO.Path.Combine(IO.Path.GetTempPath(), "DiskImageTool", "ChangeLogResponse.cache")
+        Dim TempPath = InitTempPath()
+        Dim CachePath = IO.Path.Combine(TempPath, "ChangeLogResponse.cache")
         Dim ETag = My.Settings.ChangeLogETag
         Dim NotModified As Boolean = False
 
@@ -73,8 +75,8 @@
             Dim Reader As New IO.StreamReader(Response.GetResponseStream)
             ResponseText = Reader.ReadToEnd
 
-            My.Settings.ChangeLogETag = Response.Headers.Item("etag")
             IO.File.WriteAllText(CachePath, ResponseText)
+            My.Settings.ChangeLogETag = Response.Headers.Item("etag")
 
         Catch ex As Net.WebException
             If ex.Response IsNot Nothing Then

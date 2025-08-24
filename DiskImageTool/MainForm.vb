@@ -29,6 +29,12 @@ Public Class MainForm
     Private WithEvents ContextMenuCopy2 As ContextMenuStrip
     Private WithEvents Debounce As Timer
     Private WithEvents ImageFilters As Filters.ImageFilters
+    Private WithEvents ToolStripDiskTypeCombo As ToolStripComboBox
+    Private ToolStripDiskTypeLabel As ToolStripLabel
+    Private WithEvents ToolStripFatCombo As ToolStripComboBox
+    Private WithEvents ToolStripOEMNameCombo As ToolStripComboBox
+    Private ToolStripOEMNameLabel As ToolStripLabel
+    Private WithEvents ToolStripSearchText As ToolStripSpringTextBox
     Public Const SITE_URL = "https://github.com/Digitoxin1/DiskImageTool"
     Private Const CONTEXT_MENU_SUMMARY_KEY As String = "Summary"
     Private Const CONTEXT_MENU_HASH_KEY As String = "Hashes"
@@ -57,10 +63,95 @@ Public Class MainForm
         ' Add any initialization after the InitializeComponent() call.
         _lvwColumnSorter = New ListViewColumnSorter
         ListViewInit()
-        ToolStripFATCombo.ComboBox.DrawMode = DrawMode.OwnerDrawFixed
-        AddHandler ToolStripFATCombo.ComboBox.DrawItem, AddressOf DrawComboFAT
+        InitializeToolStripTop()
 
         _CurrentImage = Nothing
+    End Sub
+
+    Private Sub InitializeToolStripTop()
+        'ToolStripFatCombo
+        ToolStripFatCombo = New ToolStripComboBox With {
+            .DropDownStyle = ComboBoxStyle.DropDownList,
+            .FlatStyle = FlatStyle.System,
+            .AutoSize = False,
+            .DropDownWidth = 25,
+            .Size = New Drawing.Size(25, 23)
+        }
+        ToolStripFatCombo.ComboBox.DrawMode = DrawMode.OwnerDrawFixed
+        AddHandler ToolStripFatCombo.ComboBox.DrawItem, AddressOf DrawComboFAT
+        AddHandler ToolStripFatCombo.SelectedIndexChanged, AddressOf ToolStripFATCombo_SelectedIndexChanged
+
+        ToolStripTop.Items.Add(ToolStripFatCombo)
+
+        'ToolStripSearchText
+        ToolStripSearchText = New ToolStripSpringTextBox With {
+            .Alignment = ToolStripItemAlignment.Right,
+            .BorderStyle = BorderStyle.FixedSingle,
+            .Font = New Font("Segoe UI", 9),
+            .Margin = New Padding(1, 0, 0, 0),
+            .MaxLength = 255,
+            .MaxWidth = 195,
+            .Overflow = ToolStripItemOverflow.Never,
+            .Size = New Drawing.Size(195, 25)
+        }
+        AddHandler ToolStripSearchText.TextChanged, AddressOf ToolStripSearchText_TextChanged
+
+        Dim ToolStripSearchLabel = New ToolStripLabel With {
+            .Text = My.Resources.Label_Search,
+            .Alignment = ToolStripItemAlignment.Right,
+            .Overflow = ToolStripItemOverflow.Never,
+            .Margin = New Padding(8, 1, 0, 2),
+            .Size = New Drawing.Size(42, 22)
+        }
+
+        ToolStripTop.Items.Add(ToolStripSearchText)
+        ToolStripTop.Items.Add(ToolStripSearchLabel)
+
+        'ToolStripOEMNameCombo
+        ToolStripOEMNameCombo = New ToolStripComboBox With {
+            .DropDownStyle = ComboBoxStyle.DropDownList,
+            .FlatStyle = FlatStyle.System,
+            .AutoSize = False,
+            .Alignment = ToolStripItemAlignment.Right,
+            .Overflow = ToolStripItemOverflow.Never,
+            .Sorted = True,
+            .Size = New Drawing.Size(125, 25)
+        }
+        AddHandler ToolStripOEMNameCombo.SelectedIndexChanged, AddressOf ToolStripCombo_SelectedIndexChanged
+
+        ToolStripOEMNameLabel = New ToolStripLabel With {
+            .Text = My.Resources.BootSector_OEMName,
+            .Alignment = ToolStripItemAlignment.Right,
+            .Overflow = ToolStripItemOverflow.Never,
+            .Margin = New Padding(8, 1, 0, 2),
+            .Size = New Drawing.Size(68, 22)
+        }
+
+        ToolStripTop.Items.Add(ToolStripOEMNameCombo)
+        ToolStripTop.Items.Add(ToolStripOEMNameLabel)
+
+        'ToolStripDiskTypeCombo
+        ToolStripDiskTypeCombo = New ToolStripComboBox With {
+            .DropDownStyle = ComboBoxStyle.DropDownList,
+            .FlatStyle = FlatStyle.System,
+            .AutoSize = False,
+            .DropDownWidth = 95,
+            .Alignment = ToolStripItemAlignment.Right,
+            .Overflow = ToolStripItemOverflow.Never,
+            .Size = New Drawing.Size(95, 25)
+        }
+        AddHandler ToolStripDiskTypeCombo.SelectedIndexChanged, AddressOf ToolStripCombo_SelectedIndexChanged
+
+        ToolStripDiskTypeLabel = New ToolStripLabel With {
+            .Text = My.Resources.SummaryPanel_DiskType,
+            .Alignment = ToolStripItemAlignment.Right,
+            .Overflow = ToolStripItemOverflow.Never,
+            .Margin = New Padding(8, 1, 0, 2),
+            .Size = New Drawing.Size(57, 22)
+        }
+
+        ToolStripTop.Items.Add(ToolStripDiskTypeCombo)
+        ToolStripTop.Items.Add(ToolStripDiskTypeLabel)
     End Sub
 
     Public Function ImageFiltersScanDirectory(Disk As DiskImage.Disk, ImageData As ImageData, Optional UpdateFilters As Boolean = False, Optional Remove As Boolean = False) As DirectoryScanResponse
@@ -3398,10 +3489,11 @@ Public Class MainForm
 
         If ParentDirectory Is Nothing Then
             SetButtonStateViewDirectory(False, False)
+            SetButtonStateAddFile(False)
             If CurrentImage Is Nothing OrElse Not CurrentImage.Disk.IsValidImage Then
-                SetButtonStateAddFile(False)
+                SetButtonStateTopMenuAddFile(False)
             Else
-                SetButtonStateAddFile(True, CurrentImage.Disk.RootDirectory)
+                SetButtonStateTopMenuAddFile(True, CurrentImage.Disk.RootDirectory)
             End If
         Else
             If ParentDirectory Is CurrentImage.Disk.RootDirectory Then
@@ -3411,6 +3503,7 @@ Public Class MainForm
             End If
             SetButtonStateViewDirectory(True, True, ParentDirectory, Caption)
             SetButtonStateAddFile(True, ParentDirectory)
+            SetButtonStateTopMenuAddFile(True, CurrentImage.Disk.RootDirectory)
         End If
     End Sub
 
@@ -3563,7 +3656,7 @@ Public Class MainForm
     End Sub
 
     Private Sub ResetAll()
-        'EmptyTempPath()
+        EmptyTempPath()
         _CurrentImage = Nothing
         Me.Text = GetWindowCaption()
         ImageFilters.FiltersApplied = False
@@ -3678,14 +3771,16 @@ Public Class MainForm
         MenuFileImportFiles.Enabled = Enabled
         MenuFileImportFiles.Tag = Tag
 
+        MenuFileNewDirectory.Enabled = Enabled
+        MenuFileNewDirectory.Tag = Tag
+    End Sub
+
+    Private Sub SetButtonStateTopMenuAddFile(Enabled As Boolean, Optional Tag As Object = Nothing)
         ToolStripImportFiles.Enabled = Enabled
         ToolStripImportFiles.Tag = Tag
 
         MenuEditImportFiles.Enabled = Enabled
         MenuEditImportFiles.Tag = Tag
-
-        MenuFileNewDirectory.Enabled = Enabled
-        MenuFileNewDirectory.Tag = Tag
     End Sub
 
     Private Sub SetButtonStateDeleteFile(Enabled As Boolean, Visible As Boolean, Optional Text As String = "")
@@ -4575,7 +4670,7 @@ Public Class MainForm
     'End Sub
 
     Private Sub MainForm_Closed(sender As Object, e As EventArgs) Handles Me.Closed
-        'EmptyTempPath()
+        EmptyTempPath()
     End Sub
 
     Private Sub MainForm_Closing(sender As Object, e As CancelEventArgs) Handles Me.Closing
@@ -4675,7 +4770,7 @@ Public Class MainForm
         GenerateTrackLayout()
     End Sub
 
-    Private Sub ToolStripCombo_SelectedIndexChanged(sender As Object, e As EventArgs) Handles ToolStripOEMNameCombo.SelectedIndexChanged, ToolStripDiskTypeCombo.SelectedIndexChanged
+    Private Sub ToolStripCombo_SelectedIndexChanged(sender As Object, e As EventArgs)
         If _SuppressEvent Then
             Exit Sub
         End If
@@ -4683,7 +4778,7 @@ Public Class MainForm
         FiltersApply(False)
     End Sub
 
-    Private Sub ToolStripFATCombo_SelectedIndexChanged(sender As Object, e As EventArgs) Handles ToolStripFATCombo.SelectedIndexChanged
+    Private Sub ToolStripFATCombo_SelectedIndexChanged(sender As Object, e As EventArgs)
         If _SuppressEvent Then
             Exit Sub
         End If
@@ -4694,7 +4789,7 @@ Public Class MainForm
         End If
     End Sub
 
-    Private Sub ToolStripSearchText_TextChanged(sender As Object, e As EventArgs) Handles ToolStripSearchText.TextChanged
+    Private Sub ToolStripSearchText_TextChanged(sender As Object, e As EventArgs)
         If _SuppressEvent Then
             Exit Sub
         End If

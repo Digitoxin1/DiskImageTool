@@ -1445,4 +1445,7 @@ Remarque : cette valeur doit être {1} pour toutes les disquettes</value>
   <data name="Menu_ExportUnknown" xml:space="preserve">
     <value>Exporter les images inconnues lors de l’analyse</value>
   </data>
+  <data name="Label_Search" xml:space="preserve">
+    <value>Rechercher</value>
+  </data>
 </root>

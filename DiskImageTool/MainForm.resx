@@ -527,15 +527,6 @@
   <data name="FileCRC32.Width" type="System.Int32, mscorlib">
     <value>70</value>
   </data>
-  <metadata name="ToolStripSearchLabel.GenerateMember" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
-    <value>False</value>
-  </metadata>
-  <data name="ToolStripSearchLabel.Size" type="System.Drawing.Size, System.Drawing">
-    <value>42, 22</value>
-  </data>
-  <data name="ToolStripSearchLabel.Text" xml:space="preserve">
-    <value>Search</value>
-  </data>
   <metadata name="MainMenuTools.GenerateMember" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
     <value>False</value>
   </metadata>
@@ -980,42 +971,6 @@
   <metadata name="ToolStripTop.Locked" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
     <value>True</value>
   </metadata>
-  <data name="ToolStripSearchText.Font" type="System.Drawing.Font, System.Drawing">
-    <value>Segoe UI, 9pt</value>
-  </data>
-  <data name="ToolStripSearchText.MaxLength" type="System.Int32, mscorlib">
-    <value>255</value>
-  </data>
-  <data name="ToolStripSearchText.Size" type="System.Drawing.Size, System.Drawing">
-    <value>195, 25</value>
-  </data>
-  <data name="ToolStripOEMNameCombo.FlatStyle" type="System.Windows.Forms.FlatStyle, System.Windows.Forms">
-    <value>System</value>
-  </data>
-  <data name="ToolStripOEMNameCombo.Size" type="System.Drawing.Size, System.Drawing">
-    <value>125, 25</value>
-  </data>
-  <data name="ToolStripOEMNameLabel.Size" type="System.Drawing.Size, System.Drawing">
-    <value>68, 22</value>
-  </data>
-  <data name="ToolStripOEMNameLabel.Text" xml:space="preserve">
-    <value>OEM Name</value>
-  </data>
-  <data name="ToolStripDiskTypeCombo.AutoSize" type="System.Boolean, mscorlib">
-    <value>False</value>
-  </data>
-  <data name="ToolStripDiskTypeCombo.FlatStyle" type="System.Windows.Forms.FlatStyle, System.Windows.Forms">
-    <value>System</value>
-  </data>
-  <data name="ToolStripDiskTypeCombo.Size" type="System.Drawing.Size, System.Drawing">
-    <value>95, 23</value>
-  </data>
-  <data name="ToolStripDiskTypeLabel.Size" type="System.Drawing.Size, System.Drawing">
-    <value>57, 22</value>
-  </data>
-  <data name="ToolStripDiskTypeLabel.Text" xml:space="preserve">
-    <value>Disk Type</value>
-  </data>
   <data name="ToolStripOpen.ImageTransparentColor" type="System.Drawing.Color, System.Drawing">
     <value>Magenta</value>
   </data>
@@ -1142,15 +1097,6 @@
   </data>
   <data name="ToolStripSeparatorFAT.Size" type="System.Drawing.Size, System.Drawing">
     <value>6, 25</value>
-  </data>
-  <data name="ToolStripFATCombo.AutoSize" type="System.Boolean, mscorlib">
-    <value>False</value>
-  </data>
-  <data name="ToolStripFATCombo.FlatStyle" type="System.Windows.Forms.FlatStyle, System.Windows.Forms">
-    <value>System</value>
-  </data>
-  <data name="ToolStripFATCombo.Size" type="System.Drawing.Size, System.Drawing">
-    <value>25, 23</value>
   </data>
   <data name="ToolStripTop.Location" type="System.Drawing.Point, System.Drawing">
     <value>0, 24</value>
@@ -1304,7 +1250,7 @@
     <value>0, 0</value>
   </data>
   <data name="ComboImages.Size" type="System.Drawing.Size, System.Drawing">
-    <value>561, 21</value>
+    <value>549, 21</value>
   </data>
   <data name="ComboImages.TabIndex" type="System.Int32, mscorlib">
     <value>4</value>
@@ -1337,7 +1283,7 @@
     <value>Microsoft Sans Serif, 9.75pt, style=Bold</value>
   </data>
   <data name="LabelDropMessage.Location" type="System.Drawing.Point, System.Drawing">
-    <value>166, 253</value>
+    <value>160, 253</value>
   </data>
   <data name="LabelDropMessage.Size" type="System.Drawing.Size, System.Drawing">
     <value>273, 16</value>
@@ -1528,7 +1474,7 @@
     <value>0, 27</value>
   </data>
   <data name="ListViewFiles.Size" type="System.Drawing.Size, System.Drawing">
-    <value>634, 467</value>
+    <value>672, 467</value>
   </data>
   <data name="ListViewFiles.TabIndex" type="System.Int32, mscorlib">
     <value>6</value>
@@ -1555,7 +1501,7 @@
     <value>0, 0</value>
   </data>
   <data name="ComboImagesFiltered.Size" type="System.Drawing.Size, System.Drawing">
-    <value>561, 21</value>
+    <value>549, 21</value>
   </data>
   <data name="ComboImagesFiltered.TabIndex" type="System.Int32, mscorlib">
     <value>3</value>
@@ -1579,7 +1525,7 @@
     <value>Top, Right</value>
   </data>
   <data name="BtnResetSort.Location" type="System.Drawing.Point, System.Drawing">
-    <value>565, -1</value>
+    <value>553, -1</value>
   </data>
   <data name="BtnResetSort.Size" type="System.Drawing.Size, System.Drawing">
     <value>65, 23</value>
@@ -3203,6 +3149,18 @@
   <data name="&gt;&gt;MenuEditSeparator2.Type" xml:space="preserve">
     <value>System.Windows.Forms.ToolStripSeparator, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
+  <data name="&gt;&gt;MenuEditImportFiles.Name" xml:space="preserve">
+    <value>MenuEditImportFiles</value>
+  </data>
+  <data name="&gt;&gt;MenuEditImportFiles.Type" xml:space="preserve">
+    <value>System.Windows.Forms.ToolStripMenuItem, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;ToolStripSeparator1.Name" xml:space="preserve">
+    <value>ToolStripSeparator1</value>
+  </data>
+  <data name="&gt;&gt;ToolStripSeparator1.Type" xml:space="preserve">
+    <value>System.Windows.Forms.ToolStripSeparator, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
   <data name="&gt;&gt;MenuEditUndo.Name" xml:space="preserve">
     <value>MenuEditUndo</value>
   </data>
@@ -3316,12 +3274,6 @@
   </data>
   <data name="&gt;&gt;FileCRC32.Type" xml:space="preserve">
     <value>System.Windows.Forms.ColumnHeader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="&gt;&gt;ToolStripSearchLabel.Name" xml:space="preserve">
-    <value>ToolStripSearchLabel</value>
-  </data>
-  <data name="&gt;&gt;ToolStripSearchLabel.Type" xml:space="preserve">
-    <value>System.Windows.Forms.ToolStripLabel, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
   <data name="&gt;&gt;MainMenuTools.Name" xml:space="preserve">
     <value>MainMenuTools</value>
@@ -3599,36 +3551,6 @@
   <data name="&gt;&gt;MainMenuUpdateAvailable.Type" xml:space="preserve">
     <value>System.Windows.Forms.ToolStripMenuItem, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
-  <data name="&gt;&gt;ToolStripSearchText.Name" xml:space="preserve">
-    <value>ToolStripSearchText</value>
-  </data>
-  <data name="&gt;&gt;ToolStripSearchText.Type" xml:space="preserve">
-    <value>DiskImageTool.ToolStripSpringTextBox, DiskImageTool, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null</value>
-  </data>
-  <data name="&gt;&gt;ToolStripOEMNameCombo.Name" xml:space="preserve">
-    <value>ToolStripOEMNameCombo</value>
-  </data>
-  <data name="&gt;&gt;ToolStripOEMNameCombo.Type" xml:space="preserve">
-    <value>System.Windows.Forms.ToolStripComboBox, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="&gt;&gt;ToolStripOEMNameLabel.Name" xml:space="preserve">
-    <value>ToolStripOEMNameLabel</value>
-  </data>
-  <data name="&gt;&gt;ToolStripOEMNameLabel.Type" xml:space="preserve">
-    <value>System.Windows.Forms.ToolStripLabel, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="&gt;&gt;ToolStripDiskTypeCombo.Name" xml:space="preserve">
-    <value>ToolStripDiskTypeCombo</value>
-  </data>
-  <data name="&gt;&gt;ToolStripDiskTypeCombo.Type" xml:space="preserve">
-    <value>System.Windows.Forms.ToolStripComboBox, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="&gt;&gt;ToolStripDiskTypeLabel.Name" xml:space="preserve">
-    <value>ToolStripDiskTypeLabel</value>
-  </data>
-  <data name="&gt;&gt;ToolStripDiskTypeLabel.Type" xml:space="preserve">
-    <value>System.Windows.Forms.ToolStripLabel, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
   <data name="&gt;&gt;ToolStripOpen.Name" xml:space="preserve">
     <value>ToolStripOpen</value>
   </data>
@@ -3712,12 +3634,6 @@
   </data>
   <data name="&gt;&gt;ToolStripSeparatorFAT.Type" xml:space="preserve">
     <value>System.Windows.Forms.ToolStripSeparator, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="&gt;&gt;ToolStripFATCombo.Name" xml:space="preserve">
-    <value>ToolStripFATCombo</value>
-  </data>
-  <data name="&gt;&gt;ToolStripFATCombo.Type" xml:space="preserve">
-    <value>System.Windows.Forms.ToolStripComboBox, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
   <data name="&gt;&gt;ToolStripStatusReadOnly.Name" xml:space="preserve">
     <value>ToolStripStatusReadOnly</value>
@@ -3916,18 +3832,6 @@
   </data>
   <data name="&gt;&gt;MenuDirectoryNewDirectory.Type" xml:space="preserve">
     <value>System.Windows.Forms.ToolStripMenuItem, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="&gt;&gt;MenuEditImportFiles.Name" xml:space="preserve">
-    <value>MenuEditImportFiles</value>
-  </data>
-  <data name="&gt;&gt;MenuEditImportFiles.Type" xml:space="preserve">
-    <value>System.Windows.Forms.ToolStripMenuItem, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="&gt;&gt;ToolStripSeparator1.Name" xml:space="preserve">
-    <value>ToolStripSeparator1</value>
-  </data>
-  <data name="&gt;&gt;ToolStripSeparator1.Type" xml:space="preserve">
-    <value>System.Windows.Forms.ToolStripSeparator, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
   <data name="&gt;&gt;$this.Name" xml:space="preserve">
     <value>MainForm</value>

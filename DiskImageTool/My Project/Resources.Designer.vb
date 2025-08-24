@@ -3225,6 +3225,15 @@ Namespace My.Resources
         End Property
         
         '''<summary>
+        '''  Looks up a localized string similar to Search.
+        '''</summary>
+        Friend ReadOnly Property Label_Search() As String
+            Get
+                Return ResourceManager.GetString("Label_Search", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
         '''  Looks up a localized string similar to Sector.
         '''</summary>
         Friend ReadOnly Property Label_Sector() As String
