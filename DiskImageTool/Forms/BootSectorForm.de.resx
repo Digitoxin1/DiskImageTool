@@ -175,7 +175,7 @@
     <value>Gesamtanzahl Sektoren (groß)</value>
   </data>
   <data name="LblVolumeLabel.Text" xml:space="preserve">
-    <value>Volumenbezeichnung</value>
+    <value>Volume-Bezeichnung</value>
   </data>
   <data name="LblFileSystemType.Text" xml:space="preserve">
     <value>Dateisystem-ID</value>

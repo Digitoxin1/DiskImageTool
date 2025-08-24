@@ -171,48 +171,56 @@ Partial Class HexViewForm
         'ToolStripBtnUndo
         '
         Me.ToolStripBtnUndo.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image
+        Me.ToolStripBtnUndo.Image = Global.DiskImageTool.My.Resources.Resources.Undo
         resources.ApplyResources(Me.ToolStripBtnUndo, "ToolStripBtnUndo")
         Me.ToolStripBtnUndo.Name = "ToolStripBtnUndo"
         '
         'ToolStripBtnRedo
         '
         Me.ToolStripBtnRedo.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image
+        Me.ToolStripBtnRedo.Image = Global.DiskImageTool.My.Resources.Resources.Redo
         resources.ApplyResources(Me.ToolStripBtnRedo, "ToolStripBtnRedo")
         Me.ToolStripBtnRedo.Name = "ToolStripBtnRedo"
         '
         'ToolStripBtnCopyText
         '
         Me.ToolStripBtnCopyText.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image
+        Me.ToolStripBtnCopyText.Image = Global.DiskImageTool.My.Resources.Resources.TextBlock
         resources.ApplyResources(Me.ToolStripBtnCopyText, "ToolStripBtnCopyText")
         Me.ToolStripBtnCopyText.Name = "ToolStripBtnCopyText"
         '
         'ToolStripBtnCopyHex
         '
         Me.ToolStripBtnCopyHex.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image
+        Me.ToolStripBtnCopyHex.Image = Global.DiskImageTool.My.Resources.Resources.Copy
         resources.ApplyResources(Me.ToolStripBtnCopyHex, "ToolStripBtnCopyHex")
         Me.ToolStripBtnCopyHex.Name = "ToolStripBtnCopyHex"
         '
         'ToolStripBtnCopyHexFormatted
         '
         Me.ToolStripBtnCopyHexFormatted.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image
+        Me.ToolStripBtnCopyHexFormatted.Image = Global.DiskImageTool.My.Resources.Resources.CopyHexFormatted
         resources.ApplyResources(Me.ToolStripBtnCopyHexFormatted, "ToolStripBtnCopyHexFormatted")
         Me.ToolStripBtnCopyHexFormatted.Name = "ToolStripBtnCopyHexFormatted"
         '
         'ToolStripBtnPaste
         '
         Me.ToolStripBtnPaste.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image
+        Me.ToolStripBtnPaste.Image = Global.DiskImageTool.My.Resources.Resources.PasteReplace
         resources.ApplyResources(Me.ToolStripBtnPaste, "ToolStripBtnPaste")
         Me.ToolStripBtnPaste.Name = "ToolStripBtnPaste"
         '
         'ToolStripBtnFind
         '
         Me.ToolStripBtnFind.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image
+        Me.ToolStripBtnFind.Image = Global.DiskImageTool.My.Resources.Resources.Search
         resources.ApplyResources(Me.ToolStripBtnFind, "ToolStripBtnFind")
         Me.ToolStripBtnFind.Name = "ToolStripBtnFind"
         '
         'ToolStripBtnFindNext
         '
         Me.ToolStripBtnFindNext.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image
+        Me.ToolStripBtnFindNext.Image = Global.DiskImageTool.My.Resources.Resources.FindNext
         resources.ApplyResources(Me.ToolStripBtnFindNext, "ToolStripBtnFindNext")
         Me.ToolStripBtnFindNext.Name = "ToolStripBtnFindNext"
         '
@@ -224,23 +232,27 @@ Partial Class HexViewForm
         'ToolStripBtnDelete
         '
         Me.ToolStripBtnDelete.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image
+        Me.ToolStripBtnDelete.Image = Global.DiskImageTool.My.Resources.Resources.Fill00
         resources.ApplyResources(Me.ToolStripBtnDelete, "ToolStripBtnDelete")
         Me.ToolStripBtnDelete.Name = "ToolStripBtnDelete"
         '
         'ToolStripBtnFillF6
         '
         Me.ToolStripBtnFillF6.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image
+        Me.ToolStripBtnFillF6.Image = Global.DiskImageTool.My.Resources.Resources.FillF6
         resources.ApplyResources(Me.ToolStripBtnFillF6, "ToolStripBtnFillF6")
         Me.ToolStripBtnFillF6.Name = "ToolStripBtnFillF6"
         '
         'ToolStripBtnSelectAll
         '
         Me.ToolStripBtnSelectAll.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image
+        Me.ToolStripBtnSelectAll.Image = Global.DiskImageTool.My.Resources.Resources.SelectAll
         resources.ApplyResources(Me.ToolStripBtnSelectAll, "ToolStripBtnSelectAll")
         Me.ToolStripBtnSelectAll.Name = "ToolStripBtnSelectAll"
         '
         'ToolStripBtnSelectSector
         '
+        Me.ToolStripBtnSelectSector.Image = Global.DiskImageTool.My.Resources.Resources.SelectSector
         resources.ApplyResources(Me.ToolStripBtnSelectSector, "ToolStripBtnSelectSector")
         Me.ToolStripBtnSelectSector.Margin = New System.Windows.Forms.Padding(0, 1, 4, 2)
         Me.ToolStripBtnSelectSector.Name = "ToolStripBtnSelectSector"
@@ -261,6 +273,7 @@ Partial Class HexViewForm
         '
         'ToolStripBtnSelectTrack
         '
+        Me.ToolStripBtnSelectTrack.Image = Global.DiskImageTool.My.Resources.Resources.SelectTrack
         resources.ApplyResources(Me.ToolStripBtnSelectTrack, "ToolStripBtnSelectTrack")
         Me.ToolStripBtnSelectTrack.Margin = New System.Windows.Forms.Padding(0, 1, 4, 2)
         Me.ToolStripBtnSelectTrack.Name = "ToolStripBtnSelectTrack"
@@ -273,33 +286,39 @@ Partial Class HexViewForm
         '
         'BtnUndo
         '
-        resources.ApplyResources(Me.BtnUndo, "BtnUndo")
+        Me.BtnUndo.Image = Global.DiskImageTool.My.Resources.Resources.Undo
         Me.BtnUndo.Name = "BtnUndo"
+        resources.ApplyResources(Me.BtnUndo, "BtnUndo")
         '
         'BtnRedo
         '
-        resources.ApplyResources(Me.BtnRedo, "BtnRedo")
+        Me.BtnRedo.Image = Global.DiskImageTool.My.Resources.Resources.Redo
         Me.BtnRedo.Name = "BtnRedo"
+        resources.ApplyResources(Me.BtnRedo, "BtnRedo")
         '
         'BtnCopyText
         '
-        resources.ApplyResources(Me.BtnCopyText, "BtnCopyText")
+        Me.BtnCopyText.Image = Global.DiskImageTool.My.Resources.Resources.TextBlock
         Me.BtnCopyText.Name = "BtnCopyText"
+        resources.ApplyResources(Me.BtnCopyText, "BtnCopyText")
         '
         'BtnCopyHex
         '
-        resources.ApplyResources(Me.BtnCopyHex, "BtnCopyHex")
+        Me.BtnCopyHex.Image = Global.DiskImageTool.My.Resources.Resources.Copy
         Me.BtnCopyHex.Name = "BtnCopyHex"
+        resources.ApplyResources(Me.BtnCopyHex, "BtnCopyHex")
         '
         'BtnCopyHexFormatted
         '
-        resources.ApplyResources(Me.BtnCopyHexFormatted, "BtnCopyHexFormatted")
+        Me.BtnCopyHexFormatted.Image = Global.DiskImageTool.My.Resources.Resources.CopyHexFormatted
         Me.BtnCopyHexFormatted.Name = "BtnCopyHexFormatted"
+        resources.ApplyResources(Me.BtnCopyHexFormatted, "BtnCopyHexFormatted")
         '
         'BtnPaste
         '
-        resources.ApplyResources(Me.BtnPaste, "BtnPaste")
+        Me.BtnPaste.Image = Global.DiskImageTool.My.Resources.Resources.PasteReplace
         Me.BtnPaste.Name = "BtnPaste"
+        resources.ApplyResources(Me.BtnPaste, "BtnPaste")
         '
         'BtnFind
         '
@@ -318,13 +337,15 @@ Partial Class HexViewForm
         '
         'BtnDelete
         '
-        resources.ApplyResources(Me.BtnDelete, "BtnDelete")
+        Me.BtnDelete.Image = Global.DiskImageTool.My.Resources.Resources.Fill00
         Me.BtnDelete.Name = "BtnDelete"
+        resources.ApplyResources(Me.BtnDelete, "BtnDelete")
         '
         'BtnFillF6
         '
-        resources.ApplyResources(Me.BtnFillF6, "BtnFillF6")
+        Me.BtnFillF6.Image = Global.DiskImageTool.My.Resources.Resources.FillF6
         Me.BtnFillF6.Name = "BtnFillF6"
+        resources.ApplyResources(Me.BtnFillF6, "BtnFillF6")
         '
         'BtnFill
         '
@@ -333,18 +354,21 @@ Partial Class HexViewForm
         '
         'BtnSelectSector
         '
-        resources.ApplyResources(Me.BtnSelectSector, "BtnSelectSector")
+        Me.BtnSelectSector.Image = Global.DiskImageTool.My.Resources.Resources.SelectSector
         Me.BtnSelectSector.Name = "BtnSelectSector"
+        resources.ApplyResources(Me.BtnSelectSector, "BtnSelectSector")
         '
         'BtnSelectTrack
         '
-        resources.ApplyResources(Me.BtnSelectTrack, "BtnSelectTrack")
+        Me.BtnSelectTrack.Image = Global.DiskImageTool.My.Resources.Resources.SelectTrack
         Me.BtnSelectTrack.Name = "BtnSelectTrack"
+        resources.ApplyResources(Me.BtnSelectTrack, "BtnSelectTrack")
         '
         'BtnSelectAll
         '
-        resources.ApplyResources(Me.BtnSelectAll, "BtnSelectAll")
+        Me.BtnSelectAll.Image = Global.DiskImageTool.My.Resources.Resources.SelectAll
         Me.BtnSelectAll.Name = "BtnSelectAll"
+        resources.ApplyResources(Me.BtnSelectAll, "BtnSelectAll")
         '
         'StatusStrip1
         '

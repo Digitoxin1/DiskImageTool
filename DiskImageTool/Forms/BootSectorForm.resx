@@ -1104,16 +1104,6 @@
   <metadata name="btnReset.Locked" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
     <value>True</value>
   </metadata>
-  <data name="btnReset.Image" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
-    <value>
-        iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAABGdBTUEAALGPC/xhBQAAACBjSFJNAAB6
-        JgAAgIQAAPoAAACA6AAAdTAAAOpgAAA6mAAAF3CculE8AAAACXBIWXMAAA68AAAOvAGVvHJJAAAAxElE
-        QVQ4T+WQMQ7CMBRDKwQbI3vSFjpkzYoa4EQwMPcscAtWOADcgAkkVgZW8K9cksJAK8HEk74U/9hulehr
-        xHF857EkTdMhdivMCXPDHJRSc+dcl5Y6YQGME631BVPgrI0xfZxzzBa+jbW2R6unKgjCeXlRp4P9Dt4F
-        tUcKgrDj+g14pvDuKT1S8CksZFk2gOdK6UHBUUpeh9dPkiQZYX+mbA++XqBgTdmO6o3kL7hqDkJjhmdc
-        NecfwwLCS3l1yl8RRQ8lWD5cFXlVdgAAAABJRU5ErkJggg==
-</value>
-  </data>
   <data name="btnReset.Location" type="System.Drawing.Point, System.Drawing">
     <value>200, 2</value>
   </data>
@@ -1284,15 +1274,6 @@
   </data>
   <data name="BtnVolumeSerialNumber.FlatStyle" type="System.Windows.Forms.FlatStyle, System.Windows.Forms">
     <value>Flat</value>
-  </data>
-  <data name="BtnVolumeSerialNumber.Image" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
-    <value>
-        iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAABGdBTUEAALGPC/xhBQAAACBjSFJNAAB6
-        JgAAgIQAAPoAAACA6AAAdTAAAOpgAAA6mAAAF3CculE8AAAACXBIWXMAAA68AAAOvAGVvHJJAAAAjUlE
-        QVQ4T8VQQQ6AIAzjD54EIYDx4sv9hYkvIfgQ3Mw4wAGQGG3SlIW12cZegTHGAcNDOrLfAUEpNZaY92BN
-        9vYAKeWstT6stUtXAKoQYoo12ftuAJOcZE8BnzvnfKgR+8iSIga0KFlSxIYaqwG5ws4e3ri7bwrIiWa4
-        /opK9ccT5CwFbPjZwI0sv4KxCxPBhADM2SfmAAAAAElFTkSuQmCC
-</value>
   </data>
   <data name="BtnVolumeSerialNumber.Location" type="System.Drawing.Point, System.Drawing">
     <value>465, 26</value>

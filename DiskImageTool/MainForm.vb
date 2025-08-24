@@ -3398,7 +3398,11 @@ Public Class MainForm
 
         If ParentDirectory Is Nothing Then
             SetButtonStateViewDirectory(False, False)
-            SetButtonStateAddFile(False)
+            If CurrentImage Is Nothing OrElse Not CurrentImage.Disk.IsValidImage Then
+                SetButtonStateAddFile(False)
+            Else
+                SetButtonStateAddFile(True, CurrentImage.Disk.RootDirectory)
+            End If
         Else
             If ParentDirectory Is CurrentImage.Disk.RootDirectory Then
                 Caption = My.Resources.Menu_ViewRootDirectory
@@ -3673,6 +3677,9 @@ Public Class MainForm
     Private Sub SetButtonStateAddFile(Enabled As Boolean, Optional Tag As Object = Nothing)
         MenuFileImportFiles.Enabled = Enabled
         MenuFileImportFiles.Tag = Tag
+
+        ToolStripImportFiles.Enabled = Enabled
+        ToolStripImportFiles.Tag = Tag
 
         MenuFileNewDirectory.Enabled = Enabled
         MenuFileNewDirectory.Tag = Tag
@@ -4123,7 +4130,7 @@ Public Class MainForm
         CheckForUpdates()
     End Sub
 
-    Private Sub BtnImportFiles_Click(sender As Object, e As EventArgs) Handles MenuFileImportFiles.Click, MenuDirectoryImportFiles.Click
+    Private Sub BtnImportFiles_Click(sender As Object, e As EventArgs) Handles MenuFileImportFiles.Click, MenuDirectoryImportFiles.Click, ToolStripImportFiles.Click
         If sender.Tag IsNot Nothing Then
             Dim Directory As IDirectory = sender.Tag
             ImageImport(_CurrentImage, Directory, True)

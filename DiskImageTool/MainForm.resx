@@ -223,15 +223,6 @@
     <value>False</value>
   </metadata>
   <assembly alias="System.Drawing" name="System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
-  <data name="MenuFileOpen.Image" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
-    <value>
-        iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8
-        YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAC0SURBVDhPY0ABsTtLGaJ3O0B5ZIDY3TYMsbteMsTsdIKK
-        EAFCV7EBNXUC8TMg/g/BO68qKCioKyoq/seDH0AMiN3ZAcRbGOL2SIOdD3IBkJaUlOSSk5OTxIVBhkAN
-        2PqUIXqbDJDFxBCzqwSkGSg5CckmXPgL1ACgk4EAaKpgaGgos4qKCruUlJQwIQw0YD9YPwyABEGGoCvE
-        hVEMAHGwKcKHRw2ggQErQAIk4hVQ7QMKGBgA8/OGDM6bEboAAAAASUVORK5CYII=
-</value>
-  </data>
   <data name="MenuFileOpen.ImageTransparentColor" type="System.Drawing.Color, System.Drawing">
     <value>Magenta</value>
   </data>
@@ -265,14 +256,6 @@
   <data name="MenuFileSeparator1.Size" type="System.Drawing.Size, System.Drawing">
     <value>202, 6</value>
   </data>
-  <data name="MenuFileSave.Image" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
-    <value>
-        iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8
-        YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAB+SURBVDhPY6AOiNn5gCF2138i8UeG6N0OUJ1QAJKI3i4J
-        xshsdAw2YLc/Q/SuV0BLnaC6gYAUA0B0zI5ghoidn6C6gYBUA2BsOKCqATG7HoH52DBIjqABxGLsBuzc
-        AGQfxYtBanAaAFYAtQEXhqkZNQDNANIyEwSD9FAOGBgASxwuA/BNGaoAAAAASUVORK5CYII=
-</value>
-  </data>
   <data name="MenuFileSave.ImageTransparentColor" type="System.Drawing.Color, System.Drawing">
     <value>Magenta</value>
   </data>
@@ -285,17 +268,6 @@
   <data name="MenuFileSave.Text" xml:space="preserve">
     <value>&amp;Save</value>
   </data>
-  <data name="MenuFileSaveAs.Image" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
-    <value>
-        iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAABGdBTUEAALGPC/xhBQAAACBjSFJNAAB6
-        JgAAgIQAAPoAAACA6AAAdTAAAOpgAAA6mAAAF3CculE8AAAACXBIWXMAAA68AAAOvAGVvHJJAAABE0lE
-        QVQ4T2OgDojZdZ8hdtd//HjnGobQVWxQHWgApCB6uyQYI7Nh/NjdckB6E9gQrICQAWAabMh/qA40gG4A
-        OkaWwwqQFeHDMTvXysnJCSoqKk5UUFBoVVFRYUc1IGbnBiD7KAYGiUdtERTTcRIHaj4PxIuA+ATQkHRU
-        A0CKkW2E4ZgdXTIyMkIgzUBNk+Xl5TWB9HUgHUDYAKDNkmr2IkANZ4B4OlCTBpAGuaILohkEcBkA1AzU
-        IIBfMwhgMyB2tzAOzZ1QXUgAW0qM22kH1LAYiNcAQ14LSF8Cam6C6iAMlJWVVYCafgPxJyC+DtTcCJUi
-        DgA1zQFq+g+kXwBxKlSYeADUvBKIG7S0tHigQrQADAwAPE/MLyYptacAAAAASUVORK5CYII=
-</value>
-  </data>
   <data name="MenuFileSaveAs.ShortcutKeys" type="System.Windows.Forms.Keys, System.Windows.Forms">
     <value>Ctrl+Alt+S</value>
   </data>
@@ -304,15 +276,6 @@
   </data>
   <data name="MenuFileSaveAs.Text" xml:space="preserve">
     <value>Save &amp;As</value>
-  </data>
-  <data name="MenuFileSaveAll.Image" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
-    <value>
-        iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAABGdBTUEAALGPC/xhBQAAACBjSFJNAAB6
-        JgAAgIQAAPoAAACA6AAAdTAAAOpgAAA6mAAAF3CculE8AAAACXBIWXMAAA68AAAOvAGVvHJJAAAAnklE
-        QVQ4T2OgLojdtZwhdud+gjhmVz2D/X4WqC4SAUhjzM4WsCFwELPzAdD2/wRx9K41DGlnWMGGgFwCB2DJ
-        7ZJgjMxGFovdLQekt4ENAesh1QAwDTbkP0QPOQbA2GA9uAyI2fUIzEfGIDGiDSCE8RoQs3MDkH0UKwbJ
-        ETQApBBmEzqGyQ0iA4DJHg7IMQAFYIs6XDhm132oLmoABgYA88QRXE/rUOAAAAAASUVORK5CYII=
-</value>
   </data>
   <data name="MenuFileSaveAll.ShortcutKeys" type="System.Windows.Forms.Keys, System.Windows.Forms">
     <value>Ctrl+Shift+S</value>
@@ -329,15 +292,6 @@
   <data name="MenuFileSeparator2.Size" type="System.Drawing.Size, System.Drawing">
     <value>202, 6</value>
   </data>
-  <data name="MenuFileClose.Image" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
-    <value>
-        iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAABGdBTUEAALGPC/xhBQAAACBjSFJNAAB6
-        JgAAgIQAAPoAAACA6AAAdTAAAOpgAAA6mAAAF3CculE8AAAACXBIWXMAAA68AAAOvAGVvHJJAAAAfUlE
-        QVQ4T72SYQ6AIAiFvQnJOWprnalL2yXq0eiHhWiz9W0O98A3BcNnENGgWxezTkSwIc4qmUhe654mzDwi
-        mRAXlTJijJOXPymZ1Mwz7sWvDl/oWxPWKrHWGxM5jHfvElVqp+sGXT0ojarJpDZn10R+Fuj7iaZo0Fr3
-        FyEcVjA2reXrnUkAAAAASUVORK5CYII=
-</value>
-  </data>
   <data name="MenuFileClose.ShortcutKeys" type="System.Windows.Forms.Keys, System.Windows.Forms">
     <value>Ctrl+W</value>
   </data>
@@ -346,15 +300,6 @@
   </data>
   <data name="MenuFileClose.Text" xml:space="preserve">
     <value>&amp;Close</value>
-  </data>
-  <data name="MenuFileCloseAll.Image" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
-    <value>
-        iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAABGdBTUEAALGPC/xhBQAAACBjSFJNAAB6
-        JgAAgIQAAPoAAACA6AAAdTAAAOpgAAA6mAAAF3CculE8AAAACXBIWXMAAA68AAAOvAGVvHJJAAAAoElE
-        QVQ4T81SyQ2EMAxMD7zII4dSBWXQEtWwVdAKf4oAj5ggIuXax0o70shxPB5HkdXP4L1fhVuFK6V5QKS1
-        HkpEndIUcOaEEj8tg+bkGNlyQy524Vnh3jI4jTFjiah3GYQQJmvtjDMi8q8M0OScOyRfEKNZtwHFC3LE
-        191jQKZ7AAGEPS9gS4poUPsDNAvzGxgNSkSd0jxE0NwDSv8KSl1AdH7QLNcUKQAAAABJRU5ErkJggg==
-</value>
   </data>
   <data name="MenuFileCloseAll.ShortcutKeys" type="System.Windows.Forms.Keys, System.Windows.Forms">
     <value>Ctrl+Shift+W</value>
@@ -370,18 +315,6 @@
   </metadata>
   <data name="MenuFileSeparator3.Size" type="System.Drawing.Size, System.Drawing">
     <value>202, 6</value>
-  </data>
-  <data name="MenuFileExit.Image" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
-    <value>
-        iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAABGdBTUEAALGPC/xhBQAAACBjSFJNAAB6
-        JgAAgIQAAPoAAACA6AAAdTAAAOpgAAA6mAAAF3CculE8AAAACXBIWXMAAA68AAAOvAGVvHJJAAABOklE
-        QVQ4T82SO07DQBRFR+LTUSMKf8YGDG7dAQkhyyCx2EcKxCL4SEhQIxC0kR1RAitgA3yEkzVECmfscYit
-        oYhEwZWuJi/vnjeTmYg/l+M4B67r3kkpv/CEz5mqcVNHzArDcJnQtQZ7uGHbtvR9f4fvj/EbviC6UBA1
-        0bwCegJYB1yrm5Nt0X8md66RH3me16bxwbphgkszYJX4ojjquwWpBfygjm2CZh0EwUoOx+lQdAYtjecD
-        Ruy+a4J0pKp4sCfiJBPdpJ3X7D4mLOuwch6I04nZyWven/sEnX6DAcPpCRhwP9cddNNR5Q54opZ6BYZs
-        msDS01c4fHQKckY0L/HLb0/JJtuqz0ZnGqkqiqIlNYRAxtpjbVqW5au7oT6hfsenRM3/xFKE9gFu8Sce
-        U6ufdqMG6ci/khDfEjB2qxej3BgAAAAASUVORK5CYII=
-</value>
   </data>
   <data name="MenuFileExit.ShortcutKeys" type="System.Windows.Forms.Keys, System.Windows.Forms">
     <value>Alt+F4</value>
@@ -402,13 +335,13 @@
     <value>False</value>
   </metadata>
   <data name="MenuEditBootSector.Size" type="System.Drawing.Size, System.Drawing">
-    <value>179, 22</value>
+    <value>180, 22</value>
   </data>
   <data name="MenuEditBootSector.Text" xml:space="preserve">
     <value>&amp;Boot Sector</value>
   </data>
   <data name="MenuEditFAT.Size" type="System.Drawing.Size, System.Drawing">
-    <value>179, 22</value>
+    <value>180, 22</value>
   </data>
   <data name="MenuEditFAT.Text" xml:space="preserve">
     <value>File &amp;Allocation Table</value>
@@ -417,44 +350,23 @@
     <value>False</value>
   </metadata>
   <data name="MenuEditSeparator1.Size" type="System.Drawing.Size, System.Drawing">
-    <value>176, 6</value>
-  </data>
-  <data name="MenuEditFileProperties.Image" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
-    <value>
-        iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAABGdBTUEAALGPC/xhBQAAACBjSFJNAAB6
-        JgAAgIQAAPoAAACA6AAAdTAAAOpgAAA6mAAAF3CculE8AAAACXBIWXMAAA68AAAOvAGVvHJJAAABDklE
-        QVQ4T2MYHGBGHsODmfkM/7Hgj9PzGRygynADsOICBkkMnMfQjGYgHIMshWqHGoAFzwC5IJfBH6vhQHmo
-        djwuwIeRDZhVwBAC5DGC8Px4Bo65uQyiWDUhY2QDlJSU+BUUFG4B8Qcg7rOwkOEkaAjMABUVFT6oITpA
-        zS8VFRX/A3HX/HoGDqwaYRhmAFDxVaBmXSh7JtSA5/X1DExYNcIwzACgra+hNsM0g/ATog0AKu5H0gjD
-        D4CuEpufzyCAVTMIwwzQ0tJiA7qgF4hfATU+B2kGGQLkXzbWkJOcnsewFqQYHaMkJGQADFRRoOZLUJdc
-        l5OTk4RKEQ+ghlyGuQQqTBpAMuQAVAgLYGAAAJ8c1n2p8CSjAAAAAElFTkSuQmCC
-</value>
+    <value>177, 6</value>
   </data>
   <data name="MenuEditFileProperties.Size" type="System.Drawing.Size, System.Drawing">
-    <value>179, 22</value>
+    <value>180, 22</value>
   </data>
   <data name="MenuEditFileProperties.Text" xml:space="preserve">
     <value>File &amp;Properties</value>
   </data>
-  <data name="MenuEditExportFile.Image" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
-    <value>
-        iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAABGdBTUEAALGPC/xhBQAAACBjSFJNAAB6
-        JgAAgIQAAPoAAACA6AAAdTAAAOpgAAA6mAAAF3CculE8AAAACXBIWXMAAA68AAAOvAGVvHJJAAAAqklE
-        QVQ4T2OgOpCXl1eAMkkHQM0OCgoKr8gyRFFR0Rao+aWSkpITVIh4QJFmEAAacBWI/+PBf4AW3AHSjTIy
-        MpxQbQiA5HcHqBAK0NLSYgNqNgWq2QKkj5FlCAxADWmAclEBkiE4YwGo2Qyo5jaUiwnwaQYBdXV1XqAB
-        P6Bc0gHUBbegXNIBUPNWIK6HcokD0FgA2QzSfBRrLOADQE01QHwbZDPJmmkMGBgAzgQy2PbsZfgAAAAA
-        SUVORK5CYII=
-</value>
-  </data>
   <data name="MenuEditExportFile.Size" type="System.Drawing.Size, System.Drawing">
-    <value>179, 22</value>
+    <value>180, 22</value>
   </data>
   <data name="MenuEditExportFile.Text" xml:space="preserve">
     <value>{ExportFile}</value>
     <comment>@Invariant</comment>
   </data>
   <data name="MenuEditReplaceFile.Size" type="System.Drawing.Size, System.Drawing">
-    <value>179, 22</value>
+    <value>180, 22</value>
   </data>
   <data name="MenuEditReplaceFile.Text" xml:space="preserve">
     <value>&amp;Replace File</value>
@@ -463,48 +375,28 @@
     <value>False</value>
   </metadata>
   <data name="MenuEditSeparator2.Size" type="System.Drawing.Size, System.Drawing">
-    <value>176, 6</value>
-  </data>
-  <data name="MenuEditUndo.Image" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
-    <value>
-        iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAABGdBTUEAALGPC/xhBQAAACBjSFJNAAB6
-        JgAAgIQAAPoAAACA6AAAdTAAAOpgAAA6mAAAF3CculE8AAAACXBIWXMAAA68AAAOvAGVvHJJAAAAxElE
-        QVQ4T+WQMQ7CMBRDKwQbI3vSFjpkzYoa4EQwMPcscAtWOADcgAkkVgZW8K9cksJAK8HEk74U/9hulehr
-        xHF857EkTdMhdivMCXPDHJRSc+dcl5Y6YQGME631BVPgrI0xfZxzzBa+jbW2R6unKgjCeXlRp4P9Dt4F
-        tUcKgrDj+g14pvDuKT1S8CksZFk2gOdK6UHBUUpeh9dPkiQZYX+mbA++XqBgTdmO6o3kL7hqDkJjhmdc
-        NecfwwLCS3l1yl8RRQ8lWD5cFXlVdgAAAABJRU5ErkJggg==
-</value>
+    <value>177, 6</value>
   </data>
   <data name="MenuEditUndo.ShortcutKeys" type="System.Windows.Forms.Keys, System.Windows.Forms">
     <value>Ctrl+Z</value>
   </data>
   <data name="MenuEditUndo.Size" type="System.Drawing.Size, System.Drawing">
-    <value>179, 22</value>
+    <value>180, 22</value>
   </data>
   <data name="MenuEditUndo.Text" xml:space="preserve">
     <value>&amp;Undo</value>
-  </data>
-  <data name="MenuEditRedo.Image" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
-    <value>
-        iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAABGdBTUEAALGPC/xhBQAAACBjSFJNAAB6
-        JgAAgIQAAPoAAACA6AAAdTAAAOpgAAA6mAAAF3CculE8AAAACXBIWXMAAA68AAAOvAGVvHJJAAAAwElE
-        QVQ4T2OgKrC3t2dRVFQsVFBQuAikvwHxEyBeoKKiogxVAgZAsf9QJgIYGxuzAjXuAkoeBGJbLS0tHjk5
-        OSBTsREo/lJeXt4BqhS7AUDBYqDCQ0AmE0QEAYDi9siGYDUAqOASSCGUiwGQDcFlwGcpKSlhKBcrAKqx
-        AxmCywvPlZWVVaBcOAApxoLvQ6URAGjyUiCug3JJB0BT1UDOQw5tkoGSkpINyBAg7QQVIh2MGoIJQLEC
-        NKQUyqU2YGAAAFPpPkRMniLCAAAAAElFTkSuQmCC
-</value>
   </data>
   <data name="MenuEditRedo.ShortcutKeys" type="System.Windows.Forms.Keys, System.Windows.Forms">
     <value>Ctrl+Shift+Z</value>
   </data>
   <data name="MenuEditRedo.Size" type="System.Drawing.Size, System.Drawing">
-    <value>179, 22</value>
+    <value>180, 22</value>
   </data>
   <data name="MenuEditRedo.Text" xml:space="preserve">
     <value>&amp;Redo</value>
   </data>
   <data name="MenuEditRevert.Size" type="System.Drawing.Size, System.Drawing">
-    <value>179, 22</value>
+    <value>180, 22</value>
   </data>
   <data name="MenuEditRevert.Text" xml:space="preserve">
     <value>&amp;Revert Changes</value>
@@ -587,7 +479,7 @@
     <comment>@Invariant</comment>
   </data>
   <data name="MainMenuView.Size" type="System.Drawing.Size, System.Drawing">
-    <value>40, 20</value>
+    <value>39, 20</value>
   </data>
   <data name="MainMenuView.Text" xml:space="preserve">
     <value>&amp;Hex</value>
@@ -602,7 +494,7 @@
     <value>Generate Physical Disk Patch</value>
   </data>
   <data name="MainMenuExperimental.Size" type="System.Drawing.Size, System.Drawing">
-    <value>88, 20</value>
+    <value>87, 20</value>
   </data>
   <data name="MainMenuExperimental.Text" xml:space="preserve">
     <value>Experimental</value>
@@ -712,7 +604,7 @@
     <value>Generate tracklayout.txt</value>
   </data>
   <data name="MainMenuTools.Size" type="System.Drawing.Size, System.Drawing">
-    <value>46, 20</value>
+    <value>47, 20</value>
   </data>
   <data name="MainMenuTools.Text" xml:space="preserve">
     <value>&amp;Tools</value>
@@ -721,19 +613,19 @@
     <value>False</value>
   </metadata>
   <data name="MenuHelpProjectPage.Size" type="System.Drawing.Size, System.Drawing">
-    <value>206, 22</value>
+    <value>207, 22</value>
   </data>
   <data name="MenuHelpProjectPage.Text" xml:space="preserve">
     <value>&amp;Project Page</value>
   </data>
   <data name="MenuHelpUpdateCheck.Size" type="System.Drawing.Size, System.Drawing">
-    <value>206, 22</value>
+    <value>207, 22</value>
   </data>
   <data name="MenuHelpUpdateCheck.Text" xml:space="preserve">
     <value>Check for &amp;Update</value>
   </data>
   <data name="MenuHelpChangeLog.Size" type="System.Drawing.Size, System.Drawing">
-    <value>206, 22</value>
+    <value>207, 22</value>
   </data>
   <data name="MenuHelpChangeLog.Text" xml:space="preserve">
     <value>&amp;Change Log</value>
@@ -742,13 +634,13 @@
     <value>False</value>
   </metadata>
   <data name="MenuHelpSeparator.Size" type="System.Drawing.Size, System.Drawing">
-    <value>203, 6</value>
+    <value>204, 6</value>
   </data>
   <data name="MenuHelpAbout.ShortcutKeys" type="System.Windows.Forms.Keys, System.Windows.Forms">
     <value>F1</value>
   </data>
   <data name="MenuHelpAbout.Size" type="System.Drawing.Size, System.Drawing">
-    <value>206, 22</value>
+    <value>207, 22</value>
   </data>
   <data name="MenuHelpAbout.Text" xml:space="preserve">
     <value>About DiskImageTool</value>
@@ -1110,19 +1002,10 @@
     <value>95, 23</value>
   </data>
   <data name="ToolStripDiskTypeLabel.Size" type="System.Drawing.Size, System.Drawing">
-    <value>56, 22</value>
+    <value>57, 22</value>
   </data>
   <data name="ToolStripDiskTypeLabel.Text" xml:space="preserve">
     <value>Disk Type</value>
-  </data>
-  <data name="ToolStripOpen.Image" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
-    <value>
-        iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8
-        YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAC0SURBVDhPY0ABsTtLGaJ3O0B5ZIDY3TYMsbteMsTsdIKK
-        EAFCV7EBNXUC8TMg/g/BO68qKCioKyoq/seDH0AMiN3ZAcRbGOL2SIOdD3IBkJaUlOSSk5OTxIVBhkAN
-        2PqUIXqbDJDFxBCzqwSkGSg5CckmXPgL1ACgk4EAaKpgaGgos4qKCruUlJQwIQw0YD9YPwyABEGGoCvE
-        hVEMAHGwKcKHRw2ggQErQAIk4hVQ7QMKGBgA8/OGDM6bEboAAAAASUVORK5CYII=
-</value>
   </data>
   <data name="ToolStripOpen.ImageTransparentColor" type="System.Drawing.Color, System.Drawing">
     <value>Magenta</value>
@@ -1133,14 +1016,6 @@
   <data name="ToolStripOpen.Text" xml:space="preserve">
     <value>Open</value>
   </data>
-  <data name="ToolStripSave.Image" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
-    <value>
-        iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8
-        YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAB+SURBVDhPY6AOiNn5gCF2138i8UeG6N0OUJ1QAJKI3i4J
-        xshsdAw2YLc/Q/SuV0BLnaC6gYAUA0B0zI5ghoidn6C6gYBUA2BsOKCqATG7HoH52DBIjqABxGLsBuzc
-        AGQfxYtBanAaAFYAtQEXhqkZNQDNANIyEwSD9FAOGBgASxwuA/BNGaoAAAAASUVORK5CYII=
-</value>
-  </data>
   <data name="ToolStripSave.ImageTransparentColor" type="System.Drawing.Color, System.Drawing">
     <value>Magenta</value>
   </data>
@@ -1149,17 +1024,6 @@
   </data>
   <data name="ToolStripSave.Text" xml:space="preserve">
     <value>Save</value>
-  </data>
-  <data name="ToolStripSaveAs.Image" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
-    <value>
-        iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8
-        YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAEWSURBVDhPY6AOiN51nyF213/8eOcahtBVbFAdaACkIHq7
-        JBgjs2H82N1yQHoT2BCsgJABYBpsyH+oDjSAbgA6RpbDCpAV4cU718rJyQkqKipOVFBQaFVRUWFHM2Dn
-        BiD7KAYGiUdtERTTcRIHaj4PxIuA+ATQkHRUA8CKkW2E4pgdXTIyMkIgzfLy8pOBWBOo+TqQDiBsANBm
-        STV7EaCGM0A8HahJA0iDXNEF0QwCuAwAagZqEMCvGQSwGRC7WxiH5k6oLiSALSXG7bQDaloM1LQGGPJa
-        QPYloOYmqA7CQFlZWQWo6besrOwnoCHXgZoboVLEAaCmOUBN/6WlpV8A2alQYeIBUPNKIG7Q0tLigQrR
-        AjAwAAAOrMwGSWk8LwAAAABJRU5ErkJggg==
-</value>
   </data>
   <data name="ToolStripSaveAs.ImageTransparentColor" type="System.Drawing.Color, System.Drawing">
     <value>Magenta</value>
@@ -1170,15 +1034,6 @@
   <data name="ToolStripSaveAs.Text" xml:space="preserve">
     <value>Save As</value>
   </data>
-  <data name="ToolStripSaveAll.Image" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
-    <value>
-        iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8
-        YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAACfSURBVDhPY6AuiN21nCF2536COGZXPYP9fhaoLhIBSGPM
-        zhawIXAQs/MB0Pb/BHHUzjUMaWdYwYaAXAIHIMno7ZJgjMxGFovdLQe0dRvYELAeUg0A00BDQGywHnIM
-        gLHBenAZELPrEZiPjEFiRBtACOM3YOcGIPsoVgySI2gAWCHUJnQMkxtEBgCTPRyQYwAKwBZ1uHD0rvtQ
-        XdQADAwA4VARVEAd8KsAAAAASUVORK5CYII=
-</value>
-  </data>
   <data name="ToolStripSaveAll.ImageTransparentColor" type="System.Drawing.Color, System.Drawing">
     <value>Magenta</value>
   </data>
@@ -1187,14 +1042,6 @@
   </data>
   <data name="ToolStripSaveAll.Text" xml:space="preserve">
     <value>Save All</value>
-  </data>
-  <data name="ToolStripClose.Image" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
-    <value>
-        iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8
-        YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAACBSURBVDhPY6AakJeXV4Ay8QKs6kCCcnJyr4C0A1QIKwDJ
-        Q9VhGqKkpGQjIyPzEkg7QYVQgKKioi0+eTDAZQghw1EAumKSNMMAyK8gTQoKCiUgmlDYYAUgzUB//wfR
-        UCHiAUUuoCgMcEUVUYYQime8hoBSFsUpEasgFkCsOnoBBgYAgco11anUSO4AAAAASUVORK5CYII=
-</value>
   </data>
   <data name="ToolStripClose.ImageTransparentColor" type="System.Drawing.Color, System.Drawing">
     <value>Magenta</value>
@@ -1205,15 +1052,6 @@
   <data name="ToolStripClose.Text" xml:space="preserve">
     <value>Close</value>
   </data>
-  <data name="ToolStripCloseAll.Image" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
-    <value>
-        iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8
-        YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAACeSURBVDhPzZLLDYAgEETpwZMcIIQqLMOWrEarsBXvFqE7
-        cTCS8PNg4iQvy8LsYAzqMznnZmEtMNOaFkxa6y4HzmmNhWTekGOpBVRvDpUjl2RjE44CWy3gMMb0OXDe
-        FOC9H6y1I9ao6F8FYEjYpZ9QQ1hzAM0TetTH3h1A4ncAA4wtX8CRWCGg9A8wLKRfYAjIgXNa0xJD9R3Q
-        +ispdQIsWH7ENXTeDwAAAABJRU5ErkJggg==
-</value>
-  </data>
   <data name="ToolStripCloseAll.ImageTransparentColor" type="System.Drawing.Color, System.Drawing">
     <value>Magenta</value>
   </data>
@@ -1223,17 +1061,6 @@
   <data name="ToolStripCloseAll.Text" xml:space="preserve">
     <value>Close All</value>
   </data>
-  <data name="ToolStripFileProperties.Image" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
-    <value>
-        iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8
-        YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAEVSURBVDhPYxgcYEYew4OZ+Qz/seCP0/MZHKDKcAOQ4hkF
-        DJLoeGYeQzOagXAMshSqHWIANjwD5IJcBn+shgPlodpxuwAfRjFgVgFDCJDHCMLz4xk45uYyiGLThIxR
-        DFBSUuKXl5e/JSkp+UFBQaHPwkKGk5AhcANUVFT4oIboyMjIvFRUVPwPxF3z6xk4sGmEYbgBQMVXgVgX
-        yp4JNeB5fT0DEzaNMAw3AOj011CbYZpB+AnRBgAV9yNphOEHQC+Jzc9nEMCmGYThBmhpabEBA65XTk7u
-        FVDjc5BmkCFAl1020pCTnJbHsBakGB2jJCRkAAxUUaDmS1CXXAcaLAmVIh5ADbkMcwlUmDSAZMgBqBAW
-        wMAAAJ2l1fBnXnfZAAAAAElFTkSuQmCC
-</value>
-  </data>
   <data name="ToolStripFileProperties.ImageTransparentColor" type="System.Drawing.Color, System.Drawing">
     <value>Magenta</value>
   </data>
@@ -1242,15 +1069,6 @@
   </data>
   <data name="ToolStripFileProperties.Text" xml:space="preserve">
     <value>File Properties</value>
-  </data>
-  <data name="ToolStripExportFile.Image" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
-    <value>
-        iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8
-        YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAACrSURBVDhPY6A6kJeXV4AySQdAzQ5ycnKvyDJEUVHRVkZG
-        5qWSkpITVIh4QJFmEAAacBWI/+PBfxQUFO4A6UagRZxQbQiA5HcHqBAK0NLSYgNqNgUasgVIHyPLEBiA
-        GtIA5aICJENwxgJQsxlQ/jaUiwnwaQYBdXV1XiEhoR9QLukA6oJbUC7pABgGW4G4HsolDkBjwQyq+SjW
-        WMAHgJpqQAEHsplkzTQGDAwA+OAydQhgy2EAAAAASUVORK5CYII=
-</value>
   </data>
   <data name="ToolStripExportFile.ImageTransparentColor" type="System.Drawing.Color, System.Drawing">
     <value>Magenta</value>
@@ -1262,15 +1080,18 @@
     <value>{ExportFile}</value>
     <comment>@Invariant</comment>
   </data>
-  <data name="ToolStripUndo.Image" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
-    <value>
-        iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8
-        YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAADHSURBVDhPY6AaUFRU/A9lgoGysrIKUGwhED8F4m9AfEFe
-        Xr7A3t6eBaoEFSAbAFToICMj81JBQaEeyFbQ0tLiAbLtgOxDQHU7jY2NWaFKEQBmAJJmO7AEKmACyh8G
-        qi2E8hEAZACSZnuoMAYAqnEEqj0P5SIAyABCmkFATU1NRFZW9hOUiwBAA+6DDEHHUGk4UFJSUgWKP4Ny
-        SQeggAUasAjKJQ3AwgjkCqgQ8QCoyQaq2QkqRDwYiZpBABhdpaBQh3JpBRgYAAy3PdUkQ1i1AAAAAElF
-        TkSuQmCC
-</value>
+  <data name="ToolStripImportFiles.ImageTransparentColor" type="System.Drawing.Color, System.Drawing">
+    <value>Magenta</value>
+  </data>
+  <data name="ToolStripImportFiles.Size" type="System.Drawing.Size, System.Drawing">
+    <value>23, 22</value>
+  </data>
+  <data name="ToolStripImportFiles.Text" xml:space="preserve">
+    <value>{ImportFiles}</value>
+    <comment>@Invariant</comment>
+  </data>
+  <data name="ToolStripImportFiles.ToolTipText" xml:space="preserve">
+    <value>Import Files</value>
   </data>
   <data name="ToolStripUndo.ImageTransparentColor" type="System.Drawing.Color, System.Drawing">
     <value>Magenta</value>
@@ -1281,15 +1102,6 @@
   <data name="ToolStripUndo.Text" xml:space="preserve">
     <value>Undo</value>
   </data>
-  <data name="ToolStripRedo.Image" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
-    <value>
-        iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8
-        YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAC/SURBVDhPY6AqsLe3Z1FUVCyUk5O7CKS/AfETIF6goqKi
-        DFUCBkCx/1AmAhgbG7PKy8vvAkoeBGJbLS0tHqBBQKZio4yMzEugnANUKXYDgILFQEWHgEwmiAgCKCgo
-        2CMbgtUAoOQlkEIoFwMgG4LLgM9SUlLCUC5WADTEDmQILi88V1ZWVoFy4QCkGAu+D5VGAKDpS4G4Dsol
-        HQBNVUMPbZKBkpKSDcgQIO0EFSIdjBqCCUCxAozeUiiX2oCBAQAqGj26wByvZgAAAABJRU5ErkJggg==
-</value>
-  </data>
   <data name="ToolStripRedo.ImageTransparentColor" type="System.Drawing.Color, System.Drawing">
     <value>Magenta</value>
   </data>
@@ -1298,14 +1110,6 @@
   </data>
   <data name="ToolStripRedo.Text" xml:space="preserve">
     <value>Redo</value>
-  </data>
-  <data name="ToolStripViewFileText.Image" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
-    <value>
-        iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8
-        YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAB4SURBVDhPY6AaUFRUXAHE+3FhBQWFrfLy8gZQ5ZgApEhK
-        SkoYF4YatENFRcUQqgUVEGkAbkNIMADsHag2BIAZAKT/o2NshkG1IQBIEF0hLkxbA4A0hheQMUEDiMG0
-        NQBIY3U6DBM0gBhMMwPwZiY0vAKqjVLAwAAAalB6RXxJB/kAAAAASUVORK5CYII=
-</value>
   </data>
   <data name="ToolStripViewFileText.ImageTransparentColor" type="System.Drawing.Color, System.Drawing">
     <value>Magenta</value>
@@ -1316,15 +1120,6 @@
   <data name="ToolStripViewFileText.Text" xml:space="preserve">
     <value>{ViewFileText}</value>
     <comment>@Invariant</comment>
-  </data>
-  <data name="ToolStripViewFile.Image" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
-    <value>
-        iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8
-        YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAC+SURBVDhPtZNNCsIwEEZzDQlJE3IAl4Lg1oUu3Cj+VMGT
-        a4XWCuIZ9BuJEIY0GsWBx2Sm+R6lUEFlra3APZPqGaaihda6lwNlfDwt6Hr2N0FpjGnA4bWjTjOoi6LY
-        JAW4dEaf4+I6FGBeoS9I/laglBrjPGWCCe0/EexwbnH5FAr83GIuk4IcogK8wRIcPQMeCukSNDhvwYgH
-        OFGBlPICyQz0eYATFeBr7xG+oV+dc0MeCokKcuCC3/7G70uIB9rPrLk4EsbsAAAAAElFTkSuQmCC
-</value>
   </data>
   <data name="ToolStripViewFile.ImageTransparentColor" type="System.Drawing.Color, System.Drawing">
     <value>Magenta</value>
@@ -1395,7 +1190,7 @@
     <value>Modified</value>
   </data>
   <data name="ToolStripFileName.Size" type="System.Drawing.Size, System.Drawing">
-    <value>558, 19</value>
+    <value>557, 19</value>
   </data>
   <data name="ToolStripFileName.Text" xml:space="preserve">
     <value>{FileName}</value>
@@ -1419,7 +1214,7 @@
     <comment>@Invariant</comment>
   </data>
   <data name="ToolStripFileTrack.Size" type="System.Drawing.Size, System.Drawing">
-    <value>46, 19</value>
+    <value>47, 19</value>
   </data>
   <data name="ToolStripFileTrack.Text" xml:space="preserve">
     <value>{Track}</value>
@@ -1500,7 +1295,7 @@
     <value>0, 0</value>
   </data>
   <data name="ComboImages.Size" type="System.Drawing.Size, System.Drawing">
-    <value>593, 21</value>
+    <value>563, 21</value>
   </data>
   <data name="ComboImages.TabIndex" type="System.Int32, mscorlib">
     <value>4</value>
@@ -1533,7 +1328,7 @@
     <value>Microsoft Sans Serif, 9.75pt, style=Bold</value>
   </data>
   <data name="LabelDropMessage.Location" type="System.Drawing.Point, System.Drawing">
-    <value>182, 253</value>
+    <value>167, 253</value>
   </data>
   <data name="LabelDropMessage.Size" type="System.Drawing.Size, System.Drawing">
     <value>273, 16</value>
@@ -1606,32 +1401,11 @@
   <metadata name="ContextMenuFiles.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
     <value>567, 17</value>
   </metadata>
-  <data name="MenuFileFileProperties.Image" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
-    <value>
-        iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAABGdBTUEAALGPC/xhBQAAACBjSFJNAAB6
-        JgAAgIQAAPoAAACA6AAAdTAAAOpgAAA6mAAAF3CculE8AAAACXBIWXMAAA68AAAOvAGVvHJJAAABDklE
-        QVQ4T2MYHGBGHsODmfkM/7Hgj9PzGRygynADsOICBkkMnMfQjGYgHIMshWqHGoAFzwC5IJfBH6vhQHmo
-        djwuwIeRDZhVwBAC5DGC8Px4Bo65uQyiWDUhY2QDlJSU+BUUFG4B8Qcg7rOwkOEkaAjMABUVFT6oITpA
-        zS8VFRX/A3HX/HoGDqwaYRhmAFDxVaBmXSh7JtSA5/X1DExYNcIwzACgra+hNsM0g/ATog0AKu5H0gjD
-        D4CuEpufzyCAVTMIwwzQ0tJiA7qgF4hfATU+B2kGGQLkXzbWkJOcnsewFqQYHaMkJGQADFRRoOZLUJdc
-        l5OTk4RKEQ+ghlyGuQQqTBpAMuQAVAgLYGAAAJ8c1n2p8CSjAAAAAElFTkSuQmCC
-</value>
-  </data>
   <data name="MenuFileFileProperties.Size" type="System.Drawing.Size, System.Drawing">
     <value>189, 22</value>
   </data>
   <data name="MenuFileFileProperties.Text" xml:space="preserve">
     <value>Edit File &amp;Properties</value>
-  </data>
-  <data name="MenuFileExportFile.Image" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
-    <value>
-        iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAABGdBTUEAALGPC/xhBQAAACBjSFJNAAB6
-        JgAAgIQAAPoAAACA6AAAdTAAAOpgAAA6mAAAF3CculE8AAAACXBIWXMAAA68AAAOvAGVvHJJAAAAqklE
-        QVQ4T2OgOpCXl1eAMkkHQM0OCgoKr8gyRFFR0Rao+aWSkpITVIh4QJFmEAAacBWI/+PBf4AW3AHSjTIy
-        MpxQbQiA5HcHqBAK0NLSYgNqNgWq2QKkj5FlCAxADWmAclEBkiE4YwGo2Qyo5jaUiwnwaQYBdXV1XqAB
-        P6Bc0gHUBbegXNIBUPNWIK6HcokD0FgA2QzSfBRrLOADQE01QHwbZDPJmmkMGBgAzgQy2PbsZfgAAAAA
-        SUVORK5CYII=
-</value>
   </data>
   <data name="MenuFileExportFile.Size" type="System.Drawing.Size, System.Drawing">
     <value>189, 22</value>
@@ -1656,31 +1430,12 @@
   <data name="FileMenuSeparatorDirectory.Size" type="System.Drawing.Size, System.Drawing">
     <value>186, 6</value>
   </data>
-  <data name="MenuFileViewFile.Image" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
-    <value>
-        iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAABGdBTUEAALGPC/xhBQAAACBjSFJNAAB6
-        JgAAgIQAAPoAAACA6AAAdTAAAOpgAAA6mAAAF3CculE8AAAACXBIWXMAAA68AAAOvAGVvHJJAAAAuklE
-        QVQ4T7WTywrCMBBF8xsu8iIf4FIQ3LrQhRvFRxX8cq1gW0H8Br0jEcKQRKM4cJiZNPcUChVU1toa3Aup
-        n2EqOlBK9UqgjI/nBalnfxNUxpgGHF5n1GkHZ631JivApRZ9jovrUIB9hb4g+VuBlHKMecoEEzr/RLDD
-        3KGfQoHfO+xVVlBCVIA3LcHRM+ChkJSgwbwFIx7gpAQXMAN9HuBEBfjae4Rv4OqcG/JQSFRQAhf89jd+
-        X0I8ABbnrN0cqDDPAAAAAElFTkSuQmCC
-</value>
-  </data>
   <data name="MenuFileViewFile.Size" type="System.Drawing.Size, System.Drawing">
     <value>189, 22</value>
   </data>
   <data name="MenuFileViewFile.Text" xml:space="preserve">
     <value>{ViewFile}</value>
     <comment>@Invariant</comment>
-  </data>
-  <data name="MenuFileViewFileText.Image" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
-    <value>
-        iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAABGdBTUEAALGPC/xhBQAAACBjSFJNAAB6
-        JgAAgIQAAPoAAACA6AAAdTAAAOpgAAA6mAAAF3CculE8AAAACXBIWXMAAA68AAAOvAGVvHJJAAAAeElE
-        QVQ4T2OgGlBUVFwBxPtxYQUFha3y8vIGUOWYAKRISkpKGBeGGrRDRUXFEKoFFRBpAG5DSDAA7B2oNgSA
-        GQCk/6NjbIZBtSEASBBdIS5MWwOANIYXkDFBA4jBtDUASGN1OgwTNIAYTDMD8GYmNLwCqo1SwMAAAGpQ
-        ekV8SQf5AAAAAElFTkSuQmCC
-</value>
   </data>
   <data name="MenuFileViewFileText.Size" type="System.Drawing.Size, System.Drawing">
     <value>189, 22</value>
@@ -1749,7 +1504,7 @@
     <value>False</value>
   </data>
   <data name="ContextMenuFiles.Size" type="System.Drawing.Size, System.Drawing">
-    <value>190, 370</value>
+    <value>190, 392</value>
   </data>
   <data name="&gt;&gt;ContextMenuFiles.Name" xml:space="preserve">
     <value>ContextMenuFiles</value>
@@ -1764,7 +1519,7 @@
     <value>0, 27</value>
   </data>
   <data name="ListViewFiles.Size" type="System.Drawing.Size, System.Drawing">
-    <value>666, 467</value>
+    <value>636, 467</value>
   </data>
   <data name="ListViewFiles.TabIndex" type="System.Int32, mscorlib">
     <value>6</value>
@@ -1791,7 +1546,7 @@
     <value>0, 0</value>
   </data>
   <data name="ComboImagesFiltered.Size" type="System.Drawing.Size, System.Drawing">
-    <value>593, 21</value>
+    <value>563, 21</value>
   </data>
   <data name="ComboImagesFiltered.TabIndex" type="System.Int32, mscorlib">
     <value>3</value>
@@ -1815,7 +1570,7 @@
     <value>Top, Right</value>
   </data>
   <data name="BtnResetSort.Location" type="System.Drawing.Point, System.Drawing">
-    <value>597, -1</value>
+    <value>567, -1</value>
   </data>
   <data name="BtnResetSort.Size" type="System.Drawing.Size, System.Drawing">
     <value>65, 23</value>
@@ -3911,6 +3666,12 @@
     <value>ToolStripExportFile</value>
   </data>
   <data name="&gt;&gt;ToolStripExportFile.Type" xml:space="preserve">
+    <value>System.Windows.Forms.ToolStripButton, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;ToolStripImportFiles.Name" xml:space="preserve">
+    <value>ToolStripImportFiles</value>
+  </data>
+  <data name="&gt;&gt;ToolStripImportFiles.Type" xml:space="preserve">
     <value>System.Windows.Forms.ToolStripButton, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
   <data name="&gt;&gt;ToolStripUndo.Name" xml:space="preserve">

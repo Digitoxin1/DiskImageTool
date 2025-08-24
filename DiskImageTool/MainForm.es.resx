@@ -367,7 +367,7 @@
     <value>Eliminar modificaciones de &amp;Windows</value>
   </data>
   <data name="BtnResetSort.Text" xml:space="preserve">
-    <value>Restablecer orden</value>
+    <value>Restablecer</value>
   </data>
   <data name="MenuToolsRestoreBootSector.Text" xml:space="preserve">
     <value>Restaurar el &amp;sector de arranque desde el directorio raíz</value>
@@ -413,5 +413,8 @@
   </data>
   <data name="MenuDirectoryView.Text" xml:space="preserve">
     <value>Ver d&amp;irectorio</value>
+  </data>
+  <data name="ToolStripImportFiles.ToolTipText" xml:space="preserve">
+    <value>Importar archivos</value>
   </data>
 </root>

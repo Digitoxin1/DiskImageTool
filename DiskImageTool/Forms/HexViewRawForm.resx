@@ -122,13 +122,13 @@
   </metadata>
   <assembly alias="System.Drawing" name="System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
   <data name="ToolStripStatusGap.Size" type="System.Drawing.Size, System.Drawing">
-    <value>293, 19</value>
+    <value>326, 19</value>
   </data>
   <metadata name="ToolStripSeparator2.GenerateMember" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
     <value>False</value>
   </metadata>
   <data name="ToolStripSeparator2.Size" type="System.Drawing.Size, System.Drawing">
-    <value>255, 6</value>
+    <value>254, 6</value>
   </data>
   <metadata name="ToolStripSeparator5.GenerateMember" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
     <value>False</value>
@@ -226,7 +226,7 @@
     <value>MiddleLeft</value>
   </data>
   <data name="ToolStripStatusTrack.Size" type="System.Drawing.Size, System.Drawing">
-    <value>46, 19</value>
+    <value>47, 19</value>
   </data>
   <data name="ToolStripStatusTrack.Text" xml:space="preserve">
     <value>{Track}</value>
@@ -246,7 +246,7 @@
     <value>MiddleRight</value>
   </data>
   <data name="ToolStripStatusTrackSector.Size" type="System.Drawing.Size, System.Drawing">
-    <value>65, 19</value>
+    <value>62, 19</value>
   </data>
   <data name="ToolStripStatusTrackSector.Text" xml:space="preserve">
     <value>{SectorId}</value>
@@ -313,10 +313,6 @@
   <data name="StatusStripBottom.TabIndex" type="System.Int32, mscorlib">
     <value>4</value>
   </data>
-  <data name="StatusStripBottom.Text" xml:space="preserve">
-    <value></value>
-    <comment>@Invariant</comment>
-  </data>
   <data name="&gt;&gt;StatusStripBottom.Name" xml:space="preserve">
     <value>StatusStripBottom</value>
   </data>
@@ -332,59 +328,35 @@
   <metadata name="ContextMenuStrip1.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
     <value>291, 17</value>
   </metadata>
-  <data name="BtnCopyHex.Image" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
-    <value>
-        iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAABGdBTUEAALGPC/xhBQAAACBjSFJNAAB6
-        JgAAgIQAAPoAAACA6AAAdTAAAOpgAAA6mAAAF3CculE8AAAACXBIWXMAAA68AAAOvAGVvHJJAAAAWklE
-        QVQ4T2OgGVBUVFwBxPvx4BVQpdgBSJGUlJQwLgyShyrFDkgyAMh5AMT/8eAHhAz4LycnJ4kLg+RHDRgM
-        BoA0oGFESgRyCBoAVYodUMMAgikRqpTagIEBAABneZFeCA6HAAAAAElFTkSuQmCC
-</value>
-  </data>
   <data name="BtnCopyHex.ShortcutKeys" type="System.Windows.Forms.Keys, System.Windows.Forms">
     <value>Ctrl+C</value>
   </data>
   <data name="BtnCopyHex.Size" type="System.Drawing.Size, System.Drawing">
-    <value>258, 22</value>
+    <value>257, 22</value>
   </data>
   <data name="BtnCopyHex.Text" xml:space="preserve">
     <value>Copy &amp;Hex</value>
-  </data>
-  <data name="BtnCopyText.Image" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
-    <value>
-        iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAABGdBTUEAALGPC/xhBQAAACBjSFJNAAB6
-        JgAAgIQAAPoAAACA6AAAdTAAAOpgAAA6mAAAF3CculE8AAAACXBIWXMAAA68AAAOvAGVvHJJAAAAWklE
-        QVQ4T2MYHEBRUfEBEP8nAT+AaoUAkKCcnJwksRikHqoVAqhuAIiPjtHloVohAF0BskJc4lCtEIBH4T8c
-        4kQb8BeHOP0M+INDnDgDcGFsBlCWEocyYGAAADvFciRIJZkfAAAAAElFTkSuQmCC
-</value>
   </data>
   <data name="BtnCopyText.ShortcutKeys" type="System.Windows.Forms.Keys, System.Windows.Forms">
     <value>Ctrl+T</value>
   </data>
   <data name="BtnCopyText.Size" type="System.Drawing.Size, System.Drawing">
-    <value>258, 22</value>
+    <value>257, 22</value>
   </data>
   <data name="BtnCopyText.Text" xml:space="preserve">
     <value>Copy &amp;Text</value>
-  </data>
-  <data name="BtnCopyHexFormatted.Image" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
-    <value>
-        iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAABGdBTUEAALGPC/xhBQAAAAlwSFlzAAAO
-        vAAADrwBlbxySQAAAH5JREFUOE/FktEJwCAMRN2hX/Uj4PZu0VXcJL2USEUSpcXSgwcJOc98JHymlFIG
-        x4CsVltiijFuHjJXq61HAWgK4AFFHsHKghXARLR7yLz9/XUArOMNUF6Gvq4BLWaARw2A9ecNpgEo3Q3k
-        Qcd9iWimG6jV1oqA6SWqdbVCOAGvvIPVBKD3CwAAAABJRU5ErkJggg==
-</value>
   </data>
   <data name="BtnCopyHexFormatted.ShortcutKeys" type="System.Windows.Forms.Keys, System.Windows.Forms">
     <value>Ctrl+Shift+C</value>
   </data>
   <data name="BtnCopyHexFormatted.Size" type="System.Drawing.Size, System.Drawing">
-    <value>258, 22</value>
+    <value>257, 22</value>
   </data>
   <data name="BtnCopyHexFormatted.Text" xml:space="preserve">
     <value>Copy Hex &amp;Formatted</value>
   </data>
   <data name="BtnCopyEncoded.Size" type="System.Drawing.Size, System.Drawing">
-    <value>258, 22</value>
+    <value>257, 22</value>
   </data>
   <data name="BtnCopyEncoded.Text" xml:space="preserve">
     <value>Copy Encoded</value>
@@ -393,7 +365,7 @@
     <value>Ctrl+F</value>
   </data>
   <data name="BtnFind.Size" type="System.Drawing.Size, System.Drawing">
-    <value>258, 22</value>
+    <value>257, 22</value>
   </data>
   <data name="BtnFind.Text" xml:space="preserve">
     <value>Find</value>
@@ -402,119 +374,70 @@
     <value>F3</value>
   </data>
   <data name="BtnFindNext.Size" type="System.Drawing.Size, System.Drawing">
-    <value>258, 22</value>
+    <value>257, 22</value>
   </data>
   <data name="BtnFindNext.Text" xml:space="preserve">
     <value>Find Next</value>
   </data>
   <data name="ToolStripMenuItem1.Size" type="System.Drawing.Size, System.Drawing">
-    <value>255, 6</value>
-  </data>
-  <data name="BtnSelectAll.Image" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
-    <value>
-        iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAABGdBTUEAALGPC/xhBQAAACBjSFJNAAB6
-        JgAAgIQAAPoAAACA6AAAdTAAAOpgAAA6mAAAF3CculE8AAAACXBIWXMAAA68AAAOvAGVvHJJAAABBElE
-        QVQ4T2OgBmBUUFBYLSUlJayoqLifGBqkHqoXAkCCpGKoVghAsuE/IQxVtx+qFQKQTYZhISEhPmziMAzV
-        CgEgE0GCyDZJSkqKAP16F8ZH1gzkE3YBVIpZRkZGCI88BIBMBAnCbANhsETsziwlJSVvIP8PSAymGcgm
-        0gWxO38zxO52kZeX58AqDwMgE7EqiN31H4jfAQ1RExcX54bJkeACsAH/GWJ23mSI2iKIHDNgeRgAmrhS
-        QkJCFOYSuA0wAyCG7GYwnskK9I4ASD1YniBAGPARiF8CcR9UhkgA0ZgKDMxTUBESQfwODTAdu3M7Q9x2
-        bTCbLBCzM4Ihbmc6lIcEGBgAS1SArXX/SFEAAAAASUVORK5CYII=
-</value>
+    <value>254, 6</value>
   </data>
   <data name="BtnSelectAll.ShortcutKeys" type="System.Windows.Forms.Keys, System.Windows.Forms">
     <value>Ctrl+A</value>
   </data>
   <data name="BtnSelectAll.Size" type="System.Drawing.Size, System.Drawing">
-    <value>258, 22</value>
+    <value>257, 22</value>
   </data>
   <data name="BtnSelectAll.Text" xml:space="preserve">
     <value>Select &amp;All</value>
-  </data>
-  <data name="BtnSelectRegion.Image" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
-    <value>
-        iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAABGdBTUEAALGPC/xhBQAAACBjSFJNAAB6
-        JgAAgIQAAPoAAACA6AAAdTAAAOpgAAA6mAAAF3CculE8AAAACXBIWXMAAA68AAAOvAGVvHJJAAAA20lE
-        QVQ4T2MYfEBGRkYaRCsqKv5H5hMFVFRUZBQUFF4qKSmZAA3oBNEgPkgcqoQwUFZWNgbayglig2gQHyxB
-        DAA5G4g7oFwGhohdUkD+RJh3iAIgZ8NcwBC76yxDzE5uMJsYgBwGYIHYXf8ZYneuYWD4zwjmEwNQQh1s
-        ABDH7KqHipAIYAbE7vzHEL0rEipKAoAbAHLFzu8McTvMoDJEAojGO0AvnGeI2Z0J5MdCZYgEsbtmMoQe
-        4wQaco0hbRMXVJQMELurkyF2dxSURwaI3qMFNCAXyqMmYGAAAEgcRxNQEIpzAAAAAElFTkSuQmCC
-</value>
   </data>
   <data name="BtnSelectRegion.ShortcutKeys" type="System.Windows.Forms.Keys, System.Windows.Forms">
     <value>Ctrl+R</value>
   </data>
   <data name="BtnSelectRegion.Size" type="System.Drawing.Size, System.Drawing">
-    <value>258, 22</value>
+    <value>257, 22</value>
   </data>
   <data name="BtnSelectRegion.Text" xml:space="preserve">
     <value>Select &amp;Region</value>
-  </data>
-  <data name="BtnSelectSector.Image" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
-    <value>
-        iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAABGdBTUEAALGPC/xhBQAAACBjSFJNAAB6
-        JgAAgIQAAPoAAACA6AAAdTAAAOpgAAA6mAAAF3CculE8AAAACXBIWXMAAA68AAAOvAGVvHJJAAAA20lE
-        QVQ4T2MYfEBGRkYaRCsqKv5H5hMFVFRUZBQUFF4qKSmZAA3oBNEgPkgcqoQwUFZWNgbayglig2gQHyxB
-        DAA5G4g7oFwGhohdUkD+RJh3iAIgZ8NcwBC76yxDzE5uMJsYgBwGYIHYXf8ZYneuYWD4zwjmEwNQQh1s
-        ABDH7KqHipAIYAbE7vzHEL0rEipKAoAbAHLFzu8McTvMoDJEAojGO0AvnGeI2Z0J5MdCZYgEsbtmMoQe
-        4wQaco0hbRMXVJQMELurkyF2dxSURwaI3qMFNCAXyqMmYGAAAEgcRxNQEIpzAAAAAElFTkSuQmCC
-</value>
   </data>
   <data name="BtnSelectSector.ShortcutKeys" type="System.Windows.Forms.Keys, System.Windows.Forms">
     <value>Ctrl+S</value>
   </data>
   <data name="BtnSelectSector.Size" type="System.Drawing.Size, System.Drawing">
-    <value>258, 22</value>
+    <value>257, 22</value>
   </data>
   <data name="BtnSelectSector.Text" xml:space="preserve">
     <value>Select &amp;Sector</value>
-  </data>
-  <data name="BtnSelectData.Image" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
-    <value>
-        iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAABGdBTUEAALGPC/xhBQAAACBjSFJNAAB6
-        JgAAgIQAAPoAAACA6AAAdTAAAOpgAAA6mAAAF3CculE8AAAACXBIWXMAAA68AAAOvAGVvHJJAAAA20lE
-        QVQ4T2MYfEBGRkYaRCsqKv5H5hMFVFRUZBQUFF4qKSmZAA3oBNEgPkgcqoQwUFZWNgbayglig2gQHyxB
-        DAA5G4g7oFwGhohdUkD+RJh3iAIgZ8NcwBC76yxDzE5uMJsYgBwGYIHYXf8ZYneuYWD4zwjmEwNQQh1s
-        ABDH7KqHipAIYAbE7vzHEL0rEipKAoAbAHLFzu8McTvMoDJEAojGO0AvnGeI2Z0J5MdCZYgEsbtmMoQe
-        4wQaco0hbRMXVJQMELurkyF2dxSURwaI3qMFNCAXyqMmYGAAAEgcRxNQEIpzAAAAAElFTkSuQmCC
-</value>
   </data>
   <data name="BtnSelectData.ShortcutKeys" type="System.Windows.Forms.Keys, System.Windows.Forms">
     <value>Ctrl+D</value>
   </data>
   <data name="BtnSelectData.Size" type="System.Drawing.Size, System.Drawing">
-    <value>258, 22</value>
+    <value>257, 22</value>
   </data>
   <data name="BtnSelectData.Text" xml:space="preserve">
     <value>Select &amp;Data</value>
   </data>
   <data name="ToolStripSeparator1.Size" type="System.Drawing.Size, System.Drawing">
-    <value>255, 6</value>
+    <value>254, 6</value>
   </data>
   <data name="BtnAdjustOffset.ShortcutKeys" type="System.Windows.Forms.Keys, System.Windows.Forms">
     <value>Ctrl+O</value>
   </data>
   <data name="BtnAdjustOffset.Size" type="System.Drawing.Size, System.Drawing">
-    <value>258, 22</value>
+    <value>257, 22</value>
   </data>
   <data name="BtnAdjustOffset.Text" xml:space="preserve">
     <value>Adjust Bit &amp;Offset</value>
   </data>
   <data name="ContextMenuStrip1.Size" type="System.Drawing.Size, System.Drawing">
-    <value>259, 264</value>
+    <value>258, 264</value>
   </data>
   <data name="&gt;&gt;ContextMenuStrip1.Name" xml:space="preserve">
     <value>ContextMenuStrip1</value>
   </data>
   <data name="&gt;&gt;ContextMenuStrip1.Type" xml:space="preserve">
     <value>System.Windows.Forms.ContextMenuStrip, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="ToolStripBtnCopyText.Image" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
-    <value>
-        iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8
-        YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAABaSURBVDhPYxgcQFFR8QEQ/ycBP4BqhQCQoJycnCSxGKQe
-        qhUCqG4AiI+O0eWhWiEAXQGyQlziUK0QgEfhPxziRBvwF4c4/Qz4g0OcOANwYWwGUJYShzJgYAAAO8Vy
-        JEglmR8AAAAASUVORK5CYII=
-</value>
   </data>
   <data name="ToolStripBtnCopyText.ImageTransparentColor" type="System.Drawing.Color, System.Drawing">
     <value>Magenta</value>
@@ -525,14 +448,6 @@
   <data name="ToolStripBtnCopyText.Text" xml:space="preserve">
     <value>Copy Text</value>
   </data>
-  <data name="ToolStripBtnCopyHex.Image" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
-    <value>
-        iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8
-        YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAABaSURBVDhPY6AZUFRUXAHE+/HgFVCl2AFIkZSUlDAuDJKH
-        KsUOSDIAyHkAxP/x4AeEDPgvJycniQuD5EcNGAwGgDSgYURKBHIIGgBVih1QwwCCKRGqlNqAgQEAAGd5
-        kV4IDocAAAAASUVORK5CYII=
-</value>
-  </data>
   <data name="ToolStripBtnCopyHex.ImageTransparentColor" type="System.Drawing.Color, System.Drawing">
     <value>Magenta</value>
   </data>
@@ -541,14 +456,6 @@
   </data>
   <data name="ToolStripBtnCopyHex.Text" xml:space="preserve">
     <value>Copy Hex</value>
-  </data>
-  <data name="ToolStripBtnCopyHexFormatted.Image" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
-    <value>
-        iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8
-        YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAB+SURBVDhPxZLRCcAgDETdoV/1I+D2btFV3CS9lEhFEqXF
-        0oMHCTnPfCR8ppRSBseArFZbYooxbh4yV6utRwFoCuABRR7ByoIVwES0e8i8/f11AKzjDVBehr6uAS1m
-        gEcNgPXnDaYBKN0N5EHHfYlophuo1daKgOklqnW1QjgBr7yD1QSg9wsAAAAASUVORK5CYII=
-</value>
   </data>
   <data name="ToolStripBtnCopyHexFormatted.ImageTransparentColor" type="System.Drawing.Color, System.Drawing">
     <value>Magenta</value>
@@ -559,16 +466,6 @@
   <data name="ToolStripBtnCopyHexFormatted.Text" xml:space="preserve">
     <value>Copy Hex Formatted</value>
   </data>
-  <data name="ToolStripBtnFind.Image" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
-    <value>
-        iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8
-        YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAADoSURBVDhPvZHLCcJQEEXThpB/8NuBFqCCijUIQbf2IC5s
-        yGXUOtzqQt1pCvAMjCC+l2QheuHyyJtzZyaJ81OFYTiNouiAc/UeT7RcLsANDU6caRzHdXEQBDN85H6t
-        mF0yWcLAbd/3a+/mrqWNx4qboihrp5/hl2kwp75T3BRALivbwmLCDTZ5KG6qqgH1ZlWDDGBmC4upL4RR
-        3BThIT7ilqVBh/CZ1xgpbopg1/O8O+AJywdriHWyhFeKmpKw67oXwEGSJD3OLVOvnDnOKicLDFT8j4sk
-        YXz7Nly8XpkIL3m/vj7+U47zBJIVTgKdLEQ9AAAAAElFTkSuQmCC
-</value>
-  </data>
   <data name="ToolStripBtnFind.ImageTransparentColor" type="System.Drawing.Color, System.Drawing">
     <value>Magenta</value>
   </data>
@@ -577,16 +474,6 @@
   </data>
   <data name="ToolStripBtnFind.Text" xml:space="preserve">
     <value>Find</value>
-  </data>
-  <data name="ToolStripBtnFindNext.Image" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
-    <value>
-        iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8
-        YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAADpSURBVDhPzZBLDoJADIbnGobhTeKWA0g03sCdCXALPIF6
-        GYmJOwOcwzMo7tQD6F9pfMHgY+WXdDHt/3faiv/FdV3dsqylaZonCtu2V3h3udwOmTVN28E0hdmngHlG
-        OaqxTA39TAbDMDqPQTk0S1mmhsf2XxtQTtf1I8vUtDXAGgeWqeGD1VZwHGeO2oJlaiAcw7DnnW9HhHnr
-        eZ5kWTMQ9qWUJZqMYExpZwr6+a0ZooDNQ041E2cTERYDflV8bCbioifivBRRVmk/Msf5uR7Z5lrD3gn2
-        fR6pjXAdoMF9gq+J8qR2g98Q4gLUrlVu/uGTmAAAAABJRU5ErkJggg==
-</value>
   </data>
   <data name="ToolStripBtnFindNext.ImageTransparentColor" type="System.Drawing.Color, System.Drawing">
     <value>Magenta</value>
@@ -600,17 +487,6 @@
   <data name="ToolStripSeparator8.Size" type="System.Drawing.Size, System.Drawing">
     <value>6, 25</value>
   </data>
-  <data name="ToolStripBtnSelectAll.Image" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
-    <value>
-        iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8
-        YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAEFSURBVDhPY6AGYJSXl18tJSUlrKiouJ8YGqQeqhcCQIKk
-        YqhWCECy4T8hDFW3H6oVApBNhmEhISE+bOIwDNUKASATQYLINklKSoooKCjchfGRNQP5hF0AlWKWkZER
-        wiMPASATQYIw20AYLBG7MwvI9gbiPyAxmGYgm0gXxM7/zRC72wUYbRxY5WEAZCJWBbG7/gPxO6AhauLi
-        4twwORJcADbgP0PUjpsMUVsEkWMGLA8DQBNXSkhIiMJcArcBZgAIR+/czWA8kxXoHQGQerA8QYAw4CMQ
-        vwTiPqgMkQCiMRUYG6egIiSC+B0aYDp253aGuO3aYDZZIGZnBEPcznQoDwkwMAAA98aAhpGqjssAAAAA
-        SUVORK5CYII=
-</value>
-  </data>
   <data name="ToolStripBtnSelectAll.ImageTransparentColor" type="System.Drawing.Color, System.Drawing">
     <value>Magenta</value>
   </data>
@@ -623,16 +499,6 @@
   <metadata name="ToolStripMain.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
     <value>418, 17</value>
   </metadata>
-  <data name="ToolStripBtnSelectRegion.Image" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
-    <value>
-        iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8
-        YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAADdSURBVDhPYxh8QEZGRhpEKyoq/kfmEwVUVFSA6mVeKikp
-        mQAN6ATRID5IHKqEMFBWVjYGauIEsUE0iA+WIAaAnA3EHVAuA0PELikgfyLMO0QBqLPBLmCI3XWWIWYn
-        N5hNDEAOA7BA7K7/DLE71zAw/GcE84kBQAMQoQ42AIhjdtVDRUgEMANi6/8xRO+KhIqSAOAGALH/+u8M
-        cTvMoDJEApDG6J13gF44D8SZQH4sVIZIELtrJkPIMU6GqO3XGNI2cUFFyQCxuzqBOArKIwNE79FiiN2d
-        C+VREzAwAABcCkaWP9v+CAAAAABJRU5ErkJggg==
-</value>
-  </data>
   <data name="ToolStripBtnSelectRegion.ImageTransparentColor" type="System.Drawing.Color, System.Drawing">
     <value>Magenta</value>
   </data>
@@ -644,16 +510,6 @@
   </data>
   <data name="ToolStripBtnSelectRegion.ToolTipText" xml:space="preserve">
     <value>Select Region</value>
-  </data>
-  <data name="ToolStripBtnSelectSector.Image" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
-    <value>
-        iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8
-        YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAADdSURBVDhPYxh8QEZGRhpEKyoq/kfmEwVUVFSA6mVeKikp
-        mQAN6ATRID5IHKqEMFBWVjYGauIEsUE0iA+WIAaAnA3EHVAuA0PELikgfyLMO0QBqLPBLmCI3XWWIWYn
-        N5hNDEAOA7BA7K7/DLE71zAw/GcE84kBQAMQoQ42AIhjdtVDRUgEMANi6/8xRO+KhIqSAOAGALH/+u8M
-        cTvMoDJEApDG6J13gF44D8SZQH4sVIZIELtrJkPIMU6GqO3XGNI2cUFFyQCxuzqBOArKIwNE79FiiN2d
-        C+VREzAwAABcCkaWP9v+CAAAAABJRU5ErkJggg==
-</value>
   </data>
   <data name="ToolStripBtnSelectSector.ImageTransparentColor" type="System.Drawing.Color, System.Drawing">
     <value>Magenta</value>
@@ -667,16 +523,6 @@
   <data name="ToolStripBtnSelectSector.ToolTipText" xml:space="preserve">
     <value>Select Sector</value>
   </data>
-  <data name="ToolStripBtnSelectData.Image" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
-    <value>
-        iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8
-        YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAADdSURBVDhPYxh8QEZGRhpEKyoq/kfmEwVUVFSA6mVeKikp
-        mQAN6ATRID5IHKqEMFBWVjYGauIEsUE0iA+WIAaAnA3EHVAuA0PELikgfyLMO0QBqLPBLmCI3XWWIWYn
-        N5hNDEAOA7BA7K7/DLE71zAw/GcE84kBQAMQoQ42AIhjdtVDRUgEMANi6/8xRO+KhIqSAOAGALH/+u8M
-        cTvMoDJEApDG6J13gF44D8SZQH4sVIZIELtrJkPIMU6GqO3XGNI2cUFFyQCxuzqBOArKIwNE79FiiN2d
-        C+VREzAwAABcCkaWP9v+CAAAAABJRU5ErkJggg==
-</value>
-  </data>
   <data name="ToolStripBtnSelectData.ImageTransparentColor" type="System.Drawing.Color, System.Drawing">
     <value>Magenta</value>
   </data>
@@ -688,14 +534,6 @@
   </data>
   <data name="ToolStripBtnSelectData.ToolTipText" xml:space="preserve">
     <value>Select Data</value>
-  </data>
-  <data name="ToolStripBtnAdjustOffset.Image" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
-    <value>
-        iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8
-        YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAB3SURBVDhPtZHbDcAgCEXZCjZwIJdyFh2K5jZqbFP6gPT8
-        8XEPLxqklLS1pr2kUormnGf9CMLMrLXWGYLgs0REDpO4JJjELQkJEHKvMDq7jxh+owUkkPVynxTNennP
-        eYWrNU2s8LqmSSgMwgLwq+TVEQcQ2G8k2gASG8b3WMVvggAAAABJRU5ErkJggg==
-</value>
   </data>
   <data name="ToolStripBtnAdjustOffset.ImageTransparentColor" type="System.Drawing.Color, System.Drawing">
     <value>Magenta</value>
@@ -717,10 +555,6 @@
   </data>
   <data name="ToolStripMain.TabIndex" type="System.Int32, mscorlib">
     <value>0</value>
-  </data>
-  <data name="ToolStripMain.Text" xml:space="preserve">
-    <value></value>
-    <comment>@Invariant</comment>
   </data>
   <data name="&gt;&gt;ToolStripMain.Name" xml:space="preserve">
     <value>ToolStripMain</value>

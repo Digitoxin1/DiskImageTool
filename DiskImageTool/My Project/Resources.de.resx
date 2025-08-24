@@ -526,10 +526,10 @@
     <value>Reserviert</value>
   </data>
   <data name="BootSector_VolumeLabel" xml:space="preserve">
-    <value>Volumeseriennummer</value>
+    <value>Volume-Bezeichnung</value>
   </data>
   <data name="BootSector_VolumeSerialNumber" xml:space="preserve">
-    <value>Volume-Bezeichnung</value>
+    <value>Volumeseriennummer</value>
   </data>
   <data name="BPB_RootEntryCount" xml:space="preserve">
     <value>Einträge Stammverzeichnis</value>
@@ -1012,7 +1012,7 @@
     <value>Volumendatum</value>
   </data>
   <data name="SummaryPanel_VolumeLabel" xml:space="preserve">
-    <value>Datenträgervolumen</value>
+    <value>Volume-Bezeichnung</value>
   </data>
   <data name="SummaryPanel_WeakBits" xml:space="preserve">
     <value>Schwache Bits vorhanden</value>
@@ -1315,7 +1315,7 @@
     <value>Mehrere Dateien</value>
   </data>
   <data name="Label_VolumeLabel" xml:space="preserve">
-    <value>Volume-Label</value>
+    <value>Volume-Bezeichnung</value>
   </data>
   <data name="Dialog_LanguageSettings" xml:space="preserve">
     <value>Die Spracheinstellungen werden nach einem Neustart der Anwendung wirksam.</value>

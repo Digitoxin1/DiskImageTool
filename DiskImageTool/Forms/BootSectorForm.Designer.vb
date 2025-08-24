@@ -121,6 +121,7 @@ Partial Class BootSectorForm
         '
         'btnReset
         '
+        Me.btnReset.Image = Global.DiskImageTool.My.Resources.Resources.Undo
         resources.ApplyResources(Me.btnReset, "btnReset")
         Me.btnReset.Name = "btnReset"
         Me.btnReset.UseVisualStyleBackColor = True
@@ -377,6 +378,7 @@ Partial Class BootSectorForm
         '
         resources.ApplyResources(Me.BtnVolumeSerialNumber, "BtnVolumeSerialNumber")
         Me.BtnVolumeSerialNumber.FlatAppearance.BorderSize = 0
+        Me.BtnVolumeSerialNumber.Image = Global.DiskImageTool.My.Resources.Resources.VolumeSerialNumber
         Me.BtnVolumeSerialNumber.Name = "BtnVolumeSerialNumber"
         Me.BtnVolumeSerialNumber.UseVisualStyleBackColor = True
         '

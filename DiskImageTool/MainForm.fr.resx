@@ -364,7 +364,7 @@
     <value>Retirer les modifications &amp;Windows</value>
   </data>
   <data name="BtnResetSort.Text" xml:space="preserve">
-    <value>Réinitialiser le tri</value>
+    <value>Réinitialiser</value>
   </data>
   <data name="MenuToolsRestoreBootSector.Text" xml:space="preserve">
     <value>Restaurer le secteur de &amp;démarrage depuis le répertoire racine</value>
@@ -413,5 +413,8 @@
   </data>
   <data name="MenuOptionsDisplayLanguage.Text" xml:space="preserve">
     <value>Langue</value>
+  </data>
+  <data name="ToolStripImportFiles.ToolTipText" xml:space="preserve">
+    <value>Importer des fichiers</value>
   </data>
 </root>

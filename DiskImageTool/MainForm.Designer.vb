@@ -141,6 +141,7 @@ Partial Class MainForm
         Me.ToolStripCloseAll = New System.Windows.Forms.ToolStripButton()
         Me.ToolStripFileProperties = New System.Windows.Forms.ToolStripButton()
         Me.ToolStripExportFile = New System.Windows.Forms.ToolStripButton()
+        Me.ToolStripImportFiles = New System.Windows.Forms.ToolStripButton()
         Me.ToolStripUndo = New System.Windows.Forms.ToolStripButton()
         Me.ToolStripRedo = New System.Windows.Forms.ToolStripButton()
         Me.ToolStripViewFileText = New System.Windows.Forms.ToolStripButton()
@@ -300,6 +301,7 @@ Partial Class MainForm
         '
         'MenuFileOpen
         '
+        Me.MenuFileOpen.Image = Global.DiskImageTool.My.Resources.Resources.OpenfileDialog
         resources.ApplyResources(Me.MenuFileOpen, "MenuFileOpen")
         Me.MenuFileOpen.Name = "MenuFileOpen"
         '
@@ -320,18 +322,21 @@ Partial Class MainForm
         '
         'MenuFileSave
         '
+        Me.MenuFileSave.Image = Global.DiskImageTool.My.Resources.Resources.Save
         resources.ApplyResources(Me.MenuFileSave, "MenuFileSave")
         Me.MenuFileSave.Name = "MenuFileSave"
         '
         'MenuFileSaveAs
         '
-        resources.ApplyResources(Me.MenuFileSaveAs, "MenuFileSaveAs")
+        Me.MenuFileSaveAs.Image = Global.DiskImageTool.My.Resources.Resources.SaveAs
         Me.MenuFileSaveAs.Name = "MenuFileSaveAs"
+        resources.ApplyResources(Me.MenuFileSaveAs, "MenuFileSaveAs")
         '
         'MenuFileSaveAll
         '
-        resources.ApplyResources(Me.MenuFileSaveAll, "MenuFileSaveAll")
+        Me.MenuFileSaveAll.Image = Global.DiskImageTool.My.Resources.Resources.SaveAll
         Me.MenuFileSaveAll.Name = "MenuFileSaveAll"
+        resources.ApplyResources(Me.MenuFileSaveAll, "MenuFileSaveAll")
         '
         'MenuFileSeparator2
         '
@@ -340,13 +345,15 @@ Partial Class MainForm
         '
         'MenuFileClose
         '
-        resources.ApplyResources(Me.MenuFileClose, "MenuFileClose")
+        Me.MenuFileClose.Image = Global.DiskImageTool.My.Resources.Resources.Close
         Me.MenuFileClose.Name = "MenuFileClose"
+        resources.ApplyResources(Me.MenuFileClose, "MenuFileClose")
         '
         'MenuFileCloseAll
         '
-        resources.ApplyResources(Me.MenuFileCloseAll, "MenuFileCloseAll")
+        Me.MenuFileCloseAll.Image = Global.DiskImageTool.My.Resources.Resources.CloseAll
         Me.MenuFileCloseAll.Name = "MenuFileCloseAll"
+        resources.ApplyResources(Me.MenuFileCloseAll, "MenuFileCloseAll")
         '
         'MenuFileSeparator3
         '
@@ -355,8 +362,9 @@ Partial Class MainForm
         '
         'MenuFileExit
         '
-        resources.ApplyResources(Me.MenuFileExit, "MenuFileExit")
+        Me.MenuFileExit.Image = Global.DiskImageTool.My.Resources.Resources._Exit
         Me.MenuFileExit.Name = "MenuFileExit"
+        resources.ApplyResources(Me.MenuFileExit, "MenuFileExit")
         '
         'MainMenuEdit
         '
@@ -381,13 +389,15 @@ Partial Class MainForm
         '
         'MenuEditFileProperties
         '
-        resources.ApplyResources(Me.MenuEditFileProperties, "MenuEditFileProperties")
+        Me.MenuEditFileProperties.Image = Global.DiskImageTool.My.Resources.Resources.PropertiesFolderClosed
         Me.MenuEditFileProperties.Name = "MenuEditFileProperties"
+        resources.ApplyResources(Me.MenuEditFileProperties, "MenuEditFileProperties")
         '
         'MenuEditExportFile
         '
-        resources.ApplyResources(Me.MenuEditExportFile, "MenuEditExportFile")
+        Me.MenuEditExportFile.Image = Global.DiskImageTool.My.Resources.Resources.Export
         Me.MenuEditExportFile.Name = "MenuEditExportFile"
+        resources.ApplyResources(Me.MenuEditExportFile, "MenuEditExportFile")
         '
         'MenuEditReplaceFile
         '
@@ -401,13 +411,15 @@ Partial Class MainForm
         '
         'MenuEditUndo
         '
-        resources.ApplyResources(Me.MenuEditUndo, "MenuEditUndo")
+        Me.MenuEditUndo.Image = Global.DiskImageTool.My.Resources.Resources.Undo
         Me.MenuEditUndo.Name = "MenuEditUndo"
+        resources.ApplyResources(Me.MenuEditUndo, "MenuEditUndo")
         '
         'MenuEditRedo
         '
-        resources.ApplyResources(Me.MenuEditRedo, "MenuEditRedo")
+        Me.MenuEditRedo.Image = Global.DiskImageTool.My.Resources.Resources.Redo
         Me.MenuEditRedo.Name = "MenuEditRedo"
+        resources.ApplyResources(Me.MenuEditRedo, "MenuEditRedo")
         '
         'MenuEditRevert
         '
@@ -703,7 +715,6 @@ Partial Class MainForm
         '
         Me.ContextMenuFilters.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.MenuFiltersScanNew, Me.MenuFiltersScan, Me.MenuFiltersClear})
         Me.ContextMenuFilters.Name = "ContextMenuStrip1"
-        Me.ContextMenuFilters.OwnerItem = Me.MainMenuFilters
         resources.ApplyResources(Me.ContextMenuFilters, "ContextMenuFilters")
         '
         'MenuFiltersScanNew
@@ -785,7 +796,7 @@ Partial Class MainForm
         '
         Me.ToolStripTop.CanOverflow = False
         Me.ToolStripTop.GripStyle = System.Windows.Forms.ToolStripGripStyle.Hidden
-        Me.ToolStripTop.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.ToolStripSearchText, ToolStripSearchLabel, Me.ToolStripOEMNameCombo, Me.ToolStripOEMNameLabel, Me.ToolStripDiskTypeCombo, Me.ToolStripDiskTypeLabel, Me.ToolStripOpen, ToolStripSeparator6, Me.ToolStripSave, Me.ToolStripSaveAs, Me.ToolStripSaveAll, ToolStripSeparator7, Me.ToolStripClose, Me.ToolStripCloseAll, ToolStripSeparator8, Me.ToolStripFileProperties, Me.ToolStripExportFile, ToolStripSeparator9, Me.ToolStripUndo, Me.ToolStripRedo, ToolStripSeparator10, Me.ToolStripViewFileText, Me.ToolStripViewFile, Me.ToolStripSeparatorFAT, Me.ToolStripFATCombo})
+        Me.ToolStripTop.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.ToolStripSearchText, ToolStripSearchLabel, Me.ToolStripOEMNameCombo, Me.ToolStripOEMNameLabel, Me.ToolStripDiskTypeCombo, Me.ToolStripDiskTypeLabel, Me.ToolStripOpen, ToolStripSeparator6, Me.ToolStripSave, Me.ToolStripSaveAs, Me.ToolStripSaveAll, ToolStripSeparator7, Me.ToolStripClose, Me.ToolStripCloseAll, ToolStripSeparator8, Me.ToolStripFileProperties, Me.ToolStripExportFile, Me.ToolStripImportFiles, ToolStripSeparator9, Me.ToolStripUndo, Me.ToolStripRedo, ToolStripSeparator10, Me.ToolStripViewFileText, Me.ToolStripViewFile, Me.ToolStripSeparatorFAT, Me.ToolStripFATCombo})
         resources.ApplyResources(Me.ToolStripTop, "ToolStripTop")
         Me.ToolStripTop.Name = "ToolStripTop"
         '
@@ -836,6 +847,7 @@ Partial Class MainForm
         'ToolStripOpen
         '
         Me.ToolStripOpen.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image
+        Me.ToolStripOpen.Image = Global.DiskImageTool.My.Resources.Resources.OpenfileDialog
         resources.ApplyResources(Me.ToolStripOpen, "ToolStripOpen")
         Me.ToolStripOpen.Name = "ToolStripOpen"
         Me.ToolStripOpen.Overflow = System.Windows.Forms.ToolStripItemOverflow.Never
@@ -843,6 +855,7 @@ Partial Class MainForm
         'ToolStripSave
         '
         Me.ToolStripSave.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image
+        Me.ToolStripSave.Image = Global.DiskImageTool.My.Resources.Resources.Save
         resources.ApplyResources(Me.ToolStripSave, "ToolStripSave")
         Me.ToolStripSave.Name = "ToolStripSave"
         Me.ToolStripSave.Overflow = System.Windows.Forms.ToolStripItemOverflow.Never
@@ -850,6 +863,7 @@ Partial Class MainForm
         'ToolStripSaveAs
         '
         Me.ToolStripSaveAs.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image
+        Me.ToolStripSaveAs.Image = Global.DiskImageTool.My.Resources.Resources.SaveAs
         resources.ApplyResources(Me.ToolStripSaveAs, "ToolStripSaveAs")
         Me.ToolStripSaveAs.Name = "ToolStripSaveAs"
         Me.ToolStripSaveAs.Overflow = System.Windows.Forms.ToolStripItemOverflow.Never
@@ -857,6 +871,7 @@ Partial Class MainForm
         'ToolStripSaveAll
         '
         Me.ToolStripSaveAll.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image
+        Me.ToolStripSaveAll.Image = Global.DiskImageTool.My.Resources.Resources.SaveAll
         resources.ApplyResources(Me.ToolStripSaveAll, "ToolStripSaveAll")
         Me.ToolStripSaveAll.Name = "ToolStripSaveAll"
         Me.ToolStripSaveAll.Overflow = System.Windows.Forms.ToolStripItemOverflow.Never
@@ -864,6 +879,7 @@ Partial Class MainForm
         'ToolStripClose
         '
         Me.ToolStripClose.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image
+        Me.ToolStripClose.Image = Global.DiskImageTool.My.Resources.Resources.Close
         resources.ApplyResources(Me.ToolStripClose, "ToolStripClose")
         Me.ToolStripClose.Name = "ToolStripClose"
         Me.ToolStripClose.Overflow = System.Windows.Forms.ToolStripItemOverflow.Never
@@ -871,6 +887,7 @@ Partial Class MainForm
         'ToolStripCloseAll
         '
         Me.ToolStripCloseAll.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image
+        Me.ToolStripCloseAll.Image = Global.DiskImageTool.My.Resources.Resources.CloseAll
         resources.ApplyResources(Me.ToolStripCloseAll, "ToolStripCloseAll")
         Me.ToolStripCloseAll.Name = "ToolStripCloseAll"
         Me.ToolStripCloseAll.Overflow = System.Windows.Forms.ToolStripItemOverflow.Never
@@ -878,6 +895,7 @@ Partial Class MainForm
         'ToolStripFileProperties
         '
         Me.ToolStripFileProperties.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image
+        Me.ToolStripFileProperties.Image = Global.DiskImageTool.My.Resources.Resources.PropertiesFolderClosed
         resources.ApplyResources(Me.ToolStripFileProperties, "ToolStripFileProperties")
         Me.ToolStripFileProperties.Name = "ToolStripFileProperties"
         Me.ToolStripFileProperties.Overflow = System.Windows.Forms.ToolStripItemOverflow.Never
@@ -885,13 +903,22 @@ Partial Class MainForm
         'ToolStripExportFile
         '
         Me.ToolStripExportFile.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image
+        Me.ToolStripExportFile.Image = Global.DiskImageTool.My.Resources.Resources.Export
         resources.ApplyResources(Me.ToolStripExportFile, "ToolStripExportFile")
         Me.ToolStripExportFile.Name = "ToolStripExportFile"
         Me.ToolStripExportFile.Overflow = System.Windows.Forms.ToolStripItemOverflow.Never
         '
+        'ToolStripImportFiles
+        '
+        Me.ToolStripImportFiles.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image
+        Me.ToolStripImportFiles.Image = Global.DiskImageTool.My.Resources.Resources.Import
+        resources.ApplyResources(Me.ToolStripImportFiles, "ToolStripImportFiles")
+        Me.ToolStripImportFiles.Name = "ToolStripImportFiles"
+        '
         'ToolStripUndo
         '
         Me.ToolStripUndo.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image
+        Me.ToolStripUndo.Image = Global.DiskImageTool.My.Resources.Resources.Undo
         resources.ApplyResources(Me.ToolStripUndo, "ToolStripUndo")
         Me.ToolStripUndo.Name = "ToolStripUndo"
         Me.ToolStripUndo.Overflow = System.Windows.Forms.ToolStripItemOverflow.Never
@@ -899,6 +926,7 @@ Partial Class MainForm
         'ToolStripRedo
         '
         Me.ToolStripRedo.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image
+        Me.ToolStripRedo.Image = Global.DiskImageTool.My.Resources.Resources.Redo
         resources.ApplyResources(Me.ToolStripRedo, "ToolStripRedo")
         Me.ToolStripRedo.Name = "ToolStripRedo"
         Me.ToolStripRedo.Overflow = System.Windows.Forms.ToolStripItemOverflow.Never
@@ -906,6 +934,7 @@ Partial Class MainForm
         'ToolStripViewFileText
         '
         Me.ToolStripViewFileText.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image
+        Me.ToolStripViewFileText.Image = Global.DiskImageTool.My.Resources.Resources.TextFile
         resources.ApplyResources(Me.ToolStripViewFileText, "ToolStripViewFileText")
         Me.ToolStripViewFileText.Name = "ToolStripViewFileText"
         Me.ToolStripViewFileText.Overflow = System.Windows.Forms.ToolStripItemOverflow.Never
@@ -913,6 +942,7 @@ Partial Class MainForm
         'ToolStripViewFile
         '
         Me.ToolStripViewFile.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image
+        Me.ToolStripViewFile.Image = Global.DiskImageTool.My.Resources.Resources.TextArea
         resources.ApplyResources(Me.ToolStripViewFile, "ToolStripViewFile")
         Me.ToolStripViewFile.Name = "ToolStripViewFile"
         Me.ToolStripViewFile.Overflow = System.Windows.Forms.ToolStripItemOverflow.Never
@@ -1069,13 +1099,15 @@ Partial Class MainForm
         '
         'MenuFileFileProperties
         '
-        resources.ApplyResources(Me.MenuFileFileProperties, "MenuFileFileProperties")
+        Me.MenuFileFileProperties.Image = Global.DiskImageTool.My.Resources.Resources.PropertiesFolderClosed
         Me.MenuFileFileProperties.Name = "MenuFileFileProperties"
+        resources.ApplyResources(Me.MenuFileFileProperties, "MenuFileFileProperties")
         '
         'MenuFileExportFile
         '
-        resources.ApplyResources(Me.MenuFileExportFile, "MenuFileExportFile")
+        Me.MenuFileExportFile.Image = Global.DiskImageTool.My.Resources.Resources.Export
         Me.MenuFileExportFile.Name = "MenuFileExportFile"
+        resources.ApplyResources(Me.MenuFileExportFile, "MenuFileExportFile")
         '
         'MenuFileReplaceFile
         '
@@ -1094,13 +1126,15 @@ Partial Class MainForm
         '
         'MenuFileViewFile
         '
-        resources.ApplyResources(Me.MenuFileViewFile, "MenuFileViewFile")
+        Me.MenuFileViewFile.Image = Global.DiskImageTool.My.Resources.Resources.TextArea
         Me.MenuFileViewFile.Name = "MenuFileViewFile"
+        resources.ApplyResources(Me.MenuFileViewFile, "MenuFileViewFile")
         '
         'MenuFileViewFileText
         '
-        resources.ApplyResources(Me.MenuFileViewFileText, "MenuFileViewFileText")
+        Me.MenuFileViewFileText.Image = Global.DiskImageTool.My.Resources.Resources.TextFile
         Me.MenuFileViewFileText.Name = "MenuFileViewFileText"
+        resources.ApplyResources(Me.MenuFileViewFileText, "MenuFileViewFileText")
         '
         'MenuFileViewCrosslinked
         '
@@ -1109,6 +1143,7 @@ Partial Class MainForm
         '
         'MenuFileImportFiles
         '
+        Me.MenuFileImportFiles.Image = Global.DiskImageTool.My.Resources.Resources.Import
         Me.MenuFileImportFiles.Name = "MenuFileImportFiles"
         resources.ApplyResources(Me.MenuFileImportFiles, "MenuFileImportFiles")
         '
@@ -1182,6 +1217,7 @@ Partial Class MainForm
         '
         'MenuDirectoryImportFiles
         '
+        Me.MenuDirectoryImportFiles.Image = Global.DiskImageTool.My.Resources.Resources.Import
         Me.MenuDirectoryImportFiles.Name = "MenuDirectoryImportFiles"
         resources.ApplyResources(Me.MenuDirectoryImportFiles, "MenuDirectoryImportFiles")
         '
@@ -1403,4 +1439,5 @@ Partial Class MainForm
     Friend WithEvents LabelCRC32Caption As Label
     Friend WithEvents LabelMD5Caption As Label
     Friend WithEvents LabelSHA1Caption As Label
+    Friend WithEvents ToolStripImportFiles As ToolStripButton
 End Class

@@ -400,7 +400,7 @@
     <value>Dateigröße &amp;korrigieren</value>
   </data>
   <data name="BtnResetSort.Text" xml:space="preserve">
-    <value>Sortierung zurücksetzen</value>
+    <value>Zurücksetzen</value>
   </data>
   <data name="btnRetry.Text" xml:space="preserve">
     <value>Wiederholen</value>
@@ -413,5 +413,8 @@
   </data>
   <data name="MenuDirectoryNewDirectory.Text" xml:space="preserve">
     <value>&amp;Neues Verzeichnis</value>
+  </data>
+  <data name="ToolStripImportFiles.ToolTipText" xml:space="preserve">
+    <value>Dateien importieren</value>
   </data>
 </root>

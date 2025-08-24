@@ -30,7 +30,6 @@ Partial Class AboutBox
     'Do not modify it using the code editor.
     <System.Diagnostics.DebuggerStepThrough()> _
     Private Sub InitializeComponent()
-        Dim resources As System.ComponentModel.ComponentResourceManager = New System.ComponentModel.ComponentResourceManager(GetType(AboutBox))
         Me.TableLayoutPanel = New System.Windows.Forms.TableLayoutPanel()
         Me.LogoPictureBox = New System.Windows.Forms.PictureBox()
         Me.LabelProductName = New System.Windows.Forms.Label()
@@ -69,7 +68,7 @@ Partial Class AboutBox
         '
         Me.LogoPictureBox.Dock = System.Windows.Forms.DockStyle.Fill
         Me.LogoPictureBox.ErrorImage = Nothing
-        Me.LogoPictureBox.Image = CType(resources.GetObject("LogoPictureBox.Image"), System.Drawing.Image)
+        Me.LogoPictureBox.Image = Global.DiskImageTool.My.Resources.Resources.AppIconLarge
         Me.LogoPictureBox.InitialImage = Nothing
         Me.LogoPictureBox.Location = New System.Drawing.Point(3, 3)
         Me.LogoPictureBox.Name = "LogoPictureBox"
