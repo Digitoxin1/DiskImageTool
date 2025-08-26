@@ -43,6 +43,7 @@ Partial Class ImageCreationForm
         Me.GroupBoxStandard = New System.Windows.Forms.GroupBox()
         Me.Label1 = New System.Windows.Forms.Label()
         Me.ComboBootSector = New System.Windows.Forms.ComboBox()
+        Me.CheckImportFiles = New System.Windows.Forms.CheckBox()
         RadioFormat2880 = New System.Windows.Forms.RadioButton()
         RadioFormat1440 = New System.Windows.Forms.RadioButton()
         RadioFormat1200 = New System.Windows.Forms.RadioButton()
@@ -210,11 +211,18 @@ Partial Class ImageCreationForm
         resources.ApplyResources(Me.ComboBootSector, "ComboBootSector")
         Me.ComboBootSector.Name = "ComboBootSector"
         '
+        'CheckImportFiles
+        '
+        resources.ApplyResources(Me.CheckImportFiles, "CheckImportFiles")
+        Me.CheckImportFiles.Name = "CheckImportFiles"
+        Me.CheckImportFiles.UseVisualStyleBackColor = True
+        '
         'ImageCreationForm
         '
         resources.ApplyResources(Me, "$this")
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
         Me.BackColor = System.Drawing.SystemColors.Window
+        Me.Controls.Add(Me.CheckImportFiles)
         Me.Controls.Add(Me.ComboBootSector)
         Me.Controls.Add(Me.Label1)
         Me.Controls.Add(Me.PanelFormats)
@@ -240,4 +248,5 @@ Partial Class ImageCreationForm
     Friend WithEvents GroupBoxSpecial As GroupBox
     Friend WithEvents Label1 As Label
     Friend WithEvents ComboBootSector As ComboBox
+    Friend WithEvents CheckImportFiles As CheckBox
 End Class

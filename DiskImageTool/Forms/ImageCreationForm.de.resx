@@ -141,4 +141,7 @@
   <data name="$this.Text" xml:space="preserve">
     <value>Neues Diskettenabbild</value>
   </data>
+  <data name="CheckImportFiles.Text" xml:space="preserve">
+    <value>Dateien importieren</value>
+  </data>
 </root>

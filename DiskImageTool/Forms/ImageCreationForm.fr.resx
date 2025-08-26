@@ -141,4 +141,7 @@
   <data name="RadioFormatDMF1024.Text" xml:space="preserve">
     <value>DMF (1024 Clusters)</value>
   </data>
+  <data name="CheckImportFiles.Text" xml:space="preserve">
+    <value>Importer des fichiers</value>
+  </data>
 </root>

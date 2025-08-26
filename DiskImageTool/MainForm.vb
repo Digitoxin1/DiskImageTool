@@ -2410,12 +2410,18 @@ Public Class MainForm
 
         Dim Data = frmImageCreationForm.Data
         Dim DiskFormat = frmImageCreationForm.DiskFormat
+        Dim ImportFiles = frmImageCreationForm.ImportFiles
 
         If Data IsNot Nothing Then
             Dim FileName = FloppyDiskNewImage(Data, DiskFormat, _LoadedFiles.FileNames)
             If FileName.Length > 0 Then
                 ProcessFileDrop(FileName, True)
                 RefreshModifiedCount()
+                If ImportFiles Then
+                    If _CurrentImage.ImageData.SourceFile = FileName Then
+                        ImageImport(_CurrentImage, _CurrentImage.Disk.RootDirectory, True)
+                    End If
+                End If
             End If
         End If
     End Sub

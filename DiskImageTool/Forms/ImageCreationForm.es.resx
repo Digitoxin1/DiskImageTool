@@ -141,4 +141,7 @@
   <data name="GroupBoxStandard.Text" xml:space="preserve">
     <value>Formatos estándar</value>
   </data>
+  <data name="CheckImportFiles.Text" xml:space="preserve">
+    <value>Importar archivos</value>
+  </data>
 </root>

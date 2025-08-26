@@ -35,6 +35,12 @@ Public Class ImageCreationForm
         End Get
     End Property
 
+    Public ReadOnly Property ImportFiles As Boolean
+        Get
+            Return CheckImportFiles.Checked
+        End Get
+    End Property
+
     Private Sub AddTandy2000RootEntries(Data() As Byte, Params As FloppyDiskParams)
         Dim Buffer = FillArray(32, &HF6)
         Buffer(0) = &H0
