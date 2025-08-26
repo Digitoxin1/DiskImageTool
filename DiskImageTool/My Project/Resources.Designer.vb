@@ -3126,6 +3126,15 @@ Namespace My.Resources
         End Property
         
         '''<summary>
+        '''  Looks up a localized string similar to New.
+        '''</summary>
+        Friend ReadOnly Property Label_New() As String
+            Get
+                Return ResourceManager.GetString("Label_New", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
         '''  Looks up a localized string similar to No.
         '''</summary>
         Friend ReadOnly Property Label_No() As String

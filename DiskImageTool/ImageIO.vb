@@ -106,7 +106,7 @@ Module ImageIO
 
         If FloppyImage Is Nothing AndAlso IO.File.Exists(ImageData.SourceFile) Then
             Try
-                If ImageData.Compressed Then
+                If ImageData.FileType = ImageData.FileTypeEnum.Compressed Then
                     ImageData.ReadOnly = True
                     Data = OpenFileFromZIP(ImageData.SourceFile, ImageData.CompressedFile)
                 Else

@@ -1,5 +1,4 @@
 ﻿Imports System.ComponentModel
-Imports System.Net.Http.Headers
 Imports DiskImageTool.DiskImage
 
 Module FloppyDiskIO
@@ -32,6 +31,42 @@ Module FloppyDiskIO
         End If
 
         Return FileName
+    End Function
+
+    Public Function FloppyDiskNewImage(Buffer() As Byte, DiskFormat As FloppyDiskFormat, LoadedFileNames As Dictionary(Of String, ImageData)) As String
+        Dim TempPath = InitTempPath()
+
+        If TempPath = "" Then
+            MsgBox(My.Resources.Dialog_SaveFileError2, MsgBoxStyle.Exclamation)
+            Return ""
+        End If
+
+        Dim NewImage As String
+        Dim NewImageSuffix As Integer = 1
+        Do
+            NewImage = IO.Path.Combine(TempPath, "New Image" & If(NewImageSuffix = 1, "", " " & NewImageSuffix) & ".ima")
+            NewImageSuffix += 1
+        Loop Until Not IO.File.Exists(NewImage)
+
+
+        Dim Success As Boolean
+        Try
+            Dim FloppyImage = New BasicSectorImage(Buffer)
+            Dim Disk = New DiskImage.Disk(FloppyImage, 0)
+            Dim Response = SaveDiskImageToFile(Disk, NewImage, False)
+            Success = (Response = SaveImageResponse.Success)
+
+        Catch ex As Exception
+            DebugException(ex)
+            Success = False
+        End Try
+
+        If Success Then
+            Return NewImage
+        Else
+            MsgBox(My.Resources.Dialog_SaveFileError2, MsgBoxStyle.Exclamation)
+            Return ""
+        End If
     End Function
 
     Public Function FloppyDiskSaveFile(Buffer() As Byte, DiskFormat As FloppyDiskFormat, LoadedFileNames As Dictionary(Of String, ImageData)) As String

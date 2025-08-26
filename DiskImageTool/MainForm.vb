@@ -295,9 +295,13 @@ Public Class MainForm
     End Sub
 
     Public Sub ImageFiltersScanModified(Disk As DiskImage.Disk, ImageData As ImageData, Optional UpdateFilters As Boolean = False, Optional Remove As Boolean = False)
-        Dim IsModified As Boolean = Not Remove And (Disk IsNot Nothing AndAlso Disk.Image.History.Modified)
+        Dim IsModified As Boolean = Not Remove And (Disk IsNot Nothing AndAlso (Disk.Image.History.Modified Or ImageData.FileType = ImageData.FileTypeEnum.NewImage))
 
         ImageFilters.FilterUpdate(ImageData, UpdateFilters, Filters.FilterTypes.ModifiedFiles, IsModified, True)
+    End Sub
+
+    Public Sub ImageFiltersSetModified(ImageData As ImageData)
+        ImageFilters.FilterUpdate(ImageData, True, Filters.FilterTypes.ModifiedFiles, True, True)
     End Sub
 
     Public Sub ImageFiltersScanOEMName(Disk As DiskImage.Disk, ImageData As ImageData, Optional UpdateFilters As Boolean = False, Optional Remove As Boolean = False)
@@ -893,7 +897,7 @@ Public Class MainForm
                 End If
 
                 If Result = MyMsgBoxResult.Yes Or Result = MyMsgBoxResult.YesToAll Then
-                    If ImageData.ReadOnly Then
+                    If ImageData.ReadOnly Or ImageData.FileType = ImageData.FileTypeEnum.NewImage Then
                         If Not ShowDialog Then
                             If MsgBoxNewFileName(ImageData.FileName) <> MsgBoxResult.Ok Then
                                 Result = MyMsgBoxResult.Cancel
@@ -931,14 +935,14 @@ Public Class MainForm
         Dim NewFilePath As String = ""
         Dim Result As MsgBoxResult
 
-        If CurrentImage.ImageData.Filter(Filters.FilterTypes.ModifiedFiles) Then
+        If CurrentImage.ImageData.IsModified Then
             Result = MsgBoxSave(CurrentImage.ImageData.FileName)
         Else
             Result = MsgBoxResult.No
         End If
 
         If Result = MsgBoxResult.Yes Then
-            If CurrentImage.ImageData.ReadOnly Then
+            If CurrentImage.ImageData.ReadOnly Or CurrentImage.ImageData.FileType = ImageData.FileTypeEnum.NewImage Then
                 NewFilePath = GetNewFilePath(CurrentImage)
                 If NewFilePath = "" Then
                     Result = MsgBoxResult.Cancel
@@ -1136,6 +1140,9 @@ Public Class MainForm
         Loop Until Success
 
         If Success Then
+            If Image.ImageData.FileType = ImageData.FileTypeEnum.NewImage Then
+                Image.ImageData.FileType = ImageData.FileTypeEnum.Standard
+            End If
             Image.ImageData.Checksum = CRC32.ComputeChecksum(Image.Disk.Image.GetBytes)
             Image.ImageData.ExternalModified = False
             ImageFiltersScanModified(Image.Disk, Image.ImageData)
@@ -1713,7 +1720,7 @@ Public Class MainForm
         Dim ModifyImageList As New List(Of ImageData)
 
         For Each ImageData As ImageData In ComboImages.Items
-            If ImageData.Filter(Filters.FilterTypes.ModifiedFiles) Then
+            If ImageData.IsModified Then
                 ModifyImageList.Add(ImageData)
             End If
         Next
@@ -1730,6 +1737,7 @@ Public Class MainForm
         Dim FilePath = ImageData.GetSaveFile
         Dim NewFilePath As String = ""
         Dim DiskFormat As FloppyDiskFormat = FloppyDiskFormat.FloppyUnknown
+        Dim InitialDirectory As String = ""
 
         If ImageData Is CurrentImage.ImageData Then
             Disk = CurrentImage.Disk
@@ -1744,8 +1752,12 @@ Public Class MainForm
         Dim FileExt = IO.Path.GetExtension(FilePath)
         Dim FileFilter = GetSaveDialogFilters(DiskFormat, Disk.Image.ImageType, FileExt)
 
+        If ImageData.FileType <> ImageData.FileTypeEnum.NewImage Then
+            InitialDirectory = IO.Path.GetDirectoryName(FilePath)
+        End If
+
         Dim Dialog = New SaveFileDialog With {
-            .InitialDirectory = IO.Path.GetDirectoryName(FilePath),
+            .InitialDirectory = InitialDirectory,
             .FileName = IO.Path.GetFileName(FilePath),
             .Filter = FileFilter.Filter,
             .FilterIndex = FileFilter.FilterIndex,
@@ -1805,11 +1817,15 @@ Public Class MainForm
             Dim CurrentPathName As String = IO.Path.GetDirectoryName(ImageData.DisplayPath)
             If CheckPath Then
                 Do While CurrentPathName.Split("\").Count > PathName.Split("\").Count
-                    CurrentPathName = IO.Path.GetDirectoryName(CurrentPathName)
+                    If CurrentPathName <> "" Then
+                        CurrentPathName = IO.Path.GetDirectoryName(CurrentPathName)
+                    End If
                 Loop
                 Do While PathName <> CurrentPathName
                     PathName = IO.Path.GetDirectoryName(PathName)
-                    CurrentPathName = IO.Path.GetDirectoryName(CurrentPathName)
+                    If CurrentPathName <> "" Then
+                        CurrentPathName = IO.Path.GetDirectoryName(CurrentPathName)
+                    End If
                 Loop
             Else
                 PathName = CurrentPathName
@@ -2396,9 +2412,10 @@ Public Class MainForm
         Dim DiskFormat = frmImageCreationForm.DiskFormat
 
         If Data IsNot Nothing Then
-            Dim FileName = FloppyDiskSaveFile(Data, DiskFormat, _LoadedFiles.FileNames)
+            Dim FileName = FloppyDiskNewImage(Data, DiskFormat, _LoadedFiles.FileNames)
             If FileName.Length > 0 Then
-                ProcessFileDrop(FileName)
+                ProcessFileDrop(FileName, True)
+                RefreshModifiedCount()
             End If
         End If
     End Sub
@@ -3161,14 +3178,18 @@ Public Class MainForm
         MenuToolsClearReservedBytes.Enabled = Response.HasNTUnknownFlags Or Response.HasFAT32Cluster
     End Sub
 
-    Private Sub ProcessFileDrop(File As String)
+    Private Sub ProcessFileDrop(File As String, NewImage As Boolean)
         Dim Files(0) As String
         Files(0) = File
 
-        ProcessFileDrop(Files, False)
+        ProcessFileDrop(Files, False, NewImage)
     End Sub
 
     Private Sub ProcessFileDrop(Files() As String, ShowDialog As Boolean)
+        ProcessFileDrop(Files, ShowDialog, False)
+    End Sub
+
+    Private Sub ProcessFileDrop(Files() As String, ShowDialog As Boolean, NewImage As Boolean)
         Cursor.Current = Cursors.WaitCursor
         Dim T = Stopwatch.StartNew
 
@@ -3182,7 +3203,7 @@ Public Class MainForm
 
         ImageData.StringOffset = 0
 
-        Dim ImageLoadForm As New ImageLoadForm(Me, Files, _LoadedFiles)
+        Dim ImageLoadForm As New ImageLoadForm(Me, Files, _LoadedFiles, NewImage)
         If ShowDialog Then
             ImageLoadForm.ShowDialog(Me)
         Else
@@ -3294,8 +3315,19 @@ Public Class MainForm
             SetButtonStateUndo(CurrentImage.Disk.Image.History.UndoEnabled)
             SetButtonStateRedo(CurrentImage.Disk.Image.History.RedoEnabled)
             ToolStripStatusModified.Visible = CurrentImage.Disk.Image.History.Modified
-            ToolStripStatusReadOnly.Visible = CurrentImage.ImageData.ReadOnly
-            ToolStripStatusReadOnly.Text = IIf(CurrentImage.ImageData.Compressed, My.Resources.Label_Compressed, My.Resources.Label_ReadOnly)
+
+            Dim StatusText = ""
+            If CurrentImage.ImageData.FileType = ImageData.FileTypeEnum.Compressed Then
+                StatusText = My.Resources.Label_Compressed
+            ElseIf CurrentImage.ImageData.FileType = ImageData.FileTypeEnum.NewImage Then
+                StatusText = My.Resources.Label_New
+            ElseIf CurrentImage.ImageData.ReadOnly Then
+                StatusText = My.Resources.Label_ReadOnly
+            End If
+
+            ToolStripStatusReadOnly.Visible = StatusText <> ""
+            ToolStripStatusReadOnly.Text = StatusText
+
             RefreshRawTrackSubMenu(CurrentImage.Disk)
             MenuToolsTrackLayout.Visible = My.Settings.Debug AndAlso CurrentImage.Disk.Image.IsBitstreamImage
         Else
@@ -3617,8 +3649,9 @@ Public Class MainForm
             BtnExportDebug.Enabled = False
             MenuFileReload.Enabled = False
         Else
-            Dim Modified = CurrentImage.ImageData.Filter(Filters.FilterTypes.ModifiedFiles)
-            SetButtonStateSaveFile(Modified And Not CurrentImage.ImageData.ReadOnly)
+            Dim Modified = CurrentImage.ImageData.IsModified
+            Dim Disabled = CurrentImage.ImageData.ReadOnly
+            SetButtonStateSaveFile(Modified And Not Disabled)
             MenuFileReload.Enabled = True
             'BtnExportDebug.Enabled = (CurrentImageData.Modified Or CurrentImageData.SessionModifications.Count > 0)
             BtnExportDebug.Enabled = False
@@ -3705,8 +3738,9 @@ Public Class MainForm
             Dim NewFilePath As String = ""
             Dim DoSave As Boolean = True
             Dim ImageData As ImageData = ComboImages.Items(Index)
-            If ImageData.Filter(Filters.FilterTypes.ModifiedFiles) Then
-                If ImageData.ReadOnly Then
+
+            If ImageData.IsModified Then
+                If ImageData.ReadOnly Or ImageData.FileType = ImageData.FileTypeEnum.NewImage Then
                     If MsgBoxNewFileName(ImageData.FileName) = MsgBoxResult.Ok Then
                         NewFilePath = GetNewFilePath(CurrentImage, ImageData)
                         DoSave = (NewFilePath <> "")
@@ -3717,7 +3751,7 @@ Public Class MainForm
                 If DoSave Then
                     Dim Result = DiskImageSave(CurrentImage, ImageData, NewFilePath)
                     If Result Then
-                        If ImageData.ReadOnly Then
+                        If ImageData.ReadOnly Or ImageData.FileType = ImageData.FileTypeEnum.NewImage Then
                             SetNewFilePath(ImageData, NewFilePath)
                         End If
                         If ImageData Is ComboImages.SelectedItem Then
@@ -3941,7 +3975,7 @@ Public Class MainForm
             _LoadedFiles.FileNames.Remove(ImageData.DisplayPath)
 
             ImageData.SourceFile = NewFilePath
-            ImageData.Compressed = False
+            ImageData.FileType = ImageData.FileTypeEnum.Standard
             ImageData.CompressedFile = ""
             ImageData.ReadOnly = IsFileReadOnly(NewFilePath)
 
@@ -4282,14 +4316,14 @@ Public Class MainForm
     Private Sub BtnReadFloppyA_Click(sender As Object, e As EventArgs) Handles MenuDiskReadFloppyA.Click
         Dim FileName = FloppyDiskRead(Me, FloppyDriveEnum.FloppyDriveA, _LoadedFiles.FileNames)
         If FileName.Length > 0 Then
-            ProcessFileDrop(FileName)
+            ProcessFileDrop(FileName, False)
         End If
     End Sub
 
     Private Sub BtnReadFloppyB_Click(sender As Object, e As EventArgs) Handles MenuDiskReadFloppyB.Click
         Dim FileName = FloppyDiskRead(Me, FloppyDriveEnum.FloppyDriveB, _LoadedFiles.FileNames)
         If FileName.Length > 0 Then
-            ProcessFileDrop(FileName)
+            ProcessFileDrop(FileName, False)
         End If
     End Sub
 
@@ -4335,7 +4369,8 @@ Public Class MainForm
     End Sub
 
     Private Sub BtnSave_Click(sender As Object, e As EventArgs) Handles MenuFileSave.Click, ToolStripSave.Click
-        SaveCurrent(_CurrentImage, False)
+        Dim NewFileName = _CurrentImage.ImageData.FileType = ImageData.FileTypeEnum.NewImage
+        SaveCurrent(_CurrentImage, NewFileName)
     End Sub
 
     Private Sub BtnSaveAll_Click(sender As Object, e As EventArgs) Handles MenuFileSaveAll.Click, ToolStripSaveAll.Click
@@ -4387,7 +4422,7 @@ Public Class MainForm
                     tBrush = SystemBrushes.HighlightText
                 Else
                     Dim ImageData As ImageData = CB.Items(e.Index)
-                    If ImageData IsNot Nothing AndAlso ImageData.Filter(Filters.FilterTypes.ModifiedFiles) Then
+                    If ImageData IsNot Nothing AndAlso ImageData.IsModified Then
                         tBrush = Brushes.Blue
                     Else
                         tBrush = SystemBrushes.WindowText

@@ -13,10 +13,11 @@ Public Class ImageLoadForm
     Private _Counter As Integer = 0
     Private _ImageCount As Integer = 0
     Private _EndScan As Boolean = False
+    Private _NewImage As Boolean = False
     Private _SelectedImageData As ImageData = Nothing
     Private _Visible As Boolean = False
 
-    Public Sub New(Parent As MainForm, Files() As String, LoadedFiles As LoadedFiles)
+    Public Sub New(Parent As MainForm, Files() As String, LoadedFiles As LoadedFiles, NewImage As Boolean)
 
         ' This call is required by the designer.
         InitializeComponent()
@@ -26,6 +27,7 @@ Public Class ImageLoadForm
         _Parent = Parent
         _Files = Files
         _LoadedFiles = LoadedFiles
+        _NewImage = NewImage
     End Sub
 
     Public ReadOnly Property SelectedImageData As ImageData
@@ -53,8 +55,8 @@ Public Class ImageLoadForm
         Return Nothing
     End Function
 
-    Private Sub LoadedFileAdd(bw As BackgroundWorker, Key As String, FileName As String, Compressed As Boolean, Optional CompressedFile As String = "")
-        Dim ImageData = _LoadedFiles.Add(Key, FileName, Compressed, CompressedFile)
+    Private Sub LoadedFileAdd(bw As BackgroundWorker, Key As String, FileName As String, FileType As ImageData.FileTypeEnum, Optional CompressedFile As String = "")
+        Dim ImageData = _LoadedFiles.Add(Key, FileName, FileType, CompressedFile)
         If ImageData IsNot Nothing Then
             If _SelectedImageData Is Nothing Then
                 _SelectedImageData = ImageData
@@ -64,6 +66,10 @@ Public Class ImageLoadForm
                 _Parent.ComboImages.Items.Add(ImageData)
             Else
                 bw.ReportProgress(2, ImageData)
+            End If
+
+            If FileType = ImageData.FileTypeEnum.NewImage Then
+                _Parent.ImageFiltersSetModified(ImageData)
             End If
         End If
     End Sub
@@ -89,7 +95,7 @@ Public Class ImageLoadForm
                         Dim FilePath = Path.Combine(FileName, Entry.FullName)
                         Dim CheckLength = Not BitstreamFileExtensions.Contains(EntryFileExt) And Not AdvancedSectorFileExtensions.Contains(EntryFileExt)
                         If Not CheckLength OrElse (Entry.Length >= MIN_FILE_SIZE And Entry.Length <= MAX_FILE_SIZE) Then
-                            LoadedFileAdd(bw, FilePath, FileName, True, Entry.FullName)
+                            LoadedFileAdd(bw, FilePath, FileName, ImageData.FileTypeEnum.Compressed, Entry.FullName)
                         End If
                     End If
                 Next
@@ -104,7 +110,7 @@ Public Class ImageLoadForm
                 End Try
                 Dim CheckLength = Not BitstreamFileExtensions.Contains(Extension) And Not AdvancedSectorFileExtensions.Contains(Extension)
                 If Not CheckLength OrElse (Length >= MIN_FILE_SIZE And Length <= MAX_FILE_SIZE) Then
-                    LoadedFileAdd(bw, FileName, FileName, False)
+                    LoadedFileAdd(bw, FileName, FileName, If(_NewImage, ImageData.FileTypeEnum.NewImage, ImageData.FileTypeEnum.Standard))
                 End If
             End If
         End If

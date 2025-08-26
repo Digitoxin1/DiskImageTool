@@ -1448,4 +1448,7 @@ Nota: Este valor debe ser {1} para todos los disquetes</value>
   <data name="Label_Search" xml:space="preserve">
     <value>Buscar</value>
   </data>
+  <data name="Label_New" xml:space="preserve">
+    <value>Nueva</value>
+  </data>
 </root>

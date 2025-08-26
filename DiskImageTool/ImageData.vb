@@ -1,14 +1,20 @@
 ﻿Public Class ImageData
+    Public Enum FileTypeEnum
+        Standard
+        Compressed
+        NewImage
+    End Enum
+
     Private ReadOnly _Filters() As Boolean
 
     Public Sub New(SourceFile As String)
         _AppliedFilters = 0
         _BatchUpdated = False
         _BottomIndex = -1
-        _Compressed = False
         _CompressedFile = ""
         _DiskType = ""
         _FATIndex = 0
+        _FileType = FileTypeEnum.Standard
         _SourceFile = SourceFile
         _Modifications = Nothing
         _OEMName = ""
@@ -36,11 +42,11 @@
     Public Property BottomIndex As Integer
     Public Property CachedRootDir As Byte()
     Public Property Checksum As UInteger
-    Public Property Compressed As Boolean
     Public Property CompressedFile As String
     Public Property DiskType As String
     Public Property ExternalModified As Boolean
     Public Property FATIndex As UShort
+    Public Property FileType As FileTypeEnum
     Public Property InvalidImage As Boolean
     Public Property Loaded As Boolean
     Public Property Modifications As Stack(Of DiskImage.DataChange())
@@ -65,24 +71,30 @@
 
     Public Function DisplayPath() As String
         Dim FullPath = _SourceFile
-        If _Compressed Then
+        If _FileType = FileTypeEnum.Compressed Then
             FullPath = IO.Path.Combine(FullPath, Replace(_CompressedFile, "/", "\"))
+        ElseIf _filetype = FileTypeEnum.NewImage Then
+            FullPath = IO.Path.GetFileName(FullPath)
         End If
         Return FullPath
     End Function
 
     Public Function FileName() As String
-        If _Compressed Then
+        If _FileType = FileTypeEnum.Compressed Then
             Return IO.Path.GetFileName(_CompressedFile)
         Else
             Return IO.Path.GetFileName(_SourceFile)
         End If
     End Function
 
+    Public Function IsModified() As Boolean
+        Return Filter(Filters.FilterTypes.ModifiedFiles)
+    End Function
+
     Public Function GetSaveFile() As String
         Dim FilePath As String
 
-        If _Compressed Then
+        If _FileType = FileTypeEnum.Compressed Then
             FilePath = IO.Path.Combine(IO.Path.GetDirectoryName(_SourceFile), _CompressedFile)
         Else
             FilePath = _SourceFile
