@@ -128,7 +128,7 @@ Public Class HexViewForm
         For Index = 0 To Length - 1
             Sector = _BPB.OffsetToSector(HexBox1.LineInfoOffset + Offset + Index)
             If Index = 0 Or Sector <> LastSector Then
-                SectorReadOnly = _HexViewSectorData.Disk.Image.ProtectedSectors.Contains(Sector)
+                SectorReadOnly = _HexViewSectorData.Disk.Image.IsProtectedSector(Sector)
                 LastSector = Sector
             End If
 
@@ -153,7 +153,7 @@ Public Class HexViewForm
         For Index = 0 To Length - 1
             Sector = _BPB.OffsetToSector(HexBox1.LineInfoOffset + Offset + Index)
             If Index = 0 Or Sector <> LastSector Then
-                SectorReadOnly = _HexViewSectorData.Disk.Image.ProtectedSectors.Contains(Sector)
+                SectorReadOnly = _HexViewSectorData.Disk.Image.IsProtectedSector(Sector)
                 LastSector = Sector
             End If
 
@@ -440,7 +440,7 @@ Public Class HexViewForm
 
                     If Size > 0 Then
                         Dim Sector = _BPB.OffsetToSector(HexBox1.LineInfoOffset + Start)
-                        If _HexViewSectorData.Disk.Image.ProtectedSectors.Contains(Sector) Then
+                        If _HexViewSectorData.Disk.Image.IsProtectedSector(Sector) Then
                             HighlightForeColor = Color.Gray
                             HighlightBackColor = Color.White
                         End If
@@ -871,7 +871,7 @@ Public Class HexViewForm
 
             Dim Sector = _BPB.OffsetToSector(OffsetStart)
 
-            HexBox1.ReadOnly = _HexViewSectorData.Disk.Image.ProtectedSectors.Contains(Sector)
+            HexBox1.ReadOnly = _HexViewSectorData.Disk.Image.IsProtectedSector(Sector)
 
             ToolStripStatusOffset.Visible = Not OutOfRange
             ToolStripStatusOffset.Text = FormatLabelPair(My.Resources.Label_OffsetHex, OffsetStart.ToString("X"), " :  ")
@@ -923,6 +923,9 @@ Public Class HexViewForm
 
                     ToolStripStatusTrackSector.Visible = Not OutOfRange
                     ToolStripStatusTrackSector.Text = FormatLabelPair(My.Resources.Label_SectorId, _BPB.SectorToTrackSector(Sector) + 1)
+
+                    Dim IsTranslated = _HexViewSectorData.Disk.Image.IsTranslatedSector(Sector)
+                    ToolStripStatusTranslated.Text = IIf(IsTranslated, "  T", "")
                 Else
                     ToolStripStatusTrack.Visible = False
                     ToolStripStatusTrack.Text = ""
@@ -932,6 +935,8 @@ Public Class HexViewForm
 
                     ToolStripStatusTrackSector.Visible = False
                     ToolStripStatusTrackSector.Text = ""
+
+                    ToolStripStatusTranslated.Text = ""
                 End If
 
                 If FileName.Length = 0 Or OutOfRange Then

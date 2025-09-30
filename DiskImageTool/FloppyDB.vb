@@ -179,19 +179,19 @@ Public Class FloppyDB
         Return Data
     End Function
 
-    Private Function GetNormalizedDataByProtectedSectors(Disk As Disk) As Byte()
-        Dim Data(Disk.Image.Length - 1) As Byte
-        Disk.Image.CopyTo(Data, 0)
-        Dim Buffer(Disk.BPB.BytesPerSector - 1) As Byte
-        For Each Sector In Disk.Image.ProtectedSectors
-            Dim Offset = Disk.BPB.SectorToBytes(Sector)
-            If Offset + Disk.BPB.BytesPerSector <= Data.Length Then
-                Buffer.CopyTo(Data, Offset)
-            End If
-        Next
+    'Private Function GetNormalizedDataByProtectedSectors(Disk As Disk) As Byte()
+    '    Dim Data(Disk.Image.Length - 1) As Byte
+    '    Disk.Image.CopyTo(Data, 0)
+    '    Dim Buffer(Disk.BPB.BytesPerSector - 1) As Byte
+    '    For Each Sector In Disk.Image.ProtectedSectors
+    '        Dim Offset = Disk.BPB.SectorToBytes(Sector)
+    '        If Offset + Disk.BPB.BytesPerSector <= Data.Length Then
+    '            Buffer.CopyTo(Data, Offset)
+    '        End If
+    '    Next
 
-        Return Data
-    End Function
+    '    Return Data
+    'End Function
 
     Private Function GetNormalizedDataByTrackList(Disk As Disk, TrackList As List(Of FloppyDB.BooterTrack)) As Byte()
         Dim BPB As BiosParameterBlock = BuildBPB(Disk.Image.Length)

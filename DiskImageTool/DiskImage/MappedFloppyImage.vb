@@ -10,6 +10,7 @@ Namespace DiskImage
         Private ReadOnly _Image As IBitstreamImage
         Private ReadOnly _NonStandardTracks As HashSet(Of UShort)
         Private ReadOnly _ProtectedSectors As HashSet(Of UInteger)
+        Private ReadOnly _TranslatedSectors As HashSet(Of UInteger)
         Private ReadOnly _History As ImageHistory
         Private _BPB As BiosParameterBlock
         Private _EmptySector() As Byte
@@ -23,6 +24,7 @@ Namespace DiskImage
             _Image = Image
             _History = New ImageHistory(Me)
             _ProtectedSectors = New HashSet(Of UInteger)
+            _TranslatedSectors = New HashSet(Of UInteger)
             _AdditionalTracks = New HashSet(Of UShort)
             _NonStandardTracks = New HashSet(Of UShort)
             _BytesPerSector = BytesPerSector
@@ -94,12 +96,6 @@ Namespace DiskImage
             End Get
         End Property
 
-        Public ReadOnly Property ProtectedSectors As HashSet(Of UInteger) Implements IFloppyImage.ProtectedSectors
-            Get
-                Return _ProtectedSectors
-            End Get
-        End Property
-
         Public ReadOnly Property Sectors As BitstreamSector()
             Get
                 Return _Sectors
@@ -111,6 +107,7 @@ Namespace DiskImage
                 Return _SideCount
             End Get
         End Property
+
         Public ReadOnly Property TrackCount As UShort Implements IFloppyImage.TrackCount
             Get
                 Return _TrackCount
@@ -210,6 +207,14 @@ Namespace DiskImage
             InferFloppyDiskFormat(DiskFormat)
             InitProtectedSectors()
         End Sub
+
+        Public Function IsProtectedSector(Sector As UInteger) As Boolean Implements IFloppyImage.IsProtectedSector
+            Return _ProtectedSectors.Contains(Sector)
+        End Function
+
+        Public Function IsTranslatedSector(Sector As UInteger) As Boolean Implements IFloppyImage.IsTranslatedSector
+            Return _TranslatedSectors.Contains(Sector)
+        End Function
 
         Public Function Resize(Length As Integer) As Boolean Implements IFloppyImage.Resize
             Return False
@@ -505,7 +510,9 @@ Namespace DiskImage
 
         Private Sub InitProtectedSectors()
             _ProtectedSectors.Clear()
+            _TranslatedSectors.Clear()
             _NonStandardTracks.Clear()
+            _AdditionalTracks.Clear()
 
             Dim TrackCount = GetTrackCount()
 
@@ -522,24 +529,28 @@ Namespace DiskImage
                             End If
 
                             For SectorId = 1 To _BPB.SectorsPerTrack
+                                Dim Sector = GetSectorFromParams(Cylinder, Side, SectorId)
                                 Dim BitstreamSector As BitstreamSector = Nothing
                                 If Cylinder < _TrackCount And Side < _SideCount Then
                                     BitstreamSector = GetSector(Cylinder, Side, SectorId)
                                 End If
                                 If BitstreamSector Is Nothing Then
-                                    Dim Sector = GetSectorFromParams(Cylinder, Side, SectorId)
-                                    ProtectedSectors.Add(Sector)
+                                    _ProtectedSectors.Add(Sector)
                                     TrackIsStandard = False
-                                ElseIf Not BitstreamSector.IsStandard Then
-                                    Dim Sector = GetSectorFromParams(Cylinder, Side, SectorId)
-                                    ProtectedSectors.Add(Sector)
-                                    TrackIsStandard = False
+                                Else
+                                    If Not BitstreamSector.IsStandard Then
+                                        _ProtectedSectors.Add(Sector)
+                                        TrackIsStandard = False
+                                    End If
+                                    If BitstreamSector.IsTranslated Then
+                                        _TranslatedSectors.Add(Sector)
+                                    End If
                                 End If
                             Next
                         Else
                             For SectorId = 1 To _BPB.SectorsPerTrack
                                 Dim Sector = GetSectorFromParams(Cylinder, Side, SectorId)
-                                ProtectedSectors.Add(Sector)
+                                _ProtectedSectors.Add(Sector)
                             Next
                         End If
 
@@ -547,7 +558,7 @@ Namespace DiskImage
                             _NonStandardTracks.Add(Cylinder * _SideCount + Side)
                         End If
                     Else
-                        AdditionalTracks.Add(Cylinder * _SideCount + Side)
+                        _AdditionalTracks.Add(Cylinder * _SideCount + Side)
                     End If
                 Next
             Next
@@ -602,7 +613,9 @@ Namespace DiskImage
                         If Sector Is Nothing Then
                             Buffer = New Byte(511) {}
                             Array.Copy(MFMSector.Data, Buffer.Length * i, Buffer, 0, Buffer.Length)
-                            BitstreamSector = New BitstreamSector(Buffer, Buffer.Length, False)
+                            BitstreamSector = New BitstreamSector(Buffer, Buffer.Length, False) With {
+                                .IsTranslated = True
+                            }
                             SetSector(Track, Side, NewSectorId, BitstreamSector)
                         Else
                             Sector.IsStandard = False

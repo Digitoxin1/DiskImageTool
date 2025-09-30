@@ -3,7 +3,6 @@
         Implements IFloppyImage
 
         Private _Data() As Byte
-        Private ReadOnly _ProtectedSectors As HashSet(Of UInteger)
         Private ReadOnly _AdditionalTracks As HashSet(Of UShort)
         Private ReadOnly _NonStandardTracks As HashSet(Of UShort)
         Private ReadOnly _History As ImageHistory
@@ -11,7 +10,6 @@
         Sub New(Data() As Byte)
             _Data = Data
             _History = New ImageHistory(Me)
-            _ProtectedSectors = New HashSet(Of UInteger)
             _AdditionalTracks = New HashSet(Of UShort)
             _NonStandardTracks = New HashSet(Of UShort)
         End Sub
@@ -268,12 +266,6 @@
             End Get
         End Property
 
-        Private ReadOnly Property IFloppyImage_ProtectedSectors As HashSet(Of UInteger) Implements IFloppyImage.ProtectedSectors
-            Get
-                Return _ProtectedSectors
-            End Get
-        End Property
-
         Private ReadOnly Property IFloppyImage_TrackCount As UShort Implements IFloppyImage.TrackCount
             Get
                 Return 0
@@ -285,5 +277,13 @@
                 Return 0
             End Get
         End Property
+
+        Private Function IFloppyImage_IsProtectedSector(Sector As UInteger) As Boolean Implements IFloppyImage.IsProtectedSector
+            Return False
+        End Function
+
+        Private Function IFloppyImage_IsTranslatedSector(Sector As UInteger) As Boolean Implements IFloppyImage.IsTranslatedSector
+            Return False
+        End Function
     End Class
 End Namespace

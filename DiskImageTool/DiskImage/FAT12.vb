@@ -159,7 +159,7 @@
 
                 Dim SectorList = ClusterToSectorList(_BPB, Cluster)
                 For Each Sector In SectorList
-                    If _FloppyImage.ProtectedSectors.Contains(Sector) Then
+                    If _FloppyImage.IsProtectedSector(Sector) Then
                         ProtectedCluster = True
                         Exit For
                     End If
@@ -221,7 +221,7 @@
 
                 Dim SectorList = ClusterToSectorList(_BPB, Cluster)
                 For Each Sector In SectorList
-                    If _FloppyImage.ProtectedSectors.Contains(Sector) Then
+                    If _FloppyImage.IsProtectedSector(Sector) Then
                         ProtectedCluster = True
                         Exit For
                     End If

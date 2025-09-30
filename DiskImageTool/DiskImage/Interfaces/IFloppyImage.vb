@@ -24,7 +24,6 @@ Namespace DiskImage
         ReadOnly Property IsBitstreamImage As Boolean
         ReadOnly Property Length As Integer
         ReadOnly Property NonStandardTracks As HashSet(Of UShort)
-        ReadOnly Property ProtectedSectors As HashSet(Of UInteger)
         ReadOnly Property SideCount As Byte
         ReadOnly Property TrackCount As UShort
         Sub Append(Data() As Byte)
@@ -38,6 +37,8 @@ Namespace DiskImage
         Function GetCRC32() As String
         Function GetMD5Hash() As String
         Function GetSHA1Hash() As String
+        Function IsProtectedSector(Sector As UInteger) As Boolean
+        Function IsTranslatedSector(Sector As UInteger) As Boolean
         Function Resize(Length As Integer) As Boolean
         Function SaveToFile(FilePath As String) As Boolean
         Function SetBytes(Value As Object, Offset As UInteger) As Boolean

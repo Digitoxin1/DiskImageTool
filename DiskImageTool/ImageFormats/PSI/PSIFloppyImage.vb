@@ -172,7 +172,9 @@ Namespace ImageFormats
                         If BitstreamSector Is Nothing Then
                             Dim Buffer = New Byte(511) {}
                             Array.Copy(PSISector.Data, Buffer.Length * i, Buffer, 0, Buffer.Length)
-                            BitstreamSector = New BitstreamSector(Buffer, Buffer.Length, False)
+                            BitstreamSector = New BitstreamSector(Buffer, Buffer.Length, False) With {
+                                .IsTranslated = True
+                            }
                             SetSector(PSISector.Track, PSISector.Side, NewSectorId, BitstreamSector)
                         Else
                             BitstreamSector.IsStandard = False

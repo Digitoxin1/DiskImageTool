@@ -33,7 +33,7 @@ Partial Class HexViewForm
         Dim ToolStripSeparator7 As System.Windows.Forms.ToolStripSeparator
         Dim ToolStripStatusGap As System.Windows.Forms.ToolStripStatusLabel
         Dim ToolStripStatusLabel1 As System.Windows.Forms.ToolStripStatusLabel
-        Dim ToolStripStatusLabel2 As System.Windows.Forms.ToolStripStatusLabel
+        Me.ToolStripStatusTranslated = New System.Windows.Forms.ToolStripStatusLabel()
         Me.ToolStripMain = New System.Windows.Forms.ToolStrip()
         Me.ToolStripBtnCommit = New System.Windows.Forms.ToolStripButton()
         Me.ToolStripBtnUndo = New System.Windows.Forms.ToolStripButton()
@@ -78,10 +78,10 @@ Partial Class HexViewForm
         Me.ToolStripStatusSide = New System.Windows.Forms.ToolStripStatusLabel()
         Me.ToolStripStatusTrackSector = New System.Windows.Forms.ToolStripStatusLabel()
         Me.ToolStripStatusBytes = New System.Windows.Forms.ToolStripStatusLabel()
-        Me.HexBox1 = New DiskImageTool.Hb.Windows.Forms.HexBox()
         Me.DataGridDataInspector = New System.Windows.Forms.DataGridView()
         Me.ContextMenuStrip2 = New System.Windows.Forms.ContextMenuStrip(Me.components)
         Me.BtnCopyValue = New System.Windows.Forms.ToolStripMenuItem()
+        Me.HexBox1 = New DiskImageTool.Hb.Windows.Forms.HexBox()
         ToolStripSeparator1 = New System.Windows.Forms.ToolStripSeparator()
         ToolStripSeparator3 = New System.Windows.Forms.ToolStripSeparator()
         ToolStripSeparator2 = New System.Windows.Forms.ToolStripSeparator()
@@ -91,7 +91,6 @@ Partial Class HexViewForm
         ToolStripSeparator7 = New System.Windows.Forms.ToolStripSeparator()
         ToolStripStatusGap = New System.Windows.Forms.ToolStripStatusLabel()
         ToolStripStatusLabel1 = New System.Windows.Forms.ToolStripStatusLabel()
-        ToolStripStatusLabel2 = New System.Windows.Forms.ToolStripStatusLabel()
         Me.ToolStripMain.SuspendLayout()
         Me.ContextMenuStrip1.SuspendLayout()
         Me.StatusStrip1.SuspendLayout()
@@ -142,19 +141,18 @@ Partial Class HexViewForm
         '
         'ToolStripStatusLabel1
         '
+        resources.ApplyResources(ToolStripStatusLabel1, "ToolStripStatusLabel1")
         ToolStripStatusLabel1.BorderSides = System.Windows.Forms.ToolStripStatusLabelBorderSides.Left
         ToolStripStatusLabel1.Margin = New System.Windows.Forms.Padding(2, 3, 2, 2)
         ToolStripStatusLabel1.Name = "ToolStripStatusLabel1"
-        ToolStripStatusLabel1.Padding = New System.Windows.Forms.Padding(16, 0, 0, 0)
-        resources.ApplyResources(ToolStripStatusLabel1, "ToolStripStatusLabel1")
         '
-        'ToolStripStatusLabel2
+        'ToolStripStatusTranslated
         '
-        ToolStripStatusLabel2.BorderSides = System.Windows.Forms.ToolStripStatusLabelBorderSides.Left
-        ToolStripStatusLabel2.Margin = New System.Windows.Forms.Padding(2, 3, 2, 2)
-        ToolStripStatusLabel2.Name = "ToolStripStatusLabel2"
-        ToolStripStatusLabel2.Padding = New System.Windows.Forms.Padding(16, 0, 0, 0)
-        resources.ApplyResources(ToolStripStatusLabel2, "ToolStripStatusLabel2")
+        resources.ApplyResources(Me.ToolStripStatusTranslated, "ToolStripStatusTranslated")
+        Me.ToolStripStatusTranslated.BorderSides = System.Windows.Forms.ToolStripStatusLabelBorderSides.Left
+        Me.ToolStripStatusTranslated.ForeColor = System.Drawing.Color.Blue
+        Me.ToolStripStatusTranslated.Margin = New System.Windows.Forms.Padding(2, 3, 2, 2)
+        Me.ToolStripStatusTranslated.Name = "ToolStripStatusTranslated"
         '
         'ToolStripMain
         '
@@ -372,7 +370,7 @@ Partial Class HexViewForm
         '
         'StatusStrip1
         '
-        Me.StatusStrip1.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.ToolStripStatusOffset, Me.ToolStripStatusBlock, Me.ToolStripStatusLength, ToolStripStatusGap, Me.ToolStripStatusCluster, Me.ToolStripStatusSector, ToolStripStatusLabel1, Me.ToolStripStatusTrack, Me.ToolStripStatusSide, Me.ToolStripStatusTrackSector, ToolStripStatusLabel2, Me.ToolStripStatusBytes})
+        Me.StatusStrip1.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.ToolStripStatusOffset, Me.ToolStripStatusBlock, Me.ToolStripStatusLength, ToolStripStatusGap, Me.ToolStripStatusCluster, Me.ToolStripStatusSector, ToolStripStatusLabel1, Me.ToolStripStatusTrack, Me.ToolStripStatusSide, Me.ToolStripStatusTrackSector, Me.ToolStripStatusTranslated, Me.ToolStripStatusBytes})
         resources.ApplyResources(Me.StatusStrip1, "StatusStrip1")
         Me.StatusStrip1.Name = "StatusStrip1"
         '
@@ -446,6 +444,26 @@ Partial Class HexViewForm
         Me.ToolStripStatusBytes.Name = "ToolStripStatusBytes"
         resources.ApplyResources(Me.ToolStripStatusBytes, "ToolStripStatusBytes")
         '
+        'DataGridDataInspector
+        '
+        resources.ApplyResources(Me.DataGridDataInspector, "DataGridDataInspector")
+        Me.DataGridDataInspector.BackgroundColor = System.Drawing.SystemColors.Window
+        Me.DataGridDataInspector.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D
+        Me.DataGridDataInspector.ContextMenuStrip = Me.ContextMenuStrip2
+        Me.DataGridDataInspector.GridColor = System.Drawing.SystemColors.ControlLight
+        Me.DataGridDataInspector.Name = "DataGridDataInspector"
+        '
+        'ContextMenuStrip2
+        '
+        Me.ContextMenuStrip2.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.BtnCopyValue})
+        Me.ContextMenuStrip2.Name = "ContextMenuStrip2"
+        resources.ApplyResources(Me.ContextMenuStrip2, "ContextMenuStrip2")
+        '
+        'BtnCopyValue
+        '
+        Me.BtnCopyValue.Name = "BtnCopyValue"
+        resources.ApplyResources(Me.BtnCopyValue, "BtnCopyValue")
+        '
         'HexBox1
         '
         resources.ApplyResources(Me.HexBox1, "HexBox1")
@@ -471,26 +489,6 @@ Partial Class HexViewForm
         Me.HexBox1.StringViewVisible = True
         Me.HexBox1.UseFixedBytesPerLine = True
         Me.HexBox1.VScrollBarVisible = False
-        '
-        'DataGridDataInspector
-        '
-        resources.ApplyResources(Me.DataGridDataInspector, "DataGridDataInspector")
-        Me.DataGridDataInspector.BackgroundColor = System.Drawing.SystemColors.Window
-        Me.DataGridDataInspector.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D
-        Me.DataGridDataInspector.ContextMenuStrip = Me.ContextMenuStrip2
-        Me.DataGridDataInspector.GridColor = System.Drawing.SystemColors.ControlLight
-        Me.DataGridDataInspector.Name = "DataGridDataInspector"
-        '
-        'ContextMenuStrip2
-        '
-        Me.ContextMenuStrip2.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.BtnCopyValue})
-        Me.ContextMenuStrip2.Name = "ContextMenuStrip2"
-        resources.ApplyResources(Me.ContextMenuStrip2, "ContextMenuStrip2")
-        '
-        'BtnCopyValue
-        '
-        Me.BtnCopyValue.Name = "BtnCopyValue"
-        resources.ApplyResources(Me.BtnCopyValue, "BtnCopyValue")
         '
         'HexViewForm
         '
@@ -568,4 +566,5 @@ Partial Class HexViewForm
     Friend WithEvents ToolStripBtnSelectTrack As ToolStripButton
     Friend WithEvents ToolStripStatusTrackSector As ToolStripStatusLabel
     Friend WithEvents BtnFill As ToolStripMenuItem
+    Friend WithEvents ToolStripStatusTranslated As ToolStripStatusLabel
 End Class

@@ -839,7 +839,7 @@
     <oemname name="MSDOS5.0" company="Microsoft" description="MS-DOS 5.0, MS-DOS 6.0"/>
   </bootstrap>
   <bootstrap crc32="B29D2D73" jmp="EB4290">
-    <oemname name="MSDOS6.0"/>
+    <oemname name="MSDOS6.0" verified="true"/>
   </bootstrap>
   <bootstrap crc32="161E78E9" jmp="EB4290" language="Swedish">
     <oemname name="MSDOS6.0"/>
@@ -960,7 +960,7 @@
     <oemname name="PSA  3.1" verified="true"/>
   </bootstrap>
   <bootstrap crc32="617EE1BE" jmp="EB3490">
-    <oemname name="PSA  3.2"/>
+    <oemname name="PSA  3.2" verified="true"/>
   </bootstrap>
   <bootstrap crc32="48BB97A3" jmp="EB3490">
     <oemname name="PSA  3.2" verified="true"/>
