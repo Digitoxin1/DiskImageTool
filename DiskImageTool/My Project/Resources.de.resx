@@ -1457,4 +1457,10 @@ Hinweis: Diese ID wird normalerweise erzeugt, indem das aktuelle Datum und die a
   <data name="DataInspector_Label_DataArea" xml:space="preserve">
     <value>Datenbereich</value>
   </data>
+  <data name="SummaryPanel_Image" xml:space="preserve">
+    <value>Abbild</value>
+  </data>
+  <data name="SummaryPanel_Comment" xml:space="preserve">
+    <value>Kommentar</value>
+  </data>
 </root>

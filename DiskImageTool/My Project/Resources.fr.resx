@@ -1457,4 +1457,10 @@ Remarque : cette valeur doit être {1} pour toutes les disquettes</value>
   <data name="DataInspector_Label_DataArea" xml:space="preserve">
     <value>Zone de données</value>
   </data>
+  <data name="SummaryPanel_Image" xml:space="preserve">
+    <value>Image</value>
+  </data>
+  <data name="SummaryPanel_Comment" xml:space="preserve">
+    <value>Commentaire</value>
+  </data>
 </root>

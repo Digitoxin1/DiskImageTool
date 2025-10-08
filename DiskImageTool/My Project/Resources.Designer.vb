@@ -3992,6 +3992,15 @@ Namespace My.Resources
         End Property
         
         '''<summary>
+        '''  Looks up a localized string similar to Comment.
+        '''</summary>
+        Friend ReadOnly Property SummaryPanel_Comment() As String
+            Get
+                Return ResourceManager.GetString("SummaryPanel_Comment", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
         '''  Looks up a localized string similar to Company.
         '''</summary>
         Friend ReadOnly Property SummaryPanel_Company() As String
@@ -4114,6 +4123,15 @@ Namespace My.Resources
         Friend ReadOnly Property SummaryPanel_Heads() As String
             Get
                 Return ResourceManager.GetString("SummaryPanel_Heads", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  Looks up a localized string similar to Image.
+        '''</summary>
+        Friend ReadOnly Property SummaryPanel_Image() As String
+            Get
+                Return ResourceManager.GetString("SummaryPanel_Image", resourceCulture)
             End Get
         End Property
         

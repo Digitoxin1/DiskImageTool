@@ -73,7 +73,7 @@ Module ListViewExtensions
             If Width.HasValue Then
                 CalcWidth = Width.Value
             Else
-                CalcWidth = listViewControl.Columns.Item(1).Width - 5
+                CalcWidth = listViewControl.Columns.Item(1).Width - 6
             End If
             If TextRenderer.MeasureText(Value, listViewControl.Font).Width > CalcWidth Then
                 StringList = Value.WordWrap(CalcWidth, listViewControl.Font)

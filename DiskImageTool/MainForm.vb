@@ -4682,17 +4682,21 @@ Public Class MainForm
     End Sub
 
     Private Sub ListViewSummary_DrawSubItem(sender As Object, e As DrawListViewSubItemEventArgs) Handles ListViewSummary.DrawSubItem
-        If e.Item.Group IsNot Nothing AndAlso e.Item.Group.Name = "Title" AndAlso e.Item.Group.Tag <> 0 Then
-            Dim Offset = e.Item.Group.Tag
-            e.DrawBackground()
-            Dim rect As Rectangle = Rectangle.Inflate(e.Bounds, -3, -2)
-            If e.ColumnIndex = 0 Then
-                rect.Width -= Offset
+        If e.Item.Group IsNot Nothing AndAlso e.Item.Group.Tag IsNot Nothing Then
+            Dim Offset As Integer = CInt(e.Item.Group.Tag)
+            If Offset <> 0 Then
+                e.DrawBackground()
+                Dim rect As Rectangle = Rectangle.Inflate(e.Bounds, -3, -2)
+                If e.ColumnIndex = 0 Then
+                    rect.Width -= Offset
+                Else
+                    rect.X -= Offset
+                    rect.Width += Offset
+                End If
+                TextRenderer.DrawText(e.Graphics, e.SubItem.Text, e.SubItem.Font, rect, e.SubItem.ForeColor, TextFormatFlags.Default Or TextFormatFlags.NoPrefix)
             Else
-                rect.X -= Offset
-                rect.Width += Offset
+                e.DrawDefault = True
             End If
-            TextRenderer.DrawText(e.Graphics, e.SubItem.Text, e.SubItem.Font, rect, e.SubItem.ForeColor, TextFormatFlags.Default Or TextFormatFlags.NoPrefix)
         Else
             e.DrawDefault = True
         End If

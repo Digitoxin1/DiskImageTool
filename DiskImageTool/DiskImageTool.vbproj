@@ -248,6 +248,7 @@
     <Compile Include="ImageFormats\PRI\PRILoader.vb" />
     <Compile Include="ImageFormats\PRI\PRITrack.vb" />
     <Compile Include="ImageFormats\PSI\PSITrackInfo.vb" />
+    <Compile Include="ImageFormats\TC\Functions.vb" />
     <Compile Include="ImageIO.vb" />
     <Compile Include="ImageFormats\ImageConversion.vb" />
     <Compile Include="ImageFormats\MFM\MFMFloppyImage.vb" />
