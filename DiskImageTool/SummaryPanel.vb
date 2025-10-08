@@ -9,6 +9,7 @@ Module SummaryPanel
     Private Const GROUP_BOOTSTRAP As String = "Bootstrap"
     Private Const GROUP_FILE_SYSTEM As String = "FileSystem"
     Private Const GROUP_TITLE As String = "Title"
+    Private InitialColumnWidth As Integer = 0
 
     Public Sub PopulateSummaryPanelError(ListViewSummary As ListView, InvalidImage As Boolean)
         With ListViewSummary
@@ -613,6 +614,11 @@ Module SummaryPanel
         'End If
 
         With ListViewSummary
+            If InitialColumnWidth = 0 Then
+                InitialColumnWidth = .Columns.Item(1).Width
+            Else
+                .Columns.Item(1).Width = InitialColumnWidth
+            End If
             Dim ColumnWidth As Integer = .Columns.Item(1).Width - 5
             Dim MaxWidth = ColumnWidth + MAxOffset
 

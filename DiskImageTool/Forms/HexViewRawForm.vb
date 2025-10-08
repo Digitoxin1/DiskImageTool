@@ -385,6 +385,7 @@ Public Class HexViewRawForm
         AddClipboardFormatListener(Me.Handle)
 
         _DataGridInspector = New HexViewDataGridInspector(DataGridDataInspector)
+        _DataGridInspector.SetDataRow(DataRowEnum.Area, Nothing, True, True)
         _DataGridInspector.SetDataRow(DataRowEnum.File, Nothing, True, True)
         _DataGridInspector.SetDataRow(DataRowEnum.Description, Nothing, True, True)
 

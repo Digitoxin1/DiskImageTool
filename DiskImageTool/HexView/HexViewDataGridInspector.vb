@@ -2,6 +2,7 @@
 
 Namespace HexView
     Public Enum DataRowEnum
+        Area
         File
         Description
         CRC16
@@ -112,6 +113,7 @@ Namespace HexView
                 .SortMode = DataGridViewColumnSortMode.NotSortable
             })
 
+            AddRow(My.Resources.DataInspector_Label_Area, 0, DataRowEnum.Area, False)
             AddRow(My.Resources.DataInspector_Label_File, 0, DataRowEnum.File, False)
             AddRow(My.Resources.DataInspector_Label_Region, 0, DataRowEnum.Description, False)
             AddRow(My.Resources.DataInspector_Label_CRC16, 0, DataRowEnum.CRC16, False)
@@ -213,7 +215,7 @@ Namespace HexView
             SetDataRow(DataRowEnum.DOSTimeDate, DosTimeDate, [ReadOnly])
         End Sub
 
-        Public Sub SetDataRow(Index As DataRowEnum, Value As Object, [ReadOnly] As Boolean, Optional HideIfEmpty As Boolean = False)
+        Public Sub SetDataRow(Index As DataRowEnum, Value As Object, [ReadOnly] As Boolean, Optional HideIfEmpty As Boolean = False, Optional Caption As String = "")
             Dim RowValue As Object
             Dim ForeColor As Color
             Dim Visible As Boolean
@@ -233,6 +235,9 @@ Namespace HexView
 
             With DataGridView.Rows.Item(Index)
                 .Visible = Visible
+                If Caption <> "" Then
+                    .Cells.Item(0).Value = Caption
+                End If
                 With .Cells.Item(1)
                     .Value = RowValue
                     .Style.ForeColor = ForeColor

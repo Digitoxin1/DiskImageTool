@@ -834,11 +834,49 @@ Public Class HexViewForm
         ToolStripBtnPaste.Enabled = BtnPaste.Enabled
     End Sub
 
+    Private Function IsFATArea(Disk As Disk, Sector As UInteger) As Boolean
+        Dim NumberOfFATs As Byte
+
+        If IsDiskFormatXDF(Disk.DiskFormat) Then
+            NumberOfFATs = 1
+        Else
+            NumberOfFATs = Disk.BPB.NumberOfFATs
+        End If
+
+        Dim Length As UInteger = Disk.BPB.SectorsPerFAT * NumberOfFATs
+        Dim Start As UInteger = Disk.BPB.FATRegionStart
+
+
+        Return Sector >= Start And Sector < Start + Length
+    End Function
+
+    Private Function GetFATIndex(Disk As Disk, Sector As UInteger) As Integer
+        Dim NumberOfFATs As Byte
+
+        If IsDiskFormatXDF(Disk.DiskFormat) Then
+            NumberOfFATs = 1
+        Else
+            NumberOfFATs = Disk.BPB.NumberOfFATs
+        End If
+
+        For Index As Byte = 0 To NumberOfFATs - 1
+            Dim Length As UInteger = Disk.BPB.SectorsPerFAT
+            Dim Start As UInteger = Disk.BPB.FATRegionStart + Length * Index
+
+            If Sector >= Start And Sector < Start + Length Then
+                Return Index
+            End If
+        Next
+
+        Return 0
+    End Function
+
     Private Sub RefreshSelection(ForceUpdate As Boolean)
         If Not _Initialized And Not ForceUpdate Then
             Exit Sub
         End If
 
+        Dim FileCaption As String = My.Resources.DataInspector_Label_File
         Dim SelectionStart = HexBox1.SelectionStart
         Dim SelectionLength = HexBox1.SelectionLength
         Dim SelectionEnd = SelectionStart + SelectionLength - 1
@@ -862,10 +900,12 @@ Public Class HexViewForm
             ToolStripBtnSelectTrack.Text = My.Resources.Label_Track
             ToolStripBtnSelectTrack.ToolTipText = My.Resources.Label_SelectTrack
             ToolStripBtnSelectTrack.Enabled = BtnSelectTrack.Enabled
-            _DataGridInspector.SetDataRow(DataRowEnum.File, Nothing, True, True)
+            _DataGridInspector.SetDataRow(DataRowEnum.Area, Nothing, True, True)
+            _DataGridInspector.SetDataRow(DataRowEnum.File, Nothing, True, True, FileCaption)
         Else
             Dim OffsetStart As UInteger = HexBox1.LineInfoOffset + SelectionStart
             Dim OffsetEnd As Integer = HexBox1.LineInfoOffset + SelectionEnd
+            Dim AreaName As String = ""
             Dim FileName As String = ""
             Dim OutOfRange As Boolean = SelectionStart >= HexBox1.ByteProvider.Length
 
@@ -904,17 +944,31 @@ Public Class HexViewForm
                 Else
                     ToolStripStatusCluster.Visible = Not OutOfRange
                     ToolStripStatusCluster.Text = FormatLabelPair(My.Resources.Label_Cluster, Cluster)
-
-                    If _BPB.IsValid Then
-                        If _CurrentHexViewData.Disk.RootDirectory.FATAllocation.FileAllocation.ContainsKey(Cluster) Then
-                            Dim OffsetList = _CurrentHexViewData.Disk.RootDirectory.FATAllocation.FileAllocation.Item(Cluster)
-                            Dim DirectoryEntry = OffsetList.Item(0)
-                            FileName = DirectoryEntry.GetShortFileName(True)
-                        End If
-                    End If
                 End If
 
                 If _BPB.IsValid Then
+                    If Sector = 0 Then
+                        AreaName = My.Resources.Label_BootSector
+                    ElseIf _CurrentHexViewData.Disk.IsValidImage Then
+                        If _CurrentHexViewData.Disk.RootDirectory.SectorChain.Contains(Sector) Then
+                            AreaName = My.Resources.HexView_RootDirectory
+                        ElseIf IsFATArea(_CurrentHexViewData.Disk, Sector) Then
+                            Dim FATIndex = GetFATIndex(_CurrentHexViewData.Disk, Sector)
+                            AreaName = My.Resources.SummaryPanel_FAT & " " & (FATIndex + 1).ToString
+                        ElseIf Cluster > 1 Then
+                            AreaName = My.Resources.DataInspector_Label_DataArea
+                        End If
+                    End If
+
+                    If Cluster > 1 AndAlso _CurrentHexViewData.Disk.RootDirectory.FATAllocation.FileAllocation.ContainsKey(Cluster) Then
+                        Dim OffsetList = _CurrentHexViewData.Disk.RootDirectory.FATAllocation.FileAllocation.Item(Cluster)
+                        Dim DirectoryEntry = OffsetList.Item(0)
+                        FileName = DirectoryEntry.GetShortFileName(True)
+                        If DirectoryEntry.IsDirectory Then
+                            FileCaption = My.Resources.HexView_Directory
+                        End If
+                    End If
+
                     ToolStripStatusTrack.Visible = Not OutOfRange
                     ToolStripStatusTrack.Text = FormatLabelPair(My.Resources.Label_Track, _BPB.SectorToTrack(Sector))
 
@@ -940,34 +994,40 @@ Public Class HexViewForm
                 End If
 
                 If FileName.Length = 0 Or OutOfRange Then
-                    _DataGridInspector.SetDataRow(DataRowEnum.File, Nothing, True, True)
+                    _DataGridInspector.SetDataRow(DataRowEnum.File, Nothing, True, True, FileCaption)
                 Else
-                    _DataGridInspector.SetDataRow(DataRowEnum.File, FileName, True, True)
+                    _DataGridInspector.SetDataRow(DataRowEnum.File, FileName, True, True, FileCaption)
+                End If
+
+                If AreaName.Length = 0 Or OutOfRange Then
+                    _DataGridInspector.SetDataRow(DataRowEnum.Area, Nothing, True, True)
+                Else
+                    _DataGridInspector.SetDataRow(DataRowEnum.Area, AreaName, True, True)
                 End If
 
                 BtnSelectSector.Text = My.Resources.Menu_SelectSector & " " & Sector
-                BtnSelectSector.Enabled = Not OutOfRange
-                ToolStripBtnSelectSector.Text = My.Resources.Label_Sector & " " & Sector
-                ToolStripBtnSelectSector.ToolTipText = My.Resources.Label_SelectSector & " " & Sector
-                ToolStripBtnSelectSector.Enabled = BtnSelectSector.Enabled
+                    BtnSelectSector.Enabled = Not OutOfRange
+                    ToolStripBtnSelectSector.Text = My.Resources.Label_Sector & " " & Sector
+                    ToolStripBtnSelectSector.ToolTipText = My.Resources.Label_SelectSector & " " & Sector
+                    ToolStripBtnSelectSector.Enabled = BtnSelectSector.Enabled
 
-                If _BPB.IsValid Then
-                    Dim Track = _BPB.SectorToTrack(Sector)
-                    Dim Side = _BPB.SectorToSide(Sector)
-                    Dim Value = Track.ToString & "." & Side.ToString
+                    If _BPB.IsValid Then
+                        Dim Track = _BPB.SectorToTrack(Sector)
+                        Dim Side = _BPB.SectorToSide(Sector)
+                        Dim Value = Track.ToString & "." & Side.ToString
 
-                    BtnSelectTrack.Text = My.Resources.Menu_SelectTrack & " " & Value
-                    BtnSelectTrack.Enabled = _ClusterNavigator And Not OutOfRange
-                    ToolStripBtnSelectTrack.Text = My.Resources.Label_Track & " " & Value
-                    ToolStripBtnSelectTrack.ToolTipText = My.Resources.Label_SelectTrack & " " & Value
-                    ToolStripBtnSelectTrack.Enabled = BtnSelectTrack.Enabled
+                        BtnSelectTrack.Text = My.Resources.Menu_SelectTrack & " " & Value
+                        BtnSelectTrack.Enabled = _ClusterNavigator And Not OutOfRange
+                        ToolStripBtnSelectTrack.Text = My.Resources.Label_Track & " " & Value
+                        ToolStripBtnSelectTrack.ToolTipText = My.Resources.Label_SelectTrack & " " & Value
+                        ToolStripBtnSelectTrack.Enabled = BtnSelectTrack.Enabled
+                    End If
+
+
+                    _CurrentSector = Sector
                 End If
 
-
-                _CurrentSector = Sector
-            End If
-
-            If _RegionDescriptions.Count = 0 Then
+                If _RegionDescriptions.Count = 0 Then
                 _DataGridInspector.SetDataRow(DataRowEnum.Description, Nothing, True, True)
             Else
                 Dim RegionStart As HexViewHighlightRegion

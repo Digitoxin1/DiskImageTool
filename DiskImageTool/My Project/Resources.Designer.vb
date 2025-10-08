@@ -1015,6 +1015,15 @@ Namespace My.Resources
         End Property
         
         '''<summary>
+        '''  Looks up a localized string similar to Area.
+        '''</summary>
+        Friend ReadOnly Property DataInspector_Label_Area() As String
+            Get
+                Return ResourceManager.GetString("DataInspector_Label_Area", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
         '''  Looks up a localized string similar to Binary (8 bit).
         '''</summary>
         Friend ReadOnly Property DataInspector_Label_Binary() As String
@@ -1047,6 +1056,15 @@ Namespace My.Resources
         Friend ReadOnly Property DataInspector_Label_CRC32() As String
             Get
                 Return ResourceManager.GetString("DataInspector_Label_CRC32", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  Looks up a localized string similar to Data Area.
+        '''</summary>
+        Friend ReadOnly Property DataInspector_Label_DataArea() As String
+            Get
+                Return ResourceManager.GetString("DataInspector_Label_DataArea", resourceCulture)
             End Get
         End Property
         

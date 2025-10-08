@@ -1451,4 +1451,10 @@ Hinweis: Diese ID wird normalerweise erzeugt, indem das aktuelle Datum und die a
   <data name="Label_New" xml:space="preserve">
     <value>Neues</value>
   </data>
+  <data name="DataInspector_Label_Area" xml:space="preserve">
+    <value>Bereich</value>
+  </data>
+  <data name="DataInspector_Label_DataArea" xml:space="preserve">
+    <value>Datenbereich</value>
+  </data>
 </root>

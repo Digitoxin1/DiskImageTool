@@ -1451,4 +1451,10 @@ Nota: Este valor debe ser {1} para todos los disquetes</value>
   <data name="Label_New" xml:space="preserve">
     <value>Nueva</value>
   </data>
+  <data name="DataInspector_Label_Area" xml:space="preserve">
+    <value>Área</value>
+  </data>
+  <data name="DataInspector_Label_DataArea" xml:space="preserve">
+    <value>Área de datos</value>
+  </data>
 </root>
