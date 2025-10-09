@@ -1063,7 +1063,7 @@
     <value>0</value>
   </data>
   <data name="LblDiskType.Text" xml:space="preserve">
-    <value>Disk Type</value>
+    <value>Disk Format</value>
   </data>
   <data name="&gt;&gt;LblDiskType.Name" xml:space="preserve">
     <value>LblDiskType</value>

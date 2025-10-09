@@ -4001,6 +4001,15 @@ Namespace My.Resources
         End Property
         
         '''<summary>
+        '''  Looks up a localized string similar to Comments.
+        '''</summary>
+        Friend ReadOnly Property SummaryPanel_Comments() As String
+            Get
+                Return ResourceManager.GetString("SummaryPanel_Comments", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
         '''  Looks up a localized string similar to Company.
         '''</summary>
         Friend ReadOnly Property SummaryPanel_Company() As String
@@ -4073,6 +4082,15 @@ Namespace My.Resources
         End Property
         
         '''<summary>
+        '''  Looks up a localized string similar to Disk Format.
+        '''</summary>
+        Friend ReadOnly Property SummaryPanel_DiskFormat() As String
+            Get
+                Return ResourceManager.GetString("SummaryPanel_DiskFormat", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
         '''  Looks up a localized string similar to Disk Type.
         '''</summary>
         Friend ReadOnly Property SummaryPanel_DiskType() As String
@@ -4123,15 +4141,6 @@ Namespace My.Resources
         Friend ReadOnly Property SummaryPanel_Heads() As String
             Get
                 Return ResourceManager.GetString("SummaryPanel_Heads", resourceCulture)
-            End Get
-        End Property
-        
-        '''<summary>
-        '''  Looks up a localized string similar to Image.
-        '''</summary>
-        Friend ReadOnly Property SummaryPanel_Image() As String
-            Get
-                Return ResourceManager.GetString("SummaryPanel_Image", resourceCulture)
             End Get
         End Property
         
@@ -4348,6 +4357,15 @@ Namespace My.Resources
         Friend ReadOnly Property SummaryPanel_Tracks() As String
             Get
                 Return ResourceManager.GetString("SummaryPanel_Tracks", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  Looks up a localized string similar to Track Step.
+        '''</summary>
+        Friend ReadOnly Property SummaryPanel_TrackStep() As String
+            Get
+                Return ResourceManager.GetString("SummaryPanel_TrackStep", resourceCulture)
             End Get
         End Property
         

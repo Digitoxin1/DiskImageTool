@@ -13,7 +13,6 @@ Module SummaryPanel
     Private Const GROUP_IMAGE As String = "Image"
     Private InitialColumnWidth As Integer = 0
     Private TitleRows As OrderedDictionary = Nothing
-    Private ImageRows As OrderedDictionary = Nothing
 
     Private Class SummaryRow
         Public Sub New(Font As Font, Text As String, WrapText As Boolean)
@@ -65,10 +64,6 @@ Module SummaryPanel
         End If
 
         Dim DiskGroup = PopulateSummaryPanelDisk(ListViewSummary, Disk)
-
-        If Disk.Image.ImageType = FloppyImageType.TranscopyImage Then
-            PopulateSummaryPanelTranscopyImage(ListViewSummary, Disk)
-        End If
 
         With ListViewSummary
             If Not Disk.IsValidImage Then
@@ -245,18 +240,6 @@ Module SummaryPanel
 
         Return String.Join(", ", Result)
     End Function
-
-    Private Sub InitializeImageRows(ListViewSummary As ListView)
-        If ImageRows Is Nothing Then
-            ImageRows = New OrderedDictionary
-        End If
-
-        ImageRows.Clear()
-
-        ImageRows.Add("Comment", New SummaryRow(ListViewSummary.Font, My.Resources.SummaryPanel_Comment, True))
-        ImageRows.Add("Comment2", New SummaryRow(ListViewSummary.Font, My.Resources.SummaryPanel_Comment & " 2", True))
-        ImageRows.Add("DiskType", New SummaryRow(ListViewSummary.Font, "Disk Type", False))
-    End Sub
 
     Private Sub InitializeTitleRows(ListViewSummary As ListView)
         If TitleRows Is Nothing Then
@@ -521,11 +504,12 @@ Module SummaryPanel
                 Dim DiskFormatBySize = GetFloppyDiskFormat(Disk.Image.Length)
 
                 If Disk.DiskFormat <> FloppyDiskFormat.FloppyUnknown Or DiskFormatBySize = FloppyDiskFormat.FloppyUnknown Then
-                    .AddItem(DiskGroup, My.Resources.SummaryPanel_DiskType, String.Format(My.Resources.Label_Floppy, DiskFormatString))
+                    Value = String.Format(My.Resources.Label_Floppy, DiskFormatString)
                 Else
                     Dim DiskFormatStringBySize = GetFloppyDiskFormatName(DiskFormatBySize)
-                    .AddItem(DiskGroup, My.Resources.SummaryPanel_DiskType, String.Format(My.Resources.Label_Floppy, DiskFormatStringBySize) & " " & InParens(My.Resources.SummaryPanel_CustomFormat))
+                    Value = String.Format(My.Resources.Label_Floppy, DiskFormatStringBySize) & " " & InParens(My.Resources.SummaryPanel_CustomFormat)
                 End If
+                .AddItem(DiskGroup, My.Resources.SummaryPanel_DiskFormat, Value)
 
                 If IsDiskFormatXDF(Disk.DiskFormat) Then
                     Dim XDFChecksum = CalcXDFChecksum(Disk.Image.GetBytes, Disk.BPB.SectorsPerFAT)
@@ -542,12 +526,21 @@ Module SummaryPanel
                 End If
             End If
 
+            If Disk.Image.ImageType = FloppyImageType.TranscopyImage Then
+                Dim Image As ImageFormats.TC.TransCopyImage = DirectCast(Disk.Image, ImageFormats.TC.TranscopyFloppyImage).Image
+                Value = ImageFormats.TC.DiskTypeToString(Image.DiskType)
+                .AddItem(DiskGroup, My.Resources.SummaryPanel_DiskType, Value)
+            End If
+
             If Disk.Image.ImageType <> FloppyImageType.BasicSectorImage Then
                 .AddItem(DiskGroup, My.Resources.SummaryPanel_Tracks, Disk.Image.TrackCount)
                 .AddItem(DiskGroup, My.Resources.SummaryPanel_Heads, Disk.Image.SideCount)
             End If
 
             If Disk.Image.IsBitstreamImage Then
+                If Disk.Image.BitstreamImage.TrackStep <> 1 Then
+                    .AddItem(DiskGroup, My.Resources.SummaryPanel_TrackStep, Disk.Image.BitstreamImage.TrackStep)
+                End If
                 If Disk.Image.BitstreamImage.VariableBitRate Then
                     .AddItem(DiskGroup, My.Resources.SummaryPanel_Bitrate, My.Resources.Label_Variable)
                 ElseIf Disk.Image.BitstreamImage.BitRate <> 0 Then
@@ -690,24 +683,6 @@ Module SummaryPanel
             Next
             Group.Tag = TextWidth - ColumnWidth
         End With
-    End Sub
-
-    Private Sub PopulateSummaryPanelTranscopyImage(ListViewSummary As ListView, Disk As Disk)
-        Dim Image As ImageFormats.TC.TransCopyImage = DirectCast(Disk.Image, ImageFormats.TC.TranscopyFloppyImage).Image
-
-        If ImageRows Is Nothing Then
-            InitializeImageRows(ListViewSummary)
-        End If
-
-        Dim Row = Function(key As String) DirectCast(ImageRows(key), SummaryRow)
-
-        Row("Comment").Value = Image.Comment
-        Row("Comment2").Value = Image.Comment2
-        Row("DiskType").Value = ImageFormats.TC.DiskTypeToString(Image.DiskType)
-
-        Dim Group = ListViewSummary.Groups.Add(GROUP_IMAGE, My.Resources.SummaryPanel_Image)
-
-        PopulateSummaryPanelGroup(Group, ImageRows)
     End Sub
 
     Private Sub PopulateSummaryPanelTitle(ListViewSummary As ListView, TitleData As FloppyDB.FloppyData)

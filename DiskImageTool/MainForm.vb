@@ -143,7 +143,7 @@ Public Class MainForm
         AddHandler ToolStripDiskTypeCombo.SelectedIndexChanged, AddressOf ToolStripCombo_SelectedIndexChanged
 
         ToolStripDiskTypeLabel = New ToolStripLabel With {
-            .Text = My.Resources.SummaryPanel_DiskType,
+            .Text = My.Resources.SummaryPanel_DiskFormat,
             .Alignment = ToolStripItemAlignment.Right,
             .Overflow = ToolStripItemOverflow.Never,
             .Margin = New Padding(8, 1, 0, 2),

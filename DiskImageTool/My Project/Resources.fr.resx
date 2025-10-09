@@ -1457,10 +1457,16 @@ Remarque : cette valeur doit être {1} pour toutes les disquettes</value>
   <data name="DataInspector_Label_DataArea" xml:space="preserve">
     <value>Zone de données</value>
   </data>
-  <data name="SummaryPanel_Image" xml:space="preserve">
-    <value>Image</value>
-  </data>
   <data name="SummaryPanel_Comment" xml:space="preserve">
     <value>Commentaire</value>
+  </data>
+  <data name="SummaryPanel_DiskFormat" xml:space="preserve">
+    <value>Format de disquette</value>
+  </data>
+  <data name="SummaryPanel_TrackStep" xml:space="preserve">
+    <value>Incrément de piste</value>
+  </data>
+  <data name="SummaryPanel_Comments" xml:space="preserve">
+    <value>Commentaires</value>
   </data>
 </root>

@@ -142,7 +142,7 @@
     <value>Copier texte</value>
   </data>
   <data name="LblDiskType.Text" xml:space="preserve">
-    <value>Type de disquette</value>
+    <value>Format de disquette</value>
   </data>
   <data name="LblDriveNumber.Text" xml:space="preserve">
     <value>Numéro de lecteur</value>

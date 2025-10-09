@@ -160,7 +160,7 @@
     <value>Bootsektor-Signatur</value>
   </data>
   <data name="LblDiskType.Text" xml:space="preserve">
-    <value>Diskettentyp</value>
+    <value>Diskettenformat</value>
   </data>
   <data name="GroupBoxMain.Text" xml:space="preserve">
     <value>Boot-Datensatz</value>
