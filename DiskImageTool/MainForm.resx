@@ -493,24 +493,6 @@
   <data name="MainMenuView.Text" xml:space="preserve">
     <value>&amp;Hex</value>
   </data>
-  <metadata name="MainMenuExperimental.GenerateMember" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
-    <value>False</value>
-  </metadata>
-  <data name="BtnExportDebug.Size" type="System.Drawing.Size, System.Drawing">
-    <value>225, 22</value>
-  </data>
-  <data name="BtnExportDebug.Text" xml:space="preserve">
-    <value>Generate Physical Disk Patch</value>
-  </data>
-  <data name="MainMenuExperimental.Size" type="System.Drawing.Size, System.Drawing">
-    <value>87, 20</value>
-  </data>
-  <data name="MainMenuExperimental.Text" xml:space="preserve">
-    <value>Experimental</value>
-  </data>
-  <data name="MainMenuExperimental.Visible" type="System.Boolean, mscorlib">
-    <value>False</value>
-  </data>
   <metadata name="FileMenuSeparator1.GenerateMember" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
     <value>False</value>
   </metadata>
@@ -799,6 +781,18 @@
   </data>
   <data name="MainMenuFilters.Text" xml:space="preserve">
     <value>F&amp;ilters</value>
+  </data>
+  <data name="MenuReportsWriteSplices.Size" type="System.Drawing.Size, System.Drawing">
+    <value>180, 22</value>
+  </data>
+  <data name="MenuReportsWriteSplices.Text" xml:space="preserve">
+    <value>Write Splices</value>
+  </data>
+  <data name="MainMenuReports.Size" type="System.Drawing.Size, System.Drawing">
+    <value>59, 20</value>
+  </data>
+  <data name="MainMenuReports.Text" xml:space="preserve">
+    <value>&amp;Reports</value>
   </data>
   <data name="MenuOptionsCreateBackup.Size" type="System.Drawing.Size, System.Drawing">
     <value>224, 22</value>
@@ -1250,7 +1244,7 @@
     <value>0, 0</value>
   </data>
   <data name="ComboImages.Size" type="System.Drawing.Size, System.Drawing">
-    <value>547, 21</value>
+    <value>543, 21</value>
   </data>
   <data name="ComboImages.TabIndex" type="System.Int32, mscorlib">
     <value>4</value>
@@ -1283,7 +1277,7 @@
     <value>Microsoft Sans Serif, 9.75pt, style=Bold</value>
   </data>
   <data name="LabelDropMessage.Location" type="System.Drawing.Point, System.Drawing">
-    <value>159, 253</value>
+    <value>157, 253</value>
   </data>
   <data name="LabelDropMessage.Size" type="System.Drawing.Size, System.Drawing">
     <value>273, 16</value>
@@ -1474,7 +1468,7 @@
     <value>0, 27</value>
   </data>
   <data name="ListViewFiles.Size" type="System.Drawing.Size, System.Drawing">
-    <value>670, 467</value>
+    <value>666, 467</value>
   </data>
   <data name="ListViewFiles.TabIndex" type="System.Int32, mscorlib">
     <value>6</value>
@@ -1501,7 +1495,7 @@
     <value>0, 0</value>
   </data>
   <data name="ComboImagesFiltered.Size" type="System.Drawing.Size, System.Drawing">
-    <value>547, 21</value>
+    <value>543, 21</value>
   </data>
   <data name="ComboImagesFiltered.TabIndex" type="System.Int32, mscorlib">
     <value>3</value>
@@ -1528,7 +1522,7 @@
     <value>True</value>
   </data>
   <data name="BtnResetSort.Location" type="System.Drawing.Point, System.Drawing">
-    <value>549, -1</value>
+    <value>545, -1</value>
   </data>
   <data name="BtnResetSort.Size" type="System.Drawing.Size, System.Drawing">
     <value>67, 23</value>
@@ -3254,18 +3248,6 @@
   <data name="&gt;&gt;MenuHexFile.Type" xml:space="preserve">
     <value>System.Windows.Forms.ToolStripMenuItem, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
-  <data name="&gt;&gt;MainMenuExperimental.Name" xml:space="preserve">
-    <value>MainMenuExperimental</value>
-  </data>
-  <data name="&gt;&gt;MainMenuExperimental.Type" xml:space="preserve">
-    <value>System.Windows.Forms.ToolStripMenuItem, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="&gt;&gt;BtnExportDebug.Name" xml:space="preserve">
-    <value>BtnExportDebug</value>
-  </data>
-  <data name="&gt;&gt;BtnExportDebug.Type" xml:space="preserve">
-    <value>System.Windows.Forms.ToolStripMenuItem, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
   <data name="&gt;&gt;FileMenuSeparator1.Name" xml:space="preserve">
     <value>FileMenuSeparator1</value>
   </data>
@@ -3510,6 +3492,12 @@
     <value>MenuFiltersClear</value>
   </data>
   <data name="&gt;&gt;MenuFiltersClear.Type" xml:space="preserve">
+    <value>System.Windows.Forms.ToolStripMenuItem, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;MainMenuReports.Name" xml:space="preserve">
+    <value>MainMenuReports</value>
+  </data>
+  <data name="&gt;&gt;MainMenuReports.Type" xml:space="preserve">
     <value>System.Windows.Forms.ToolStripMenuItem, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
   <data name="&gt;&gt;MainMenuOptions.Name" xml:space="preserve">
@@ -3834,6 +3822,12 @@
     <value>MenuDirectoryNewDirectory</value>
   </data>
   <data name="&gt;&gt;MenuDirectoryNewDirectory.Type" xml:space="preserve">
+    <value>System.Windows.Forms.ToolStripMenuItem, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;MenuReportsWriteSplices.Name" xml:space="preserve">
+    <value>MenuReportsWriteSplices</value>
+  </data>
+  <data name="&gt;&gt;MenuReportsWriteSplices.Type" xml:space="preserve">
     <value>System.Windows.Forms.ToolStripMenuItem, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
   <data name="&gt;&gt;$this.Name" xml:space="preserve">

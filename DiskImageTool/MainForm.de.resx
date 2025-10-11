@@ -222,12 +222,6 @@
   <data name="MainMenuView.Text" xml:space="preserve">
     <value>&amp;Hex</value>
   </data>
-  <data name="BtnExportDebug.Text" xml:space="preserve">
-    <value>Physikalischen Datenträger-Patch generieren</value>
-  </data>
-  <data name="MainMenuExperimental.Text" xml:space="preserve">
-    <value>Experimentell</value>
-  </data>
   <data name="MenuToolsCompare.Text" xml:space="preserve">
     <value>&amp;Abbilder vergleichen</value>
   </data>
@@ -410,5 +404,8 @@
   </data>
   <data name="MenuEditImportFiles.Text" xml:space="preserve">
     <value>Dateien &amp;importieren</value>
+  </data>
+  <data name="MainMenuReports.Text" xml:space="preserve">
+    <value>&amp;Berichte</value>
   </data>
 </root>

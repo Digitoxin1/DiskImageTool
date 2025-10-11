@@ -1324,10 +1324,6 @@ Public Class MainForm
         e.DrawFocusRectangle()
     End Sub
 
-    Private Sub ExportDebugScript(CurrentImage As CurrentImage)
-        GenerateDebugPackage(CurrentImage)
-    End Sub
-
     Private Sub FATEdit(CurrentImage As CurrentImage, Index As UShort)
         Dim frmFATEdit As New FATEditForm(CurrentImage.Disk, Index)
 
@@ -2590,6 +2586,7 @@ Public Class MainForm
             MenuDiskWriteFloppyA.Enabled = _DriveAEnabled
             MenuDiskWriteFloppyB.Enabled = _DriveBEnabled
             MenuFileSaveAs.Enabled = True
+            MenuReportsWriteSplices.Enabled = CurrentImage.Disk.Image.IsBitstreamImage
         Else
             MenuHexBootSector.Enabled = False
             MenuHexDisk.Enabled = False
@@ -2602,6 +2599,7 @@ Public Class MainForm
             MenuDiskWriteFloppyA.Enabled = False
             MenuDiskWriteFloppyB.Enabled = False
             MenuFileSaveAs.Enabled = False
+            MenuReportsWriteSplices.Enabled = False
         End If
         MenuToolsWin9xClean.Enabled = False
         MenuToolsClearReservedBytes.Enabled = False
@@ -2631,6 +2629,10 @@ Public Class MainForm
             AddHandler Item.CheckStateChanged, AddressOf MenuOptionsExportUnknown_CheckStateChanged
 
             MainMenuOptions.DropDownItems.Add(Item)
+
+            MainMenuReports.Visible = True
+        Else
+            MainMenuReports.Visible = False
         End If
     End Sub
 
@@ -3652,15 +3654,12 @@ Public Class MainForm
     Private Sub RefreshSaveButtons(CurrentImage As CurrentImage)
         If CurrentImage Is Nothing Then
             SetButtonStateSaveFile(False)
-            BtnExportDebug.Enabled = False
             MenuFileReload.Enabled = False
         Else
             Dim Modified = CurrentImage.ImageData.IsModified
             Dim Disabled = CurrentImage.ImageData.ReadOnly
             SetButtonStateSaveFile(Modified And Not Disabled)
             MenuFileReload.Enabled = True
-            'BtnExportDebug.Enabled = (CurrentImageData.Modified Or CurrentImageData.SessionModifications.Count > 0)
-            BtnExportDebug.Enabled = False
         End If
     End Sub
 
@@ -4190,10 +4189,6 @@ Public Class MainForm
         If CloseAll(_CurrentImage) Then
             Me.Close()
         End If
-    End Sub
-
-    Private Sub BtnExportDebug_Click(sender As Object, e As EventArgs) Handles BtnExportDebug.Click
-        ExportDebugScript(_CurrentImage)
     End Sub
 
     Private Sub BtnExportFile_Click(sender As Object, e As EventArgs) Handles MenuEditExportFile.Click, MenuFileExportFile.Click, ToolStripExportFile.Click
@@ -4841,6 +4836,10 @@ Public Class MainForm
 
         Debounce.Stop()
         Debounce.Start()
+    End Sub
+
+    Private Sub MenuReportsWriteSplices_Click(sender As Object, e As EventArgs) Handles MenuReportsWriteSplices.Click
+        DisplayReportWriteSplices(_CurrentImage)
     End Sub
 
 #End Region

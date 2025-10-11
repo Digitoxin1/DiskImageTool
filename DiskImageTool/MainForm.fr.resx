@@ -288,9 +288,6 @@
   <data name="FileClusterError.Text" xml:space="preserve">
     <value>Err</value>
   </data>
-  <data name="MainMenuExperimental.Text" xml:space="preserve">
-    <value>Expérimental</value>
-  </data>
   <data name="FileExt.Text" xml:space="preserve">
     <value>Ext</value>
   </data>
@@ -317,9 +314,6 @@
   </data>
   <data name="MenuHexFreeClusters.Text" xml:space="preserve">
     <value>&amp;Clusters libres contenant des données</value>
-  </data>
-  <data name="BtnExportDebug.Text" xml:space="preserve">
-    <value>Générer un correctif pour le disque physique</value>
   </data>
   <data name="MenuToolsTrackLayout.Text" xml:space="preserve">
     <value>Générer tracklayout.txt</value>
@@ -410,5 +404,8 @@
   </data>
   <data name="MenuEditImportFiles.Text" xml:space="preserve">
     <value>&amp;Importer des fichiers</value>
+  </data>
+  <data name="MainMenuReports.Text" xml:space="preserve">
+    <value>&amp;Rapports</value>
   </data>
 </root>

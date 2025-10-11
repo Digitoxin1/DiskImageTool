@@ -43,7 +43,6 @@ Partial Class MainForm
         Dim MenuEditSeparator1 As System.Windows.Forms.ToolStripSeparator
         Dim MenuEditSeparator2 As System.Windows.Forms.ToolStripSeparator
         Dim MainMenuView As System.Windows.Forms.ToolStripMenuItem
-        Dim MainMenuExperimental As System.Windows.Forms.ToolStripMenuItem
         Dim FileMenuSeparator1 As System.Windows.Forms.ToolStripSeparator
         Dim FileCRC32 As System.Windows.Forms.ColumnHeader
         Dim MainMenuTools As System.Windows.Forms.ToolStripMenuItem
@@ -93,7 +92,6 @@ Partial Class MainForm
         Me.MenuHexDisk = New System.Windows.Forms.ToolStripMenuItem()
         Me.MenuHexSeparatorFile = New System.Windows.Forms.ToolStripSeparator()
         Me.MenuHexFile = New System.Windows.Forms.ToolStripMenuItem()
-        Me.BtnExportDebug = New System.Windows.Forms.ToolStripMenuItem()
         Me.MenuToolsCompare = New System.Windows.Forms.ToolStripMenuItem()
         Me.MenuToolsWin9xClean = New System.Windows.Forms.ToolStripMenuItem()
         Me.MenuToolsClearReservedBytes = New System.Windows.Forms.ToolStripMenuItem()
@@ -118,6 +116,7 @@ Partial Class MainForm
         Me.MenuFiltersScanNew = New System.Windows.Forms.ToolStripMenuItem()
         Me.MenuFiltersScan = New System.Windows.Forms.ToolStripMenuItem()
         Me.MenuFiltersClear = New System.Windows.Forms.ToolStripMenuItem()
+        Me.MainMenuReports = New System.Windows.Forms.ToolStripMenuItem()
         Me.MainMenuOptions = New System.Windows.Forms.ToolStripMenuItem()
         Me.MenuOptionsCreateBackup = New System.Windows.Forms.ToolStripMenuItem()
         Me.MenuOptionsCheckUpdate = New System.Windows.Forms.ToolStripMenuItem()
@@ -191,6 +190,7 @@ Partial Class MainForm
         Me.LabelCRC32 = New System.Windows.Forms.Label()
         Me.LabelMD5 = New System.Windows.Forms.Label()
         Me.LabelSHA1 = New System.Windows.Forms.Label()
+        Me.MenuReportsWriteSplices = New System.Windows.Forms.ToolStripMenuItem()
         SummaryName = CType(New System.Windows.Forms.ColumnHeader(), System.Windows.Forms.ColumnHeader)
         SummaryValue = CType(New System.Windows.Forms.ColumnHeader(), System.Windows.Forms.ColumnHeader)
         HashName = CType(New System.Windows.Forms.ColumnHeader(), System.Windows.Forms.ColumnHeader)
@@ -210,7 +210,6 @@ Partial Class MainForm
         MenuEditSeparator1 = New System.Windows.Forms.ToolStripSeparator()
         MenuEditSeparator2 = New System.Windows.Forms.ToolStripSeparator()
         MainMenuView = New System.Windows.Forms.ToolStripMenuItem()
-        MainMenuExperimental = New System.Windows.Forms.ToolStripMenuItem()
         FileMenuSeparator1 = New System.Windows.Forms.ToolStripSeparator()
         FileCRC32 = CType(New System.Windows.Forms.ColumnHeader(), System.Windows.Forms.ColumnHeader)
         MainMenuTools = New System.Windows.Forms.ToolStripMenuItem()
@@ -492,17 +491,6 @@ Partial Class MainForm
         Me.MenuHexFile.Name = "MenuHexFile"
         resources.ApplyResources(Me.MenuHexFile, "MenuHexFile")
         '
-        'MainMenuExperimental
-        '
-        MainMenuExperimental.DropDownItems.AddRange(New System.Windows.Forms.ToolStripItem() {Me.BtnExportDebug})
-        MainMenuExperimental.Name = "MainMenuExperimental"
-        resources.ApplyResources(MainMenuExperimental, "MainMenuExperimental")
-        '
-        'BtnExportDebug
-        '
-        Me.BtnExportDebug.Name = "BtnExportDebug"
-        resources.ApplyResources(Me.BtnExportDebug, "BtnExportDebug")
-        '
         'FileMenuSeparator1
         '
         FileMenuSeparator1.Name = "FileMenuSeparator1"
@@ -697,7 +685,7 @@ Partial Class MainForm
         '
         'MenuStripTop
         '
-        MenuStripTop.Items.AddRange(New System.Windows.Forms.ToolStripItem() {MainMenuFile, MainMenuEdit, Me.MainMenuFilters, MainMenuView, MainMenuTools, MainMenuDisk, Me.MainMenuOptions, MainMenuHelp, MainMenuExperimental, Me.MainMenuUpdateAvailable})
+        MenuStripTop.Items.AddRange(New System.Windows.Forms.ToolStripItem() {MainMenuFile, MainMenuEdit, Me.MainMenuFilters, MainMenuView, MainMenuTools, MainMenuDisk, Me.MainMenuReports, Me.MainMenuOptions, MainMenuHelp, Me.MainMenuUpdateAvailable})
         resources.ApplyResources(MenuStripTop, "MenuStripTop")
         MenuStripTop.Name = "MenuStripTop"
         '
@@ -729,6 +717,12 @@ Partial Class MainForm
         '
         Me.MenuFiltersClear.Name = "MenuFiltersClear"
         resources.ApplyResources(Me.MenuFiltersClear, "MenuFiltersClear")
+        '
+        'MainMenuReports
+        '
+        Me.MainMenuReports.DropDownItems.AddRange(New System.Windows.Forms.ToolStripItem() {Me.MenuReportsWriteSplices})
+        Me.MainMenuReports.Name = "MainMenuReports"
+        resources.ApplyResources(Me.MainMenuReports, "MainMenuReports")
         '
         'MainMenuOptions
         '
@@ -1225,6 +1219,11 @@ Partial Class MainForm
         Me.LabelSHA1.Name = "LabelSHA1"
         Me.LabelSHA1.UseMnemonic = False
         '
+        'MenuReportsWriteSplices
+        '
+        Me.MenuReportsWriteSplices.Name = "MenuReportsWriteSplices"
+        resources.ApplyResources(Me.MenuReportsWriteSplices, "MenuReportsWriteSplices")
+        '
         'MainForm
         '
         resources.ApplyResources(Me, "$this")
@@ -1276,7 +1275,6 @@ Partial Class MainForm
     Friend WithEvents MenuFileClose As ToolStripMenuItem
     Friend WithEvents MenuFileCloseAll As ToolStripMenuItem
     Friend WithEvents MenuFiltersScanNew As ToolStripMenuItem
-    Friend WithEvents BtnExportDebug As ToolStripMenuItem
     Friend WithEvents ToolStripFileCount As ToolStripStatusLabel
     Friend WithEvents MenuEditFileProperties As ToolStripMenuItem
     Friend WithEvents ContextMenuFiles As ContextMenuStrip
@@ -1383,4 +1381,6 @@ Partial Class MainForm
     Friend WithEvents ToolStripImportFiles As ToolStripButton
     Friend WithEvents MenuEditImportFiles As ToolStripMenuItem
     Friend WithEvents ToolStripSeparator1 As ToolStripSeparator
+    Friend WithEvents MainMenuReports As ToolStripMenuItem
+    Friend WithEvents MenuReportsWriteSplices As ToolStripMenuItem
 End Class

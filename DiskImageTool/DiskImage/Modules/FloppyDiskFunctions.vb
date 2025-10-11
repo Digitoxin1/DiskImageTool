@@ -66,6 +66,38 @@ Namespace DiskImage
             Return BuildBPB(GetFloppyDiskParams(GetFloppyDiskFomat(MediaDescriptor)))
         End Function
 
+        Public Function GetDirectoryEntryFromCluster(Disk As Disk, Cluster As Integer) As DirectoryEntry
+            If Disk.IsValidImage Then
+                If Disk.RootDirectory.FATAllocation.FileAllocation.ContainsKey(Cluster) Then
+                    Dim OffsetList = Disk.RootDirectory.FATAllocation.FileAllocation.Item(Cluster)
+                    Return OffsetList.Item(0)
+                End If
+            End If
+
+            Return Nothing
+        End Function
+
+        Public Function GetFATIndex(Disk As Disk, Sector As UInteger) As Integer
+            Dim NumberOfFATs As Byte
+
+            If IsDiskFormatXDF(Disk.DiskFormat) Then
+                NumberOfFATs = 1
+            Else
+                NumberOfFATs = Disk.BPB.NumberOfFATs
+            End If
+
+            For Index As Byte = 0 To NumberOfFATs - 1
+                Dim Length As UInteger = Disk.BPB.SectorsPerFAT
+                Dim Start As UInteger = Disk.BPB.FATRegionStart + Length * Index
+
+                If Sector >= Start And Sector < Start + Length Then
+                    Return Index
+                End If
+            Next
+
+            Return 0
+        End Function
+
         Public Function GetFloppyDiskMediaDescriptor(Size As Integer) As Byte
             Return GetFloppyDiskMediaDescriptor(GetFloppyDiskFormat(Size))
         End Function
@@ -596,6 +628,43 @@ Namespace DiskImage
             Return GetFloppyDiskFormatName(GetFloppyDiskFomat(MediaDescriptor), Extended)
         End Function
 
+        Public Function GetFloppyDiskRegionName(Disk As Disk, Sector As UInteger, Cluster As UShort) As String
+            If Sector = 0 Then
+                Return My.Resources.Label_BootSector
+            ElseIf Disk.IsValidImage Then
+                If Disk.RootDirectory.SectorChain.Contains(Sector) Then
+                    Return My.Resources.HexView_RootDirectory
+                ElseIf IsFATArea(Disk, Sector) Then
+                    Dim FATIndex = GetFATIndex(Disk, Sector)
+                    Return My.Resources.SummaryPanel_FAT & " " & (FATIndex + 1).ToString
+                ElseIf Cluster > 1 Then
+                    Return My.Resources.DataInspector_Label_DataArea
+                End If
+            End If
+
+            Return ""
+        End Function
+
+        Public Function IsClusterEmpty(FloppyImage As IFloppyImage, BPB As BiosParameterBlock, Cluster As UShort) As Boolean
+            Dim Offset = BPB.ClusterToOffset(Cluster)
+            Dim ClusterSize As UInteger = BPB.BytesPerCluster()
+
+            Dim Data = FloppyImage.GetBytes(Offset, ClusterSize)
+            Dim EmptyByte As Byte = Data(0)
+            If Not Disk.FreeClusterBytes.Contains(EmptyByte) Then
+                Return False
+            Else
+                For Each B In Data
+                    If B <> EmptyByte Then
+                        Return False
+                        Exit For
+                    End If
+                Next
+            End If
+
+            Return True
+        End Function
+
         Public Function IsDiskFormatXDF(DiskFormat As FloppyDiskFormat) As Boolean
             Return (DiskFormat = FloppyDiskFormat.FloppyXDF525 Or DiskFormat = FloppyDiskFormat.FloppyXDF35)
         End Function
@@ -612,6 +681,22 @@ Namespace DiskImage
             End If
 
             Return True
+        End Function
+
+        Public Function IsFATArea(Disk As Disk, Sector As UInteger) As Boolean
+            Dim NumberOfFATs As Byte
+
+            If IsDiskFormatXDF(Disk.DiskFormat) Then
+                NumberOfFATs = 1
+            Else
+                NumberOfFATs = Disk.BPB.NumberOfFATs
+            End If
+
+            Dim Length As UInteger = Disk.BPB.SectorsPerFAT * NumberOfFATs
+            Dim Start As UInteger = Disk.BPB.FATRegionStart
+
+
+            Return Sector >= Start And Sector < Start + Length
         End Function
 
         Public Structure FloppyDiskParams
