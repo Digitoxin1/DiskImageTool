@@ -408,4 +408,7 @@
   <data name="MainMenuReports.Text" xml:space="preserve">
     <value>&amp;Informes</value>
   </data>
+  <data name="MenuReportsWriteSplices.Text" xml:space="preserve">
+    <value>Empalmes de escritura</value>
+  </data>
 </root>

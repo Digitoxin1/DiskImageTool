@@ -2630,9 +2630,9 @@ Public Class MainForm
 
             MainMenuOptions.DropDownItems.Add(Item)
 
-            MainMenuReports.Visible = True
+            'MainMenuReports.Visible = True
         Else
-            MainMenuReports.Visible = False
+            'MainMenuReports.Visible = False
         End If
     End Sub
 

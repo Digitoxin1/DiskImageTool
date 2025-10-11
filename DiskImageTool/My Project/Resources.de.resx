@@ -1469,4 +1469,7 @@ Hinweis: Diese ID wird normalerweise erzeugt, indem das aktuelle Datum und die a
   <data name="SummaryPanel_Comments" xml:space="preserve">
     <value>Kommentare</value>
   </data>
+  <data name="Label_WriteSplices" xml:space="preserve">
+    <value>Schreibübergänge</value>
+  </data>
 </root>

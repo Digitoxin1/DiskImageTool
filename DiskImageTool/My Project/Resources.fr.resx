@@ -1469,4 +1469,7 @@ Remarque : cette valeur doit être {1} pour toutes les disquettes</value>
   <data name="SummaryPanel_Comments" xml:space="preserve">
     <value>Commentaires</value>
   </data>
+  <data name="Label_WriteSplices" xml:space="preserve">
+    <value>Coupures d’écriture</value>
+  </data>
 </root>

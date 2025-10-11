@@ -8,7 +8,7 @@ Module Reports
     Public Sub DisplayReportWriteSplices(CurrentImage As CurrentImage)
         Dim TrackLength As Integer = 6
         Dim SideLength As Integer = 6
-        Dim SectorIdLength As Integer = 12
+        Dim SectorIdLength As Integer = 14
         Dim RegionLength As Integer = 14
         Dim FileLength As Integer = 12
         Dim Rows As New List(Of String)
@@ -46,6 +46,8 @@ Module Reports
                                         Region = My.Resources.DataInspector_Label_DataArea
                                     End If
 
+                                    RegionLength = Math.Max(RegionLength, Region.Length)
+
                                     If Cluster > 1 Then
                                         DirectoryEntry = GetDirectoryEntryFromCluster(CurrentImage.Disk, Cluster)
                                         IsDataArea = True
@@ -70,7 +72,7 @@ Module Reports
                                 Else
                                     If IsDataArea And Not IsEmpty Then
                                         HasFile = True
-                                        WriteSpliceSector.FileName = "(Deleted)"
+                                        WriteSpliceSector.FileName = InParens(My.Resources.Label_Deleted)
                                         WriteSpliceSector.DeletedData = True
                                     End If
                                 End If
@@ -87,17 +89,23 @@ Module Reports
                 RowLength += V_SEPARATOR.Length + FileLength
             End If
 
-            Rows.Add("Modifications")
+            Rows.Add(CurrentImage.ImageData.FileName)
+            Rows.Add("")
+            If My.Settings.Debug Then
+                Rows.Add("Modifications")
+            Else
+                Rows.Add(My.Resources.Label_WriteSplices)
+            End If
             Rows.Add(StrDup(RowLength, H_SEPARATOR))
 
             Dim ContentRow As New List(Of String) From {
-                "Track".PadRight(TrackLength),
-                "Side".PadRight(SideLength),
-                "Sector Id".PadRight(SectorIdLength),
-                "Region".PadRight(RegionLength)
+                My.Resources.Label_Track.PadRight(TrackLength),
+                My.Resources.Label_Side.PadRight(SideLength),
+                My.Resources.Label_SectorId.PadRight(SectorIdLength),
+                My.Resources.DataInspector_Label_Region.PadRight(RegionLength)
             }
             If HasFile Then
-                ContentRow.Add("File".PadRight(FileLength))
+                ContentRow.Add(My.Resources.Label_File.PadRight(FileLength))
             End If
 
             Rows.Add(GetRowString(ContentRow))
@@ -142,11 +150,11 @@ Module Reports
                 SectorIdString = CompressIntegerList(SectorIdList)
 
                 ContentRow = New List(Of String) From {
-                    LastWriteSpliceSector.Track.ToString.PadRight(TrackLength),
-                    LastWriteSpliceSector.Side.ToString.PadRight(SideLength),
-                    SectorIdString.PadRight(SectorIdLength),
-                    LastWriteSpliceSector.Region.PadRight(RegionLength)
-                }
+                        LastWriteSpliceSector.Track.ToString.PadRight(TrackLength),
+                        LastWriteSpliceSector.Side.ToString.PadRight(SideLength),
+                        SectorIdString.PadRight(SectorIdLength),
+                        LastWriteSpliceSector.Region.PadRight(RegionLength)
+                    }
                 If HasFile Then
                     ContentRow.Add(LastWriteSpliceSector.FileName.PadRight(FileLength))
                 End If
@@ -154,14 +162,16 @@ Module Reports
                 Rows.Add(GetRowString(ContentRow))
             End If
 
-            Rows.Add("")
-            Rows.Add("Details")
-            Rows.Add(StrDup(7, H_SEPARATOR))
+            If My.Settings.Debug Then
+                Rows.Add("")
+                Rows.Add("Details")
+                Rows.Add(StrDup(7, H_SEPARATOR))
+            End If
         End If
 
         Dim Content = String.Join(vbCrLf, Rows) & If(Rows.Count > 0, vbCrLf, String.Empty)
 
-        Dim frmTextView = New TextViewForm("Write Splices", Content, True, True)
+        Dim frmTextView = New TextViewForm(My.Resources.Label_WriteSplices & " - " & CurrentImage.ImageData.FileName, Content, True, True)
         frmTextView.ShowDialog()
     End Sub
 

@@ -3432,6 +3432,15 @@ Namespace My.Resources
         End Property
         
         '''<summary>
+        '''  Looks up a localized string similar to Write Splices.
+        '''</summary>
+        Friend ReadOnly Property Label_WriteSplices() As String
+            Get
+                Return ResourceManager.GetString("Label_WriteSplices", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
         '''  Looks up a localized string similar to Writing.
         '''</summary>
         Friend ReadOnly Property Label_Writing() As String
