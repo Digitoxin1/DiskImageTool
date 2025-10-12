@@ -48,10 +48,12 @@ Module Reports
 
                                     RegionLength = Math.Max(RegionLength, Region.Length)
 
-                                    If Cluster > 1 Then
-                                        DirectoryEntry = GetDirectoryEntryFromCluster(CurrentImage.Disk, Cluster)
-                                        IsDataArea = True
-                                        IsEmpty = IsClusterEmpty(CurrentImage.Disk.Image, BPB, Cluster)
+                                    If RegionSector.SectorId >= 1 And RegionSector.SectorId <= BPB.SectorsPerTrack Then
+                                        If Cluster > 1 Then
+                                            DirectoryEntry = GetDirectoryEntryFromCluster(CurrentImage.Disk, Cluster)
+                                            IsDataArea = True
+                                            IsEmpty = IsClusterEmpty(CurrentImage.Disk.Image, BPB, Cluster)
+                                        End If
                                     End If
                                 End If
 
