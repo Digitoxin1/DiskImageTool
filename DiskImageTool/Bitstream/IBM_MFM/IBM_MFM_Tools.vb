@@ -1,4 +1,6 @@
-﻿Namespace Bitstream
+﻿Imports System.ComponentModel.Design
+
+Namespace Bitstream
     Namespace IBM_MFM
         Public Enum MFMRegionType
             Gap1
@@ -296,6 +298,7 @@
                     PrevBitOffset = BitOffset
                     ByteIndex = Index \ MFM_BYTE_SIZE
                     BitOffset = Index Mod MFM_BYTE_SIZE
+
                     If BitOffset > 0 Then
                         RegionData.Aligned = False
                     End If
@@ -402,8 +405,16 @@
                         PrevBitOffset = BitOffset
                         ByteIndex = DataIndex \ MFM_BYTE_SIZE
                         BitOffset = DataIndex Mod MFM_BYTE_SIZE
+
                         If BitOffset > 0 Then
                             RegionData.Aligned = False
+                        End If
+
+                        'Write splice occurs after ID field but before data field
+                        'This is the write splice we look for to determine if the sector data has been written by a PC as opposed to a track level duplicator
+                        'Bit offsets are different because of missing or extra bits in the bitstream before the DAM which signifies a write splice
+                        If PrevBitOffset <> BitOffset Then
+                            RegionSector.WriteSplice = True
                         End If
 
                         If DataIndex >= BitstreamIndex + MFM_BYTE_SIZE Then
@@ -480,12 +491,13 @@
                             ByteIndex += MFM_CRC_SIZE
                             BitstreamIndex += MFM_CRC_SIZE * MFM_BYTE_SIZE
 
-                            If TrackType = BitstreamTrackType.MFM Then
-                                Buffer = MFMGetBytes(Bitstream, BitstreamIndex, 3)
-                                If Buffer(0) <> &H4E Or Buffer(1) <> &H4E Or Buffer(2) <> &H4E Then
-                                    RegionSector.WriteSplice = True
-                                End If
-                            End If
+                            'Old unreliable method of detecting write splice
+                            'If TrackType = BitstreamTrackType.MFM Then
+                            '    Buffer = MFMGetBytes(Bitstream, BitstreamIndex, 3)
+                            '    If Buffer(0) <> &H4E Or Buffer(1) <> &H4E Or Buffer(2) <> &H4E Then
+                            '        RegionSector.WriteSplice = True
+                            '    End If
+                            'End If
                         End If
 
                         RegionSector.HasData = True
