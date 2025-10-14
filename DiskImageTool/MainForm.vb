@@ -472,7 +472,7 @@ Public Class MainForm
             Content = Encoding.UTF7.GetString(Stream.GetBuffer)
         End Using
 
-        Dim frmTextView = New TextViewForm(Caption, Content, False, False)
+        Dim frmTextView = New TextViewForm(Caption, Content, False, True, DirectoryEntry.GetFullFileName)
         frmTextView.ShowDialog()
     End Sub
 
@@ -1009,7 +1009,7 @@ Public Class MainForm
 
         Dim Content = ImageCompare.CompareImages(ImageData1, ImageData2)
 
-        Dim frmTextView = New TextViewForm(My.Resources.Caption_ImageComparison, Content, False, False)
+        Dim frmTextView = New TextViewForm(My.Resources.Caption_ImageComparison, Content, False, True)
         frmTextView.ShowDialog()
     End Sub
 
@@ -1256,7 +1256,7 @@ Public Class MainForm
             Exit Sub
         End Try
 
-        Dim frmTextView = New TextViewForm(My.Resources.Caption_ChangeLog, ChangeLogString, False, False)
+        Dim frmTextView = New TextViewForm(My.Resources.Caption_ChangeLog, ChangeLogString, False, True, "ChangeLog.txt")
         frmTextView.ShowDialog()
     End Sub
 

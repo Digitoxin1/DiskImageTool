@@ -39,16 +39,16 @@ Module Reports
                                 Dim IsEmpty As Boolean = False
 
                                 If BPB.IsValid Then
-                                    Dim Sector = BPB.TrackToSector(MappedTrack, Side) + RegionSector.SectorIndex
-                                    Dim Cluster = BPB.SectorToCluster(Sector)
-                                    Region = GetFloppyDiskRegionName(CurrentImage.Disk, Sector, Cluster)
-                                    If Region.Length = 0 Then
-                                        Region = My.Resources.DataInspector_Label_DataArea
-                                    End If
-
-                                    RegionLength = Math.Max(RegionLength, Region.Length)
-
                                     If RegionSector.SectorId >= 1 And RegionSector.SectorId <= BPB.SectorsPerTrack Then
+                                        Dim Sector = BPB.TrackToSector(MappedTrack, Side) + (CInt(RegionSector.SectorId) - 1)
+                                        Dim Cluster = BPB.SectorToCluster(Sector)
+                                        Region = GetFloppyDiskRegionName(CurrentImage.Disk, Sector, Cluster)
+                                        If Region.Length = 0 Then
+                                            Region = My.Resources.DataInspector_Label_DataArea
+                                        End If
+
+                                        RegionLength = Math.Max(RegionLength, Region.Length)
+
                                         If Cluster > 1 Then
                                             DirectoryEntry = GetDirectoryEntryFromCluster(CurrentImage.Disk, Cluster)
                                             IsDataArea = True
@@ -173,7 +173,7 @@ Module Reports
 
         Dim Content = String.Join(vbCrLf, Rows) & If(Rows.Count > 0, vbCrLf, String.Empty)
 
-        Dim frmTextView = New TextViewForm(My.Resources.Label_WriteSplices & " - " & CurrentImage.ImageData.FileName, Content, True, True)
+        Dim frmTextView = New TextViewForm(My.Resources.Label_WriteSplices & " - " & CurrentImage.ImageData.FileName, Content, True, True, "WriteSplices.txt")
         frmTextView.ShowDialog()
     End Sub
 

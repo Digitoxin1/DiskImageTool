@@ -27,10 +27,17 @@
     End Sub
 
     Private Sub BtnSave_Click(sender As Object, e As EventArgs) Handles BtnSave.Click
+        Dim Extension = IO.Path.GetExtension(m_SaveFileName).ToLower
+        Dim FilterIndex As Integer = 1
+        If Extension <> ".txt" Then
+            FilterIndex = 2
+        End If
+
         Dim Dialog = New SaveFileDialog With {
            .FileName = m_SaveFileName,
            .DefaultExt = "txt",
-           .Filter = My.Resources.FileType_Text & " (*.txt)|*.txt|" & My.Resources.FileType_All & " (*.*)|*.*"
+           .Filter = My.Resources.FileType_Text & " (*.txt)|*.txt|" & My.Resources.FileType_All & " (*.*)|*.*",
+           .FilterIndex = FilterIndex
         }
 
         If Dialog.ShowDialog = DialogResult.OK Then
