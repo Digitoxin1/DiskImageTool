@@ -35,7 +35,7 @@
                 _DataRate = 0
                 If Gap4A > 0 Then
                     AddGap(Gap4A)
-                    AddSync(MFM_SYNC_NULL_SIZE)
+                    AddSync(MFM_SYNC_NULL_BYTES)
                     AddIAM()
                     AddAddressMarkIndex()
                 End If
@@ -69,7 +69,7 @@
             End Property
 
             Public Sub AddData(Data() As Byte, Gap3 As UInteger)
-                AddSync(MFM_SYNC_NULL_SIZE)
+                AddSync(MFM_SYNC_NULL_BYTES)
                 Dim Start = _Bitstream.Length
                 AddMFM(MFMAddressMark.Data)
                 AppendBytes(Data)
@@ -80,8 +80,8 @@
                 End If
             End Sub
 
-            Public Sub AddSectorId(Cylinder As Byte, Head As Byte, SectorId As Byte, Size As MFMSectorSize)
-                AddSync(MFM_SYNC_NULL_SIZE)
+            Public Sub AddSectorId(Cylinder As Byte, Head As Byte, SectorId As Byte, Size As MFMSectorSize, Gap2 As UInteger)
+                AddSync(MFM_SYNC_NULL_BYTES)
                 Dim Start = _Bitstream.Length
                 AddMFM(MFMAddressMark.ID)
                 AddAddressMarkIndex()
@@ -91,7 +91,7 @@
                 AppendByte(Size)
                 Dim Checksum = CalculateChecksum(Start, _Bitstream.Length - Start)
                 AppendBytes(BitConverter.GetBytes(Checksum))
-                AddGap(MFM_GAP2_SIZE)
+                AddGap(Gap2)
             End Sub
 
             Public Function CalculateChecksum(Start As UInteger, Length As UInteger) As UShort
@@ -127,13 +127,13 @@
             End Sub
 
             Private Sub AddIAM()
-                Dim Newbits = BytesToBits(MFM_IAM_Sync_Bytes)
+                Dim Newbits = BytesToBits(MFM_IAM_SYNC_PATTERN_BYTES)
                 AppendBits(Newbits)
                 AppendByte(MFMAddressMark.Index)
             End Sub
 
             Private Sub AddMFM(AddressMArk As MFMAddressMark)
-                Dim Newbits = BytesToBits(MFM_Sync_Bytes)
+                Dim Newbits = BytesToBits(MFM_SYNC_PATTERN_BYTES)
                 AppendBits(Newbits)
                 AppendByte(AddressMArk)
             End Sub

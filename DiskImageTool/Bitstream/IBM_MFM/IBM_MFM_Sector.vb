@@ -152,12 +152,12 @@
 
             Public Function GetDataBitstream(SeedBit As Boolean) As BitArray
                 Dim DataSize = GetSizeBytes()
-                Dim Buffer(DataSize + MFM_CRC_SIZE - 1) As Byte
+                Dim Buffer(DataSize + MFM_CRC_BYTES - 1) As Byte
 
                 Dim Offset As UInteger = 0
                 Array.Copy(_Data, 0, Buffer, Offset, DataSize)
                 Offset += DataSize
-                Array.Copy(BitConverter.GetBytes(_DataChecksum), 0, Buffer, Offset, MFM_CRC_SIZE)
+                Array.Copy(BitConverter.GetBytes(_DataChecksum), 0, Buffer, Offset, MFM_CRC_BYTES)
 
                 Return MFMEncodeBytes(Buffer, SeedBit)
             End Function
@@ -196,7 +196,7 @@
             End Sub
 
             Private Function GetChecksum(Bitstream As BitArray, Start As Integer) As UShort
-                Dim Checksum = MFMGetBytes(Bitstream, Start, MFM_CRC_SIZE)
+                Dim Checksum = MFMGetBytes(Bitstream, Start, MFM_CRC_BYTES)
 
                 Return BitConverter.ToUInt16(Checksum, 0)
             End Function
@@ -209,30 +209,30 @@
                 End If
             End Function
             Private Function ProcessDataField(BitStream As BitArray, Start As UInteger) As Integer
-                Dim MFMPattern = BytesToBits(MFM_Sync_Bytes)
+                Dim MFMPattern = BytesToBits(MFM_SYNC_PATTERN_BYTES)
 
                 _DAMFound = False
                 Dim DataFieldSyncIndex = FindPattern(BitStream, MFMPattern, Start)
                 If DataFieldSyncIndex > -1 Then
-                    Dim DAM As MFMAddressMark = MFMGetByte(BitStream, DataFieldSyncIndex + MFMBytesToBits(MFM_SYNC_SIZE))
+                    Dim DAM As MFMAddressMark = MFMGetByte(BitStream, DataFieldSyncIndex + MFMBytesToBits(MFM_SYNC_BYTES))
                     If DAM = MFMAddressMark.Data Or DAM = MFMAddressMark.DeletedData Then
                         _DAMFound = True
                     End If
                 End If
 
                 If _DAMFound Then
-                    _DataFieldSync = MFMGetBytes(BitStream, DataFieldSyncIndex, MFM_SYNC_MARK_SIZE)
+                    _DataFieldSync = MFMGetBytes(BitStream, DataFieldSyncIndex, MFM_SYNC_MARK_BYTES)
                     Dim Size = GetSizeBytes()
-                    _Gap2 = MFMGetBytesByRange(BitStream, Start, DataFieldSyncIndex - MFM_SYNC_NULL_SIZE_BITS)
-                    _DataOffset = DataFieldSyncIndex + MFMPattern.Length + MFM_BYTE_SIZE
+                    _Gap2 = MFMGetBytesByRange(BitStream, Start, DataFieldSyncIndex - MFM_SYNC_NULL_BITS)
+                    _DataOffset = DataFieldSyncIndex + MFMPattern.Length + MFM_BYTE_BYTES
                     _Data = MFMGetBytes(BitStream, _DataOffset, Size)
                     Start = _DataOffset + MFMBytesToBits(Size)
                     Start = Start Mod BitStream.Length
                     _DataChecksum = GetChecksum(BitStream, Start)
                     _InitialDataChecksum = _DataChecksum
-                    Start += MFMBytesToBits(MFM_CRC_SIZE)
+                    Start += MFMBytesToBits(MFM_CRC_BYTES)
                 Else
-                    _DataFieldSync = New Byte(MFM_SYNC_MARK_SIZE - 1) {}
+                    _DataFieldSync = New Byte(MFM_SYNC_MARK_BYTES - 1) {}
                     _Gap2 = New Byte(-1) {}
                     _DataOffset = 0
                     _Data = New Byte(-1) {}
@@ -243,13 +243,13 @@
             End Function
 
             Private Sub ProcessGap3(Bitstream As BitArray, Offset As UInteger)
-                Dim IDAMPattern = BytesToBits(MFM_IDAM_Sync_Bytes)
+                Dim IDAMPattern = BytesToBits(MFM_IDAM_SYNC_PATTERN_BYTES)
 
                 Dim IDAMFieldSyncIndex = FindPattern(Bitstream, IDAMPattern, Offset)
                 If IDAMFieldSyncIndex = -1 Then
                     IDAMFieldSyncIndex = Bitstream.Length
                 Else
-                    IDAMFieldSyncIndex -= MFM_SYNC_NULL_SIZE_BITS
+                    IDAMFieldSyncIndex -= MFM_SYNC_NULL_BITS
                 End If
 
                 _Gap3 = MFMGetBytesByRange(Bitstream, Offset, IDAMFieldSyncIndex)

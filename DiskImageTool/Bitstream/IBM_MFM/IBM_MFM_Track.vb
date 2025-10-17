@@ -105,18 +105,18 @@
 
                 Start = ProcessIndexField(Bitstream, Start)
 
-                Dim IDAMPattern = BytesToBits(MFM_IDAM_Sync_Bytes)
+                Dim IDAMPattern = BytesToBits(MFM_IDAM_SYNC_PATTERN_BYTES)
                 Dim SectorList = MFMGetSectorList(Bitstream, IDAMPattern)
 
                 If SectorList.Count > 0 Then
                     Dim IDFieldSyncIndex = SectorList.Item(0)
                     Dim Offset As UInteger
                     If Start = 0 Then
-                        Offset = IDFieldSyncIndex Mod MFM_BYTE_SIZE
+                        Offset = IDFieldSyncIndex Mod MFM_BYTE_BYTES
                     Else
                         Offset = 0
                     End If
-                    _Gap1 = MFMGetBytesByRange(Bitstream, Start + Offset, IDFieldSyncIndex - MFM_SYNC_NULL_SIZE_BITS)
+                    _Gap1 = MFMGetBytesByRange(Bitstream, Start + Offset, IDFieldSyncIndex - MFM_SYNC_NULL_BITS)
 
                     ProcessSectorList(Bitstream, SectorList)
                 Else
@@ -125,15 +125,15 @@
             End Sub
 
             Private Function ProcessIndexField(BitStream As BitArray, Start As UInteger) As UInteger
-                Dim IAMPattern = BytesToBits(MFM_IAM_Sync_Bytes)
+                Dim IAMPattern = BytesToBits(MFM_IAM_SYNC_PATTERN_BYTES)
 
                 Dim IndexFieldSyncIndex = FindPattern(BitStream, IAMPattern, Start)
                 If IndexFieldSyncIndex > -1 Then
-                    Dim Offset = IndexFieldSyncIndex Mod MFM_BYTE_SIZE
-                    _Gap4A = MFMGetBytesByRange(BitStream, Start + Offset, IndexFieldSyncIndex - MFM_SYNC_NULL_SIZE_BITS)
+                    Dim Offset = IndexFieldSyncIndex Mod MFM_BYTE_BYTES
+                    _Gap4A = MFMGetBytesByRange(BitStream, Start + Offset, IndexFieldSyncIndex - MFM_SYNC_NULL_BITS)
                     Start = IndexFieldSyncIndex + IAMPattern.Length
                     _IAM = MFMGetByte(BitStream, Start)
-                    Start += MFM_BYTE_SIZE
+                    Start += MFM_BYTE_BYTES
                     AddAddressMarkIndex(Start)
                 Else
                     _Gap4A = New Byte(-1) {}
@@ -151,7 +151,7 @@
                 Dim SectorIds As New HashSet(Of Byte)
 
                 For Each SectorOffset In SectorList
-                    Dim Start = SectorOffset + MFM_IDAM_Sync_Bytes.Length * 8
+                    Dim Start = SectorOffset + MFM_IDAM_SYNC_PATTERN_BYTES.Length * 8
                     AddAddressMarkIndex(Start)
 
                     Dim Sector = New IBM_MFM_Sector(BitStream, SectorOffset)

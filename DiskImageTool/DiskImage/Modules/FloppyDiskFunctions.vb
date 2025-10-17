@@ -141,6 +141,51 @@ Namespace DiskImage
             End Select
         End Function
 
+        Public Function GetFloppyDiskGaps(DiskFormat As FloppyDiskFormat) As FloppyDiskGaps
+            Dim Gaps As FloppyDiskGaps
+
+            Select Case DiskFormat
+                Case FloppyDiskFormat.Floppy160, FloppyDiskFormat.Floppy180, FloppyDiskFormat.Floppy320, FloppyDiskFormat.Floppy360, FloppyDiskFormat.Floppy720
+                    Gaps.Gap4A = 80
+                    Gaps.Gap1 = 50
+                    Gaps.Gap2 = 22
+                    Gaps.Gap3 = 80
+                Case FloppyDiskFormat.Floppy1200
+                    Gaps.Gap4A = 80
+                    Gaps.Gap1 = 50
+                    Gaps.Gap2 = 22
+                    Gaps.Gap3 = 84
+                Case FloppyDiskFormat.Floppy1440
+                    Gaps.Gap4A = 80
+                    Gaps.Gap1 = 50
+                    Gaps.Gap2 = 22
+                    Gaps.Gap3 = 108
+                Case FloppyDiskFormat.Floppy2880
+                    Gaps.Gap4A = 80
+                    Gaps.Gap1 = 50
+                    Gaps.Gap2 = 41
+                    Gaps.Gap3 = 84
+                Case FloppyDiskFormat.FloppyProCopy
+                    Gaps.Gap4A = 80
+                    Gaps.Gap1 = 50
+                    Gaps.Gap2 = 22
+                    Gaps.Gap3 = 100
+                Case FloppyDiskFormat.FloppyDMF1024, FloppyDiskFormat.FloppyDMF2048
+                    Gaps.Gap4A = 0
+                    Gaps.Gap1 = 108
+                    Gaps.Gap2 = 22
+                    Gaps.Gap3 = 8
+                Case Else
+                    Gaps.Gap4A = 80
+                    Gaps.Gap1 = 50
+                    Gaps.Gap2 = 22
+                    Gaps.Gap3 = 80
+            End Select
+
+            Return Gaps
+        End Function
+
+
         Public Function GetFloppyDiskParams(DiskFormat As FloppyDiskFormat) As FloppyDiskParams
             Dim Params As FloppyDiskParams
 
@@ -698,6 +743,13 @@ Namespace DiskImage
 
             Return Sector >= Start And Sector < Start + Length
         End Function
+
+        Public Structure FloppyDiskGaps
+            Dim Gap4A As UInteger
+            Dim Gap1 As UInteger
+            Dim Gap2 As UInteger
+            Dim Gap3 As UInteger
+        End Structure
 
         Public Structure FloppyDiskParams
             Dim BytesPerSector As UShort
