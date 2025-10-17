@@ -35,7 +35,7 @@
                 _DataRate = 0
                 If Gap4A > 0 Then
                     AddGap(Gap4A)
-                    AddSync(MFM_SYNC_SIZE)
+                    AddSync(MFM_SYNC_NULL_SIZE)
                     AddIAM()
                     AddAddressMarkIndex()
                 End If
@@ -69,7 +69,7 @@
             End Property
 
             Public Sub AddData(Data() As Byte, Gap3 As UInteger)
-                AddSync(MFM_SYNC_SIZE)
+                AddSync(MFM_SYNC_NULL_SIZE)
                 Dim Start = _Bitstream.Length
                 AddMFM(MFMAddressMark.Data)
                 AppendBytes(Data)
@@ -81,7 +81,7 @@
             End Sub
 
             Public Sub AddSectorId(Cylinder As Byte, Head As Byte, SectorId As Byte, Size As MFMSectorSize)
-                AddSync(MFM_SYNC_SIZE)
+                AddSync(MFM_SYNC_NULL_SIZE)
                 Dim Start = _Bitstream.Length
                 AddMFM(MFMAddressMark.ID)
                 AddAddressMarkIndex()

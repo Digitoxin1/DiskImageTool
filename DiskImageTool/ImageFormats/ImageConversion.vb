@@ -170,9 +170,9 @@ Namespace ImageFormats
 
             For Track As UShort = 0 To TrackCount - 1
                 For Side = 0 To Params.NumberOfHeads - 1
-                    Dim TrackOffset As UInteger = MFM_GAP4A_SIZE + MFM_SYNC_SIZE + MFM_ADDRESS_MARK_SIZE + MFM_GAP1_SIZE
+                    Dim TrackOffset As UInteger = MFM_GAP4A_SIZE + MFM_PREAMBLE_SIZE + MFM_GAP1_SIZE
                     For SectorId = 1 To Params.SectorsPerTrack
-                        TrackOffset += MFM_SYNC_SIZE + MFM_ADDRESS_MARK_SIZE
+                        TrackOffset += MFM_PREAMBLE_SIZE
                         Dim ImageOffset = GetImageOffset(Params, Track, Side, SectorId)
                         Dim Size = Math.Min(Params.BytesPerSector, Data.Length - ImageOffset)
                         Dim Buffer = New Byte(Size - 1) {}
@@ -188,7 +188,7 @@ Namespace ImageFormats
                                 .Offset = TrackOffset * 8
                             }
 
-                        TrackOffset += MFM_IDAM_SIZE + MFM_GAP2_SIZE + MFM_SYNC_SIZE + MFM_ADDRESS_MARK_SIZE + Size + 2 + MFM_GAP3_SIZE
+                        TrackOffset += MFM_IDAREA_SIZE + MFM_CRC_SIZE + MFM_GAP2_SIZE + MFM_PREAMBLE_SIZE + Size + MFM_CRC_SIZE + MFM_GAP3_SIZE
 
                         PSI.Sectors.Add(PSISector)
                     Next

@@ -32,7 +32,7 @@ Public Class HexViewRawForm
     Private _LabelGap1 As ToolStripLabel
     Private _labelEncoding As ToolStripLabel
     Private _LastSearch As HexSearch
-    Private _RegionData As RegionData
+    Private _RegionData As BitstreamRegionData
     Private _RegionMap() As BitstreamRegion
     Private _SectorLabels As List(Of Label)
     Private _SectorsPerTrack As UShort
@@ -610,7 +610,7 @@ Public Class HexViewRawForm
         _IgnoreEvent = False
     End Sub
 
-    Private Sub LoadData(Data() As Byte, RegionData As RegionData, KeepGridLocation As Boolean)
+    Private Sub LoadData(Data() As Byte, RegionData As BitstreamRegionData, KeepGridLocation As Boolean)
         _Initialized = False
         _Data = Data
         _RegionData = RegionData
@@ -664,7 +664,7 @@ Public Class HexViewRawForm
         Dim MFMTrack = _FloppyImage.BitstreamImage.GetTrack(TrackData.Track * _FloppyImage.BitstreamImage.TrackStep, TrackData.Side)
 
         Dim Data() As Byte
-        Dim RegionData As RegionData
+        Dim RegionData As BitstreamRegionData
         _TrackType = MFMTrack.TrackType
         If MFMTrack.TrackType = BitstreamTrackType.MFM Or MFMTrack.TrackType = BitstreamTrackType.FM Then
             If TrackData.Offset = -1 Then
@@ -700,11 +700,10 @@ Public Class HexViewRawForm
             End If
         Else
             Data = BitsToBytes(MFMTrack.Bitstream, 0)
-            RegionData.NumBits = MFMTrack.Bitstream.Length
-            RegionData.Regions = New List(Of BitstreamRegion)
-            RegionData.Sectors = New List(Of BitstreamRegionSector)
-            RegionData.Aligned = False
-            RegionData.Encoding = ""
+            RegionData = New BitstreamRegionData With {
+                .NumBits = MFMTrack.Bitstream.Length,
+                .Aligned = False
+            }
 
             _Bitstream = Nothing
             _SurfaceData = Nothing

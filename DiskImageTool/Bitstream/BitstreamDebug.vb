@@ -98,7 +98,7 @@
                 DebugFile.Write(", Gap2: " & Sector.Gap2.Length)
                 DebugFile.Write(", Gap3: " & Sector.Gap3.Length)
                 DebugFile.Write(", Overlaps: " & Sector.Overlaps)
-                DebugFile.WriteLine(", Offset: " & Sector.Offset \ IBM_MFM.MFM_BYTE_SIZE)
+                DebugFile.WriteLine(", Offset: " & IBM_MFM.MFMBitsToBytes(Sector.Offset))
                 If Sector.Gap2.Length > 0 Then
                     DebugFile.WriteLine("Gap 2:")
                     DebugFile.WriteLine(HexFormat(Sector.Gap2))

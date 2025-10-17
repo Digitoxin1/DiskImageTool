@@ -127,6 +127,7 @@
   <ItemGroup>
     <Compile Include="ApplicationEvents.vb" />
     <Compile Include="Bitstream\Bitstream.vb" />
+    <Compile Include="Bitstream\BitstreamRegionData.vb" />
     <Compile Include="Controls\SelectablePanel.vb">
       <SubType>Component</SubType>
     </Compile>

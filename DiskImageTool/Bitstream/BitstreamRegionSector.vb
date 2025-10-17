@@ -15,6 +15,7 @@
             Public Property SectorIndex As UShort
             Public Property Side As Byte
             Public Property StartIndex As UInteger
+            Public Property StartIndexBits As UInteger
             Public Property Track As Byte
             Public Property WriteSplice As Boolean
         End Class

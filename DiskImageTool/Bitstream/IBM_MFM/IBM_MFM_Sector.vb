@@ -152,12 +152,12 @@
 
             Public Function GetDataBitstream(SeedBit As Boolean) As BitArray
                 Dim DataSize = GetSizeBytes()
-                Dim Buffer(DataSize + 2 - 1) As Byte
+                Dim Buffer(DataSize + MFM_CRC_SIZE - 1) As Byte
 
                 Dim Offset As UInteger = 0
                 Array.Copy(_Data, 0, Buffer, Offset, DataSize)
                 Offset += DataSize
-                Array.Copy(BitConverter.GetBytes(_DataChecksum), 0, Buffer, Offset, 2)
+                Array.Copy(BitConverter.GetBytes(_DataChecksum), 0, Buffer, Offset, MFM_CRC_SIZE)
 
                 Return MFMEncodeBytes(Buffer, SeedBit)
             End Function
@@ -196,7 +196,7 @@
             End Sub
 
             Private Function GetChecksum(Bitstream As BitArray, Start As Integer) As UShort
-                Dim Checksum = MFMGetBytes(Bitstream, Start, 2)
+                Dim Checksum = MFMGetBytes(Bitstream, Start, MFM_CRC_SIZE)
 
                 Return BitConverter.ToUInt16(Checksum, 0)
             End Function
@@ -214,25 +214,25 @@
                 _DAMFound = False
                 Dim DataFieldSyncIndex = FindPattern(BitStream, MFMPattern, Start)
                 If DataFieldSyncIndex > -1 Then
-                    Dim DAM As MFMAddressMark = MFMGetByte(BitStream, DataFieldSyncIndex + 3 * MFM_BYTE_SIZE)
+                    Dim DAM As MFMAddressMark = MFMGetByte(BitStream, DataFieldSyncIndex + MFMBytesToBits(MFM_SYNC_SIZE))
                     If DAM = MFMAddressMark.Data Or DAM = MFMAddressMark.DeletedData Then
                         _DAMFound = True
                     End If
                 End If
 
                 If _DAMFound Then
-                    _DataFieldSync = MFMGetBytes(BitStream, DataFieldSyncIndex, 4)
+                    _DataFieldSync = MFMGetBytes(BitStream, DataFieldSyncIndex, MFM_SYNC_MARK_SIZE)
                     Dim Size = GetSizeBytes()
-                    _Gap2 = MFMGetBytesByRange(BitStream, Start, DataFieldSyncIndex - MFM_SYNC_SIZE_BITS)
+                    _Gap2 = MFMGetBytesByRange(BitStream, Start, DataFieldSyncIndex - MFM_SYNC_NULL_SIZE_BITS)
                     _DataOffset = DataFieldSyncIndex + MFMPattern.Length + MFM_BYTE_SIZE
                     _Data = MFMGetBytes(BitStream, _DataOffset, Size)
-                    Start = _DataOffset + Size * MFM_BYTE_SIZE
+                    Start = _DataOffset + MFMBytesToBits(Size)
                     Start = Start Mod BitStream.Length
                     _DataChecksum = GetChecksum(BitStream, Start)
                     _InitialDataChecksum = _DataChecksum
-                    Start += 2 * MFM_BYTE_SIZE
+                    Start += MFMBytesToBits(MFM_CRC_SIZE)
                 Else
-                    _DataFieldSync = New Byte(3) {}
+                    _DataFieldSync = New Byte(MFM_SYNC_MARK_SIZE - 1) {}
                     _Gap2 = New Byte(-1) {}
                     _DataOffset = 0
                     _Data = New Byte(-1) {}
@@ -249,7 +249,7 @@
                 If IDAMFieldSyncIndex = -1 Then
                     IDAMFieldSyncIndex = Bitstream.Length
                 Else
-                    IDAMFieldSyncIndex -= MFM_SYNC_SIZE_BITS
+                    IDAMFieldSyncIndex -= MFM_SYNC_NULL_SIZE_BITS
                 End If
 
                 _Gap3 = MFMGetBytesByRange(Bitstream, Offset, IDAMFieldSyncIndex)

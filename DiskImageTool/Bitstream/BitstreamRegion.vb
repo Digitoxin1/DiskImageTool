@@ -9,6 +9,14 @@
                 _BitOffset = BitOffset
             End Sub
 
+            Public Sub New(RegionType As MFMRegionType, StartIndex As UInteger, Length As UInteger, BitOffset As UInteger)
+                _RegionType = RegionType
+                _StartIndex = StartIndex
+                _Length = Length
+                _Sector = Nothing
+                _BitOffset = BitOffset
+            End Sub
+
             Public Property BitOffset As UInteger
             Public Property Length As UInteger
             Public Property RegionType As MFMRegionType

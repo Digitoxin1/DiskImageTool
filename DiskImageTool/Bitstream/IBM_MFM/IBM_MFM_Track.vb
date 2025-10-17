@@ -116,7 +116,7 @@
                     Else
                         Offset = 0
                     End If
-                    _Gap1 = MFMGetBytesByRange(Bitstream, Start + Offset, IDFieldSyncIndex - MFM_SYNC_SIZE_BITS)
+                    _Gap1 = MFMGetBytesByRange(Bitstream, Start + Offset, IDFieldSyncIndex - MFM_SYNC_NULL_SIZE_BITS)
 
                     ProcessSectorList(Bitstream, SectorList)
                 Else
@@ -130,7 +130,7 @@
                 Dim IndexFieldSyncIndex = FindPattern(BitStream, IAMPattern, Start)
                 If IndexFieldSyncIndex > -1 Then
                     Dim Offset = IndexFieldSyncIndex Mod MFM_BYTE_SIZE
-                    _Gap4A = MFMGetBytesByRange(BitStream, Start + Offset, IndexFieldSyncIndex - MFM_SYNC_SIZE_BITS)
+                    _Gap4A = MFMGetBytesByRange(BitStream, Start + Offset, IndexFieldSyncIndex - MFM_SYNC_NULL_SIZE_BITS)
                     Start = IndexFieldSyncIndex + IAMPattern.Length
                     _IAM = MFMGetByte(BitStream, Start)
                     Start += MFM_BYTE_SIZE
@@ -158,7 +158,7 @@
                     Dim SectorSize = Sector.GetSizeBytes
 
                     DataStart = SectorOffset + 160
-                    DataEnd = DataStart + SectorSize * MFM_BYTE_SIZE
+                    DataEnd = DataStart + MFMBytesToBits(SectorSize)
 
                     If SectorIndex < SectorList.Count - 1 Then
                         NextSectorOffset = SectorList.Item(SectorIndex + 1)
