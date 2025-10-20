@@ -7,18 +7,24 @@ Namespace Bitstream
 
         Public Function BitstreamCalculateHash(Image As IBitstreamImage, HashAlgorithm As HashAlgorithm) As String
             Dim BitstreamTrack As IBitstreamTrack
-            Dim OutputBuffer() As Byte
 
             For Track = 0 To Image.TrackCount - 1 Step Image.TrackStep
                 For Side = 0 To Image.SideCount - 1
                     BitstreamTrack = Image.GetTrack(Track, Side)
                     If BitstreamTrack IsNot Nothing AndAlso BitstreamTrack.MFMData IsNot Nothing Then
-                        For Each MFMSector In BitstreamTrack.MFMData.Sectors
+                        Dim Sectors = BitstreamTrack.MFMData.Sectors
+                        Dim Count = Sectors.Count
+                        Dim SectorIndex As Integer = BitstreamTrack.MFMData.SectorStart
+                        For Counter = 0 To Count - 1
+                            Dim MFMSector = Sectors(SectorIndex)
                             If MFMSector.DAMFound Then
                                 If MFMSector.InitialDataChecksumValid Then
-                                    OutputBuffer = New Byte(MFMSector.Data.Length - 1) {}
-                                    HashAlgorithm.TransformBlock(MFMSector.Data, 0, MFMSector.Data.Length, OutputBuffer, 0)
+                                    HashAlgorithm.TransformBlock(MFMSector.Data, 0, MFMSector.Data.Length, Nothing, 0)
                                 End If
+                            End If
+                            SectorIndex += 1
+                            If SectorIndex = Count Then
+                                SectorIndex = 0
                             End If
                         Next
                     End If

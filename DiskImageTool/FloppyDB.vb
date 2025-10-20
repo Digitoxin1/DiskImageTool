@@ -317,8 +317,8 @@ Public Class FloppyDB
                     _TitleDictionary.Add(md5, FloppyData)
                 End If
             End If
-            If DirectCast(Node, Xml.XmlElement).HasAttribute("md5_alt") Then
-                Dim md5 As String = Node.Attributes("md5_alt").Value
+            If DirectCast(Node, Xml.XmlElement).HasAttribute("md5_bitstream") Then
+                Dim md5 As String = Node.Attributes("md5_bitstream").Value
                 If Not _TitleDictionary.ContainsKey(md5) Then
                     _TitleDictionary.Add(md5, FloppyData)
                 End If

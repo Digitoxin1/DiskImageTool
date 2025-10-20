@@ -100,12 +100,9 @@ Namespace ImageFormats
             End Sub
 
             Private Function CalculateHash(HashAlgorithm As HashAlgorithm) As String
-                Dim OutputBuffer() As Byte
-
                 For Each PSISector In _Image.Sectors
                     If Not PSISector.IsAlternateSector And Not PSISector.HasDataCRCError Then
-                        OutputBuffer = New Byte(PSISector.Data.Length - 1) {}
-                        HashAlgorithm.TransformBlock(PSISector.Data, 0, PSISector.Data.Length, OutputBuffer, 0)
+                        HashAlgorithm.TransformBlock(PSISector.Data, 0, PSISector.Data.Length, Nothing, 0)
                     End If
                 Next
                 HashAlgorithm.TransformFinalBlock(New Byte(0) {}, 0, 0)

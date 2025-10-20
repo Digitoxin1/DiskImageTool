@@ -11,6 +11,7 @@
             Private _OverlappingSectors As Boolean
             Private _Sectors As List(Of IBM_MFM_Sector)
             Private _SectorSize As Integer
+            Private _SectorStart As UInteger
             Private _Size As UInteger
 
             Public Sub New(Data() As Byte)
@@ -81,6 +82,12 @@
                 End Get
             End Property
 
+            Public ReadOnly Property SectorStart As UInteger
+                Get
+                    Return _SectorStart
+                End Get
+            End Property
+
             Public ReadOnly Property Size As UInteger
                 Get
                     Return _Size
@@ -100,6 +107,7 @@
                 _FirstSector = -1
                 _LastSector = -1
                 _SectorSize = -1
+                _SectorStart = 0
                 _OverlappingSectors = False
                 _DuplicateSectors = False
 
@@ -149,6 +157,7 @@
                 Dim DataStart As UInteger
                 Dim DataEnd As UInteger
                 Dim SectorIds As New HashSet(Of Byte)
+                Dim SectorStart As Integer = -1
 
                 For Each SectorOffset In SectorList
                     Dim Start = SectorOffset + MFM_IDAM_SYNC_PATTERN_BYTES.Length * 8
@@ -198,8 +207,18 @@
                         _DuplicateSectors = True
                     End If
 
+                    If SectorStart = -1 AndAlso Sector.SectorId < 2 Then
+                        SectorStart = SectorIndex
+                    End If
+
                     SectorIndex += 1
                 Next
+
+                If SectorStart = -1 Then
+                    SectorStart = 0
+                End If
+
+                _SectorStart = SectorStart
             End Sub
         End Class
     End Namespace

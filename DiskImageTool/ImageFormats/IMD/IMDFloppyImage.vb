@@ -70,14 +70,11 @@ Namespace ImageFormats
             End Sub
 
             Private Function CalculateHash(HashAlgorithm As HashAlgorithm) As String
-                Dim OutputBuffer() As Byte
-
                 For Each Track In _Image.Tracks
                     If Track.IsMFM Then
                         For Each Sector In Track.Sectors
                             If Not Sector.Unavailable And Not Sector.ChecksumError Then
-                                OutputBuffer = New Byte(Sector.Data.Length - 1) {}
-                                HashAlgorithm.TransformBlock(Sector.Data, 0, Sector.Data.Length, OutputBuffer, 0)
+                                HashAlgorithm.TransformBlock(Sector.Data, 0, Sector.Data.Length, Nothing, 0)
                             End If
                         Next
                     End If
