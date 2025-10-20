@@ -37,7 +37,7 @@
     End Sub
 
     Public Property [ReadOnly] As Boolean
-    Public Property AppliedFilters As Integer
+    Public Property AppliedFilters As Long
     Public Property BatchUpdated As Boolean
     Public Property BottomIndex As Integer
     Public Property CachedRootDir As Byte()

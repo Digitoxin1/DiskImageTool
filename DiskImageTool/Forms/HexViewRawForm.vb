@@ -289,11 +289,15 @@ Public Class HexViewRawForm
                 Return My.Resources.Bitstream_Gap & " 4A" & "  " & InParens(Region.Length)
             Case MFMRegionType.Gap4B
                 Return My.Resources.Bitstream_Gap & " 3+4B" & "  " & InParens(Region.Length)
-            Case MFMRegionType.IAMNulls, MFMRegionType.IAMSync
+            Case MFMRegionType.IAMNulls
+                Return My.Resources.Bitstream_IAMSync & "  " & InParens(Region.Length)
+            Case MFMRegionType.IAMSync
                 Return My.Resources.Bitstream_IAMSync
             Case MFMRegionType.IAM
                 Return My.Resources.Bitstream_IAM
-            Case MFMRegionType.IDAMNulls, MFMRegionType.IDAMSync
+            Case MFMRegionType.IDAMNulls
+                Return My.Resources.Bitstream_IDAMSync & "  " & InParens(Region.Length)
+            Case MFMRegionType.IDAMSync
                 Return My.Resources.Bitstream_IDAMSync
             Case MFMRegionType.IDAM
                 Return My.Resources.Bitstream_IDAM
@@ -301,7 +305,9 @@ Public Class HexViewRawForm
                 Return My.Resources.Bitstream_IDArea
             Case MFMRegionType.IDAMChecksumValid, MFMRegionType.IDAMChecksumInvalid
                 Return My.Resources.Bitstream_IDAMChecksum
-            Case MFMRegionType.DAMNulls, MFMRegionType.DAMSync
+            Case MFMRegionType.DAMNulls
+                Return My.Resources.Bitstream_DAMSync & "  " & InParens(Region.Length)
+            Case MFMRegionType.DAMSync
                 Return My.Resources.Bitstream_DAMSync
             Case MFMRegionType.DAM
                 Return My.Resources.Bitstream_DAM

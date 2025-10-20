@@ -29,7 +29,7 @@
                     Caption = My.Resources.Filter_Disk_NOBPB
                 Case FilterTypes.Disk_NoBootLoader
                     Caption = My.Resources.Filter_Disk_NoBootLoader
-                Case FilterTypes.DIsk_CustomBootLoader
+                Case FilterTypes.Disk_CustomBootLoader
                     Caption = My.Resources.Filter_Disk_CustomBootLoader
                 Case FilterTypes.Disk_MismatchedImageSize
                     Caption = My.Resources.Filter_Disk_MismatchedImageSize
@@ -37,6 +37,8 @@
                     Caption = My.Resources.Filter_Disk_MismatchedMediaDescriptor
                 Case FilterTypes.Disk_FreeClustersWithData
                     Caption = My.Resources.Filter_Disk_FreeClustersWithData
+                Case FilterTypes.Disk_HasWriteSplices
+                    Caption = My.Resources.Filter_Disk_HasWriteSplices
                 Case FilterTypes.Bootstrap_Unknown
                     Caption = My.Resources.Filter_Bootstrap_Unknown
                 Case FilterTypes.OEMName_Unknown
@@ -91,11 +93,11 @@
             Return Caption
         End Function
 
-        Private Shared Function FilterCheck(FilterType As FilterTypes, AppliedFilters As Integer) As Boolean
+        Private Shared Function FilterCheck(FilterType As FilterTypes, AppliedFilters As Long) As Boolean
             Return (AppliedFilters And (2 ^ FilterType)) > 0
         End Function
 
-        Public Shared Function IsFiltered(ImageData As ImageData, AppliedFilters As Integer, ByRef FilterCounts() As FilterCounts) As Boolean
+        Public Shared Function IsFiltered(ImageData As ImageData, AppliedFilters As Long, ByRef FilterCounts() As FilterCounts) As Boolean
             Dim Result = False
             ImageData.AppliedFilters = 0
 
@@ -169,8 +171,8 @@
             End If
         End Sub
 
-        Public Function GetAppliedFilters(ClearAvailable As Boolean) As Integer
-            Dim AppliedFilters As Integer = 0
+        Public Function GetAppliedFilters(ClearAvailable As Boolean) As Long
+            Dim AppliedFilters As Long = 0
             Dim FilterCount As Integer = FilterGetCount()
 
             For Counter = 0 To FilterCount - 1

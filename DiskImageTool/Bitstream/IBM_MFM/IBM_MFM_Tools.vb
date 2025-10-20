@@ -44,6 +44,8 @@
         End Structure
 
         Module IBM_MFM_Tools
+            Private Const MAX_ALLOWED_BAD_GAPS_START As Integer = 1
+            Private Const MAX_ALLOWED_BAD_GAPS_END As Integer = 0
             Private Const MFM_NULL_WORD As UShort = &H5555  'Binary 0101010101010101
             Private Const MFM_GAP_WORD As UShort = &H2A49   'Binary 0010101001001001
             Public Const FM_FIELD_BYTES As UInteger = 1
@@ -75,7 +77,7 @@
 
                 Public Sub New(Index As UInteger)
                     _ByteIndex = MFMBitsToBytes(Index)
-                    _BitOffset = Index Mod MFM_BYTE_BYTES
+                    _BitOffset = MFMBitOffset(Index)
                     _BitstreamIndex = Index
                 End Sub
 
@@ -208,8 +210,16 @@
                 Return b
             End Function
 
-            Public Function MFMBitsToBytes(Value As UInteger) As UInteger
-                Return Value \ MFM_BYTE_BYTES
+            Public Function MFMBitOffset(Value As UInteger) As UInteger
+                Return Value Mod MFM_BYTE_BYTES
+            End Function
+
+            Public Function MFMBitsToBytes(Value As UInteger, Optional RoundUp As Boolean = False) As UInteger
+                If RoundUp Then
+                    Return (Value + MFM_BYTE_BYTES - 1) \ MFM_BYTE_BYTES
+                Else
+                    Return Value \ MFM_BYTE_BYTES
+                End If
             End Function
 
             Public Function MFMBytesToBits(Value As UInteger) As UInteger
@@ -233,7 +243,6 @@
                 End If
 
                 Dim Buffer As Byte()
-                Dim SyncNullCount As UInteger
 
                 Dim RegionInfo As New MFMRegionInfo(Index)
 
@@ -242,14 +251,15 @@
                 End If
 
                 If Index >= PrevRegion.BitstreamIndex + MFM_BYTE_BYTES Then
-                    SyncNullCount = GetSyncNullCount(Bitstream, PrevRegion.BitstreamIndex, Index)
+                    RegionSector.DAMNulls = GetSyncNullCount(Bitstream, PrevRegion.BitstreamIndex, Index)
 
-                    Dim OffsetEnd As UInteger = Index - MFMBytesToBits(SyncNullCount)
+                    Dim OffsetEnd As UInteger = Index - MFMBytesToBits(RegionSector.DAMNulls)
 
                     'Write splice occurs after ID field but before data field
                     'This is the write splice we look for to determine if the sector data has been written by a PC as opposed to a track level duplicator
                     'If TrackType = BitstreamTrackType.MFM Then
-                    RegionSector.WriteSplice = HasWriteSpliceStart(Bitstream, PrevRegion.BitstreamIndex, OffsetEnd)
+                    RegionSector.BadGapsStart = AnalyzeWriteSpliceStart(Bitstream, PrevRegion.BitstreamIndex, OffsetEnd)
+                    RegionSector.WriteSplice = (RegionSector.BadGapsStart > MAX_ALLOWED_BAD_GAPS_START)
                     'End If
 
                     Buffer = GetGapBytes(Bitstream, PrevRegion.BitstreamIndex, OffsetEnd)
@@ -258,8 +268,8 @@
                         RegionData.Regions.Add(New BitstreamRegion(MFMRegionType.Gap2, PrevRegion.ByteIndex, Buffer.Length, RegionSector, PrevRegion.BitOffset))
                     End If
 
-                    If SyncNullCount > 0 Then
-                        RegionData.Regions.Add(New BitstreamRegion(MFMRegionType.DAMNulls, RegionInfo.ByteIndex - SyncNullCount, SyncNullCount, RegionSector, RegionInfo.BitOffset))
+                    If RegionSector.DAMNulls > 0 Then
+                        RegionData.Regions.Add(New BitstreamRegion(MFMRegionType.DAMNulls, RegionInfo.ByteIndex - RegionSector.DAMNulls, RegionSector.DAMNulls, RegionSector, RegionInfo.BitOffset))
                     End If
                 End If
 
@@ -291,8 +301,9 @@
 
                 If RegionSector.Overlaps Then
                     Buffer = MFMGetBytes(Bitstream, RegionInfo.BitstreamIndex, SectorSize)
-                    SyncNullCount = GetByteCount(Buffer, 0, 0)
+                    Dim SyncNullCount = GetByteCount(Buffer, 0, 0)
                     SectorSize -= SyncNullCount
+
                     Dim GapCount = GetByteCount(Buffer, MFM_GAP_BYTE, SyncNullCount, 6)
                     SectorSize -= GapCount
                 End If
@@ -350,17 +361,17 @@
                 End If
 
                 If Index >= PrevRegion.BitstreamIndex + MFM_BYTE_BYTES Then
-                    Dim SyncNullCount = GetSyncNullCount(Bitstream, PrevRegion.BitstreamIndex, Index)
+                    RegionData.IAMNulls = GetSyncNullCount(Bitstream, PrevRegion.BitstreamIndex, Index)
 
-                    Dim Buffer = GetGapBytes(Bitstream, PrevRegion.BitstreamIndex, Index - MFMBytesToBits(SyncNullCount))
+                    Dim Buffer = GetGapBytes(Bitstream, PrevRegion.BitstreamIndex, Index - MFMBytesToBits(RegionData.IAMNulls))
                     RegionData.Gap4A = Buffer.Length
 
                     If Buffer.Length > 0 Then
                         RegionData.Regions.Add(New BitstreamRegion(MFMRegionType.Gap4A, PrevRegion.ByteIndex, Buffer.Length, RegionInfo.BitOffset))
                     End If
 
-                    If SyncNullCount > 0 Then
-                        RegionData.Regions.Add(New BitstreamRegion(MFMRegionType.IAMNulls, RegionInfo.ByteIndex - SyncNullCount, SyncNullCount, RegionInfo.BitOffset))
+                    If RegionData.IAMNulls > 0 Then
+                        RegionData.Regions.Add(New BitstreamRegion(MFMRegionType.IAMNulls, RegionInfo.ByteIndex - RegionData.IAMNulls, RegionData.IAMNulls, RegionInfo.BitOffset))
                     End If
                 End If
 
@@ -401,9 +412,11 @@
                 End If
 
                 If RegionSector.StartIndexBits >= PrevRegion.BitstreamIndex + MFM_BYTE_BYTES Then
-                    Dim SyncNullCount = GetSyncNullCount(Bitstream, PrevRegion.BitstreamIndex, RegionSector.StartIndexBits)
+                    RegionSector.IDAMNulls = GetSyncNullCount(Bitstream, PrevRegion.BitstreamIndex, RegionSector.StartIndexBits)
 
-                    Buffer = GetGapBytes(Bitstream, PrevRegion.BitstreamIndex, RegionSector.StartIndexBits - MFMBytesToBits(SyncNullCount))
+                    Dim OffsetEnd As UInteger = RegionSector.StartIndexBits - MFMBytesToBits(RegionSector.IDAMNulls)
+
+                    Buffer = GetGapBytes(Bitstream, PrevRegion.BitstreamIndex, OffsetEnd)
 
                     If Buffer.Length > 0 Then
                         If RegionSector.SectorIndex = 0 Then
@@ -411,19 +424,26 @@
                             RegionData.Gap1 = Buffer.Length
                         Else
                             RegionType = MFMRegionType.Gap3
-                            RegionData.Sectors.Item(RegionSector.SectorIndex - 1).Gap3 = Buffer.Length
+                            If PrevRegionSector IsNot Nothing Then
+                                PrevRegionSector.Gap3 = Buffer.Length
+                                'Additional check for write splice between data area and Gap3 if needed
+                                If Not PrevRegionSector.WriteSplice AndAlso (PrevRegionSector.DAMNulls <> 12 Or PrevRegionSector.BadGapsStart > 0) Then
+                                    Dim BadGaps = AnalyzeWriteSpliceEnd(Bitstream, PrevRegion.BitstreamIndex, OffsetEnd)
+                                    PrevRegionSector.WriteSplice = BadGaps > MAX_ALLOWED_BAD_GAPS_END
+                                End If
+                            End If
                         End If
                         RegionData.Regions.Add(New BitstreamRegion(RegionType, PrevRegion.ByteIndex, Buffer.Length, PrevRegionSector, RegionInfo.BitOffset))
                     End If
 
-                    If SyncNullCount > 0 Then
-                        RegionData.Regions.Add(New BitstreamRegion(MFMRegionType.IDAMNulls, RegionInfo.ByteIndex - SyncNullCount, SyncNullCount, RegionSector, RegionInfo.BitOffset))
+                    If RegionSector.IDAMNulls > 0 Then
+                        RegionData.Regions.Add(New BitstreamRegion(MFMRegionType.IDAMNulls, RegionInfo.ByteIndex - RegionSector.IDAMNulls, RegionSector.IDAMNulls, RegionSector, RegionInfo.BitOffset))
                     End If
 
-                    RegionSector.StartIndex -= SyncNullCount
+                    RegionSector.StartIndex -= RegionSector.IDAMNulls
 
                     If PrevRegionSector IsNot Nothing Then
-                        PrevRegionSector.Length -= SyncNullCount
+                        PrevRegionSector.Length -= RegionSector.IDAMNulls
                     End If
                 End If
 
@@ -471,7 +491,7 @@
 
             Public Function MFMGetRegionList(Bitstream As BitArray, TrackType As BitstreamTrackType) As BitstreamRegionData
                 Dim RegionData As New BitstreamRegionData With {
-                    .NumBytes = Math.Ceiling(Bitstream.Length / MFM_BYTE_BYTES),
+                    .NumBytes = MFMBitsToBytes(Bitstream.Length, True),
                     .NumBits = Bitstream.Length
                 }
 
@@ -543,14 +563,27 @@
                 Next
 
                 If RegionInfo.BitstreamIndex > 0 And RegionInfo.BitstreamIndex < Bitstream.Length Then
-                    Dim GapCount As UInteger = Math.Ceiling((Bitstream.Length - RegionInfo.BitstreamIndex) / MFM_BYTE_BYTES)
-                    RegionData.Regions.Add(New BitstreamRegion(MFMRegionType.Gap4B, RegionInfo.ByteIndex, GapCount, RegionSector, RegionInfo.BitOffset))
+                    Dim OffsetEnd = Bitstream.Length - RegionInfo.BitstreamIndex
+
+                    If TrackType = BitstreamTrackType.MFM Then
+                        'Additional check for write splice between data area and Gap3 if needed
+                        If Not RegionSector.WriteSplice AndAlso (RegionSector.DAMNulls <> 12 Or RegionSector.BadGapsStart > 0) Then
+                            Dim Allowed As New HashSet(Of UShort) From {
+                                MFM_GAP_WORD
+                            }
+                            Dim BadGaps = AnalyzeWriteSpliceEnd(Bitstream, RegionInfo.BitstreamIndex, OffsetEnd, Allowed)
+                            RegionSector.WriteSplice = BadGaps > MAX_ALLOWED_BAD_GAPS_END
+                        End If
+                    End If
+
+                    RegionData.Regions.Add(New BitstreamRegion(MFMRegionType.Gap4B, RegionInfo.ByteIndex, MFMBitsToBytes(OffsetEnd, True), RegionSector, RegionInfo.BitOffset))
+
                     If RegionSector IsNot Nothing Then
-                        RegionSector.Length = Math.Ceiling(Bitstream.Length / MFM_BYTE_BYTES) - RegionSector.StartIndex
+                        RegionSector.Length = MFMBitsToBytes(Bitstream.Length, True) - RegionSector.StartIndex
                     End If
                 End If
 
-                RegionInfo.SetByteIndex(Math.Ceiling(Bitstream.Length / MFM_BYTE_BYTES))
+                RegionInfo.SetByteIndex(MFMBitsToBytes(Bitstream.Length, True))
                 If RegionData.NumBytes > RegionInfo.ByteIndex Then
                     Dim Length = RegionData.NumBytes - RegionInfo.ByteIndex
                     RegionData.Regions.Add(New BitstreamRegion(MFMRegionType.Overflow, RegionInfo.ByteIndex, Length, RegionInfo.BitOffset))
@@ -589,14 +622,14 @@
             End Function
 
             Private Function GetGapBytes(BitStream As BitArray, OffsetStart As UInteger, OffsetEnd As UInteger) As Byte()
-                Dim Diff = Math.Truncate((OffsetEnd - OffsetStart) / MFM_BYTE_BYTES) * MFM_BYTE_BYTES
+                Dim Diff = ((OffsetEnd - OffsetStart) \ MFM_BYTE_BYTES) * MFM_BYTE_BYTES
 
                 OffsetEnd = OffsetStart + Diff
 
                 Return MFMGetBytesByRange(BitStream, OffsetStart, OffsetEnd)
             End Function
 
-            Private Function GetGapValues(BitStream As BitArray, OffsetStart As UInteger, OffsetEnd As UInteger) As HashSet(Of UShort)
+            Private Function GetGapValues(BitStream As BitArray, OffsetStart As UInteger, OffsetEnd As UInteger, Optional Backward As Boolean = False) As HashSet(Of UShort)
                 Const TopN As Integer = 3
                 Const MinFrequency As Integer = 2
 
@@ -606,14 +639,28 @@
 
                 Dim GapValues As New Dictionary(Of UShort, Integer)
 
-                For Offset As UInteger = OffsetStart To OffsetEnd - MFM_BYTE_BYTES Step MFM_BYTE_BYTES
-                    Dim Value = GetWordFromBitArray(BitStream, Offset)
-                    If GapValues.ContainsKey(Value) Then
-                        GapValues(Value) += 1
-                    Else
-                        GapValues(Value) = 1
-                    End If
-                Next
+                If Backward Then
+                    Dim Offset As UInteger = OffsetEnd
+                    Do While Offset >= OffsetStart + MFM_BYTE_BYTES
+                        Offset -= MFM_BYTE_BYTES
+                        Dim Value As UShort = GetWordFromBitArray(BitStream, Offset)
+                        If GapValues.ContainsKey(Value) Then
+                            GapValues(Value) += 1
+                        Else
+                            GapValues(Value) = 1
+                        End If
+                    Loop
+                Else
+                    For Offset As UInteger = OffsetStart To OffsetEnd - MFM_BYTE_BYTES Step MFM_BYTE_BYTES
+                        Dim Value = GetWordFromBitArray(BitStream, Offset)
+                        If GapValues.ContainsKey(Value) Then
+                            GapValues(Value) += 1
+                        Else
+                            GapValues(Value) = 1
+                        End If
+                    Next
+                End If
+
 
                 Dim Frequent = GapValues.
                     Where(Function(kv) kv.Value >= MinFrequency).
@@ -642,15 +689,13 @@
                 Return Count
             End Function
 
-            Private Function HasWriteSpliceStart(BitStream As BitArray, OffsetStart As UInteger, OffsetEnd As UInteger) As Boolean
+            Private Function AnalyzeWriteSpliceStart(BitStream As BitArray, OffsetStart As UInteger, OffsetEnd As UInteger) As UInteger
                 Const MaxWordsToCheck As Integer = 2
-                Const MaxAllowedBadGaps As Integer = 1
-                Dim Result As Boolean = False
                 Dim WordCount As UInteger = 0
                 Dim BadGapCount As UInteger = 0
 
                 If OffsetEnd < OffsetStart + MFM_BYTE_BYTES Then
-                    Return Result
+                    Return BadGapCount
                 End If
 
                 'Get possible gap values
@@ -668,9 +713,38 @@
                     Offset -= MFM_BYTE_BYTES
                 Loop
 
-                Result = BadGapCount > MaxAllowedBadGaps
+                Return BadGapCount
+            End Function
 
-                Return Result
+            Private Function AnalyzeWriteSpliceEnd(BitStream As BitArray, OffsetStart As UInteger, OffsetEnd As UInteger, Optional Allowed As HashSet(Of UShort) = Nothing) As UInteger
+                Const MaxWordsToCheck As Integer = 2
+                Dim WordCount As UInteger = 0
+                Dim BadGapCount As UInteger = 0
+
+                OffsetStart += MFM_BYTE_BYTES
+
+                If OffsetEnd < OffsetStart + MFM_BYTE_BYTES Then
+                    Return BadGapCount
+                End If
+
+                'Get possible gap values
+                If Allowed Is Nothing Then
+                    Allowed = GetGapValues(BitStream, OffsetStart, OffsetEnd, True)
+                End If
+
+                'If there is more than one bad gap word then we have a write splice
+                Dim Offset As Integer = OffsetStart
+
+                Do While Offset < OffsetEnd AndAlso WordCount < MaxWordsToCheck
+                    Dim Value = GetWordFromBitArray(BitStream, Offset)
+                    If Not Allowed.Contains(Value) Then
+                        BadGapCount += 1
+                    End If
+                    WordCount += 1
+                    Offset += MFM_BYTE_BYTES
+                Loop
+
+                Return BadGapCount
             End Function
 
             Public Function FindPattern(BitStream As BitArray, Pattern As BitArray, Optional Start As Integer = 0) As Integer

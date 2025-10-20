@@ -1472,4 +1472,7 @@ Hinweis: Diese ID wird normalerweise erzeugt, indem das aktuelle Datum und die a
   <data name="Label_WriteSplices" xml:space="preserve">
     <value>Schreibübergänge</value>
   </data>
+  <data name="Filter_Disk_HasWriteSplices" xml:space="preserve">
+    <value>Diskette – Mit Schreibsplices</value>
+  </data>
 </root>

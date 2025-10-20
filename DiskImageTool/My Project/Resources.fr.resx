@@ -1472,4 +1472,7 @@ Remarque : cette valeur doit être {1} pour toutes les disquettes</value>
   <data name="Label_WriteSplices" xml:space="preserve">
     <value>Coupures d’écriture</value>
   </data>
+  <data name="Filter_Disk_HasWriteSplices" xml:space="preserve">
+    <value>Disquette - Avec jonctions d’écriture</value>
+  </data>
 </root>

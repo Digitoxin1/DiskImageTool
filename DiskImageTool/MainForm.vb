@@ -179,6 +179,7 @@ Public Class MainForm
     End Function
 
     Public Sub ImageFiltersScanDisk(Disk As DiskImage.Disk, ImageData As ImageData, Optional UpdateFilters As Boolean = False, Optional Remove As Boolean = False)
+        Const CheckWriteSplices As Boolean = False
         Dim TitleFindResult As FloppyDB.TitleFindResult = Nothing
         Dim FileData As FloppyDB.FileNameData = Nothing
         Dim Disk_UnknownFormat As Boolean
@@ -193,7 +194,8 @@ Public Class MainForm
         Dim Image_Unverified As Boolean = False
         Dim Disk_NOBPB As Boolean = False
         Dim Disk_NoBootLoader As Boolean = False
-        Dim DIsk_CustomBootLoader As Boolean = False
+        Dim Disk_CustomBootLoader As Boolean = False
+        Dim Disk_HasWriteSplices As Boolean = False
         Dim Database_MismatchedStatus As Boolean = False
 
         If Not Remove Then
@@ -221,7 +223,7 @@ Public Class MainForm
                     If Disk.BootSector.CheckJumpInstruction(False, True) Then
                         Disk_NoBootLoader = True
                     Else
-                        DIsk_CustomBootLoader = True
+                        Disk_CustomBootLoader = True
                         Disk_NOBPB = False
                     End If
                 End If
@@ -245,6 +247,10 @@ Public Class MainForm
                     End If
                 End If
             End If
+
+            If CheckWriteSplices Then
+                Disk_HasWriteSplices = DiskHasWriteSplices(Disk)
+            End If
         Else
             Disk_UnknownFormat = False
         End If
@@ -264,7 +270,11 @@ Public Class MainForm
         ImageFilters.FilterUpdate(ImageData, UpdateFilters, Filters.FilterTypes.Disk_CustomFormat, Disk_CustomFormat)
         ImageFilters.FilterUpdate(ImageData, UpdateFilters, Filters.FilterTypes.Disk_NOBPB, Disk_NOBPB)
         ImageFilters.FilterUpdate(ImageData, UpdateFilters, Filters.FilterTypes.Disk_NoBootLoader, Disk_NoBootLoader)
-        ImageFilters.FilterUpdate(ImageData, UpdateFilters, Filters.FilterTypes.DIsk_CustomBootLoader, DIsk_CustomBootLoader)
+        ImageFilters.FilterUpdate(ImageData, UpdateFilters, Filters.FilterTypes.Disk_CustomBootLoader, Disk_CustomBootLoader)
+
+        If CheckWriteSplices Then
+            ImageFilters.FilterUpdate(ImageData, UpdateFilters, Filters.FilterTypes.Disk_HasWriteSplices, Disk_HasWriteSplices)
+        End If
 
         If My.Settings.Debug And Disk IsNot Nothing Then
             ImageFilters.FilterUpdate(ImageData, UpdateFilters, Filters.FilterTypes.Database_MismatchedStatus, Database_MismatchedStatus)
@@ -1499,7 +1509,7 @@ Public Class MainForm
 
     Private Sub FiltersApply(ResetSubFilters As Boolean)
         Dim HasFilter As Boolean = False
-        Dim AppliedFilters As Integer = 0
+        Dim AppliedFilters As Long = 0
         Dim r As RegularExpressions.Regex = Nothing
 
         If ResetSubFilters Then

@@ -112,7 +112,7 @@
                     Dim IDFieldSyncIndex = SectorList.Item(0)
                     Dim Offset As UInteger
                     If Start = 0 Then
-                        Offset = IDFieldSyncIndex Mod MFM_BYTE_BYTES
+                        Offset = MFMBitOffset(IDFieldSyncIndex)
                     Else
                         Offset = 0
                     End If
@@ -129,7 +129,7 @@
 
                 Dim IndexFieldSyncIndex = FindPattern(BitStream, IAMPattern, Start)
                 If IndexFieldSyncIndex > -1 Then
-                    Dim Offset = IndexFieldSyncIndex Mod MFM_BYTE_BYTES
+                    Dim Offset = MFMBitOffset(IndexFieldSyncIndex)
                     _Gap4A = MFMGetBytesByRange(BitStream, Start + Offset, IndexFieldSyncIndex - MFM_SYNC_NULL_BITS)
                     Start = IndexFieldSyncIndex + IAMPattern.Length
                     _IAM = MFMGetByte(BitStream, Start)

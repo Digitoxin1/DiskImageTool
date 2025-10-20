@@ -16,6 +16,7 @@
             Property Gap4A As UShort = 0
             Property Gap1 As UShort = 0
             Property Encoding As String = ""
+            Property IAMNulls As UInteger = 0
         End Class
     End Namespace
 End Namespace

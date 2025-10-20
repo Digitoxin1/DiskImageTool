@@ -66,6 +66,37 @@ Namespace DiskImage
             Return BuildBPB(GetFloppyDiskParams(GetFloppyDiskFomat(MediaDescriptor)))
         End Function
 
+        Public Function DiskHasWriteSplices(Disk As Disk) As Boolean
+            Dim Result As Boolean = False
+
+            If Disk.Image.IsBitstreamImage Then
+                Dim Image = Disk.Image.BitstreamImage
+
+                For Track = 0 To Image.TrackCount - 1 Step Image.TrackStep
+                    For Side = 0 To Image.SideCount - 1
+                        Dim BitstreamTrack = Image.GetTrack(Track, Side)
+                        If BitstreamTrack.TrackType = Bitstream.BitstreamTrackType.MFM Or BitstreamTrack.TrackType = Bitstream.BitstreamTrackType.FM Then
+                            Dim RegionData = Bitstream.IBM_MFM.MFMGetRegionList(BitstreamTrack.Bitstream, BitstreamTrack.TrackType)
+                            For Each RegionSector In RegionData.Sectors
+                                If RegionSector.WriteSplice Then
+                                    Result = True
+                                    Exit For
+                                End If
+                            Next
+                        End If
+                        If Result Then
+                            Exit For
+                        End If
+                    Next
+                    If Result Then
+                        Exit For
+                    End If
+                Next
+            End If
+
+            Return Result
+        End Function
+
         Public Function GetDirectoryEntryFromCluster(Disk As Disk, Cluster As Integer) As DirectoryEntry
             If Disk.IsValidImage Then
                 If Disk.RootDirectory.FATAllocation.FileAllocation.ContainsKey(Cluster) Then

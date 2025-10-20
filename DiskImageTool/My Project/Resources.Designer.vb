@@ -2152,6 +2152,15 @@ Namespace My.Resources
         End Property
         
         '''<summary>
+        '''  Looks up a localized string similar to Disk - Has Write Splices.
+        '''</summary>
+        Friend ReadOnly Property Filter_Disk_HasWriteSplices() As String
+            Get
+                Return ResourceManager.GetString("Filter_Disk_HasWriteSplices", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
         '''  Looks up a localized string similar to Disk - Mismatched Image Size.
         '''</summary>
         Friend ReadOnly Property Filter_Disk_MismatchedImageSize() As String

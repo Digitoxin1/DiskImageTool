@@ -1472,4 +1472,7 @@ Nota: Este valor debe ser {1} para todos los disquetes</value>
   <data name="Label_WriteSplices" xml:space="preserve">
     <value>Empalmes de escritura</value>
   </data>
+  <data name="Filter_Disk_HasWriteSplices" xml:space="preserve">
+    <value>Disco - Con empalmes de escritura</value>
+  </data>
 </root>
