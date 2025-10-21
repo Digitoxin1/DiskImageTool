@@ -3558,6 +3558,15 @@ Namespace My.Resources
         End Property
         
         '''<summary>
+        '''  Looks up a localized string similar to Enable Write-splice Filter.
+        '''</summary>
+        Friend ReadOnly Property Menu_EnableWriteSpliceFilter() As String
+            Get
+                Return ResourceManager.GetString("Menu_EnableWriteSpliceFilter", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
         '''  Looks up a localized string similar to English.
         '''</summary>
         Friend ReadOnly Property Menu_English() As String

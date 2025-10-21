@@ -44,6 +44,7 @@ Public Class MainForm
     Private _DriveAEnabled As Boolean = False
     Private _DriveBEnabled As Boolean = False
     Private _ExportUnknownImages As Boolean = False
+    Private _EnableWriteSpliceFilter As Boolean = False
     Private _FileVersion As String = ""
     Private _ListViewCheckAll As Boolean = False
     Private _ListViewClickedGroup As ListViewGroup = Nothing
@@ -179,7 +180,6 @@ Public Class MainForm
     End Function
 
     Public Sub ImageFiltersScanDisk(Disk As DiskImage.Disk, ImageData As ImageData, Optional UpdateFilters As Boolean = False, Optional Remove As Boolean = False)
-        Const CheckWriteSplices As Boolean = False
         Dim TitleFindResult As FloppyDB.TitleFindResult = Nothing
         Dim FileData As FloppyDB.FileNameData = Nothing
         Dim Disk_UnknownFormat As Boolean
@@ -248,7 +248,7 @@ Public Class MainForm
                 End If
             End If
 
-            If CheckWriteSplices Then
+            If _EnableWriteSpliceFilter Then
                 Disk_HasWriteSplices = DiskHasWriteSplices(Disk)
             End If
         Else
@@ -272,7 +272,7 @@ Public Class MainForm
         ImageFilters.FilterUpdate(ImageData, UpdateFilters, Filters.FilterTypes.Disk_NoBootLoader, Disk_NoBootLoader)
         ImageFilters.FilterUpdate(ImageData, UpdateFilters, Filters.FilterTypes.Disk_CustomBootLoader, Disk_CustomBootLoader)
 
-        If CheckWriteSplices Then
+        If _EnableWriteSpliceFilter Then
             ImageFilters.FilterUpdate(ImageData, UpdateFilters, Filters.FilterTypes.Disk_HasWriteSplices, Disk_HasWriteSplices)
         End If
 
@@ -2640,6 +2640,17 @@ Public Class MainForm
 
             MainMenuOptions.DropDownItems.Add(Item)
 
+            Item = New ToolStripMenuItem With {
+                .Name = "MenuOptionsEnableWriteSpliceFilter",
+                .Text = My.Resources.Menu_EnableWriteSpliceFilter,
+                .CheckOnClick = True,
+                .Checked = _EnableWriteSpliceFilter
+            }
+
+            AddHandler Item.CheckStateChanged, AddressOf MenuOptionsEnableWriteSpliceFilter_CheckStateChanged
+
+            MainMenuOptions.DropDownItems.Add(Item)
+
             'MainMenuReports.Visible = True
         Else
             'MainMenuReports.Visible = False
@@ -3540,7 +3551,7 @@ Public Class MainForm
         If ParentDirectory Is Nothing Then
             SetButtonStateViewDirectory(False, False)
             SetButtonStateAddFile(False)
-            If CurrentImage Is Nothing OrElse Not CurrentImage.Disk.IsValidImage Then
+            If CurrentImage Is Nothing OrElse CurrentImage.Disk Is Nothing OrElse Not CurrentImage.Disk.IsValidImage Then
                 SetButtonStateTopMenuAddFile(False)
             Else
                 SetButtonStateTopMenuAddFile(True, CurrentImage.Disk.RootDirectory)
@@ -4810,6 +4821,10 @@ Public Class MainForm
         If _CurrentImage IsNot Nothing Then
             PopulateSummary(_CurrentImage)
         End If
+    End Sub
+
+    Private Sub MenuOptionsEnableWriteSpliceFilter_CheckStateChanged(sender As Object, e As EventArgs)
+        _EnableWriteSpliceFilter = DirectCast(sender, ToolStripMenuItem).Checked
     End Sub
 
     Private Sub MenuOptionsExportUnknown_CheckStateChanged(sender As Object, e As EventArgs)

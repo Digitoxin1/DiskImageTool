@@ -432,7 +432,7 @@
                             If PrevRegionSector IsNot Nothing Then
                                 PrevRegionSector.Gap3 = Buffer.Length
                                 'Additional check for write splice between data area and Gap3 if needed
-                                If Not PrevRegionSector.WriteSplice AndAlso (PrevRegionSector.DAMNulls <> 12 Or PrevRegionSector.BadGapsStart > 0) Then
+                                If Not PrevRegionSector.WriteSplice AndAlso PrevRegionSector.HasData AndAlso (PrevRegionSector.DAMNulls <> 12 Or PrevRegionSector.BadGapsStart > 0) Then
                                     Dim BadGaps = AnalyzeWriteSpliceEnd(Bitstream, PrevRegion.BitstreamIndex, OffsetEnd)
                                     PrevRegionSector.WriteSplice = BadGaps > MAX_ALLOWED_BAD_GAPS_END
                                 End If
@@ -572,7 +572,7 @@
 
                     If TrackType = BitstreamTrackType.MFM Then
                         'Additional check for write splice between data area and Gap3 if needed
-                        If Not RegionSector.WriteSplice AndAlso (RegionSector.DAMNulls <> 12 Or RegionSector.BadGapsStart > 0) Then
+                        If Not RegionSector.WriteSplice AndAlso RegionSector.HasData AndAlso (RegionSector.DAMNulls <> 12 Or RegionSector.BadGapsStart > 0) Then
                             Dim Allowed As New HashSet(Of UShort) From {
                                 MFM_GAP_WORD
                             }

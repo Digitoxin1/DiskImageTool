@@ -6890,9 +6890,9 @@
     </release>
     <release year="1990" version="3.0" status="V">
       <media media="360K">
-        <disk md5="87E320F7EBA3602BB1DCA851A48A9088" disk="A"/>
+        <disk md5="87E320F7EBA3602BB1DCA851A48A9088" md5_alt="FF520C16B8FA308DAD613523394A9F4C" disk="A"/>
         <disk md5="E4D438D2094EA831804C5BC64EC74077" disk="B"/>
-        <disk md5="E10F2A4412CF893FBCC555FD0A4D1E1E" disk="C"/>
+        <disk md5="E10F2A4412CF893FBCC555FD0A4D1E1E" md5_alt="DBD097E387BB2C8460A4A0C49DDC4479" disk="C"/>
       </media>
       <media media="720K">
         <disk md5="995480B127F339AB9A17D7C995195D17" disk="A"/>
