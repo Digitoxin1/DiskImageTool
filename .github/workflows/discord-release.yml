@@ -4,6 +4,8 @@ on:
   release:
     types:
       - published
+  # Optional: allow manual testing
+  workflow_dispatch: {}
 
 jobs:
   notify-discord:
@@ -17,32 +19,45 @@ jobs:
       REPO_NAME: ${{ github.repository }}
       AUTHOR: ${{ github.event.release.author.login }}
     steps:
+      - name: Install jq
+        run: |
+          sudo apt-get update -y >/dev/null 2>&1
+          sudo apt-get install -y jq >/dev/null 2>&1
+
       - name: Post to Discord
         shell: bash
         run: |
-          # Truncate to Discord embed description limit (4096 chars)
-          if [ "${#RELEASE_BODY}" -gt 4096 ]; then
-            BODY_TRUNCATED="${RELEASE_BODY:0:4095}…"
-          else
-            BODY_TRUNCATED="$RELEASE_BODY"
+          # Truncate to 4096 (embed description limit)
+          BODY_TRUNCATED=$(printf '%s' "$RELEASE_BODY" | head -c 4096)
+          # Encode body as JSON string safely
+          BODY_JSON=$(printf '%s' "$BODY_TRUNCATED" | jq -Rs .)
+
+          payload=$(jq -n \
+            --arg title "${REPO_NAME} – ${RELEASE_NAME} (${RELEASE_TAG})" \
+            --arg url "$RELEASE_URL" \
+            --arg ts "$(date -u +%Y-%m-%dT%H:%M:%SZ)" \
+            --arg author "$AUTHOR" \
+            --argjson desc "$BODY_JSON" '
+            {
+              embeds: [
+                {
+                  title: $title,
+                  url: $url,
+                  description: $desc,
+                  timestamp: $ts,
+                  footer: { text: ("Released by " + $author) }
+                }
+              ]
+            }')
+
+          CODE=$(curl -sS -o /tmp/resp.txt -w '%{http_code}' \
+            -H "Content-Type: application/json" \
+            -d "$payload" \
+            "${DISCORD_WEBHOOK}")
+          echo "HTTP: $CODE"
+          echo "Response:"
+          cat /tmp/resp.txt
+          if [ "$CODE" -ne 204 ]; then
+            echo "::error::Discord rejected the message (HTTP $CODE)"
+            exit 1
           fi
-
-          # Build the JSON payload (simple embed)
-          payload=$(cat <<JSON
-          {
-            "embeds": [
-              {
-                "title": "${REPO_NAME} – ${RELEASE_NAME} (${RELEASE_TAG})",
-                "url": "${RELEASE_URL}",
-                "description": ${BODY_TRUNCATED@Q},
-                "timestamp": "$(date -u +%Y-%m-%dT%H:%M:%SZ)",
-                "footer": { "text": "Released by ${AUTHOR}" }
-              }
-            ]
-          }
-          JSON
-          )
-
-          # Send to Discord
-          curl -sS -X POST -H "Content-Type: application/json" \
-            -d "$payload" "$DISCORD_WEBHOOK"
