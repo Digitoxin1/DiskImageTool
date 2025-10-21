@@ -609,7 +609,7 @@ Module ImageIO
                     For j = 0 To BitstreamData.SideCount - 1
                         Dim TrackData = BitstreamData.GetTrack(i, j)
                         If TrackData IsNot Nothing Then
-                            If TrackData.FirstSector > -1 Then
+                            If TrackData.FirstSectorId > -1 Then
                                 If TrackData.SectorSize = -1 Or TrackData.OverlappingSectors Or TrackData.DuplicateSectors Then
                                     CompatibleSectors = False
                                     Exit For

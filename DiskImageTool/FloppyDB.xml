@@ -5196,7 +5196,7 @@
     </release>
     <release variation="256 Color" year="1991" version="0.000.062, Int. 2.1.91">
       <media media="1.2M" status="V">
-        <disk md5="385FCED8216ED44F75F93B90CD0BFB23" disk="Startup"/>
+        <disk md5="036E048F9B94FE1BB7E18B53BA3F0A0B" disk="Startup"/>
         <disk md5="75B73B108CB4B81EFBEA182C6F6C562F" disk="1"/>
         <disk md5="3D7356C03ECAF6C90BA74456C8D80D26" disk="2"/>
         <disk md5="704BB7D2EC2F2949CD9789037AA9340E" disk="3"/>
@@ -6789,7 +6789,7 @@
   <title name="MasterType" publisher="Scarborough Systems, Inc.">
     <release year="1984" media="160K" status="V">
       <disk md5="EE88C5CFEE05ADB11DFE1ABAC8948970" disk="Color" cp="Key Disk"/>
-      <disk md5="2BF5241FA5957AA479405329032AFC5A" disk="Mono" cp="Key Disk"/>
+      <disk md5="9452ED60180E6115289361E492ABCA14" disk="Mono" cp="Key Disk"/>
       <disk md5="3695631A94FF7D7EE4A19E499F321080" media="320K" status="U" disk="Training Ground" cp="Key Disk"/>
     </release>
   </title>
@@ -7474,7 +7474,7 @@
   </title>
   <title name="Music 101: Trivia from Mozart to Motown" publisher="IBM">
     <release year="1985" media="320K" status="V" os="PC Booter">
-      <disk md5="AB79EAAB611569DE40EBA2A5F3D75241" cp="Key Disk"/>
+      <disk md5="8057DEC9D403D8F8F5714DC1BA51C98F" cp="Key Disk"/>
     </release>
   </title>
   <title name="Mystery Master: Murder by the Dozen" publisher="CBS Software">
@@ -12735,7 +12735,7 @@
   </title>
   <title name="Trivia 101: The Introductory Course" publisher="IBM" os="PC Booter">
     <release year="1984" media="320K" status="V">
-      <disk md5="7B8381588C41F4172D691547312BFD07" cp="Key Disk"/>
+      <disk md5="E9CB0CA9D0B6D3FB06484E829ACF19CF" cp="Key Disk"/>
     </release>
   </title>
   <title name="Trivia Fever" publisher="Professional Software, Inc.">
@@ -12792,7 +12792,7 @@
   </title>
   <title name="TV and Cinema 101: Trivia from Talkies to Trekkies" publisher="IBM" os="PC Booter">
     <release year="1984" media="320K" status="V">
-      <disk md5="2F1D7254D9872E5B8FF65F819CF9322D" cp="Key Disk"/>
+      <disk md5="0BBF43B2AA80DF9D3EFAD2BCF91F4A70" cp="Key Disk"/>
     </release>
   </title>
   <title name="Twilight: 2000" publisher="MicroProse Software, Inc.">
@@ -13683,7 +13683,7 @@
   </title>
   <title name="Wizardry: Proving Grounds of the Mad Overlord" publisher="Sir-tech Software, Inc.">
     <release year="1984" media="320K" version="r840227" status="V" os="PC Booter">
-      <disk md5="558FFC64A3AC98332720C9BB4652B8C1" cp="Key Disk"/>
+      <disk md5="4055FDDE2E07CC24F08692D577E3B637" cp="Key Disk"/>
     </release>
     <release year="1987" media="320K" version="r870314" status="U" os="PC Booter">
       <disk md5="6B6678BC6138F6DF9ECF1304E1AAE1EC" cp="Key Disk"/>
@@ -14517,7 +14517,7 @@
   </title>
   <title name="Super Pac-Man" publisher="Thunder Mountain">
     <release year="1989" version="4.00" media="360K" status="U">
-      <disk md5="69DD115D71B1E2F226069B7180EB5589" cp="Key Disk"/>
+      <disk md5="BBC57723FB69F97D028BA0D6FEC6BF8F" cp="Key Disk"/>
     </release>
   </title>
   <title name="Winter Challenge: World Class Competition" publisher="Thunder Mountain">

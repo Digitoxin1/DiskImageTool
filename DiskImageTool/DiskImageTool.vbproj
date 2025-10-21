@@ -140,7 +140,6 @@
     <Compile Include="DiskImage\AddFileOptions.vb" />
     <Compile Include="DiskImage\Modules\EnumDescriptions.vb" />
     <Compile Include="DiskImage\MappedFloppyImage.vb" />
-    <Compile Include="Bitstream\BitstreamDebug.vb" />
     <Compile Include="Bitstream\BitStreamImageBase.vb" />
     <Compile Include="Bitstream\BitstreamRegion.vb" />
     <Compile Include="Bitstream\BitstreamRegionSector.vb" />

@@ -14,7 +14,7 @@ Namespace Bitstream
                     If BitstreamTrack IsNot Nothing AndAlso BitstreamTrack.MFMData IsNot Nothing Then
                         Dim Sectors = BitstreamTrack.MFMData.Sectors
                         Dim Count = Sectors.Count
-                        Dim SectorIndex As Integer = BitstreamTrack.MFMData.SectorStart
+                        Dim SectorIndex As Integer = BitstreamTrack.MFMData.SectorStartIndex
                         For Counter = 0 To Count - 1
                             Dim MFMSector = Sectors(SectorIndex)
                             If MFMSector.DAMFound Then

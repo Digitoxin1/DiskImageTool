@@ -83,13 +83,13 @@ Namespace ImageFormats
                         If TrackData Is Nothing Then
                             TrackInfo = _Image.GetTrackInfo(PSISector.Track, PSISector.Side)
                             TrackData = SetTrack(PSISector.Track, PSISector.Side)
-                            TrackData.FirstSector = TrackInfo.FirstSector
-                            TrackData.LastSector = TrackInfo.LastSector
+                            TrackData.FirstSectorId = TrackInfo.FirstSector
+                            TrackData.LastSectorId = TrackInfo.LastSector
                             TrackData.SectorSize = TrackInfo.SectorSize
                             TrackData.Encoding = BitstreamTrackType.MFM
                         End If
 
-                        If TrackData.FirstSector = 1 And TrackData.LastSector = 4 And TrackData.SectorSize = 1024 Then
+                        If TrackData.FirstSectorId = 1 And TrackData.LastSectorId = 4 And TrackData.SectorSize = 1024 Then
                             ProcessSector1024(PSISector)
                         Else
                             ProcessSector(PSISector, MaxSectors)

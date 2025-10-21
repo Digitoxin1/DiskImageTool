@@ -414,7 +414,7 @@ Namespace DiskImage
                         SetTrack(MappedTrack, Side, BitstreamTrack.MFMData, BitstreamTrack.TrackType)
 
                         If BitstreamTrack.MFMData IsNot Nothing Then
-                            If _BytesPerSector = 512 And BitstreamTrack.MFMData.FirstSector = 1 And BitstreamTrack.MFMData.LastSector = 4 And BitstreamTrack.MFMData.SectorSize = 1024 Then
+                            If _BytesPerSector = 512 And BitstreamTrack.MFMData.FirstSectorId = 1 And BitstreamTrack.MFMData.LastSectorId = 4 And BitstreamTrack.MFMData.SectorSize = 1024 Then
                                 ProcessMFMSectors1024(Track, Side, BitstreamTrack.MFMData)
                             Else
                                 ProcessMFMSectors(MappedTrack, Side, BitstreamTrack.MFMData)
@@ -523,8 +523,8 @@ Namespace DiskImage
                         Dim TrackIsStandard As Boolean = False
                         If TrackData IsNot Nothing Then
                             If TrackData.Encoding = BitstreamTrackType.MFM Then
-                                If TrackData.FirstSector > -1 Then
-                                    TrackIsStandard = TrackData.FirstSector >= 1 And TrackData.LastSector <= Math.Max(_BPB.SectorsPerTrack, 9)
+                                If TrackData.FirstSectorId > -1 Then
+                                    TrackIsStandard = TrackData.FirstSectorId >= 1 And TrackData.LastSectorId <= Math.Max(_BPB.SectorsPerTrack, 9)
                                 End If
                             End If
 
@@ -652,8 +652,8 @@ Namespace DiskImage
                 .Encoding = Encoding
             }
             If MFMData IsNot Nothing Then
-                TrackData.FirstSector = MFMData.FirstSector
-                TrackData.LastSector = MFMData.LastSector
+                TrackData.FirstSectorId = MFMData.FirstSectorId
+                TrackData.LastSectorId = MFMData.LastSectorId
                 TrackData.SectorSize = MFMData.SectorSize
                 TrackData.DuplicateSectors = MFMData.DuplicateSectors
                 TrackData.OverlappingSectors = MFMData.OverlappingSectors
@@ -665,16 +665,16 @@ Namespace DiskImage
         Public Class TrackData
             Public Sub New()
                 _DuplicateSectors = False
-                _FirstSector = -1
-                _LastSector = -1
+                _FirstSectorId = -1
+                _LastSectorId = -1
                 _OverlappingSectors = False
                 _Encoding = BitstreamTrackType.Other
             End Sub
 
             Public Property DuplicateSectors As Boolean
             Public Property Encoding As BitstreamTrackType
-            Public Property FirstSector As Integer
-            Public Property LastSector As Integer
+            Public Property FirstSectorId As Short
+            Public Property LastSectorId As Short
             Public Property OverlappingSectors As Boolean
             Public Property SectorSize As Integer
         End Class

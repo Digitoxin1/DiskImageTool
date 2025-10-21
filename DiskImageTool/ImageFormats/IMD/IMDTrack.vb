@@ -3,12 +3,12 @@
         Public Class IMDTrack
             Public Sub New()
                 _Sectors = New List(Of IMDSector)
-                _FirstSector = -1
-                _LastSector = -1
+                _FirstSectorId = -1
+                _LastSectorId = -1
             End Sub
 
-            Public Property FirstSector As Integer
-            Public Property LastSector As Integer
+            Public Property FirstSectorId As Short
+            Public Property LastSectorId As Short
             Public Property Mode As TrackMode
             Public Property Sectors As List(Of IMDSector)
             Public Property SectorSize As SectorSize
@@ -18,12 +18,12 @@
             Public Sub AddSector(Sector As IMDSector)
                 _Sectors.Add(Sector)
 
-                If _FirstSector = -1 Or Sector.SectorId < _FirstSector Then
-                    _FirstSector = Sector.SectorId
+                If _FirstSectorId = -1 Or Sector.SectorId < _FirstSectorId Then
+                    _FirstSectorId = Sector.SectorId
                 End If
 
-                If Sector.SectorId > _LastSector Then
-                    _LastSector = Sector.SectorId
+                If Sector.SectorId > _LastSectorId Then
+                    _LastSectorId = Sector.SectorId
                 End If
             End Sub
 

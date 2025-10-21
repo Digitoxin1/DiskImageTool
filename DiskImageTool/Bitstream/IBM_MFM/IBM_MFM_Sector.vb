@@ -7,26 +7,30 @@
             Private ReadOnly _IDChecksumValid As Boolean
             Private ReadOnly _InitialDataChecksumValid As Boolean
             Private ReadOnly _Offset As UInteger
+            Private ReadOnly _OffsetEnd As UInteger
             Private _DAMFound As Boolean = False
             Private _Data As Byte()
             Private _DataChecksum As UShort
             Private _DataFieldSync() As Byte
             Private _DataOffset As UInteger
-            Private _Gap2 As Byte()
-            Private _Gap3 As Byte()
             Private _InitialDataChecksum As UShort
             Private _Overlaps As Boolean
 
             Public Sub New(Bitstream As BitArray, Offset As UInteger)
+                Dim NumBytes As UInteger
+
                 _Bitstream = Bitstream
-                _Offset = Offset
-                _IDArea = MFMGetBytes(Bitstream, Offset, 8)
-                _IDChecksum = GetChecksum(Bitstream, Offset + 128)
                 _Overlaps = False
+                _Offset = Offset
 
-                Dim DataOffset = ProcessDataField(Bitstream, Offset + 160)
+                NumBytes = MFM_SYNC_MARK_BYTES + MFM_IDAREA_BYTES
+                _IDArea = MFMGetBytes(Bitstream, Offset, NumBytes)
+                Offset += MFMBytesToBits(NumBytes)
 
-                ProcessGap3(Bitstream, DataOffset)
+                _IDChecksum = GetChecksum(Bitstream, Offset)
+                Offset += MFM_CRC_BITS
+
+                _OffsetEnd = ProcessDataField(Bitstream, Offset)
 
                 _InitialDataChecksumValid = (_DataChecksum = CalculateDataChecksum())
                 _IDChecksumValid = (_IDChecksum = CalculateIDChecksum())
@@ -65,18 +69,6 @@
                 End Get
             End Property
 
-            Public ReadOnly Property Gap2 As Byte()
-                Get
-                    Return _Gap2
-                End Get
-            End Property
-
-            Public ReadOnly Property Gap3 As Byte()
-                Get
-                    Return _Gap3
-                End Get
-            End Property
-
             Public ReadOnly Property IDChecksum As UShort
                 Get
                     Return _IDChecksum
@@ -98,6 +90,12 @@
             Public ReadOnly Property Offset As UInteger
                 Get
                     Return _Offset
+                End Get
+            End Property
+
+            Public ReadOnly Property OffsetEnd As UInteger
+                Get
+                    Return _OffsetEnd
                 End Get
             End Property
 
@@ -214,7 +212,7 @@
                 _DAMFound = False
                 Dim DataFieldSyncIndex = FindPattern(BitStream, MFMPattern, Start)
                 If DataFieldSyncIndex > -1 Then
-                    Dim DAM As MFMAddressMark = MFMGetByte(BitStream, DataFieldSyncIndex + MFMBytesToBits(MFM_SYNC_BYTES))
+                    Dim DAM As MFMAddressMark = MFMGetByte(BitStream, DataFieldSyncIndex + MFM_SYNC_BITS)
                     If DAM = MFMAddressMark.Data Or DAM = MFMAddressMark.DeletedData Then
                         _DAMFound = True
                     End If
@@ -223,17 +221,15 @@
                 If _DAMFound Then
                     _DataFieldSync = MFMGetBytes(BitStream, DataFieldSyncIndex, MFM_SYNC_MARK_BYTES)
                     Dim Size = GetSizeBytes()
-                    _Gap2 = MFMGetBytesByRange(BitStream, Start, DataFieldSyncIndex - MFM_SYNC_NULL_BITS)
-                    _DataOffset = DataFieldSyncIndex + MFMPattern.Length + MFM_BYTE_BYTES
+                    _DataOffset = DataFieldSyncIndex + MFMPattern.Length + MFM_BYTE_BITS
                     _Data = MFMGetBytes(BitStream, _DataOffset, Size)
                     Start = _DataOffset + MFMBytesToBits(Size)
                     Start = Start Mod BitStream.Length
                     _DataChecksum = GetChecksum(BitStream, Start)
                     _InitialDataChecksum = _DataChecksum
-                    Start += MFMBytesToBits(MFM_CRC_BYTES)
+                    Start += MFM_CRC_BITS
                 Else
                     _DataFieldSync = New Byte(MFM_SYNC_MARK_BYTES - 1) {}
-                    _Gap2 = New Byte(-1) {}
                     _DataOffset = 0
                     _Data = New Byte(-1) {}
                     _DataChecksum = 0
@@ -241,19 +237,6 @@
 
                 Return Start
             End Function
-
-            Private Sub ProcessGap3(Bitstream As BitArray, Offset As UInteger)
-                Dim IDAMPattern = BytesToBits(MFM_IDAM_SYNC_PATTERN_BYTES)
-
-                Dim IDAMFieldSyncIndex = FindPattern(Bitstream, IDAMPattern, Offset)
-                If IDAMFieldSyncIndex = -1 Then
-                    IDAMFieldSyncIndex = Bitstream.Length
-                Else
-                    IDAMFieldSyncIndex -= MFM_SYNC_NULL_BITS
-                End If
-
-                _Gap3 = MFMGetBytesByRange(Bitstream, Offset, IDAMFieldSyncIndex)
-            End Sub
         End Class
     End Namespace
 End Namespace
