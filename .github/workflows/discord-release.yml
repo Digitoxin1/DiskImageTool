@@ -1,63 +1,20 @@
-name: Post release to Discord
-
 on:
   release:
-    types:
-      - published
-  # Optional: allow manual testing
-  workflow_dispatch: {}
+    types: [published]
 
 jobs:
-  notify-discord:
+  github-releases-to-discord:
     runs-on: ubuntu-latest
-    env:
-      DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
-      RELEASE_NAME: ${{ github.event.release.name }}
-      RELEASE_TAG: ${{ github.event.release.tag_name }}
-      RELEASE_URL: ${{ github.event.release.html_url }}
-      RELEASE_BODY: ${{ github.event.release.body }}
-      REPO_NAME: ${{ github.repository }}
-      AUTHOR: ${{ github.event.release.author.login }}
     steps:
-      - name: Install jq
-        run: |
-          sudo apt-get update -y >/dev/null 2>&1
-          sudo apt-get install -y jq >/dev/null 2>&1
-
-      - name: Post to Discord
-        shell: bash
-        run: |
-          # Truncate to 4096 (embed description limit)
-          BODY_TRUNCATED=$(printf '%s' "$RELEASE_BODY" | head -c 4096)
-          # Encode body as JSON string safely
-          BODY_JSON=$(printf '%s' "$BODY_TRUNCATED" | jq -Rs .)
-
-          payload=$(jq -n \
-            --arg title "${REPO_NAME} – ${RELEASE_NAME} (${RELEASE_TAG})" \
-            --arg url "$RELEASE_URL" \
-            --arg ts "$(date -u +%Y-%m-%dT%H:%M:%SZ)" \
-            --arg author "$AUTHOR" \
-            --argjson desc "$BODY_JSON" '
-            {
-              embeds: [
-                {
-                  title: $title,
-                  url: $url,
-                  description: $desc,
-                  timestamp: $ts,
-                  footer: { text: ("Released by " + $author) }
-                }
-              ]
-            }')
-
-          CODE=$(curl -sS -o /tmp/resp.txt -w '%{http_code}' \
-            -H "Content-Type: application/json" \
-            -d "$payload" \
-            "${DISCORD_WEBHOOK}")
-          echo "HTTP: $CODE"
-          echo "Response:"
-          cat /tmp/resp.txt
-          if [ "$CODE" -ne 204 ]; then
-            echo "::error::Discord rejected the message (HTTP $CODE)"
-            exit 1
-          fi
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: GitHub Releases to Discord
+        uses: SethCohen/github-releases-to-discord@v1
+        with:
+          webhook_url: ${{ secrets.DISCORD_WEBHOOK }}
+          color: "2105893"
+          username: "Release Changelog"
+          avatar_url: "https://cdn.discordapp.com/avatars/487431320314576937/bd64361e4ba6313d561d54e78c9e7171.png"
+          content: "||@everyone||"
+          footer_title: "Changelog"
+          reduce_headings: true
