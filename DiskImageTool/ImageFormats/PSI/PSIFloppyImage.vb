@@ -87,6 +87,7 @@ Namespace ImageFormats
                             TrackData.LastSectorId = TrackInfo.LastSector
                             TrackData.SectorSize = TrackInfo.SectorSize
                             TrackData.Encoding = BitstreamTrackType.MFM
+                            TrackData.SectorCount = TrackInfo.SectorCount
                         End If
 
                         If TrackData.FirstSectorId = 1 And TrackData.LastSectorId = 4 And TrackData.SectorSize = 1024 Then

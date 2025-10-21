@@ -60,6 +60,7 @@ Namespace ImageFormats
                     TrackData.Encoding = GetEncoding(Track.Mode)
                     TrackData.FirstSectorId = Track.FirstSectorId
                     TrackData.LastSectorId = Track.LastSectorId
+                    TrackData.SectorCount = Track.Sectors.Count
 
                     If TrackData.FirstSectorId = 1 And TrackData.LastSectorId = 4 And TrackData.SectorSize = 1024 Then
                         ProcessSectors1024(Track)

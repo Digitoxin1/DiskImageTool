@@ -5,28 +5,49 @@ Namespace Bitstream
     Module Functions
         Private ReadOnly ValidSectorCount() As Byte = {8, 9, 15, 18, 36}
 
-        Public Function BitstreamCalculateHash(Image As IBitstreamImage, HashAlgorithm As HashAlgorithm) As String
+        Public Function BitstreamCalculateHash(Image As IBitstreamImage, HashAlgorithm As HashAlgorithm, Optional AllTracks As Boolean = True) As String
             Dim BitstreamTrack As IBitstreamTrack
+            Dim TrackCount As UShort
 
-            For Track = 0 To Image.TrackCount - 1 Step Image.TrackStep
+            If AllTracks Then
+                TrackCount = Image.TrackCount
+            Else
+                TrackCount = StandardTrackCount(Image.TrackCount, Image.TrackStep)
+            End If
+
+            Dim NewTrackCount = Image.TrackCount \ Image.TrackStep
+
+            For Track = 0 To TrackCount - 1 Step Image.TrackStep
+                Dim NewTrack = Track \ Image.TrackStep
                 For Side = 0 To Image.SideCount - 1
                     BitstreamTrack = Image.GetTrack(Track, Side)
                     If BitstreamTrack IsNot Nothing AndAlso BitstreamTrack.MFMData IsNot Nothing Then
                         Dim Sectors = BitstreamTrack.MFMData.Sectors
                         Dim Count = Sectors.Count
-                        Dim SectorIndex As Integer = BitstreamTrack.MFMData.SectorStartIndex
-                        For Counter = 0 To Count - 1
-                            Dim MFMSector = Sectors(SectorIndex)
-                            If MFMSector.DAMFound Then
-                                If MFMSector.InitialDataChecksumValid Then
-                                    HashAlgorithm.TransformBlock(MFMSector.Data, 0, MFMSector.Data.Length, Nothing, 0)
+                        Dim IsMetadata As Boolean = False
+
+                        ' Skip metadata tracks
+                        If ((NewTrackCount = 41 And NewTrack = 40) Or (NewTrackCount = 81 And NewTrack = 80)) Then
+                            If Count = 1 AndAlso Sectors(0).SectorId = 1 Then
+                                IsMetadata = True
+                            End If
+                        End If
+
+                        If Not IsMetadata Then
+                            Dim SectorIndex As Integer = BitstreamTrack.MFMData.SectorStartIndex
+                            For Counter = 0 To Count - 1
+                                Dim MFMSector = Sectors(SectorIndex)
+                                If MFMSector.DAMFound Then
+                                    If MFMSector.InitialDataChecksumValid Then
+                                        HashAlgorithm.TransformBlock(MFMSector.Data, 0, MFMSector.Data.Length, Nothing, 0)
+                                    End If
                                 End If
-                            End If
-                            SectorIndex += 1
-                            If SectorIndex = Count Then
-                                SectorIndex = 0
-                            End If
-                        Next
+                                SectorIndex += 1
+                                If SectorIndex = Count Then
+                                    SectorIndex = 0
+                                End If
+                            Next
+                        End If
                     End If
                 Next
             Next
@@ -193,6 +214,21 @@ Namespace Bitstream
         Public Function RoundRPM(RPM As UShort) As UShort
             Return Math.Round(RPM / 60) * 60
         End Function
+
+        Private Function StandardTrackCount(TrackCount As UShort, TrackStep As Byte) As UShort
+            Dim NewTrackCount = TrackCount \ TrackStep
+
+            If NewTrackCount > 40 And NewTrackCount < 43 Then
+                NewTrackCount = 40
+            ElseIf NewTrackCount > 80 Then
+                NewTrackCount = 80
+            End If
+
+            NewTrackCount = NewTrackCount * TrackStep
+
+            Return NewTrackCount
+        End Function
+
 
         Private Function GetSectorSize(Sectors As List(Of IBM_MFM.IBM_MFM_Sector)) As UShort
             Dim TotalSize As UShort = 0

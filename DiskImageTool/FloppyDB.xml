@@ -317,7 +317,7 @@
       <disk md5="6562233190BE09F4DF013271010C0AE6" cp="MicroProse Cloak"/>
     </release>
     <release year="1988" version="441.03" media="360K" status="V">
-      <disk md5="ECA0473A9F7ED3B98B95BB8F99E81199" md5_bitstream="B1639EF9A4B89082905051AE43692089" cp="MicroProse Cloak"/>
+      <disk md5="ECA0473A9F7ED3B98B95BB8F99E81199" md5_alt="B1639EF9A4B89082905051AE43692089" cp="MicroProse Cloak"/>
     </release>
   </title>
   <title name="Alex Higgins' World Snooker" publisher="Amstrad plc">
@@ -2127,7 +2127,7 @@
   </title>
   <title name="Demon Attack" publisher="Tandy Corporation">
     <release year="1984" media="160K" version="01.00.00" status="V" os="PC Booter">
-      <disk md5="34EBACE144F78AB50AB588C7D08EE982"/>
+      <disk md5="34EBACE144F78AB50AB588C7D08EE982" md5_alt="CF60874B91B233E2559F05699191F657"/>
     </release>
   </title>
   <title name="Demon Stalkers" publisher="Electronic Arts, Inc.">
@@ -2806,7 +2806,7 @@
   <title name="F-15 Strike Eagle II" publisher="MicroProse Software, Inc.">
     <release year="1989" version="451.01">
       <media media="360K" status="U">
-        <disk md5="26AA034B1FCE7BBAD8D4A331771226C6" md5_bitstream="978131A0F70CBD1C810B1918D749DD94" disk="A" cp="MicroProse Cloak"/>
+        <disk md5="26AA034B1FCE7BBAD8D4A331771226C6" md5_alt="978131A0F70CBD1C810B1918D749DD94" disk="A" cp="MicroProse Cloak"/>
         <disk md5="5786077609B52B2E5CCA2671D219A9D7" disk="B" status="V"/>
       </media>
       <media media="720K" status="V">
@@ -2814,7 +2814,7 @@
       </media>
     </release>
     <release year="1989" version="451.02" media="360K" status="U">
-      <disk md5="32B310B254D507E9EBAA878CA15C3F1D" md5_bitstream="677BA56416497E116D98044983D17341" disk="A" cp="MicroProse Cloak"/>
+      <disk md5="32B310B254D507E9EBAA878CA15C3F1D" md5_alt="677BA56416497E116D98044983D17341" disk="A" cp="MicroProse Cloak"/>
       <disk md5="8E52EA3EDB78A51E3B4F82B5B494183D" disk="B" status="V"/>
     </release>
   </title>
@@ -2855,7 +2855,7 @@
   </title>
   <title name="F-19 Stealth Fighter" publisher="MicroProse Software, Inc.">
     <release year="1988" version="435.01" media="360K" status="U">
-      <disk md5="FC6E198FCA046A3327E2068B620498B4" md5_bitstream="563BAA71B9693B90EB19084CD049A3A4" disk="A" cp="MicroProse Cloak"/>
+      <disk md5="FC6E198FCA046A3327E2068B620498B4" md5_alt="563BAA71B9693B90EB19084CD049A3A4" disk="A" cp="MicroProse Cloak"/>
       <disk md5="45CBB4FC1D24223503ABC6A614BBEC06" disk="B" status="V"/>
       <disk md5="D9375632500D6175E2B79482A0021B1F" disk="C"/>
     </release>
@@ -2866,12 +2866,12 @@
         <disk md5="BDB8B87D88784846BDC0362DE5F84D6D" disk="C" status="V"/>
       </media>
       <media media="720K">
-        <disk md5="6D5A29592738CCE45274F31043658E27" md5_bitstream="8FF1677306E2074822AB507F31016D5D" disk="A" cp="MicroProse Cloak"/>
+        <disk md5="6D5A29592738CCE45274F31043658E27" md5_alt="8FF1677306E2074822AB507F31016D5D" disk="A" cp="MicroProse Cloak"/>
         <disk md5="125E63AFD3ED691714C639AF648D66F5" disk="B" status="V"/>
       </media>
     </release>
     <release year="1988" version="435.04" media="360K" status="V">
-      <disk md5="0655953CF8EC974DCB0684B38F23AB4F" md5_bitstream="8BCC9101F749930138367BA4C9D77AC3" disk="A" cp="MicroProse Cloak"/>
+      <disk md5="0655953CF8EC974DCB0684B38F23AB4F" md5_alt="8BCC9101F749930138367BA4C9D77AC3" disk="A" cp="MicroProse Cloak"/>
       <disk md5="04E536E57D43BF1BCC19987D26615299" disk="B"/>
       <disk md5="63757CF8F78E559B0FD166508CB24C25" disk="C"/>
     </release>
@@ -3695,9 +3695,9 @@
   <title name="Gunship 2000" publisher="MicroProse Software, Inc.">
     <release year="1991" version="469.02" status="V">
       <media media="1.2M">
-        <disk md5="BC8F7B22320373D205F636AC03E70986" disk="A"/>
-        <disk md5="2A140C546FB0B82E2CEC43F4D919FC0D" disk="B"/>
-        <disk md5="9FFEB357555A24FB132695B64911982D" disk="C"/>
+        <disk md5="BC8F7B22320373D205F636AC03E70986" md5_alt="3249026E8DC56EC62C58B08D7C28E488" disk="A"/>
+        <disk md5="2A140C546FB0B82E2CEC43F4D919FC0D" md5_alt="A1767CAF45CC665415DAC0B686A0EDDE" disk="B"/>
+        <disk md5="9FFEB357555A24FB132695B64911982D" md5_alt="C47B2C9EAB15CDA4482DDE4C3AF95492" disk="C"/>
       </media>
       <media media="720K">
         <disk md5="2B45B13F3613315ECA255E7654102BC1" disk="A"/>
@@ -6483,12 +6483,12 @@
   <title name="M1 Tank Platoon" publisher="MicroProse Software, Inc.">
     <release year="1989" version="449.01">
       <media media="360K" status="V">
-        <disk md5="DA4C5A0B6B676C28FC4CB9C4BA4F1182" md5_bitstream="A0128BE1AF8A7CBB679C4A9A2EBDCF62" disk="A" cp="MicroProse Cloak"/>
+        <disk md5="DA4C5A0B6B676C28FC4CB9C4BA4F1182" md5_alt="A0128BE1AF8A7CBB679C4A9A2EBDCF62" disk="A" cp="MicroProse Cloak"/>
         <disk md5="3AF62499BA2A462FEA0E8B61B31A2552" disk="B" status="U"/>
         <disk md5="09420CC12B1381C609B009CD08941728" disk="C" status="U"/>
       </media>
       <media media="720K" status="V">
-        <disk md5="5CE04F208885FE6CFF599752A9755430" md5_bitstream="F973582525BB826C9B51E3160FF8525F" disk="A" cp="MicroProse Cloak"/>
+        <disk md5="5CE04F208885FE6CFF599752A9755430" md5_alt="F973582525BB826C9B51E3160FF8525F" disk="A" cp="MicroProse Cloak"/>
         <disk md5="F615A95338A11D36B03554BD9F1E55D7" disk="B"/>
       </media>
     </release>
@@ -7003,7 +7003,7 @@
   </title>
   <title name="MicroProse Pro Soccer" publisher="MicroProse Software, Inc.">
     <release year="1989" media="720K" status="V">
-      <disk md5="8086F63E6FCF7544BC8953A8FE96007A" cp="MicroProse Cloak"/>
+      <disk md5="ADFD05D071D07801AABD5B6D6A68A553" cp="MicroProse Cloak"/>
     </release>
   </title>
   <title name="Microsoft Adventure" publisher="IBM">
@@ -8784,11 +8784,11 @@
   <title name="Red Storm Rising" publisher="MicroProse Software, Inc.">
     <release year="1989" version="443.01" status="U">
       <media media="360K">
-        <disk md5="3A99256E5AD9CFD25ABD21C06CA587C6" md5_bitstream="64BDFE83C0AFC4C8BA75FB6F1F848B8B" disk="A" cp="MicroProse Cloak"/>
+        <disk md5="3A99256E5AD9CFD25ABD21C06CA587C6" md5_alt="64BDFE83C0AFC4C8BA75FB6F1F848B8B" disk="A" cp="MicroProse Cloak"/>
         <disk md5="849F6934045DD7A89545834C34D6532F" disk="B"/>
       </media>
       <media media="720K">
-        <disk md5="575592FE035197329A719F923C22B85D" md5_bitstream="88BC7F7F0B53EA04F8D355DE12DFF438" cp="MicroProse Cloak"/>
+        <disk md5="575592FE035197329A719F923C22B85D" md5_alt="88BC7F7F0B53EA04F8D355DE12DFF438" cp="MicroProse Cloak"/>
       </media>
     </release>
   </title>
@@ -8887,10 +8887,10 @@
   <title name="Rick Dangerous" publisher="MicroProse Software, Inc.">
     <release year="1989" status="V">
       <media media="360K">
-        <disk md5="1D78E533D2378B9157275961697794F6" md5_bitstream="1FF300C0FF042A10DBE32C9CDD2AFF35" cp="MicroProse Cloak"/>
+        <disk md5="1D78E533D2378B9157275961697794F6" md5_alt="1FF300C0FF042A10DBE32C9CDD2AFF35" cp="MicroProse Cloak"/>
       </media>
       <media media="720K">
-        <disk md5="2DEB662F8E9B27926C6E60292C3D8534" md5_bitstream="0ED14F57A7D8600F464EA6F87AAA984D" cp="MicroProse Cloak"/>
+        <disk md5="2DEB662F8E9B27926C6E60292C3D8534" md5_alt="0ED14F57A7D8600F464EA6F87AAA984D" cp="MicroProse Cloak"/>
       </media>
     </release>
   </title>
@@ -11117,7 +11117,7 @@
   </title>
   <title name="Stunt Track Racer" publisher="MicroProse Software, Inc.">
     <release year="1989" media="360K" status="V">
-      <disk md5="A7DF1D80FE5DF143BEC50D02F4DC4CFF" md5_bitstream="F22D736B1A5D56F7019A68868FC761DC" disk="A" cp="MicroProse Cloak"/>
+      <disk md5="A7DF1D80FE5DF143BEC50D02F4DC4CFF" md5_alt="F22D736B1A5D56F7019A68868FC761DC" disk="A" cp="MicroProse Cloak"/>
       <disk md5="EFB3711DFE028E3AD2E4DA44BC9B7F2D" disk="B"/>
     </release>
   </title>
@@ -11557,7 +11557,7 @@
   </title>
   <title name="The Amazing Spider-Man and Captain America in Dr. Doom's Revenge!" publisher="Medalist International">
     <release year="1989" version="1.2" media="360K" status="V">
-      <disk md5="E3A927001A9C023B2769879DF804A831" md5_bitstream="A4C8774CBFC51B3467ABE1C3C1ACCD94" disk="A" cp="MicroProse Cloak"/>
+      <disk md5="4FDC37349E7E2C0038A91CCE69BCB08A" disk="A" cp="MicroProse Cloak"/>
       <disk md5="DEE44E3B4323B15EA9928B652BA08E54" disk="B"/>
     </release>
   </title>
@@ -13882,12 +13882,12 @@
   </title>
   <title name="X-Men" publisher="Paragon Software Corporation">
     <release year="1989" media="360K" status="V">
-      <disk md5="C20D929EF316412D283990D0E05C0A51" md5_bitstream="67EA70A2755597D3C509E1EED90EC49A" disk="A" cp="MicroProse Cloak"/>
+      <disk md5="C20D929EF316412D283990D0E05C0A51" md5_alt="67EA70A2755597D3C509E1EED90EC49A" disk="A" cp="MicroProse Cloak"/>
       <disk md5="72F214CDCE9C13563F96BB062E7EDE0F" disk="B"/>
       <disk md5="733F0C159BF554871D9F5C878450BD47" disk="C"/>
     </release>
     <release year="1989" version="3.0" media="360K" status="V">
-      <disk md5="634A9D920E63478FBEA058750452558A" md5_bitstream="80D79FB621824B2A37F2646CD3DE0F5B" disk="A" cp="MicroProse Cloak"/>
+      <disk md5="634A9D920E63478FBEA058750452558A" md5_alt="80D79FB621824B2A37F2646CD3DE0F5B" disk="A" cp="MicroProse Cloak"/>
       <disk md5="3CBFF0E7D073AD3E5F3A650684D489D8" disk="B"/>
       <disk md5="AB88F2444BED60F693AA8C48E62C1332" disk="C"/>
     </release>

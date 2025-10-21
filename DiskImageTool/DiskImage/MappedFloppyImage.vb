@@ -657,6 +657,7 @@ Namespace DiskImage
                 TrackData.SectorSize = MFMData.SectorSize
                 TrackData.DuplicateSectors = MFMData.DuplicateSectors
                 TrackData.OverlappingSectors = MFMData.OverlappingSectors
+                TrackData.SectorCount = MFMData.Sectors.Count
             End If
 
             _Tracks(Index) = TrackData
@@ -669,6 +670,7 @@ Namespace DiskImage
                 _LastSectorId = -1
                 _OverlappingSectors = False
                 _Encoding = BitstreamTrackType.Other
+                _SectorCount = 0
             End Sub
 
             Public Property DuplicateSectors As Boolean
@@ -676,6 +678,7 @@ Namespace DiskImage
             Public Property FirstSectorId As Short
             Public Property LastSectorId As Short
             Public Property OverlappingSectors As Boolean
+            Public Property SectorCount As Integer
             Public Property SectorSize As Integer
         End Class
 

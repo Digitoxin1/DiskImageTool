@@ -608,7 +608,7 @@ Namespace ImageFormats
 
             If TrackCount < 40 Then
                 NewTrackCount = 40
-            ElseIf TrackCount > 41 And TrackCount < 80 Then
+            ElseIf TrackCount > 42 And TrackCount < 80 Then
                 NewTrackCount = 80
             Else
                 NewTrackCount = TrackCount

@@ -572,8 +572,9 @@ Module SummaryPanel
                 .AddItem(DiskGroup, My.Resources.SummaryPanel_WeakBits, If(Disk.Image.HasWeakBits, My.Resources.Label_Yes, My.Resources.Label_No))
             End If
 
-            If Disk.Image.NonStandardTracks.Count > 0 Then
-                .AddItem(DiskGroup, My.Resources.SummaryPanel_NonStandardTracks, GetNonStandardTrackList(Disk.Image.NonStandardTracks, Disk.Image.SideCount))
+            If Disk.Image.NonStandardTracks.Count > 0 Or Disk.Image.AdditionalTracks.Count > 0 Then
+                Dim TrackList As New HashSet(Of UShort)(Disk.Image.NonStandardTracks.Concat(Disk.Image.AdditionalTracks))
+                .AddItem(DiskGroup, My.Resources.SummaryPanel_NonStandardTracks, GetNonStandardTrackList(TrackList, Disk.Image.SideCount))
             End If
         End With
 

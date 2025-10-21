@@ -238,6 +238,8 @@ Namespace ImageFormats
             Private Sub UpdateTrackInfo(Sector As PSISector)
                 Dim TrackInfo = GetTrackInfo(Sector.Track, Sector.Side)
 
+                TrackInfo.SectorCount += 1
+
                 If TrackInfo.FirstSector = -1 Then
                     TrackInfo.FirstSector = Sector.Sector
                     TrackInfo.SectorSize = Sector.Size
