@@ -1,35 +1,48 @@
-// GitHub -> (your server) -> Discord
-import express from "express";
-import fetch from "node-fetch";
+name: Post release to Discord
 
-const app = express();
-app.use(express.json({ type: ["application/json", "application/*+json"] }));
+on:
+  release:
+    types:
+      - published
 
-app.post("/github", async (req, res) => {
-  if (req.header("X-GitHub-Event") !== "release") return res.sendStatus(204);
-  const r = req.body.release;
-  if (!r || req.body.action !== "published") return res.sendStatus(204);
+jobs:
+  notify-discord:
+    runs-on: ubuntu-latest
+    env:
+      DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
+      RELEASE_NAME: ${{ github.event.release.name }}
+      RELEASE_TAG: ${{ github.event.release.tag_name }}
+      RELEASE_URL: ${{ github.event.release.html_url }}
+      RELEASE_BODY: ${{ github.event.release.body }}
+      REPO_NAME: ${{ github.repository }}
+      AUTHOR: ${{ github.event.release.author.login }}
+    steps:
+      - name: Post to Discord
+        shell: bash
+        run: |
+          # Truncate to Discord embed description limit (4096 chars)
+          if [ "${#RELEASE_BODY}" -gt 4096 ]; then
+            BODY_TRUNCATED="${RELEASE_BODY:0:4095}…"
+          else
+            BODY_TRUNCATED="$RELEASE_BODY"
+          fi
 
-  const desc = (r.body || "");
-  const description = desc.length > 4096 ? desc.slice(0, 4095) + "…" : desc;
+          # Build the JSON payload (simple embed)
+          payload=$(cat <<JSON
+          {
+            "embeds": [
+              {
+                "title": "${REPO_NAME} – ${RELEASE_NAME} (${RELEASE_TAG})",
+                "url": "${RELEASE_URL}",
+                "description": ${BODY_TRUNCATED@Q},
+                "timestamp": "$(date -u +%Y-%m-%dT%H:%M:%SZ)",
+                "footer": { "text": "Released by ${AUTHOR}" }
+              }
+            ]
+          }
+          JSON
+          )
 
-  const payload = {
-    embeds: [{
-      title: `${req.body.repository.full_name} – ${r.name} (${r.tag_name})`,
-      url: r.html_url,
-      description,
-      timestamp: new Date().toISOString(),
-      footer: { text: `Released by ${r.author?.login || "unknown"}` }
-    }]
-  };
-
-  await fetch(process.env.DISCORD_WEBHOOK, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(payload)
-  });
-
-  res.sendStatus(200);
-});
-
-app.listen(3000, () => console.log("listening on :3000"));
+          # Send to Discord
+          curl -sS -X POST -H "Content-Type: application/json" \
+            -d "$payload" "$DISCORD_WEBHOOK"
