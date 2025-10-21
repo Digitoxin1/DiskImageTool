@@ -15,7 +15,7 @@ jobs:
         with:
           webhook_url: ${{ secrets.DISCORD_WEBHOOK }}
           color: "2105893"
-          username: "Release Changelog"
+          username: "New Release"
           avatar_url: "https://cdn.discordapp.com/avatars/487431320314576937/bd64361e4ba6313d561d54e78c9e7171.png"
           content: "||@everyone||"
           footer_title: "Changelog"
