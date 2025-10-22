@@ -278,7 +278,7 @@
                     End If
                 End If
 
-                Buffer = MFMGetBytes(Bitstream, RegionInfo.BitstreamIndex, RegionSector.DataLength + MFM_SYNC_MARK_BYTES)
+                Buffer = MFMGetBytes(Bitstream, RegionInfo.BitstreamIndex, RegionSector.AdjustedDataLength + MFM_SYNC_MARK_BYTES)
                 Dim CalculatedChecksum = MFMCRC16(Buffer)
 
                 Dim RegionSize As UInteger
@@ -294,7 +294,7 @@
                 RegionData.Regions.Add(New BitstreamRegion(MFMRegionType.DAM, RegionInfo.ByteIndex, MFMBitsToBytes(RegionSize), RegionSector, RegionInfo.BitOffset))
                 RegionInfo.AddBits(RegionSize)
 
-                Dim SectorSize = RegionSector.DataLength
+                Dim SectorSize = RegionSector.AdjustedDataLength
                 Dim SectorLength = MFMBitsToBytes(EndIndex - RegionInfo.BitstreamIndex)
 
                 If SectorSize > SectorLength Then
@@ -315,11 +315,11 @@
 
                 RegionSector.DataStartIndex = RegionInfo.ByteIndex
                 RegionData.Regions.Add(New BitstreamRegion(MFMRegionType.DataArea, RegionInfo.ByteIndex, SectorSize, RegionSector, RegionInfo.BitOffset))
-                If RegionInfo.ByteIndex + RegionSector.DataLength > RegionData.NumBytes Then
-                    RegionData.NumBytes = RegionInfo.ByteIndex + RegionSector.DataLength
+                If RegionInfo.ByteIndex + RegionSector.AdjustedDataLength > RegionData.NumBytes Then
+                    RegionData.NumBytes = RegionInfo.ByteIndex + RegionSector.AdjustedDataLength
                 End If
 
-                Buffer = MFMGetBytes(Bitstream, RegionInfo.BitstreamIndex + MFMBytesToBits(RegionSector.DataLength), MFM_CRC_BYTES)
+                Buffer = MFMGetBytes(Bitstream, RegionInfo.BitstreamIndex + MFMBytesToBits(RegionSector.AdjustedDataLength), MFM_CRC_BYTES)
                 Dim Checksum = BitConverter.ToUInt16(Buffer, 0)
                 RegionSector.DataChecksumValid = (Checksum = CalculatedChecksum)
 
@@ -472,6 +472,7 @@
                 RegionSector.Side = Buffer(1)
                 RegionSector.SectorId = Buffer(2)
                 RegionSector.DataLength = GetSectorSizeBytes(Buffer(3))
+                RegionSector.AdjustedDataLength = RegionSector.DataLength
 
                 RegionSize = MFM_IDAREA_BYTES
                 RegionData.Regions.Add(New BitstreamRegion(MFMRegionType.IDArea, RegionInfo.ByteIndex, RegionSize, RegionSector, RegionInfo.BitOffset))
@@ -555,7 +556,7 @@
                         If RegionSector.DataLength = 256 Then
                             'Not sure why I chose 526 - Need to research
                             If RegionInfo.BitstreamIndex + MFMBytesToBits(526) < SectorEnd Then
-                                RegionSector.DataLength = 512
+                                RegionSector.AdjustedDataLength = 512
                             End If
                         End If
                     Else

@@ -1052,7 +1052,7 @@ Public Class HexViewRawForm
     Private Sub SelectData()
         If _CurrentRegionSector IsNot Nothing Then
             Dim MaxLength = HexBox1.ByteProvider.Length
-            Dim DataLength = _CurrentRegionSector.DataLength
+            Dim DataLength = _CurrentRegionSector.AdjustedDataLength
             If _CurrentRegionSector.DataStartIndex + DataLength > MaxLength Then
                 DataLength = MaxLength - _CurrentRegionSector.DataStartIndex
             End If
@@ -1105,6 +1105,10 @@ Public Class HexViewRawForm
         End If
 
         If Sector.DAM <> MFMAddressMark.Data Then
+            Return False
+        End If
+
+        If Sector.Overlaps Then
             Return False
         End If
 

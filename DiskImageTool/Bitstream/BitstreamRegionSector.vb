@@ -1,6 +1,7 @@
 ﻿Namespace Bitstream
     Namespace IBM_MFM
         Public Class BitstreamRegionSector
+            Public Property AdjustedDataLength As UInteger
             Public Property BadGapsStart As UInteger
             Public Property DAM As Byte
             Public Property DAMNulls As UInteger
