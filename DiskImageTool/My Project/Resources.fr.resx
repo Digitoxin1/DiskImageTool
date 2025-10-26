@@ -1475,4 +1475,7 @@ Remarque : cette valeur doit être {1} pour toutes les disquettes</value>
   <data name="Filter_Disk_HasWriteSplices" xml:space="preserve">
     <value>Disquette - Avec jonctions d’écriture</value>
   </data>
+  <data name="Label_SizeId" xml:space="preserve">
+    <value>Taille ID</value>
+  </data>
 </root>

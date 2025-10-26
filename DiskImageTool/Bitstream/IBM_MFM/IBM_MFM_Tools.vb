@@ -13,6 +13,10 @@
             IDAMSync
             IDAM
             IDArea
+            IDAreaCylinder
+            IDAreaHead
+            IDAreaSectorId
+            IDAreaSizeId
             IDAMChecksumValid
             IDAMChecksumInvalid
             DAMNulls
@@ -474,9 +478,25 @@
                 RegionSector.DataLength = GetSectorSizeBytes(Buffer(3))
                 RegionSector.AdjustedDataLength = RegionSector.DataLength
 
-                RegionSize = MFM_IDAREA_BYTES
-                RegionData.Regions.Add(New BitstreamRegion(MFMRegionType.IDArea, RegionInfo.ByteIndex, RegionSize, RegionSector, RegionInfo.BitOffset))
-                RegionInfo.AddBytes(RegionSize)
+                RegionSize = MFM_BYTE_BITS
+                RegionData.Regions.Add(New BitstreamRegion(MFMRegionType.IDAreaCylinder, RegionInfo.ByteIndex, MFMBitsToBytes(RegionSize), RegionSector, RegionInfo.BitOffset))
+                RegionInfo.AddBits(RegionSize)
+
+                RegionSize = MFM_BYTE_BITS
+                RegionData.Regions.Add(New BitstreamRegion(MFMRegionType.IDAreaHead, RegionInfo.ByteIndex, MFMBitsToBytes(RegionSize), RegionSector, RegionInfo.BitOffset))
+                RegionInfo.AddBits(RegionSize)
+
+                RegionSize = MFM_BYTE_BITS
+                RegionData.Regions.Add(New BitstreamRegion(MFMRegionType.IDAreaSectorId, RegionInfo.ByteIndex, MFMBitsToBytes(RegionSize), RegionSector, RegionInfo.BitOffset))
+                RegionInfo.AddBits(RegionSize)
+
+                RegionSize = MFM_BYTE_BITS
+                RegionData.Regions.Add(New BitstreamRegion(MFMRegionType.IDAreaSizeId, RegionInfo.ByteIndex, MFMBitsToBytes(RegionSize), RegionSector, RegionInfo.BitOffset))
+                RegionInfo.AddBits(RegionSize)
+
+                'RegionSize = MFM_IDAREA_BYTES
+                'RegionData.Regions.Add(New BitstreamRegion(MFMRegionType.IDArea, RegionInfo.ByteIndex, RegionSize, RegionSector, RegionInfo.BitOffset))
+                'RegionInfo.AddBytes(RegionSize)
 
                 Buffer = MFMGetBytes(Bitstream, RegionInfo.BitstreamIndex, MFM_CRC_BYTES)
                 Dim Checksum = BitConverter.ToUInt16(Buffer, 0)

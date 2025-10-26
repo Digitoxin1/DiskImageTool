@@ -3342,6 +3342,15 @@ Namespace My.Resources
         End Property
         
         '''<summary>
+        '''  Looks up a localized string similar to Size Id.
+        '''</summary>
+        Friend ReadOnly Property Label_SizeId() As String
+            Get
+                Return ResourceManager.GetString("Label_SizeId", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
         '''  Looks up a localized string similar to Sync FATs.
         '''</summary>
         Friend ReadOnly Property Label_SyncFATs() As String

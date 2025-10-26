@@ -1475,4 +1475,7 @@ Hinweis: Diese ID wird normalerweise erzeugt, indem das aktuelle Datum und die a
   <data name="Filter_Disk_HasWriteSplices" xml:space="preserve">
     <value>Diskette – Mit Schreibsplices</value>
   </data>
+  <data name="Label_SizeId" xml:space="preserve">
+    <value>Größe ID</value>
+  </data>
 </root>

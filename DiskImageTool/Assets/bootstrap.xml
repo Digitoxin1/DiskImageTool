@@ -512,7 +512,7 @@
     <oemname name="IBM  5.0" company="IBM" description="PC-DOS 5.0"/>
   </bootstrap>
   <bootstrap crc32="42705487" jmp="EB3C90" language="French">
-    <oemname name="IBM  5.0"/>
+    <oemname name="IBM  5.0" company="IBM" verified="true"/>
   </bootstrap>
   <bootstrap crc32="691CBF48" jmp="EB3C90" language="French">
     <oemname name="IBM  5.0" company="Compaq" dexcription="Microsoft Windows 3.1"/>

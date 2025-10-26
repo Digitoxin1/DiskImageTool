@@ -263,7 +263,7 @@ Public Class HexViewRawForm
                 Return Color.MediumBlue
             Case MFMRegionType.IAM, MFMRegionType.IDAM, MFMRegionType.DAM
                 Return Color.Blue
-            Case MFMRegionType.IDArea
+            Case MFMRegionType.IDArea, MFMRegionType.IDAreaCylinder, MFMRegionType.IDAreaHead, MFMRegionType.IDAreaSectorId, MFMRegionType.IDAreaSizeId
                 Return Color.DarkOrange
             Case MFMRegionType.IDAMChecksumValid, MFMRegionType.DataChecksumValid
                 Return Color.Purple
@@ -303,6 +303,14 @@ Public Class HexViewRawForm
                 Return My.Resources.Bitstream_IDAM
             Case MFMRegionType.IDArea
                 Return My.Resources.Bitstream_IDArea
+            Case MFMRegionType.IDAreaCylinder
+                Return My.Resources.Bitstream_IDArea & " - " & My.Resources.Label_Track
+            Case MFMRegionType.IDAreaHead
+                Return My.Resources.Bitstream_IDArea & " - " & My.Resources.Label_Side
+            Case MFMRegionType.IDAreaSectorId
+                Return My.Resources.Bitstream_IDArea & " - " & My.Resources.Label_SectorId
+            Case MFMRegionType.IDAreaSizeId
+                Return My.Resources.Bitstream_IDArea & " - " & My.Resources.Label_SizeId
             Case MFMRegionType.IDAMChecksumValid, MFMRegionType.IDAMChecksumInvalid
                 Return My.Resources.Bitstream_IDAMChecksum
             Case MFMRegionType.DAMNulls
