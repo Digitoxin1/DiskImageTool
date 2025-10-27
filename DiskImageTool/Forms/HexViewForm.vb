@@ -6,7 +6,7 @@ Imports DiskImageTool.HexView
 
 Public Class HexViewForm
     Private WithEvents CheckBoxSync As ToolStripCheckBox
-    Private WithEvents ComboTrack As ToolStripComboBox
+    Private WithEvents ComboTrack As ComboTrack
     Private WithEvents NumericCluster As ToolStripNumericUpDown
     Private WithEvents NumericSector As ToolStripNumericUpDown
     Public Shared ReadOnly ALT_BACK_COLOR As Color = Color.FromArgb(246, 246, 252)
@@ -33,7 +33,6 @@ Public Class HexViewForm
     Private _StartingCluster As UShort = 0
     Private _StoredCellValue As String
     Private _DataGridInspector As HexViewDataGridInspector
-    Private _typeAhead As ComboTypeAhead
 
     Public Sub New(HexViewSectorData As HexViewSectorData, SectorNavigator As Boolean, ClusterNavigator As Boolean, SyncBlocks As Boolean)
         ' This call is required by the designer.
@@ -604,13 +603,7 @@ Public Class HexViewForm
     End Sub
 
     Private Sub InitializeTrackNavigator()
-        ComboTrack = New ToolStripComboBox() With {
-            .Alignment = ToolStripItemAlignment.Right,
-            .DropDownStyle = ComboBoxStyle.DropDownList,
-            .AutoSize = False,
-            .FlatStyle = FlatStyle.Standard,
-            .Size = New Drawing.Size(50, 23)
-        }
+        ComboTrack = New ComboTrack()
 
         Dim LabelTrack = New ToolStripLabel(My.Resources.Label_Track) With {
             .Alignment = ToolStripItemAlignment.Right,
@@ -619,8 +612,6 @@ Public Class HexViewForm
 
         ToolStripMain.Items.Add(ComboTrack)
         ToolStripMain.Items.Add(LabelTrack)
-
-        _typeAhead = New ComboTypeAhead(ComboTrack.ComboBox)
     End Sub
 
     Private Sub InitRegionDescriptions(HighlightedRegions As HighlightedRegions)
@@ -962,28 +953,28 @@ Public Class HexViewForm
                 End If
 
                 BtnSelectSector.Text = My.Resources.Menu_SelectSector & " " & Sector
-                    BtnSelectSector.Enabled = Not OutOfRange
-                    ToolStripBtnSelectSector.Text = My.Resources.Label_Sector & " " & Sector
-                    ToolStripBtnSelectSector.ToolTipText = My.Resources.Label_SelectSector & " " & Sector
-                    ToolStripBtnSelectSector.Enabled = BtnSelectSector.Enabled
+                BtnSelectSector.Enabled = Not OutOfRange
+                ToolStripBtnSelectSector.Text = My.Resources.Label_Sector & " " & Sector
+                ToolStripBtnSelectSector.ToolTipText = My.Resources.Label_SelectSector & " " & Sector
+                ToolStripBtnSelectSector.Enabled = BtnSelectSector.Enabled
 
-                    If _BPB.IsValid Then
-                        Dim Track = _BPB.SectorToTrack(Sector)
-                        Dim Side = _BPB.SectorToSide(Sector)
-                        Dim Value = Track.ToString & "." & Side.ToString
+                If _BPB.IsValid Then
+                    Dim Track = _BPB.SectorToTrack(Sector)
+                    Dim Side = _BPB.SectorToSide(Sector)
+                    Dim Value = Track.ToString & "." & Side.ToString
 
-                        BtnSelectTrack.Text = My.Resources.Menu_SelectTrack & " " & Value
-                        BtnSelectTrack.Enabled = _ClusterNavigator And Not OutOfRange
-                        ToolStripBtnSelectTrack.Text = My.Resources.Label_Track & " " & Value
-                        ToolStripBtnSelectTrack.ToolTipText = My.Resources.Label_SelectTrack & " " & Value
-                        ToolStripBtnSelectTrack.Enabled = BtnSelectTrack.Enabled
-                    End If
-
-
-                    _CurrentSector = Sector
+                    BtnSelectTrack.Text = My.Resources.Menu_SelectTrack & " " & Value
+                    BtnSelectTrack.Enabled = _ClusterNavigator And Not OutOfRange
+                    ToolStripBtnSelectTrack.Text = My.Resources.Label_Track & " " & Value
+                    ToolStripBtnSelectTrack.ToolTipText = My.Resources.Label_SelectTrack & " " & Value
+                    ToolStripBtnSelectTrack.Enabled = BtnSelectTrack.Enabled
                 End If
 
-                If _RegionDescriptions.Count = 0 Then
+
+                _CurrentSector = Sector
+            End If
+
+            If _RegionDescriptions.Count = 0 Then
                 _DataGridInspector.SetDataRow(DataRowEnum.Description, Nothing, True, True)
             Else
                 Dim RegionStart As HexViewHighlightRegion
@@ -1537,10 +1528,6 @@ Public Class HexViewForm
 
     Private Sub ToolStripMain_ItemClicked(sender As Object, e As ToolStripItemClickedEventArgs) Handles ToolStripMain.ItemClicked
         HexBox1.Focus()
-    End Sub
-
-    Private Sub ComboTrack_KeyPress(sender As Object, e As KeyPressEventArgs) Handles ComboTrack.KeyPress
-        e.Handled = True
     End Sub
 
     'Private Sub GroupBoxByteOrder_Resize(sender As Object, e As EventArgs) Handles GroupBoxByteOrder.Resize

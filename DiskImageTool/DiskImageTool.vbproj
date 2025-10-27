@@ -288,7 +288,9 @@
     <Compile Include="Extensions\DataGridViewExtensions.vb" />
     <Compile Include="Extensions\StringExtensions.vb" />
     <Compile Include="Extensions\XMLExtensions.vb" />
-    <Compile Include="Lib\ComboTypeAhead.vb" />
+    <Compile Include="Lib\ComboTrack.vb">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="Lib\CRC32Hash.vb" />
     <Compile Include="Lib\FloppyInterface.vb" />
     <Compile Include="FormControls.vb" />

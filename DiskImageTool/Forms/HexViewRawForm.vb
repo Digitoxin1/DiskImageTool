@@ -7,7 +7,7 @@ Imports DiskImageTool.Bitstream
 
 Public Class HexViewRawForm
     Private WithEvents CheckBoxAllTracks As ToolStripCheckBox
-    Private WithEvents ComboTrack As ToolStripComboBox
+    Private WithEvents ComboTrack As ComboTrack
     Private WithEvents NumericBitOffset As ToolStripNumericUpDown
     Private Const PADDING_COLS As Integer = 8
     Private Const PADDING_ROWS As Integer = 6
@@ -43,7 +43,7 @@ Public Class HexViewRawForm
     Private _Track As UShort
     Private _TrackType As BitstreamTrackType
     Private _WeakBitRegions As List(Of HighlightRange)
-    Private _typeAhead As ComboTypeAhead
+
     Public Sub New(Disk As Disk, Track As UShort, Side As Byte, AllTracks As Boolean)
         ' This call is required by the designer.
         InitializeComponent()
@@ -554,13 +554,7 @@ Public Class HexViewRawForm
     End Sub
 
     Private Sub InitializeTrackNavigator()
-        ComboTrack = New ToolStripComboBox() With {
-            .Alignment = ToolStripItemAlignment.Right,
-            .DropDownStyle = ComboBoxStyle.DropDownList,
-            .AutoSize = False,
-            .FlatStyle = FlatStyle.Standard,
-            .Size = New Drawing.Size(50, 23)
-        }
+        ComboTrack = New ComboTrack()
 
         Dim LabelTrack = New ToolStripLabel(My.Resources.Label_Track) With {
             .Alignment = ToolStripItemAlignment.Right,
@@ -569,8 +563,6 @@ Public Class HexViewRawForm
 
         ToolStripMain.Items.Add(ComboTrack)
         ToolStripMain.Items.Add(LabelTrack)
-
-        _typeAhead = New ComboTypeAhead(ComboTrack.ComboBox)
     End Sub
 
     Private Sub InitRegionMap()
