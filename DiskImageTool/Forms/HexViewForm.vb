@@ -33,6 +33,7 @@ Public Class HexViewForm
     Private _StartingCluster As UShort = 0
     Private _StoredCellValue As String
     Private _DataGridInspector As HexViewDataGridInspector
+    Private _typeAhead As ComboTypeAhead
 
     Public Sub New(HexViewSectorData As HexViewSectorData, SectorNavigator As Boolean, ClusterNavigator As Boolean, SyncBlocks As Boolean)
         ' This call is required by the designer.
@@ -607,7 +608,7 @@ Public Class HexViewForm
             .Alignment = ToolStripItemAlignment.Right,
             .DropDownStyle = ComboBoxStyle.DropDownList,
             .AutoSize = False,
-            .FlatStyle = FlatStyle.Popup,
+            .FlatStyle = FlatStyle.Standard,
             .Size = New Drawing.Size(50, 23)
         }
 
@@ -618,6 +619,8 @@ Public Class HexViewForm
 
         ToolStripMain.Items.Add(ComboTrack)
         ToolStripMain.Items.Add(LabelTrack)
+
+        _typeAhead = New ComboTypeAhead(ComboTrack.ComboBox)
     End Sub
 
     Private Sub InitRegionDescriptions(HighlightedRegions As HighlightedRegions)
@@ -1077,7 +1080,7 @@ Public Class HexViewForm
                 Dim TrackEnd = _BPB.SectorToTrack(SectorEnd)
                 For i = TrackStart To TrackEnd
                     For j = 0 To _BPB.NumberOfHeads - 1
-                        ComboTrack.Items.Add(i & "." & j)
+                        ComboTrack.Items.Add($"{i}.{j}")
                     Next
                 Next
                 ComboTrack.SelectedIndex = 0
@@ -1534,6 +1537,10 @@ Public Class HexViewForm
 
     Private Sub ToolStripMain_ItemClicked(sender As Object, e As ToolStripItemClickedEventArgs) Handles ToolStripMain.ItemClicked
         HexBox1.Focus()
+    End Sub
+
+    Private Sub ComboTrack_KeyPress(sender As Object, e As KeyPressEventArgs) Handles ComboTrack.KeyPress
+        e.Handled = True
     End Sub
 
     'Private Sub GroupBoxByteOrder_Resize(sender As Object, e As EventArgs) Handles GroupBoxByteOrder.Resize

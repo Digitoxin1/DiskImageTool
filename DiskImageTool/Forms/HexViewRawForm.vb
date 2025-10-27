@@ -43,6 +43,7 @@ Public Class HexViewRawForm
     Private _Track As UShort
     Private _TrackType As BitstreamTrackType
     Private _WeakBitRegions As List(Of HighlightRange)
+    Private _typeAhead As ComboTypeAhead
     Public Sub New(Disk As Disk, Track As UShort, Side As Byte, AllTracks As Boolean)
         ' This call is required by the designer.
         InitializeComponent()
@@ -568,6 +569,8 @@ Public Class HexViewRawForm
 
         ToolStripMain.Items.Add(ComboTrack)
         ToolStripMain.Items.Add(LabelTrack)
+
+        _typeAhead = New ComboTypeAhead(ComboTrack.ComboBox)
     End Sub
 
     Private Sub InitRegionMap()
