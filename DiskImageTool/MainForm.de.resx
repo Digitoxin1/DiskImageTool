@@ -117,24 +117,6 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="FileName.Text" xml:space="preserve">
-    <value>Name</value>
-  </data>
-  <data name="FileExt.Text" xml:space="preserve">
-    <value>Erw</value>
-  </data>
-  <data name="FileSize.Text" xml:space="preserve">
-    <value>Größe</value>
-  </data>
-  <data name="FileLastWriteDate.Text" xml:space="preserve">
-    <value>Zuletzt geschrieben</value>
-  </data>
-  <data name="FileStartingCluster.Text" xml:space="preserve">
-    <value>Cluster</value>
-  </data>
-  <data name="FileAttrib.Text" xml:space="preserve">
-    <value>Attribute</value>
-  </data>
   <data name="MenuFileOpen.Text" xml:space="preserve">
     <value>&amp;Öffnen</value>
   </data>
@@ -338,18 +320,6 @@
   </data>
   <data name="LabelDropMessage.Text" xml:space="preserve">
     <value>Diskettenabbilder hierher ziehen (Drag &amp;&amp; Drop)</value>
-  </data>
-  <data name="FileClusterError.Text" xml:space="preserve">
-    <value>Err</value>
-  </data>
-  <data name="FileCreationDate.Text" xml:space="preserve">
-    <value>Erstellt</value>
-  </data>
-  <data name="FileLastAccessDate.Text" xml:space="preserve">
-    <value>Letzter Zugriff</value>
-  </data>
-  <data name="FileLFN.Text" xml:space="preserve">
-    <value>Langer Dateiname</value>
   </data>
   <data name="MenuFileFileProperties.Text" xml:space="preserve">
     <value>Datei&amp;eigenschaften bearbeiten</value>

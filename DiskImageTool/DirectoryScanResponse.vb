@@ -2,6 +2,7 @@
 
 Public Class DirectoryScanResponse
     Private ReadOnly _FileNames As HashSet(Of String)
+    Private ReadOnly _DirectoryList As List(Of DirectoryScanSubDirectory)
 
     Private _VolumeNameFound As Boolean
 
@@ -25,8 +26,15 @@ Public Class DirectoryScanResponse
         _HasFAT32Cluster = False
         _ItemCount = 0
         _FileNames = New HashSet(Of String)
+        _DirectoryList = New List(Of DirectoryScanSubDirectory)
         _VolumeNameFound = False
     End Sub
+
+    Public ReadOnly Property DirectoryList As List(Of DirectoryScanSubDirectory)
+        Get
+            Return _DirectoryList
+        End Get
+    End Property
 
     Public Property HasAdditionalData As Boolean
 
@@ -54,6 +62,14 @@ Public Class DirectoryScanResponse
 
     Public Property ItemCount As Integer
 
+    Public Sub AddDirectory(Path As String, Directory As IDirectory)
+        Dim Item As DirectoryScanSubDirectory
+        Item.Path = Path
+        Item.Directory = Directory
+
+        _DirectoryList.Add(Item)
+    End Sub
+
     Public Sub Combine(Response As DirectoryScanResponse)
         _HasLastAccessed = _HasLastAccessed Or Response.HasLastAccessed
         _HasValidLastAccessed = _HasValidLastAccessed Or Response.HasValidLastAccessed
@@ -67,6 +83,10 @@ Public Class DirectoryScanResponse
         _HasNTReserved = _HasNTReserved Or Response.HasNTReserved
         _HasNTUnknownFlags = _HasNTUnknownFlags Or Response.HasNTUnknownFlags
         _HasFAT32Cluster = _HasFAT32Cluster Or Response.HasFAT32Cluster
+
+        For Each Item In Response.DirectoryList
+            _DirectoryList.Add(Item)
+        Next
     End Sub
 
     Public Function ProcessDirectoryEntry(DirectoryEntry As DirectoryEntry, LFNFileName As String, IsRootDirectory As Boolean) As ProcessDirectoryEntryResponse
@@ -185,6 +205,11 @@ Public Class DirectoryScanResponse
     Public Structure ProcessDirectoryEntryResponse
         Dim DuplicateFileName As Boolean
         Dim InvalidVolumeName As Boolean
+    End Structure
+
+    Public Structure DirectoryScanSubDirectory
+        Dim Path As String
+        Dim Directory As IDirectory
     End Structure
 
 End Class

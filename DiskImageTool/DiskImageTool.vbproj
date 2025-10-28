@@ -137,6 +137,7 @@
     <Compile Include="Controls\TwoColumnTooltip.vb">
       <SubType>Component</SubType>
     </Compile>
+    <Compile Include="DirectoryScan.vb" />
     <Compile Include="DiskImage\AddFileOptions.vb" />
     <Compile Include="DiskImage\Modules\EnumDescriptions.vb" />
     <Compile Include="DiskImage\MappedFloppyImage.vb" />
@@ -157,10 +158,12 @@
     <Compile Include="DiskImage\Modules\Structures.vb" />
     <Compile Include="DiskImage\Modules\UpdateFunctions.vb" />
     <Compile Include="FileData.vb" />
+    <Compile Include="FilePanel.vb" />
     <Compile Include="Filters\Enums.vb" />
     <Compile Include="Filters\FilterCounts.vb" />
     <Compile Include="Filters\FilterTag.vb" />
     <Compile Include="Filters\ImageFilters.vb" />
+    <Compile Include="Filters\ImageFiltersBase.vb" />
     <Compile Include="FloppyDiskIO.vb" />
     <Compile Include="Bitstream\Interfaces\IBitstreamImage.vb" />
     <Compile Include="Bitstream\Interfaces\IBitstreamTrack.vb" />
@@ -301,7 +304,7 @@
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="CopyProtection.vb" />
-    <Compile Include="Lib\ListViewColumns.vb" />
+    <Compile Include="Lib\FilePanelColumns.vb" />
     <Compile Include="LoadedFiles.vb" />
     <Compile Include="Reports.vb" />
     <Compile Include="SummaryPanel.vb" />

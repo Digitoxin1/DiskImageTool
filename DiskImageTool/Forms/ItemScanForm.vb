@@ -71,13 +71,7 @@ Public Class ItemScanForm
             End If
 
             If Disk IsNot Nothing Then
-                _Parent.ImageFiltersScanModified(Disk, ImageData)
-                _Parent.ImageFiltersScanDisk(Disk, ImageData)
-                _Parent.ImageFiltersScanOEMName(Disk, ImageData)
-                _Parent.ImageSubFilterOEMNameUpdate(Disk, ImageData)
-                _Parent.ImageSubFilterDiskTypeUpdate(Disk, ImageData)
-                _Parent.ImageFiltersScanFreeClusters(Disk, ImageData)
-                _Parent.ImageFiltersScanDirectory(Disk, ImageData)
+                _Parent.ImageFiltersScanAll(Disk, ImageData)
 
                 ImageData.Scanned = True
             End If
@@ -133,16 +127,7 @@ Public Class ItemScanForm
         End If
 
         If Disk IsNot Nothing Then
-            Dim Result = _Parent.ImageWin9xClean(Disk, True)
-            ImageData.BatchUpdated = Result
-            If Result Then
-                _Parent.ImageFiltersScanModified(Disk, ImageData)
-                If ImageData.Scanned Then
-                    _Parent.ImageFiltersScanOEMName(Disk, ImageData)
-                    _Parent.ImageSubFilterOEMNameUpdate(Disk, ImageData)
-                    _Parent.ImageFiltersScanDirectory(Disk, ImageData)
-                End If
-            End If
+            _Parent.ImageWin9xCleanBatch(Disk, ImageData)
         End If
 
         Return True

@@ -231,9 +231,6 @@
   <data name="MenuHelpAbout.Text" xml:space="preserve">
     <value>À propos de DiskImageTool</value>
   </data>
-  <data name="FileAttrib.Text" xml:space="preserve">
-    <value>Attrib</value>
-  </data>
   <data name="MenuHexBadSectors.Text" xml:space="preserve">
     <value>Mauvais &amp;secteurs</value>
   </data>
@@ -261,14 +258,8 @@
   <data name="ToolStripCloseAll.Text" xml:space="preserve">
     <value>Tout fermer</value>
   </data>
-  <data name="FileStartingCluster.Text" xml:space="preserve">
-    <value>Cluster</value>
-  </data>
   <data name="MenuOptionsCreateBackup.Text" xml:space="preserve">
     <value>Créer une sauvegarde lors de l’enregistrement</value>
-  </data>
-  <data name="FileCreationDate.Text" xml:space="preserve">
-    <value>Créé</value>
   </data>
   <data name="MenuOptionsDisplayTitles.Text" xml:space="preserve">
     <value>Afficher les titres</value>
@@ -284,12 +275,6 @@
   </data>
   <data name="MenuHexDisk.Text" xml:space="preserve">
     <value>Disquette &amp;entière</value>
-  </data>
-  <data name="FileClusterError.Text" xml:space="preserve">
-    <value>Err</value>
-  </data>
-  <data name="FileExt.Text" xml:space="preserve">
-    <value>Ext</value>
   </data>
   <data name="MainMenuFilters.Text" xml:space="preserve">
     <value>&amp;Filtres</value>
@@ -321,20 +306,8 @@
   <data name="MenuOptionsDragDrop.Text" xml:space="preserve">
     <value>Importer par glisser-déposer</value>
   </data>
-  <data name="FileLastAccessDate.Text" xml:space="preserve">
-    <value>Dernier accès</value>
-  </data>
-  <data name="FileLastWriteDate.Text" xml:space="preserve">
-    <value>Dernière modification</value>
-  </data>
-  <data name="FileLFN.Text" xml:space="preserve">
-    <value>Nom long de fichier</value>
-  </data>
   <data name="ToolStripStatusModified.Text" xml:space="preserve">
     <value>Modifié</value>
-  </data>
-  <data name="FileName.Text" xml:space="preserve">
-    <value>Nom</value>
   </data>
   <data name="ToolStripOpen.Text" xml:space="preserve">
     <value>Ouvrir</value>
@@ -374,9 +347,6 @@
   </data>
   <data name="MenuFiltersScanNew.Text" xml:space="preserve">
     <value>Analyser les &amp;nouvelles images</value>
-  </data>
-  <data name="FileSize.Text" xml:space="preserve">
-    <value>Taille</value>
   </data>
   <data name="ToolStripUndo.Text" xml:space="preserve">
     <value>Annuler</value>

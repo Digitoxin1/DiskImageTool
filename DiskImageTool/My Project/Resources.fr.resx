@@ -528,9 +528,6 @@
   <data name="Label_Bytes" xml:space="preserve">
     <value>octets</value>
   </data>
-  <data name="Label_Cluster" xml:space="preserve">
-    <value>Cluster</value>
-  </data>
   <data name="Label_Floppy" xml:space="preserve">
     <value>Disquette {0}</value>
   </data>
@@ -1477,5 +1474,29 @@ Remarque : cette valeur doit être {1} pour toutes les disquettes</value>
   </data>
   <data name="Label_SizeId" xml:space="preserve">
     <value>Taille ID</value>
+  </data>
+  <data name="FilePanel_Size" xml:space="preserve">
+    <value>Taille</value>
+  </data>
+  <data name="FilePanel_Attributes" xml:space="preserve">
+    <value>Attrib</value>
+  </data>
+  <data name="FilePanel_Created" xml:space="preserve">
+    <value>Créé</value>
+  </data>
+  <data name="FilePanel_Extension" xml:space="preserve">
+    <value>Ext</value>
+  </data>
+  <data name="FilePanel_LastAccessed" xml:space="preserve">
+    <value>Dernier accès</value>
+  </data>
+  <data name="FilePanel_LastWritten" xml:space="preserve">
+    <value>Dernière modification</value>
+  </data>
+  <data name="FilePanel_Name" xml:space="preserve">
+    <value>Nom</value>
+  </data>
+  <data name="FilePanel_LFN" xml:space="preserve">
+    <value>Nom long de fichier</value>
   </data>
 </root>

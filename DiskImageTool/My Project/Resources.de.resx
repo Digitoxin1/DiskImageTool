@@ -855,9 +855,6 @@
   <data name="Label_Bytes" xml:space="preserve">
     <value>Bytes</value>
   </data>
-  <data name="Label_Cluster" xml:space="preserve">
-    <value>Cluster</value>
-  </data>
   <data name="Label_Floppy" xml:space="preserve">
     <value>{0}-Diskette</value>
   </data>
@@ -1477,5 +1474,29 @@ Hinweis: Diese ID wird normalerweise erzeugt, indem das aktuelle Datum und die a
   </data>
   <data name="Label_SizeId" xml:space="preserve">
     <value>Größe ID</value>
+  </data>
+  <data name="FilePanel_Size" xml:space="preserve">
+    <value>Größe</value>
+  </data>
+  <data name="FilePanel_Attributes" xml:space="preserve">
+    <value>Attribute</value>
+  </data>
+  <data name="FilePanel_Created" xml:space="preserve">
+    <value>Erstellt</value>
+  </data>
+  <data name="FilePanel_Extension" xml:space="preserve">
+    <value>Erw</value>
+  </data>
+  <data name="FilePanel_LastAccessed" xml:space="preserve">
+    <value>Letzter Zugriff</value>
+  </data>
+  <data name="FilePanel_LastWritten" xml:space="preserve">
+    <value>Zuletzt geschrieben</value>
+  </data>
+  <data name="FilePanel_Name" xml:space="preserve">
+    <value>Name</value>
+  </data>
+  <data name="FilePanel_LFN" xml:space="preserve">
+    <value>Langer Dateiname</value>
   </data>
 </root>

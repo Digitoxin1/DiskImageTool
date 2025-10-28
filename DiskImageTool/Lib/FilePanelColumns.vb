@@ -1,4 +1,4 @@
-﻿Public NotInheritable Class ListViewColumns
+﻿Public NotInheritable Class FilePanelColumns
     Public Const FileName As String = "FileName"
     Public Const FileExtension As String = "FileExtension"
     Public Const FileSize As String = "FileSize"

@@ -72,25 +72,25 @@ Public Class ListViewColumnSorter
                 Case 0
                     ObjX = FileDataX.Index
                     ObjY = FileDataY.Index
-                Case ListViewX.SubItems.IndexOfKey(ListViewColumns.FileName)
+                Case ListViewX.SubItems.IndexOfKey(FilePanelColumns.FileName)
                     ObjX = FileDataX.DirectoryEntry.GetFileName(True)
                     ObjY = FileDataY.DirectoryEntry.GetFileName(True)
-                Case ListViewX.SubItems.IndexOfKey(ListViewColumns.FileExtension)
+                Case ListViewX.SubItems.IndexOfKey(FilePanelColumns.FileExtension)
                     ObjX = FileDataX.DirectoryEntry.GetFileExtension(True)
                     ObjY = FileDataY.DirectoryEntry.GetFileExtension(True)
-                Case ListViewX.SubItems.IndexOfKey(ListViewColumns.FileSize)
+                Case ListViewX.SubItems.IndexOfKey(FilePanelColumns.FileSize)
                     ObjX = FileDataX.DirectoryEntry.FileSize
                     ObjY = FileDataY.DirectoryEntry.FileSize
-                Case ListViewX.SubItems.IndexOfKey(ListViewColumns.FileLastWriteDate)
+                Case ListViewX.SubItems.IndexOfKey(FilePanelColumns.FileLastWriteDate)
                     ObjX = FileDataX.DirectoryEntry.GetLastWriteDate.DateObject
                     ObjY = FileDataY.DirectoryEntry.GetLastWriteDate.DateObject
-                Case ListViewX.SubItems.IndexOfKey(ListViewColumns.FileStartingCluster)
+                Case ListViewX.SubItems.IndexOfKey(FilePanelColumns.FileStartingCluster)
                     ObjX = FileDataX.DirectoryEntry.StartingCluster
                     ObjY = FileDataY.DirectoryEntry.StartingCluster
-                Case ListViewX.SubItems.IndexOfKey(ListViewColumns.FileCreationDate)
+                Case ListViewX.SubItems.IndexOfKey(FilePanelColumns.FileCreationDate)
                     ObjX = FileDataX.DirectoryEntry.GetCreationDate.DateObject
                     ObjY = FileDataY.DirectoryEntry.GetCreationDate.DateObject
-                Case ListViewX.SubItems.IndexOfKey(ListViewColumns.FileLastAccessDate)
+                Case ListViewX.SubItems.IndexOfKey(FilePanelColumns.FileLastAccessDate)
                     ObjX = FileDataX.DirectoryEntry.GetLastAccessDate.DateObject
                     ObjY = FileDataY.DirectoryEntry.GetLastAccessDate.DateObject
                 Case Else

@@ -456,9 +456,6 @@
   <data name="Label_Close" xml:space="preserve">
     <value>Cerrar</value>
   </data>
-  <data name="Label_Cluster" xml:space="preserve">
-    <value>Cluster</value>
-  </data>
   <data name="SummaryPanel_Company" xml:space="preserve">
     <value>Empresa</value>
   </data>
@@ -1477,5 +1474,29 @@ Nota: Este valor debe ser {1} para todos los disquetes</value>
   </data>
   <data name="Label_SizeId" xml:space="preserve">
     <value>Tamaño ID</value>
+  </data>
+  <data name="FilePanel_Size" xml:space="preserve">
+    <value>Tamaño</value>
+  </data>
+  <data name="FilePanel_Attributes" xml:space="preserve">
+    <value>Atributo</value>
+  </data>
+  <data name="FilePanel_Created" xml:space="preserve">
+    <value>Creado</value>
+  </data>
+  <data name="FilePanel_Extension" xml:space="preserve">
+    <value>Ext</value>
+  </data>
+  <data name="FilePanel_LastAccessed" xml:space="preserve">
+    <value>Último acceso</value>
+  </data>
+  <data name="FilePanel_LastWritten" xml:space="preserve">
+    <value>Última escritura</value>
+  </data>
+  <data name="FilePanel_Name" xml:space="preserve">
+    <value>Nombre</value>
+  </data>
+  <data name="FilePanel_LFN" xml:space="preserve">
+    <value>Nombre de archivo largo</value>
   </data>
 </root>

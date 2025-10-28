@@ -1997,6 +1997,123 @@ Namespace My.Resources
         End Property
         
         '''<summary>
+        '''  Looks up a localized string similar to Attrib.
+        '''</summary>
+        Friend ReadOnly Property FilePanel_Attributes() As String
+            Get
+                Return ResourceManager.GetString("FilePanel_Attributes", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  Looks up a localized string similar to Cluster.
+        '''</summary>
+        Friend ReadOnly Property FilePanel_Cluster() As String
+            Get
+                Return ResourceManager.GetString("FilePanel_Cluster", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  Looks up a localized string similar to Err.
+        '''</summary>
+        Friend ReadOnly Property FilePanel_ClusterError() As String
+            Get
+                Return ResourceManager.GetString("FilePanel_ClusterError", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  Looks up a localized string similar to CRC32.
+        '''</summary>
+        Friend ReadOnly Property FilePanel_CRC32() As String
+            Get
+                Return ResourceManager.GetString("FilePanel_CRC32", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  Looks up a localized string similar to Created.
+        '''</summary>
+        Friend ReadOnly Property FilePanel_Created() As String
+            Get
+                Return ResourceManager.GetString("FilePanel_Created", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  Looks up a localized string similar to Ext.
+        '''</summary>
+        Friend ReadOnly Property FilePanel_Extension() As String
+            Get
+                Return ResourceManager.GetString("FilePanel_Extension", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  Looks up a localized string similar to FAT32.
+        '''</summary>
+        Friend ReadOnly Property FilePanel_FAT32Cluster() As String
+            Get
+                Return ResourceManager.GetString("FilePanel_FAT32Cluster", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  Looks up a localized string similar to Last Accessed.
+        '''</summary>
+        Friend ReadOnly Property FilePanel_LastAccessed() As String
+            Get
+                Return ResourceManager.GetString("FilePanel_LastAccessed", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  Looks up a localized string similar to Last Written.
+        '''</summary>
+        Friend ReadOnly Property FilePanel_LastWritten() As String
+            Get
+                Return ResourceManager.GetString("FilePanel_LastWritten", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  Looks up a localized string similar to Long File Name.
+        '''</summary>
+        Friend ReadOnly Property FilePanel_LFN() As String
+            Get
+                Return ResourceManager.GetString("FilePanel_LFN", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  Looks up a localized string similar to Name.
+        '''</summary>
+        Friend ReadOnly Property FilePanel_Name() As String
+            Get
+                Return ResourceManager.GetString("FilePanel_Name", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  Looks up a localized string similar to NT.
+        '''</summary>
+        Friend ReadOnly Property FilePanel_NTReserved() As String
+            Get
+                Return ResourceManager.GetString("FilePanel_NTReserved", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  Looks up a localized string similar to Size.
+        '''</summary>
+        Friend ReadOnly Property FilePanel_Size() As String
+            Get
+                Return ResourceManager.GetString("FilePanel_Size", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
         '''  Looks up a localized string similar to Advanced Sector Image.
         '''</summary>
         Friend ReadOnly Property FileType_AdvancedSectorImage() As String
