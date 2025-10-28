@@ -1,38 +1,46 @@
 ﻿Imports System.Collections.Specialized
+Imports System.ComponentModel
 Imports DiskImageTool.DiskImage
 Imports BootSectorOffsets = DiskImageTool.DiskImage.BootSector.BootSectorOffsets
 Imports BPBOffsets = DiskImageTool.DiskImage.BiosParameterBlock.BPBOoffsets
 
-Module SummaryPanel
-    Public Const NULL_CHAR As Char = "�"
+Public Class SummaryPanel
+    Private WithEvents ContextMenuCopy As ContextMenuStrip
+    Private WithEvents ListView As ListView
     Private Const COLUMN_WIDTH_NAME As Integer = 124
+    Private Const CONTEXT_MENU_SUMMARY_KEY As String = "Summary"
     Private Const GROUP_BOOTRECORD As String = "BootRecord"
     Private Const GROUP_BOOTSTRAP As String = "Bootstrap"
     Private Const GROUP_DISK As String = "Disk"
     Private Const GROUP_FILE_SYSTEM As String = "FileSystem"
     Private Const GROUP_IMAGE As String = "Image"
     Private Const GROUP_TITLE As String = "Title"
+    Private Const NULL_CHAR As Char = "�"
+    Private ReadOnly _BootStrapDB As BootstrapDB
+    Private ReadOnly _TitleDB As FloppyDB
     Private Column_Width_Value As Integer = 0
     Private TitleRows As OrderedDictionary = Nothing
 
-    Public Sub InitializeSummaryPanel(ListViewSummary As ListView)
-        With ListViewSummary
-            .FullRowSelect = True
-            .View = View.Details
-            .HeaderStyle = ColumnHeaderStyle.None
-            .HideSelection = False
-            .MultiSelect = False
-            .OwnerDraw = True
-            .Items.Clear()
-            .Columns.Clear()
-            .Columns.Add("", COLUMN_WIDTH_NAME, HorizontalAlignment.Left)
-            Column_Width_Value = .ClientSize.Width - COLUMN_WIDTH_NAME - SystemInformation.VerticalScrollBarWidth
-            .Columns.Add("", Column_Width_Value, HorizontalAlignment.Left)
-        End With
+    Public Sub New(ListViewSummary As ListView, TitleDB As FloppyDB, BootStrapDB As BootstrapDB)
+        ListView = ListViewSummary
+        _TitleDB = TitleDB
+        _BootStrapDB = BootStrapDB
+
+        Initialize()
+
+        ContextMenuCopy = New ContextMenuStrip With {
+            .Name = CONTEXT_MENU_SUMMARY_KEY
+        }
+        ContextMenuCopy.Items.Add(My.Resources.Menu_CopyValue)
+        ListView.ContextMenuStrip = ContextMenuCopy
     End Sub
 
-    Public Sub PopulateSummaryPanel(ListViewSummary As ListView, CurrentImage As CurrentImage, TitleDB As FloppyDB, BootStrapDB As BootstrapDB, MD5 As String)
-        With ListViewSummary
+    Public Sub Clear()
+        ListView.Items.Clear()
+    End Sub
+
+    Public Sub Populate(CurrentImage As CurrentImage, MD5 As String)
+        With ListView
             .BeginUpdate()
             .Items.Clear()
             .Groups.Clear()
@@ -41,12 +49,12 @@ Module SummaryPanel
             .Columns.Item(1).Width = Column_Width_Value
 
             If CurrentImage.Disk IsNot Nothing Then
-                PopulateSummaryPanelMain(ListViewSummary, CurrentImage.Disk, TitleDB, BootStrapDB, MD5)
+                PopulateMain(CurrentImage.Disk, _TitleDB, _BootStrapDB, MD5)
 
                 .HideSelection = False
                 .TabStop = True
             Else
-                PopulateSummaryPanelError(ListViewSummary, CurrentImage.ImageData.InvalidImage)
+                PopulateError(CurrentImage.ImageData.InvalidImage)
 
                 .HideSelection = True
                 .TabStop = False
@@ -119,6 +127,43 @@ Module SummaryPanel
         Next
 
         Return fsi
+    End Function
+
+    Private Function GetFocusedItemName() As String
+        If ListView IsNot Nothing AndAlso ListView.FocusedItem IsNot Nothing Then
+            Dim Item = ListView.FocusedItem
+
+            If Item.SubItems.Count > 1 Then
+                Dim Text As String
+
+                If Item.Tag Is Nothing Then
+                    Text = Item.Text
+                Else
+                    Text = Item.Tag
+                End If
+
+                Return String.Format(My.Resources.Menu_CopyValueByName, Text)
+            End If
+        End If
+
+        Return Nothing
+    End Function
+
+    Private Function GetFocusedItemValue() As String
+        If ListView IsNot Nothing AndAlso ListView.FocusedItem IsNot Nothing Then
+            Dim Item = ListView.FocusedItem.SubItems.Item(1)
+            Dim Value As String
+
+            If Item.Tag Is Nothing Then
+                Value = Item.Text
+            Else
+                Value = Item.Tag
+            End If
+
+            Return Value
+        End If
+
+        Return Nothing
     End Function
 
     Private Function GetNonStandardTrackList(NonStandardTracks As HashSet(Of UShort), HeadCount As Byte) As String
@@ -201,27 +246,95 @@ Module SummaryPanel
         Return ForeColor
     End Function
 
-    Private Sub InitializeTitleRows(ListViewSummary As ListView)
+    Private Sub Initialize()
+        With ListView
+            .FullRowSelect = True
+            .View = View.Details
+            .HeaderStyle = ColumnHeaderStyle.None
+            .HideSelection = False
+            .MultiSelect = False
+            .OwnerDraw = True
+            .DoubleBuffer
+            .AutoResizeColumnsContstrained(ColumnHeaderAutoResizeStyle.None)
+            .Items.Clear()
+            .Columns.Clear()
+            .Columns.Add("", COLUMN_WIDTH_NAME, HorizontalAlignment.Left)
+            Column_Width_Value = .ClientSize.Width - COLUMN_WIDTH_NAME - SystemInformation.VerticalScrollBarWidth
+            .Columns.Add("", Column_Width_Value, HorizontalAlignment.Left)
+        End With
+    End Sub
+    Private Sub InitializeTitleRows()
         If TitleRows Is Nothing Then
             TitleRows = New OrderedDictionary
         End If
 
         TitleRows.Clear()
 
-        TitleRows.Add("Name", New SummaryRow(ListViewSummary.Font, My.Resources.SummaryPanel_Title, True))
-        TitleRows.Add("Variation", New SummaryRow(ListViewSummary.Font, My.Resources.SummaryPanel_Variant, False))
-        TitleRows.Add("Compilation", New SummaryRow(ListViewSummary.Font, My.Resources.SummaryPanel_Compilation, True))
-        TitleRows.Add("Publisher", New SummaryRow(ListViewSummary.Font, My.Resources.SummaryPanel_Publisher, True))
-        TitleRows.Add("Year", New SummaryRow(ListViewSummary.Font, My.Resources.SummaryPanel_Year, False))
-        TitleRows.Add("OperatingSystem", New SummaryRow(ListViewSummary.Font, My.Resources.SummaryPanel_OperatingSystem, False))
-        TitleRows.Add("Region", New SummaryRow(ListViewSummary.Font, My.Resources.SummaryPanel_Region, False))
-        TitleRows.Add("Language", New SummaryRow(ListViewSummary.Font, My.Resources.SummaryPanel_Language, False))
-        TitleRows.Add("Version", New SummaryRow(ListViewSummary.Font, My.Resources.SummaryPanel_Version, True))
-        TitleRows.Add("Disk", New SummaryRow(ListViewSummary.Font, My.Resources.SummaryPanel_Disk, False))
-        TitleRows.Add("CopyProtection", New SummaryRow(ListViewSummary.Font, My.Resources.SummaryPanel_CopyProtection, True))
+        TitleRows.Add("Name", New SummaryRow(ListView.Font, My.Resources.SummaryPanel_Title, True))
+        TitleRows.Add("Variation", New SummaryRow(ListView.Font, My.Resources.SummaryPanel_Variant, False))
+        TitleRows.Add("Compilation", New SummaryRow(ListView.Font, My.Resources.SummaryPanel_Compilation, True))
+        TitleRows.Add("Publisher", New SummaryRow(ListView.Font, My.Resources.SummaryPanel_Publisher, True))
+        TitleRows.Add("Year", New SummaryRow(ListView.Font, My.Resources.SummaryPanel_Year, False))
+        TitleRows.Add("OperatingSystem", New SummaryRow(ListView.Font, My.Resources.SummaryPanel_OperatingSystem, False))
+        TitleRows.Add("Region", New SummaryRow(ListView.Font, My.Resources.SummaryPanel_Region, False))
+        TitleRows.Add("Language", New SummaryRow(ListView.Font, My.Resources.SummaryPanel_Language, False))
+        TitleRows.Add("Version", New SummaryRow(ListView.Font, My.Resources.SummaryPanel_Version, True))
+        TitleRows.Add("Disk", New SummaryRow(ListView.Font, My.Resources.SummaryPanel_Disk, False))
+        TitleRows.Add("CopyProtection", New SummaryRow(ListView.Font, My.Resources.SummaryPanel_CopyProtection, True))
     End Sub
 
-    Private Sub PopulateSummaryPanelBootRecord(ListViewSummary As ListView, Disk As Disk, OEMNameResponse As OEMNameResponse)
+    Private Sub PopulateError(InvalidImage As Boolean)
+        With ListView
+            Dim DiskGroup = .Groups.Add(GROUP_DISK, My.Resources.SummaryPanel_Disk)
+            Dim Msg As String
+
+            If InvalidImage Then
+                Msg = My.Resources.SummaryPanel_InvalidFormat
+            Else
+                Msg = My.Resources.SummaryPanel_Error
+            End If
+
+            Dim Item = New ListViewItem("  " & Msg, DiskGroup) With {
+                .ForeColor = Color.Red
+            }
+            .Items.Add(Item)
+        End With
+    End Sub
+
+    Private Sub PopulateGroup(Group As ListViewGroup, Rows As OrderedDictionary)
+        Dim MaxColumnWidth As Integer = 55
+
+        With Group.ListView
+            For Each SummaryRow As SummaryRow In Rows.Values
+                If SummaryRow.Value <> "" Then
+                    MaxColumnWidth = Math.Max(MaxColumnWidth, SummaryRow.TextWidth)
+                End If
+            Next
+
+            Dim Diff = .Columns.Item(0).Width - MaxColumnWidth
+            Dim ColumnWidth As Integer = .Columns.Item(1).Width - 6
+            Dim MaxWidth = ColumnWidth + Diff
+
+            For Each SummaryRow As SummaryRow In Rows.Values
+                If SummaryRow.Value <> "" Then
+                    If SummaryRow.WrapText Then
+                        .AddItem(Group, SummaryRow.Text, SummaryRow.Value, SummaryRow.ForeColor, SummaryRow.WrapText, MaxWidth)
+                    Else
+                        .AddItem(Group, SummaryRow.Text, SummaryRow.Value, SummaryRow.ForeColor, SummaryRow.WrapText)
+                    End If
+                End If
+            Next
+
+            Dim TextWidth As Integer = ColumnWidth
+            For Each Item As ListViewItem In Group.Items
+                Dim Value = Item.SubItems.Item(1).Text
+                TextWidth = Math.Max(TextWidth, TextRenderer.MeasureText(Value, .Font).Width)
+            Next
+            Group.Tag = TextWidth - ColumnWidth
+        End With
+    End Sub
+
+    Private Sub PopulateGroupBootRecord(Disk As Disk, OEMNameResponse As OEMNameResponse)
         Dim Value As String
         Dim ForeColor As Color
 
@@ -229,7 +342,7 @@ Module SummaryPanel
         Dim BPBBySize = BuildBPB(DiskFormatBySize)
         Dim DoBPBCompare = Disk.DiskFormat = FloppyDiskFormat.FloppyUnknown And DiskFormatBySize <> FloppyDiskFormat.FloppyUnknown
 
-        With ListViewSummary
+        With ListView
             Dim BootRecordGroup = .Groups.Add(GROUP_BOOTRECORD, My.Resources.SummaryPanel_BootRecord)
 
             If Not OEMNameResponse.Found Then
@@ -388,10 +501,10 @@ Module SummaryPanel
         End With
     End Sub
 
-    Private Sub PopulateSummaryPanelBootstrap(ListViewSummary As ListView, Disk As Disk, OEMNameResponse As OEMNameResponse)
+    Private Sub PopulateGroupBootstrap(Disk As Disk, OEMNameResponse As OEMNameResponse)
         Dim ForeColor As Color
 
-        With ListViewSummary
+        With ListView
             Dim BootStrapGroup = .Groups.Add(GROUP_BOOTSTRAP, My.Resources.SummaryPanel_Bootstrap)
 
             If Not OEMNameResponse.NoBootLoader Then
@@ -440,12 +553,12 @@ Module SummaryPanel
         End With
     End Sub
 
-    Private Function PopulateSummaryPanelDisk(ListViewSummary As ListView, Disk As Disk) As ListViewGroup
+    Private Function PopulateGroupDisk(Disk As Disk) As ListViewGroup
         Dim DiskGroup As ListViewGroup
         Dim Value As String
         Dim ForeColor As Color
 
-        With ListViewSummary
+        With ListView
             DiskGroup = .Groups.Add(GROUP_DISK, My.Resources.SummaryPanel_Disk)
 
             .AddItem(DiskGroup, My.Resources.SummaryPanel_ImageType, GetImageTypeName(Disk.Image.ImageType))
@@ -540,30 +653,11 @@ Module SummaryPanel
 
         Return DiskGroup
     End Function
-
-    Private Sub PopulateSummaryPanelError(ListViewSummary As ListView, InvalidImage As Boolean)
-        With ListViewSummary
-            Dim DiskGroup = .Groups.Add(GROUP_DISK, My.Resources.SummaryPanel_Disk)
-            Dim Msg As String
-
-            If InvalidImage Then
-                Msg = My.Resources.SummaryPanel_InvalidFormat
-            Else
-                Msg = My.Resources.SummaryPanel_Error
-            End If
-
-            Dim Item = New ListViewItem("  " & Msg, DiskGroup) With {
-                .ForeColor = Color.Red
-            }
-            .Items.Add(Item)
-        End With
-    End Sub
-
-    Private Sub PopulateSummaryPanelFileSystem(ListViewSummary As ListView, Disk As Disk)
+    Private Sub PopulateGroupFileSystem(Disk As Disk)
         Dim Value As String
         Dim ForeColor As Color
 
-        With ListViewSummary
+        With ListView
             Dim FileSystemGroup = .Groups.Add(GROUP_FILE_SYSTEM, My.Resources.SummaryPanel_FileSystem)
 
             If Disk.FAT.HasMediaDescriptor Then
@@ -630,87 +724,9 @@ Module SummaryPanel
             End If
         End With
     End Sub
-
-    Private Sub PopulateSummaryPanelGroup(Group As ListViewGroup, Rows As OrderedDictionary)
-        Dim MaxColumnWidth As Integer = 55
-
-        With Group.ListView
-            For Each SummaryRow As SummaryRow In Rows.Values
-                If SummaryRow.Value <> "" Then
-                    MaxColumnWidth = Math.Max(MaxColumnWidth, SummaryRow.TextWidth)
-                End If
-            Next
-
-            Dim Diff = .Columns.Item(0).Width - MaxColumnWidth
-            Dim ColumnWidth As Integer = .Columns.Item(1).Width - 6
-            Dim MaxWidth = ColumnWidth + Diff
-
-            For Each SummaryRow As SummaryRow In Rows.Values
-                If SummaryRow.Value <> "" Then
-                    If SummaryRow.WrapText Then
-                        .AddItem(Group, SummaryRow.Text, SummaryRow.Value, SummaryRow.ForeColor, SummaryRow.WrapText, MaxWidth)
-                    Else
-                        .AddItem(Group, SummaryRow.Text, SummaryRow.Value, SummaryRow.ForeColor, SummaryRow.WrapText)
-                    End If
-                End If
-            Next
-
-            Dim TextWidth As Integer = ColumnWidth
-            For Each Item As ListViewItem In Group.Items
-                Dim Value = Item.SubItems.Item(1).Text
-                TextWidth = Math.Max(TextWidth, TextRenderer.MeasureText(Value, .Font).Width)
-            Next
-            Group.Tag = TextWidth - ColumnWidth
-        End With
-    End Sub
-
-    Private Sub PopulateSummaryPanelMain(ListViewSummary As ListView, Disk As Disk, TitleDB As FloppyDB, BootStrapDB As BootstrapDB, MD5 As String)
-        Dim TitleFound As Boolean = False
-
-        If My.Settings.DisplayTitles AndAlso TitleDB.TitleCount > 0 Then
-            Dim TitleFindResult = TitleDB.TitleFind(MD5)
-            If TitleFindResult.TitleData IsNot Nothing Then
-                TitleFound = True
-                PopulateSummaryPanelTitle(ListViewSummary, TitleFindResult.TitleData)
-            End If
-        End If
-
-        Dim DiskGroup = PopulateSummaryPanelDisk(ListViewSummary, Disk)
-
-        With ListViewSummary
-            If Not Disk.IsValidImage Then
-                .AddItem(DiskGroup, My.Resources.SummaryPanel_FileSystem, My.Resources.Caption_Unknown, Color.Red)
-            Else
-                Dim OEMNameResponse = BootStrapDB.CheckOEMName(Disk.BootSector)
-
-                If OEMNameResponse.NoBootLoader Then
-                    If Disk.BootSector.CheckJumpInstruction(False, True) Then
-                        .AddItem(DiskGroup, My.Resources.SummaryPanel_Bootstrap, My.Resources.SummaryPanel_NoBootLoader, Color.Red)
-                    Else
-                        .AddItem(DiskGroup, My.Resources.SummaryPanel_Bootstrap, My.Resources.SummaryPanel_CustomBootLoader, Color.Red)
-                    End If
-                ElseIf Not Disk.BootSector.BPB.IsValid Then
-                    .AddItem(DiskGroup, My.Resources.SummaryPanel_BootRecord, My.Resources.SummaryPanel_NoBPB, Color.Red)
-                End If
-
-                If Not Disk.BootSector.BPB.IsValid Then
-                    If Not Disk.FATTables.FATsMatch Then
-                        .AddItem(DiskGroup, My.Resources.SummaryPanel_FAT, My.Resources.Label_Mismatched, Color.Red)
-                    End If
-                End If
-
-                If Disk.BootSector.BPB.IsValid Then
-                    PopulateSummaryPanelBootRecord(ListViewSummary, Disk, OEMNameResponse)
-                End If
-
-                PopulateSummaryPanelFileSystem(ListViewSummary, Disk)
-                PopulateSummaryPanelBootstrap(ListViewSummary, Disk, OEMNameResponse)
-            End If
-        End With
-    End Sub
-    Private Sub PopulateSummaryPanelTitle(ListViewSummary As ListView, TitleData As FloppyDB.FloppyData)
+    Private Sub PopulateGroupTitle(TitleData As FloppyDB.FloppyData)
         If TitleRows Is Nothing Then
-            InitializeTitleRows(ListViewSummary)
+            InitializeTitleRows()
         End If
 
         Dim Row = Function(key As String) DirectCast(TitleRows(key), SummaryRow)
@@ -740,10 +756,114 @@ Module SummaryPanel
         Row("Disk").Value = TitleData.GetDisk
         Row("CopyProtection").Value = TitleData.CopyProtection
 
-        Dim Group = ListViewSummary.Groups.Add(GROUP_TITLE, My.Resources.SummaryPanel_Title)
+        Dim Group = ListView.Groups.Add(GROUP_TITLE, My.Resources.SummaryPanel_Title)
 
-        PopulateSummaryPanelGroup(Group, TitleRows)
+        PopulateGroup(Group, TitleRows)
     End Sub
+
+    Private Sub PopulateMain(Disk As Disk, TitleDB As FloppyDB, BootStrapDB As BootstrapDB, MD5 As String)
+        Dim TitleFound As Boolean = False
+
+        If My.Settings.DisplayTitles AndAlso TitleDB.TitleCount > 0 Then
+            Dim TitleFindResult = TitleDB.TitleFind(MD5)
+            If TitleFindResult.TitleData IsNot Nothing Then
+                TitleFound = True
+                PopulateGroupTitle(TitleFindResult.TitleData)
+            End If
+        End If
+
+        Dim DiskGroup = PopulateGroupDisk(Disk)
+
+        With ListView
+            If Not Disk.IsValidImage Then
+                .AddItem(DiskGroup, My.Resources.SummaryPanel_FileSystem, My.Resources.Caption_Unknown, Color.Red)
+            Else
+                Dim OEMNameResponse = BootStrapDB.CheckOEMName(Disk.BootSector)
+
+                If OEMNameResponse.NoBootLoader Then
+                    If Disk.BootSector.CheckJumpInstruction(False, True) Then
+                        .AddItem(DiskGroup, My.Resources.SummaryPanel_Bootstrap, My.Resources.SummaryPanel_NoBootLoader, Color.Red)
+                    Else
+                        .AddItem(DiskGroup, My.Resources.SummaryPanel_Bootstrap, My.Resources.SummaryPanel_CustomBootLoader, Color.Red)
+                    End If
+                ElseIf Not Disk.BootSector.BPB.IsValid Then
+                    .AddItem(DiskGroup, My.Resources.SummaryPanel_BootRecord, My.Resources.SummaryPanel_NoBPB, Color.Red)
+                End If
+
+                If Not Disk.BootSector.BPB.IsValid Then
+                    If Not Disk.FATTables.FATsMatch Then
+                        .AddItem(DiskGroup, My.Resources.SummaryPanel_FAT, My.Resources.Label_Mismatched, Color.Red)
+                    End If
+                End If
+
+                If Disk.BootSector.BPB.IsValid Then
+                    PopulateGroupBootRecord(Disk, OEMNameResponse)
+                End If
+
+                PopulateGroupFileSystem(Disk)
+                PopulateGroupBootstrap(Disk, OEMNameResponse)
+            End If
+        End With
+    End Sub
+
+#Region "Events"
+
+    Private Sub ContextMenuCopy_ItemClicked(sender As Object, e As ToolStripItemClickedEventArgs) Handles ContextMenuCopy.ItemClicked
+        Dim Value = GetFocusedItemValue()
+
+        If Value IsNot Nothing Then
+            Clipboard.SetText(Value)
+        End If
+    End Sub
+
+    Private Sub ContextMenuCopy_Opening(sender As Object, e As CancelEventArgs) Handles ContextMenuCopy.Opening
+        Dim Name = GetFocusedItemName()
+
+        If Name IsNot Nothing Then
+            Dim CM As ContextMenuStrip = sender
+            CM.Items(0).Text = Name
+        Else
+            e.Cancel = True
+        End If
+    End Sub
+
+    Private Sub ListView_DrawItem(sender As Object, e As DrawListViewItemEventArgs) Handles ListView.DrawItem
+        e.DrawDefault = True
+    End Sub
+
+    Private Sub ListView_DrawSubItem(sender As Object, e As DrawListViewSubItemEventArgs) Handles ListView.DrawSubItem
+        If e.Item.Group IsNot Nothing AndAlso e.Item.Group.Tag IsNot Nothing Then
+            Dim Offset As Integer = CInt(e.Item.Group.Tag)
+            If Offset <> 0 Then
+                e.DrawBackground()
+                Dim rect As Rectangle = Rectangle.Inflate(e.Bounds, -3, -2)
+                If e.ColumnIndex = 0 Then
+                    rect.Width -= Offset
+                Else
+                    rect.X -= Offset
+                    rect.Width += Offset
+                End If
+                TextRenderer.DrawText(e.Graphics, e.SubItem.Text, e.SubItem.Font, rect, e.SubItem.ForeColor, TextFormatFlags.Default Or TextFormatFlags.NoPrefix)
+            Else
+                e.DrawDefault = True
+            End If
+        Else
+            e.DrawDefault = True
+        End If
+    End Sub
+
+    Private Sub ListView_ItemSelectionChanged(sender As Object, e As ListViewItemSelectionChangedEventArgs) Handles ListView.ItemSelectionChanged
+        e.Item.Selected = False
+    End Sub
+
+    'Private Sub ListView_Resize(sender As Object, e As EventArgs) Handles ListView.Resize
+    '    If ListView.Columns.Count < 2 Then
+    '        Exit Sub
+    '    End If
+
+    '    ListView.Columns.Item(1).Width = ListView.ClientSize.Width - ListView.Columns.Item(0).Width
+    'End Sub
+#End Region
 
     Private Class SummaryRow
         Public Sub New(Font As Font, Text As String, WrapText As Boolean)
@@ -758,4 +878,4 @@ Module SummaryPanel
         Public Property Value As String = ""
         Public Property WrapText As Boolean
     End Class
-End Module
+End Class

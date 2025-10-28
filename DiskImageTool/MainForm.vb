@@ -25,8 +25,7 @@ Public Structure SaveDialogFilter
 End Structure
 
 Public Class MainForm
-    Private WithEvents ContextMenuCopy1 As ContextMenuStrip
-    Private WithEvents ContextMenuCopy2 As ContextMenuStrip
+    Private WithEvents ContextMenuCopy As ContextMenuStrip
     Private WithEvents Debounce As Timer
     Private WithEvents ImageFilters As Filters.ImageFilters
     Private WithEvents ToolStripDiskTypeCombo As ToolStripComboBox
@@ -36,8 +35,8 @@ Public Class MainForm
     Private ToolStripOEMNameLabel As ToolStripLabel
     Private WithEvents ToolStripSearchText As ToolStripSpringTextBox
     Public Const SITE_URL = "https://github.com/Digitoxin1/DiskImageTool"
-    Private Const CONTEXT_MENU_SUMMARY_KEY As String = "Summary"
     Private Const CONTEXT_MENU_HASH_KEY As String = "Hashes"
+    Private Const NULL_CHAR As Char = "�"
     Private ReadOnly _lvwColumnSorter As ListViewColumnSorter
     Private _BootStrapDB As BootstrapDB
     Private _CurrentImage As CurrentImage
@@ -54,6 +53,7 @@ Public Class MainForm
     Private _ScanRun As Boolean = False
     Private _SubFilterDiskType As ComboFilter
     Private _SubFilterOEMName As ComboFilter
+    Private _SummaryPanel As SummaryPanel
     Private _SuppressEvent As Boolean = False
     Private _TitleDB As FloppyDB
 
@@ -1314,7 +1314,7 @@ Public Class MainForm
         e.DrawBackground()
 
         If e.Index >= 0 Then
-            Dim Item As String = ToolStripFATCombo.Items(e.Index)
+            Dim Item As String = ToolStripFatCombo.Items(e.Index)
 
             Dim Brush As Brush
             Dim tBrush As Brush
@@ -1350,7 +1350,7 @@ Public Class MainForm
         Next
         MenuEditFAT.DropDownItems.Clear()
         MenuEditFAT.Tag = Nothing
-        ToolStripFATCombo.Items.Clear()
+        ToolStripFatCombo.Items.Clear()
 
         If CurrentImage IsNot Nothing AndAlso CurrentImage.Disk IsNot Nothing AndAlso CurrentImage.Disk.IsValidImage Then
             If FATTablesMatch Then
@@ -1363,16 +1363,16 @@ Public Class MainForm
                     }
                     MenuEditFAT.DropDownItems.Add(Item)
                     AddHandler Item.Click, AddressOf BtnEditFAT_Click
-                    ToolStripFATCombo.Items.Add("FAT " & Counter + 1)
+                    ToolStripFatCombo.Items.Add("FAT " & Counter + 1)
                 Next
                 _SuppressEvent = True
                 If CurrentImage.ImageData Is Nothing Then
-                    ToolStripFATCombo.SelectedIndex = 0
+                    ToolStripFatCombo.SelectedIndex = 0
                 Else
                     If CurrentImage.ImageData.FATIndex > CurrentImage.Disk.BPB.NumberOfFATs - 1 Or FATTablesMatch Then
                         CurrentImage.ImageData.FATIndex = 0
                     End If
-                    ToolStripFATCombo.SelectedIndex = CurrentImage.ImageData.FATIndex
+                    ToolStripFatCombo.SelectedIndex = CurrentImage.ImageData.FATIndex
                 End If
                 _SuppressEvent = False
             End If
@@ -2580,7 +2580,7 @@ Public Class MainForm
 
     Private Sub InitButtonState(CurrentImage As CurrentImage)
         Dim FATTablesMatch As Boolean = True
-        Dim PrevVisible = ToolStripFATCombo.Visible
+        Dim PrevVisible = ToolStripFatCombo.Visible
 
         If CurrentImage IsNot Nothing AndAlso CurrentImage.Disk IsNot Nothing Then
             FATTablesMatch = IsDiskFormatXDF(CurrentImage.Disk.DiskFormat) OrElse CurrentImage.Disk.FATTables.FATsMatch
@@ -2591,8 +2591,8 @@ Public Class MainForm
             MenuEditFAT.Enabled = CurrentImage.Disk.IsValidImage
             MenuHexDirectory.Enabled = CurrentImage.Disk.IsValidImage
             ToolStripSeparatorFAT.Visible = Not FATTablesMatch
-            ToolStripFATCombo.Visible = Not FATTablesMatch
-            ToolStripFATCombo.Width = 60
+            ToolStripFatCombo.Visible = Not FATTablesMatch
+            ToolStripFatCombo.Width = 60
             MenuDiskWriteFloppyA.Enabled = _DriveAEnabled
             MenuDiskWriteFloppyB.Enabled = _DriveBEnabled
             MenuFileSaveAs.Enabled = True
@@ -2605,7 +2605,7 @@ Public Class MainForm
             MenuEditFAT.Enabled = False
             MenuHexDirectory.Enabled = False
             ToolStripSeparatorFAT.Visible = False
-            ToolStripFATCombo.Visible = False
+            ToolStripFatCombo.Visible = False
             MenuDiskWriteFloppyA.Enabled = False
             MenuDiskWriteFloppyB.Enabled = False
             MenuFileSaveAs.Enabled = False
@@ -2620,7 +2620,7 @@ Public Class MainForm
 
         RefreshSaveButtons(CurrentImage)
 
-        If ToolStripFATCombo.Visible <> PrevVisible Then
+        If ToolStripFatCombo.Visible <> PrevVisible Then
             ToolStripTop.Refresh()
         End If
     End Sub
@@ -2986,7 +2986,7 @@ Public Class MainForm
         End If
 
         SetCurrentFileName(CurrentImage.ImageData)
-        PopulateSummaryPanel(ListViewSummary, CurrentImage, _TitleDB, _BootStrapDB, MD5)
+        _SummaryPanel.Populate(CurrentImage, MD5)
         PopulateHashPanel(CurrentImage.Disk, MD5)
         RefreshDiskButtons(CurrentImage)
     End Sub
@@ -3716,7 +3716,7 @@ Public Class MainForm
         SetButtonStateSaveAll(False)
         btnRetry.Visible = False
 
-        ListViewSummary.Items.Clear()
+        _SummaryPanel.Clear()
         ToggleHashPanelVisible(False)
 
         ComboImagesReset()
@@ -4460,20 +4460,7 @@ Public Class MainForm
         ComboImages.SelectedItem = ComboImagesFiltered.SelectedItem
     End Sub
 
-    Private Sub ContextMenuCopy_ItemClicked(sender As Object, e As ToolStripItemClickedEventArgs) Handles ContextMenuCopy1.ItemClicked
-        If ListViewSummary IsNot Nothing AndAlso ListViewSummary.FocusedItem IsNot Nothing Then
-            Dim Item = ListViewSummary.FocusedItem.SubItems.Item(1)
-            Dim Value As String
-            If Item.Tag Is Nothing Then
-                Value = Item.Text
-            Else
-                Value = Item.Tag
-            End If
-            Clipboard.SetText(Value)
-        End If
-    End Sub
-
-    Private Sub ContextMenuCopy2_ItemClicked(sender As Object, e As ToolStripItemClickedEventArgs) Handles ContextMenuCopy2.ItemClicked
+    Private Sub ContextMenuCopy_ItemClicked(sender As Object, e As ToolStripItemClickedEventArgs) Handles ContextMenuCopy.ItemClicked
         Dim Label As Label = CType(sender.SourceControl, Label)
         Dim Value As String
 
@@ -4490,29 +4477,7 @@ Public Class MainForm
         Clipboard.SetText(Value)
     End Sub
 
-    Private Sub ContextMenuCopy_Opening(sender As Object, e As CancelEventArgs) Handles ContextMenuCopy1.Opening
-        Dim CM As ContextMenuStrip = sender
-
-        If ListViewSummary IsNot Nothing AndAlso ListViewSummary.FocusedItem IsNot Nothing Then
-            Dim Item = ListViewSummary.FocusedItem
-
-            If Item.SubItems.Count > 1 Then
-                Dim Text As String
-                If Item.Tag Is Nothing Then
-                    Text = Item.Text
-                Else
-                    Text = Item.Tag
-                End If
-                CM.Items(0).Text = String.Format(My.Resources.Menu_CopyValueByName, Text)
-            Else
-                e.Cancel = True
-            End If
-        Else
-            e.Cancel = True
-        End If
-    End Sub
-
-    Private Sub ContextMenuCopy2_Opening(sender As Object, e As CancelEventArgs) Handles ContextMenuCopy2.Opening
+    Private Sub ContextMenuCopy_Opening(sender As Object, e As CancelEventArgs) Handles ContextMenuCopy.Opening
         Dim CM As ContextMenuStrip = sender
         Dim Label As Label = CType(sender.SourceControl, Label)
         Dim Text As String
@@ -4670,43 +4635,6 @@ Public Class MainForm
         End If
     End Sub
 
-    Private Sub ListViewSummary_DrawItem(sender As Object, e As DrawListViewItemEventArgs) Handles ListViewSummary.DrawItem
-        e.DrawDefault = True
-    End Sub
-
-    Private Sub ListViewSummary_DrawSubItem(sender As Object, e As DrawListViewSubItemEventArgs) Handles ListViewSummary.DrawSubItem
-        If e.Item.Group IsNot Nothing AndAlso e.Item.Group.Tag IsNot Nothing Then
-            Dim Offset As Integer = CInt(e.Item.Group.Tag)
-            If Offset <> 0 Then
-                e.DrawBackground()
-                Dim rect As Rectangle = Rectangle.Inflate(e.Bounds, -3, -2)
-                If e.ColumnIndex = 0 Then
-                    rect.Width -= Offset
-                Else
-                    rect.X -= Offset
-                    rect.Width += Offset
-                End If
-                TextRenderer.DrawText(e.Graphics, e.SubItem.Text, e.SubItem.Font, rect, e.SubItem.ForeColor, TextFormatFlags.Default Or TextFormatFlags.NoPrefix)
-            Else
-                e.DrawDefault = True
-            End If
-        Else
-            e.DrawDefault = True
-        End If
-    End Sub
-
-    Private Sub ListViewSummary_ItemSelectionChanged(sender As Object, e As ListViewItemSelectionChangedEventArgs) Handles ListViewSummary.ItemSelectionChanged
-        e.Item.Selected = False
-    End Sub
-
-    'Private Sub ListViewSummary_Resize(sender As Object, e As EventArgs) Handles ListViewSummary.Resize
-    '    If ListViewSummary.Columns.Count < 2 Then
-    '        Exit Sub
-    '    End If
-
-    '    ListViewSummary.Columns.Item(1).Width = ListViewSummary.ClientSize.Width - ListViewSummary.Columns.Item(0).Width
-    'End Sub
-
     Private Sub MainForm_Closed(sender As Object, e As EventArgs) Handles Me.Closed
         EmptyTempPath()
     End Sub
@@ -4724,7 +4652,6 @@ Public Class MainForm
         PositionControls()
 
         InitAllFileExtensions()
-        InitializeSummaryPanel(ListViewSummary)
 
         PositionForm()
 
@@ -4734,9 +4661,7 @@ Public Class MainForm
         MainMenuUpdateAvailable.Visible = False
         MenuToolsCompare.Visible = False
         ListViewFiles.DoubleBuffer
-        ListViewSummary.DoubleBuffer
         _ListViewHeader = New ListViewHeader(ListViewFiles.Handle)
-        ListViewSummary.AutoResizeColumnsContstrained(ColumnHeaderAutoResizeStyle.None)
         ImageFilters = New Filters.ImageFilters(ContextMenuFilters)
         SubFiltersInitialize()
         PopulateLanguages()
@@ -4746,19 +4671,16 @@ Public Class MainForm
         Debounce = New Timer With {
             .Interval = 750
         }
-        ContextMenuCopy1 = New ContextMenuStrip With {
-            .Name = CONTEXT_MENU_SUMMARY_KEY
-        }
-        ContextMenuCopy1.Items.Add(My.Resources.Menu_CopyValue)
-        ListViewSummary.ContextMenuStrip = ContextMenuCopy1
 
-        ContextMenuCopy2 = New ContextMenuStrip With {
+        ContextMenuCopy = New ContextMenuStrip With {
             .Name = CONTEXT_MENU_HASH_KEY
         }
-        ContextMenuCopy2.Items.Add(My.Resources.Menu_CopyValue)
+        ContextMenuCopy.Items.Add(My.Resources.Menu_CopyValue)
         For Each Control As Control In FlowLayoutPanelHashes.Controls
-            Control.ContextMenuStrip = ContextMenuCopy2
+            Control.ContextMenuStrip = ContextMenuCopy
         Next
+
+        _SummaryPanel = New SummaryPanel(ListViewSummary, _TitleDB, _BootStrapDB)
 
         InitDebugFeatures(My.Settings.Debug)
 
@@ -4827,7 +4749,7 @@ Public Class MainForm
         End If
 
         If _CurrentImage IsNot Nothing Then
-            _CurrentImage.ImageData.FATIndex = ToolStripFATCombo.SelectedIndex
+            _CurrentImage.ImageData.FATIndex = ToolStripFatCombo.SelectedIndex
             ReloadCurrentImage(False)
         End If
     End Sub
