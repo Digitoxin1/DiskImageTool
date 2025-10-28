@@ -333,9 +333,6 @@
   <data name="ToolStripStatusModified.Text" xml:space="preserve">
     <value>Modifié</value>
   </data>
-  <data name="SummaryName.Text" xml:space="preserve">
-    <value>Nom</value>
-  </data>
   <data name="FileName.Text" xml:space="preserve">
     <value>Nom</value>
   </data>
@@ -386,9 +383,6 @@
   </data>
   <data name="MainMenuUpdateAvailable.Text" xml:space="preserve">
     <value>Mise à jour disponible</value>
-  </data>
-  <data name="SummaryValue.Text" xml:space="preserve">
-    <value>Valeur</value>
   </data>
   <data name="MenuFileViewCrosslinked.Text" xml:space="preserve">
     <value>Voir les fichiers &amp;croisés</value>

@@ -23,10 +23,8 @@ Partial Class MainForm
     <System.Diagnostics.DebuggerStepThrough()>
     Private Sub InitializeComponent()
         Me.components = New System.ComponentModel.Container()
-        Dim SummaryName As System.Windows.Forms.ColumnHeader
-        Dim resources As System.ComponentModel.ComponentResourceManager = New System.ComponentModel.ComponentResourceManager(GetType(MainForm))
-        Dim SummaryValue As System.Windows.Forms.ColumnHeader
         Dim HashName As System.Windows.Forms.ColumnHeader
+        Dim resources As System.ComponentModel.ComponentResourceManager = New System.ComponentModel.ComponentResourceManager(GetType(MainForm))
         Dim HashValue As System.Windows.Forms.ColumnHeader
         Dim FileName As System.Windows.Forms.ColumnHeader
         Dim FileExt As System.Windows.Forms.ColumnHeader
@@ -117,6 +115,7 @@ Partial Class MainForm
         Me.MenuFiltersScan = New System.Windows.Forms.ToolStripMenuItem()
         Me.MenuFiltersClear = New System.Windows.Forms.ToolStripMenuItem()
         Me.MainMenuReports = New System.Windows.Forms.ToolStripMenuItem()
+        Me.MenuReportsWriteSplices = New System.Windows.Forms.ToolStripMenuItem()
         Me.MainMenuOptions = New System.Windows.Forms.ToolStripMenuItem()
         Me.MenuOptionsCreateBackup = New System.Windows.Forms.ToolStripMenuItem()
         Me.MenuOptionsCheckUpdate = New System.Windows.Forms.ToolStripMenuItem()
@@ -190,9 +189,6 @@ Partial Class MainForm
         Me.LabelCRC32 = New System.Windows.Forms.Label()
         Me.LabelMD5 = New System.Windows.Forms.Label()
         Me.LabelSHA1 = New System.Windows.Forms.Label()
-        Me.MenuReportsWriteSplices = New System.Windows.Forms.ToolStripMenuItem()
-        SummaryName = CType(New System.Windows.Forms.ColumnHeader(), System.Windows.Forms.ColumnHeader)
-        SummaryValue = CType(New System.Windows.Forms.ColumnHeader(), System.Windows.Forms.ColumnHeader)
         HashName = CType(New System.Windows.Forms.ColumnHeader(), System.Windows.Forms.ColumnHeader)
         HashValue = CType(New System.Windows.Forms.ColumnHeader(), System.Windows.Forms.ColumnHeader)
         FileName = CType(New System.Windows.Forms.ColumnHeader(), System.Windows.Forms.ColumnHeader)
@@ -241,14 +237,6 @@ Partial Class MainForm
         Me.SplitContainer1.SuspendLayout()
         Me.FlowLayoutPanelHashes.SuspendLayout()
         Me.SuspendLayout()
-        '
-        'SummaryName
-        '
-        resources.ApplyResources(SummaryName, "SummaryName")
-        '
-        'SummaryValue
-        '
-        resources.ApplyResources(SummaryValue, "SummaryValue")
         '
         'HashName
         '
@@ -724,6 +712,11 @@ Partial Class MainForm
         Me.MainMenuReports.Name = "MainMenuReports"
         resources.ApplyResources(Me.MainMenuReports, "MainMenuReports")
         '
+        'MenuReportsWriteSplices
+        '
+        Me.MenuReportsWriteSplices.Name = "MenuReportsWriteSplices"
+        resources.ApplyResources(Me.MenuReportsWriteSplices, "MenuReportsWriteSplices")
+        '
         'MainMenuOptions
         '
         Me.MainMenuOptions.DropDownItems.AddRange(New System.Windows.Forms.ToolStripItem() {Me.MenuOptionsCreateBackup, Me.MenuOptionsCheckUpdate, Me.MenuOptionsDragDrop, Me.MenuOptionsDisplayTitles, Me.MenuOptionsDisplayLanguage})
@@ -969,15 +962,8 @@ Partial Class MainForm
         '
         Me.ListViewSummary.AllowDrop = True
         resources.ApplyResources(Me.ListViewSummary, "ListViewSummary")
-        Me.ListViewSummary.Columns.AddRange(New System.Windows.Forms.ColumnHeader() {SummaryName, SummaryValue})
-        Me.ListViewSummary.FullRowSelect = True
-        Me.ListViewSummary.HeaderStyle = System.Windows.Forms.ColumnHeaderStyle.None
-        Me.ListViewSummary.HideSelection = False
-        Me.ListViewSummary.MultiSelect = False
         Me.ListViewSummary.Name = "ListViewSummary"
-        Me.ListViewSummary.OwnerDraw = True
         Me.ListViewSummary.UseCompatibleStateImageBehavior = False
-        Me.ListViewSummary.View = System.Windows.Forms.View.Details
         '
         'ComboImages
         '
@@ -1218,11 +1204,6 @@ Partial Class MainForm
         resources.ApplyResources(Me.LabelSHA1, "LabelSHA1")
         Me.LabelSHA1.Name = "LabelSHA1"
         Me.LabelSHA1.UseMnemonic = False
-        '
-        'MenuReportsWriteSplices
-        '
-        Me.MenuReportsWriteSplices.Name = "MenuReportsWriteSplices"
-        resources.ApplyResources(Me.MenuReportsWriteSplices, "MenuReportsWriteSplices")
         '
         'MainForm
         '

@@ -2974,44 +2974,21 @@ Public Class MainForm
     Private Sub PopulateSummary(CurrentImage As CurrentImage)
         Dim MD5 As String = ""
 
-        If CurrentImage IsNot Nothing AndAlso CurrentImage.Disk IsNot Nothing Then
-            MD5 = CurrentImage.Disk.Image.GetMD5Hash
+        If CurrentImage IsNot Nothing Then
+            If CurrentImage.Disk IsNot Nothing Then
+                MD5 = CurrentImage.Disk.Image.GetMD5Hash
+                btnRetry.Visible = False
+            Else
+                btnRetry.Visible = Not CurrentImage.ImageData.InvalidImage
+            End If
+        Else
+            btnRetry.Visible = True
         End If
 
         SetCurrentFileName(CurrentImage.ImageData)
-        PopulateSummaryPanel(CurrentImage, MD5)
+        PopulateSummaryPanel(ListViewSummary, CurrentImage, _TitleDB, _BootStrapDB, MD5)
         PopulateHashPanel(CurrentImage.Disk, MD5)
         RefreshDiskButtons(CurrentImage)
-    End Sub
-
-    Private Sub PopulateSummaryPanel(CurrentImage As CurrentImage, MD5 As String)
-        With ListViewSummary
-            .BeginUpdate()
-            .Items.Clear()
-            .Groups.Clear()
-
-            .Columns.Item(0).Width = 124
-            .Columns.Item(1).Width = .ClientSize.Width - .Columns.Item(0).Width - SystemInformation.VerticalScrollBarWidth
-
-            If CurrentImage.Disk IsNot Nothing Then
-                PopulateSummaryPanelMain(ListViewSummary, CurrentImage.Disk, _TitleDB, _BootStrapDB, MD5)
-
-                .HideSelection = False
-                .TabStop = True
-                btnRetry.Visible = False
-            Else
-                PopulateSummaryPanelError(ListViewSummary, CurrentImage.ImageData.InvalidImage)
-
-                .HideSelection = True
-                .TabStop = False
-                btnRetry.Visible = Not CurrentImage.ImageData.InvalidImage
-            End If
-
-            '.AutoResizeColumn(0, ColumnHeaderAutoResizeStyle.ColumnContent)
-
-            .EndUpdate()
-            .Refresh()
-        End With
     End Sub
 
     Private Sub PositionControls()
@@ -4747,6 +4724,7 @@ Public Class MainForm
         PositionControls()
 
         InitAllFileExtensions()
+        InitializeSummaryPanel(ListViewSummary)
 
         PositionForm()
 

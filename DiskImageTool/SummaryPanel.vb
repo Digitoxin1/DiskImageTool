@@ -5,130 +5,57 @@ Imports BPBOffsets = DiskImageTool.DiskImage.BiosParameterBlock.BPBOoffsets
 
 Module SummaryPanel
     Public Const NULL_CHAR As Char = "�"
-    Private Const GROUP_DISK As String = "Disk"
+    Private Const COLUMN_WIDTH_NAME As Integer = 124
     Private Const GROUP_BOOTRECORD As String = "BootRecord"
     Private Const GROUP_BOOTSTRAP As String = "Bootstrap"
+    Private Const GROUP_DISK As String = "Disk"
     Private Const GROUP_FILE_SYSTEM As String = "FileSystem"
-    Private Const GROUP_TITLE As String = "Title"
     Private Const GROUP_IMAGE As String = "Image"
-    Private InitialColumnWidth As Integer = 0
+    Private Const GROUP_TITLE As String = "Title"
+    Private Column_Width_Value As Integer = 0
     Private TitleRows As OrderedDictionary = Nothing
 
-    Private Class SummaryRow
-        Public Sub New(Font As Font, Text As String, WrapText As Boolean)
-            _Text = Text
-            _TextWidth = TextRenderer.MeasureText(Text, Font).Width
-            _WrapText = WrapText
-        End Sub
-
-        Public Property Text As String
-        Public Property Value As String = ""
-        Public Property ForeColor As Color = SystemColors.WindowText
-        Public Property WrapText As Boolean
-        Public Property TextWidth As Integer
-    End Class
-
-    Public Sub PopulateSummaryPanelError(ListViewSummary As ListView, InvalidImage As Boolean)
+    Public Sub InitializeSummaryPanel(ListViewSummary As ListView)
         With ListViewSummary
-            Dim DiskGroup = .Groups.Add(GROUP_DISK, My.Resources.SummaryPanel_Disk)
-            Dim Msg As String
-
-            If InvalidImage Then
-                Msg = My.Resources.SummaryPanel_InvalidFormat
-            Else
-                Msg = My.Resources.SummaryPanel_Error
-            End If
-
-            Dim Item = New ListViewItem("  " & Msg, DiskGroup) With {
-                .ForeColor = Color.Red
-            }
-            .Items.Add(Item)
+            .FullRowSelect = True
+            .View = View.Details
+            .HeaderStyle = ColumnHeaderStyle.None
+            .HideSelection = False
+            .MultiSelect = False
+            .OwnerDraw = True
+            .Items.Clear()
+            .Columns.Clear()
+            .Columns.Add("", COLUMN_WIDTH_NAME, HorizontalAlignment.Left)
+            Column_Width_Value = .ClientSize.Width - COLUMN_WIDTH_NAME - SystemInformation.VerticalScrollBarWidth
+            .Columns.Add("", Column_Width_Value, HorizontalAlignment.Left)
         End With
     End Sub
 
-    Public Sub PopulateSummaryPanelMain(ListViewSummary As ListView, Disk As Disk, TitleDB As FloppyDB, BootStrapDB As BootstrapDB, MD5 As String)
-        Dim TitleFound As Boolean = False
-
-        If InitialColumnWidth = 0 Then
-            InitialColumnWidth = ListViewSummary.Columns.Item(1).Width
-        Else
-            ListViewSummary.Columns.Item(1).Width = InitialColumnWidth
-        End If
-
-        If My.Settings.DisplayTitles AndAlso TitleDB.TitleCount > 0 Then
-            Dim TitleFindResult = TitleDB.TitleFind(MD5)
-            If TitleFindResult.TitleData IsNot Nothing Then
-                TitleFound = True
-                PopulateSummaryPanelTitle(ListViewSummary, TitleFindResult.TitleData)
-            End If
-        End If
-
-        Dim DiskGroup = PopulateSummaryPanelDisk(ListViewSummary, Disk)
-
+    Public Sub PopulateSummaryPanel(ListViewSummary As ListView, CurrentImage As CurrentImage, TitleDB As FloppyDB, BootStrapDB As BootstrapDB, MD5 As String)
         With ListViewSummary
-            If Not Disk.IsValidImage Then
-                .AddItem(DiskGroup, My.Resources.SummaryPanel_FileSystem, My.Resources.Caption_Unknown, Color.Red)
+            .BeginUpdate()
+            .Items.Clear()
+            .Groups.Clear()
+
+            .Columns.Item(0).Width = COLUMN_WIDTH_NAME
+            .Columns.Item(1).Width = Column_Width_Value
+
+            If CurrentImage.Disk IsNot Nothing Then
+                PopulateSummaryPanelMain(ListViewSummary, CurrentImage.Disk, TitleDB, BootStrapDB, MD5)
+
+                .HideSelection = False
+                .TabStop = True
             Else
-                Dim OEMNameResponse = BootStrapDB.CheckOEMName(Disk.BootSector)
+                PopulateSummaryPanelError(ListViewSummary, CurrentImage.ImageData.InvalidImage)
 
-                If OEMNameResponse.NoBootLoader Then
-                    If Disk.BootSector.CheckJumpInstruction(False, True) Then
-                        .AddItem(DiskGroup, My.Resources.SummaryPanel_Bootstrap, My.Resources.SummaryPanel_NoBootLoader, Color.Red)
-                    Else
-                        .AddItem(DiskGroup, My.Resources.SummaryPanel_Bootstrap, My.Resources.SummaryPanel_CustomBootLoader, Color.Red)
-                    End If
-                ElseIf Not Disk.BootSector.BPB.IsValid Then
-                    .AddItem(DiskGroup, My.Resources.SummaryPanel_BootRecord, My.Resources.SummaryPanel_NoBPB, Color.Red)
-                End If
-
-                If Not Disk.BootSector.BPB.IsValid Then
-                    If Not Disk.FATTables.FATsMatch Then
-                        .AddItem(DiskGroup, My.Resources.SummaryPanel_FAT, My.Resources.Label_Mismatched, Color.Red)
-                    End If
-                End If
-
-                If Disk.BootSector.BPB.IsValid Then
-                    PopulateSummaryPanelBootRecord(ListViewSummary, Disk, OEMNameResponse)
-                End If
-
-                PopulateSummaryPanelFileSystem(ListViewSummary, Disk)
-                PopulateSummaryPanelBootstrap(ListViewSummary, Disk, OEMNameResponse)
+                .HideSelection = True
+                .TabStop = False
             End If
+
+            .EndUpdate()
+            .Refresh()
         End With
     End Sub
-
-    Private Function GetFileSystemInfo(Disk As Disk) As FileSystemInfo
-        Dim fsi As FileSystemInfo
-
-        fsi.OldestFileDate = Nothing
-        fsi.NewestFileDate = Nothing
-        fsi.VolumeLabel = Nothing
-
-        Dim FileList = Disk.RootDirectory.GetFileList()
-
-        For Each DirectoryEntry In FileList
-            If DirectoryEntry.IsValid Then
-                If fsi.VolumeLabel Is Nothing AndAlso DirectoryEntry.IsValidVolumeName AndAlso DirectoryEntry.ParentDirectory.IsRootDirectory Then
-                    fsi.VolumeLabel = DirectoryEntry
-                End If
-                Dim LastWriteDate = DirectoryEntry.GetLastWriteDate
-                If LastWriteDate.IsValidDate Then
-                    If fsi.OldestFileDate Is Nothing Then
-                        fsi.OldestFileDate = LastWriteDate.DateObject
-                    ElseIf fsi.OldestFileDate.Value.CompareTo(LastWriteDate.DateObject) > 0 Then
-                        fsi.OldestFileDate = LastWriteDate.DateObject
-                    End If
-                    If fsi.NewestFileDate Is Nothing Then
-                        fsi.NewestFileDate = LastWriteDate.DateObject
-                    ElseIf fsi.NewestFileDate.Value.CompareTo(LastWriteDate.DateObject) < 0 Then
-                        fsi.NewestFileDate = LastWriteDate.DateObject
-                    End If
-                End If
-            End If
-        Next
-
-        Return fsi
-    End Function
 
     Private Function GetBitRateColor(BitRate As Integer, Format As FloppyDiskFormat) As Color
         Dim ForeColor = SystemColors.WindowText
@@ -161,29 +88,37 @@ Module SummaryPanel
         Return ForeColor
     End Function
 
-    Private Function GetRPMColor(RPM As Integer, Format As FloppyDiskFormat) As Color
-        Dim ForeColor = SystemColors.WindowText
+    Private Function GetFileSystemInfo(Disk As Disk) As FileSystemInfo
+        Dim fsi As FileSystemInfo
 
-        Select Case Format
-            Case FloppyDiskFormat.Floppy160, FloppyDiskFormat.Floppy180, FloppyDiskFormat.Floppy320, FloppyDiskFormat.Floppy360
-                If RPM = 360 Then
-                    ForeColor = Color.Blue
-                ElseIf RPM <> 300 Then
-                    ForeColor = Color.Red
-                End If
-            Case FloppyDiskFormat.Floppy1200
-                If RPM <> 360 Then
-                    ForeColor = Color.Red
-                End If
-            Case FloppyDiskFormat.FloppyUnknown, FloppyDiskFormat.FloppyNoBPB
-                'Return True'
-            Case Else
-                If RPM <> 300 Then
-                    ForeColor = Color.Red
-                End If
-        End Select
+        fsi.OldestFileDate = Nothing
+        fsi.NewestFileDate = Nothing
+        fsi.VolumeLabel = Nothing
 
-        Return ForeColor
+        Dim FileList = Disk.RootDirectory.GetFileList()
+
+        For Each DirectoryEntry In FileList
+            If DirectoryEntry.IsValid Then
+                If fsi.VolumeLabel Is Nothing AndAlso DirectoryEntry.IsValidVolumeName AndAlso DirectoryEntry.ParentDirectory.IsRootDirectory Then
+                    fsi.VolumeLabel = DirectoryEntry
+                End If
+                Dim LastWriteDate = DirectoryEntry.GetLastWriteDate
+                If LastWriteDate.IsValidDate Then
+                    If fsi.OldestFileDate Is Nothing Then
+                        fsi.OldestFileDate = LastWriteDate.DateObject
+                    ElseIf fsi.OldestFileDate.Value.CompareTo(LastWriteDate.DateObject) > 0 Then
+                        fsi.OldestFileDate = LastWriteDate.DateObject
+                    End If
+                    If fsi.NewestFileDate Is Nothing Then
+                        fsi.NewestFileDate = LastWriteDate.DateObject
+                    ElseIf fsi.NewestFileDate.Value.CompareTo(LastWriteDate.DateObject) < 0 Then
+                        fsi.NewestFileDate = LastWriteDate.DateObject
+                    End If
+                End If
+            End If
+        Next
+
+        Return fsi
     End Function
 
     Private Function GetNonStandardTrackList(NonStandardTracks As HashSet(Of UShort), HeadCount As Byte) As String
@@ -239,6 +174,31 @@ Module SummaryPanel
         End If
 
         Return String.Join(", ", Result)
+    End Function
+
+    Private Function GetRPMColor(RPM As Integer, Format As FloppyDiskFormat) As Color
+        Dim ForeColor = SystemColors.WindowText
+
+        Select Case Format
+            Case FloppyDiskFormat.Floppy160, FloppyDiskFormat.Floppy180, FloppyDiskFormat.Floppy320, FloppyDiskFormat.Floppy360
+                If RPM = 360 Then
+                    ForeColor = Color.Blue
+                ElseIf RPM <> 300 Then
+                    ForeColor = Color.Red
+                End If
+            Case FloppyDiskFormat.Floppy1200
+                If RPM <> 360 Then
+                    ForeColor = Color.Red
+                End If
+            Case FloppyDiskFormat.FloppyUnknown, FloppyDiskFormat.FloppyNoBPB
+                'Return True'
+            Case Else
+                If RPM <> 300 Then
+                    ForeColor = Color.Red
+                End If
+        End Select
+
+        Return ForeColor
     End Function
 
     Private Sub InitializeTitleRows(ListViewSummary As ListView)
@@ -581,6 +541,24 @@ Module SummaryPanel
         Return DiskGroup
     End Function
 
+    Private Sub PopulateSummaryPanelError(ListViewSummary As ListView, InvalidImage As Boolean)
+        With ListViewSummary
+            Dim DiskGroup = .Groups.Add(GROUP_DISK, My.Resources.SummaryPanel_Disk)
+            Dim Msg As String
+
+            If InvalidImage Then
+                Msg = My.Resources.SummaryPanel_InvalidFormat
+            Else
+                Msg = My.Resources.SummaryPanel_Error
+            End If
+
+            Dim Item = New ListViewItem("  " & Msg, DiskGroup) With {
+                .ForeColor = Color.Red
+            }
+            .Items.Add(Item)
+        End With
+    End Sub
+
     Private Sub PopulateSummaryPanelFileSystem(ListViewSummary As ListView, Disk As Disk)
         Dim Value As String
         Dim ForeColor As Color
@@ -686,6 +664,50 @@ Module SummaryPanel
         End With
     End Sub
 
+    Private Sub PopulateSummaryPanelMain(ListViewSummary As ListView, Disk As Disk, TitleDB As FloppyDB, BootStrapDB As BootstrapDB, MD5 As String)
+        Dim TitleFound As Boolean = False
+
+        If My.Settings.DisplayTitles AndAlso TitleDB.TitleCount > 0 Then
+            Dim TitleFindResult = TitleDB.TitleFind(MD5)
+            If TitleFindResult.TitleData IsNot Nothing Then
+                TitleFound = True
+                PopulateSummaryPanelTitle(ListViewSummary, TitleFindResult.TitleData)
+            End If
+        End If
+
+        Dim DiskGroup = PopulateSummaryPanelDisk(ListViewSummary, Disk)
+
+        With ListViewSummary
+            If Not Disk.IsValidImage Then
+                .AddItem(DiskGroup, My.Resources.SummaryPanel_FileSystem, My.Resources.Caption_Unknown, Color.Red)
+            Else
+                Dim OEMNameResponse = BootStrapDB.CheckOEMName(Disk.BootSector)
+
+                If OEMNameResponse.NoBootLoader Then
+                    If Disk.BootSector.CheckJumpInstruction(False, True) Then
+                        .AddItem(DiskGroup, My.Resources.SummaryPanel_Bootstrap, My.Resources.SummaryPanel_NoBootLoader, Color.Red)
+                    Else
+                        .AddItem(DiskGroup, My.Resources.SummaryPanel_Bootstrap, My.Resources.SummaryPanel_CustomBootLoader, Color.Red)
+                    End If
+                ElseIf Not Disk.BootSector.BPB.IsValid Then
+                    .AddItem(DiskGroup, My.Resources.SummaryPanel_BootRecord, My.Resources.SummaryPanel_NoBPB, Color.Red)
+                End If
+
+                If Not Disk.BootSector.BPB.IsValid Then
+                    If Not Disk.FATTables.FATsMatch Then
+                        .AddItem(DiskGroup, My.Resources.SummaryPanel_FAT, My.Resources.Label_Mismatched, Color.Red)
+                    End If
+                End If
+
+                If Disk.BootSector.BPB.IsValid Then
+                    PopulateSummaryPanelBootRecord(ListViewSummary, Disk, OEMNameResponse)
+                End If
+
+                PopulateSummaryPanelFileSystem(ListViewSummary, Disk)
+                PopulateSummaryPanelBootstrap(ListViewSummary, Disk, OEMNameResponse)
+            End If
+        End With
+    End Sub
     Private Sub PopulateSummaryPanelTitle(ListViewSummary As ListView, TitleData As FloppyDB.FloppyData)
         If TitleRows Is Nothing Then
             InitializeTitleRows(ListViewSummary)
@@ -723,4 +745,17 @@ Module SummaryPanel
         PopulateSummaryPanelGroup(Group, TitleRows)
     End Sub
 
+    Private Class SummaryRow
+        Public Sub New(Font As Font, Text As String, WrapText As Boolean)
+            _Text = Text
+            _TextWidth = TextRenderer.MeasureText(Text, Font).Width
+            _WrapText = WrapText
+        End Sub
+
+        Public Property ForeColor As Color = SystemColors.WindowText
+        Public Property Text As String
+        Public Property TextWidth As Integer
+        Public Property Value As String = ""
+        Public Property WrapText As Boolean
+    End Class
 End Module
