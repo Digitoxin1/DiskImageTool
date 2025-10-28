@@ -42,6 +42,16 @@
         InitColumns()
     End Sub
 
+    Public ReadOnly Property FirstSelectedItem As ListViewItem
+        Get
+            If ListView.SelectedItems.Count > 0 Then
+                Return ListView.SelectedItems(0)
+            Else
+                Return Nothing
+            End If
+        End Get
+    End Property
+
     Public ReadOnly Property Items As ListView.ListViewItemCollection
         Get
             Return ListView.Items

@@ -109,7 +109,6 @@ Public Class MainForm
             .Sorted = True,
             .Size = New Drawing.Size(125, 25)
         }
-        AddHandler ToolStripOEMNameCombo.SelectedIndexChanged, AddressOf ToolStripCombo_SelectedIndexChanged
 
         ToolStripOEMNameLabel = New ToolStripLabel With {
             .Text = My.Resources.BootSector_OEMName,
@@ -132,7 +131,6 @@ Public Class MainForm
             .Overflow = ToolStripItemOverflow.Never,
             .Size = New Drawing.Size(95, 25)
         }
-        AddHandler ToolStripDiskTypeCombo.SelectedIndexChanged, AddressOf ToolStripCombo_SelectedIndexChanged
 
         ToolStripDiskTypeLabel = New ToolStripLabel With {
             .Text = My.Resources.SummaryPanel_DiskFormat,
@@ -976,7 +974,7 @@ Public Class MainForm
         ToolStripFileCount.Visible = True
 
         If Selected = 1 Then
-            Dim FileData As FileData = FilePanel.SelectedItems(0).Tag
+            Dim FileData As FileData = FilePanel.FirstSelectedItem.Tag
 
             If FileData IsNot Nothing AndAlso FileData.DirectoryEntry.StartingCluster >= 2 Then
 
@@ -1005,7 +1003,7 @@ Public Class MainForm
         Dim Result As Boolean = False
 
         If FilePanel.SelectedItems.Count = 1 Then
-            Dim Item As ListViewItem = FilePanel.SelectedItems.Item(0)
+            Dim Item As ListViewItem = FilePanel.FirstSelectedItem
             Dim FileData As FileData = Item.Tag
 
             Dim frmFilePropertiesEdit As New FilePropertiesFormSingle(FileData.DirectoryEntry)
@@ -1587,7 +1585,7 @@ Public Class MainForm
 
         If DisplayDialog Then
             If FilePanel.SelectedItems.Count = 1 Then
-                Item = FilePanel.SelectedItems(0)
+                Item = FilePanel.FirstSelectedItem
                 FileData = Item.Tag
                 If Remove Then
                     Msg = String.Format(My.Resources.Dialog_RemoveFile, FileData.DirectoryEntry.GetShortFileName(True))
@@ -1657,7 +1655,7 @@ Public Class MainForm
 
     Private Sub ImageFileExport()
         If FilePanel.SelectedItems.Count = 1 Then
-            DirectoryEntryExport(FilePanel.SelectedItems(0).Tag)
+            DirectoryEntryExport(FilePanel.FirstSelectedItem.Tag)
         ElseIf FilePanel.SelectedItems.Count > 1 Then
             ImageFileExportSelected()
         End If
@@ -2280,6 +2278,22 @@ Public Class MainForm
         AddHandler Item.Click, AddressOf BtnDisplayDirectory_Click
     End Sub
 
+    Private Sub MenuDisplayDirectorySubMenuPopulate(CurrentImage As CurrentImage, Response As DirectoryScanResponse)
+        MenuDisplayDirectorySubMenuClear()
+
+        If Response.DirectoryList.Count > 0 Then
+            MenuHexDirectory.Text = My.Resources.Menu_Directory
+            MenuDisplayDirectorySubMenuItemAdd(InParens(My.Resources.Label_Root), CurrentImage.Disk.RootDirectory)
+            MenuHexDirectory.Tag = Nothing
+        Else
+            MenuHexDirectory.Tag = CurrentImage.Disk.RootDirectory
+        End If
+
+        For Each Item In Response.DirectoryList
+            MenuDisplayDirectorySubMenuItemAdd(Item.Path, Item.Directory)
+        Next
+    End Sub
+
     Private Sub MenuRawTrackDataSubMenuClear()
         For Each Item As ToolStripMenuItem In MenuHexRawTrackData.DropDownItems
             RemoveHandler Item.Click, AddressOf BtnRawTrackData_Click
@@ -2299,19 +2313,7 @@ Public Class MainForm
     Private Sub PopulateFilesPanel(CurrentImage As CurrentImage, ClearItems As Boolean)
         Dim Response = FilePanel.Populate(CurrentImage, ClearItems)
 
-        MenuDisplayDirectorySubMenuClear()
-
-        If Response.DirectoryList.Count > 0 Then
-            MenuHexDirectory.Text = My.Resources.Menu_Directory
-            MenuDisplayDirectorySubMenuItemAdd(InParens(My.Resources.Label_Root), CurrentImage.Disk.RootDirectory)
-            MenuHexDirectory.Tag = Nothing
-        Else
-            MenuHexDirectory.Tag = CurrentImage.Disk.RootDirectory
-        End If
-
-        For Each Item In Response.DirectoryList
-            MenuDisplayDirectorySubMenuItemAdd(Item.Path, Item.Directory)
-        Next
+        MenuDisplayDirectorySubMenuPopulate(CurrentImage, Response)
 
         MenuToolsWin9xClean.Enabled = Response.HasValidCreated Or Response.HasValidLastAccessed Or CurrentImage.Disk.BootSector.IsWin9xOEMName
         MenuToolsClearReservedBytes.Enabled = Response.HasNTUnknownFlags Or Response.HasFAT32Cluster
@@ -2583,8 +2585,8 @@ Public Class MainForm
             MenuFileNewDirectoryHere.Enabled = False
 
         ElseIf FilePanel.SelectedItems.Count = 1 Then
-            Dim FileData As FileData = FilePanel.SelectedItems(0).Tag
-            ParentDirectory = FilePanel.SelectedItems(0).Group.Tag
+            Dim FileData As FileData = FilePanel.FirstSelectedItem.Tag
+            ParentDirectory = FilePanel.FirstSelectedItem.Group.Tag
             If FileData IsNot Nothing Then
                 Stats = DirectoryEntryGetStats(FileData.DirectoryEntry)
 
@@ -3713,8 +3715,8 @@ Public Class MainForm
         BtnResetSort.Enabled = e
     End Sub
 
-    Private Sub ImageFilters_FilterChanged() Handles ImageFilters.FilterChanged
-        FiltersApply(True)
+    Private Sub ImageFilters_FilterChanged(ResetSubFilters As Boolean) Handles ImageFilters.FilterChanged
+        FiltersApply(ResetSubFilters)
     End Sub
 
     Private Sub ListViewFiles_ItemDrag(sender As Object, e As ItemDragEventArgs) Handles ListViewFiles.ItemDrag
@@ -3819,14 +3821,6 @@ Public Class MainForm
 
     Private Sub MenuToolsTrackLayout_Click(sender As Object, e As EventArgs) Handles MenuToolsTrackLayout.Click
         GenerateTrackLayout()
-    End Sub
-
-    Private Sub ToolStripCombo_SelectedIndexChanged(sender As Object, e As EventArgs)
-        If ImageFilters.SuppressEvent Then
-            Exit Sub
-        End If
-
-        FiltersApply(False)
     End Sub
 
     Private Sub ToolStripFATCombo_SelectedIndexChanged(sender As Object, e As EventArgs)

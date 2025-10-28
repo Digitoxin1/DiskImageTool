@@ -1,5 +1,5 @@
 ﻿Namespace Filters
-    Public Delegate Sub FilterChangedEventHandler()
+    Public Delegate Sub FilterChangedEventHandler(ResetSubFilters As Boolean)
     Public Class ImageFiltersBase
         Private ReadOnly _ContextMenuFilters As ContextMenuStrip
         Private _SuppressEvent As Boolean = False
@@ -14,6 +14,10 @@
 
         Public Property FilterCounts As FilterCounts()
         Public Property FiltersApplied As Boolean
+
+        Protected Overridable Sub OnFilterChanged(ResetSubFilters As Boolean)
+            RaiseEvent FilterChanged(ResetSubFilters)
+        End Sub
 
         Private Shared Function FilterGetCaption(ID As FilterTypes, Count As Integer) As String
             Dim Caption As String
@@ -271,7 +275,7 @@
                 Exit Sub
             End If
 
-            RaiseEvent FilterChanged()
+            RaiseEvent FilterChanged(True)
         End Sub
     End Class
 End Namespace

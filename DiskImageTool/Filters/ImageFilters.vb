@@ -9,19 +9,13 @@ Namespace Filters
         Private ReadOnly _SubFilterOEMName As ComboFilter
         Private _SuppressEvent As Boolean = False
 
-        Public Property SuppressEvent As Boolean
-            Get
-                Return _SuppressEvent
-            End Get
-            Set
-                _SuppressEvent = Value
-            End Set
-        End Property
-
         Public Sub New(ContextMenuFilters As ContextMenuStrip, ToolStripOEMNameCombo As ToolStripComboBox, ToolStripDiskTypeCombo As ToolStripComboBox)
             MyBase.New(ContextMenuFilters)
             _SubFilterDiskType = New ComboFilter(ToolStripDiskTypeCombo)
             _SubFilterOEMName = New ComboFilter(ToolStripOEMNameCombo)
+
+            AddHandler ToolStripOEMNameCombo.SelectedIndexChanged, AddressOf SelectedIndexChanged
+            AddHandler ToolStripDiskTypeCombo.SelectedIndexChanged, AddressOf SelectedIndexChanged
         End Sub
 
         Public Sub DiskTypeUpdate(Disk As DiskImage.Disk, ImageData As ImageData, Optional UpdateFilters As Boolean = False, Optional Remove As Boolean = False)
@@ -327,6 +321,14 @@ Namespace Filters
                 OEMNameAdd(ImageData.OEMName, False)
             Next
             _SubFilterOEMName.Populate()
+        End Sub
+
+        Private Sub SelectedIndexChanged(sender As Object, e As EventArgs)
+            If _SuppressEvent Then
+                Exit Sub
+            End If
+
+            MyBase.OnFilterChanged(False)
         End Sub
     End Class
 End Namespace

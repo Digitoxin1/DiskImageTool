@@ -647,7 +647,6 @@
 		<release year="1989" media="360K" status="V">
 			<disk md5="3DBA2F48F0D7270E1E9EE299889CD3C6" disk="Blockbuster" cp="Mindscape DEM v2"/>
 			<disk md5="9417DEEC798EE1CF63E059B8F139D9A2" disk="Gauntlet"/>
-			<disk md5="B9018402CE33A69D0F1DD80DC75034CB" disk="Paperboy"/>
 			<disk md5="970A3EC6D53A44638B375F160A06F7B9" disk="Road Runner" cp="Mindscape DEM v3"/>
 		</release>
 	</title>
@@ -7696,7 +7695,7 @@
 		</release>
 	</title>
 	<title name="Matterhorn Screamer!" publisher="Hi-Tech Expressions, Inc.">
-		<release year="1988" media="360K" status="U">
+		<release year="1988" media="360K" status="V">
 			<disk md5="7EEF7A78BDEBC4A44BC15AC227B7B861"/>
 		</release>
 	</title>
@@ -8509,7 +8508,7 @@
 				<disk md5="0198A6A319B238D89AB5D909D4DF9C5A" disk="2"/>
 			</media>
 		</release>
-		<release year="1990" version="1.1" media="360K" status="V" region="France" language="English">
+		<release year="1990" version="1.1" media="360K" status="V" region="USA, France">
 			<disk md5="04B1D7E23F2553F06CFB17A50484FAED" disk="1"/>
 			<disk md5="2DBA280B066E49E73EE8DFEEA14453EA" disk="2"/>
 			<disk md5="0353D42924C69074CC302C179955BA7B" disk="3"/>
@@ -8844,6 +8843,9 @@
 		<release year="1988" media="720K" status="V">
 			<disk md5="7EC3F41EB184C4FBF61DF8FBFE69EDE9" cp="WayDisk Minder v2"/>
 		</release>
+    <release year="1989" media="360K" status="V">
+      <disk md5="B9018402CE33A69D0F1DD80DC75034CB"/>
+    </release>
 		<release year="1990" media="360K" status="V">
 			<disk md5="8CD3709ECE2793876104247B914F87BB" cp="Rob Northern Copylock PC"/>
 		</release>
@@ -10146,6 +10148,11 @@
 			<disk md5="579BDB145AFA50EC523BA56C50A8140B"/>
 		</release>
 	</title>
+  <title name="Roller Coaster Rumbler" publisher="Hi-Tech Expressions, Inc.">
+    <release year="1988" media="360K" status="V">
+      <disk md5="FA7ADB02B26818AF8812BDA8F0E3F31E"/>
+    </release>
+  </title>
 	<title name="Rome: Pathway to Power" publisher="Maxis Software, Inc.">
 		<release year="1992" status="U">
 			<media media="1.2M">
@@ -11458,7 +11465,7 @@
 				<disk md5="EA23CF94DCF6EA03B822DB0B14C320CB" disk="5"/>
 			</media>
 			<media media="1.2M" status="V">
-				<disk md5="13882B7CBD3FED4BE9C96BAF80204FFE" disk="Startup" status="U"/>
+				<disk md5="ECAABCD9EA93658070CB8B4052317059" disk="Startup"/>
 				<disk md5="5445B5DB4B24AB3E6FBF98988072C064" disk="1"/>
 				<disk md5="3B93EFE93273222CE3E1019F65F7AAD7" disk="2"/>
 				<disk md5="715EC9E4A72D6D910E04417F4A076793" disk="3"/>
@@ -11543,7 +11550,7 @@
 		</release>
 	</title>
 	<title name="Space Quest V: The Next Mutation" publisher="Sierra On-Line, Inc.">
-		<release year="1993" version="1.0, Int. 2.5.93" media="1.44M" status="U">
+		<release year="1993" version="1.0, Int. 2.5.93" media="1.44M" status="V">
 			<disk md5="DACBE85001A4E0EFC6C235D1E15FE1E9" disk="1"/>
 			<disk md5="FF098E81B825F48E663E2D18896244E4" disk="2"/>
 			<disk md5="CE1C51B99132D4DE6B9D0C054D564C7D" disk="3"/>
@@ -13426,16 +13433,16 @@
 	</title>
 	<title name="The Lost Files of Sherlock Holmes" publisher="Electronic Arts, Inc.">
 		<release year="1992">
-			<media media="1.2M" status="U">
-				<disk md5="907F635FA706D8CDB1FE6AC4B2E1DE43" disk="1"/>
+			<media media="1.2M" status="V">
+				<disk md5="5F193D943557C51233D2BF607C11EAE0" disk="1"/>
 				<disk md5="D80FEC4579FDEE2820E379E908528233" disk="2"/>
 				<disk md5="2D25F6439E6DBBD0BA9C5D18E3EE0BBE" disk="3"/>
-				<disk md5="626B3A7FA817C9472BA5E1F188C20E3B" disk="4"/>
-				<disk md5="C47D6A4FA9C1AF910DAE04863780BCF7" disk="5"/>
-				<disk md5="FFB376F256D9608E827EFC8C5E004BDC" disk="6"/>
-				<disk md5="8A9CF605E68DDD6D7F7488E77F56156A" disk="7"/>
+				<disk md5="9DF7A214AF6B5443E8710B3B11C9C3C5" disk="4"/>
+				<disk md5="F1487B6A2EE973ACC05FB37AD2C1F4D5" disk="5"/>
+				<disk md5="41FF971CF673D73400B7D8CAF0A9D13F" disk="6"/>
+				<disk md5="4AEBF2C099DD4D93B6982100AFC00436" disk="7"/>
 				<disk md5="C87E3B3ED32D50B9D791F3B6AB9EB491" disk="8"/>
-				<disk md5="81D3E1ED8F70AEE5EC16727C69AF7E06" disk="9"/>
+				<disk md5="D7D85F4F1C52EF02445055ECC7A4D710" disk="9"/>
 				<disk md5="C36DC9645CD56927004C7E4D5D12F42B" disk="10"/>
 			</media>
 			<media media="1.44M" status="V">
