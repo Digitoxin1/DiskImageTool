@@ -637,8 +637,16 @@ Public Class HexViewRawForm
             HexBox1.Select(SelectionStart, SelectionLength)
         End If
 
+        Dim ExactBitCount = InferBitCount(RegionData.NumBits)
+        If RegionData.NumBits = ExactBitCount Then
+            ToolStripStatusExactBitCount.Text = "  ✓"
+        Else
+            ToolStripStatusExactBitCount.Text = ""
+        End If
+
         ToolStripStatusBits.Text = FormatThousands(RegionData.NumBits) & " " & My.Resources.Label_Bits
         ToolStripStatusBytes.Text = FormatThousands(Math.Ceiling(RegionData.NumBits / 16)) & " " & My.Resources.Label_Bytes
+
         _LastSearch = New HexSearch
 
         _LabelGap4A.Text = FormatLabelPair(My.Resources.Label_Gap & " 4A", RegionData.Gap4A)

@@ -126,6 +126,13 @@ Namespace Bitstream
             Return BytesPerSector
         End Function
 
+        Public Function InferBitCount(BitCount As UInteger) As UInteger
+            Dim BitRate = InferBitRate(BitCount)
+            Dim RPM = InferRPM(BitCount)
+
+            Return IBM_MFM.MFMGetSize(RPM, BitRate)
+        End Function
+
         Public Function InferBitRate(BitCount As UInteger) As UShort
             BitCount = Math.Round(BitCount / 5000) * 5000
 

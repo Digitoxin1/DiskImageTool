@@ -1,5 +1,10 @@
-﻿Public Class FilePanel
-    Private WithEvents ListView As ListView
+﻿Imports System.ComponentModel
+Imports DiskImageTool.DiskImage
+
+Public Class FilePanel
+    Private WithEvents ContextMenuFiles As ContextMenuStrip
+    Private WithEvents ContextMenuDirectory As ContextMenuStrip
+    Private WithEvents ListViewFiles As ListViewEx
     Private Const COL_ATTRIBUTES_WIDTH As Integer = 72
     Private Const COL_CLUSTER_ERROR_WIDTH As Integer = 30
     Private Const COL_CLUSTER_WIDTH As Integer = 57
@@ -15,7 +20,7 @@
     Private Const COL_NT_RESERVED_WIDTH As Integer = 30
     Private Const COL_SIZE_WIDTH As Integer = 80
     Private ReadOnly _ListViewHeader As ListViewHeader
-    Private ReadOnly _lvwColumnSorter As ListViewColumnSorter
+    Private ReadOnly _lvwColumnSorter As FilePanelColumnSorter
     Private _CheckAll As Boolean = False
     Private _ClickedGroup As ListViewGroup = Nothing
     Private _ColClusterError As ColumnHeader
@@ -25,27 +30,70 @@
     Private _ColLFN As ColumnHeader
     Private _ColNTReserved As ColumnHeader
     Private _ColumnWidths() As Integer
+    Private _CurrentImage As CurrentImage = Nothing
+    Private _MenuState As FileMenuState
     Private _SuppressEvent As Boolean = False
 
-    Public Event GroupClick As EventHandler(Of ListViewGroup)
+    Public Enum FilePanelMenuItem
+        FileProperties
+        ExportFile
+        ReplaceFile
+        ViewDirectory
+        ViewDirectorySeparator
+        ViewFile
+        ViewFileText
+        ViewCrosslinked
+        ImportFiles
+        ImportFilesHere
+        NewDirectory
+        NewDirectoryHere
+        DeleteFile
+        UnDeleteFile
+        FileRemove
+        FixSize
+    End Enum
+
     Public Event ItemDoubleClick As EventHandler(Of ListViewItem)
+    Public Event ItemDrag As EventHandler(Of ItemDragEventArgs)
     Public Event ItemSelectionChanged As EventHandler
+    Public Event MenuItemClicked As EventHandler(Of MenuItemClickedEventArgs)
     Public Event SortChanged As EventHandler(Of Boolean)
 
-    Public Sub New(ListViewFiles As ListView)
-        ListView = ListViewFiles
+    Public Sub New(ListViewFiles As ListViewEx)
+        Me.ListViewFiles = ListViewFiles
+        ContextMenuFiles = New ContextMenuStrip
+        ContextMenuDirectory = New ContextMenuStrip
+        Me.ListViewFiles.ContextMenuStrip = ContextMenuFiles
 
-        _lvwColumnSorter = New ListViewColumnSorter
-        _ListViewHeader = New ListViewHeader(ListView.Handle)
+        _lvwColumnSorter = New FilePanelColumnSorter
+        _ListViewHeader = New ListViewHeader(Me.ListViewFiles.Handle)
 
         Initialize()
         InitColumns()
+        InitContextMenuDirectory()
+        InitContextMenuFiles()
+
+        _MenuState = GetFileMenuState(Me)
     End Sub
+
+    Protected Overrides Sub Finalize()
+        MyBase.Finalize()
+
+        ListViewFiles = Nothing
+        ContextMenuFiles = Nothing
+        ContextMenuDirectory = Nothing
+    End Sub
+
+    Public ReadOnly Property CurrentImage As CurrentImage
+        Get
+            Return _CurrentImage
+        End Get
+    End Property
 
     Public ReadOnly Property FirstSelectedItem As ListViewItem
         Get
-            If ListView.SelectedItems.Count > 0 Then
-                Return ListView.SelectedItems(0)
+            If ListViewFiles.SelectedItems.Count > 0 Then
+                Return ListViewFiles.SelectedItems(0)
             Else
                 Return Nothing
             End If
@@ -54,14 +102,20 @@
 
     Public ReadOnly Property Items As ListView.ListViewItemCollection
         Get
-            Return ListView.Items
+            Return ListViewFiles.Items
+        End Get
+    End Property
+
+    Public ReadOnly Property MenuState As FileMenuState
+        Get
+            Return _MenuState
         End Get
     End Property
 
     Public ReadOnly Property SelectedFileData As FileData
         Get
-            If ListView.SelectedItems.Count = 1 Then
-                Return TryCast(ListView.SelectedItems(0).Tag, FileData)
+            If ListViewFiles.SelectedItems.Count = 1 Then
+                Return TryCast(ListViewFiles.SelectedItems(0).Tag, FileData)
             Else
                 Return Nothing
             End If
@@ -70,7 +124,7 @@
 
     Public ReadOnly Property SelectedItems As ListView.SelectedListViewItemCollection
         Get
-            Return ListView.SelectedItems
+            Return ListViewFiles.SelectedItems
         End Get
     End Property
 
@@ -91,16 +145,16 @@
             Item.SubItems.Add("")
         Next
 
-        If ListView.Items.Count <= ItemIndex Then
-            ListView.Items.Add(Item)
+        If ListViewFiles.Items.Count <= ItemIndex Then
+            ListViewFiles.Items.Add(Item)
         Else
-            ListView.Items.Item(ItemIndex) = Item
+            ListViewFiles.Items.Item(ItemIndex) = Item
         End If
 
         Return Item
     End Function
 
-    Public Function AddGroup(Directory As DiskImage.IDirectory, Path As String, GroupIndex As Integer) As ListViewGroup
+    Public Function AddGroup(Directory As IDirectory, Path As String, GroupIndex As Integer) As ListViewGroup
         Dim FileCount As UInteger = Directory.Data.FileCount
 
         Dim GroupName As String = IIf(Path = "", InParens(My.Resources.Label_Root), Path) & "  ("
@@ -124,7 +178,7 @@
         Dim Group = New ListViewGroup(GroupName) With {
             .Tag = Directory
         }
-        ListView.Groups.Add(Group)
+        ListViewFiles.Groups.Add(Group)
 
         Return Group
     End Function
@@ -132,89 +186,95 @@
     Public Function AddItem(FileData As FileData, Group As ListViewGroup, ItemIndex As Integer) As ListViewItem
         Dim Item = GetItem(Group, FileData)
 
-        If ListView.Items.Count <= ItemIndex Then
-            ListView.Items.Add(Item)
+        If ListViewFiles.Items.Count <= ItemIndex Then
+            ListViewFiles.Items.Add(Item)
         Else
-            ListView.Items.Item(ItemIndex) = Item
+            ListViewFiles.Items.Item(ItemIndex) = Item
         End If
 
         Return Item
     End Function
 
-    Public Sub ClearItems()
-        EnableSorter(False)
-        ListView.Items.Clear()
-        SelectionChanged()
-    End Sub
-
     Public Sub ClearModifiedFlag()
-        ListView.BeginUpdate()
+        ListViewFiles.BeginUpdate()
 
-        For Each Item As ListViewItem In ListView.Items
+        For Each Item As ListViewItem In ListViewFiles.Items
             If Item.SubItems(0).Text = "#" Then
                 Item.SubItems(0) = New ListViewItem.ListViewSubItem()
             End If
         Next
 
-        ListView.EndUpdate()
+        ListViewFiles.EndUpdate()
     End Sub
 
     Public Sub ClearSort(Reset As Boolean)
         If Reset Then
             _lvwColumnSorter.Sort(0)
-            ListView.Sort()
+            ListViewFiles.Sort()
         Else
             _lvwColumnSorter.Sort(-1, SortOrder.None)
         End If
-        ListView.SetSortIcon(-1, SortOrder.None)
+        ListViewFiles.SetSortIcon(-1, SortOrder.None)
         _lvwColumnSorter.ClearHistory()
         RaiseEvent SortChanged(Me, False)
     End Sub
 
-    Public Function GetBottomIndex() As Integer
-        Return ListView.GetBottomIndex
+    Public Function DoDragDrop(data As Object, allowedEffects As DragDropEffects) As DragDropEffects
+        Return ListViewFiles.DoDragDrop(data, allowedEffects)
     End Function
 
-    Public Function Populate(CurrentImage As CurrentImage, ClearItems As Boolean) As DirectoryScanResponse
-        ListView.BeginUpdate()
+    Public Function GetBottomIndex() As Integer
+        Return ListViewFiles.GetBottomIndex
+    End Function
+
+    Public Function Load(CurrentImage As CurrentImage, ClearItems As Boolean) As DirectoryScanResponse
+        _CurrentImage = CurrentImage
+
+        Dim Response As DirectoryScanResponse = Nothing
+        Dim IsValidImage = CurrentImage IsNot Nothing AndAlso CurrentImage.Disk IsNot Nothing AndAlso CurrentImage.Disk.IsValidImage
+
+
+        ListViewFiles.BeginUpdate()
 
         EnableSorter(False)
 
         If ClearItems Then
-            ListView.Items.Clear()
-            ListView.Groups.Clear()
+            ListViewFiles.Items.Clear()
+            ListViewFiles.Groups.Clear()
         End If
 
-        ListView.MultiSelect = True
+        If IsValidImage Then
+            ListViewFiles.MultiSelect = True
 
-        Dim Response = ProcessDirectoryEntries(CurrentImage.Disk.RootDirectory, Me)
+            Response = ProcessDirectoryEntries(CurrentImage.Disk.RootDirectory, Me)
 
-        If Not ClearItems Then
-            RemoveUnused(Response.ItemCount)
-        End If
+            If Not ClearItems Then
+                RemoveUnused(Response.ItemCount)
+            End If
 
-        AdjustWidths(Response)
+            AdjustWidths(Response)
 
-        If Response.HasFATChainingErrors Then
-            RefreshClusterErrors()
-        End If
+            If Response.HasFATChainingErrors Then
+                RefreshClusterErrors()
+            End If
 
-        AutoSize()
+            AutoSize()
 
-        EnableSorter(True)
+            EnableSorter(True)
 
-        If CurrentImage.ImageData.SortHistory IsNot Nothing Then
-            Sort(CurrentImage.ImageData.SortHistory)
-        End If
+            If CurrentImage.ImageData.SortHistory IsNot Nothing Then
+                Sort(CurrentImage.ImageData.SortHistory)
+            End If
 
-        If ClearItems Then
-            If CurrentImage.ImageData IsNot Nothing Then
-                ScrollToIndex(CurrentImage.ImageData.BottomIndex)
+            If ClearItems Then
+                If CurrentImage.ImageData IsNot Nothing Then
+                    ScrollToIndex(CurrentImage.ImageData.BottomIndex)
+                End If
             End If
         End If
 
-        ListView.EndUpdate()
-        ListView.Refresh()
+        ListViewFiles.EndUpdate()
+        ListViewFiles.Refresh()
 
         SelectionChanged()
 
@@ -224,13 +284,15 @@
     Public Sub Reset()
         _CheckAll = False
         ClearSort(False)
-        With ListView
+        With ListViewFiles
             .BeginUpdate()
             .Items.Clear()
             .Groups.Clear()
             .MultiSelect = False
             .EndUpdate()
         End With
+        _CurrentImage = Nothing
+        _MenuState = GetFileMenuState(Me)
     End Sub
 
     Private Shared Function GetItem(Group As ListViewGroup, FileData As FileData) As ListViewItem
@@ -437,6 +499,41 @@
         Return Item
     End Function
 
+    Private Function GetMenuItem(MenuStrip As ContextMenuStrip, name As FilePanelMenuItem) As ToolStripItem
+        Dim key As String = name
+
+        Return MenuStrip.Items.Item(key)
+    End Function
+
+    Private Function AddMenuItem(MenuStrip As ContextMenuStrip, name As FilePanelMenuItem, text As String) As ToolStripMenuItem
+        Dim Item = New ToolStripMenuItem(text) With {
+            .Name = name
+        }
+        MenuStrip.Items.Add(Item)
+
+        Return Item
+    End Function
+
+    Private Function AddMenuItem(MenuStrip As ContextMenuStrip, name As FilePanelMenuItem, text As String, image As Image) As ToolStripMenuItem
+        Dim Item = New ToolStripMenuItem(text, image) With {
+            .Name = name
+        }
+        MenuStrip.Items.Add(Item)
+
+        Return Item
+    End Function
+
+    Private Sub AddMenuSeparator(MenuStrip As ContextMenuStrip)
+        MenuStrip.Items.Add(New ToolStripSeparator())
+    End Sub
+
+    Private Sub AddMenuSeparator(MenuStrip As ContextMenuStrip, name As FilePanelMenuItem)
+        Dim Item = New ToolStripSeparator() With {
+            .Name = name
+        }
+        MenuStrip.Items.Add(Item)
+    End Sub
+
     Private Sub AdjustWidths(Response As DirectoryScanResponse)
         If Response.HasCreated Then
             _ColCreationDate.Width = COL_CREATED_WIDTH
@@ -476,7 +573,7 @@
     End Sub
 
     Private Sub AutoSize()
-        For Each Column As ColumnHeader In ListView.Columns
+        For Each Column As ColumnHeader In ListViewFiles.Columns
             If Column.Width > 0 Then
                 Column.Width = -2
                 If Column.Width < _ColumnWidths(Column.Index) Then
@@ -486,17 +583,22 @@
         Next
     End Sub
 
+    Private Sub DisplayDirectoryContextMenu(Directory As IDirectory, Location As Point)
+        ContextMenuDirectory.Tag = Directory
+        ContextMenuDirectory.Show(Location)
+    End Sub
+
     Private Sub EnableSorter(Value As Boolean)
         If Value Then
-            ListView.ListViewItemSorter = _lvwColumnSorter
+            ListViewFiles.ListViewItemSorter = _lvwColumnSorter
         Else
-            ListView.ListViewItemSorter = Nothing
+            ListViewFiles.ListViewItemSorter = Nothing
         End If
     End Sub
 
     Private Sub InitColumns()
-        ReDim _ColumnWidths(ListView.Columns.Count - 1)
-        For Each Column As ColumnHeader In ListView.Columns
+        ReDim _ColumnWidths(ListViewFiles.Columns.Count - 1)
+        For Each Column As ColumnHeader In ListViewFiles.Columns
             _ColumnWidths(Column.Index) = Column.Width
         Next
 
@@ -508,8 +610,39 @@
         _ColFAT32Cluster.Width = 0
     End Sub
 
+    Private Sub InitContextMenuDirectory()
+        AddMenuItem(ContextMenuDirectory, FilePanelMenuItem.ViewDirectory, My.Resources.Menu_ViewDirectoryAlt)
+        AddMenuSeparator(ContextMenuDirectory)
+        AddMenuItem(ContextMenuDirectory, FilePanelMenuItem.ImportFiles, My.Resources.Menu_ImportFiles, My.Resources.Import)
+        AddMenuItem(ContextMenuDirectory, FilePanelMenuItem.NewDirectory, My.Resources.Menu_NewDirectory)
+    End Sub
+
+    Private Sub InitContextMenuFiles()
+        AddMenuItem(ContextMenuFiles, FilePanelMenuItem.FileProperties, My.Resources.Menu_EditFileProperties, My.Resources.PropertiesFolderClosed)
+        AddMenuItem(ContextMenuFiles, FilePanelMenuItem.ExportFile, My.Resources.Menu_ExportFile, My.Resources.Export)
+        AddMenuItem(ContextMenuFiles, FilePanelMenuItem.ReplaceFile, My.Resources.Menu_ReplaceFile)
+        AddMenuSeparator(ContextMenuFiles)
+        AddMenuItem(ContextMenuFiles, FilePanelMenuItem.ViewDirectory, My.Resources.Menu_ViewDirectoryAlt)
+        AddMenuSeparator(ContextMenuFiles, FilePanelMenuItem.ViewDirectorySeparator)
+        AddMenuItem(ContextMenuFiles, FilePanelMenuItem.ViewFile, My.Resources.Menu_ViewFile, My.Resources.TextArea)
+        AddMenuItem(ContextMenuFiles, FilePanelMenuItem.ViewFileText, My.Resources.Menu_ViewFileAsText, My.Resources.TextFile)
+        AddMenuItem(ContextMenuFiles, FilePanelMenuItem.ViewCrosslinked, My.Resources.Menu_ViewCrosslinked)
+        AddMenuSeparator(ContextMenuFiles)
+        AddMenuItem(ContextMenuFiles, FilePanelMenuItem.ImportFiles, My.Resources.Menu_ImportFiles, My.Resources.Import)
+        AddMenuItem(ContextMenuFiles, FilePanelMenuItem.ImportFilesHere, My.Resources.Menu_ImportFilesHere)
+        AddMenuSeparator(ContextMenuFiles)
+        AddMenuItem(ContextMenuFiles, FilePanelMenuItem.NewDirectory, My.Resources.Menu_NewDirectory)
+        AddMenuItem(ContextMenuFiles, FilePanelMenuItem.NewDirectoryHere, My.Resources.Menu_NewDirectoryHere)
+        AddMenuSeparator(ContextMenuFiles)
+        AddMenuItem(ContextMenuFiles, FilePanelMenuItem.DeleteFile, My.Resources.Menu_DeleteFile)
+        AddMenuItem(ContextMenuFiles, FilePanelMenuItem.UnDeleteFile, My.Resources.Menu_UndeleteFile)
+        AddMenuItem(ContextMenuFiles, FilePanelMenuItem.FileRemove, My.Resources.Menu_RemoveFile)
+        AddMenuSeparator(ContextMenuFiles)
+        AddMenuItem(ContextMenuFiles, FilePanelMenuItem.FixSize, My.Resources.Menu_FixFlieSize)
+    End Sub
+
     Private Sub Initialize()
-        With ListView
+        With ListViewFiles
             .FullRowSelect = True
             .View = View.Details
             .HideSelection = False
@@ -535,15 +668,15 @@
     End Sub
 
     Private Sub RefreshCheckAll()
-        Dim CheckAll = (ListView.SelectedItems.Count = ListView.Items.Count And ListView.Items.Count > 0)
+        Dim CheckAll = (ListViewFiles.SelectedItems.Count = ListViewFiles.Items.Count And ListViewFiles.Items.Count > 0)
         If CheckAll <> _CheckAll Then
             _CheckAll = CheckAll
-            ListView.Invalidate(New Rectangle(0, 0, 20, 20), True)
+            ListViewFiles.Invalidate(New Rectangle(0, 0, 20, 20), True)
         End If
     End Sub
 
     Private Sub RefreshClusterErrors()
-        For Each Item As ListViewItem In ListView.Items
+        For Each Item As ListViewItem In ListViewFiles.Items
             Dim FileData As FileData = TryCast(Item.Tag, FileData)
             If FileData IsNot Nothing Then
                 If FileData.DirectoryEntry.IsCrossLinked Then
@@ -555,31 +688,32 @@
     End Sub
 
     Private Sub RemoveUnused(ItemCount As Integer)
-        For Counter = ListView.Items.Count - 1 To ItemCount Step -1
-            ListView.Items.RemoveAt(Counter)
+        For Counter = ListViewFiles.Items.Count - 1 To ItemCount Step -1
+            ListViewFiles.Items.RemoveAt(Counter)
         Next
-        For Counter = ListView.Groups.Count - 1 To 0 Step -1
-            Dim Group = ListView.Groups.Item(Counter)
+        For Counter = ListViewFiles.Groups.Count - 1 To 0 Step -1
+            Dim Group = ListViewFiles.Groups.Item(Counter)
             If Group.Items.Count = 0 Then
-                ListView.Groups.Remove(Group)
+                ListViewFiles.Groups.Remove(Group)
             End If
         Next
     End Sub
     Private Sub ScrollToIndex(Index As Integer)
-        If Index > -1 AndAlso Index < ListView.Items.Count Then
-            ListView.EnsureVisible(Index)
+        If Index > -1 AndAlso Index < ListViewFiles.Items.Count Then
+            ListViewFiles.EnsureVisible(Index)
         End If
     End Sub
 
     Private Sub SelectionChanged()
         RefreshCheckAll()
+        _MenuState = GetFileMenuState(Me)
         RaiseEvent ItemSelectionChanged(Me, EventArgs.Empty)
     End Sub
 
     Private Sub Sort(Item As SortEntity)
         _lvwColumnSorter.Sort(Item)
-        ListView.Sort()
-        ListView.SetSortIcon(_lvwColumnSorter.SortColumn, _lvwColumnSorter.Order)
+        ListViewFiles.Sort()
+        ListViewFiles.SetSortIcon(_lvwColumnSorter.SortColumn, _lvwColumnSorter.Order)
     End Sub
     Private Sub Sort(SortList As List(Of SortEntity))
         If SortList.Count > 0 Then
@@ -589,16 +723,60 @@
             RaiseEvent SortChanged(Me, True)
         End If
     End Sub
+
 #Region "Events"
-    Private Sub ListView_ColumnClick(sender As Object, e As ColumnClickEventArgs) Handles ListView.ColumnClick
-        If ListView.Items.Count = 0 Then
+    Private Sub ContextMenuDirectory_ItemClicked(sender As Object, e As ToolStripItemClickedEventArgs) Handles ContextMenuDirectory.ItemClicked
+        ContextMenuDirectory.Close(ToolStripDropDownCloseReason.ItemClicked)
+
+        Dim Item As Integer
+        If Integer.TryParse(e.ClickedItem.Name, Item) Then
+            Dim ParentDirectory = TryCast(ContextMenuDirectory.Tag, IDirectory)
+            If ParentDirectory IsNot Nothing Then
+                RaiseEvent MenuItemClicked(Me, New MenuItemClickedEventArgs(Item, ParentDirectory))
+            End If
+        End If
+    End Sub
+    Private Sub ContextMenuFiles_ItemClicked(sender As Object, e As ToolStripItemClickedEventArgs) Handles ContextMenuFiles.ItemClicked
+        ContextMenuFiles.Close(ToolStripDropDownCloseReason.ItemClicked)
+
+        Dim Item As Integer
+        If Integer.TryParse(e.ClickedItem.Name, Item) Then
+            RaiseEvent MenuItemClicked(Me, New MenuItemClickedEventArgs(Item, _MenuState.ParentDirectory))
+        End If
+    End Sub
+
+    Private Sub ContextMenuFiles_Opening(sender As Object, e As CancelEventArgs) Handles ContextMenuFiles.Opening
+        If SelectedItems.Count = 0 Then
+            e.Cancel = True
+        End If
+
+        SetMenuItemStateEnabled(GetMenuItem(ContextMenuFiles, FilePanelMenuItem.FileProperties), _MenuState.FilePropertiesEnabled)
+        SetMenuItemState(GetMenuItem(ContextMenuFiles, FilePanelMenuItem.ExportFile), _MenuState.ExportFile)
+        SetMenuItemStateEnabled(GetMenuItem(ContextMenuFiles, FilePanelMenuItem.ReplaceFile), _MenuState.ReplaceFileEnabled)
+        SetMenuItemState(GetMenuItem(ContextMenuFiles, FilePanelMenuItem.ViewDirectory), _MenuState.ViewDirectory, _MenuState.ParentDirectory)
+        SetMenuItemStateVisible(GetMenuItem(ContextMenuFiles, FilePanelMenuItem.ViewDirectorySeparator), _MenuState.ViewDirectory.Visible)
+        SetMenuItemState(GetMenuItem(ContextMenuFiles, FilePanelMenuItem.ViewFile), _MenuState.ViewFile)
+        SetMenuItemState(GetMenuItem(ContextMenuFiles, FilePanelMenuItem.ViewFileText), _MenuState.ViewFileText)
+        SetMenuItemStateVisible(GetMenuItem(ContextMenuFiles, FilePanelMenuItem.ViewCrosslinked), _MenuState.ViewCrosslinkedVisible)
+        SetMenuItemStateEnabled(GetMenuItem(ContextMenuFiles, FilePanelMenuItem.ImportFilesHere), _MenuState.ImportFilesHereEnabled)
+        SetMenuItemStateEnabled(GetMenuItem(ContextMenuFiles, FilePanelMenuItem.NewDirectoryHere), _MenuState.NewDirectoryHereEnabled)
+        SetMenuItemState(GetMenuItem(ContextMenuFiles, FilePanelMenuItem.DeleteFile), _MenuState.DeleteFile)
+        SetMenuItemState(GetMenuItem(ContextMenuFiles, FilePanelMenuItem.UnDeleteFile), _MenuState.UndeleteFile)
+        SetMenuItemState(GetMenuItem(ContextMenuFiles, FilePanelMenuItem.FileRemove), _MenuState.RemoveFile)
+        SetMenuItemStateEnabled(GetMenuItem(ContextMenuFiles, FilePanelMenuItem.FixSize), _MenuState.FixSizeEnabled)
+        SetMenuItemStateEnabled(GetMenuItem(ContextMenuFiles, FilePanelMenuItem.ImportFiles), _MenuState.AddFileEnabled, _MenuState.ParentDirectory)
+        SetMenuItemStateEnabled(GetMenuItem(ContextMenuFiles, FilePanelMenuItem.NewDirectory), _MenuState.AddFileEnabled, _MenuState.ParentDirectory)
+    End Sub
+
+    Private Sub ListView_ColumnClick(sender As Object, e As ColumnClickEventArgs) Handles ListViewFiles.ColumnClick
+        If ListViewFiles.Items.Count = 0 Then
             Exit Sub
         End If
 
         If e.Column = 0 Then
             _CheckAll = Not _CheckAll
             _SuppressEvent = True
-            For Each Item As ListViewItem In ListView.Items
+            For Each Item As ListViewItem In ListViewFiles.Items
                 Item.Selected = _CheckAll
             Next
             _SuppressEvent = False
@@ -609,17 +787,17 @@
             Else
                 _lvwColumnSorter.Sort(e.Column)
             End If
-            ListView.Sort()
-            ListView.SetSortIcon(_lvwColumnSorter.SortColumn, _lvwColumnSorter.Order)
+            ListViewFiles.Sort()
+            ListViewFiles.SetSortIcon(_lvwColumnSorter.SortColumn, _lvwColumnSorter.Order)
             RaiseEvent SortChanged(Me, True)
         End If
     End Sub
-    Private Sub ListView_ColumnWidthChanging(sender As Object, e As ColumnWidthChangingEventArgs) Handles ListView.ColumnWidthChanging
-        e.NewWidth = ListView.Columns(e.ColumnIndex).Width
+    Private Sub ListView_ColumnWidthChanging(sender As Object, e As ColumnWidthChangingEventArgs) Handles ListViewFiles.ColumnWidthChanging
+        e.NewWidth = ListViewFiles.Columns(e.ColumnIndex).Width
         e.Cancel = True
     End Sub
 
-    Private Sub ListView_DrawColumnHeader(sender As Object, e As DrawListViewColumnHeaderEventArgs) Handles ListView.DrawColumnHeader
+    Private Sub ListView_DrawColumnHeader(sender As Object, e As DrawListViewColumnHeaderEventArgs) Handles ListViewFiles.DrawColumnHeader
         If e.ColumnIndex = 0 Then
             'Dim Offset As Integer
             'If (e.State And ListViewItemStates.Selected) > 0 Then
@@ -637,15 +815,27 @@
         End If
     End Sub
 
-    Private Sub ListView_DrawItem(sender As Object, e As DrawListViewItemEventArgs) Handles ListView.DrawItem
+    Private Sub ListView_DrawItem(sender As Object, e As DrawListViewItemEventArgs) Handles ListViewFiles.DrawItem
         e.DrawDefault = True
     End Sub
 
-    Private Sub ListView_DrawSubItem(sender As Object, e As DrawListViewSubItemEventArgs) Handles ListView.DrawSubItem
+    Private Sub ListView_DrawSubItem(sender As Object, e As DrawListViewSubItemEventArgs) Handles ListViewFiles.DrawSubItem
         e.DrawDefault = True
     End Sub
 
-    Private Sub ListView_ItemSelectionChanged(sender As Object, e As ListViewItemSelectionChangedEventArgs) Handles ListView.ItemSelectionChanged
+    'Private Sub ListView_ItemSelectionChanged(sender As Object, e As ListViewItemSelectionChangedEventArgs) Handles ListViewFiles.ItemSelectionChanged
+    '    If _SuppressEvent Then
+    '        Exit Sub
+    '    End If
+
+    '    SelectionChanged()
+    'End Sub
+
+    Private Sub ListView_ItemDrag(sender As Object, e As ItemDragEventArgs) Handles ListViewFiles.ItemDrag
+        RaiseEvent ItemDrag(Me, e)
+    End Sub
+
+    Private Sub ListView_ItemSelectionEnd(sender As Object, e As EventArgs) Handles ListViewFiles.ItemSelectionEnd
         If _SuppressEvent Then
             Exit Sub
         End If
@@ -653,26 +843,29 @@
         SelectionChanged()
     End Sub
 
-    Private Sub ListView_MouseDoubleClick(sender As Object, e As MouseEventArgs) Handles ListView.MouseDoubleClick
+    Private Sub ListView_MouseDoubleClick(sender As Object, e As MouseEventArgs) Handles ListViewFiles.MouseDoubleClick
         If e.Button = MouseButtons.Left Then
-            If ListView.SelectedItems.Count = 1 Then
-                RaiseEvent ItemDoubleClick(Me, ListView.SelectedItems(0))
+            If ListViewFiles.SelectedItems.Count = 1 Then
+                RaiseEvent ItemDoubleClick(Me, ListViewFiles.SelectedItems(0))
             End If
         End If
     End Sub
 
-    Private Sub ListView_MouseDown(sender As Object, e As MouseEventArgs) Handles ListView.MouseDown
+    Private Sub ListView_MouseDown(sender As Object, e As MouseEventArgs) Handles ListViewFiles.MouseDown
         _ClickedGroup = Nothing
 
         If e.Button And MouseButtons.Right Then
-            _ClickedGroup = ListView.GetGroupAtPoint(e.Location)
+            _ClickedGroup = ListViewFiles.GetGroupAtPoint(e.Location)
         End If
     End Sub
 
-    Private Sub ListView_MouseUp(sender As Object, e As MouseEventArgs) Handles ListView.MouseUp
+    Private Sub ListView_MouseUp(sender As Object, e As MouseEventArgs) Handles ListViewFiles.MouseUp
         If _ClickedGroup IsNot Nothing Then
-            RaiseEvent GroupClick(Me, _ClickedGroup)
-            _ClickedGroup = Nothing
+            Dim Directory = TryCast(_ClickedGroup.Tag, IDirectory)
+            If Directory IsNot Nothing Then
+                _ClickedGroup = Nothing
+                DisplayDirectoryContextMenu(Directory, ListView.MousePosition)
+            End If
         End If
     End Sub
 #End Region

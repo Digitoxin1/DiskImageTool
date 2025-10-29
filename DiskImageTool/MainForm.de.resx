@@ -321,47 +321,11 @@
   <data name="LabelDropMessage.Text" xml:space="preserve">
     <value>Diskettenabbilder hierher ziehen (Drag &amp;&amp; Drop)</value>
   </data>
-  <data name="MenuFileFileProperties.Text" xml:space="preserve">
-    <value>Datei&amp;eigenschaften bearbeiten</value>
-  </data>
-  <data name="MenuFileReplaceFile.Text" xml:space="preserve">
-    <value>Datei &amp;ersetzen</value>
-  </data>
-  <data name="MenuFileViewCrosslinked.Text" xml:space="preserve">
-    <value>&amp;Verknüpfte Dateien anzeigen</value>
-  </data>
-  <data name="MenuFileImportFiles.Text" xml:space="preserve">
-    <value>Dateien &amp;importieren</value>
-  </data>
-  <data name="MenuFileImportFilesHere.Text" xml:space="preserve">
-    <value>Dateien hier &amp;importieren</value>
-  </data>
-  <data name="MenuFileNewDirectory.Text" xml:space="preserve">
-    <value>&amp;Neues Verzeichnis</value>
-  </data>
-  <data name="MenuFileNewDirectoryHere.Text" xml:space="preserve">
-    <value>&amp;Neues Verzeichnis hier</value>
-  </data>
-  <data name="MenuFileUnDeleteFile.Text" xml:space="preserve">
-    <value>Datei &amp;wiederherstellen</value>
-  </data>
-  <data name="MenuFileFixSize.Text" xml:space="preserve">
-    <value>Dateigröße &amp;korrigieren</value>
-  </data>
   <data name="BtnResetSort.Text" xml:space="preserve">
     <value>Zurücksetzen</value>
   </data>
   <data name="btnRetry.Text" xml:space="preserve">
     <value>Wiederholen</value>
-  </data>
-  <data name="MenuDirectoryView.Text" xml:space="preserve">
-    <value>&amp;Verzeichnis anzeigen</value>
-  </data>
-  <data name="MenuDirectoryImportFiles.Text" xml:space="preserve">
-    <value>Dateien &amp;importieren</value>
-  </data>
-  <data name="MenuDirectoryNewDirectory.Text" xml:space="preserve">
-    <value>&amp;Neues Verzeichnis</value>
   </data>
   <data name="ToolStripImportFiles.ToolTipText" xml:space="preserve">
     <value>Dateien importieren</value>

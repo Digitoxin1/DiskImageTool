@@ -144,26 +144,8 @@
   <data name="MainMenuView.Text" xml:space="preserve">
     <value>&amp;Hexadecimal</value>
   </data>
-  <data name="MenuFileImportFiles.Text" xml:space="preserve">
-    <value>&amp;Importar Archivos</value>
-  </data>
-  <data name="MenuDirectoryImportFiles.Text" xml:space="preserve">
-    <value>&amp;Importar Archivos</value>
-  </data>
-  <data name="MenuFileImportFilesHere.Text" xml:space="preserve">
-    <value>&amp;Importar Archivos Aquí</value>
-  </data>
   <data name="MenuHexLostClusters.Text" xml:space="preserve">
     <value>&amp;Clústeres Perdidos</value>
-  </data>
-  <data name="MenuDirectoryNewDirectory.Text" xml:space="preserve">
-    <value>&amp;Nuevo Directorio</value>
-  </data>
-  <data name="MenuFileNewDirectory.Text" xml:space="preserve">
-    <value>&amp;Nuevo Directorio</value>
-  </data>
-  <data name="MenuFileNewDirectoryHere.Text" xml:space="preserve">
-    <value>&amp;Nuevo Directorio Aquí</value>
   </data>
   <data name="MenuFileNewImage.Text" xml:space="preserve">
     <value>&amp;Nueva Imagen</value>
@@ -195,9 +177,6 @@
   <data name="MenuFileReload.Text" xml:space="preserve">
     <value>&amp;Recargar desde el Disco</value>
   </data>
-  <data name="MenuFileReplaceFile.Text" xml:space="preserve">
-    <value>&amp;Reemplazar Archivo</value>
-  </data>
   <data name="MenuEditReplaceFile.Text" xml:space="preserve">
     <value>&amp;Reemplazar Archivo</value>
   </data>
@@ -215,9 +194,6 @@
   </data>
   <data name="MenuToolsTruncateImage.Text" xml:space="preserve">
     <value>&amp;Truncar Imagen</value>
-  </data>
-  <data name="MenuFileUnDeleteFile.Text" xml:space="preserve">
-    <value>&amp;Restaurar Archivo</value>
   </data>
   <data name="MenuEditUndo.Text" xml:space="preserve">
     <value>&amp;Deshacer</value>
@@ -270,9 +246,6 @@
   <data name="MenuFileExit.Text" xml:space="preserve">
     <value>Sa&amp;lir</value>
   </data>
-  <data name="MenuFileFileProperties.Text" xml:space="preserve">
-    <value>Editar propiedades del &amp;archivo</value>
-  </data>
   <data name="MenuHexDisk.Text" xml:space="preserve">
     <value>Todo el &amp;disco</value>
   </data>
@@ -290,9 +263,6 @@
   </data>
   <data name="ToolStripFileProperties.Text" xml:space="preserve">
     <value>Propiedades del archivo</value>
-  </data>
-  <data name="MenuFileFixSize.Text" xml:space="preserve">
-    <value>Corregir &amp;tamaño del archivo</value>
   </data>
   <data name="MenuToolsFixImageSizeSubMenu.Text" xml:space="preserve">
     <value>Corregir &amp;tamaño de la imagen</value>
@@ -356,12 +326,6 @@
   </data>
   <data name="MainMenuUpdateAvailable.Text" xml:space="preserve">
     <value>Actualización disponible</value>
-  </data>
-  <data name="MenuFileViewCrosslinked.Text" xml:space="preserve">
-    <value>Ver archivos &amp;interconectados</value>
-  </data>
-  <data name="MenuDirectoryView.Text" xml:space="preserve">
-    <value>Ver d&amp;irectorio</value>
   </data>
   <data name="ToolStripImportFiles.ToolTipText" xml:space="preserve">
     <value>Importar archivos</value>

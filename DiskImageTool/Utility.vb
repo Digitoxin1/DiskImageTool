@@ -201,6 +201,21 @@ Module Utility
         Return "(" & text & ")"
     End Function
 
+    Public Function IsBinaryData(data As Byte(), Optional BytesToCheck As Integer = 4096) As Boolean
+        Dim allowedControlChars As Byte() = {7, 8, 9, 10, 11, 12, 13, 26, 27}
+        Dim maxBytesToCheck As Integer = Math.Min(BytesToCheck, data.Length)
+
+        For i As Integer = 0 To maxBytesToCheck - 1
+            Dim b As Byte = data(i)
+
+            If (b < 32 AndAlso Not allowedControlChars.Contains(b)) OrElse b = 0 Then
+                Return True
+            End If
+        Next
+
+        Return False
+    End Function
+
     Public Function IsFileReadOnly(fileName As String) As Boolean
         Dim fInfo As New IO.FileInfo(fileName)
         Return fInfo.IsReadOnly

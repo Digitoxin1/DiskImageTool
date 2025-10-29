@@ -1499,4 +1499,28 @@ Hinweis: Diese ID wird normalerweise erzeugt, indem das aktuelle Datum und die a
   <data name="FilePanel_LFN" xml:space="preserve">
     <value>Langer Dateiname</value>
   </data>
+  <data name="Menu_EditFileProperties" xml:space="preserve">
+    <value>Datei&amp;eigenschaften bearbeiten</value>
+  </data>
+  <data name="Menu_ReplaceFile" xml:space="preserve">
+    <value>Datei &amp;ersetzen</value>
+  </data>
+  <data name="Menu_ViewCrosslinked" xml:space="preserve">
+    <value>&amp;Verknüpfte Dateien anzeigen</value>
+  </data>
+  <data name="Menu_ImportFiles" xml:space="preserve">
+    <value>Dateien &amp;importieren</value>
+  </data>
+  <data name="Menu_ImportFilesHere" xml:space="preserve">
+    <value>Dateien hier &amp;importieren</value>
+  </data>
+  <data name="Menu_NewDirectory" xml:space="preserve">
+    <value>&amp;Neues Verzeichnis</value>
+  </data>
+  <data name="Menu_NewDirectoryHere" xml:space="preserve">
+    <value>&amp;Neues Verzeichnis hier</value>
+  </data>
+  <data name="Menu_FixFlieSize" xml:space="preserve">
+    <value>Dateigröße &amp;korrigieren</value>
+  </data>
 </root>

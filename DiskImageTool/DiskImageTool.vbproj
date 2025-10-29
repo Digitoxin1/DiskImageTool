@@ -128,6 +128,9 @@
     <Compile Include="ApplicationEvents.vb" />
     <Compile Include="Bitstream\Bitstream.vb" />
     <Compile Include="Bitstream\BitstreamRegionData.vb" />
+    <Compile Include="Controls\ListViewEx.vb">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="Controls\SelectablePanel.vb">
       <SubType>Component</SubType>
     </Compile>
@@ -158,13 +161,15 @@
     <Compile Include="DiskImage\Modules\Structures.vb" />
     <Compile Include="DiskImage\Modules\UpdateFunctions.vb" />
     <Compile Include="FileData.vb" />
-    <Compile Include="FilePanel.vb" />
+    <Compile Include="FilePanel\FileMenuLib.vb" />
+    <Compile Include="FilePanel\FilePanel.vb" />
     <Compile Include="Filters\Enums.vb" />
     <Compile Include="Filters\FilterCounts.vb" />
     <Compile Include="Filters\FilterTag.vb" />
     <Compile Include="Filters\ImageFilters.vb" />
     <Compile Include="Filters\ImageFiltersBase.vb" />
-    <Compile Include="FloppyDiskIO.vb" />
+    <Compile Include="Modules\FileExport.vb" />
+    <Compile Include="Modules\FloppyDiskIO.vb" />
     <Compile Include="Bitstream\Interfaces\IBitstreamImage.vb" />
     <Compile Include="Bitstream\Interfaces\IBitstreamTrack.vb" />
     <Compile Include="Forms\FileDropForm.Designer.vb">
@@ -200,7 +205,7 @@
     <Compile Include="Forms\ImportFileForm.vb">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Github.vb" />
+    <Compile Include="Modules\Github.vb" />
     <Compile Include="HexBox\BuiltInContextMenu.vb">
       <SubType>Component</SubType>
     </Compile>
@@ -252,7 +257,7 @@
     <Compile Include="ImageFormats\PRI\PRITrack.vb" />
     <Compile Include="ImageFormats\PSI\PSITrackInfo.vb" />
     <Compile Include="ImageFormats\TC\Functions.vb" />
-    <Compile Include="ImageIO.vb" />
+    <Compile Include="Modules\ImageIO.vb" />
     <Compile Include="ImageFormats\ImageConversion.vb" />
     <Compile Include="ImageFormats\MFM\MFMFloppyImage.vb" />
     <Compile Include="ImageFormats\MFM\MFMImage.vb" />
@@ -303,11 +308,11 @@
     <Compile Include="Forms\AboutBox.vb">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="CopyProtection.vb" />
-    <Compile Include="Lib\FilePanelColumns.vb" />
+    <Compile Include="Modules\CopyProtection.vb" />
+    <Compile Include="FilePanel\FilePanelColumns.vb" />
     <Compile Include="LoadedFiles.vb" />
-    <Compile Include="Reports.vb" />
-    <Compile Include="SummaryPanel.vb" />
+    <Compile Include="Modules\Reports.vb" />
+    <Compile Include="Modules\SummaryPanel.vb" />
     <Compile Include="Testing\DebugScript.vb" />
     <Compile Include="DiskImage\SectorData.vb" />
     <Compile Include="DiskImage\BasicSectorImage.vb" />
@@ -393,7 +398,8 @@
     <Compile Include="Testing\ImageCompare.vb" />
     <Compile Include="Lib\ListViewHeader.vb" />
     <Compile Include="Lib\MyBitConverter.vb" />
-    <Compile Include="FloppyDB.vb" />
+    <Compile Include="Modules\FloppyDB.vb" />
+    <Compile Include="Modules\Updater.vb" />
     <Compile Include="Utility.vb" />
     <Compile Include="Controls\HexTextBox.vb">
       <SubType>Component</SubType>
@@ -410,10 +416,10 @@
     <Compile Include="HexView\HexViewRegionDescription.vb" />
     <Compile Include="HexView\HexViewSectorData.vb" />
     <Compile Include="HexView\HighlightedRegions.vb" />
-    <Compile Include="Lib\ListViewColumnSorter.vb" />
+    <Compile Include="FilePanel\FilePanelColumnSorter.vb" />
     <Compile Include="Extensions\ListViewExtensions.vb" />
     <Compile Include="HexView\MyByteProvider.vb" />
-    <Compile Include="BootstrapDB.vb" />
+    <Compile Include="Modules\BootstrapDB.vb" />
     <Compile Include="ImageData.vb" />
     <Compile Include="Lib\CRC32.vb" />
     <Compile Include="DiskImage\DirectoryEntry.vb" />

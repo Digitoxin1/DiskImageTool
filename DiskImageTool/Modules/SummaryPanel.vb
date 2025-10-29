@@ -6,7 +6,7 @@ Imports BPBOffsets = DiskImageTool.DiskImage.BiosParameterBlock.BPBOoffsets
 
 Public Class SummaryPanel
     Private WithEvents ContextMenuCopy As ContextMenuStrip
-    Private WithEvents ListView As ListView
+    Private WithEvents ListViewSummary As ListView
     Private Const COLUMN_WIDTH_NAME As Integer = 124
     Private Const CONTEXT_MENU_SUMMARY_KEY As String = "Summary"
     Private Const GROUP_BOOTRECORD As String = "BootRecord"
@@ -22,7 +22,7 @@ Public Class SummaryPanel
     Private TitleRows As OrderedDictionary = Nothing
 
     Public Sub New(ListViewSummary As ListView, TitleDB As FloppyDB, BootStrapDB As BootstrapDB)
-        ListView = ListViewSummary
+        Me.ListViewSummary = ListViewSummary
         _TitleDB = TitleDB
         _BootStrapDB = BootStrapDB
 
@@ -32,15 +32,22 @@ Public Class SummaryPanel
             .Name = CONTEXT_MENU_SUMMARY_KEY
         }
         ContextMenuCopy.Items.Add(My.Resources.Menu_CopyValue)
-        ListView.ContextMenuStrip = ContextMenuCopy
+        Me.ListViewSummary.ContextMenuStrip = ContextMenuCopy
+    End Sub
+
+    Protected Overrides Sub Finalize()
+        MyBase.Finalize()
+
+        ListViewSummary = Nothing
+        ContextMenuCopy = Nothing
     End Sub
 
     Public Sub Clear()
-        ListView.Items.Clear()
+        ListViewSummary.Items.Clear()
     End Sub
 
     Public Sub Populate(CurrentImage As CurrentImage, MD5 As String)
-        With ListView
+        With ListViewSummary
             .BeginUpdate()
             .Items.Clear()
             .Groups.Clear()
@@ -130,8 +137,8 @@ Public Class SummaryPanel
     End Function
 
     Private Function GetFocusedItemName() As String
-        If ListView IsNot Nothing AndAlso ListView.FocusedItem IsNot Nothing Then
-            Dim Item = ListView.FocusedItem
+        If ListViewSummary IsNot Nothing AndAlso ListViewSummary.FocusedItem IsNot Nothing Then
+            Dim Item = ListViewSummary.FocusedItem
 
             If Item.SubItems.Count > 1 Then
                 Dim Text As String
@@ -150,8 +157,8 @@ Public Class SummaryPanel
     End Function
 
     Private Function GetFocusedItemValue() As String
-        If ListView IsNot Nothing AndAlso ListView.FocusedItem IsNot Nothing Then
-            Dim Item = ListView.FocusedItem.SubItems.Item(1)
+        If ListViewSummary IsNot Nothing AndAlso ListViewSummary.FocusedItem IsNot Nothing Then
+            Dim Item = ListViewSummary.FocusedItem.SubItems.Item(1)
             Dim Value As String
 
             If Item.Tag Is Nothing Then
@@ -247,7 +254,7 @@ Public Class SummaryPanel
     End Function
 
     Private Sub Initialize()
-        With ListView
+        With ListViewSummary
             .FullRowSelect = True
             .View = View.Details
             .HeaderStyle = ColumnHeaderStyle.None
@@ -270,21 +277,21 @@ Public Class SummaryPanel
 
         TitleRows.Clear()
 
-        TitleRows.Add("Name", New SummaryRow(ListView.Font, My.Resources.SummaryPanel_Title, True))
-        TitleRows.Add("Variation", New SummaryRow(ListView.Font, My.Resources.SummaryPanel_Variant, False))
-        TitleRows.Add("Compilation", New SummaryRow(ListView.Font, My.Resources.SummaryPanel_Compilation, True))
-        TitleRows.Add("Publisher", New SummaryRow(ListView.Font, My.Resources.SummaryPanel_Publisher, True))
-        TitleRows.Add("Year", New SummaryRow(ListView.Font, My.Resources.SummaryPanel_Year, False))
-        TitleRows.Add("OperatingSystem", New SummaryRow(ListView.Font, My.Resources.SummaryPanel_OperatingSystem, False))
-        TitleRows.Add("Region", New SummaryRow(ListView.Font, My.Resources.SummaryPanel_Region, False))
-        TitleRows.Add("Language", New SummaryRow(ListView.Font, My.Resources.SummaryPanel_Language, False))
-        TitleRows.Add("Version", New SummaryRow(ListView.Font, My.Resources.SummaryPanel_Version, True))
-        TitleRows.Add("Disk", New SummaryRow(ListView.Font, My.Resources.SummaryPanel_Disk, False))
-        TitleRows.Add("CopyProtection", New SummaryRow(ListView.Font, My.Resources.SummaryPanel_CopyProtection, True))
+        TitleRows.Add("Name", New SummaryRow(ListViewSummary.Font, My.Resources.SummaryPanel_Title, True))
+        TitleRows.Add("Variation", New SummaryRow(ListViewSummary.Font, My.Resources.SummaryPanel_Variant, False))
+        TitleRows.Add("Compilation", New SummaryRow(ListViewSummary.Font, My.Resources.SummaryPanel_Compilation, True))
+        TitleRows.Add("Publisher", New SummaryRow(ListViewSummary.Font, My.Resources.SummaryPanel_Publisher, True))
+        TitleRows.Add("Year", New SummaryRow(ListViewSummary.Font, My.Resources.SummaryPanel_Year, False))
+        TitleRows.Add("OperatingSystem", New SummaryRow(ListViewSummary.Font, My.Resources.SummaryPanel_OperatingSystem, False))
+        TitleRows.Add("Region", New SummaryRow(ListViewSummary.Font, My.Resources.SummaryPanel_Region, False))
+        TitleRows.Add("Language", New SummaryRow(ListViewSummary.Font, My.Resources.SummaryPanel_Language, False))
+        TitleRows.Add("Version", New SummaryRow(ListViewSummary.Font, My.Resources.SummaryPanel_Version, True))
+        TitleRows.Add("Disk", New SummaryRow(ListViewSummary.Font, My.Resources.SummaryPanel_Disk, False))
+        TitleRows.Add("CopyProtection", New SummaryRow(ListViewSummary.Font, My.Resources.SummaryPanel_CopyProtection, True))
     End Sub
 
     Private Sub PopulateError(InvalidImage As Boolean)
-        With ListView
+        With ListViewSummary
             Dim DiskGroup = .Groups.Add(GROUP_DISK, My.Resources.SummaryPanel_Disk)
             Dim Msg As String
 
@@ -342,7 +349,7 @@ Public Class SummaryPanel
         Dim BPBBySize = BuildBPB(DiskFormatBySize)
         Dim DoBPBCompare = Disk.DiskFormat = FloppyDiskFormat.FloppyUnknown And DiskFormatBySize <> FloppyDiskFormat.FloppyUnknown
 
-        With ListView
+        With ListViewSummary
             Dim BootRecordGroup = .Groups.Add(GROUP_BOOTRECORD, My.Resources.SummaryPanel_BootRecord)
 
             If Not OEMNameResponse.Found Then
@@ -504,7 +511,7 @@ Public Class SummaryPanel
     Private Sub PopulateGroupBootstrap(Disk As Disk, OEMNameResponse As OEMNameResponse)
         Dim ForeColor As Color
 
-        With ListView
+        With ListViewSummary
             Dim BootStrapGroup = .Groups.Add(GROUP_BOOTSTRAP, My.Resources.SummaryPanel_Bootstrap)
 
             If Not OEMNameResponse.NoBootLoader Then
@@ -558,7 +565,7 @@ Public Class SummaryPanel
         Dim Value As String
         Dim ForeColor As Color
 
-        With ListView
+        With ListViewSummary
             DiskGroup = .Groups.Add(GROUP_DISK, My.Resources.SummaryPanel_Disk)
 
             .AddItem(DiskGroup, My.Resources.SummaryPanel_ImageType, GetImageTypeName(Disk.Image.ImageType))
@@ -657,7 +664,7 @@ Public Class SummaryPanel
         Dim Value As String
         Dim ForeColor As Color
 
-        With ListView
+        With ListViewSummary
             Dim FileSystemGroup = .Groups.Add(GROUP_FILE_SYSTEM, My.Resources.SummaryPanel_FileSystem)
 
             If Disk.FAT.HasMediaDescriptor Then
@@ -756,7 +763,7 @@ Public Class SummaryPanel
         Row("Disk").Value = TitleData.GetDisk
         Row("CopyProtection").Value = TitleData.CopyProtection
 
-        Dim Group = ListView.Groups.Add(GROUP_TITLE, My.Resources.SummaryPanel_Title)
+        Dim Group = ListViewSummary.Groups.Add(GROUP_TITLE, My.Resources.SummaryPanel_Title)
 
         PopulateGroup(Group, TitleRows)
     End Sub
@@ -774,7 +781,7 @@ Public Class SummaryPanel
 
         Dim DiskGroup = PopulateGroupDisk(Disk)
 
-        With ListView
+        With ListViewSummary
             If Not Disk.IsValidImage Then
                 .AddItem(DiskGroup, My.Resources.SummaryPanel_FileSystem, My.Resources.Caption_Unknown, Color.Red)
             Else
@@ -827,11 +834,11 @@ Public Class SummaryPanel
         End If
     End Sub
 
-    Private Sub ListView_DrawItem(sender As Object, e As DrawListViewItemEventArgs) Handles ListView.DrawItem
+    Private Sub ListView_DrawItem(sender As Object, e As DrawListViewItemEventArgs) Handles ListViewSummary.DrawItem
         e.DrawDefault = True
     End Sub
 
-    Private Sub ListView_DrawSubItem(sender As Object, e As DrawListViewSubItemEventArgs) Handles ListView.DrawSubItem
+    Private Sub ListView_DrawSubItem(sender As Object, e As DrawListViewSubItemEventArgs) Handles ListViewSummary.DrawSubItem
         If e.Item.Group IsNot Nothing AndAlso e.Item.Group.Tag IsNot Nothing Then
             Dim Offset As Integer = CInt(e.Item.Group.Tag)
             If Offset <> 0 Then
@@ -852,9 +859,10 @@ Public Class SummaryPanel
         End If
     End Sub
 
-    Private Sub ListView_ItemSelectionChanged(sender As Object, e As ListViewItemSelectionChangedEventArgs) Handles ListView.ItemSelectionChanged
+    Private Sub ListView_ItemSelectionChanged(sender As Object, e As ListViewItemSelectionChangedEventArgs) Handles ListViewSummary.ItemSelectionChanged
         e.Item.Selected = False
     End Sub
+
 
     'Private Sub ListView_Resize(sender As Object, e As EventArgs) Handles ListView.Resize
     '    If ListView.Columns.Count < 2 Then

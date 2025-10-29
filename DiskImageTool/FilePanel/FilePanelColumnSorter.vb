@@ -3,7 +3,7 @@
     Dim Order As SortOrder
 End Structure
 
-Public Class ListViewColumnSorter
+Public Class FilePanelColumnSorter
     Implements IComparer
 
     Private ReadOnly _SortHistory As List(Of SortEntity)

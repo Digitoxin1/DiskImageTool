@@ -1,4 +1,6 @@
 ﻿
+Imports DiskImageTool.Bitstream.IBM_MFM
+
 Namespace DiskImage
     Public Module FloppyDiskFunctions
         Public Enum FloppyDiskFormat As Byte

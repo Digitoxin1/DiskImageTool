@@ -1499,4 +1499,28 @@ Remarque : cette valeur doit être {1} pour toutes les disquettes</value>
   <data name="FilePanel_LFN" xml:space="preserve">
     <value>Nom long de fichier</value>
   </data>
+  <data name="Menu_EditFileProperties" xml:space="preserve">
+    <value>Modifier les &amp;propriétés du fichier</value>
+  </data>
+  <data name="Menu_ReplaceFile" xml:space="preserve">
+    <value>&amp;Remplacer le fichier</value>
+  </data>
+  <data name="Menu_ViewCrosslinked" xml:space="preserve">
+    <value>Voir les fichiers &amp;croisés</value>
+  </data>
+  <data name="Menu_ImportFiles" xml:space="preserve">
+    <value>&amp;Importer des fichiers</value>
+  </data>
+  <data name="Menu_ImportFilesHere" xml:space="preserve">
+    <value>&amp;Importer ici</value>
+  </data>
+  <data name="Menu_NewDirectory" xml:space="preserve">
+    <value>&amp;Nouveau dossier</value>
+  </data>
+  <data name="Menu_NewDirectoryHere" xml:space="preserve">
+    <value>&amp;Nouveau dossier ici</value>
+  </data>
+  <data name="Menu_FixFlieSize" xml:space="preserve">
+    <value>Corriger la &amp;taille du fichier</value>
+  </data>
 </root>

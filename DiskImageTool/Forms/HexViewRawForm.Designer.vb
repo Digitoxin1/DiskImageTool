@@ -27,7 +27,7 @@ Partial Class HexViewRawForm
         Dim resources As System.ComponentModel.ComponentResourceManager = New System.ComponentModel.ComponentResourceManager(GetType(HexViewRawForm))
         Dim ToolStripSeparator2 As System.Windows.Forms.ToolStripSeparator
         Dim ToolStripSeparator5 As System.Windows.Forms.ToolStripSeparator
-        Dim ToolStripStatusLabel2 As System.Windows.Forms.ToolStripStatusLabel
+        Me.ToolStripStatusExactBitCount = New System.Windows.Forms.ToolStripStatusLabel()
         Me.DataGridDataInspector = New System.Windows.Forms.DataGridView()
         Me.ContextMenuStrip2 = New System.Windows.Forms.ContextMenuStrip(Me.components)
         Me.BtnCopyValue = New System.Windows.Forms.ToolStripMenuItem()
@@ -74,7 +74,6 @@ Partial Class HexViewRawForm
         ToolStripStatusGap = New System.Windows.Forms.ToolStripStatusLabel()
         ToolStripSeparator2 = New System.Windows.Forms.ToolStripSeparator()
         ToolStripSeparator5 = New System.Windows.Forms.ToolStripSeparator()
-        ToolStripStatusLabel2 = New System.Windows.Forms.ToolStripStatusLabel()
         CType(Me.DataGridDataInspector, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.ContextMenuStrip2.SuspendLayout()
         Me.StatusStripBottom.SuspendLayout()
@@ -98,13 +97,13 @@ Partial Class HexViewRawForm
         ToolStripSeparator5.Name = "ToolStripSeparator5"
         resources.ApplyResources(ToolStripSeparator5, "ToolStripSeparator5")
         '
-        'ToolStripStatusLabel2
+        'ToolStripStatusExactBitCount
         '
-        ToolStripStatusLabel2.BorderSides = System.Windows.Forms.ToolStripStatusLabelBorderSides.Left
-        ToolStripStatusLabel2.Margin = New System.Windows.Forms.Padding(2, 3, 2, 2)
-        ToolStripStatusLabel2.Name = "ToolStripStatusLabel2"
-        ToolStripStatusLabel2.Padding = New System.Windows.Forms.Padding(16, 0, 0, 0)
-        resources.ApplyResources(ToolStripStatusLabel2, "ToolStripStatusLabel2")
+        resources.ApplyResources(Me.ToolStripStatusExactBitCount, "ToolStripStatusExactBitCount")
+        Me.ToolStripStatusExactBitCount.BorderSides = System.Windows.Forms.ToolStripStatusLabelBorderSides.Left
+        Me.ToolStripStatusExactBitCount.ForeColor = System.Drawing.Color.Green
+        Me.ToolStripStatusExactBitCount.Margin = New System.Windows.Forms.Padding(2, 3, 2, 2)
+        Me.ToolStripStatusExactBitCount.Name = "ToolStripStatusExactBitCount"
         '
         'DataGridDataInspector
         '
@@ -128,7 +127,7 @@ Partial Class HexViewRawForm
         '
         'StatusStripBottom
         '
-        Me.StatusStripBottom.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.ToolStripStatusOffset, Me.ToolStripStatusBlock, Me.ToolStripStatusLength, ToolStripStatusGap, Me.ToolStripStatusTrack, Me.ToolStripStatusSide, Me.ToolStripStatusTrackSector, Me.ToolStripStatusTrackSize, Me.ToolStripStatusChecksumText, Me.ToolStripStatusChecksum, ToolStripStatusLabel2, Me.ToolStripStatusBits, Me.ToolStripStatusBytes})
+        Me.StatusStripBottom.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.ToolStripStatusOffset, Me.ToolStripStatusBlock, Me.ToolStripStatusLength, ToolStripStatusGap, Me.ToolStripStatusTrack, Me.ToolStripStatusSide, Me.ToolStripStatusTrackSector, Me.ToolStripStatusTrackSize, Me.ToolStripStatusChecksumText, Me.ToolStripStatusChecksum, Me.ToolStripStatusExactBitCount, Me.ToolStripStatusBits, Me.ToolStripStatusBytes})
         resources.ApplyResources(Me.StatusStripBottom, "StatusStripBottom")
         Me.StatusStripBottom.Name = "StatusStripBottom"
         '
@@ -478,4 +477,5 @@ Partial Class HexViewRawForm
     Friend WithEvents ToolStripStatusBits As ToolStripStatusLabel
     Friend WithEvents PanelSectors As DiskImageTool.SelectablePanel
     Friend WithEvents BtnCopyEncoded As ToolStripMenuItem
+    Friend WithEvents ToolStripStatusExactBitCount As ToolStripStatusLabel
 End Class

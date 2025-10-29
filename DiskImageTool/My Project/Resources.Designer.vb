@@ -3684,6 +3684,15 @@ Namespace My.Resources
         End Property
         
         '''<summary>
+        '''  Looks up a localized string similar to Edit File &amp;Properties.
+        '''</summary>
+        Friend ReadOnly Property Menu_EditFileProperties() As String
+            Get
+                Return ResourceManager.GetString("Menu_EditFileProperties", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
         '''  Looks up a localized string similar to Enable Write-splice Filter.
         '''</summary>
         Friend ReadOnly Property Menu_EnableWriteSpliceFilter() As String
@@ -3783,6 +3792,51 @@ Namespace My.Resources
         End Property
         
         '''<summary>
+        '''  Looks up a localized string similar to Fix File &amp;Size.
+        '''</summary>
+        Friend ReadOnly Property Menu_FixFlieSize() As String
+            Get
+                Return ResourceManager.GetString("Menu_FixFlieSize", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  Looks up a localized string similar to &amp;Import Files.
+        '''</summary>
+        Friend ReadOnly Property Menu_ImportFiles() As String
+            Get
+                Return ResourceManager.GetString("Menu_ImportFiles", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  Looks up a localized string similar to &amp;Import Files Here.
+        '''</summary>
+        Friend ReadOnly Property Menu_ImportFilesHere() As String
+            Get
+                Return ResourceManager.GetString("Menu_ImportFilesHere", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  Looks up a localized string similar to &amp;New Directory.
+        '''</summary>
+        Friend ReadOnly Property Menu_NewDirectory() As String
+            Get
+                Return ResourceManager.GetString("Menu_NewDirectory", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  Looks up a localized string similar to &amp;New Directory Here.
+        '''</summary>
+        Friend ReadOnly Property Menu_NewDirectoryHere() As String
+            Get
+                Return ResourceManager.GetString("Menu_NewDirectoryHere", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
         '''  Looks up a localized string similar to &amp;Ok.
         '''</summary>
         Friend ReadOnly Property Menu_Ok() As String
@@ -3846,6 +3900,15 @@ Namespace My.Resources
         End Property
         
         '''<summary>
+        '''  Looks up a localized string similar to &amp;Replace File.
+        '''</summary>
+        Friend ReadOnly Property Menu_ReplaceFile() As String
+            Get
+                Return ResourceManager.GetString("Menu_ReplaceFile", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
         '''  Looks up a localized string similar to Root &amp;Directory.
         '''</summary>
         Friend ReadOnly Property Menu_RootDirectory() As String
@@ -3905,6 +3968,15 @@ Namespace My.Resources
         Friend ReadOnly Property Menu_UndeleteFile() As String
             Get
                 Return ResourceManager.GetString("Menu_UndeleteFile", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  Looks up a localized string similar to View &amp;Crosslinked Files.
+        '''</summary>
+        Friend ReadOnly Property Menu_ViewCrosslinked() As String
+            Get
+                Return ResourceManager.GetString("Menu_ViewCrosslinked", resourceCulture)
             End Get
         End Property
         
