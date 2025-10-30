@@ -1,5 +1,4 @@
 ﻿Imports System.ComponentModel
-Imports System.IO
 Imports System.Text
 Imports DiskImageTool.DiskImage
 
@@ -20,7 +19,6 @@ Public Class MainForm
     Private WithEvents ToolStripSearchText As ToolStripSpringTextBox
     Private Const CONTEXT_MENU_HASH_KEY As String = "Hashes"
     Private _BootStrapDB As BootstrapDB
-    Private _CurrentImage As CurrentImage
     Private _DriveAEnabled As Boolean = False
     Private _DriveBEnabled As Boolean = False
     Private _EnableWriteSpliceFilter As Boolean = False
@@ -64,8 +62,6 @@ Public Class MainForm
 
         ' Add any initialization after the InitializeComponent() call.
         InitializeToolStripTop()
-
-        _CurrentImage = Nothing
     End Sub
 
     Public Sub ImageFiltersScanAll(Disk As Disk, ImageData As ImageData)
@@ -113,7 +109,7 @@ Public Class MainForm
 
     Private Sub ClearFilesPanel(CurrentImage As CurrentImage)
         MenuDisplayDirectorySubMenuClear()
-        FilePanelMain.Load(CurrentImage, True)
+        FilePanelMain.Load(CurrentImage)
         MenuToolsWin9xClean.Enabled = False
         MenuToolsClearReservedBytes.Enabled = False
     End Sub
@@ -245,7 +241,7 @@ Public Class MainForm
         MenuDiskWriteFloppyB.Enabled = False
     End Sub
 
-    Private Sub DiskImageProcess(CurrentImage As CurrentImage, DoItemScan As Boolean, ClearItems As Boolean)
+    Private Sub DiskImageProcess(CurrentImage As CurrentImage, DoItemScan As Boolean)
         InitButtonState(CurrentImage)
         'PopulateSummary(CurrentImage)
 
@@ -253,7 +249,7 @@ Public Class MainForm
             If CurrentImage.ImageData.CachedRootDir Is Nothing Then
                 CurrentImage.ImageData.CachedRootDir = CurrentImage.Disk.RootDirectory.GetContent
             End If
-            PopulateFilesPanel(CurrentImage, ClearItems)
+            PopulateFilesPanel(CurrentImage)
         Else
             ClearFilesPanel(CurrentImage)
         End If
@@ -349,12 +345,11 @@ Public Class MainForm
 
     Private Sub DiskImageRefresh(CurrentImage As CurrentImage)
         If CurrentImage IsNot Nothing Then
-            CurrentImage.ImageData.BottomIndex = FilePanelMain.GetBottomIndex
             CurrentImage.Disk?.Reinitialize()
         End If
 
         '_SuppressEvent = True
-        DiskImageProcess(CurrentImage, True, False)
+        DiskImageProcess(CurrentImage, True)
         '_SuppressEvent = False
     End Sub
 
@@ -852,11 +847,7 @@ Public Class MainForm
             ProcessFileDrop(FileName, True)
             RefreshModifiedCount()
             If ImportFiles Then
-                If _CurrentImage.ImageData.SourceFile = FileName Then
-                    If ImageImport(_CurrentImage.Disk.RootDirectory, True) Then
-                        DiskImageRefresh(_CurrentImage)
-                    End If
-                End If
+                NewImageImport(FileName)
             End If
         End If
     End Sub
@@ -1078,28 +1069,30 @@ Public Class MainForm
         RefreshModifiedCount()
     End Sub
 
-    Private Sub LoadCurrentImage(ImageData As ImageData, DoItemScan As Boolean)
+    Private Function LoadDiskImage(ImageData As ImageData, DoItemScan As Boolean) As CurrentImage
         Cursor.Current = Cursors.WaitCursor
 
         Dim Disk = DiskImageLoad(ImageData, True)
 
-        _CurrentImage = New CurrentImage(Disk, ImageData)
+        Dim Image = New CurrentImage(Disk, ImageData)
 
-        FilePanelMain.ClearSort(False)
+        'FilePanelMain.ClearSort(False)
 
-        If _CurrentImage IsNot Nothing Then
-            If _CurrentImage.ImageData.ExternalModified Then
-                _CurrentImage.ImageData.ExternalModified = False
+        If Image IsNot Nothing Then
+            If Image.ImageData.ExternalModified Then
+                Image.ImageData.ExternalModified = False
                 DoItemScan = True
                 Dim Msg = String.Format(My.Resources.Dialog_ChangesDiscarded, Environment.NewLine)
                 MsgBox(Msg, MsgBoxStyle.Exclamation)
             End If
 
-            DiskImageProcess(_CurrentImage, DoItemScan, True)
+            DiskImageProcess(Image, DoItemScan)
         End If
 
         Cursor.Current = Cursors.Default
-    End Sub
+
+        Return Image
+    End Function
 
     Private Sub MenuDisplayDirectorySubMenuClear()
         For Each Item As ToolStripMenuItem In MenuHexDirectory.DropDownItems
@@ -1166,8 +1159,19 @@ Public Class MainForm
         AddHandler Item.Click, AddressOf MenuHexRawTrackData_Click
     End Sub
 
-    Private Sub PopulateFilesPanel(CurrentImage As CurrentImage, ClearItems As Boolean)
-        Dim Response = FilePanelMain.Load(CurrentImage, ClearItems)
+    Private Sub NewImageImport(FileName As String)
+        If FilePanelMain.CurrentImage Is Nothing Then
+            Exit Sub
+        End If
+
+        If FilePanelMain.CurrentImage.ImageData.SourceFile = FileName Then
+            If ImageImport(FilePanelMain.CurrentImage.Disk.RootDirectory, True) Then
+                DiskImageRefresh(FilePanelMain.CurrentImage)
+            End If
+        End If
+    End Sub
+    Private Sub PopulateFilesPanel(CurrentImage As CurrentImage)
+        Dim Response = FilePanelMain.Load(CurrentImage)
 
         MenuDisplayDirectorySubMenuPopulate(CurrentImage, Response)
 
@@ -1462,20 +1466,16 @@ Public Class MainForm
         End If
     End Sub
 
-    Private Sub ReloadCurrentImage(RevertChanges As Boolean)
-        _CurrentImage.ImageData.BottomIndex = FilePanelMain.GetBottomIndex
-        _CurrentImage.ImageData.SortHistory = FilePanelMain.SortHistory
-
+    Private Sub ReloadCurrentImage(CurrentImage As CurrentImage, RevertChanges As Boolean)
         If RevertChanges Then
-            _CurrentImage.ImageData.Modifications.Clear()
+            CurrentImage.ImageData.Modifications.Clear()
         End If
 
-        LoadCurrentImage(_CurrentImage.ImageData, RevertChanges)
+        LoadDiskImage(CurrentImage.ImageData, RevertChanges)
     End Sub
 
     Private Sub ResetAll()
         EmptyTempPath()
-        _CurrentImage = Nothing
         Me.Text = GetWindowCaption()
         ImageFilters.FiltersApplied = False
         _LoadedFiles.FileNames.Clear()
@@ -1512,7 +1512,7 @@ Public Class MainForm
 
     Private Sub RevertChanges(CurrentImage As CurrentImage)
         If CurrentImage.Disk.Image.History.Modified Then
-            ReloadCurrentImage(True)
+            ReloadCurrentImage(CurrentImage, True)
         End If
     End Sub
 
@@ -1556,7 +1556,7 @@ Public Class MainForm
 
         If RefreshCurrent Then
             RefreshCurrentState(CurrentImage)
-            ReloadCurrentImage(False)
+            ReloadCurrentImage(CurrentImage, False)
         End If
     End Sub
 
@@ -1583,7 +1583,7 @@ Public Class MainForm
 
             FilePanelMain.ClearModifiedFlag()
             RefreshCurrentState(CurrentImage)
-            ReloadCurrentImage(False)
+            ReloadCurrentImage(CurrentImage, False)
         End If
     End Sub
 
@@ -1851,7 +1851,7 @@ Public Class MainForm
     End Sub
 
     Private Sub BtnRetry_Click(sender As Object, e As EventArgs) Handles btnRetry.Click
-        ReloadCurrentImage(False)
+        ReloadCurrentImage(FilePanelMain.CurrentImage, False)
     End Sub
 
     Private Sub ContextMenuFilters_Closing(sender As Object, e As ToolStripDropDownClosingEventArgs) Handles ContextMenuFilters.Closing
@@ -1969,19 +1969,14 @@ Public Class MainForm
     End Sub
 
     Private Sub ImageList_SelectedIndexChanged(sender As Object, e As EventArgs) Handles ImageCombo.SelectedIndexChanged
-        If _CurrentImage IsNot Nothing Then
-            _CurrentImage.ImageData.BottomIndex = FilePanelMain.GetBottomIndex
-            _CurrentImage.ImageData.SortHistory = FilePanelMain.SortHistory
-        End If
-
-        LoadCurrentImage(ImageCombo.SelectedImage, False)
+        LoadDiskImage(ImageCombo.SelectedImage, False)
     End Sub
     Private Sub MainForm_Closed(sender As Object, e As EventArgs) Handles Me.Closed
         EmptyTempPath()
     End Sub
 
     Private Sub MainForm_Closing(sender As Object, e As CancelEventArgs) Handles Me.Closing
-        If Not CloseAll(_CurrentImage) Then
+        If Not CloseAll(FilePanelMain.CurrentImage) Then
             e.Cancel = True
         End If
     End Sub
@@ -2098,17 +2093,17 @@ Public Class MainForm
     End Sub
 
     Private Sub MenuFileClose_Click(sender As Object, e As EventArgs) Handles MenuFileClose.Click, ToolStripClose.Click
-        CloseCurrent(_CurrentImage)
+        CloseCurrent(FilePanelMain.CurrentImage)
     End Sub
 
     Private Sub MenuFileCloseAll_Click(sender As Object, e As EventArgs) Handles MenuFileCloseAll.Click, ToolStripCloseAll.Click
         If MsgBox(My.Resources.Dialog_CloseAll, MsgBoxStyle.YesNo + MsgBoxStyle.DefaultButton2) = MsgBoxResult.Yes Then
-            CloseAll(_CurrentImage)
+            CloseAll(FilePanelMain.CurrentImage)
         End If
     End Sub
 
     Private Sub MenuFileExit_Click(sender As Object, e As EventArgs) Handles MenuFileExit.Click
-        If CloseAll(_CurrentImage) Then
+        If CloseAll(FilePanelMain.CurrentImage) Then
             Me.Close()
         End If
     End Sub
@@ -2122,22 +2117,22 @@ Public Class MainForm
     End Sub
 
     Private Sub MenuFileReload_Click(sender As Object, e As EventArgs) Handles MenuFileReload.Click
-        ReloadCurrentImage(False)
+        ReloadCurrentImage(FilePanelMain.CurrentImage, False)
     End Sub
 
     Private Sub MenuFileSave_Click(sender As Object, e As EventArgs) Handles MenuFileSave.Click, ToolStripSave.Click
-        Dim NewFileName = _CurrentImage.ImageData.FileType = ImageData.FileTypeEnum.NewImage
-        SaveCurrent(_CurrentImage, NewFileName)
+        Dim NewFileName = FilePanelMain.CurrentImage.ImageData.FileType = ImageData.FileTypeEnum.NewImage
+        SaveCurrent(FilePanelMain.CurrentImage, NewFileName)
     End Sub
 
     Private Sub MenuFileSaveAll_Click(sender As Object, e As EventArgs) Handles MenuFileSaveAll.Click, ToolStripSaveAll.Click
         If MsgBox(My.Resources.Dialog_SaveAll, MsgBoxStyle.YesNo + MsgBoxStyle.DefaultButton2) = MsgBoxResult.Yes Then
-            SaveAll(_CurrentImage)
+            SaveAll(FilePanelMain.CurrentImage)
         End If
     End Sub
 
     Private Sub MenuFileSaveAs_Click(sender As Object, e As EventArgs) Handles MenuFileSaveAs.Click, ToolStripSaveAs.Click
-        SaveCurrent(_CurrentImage, True)
+        SaveCurrent(FilePanelMain.CurrentImage, True)
     End Sub
 
     Private Sub MenuFiltersClear_Click(sender As Object, e As EventArgs) Handles MenuFiltersClear.Click
@@ -2151,12 +2146,12 @@ Public Class MainForm
 
     Private Sub MenuFiltersScan_Click(sender As Object, e As EventArgs) Handles MenuFiltersScan.Click
         ContextMenuFilters.Close()
-        DiskImagesScan(_CurrentImage, False)
+        DiskImagesScan(FilePanelMain.CurrentImage, False)
     End Sub
 
     Private Sub MenuFiltersScanNew_Click(sender As Object, e As EventArgs) Handles MenuFiltersScanNew.Click
         ContextMenuFilters.Close()
-        DiskImagesScan(_CurrentImage, True)
+        DiskImagesScan(FilePanelMain.CurrentImage, True)
     End Sub
 
     Private Sub MenuHelpAbout_Click(sender As Object, e As EventArgs) Handles MenuHelpAbout.Click
@@ -2276,7 +2271,7 @@ Public Class MainForm
     End Sub
 
     Private Sub MenuToolsWin9xCleanBatch_Click(sender As Object, e As EventArgs) Handles MenuToolsWin9xCleanBatch.Click
-        ImageRemoveWindowsModificationsBatch(_CurrentImage)
+        ImageRemoveWindowsModificationsBatch(FilePanelMain.CurrentImage)
     End Sub
 
     Private Sub ToolStripFATCombo_SelectedIndexChanged(sender As Object, e As EventArgs)
@@ -2288,7 +2283,7 @@ Public Class MainForm
 
         If FilePanelMain.CurrentImage IsNot Nothing Then
             FilePanelMain.CurrentImage.ImageData.FATIndex = ToolStripFatCombo.SelectedIndex
-            ReloadCurrentImage(False)
+            ReloadCurrentImage(FilePanelMain.CurrentImage, False)
         End If
     End Sub
 

@@ -128,12 +128,6 @@ Public Class FilePanel
         End Get
     End Property
 
-    Public ReadOnly Property SortHistory As List(Of SortEntity)
-        Get
-            Return _lvwColumnSorter.SortHistory
-        End Get
-    End Property
-
     Public Function AddEmptyItem(Group As ListViewGroup, ItemIndex As Integer) As ListViewItem
         Dim Item = New ListViewItem("", Group) With {
             .UseItemStyleForSubItems = False,
@@ -216,6 +210,11 @@ Public Class FilePanel
         End If
         ListViewFiles.SetSortIcon(-1, SortOrder.None)
         _lvwColumnSorter.ClearHistory()
+
+        If Reset Then
+            UpdateSortHistory()
+        End If
+
         RaiseEvent SortChanged(Me, False)
     End Sub
 
@@ -223,11 +222,19 @@ Public Class FilePanel
         Return ListViewFiles.DoDragDrop(data, allowedEffects)
     End Function
 
-    Public Function GetBottomIndex() As Integer
-        Return ListViewFiles.GetBottomIndex
-    End Function
+    Private Sub UpdateSortHistory()
+        If _CurrentImage IsNot Nothing Then
+            _CurrentImage.ImageData.SortHistory = _lvwColumnSorter.SortHistory
+        End If
+    End Sub
 
-    Public Function Load(CurrentImage As CurrentImage, ClearItems As Boolean) As DirectoryScanResponse
+    Public Function Load(CurrentImage As CurrentImage) As DirectoryScanResponse
+        Dim ClearItems As Boolean = CurrentImage IsNot _CurrentImage
+
+        If _CurrentImage IsNot Nothing AndAlso ClearItems Then
+            _CurrentImage.ImageData.BottomIndex = ListViewFiles.GetBottomIndex
+        End If
+
         _CurrentImage = CurrentImage
 
         Dim Response As DirectoryScanResponse = Nothing
@@ -236,6 +243,7 @@ Public Class FilePanel
 
         ListViewFiles.BeginUpdate()
 
+        ClearSort(False)
         EnableSorter(False)
 
         If ClearItems Then
@@ -282,6 +290,10 @@ Public Class FilePanel
     End Function
 
     Public Sub Reset()
+        If _CurrentImage IsNot Nothing Then
+            _CurrentImage.ImageData.BottomIndex = ListViewFiles.GetBottomIndex
+        End If
+
         _CheckAll = False
         ClearSort(False)
         With ListViewFiles
@@ -523,16 +535,21 @@ Public Class FilePanel
         Return Item
     End Function
 
-    Private Sub AddMenuSeparator(MenuStrip As ContextMenuStrip)
-        MenuStrip.Items.Add(New ToolStripSeparator())
-    End Sub
+    Private Function AddMenuSeparator(MenuStrip As ContextMenuStrip) As ToolStripItem
+        Dim Item = New ToolStripSeparator()
+        MenuStrip.Items.Add(Item)
 
-    Private Sub AddMenuSeparator(MenuStrip As ContextMenuStrip, name As FilePanelMenuItem)
+        Return Item
+    End Function
+
+    Private Function AddMenuSeparator(MenuStrip As ContextMenuStrip, name As FilePanelMenuItem) As ToolStripItem
         Dim Item = New ToolStripSeparator() With {
             .Name = name
         }
         MenuStrip.Items.Add(Item)
-    End Sub
+
+        Return Item
+    End Function
 
     Private Sub AdjustWidths(Response As DirectoryScanResponse)
         If Response.HasCreated Then
@@ -618,6 +635,8 @@ Public Class FilePanel
     End Sub
 
     Private Sub InitContextMenuFiles()
+        Dim Item As ToolStripItem
+
         AddMenuItem(ContextMenuFiles, FilePanelMenuItem.FileProperties, My.Resources.Menu_EditFileProperties, My.Resources.PropertiesFolderClosed)
         AddMenuItem(ContextMenuFiles, FilePanelMenuItem.ExportFile, My.Resources.Menu_ExportFile, My.Resources.Export)
         AddMenuItem(ContextMenuFiles, FilePanelMenuItem.ReplaceFile, My.Resources.Menu_ReplaceFile)
@@ -637,8 +656,12 @@ Public Class FilePanel
         AddMenuItem(ContextMenuFiles, FilePanelMenuItem.DeleteFile, My.Resources.Menu_DeleteFile)
         AddMenuItem(ContextMenuFiles, FilePanelMenuItem.UnDeleteFile, My.Resources.Menu_UndeleteFile)
         AddMenuItem(ContextMenuFiles, FilePanelMenuItem.FileRemove, My.Resources.Menu_RemoveFile)
-        AddMenuSeparator(ContextMenuFiles)
-        AddMenuItem(ContextMenuFiles, FilePanelMenuItem.FixSize, My.Resources.Menu_FixFlieSize)
+
+        Item = AddMenuSeparator(ContextMenuFiles)
+        Item.Visible = False
+
+        Item = AddMenuItem(ContextMenuFiles, FilePanelMenuItem.FixSize, My.Resources.Menu_FixFlieSize)
+        Item.Visible = False
     End Sub
 
     Private Sub Initialize()
@@ -789,6 +812,7 @@ Public Class FilePanel
             End If
             ListViewFiles.Sort()
             ListViewFiles.SetSortIcon(_lvwColumnSorter.SortColumn, _lvwColumnSorter.Order)
+            UpdateSortHistory()
             RaiseEvent SortChanged(Me, True)
         End If
     End Sub
