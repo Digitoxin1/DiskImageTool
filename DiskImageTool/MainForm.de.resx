@@ -315,9 +315,6 @@
   <data name="ToolStripRedo.Text" xml:space="preserve">
     <value>Wiederholen</value>
   </data>
-  <data name="ToolStripStatusModified.Text" xml:space="preserve">
-    <value>Geändert</value>
-  </data>
   <data name="LabelDropMessage.Text" xml:space="preserve">
     <value>Diskettenabbilder hierher ziehen (Drag &amp;&amp; Drop)</value>
   </data>
@@ -338,5 +335,8 @@
   </data>
   <data name="MenuReportsWriteSplices.Text" xml:space="preserve">
     <value>Schreibübergänge</value>
+  </data>
+  <data name="StatusBarModified.Text" xml:space="preserve">
+    <value>Geändert</value>
   </data>
 </root>

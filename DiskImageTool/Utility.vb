@@ -234,6 +234,19 @@ Module Utility
         Return Path
     End Function
 
+    Public Function ReadFileIntoBuffer(FileInfo As IO.FileInfo, FileSize As UInteger, FillChar As Byte) As Byte()
+        Dim FileBuffer(FileSize - 1) As Byte
+        Dim n As Integer
+        Using fs = FileInfo.OpenRead()
+            n = fs.Read(FileBuffer, 0, Math.Min(FileInfo.Length, FileBuffer.Length))
+        End Using
+        For Counter As Integer = n To FileBuffer.Length - 1
+            FileBuffer(Counter) = FillChar
+        Next
+
+        Return FileBuffer
+    End Function
+
     Public Sub ResizeArray(ByRef b() As Byte, Length As UInteger, Padding As Byte)
         Dim Size = b.Length - 1
         If Size <> Length - 1 Then

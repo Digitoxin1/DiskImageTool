@@ -74,6 +74,10 @@ Namespace Filters
             End If
         End Sub
 
+        Public Sub ScanAll(Disk As DiskImage.Disk, ImageData As ImageData, BootstrapDB As BootstrapDB, TitleDB As FloppyDB, EnableWriteSpliceFilter As Boolean, ExportUnknownImages As Boolean)
+            Scan(Disk, ImageData, BootstrapDB, TitleDB, EnableWriteSpliceFilter, ExportUnknownImages, True)
+        End Sub
+
         Public Sub ScanDirectory(Disk As DiskImage.Disk, ImageData As ImageData, Optional UpdateFilters As Boolean = False, Optional Remove As Boolean = False)
             Dim Response As DirectoryScanResponse
             Dim HasLostClusters As Boolean = False
@@ -258,6 +262,23 @@ Namespace Filters
             FilterUpdate(ImageData, UpdateFilters, Filters.FilterTypes.OEMName_Unverified, OEMName_Unverified)
         End Sub
 
+        Public Sub ScanRemove(ImageData As ImageData, BootstrapDB As BootstrapDB, TitleDB As FloppyDB, EnableWriteSpliceFilter As Boolean, ExportUnknownImages As Boolean)
+            Scan(Nothing, ImageData, BootstrapDB, TitleDB, EnableWriteSpliceFilter, ExportUnknownImages, False, True, True)
+        End Sub
+
+        Public Sub ScanUpdate(Disk As DiskImage.Disk, ImageData As ImageData, BootstrapDB As BootstrapDB, TitleDB As FloppyDB, EnableWriteSpliceFilter As Boolean, ExportUnknownImages As Boolean)
+            Scan(Disk, ImageData, BootstrapDB, TitleDB, EnableWriteSpliceFilter, ExportUnknownImages, False, True, False)
+        End Sub
+        Public Sub ScanWin9xClean(Disk As Disk, ImageData As ImageData, BootstrapDB As BootstrapDB)
+            ScanModified(Disk, ImageData)
+
+            If ImageData.Scanned Then
+                ScanOEMName(Disk, ImageData, BootstrapDB)
+                OEMNameUpdate(Disk, ImageData)
+                ScanDirectory(Disk, ImageData)
+            End If
+        End Sub
+
         Public Sub SubFilterAdd(ImageData As ImageData)
             OEMNameAdd(ImageData.OEMName, False)
             _SubFilterDiskType.Add(ImageData.DiskType, False)
@@ -323,6 +344,18 @@ Namespace Filters
             _SubFilterOEMName.Populate()
         End Sub
 
+        Private Sub Scan(Disk As DiskImage.Disk, ImageData As ImageData, BootstrapDB As BootstrapDB, TitleDB As FloppyDB, EnableWriteSpliceFilter As Boolean, ExportUnknownImages As Boolean, ScanAll As Boolean, Optional UpdateFilters As Boolean = False, Optional Remove As Boolean = False)
+            ScanModified(Disk, ImageData, UpdateFilters, Remove)
+
+            If ScanAll OrElse ImageData.Scanned Then
+                ScanDisk(Disk, ImageData, TitleDB, EnableWriteSpliceFilter, ExportUnknownImages, UpdateFilters, Remove)
+                ScanOEMName(Disk, ImageData, BootstrapDB, UpdateFilters, Remove)
+                OEMNameUpdate(Disk, ImageData, UpdateFilters, Remove)
+                DiskTypeUpdate(Disk, ImageData, UpdateFilters, Remove)
+                ScanFreeClusters(Disk, ImageData, UpdateFilters, Remove)
+                ScanDirectory(Disk, ImageData, UpdateFilters, Remove)
+            End If
+        End Sub
         Private Sub SelectedIndexChanged(sender As Object, e As EventArgs)
             If _SuppressEvent Then
                 Exit Sub

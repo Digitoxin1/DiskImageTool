@@ -7,6 +7,7 @@ Public Class ImageLoadForm
     Private Const MIN_FILE_SIZE As Long = 163840
     Private Const MAX_FILE_SIZE As Long = 3000000
     Private ReadOnly _Files() As String
+    Private ReadOnly _ImageCombo As ComboBox
     Private ReadOnly _LoadedFiles As LoadedFiles
     Private ReadOnly _Parent As MainForm
     Private _Activated As Boolean = False
@@ -17,7 +18,7 @@ Public Class ImageLoadForm
     Private _SelectedImageData As ImageData = Nothing
     Private _Visible As Boolean = False
 
-    Public Sub New(Parent As MainForm, Files() As String, LoadedFiles As LoadedFiles, NewImage As Boolean)
+    Public Sub New(Parent As MainForm, Files() As String, LoadedFiles As LoadedFiles, NewImage As Boolean, ImageCombo As ComboBox)
 
         ' This call is required by the designer.
         InitializeComponent()
@@ -26,6 +27,7 @@ Public Class ImageLoadForm
         Me.Text = My.Resources.Caption_ScanFiles
         _Parent = Parent
         _Files = Files
+        _ImageCombo = ImageCombo
         _LoadedFiles = LoadedFiles
         _NewImage = NewImage
     End Sub
@@ -63,7 +65,7 @@ Public Class ImageLoadForm
             End If
 
             If bw Is Nothing Then
-                _Parent.ComboImages.Items.Add(ImageData)
+                _ImageCombo.Items.Add(ImageData)
             Else
                 bw.ReportProgress(2, ImageData)
             End If
@@ -175,7 +177,7 @@ Public Class ImageLoadForm
         ElseIf e.ProgressPercentage = 2 Then
             _ImageCount += 1
             Dim ImageData As ImageData = e.UserState
-            _Parent.ComboImages.Items.Add(ImageData)
+            _ImageCombo.Items.Add(ImageData)
         End If
     End Sub
 

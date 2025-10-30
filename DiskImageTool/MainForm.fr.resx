@@ -276,9 +276,6 @@
   <data name="MenuOptionsDragDrop.Text" xml:space="preserve">
     <value>Importer par glisser-déposer</value>
   </data>
-  <data name="ToolStripStatusModified.Text" xml:space="preserve">
-    <value>Modifié</value>
-  </data>
   <data name="ToolStripOpen.Text" xml:space="preserve">
     <value>Ouvrir</value>
   </data>
@@ -338,5 +335,8 @@
   </data>
   <data name="MenuReportsWriteSplices.Text" xml:space="preserve">
     <value>Coupures d’écriture</value>
+  </data>
+  <data name="StatusBarModified.Text" xml:space="preserve">
+    <value>Modifié</value>
   </data>
 </root>

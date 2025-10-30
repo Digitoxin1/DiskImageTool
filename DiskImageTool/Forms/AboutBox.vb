@@ -15,7 +15,7 @@
         '    properties dialog (under the "Project" menu).
         Me.LabelProductName.Text = My.Application.Info.ProductName
         Me.LabelVersion.Text = My.Resources.Label_Version & " " & GetVersionString()
-        Me.LabelURL.Text = MainForm.SITE_URL
+        Me.LabelURL.Text = My.Resources.URL_Repository
         Me.TextBoxDescription.Text = GetResource("License.txt")
 
         OKButton.Text = My.Resources.Menu_Ok
@@ -38,7 +38,7 @@
     End Function
 
     Private Sub LabelURL_LinkClicked(sender As Object, e As LinkLabelLinkClickedEventArgs) Handles LabelURL.LinkClicked
-        Process.Start(MainForm.SITE_URL)
+        Process.Start(My.Resources.URL_Repository)
     End Sub
 
     Private Sub OKButton_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles OKButton.Click

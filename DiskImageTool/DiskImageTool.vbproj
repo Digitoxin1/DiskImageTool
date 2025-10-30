@@ -160,7 +160,7 @@
     <Compile Include="DiskImage\ImageHistory.vb" />
     <Compile Include="DiskImage\Modules\Structures.vb" />
     <Compile Include="DiskImage\Modules\UpdateFunctions.vb" />
-    <Compile Include="FileData.vb" />
+    <Compile Include="FilePanel\FileData.vb" />
     <Compile Include="FilePanel\FileMenuLib.vb" />
     <Compile Include="FilePanel\FilePanel.vb" />
     <Compile Include="Filters\Enums.vb" />
@@ -168,6 +168,9 @@
     <Compile Include="Filters\FilterTag.vb" />
     <Compile Include="Filters\ImageFilters.vb" />
     <Compile Include="Filters\ImageFiltersBase.vb" />
+    <Compile Include="ImageTools.vb" />
+    <Compile Include="MenuHelp.vb" />
+    <Compile Include="MenuTools.vb" />
     <Compile Include="Modules\FileExport.vb" />
     <Compile Include="Modules\FloppyDiskIO.vb" />
     <Compile Include="Bitstream\Interfaces\IBitstreamImage.vb" />
@@ -301,7 +304,7 @@
     </Compile>
     <Compile Include="Lib\CRC32Hash.vb" />
     <Compile Include="Lib\FloppyInterface.vb" />
-    <Compile Include="FormControls.vb" />
+    <Compile Include="Lib\FormControls.vb" />
     <Compile Include="Forms\AboutBox.Designer.vb">
       <DependentUpon>AboutBox.vb</DependentUpon>
     </Compile>
@@ -311,6 +314,7 @@
     <Compile Include="Modules\CopyProtection.vb" />
     <Compile Include="FilePanel\FilePanelColumns.vb" />
     <Compile Include="LoadedFiles.vb" />
+    <Compile Include="Modules\LoadedImageList.vb" />
     <Compile Include="Modules\Reports.vb" />
     <Compile Include="Modules\SummaryPanel.vb" />
     <Compile Include="Testing\DebugScript.vb" />

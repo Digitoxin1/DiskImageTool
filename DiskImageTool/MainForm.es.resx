@@ -279,9 +279,6 @@
   <data name="MenuOptionsDisplayLanguage.Text" xml:space="preserve">
     <value>Idioma</value>
   </data>
-  <data name="ToolStripStatusModified.Text" xml:space="preserve">
-    <value>Modificado</value>
-  </data>
   <data name="ToolStripOpen.Text" xml:space="preserve">
     <value>Abrir</value>
   </data>
@@ -338,5 +335,8 @@
   </data>
   <data name="MenuReportsWriteSplices.Text" xml:space="preserve">
     <value>Empalmes de escritura</value>
+  </data>
+  <data name="StatusBarModified.Text" xml:space="preserve">
+    <value>Modificado</value>
   </data>
 </root>

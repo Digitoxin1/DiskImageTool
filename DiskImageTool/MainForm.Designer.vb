@@ -128,18 +128,17 @@ Partial Class MainForm
         Me.ToolStripViewFile = New System.Windows.Forms.ToolStripButton()
         Me.ToolStripSeparatorFAT = New System.Windows.Forms.ToolStripSeparator()
         Me.StatusStripBottom = New System.Windows.Forms.StatusStrip()
-        Me.ToolStripStatusReadOnly = New System.Windows.Forms.ToolStripStatusLabel()
-        Me.ToolStripStatusModified = New System.Windows.Forms.ToolStripStatusLabel()
-        Me.ToolStripFileName = New System.Windows.Forms.ToolStripStatusLabel()
-        Me.ToolStripFileCount = New System.Windows.Forms.ToolStripStatusLabel()
-        Me.ToolStripFileSector = New System.Windows.Forms.ToolStripStatusLabel()
-        Me.ToolStripFileTrack = New System.Windows.Forms.ToolStripStatusLabel()
-        Me.ToolStripImageCount = New System.Windows.Forms.ToolStripStatusLabel()
-        Me.ToolStripModified = New System.Windows.Forms.ToolStripStatusLabel()
+        Me.StatusBarStatus = New System.Windows.Forms.ToolStripStatusLabel()
+        Me.StatusBarModified = New System.Windows.Forms.ToolStripStatusLabel()
+        Me.StatusBarFileName = New System.Windows.Forms.ToolStripStatusLabel()
+        Me.StatusBarFileCount = New System.Windows.Forms.ToolStripStatusLabel()
+        Me.StatusBarFileSector = New System.Windows.Forms.ToolStripStatusLabel()
+        Me.StatusBarFileTrack = New System.Windows.Forms.ToolStripStatusLabel()
+        Me.StatusBarImageCount = New System.Windows.Forms.ToolStripStatusLabel()
+        Me.StatusBarImagesModified = New System.Windows.Forms.ToolStripStatusLabel()
         Me.ListViewSummary = New System.Windows.Forms.ListView()
         Me.ComboImages = New System.Windows.Forms.ComboBox()
         Me.LabelDropMessage = New System.Windows.Forms.Label()
-        Me.ListViewFiles = New DiskImageTool.ListViewEx()
         Me.ComboImagesFiltered = New System.Windows.Forms.ComboBox()
         Me.BtnResetSort = New System.Windows.Forms.Button()
         Me.btnRetry = New System.Windows.Forms.Button()
@@ -148,6 +147,7 @@ Partial Class MainForm
         Me.LabelCRC32 = New System.Windows.Forms.Label()
         Me.LabelMD5 = New System.Windows.Forms.Label()
         Me.LabelSHA1 = New System.Windows.Forms.Label()
+        Me.ListViewFiles = New DiskImageTool.ListViewEx()
         HashName = CType(New System.Windows.Forms.ColumnHeader(), System.Windows.Forms.ColumnHeader)
         HashValue = CType(New System.Windows.Forms.ColumnHeader(), System.Windows.Forms.ColumnHeader)
         MainMenuFile = New System.Windows.Forms.ToolStripMenuItem()
@@ -776,68 +776,68 @@ Partial Class MainForm
         '
         'StatusStripBottom
         '
-        Me.StatusStripBottom.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.ToolStripStatusReadOnly, Me.ToolStripStatusModified, Me.ToolStripFileName, Me.ToolStripFileCount, Me.ToolStripFileSector, Me.ToolStripFileTrack, Me.ToolStripImageCount, Me.ToolStripModified})
+        Me.StatusStripBottom.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.StatusBarStatus, Me.StatusBarModified, Me.StatusBarFileName, Me.StatusBarFileCount, Me.StatusBarFileSector, Me.StatusBarFileTrack, Me.StatusBarImageCount, Me.StatusBarImagesModified})
         resources.ApplyResources(Me.StatusStripBottom, "StatusStripBottom")
         Me.StatusStripBottom.Name = "StatusStripBottom"
         Me.StatusStripBottom.ShowItemToolTips = True
         '
-        'ToolStripStatusReadOnly
+        'StatusBarStatus
         '
-        resources.ApplyResources(Me.ToolStripStatusReadOnly, "ToolStripStatusReadOnly")
-        Me.ToolStripStatusReadOnly.ForeColor = System.Drawing.Color.Red
-        Me.ToolStripStatusReadOnly.Name = "ToolStripStatusReadOnly"
+        resources.ApplyResources(Me.StatusBarStatus, "StatusBarStatus")
+        Me.StatusBarStatus.ForeColor = System.Drawing.Color.Red
+        Me.StatusBarStatus.Name = "StatusBarStatus"
         '
-        'ToolStripStatusModified
+        'StatusBarModified
         '
-        Me.ToolStripStatusModified.ForeColor = System.Drawing.Color.Blue
-        Me.ToolStripStatusModified.Name = "ToolStripStatusModified"
-        resources.ApplyResources(Me.ToolStripStatusModified, "ToolStripStatusModified")
+        Me.StatusBarModified.ForeColor = System.Drawing.Color.Blue
+        Me.StatusBarModified.Name = "StatusBarModified"
+        resources.ApplyResources(Me.StatusBarModified, "StatusBarModified")
         '
-        'ToolStripFileName
+        'StatusBarFileName
         '
-        Me.ToolStripFileName.AutoToolTip = True
-        Me.ToolStripFileName.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text
-        Me.ToolStripFileName.Margin = New System.Windows.Forms.Padding(2, 3, 2, 2)
-        Me.ToolStripFileName.Name = "ToolStripFileName"
-        resources.ApplyResources(Me.ToolStripFileName, "ToolStripFileName")
-        Me.ToolStripFileName.Spring = True
+        Me.StatusBarFileName.AutoToolTip = True
+        Me.StatusBarFileName.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text
+        Me.StatusBarFileName.Margin = New System.Windows.Forms.Padding(2, 3, 2, 2)
+        Me.StatusBarFileName.Name = "StatusBarFileName"
+        resources.ApplyResources(Me.StatusBarFileName, "StatusBarFileName")
+        Me.StatusBarFileName.Spring = True
         '
-        'ToolStripFileCount
+        'StatusBarFileCount
         '
-        Me.ToolStripFileCount.BorderSides = System.Windows.Forms.ToolStripStatusLabelBorderSides.Left
-        Me.ToolStripFileCount.Margin = New System.Windows.Forms.Padding(2, 3, 2, 2)
-        Me.ToolStripFileCount.Name = "ToolStripFileCount"
-        resources.ApplyResources(Me.ToolStripFileCount, "ToolStripFileCount")
+        Me.StatusBarFileCount.BorderSides = System.Windows.Forms.ToolStripStatusLabelBorderSides.Left
+        Me.StatusBarFileCount.Margin = New System.Windows.Forms.Padding(2, 3, 2, 2)
+        Me.StatusBarFileCount.Name = "StatusBarFileCount"
+        resources.ApplyResources(Me.StatusBarFileCount, "StatusBarFileCount")
         '
-        'ToolStripFileSector
+        'StatusBarFileSector
         '
-        Me.ToolStripFileSector.BorderSides = System.Windows.Forms.ToolStripStatusLabelBorderSides.Left
-        Me.ToolStripFileSector.Margin = New System.Windows.Forms.Padding(2, 3, 2, 2)
-        Me.ToolStripFileSector.Name = "ToolStripFileSector"
-        resources.ApplyResources(Me.ToolStripFileSector, "ToolStripFileSector")
+        Me.StatusBarFileSector.BorderSides = System.Windows.Forms.ToolStripStatusLabelBorderSides.Left
+        Me.StatusBarFileSector.Margin = New System.Windows.Forms.Padding(2, 3, 2, 2)
+        Me.StatusBarFileSector.Name = "StatusBarFileSector"
+        resources.ApplyResources(Me.StatusBarFileSector, "StatusBarFileSector")
         '
-        'ToolStripFileTrack
+        'StatusBarFileTrack
         '
-        Me.ToolStripFileTrack.BorderSides = System.Windows.Forms.ToolStripStatusLabelBorderSides.Left
-        Me.ToolStripFileTrack.Margin = New System.Windows.Forms.Padding(2, 3, 2, 2)
-        Me.ToolStripFileTrack.Name = "ToolStripFileTrack"
-        resources.ApplyResources(Me.ToolStripFileTrack, "ToolStripFileTrack")
+        Me.StatusBarFileTrack.BorderSides = System.Windows.Forms.ToolStripStatusLabelBorderSides.Left
+        Me.StatusBarFileTrack.Margin = New System.Windows.Forms.Padding(2, 3, 2, 2)
+        Me.StatusBarFileTrack.Name = "StatusBarFileTrack"
+        resources.ApplyResources(Me.StatusBarFileTrack, "StatusBarFileTrack")
         '
-        'ToolStripImageCount
+        'StatusBarImageCount
         '
-        Me.ToolStripImageCount.BorderSides = System.Windows.Forms.ToolStripStatusLabelBorderSides.Left
-        Me.ToolStripImageCount.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text
-        Me.ToolStripImageCount.Margin = New System.Windows.Forms.Padding(2, 3, 2, 2)
-        Me.ToolStripImageCount.Name = "ToolStripImageCount"
-        resources.ApplyResources(Me.ToolStripImageCount, "ToolStripImageCount")
+        Me.StatusBarImageCount.BorderSides = System.Windows.Forms.ToolStripStatusLabelBorderSides.Left
+        Me.StatusBarImageCount.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text
+        Me.StatusBarImageCount.Margin = New System.Windows.Forms.Padding(2, 3, 2, 2)
+        Me.StatusBarImageCount.Name = "StatusBarImageCount"
+        resources.ApplyResources(Me.StatusBarImageCount, "StatusBarImageCount")
         '
-        'ToolStripModified
+        'StatusBarImagesModified
         '
-        Me.ToolStripModified.BorderSides = System.Windows.Forms.ToolStripStatusLabelBorderSides.Left
-        Me.ToolStripModified.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text
-        Me.ToolStripModified.Margin = New System.Windows.Forms.Padding(2, 3, 2, 2)
-        Me.ToolStripModified.Name = "ToolStripModified"
-        resources.ApplyResources(Me.ToolStripModified, "ToolStripModified")
+        Me.StatusBarImagesModified.BorderSides = System.Windows.Forms.ToolStripStatusLabelBorderSides.Left
+        Me.StatusBarImagesModified.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text
+        Me.StatusBarImagesModified.Margin = New System.Windows.Forms.Padding(2, 3, 2, 2)
+        Me.StatusBarImagesModified.Name = "StatusBarImagesModified"
+        resources.ApplyResources(Me.StatusBarImagesModified, "StatusBarImagesModified")
         '
         'ListViewSummary
         '
@@ -862,14 +862,6 @@ Partial Class MainForm
         resources.ApplyResources(Me.LabelDropMessage, "LabelDropMessage")
         Me.LabelDropMessage.BackColor = System.Drawing.SystemColors.Window
         Me.LabelDropMessage.Name = "LabelDropMessage"
-        '
-        'ListViewFiles
-        '
-        Me.ListViewFiles.AllowDrop = True
-        resources.ApplyResources(Me.ListViewFiles, "ListViewFiles")
-        Me.ListViewFiles.HideSelection = False
-        Me.ListViewFiles.Name = "ListViewFiles"
-        Me.ListViewFiles.UseCompatibleStateImageBehavior = False
         '
         'ComboImagesFiltered
         '
@@ -945,6 +937,14 @@ Partial Class MainForm
         Me.LabelSHA1.Name = "LabelSHA1"
         Me.LabelSHA1.UseMnemonic = False
         '
+        'ListViewFiles
+        '
+        Me.ListViewFiles.AllowDrop = True
+        resources.ApplyResources(Me.ListViewFiles, "ListViewFiles")
+        Me.ListViewFiles.HideSelection = False
+        Me.ListViewFiles.Name = "ListViewFiles"
+        Me.ListViewFiles.UseCompatibleStateImageBehavior = False
+        '
         'MainForm
         '
         resources.ApplyResources(Me, "$this")
@@ -975,9 +975,9 @@ Partial Class MainForm
     End Sub
     Friend WithEvents ListViewSummary As ListView
     Friend WithEvents ComboImages As ComboBox
-    Friend WithEvents ToolStripImageCount As ToolStripStatusLabel
-    Friend WithEvents ToolStripFileName As ToolStripStatusLabel
-    Friend WithEvents ToolStripModified As ToolStripStatusLabel
+    Friend WithEvents StatusBarImageCount As ToolStripStatusLabel
+    Friend WithEvents StatusBarFileName As ToolStripStatusLabel
+    Friend WithEvents StatusBarImagesModified As ToolStripStatusLabel
     Friend WithEvents ListViewFiles As ListViewEx
     Friend WithEvents MenuFileOpen As ToolStripMenuItem
     Friend WithEvents MenuFileSave As ToolStripMenuItem
@@ -994,14 +994,14 @@ Partial Class MainForm
     Friend WithEvents MenuFileClose As ToolStripMenuItem
     Friend WithEvents MenuFileCloseAll As ToolStripMenuItem
     Friend WithEvents MenuFiltersScanNew As ToolStripMenuItem
-    Friend WithEvents ToolStripFileCount As ToolStripStatusLabel
+    Friend WithEvents StatusBarFileCount As ToolStripStatusLabel
     Friend WithEvents MenuEditFileProperties As ToolStripMenuItem
     Friend WithEvents MainMenuFilters As ToolStripMenuItem
     Friend WithEvents MenuHexFAT As ToolStripMenuItem
     Friend WithEvents MenuEditExportFile As ToolStripMenuItem
     Friend WithEvents ComboImagesFiltered As ComboBox
     Friend WithEvents MenuFiltersClear As ToolStripMenuItem
-    Friend WithEvents ToolStripStatusModified As ToolStripStatusLabel
+    Friend WithEvents StatusBarModified As ToolStripStatusLabel
     Friend WithEvents MenuHexBadSectors As ToolStripMenuItem
     Friend WithEvents MenuEditUndo As ToolStripMenuItem
     Friend WithEvents MenuEditRedo As ToolStripMenuItem
@@ -1025,11 +1025,11 @@ Partial Class MainForm
     Friend WithEvents MenuHelpProjectPage As ToolStripMenuItem
     Friend WithEvents MenuHelpUpdateCheck As ToolStripMenuItem
     Friend WithEvents MenuEditFAT As ToolStripMenuItem
-    Friend WithEvents ToolStripFileSector As ToolStripStatusLabel
-    Friend WithEvents ToolStripFileTrack As ToolStripStatusLabel
+    Friend WithEvents StatusBarFileSector As ToolStripStatusLabel
+    Friend WithEvents StatusBarFileTrack As ToolStripStatusLabel
     Friend WithEvents BtnResetSort As Button
     Friend WithEvents MenuEditBootSector As ToolStripMenuItem
-    Friend WithEvents ToolStripStatusReadOnly As ToolStripStatusLabel
+    Friend WithEvents StatusBarStatus As ToolStripStatusLabel
     Friend WithEvents MenuToolsRestoreBootSector As ToolStripMenuItem
     Friend WithEvents MenuToolsRemoveBootSector As ToolStripMenuItem
     Friend WithEvents MenuToolsWin9xCleanBatch As ToolStripMenuItem

@@ -36,6 +36,113 @@ Module HexViews
         End If
     End Function
 
+    Public Function HexDisplayBadSectors(Disk As Disk) As Boolean
+        Dim HexViewSectorData = HexViewBadSectors(Disk)
+
+        Return DisplayHexViewForm(HexViewSectorData)
+    End Function
+
+    Public Function HexDisplayBootSector(Disk As Disk) As Boolean
+        Dim HexViewSectorData = HexViewBootSector(Disk)
+
+        Return DisplayHexViewForm(HexViewSectorData)
+    End Function
+
+    Public Function HexDisplayDirectory(Disk As Disk, Directory As IDirectory) As Boolean
+        Dim Result As Boolean
+
+        If Directory Is Disk.RootDirectory Then
+            Result = HexDisplayRootDirectory(Disk)
+        Else
+            Result = HexDisplayDirectoryEntry(Disk, Directory.ParentEntry)
+        End If
+
+        Return Result
+    End Function
+
+    Public Function HexDisplayDirectoryEntry(Disk As Disk, DirectoryEntry As DirectoryEntry) As Boolean
+        Dim HexViewSectorData = HexViewDirectoryEntry(Disk, DirectoryEntry)
+
+        If HexViewSectorData Is Nothing Then
+            Return False
+        End If
+
+        Return DisplayHexViewForm(HexViewSectorData)
+    End Function
+
+    Public Function HexDisplayDisk(Disk As Disk) As Boolean
+        Dim HexViewSectorData = New HexViewSectorData(Disk, 0, Disk.Image.Length) With {
+            .Description = "Disk"
+        }
+
+        Return DisplayHexViewForm(HexViewSectorData, True, True, False)
+    End Function
+
+    Public Function HexDisplayFAT(Disk As Disk) As Boolean
+        Dim HexViewSectorData = HexViewFAT(Disk)
+
+        Dim SyncBlocks = Disk.BPB.NumberOfFATEntries > 1 AndAlso Not IsDiskFormatXDF(Disk.DiskFormat)
+
+        Return DisplayHexViewForm(HexViewSectorData, SyncBlocks)
+    End Function
+
+    Public Function HexDisplayFreeClusters(Disk As Disk) As Boolean
+        Dim HexViewSectorData = New HexViewSectorData(Disk, Disk.FAT.GetFreeClusters(FAT12.FreeClusterEmum.WithData).ToList) With {
+            .Description = "Free Clusters"
+        }
+
+        Return DisplayHexViewForm(HexViewSectorData)
+    End Function
+
+    Public Function HexDisplayLostSectors(Disk As Disk) As Boolean
+        Dim HexViewSectorData = HexViewLostClusters(Disk)
+
+        Return DisplayHexViewForm(HexViewSectorData)
+    End Function
+
+    Public Function HexDisplayOverdumpData(Disk As Disk) As Boolean
+        Dim Offset = Disk.BPB.ReportedImageSize() + 1
+
+        Dim HexViewSectorData = New HexViewSectorData(Disk, Offset, Disk.Image.Length - Offset) With {
+            .Description = "Disk"
+        }
+
+        Return DisplayHexViewForm(HexViewSectorData, True, True, False)
+    End Function
+
+    Public Sub HexDisplayRawTrackData(Disk As Disk, TrackIndex As Integer)
+        Dim Track As UShort
+        Dim Side As Byte
+        Dim AllTracks As Boolean
+
+        If TrackIndex = -1 Then
+            Track = 0
+            Side = 0
+            AllTracks = True
+        Else
+            Track = TrackIndex \ Disk.Image.SideCount
+            Side = TrackIndex Mod Disk.Image.SideCount
+            AllTracks = False
+        End If
+
+        Dim Image = Disk.Image.BitstreamImage
+
+        If Image IsNot Nothing Then
+            Dim frmHexView As New HexViewRawForm(Disk, Track, Side, AllTracks)
+            frmHexView.ShowDialog()
+        End If
+    End Sub
+
+    Public Function HexDisplayRootDirectory(Disk As Disk) As Boolean
+        Dim HexViewSectorData = HexViewRootDirectory(Disk)
+
+        If HexViewSectorData Is Nothing Then
+            Return False
+        End If
+
+        Return DisplayHexViewForm(HexViewSectorData)
+    End Function
+
     Public Function HexViewBadSectors(Disk As Disk) As HexViewSectorData
         Dim HexViewSectorData As New HexViewSectorData(Disk) With {
             .Description = My.Resources.HexView_BadSectors
@@ -46,34 +153,6 @@ Module HexViews
         Dim LastCluster As UShort = 0
 
         For Each Cluster In Disk.FAT.BadClusters
-            If Cluster > LastCluster + 1 Then
-                If Length > 0 Then
-                    HexViewSectorData.SectorData.AddBlockByOffset(Offset, Length)
-                End If
-                Offset = Disk.BPB.ClusterToOffset(Cluster)
-                Length = 0
-            End If
-            Length += Disk.BPB.BytesPerCluster
-            LastCluster = Cluster
-        Next
-
-        If Length > 0 Then
-            HexViewSectorData.SectorData.AddBlockByOffset(Offset, Length)
-        End If
-
-        Return HexViewSectorData
-    End Function
-
-    Public Function HexViewLostClusters(Disk As Disk) As HexViewSectorData
-        Dim HexViewSectorData As New HexViewSectorData(Disk) With {
-            .Description = My.Resources.HexView_LostClusters
-        }
-
-        Dim Offset As UInteger = 0
-        Dim Length As UInteger = 0
-        Dim LastCluster As UShort = 0
-
-        For Each Cluster In Disk.RootDirectory.FATAllocation.LostClusters
             If Cluster > LastCluster + 1 Then
                 If Length > 0 Then
                     HexViewSectorData.SectorData.AddBlockByOffset(Offset, Length)
@@ -158,15 +237,6 @@ Module HexViews
         End If
 
         HighlightedRegions.AddBootSectorOffset(BootSectorOffsets.BootStrapSignature, ForeColor)
-
-        Return HexViewSectorData
-    End Function
-
-    Public Function HexViewRootDirectory(Disk As Disk) As HexViewSectorData
-        Dim HexViewSectorData = New HexViewSectorData(Disk, Disk.RootDirectory.SectorChain)
-        HighlightDirectoryData(Disk, HexViewSectorData, True)
-
-        HexViewSectorData.Description = My.Resources.HexView_RootDirectory
 
         Return HexViewSectorData
     End Function
@@ -273,6 +343,41 @@ Module HexViews
         Return HexViewSectorData
     End Function
 
+    Public Function HexViewLostClusters(Disk As Disk) As HexViewSectorData
+        Dim HexViewSectorData As New HexViewSectorData(Disk) With {
+            .Description = My.Resources.HexView_LostClusters
+        }
+
+        Dim Offset As UInteger = 0
+        Dim Length As UInteger = 0
+        Dim LastCluster As UShort = 0
+
+        For Each Cluster In Disk.RootDirectory.FATAllocation.LostClusters
+            If Cluster > LastCluster + 1 Then
+                If Length > 0 Then
+                    HexViewSectorData.SectorData.AddBlockByOffset(Offset, Length)
+                End If
+                Offset = Disk.BPB.ClusterToOffset(Cluster)
+                Length = 0
+            End If
+            Length += Disk.BPB.BytesPerCluster
+            LastCluster = Cluster
+        Next
+
+        If Length > 0 Then
+            HexViewSectorData.SectorData.AddBlockByOffset(Offset, Length)
+        End If
+
+        Return HexViewSectorData
+    End Function
+    Public Function HexViewRootDirectory(Disk As Disk) As HexViewSectorData
+        Dim HexViewSectorData = New HexViewSectorData(Disk, Disk.RootDirectory.SectorChain)
+        HighlightDirectoryData(Disk, HexViewSectorData, True)
+
+        HexViewSectorData.Description = My.Resources.HexView_RootDirectory
+
+        Return HexViewSectorData
+    End Function
     Private Sub HighlightDirectoryData(Disk As Disk, HexViewSectorData As HexViewSectorData, CheckBootSector As Boolean)
         Dim EndOfDirectory As Boolean = False
 

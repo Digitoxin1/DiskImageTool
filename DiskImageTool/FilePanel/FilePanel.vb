@@ -840,6 +840,8 @@ Public Class FilePanel
             Exit Sub
         End If
 
+        Debug.Print("FilePanel.ListView_ItemSelectionEnd fired")
+
         SelectionChanged()
     End Sub
 

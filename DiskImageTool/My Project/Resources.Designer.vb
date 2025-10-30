@@ -4698,6 +4698,15 @@ Namespace My.Resources
         End Property
         
         '''<summary>
+        '''  Looks up a localized string similar to https://github.com/Digitoxin1/DiskImageTool.
+        '''</summary>
+        Friend ReadOnly Property URL_Repository() As String
+            Get
+                Return ResourceManager.GetString("URL_Repository", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
         '''  Looks up a localized resource of type System.Drawing.Bitmap.
         '''</summary>
         Friend ReadOnly Property VolumeSerialNumber() As System.Drawing.Bitmap

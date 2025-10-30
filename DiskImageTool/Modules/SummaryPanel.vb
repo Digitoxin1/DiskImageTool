@@ -873,6 +873,12 @@ Public Class SummaryPanel
     'End Sub
 #End Region
 
+    Private Structure FileSystemInfo
+        Dim NewestFileDate As Date?
+        Dim OldestFileDate As Date?
+        Dim VolumeLabel As DirectoryEntry
+    End Structure
+
     Private Class SummaryRow
         Public Sub New(Font As Font, Text As String, WrapText As Boolean)
             _Text = Text
