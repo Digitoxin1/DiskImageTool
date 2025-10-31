@@ -646,6 +646,7 @@ Public Class MainForm
         MenuToolsClearReservedBytes.Enabled = False
         ToolStripSaveAs.Enabled = MenuFileSaveAs.Enabled
 
+        SetButtonStateClose(CurrentImage IsNot Nothing)
         MenuDisplayDirectorySubMenuClear()
         FATSubMenuRefresh(CurrentImage, FATTablesMatch)
 
@@ -1175,6 +1176,11 @@ Public Class MainForm
         RefreshSaveButtons(Nothing)
     End Sub
 
+    Private Sub SetButtonStateClose(Enabled As Boolean)
+        MenuFileClose.Enabled = Enabled
+        ToolStripClose.Enabled = Enabled
+    End Sub
+
     Private Sub SetButtonStateRedo(Enabled As Boolean)
         MenuEditRedo.Enabled = Enabled
         ToolStripRedo.Enabled = Enabled
@@ -1194,7 +1200,6 @@ Public Class MainForm
         MenuEditUndo.Enabled = Enabled
         ToolStripUndo.Enabled = Enabled
     End Sub
-
     Private Sub SetCurrentFileName(ImageData As ImageData)
         Dim FileName = ImageData.FileName
 
@@ -1210,8 +1215,6 @@ Public Class MainForm
         MenuFiltersScan.Enabled = Value
         MenuFiltersScanNew.Enabled = Value
         MenuFiltersScanNew.Visible = ImageFilters.ScanRun
-        MenuFileClose.Enabled = Value
-        ToolStripClose.Enabled = MenuFileClose.Enabled
         MenuFileCloseAll.Enabled = Value
         ToolStripCloseAll.Enabled = MenuFileCloseAll.Enabled
         _ToolStripSearchText.Enabled = Value
