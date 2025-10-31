@@ -97,7 +97,7 @@ Module ImageIO
         End If
     End Sub
 
-    Public Function DiskImageLoad(ImageData As ImageData, Optional SetChecksum As Boolean = False) As DiskImage.Disk
+    Public Function DiskImageLoadFromImageData(ImageData As ImageData, Optional SetChecksum As Boolean = False) As DiskImage.Disk
         Dim Data() As Byte
         Dim LastChecksum As UInteger
         Dim FloppyImage As IFloppyImage = Nothing

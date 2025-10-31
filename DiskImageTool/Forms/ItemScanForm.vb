@@ -6,7 +6,7 @@ Public Enum ScanType
 End Enum
 
 Public Class ItemScanForm
-    Private ReadOnly _CurrentImage As CurrentImage
+    Private ReadOnly _CurrentImage As DiskImageContainer
     Private ReadOnly _ImageList As ComboBox.ObjectCollection
     Private ReadOnly _NewOnly As Boolean
     Private ReadOnly _Parent As MainForm
@@ -16,7 +16,7 @@ Public Class ItemScanForm
     Private _EndScan As Boolean = False
     Private _ItemsRemaining As UInteger
     Private _ScanComplete As Boolean = False
-    Public Sub New(Parent As MainForm, ImageList As ComboBox.ObjectCollection, CurrentImage As CurrentImage, NewOnly As Boolean, ScanType As ScanType)
+    Public Sub New(Parent As MainForm, ImageList As ComboBox.ObjectCollection, CurrentImage As DiskImageContainer, NewOnly As Boolean, ScanType As ScanType)
 
         ' This call is required by the designer.
         InitializeComponent()
@@ -67,7 +67,7 @@ Public Class ItemScanForm
             If ImageData Is _CurrentImage.ImageData Then
                 Disk = _CurrentImage.Disk
             Else
-                Disk = DiskImageLoad(ImageData, True)
+                Disk = DiskImageLoadFromImageData(ImageData, True)
             End If
 
             If Disk IsNot Nothing Then
@@ -123,7 +123,7 @@ Public Class ItemScanForm
         If ImageData Is _CurrentImage.ImageData Then
             Disk = _CurrentImage.Disk
         Else
-            Disk = DiskImageLoad(ImageData, True)
+            Disk = DiskImageLoadFromImageData(ImageData, True)
         End If
 
         If Disk IsNot Nothing Then

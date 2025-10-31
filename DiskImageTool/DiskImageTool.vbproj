@@ -153,7 +153,7 @@
     <Compile Include="Bitstream\IBM_MFM\IBM_MFM_Sector.vb" />
     <Compile Include="Bitstream\IBM_MFM\IBM_MFM_Tools.vb" />
     <Compile Include="Bitstream\IBM_MFM\IBM_MFM_Track.vb" />
-    <Compile Include="CurrentImage.vb" />
+    <Compile Include="DiskImageContainer.vb" />
     <Compile Include="DiskImage\DirectoryBase.vb" />
     <Compile Include="DiskImage\FAT12.vb" />
     <Compile Include="DiskImage\FATAllocation.vb" />
@@ -168,7 +168,8 @@
     <Compile Include="Filters\FilterTag.vb" />
     <Compile Include="Filters\ImageFilters.vb" />
     <Compile Include="Filters\ImageFiltersBase.vb" />
-    <Compile Include="ImageTools.vb" />
+    <Compile Include="DiskImageLib.vb" />
+    <Compile Include="Globals.vb" />
     <Compile Include="MenuHelp.vb" />
     <Compile Include="MenuTools.vb" />
     <Compile Include="Modules\FileExport.vb" />

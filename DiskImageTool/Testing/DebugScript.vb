@@ -4,7 +4,7 @@ Imports System.Text
 
 Module DebugScript
 
-    Public Sub GenerateDebugPackage(CurrentImage As CurrentImage)
+    Public Sub GenerateDebugPackage(CurrentImage As DiskImageContainer)
         Dim TempPath As String = Path.GetTempPath() & Guid.NewGuid().ToString()
         Dim ContentPath As String = Path.Combine(TempPath, "CONTENT")
         Dim ToolsPath As String = Path.Combine(ContentPath, "TOOLS")
@@ -97,7 +97,7 @@ Module DebugScript
         File.WriteAllText(DriveBFile, SB_B.ToString)
     End Sub
 
-    Public Sub GenerateDirectoryDump(DataPath As String, CurrentImage As CurrentImage)
+    Public Sub GenerateDirectoryDump(DataPath As String, CurrentImage As DiskImageContainer)
         Dim FileName As String
 
         Dim SectorStart = CurrentImage.Disk.BootSector.BPB.RootDirectoryRegionStart

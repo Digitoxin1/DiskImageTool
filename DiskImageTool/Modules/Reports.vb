@@ -6,7 +6,7 @@ Module Reports
     Private Const H_SEPARATOR As String = "-"
     Private Const V_SEPARATOR As String = " | "
 
-    Public Sub DisplayReportWriteSplices(CurrentImage As CurrentImage)
+    Public Sub DisplayReportWriteSplices(CurrentImage As DiskImageContainer)
         Dim TrackLength As Integer = 6
         Dim SideLength As Integer = 6
         Dim SectorIdLength As Integer = 14

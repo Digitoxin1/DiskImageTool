@@ -1523,4 +1523,7 @@ Nota: Este valor debe ser {1} para todos los disquetes</value>
   <data name="Menu_FixFlieSize" xml:space="preserve">
     <value>Corregir &amp;tamaño del archivo</value>
   </data>
+  <data name="Dialog_OpenFileError" xml:space="preserve">
+    <value>Error al abrir el archivo '{0}'.</value>
+  </data>
 </root>

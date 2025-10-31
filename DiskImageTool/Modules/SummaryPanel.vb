@@ -46,7 +46,7 @@ Public Class SummaryPanel
         ListViewSummary.Items.Clear()
     End Sub
 
-    Public Sub Populate(CurrentImage As CurrentImage, MD5 As String)
+    Public Sub Populate(CurrentImage As DiskImageContainer, MD5 As String)
         With ListViewSummary
             .BeginUpdate()
             .Items.Clear()

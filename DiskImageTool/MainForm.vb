@@ -18,11 +18,8 @@ Public Class MainForm
     Private WithEvents ToolStripOEMNameCombo As ToolStripComboBox
     Private WithEvents ToolStripSearchText As ToolStripSpringTextBox
     Private Const CONTEXT_MENU_HASH_KEY As String = "Hashes"
-    Private _BootStrapDB As BootstrapDB
     Private _DriveAEnabled As Boolean = False
     Private _DriveBEnabled As Boolean = False
-    Private _EnableWriteSpliceFilter As Boolean = False
-    Private _ExportUnknownImages As Boolean = False
     Private _FileVersion As String = ""
     Private _LoadedFiles As LoadedFiles
     Private _ScanRun As Boolean = False
@@ -30,42 +27,19 @@ Public Class MainForm
     Private _Suppress_File_DragEnterEvent As Boolean = False
     Private _Suppress_ToolStripFATCombo_SelectedIndexChangedEvent As Boolean = False
     Private _Suppress_ToolStripSearchText_TextChangedEvent As Boolean = False
-    Private _TitleDB As FloppyDB
     Private ToolStripDiskTypeLabel As ToolStripLabel
     Private ToolStripOEMNameLabel As ToolStripLabel
-
-    Private Enum DiskImageMenuItem
-        BootSectorEdit
-        BootSectorRemoveFromDirectory
-        BootSectorRestoreFromDirectory
-        EditFAT
-        HexDisplayBadSectors
-        HexDisplayBootSector
-        HexDisplayDirectory
-        HexDisplayDirectoryEntry
-        HexDisplayDisk
-        HexDisplayFAT
-        HexDisplayFreeClusters
-        HexDisplayLostSectors
-        HexDisplayOverdumpData
-        ImageClearReservedBytes
-        ImageFixImageSize
-        ImageRedo
-        ImageRestructure
-        ImageUndo
-        RemoveWindowsModifications
-    End Enum
 
     Public Sub New()
         ' This call is required by the designer.
         InitializeComponent()
 
         ' Add any initialization after the InitializeComponent() call.
-        InitializeToolStripTop()
+        InitToolStripTop()
     End Sub
 
     Public Sub ImageFiltersScanAll(Disk As Disk, ImageData As ImageData)
-        ImageFilters.ScanAll(Disk, ImageData, _BootStrapDB, _TitleDB, _EnableWriteSpliceFilter, _ExportUnknownImages)
+        ImageFilters.ScanAll(Disk, ImageData)
     End Sub
 
     Public Sub ImageFiltersSetModified(ImageData As ImageData)
@@ -73,31 +47,12 @@ Public Class MainForm
     End Sub
 
     Public Sub ImageWin9xCleanBatch(Disk As Disk, ImageData As ImageData)
-        Dim Result = ImageRemoveWindowsModifications(Disk, _BootStrapDB, _TitleDB, True)
+        Dim Result = ImageRemoveWindowsModifications(Disk, True)
         ImageData.BatchUpdated = Result
         If Result Then
-            ImageFilters.ScanWin9xClean(Disk, ImageData, _BootStrapDB)
+            ImageFilters.ScanWin9xClean(Disk, ImageData)
         End If
     End Sub
-
-    Private Shared Function MsgBoxNewFileName(FileName As String) As MsgBoxResult
-        Dim Msg As String = String.Format(My.Resources.Dialog_NewFileName, FileName)
-        Return MsgBox(Msg, MsgBoxStyle.OkCancel)
-    End Function
-
-    Private Shared Function MsgBoxSave(FileName As String) As MsgBoxResult
-        Dim Msg As String = String.Format(My.Resources.Dialog_SaveFile, FileName)
-
-        Return MsgBox(Msg, MsgBoxStyle.Question + MsgBoxStyle.YesNoCancel + MsgBoxStyle.DefaultButton3, "Save")
-    End Function
-
-    Private Shared Function MsgBoxSaveAll(FileName As String) As MyMsgBoxResult
-        Dim Msg As String = String.Format(My.Resources.Dialog_SaveFile, FileName)
-
-        Dim SaveAllForm As New SaveAllForm(Msg)
-        SaveAllForm.ShowDialog()
-        Return SaveAllForm.Result
-    End Function
 
     Private Async Sub CheckForUpdatesStartup()
         Dim Result = Await Task.Run(Function()
@@ -105,106 +60,6 @@ Public Class MainForm
                                     End Function)
 
         MainMenuUpdateAvailable.Visible = Result
-    End Sub
-
-    Private Sub ClearFilesPanel(FilePanel As FilePanel, CurrentImage As CurrentImage)
-        MenuDisplayDirectorySubMenuClear()
-        FilePanel.Load(CurrentImage)
-        MenuToolsWin9xClean.Enabled = False
-        MenuToolsClearReservedBytes.Enabled = False
-    End Sub
-
-    Private Function CloseAll(CurrentImage As CurrentImage) As Boolean
-        Dim BatchResult As MyMsgBoxResult = MyMsgBoxResult.Yes
-        Dim Result As MyMsgBoxResult = MyMsgBoxResult.Yes
-
-        Dim ModifyImageList = ImageCombo.GetModifiedImageList()
-
-        If ModifyImageList.Count > 0 Then
-            Dim ShowDialog As Boolean = True
-
-            For Each ImageData In ModifyImageList
-                Dim NewFilePath As String = ""
-                If ShowDialog Then
-                    If ModifyImageList.Count = 1 Then
-                        Result = MsgBoxSave(ImageData.FileName)
-                    Else
-                        Result = MsgBoxSaveAll(ImageData.FileName)
-                    End If
-                Else
-                    Result = BatchResult
-                End If
-
-                If Result = MyMsgBoxResult.YesToAll Or Result = MyMsgBoxResult.NoToAll Then
-                    ShowDialog = False
-                    If Result = MyMsgBoxResult.NoToAll Then
-                        BatchResult = MyMsgBoxResult.No
-                    End If
-                End If
-
-                If Result = MyMsgBoxResult.Yes Or Result = MyMsgBoxResult.YesToAll Then
-                    If ImageData.ReadOnly Or ImageData.FileType = ImageData.FileTypeEnum.NewImage Then
-                        If Not ShowDialog Then
-                            If MsgBoxNewFileName(ImageData.FileName) <> MsgBoxResult.Ok Then
-                                Result = MyMsgBoxResult.Cancel
-                                Exit For
-                            End If
-                        End If
-                        If Result <> MyMsgBoxResult.No Then
-                            NewFilePath = GetNewFilePath(CurrentImage, ImageData)
-                            If NewFilePath = "" Then
-                                Result = MyMsgBoxResult.Cancel
-                                Exit For
-                            End If
-                        End If
-                    End If
-                End If
-
-                If Result = MyMsgBoxResult.Yes Or Result = MyMsgBoxResult.YesToAll Then
-                    If Not DiskImageSave(CurrentImage, ImageData, NewFilePath) Then
-                        Result = MyMsgBoxResult.Cancel
-                        Exit For
-                    End If
-                ElseIf Result = MyMsgBoxResult.Cancel Then
-                    Exit For
-                End If
-            Next
-        End If
-
-        If Result <> MyMsgBoxResult.Cancel Then
-            ResetAll()
-        End If
-        Return (Result <> MyMsgBoxResult.Cancel)
-    End Function
-
-    Private Sub CloseCurrent(CurrentImage As CurrentImage)
-        Dim NewFilePath As String = ""
-        Dim Result As MsgBoxResult
-
-        If CurrentImage.ImageData.IsModified Then
-            Result = MsgBoxSave(CurrentImage.ImageData.FileName)
-        Else
-            Result = MsgBoxResult.No
-        End If
-
-        If Result = MsgBoxResult.Yes Then
-            If CurrentImage.ImageData.ReadOnly Or CurrentImage.ImageData.FileType = ImageData.FileTypeEnum.NewImage Then
-                NewFilePath = GetNewFilePath(CurrentImage)
-                If NewFilePath = "" Then
-                    Result = MsgBoxResult.Cancel
-                End If
-            End If
-            If Result = MsgBoxResult.Yes Then
-                If Not DiskImageSave(CurrentImage, NewFilePath) Then
-                    Result = MsgBoxResult.Cancel
-                End If
-            End If
-        End If
-
-        If Result <> MsgBoxResult.Cancel Then
-            FileClose(CurrentImage.ImageData)
-            ImageCombo.RefreshPaths()
-        End If
     End Sub
 
     Private Sub CompareImages()
@@ -241,183 +96,154 @@ Public Class MainForm
         MenuDiskWriteFloppyB.Enabled = False
     End Sub
 
-    Private Sub DiskImageProcess(FilePanel As FilePanel)
-        DiskImageProcess(FilePanel, FilePanel.CurrentImage, True)
-    End Sub
+    Private Function DiskImageCloseAll(CurrentImage As DiskImageContainer) As Boolean
+        Dim ModifyImageList = ImageCombo.GetModifiedImageList()
 
-    Private Sub DiskImageProcess(FilePanel As FilePanel, CurrentImage As CurrentImage, DoItemScan As Boolean)
-        InitButtonState(CurrentImage)
-        'PopulateSummary(CurrentImage)
-
-        If CurrentImage IsNot Nothing AndAlso CurrentImage.Disk IsNot Nothing AndAlso CurrentImage.Disk.IsValidImage Then
-            If CurrentImage.ImageData.CachedRootDir Is Nothing Then
-                CurrentImage.ImageData.CachedRootDir = CurrentImage.Disk.RootDirectory.GetContent
-            End If
-            PopulateFilesPanel(FilePanel, CurrentImage)
-        Else
-            ClearFilesPanel(FilePanel, CurrentImage)
+        If ModifyImageList.Count = 0 Then
+            ResetAll()
+            Return True
         End If
 
-        PopulateSummary(CurrentImage)
-        StatusStripBottom.Refresh()
+        Dim ShowDialog As Boolean = True
+        Dim BatchResult As MyMsgBoxResult = MyMsgBoxResult.Yes
+        Dim Result As MyMsgBoxResult
 
-        If DoItemScan Then
-            ImageFiltersUpdate(CurrentImage)
-            ImageCombo.RefreshCurrentItemText()
-            RefreshSaveButtons(CurrentImage)
-        End If
-    End Sub
+        For Each ImageData In ModifyImageList
+            Dim NewFilePath As String = ""
 
-    Private Sub DiskImageProcessEvent(FilePanel As FilePanel, MenuItem As DiskImageMenuItem, Optional Data As Object = Nothing)
-        Dim DoRefresh As Boolean = False
-
-        Select Case MenuItem
-            Case DiskImageMenuItem.BootSectorEdit
-                DoRefresh = BootSectorEdit(FilePanel.CurrentImage.Disk, _BootStrapDB)
-
-            Case DiskImageMenuItem.BootSectorRemoveFromDirectory
-                BootSectorRemoveFromDirectory(FilePanel.CurrentImage.Disk)
-                DoRefresh = True
-
-            Case DiskImageMenuItem.BootSectorRestoreFromDirectory
-                BootSectorRestoreFromDirectory(FilePanel.CurrentImage.Disk)
-                DoRefresh = True
-
-            Case DiskImageMenuItem.EditFAT
-                If Data IsNot Nothing Then
-                    DoRefresh = FATEdit(FilePanel.CurrentImage.Disk, CUShort(Data))
+            If ShowDialog Then
+                If ModifyImageList.Count = 1 Then
+                    Result = MsgBoxSave(ImageData.FileName)
+                Else
+                    Result = MsgBoxSaveAll(ImageData.FileName)
                 End If
-
-            Case DiskImageMenuItem.HexDisplayBadSectors
-                DoRefresh = HexDisplayBadSectors(FilePanel.CurrentImage.Disk)
-
-            Case DiskImageMenuItem.HexDisplayBootSector
-                DoRefresh = HexDisplayBootSector(FilePanel.CurrentImage.Disk)
-
-            Case DiskImageMenuItem.HexDisplayDirectory
-                Dim Directory = TryCast(Data, IDirectory)
-                If Directory IsNot Nothing Then
-                    DoRefresh = HexDisplayDirectory(FilePanel.CurrentImage.Disk, Directory)
-                End If
-
-            Case DiskImageMenuItem.HexDisplayDirectoryEntry
-                Dim DirectoryEntry = TryCast(Data, DirectoryEntry)
-                If DirectoryEntry IsNot Nothing Then
-                    DoRefresh = HexDisplayDirectoryEntry(FilePanel.CurrentImage.Disk, DirectoryEntry)
-                End If
-
-            Case DiskImageMenuItem.HexDisplayDisk
-                DoRefresh = HexDisplayDisk(FilePanel.CurrentImage.Disk)
-
-            Case DiskImageMenuItem.HexDisplayFAT
-                DoRefresh = HexDisplayFAT(FilePanel.CurrentImage.Disk)
-
-            Case DiskImageMenuItem.HexDisplayFreeClusters
-                DoRefresh = HexDisplayFreeClusters(FilePanel.CurrentImage.Disk)
-
-            Case DiskImageMenuItem.HexDisplayLostSectors
-                DoRefresh = HexDisplayLostSectors(FilePanel.CurrentImage.Disk)
-
-            Case DiskImageMenuItem.HexDisplayOverdumpData
-                DoRefresh = HexDisplayOverdumpData(FilePanel.CurrentImage.Disk)
-
-            Case DiskImageMenuItem.ImageClearReservedBytes
-                DoRefresh = ImageClearReservedBytes(FilePanel.CurrentImage, _TitleDB)
-
-            Case DiskImageMenuItem.ImageFixImageSize
-                DoRefresh = ImageFixImageSize(FilePanel.CurrentImage, _TitleDB)
-
-            Case DiskImageMenuItem.ImageRestructure
-                DoRefresh = ImageRestructure(FilePanel.CurrentImage.Disk, _TitleDB)
-
-            Case DiskImageMenuItem.ImageUndo
-                FilePanel.CurrentImage.Disk.Image.History.Redo()
-                DoRefresh = True
-
-            Case DiskImageMenuItem.ImageRedo
-                FilePanel.CurrentImage.Disk.Image.History.Undo()
-                DoRefresh = True
-
-            Case DiskImageMenuItem.RemoveWindowsModifications
-                DoRefresh = ImageRemoveWindowsModifications(FilePanel.CurrentImage.Disk, _BootStrapDB, _TitleDB, False)
-        End Select
-
-        If DoRefresh Then
-            DiskImageRefresh(FilePanel)
-        End If
-    End Sub
-
-    Private Sub DiskImageRefresh(FilePanel As FilePanel)
-        If FilePanel.CurrentImage IsNot Nothing Then
-            FilePanel.CurrentImage.Disk?.Reinitialize()
-        End If
-
-        '_SuppressEvent = True
-        DiskImageProcess(FilePanel)
-        '_SuppressEvent = False
-    End Sub
-
-    Private Function DiskImageSave(CurrentImage As CurrentImage, Optional NewFilePath As String = "") As Boolean
-        Return DiskImageSave(CurrentImage, CurrentImage.ImageData, NewFilePath)
-    End Function
-
-    Private Function DiskImageSave(CurrentImage As CurrentImage, ImageData As ImageData, Optional NewFilePath As String = "") As Boolean
-        Dim Image As CurrentImage = Nothing
-        Dim Success As Boolean = False
-
-        Do
-            If ImageData Is CurrentImage.ImageData Then
-                Image = CurrentImage
-                Success = True
             Else
-                Dim Disk = DiskImageLoad(ImageData)
-                If Disk IsNot Nothing Then
-                    Image = New CurrentImage(Disk, ImageData)
-                    Success = True
+                Result = BatchResult
+            End If
+
+            If Result = MyMsgBoxResult.YesToAll OrElse Result = MyMsgBoxResult.NoToAll Then
+                ShowDialog = False
+                If Result = MyMsgBoxResult.NoToAll Then
+                    BatchResult = MyMsgBoxResult.No
+                Else
+                    BatchResult = MyMsgBoxResult.Yes
+                End If
+                Result = BatchResult
+            End If
+
+            Select Case Result
+                Case MyMsgBoxResult.No
+                    Continue For
+
+                Case MyMsgBoxResult.Cancel
+                    Return False
+
+                Case MyMsgBoxResult.Yes
+                    If ImageData.ReadOnly OrElse ImageData.FileType = ImageData.FileTypeEnum.NewImage Then
+                        If Not ShowDialog Then
+                            If MsgBoxNewFileName(ImageData.FileName) <> MsgBoxResult.Ok Then
+                                Return False
+                            End If
+                        End If
+
+                        NewFilePath = GetNewFilePath(CurrentImage, ImageData, _LoadedFiles)
+                        If String.IsNullOrEmpty(NewFilePath) Then
+                            Return False
+                        End If
+                    End If
+
+                    Dim image = DiskImageLoadIfNeeded(CurrentImage, ImageData)
+                    If image Is Nothing Then
+                        Return False
+                    End If
+
+                    If Not DiskImageSave(image, NewFilePath) Then
+                        Return False
+                    End If
+
+                    ImageFilters.ScanModified(image.Disk, image.ImageData)
+            End Select
+        Next
+
+        ResetAll()
+        Return True
+    End Function
+    Private Sub DiskImageSaveAll(FilePanel As FilePanel)
+        Dim RefreshCurrent As Boolean = False
+
+        For Index = 0 To ImageCombo.Main.Items.Count - 1
+            Dim NewFilePath As String = ""
+            Dim DoSave As Boolean = True
+            Dim ImageData As ImageData = ImageCombo.Main.Items(Index)
+
+            If Not ImageData.IsModified Then Continue For
+
+            If ImageData.ReadOnly OrElse ImageData.FileType = ImageData.FileTypeEnum.NewImage Then
+                If MsgBoxNewFileName(ImageData.FileName) = MsgBoxResult.Ok Then
+                    NewFilePath = GetNewFilePath(FilePanel.CurrentImage, ImageData, _LoadedFiles)
+                    DoSave = (NewFilePath <> "")
+                Else
+                    DoSave = False
                 End If
             End If
 
-            If Success Then
-                If NewFilePath = "" Then
-                    NewFilePath = Image.ImageData.GetSaveFile
-                End If
+            If DoSave Then
+                Dim Image = DiskImageLoadIfNeeded(FilePanel.CurrentImage, ImageData)
 
-                Dim Response = SaveDiskImageToFile(Image.Disk, NewFilePath, My.Settings.CreateBackups)
-                Success = (Response = SaveImageResponse.Success)
+                If Image Is Nothing Then Continue For
 
-                If Response = SaveImageResponse.Unsupported Then
-                    MsgBox(My.Resources.Dialog_SaveNotSupported, MsgBoxStyle.Exclamation)
-                    Exit Do
-                ElseIf Response = SaveImageResponse.Unknown Then
-                    MsgBox(My.Resources.Dialog_UnsupportedDiskType, MsgBoxStyle.Exclamation)
-                    Exit Do
-                ElseIf Response = SaveImageResponse.Cancelled Then
-                    Exit Do
-                End If
-            End If
+                If DiskImageSave(Image, NewFilePath) Then
+                    ImageFilters.ScanModified(Image.Disk, Image.ImageData)
 
-            If Not Success Then
-                Dim Msg As String = String.Format(My.Resources.Dialog_SaveFileError, IO.Path.GetFileName(NewFilePath))
-                Dim ErrorResult = MsgBox(Msg, MsgBoxStyle.Critical + MsgBoxStyle.RetryCancel)
-                If ErrorResult = MsgBoxResult.Cancel Then
-                    Exit Do
+                    If ImageData.ReadOnly Or ImageData.FileType = ImageData.FileTypeEnum.NewImage Then
+                        SetNewFilePath(ImageData, NewFilePath)
+                    End If
+
+                    If ImageData Is ImageCombo.SelectedImage Then
+                        SetCurrentFileName(ImageData)
+                        FilePanel.ClearModifiedFlag()
+                        RefreshCurrent = True
+                    End If
                 End If
             End If
-        Loop Until Success
+        Next Index
 
-        If Success Then
-            If Image.ImageData.FileType = ImageData.FileTypeEnum.NewImage Then
-                Image.ImageData.FileType = ImageData.FileTypeEnum.Standard
+        ImageFilters.UpdateMenuItem(Filters.FilterTypes.ModifiedFiles)
+        RefreshModifiedCount()
+
+        If RefreshCurrent Then
+            RefreshCurrentState(FilePanel.CurrentImage)
+            DiskImageReloadCurrent(FilePanel, False)
+        End If
+    End Sub
+
+    Private Sub DiskImageSaveCurrent(FilePanel As FilePanel, NewFileName As Boolean)
+        Dim NewFilePath As String = ""
+
+        If NewFileName Then
+            NewFilePath = GetNewFilePath(FilePanel.CurrentImage, _LoadedFiles)
+            If NewFilePath = "" Then
+                Exit Sub
             End If
-            Image.ImageData.Checksum = CRC32.ComputeChecksum(Image.Disk.Image.GetBytes)
-            Image.ImageData.ExternalModified = False
-            ImageFilters.ScanModified(Image.Disk, Image.ImageData)
         End If
 
-        Return Success
-    End Function
+        If DiskImageSave(FilePanel.CurrentImage, NewFilePath) Then
+            ImageFilters.ScanModified(FilePanel.CurrentImage.Disk, FilePanel.CurrentImage.ImageData)
+            ImageFilters.UpdateMenuItem(Filters.FilterTypes.ModifiedFiles)
+            RefreshModifiedCount()
 
-    Private Sub DiskImagesScan(CurrentImage As CurrentImage, NewOnly As Boolean)
+            If NewFileName Then
+                SetNewFilePath(FilePanel.CurrentImage.ImageData, NewFilePath)
+                SetCurrentFileName(FilePanel.CurrentImage.ImageData)
+            End If
+
+            FilePanel.ClearModifiedFlag()
+            RefreshCurrentState(FilePanel.CurrentImage)
+            DiskImageReloadCurrent(FilePanel, False)
+        End If
+    End Sub
+
+    Private Sub DiskImagesScan(CurrentImage As DiskImageContainer, NewOnly As Boolean)
         Me.UseWaitCursor = True
         Dim T = Stopwatch.StartNew
 
@@ -432,8 +258,8 @@ Public Class MainForm
         ItemScanForm.ShowDialog()
         MenuFiltersScanNew.Visible = ItemScanForm.ItemsRemaining > 0
 
-        If _ExportUnknownImages Then
-            _TitleDB.SaveNewXML()
+        If ImageFilters.ExportUnknownImages Then
+            App.Globals.TitleDB.SaveNewXML()
         End If
 
         ImageFilters.UpdateAllMenuItems()
@@ -485,7 +311,7 @@ Public Class MainForm
         e.DrawFocusRectangle()
     End Sub
 
-    Private Sub FATSubMenuRefresh(CurrentImage As CurrentImage, FATTablesMatch As Boolean)
+    Private Sub FATSubMenuRefresh(CurrentImage As DiskImageContainer, FATTablesMatch As Boolean)
         For Each Item As ToolStripMenuItem In MenuEditFAT.DropDownItems
             RemoveHandler Item.Click, AddressOf MenuEditFAT_Click
         Next
@@ -521,7 +347,9 @@ Public Class MainForm
     End Sub
 
     Private Sub FileClose(ImageData As ImageData)
-        ItemFiltersRemove(ImageData)
+        ImageFilters.ScanRemove(ImageData)
+        RefreshModifiedCount()
+
         _LoadedFiles.FileNames.Remove(ImageData.DisplayPath)
 
         ImageCombo.RemoveImage(ImageData)
@@ -531,84 +359,6 @@ Public Class MainForm
         Else
             StatusBarImageCountUpdate()
             MenuToolsCompare.Enabled = ImageCombo.Main.Items.Count > 1
-        End If
-    End Sub
-
-    Private Sub FilePanelProcessEvent(FilePanel As FilePanel, MenuItem As FilePanel.FilePanelMenuItem, Optional Directory As IDirectory = Nothing)
-        Dim FileData = FilePanel.SelectedFileData
-        Dim DoRefresh As Boolean = False
-
-        Select Case MenuItem
-            Case FilePanel.FilePanelMenuItem.FileProperties
-                DoRefresh = FilePropertiesEdit(FilePanel)
-
-            Case FilePanel.FilePanelMenuItem.ExportFile
-                ImageFileExport(FilePanel)
-
-            Case FilePanel.FilePanelMenuItem.ReplaceFile
-                If FileData IsNot Nothing Then
-                    DoRefresh = ImageReplaceFile(FileData.DirectoryEntry)
-                End If
-
-            Case FilePanel.FilePanelMenuItem.ViewDirectory
-                If Directory IsNot Nothing Then
-                    DoRefresh = HexDisplayDirectory(FilePanel.CurrentImage.Disk, Directory)
-                End If
-
-            Case FilePanel.FilePanelMenuItem.ViewFile
-                If FileData IsNot Nothing Then
-                    DoRefresh = HexDisplayDirectoryEntry(FilePanel.CurrentImage.Disk, FileData.DirectoryEntry)
-                End If
-
-            Case FilePanel.FilePanelMenuItem.ViewFileText
-                If FileData IsNot Nothing Then
-                    DirectoryEntryDisplayText(FileData.DirectoryEntry)
-                End If
-
-            Case FilePanel.FilePanelMenuItem.ViewCrosslinked
-                If FileData IsNot Nothing Then
-                    CrossLinkedFilesDisplay(FilePanel.CurrentImage.Disk, FileData.DirectoryEntry)
-                End If
-
-            Case FilePanel.FilePanelMenuItem.ImportFiles
-                If Directory IsNot Nothing Then
-                    DoRefresh = ImageImport(Directory, True)
-                End If
-
-            Case FilePanel.FilePanelMenuItem.ImportFilesHere
-                If FileData IsNot Nothing Then
-                    DoRefresh = ImageImport(FileData.DirectoryEntry.ParentDirectory, True, FileData.DirectoryEntry.Index)
-                End If
-
-            Case FilePanel.FilePanelMenuItem.NewDirectory
-                If Directory IsNot Nothing Then
-                    DoRefresh = ImageAddDirectory(Directory)
-                End If
-
-            Case FilePanel.FilePanelMenuItem.NewDirectoryHere
-                If FileData IsNot Nothing Then
-                    DoRefresh = ImageAddDirectory(FileData.DirectoryEntry.ParentDirectory, FileData.DirectoryEntry.Index)
-                End If
-
-            Case FilePanel.FilePanelMenuItem.DeleteFile
-                DoRefresh = ImageDeleteSelectedFiles(FilePanel, False)
-
-            Case FilePanel.FilePanelMenuItem.UnDeleteFile
-                If FileData IsNot Nothing Then
-                    DoRefresh = ImageUndeleteFile(FileData.DirectoryEntry)
-                End If
-
-            Case FilePanel.FilePanelMenuItem.FileRemove
-                DoRefresh = ImageDeleteSelectedFiles(FilePanel, True)
-
-            Case FilePanel.FilePanelMenuItem.FixSize
-                If FileData IsNot Nothing Then
-                    DoRefresh = ImageFixFileSize(FileData.DirectoryEntry)
-                End If
-        End Select
-
-        If DoRefresh Then
-            DiskImageRefresh(FilePanel)
         End If
     End Sub
 
@@ -742,57 +492,6 @@ Public Class MainForm
         RefreshFilterButtons(False)
     End Sub
 
-    Private Function GetNewFilePath(CurrentImage As CurrentImage) As String
-        Return GetNewFilePath(CurrentImage, CurrentImage.ImageData)
-    End Function
-
-    Private Function GetNewFilePath(CurrentImage As CurrentImage, ImageData As ImageData) As String
-        Dim Disk As DiskImage.Disk
-        Dim FilePath = ImageData.GetSaveFile
-        Dim NewFilePath As String = ""
-        Dim DiskFormat As FloppyDiskFormat = FloppyDiskFormat.FloppyUnknown
-        Dim InitialDirectory As String = ""
-
-        If ImageData Is CurrentImage.ImageData Then
-            Disk = CurrentImage.Disk
-        Else
-            Disk = DiskImageLoad(ImageData)
-        End If
-
-        If Disk IsNot Nothing Then
-            DiskFormat = Disk.DiskFormat
-        End If
-
-        Dim FileExt = IO.Path.GetExtension(FilePath)
-        Dim FileFilter = GetSaveDialogFilters(DiskFormat, Disk.Image.ImageType, FileExt)
-
-        If ImageData.FileType <> ImageData.FileTypeEnum.NewImage Then
-            InitialDirectory = IO.Path.GetDirectoryName(FilePath)
-        End If
-
-        Dim Dialog = New SaveFileDialog With {
-            .InitialDirectory = InitialDirectory,
-            .FileName = IO.Path.GetFileName(FilePath),
-            .Filter = FileFilter.Filter,
-            .FilterIndex = FileFilter.FilterIndex,
-            .DefaultExt = FileExt
-        }
-
-        AddHandler Dialog.FileOk, Sub(sender As Object, e As CancelEventArgs)
-                                      If Dialog.FileName <> FilePath AndAlso _LoadedFiles.FileNames.ContainsKey(Dialog.FileName) Then
-                                          Dim Msg = String.Format(My.Resources.Dialog_FileCurrentlyOpen, IO.Path.GetFileName(Dialog.FileName), Environment.NewLine, Application.ProductName)
-                                          MsgBox(Msg, MsgBoxStyle.Exclamation, My.Resources.Caption_SaveAs)
-                                          e.Cancel = True
-                                      End If
-                                  End Sub
-
-        If Dialog.ShowDialog = DialogResult.OK Then
-            NewFilePath = Dialog.FileName
-        End If
-
-        Return NewFilePath
-    End Function
-
     Private Function GetWindowCaption() As String
         Return My.Application.Info.ProductName & " v" & _FileVersion
     End Function
@@ -828,9 +527,10 @@ Public Class MainForm
         Next
     End Sub
 
-    Private Sub ImageFiltersUpdate(CurrentImage As CurrentImage)
-        ImageFilters.ScanUpdate(CurrentImage.Disk, CurrentImage.ImageData, _BootStrapDB, _TitleDB, _EnableWriteSpliceFilter, _ExportUnknownImages)
+    Private Sub ImageFiltersUpdate(Image As DiskImageContainer)
+        ImageFilters.ScanUpdate(Image)
         RefreshModifiedCount()
+        ImageCombo.RefreshCurrentItemText()
     End Sub
 
     Private Sub ImageNew()
@@ -851,7 +551,7 @@ Public Class MainForm
             ProcessFileDrop(FileName, True)
             RefreshModifiedCount()
             If ImportFiles Then
-                NewImageImport(FileName)
+                NewImageImport(FilePanelMain, FileName)
             End If
         End If
     End Sub
@@ -905,7 +605,7 @@ Public Class MainForm
         End If
     End Sub
 
-    Private Sub InitButtonState(CurrentImage As CurrentImage)
+    Private Sub InitButtonState(CurrentImage As DiskImageContainer)
         Dim FATTablesMatch As Boolean = True
         Dim PrevVisible = ToolStripFatCombo.Visible
 
@@ -945,8 +645,6 @@ Public Class MainForm
         MenuDisplayDirectorySubMenuClear()
         FATSubMenuRefresh(CurrentImage, FATTablesMatch)
 
-        RefreshSaveButtons(CurrentImage)
-
         If ToolStripFatCombo.Visible <> PrevVisible Then
             ToolStripTop.Refresh()
         End If
@@ -960,7 +658,7 @@ Public Class MainForm
                 .Name = "MenuOptionsExportUnknown",
                 .Text = My.Resources.Menu_ExportUnknown,
                 .CheckOnClick = True,
-                .Checked = _ExportUnknownImages
+                .Checked = ImageFilters.ExportUnknownImages
             }
 
             AddHandler Item.CheckStateChanged, AddressOf MenuOptionsExportUnknown_CheckStateChanged
@@ -971,7 +669,7 @@ Public Class MainForm
                 .Name = "MenuOptionsEnableWriteSpliceFilter",
                 .Text = My.Resources.Menu_EnableWriteSpliceFilter,
                 .CheckOnClick = True,
-                .Checked = _EnableWriteSpliceFilter
+                .Checked = ImageFilters.EnableWriteSpliceFilter
             }
 
             AddHandler Item.CheckStateChanged, AddressOf MenuOptionsEnableWriteSpliceFilter_CheckStateChanged
@@ -984,7 +682,7 @@ Public Class MainForm
         End If
     End Sub
 
-    Private Sub InitializeToolStripTop()
+    Private Sub InitToolStripTop()
         'ToolStripFatCombo
         ToolStripFatCombo = New ToolStripComboBox With {
             .DropDownStyle = ComboBoxStyle.DropDownList,
@@ -1068,34 +766,6 @@ Public Class MainForm
         ToolStripTop.Items.Add(ToolStripDiskTypeLabel)
     End Sub
 
-    Private Sub ItemFiltersRemove(ImageData As ImageData)
-        ImageFilters.ScanRemove(ImageData, _BootStrapDB, _TitleDB, _EnableWriteSpliceFilter, _ExportUnknownImages)
-        RefreshModifiedCount()
-    End Sub
-
-    Private Function LoadDiskImage(FilePanel As FilePanel, ImageData As ImageData, DoItemScan As Boolean) As CurrentImage
-        Cursor.Current = Cursors.WaitCursor
-
-        Dim Disk = DiskImageLoad(ImageData, True)
-
-        Dim Image = New CurrentImage(Disk, ImageData)
-
-        If Image IsNot Nothing Then
-            If Image.ImageData.ExternalModified Then
-                Image.ImageData.ExternalModified = False
-                DoItemScan = True
-                Dim Msg = String.Format(My.Resources.Dialog_ChangesDiscarded, Environment.NewLine)
-                MsgBox(Msg, MsgBoxStyle.Exclamation)
-            End If
-
-            DiskImageProcess(FilePanel, Image, DoItemScan)
-        End If
-
-        Cursor.Current = Cursors.Default
-
-        Return Image
-    End Function
-
     Private Sub MenuDisplayDirectorySubMenuClear()
         For Each Item As ToolStripMenuItem In MenuHexDirectory.DropDownItems
             RemoveHandler Item.Click, AddressOf MenuHexDirectory_Click
@@ -1115,7 +785,7 @@ Public Class MainForm
         AddHandler Item.Click, AddressOf MenuHexDirectory_Click
     End Sub
 
-    Private Sub MenuDisplayDirectorySubMenuPopulate(CurrentImage As CurrentImage, Response As DirectoryScanResponse)
+    Private Sub MenuDisplayDirectorySubMenuPopulate(CurrentImage As DiskImageContainer, Response As DirectoryScanResponse)
         MenuDisplayDirectorySubMenuClear()
 
         If Response.DirectoryList.Count > 0 Then
@@ -1161,26 +831,6 @@ Public Class MainForm
         AddHandler Item.Click, AddressOf MenuHexRawTrackData_Click
     End Sub
 
-    Private Sub NewImageImport(FileName As String)
-        If FilePanelMain.CurrentImage Is Nothing Then
-            Exit Sub
-        End If
-
-        If FilePanelMain.CurrentImage.ImageData.SourceFile = FileName Then
-            If ImageImport(FilePanelMain.CurrentImage.Disk.RootDirectory, True) Then
-                DiskImageRefresh(FilePanelMain)
-            End If
-        End If
-    End Sub
-    Private Sub PopulateFilesPanel(FilePanel As FilePanel, CurrentImage As CurrentImage)
-        Dim Response = FilePanel.Load(CurrentImage)
-
-        MenuDisplayDirectorySubMenuPopulate(CurrentImage, Response)
-
-        MenuToolsWin9xClean.Enabled = Response.HasValidCreated Or Response.HasValidLastAccessed Or CurrentImage.Disk.BootSector.IsWin9xOEMName
-        MenuToolsClearReservedBytes.Enabled = Response.HasNTUnknownFlags Or Response.HasFAT32Cluster
-    End Sub
-
     Private Sub PopulateLanguages()
         MenuOptionsDisplayLanguage.DropDownItems.Clear()
 
@@ -1196,7 +846,7 @@ Public Class MainForm
         Next
     End Sub
 
-    Private Sub PopulateSummary(CurrentImage As CurrentImage)
+    Private Sub PopulateSummary(CurrentImage As DiskImageContainer)
         Dim MD5 As String = ""
 
         If CurrentImage IsNot Nothing Then
@@ -1247,6 +897,20 @@ Public Class MainForm
 
         Me.Size = New Size(Width, Height)
         Me.Location = New Point(WorkingArea.Left + (WorkingArea.Width - Width) / 2, WorkingArea.Top + (WorkingArea.Height - Height) / 2)
+    End Sub
+
+    Private Sub ProcessDirectoryScan(CurrentImage As DiskImageContainer, DirectoryScan As DirectoryScanResponse)
+        If DirectoryScan Is Nothing Then
+            MenuDisplayDirectorySubMenuClear()
+
+            MenuToolsWin9xClean.Enabled = False
+            MenuToolsClearReservedBytes.Enabled = False
+        Else
+            MenuDisplayDirectorySubMenuPopulate(CurrentImage, DirectoryScan)
+
+            MenuToolsWin9xClean.Enabled = DirectoryScan.HasValidCreated Or DirectoryScan.HasValidLastAccessed Or CurrentImage.Disk.BootSector.IsWin9xOEMName
+            MenuToolsClearReservedBytes.Enabled = DirectoryScan.HasNTUnknownFlags Or DirectoryScan.HasFAT32Cluster
+        End If
     End Sub
 
     Private Sub ProcessFileDrop(File As String, NewImage As Boolean)
@@ -1302,14 +966,14 @@ Public Class MainForm
         Cursor.Current = Cursors.Default
     End Sub
 
-    Private Sub RefreshCurrentState(CurrentImage As CurrentImage)
+    Private Sub RefreshCurrentState(CurrentImage As DiskImageContainer)
         ImageCombo.RefreshCurrentItemText()
         RefreshDiskButtons(CurrentImage)
         StatusBarImageInfoUpdate(CurrentImage)
         RefreshSaveButtons(CurrentImage)
     End Sub
 
-    Private Sub RefreshDiskButtons(CurrentImage As CurrentImage)
+    Private Sub RefreshDiskButtons(CurrentImage As DiskImageContainer)
         If CurrentImage IsNot Nothing AndAlso CurrentImage.Disk IsNot Nothing AndAlso CurrentImage.Disk.IsValidImage Then
             Dim Compare = CurrentImage.Disk.CheckImageSize
             MenuToolsFixImageSize.Enabled = CurrentImage.Disk.Image.CanResize And Compare <> 0
@@ -1456,7 +1120,7 @@ Public Class MainForm
         End If
     End Sub
 
-    Private Sub RefreshSaveButtons(CurrentImage As CurrentImage)
+    Private Sub RefreshSaveButtons(CurrentImage As DiskImageContainer)
         If CurrentImage Is Nothing Then
             SetButtonStateSaveFile(False)
             MenuFileReload.Enabled = False
@@ -1466,14 +1130,6 @@ Public Class MainForm
             SetButtonStateSaveFile(Modified And Not Disabled)
             MenuFileReload.Enabled = True
         End If
-    End Sub
-
-    Private Sub ReloadCurrentImage(FilePanel As FilePanel, RevertChanges As Boolean)
-        If RevertChanges Then
-            FilePanel.CurrentImage.ImageData.Modifications.Clear()
-        End If
-
-        LoadDiskImage(FilePanel, FilePanel.CurrentImage.ImageData, RevertChanges)
     End Sub
 
     Private Sub ResetAll()
@@ -1510,85 +1166,8 @@ Public Class MainForm
         SetImagesLoaded(False)
         FiltersReset()
         InitButtonState(Nothing)
+        RefreshSaveButtons(Nothing)
     End Sub
-
-    Private Sub RevertChanges(FilePanel As FilePanel)
-        If FilePanel.CurrentImage.Disk.Image.History.Modified Then
-            ReloadCurrentImage(FilePanel, True)
-        End If
-    End Sub
-
-    Private Sub SaveAll(FilePanel As FilePanel)
-        Dim RefreshCurrent As Boolean = False
-
-        '_SuppressEvent = True
-        For Index = 0 To ImageCombo.Main.Items.Count - 1
-            Dim NewFilePath As String = ""
-            Dim DoSave As Boolean = True
-            Dim ImageData As ImageData = ImageCombo.Main.Items(Index)
-
-            If ImageData.IsModified Then
-                If ImageData.ReadOnly Or ImageData.FileType = ImageData.FileTypeEnum.NewImage Then
-                    If MsgBoxNewFileName(ImageData.FileName) = MsgBoxResult.Ok Then
-                        NewFilePath = GetNewFilePath(FilePanel.CurrentImage, ImageData)
-                        DoSave = (NewFilePath <> "")
-                    Else
-                        DoSave = False
-                    End If
-                End If
-                If DoSave Then
-                    Dim Result = DiskImageSave(FilePanel.CurrentImage, ImageData, NewFilePath)
-                    If Result Then
-                        If ImageData.ReadOnly Or ImageData.FileType = ImageData.FileTypeEnum.NewImage Then
-                            SetNewFilePath(ImageData, NewFilePath)
-                        End If
-                        If ImageData Is ImageCombo.SelectedImage Then
-                            SetCurrentFileName(ImageData)
-                            FilePanel.ClearModifiedFlag()
-                            RefreshCurrent = True
-                        End If
-                    End If
-                End If
-            End If
-        Next Index
-        '_SuppressEvent = False
-
-        ImageFilters.UpdateMenuItem(Filters.FilterTypes.ModifiedFiles)
-        RefreshModifiedCount()
-
-        If RefreshCurrent Then
-            RefreshCurrentState(FilePanel.CurrentImage)
-            ReloadCurrentImage(FilePanel, False)
-        End If
-    End Sub
-
-    Private Sub SaveCurrent(FilePanel As FilePanel, NewFileName As Boolean)
-        Dim NewFilePath As String = ""
-
-        If NewFileName Then
-            NewFilePath = GetNewFilePath(FilePanel.CurrentImage)
-            If NewFilePath = "" Then
-                Exit Sub
-            End If
-        End If
-
-
-        Dim Result = DiskImageSave(FilePanel.CurrentImage, NewFilePath)
-        If Result Then
-            ImageFilters.UpdateMenuItem(Filters.FilterTypes.ModifiedFiles)
-            RefreshModifiedCount()
-
-            If NewFileName Then
-                SetNewFilePath(FilePanel.CurrentImage.ImageData, NewFilePath)
-                SetCurrentFileName(FilePanel.CurrentImage.ImageData)
-            End If
-
-            FilePanel.ClearModifiedFlag()
-            RefreshCurrentState(FilePanel.CurrentImage)
-            ReloadCurrentImage(FilePanel, False)
-        End If
-    End Sub
-
     Private Sub SetButtonStateRedo(Enabled As Boolean)
         MenuEditRedo.Enabled = Enabled
         ToolStripRedo.Enabled = Enabled
@@ -1733,7 +1312,7 @@ Public Class MainForm
         StatusBarImageCount.Text = Text
     End Sub
 
-    Private Sub StatusBarImageInfoUpdate(CurrentImage As CurrentImage)
+    Private Sub StatusBarImageInfoUpdate(CurrentImage As DiskImageContainer)
         If CurrentImage IsNot Nothing AndAlso CurrentImage.Disk IsNot Nothing Then
             Dim StatusText = ""
             If CurrentImage.ImageData.FileType = ImageData.FileTypeEnum.Compressed Then
@@ -1853,7 +1432,7 @@ Public Class MainForm
     End Sub
 
     Private Sub BtnRetry_Click(sender As Object, e As EventArgs) Handles btnRetry.Click
-        ReloadCurrentImage(FilePanelMain, False)
+        DiskImageReloadCurrent(FilePanelMain, False)
     End Sub
 
     Private Sub ContextMenuFilters_Closing(sender As Object, e As ToolStripDropDownClosingEventArgs) Handles ContextMenuFilters.Closing
@@ -1891,18 +1470,26 @@ Public Class MainForm
         End If
     End Sub
 
+    Private Sub FilePanel_CurrentImageChangeEnd(sender As Object, e As Boolean) Handles FilePanelMain.CurrentImageChangeEnd
+        ProcessDirectoryScan(FilePanelMain.CurrentImage, FilePanelMain.DirectoryScan)
+        PopulateSummary(FilePanelMain.CurrentImage)
+        StatusStripBottom.Refresh()
+        If e Then
+            ImageFiltersUpdate(FilePanelMain.CurrentImage)
+        End If
+        RefreshSaveButtons(FilePanelMain.CurrentImage)
+    End Sub
+
+    Private Sub FilePanel_CurrentImageChangeStart(sender As Object, e As Boolean) Handles FilePanelMain.CurrentImageChangeStart
+        InitButtonState(FilePanelMain.CurrentImage)
+    End Sub
+
     Private Sub FilePanel_ItemDoubleClick(sender As Object, e As ListViewItem) Handles FilePanelMain.ItemDoubleClick
         Dim FilePanel = DirectCast(sender, FilePanel)
         Dim FileData = TryCast(e.Tag, FileData)
 
         If FileData IsNot Nothing Then
-            If FileData.DirectoryEntry.IsValidFile And FileData.DirectoryEntry.FileSize > 0 Then
-                If IsBinaryData(FileData.DirectoryEntry.GetContent) Then
-                    DiskImageProcessEvent(FilePanel, DiskImageMenuItem.HexDisplayDirectoryEntry, FileData.DirectoryEntry)
-                Else
-                    DirectoryEntryDisplayText(FileData.DirectoryEntry)
-                End If
-            End If
+            DirectoryEntryDisplay(FilePanel, FileData)
         End If
     End Sub
 
@@ -1973,16 +1560,21 @@ Public Class MainForm
     End Sub
 
     Private Sub ImageList_SelectedIndexChanged(sender As Object, e As EventArgs) Handles ImageCombo.SelectedIndexChanged
-        LoadDiskImage(FilePanelMain, ImageCombo.SelectedImage, False)
+        DiskImageLoadIntoFilePanel(FilePanelMain, ImageCombo.SelectedImage, False)
     End Sub
     Private Sub MainForm_Closed(sender As Object, e As EventArgs) Handles Me.Closed
         EmptyTempPath()
     End Sub
 
     Private Sub MainForm_Closing(sender As Object, e As CancelEventArgs) Handles Me.Closing
-        If Not CloseAll(FilePanelMain.CurrentImage) Then
+        If Not DiskImageCloseAll(FilePanelMain.CurrentImage) Then
+            RefreshModifiedCount()
             e.Cancel = True
         End If
+    End Sub
+
+    Private Sub MainForm_Disposed(sender As Object, e As EventArgs) Handles Me.Disposed
+        ImageFilters.Dispose()
     End Sub
 
     Private Sub MainForm_Load(sender As Object, e As EventArgs) Handles Me.Load
@@ -2001,18 +1593,16 @@ Public Class MainForm
         MainMenuUpdateAvailable.Visible = False
         MenuToolsCompare.Visible = False
         FilePanelMain = New FilePanel(ListViewFiles)
-        ImageFilters = New Filters.ImageFilters(ContextMenuFilters, ToolStripOEMNameCombo, ToolStripDiskTypeCombo)
         PopulateLanguages()
         _LoadedFiles = New LoadedFiles
-        _BootStrapDB = New BootstrapDB
-        _TitleDB = New FloppyDB
         Debounce = New Timer With {
             .Interval = 750
         }
 
         HashPanelInitContextMenu()
 
-        _SummaryPanel = New SummaryPanel(ListViewSummary, _TitleDB, _BootStrapDB)
+        ImageFilters = New Filters.ImageFilters(ContextMenuFilters, ToolStripOEMNameCombo, ToolStripDiskTypeCombo, App.Globals.BootstrapDB, App.Globals.TitleDB)
+        _SummaryPanel = New SummaryPanel(ListViewSummary, App.Globals.TitleDB, App.Globals.BootstrapDB)
         ImageCombo = New LoadedImageList(ComboImages, ComboImagesFiltered)
 
         InitDebugFeatures(My.Settings.Debug)
@@ -2089,7 +1679,7 @@ Public Class MainForm
     End Sub
 
     Private Sub MenuEditRevert_Click(sender As Object, e As EventArgs) Handles MenuEditRevert.Click
-        RevertChanges(FilePanelMain)
+        DiskImageRevertChanges(FilePanelMain)
     End Sub
 
     Private Sub MenuEditUndo_Click(sender As Object, e As EventArgs) Handles MenuEditUndo.Click, ToolStripUndo.Click
@@ -2097,18 +1687,25 @@ Public Class MainForm
     End Sub
 
     Private Sub MenuFileClose_Click(sender As Object, e As EventArgs) Handles MenuFileClose.Click, ToolStripClose.Click
-        CloseCurrent(FilePanelMain.CurrentImage)
+        If DiskImageCloseCurrent(FilePanelMain.CurrentImage, _LoadedFiles) Then
+            FileClose(FilePanelMain.CurrentImage.ImageData)
+            ImageCombo.RefreshPaths()
+        End If
     End Sub
 
     Private Sub MenuFileCloseAll_Click(sender As Object, e As EventArgs) Handles MenuFileCloseAll.Click, ToolStripCloseAll.Click
         If MsgBox(My.Resources.Dialog_CloseAll, MsgBoxStyle.YesNo + MsgBoxStyle.DefaultButton2) = MsgBoxResult.Yes Then
-            CloseAll(FilePanelMain.CurrentImage)
+            If Not DiskImageCloseAll(FilePanelMain.CurrentImage) Then
+                RefreshModifiedCount()
+            End If
         End If
     End Sub
 
     Private Sub MenuFileExit_Click(sender As Object, e As EventArgs) Handles MenuFileExit.Click
-        If CloseAll(FilePanelMain.CurrentImage) Then
+        If DiskImageCloseAll(FilePanelMain.CurrentImage) Then
             Me.Close()
+        Else
+            RefreshModifiedCount()
         End If
     End Sub
 
@@ -2121,22 +1718,22 @@ Public Class MainForm
     End Sub
 
     Private Sub MenuFileReload_Click(sender As Object, e As EventArgs) Handles MenuFileReload.Click
-        ReloadCurrentImage(FilePanelMain, False)
+        DiskImageReloadCurrent(FilePanelMain, False)
     End Sub
 
     Private Sub MenuFileSave_Click(sender As Object, e As EventArgs) Handles MenuFileSave.Click, ToolStripSave.Click
         Dim NewFileName = FilePanelMain.CurrentImage.ImageData.FileType = ImageData.FileTypeEnum.NewImage
-        SaveCurrent(FilePanelMain, NewFileName)
+        DiskImageSaveCurrent(FilePanelMain, NewFileName)
     End Sub
 
     Private Sub MenuFileSaveAll_Click(sender As Object, e As EventArgs) Handles MenuFileSaveAll.Click, ToolStripSaveAll.Click
         If MsgBox(My.Resources.Dialog_SaveAll, MsgBoxStyle.YesNo + MsgBoxStyle.DefaultButton2) = MsgBoxResult.Yes Then
-            SaveAll(FilePanelMain)
+            DiskImageSaveAll(FilePanelMain)
         End If
     End Sub
 
     Private Sub MenuFileSaveAs_Click(sender As Object, e As EventArgs) Handles MenuFileSaveAs.Click, ToolStripSaveAs.Click
-        SaveCurrent(FilePanelMain, True)
+        DiskImageSaveCurrent(FilePanelMain, True)
     End Sub
 
     Private Sub MenuFiltersClear_Click(sender As Object, e As EventArgs) Handles MenuFiltersClear.Click
@@ -2233,11 +1830,11 @@ Public Class MainForm
     End Sub
 
     Private Sub MenuOptionsEnableWriteSpliceFilter_CheckStateChanged(sender As Object, e As EventArgs)
-        _EnableWriteSpliceFilter = DirectCast(sender, ToolStripMenuItem).Checked
+        ImageFilters.EnableWriteSpliceFilter = DirectCast(sender, ToolStripMenuItem).Checked
     End Sub
 
     Private Sub MenuOptionsExportUnknown_CheckStateChanged(sender As Object, e As EventArgs)
-        _ExportUnknownImages = DirectCast(sender, ToolStripMenuItem).Checked
+        ImageFilters.ExportUnknownImages = DirectCast(sender, ToolStripMenuItem).Checked
     End Sub
 
     Private Sub MenuReportsWriteSplices_Click(sender As Object, e As EventArgs) Handles MenuReportsWriteSplices.Click
@@ -2287,7 +1884,7 @@ Public Class MainForm
 
         If FilePanelMain.CurrentImage IsNot Nothing Then
             FilePanelMain.CurrentImage.ImageData.FATIndex = ToolStripFatCombo.SelectedIndex
-            ReloadCurrentImage(FilePanelMain, False)
+            DiskImageReloadCurrent(FilePanelMain, False)
         End If
     End Sub
 

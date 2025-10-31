@@ -40,7 +40,6 @@
     Public Property AppliedFilters As Long
     Public Property BatchUpdated As Boolean
     Public Property BottomIndex As Integer
-    Public Property CachedRootDir As Byte()
     Public Property Checksum As UInteger
     Public Property CompressedFile As String
     Public Property DiskType As String

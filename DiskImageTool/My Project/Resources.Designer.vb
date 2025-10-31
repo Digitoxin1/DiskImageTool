@@ -1600,6 +1600,15 @@ Namespace My.Resources
         End Property
         
         '''<summary>
+        '''  Looks up a localized string similar to Error opening file &apos;{0}&apos;..
+        '''</summary>
+        Friend ReadOnly Property Dialog_OpenFileError() As String
+            Get
+                Return ResourceManager.GetString("Dialog_OpenFileError", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
         '''  Looks up a localized string similar to Are you sure you wish to remove {0}?.
         '''</summary>
         Friend ReadOnly Property Dialog_RemoveFile() As String

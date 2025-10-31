@@ -6,8 +6,8 @@ Module ImageCompare
     Public Function CompareImages(ImageData1 As ImageData, ImageData2 As ImageData) As String
         Dim Builder As New StringBuilder
 
-        Dim Disk1 = DiskImageLoad(ImageData1)
-        Dim Disk2 = DiskImageLoad(ImageData2)
+        Dim Disk1 = DiskImageLoadFromImageData(ImageData1)
+        Dim Disk2 = DiskImageLoadFromImageData(ImageData2)
 
         CompareBootSectors(Builder, Disk1.BootSector, Disk2.BootSector)
 

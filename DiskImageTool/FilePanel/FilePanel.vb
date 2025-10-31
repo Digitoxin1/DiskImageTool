@@ -30,7 +30,8 @@ Public Class FilePanel
     Private _ColLFN As ColumnHeader
     Private _ColNTReserved As ColumnHeader
     Private _ColumnWidths() As Integer
-    Private _CurrentImage As CurrentImage = Nothing
+    Private _CurrentImage As DiskImageContainer = Nothing
+    Private _DirectoryScan As DirectoryScanResponse = Nothing
     Private _MenuState As FileMenuState
     Private _SuppressEvent As Boolean = False
 
@@ -53,6 +54,8 @@ Public Class FilePanel
         FixSize
     End Enum
 
+    Public Event CurrentImageChangeStart As EventHandler(Of Boolean)
+    Public Event CurrentImageChangeEnd As EventHandler(Of Boolean)
     Public Event ItemDoubleClick As EventHandler(Of ListViewItem)
     Public Event ItemDrag As EventHandler(Of ItemDragEventArgs)
     Public Event ItemSelectionChanged As EventHandler
@@ -84,9 +87,15 @@ Public Class FilePanel
         ContextMenuDirectory = Nothing
     End Sub
 
-    Public ReadOnly Property CurrentImage As CurrentImage
+    Public ReadOnly Property CurrentImage As DiskImageContainer
         Get
             Return _CurrentImage
+        End Get
+    End Property
+
+    Public ReadOnly Property DirectoryScan As DirectoryScanResponse
+        Get
+            Return _DirectoryScan
         End Get
     End Property
 
@@ -228,7 +237,7 @@ Public Class FilePanel
         End If
     End Sub
 
-    Public Function Load(CurrentImage As CurrentImage) As DirectoryScanResponse
+    Public Sub Load(CurrentImage As DiskImageContainer, DoItemScan As Boolean)
         Dim ClearItems As Boolean = CurrentImage IsNot _CurrentImage
 
         If _CurrentImage IsNot Nothing AndAlso ClearItems Then
@@ -236,6 +245,8 @@ Public Class FilePanel
         End If
 
         _CurrentImage = CurrentImage
+
+        RaiseEvent CurrentImageChangeStart(Me, DoItemScan)
 
         Dim Response As DirectoryScanResponse = Nothing
         Dim IsValidImage = CurrentImage IsNot Nothing AndAlso CurrentImage.Disk IsNot Nothing AndAlso CurrentImage.Disk.IsValidImage
@@ -284,10 +295,12 @@ Public Class FilePanel
         ListViewFiles.EndUpdate()
         ListViewFiles.Refresh()
 
+        _DirectoryScan = Response
+
         SelectionChanged()
 
-        Return Response
-    End Function
+        RaiseEvent CurrentImageChangeEnd(Me, DoItemScan)
+    End Sub
 
     Public Sub Reset()
         If _CurrentImage IsNot Nothing Then

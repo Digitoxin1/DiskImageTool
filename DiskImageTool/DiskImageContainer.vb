@@ -1,4 +1,4 @@
-﻿Public Class CurrentImage
+﻿Public Class DiskImageContainer
     Public Sub New(Disk As DiskImage.Disk, ImageData As ImageData)
         _Disk = Disk
         _ImageData = ImageData

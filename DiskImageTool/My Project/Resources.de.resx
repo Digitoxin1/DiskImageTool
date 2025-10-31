@@ -1523,4 +1523,7 @@ Hinweis: Diese ID wird normalerweise erzeugt, indem das aktuelle Datum und die a
   <data name="Menu_FixFlieSize" xml:space="preserve">
     <value>Dateigröße &amp;korrigieren</value>
   </data>
+  <data name="Dialog_OpenFileError" xml:space="preserve">
+    <value>Fehler beim Öffnen der Datei '{0}'.</value>
+  </data>
 </root>

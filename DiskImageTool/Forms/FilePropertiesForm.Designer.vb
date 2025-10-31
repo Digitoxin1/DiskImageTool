@@ -137,7 +137,6 @@ Partial Class FilePropertiesForm
         'BtnCreated
         '
         resources.ApplyResources(Me.BtnCreated, "BtnCreated")
-        Me.BtnCreated.DialogResult = System.Windows.Forms.DialogResult.Cancel
         Me.BtnCreated.Name = "BtnCreated"
         Me.BtnCreated.UseVisualStyleBackColor = True
         '
@@ -257,7 +256,6 @@ Partial Class FilePropertiesForm
         'BtnHidden
         '
         resources.ApplyResources(Me.BtnHidden, "BtnHidden")
-        Me.BtnHidden.DialogResult = System.Windows.Forms.DialogResult.Cancel
         Me.BtnHidden.Name = "BtnHidden"
         Me.BtnHidden.UseVisualStyleBackColor = True
         '

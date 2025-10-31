@@ -2,7 +2,7 @@
 Imports DiskImageTool.DiskImage
 
 Module MenuTools
-    Public Sub GenerateTrackLayout(CurrentImage As CurrentImage)
+    Public Sub GenerateTrackLayout(CurrentImage As DiskImageContainer)
         If CurrentImage Is Nothing Then Exit Sub
 
         If Not CurrentImage.Disk.Image.IsBitstreamImage Then
@@ -85,8 +85,8 @@ Module MenuTools
         frmTextView.ShowDialog()
     End Sub
 
-    Public Function ImageClearReservedBytes(CurrentImage As CurrentImage, TitleDB As FloppyDB) As Boolean
-        If TitleDB.IsVerifiedImage(CurrentImage.Disk) Then
+    Public Function ImageClearReservedBytes(CurrentImage As DiskImageContainer) As Boolean
+        If App.Globals.TitleDB.IsVerifiedImage(CurrentImage.Disk) Then
             If Not MsgBoxQuestion(My.Resources.Dialog_ClearReservedBytes) Then
                 Return False
             End If
@@ -95,10 +95,10 @@ Module MenuTools
         Return DiskImage.ClearReservedBytes(CurrentImage.Disk)
     End Function
 
-    Public Function ImageFixImageSize(CurrentImage As CurrentImage, TitleDB As FloppyDB) As Boolean
+    Public Function ImageFixImageSize(CurrentImage As DiskImageContainer) As Boolean
         Dim Result As Boolean = True
 
-        If TitleDB.IsVerifiedImage(CurrentImage.Disk) Then
+        If App.Globals.TitleDB.IsVerifiedImage(CurrentImage.Disk) Then
             If Not MsgBoxQuestion(My.Resources.Dialog_AdjustImageSize) Then
                 Return False
             End If
@@ -132,8 +132,8 @@ Module MenuTools
         Return Result
     End Function
 
-    Public Function ImageRemoveWindowsModifications(Disk As Disk, BootStrapDB As BootstrapDB, TitleDB As FloppyDB, Batch As Boolean) As Boolean
-        If TitleDB.IsVerifiedImage(Disk) Then
+    Public Function ImageRemoveWindowsModifications(Disk As Disk, Batch As Boolean) As Boolean
+        If App.Globals.TitleDB.IsVerifiedImage(Disk) Then
             If Batch Then
                 Return False
             Else
@@ -147,7 +147,7 @@ Module MenuTools
         Dim UseTransaction = Disk.BeginTransaction
 
         If Disk.BootSector.IsWin9xOEMName Then
-            Dim BootstrapType = BootStrapDB.FindMatch(Disk.BootSector.BootStrapCode)
+            Dim BootstrapType = App.Globals.BootstrapDB.FindMatch(Disk.BootSector.BootStrapCode)
             If BootstrapType IsNot Nothing Then
                 If BootstrapType.OEMNames.Count > 0 Then
                     Disk.BootSector.OEMName = BootstrapType.OEMNames.Item(0).Name
@@ -183,8 +183,8 @@ Module MenuTools
         Return Result
     End Function
 
-    Public Function ImageRestructure(Disk As Disk, TitleDB As FloppyDB) As Boolean
-        If TitleDB.IsVerifiedImage(Disk) Then
+    Public Function ImageRestructure(Disk As Disk) As Boolean
+        If App.Globals.TitleDB.IsVerifiedImage(Disk) Then
             If Not MsgBoxQuestion(My.Resources.Dialog_RestructureImage) Then
                 Return False
             End If
