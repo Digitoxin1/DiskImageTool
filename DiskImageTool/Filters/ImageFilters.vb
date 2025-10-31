@@ -1,4 +1,5 @@
-﻿Imports DiskImageTool.DiskImage
+﻿Imports System.Text
+Imports DiskImageTool.DiskImage
 
 Namespace Filters
     Public Class ImageFilters
@@ -6,22 +7,31 @@ Namespace Filters
 
         Private Const NULL_CHAR As Char = "�"
         Private ReadOnly _BootStrapDB As BootstrapDB
+        Private ReadOnly _Debounce As Timer
         Private ReadOnly _SubFilterDiskType As ComboFilter
         Private ReadOnly _SubFilterOEMName As ComboFilter
+        Private ReadOnly _TextSearch As ToolStripTextBox
         Private ReadOnly _TitleDB As FloppyDB
         Private _disposed As Boolean = False
         Private _EnableWriteSpliceFilter As Boolean = False
         Private _ExportUnknownImages As Boolean = False
         Private _SuppressEvent As Boolean = False
-        Public Sub New(ContextMenuFilters As ContextMenuStrip, ToolStripOEMNameCombo As ToolStripComboBox, ToolStripDiskTypeCombo As ToolStripComboBox, BootstrapDB As BootstrapDB, TitleDB As FloppyDB)
+        Public Sub New(ContextMenuFilters As ContextMenuStrip, OEMNameCombo As ToolStripComboBox, DiskTypeCombo As ToolStripComboBox, TextSearch As ToolStripTextBox, BootstrapDB As BootstrapDB, TitleDB As FloppyDB)
             MyBase.New(ContextMenuFilters)
-            _SubFilterDiskType = New ComboFilter(ToolStripDiskTypeCombo)
-            _SubFilterOEMName = New ComboFilter(ToolStripOEMNameCombo)
+            _SubFilterDiskType = New ComboFilter(DiskTypeCombo)
+            _SubFilterOEMName = New ComboFilter(OEMNameCombo)
+            _TextSearch = TextSearch
             _BootStrapDB = BootstrapDB
             _TitleDB = TitleDB
 
+            _Debounce = New Timer With {
+                .Interval = 750
+            }
+
             AddHandler _SubFilterOEMName.SelectedIndexChanged, AddressOf SelectedIndexChanged
             AddHandler _SubFilterDiskType.SelectedIndexChanged, AddressOf SelectedIndexChanged
+            AddHandler _TextSearch.TextChanged, AddressOf TextChanged
+            AddHandler _Debounce.Tick, AddressOf DebounceTick
         End Sub
 
         Public Property EnableWriteSpliceFilter As Boolean
@@ -41,6 +51,8 @@ Namespace Filters
                 _ExportUnknownImages = Value
             End Set
         End Property
+
+        Public Property ScanRun As Boolean = False
 
         Public Sub DiskTypeUpdate(Disk As DiskImage.Disk, ImageData As ImageData, Optional UpdateFilters As Boolean = False, Optional Remove As Boolean = False)
             Dim DiskFormat As String = ""
@@ -82,6 +94,8 @@ Namespace Filters
             Try
                 Try : RemoveHandler _SubFilterOEMName.SelectedIndexChanged, AddressOf SelectedIndexChanged : Catch : End Try
                 Try : RemoveHandler _SubFilterDiskType.SelectedIndexChanged, AddressOf SelectedIndexChanged : Catch : End Try
+                Try : RemoveHandler _TextSearch.TextChanged, AddressOf TextChanged : Catch : End Try
+                Try : RemoveHandler _Debounce.Tick, AddressOf DebounceTick : Catch : End Try
                 Try : _SubFilterDiskType?.Dispose() : Catch : End Try
                 Try : _SubFilterOEMName?.Dispose() : Catch : End Try
             Finally
@@ -325,11 +339,14 @@ Namespace Filters
             _SubFilterDiskType.Add(ImageData.DiskType, False)
         End Sub
 
-        Public Sub SubFiltersClear()
+        Public Sub SubFiltersClear(ClearTextSearch As Boolean)
             _SuppressEvent = True
 
             _SubFilterOEMName.Clear()
             _SubFilterDiskType.Clear()
+            If ClearTextSearch Then
+                _TextSearch.Text = ""
+            End If
 
             _SuppressEvent = False
         End Sub
@@ -339,6 +356,7 @@ Namespace Filters
 
             _SubFilterOEMName.ClearFilter()
             _SubFilterDiskType.ClearFilter()
+            _TextSearch.Text = ""
 
             _SuppressEvent = False
         End Sub
@@ -359,6 +377,23 @@ Namespace Filters
             DiskTypePopulateUnfiltered(ComboBox)
 
             _SuppressEvent = False
+        End Sub
+
+        Public Function TextFilterGetRegex() As RegularExpressions.Regex
+            Dim TextFilter As String = _TextSearch.Text.Trim.ToLower
+            Dim HasTextFilter = TextFilter.Length > 0
+            If HasTextFilter Then
+                Dim Pattern As String = "(?:\W|^|_)(" & RegularExpressions.Regex.Escape(TextFilter) & ")"
+                Return New RegularExpressions.Regex(Pattern, RegularExpressions.RegexOptions.IgnoreCase)
+            Else
+                Return Nothing
+            End If
+        End Function
+
+        Private Sub DebounceTick(sender As Object, e As EventArgs)
+            _Debounce.Stop()
+
+            MyBase.OnFilterChanged(False)
         End Sub
 
         Private Sub DiskTypePopulateUnfiltered(ComboBox As ComboBox)
@@ -404,5 +439,24 @@ Namespace Filters
 
             MyBase.OnFilterChanged(False)
         End Sub
+
+        Private Sub TextChanged(sender As Object, e As EventArgs)
+            If _SuppressEvent Then
+                Exit Sub
+            End If
+
+            _Debounce.Stop()
+            _Debounce.Start()
+        End Sub
+
+        Private Function TextFilterMatch(Value As String) As Boolean
+            Dim TextFilterRegex = TextFilterGetRegex()
+
+            If TextFilterRegex IsNot Nothing Then
+                Return TextFilterRegex.IsMatch(Value)
+            Else
+                Return True
+            End If
+        End Function
     End Class
 End Namespace

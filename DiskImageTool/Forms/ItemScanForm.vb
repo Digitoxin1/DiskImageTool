@@ -16,6 +16,7 @@ Public Class ItemScanForm
     Private _EndScan As Boolean = False
     Private _ItemsRemaining As UInteger
     Private _ScanComplete As Boolean = False
+
     Public Sub New(Parent As MainForm, ImageList As ComboBox.ObjectCollection, CurrentImage As DiskImageContainer, NewOnly As Boolean, ScanType As ScanType)
 
         ' This call is required by the designer.
@@ -92,10 +93,12 @@ Public Class ItemScanForm
         Dim PrevPercentage As Integer = 0
         Dim Counter As Integer = 0
         Dim Result As Boolean = True
+
         For Each ImageData As ImageData In _ImageList
             If bw.CancellationPending Then
                 Return False
             End If
+
             Dim Percentage As Integer = Counter / ItemCount * 100
             If Percentage <> PrevPercentage Then
                 bw.ReportProgress(Percentage)
@@ -173,11 +176,6 @@ Public Class ItemScanForm
             End If
         End If
     End Sub
-
-    Private Sub LblScanning_Click(sender As Object, e As EventArgs) Handles LblScanning.Click
-
-    End Sub
-
 #End Region
 
 End Class

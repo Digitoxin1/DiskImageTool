@@ -55,15 +55,11 @@
     End Sub
 
     Public Sub EnsureFilteredImageSelected()
-        If ComboFiltered.SelectedIndex = -1 AndAlso ComboFiltered.Items.Count > 0 Then
-            ComboFiltered.SelectedIndex = 0
-        End If
+        EnsureImageSelected(ComboFiltered)
     End Sub
 
     Public Sub EnsureMainImageSelected()
-        If Combo.SelectedIndex = -1 AndAlso Combo.Items.Count > 0 Then
-            Combo.SelectedIndex = 0
-        End If
+        EnsureImageSelected(Combo)
     End Sub
 
     Public Function GetModifiedImageList() As List(Of ImageData)
@@ -77,6 +73,7 @@
 
         Return ModifyImageList
     End Function
+
     Public Function GetPathOffset() As Integer
         Dim PathName As String = ""
         Dim CheckPath As Boolean = False
@@ -152,6 +149,8 @@
             End If
             ActiveComboBox.SelectedIndex = SelectedIndex
         End If
+
+        CheckComboCount(ActiveComboBox)
     End Sub
 
     Public Sub SetSelectedImage(ImageData As ImageData)
@@ -169,8 +168,20 @@
 
         If Filtered Then
             RefreshComboEnabled(ComboFiltered)
+            If ComboFiltered.Items.Count = 0 Then
+                Combo.SelectedIndex = -1
+                RaiseEvent SelectedIndexChanged(Me, New EventArgs())
+            End If
         Else
             ComboImagesClear(ComboFiltered)
+            EnsureImageSelected(Combo)
+        End If
+    End Sub
+
+    Private Sub CheckComboCount(Combo As ComboBox)
+        If Combo.Items.Count = 0 Then
+            RefreshComboEnabled(Combo)
+            RaiseEvent SelectedIndexChanged(Me, New EventArgs())
         End If
     End Sub
 
@@ -179,6 +190,11 @@
         RefreshComboEnabled(Combo)
     End Sub
 
+    Private Sub EnsureImageSelected(Combo As ComboBox)
+        If Combo.SelectedIndex = -1 AndAlso Combo.Items.Count > 0 Then
+            Combo.SelectedIndex = 0
+        End If
+    End Sub
     Private Sub Initialize()
         With Combo
             .DropDownStyle = ComboBoxStyle.DropDownList

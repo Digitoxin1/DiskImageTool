@@ -221,6 +221,25 @@ Module Utility
         Return fInfo.IsReadOnly
     End Function
 
+    Public Function IsZipArchive(FileName As String) As IO.Compression.ZipArchive
+        Try
+            Dim Buffer(1) As Byte
+            Using fs = New IO.FileStream(FileName, IO.FileMode.Open, IO.FileAccess.Read)
+                Dim BytesRead = fs.Read(Buffer, 0, Buffer.Length)
+                fs.Close()
+            End Using
+
+            If Buffer(0) = &H50 And Buffer(1) = &H4B Then
+                Return IO.Compression.ZipFile.OpenRead(FileName)
+            End If
+        Catch ex As Exception
+            DebugException(ex)
+            Return Nothing
+        End Try
+
+        Return Nothing
+    End Function
+
     Public Function MsgBoxQuestion(Prompt As String, Optional Title As Object = Nothing) As Boolean
         Return MsgBox(Prompt, MsgBoxStyle.Question + MsgBoxStyle.YesNo + MsgBoxStyle.DefaultButton2, Title) = MsgBoxResult.Yes
     End Function

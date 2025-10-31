@@ -1,5 +1,4 @@
 ﻿Imports System.ComponentModel
-Imports System.Runtime.InteropServices.WindowsRuntime
 Imports System.Text
 Imports DiskImageTool.DiskImage
 
@@ -114,6 +113,11 @@ Module DiskImageLib
     End Function
 
     Public Sub DiskImageLoadIntoFilePanel(FilePanel As FilePanel, ImageData As ImageData, DoItemScan As Boolean)
+        If ImageData Is Nothing Then
+            FilePanel.Load(Nothing, DoItemScan)
+            Exit Sub
+        End If
+
         Cursor.Current = Cursors.WaitCursor
 
         Dim Disk = DiskImageLoadFromImageData(ImageData, True)

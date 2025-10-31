@@ -38,40 +38,31 @@ Public Class ImageLoadForm
         End Get
     End Property
 
-    Private Shared Function IsZipArchive(FileName As String) As ZipArchive
-        Try
-            Dim Buffer(1) As Byte
-            Using fs = New FileStream(FileName, FileMode.Open, FileAccess.Read)
-                Dim BytesRead = fs.Read(Buffer, 0, Buffer.Length)
-                fs.Close()
-            End Using
+    Private Sub ImageDataAddItem(ImageData As ImageData)
+        _ImageCombo.Items.Add(ImageData)
 
-            If Buffer(0) = &H50 And Buffer(1) = &H4B Then
-                Return ZipFile.OpenRead(FileName)
-            End If
-        Catch ex As Exception
-            DebugException(ex)
-            Return Nothing
-        End Try
+        If ImageData.FileType = ImageData.FileTypeEnum.NewImage Then
+            _Parent.ImageFiltersSetModified(ImageData)
+        End If
+    End Sub
 
-        Return Nothing
+    Private Function IsValidFileLength(Length As Long, Extension As String) As Boolean
+        Dim CheckLength = Not BitstreamFileExtensions.Contains(Extension) And Not AdvancedSectorFileExtensions.Contains(Extension)
+        Return Not CheckLength OrElse (Length >= MIN_FILE_SIZE And Length <= MAX_FILE_SIZE)
     End Function
 
     Private Sub LoadedFileAdd(bw As BackgroundWorker, Key As String, FileName As String, FileType As ImageData.FileTypeEnum, Optional CompressedFile As String = "")
         Dim ImageData = _LoadedFiles.Add(Key, FileName, FileType, CompressedFile)
+
         If ImageData IsNot Nothing Then
             If _SelectedImageData Is Nothing Then
                 _SelectedImageData = ImageData
             End If
 
             If bw Is Nothing Then
-                _ImageCombo.Items.Add(ImageData)
+                ImageDataAddItem(ImageData)
             Else
                 bw.ReportProgress(2, ImageData)
-            End If
-
-            If FileType = ImageData.FileTypeEnum.NewImage Then
-                _Parent.ImageFiltersSetModified(ImageData)
             End If
         End If
     End Sub
@@ -84,34 +75,13 @@ Public Class ImageLoadForm
         Dim Archive = IsZipArchive(FileName)
 
         If Archive IsNot Nothing Then
-            Dim Entries As ReadOnlyCollection(Of ZipArchiveEntry) = Nothing
-            Try
-                Entries = Archive.Entries
-            Catch
-                '
-            End Try
-            If Entries IsNot Nothing Then
-                For Each Entry In Entries.OrderBy(Function(e) e.FullName)
-                    Dim EntryFileExt = Path.GetExtension(Entry.Name).ToLower
-                    If AllFileExtensions.Contains(EntryFileExt) Then
-                        Dim FilePath = Path.Combine(FileName, Entry.FullName)
-                        Dim CheckLength = Not BitstreamFileExtensions.Contains(EntryFileExt) And Not AdvancedSectorFileExtensions.Contains(EntryFileExt)
-                        If Not CheckLength OrElse (Entry.Length >= MIN_FILE_SIZE And Entry.Length <= MAX_FILE_SIZE) Then
-                            LoadedFileAdd(bw, FilePath, FileName, ImageData.FileTypeEnum.Compressed, Entry.FullName)
-                        End If
-                    End If
-                Next
-            End If
+            ProcessZipArchive(bw, Archive, FileName)
         Else
             If Not ArchiveFileExtensions.Contains(Extension) Then
                 Dim Length As Long = 0
-                Try
-                    Length = New FileInfo(FileName).Length
-                Catch
-                    '
-                End Try
-                Dim CheckLength = Not BitstreamFileExtensions.Contains(Extension) And Not AdvancedSectorFileExtensions.Contains(Extension)
-                If Not CheckLength OrElse (Length >= MIN_FILE_SIZE And Length <= MAX_FILE_SIZE) Then
+                Try : Length = New FileInfo(FileName).Length : Catch : End Try
+
+                If IsValidFileLength(Length, Extension) Then
                     LoadedFileAdd(bw, FileName, FileName, If(_NewImage, ImageData.FileTypeEnum.NewImage, ImageData.FileTypeEnum.Standard))
                 End If
             End If
@@ -127,29 +97,53 @@ Public Class ImageLoadForm
             If bw IsNot Nothing AndAlso bw.CancellationPending Then
                 Return True
             End If
+
             Dim FAttributes = IO.File.GetAttributes(FilePath)
+
             If (FAttributes And IO.FileAttributes.Directory) > 0 Then
                 Dim DirectoryInfo As New IO.DirectoryInfo(FilePath)
                 Dim Files = DirectoryInfo.GetFiles("*.*", IO.SearchOption.AllDirectories)
+
                 For Each FileInfo In Files
                     If bw IsNot Nothing AndAlso bw.CancellationPending Then
                         Return True
                     End If
+
                     Dim Extension = FileInfo.Extension.ToLower
+
                     If AllFileExtensions.Contains(Extension) OrElse ArchiveFileExtensions.Contains(Extension) Then
                         ProcessFile(bw, FileInfo.FullName, Extension)
                     End If
+
                     bw?.ReportProgress(1)
                 Next
             Else
                 Dim Extension = Path.GetExtension(FilePath).ToLower
                 ProcessFile(bw, FilePath, Extension)
             End If
+
             bw?.ReportProgress(1)
         Next
 
         Return True
     End Function
+
+    Private Sub ProcessZipArchive(bw As BackgroundWorker, Archive As ZipArchive, Filename As String)
+        Dim Entries As ReadOnlyCollection(Of ZipArchiveEntry) = Nothing
+        Try : Entries = Archive.Entries : Catch : End Try
+
+        If Entries IsNot Nothing Then
+            For Each Entry In Entries.OrderBy(Function(e) e.FullName)
+                Dim EntryFileExt = Path.GetExtension(Entry.Name).ToLower
+                If AllFileExtensions.Contains(EntryFileExt) Then
+                    Dim FilePath = Path.Combine(Filename, Entry.FullName)
+                    If IsValidFileLength(Entry.Length, EntryFileExt) Then
+                        LoadedFileAdd(bw, FilePath, Filename, ImageData.FileTypeEnum.Compressed, Entry.FullName)
+                    End If
+                End If
+            Next
+        End If
+    End Sub
 
 #Region "Events"
 
@@ -164,20 +158,24 @@ Public Class ImageLoadForm
     Private Sub BackgroundWorker1_ProgressChanged(sender As Object, e As ProgressChangedEventArgs) Handles BackgroundWorker1.ProgressChanged
         If e.ProgressPercentage = 1 Then
             _Counter += 1
+
             If Not _Visible AndAlso _Counter > 10 Then
                 _Visible = True
                 Me.Opacity = 1
             End If
+
             If _Counter Mod 10 = 0 Then
                 LblScanning.Text = My.Resources.Label_Scanning & "... " & _Counter & " " & My.Resources.Label_Files
                 lblScanning2.Text = String.Format(My.Resources.Label_ImagesLoaded, _ImageCount)
                 LblScanning.Refresh()
                 lblScanning2.Refresh()
             End If
+
         ElseIf e.ProgressPercentage = 2 Then
             _ImageCount += 1
+
             Dim ImageData As ImageData = e.UserState
-            _ImageCombo.Items.Add(ImageData)
+            ImageDataAddItem(ImageData)
         End If
     End Sub
 

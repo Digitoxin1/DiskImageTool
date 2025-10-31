@@ -1,5 +1,4 @@
 ﻿Imports System.ComponentModel
-Imports System.Text
 Imports DiskImageTool.DiskImage
 
 Public Structure SaveDialogFilter
@@ -8,28 +7,24 @@ Public Structure SaveDialogFilter
 End Structure
 
 Public Class MainForm
-    Private WithEvents Debounce As Timer
     Private WithEvents FilePanelMain As FilePanel
     Private WithEvents HashPanelContextMenu As ContextMenuStrip
     Private WithEvents ImageCombo As LoadedImageList
     Private WithEvents ImageFilters As Filters.ImageFilters
-    Private WithEvents ToolStripDiskTypeCombo As ToolStripComboBox
-    Private WithEvents ToolStripFatCombo As ToolStripComboBox
-    Private WithEvents ToolStripOEMNameCombo As ToolStripComboBox
-    Private WithEvents ToolStripSearchText As ToolStripSpringTextBox
     Private Const CONTEXT_MENU_HASH_KEY As String = "Hashes"
     Private _DriveAEnabled As Boolean = False
     Private _DriveBEnabled As Boolean = False
     Private _FileVersion As String = ""
     Private _LoadedFiles As LoadedFiles
-    Private _ScanRun As Boolean = False
     Private _SummaryPanel As SummaryPanel
     Private _Suppress_File_DragEnterEvent As Boolean = False
     Private _Suppress_ToolStripFATCombo_SelectedIndexChangedEvent As Boolean = False
-    Private _Suppress_ToolStripSearchText_TextChangedEvent As Boolean = False
-    Private ToolStripDiskTypeLabel As ToolStripLabel
-    Private ToolStripOEMNameLabel As ToolStripLabel
-
+    Private _ToolStripDiskTypeCombo As ToolStripComboBox
+    Private _ToolStripDiskTypeLabel As ToolStripLabel
+    Private _ToolStripFatCombo As ToolStripComboBox
+    Private _ToolStripOEMNameCombo As ToolStripComboBox
+    Private _ToolStripOEMNameLabel As ToolStripLabel
+    Private _ToolStripSearchText As ToolStripSpringTextBox
     Public Sub New()
         ' This call is required by the designer.
         InitializeComponent()
@@ -60,6 +55,11 @@ Public Class MainForm
                                     End Function)
 
         MainMenuUpdateAvailable.Visible = Result
+    End Sub
+
+    Private Sub ClearCurentFileName()
+        Me.Text = GetWindowCaption()
+        StatusBarFileName.Visible = False
     End Sub
 
     Private Sub CompareImages()
@@ -168,6 +168,7 @@ Public Class MainForm
         ResetAll()
         Return True
     End Function
+
     Private Sub DiskImageSaveAll(FilePanel As FilePanel)
         Dim RefreshCurrent As Boolean = False
 
@@ -212,8 +213,7 @@ Public Class MainForm
         RefreshModifiedCount()
 
         If RefreshCurrent Then
-            RefreshCurrentState(FilePanel.CurrentImage)
-            DiskImageReloadCurrent(FilePanel, False)
+            RefreshCurrentState(FilePanel)
         End If
     End Sub
 
@@ -238,8 +238,7 @@ Public Class MainForm
             End If
 
             FilePanel.ClearModifiedFlag()
-            RefreshCurrentState(FilePanel.CurrentImage)
-            DiskImageReloadCurrent(FilePanel, False)
+            RefreshCurrentState(FilePanel)
         End If
     End Sub
 
@@ -249,6 +248,7 @@ Public Class MainForm
 
         MenuFiltersScanNew.Visible = False
         MenuFiltersScan.Enabled = False
+
         If ImageFilters.FiltersApplied Then
             FiltersClear(False)
             StatusBarImageCountUpdate()
@@ -256,6 +256,7 @@ Public Class MainForm
 
         Dim ItemScanForm As New ItemScanForm(Me, ImageCombo.Main.Items, CurrentImage, NewOnly, ScanType.ScanTypeFilters)
         ItemScanForm.ShowDialog()
+
         MenuFiltersScanNew.Visible = ItemScanForm.ItemsRemaining > 0
 
         If ImageFilters.ExportUnknownImages Then
@@ -264,34 +265,27 @@ Public Class MainForm
 
         ImageFilters.UpdateAllMenuItems()
         ImageFilters.SubFiltersPopulate()
+        ImageFilters.ScanRun = True
+
         RefreshModifiedCount()
 
-        ToolStripOEMNameCombo.Visible = True
-        ToolStripOEMNameLabel.Visible = True
-        ToolStripDiskTypeCombo.Visible = True
-        ToolStripDiskTypeLabel.Visible = True
+        SubFiltersToggle(True)
 
         MenuFiltersScan.Text = My.Resources.Caption_RescanImages
         MenuFiltersScan.Enabled = True
-        _ScanRun = True
 
         T.Stop()
         Debug.Print(String.Format(My.Resources.Debug_ScanTimeTaken, T.Elapsed))
         Me.UseWaitCursor = False
 
-        Dim Handle = WindowsAPI.GetForegroundWindow()
-        If Handle = Me.Handle Then
-            MainMenuFilters.ShowDropDown()
-        Else
-            WindowsAPI.FlashWindow(Me.Handle, True, True, 5, True)
-        End If
+        ImageFiltersAlertUser()
     End Sub
 
     Private Sub DrawComboFAT(ByVal sender As Object, ByVal e As DrawItemEventArgs)
         e.DrawBackground()
 
         If e.Index >= 0 Then
-            Dim Item As String = ToolStripFatCombo.Items(e.Index)
+            Dim Item As String = _ToolStripFatCombo.Items(e.Index)
 
             Dim Brush As Brush
             Dim tBrush As Brush
@@ -315,9 +309,10 @@ Public Class MainForm
         For Each Item As ToolStripMenuItem In MenuEditFAT.DropDownItems
             RemoveHandler Item.Click, AddressOf MenuEditFAT_Click
         Next
+
         MenuEditFAT.DropDownItems.Clear()
         MenuEditFAT.Tag = Nothing
-        ToolStripFatCombo.Items.Clear()
+        _ToolStripFatCombo.Items.Clear()
 
         If CurrentImage IsNot Nothing AndAlso CurrentImage.Disk IsNot Nothing AndAlso CurrentImage.Disk.IsValidImage Then
             If FATTablesMatch Then
@@ -330,16 +325,16 @@ Public Class MainForm
                     }
                     MenuEditFAT.DropDownItems.Add(Item)
                     AddHandler Item.Click, AddressOf MenuEditFAT_Click
-                    ToolStripFatCombo.Items.Add("FAT " & Counter + 1)
+                    _ToolStripFatCombo.Items.Add("FAT " & Counter + 1)
                 Next
                 _Suppress_ToolStripFATCombo_SelectedIndexChangedEvent = True
                 If CurrentImage.ImageData Is Nothing Then
-                    ToolStripFatCombo.SelectedIndex = 0
+                    _ToolStripFatCombo.SelectedIndex = 0
                 Else
                     If CurrentImage.ImageData.FATIndex > CurrentImage.Disk.BPB.NumberOfFATs - 1 Or FATTablesMatch Then
                         CurrentImage.ImageData.FATIndex = 0
                     End If
-                    ToolStripFatCombo.SelectedIndex = CurrentImage.ImageData.FATIndex
+                    _ToolStripFatCombo.SelectedIndex = CurrentImage.ImageData.FATIndex
                 End If
                 _Suppress_ToolStripFATCombo_SelectedIndexChangedEvent = False
             End If
@@ -390,14 +385,14 @@ Public Class MainForm
         End If
         HasFilter = HasFilter Or FiltersChecked
 
-        Dim TextFilterRegex = TextFilterGetRegex()
+        Dim TextFilterRegex = _ImageFilters.TextFilterGetRegex()
         HasFilter = HasFilter Or (TextFilterRegex IsNot Nothing)
 
-        Dim OEMNameItem As ComboFilterItem = ToolStripOEMNameCombo.SelectedItem
+        Dim OEMNameItem As ComboFilterItem = _ToolStripOEMNameCombo.SelectedItem
         Dim HasOEMNameFilter = OEMNameItem IsNot Nothing AndAlso Not OEMNameItem.AllItems
         HasFilter = HasFilter Or HasOEMNameFilter
 
-        Dim DiskTypeItem As ComboFilterItem = ToolStripDiskTypeCombo.SelectedItem
+        Dim DiskTypeItem As ComboFilterItem = _ToolStripDiskTypeCombo.SelectedItem
         Dim HasDiskTypeFilter = DiskTypeItem IsNot Nothing AndAlso Not DiskTypeItem.AllItems
         HasFilter = HasFilter Or HasDiskTypeFilter
 
@@ -405,7 +400,7 @@ Public Class MainForm
             Cursor.Current = Cursors.WaitCursor
 
             If ResetSubFilters Then
-                ImageFilters.SubFiltersClear()
+                ImageFilters.SubFiltersClear(False)
             End If
 
             ImageCombo.Filtered.BeginUpdate()
@@ -527,6 +522,15 @@ Public Class MainForm
         Next
     End Sub
 
+    Private Sub ImageFiltersAlertUser()
+        Dim Handle = WindowsAPI.GetForegroundWindow()
+        If Handle = Me.Handle Then
+            MainMenuFilters.ShowDropDown()
+        Else
+            WindowsAPI.FlashWindow(Me.Handle, True, True, 5, True)
+        End If
+    End Sub
+
     Private Sub ImageFiltersUpdate(Image As DiskImageContainer)
         ImageFilters.ScanUpdate(Image)
         RefreshModifiedCount()
@@ -570,11 +574,11 @@ Public Class MainForm
         ItemScanForm.ShowDialog()
 
         ImageFilters.UpdateAllMenuItems()
-
-        RefreshModifiedCount()
-        If _ScanRun Then
+        If ImageFilters.ScanRun Then
             ImageFilters.SubFiltersPopulate()
         End If
+
+        RefreshModifiedCount()
 
         Dim UpdateCount As Integer = 0
         For Index = 0 To ImageCombo.Main.Items.Count - 1
@@ -607,7 +611,7 @@ Public Class MainForm
 
     Private Sub InitButtonState(CurrentImage As DiskImageContainer)
         Dim FATTablesMatch As Boolean = True
-        Dim PrevVisible = ToolStripFatCombo.Visible
+        Dim PrevVisible = _ToolStripFatCombo.Visible
 
         If CurrentImage IsNot Nothing AndAlso CurrentImage.Disk IsNot Nothing Then
             FATTablesMatch = IsDiskFormatXDF(CurrentImage.Disk.DiskFormat) OrElse CurrentImage.Disk.FATTables.FATsMatch
@@ -618,8 +622,8 @@ Public Class MainForm
             MenuEditFAT.Enabled = CurrentImage.Disk.IsValidImage
             MenuHexDirectory.Enabled = CurrentImage.Disk.IsValidImage
             ToolStripSeparatorFAT.Visible = Not FATTablesMatch
-            ToolStripFatCombo.Visible = Not FATTablesMatch
-            ToolStripFatCombo.Width = 60
+            _ToolStripFatCombo.Visible = Not FATTablesMatch
+            _ToolStripFatCombo.Width = 60
             MenuDiskWriteFloppyA.Enabled = _DriveAEnabled
             MenuDiskWriteFloppyB.Enabled = _DriveBEnabled
             MenuFileSaveAs.Enabled = True
@@ -632,7 +636,7 @@ Public Class MainForm
             MenuEditFAT.Enabled = False
             MenuHexDirectory.Enabled = False
             ToolStripSeparatorFAT.Visible = False
-            ToolStripFatCombo.Visible = False
+            _ToolStripFatCombo.Visible = False
             MenuDiskWriteFloppyA.Enabled = False
             MenuDiskWriteFloppyB.Enabled = False
             MenuFileSaveAs.Enabled = False
@@ -645,7 +649,7 @@ Public Class MainForm
         MenuDisplayDirectorySubMenuClear()
         FATSubMenuRefresh(CurrentImage, FATTablesMatch)
 
-        If ToolStripFatCombo.Visible <> PrevVisible Then
+        If _ToolStripFatCombo.Visible <> PrevVisible Then
             ToolStripTop.Refresh()
         End If
     End Sub
@@ -684,21 +688,21 @@ Public Class MainForm
 
     Private Sub InitToolStripTop()
         'ToolStripFatCombo
-        ToolStripFatCombo = New ToolStripComboBox With {
+        _ToolStripFatCombo = New ToolStripComboBox With {
             .DropDownStyle = ComboBoxStyle.DropDownList,
             .FlatStyle = FlatStyle.System,
             .AutoSize = False,
             .DropDownWidth = 25,
             .Size = New Drawing.Size(25, 23)
         }
-        ToolStripFatCombo.ComboBox.DrawMode = DrawMode.OwnerDrawFixed
-        AddHandler ToolStripFatCombo.ComboBox.DrawItem, AddressOf DrawComboFAT
-        AddHandler ToolStripFatCombo.SelectedIndexChanged, AddressOf ToolStripFATCombo_SelectedIndexChanged
+        _ToolStripFatCombo.ComboBox.DrawMode = DrawMode.OwnerDrawFixed
+        AddHandler _ToolStripFatCombo.ComboBox.DrawItem, AddressOf DrawComboFAT
+        AddHandler _ToolStripFatCombo.SelectedIndexChanged, AddressOf ToolStripFATCombo_SelectedIndexChanged
 
-        ToolStripTop.Items.Add(ToolStripFatCombo)
+        ToolStripTop.Items.Add(_ToolStripFatCombo)
 
         'ToolStripSearchText
-        ToolStripSearchText = New ToolStripSpringTextBox With {
+        _ToolStripSearchText = New ToolStripSpringTextBox With {
             .Alignment = ToolStripItemAlignment.Right,
             .BorderStyle = BorderStyle.FixedSingle,
             .Font = New Font("Segoe UI", 9),
@@ -708,7 +712,6 @@ Public Class MainForm
             .Overflow = ToolStripItemOverflow.Never,
             .Size = New Drawing.Size(195, 25)
         }
-        AddHandler ToolStripSearchText.TextChanged, AddressOf ToolStripSearchText_TextChanged
 
         Dim ToolStripSearchLabel = New ToolStripLabel With {
             .Text = My.Resources.Label_Search,
@@ -718,11 +721,11 @@ Public Class MainForm
             .Size = New Drawing.Size(42, 22)
         }
 
-        ToolStripTop.Items.Add(ToolStripSearchText)
+        ToolStripTop.Items.Add(_ToolStripSearchText)
         ToolStripTop.Items.Add(ToolStripSearchLabel)
 
         'ToolStripOEMNameCombo
-        ToolStripOEMNameCombo = New ToolStripComboBox With {
+        _ToolStripOEMNameCombo = New ToolStripComboBox With {
             .DropDownStyle = ComboBoxStyle.DropDownList,
             .FlatStyle = FlatStyle.System,
             .AutoSize = False,
@@ -732,7 +735,7 @@ Public Class MainForm
             .Size = New Drawing.Size(125, 25)
         }
 
-        ToolStripOEMNameLabel = New ToolStripLabel With {
+        _ToolStripOEMNameLabel = New ToolStripLabel With {
             .Text = My.Resources.BootSector_OEMName,
             .Alignment = ToolStripItemAlignment.Right,
             .Overflow = ToolStripItemOverflow.Never,
@@ -740,11 +743,11 @@ Public Class MainForm
             .Size = New Drawing.Size(68, 22)
         }
 
-        ToolStripTop.Items.Add(ToolStripOEMNameCombo)
-        ToolStripTop.Items.Add(ToolStripOEMNameLabel)
+        ToolStripTop.Items.Add(_ToolStripOEMNameCombo)
+        ToolStripTop.Items.Add(_ToolStripOEMNameLabel)
 
         'ToolStripDiskTypeCombo
-        ToolStripDiskTypeCombo = New ToolStripComboBox With {
+        _ToolStripDiskTypeCombo = New ToolStripComboBox With {
             .DropDownStyle = ComboBoxStyle.DropDownList,
             .FlatStyle = FlatStyle.System,
             .AutoSize = False,
@@ -754,7 +757,7 @@ Public Class MainForm
             .Size = New Drawing.Size(95, 25)
         }
 
-        ToolStripDiskTypeLabel = New ToolStripLabel With {
+        _ToolStripDiskTypeLabel = New ToolStripLabel With {
             .Text = My.Resources.SummaryPanel_DiskFormat,
             .Alignment = ToolStripItemAlignment.Right,
             .Overflow = ToolStripItemOverflow.Never,
@@ -762,8 +765,8 @@ Public Class MainForm
             .Size = New Drawing.Size(57, 22)
         }
 
-        ToolStripTop.Items.Add(ToolStripDiskTypeCombo)
-        ToolStripTop.Items.Add(ToolStripDiskTypeLabel)
+        ToolStripTop.Items.Add(_ToolStripDiskTypeCombo)
+        ToolStripTop.Items.Add(_ToolStripDiskTypeLabel)
     End Sub
 
     Private Sub MenuDisplayDirectorySubMenuClear()
@@ -856,13 +859,16 @@ Public Class MainForm
             Else
                 btnRetry.Visible = Not CurrentImage.ImageData.InvalidImage
             End If
+            SetCurrentFileName(CurrentImage.ImageData)
+            _SummaryPanel.Populate(CurrentImage, MD5)
+            HashPanelPopulate(CurrentImage.Disk, MD5)
         Else
-            btnRetry.Visible = True
+            btnRetry.Visible = False
+            ClearCurentFileName()
+            _SummaryPanel.Clear()
+            HashPanelPopulate(Nothing, MD5)
         End If
 
-        SetCurrentFileName(CurrentImage.ImageData)
-        _SummaryPanel.Populate(CurrentImage, MD5)
-        HashPanelPopulate(CurrentImage.Disk, MD5)
         RefreshDiskButtons(CurrentImage)
         StatusBarImageInfoUpdate(CurrentImage)
     End Sub
@@ -966,11 +972,13 @@ Public Class MainForm
         Cursor.Current = Cursors.Default
     End Sub
 
-    Private Sub RefreshCurrentState(CurrentImage As DiskImageContainer)
+    Private Sub RefreshCurrentState(FilePanel As FilePanel)
         ImageCombo.RefreshCurrentItemText()
-        RefreshDiskButtons(CurrentImage)
-        StatusBarImageInfoUpdate(CurrentImage)
-        RefreshSaveButtons(CurrentImage)
+        RefreshDiskButtons(FilePanel.CurrentImage)
+        StatusBarImageInfoUpdate(FilePanel.CurrentImage)
+        RefreshSaveButtons(FilePanel.CurrentImage)
+
+        DiskImageReloadCurrent(FilePanel, False)
     End Sub
 
     Private Sub RefreshDiskButtons(CurrentImage As DiskImageContainer)
@@ -1131,13 +1139,12 @@ Public Class MainForm
             MenuFileReload.Enabled = True
         End If
     End Sub
-
     Private Sub ResetAll()
         EmptyTempPath()
-        Me.Text = GetWindowCaption()
+        ClearCurentFileName()
         ImageFilters.FiltersApplied = False
+        ImageFilters.ScanRun = False
         _LoadedFiles.FileNames.Clear()
-        _ScanRun = False
 
         MenuOptionsCreateBackup.Checked = My.Settings.CreateBackups
         MenuOptionsCheckUpdate.Checked = My.Settings.CheckUpdateOnStartup
@@ -1147,7 +1154,6 @@ Public Class MainForm
         RefreshDiskButtons(Nothing)
         StatusBarImageInfoUpdate(Nothing)
 
-        StatusBarFileName.Visible = False
         StatusBarImagesModified.Visible = False
 
         StatusBarFileInfoClear()
@@ -1168,6 +1174,7 @@ Public Class MainForm
         InitButtonState(Nothing)
         RefreshSaveButtons(Nothing)
     End Sub
+
     Private Sub SetButtonStateRedo(Enabled As Boolean)
         MenuEditRedo.Enabled = Enabled
         ToolStripRedo.Enabled = Enabled
@@ -1202,12 +1209,12 @@ Public Class MainForm
         LabelDropMessage.Visible = Not Value
         MenuFiltersScan.Enabled = Value
         MenuFiltersScanNew.Enabled = Value
-        MenuFiltersScanNew.Visible = _ScanRun
+        MenuFiltersScanNew.Visible = ImageFilters.ScanRun
         MenuFileClose.Enabled = Value
         ToolStripClose.Enabled = MenuFileClose.Enabled
         MenuFileCloseAll.Enabled = Value
         ToolStripCloseAll.Enabled = MenuFileCloseAll.Enabled
-        ToolStripSearchText.Enabled = Value
+        _ToolStripSearchText.Enabled = Value
         MenuToolsWin9xCleanBatch.Enabled = Value
         If Value Then
             MenuToolsCompare.Enabled = ImageCombo.Main.Items.Count > 1
@@ -1242,7 +1249,6 @@ Public Class MainForm
     End Sub
 
     Private Sub StatusBarFileInfoUpdate(FilePanel As FilePanel)
-        Dim Disk = FilePanel.CurrentImage.Disk
         Dim Text As String
         Dim Total As Integer = FilePanel.Items.Count
         Dim Selected As Integer = FilePanel.SelectedItems.Count
@@ -1264,6 +1270,7 @@ Public Class MainForm
         StatusBarFileCount.Visible = True
 
         If Selected = 1 Then
+            Dim Disk = FilePanel.CurrentImage.Disk
             Dim FileData As FileData = FilePanel.FirstSelectedItem.Tag
 
             If FileData IsNot Nothing AndAlso FileData.DirectoryEntry.StartingCluster >= 2 Then
@@ -1348,34 +1355,22 @@ Public Class MainForm
     End Function
 
     Private Sub SubFiltersClearFilter()
-        _Suppress_ToolStripSearchText_TextChangedEvent = True
-        ToolStripSearchText.Text = ""
-        _Suppress_ToolStripSearchText_TextChangedEvent = False
-
         ImageFilters.SubFiltersClearFilter()
     End Sub
 
     Private Sub SubFiltersReset()
-        ToolStripSearchText.Text = ""
-        ImageFilters.SubFiltersClear()
+        ImageFilters.SubFiltersClear(True)
 
-        ToolStripOEMNameCombo.Visible = False
-        ToolStripOEMNameLabel.Visible = False
-
-        ToolStripDiskTypeCombo.Visible = False
-        ToolStripDiskTypeLabel.Visible = False
+        SubFiltersToggle(False)
     End Sub
 
-    Private Function TextFilterGetRegex() As RegularExpressions.Regex
-        Dim TextFilter As String = ToolStripSearchText.Text.Trim.ToLower
-        Dim HasTextFilter = TextFilter.Length > 0
-        If HasTextFilter Then
-            Dim Pattern As String = "(?:\W|^|_)(" & RegularExpressions.Regex.Escape(TextFilter) & ")"
-            Return New RegularExpressions.Regex(Pattern, RegularExpressions.RegexOptions.IgnoreCase)
-        Else
-            Return Nothing
-        End If
-    End Function
+    Private Sub SubFiltersToggle(Value As Boolean)
+        _ToolStripOEMNameCombo.Visible = Value
+        _ToolStripOEMNameLabel.Visible = Value
+
+        _ToolStripDiskTypeCombo.Visible = Value
+        _ToolStripDiskTypeLabel.Visible = Value
+    End Sub
 
     Private Sub ToolbarFileButtonsUpdate(MenuState As FileMenuState)
         SetMenuItemStateEnabled(ToolStripFileProperties, MenuState.FilePropertiesEnabled)
@@ -1445,12 +1440,6 @@ Public Class MainForm
         If e.CloseReason = ToolStripDropDownCloseReason.ItemClicked Then
             e.Cancel = True
         End If
-    End Sub
-
-    Private Sub Debounce_Tick(sender As Object, e As EventArgs) Handles Debounce.Tick
-        Debounce.Stop()
-
-        FiltersApply(False)
     End Sub
 
     Private Sub File_DragDrop(sender As Object, e As DragEventArgs) Handles ComboImages.DragDrop, ComboImagesFiltered.DragDrop, LabelDropMessage.DragDrop, ListViewFiles.DragDrop, ListViewSummary.DragDrop, FlowLayoutPanelHashes.DragDrop
@@ -1579,7 +1568,7 @@ Public Class MainForm
 
     Private Sub MainForm_Load(sender As Object, e As EventArgs) Handles Me.Load
         _FileVersion = GetVersionString()
-        Me.Text = GetWindowCaption()
+        ClearCurentFileName()
 
         PositionControls()
 
@@ -1595,13 +1584,10 @@ Public Class MainForm
         FilePanelMain = New FilePanel(ListViewFiles)
         PopulateLanguages()
         _LoadedFiles = New LoadedFiles
-        Debounce = New Timer With {
-            .Interval = 750
-        }
 
         HashPanelInitContextMenu()
 
-        ImageFilters = New Filters.ImageFilters(ContextMenuFilters, ToolStripOEMNameCombo, ToolStripDiskTypeCombo, App.Globals.BootstrapDB, App.Globals.TitleDB)
+        ImageFilters = New Filters.ImageFilters(ContextMenuFilters, _ToolStripOEMNameCombo, _ToolStripDiskTypeCombo, _ToolStripSearchText, App.Globals.BootstrapDB, App.Globals.TitleDB)
         _SummaryPanel = New SummaryPanel(ListViewSummary, App.Globals.TitleDB, App.Globals.BootstrapDB)
         ImageCombo = New LoadedImageList(ComboImages, ComboImagesFiltered)
 
@@ -1883,20 +1869,9 @@ Public Class MainForm
         Debug.Print("MainForm.ToolStripFATCombo_SelectedIndexChanged fired")
 
         If FilePanelMain.CurrentImage IsNot Nothing Then
-            FilePanelMain.CurrentImage.ImageData.FATIndex = ToolStripFatCombo.SelectedIndex
+            FilePanelMain.CurrentImage.ImageData.FATIndex = _ToolStripFatCombo.SelectedIndex
             DiskImageReloadCurrent(FilePanelMain, False)
         End If
-    End Sub
-
-    Private Sub ToolStripSearchText_TextChanged(sender As Object, e As EventArgs)
-        If _Suppress_ToolStripSearchText_TextChangedEvent Then
-            Exit Sub
-        End If
-
-        Debug.Print("MainForm.ToolStripSearchText_TextChanged fired")
-
-        Debounce.Stop()
-        Debounce.Start()
     End Sub
 
     Private Sub ToolStripViewFile_Click(sender As Object, e As EventArgs) Handles ToolStripViewFile.Click
