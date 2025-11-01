@@ -787,6 +787,18 @@
     </BootstrapperPackage>
   </ItemGroup>
   <ItemGroup>
+    <None Include="Resources\FolderHex.png" />
+    <None Include="Resources\BinaryFile.png" />
+    <None Include="Resources\HexFile.png" />
+    <None Include="Resources\NewFolder.png" />
+    <None Include="Resources\DeleteDocument.png" />
+    <None Include="Resources\Delete.png" />
+    <None Include="Resources\SwitchFolders.png" />
+    <None Include="Resources\History.png" />
+    <None Include="Resources\Web.png" />
+    <None Include="Resources\AboutBox.png" />
+    <None Include="Resources\NewDocument.png" />
+    <None Include="Resources\Refresh.png" />
     <None Include="Resources\Instance.png" />
     <None Include="Resources\AdjustOffset.png" />
     <None Include="Resources\AppIconLarge.png" />

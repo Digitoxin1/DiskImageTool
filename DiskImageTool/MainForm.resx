@@ -1116,7 +1116,7 @@
     <value>0, 0</value>
   </data>
   <data name="ComboImages.Size" type="System.Drawing.Size, System.Drawing">
-    <value>523, 21</value>
+    <value>507, 21</value>
   </data>
   <data name="ComboImages.TabIndex" type="System.Int32, mscorlib">
     <value>4</value>
@@ -1152,7 +1152,7 @@
     <value>NoControl</value>
   </data>
   <data name="LabelDropMessage.Location" type="System.Drawing.Point, System.Drawing">
-    <value>147, 253</value>
+    <value>139, 253</value>
   </data>
   <data name="LabelDropMessage.Size" type="System.Drawing.Size, System.Drawing">
     <value>273, 16</value>
@@ -1188,7 +1188,7 @@
     <value>0, 0</value>
   </data>
   <data name="ComboImagesFiltered.Size" type="System.Drawing.Size, System.Drawing">
-    <value>523, 21</value>
+    <value>507, 21</value>
   </data>
   <data name="ComboImagesFiltered.TabIndex" type="System.Int32, mscorlib">
     <value>3</value>
@@ -1218,7 +1218,7 @@
     <value>NoControl</value>
   </data>
   <data name="BtnResetSort.Location" type="System.Drawing.Point, System.Drawing">
-    <value>525, -1</value>
+    <value>509, -1</value>
   </data>
   <data name="BtnResetSort.Size" type="System.Drawing.Size, System.Drawing">
     <value>67, 23</value>
@@ -1449,7 +1449,7 @@
     <value>0, 27</value>
   </data>
   <data name="ListViewFiles.Size" type="System.Drawing.Size, System.Drawing">
-    <value>646, 467</value>
+    <value>630, 467</value>
   </data>
   <data name="ListViewFiles.TabIndex" type="System.Int32, mscorlib">
     <value>6</value>

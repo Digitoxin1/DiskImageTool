@@ -203,11 +203,13 @@ Partial Class MainForm
         '
         'MenuFileReload
         '
+        Me.MenuFileReload.Image = Global.DiskImageTool.My.Resources.Resources.Refresh
         Me.MenuFileReload.Name = "MenuFileReload"
         resources.ApplyResources(Me.MenuFileReload, "MenuFileReload")
         '
         'MenuFileNewImage
         '
+        Me.MenuFileNewImage.Image = Global.DiskImageTool.My.Resources.Resources.NewDocument
         Me.MenuFileNewImage.Name = "MenuFileNewImage"
         resources.ApplyResources(Me.MenuFileNewImage, "MenuFileNewImage")
         '
@@ -297,6 +299,7 @@ Partial Class MainForm
         '
         'MenuEditReplaceFile
         '
+        Me.MenuEditReplaceFile.Image = Global.DiskImageTool.My.Resources.Resources.SwitchFolders
         Me.MenuEditReplaceFile.Name = "MenuEditReplaceFile"
         resources.ApplyResources(Me.MenuEditReplaceFile, "MenuEditReplaceFile")
         '
@@ -464,16 +467,19 @@ Partial Class MainForm
         '
         'MenuHelpProjectPage
         '
+        Me.MenuHelpProjectPage.Image = Global.DiskImageTool.My.Resources.Resources.Web
         Me.MenuHelpProjectPage.Name = "MenuHelpProjectPage"
         resources.ApplyResources(Me.MenuHelpProjectPage, "MenuHelpProjectPage")
         '
         'MenuHelpUpdateCheck
         '
+        Me.MenuHelpUpdateCheck.Image = Global.DiskImageTool.My.Resources.Resources.Refresh
         Me.MenuHelpUpdateCheck.Name = "MenuHelpUpdateCheck"
         resources.ApplyResources(Me.MenuHelpUpdateCheck, "MenuHelpUpdateCheck")
         '
         'MenuHelpChangeLog
         '
+        Me.MenuHelpChangeLog.Image = Global.DiskImageTool.My.Resources.Resources.History
         Me.MenuHelpChangeLog.Name = "MenuHelpChangeLog"
         resources.ApplyResources(Me.MenuHelpChangeLog, "MenuHelpChangeLog")
         '
@@ -484,6 +490,7 @@ Partial Class MainForm
         '
         'MenuHelpAbout
         '
+        Me.MenuHelpAbout.Image = Global.DiskImageTool.My.Resources.Resources.AboutBox
         Me.MenuHelpAbout.Name = "MenuHelpAbout"
         resources.ApplyResources(Me.MenuHelpAbout, "MenuHelpAbout")
         '
@@ -768,7 +775,7 @@ Partial Class MainForm
         'ToolStripViewFile
         '
         Me.ToolStripViewFile.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image
-        Me.ToolStripViewFile.Image = Global.DiskImageTool.My.Resources.Resources.TextArea
+        Me.ToolStripViewFile.Image = Global.DiskImageTool.My.Resources.Resources.BinaryFile
         resources.ApplyResources(Me.ToolStripViewFile, "ToolStripViewFile")
         Me.ToolStripViewFile.Name = "ToolStripViewFile"
         Me.ToolStripViewFile.Overflow = System.Windows.Forms.ToolStripItemOverflow.Never

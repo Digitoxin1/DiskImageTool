@@ -641,10 +641,10 @@ Public Class FilePanel
     End Sub
 
     Private Sub InitContextMenuDirectory()
-        AddMenuItem(ContextMenuDirectory, FilePanelMenuItem.ViewDirectory, My.Resources.Menu_ViewDirectoryAlt)
+        AddMenuItem(ContextMenuDirectory, FilePanelMenuItem.ViewDirectory, My.Resources.Menu_ViewDirectoryAlt, My.Resources.FolderHex)
         AddMenuSeparator(ContextMenuDirectory)
         AddMenuItem(ContextMenuDirectory, FilePanelMenuItem.ImportFiles, My.Resources.Menu_ImportFiles, My.Resources.Import)
-        AddMenuItem(ContextMenuDirectory, FilePanelMenuItem.NewDirectory, My.Resources.Menu_NewDirectory)
+        AddMenuItem(ContextMenuDirectory, FilePanelMenuItem.NewDirectory, My.Resources.Menu_NewDirectory, My.Resources.NewFolder)
     End Sub
 
     Private Sub InitContextMenuFiles()
@@ -652,21 +652,21 @@ Public Class FilePanel
 
         AddMenuItem(ContextMenuFiles, FilePanelMenuItem.FileProperties, My.Resources.Menu_EditFileProperties, My.Resources.PropertiesFolderClosed)
         AddMenuItem(ContextMenuFiles, FilePanelMenuItem.ExportFile, My.Resources.Menu_ExportFile, My.Resources.Export)
-        AddMenuItem(ContextMenuFiles, FilePanelMenuItem.ReplaceFile, My.Resources.Menu_ReplaceFile)
+        AddMenuItem(ContextMenuFiles, FilePanelMenuItem.ReplaceFile, My.Resources.Menu_ReplaceFile, My.Resources.SwitchFolders)
         AddMenuSeparator(ContextMenuFiles)
-        AddMenuItem(ContextMenuFiles, FilePanelMenuItem.ViewDirectory, My.Resources.Menu_ViewDirectoryAlt)
+        AddMenuItem(ContextMenuFiles, FilePanelMenuItem.ViewDirectory, My.Resources.Menu_ViewDirectoryAlt, My.Resources.FolderHex)
         AddMenuSeparator(ContextMenuFiles, FilePanelMenuItem.ViewDirectorySeparator)
-        AddMenuItem(ContextMenuFiles, FilePanelMenuItem.ViewFile, My.Resources.Menu_ViewFile, My.Resources.TextArea)
+        AddMenuItem(ContextMenuFiles, FilePanelMenuItem.ViewFile, My.Resources.Menu_ViewFile, My.Resources.BinaryFile)
         AddMenuItem(ContextMenuFiles, FilePanelMenuItem.ViewFileText, My.Resources.Menu_ViewFileAsText, My.Resources.TextFile)
         AddMenuItem(ContextMenuFiles, FilePanelMenuItem.ViewCrosslinked, My.Resources.Menu_ViewCrosslinked)
         AddMenuSeparator(ContextMenuFiles)
         AddMenuItem(ContextMenuFiles, FilePanelMenuItem.ImportFiles, My.Resources.Menu_ImportFiles, My.Resources.Import)
         AddMenuItem(ContextMenuFiles, FilePanelMenuItem.ImportFilesHere, My.Resources.Menu_ImportFilesHere)
         AddMenuSeparator(ContextMenuFiles)
-        AddMenuItem(ContextMenuFiles, FilePanelMenuItem.NewDirectory, My.Resources.Menu_NewDirectory)
+        AddMenuItem(ContextMenuFiles, FilePanelMenuItem.NewDirectory, My.Resources.Menu_NewDirectory, My.Resources.NewFolder)
         AddMenuItem(ContextMenuFiles, FilePanelMenuItem.NewDirectoryHere, My.Resources.Menu_NewDirectoryHere)
         AddMenuSeparator(ContextMenuFiles)
-        AddMenuItem(ContextMenuFiles, FilePanelMenuItem.DeleteFile, My.Resources.Menu_DeleteFile)
+        AddMenuItem(ContextMenuFiles, FilePanelMenuItem.DeleteFile, My.Resources.Menu_DeleteFile, My.Resources.DeleteDocument)
         AddMenuItem(ContextMenuFiles, FilePanelMenuItem.UnDeleteFile, My.Resources.Menu_UndeleteFile)
         AddMenuItem(ContextMenuFiles, FilePanelMenuItem.FileRemove, My.Resources.Menu_RemoveFile)
 

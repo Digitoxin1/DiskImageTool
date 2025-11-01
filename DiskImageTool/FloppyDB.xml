@@ -12319,12 +12319,15 @@
 	</title>
 	<title name="Strike Fleet" publisher="Electronic Arts, Inc.">
 		<release year="1989">
-			<media media="360K" status="U">
+			<media media="360K" status="V">
 				<disk md5="FF2AC15B8C4E2C174F8DD29C3AB82920"/>
 			</media>
 			<media media="720K" status="V">
 				<disk md5="3B88D9256425C834475A89382BDEA2F8"/>
 			</media>
+      <media media="720K" status="V">
+        <disk md5="25A5F5CDF92E6867CB11955F62B7296A"/>
+      </media>
 		</release>
 	</title>
 	<title name="Strike!" publisher="Mastertronic Ltd.">
