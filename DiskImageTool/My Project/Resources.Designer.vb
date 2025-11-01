@@ -2703,6 +2703,16 @@ Namespace My.Resources
         End Property
         
         '''<summary>
+        '''  Looks up a localized resource of type System.Drawing.Bitmap.
+        '''</summary>
+        Friend ReadOnly Property Instance() As System.Drawing.Bitmap
+            Get
+                Dim obj As Object = ResourceManager.GetObject("Instance", resourceCulture)
+                Return CType(obj,System.Drawing.Bitmap)
+            End Get
+        End Property
+        
+        '''<summary>
         '''  Looks up a localized string similar to yyyy-MM-dd.
         '''</summary>
         Friend ReadOnly Property IsoDateFormat() As String

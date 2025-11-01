@@ -67,7 +67,7 @@ Public Class ImageLoadForm
         End If
     End Sub
 
-    Private Sub ProcessFile(bw As BackgroundWorker, FileName As String, Extension As String)
+    Private Sub ProcessFile(bw As BackgroundWorker, FileName As String, Extension As String, Optional InnerPath As String = Nothing)
         If Not File.Exists(FileName) Then
             Return
         End If
@@ -75,7 +75,7 @@ Public Class ImageLoadForm
         Dim Archive = IsZipArchive(FileName)
 
         If Archive IsNot Nothing Then
-            ProcessZipArchive(bw, Archive, FileName)
+            ProcessZipArchive(bw, Archive, FileName, InnerPath)
         Else
             If Not ArchiveFileExtensions.Contains(Extension) Then
                 Dim Length As Long = 0
@@ -88,6 +88,15 @@ Public Class ImageLoadForm
         End If
     End Sub
 
+    Private Function SplitFilePath(FilePath As String) As (FilePath As String, InnerPath As String)
+        Dim p = FilePath.IndexOf("|"c)
+        If p < 0 Then
+            Return (FilePath, Nothing)
+        End If
+
+        Return (FilePath.Substring(0, p), FilePath.Substring(p + 1))
+    End Function
+
     Public Function ProcessScan(bw As BackgroundWorker) As Boolean
         If _Files.Count = 0 Then
             Return True
@@ -98,10 +107,17 @@ Public Class ImageLoadForm
                 Return True
             End If
 
-            Dim FAttributes = IO.File.GetAttributes(FilePath)
+            Dim FileParts = SplitFilePath(FilePath)
+
+            Dim FAttributes As FileAttributes
+            Try
+                FAttributes = IO.File.GetAttributes(FileParts.FilePath)
+            Catch
+                Continue For
+            End Try
 
             If (FAttributes And IO.FileAttributes.Directory) > 0 Then
-                Dim DirectoryInfo As New IO.DirectoryInfo(FilePath)
+                Dim DirectoryInfo As New IO.DirectoryInfo(FileParts.FilePath)
                 Dim Files = DirectoryInfo.GetFiles("*.*", IO.SearchOption.AllDirectories)
 
                 For Each FileInfo In Files
@@ -118,8 +134,8 @@ Public Class ImageLoadForm
                     bw?.ReportProgress(1)
                 Next
             Else
-                Dim Extension = Path.GetExtension(FilePath).ToLower
-                ProcessFile(bw, FilePath, Extension)
+                Dim Extension = Path.GetExtension(FileParts.FilePath).ToLower
+                ProcessFile(bw, FileParts.FilePath, Extension, FileParts.InnerPath)
             End If
 
             bw?.ReportProgress(1)
@@ -128,15 +144,25 @@ Public Class ImageLoadForm
         Return True
     End Function
 
-    Private Sub ProcessZipArchive(bw As BackgroundWorker, Archive As ZipArchive, Filename As String)
+    Private Sub ProcessZipArchive(bw As BackgroundWorker, Archive As ZipArchive, Filename As String, Optional InnerPath As String = Nothing)
         Dim Entries As ReadOnlyCollection(Of ZipArchiveEntry) = Nothing
         Try : Entries = Archive.Entries : Catch : End Try
 
         If Entries IsNot Nothing Then
+            Dim HasFilter = Not String.IsNullOrEmpty(InnerPath)
+
             For Each Entry In Entries.OrderBy(Function(e) e.FullName)
+                If Entry.Name.Length = 0 Then
+                    Continue For
+                End If
                 Dim EntryFileExt = Path.GetExtension(Entry.Name).ToLower
                 If AllFileExtensions.Contains(EntryFileExt) Then
                     Dim FilePath = Path.Combine(Filename, Entry.FullName)
+                    If HasFilter Then
+                        If Entry.FullName <> InnerPath Then
+                            Continue For
+                        End If
+                    End If
                     If IsValidFileLength(Entry.Length, EntryFileExt) Then
                         LoadedFileAdd(bw, FilePath, Filename, ImageData.FileTypeEnum.Compressed, Entry.FullName)
                     End If

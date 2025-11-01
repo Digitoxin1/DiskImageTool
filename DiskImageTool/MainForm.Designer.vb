@@ -108,6 +108,7 @@ Partial Class MainForm
         Me.MenuOptionsDisplayTitles = New System.Windows.Forms.ToolStripMenuItem()
         Me.MenuOptionsDisplayLanguage = New System.Windows.Forms.ToolStripMenuItem()
         Me.MainMenuUpdateAvailable = New System.Windows.Forms.ToolStripMenuItem()
+        Me.MainMenuNewInstance = New System.Windows.Forms.ToolStripMenuItem()
         Me.LabelCRC32Caption = New System.Windows.Forms.Label()
         Me.LabelMD5Caption = New System.Windows.Forms.Label()
         Me.LabelSHA1Caption = New System.Windows.Forms.Label()
@@ -548,9 +549,10 @@ Partial Class MainForm
         '
         'MenuStripTop
         '
-        MenuStripTop.Items.AddRange(New System.Windows.Forms.ToolStripItem() {MainMenuFile, MainMenuEdit, Me.MainMenuFilters, MainMenuView, MainMenuTools, MainMenuDisk, Me.MainMenuReports, Me.MainMenuOptions, MainMenuHelp, Me.MainMenuUpdateAvailable})
+        MenuStripTop.Items.AddRange(New System.Windows.Forms.ToolStripItem() {MainMenuFile, MainMenuEdit, Me.MainMenuFilters, MainMenuView, MainMenuTools, MainMenuDisk, Me.MainMenuReports, Me.MainMenuOptions, MainMenuHelp, Me.MainMenuUpdateAvailable, Me.MainMenuNewInstance})
         resources.ApplyResources(MenuStripTop, "MenuStripTop")
         MenuStripTop.Name = "MenuStripTop"
+        MenuStripTop.ShowItemToolTips = True
         '
         'MainMenuFilters
         '
@@ -633,6 +635,14 @@ Partial Class MainForm
         Me.MainMenuUpdateAvailable.Margin = New System.Windows.Forms.Padding(12, 0, 0, 0)
         Me.MainMenuUpdateAvailable.Name = "MainMenuUpdateAvailable"
         resources.ApplyResources(Me.MainMenuUpdateAvailable, "MainMenuUpdateAvailable")
+        '
+        'MainMenuNewInstance
+        '
+        Me.MainMenuNewInstance.Alignment = System.Windows.Forms.ToolStripItemAlignment.Right
+        Me.MainMenuNewInstance.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image
+        Me.MainMenuNewInstance.Image = Global.DiskImageTool.My.Resources.Resources.Instance
+        Me.MainMenuNewInstance.Name = "MainMenuNewInstance"
+        resources.ApplyResources(Me.MainMenuNewInstance, "MainMenuNewInstance")
         '
         'LabelCRC32Caption
         '
@@ -1068,4 +1078,5 @@ Partial Class MainForm
     Friend WithEvents ToolStripSeparator1 As ToolStripSeparator
     Friend WithEvents MainMenuReports As ToolStripMenuItem
     Friend WithEvents MenuReportsWriteSplices As ToolStripMenuItem
+    Friend WithEvents MainMenuNewInstance As ToolStripMenuItem
 End Class

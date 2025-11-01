@@ -349,6 +349,21 @@ Public Class MainForm
         End If
     End Sub
 
+    Private Sub OpenImageInNewInstance(CurrentImage As DiskImageContainer)
+        If DiskImageCloseCurrent(CurrentImage, _LoadedFiles) Then
+            FileClose(CurrentImage.ImageData)
+            ImageCombo.RefreshPaths()
+
+            If CurrentImage.ImageData.FileType <> ImageData.FileTypeEnum.NewImage Then
+                Dim LaunchPath = CurrentImage.ImageData.SourceFile
+                If CurrentImage.ImageData.FileType = ImageData.FileTypeEnum.Compressed Then
+                    LaunchPath &= "|" & CurrentImage.ImageData.CompressedFile
+                End If
+                LaunchNewInstance(LaunchPath)
+            End If
+        End If
+    End Sub
+
     Private Sub FileClose(ImageData As ImageData)
         ImageFilters.ScanRemove(ImageData)
         RefreshModifiedCount()
@@ -511,6 +526,10 @@ Public Class MainForm
         RefreshFilterButtons(False)
 
         Cursor.Current = Cursors.Default
+    End Sub
+
+    Private Sub LaunchNewInstance(FilePath As String)
+        Process.Start(Application.ExecutablePath, """" & FilePath & """")
     End Sub
 
     Private Sub FiltersReset()
@@ -957,6 +976,7 @@ Public Class MainForm
     Private Sub RefreshDiskState(CurrentImage As DiskImageContainer)
         Dim Compare As Integer = 0
         Dim IsValidImage As Boolean = False
+        Dim NewInstanceVisible As Boolean = False
         Dim Disk As Disk = Nothing
 
         If CurrentImage IsNot Nothing Then
@@ -965,6 +985,7 @@ Public Class MainForm
                 IsValidImage = CurrentImage.Disk.IsValidImage
                 Compare = CurrentImage.Disk.CheckImageSize
             End If
+            NewInstanceVisible = CurrentImage.ImageData.FileType <> ImageData.FileTypeEnum.NewImage AndAlso ImageCombo.Main.Items.Count > 1
         End If
 
         RefreshHexMenu(Disk, IsValidImage, Compare)
@@ -972,6 +993,8 @@ Public Class MainForm
         RefreshHistoryButtons(Disk)
         RefreshSaveButtons(CurrentImage)
         StatusBarImageInfoUpdate(CurrentImage)
+
+        MainMenuNewInstance.Visible = NewInstanceVisible
     End Sub
 
     Private Sub RefreshFilterButtons(Enabled As Boolean)
@@ -1142,6 +1165,7 @@ Public Class MainForm
         SummaryClear()
 
         ImageCombo.ClearAll()
+        MainMenuNewInstance.Visible = False
 
         FilePanelMain.Reset()
         TopMenuFileButtonsRefresh(FilePanelMain.MenuState)
@@ -1573,6 +1597,7 @@ Public Class MainForm
     End Sub
 
     Private Sub MainForm_Load(sender As Object, e As EventArgs) Handles Me.Load
+        MainMenuNewInstance.ToolTipText = MainMenuNewInstance.Text
         _FileVersion = GetVersionString()
 
         PositionControls()
@@ -1877,6 +1902,10 @@ Public Class MainForm
 
     Private Sub ToolStripViewFileText_Click(sender As Object, e As EventArgs) Handles ToolStripViewFileText.Click
         FilePanelProcessEvent(FilePanelMain, FilePanel.FilePanelMenuItem.ViewFileText)
+    End Sub
+
+    Private Sub MainMenuNewInstance_Click(sender As Object, e As EventArgs) Handles MainMenuNewInstance.Click
+        OpenImageInNewInstance(FilePanelMain.CurrentImage)
     End Sub
 #End Region
 End Class

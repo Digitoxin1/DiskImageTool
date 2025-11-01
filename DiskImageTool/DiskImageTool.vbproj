@@ -787,6 +787,7 @@
     </BootstrapperPackage>
   </ItemGroup>
   <ItemGroup>
+    <None Include="Resources\Instance.png" />
     <None Include="Resources\AdjustOffset.png" />
     <None Include="Resources\AppIconLarge.png" />
     <None Include="Resources\VolumeSerialNumber.png" />
