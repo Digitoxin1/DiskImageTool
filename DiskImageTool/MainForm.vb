@@ -62,16 +62,6 @@ Public Class MainForm
         StatusBarFileName.Visible = False
     End Sub
 
-    Private Sub CompareImages()
-        Dim ImageData1 As ImageData = ImageCombo.Main.Items(0)
-        Dim ImageData2 As ImageData = ImageCombo.Main.Items(1)
-
-        Dim Content = ImageCompare.CompareImages(ImageData1, ImageData2)
-
-        Dim frmTextView = New TextViewForm(My.Resources.Caption_ImageComparison, Content, False, True)
-        frmTextView.ShowDialog()
-    End Sub
-
     Private Sub DetectFloppyDrives()
         Dim AllDrives() = IO.DriveInfo.GetDrives()
         _DriveAEnabled = False
@@ -305,6 +295,24 @@ Public Class MainForm
         e.DrawFocusRectangle()
     End Sub
 
+    Private Function FATComboAdd() As ToolStripComboBox
+        Dim Combo = New ToolStripComboBox With {
+            .DropDownStyle = ComboBoxStyle.DropDownList,
+            .FlatStyle = FlatStyle.System,
+            .AutoSize = False,
+            .DropDownWidth = 25,
+            .Size = New Drawing.Size(25, 23)
+        }
+
+        Combo.ComboBox.DrawMode = DrawMode.OwnerDrawFixed
+        AddHandler Combo.ComboBox.DrawItem, AddressOf DrawComboFAT
+        AddHandler Combo.SelectedIndexChanged, AddressOf ToolStripFATCombo_SelectedIndexChanged
+
+        ToolStripTop.Items.Add(Combo)
+
+        Return Combo
+    End Function
+
     Private Sub FATSubMenuRefresh(CurrentImage As DiskImageContainer, FATTablesMatch As Boolean)
         For Each Item As ToolStripMenuItem In MenuEditFAT.DropDownItems
             RemoveHandler Item.Click, AddressOf MenuEditFAT_Click
@@ -353,7 +361,6 @@ Public Class MainForm
             ResetAll()
         Else
             StatusBarImageCountUpdate()
-            MenuToolsCompare.Enabled = ImageCombo.Main.Items.Count > 1
         End If
     End Sub
 
@@ -370,6 +377,35 @@ Public Class MainForm
 
         ProcessFileDrop(Dialog.FileNames, True)
     End Sub
+
+    Private Function FilterComboAdd(Width As Integer, Sorted As Boolean) As ToolStripComboBox
+        Dim Combo = New ToolStripComboBox With {
+            .DropDownStyle = ComboBoxStyle.DropDownList,
+            .FlatStyle = FlatStyle.System,
+            .AutoSize = False,
+            .DropDownWidth = Width,
+            .Sorted = Sorted,
+            .Alignment = ToolStripItemAlignment.Right,
+            .Overflow = ToolStripItemOverflow.Never,
+            .Size = New Drawing.Size(Width, 25)
+        }
+        ToolStripTop.Items.Add(Combo)
+
+        Return Combo
+    End Function
+
+    Private Function FilterLabelAdd(Text As String) As ToolStripLabel
+        Dim Label = New ToolStripLabel With {
+            .Text = Text,
+            .Alignment = ToolStripItemAlignment.Right,
+            .Overflow = ToolStripItemOverflow.Never,
+            .Margin = New Padding(8, 1, 0, 2),
+            .Size = New Drawing.Size(0, 22)
+        }
+        ToolStripTop.Items.Add(Label)
+
+        Return Label
+    End Function
 
     Private Sub FiltersApply(ResetSubFilters As Boolean)
         Dim HasFilter As Boolean = False
@@ -486,6 +522,23 @@ Public Class MainForm
         MenuFiltersScan.Text = My.Resources.Caption_ScanImages
         RefreshFilterButtons(False)
     End Sub
+
+    Private Function FilterTextBoxAdd() As ToolStripSpringTextBox
+        Dim TextBox = New ToolStripSpringTextBox With {
+            .Alignment = ToolStripItemAlignment.Right,
+            .BorderStyle = BorderStyle.FixedSingle,
+            .Font = New Font("Segoe UI", 9),
+            .Margin = New Padding(1, 0, 0, 0),
+            .MaxLength = 255,
+            .MaxWidth = 195,
+            .Overflow = ToolStripItemOverflow.Never,
+            .Size = New Drawing.Size(195, 25)
+        }
+
+        ToolStripTop.Items.Add(TextBox)
+
+        Return TextBox
+    End Function
 
     Private Function GetWindowCaption() As String
         Return My.Application.Info.ProductName & " v" & _FileVersion
@@ -610,24 +663,33 @@ Public Class MainForm
     End Sub
 
     Private Sub InitButtonState(CurrentImage As DiskImageContainer)
+        Dim Disk As Disk = Nothing
         Dim FATTablesMatch As Boolean = True
+
+        If CurrentImage IsNot Nothing Then
+            Disk = CurrentImage.Disk
+        End If
+
         Dim PrevVisible = _ToolStripFatCombo.Visible
 
-        If CurrentImage IsNot Nothing AndAlso CurrentImage.Disk IsNot Nothing Then
-            FATTablesMatch = IsDiskFormatXDF(CurrentImage.Disk.DiskFormat) OrElse CurrentImage.Disk.FATTables.FATsMatch
-            MenuHexBootSector.Enabled = CurrentImage.Disk.CheckSize
-            MenuEditBootSector.Enabled = CurrentImage.Disk.CheckSize
-            MenuHexDisk.Enabled = CurrentImage.Disk.CheckSize
-            MenuHexFAT.Enabled = CurrentImage.Disk.IsValidImage
-            MenuEditFAT.Enabled = CurrentImage.Disk.IsValidImage
-            MenuHexDirectory.Enabled = CurrentImage.Disk.IsValidImage
+        If Disk IsNot Nothing Then
+            Dim IsValidImage = Disk.IsValidImage
+            Dim CheckSize = Disk.CheckSize
+            FATTablesMatch = IsDiskFormatXDF(Disk.DiskFormat) OrElse Disk.FATTables.FATsMatch
+
+            MenuHexBootSector.Enabled = CheckSize
+            MenuEditBootSector.Enabled = CheckSize
+            MenuHexDisk.Enabled = CheckSize
+            MenuHexFAT.Enabled = IsValidImage
+            MenuEditFAT.Enabled = IsValidImage
+            MenuHexDirectory.Enabled = IsValidImage
             ToolStripSeparatorFAT.Visible = Not FATTablesMatch
             _ToolStripFatCombo.Visible = Not FATTablesMatch
             _ToolStripFatCombo.Width = 60
             MenuDiskWriteFloppyA.Enabled = _DriveAEnabled
             MenuDiskWriteFloppyB.Enabled = _DriveBEnabled
-            MenuFileSaveAs.Enabled = True
-            MenuReportsWriteSplices.Enabled = CurrentImage.Disk.Image.IsBitstreamImage
+            MenuReportsWriteSplices.Enabled = Disk.Image.IsBitstreamImage
+            SetButtonStateSaveAs(True)
         Else
             MenuHexBootSector.Enabled = False
             MenuHexDisk.Enabled = False
@@ -639,15 +701,12 @@ Public Class MainForm
             _ToolStripFatCombo.Visible = False
             MenuDiskWriteFloppyA.Enabled = False
             MenuDiskWriteFloppyB.Enabled = False
-            MenuFileSaveAs.Enabled = False
             MenuReportsWriteSplices.Enabled = False
+            SetButtonStateSaveAs(False)
         End If
-        MenuToolsWin9xClean.Enabled = False
-        MenuToolsClearReservedBytes.Enabled = False
-        ToolStripSaveAs.Enabled = MenuFileSaveAs.Enabled
 
         SetButtonStateClose(CurrentImage IsNot Nothing)
-        MenuDisplayDirectorySubMenuClear()
+        RefreshDirectoryMenu(Nothing, Nothing)
         FATSubMenuRefresh(CurrentImage, FATTablesMatch)
 
         If _ToolStripFatCombo.Visible <> PrevVisible Then
@@ -680,97 +739,40 @@ Public Class MainForm
             AddHandler Item.CheckStateChanged, AddressOf MenuOptionsEnableWriteSpliceFilter_CheckStateChanged
 
             MainMenuOptions.DropDownItems.Add(Item)
-
-            'MainMenuReports.Visible = True
-        Else
-            'MainMenuReports.Visible = False
         End If
     End Sub
 
-    Private Sub InitToolStripTop()
-        'ToolStripFatCombo
-        _ToolStripFatCombo = New ToolStripComboBox With {
-            .DropDownStyle = ComboBoxStyle.DropDownList,
-            .FlatStyle = FlatStyle.System,
-            .AutoSize = False,
-            .DropDownWidth = 25,
-            .Size = New Drawing.Size(25, 23)
-        }
-        _ToolStripFatCombo.ComboBox.DrawMode = DrawMode.OwnerDrawFixed
-        AddHandler _ToolStripFatCombo.ComboBox.DrawItem, AddressOf DrawComboFAT
-        AddHandler _ToolStripFatCombo.SelectedIndexChanged, AddressOf ToolStripFATCombo_SelectedIndexChanged
+    Private Sub InitOptionsMenu()
+        MenuOptionsCreateBackup.Checked = My.Settings.CreateBackups
+        MenuOptionsCheckUpdate.Checked = My.Settings.CheckUpdateOnStartup
+        MenuOptionsDragDrop.Checked = My.Settings.DragAndDrop
+        MenuOptionsDisplayTitles.Checked = My.Settings.DisplayTitles
 
-        ToolStripTop.Items.Add(_ToolStripFatCombo)
-
-        'ToolStripSearchText
-        _ToolStripSearchText = New ToolStripSpringTextBox With {
-            .Alignment = ToolStripItemAlignment.Right,
-            .BorderStyle = BorderStyle.FixedSingle,
-            .Font = New Font("Segoe UI", 9),
-            .Margin = New Padding(1, 0, 0, 0),
-            .MaxLength = 255,
-            .MaxWidth = 195,
-            .Overflow = ToolStripItemOverflow.Never,
-            .Size = New Drawing.Size(195, 25)
-        }
-
-        Dim ToolStripSearchLabel = New ToolStripLabel With {
-            .Text = My.Resources.Label_Search,
-            .Alignment = ToolStripItemAlignment.Right,
-            .Overflow = ToolStripItemOverflow.Never,
-            .Margin = New Padding(8, 1, 0, 2),
-            .Size = New Drawing.Size(42, 22)
-        }
-
-        ToolStripTop.Items.Add(_ToolStripSearchText)
-        ToolStripTop.Items.Add(ToolStripSearchLabel)
-
-        'ToolStripOEMNameCombo
-        _ToolStripOEMNameCombo = New ToolStripComboBox With {
-            .DropDownStyle = ComboBoxStyle.DropDownList,
-            .FlatStyle = FlatStyle.System,
-            .AutoSize = False,
-            .Alignment = ToolStripItemAlignment.Right,
-            .Overflow = ToolStripItemOverflow.Never,
-            .Sorted = True,
-            .Size = New Drawing.Size(125, 25)
-        }
-
-        _ToolStripOEMNameLabel = New ToolStripLabel With {
-            .Text = My.Resources.BootSector_OEMName,
-            .Alignment = ToolStripItemAlignment.Right,
-            .Overflow = ToolStripItemOverflow.Never,
-            .Margin = New Padding(8, 1, 0, 2),
-            .Size = New Drawing.Size(68, 22)
-        }
-
-        ToolStripTop.Items.Add(_ToolStripOEMNameCombo)
-        ToolStripTop.Items.Add(_ToolStripOEMNameLabel)
-
-        'ToolStripDiskTypeCombo
-        _ToolStripDiskTypeCombo = New ToolStripComboBox With {
-            .DropDownStyle = ComboBoxStyle.DropDownList,
-            .FlatStyle = FlatStyle.System,
-            .AutoSize = False,
-            .DropDownWidth = 95,
-            .Alignment = ToolStripItemAlignment.Right,
-            .Overflow = ToolStripItemOverflow.Never,
-            .Size = New Drawing.Size(95, 25)
-        }
-
-        _ToolStripDiskTypeLabel = New ToolStripLabel With {
-            .Text = My.Resources.SummaryPanel_DiskFormat,
-            .Alignment = ToolStripItemAlignment.Right,
-            .Overflow = ToolStripItemOverflow.Never,
-            .Margin = New Padding(8, 1, 0, 2),
-            .Size = New Drawing.Size(57, 22)
-        }
-
-        ToolStripTop.Items.Add(_ToolStripDiskTypeCombo)
-        ToolStripTop.Items.Add(_ToolStripDiskTypeLabel)
+        PopulateLanguages()
     End Sub
 
-    Private Sub MenuDisplayDirectorySubMenuClear()
+    Private Sub InitToolStripTop()
+        _ToolStripFatCombo = FATComboAdd()
+
+        _ToolStripSearchText = FilterTextBoxAdd()
+        FilterLabelAdd(My.Resources.Label_Search)
+
+        _ToolStripOEMNameCombo = FilterComboAdd(125, True)
+        _ToolStripOEMNameLabel = FilterLabelAdd(My.Resources.BootSector_OEMName)
+
+        _ToolStripDiskTypeCombo = FilterComboAdd(95, False)
+        _ToolStripDiskTypeLabel = FilterLabelAdd(My.Resources.SummaryPanel_DiskFormat)
+    End Sub
+
+    Private Sub InitUpdateCheck()
+        MainMenuUpdateAvailable.Visible = False
+
+        If My.Settings.CheckUpdateOnStartup Then
+            CheckForUpdatesStartup()
+        End If
+    End Sub
+
+    Private Sub MenuHexDirectorySubMenuClear()
         For Each Item As ToolStripMenuItem In MenuHexDirectory.DropDownItems
             RemoveHandler Item.Click, AddressOf MenuHexDirectory_Click
         Next
@@ -778,7 +780,7 @@ Public Class MainForm
         MenuHexDirectory.Text = My.Resources.Menu_RootDirectory
     End Sub
 
-    Private Sub MenuDisplayDirectorySubMenuItemAdd(Path As String, Directory As IDirectory)
+    Private Sub MenuHexDirectorySubMenuItemAdd(Path As String, Directory As IDirectory)
         Dim Item As New ToolStripMenuItem With {
             .Text = Path,
             .Tag = Directory
@@ -789,19 +791,19 @@ Public Class MainForm
         AddHandler Item.Click, AddressOf MenuHexDirectory_Click
     End Sub
 
-    Private Sub MenuDisplayDirectorySubMenuPopulate(CurrentImage As DiskImageContainer, Response As DirectoryScanResponse)
-        MenuDisplayDirectorySubMenuClear()
+    Private Sub MenuHexDirectorySubMenuPopulate(Disk As Disk, Response As DirectoryScanResponse)
+        MenuHexDirectorySubMenuClear()
 
         If Response.DirectoryList.Count > 0 Then
             MenuHexDirectory.Text = My.Resources.Menu_Directory
-            MenuDisplayDirectorySubMenuItemAdd(InParens(My.Resources.Label_Root), CurrentImage.Disk.RootDirectory)
+            MenuHexDirectorySubMenuItemAdd(InParens(My.Resources.Label_Root), Disk.RootDirectory)
             MenuHexDirectory.Tag = Nothing
         Else
-            MenuHexDirectory.Tag = CurrentImage.Disk.RootDirectory
+            MenuHexDirectory.Tag = Disk.RootDirectory
         End If
 
         For Each Item In Response.DirectoryList
-            MenuDisplayDirectorySubMenuItemAdd(Item.Path, Item.Directory)
+            MenuHexDirectorySubMenuItemAdd(Item.Path, Item.Directory)
         Next
     End Sub
 
@@ -850,30 +852,6 @@ Public Class MainForm
         Next
     End Sub
 
-    Private Sub PopulateSummary(CurrentImage As DiskImageContainer)
-        Dim MD5 As String = ""
-
-        If CurrentImage IsNot Nothing Then
-            If CurrentImage.Disk IsNot Nothing Then
-                MD5 = CurrentImage.Disk.Image.GetMD5Hash
-                btnRetry.Visible = False
-            Else
-                btnRetry.Visible = Not CurrentImage.ImageData.InvalidImage
-            End If
-            SetCurrentFileName(CurrentImage.ImageData)
-            _SummaryPanel.Populate(CurrentImage, MD5)
-            HashPanelPopulate(CurrentImage.Disk, MD5)
-        Else
-            btnRetry.Visible = False
-            ClearCurentFileName()
-            _SummaryPanel.Clear()
-            HashPanelPopulate(Nothing, MD5)
-        End If
-
-        RefreshDiskButtons(CurrentImage)
-        StatusBarImageInfoUpdate(CurrentImage)
-    End Sub
-
     Private Sub PositionControls()
         ListViewSummary.Width = ListViewSummary.Parent.Width
         FlowLayoutPanelHashes.Width = FlowLayoutPanelHashes.Parent.Width
@@ -906,25 +884,8 @@ Public Class MainForm
         Me.Location = New Point(WorkingArea.Left + (WorkingArea.Width - Width) / 2, WorkingArea.Top + (WorkingArea.Height - Height) / 2)
     End Sub
 
-    Private Sub ProcessDirectoryScan(CurrentImage As DiskImageContainer, DirectoryScan As DirectoryScanResponse)
-        If DirectoryScan Is Nothing Then
-            MenuDisplayDirectorySubMenuClear()
-
-            MenuToolsWin9xClean.Enabled = False
-            MenuToolsClearReservedBytes.Enabled = False
-        Else
-            MenuDisplayDirectorySubMenuPopulate(CurrentImage, DirectoryScan)
-
-            MenuToolsWin9xClean.Enabled = DirectoryScan.HasValidCreated Or DirectoryScan.HasValidLastAccessed Or CurrentImage.Disk.BootSector.IsWin9xOEMName
-            MenuToolsClearReservedBytes.Enabled = DirectoryScan.HasNTUnknownFlags Or DirectoryScan.HasFAT32Cluster
-        End If
-    End Sub
-
     Private Sub ProcessFileDrop(File As String, NewImage As Boolean)
-        Dim Files(0) As String
-        Files(0) = File
-
-        ProcessFileDrop(Files, False, NewImage)
+        ProcessFileDrop({File}, False, NewImage)
     End Sub
 
     Private Sub ProcessFileDrop(Files() As String, ShowDialog As Boolean)
@@ -975,62 +936,42 @@ Public Class MainForm
 
     Private Sub RefreshCurrentState(FilePanel As FilePanel)
         ImageCombo.RefreshCurrentItemText()
-        RefreshDiskButtons(FilePanel.CurrentImage)
-        StatusBarImageInfoUpdate(FilePanel.CurrentImage)
-        RefreshSaveButtons(FilePanel.CurrentImage)
-
+        RefreshDiskState(FilePanel.CurrentImage)
         DiskImageReloadCurrent(FilePanel, False)
     End Sub
 
-    Private Sub RefreshDiskButtons(CurrentImage As DiskImageContainer)
-        If CurrentImage IsNot Nothing AndAlso CurrentImage.Disk IsNot Nothing AndAlso CurrentImage.Disk.IsValidImage Then
-            Dim Compare = CurrentImage.Disk.CheckImageSize
-            MenuToolsFixImageSize.Enabled = CurrentImage.Disk.Image.CanResize And Compare <> 0
-            MenuToolsFixImageSize.Text = IIf(Compare < 0, My.Resources.Menu_PadImageSize, My.Resources.Menu_TruncateImage)
-            If CurrentImage.Disk.RootDirectory.Data.HasBootSector Then
-                Dim BootSectorBytes = CurrentImage.Disk.Image.GetBytes(CurrentImage.Disk.RootDirectory.Data.BootSectorOffset, BootSector.BOOT_SECTOR_SIZE)
-                MenuToolsRestoreBootSector.Enabled = Not BootSectorBytes.CompareTo(CurrentImage.Disk.BootSector.Data)
-            Else
-                MenuToolsRestoreBootSector.Enabled = False
+    Private Sub RefreshDirectoryMenu(CurrentImage As DiskImageContainer, DirectoryScan As DirectoryScanResponse)
+        If CurrentImage Is Nothing OrElse CurrentImage.Disk Is Nothing OrElse DirectoryScan Is Nothing Then
+            MenuHexDirectorySubMenuClear()
+
+            MenuToolsWin9xClean.Enabled = False
+            MenuToolsClearReservedBytes.Enabled = False
+        Else
+            MenuHexDirectorySubMenuPopulate(CurrentImage.Disk, DirectoryScan)
+
+            MenuToolsWin9xClean.Enabled = DirectoryScan.HasValidCreated Or DirectoryScan.HasValidLastAccessed Or CurrentImage.Disk.BootSector.IsWin9xOEMName
+            MenuToolsClearReservedBytes.Enabled = DirectoryScan.HasNTUnknownFlags Or DirectoryScan.HasFAT32Cluster
+        End If
+    End Sub
+
+    Private Sub RefreshDiskState(CurrentImage As DiskImageContainer)
+        Dim Compare As Integer = 0
+        Dim IsValidImage As Boolean = False
+        Dim Disk As Disk = Nothing
+
+        If CurrentImage IsNot Nothing Then
+            Disk = CurrentImage.Disk
+            If Disk IsNot Nothing Then
+                IsValidImage = CurrentImage.Disk.IsValidImage
+                Compare = CurrentImage.Disk.CheckImageSize
             End If
-            MenuToolsRemoveBootSector.Enabled = CurrentImage.Disk.RootDirectory.Data.HasBootSector
-            MenuHexOverdumpData.Enabled = Compare > 0
-            MenuHexFreeClusters.Enabled = CurrentImage.Disk.FAT.HasFreeClusters(FAT12.FreeClusterEmum.WithData)
-            MenuHexBadSectors.Enabled = CurrentImage.Disk.FAT.BadClusters.Count > 0
-            MenuHexLostClusters.Enabled = CurrentImage.Disk.RootDirectory.FATAllocation.LostClusters.Count > 0
-
-            RefreshFixImageSubMenu(CurrentImage.Disk)
-        Else
-            MenuToolsFixImageSize.Enabled = False
-            MenuToolsFixImageSize.Text = My.Resources.Menu_TruncateImage
-            MenuToolsRestructureImage.Enabled = False
-            MenuToolsFixImageSizeSubMenu.Enabled = False
-            MenuToolsFixImageSizeSubMenu.Visible = False
-            MenuToolsRestoreBootSector.Enabled = False
-            MenuToolsRemoveBootSector.Enabled = False
-            MenuHexOverdumpData.Enabled = False
-            MenuHexRawTrackData.Enabled = False
-            MenuHexFreeClusters.Enabled = False
-            MenuHexBadSectors.Enabled = False
-            MenuHexLostClusters.Enabled = False
         End If
 
-        MenuToolsTruncateImage.Enabled = MenuToolsFixImageSize.Enabled
-
-        If CurrentImage IsNot Nothing AndAlso CurrentImage.Disk IsNot Nothing Then
-            MenuEditRevert.Enabled = CurrentImage.Disk.Image.History.Modified
-            SetButtonStateUndo(CurrentImage.Disk.Image.History.UndoEnabled)
-            SetButtonStateRedo(CurrentImage.Disk.Image.History.RedoEnabled)
-
-            RefreshRawTrackSubMenu(CurrentImage.Disk)
-            MenuToolsTrackLayout.Visible = My.Settings.Debug AndAlso CurrentImage.Disk.Image.IsBitstreamImage
-        Else
-            MenuEditRevert.Enabled = False
-            SetButtonStateUndo(False)
-            SetButtonStateRedo(False)
-            MenuRawTrackDataSubMenuClear()
-            MenuToolsTrackLayout.Visible = False
-        End If
+        RefreshHexMenu(Disk, IsValidImage, Compare)
+        RefreshToolsMenu(Disk, IsValidImage, Compare)
+        RefreshHistoryButtons(Disk)
+        RefreshSaveButtons(CurrentImage)
+        StatusBarImageInfoUpdate(CurrentImage)
     End Sub
 
     Private Sub RefreshFilterButtons(Enabled As Boolean)
@@ -1042,41 +983,31 @@ Public Class MainForm
         End If
     End Sub
 
-    Private Sub RefreshFixImageSubMenu(Disk As Disk)
-        Dim EnableSubMenu As Boolean
-        Dim EnableRestructureImage As Boolean = False
+    Private Sub RefreshHexMenu(Disk As Disk, IsValidImage As Boolean, Compare As Integer)
+        RefreshRawTrackSubMenu(Disk)
 
-        If Disk.Image.CanResize Then
-            Dim DiskFormatBySize = GetFloppyDiskFormat(Disk.Image.Length)
-
-            If Disk.DiskFormat = FloppyDiskFormat.Floppy160 And DiskFormatBySize = FloppyDiskFormat.Floppy180 Then
-                EnableRestructureImage = True
-            ElseIf Disk.DiskFormat = FloppyDiskFormat.Floppy160 And DiskFormatBySize = FloppyDiskFormat.Floppy320 Then
-                EnableRestructureImage = True
-            ElseIf Disk.DiskFormat = FloppyDiskFormat.Floppy160 And DiskFormatBySize = FloppyDiskFormat.Floppy360 Then
-                EnableRestructureImage = True
-            ElseIf Disk.DiskFormat = FloppyDiskFormat.Floppy180 And DiskFormatBySize = FloppyDiskFormat.Floppy360 Then
-                EnableRestructureImage = True
-            ElseIf Disk.DiskFormat = FloppyDiskFormat.Floppy320 And DiskFormatBySize = FloppyDiskFormat.Floppy360 Then
-                EnableRestructureImage = True
-            ElseIf Disk.DiskFormat = FloppyDiskFormat.Floppy720 And DiskFormatBySize = FloppyDiskFormat.Floppy1440 Then
-                EnableRestructureImage = True
-            End If
-        End If
-
-        EnableSubMenu = EnableRestructureImage
-
-        If EnableSubMenu Then
-            MenuToolsFixImageSize.Visible = False
-            MenuToolsFixImageSizeSubMenu.Visible = True
-            MenuToolsFixImageSizeSubMenu.Enabled = True
-            MenuToolsRestructureImage.Enabled = EnableRestructureImage
-            MenuToolsRestructureImage.Visible = EnableRestructureImage
+        If Disk IsNot Nothing AndAlso IsValidImage Then
+            MenuHexOverdumpData.Enabled = Compare > 0
+            MenuHexFreeClusters.Enabled = Disk.FAT.HasFreeClusters(FAT12.FreeClusterEmum.WithData)
+            MenuHexBadSectors.Enabled = Disk.FAT.BadClusters.Count > 0
+            MenuHexLostClusters.Enabled = Disk.RootDirectory.FATAllocation.LostClusters.Count > 0
         Else
-            MenuToolsFixImageSize.Visible = True
-            MenuToolsFixImageSizeSubMenu.Visible = False
-            MenuToolsFixImageSizeSubMenu.Enabled = False
-            MenuToolsRestructureImage.Enabled = False
+            MenuHexOverdumpData.Enabled = False
+            MenuHexFreeClusters.Enabled = False
+            MenuHexBadSectors.Enabled = False
+            MenuHexLostClusters.Enabled = False
+        End If
+    End Sub
+
+    Private Sub RefreshHistoryButtons(Disk As Disk)
+        If Disk IsNot Nothing Then
+            MenuEditRevert.Enabled = Disk.Image.History.Modified
+            SetButtonStateUndo(Disk.Image.History.UndoEnabled)
+            SetButtonStateRedo(Disk.Image.History.RedoEnabled)
+        Else
+            MenuEditRevert.Enabled = False
+            SetButtonStateUndo(False)
+            SetButtonStateRedo(False)
         End If
     End Sub
 
@@ -1086,10 +1017,12 @@ Public Class MainForm
     End Sub
 
     Private Sub RefreshRawTrackSubMenu(Disk As Disk)
-        MenuRawTrackDataSubMenuClear()
-        MenuHexRawTrackData.Enabled = False
+        Dim RawTrackDataEnabled As Boolean = False
+        Dim RawTrackDataTag As Object = -1
 
-        If Disk.Image.IsBitstreamImage Then
+        MenuRawTrackDataSubMenuClear()
+
+        If Disk IsNot Nothing AndAlso Disk.Image.IsBitstreamImage Then
             Dim TrackCount = Disk.Image.NonStandardTracks.Count + Disk.Image.AdditionalTracks.Count
             If TrackCount > 0 Then
                 Dim TrackList(TrackCount - 1) As UShort
@@ -1116,17 +1049,15 @@ Public Class MainForm
                         MenuRawTrackDataSubMenuItemAdd(Track, TrackString)
                     Next
 
-                    MenuHexRawTrackData.Enabled = True
-                    MenuHexRawTrackData.Tag = Nothing
-                Else
-                    MenuHexRawTrackData.Enabled = True
-                    MenuHexRawTrackData.Tag = -1
+                    RawTrackDataTag = Nothing
                 End If
-            Else
-                MenuHexRawTrackData.Enabled = True
-                MenuHexRawTrackData.Tag = -1
             End If
+
+            RawTrackDataEnabled = True
         End If
+
+        MenuHexRawTrackData.Enabled = RawTrackDataEnabled
+        MenuHexRawTrackData.Tag = RawTrackDataTag
     End Sub
 
     Private Sub RefreshSaveButtons(CurrentImage As DiskImageContainer)
@@ -1140,40 +1071,86 @@ Public Class MainForm
             MenuFileReload.Enabled = True
         End If
     End Sub
+
+    Private Sub RefreshToolsMenu(Disk As Disk, IsValidImage As Boolean, Compare As Integer)
+        Dim CanRestructureImage As Boolean = False
+        Dim CanResize As Boolean = False
+        Dim CanRestoreBootSector As Boolean = False
+        Dim HasBootSector As Boolean = False
+        Dim TrackLayoutVisible As Boolean
+        Dim FixImageSizeText As String = My.Resources.Menu_TruncateImage
+
+        If Disk IsNot Nothing AndAlso IsValidImage Then
+            TrackLayoutVisible = My.Settings.Debug AndAlso Disk.Image.IsBitstreamImage
+
+            CanResize = Disk.Image.CanResize
+
+            If CanResize Then
+                Dim DiskFormatBySize = GetFloppyDiskFormat(Disk.Image.Length)
+
+                If Disk.DiskFormat = FloppyDiskFormat.Floppy160 And DiskFormatBySize = FloppyDiskFormat.Floppy180 Then
+                    CanRestructureImage = True
+                ElseIf Disk.DiskFormat = FloppyDiskFormat.Floppy160 And DiskFormatBySize = FloppyDiskFormat.Floppy320 Then
+                    CanRestructureImage = True
+                ElseIf Disk.DiskFormat = FloppyDiskFormat.Floppy160 And DiskFormatBySize = FloppyDiskFormat.Floppy360 Then
+                    CanRestructureImage = True
+                ElseIf Disk.DiskFormat = FloppyDiskFormat.Floppy180 And DiskFormatBySize = FloppyDiskFormat.Floppy360 Then
+                    CanRestructureImage = True
+                ElseIf Disk.DiskFormat = FloppyDiskFormat.Floppy320 And DiskFormatBySize = FloppyDiskFormat.Floppy360 Then
+                    CanRestructureImage = True
+                ElseIf Disk.DiskFormat = FloppyDiskFormat.Floppy720 And DiskFormatBySize = FloppyDiskFormat.Floppy1440 Then
+                    CanRestructureImage = True
+                End If
+
+                FixImageSizeText = IIf(Compare < 0, My.Resources.Menu_PadImageSize, My.Resources.Menu_TruncateImage)
+            End If
+
+            HasBootSector = Disk.RootDirectory.Data.HasBootSector
+
+            If HasBootSector Then
+                Dim BootSectorBytes = Disk.Image.GetBytes(Disk.RootDirectory.Data.BootSectorOffset, BootSector.BOOT_SECTOR_SIZE)
+                CanRestoreBootSector = Not BootSectorBytes.CompareTo(Disk.BootSector.Data)
+            End If
+        End If
+
+        MenuToolsFixImageSize.Visible = Not CanRestructureImage
+        MenuToolsFixImageSize.Enabled = CanRestructureImage Or (CanResize AndAlso Compare <> 0)
+        MenuToolsFixImageSize.Text = FixImageSizeText
+
+        MenuToolsTruncateImage.Enabled = MenuToolsFixImageSize.Enabled
+
+        MenuToolsFixImageSizeSubMenu.Visible = CanRestructureImage
+        MenuToolsFixImageSizeSubMenu.Enabled = CanRestructureImage
+
+        MenuToolsRestructureImage.Enabled = CanRestructureImage
+        MenuToolsRestructureImage.Visible = CanRestructureImage
+
+        MenuToolsRemoveBootSector.Enabled = HasBootSector
+        MenuToolsRestoreBootSector.Enabled = CanRestoreBootSector
+
+        MenuToolsTrackLayout.Visible = TrackLayoutVisible
+    End Sub
+
     Private Sub ResetAll()
         EmptyTempPath()
-        ClearCurentFileName()
         ImageFilters.FiltersApplied = False
         ImageFilters.ScanRun = False
         _LoadedFiles.FileNames.Clear()
 
-        MenuOptionsCreateBackup.Checked = My.Settings.CreateBackups
-        MenuOptionsCheckUpdate.Checked = My.Settings.CheckUpdateOnStartup
-        MenuOptionsDragDrop.Checked = My.Settings.DragAndDrop
-        MenuOptionsDisplayTitles.Checked = My.Settings.DisplayTitles
+        RefreshDiskState(Nothing)
 
-        RefreshDiskButtons(Nothing)
-        StatusBarImageInfoUpdate(Nothing)
-
-        StatusBarImagesModified.Visible = False
-
-        StatusBarFileInfoClear()
-
-        SetButtonStateSaveAll(False)
-        btnRetry.Visible = False
-
-        _SummaryPanel.Clear()
-        HashPanelSetVisible(False)
+        SummaryClear()
 
         ImageCombo.ClearAll()
+
         FilePanelMain.Reset()
         TopMenuFileButtonsRefresh(FilePanelMain.MenuState)
         ToolbarFileButtonsUpdate(FilePanelMain.MenuState)
+        StatusBarFileInfoClear()
 
         SetImagesLoaded(False)
         FiltersReset()
         InitButtonState(Nothing)
-        RefreshSaveButtons(Nothing)
     End Sub
 
     Private Sub SetButtonStateClose(Enabled As Boolean)
@@ -1191,6 +1168,11 @@ Public Class MainForm
         ToolStripSaveAll.Enabled = Enabled
     End Sub
 
+    Private Sub SetButtonStateSaveAs(Enabled As Boolean)
+        MenuFileSaveAs.Enabled = Enabled
+        ToolStripSaveAs.Enabled = Enabled
+    End Sub
+
     Private Sub SetButtonStateSaveFile(Enabled As Boolean)
         MenuFileSave.Enabled = Enabled
         ToolStripSave.Enabled = Enabled
@@ -1200,6 +1182,7 @@ Public Class MainForm
         MenuEditUndo.Enabled = Enabled
         ToolStripUndo.Enabled = Enabled
     End Sub
+
     Private Sub SetCurrentFileName(ImageData As ImageData)
         Dim FileName = ImageData.FileName
 
@@ -1219,11 +1202,6 @@ Public Class MainForm
         ToolStripCloseAll.Enabled = MenuFileCloseAll.Enabled
         _ToolStripSearchText.Enabled = Value
         MenuToolsWin9xCleanBatch.Enabled = Value
-        If Value Then
-            MenuToolsCompare.Enabled = ImageCombo.Main.Items.Count > 1
-        Else
-            MenuToolsCompare.Enabled = False
-        End If
     End Sub
 
     Private Sub SetNewFilePath(ImageData As ImageData, NewFilePath As String)
@@ -1375,6 +1353,30 @@ Public Class MainForm
         _ToolStripDiskTypeLabel.Visible = Value
     End Sub
 
+    Private Sub SummaryClear()
+        btnRetry.Visible = False
+        ClearCurentFileName()
+        _SummaryPanel.Clear()
+        HashPanelPopulate(Nothing, "")
+    End Sub
+
+    Private Sub SummaryPopulate(CurrentImage As DiskImageContainer)
+        Dim MD5 As String = ""
+
+        If CurrentImage IsNot Nothing Then
+            If CurrentImage.Disk IsNot Nothing Then
+                MD5 = CurrentImage.Disk.Image.GetMD5Hash
+                btnRetry.Visible = False
+            Else
+                btnRetry.Visible = Not CurrentImage.ImageData.InvalidImage
+            End If
+            SetCurrentFileName(CurrentImage.ImageData)
+            _SummaryPanel.Populate(CurrentImage, MD5)
+            HashPanelPopulate(CurrentImage.Disk, MD5)
+        Else
+            SummaryClear()
+        End If
+    End Sub
     Private Sub ToolbarFileButtonsUpdate(MenuState As FileMenuState)
         SetMenuItemStateEnabled(ToolStripFileProperties, MenuState.FilePropertiesEnabled)
 
@@ -1463,13 +1465,13 @@ Public Class MainForm
     End Sub
 
     Private Sub FilePanel_CurrentImageChangeEnd(sender As Object, e As Boolean) Handles FilePanelMain.CurrentImageChangeEnd
-        ProcessDirectoryScan(FilePanelMain.CurrentImage, FilePanelMain.DirectoryScan)
-        PopulateSummary(FilePanelMain.CurrentImage)
+        RefreshDirectoryMenu(FilePanelMain.CurrentImage, FilePanelMain.DirectoryScan)
+        SummaryPopulate(FilePanelMain.CurrentImage)
+        RefreshDiskState(FilePanelMain.CurrentImage)
         StatusStripBottom.Refresh()
         If e Then
             ImageFiltersUpdate(FilePanelMain.CurrentImage)
         End If
-        RefreshSaveButtons(FilePanelMain.CurrentImage)
     End Sub
 
     Private Sub FilePanel_CurrentImageChangeStart(sender As Object, e As Boolean) Handles FilePanelMain.CurrentImageChangeStart
@@ -1554,6 +1556,7 @@ Public Class MainForm
     Private Sub ImageList_SelectedIndexChanged(sender As Object, e As EventArgs) Handles ImageCombo.SelectedIndexChanged
         DiskImageLoadIntoFilePanel(FilePanelMain, ImageCombo.SelectedImage, False)
     End Sub
+
     Private Sub MainForm_Closed(sender As Object, e As EventArgs) Handles Me.Closed
         EmptyTempPath()
     End Sub
@@ -1571,7 +1574,6 @@ Public Class MainForm
 
     Private Sub MainForm_Load(sender As Object, e As EventArgs) Handles Me.Load
         _FileVersion = GetVersionString()
-        ClearCurentFileName()
 
         PositionControls()
 
@@ -1580,12 +1582,7 @@ Public Class MainForm
         PositionForm()
 
         AddHandler MainMenuOptions.DropDown.Closing, AddressOf ContextMenuOptions_Closing
-        'AddHandler MenuOptionsDisplayLanguage.DropDown.Closing, AddressOf ContextMenuOptions_Closing
 
-        MainMenuUpdateAvailable.Visible = False
-        MenuToolsCompare.Visible = False
-        FilePanelMain = New FilePanel(ListViewFiles)
-        PopulateLanguages()
         _LoadedFiles = New LoadedFiles
 
         HashPanelInitContextMenu()
@@ -1593,10 +1590,11 @@ Public Class MainForm
         ImageFilters = New Filters.ImageFilters(ContextMenuFilters, _ToolStripOEMNameCombo, _ToolStripDiskTypeCombo, _ToolStripSearchText, App.Globals.BootstrapDB, App.Globals.TitleDB)
         _SummaryPanel = New SummaryPanel(ListViewSummary, App.Globals.TitleDB, App.Globals.BootstrapDB)
         ImageCombo = New LoadedImageList(ComboImages, ComboImagesFiltered)
-
-        InitDebugFeatures(My.Settings.Debug)
+        FilePanelMain = New FilePanel(ListViewFiles)
 
         DetectFloppyDrives()
+        InitOptionsMenu()
+        InitDebugFeatures(My.Settings.Debug)
         ResetAll()
 
         Dim Args = Environment.GetCommandLineArgs.Skip(1).ToArray
@@ -1605,11 +1603,8 @@ Public Class MainForm
             ProcessFileDrop(Args, True)
         End If
 
-        If My.Settings.CheckUpdateOnStartup Then
-            CheckForUpdatesStartup()
-        End If
+        InitUpdateCheck()
     End Sub
-
     Private Sub MainForm_ResizeEnd(sender As Object, e As EventArgs) Handles Me.ResizeEnd
         My.Settings.WindowWidth = Me.Width
         My.Settings.WindowHeight = Me.Height
@@ -1810,7 +1805,8 @@ Public Class MainForm
         My.Settings.DisplayTitles = MenuOptionsDisplayTitles.Checked
 
         If FilePanelMain.CurrentImage IsNot Nothing Then
-            PopulateSummary(FilePanelMain.CurrentImage)
+            SummaryPopulate(FilePanelMain.CurrentImage)
+            RefreshDiskState(FilePanelMain.CurrentImage)
         End If
     End Sub
 
@@ -1833,9 +1829,7 @@ Public Class MainForm
     Private Sub MenuToolsClearReservedBytes_Click(sender As Object, e As EventArgs) Handles MenuToolsClearReservedBytes.Click
         DiskImageProcessEvent(FilePanelMain, DiskImageMenuItem.ImageClearReservedBytes)
     End Sub
-    Private Sub MenuToolsCompare_Click(sender As Object, e As EventArgs) Handles MenuToolsCompare.Click
-        CompareImages()
-    End Sub
+
     Private Sub MenuToolsFixImageSize_Click(sender As Object, e As EventArgs) Handles MenuToolsFixImageSize.Click, MenuToolsTruncateImage.Click
         DiskImageProcessEvent(FilePanelMain, DiskImageMenuItem.ImageFixImageSize)
     End Sub

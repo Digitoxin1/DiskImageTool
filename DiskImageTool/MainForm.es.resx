@@ -129,9 +129,6 @@
   <data name="MenuFileClose.Text" xml:space="preserve">
     <value>&amp;Cerrar</value>
   </data>
-  <data name="MenuToolsCompare.Text" xml:space="preserve">
-    <value>&amp;Comparar Imágenes</value>
-  </data>
   <data name="MainMenuDisk.Text" xml:space="preserve">
     <value>&amp;Disco</value>
   </data>

@@ -198,9 +198,6 @@
   <data name="MainMenuView.Text" xml:space="preserve">
     <value>&amp;Hex</value>
   </data>
-  <data name="MenuToolsCompare.Text" xml:space="preserve">
-    <value>&amp;Abbilder vergleichen</value>
-  </data>
   <data name="MenuToolsWin9xClean.Text" xml:space="preserve">
     <value>&amp;Windows-Änderungen entfernen</value>
   </data>

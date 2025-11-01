@@ -76,7 +76,6 @@ Partial Class MainForm
         Me.MenuHexDisk = New System.Windows.Forms.ToolStripMenuItem()
         Me.MenuHexSeparatorFile = New System.Windows.Forms.ToolStripSeparator()
         Me.MenuHexFile = New System.Windows.Forms.ToolStripMenuItem()
-        Me.MenuToolsCompare = New System.Windows.Forms.ToolStripMenuItem()
         Me.MenuToolsWin9xClean = New System.Windows.Forms.ToolStripMenuItem()
         Me.MenuToolsClearReservedBytes = New System.Windows.Forms.ToolStripMenuItem()
         Me.MenuToolsFixImageSize = New System.Windows.Forms.ToolStripMenuItem()
@@ -396,14 +395,9 @@ Partial Class MainForm
         '
         'MainMenuTools
         '
-        MainMenuTools.DropDownItems.AddRange(New System.Windows.Forms.ToolStripItem() {Me.MenuToolsCompare, Me.MenuToolsWin9xClean, Me.MenuToolsClearReservedBytes, Me.MenuToolsFixImageSize, Me.MenuToolsFixImageSizeSubMenu, Me.MenuToolsRestoreBootSector, Me.MenuToolsRemoveBootSector, MenuToolsSeparator, Me.MenuToolsWin9xCleanBatch, Me.MenuToolsTrackLayout})
+        MainMenuTools.DropDownItems.AddRange(New System.Windows.Forms.ToolStripItem() {Me.MenuToolsWin9xClean, Me.MenuToolsClearReservedBytes, Me.MenuToolsFixImageSize, Me.MenuToolsFixImageSizeSubMenu, Me.MenuToolsRestoreBootSector, Me.MenuToolsRemoveBootSector, MenuToolsSeparator, Me.MenuToolsWin9xCleanBatch, Me.MenuToolsTrackLayout})
         MainMenuTools.Name = "MainMenuTools"
         resources.ApplyResources(MainMenuTools, "MainMenuTools")
-        '
-        'MenuToolsCompare
-        '
-        Me.MenuToolsCompare.Name = "MenuToolsCompare"
-        resources.ApplyResources(Me.MenuToolsCompare, "MenuToolsCompare")
         '
         'MenuToolsWin9xClean
         '
@@ -1033,7 +1027,6 @@ Partial Class MainForm
     Friend WithEvents MenuToolsRestoreBootSector As ToolStripMenuItem
     Friend WithEvents MenuToolsRemoveBootSector As ToolStripMenuItem
     Friend WithEvents MenuToolsWin9xCleanBatch As ToolStripMenuItem
-    Friend WithEvents MenuToolsCompare As ToolStripMenuItem
     Friend WithEvents MenuToolsClearReservedBytes As ToolStripMenuItem
     Friend WithEvents MenuHexLostClusters As ToolStripMenuItem
     Friend WithEvents ToolStripSeparatorFAT As ToolStripSeparator
