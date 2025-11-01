@@ -336,4 +336,7 @@
   <data name="StatusBarModified.Text" xml:space="preserve">
     <value>Modificado</value>
   </data>
+  <data name="MainMenuNewInstance.Text" xml:space="preserve">
+    <value>Abrir en una nueva instancia</value>
+  </data>
 </root>
