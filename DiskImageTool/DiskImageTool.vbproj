@@ -170,6 +170,13 @@
     <Compile Include="Filters\ImageFiltersBase.vb" />
     <Compile Include="DiskImageLib.vb" />
     <Compile Include="Globals.vb" />
+    <Compile Include="Greaseweazle\GreaseweazleConfigurationForm.Designer.vb">
+      <DependentUpon>GreaseweazleConfigurationForm.vb</DependentUpon>
+    </Compile>
+    <Compile Include="Greaseweazle\GreaseweazleConfigurationForm.vb">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Greaseweazle\GreaseweazleLib.vb" />
     <Compile Include="MenuHelp.vb" />
     <Compile Include="MenuTools.vb" />
     <Compile Include="Modules\FileExport.vb" />
@@ -719,6 +726,18 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\VolumeSerialNumberForm.resx">
       <DependentUpon>VolumeSerialNumberForm.vb</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Greaseweazle\GreaseweazleConfigurationForm.de.resx">
+      <DependentUpon>GreaseweazleConfigurationForm.vb</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Greaseweazle\GreaseweazleConfigurationForm.es.resx">
+      <DependentUpon>GreaseweazleConfigurationForm.vb</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Greaseweazle\GreaseweazleConfigurationForm.fr.resx">
+      <DependentUpon>GreaseweazleConfigurationForm.vb</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Greaseweazle\GreaseweazleConfigurationForm.resx">
+      <DependentUpon>GreaseweazleConfigurationForm.vb</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="MainForm.de.resx">
       <DependentUpon>MainForm.vb</DependentUpon>

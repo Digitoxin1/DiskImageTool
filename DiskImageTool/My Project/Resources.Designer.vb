@@ -2979,6 +2979,15 @@ Namespace My.Resources
         End Property
         
         '''<summary>
+        '''  Looks up a localized string similar to Drive {0} Type.
+        '''</summary>
+        Friend ReadOnly Property Label_DriveType() As String
+            Get
+                Return ResourceManager.GetString("Label_DriveType", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
         '''  Looks up a localized string similar to Encoding.
         '''</summary>
         Friend ReadOnly Property Label_Encoding() As String

@@ -147,6 +147,8 @@ Partial Class MainForm
         Me.LabelCRC32 = New System.Windows.Forms.Label()
         Me.LabelMD5 = New System.Windows.Forms.Label()
         Me.LabelSHA1 = New System.Windows.Forms.Label()
+        Me.ToolStripSeparator2 = New System.Windows.Forms.ToolStripSeparator()
+        Me.MenuOptionsGreaseweazle = New System.Windows.Forms.ToolStripMenuItem()
         Me.ListViewFiles = New DiskImageTool.ListViewEx()
         HashName = CType(New System.Windows.Forms.ColumnHeader(), System.Windows.Forms.ColumnHeader)
         HashValue = CType(New System.Windows.Forms.ColumnHeader(), System.Windows.Forms.ColumnHeader)
@@ -603,7 +605,7 @@ Partial Class MainForm
         '
         'MainMenuOptions
         '
-        Me.MainMenuOptions.DropDownItems.AddRange(New System.Windows.Forms.ToolStripItem() {Me.MenuOptionsCreateBackup, Me.MenuOptionsCheckUpdate, Me.MenuOptionsDragDrop, Me.MenuOptionsDisplayTitles, Me.MenuOptionsDisplayLanguage})
+        Me.MainMenuOptions.DropDownItems.AddRange(New System.Windows.Forms.ToolStripItem() {Me.MenuOptionsCreateBackup, Me.MenuOptionsCheckUpdate, Me.MenuOptionsDragDrop, Me.MenuOptionsDisplayTitles, Me.MenuOptionsDisplayLanguage, Me.ToolStripSeparator2, Me.MenuOptionsGreaseweazle})
         Me.MainMenuOptions.Name = "MainMenuOptions"
         resources.ApplyResources(Me.MainMenuOptions, "MainMenuOptions")
         '
@@ -948,6 +950,16 @@ Partial Class MainForm
         Me.LabelSHA1.Name = "LabelSHA1"
         Me.LabelSHA1.UseMnemonic = False
         '
+        'ToolStripSeparator2
+        '
+        Me.ToolStripSeparator2.Name = "ToolStripSeparator2"
+        resources.ApplyResources(Me.ToolStripSeparator2, "ToolStripSeparator2")
+        '
+        'MenuOptionsGreaseweazle
+        '
+        Me.MenuOptionsGreaseweazle.Name = "MenuOptionsGreaseweazle"
+        resources.ApplyResources(Me.MenuOptionsGreaseweazle, "MenuOptionsGreaseweazle")
+        '
         'ListViewFiles
         '
         Me.ListViewFiles.AllowDrop = True
@@ -1086,4 +1098,6 @@ Partial Class MainForm
     Friend WithEvents MainMenuReports As ToolStripMenuItem
     Friend WithEvents MenuReportsWriteSplices As ToolStripMenuItem
     Friend WithEvents MainMenuNewInstance As ToolStripMenuItem
+    Friend WithEvents ToolStripSeparator2 As ToolStripSeparator
+    Friend WithEvents MenuOptionsGreaseweazle As ToolStripMenuItem
 End Class

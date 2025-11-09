@@ -339,4 +339,7 @@
   <data name="MainMenuNewInstance.Text" xml:space="preserve">
     <value>Abrir en una nueva instancia</value>
   </data>
+  <data name="MenuOptionsGreaseweazle.Text" xml:space="preserve">
+    <value>Greaseweazle Configuración</value>
+  </data>
 </root>

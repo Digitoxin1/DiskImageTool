@@ -1907,5 +1907,12 @@ Public Class MainForm
     Private Sub MainMenuNewInstance_Click(sender As Object, e As EventArgs) Handles MainMenuNewInstance.Click
         OpenImageInNewInstance(FilePanelMain.CurrentImage)
     End Sub
+
+    Private Sub MenuOptionsGreaseweazle_Click(sender As Object, e As EventArgs) Handles MenuOptionsGreaseweazle.Click
+        MainMenuOptions.DropDown.Close()
+
+        Dim Form As New GreaseweazleConfigurationForm
+        Form.ShowDialog()
+    End Sub
 #End Region
 End Class

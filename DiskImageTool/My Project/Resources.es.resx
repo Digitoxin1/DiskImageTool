@@ -1526,4 +1526,7 @@ Nota: Este valor debe ser {1} para todos los disquetes</value>
   <data name="Dialog_OpenFileError" xml:space="preserve">
     <value>Error al abrir el archivo '{0}'.</value>
   </data>
+  <data name="Label_DriveType" xml:space="preserve">
+    <value>Tipo de unidad {0}</value>
+  </data>
 </root>

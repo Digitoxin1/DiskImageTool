@@ -173,6 +173,66 @@ Namespace My
                 Me("Language") = value
             End Set
         End Property
+        
+        <Global.System.Configuration.UserScopedSettingAttribute(),  _
+         Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
+         Global.System.Configuration.DefaultSettingValueAttribute("")>  _
+        Public Property GW_Path() As String
+            Get
+                Return CType(Me("GW_Path"),String)
+            End Get
+            Set
+                Me("GW_Path") = value
+            End Set
+        End Property
+        
+        <Global.System.Configuration.UserScopedSettingAttribute(),  _
+         Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
+         Global.System.Configuration.DefaultSettingValueAttribute("")>  _
+        Public Property GW_Interface() As String
+            Get
+                Return CType(Me("GW_Interface"),String)
+            End Get
+            Set
+                Me("GW_Interface") = value
+            End Set
+        End Property
+        
+        <Global.System.Configuration.UserScopedSettingAttribute(),  _
+         Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
+         Global.System.Configuration.DefaultSettingValueAttribute("")>  _
+        Public Property GW_DriveType0() As String
+            Get
+                Return CType(Me("GW_DriveType0"),String)
+            End Get
+            Set
+                Me("GW_DriveType0") = value
+            End Set
+        End Property
+        
+        <Global.System.Configuration.UserScopedSettingAttribute(),  _
+         Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
+         Global.System.Configuration.DefaultSettingValueAttribute("")>  _
+        Public Property GW_DriveType1() As String
+            Get
+                Return CType(Me("GW_DriveType1"),String)
+            End Get
+            Set
+                Me("GW_DriveType1") = value
+            End Set
+        End Property
+        
+        <Global.System.Configuration.UserScopedSettingAttribute(),  _
+         Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
+         Global.System.Configuration.DefaultSettingValueAttribute("")>  _
+        Public Property GW_DriveType2() As String
+            Get
+                Return CType(Me("GW_DriveType2"),String)
+            End Get
+            Set
+                Me("GW_DriveType2") = value
+            End Set
+        End Property
     End Class
 End Namespace
 

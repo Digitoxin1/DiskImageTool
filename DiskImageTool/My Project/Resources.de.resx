@@ -1526,4 +1526,7 @@ Hinweis: Diese ID wird normalerweise erzeugt, indem das aktuelle Datum und die a
   <data name="Dialog_OpenFileError" xml:space="preserve">
     <value>Fehler beim Öffnen der Datei '{0}'.</value>
   </data>
+  <data name="Label_DriveType" xml:space="preserve">
+    <value>Laufwerk {0} Typ</value>
+  </data>
 </root>
