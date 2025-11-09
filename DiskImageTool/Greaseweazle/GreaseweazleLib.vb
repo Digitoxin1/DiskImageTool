@@ -1,4 +1,6 @@
-﻿Namespace Greaseweazle
+﻿Imports System.Text
+
+Namespace Greaseweazle
     Module GreaseweazleLib
         Public Enum GreaseweazleFloppyType
             None
@@ -13,6 +15,25 @@
             IBM
             Shugart
         End Enum
+
+        Public Sub DisplayGreaseweazleInfo()
+            Dim AppPath As String = My.Settings.GW_Path
+
+            If Not IsValidGreaseweazlePath(AppPath) Then
+                DisplayInvalidApplicationPathMsg()
+                Exit Sub
+            End If
+
+            Dim Content = GetGreaseweazleInfo(AppPath)
+
+            Dim frmTextView = New TextViewForm("Greaseweazle - Info", Content, False, True, "GreaseweazleInfo.txt")
+            frmTextView.ShowDialog()
+        End Sub
+
+        Public Sub DisplayInvalidApplicationPathMsg()
+            MessageBox.Show("Application path is invalid.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error)
+        End Sub
+
         Public Function GetGreaseweazleFloppyTypeDescription(Value As GreaseweazleFloppyType) As String
             Select Case Value
                 Case GreaseweazleFloppyType.F525_DD_360K
@@ -64,6 +85,43 @@
             End Select
         End Function
 
+        Public Function GetGreaseweazleInfo(AppPath As String) As String
+            Dim psi As New ProcessStartInfo() With {
+                .FileName = AppPath,
+                .Arguments = "info",
+                .RedirectStandardOutput = True,
+                .RedirectStandardError = True,
+                .UseShellExecute = False,
+                .CreateNoWindow = True
+            }
+
+            Dim outputBuilder As New StringBuilder()
+
+            Using proc As New Process()
+                proc.StartInfo = psi
+                AddHandler proc.OutputDataReceived, Sub(sender, e)
+                                                        If e.Data IsNot Nothing Then
+                                                            SyncLock outputBuilder
+                                                                outputBuilder.AppendLine(e.Data)
+                                                            End SyncLock
+                                                        End If
+                                                    End Sub
+                AddHandler proc.ErrorDataReceived, Sub(sender, e)
+                                                       If e.Data IsNot Nothing Then
+                                                           SyncLock outputBuilder
+                                                               outputBuilder.AppendLine(e.Data)
+                                                           End SyncLock
+                                                       End If
+                                                   End Sub
+
+                proc.Start()
+                proc.BeginOutputReadLine()
+                proc.BeginErrorReadLine()
+                proc.WaitForExit()
+            End Using
+
+            Return outputBuilder.ToString
+        End Function
         Public Function GetGreaseweazleInterfaceName(Value As GreaseweazleInterface) As String
             Select Case Value
                 Case GreaseweazleInterface.Shugart
@@ -80,6 +138,28 @@
                 Case Else
                     Return GreaseweazleInterface.IBM
             End Select
+        End Function
+
+        Public Function IsExecutable(path As String) As Boolean
+            Return Not String.IsNullOrWhiteSpace(path) AndAlso
+           IO.File.Exists(path) AndAlso
+           IO.Path.GetExtension(path).Equals(".exe", StringComparison.OrdinalIgnoreCase)
+        End Function
+
+        Public Function IsValidGreaseweazlePath(Path As String) As Boolean
+            Dim IsValid As Boolean
+
+            If My.Settings.GW_Path = "" Then
+                IsValid = False
+            ElseIf Not IsExecutable(My.Settings.GW_Path) Then
+                IsValid = False
+            ElseIf Not IO.File.Exists(My.Settings.GW_Path) Then
+                IsValid = False
+            Else
+                IsValid = True
+            End If
+
+            Return IsValid
         End Function
     End Module
 End Namespace

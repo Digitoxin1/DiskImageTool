@@ -107,6 +107,8 @@ Partial Class MainForm
         Me.MenuOptionsDragDrop = New System.Windows.Forms.ToolStripMenuItem()
         Me.MenuOptionsDisplayTitles = New System.Windows.Forms.ToolStripMenuItem()
         Me.MenuOptionsDisplayLanguage = New System.Windows.Forms.ToolStripMenuItem()
+        Me.ToolStripSeparator2 = New System.Windows.Forms.ToolStripSeparator()
+        Me.MenuOptionsGreaseweazle = New System.Windows.Forms.ToolStripMenuItem()
         Me.MainMenuUpdateAvailable = New System.Windows.Forms.ToolStripMenuItem()
         Me.MainMenuNewInstance = New System.Windows.Forms.ToolStripMenuItem()
         Me.LabelCRC32Caption = New System.Windows.Forms.Label()
@@ -147,9 +149,9 @@ Partial Class MainForm
         Me.LabelCRC32 = New System.Windows.Forms.Label()
         Me.LabelMD5 = New System.Windows.Forms.Label()
         Me.LabelSHA1 = New System.Windows.Forms.Label()
-        Me.ToolStripSeparator2 = New System.Windows.Forms.ToolStripSeparator()
-        Me.MenuOptionsGreaseweazle = New System.Windows.Forms.ToolStripMenuItem()
+        Me.MainMenuGreaseweazle = New System.Windows.Forms.ToolStripMenuItem()
         Me.ListViewFiles = New DiskImageTool.ListViewEx()
+        Me.MenuGWInfo = New System.Windows.Forms.ToolStripMenuItem()
         HashName = CType(New System.Windows.Forms.ColumnHeader(), System.Windows.Forms.ColumnHeader)
         HashValue = CType(New System.Windows.Forms.ColumnHeader(), System.Windows.Forms.ColumnHeader)
         MainMenuFile = New System.Windows.Forms.ToolStripMenuItem()
@@ -558,7 +560,7 @@ Partial Class MainForm
         '
         'MenuStripTop
         '
-        MenuStripTop.Items.AddRange(New System.Windows.Forms.ToolStripItem() {MainMenuFile, MainMenuEdit, Me.MainMenuFilters, MainMenuView, MainMenuTools, MainMenuDisk, Me.MainMenuReports, Me.MainMenuOptions, MainMenuHelp, Me.MainMenuUpdateAvailable, Me.MainMenuNewInstance})
+        MenuStripTop.Items.AddRange(New System.Windows.Forms.ToolStripItem() {MainMenuFile, MainMenuEdit, Me.MainMenuFilters, MainMenuView, MainMenuTools, MainMenuDisk, Me.MainMenuGreaseweazle, Me.MainMenuReports, Me.MainMenuOptions, MainMenuHelp, Me.MainMenuUpdateAvailable, Me.MainMenuNewInstance})
         resources.ApplyResources(MenuStripTop, "MenuStripTop")
         MenuStripTop.Name = "MenuStripTop"
         MenuStripTop.ShowItemToolTips = True
@@ -637,6 +639,16 @@ Partial Class MainForm
         '
         Me.MenuOptionsDisplayLanguage.Name = "MenuOptionsDisplayLanguage"
         resources.ApplyResources(Me.MenuOptionsDisplayLanguage, "MenuOptionsDisplayLanguage")
+        '
+        'ToolStripSeparator2
+        '
+        Me.ToolStripSeparator2.Name = "ToolStripSeparator2"
+        resources.ApplyResources(Me.ToolStripSeparator2, "ToolStripSeparator2")
+        '
+        'MenuOptionsGreaseweazle
+        '
+        Me.MenuOptionsGreaseweazle.Name = "MenuOptionsGreaseweazle"
+        resources.ApplyResources(Me.MenuOptionsGreaseweazle, "MenuOptionsGreaseweazle")
         '
         'MainMenuUpdateAvailable
         '
@@ -950,15 +962,11 @@ Partial Class MainForm
         Me.LabelSHA1.Name = "LabelSHA1"
         Me.LabelSHA1.UseMnemonic = False
         '
-        'ToolStripSeparator2
+        'MainMenuGreaseweazle
         '
-        Me.ToolStripSeparator2.Name = "ToolStripSeparator2"
-        resources.ApplyResources(Me.ToolStripSeparator2, "ToolStripSeparator2")
-        '
-        'MenuOptionsGreaseweazle
-        '
-        Me.MenuOptionsGreaseweazle.Name = "MenuOptionsGreaseweazle"
-        resources.ApplyResources(Me.MenuOptionsGreaseweazle, "MenuOptionsGreaseweazle")
+        Me.MainMenuGreaseweazle.DropDownItems.AddRange(New System.Windows.Forms.ToolStripItem() {Me.MenuGWInfo})
+        Me.MainMenuGreaseweazle.Name = "MainMenuGreaseweazle"
+        resources.ApplyResources(Me.MainMenuGreaseweazle, "MainMenuGreaseweazle")
         '
         'ListViewFiles
         '
@@ -967,6 +975,11 @@ Partial Class MainForm
         Me.ListViewFiles.HideSelection = False
         Me.ListViewFiles.Name = "ListViewFiles"
         Me.ListViewFiles.UseCompatibleStateImageBehavior = False
+        '
+        'MenuGWInfo
+        '
+        Me.MenuGWInfo.Name = "MenuGWInfo"
+        resources.ApplyResources(Me.MenuGWInfo, "MenuGWInfo")
         '
         'MainForm
         '
@@ -1100,4 +1113,6 @@ Partial Class MainForm
     Friend WithEvents MainMenuNewInstance As ToolStripMenuItem
     Friend WithEvents ToolStripSeparator2 As ToolStripSeparator
     Friend WithEvents MenuOptionsGreaseweazle As ToolStripMenuItem
+    Friend WithEvents MainMenuGreaseweazle As ToolStripMenuItem
+    Friend WithEvents MenuGWInfo As ToolStripMenuItem
 End Class

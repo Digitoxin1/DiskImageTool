@@ -393,6 +393,12 @@ Public Class MainForm
         ProcessFileDrop(Dialog.FileNames, True)
     End Sub
 
+    Private Sub RefreshGreaseweazleMenu()
+        Dim Visible As Boolean = Greaseweazle.IsValidGreaseweazlePath(My.Settings.GW_Path)
+
+        MainMenuGreaseweazle.Visible = Visible
+    End Sub
+
     Private Function FilterComboAdd(Width As Integer, Sorted As Boolean) As ToolStripComboBox
         Dim Combo = New ToolStripComboBox With {
             .DropDownStyle = ComboBoxStyle.DropDownList,
@@ -1620,6 +1626,7 @@ Public Class MainForm
         DetectFloppyDrives()
         InitOptionsMenu()
         InitDebugFeatures(My.Settings.Debug)
+        RefreshGreaseweazleMenu()
         ResetAll()
 
         Dim Args = Environment.GetCommandLineArgs.Skip(1).ToArray
@@ -1913,6 +1920,12 @@ Public Class MainForm
 
         Dim Form As New GreaseweazleConfigurationForm
         Form.ShowDialog()
+
+        RefreshGreaseweazleMenu
+    End Sub
+
+    Private Sub MenuGWInfo_Click(sender As Object, e As EventArgs) Handles MenuGWInfo.Click
+        Greaseweazle.DisplayGreaseweazleInfo()
     End Sub
 #End Region
 End Class

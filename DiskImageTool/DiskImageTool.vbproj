@@ -216,6 +216,7 @@
     <Compile Include="Forms\ImportFileForm.vb">
       <SubType>Form</SubType>
     </Compile>
+    <Compile Include="Modules\FloppyGrid.vb" />
     <Compile Include="Modules\Github.vb" />
     <Compile Include="HexBox\BuiltInContextMenu.vb">
       <SubType>Component</SubType>

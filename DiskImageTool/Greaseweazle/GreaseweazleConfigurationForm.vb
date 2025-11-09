@@ -29,148 +29,98 @@ Public Class GreaseweazleConfigurationForm
             InitializeDriveType(ComboDriveType2, GetGreaseweazleFoppyTypeFromName(My.Settings.GW_DriveType2))
         End Sub
 
-        Private Sub InitializeInterfaceName(Combo As ComboBox, CurrentValue As GreaseweazleInterface)
-            Dim DriveList As New List(Of KeyValuePair(Of String, GreaseweazleInterface))
-            For Each InterfaceType As GreaseweazleInterface In [Enum].GetValues(GetType(GreaseweazleInterface))
-                DriveList.Add(New KeyValuePair(Of String, GreaseweazleInterface)(
+    Private Sub InitializeInterfaceName(Combo As ComboBox, CurrentValue As GreaseweazleInterface)
+        Dim DriveList As New List(Of KeyValuePair(Of String, GreaseweazleInterface))
+        For Each InterfaceType As GreaseweazleInterface In [Enum].GetValues(GetType(GreaseweazleInterface))
+            DriveList.Add(New KeyValuePair(Of String, GreaseweazleInterface)(
                 GetGreaseweazleInterfaceName(InterfaceType), InterfaceType)
             )
-            Next
+        Next
 
-            Combo.DisplayMember = "Key"
-            Combo.ValueMember = "Value"
-            Combo.DataSource = DriveList
-            Combo.DropDownStyle = ComboBoxStyle.DropDownList
-            Combo.SelectedValue = CurrentValue
+        Combo.DisplayMember = "Key"
+        Combo.ValueMember = "Value"
+        Combo.DataSource = DriveList
+        Combo.DropDownStyle = ComboBoxStyle.DropDownList
+        Combo.SelectedValue = CurrentValue
 
-            RefreshDriveTypes(CurrentValue)
-        End Sub
+        RefreshDriveTypes(CurrentValue)
+    End Sub
 
-        Private Function IsExecutable(path As String) As Boolean
-            Return Not String.IsNullOrWhiteSpace(path) AndAlso
-           IO.File.Exists(path) AndAlso
-           IO.Path.GetExtension(path).Equals(".exe", StringComparison.OrdinalIgnoreCase)
-        End Function
+    Private Sub RefreshDriveTypes(DriveInterface As GreaseweazleInterface)
+        If DriveInterface = GreaseweazleInterface.Shugart Then
+            LabelDriveType0.Text = String.Format(My.Resources.Label_DriveType, "0")
+            LabelDriveType1.Text = String.Format(My.Resources.Label_DriveType, "1")
+            LabelDriveType2.Text = String.Format(My.Resources.Label_DriveType, "2")
 
-        Private Sub RefreshDriveTypes(DriveInterface As GreaseweazleInterface)
-            If DriveInterface = GreaseweazleInterface.Shugart Then
-                LabelDriveType0.Text = String.Format(My.Resources.Label_DriveType, "0")
-                LabelDriveType1.Text = String.Format(My.Resources.Label_DriveType, "1")
-                LabelDriveType2.Text = String.Format(My.Resources.Label_DriveType, "2")
+            LabelDriveType2.Visible = True
+            ComboDriveType2.Visible = True
+        Else
+            LabelDriveType0.Text = String.Format(My.Resources.Label_DriveType, "A")
+            LabelDriveType1.Text = String.Format(My.Resources.Label_DriveType, "B")
 
-                LabelDriveType2.Visible = True
-                ComboDriveType2.Visible = True
-            Else
-                LabelDriveType0.Text = String.Format(My.Resources.Label_DriveType, "A")
-                LabelDriveType1.Text = String.Format(My.Resources.Label_DriveType, "B")
+            LabelDriveType2.Visible = False
+            ComboDriveType2.Visible = False
+        End If
+    End Sub
 
-                LabelDriveType2.Visible = False
-                ComboDriveType2.Visible = False
+    Private Sub RefreshInfo()
+        Dim Enabled As Boolean = IsValidGreaseweazlePath(TextBoxPath.Text)
+
+        ButtonInfo.Enabled = Enabled
+        TextBoxInfo.Enabled = Enabled
+    End Sub
+
+    Private Function ResolveShortcutTarget(lnkPath As String) As String
+        Try
+            If Not IO.Path.GetExtension(lnkPath).Equals(".lnk", StringComparison.OrdinalIgnoreCase) Then
+                Return lnkPath
             End If
-        End Sub
-
-        Private Sub RefreshInfo()
-            Dim Enabled As Boolean
-
-            If TextBoxPath.Text = "" Then
-                Enabled = False
-            ElseIf Not IsExecutable(TextBoxPath.text) Then
-                Enabled = False
-            ElseIf Not IO.File.Exists(TextBoxPath.text) Then
-                Enabled = False
-            Else
-                Enabled = True
+            Dim shell = CreateObject("WScript.Shell")
+            Dim shortcut = shell.CreateShortcut(lnkPath)
+            Dim target As String = CStr(shortcut.TargetPath)
+            If Not String.IsNullOrWhiteSpace(target) Then
+                Return target
             End If
+        Catch
+            ' ignore and fall through
+        End Try
+        Return lnkPath
+    End Function
 
-            ButtonInfo.Enabled = Enabled
-            TextBoxInfo.Enabled = Enabled
-        End Sub
 
-        Private Function ResolveShortcutTarget(lnkPath As String) As String
-            Try
-                If Not IO.Path.GetExtension(lnkPath).Equals(".lnk", StringComparison.OrdinalIgnoreCase) Then
-                    Return lnkPath
-                End If
-                Dim shell = CreateObject("WScript.Shell")
-                Dim shortcut = shell.CreateShortcut(lnkPath)
-                Dim target As String = CStr(shortcut.TargetPath)
-                If Not String.IsNullOrWhiteSpace(target) Then
-                    Return target
-                End If
-            Catch
-                ' ignore and fall through
-            End Try
-            Return lnkPath
-        End Function
+    Private Sub RunAppAndCaptureOutput(appPath As String, arguments As String)
+        If String.IsNullOrWhiteSpace(appPath) OrElse Not IO.File.Exists(appPath) Then
+            DisplayInvalidApplicationPathMsg()
+            Exit Sub
+        End If
 
-        Private Sub RunAppAndCaptureOutput(appPath As String, arguments As String)
-            If String.IsNullOrWhiteSpace(appPath) OrElse Not IO.File.Exists(appPath) Then
-                MessageBox.Show("Application path is invalid.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error)
-                Exit Sub
-            End If
+        Dim Content = GetGreaseweazleInfo(appPath)
 
-            Dim psi As New ProcessStartInfo() With {
-        .FileName = appPath,
-        .Arguments = arguments,
-        .RedirectStandardOutput = True,
-        .RedirectStandardError = True,
-        .UseShellExecute = False,
-        .CreateNoWindow = True
-    }
-
-            Dim outputBuilder As New StringBuilder()
-
-            Using proc As New Process()
-                proc.StartInfo = psi
-                AddHandler proc.OutputDataReceived, Sub(sender, e)
-                                                        If e.Data IsNot Nothing Then
-                                                            SyncLock outputBuilder
-                                                                outputBuilder.AppendLine(e.Data)
-                                                            End SyncLock
-                                                        End If
-                                                    End Sub
-                AddHandler proc.ErrorDataReceived, Sub(sender, e)
-                                                       If e.Data IsNot Nothing Then
-                                                           SyncLock outputBuilder
-                                                               outputBuilder.AppendLine(e.Data)
-                                                           End SyncLock
-                                                       End If
-                                                   End Sub
-
-                proc.Start()
-                proc.BeginOutputReadLine()
-                proc.BeginErrorReadLine()
-                proc.WaitForExit()
-
-                ' update the UI safely (on main thread)
-                TextBoxInfo.Invoke(Sub()
-                                       TextBoxInfo.Text = outputBuilder.ToString().Trim()
-                                   End Sub)
-            End Using
-        End Sub
-
-        Private Sub SetExePath(path As String)
-            TextBoxPath.Text = path
-            ToolTip1.SetToolTip(TextBoxPath, path)
-            RefreshInfo()
-        End Sub
+        TextBoxInfo.Text = Content
+    End Sub
+    Private Sub SetExePath(path As String)
+        TextBoxPath.Text = path
+        ToolTip1.SetToolTip(TextBoxPath, path)
+        RefreshInfo()
+    End Sub
 #Region "Events"
-        Private Sub BtnUpdate_Click(sender As Object, e As EventArgs) Handles BtnUpdate.Click
-            If IO.File.Exists(TextBoxPath.Text) Then
-                My.Settings.GW_Path = TextBoxPath.Text
-            End If
-            My.Settings.GW_Interface = GetGreaseweazleInterfaceName(ComboInterface.SelectedValue)
-            My.Settings.GW_DriveType0 = GetGreaseweazleFloppyTypeName(ComboDriveType0.SelectedValue)
-            My.Settings.GW_DriveType1 = GetGreaseweazleFloppyTypeName(ComboDriveType1.SelectedValue)
+    Private Sub BtnUpdate_Click(sender As Object, e As EventArgs) Handles BtnUpdate.Click
+        If TextBoxPath.Text = "" OrElse IO.File.Exists(TextBoxPath.Text) Then
+            My.Settings.GW_Path = TextBoxPath.Text
+        End If
 
-            If DirectCast(ComboInterface.SelectedValue, GreaseweazleInterface) = GreaseweazleInterface.Shugart Then
-                My.Settings.GW_DriveType2 = GetGreaseweazleFloppyTypeName(ComboDriveType2.SelectedValue)
-            Else
-                My.Settings.GW_DriveType2 = ""
-            End If
-        End Sub
+        My.Settings.GW_Interface = GetGreaseweazleInterfaceName(ComboInterface.SelectedValue)
+        My.Settings.GW_DriveType0 = GetGreaseweazleFloppyTypeName(ComboDriveType0.SelectedValue)
+        My.Settings.GW_DriveType1 = GetGreaseweazleFloppyTypeName(ComboDriveType1.SelectedValue)
 
-        Private Sub ButtonBrowse_Click(sender As Object, e As EventArgs) Handles ButtonBrowse.Click
+        If DirectCast(ComboInterface.SelectedValue, GreaseweazleInterface) = GreaseweazleInterface.Shugart Then
+            My.Settings.GW_DriveType2 = GetGreaseweazleFloppyTypeName(ComboDriveType2.SelectedValue)
+        Else
+            My.Settings.GW_DriveType2 = ""
+        End If
+    End Sub
+
+    Private Sub ButtonBrowse_Click(sender As Object, e As EventArgs) Handles ButtonBrowse.Click
             Using ofd As New OpenFileDialog()
                 ofd.Title = "Select a Greaseweazle executable"
                 ofd.Filter = "Executable files (*.exe)|*.exe"

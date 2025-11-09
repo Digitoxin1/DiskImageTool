@@ -12,12 +12,14 @@ Public Class FloppyAccessForm
     Private _DoFormat As Boolean
     Private _DoVerify As Boolean
     Private _EndProcess As Boolean = False
+    Private _FileName As String = ""
     Private _LastStatus As TrackStatus
+    Private _LoadedFileNames As New Dictionary(Of String, ImageData)
     Private _SectorData As SectorData = Nothing
     Private _SectorError As Boolean = False
     Private _TotalBadSectors As UInteger = 0
-    Private _LoadedFileNames As New Dictionary(Of String, ImageData)
-    Private _FileName As String = ""
+    Private _TS0 As TableLayoutPanel
+    Private _TS1 As TableLayoutPanel
 
     Public Enum FloppyAccessType
         Read
@@ -38,13 +40,6 @@ Public Class FloppyAccessForm
         InitializeComponent()
 
         ' Add any initialization after the InitializeComponent() call
-        TableSide0.GetType() _
-            .GetProperty("DoubleBuffered", System.Reflection.BindingFlags.Instance Or System.Reflection.BindingFlags.NonPublic) _
-            .SetValue(TableSide0, True, Nothing)
-        TableSide1.GetType() _
-            .GetProperty("DoubleBuffered", System.Reflection.BindingFlags.Instance Or System.Reflection.BindingFlags.NonPublic) _
-            .SetValue(TableSide1, True, Nothing)
-
         _AccessType = AccessType
         _FloppyDrive = FloppyDrive
         _BPB = BPB
@@ -53,6 +48,7 @@ Public Class FloppyAccessForm
 
         Me.Text = StatusTypeString & " " & String.Format(My.Resources.Label_Floppy, GetFloppyDiskFormatName(_BPB, False))
         StatusType.Text = StatusTypeString
+        StatusBadSectors.Text = ""
 
         btnAbort.Text = My.Resources.Label_Abort
 
@@ -113,19 +109,8 @@ Public Class FloppyAccessForm
         End Get
     End Property
 
-    Private Function AddLabel(Text As String, BackColor As Color) As Label
-        Dim objLabel As New Label With {
-            .BorderStyle = BorderStyle.None,
-            .Margin = New Padding(0),
-            .TextAlign = ContentAlignment.MiddleCenter,
-            .UseMnemonic = False,
-            .AutoSize = False,
-            .Anchor = AnchorStyles.Top Or AnchorStyles.Left Or AnchorStyles.Right Or AnchorStyles.Bottom,
-            .BackColor = BackColor,
-            .Text = Text
-        }
-
-        Return objLabel
+    Public Function SectorToBytes(Sector As UInteger) As UInteger
+        Return Sector * BYTES_PER_SECTOR
     End Function
 
     Private Sub ClearFlags()
@@ -403,6 +388,7 @@ Public Class FloppyAccessForm
                 Return ""
         End Select
     End Function
+
     Private Function HandleError() As Boolean
         Dim Track = _BPB.SectorToTrack(_SectorData.SectorStart)
         Dim Side = _BPB.SectorToSide(_SectorData.SectorStart)
@@ -450,45 +436,15 @@ Public Class FloppyAccessForm
     End Function
 
     Private Sub InitTables()
-        Dim objLabel As Label
         Dim Tracks = _BPB.SectorToTrack(_BPB.SectorCount)
-        Dim TrackColor As Color
 
-        For Col = 1 To 10
-            objLabel = AddLabel(Col - 1, SystemColors.Control)
-            TableSide0Outer.Controls.Add(objLabel, Col, 0)
+        _TS0 = FloppyGridInit(TableSide0, "Side 0", Tracks)
 
-            objLabel = AddLabel(Col - 1, SystemColors.Control)
-            TableSide1Outer.Controls.Add(objLabel, Col, 0)
-        Next
-        For Row = 1 To 8
-            objLabel = AddLabel(Row - 1, SystemColors.Control)
-            TableSide0Outer.Controls.Add(objLabel, 0, Row)
-
-            objLabel = AddLabel(Row - 1, SystemColors.Control)
-            TableSide1Outer.Controls.Add(objLabel, 0, Row)
-        Next
-        For Row = 0 To TableSide0.RowCount - 1
-            For Col = 0 To TableSide0.ColumnCount - 1
-                Dim CurrentTrack As UShort = Row * 10 + Col
-
-                If CurrentTrack < Tracks Then
-                    TrackColor = Color.White
-                Else
-                    TrackColor = Color.LightGray
-                End If
-                objLabel = AddLabel("", TrackColor)
-                TableSide0.Controls.Add(objLabel, Col, Row)
-
-                If CurrentTrack < Tracks And _BPB.NumberOfHeads > 1 Then
-                    TrackColor = Color.White
-                Else
-                    TrackColor = Color.LightGray
-                End If
-                objLabel = AddLabel("", TrackColor)
-                TableSide1.Controls.Add(objLabel, Col, Row)
-            Next
-        Next
+        Dim TrackCount As UShort = 0
+        If _BPB.NumberOfHeads > 1 Then
+            TrackCount = Tracks
+        End If
+        _TS1 = FloppyGridInit(TableSide1, "Side 1", TrackCount)
     End Sub
     Private Sub ReadSectorsBySector(DiskBuffer() As Byte, SectorData As SectorData)
         Dim BufferSize = BYTES_PER_SECTOR
@@ -527,11 +483,6 @@ Public Class FloppyAccessForm
 
         Return Buffer
     End Function
-
-    Public Function SectorToBytes(Sector As UInteger) As UInteger
-        Return Sector * BYTES_PER_SECTOR
-    End Function
-
     Private Sub WriteSectorsBySector(DiskBuffer() As Byte, SectorData As SectorData)
         Dim BufferSize = BYTES_PER_SECTOR
         Dim Buffer(BufferSize - 1) As Byte
@@ -586,27 +537,26 @@ Public Class FloppyAccessForm
         Dim Table As TableLayoutPanel
 
         If Side = 0 Then
-            Table = TableSide0
+            Table = _TS0
         ElseIf Side = 1 Then
-            Table = TableSide1
+            Table = _TS1
         Else
             Table = Nothing
         End If
 
         If Table IsNot Nothing Then
-            Dim Row As Integer = Track \ 10
-            Dim Col As Integer = Track Mod 10
-            Dim objLabel As Label = Table.GetControlFromPosition(Col, Row)
             Dim StatusText = GetStatusText(TrackInfo.Status)
             If StatusText <> "" Then
                 StatusType.Text = StatusText
             End If
-            objLabel.BackColor = GetStatusColor(TrackInfo.Status)
+
+            Dim Text As String = ""
+            Dim BackColor = GetStatusColor(TrackInfo.Status)
             If TrackInfo.BadSectors > 0 Then
-                objLabel.Text = TrackInfo.BadSectors
-            Else
-                objLabel.Text = ""
+                Text = TrackInfo.BadSectors
             End If
+
+            FloppyGridSetLabel(Table, Track, Text, BackColor)
         End If
 
         StatusTrack.Text = My.Resources.Label_Track & " " & Track
@@ -663,7 +613,6 @@ Public Class FloppyAccessForm
             End If
         End If
     End Sub
-
 
 #End Region
 

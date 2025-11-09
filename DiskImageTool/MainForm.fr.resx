@@ -342,4 +342,7 @@
   <data name="MenuOptionsGreaseweazle.Text" xml:space="preserve">
     <value>Greaseweazle Configuration</value>
   </data>
+  <data name="MenuGWInfo.Text" xml:space="preserve">
+    <value>&amp;Infos</value>
+  </data>
 </root>
