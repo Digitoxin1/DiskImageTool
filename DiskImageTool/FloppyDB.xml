@@ -10928,7 +10928,7 @@
 		</release>
 	</title>
 	<title name="SimCity Classic" publisher="Maxis Software, Inc.">
-		<release year="1993-08" version="2.00" media="720K" status="V" region="Europe" publisher="The Hit Squad">
+		<release year="1993-08" version="2.00" media="720K" status="V" region="USA, Europe" publisher="Maxis Software, Inc., The Hit Squad">
 			<disk md5="638656711089321275923553D557512B" disk="1"/>
 			<disk md5="7239D90DE8838E603B8F24B11F06B74C" disk="2"/>
 		</release>
