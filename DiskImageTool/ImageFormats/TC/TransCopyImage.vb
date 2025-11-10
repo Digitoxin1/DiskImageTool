@@ -121,9 +121,7 @@ Namespace ImageFormats
                 Dim TransCopyTrack As TransCopyTrack
 
                 Try
-                    If IO.File.Exists(FilePath) Then
-                        IO.File.Delete(FilePath)
-                    End If
+                    DeleteFileIfExists(FilePath)
 
                     Using fs As IO.FileStream = IO.File.OpenWrite(FilePath)
                         '0x0000     byte[2]     Magic Number

@@ -1529,4 +1529,40 @@ Remarque : cette valeur doit être {1} pour toutes les disquettes</value>
   <data name="Label_DriveType" xml:space="preserve">
     <value>Type de lecteur {0}</value>
   </data>
+  <data name="Dialog_InvalidSCPFile" xml:space="preserve">
+    <value>Le fichier ne semble pas être une image .scp valide de SuperCard Pro.</value>
+  </data>
+  <data name="Dialog_InvalidKryofluxFile" xml:space="preserve">
+    <value>Le fichier ne semble pas faire partie d’un ensemble brut KryoFlux valide.</value>
+  </data>
+  <data name="Greaseweazle_SelectExecutable" xml:space="preserve">
+    <value>Sélectionnez un exécutable Greaseweazle</value>
+  </data>
+  <data name="Dialog_PleaseSelect" xml:space="preserve">
+    <value>Veuillez sélectionner un fichier {0}.</value>
+  </data>
+  <data name="Dialog_InvalidSelection" xml:space="preserve">
+    <value>Sélection non valide</value>
+  </data>
+  <data name="Label_Process" xml:space="preserve">
+    <value>Traiter</value>
+  </data>
+  <data name="Caption_ImportFluxImage" xml:space="preserve">
+    <value>Importer l’image de flux</value>
+  </data>
+  <data name="Label_Info" xml:space="preserve">
+    <value>Infos</value>
+  </data>
+  <data name="Dialog_TempPathError" xml:space="preserve">
+    <value>Une erreur s’est produite lors de l’initialisation du chemin temporaire.</value>
+  </data>
+  <data name="Dialog_InvalidApplicationPath" xml:space="preserve">
+    <value>Le chemin de l’application n’est pas valide.</value>
+  </data>
+  <data name="Label_Bandwidth" xml:space="preserve">
+    <value>Bande passante</value>
+  </data>
+  <data name="Dialog_InvalidFileType" xml:space="preserve">
+    <value>Type de fichier non valide</value>
+  </data>
 </root>

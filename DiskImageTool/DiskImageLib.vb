@@ -385,25 +385,27 @@ Module DiskImageLib
             InitialDirectory = IO.Path.GetDirectoryName(FilePath)
         End If
 
-        Dim Dialog = New SaveFileDialog With {
-            .InitialDirectory = InitialDirectory,
-            .FileName = IO.Path.GetFileName(FilePath),
-            .Filter = FileFilter.Filter,
-            .FilterIndex = FileFilter.FilterIndex,
-            .DefaultExt = FileExt
-        }
+        Using Dialog As New SaveFileDialog With {
+                .InitialDirectory = InitialDirectory,
+                .FileName = IO.Path.GetFileName(FilePath),
+                .Filter = FileFilter.Filter,
+                .FilterIndex = FileFilter.FilterIndex,
+                .DefaultExt = FileExt
+            }
 
-        AddHandler Dialog.FileOk, Sub(sender As Object, e As CancelEventArgs)
-                                      If Dialog.FileName <> FilePath AndAlso LoadedFiles.FileNames.ContainsKey(Dialog.FileName) Then
-                                          Dim Msg = String.Format(My.Resources.Dialog_FileCurrentlyOpen, IO.Path.GetFileName(Dialog.FileName), Environment.NewLine, Application.ProductName)
-                                          MsgBox(Msg, MsgBoxStyle.Exclamation, My.Resources.Caption_SaveAs)
-                                          e.Cancel = True
-                                      End If
-                                  End Sub
+            AddHandler Dialog.FileOk,
+                Sub(sender As Object, e As CancelEventArgs)
+                    If Dialog.FileName <> FilePath AndAlso LoadedFiles.FileNames.ContainsKey(Dialog.FileName) Then
+                        Dim Msg = String.Format(My.Resources.Dialog_FileCurrentlyOpen, IO.Path.GetFileName(Dialog.FileName), Environment.NewLine, Application.ProductName)
+                        MsgBox(Msg, MsgBoxStyle.Exclamation, My.Resources.Caption_SaveAs)
+                        e.Cancel = True
+                    End If
+                End Sub
 
-        If Dialog.ShowDialog = DialogResult.OK Then
-            NewFilePath = Dialog.FileName
-        End If
+            If Dialog.ShowDialog = DialogResult.OK Then
+                NewFilePath = Dialog.FileName
+            End If
+        End Using
 
         Return NewFilePath
     End Function
@@ -689,14 +691,16 @@ Module DiskImageLib
 
             FileNames = frmFileDrop.FileNames
         Else
-            Dim Dialog = New OpenFileDialog With {
-               .Multiselect = Multiselect
-           }
-            If Dialog.ShowDialog <> DialogResult.OK Then
-                Return False
-            End If
+            Using Dialog As New OpenFileDialog With {
+                   .Multiselect = Multiselect
+               }
 
-            FileNames = Dialog.FileNames
+                If Dialog.ShowDialog <> DialogResult.OK Then
+                    Return False
+                End If
+
+                FileNames = Dialog.FileNames
+            End Using
         End If
 
         Dim ImportFilesForm As New ImportFileForm(ParentDirectory, FileNames)
@@ -769,14 +773,18 @@ Module DiskImageLib
     End Sub
 
     Private Function ImageReplaceFile(DirectoryEntry As DirectoryEntry) As Boolean
-        Dim Dialog = New OpenFileDialog
+        Dim FileName As String
+
+        Using Dialog As New OpenFileDialog
+            If Dialog.ShowDialog <> DialogResult.OK Then
+                Return False
+            End If
+
+            FileName = Dialog.FileName
+        End Using
+
         Dim FormResult As ReplaceFileForm.ReplaceFileFormResult
-
-        If Dialog.ShowDialog <> DialogResult.OK Then
-            Return False
-        End If
-
-        Dim FileInfo As New IO.FileInfo(Dialog.FileName)
+        Dim FileInfo As New IO.FileInfo(FileName)
 
         Dim AvailableSpace = DirectoryEntry.Disk.FAT.GetFreeSpace() + DirectoryEntry.GetSizeOnDisk
 
@@ -799,9 +807,9 @@ Module DiskImageLib
         Dim Result As Boolean = False
         Dim FreeClusters = DirectoryEntry.Disk.FAT.GetFreeClusters(FAT12.FreeClusterEmum.WithoutData)
 
-        Result = DirectoryEntry.UpdateFile(Dialog.FileName, FormResult.FileSize, FormResult.FillChar, FreeClusters)
+        Result = DirectoryEntry.UpdateFile(FileName, FormResult.FileSize, FormResult.FillChar, FreeClusters)
         If Not Result Then
-            Result = DirectoryEntry.UpdateFile(Dialog.FileName, FormResult.FileSize, FormResult.FillChar)
+            Result = DirectoryEntry.UpdateFile(FileName, FormResult.FileSize, FormResult.FillChar)
         End If
 
         If Result Then

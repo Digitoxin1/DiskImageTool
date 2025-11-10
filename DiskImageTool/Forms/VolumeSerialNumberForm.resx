@@ -349,7 +349,7 @@
     <value>True</value>
   </metadata>
   <data name="FlowLayoutPanelButtons.Anchor" type="System.Windows.Forms.AnchorStyles, System.Windows.Forms">
-    <value>Top</value>
+    <value>Bottom, Right</value>
   </data>
   <data name="FlowLayoutPanelButtons.AutoSize" type="System.Boolean, mscorlib">
     <value>True</value>
@@ -364,7 +364,10 @@
     <value>GrowAndShrink</value>
   </data>
   <data name="BtnOK.Location" type="System.Drawing.Point, System.Drawing">
-    <value>3, 3</value>
+    <value>0, 0</value>
+  </data>
+  <data name="BtnOK.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
+    <value>0, 0, 4, 0</value>
   </data>
   <data name="BtnOK.Size" type="System.Drawing.Size, System.Drawing">
     <value>90, 23</value>
@@ -394,7 +397,10 @@
     <value>GrowAndShrink</value>
   </data>
   <data name="BtnCancel.Location" type="System.Drawing.Point, System.Drawing">
-    <value>99, 3</value>
+    <value>98, 0</value>
+  </data>
+  <data name="BtnCancel.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
+    <value>4, 0, 0, 0</value>
   </data>
   <data name="BtnCancel.Size" type="System.Drawing.Size, System.Drawing">
     <value>90, 23</value>
@@ -418,10 +424,13 @@
     <value>1</value>
   </data>
   <data name="FlowLayoutPanelButtons.Location" type="System.Drawing.Point, System.Drawing">
-    <value>45, 48</value>
+    <value>91, 54</value>
+  </data>
+  <data name="FlowLayoutPanelButtons.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
+    <value>0, 9, 3, 0</value>
   </data>
   <data name="FlowLayoutPanelButtons.Size" type="System.Drawing.Size, System.Drawing">
-    <value>192, 29</value>
+    <value>188, 23</value>
   </data>
   <data name="FlowLayoutPanelButtons.TabIndex" type="System.Int32, mscorlib">
     <value>1</value>
@@ -457,7 +466,7 @@
     <value>21, 21</value>
   </data>
   <data name="FlowLayoutPanelMain.Size" type="System.Drawing.Size, System.Drawing">
-    <value>282, 80</value>
+    <value>282, 77</value>
   </data>
   <data name="FlowLayoutPanelMain.TabIndex" type="System.Int32, mscorlib">
     <value>0</value>
@@ -493,7 +502,7 @@
     <value>362, 145</value>
   </data>
   <data name="$this.Padding" type="System.Windows.Forms.Padding, System.Windows.Forms">
-    <value>18, 18, 18, 18</value>
+    <value>18, 18, 18, 12</value>
   </data>
   <data name="$this.StartPosition" type="System.Windows.Forms.FormStartPosition, System.Windows.Forms">
     <value>CenterParent</value>

@@ -46,6 +46,8 @@ Partial Class MainForm
         Dim ToolStripSeparator9 As System.Windows.Forms.ToolStripSeparator
         Dim MainMenuDisk As System.Windows.Forms.ToolStripMenuItem
         Dim MenuStripTop As System.Windows.Forms.MenuStrip
+        Dim ToolStripSeparator4 As System.Windows.Forms.ToolStripSeparator
+        Dim ToolStripSeparator3 As System.Windows.Forms.ToolStripSeparator
         Me.MenuFileOpen = New System.Windows.Forms.ToolStripMenuItem()
         Me.MenuFileReload = New System.Windows.Forms.ToolStripMenuItem()
         Me.MenuFileNewImage = New System.Windows.Forms.ToolStripMenuItem()
@@ -99,6 +101,15 @@ Partial Class MainForm
         Me.MenuFiltersScanNew = New System.Windows.Forms.ToolStripMenuItem()
         Me.MenuFiltersScan = New System.Windows.Forms.ToolStripMenuItem()
         Me.MenuFiltersClear = New System.Windows.Forms.ToolStripMenuItem()
+        Me.MenuGreaseweazleFormat = New System.Windows.Forms.ToolStripMenuItem()
+        Me.MenuGreaseweazleRead = New System.Windows.Forms.ToolStripMenuItem()
+        Me.MenuGreaseweazleWrite = New System.Windows.Forms.ToolStripMenuItem()
+        Me.MenuGreaseweazleErase = New System.Windows.Forms.ToolStripMenuItem()
+        Me.ToolStripSeparator5 = New System.Windows.Forms.ToolStripSeparator()
+        Me.MenuGreaseweazleImport = New System.Windows.Forms.ToolStripMenuItem()
+        Me.MenuGreaseweazleClean = New System.Windows.Forms.ToolStripMenuItem()
+        Me.MenuGreaseweazleInfo = New System.Windows.Forms.ToolStripMenuItem()
+        Me.MenuGreaseweazleBandwidth = New System.Windows.Forms.ToolStripMenuItem()
         Me.MainMenuReports = New System.Windows.Forms.ToolStripMenuItem()
         Me.MenuReportsWriteSplices = New System.Windows.Forms.ToolStripMenuItem()
         Me.MainMenuOptions = New System.Windows.Forms.ToolStripMenuItem()
@@ -149,9 +160,7 @@ Partial Class MainForm
         Me.LabelCRC32 = New System.Windows.Forms.Label()
         Me.LabelMD5 = New System.Windows.Forms.Label()
         Me.LabelSHA1 = New System.Windows.Forms.Label()
-        Me.MainMenuGreaseweazle = New System.Windows.Forms.ToolStripMenuItem()
         Me.ListViewFiles = New DiskImageTool.ListViewEx()
-        Me.MenuGWInfo = New System.Windows.Forms.ToolStripMenuItem()
         HashName = CType(New System.Windows.Forms.ColumnHeader(), System.Windows.Forms.ColumnHeader)
         HashValue = CType(New System.Windows.Forms.ColumnHeader(), System.Windows.Forms.ColumnHeader)
         MainMenuFile = New System.Windows.Forms.ToolStripMenuItem()
@@ -174,6 +183,8 @@ Partial Class MainForm
         ToolStripSeparator9 = New System.Windows.Forms.ToolStripSeparator()
         MainMenuDisk = New System.Windows.Forms.ToolStripMenuItem()
         MenuStripTop = New System.Windows.Forms.MenuStrip()
+        ToolStripSeparator4 = New System.Windows.Forms.ToolStripSeparator()
+        ToolStripSeparator3 = New System.Windows.Forms.ToolStripSeparator()
         MenuStripTop.SuspendLayout()
         Me.ContextMenuFilters.SuspendLayout()
         Me.ToolStripTop.SuspendLayout()
@@ -560,7 +571,7 @@ Partial Class MainForm
         '
         'MenuStripTop
         '
-        MenuStripTop.Items.AddRange(New System.Windows.Forms.ToolStripItem() {MainMenuFile, MainMenuEdit, Me.MainMenuFilters, MainMenuView, MainMenuTools, MainMenuDisk, Me.MainMenuGreaseweazle, Me.MainMenuReports, Me.MainMenuOptions, MainMenuHelp, Me.MainMenuUpdateAvailable, Me.MainMenuNewInstance})
+        MenuStripTop.Items.AddRange(New System.Windows.Forms.ToolStripItem() {MainMenuFile, MainMenuEdit, Me.MainMenuFilters, MainMenuView, MainMenuTools, MainMenuDisk, Me.MenuGreaseweazleFormat, Me.MainMenuReports, Me.MainMenuOptions, MainMenuHelp, Me.MainMenuUpdateAvailable, Me.MainMenuNewInstance})
         resources.ApplyResources(MenuStripTop, "MenuStripTop")
         MenuStripTop.Name = "MenuStripTop"
         MenuStripTop.ShowItemToolTips = True
@@ -593,6 +604,62 @@ Partial Class MainForm
         '
         Me.MenuFiltersClear.Name = "MenuFiltersClear"
         resources.ApplyResources(Me.MenuFiltersClear, "MenuFiltersClear")
+        '
+        'MenuGreaseweazleFormat
+        '
+        Me.MenuGreaseweazleFormat.DropDownItems.AddRange(New System.Windows.Forms.ToolStripItem() {Me.MenuGreaseweazleRead, Me.MenuGreaseweazleWrite, Me.MenuGreaseweazleErase, Me.ToolStripSeparator5, Me.MenuGreaseweazleImport, ToolStripSeparator4, Me.MenuGreaseweazleClean, ToolStripSeparator3, Me.MenuGreaseweazleInfo, Me.MenuGreaseweazleBandwidth})
+        Me.MenuGreaseweazleFormat.Name = "MenuGreaseweazleFormat"
+        resources.ApplyResources(Me.MenuGreaseweazleFormat, "MenuGreaseweazleFormat")
+        '
+        'MenuGreaseweazleRead
+        '
+        Me.MenuGreaseweazleRead.Name = "MenuGreaseweazleRead"
+        resources.ApplyResources(Me.MenuGreaseweazleRead, "MenuGreaseweazleRead")
+        '
+        'MenuGreaseweazleWrite
+        '
+        Me.MenuGreaseweazleWrite.Name = "MenuGreaseweazleWrite"
+        resources.ApplyResources(Me.MenuGreaseweazleWrite, "MenuGreaseweazleWrite")
+        '
+        'MenuGreaseweazleErase
+        '
+        Me.MenuGreaseweazleErase.Name = "MenuGreaseweazleErase"
+        resources.ApplyResources(Me.MenuGreaseweazleErase, "MenuGreaseweazleErase")
+        '
+        'ToolStripSeparator5
+        '
+        Me.ToolStripSeparator5.Name = "ToolStripSeparator5"
+        resources.ApplyResources(Me.ToolStripSeparator5, "ToolStripSeparator5")
+        '
+        'MenuGreaseweazleImport
+        '
+        Me.MenuGreaseweazleImport.Name = "MenuGreaseweazleImport"
+        resources.ApplyResources(Me.MenuGreaseweazleImport, "MenuGreaseweazleImport")
+        '
+        'ToolStripSeparator4
+        '
+        ToolStripSeparator4.Name = "ToolStripSeparator4"
+        resources.ApplyResources(ToolStripSeparator4, "ToolStripSeparator4")
+        '
+        'MenuGreaseweazleClean
+        '
+        Me.MenuGreaseweazleClean.Name = "MenuGreaseweazleClean"
+        resources.ApplyResources(Me.MenuGreaseweazleClean, "MenuGreaseweazleClean")
+        '
+        'ToolStripSeparator3
+        '
+        ToolStripSeparator3.Name = "ToolStripSeparator3"
+        resources.ApplyResources(ToolStripSeparator3, "ToolStripSeparator3")
+        '
+        'MenuGreaseweazleInfo
+        '
+        Me.MenuGreaseweazleInfo.Name = "MenuGreaseweazleInfo"
+        resources.ApplyResources(Me.MenuGreaseweazleInfo, "MenuGreaseweazleInfo")
+        '
+        'MenuGreaseweazleBandwidth
+        '
+        Me.MenuGreaseweazleBandwidth.Name = "MenuGreaseweazleBandwidth"
+        resources.ApplyResources(Me.MenuGreaseweazleBandwidth, "MenuGreaseweazleBandwidth")
         '
         'MainMenuReports
         '
@@ -962,12 +1029,6 @@ Partial Class MainForm
         Me.LabelSHA1.Name = "LabelSHA1"
         Me.LabelSHA1.UseMnemonic = False
         '
-        'MainMenuGreaseweazle
-        '
-        Me.MainMenuGreaseweazle.DropDownItems.AddRange(New System.Windows.Forms.ToolStripItem() {Me.MenuGWInfo})
-        Me.MainMenuGreaseweazle.Name = "MainMenuGreaseweazle"
-        resources.ApplyResources(Me.MainMenuGreaseweazle, "MainMenuGreaseweazle")
-        '
         'ListViewFiles
         '
         Me.ListViewFiles.AllowDrop = True
@@ -975,11 +1036,6 @@ Partial Class MainForm
         Me.ListViewFiles.HideSelection = False
         Me.ListViewFiles.Name = "ListViewFiles"
         Me.ListViewFiles.UseCompatibleStateImageBehavior = False
-        '
-        'MenuGWInfo
-        '
-        Me.MenuGWInfo.Name = "MenuGWInfo"
-        resources.ApplyResources(Me.MenuGWInfo, "MenuGWInfo")
         '
         'MainForm
         '
@@ -1113,6 +1169,13 @@ Partial Class MainForm
     Friend WithEvents MainMenuNewInstance As ToolStripMenuItem
     Friend WithEvents ToolStripSeparator2 As ToolStripSeparator
     Friend WithEvents MenuOptionsGreaseweazle As ToolStripMenuItem
-    Friend WithEvents MainMenuGreaseweazle As ToolStripMenuItem
-    Friend WithEvents MenuGWInfo As ToolStripMenuItem
+    Friend WithEvents MenuGreaseweazleFormat As ToolStripMenuItem
+    Friend WithEvents MenuGreaseweazleInfo As ToolStripMenuItem
+    Friend WithEvents MenuGreaseweazleRead As ToolStripMenuItem
+    Friend WithEvents MenuGreaseweazleWrite As ToolStripMenuItem
+    Friend WithEvents MenuGreaseweazleErase As ToolStripMenuItem
+    Friend WithEvents MenuGreaseweazleClean As ToolStripMenuItem
+    Friend WithEvents MenuGreaseweazleBandwidth As ToolStripMenuItem
+    Friend WithEvents ToolStripSeparator5 As ToolStripSeparator
+    Friend WithEvents MenuGreaseweazleImport As ToolStripMenuItem
 End Class

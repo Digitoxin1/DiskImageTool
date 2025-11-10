@@ -245,7 +245,7 @@ Public Class MainForm
         End If
 
         Dim ItemScanForm As New ItemScanForm(Me, ImageCombo.Main.Items, CurrentImage, NewOnly, ScanType.ScanTypeFilters)
-        ItemScanForm.ShowDialog()
+        ItemScanForm.ShowDialog(Me)
 
         MenuFiltersScanNew.Visible = ItemScanForm.ItemsRemaining > 0
 
@@ -349,21 +349,6 @@ Public Class MainForm
         End If
     End Sub
 
-    Private Sub OpenImageInNewInstance(CurrentImage As DiskImageContainer)
-        If DiskImageCloseCurrent(CurrentImage, _LoadedFiles) Then
-            FileClose(CurrentImage.ImageData)
-            ImageCombo.RefreshPaths()
-
-            If CurrentImage.ImageData.FileType <> ImageData.FileTypeEnum.NewImage Then
-                Dim LaunchPath = CurrentImage.ImageData.SourceFile
-                If CurrentImage.ImageData.FileType = ImageData.FileTypeEnum.Compressed Then
-                    LaunchPath &= "|" & CurrentImage.ImageData.CompressedFile
-                End If
-                LaunchNewInstance(LaunchPath)
-            End If
-        End If
-    End Sub
-
     Private Sub FileClose(ImageData As ImageData)
         ImageFilters.ScanRemove(ImageData)
         RefreshModifiedCount()
@@ -381,22 +366,21 @@ Public Class MainForm
 
     Private Sub FilesOpen()
         Dim FileFilter = GetLoadDialogFilters()
+        Dim FileNames As String() = Nothing
 
-        Dim Dialog = New OpenFileDialog With {
-            .Filter = FileFilter,
-            .Multiselect = True
-        }
-        If Dialog.ShowDialog <> DialogResult.OK Then
-            Exit Sub
-        End If
+        Using Dialog As New OpenFileDialog With {
+                .Filter = FileFilter,
+                .Multiselect = True
+            }
 
-        ProcessFileDrop(Dialog.FileNames, True)
-    End Sub
+            If Dialog.ShowDialog <> DialogResult.OK Then
+                Exit Sub
+            End If
 
-    Private Sub RefreshGreaseweazleMenu()
-        Dim Visible As Boolean = Greaseweazle.IsValidGreaseweazlePath(My.Settings.GW_Path)
+            FileNames = Dialog.FileNames
+        End Using
 
-        MainMenuGreaseweazle.Visible = Visible
+        ProcessFileDrop(FileNames, True)
     End Sub
 
     Private Function FilterComboAdd(Width As Integer, Sorted As Boolean) As ToolStripComboBox
@@ -534,10 +518,6 @@ Public Class MainForm
         Cursor.Current = Cursors.Default
     End Sub
 
-    Private Sub LaunchNewInstance(FilePath As String)
-        Process.Start(Application.ExecutablePath, """" & FilePath & """")
-    End Sub
-
     Private Sub FiltersReset()
         ImageFilters.Reset()
         SubFiltersReset()
@@ -568,6 +548,36 @@ Public Class MainForm
     Private Function GetWindowCaption() As String
         Return My.Application.Info.ProductName & " v" & _FileVersion
     End Function
+
+    Private Sub GreaseweazleImportImage()
+        Dim FileName As String = Greaseweazle.OpenFluxImage(Me)
+
+        GreaseweazleImportImage(FileName)
+    End Sub
+
+    Private Sub GreaseweazleImportImage(FileName As String)
+        If FileName <> "" Then
+            Dim OutputFile = Greaseweazle.ImportFluxImage(FileName, Me)
+            If Not String.IsNullOrEmpty(OutputFile) Then
+                ProcessFileDrop(OutputFile, True)
+                RefreshModifiedCount()
+            End If
+        End If
+    End Sub
+
+    Private Sub HandleDragDrop(Files() As String)
+        If Files.Length = 1 Then
+            Dim CanProcessFlux = Greaseweazle.IsValidGreaseweazlePath(My.Settings.GW_Path)
+            If CanProcessFlux Then
+                Dim Result = ProcessFileDropFlux(Files(0))
+                If Result Then
+                    Exit Sub
+                End If
+            End If
+        End If
+
+        ProcessFileDrop(Files, True)
+    End Sub
 
     Private Sub HashPanelInitContextMenu()
         HashPanelContextMenu = New ContextMenuStrip With {
@@ -617,7 +627,7 @@ Public Class MainForm
 
     Private Sub ImageNew()
         Dim frmImageCreationForm As New ImageCreationForm()
-        frmImageCreationForm.ShowDialog()
+        frmImageCreationForm.ShowDialog(Me)
 
         Dim Data = frmImageCreationForm.Data
 
@@ -649,7 +659,7 @@ Public Class MainForm
         Dim T = Stopwatch.StartNew
 
         Dim ItemScanForm As New ItemScanForm(Me, ImageCombo.Main.Items, FilePanel.CurrentImage, False, ScanType.ScanTypeWin9xClean)
-        ItemScanForm.ShowDialog()
+        ItemScanForm.ShowDialog(Me)
 
         ImageFilters.UpdateAllMenuItems()
         If ImageFilters.ScanRun Then
@@ -797,6 +807,10 @@ Public Class MainForm
         End If
     End Sub
 
+    Private Sub LaunchNewInstance(FilePath As String)
+        Process.Start(Application.ExecutablePath, """" & FilePath & """")
+    End Sub
+
     Private Sub MenuHexDirectorySubMenuClear()
         For Each Item As ToolStripMenuItem In MenuHexDirectory.DropDownItems
             RemoveHandler Item.Click, AddressOf MenuHexDirectory_Click
@@ -860,6 +874,21 @@ Public Class MainForm
        }
         MenuHexRawTrackData.DropDownItems.Add(Item)
         AddHandler Item.Click, AddressOf MenuHexRawTrackData_Click
+    End Sub
+
+    Private Sub OpenImageInNewInstance(CurrentImage As DiskImageContainer)
+        If DiskImageCloseCurrent(CurrentImage, _LoadedFiles) Then
+            FileClose(CurrentImage.ImageData)
+            ImageCombo.RefreshPaths()
+
+            If CurrentImage.ImageData.FileType <> ImageData.FileTypeEnum.NewImage Then
+                Dim LaunchPath = CurrentImage.ImageData.SourceFile
+                If CurrentImage.ImageData.FileType = ImageData.FileTypeEnum.Compressed Then
+                    LaunchPath &= "|" & CurrentImage.ImageData.CompressedFile
+                End If
+                LaunchNewInstance(LaunchPath)
+            End If
+        End If
     End Sub
 
     Private Sub PopulateLanguages()
@@ -959,6 +988,32 @@ Public Class MainForm
         Cursor.Current = Cursors.Default
     End Sub
 
+    Private Function ProcessFileDropFlux(FilePath As String) As Boolean
+        Dim IsFluxIamge As Boolean = False
+
+        If IO.File.Exists(FilePath) Then
+            If IO.Path.GetExtension(FilePath).ToLower = ".scp" Then
+                IsFluxIamge = True
+            ElseIf IO.Path.GetExtension(FilePath).ToLower = ".raw" Then
+                Dim Response = Greaseweazle.GetTrackCountRaw(FilePath)
+                If Response.Result Then
+                    IsFluxIamge = True
+                End If
+            End If
+        ElseIf IO.Directory.Exists(FilePath) Then
+            Dim RawFile = Greaseweazle.GetFirstRawFile(FilePath)
+            If Not String.IsNullOrEmpty(RawFile) Then
+                FilePath = RawFile
+                IsFluxIamge = True
+            End If
+        End If
+
+        If IsFluxIamge Then
+            GreaseweazleImportImage(FilePath)
+        End If
+
+        Return IsFluxIamge
+    End Function
     Private Sub RefreshCurrentState(FilePanel As FilePanel)
         ImageCombo.RefreshCurrentItemText()
         RefreshDiskState(FilePanel.CurrentImage)
@@ -1012,6 +1067,11 @@ Public Class MainForm
         End If
     End Sub
 
+    Private Sub RefreshGreaseweazleMenu()
+        Dim Visible As Boolean = Greaseweazle.IsValidGreaseweazlePath(My.Settings.GW_Path)
+
+        MenuGreaseweazleFormat.Visible = Visible
+    End Sub
     Private Sub RefreshHexMenu(Disk As Disk, IsValidImage As Boolean, Compare As Integer)
         RefreshRawTrackSubMenu(Disk)
 
@@ -1161,7 +1221,7 @@ Public Class MainForm
     End Sub
 
     Private Sub ResetAll()
-        EmptyTempPath()
+        EmptyTempImagePath()
         ImageFilters.FiltersApplied = False
         ImageFilters.ScanRun = False
         _LoadedFiles.FileNames.Clear()
@@ -1479,7 +1539,11 @@ Public Class MainForm
 
     Private Sub File_DragDrop(sender As Object, e As DragEventArgs) Handles ComboImages.DragDrop, ComboImagesFiltered.DragDrop, LabelDropMessage.DragDrop, ListViewFiles.DragDrop, ListViewSummary.DragDrop, FlowLayoutPanelHashes.DragDrop
         Dim Files As String() = e.Data.GetData(DataFormats.FileDrop)
-        ProcessFileDrop(Files, True)
+
+        Me.BeginInvoke(Sub()
+                           Me.Cursor = Cursors.Default
+                           HandleDragDrop(Files)
+                       End Sub)
     End Sub
 
     Private Sub File_DragEnter(sender As Object, e As DragEventArgs) Handles ComboImages.DragEnter, ComboImagesFiltered.DragEnter, LabelDropMessage.DragEnter, ListViewFiles.DragEnter, ListViewSummary.DragEnter, FlowLayoutPanelHashes.DragEnter
@@ -1588,7 +1652,7 @@ Public Class MainForm
     End Sub
 
     Private Sub MainForm_Closed(sender As Object, e As EventArgs) Handles Me.Closed
-        EmptyTempPath()
+        EmptyTempImagePath()
     End Sub
 
     Private Sub MainForm_Closing(sender As Object, e As CancelEventArgs) Handles Me.Closing
@@ -1640,6 +1704,10 @@ Public Class MainForm
     Private Sub MainForm_ResizeEnd(sender As Object, e As EventArgs) Handles Me.ResizeEnd
         My.Settings.WindowWidth = Me.Width
         My.Settings.WindowHeight = Me.Height
+    End Sub
+
+    Private Sub MainMenuNewInstance_Click(sender As Object, e As EventArgs) Handles MainMenuNewInstance.Click
+        OpenImageInNewInstance(FilePanelMain.CurrentImage)
     End Sub
 
     Private Sub MenuDiskReadFloppyA_Click(sender As Object, e As EventArgs) Handles MenuDiskReadFloppyA.Click
@@ -1771,6 +1839,18 @@ Public Class MainForm
         DiskImagesScan(FilePanelMain.CurrentImage, True)
     End Sub
 
+    Private Sub MenuGreaseweazleBandwidth_Click(sender As Object, e As EventArgs) Handles MenuGreaseweazleBandwidth.Click
+        Greaseweazle.DisplayGreaseweazleBandwidth(Me)
+    End Sub
+
+    Private Sub MenuGreaseweazleImport_Click(sender As Object, e As EventArgs) Handles MenuGreaseweazleImport.Click
+        GreaseweazleImportImage()
+    End Sub
+
+    Private Sub MenuGreaseweazleInfo_Click(sender As Object, e As EventArgs) Handles MenuGreaseweazleInfo.Click
+        Greaseweazle.DisplayGreaseweazleInfo(Me)
+    End Sub
+
     Private Sub MenuHelpAbout_Click(sender As Object, e As EventArgs) Handles MenuHelpAbout.Click
         AboutBoxDisplay()
     End Sub
@@ -1854,6 +1934,15 @@ Public Class MainForm
         ImageFilters.ExportUnknownImages = DirectCast(sender, ToolStripMenuItem).Checked
     End Sub
 
+    Private Sub MenuOptionsGreaseweazle_Click(sender As Object, e As EventArgs) Handles MenuOptionsGreaseweazle.Click
+        MainMenuOptions.DropDown.Close()
+
+        Dim Form As New GreaseweazleConfigurationForm
+        Form.ShowDialog(Me)
+
+        RefreshGreaseweazleMenu()
+    End Sub
+
     Private Sub MenuReportsWriteSplices_Click(sender As Object, e As EventArgs) Handles MenuReportsWriteSplices.Click
         DisplayReportWriteSplices(FilePanelMain.CurrentImage)
     End Sub
@@ -1909,23 +1998,6 @@ Public Class MainForm
 
     Private Sub ToolStripViewFileText_Click(sender As Object, e As EventArgs) Handles ToolStripViewFileText.Click
         FilePanelProcessEvent(FilePanelMain, FilePanel.FilePanelMenuItem.ViewFileText)
-    End Sub
-
-    Private Sub MainMenuNewInstance_Click(sender As Object, e As EventArgs) Handles MainMenuNewInstance.Click
-        OpenImageInNewInstance(FilePanelMain.CurrentImage)
-    End Sub
-
-    Private Sub MenuOptionsGreaseweazle_Click(sender As Object, e As EventArgs) Handles MenuOptionsGreaseweazle.Click
-        MainMenuOptions.DropDown.Close()
-
-        Dim Form As New GreaseweazleConfigurationForm
-        Form.ShowDialog()
-
-        RefreshGreaseweazleMenu
-    End Sub
-
-    Private Sub MenuGWInfo_Click(sender As Object, e As EventArgs) Handles MenuGWInfo.Click
-        Greaseweazle.DisplayGreaseweazleInfo()
     End Sub
 #End Region
 End Class

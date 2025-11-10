@@ -192,7 +192,7 @@ Namespace Filters
                         End If
                     End If
                     Disk_MismatchedImageSize = Disk.CheckImageSize <> 0
-                    Disk_CustomFormat = GetFloppyDiskFormat(Disk.BPB, False) = FloppyDiskFormat.FloppyUnknown
+                    Disk_CustomFormat = GetFloppyDiskFormat(Disk.BPB) = FloppyDiskFormat.FloppyUnknown
                     Disk_NOBPB = Not Disk.BootSector.BPB.IsValid
                     If Disk.BootSector.BootStrapCode.Length = 0 Then
                         If Disk.BootSector.CheckJumpInstruction(False, True) Then

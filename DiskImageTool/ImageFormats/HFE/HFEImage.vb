@@ -254,9 +254,7 @@ Namespace ImageFormats
                 Dim Buffer() As Byte
 
                 Try
-                    If IO.File.Exists(FilePath) Then
-                        IO.File.Delete(FilePath)
-                    End If
+                    DeleteFileIfExists(FilePath)
 
                     Using fs As IO.FileStream = IO.File.OpenWrite(FilePath)
                         fs.Write(_Header, 0, _Header.Length)

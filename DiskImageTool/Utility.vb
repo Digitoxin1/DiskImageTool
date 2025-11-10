@@ -101,6 +101,30 @@ Module Utility
         Next
     End Sub
 
+    Public Function Quoted(Value As String) As String
+        Const q As Char = ControlChars.Quote
+
+        If Value Is Nothing Then
+            Return New String({q, q})
+        End If
+
+        Return q & Value.Replace(q, q & q) & q
+    End Function
+
+    Public Function GenerateUniqueFileName(FilePath As String, FileName As String) As String
+        Dim NewFileName As String
+        Dim Suffix As Integer = 1
+        Dim FilePart = IO.Path.GetFileNameWithoutExtension(FileName)
+        Dim ExtPart = IO.Path.GetExtension(FileName)
+
+        Do
+            NewFileName = IO.Path.Combine(FilePath, FilePart & If(Suffix = 1, "", " " & Suffix) & ExtPart)
+            Suffix += 1
+        Loop Until Not IO.File.Exists(NewFileName)
+
+        Return NewFileName
+    End Function
+
     Public Function GetAvailableLanguages() As List(Of CultureInfo)
         Dim result As New List(Of CultureInfo)()
         Dim baseDir As String = AppDomain.CurrentDomain.BaseDirectory
@@ -214,6 +238,17 @@ Module Utility
         Next
 
         Return False
+    End Function
+
+    Public Function DeleteFileIfExists(FilePath As String) As Boolean
+        Try
+            If IO.File.Exists(FilePath) Then
+                IO.File.Delete(FilePath)
+            End If
+            Return True
+        Catch ex As Exception
+            Return False
+        End Try
     End Function
 
     Public Function IsFileReadOnly(fileName As String) As Boolean

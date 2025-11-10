@@ -1,5 +1,4 @@
-﻿Imports System.Text
-Imports DiskImageTool.Greaseweazle
+﻿Imports DiskImageTool.Greaseweazle
 
 
 Public Class GreaseweazleConfigurationForm
@@ -94,7 +93,15 @@ Public Class GreaseweazleConfigurationForm
             Exit Sub
         End If
 
-        Dim Content = GetGreaseweazleInfo(appPath)
+        Me.Cursor = Cursors.WaitCursor
+        Application.DoEvents()
+
+        Dim Content As String = ""
+        Try
+            Content = GetGreaseweazleOutput(appPath, Arguments)
+        Finally
+            Me.Cursor = Cursors.Default
+        End Try
 
         TextBoxInfo.Text = Content
     End Sub
@@ -121,71 +128,75 @@ Public Class GreaseweazleConfigurationForm
     End Sub
 
     Private Sub ButtonBrowse_Click(sender As Object, e As EventArgs) Handles ButtonBrowse.Click
-            Using ofd As New OpenFileDialog()
-                ofd.Title = "Select a Greaseweazle executable"
-                ofd.Filter = "Executable files (*.exe)|*.exe"
-                ofd.CheckFileExists = True
-                ofd.Multiselect = False
-                ' If you already have a path, start there; otherwise use Program Files
-                If IO.File.Exists(TextBoxPath.Text) Then
-                    ofd.InitialDirectory = IO.Path.GetDirectoryName(TextBoxPath.Text)
-                    ofd.FileName = IO.Path.GetFileName(TextBoxPath.Text)
+        Using ofd As New OpenFileDialog()
+            ofd.Title = My.Resources.Greaseweazle_SelectExecutable
+            ofd.Filter = "Executable files (*.exe)|*.exe"
+            ofd.CheckFileExists = True
+            ofd.Multiselect = False
+            ' If you already have a path, start there; otherwise use Program Files
+            If IO.File.Exists(TextBoxPath.Text) Then
+                ofd.InitialDirectory = IO.Path.GetDirectoryName(TextBoxPath.Text)
+                ofd.FileName = IO.Path.GetFileName(TextBoxPath.Text)
+            Else
+                ofd.InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles)
+            End If
+
+            If ofd.ShowDialog(Me) = DialogResult.OK Then
+                If IsExecutable(ofd.FileName) Then
+                    SetExePath(ofd.FileName)
                 Else
-                    ofd.InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles)
-                End If
-
-                If ofd.ShowDialog(Me) = DialogResult.OK Then
-                    If IsExecutable(ofd.FileName) Then
-                        SetExePath(ofd.FileName)
-                    Else
-                        MessageBox.Show("Please select an .exe file.", "Invalid selection", MessageBoxButtons.OK, MessageBoxIcon.Warning)
-                    End If
-                End If
-            End Using
-        End Sub
-
-        Private Sub ButtonClear_Click(sender As Object, e As EventArgs) Handles ButtonClear.Click
-            SetExePath("")
-        End Sub
-
-        Private Sub ButtonInfo_Click(sender As Object, e As EventArgs) Handles ButtonInfo.Click
-            RunAppAndCaptureOutput(TextBoxPath.Text, "info")
-        End Sub
-
-        Private Sub ComboInterface_SelectedIndexChanged(sender As Object, e As EventArgs) Handles ComboInterface.SelectedIndexChanged
-            RefreshDriveTypes(DirectCast(ComboInterface.SelectedValue, GreaseweazleInterface))
-        End Sub
-
-        Private Sub GreaseweazleConfigurationForm_Load(sender As Object, e As EventArgs) Handles Me.Load
-            InitializeFields()
-        End Sub
-
-        Private Sub TextBoxPath_DragDrop(sender As Object, e As DragEventArgs) Handles TextBoxPath.DragDrop
-            Dim files = CType(e.Data.GetData(DataFormats.FileDrop), String())
-            ' Prefer the first valid .exe (resolve .lnk if needed)
-            For Each f In files
-                Dim candidate As String = f
-                If IO.Path.GetExtension(f).Equals(".lnk", StringComparison.OrdinalIgnoreCase) Then
-                    candidate = ResolveShortcutTarget(f) ' may return original if resolution fails
-                End If
-                If IsExecutable(candidate) Then
-                    SetExePath(candidate)
-                    Exit For
-                End If
-            Next
-        End Sub
-
-        Private Sub TextBoxPath_DragEnter(sender As Object, e As DragEventArgs) Handles TextBoxPath.DragEnter
-            If e.Data.GetDataPresent(DataFormats.FileDrop) Then
-                Dim files = CType(e.Data.GetData(DataFormats.FileDrop), String())
-                ' Accept only if there is at least one .exe (or a .lnk that points to an .exe)
-                If files.Any(Function(f) IsExecutable(f) OrElse (IO.Path.GetExtension(f).Equals(".lnk", StringComparison.OrdinalIgnoreCase) AndAlso
-                                                           IsExecutable(ResolveShortcutTarget(f)))) Then
-                    e.Effect = DragDropEffects.Copy
-                    Return
+                    Dim Msg = String.Format(My.Resources.Dialog_PleaseSelect, ".exe")
+                    MessageBox.Show(Msg, My.Resources.Dialog_InvalidSelection, MessageBoxButtons.OK, MessageBoxIcon.Warning)
                 End If
             End If
-            e.Effect = DragDropEffects.None
-        End Sub
+        End Using
+    End Sub
+
+
+    Private Sub ButtonClear_Click(sender As Object, e As EventArgs) Handles ButtonClear.Click
+        SetExePath("")
+    End Sub
+
+    Private Sub ButtonInfo_Click(sender As Object, e As EventArgs) Handles ButtonInfo.Click
+        Dim Builder = New CommandLineBuilder(CommandLineBuilder.CommandAction.info)
+        Dim Arguments = Builder.Arguments
+        RunAppAndCaptureOutput(TextBoxPath.Text, Arguments)
+    End Sub
+
+    Private Sub ComboInterface_SelectedIndexChanged(sender As Object, e As EventArgs) Handles ComboInterface.SelectedIndexChanged
+        RefreshDriveTypes(DirectCast(ComboInterface.SelectedValue, GreaseweazleInterface))
+    End Sub
+
+    Private Sub GreaseweazleConfigurationForm_Load(sender As Object, e As EventArgs) Handles Me.Load
+        InitializeFields()
+    End Sub
+
+    Private Sub TextBoxPath_DragDrop(sender As Object, e As DragEventArgs) Handles TextBoxPath.DragDrop
+        Dim files = CType(e.Data.GetData(DataFormats.FileDrop), String())
+        ' Prefer the first valid .exe (resolve .lnk if needed)
+        For Each f In files
+            Dim candidate As String = f
+            If IO.Path.GetExtension(f).Equals(".lnk", StringComparison.OrdinalIgnoreCase) Then
+                candidate = ResolveShortcutTarget(f) ' may return original if resolution fails
+            End If
+            If IsExecutable(candidate) Then
+                SetExePath(candidate)
+                Exit For
+            End If
+        Next
+    End Sub
+
+    Private Sub TextBoxPath_DragEnter(sender As Object, e As DragEventArgs) Handles TextBoxPath.DragEnter
+        If e.Data.GetDataPresent(DataFormats.FileDrop) Then
+            Dim files = CType(e.Data.GetData(DataFormats.FileDrop), String())
+            ' Accept only if there is at least one .exe (or a .lnk that points to an .exe)
+            If files.Any(Function(f) IsExecutable(f) OrElse (IO.Path.GetExtension(f).Equals(".lnk", StringComparison.OrdinalIgnoreCase) AndAlso
+                                                        IsExecutable(ResolveShortcutTarget(f)))) Then
+                e.Effect = DragDropEffects.Copy
+                Return
+            End If
+        End If
+        e.Effect = DragDropEffects.None
+    End Sub
 #End Region
 End Class

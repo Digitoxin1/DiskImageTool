@@ -194,7 +194,7 @@
             Dim DiskFormat As FloppyDiskFormat
 
             If _BPB.IsValid Then
-                DiskFormat = GetFloppyDiskFormat(_BPB, False)
+                DiskFormat = GetFloppyDiskFormat(_BPB)
             Else
                 DiskFormat = GetFloppyDiskFomat(_FATTables.FAT.MediaDescriptor)
                 If DiskFormat = FloppyDiskFormat.FloppyUnknown Then

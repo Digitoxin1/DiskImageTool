@@ -170,6 +170,7 @@
     <Compile Include="Filters\ImageFiltersBase.vb" />
     <Compile Include="DiskImageLib.vb" />
     <Compile Include="Globals.vb" />
+    <Compile Include="Greaseweazle\CommandLineBuilder.vb" />
     <Compile Include="Greaseweazle\GreaseweazleConfigurationForm.Designer.vb">
       <DependentUpon>GreaseweazleConfigurationForm.vb</DependentUpon>
     </Compile>
@@ -177,6 +178,13 @@
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="Greaseweazle\GreaseweazleLib.vb" />
+    <Compile Include="Greaseweazle\ImageImportForm.Designer.vb">
+      <DependentUpon>ImageImportForm.vb</DependentUpon>
+    </Compile>
+    <Compile Include="Greaseweazle\ImageImportForm.vb">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Lib\ConsoleProcessRunner.vb" />
     <Compile Include="MenuHelp.vb" />
     <Compile Include="MenuTools.vb" />
     <Compile Include="Modules\FileExport.vb" />
@@ -739,6 +747,18 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Greaseweazle\GreaseweazleConfigurationForm.resx">
       <DependentUpon>GreaseweazleConfigurationForm.vb</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Greaseweazle\ImageImportForm.de.resx">
+      <DependentUpon>ImageImportForm.vb</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Greaseweazle\ImageImportForm.es.resx">
+      <DependentUpon>ImageImportForm.vb</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Greaseweazle\ImageImportForm.fr.resx">
+      <DependentUpon>ImageImportForm.vb</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Greaseweazle\ImageImportForm.resx">
+      <DependentUpon>ImageImportForm.vb</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="MainForm.de.resx">
       <DependentUpon>MainForm.vb</DependentUpon>

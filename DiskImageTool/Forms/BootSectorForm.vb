@@ -100,7 +100,7 @@ Public Class BootSectorForm
     Private Sub ChangeVolumeSerialNumber()
         Dim VolumeSerialNumberForm As New VolumeSerialNumberForm()
 
-        VolumeSerialNumberForm.ShowDialog()
+        VolumeSerialNumberForm.ShowDialog(Me)
 
         Dim Result As Boolean = VolumeSerialNumberForm.DialogResult = DialogResult.OK
 

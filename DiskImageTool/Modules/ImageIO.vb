@@ -44,19 +44,21 @@ Module ImageIO
 
         Dim FileName = DirectoryEntry.GetFullFileName
 
-        Dim Dialog = New SaveFileDialog With {
-            .FileName = CleanFileName(FileName)
-        }
-        If Dialog.ShowDialog <> DialogResult.OK Then
-            Exit Sub
-        End If
+        Using Dialog As New SaveFileDialog With {
+                .FileName = CleanFileName(FileName)
+            }
 
-        Dim Result = DirectoryEntrySaveToFile(Dialog.FileName, DirectoryEntry)
+            If Dialog.ShowDialog <> DialogResult.OK Then
+                Exit Sub
+            End If
 
-        If Not Result Then
-            Dim Msg = String.Format(My.Resources.Dialog_SaveFileError, IO.Path.GetFileName(Dialog.FileName))
-            MsgBox(Msg, MsgBoxStyle.Critical + MsgBoxStyle.OkOnly)
-        End If
+            Dim Result = DirectoryEntrySaveToFile(Dialog.FileName, DirectoryEntry)
+
+            If Not Result Then
+                Dim Msg = String.Format(My.Resources.Dialog_SaveFileError, IO.Path.GetFileName(Dialog.FileName))
+                MsgBox(Msg, MsgBoxStyle.Critical + MsgBoxStyle.OkOnly)
+            End If
+        End Using
     End Sub
 
     Public Function DirectoryEntrySaveToFile(FilePath As String, DirectoryEntry As DiskImage.DirectoryEntry) As Boolean
@@ -228,18 +230,33 @@ Module ImageIO
         Return TempPath
     End Function
 
-    Public Sub EmptyTempPath()
-        Dim TempPath = IO.Path.Combine(IO.Path.GetTempPath(), "DiskImageTool")
+    Public Function InitTempImagePath() As String
+        Dim TempPath = IO.Path.Combine(IO.Path.GetTempPath(), "DiskImageTool", App.Globals.GlobalIdentifier.ToString)
+        If Not IO.Directory.Exists(TempPath) Then
+            Try
+                IO.Directory.CreateDirectory(TempPath)
+            Catch ex As Exception
+                DebugException(ex)
+            End Try
+        End If
+
+        Return TempPath
+    End Function
+
+    Public Sub EmptyTempImagePath()
+        Dim TempPath = IO.Path.Combine(IO.Path.GetTempPath(), "DiskImageTool", App.Globals.GlobalIdentifier.ToString)
 
         If IO.Directory.Exists(TempPath) Then
             Try
-                For Each File In IO.Directory.EnumerateFiles(TempPath, "*.ima")
+                Dim Files = IO.Directory.EnumerateFiles(TempPath, "*.*")
+                For Each File In Files
                     Try
                         IO.File.Delete(File)
                     Catch ex As Exception
                         DebugException(ex)
                     End Try
                 Next
+                IO.Directory.Delete(TempPath)
             Catch ex As Exception
                 DebugException(ex)
             End Try

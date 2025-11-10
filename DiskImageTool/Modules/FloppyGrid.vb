@@ -1,11 +1,11 @@
 ﻿Module FloppyGrid
-    Public Function FloppyGridInit(TLP As TableLayoutPanel, LabelText As String, Tracks As UShort) As TableLayoutPanel
+    Public Function FloppyGridInit(TLP As TableLayoutPanel, LabelText As String, Tracks As UShort, TotalTracks As UShort) As TableLayoutPanel
         Const COL_COUNT As Integer = 10
-        Const ROW_COUNT As Integer = 8
         Const LABEL_WIDTH As Integer = 17
         Const COL_WIDTH As Integer = 20
         Const ROW_HEIGHT As Integer = 22
         Const PADDING As Integer = 2
+        Dim RowCount As Integer = Math.Ceiling(TotalTracks / COL_COUNT)
 
         Dim objLabel As Label
 
@@ -21,7 +21,7 @@
         TLP.TabStop = False
 
         TLP.ColumnCount = COL_COUNT + 2 ' header + data + spacer
-        TLP.RowCount = ROW_COUNT + 3    ' header + data + spacer + footer
+        TLP.RowCount = RowCount + 3    ' header + data + spacer + footer
 
         TLP.ColumnStyles.Add(New ColumnStyle(SizeType.Absolute, LABEL_WIDTH))
 
@@ -35,7 +35,7 @@
 
         TLP.RowStyles.Add(New RowStyle(SizeType.Absolute, ROW_HEIGHT - 1))
 
-        For Row = 1 To ROW_COUNT
+        For Row = 1 To RowCount
             TLP.RowStyles.Add(New RowStyle(SizeType.Absolute, ROW_HEIGHT))
             objLabel = AddLabel(Row - 1, SystemColors.Control)
             TLP.Controls.Add(objLabel, 0, Row)
@@ -45,7 +45,7 @@
         TLP.RowStyles.Add(New RowStyle(SizeType.AutoSize))
 
         objLabel = AddLabel(LabelText, SystemColors.Control)
-        TLP.Controls.Add(objLabel, 1, ROW_COUNT + 2)
+        TLP.Controls.Add(objLabel, 1, RowCount + 2)
         TLP.SetColumnSpan(objLabel, COL_COUNT + 1)
 
         Dim InnerPanel As New TableLayoutPanel With {
@@ -56,7 +56,7 @@
             .Padding = New Padding(0),
             .GrowStyle = TableLayoutPanelGrowStyle.FixedSize,
             .ColumnCount = COL_COUNT,
-            .RowCount = ROW_COUNT,
+            .RowCount = RowCount,
             .TabStop = False
         }
 
@@ -75,11 +75,11 @@
             InnerPanel.ColumnStyles.Add(New ColumnStyle(SizeType.Absolute, COL_WIDTH - 1))
         Next
 
-        For Row = 0 To ROW_COUNT - 1
+        For Row = 0 To RowCount - 1
             InnerPanel.RowStyles.Add(New RowStyle(SizeType.Absolute, ROW_HEIGHT - 1))
         Next
 
-        For Row = 0 To ROW_COUNT - 1
+        For Row = 0 To RowCount - 1
             For Col = 0 To COL_COUNT - 1
                 Dim CurrentTrack As UShort = Row * COL_COUNT + Col
 
@@ -97,19 +97,38 @@
 
         TLP.Controls.Add(InnerPanel, 1, 1)
         TLP.SetColumnSpan(InnerPanel, COL_COUNT + 1)
-        TLP.SetRowSpan(InnerPanel, ROW_COUNT + 1)
+        TLP.SetRowSpan(InnerPanel, RowCount + 1)
 
         TLP.ResumeLayout(True)
 
         Return InnerPanel
     End Function
 
+    Public Sub FloppyGridReset(TLP As TableLayoutPanel, Tracks As UShort, TotalTracks As UShort)
+        Dim TrackColor As Color
+
+        TLP.SuspendLayout()
+
+        For Track = 0 To TotalTracks - 1
+            If Track < Tracks Then
+                TrackColor = Color.White
+            Else
+                TrackColor = Color.LightGray
+            End If
+            FloppyGridSetLabel(TLP, Track, "", TrackColor)
+        Next
+
+        TLP.ResumeLayout(True)
+    End Sub
+
     Public Sub FloppyGridSetLabel(TLP As TableLayoutPanel, Track As UShort, Text As String, BackColor As Color)
         Dim Row As Integer = Track \ 10
         Dim Col As Integer = Track Mod 10
         Dim objLabel As Label = TLP.GetControlFromPosition(Col, Row)
-        objLabel.Text = Text
-        objLabel.BackColor = BackColor
+        If objLabel IsNot Nothing Then
+            objLabel.Text = Text
+            objLabel.BackColor = BackColor
+        End If
     End Sub
 
     Private Function AddLabel(Text As String, BackColor As Color) As Label

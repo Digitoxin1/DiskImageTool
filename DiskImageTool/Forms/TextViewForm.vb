@@ -33,15 +33,16 @@
             FilterIndex = 2
         End If
 
-        Dim Dialog = New SaveFileDialog With {
-           .FileName = m_SaveFileName,
-           .DefaultExt = "txt",
-           .Filter = My.Resources.FileType_Text & " (*.txt)|*.txt|" & My.Resources.FileType_All & " (*.*)|*.*",
-           .FilterIndex = FilterIndex
-        }
+        Using Dialog As New SaveFileDialog With {
+               .FileName = m_SaveFileName,
+               .DefaultExt = "txt",
+               .Filter = My.Resources.FileType_Text & " (*.txt)|*.txt|" & My.Resources.FileType_All & " (*.*)|*.*",
+               .FilterIndex = FilterIndex
+            }
 
-        If Dialog.ShowDialog = DialogResult.OK Then
-            IO.File.WriteAllText(Dialog.FileName, TextBox1.Text)
-        End If
+            If Dialog.ShowDialog = DialogResult.OK Then
+                IO.File.WriteAllText(Dialog.FileName, TextBox1.Text)
+            End If
+        End Using
     End Sub
 End Class

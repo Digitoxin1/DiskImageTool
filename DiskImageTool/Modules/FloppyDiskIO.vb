@@ -34,20 +34,15 @@ Module FloppyDiskIO
     End Function
 
     Public Function FloppyDiskNewImage(Buffer() As Byte, DiskFormat As FloppyDiskFormat, LoadedFileNames As Dictionary(Of String, ImageData)) As String
-        Dim TempPath = InitTempPath()
+        Dim TempPath = InitTempImagePath()
+        Dim FileName = "New Image.ima"
 
         If TempPath = "" Then
             MsgBox(My.Resources.Dialog_SaveFileError2, MsgBoxStyle.Exclamation)
             Return ""
         End If
 
-        Dim NewImage As String
-        Dim NewImageSuffix As Integer = 1
-        Do
-            NewImage = IO.Path.Combine(TempPath, "New Image" & If(NewImageSuffix = 1, "", " " & NewImageSuffix) & ".ima")
-            NewImageSuffix += 1
-        Loop Until Not IO.File.Exists(NewImage)
-
+        Dim NewImage = GenerateUniqueFileName(TempPath, FileName)
 
         Dim Success As Boolean
         Try
@@ -73,41 +68,43 @@ Module FloppyDiskIO
         Dim FileExt = ".ima"
         Dim FileFilter = GetSaveDialogFilters(DiskFormat, FloppyImageType.BasicSectorImage, FileExt)
 
-        Dim Dialog = New SaveFileDialog With {
-            .Filter = FileFilter.Filter,
-            .FilterIndex = FileFilter.FilterIndex,
-            .DefaultExt = FileExt
-        }
+        Using Dialog As New SaveFileDialog With {
+                .Filter = FileFilter.Filter,
+                .FilterIndex = FileFilter.FilterIndex,
+                .DefaultExt = FileExt
+            }
 
-        AddHandler Dialog.FileOk, Sub(sender As Object, e As CancelEventArgs)
-                                      If LoadedFileNames.ContainsKey(Dialog.FileName) Then
-                                          Dim Msg = String.Format(My.Resources.Dialog_FileCurrentlyOpen, IO.Path.GetFileName(Dialog.FileName), Environment.NewLine, Application.ProductName)
-                                          MsgBox(Msg, MsgBoxStyle.Exclamation, My.Resources.Caption_SaveAs)
-                                          e.Cancel = True
-                                      End If
-                                  End Sub
+            AddHandler Dialog.FileOk,
+                Sub(sender As Object, e As CancelEventArgs)
+                    If LoadedFileNames.ContainsKey(Dialog.FileName) Then
+                        Dim Msg = String.Format(My.Resources.Dialog_FileCurrentlyOpen, IO.Path.GetFileName(Dialog.FileName), Environment.NewLine, Application.ProductName)
+                        MsgBox(Msg, MsgBoxStyle.Exclamation, My.Resources.Caption_SaveAs)
+                        e.Cancel = True
+                    End If
+                End Sub
 
-        If Dialog.ShowDialog = DialogResult.OK Then
-            Dim Success As Boolean
-            Try
-                Dim FloppyImage = New BasicSectorImage(Buffer)
-                Dim Disk = New DiskImage.Disk(FloppyImage, 0)
-                Dim Response = SaveDiskImageToFile(Disk, Dialog.FileName, False)
-                Success = (Response = SaveImageResponse.Success)
-            Catch ex As Exception
-                DebugException(ex)
-                Success = False
-            End Try
+            If Dialog.ShowDialog = DialogResult.OK Then
+                Dim Success As Boolean
+                Try
+                    Dim FloppyImage = New BasicSectorImage(Buffer)
+                    Dim Disk = New DiskImage.Disk(FloppyImage, 0)
+                    Dim Response = SaveDiskImageToFile(Disk, Dialog.FileName, False)
+                    Success = (Response = SaveImageResponse.Success)
+                Catch ex As Exception
+                    DebugException(ex)
+                    Success = False
+                End Try
 
-            If Success Then
-                Return Dialog.FileName
+                If Success Then
+                    Return Dialog.FileName
+                Else
+                    MsgBox(My.Resources.Dialog_SaveFileError2, MsgBoxStyle.Exclamation)
+                    Return ""
+                End If
             Else
-                MsgBox(My.Resources.Dialog_SaveFileError2, MsgBoxStyle.Exclamation)
                 Return ""
             End If
-        Else
-            Return ""
-        End If
+        End Using
     End Function
 
     Public Sub FloppyDiskWrite(Owner As IWin32Window, Disk As Disk, Drive As FloppyDriveEnum)
@@ -120,7 +117,7 @@ Module FloppyDiskIO
         Dim DriveName = DriveLetter & ":\"
         Dim DriveInfo = New IO.DriveInfo(DriveName)
         Dim IsReady = DriveInfo.IsReady
-        Dim NewDiskFormat = GetFloppyDiskFormat(Disk.BPB, False)
+        Dim NewDiskFormat = GetFloppyDiskFormat(Disk.BPB)
         Dim NewFormatName = String.Format(My.Resources.Label_Floppy, GetFloppyDiskFormatName(NewDiskFormat))
         Dim DetectedFormat As FloppyDiskFormat = 255
         Dim DoFormat = Not IsReady
@@ -133,7 +130,7 @@ Module FloppyDiskIO
                 Dim BytesRead = FloppyDrive.ReadSector(0, Buffer)
                 If BytesRead = Buffer.Length Then
                     Dim BootSector = New BootSector(Buffer)
-                    DetectedFormat = GetFloppyDiskFormat(BootSector.BPB, False)
+                    DetectedFormat = GetFloppyDiskFormat(BootSector.BPB)
                 Else
                     DetectedFormat = FloppyDiskFormat.FloppyUnknown
                 End If
@@ -186,7 +183,7 @@ Module FloppyDiskIO
         Dim BytesRead = FloppyDrive.ReadSector(0, Buffer)
         If BytesRead = Buffer.Length Then
             BootSector = New BootSector(Buffer)
-            DetectedFormat = GetFloppyDiskFormat(BootSector.BPB, False)
+            DetectedFormat = GetFloppyDiskFormat(BootSector.BPB)
         Else
             DetectedFormat = FloppyDiskFormat.FloppyUnknown
         End If

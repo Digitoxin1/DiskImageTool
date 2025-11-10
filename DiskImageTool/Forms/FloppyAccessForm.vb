@@ -306,7 +306,7 @@ Public Class FloppyAccessForm
     Private Function FormatTrack(Sector As UInteger) As Boolean
         Dim Track = _BPB.SectorToTrack(Sector)
         Dim Side = _BPB.SectorToSide(Sector)
-        Dim MediaType As FloppyInterface.MEDIA_TYPE = GetMediaTypeFromDiskType(GetFloppyDiskFormat(_BPB, False))
+        Dim MediaType As FloppyInterface.MEDIA_TYPE = GetMediaTypeFromDiskType(GetFloppyDiskFormat(_BPB))
 
         If MediaType = FloppyInterface.MEDIA_TYPE.Unknown Then
             Return False
@@ -438,13 +438,13 @@ Public Class FloppyAccessForm
     Private Sub InitTables()
         Dim Tracks = _BPB.SectorToTrack(_BPB.SectorCount)
 
-        _TS0 = FloppyGridInit(TableSide0, "Side 0", Tracks)
+        _TS0 = FloppyGridInit(TableSide0, My.Resources.Label_Side & " 0", Tracks, 80)
 
         Dim TrackCount As UShort = 0
         If _BPB.NumberOfHeads > 1 Then
             TrackCount = Tracks
         End If
-        _TS1 = FloppyGridInit(TableSide1, "Side 1", TrackCount)
+        _TS1 = FloppyGridInit(TableSide1, My.Resources.Label_Side & " 1", TrackCount, 80)
     End Sub
     Private Sub ReadSectorsBySector(DiskBuffer() As Byte, SectorData As SectorData)
         Dim BufferSize = BYTES_PER_SECTOR
@@ -588,7 +588,7 @@ Public Class FloppyAccessForm
             End If
         Else
             If _Complete Then
-                Dim DiskFormat = GetFloppyDiskFormat(_BPB, False)
+                Dim DiskFormat = GetFloppyDiskFormat(_BPB)
                 _FileName = FloppyDiskSaveFile(_DiskBuffer, DiskFormat, _LoadedFileNames)
             End If
         End If

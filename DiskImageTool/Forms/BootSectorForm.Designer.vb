@@ -33,14 +33,12 @@ Partial Class BootSectorForm
         Me.GroupBoxMain = New System.Windows.Forms.GroupBox()
         Me.TableLayoutPanelMain = New System.Windows.Forms.TableLayoutPanel()
         Me.CboMediaDescriptor = New System.Windows.Forms.ComboBox()
-        Me.HexJumpInstruction = New DiskImageTool.HexTextBox()
         Me.LblJumpInstruction = New System.Windows.Forms.Label()
         Me.LblBytesPerSector = New System.Windows.Forms.Label()
         Me.LblReservedSectors = New System.Windows.Forms.Label()
         Me.LblRootDirectoryEntries = New System.Windows.Forms.Label()
         Me.LblOEMName = New System.Windows.Forms.Label()
         Me.CboOEMName = New System.Windows.Forms.ComboBox()
-        Me.HexOEMName = New DiskImageTool.HexTextBox()
         Me.CboBytesPerSector = New System.Windows.Forms.ComboBox()
         Me.LblSectorsPerCluster = New System.Windows.Forms.Label()
         Me.CboSectorsPerCluster = New System.Windows.Forms.ComboBox()
@@ -60,30 +58,32 @@ Partial Class BootSectorForm
         Me.TxtNumberOfHeads = New System.Windows.Forms.TextBox()
         Me.TxtHiddenSectors = New System.Windows.Forms.TextBox()
         Me.LblBootSectorSignature = New System.Windows.Forms.Label()
-        Me.HexBootSectorSignature = New DiskImageTool.HexTextBox()
         Me.GroupBoxExtended = New System.Windows.Forms.GroupBox()
         Me.LblExtendedMsg = New System.Windows.Forms.Label()
         Me.TableLayoutPanel1 = New System.Windows.Forms.TableLayoutPanel()
         Me.BtnVolumeSerialNumber = New System.Windows.Forms.Button()
-        Me.HexFileSystemType = New DiskImageTool.HexTextBox()
         Me.TxtDriveNumber = New System.Windows.Forms.TextBox()
         Me.LblDriveNumber = New System.Windows.Forms.Label()
         Me.LblSectorCountLarge = New System.Windows.Forms.Label()
         Me.TxtSectorCountLarge = New System.Windows.Forms.TextBox()
         Me.LblVolumeLabel = New System.Windows.Forms.Label()
         Me.TxtVolumeLabel = New System.Windows.Forms.TextBox()
-        Me.HexVolumeLabel = New DiskImageTool.HexTextBox()
         Me.LblFileSystemType = New System.Windows.Forms.Label()
         Me.TxtFileSystemType = New System.Windows.Forms.TextBox()
         Me.LblVolumeSerialNumber = New System.Windows.Forms.Label()
-        Me.HexVolumeSerialNumber = New DiskImageTool.HexTextBox()
         Me.lblExtendedBootSignature = New System.Windows.Forms.Label()
-        Me.HexExtendedBootSignature = New DiskImageTool.HexTextBox()
         Me.GroupBoxAdditionalData = New System.Windows.Forms.GroupBox()
-        Me.HexBox1 = New DiskImageTool.Hb.Windows.Forms.HexBox()
         Me.FlowLayoutPanel2 = New System.Windows.Forms.FlowLayoutPanel()
         Me.BtnUpdate = New System.Windows.Forms.Button()
         Me.BtnCancel = New System.Windows.Forms.Button()
+        Me.HexJumpInstruction = New DiskImageTool.HexTextBox()
+        Me.HexOEMName = New DiskImageTool.HexTextBox()
+        Me.HexBootSectorSignature = New DiskImageTool.HexTextBox()
+        Me.HexFileSystemType = New DiskImageTool.HexTextBox()
+        Me.HexVolumeLabel = New DiskImageTool.HexTextBox()
+        Me.HexVolumeSerialNumber = New DiskImageTool.HexTextBox()
+        Me.HexExtendedBootSignature = New DiskImageTool.HexTextBox()
+        Me.HexBox1 = New DiskImageTool.Hb.Windows.Forms.HexBox()
         FlowLayoutPanel1 = New System.Windows.Forms.FlowLayoutPanel()
         FlowLayoutPanel3 = New System.Windows.Forms.FlowLayoutPanel()
         FlowLayoutPanel4 = New System.Windows.Forms.FlowLayoutPanel()
@@ -184,12 +184,6 @@ Partial Class BootSectorForm
         resources.ApplyResources(Me.CboMediaDescriptor, "CboMediaDescriptor")
         Me.CboMediaDescriptor.Name = "CboMediaDescriptor"
         '
-        'HexJumpInstruction
-        '
-        resources.ApplyResources(Me.HexJumpInstruction, "HexJumpInstruction")
-        Me.HexJumpInstruction.MaskLength = 3
-        Me.HexJumpInstruction.Name = "HexJumpInstruction"
-        '
         'LblJumpInstruction
         '
         resources.ApplyResources(Me.LblJumpInstruction, "LblJumpInstruction")
@@ -220,13 +214,6 @@ Partial Class BootSectorForm
         resources.ApplyResources(Me.CboOEMName, "CboOEMName")
         Me.CboOEMName.FormattingEnabled = True
         Me.CboOEMName.Name = "CboOEMName"
-        '
-        'HexOEMName
-        '
-        Me.TableLayoutPanelMain.SetColumnSpan(Me.HexOEMName, 2)
-        resources.ApplyResources(Me.HexOEMName, "HexOEMName")
-        Me.HexOEMName.MaskLength = 8
-        Me.HexOEMName.Name = "HexOEMName"
         '
         'CboBytesPerSector
         '
@@ -327,12 +314,6 @@ Partial Class BootSectorForm
         resources.ApplyResources(Me.LblBootSectorSignature, "LblBootSectorSignature")
         Me.LblBootSectorSignature.Name = "LblBootSectorSignature"
         '
-        'HexBootSectorSignature
-        '
-        resources.ApplyResources(Me.HexBootSectorSignature, "HexBootSectorSignature")
-        Me.HexBootSectorSignature.MaskLength = 2
-        Me.HexBootSectorSignature.Name = "HexBootSectorSignature"
-        '
         'GroupBoxExtended
         '
         resources.ApplyResources(Me.GroupBoxExtended, "GroupBoxExtended")
@@ -382,13 +363,6 @@ Partial Class BootSectorForm
         Me.BtnVolumeSerialNumber.Name = "BtnVolumeSerialNumber"
         Me.BtnVolumeSerialNumber.UseVisualStyleBackColor = True
         '
-        'HexFileSystemType
-        '
-        Me.TableLayoutPanel1.SetColumnSpan(Me.HexFileSystemType, 3)
-        resources.ApplyResources(Me.HexFileSystemType, "HexFileSystemType")
-        Me.HexFileSystemType.MaskLength = 8
-        Me.HexFileSystemType.Name = "HexFileSystemType"
-        '
         'TxtDriveNumber
         '
         Me.TableLayoutPanel1.SetColumnSpan(Me.TxtDriveNumber, 2)
@@ -420,13 +394,6 @@ Partial Class BootSectorForm
         resources.ApplyResources(Me.TxtVolumeLabel, "TxtVolumeLabel")
         Me.TxtVolumeLabel.Name = "TxtVolumeLabel"
         '
-        'HexVolumeLabel
-        '
-        Me.TableLayoutPanel1.SetColumnSpan(Me.HexVolumeLabel, 3)
-        resources.ApplyResources(Me.HexVolumeLabel, "HexVolumeLabel")
-        Me.HexVolumeLabel.MaskLength = 11
-        Me.HexVolumeLabel.Name = "HexVolumeLabel"
-        '
         'LblFileSystemType
         '
         resources.ApplyResources(Me.LblFileSystemType, "LblFileSystemType")
@@ -442,22 +409,10 @@ Partial Class BootSectorForm
         resources.ApplyResources(Me.LblVolumeSerialNumber, "LblVolumeSerialNumber")
         Me.LblVolumeSerialNumber.Name = "LblVolumeSerialNumber"
         '
-        'HexVolumeSerialNumber
-        '
-        resources.ApplyResources(Me.HexVolumeSerialNumber, "HexVolumeSerialNumber")
-        Me.HexVolumeSerialNumber.MaskLength = 4
-        Me.HexVolumeSerialNumber.Name = "HexVolumeSerialNumber"
-        '
         'lblExtendedBootSignature
         '
         resources.ApplyResources(Me.lblExtendedBootSignature, "lblExtendedBootSignature")
         Me.lblExtendedBootSignature.Name = "lblExtendedBootSignature"
-        '
-        'HexExtendedBootSignature
-        '
-        resources.ApplyResources(Me.HexExtendedBootSignature, "HexExtendedBootSignature")
-        Me.HexExtendedBootSignature.MaskLength = 1
-        Me.HexExtendedBootSignature.Name = "HexExtendedBootSignature"
         '
         'GroupBoxAdditionalData
         '
@@ -465,6 +420,72 @@ Partial Class BootSectorForm
         Me.GroupBoxAdditionalData.Controls.Add(Me.HexBox1)
         Me.GroupBoxAdditionalData.Name = "GroupBoxAdditionalData"
         Me.GroupBoxAdditionalData.TabStop = False
+        '
+        'FlowLayoutPanel2
+        '
+        resources.ApplyResources(Me.FlowLayoutPanel2, "FlowLayoutPanel2")
+        Me.FlowLayoutPanel2.Controls.Add(Me.BtnUpdate)
+        Me.FlowLayoutPanel2.Controls.Add(Me.BtnCancel)
+        Me.FlowLayoutPanel2.Name = "FlowLayoutPanel2"
+        '
+        'BtnUpdate
+        '
+        resources.ApplyResources(Me.BtnUpdate, "BtnUpdate")
+        Me.BtnUpdate.DialogResult = System.Windows.Forms.DialogResult.OK
+        Me.BtnUpdate.Name = "BtnUpdate"
+        Me.BtnUpdate.UseVisualStyleBackColor = True
+        '
+        'BtnCancel
+        '
+        resources.ApplyResources(Me.BtnCancel, "BtnCancel")
+        Me.BtnCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel
+        Me.BtnCancel.Name = "BtnCancel"
+        Me.BtnCancel.UseVisualStyleBackColor = True
+        '
+        'HexJumpInstruction
+        '
+        resources.ApplyResources(Me.HexJumpInstruction, "HexJumpInstruction")
+        Me.HexJumpInstruction.MaskLength = 3
+        Me.HexJumpInstruction.Name = "HexJumpInstruction"
+        '
+        'HexOEMName
+        '
+        Me.TableLayoutPanelMain.SetColumnSpan(Me.HexOEMName, 2)
+        resources.ApplyResources(Me.HexOEMName, "HexOEMName")
+        Me.HexOEMName.MaskLength = 8
+        Me.HexOEMName.Name = "HexOEMName"
+        '
+        'HexBootSectorSignature
+        '
+        resources.ApplyResources(Me.HexBootSectorSignature, "HexBootSectorSignature")
+        Me.HexBootSectorSignature.MaskLength = 2
+        Me.HexBootSectorSignature.Name = "HexBootSectorSignature"
+        '
+        'HexFileSystemType
+        '
+        Me.TableLayoutPanel1.SetColumnSpan(Me.HexFileSystemType, 3)
+        resources.ApplyResources(Me.HexFileSystemType, "HexFileSystemType")
+        Me.HexFileSystemType.MaskLength = 8
+        Me.HexFileSystemType.Name = "HexFileSystemType"
+        '
+        'HexVolumeLabel
+        '
+        Me.TableLayoutPanel1.SetColumnSpan(Me.HexVolumeLabel, 3)
+        resources.ApplyResources(Me.HexVolumeLabel, "HexVolumeLabel")
+        Me.HexVolumeLabel.MaskLength = 11
+        Me.HexVolumeLabel.Name = "HexVolumeLabel"
+        '
+        'HexVolumeSerialNumber
+        '
+        resources.ApplyResources(Me.HexVolumeSerialNumber, "HexVolumeSerialNumber")
+        Me.HexVolumeSerialNumber.MaskLength = 4
+        Me.HexVolumeSerialNumber.Name = "HexVolumeSerialNumber"
+        '
+        'HexExtendedBootSignature
+        '
+        resources.ApplyResources(Me.HexExtendedBootSignature, "HexExtendedBootSignature")
+        Me.HexExtendedBootSignature.MaskLength = 1
+        Me.HexExtendedBootSignature.Name = "HexExtendedBootSignature"
         '
         'HexBox1
         '
@@ -488,27 +509,6 @@ Partial Class BootSectorForm
         Me.HexBox1.StringViewVisible = True
         Me.HexBox1.UseFixedBytesPerLine = True
         Me.HexBox1.VScrollBarVisible = False
-        '
-        'FlowLayoutPanel2
-        '
-        resources.ApplyResources(Me.FlowLayoutPanel2, "FlowLayoutPanel2")
-        Me.FlowLayoutPanel2.Controls.Add(Me.BtnUpdate)
-        Me.FlowLayoutPanel2.Controls.Add(Me.BtnCancel)
-        Me.FlowLayoutPanel2.Name = "FlowLayoutPanel2"
-        '
-        'BtnUpdate
-        '
-        resources.ApplyResources(Me.BtnUpdate, "BtnUpdate")
-        Me.BtnUpdate.DialogResult = System.Windows.Forms.DialogResult.OK
-        Me.BtnUpdate.Name = "BtnUpdate"
-        Me.BtnUpdate.UseVisualStyleBackColor = True
-        '
-        'BtnCancel
-        '
-        resources.ApplyResources(Me.BtnCancel, "BtnCancel")
-        Me.BtnCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel
-        Me.BtnCancel.Name = "BtnCancel"
-        Me.BtnCancel.UseVisualStyleBackColor = True
         '
         'BootSectorForm
         '

@@ -1529,4 +1529,40 @@ Hinweis: Diese ID wird normalerweise erzeugt, indem das aktuelle Datum und die a
   <data name="Label_DriveType" xml:space="preserve">
     <value>Laufwerk {0} Typ</value>
   </data>
+  <data name="Dialog_InvalidSCPFile" xml:space="preserve">
+    <value>Die Datei scheint kein gültiges SuperCard Pro-.scp-Image zu sein.</value>
+  </data>
+  <data name="Dialog_InvalidKryofluxFile" xml:space="preserve">
+    <value>Die Datei scheint nicht zu einem gültigen KryoFlux-Rohdaten-Satz zu gehören.</value>
+  </data>
+  <data name="Greaseweazle_SelectExecutable" xml:space="preserve">
+    <value>Wählen Sie eine Greaseweazle-ausführbare Datei aus</value>
+  </data>
+  <data name="Dialog_PleaseSelect" xml:space="preserve">
+    <value>Bitte wählen Sie eine {0}-Datei aus.</value>
+  </data>
+  <data name="Dialog_InvalidSelection" xml:space="preserve">
+    <value>Ungültige Auswahl</value>
+  </data>
+  <data name="Label_Process" xml:space="preserve">
+    <value>Verarbeiten</value>
+  </data>
+  <data name="Caption_ImportFluxImage" xml:space="preserve">
+    <value>Flux-Image importieren</value>
+  </data>
+  <data name="Label_Info" xml:space="preserve">
+    <value>Info</value>
+  </data>
+  <data name="Dialog_TempPathError" xml:space="preserve">
+    <value>Beim Initialisieren des temporären Pfads ist ein Fehler aufgetreten.</value>
+  </data>
+  <data name="Dialog_InvalidApplicationPath" xml:space="preserve">
+    <value>Der Anwendungspfad ist ungültig.</value>
+  </data>
+  <data name="Label_Bandwidth" xml:space="preserve">
+    <value>Bandbreite</value>
+  </data>
+  <data name="Dialog_InvalidFileType" xml:space="preserve">
+    <value>Ungültiger Dateityp</value>
+  </data>
 </root>

@@ -23,13 +23,14 @@ Module DebugScript
 
         ZipContent(ZipPath, ContentPath)
 
-        Dim Dialog = New SaveFileDialog With {
+        Using Dialog As New SaveFileDialog With {
             .FileName = Path.GetFileName(ZipPath),
             .Filter = "Zip Archive (*.zip)|*.zip"
         }
-        If Dialog.ShowDialog = DialogResult.OK Then
-            File.Copy(ZipPath, Dialog.FileName, True)
-        End If
+            If Dialog.ShowDialog = DialogResult.OK Then
+                File.Copy(ZipPath, Dialog.FileName, True)
+            End If
+        End Using
 
         Directory.Delete(TempPath, True)
     End Sub

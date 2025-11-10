@@ -1529,4 +1529,40 @@ Nota: Este valor debe ser {1} para todos los disquetes</value>
   <data name="Label_DriveType" xml:space="preserve">
     <value>Tipo de unidad {0}</value>
   </data>
+  <data name="Dialog_InvalidSCPFile" xml:space="preserve">
+    <value>El archivo no parece ser una imagen .scp válida de SuperCard Pro.</value>
+  </data>
+  <data name="Dialog_InvalidKryofluxFile" xml:space="preserve">
+    <value>El archivo no parece formar parte de un conjunto raw válido de KryoFlux.</value>
+  </data>
+  <data name="Greaseweazle_SelectExecutable" xml:space="preserve">
+    <value>Seleccione un ejecutable de Greaseweazle</value>
+  </data>
+  <data name="Dialog_PleaseSelect" xml:space="preserve">
+    <value>Seleccione un archivo {0}.</value>
+  </data>
+  <data name="Dialog_InvalidSelection" xml:space="preserve">
+    <value>Selección no válida</value>
+  </data>
+  <data name="Label_Process" xml:space="preserve">
+    <value>Procesar</value>
+  </data>
+  <data name="Caption_ImportFluxImage" xml:space="preserve">
+    <value>Importar imagen de flujo</value>
+  </data>
+  <data name="Label_Info" xml:space="preserve">
+    <value>Información</value>
+  </data>
+  <data name="Dialog_TempPathError" xml:space="preserve">
+    <value>Se ha producido un error al inicializar la ruta temporal.</value>
+  </data>
+  <data name="Dialog_InvalidApplicationPath" xml:space="preserve">
+    <value>La ruta de la aplicación no es válida.</value>
+  </data>
+  <data name="Label_Bandwidth" xml:space="preserve">
+    <value>Ancho de banda</value>
+  </data>
+  <data name="Dialog_InvalidFileType" xml:space="preserve">
+    <value>Tipo de archivo no válido</value>
+  </data>
 </root>

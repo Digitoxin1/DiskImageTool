@@ -117,12 +117,9 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <metadata name="FlowLayoutPanelButtons.Locked" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
-    <value>True</value>
-  </metadata>
   <assembly alias="System.Windows.Forms" name="System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
   <data name="FlowLayoutPanelButtons.Anchor" type="System.Windows.Forms.AnchorStyles, System.Windows.Forms">
-    <value>Bottom</value>
+    <value>Bottom, Right</value>
   </data>
   <assembly alias="mscorlib" name="mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
   <data name="FlowLayoutPanelButtons.AutoSize" type="System.Boolean, mscorlib">
@@ -131,15 +128,15 @@
   <data name="FlowLayoutPanelButtons.AutoSizeMode" type="System.Windows.Forms.AutoSizeMode, System.Windows.Forms">
     <value>GrowAndShrink</value>
   </data>
-  <metadata name="BtnUpdate.Locked" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
-    <value>True</value>
-  </metadata>
   <data name="BtnUpdate.AutoSizeMode" type="System.Windows.Forms.AutoSizeMode, System.Windows.Forms">
     <value>GrowAndShrink</value>
   </data>
   <assembly alias="System.Drawing" name="System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
   <data name="BtnUpdate.Location" type="System.Drawing.Point, System.Drawing">
-    <value>3, 3</value>
+    <value>0, 0</value>
+  </data>
+  <data name="BtnUpdate.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
+    <value>0, 0, 4, 0</value>
   </data>
   <data name="BtnUpdate.Size" type="System.Drawing.Size, System.Drawing">
     <value>90, 23</value>
@@ -162,14 +159,14 @@
   <data name="&gt;&gt;BtnUpdate.ZOrder" xml:space="preserve">
     <value>0</value>
   </data>
-  <metadata name="BtnCancel.Locked" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
-    <value>True</value>
-  </metadata>
   <data name="BtnCancel.AutoSizeMode" type="System.Windows.Forms.AutoSizeMode, System.Windows.Forms">
     <value>GrowAndShrink</value>
   </data>
   <data name="BtnCancel.Location" type="System.Drawing.Point, System.Drawing">
-    <value>99, 3</value>
+    <value>98, 0</value>
+  </data>
+  <data name="BtnCancel.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
+    <value>4, 0, 0, 0</value>
   </data>
   <data name="BtnCancel.Size" type="System.Drawing.Size, System.Drawing">
     <value>90, 23</value>
@@ -193,13 +190,13 @@
     <value>1</value>
   </data>
   <data name="FlowLayoutPanelButtons.Location" type="System.Drawing.Point, System.Drawing">
-    <value>74, 70</value>
+    <value>135, 73</value>
   </data>
   <data name="FlowLayoutPanelButtons.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
-    <value>3, 3, 3, 0</value>
+    <value>0, 0, 0, 0</value>
   </data>
   <data name="FlowLayoutPanelButtons.Size" type="System.Drawing.Size, System.Drawing">
-    <value>192, 29</value>
+    <value>188, 23</value>
   </data>
   <data name="FlowLayoutPanelButtons.TabIndex" type="System.Int32, mscorlib">
     <value>2</value>
@@ -216,9 +213,6 @@
   <data name="&gt;&gt;FlowLayoutPanelButtons.ZOrder" xml:space="preserve">
     <value>2</value>
   </data>
-  <metadata name="TextBoxChar.Locked" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
-    <value>True</value>
-  </metadata>
   <data name="TextBoxChar.Location" type="System.Drawing.Point, System.Drawing">
     <value>280, 25</value>
   </data>
@@ -243,12 +237,6 @@
   <data name="&gt;&gt;TextBoxChar.ZOrder" xml:space="preserve">
     <value>1</value>
   </data>
-  <metadata name="FlowLayoutPanelMain.Locked" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
-    <value>True</value>
-  </metadata>
-  <metadata name="LabelCaption.Locked" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
-    <value>True</value>
-  </metadata>
   <data name="LabelCaption.AutoSize" type="System.Boolean, mscorlib">
     <value>True</value>
   </data>
@@ -279,9 +267,6 @@
   <data name="&gt;&gt;LabelCaption.ZOrder" xml:space="preserve">
     <value>0</value>
   </data>
-  <metadata name="LabelFileName.Locked" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
-    <value>True</value>
-  </metadata>
   <data name="LabelFileName.AutoSize" type="System.Boolean, mscorlib">
     <value>True</value>
   </data>
@@ -292,7 +277,7 @@
     <value>0, 3, 3, 0</value>
   </data>
   <data name="LabelFileName.Size" type="System.Drawing.Size, System.Drawing">
-    <value>68, 13</value>
+    <value>59, 13</value>
   </data>
   <data name="LabelFileName.TabIndex" type="System.Int32, mscorlib">
     <value>1</value>
@@ -340,14 +325,14 @@
   <metadata name="$this.Localizable" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
     <value>True</value>
   </metadata>
-  <metadata name="$this.Locked" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
-    <value>True</value>
-  </metadata>
   <data name="$this.AutoScaleDimensions" type="System.Drawing.SizeF, System.Drawing">
     <value>6, 13</value>
   </data>
   <data name="$this.ClientSize" type="System.Drawing.Size, System.Drawing">
     <value>340, 108</value>
+  </data>
+  <data name="$this.Padding" type="System.Windows.Forms.Padding, System.Windows.Forms">
+    <value>0, 0, 0, 12</value>
   </data>
   <data name="$this.StartPosition" type="System.Windows.Forms.FormStartPosition, System.Windows.Forms">
     <value>CenterParent</value>

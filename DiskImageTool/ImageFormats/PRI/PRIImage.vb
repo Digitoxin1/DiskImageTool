@@ -69,9 +69,7 @@ Namespace ImageFormats
                 Dim ChunkData() As Byte
 
                 Try
-                    If IO.File.Exists(FilePath) Then
-                        IO.File.Delete(FilePath)
-                    End If
+                    DeleteFileIfExists(FilePath)
 
                     Using fs As IO.FileStream = IO.File.OpenWrite(FilePath)
                         Buffer = New PRIChunk("PRI ", _Header.ChunkData).ToBytes

@@ -57,18 +57,25 @@
             Msg &= String.Format(My.Resources.Dialog_UpdateDownload, Environment.NewLine)
 
             If MsgBoxQuestion(Msg) Then
-                Dim Dialog As New SaveFileDialog With {
-                    .Filter = FileDialogGetFilter(My.Resources.FileType_ZipArchive, ".zip"),
-                    .FileName = IO.Path.GetFileName(DownloadURL),
-                    .InitialDirectory = GetDownloadsFolder(),
-                    .RestoreDirectory = True
-                }
-                Dialog.ShowDialog()
-                If Dialog.FileName <> "" Then
+                Dim FileName As String = ""
+
+                Using Dialog As New SaveFileDialog With {
+                        .Filter = FileDialogGetFilter(My.Resources.FileType_ZipArchive, ".zip"),
+                        .FileName = IO.Path.GetFileName(DownloadURL),
+                        .InitialDirectory = GetDownloadsFolder(),
+                        .RestoreDirectory = True
+                    }
+
+                    Dialog.ShowDialog()
+
+                    FileName = Dialog.FileName
+                End Using
+
+                If FileName <> "" Then
                     Cursor.Current = Cursors.WaitCursor
                     Try
                         Dim Client As New Net.WebClient()
-                        Client.DownloadFile(DownloadURL, Dialog.FileName)
+                        Client.DownloadFile(DownloadURL, FileName)
                     Catch ex As Exception
                         MsgBox(My.Resources.Dialog_FileDownloadError, MsgBoxStyle.Exclamation)
                         DebugException(ex)

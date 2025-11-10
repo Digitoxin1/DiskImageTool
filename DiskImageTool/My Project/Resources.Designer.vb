@@ -824,6 +824,15 @@ Namespace My.Resources
         End Property
         
         '''<summary>
+        '''  Looks up a localized string similar to Import Flux Image.
+        '''</summary>
+        Friend ReadOnly Property Caption_ImportFluxImage() As String
+            Get
+                Return ResourceManager.GetString("Caption_ImportFluxImage", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
         '''  Looks up a localized string similar to New Directory.
         '''</summary>
         Friend ReadOnly Property Caption_NewDirectory() As String
@@ -1585,6 +1594,15 @@ Namespace My.Resources
         End Property
         
         '''<summary>
+        '''  Looks up a localized string similar to Application path is invalid..
+        '''</summary>
+        Friend ReadOnly Property Dialog_InvalidApplicationPath() As String
+            Get
+                Return ResourceManager.GetString("Dialog_InvalidApplicationPath", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
         '''  Looks up a localized string similar to A file name can&apos;t contain any of the following characters.
         '''</summary>
         Friend ReadOnly Property Dialog_InvalidCharacters() As String
@@ -1594,11 +1612,47 @@ Namespace My.Resources
         End Property
         
         '''<summary>
+        '''  Looks up a localized string similar to Invalid File Type.
+        '''</summary>
+        Friend ReadOnly Property Dialog_InvalidFileType() As String
+            Get
+                Return ResourceManager.GetString("Dialog_InvalidFileType", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  Looks up a localized string similar to File does not appear to be part of a valid KryoFlux raw set..
+        '''</summary>
+        Friend ReadOnly Property Dialog_InvalidKryofluxFile() As String
+            Get
+                Return ResourceManager.GetString("Dialog_InvalidKryofluxFile", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  Looks up a localized string similar to File does not appear to be a valid SuperCard Pro .scp image..
+        '''</summary>
+        Friend ReadOnly Property Dialog_InvalidSCPFile() As String
+            Get
+                Return ResourceManager.GetString("Dialog_InvalidSCPFile", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
         '''  Looks up a localized string similar to Invalid Search String.
         '''</summary>
         Friend ReadOnly Property Dialog_InvalidSearchString() As String
             Get
                 Return ResourceManager.GetString("Dialog_InvalidSearchString", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  Looks up a localized string similar to Invalid selection.
+        '''</summary>
+        Friend ReadOnly Property Dialog_InvalidSelection() As String
+            Get
+                Return ResourceManager.GetString("Dialog_InvalidSelection", resourceCulture)
             End Get
         End Property
         
@@ -1635,6 +1689,15 @@ Namespace My.Resources
         Friend ReadOnly Property Dialog_OpenFileError() As String
             Get
                 Return ResourceManager.GetString("Dialog_OpenFileError", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  Looks up a localized string similar to Please select an {0} file..
+        '''</summary>
+        Friend ReadOnly Property Dialog_PleaseSelect() As String
+            Get
+                Return ResourceManager.GetString("Dialog_PleaseSelect", resourceCulture)
             End Get
         End Property
         
@@ -1761,6 +1824,15 @@ Namespace My.Resources
         Friend ReadOnly Property Dialog_SuccessfulExportSingular() As String
             Get
                 Return ResourceManager.GetString("Dialog_SuccessfulExportSingular", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  Looks up a localized string similar to An error has occurred while initializing the temp path..
+        '''</summary>
+        Friend ReadOnly Property Dialog_TempPathError() As String
+            Get
+                Return ResourceManager.GetString("Dialog_TempPathError", resourceCulture)
             End Get
         End Property
         
@@ -2652,6 +2724,15 @@ Namespace My.Resources
         End Property
         
         '''<summary>
+        '''  Looks up a localized string similar to Select a Greaseweazle executable.
+        '''</summary>
+        Friend ReadOnly Property Greaseweazle_SelectExecutable() As String
+            Get
+                Return ResourceManager.GetString("Greaseweazle_SelectExecutable", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
         '''  Looks up a localized string similar to Bad Sectors.
         '''</summary>
         Friend ReadOnly Property HexView_BadSectors() As String
@@ -2840,6 +2921,15 @@ Namespace My.Resources
         Friend ReadOnly Property Label_BadSectors() As String
             Get
                 Return ResourceManager.GetString("Label_BadSectors", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  Looks up a localized string similar to Bandwidth.
+        '''</summary>
+        Friend ReadOnly Property Label_Bandwidth() As String
+            Get
+                Return ResourceManager.GetString("Label_Bandwidth", resourceCulture)
             End Get
         End Property
         
@@ -3258,6 +3348,15 @@ Namespace My.Resources
         End Property
         
         '''<summary>
+        '''  Looks up a localized string similar to Info.
+        '''</summary>
+        Friend ReadOnly Property Label_Info() As String
+            Get
+                Return ResourceManager.GetString("Label_Info", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
         '''  Looks up a localized string similar to Invalid.
         '''</summary>
         Friend ReadOnly Property Label_Invalid() As String
@@ -3407,6 +3506,15 @@ Namespace My.Resources
         Friend ReadOnly Property Label_PadFile() As String
             Get
                 Return ResourceManager.GetString("Label_PadFile", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  Looks up a localized string similar to Process.
+        '''</summary>
+        Friend ReadOnly Property Label_Process() As String
+            Get
+                Return ResourceManager.GetString("Label_Process", resourceCulture)
             End Get
         End Property
         

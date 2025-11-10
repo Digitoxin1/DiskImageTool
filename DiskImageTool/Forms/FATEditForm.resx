@@ -141,7 +141,7 @@
     <value>Vertical</value>
   </data>
   <data name="DataGridViewFAT.Size" type="System.Drawing.Size, System.Drawing">
-    <value>592, 318</value>
+    <value>592, 324</value>
   </data>
   <assembly alias="mscorlib" name="mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
   <data name="DataGridViewFAT.TabIndex" type="System.Int32, mscorlib">
@@ -160,7 +160,7 @@
     <value>8</value>
   </data>
   <data name="FlowLayoutPanelBottom.Anchor" type="System.Windows.Forms.AnchorStyles, System.Windows.Forms">
-    <value>Bottom</value>
+    <value>Bottom, Right</value>
   </data>
   <data name="FlowLayoutPanelBottom.AutoSize" type="System.Boolean, mscorlib">
     <value>True</value>
@@ -172,7 +172,10 @@
     <value>GrowAndShrink</value>
   </data>
   <data name="BtnUpdate.Location" type="System.Drawing.Point, System.Drawing">
-    <value>3, 3</value>
+    <value>0, 0</value>
+  </data>
+  <data name="BtnUpdate.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
+    <value>0, 0, 4, 0</value>
   </data>
   <data name="BtnUpdate.Size" type="System.Drawing.Size, System.Drawing">
     <value>90, 23</value>
@@ -199,7 +202,10 @@
     <value>GrowAndShrink</value>
   </data>
   <data name="BtnCancel.Location" type="System.Drawing.Point, System.Drawing">
-    <value>99, 3</value>
+    <value>98, 0</value>
+  </data>
+  <data name="BtnCancel.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
+    <value>4, 0, 0, 0</value>
   </data>
   <data name="BtnCancel.Size" type="System.Drawing.Size, System.Drawing">
     <value>90, 23</value>
@@ -223,10 +229,13 @@
     <value>1</value>
   </data>
   <data name="FlowLayoutPanelBottom.Location" type="System.Drawing.Point, System.Drawing">
-    <value>221, 547</value>
+    <value>425, 562</value>
+  </data>
+  <data name="FlowLayoutPanelBottom.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
+    <value>0, 0, 0, 0</value>
   </data>
   <data name="FlowLayoutPanelBottom.Size" type="System.Drawing.Size, System.Drawing">
-    <value>192, 29</value>
+    <value>188, 23</value>
   </data>
   <data name="FlowLayoutPanelBottom.TabIndex" type="System.Int32, mscorlib">
     <value>4</value>
@@ -250,7 +259,7 @@
     <value>True</value>
   </data>
   <data name="ChkSync.Location" type="System.Drawing.Point, System.Drawing">
-    <value>261, 524</value>
+    <value>261, 530</value>
   </data>
   <data name="ChkSync.Size" type="System.Drawing.Size, System.Drawing">
     <value>112, 17</value>
@@ -400,7 +409,7 @@
     <value>8, 0, 3, 0</value>
   </data>
   <data name="LblValid.Size" type="System.Drawing.Size, System.Drawing">
-    <value>73, 13</value>
+    <value>75, 13</value>
   </data>
   <data name="LblValid.TabIndex" type="System.Int32, mscorlib">
     <value>4</value>
@@ -425,7 +434,7 @@
     <value>21, 165</value>
   </data>
   <data name="FlowLayoutPanelTop.Size" type="System.Drawing.Size, System.Drawing">
-    <value>333, 29</value>
+    <value>335, 29</value>
   </data>
   <data name="FlowLayoutPanelTop.TabIndex" type="System.Int32, mscorlib">
     <value>0</value>
@@ -529,9 +538,6 @@
   <data name="&gt;&gt;TxtMediaDescriptor.ZOrder" xml:space="preserve">
     <value>0</value>
   </data>
-  <metadata name="CboMediaDescriptor.Locked" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
-    <value>True</value>
-  </metadata>
   <data name="CboMediaDescriptor.Location" type="System.Drawing.Point, System.Drawing">
     <value>96, 3</value>
   </data>
@@ -580,20 +586,20 @@
   <metadata name="$this.Localizable" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
     <value>True</value>
   </metadata>
-  <metadata name="$this.Locked" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
-    <value>True</value>
-  </metadata>
   <data name="$this.AutoScaleDimensions" type="System.Drawing.SizeF, System.Drawing">
     <value>6, 13</value>
   </data>
   <data name="$this.ClientSize" type="System.Drawing.Size, System.Drawing">
     <value>634, 597</value>
   </data>
+  <data name="$this.ImeMode" type="System.Windows.Forms.ImeMode, System.Windows.Forms">
+    <value>NoControl</value>
+  </data>
   <data name="$this.MinimumSize" type="System.Drawing.Size, System.Drawing">
     <value>650, 450</value>
   </data>
   <data name="$this.Padding" type="System.Windows.Forms.Padding, System.Windows.Forms">
-    <value>18, 18, 18, 18</value>
+    <value>18, 18, 18, 12</value>
   </data>
   <data name="$this.StartPosition" type="System.Windows.Forms.FormStartPosition, System.Windows.Forms">
     <value>CenterParent</value>

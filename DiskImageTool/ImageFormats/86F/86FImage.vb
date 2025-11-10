@@ -230,9 +230,7 @@ Namespace ImageFormats
                 Dim Reverse As Boolean = Not ReverseEndian
 
                 Try
-                    If IO.File.Exists(FilePath) Then
-                        IO.File.Delete(FilePath)
-                    End If
+                    DeleteFileIfExists(FilePath)
 
                     Using fs As IO.FileStream = IO.File.OpenWrite(FilePath)
                         Buffer = Text.Encoding.UTF8.GetBytes(FILE_SIGNATURE)

@@ -342,7 +342,25 @@
   <data name="MenuOptionsGreaseweazle.Text" xml:space="preserve">
     <value>Greaseweazle Configuración</value>
   </data>
-  <data name="MenuGWInfo.Text" xml:space="preserve">
-    <value>&amp;Información</value>
+  <data name="MenuGreaseweazleBandwidth.Text" xml:space="preserve">
+    <value>Informar del &amp;ancho de banda</value>
+  </data>
+  <data name="MenuGreaseweazleWrite.Text" xml:space="preserve">
+    <value>&amp;Escribir disco</value>
+  </data>
+  <data name="MenuGreaseweazleErase.Text" xml:space="preserve">
+    <value>&amp;Borrar disco</value>
+  </data>
+  <data name="MenuGreaseweazleImport.Text" xml:space="preserve">
+    <value>&amp;Importar imagen de flujo</value>
+  </data>
+  <data name="MenuGreaseweazleClean.Text" xml:space="preserve">
+    <value>&amp;Limpiar unidad</value>
+  </data>
+  <data name="MenuGreaseweazleInfo.Text" xml:space="preserve">
+    <value>&amp;Información del dispositivo</value>
+  </data>
+  <data name="MenuGreaseweazleRead.Text" xml:space="preserve">
+    <value>&amp;Leer disco</value>
   </data>
 </root>
