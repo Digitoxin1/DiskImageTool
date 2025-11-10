@@ -89,7 +89,7 @@ Partial Class FloppyAccessForm
         'StatusSide
         '
         Me.StatusSide.Name = "StatusSide"
-        Me.StatusSide.Size = New System.Drawing.Size(314, 17)
+        Me.StatusSide.Size = New System.Drawing.Size(206, 17)
         Me.StatusSide.Spring = True
         Me.StatusSide.Text = "{Side}"
         Me.StatusSide.TextAlign = System.Drawing.ContentAlignment.MiddleLeft

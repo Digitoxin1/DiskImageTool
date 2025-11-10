@@ -3114,6 +3114,15 @@ Namespace My.Resources
         End Property
         
         '''<summary>
+        '''  Looks up a localized string similar to Failed.
+        '''</summary>
+        Friend ReadOnly Property Label_Failed() As String
+            Get
+                Return ResourceManager.GetString("Label_Failed", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
         '''  Looks up a localized string similar to Bad.
         '''</summary>
         Friend ReadOnly Property Label_FATType_Bad() As String
@@ -3677,6 +3686,24 @@ Namespace My.Resources
         Friend ReadOnly Property Label_Type() As String
             Get
                 Return ResourceManager.GetString("Label_Type", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  Looks up a localized string similar to Unexpected Sector.
+        '''</summary>
+        Friend ReadOnly Property Label_UnexpectedSector() As String
+            Get
+                Return ResourceManager.GetString("Label_UnexpectedSector", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  Looks up a localized string similar to Unexpected Sectors.
+        '''</summary>
+        Friend ReadOnly Property Label_UnexpectedSectors() As String
+            Get
+                Return ResourceManager.GetString("Label_UnexpectedSectors", resourceCulture)
             End Get
         End Property
         

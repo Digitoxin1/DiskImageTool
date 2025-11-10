@@ -27,6 +27,9 @@ Partial Class ImageImportForm
         Dim Label2 As System.Windows.Forms.Label
         Dim Label3 As System.Windows.Forms.Label
         Me.StatusStrip1 = New System.Windows.Forms.StatusStrip()
+        Me.StatusType = New System.Windows.Forms.ToolStripStatusLabel()
+        Me.StatusTrack = New System.Windows.Forms.ToolStripStatusLabel()
+        Me.StatusSide = New System.Windows.Forms.ToolStripStatusLabel()
         Me.TableLayoutPanel1 = New System.Windows.Forms.TableLayoutPanel()
         Me.ButtonProcess = New System.Windows.Forms.Button()
         Me.TableSide1 = New System.Windows.Forms.TableLayoutPanel()
@@ -38,9 +41,12 @@ Partial Class ImageImportForm
         Me.FlowLayoutPanel2 = New System.Windows.Forms.FlowLayoutPanel()
         Me.ButtonImport = New System.Windows.Forms.Button()
         Me.ButtonCancel = New System.Windows.Forms.Button()
+        Me.StatusBadSectors = New System.Windows.Forms.ToolStripStatusLabel()
+        Me.StatusUnexpected = New System.Windows.Forms.ToolStripStatusLabel()
         Label1 = New System.Windows.Forms.Label()
         Label2 = New System.Windows.Forms.Label()
         Label3 = New System.Windows.Forms.Label()
+        Me.StatusStrip1.SuspendLayout()
         Me.TableLayoutPanel1.SuspendLayout()
         Me.FlowLayoutPanel2.SuspendLayout()
         Me.SuspendLayout()
@@ -62,9 +68,26 @@ Partial Class ImageImportForm
         '
         'StatusStrip1
         '
+        Me.StatusStrip1.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.StatusType, Me.StatusTrack, Me.StatusSide, Me.StatusBadSectors, Me.StatusUnexpected})
         resources.ApplyResources(Me.StatusStrip1, "StatusStrip1")
         Me.StatusStrip1.Name = "StatusStrip1"
         Me.StatusStrip1.SizingGrip = False
+        '
+        'StatusType
+        '
+        resources.ApplyResources(Me.StatusType, "StatusType")
+        Me.StatusType.Name = "StatusType"
+        '
+        'StatusTrack
+        '
+        Me.StatusTrack.Name = "StatusTrack"
+        resources.ApplyResources(Me.StatusTrack, "StatusTrack")
+        '
+        'StatusSide
+        '
+        Me.StatusSide.Name = "StatusSide"
+        resources.ApplyResources(Me.StatusSide, "StatusSide")
+        Me.StatusSide.Spring = True
         '
         'TableLayoutPanel1
         '
@@ -145,6 +168,17 @@ Partial Class ImageImportForm
         Me.ButtonCancel.Name = "ButtonCancel"
         Me.ButtonCancel.UseVisualStyleBackColor = True
         '
+        'StatusBadSectors
+        '
+        Me.StatusBadSectors.Name = "StatusBadSectors"
+        resources.ApplyResources(Me.StatusBadSectors, "StatusBadSectors")
+        '
+        'StatusUnexpected
+        '
+        Me.StatusUnexpected.Margin = New System.Windows.Forms.Padding(6, 3, 0, 2)
+        Me.StatusUnexpected.Name = "StatusUnexpected"
+        resources.ApplyResources(Me.StatusUnexpected, "StatusUnexpected")
+        '
         'ImageImportForm
         '
         resources.ApplyResources(Me, "$this")
@@ -159,6 +193,8 @@ Partial Class ImageImportForm
         Me.MinimizeBox = False
         Me.Name = "ImageImportForm"
         Me.ShowInTaskbar = False
+        Me.StatusStrip1.ResumeLayout(False)
+        Me.StatusStrip1.PerformLayout()
         Me.TableLayoutPanel1.ResumeLayout(False)
         Me.TableLayoutPanel1.PerformLayout()
         Me.FlowLayoutPanel2.ResumeLayout(False)
@@ -178,4 +214,9 @@ Partial Class ImageImportForm
     Friend WithEvents ButtonProcess As Button
     Friend WithEvents TableSide1 As TableLayoutPanel
     Friend WithEvents TableSide0 As TableLayoutPanel
+    Friend WithEvents StatusType As ToolStripStatusLabel
+    Friend WithEvents StatusTrack As ToolStripStatusLabel
+    Friend WithEvents StatusSide As ToolStripStatusLabel
+    Friend WithEvents StatusBadSectors As ToolStripStatusLabel
+    Friend WithEvents StatusUnexpected As ToolStripStatusLabel
 End Class

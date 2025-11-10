@@ -1565,4 +1565,13 @@ Hinweis: Diese ID wird normalerweise erzeugt, indem das aktuelle Datum und die a
   <data name="Dialog_InvalidFileType" xml:space="preserve">
     <value>Ungültiger Dateityp</value>
   </data>
+  <data name="Label_Failed" xml:space="preserve">
+    <value>Fehlgeschlagen</value>
+  </data>
+  <data name="Label_UnexpectedSector" xml:space="preserve">
+    <value>Unerwarteter Sektor</value>
+  </data>
+  <data name="Label_UnexpectedSectors" xml:space="preserve">
+    <value>Unerwartete Sektoren</value>
+  </data>
 </root>

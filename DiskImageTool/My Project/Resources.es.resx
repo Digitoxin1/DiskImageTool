@@ -1565,4 +1565,13 @@ Nota: Este valor debe ser {1} para todos los disquetes</value>
   <data name="Dialog_InvalidFileType" xml:space="preserve">
     <value>Tipo de archivo no válido</value>
   </data>
+  <data name="Label_Failed" xml:space="preserve">
+    <value>Error</value>
+  </data>
+  <data name="Label_UnexpectedSector" xml:space="preserve">
+    <value>Sector inesperado</value>
+  </data>
+  <data name="Label_UnexpectedSectors" xml:space="preserve">
+    <value>Sectores inesperados</value>
+  </data>
 </root>

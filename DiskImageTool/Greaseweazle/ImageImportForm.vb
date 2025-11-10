@@ -28,6 +28,8 @@ Public Class ImageImportForm
     Private _DoubleStep As Boolean = False
     Private _TS0 As TableLayoutPanel
     Private _TS1 As TableLayoutPanel
+    Private _TotalBadSectors As UInteger = 0
+    Private _TotalUnexpectedSectors As UInteger = 0
     Public Sub New(FilePath As String, TrackCount As Integer, SideCount As Integer)
         ' This call is required by the designer.
         InitializeComponent()
@@ -47,6 +49,7 @@ Public Class ImageImportForm
         }
 
         SetTilebarText()
+        ResetStatusBar()
     End Sub
 
     Public ReadOnly Property OutputFilePath As String
@@ -54,6 +57,16 @@ Public Class ImageImportForm
             Return _OutputFilePath
         End Get
     End Property
+
+    Private Sub ResetStatusBar()
+        StatusType.Text = ""
+        StatusTrack.Text = ""
+        StatusSide.Text = ""
+        StatusBadSectors.Text = ""
+        StatusUnexpected.Text = ""
+        _TotalBadSectors = 0
+        _TotalUnexpectedSectors = 0
+    End Sub
 
     Private Sub ButtonCancel_Click(sender As Object, e As EventArgs) Handles ButtonCancel.Click
         If Process.IsRunning Then
@@ -294,6 +307,21 @@ Public Class ImageImportForm
                 BackColor = Color.LightGreen
             End If
             FloppyGridSetLabel(Table, Track, Text, BackColor)
+
+            StatusTrack.Text = My.Resources.Label_Track & " " & Track
+            StatusSide.Text = My.Resources.Label_Side & " " & StatusInfo.Side
+
+            If _TotalBadSectors = 1 Then
+                StatusBadSectors.Text = _TotalBadSectors & " " & My.Resources.Label_BadSector
+            ElseIf _TotalBadSectors > 1 Then
+                StatusBadSectors.Text = _TotalBadSectors & " " & My.Resources.Label_BadSectors
+            End If
+
+            If _TotalUnexpectedSectors = 1 Then
+                StatusUnexpected.Text = _TotalUnexpectedSectors & " " & My.Resources.Label_UnexpectedSector
+            ElseIf _TotalUnexpectedSectors > 1 Then
+                StatusUnexpected.Text = _TotalUnexpectedSectors & " " & My.Resources.Label_UnexpectedSectors
+            End If
         End If
     End Sub
 
@@ -372,6 +400,7 @@ Public Class ImageImportForm
             _TrackStatus.Add(Key, StatusInfo)
         End If
         StatusInfo.BadSectors += TrackInfo.BadSectors
+        _TotalBadSectors += TrackInfo.BadSectors
 
         Return StatusInfo
     End Function
@@ -390,18 +419,19 @@ Public Class ImageImportForm
             _TrackStatus.Add(Key, StatusInfo)
         End If
         StatusInfo.UnexpectedSectors += 1
+        _TotalUnexpectedSectors += 1
 
         Return StatusInfo
     End Function
-#Region "Events"
 
-    Private Sub ButtonProcess_Click(sender As Object, e As EventArgs) Handles ButtonProcess.Click
+    Private Sub ProcessImage()
         If Process.IsRunning Then
             Process.Cancel()
             Exit Sub
         End If
 
         ClearOutputFile()
+        ResetStatusBar()
 
         Dim ImageFormat As GreaseweazleImageFormat = ComboImageFormat.SelectedValue
         Dim OutputType As GreaseweazleOutputType = ComboOutputType.SelectedValue
@@ -428,6 +458,11 @@ Public Class ImageImportForm
         Dim Arguments = GenerateCommandLine(ImageFormat, OutputType, DoubleStep)
         Process.StartAsync(My.Settings.GW_Path, Arguments)
     End Sub
+#Region "Events"
+
+    Private Sub ButtonProcess_Click(sender As Object, e As EventArgs) Handles ButtonProcess.Click
+        ProcessImage()
+    End Sub
 
 
     Private Sub ComboImageFormat_SelectedIndexChanged(sender As Object, e As EventArgs) Handles ComboImageFormat.SelectedIndexChanged
@@ -452,11 +487,15 @@ Public Class ImageImportForm
     Private Sub Process_ProcessExited(exitCode As Integer) Handles Process.ProcessExited
         If exitCode = -1 Then
             ClearOutputFile()
+            StatusType.Text = My.Resources.Label_Aborted
+        Else
+            StatusType.Text = My.Resources.Label_Complete
         End If
         ToggleProcessRunning(False)
     End Sub
 
     Private Sub Process_ProcessFailed(message As String, ex As Exception) Handles Process.ProcessFailed
+        StatusType.Text = My.Resources.Label_Failed
         ToggleProcessRunning(False)
     End Sub
 #End Region
@@ -511,4 +550,8 @@ Public Class ImageImportForm
         Public Property Track As Integer
         Public Property UnexpectedSectors As UShort = 0
     End Class
+
+    Private Sub Process_ProcessStarted(exePath As String, arguments As String) Handles Process.ProcessStarted
+        StatusType.Text = My.Resources.Label_Processing
+    End Sub
 End Class
