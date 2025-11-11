@@ -135,4 +135,7 @@
   <data name="Label2.Text" xml:space="preserve">
     <value>Type de sortie</value>
   </data>
+  <data name="Label4.Text" xml:space="preserve">
+    <value>Nom de fichier</value>
+  </data>
 </root>

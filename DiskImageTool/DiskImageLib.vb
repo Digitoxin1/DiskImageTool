@@ -218,9 +218,7 @@ Module DiskImageLib
     End Sub
 
     Public Sub DiskImageRefresh(FilePanel As FilePanel)
-        If FilePanel.CurrentImage IsNot Nothing Then
-            FilePanel.CurrentImage.Disk?.Reinitialize()
-        End If
+        FilePanel.CurrentImage?.Disk?.Reinitialize()
 
         FilePanel.Load(FilePanel.CurrentImage, True)
     End Sub
@@ -849,9 +847,4 @@ Module DiskImageLib
 
         Return False
     End Function
-
-    Public Structure DiskImageSaveResponse
-        Dim Image As DiskImageContainer
-        Dim Result As Boolean
-    End Structure
 End Module

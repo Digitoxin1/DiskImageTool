@@ -1,78 +1,10 @@
-﻿Imports System.Text
-Imports System.Text.RegularExpressions
+﻿Imports System.Text.RegularExpressions
 
 Namespace Greaseweazle
     Module GreaseweazleLib
-        Public Enum GreaseweazleFloppyType
-            None
-            F525_DD_360K
-            F525_HD_12M
-            F35_DD_720K
-            F35_HD_144M
-            F35_ED_288M
-        End Enum
+        Private Const REGEX_RAW_FILE As String = "^(?<diskId>.+?)\.?(?<track>\d{2})\.(?<side>\d)\.(?<ext>raw|stream)$"
 
-        Public Enum GreaseweazleImageFormat
-            None
-            IBM_160
-            IBM_180
-            IBM_320
-            IBM_360
-            IBM_1200
-            IBM_720
-            IBM_800
-            IBM_1440
-            IBM_2880
-            IBM_DMF
-        End Enum
-
-        Public Enum GreaseweazleInterface
-            IBM
-            Shugart
-        End Enum
-        Public Enum GreaseweazleOutputType
-            IMA
-            IMG
-            HFE
-        End Enum
-
-        Public Function ConvertFirstTrack(FilePath As String) As (Boolean, String)
-            Dim AppPath As String = My.Settings.GW_Path
-            Dim TempPath = InitTempImagePath()
-
-            If TempPath = "" Then
-                Return (False, "")
-            End If
-
-            Dim FileName = GenerateUniqueFileName(TempPath, "temp.ima")
-
-            Dim Builder = New CommandLineBuilder(CommandLineBuilder.CommandAction.convert) With {
-            .InFile = FilePath,
-            .OutFile = FileName,
-            .Format = "ibm.scan",
-            .Heads = CommandLineBuilder.TrackHeads.head0
-        }
-            Builder.AddCylinder(0)
-
-            Dim psi As New ProcessStartInfo() With {
-               .FileName = AppPath,
-               .Arguments = Builder.Arguments,
-               .RedirectStandardOutput = False,
-               .RedirectStandardError = False,
-               .UseShellExecute = False,
-               .CreateNoWindow = True
-           }
-
-            Using proc As New Process()
-                proc.StartInfo = psi
-                proc.Start()
-                proc.WaitForExit()
-            End Using
-
-            Return (IO.File.Exists(FileName), FileName)
-        End Function
-
-        Public Sub DisplayGreaseweazleBandwidth(ParentForm As Form)
+        Public Sub BandwidthDisplay(ParentForm As Form)
             Dim AppPath As String = My.Settings.GW_Path
 
             If Not IsValidGreaseweazlePath(AppPath) Then
@@ -88,7 +20,8 @@ Namespace Greaseweazle
 
             Dim Content As String = ""
             Try
-                Content = GetGreaseweazleOutput(AppPath, Arguments)
+                Dim Result = ConsoleProcessRunner.RunProcess(AppPath, Arguments)
+                Content = Result.CombinedOutput
             Finally
                 ParentForm.Cursor = Cursors.Default
             End Try
@@ -97,148 +30,39 @@ Namespace Greaseweazle
             frmTextView.ShowDialog(ParentForm)
         End Sub
 
-        Public Sub DisplayGreaseweazleInfo(ParentForm As Form)
+        Public Function ConvertFirstTrack(FilePath As String) As (Result As Boolean, FileName As String)
             Dim AppPath As String = My.Settings.GW_Path
+            Dim TempPath = InitTempImagePath()
 
-            If Not IsValidGreaseweazlePath(AppPath) Then
-                DisplayInvalidApplicationPathMsg()
-                Exit Sub
+            If TempPath = "" Then
+                Return (False, "")
             End If
 
-            ParentForm.Cursor = Cursors.WaitCursor
-            Application.DoEvents()
+            Dim FileName = GenerateUniqueFileName(TempPath, "temp.ima")
 
-            Dim Builder = New CommandLineBuilder(CommandLineBuilder.CommandAction.info)
-            Dim Arguments = Builder.Arguments
+            Dim Builder = New CommandLineBuilder(CommandLineBuilder.CommandAction.convert) With {
+                .InFile = FilePath,
+                .OutFile = FileName,
+                .Format = "ibm.scan",
+                .Heads = CommandLineBuilder.TrackHeads.head0
+            }
+            Builder.AddCylinder(0)
 
-            Dim Content As String = ""
-            Try
-                Content = GetGreaseweazleOutput(AppPath, Arguments)
-            Finally
-                ParentForm.Cursor = Cursors.Default
-            End Try
+            ConsoleProcessRunner.RunProcess(AppPath, Builder.Arguments, captureOutput:=False, captureError:=False)
 
-            Dim frmTextView = New TextViewForm("Greaseweazle - " & My.Resources.label_info, Content, False, True, "GreaseweazleInfo.txt")
-            frmTextView.ShowDialog(ParentForm)
-        End Sub
+            Return (IO.File.Exists(FileName), FileName)
+        End Function
 
         Public Sub DisplayInvalidApplicationPathMsg()
             MessageBox.Show(My.Resources.Dialog_InvalidApplicationPath, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error)
         End Sub
 
-        Public Function GetGreaseweazleFloppyTypeDescription(Value As GreaseweazleFloppyType) As String
-            Select Case Value
-                Case GreaseweazleFloppyType.F525_DD_360K
-                    Return "5.25"" 360 KB (Double Density)"
-                Case GreaseweazleFloppyType.F35_DD_720K
-                    Return "3.5"" 720 KB (Double Density)"
-                Case GreaseweazleFloppyType.F525_HD_12M
-                    Return "5.25"" 1.2 MB (High Density)"
-                Case GreaseweazleFloppyType.F35_HD_144M
-                    Return "3.5"" 1.44 MB (High Density)"
-                Case GreaseweazleFloppyType.F35_ED_288M
-                    Return "3.5"" 2.88 MB (Extra Density)"
-                Case Else
-                    Return "None"
-            End Select
-        End Function
-
-        Public Function GetGreaseweazleFloppyTypeName(Value As GreaseweazleFloppyType) As String
-            Select Case Value
-                Case GreaseweazleFloppyType.F525_DD_360K
-                    Return "360"
-                Case GreaseweazleFloppyType.F35_DD_720K
-                    Return "720"
-                Case GreaseweazleFloppyType.F525_HD_12M
-                    Return "1200"
-                Case GreaseweazleFloppyType.F35_HD_144M
-                    Return "1440"
-                Case GreaseweazleFloppyType.F35_ED_288M
-                    Return "2880"
-                Case Else
-                    Return ""
-            End Select
-        End Function
-
-        Public Function GetGreaseweazleFoppyTypeFromName(Value As String) As GreaseweazleFloppyType
-            Select Case Value
-                Case "360"
-                    Return GreaseweazleFloppyType.F525_DD_360K
-                Case "720"
-                    Return GreaseweazleFloppyType.F35_DD_720K
-                Case "1200"
-                    Return GreaseweazleFloppyType.F525_HD_12M
-                Case "1440"
-                    Return GreaseweazleFloppyType.F35_HD_144M
-                Case "2880"
-                    Return GreaseweazleFloppyType.F35_ED_288M
-                Case Else
-                    Return GreaseweazleFloppyType.None
-            End Select
-        End Function
-
-        Public Function GetGreaseweazleInterfaceName(Value As GreaseweazleInterface) As String
-            Select Case Value
-                Case GreaseweazleInterface.Shugart
-                    Return "Shugart"
-                Case Else
-                    Return "IBM"
-            End Select
-        End Function
-
-        Public Function GetGreaseweazleInterfacFromName(Value As String) As GreaseweazleInterface
-            Select Case Value
-                Case "Shugart"
-                    Return GreaseweazleInterface.Shugart
-                Case Else
-                    Return GreaseweazleInterface.IBM
-            End Select
-        End Function
-
-        Public Function GetGreaseweazleOutput(AppPath As String, Arguments As String) As String
-            Dim psi As New ProcessStartInfo() With {
-                .FileName = AppPath,
-                .Arguments = Arguments,
-                .RedirectStandardOutput = True,
-                .RedirectStandardError = True,
-                .UseShellExecute = False,
-                .CreateNoWindow = True
-            }
-
-            Dim outputBuilder As New StringBuilder()
-
-            Using proc As New Process()
-                proc.StartInfo = psi
-                AddHandler proc.OutputDataReceived, Sub(sender, e)
-                                                        If e.Data IsNot Nothing Then
-                                                            SyncLock outputBuilder
-                                                                outputBuilder.AppendLine(e.Data)
-                                                            End SyncLock
-                                                        End If
-                                                    End Sub
-                AddHandler proc.ErrorDataReceived, Sub(sender, e)
-                                                       If e.Data IsNot Nothing Then
-                                                           SyncLock outputBuilder
-                                                               outputBuilder.AppendLine(e.Data)
-                                                           End SyncLock
-                                                       End If
-                                                   End Sub
-
-                proc.Start()
-                proc.BeginOutputReadLine()
-                proc.BeginErrorReadLine()
-                proc.WaitForExit()
-            End Using
-
-            Return outputBuilder.ToString
-        End Function
-
         Public Function GetFirstRawFile(FilePath As String) As String
             Dim RawFileName As String = ""
 
             For Each file In IO.Directory.EnumerateFiles(FilePath, "*.raw", IO.SearchOption.TopDirectoryOnly)
-                Dim name = IO.Path.GetFileNameWithoutExtension(file)
-                Dim PrefixMatch = Regex.Match(name, "^(.*?)(\d+)\.\d+$")
+                Dim name = IO.Path.GetFileName(file)
+                Dim PrefixMatch = Regex.Match(name, REGEX_RAW_FILE, RegexOptions.IgnoreCase)
                 If PrefixMatch.Success Then
                     RawFileName = file
                     Exit For
@@ -265,30 +89,31 @@ Namespace Greaseweazle
                 Return (False, TrackCount, SideCount)
             End If
 
-            Dim BaseName = IO.Path.GetFileNameWithoutExtension(FilePath)
-
-            Dim PrefixMatch = Regex.Match(BaseName, "^(.*?)(\d+)\.\d+$")
+            Dim BaseName = IO.Path.GetFileName(FilePath)
+            Dim PrefixMatch = Regex.Match(BaseName, REGEX_RAW_FILE, RegexOptions.IgnoreCase)
             If Not PrefixMatch.Success Then
                 Return (False, TrackCount, SideCount)
             End If
 
-            Dim Prefix As String = PrefixMatch.Groups(1).Value
-            Dim rxPattern As String = "^" & Regex.Escape(Prefix) & "(?<trk>\d+)\.(?<side>\d+)\.raw$"
-            Dim rx As New Regex(rxPattern, RegexOptions.IgnoreCase)
+            Dim Prefix As String = PrefixMatch.Groups("diskId").Value
+            Dim rx As New Regex(REGEX_RAW_FILE, RegexOptions.IgnoreCase)
 
             For Each file In IO.Directory.EnumerateFiles(ParentDir, Prefix & "*.raw", IO.SearchOption.TopDirectoryOnly)
                 Dim name = IO.Path.GetFileName(file)
                 Dim m = rx.Match(name)
                 If m.Success Then
-                    Dim trk As Integer = Integer.Parse(m.Groups("trk").Value)
-                    Dim side As Integer = Integer.Parse(m.Groups("side").Value)
+                    Dim diskId As String = m.Groups("diskId").Value
+                    If String.Equals(diskId, Prefix, StringComparison.OrdinalIgnoreCase) Then
+                        Dim trk As Integer = Integer.Parse(m.Groups("track").Value)
+                        Dim side As Integer = Integer.Parse(m.Groups("side").Value)
 
-                    If trk >= TrackCount Then
-                        TrackCount = trk + 1
-                    End If
+                        If trk >= TrackCount Then
+                            TrackCount = trk + 1
+                        End If
 
-                    If side >= SideCount Then
-                        SideCount = side + 1
+                        If side >= SideCount Then
+                            SideCount = side + 1
+                        End If
                     End If
                 End If
             Next
@@ -331,154 +156,7 @@ Namespace Greaseweazle
             End Using
         End Function
 
-        Public Function GreaseweazleImageFormatRPM(Value As GreaseweazleImageFormat) As Integer
-            Select Case Value
-                Case GreaseweazleImageFormat.IBM_1200
-                    Return 360
-                Case Else
-                    Return 300
-            End Select
-        End Function
-
-        Public Function GreaseweazleImageFormatBitrate(Value As GreaseweazleImageFormat) As Integer
-            Select Case Value
-                Case GreaseweazleImageFormat.IBM_1200, GreaseweazleImageFormat.IBM_1440, GreaseweazleImageFormat.IBM_DMF
-                    Return 500
-                Case GreaseweazleImageFormat.IBM_2880
-                    Return 1000
-                Case Else
-                    Return 250
-            End Select
-        End Function
-
-        Public Function GreaseweazleImageFormatCommandLine(Value As GreaseweazleImageFormat) As String
-            Select Case Value
-                Case GreaseweazleImageFormat.None
-                    Return "ibm.scan"
-                Case GreaseweazleImageFormat.IBM_160
-                    Return "ibm.160"
-                Case GreaseweazleImageFormat.IBM_180
-                    Return "ibm.180"
-                Case GreaseweazleImageFormat.IBM_320
-                    Return "ibm.320"
-                Case GreaseweazleImageFormat.IBM_360
-                    Return "ibm.360"
-                Case GreaseweazleImageFormat.IBM_1200
-                    Return "ibm.1200"
-                Case GreaseweazleImageFormat.IBM_720
-                    Return "ibm.720"
-                Case GreaseweazleImageFormat.IBM_800
-                    Return "ibm.800"
-                Case GreaseweazleImageFormat.IBM_1440
-                    Return "ibm.1440"
-                Case GreaseweazleImageFormat.IBM_2880
-                    Return "ibm.2880"
-                Case GreaseweazleImageFormat.IBM_DMF
-                    Return "ibm.dmf"
-                Case Else
-                    Return "ibm.scan"
-            End Select
-        End Function
-
-        Public Function GreaseweazleImageFormatDescription(Value As GreaseweazleImageFormat) As String
-            Select Case Value
-                Case GreaseweazleImageFormat.None
-                    Return "Please Select"
-                Case GreaseweazleImageFormat.IBM_160
-                    Return "5.25"" 160 KB (SS, DD)"
-                Case GreaseweazleImageFormat.IBM_180
-                    Return "5.25"" 180 KB (SS, DD)"
-                Case GreaseweazleImageFormat.IBM_320
-                    Return "5.25"" 320 KB (DS, DD)"
-                Case GreaseweazleImageFormat.IBM_360
-                    Return "5.25"" 360 KB (DS, DD)"
-                Case GreaseweazleImageFormat.IBM_1200
-                    Return "5.25"" 1.2 MB (DS, HD)"
-                Case GreaseweazleImageFormat.IBM_720
-                    Return "3.5"" 720 KB (DS, DD)"
-                Case GreaseweazleImageFormat.IBM_800
-                    Return "3.5"" 800 KB (DS, DD)"
-                Case GreaseweazleImageFormat.IBM_1440
-                    Return "3.5"" 1.44 MB (DS, HD)"
-                Case GreaseweazleImageFormat.IBM_2880
-                    Return "3.5"" 2.88 MB (DS, ED)"
-                Case GreaseweazleImageFormat.IBM_DMF
-                    Return "3.5"" 1.68 MB (DS, HD, DMF)"
-                Case Else
-                    Return ""
-            End Select
-        End Function
-
-        Public Function GreaseweazleImageFormatFromFloppyDiskFormat(Format As DiskImage.FloppyDiskFormat) As GreaseweazleImageFormat
-            Select Case Format
-                Case DiskImage.FloppyDiskFormat.Floppy160
-                    Return GreaseweazleImageFormat.IBM_160
-                Case DiskImage.FloppyDiskFormat.Floppy180
-                    Return GreaseweazleImageFormat.IBM_180
-                Case DiskImage.FloppyDiskFormat.Floppy320
-                    Return GreaseweazleImageFormat.IBM_320
-                Case DiskImage.FloppyDiskFormat.Floppy360
-                    Return GreaseweazleImageFormat.IBM_360
-                Case DiskImage.FloppyDiskFormat.Floppy720
-                    Return GreaseweazleImageFormat.IBM_720
-                Case DiskImage.FloppyDiskFormat.Floppy1200
-                    Return GreaseweazleImageFormat.IBM_1200
-                Case DiskImage.FloppyDiskFormat.Floppy1440
-                    Return GreaseweazleImageFormat.IBM_1440
-                Case DiskImage.FloppyDiskFormat.Floppy2880
-                    Return GreaseweazleImageFormat.IBM_2880
-                Case DiskImage.FloppyDiskFormat.FloppyDMF1024, DiskImage.FloppyDiskFormat.FloppyDMF2048
-                    Return GreaseweazleImageFormat.IBM_DMF
-                Case Else
-                    Return GreaseweazleImageFormat.None
-            End Select
-        End Function
-
-        Public Function GreaseweazleImageFormatSideCount(Value As GreaseweazleImageFormat) As Integer
-            Select Case Value
-                Case GreaseweazleImageFormat.IBM_160, GreaseweazleImageFormat.IBM_180
-                    Return 1
-                Case Else
-                    Return 2
-            End Select
-        End Function
-
-        Public Function GreaseweazleImageFormatTrackCount(Value As GreaseweazleImageFormat) As Integer
-            Select Case Value
-                Case GreaseweazleImageFormat.IBM_160, GreaseweazleImageFormat.IBM_180, GreaseweazleImageFormat.IBM_320, GreaseweazleImageFormat.IBM_360
-                    Return 40
-                Case Else
-                    Return 80
-            End Select
-        End Function
-
-        Public Function GreaseweazleOutputTypeDescription(Value As GreaseweazleOutputType) As String
-            Select Case Value
-                Case GreaseweazleOutputType.HFE
-                    Return "HxC HFE Image (.hfe)"
-                Case GreaseweazleOutputType.IMA
-                    Return "Basic Sector Image (.ima)"
-                Case GreaseweazleOutputType.IMG
-                    Return "Basic Sector Image (.img)"
-                Case Else
-                    Return ""
-            End Select
-        End Function
-
-        Public Function GreaseweazleOutputTypeFileExt(Value As GreaseweazleOutputType) As String
-            Select Case Value
-                Case GreaseweazleOutputType.HFE
-                    Return ".hfe"
-                Case GreaseweazleOutputType.IMA
-                    Return ".ima"
-                Case GreaseweazleOutputType.IMG
-                    Return ".img"
-                Case Else
-                    Return ".ima"
-            End Select
-        End Function
-
-        Public Function ImportFluxImage(FilePath As String, ParentForm As Form) As String
+        Public Function ImportFluxImage(FilePath As String, ParentForm As Form) As (Result As Boolean, OutputFile As String, NewFileName As String)
             Dim FileExt = IO.Path.GetExtension(FilePath).ToLower
             Dim TrackCount As Integer = 0
             Dim SideCount As Integer = 0
@@ -487,7 +165,7 @@ Namespace Greaseweazle
                 Dim Response = GetTrackCountRaw(FilePath)
                 If Not Response.Result Then
                     MsgBox(My.Resources.Dialog_InvalidKryofluxFile, MsgBoxStyle.Exclamation)
-                    Return ""
+                    Return (False, "", "")
                 Else
                     TrackCount = Response.Tracks
                     SideCount = Response.Sides
@@ -502,7 +180,7 @@ Namespace Greaseweazle
                 End If
             Else
                 MsgBox(My.Resources.Dialog_InvalidFileType, MsgBoxStyle.Exclamation)
-                Return ""
+                Return (False, "", "")
             End If
 
             If SideCount > 2 Then
@@ -516,17 +194,53 @@ Namespace Greaseweazle
             Dim Form As New ImageImportForm(FilePath, TrackCount, SideCount)
             If Form.ShowDialog(ParentForm) = DialogResult.OK Then
                 If Not String.IsNullOrEmpty(Form.OutputFilePath) Then
-                    Return Form.OutputFilePath
+                    Return (True, Form.OutputFilePath, Form.GetNewFileName)
                 End If
             End If
 
-            Return ""
+            Return (False, "", "")
         End Function
 
+        Public Sub InfoDisplay(ParentForm As Form)
+            Dim AppPath As String = My.Settings.GW_Path
+
+            If Not IsValidGreaseweazlePath(AppPath) Then
+                DisplayInvalidApplicationPathMsg()
+                Exit Sub
+            End If
+
+            ParentForm.Cursor = Cursors.WaitCursor
+            Application.DoEvents()
+
+            Dim Builder = New CommandLineBuilder(CommandLineBuilder.CommandAction.info)
+            Dim Arguments = Builder.Arguments
+
+            Dim Content As String = ""
+            Try
+                Dim Result = ConsoleProcessRunner.RunProcess(AppPath, Arguments)
+                Content = Result.CombinedOutput
+            Finally
+                ParentForm.Cursor = Cursors.Default
+            End Try
+
+            Dim frmTextView = New TextViewForm("Greaseweazle - " & My.Resources.Label_Info, Content, False, True, "GreaseweazleInfo.txt")
+            frmTextView.ShowDialog(ParentForm)
+        End Sub
+
+        Public Sub InitializeCombo(Combo As ComboBox, DataSource As Object, CurrentValue As Object)
+            Combo.DisplayMember = "Key"
+            Combo.ValueMember = "Value"
+            Combo.DataSource = DataSource
+            Combo.DropDownStyle = ComboBoxStyle.DropDownList
+
+            If CurrentValue IsNot Nothing Then
+                Combo.SelectedValue = CurrentValue
+            End If
+        End Sub
         Public Function IsExecutable(path As String) As Boolean
             Return Not String.IsNullOrWhiteSpace(path) AndAlso
-           IO.File.Exists(path) AndAlso
-           IO.Path.GetExtension(path).Equals(".exe", StringComparison.OrdinalIgnoreCase)
+                IO.File.Exists(path) AndAlso
+                IO.Path.GetExtension(path).Equals(".exe", StringComparison.OrdinalIgnoreCase)
         End Function
 
         Public Function IsValidGreaseweazlePath(Path As String) As Boolean

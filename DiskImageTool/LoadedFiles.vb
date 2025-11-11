@@ -11,13 +11,15 @@
         End Get
     End Property
 
-    Public Function Add(Key As String, FileName As String, FileType As ImageData.FileTypeEnum, Optional CompressedFile As String = "") As ImageData
+    Public Function Add(Key As String, FileName As String, FileType As ImageData.FileTypeEnum, Optional CompressedFile As String = "", Optional NewFileName As String = "") As ImageData
         If Not _FileNames.ContainsKey(Key) Then
             Dim ImageData = New ImageData(FileName) With {
                 .FileType = FileType
             }
             If ImageData.FileType = ImageData.FileTypeEnum.Compressed Then
                 ImageData.CompressedFile = CompressedFile
+            ElseIf ImageData.FileType = ImageData.FileTypeEnum.NewImage Then
+                ImageData.NewFileName = NewFileName
             End If
 
             _FileNames.Add(Key, ImageData)

@@ -308,8 +308,8 @@ Module ImageIO
         Return FileFilter
     End Function
 
-    Public Function GetSaveDialogFilters(DiskFormat As FloppyDiskFormat, ImageType As FloppyImageType, FileExt As String) As SaveDialogFilter
-        Dim Response As SaveDialogFilter
+    Public Function GetSaveDialogFilters(DiskFormat As FloppyDiskFormat, ImageType As FloppyImageType, FileExt As String) As (Filter As String, FilterIndex As Integer)
+        Dim Response As (Filter As String, FilterIndex As Integer)
         Dim CurrentIndex As Integer = 1
         Dim Extension As String
         Dim ExtensionList As List(Of String)

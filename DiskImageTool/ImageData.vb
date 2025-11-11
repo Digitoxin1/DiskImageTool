@@ -17,6 +17,7 @@
         _FileType = FileTypeEnum.Standard
         _SourceFile = SourceFile
         _Modifications = Nothing
+        _NewFileName = ""
         _OEMName = ""
         _ReadOnly = False
         _Scanned = False
@@ -49,6 +50,7 @@
     Public Property InvalidImage As Boolean
     Public Property Loaded As Boolean
     Public Property Modifications As Stack(Of DiskImage.DataChange())
+    Public Property NewFileName As String
     Public Property OEMName As String
     Public Property Scanned As Boolean
     Public Property SortHistory As List(Of SortEntity)
@@ -73,14 +75,20 @@
         If _FileType = FileTypeEnum.Compressed Then
             FullPath = IO.Path.Combine(FullPath, Replace(_CompressedFile, "/", "\"))
         ElseIf _filetype = FileTypeEnum.NewImage Then
-            FullPath = IO.Path.GetFileName(FullPath)
+            If _NewFileName = "" Then
+                FullPath = IO.Path.GetFileName(FullPath)
+            Else
+                FullPath = _NewFileName
+            End If
         End If
-        Return FullPath
+            Return FullPath
     End Function
 
     Public Function FileName() As String
         If _FileType = FileTypeEnum.Compressed Then
             Return IO.Path.GetFileName(_CompressedFile)
+        ElseIf _filetype = FileTypeEnum.NewImage AndAlso _newfilename <> "" Then
+            Return _NewFileName
         Else
             Return IO.Path.GetFileName(_SourceFile)
         End If
@@ -95,6 +103,8 @@
 
         If _FileType = FileTypeEnum.Compressed Then
             FilePath = IO.Path.Combine(IO.Path.GetDirectoryName(_SourceFile), _CompressedFile)
+        ElseIf _filetype = FileTypeEnum.NewImage AndAlso _NewFileName <> "" Then
+            FilePath = _NewFileName
         Else
             FilePath = _SourceFile
         End If

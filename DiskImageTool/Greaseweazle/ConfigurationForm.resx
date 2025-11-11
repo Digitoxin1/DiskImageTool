@@ -120,9 +120,6 @@
   <metadata name="LabelApplicationPath.GenerateMember" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
     <value>False</value>
   </metadata>
-  <metadata name="LabelApplicationPath.Locked" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
-    <value>True</value>
-  </metadata>
   <assembly alias="System.Windows.Forms" name="System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
   <data name="LabelApplicationPath.Anchor" type="System.Windows.Forms.AnchorStyles, System.Windows.Forms">
     <value>Left</value>
@@ -159,9 +156,6 @@
   <metadata name="LabelDriveInterface.GenerateMember" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
     <value>False</value>
   </metadata>
-  <metadata name="LabelDriveInterface.Locked" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
-    <value>True</value>
-  </metadata>
   <data name="LabelDriveInterface.Anchor" type="System.Windows.Forms.AnchorStyles, System.Windows.Forms">
     <value>Left</value>
   </data>
@@ -192,9 +186,6 @@
   <data name="&gt;&gt;LabelDriveInterface.ZOrder" xml:space="preserve">
     <value>1</value>
   </data>
-  <metadata name="LabelDriveType0.Locked" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
-    <value>True</value>
-  </metadata>
   <data name="LabelDriveType0.Anchor" type="System.Windows.Forms.AnchorStyles, System.Windows.Forms">
     <value>Left</value>
   </data>
@@ -226,9 +217,6 @@
   <data name="&gt;&gt;LabelDriveType0.ZOrder" xml:space="preserve">
     <value>2</value>
   </data>
-  <metadata name="LabelDriveType1.Locked" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
-    <value>True</value>
-  </metadata>
   <data name="LabelDriveType1.Anchor" type="System.Windows.Forms.AnchorStyles, System.Windows.Forms">
     <value>Left</value>
   </data>
@@ -260,9 +248,6 @@
   <data name="&gt;&gt;LabelDriveType1.ZOrder" xml:space="preserve">
     <value>3</value>
   </data>
-  <metadata name="LabelDriveType2.Locked" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
-    <value>True</value>
-  </metadata>
   <data name="LabelDriveType2.Anchor" type="System.Windows.Forms.AnchorStyles, System.Windows.Forms">
     <value>Left</value>
   </data>
@@ -294,11 +279,8 @@
   <data name="&gt;&gt;LabelDriveType2.ZOrder" xml:space="preserve">
     <value>4</value>
   </data>
-  <metadata name="FlowLayoutPanelBottom.Locked" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
-    <value>True</value>
-  </metadata>
   <data name="FlowLayoutPanelBottom.Anchor" type="System.Windows.Forms.AnchorStyles, System.Windows.Forms">
-    <value>Bottom</value>
+    <value>Bottom, Left</value>
   </data>
   <data name="FlowLayoutPanelBottom.AutoSize" type="System.Boolean, mscorlib">
     <value>True</value>
@@ -306,9 +288,6 @@
   <data name="FlowLayoutPanelBottom.AutoSizeMode" type="System.Windows.Forms.AutoSizeMode, System.Windows.Forms">
     <value>GrowAndShrink</value>
   </data>
-  <metadata name="BtnUpdate.Locked" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
-    <value>True</value>
-  </metadata>
   <data name="BtnUpdate.AutoSizeMode" type="System.Windows.Forms.AutoSizeMode, System.Windows.Forms">
     <value>GrowAndShrink</value>
   </data>
@@ -316,7 +295,10 @@
     <value>NoControl</value>
   </data>
   <data name="BtnUpdate.Location" type="System.Drawing.Point, System.Drawing">
-    <value>3, 3</value>
+    <value>0, 0</value>
+  </data>
+  <data name="BtnUpdate.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
+    <value>0, 0, 4, 0</value>
   </data>
   <data name="BtnUpdate.Size" type="System.Drawing.Size, System.Drawing">
     <value>90, 23</value>
@@ -339,9 +321,6 @@
   <data name="&gt;&gt;BtnUpdate.ZOrder" xml:space="preserve">
     <value>0</value>
   </data>
-  <metadata name="BtnCancel.Locked" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
-    <value>True</value>
-  </metadata>
   <data name="BtnCancel.AutoSizeMode" type="System.Windows.Forms.AutoSizeMode, System.Windows.Forms">
     <value>GrowAndShrink</value>
   </data>
@@ -349,7 +328,10 @@
     <value>NoControl</value>
   </data>
   <data name="BtnCancel.Location" type="System.Drawing.Point, System.Drawing">
-    <value>99, 3</value>
+    <value>98, 0</value>
+  </data>
+  <data name="BtnCancel.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
+    <value>4, 0, 0, 0</value>
   </data>
   <data name="BtnCancel.Size" type="System.Drawing.Size, System.Drawing">
     <value>90, 23</value>
@@ -373,10 +355,13 @@
     <value>1</value>
   </data>
   <data name="FlowLayoutPanelBottom.Location" type="System.Drawing.Point, System.Drawing">
-    <value>240, 280</value>
+    <value>441, 253</value>
+  </data>
+  <data name="FlowLayoutPanelBottom.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
+    <value>0, 0, 0, 0</value>
   </data>
   <data name="FlowLayoutPanelBottom.Size" type="System.Drawing.Size, System.Drawing">
-    <value>192, 29</value>
+    <value>188, 23</value>
   </data>
   <data name="FlowLayoutPanelBottom.TabIndex" type="System.Int32, mscorlib">
     <value>5</value>
@@ -393,9 +378,6 @@
   <data name="&gt;&gt;FlowLayoutPanelBottom.ZOrder" xml:space="preserve">
     <value>1</value>
   </data>
-  <metadata name="TableLayoutPanel1.Locked" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
-    <value>True</value>
-  </metadata>
   <data name="TableLayoutPanel1.AutoSize" type="System.Boolean, mscorlib">
     <value>True</value>
   </data>
@@ -405,9 +387,141 @@
   <data name="TableLayoutPanel1.ColumnCount" type="System.Int32, mscorlib">
     <value>6</value>
   </data>
-  <metadata name="ComboDriveType2.Locked" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
-    <value>True</value>
-  </metadata>
+  <data name="&gt;&gt;ComboDriveType2.Name" xml:space="preserve">
+    <value>ComboDriveType2</value>
+  </data>
+  <data name="&gt;&gt;ComboDriveType2.Type" xml:space="preserve">
+    <value>System.Windows.Forms.ComboBox, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;ComboDriveType2.Parent" xml:space="preserve">
+    <value>TableLayoutPanel1</value>
+  </data>
+  <data name="&gt;&gt;ComboDriveType2.ZOrder" xml:space="preserve">
+    <value>5</value>
+  </data>
+  <data name="&gt;&gt;ComboDriveType1.Name" xml:space="preserve">
+    <value>ComboDriveType1</value>
+  </data>
+  <data name="&gt;&gt;ComboDriveType1.Type" xml:space="preserve">
+    <value>System.Windows.Forms.ComboBox, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;ComboDriveType1.Parent" xml:space="preserve">
+    <value>TableLayoutPanel1</value>
+  </data>
+  <data name="&gt;&gt;ComboDriveType1.ZOrder" xml:space="preserve">
+    <value>6</value>
+  </data>
+  <data name="&gt;&gt;ComboDriveType0.Name" xml:space="preserve">
+    <value>ComboDriveType0</value>
+  </data>
+  <data name="&gt;&gt;ComboDriveType0.Type" xml:space="preserve">
+    <value>System.Windows.Forms.ComboBox, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;ComboDriveType0.Parent" xml:space="preserve">
+    <value>TableLayoutPanel1</value>
+  </data>
+  <data name="&gt;&gt;ComboDriveType0.ZOrder" xml:space="preserve">
+    <value>7</value>
+  </data>
+  <data name="&gt;&gt;ComboInterface.Name" xml:space="preserve">
+    <value>ComboInterface</value>
+  </data>
+  <data name="&gt;&gt;ComboInterface.Type" xml:space="preserve">
+    <value>System.Windows.Forms.ComboBox, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;ComboInterface.Parent" xml:space="preserve">
+    <value>TableLayoutPanel1</value>
+  </data>
+  <data name="&gt;&gt;ComboInterface.ZOrder" xml:space="preserve">
+    <value>8</value>
+  </data>
+  <data name="&gt;&gt;TextBoxPath.Name" xml:space="preserve">
+    <value>TextBoxPath</value>
+  </data>
+  <data name="&gt;&gt;TextBoxPath.Type" xml:space="preserve">
+    <value>System.Windows.Forms.TextBox, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;TextBoxPath.Parent" xml:space="preserve">
+    <value>TableLayoutPanel1</value>
+  </data>
+  <data name="&gt;&gt;TextBoxPath.ZOrder" xml:space="preserve">
+    <value>9</value>
+  </data>
+  <data name="&gt;&gt;ButtonBrowse.Name" xml:space="preserve">
+    <value>ButtonBrowse</value>
+  </data>
+  <data name="&gt;&gt;ButtonBrowse.Type" xml:space="preserve">
+    <value>System.Windows.Forms.Button, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;ButtonBrowse.Parent" xml:space="preserve">
+    <value>TableLayoutPanel1</value>
+  </data>
+  <data name="&gt;&gt;ButtonBrowse.ZOrder" xml:space="preserve">
+    <value>10</value>
+  </data>
+  <data name="&gt;&gt;ButtonClear.Name" xml:space="preserve">
+    <value>ButtonClear</value>
+  </data>
+  <data name="&gt;&gt;ButtonClear.Type" xml:space="preserve">
+    <value>System.Windows.Forms.Button, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;ButtonClear.Parent" xml:space="preserve">
+    <value>TableLayoutPanel1</value>
+  </data>
+  <data name="&gt;&gt;ButtonClear.ZOrder" xml:space="preserve">
+    <value>11</value>
+  </data>
+  <data name="&gt;&gt;TextBoxInfo.Name" xml:space="preserve">
+    <value>TextBoxInfo</value>
+  </data>
+  <data name="&gt;&gt;TextBoxInfo.Type" xml:space="preserve">
+    <value>System.Windows.Forms.TextBox, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;TextBoxInfo.Parent" xml:space="preserve">
+    <value>TableLayoutPanel1</value>
+  </data>
+  <data name="&gt;&gt;TextBoxInfo.ZOrder" xml:space="preserve">
+    <value>12</value>
+  </data>
+  <data name="&gt;&gt;ButtonInfo.Name" xml:space="preserve">
+    <value>ButtonInfo</value>
+  </data>
+  <data name="&gt;&gt;ButtonInfo.Type" xml:space="preserve">
+    <value>System.Windows.Forms.Button, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;ButtonInfo.Parent" xml:space="preserve">
+    <value>TableLayoutPanel1</value>
+  </data>
+  <data name="&gt;&gt;ButtonInfo.ZOrder" xml:space="preserve">
+    <value>13</value>
+  </data>
+  <data name="TableLayoutPanel1.Location" type="System.Drawing.Point, System.Drawing">
+    <value>21, 21</value>
+  </data>
+  <data name="TableLayoutPanel1.RowCount" type="System.Int32, mscorlib">
+    <value>6</value>
+  </data>
+  <data name="TableLayoutPanel1.Size" type="System.Drawing.Size, System.Drawing">
+    <value>608, 214</value>
+  </data>
+  <data name="TableLayoutPanel1.TabIndex" type="System.Int32, mscorlib">
+    <value>0</value>
+  </data>
+  <data name="&gt;&gt;TableLayoutPanel1.Name" xml:space="preserve">
+    <value>TableLayoutPanel1</value>
+  </data>
+  <data name="&gt;&gt;TableLayoutPanel1.Type" xml:space="preserve">
+    <value>System.Windows.Forms.TableLayoutPanel, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;TableLayoutPanel1.Parent" xml:space="preserve">
+    <value>$this</value>
+  </data>
+  <data name="&gt;&gt;TableLayoutPanel1.ZOrder" xml:space="preserve">
+    <value>0</value>
+  </data>
+  <data name="TableLayoutPanel1.LayoutSettings" type="System.Windows.Forms.TableLayoutSettings, System.Windows.Forms">
+    <value>&lt;?xml version="1.0" encoding="utf-16"?&gt;&lt;TableLayoutSettings&gt;&lt;Controls&gt;&lt;Control Name="LabelApplicationPath" Row="0" RowSpan="1" Column="0" ColumnSpan="1" /&gt;&lt;Control Name="LabelDriveInterface" Row="1" RowSpan="1" Column="0" ColumnSpan="1" /&gt;&lt;Control Name="LabelDriveType0" Row="2" RowSpan="1" Column="0" ColumnSpan="1" /&gt;&lt;Control Name="LabelDriveType1" Row="3" RowSpan="1" Column="0" ColumnSpan="1" /&gt;&lt;Control Name="LabelDriveType2" Row="4" RowSpan="1" Column="0" ColumnSpan="1" /&gt;&lt;Control Name="ComboDriveType2" Row="4" RowSpan="1" Column="1" ColumnSpan="1" /&gt;&lt;Control Name="ComboDriveType1" Row="3" RowSpan="1" Column="1" ColumnSpan="1" /&gt;&lt;Control Name="ComboDriveType0" Row="2" RowSpan="1" Column="1" ColumnSpan="1" /&gt;&lt;Control Name="ComboInterface" Row="1" RowSpan="1" Column="1" ColumnSpan="1" /&gt;&lt;Control Name="TextBoxPath" Row="0" RowSpan="1" Column="1" ColumnSpan="3" /&gt;&lt;Control Name="ButtonBrowse" Row="0" RowSpan="1" Column="3" ColumnSpan="1" /&gt;&lt;Control Name="ButtonClear" Row="0" RowSpan="1" Column="5" ColumnSpan="1" /&gt;&lt;Control Name="TextBoxInfo" Row="2" RowSpan="4" Column="2" ColumnSpan="4" /&gt;&lt;Control Name="ButtonInfo" Row="1" RowSpan="1" Column="2" ColumnSpan="1" /&gt;&lt;/Controls&gt;&lt;Columns Styles="AutoSize,0,Percent,100,AutoSize,0,AutoSize,0,AutoSize,0,AutoSize,0" /&gt;&lt;Rows Styles="AutoSize,0,AutoSize,0,AutoSize,0,AutoSize,0,AutoSize,0,AutoSize,0" /&gt;&lt;/TableLayoutSettings&gt;</value>
+  </data>
   <data name="ComboDriveType2.Anchor" type="System.Windows.Forms.AnchorStyles, System.Windows.Forms">
     <value>Left</value>
   </data>
@@ -432,9 +546,6 @@
   <data name="&gt;&gt;ComboDriveType2.ZOrder" xml:space="preserve">
     <value>5</value>
   </data>
-  <metadata name="ComboDriveType1.Locked" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
-    <value>True</value>
-  </metadata>
   <data name="ComboDriveType1.Anchor" type="System.Windows.Forms.AnchorStyles, System.Windows.Forms">
     <value>Left</value>
   </data>
@@ -459,9 +570,6 @@
   <data name="&gt;&gt;ComboDriveType1.ZOrder" xml:space="preserve">
     <value>6</value>
   </data>
-  <metadata name="ComboDriveType0.Locked" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
-    <value>True</value>
-  </metadata>
   <data name="ComboDriveType0.Anchor" type="System.Windows.Forms.AnchorStyles, System.Windows.Forms">
     <value>Left</value>
   </data>
@@ -486,9 +594,6 @@
   <data name="&gt;&gt;ComboDriveType0.ZOrder" xml:space="preserve">
     <value>7</value>
   </data>
-  <metadata name="ComboInterface.Locked" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
-    <value>True</value>
-  </metadata>
   <data name="ComboInterface.Anchor" type="System.Windows.Forms.AnchorStyles, System.Windows.Forms">
     <value>Left</value>
   </data>
@@ -513,9 +618,6 @@
   <data name="&gt;&gt;ComboInterface.ZOrder" xml:space="preserve">
     <value>8</value>
   </data>
-  <metadata name="TextBoxPath.Locked" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
-    <value>True</value>
-  </metadata>
   <data name="TextBoxPath.Anchor" type="System.Windows.Forms.AnchorStyles, System.Windows.Forms">
     <value>Left</value>
   </data>
@@ -540,9 +642,6 @@
   <data name="&gt;&gt;TextBoxPath.ZOrder" xml:space="preserve">
     <value>9</value>
   </data>
-  <metadata name="ButtonBrowse.Locked" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
-    <value>True</value>
-  </metadata>
   <data name="ButtonBrowse.Anchor" type="System.Windows.Forms.AnchorStyles, System.Windows.Forms">
     <value>Left</value>
   </data>
@@ -570,9 +669,6 @@
   <data name="&gt;&gt;ButtonBrowse.ZOrder" xml:space="preserve">
     <value>10</value>
   </data>
-  <metadata name="ButtonClear.Locked" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
-    <value>True</value>
-  </metadata>
   <data name="ButtonClear.Anchor" type="System.Windows.Forms.AnchorStyles, System.Windows.Forms">
     <value>Left</value>
   </data>
@@ -600,9 +696,6 @@
   <data name="&gt;&gt;ButtonClear.ZOrder" xml:space="preserve">
     <value>11</value>
   </data>
-  <metadata name="TextBoxInfo.Locked" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
-    <value>True</value>
-  </metadata>
   <data name="TextBoxInfo.Anchor" type="System.Windows.Forms.AnchorStyles, System.Windows.Forms">
     <value>Top, Bottom, Left, Right</value>
   </data>
@@ -633,9 +726,6 @@
   <data name="&gt;&gt;TextBoxInfo.ZOrder" xml:space="preserve">
     <value>12</value>
   </data>
-  <metadata name="ButtonInfo.Locked" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
-    <value>True</value>
-  </metadata>
   <data name="ButtonInfo.Location" type="System.Drawing.Point, System.Drawing">
     <value>274, 32</value>
   </data>
@@ -660,37 +750,7 @@
   <data name="&gt;&gt;ButtonInfo.ZOrder" xml:space="preserve">
     <value>13</value>
   </data>
-  <data name="TableLayoutPanel1.Location" type="System.Drawing.Point, System.Drawing">
-    <value>22, 22</value>
-  </data>
-  <data name="TableLayoutPanel1.RowCount" type="System.Int32, mscorlib">
-    <value>6</value>
-  </data>
-  <data name="TableLayoutPanel1.Size" type="System.Drawing.Size, System.Drawing">
-    <value>608, 214</value>
-  </data>
-  <data name="TableLayoutPanel1.TabIndex" type="System.Int32, mscorlib">
-    <value>0</value>
-  </data>
-  <data name="&gt;&gt;TableLayoutPanel1.Name" xml:space="preserve">
-    <value>TableLayoutPanel1</value>
-  </data>
-  <data name="&gt;&gt;TableLayoutPanel1.Type" xml:space="preserve">
-    <value>System.Windows.Forms.TableLayoutPanel, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="&gt;&gt;TableLayoutPanel1.Parent" xml:space="preserve">
-    <value>$this</value>
-  </data>
-  <data name="&gt;&gt;TableLayoutPanel1.ZOrder" xml:space="preserve">
-    <value>0</value>
-  </data>
-  <data name="TableLayoutPanel1.LayoutSettings" type="System.Windows.Forms.TableLayoutSettings, System.Windows.Forms">
-    <value>&lt;?xml version="1.0" encoding="utf-16"?&gt;&lt;TableLayoutSettings&gt;&lt;Controls&gt;&lt;Control Name="LabelApplicationPath" Row="0" RowSpan="1" Column="0" ColumnSpan="1" /&gt;&lt;Control Name="LabelDriveInterface" Row="1" RowSpan="1" Column="0" ColumnSpan="1" /&gt;&lt;Control Name="LabelDriveType0" Row="2" RowSpan="1" Column="0" ColumnSpan="1" /&gt;&lt;Control Name="LabelDriveType1" Row="3" RowSpan="1" Column="0" ColumnSpan="1" /&gt;&lt;Control Name="LabelDriveType2" Row="4" RowSpan="1" Column="0" ColumnSpan="1" /&gt;&lt;Control Name="ComboDriveType2" Row="4" RowSpan="1" Column="1" ColumnSpan="1" /&gt;&lt;Control Name="ComboDriveType1" Row="3" RowSpan="1" Column="1" ColumnSpan="1" /&gt;&lt;Control Name="ComboDriveType0" Row="2" RowSpan="1" Column="1" ColumnSpan="1" /&gt;&lt;Control Name="ComboInterface" Row="1" RowSpan="1" Column="1" ColumnSpan="1" /&gt;&lt;Control Name="TextBoxPath" Row="0" RowSpan="1" Column="1" ColumnSpan="3" /&gt;&lt;Control Name="ButtonBrowse" Row="0" RowSpan="1" Column="3" ColumnSpan="1" /&gt;&lt;Control Name="ButtonClear" Row="0" RowSpan="1" Column="5" ColumnSpan="1" /&gt;&lt;Control Name="TextBoxInfo" Row="2" RowSpan="4" Column="2" ColumnSpan="4" /&gt;&lt;Control Name="ButtonInfo" Row="1" RowSpan="1" Column="2" ColumnSpan="1" /&gt;&lt;/Controls&gt;&lt;Columns Styles="AutoSize,0,Percent,100,AutoSize,0,AutoSize,0,AutoSize,0,AutoSize,0" /&gt;&lt;Rows Styles="AutoSize,0,AutoSize,0,AutoSize,0,AutoSize,0,AutoSize,0,AutoSize,0" /&gt;&lt;/TableLayoutSettings&gt;</value>
-  </data>
   <metadata name="$this.Localizable" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
-    <value>True</value>
-  </metadata>
-  <metadata name="$this.Locked" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
     <value>True</value>
   </metadata>
   <data name="$this.AutoScaleDimensions" type="System.Drawing.SizeF, System.Drawing">
@@ -703,10 +763,10 @@
     <value>GrowAndShrink</value>
   </data>
   <data name="$this.ClientSize" type="System.Drawing.Size, System.Drawing">
-    <value>672, 330</value>
+    <value>676, 288</value>
   </data>
   <data name="$this.Padding" type="System.Windows.Forms.Padding, System.Windows.Forms">
-    <value>18, 18, 18, 18</value>
+    <value>18, 18, 18, 12</value>
   </data>
   <data name="$this.StartPosition" type="System.Windows.Forms.FormStartPosition, System.Windows.Forms">
     <value>CenterParent</value>

@@ -202,7 +202,7 @@
     <value>4</value>
   </data>
   <data name="FlowLayoutPanel2.Anchor" type="System.Windows.Forms.AnchorStyles, System.Windows.Forms">
-    <value>Bottom, Right</value>
+    <value>Bottom</value>
   </data>
   <data name="FlowLayoutPanel2.AutoSize" type="System.Boolean, mscorlib">
     <value>True</value>

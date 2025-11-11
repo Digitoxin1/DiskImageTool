@@ -171,10 +171,12 @@
     <Compile Include="DiskImageLib.vb" />
     <Compile Include="Globals.vb" />
     <Compile Include="Greaseweazle\CommandLineBuilder.vb" />
-    <Compile Include="Greaseweazle\GreaseweazleConfigurationForm.Designer.vb">
-      <DependentUpon>GreaseweazleConfigurationForm.vb</DependentUpon>
+    <Compile Include="Greaseweazle\ConsoleOutputParser.vb" />
+    <Compile Include="Greaseweazle\Enums.vb" />
+    <Compile Include="Greaseweazle\ConfigurationForm.Designer.vb">
+      <DependentUpon>ConfigurationForm.vb</DependentUpon>
     </Compile>
-    <Compile Include="Greaseweazle\GreaseweazleConfigurationForm.vb">
+    <Compile Include="Greaseweazle\ConfigurationForm.vb">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="Greaseweazle\GreaseweazleLib.vb" />
@@ -736,17 +738,17 @@
     <EmbeddedResource Include="Forms\VolumeSerialNumberForm.resx">
       <DependentUpon>VolumeSerialNumberForm.vb</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Greaseweazle\GreaseweazleConfigurationForm.de.resx">
-      <DependentUpon>GreaseweazleConfigurationForm.vb</DependentUpon>
+    <EmbeddedResource Include="Greaseweazle\ConfigurationForm.de.resx">
+      <DependentUpon>ConfigurationForm.vb</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Greaseweazle\GreaseweazleConfigurationForm.es.resx">
-      <DependentUpon>GreaseweazleConfigurationForm.vb</DependentUpon>
+    <EmbeddedResource Include="Greaseweazle\ConfigurationForm.es.resx">
+      <DependentUpon>ConfigurationForm.vb</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Greaseweazle\GreaseweazleConfigurationForm.fr.resx">
-      <DependentUpon>GreaseweazleConfigurationForm.vb</DependentUpon>
+    <EmbeddedResource Include="Greaseweazle\ConfigurationForm.fr.resx">
+      <DependentUpon>ConfigurationForm.vb</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Greaseweazle\GreaseweazleConfigurationForm.resx">
-      <DependentUpon>GreaseweazleConfigurationForm.vb</DependentUpon>
+    <EmbeddedResource Include="Greaseweazle\ConfigurationForm.resx">
+      <DependentUpon>ConfigurationForm.vb</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Greaseweazle\ImageImportForm.de.resx">
       <DependentUpon>ImageImportForm.vb</DependentUpon>
@@ -800,6 +802,7 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
+    <None Include="ClassDiagram1.cd" />
     <None Include="DiskImageTool_TemporaryKey.pfx" />
     <None Include="My Project\app.manifest" />
     <None Include="My Project\Application.myapp">

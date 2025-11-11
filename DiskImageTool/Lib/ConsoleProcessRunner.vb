@@ -37,6 +37,104 @@ Public Class ConsoleProcessRunner
     Public Property StandardOutputEncoding As Encoding
     Public Property WorkingDirectory As String
 
+    Public Shared Function RunProcess(fileName As String,
+                                        arguments As String,
+                                        Optional workingDirectory As String = Nothing,
+                                        Optional captureOutput As Boolean = True,
+                                        Optional captureError As Boolean = True,
+                                        Optional timeoutMilliseconds As Integer = -1
+                                    ) As ProcessResult
+
+        Dim psi As New ProcessStartInfo(fileName, arguments) With {
+            .UseShellExecute = False,
+            .CreateNoWindow = True,
+            .RedirectStandardOutput = captureOutput,
+            .RedirectStandardError = captureError
+        }
+
+        If Not String.IsNullOrWhiteSpace(workingDirectory) Then
+            psi.WorkingDirectory = workingDirectory
+        End If
+
+        If captureOutput Then
+            psi.StandardOutputEncoding = Encoding.UTF8
+        End If
+
+        If captureError Then
+            psi.StandardErrorEncoding = Encoding.UTF8
+        End If
+
+        Dim sbOut As New StringBuilder()
+        Dim sbErr As New StringBuilder()
+        Dim sbAll As New StringBuilder()
+
+        Using proc As New Process()
+            proc.StartInfo = psi
+
+            If captureOutput Then
+                AddHandler proc.OutputDataReceived, Sub(sender, e)
+                                                        If e.Data IsNot Nothing Then
+                                                            SyncLock sbOut
+                                                                sbOut.AppendLine(e.Data)
+                                                                sbAll.AppendLine(e.Data)
+                                                            End SyncLock
+                                                        End If
+                                                    End Sub
+            End If
+
+            If captureError Then
+                AddHandler proc.ErrorDataReceived, Sub(sender, e)
+                                                       If e.Data IsNot Nothing Then
+                                                           SyncLock sbErr
+                                                               sbErr.AppendLine(e.Data)
+                                                               sbAll.AppendLine(e.Data)
+                                                           End SyncLock
+                                                       End If
+                                                   End Sub
+            End If
+
+            proc.Start()
+
+            If captureOutput Then
+                proc.BeginOutputReadLine()
+            End If
+
+            If captureError Then
+                proc.BeginErrorReadLine()
+            End If
+
+            Dim timedOut As Boolean = False
+
+            If timeoutMilliseconds >= 0 Then
+                ' Timed wait
+                If Not proc.WaitForExit(timeoutMilliseconds) Then
+                    timedOut = True
+                    Try
+                        proc.Kill()
+                    Catch
+                        ' ignore kill failures
+                    End Try
+                Else
+                    ' Ensure async readers flush remaining lines
+                    proc.WaitForExit()
+                End If
+            Else
+                ' No timeout: wait indefinitely
+                proc.WaitForExit()
+                proc.WaitForExit() ' once more to ensure async handlers finish
+            End If
+
+            Return New ProcessResult(
+                exitCode:=If(timedOut, -1, proc.ExitCode),
+                combined:=If(captureOutput Or captureError, sbAll.ToString(), String.Empty),
+                stdOut:=If(captureOutput, sbOut.ToString(), String.Empty),
+                stdErr:=If(captureError, sbErr.ToString(), String.Empty),
+                timedOut:=timedOut
+            )
+        End Using
+
+    End Function
+
     Public Sub Cancel()
         If _proc IsNot Nothing AndAlso Not _proc.HasExited Then
             Try
@@ -81,7 +179,10 @@ Public Class ConsoleProcessRunner
             psi.StandardErrorEncoding = StandardErrorEncoding
         End If
 
-        _proc = New Process() With {.StartInfo = psi, .EnableRaisingEvents = True}
+        _proc = New Process() With {
+            .StartInfo = psi,
+            .EnableRaisingEvents = True
+        }
 
         ' Wire cancellation: kill process & children if requested
         If ct.CanBeCanceled Then
@@ -195,4 +296,20 @@ Public Class ConsoleProcessRunner
             action()
         End If
     End Sub
+
+    Public Structure ProcessResult
+        Public ReadOnly ExitCode As Integer
+        Public ReadOnly CombinedOutput As String
+        Public ReadOnly StdErr As String
+        Public ReadOnly StdOut As String
+        Public ReadOnly TimedOut As Boolean
+
+        Public Sub New(exitCode As Integer, stdOut As String, stdErr As String, combined As String, timedOut As Boolean)
+            Me.CombinedOutput = combined
+            Me.ExitCode = exitCode
+            Me.StdOut = stdOut
+            Me.StdErr = stdErr
+            Me.TimedOut = timedOut
+        End Sub
+    End Structure
 End Class

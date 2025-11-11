@@ -1,11 +1,6 @@
 ﻿Imports System.ComponentModel
 Imports DiskImageTool.DiskImage
 
-Public Structure SaveDialogFilter
-    Dim Filter As String
-    Dim FilterIndex As Integer
-End Structure
-
 Public Class MainForm
     Private WithEvents FilePanelMain As FilePanel
     Private WithEvents HashPanelContextMenu As ContextMenuStrip
@@ -557,9 +552,9 @@ Public Class MainForm
 
     Private Sub GreaseweazleImportImage(FileName As String)
         If FileName <> "" Then
-            Dim OutputFile = Greaseweazle.ImportFluxImage(FileName, Me)
-            If Not String.IsNullOrEmpty(OutputFile) Then
-                ProcessFileDrop(OutputFile, True)
+            Dim Response = Greaseweazle.ImportFluxImage(FileName, Me)
+            If Response.Result Then
+                ProcessFileDrop(Response.OutputFile, True, Response.NewFileName)
                 RefreshModifiedCount()
             End If
         End If
@@ -938,15 +933,19 @@ Public Class MainForm
         Me.Location = New Point(WorkingArea.Left + (WorkingArea.Width - Width) / 2, WorkingArea.Top + (WorkingArea.Height - Height) / 2)
     End Sub
 
-    Private Sub ProcessFileDrop(File As String, NewImage As Boolean)
-        ProcessFileDrop({File}, False, NewImage)
+    Private Sub ProcessFileDrop(File As String)
+        ProcessFileDrop({File}, False, False)
+    End Sub
+
+    Private Sub ProcessFileDrop(File As String, NewImage As Boolean, Optional NewFileName As String = "")
+        ProcessFileDrop({File}, False, NewImage, NewFileName)
     End Sub
 
     Private Sub ProcessFileDrop(Files() As String, ShowDialog As Boolean)
         ProcessFileDrop(Files, ShowDialog, False)
     End Sub
 
-    Private Sub ProcessFileDrop(Files() As String, ShowDialog As Boolean, NewImage As Boolean)
+    Private Sub ProcessFileDrop(Files() As String, ShowDialog As Boolean, NewImage As Boolean, Optional NewFileName As String = "")
         Cursor.Current = Cursors.WaitCursor
         Dim T = Stopwatch.StartNew
 
@@ -960,7 +959,7 @@ Public Class MainForm
 
         ImageData.StringOffset = 0
 
-        Dim ImageLoadForm As New ImageLoadForm(Me, Files, _LoadedFiles, NewImage, ImageCombo.Main)
+        Dim ImageLoadForm As New ImageLoadForm(Me, Files, _LoadedFiles, NewImage, ImageCombo.Main, NewFileName)
         If ShowDialog Then
             ImageLoadForm.ShowDialog(Me)
         Else
@@ -1713,14 +1712,14 @@ Public Class MainForm
     Private Sub MenuDiskReadFloppyA_Click(sender As Object, e As EventArgs) Handles MenuDiskReadFloppyA.Click
         Dim FileName = FloppyDiskRead(Me, FloppyDriveEnum.FloppyDriveA, _LoadedFiles.FileNames)
         If FileName.Length > 0 Then
-            ProcessFileDrop(FileName, False)
+            ProcessFileDrop(FileName)
         End If
     End Sub
 
     Private Sub MenuDiskReadFloppyB_Click(sender As Object, e As EventArgs) Handles MenuDiskReadFloppyB.Click
         Dim FileName = FloppyDiskRead(Me, FloppyDriveEnum.FloppyDriveB, _LoadedFiles.FileNames)
         If FileName.Length > 0 Then
-            ProcessFileDrop(FileName, False)
+            ProcessFileDrop(FileName)
         End If
     End Sub
 
@@ -1840,7 +1839,7 @@ Public Class MainForm
     End Sub
 
     Private Sub MenuGreaseweazleBandwidth_Click(sender As Object, e As EventArgs) Handles MenuGreaseweazleBandwidth.Click
-        Greaseweazle.DisplayGreaseweazleBandwidth(Me)
+        Greaseweazle.BandwidthDisplay(Me)
     End Sub
 
     Private Sub MenuGreaseweazleImport_Click(sender As Object, e As EventArgs) Handles MenuGreaseweazleImport.Click
@@ -1848,7 +1847,7 @@ Public Class MainForm
     End Sub
 
     Private Sub MenuGreaseweazleInfo_Click(sender As Object, e As EventArgs) Handles MenuGreaseweazleInfo.Click
-        Greaseweazle.DisplayGreaseweazleInfo(Me)
+        Greaseweazle.InfoDisplay(Me)
     End Sub
 
     Private Sub MenuHelpAbout_Click(sender As Object, e As EventArgs) Handles MenuHelpAbout.Click
@@ -1937,7 +1936,7 @@ Public Class MainForm
     Private Sub MenuOptionsGreaseweazle_Click(sender As Object, e As EventArgs) Handles MenuOptionsGreaseweazle.Click
         MainMenuOptions.DropDown.Close()
 
-        Dim Form As New GreaseweazleConfigurationForm
+        Dim Form As New Greaseweazle.ConfigurationForm
         Form.ShowDialog(Me)
 
         RefreshGreaseweazleMenu()

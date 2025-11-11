@@ -89,8 +89,8 @@ Public Class DirectoryScanResponse
         Next
     End Sub
 
-    Public Function ProcessDirectoryEntry(DirectoryEntry As DirectoryEntry, LFNFileName As String, IsRootDirectory As Boolean) As ProcessDirectoryEntryResponse
-        Dim Response As ProcessDirectoryEntryResponse
+    Public Function ProcessDirectoryEntry(DirectoryEntry As DirectoryEntry, LFNFileName As String, IsRootDirectory As Boolean) As (DuplicateFileName As Boolean, InvalidVolumeName As Boolean)
+        Dim Response As (DuplicateFileName As Boolean, InvalidVolumeName As Boolean)
         Response.DuplicateFileName = False
         Response.InvalidVolumeName = False
 
@@ -201,11 +201,6 @@ Public Class DirectoryScanResponse
 
         Return Response
     End Function
-
-    Public Structure ProcessDirectoryEntryResponse
-        Dim DuplicateFileName As Boolean
-        Dim InvalidVolumeName As Boolean
-    End Structure
 
     Public Structure DirectoryScanSubDirectory
         Dim Path As String

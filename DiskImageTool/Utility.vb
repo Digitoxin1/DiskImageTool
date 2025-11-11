@@ -4,11 +4,6 @@ Imports System.Text
 Imports DiskImageTool.DiskImage
 
 Module Utility
-    Public Structure FileParts
-        Dim Name As String
-        Dim Extension As String
-    End Structure
-
     Public Sub ApplyResourcesToControls(ctrl As Control, res As System.ComponentModel.ComponentResourceManager)
         res.ApplyResources(ctrl, ctrl.Name)
 
@@ -311,6 +306,24 @@ Module Utility
         End If
     End Sub
 
+    Public Function SanitizeFileName(input As String) As String
+        ' Get the invalid characters for Windows filenames
+        Dim invalidChars() As Char = System.IO.Path.GetInvalidFileNameChars()
+
+        ' Replace any invalid char with an underscore
+        For Each c In invalidChars
+            input = input.Replace(c, "_"c)
+        Next
+
+        ' Trim spaces and periods from the end
+        input = input.TrimEnd(" "c, "."c)
+
+        ' Optionally trim leading spaces too
+        input = input.TrimStart()
+
+        Return input
+    End Function
+
     Public Function SaveByteArrayToFile(FilePath As String, Data() As Byte) As Boolean
         Try
             IO.File.WriteAllBytes(FilePath, Data)
@@ -322,8 +335,8 @@ Module Utility
         Return True
     End Function
 
-    Public Function SplitFilename(FileName As String) As FileParts
-        Dim FileParts As FileParts
+    Public Function SplitFilename(FileName As String) As (Name As String, Extension As String)
+        Dim FileParts As (Name As String, Extension As String)
 
         FileParts.Name = IO.Path.GetFileNameWithoutExtension(FileName)
         FileParts.Extension = IO.Path.GetExtension(FileName)

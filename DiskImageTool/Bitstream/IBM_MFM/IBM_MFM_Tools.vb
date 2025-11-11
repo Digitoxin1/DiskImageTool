@@ -42,11 +42,6 @@
             TrackFormatED = 4
         End Enum
 
-        Public Structure SyncCountResponse
-            Dim Count As UInteger
-            Dim WriteSplice As Boolean
-        End Structure
-
         Module IBM_MFM_Tools
             Private Const MAX_ALLOWED_BAD_GAPS_START As Integer = 1
             Private Const MAX_ALLOWED_BAD_GAPS_END As Integer = 0

@@ -163,11 +163,20 @@
             End Select
         End Function
 
-        Public Function GetFloppyDiskFormat(BPB As BiosParameterBlock, MediaDescriptor As Byte) As FloppyDiskFormat
-            If BPB.IsValid Then
-                Return GetFloppyDiskFormat(BPB, False, True)
+        Public Function GetFloppyDiskFormat(Buffer() As Byte) As FloppyDiskFormat
+            If Buffer.Length >= 512 Then
+                Dim BootSector = New BootSector(Buffer)
+                Dim MediaDescriptor As Byte = 0
+                If Buffer.Length = 513 Then
+                    MediaDescriptor = Buffer(512)
+                End If
+                If BootSector.BPB.IsValid Then
+                    Return GetFloppyDiskFormat(BootSector.BPB, False, True)
+                Else
+                    Return GetFloppyDiskFomat(MediaDescriptor)
+                End If
             Else
-                Return GetFloppyDiskFomat(MediaDescriptor)
+                Return FloppyDiskFormat.FloppyUnknown
             End If
         End Function
 

@@ -129,8 +129,7 @@ Module FloppyDiskIO
                 Dim Buffer(BYTES_PER_SECTOR - 1) As Byte
                 Dim BytesRead = FloppyDrive.ReadSector(0, Buffer)
                 If BytesRead = Buffer.Length Then
-                    Dim BootSector = New BootSector(Buffer)
-                    DetectedFormat = GetFloppyDiskFormat(BootSector.BPB)
+                    DetectedFormat = GetFloppyDiskFormat(Buffer)
                 Else
                     DetectedFormat = FloppyDiskFormat.FloppyUnknown
                 End If

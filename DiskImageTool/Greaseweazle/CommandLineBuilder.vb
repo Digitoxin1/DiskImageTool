@@ -216,7 +216,7 @@
             End If
 
             If CylinderList.Count > 0 OrElse _Heads <> DEFAULT_HEADS Then
-                Dim HeadList = ""
+                Dim HeadList As String
                 If _Heads = TrackHeads.head0 Then
                     HeadList = "0"
                 ElseIf _Heads = TrackHeads.head1 Then

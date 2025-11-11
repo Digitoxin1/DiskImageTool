@@ -15,10 +15,11 @@ Public Class ImageLoadForm
     Private _ImageCount As Integer = 0
     Private _EndScan As Boolean = False
     Private _NewImage As Boolean = False
+    Private _NewFileName As String = ""
     Private _SelectedImageData As ImageData = Nothing
     Private _Visible As Boolean = False
 
-    Public Sub New(Parent As MainForm, Files() As String, LoadedFiles As LoadedFiles, NewImage As Boolean, ImageCombo As ComboBox)
+    Public Sub New(Parent As MainForm, Files() As String, LoadedFiles As LoadedFiles, NewImage As Boolean, ImageCombo As ComboBox, Optional NewFileName As String = "")
 
         ' This call is required by the designer.
         InitializeComponent()
@@ -30,6 +31,7 @@ Public Class ImageLoadForm
         _ImageCombo = ImageCombo
         _LoadedFiles = LoadedFiles
         _NewImage = NewImage
+        _NewFileName = NewFileName
     End Sub
 
     Public ReadOnly Property SelectedImageData As ImageData
@@ -51,8 +53,8 @@ Public Class ImageLoadForm
         Return Not CheckLength OrElse (Length >= MIN_FILE_SIZE And Length <= MAX_FILE_SIZE)
     End Function
 
-    Private Sub LoadedFileAdd(bw As BackgroundWorker, Key As String, FileName As String, FileType As ImageData.FileTypeEnum, Optional CompressedFile As String = "")
-        Dim ImageData = _LoadedFiles.Add(Key, FileName, FileType, CompressedFile)
+    Private Sub LoadedFileAdd(bw As BackgroundWorker, Key As String, FileName As String, FileType As ImageData.FileTypeEnum, Optional CompressedFile As String = "", Optional NewFileName As String = "")
+        Dim ImageData = _LoadedFiles.Add(Key, FileName, FileType, CompressedFile, NewFileName)
 
         If ImageData IsNot Nothing Then
             If _SelectedImageData Is Nothing Then
@@ -82,7 +84,7 @@ Public Class ImageLoadForm
                 Try : Length = New FileInfo(FileName).Length : Catch : End Try
 
                 If IsValidFileLength(Length, Extension) Then
-                    LoadedFileAdd(bw, FileName, FileName, If(_NewImage, ImageData.FileTypeEnum.NewImage, ImageData.FileTypeEnum.Standard))
+                    LoadedFileAdd(bw, FileName, FileName, If(_NewImage, ImageData.FileTypeEnum.NewImage, ImageData.FileTypeEnum.Standard), NewFileName:=_NewFileName)
                 End If
             End If
         End If
