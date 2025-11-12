@@ -24,11 +24,12 @@ Partial Class FATEditForm
     Private Sub InitializeComponent()
         Me.components = New System.ComponentModel.Container()
         Dim resources As System.ComponentModel.ComponentResourceManager = New System.ComponentModel.ComponentResourceManager(GetType(FATEditForm))
+        Dim PanelBottom As System.Windows.Forms.FlowLayoutPanel
+        Dim PanelMain As System.Windows.Forms.Panel
         Me.DataGridViewFAT = New System.Windows.Forms.DataGridView()
         Me.ContextMenuGrid = New System.Windows.Forms.ContextMenuStrip(Me.components)
-        Me.FlowLayoutPanelBottom = New System.Windows.Forms.FlowLayoutPanel()
-        Me.BtnUpdate = New System.Windows.Forms.Button()
         Me.BtnCancel = New System.Windows.Forms.Button()
+        Me.BtnUpdate = New System.Windows.Forms.Button()
         Me.ChkSync = New System.Windows.Forms.CheckBox()
         Me.FlowLayoutPanelTop = New System.Windows.Forms.FlowLayoutPanel()
         Me.BtnFree = New System.Windows.Forms.Button()
@@ -42,11 +43,14 @@ Partial Class FATEditForm
         Me.FlowLayoutPanel1 = New System.Windows.Forms.FlowLayoutPanel()
         Me.TxtMediaDescriptor = New System.Windows.Forms.Label()
         Me.CboMediaDescriptor = New System.Windows.Forms.ComboBox()
+        PanelBottom = New System.Windows.Forms.FlowLayoutPanel()
+        PanelMain = New System.Windows.Forms.Panel()
         CType(Me.DataGridViewFAT, System.ComponentModel.ISupportInitialize).BeginInit()
-        Me.FlowLayoutPanelBottom.SuspendLayout()
+        PanelBottom.SuspendLayout()
         Me.FlowLayoutPanelTop.SuspendLayout()
         CType(Me.PictureBoxFAT, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.FlowLayoutPanel1.SuspendLayout()
+        PanelMain.SuspendLayout()
         Me.SuspendLayout()
         '
         'DataGridViewFAT
@@ -69,19 +73,12 @@ Partial Class FATEditForm
         Me.ContextMenuGrid.ShowImageMargin = False
         resources.ApplyResources(Me.ContextMenuGrid, "ContextMenuGrid")
         '
-        'FlowLayoutPanelBottom
+        'PanelBottom
         '
-        resources.ApplyResources(Me.FlowLayoutPanelBottom, "FlowLayoutPanelBottom")
-        Me.FlowLayoutPanelBottom.Controls.Add(Me.BtnUpdate)
-        Me.FlowLayoutPanelBottom.Controls.Add(Me.BtnCancel)
-        Me.FlowLayoutPanelBottom.Name = "FlowLayoutPanelBottom"
-        '
-        'BtnUpdate
-        '
-        resources.ApplyResources(Me.BtnUpdate, "BtnUpdate")
-        Me.BtnUpdate.DialogResult = System.Windows.Forms.DialogResult.OK
-        Me.BtnUpdate.Name = "BtnUpdate"
-        Me.BtnUpdate.UseVisualStyleBackColor = True
+        PanelBottom.Controls.Add(Me.BtnCancel)
+        PanelBottom.Controls.Add(Me.BtnUpdate)
+        resources.ApplyResources(PanelBottom, "PanelBottom")
+        PanelBottom.Name = "PanelBottom"
         '
         'BtnCancel
         '
@@ -89,6 +86,13 @@ Partial Class FATEditForm
         Me.BtnCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel
         Me.BtnCancel.Name = "BtnCancel"
         Me.BtnCancel.UseVisualStyleBackColor = True
+        '
+        'BtnUpdate
+        '
+        resources.ApplyResources(Me.BtnUpdate, "BtnUpdate")
+        Me.BtnUpdate.DialogResult = System.Windows.Forms.DialogResult.OK
+        Me.BtnUpdate.Name = "BtnUpdate"
+        Me.BtnUpdate.UseVisualStyleBackColor = True
         '
         'ChkSync
         '
@@ -172,35 +176,41 @@ Partial Class FATEditForm
         resources.ApplyResources(Me.CboMediaDescriptor, "CboMediaDescriptor")
         Me.CboMediaDescriptor.Name = "CboMediaDescriptor"
         '
+        'PanelMain
+        '
+        PanelMain.Controls.Add(Me.PictureBoxFAT)
+        PanelMain.Controls.Add(Me.DataGridViewFAT)
+        PanelMain.Controls.Add(Me.ChkSync)
+        PanelMain.Controls.Add(Me.FlowLayoutPanelTop)
+        PanelMain.Controls.Add(Me.FlowLayoutPanel1)
+        resources.ApplyResources(PanelMain, "PanelMain")
+        PanelMain.Name = "PanelMain"
+        '
         'FATEditForm
         '
         resources.ApplyResources(Me, "$this")
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
-        Me.Controls.Add(Me.FlowLayoutPanel1)
-        Me.Controls.Add(Me.PictureBoxFAT)
-        Me.Controls.Add(Me.FlowLayoutPanelTop)
-        Me.Controls.Add(Me.ChkSync)
-        Me.Controls.Add(Me.FlowLayoutPanelBottom)
-        Me.Controls.Add(Me.DataGridViewFAT)
+        Me.Controls.Add(PanelMain)
+        Me.Controls.Add(PanelBottom)
         Me.MaximizeBox = False
         Me.MinimizeBox = False
         Me.Name = "FATEditForm"
         Me.ShowIcon = False
         Me.ShowInTaskbar = False
         CType(Me.DataGridViewFAT, System.ComponentModel.ISupportInitialize).EndInit()
-        Me.FlowLayoutPanelBottom.ResumeLayout(False)
+        PanelBottom.ResumeLayout(False)
         Me.FlowLayoutPanelTop.ResumeLayout(False)
         Me.FlowLayoutPanelTop.PerformLayout()
         CType(Me.PictureBoxFAT, System.ComponentModel.ISupportInitialize).EndInit()
         Me.FlowLayoutPanel1.ResumeLayout(False)
         Me.FlowLayoutPanel1.PerformLayout()
+        PanelMain.ResumeLayout(False)
+        PanelMain.PerformLayout()
         Me.ResumeLayout(False)
-        Me.PerformLayout()
 
     End Sub
 
     Friend WithEvents DataGridViewFAT As DataGridView
-    Friend WithEvents FlowLayoutPanelBottom As FlowLayoutPanel
     Friend WithEvents BtnUpdate As Button
     Friend WithEvents BtnCancel As Button
     Friend WithEvents ChkSync As CheckBox

@@ -358,7 +358,7 @@
     <value>Laufwerk &amp;reinigen</value>
   </data>
   <data name="MenuGreaseweazleInfo.Text" xml:space="preserve">
-    <value>Geräte&amp;info</value>
+    <value>&amp;Geräteinfo</value>
   </data>
   <data name="MenuGreaseweazleRead.Text" xml:space="preserve">
     <value>Diskette &amp;lesen</value>

@@ -5,6 +5,7 @@
         Private Const DEFAULT_HEADS As TrackHeads = TrackHeads.both
         Private Const DEFAULT_NR As UInteger = 1
         Private Const DEFAULT_STEP As Byte = 1
+        Public Const DEFAULT_RETRIES As UInteger = 3
         Private ReadOnly _Action As CommandAction
         Private ReadOnly _Cylinders As List(Of (UShort, UShort))
 
@@ -46,6 +47,9 @@
         Public Property NR As UInteger = DEFAULT_NR
         Public Property OutFile As String
         Public Property Time As Boolean = False
+        Public Property Retries As UInteger = DEFAULT_RETRIES
+        Public Property PreErase As Boolean = False
+
         Public Sub AddCylinder(Cylinder As UShort)
             _Cylinders.Add((Cylinder, Cylinder))
         End Sub
@@ -78,11 +82,19 @@
                 args.Add("--nr " & _NR)
             End If
 
+            If CheckOptionRetries() AndAlso _Retries <> DEFAULT_RETRIES Then
+                args.Add("--retries " & _Retries)
+            End If
+
             If CheckOptionTracks() Then
                 Dim TrackString = GetTrackString()
                 If Not String.IsNullOrEmpty(TrackString) Then
                     args.Add("--tracks " & Quoted(TrackString))
                 End If
+            End If
+
+            If CheckOptionPreErase() AndAlso _PreErase Then
+                args.Add("--pre-erase")
             End If
 
             If CheckOptionAdjustSpeed() AndAlso Not String.IsNullOrEmpty(_AdjustSpeed) Then
@@ -151,6 +163,24 @@
         Private Function CheckOptionOutFile() As Boolean
             Select Case _Action
                 Case CommandAction.convert
+                    Return True
+                Case Else
+                    Return False
+            End Select
+        End Function
+
+        Private Function CheckOptionRetries() As Boolean
+            Select Case _Action
+                Case CommandAction.read, CommandAction.write
+                    Return True
+                Case Else
+                    Return False
+            End Select
+        End Function
+
+        Private Function CheckOptionPreErase() As Boolean
+            Select Case _Action
+                Case CommandAction.write
                     Return True
                 Case Else
                     Return False

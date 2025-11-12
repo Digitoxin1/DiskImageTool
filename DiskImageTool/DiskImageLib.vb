@@ -268,6 +268,7 @@ Module DiskImageLib
         Loop Until Result
 
         If Result Then
+            Image.Disk.ClearChanges()
             If Image.ImageData.FileType = ImageData.FileTypeEnum.NewImage Then
                 Image.ImageData.FileType = ImageData.FileTypeEnum.Standard
             End If

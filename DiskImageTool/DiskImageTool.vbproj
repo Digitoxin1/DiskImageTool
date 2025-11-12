@@ -180,10 +180,16 @@
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="Greaseweazle\GreaseweazleLib.vb" />
-    <Compile Include="Greaseweazle\ImageImportForm.Designer.vb">
-      <DependentUpon>ImageImportForm.vb</DependentUpon>
+    <Compile Include="Greaseweazle\BaseForm.Designer.vb">
+      <DependentUpon>BaseForm.vb</DependentUpon>
+    </Compile>
+    <Compile Include="Greaseweazle\BaseForm.vb">
+      <SubType>Form</SubType>
     </Compile>
     <Compile Include="Greaseweazle\ImageImportForm.vb">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Greaseweazle\WriteDiskForm.vb">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="Lib\ConsoleProcessRunner.vb" />
@@ -750,17 +756,17 @@
     <EmbeddedResource Include="Greaseweazle\ConfigurationForm.resx">
       <DependentUpon>ConfigurationForm.vb</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Greaseweazle\ImageImportForm.de.resx">
-      <DependentUpon>ImageImportForm.vb</DependentUpon>
+    <EmbeddedResource Include="Greaseweazle\BaseForm.de.resx">
+      <DependentUpon>BaseForm.vb</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Greaseweazle\ImageImportForm.es.resx">
-      <DependentUpon>ImageImportForm.vb</DependentUpon>
+    <EmbeddedResource Include="Greaseweazle\BaseForm.es.resx">
+      <DependentUpon>BaseForm.vb</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Greaseweazle\ImageImportForm.fr.resx">
-      <DependentUpon>ImageImportForm.vb</DependentUpon>
+    <EmbeddedResource Include="Greaseweazle\BaseForm.fr.resx">
+      <DependentUpon>BaseForm.vb</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Greaseweazle\ImageImportForm.resx">
-      <DependentUpon>ImageImportForm.vb</DependentUpon>
+    <EmbeddedResource Include="Greaseweazle\BaseForm.resx">
+      <DependentUpon>BaseForm.vb</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="MainForm.de.resx">
       <DependentUpon>MainForm.vb</DependentUpon>

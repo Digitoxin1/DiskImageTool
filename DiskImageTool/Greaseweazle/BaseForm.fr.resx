@@ -120,22 +120,7 @@
   <data name="ButtonCancel.Text" xml:space="preserve">
     <value>&amp;Annuler</value>
   </data>
-  <data name="ButtonImport.Text" xml:space="preserve">
-    <value>&amp;Importer</value>
-  </data>
   <data name="Label3.Text" xml:space="preserve">
     <value>Sortie de console</value>
-  </data>
-  <data name="CheckBoxDoublestep.Text" xml:space="preserve">
-    <value>Double pas</value>
-  </data>
-  <data name="Label1.Text" xml:space="preserve">
-    <value>Format d’image</value>
-  </data>
-  <data name="Label2.Text" xml:space="preserve">
-    <value>Type de sortie</value>
-  </data>
-  <data name="Label4.Text" xml:space="preserve">
-    <value>Nom de fichier</value>
   </data>
 </root>

@@ -22,19 +22,54 @@ Partial Class HexSearchForm
     'Do not modify it using the code editor.
     <System.Diagnostics.DebuggerStepThrough()> _
     Private Sub InitializeComponent()
+        Dim PanelBottom As System.Windows.Forms.FlowLayoutPanel
         Dim resources As System.ComponentModel.ComponentResourceManager = New System.ComponentModel.ComponentResourceManager(GetType(HexSearchForm))
+        Dim PanelMain As System.Windows.Forms.Panel
+        Me.BtnCancel = New System.Windows.Forms.Button()
+        Me.BtnOK = New System.Windows.Forms.Button()
         Me.FlowLayoutPanel1 = New System.Windows.Forms.FlowLayoutPanel()
         Me.RadBtnText = New System.Windows.Forms.RadioButton()
         Me.RadBtnHex = New System.Windows.Forms.RadioButton()
-        Me.FlowLayoutPanel2 = New System.Windows.Forms.FlowLayoutPanel()
-        Me.BtnOK = New System.Windows.Forms.Button()
-        Me.BtnCancel = New System.Windows.Forms.Button()
+        Me.ChkCaseSensitive = New System.Windows.Forms.CheckBox()
         Me.TextSearch = New System.Windows.Forms.TextBox()
         Me.Label1 = New System.Windows.Forms.Label()
-        Me.ChkCaseSensitive = New System.Windows.Forms.CheckBox()
+        PanelBottom = New System.Windows.Forms.FlowLayoutPanel()
+        PanelMain = New System.Windows.Forms.Panel()
+        PanelBottom.SuspendLayout()
+        PanelMain.SuspendLayout()
         Me.FlowLayoutPanel1.SuspendLayout()
-        Me.FlowLayoutPanel2.SuspendLayout()
         Me.SuspendLayout()
+        '
+        'PanelBottom
+        '
+        PanelBottom.Controls.Add(Me.BtnCancel)
+        PanelBottom.Controls.Add(Me.BtnOK)
+        resources.ApplyResources(PanelBottom, "PanelBottom")
+        PanelBottom.Name = "PanelBottom"
+        '
+        'BtnCancel
+        '
+        resources.ApplyResources(Me.BtnCancel, "BtnCancel")
+        Me.BtnCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel
+        Me.BtnCancel.Name = "BtnCancel"
+        Me.BtnCancel.UseVisualStyleBackColor = True
+        '
+        'BtnOK
+        '
+        resources.ApplyResources(Me.BtnOK, "BtnOK")
+        Me.BtnOK.DialogResult = System.Windows.Forms.DialogResult.OK
+        Me.BtnOK.Name = "BtnOK"
+        Me.BtnOK.UseVisualStyleBackColor = True
+        '
+        'PanelMain
+        '
+        resources.ApplyResources(PanelMain, "PanelMain")
+        PanelMain.BackColor = System.Drawing.SystemColors.Window
+        PanelMain.Controls.Add(Me.FlowLayoutPanel1)
+        PanelMain.Controls.Add(Me.ChkCaseSensitive)
+        PanelMain.Controls.Add(Me.TextSearch)
+        PanelMain.Controls.Add(Me.Label1)
+        PanelMain.Name = "PanelMain"
         '
         'FlowLayoutPanel1
         '
@@ -57,26 +92,11 @@ Partial Class HexSearchForm
         Me.RadBtnHex.TabStop = True
         Me.RadBtnHex.UseVisualStyleBackColor = True
         '
-        'FlowLayoutPanel2
+        'ChkCaseSensitive
         '
-        resources.ApplyResources(Me.FlowLayoutPanel2, "FlowLayoutPanel2")
-        Me.FlowLayoutPanel2.Controls.Add(Me.BtnOK)
-        Me.FlowLayoutPanel2.Controls.Add(Me.BtnCancel)
-        Me.FlowLayoutPanel2.Name = "FlowLayoutPanel2"
-        '
-        'BtnOK
-        '
-        resources.ApplyResources(Me.BtnOK, "BtnOK")
-        Me.BtnOK.DialogResult = System.Windows.Forms.DialogResult.OK
-        Me.BtnOK.Name = "BtnOK"
-        Me.BtnOK.UseVisualStyleBackColor = True
-        '
-        'BtnCancel
-        '
-        resources.ApplyResources(Me.BtnCancel, "BtnCancel")
-        Me.BtnCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel
-        Me.BtnCancel.Name = "BtnCancel"
-        Me.BtnCancel.UseVisualStyleBackColor = True
+        resources.ApplyResources(Me.ChkCaseSensitive, "ChkCaseSensitive")
+        Me.ChkCaseSensitive.Name = "ChkCaseSensitive"
+        Me.ChkCaseSensitive.UseVisualStyleBackColor = True
         '
         'TextSearch
         '
@@ -88,31 +108,24 @@ Partial Class HexSearchForm
         resources.ApplyResources(Me.Label1, "Label1")
         Me.Label1.Name = "Label1"
         '
-        'ChkCaseSensitive
-        '
-        resources.ApplyResources(Me.ChkCaseSensitive, "ChkCaseSensitive")
-        Me.ChkCaseSensitive.Name = "ChkCaseSensitive"
-        Me.ChkCaseSensitive.UseVisualStyleBackColor = True
-        '
         'HexSearchForm
         '
         resources.ApplyResources(Me, "$this")
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
         Me.CancelButton = Me.BtnCancel
-        Me.Controls.Add(Me.ChkCaseSensitive)
-        Me.Controls.Add(Me.Label1)
-        Me.Controls.Add(Me.TextSearch)
-        Me.Controls.Add(Me.FlowLayoutPanel2)
-        Me.Controls.Add(Me.FlowLayoutPanel1)
+        Me.Controls.Add(PanelMain)
+        Me.Controls.Add(PanelBottom)
         Me.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle
         Me.MaximizeBox = False
         Me.MinimizeBox = False
         Me.Name = "HexSearchForm"
         Me.ShowIcon = False
         Me.ShowInTaskbar = False
+        PanelBottom.ResumeLayout(False)
+        PanelMain.ResumeLayout(False)
+        PanelMain.PerformLayout()
         Me.FlowLayoutPanel1.ResumeLayout(False)
         Me.FlowLayoutPanel1.PerformLayout()
-        Me.FlowLayoutPanel2.ResumeLayout(False)
         Me.ResumeLayout(False)
         Me.PerformLayout()
 
@@ -121,7 +134,6 @@ Partial Class HexSearchForm
     Friend WithEvents FlowLayoutPanel1 As FlowLayoutPanel
     Friend WithEvents RadBtnText As RadioButton
     Friend WithEvents RadBtnHex As RadioButton
-    Friend WithEvents FlowLayoutPanel2 As FlowLayoutPanel
     Friend WithEvents BtnOK As Button
     Friend WithEvents BtnCancel As Button
     Friend WithEvents TextSearch As TextBox

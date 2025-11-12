@@ -1574,4 +1574,16 @@ Remarque : cette valeur doit être {1} pour toutes les disquettes</value>
   <data name="Label_UnexpectedSectors" xml:space="preserve">
     <value>Secteurs inattendus</value>
   </data>
+  <data name="Label_DoubleStep" xml:space="preserve">
+    <value>Double pas</value>
+  </data>
+  <data name="Label_OutputType" xml:space="preserve">
+    <value>Type de sortie</value>
+  </data>
+  <data name="Label_ImageFormat" xml:space="preserve">
+    <value>Format d’image</value>
+  </data>
+  <data name="Label_Import" xml:space="preserve">
+    <value>&amp;Importer</value>
+  </data>
 </root>

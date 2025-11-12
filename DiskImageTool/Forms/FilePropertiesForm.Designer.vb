@@ -26,6 +26,8 @@ Partial Class FilePropertiesForm
         Dim GroupFileDates As System.Windows.Forms.GroupBox
         Dim resources As System.ComponentModel.ComponentResourceManager = New System.ComponentModel.ComponentResourceManager(GetType(FilePropertiesForm))
         Dim GroupAttributes As System.Windows.Forms.GroupBox
+        Dim PanelBottom As System.Windows.Forms.FlowLayoutPanel
+        Dim PanelMain As System.Windows.Forms.Panel
         Me.TableLayoutPanel1 = New System.Windows.Forms.TableLayoutPanel()
         Me.PanelCreatedMS = New System.Windows.Forms.Panel()
         Me.NumCreatedMS = New System.Windows.Forms.NumericUpDown()
@@ -50,11 +52,9 @@ Partial Class FilePropertiesForm
         Me.BtnHidden = New System.Windows.Forms.Button()
         Me.ChkReadOnly = New System.Windows.Forms.CheckBox()
         Me.ChkHidden = New System.Windows.Forms.CheckBox()
-        Me.TableLayoutPanelFile = New System.Windows.Forms.TableLayoutPanel()
-        Me.MskExtensionHex = New DiskImageTool.HexTextBox()
-        Me.MskFileHex = New DiskImageTool.HexTextBox()
-        Me.TxtExtension = New System.Windows.Forms.TextBox()
-        Me.TxtFile = New System.Windows.Forms.MaskedTextBox()
+        Me.BtnCancel = New System.Windows.Forms.Button()
+        Me.BtnUpdate = New System.Windows.Forms.Button()
+        Me.FlowLayoutPanel2 = New System.Windows.Forms.FlowLayoutPanel()
         Me.GroupFileName = New System.Windows.Forms.GroupBox()
         Me.LblMultipleFiles = New System.Windows.Forms.Label()
         Me.TxtLFN = New System.Windows.Forms.TextBox()
@@ -62,12 +62,16 @@ Partial Class FilePropertiesForm
         Me.RadioFileShort = New System.Windows.Forms.RadioButton()
         Me.RadioFileLong = New System.Windows.Forms.RadioButton()
         Me.ChkNTExtensions = New System.Windows.Forms.CheckBox()
-        Me.BtnCancel = New System.Windows.Forms.Button()
-        Me.BtnUpdate = New System.Windows.Forms.Button()
+        Me.TableLayoutPanelFile = New System.Windows.Forms.TableLayoutPanel()
+        Me.TxtExtension = New System.Windows.Forms.TextBox()
+        Me.TxtFile = New System.Windows.Forms.MaskedTextBox()
         Me.FlowLayoutPanel1 = New System.Windows.Forms.FlowLayoutPanel()
-        Me.FlowLayoutPanel2 = New System.Windows.Forms.FlowLayoutPanel()
+        Me.MskExtensionHex = New DiskImageTool.HexTextBox()
+        Me.MskFileHex = New DiskImageTool.HexTextBox()
         GroupFileDates = New System.Windows.Forms.GroupBox()
         GroupAttributes = New System.Windows.Forms.GroupBox()
+        PanelBottom = New System.Windows.Forms.FlowLayoutPanel()
+        PanelMain = New System.Windows.Forms.Panel()
         GroupFileDates.SuspendLayout()
         Me.TableLayoutPanel1.SuspendLayout()
         Me.PanelCreatedMS.SuspendLayout()
@@ -75,11 +79,12 @@ Partial Class FilePropertiesForm
         Me.PanelCreatedTime.SuspendLayout()
         GroupAttributes.SuspendLayout()
         Me.TableLayoutPanel2.SuspendLayout()
-        Me.TableLayoutPanelFile.SuspendLayout()
+        PanelBottom.SuspendLayout()
+        PanelMain.SuspendLayout()
+        Me.FlowLayoutPanel2.SuspendLayout()
         Me.GroupFileName.SuspendLayout()
         Me.FlowLayoutFileNameType.SuspendLayout()
-        Me.FlowLayoutPanel1.SuspendLayout()
-        Me.FlowLayoutPanel2.SuspendLayout()
+        Me.TableLayoutPanelFile.SuspendLayout()
         Me.SuspendLayout()
         '
         'GroupFileDates
@@ -271,36 +276,42 @@ Partial Class FilePropertiesForm
         Me.ChkHidden.Name = "ChkHidden"
         Me.ChkHidden.UseVisualStyleBackColor = True
         '
-        'TableLayoutPanelFile
+        'PanelBottom
         '
-        resources.ApplyResources(Me.TableLayoutPanelFile, "TableLayoutPanelFile")
-        Me.TableLayoutPanelFile.Controls.Add(Me.MskExtensionHex, 1, 1)
-        Me.TableLayoutPanelFile.Controls.Add(Me.MskFileHex, 0, 1)
-        Me.TableLayoutPanelFile.Controls.Add(Me.TxtExtension, 1, 0)
-        Me.TableLayoutPanelFile.Controls.Add(Me.TxtFile, 0, 0)
-        Me.TableLayoutPanelFile.Name = "TableLayoutPanelFile"
+        resources.ApplyResources(PanelBottom, "PanelBottom")
+        PanelBottom.Controls.Add(Me.BtnCancel)
+        PanelBottom.Controls.Add(Me.BtnUpdate)
+        PanelBottom.Name = "PanelBottom"
         '
-        'MskExtensionHex
+        'BtnCancel
         '
-        resources.ApplyResources(Me.MskExtensionHex, "MskExtensionHex")
-        Me.MskExtensionHex.MaskLength = 3
-        Me.MskExtensionHex.Name = "MskExtensionHex"
+        Me.BtnCancel.CausesValidation = False
+        Me.BtnCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel
+        resources.ApplyResources(Me.BtnCancel, "BtnCancel")
+        Me.BtnCancel.Name = "BtnCancel"
+        Me.BtnCancel.UseVisualStyleBackColor = True
         '
-        'MskFileHex
+        'BtnUpdate
         '
-        resources.ApplyResources(Me.MskFileHex, "MskFileHex")
-        Me.MskFileHex.MaskLength = 8
-        Me.MskFileHex.Name = "MskFileHex"
+        resources.ApplyResources(Me.BtnUpdate, "BtnUpdate")
+        Me.BtnUpdate.Name = "BtnUpdate"
+        Me.BtnUpdate.UseVisualStyleBackColor = True
         '
-        'TxtExtension
+        'PanelMain
         '
-        resources.ApplyResources(Me.TxtExtension, "TxtExtension")
-        Me.TxtExtension.Name = "TxtExtension"
+        resources.ApplyResources(PanelMain, "PanelMain")
+        PanelMain.BackColor = System.Drawing.SystemColors.Window
+        PanelMain.Controls.Add(Me.FlowLayoutPanel2)
+        PanelMain.Name = "PanelMain"
         '
-        'TxtFile
+        'FlowLayoutPanel2
         '
-        resources.ApplyResources(Me.TxtFile, "TxtFile")
-        Me.TxtFile.Name = "TxtFile"
+        resources.ApplyResources(Me.FlowLayoutPanel2, "FlowLayoutPanel2")
+        Me.FlowLayoutPanel2.Controls.Add(Me.GroupFileName)
+        Me.FlowLayoutPanel2.Controls.Add(GroupFileDates)
+        Me.FlowLayoutPanel2.Controls.Add(GroupAttributes)
+        Me.FlowLayoutPanel2.Controls.Add(Me.FlowLayoutPanel1)
+        Me.FlowLayoutPanel2.Name = "FlowLayoutPanel2"
         '
         'GroupFileName
         '
@@ -350,42 +361,49 @@ Partial Class FilePropertiesForm
         Me.ChkNTExtensions.Name = "ChkNTExtensions"
         Me.ChkNTExtensions.UseVisualStyleBackColor = True
         '
-        'BtnCancel
+        'TableLayoutPanelFile
         '
-        resources.ApplyResources(Me.BtnCancel, "BtnCancel")
-        Me.BtnCancel.CausesValidation = False
-        Me.BtnCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel
-        Me.BtnCancel.Name = "BtnCancel"
-        Me.BtnCancel.UseVisualStyleBackColor = True
+        resources.ApplyResources(Me.TableLayoutPanelFile, "TableLayoutPanelFile")
+        Me.TableLayoutPanelFile.Controls.Add(Me.MskExtensionHex, 1, 1)
+        Me.TableLayoutPanelFile.Controls.Add(Me.MskFileHex, 0, 1)
+        Me.TableLayoutPanelFile.Controls.Add(Me.TxtExtension, 1, 0)
+        Me.TableLayoutPanelFile.Controls.Add(Me.TxtFile, 0, 0)
+        Me.TableLayoutPanelFile.Name = "TableLayoutPanelFile"
         '
-        'BtnUpdate
+        'TxtExtension
         '
-        resources.ApplyResources(Me.BtnUpdate, "BtnUpdate")
-        Me.BtnUpdate.Name = "BtnUpdate"
-        Me.BtnUpdate.UseVisualStyleBackColor = True
+        resources.ApplyResources(Me.TxtExtension, "TxtExtension")
+        Me.TxtExtension.Name = "TxtExtension"
+        '
+        'TxtFile
+        '
+        resources.ApplyResources(Me.TxtFile, "TxtFile")
+        Me.TxtFile.Name = "TxtFile"
         '
         'FlowLayoutPanel1
         '
         resources.ApplyResources(Me.FlowLayoutPanel1, "FlowLayoutPanel1")
         Me.FlowLayoutPanel1.CausesValidation = False
-        Me.FlowLayoutPanel1.Controls.Add(Me.BtnUpdate)
-        Me.FlowLayoutPanel1.Controls.Add(Me.BtnCancel)
         Me.FlowLayoutPanel1.Name = "FlowLayoutPanel1"
         '
-        'FlowLayoutPanel2
+        'MskExtensionHex
         '
-        resources.ApplyResources(Me.FlowLayoutPanel2, "FlowLayoutPanel2")
-        Me.FlowLayoutPanel2.Controls.Add(Me.GroupFileName)
-        Me.FlowLayoutPanel2.Controls.Add(GroupFileDates)
-        Me.FlowLayoutPanel2.Controls.Add(GroupAttributes)
-        Me.FlowLayoutPanel2.Controls.Add(Me.FlowLayoutPanel1)
-        Me.FlowLayoutPanel2.Name = "FlowLayoutPanel2"
+        resources.ApplyResources(Me.MskExtensionHex, "MskExtensionHex")
+        Me.MskExtensionHex.MaskLength = 3
+        Me.MskExtensionHex.Name = "MskExtensionHex"
+        '
+        'MskFileHex
+        '
+        resources.ApplyResources(Me.MskFileHex, "MskFileHex")
+        Me.MskFileHex.MaskLength = 8
+        Me.MskFileHex.Name = "MskFileHex"
         '
         'FilePropertiesForm
         '
         resources.ApplyResources(Me, "$this")
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
-        Me.Controls.Add(Me.FlowLayoutPanel2)
+        Me.Controls.Add(PanelMain)
+        Me.Controls.Add(PanelBottom)
         Me.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog
         Me.MaximizeBox = False
         Me.MinimizeBox = False
@@ -402,15 +420,17 @@ Partial Class FilePropertiesForm
         GroupAttributes.ResumeLayout(False)
         GroupAttributes.PerformLayout()
         Me.TableLayoutPanel2.ResumeLayout(False)
-        Me.TableLayoutPanelFile.ResumeLayout(False)
-        Me.TableLayoutPanelFile.PerformLayout()
+        PanelBottom.ResumeLayout(False)
+        PanelMain.ResumeLayout(False)
+        PanelMain.PerformLayout()
+        Me.FlowLayoutPanel2.ResumeLayout(False)
+        Me.FlowLayoutPanel2.PerformLayout()
         Me.GroupFileName.ResumeLayout(False)
         Me.GroupFileName.PerformLayout()
         Me.FlowLayoutFileNameType.ResumeLayout(False)
         Me.FlowLayoutFileNameType.PerformLayout()
-        Me.FlowLayoutPanel1.ResumeLayout(False)
-        Me.FlowLayoutPanel2.ResumeLayout(False)
-        Me.FlowLayoutPanel2.PerformLayout()
+        Me.TableLayoutPanelFile.ResumeLayout(False)
+        Me.TableLayoutPanelFile.PerformLayout()
         Me.ResumeLayout(False)
         Me.PerformLayout()
 

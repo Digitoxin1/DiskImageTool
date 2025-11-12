@@ -1574,4 +1574,16 @@ Hinweis: Diese ID wird normalerweise erzeugt, indem das aktuelle Datum und die a
   <data name="Label_UnexpectedSectors" xml:space="preserve">
     <value>Unerwartete Sektoren</value>
   </data>
+  <data name="Label_DoubleStep" xml:space="preserve">
+    <value>Doppelschritt</value>
+  </data>
+  <data name="Label_OutputType" xml:space="preserve">
+    <value>Ausgabetyp</value>
+  </data>
+  <data name="Label_ImageFormat" xml:space="preserve">
+    <value>Imageformat</value>
+  </data>
+  <data name="Label_Import" xml:space="preserve">
+    <value>&amp;Importieren</value>
+  </data>
 </root>

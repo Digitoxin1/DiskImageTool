@@ -604,7 +604,6 @@ Module ImageIO
         End If
 
         If Result Then
-            Disk.ClearChanges()
             Response = SaveImageResponse.Success
         End If
 

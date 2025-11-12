@@ -26,10 +26,11 @@
             Dim LabelApplicationPath As System.Windows.Forms.Label
             Dim resources As System.ComponentModel.ComponentResourceManager = New System.ComponentModel.ComponentResourceManager(GetType(ConfigurationForm))
             Dim LabelDriveInterface As System.Windows.Forms.Label
+            Dim PanelBottom As System.Windows.Forms.FlowLayoutPanel
+            Dim PanelMain As System.Windows.Forms.Panel
             Me.LabelDriveType0 = New System.Windows.Forms.Label()
             Me.LabelDriveType1 = New System.Windows.Forms.Label()
             Me.LabelDriveType2 = New System.Windows.Forms.Label()
-            Me.FlowLayoutPanelBottom = New System.Windows.Forms.FlowLayoutPanel()
             Me.BtnUpdate = New System.Windows.Forms.Button()
             Me.BtnCancel = New System.Windows.Forms.Button()
             Me.TableLayoutPanel1 = New System.Windows.Forms.TableLayoutPanel()
@@ -44,8 +45,11 @@
             Me.ButtonInfo = New System.Windows.Forms.Button()
             LabelApplicationPath = New System.Windows.Forms.Label()
             LabelDriveInterface = New System.Windows.Forms.Label()
-            Me.FlowLayoutPanelBottom.SuspendLayout()
+            PanelBottom = New System.Windows.Forms.FlowLayoutPanel()
+            PanelMain = New System.Windows.Forms.Panel()
+            PanelBottom.SuspendLayout()
             Me.TableLayoutPanel1.SuspendLayout()
+            PanelMain.SuspendLayout()
             Me.SuspendLayout()
             '
             'LabelApplicationPath
@@ -73,24 +77,24 @@
             resources.ApplyResources(Me.LabelDriveType2, "LabelDriveType2")
             Me.LabelDriveType2.Name = "LabelDriveType2"
             '
-            'FlowLayoutPanelBottom
+            'PanelBottom
             '
-            resources.ApplyResources(Me.FlowLayoutPanelBottom, "FlowLayoutPanelBottom")
-            Me.FlowLayoutPanelBottom.Controls.Add(Me.BtnUpdate)
-            Me.FlowLayoutPanelBottom.Controls.Add(Me.BtnCancel)
-            Me.FlowLayoutPanelBottom.Name = "FlowLayoutPanelBottom"
+            PanelBottom.Controls.Add(Me.BtnCancel)
+            PanelBottom.Controls.Add(Me.BtnUpdate)
+            resources.ApplyResources(PanelBottom, "PanelBottom")
+            PanelBottom.Name = "PanelBottom"
             '
             'BtnUpdate
             '
-            resources.ApplyResources(Me.BtnUpdate, "BtnUpdate")
             Me.BtnUpdate.DialogResult = System.Windows.Forms.DialogResult.OK
+            resources.ApplyResources(Me.BtnUpdate, "BtnUpdate")
             Me.BtnUpdate.Name = "BtnUpdate"
             Me.BtnUpdate.UseVisualStyleBackColor = True
             '
             'BtnCancel
             '
-            resources.ApplyResources(Me.BtnCancel, "BtnCancel")
             Me.BtnCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel
+            resources.ApplyResources(Me.BtnCancel, "BtnCancel")
             Me.BtnCancel.Name = "BtnCancel"
             Me.BtnCancel.UseVisualStyleBackColor = True
             '
@@ -178,26 +182,32 @@
             Me.ButtonInfo.Name = "ButtonInfo"
             Me.ButtonInfo.UseVisualStyleBackColor = True
             '
-            'GreaseweazleConfigurationForm
+            'PanelMain
+            '
+            resources.ApplyResources(PanelMain, "PanelMain")
+            PanelMain.Controls.Add(Me.TableLayoutPanel1)
+            PanelMain.Name = "PanelMain"
+            '
+            'ConfigurationForm
             '
             resources.ApplyResources(Me, "$this")
             Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
-            Me.Controls.Add(Me.TableLayoutPanel1)
-            Me.Controls.Add(Me.FlowLayoutPanelBottom)
+            Me.Controls.Add(PanelMain)
+            Me.Controls.Add(PanelBottom)
             Me.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog
             Me.MaximizeBox = False
             Me.MinimizeBox = False
-            Me.Name = "GreaseweazleConfigurationForm"
+            Me.Name = "ConfigurationForm"
             Me.ShowInTaskbar = False
-            Me.FlowLayoutPanelBottom.ResumeLayout(False)
+            PanelBottom.ResumeLayout(False)
             Me.TableLayoutPanel1.ResumeLayout(False)
             Me.TableLayoutPanel1.PerformLayout()
+            PanelMain.ResumeLayout(False)
+            PanelMain.PerformLayout()
             Me.ResumeLayout(False)
             Me.PerformLayout()
 
         End Sub
-
-        Friend WithEvents FlowLayoutPanelBottom As FlowLayoutPanel
         Friend WithEvents BtnUpdate As Button
         Friend WithEvents BtnCancel As Button
         Friend WithEvents TableLayoutPanel1 As TableLayoutPanel

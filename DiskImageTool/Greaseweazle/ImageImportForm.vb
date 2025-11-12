@@ -2,29 +2,31 @@
 
 Namespace Greaseweazle
     Public Class ImageImportForm
+        Inherits BaseForm
+
+        Private WithEvents ButtonProcess As Button
+        Private WithEvents CheckBoxDoublestep As CheckBox
+        Private WithEvents ComboImageFormat As ComboBox
+        Private WithEvents ComboOutputType As ComboBox
         Private WithEvents Process As ConsoleProcessRunner
-        Private Const TOTAL_TRACKS As UShort = 83
-
-        Private ReadOnly _Parser As ConsoleOutputParser
+        Private WithEvents TextBoxFileName As TextBox
+        Private ReadOnly _InputFilePath As String
+        Private ReadOnly _SideCount As Integer
+        Private ReadOnly _TrackCount As Integer
         Private ReadOnly _TrackStatus As Dictionary(Of String, TrackStatusInfo)
-
         Private _DoubleStep As Boolean = False
-        Private _InputFilePath As String
         Private _OutputFilePath As String = ""
         Private _ProcessRunning As Boolean = False
-        Private _SideCount As Integer
+        Private _StatusBadSectors As ToolStripStatusLabel
+        Private _StatusUnexpected As ToolStripStatusLabel
         Private _TotalBadSectors As UInteger = 0
         Private _TotalUnexpectedSectors As UInteger = 0
-        Private _TrackCount As Integer
-        Private _TS0 As TableLayoutPanel
-        Private _TS1 As TableLayoutPanel
 
         Public Sub New(FilePath As String, TrackCount As Integer, SideCount As Integer)
-            ' This call is required by the designer.
-            InitializeComponent()
+            MyBase.New()
 
-            ' Add any initialization after the InitializeComponent() call.
-            _Parser = New ConsoleOutputParser
+            InitializeControls()
+
             _InputFilePath = FilePath
             _TrackStatus = New Dictionary(Of String, TrackStatusInfo)
             _TrackCount = TrackCount
@@ -54,6 +56,7 @@ Namespace Greaseweazle
 
             Return TextBoxFileName.Text & GreaseweazleOutputTypeFileExt(OutputType)
         End Function
+
         Private Sub ClearOutputFile()
             If Not String.IsNullOrEmpty(_OutputFilePath) Then
                 DeleteFileIfExists(_OutputFilePath)
@@ -103,6 +106,112 @@ Namespace Greaseweazle
             Return Builder.Arguments
         End Function
 
+        Private Sub InitializeControls()
+            Dim FileNameLabel = New Label With {
+                .Text = My.Resources.Label_FileName,
+                .Anchor = AnchorStyles.Left,
+                .AutoSize = True
+            }
+
+            TextBoxFileName = New TextBox With {
+                .Anchor = AnchorStyles.Left Or AnchorStyles.Right,
+                .MaxLength = 255
+            }
+
+            Dim ImageFormatLabel = New Label With {
+                .Text = My.Resources.Label_ImageFormat,
+                .Anchor = AnchorStyles.Left,
+                .AutoSize = True
+            }
+
+            ComboImageFormat = New ComboBox With {
+                .Anchor = AnchorStyles.Left,
+                .Width = 175
+            }
+
+            Dim OutputTypeLabel = New Label With {
+                .Text = My.Resources.Label_OutputType,
+                .Anchor = AnchorStyles.Left,
+                .AutoSize = True,
+                .Margin = New Padding(12, 3, 3, 3)
+            }
+
+            ComboOutputType = New ComboBox With {
+                .Anchor = AnchorStyles.Left,
+                .Width = 175
+            }
+
+            CheckBoxDoublestep = New CheckBox With {
+                .Text = My.Resources.Label_DoubleStep,
+                .Anchor = AnchorStyles.Left,
+                .AutoSize = True,
+                .Margin = New Padding(12, 3, 3, 3)
+            }
+
+            _StatusBadSectors = New ToolStripStatusLabel With {
+                .TextAlign = ContentAlignment.MiddleRight
+            }
+            StatusStripBottom.Items.Add(_StatusBadSectors)
+
+            _StatusUnexpected = New ToolStripStatusLabel With {
+                .TextAlign = ContentAlignment.MiddleRight,
+                .Margin = New Padding(6, 3, 0, 2)
+            }
+            StatusStripBottom.Items.Add(_StatusUnexpected)
+
+            ButtonProcess = New Button With {
+                .Width = 75,
+                .Margin = New Padding(12, 24, 3, 3)
+            }
+
+            ButtonOk.Text = My.Resources.Label_Import
+            ButtonOk.Visible = True
+
+
+            With TableLayoutPanelMain
+                .SuspendLayout()
+
+                .RowCount = 3
+                .ColumnCount = 5
+
+                While .RowStyles.Count < .RowCount
+                    .RowStyles.Add(New RowStyle())
+                End While
+                For i As Integer = 0 To .RowCount - 1
+                    .RowStyles(i).SizeType = SizeType.AutoSize
+                Next
+
+                While .ColumnStyles.Count < .ColumnCount
+                    .ColumnStyles.Add(New ColumnStyle())
+                End While
+                For j As Integer = 0 To .ColumnCount - 1
+                    .ColumnStyles(j).SizeType = SizeType.AutoSize
+                Next
+
+                TableLayoutPanelMain.Controls.Add(TableSide0Outer, 0, 2)
+                TableLayoutPanelMain.SetColumnSpan(TableSide0Outer, 2)
+
+                TableLayoutPanelMain.Controls.Add(TableSide1Outer, 2, 2)
+                TableLayoutPanelMain.SetColumnSpan(TableSide1Outer, 2)
+
+                TableLayoutPanelMain.Controls.Add(FileNameLabel, 0, 0)
+                TableLayoutPanelMain.Controls.Add(TextBoxFileName, 1, 0)
+                TableLayoutPanelMain.SetColumnSpan(TextBoxFileName, 3)
+
+                TableLayoutPanelMain.Controls.Add(ImageFormatLabel, 0, 1)
+                TableLayoutPanelMain.Controls.Add(ComboImageFormat, 1, 1)
+
+                TableLayoutPanelMain.Controls.Add(OutputTypeLabel, 2, 1)
+                TableLayoutPanelMain.Controls.Add(ComboOutputType, 3, 1)
+
+                TableLayoutPanelMain.Controls.Add(CheckBoxDoublestep, 4, 1)
+
+                TableLayoutPanelMain.Controls.Add(ButtonProcess, 4, 2)
+
+                .ResumeLayout()
+                .Left = (.Parent.ClientSize.Width - .Width) \ 2
+            End With
+        End Sub
         Private Sub PopulateImageFormats(SelectedValue As GreaseweazleImageFormat)
             Dim DriveList As New List(Of KeyValuePair(Of String, GreaseweazleImageFormat))
             For Each ImageFormat As GreaseweazleImageFormat In [Enum].GetValues(GetType(GreaseweazleImageFormat))
@@ -166,14 +275,14 @@ Namespace Greaseweazle
             End If
             TextBoxConsole.AppendText(line)
 
-            Dim TrackInfo = _Parser.ParseTrackInfo(line)
+            Dim TrackInfo = Parser.ParseTrackInfo(line)
             If TrackInfo IsNot Nothing Then
                 Dim Statusinfo = UpdateStatusInfo(TrackInfo)
                 ProcessTrackStatus(Statusinfo)
                 Return
             End If
 
-            Dim TrackInfoUnexpected = _Parser.ParseUnexpectedSector(line)
+            Dim TrackInfoUnexpected = Parser.ParseUnexpectedSector(line)
             If TrackInfoUnexpected IsNot Nothing Then
                 Dim StatusInfo = UpdateStatusInfo(TrackInfoUnexpected)
                 ProcessTrackStatus(StatusInfo)
@@ -185,9 +294,9 @@ Namespace Greaseweazle
             Dim Table As TableLayoutPanel
 
             If StatusInfo.Side = 0 Then
-                Table = _TS0
+                Table = TableSide0
             ElseIf StatusInfo.Side = 1 Then
-                Table = _TS1
+                Table = TableSide1
             Else
                 Table = Nothing
             End If
@@ -215,15 +324,15 @@ Namespace Greaseweazle
                 StatusSide.Text = My.Resources.Label_Side & " " & StatusInfo.Side
 
                 If _TotalBadSectors = 1 Then
-                    StatusBadSectors.Text = _TotalBadSectors & " " & My.Resources.Label_BadSector
+                    _StatusBadSectors.Text = _TotalBadSectors & " " & My.Resources.Label_BadSector
                 ElseIf _TotalBadSectors > 1 Then
-                    StatusBadSectors.Text = _TotalBadSectors & " " & My.Resources.Label_BadSectors
+                    _StatusBadSectors.Text = _TotalBadSectors & " " & My.Resources.Label_BadSectors
                 End If
 
                 If _TotalUnexpectedSectors = 1 Then
-                    StatusUnexpected.Text = _TotalUnexpectedSectors & " " & My.Resources.Label_UnexpectedSector
+                    _StatusUnexpected.Text = _TotalUnexpectedSectors & " " & My.Resources.Label_UnexpectedSector
                 ElseIf _TotalUnexpectedSectors > 1 Then
-                    StatusUnexpected.Text = _TotalUnexpectedSectors & " " & My.Resources.Label_UnexpectedSectors
+                    _StatusUnexpected.Text = _TotalUnexpectedSectors & " " & My.Resources.Label_UnexpectedSectors
                 End If
             End If
         End Sub
@@ -254,15 +363,15 @@ Namespace Greaseweazle
         End Sub
 
         Private Sub RefreshImportButtonState()
-            ButtonImport.Enabled = Not _ProcessRunning AndAlso Not String.IsNullOrEmpty(_OutputFilePath) AndAlso Not String.IsNullOrEmpty(TextBoxFileName.Text)
+            ButtonOk.Enabled = Not _ProcessRunning AndAlso Not String.IsNullOrEmpty(_OutputFilePath) AndAlso Not String.IsNullOrEmpty(TextBoxFileName.Text)
         End Sub
 
         Private Sub ResetStatusBar()
             StatusType.Text = ""
             StatusTrack.Text = ""
             StatusSide.Text = ""
-            StatusBadSectors.Text = ""
-            StatusUnexpected.Text = ""
+            _StatusBadSectors.Text = ""
+            _StatusUnexpected.Text = ""
             _TotalBadSectors = 0
             _TotalUnexpectedSectors = 0
         End Sub
@@ -291,26 +400,6 @@ Namespace Greaseweazle
         Private Sub ToggleProcessRunning(Value As Boolean)
             _ProcessRunning = Value
             RefreshButtonState()
-        End Sub
-
-        Private Sub TrackGridInit(Tracks As UShort, Sides As Byte)
-            _TS0 = FloppyGridInit(TableSide0, My.Resources.Label_Side & " 0", Tracks, Math.Max(Tracks, TOTAL_TRACKS))
-
-            Dim TrackCount As UShort = 0
-            If Sides > 1 Then
-                TrackCount = Tracks
-            End If
-            _TS1 = FloppyGridInit(TableSide1, My.Resources.Label_Side & " 1", TrackCount, Math.Max(Tracks, TOTAL_TRACKS))
-        End Sub
-
-        Private Sub TrackGridReset(Tracks As UShort, Sides As Byte)
-            FloppyGridReset(_TS0, Tracks, Math.Max(Tracks, TOTAL_TRACKS))
-
-            Dim TrackCount As UShort = 0
-            If Sides > 1 Then
-                TrackCount = Tracks
-            End If
-            FloppyGridReset(_TS1, TrackCount, Math.Max(Tracks, TOTAL_TRACKS))
         End Sub
 
         Private Function UpdateStatusInfo(TrackInfo As ConsoleOutputParser.TrackInfo) As TrackStatusInfo

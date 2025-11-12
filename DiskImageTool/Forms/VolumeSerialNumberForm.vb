@@ -17,5 +17,4 @@
         DTTime.Value = Date.Now
         NumMS.Value = Date.Now.Millisecond
     End Sub
-
 End Class

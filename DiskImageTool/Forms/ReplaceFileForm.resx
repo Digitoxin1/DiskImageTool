@@ -117,59 +117,32 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <metadata name="PanelBottom.GenerateMember" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
+    <value>False</value>
+  </metadata>
+  <metadata name="PanelBottom.Locked" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
+    <value>True</value>
+  </metadata>
+  <metadata name="BtnCancel.Locked" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
+    <value>True</value>
+  </metadata>
   <assembly alias="System.Windows.Forms" name="System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
-  <data name="BtnOK.Anchor" type="System.Windows.Forms.AnchorStyles, System.Windows.Forms">
-    <value>Top, Right</value>
-  </data>
-  <data name="BtnOK.AutoSizeMode" type="System.Windows.Forms.AutoSizeMode, System.Windows.Forms">
-    <value>GrowAndShrink</value>
-  </data>
-  <assembly alias="System.Drawing" name="System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
-  <data name="BtnOK.Location" type="System.Drawing.Point, System.Drawing">
-    <value>338, 10</value>
-  </data>
-  <data name="BtnOK.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
-    <value>4, 10, 4, 9</value>
-  </data>
-  <data name="BtnOK.Size" type="System.Drawing.Size, System.Drawing">
-    <value>75, 23</value>
-  </data>
-  <assembly alias="mscorlib" name="mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
-  <data name="BtnOK.TabIndex" type="System.Int32, mscorlib">
-    <value>17</value>
-  </data>
-  <data name="BtnOK.Text" xml:space="preserve">
-    <value>Replace</value>
-  </data>
-  <data name="&gt;&gt;BtnOK.Name" xml:space="preserve">
-    <value>BtnOK</value>
-  </data>
-  <data name="&gt;&gt;BtnOK.Type" xml:space="preserve">
-    <value>System.Windows.Forms.Button, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="&gt;&gt;BtnOK.Parent" xml:space="preserve">
-    <value>Panel1</value>
-  </data>
-  <data name="&gt;&gt;BtnOK.ZOrder" xml:space="preserve">
-    <value>0</value>
-  </data>
-  <data name="BtnCancel.Anchor" type="System.Windows.Forms.AnchorStyles, System.Windows.Forms">
-    <value>Top, Right</value>
-  </data>
   <data name="BtnCancel.AutoSizeMode" type="System.Windows.Forms.AutoSizeMode, System.Windows.Forms">
     <value>GrowAndShrink</value>
   </data>
+  <assembly alias="System.Drawing" name="System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
   <data name="BtnCancel.Location" type="System.Drawing.Point, System.Drawing">
-    <value>421, 10</value>
+    <value>403, 10</value>
   </data>
   <data name="BtnCancel.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
-    <value>4, 10, 4, 9</value>
+    <value>6, 0, 6, 0</value>
   </data>
   <data name="BtnCancel.Size" type="System.Drawing.Size, System.Drawing">
     <value>75, 23</value>
   </data>
+  <assembly alias="mscorlib" name="mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
   <data name="BtnCancel.TabIndex" type="System.Int32, mscorlib">
-    <value>18</value>
+    <value>1</value>
   </data>
   <data name="BtnCancel.Text" xml:space="preserve">
     <value>Cancel</value>
@@ -181,38 +154,98 @@
     <value>System.Windows.Forms.Button, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
   <data name="&gt;&gt;BtnCancel.Parent" xml:space="preserve">
-    <value>Panel1</value>
+    <value>PanelBottom</value>
   </data>
   <data name="&gt;&gt;BtnCancel.ZOrder" xml:space="preserve">
+    <value>0</value>
+  </data>
+  <metadata name="BtnOK.Locked" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
+    <value>True</value>
+  </metadata>
+  <data name="BtnOK.AutoSizeMode" type="System.Windows.Forms.AutoSizeMode, System.Windows.Forms">
+    <value>GrowAndShrink</value>
+  </data>
+  <data name="BtnOK.Location" type="System.Drawing.Point, System.Drawing">
+    <value>316, 10</value>
+  </data>
+  <data name="BtnOK.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
+    <value>6, 0, 6, 0</value>
+  </data>
+  <data name="BtnOK.Size" type="System.Drawing.Size, System.Drawing">
+    <value>75, 23</value>
+  </data>
+  <data name="BtnOK.TabIndex" type="System.Int32, mscorlib">
+    <value>0</value>
+  </data>
+  <data name="BtnOK.Text" xml:space="preserve">
+    <value>Replace</value>
+  </data>
+  <data name="&gt;&gt;BtnOK.Name" xml:space="preserve">
+    <value>BtnOK</value>
+  </data>
+  <data name="&gt;&gt;BtnOK.Type" xml:space="preserve">
+    <value>System.Windows.Forms.Button, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;BtnOK.Parent" xml:space="preserve">
+    <value>PanelBottom</value>
+  </data>
+  <data name="&gt;&gt;BtnOK.ZOrder" xml:space="preserve">
     <value>1</value>
   </data>
-  <data name="Panel1.Dock" type="System.Windows.Forms.DockStyle, System.Windows.Forms">
+  <data name="PanelBottom.Dock" type="System.Windows.Forms.DockStyle, System.Windows.Forms">
     <value>Bottom</value>
   </data>
-  <data name="Panel1.Location" type="System.Drawing.Point, System.Drawing">
-    <value>0, 256</value>
+  <data name="PanelBottom.FlowDirection" type="System.Windows.Forms.FlowDirection, System.Windows.Forms">
+    <value>RightToLeft</value>
   </data>
-  <data name="Panel1.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
-    <value>3, 3, 50, 3</value>
+  <data name="PanelBottom.Location" type="System.Drawing.Point, System.Drawing">
+    <value>0, 239</value>
   </data>
-  <data name="Panel1.Size" type="System.Drawing.Size, System.Drawing">
-    <value>512, 42</value>
+  <data name="PanelBottom.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
+    <value>0, 0, 0, 0</value>
   </data>
-  <data name="Panel1.TabIndex" type="System.Int32, mscorlib">
-    <value>16</value>
+  <data name="PanelBottom.Padding" type="System.Windows.Forms.Padding, System.Windows.Forms">
+    <value>6, 10, 6, 10</value>
   </data>
-  <data name="&gt;&gt;Panel1.Name" xml:space="preserve">
-    <value>Panel1</value>
+  <data name="PanelBottom.Size" type="System.Drawing.Size, System.Drawing">
+    <value>496, 43</value>
   </data>
-  <data name="&gt;&gt;Panel1.Type" xml:space="preserve">
-    <value>System.Windows.Forms.Panel, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  <data name="PanelBottom.TabIndex" type="System.Int32, mscorlib">
+    <value>1</value>
   </data>
-  <data name="&gt;&gt;Panel1.Parent" xml:space="preserve">
+  <data name="PanelBottom.WrapContents" type="System.Boolean, mscorlib">
+    <value>False</value>
+  </data>
+  <data name="&gt;&gt;PanelBottom.Name" xml:space="preserve">
+    <value>PanelBottom</value>
+  </data>
+  <data name="&gt;&gt;PanelBottom.Type" xml:space="preserve">
+    <value>System.Windows.Forms.FlowLayoutPanel, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;PanelBottom.Parent" xml:space="preserve">
     <value>$this</value>
   </data>
-  <data name="&gt;&gt;Panel1.ZOrder" xml:space="preserve">
-    <value>6</value>
+  <data name="&gt;&gt;PanelBottom.ZOrder" xml:space="preserve">
+    <value>1</value>
   </data>
+  <metadata name="PanelMain.GenerateMember" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
+    <value>False</value>
+  </metadata>
+  <metadata name="PanelMain.Locked" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
+    <value>True</value>
+  </metadata>
+  <data name="PanelMain.AutoSize" type="System.Boolean, mscorlib">
+    <value>True</value>
+  </data>
+  <data name="PanelMain.AutoSizeMode" type="System.Windows.Forms.AutoSizeMode, System.Windows.Forms">
+    <value>GrowAndShrink</value>
+  </data>
+  <metadata name="GroupBoxOriginal.Locked" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
+    <value>True</value>
+  </metadata>
+  <metadata name="ChkFileSizeOriginal.Locked" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
+    <value>True</value>
+  </metadata>
   <data name="ChkFileSizeOriginal.AutoSize" type="System.Boolean, mscorlib">
     <value>True</value>
   </data>
@@ -241,6 +274,9 @@
   <data name="&gt;&gt;ChkFileSizeOriginal.ZOrder" xml:space="preserve">
     <value>0</value>
   </data>
+  <metadata name="ChkFileDateOriginal.Locked" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
+    <value>True</value>
+  </metadata>
   <data name="ChkFileDateOriginal.AutoSize" type="System.Boolean, mscorlib">
     <value>True</value>
   </data>
@@ -269,6 +305,9 @@
   <data name="&gt;&gt;ChkFileDateOriginal.ZOrder" xml:space="preserve">
     <value>1</value>
   </data>
+  <metadata name="ChkFilenameOriginal.Locked" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
+    <value>True</value>
+  </metadata>
   <data name="ChkFilenameOriginal.AutoSize" type="System.Boolean, mscorlib">
     <value>True</value>
   </data>
@@ -298,7 +337,7 @@
     <value>2</value>
   </data>
   <data name="GroupBoxOriginal.Location" type="System.Drawing.Point, System.Drawing">
-    <value>27, 27</value>
+    <value>18, 18</value>
   </data>
   <data name="GroupBoxOriginal.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
     <value>18, 18, 18, 18</value>
@@ -319,18 +358,158 @@
     <value>System.Windows.Forms.GroupBox, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
   <data name="&gt;&gt;GroupBoxOriginal.Parent" xml:space="preserve">
-    <value>$this</value>
+    <value>PanelMain</value>
   </data>
   <data name="&gt;&gt;GroupBoxOriginal.ZOrder" xml:space="preserve">
+    <value>0</value>
+  </data>
+  <metadata name="FlowLayoutPad.Locked" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
+    <value>True</value>
+  </metadata>
+  <data name="FlowLayoutPad.Anchor" type="System.Windows.Forms.AnchorStyles, System.Windows.Forms">
+    <value>Top, Right</value>
+  </data>
+  <data name="FlowLayoutPad.AutoSize" type="System.Boolean, mscorlib">
+    <value>True</value>
+  </data>
+  <data name="FlowLayoutPad.AutoSizeMode" type="System.Windows.Forms.AutoSizeMode, System.Windows.Forms">
+    <value>GrowAndShrink</value>
+  </data>
+  <metadata name="RadioFill00.Locked" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
+    <value>True</value>
+  </metadata>
+  <data name="RadioFill00.AutoSize" type="System.Boolean, mscorlib">
+    <value>True</value>
+  </data>
+  <data name="RadioFill00.Location" type="System.Drawing.Point, System.Drawing">
+    <value>130, 3</value>
+  </data>
+  <data name="RadioFill00.Size" type="System.Drawing.Size, System.Drawing">
+    <value>48, 17</value>
+  </data>
+  <data name="RadioFill00.TabIndex" type="System.Int32, mscorlib">
+    <value>2</value>
+  </data>
+  <data name="RadioFill00.Text" xml:space="preserve">
+    <value>0x00</value>
+    <comment>@Invariant</comment>
+  </data>
+  <data name="&gt;&gt;RadioFill00.Name" xml:space="preserve">
+    <value>RadioFill00</value>
+  </data>
+  <data name="&gt;&gt;RadioFill00.Type" xml:space="preserve">
+    <value>System.Windows.Forms.RadioButton, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;RadioFill00.Parent" xml:space="preserve">
+    <value>FlowLayoutPad</value>
+  </data>
+  <data name="&gt;&gt;RadioFill00.ZOrder" xml:space="preserve">
+    <value>0</value>
+  </data>
+  <metadata name="RadioFillF6.Locked" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
+    <value>True</value>
+  </metadata>
+  <data name="RadioFillF6.AutoSize" type="System.Boolean, mscorlib">
+    <value>True</value>
+  </data>
+  <data name="RadioFillF6.Location" type="System.Drawing.Point, System.Drawing">
+    <value>76, 3</value>
+  </data>
+  <data name="RadioFillF6.Size" type="System.Drawing.Size, System.Drawing">
+    <value>48, 17</value>
+  </data>
+  <data name="RadioFillF6.TabIndex" type="System.Int32, mscorlib">
+    <value>1</value>
+  </data>
+  <data name="RadioFillF6.Text" xml:space="preserve">
+    <value>0xF6</value>
+    <comment>@Invariant</comment>
+  </data>
+  <data name="&gt;&gt;RadioFillF6.Name" xml:space="preserve">
+    <value>RadioFillF6</value>
+  </data>
+  <data name="&gt;&gt;RadioFillF6.Type" xml:space="preserve">
+    <value>System.Windows.Forms.RadioButton, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;RadioFillF6.Parent" xml:space="preserve">
+    <value>FlowLayoutPad</value>
+  </data>
+  <data name="&gt;&gt;RadioFillF6.ZOrder" xml:space="preserve">
+    <value>1</value>
+  </data>
+  <metadata name="LblPadCaption.Locked" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
+    <value>True</value>
+  </metadata>
+  <data name="LblPadCaption.Anchor" type="System.Windows.Forms.AnchorStyles, System.Windows.Forms">
+    <value>Left</value>
+  </data>
+  <data name="LblPadCaption.AutoSize" type="System.Boolean, mscorlib">
+    <value>True</value>
+  </data>
+  <data name="LblPadCaption.Location" type="System.Drawing.Point, System.Drawing">
+    <value>3, 5</value>
+  </data>
+  <data name="LblPadCaption.Size" type="System.Drawing.Size, System.Drawing">
+    <value>67, 13</value>
+  </data>
+  <data name="LblPadCaption.TabIndex" type="System.Int32, mscorlib">
+    <value>0</value>
+  </data>
+  <data name="LblPadCaption.Text" xml:space="preserve">
+    <value>Pad file with:</value>
+  </data>
+  <data name="&gt;&gt;LblPadCaption.Name" xml:space="preserve">
+    <value>LblPadCaption</value>
+  </data>
+  <data name="&gt;&gt;LblPadCaption.Type" xml:space="preserve">
+    <value>System.Windows.Forms.Label, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;LblPadCaption.Parent" xml:space="preserve">
+    <value>FlowLayoutPad</value>
+  </data>
+  <data name="&gt;&gt;LblPadCaption.ZOrder" xml:space="preserve">
+    <value>2</value>
+  </data>
+  <data name="FlowLayoutPad.FlowDirection" type="System.Windows.Forms.FlowDirection, System.Windows.Forms">
+    <value>RightToLeft</value>
+  </data>
+  <data name="FlowLayoutPad.Location" type="System.Drawing.Point, System.Drawing">
+    <value>297, 198</value>
+  </data>
+  <data name="FlowLayoutPad.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
+    <value>18, 18, 18, 18</value>
+  </data>
+  <data name="FlowLayoutPad.Size" type="System.Drawing.Size, System.Drawing">
+    <value>181, 23</value>
+  </data>
+  <data name="FlowLayoutPad.TabIndex" type="System.Int32, mscorlib">
     <value>5</value>
   </data>
+  <data name="&gt;&gt;FlowLayoutPad.Name" xml:space="preserve">
+    <value>FlowLayoutPad</value>
+  </data>
+  <data name="&gt;&gt;FlowLayoutPad.Type" xml:space="preserve">
+    <value>System.Windows.Forms.FlowLayoutPanel, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;FlowLayoutPad.Parent" xml:space="preserve">
+    <value>PanelMain</value>
+  </data>
+  <data name="&gt;&gt;FlowLayoutPad.ZOrder" xml:space="preserve">
+    <value>1</value>
+  </data>
+  <metadata name="GroupBox1.Locked" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
+    <value>True</value>
+  </metadata>
+  <metadata name="BtnUndo.Locked" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
+    <value>True</value>
+  </metadata>
   <data name="BtnUndo.FlatStyle" type="System.Windows.Forms.FlatStyle, System.Windows.Forms">
     <value>Flat</value>
   </data>
   <data name="BtnUndo.Image" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
     <value>
         iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAABGdBTUEAALGPC/xhBQAAACBjSFJNAAB6
-        JgAAgIQAAPoAAACA6AAAdTAAAOpgAAA6mAAAF3CculE8AAAACXBIWXMAAA7AAAAOwAFq1okJAAAAv0lE
+        JgAAgIQAAPoAAACA6AAAdTAAAOpgAAA6mAAAF3CculE8AAAACXBIWXMAAA68AAAOvAGVvHJJAAAAv0lE
         QVQ4T+WQoQ7CQBBELwQcEr8zd1BRW0t6wBeBQPMt8BdY+AD4AxQkWAQWsg0lx5pW1PGSEzezM9msc11B
         8pX+QwhjkluSV5JPkmcRWcYY++ncl7RARGYA7gA2IoI8z4cASgAHkvuiKAa/6aQgCZd2xjnXA3AkubJG
         VZCEo/VrRGRO8mT1qqAprGRZNgLwsLoWXLTEPjvnvZ+QvFm9NXpYkjurt6K+kW5hvUa899NPeGG9Rv4x
@@ -358,6 +537,9 @@
   <data name="&gt;&gt;BtnUndo.ZOrder" xml:space="preserve">
     <value>0</value>
   </data>
+  <metadata name="TxtFileExtNew.Locked" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
+    <value>True</value>
+  </metadata>
   <data name="TxtFileExtNew.Location" type="System.Drawing.Point, System.Drawing">
     <value>136, 25</value>
   </data>
@@ -382,6 +564,9 @@
   <data name="&gt;&gt;TxtFileExtNew.ZOrder" xml:space="preserve">
     <value>1</value>
   </data>
+  <metadata name="TxtFilenameNew.Locked" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
+    <value>True</value>
+  </metadata>
   <data name="TxtFilenameNew.Location" type="System.Drawing.Point, System.Drawing">
     <value>30, 25</value>
   </data>
@@ -406,6 +591,9 @@
   <data name="&gt;&gt;TxtFilenameNew.ZOrder" xml:space="preserve">
     <value>2</value>
   </data>
+  <metadata name="ChkFileSizeNew.Locked" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
+    <value>True</value>
+  </metadata>
   <data name="ChkFileSizeNew.AutoSize" type="System.Boolean, mscorlib">
     <value>True</value>
   </data>
@@ -434,6 +622,9 @@
   <data name="&gt;&gt;ChkFileSizeNew.ZOrder" xml:space="preserve">
     <value>3</value>
   </data>
+  <metadata name="ChkFileDateNew.Locked" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
+    <value>True</value>
+  </metadata>
   <data name="ChkFileDateNew.AutoSize" type="System.Boolean, mscorlib">
     <value>True</value>
   </data>
@@ -462,6 +653,9 @@
   <data name="&gt;&gt;ChkFileDateNew.ZOrder" xml:space="preserve">
     <value>4</value>
   </data>
+  <metadata name="ChkFilenameNew.Locked" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
+    <value>True</value>
+  </metadata>
   <data name="ChkFilenameNew.AutoSize" type="System.Boolean, mscorlib">
     <value>True</value>
   </data>
@@ -487,7 +681,7 @@
     <value>5</value>
   </data>
   <data name="GroupBox1.Location" type="System.Drawing.Point, System.Drawing">
-    <value>275, 27</value>
+    <value>266, 18</value>
   </data>
   <data name="GroupBox1.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
     <value>18, 18, 18, 18</value>
@@ -508,17 +702,156 @@
     <value>System.Windows.Forms.GroupBox, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
   <data name="&gt;&gt;GroupBox1.Parent" xml:space="preserve">
-    <value>$this</value>
+    <value>PanelMain</value>
   </data>
   <data name="&gt;&gt;GroupBox1.ZOrder" xml:space="preserve">
+    <value>2</value>
+  </data>
+  <metadata name="FlowLayoutPanel3.Locked" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
+    <value>True</value>
+  </metadata>
+  <data name="FlowLayoutPanel3.AutoSize" type="System.Boolean, mscorlib">
+    <value>True</value>
+  </data>
+  <data name="FlowLayoutPanel3.AutoSizeMode" type="System.Windows.Forms.AutoSizeMode, System.Windows.Forms">
+    <value>GrowAndShrink</value>
+  </data>
+  <metadata name="LblFileSizeCaption.Locked" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
+    <value>True</value>
+  </metadata>
+  <data name="LblFileSizeCaption.AutoSize" type="System.Boolean, mscorlib">
+    <value>True</value>
+  </data>
+  <data name="LblFileSizeCaption.Location" type="System.Drawing.Point, System.Drawing">
+    <value>0, 0</value>
+  </data>
+  <data name="LblFileSizeCaption.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
+    <value>0, 0, 0, 0</value>
+  </data>
+  <data name="LblFileSizeCaption.Size" type="System.Drawing.Size, System.Drawing">
+    <value>108, 13</value>
+  </data>
+  <data name="LblFileSizeCaption.TabIndex" type="System.Int32, mscorlib">
+    <value>0</value>
+  </data>
+  <data name="LblFileSizeCaption.Text" xml:space="preserve">
+    <value>File size will be set to:</value>
+  </data>
+  <data name="&gt;&gt;LblFileSizeCaption.Name" xml:space="preserve">
+    <value>LblFileSizeCaption</value>
+  </data>
+  <data name="&gt;&gt;LblFileSizeCaption.Type" xml:space="preserve">
+    <value>System.Windows.Forms.Label, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;LblFileSizeCaption.Parent" xml:space="preserve">
+    <value>FlowLayoutPanel3</value>
+  </data>
+  <data name="&gt;&gt;LblFileSizeCaption.ZOrder" xml:space="preserve">
+    <value>0</value>
+  </data>
+  <metadata name="LblFileSize.Locked" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
+    <value>True</value>
+  </metadata>
+  <data name="LblFileSize.AutoSize" type="System.Boolean, mscorlib">
+    <value>True</value>
+  </data>
+  <data name="LblFileSize.Location" type="System.Drawing.Point, System.Drawing">
+    <value>108, 0</value>
+  </data>
+  <data name="LblFileSize.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
+    <value>0, 0, 3, 0</value>
+  </data>
+  <data name="LblFileSize.Size" type="System.Drawing.Size, System.Drawing">
+    <value>41, 13</value>
+  </data>
+  <data name="LblFileSize.TabIndex" type="System.Int32, mscorlib">
+    <value>1</value>
+  </data>
+  <data name="LblFileSize.Text" xml:space="preserve">
+    <value>{Bytes}</value>
+    <comment>@Invariant</comment>
+  </data>
+  <data name="&gt;&gt;LblFileSize.Name" xml:space="preserve">
+    <value>LblFileSize</value>
+  </data>
+  <data name="&gt;&gt;LblFileSize.Type" xml:space="preserve">
+    <value>System.Windows.Forms.Label, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;LblFileSize.Parent" xml:space="preserve">
+    <value>FlowLayoutPanel3</value>
+  </data>
+  <data name="&gt;&gt;LblFileSize.ZOrder" xml:space="preserve">
+    <value>1</value>
+  </data>
+  <metadata name="LblFileSizeError.Locked" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
+    <value>True</value>
+  </metadata>
+  <data name="LblFileSizeError.AutoSize" type="System.Boolean, mscorlib">
+    <value>True</value>
+  </data>
+  <data name="LblFileSizeError.Location" type="System.Drawing.Point, System.Drawing">
+    <value>155, 0</value>
+  </data>
+  <data name="LblFileSizeError.RightToLeft" type="System.Windows.Forms.RightToLeft, System.Windows.Forms">
+    <value>Yes</value>
+  </data>
+  <data name="LblFileSizeError.Size" type="System.Drawing.Size, System.Drawing">
+    <value>35, 13</value>
+  </data>
+  <data name="LblFileSizeError.TabIndex" type="System.Int32, mscorlib">
+    <value>2</value>
+  </data>
+  <data name="LblFileSizeError.Text" xml:space="preserve">
+    <value>(Error)</value>
+  </data>
+  <data name="&gt;&gt;LblFileSizeError.Name" xml:space="preserve">
+    <value>LblFileSizeError</value>
+  </data>
+  <data name="&gt;&gt;LblFileSizeError.Type" xml:space="preserve">
+    <value>System.Windows.Forms.Label, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;LblFileSizeError.Parent" xml:space="preserve">
+    <value>FlowLayoutPanel3</value>
+  </data>
+  <data name="&gt;&gt;LblFileSizeError.ZOrder" xml:space="preserve">
+    <value>2</value>
+  </data>
+  <data name="FlowLayoutPanel3.Location" type="System.Drawing.Point, System.Drawing">
+    <value>18, 203</value>
+  </data>
+  <data name="FlowLayoutPanel3.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
+    <value>3, 3, 3, 18</value>
+  </data>
+  <data name="FlowLayoutPanel3.Size" type="System.Drawing.Size, System.Drawing">
+    <value>193, 13</value>
+  </data>
+  <data name="FlowLayoutPanel3.TabIndex" type="System.Int32, mscorlib">
     <value>4</value>
   </data>
+  <data name="&gt;&gt;FlowLayoutPanel3.Name" xml:space="preserve">
+    <value>FlowLayoutPanel3</value>
+  </data>
+  <data name="&gt;&gt;FlowLayoutPanel3.Type" xml:space="preserve">
+    <value>System.Windows.Forms.FlowLayoutPanel, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;FlowLayoutPanel3.Parent" xml:space="preserve">
+    <value>PanelMain</value>
+  </data>
+  <data name="&gt;&gt;FlowLayoutPanel3.ZOrder" xml:space="preserve">
+    <value>3</value>
+  </data>
+  <metadata name="FlowLayoutPanel1.Locked" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
+    <value>True</value>
+  </metadata>
   <data name="FlowLayoutPanel1.AutoSize" type="System.Boolean, mscorlib">
     <value>True</value>
   </data>
   <data name="FlowLayoutPanel1.AutoSizeMode" type="System.Windows.Forms.AutoSizeMode, System.Windows.Forms">
     <value>GrowAndShrink</value>
   </data>
+  <metadata name="LblFileNameCaption.Locked" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
+    <value>True</value>
+  </metadata>
   <data name="LblFileNameCaption.AutoSize" type="System.Boolean, mscorlib">
     <value>True</value>
   </data>
@@ -532,7 +865,7 @@
     <value>116, 13</value>
   </data>
   <data name="LblFileNameCaption.TabIndex" type="System.Int32, mscorlib">
-    <value>4</value>
+    <value>0</value>
   </data>
   <data name="LblFileNameCaption.Text" xml:space="preserve">
     <value>File name will be set to:</value>
@@ -549,6 +882,9 @@
   <data name="&gt;&gt;LblFileNameCaption.ZOrder" xml:space="preserve">
     <value>0</value>
   </data>
+  <metadata name="LblFileName.Locked" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
+    <value>True</value>
+  </metadata>
   <data name="LblFileName.AutoSize" type="System.Boolean, mscorlib">
     <value>True</value>
   </data>
@@ -562,7 +898,7 @@
     <value>59, 13</value>
   </data>
   <data name="LblFileName.TabIndex" type="System.Int32, mscorlib">
-    <value>5</value>
+    <value>1</value>
   </data>
   <data name="LblFileName.Text" xml:space="preserve">
     <value>{FileName}</value>
@@ -581,13 +917,13 @@
     <value>1</value>
   </data>
   <data name="FlowLayoutPanel1.Location" type="System.Drawing.Point, System.Drawing">
-    <value>27, 156</value>
+    <value>18, 147</value>
   </data>
   <data name="FlowLayoutPanel1.Size" type="System.Drawing.Size, System.Drawing">
     <value>178, 13</value>
   </data>
   <data name="FlowLayoutPanel1.TabIndex" type="System.Int32, mscorlib">
-    <value>3</value>
+    <value>2</value>
   </data>
   <data name="&gt;&gt;FlowLayoutPanel1.Name" xml:space="preserve">
     <value>FlowLayoutPanel1</value>
@@ -596,17 +932,23 @@
     <value>System.Windows.Forms.FlowLayoutPanel, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
   <data name="&gt;&gt;FlowLayoutPanel1.Parent" xml:space="preserve">
-    <value>$this</value>
+    <value>PanelMain</value>
   </data>
   <data name="&gt;&gt;FlowLayoutPanel1.ZOrder" xml:space="preserve">
-    <value>3</value>
+    <value>4</value>
   </data>
+  <metadata name="FlowLayoutPanel2.Locked" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
+    <value>True</value>
+  </metadata>
   <data name="FlowLayoutPanel2.AutoSize" type="System.Boolean, mscorlib">
     <value>True</value>
   </data>
   <data name="FlowLayoutPanel2.AutoSizeMode" type="System.Windows.Forms.AutoSizeMode, System.Windows.Forms">
     <value>GrowAndShrink</value>
   </data>
+  <metadata name="LblFileDateCaption.Locked" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
+    <value>True</value>
+  </metadata>
   <data name="LblFileDateCaption.AutoSize" type="System.Boolean, mscorlib">
     <value>True</value>
   </data>
@@ -620,7 +962,7 @@
     <value>149, 13</value>
   </data>
   <data name="LblFileDateCaption.TabIndex" type="System.Int32, mscorlib">
-    <value>7</value>
+    <value>0</value>
   </data>
   <data name="LblFileDateCaption.Text" xml:space="preserve">
     <value>Last written date will be set to:</value>
@@ -637,6 +979,9 @@
   <data name="&gt;&gt;LblFileDateCaption.ZOrder" xml:space="preserve">
     <value>0</value>
   </data>
+  <metadata name="LblFileDate.Locked" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
+    <value>True</value>
+  </metadata>
   <data name="LblFileDate.AutoSize" type="System.Boolean, mscorlib">
     <value>True</value>
   </data>
@@ -650,7 +995,7 @@
     <value>54, 13</value>
   </data>
   <data name="LblFileDate.TabIndex" type="System.Int32, mscorlib">
-    <value>8</value>
+    <value>1</value>
   </data>
   <data name="LblFileDate.Text" xml:space="preserve">
     <value>{FileDate}</value>
@@ -669,13 +1014,13 @@
     <value>1</value>
   </data>
   <data name="FlowLayoutPanel2.Location" type="System.Drawing.Point, System.Drawing">
-    <value>27, 184</value>
+    <value>18, 175</value>
   </data>
   <data name="FlowLayoutPanel2.Size" type="System.Drawing.Size, System.Drawing">
     <value>206, 13</value>
   </data>
   <data name="FlowLayoutPanel2.TabIndex" type="System.Int32, mscorlib">
-    <value>6</value>
+    <value>3</value>
   </data>
   <data name="&gt;&gt;FlowLayoutPanel2.Name" xml:space="preserve">
     <value>FlowLayoutPanel2</value>
@@ -684,240 +1029,33 @@
     <value>System.Windows.Forms.FlowLayoutPanel, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
   <data name="&gt;&gt;FlowLayoutPanel2.Parent" xml:space="preserve">
-    <value>$this</value>
+    <value>PanelMain</value>
   </data>
   <data name="&gt;&gt;FlowLayoutPanel2.ZOrder" xml:space="preserve">
-    <value>2</value>
+    <value>5</value>
   </data>
-  <data name="FlowLayoutPanel3.AutoSize" type="System.Boolean, mscorlib">
-    <value>True</value>
+  <data name="PanelMain.Dock" type="System.Windows.Forms.DockStyle, System.Windows.Forms">
+    <value>Fill</value>
   </data>
-  <data name="FlowLayoutPanel3.AutoSizeMode" type="System.Windows.Forms.AutoSizeMode, System.Windows.Forms">
-    <value>GrowAndShrink</value>
-  </data>
-  <data name="LblFileSizeCaption.AutoSize" type="System.Boolean, mscorlib">
-    <value>True</value>
-  </data>
-  <data name="LblFileSizeCaption.Location" type="System.Drawing.Point, System.Drawing">
+  <data name="PanelMain.Location" type="System.Drawing.Point, System.Drawing">
     <value>0, 0</value>
   </data>
-  <data name="LblFileSizeCaption.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
-    <value>0, 0, 0, 0</value>
+  <data name="PanelMain.Size" type="System.Drawing.Size, System.Drawing">
+    <value>496, 239</value>
   </data>
-  <data name="LblFileSizeCaption.Size" type="System.Drawing.Size, System.Drawing">
-    <value>108, 13</value>
-  </data>
-  <data name="LblFileSizeCaption.TabIndex" type="System.Int32, mscorlib">
-    <value>10</value>
-  </data>
-  <data name="LblFileSizeCaption.Text" xml:space="preserve">
-    <value>File size will be set to:</value>
-  </data>
-  <data name="&gt;&gt;LblFileSizeCaption.Name" xml:space="preserve">
-    <value>LblFileSizeCaption</value>
-  </data>
-  <data name="&gt;&gt;LblFileSizeCaption.Type" xml:space="preserve">
-    <value>System.Windows.Forms.Label, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="&gt;&gt;LblFileSizeCaption.Parent" xml:space="preserve">
-    <value>FlowLayoutPanel3</value>
-  </data>
-  <data name="&gt;&gt;LblFileSizeCaption.ZOrder" xml:space="preserve">
+  <data name="PanelMain.TabIndex" type="System.Int32, mscorlib">
     <value>0</value>
   </data>
-  <data name="LblFileSize.AutoSize" type="System.Boolean, mscorlib">
-    <value>True</value>
+  <data name="&gt;&gt;PanelMain.Name" xml:space="preserve">
+    <value>PanelMain</value>
   </data>
-  <data name="LblFileSize.Location" type="System.Drawing.Point, System.Drawing">
-    <value>108, 0</value>
+  <data name="&gt;&gt;PanelMain.Type" xml:space="preserve">
+    <value>System.Windows.Forms.Panel, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
-  <data name="LblFileSize.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
-    <value>0, 0, 3, 0</value>
-  </data>
-  <data name="LblFileSize.Size" type="System.Drawing.Size, System.Drawing">
-    <value>41, 13</value>
-  </data>
-  <data name="LblFileSize.TabIndex" type="System.Int32, mscorlib">
-    <value>11</value>
-  </data>
-  <data name="LblFileSize.Text" xml:space="preserve">
-    <value>{Bytes}</value>
-    <comment>@Invariant</comment>
-  </data>
-  <data name="&gt;&gt;LblFileSize.Name" xml:space="preserve">
-    <value>LblFileSize</value>
-  </data>
-  <data name="&gt;&gt;LblFileSize.Type" xml:space="preserve">
-    <value>System.Windows.Forms.Label, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="&gt;&gt;LblFileSize.Parent" xml:space="preserve">
-    <value>FlowLayoutPanel3</value>
-  </data>
-  <data name="&gt;&gt;LblFileSize.ZOrder" xml:space="preserve">
-    <value>1</value>
-  </data>
-  <data name="LblFileSizeError.AutoSize" type="System.Boolean, mscorlib">
-    <value>True</value>
-  </data>
-  <data name="LblFileSizeError.Location" type="System.Drawing.Point, System.Drawing">
-    <value>155, 0</value>
-  </data>
-  <data name="LblFileSizeError.RightToLeft" type="System.Windows.Forms.RightToLeft, System.Windows.Forms">
-    <value>Yes</value>
-  </data>
-  <data name="LblFileSizeError.Size" type="System.Drawing.Size, System.Drawing">
-    <value>35, 13</value>
-  </data>
-  <data name="LblFileSizeError.TabIndex" type="System.Int32, mscorlib">
-    <value>12</value>
-  </data>
-  <data name="LblFileSizeError.Text" xml:space="preserve">
-    <value>(Error)</value>
-  </data>
-  <data name="&gt;&gt;LblFileSizeError.Name" xml:space="preserve">
-    <value>LblFileSizeError</value>
-  </data>
-  <data name="&gt;&gt;LblFileSizeError.Type" xml:space="preserve">
-    <value>System.Windows.Forms.Label, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="&gt;&gt;LblFileSizeError.Parent" xml:space="preserve">
-    <value>FlowLayoutPanel3</value>
-  </data>
-  <data name="&gt;&gt;LblFileSizeError.ZOrder" xml:space="preserve">
-    <value>2</value>
-  </data>
-  <data name="FlowLayoutPanel3.Location" type="System.Drawing.Point, System.Drawing">
-    <value>27, 212</value>
-  </data>
-  <data name="FlowLayoutPanel3.Size" type="System.Drawing.Size, System.Drawing">
-    <value>193, 13</value>
-  </data>
-  <data name="FlowLayoutPanel3.TabIndex" type="System.Int32, mscorlib">
-    <value>9</value>
-  </data>
-  <data name="&gt;&gt;FlowLayoutPanel3.Name" xml:space="preserve">
-    <value>FlowLayoutPanel3</value>
-  </data>
-  <data name="&gt;&gt;FlowLayoutPanel3.Type" xml:space="preserve">
-    <value>System.Windows.Forms.FlowLayoutPanel, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="&gt;&gt;FlowLayoutPanel3.Parent" xml:space="preserve">
+  <data name="&gt;&gt;PanelMain.Parent" xml:space="preserve">
     <value>$this</value>
   </data>
-  <data name="&gt;&gt;FlowLayoutPanel3.ZOrder" xml:space="preserve">
-    <value>1</value>
-  </data>
-  <data name="FlowLayoutPad.AutoSize" type="System.Boolean, mscorlib">
-    <value>True</value>
-  </data>
-  <data name="FlowLayoutPad.AutoSizeMode" type="System.Windows.Forms.AutoSizeMode, System.Windows.Forms">
-    <value>GrowAndShrink</value>
-  </data>
-  <data name="LblPadCaption.Anchor" type="System.Windows.Forms.AnchorStyles, System.Windows.Forms">
-    <value>Left</value>
-  </data>
-  <data name="LblPadCaption.AutoSize" type="System.Boolean, mscorlib">
-    <value>True</value>
-  </data>
-  <data name="LblPadCaption.Location" type="System.Drawing.Point, System.Drawing">
-    <value>3, 5</value>
-  </data>
-  <data name="LblPadCaption.Size" type="System.Drawing.Size, System.Drawing">
-    <value>67, 13</value>
-  </data>
-  <data name="LblPadCaption.TabIndex" type="System.Int32, mscorlib">
-    <value>13</value>
-  </data>
-  <data name="LblPadCaption.Text" xml:space="preserve">
-    <value>Pad file with:</value>
-  </data>
-  <data name="&gt;&gt;LblPadCaption.Name" xml:space="preserve">
-    <value>LblPadCaption</value>
-  </data>
-  <data name="&gt;&gt;LblPadCaption.Type" xml:space="preserve">
-    <value>System.Windows.Forms.Label, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="&gt;&gt;LblPadCaption.Parent" xml:space="preserve">
-    <value>FlowLayoutPad</value>
-  </data>
-  <data name="&gt;&gt;LblPadCaption.ZOrder" xml:space="preserve">
-    <value>0</value>
-  </data>
-  <data name="RadioFillF6.AutoSize" type="System.Boolean, mscorlib">
-    <value>True</value>
-  </data>
-  <data name="RadioFillF6.Location" type="System.Drawing.Point, System.Drawing">
-    <value>76, 3</value>
-  </data>
-  <data name="RadioFillF6.Size" type="System.Drawing.Size, System.Drawing">
-    <value>48, 17</value>
-  </data>
-  <data name="RadioFillF6.TabIndex" type="System.Int32, mscorlib">
-    <value>14</value>
-  </data>
-  <data name="RadioFillF6.Text" xml:space="preserve">
-    <value>0xF6</value>
-    <comment>@Invariant</comment>
-  </data>
-  <data name="&gt;&gt;RadioFillF6.Name" xml:space="preserve">
-    <value>RadioFillF6</value>
-  </data>
-  <data name="&gt;&gt;RadioFillF6.Type" xml:space="preserve">
-    <value>System.Windows.Forms.RadioButton, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="&gt;&gt;RadioFillF6.Parent" xml:space="preserve">
-    <value>FlowLayoutPad</value>
-  </data>
-  <data name="&gt;&gt;RadioFillF6.ZOrder" xml:space="preserve">
-    <value>1</value>
-  </data>
-  <data name="RadioFill00.AutoSize" type="System.Boolean, mscorlib">
-    <value>True</value>
-  </data>
-  <data name="RadioFill00.Location" type="System.Drawing.Point, System.Drawing">
-    <value>130, 3</value>
-  </data>
-  <data name="RadioFill00.Size" type="System.Drawing.Size, System.Drawing">
-    <value>48, 17</value>
-  </data>
-  <data name="RadioFill00.TabIndex" type="System.Int32, mscorlib">
-    <value>15</value>
-  </data>
-  <data name="RadioFill00.Text" xml:space="preserve">
-    <value>0x00</value>
-    <comment>@Invariant</comment>
-  </data>
-  <data name="&gt;&gt;RadioFill00.Name" xml:space="preserve">
-    <value>RadioFill00</value>
-  </data>
-  <data name="&gt;&gt;RadioFill00.Type" xml:space="preserve">
-    <value>System.Windows.Forms.RadioButton, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="&gt;&gt;RadioFill00.Parent" xml:space="preserve">
-    <value>FlowLayoutPad</value>
-  </data>
-  <data name="&gt;&gt;RadioFill00.ZOrder" xml:space="preserve">
-    <value>2</value>
-  </data>
-  <data name="FlowLayoutPad.Location" type="System.Drawing.Point, System.Drawing">
-    <value>275, 207</value>
-  </data>
-  <data name="FlowLayoutPad.Size" type="System.Drawing.Size, System.Drawing">
-    <value>181, 23</value>
-  </data>
-  <data name="FlowLayoutPad.TabIndex" type="System.Int32, mscorlib">
-    <value>12</value>
-  </data>
-  <data name="&gt;&gt;FlowLayoutPad.Name" xml:space="preserve">
-    <value>FlowLayoutPad</value>
-  </data>
-  <data name="&gt;&gt;FlowLayoutPad.Type" xml:space="preserve">
-    <value>System.Windows.Forms.FlowLayoutPanel, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="&gt;&gt;FlowLayoutPad.Parent" xml:space="preserve">
-    <value>$this</value>
-  </data>
-  <data name="&gt;&gt;FlowLayoutPad.ZOrder" xml:space="preserve">
+  <data name="&gt;&gt;PanelMain.ZOrder" xml:space="preserve">
     <value>0</value>
   </data>
   <metadata name="$this.Localizable" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
@@ -930,7 +1068,7 @@
     <value>6, 13</value>
   </data>
   <data name="$this.ClientSize" type="System.Drawing.Size, System.Drawing">
-    <value>512, 298</value>
+    <value>496, 282</value>
   </data>
   <data name="$this.StartPosition" type="System.Windows.Forms.FormStartPosition, System.Windows.Forms">
     <value>CenterParent</value>

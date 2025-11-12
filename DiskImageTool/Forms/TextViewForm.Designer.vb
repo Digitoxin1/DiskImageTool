@@ -24,9 +24,9 @@ Partial Class TextViewForm
     Private Sub InitializeComponent()
         Dim resources As System.ComponentModel.ComponentResourceManager = New System.ComponentModel.ComponentResourceManager(GetType(TextViewForm))
         Me.TextBox1 = New System.Windows.Forms.TextBox()
-        Me.Panel1 = New System.Windows.Forms.Panel()
-        Me.BtnSave = New System.Windows.Forms.Button()
+        Me.Panel1 = New System.Windows.Forms.FlowLayoutPanel()
         Me.BtnClose = New System.Windows.Forms.Button()
+        Me.BtnSave = New System.Windows.Forms.Button()
         Me.Panel1.SuspendLayout()
         Me.SuspendLayout()
         '
@@ -34,18 +34,25 @@ Partial Class TextViewForm
         '
         Me.TextBox1.AcceptsReturn = True
         Me.TextBox1.AcceptsTab = True
-        resources.ApplyResources(Me.TextBox1, "TextBox1")
         Me.TextBox1.BackColor = System.Drawing.SystemColors.Window
+        resources.ApplyResources(Me.TextBox1, "TextBox1")
         Me.TextBox1.Name = "TextBox1"
         Me.TextBox1.ReadOnly = True
         '
         'Panel1
         '
         Me.Panel1.BackColor = System.Drawing.SystemColors.Control
-        Me.Panel1.Controls.Add(Me.BtnSave)
         Me.Panel1.Controls.Add(Me.BtnClose)
+        Me.Panel1.Controls.Add(Me.BtnSave)
         resources.ApplyResources(Me.Panel1, "Panel1")
         Me.Panel1.Name = "Panel1"
+        '
+        'BtnClose
+        '
+        Me.BtnClose.DialogResult = System.Windows.Forms.DialogResult.Cancel
+        resources.ApplyResources(Me.BtnClose, "BtnClose")
+        Me.BtnClose.Name = "BtnClose"
+        Me.BtnClose.UseVisualStyleBackColor = True
         '
         'BtnSave
         '
@@ -53,17 +60,11 @@ Partial Class TextViewForm
         Me.BtnSave.Name = "BtnSave"
         Me.BtnSave.UseVisualStyleBackColor = True
         '
-        'BtnClose
-        '
-        resources.ApplyResources(Me.BtnClose, "BtnClose")
-        Me.BtnClose.DialogResult = System.Windows.Forms.DialogResult.Cancel
-        Me.BtnClose.Name = "BtnClose"
-        Me.BtnClose.UseVisualStyleBackColor = True
-        '
         'TextViewForm
         '
         resources.ApplyResources(Me, "$this")
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
+        Me.BackColor = System.Drawing.SystemColors.Control
         Me.Controls.Add(Me.Panel1)
         Me.Controls.Add(Me.TextBox1)
         Me.KeyPreview = True
@@ -77,7 +78,7 @@ Partial Class TextViewForm
     End Sub
 
     Friend WithEvents TextBox1 As TextBox
-    Friend WithEvents Panel1 As Panel
+    Friend WithEvents Panel1 As FlowLayoutPanel
     Friend WithEvents BtnClose As Button
     Friend WithEvents BtnSave As Button
 End Class

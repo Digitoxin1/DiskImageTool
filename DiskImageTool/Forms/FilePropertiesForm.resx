@@ -137,42 +137,6 @@
   <metadata name="TableLayoutPanel1.Locked" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
     <value>True</value>
   </metadata>
-  <metadata name="PanelCreatedMS.Locked" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
-    <value>True</value>
-  </metadata>
-  <metadata name="BtnLastAccessed.Locked" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
-    <value>True</value>
-  </metadata>
-  <metadata name="LblLastWritten.Locked" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
-    <value>True</value>
-  </metadata>
-  <metadata name="BtnCreated.Locked" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
-    <value>True</value>
-  </metadata>
-  <metadata name="LblCreated.Locked" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
-    <value>True</value>
-  </metadata>
-  <metadata name="LblLastAccessed.Locked" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
-    <value>True</value>
-  </metadata>
-  <metadata name="DTLastAccessed.Locked" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
-    <value>True</value>
-  </metadata>
-  <metadata name="DTCreated.Locked" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
-    <value>True</value>
-  </metadata>
-  <metadata name="DTLastWritten.Locked" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
-    <value>True</value>
-  </metadata>
-  <metadata name="BtnLastWritten.Locked" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
-    <value>True</value>
-  </metadata>
-  <metadata name="DTLastWrittenTime.Locked" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
-    <value>True</value>
-  </metadata>
-  <metadata name="PanelCreatedTime.Locked" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
-    <value>True</value>
-  </metadata>
   <data name="TableLayoutPanel1.AutoSize" type="System.Boolean, mscorlib">
     <value>True</value>
   </data>
@@ -182,214 +146,22 @@
   <data name="TableLayoutPanel1.ColumnCount" type="System.Int32, mscorlib">
     <value>5</value>
   </data>
-  <data name="&gt;&gt;PanelCreatedMS.Name" xml:space="preserve">
-    <value>PanelCreatedMS</value>
-  </data>
-  <data name="&gt;&gt;PanelCreatedMS.Type" xml:space="preserve">
-    <value>System.Windows.Forms.Panel, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="&gt;&gt;PanelCreatedMS.Parent" xml:space="preserve">
-    <value>TableLayoutPanel1</value>
-  </data>
-  <data name="&gt;&gt;PanelCreatedMS.ZOrder" xml:space="preserve">
-    <value>0</value>
-  </data>
-  <data name="&gt;&gt;BtnLastAccessed.Name" xml:space="preserve">
-    <value>BtnLastAccessed</value>
-  </data>
-  <data name="&gt;&gt;BtnLastAccessed.Type" xml:space="preserve">
-    <value>System.Windows.Forms.Button, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="&gt;&gt;BtnLastAccessed.Parent" xml:space="preserve">
-    <value>TableLayoutPanel1</value>
-  </data>
-  <data name="&gt;&gt;BtnLastAccessed.ZOrder" xml:space="preserve">
-    <value>1</value>
-  </data>
-  <data name="&gt;&gt;LblLastWritten.Name" xml:space="preserve">
-    <value>LblLastWritten</value>
-  </data>
-  <data name="&gt;&gt;LblLastWritten.Type" xml:space="preserve">
-    <value>System.Windows.Forms.Label, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="&gt;&gt;LblLastWritten.Parent" xml:space="preserve">
-    <value>TableLayoutPanel1</value>
-  </data>
-  <data name="&gt;&gt;LblLastWritten.ZOrder" xml:space="preserve">
-    <value>2</value>
-  </data>
-  <data name="&gt;&gt;BtnCreated.Name" xml:space="preserve">
-    <value>BtnCreated</value>
-  </data>
-  <data name="&gt;&gt;BtnCreated.Type" xml:space="preserve">
-    <value>System.Windows.Forms.Button, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="&gt;&gt;BtnCreated.Parent" xml:space="preserve">
-    <value>TableLayoutPanel1</value>
-  </data>
-  <data name="&gt;&gt;BtnCreated.ZOrder" xml:space="preserve">
-    <value>3</value>
-  </data>
-  <data name="&gt;&gt;LblCreated.Name" xml:space="preserve">
-    <value>LblCreated</value>
-  </data>
-  <data name="&gt;&gt;LblCreated.Type" xml:space="preserve">
-    <value>System.Windows.Forms.Label, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="&gt;&gt;LblCreated.Parent" xml:space="preserve">
-    <value>TableLayoutPanel1</value>
-  </data>
-  <data name="&gt;&gt;LblCreated.ZOrder" xml:space="preserve">
-    <value>4</value>
-  </data>
-  <data name="&gt;&gt;LblLastAccessed.Name" xml:space="preserve">
-    <value>LblLastAccessed</value>
-  </data>
-  <data name="&gt;&gt;LblLastAccessed.Type" xml:space="preserve">
-    <value>System.Windows.Forms.Label, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="&gt;&gt;LblLastAccessed.Parent" xml:space="preserve">
-    <value>TableLayoutPanel1</value>
-  </data>
-  <data name="&gt;&gt;LblLastAccessed.ZOrder" xml:space="preserve">
-    <value>5</value>
-  </data>
-  <data name="&gt;&gt;DTLastAccessed.Name" xml:space="preserve">
-    <value>DTLastAccessed</value>
-  </data>
-  <data name="&gt;&gt;DTLastAccessed.Type" xml:space="preserve">
-    <value>System.Windows.Forms.DateTimePicker, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="&gt;&gt;DTLastAccessed.Parent" xml:space="preserve">
-    <value>TableLayoutPanel1</value>
-  </data>
-  <data name="&gt;&gt;DTLastAccessed.ZOrder" xml:space="preserve">
-    <value>6</value>
-  </data>
-  <data name="&gt;&gt;DTCreated.Name" xml:space="preserve">
-    <value>DTCreated</value>
-  </data>
-  <data name="&gt;&gt;DTCreated.Type" xml:space="preserve">
-    <value>System.Windows.Forms.DateTimePicker, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="&gt;&gt;DTCreated.Parent" xml:space="preserve">
-    <value>TableLayoutPanel1</value>
-  </data>
-  <data name="&gt;&gt;DTCreated.ZOrder" xml:space="preserve">
-    <value>7</value>
-  </data>
-  <data name="&gt;&gt;DTLastWritten.Name" xml:space="preserve">
-    <value>DTLastWritten</value>
-  </data>
-  <data name="&gt;&gt;DTLastWritten.Type" xml:space="preserve">
-    <value>System.Windows.Forms.DateTimePicker, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="&gt;&gt;DTLastWritten.Parent" xml:space="preserve">
-    <value>TableLayoutPanel1</value>
-  </data>
-  <data name="&gt;&gt;DTLastWritten.ZOrder" xml:space="preserve">
-    <value>8</value>
-  </data>
-  <data name="&gt;&gt;BtnLastWritten.Name" xml:space="preserve">
-    <value>BtnLastWritten</value>
-  </data>
-  <data name="&gt;&gt;BtnLastWritten.Type" xml:space="preserve">
-    <value>System.Windows.Forms.Button, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="&gt;&gt;BtnLastWritten.Parent" xml:space="preserve">
-    <value>TableLayoutPanel1</value>
-  </data>
-  <data name="&gt;&gt;BtnLastWritten.ZOrder" xml:space="preserve">
-    <value>9</value>
-  </data>
-  <data name="&gt;&gt;DTLastWrittenTime.Name" xml:space="preserve">
-    <value>DTLastWrittenTime</value>
-  </data>
-  <data name="&gt;&gt;DTLastWrittenTime.Type" xml:space="preserve">
-    <value>System.Windows.Forms.DateTimePicker, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="&gt;&gt;DTLastWrittenTime.Parent" xml:space="preserve">
-    <value>TableLayoutPanel1</value>
-  </data>
-  <data name="&gt;&gt;DTLastWrittenTime.ZOrder" xml:space="preserve">
-    <value>10</value>
-  </data>
-  <data name="&gt;&gt;PanelCreatedTime.Name" xml:space="preserve">
-    <value>PanelCreatedTime</value>
-  </data>
-  <data name="&gt;&gt;PanelCreatedTime.Type" xml:space="preserve">
-    <value>System.Windows.Forms.Panel, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="&gt;&gt;PanelCreatedTime.Parent" xml:space="preserve">
-    <value>TableLayoutPanel1</value>
-  </data>
-  <data name="&gt;&gt;PanelCreatedTime.ZOrder" xml:space="preserve">
-    <value>11</value>
-  </data>
-  <assembly alias="System.Drawing" name="System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
-  <data name="TableLayoutPanel1.Location" type="System.Drawing.Point, System.Drawing">
-    <value>9, 19</value>
-  </data>
-  <data name="TableLayoutPanel1.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
-    <value>6, 3, 6, 3</value>
-  </data>
-  <data name="TableLayoutPanel1.RowCount" type="System.Int32, mscorlib">
-    <value>3</value>
-  </data>
-  <data name="TableLayoutPanel1.Size" type="System.Drawing.Size, System.Drawing">
-    <value>420, 78</value>
-  </data>
-  <data name="TableLayoutPanel1.TabIndex" type="System.Int32, mscorlib">
-    <value>0</value>
-  </data>
-  <data name="&gt;&gt;TableLayoutPanel1.Name" xml:space="preserve">
-    <value>TableLayoutPanel1</value>
-  </data>
-  <data name="&gt;&gt;TableLayoutPanel1.Type" xml:space="preserve">
-    <value>System.Windows.Forms.TableLayoutPanel, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="&gt;&gt;TableLayoutPanel1.Parent" xml:space="preserve">
-    <value>GroupFileDates</value>
-  </data>
-  <data name="&gt;&gt;TableLayoutPanel1.ZOrder" xml:space="preserve">
-    <value>0</value>
-  </data>
-  <data name="TableLayoutPanel1.LayoutSettings" type="System.Windows.Forms.TableLayoutSettings, System.Windows.Forms">
-    <value>&lt;?xml version="1.0" encoding="utf-16"?&gt;&lt;TableLayoutSettings&gt;&lt;Controls&gt;&lt;Control Name="PanelCreatedMS" Row="1" RowSpan="1" Column="3" ColumnSpan="1" /&gt;&lt;Control Name="BtnLastAccessed" Row="2" RowSpan="1" Column="4" ColumnSpan="1" /&gt;&lt;Control Name="LblLastWritten" Row="0" RowSpan="1" Column="0" ColumnSpan="1" /&gt;&lt;Control Name="BtnCreated" Row="1" RowSpan="1" Column="4" ColumnSpan="1" /&gt;&lt;Control Name="LblCreated" Row="1" RowSpan="1" Column="0" ColumnSpan="1" /&gt;&lt;Control Name="LblLastAccessed" Row="2" RowSpan="1" Column="0" ColumnSpan="1" /&gt;&lt;Control Name="DTLastAccessed" Row="2" RowSpan="1" Column="1" ColumnSpan="1" /&gt;&lt;Control Name="DTCreated" Row="1" RowSpan="1" Column="1" ColumnSpan="1" /&gt;&lt;Control Name="DTLastWritten" Row="0" RowSpan="1" Column="1" ColumnSpan="1" /&gt;&lt;Control Name="BtnLastWritten" Row="0" RowSpan="1" Column="4" ColumnSpan="1" /&gt;&lt;Control Name="DTLastWrittenTime" Row="0" RowSpan="1" Column="2" ColumnSpan="1" /&gt;&lt;Control Name="PanelCreatedTime" Row="1" RowSpan="1" Column="2" ColumnSpan="1" /&gt;&lt;/Controls&gt;&lt;Columns Styles="AutoSize,0,AutoSize,0,AutoSize,0,AutoSize,0,AutoSize,0" /&gt;&lt;Rows Styles="Absolute,26,Absolute,26,Absolute,26" /&gt;&lt;/TableLayoutSettings&gt;</value>
-  </data>
-  <data name="GroupFileDates.Location" type="System.Drawing.Point, System.Drawing">
-    <value>3, 112</value>
-  </data>
-  <data name="GroupFileDates.Padding" type="System.Windows.Forms.Padding, System.Windows.Forms">
-    <value>3, 3, 3, 0</value>
-  </data>
-  <data name="GroupFileDates.Size" type="System.Drawing.Size, System.Drawing">
-    <value>438, 113</value>
-  </data>
-  <data name="GroupFileDates.TabIndex" type="System.Int32, mscorlib">
-    <value>1</value>
-  </data>
-  <data name="GroupFileDates.Text" xml:space="preserve">
-    <value>File Dates</value>
-  </data>
-  <data name="&gt;&gt;GroupFileDates.Name" xml:space="preserve">
-    <value>GroupFileDates</value>
-  </data>
-  <data name="&gt;&gt;GroupFileDates.Type" xml:space="preserve">
-    <value>System.Windows.Forms.GroupBox, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="&gt;&gt;GroupFileDates.Parent" xml:space="preserve">
-    <value>FlowLayoutPanel2</value>
-  </data>
-  <data name="&gt;&gt;GroupFileDates.ZOrder" xml:space="preserve">
-    <value>1</value>
-  </data>
   <metadata name="PanelCreatedMS.Locked" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
     <value>True</value>
   </metadata>
   <metadata name="NumCreatedMS.Locked" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
     <value>True</value>
   </metadata>
+  <assembly alias="System.Drawing" name="System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
+  <data name="NumCreatedMS.Location" type="System.Drawing.Point, System.Drawing">
+    <value>1, 1</value>
+  </data>
+  <data name="NumCreatedMS.Size" type="System.Drawing.Size, System.Drawing">
+    <value>42, 16</value>
+  </data>
+  <data name="NumCreatedMS.TabIndex" type="System.Int32, mscorlib">
+    <value>0</value>
+  </data>
   <data name="&gt;&gt;NumCreatedMS.Name" xml:space="preserve">
     <value>NumCreatedMS</value>
   </data>
@@ -426,35 +198,14 @@
   <data name="&gt;&gt;PanelCreatedMS.ZOrder" xml:space="preserve">
     <value>0</value>
   </data>
-  <metadata name="NumCreatedMS.Locked" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
-    <value>True</value>
-  </metadata>
-  <data name="NumCreatedMS.Location" type="System.Drawing.Point, System.Drawing">
-    <value>1, 1</value>
-  </data>
-  <data name="NumCreatedMS.Size" type="System.Drawing.Size, System.Drawing">
-    <value>42, 16</value>
-  </data>
-  <data name="NumCreatedMS.TabIndex" type="System.Int32, mscorlib">
-    <value>0</value>
-  </data>
-  <data name="&gt;&gt;NumCreatedMS.Name" xml:space="preserve">
-    <value>NumCreatedMS</value>
-  </data>
-  <data name="&gt;&gt;NumCreatedMS.Type" xml:space="preserve">
-    <value>System.Windows.Forms.NumericUpDown, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="&gt;&gt;NumCreatedMS.Parent" xml:space="preserve">
-    <value>PanelCreatedMS</value>
-  </data>
-  <data name="&gt;&gt;NumCreatedMS.ZOrder" xml:space="preserve">
-    <value>0</value>
-  </data>
   <metadata name="BtnLastAccessed.Locked" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
     <value>True</value>
   </metadata>
   <data name="BtnLastAccessed.Anchor" type="System.Windows.Forms.AnchorStyles, System.Windows.Forms">
     <value>Left</value>
+  </data>
+  <data name="BtnLastAccessed.ImeMode" type="System.Windows.Forms.ImeMode, System.Windows.Forms">
+    <value>NoControl</value>
   </data>
   <data name="BtnLastAccessed.Location" type="System.Drawing.Point, System.Drawing">
     <value>355, 55</value>
@@ -489,6 +240,9 @@
   <data name="LblLastWritten.AutoSize" type="System.Boolean, mscorlib">
     <value>True</value>
   </data>
+  <data name="LblLastWritten.ImeMode" type="System.Windows.Forms.ImeMode, System.Windows.Forms">
+    <value>NoControl</value>
+  </data>
   <data name="LblLastWritten.Location" type="System.Drawing.Point, System.Drawing">
     <value>3, 6</value>
   </data>
@@ -522,6 +276,9 @@
   <data name="BtnCreated.Anchor" type="System.Windows.Forms.AnchorStyles, System.Windows.Forms">
     <value>Left</value>
   </data>
+  <data name="BtnCreated.ImeMode" type="System.Windows.Forms.ImeMode, System.Windows.Forms">
+    <value>NoControl</value>
+  </data>
   <data name="BtnCreated.Location" type="System.Drawing.Point, System.Drawing">
     <value>355, 29</value>
   </data>
@@ -554,6 +311,9 @@
   </data>
   <data name="LblCreated.AutoSize" type="System.Boolean, mscorlib">
     <value>True</value>
+  </data>
+  <data name="LblCreated.ImeMode" type="System.Windows.Forms.ImeMode, System.Windows.Forms">
+    <value>NoControl</value>
   </data>
   <data name="LblCreated.Location" type="System.Drawing.Point, System.Drawing">
     <value>3, 32</value>
@@ -590,6 +350,9 @@
   </data>
   <data name="LblLastAccessed.AutoSize" type="System.Boolean, mscorlib">
     <value>True</value>
+  </data>
+  <data name="LblLastAccessed.ImeMode" type="System.Windows.Forms.ImeMode, System.Windows.Forms">
+    <value>NoControl</value>
   </data>
   <data name="LblLastAccessed.Location" type="System.Drawing.Point, System.Drawing">
     <value>3, 58</value>
@@ -705,6 +468,9 @@
   <data name="BtnLastWritten.Anchor" type="System.Windows.Forms.AnchorStyles, System.Windows.Forms">
     <value>Left</value>
   </data>
+  <data name="BtnLastWritten.ImeMode" type="System.Windows.Forms.ImeMode, System.Windows.Forms">
+    <value>NoControl</value>
+  </data>
   <data name="BtnLastWritten.Location" type="System.Drawing.Point, System.Drawing">
     <value>355, 3</value>
   </data>
@@ -759,6 +525,15 @@
   <metadata name="DTCreatedTime.Locked" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
     <value>True</value>
   </metadata>
+  <data name="DTCreatedTime.Location" type="System.Drawing.Point, System.Drawing">
+    <value>0, 0</value>
+  </data>
+  <data name="DTCreatedTime.Size" type="System.Drawing.Size, System.Drawing">
+    <value>91, 20</value>
+  </data>
+  <data name="DTCreatedTime.TabIndex" type="System.Int32, mscorlib">
+    <value>0</value>
+  </data>
   <data name="&gt;&gt;DTCreatedTime.Name" xml:space="preserve">
     <value>DTCreatedTime</value>
   </data>
@@ -792,37 +567,67 @@
   <data name="&gt;&gt;PanelCreatedTime.ZOrder" xml:space="preserve">
     <value>11</value>
   </data>
-  <metadata name="DTCreatedTime.Locked" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
-    <value>True</value>
-  </metadata>
-  <data name="DTCreatedTime.Location" type="System.Drawing.Point, System.Drawing">
-    <value>0, 0</value>
+  <data name="TableLayoutPanel1.Location" type="System.Drawing.Point, System.Drawing">
+    <value>9, 19</value>
   </data>
-  <data name="DTCreatedTime.Size" type="System.Drawing.Size, System.Drawing">
-    <value>91, 20</value>
+  <data name="TableLayoutPanel1.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
+    <value>6, 3, 6, 3</value>
   </data>
-  <data name="DTCreatedTime.TabIndex" type="System.Int32, mscorlib">
+  <data name="TableLayoutPanel1.RowCount" type="System.Int32, mscorlib">
+    <value>3</value>
+  </data>
+  <data name="TableLayoutPanel1.Size" type="System.Drawing.Size, System.Drawing">
+    <value>420, 78</value>
+  </data>
+  <data name="TableLayoutPanel1.TabIndex" type="System.Int32, mscorlib">
     <value>0</value>
   </data>
-  <data name="&gt;&gt;DTCreatedTime.Name" xml:space="preserve">
-    <value>DTCreatedTime</value>
+  <data name="&gt;&gt;TableLayoutPanel1.Name" xml:space="preserve">
+    <value>TableLayoutPanel1</value>
   </data>
-  <data name="&gt;&gt;DTCreatedTime.Type" xml:space="preserve">
-    <value>System.Windows.Forms.DateTimePicker, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  <data name="&gt;&gt;TableLayoutPanel1.Type" xml:space="preserve">
+    <value>System.Windows.Forms.TableLayoutPanel, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
-  <data name="&gt;&gt;DTCreatedTime.Parent" xml:space="preserve">
-    <value>PanelCreatedTime</value>
+  <data name="&gt;&gt;TableLayoutPanel1.Parent" xml:space="preserve">
+    <value>GroupFileDates</value>
   </data>
-  <data name="&gt;&gt;DTCreatedTime.ZOrder" xml:space="preserve">
+  <data name="&gt;&gt;TableLayoutPanel1.ZOrder" xml:space="preserve">
     <value>0</value>
+  </data>
+  <data name="TableLayoutPanel1.LayoutSettings" type="System.Windows.Forms.TableLayoutSettings, System.Windows.Forms">
+    <value>&lt;?xml version="1.0" encoding="utf-16"?&gt;&lt;TableLayoutSettings&gt;&lt;Controls&gt;&lt;Control Name="PanelCreatedMS" Row="1" RowSpan="1" Column="3" ColumnSpan="1" /&gt;&lt;Control Name="BtnLastAccessed" Row="2" RowSpan="1" Column="4" ColumnSpan="1" /&gt;&lt;Control Name="LblLastWritten" Row="0" RowSpan="1" Column="0" ColumnSpan="1" /&gt;&lt;Control Name="BtnCreated" Row="1" RowSpan="1" Column="4" ColumnSpan="1" /&gt;&lt;Control Name="LblCreated" Row="1" RowSpan="1" Column="0" ColumnSpan="1" /&gt;&lt;Control Name="LblLastAccessed" Row="2" RowSpan="1" Column="0" ColumnSpan="1" /&gt;&lt;Control Name="DTLastAccessed" Row="2" RowSpan="1" Column="1" ColumnSpan="1" /&gt;&lt;Control Name="DTCreated" Row="1" RowSpan="1" Column="1" ColumnSpan="1" /&gt;&lt;Control Name="DTLastWritten" Row="0" RowSpan="1" Column="1" ColumnSpan="1" /&gt;&lt;Control Name="BtnLastWritten" Row="0" RowSpan="1" Column="4" ColumnSpan="1" /&gt;&lt;Control Name="DTLastWrittenTime" Row="0" RowSpan="1" Column="2" ColumnSpan="1" /&gt;&lt;Control Name="PanelCreatedTime" Row="1" RowSpan="1" Column="2" ColumnSpan="1" /&gt;&lt;/Controls&gt;&lt;Columns Styles="AutoSize,0,AutoSize,0,AutoSize,0,AutoSize,0,AutoSize,0" /&gt;&lt;Rows Styles="Absolute,26,Absolute,26,Absolute,26" /&gt;&lt;/TableLayoutSettings&gt;</value>
+  </data>
+  <data name="GroupFileDates.Location" type="System.Drawing.Point, System.Drawing">
+    <value>3, 112</value>
+  </data>
+  <data name="GroupFileDates.Padding" type="System.Windows.Forms.Padding, System.Windows.Forms">
+    <value>3, 3, 3, 0</value>
+  </data>
+  <data name="GroupFileDates.Size" type="System.Drawing.Size, System.Drawing">
+    <value>438, 113</value>
+  </data>
+  <data name="GroupFileDates.TabIndex" type="System.Int32, mscorlib">
+    <value>1</value>
+  </data>
+  <data name="GroupFileDates.Text" xml:space="preserve">
+    <value>File Dates</value>
+  </data>
+  <data name="&gt;&gt;GroupFileDates.Name" xml:space="preserve">
+    <value>GroupFileDates</value>
+  </data>
+  <data name="&gt;&gt;GroupFileDates.Type" xml:space="preserve">
+    <value>System.Windows.Forms.GroupBox, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;GroupFileDates.Parent" xml:space="preserve">
+    <value>FlowLayoutPanel2</value>
+  </data>
+  <data name="&gt;&gt;GroupFileDates.ZOrder" xml:space="preserve">
+    <value>1</value>
   </data>
   <metadata name="GroupAttributes.GenerateMember" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
     <value>False</value>
   </metadata>
   <metadata name="GroupAttributes.Locked" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
-    <value>True</value>
-  </metadata>
-  <metadata name="TableLayoutPanel2.Locked" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
     <value>True</value>
   </metadata>
   <data name="GroupAttributes.Anchor" type="System.Windows.Forms.AnchorStyles, System.Windows.Forms">
@@ -834,73 +639,7 @@
   <data name="GroupAttributes.AutoSizeMode" type="System.Windows.Forms.AutoSizeMode, System.Windows.Forms">
     <value>GrowAndShrink</value>
   </data>
-  <data name="&gt;&gt;TableLayoutPanel2.Name" xml:space="preserve">
-    <value>TableLayoutPanel2</value>
-  </data>
-  <data name="&gt;&gt;TableLayoutPanel2.Type" xml:space="preserve">
-    <value>System.Windows.Forms.TableLayoutPanel, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="&gt;&gt;TableLayoutPanel2.Parent" xml:space="preserve">
-    <value>GroupAttributes</value>
-  </data>
-  <data name="&gt;&gt;TableLayoutPanel2.ZOrder" xml:space="preserve">
-    <value>0</value>
-  </data>
-  <data name="TableLayoutPanel2.LayoutSettings" type="System.Windows.Forms.TableLayoutSettings, System.Windows.Forms">
-    <value>&lt;?xml version="1.0" encoding="utf-16"?&gt;&lt;TableLayoutSettings&gt;&lt;Controls&gt;&lt;Control Name="ChkArchive" Row="0" RowSpan="1" Column="0" ColumnSpan="1" /&gt;&lt;Control Name="ChkSystem" Row="1" RowSpan="1" Column="0" ColumnSpan="1" /&gt;&lt;Control Name="BtnArchive" Row="0" RowSpan="1" Column="1" ColumnSpan="1" /&gt;&lt;Control Name="BtnSystem" Row="1" RowSpan="1" Column="1" ColumnSpan="1" /&gt;&lt;Control Name="BtnReadOnly" Row="0" RowSpan="1" Column="3" ColumnSpan="1" /&gt;&lt;Control Name="BtnHidden" Row="1" RowSpan="1" Column="3" ColumnSpan="1" /&gt;&lt;Control Name="ChkReadOnly" Row="0" RowSpan="1" Column="2" ColumnSpan="1" /&gt;&lt;Control Name="ChkHidden" Row="1" RowSpan="1" Column="2" ColumnSpan="1" /&gt;&lt;/Controls&gt;&lt;Columns Styles="Absolute,142,AutoSize,0,Absolute,142,AutoSize,0" /&gt;&lt;Rows Styles="Absolute,26,Absolute,26" /&gt;&lt;/TableLayoutSettings&gt;</value>
-  </data>
-  <data name="GroupAttributes.Location" type="System.Drawing.Point, System.Drawing">
-    <value>3, 231</value>
-  </data>
-  <data name="GroupAttributes.Padding" type="System.Windows.Forms.Padding, System.Windows.Forms">
-    <value>3, 3, 3, 0</value>
-  </data>
-  <data name="GroupAttributes.Size" type="System.Drawing.Size, System.Drawing">
-    <value>438, 90</value>
-  </data>
-  <data name="GroupAttributes.TabIndex" type="System.Int32, mscorlib">
-    <value>2</value>
-  </data>
-  <data name="GroupAttributes.Text" xml:space="preserve">
-    <value>Attributes</value>
-  </data>
-  <data name="&gt;&gt;GroupAttributes.Name" xml:space="preserve">
-    <value>GroupAttributes</value>
-  </data>
-  <data name="&gt;&gt;GroupAttributes.Type" xml:space="preserve">
-    <value>System.Windows.Forms.GroupBox, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="&gt;&gt;GroupAttributes.Parent" xml:space="preserve">
-    <value>FlowLayoutPanel2</value>
-  </data>
-  <data name="&gt;&gt;GroupAttributes.ZOrder" xml:space="preserve">
-    <value>2</value>
-  </data>
   <metadata name="TableLayoutPanel2.Locked" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
-    <value>True</value>
-  </metadata>
-  <metadata name="ChkArchive.Locked" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
-    <value>True</value>
-  </metadata>
-  <metadata name="ChkSystem.Locked" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
-    <value>True</value>
-  </metadata>
-  <metadata name="BtnArchive.Locked" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
-    <value>True</value>
-  </metadata>
-  <metadata name="BtnSystem.Locked" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
-    <value>True</value>
-  </metadata>
-  <metadata name="BtnReadOnly.Locked" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
-    <value>True</value>
-  </metadata>
-  <metadata name="BtnHidden.Locked" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
-    <value>True</value>
-  </metadata>
-  <metadata name="ChkReadOnly.Locked" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
-    <value>True</value>
-  </metadata>
-  <metadata name="ChkHidden.Locked" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
     <value>True</value>
   </metadata>
   <data name="TableLayoutPanel2.AutoSize" type="System.Boolean, mscorlib">
@@ -911,6 +650,30 @@
   </data>
   <data name="TableLayoutPanel2.ColumnCount" type="System.Int32, mscorlib">
     <value>4</value>
+  </data>
+  <metadata name="ChkArchive.Locked" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
+    <value>True</value>
+  </metadata>
+  <data name="ChkArchive.Anchor" type="System.Windows.Forms.AnchorStyles, System.Windows.Forms">
+    <value>Left</value>
+  </data>
+  <data name="ChkArchive.ImeMode" type="System.Windows.Forms.ImeMode, System.Windows.Forms">
+    <value>NoControl</value>
+  </data>
+  <data name="ChkArchive.Location" type="System.Drawing.Point, System.Drawing">
+    <value>3, 4</value>
+  </data>
+  <data name="ChkArchive.Padding" type="System.Windows.Forms.Padding, System.Windows.Forms">
+    <value>0, 1, 0, 0</value>
+  </data>
+  <data name="ChkArchive.Size" type="System.Drawing.Size, System.Drawing">
+    <value>62, 17</value>
+  </data>
+  <data name="ChkArchive.TabIndex" type="System.Int32, mscorlib">
+    <value>0</value>
+  </data>
+  <data name="ChkArchive.Text" xml:space="preserve">
+    <value>Archive</value>
   </data>
   <data name="&gt;&gt;ChkArchive.Name" xml:space="preserve">
     <value>ChkArchive</value>
@@ -924,6 +687,30 @@
   <data name="&gt;&gt;ChkArchive.ZOrder" xml:space="preserve">
     <value>0</value>
   </data>
+  <metadata name="ChkSystem.Locked" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
+    <value>True</value>
+  </metadata>
+  <data name="ChkSystem.Anchor" type="System.Windows.Forms.AnchorStyles, System.Windows.Forms">
+    <value>Left</value>
+  </data>
+  <data name="ChkSystem.ImeMode" type="System.Windows.Forms.ImeMode, System.Windows.Forms">
+    <value>NoControl</value>
+  </data>
+  <data name="ChkSystem.Location" type="System.Drawing.Point, System.Drawing">
+    <value>3, 30</value>
+  </data>
+  <data name="ChkSystem.Padding" type="System.Windows.Forms.Padding, System.Windows.Forms">
+    <value>0, 1, 0, 0</value>
+  </data>
+  <data name="ChkSystem.Size" type="System.Drawing.Size, System.Drawing">
+    <value>60, 17</value>
+  </data>
+  <data name="ChkSystem.TabIndex" type="System.Int32, mscorlib">
+    <value>4</value>
+  </data>
+  <data name="ChkSystem.Text" xml:space="preserve">
+    <value>System</value>
+  </data>
   <data name="&gt;&gt;ChkSystem.Name" xml:space="preserve">
     <value>ChkSystem</value>
   </data>
@@ -935,6 +722,27 @@
   </data>
   <data name="&gt;&gt;ChkSystem.ZOrder" xml:space="preserve">
     <value>1</value>
+  </data>
+  <metadata name="BtnArchive.Locked" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
+    <value>True</value>
+  </metadata>
+  <data name="BtnArchive.Anchor" type="System.Windows.Forms.AnchorStyles, System.Windows.Forms">
+    <value>Left</value>
+  </data>
+  <data name="BtnArchive.ImeMode" type="System.Windows.Forms.ImeMode, System.Windows.Forms">
+    <value>NoControl</value>
+  </data>
+  <data name="BtnArchive.Location" type="System.Drawing.Point, System.Drawing">
+    <value>145, 3</value>
+  </data>
+  <data name="BtnArchive.Size" type="System.Drawing.Size, System.Drawing">
+    <value>62, 20</value>
+  </data>
+  <data name="BtnArchive.TabIndex" type="System.Int32, mscorlib">
+    <value>1</value>
+  </data>
+  <data name="BtnArchive.Text" xml:space="preserve">
+    <value>Edit</value>
   </data>
   <data name="&gt;&gt;BtnArchive.Name" xml:space="preserve">
     <value>BtnArchive</value>
@@ -948,6 +756,27 @@
   <data name="&gt;&gt;BtnArchive.ZOrder" xml:space="preserve">
     <value>2</value>
   </data>
+  <metadata name="BtnSystem.Locked" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
+    <value>True</value>
+  </metadata>
+  <data name="BtnSystem.Anchor" type="System.Windows.Forms.AnchorStyles, System.Windows.Forms">
+    <value>Left</value>
+  </data>
+  <data name="BtnSystem.ImeMode" type="System.Windows.Forms.ImeMode, System.Windows.Forms">
+    <value>NoControl</value>
+  </data>
+  <data name="BtnSystem.Location" type="System.Drawing.Point, System.Drawing">
+    <value>145, 29</value>
+  </data>
+  <data name="BtnSystem.Size" type="System.Drawing.Size, System.Drawing">
+    <value>62, 20</value>
+  </data>
+  <data name="BtnSystem.TabIndex" type="System.Int32, mscorlib">
+    <value>5</value>
+  </data>
+  <data name="BtnSystem.Text" xml:space="preserve">
+    <value>Edit</value>
+  </data>
   <data name="&gt;&gt;BtnSystem.Name" xml:space="preserve">
     <value>BtnSystem</value>
   </data>
@@ -959,6 +788,27 @@
   </data>
   <data name="&gt;&gt;BtnSystem.ZOrder" xml:space="preserve">
     <value>3</value>
+  </data>
+  <metadata name="BtnReadOnly.Locked" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
+    <value>True</value>
+  </metadata>
+  <data name="BtnReadOnly.Anchor" type="System.Windows.Forms.AnchorStyles, System.Windows.Forms">
+    <value>Left</value>
+  </data>
+  <data name="BtnReadOnly.ImeMode" type="System.Windows.Forms.ImeMode, System.Windows.Forms">
+    <value>NoControl</value>
+  </data>
+  <data name="BtnReadOnly.Location" type="System.Drawing.Point, System.Drawing">
+    <value>355, 3</value>
+  </data>
+  <data name="BtnReadOnly.Size" type="System.Drawing.Size, System.Drawing">
+    <value>62, 20</value>
+  </data>
+  <data name="BtnReadOnly.TabIndex" type="System.Int32, mscorlib">
+    <value>3</value>
+  </data>
+  <data name="BtnReadOnly.Text" xml:space="preserve">
+    <value>Edit</value>
   </data>
   <data name="&gt;&gt;BtnReadOnly.Name" xml:space="preserve">
     <value>BtnReadOnly</value>
@@ -972,6 +822,27 @@
   <data name="&gt;&gt;BtnReadOnly.ZOrder" xml:space="preserve">
     <value>4</value>
   </data>
+  <metadata name="BtnHidden.Locked" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
+    <value>True</value>
+  </metadata>
+  <data name="BtnHidden.Anchor" type="System.Windows.Forms.AnchorStyles, System.Windows.Forms">
+    <value>Left</value>
+  </data>
+  <data name="BtnHidden.ImeMode" type="System.Windows.Forms.ImeMode, System.Windows.Forms">
+    <value>NoControl</value>
+  </data>
+  <data name="BtnHidden.Location" type="System.Drawing.Point, System.Drawing">
+    <value>355, 29</value>
+  </data>
+  <data name="BtnHidden.Size" type="System.Drawing.Size, System.Drawing">
+    <value>62, 20</value>
+  </data>
+  <data name="BtnHidden.TabIndex" type="System.Int32, mscorlib">
+    <value>7</value>
+  </data>
+  <data name="BtnHidden.Text" xml:space="preserve">
+    <value>Edit</value>
+  </data>
   <data name="&gt;&gt;BtnHidden.Name" xml:space="preserve">
     <value>BtnHidden</value>
   </data>
@@ -984,6 +855,30 @@
   <data name="&gt;&gt;BtnHidden.ZOrder" xml:space="preserve">
     <value>5</value>
   </data>
+  <metadata name="ChkReadOnly.Locked" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
+    <value>True</value>
+  </metadata>
+  <data name="ChkReadOnly.Anchor" type="System.Windows.Forms.AnchorStyles, System.Windows.Forms">
+    <value>Left</value>
+  </data>
+  <data name="ChkReadOnly.ImeMode" type="System.Windows.Forms.ImeMode, System.Windows.Forms">
+    <value>NoControl</value>
+  </data>
+  <data name="ChkReadOnly.Location" type="System.Drawing.Point, System.Drawing">
+    <value>213, 4</value>
+  </data>
+  <data name="ChkReadOnly.Padding" type="System.Windows.Forms.Padding, System.Windows.Forms">
+    <value>6, 1, 0, 0</value>
+  </data>
+  <data name="ChkReadOnly.Size" type="System.Drawing.Size, System.Drawing">
+    <value>87, 17</value>
+  </data>
+  <data name="ChkReadOnly.TabIndex" type="System.Int32, mscorlib">
+    <value>2</value>
+  </data>
+  <data name="ChkReadOnly.Text" xml:space="preserve">
+    <value>Read Only</value>
+  </data>
   <data name="&gt;&gt;ChkReadOnly.Name" xml:space="preserve">
     <value>ChkReadOnly</value>
   </data>
@@ -995,6 +890,30 @@
   </data>
   <data name="&gt;&gt;ChkReadOnly.ZOrder" xml:space="preserve">
     <value>6</value>
+  </data>
+  <metadata name="ChkHidden.Locked" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
+    <value>True</value>
+  </metadata>
+  <data name="ChkHidden.Anchor" type="System.Windows.Forms.AnchorStyles, System.Windows.Forms">
+    <value>Left</value>
+  </data>
+  <data name="ChkHidden.ImeMode" type="System.Windows.Forms.ImeMode, System.Windows.Forms">
+    <value>NoControl</value>
+  </data>
+  <data name="ChkHidden.Location" type="System.Drawing.Point, System.Drawing">
+    <value>213, 30</value>
+  </data>
+  <data name="ChkHidden.Padding" type="System.Windows.Forms.Padding, System.Windows.Forms">
+    <value>6, 1, 0, 0</value>
+  </data>
+  <data name="ChkHidden.Size" type="System.Drawing.Size, System.Drawing">
+    <value>76, 17</value>
+  </data>
+  <data name="ChkHidden.TabIndex" type="System.Int32, mscorlib">
+    <value>6</value>
+  </data>
+  <data name="ChkHidden.Text" xml:space="preserve">
+    <value>Hidden</value>
   </data>
   <data name="&gt;&gt;ChkHidden.Name" xml:space="preserve">
     <value>ChkHidden</value>
@@ -1038,271 +957,377 @@
   <data name="TableLayoutPanel2.LayoutSettings" type="System.Windows.Forms.TableLayoutSettings, System.Windows.Forms">
     <value>&lt;?xml version="1.0" encoding="utf-16"?&gt;&lt;TableLayoutSettings&gt;&lt;Controls&gt;&lt;Control Name="ChkArchive" Row="0" RowSpan="1" Column="0" ColumnSpan="1" /&gt;&lt;Control Name="ChkSystem" Row="1" RowSpan="1" Column="0" ColumnSpan="1" /&gt;&lt;Control Name="BtnArchive" Row="0" RowSpan="1" Column="1" ColumnSpan="1" /&gt;&lt;Control Name="BtnSystem" Row="1" RowSpan="1" Column="1" ColumnSpan="1" /&gt;&lt;Control Name="BtnReadOnly" Row="0" RowSpan="1" Column="3" ColumnSpan="1" /&gt;&lt;Control Name="BtnHidden" Row="1" RowSpan="1" Column="3" ColumnSpan="1" /&gt;&lt;Control Name="ChkReadOnly" Row="0" RowSpan="1" Column="2" ColumnSpan="1" /&gt;&lt;Control Name="ChkHidden" Row="1" RowSpan="1" Column="2" ColumnSpan="1" /&gt;&lt;/Controls&gt;&lt;Columns Styles="Absolute,142,AutoSize,0,Absolute,142,AutoSize,0" /&gt;&lt;Rows Styles="Absolute,26,Absolute,26" /&gt;&lt;/TableLayoutSettings&gt;</value>
   </data>
-  <metadata name="ChkArchive.Locked" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
-    <value>True</value>
-  </metadata>
-  <data name="ChkArchive.Anchor" type="System.Windows.Forms.AnchorStyles, System.Windows.Forms">
-    <value>Left</value>
+  <data name="GroupAttributes.Location" type="System.Drawing.Point, System.Drawing">
+    <value>3, 231</value>
   </data>
-  <data name="ChkArchive.Location" type="System.Drawing.Point, System.Drawing">
-    <value>3, 4</value>
+  <data name="GroupAttributes.Padding" type="System.Windows.Forms.Padding, System.Windows.Forms">
+    <value>3, 3, 3, 0</value>
   </data>
-  <data name="ChkArchive.Padding" type="System.Windows.Forms.Padding, System.Windows.Forms">
-    <value>0, 1, 0, 0</value>
+  <data name="GroupAttributes.Size" type="System.Drawing.Size, System.Drawing">
+    <value>438, 90</value>
   </data>
-  <data name="ChkArchive.Size" type="System.Drawing.Size, System.Drawing">
-    <value>62, 17</value>
-  </data>
-  <data name="ChkArchive.TabIndex" type="System.Int32, mscorlib">
-    <value>0</value>
-  </data>
-  <data name="ChkArchive.Text" xml:space="preserve">
-    <value>Archive</value>
-  </data>
-  <data name="&gt;&gt;ChkArchive.Name" xml:space="preserve">
-    <value>ChkArchive</value>
-  </data>
-  <data name="&gt;&gt;ChkArchive.Type" xml:space="preserve">
-    <value>System.Windows.Forms.CheckBox, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="&gt;&gt;ChkArchive.Parent" xml:space="preserve">
-    <value>TableLayoutPanel2</value>
-  </data>
-  <data name="&gt;&gt;ChkArchive.ZOrder" xml:space="preserve">
-    <value>0</value>
-  </data>
-  <metadata name="ChkSystem.Locked" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
-    <value>True</value>
-  </metadata>
-  <data name="ChkSystem.Anchor" type="System.Windows.Forms.AnchorStyles, System.Windows.Forms">
-    <value>Left</value>
-  </data>
-  <data name="ChkSystem.Location" type="System.Drawing.Point, System.Drawing">
-    <value>3, 30</value>
-  </data>
-  <data name="ChkSystem.Padding" type="System.Windows.Forms.Padding, System.Windows.Forms">
-    <value>0, 1, 0, 0</value>
-  </data>
-  <data name="ChkSystem.Size" type="System.Drawing.Size, System.Drawing">
-    <value>60, 17</value>
-  </data>
-  <data name="ChkSystem.TabIndex" type="System.Int32, mscorlib">
-    <value>4</value>
-  </data>
-  <data name="ChkSystem.Text" xml:space="preserve">
-    <value>System</value>
-  </data>
-  <data name="&gt;&gt;ChkSystem.Name" xml:space="preserve">
-    <value>ChkSystem</value>
-  </data>
-  <data name="&gt;&gt;ChkSystem.Type" xml:space="preserve">
-    <value>System.Windows.Forms.CheckBox, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="&gt;&gt;ChkSystem.Parent" xml:space="preserve">
-    <value>TableLayoutPanel2</value>
-  </data>
-  <data name="&gt;&gt;ChkSystem.ZOrder" xml:space="preserve">
-    <value>1</value>
-  </data>
-  <metadata name="BtnArchive.Locked" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
-    <value>True</value>
-  </metadata>
-  <data name="BtnArchive.Anchor" type="System.Windows.Forms.AnchorStyles, System.Windows.Forms">
-    <value>Left</value>
-  </data>
-  <data name="BtnArchive.Location" type="System.Drawing.Point, System.Drawing">
-    <value>145, 3</value>
-  </data>
-  <data name="BtnArchive.Size" type="System.Drawing.Size, System.Drawing">
-    <value>62, 20</value>
-  </data>
-  <data name="BtnArchive.TabIndex" type="System.Int32, mscorlib">
-    <value>1</value>
-  </data>
-  <data name="BtnArchive.Text" xml:space="preserve">
-    <value>Edit</value>
-  </data>
-  <data name="&gt;&gt;BtnArchive.Name" xml:space="preserve">
-    <value>BtnArchive</value>
-  </data>
-  <data name="&gt;&gt;BtnArchive.Type" xml:space="preserve">
-    <value>System.Windows.Forms.Button, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="&gt;&gt;BtnArchive.Parent" xml:space="preserve">
-    <value>TableLayoutPanel2</value>
-  </data>
-  <data name="&gt;&gt;BtnArchive.ZOrder" xml:space="preserve">
+  <data name="GroupAttributes.TabIndex" type="System.Int32, mscorlib">
     <value>2</value>
   </data>
-  <metadata name="BtnSystem.Locked" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
-    <value>True</value>
-  </metadata>
-  <data name="BtnSystem.Anchor" type="System.Windows.Forms.AnchorStyles, System.Windows.Forms">
-    <value>Left</value>
+  <data name="GroupAttributes.Text" xml:space="preserve">
+    <value>Attributes</value>
   </data>
-  <data name="BtnSystem.Location" type="System.Drawing.Point, System.Drawing">
-    <value>145, 29</value>
+  <data name="&gt;&gt;GroupAttributes.Name" xml:space="preserve">
+    <value>GroupAttributes</value>
   </data>
-  <data name="BtnSystem.Size" type="System.Drawing.Size, System.Drawing">
-    <value>62, 20</value>
+  <data name="&gt;&gt;GroupAttributes.Type" xml:space="preserve">
+    <value>System.Windows.Forms.GroupBox, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
-  <data name="BtnSystem.TabIndex" type="System.Int32, mscorlib">
-    <value>5</value>
+  <data name="&gt;&gt;GroupAttributes.Parent" xml:space="preserve">
+    <value>FlowLayoutPanel2</value>
   </data>
-  <data name="BtnSystem.Text" xml:space="preserve">
-    <value>Edit</value>
-  </data>
-  <data name="&gt;&gt;BtnSystem.Name" xml:space="preserve">
-    <value>BtnSystem</value>
-  </data>
-  <data name="&gt;&gt;BtnSystem.Type" xml:space="preserve">
-    <value>System.Windows.Forms.Button, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="&gt;&gt;BtnSystem.Parent" xml:space="preserve">
-    <value>TableLayoutPanel2</value>
-  </data>
-  <data name="&gt;&gt;BtnSystem.ZOrder" xml:space="preserve">
-    <value>3</value>
-  </data>
-  <metadata name="BtnReadOnly.Locked" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
-    <value>True</value>
-  </metadata>
-  <data name="BtnReadOnly.Anchor" type="System.Windows.Forms.AnchorStyles, System.Windows.Forms">
-    <value>Left</value>
-  </data>
-  <data name="BtnReadOnly.Location" type="System.Drawing.Point, System.Drawing">
-    <value>355, 3</value>
-  </data>
-  <data name="BtnReadOnly.Size" type="System.Drawing.Size, System.Drawing">
-    <value>62, 20</value>
-  </data>
-  <data name="BtnReadOnly.TabIndex" type="System.Int32, mscorlib">
-    <value>3</value>
-  </data>
-  <data name="BtnReadOnly.Text" xml:space="preserve">
-    <value>Edit</value>
-  </data>
-  <data name="&gt;&gt;BtnReadOnly.Name" xml:space="preserve">
-    <value>BtnReadOnly</value>
-  </data>
-  <data name="&gt;&gt;BtnReadOnly.Type" xml:space="preserve">
-    <value>System.Windows.Forms.Button, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="&gt;&gt;BtnReadOnly.Parent" xml:space="preserve">
-    <value>TableLayoutPanel2</value>
-  </data>
-  <data name="&gt;&gt;BtnReadOnly.ZOrder" xml:space="preserve">
-    <value>4</value>
-  </data>
-  <metadata name="BtnHidden.Locked" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
-    <value>True</value>
-  </metadata>
-  <data name="BtnHidden.Anchor" type="System.Windows.Forms.AnchorStyles, System.Windows.Forms">
-    <value>Left</value>
-  </data>
-  <data name="BtnHidden.Location" type="System.Drawing.Point, System.Drawing">
-    <value>355, 29</value>
-  </data>
-  <data name="BtnHidden.Size" type="System.Drawing.Size, System.Drawing">
-    <value>62, 20</value>
-  </data>
-  <data name="BtnHidden.TabIndex" type="System.Int32, mscorlib">
-    <value>7</value>
-  </data>
-  <data name="BtnHidden.Text" xml:space="preserve">
-    <value>Edit</value>
-  </data>
-  <data name="&gt;&gt;BtnHidden.Name" xml:space="preserve">
-    <value>BtnHidden</value>
-  </data>
-  <data name="&gt;&gt;BtnHidden.Type" xml:space="preserve">
-    <value>System.Windows.Forms.Button, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="&gt;&gt;BtnHidden.Parent" xml:space="preserve">
-    <value>TableLayoutPanel2</value>
-  </data>
-  <data name="&gt;&gt;BtnHidden.ZOrder" xml:space="preserve">
-    <value>5</value>
-  </data>
-  <metadata name="ChkReadOnly.Locked" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
-    <value>True</value>
-  </metadata>
-  <data name="ChkReadOnly.Anchor" type="System.Windows.Forms.AnchorStyles, System.Windows.Forms">
-    <value>Left</value>
-  </data>
-  <data name="ChkReadOnly.Location" type="System.Drawing.Point, System.Drawing">
-    <value>213, 4</value>
-  </data>
-  <data name="ChkReadOnly.Padding" type="System.Windows.Forms.Padding, System.Windows.Forms">
-    <value>6, 1, 0, 0</value>
-  </data>
-  <data name="ChkReadOnly.Size" type="System.Drawing.Size, System.Drawing">
-    <value>87, 17</value>
-  </data>
-  <data name="ChkReadOnly.TabIndex" type="System.Int32, mscorlib">
+  <data name="&gt;&gt;GroupAttributes.ZOrder" xml:space="preserve">
     <value>2</value>
   </data>
-  <data name="ChkReadOnly.Text" xml:space="preserve">
-    <value>Read Only</value>
-  </data>
-  <data name="&gt;&gt;ChkReadOnly.Name" xml:space="preserve">
-    <value>ChkReadOnly</value>
-  </data>
-  <data name="&gt;&gt;ChkReadOnly.Type" xml:space="preserve">
-    <value>System.Windows.Forms.CheckBox, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="&gt;&gt;ChkReadOnly.Parent" xml:space="preserve">
-    <value>TableLayoutPanel2</value>
-  </data>
-  <data name="&gt;&gt;ChkReadOnly.ZOrder" xml:space="preserve">
-    <value>6</value>
-  </data>
-  <metadata name="ChkHidden.Locked" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
+  <metadata name="PanelBottom.GenerateMember" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
+    <value>False</value>
+  </metadata>
+  <metadata name="PanelBottom.Locked" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
     <value>True</value>
   </metadata>
-  <data name="ChkHidden.Anchor" type="System.Windows.Forms.AnchorStyles, System.Windows.Forms">
+  <data name="PanelBottom.AutoSize" type="System.Boolean, mscorlib">
+    <value>True</value>
+  </data>
+  <data name="PanelBottom.AutoSizeMode" type="System.Windows.Forms.AutoSizeMode, System.Windows.Forms">
+    <value>GrowAndShrink</value>
+  </data>
+  <metadata name="BtnCancel.Locked" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
+    <value>True</value>
+  </metadata>
+  <data name="BtnCancel.ImeMode" type="System.Windows.Forms.ImeMode, System.Windows.Forms">
+    <value>NoControl</value>
+  </data>
+  <data name="BtnCancel.Location" type="System.Drawing.Point, System.Drawing">
+    <value>435, 10</value>
+  </data>
+  <data name="BtnCancel.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
+    <value>6, 0, 6, 0</value>
+  </data>
+  <data name="BtnCancel.Size" type="System.Drawing.Size, System.Drawing">
+    <value>75, 23</value>
+  </data>
+  <data name="BtnCancel.TabIndex" type="System.Int32, mscorlib">
+    <value>1</value>
+  </data>
+  <data name="BtnCancel.Text" xml:space="preserve">
+    <value>&amp;Cancel</value>
+  </data>
+  <data name="&gt;&gt;BtnCancel.Name" xml:space="preserve">
+    <value>BtnCancel</value>
+  </data>
+  <data name="&gt;&gt;BtnCancel.Type" xml:space="preserve">
+    <value>System.Windows.Forms.Button, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;BtnCancel.Parent" xml:space="preserve">
+    <value>PanelBottom</value>
+  </data>
+  <data name="&gt;&gt;BtnCancel.ZOrder" xml:space="preserve">
+    <value>0</value>
+  </data>
+  <metadata name="BtnUpdate.Locked" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
+    <value>True</value>
+  </metadata>
+  <data name="BtnUpdate.ImeMode" type="System.Windows.Forms.ImeMode, System.Windows.Forms">
+    <value>NoControl</value>
+  </data>
+  <data name="BtnUpdate.Location" type="System.Drawing.Point, System.Drawing">
+    <value>348, 10</value>
+  </data>
+  <data name="BtnUpdate.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
+    <value>6, 0, 6, 0</value>
+  </data>
+  <data name="BtnUpdate.Size" type="System.Drawing.Size, System.Drawing">
+    <value>75, 23</value>
+  </data>
+  <data name="BtnUpdate.TabIndex" type="System.Int32, mscorlib">
+    <value>0</value>
+  </data>
+  <data name="BtnUpdate.Text" xml:space="preserve">
+    <value>&amp;Update</value>
+  </data>
+  <data name="&gt;&gt;BtnUpdate.Name" xml:space="preserve">
+    <value>BtnUpdate</value>
+  </data>
+  <data name="&gt;&gt;BtnUpdate.Type" xml:space="preserve">
+    <value>System.Windows.Forms.Button, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;BtnUpdate.Parent" xml:space="preserve">
+    <value>PanelBottom</value>
+  </data>
+  <data name="&gt;&gt;BtnUpdate.ZOrder" xml:space="preserve">
+    <value>1</value>
+  </data>
+  <data name="PanelBottom.Dock" type="System.Windows.Forms.DockStyle, System.Windows.Forms">
+    <value>Bottom</value>
+  </data>
+  <data name="PanelBottom.FlowDirection" type="System.Windows.Forms.FlowDirection, System.Windows.Forms">
+    <value>RightToLeft</value>
+  </data>
+  <data name="PanelBottom.Location" type="System.Drawing.Point, System.Drawing">
+    <value>0, 406</value>
+  </data>
+  <data name="PanelBottom.Padding" type="System.Windows.Forms.Padding, System.Windows.Forms">
+    <value>6, 10, 6, 10</value>
+  </data>
+  <data name="PanelBottom.Size" type="System.Drawing.Size, System.Drawing">
+    <value>528, 43</value>
+  </data>
+  <data name="PanelBottom.TabIndex" type="System.Int32, mscorlib">
+    <value>1</value>
+  </data>
+  <data name="PanelBottom.WrapContents" type="System.Boolean, mscorlib">
+    <value>False</value>
+  </data>
+  <data name="&gt;&gt;PanelBottom.Name" xml:space="preserve">
+    <value>PanelBottom</value>
+  </data>
+  <data name="&gt;&gt;PanelBottom.Type" xml:space="preserve">
+    <value>System.Windows.Forms.FlowLayoutPanel, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;PanelBottom.Parent" xml:space="preserve">
+    <value>$this</value>
+  </data>
+  <data name="&gt;&gt;PanelBottom.ZOrder" xml:space="preserve">
+    <value>1</value>
+  </data>
+  <metadata name="PanelMain.GenerateMember" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
+    <value>False</value>
+  </metadata>
+  <metadata name="PanelMain.Locked" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
+    <value>True</value>
+  </metadata>
+  <data name="PanelMain.AutoSize" type="System.Boolean, mscorlib">
+    <value>True</value>
+  </data>
+  <data name="PanelMain.AutoSizeMode" type="System.Windows.Forms.AutoSizeMode, System.Windows.Forms">
+    <value>GrowAndShrink</value>
+  </data>
+  <metadata name="FlowLayoutPanel2.Locked" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
+    <value>True</value>
+  </metadata>
+  <data name="FlowLayoutPanel2.AutoSize" type="System.Boolean, mscorlib">
+    <value>True</value>
+  </data>
+  <data name="FlowLayoutPanel2.AutoSizeMode" type="System.Windows.Forms.AutoSizeMode, System.Windows.Forms">
+    <value>GrowAndShrink</value>
+  </data>
+  <metadata name="GroupFileName.Locked" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
+    <value>True</value>
+  </metadata>
+  <data name="GroupFileName.Anchor" type="System.Windows.Forms.AnchorStyles, System.Windows.Forms">
+    <value>Top, Left, Right</value>
+  </data>
+  <data name="GroupFileName.AutoSize" type="System.Boolean, mscorlib">
+    <value>True</value>
+  </data>
+  <data name="GroupFileName.AutoSizeMode" type="System.Windows.Forms.AutoSizeMode, System.Windows.Forms">
+    <value>GrowAndShrink</value>
+  </data>
+  <metadata name="LblMultipleFiles.Locked" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
+    <value>True</value>
+  </metadata>
+  <data name="LblMultipleFiles.Anchor" type="System.Windows.Forms.AnchorStyles, System.Windows.Forms">
     <value>Left</value>
   </data>
-  <data name="ChkHidden.Location" type="System.Drawing.Point, System.Drawing">
-    <value>213, 30</value>
+  <data name="LblMultipleFiles.AutoSize" type="System.Boolean, mscorlib">
+    <value>True</value>
   </data>
-  <data name="ChkHidden.Padding" type="System.Windows.Forms.Padding, System.Windows.Forms">
-    <value>6, 1, 0, 0</value>
+  <data name="LblMultipleFiles.ImeMode" type="System.Windows.Forms.ImeMode, System.Windows.Forms">
+    <value>NoControl</value>
   </data>
-  <data name="ChkHidden.Size" type="System.Drawing.Size, System.Drawing">
-    <value>76, 17</value>
+  <data name="LblMultipleFiles.Location" type="System.Drawing.Point, System.Drawing">
+    <value>11, 49</value>
   </data>
-  <data name="ChkHidden.TabIndex" type="System.Int32, mscorlib">
-    <value>6</value>
+  <data name="LblMultipleFiles.Size" type="System.Drawing.Size, System.Drawing">
+    <value>118, 13</value>
   </data>
-  <data name="ChkHidden.Text" xml:space="preserve">
-    <value>Hidden</value>
+  <data name="LblMultipleFiles.TabIndex" type="System.Int32, mscorlib">
+    <value>4</value>
   </data>
-  <data name="&gt;&gt;ChkHidden.Name" xml:space="preserve">
-    <value>ChkHidden</value>
+  <data name="LblMultipleFiles.Text" xml:space="preserve">
+    <value>(Multiple Files Selected)</value>
   </data>
-  <data name="&gt;&gt;ChkHidden.Type" xml:space="preserve">
+  <data name="&gt;&gt;LblMultipleFiles.Name" xml:space="preserve">
+    <value>LblMultipleFiles</value>
+  </data>
+  <data name="&gt;&gt;LblMultipleFiles.Type" xml:space="preserve">
+    <value>System.Windows.Forms.Label, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;LblMultipleFiles.Parent" xml:space="preserve">
+    <value>GroupFileName</value>
+  </data>
+  <data name="&gt;&gt;LblMultipleFiles.ZOrder" xml:space="preserve">
+    <value>0</value>
+  </data>
+  <metadata name="TxtLFN.Locked" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
+    <value>True</value>
+  </metadata>
+  <data name="TxtLFN.Location" type="System.Drawing.Point, System.Drawing">
+    <value>12, 38</value>
+  </data>
+  <data name="TxtLFN.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
+    <value>3, 3, 3, 29</value>
+  </data>
+  <data name="TxtLFN.MaxLength" type="System.Int32, mscorlib">
+    <value>256</value>
+  </data>
+  <data name="TxtLFN.Size" type="System.Drawing.Size, System.Drawing">
+    <value>347, 20</value>
+  </data>
+  <data name="TxtLFN.TabIndex" type="System.Int32, mscorlib">
+    <value>2</value>
+  </data>
+  <data name="&gt;&gt;TxtLFN.Name" xml:space="preserve">
+    <value>TxtLFN</value>
+  </data>
+  <data name="&gt;&gt;TxtLFN.Type" xml:space="preserve">
+    <value>System.Windows.Forms.TextBox, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;TxtLFN.Parent" xml:space="preserve">
+    <value>GroupFileName</value>
+  </data>
+  <data name="&gt;&gt;TxtLFN.ZOrder" xml:space="preserve">
+    <value>1</value>
+  </data>
+  <metadata name="FlowLayoutFileNameType.Locked" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
+    <value>True</value>
+  </metadata>
+  <data name="FlowLayoutFileNameType.AutoSize" type="System.Boolean, mscorlib">
+    <value>True</value>
+  </data>
+  <data name="FlowLayoutFileNameType.AutoSizeMode" type="System.Windows.Forms.AutoSizeMode, System.Windows.Forms">
+    <value>GrowAndShrink</value>
+  </data>
+  <metadata name="RadioFileShort.Locked" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
+    <value>True</value>
+  </metadata>
+  <data name="RadioFileShort.AutoSize" type="System.Boolean, mscorlib">
+    <value>True</value>
+  </data>
+  <data name="RadioFileShort.ImeMode" type="System.Windows.Forms.ImeMode, System.Windows.Forms">
+    <value>NoControl</value>
+  </data>
+  <data name="RadioFileShort.Location" type="System.Drawing.Point, System.Drawing">
+    <value>3, 3</value>
+  </data>
+  <data name="RadioFileShort.Size" type="System.Drawing.Size, System.Drawing">
+    <value>40, 17</value>
+  </data>
+  <data name="RadioFileShort.TabIndex" type="System.Int32, mscorlib">
+    <value>0</value>
+  </data>
+  <data name="RadioFileShort.Text" xml:space="preserve">
+    <value>8.3</value>
+    <comment>@Invariant</comment>
+  </data>
+  <data name="&gt;&gt;RadioFileShort.Name" xml:space="preserve">
+    <value>RadioFileShort</value>
+  </data>
+  <data name="&gt;&gt;RadioFileShort.Type" xml:space="preserve">
+    <value>System.Windows.Forms.RadioButton, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;RadioFileShort.Parent" xml:space="preserve">
+    <value>FlowLayoutFileNameType</value>
+  </data>
+  <data name="&gt;&gt;RadioFileShort.ZOrder" xml:space="preserve">
+    <value>0</value>
+  </data>
+  <metadata name="RadioFileLong.Locked" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
+    <value>True</value>
+  </metadata>
+  <data name="RadioFileLong.AutoSize" type="System.Boolean, mscorlib">
+    <value>True</value>
+  </data>
+  <data name="RadioFileLong.ImeMode" type="System.Windows.Forms.ImeMode, System.Windows.Forms">
+    <value>NoControl</value>
+  </data>
+  <data name="RadioFileLong.Location" type="System.Drawing.Point, System.Drawing">
+    <value>49, 3</value>
+  </data>
+  <data name="RadioFileLong.Size" type="System.Drawing.Size, System.Drawing">
+    <value>49, 17</value>
+  </data>
+  <data name="RadioFileLong.TabIndex" type="System.Int32, mscorlib">
+    <value>1</value>
+  </data>
+  <data name="RadioFileLong.Text" xml:space="preserve">
+    <value>Long</value>
+  </data>
+  <data name="&gt;&gt;RadioFileLong.Name" xml:space="preserve">
+    <value>RadioFileLong</value>
+  </data>
+  <data name="&gt;&gt;RadioFileLong.Type" xml:space="preserve">
+    <value>System.Windows.Forms.RadioButton, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;RadioFileLong.Parent" xml:space="preserve">
+    <value>FlowLayoutFileNameType</value>
+  </data>
+  <data name="&gt;&gt;RadioFileLong.ZOrder" xml:space="preserve">
+    <value>1</value>
+  </data>
+  <metadata name="ChkNTExtensions.Locked" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
+    <value>True</value>
+  </metadata>
+  <data name="ChkNTExtensions.AutoSize" type="System.Boolean, mscorlib">
+    <value>True</value>
+  </data>
+  <data name="ChkNTExtensions.ImeMode" type="System.Windows.Forms.ImeMode, System.Windows.Forms">
+    <value>NoControl</value>
+  </data>
+  <data name="ChkNTExtensions.Location" type="System.Drawing.Point, System.Drawing">
+    <value>107, 4</value>
+  </data>
+  <data name="ChkNTExtensions.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
+    <value>6, 4, 3, 2</value>
+  </data>
+  <data name="ChkNTExtensions.Size" type="System.Drawing.Size, System.Drawing">
+    <value>95, 17</value>
+  </data>
+  <data name="ChkNTExtensions.TabIndex" type="System.Int32, mscorlib">
+    <value>2</value>
+  </data>
+  <data name="ChkNTExtensions.Text" xml:space="preserve">
+    <value>NT Extensions</value>
+  </data>
+  <data name="&gt;&gt;ChkNTExtensions.Name" xml:space="preserve">
+    <value>ChkNTExtensions</value>
+  </data>
+  <data name="&gt;&gt;ChkNTExtensions.Type" xml:space="preserve">
     <value>System.Windows.Forms.CheckBox, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
-  <data name="&gt;&gt;ChkHidden.Parent" xml:space="preserve">
-    <value>TableLayoutPanel2</value>
+  <data name="&gt;&gt;ChkNTExtensions.Parent" xml:space="preserve">
+    <value>FlowLayoutFileNameType</value>
   </data>
-  <data name="&gt;&gt;ChkHidden.ZOrder" xml:space="preserve">
-    <value>7</value>
+  <data name="&gt;&gt;ChkNTExtensions.ZOrder" xml:space="preserve">
+    <value>2</value>
+  </data>
+  <data name="FlowLayoutFileNameType.Location" type="System.Drawing.Point, System.Drawing">
+    <value>157, 9</value>
+  </data>
+  <data name="FlowLayoutFileNameType.Size" type="System.Drawing.Size, System.Drawing">
+    <value>205, 23</value>
+  </data>
+  <data name="FlowLayoutFileNameType.TabIndex" type="System.Int32, mscorlib">
+    <value>0</value>
+  </data>
+  <data name="&gt;&gt;FlowLayoutFileNameType.Name" xml:space="preserve">
+    <value>FlowLayoutFileNameType</value>
+  </data>
+  <data name="&gt;&gt;FlowLayoutFileNameType.Type" xml:space="preserve">
+    <value>System.Windows.Forms.FlowLayoutPanel, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;FlowLayoutFileNameType.Parent" xml:space="preserve">
+    <value>GroupFileName</value>
+  </data>
+  <data name="&gt;&gt;FlowLayoutFileNameType.ZOrder" xml:space="preserve">
+    <value>2</value>
   </data>
   <metadata name="TableLayoutPanelFile.Locked" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
-    <value>True</value>
-  </metadata>
-  <metadata name="MskExtensionHex.Locked" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
-    <value>True</value>
-  </metadata>
-  <metadata name="MskFileHex.Locked" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
-    <value>True</value>
-  </metadata>
-  <metadata name="TxtExtension.Locked" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
-    <value>True</value>
-  </metadata>
-  <metadata name="TxtFile.Locked" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
     <value>True</value>
   </metadata>
   <data name="TableLayoutPanelFile.AutoSize" type="System.Boolean, mscorlib">
@@ -1313,84 +1338,6 @@
   </data>
   <data name="TableLayoutPanelFile.ColumnCount" type="System.Int32, mscorlib">
     <value>2</value>
-  </data>
-  <data name="&gt;&gt;MskExtensionHex.Name" xml:space="preserve">
-    <value>MskExtensionHex</value>
-  </data>
-  <data name="&gt;&gt;MskExtensionHex.Type" xml:space="preserve">
-    <value>DiskImageTool.HexTextBox, DiskImageTool, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null</value>
-  </data>
-  <data name="&gt;&gt;MskExtensionHex.Parent" xml:space="preserve">
-    <value>TableLayoutPanelFile</value>
-  </data>
-  <data name="&gt;&gt;MskExtensionHex.ZOrder" xml:space="preserve">
-    <value>0</value>
-  </data>
-  <data name="&gt;&gt;MskFileHex.Name" xml:space="preserve">
-    <value>MskFileHex</value>
-  </data>
-  <data name="&gt;&gt;MskFileHex.Type" xml:space="preserve">
-    <value>DiskImageTool.HexTextBox, DiskImageTool, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null</value>
-  </data>
-  <data name="&gt;&gt;MskFileHex.Parent" xml:space="preserve">
-    <value>TableLayoutPanelFile</value>
-  </data>
-  <data name="&gt;&gt;MskFileHex.ZOrder" xml:space="preserve">
-    <value>1</value>
-  </data>
-  <data name="&gt;&gt;TxtExtension.Name" xml:space="preserve">
-    <value>TxtExtension</value>
-  </data>
-  <data name="&gt;&gt;TxtExtension.Type" xml:space="preserve">
-    <value>System.Windows.Forms.TextBox, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="&gt;&gt;TxtExtension.Parent" xml:space="preserve">
-    <value>TableLayoutPanelFile</value>
-  </data>
-  <data name="&gt;&gt;TxtExtension.ZOrder" xml:space="preserve">
-    <value>2</value>
-  </data>
-  <data name="&gt;&gt;TxtFile.Name" xml:space="preserve">
-    <value>TxtFile</value>
-  </data>
-  <data name="&gt;&gt;TxtFile.Type" xml:space="preserve">
-    <value>System.Windows.Forms.MaskedTextBox, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="&gt;&gt;TxtFile.Parent" xml:space="preserve">
-    <value>TableLayoutPanelFile</value>
-  </data>
-  <data name="&gt;&gt;TxtFile.ZOrder" xml:space="preserve">
-    <value>3</value>
-  </data>
-  <data name="TableLayoutPanelFile.Location" type="System.Drawing.Point, System.Drawing">
-    <value>9, 35</value>
-  </data>
-  <data name="TableLayoutPanelFile.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
-    <value>3, 3, 3, 0</value>
-  </data>
-  <data name="TableLayoutPanelFile.RowCount" type="System.Int32, mscorlib">
-    <value>3</value>
-  </data>
-  <data name="TableLayoutPanelFile.Size" type="System.Drawing.Size, System.Drawing">
-    <value>246, 52</value>
-  </data>
-  <data name="TableLayoutPanelFile.TabIndex" type="System.Int32, mscorlib">
-    <value>1</value>
-  </data>
-  <data name="&gt;&gt;TableLayoutPanelFile.Name" xml:space="preserve">
-    <value>TableLayoutPanelFile</value>
-  </data>
-  <data name="&gt;&gt;TableLayoutPanelFile.Type" xml:space="preserve">
-    <value>System.Windows.Forms.TableLayoutPanel, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="&gt;&gt;TableLayoutPanelFile.Parent" xml:space="preserve">
-    <value>GroupFileName</value>
-  </data>
-  <data name="&gt;&gt;TableLayoutPanelFile.ZOrder" xml:space="preserve">
-    <value>3</value>
-  </data>
-  <data name="TableLayoutPanelFile.LayoutSettings" type="System.Windows.Forms.TableLayoutSettings, System.Windows.Forms">
-    <value>&lt;?xml version="1.0" encoding="utf-16"?&gt;&lt;TableLayoutSettings&gt;&lt;Controls&gt;&lt;Control Name="MskExtensionHex" Row="1" RowSpan="1" Column="1" ColumnSpan="1" /&gt;&lt;Control Name="MskFileHex" Row="1" RowSpan="1" Column="0" ColumnSpan="1" /&gt;&lt;Control Name="TxtExtension" Row="0" RowSpan="1" Column="1" ColumnSpan="1" /&gt;&lt;Control Name="TxtFile" Row="0" RowSpan="1" Column="0" ColumnSpan="1" /&gt;&lt;/Controls&gt;&lt;Columns Styles="AutoSize,0,AutoSize,0,Absolute,20" /&gt;&lt;Rows Styles="AutoSize,0,AutoSize,0,AutoSize,0" /&gt;&lt;/TableLayoutSettings&gt;</value>
   </data>
   <metadata name="MskExtensionHex.Locked" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
     <value>True</value>
@@ -1497,62 +1444,35 @@
   <data name="&gt;&gt;TxtFile.ZOrder" xml:space="preserve">
     <value>3</value>
   </data>
-  <metadata name="GroupFileName.Locked" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
-    <value>True</value>
-  </metadata>
-  <metadata name="LblMultipleFiles.Locked" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
-    <value>True</value>
-  </metadata>
-  <metadata name="TxtLFN.Locked" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
-    <value>True</value>
-  </metadata>
-  <metadata name="FlowLayoutFileNameType.Locked" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
-    <value>True</value>
-  </metadata>
-  <data name="GroupFileName.Anchor" type="System.Windows.Forms.AnchorStyles, System.Windows.Forms">
-    <value>Top, Left, Right</value>
+  <data name="TableLayoutPanelFile.Location" type="System.Drawing.Point, System.Drawing">
+    <value>9, 35</value>
   </data>
-  <data name="GroupFileName.AutoSize" type="System.Boolean, mscorlib">
-    <value>True</value>
+  <data name="TableLayoutPanelFile.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
+    <value>3, 3, 3, 0</value>
   </data>
-  <data name="GroupFileName.AutoSizeMode" type="System.Windows.Forms.AutoSizeMode, System.Windows.Forms">
-    <value>GrowAndShrink</value>
+  <data name="TableLayoutPanelFile.RowCount" type="System.Int32, mscorlib">
+    <value>3</value>
   </data>
-  <data name="&gt;&gt;LblMultipleFiles.Name" xml:space="preserve">
-    <value>LblMultipleFiles</value>
+  <data name="TableLayoutPanelFile.Size" type="System.Drawing.Size, System.Drawing">
+    <value>246, 52</value>
   </data>
-  <data name="&gt;&gt;LblMultipleFiles.Type" xml:space="preserve">
-    <value>System.Windows.Forms.Label, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="&gt;&gt;LblMultipleFiles.Parent" xml:space="preserve">
-    <value>GroupFileName</value>
-  </data>
-  <data name="&gt;&gt;LblMultipleFiles.ZOrder" xml:space="preserve">
-    <value>0</value>
-  </data>
-  <data name="&gt;&gt;TxtLFN.Name" xml:space="preserve">
-    <value>TxtLFN</value>
-  </data>
-  <data name="&gt;&gt;TxtLFN.Type" xml:space="preserve">
-    <value>System.Windows.Forms.TextBox, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="&gt;&gt;TxtLFN.Parent" xml:space="preserve">
-    <value>GroupFileName</value>
-  </data>
-  <data name="&gt;&gt;TxtLFN.ZOrder" xml:space="preserve">
+  <data name="TableLayoutPanelFile.TabIndex" type="System.Int32, mscorlib">
     <value>1</value>
   </data>
-  <data name="&gt;&gt;FlowLayoutFileNameType.Name" xml:space="preserve">
-    <value>FlowLayoutFileNameType</value>
+  <data name="&gt;&gt;TableLayoutPanelFile.Name" xml:space="preserve">
+    <value>TableLayoutPanelFile</value>
   </data>
-  <data name="&gt;&gt;FlowLayoutFileNameType.Type" xml:space="preserve">
-    <value>System.Windows.Forms.FlowLayoutPanel, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  <data name="&gt;&gt;TableLayoutPanelFile.Type" xml:space="preserve">
+    <value>System.Windows.Forms.TableLayoutPanel, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
-  <data name="&gt;&gt;FlowLayoutFileNameType.Parent" xml:space="preserve">
+  <data name="&gt;&gt;TableLayoutPanelFile.Parent" xml:space="preserve">
     <value>GroupFileName</value>
   </data>
-  <data name="&gt;&gt;FlowLayoutFileNameType.ZOrder" xml:space="preserve">
-    <value>2</value>
+  <data name="&gt;&gt;TableLayoutPanelFile.ZOrder" xml:space="preserve">
+    <value>3</value>
+  </data>
+  <data name="TableLayoutPanelFile.LayoutSettings" type="System.Windows.Forms.TableLayoutSettings, System.Windows.Forms">
+    <value>&lt;?xml version="1.0" encoding="utf-16"?&gt;&lt;TableLayoutSettings&gt;&lt;Controls&gt;&lt;Control Name="MskExtensionHex" Row="1" RowSpan="1" Column="1" ColumnSpan="1" /&gt;&lt;Control Name="MskFileHex" Row="1" RowSpan="1" Column="0" ColumnSpan="1" /&gt;&lt;Control Name="TxtExtension" Row="0" RowSpan="1" Column="1" ColumnSpan="1" /&gt;&lt;Control Name="TxtFile" Row="0" RowSpan="1" Column="0" ColumnSpan="1" /&gt;&lt;/Controls&gt;&lt;Columns Styles="AutoSize,0,AutoSize,0,Absolute,20" /&gt;&lt;Rows Styles="AutoSize,0,AutoSize,0,AutoSize,0" /&gt;&lt;/TableLayoutSettings&gt;</value>
   </data>
   <data name="GroupFileName.Location" type="System.Drawing.Point, System.Drawing">
     <value>3, 3</value>
@@ -1578,304 +1498,6 @@
   <data name="&gt;&gt;GroupFileName.ZOrder" xml:space="preserve">
     <value>0</value>
   </data>
-  <metadata name="LblMultipleFiles.Locked" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
-    <value>True</value>
-  </metadata>
-  <data name="LblMultipleFiles.Anchor" type="System.Windows.Forms.AnchorStyles, System.Windows.Forms">
-    <value>Left</value>
-  </data>
-  <data name="LblMultipleFiles.AutoSize" type="System.Boolean, mscorlib">
-    <value>True</value>
-  </data>
-  <data name="LblMultipleFiles.Location" type="System.Drawing.Point, System.Drawing">
-    <value>11, 49</value>
-  </data>
-  <data name="LblMultipleFiles.Size" type="System.Drawing.Size, System.Drawing">
-    <value>118, 13</value>
-  </data>
-  <data name="LblMultipleFiles.TabIndex" type="System.Int32, mscorlib">
-    <value>4</value>
-  </data>
-  <data name="LblMultipleFiles.Text" xml:space="preserve">
-    <value>(Multiple Files Selected)</value>
-  </data>
-  <data name="&gt;&gt;LblMultipleFiles.Name" xml:space="preserve">
-    <value>LblMultipleFiles</value>
-  </data>
-  <data name="&gt;&gt;LblMultipleFiles.Type" xml:space="preserve">
-    <value>System.Windows.Forms.Label, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="&gt;&gt;LblMultipleFiles.Parent" xml:space="preserve">
-    <value>GroupFileName</value>
-  </data>
-  <data name="&gt;&gt;LblMultipleFiles.ZOrder" xml:space="preserve">
-    <value>0</value>
-  </data>
-  <metadata name="TxtLFN.Locked" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
-    <value>True</value>
-  </metadata>
-  <data name="TxtLFN.Location" type="System.Drawing.Point, System.Drawing">
-    <value>12, 38</value>
-  </data>
-  <data name="TxtLFN.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
-    <value>3, 3, 3, 29</value>
-  </data>
-  <data name="TxtLFN.MaxLength" type="System.Int32, mscorlib">
-    <value>256</value>
-  </data>
-  <data name="TxtLFN.Size" type="System.Drawing.Size, System.Drawing">
-    <value>347, 20</value>
-  </data>
-  <data name="TxtLFN.TabIndex" type="System.Int32, mscorlib">
-    <value>2</value>
-  </data>
-  <data name="&gt;&gt;TxtLFN.Name" xml:space="preserve">
-    <value>TxtLFN</value>
-  </data>
-  <data name="&gt;&gt;TxtLFN.Type" xml:space="preserve">
-    <value>System.Windows.Forms.TextBox, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="&gt;&gt;TxtLFN.Parent" xml:space="preserve">
-    <value>GroupFileName</value>
-  </data>
-  <data name="&gt;&gt;TxtLFN.ZOrder" xml:space="preserve">
-    <value>1</value>
-  </data>
-  <metadata name="FlowLayoutFileNameType.Locked" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
-    <value>True</value>
-  </metadata>
-  <metadata name="RadioFileShort.Locked" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
-    <value>True</value>
-  </metadata>
-  <metadata name="RadioFileLong.Locked" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
-    <value>True</value>
-  </metadata>
-  <metadata name="ChkNTExtensions.Locked" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
-    <value>True</value>
-  </metadata>
-  <data name="FlowLayoutFileNameType.AutoSize" type="System.Boolean, mscorlib">
-    <value>True</value>
-  </data>
-  <data name="FlowLayoutFileNameType.AutoSizeMode" type="System.Windows.Forms.AutoSizeMode, System.Windows.Forms">
-    <value>GrowAndShrink</value>
-  </data>
-  <data name="&gt;&gt;RadioFileShort.Name" xml:space="preserve">
-    <value>RadioFileShort</value>
-  </data>
-  <data name="&gt;&gt;RadioFileShort.Type" xml:space="preserve">
-    <value>System.Windows.Forms.RadioButton, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="&gt;&gt;RadioFileShort.Parent" xml:space="preserve">
-    <value>FlowLayoutFileNameType</value>
-  </data>
-  <data name="&gt;&gt;RadioFileShort.ZOrder" xml:space="preserve">
-    <value>0</value>
-  </data>
-  <data name="&gt;&gt;RadioFileLong.Name" xml:space="preserve">
-    <value>RadioFileLong</value>
-  </data>
-  <data name="&gt;&gt;RadioFileLong.Type" xml:space="preserve">
-    <value>System.Windows.Forms.RadioButton, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="&gt;&gt;RadioFileLong.Parent" xml:space="preserve">
-    <value>FlowLayoutFileNameType</value>
-  </data>
-  <data name="&gt;&gt;RadioFileLong.ZOrder" xml:space="preserve">
-    <value>1</value>
-  </data>
-  <data name="&gt;&gt;ChkNTExtensions.Name" xml:space="preserve">
-    <value>ChkNTExtensions</value>
-  </data>
-  <data name="&gt;&gt;ChkNTExtensions.Type" xml:space="preserve">
-    <value>System.Windows.Forms.CheckBox, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="&gt;&gt;ChkNTExtensions.Parent" xml:space="preserve">
-    <value>FlowLayoutFileNameType</value>
-  </data>
-  <data name="&gt;&gt;ChkNTExtensions.ZOrder" xml:space="preserve">
-    <value>2</value>
-  </data>
-  <data name="FlowLayoutFileNameType.Location" type="System.Drawing.Point, System.Drawing">
-    <value>157, 9</value>
-  </data>
-  <data name="FlowLayoutFileNameType.Size" type="System.Drawing.Size, System.Drawing">
-    <value>205, 23</value>
-  </data>
-  <data name="FlowLayoutFileNameType.TabIndex" type="System.Int32, mscorlib">
-    <value>0</value>
-  </data>
-  <data name="&gt;&gt;FlowLayoutFileNameType.Name" xml:space="preserve">
-    <value>FlowLayoutFileNameType</value>
-  </data>
-  <data name="&gt;&gt;FlowLayoutFileNameType.Type" xml:space="preserve">
-    <value>System.Windows.Forms.FlowLayoutPanel, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="&gt;&gt;FlowLayoutFileNameType.Parent" xml:space="preserve">
-    <value>GroupFileName</value>
-  </data>
-  <data name="&gt;&gt;FlowLayoutFileNameType.ZOrder" xml:space="preserve">
-    <value>2</value>
-  </data>
-  <metadata name="RadioFileShort.Locked" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
-    <value>True</value>
-  </metadata>
-  <data name="RadioFileShort.AutoSize" type="System.Boolean, mscorlib">
-    <value>True</value>
-  </data>
-  <data name="RadioFileShort.Location" type="System.Drawing.Point, System.Drawing">
-    <value>3, 3</value>
-  </data>
-  <data name="RadioFileShort.Size" type="System.Drawing.Size, System.Drawing">
-    <value>40, 17</value>
-  </data>
-  <data name="RadioFileShort.TabIndex" type="System.Int32, mscorlib">
-    <value>0</value>
-  </data>
-  <data name="RadioFileShort.Text" xml:space="preserve">
-    <value>8.3</value>
-    <comment>@Invariant</comment>
-  </data>
-  <data name="&gt;&gt;RadioFileShort.Name" xml:space="preserve">
-    <value>RadioFileShort</value>
-  </data>
-  <data name="&gt;&gt;RadioFileShort.Type" xml:space="preserve">
-    <value>System.Windows.Forms.RadioButton, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="&gt;&gt;RadioFileShort.Parent" xml:space="preserve">
-    <value>FlowLayoutFileNameType</value>
-  </data>
-  <data name="&gt;&gt;RadioFileShort.ZOrder" xml:space="preserve">
-    <value>0</value>
-  </data>
-  <metadata name="RadioFileLong.Locked" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
-    <value>True</value>
-  </metadata>
-  <data name="RadioFileLong.AutoSize" type="System.Boolean, mscorlib">
-    <value>True</value>
-  </data>
-  <data name="RadioFileLong.Location" type="System.Drawing.Point, System.Drawing">
-    <value>49, 3</value>
-  </data>
-  <data name="RadioFileLong.Size" type="System.Drawing.Size, System.Drawing">
-    <value>49, 17</value>
-  </data>
-  <data name="RadioFileLong.TabIndex" type="System.Int32, mscorlib">
-    <value>1</value>
-  </data>
-  <data name="RadioFileLong.Text" xml:space="preserve">
-    <value>Long</value>
-  </data>
-  <data name="&gt;&gt;RadioFileLong.Name" xml:space="preserve">
-    <value>RadioFileLong</value>
-  </data>
-  <data name="&gt;&gt;RadioFileLong.Type" xml:space="preserve">
-    <value>System.Windows.Forms.RadioButton, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="&gt;&gt;RadioFileLong.Parent" xml:space="preserve">
-    <value>FlowLayoutFileNameType</value>
-  </data>
-  <data name="&gt;&gt;RadioFileLong.ZOrder" xml:space="preserve">
-    <value>1</value>
-  </data>
-  <metadata name="ChkNTExtensions.Locked" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
-    <value>True</value>
-  </metadata>
-  <data name="ChkNTExtensions.AutoSize" type="System.Boolean, mscorlib">
-    <value>True</value>
-  </data>
-  <data name="ChkNTExtensions.Location" type="System.Drawing.Point, System.Drawing">
-    <value>107, 4</value>
-  </data>
-  <data name="ChkNTExtensions.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
-    <value>6, 4, 3, 2</value>
-  </data>
-  <data name="ChkNTExtensions.Size" type="System.Drawing.Size, System.Drawing">
-    <value>95, 17</value>
-  </data>
-  <data name="ChkNTExtensions.TabIndex" type="System.Int32, mscorlib">
-    <value>2</value>
-  </data>
-  <data name="ChkNTExtensions.Text" xml:space="preserve">
-    <value>NT Extensions</value>
-  </data>
-  <data name="&gt;&gt;ChkNTExtensions.Name" xml:space="preserve">
-    <value>ChkNTExtensions</value>
-  </data>
-  <data name="&gt;&gt;ChkNTExtensions.Type" xml:space="preserve">
-    <value>System.Windows.Forms.CheckBox, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="&gt;&gt;ChkNTExtensions.Parent" xml:space="preserve">
-    <value>FlowLayoutFileNameType</value>
-  </data>
-  <data name="&gt;&gt;ChkNTExtensions.ZOrder" xml:space="preserve">
-    <value>2</value>
-  </data>
-  <metadata name="BtnCancel.Locked" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
-    <value>True</value>
-  </metadata>
-  <data name="BtnCancel.AutoSizeMode" type="System.Windows.Forms.AutoSizeMode, System.Windows.Forms">
-    <value>GrowAndShrink</value>
-  </data>
-  <data name="BtnCancel.Location" type="System.Drawing.Point, System.Drawing">
-    <value>98, 6</value>
-  </data>
-  <data name="BtnCancel.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
-    <value>4, 0, 0, 0</value>
-  </data>
-  <data name="BtnCancel.Size" type="System.Drawing.Size, System.Drawing">
-    <value>90, 23</value>
-  </data>
-  <data name="BtnCancel.TabIndex" type="System.Int32, mscorlib">
-    <value>1</value>
-  </data>
-  <data name="BtnCancel.Text" xml:space="preserve">
-    <value>&amp;Cancel</value>
-  </data>
-  <data name="&gt;&gt;BtnCancel.Name" xml:space="preserve">
-    <value>BtnCancel</value>
-  </data>
-  <data name="&gt;&gt;BtnCancel.Type" xml:space="preserve">
-    <value>System.Windows.Forms.Button, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="&gt;&gt;BtnCancel.Parent" xml:space="preserve">
-    <value>FlowLayoutPanel1</value>
-  </data>
-  <data name="&gt;&gt;BtnCancel.ZOrder" xml:space="preserve">
-    <value>1</value>
-  </data>
-  <metadata name="BtnUpdate.Locked" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
-    <value>True</value>
-  </metadata>
-  <data name="BtnUpdate.AutoSizeMode" type="System.Windows.Forms.AutoSizeMode, System.Windows.Forms">
-    <value>GrowAndShrink</value>
-  </data>
-  <data name="BtnUpdate.Location" type="System.Drawing.Point, System.Drawing">
-    <value>0, 6</value>
-  </data>
-  <data name="BtnUpdate.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
-    <value>0, 0, 4, 0</value>
-  </data>
-  <data name="BtnUpdate.Size" type="System.Drawing.Size, System.Drawing">
-    <value>90, 23</value>
-  </data>
-  <data name="BtnUpdate.TabIndex" type="System.Int32, mscorlib">
-    <value>0</value>
-  </data>
-  <data name="BtnUpdate.Text" xml:space="preserve">
-    <value>&amp;Update</value>
-  </data>
-  <data name="&gt;&gt;BtnUpdate.Name" xml:space="preserve">
-    <value>BtnUpdate</value>
-  </data>
-  <data name="&gt;&gt;BtnUpdate.Type" xml:space="preserve">
-    <value>System.Windows.Forms.Button, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="&gt;&gt;BtnUpdate.Parent" xml:space="preserve">
-    <value>FlowLayoutPanel1</value>
-  </data>
-  <data name="&gt;&gt;BtnUpdate.ZOrder" xml:space="preserve">
-    <value>0</value>
-  </data>
   <metadata name="FlowLayoutPanel1.Locked" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
     <value>True</value>
   </metadata>
@@ -1889,7 +1511,7 @@
     <value>GrowAndShrink</value>
   </data>
   <data name="FlowLayoutPanel1.Location" type="System.Drawing.Point, System.Drawing">
-    <value>256, 324</value>
+    <value>444, 324</value>
   </data>
   <data name="FlowLayoutPanel1.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
     <value>0, 0, 0, 0</value>
@@ -1898,7 +1520,7 @@
     <value>0, 6, 0, 0</value>
   </data>
   <data name="FlowLayoutPanel1.Size" type="System.Drawing.Size, System.Drawing">
-    <value>188, 29</value>
+    <value>0, 6</value>
   </data>
   <data name="FlowLayoutPanel1.TabIndex" type="System.Int32, mscorlib">
     <value>3</value>
@@ -1915,23 +1537,14 @@
   <data name="&gt;&gt;FlowLayoutPanel1.ZOrder" xml:space="preserve">
     <value>3</value>
   </data>
-  <metadata name="FlowLayoutPanel2.Locked" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
-    <value>True</value>
-  </metadata>
-  <data name="FlowLayoutPanel2.AutoSize" type="System.Boolean, mscorlib">
-    <value>True</value>
-  </data>
-  <data name="FlowLayoutPanel2.AutoSizeMode" type="System.Windows.Forms.AutoSizeMode, System.Windows.Forms">
-    <value>GrowAndShrink</value>
-  </data>
   <data name="FlowLayoutPanel2.FlowDirection" type="System.Windows.Forms.FlowDirection, System.Windows.Forms">
     <value>TopDown</value>
   </data>
   <data name="FlowLayoutPanel2.Location" type="System.Drawing.Point, System.Drawing">
-    <value>21, 21</value>
+    <value>18, 18</value>
   </data>
   <data name="FlowLayoutPanel2.Size" type="System.Drawing.Size, System.Drawing">
-    <value>444, 353</value>
+    <value>444, 330</value>
   </data>
   <data name="FlowLayoutPanel2.TabIndex" type="System.Int32, mscorlib">
     <value>0</value>
@@ -1943,9 +1556,36 @@
     <value>System.Windows.Forms.FlowLayoutPanel, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
   <data name="&gt;&gt;FlowLayoutPanel2.Parent" xml:space="preserve">
-    <value>$this</value>
+    <value>PanelMain</value>
   </data>
   <data name="&gt;&gt;FlowLayoutPanel2.ZOrder" xml:space="preserve">
+    <value>0</value>
+  </data>
+  <data name="PanelMain.Dock" type="System.Windows.Forms.DockStyle, System.Windows.Forms">
+    <value>Fill</value>
+  </data>
+  <data name="PanelMain.Location" type="System.Drawing.Point, System.Drawing">
+    <value>0, 0</value>
+  </data>
+  <data name="PanelMain.Padding" type="System.Windows.Forms.Padding, System.Windows.Forms">
+    <value>18, 18, 18, 0</value>
+  </data>
+  <data name="PanelMain.Size" type="System.Drawing.Size, System.Drawing">
+    <value>528, 406</value>
+  </data>
+  <data name="PanelMain.TabIndex" type="System.Int32, mscorlib">
+    <value>0</value>
+  </data>
+  <data name="&gt;&gt;PanelMain.Name" xml:space="preserve">
+    <value>PanelMain</value>
+  </data>
+  <data name="&gt;&gt;PanelMain.Type" xml:space="preserve">
+    <value>System.Windows.Forms.Panel, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;PanelMain.Parent" xml:space="preserve">
+    <value>$this</value>
+  </data>
+  <data name="&gt;&gt;PanelMain.ZOrder" xml:space="preserve">
     <value>0</value>
   </data>
   <metadata name="$this.Localizable" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
@@ -1964,10 +1604,10 @@
     <value>GrowAndShrink</value>
   </data>
   <data name="$this.ClientSize" type="System.Drawing.Size, System.Drawing">
-    <value>484, 396</value>
+    <value>528, 449</value>
   </data>
-  <data name="$this.Padding" type="System.Windows.Forms.Padding, System.Windows.Forms">
-    <value>18, 18, 18, 12</value>
+  <data name="$this.ImeMode" type="System.Windows.Forms.ImeMode, System.Windows.Forms">
+    <value>NoControl</value>
   </data>
   <data name="$this.StartPosition" type="System.Windows.Forms.FormStartPosition, System.Windows.Forms">
     <value>CenterParent</value>

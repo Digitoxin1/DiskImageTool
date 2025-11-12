@@ -1574,4 +1574,16 @@ Nota: Este valor debe ser {1} para todos los disquetes</value>
   <data name="Label_UnexpectedSectors" xml:space="preserve">
     <value>Sectores inesperados</value>
   </data>
+  <data name="Label_DoubleStep" xml:space="preserve">
+    <value>Paso doble</value>
+  </data>
+  <data name="Label_OutputType" xml:space="preserve">
+    <value>Tipo de salida</value>
+  </data>
+  <data name="Label_ImageFormat" xml:space="preserve">
+    <value>Formato de imagen</value>
+  </data>
+  <data name="Label_Import" xml:space="preserve">
+    <value>&amp;Importar</value>
+  </data>
 </root>

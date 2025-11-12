@@ -35,15 +35,16 @@ Partial Class ImageCreationForm
         Dim RadioFormatProCopy As System.Windows.Forms.RadioButton
         Dim RadioFormatDMF2048 As System.Windows.Forms.RadioButton
         Dim RadioFormatDMF1024 As System.Windows.Forms.RadioButton
-        Me.Panel1 = New System.Windows.Forms.Panel()
-        Me.BtnOK = New System.Windows.Forms.Button()
+        Dim PanelBottom As System.Windows.Forms.FlowLayoutPanel
+        Dim PanelMain As System.Windows.Forms.Panel
         Me.BtnCancel = New System.Windows.Forms.Button()
+        Me.BtnOK = New System.Windows.Forms.Button()
         Me.PanelFormats = New System.Windows.Forms.Panel()
         Me.GroupBoxSpecial = New System.Windows.Forms.GroupBox()
         Me.GroupBoxStandard = New System.Windows.Forms.GroupBox()
+        Me.CheckImportFiles = New System.Windows.Forms.CheckBox()
         Me.Label1 = New System.Windows.Forms.Label()
         Me.ComboBootSector = New System.Windows.Forms.ComboBox()
-        Me.CheckImportFiles = New System.Windows.Forms.CheckBox()
         RadioFormat2880 = New System.Windows.Forms.RadioButton()
         RadioFormat1440 = New System.Windows.Forms.RadioButton()
         RadioFormat1200 = New System.Windows.Forms.RadioButton()
@@ -56,7 +57,10 @@ Partial Class ImageCreationForm
         RadioFormatProCopy = New System.Windows.Forms.RadioButton()
         RadioFormatDMF2048 = New System.Windows.Forms.RadioButton()
         RadioFormatDMF1024 = New System.Windows.Forms.RadioButton()
-        Me.Panel1.SuspendLayout()
+        PanelBottom = New System.Windows.Forms.FlowLayoutPanel()
+        PanelMain = New System.Windows.Forms.Panel()
+        PanelBottom.SuspendLayout()
+        PanelMain.SuspendLayout()
         Me.PanelFormats.SuspendLayout()
         Me.SuspendLayout()
         '
@@ -146,13 +150,20 @@ Partial Class ImageCreationForm
         RadioFormatDMF1024.Tag = "9"
         RadioFormatDMF1024.UseVisualStyleBackColor = True
         '
-        'Panel1
+        'PanelBottom
         '
-        Me.Panel1.BackColor = System.Drawing.SystemColors.Control
-        Me.Panel1.Controls.Add(Me.BtnOK)
-        Me.Panel1.Controls.Add(Me.BtnCancel)
-        resources.ApplyResources(Me.Panel1, "Panel1")
-        Me.Panel1.Name = "Panel1"
+        PanelBottom.BackColor = System.Drawing.SystemColors.Control
+        PanelBottom.Controls.Add(Me.BtnCancel)
+        PanelBottom.Controls.Add(Me.BtnOK)
+        resources.ApplyResources(PanelBottom, "PanelBottom")
+        PanelBottom.Name = "PanelBottom"
+        '
+        'BtnCancel
+        '
+        resources.ApplyResources(Me.BtnCancel, "BtnCancel")
+        Me.BtnCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel
+        Me.BtnCancel.Name = "BtnCancel"
+        Me.BtnCancel.UseVisualStyleBackColor = True
         '
         'BtnOK
         '
@@ -161,12 +172,15 @@ Partial Class ImageCreationForm
         Me.BtnOK.Name = "BtnOK"
         Me.BtnOK.UseVisualStyleBackColor = True
         '
-        'BtnCancel
+        'PanelMain
         '
-        resources.ApplyResources(Me.BtnCancel, "BtnCancel")
-        Me.BtnCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel
-        Me.BtnCancel.Name = "BtnCancel"
-        Me.BtnCancel.UseVisualStyleBackColor = True
+        resources.ApplyResources(PanelMain, "PanelMain")
+        PanelMain.BackColor = System.Drawing.SystemColors.Window
+        PanelMain.Controls.Add(Me.PanelFormats)
+        PanelMain.Controls.Add(Me.CheckImportFiles)
+        PanelMain.Controls.Add(Me.Label1)
+        PanelMain.Controls.Add(Me.ComboBootSector)
+        PanelMain.Name = "PanelMain"
         '
         'PanelFormats
         '
@@ -199,6 +213,12 @@ Partial Class ImageCreationForm
         Me.GroupBoxStandard.Name = "GroupBoxStandard"
         Me.GroupBoxStandard.TabStop = False
         '
+        'CheckImportFiles
+        '
+        resources.ApplyResources(Me.CheckImportFiles, "CheckImportFiles")
+        Me.CheckImportFiles.Name = "CheckImportFiles"
+        Me.CheckImportFiles.UseVisualStyleBackColor = True
+        '
         'Label1
         '
         resources.ApplyResources(Me.Label1, "Label1")
@@ -211,36 +231,28 @@ Partial Class ImageCreationForm
         resources.ApplyResources(Me.ComboBootSector, "ComboBootSector")
         Me.ComboBootSector.Name = "ComboBootSector"
         '
-        'CheckImportFiles
-        '
-        resources.ApplyResources(Me.CheckImportFiles, "CheckImportFiles")
-        Me.CheckImportFiles.Name = "CheckImportFiles"
-        Me.CheckImportFiles.UseVisualStyleBackColor = True
-        '
         'ImageCreationForm
         '
         resources.ApplyResources(Me, "$this")
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
-        Me.BackColor = System.Drawing.SystemColors.Window
-        Me.Controls.Add(Me.CheckImportFiles)
-        Me.Controls.Add(Me.ComboBootSector)
-        Me.Controls.Add(Me.Label1)
-        Me.Controls.Add(Me.PanelFormats)
-        Me.Controls.Add(Me.Panel1)
+        Me.BackColor = System.Drawing.SystemColors.Control
+        Me.Controls.Add(PanelMain)
+        Me.Controls.Add(PanelBottom)
         Me.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog
         Me.MaximizeBox = False
         Me.MinimizeBox = False
         Me.Name = "ImageCreationForm"
         Me.ShowIcon = False
         Me.ShowInTaskbar = False
-        Me.Panel1.ResumeLayout(False)
+        PanelBottom.ResumeLayout(False)
+        PanelMain.ResumeLayout(False)
+        PanelMain.PerformLayout()
         Me.PanelFormats.ResumeLayout(False)
         Me.PanelFormats.PerformLayout()
         Me.ResumeLayout(False)
         Me.PerformLayout()
 
     End Sub
-    Friend WithEvents Panel1 As Panel
     Friend WithEvents BtnOK As Button
     Friend WithEvents BtnCancel As Button
     Friend WithEvents PanelFormats As Panel

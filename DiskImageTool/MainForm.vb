@@ -716,10 +716,11 @@ Public Class MainForm
             ToolStripSeparatorFAT.Visible = Not FATTablesMatch
             _ToolStripFatCombo.Visible = Not FATTablesMatch
             _ToolStripFatCombo.Width = 60
-            MenuDiskWriteFloppyA.Enabled = _DriveAEnabled
-            MenuDiskWriteFloppyB.Enabled = _DriveBEnabled
+            MenuDiskWriteFloppyA.Enabled = CheckSize AndAlso _DriveAEnabled
+            MenuDiskWriteFloppyB.Enabled = CheckSize AndAlso _DriveBEnabled
             MenuReportsWriteSplices.Enabled = Disk.Image.IsBitstreamImage
             SetButtonStateSaveAs(True)
+            MenuGreaseweazleWrite.Enabled = CheckSize
         Else
             MenuHexBootSector.Enabled = False
             MenuHexDisk.Enabled = False
@@ -733,6 +734,7 @@ Public Class MainForm
             MenuDiskWriteFloppyB.Enabled = False
             MenuReportsWriteSplices.Enabled = False
             SetButtonStateSaveAs(False)
+            MenuGreaseweazleWrite.Enabled = False
         End If
 
         SetButtonStateClose(CurrentImage IsNot Nothing)
@@ -1997,6 +1999,12 @@ Public Class MainForm
 
     Private Sub ToolStripViewFileText_Click(sender As Object, e As EventArgs) Handles ToolStripViewFileText.Click
         FilePanelProcessEvent(FilePanelMain, FilePanel.FilePanelMenuItem.ViewFileText)
+    End Sub
+
+    Private Sub MenuGreaseweazleWrite_Click(sender As Object, e As EventArgs) Handles MenuGreaseweazleWrite.Click
+        If FilePanelMain.CurrentImage IsNot Nothing AndAlso FilePanelMain.CurrentImage.Disk IsNot Nothing Then
+            Greaseweazle.WriteImageToDisk(Me, FilePanelMain.CurrentImage)
+        End If
     End Sub
 #End Region
 End Class

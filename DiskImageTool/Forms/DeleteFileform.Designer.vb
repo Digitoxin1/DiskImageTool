@@ -22,50 +22,23 @@ Partial Class DeleteFileForm
     'Do not modify it using the code editor.
     <System.Diagnostics.DebuggerStepThrough()> _
     Private Sub InitializeComponent()
-        Dim resources As System.ComponentModel.ComponentResourceManager = New System.ComponentModel.ComponentResourceManager(GetType(DeleteFileForm))
         Dim GroupBox1 As System.Windows.Forms.GroupBox
+        Dim resources As System.ComponentModel.ComponentResourceManager = New System.ComponentModel.ComponentResourceManager(GetType(DeleteFileForm))
         Dim FlowLayoutPanel1 As System.Windows.Forms.FlowLayoutPanel
-        Me.LblCaption = New System.Windows.Forms.Label()
-        Me.Panel1 = New System.Windows.Forms.Panel()
-        Me.BtnOK = New System.Windows.Forms.Button()
-        Me.BtnCancel = New System.Windows.Forms.Button()
+        Dim PanelBottom As System.Windows.Forms.FlowLayoutPanel
         Me.RadioFillKeep = New System.Windows.Forms.RadioButton()
         Me.RadioFillF6 = New System.Windows.Forms.RadioButton()
         Me.RadioFill00 = New System.Windows.Forms.RadioButton()
+        Me.LblCaption = New System.Windows.Forms.Label()
+        Me.BtnOK = New System.Windows.Forms.Button()
+        Me.BtnCancel = New System.Windows.Forms.Button()
         GroupBox1 = New System.Windows.Forms.GroupBox()
         FlowLayoutPanel1 = New System.Windows.Forms.FlowLayoutPanel()
-        Me.Panel1.SuspendLayout()
+        PanelBottom = New System.Windows.Forms.FlowLayoutPanel()
         GroupBox1.SuspendLayout()
         FlowLayoutPanel1.SuspendLayout()
+        PanelBottom.SuspendLayout()
         Me.SuspendLayout()
-        '
-        'LblCaption
-        '
-        resources.ApplyResources(Me.LblCaption, "LblCaption")
-        Me.LblCaption.Name = "LblCaption"
-        Me.LblCaption.UseMnemonic = False
-        '
-        'Panel1
-        '
-        Me.Panel1.BackColor = System.Drawing.SystemColors.Control
-        Me.Panel1.Controls.Add(Me.BtnOK)
-        Me.Panel1.Controls.Add(Me.BtnCancel)
-        resources.ApplyResources(Me.Panel1, "Panel1")
-        Me.Panel1.Name = "Panel1"
-        '
-        'BtnOK
-        '
-        resources.ApplyResources(Me.BtnOK, "BtnOK")
-        Me.BtnOK.DialogResult = System.Windows.Forms.DialogResult.OK
-        Me.BtnOK.Name = "BtnOK"
-        Me.BtnOK.UseVisualStyleBackColor = True
-        '
-        'BtnCancel
-        '
-        resources.ApplyResources(Me.BtnCancel, "BtnCancel")
-        Me.BtnCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel
-        Me.BtnCancel.Name = "BtnCancel"
-        Me.BtnCancel.UseVisualStyleBackColor = True
         '
         'GroupBox1
         '
@@ -104,6 +77,34 @@ Partial Class DeleteFileForm
         Me.RadioFill00.UseMnemonic = False
         Me.RadioFill00.UseVisualStyleBackColor = True
         '
+        'LblCaption
+        '
+        resources.ApplyResources(Me.LblCaption, "LblCaption")
+        Me.LblCaption.Name = "LblCaption"
+        Me.LblCaption.UseMnemonic = False
+        '
+        'PanelBottom
+        '
+        PanelBottom.BackColor = System.Drawing.SystemColors.Control
+        PanelBottom.Controls.Add(Me.BtnCancel)
+        PanelBottom.Controls.Add(Me.BtnOK)
+        resources.ApplyResources(PanelBottom, "PanelBottom")
+        PanelBottom.Name = "PanelBottom"
+        '
+        'BtnOK
+        '
+        resources.ApplyResources(Me.BtnOK, "BtnOK")
+        Me.BtnOK.DialogResult = System.Windows.Forms.DialogResult.OK
+        Me.BtnOK.Name = "BtnOK"
+        Me.BtnOK.UseVisualStyleBackColor = True
+        '
+        'BtnCancel
+        '
+        resources.ApplyResources(Me.BtnCancel, "BtnCancel")
+        Me.BtnCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel
+        Me.BtnCancel.Name = "BtnCancel"
+        Me.BtnCancel.UseVisualStyleBackColor = True
+        '
         'DeleteFileForm
         '
         resources.ApplyResources(Me, "$this")
@@ -111,7 +112,7 @@ Partial Class DeleteFileForm
         Me.BackColor = System.Drawing.SystemColors.Window
         Me.CancelButton = Me.BtnCancel
         Me.Controls.Add(GroupBox1)
-        Me.Controls.Add(Me.Panel1)
+        Me.Controls.Add(PanelBottom)
         Me.Controls.Add(Me.LblCaption)
         Me.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog
         Me.MaximizeBox = False
@@ -119,17 +120,16 @@ Partial Class DeleteFileForm
         Me.Name = "DeleteFileForm"
         Me.ShowIcon = False
         Me.ShowInTaskbar = False
-        Me.Panel1.ResumeLayout(False)
         GroupBox1.ResumeLayout(False)
         GroupBox1.PerformLayout()
         FlowLayoutPanel1.ResumeLayout(False)
         FlowLayoutPanel1.PerformLayout()
+        PanelBottom.ResumeLayout(False)
         Me.ResumeLayout(False)
         Me.PerformLayout()
 
     End Sub
     Friend WithEvents LblCaption As Label
-    Friend WithEvents Panel1 As Panel
     Friend WithEvents BtnOK As Button
     Friend WithEvents BtnCancel As Button
     Friend WithEvents RadioFillKeep As RadioButton

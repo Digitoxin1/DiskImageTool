@@ -156,6 +156,11 @@ Namespace Greaseweazle
             End Using
         End Function
 
+        Public Sub WriteImageToDisk(ParentForm As Form, Image As DiskImageContainer)
+            Dim Form As New WriteDiskForm(Image)
+            Form.ShowDialog(ParentForm)
+        End Sub
+
         Public Function ImportFluxImage(FilePath As String, ParentForm As Form) As (Result As Boolean, OutputFile As String, NewFileName As String)
             Dim FileExt = IO.Path.GetExtension(FilePath).ToLower
             Dim TrackCount As Integer = 0

@@ -22,45 +22,51 @@ Partial Class UndeleteForm
     'Do not modify it using the code editor.
     <System.Diagnostics.DebuggerStepThrough()> _
     Private Sub InitializeComponent()
+        Dim PanelBottom As System.Windows.Forms.FlowLayoutPanel
         Dim resources As System.ComponentModel.ComponentResourceManager = New System.ComponentModel.ComponentResourceManager(GetType(UndeleteForm))
-        Me.FlowLayoutPanelButtons = New System.Windows.Forms.FlowLayoutPanel()
-        Me.BtnUpdate = New System.Windows.Forms.Button()
+        Dim PanelMain As System.Windows.Forms.Panel
         Me.BtnCancel = New System.Windows.Forms.Button()
-        Me.TextBoxChar = New System.Windows.Forms.TextBox()
+        Me.BtnUpdate = New System.Windows.Forms.Button()
         Me.FlowLayoutPanelMain = New System.Windows.Forms.FlowLayoutPanel()
         Me.LabelCaption = New System.Windows.Forms.Label()
         Me.LabelFileName = New System.Windows.Forms.Label()
-        Me.FlowLayoutPanelButtons.SuspendLayout()
+        Me.TextBoxChar = New System.Windows.Forms.TextBox()
+        PanelBottom = New System.Windows.Forms.FlowLayoutPanel()
+        PanelMain = New System.Windows.Forms.Panel()
+        PanelBottom.SuspendLayout()
+        PanelMain.SuspendLayout()
         Me.FlowLayoutPanelMain.SuspendLayout()
         Me.SuspendLayout()
         '
-        'FlowLayoutPanelButtons
+        'PanelBottom
         '
-        resources.ApplyResources(Me.FlowLayoutPanelButtons, "FlowLayoutPanelButtons")
-        Me.FlowLayoutPanelButtons.Controls.Add(Me.BtnUpdate)
-        Me.FlowLayoutPanelButtons.Controls.Add(Me.BtnCancel)
-        Me.FlowLayoutPanelButtons.Name = "FlowLayoutPanelButtons"
-        '
-        'BtnUpdate
-        '
-        resources.ApplyResources(Me.BtnUpdate, "BtnUpdate")
-        Me.BtnUpdate.DialogResult = System.Windows.Forms.DialogResult.OK
-        Me.BtnUpdate.Name = "BtnUpdate"
-        Me.BtnUpdate.UseVisualStyleBackColor = True
+        PanelBottom.BackColor = System.Drawing.SystemColors.Control
+        PanelBottom.Controls.Add(Me.BtnCancel)
+        PanelBottom.Controls.Add(Me.BtnUpdate)
+        resources.ApplyResources(PanelBottom, "PanelBottom")
+        PanelBottom.Name = "PanelBottom"
         '
         'BtnCancel
         '
-        resources.ApplyResources(Me.BtnCancel, "BtnCancel")
         Me.BtnCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel
+        resources.ApplyResources(Me.BtnCancel, "BtnCancel")
         Me.BtnCancel.Name = "BtnCancel"
         Me.BtnCancel.UseVisualStyleBackColor = True
         '
-        'TextBoxChar
+        'BtnUpdate
         '
-        Me.TextBoxChar.CharacterCasing = System.Windows.Forms.CharacterCasing.Upper
-        resources.ApplyResources(Me.TextBoxChar, "TextBoxChar")
-        Me.TextBoxChar.Name = "TextBoxChar"
-        Me.TextBoxChar.ShortcutsEnabled = False
+        Me.BtnUpdate.DialogResult = System.Windows.Forms.DialogResult.OK
+        resources.ApplyResources(Me.BtnUpdate, "BtnUpdate")
+        Me.BtnUpdate.Name = "BtnUpdate"
+        Me.BtnUpdate.UseVisualStyleBackColor = True
+        '
+        'PanelMain
+        '
+        resources.ApplyResources(PanelMain, "PanelMain")
+        PanelMain.BackColor = System.Drawing.SystemColors.Window
+        PanelMain.Controls.Add(Me.FlowLayoutPanelMain)
+        PanelMain.Controls.Add(Me.TextBoxChar)
+        PanelMain.Name = "PanelMain"
         '
         'FlowLayoutPanelMain
         '
@@ -82,29 +88,36 @@ Partial Class UndeleteForm
         Me.LabelFileName.Name = "LabelFileName"
         Me.LabelFileName.UseMnemonic = False
         '
+        'TextBoxChar
+        '
+        Me.TextBoxChar.CharacterCasing = System.Windows.Forms.CharacterCasing.Upper
+        resources.ApplyResources(Me.TextBoxChar, "TextBoxChar")
+        Me.TextBoxChar.Name = "TextBoxChar"
+        Me.TextBoxChar.ShortcutsEnabled = False
+        '
         'UndeleteForm
         '
         resources.ApplyResources(Me, "$this")
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
+        Me.BackColor = System.Drawing.SystemColors.Control
         Me.CancelButton = Me.BtnCancel
-        Me.Controls.Add(Me.FlowLayoutPanelMain)
-        Me.Controls.Add(Me.TextBoxChar)
-        Me.Controls.Add(Me.FlowLayoutPanelButtons)
+        Me.Controls.Add(PanelMain)
+        Me.Controls.Add(PanelBottom)
         Me.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog
         Me.MaximizeBox = False
         Me.MinimizeBox = False
         Me.Name = "UndeleteForm"
         Me.ShowIcon = False
         Me.ShowInTaskbar = False
-        Me.FlowLayoutPanelButtons.ResumeLayout(False)
+        PanelBottom.ResumeLayout(False)
+        PanelMain.ResumeLayout(False)
+        PanelMain.PerformLayout()
         Me.FlowLayoutPanelMain.ResumeLayout(False)
         Me.FlowLayoutPanelMain.PerformLayout()
         Me.ResumeLayout(False)
         Me.PerformLayout()
 
     End Sub
-
-    Friend WithEvents FlowLayoutPanelButtons As FlowLayoutPanel
     Friend WithEvents BtnUpdate As Button
     Friend WithEvents BtnCancel As Button
     Friend WithEvents TextBoxChar As TextBox

@@ -3069,6 +3069,15 @@ Namespace My.Resources
         End Property
         
         '''<summary>
+        '''  Looks up a localized string similar to Double-step.
+        '''</summary>
+        Friend ReadOnly Property Label_DoubleStep() As String
+            Get
+                Return ResourceManager.GetString("Label_DoubleStep", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
         '''  Looks up a localized string similar to Drive {0} Type.
         '''</summary>
         Friend ReadOnly Property Label_DriveType() As String
@@ -3348,11 +3357,29 @@ Namespace My.Resources
         End Property
         
         '''<summary>
+        '''  Looks up a localized string similar to Image Format.
+        '''</summary>
+        Friend ReadOnly Property Label_ImageFormat() As String
+            Get
+                Return ResourceManager.GetString("Label_ImageFormat", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
         '''  Looks up a localized string similar to {0} images loaded.
         '''</summary>
         Friend ReadOnly Property Label_ImagesLoaded() As String
             Get
                 Return ResourceManager.GetString("Label_ImagesLoaded", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  Looks up a localized string similar to &amp;Import.
+        '''</summary>
+        Friend ReadOnly Property Label_Import() As String
+            Get
+                Return ResourceManager.GetString("Label_Import", resourceCulture)
             End Get
         End Property
         
@@ -3506,6 +3533,15 @@ Namespace My.Resources
         Friend ReadOnly Property Label_OffsetHex() As String
             Get
                 Return ResourceManager.GetString("Label_OffsetHex", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  Looks up a localized string similar to Output Type.
+        '''</summary>
+        Friend ReadOnly Property Label_OutputType() As String
+            Get
+                Return ResourceManager.GetString("Label_OutputType", resourceCulture)
             End Get
         End Property
         
