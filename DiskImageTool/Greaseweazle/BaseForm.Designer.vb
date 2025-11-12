@@ -102,7 +102,7 @@
             '
             'StatusStripBottom
             '
-            Me.StatusStripBottom.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.StatusType, Me.StatusTrack, Me.StatusSide})
+            Me.StatusStripBottom.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.StatusTrack, Me.StatusSide, Me.StatusType})
             resources.ApplyResources(Me.StatusStripBottom, "StatusStripBottom")
             Me.StatusStripBottom.Name = "StatusStripBottom"
             Me.StatusStripBottom.SizingGrip = False
@@ -110,18 +110,22 @@
             'StatusType
             '
             resources.ApplyResources(Me.StatusType, "StatusType")
+            Me.StatusType.Margin = New System.Windows.Forms.Padding(2, 3, 2, 2)
             Me.StatusType.Name = "StatusType"
+            Me.StatusType.Spring = True
             '
             'StatusTrack
             '
+            Me.StatusTrack.Margin = New System.Windows.Forms.Padding(2, 3, 0, 2)
             Me.StatusTrack.Name = "StatusTrack"
             resources.ApplyResources(Me.StatusTrack, "StatusTrack")
             '
             'StatusSide
             '
+            Me.StatusSide.BorderSides = System.Windows.Forms.ToolStripStatusLabelBorderSides.Right
+            Me.StatusSide.Margin = New System.Windows.Forms.Padding(0, 3, 2, 2)
             Me.StatusSide.Name = "StatusSide"
             resources.ApplyResources(Me.StatusSide, "StatusSide")
-            Me.StatusSide.Spring = True
             '
             'BaseForm
             '

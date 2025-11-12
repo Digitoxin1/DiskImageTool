@@ -1,16 +1,30 @@
-﻿Namespace Greaseweazle
+﻿Imports System.Net.NetworkInformation
+
+Namespace Greaseweazle
     Public Class WriteDiskForm
         Inherits BaseForm
         Private WithEvents ButtonProcess As Button
+        Private WithEvents CheckboxNoVerify As CheckBox
         Private WithEvents ComboImageDrives As ComboBox
-        Private WithEvents NumericRetries As NumericUpDown
-        Private WithEvents CheckBoxPreErase As CheckBox
         Private WithEvents Process As ConsoleProcessRunner
         Private ReadOnly _DiskImage As DiskImageContainer
-        Private _ProcessRunning As Boolean = False
-        Private ReadOnly _TrackCount As UShort
+        Private ReadOnly _IsBitstreamImage As Boolean
         Private ReadOnly _SideCount As Byte
-        Private ReadOnly _TrackStatus As Dictionary(Of String, ConsoleOutputParser.WriteTrackInfo)
+        Private ReadOnly _TrackCount As UShort
+        Private ReadOnly _TrackStatus As Dictionary(Of String, TrackStatusInfo)
+        Private _CancelButtonClicked As Boolean = False
+        Private _ContinueAfterWrite As Boolean = False
+        Private _CurrentFilePath As String = ""
+        Private _CurrentStatusInfo As TrackStatusInfo = Nothing
+        Private _ProcessRunning As Boolean = False
+        Private _TrackRange As ConsoleOutputParser.TrackRange = Nothing
+        Private CheckBoxContinue As CheckBox
+        Private CheckBoxEraseEmpty As CheckBox
+        Private CheckBoxPreErase As CheckBox
+        Private LabelWarning As Label
+        Private NumericRetries As NumericUpDown
+        Private _AllowRetries As Boolean = True
+        Private _AllowNoVerify As Boolean = True
 
         Public Sub New(DiskImage As DiskImageContainer)
             MyBase.New()
@@ -18,32 +32,68 @@
             InitializeControls()
 
             _DiskImage = DiskImage
-            _TrackStatus = New Dictionary(Of String, ConsoleOutputParser.WriteTrackInfo)
+
+            _TrackStatus = New Dictionary(Of String, TrackStatusInfo)
 
             Process = New ConsoleProcessRunner With {
                 .EventContext = Threading.SynchronizationContext.Current
             }
 
-            Me.Text = "Write Disk - " & DiskImage.ImageData.FileName
+            Me.Text = My.Resources.Label_WriteDisk & " - " & DiskImage.ImageData.FileName
 
             If DiskImage.Disk.Image.IsBitstreamImage Then
                 _TrackCount = DiskImage.Disk.Image.TrackCount
                 _SideCount = DiskImage.Disk.Image.SideCount
+                _IsBitstreamImage = True
             Else
                 _TrackCount = DiskImage.Disk.BPB.SectorToTrack(DiskImage.Disk.BPB.SectorCount)
                 _SideCount = DiskImage.Disk.BPB.NumberOfHeads
+                _IsBitstreamImage = False
             End If
 
             NumericRetries.Value = CommandLineBuilder.DEFAULT_RETRIES
-
-            TrackGridInit(_TrackCount, _SideCount)
             PopulateDrives(DiskImage.Disk.DiskFormat)
-            ResetStatusBar()
+            ResetState()
+            RefreshButtonState()
         End Sub
 
+        Public Function GetDriveName(Drive As String) As String
+            Select Case Drive
+                Case "A", "B"
+                    Return Drive & ":"
+                Case Else
+                    Return "DS" & Drive & ":"
+            End Select
+        End Function
+
+        Private Function CheckCompatibility() As Boolean
+            Dim Opt As DriveOption = ComboImageDrives.SelectedValue
+
+            If Opt.Type = GreaseweazleFloppyType.None Then
+                Return True
+            End If
+
+            Dim DiskFormat = _DiskImage.Disk.DiskFormat
+            Dim FloppyType = GreaseweazleFindCompatibleFloppyType(DiskFormat, Opt.Type)
+
+            Return FloppyType = Opt.Type
+        End Function
+
+        Private Function ConfirmCancel() As Boolean
+            Return MsgBox(My.Resources.Dialog_ConfirmWriteCancel, MsgBoxStyle.YesNo + MsgBoxStyle.DefaultButton2) = MsgBoxResult.Yes
+        End Function
+
+        Private Function ConfirmIncompatibleImage() As Boolean
+            Dim Msg = String.Format(My.Resources.Dialog_ImageFormatWarning, vbNewLine)
+            Return MsgBox(Msg, MsgBoxStyle.YesNo + MsgBoxStyle.DefaultButton2) = MsgBoxResult.Yes
+        End Function
+        Private Function ConfirmWrite(DriveName As String) As Boolean
+            Dim Msg = String.Format(My.Resources.Dialog_ConfirmWrite, vbNewLine, DriveName)
+            Return MsgBox(Msg, MsgBoxStyle.YesNo + MsgBoxStyle.DefaultButton2) = MsgBoxResult.Yes
+        End Function
         Private Sub InitializeControls()
             Dim DriveLabel = New Label With {
-                .Text = "Drive",
+                .Text = My.Resources.Label_Drive,
                 .Anchor = AnchorStyles.Left,
                 .AutoSize = True
             }
@@ -54,10 +104,9 @@
             }
 
             Dim RetriesLabel = New Label With {
-                .Text = "Retries",
+                .Text = My.Resources.Label_Retries,
                 .Anchor = AnchorStyles.Left,
-                .AutoSize = True,
-                .Margin = New Padding(12, 3, 3, 3)
+                .AutoSize = True
             }
 
             NumericRetries = New NumericUpDown With {
@@ -68,25 +117,55 @@
             }
 
             CheckBoxPreErase = New CheckBox With {
-                .Text = "Pre-Erase",
+                .Text = My.Resources.Label_PreErase,
                 .Anchor = AnchorStyles.Left,
                 .AutoSize = True,
-                .Margin = New Padding(12, 3, 3, 3)
+                .Margin = New Padding(3, 3, 3, 3)
+            }
+
+            CheckBoxEraseEmpty = New CheckBox With {
+                .Text = My.Resources.Label_EraseEmpty,
+                .Anchor = AnchorStyles.Left,
+                .AutoSize = True,
+                .Margin = New Padding(3, 3, 3, 3)
+            }
+
+            CheckboxNoVerify = New CheckBox With {
+                .Text = My.Resources.Label_NoVerify,
+                .Anchor = AnchorStyles.Left,
+                .AutoSize = True,
+                .Margin = New Padding(3, 3, 3, 3)
+            }
+
+            CheckBoxContinue = New CheckBox With {
+                .Text = My.Resources.Label_ContinueAfterFailure,
+                .Anchor = AnchorStyles.Left,
+                .AutoSize = True,
+                .Margin = New Padding(3, 3, 3, 3)
             }
 
             ButtonProcess = New Button With {
                 .Width = 75,
                 .Margin = New Padding(12, 24, 3, 3),
-                .Text = "Write"
+                .Text = My.Resources.Label_Write
+            }
+            LabelWarning = New Label With {
+                .Text = My.Resources.Message_ImageFormatWarning,
+                .ForeColor = Color.Red,
+                .AutoSize = True,
+                .Anchor = AnchorStyles.Right,
+                .Visible = False
             }
 
+
             ButtonOk.Visible = False
+            ButtonCancel.Text = My.Resources.Label_Close
 
             With TableLayoutPanelMain
                 .SuspendLayout()
 
-                .RowCount = 2
-                .ColumnCount = 7
+                .RowCount = 3
+                .ColumnCount = 8
 
                 While .RowStyles.Count < .RowCount
                     .RowStyles.Add(New RowStyle())
@@ -102,21 +181,31 @@
                     .ColumnStyles(j).SizeType = SizeType.AutoSize
                 Next
 
-                TableLayoutPanelMain.Controls.Add(TableSide0Outer, 0, 1)
+                TableLayoutPanelMain.Controls.Add(TableSide0Outer, 0, 2)
                 TableLayoutPanelMain.SetColumnSpan(TableSide0Outer, 2)
 
-                TableLayoutPanelMain.Controls.Add(TableSide1Outer, 2, 1)
+                TableLayoutPanelMain.Controls.Add(TableSide1Outer, 2, 2)
                 TableLayoutPanelMain.SetColumnSpan(TableSide1Outer, 4)
 
                 TableLayoutPanelMain.Controls.Add(DriveLabel, 0, 0)
                 TableLayoutPanelMain.Controls.Add(ComboImageDrives, 1, 0)
 
-                TableLayoutPanelMain.Controls.Add(RetriesLabel, 2, 0)
-                TableLayoutPanelMain.Controls.Add(NumericRetries, 3, 0)
-
                 TableLayoutPanelMain.Controls.Add(CheckBoxPreErase, 4, 0)
 
-                TableLayoutPanelMain.Controls.Add(ButtonProcess, 6, 1)
+                TableLayoutPanelMain.Controls.Add(CheckBoxEraseEmpty, 5, 0)
+
+                TableLayoutPanelMain.Controls.Add(LabelWarning, 0, 1)
+                TableLayoutPanelMain.SetColumnSpan(LabelWarning, 2)
+
+                TableLayoutPanelMain.Controls.Add(CheckboxNoVerify, 4, 1)
+
+                TableLayoutPanelMain.Controls.Add(CheckBoxContinue, 5, 1)
+
+                TableLayoutPanelMain.Controls.Add(RetriesLabel, 6, 0)
+                TableLayoutPanelMain.Controls.Add(NumericRetries, 7, 0)
+
+                TableLayoutPanelMain.Controls.Add(ButtonProcess, 6, 2)
+                TableLayoutPanelMain.SetColumnSpan(ButtonProcess, 2)
 
                 .ResumeLayout()
                 .Left = (.Parent.ClientSize.Width - .Width) \ 2
@@ -124,23 +213,33 @@
 
         End Sub
 
-        Private Sub RefreshButtonState()
-            Dim Drive As String = ComboImageDrives.SelectedValue
-
-            ComboImageDrives.Enabled = Not _ProcessRunning
-
-            ButtonProcess.Enabled = Drive <> ""
-            If _ProcessRunning Then
-                ButtonProcess.Text = My.Resources.Label_Abort
-            Else
-                ButtonProcess.Text = "Write"
+        Private Function KeepProcessing() As Boolean
+            If _CurrentStatusInfo Is Nothing Then
+                Return False
             End If
-        End Sub
 
-        Private Sub ToggleProcessRunning(Value As Boolean)
-            _ProcessRunning = Value
-            RefreshButtonState()
-        End Sub
+            If _TrackRange Is Nothing Then
+                Return False
+            End If
+
+            If Not _ContinueAfterWrite AndAlso Not (_AllowRetries And CheckBoxContinue.Checked And _CurrentStatusInfo.Failed) Then
+                Return False
+            End If
+
+
+            If Not (_CurrentStatusInfo.Track < _TrackRange.TrackEnd Or _CurrentStatusInfo.Side < _TrackRange.HeadEnd) Then
+                Return False
+            End If
+
+            If _CurrentStatusInfo.Side < _TrackRange.HeadEnd Then
+                _ContinueAfterWrite = True
+                WriteDisk(_CurrentFilePath, _CurrentStatusInfo.Track, _CurrentStatusInfo.Track, _CurrentStatusInfo.Side + 1)
+            Else
+                WriteDisk(_CurrentFilePath, _CurrentStatusInfo.Track + 1, _TrackRange.TrackEnd)
+            End If
+
+            Return True
+        End Function
 
         Private Sub PopulateDrives(DiskFormat As DiskImage.FloppyDiskFormat)
             Dim IsShugart As Boolean = String.Equals(My.Settings.GW_Interface, "Shugart", StringComparison.OrdinalIgnoreCase)
@@ -156,20 +255,32 @@
 
             Dim SelectedFormat = GreaseweazleFindCompatibleFloppyType(DiskFormat, AvailableTypes)
 
-            Dim DriveList As New List(Of KeyValuePair(Of String, String)) From {
-                New KeyValuePair(Of String, String)("Please Select", "")
-            }
+            Dim DriveList As New List(Of DriveOption)
 
-            Dim SelectedValue As String = Nothing
+            Dim placeholder As New DriveOption With {
+                .Id = "",
+                .Type = GreaseweazleFloppyType.None,
+                .Label = My.Resources.Label_PleaseSelect
+            }
+            DriveList.Add(placeholder)
+
+            Dim SelectedOption As DriveOption = Nothing
 
             Dim AddItem As Action(Of String, String, GreaseweazleFloppyType) =
-                Sub(labelPrefix As String, value As String, t As GreaseweazleFloppyType)
-                    If t <> GreaseweazleFloppyType.None Then
-                        DriveList.Add(New KeyValuePair(Of String, String)(
-                            labelPrefix & ":   " & GreaseweazleFloppyTypeDescription(t), value))
-                        If SelectedValue Is Nothing AndAlso t = SelectedFormat Then
-                            SelectedValue = value
-                        End If
+                Sub(labelPrefix As String, id As String, t As GreaseweazleFloppyType)
+                    If t = GreaseweazleFloppyType.None Then
+                        Exit Sub
+                    End If
+
+                    Dim opt = New DriveOption With {
+                        .Id = id,
+                        .Type = t,
+                        .Label = $"{labelPrefix}:   {GreaseweazleFloppyTypeDescription(t)}"
+                    }
+                    DriveList.Add(opt)
+
+                    If SelectedOption Is Nothing AndAlso t = SelectedFormat Then
+                        SelectedOption = opt
                     End If
                 End Sub
 
@@ -182,118 +293,43 @@
                 AddItem("B", "B", Drive1Type)
             End If
 
-            InitializeCombo(ComboImageDrives, DriveList, SelectedValue)
+            ComboImageDrives.DropDownStyle = ComboBoxStyle.DropDownList
+            ComboImageDrives.DataSource = DriveList
+            ComboImageDrives.DisplayMember = NameOf(DriveOption.Label)
+            ComboImageDrives.ValueMember = ""
+            ComboImageDrives.SelectedItem = If(SelectedOption, placeholder)
         End Sub
 
-        Private Function GetTrackInfo(Track As UShort, Side As Byte, Retry As Integer, Failed As Boolean) As ConsoleOutputParser.WriteTrackInfo
-            Dim Key = Track & "." & Side
+        Private Sub ProcessDisk()
+            Dim Response = SaveTempImage()
+            If Response.Result Then
+                _CurrentFilePath = Response.FilePath
 
-            Dim TrackInfo As ConsoleOutputParser.WriteTrackInfo
+                ResetState()
 
-            If _TrackStatus.ContainsKey(Key) Then
-                TrackInfo = _TrackStatus.Item(Key)
+                WriteDisk(_CurrentFilePath)
+            End If
+        End Sub
+        Private Sub ProcessDiskCleanup(exitCode As Integer)
+            If exitCode = -1 Then
+                StatusType.Text = GetTrackStatusText(TrackStatus.Aborted)
             Else
-                TrackInfo = New ConsoleOutputParser.WriteTrackInfo With {
-                    .SourceTrack = Track,
-                    .SourceSide = Side
-                }
-                _TrackStatus.Add(Key, TrackInfo)
-            End If
-
-            TrackInfo.Retry = Math.Max(Retry, TrackInfo.Retry)
-            If Failed Then
-                TrackInfo.Failed = Failed
-            End If
-
-            Return TrackInfo
-        End Function
-
-        Private Sub ProcessTrackStatus(TrackInfo As ConsoleOutputParser.WriteTrackInfo)
-            Dim Table As TableLayoutPanel
-
-            If TrackInfo.SourceSide = 0 Then
-                Table = TableSide0
-            ElseIf TrackInfo.SourceSide = 1 Then
-                Table = TableSide1
-            Else
-                Table = Nothing
-            End If
-
-            If Table IsNot Nothing Then
-
-                Dim BackColor As Color
-                Dim Text As String = ""
-
-                If TrackInfo.Retry > 0 Then
-                    Text = TrackInfo.Retry
+                If _CurrentStatusInfo IsNot Nothing Then
+                    ProcessTrackStatus(_CurrentStatusInfo, "Complete")
                 End If
 
-                If TrackInfo.Failed Then
-                    BackColor = Color.Red
-                ElseIf TrackInfo.Retry > 0 Then
-                    BackColor = Color.Yellow
+                If KeepProcessing() Then
+                    Exit Sub
+                End If
+
+                If _CurrentStatusInfo IsNot Nothing AndAlso _CurrentStatusInfo.Failed Then
+                    StatusType.Text = GetTrackStatusText(TrackStatus.Failed)
                 Else
-                    BackColor = Color.LightGreen
+                    StatusType.Text = GetTrackStatusText(TrackStatus.Success)
                 End If
-
-                FloppyGridSetLabel(Table, TrackInfo.SourceTrack, Text, BackColor)
-
-                StatusTrack.Text = My.Resources.Label_Track & " " & TrackInfo.SourceTrack
-                StatusSide.Text = My.Resources.Label_Side & " " & TrackInfo.SourceSide
-            End If
-        End Sub
-
-        Private Sub ButtonProcess_Click(sender As Object, e As EventArgs) Handles ButtonProcess.Click
-            If Process.IsRunning Then
-                Process.Cancel()
-                Exit Sub
             End If
 
-            Dim Drive As String = ComboImageDrives.SelectedValue
-            Dim FileExt As String
-            If _DiskImage.Disk.Image.IsBitstreamImage Then
-                FileExt = ".hfe"
-            Else
-                FileExt = ".ima"
-            End If
-
-            Dim TempPath = InitTempImagePath()
-            Dim FileName = "New Image" & FileExt
-
-            If TempPath = "" Then
-                MsgBox(My.Resources.Dialog_TempPathError, MsgBoxStyle.Exclamation)
-                Exit Sub
-            End If
-
-            Dim FilePath = GenerateUniqueFileName(TempPath, FileName)
-
-            Dim Response = ImageIO.SaveDiskImageToFile(_DiskImage.Disk, FilePath, False)
-            If Response = SaveImageResponse.Success Then
-                Dim Builder = New CommandLineBuilder(CommandLineBuilder.CommandAction.write) With {
-                    .InFile = FilePath,
-                    .Drive = Drive,
-                    .Retries = NumericRetries.Value,
-                    .PreErase = CheckBoxPreErase.Checked
-                }
-                If FileExt = ".ima" Then
-                    Dim ImageFormat = GreaseweazleImageFormatFromFloppyDiskFormat(_DiskImage.Disk.DiskFormat)
-                    Builder.Format = GreaseweazleImageFormatCommandLine(ImageFormat)
-                End If
-                TextBoxConsole.Clear()
-                Dim Arguments = Builder.Arguments
-                TextBoxConsole.AppendText(Arguments)
-                ResetStatusBar()
-                _TrackStatus.Clear()
-                TrackGridReset(_TrackCount, _SideCount)
-                ToggleProcessRunning(True)
-                Process.StartAsync(My.Settings.GW_Path, Arguments)
-            End If
-        End Sub
-
-        Private Sub ResetStatusBar()
-            StatusType.Text = ""
-            StatusTrack.Text = ""
-            StatusSide.Text = ""
+            ToggleProcessRunning(False)
         End Sub
 
         Private Sub ProcessOutputLine(line As String)
@@ -302,34 +338,273 @@
             End If
             TextBoxConsole.AppendText(line)
 
+            If _TrackRange Is Nothing Then
+                _TrackRange = Parser.ParseTrackRange(line)
+            End If
+
             Dim TrackInfo = Parser.ParseWriteTrackInfo(line)
             If TrackInfo IsNot Nothing Then
-                TrackInfo = GetTrackInfo(TrackInfo.SourceTrack, TrackInfo.SourceSide, TrackInfo.Retry, TrackInfo.Failed)
-                ProcessTrackStatus(TrackInfo)
+                Dim Statusinfo = UpdateStatusInfo(TrackInfo)
+                ProcessTrack(Statusinfo, TrackInfo.Action)
                 Return
             End If
         End Sub
 
-        Private Sub ButtonCancel_Click(sender As Object, e As EventArgs) Handles ButtonCancel.Click
-            If Process.IsRunning Then
-                Try
-                    Process.Cancel()
-                Catch ex As Exception
-                End Try
-            Else
-                '
+        Private Sub ProcessTrack(Statusinfo As TrackStatusInfo, Action As String)
+            If _CurrentStatusInfo IsNot Nothing Then
+                ProcessTrackStatus(_CurrentStatusInfo, "Complete")
             End If
+
+            _CurrentStatusInfo = Statusinfo
+
+            Dim Status = ProcessTrackStatus(Statusinfo, Action)
+
+            StatusType.Text = GetTrackStatusText(Status, _CurrentStatusInfo.Retries)
+            StatusTrack.Text = My.Resources.Label_Track & " " & Statusinfo.Track
+            StatusSide.Text = My.Resources.Label_Side & " " & Statusinfo.Side
+            StatusSide.Visible = True
         End Sub
 
-        Private Sub WriteDiskForm_FormClosing(sender As Object, e As FormClosingEventArgs) Handles Me.FormClosing
-            If Process.IsRunning Then
-                Try
-                    Process.Cancel()
-                Catch ex As Exception
-                End Try
-            ElseIf e.CloseReason = CloseReason.UserClosing Then
-                ' 
+        Private Function ProcessTrackStatus(Statusinfo As TrackStatusInfo, Action As String) As TrackStatus
+            Dim Status As TrackStatus
+            Dim Label As String
+
+            If Action = "Erasing" Then
+                Status = TrackStatus.Erasing
+                Label = "E"
+            ElseIf Statusinfo.Failed Then
+                Status = TrackStatus.Failed
+                Label = Statusinfo.Retries
+            ElseIf Statusinfo.Retries > 0 Then
+                Status = TrackStatus.Retry
+                Label = Statusinfo.Retries
+            ElseIf Action = "Complete" Then
+                If Statusinfo.Retries > 0 Then
+                    Status = TrackStatus.Retry
+                    Label = Statusinfo.Retries
+                Else
+                    Status = TrackStatus.Success
+                    Label = ""
+                End If
+            Else
+                Status = TrackStatus.Writing
+                Label = "W"
             End If
+
+            MarkTrack(Statusinfo.Track, Statusinfo.Side, Status, Label)
+
+            Return Status
+        End Function
+
+        Private Sub RefreshButtonState()
+            _AllowNoVerify = Not _IsBitstreamImage
+            ComboImageDrives.Enabled = Not _ProcessRunning
+            CheckBoxPreErase.Enabled = Not _ProcessRunning
+            CheckBoxEraseEmpty.Enabled = Not _ProcessRunning
+            CheckboxNoVerify.Enabled = Not _ProcessRunning AndAlso _AllowNoVerify
+
+
+            If _ProcessRunning Then
+                ButtonProcess.Text = My.Resources.Label_Abort
+            Else
+                ButtonProcess.Text = My.Resources.Label_Write
+            End If
+
+            RefreshProcessButtonState()
+            RefreshVerifyButtonState()
+        End Sub
+
+        Private Sub RefreshProcessButtonState()
+            Dim Opt As DriveOption = ComboImageDrives.SelectedValue
+            ButtonProcess.Enabled = Opt.Id <> ""
+        End Sub
+
+        Private Sub RefreshVerifyButtonState()
+            _AllowRetries = Not CheckboxNoVerify.Checked AndAlso Not _IsBitstreamImage
+            CheckBoxContinue.Enabled = Not _ProcessRunning AndAlso _AllowRetries
+            NumericRetries.Enabled = Not _ProcessRunning AndAlso _AllowRetries
+        End Sub
+
+        Private Sub ResetState()
+            TrackGridInit(_TrackCount, _SideCount)
+            StatusType.Text = ""
+            StatusTrack.Text = ""
+            StatusSide.Text = ""
+            StatusSide.Visible = False
+            _TrackStatus.Clear()
+            _CurrentStatusInfo = Nothing
+            _TrackRange = Nothing
+
+            TextBoxConsole.Clear()
+        End Sub
+
+        Private Function SaveTempImage() As (Result As Boolean, FilePath As String)
+            Dim FileExt As String
+            If _IsBitstreamImage Then
+                FileExt = ".hfe"
+            Else
+                FileExt = ".ima"
+            End If
+
+            Dim TempPath = InitTempImagePath()
+            Dim FileName = Guid.NewGuid.ToString & FileExt
+
+            If TempPath = "" Then
+                MsgBox(My.Resources.Dialog_TempPathError, MsgBoxStyle.Exclamation)
+                Return (False, "")
+            End If
+
+            Dim FilePath = GenerateUniqueFileName(TempPath, FileName)
+
+            Dim Response = ImageIO.SaveDiskImageToFile(_DiskImage.Disk, FilePath, False)
+            Dim Result = (Response = SaveImageResponse.Success)
+
+            Return (Result, FilePath)
+        End Function
+
+        Private Sub ToggleProcessRunning(Value As Boolean)
+            _ProcessRunning = Value
+
+            If Not Value AndAlso _CurrentFilePath <> "" Then
+                DeleteFileIfExists(_CurrentFilePath)
+            End If
+
+            RefreshButtonState()
+        End Sub
+
+        Private Function UpdateStatusInfo(TrackInfo As ConsoleOutputParser.WriteTrackInfo) As TrackStatusInfo
+            Dim Key = TrackInfo.SourceTrack & "." & TrackInfo.SourceSide
+            Dim StatusInfo As TrackStatusInfo
+
+            If _TrackStatus.ContainsKey(Key) Then
+                StatusInfo = _TrackStatus.Item(Key)
+            Else
+                StatusInfo = New TrackStatusInfo With {
+                    .Track = TrackInfo.SourceTrack,
+                    .Side = TrackInfo.SourceSide
+                }
+                _TrackStatus.Add(Key, StatusInfo)
+            End If
+
+            StatusInfo.Retries = Math.Max(StatusInfo.Retries, TrackInfo.Retry)
+            If TrackInfo.Failed Then
+                StatusInfo.Failed = TrackInfo.Failed
+            End If
+
+            Return StatusInfo
+        End Function
+
+        Private Sub WriteDisk(FilePath As String, Optional StartTrack As Integer = -1, Optional EndTrack As Integer = -1, Optional StartHead As Integer = -1, Optional EndHead As Integer = -1)
+            Dim Opt As DriveOption = ComboImageDrives.SelectedValue
+
+            If Opt.Id = "" Then
+                Exit Sub
+            End If
+
+            Dim Builder = New CommandLineBuilder(CommandLineBuilder.CommandAction.write) With {
+                   .InFile = FilePath,
+                   .Drive = Opt.Id,
+                   .PreErase = CheckBoxPreErase.Checked,
+                   .EraseEmpty = CheckBoxEraseEmpty.Checked
+               }
+
+            If _AllowNoVerify Then
+                Builder.NoVerify = CheckboxNoVerify.Checked
+            End If
+
+            If _AllowRetries Then
+                Builder.Retries = NumericRetries.Value
+            End If
+
+            Dim FileExt = IO.Path.GetExtension(FilePath).ToLower
+
+            Dim MaxTracks As Integer
+            If FileExt = ".ima" Then
+                Dim ImageFormat = GreaseweazleImageFormatFromFloppyDiskFormat(_DiskImage.Disk.DiskFormat)
+                Builder.Format = GreaseweazleImageFormatCommandLine(ImageFormat)
+                MaxTracks = GetMaxTracks(ImageFormat)
+            Else
+                MaxTracks = _DiskImage.Disk.Image.TrackCount
+            End If
+
+            If StartTrack = -1 And StartHead = -1 Then
+                If Opt.Type = GreaseweazleFloppyType.F525_DD_360K And MaxTracks > 42 Then
+                    StartTrack = 0
+                    EndTrack = 39
+                End If
+            End If
+
+            If StartTrack > -1 Then
+                If EndTrack = -1 Then
+                    EndTrack = StartTrack
+                End If
+                Builder.AddCylinder(StartTrack, EndTrack)
+            End If
+
+            If StartHead > -1 Then
+                If EndHead = -1 Then
+                    EndHead = StartHead
+                End If
+                If StartHead = 0 And EndHead = 0 Then
+                    Builder.Heads = CommandLineBuilder.TrackHeads.head0
+                ElseIf StartHead = 1 And EndHead = 1 Then
+                    Builder.Heads = CommandLineBuilder.TrackHeads.head1
+                Else
+                    Builder.Heads = CommandLineBuilder.TrackHeads.both
+                End If
+            End If
+
+            Dim Arguments = Builder.Arguments
+
+            'If TextBoxConsole.Text.Length > 0 Then
+            '    TextBoxConsole.AppendText(Environment.NewLine)
+            'End If
+            'TextBoxConsole.AppendText(Arguments)
+
+            ToggleProcessRunning(True)
+            Process.StartAsync(My.Settings.GW_Path, Arguments)
+        End Sub
+
+#Region "Events"
+        Private Sub ButtonCancel_Click(sender As Object, e As EventArgs) Handles ButtonCancel.Click
+            _CancelButtonClicked = True
+        End Sub
+
+        Private Sub ButtonProcess_Click(sender As Object, e As EventArgs) Handles ButtonProcess.Click
+            If Process.IsRunning Then
+                If Not ConfirmCancel() Then
+                    Exit Sub
+                End If
+                Process.Cancel()
+                Exit Sub
+            End If
+
+            Dim Opt As DriveOption = ComboImageDrives.SelectedValue
+
+            If Opt.Id = "" Then
+                Exit Sub
+            End If
+
+            If Not CheckCompatibility() Then
+                If Not ConfirmIncompatibleImage() Then
+                    Exit Sub
+                End If
+            End If
+
+            If Not ConfirmWrite(GetDriveName(Opt.Id)) Then
+                Exit Sub
+            End If
+
+            ProcessDisk()
+        End Sub
+
+        Private Sub CheckboxNoVerify_CheckStateChanged(sender As Object, e As EventArgs) Handles CheckboxNoVerify.CheckStateChanged
+            RefreshVerifyButtonState()
+        End Sub
+
+        Private Sub ComboImageDrives_SelectedIndexChanged(sender As Object, e As EventArgs) Handles ComboImageDrives.SelectedIndexChanged
+            RefreshProcessButtonState()
+            LabelWarning.Visible = Not CheckCompatibility()
         End Sub
 
         Private Sub Process_ErrorLineReceived(line As String) Handles Process.ErrorLineReceived
@@ -337,21 +612,45 @@
         End Sub
 
         Private Sub Process_ProcessExited(exitCode As Integer) Handles Process.ProcessExited
-            If exitCode = -1 Then
-                StatusType.Text = My.Resources.Label_Aborted
-            Else
-                StatusType.Text = My.Resources.Label_Complete
-            End If
-            ToggleProcessRunning(False)
+            ProcessDiskCleanup(exitCode)
         End Sub
 
         Private Sub Process_ProcessFailed(message As String, ex As Exception) Handles Process.ProcessFailed
-            StatusType.Text = My.Resources.Label_Failed
+            StatusType.Text = GetTrackStatusText(TrackStatus.Error)
             ToggleProcessRunning(False)
         End Sub
 
-        Private Sub Process_ProcessStarted(exePath As String, arguments As String) Handles Process.ProcessStarted
-            StatusType.Text = My.Resources.Label_Writing
+        Private Sub WriteDiskForm_FormClosing(sender As Object, e As FormClosingEventArgs) Handles Me.FormClosing
+            If Process.IsRunning Then
+                If e.CloseReason = CloseReason.UserClosing OrElse _CancelButtonClicked Then
+                    _CancelButtonClicked = False
+                    If Not ConfirmCancel() Then
+                        e.Cancel = True
+                        Exit Sub
+                    End If
+                End If
+                Try
+                    Process.Cancel()
+                Catch ex As Exception
+                End Try
+            End If
         End Sub
+#End Region
+
+        Private Class DriveOption
+            Public Property Id As String
+            Public Property Label As String
+            Public Property Type As GreaseweazleFloppyType
+            Public Overrides Function ToString() As String
+                Return Label
+            End Function
+        End Class
+
+        Private Class TrackStatusInfo
+            Public Property Failed As Boolean
+            Public Property Retries As UShort = 0
+            Public Property Side As Integer
+            Public Property Track As Integer
+        End Class
     End Class
 End Namespace

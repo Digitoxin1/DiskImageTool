@@ -1586,4 +1586,49 @@ Nota: Este valor debe ser {1} para todos los disquetes</value>
   <data name="Label_Import" xml:space="preserve">
     <value>&amp;Importar</value>
   </data>
+  <data name="Dialog_ImageFormatWarning" xml:space="preserve">
+    <value>Advertencia: el formato de imagen no es compatible con la unidad seleccionada actualmente.{0}{0}¿Desea continuar de todos modos?</value>
+  </data>
+  <data name="Message_ImageFormatWarning" xml:space="preserve">
+    <value>Advertencia: formato de imagen incompatible</value>
+  </data>
+  <data name="Label_WriteDisk" xml:space="preserve">
+    <value>Escribir el disquete</value>
+  </data>
+  <data name="Dialog_ConfirmWriteCancel" xml:space="preserve">
+    <value>Hay una operación de escritura en curso. ¿Desea cancelarla?</value>
+  </data>
+  <data name="Label_PleaseSelect" xml:space="preserve">
+    <value>Seleccione, por favor</value>
+  </data>
+  <data name="Label_Write" xml:space="preserve">
+    <value>Escribir</value>
+  </data>
+  <data name="Label_Drive" xml:space="preserve">
+    <value>Unidad</value>
+  </data>
+  <data name="Label_ContinueAfterFailure" xml:space="preserve">
+    <value>Continuar después de un fallo</value>
+  </data>
+  <data name="Label_NoVerify" xml:space="preserve">
+    <value>Sin verificación</value>
+  </data>
+  <data name="Label_EraseEmpty" xml:space="preserve">
+    <value>Borrar las pistas vacías</value>
+  </data>
+  <data name="Label_Retries" xml:space="preserve">
+    <value>Reintentos</value>
+  </data>
+  <data name="Label_PreErase" xml:space="preserve">
+    <value>Preborrado</value>
+  </data>
+  <data name="Label_Erasing" xml:space="preserve">
+    <value>Borrando</value>
+  </data>
+  <data name="Label_Retrying" xml:space="preserve">
+    <value>Reintentando</value>
+  </data>
+  <data name="Dialog_ConfirmWrite" xml:space="preserve">
+    <value>Esta operación sobrescribirá todos los datos del disquete en la unidad {1}.{0}{0}Todo el contenido existente se perderá permanentemente.{0}{0}¿Desea continuar?</value>
+  </data>
 </root>

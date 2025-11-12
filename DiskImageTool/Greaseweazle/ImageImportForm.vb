@@ -322,6 +322,7 @@ Namespace Greaseweazle
 
                 StatusTrack.Text = My.Resources.Label_Track & " " & Track
                 StatusSide.Text = My.Resources.Label_Side & " " & StatusInfo.Side
+                StatusSide.Visible = True
 
                 If _TotalBadSectors = 1 Then
                     _StatusBadSectors.Text = _TotalBadSectors & " " & My.Resources.Label_BadSector
@@ -370,6 +371,7 @@ Namespace Greaseweazle
             StatusType.Text = ""
             StatusTrack.Text = ""
             StatusSide.Text = ""
+            StatusSide.Visible = False
             _StatusBadSectors.Text = ""
             _StatusUnexpected.Text = ""
             _TotalBadSectors = 0
@@ -506,7 +508,6 @@ Namespace Greaseweazle
             RefreshImportButtonState()
         End Sub
 #End Region
-
         Private Class TrackStatusInfo
             Public Sub New()
                 _UnexpectedSectors = New Dictionary(Of String, ConsoleOutputParser.UnexpectedSector)

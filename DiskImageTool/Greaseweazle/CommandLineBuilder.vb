@@ -49,6 +49,9 @@
         Public Property Time As Boolean = False
         Public Property Retries As UInteger = DEFAULT_RETRIES
         Public Property PreErase As Boolean = False
+        Public Property EraseEmpty As Boolean = False
+        Public Property NoVerify As Boolean = False
+
 
         Public Sub AddCylinder(Cylinder As UShort)
             _Cylinders.Add((Cylinder, Cylinder))
@@ -95,6 +98,14 @@
 
             If CheckOptionPreErase() AndAlso _PreErase Then
                 args.Add("--pre-erase")
+            End If
+
+            If CheckOptionEraseEmpty() AndAlso _EraseEmpty Then
+                args.Add("--erase-empty")
+            End If
+
+            If CheckOptionNoVerify() AndAlso _NoVerify Then
+                args.Add("--no-verify")
             End If
 
             If CheckOptionAdjustSpeed() AndAlso Not String.IsNullOrEmpty(_AdjustSpeed) Then
@@ -187,6 +198,24 @@
             End Select
         End Function
 
+        Private Function CheckOptionEraseEmpty() As Boolean
+            Select Case _Action
+                Case CommandAction.write
+                    Return True
+                Case Else
+                    Return False
+            End Select
+        End Function
+
+        Private Function CheckOptionNoVerify() As Boolean
+            Select Case _Action
+                Case CommandAction.write
+                    Return True
+                Case Else
+                    Return False
+            End Select
+        End Function
+
         Private Function CheckOptionTracks() As Boolean
             Select Case _Action
                 Case CommandAction.read, CommandAction.write, CommandAction.convert
@@ -234,7 +263,7 @@
             Dim CylinderList = New List(Of String)
 
             For Each Value In _Cylinders
-                Dim Range = Value.Item1
+                Dim Range As String = Value.Item1
                 If Value.Item2 <> Value.Item1 Then
                     Range &= "-" & Value.Item2
                 End If

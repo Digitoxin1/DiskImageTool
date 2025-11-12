@@ -1586,4 +1586,49 @@ Hinweis: Diese ID wird normalerweise erzeugt, indem das aktuelle Datum und die a
   <data name="Label_Import" xml:space="preserve">
     <value>&amp;Importieren</value>
   </data>
+  <data name="Dialog_ImageFormatWarning" xml:space="preserve">
+    <value>Warnung: Das Abbildformat ist mit dem derzeit ausgewählten Laufwerk nicht kompatibel.{0}{0}Möchten Sie trotzdem fortfahren?</value>
+  </data>
+  <data name="Message_ImageFormatWarning" xml:space="preserve">
+    <value>Warnung: Inkompatibles Abbildformat</value>
+  </data>
+  <data name="Label_WriteDisk" xml:space="preserve">
+    <value>Diskette schreiben</value>
+  </data>
+  <data name="Dialog_ConfirmWriteCancel" xml:space="preserve">
+    <value>Ein Schreibvorgang ist derzeit im Gange. Möchten Sie ihn abbrechen?</value>
+  </data>
+  <data name="Label_PleaseSelect" xml:space="preserve">
+    <value>Bitte auswählen</value>
+  </data>
+  <data name="Label_Write" xml:space="preserve">
+    <value>Schreiben</value>
+  </data>
+  <data name="Label_Drive" xml:space="preserve">
+    <value>Laufwerk</value>
+  </data>
+  <data name="Label_ContinueAfterFailure" xml:space="preserve">
+    <value>Nach Fehler fortsetzen</value>
+  </data>
+  <data name="Label_NoVerify" xml:space="preserve">
+    <value>Keine Überprüfung</value>
+  </data>
+  <data name="Label_EraseEmpty" xml:space="preserve">
+    <value>Leere Spuren löschen</value>
+  </data>
+  <data name="Label_Retries" xml:space="preserve">
+    <value>Wiederholungen</value>
+  </data>
+  <data name="Label_PreErase" xml:space="preserve">
+    <value>Vorlöschung</value>
+  </data>
+  <data name="Label_Erasing" xml:space="preserve">
+    <value>Löschen</value>
+  </data>
+  <data name="Label_Retrying" xml:space="preserve">
+    <value>Wiederholen</value>
+  </data>
+  <data name="Dialog_ConfirmWrite" xml:space="preserve">
+    <value>Dieser Vorgang überschreibt alle Daten auf der Diskette im Laufwerk {1}.{0}{0}Alle vorhandenen Inhalte gehen dauerhaft verloren.{0}{0}Möchten Sie fortfahren?</value>
+  </data>
 </root>

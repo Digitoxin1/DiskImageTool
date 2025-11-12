@@ -1586,4 +1586,49 @@ Remarque : cette valeur doit être {1} pour toutes les disquettes</value>
   <data name="Label_Import" xml:space="preserve">
     <value>&amp;Importer</value>
   </data>
+  <data name="Dialog_ImageFormatWarning" xml:space="preserve">
+    <value>Avertissement : le format d’image est incompatible avec le lecteur actuellement sélectionné.{0}{0}Souhaitez-vous tout de même continuer ?</value>
+  </data>
+  <data name="Message_ImageFormatWarning" xml:space="preserve">
+    <value>Avertissement : format d’image incompatible</value>
+  </data>
+  <data name="Label_WriteDisk" xml:space="preserve">
+    <value>Écrire le disque</value>
+  </data>
+  <data name="Dialog_ConfirmWriteCancel" xml:space="preserve">
+    <value>Une opération d’écriture est actuellement en cours. Souhaitez-vous l’annuler ?</value>
+  </data>
+  <data name="Label_PleaseSelect" xml:space="preserve">
+    <value>Veuillez sélectionner</value>
+  </data>
+  <data name="Label_Write" xml:space="preserve">
+    <value>Écrire</value>
+  </data>
+  <data name="Label_Drive" xml:space="preserve">
+    <value>Lecteur</value>
+  </data>
+  <data name="Label_ContinueAfterFailure" xml:space="preserve">
+    <value>Continuer après une erreur</value>
+  </data>
+  <data name="Label_NoVerify" xml:space="preserve">
+    <value>Sans vérification</value>
+  </data>
+  <data name="Label_EraseEmpty" xml:space="preserve">
+    <value>Effacer les pistes vides</value>
+  </data>
+  <data name="Label_Retries" xml:space="preserve">
+    <value>Réessais</value>
+  </data>
+  <data name="Label_PreErase" xml:space="preserve">
+    <value>Pré-effacement</value>
+  </data>
+  <data name="Label_Erasing" xml:space="preserve">
+    <value>Effacement</value>
+  </data>
+  <data name="Label_Retrying" xml:space="preserve">
+    <value>Nouvelle tentative</value>
+  </data>
+  <data name="Dialog_ConfirmWrite" xml:space="preserve">
+    <value>Cette opération écrasera toutes les données présentes sur le disque du lecteur {1}.{0}{0}Tout le contenu existant sera définitivement perdu.{0}{0}Souhaitez-vous continuer ?</value>
+  </data>
 </root>

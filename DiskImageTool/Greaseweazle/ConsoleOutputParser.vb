@@ -11,20 +11,24 @@ Namespace Greaseweazle
             "^T(?<srcTrack>\d+)\.(?<srcSide>\d+)( <- Image (?<imgTrack>\d+)\.(?<imgSide>\d+))?: (?<system>\w+) (?<encoding>\w+)( \((?<sectorsFound>\d+)\/(?<sectorsTotal>\d+) sectors\))?( from (?<sourceType>.+))? \((?<fluxCount>\d+) flux in (?<fluxTimeMS>\d+(\.?\d+))?ms\)",
             RegexOptions.IgnoreCase Or RegexOptions.CultureInvariant Or RegexOptions.Compiled)
 
+        Private ReadOnly RegExTrackRange As New Regex(
+            "^(?<action>Reading|Writing)\b c=(?<trkStart>\d+)(-(?<trkEnd>\d+))?:h=(?<headStart>\d+)(-(?<headEnd>\d+))?",
+            RegexOptions.IgnoreCase Or RegexOptions.CultureInvariant Or RegexOptions.Compiled)
+
         Private ReadOnly RegExUnexpected As New Regex(
-            "^T(?<srcTrack>\d+)\.(?<srcSide>\d+): Ignoring unexpected sector C:(?<cylinder>\d+) H:(?<head>\d+) R:(?<sectorId>\d+) N:(?<sizeId>\d+)",
+                    "^T(?<srcTrack>\d+)\.(?<srcSide>\d+): Ignoring unexpected sector C:(?<cylinder>\d+) H:(?<head>\d+) R:(?<sectorId>\d+) N:(?<sizeId>\d+)",
             RegexOptions.IgnoreCase Or RegexOptions.CultureInvariant Or RegexOptions.Compiled)
 
         Private ReadOnly RegExWriting As New Regex(
             "^T(?<srcTrack>\d+)\.(?<srcSide>\d+): (?<action>Writing|Erasing) Track\b( \((?<details>.+)\))?",
             RegexOptions.IgnoreCase Or RegexOptions.CultureInvariant Or RegexOptions.Compiled)
 
-        Private ReadOnly RegExWritingRetries As New Regex(
-            "Retry #(?<retry>\d+)",
-            RegexOptions.IgnoreCase Or RegexOptions.CultureInvariant Or RegexOptions.Compiled)
-
         Private ReadOnly RegExWritingFailed As New Regex(
             "^Failed to verify Track (?<srcTrack>\d+)\.(?<srcSide>\d+)",
+            RegexOptions.IgnoreCase Or RegexOptions.CultureInvariant Or RegexOptions.Compiled)
+
+        Private ReadOnly RegExWritingRetries As New Regex(
+                    "Retry #(?<retry>\d+)",
             RegexOptions.IgnoreCase Or RegexOptions.CultureInvariant Or RegexOptions.Compiled)
 
         Public Function ParseConvertingLine(line As String) As ConvertingRange
@@ -79,6 +83,26 @@ Namespace Greaseweazle
             Return info
         End Function
 
+        Public Function ParseTrackRange(line As String) As TrackRange
+            If String.IsNullOrWhiteSpace(line) Then
+                Return Nothing
+            End If
+
+            Dim Match = RegExTrackRange.Match(line)
+            If Not Match.Success Then
+                Return Nothing
+            End If
+
+            Dim info As New TrackRange With {
+                .Action = Match.Groups("action").Value,
+                .TrackStart = GetInt(Match, "trkStart"),
+                .TrackEnd = GetIntOrDefault(Match, "trkEnd", .TrackStart),
+                .HeadStart = GetInt(Match, "headStart"),
+                .HeadEnd = GetIntOrDefault(Match, "headEnd", .HeadStart)
+            }
+
+            Return info
+        End Function
         Public Function ParseUnexpectedSector(line As String) As UnexpectedSector
             If String.IsNullOrWhiteSpace(line) Then
                 Return Nothing
@@ -113,6 +137,7 @@ Namespace Greaseweazle
             If Match.Success Then
                 MatchFound = True
 
+                info.Action = Match.Groups("action").Value
                 Dim Details = Match.Groups("details").Value
                 Dim RetryMatch = RegExWritingRetries.Match(Details)
                 If RetryMatch.Success Then
@@ -192,6 +217,13 @@ Namespace Greaseweazle
             Public Property System As String
         End Class
 
+        Public Class TrackRange
+            Public Property Action As String = ""
+            Public Property HeadEnd As Integer = 0
+            Public Property HeadStart As Integer = 0
+            Public Property TrackEnd As Integer = 0
+            Public Property TrackStart As Integer = 0
+        End Class
         Public Class UnexpectedSector
             Public Property Cylinder As Integer
             Public Property Head As Integer
@@ -208,10 +240,11 @@ Namespace Greaseweazle
         End Class
 
         Public Class WriteTrackInfo
+            Public Property Action As String = ""
+            Public Property Failed As Boolean = False
+            Public Property Retry As Integer = 0
             Public Property SourceSide As Integer = 0
             Public Property SourceTrack As Integer = 0
-            Public Property Retry As Integer = 0
-            Public Property Failed As Boolean = False
         End Class
     End Class
 End Namespace

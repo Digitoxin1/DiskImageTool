@@ -19,8 +19,8 @@
             IBM_720
             IBM_800
             IBM_1440
-            IBM_2880
             IBM_DMF
+            IBM_2880
         End Enum
 
         Public Enum GreaseweazleInterface
@@ -32,6 +32,56 @@
             IMA
             HFE
         End Enum
+
+        Public Function GetMaxTracks(Value As GreaseweazleImageFormat) As Integer
+            Select Case Value
+                Case GreaseweazleImageFormat.IBM_160, GreaseweazleImageFormat.IBM_180, GreaseweazleImageFormat.IBM_320, GreaseweazleImageFormat.IBM_360
+                    Return 40
+                Case Else
+                    Return 80
+            End Select
+        End Function
+
+        Public Function GreaseweazleFindCompatibleFloppyType(Format As DiskImage.FloppyDiskFormat, AvailableTypes As GreaseweazleFloppyType) As GreaseweazleFloppyType
+            Dim Result As GreaseweazleFloppyType = GreaseweazleFloppyType.None
+
+            Select Case Format
+                Case DiskImage.FloppyDiskFormat.Floppy160, DiskImage.FloppyDiskFormat.Floppy180, DiskImage.FloppyDiskFormat.Floppy320, DiskImage.FloppyDiskFormat.Floppy360
+                    If (AvailableTypes And GreaseweazleFloppyType.F525_DD_360K) > 0 Then
+                        Result = GreaseweazleFloppyType.F525_DD_360K
+                    ElseIf (AvailableTypes And GreaseweazleFloppyType.F525_HD_12M) > 0 Then
+                        Result = GreaseweazleFloppyType.F525_HD_12M
+                    End If
+
+                Case DiskImage.FloppyDiskFormat.Floppy720
+                    If (AvailableTypes And GreaseweazleFloppyType.F35_DD_720K) > 0 Then
+                        Result = GreaseweazleFloppyType.F35_DD_720K
+                    ElseIf (AvailableTypes And GreaseweazleFloppyType.F35_HD_144M) > 0 Then
+                        Result = GreaseweazleFloppyType.F35_HD_144M
+                    ElseIf (AvailableTypes And GreaseweazleFloppyType.F35_ED_288M) > 0 Then
+                        Result = GreaseweazleFloppyType.F35_ED_288M
+                    End If
+
+                Case DiskImage.FloppyDiskFormat.Floppy1200, DiskImage.FloppyDiskFormat.FloppyTandy2000, DiskImage.FloppyDiskFormat.FloppyXDF525
+                    If (AvailableTypes And GreaseweazleFloppyType.F525_HD_12M > 0) Then
+                        Result = GreaseweazleFloppyType.F525_HD_12M
+                    End If
+
+                Case DiskImage.FloppyDiskFormat.Floppy1440, DiskImage.FloppyDiskFormat.Floppy2HD, DiskImage.FloppyDiskFormat.FloppyDMF1024, DiskImage.FloppyDiskFormat.FloppyDMF2048, DiskImage.FloppyDiskFormat.FloppyProCopy
+                    If (AvailableTypes And GreaseweazleFloppyType.F35_HD_144M > 0) Then
+                        Result = GreaseweazleFloppyType.F35_HD_144M
+                    ElseIf (AvailableTypes And GreaseweazleFloppyType.F35_ED_288M > 0) Then
+                        Result = GreaseweazleFloppyType.F35_ED_288M
+                    End If
+
+                Case DiskImage.FloppyDiskFormat.Floppy2880
+                    If (AvailableTypes And GreaseweazleFloppyType.F35_ED_288M > 0) Then
+                        Result = GreaseweazleFloppyType.F35_ED_288M
+                    End If
+            End Select
+
+            Return Result
+        End Function
 
         Public Function GreaseweazleFloppyTypeDescription(Value As GreaseweazleFloppyType) As String
             Select Case Value
@@ -126,7 +176,7 @@
         Public Function GreaseweazleImageFormatDescription(Value As GreaseweazleImageFormat) As String
             Select Case Value
                 Case GreaseweazleImageFormat.None
-                    Return "Please Select"
+                    Return My.Resources.Label_PleaseSelect
                 Case GreaseweazleImageFormat.IBM_160
                     Return "5.25"" 160 KB (SS, DD)"
                 Case GreaseweazleImageFormat.IBM_180
@@ -151,48 +201,6 @@
                     Return ""
             End Select
         End Function
-
-        Public Function GreaseweazleFindCompatibleFloppyType(Format As DiskImage.FloppyDiskFormat, AvailableTypes As GreaseweazleFloppyType) As GreaseweazleFloppyType
-            Dim Result As GreaseweazleFloppyType = GreaseweazleFloppyType.None
-
-            Select Case Format
-                Case DiskImage.FloppyDiskFormat.Floppy160, DiskImage.FloppyDiskFormat.Floppy180, DiskImage.FloppyDiskFormat.Floppy320, DiskImage.FloppyDiskFormat.Floppy360
-                    If (AvailableTypes And GreaseweazleFloppyType.F525_DD_360K) > 0 Then
-                        Result = GreaseweazleFloppyType.F525_DD_360K
-                    ElseIf (AvailableTypes And GreaseweazleFloppyType.F525_HD_12M) > 0 Then
-                        Result = GreaseweazleFloppyType.F525_HD_12M
-                    End If
-
-                Case DiskImage.FloppyDiskFormat.Floppy720
-                    If (AvailableTypes And GreaseweazleFloppyType.F35_DD_720K) > 0 Then
-                        Result = GreaseweazleFloppyType.F35_DD_720K
-                    ElseIf (AvailableTypes And GreaseweazleFloppyType.F35_HD_144M) > 0 Then
-                        Result = GreaseweazleFloppyType.F35_HD_144M
-                    ElseIf (AvailableTypes And GreaseweazleFloppyType.F35_ED_288M) > 0 Then
-                        Result = GreaseweazleFloppyType.F35_ED_288M
-                    End If
-
-                Case DiskImage.FloppyDiskFormat.Floppy1200, DiskImage.FloppyDiskFormat.FloppyTandy2000, DiskImage.FloppyDiskFormat.FloppyXDF525
-                    If (AvailableTypes And GreaseweazleFloppyType.F525_HD_12M > 0) Then
-                        Result = GreaseweazleFloppyType.F525_HD_12M
-                    End If
-
-                Case DiskImage.FloppyDiskFormat.Floppy1440, DiskImage.FloppyDiskFormat.Floppy2HD, DiskImage.FloppyDiskFormat.FloppyDMF1024, DiskImage.FloppyDiskFormat.FloppyDMF2048, DiskImage.FloppyDiskFormat.FloppyProCopy
-                    If (AvailableTypes And GreaseweazleFloppyType.F35_HD_144M > 0) Then
-                        Result = GreaseweazleFloppyType.F35_HD_144M
-                    ElseIf (AvailableTypes And GreaseweazleFloppyType.F35_ED_288M > 0) Then
-                        Result = GreaseweazleFloppyType.F35_ED_288M
-                    End If
-
-                Case DiskImage.FloppyDiskFormat.Floppy2880
-                    If (AvailableTypes And GreaseweazleFloppyType.F35_ED_288M > 0) Then
-                        Result = GreaseweazleFloppyType.F35_ED_288M
-                    End If
-            End Select
-
-            Return Result
-        End Function
-
         Public Function GreaseweazleImageFormatFromFloppyDiskFormat(Format As DiskImage.FloppyDiskFormat) As GreaseweazleImageFormat
             Select Case Format
                 Case DiskImage.FloppyDiskFormat.Floppy160

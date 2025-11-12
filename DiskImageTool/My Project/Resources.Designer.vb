@@ -1360,6 +1360,24 @@ Namespace My.Resources
         End Property
         
         '''<summary>
+        '''  Looks up a localized string similar to This operation will overwrite all data on the disk in drive {1}.{0}{0}Any existing contents will be permanently lost.{0}{0}Do you wish to continue?.
+        '''</summary>
+        Friend ReadOnly Property Dialog_ConfirmWrite() As String
+            Get
+                Return ResourceManager.GetString("Dialog_ConfirmWrite", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  Looks up a localized string similar to A write operation is currently in progress. Do you wish to cancel?.
+        '''</summary>
+        Friend ReadOnly Property Dialog_ConfirmWriteCancel() As String
+            Get
+                Return ResourceManager.GetString("Dialog_ConfirmWriteCancel", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
         '''  Looks up a localized string similar to {0} is crosslinked with the following files:{1}.
         '''</summary>
         Friend ReadOnly Property Dialog_CrossLinked() As String
@@ -1572,6 +1590,15 @@ Namespace My.Resources
         Friend ReadOnly Property Dialog_Image_SurfaceData() As String
             Get
                 Return ResourceManager.GetString("Dialog_Image_SurfaceData", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  Looks up a localized string similar to Warning: The Image Format is incompatible with the currently selected drive.{0}{0}Do you still wish to continue?.
+        '''</summary>
+        Friend ReadOnly Property Dialog_ImageFormatWarning() As String
+            Get
+                Return ResourceManager.GetString("Dialog_ImageFormatWarning", resourceCulture)
             End Get
         End Property
         
@@ -3033,6 +3060,15 @@ Namespace My.Resources
         End Property
         
         '''<summary>
+        '''  Looks up a localized string similar to Continue after Failure.
+        '''</summary>
+        Friend ReadOnly Property Label_ContinueAfterFailure() As String
+            Get
+                Return ResourceManager.GetString("Label_ContinueAfterFailure", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
         '''  Looks up a localized string similar to Cross-Linked.
         '''</summary>
         Friend ReadOnly Property Label_CrossLinked() As String
@@ -3078,6 +3114,15 @@ Namespace My.Resources
         End Property
         
         '''<summary>
+        '''  Looks up a localized string similar to Drive.
+        '''</summary>
+        Friend ReadOnly Property Label_Drive() As String
+            Get
+                Return ResourceManager.GetString("Label_Drive", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
         '''  Looks up a localized string similar to Drive {0} Type.
         '''</summary>
         Friend ReadOnly Property Label_DriveType() As String
@@ -3110,6 +3155,24 @@ Namespace My.Resources
         Friend ReadOnly Property Label_Entry() As String
             Get
                 Return ResourceManager.GetString("Label_Entry", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  Looks up a localized string similar to Erase Empty.
+        '''</summary>
+        Friend ReadOnly Property Label_EraseEmpty() As String
+            Get
+                Return ResourceManager.GetString("Label_EraseEmpty", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  Looks up a localized string similar to Erasing.
+        '''</summary>
+        Friend ReadOnly Property Label_Erasing() As String
+            Get
+                Return ResourceManager.GetString("Label_Erasing", resourceCulture)
             End Get
         End Property
         
@@ -3528,6 +3591,15 @@ Namespace My.Resources
         End Property
         
         '''<summary>
+        '''  Looks up a localized string similar to No Verify.
+        '''</summary>
+        Friend ReadOnly Property Label_NoVerify() As String
+            Get
+                Return ResourceManager.GetString("Label_NoVerify", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
         '''  Looks up a localized string similar to Offset(h).
         '''</summary>
         Friend ReadOnly Property Label_OffsetHex() As String
@@ -3551,6 +3623,24 @@ Namespace My.Resources
         Friend ReadOnly Property Label_PadFile() As String
             Get
                 Return ResourceManager.GetString("Label_PadFile", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  Looks up a localized string similar to Please Select.
+        '''</summary>
+        Friend ReadOnly Property Label_PleaseSelect() As String
+            Get
+                Return ResourceManager.GetString("Label_PleaseSelect", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  Looks up a localized string similar to Pre-Erase.
+        '''</summary>
+        Friend ReadOnly Property Label_PreErase() As String
+            Get
+                Return ResourceManager.GetString("Label_PreErase", resourceCulture)
             End Get
         End Property
         
@@ -3587,6 +3677,24 @@ Namespace My.Resources
         Friend ReadOnly Property Label_ReadOnly() As String
             Get
                 Return ResourceManager.GetString("Label_ReadOnly", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  Looks up a localized string similar to Retries.
+        '''</summary>
+        Friend ReadOnly Property Label_Retries() As String
+            Get
+                Return ResourceManager.GetString("Label_Retries", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  Looks up a localized string similar to Retrying.
+        '''</summary>
+        Friend ReadOnly Property Label_Retrying() As String
+            Get
+                Return ResourceManager.GetString("Label_Retrying", resourceCulture)
             End Get
         End Property
         
@@ -3812,6 +3920,24 @@ Namespace My.Resources
         Friend ReadOnly Property Label_VolumeLabel() As String
             Get
                 Return ResourceManager.GetString("Label_VolumeLabel", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  Looks up a localized string similar to Write.
+        '''</summary>
+        Friend ReadOnly Property Label_Write() As String
+            Get
+                Return ResourceManager.GetString("Label_Write", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  Looks up a localized string similar to Write Disk.
+        '''</summary>
+        Friend ReadOnly Property Label_WriteDisk() As String
+            Get
+                Return ResourceManager.GetString("Label_WriteDisk", resourceCulture)
             End Get
         End Property
         
@@ -4307,6 +4433,15 @@ Namespace My.Resources
         Friend ReadOnly Property Menu_ViewRootDirectory() As String
             Get
                 Return ResourceManager.GetString("Menu_ViewRootDirectory", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  Looks up a localized string similar to Warning: Incompatible Image Format.
+        '''</summary>
+        Friend ReadOnly Property Message_ImageFormatWarning() As String
+            Get
+                Return ResourceManager.GetString("Message_ImageFormatWarning", resourceCulture)
             End Get
         End Property
         
