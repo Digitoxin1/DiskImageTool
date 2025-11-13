@@ -46,7 +46,7 @@ Public Class FloppyAccessForm
         ReDim _DiskBuffer(_BPB.ImageSize - 1)
         Dim StatusTypeString = IIf(AccessType = FloppyAccessType.Read, My.Resources.Label_Reading, My.Resources.Label_Writing)
 
-        Me.Text = StatusTypeString & " " & String.Format(My.Resources.Label_Floppy, GetFloppyDiskFormatName(_BPB, False))
+        Me.Text = StatusTypeString & " " & String.Format(My.Resources.Label_Floppy, FloppyDiskFormatGetName(_BPB, False))
         StatusType.Text = StatusTypeString
         StatusBadSectors.Text = ""
 
@@ -306,7 +306,7 @@ Public Class FloppyAccessForm
     Private Function FormatTrack(Sector As UInteger) As Boolean
         Dim Track = _BPB.SectorToTrack(Sector)
         Dim Side = _BPB.SectorToSide(Sector)
-        Dim MediaType As FloppyInterface.MEDIA_TYPE = GetMediaTypeFromDiskType(GetFloppyDiskFormat(_BPB))
+        Dim MediaType As FloppyInterface.MEDIA_TYPE = GetMediaTypeFromDiskType(FloppyDiskFormatGet(_BPB))
 
         If MediaType = FloppyInterface.MEDIA_TYPE.Unknown Then
             Return False
@@ -588,7 +588,7 @@ Public Class FloppyAccessForm
             End If
         Else
             If _Complete Then
-                Dim DiskFormat = GetFloppyDiskFormat(_BPB)
+                Dim DiskFormat = FloppyDiskFormatGet(_BPB)
                 _FileName = FloppyDiskSaveFile(_DiskBuffer, DiskFormat, _LoadedFileNames)
             End If
         End If

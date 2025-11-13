@@ -20,7 +20,7 @@ Namespace Greaseweazle
             RegexOptions.IgnoreCase Or RegexOptions.CultureInvariant Or RegexOptions.Compiled)
 
         Private ReadOnly RegExWriting As New Regex(
-            "^T(?<srcTrack>\d+)\.(?<srcSide>\d+): (?<action>Writing|Erasing) Track\b( \((?<details>.+)\))?",
+            "^T(?<srcTrack>\d+)\.(?<srcSide>\d+)( -> Drive (?<destTrack>\d+).(?<destHead>\d+))?: (?<action>Writing|Erasing) Track\b( \((?<details>.+)\))?",
             RegexOptions.IgnoreCase Or RegexOptions.CultureInvariant Or RegexOptions.Compiled)
 
         Private ReadOnly RegExWritingFailed As New Regex(
@@ -145,6 +145,8 @@ Namespace Greaseweazle
                 End If
                 info.SourceTrack = GetInt(Match, "srcTrack")
                 info.SourceSide = GetInt(Match, "srcSide")
+                info.DestTrack = GetIntOrDefault(Match, "destTrack", info.SourceTrack)
+                info.DestSide = GetIntOrDefault(Match, "destSide", info.SourceSide)
             End If
 
             If Not MatchFound Then
@@ -245,6 +247,8 @@ Namespace Greaseweazle
             Public Property Retry As Integer = 0
             Public Property SourceSide As Integer = 0
             Public Property SourceTrack As Integer = 0
+            Public Property DestSide As Integer = 0
+            Public Property DestTrack As Integer = 0
         End Class
     End Class
 End Namespace

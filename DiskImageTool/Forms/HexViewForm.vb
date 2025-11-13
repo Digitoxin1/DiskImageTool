@@ -589,7 +589,7 @@ Public Class HexViewForm
     End Sub
 
     Private Sub InitializeSyncCheckBox()
-        Dim Checked = Not IsDiskFormatXDF(_HexViewSectorData.Disk.DiskFormat) AndAlso _HexViewSectorData.Disk.FATTables.FATsMatch
+        Dim Checked = Not _HexViewSectorData.Disk.DiskParams.IsXDF AndAlso _HexViewSectorData.Disk.FATTables.FATsMatch
 
         CheckBoxSync = New ToolStripCheckBox With {
             .Alignment = ToolStripItemAlignment.Right,

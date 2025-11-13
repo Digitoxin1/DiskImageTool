@@ -117,8 +117,8 @@ Module FloppyDiskIO
         Dim DriveName = DriveLetter & ":\"
         Dim DriveInfo = New IO.DriveInfo(DriveName)
         Dim IsReady = DriveInfo.IsReady
-        Dim NewDiskFormat = GetFloppyDiskFormat(Disk.BPB)
-        Dim NewFormatName = String.Format(My.Resources.Label_Floppy, GetFloppyDiskFormatName(NewDiskFormat))
+        Dim NewDiskFormat = FloppyDiskFormatGet(Disk.BPB)
+        Dim NewFormatName = String.Format(My.Resources.Label_Floppy, FloppyDiskFormatGetName(NewDiskFormat))
         Dim DetectedFormat As FloppyDiskFormat = 255
         Dim DoFormat = Not IsReady
 
@@ -129,7 +129,7 @@ Module FloppyDiskIO
                 Dim Buffer(BYTES_PER_SECTOR - 1) As Byte
                 Dim BytesRead = FloppyDrive.ReadSector(0, Buffer)
                 If BytesRead = Buffer.Length Then
-                    DetectedFormat = GetFloppyDiskFormat(Buffer)
+                    DetectedFormat = FloppyDiskFormatGet(Buffer)
                 Else
                     DetectedFormat = FloppyDiskFormat.FloppyUnknown
                 End If
@@ -145,7 +145,7 @@ Module FloppyDiskIO
                 Msg = String.Format(My.Resources.Dialog_DiskNotEmptyWarning_UnknownFormat, DriveLetter, Environment.NewLine, NewFormatName)
             Else
                 DoFormat = True
-                Dim DetectedFormatName = String.Format(My.Resources.Label_Floppy, GetFloppyDiskFormatName(DetectedFormat))
+                Dim DetectedFormatName = String.Format(My.Resources.Label_Floppy, FloppyDiskFormatGetName(DetectedFormat))
                 Msg = String.Format(My.Resources.Dialog_DiskNotEmptyWarning_Mismatched, DriveLetter, DetectedFormatName, Environment.NewLine, NewFormatName)
             End If
             MsgBoxResult = MsgBox(Msg, MsgBoxStyle.Exclamation Or MsgBoxStyle.OkCancel Or MsgBoxStyle.DefaultButton2)
@@ -182,7 +182,7 @@ Module FloppyDiskIO
         Dim BytesRead = FloppyDrive.ReadSector(0, Buffer)
         If BytesRead = Buffer.Length Then
             BootSector = New BootSector(Buffer)
-            DetectedFormat = GetFloppyDiskFormat(BootSector.BPB)
+            DetectedFormat = FloppyDiskFormatGet(BootSector.BPB)
         Else
             DetectedFormat = FloppyDiskFormat.FloppyUnknown
         End If

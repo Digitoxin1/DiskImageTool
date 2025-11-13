@@ -406,9 +406,9 @@ Module ImageIO
 
         Dim Items = System.Enum.GetValues(GetType(FloppyDiskFormat))
         For Each Item As Integer In Items
-            Extension = GetImageFileExtensionByFormat(Item)
+            Extension = FloppyDiskFormatGetParams(Item).FileExtension
             If Extension <> "" Then
-                Dim Description = GetFileFilterDescriptionByFormat(Item)
+                Dim Description = FloppyDiskFormatGetFileFilterDescription(Item)
                 If FileExt.Equals(Extension, StringComparison.OrdinalIgnoreCase) Then
                     Response.Filter = FileDialogAppendFilter(Response.Filter, Description, Extension)
                     Response.FilterIndex = CurrentIndex
@@ -465,7 +465,7 @@ Module ImageIO
     Public Sub InitAllFileExtensions()
         Dim Items = System.Enum.GetValues(GetType(FloppyDiskFormat))
         For Each Item As Integer In Items
-            Dim FileExt = GetImageFileExtensionByFormat(Item)
+            Dim FileExt = FloppyDiskFormatGetParams(Item).FileExtension
             If FileExt <> "" Then
                 If Not BasicSectorFileExtensions.Contains(FileExt) Then
                     BasicSectorFileExtensions.Add(FileExt)
@@ -529,23 +529,25 @@ Module ImageIO
             Dim NewImage As IBitstreamImage = Nothing
 
             If DiskImageType = FloppyImageType.BasicSectorImage Then
-                If IsDiskFormatValidForRead(Disk.DiskFormat) Then
+                Dim Format = Disk.DiskParams.Format
+
+                If FloppyDiskFormatIsStandard(Format) Then
                     Dim Data = Disk.Image.GetBytes()
 
                     If FileImageType = FloppyImageType.TranscopyImage Then
-                        NewImage = ImageFormats.BasicSectorToTranscopyImage(Data, Disk.DiskFormat)
+                        NewImage = ImageFormats.BasicSectorToTranscopyImage(Data, Format)
                     ElseIf FileImageType = FloppyImageType.PSIImage Then
-                        NewImage = ImageFormats.BasicSectorToPSIImage(Data, Disk.DiskFormat)
+                        NewImage = ImageFormats.BasicSectorToPSIImage(Data, Format)
                     ElseIf FileImageType = FloppyImageType.PRIImage Then
-                        NewImage = ImageFormats.BasicSectorToPRIImage(Data, Disk.DiskFormat)
+                        NewImage = ImageFormats.BasicSectorToPRIImage(Data, Format)
                     ElseIf FileImageType = FloppyImageType.MFMImage Then
-                        NewImage = ImageFormats.BasicSectorToMFMImage(Data, Disk.DiskFormat)
+                        NewImage = ImageFormats.BasicSectorToMFMImage(Data, Format)
                     ElseIf FileImageType = FloppyImageType.HFEImage Then
-                        NewImage = ImageFormats.BasicSectorToHFEImage(Data, Disk.DiskFormat)
+                        NewImage = ImageFormats.BasicSectorToHFEImage(Data, Format)
                     ElseIf FileImageType = FloppyImageType.D86FImage Then
-                        NewImage = ImageFormats.BasicSectorTo86FImage(Data, Disk.DiskFormat)
+                        NewImage = ImageFormats.BasicSectorTo86FImage(Data, Format)
                     ElseIf FileImageType = FloppyImageType.IMDImage Then
-                        NewImage = ImageFormats.BasicSectorToIMDImage(Data, Disk.DiskFormat)
+                        NewImage = ImageFormats.BasicSectorToIMDImage(Data, Format)
                     End If
                 Else
                     Return SaveImageResponse.Unknown

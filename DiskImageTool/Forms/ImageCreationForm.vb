@@ -41,7 +41,7 @@ Public Class ImageCreationForm
         End Get
     End Property
 
-    Private Sub AddTandy2000RootEntries(Data() As Byte, Params As FloppyDiskParams)
+    Private Sub AddTandy2000RootEntries(Data() As Byte, Params As FloppyDiskBPBParams)
         Dim Buffer = FillArray(32, &HF6)
         Buffer(0) = &H0
 
@@ -52,7 +52,7 @@ Public Class ImageCreationForm
         Next
     End Sub
 
-    Private Sub AddRootEntries(Data() As Byte, Params As FloppyDiskParams)
+    Private Sub AddRootEntries(Data() As Byte, Params As FloppyDiskBPBParams)
         Dim Buffer = New Byte(31) {}
         Buffer(0) = &HE5
 
@@ -67,7 +67,9 @@ Public Class ImageCreationForm
     End Sub
 
     Private Sub CreateFloppy()
-        Dim Size = GetFloppyDiskSize(_SelectedFormat)
+        Dim Params = FloppyDiskFormatGetParams(_SelectedFormat)
+        Dim BPBParams = Params.BPBParams
+        Dim Size = BPBParams.SizeInBytes
         Dim BootSectorType As BootSectorType = ComboBootSector.SelectedItem
         Dim Buffer() As Byte
 
@@ -85,10 +87,8 @@ Public Class ImageCreationForm
                     BootSector.OEMName = HexStringToBytes(BootSectorType.OEMName)
                 End If
 
-                Dim Params = GetFloppyDiskParams(_SelectedFormat)
-
                 If BootSectorType.BPB Then
-                    SetBPB(BootSector.BPB, Params)
+                    SetBPB(BootSector.BPB, BPBParams)
                 End If
 
                 If BootSectorType.VolumeSerialNumber Then
@@ -99,22 +99,22 @@ Public Class ImageCreationForm
                 BootSector.Data.CopyTo(Buffer, 0)
 
                 If BootSectorType.FATMediaDescriptor = "" Then
-                    FATMediaDescriptor = Params.MediaDescriptor
+                    FATMediaDescriptor = BPBParams.MediaDescriptor
                 Else
                     FATMediaDescriptor = Convert.ToByte(BootSectorType.FATMediaDescriptor, 16)
                 End If
 
-                SetFAT(Buffer, Params, FATMediaDescriptor)
+                SetFAT(Buffer, BPBParams, FATMediaDescriptor)
 
                 If BootSectorType.RootFill Then
                     If _SelectedFormat = FloppyDiskFormat.FloppyTandy2000 Then
-                        AddTandy2000RootEntries(Buffer, Params)
+                        AddTandy2000RootEntries(Buffer, BPBParams)
                     Else
-                        AddRootEntries(Buffer, Params)
+                        AddRootEntries(Buffer, BPBParams)
                     End If
                 End If
 
-                Dim Offset As UInteger = (Params.ReservedSectorCount + (Params.SectorsPerFAT * Params.NumberOfFATs)) * Params.BytesPerSector + Params.RootEntryCount * 32
+                Dim Offset As UInteger = (BPBParams.ReservedSectorCount + (BPBParams.SectorsPerFAT * BPBParams.NumberOfFATs)) * BPBParams.BytesPerSector + BPBParams.RootEntryCount * 32
                 For Counter As UInteger = Offset To Buffer.Length - 1
                     Buffer(Counter) = &HF6
                 Next
@@ -233,7 +233,7 @@ Public Class ImageCreationForm
 
     End Sub
 
-    Private Sub SetBPB(BPB As BiosParameterBlock, Params As FloppyDiskParams)
+    Private Sub SetBPB(BPB As BiosParameterBlock, Params As FloppyDiskBPBParams)
         With BPB
             .BytesPerSector = Params.BytesPerSector
             .MediaDescriptor = Params.MediaDescriptor
@@ -248,7 +248,7 @@ Public Class ImageCreationForm
         End With
     End Sub
 
-    Private Sub SetFAT(Data() As Byte, Params As FloppyDiskParams, MediaDescriptor As Byte)
+    Private Sub SetFAT(Data() As Byte, Params As FloppyDiskBPBParams, MediaDescriptor As Byte)
 
         Dim Offset As UInteger = Params.ReservedSectorCount * Params.BytesPerSector
         For Counter = 0 To Params.NumberOfFATs - 1

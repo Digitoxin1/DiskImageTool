@@ -1,6 +1,6 @@
 ﻿Namespace Greaseweazle
     Public Class BaseForm
-        Private Const TOTAL_TRACKS As UShort = 83
+        Private Const TOTAL_TRACKS As UShort = 84
         Private ReadOnly _Parser As ConsoleOutputParser
         Private _TableSide0 As TableLayoutPanel
         Private _TableSide0Outer As TableLayoutPanel
@@ -61,7 +61,7 @@
             End Get
         End Property
 
-        Public Sub MarkTrack(Track As Integer, Side As Integer, Status As TrackStatus, Label As String)
+        Public Sub MarkTrack(Track As Integer, Side As Integer, Status As TrackStatus, Label As String, DoubleStep As Boolean)
             Dim Table As TableLayoutPanel
 
             If Side = 0 Then
@@ -74,6 +74,9 @@
 
             If Table IsNot Nothing Then
                 Dim BackColor = GetTrackStatusColor(Status)
+                If DoubleStep Then
+                    Track *= 2
+                End If
                 FloppyGridSetLabel(Table, Track, Label, BackColor)
             End If
         End Sub

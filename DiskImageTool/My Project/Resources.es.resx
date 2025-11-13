@@ -1631,4 +1631,7 @@ Nota: Este valor debe ser {1} para todos los disquetes</value>
   <data name="Dialog_ConfirmWrite" xml:space="preserve">
     <value>Esta operación sobrescribirá todos los datos del disquete en la unidad {1}.{0}{0}Todo el contenido existente se perderá permanentemente.{0}{0}¿Desea continuar?</value>
   </data>
+  <data name="FileType_SectorImage" xml:space="preserve">
+    <value>Imagen de sector</value>
+  </data>
 </root>

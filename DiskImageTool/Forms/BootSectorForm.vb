@@ -81,7 +81,7 @@ Public Class BootSectorForm
         Dim BootStrapStart = _BootSector.GetBootStrapOffset
         _HasExtended = BootStrapStart >= BootSectorOffsets.FileSystemType + BootSectorSizes.FileSystemType
 
-        Dim DiskFormat = GetFloppyDiskFormat(_BootSector.BPB, True, False)
+        Dim DiskFormat = FloppyDiskFormatGet(_BootSector.BPB, True, False)
 
         IntitializeHelp()
         PopulateDiskTypes(DiskFormat)
@@ -319,7 +319,7 @@ Public Class BootSectorForm
         CboMediaDescriptor.Items.Clear()
 
         For Each item In _MediaDescriptorList
-            CboMediaDescriptor.Items.Add(New MediaDescriptorType(item.Key, GetFloppyDiskFormatName(item.Value)))
+            CboMediaDescriptor.Items.Add(New MediaDescriptorType(item.Key, FloppyDiskFormatGetName(item.Value)))
         Next
     End Sub
 
@@ -387,7 +387,7 @@ Public Class BootSectorForm
             GroupBoxExtended.Visible = False
         End If
 
-        UpdateBackColors(GetFloppyDiskFormat(GetBPB(), True, False))
+        UpdateBackColors(FloppyDiskFormatGet(GetBPB(), True, False))
     End Sub
 
     Private Sub RefreshFileSystemType()
@@ -604,7 +604,7 @@ Public Class BootSectorForm
     Private Sub UpdateTag(Control As Control, UpdateDiskType As Boolean)
         ControlSetLastValue(Control, Control.Text)
 
-        Dim DiskFormat = GetFloppyDiskFormat(GetBPB(), True, False)
+        Dim DiskFormat = FloppyDiskFormatGet(GetBPB(), True, False)
 
         If UpdateDiskType Then
             SetCurrentDiskFormat(DiskFormat)
@@ -622,7 +622,7 @@ Public Class BootSectorForm
             If Result.Length > 0 Then
                 Result &= ", "
             End If
-            Result &= GetFloppyDiskFormatName(DiskFormat, Extended)
+            Result &= FloppyDiskFormatGetName(DiskFormat, Extended)
         Next
 
         Return Result
@@ -660,11 +660,11 @@ Public Class BootSectorForm
 
         Result &= GetHelpValueString("FA", My.Resources.BootSectorForm_Help_Unused, 1)
         Result &= GetHelpValueString("FB", My.Resources.BootSectorForm_Help_Unused, 1)
-        Result &= GetHelpValueString("FC", GetFloppyDiskFormatName(FloppyDiskFormat.Floppy180), 1)
-        Result &= GetHelpValueString("FD", GetFloppyDiskFormatName(FloppyDiskFormat.Floppy360), 1)
-        Result &= GetHelpValueString("FE", GetFloppyDiskFormatName(FloppyDiskFormat.Floppy160), 1)
-        Result &= GetHelpValueString("FF", GetFloppyDiskFormatName(FloppyDiskFormat.Floppy320), 1)
-        Result &= GetHelpValueString("ED", GetFloppyDiskFormatName(FloppyDiskFormat.FloppyTandy2000), 1)
+        Result &= GetHelpValueString("FC", FloppyDiskFormatGetName(FloppyDiskFormat.Floppy180), 1)
+        Result &= GetHelpValueString("FD", FloppyDiskFormatGetName(FloppyDiskFormat.Floppy360), 1)
+        Result &= GetHelpValueString("FE", FloppyDiskFormatGetName(FloppyDiskFormat.Floppy160), 1)
+        Result &= GetHelpValueString("FF", FloppyDiskFormatGetName(FloppyDiskFormat.Floppy320), 1)
+        Result &= GetHelpValueString("ED", FloppyDiskFormatGetName(FloppyDiskFormat.FloppyTandy2000), 1)
 
         Return Result
     End Function
@@ -673,7 +673,7 @@ Public Class BootSectorForm
         Dim Result As String = My.Resources.BootSectorForm_Help_TypicalValues
         For Each item In _FormatList
             If item.ToolTip Then
-                Result &= GetHelpValueString(GetFloppyDiskFormatName(item.Format, item.Extended), Selector(item).ToString, item.Tabs + 1)
+                Result &= GetHelpValueString(FloppyDiskFormatGetName(item.Format, item.Extended), Selector(item).ToString, item.Tabs + 1)
             End If
         Next
 
@@ -682,7 +682,7 @@ Public Class BootSectorForm
 
 #Region "Events"
     Private Sub BtnReset_Click(sender As Object, e As EventArgs) Handles btnReset.Click
-        SetCurrentDiskFormat(GetFloppyDiskFormat(_BootSector.BPB, True, False))
+        SetCurrentDiskFormat(FloppyDiskFormatGet(_BootSector.BPB, True, False))
         PopulateValues()
     End Sub
 
@@ -706,7 +706,7 @@ Public Class BootSectorForm
             Dim BPB = BuildBPB(DiskFormat)
             PopulateBPB(BPB)
         Else
-            DiskFormat = GetFloppyDiskFormat(GetBPB, True, False)
+            DiskFormat = FloppyDiskFormatGet(GetBPB, True, False)
         End If
         UpdateBackColors(DiskFormat)
         _SuppressEvent = False
@@ -1007,7 +1007,7 @@ Public Class BootSectorForm
         Public Property Format As FloppyDiskFormat
 
         Public Overrides Function ToString() As String
-            Return GetFloppyDiskFormatName(_Format, True)
+            Return FloppyDiskFormatGetName(_Format, True)
         End Function
     End Class
 

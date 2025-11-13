@@ -56,8 +56,8 @@ Public Class FATEditForm
 
         Me.Text = My.Resources.Caption_FAT & " " & Index + 1
 
-        Dim SyncFATS = Not IsDiskFormatXDF(_Disk.DiskFormat) AndAlso Disk.FATTables.FATsMatch
-        Dim DisplaySync = Not IsDiskFormatXDF(_Disk.DiskFormat) AndAlso Not Disk.FATTables.FATsMatch
+        Dim SyncFATS = Not _Disk.DiskParams.IsXDF AndAlso Disk.FATTables.FATsMatch
+        Dim DisplaySync = Not _Disk.DiskParams.IsXDF AndAlso Not Disk.FATTables.FATsMatch
 
         ChkSync.Checked = SyncFATS
         ChkSync.Visible = DisplaySync

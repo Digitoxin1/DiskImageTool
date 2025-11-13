@@ -477,8 +477,9 @@ Namespace DiskImage
         End Function
 
         Private Sub InferFloppyDiskFormat(DiskFormat As FloppyDiskFormat)
-            _BPB = BuildBPB(DiskFormat)
-            _ImageSize = GetFloppyDiskSize(DiskFormat)
+            Dim BPBParams = FloppyDiskFormatGetParams(DiskFormat).BPBParams
+            _BPB = BPBParams.GetBPB
+            _ImageSize = BPBParams.SizeInBytes
             _EmptySector = New Byte(_BPB.BytesPerSector - 1) {}
 
             Dim Data = GetSectorData(0, 0, 1)
@@ -489,11 +490,11 @@ Namespace DiskImage
                 _ImageSize = _BPB.SectorCount * _BPB.BytesPerSector
             Else
                 Data = GetSectorData(0, 0, 2)
-                Dim MediaDescriptor = 0
+                Dim MediaDescriptor As Byte = 0
                 If Data(1) = &HFF And Data(2) = &HFF Then
                     MediaDescriptor = Data(0)
                 End If
-                Dim FATDiskFormat = GetFloppyDiskFomat(MediaDescriptor)
+                Dim FATDiskFormat = FloppyDiskFormatGet(MediaDescriptor)
                 If FATDiskFormat <> FloppyDiskFormat.FloppyUnknown Then
                     If _SideCount = 1 Then
                         If FATDiskFormat = FloppyDiskFormat.Floppy360 Then
@@ -503,7 +504,7 @@ Namespace DiskImage
                         End If
                     End If
                     _BPB = BuildBPB(FATDiskFormat)
-                    _ImageSize = GetFloppyDiskSize(FATDiskFormat)
+                    _ImageSize = FloppyDiskFormatGetParams(FATDiskFormat).BPBParams.SizeInBytes
                 End If
             End If
         End Sub

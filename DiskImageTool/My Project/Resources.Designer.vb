@@ -2306,6 +2306,15 @@ Namespace My.Resources
         End Property
         
         '''<summary>
+        '''  Looks up a localized string similar to Sector Image.
+        '''</summary>
+        Friend ReadOnly Property FileType_SectorImage() As String
+            Get
+                Return ResourceManager.GetString("FileType_SectorImage", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
         '''  Looks up a localized string similar to Text files.
         '''</summary>
         Friend ReadOnly Property FileType_Text() As String
@@ -3380,6 +3389,15 @@ Namespace My.Resources
         Friend ReadOnly Property Label_Floppy() As String
             Get
                 Return ResourceManager.GetString("Label_Floppy", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  Looks up a localized string similar to Format.
+        '''</summary>
+        Friend ReadOnly Property Label_Format() As String
+            Get
+                Return ResourceManager.GetString("Label_Format", resourceCulture)
             End Get
         End Property
         

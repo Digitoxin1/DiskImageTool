@@ -234,7 +234,7 @@ Public Class FloppyDB
         End If
         If Node.HasAttribute("media") Then
             Dim Media As String = Node.Attributes("media").Value
-            TitleData.Media = GetFloppyDiskFormat(Media)
+            TitleData.Media = FloppyDiskFormatGet(Media)
         End If
         If Node.HasAttribute("publisher") Then
             TitleData.Publisher = Node.Attributes("publisher").Value

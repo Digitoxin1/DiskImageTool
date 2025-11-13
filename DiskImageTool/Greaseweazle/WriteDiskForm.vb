@@ -1,4 +1,4 @@
-﻿Imports System.Net.NetworkInformation
+﻿Imports DiskImageTool.DiskImage.FloppyDiskFunctions
 
 Namespace Greaseweazle
     Public Class WriteDiskForm
@@ -7,7 +7,8 @@ Namespace Greaseweazle
         Private WithEvents CheckboxNoVerify As CheckBox
         Private WithEvents ComboImageDrives As ComboBox
         Private WithEvents Process As ConsoleProcessRunner
-        Private ReadOnly _DiskImage As DiskImageContainer
+        Private ReadOnly _Disk As DiskImage.Disk
+        Private ReadOnly _DiskParams As FloppyDiskParams
         Private ReadOnly _IsBitstreamImage As Boolean
         Private ReadOnly _SideCount As Byte
         Private ReadOnly _TrackCount As UShort
@@ -22,16 +23,18 @@ Namespace Greaseweazle
         Private CheckBoxEraseEmpty As CheckBox
         Private CheckBoxPreErase As CheckBox
         Private LabelWarning As Label
+        Private LabelImageFormat As Label
         Private NumericRetries As NumericUpDown
         Private _AllowRetries As Boolean = True
         Private _AllowNoVerify As Boolean = True
+        Private _DoubleStep As Boolean = False
 
-        Public Sub New(DiskImage As DiskImageContainer)
+        Public Sub New(Disk As DiskImage.Disk, FileName As String)
             MyBase.New()
-
             InitializeControls()
 
-            _DiskImage = DiskImage
+            _Disk = Disk
+            _DiskParams = Disk.DiskParams
 
             _TrackStatus = New Dictionary(Of String, TrackStatusInfo)
 
@@ -39,20 +42,30 @@ Namespace Greaseweazle
                 .EventContext = Threading.SynchronizationContext.Current
             }
 
-            Me.Text = My.Resources.Label_WriteDisk & " - " & DiskImage.ImageData.FileName
+            Me.Text = My.Resources.Label_WriteDisk & " - " & FileName
 
-            If DiskImage.Disk.Image.IsBitstreamImage Then
-                _TrackCount = DiskImage.Disk.Image.TrackCount
-                _SideCount = DiskImage.Disk.Image.SideCount
+            If Disk.Image.IsBitstreamImage Then
+                _TrackCount = Disk.Image.TrackCount
+                _SideCount = Disk.Image.SideCount
                 _IsBitstreamImage = True
             Else
-                _TrackCount = DiskImage.Disk.BPB.SectorToTrack(DiskImage.Disk.BPB.SectorCount)
-                _SideCount = DiskImage.Disk.BPB.NumberOfHeads
+                If _DiskParams.Format = FloppyDiskFormat.FloppyUnknown Then
+                    Dim DiskFormat = FloppyDiskFormatGet(Disk.Image.Length)
+                    _DiskParams = FloppyDiskFormatGetParams(DiskFormat)
+                End If
+                _TrackCount = _DiskParams.BPBParams.TrackCount
+                _SideCount = _DiskParams.BPBParams.NumberOfHeads
                 _IsBitstreamImage = False
             End If
 
             NumericRetries.Value = CommandLineBuilder.DEFAULT_RETRIES
-            PopulateDrives(DiskImage.Disk.DiskFormat)
+
+            LabelImageFormat.Text = _DiskParams.Description
+
+            Dim Mode As String = IIf(_IsBitstreamImage, My.Resources.FileType_BitstreamImage, My.Resources.FileType_SectorImage)
+            StatusStripBottom.Items.Add(New ToolStripStatusLabel(Mode))
+
+            PopulateDrives(_DiskParams)
             ResetState()
             RefreshButtonState()
         End Sub
@@ -69,12 +82,11 @@ Namespace Greaseweazle
         Private Function CheckCompatibility() As Boolean
             Dim Opt As DriveOption = ComboImageDrives.SelectedValue
 
-            If Opt.Type = GreaseweazleFloppyType.None Then
+            If Opt.Type = FloppyMediaType.MediaUnknown Then
                 Return True
             End If
 
-            Dim DiskFormat = _DiskImage.Disk.DiskFormat
-            Dim FloppyType = GreaseweazleFindCompatibleFloppyType(DiskFormat, Opt.Type)
+            Dim FloppyType = GreaseweazleFindCompatibleFloppyType(_DiskParams, Opt.Type)
 
             Return FloppyType = Opt.Type
         End Function
@@ -94,7 +106,7 @@ Namespace Greaseweazle
         Private Sub InitializeControls()
             Dim DriveLabel = New Label With {
                 .Text = My.Resources.Label_Drive,
-                .Anchor = AnchorStyles.Left,
+                .Anchor = AnchorStyles.Right,
                 .AutoSize = True
             }
 
@@ -149,6 +161,7 @@ Namespace Greaseweazle
                 .Margin = New Padding(12, 24, 3, 3),
                 .Text = My.Resources.Label_Write
             }
+
             LabelWarning = New Label With {
                 .Text = My.Resources.Message_ImageFormatWarning,
                 .ForeColor = Color.Red,
@@ -157,14 +170,29 @@ Namespace Greaseweazle
                 .Visible = False
             }
 
+            Dim ImageFormatCaption = New Label With {
+                .Text = My.Resources.Label_Format,
+                .Anchor = AnchorStyles.Right,
+                .AutoSize = True
+            }
+
+            LabelImageFormat = New Label With {
+                .Anchor = AnchorStyles.Left,
+                .AutoSize = True,
+                .UseMnemonic = False
+            }
+
 
             ButtonOk.Visible = False
             ButtonCancel.Text = My.Resources.Label_Close
 
+
+            Dim Row As Integer
+
             With TableLayoutPanelMain
                 .SuspendLayout()
 
-                .RowCount = 3
+                .RowCount = 4
                 .ColumnCount = 8
 
                 While .RowStyles.Count < .RowCount
@@ -181,36 +209,44 @@ Namespace Greaseweazle
                     .ColumnStyles(j).SizeType = SizeType.AutoSize
                 Next
 
-                TableLayoutPanelMain.Controls.Add(TableSide0Outer, 0, 2)
-                TableLayoutPanelMain.SetColumnSpan(TableSide0Outer, 2)
+                Row = 0
+                .Controls.Add(DriveLabel, 0, Row)
+                .Controls.Add(ComboImageDrives, 1, Row)
 
-                TableLayoutPanelMain.Controls.Add(TableSide1Outer, 2, 2)
-                TableLayoutPanelMain.SetColumnSpan(TableSide1Outer, 4)
+                .Controls.Add(CheckBoxPreErase, 4, Row)
 
-                TableLayoutPanelMain.Controls.Add(DriveLabel, 0, 0)
-                TableLayoutPanelMain.Controls.Add(ComboImageDrives, 1, 0)
+                .Controls.Add(CheckBoxEraseEmpty, 5, Row)
 
-                TableLayoutPanelMain.Controls.Add(CheckBoxPreErase, 4, 0)
+                .Controls.Add(RetriesLabel, 6, Row)
+                .Controls.Add(NumericRetries, 7, Row)
 
-                TableLayoutPanelMain.Controls.Add(CheckBoxEraseEmpty, 5, 0)
+                Row = 1
+                .Controls.Add(ImageFormatCaption, 0, Row)
+                .Controls.Add(LabelImageFormat, 1, Row)
 
-                TableLayoutPanelMain.Controls.Add(LabelWarning, 0, 1)
-                TableLayoutPanelMain.SetColumnSpan(LabelWarning, 2)
+                .Controls.Add(CheckboxNoVerify, 4, Row)
 
-                TableLayoutPanelMain.Controls.Add(CheckboxNoVerify, 4, 1)
+                .Controls.Add(CheckBoxContinue, 5, Row)
 
-                TableLayoutPanelMain.Controls.Add(CheckBoxContinue, 5, 1)
+                Row = 2
+                .RowStyles(Row).SizeType = SizeType.Absolute
+                .RowStyles(Row).Height = 20
+                .Controls.Add(LabelWarning, 0, Row)
+                .SetColumnSpan(LabelWarning, 2)
 
-                TableLayoutPanelMain.Controls.Add(RetriesLabel, 6, 0)
-                TableLayoutPanelMain.Controls.Add(NumericRetries, 7, 0)
+                Row = 3
+                .Controls.Add(TableSide0Outer, 0, Row)
+                .SetColumnSpan(TableSide0Outer, 2)
 
-                TableLayoutPanelMain.Controls.Add(ButtonProcess, 6, 2)
-                TableLayoutPanelMain.SetColumnSpan(ButtonProcess, 2)
+                .Controls.Add(TableSide1Outer, 2, Row)
+                .SetColumnSpan(TableSide1Outer, 4)
+
+                .Controls.Add(ButtonProcess, 6, Row)
+                .SetColumnSpan(ButtonProcess, 2)
 
                 .ResumeLayout()
                 .Left = (.Parent.ClientSize.Width - .Width) \ 2
             End With
-
         End Sub
 
         Private Function KeepProcessing() As Boolean
@@ -241,7 +277,7 @@ Namespace Greaseweazle
             Return True
         End Function
 
-        Private Sub PopulateDrives(DiskFormat As DiskImage.FloppyDiskFormat)
+        Private Sub PopulateDrives(DiskParams As FloppyDiskParams)
             Dim IsShugart As Boolean = String.Equals(My.Settings.GW_Interface, "Shugart", StringComparison.OrdinalIgnoreCase)
 
             Dim Drive0Type = GreaseweazleFloppyTypeFromName(My.Settings.GW_DriveType0)
@@ -253,22 +289,22 @@ Namespace Greaseweazle
                 AvailableTypes = AvailableTypes Or Drive2Type
             End If
 
-            Dim SelectedFormat = GreaseweazleFindCompatibleFloppyType(DiskFormat, AvailableTypes)
+            Dim SelectedFormat = GreaseweazleFindCompatibleFloppyType(DiskParams, AvailableTypes)
 
             Dim DriveList As New List(Of DriveOption)
 
             Dim placeholder As New DriveOption With {
                 .Id = "",
-                .Type = GreaseweazleFloppyType.None,
+                .Type = FloppyMediaType.MediaUnknown,
                 .Label = My.Resources.Label_PleaseSelect
             }
             DriveList.Add(placeholder)
 
             Dim SelectedOption As DriveOption = Nothing
 
-            Dim AddItem As Action(Of String, String, GreaseweazleFloppyType) =
-                Sub(labelPrefix As String, id As String, t As GreaseweazleFloppyType)
-                    If t = GreaseweazleFloppyType.None Then
+            Dim AddItem As Action(Of String, String, FloppyMediaType) =
+                Sub(labelPrefix As String, id As String, t As FloppyMediaType)
+                    If t = FloppyMediaType.MediaUnknown Then
                         Exit Sub
                     End If
 
@@ -391,7 +427,7 @@ Namespace Greaseweazle
                 Label = "W"
             End If
 
-            MarkTrack(Statusinfo.Track, Statusinfo.Side, Status, Label)
+            MarkTrack(Statusinfo.Track, Statusinfo.Side, Status, Label, _DoubleStep)
 
             Return Status
         End Function
@@ -426,7 +462,7 @@ Namespace Greaseweazle
         End Sub
 
         Private Sub ResetState()
-            TrackGridInit(_TrackCount, _SideCount)
+            ResetTrackGrid()
             StatusType.Text = ""
             StatusTrack.Text = ""
             StatusSide.Text = ""
@@ -436,6 +472,27 @@ Namespace Greaseweazle
             _TrackRange = Nothing
 
             TextBoxConsole.Clear()
+        End Sub
+
+        Private Sub ResetTrackGrid()
+            Dim Opt As DriveOption = ComboImageDrives.SelectedValue
+
+            Dim TrackCount As UShort
+            If Opt.Type = FloppyMediaType.MediaUnknown Then
+                If _DiskParams.MediaType = FloppyMediaType.Media525DoubleDensity Then
+                    TrackCount = 42
+                Else
+                    TrackCount = 84
+                End If
+            ElseIf Opt.Type = FloppyMediaType.Media525DoubleDensity Then
+                TrackCount = 42
+            Else
+                TrackCount = 84
+            End If
+
+            TrackCount = Math.Max(TrackCount, _TrackCount)
+
+            TrackGridInit(TrackCount, _SideCount)
         End Sub
 
         Private Function SaveTempImage() As (Result As Boolean, FilePath As String)
@@ -456,7 +513,7 @@ Namespace Greaseweazle
 
             Dim FilePath = GenerateUniqueFileName(TempPath, FileName)
 
-            Dim Response = ImageIO.SaveDiskImageToFile(_DiskImage.Disk, FilePath, False)
+            Dim Response = ImageIO.SaveDiskImageToFile(_Disk, FilePath, False)
             Dim Result = (Response = SaveImageResponse.Success)
 
             Return (Result, FilePath)
@@ -516,19 +573,24 @@ Namespace Greaseweazle
                 Builder.Retries = NumericRetries.Value
             End If
 
+            _DoubleStep = Opt.Type = FloppyMediaType.Media525HighDensity And _DiskParams.MediaType = FloppyMediaType.Media525DoubleDensity
+
+            If _DoubleStep Then
+                Builder.HeadStep = 2
+            End If
+
             Dim FileExt = IO.Path.GetExtension(FilePath).ToLower
 
-            Dim MaxTracks As Integer
             If FileExt = ".ima" Then
-                Dim ImageFormat = GreaseweazleImageFormatFromFloppyDiskFormat(_DiskImage.Disk.DiskFormat)
+                Dim ImageFormat = GreaseweazleImageFormatFromFloppyDiskFormat(_DiskParams.Format)
                 Builder.Format = GreaseweazleImageFormatCommandLine(ImageFormat)
-                MaxTracks = GetMaxTracks(ImageFormat)
-            Else
-                MaxTracks = _DiskImage.Disk.Image.TrackCount
             End If
 
             If StartTrack = -1 And StartHead = -1 Then
-                If Opt.Type = GreaseweazleFloppyType.F525_DD_360K And MaxTracks > 42 Then
+                If _DiskParams.MediaType = FloppyMediaType.Media525DoubleDensity Then
+                    StartTrack = 0
+                    EndTrack = 42
+                ElseIf Opt.Type = FloppyMediaType.Media525DoubleDensity And _TrackCount > 42 Then
                     StartTrack = 0
                     EndTrack = 39
                 End If
@@ -603,6 +665,7 @@ Namespace Greaseweazle
         End Sub
 
         Private Sub ComboImageDrives_SelectedIndexChanged(sender As Object, e As EventArgs) Handles ComboImageDrives.SelectedIndexChanged
+            ResetTrackGrid()
             RefreshProcessButtonState()
             LabelWarning.Visible = Not CheckCompatibility()
         End Sub
@@ -640,7 +703,7 @@ Namespace Greaseweazle
         Private Class DriveOption
             Public Property Id As String
             Public Property Label As String
-            Public Property Type As GreaseweazleFloppyType
+            Public Property Type As FloppyMediaType
             Public Overrides Function ToString() As String
                 Return Label
             End Function

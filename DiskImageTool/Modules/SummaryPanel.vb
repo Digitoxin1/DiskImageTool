@@ -345,9 +345,9 @@ Public Class SummaryPanel
         Dim Value As String
         Dim ForeColor As Color
 
-        Dim DiskFormatBySize = GetFloppyDiskFormat(Disk.Image.Length)
+        Dim DiskFormatBySize = FloppyDiskFormatGet(Disk.Image.Length)
         Dim BPBBySize = BuildBPB(DiskFormatBySize)
-        Dim DoBPBCompare = Disk.DiskFormat = FloppyDiskFormat.FloppyUnknown And DiskFormatBySize <> FloppyDiskFormat.FloppyUnknown
+        Dim DoBPBCompare = Disk.DiskParams.Format = FloppyDiskFormat.FloppyUnknown And DiskFormatBySize <> FloppyDiskFormat.FloppyUnknown
 
         With ListViewSummary
             Dim BootRecordGroup = .Groups.Add(GROUP_BOOTRECORD, My.Resources.SummaryPanel_BootRecord)
@@ -396,7 +396,7 @@ Public Class SummaryPanel
                 ForeColor = SystemColors.WindowText
             End If
 
-            If IsDiskFormatXDF(Disk.DiskFormat) Then
+            If Disk.DiskParams.IsXDF Then
                 Value = "1 + " & My.Resources.SummaryPanel_CompatibilityImage
             Else
                 Value = Disk.BootSector.BPB.NumberOfFATs
@@ -436,9 +436,9 @@ Public Class SummaryPanel
                 If Not Disk.BPB.HasValidMediaDescriptor Then
                     Value &= " " & InParens(My.Resources.Label_Invalid)
                     ForeColor = Color.Red
-                ElseIf Disk.DiskFormat = FloppyDiskFormat.FloppyXDF35 AndAlso Disk.FAT.MediaDescriptor = &HF9 Then
+                ElseIf Disk.DiskParams.Format = FloppyDiskFormat.FloppyXDF35 AndAlso Disk.FAT.MediaDescriptor = &HF9 Then
                     'Do Nothing - This is normal for XDF
-                ElseIf Disk.DiskFormat <> FloppyDiskFormat.FloppyUnknown AndAlso Disk.BootSector.BPB.MediaDescriptor <> GetFloppyDiskMediaDescriptor(Disk.DiskFormat) Then
+                ElseIf Disk.DiskParams.Format <> FloppyDiskFormat.FloppyUnknown AndAlso Disk.BootSector.BPB.MediaDescriptor <> Disk.DiskParams.BPBParams.MediaDescriptor Then
                     Value &= " " & InParens(My.Resources.Label_Mismatched)
                     ForeColor = Color.Red
                 ElseIf Disk.FAT.MediaDescriptor <> Disk.BootSector.BPB.MediaDescriptor Then
@@ -580,18 +580,18 @@ Public Class SummaryPanel
             End If
 
             If Disk.IsValidImage(False) Then
-                Dim DiskFormatString = GetFloppyDiskFormatName(Disk.DiskFormat)
-                Dim DiskFormatBySize = GetFloppyDiskFormat(Disk.Image.Length)
+                Dim DiskFormatString = FloppyDiskFormatGetName(Disk.DiskParams.Format)
+                Dim DiskFormatBySize = FloppyDiskFormatGet(Disk.Image.Length)
 
-                If Disk.DiskFormat <> FloppyDiskFormat.FloppyUnknown Or DiskFormatBySize = FloppyDiskFormat.FloppyUnknown Then
+                If Disk.DiskParams.Format <> FloppyDiskFormat.FloppyUnknown Or DiskFormatBySize = FloppyDiskFormat.FloppyUnknown Then
                     Value = String.Format(My.Resources.Label_Floppy, DiskFormatString)
                 Else
-                    Dim DiskFormatStringBySize = GetFloppyDiskFormatName(DiskFormatBySize)
+                    Dim DiskFormatStringBySize = FloppyDiskFormatGetName(DiskFormatBySize)
                     Value = String.Format(My.Resources.Label_Floppy, DiskFormatStringBySize) & " " & InParens(My.Resources.SummaryPanel_CustomFormat)
                 End If
                 .AddItem(DiskGroup, My.Resources.SummaryPanel_DiskFormat, Value)
 
-                If IsDiskFormatXDF(Disk.DiskFormat) Then
+                If Disk.DiskParams.IsXDF Then
                     Dim XDFChecksum = CalcXDFChecksum(Disk.Image.GetBytes, Disk.BPB.SectorsPerFAT)
                     If XDFChecksum = Disk.GetXDFChecksum Then
                         ForeColor = Color.Green
@@ -601,7 +601,7 @@ Public Class SummaryPanel
                     .AddItem(DiskGroup, My.Resources.SummaryPanel_XDFChecksum, XDFChecksum.ToString("X8"), ForeColor)
                 End If
 
-                If Disk.BPB.IsValid AndAlso Disk.CheckImageSize > 0 AndAlso Disk.DiskFormat <> FloppyDiskFormat.FloppyUnknown Then
+                If Disk.BPB.IsValid AndAlso Disk.CheckImageSize > 0 AndAlso Disk.DiskParams.Format <> FloppyDiskFormat.FloppyUnknown Then
                     .AddItem(DiskGroup, DiskFormatString & " CRC32", HashFunctions.CRC32Hash(Disk.Image.GetBytes(0, Disk.BPB.ReportedImageSize())))
                 End If
             End If
@@ -624,14 +624,14 @@ Public Class SummaryPanel
                 If Disk.Image.BitstreamImage.VariableBitRate Then
                     .AddItem(DiskGroup, My.Resources.SummaryPanel_Bitrate, My.Resources.Label_Variable)
                 ElseIf Disk.Image.BitstreamImage.BitRate <> 0 Then
-                    ForeColor = GetBitRateColor(Disk.Image.BitstreamImage.BitRate, Disk.DiskFormat)
+                    ForeColor = GetBitRateColor(Disk.Image.BitstreamImage.BitRate, Disk.DiskParams.Format)
                     .AddItem(DiskGroup, My.Resources.SummaryPanel_Bitrate, Disk.Image.BitstreamImage.BitRate, ForeColor)
                 End If
 
                 If Disk.Image.BitstreamImage.VariableRPM Then
                     .AddItem(DiskGroup, My.Resources.SummaryPanel_RPM, My.Resources.Label_Variable)
                 ElseIf Disk.Image.BitstreamImage.RPM <> 0 Then
-                    ForeColor = GetRPMColor(Disk.Image.BitstreamImage.RPM, Disk.DiskFormat)
+                    ForeColor = GetRPMColor(Disk.Image.BitstreamImage.RPM, Disk.DiskParams.Format)
                     .AddItem(DiskGroup, My.Resources.SummaryPanel_RPM, Disk.Image.BitstreamImage.RPM, ForeColor)
                 End If
             End If
@@ -680,9 +680,9 @@ Public Class SummaryPanel
                     Value &= " " & InParens(My.Resources.Label_Invalid)
                     ForeColor = Color.Red
                     Visible = True
-                ElseIf Disk.DiskFormat = FloppyDiskFormat.FloppyXDF35 AndAlso Disk.FAT.MediaDescriptor = &HF9 Then
+                ElseIf Disk.DiskParams.Format = FloppyDiskFormat.FloppyXDF35 AndAlso Disk.FAT.MediaDescriptor = &HF9 Then
                     Visible = False
-                ElseIf Disk.DiskFormat <> FloppyDiskFormat.FloppyUnknown AndAlso Disk.FAT.MediaDescriptor <> GetFloppyDiskMediaDescriptor(Disk.DiskFormat) Then
+                ElseIf Disk.DiskParams.Format <> FloppyDiskFormat.FloppyUnknown AndAlso Disk.FAT.MediaDescriptor <> Disk.DiskParams.BPBParams.MediaDescriptor Then
                     Value &= " " & InParens(My.Resources.Label_Mismatched)
                     ForeColor = Color.Red
                     Visible = True

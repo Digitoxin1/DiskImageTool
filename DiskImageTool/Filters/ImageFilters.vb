@@ -63,12 +63,12 @@ Namespace Filters
                 'Else
                 '    DiskType = GetFloppyDiskTypeName(Disk.Data.Length, True)
                 'End If
-                Dim DiskFormatBySize = GetFloppyDiskFormat(Disk.Image.Length)
+                Dim DiskFormatBySize = FloppyDiskFormatGet(Disk.Image.Length)
 
-                If Disk.DiskFormat <> FloppyDiskFormat.FloppyUnknown Or DiskFormatBySize = FloppyDiskFormat.FloppyUnknown Then
-                    DiskFormat = GetFloppyDiskFormatName(Disk.DiskFormat)
+                If Disk.DiskParams.Format <> FloppyDiskFormat.FloppyUnknown Or DiskFormatBySize = FloppyDiskFormat.FloppyUnknown Then
+                    DiskFormat = FloppyDiskFormatGetName(Disk.DiskParams.Format)
                 Else
-                    DiskFormat = GetFloppyDiskFormatName(DiskFormatBySize)
+                    DiskFormat = FloppyDiskFormatGetName(DiskFormatBySize)
                 End If
             End If
 
@@ -177,13 +177,13 @@ Namespace Filters
                 Disk_UnknownFormat = Not Disk.IsValidImage
                 Image_NotInDatabase = True
                 If Not Disk_UnknownFormat Then
-                    Dim MediaDescriptor = GetFloppyDiskMediaDescriptor(Disk.DiskFormat)
+                    Dim MediaDescriptor = Disk.DiskParams.BPBParams.MediaDescriptor
                     FAT_BadSectors = Disk.FAT.BadClusters.Count > 0
-                    FATS_MismatchedFATs = Not IsDiskFormatXDF(Disk.DiskFormat) AndAlso Not Disk.FATTables.FATsMatch
+                    FATS_MismatchedFATs = Not Disk.DiskParams.IsXDF AndAlso Not Disk.FATTables.FATsMatch
                     If Disk.BootSector.BPB.IsValid Then
                         If Disk.BootSector.BPB.MediaDescriptor <> MediaDescriptor Then
                             Disk_MismatchedMediaDescriptor = True
-                        ElseIf Disk.DiskFormat = FloppyDiskFormat.FloppyXDF35 And Disk.FAT.MediaDescriptor = &HF9 Then
+                        ElseIf Disk.DiskParams.Format = FloppyDiskFormat.FloppyXDF35 And Disk.FAT.MediaDescriptor = &HF9 Then
                             Disk_MismatchedMediaDescriptor = False
                         ElseIf Disk.FAT.HasMediaDescriptor AndAlso Disk.FAT.MediaDescriptor <> Disk.BootSector.BPB.MediaDescriptor Then
                             Disk_MismatchedMediaDescriptor = True
@@ -192,7 +192,7 @@ Namespace Filters
                         End If
                     End If
                     Disk_MismatchedImageSize = Disk.CheckImageSize <> 0
-                    Disk_CustomFormat = (GetFloppyDiskFormat(Disk.BPB) = FloppyDiskFormat.FloppyUnknown)
+                    Disk_CustomFormat = (FloppyDiskFormatGet(Disk.BPB) = FloppyDiskFormat.FloppyUnknown)
                     Disk_NOBPB = Not Disk.BootSector.BPB.IsValid
                     If Disk.BootSector.BootStrapCode.Length = 0 Then
                         If Disk.BootSector.CheckJumpInstruction(False, True) Then
@@ -262,7 +262,7 @@ Namespace Filters
                         If FileData Is Nothing Then
                             FileData = New FloppyDB.FileNameData(ImageData.FileName)
                         End If
-                        Dim Media = GetFloppyDiskFormatName(Disk.BPB, True)
+                        Dim Media = FloppyDiskFormatGetName(Disk.BPB, True)
                         _TitleDB.AddTile(FileData, Media, TitleFindResult.MD5)
                     End If
                 End If

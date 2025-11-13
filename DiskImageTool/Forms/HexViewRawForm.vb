@@ -51,7 +51,7 @@ Public Class HexViewRawForm
         ' Add any initialization after the InitializeComponent() call.
         _ToolTip = New TwoColumnToolTip()
         _FloppyImage = Disk.Image
-        _SectorsPerTrack = BuildBPB(Disk.DiskFormat).SectorsPerTrack
+        _SectorsPerTrack = Disk.DiskParams.BPBParams.SectorsPerTrack
         _Track = Track
         _Side = Side
         _AllTracks = AllTracks

@@ -1,12 +1,14 @@
-﻿Namespace Greaseweazle
+﻿Imports DiskImageTool.DiskImage.FloppyDiskFunctions
+
+Namespace Greaseweazle
     Public Class ConfigurationForm
         Private ReadOnly ToolTip1 As New ToolTip()
 
-        Private Sub InitializeDriveType(Combo As ComboBox, CurrentValue As GreaseweazleFloppyType)
-            Dim DriveList As New List(Of KeyValuePair(Of String, GreaseweazleFloppyType))
+        Private Sub InitializeDriveType(Combo As ComboBox, CurrentValue As FloppyMediaType)
+            Dim DriveList As New List(Of KeyValuePair(Of String, FloppyMediaType))
 
-            For Each FloppyType As GreaseweazleFloppyType In [Enum].GetValues(GetType(GreaseweazleFloppyType))
-                DriveList.Add(New KeyValuePair(Of String, GreaseweazleFloppyType)(
+            For Each FloppyType As FloppyMediaType In [Enum].GetValues(GetType(FloppyMediaType))
+                DriveList.Add(New KeyValuePair(Of String, FloppyMediaType)(
                     GreaseweazleFloppyTypeDescription(FloppyType), FloppyType)
                 )
             Next

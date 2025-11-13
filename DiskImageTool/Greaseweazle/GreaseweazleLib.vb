@@ -157,7 +157,7 @@ Namespace Greaseweazle
         End Function
 
         Public Sub WriteImageToDisk(ParentForm As Form, Image As DiskImageContainer)
-            Dim Form As New WriteDiskForm(Image)
+            Dim Form As New WriteDiskForm(Image.Disk, Image.ImageData.FileName)
             Form.ShowDialog(ParentForm)
         End Sub
 
@@ -242,6 +242,7 @@ Namespace Greaseweazle
                 Combo.SelectedValue = CurrentValue
             End If
         End Sub
+
         Public Function IsExecutable(path As String) As Boolean
             Return Not String.IsNullOrWhiteSpace(path) AndAlso
                 IO.File.Exists(path) AndAlso

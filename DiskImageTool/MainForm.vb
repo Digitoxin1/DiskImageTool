@@ -705,7 +705,7 @@ Public Class MainForm
         If Disk IsNot Nothing Then
             Dim IsValidImage = Disk.IsValidImage
             Dim CheckSize = Disk.CheckSize
-            FATTablesMatch = IsDiskFormatXDF(Disk.DiskFormat) OrElse Disk.FATTables.FATsMatch
+            FATTablesMatch = Disk.DiskParams.IsXDF OrElse Disk.FATTables.FATsMatch
 
             MenuHexBootSector.Enabled = CheckSize
             MenuEditBootSector.Enabled = CheckSize
@@ -1176,19 +1176,20 @@ Public Class MainForm
             CanResize = Disk.Image.CanResize
 
             If CanResize Then
-                Dim DiskFormatBySize = GetFloppyDiskFormat(Disk.Image.Length)
+                Dim DiskFormatBySize = FloppyDiskFormatGet(Disk.Image.Length)
+                Dim Format = Disk.DiskParams.Format
 
-                If Disk.DiskFormat = FloppyDiskFormat.Floppy160 And DiskFormatBySize = FloppyDiskFormat.Floppy180 Then
+                If Format = FloppyDiskFormat.Floppy160 And DiskFormatBySize = FloppyDiskFormat.Floppy180 Then
                     CanRestructureImage = True
-                ElseIf Disk.DiskFormat = FloppyDiskFormat.Floppy160 And DiskFormatBySize = FloppyDiskFormat.Floppy320 Then
+                ElseIf Format = FloppyDiskFormat.Floppy160 And DiskFormatBySize = FloppyDiskFormat.Floppy320 Then
                     CanRestructureImage = True
-                ElseIf Disk.DiskFormat = FloppyDiskFormat.Floppy160 And DiskFormatBySize = FloppyDiskFormat.Floppy360 Then
+                ElseIf Format = FloppyDiskFormat.Floppy160 And DiskFormatBySize = FloppyDiskFormat.Floppy360 Then
                     CanRestructureImage = True
-                ElseIf Disk.DiskFormat = FloppyDiskFormat.Floppy180 And DiskFormatBySize = FloppyDiskFormat.Floppy360 Then
+                ElseIf format = FloppyDiskFormat.Floppy180 And DiskFormatBySize = FloppyDiskFormat.Floppy360 Then
                     CanRestructureImage = True
-                ElseIf Disk.DiskFormat = FloppyDiskFormat.Floppy320 And DiskFormatBySize = FloppyDiskFormat.Floppy360 Then
+                ElseIf Format = FloppyDiskFormat.Floppy320 And DiskFormatBySize = FloppyDiskFormat.Floppy360 Then
                     CanRestructureImage = True
-                ElseIf Disk.DiskFormat = FloppyDiskFormat.Floppy720 And DiskFormatBySize = FloppyDiskFormat.Floppy1440 Then
+                ElseIf Format = FloppyDiskFormat.Floppy720 And DiskFormatBySize = FloppyDiskFormat.Floppy1440 Then
                     CanRestructureImage = True
                 End If
 

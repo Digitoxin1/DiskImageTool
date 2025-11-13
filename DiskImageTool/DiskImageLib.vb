@@ -374,7 +374,7 @@ Module DiskImageLib
         End If
 
         If Disk IsNot Nothing Then
-            DiskFormat = Disk.DiskFormat
+            DiskFormat = Disk.DiskParams.Format
         End If
 
         Dim FileExt = IO.Path.GetExtension(FilePath)

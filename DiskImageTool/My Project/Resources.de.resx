@@ -1631,4 +1631,7 @@ Hinweis: Diese ID wird normalerweise erzeugt, indem das aktuelle Datum und die a
   <data name="Dialog_ConfirmWrite" xml:space="preserve">
     <value>Dieser Vorgang überschreibt alle Daten auf der Diskette im Laufwerk {1}.{0}{0}Alle vorhandenen Inhalte gehen dauerhaft verloren.{0}{0}Möchten Sie fortfahren?</value>
   </data>
+  <data name="FileType_SectorImage" xml:space="preserve">
+    <value>Sektorabbild</value>
+  </data>
 </root>

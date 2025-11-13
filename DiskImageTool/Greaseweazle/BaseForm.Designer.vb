@@ -33,9 +33,9 @@
             Me.TableLayoutPanelMain = New System.Windows.Forms.TableLayoutPanel()
             Me.TextBoxConsole = New System.Windows.Forms.TextBox()
             Me.StatusStripBottom = New System.Windows.Forms.StatusStrip()
-            Me.StatusType = New System.Windows.Forms.ToolStripStatusLabel()
             Me.StatusTrack = New System.Windows.Forms.ToolStripStatusLabel()
             Me.StatusSide = New System.Windows.Forms.ToolStripStatusLabel()
+            Me.StatusType = New System.Windows.Forms.ToolStripStatusLabel()
             Label3 = New System.Windows.Forms.Label()
             PanelBottom = New System.Windows.Forms.FlowLayoutPanel()
             PanelMain = New System.Windows.Forms.Panel()
@@ -107,13 +107,6 @@
             Me.StatusStripBottom.Name = "StatusStripBottom"
             Me.StatusStripBottom.SizingGrip = False
             '
-            'StatusType
-            '
-            resources.ApplyResources(Me.StatusType, "StatusType")
-            Me.StatusType.Margin = New System.Windows.Forms.Padding(2, 3, 2, 2)
-            Me.StatusType.Name = "StatusType"
-            Me.StatusType.Spring = True
-            '
             'StatusTrack
             '
             Me.StatusTrack.Margin = New System.Windows.Forms.Padding(2, 3, 0, 2)
@@ -126,6 +119,13 @@
             Me.StatusSide.Margin = New System.Windows.Forms.Padding(0, 3, 2, 2)
             Me.StatusSide.Name = "StatusSide"
             resources.ApplyResources(Me.StatusSide, "StatusSide")
+            '
+            'StatusType
+            '
+            resources.ApplyResources(Me.StatusType, "StatusType")
+            Me.StatusType.Margin = New System.Windows.Forms.Padding(2, 3, 2, 2)
+            Me.StatusType.Name = "StatusType"
+            Me.StatusType.Spring = True
             '
             'BaseForm
             '

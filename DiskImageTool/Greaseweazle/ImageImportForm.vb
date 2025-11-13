@@ -1,4 +1,5 @@
 ﻿Imports System.ComponentModel
+Imports DiskImageTool.DiskImage.FloppyDiskFunctions
 
 Namespace Greaseweazle
     Public Class ImageImportForm
@@ -21,6 +22,7 @@ Namespace Greaseweazle
         Private _StatusUnexpected As ToolStripStatusLabel
         Private _TotalBadSectors As UInteger = 0
         Private _TotalUnexpectedSectors As UInteger = 0
+        Private _CachedOutputTypeValue As GreaseweazleOutputType = GreaseweazleOutputType.IMA
 
         Public Sub New(FilePath As String, TrackCount As Integer, SideCount As Integer)
             MyBase.New()
@@ -33,8 +35,8 @@ Namespace Greaseweazle
             _SideCount = SideCount
             TrackGridInit(_TrackCount, _SideCount)
             Dim ImageFormat = DetectImageFormat()
-            PopulateImageFormats(ImageFormat)
             PopulateOutputTypes()
+            PopulateImageFormats(ImageFormat)
 
             Process = New ConsoleProcessRunner With {
                 .EventContext = Threading.SynchronizationContext.Current
@@ -64,7 +66,7 @@ Namespace Greaseweazle
             _OutputFilePath = ""
         End Sub
 
-        Private Function DetectImageFormat() As GreaseweazleImageFormat
+        Private Function DetectImageFormat() As DiskImage.FloppyDiskFormat
             Dim Response = ConvertFirstTrack(_InputFilePath)
 
             If Not Response.Result Then
@@ -72,31 +74,45 @@ Namespace Greaseweazle
             End If
 
             Dim Buffer As Byte()
+            Dim SecondOffset As Long = 4096
+            Dim Length As Integer = 513
+            Dim DetectedFormat As FloppyDiskFormat
 
             Using fs As New IO.FileStream(Response.FileName, IO.FileMode.Open, IO.FileAccess.Read, IO.FileShare.Read)
                 Using br As New IO.BinaryReader(fs, System.Text.Encoding.ASCII, leaveOpen:=False)
-                    Buffer = br.ReadBytes(513)
+                    Buffer = br.ReadBytes(Length)
+                    DetectedFormat = FloppyDiskFormatGet(Buffer)
+                    If DetectedFormat = FloppyDiskFormat.FloppyXDFMicro Then
+                        If fs.Length >= SecondOffset + Length Then
+                            fs.Seek(SecondOffset, IO.SeekOrigin.Begin)
+                            Buffer = br.ReadBytes(513)
+                            DetectedFormat = FloppyDiskFormatGet(Buffer)
+                        End If
+                    End If
                 End Using
             End Using
 
-            Dim DetectedFormat = DiskImage.GetFloppyDiskFormat(Buffer)
-
             DeleteFileIfExists(Response.FileName)
 
-            Return GreaseweazleImageFormatFromFloppyDiskFormat(DetectedFormat)
+            Return DetectedFormat
         End Function
 
-        Private Function GenerateCommandLine(ImageFormat As GreaseweazleImageFormat, OutputType As GreaseweazleOutputType, DoubleStep As Boolean) As String
+        Private Function GenerateCommandLine(DiskParams As FloppyDiskParams, OutputType As GreaseweazleOutputType, DoubleStep As Boolean) As String
             Dim Builder = New CommandLineBuilder(CommandLineBuilder.CommandAction.convert) With {
                 .InFile = _InputFilePath,
                 .OutFile = _OutputFilePath
             }
 
+            If Not DiskParams.IsStandard Then
+                OutputType = GreaseweazleOutputType.HFE
+            End If
+
             If OutputType <> GreaseweazleOutputType.HFE Then
+                Dim ImageFormat = GreaseweazleImageFormatFromFloppyDiskFormat(DiskParams.Format)
                 Builder.Format = GreaseweazleImageFormatCommandLine(ImageFormat)
             Else
-                Builder.BitRate = GreaseweazleImageFormatBitrate(ImageFormat)
-                Builder.AdjustSpeed = GreaseweazleImageFormatRPM(ImageFormat) & "rpm"
+                Builder.BitRate = DiskParams.BitRateKbps
+                Builder.AdjustSpeed = DiskParams.RPM & "rpm"
             End If
 
             If DoubleStep Then
@@ -109,7 +125,7 @@ Namespace Greaseweazle
         Private Sub InitializeControls()
             Dim FileNameLabel = New Label With {
                 .Text = My.Resources.Label_FileName,
-                .Anchor = AnchorStyles.Left,
+                .Anchor = AnchorStyles.Right,
                 .AutoSize = True
             }
 
@@ -120,13 +136,13 @@ Namespace Greaseweazle
 
             Dim ImageFormatLabel = New Label With {
                 .Text = My.Resources.Label_ImageFormat,
-                .Anchor = AnchorStyles.Left,
+                .Anchor = AnchorStyles.Right,
                 .AutoSize = True
             }
 
             ComboImageFormat = New ComboBox With {
                 .Anchor = AnchorStyles.Left,
-                .Width = 175
+                .Width = 200
             }
 
             Dim OutputTypeLabel = New Label With {
@@ -167,6 +183,7 @@ Namespace Greaseweazle
             ButtonOk.Text = My.Resources.Label_Import
             ButtonOk.Visible = True
 
+            Dim Row As Integer
 
             With TableLayoutPanelMain
                 .SuspendLayout()
@@ -188,39 +205,49 @@ Namespace Greaseweazle
                     .ColumnStyles(j).SizeType = SizeType.AutoSize
                 Next
 
-                TableLayoutPanelMain.Controls.Add(TableSide0Outer, 0, 2)
-                TableLayoutPanelMain.SetColumnSpan(TableSide0Outer, 2)
+                Row = 0
+                .Controls.Add(FileNameLabel, 0, Row)
+                .Controls.Add(TextBoxFileName, 1, Row)
+                .SetColumnSpan(TextBoxFileName, 3)
 
-                TableLayoutPanelMain.Controls.Add(TableSide1Outer, 2, 2)
-                TableLayoutPanelMain.SetColumnSpan(TableSide1Outer, 2)
+                Row = 1
+                .Controls.Add(ImageFormatLabel, 0, Row)
+                .Controls.Add(ComboImageFormat, 1, Row)
 
-                TableLayoutPanelMain.Controls.Add(FileNameLabel, 0, 0)
-                TableLayoutPanelMain.Controls.Add(TextBoxFileName, 1, 0)
-                TableLayoutPanelMain.SetColumnSpan(TextBoxFileName, 3)
+                .Controls.Add(OutputTypeLabel, 2, Row)
+                .Controls.Add(ComboOutputType, 3, Row)
 
-                TableLayoutPanelMain.Controls.Add(ImageFormatLabel, 0, 1)
-                TableLayoutPanelMain.Controls.Add(ComboImageFormat, 1, 1)
+                .Controls.Add(CheckBoxDoublestep, 4, Row)
 
-                TableLayoutPanelMain.Controls.Add(OutputTypeLabel, 2, 1)
-                TableLayoutPanelMain.Controls.Add(ComboOutputType, 3, 1)
+                Row = 2
+                .Controls.Add(TableSide0Outer, 0, Row)
+                .SetColumnSpan(TableSide0Outer, 2)
 
-                TableLayoutPanelMain.Controls.Add(CheckBoxDoublestep, 4, 1)
+                .Controls.Add(TableSide1Outer, 2, Row)
+                .SetColumnSpan(TableSide1Outer, 2)
 
-                TableLayoutPanelMain.Controls.Add(ButtonProcess, 4, 2)
+                .Controls.Add(ButtonProcess, 4, Row)
 
                 .ResumeLayout()
                 .Left = (.Parent.ClientSize.Width - .Width) \ 2
             End With
         End Sub
-        Private Sub PopulateImageFormats(SelectedValue As GreaseweazleImageFormat)
-            Dim DriveList As New List(Of KeyValuePair(Of String, GreaseweazleImageFormat))
-            For Each ImageFormat As GreaseweazleImageFormat In [Enum].GetValues(GetType(GreaseweazleImageFormat))
-                DriveList.Add(New KeyValuePair(Of String, GreaseweazleImageFormat)(
-                    GreaseweazleImageFormatDescription(ImageFormat), ImageFormat)
-                )
-            Next
 
-            InitializeCombo(ComboImageFormat, DriveList, SelectedValue)
+        Private Sub PopulateImageFormats(SelectedFormat As FloppyDiskFormat?)
+            Dim list = FloppyDiskFormatGetComboList()
+
+            ComboImageFormat.DisplayMember = "Description"
+            ComboImageFormat.ValueMember = Nothing
+            ComboImageFormat.DataSource = list
+            ComboImageFormat.DropDownStyle = ComboBoxStyle.DropDownList
+
+            If SelectedFormat.HasValue Then
+                Dim match = list.FirstOrDefault(Function(p) p.Format = SelectedFormat.Value)
+                If match IsNot Nothing Then
+                    match.Detected = True
+                    ComboImageFormat.SelectedItem = match
+                End If
+            End If
         End Sub
 
         Private Sub PopulateOutputTypes()
@@ -240,10 +267,15 @@ Namespace Greaseweazle
                 Exit Sub
             End If
 
+            Dim DiskParams As FloppyDiskParams = ComboImageFormat.SelectedValue
+
+            If DiskParams.IsNonImage Then
+                Exit Sub
+            End If
+
             ClearOutputFile()
             ResetStatusBar()
 
-            Dim ImageFormat As GreaseweazleImageFormat = ComboImageFormat.SelectedValue
             Dim OutputType As GreaseweazleOutputType = ComboOutputType.SelectedValue
 
             Dim TempPath = InitTempImagePath()
@@ -260,12 +292,12 @@ Namespace Greaseweazle
             _TrackStatus.Clear()
             TrackGridReset(_TrackCount, _SideCount)
 
-            Dim DoubleStep As Boolean = CheckBoxDoublestep.Enabled AndAlso CheckBoxDoublestep.Checked
+            Dim DoubleStep As Boolean = DiskParams.IsStandard AndAlso CheckBoxDoublestep.Enabled AndAlso CheckBoxDoublestep.Checked
             _DoubleStep = DoubleStep
 
             ToggleProcessRunning(True)
 
-            Dim Arguments = GenerateCommandLine(ImageFormat, OutputType, DoubleStep)
+            Dim Arguments = GenerateCommandLine(DiskParams, OutputType, DoubleStep)
             Process.StartAsync(My.Settings.GW_Path, Arguments)
         End Sub
 
@@ -338,27 +370,43 @@ Namespace Greaseweazle
             End If
         End Sub
 
-        Private Sub RefreshButtonState()
-            Dim ImageFormat As GreaseweazleImageFormat = ComboImageFormat.SelectedValue
+        Private Sub RefreshButtonState(CheckImageFormat As Boolean)
+            Dim ImageParams As FloppyDiskParams = ComboImageFormat.SelectedValue
+            Dim OutputTypeDisabled As Boolean = False
+
+            If CheckImageFormat Then
+                If ImageParams.IsNonImage Then
+                    OutputTypeDisabled = False
+                Else
+                    Dim ImageFormat = GreaseweazleImageFormatFromFloppyDiskFormat(ImageParams.Format)
+                    OutputTypeDisabled = (ImageFormat = GreaseweazleImageFormat.None)
+                End If
+
+                If ComboOutputType.Enabled AndAlso OutputTypeDisabled Then
+                    _CachedOutputTypeValue = ComboOutputType.SelectedValue
+                    ComboOutputType.SelectedValue = GreaseweazleOutputType.HFE
+                ElseIf Not ComboOutputType.Enabled And Not OutputTypeDisabled Then
+                    ComboOutputType.SelectedValue = _CachedOutputTypeValue
+                End If
+            End If
 
             ComboImageFormat.Enabled = Not _ProcessRunning
-            ComboOutputType.Enabled = Not _ProcessRunning
+            ComboOutputType.Enabled = Not _ProcessRunning And Not OutputTypeDisabled
 
-            ButtonProcess.Enabled = ImageFormat <> GreaseweazleImageFormat.None
+            ButtonProcess.Enabled = ImageParams.Format <> FloppyDiskFormat.FloppyUnknown
             If _ProcessRunning Then
                 ButtonProcess.Text = My.Resources.Label_Abort
             Else
                 ButtonProcess.Text = My.Resources.Label_Process
             End If
 
-            Select Case ImageFormat
-                Case GreaseweazleImageFormat.IBM_160, GreaseweazleImageFormat.IBM_180, GreaseweazleImageFormat.IBM_320, GreaseweazleImageFormat.IBM_360
-                    CheckBoxDoublestep.Enabled = Not _ProcessRunning AndAlso _TrackCount > 42
-                    CheckBoxDoublestep.Checked = _TrackCount > 79
-                Case Else
-                    CheckBoxDoublestep.Enabled = False
-                    CheckBoxDoublestep.Checked = False
-            End Select
+            If ImageParams.IsStandard AndAlso ImageParams.MediaType = FloppyMediaType.Media525DoubleDensity Then
+                CheckBoxDoublestep.Enabled = Not _ProcessRunning AndAlso _TrackCount > 42
+                CheckBoxDoublestep.Checked = _TrackCount > 79
+            Else
+                CheckBoxDoublestep.Enabled = False
+                CheckBoxDoublestep.Checked = False
+            End If
 
             RefreshImportButtonState()
         End Sub
@@ -401,7 +449,7 @@ Namespace Greaseweazle
 
         Private Sub ToggleProcessRunning(Value As Boolean)
             _ProcessRunning = Value
-            RefreshButtonState()
+            RefreshButtonState(False)
         End Sub
 
         Private Function UpdateStatusInfo(TrackInfo As ConsoleOutputParser.TrackInfo) As TrackStatusInfo
@@ -461,7 +509,7 @@ Namespace Greaseweazle
         End Sub
 
         Private Sub ComboImageFormat_SelectedIndexChanged(sender As Object, e As EventArgs) Handles ComboImageFormat.SelectedIndexChanged
-            RefreshButtonState()
+            RefreshButtonState(True)
         End Sub
 
         Private Sub ImageImportForm_FormClosing(sender As Object, e As FormClosingEventArgs) Handles Me.FormClosing

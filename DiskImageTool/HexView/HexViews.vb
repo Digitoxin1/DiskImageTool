@@ -81,7 +81,7 @@ Module HexViews
     Public Function HexDisplayFAT(Disk As Disk) As Boolean
         Dim HexViewSectorData = HexViewFAT(Disk)
 
-        Dim SyncBlocks = Disk.BPB.NumberOfFATEntries > 1 AndAlso Not IsDiskFormatXDF(Disk.DiskFormat)
+        Dim SyncBlocks = Disk.BPB.NumberOfFATEntries > 1 AndAlso Not Disk.DiskParams.IsXDF
 
         Return DisplayHexViewForm(HexViewSectorData, SyncBlocks)
     End Function
@@ -302,7 +302,7 @@ Module HexViews
         Dim OriginalData() As Byte = Nothing
 
         Dim NumberOfFATs As Byte
-        If IsDiskFormatXDF(Disk.DiskFormat) Then
+        If Disk.DiskParams.IsXDF Then
             NumberOfFATs = 1
         Else
             NumberOfFATs = Disk.BPB.NumberOfFATs

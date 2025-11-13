@@ -6,7 +6,7 @@
         Private ReadOnly _FloppyImage As IFloppyImage
         Private ReadOnly _RootDirectory As RootDirectory
         Private _BPB As BiosParameterBlock
-        Private _DiskFormat As FloppyDiskFormat
+        Private _DiskParams As FloppyDiskParams
 
         Sub New(FloppyImage As IFloppyImage, FatIndex As UShort, Optional Modifications As Stack(Of DataChange()) = Nothing)
             _FloppyImage = FloppyImage
@@ -16,8 +16,8 @@
             _BPB = GetBPB(FloppyImage.BytesPerSector)
 
             _FATTables = New FATTables(_BPB, _FloppyImage, FatIndex)
-            _DiskFormat = InferFloppyDiskFormat()
-            _FATTables.SyncFATs = Not IsDiskFormatXDF(_DiskFormat)
+            _DiskParams = FloppyDiskFormatGetParams(InferFloppyDiskFormat())
+            _FATTables.SyncFATs = Not _DiskParams.IsXDF
 
             _RootDirectory = New RootDirectory(Me, _FATTables.FAT)
 
@@ -39,9 +39,9 @@
             End Get
         End Property
 
-        Public ReadOnly Property DiskFormat As FloppyDiskFormat
+        Public ReadOnly Property DiskParams As FloppyDiskParams
             Get
-                Return _DiskFormat
+                Return _DiskParams
             End Get
         End Property
 
@@ -131,8 +131,8 @@
         Public Sub Reinitialize()
             _BPB = GetBPB(_FloppyImage.BytesPerSector)
             _FATTables.Reinitialize(_BPB)
-            _DiskFormat = InferFloppyDiskFormat()
-            _FATTables.SyncFATs = Not IsDiskFormatXDF(_DiskFormat)
+            _DiskParams = FloppyDiskFormatGetParams(InferFloppyDiskFormat())
+            _FATTables.SyncFATs = Not _DiskParams.IsXDF
             _RootDirectory.RefreshData()
         End Sub
 
@@ -148,20 +148,20 @@
             If _BootSector.BPB.IsValid Then
                 'BPB = _BootSector.BPB
                 BPB = New BiosParameterBlock(_BootSector.Data)
-                Dim DiskFormat = GetFloppyDiskFomat(BPB.MediaDescriptor)
+                Dim DiskFormat = FloppyDiskFormatGet(BPB.MediaDescriptor)
                 If DiskFormat = FloppyDiskFormat.Floppy160 Or DiskFormat = FloppyDiskFormat.Floppy180 Then
                     BPB.SectorsPerCluster = 1
                 End If
             Else
                 Dim FATMediaDescriptor = GetFATMediaDescriptor()
 
-                Dim DiskFormatSize = GetFloppyDiskFormat(_FloppyImage.Length)
-                Dim DiskFormatFAT = GetFloppyDiskFomat(FATMediaDescriptor)
+                Dim DiskFormatSize = FloppyDiskFormatGet(_FloppyImage.Length)
+                Dim DiskFormatFAT = FloppyDiskFormatGet(FATMediaDescriptor)
 
                 If DiskFormatFAT = FloppyDiskFormat.Floppy360 And DiskFormatSize = FloppyDiskFormat.Floppy180 Then
-                    FATMediaDescriptor = GetFloppyDiskMediaDescriptor(DiskFormatSize)
+                    FATMediaDescriptor = FloppyDiskFormatGetParams(DiskFormatSize).BPBParams.MediaDescriptor
                 ElseIf DiskFormatFAT = FloppyDiskFormat.Floppy320 And DiskFormatSize = FloppyDiskFormat.Floppy160 Then
-                    FATMediaDescriptor = GetFloppyDiskMediaDescriptor(DiskFormatSize)
+                    FATMediaDescriptor = FloppyDiskFormatGetParams(DiskFormatSize).BPBParams.MediaDescriptor
                 End If
 
                 BPB = BuildBPB(FATMediaDescriptor)
@@ -194,11 +194,11 @@
             Dim DiskFormat As FloppyDiskFormat
 
             If _BPB.IsValid Then
-                DiskFormat = GetFloppyDiskFormat(_BPB)
+                DiskFormat = FloppyDiskFormatGet(_BPB)
             Else
-                DiskFormat = GetFloppyDiskFomat(_FATTables.FAT.MediaDescriptor)
+                DiskFormat = FloppyDiskFormatGet(_FATTables.FAT.MediaDescriptor)
                 If DiskFormat = FloppyDiskFormat.FloppyUnknown Then
-                    DiskFormat = GetFloppyDiskFormat(_FloppyImage.Length)
+                    DiskFormat = FloppyDiskFormatGet(_FloppyImage.Length)
                 End If
             End If
 

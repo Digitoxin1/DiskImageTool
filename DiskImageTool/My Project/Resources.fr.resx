@@ -1631,4 +1631,7 @@ Remarque : cette valeur doit être {1} pour toutes les disquettes</value>
   <data name="Dialog_ConfirmWrite" xml:space="preserve">
     <value>Cette opération écrasera toutes les données présentes sur le disque du lecteur {1}.{0}{0}Tout le contenu existant sera définitivement perdu.{0}{0}Souhaitez-vous continuer ?</value>
   </data>
+  <data name="FileType_SectorImage" xml:space="preserve">
+    <value>Image de secteur</value>
+  </data>
 </root>
