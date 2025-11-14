@@ -510,7 +510,7 @@ Module ImageIO
         Dim Response As SaveImageResponse = SaveImageResponse.Failed
         Dim Result As Boolean = False
 
-        If Not CheckCompatibility(FileImageType, Disk.Image) Then
+        If Not CheckCompatibility(FileImageType, Disk.Image, Disk.DiskParams.Format) Then
             Return SaveImageResponse.Cancelled
         End If
 
@@ -520,7 +520,17 @@ Module ImageIO
             End If
 
         ElseIf FileImageType = FloppyImageType.BasicSectorImage Then
-            Dim Data = Disk.Image.GetBytes()
+            Dim Data As Byte()
+            If Disk.Image.IsBitstreamImage AndAlso Disk.DiskParams.Format = FloppyDiskFormat.FloppyXDFMicro Then
+                Dim XDFResponse = ImageFormats.XDFImageToBasicSectorImaage(Disk.Image.BitstreamImage)
+                If XDFResponse.Result Then
+                    Data = XDFResponse.Data
+                Else
+                    Return SaveImageResponse.Unknown
+                End If
+            Else
+                Data = Disk.Image.GetBytes()
+            End If
 
             If Not DoBackup OrElse CreateBackupIfExists(FilePath) Then
                 Result = SaveByteArrayToFile(FilePath, Data)
@@ -612,7 +622,7 @@ Module ImageIO
         Return Response
     End Function
 
-    Private Function CheckCompatibility(FileImageType As FloppyImageType, FloppyImage As IFloppyImage) As Boolean
+    Private Function CheckCompatibility(FileImageType As FloppyImageType, FloppyImage As IFloppyImage, Format As FloppyDiskFormat) As Boolean
         Dim Msg As String
 
         If FileImageType = FloppyImage.ImageType Then
@@ -648,6 +658,10 @@ Module ImageIO
         End If
 
         If FileImageType = FloppyImageType.BasicSectorImage Then
+            If Format = FloppyDiskFormat.FloppyXDFMicro Then
+                Return True
+            End If
+
             If FloppyImage.NonStandardTracks.Count > 0 Then
                 Msg = String.Format(My.Resources.Dialog_Image_NonStandardTracks, Environment.NewLine)
                 If MsgBox(Msg, MsgBoxStyle.Exclamation + MsgBoxStyle.YesNo + MsgBoxStyle.DefaultButton2) = MsgBoxResult.No Then

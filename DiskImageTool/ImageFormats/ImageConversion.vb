@@ -593,6 +593,40 @@ Namespace ImageFormats
             Return Transcopy
         End Function
 
+        Public Function XDFImageToBasicSectorImaage(Image As IBitstreamImage) As (Result As Boolean, Data As Byte())
+            Dim XDFResponse = XDFImageParseTrack0(Image)
+
+            If XDFResponse.Format = FloppyDiskFormat.FloppyUnknown Then
+                Return (False, Nothing)
+            End If
+
+            Dim Offsets = GetXDFOffsetMap(XDFResponse.Format)
+
+            Using MS As New IO.MemoryStream()
+                MS.Write(XDFResponse.Data, 0, XDFResponse.Data.Length)
+
+                For Track = 1 To 79
+                    Dim Buffer(XDFResponse.SectorsPerTrack * 512 * 2 - 1) As Byte
+                    For Side = 0 To 1
+                        If Track < Image.TrackCount AndAlso Side < Image.SideCount Then
+                            Dim BitstreamTrack = Image.GetTrack(Track, Side)
+                            If BitstreamTrack.TrackType = BitstreamTrackType.MFM Then
+                                For Each Sector In BitstreamTrack.MFMData.Sectors
+                                    Dim Offset As Integer
+                                    If Offsets.TryGetValue((Side, Sector.Size), Offset) Then
+                                        Sector.Data.CopyTo(Buffer, Offset)
+                                    End If
+                                Next
+                            End If
+                        End If
+                    Next
+                    MS.Write(Buffer, 0, Buffer.Length)
+                Next
+
+                Return (True, MS.ToArray)
+            End Using
+        End Function
+
         Private Function AdjustTrackCount(TrackCount As UShort) As UShort
             Dim NewTrackCount As UShort
 
@@ -740,6 +774,10 @@ Namespace ImageFormats
             End Select
         End Function
 
+        Private Function GetImageOffset(Params As FloppyDiskBPBParams, Track As UShort, Side As UShort, SectorId As UShort) As UInteger
+            Return (Track * Params.NumberOfHeads * Params.SectorsPerTrack + Params.SectorsPerTrack * Side + (SectorId - 1)) * Params.BytesPerSector
+        End Function
+
         Private Function GetIMDMode(Bitrate As UShort, IsMFM As Boolean) As IMD.TrackMode
             If IsMFM Then
                 If Bitrate = 1000 Then
@@ -784,11 +822,6 @@ Namespace ImageFormats
                     Return IMD.SectorSize.Sectorsize512
             End Select
         End Function
-
-        Private Function GetImageOffset(Params As FloppyDiskBPBParams, Track As UShort, Side As UShort, SectorId As UShort) As UInteger
-            Return (Track * Params.NumberOfHeads * Params.SectorsPerTrack + Params.SectorsPerTrack * Side + (SectorId - 1)) * Params.BytesPerSector
-        End Function
-
         Private Function GetMFMSectorSize(BytesPerSector As UInteger) As IBM_MFM_Bitstream.MFMSectorSize
             Select Case BytesPerSector
                 Case 128
@@ -892,6 +925,33 @@ Namespace ImageFormats
             Return TrackCount
         End Function
 
+        Private Function GetXDFOffsetMap(Format As FloppyDiskFormat) As Dictionary(Of (Side As Byte, Size As Byte), Integer)
+            Select Case Format
+                Case FloppyDiskFormat.FloppyXDF35
+                    Return New Dictionary(Of (Side As Byte, Size As Byte), Integer) From {
+                        {(0, 3), 0},
+                        {(0, 4), 1024},
+                        {(1, 6), 3072},
+                        {(0, 2), 11264},
+                        {(1, 2), 11776},
+                        {(0, 6), 12288},
+                        {(1, 4), 20480},
+                        {(1, 3), 22528}
+                    }
+                Case FloppyDiskFormat.FloppyXDF525
+                    Return New Dictionary(Of (Side As Byte, Size As Byte), Integer) From {
+                        {(0, 3), 0},       ' 1K,  side 0
+                        {(0, 6), 1024},    ' 8K,  side 0
+                        {(1, 2), 9216},    ' 512, side 1
+                        {(0, 2), 9728},    ' 512, side 0
+                        {(1, 6), 10240},   ' 8K,  side 1
+                        {(1, 3), 18432}    ' 1K,  side 1
+                   }
+                Case Else
+                    Return Nothing
+            End Select
+        End Function
+
         Private Function MFMBitstreamFromSectorImage(Data() As Byte, Params As FloppyDiskParams, Track As UShort, Side As Byte) As IBM_MFM_Bitstream
             Dim MFMBitstream = New IBM_MFM_Bitstream(Params.Gaps.Gap4A, Params.Gaps.Gap1)
 
@@ -941,6 +1001,92 @@ Namespace ImageFormats
             End If
 
             Return PSISector
+        End Function
+
+        Private Function XDFImageParseTrack0(Image As IBitstreamImage) As (Format As FloppyDiskFormat, SectorsPerTrack As UShort, Data As Byte())
+            Dim ValidSectorCount() As Integer = {32, 38}
+            Const MICRODISK_SECTOR_COUNT As Integer = 8
+            Const SECTOR_SIZE As Integer = 512
+            Const BAD_SECTOR_COUNT_35 As Integer = 5
+            Const BAD_SECTOR_COUNT_525 As Integer = 6
+
+            Dim SectorCount As Integer = 0
+            Dim Buffer() As Byte
+            Using Stream As New IO.MemoryStream()
+                For Side = 0 To 1
+                    Dim BitstreamTrack = Image.GetTrack(0, Side)
+                    Dim Sectors = BitstreamTrack.MFMData.Sectors.OrderBy(Function(s) s.SectorId).ToList()
+                    For Each Sector In Sectors
+                        Stream.Write(Sector.Data, 0, Sector.Data.Length)
+                        SectorCount += 1
+                    Next
+                Next
+                Buffer = Stream.ToArray
+            End Using
+
+            If Buffer.Length Mod SECTOR_SIZE <> 0 OrElse Not ValidSectorCount.Contains(Buffer.Length \ SECTOR_SIZE) Then
+                Return (FloppyDiskFormat.FloppyUnknown, 0, Nothing)
+            End If
+
+            Dim Offset As Integer = 0
+
+            Dim MicroDiskData(MICRODISK_SECTOR_COUNT * SECTOR_SIZE - 1) As Byte
+            Array.Copy(Buffer, Offset, MicroDiskData, 0, MicroDiskData.Length)
+            Offset += MicroDiskData.Length
+
+            Dim BootSectorData(SECTOR_SIZE - 1) As Byte
+            Array.Copy(Buffer, Offset, BootSectorData, 0, BootSectorData.Length)
+            Offset += BootSectorData.Length
+
+            Dim Format = FloppyDiskFormatGet(BootSectorData)
+
+            If Format <> FloppyDiskFormat.FloppyXDF525 And Format <> FloppyDiskFormat.FloppyXDF35 Then
+                Return (FloppyDiskFormat.FloppyUnknown, 0, Nothing)
+            End If
+
+            Dim BPB = BuildBPB(Format)
+
+            Dim FATSectorData(BPB.SectorsPerFAT * SECTOR_SIZE - 1) As Byte
+            Array.Copy(Buffer, Offset, FATSectorData, 0, FATSectorData.Length)
+            Offset += FATSectorData.Length
+
+            Dim RootDirectoryData(BPB.RootEntryCount * 32 - 1) As Byte
+            Array.Copy(Buffer, Offset, RootDirectoryData, 0, RootDirectoryData.Length)
+            Offset += RootDirectoryData.Length
+
+            Dim DataBlocks(Buffer.Length - Offset - 1) As Byte
+            If DataBlocks.Length > 0 Then
+                Array.Copy(Buffer, Offset, DataBlocks, 0, DataBlocks.Length)
+            End If
+
+            Dim BadSectorCount As Integer
+            If Format = FloppyDiskFormat.FloppyXDF35 Then
+                BadSectorCount = BAD_SECTOR_COUNT_35
+            Else
+                BadSectorCount = BAD_SECTOR_COUNT_525
+            End If
+
+            Dim BadSectorBlocks(BadSectorCount * SECTOR_SIZE - 1) As Byte
+            Offset = MicroDiskData.Length - BadSectorBlocks.Length
+            Array.Copy(MicroDiskData, Offset, BadSectorBlocks, 0, BadSectorBlocks.Length)
+
+            Using Stream As New IO.MemoryStream()
+                Stream.Write(BootSectorData, 0, BootSectorData.Length)
+                Stream.Write(FATSectorData, 0, FATSectorData.Length)
+
+                Array.Copy(MicroDiskData, 0, FATSectorData, 0, MicroDiskData.Length)
+                Stream.Write(FATSectorData, 0, FATSectorData.Length)
+
+                Stream.Write(RootDirectoryData, 0, RootDirectoryData.Length)
+                Stream.Write(BadSectorBlocks, 0, BadSectorBlocks.Length)
+
+                If DataBlocks.Length > 0 Then
+                    Stream.Write(DataBlocks, 0, DataBlocks.Length)
+                End If
+                Buffer = Stream.ToArray
+            End Using
+
+            Return (Format, BPB.SectorsPerTrack, Buffer)
         End Function
     End Module
 End Namespace
