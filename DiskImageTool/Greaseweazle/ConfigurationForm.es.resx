@@ -141,4 +141,16 @@
   <data name="ButtonInfo.Text" xml:space="preserve">
     <value>Información</value>
   </data>
+  <data name="LabelTracks2.Text" xml:space="preserve">
+    <value>Pistas</value>
+  </data>
+  <data name="LabelTracks1.Text" xml:space="preserve">
+    <value>Pistas</value>
+  </data>
+  <data name="LabelTracks0.Text" xml:space="preserve">
+    <value>Pistas</value>
+  </data>
+  <data name="LabelPort.Text" xml:space="preserve">
+    <value>Puerto</value>
+  </data>
 </root>

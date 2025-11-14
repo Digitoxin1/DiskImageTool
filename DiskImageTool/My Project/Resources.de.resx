@@ -1634,4 +1634,7 @@ Hinweis: Diese ID wird normalerweise erzeugt, indem das aktuelle Datum und die a
   <data name="FileType_SectorImage" xml:space="preserve">
     <value>Sektorabbild</value>
   </data>
+  <data name="Label_Format" xml:space="preserve">
+    <value>Format</value>
+  </data>
 </root>

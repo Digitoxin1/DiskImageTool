@@ -233,6 +233,54 @@ Namespace My
                 Me("GW_DriveType2") = value
             End Set
         End Property
+        
+        <Global.System.Configuration.UserScopedSettingAttribute(),  _
+         Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
+         Global.System.Configuration.DefaultSettingValueAttribute("0")>  _
+        Public Property GW_Tracks0() As Byte
+            Get
+                Return CType(Me("GW_Tracks0"),Byte)
+            End Get
+            Set
+                Me("GW_Tracks0") = value
+            End Set
+        End Property
+        
+        <Global.System.Configuration.UserScopedSettingAttribute(),  _
+         Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
+         Global.System.Configuration.DefaultSettingValueAttribute("0")>  _
+        Public Property GW_Tracks1() As Byte
+            Get
+                Return CType(Me("GW_Tracks1"),Byte)
+            End Get
+            Set
+                Me("GW_Tracks1") = value
+            End Set
+        End Property
+        
+        <Global.System.Configuration.UserScopedSettingAttribute(),  _
+         Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
+         Global.System.Configuration.DefaultSettingValueAttribute("0")>  _
+        Public Property GW_Tracks2() As Byte
+            Get
+                Return CType(Me("GW_Tracks2"),Byte)
+            End Get
+            Set
+                Me("GW_Tracks2") = value
+            End Set
+        End Property
+        
+        <Global.System.Configuration.UserScopedSettingAttribute(),  _
+         Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
+         Global.System.Configuration.DefaultSettingValueAttribute("")>  _
+        Public Property GW_COMPort() As String
+            Get
+                Return CType(Me("GW_COMPort"),String)
+            End Get
+            Set
+                Me("GW_COMPort") = value
+            End Set
+        End Property
     End Class
 End Namespace
 

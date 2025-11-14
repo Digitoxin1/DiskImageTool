@@ -1634,4 +1634,7 @@ Nota: Este valor debe ser {1} para todos los disquetes</value>
   <data name="FileType_SectorImage" xml:space="preserve">
     <value>Imagen de sector</value>
   </data>
+  <data name="Label_Format" xml:space="preserve">
+    <value>Formato</value>
+  </data>
 </root>

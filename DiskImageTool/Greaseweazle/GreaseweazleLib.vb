@@ -2,12 +2,11 @@
 
 Namespace Greaseweazle
     Module GreaseweazleLib
+        Public GreaseweazleSettings As New Settings
         Private Const REGEX_RAW_FILE As String = "^(?<diskId>.+?)\.?(?<track>\d{2})\.(?<side>\d)\.(?<ext>raw|stream)$"
 
         Public Sub BandwidthDisplay(ParentForm As Form)
-            Dim AppPath As String = My.Settings.GW_Path
-
-            If Not IsValidGreaseweazlePath(AppPath) Then
+            If Not GreaseweazleSettings.IsPathValid Then
                 DisplayInvalidApplicationPathMsg()
                 Exit Sub
             End If
@@ -15,12 +14,15 @@ Namespace Greaseweazle
             ParentForm.Cursor = Cursors.WaitCursor
             Application.DoEvents()
 
-            Dim Builder = New CommandLineBuilder(CommandLineBuilder.CommandAction.bandwidth)
+            Dim Builder = New CommandLineBuilder(CommandLineBuilder.CommandAction.bandwidth) With {
+                .Device = GreaseweazleSettings.COMPort
+            }
+
             Dim Arguments = Builder.Arguments
 
             Dim Content As String = ""
             Try
-                Dim Result = ConsoleProcessRunner.RunProcess(AppPath, Arguments)
+                Dim Result = ConsoleProcessRunner.RunProcess(GreaseweazleSettings.AppPath, Arguments)
                 Content = Result.CombinedOutput
             Finally
                 ParentForm.Cursor = Cursors.Default
@@ -31,7 +33,6 @@ Namespace Greaseweazle
         End Sub
 
         Public Function ConvertFirstTrack(FilePath As String) As (Result As Boolean, FileName As String)
-            Dim AppPath As String = My.Settings.GW_Path
             Dim TempPath = InitTempImagePath()
 
             If TempPath = "" Then
@@ -41,6 +42,7 @@ Namespace Greaseweazle
             Dim FileName = GenerateUniqueFileName(TempPath, "temp.ima")
 
             Dim Builder = New CommandLineBuilder(CommandLineBuilder.CommandAction.convert) With {
+                .Device = GreaseweazleSettings.COMPort,
                 .InFile = FilePath,
                 .OutFile = FileName,
                 .Format = "ibm.scan",
@@ -48,7 +50,7 @@ Namespace Greaseweazle
             }
             Builder.AddCylinder(0)
 
-            ConsoleProcessRunner.RunProcess(AppPath, Builder.Arguments, captureOutput:=False, captureError:=False)
+            ConsoleProcessRunner.RunProcess(GreaseweazleSettings.AppPath, Builder.Arguments, captureOutput:=False, captureError:=False)
 
             Return (IO.File.Exists(FileName), FileName)
         End Function
@@ -156,11 +158,6 @@ Namespace Greaseweazle
             End Using
         End Function
 
-        Public Sub WriteImageToDisk(ParentForm As Form, Image As DiskImageContainer)
-            Dim Form As New WriteDiskForm(Image.Disk, Image.ImageData.FileName)
-            Form.ShowDialog(ParentForm)
-        End Sub
-
         Public Function ImportFluxImage(FilePath As String, ParentForm As Form) As (Result As Boolean, OutputFile As String, NewFileName As String)
             Dim FileExt = IO.Path.GetExtension(FilePath).ToLower
             Dim TrackCount As Integer = 0
@@ -207,9 +204,7 @@ Namespace Greaseweazle
         End Function
 
         Public Sub InfoDisplay(ParentForm As Form)
-            Dim AppPath As String = My.Settings.GW_Path
-
-            If Not IsValidGreaseweazlePath(AppPath) Then
+            If Not GreaseweazleSettings.IsPathValid Then
                 DisplayInvalidApplicationPathMsg()
                 Exit Sub
             End If
@@ -217,12 +212,14 @@ Namespace Greaseweazle
             ParentForm.Cursor = Cursors.WaitCursor
             Application.DoEvents()
 
-            Dim Builder = New CommandLineBuilder(CommandLineBuilder.CommandAction.info)
+            Dim Builder = New CommandLineBuilder(CommandLineBuilder.CommandAction.info) With {
+                .Device = GreaseweazleSettings.COMPort
+            }
             Dim Arguments = Builder.Arguments
 
             Dim Content As String = ""
             Try
-                Dim Result = ConsoleProcessRunner.RunProcess(AppPath, Arguments)
+                Dim Result = ConsoleProcessRunner.RunProcess(GreaseweazleSettings.AppPath, Arguments)
                 Content = Result.CombinedOutput
             Finally
                 ParentForm.Cursor = Cursors.Default
@@ -243,28 +240,6 @@ Namespace Greaseweazle
             End If
         End Sub
 
-        Public Function IsExecutable(path As String) As Boolean
-            Return Not String.IsNullOrWhiteSpace(path) AndAlso
-                IO.File.Exists(path) AndAlso
-                IO.Path.GetExtension(path).Equals(".exe", StringComparison.OrdinalIgnoreCase)
-        End Function
-
-        Public Function IsValidGreaseweazlePath(Path As String) As Boolean
-            Dim IsValid As Boolean
-
-            If My.Settings.GW_Path = "" Then
-                IsValid = False
-            ElseIf Not IsExecutable(My.Settings.GW_Path) Then
-                IsValid = False
-            ElseIf Not IO.File.Exists(My.Settings.GW_Path) Then
-                IsValid = False
-            Else
-                IsValid = True
-            End If
-
-            Return IsValid
-        End Function
-
         Public Function OpenFluxImage(ParentForm As Form) As String
             Using Dialog As New OpenFileDialog With {
                 .Title = "Open Flux Image",
@@ -284,5 +259,10 @@ Namespace Greaseweazle
 
             Return Nothing
         End Function
+
+        Public Sub WriteImageToDisk(ParentForm As Form, Image As DiskImageContainer)
+            Dim Form As New WriteDiskForm(Image.Disk, Image.ImageData.FileName)
+            Form.ShowDialog(ParentForm)
+        End Sub
     End Module
 End Namespace

@@ -278,16 +278,7 @@ Namespace Greaseweazle
         End Function
 
         Private Sub PopulateDrives(DiskParams As FloppyDiskParams)
-            Dim IsShugart As Boolean = String.Equals(My.Settings.GW_Interface, "Shugart", StringComparison.OrdinalIgnoreCase)
-
-            Dim Drive0Type = GreaseweazleFloppyTypeFromName(My.Settings.GW_DriveType0)
-            Dim Drive1Type = GreaseweazleFloppyTypeFromName(My.Settings.GW_DriveType1)
-            Dim Drive2Type = GreaseweazleFloppyTypeFromName(My.Settings.GW_DriveType2)
-
-            Dim AvailableTypes = Drive0Type Or Drive1Type
-            If IsShugart Then
-                AvailableTypes = AvailableTypes Or Drive2Type
-            End If
+            Dim AvailableTypes = GreaseweazleSettings.AvailableDriveTypes
 
             Dim SelectedFormat = GreaseweazleFindCompatibleFloppyType(DiskParams, AvailableTypes)
 
@@ -296,14 +287,16 @@ Namespace Greaseweazle
             Dim placeholder As New DriveOption With {
                 .Id = "",
                 .Type = FloppyMediaType.MediaUnknown,
+                .Tracks = 0,
                 .Label = My.Resources.Label_PleaseSelect
             }
             DriveList.Add(placeholder)
 
             Dim SelectedOption As DriveOption = Nothing
 
-            Dim AddItem As Action(Of String, String, FloppyMediaType) =
-                Sub(labelPrefix As String, id As String, t As FloppyMediaType)
+            Dim AddItem As Action(Of String, String, Byte) =
+                Sub(labelPrefix As String, id As String, index As Byte)
+                    Dim t = GreaseweazleSettings.DriveType(index)
                     If t = FloppyMediaType.MediaUnknown Then
                         Exit Sub
                     End If
@@ -311,6 +304,7 @@ Namespace Greaseweazle
                     Dim opt = New DriveOption With {
                         .Id = id,
                         .Type = t,
+                        .Tracks = GreaseweazleSettings.TrackCount(index),
                         .Label = $"{labelPrefix}:   {GreaseweazleFloppyTypeDescription(t)}"
                     }
                     DriveList.Add(opt)
@@ -320,13 +314,13 @@ Namespace Greaseweazle
                     End If
                 End Sub
 
-            If IsShugart Then
-                AddItem("DS0", "0", Drive0Type)
-                AddItem("DS1", "1", Drive1Type)
-                AddItem("DS2", "2", Drive2Type)
+            If GreaseweazleSettings.Interface = Settings.GreaseweazleInterface.Shugart Then
+                AddItem("DS0", "0", 0)
+                AddItem("DS1", "1", 1)
+                AddItem("DS2", "2", 2)
             Else
-                AddItem("A", "A", Drive0Type)
-                AddItem("B", "B", Drive1Type)
+                AddItem("A", "A", 0)
+                AddItem("B", "B", 1)
             End If
 
             ComboImageDrives.DropDownStyle = ComboBoxStyle.DropDownList
@@ -480,14 +474,12 @@ Namespace Greaseweazle
             Dim TrackCount As UShort
             If Opt.Type = FloppyMediaType.MediaUnknown Then
                 If _DiskParams.MediaType = FloppyMediaType.Media525DoubleDensity Then
-                    TrackCount = 42
+                    TrackCount = Settings.MAX_TRACKS_525DD
                 Else
-                    TrackCount = 84
+                    TrackCount = Settings.MAX_TRACKS
                 End If
-            ElseIf Opt.Type = FloppyMediaType.Media525DoubleDensity Then
-                TrackCount = 42
             Else
-                TrackCount = 84
+                TrackCount = Opt.Tracks
             End If
 
             TrackCount = Math.Max(TrackCount, _TrackCount)
@@ -559,6 +551,7 @@ Namespace Greaseweazle
             End If
 
             Dim Builder = New CommandLineBuilder(CommandLineBuilder.CommandAction.write) With {
+                   .Device = GreaseweazleSettings.COMPort,
                    .InFile = FilePath,
                    .Drive = Opt.Id,
                    .PreErase = CheckBoxPreErase.Checked,
@@ -573,7 +566,7 @@ Namespace Greaseweazle
                 Builder.Retries = NumericRetries.Value
             End If
 
-            _DoubleStep = Opt.Type = FloppyMediaType.Media525HighDensity And _DiskParams.MediaType = FloppyMediaType.Media525DoubleDensity
+            _DoubleStep = (Opt.Type = FloppyMediaType.Media525HighDensity And _DiskParams.MediaType = FloppyMediaType.Media525DoubleDensity)
 
             If _DoubleStep Then
                 Builder.HeadStep = 2
@@ -587,13 +580,22 @@ Namespace Greaseweazle
             End If
 
             If StartTrack = -1 And StartHead = -1 Then
+                Dim TrackCount As Integer = Opt.Tracks
+
                 If _DiskParams.MediaType = FloppyMediaType.Media525DoubleDensity Then
-                    StartTrack = 0
-                    EndTrack = 42
-                ElseIf Opt.Type = FloppyMediaType.Media525DoubleDensity And _TrackCount > 42 Then
-                    StartTrack = 0
-                    EndTrack = 39
+                    If Opt.Type <> FloppyMediaType.Media525DoubleDensity AndAlso Opt.Type <> FloppyMediaType.Media525HighDensity Then
+                        TrackCount = Settings.MAX_TRACKS_525DD
+                    End If
+                ElseIf Opt.Type = FloppyMediaType.Media525DoubleDensity AndAlso _TrackCount > Settings.MAX_TRACKS_525DD Then
+                    TrackCount = Settings.MIN_TRACKS_525DD
                 End If
+
+                If _DoubleStep Then
+                    TrackCount = Math.Ceiling(TrackCount / 2)
+                End If
+
+                StartTrack = 0
+                EndTrack = TrackCount - 1
             End If
 
             If StartTrack > -1 Then
@@ -624,7 +626,7 @@ Namespace Greaseweazle
             'TextBoxConsole.AppendText(Arguments)
 
             ToggleProcessRunning(True)
-            Process.StartAsync(My.Settings.GW_Path, Arguments)
+            Process.StartAsync(GreaseweazleSettings.AppPath, Arguments)
         End Sub
 
 #Region "Events"
@@ -703,6 +705,7 @@ Namespace Greaseweazle
         Private Class DriveOption
             Public Property Id As String
             Public Property Label As String
+            Public Property Tracks As Byte
             Public Property Type As FloppyMediaType
             Public Overrides Function ToString() As String
                 Return Label

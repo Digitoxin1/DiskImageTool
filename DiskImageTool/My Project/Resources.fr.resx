@@ -1634,4 +1634,7 @@ Remarque : cette valeur doit être {1} pour toutes les disquettes</value>
   <data name="FileType_SectorImage" xml:space="preserve">
     <value>Image de secteur</value>
   </data>
+  <data name="Label_Format" xml:space="preserve">
+    <value>Format</value>
+  </data>
 </root>

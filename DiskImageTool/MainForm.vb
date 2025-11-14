@@ -562,7 +562,7 @@ Public Class MainForm
 
     Private Sub HandleDragDrop(Files() As String)
         If Files.Length = 1 Then
-            Dim CanProcessFlux = Greaseweazle.IsValidGreaseweazlePath(My.Settings.GW_Path)
+            Dim CanProcessFlux = Greaseweazle.GreaseweazleSettings.IsPathValid
             If CanProcessFlux Then
                 Dim Result = ProcessFileDropFlux(Files(0))
                 If Result Then
@@ -1069,10 +1069,11 @@ Public Class MainForm
     End Sub
 
     Private Sub RefreshGreaseweazleMenu()
-        Dim Visible As Boolean = Greaseweazle.IsValidGreaseweazlePath(My.Settings.GW_Path)
+        Dim Visible As Boolean = Greaseweazle.GreaseweazleSettings.IsPathValid
 
         MenuGreaseweazleFormat.Visible = Visible
     End Sub
+
     Private Sub RefreshHexMenu(Disk As Disk, IsValidImage As Boolean, Compare As Integer)
         RefreshRawTrackSubMenu(Disk)
 

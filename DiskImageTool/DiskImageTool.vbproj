@@ -186,6 +186,7 @@
     <Compile Include="Greaseweazle\BaseForm.vb">
       <SubType>Form</SubType>
     </Compile>
+    <Compile Include="Greaseweazle\Settings.vb" />
     <Compile Include="Greaseweazle\ImageImportForm.vb">
       <SubType>Form</SubType>
     </Compile>

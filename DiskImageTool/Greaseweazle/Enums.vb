@@ -16,11 +16,6 @@ Namespace Greaseweazle
             IBM_2880
         End Enum
 
-        Public Enum GreaseweazleInterface
-            IBM
-            Shugart
-        End Enum
-
         Public Enum GreaseweazleOutputType
             IMA
             HFE
@@ -90,40 +85,6 @@ Namespace Greaseweazle
             End Select
         End Function
 
-        Public Function GreaseweazleFloppyTypeFromName(Value As String) As FloppyMediaType
-            Select Case Value
-                Case "360"
-                    Return FloppyMediaType.Media525DoubleDensity
-                Case "720"
-                    Return FloppyMediaType.Media35DoubleDensity
-                Case "1200"
-                    Return FloppyMediaType.Media525HighDensity
-                Case "1440"
-                    Return FloppyMediaType.Media35HighDensity
-                Case "2880"
-                    Return FloppyMediaType.Media35ExtraHighDensity
-                Case Else
-                    Return FloppyMediaType.MediaUnknown
-            End Select
-        End Function
-
-        Public Function GreaseweazleFloppyTypeName(Value As FloppyMediaType) As String
-            Select Case Value
-                Case FloppyMediaType.Media525DoubleDensity
-                    Return "360"
-                Case FloppyMediaType.Media35DoubleDensity
-                    Return "720"
-                Case FloppyMediaType.Media525HighDensity
-                    Return "1200"
-                Case FloppyMediaType.Media35HighDensity
-                    Return "1440"
-                Case FloppyMediaType.Media35ExtraHighDensity
-                    Return "2880"
-                Case Else
-                    Return ""
-            End Select
-        End Function
-
         Public Function GreaseweazleImageFormatCommandLine(Value As GreaseweazleImageFormat) As String
             Select Case Value
                 Case GreaseweazleImageFormat.None
@@ -178,18 +139,9 @@ Namespace Greaseweazle
             End Select
         End Function
 
-        Public Function GreaseweazleInterfaceFromName(Value As String) As GreaseweazleInterface
+        Public Function GreaseweazleInterfaceName(Value As Settings.GreaseweazleInterface) As String
             Select Case Value
-                Case "Shugart"
-                    Return GreaseweazleInterface.Shugart
-                Case Else
-                    Return GreaseweazleInterface.IBM
-            End Select
-        End Function
-
-        Public Function GreaseweazleInterfaceName(Value As GreaseweazleInterface) As String
-            Select Case Value
-                Case GreaseweazleInterface.Shugart
+                Case Settings.GreaseweazleInterface.Shugart
                     Return "Shugart"
                 Case Else
                     Return "IBM"

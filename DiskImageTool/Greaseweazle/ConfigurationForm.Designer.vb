@@ -28,12 +28,15 @@
             Dim LabelDriveInterface As System.Windows.Forms.Label
             Dim PanelBottom As System.Windows.Forms.FlowLayoutPanel
             Dim PanelMain As System.Windows.Forms.Panel
+            Dim LabelTracks0 As System.Windows.Forms.Label
+            Dim LabelTracks1 As System.Windows.Forms.Label
+            Dim LabelPort As System.Windows.Forms.Label
+            Me.BtnCancel = New System.Windows.Forms.Button()
+            Me.BtnUpdate = New System.Windows.Forms.Button()
+            Me.TableLayoutPanel1 = New System.Windows.Forms.TableLayoutPanel()
             Me.LabelDriveType0 = New System.Windows.Forms.Label()
             Me.LabelDriveType1 = New System.Windows.Forms.Label()
             Me.LabelDriveType2 = New System.Windows.Forms.Label()
-            Me.BtnUpdate = New System.Windows.Forms.Button()
-            Me.BtnCancel = New System.Windows.Forms.Button()
-            Me.TableLayoutPanel1 = New System.Windows.Forms.TableLayoutPanel()
             Me.ComboDriveType2 = New System.Windows.Forms.ComboBox()
             Me.ComboDriveType1 = New System.Windows.Forms.ComboBox()
             Me.ComboDriveType0 = New System.Windows.Forms.ComboBox()
@@ -42,14 +45,25 @@
             Me.ButtonBrowse = New System.Windows.Forms.Button()
             Me.ButtonClear = New System.Windows.Forms.Button()
             Me.TextBoxInfo = New System.Windows.Forms.TextBox()
+            Me.LabelTracks2 = New System.Windows.Forms.Label()
+            Me.NumericTracks1 = New System.Windows.Forms.NumericUpDown()
+            Me.NumericTracks2 = New System.Windows.Forms.NumericUpDown()
+            Me.NumericTracks0 = New System.Windows.Forms.NumericUpDown()
             Me.ButtonInfo = New System.Windows.Forms.Button()
+            Me.ComboPorts = New System.Windows.Forms.ComboBox()
             LabelApplicationPath = New System.Windows.Forms.Label()
             LabelDriveInterface = New System.Windows.Forms.Label()
             PanelBottom = New System.Windows.Forms.FlowLayoutPanel()
             PanelMain = New System.Windows.Forms.Panel()
+            LabelTracks0 = New System.Windows.Forms.Label()
+            LabelTracks1 = New System.Windows.Forms.Label()
+            LabelPort = New System.Windows.Forms.Label()
             PanelBottom.SuspendLayout()
-            Me.TableLayoutPanel1.SuspendLayout()
             PanelMain.SuspendLayout()
+            Me.TableLayoutPanel1.SuspendLayout()
+            CType(Me.NumericTracks1, System.ComponentModel.ISupportInitialize).BeginInit()
+            CType(Me.NumericTracks2, System.ComponentModel.ISupportInitialize).BeginInit()
+            CType(Me.NumericTracks0, System.ComponentModel.ISupportInitialize).BeginInit()
             Me.SuspendLayout()
             '
             'LabelApplicationPath
@@ -61,6 +75,60 @@
             '
             resources.ApplyResources(LabelDriveInterface, "LabelDriveInterface")
             LabelDriveInterface.Name = "LabelDriveInterface"
+            '
+            'PanelBottom
+            '
+            PanelBottom.Controls.Add(Me.BtnCancel)
+            PanelBottom.Controls.Add(Me.BtnUpdate)
+            resources.ApplyResources(PanelBottom, "PanelBottom")
+            PanelBottom.Name = "PanelBottom"
+            '
+            'BtnCancel
+            '
+            Me.BtnCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel
+            resources.ApplyResources(Me.BtnCancel, "BtnCancel")
+            Me.BtnCancel.Name = "BtnCancel"
+            Me.BtnCancel.UseVisualStyleBackColor = True
+            '
+            'BtnUpdate
+            '
+            Me.BtnUpdate.DialogResult = System.Windows.Forms.DialogResult.OK
+            resources.ApplyResources(Me.BtnUpdate, "BtnUpdate")
+            Me.BtnUpdate.Name = "BtnUpdate"
+            Me.BtnUpdate.UseVisualStyleBackColor = True
+            '
+            'PanelMain
+            '
+            resources.ApplyResources(PanelMain, "PanelMain")
+            PanelMain.Controls.Add(Me.TableLayoutPanel1)
+            PanelMain.Name = "PanelMain"
+            '
+            'TableLayoutPanel1
+            '
+            resources.ApplyResources(Me.TableLayoutPanel1, "TableLayoutPanel1")
+            Me.TableLayoutPanel1.Controls.Add(LabelApplicationPath, 0, 0)
+            Me.TableLayoutPanel1.Controls.Add(LabelDriveInterface, 0, 1)
+            Me.TableLayoutPanel1.Controls.Add(Me.LabelDriveType0, 0, 2)
+            Me.TableLayoutPanel1.Controls.Add(Me.LabelDriveType1, 0, 3)
+            Me.TableLayoutPanel1.Controls.Add(Me.LabelDriveType2, 0, 4)
+            Me.TableLayoutPanel1.Controls.Add(Me.ComboDriveType2, 1, 4)
+            Me.TableLayoutPanel1.Controls.Add(Me.ComboDriveType1, 1, 3)
+            Me.TableLayoutPanel1.Controls.Add(Me.ComboDriveType0, 1, 2)
+            Me.TableLayoutPanel1.Controls.Add(Me.ComboInterface, 1, 1)
+            Me.TableLayoutPanel1.Controls.Add(Me.TextBoxPath, 1, 0)
+            Me.TableLayoutPanel1.Controls.Add(Me.ButtonBrowse, 5, 0)
+            Me.TableLayoutPanel1.Controls.Add(Me.ButtonClear, 6, 0)
+            Me.TableLayoutPanel1.Controls.Add(Me.TextBoxInfo, 4, 2)
+            Me.TableLayoutPanel1.Controls.Add(LabelTracks0, 2, 2)
+            Me.TableLayoutPanel1.Controls.Add(LabelTracks1, 2, 3)
+            Me.TableLayoutPanel1.Controls.Add(Me.LabelTracks2, 2, 4)
+            Me.TableLayoutPanel1.Controls.Add(Me.NumericTracks1, 3, 3)
+            Me.TableLayoutPanel1.Controls.Add(Me.NumericTracks2, 3, 4)
+            Me.TableLayoutPanel1.Controls.Add(Me.NumericTracks0, 3, 2)
+            Me.TableLayoutPanel1.Controls.Add(Me.ButtonInfo, 4, 1)
+            Me.TableLayoutPanel1.Controls.Add(LabelPort, 2, 1)
+            Me.TableLayoutPanel1.Controls.Add(Me.ComboPorts, 3, 1)
+            Me.TableLayoutPanel1.Name = "TableLayoutPanel1"
             '
             'LabelDriveType0
             '
@@ -76,46 +144,6 @@
             '
             resources.ApplyResources(Me.LabelDriveType2, "LabelDriveType2")
             Me.LabelDriveType2.Name = "LabelDriveType2"
-            '
-            'PanelBottom
-            '
-            PanelBottom.Controls.Add(Me.BtnCancel)
-            PanelBottom.Controls.Add(Me.BtnUpdate)
-            resources.ApplyResources(PanelBottom, "PanelBottom")
-            PanelBottom.Name = "PanelBottom"
-            '
-            'BtnUpdate
-            '
-            Me.BtnUpdate.DialogResult = System.Windows.Forms.DialogResult.OK
-            resources.ApplyResources(Me.BtnUpdate, "BtnUpdate")
-            Me.BtnUpdate.Name = "BtnUpdate"
-            Me.BtnUpdate.UseVisualStyleBackColor = True
-            '
-            'BtnCancel
-            '
-            Me.BtnCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel
-            resources.ApplyResources(Me.BtnCancel, "BtnCancel")
-            Me.BtnCancel.Name = "BtnCancel"
-            Me.BtnCancel.UseVisualStyleBackColor = True
-            '
-            'TableLayoutPanel1
-            '
-            resources.ApplyResources(Me.TableLayoutPanel1, "TableLayoutPanel1")
-            Me.TableLayoutPanel1.Controls.Add(LabelApplicationPath, 0, 0)
-            Me.TableLayoutPanel1.Controls.Add(LabelDriveInterface, 0, 1)
-            Me.TableLayoutPanel1.Controls.Add(Me.LabelDriveType0, 0, 2)
-            Me.TableLayoutPanel1.Controls.Add(Me.LabelDriveType1, 0, 3)
-            Me.TableLayoutPanel1.Controls.Add(Me.LabelDriveType2, 0, 4)
-            Me.TableLayoutPanel1.Controls.Add(Me.ComboDriveType2, 1, 4)
-            Me.TableLayoutPanel1.Controls.Add(Me.ComboDriveType1, 1, 3)
-            Me.TableLayoutPanel1.Controls.Add(Me.ComboDriveType0, 1, 2)
-            Me.TableLayoutPanel1.Controls.Add(Me.ComboInterface, 1, 1)
-            Me.TableLayoutPanel1.Controls.Add(Me.TextBoxPath, 1, 0)
-            Me.TableLayoutPanel1.Controls.Add(Me.ButtonBrowse, 3, 0)
-            Me.TableLayoutPanel1.Controls.Add(Me.ButtonClear, 5, 0)
-            Me.TableLayoutPanel1.Controls.Add(Me.TextBoxInfo, 2, 2)
-            Me.TableLayoutPanel1.Controls.Add(Me.ButtonInfo, 2, 1)
-            Me.TableLayoutPanel1.Name = "TableLayoutPanel1"
             '
             'ComboDriveType2
             '
@@ -150,7 +178,7 @@
             Me.TextBoxPath.AllowDrop = True
             resources.ApplyResources(Me.TextBoxPath, "TextBoxPath")
             Me.TextBoxPath.BackColor = System.Drawing.SystemColors.Window
-            Me.TableLayoutPanel1.SetColumnSpan(Me.TextBoxPath, 3)
+            Me.TableLayoutPanel1.SetColumnSpan(Me.TextBoxPath, 4)
             Me.TextBoxPath.Name = "TextBoxPath"
             Me.TextBoxPath.ReadOnly = True
             '
@@ -170,11 +198,41 @@
             '
             resources.ApplyResources(Me.TextBoxInfo, "TextBoxInfo")
             Me.TextBoxInfo.BackColor = System.Drawing.SystemColors.Window
-            Me.TableLayoutPanel1.SetColumnSpan(Me.TextBoxInfo, 4)
+            Me.TableLayoutPanel1.SetColumnSpan(Me.TextBoxInfo, 3)
             Me.TextBoxInfo.Name = "TextBoxInfo"
             Me.TextBoxInfo.ReadOnly = True
             Me.TableLayoutPanel1.SetRowSpan(Me.TextBoxInfo, 4)
             Me.TextBoxInfo.ShortcutsEnabled = False
+            '
+            'LabelTracks0
+            '
+            resources.ApplyResources(LabelTracks0, "LabelTracks0")
+            LabelTracks0.Name = "LabelTracks0"
+            '
+            'LabelTracks1
+            '
+            resources.ApplyResources(LabelTracks1, "LabelTracks1")
+            LabelTracks1.Name = "LabelTracks1"
+            '
+            'LabelTracks2
+            '
+            resources.ApplyResources(Me.LabelTracks2, "LabelTracks2")
+            Me.LabelTracks2.Name = "LabelTracks2"
+            '
+            'NumericTracks1
+            '
+            resources.ApplyResources(Me.NumericTracks1, "NumericTracks1")
+            Me.NumericTracks1.Name = "NumericTracks1"
+            '
+            'NumericTracks2
+            '
+            resources.ApplyResources(Me.NumericTracks2, "NumericTracks2")
+            Me.NumericTracks2.Name = "NumericTracks2"
+            '
+            'NumericTracks0
+            '
+            resources.ApplyResources(Me.NumericTracks0, "NumericTracks0")
+            Me.NumericTracks0.Name = "NumericTracks0"
             '
             'ButtonInfo
             '
@@ -182,11 +240,17 @@
             Me.ButtonInfo.Name = "ButtonInfo"
             Me.ButtonInfo.UseVisualStyleBackColor = True
             '
-            'PanelMain
+            'LabelPort
             '
-            resources.ApplyResources(PanelMain, "PanelMain")
-            PanelMain.Controls.Add(Me.TableLayoutPanel1)
-            PanelMain.Name = "PanelMain"
+            resources.ApplyResources(LabelPort, "LabelPort")
+            LabelPort.Name = "LabelPort"
+            '
+            'ComboPorts
+            '
+            resources.ApplyResources(Me.ComboPorts, "ComboPorts")
+            Me.ComboPorts.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList
+            Me.ComboPorts.FormattingEnabled = True
+            Me.ComboPorts.Name = "ComboPorts"
             '
             'ConfigurationForm
             '
@@ -200,10 +264,13 @@
             Me.Name = "ConfigurationForm"
             Me.ShowInTaskbar = False
             PanelBottom.ResumeLayout(False)
-            Me.TableLayoutPanel1.ResumeLayout(False)
-            Me.TableLayoutPanel1.PerformLayout()
             PanelMain.ResumeLayout(False)
             PanelMain.PerformLayout()
+            Me.TableLayoutPanel1.ResumeLayout(False)
+            Me.TableLayoutPanel1.PerformLayout()
+            CType(Me.NumericTracks1, System.ComponentModel.ISupportInitialize).EndInit()
+            CType(Me.NumericTracks2, System.ComponentModel.ISupportInitialize).EndInit()
+            CType(Me.NumericTracks0, System.ComponentModel.ISupportInitialize).EndInit()
             Me.ResumeLayout(False)
             Me.PerformLayout()
 
@@ -220,8 +287,13 @@
         Friend WithEvents LabelDriveType2 As Label
         Friend WithEvents LabelDriveType0 As Label
         Friend WithEvents LabelDriveType1 As Label
-        Friend WithEvents ButtonClear As Button
         Friend WithEvents ButtonInfo As Button
         Friend WithEvents TextBoxInfo As TextBox
+        Friend WithEvents ButtonClear As Button
+        Friend WithEvents NumericTracks1 As NumericUpDown
+        Friend WithEvents NumericTracks2 As NumericUpDown
+        Friend WithEvents NumericTracks0 As NumericUpDown
+        Friend WithEvents LabelTracks2 As Label
+        Friend WithEvents ComboPorts As ComboBox
     End Class
 End Namespace

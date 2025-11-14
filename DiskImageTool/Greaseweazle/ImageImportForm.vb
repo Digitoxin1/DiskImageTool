@@ -99,6 +99,7 @@ Namespace Greaseweazle
 
         Private Function GenerateCommandLine(DiskParams As FloppyDiskParams, OutputType As GreaseweazleOutputType, DoubleStep As Boolean) As String
             Dim Builder = New CommandLineBuilder(CommandLineBuilder.CommandAction.convert) With {
+                .Device = GreaseweazleSettings.COMPort,
                 .InFile = _InputFilePath,
                 .OutFile = _OutputFilePath
             }
@@ -298,7 +299,7 @@ Namespace Greaseweazle
             ToggleProcessRunning(True)
 
             Dim Arguments = GenerateCommandLine(DiskParams, OutputType, DoubleStep)
-            Process.StartAsync(My.Settings.GW_Path, Arguments)
+            Process.StartAsync(GreaseweazleSettings.AppPath, Arguments)
         End Sub
 
         Private Sub ProcessOutputLine(line As String)
