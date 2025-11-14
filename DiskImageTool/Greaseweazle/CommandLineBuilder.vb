@@ -69,7 +69,7 @@
 
             args.Add(GetActionName(_Action))
 
-            If Not String.IsNullOrEmpty(_Device) Then
+            If CheckOptionDevice() AndAlso Not String.IsNullOrEmpty(_Device) Then
                 args.Add("--device " & _Device)
             End If
 
@@ -133,6 +133,15 @@
                     Return True
                 Case Else
                     Return False
+            End Select
+        End Function
+
+        Private Function CheckOptionDevice() As Boolean
+            Select Case _Action
+                Case CommandAction.convert
+                    Return False
+                Case Else
+                    Return True
             End Select
         End Function
 

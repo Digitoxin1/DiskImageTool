@@ -99,7 +99,6 @@ Namespace Greaseweazle
 
         Private Function GenerateCommandLine(DiskParams As FloppyDiskParams, OutputType As GreaseweazleOutputType, DoubleStep As Boolean) As String
             Dim Builder = New CommandLineBuilder(CommandLineBuilder.CommandAction.convert) With {
-                .Device = GreaseweazleSettings.COMPort,
                 .InFile = _InputFilePath,
                 .OutFile = _OutputFilePath
             }

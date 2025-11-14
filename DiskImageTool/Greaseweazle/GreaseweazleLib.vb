@@ -42,7 +42,6 @@ Namespace Greaseweazle
             Dim FileName = GenerateUniqueFileName(TempPath, "temp.ima")
 
             Dim Builder = New CommandLineBuilder(CommandLineBuilder.CommandAction.convert) With {
-                .Device = GreaseweazleSettings.COMPort,
                 .InFile = FilePath,
                 .OutFile = FileName,
                 .Format = "ibm.scan",

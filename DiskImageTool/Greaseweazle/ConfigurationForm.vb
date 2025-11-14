@@ -86,13 +86,20 @@ Namespace Greaseweazle
                    "Auto", "")
             }
 
-            Dim ports = IO.Ports.SerialPort.GetPortNames().
-                OrderBy(Function(name)
-                            Dim num As Integer = Integer.Parse(name.Substring(3))
-                            Return num
-                        End Function)
+            Dim ports = IO.Ports.SerialPort.GetPortNames()
 
-            For Each p In ports
+            If CurrentValue <> "" Then
+                If Not ports.Contains(CurrentValue, StringComparer.OrdinalIgnoreCase) Then
+                    ports = ports.Append(CurrentValue).ToArray()
+                End If
+            End If
+
+            Dim SortedPorts = ports.OrderBy(Function(name)
+                                                Dim num As Integer = Integer.Parse(name.Substring(3))
+                                                Return num
+                                            End Function)
+
+            For Each p In SortedPorts
                 PortList.Add(New KeyValuePair(Of String, String)(
                    p, p)
                )
