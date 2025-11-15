@@ -1595,9 +1595,6 @@ Nota: Este valor debe ser {1} para todos los disquetes</value>
   <data name="Label_WriteDisk" xml:space="preserve">
     <value>Escribir el disquete</value>
   </data>
-  <data name="Dialog_ConfirmWriteCancel" xml:space="preserve">
-    <value>Hay una operación de escritura en curso. ¿Desea cancelarla?</value>
-  </data>
   <data name="Label_PleaseSelect" xml:space="preserve">
     <value>Seleccione, por favor</value>
   </data>
@@ -1660,5 +1657,20 @@ Nota: Este valor debe ser {1} para todos los disquetes</value>
   </data>
   <data name="Label_CleanDisk" xml:space="preserve">
     <value>Limpiar el disco</value>
+  </data>
+  <data name="Dialog_ConfirmCancel" xml:space="preserve">
+    <value>Hay una operación en curso. ¿Desea cancelarla?</value>
+  </data>
+  <data name="Label_Linger" xml:space="preserve">
+    <value>Espera</value>
+  </data>
+  <data name="Label_Passes" xml:space="preserve">
+    <value>Pasadas</value>
+  </data>
+  <data name="Label_Clean" xml:space="preserve">
+    <value>Limpiar</value>
+  </data>
+  <data name="Label_Cylinders" xml:space="preserve">
+    <value>Cilindros</value>
   </data>
 </root>

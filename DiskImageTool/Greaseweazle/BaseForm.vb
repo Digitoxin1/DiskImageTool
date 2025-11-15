@@ -1,9 +1,11 @@
 ﻿Namespace Greaseweazle
     Public Class BaseForm
+        Friend WithEvents Process As ConsoleProcessRunner
         Private WithEvents TS0 As FloppyTrackGrid
         Private WithEvents TS1 As FloppyTrackGrid
         Private Const TOTAL_TRACKS As UShort = 84
         Private ReadOnly _Parser As ConsoleOutputParser
+        Private _CancelButtonClicked As Boolean = False
         Private _Sides As Byte
         Private _Tracks As UShort
 
@@ -25,6 +27,10 @@
             InitializeComponent()
 
             ' Add any initialization after the InitializeComponent() call.
+            Process = New ConsoleProcessRunner With {
+                .EventContext = Threading.SynchronizationContext.Current
+            }
+
             _Parser = New ConsoleOutputParser
 
             If UseGrid Then
@@ -38,12 +44,17 @@
             End If
         End Sub
 
+        Public ReadOnly Property CancelButtonClicked As Boolean
+            Get
+                Return _CancelButtonClicked
+            End Get
+        End Property
+
         Public ReadOnly Property Parser As ConsoleOutputParser
             Get
                 Return _Parser
             End Get
         End Property
-
         Public ReadOnly Property TableSide0 As FloppyTrackGrid
             Get
                 Return TS0
@@ -55,6 +66,18 @@
                 Return TS1
             End Get
         End Property
+
+        Public Function CancelProcessIfRunning() As Boolean
+            If Process.IsRunning Then
+                If Not ConfirmCancel() Then
+                    Return True
+                End If
+                Process.Cancel()
+                Return True
+            End If
+
+            Return False
+        End Function
 
         Public Sub ClearStatusBar()
             StatusType.Text = ""
@@ -88,6 +111,7 @@
                     Return Color.Gray
             End Select
         End Function
+
         Public Function GetTrackStatusText(Status As TrackStatus, Optional Retries As UShort = 0) As String
             Select Case Status
                 Case TrackStatus.Erasing
@@ -193,6 +217,7 @@
 
             Return StatusInfo
         End Function
+
         Friend Function GetTrackHeads(StartHead As Integer, Optional EndHead As Integer = -1) As CommandLineBuilder.TrackHeads
             If EndHead = -1 Then
                 EndHead = StartHead
@@ -206,6 +231,45 @@
                 Return CommandLineBuilder.TrackHeads.both
             End If
         End Function
+
+        Protected Overridable Sub OnAfterBaseFormClosing(e As FormClosingEventArgs)
+            ' Default: do nothing
+        End Sub
+
+        Protected Overrides Sub OnFormClosing(e As FormClosingEventArgs)
+            If Process.IsRunning Then
+                If e.CloseReason = CloseReason.UserClosing OrElse _CancelButtonClicked Then
+                    If Not ConfirmCancel() Then
+                        e.Cancel = True
+                        _CancelButtonClicked = False
+                        Exit Sub
+                    End If
+                End If
+                Try
+                    Process.Cancel()
+                Catch ex As Exception
+                End Try
+            End If
+
+            If e.Cancel Then
+                _CancelButtonClicked = False
+                Return
+            End If
+
+            OnAfterBaseFormClosing(e)
+
+            _CancelButtonClicked = False
+
+            If e.Cancel Then
+                Return
+            End If
+
+            MyBase.OnFormClosing(e)
+        End Sub
+
+        Private Function ConfirmCancel() As Boolean
+            Return MsgBox(My.Resources.Dialog_ConfirmCancel, MsgBoxStyle.YesNo + MsgBoxStyle.DefaultButton2) = MsgBoxResult.Yes
+        End Function
         Private Sub GridResetTracks(Grid As FloppyTrackGrid, Tracks As UShort, Disabled As Boolean, Optional ResetSelected As Boolean = True)
             Grid.ActiveTrackCount = Tracks
             Grid.ResetAll()
@@ -216,6 +280,12 @@
             Grid.Disabled = Disabled
         End Sub
 #Region "Events"
+
+        Private Sub ButtonCancel_Click(sender As Object, e As EventArgs) Handles ButtonCancel.Click
+            _CancelButtonClicked = True
+        End Sub
+
+
         Private Sub TS0_CheckChanged(sender As Object, Checked As Boolean) Handles TS0.CheckChanged
             If Checked Then
                 TS0.SetCellsSelected(TS1.SelectedTracks, Checked)

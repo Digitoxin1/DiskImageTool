@@ -9,7 +9,6 @@ Namespace Greaseweazle
         Private WithEvents CheckBoxDoublestep As CheckBox
         Private WithEvents ComboImageFormat As ComboBox
         Private WithEvents ComboOutputType As ComboBox
-        Private WithEvents Process As ConsoleProcessRunner
         Private WithEvents TextBoxFileName As TextBox
         Private ReadOnly _InputFilePath As String
         Private ReadOnly _SideCount As Integer
@@ -35,10 +34,6 @@ Namespace Greaseweazle
             Dim ImageFormat = DetectImageFormat()
             PopulateOutputTypes()
             PopulateImageFormats(ImageFormat)
-
-            Process = New ConsoleProcessRunner With {
-                .EventContext = Threading.SynchronizationContext.Current
-            }
 
             SetNewFileName()
             SetTilebarText()
@@ -260,11 +255,6 @@ Namespace Greaseweazle
         End Sub
 
         Private Sub ProcessImage()
-            If Process.IsRunning Then
-                Process.Cancel()
-                Exit Sub
-            End If
-
             Dim DiskParams As FloppyDiskParams = ComboImageFormat.SelectedValue
 
             If DiskParams.IsNonImage Then
@@ -480,19 +470,18 @@ Namespace Greaseweazle
             Return StatusInfo
         End Function
 
-#Region "Events"
-        Private Sub ButtonCancel_Click(sender As Object, e As EventArgs) Handles ButtonCancel.Click
-            If Process.IsRunning Then
-                Try
-                    Process.Cancel()
-                Catch ex As Exception
-                End Try
-            Else
+        Protected Overrides Sub OnAfterBaseFormClosing(e As FormClosingEventArgs)
+            If e.CloseReason = CloseReason.UserClosing OrElse CancelButtonClicked Then
                 ClearOutputFile()
             End If
         End Sub
 
+#Region "Events"
         Private Sub ButtonProcess_Click(sender As Object, e As EventArgs) Handles ButtonProcess.Click
+            If CancelProcessIfRunning() Then
+                Exit Sub
+            End If
+
             ProcessImage()
         End Sub
 
@@ -500,19 +489,8 @@ Namespace Greaseweazle
             RefreshButtonState(True)
         End Sub
 
-        Private Sub ImageImportForm_FormClosing(sender As Object, e As FormClosingEventArgs) Handles Me.FormClosing
-            If Process.IsRunning Then
-                Try
-                    Process.Cancel()
-                Catch ex As Exception
-                End Try
-            ElseIf e.CloseReason = CloseReason.UserClosing Then
-                ClearOutputFile()
-            End If
-        End Sub
-
-        Private Sub Process_ErrorLineReceived(line As String) Handles Process.ErrorLineReceived
-            ProcessOutputLine(line)
+        Private Sub Process_ErrorDataReceived(data As String) Handles Process.ErrorDataReceived
+            ProcessOutputLine(data)
         End Sub
 
         Private Sub Process_ProcessExited(exitCode As Integer) Handles Process.ProcessExited

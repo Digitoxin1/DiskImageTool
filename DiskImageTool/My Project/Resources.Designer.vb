@@ -1360,20 +1360,20 @@ Namespace My.Resources
         End Property
         
         '''<summary>
+        '''  Looks up a localized string similar to An operation is currently in progress. Do you wish to cancel?.
+        '''</summary>
+        Friend ReadOnly Property Dialog_ConfirmCancel() As String
+            Get
+                Return ResourceManager.GetString("Dialog_ConfirmCancel", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
         '''  Looks up a localized string similar to This operation will overwrite all data on the disk in drive {1}.{0}{0}Any existing contents will be permanently lost.{0}{0}Do you wish to continue?.
         '''</summary>
         Friend ReadOnly Property Dialog_ConfirmWrite() As String
             Get
                 Return ResourceManager.GetString("Dialog_ConfirmWrite", resourceCulture)
-            End Get
-        End Property
-        
-        '''<summary>
-        '''  Looks up a localized string similar to A write operation is currently in progress. Do you wish to cancel?.
-        '''</summary>
-        Friend ReadOnly Property Dialog_ConfirmWriteCancel() As String
-            Get
-                Return ResourceManager.GetString("Dialog_ConfirmWriteCancel", resourceCulture)
             End Get
         End Property
         
@@ -3042,6 +3042,15 @@ Namespace My.Resources
         End Property
         
         '''<summary>
+        '''  Looks up a localized string similar to Clean.
+        '''</summary>
+        Friend ReadOnly Property Label_Clean() As String
+            Get
+                Return ResourceManager.GetString("Label_Clean", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
         '''  Looks up a localized string similar to Clean Disk.
         '''</summary>
         Friend ReadOnly Property Label_CleanDisk() As String
@@ -3101,6 +3110,15 @@ Namespace My.Resources
         Friend ReadOnly Property Label_CrossLinked() As String
             Get
                 Return ResourceManager.GetString("Label_CrossLinked", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  Looks up a localized string similar to Cylinders.
+        '''</summary>
+        Friend ReadOnly Property Label_Cylinders() As String
+            Get
+                Return ResourceManager.GetString("Label_Cylinders", resourceCulture)
             End Get
         End Property
         
@@ -3555,6 +3573,15 @@ Namespace My.Resources
         End Property
         
         '''<summary>
+        '''  Looks up a localized string similar to Linger.
+        '''</summary>
+        Friend ReadOnly Property Label_Linger() As String
+            Get
+                Return ResourceManager.GetString("Label_Linger", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
         '''  Looks up a localized string similar to Lost Cluster.
         '''</summary>
         Friend ReadOnly Property Label_LostCluster() As String
@@ -3690,6 +3717,15 @@ Namespace My.Resources
         End Property
         
         '''<summary>
+        '''  Looks up a localized string similar to Passes.
+        '''</summary>
+        Friend ReadOnly Property Label_Passes() As String
+            Get
+                Return ResourceManager.GetString("Label_Passes", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
         '''  Looks up a localized string similar to Please Select.
         '''</summary>
         Friend ReadOnly Property Label_PleaseSelect() As String
@@ -3744,7 +3780,7 @@ Namespace My.Resources
         End Property
         
         '''<summary>
-        '''  Looks up a localized string similar to Reset.
+        '''  Looks up a localized string similar to Device Reset.
         '''</summary>
         Friend ReadOnly Property Label_Reset() As String
             Get

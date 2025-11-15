@@ -5,16 +5,18 @@ Public Class ConsoleProcessRunner
     Implements IDisposable
 
     Private _ctr As CancellationTokenRegistration
-    Private _ctsExternal As CancellationToken
 
     Private _disposed As Boolean
     Private _exitCode As Integer?
 
     Private _proc As Process
+    Private _rawErrTask As Task
+    Private _rawOutTask As Task
     Private _tcs As TaskCompletionSource(Of Integer)
 
-    Public Event ErrorLineReceived(line As String)
-    Public Event OutputLineReceived(line As String)
+    Private _useRawCapture As Boolean
+    Public Event ErrorDataReceived(data As String)
+    Public Event OutputDataReceived(data As String)
     Public Event ProcessExited(exitCode As Integer)
     Public Event ProcessFailed(message As String, ex As Exception)
     Public Event ProcessStarted(exePath As String, arguments As String)
@@ -33,8 +35,8 @@ Public Class ConsoleProcessRunner
         End Get
     End Property
 
-    Public Property StandardErrorEncoding As Encoding
-    Public Property StandardOutputEncoding As Encoding
+    Public Property StandardErrorEncoding As Encoding = Encoding.UTF8
+    Public Property StandardOutputEncoding As Encoding = Encoding.UTF8
     Public Property WorkingDirectory As String
 
     Public Shared Function RunProcess(fileName As String,
@@ -72,25 +74,11 @@ Public Class ConsoleProcessRunner
             proc.StartInfo = psi
 
             If captureOutput Then
-                AddHandler proc.OutputDataReceived, Sub(sender, e)
-                                                        If e.Data IsNot Nothing Then
-                                                            SyncLock sbOut
-                                                                sbOut.AppendLine(e.Data)
-                                                                sbAll.AppendLine(e.Data)
-                                                            End SyncLock
-                                                        End If
-                                                    End Sub
+                AddHandler proc.OutputDataReceived, Sub(sender, e) CollectOutputLine(sbOut, sbAll, e)
             End If
 
             If captureError Then
-                AddHandler proc.ErrorDataReceived, Sub(sender, e)
-                                                       If e.Data IsNot Nothing Then
-                                                           SyncLock sbErr
-                                                               sbErr.AppendLine(e.Data)
-                                                               sbAll.AppendLine(e.Data)
-                                                           End SyncLock
-                                                       End If
-                                                   End Sub
+                AddHandler proc.ErrorDataReceived, Sub(sender, e) CollectErrorLine(sbErr, sbAll, e)
             End If
 
             proc.Start()
@@ -151,13 +139,18 @@ Public Class ConsoleProcessRunner
         GC.SuppressFinalize(Me)
     End Sub
 
-    Public Function StartAsync(exePath As String, arguments As String, Optional ct As CancellationToken = Nothing) As Task(Of Integer)
+    Public Function StartAsyncRaw(exePath As String, arguments As String, Optional ct As CancellationToken = Nothing) As Task(Of Integer)
+        Return StartAsync(exePath, arguments, ct, True)
+    End Function
+
+    Public Function StartAsync(exePath As String, arguments As String, Optional ct As CancellationToken = Nothing, Optional useRawCapture As Boolean = False) As Task(Of Integer)
         If _proc IsNot Nothing Then
             Throw New InvalidOperationException("Process is already started on this instance.")
         End If
 
+        _useRawCapture = useRawCapture
+
         _tcs = New TaskCompletionSource(Of Integer)(TaskCreationOptions.RunContinuationsAsynchronously)
-        _ctsExternal = ct
         _exitCode = Nothing
 
         Dim psi As New ProcessStartInfo(exePath, arguments) With {
@@ -171,13 +164,8 @@ Public Class ConsoleProcessRunner
             psi.WorkingDirectory = WorkingDirectory
         End If
 
-        If StandardOutputEncoding IsNot Nothing Then
-            psi.StandardOutputEncoding = StandardOutputEncoding
-        End If
-
-        If StandardErrorEncoding IsNot Nothing Then
-            psi.StandardErrorEncoding = StandardErrorEncoding
-        End If
+        psi.StandardOutputEncoding = StandardOutputEncoding
+        psi.StandardErrorEncoding = StandardErrorEncoding
 
         _proc = New Process() With {
             .StartInfo = psi,
@@ -186,20 +174,16 @@ Public Class ConsoleProcessRunner
 
         ' Wire cancellation: kill process & children if requested
         If ct.CanBeCanceled Then
-            _ctr = ct.Register(Sub()
-                                   Try
-                                       If _proc IsNot Nothing AndAlso Not _proc.HasExited Then
-                                           _proc.Kill()
-                                       End If
-                                   Catch
-                                   End Try
-                               End Sub)
+            _ctr = ct.Register(AddressOf CancelProcessCallback)
         End If
 
         ' Subscribe to events BEFORE Start()
-        AddHandler _proc.OutputDataReceived, AddressOf OnOutputData
-        AddHandler _proc.ErrorDataReceived, AddressOf OnErrorData
         AddHandler _proc.Exited, AddressOf OnExited
+
+        If Not _useRawCapture Then
+            AddHandler _proc.OutputDataReceived, AddressOf OnOutputData
+            AddHandler _proc.ErrorDataReceived, AddressOf OnErrorData
+        End If
 
         Try
             If Not _proc.Start() Then
@@ -213,18 +197,29 @@ Public Class ConsoleProcessRunner
 
         RaiseOnContext(Sub() RaiseEvent ProcessStarted(exePath, arguments))
 
-        ' Begin async reads (line-buffered)
-        _proc.BeginOutputReadLine()
-        _proc.BeginErrorReadLine()
+        ' Begin async reads, depending on mode
+        If _useRawCapture Then
+            _rawOutTask = Task.Run(AddressOf ReadRawOutput)
+            _rawErrTask = Task.Run(AddressOf ReadRawError)
+        Else
+            ' line-buffered behavior
+            _proc.BeginOutputReadLine()
+            _proc.BeginErrorReadLine()
+        End If
+
 
         Return _tcs.Task
     End Function
 
     Public Sub WriteInput(text As String)
-        If _proc Is Nothing OrElse _proc.HasExited Then Return
+        If _proc Is Nothing OrElse _proc.HasExited Then
+            Return
+        End If
+
         If Not _proc.StartInfo.RedirectStandardInput Then
             Throw New InvalidOperationException("StandardInput is not redirected. Enable it in the StartInfo setup if needed.")
         End If
+
         Try
             _proc.StandardInput.WriteLine(text)
         Catch ex As Exception
@@ -245,8 +240,45 @@ Public Class ConsoleProcessRunner
         End If
     End Sub
 
+    Private Shared Sub CollectErrorLine(sbErr As StringBuilder, sbAll As StringBuilder, e As DataReceivedEventArgs)
+        If e.Data Is Nothing Then Return
+        SyncLock sbErr
+            sbErr.AppendLine(e.Data)
+            sbAll.AppendLine(e.Data)
+        End SyncLock
+    End Sub
+
+    Private Shared Sub CollectOutputLine(sbOut As StringBuilder, sbAll As StringBuilder, e As DataReceivedEventArgs)
+        If e.Data Is Nothing Then Return
+        SyncLock sbOut
+            sbOut.AppendLine(e.Data)
+            sbAll.AppendLine(e.Data)
+        End SyncLock
+    End Sub
+
+    Private Sub CancelProcessCallback()
+        Try
+            If _proc IsNot Nothing AndAlso Not _proc.HasExited Then
+                _proc.Kill()
+            End If
+        Catch
+        End Try
+    End Sub
     Private Sub Cleanup()
         Try
+            ' Wait for raw readers to finish if in raw mode
+            If _useRawCapture Then
+                Try
+                    _rawOutTask?.Wait()
+                Catch
+                End Try
+
+                Try
+                    _rawErrTask?.Wait()
+                Catch
+                End Try
+            End If
+
             If _proc IsNot Nothing Then
                 Try : _proc.CancelOutputRead() : Catch : End Try
                 Try : _proc.CancelErrorRead() : Catch : End Try
@@ -264,8 +296,10 @@ Public Class ConsoleProcessRunner
     End Sub
 
     Private Sub OnErrorData(sender As Object, e As DataReceivedEventArgs)
-        If e.Data Is Nothing Then Return
-        RaiseOnContext(Sub() RaiseEvent ErrorLineReceived(e.Data))
+        If e.Data Is Nothing Then
+            Return
+        End If
+        RaiseOnContext(Sub() RaiseEvent ErrorDataReceived(e.Data))
     End Sub
 
     Private Sub OnExited(sender As Object, e As EventArgs)
@@ -284,7 +318,7 @@ Public Class ConsoleProcessRunner
 
     Private Sub OnOutputData(sender As Object, e As DataReceivedEventArgs)
         If e.Data Is Nothing Then Return
-        RaiseOnContext(Sub() RaiseEvent OutputLineReceived(e.Data))
+        RaiseOnContext(Sub() RaiseEvent OutputDataReceived(e.Data))
     End Sub
 
     Private Sub RaiseOnContext(action As Action)
@@ -297,9 +331,48 @@ Public Class ConsoleProcessRunner
         End If
     End Sub
 
+    Private Sub ReadRawError()
+        Try
+            Dim buffer(4095) As Byte
+            Dim stream = _proc.StandardError.BaseStream
+
+            Do
+                Dim read = stream.Read(buffer, 0, buffer.Length)
+                If read <= 0 Then
+                    Exit Do
+                End If
+
+                Dim chunk = StandardErrorEncoding.GetString(buffer, 0, read)
+
+                RaiseOnContext(Sub() RaiseEvent ErrorDataReceived(chunk))
+            Loop
+        Catch ex As Exception
+            RaiseOnContext(Sub() RaiseEvent ProcessFailed("Error reading standard error.", ex))
+        End Try
+    End Sub
+
+    Private Sub ReadRawOutput()
+        Try
+            Dim buffer(4095) As Byte
+            Dim stream = _proc.StandardOutput.BaseStream
+
+            Do
+                Dim read = stream.Read(buffer, 0, buffer.Length)
+                If read <= 0 Then
+                    Exit Do
+                End If
+
+                Dim chunk = StandardOutputEncoding.GetString(buffer, 0, read)
+
+                RaiseOnContext(Sub() RaiseEvent OutputDataReceived(chunk))
+            Loop
+        Catch ex As Exception
+            RaiseOnContext(Sub() RaiseEvent ProcessFailed("Error reading standard output.", ex))
+        End Try
+    End Sub
     Public Structure ProcessResult
-        Public ReadOnly ExitCode As Integer
         Public ReadOnly CombinedOutput As String
+        Public ReadOnly ExitCode As Integer
         Public ReadOnly StdErr As String
         Public ReadOnly StdOut As String
         Public ReadOnly TimedOut As Boolean

@@ -67,10 +67,6 @@ Namespace Greaseweazle
             Return result
         End Function
 
-        Public Function ConfirmCancel() As Boolean
-            Return MsgBox(My.Resources.Dialog_ConfirmWriteCancel, MsgBoxStyle.YesNo + MsgBoxStyle.DefaultButton2) = MsgBoxResult.Yes
-        End Function
-
         Public Function ConfirmWrite(DriveName As String) As Boolean
             Dim Msg = String.Format(My.Resources.Dialog_ConfirmWrite, vbNewLine, DriveName)
             Return MsgBox(Msg, MsgBoxStyle.YesNo + MsgBoxStyle.DefaultButton2) = MsgBoxResult.Yes

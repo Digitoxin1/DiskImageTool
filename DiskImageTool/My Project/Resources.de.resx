@@ -1595,9 +1595,6 @@ Hinweis: Diese ID wird normalerweise erzeugt, indem das aktuelle Datum und die a
   <data name="Label_WriteDisk" xml:space="preserve">
     <value>Diskette schreiben</value>
   </data>
-  <data name="Dialog_ConfirmWriteCancel" xml:space="preserve">
-    <value>Ein Schreibvorgang ist derzeit im Gange. Möchten Sie ihn abbrechen?</value>
-  </data>
   <data name="Label_PleaseSelect" xml:space="preserve">
     <value>Bitte auswählen</value>
   </data>
@@ -1641,7 +1638,7 @@ Hinweis: Diese ID wird normalerweise erzeugt, indem das aktuelle Datum und die a
     <value>Reset-Befehl an das Greaseweazle-Gerät gesendet.</value>
   </data>
   <data name="Label_Reset" xml:space="preserve">
-    <value>Zurücksetzen</value>
+    <value>Gerätereset</value>
   </data>
   <data name="Label_Erase" xml:space="preserve">
     <value>Löschen</value>
@@ -1660,5 +1657,20 @@ Hinweis: Diese ID wird normalerweise erzeugt, indem das aktuelle Datum und die a
   </data>
   <data name="Label_CleanDisk" xml:space="preserve">
     <value>Diskette reinigen</value>
+  </data>
+  <data name="Dialog_ConfirmCancel" xml:space="preserve">
+    <value>Ein Vorgang ist derzeit im Gange. Möchten Sie ihn abbrechen?</value>
+  </data>
+  <data name="Label_Linger" xml:space="preserve">
+    <value>Verweildauer</value>
+  </data>
+  <data name="Label_Passes" xml:space="preserve">
+    <value>Durchläufe</value>
+  </data>
+  <data name="Label_Clean" xml:space="preserve">
+    <value>Reinigen</value>
+  </data>
+  <data name="Label_Cylinders" xml:space="preserve">
+    <value>Zylinder</value>
   </data>
 </root>

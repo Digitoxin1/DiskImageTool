@@ -6,21 +6,46 @@ Namespace Greaseweazle
         Private WithEvents ButtonProcess As Button
         Private WithEvents ButtonReset As Button
         Private WithEvents ComboImageDrives As ComboBox
-        Private WithEvents Process As ConsoleProcessRunner
+        Private _ProcessRunning As Boolean = False
         Private NumericCyls As NumericUpDown
-        Private NumericPasses As NumericUpDown
         Private NumericLinger As NumericUpDown
-
+        Private NumericPasses As NumericUpDown
         Public Sub New()
             MyBase.New(False)
             InitializeControls()
 
-            Process = New ConsoleProcessRunner With {
-                .EventContext = Threading.SynchronizationContext.Current
-            }
-
             Me.Text = My.Resources.Label_CleanDisk
+
+            NumericCyls.Value = CommandLineBuilder.DEFAULT_CYLS
+            NumericLinger.Value = CommandLineBuilder.DEFAULT_LINGER
+            NumericPasses.Value = CommandLineBuilder.DEFAULT_PASSES
+
             PopulateDrives(ComboImageDrives, FloppyMediaType.MediaUnknown)
+            ResetState()
+            RefreshButtonState()
+        End Sub
+
+        Private Sub CleanDisk()
+            Dim Opt As DriveOption = ComboImageDrives.SelectedValue
+
+            If Opt.Id = "" Then
+                Exit Sub
+            End If
+
+            ResetState()
+
+            Dim Builder = New CommandLineBuilder(CommandLineBuilder.CommandAction.clean) With {
+                   .Device = GreaseweazleSettings.COMPort,
+                   .Drive = Opt.Id,
+                   .Cyls = NumericCyls.Value,
+                   .Linger = NumericLinger.Value,
+                   .Passes = NumericPasses.Value
+               }
+
+            Dim Arguments = Builder.Arguments
+
+            ToggleProcessRunning(True)
+            Process.StartAsyncRaw(GreaseweazleSettings.AppPath, Arguments)
         End Sub
 
         Private Sub InitializeControls()
@@ -36,7 +61,7 @@ Namespace Greaseweazle
             }
 
             Dim CylsLabel = New Label With {
-                .Text = "Cylinders",
+                .Text = My.Resources.Label_Cylinders,
                 .Anchor = AnchorStyles.Left,
                 .AutoSize = True,
                 .Margin = New Padding(6, 3, 3, 3)
@@ -46,12 +71,11 @@ Namespace Greaseweazle
                 .Anchor = AnchorStyles.Left,
                 .Width = 45,
                 .Minimum = 1,
-                .Maximum = 80,
-                .Value = CommandLineBuilder.DEFAULT_CYLS
+                .Maximum = 80
             }
 
             Dim PassesLabel = New Label With {
-                .Text = "Passes",
+                .Text = My.Resources.Label_Passes,
                 .Anchor = AnchorStyles.Left,
                 .AutoSize = True,
                 .Margin = New Padding(6, 3, 3, 3)
@@ -61,12 +85,11 @@ Namespace Greaseweazle
                 .Anchor = AnchorStyles.Left,
                 .Width = 45,
                 .Minimum = 1,
-                .Maximum = 9,
-                .Value = CommandLineBuilder.DEFAULT_PASSES
+                .Maximum = 9
             }
 
             Dim LingerLabel = New Label With {
-                .Text = "Linger",
+                .Text = My.Resources.Label_Linger,
                 .Anchor = AnchorStyles.Left,
                 .AutoSize = True,
                 .Margin = New Padding(6, 3, 3, 3)
@@ -76,8 +99,7 @@ Namespace Greaseweazle
                 .Anchor = AnchorStyles.Left,
                 .Width = 60,
                 .Minimum = 1,
-                .Maximum = 1000,
-                .Value = CommandLineBuilder.DEFAULT_LINGER
+                .Maximum = 1000
             }
 
             Dim ButtonContainer = New FlowLayoutPanel With {
@@ -94,9 +116,10 @@ Namespace Greaseweazle
             }
 
             ButtonReset = New Button With {
-                .Width = 75,
                 .Margin = New Padding(3, 3, 0, 3),
-                .Text = My.Resources.Label_Reset
+                .Text = My.Resources.Label_Reset,
+                .MinimumSize = New Size(75, 0),
+                .AutoSize = True
             }
 
             ButtonContainer.Controls.Add(ButtonReset)
@@ -148,8 +171,89 @@ Namespace Greaseweazle
                 .SetColumnSpan(ButtonContainer, 4)
 
                 .ResumeLayout()
-                .Left = (.Parent.ClientSize.Width - .Width) \ 2
             End With
         End Sub
+
+        Private Sub RefreshButtonState()
+            Dim Opt As DriveOption = ComboImageDrives.SelectedValue
+
+            ComboImageDrives.Enabled = Not _ProcessRunning
+            NumericPasses.Enabled = Not _ProcessRunning
+            NumericLinger.Enabled = Not _ProcessRunning
+            NumericCyls.Enabled = Not _ProcessRunning
+
+            If _ProcessRunning Then
+                ButtonProcess.Text = My.Resources.Label_Abort
+            Else
+                ButtonProcess.Text = My.Resources.Label_Clean
+            End If
+
+            ButtonProcess.Enabled = Opt.Id <> ""
+
+            ButtonReset.Enabled = Not _ProcessRunning
+        End Sub
+
+        Private Sub RefreshCylinderCount()
+            Dim Opt As DriveOption = ComboImageDrives.SelectedValue
+
+            Dim MaxTrackCount As UShort
+
+            Select Case Opt.Type
+                Case FloppyMediaType.Media525DoubleDensity
+                    MaxTrackCount = 40
+                Case Else
+                    MaxTrackCount = 80
+            End Select
+
+            If NumericCyls.Maximum <> MaxTrackCount Then
+                NumericCyls.Maximum = MaxTrackCount
+                NumericCyls.Value = MaxTrackCount
+            End If
+        End Sub
+        Private Sub ResetState()
+            ClearStatusBar()
+            TextBoxConsole.Clear()
+        End Sub
+        Private Sub ToggleProcessRunning(Value As Boolean)
+            _ProcessRunning = Value
+
+            RefreshButtonState()
+        End Sub
+#Region "Events"
+        Private Sub ButtonProcess_Click(sender As Object, e As EventArgs) Handles ButtonProcess.Click
+            If CancelProcessIfRunning() Then
+                Exit Sub
+            End If
+
+            Dim Opt As DriveOption = ComboImageDrives.SelectedValue
+
+            If Opt.Id = "" Then
+                Exit Sub
+            End If
+
+            CleanDisk()
+        End Sub
+
+        Private Sub ButtonReset_Click(sender As Object, e As EventArgs) Handles ButtonReset.Click
+            Reset(TextBoxConsole)
+        End Sub
+
+        Private Sub ComboImageDrives_SelectedIndexChanged(sender As Object, e As EventArgs) Handles ComboImageDrives.SelectedIndexChanged
+            RefreshButtonState()
+            RefreshCylinderCount()
+        End Sub
+
+        Private Sub Process_ErrorDataReceived(data As String) Handles Process.ErrorDataReceived
+            TextBoxConsole.AppendText(data)
+        End Sub
+
+        Private Sub Process_ProcessExited(exitCode As Integer) Handles Process.ProcessExited
+            ToggleProcessRunning(False)
+        End Sub
+
+        Private Sub Process_ProcessFailed(message As String, ex As Exception) Handles Process.ProcessFailed
+            ToggleProcessRunning(False)
+        End Sub
+#End Region
     End Class
 End Namespace

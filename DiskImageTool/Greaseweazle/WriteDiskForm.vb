@@ -8,7 +8,6 @@ Namespace Greaseweazle
         Private WithEvents CheckboxNoVerify As CheckBox
         Private WithEvents CheckBoxSelect As CheckBox
         Private WithEvents ComboImageDrives As ComboBox
-        Private WithEvents Process As ConsoleProcessRunner
         Private ReadOnly _Disk As DiskImage.Disk
         Private ReadOnly _DiskParams As FloppyDiskParams
         Private ReadOnly _IsBitstreamImage As Boolean
@@ -17,7 +16,6 @@ Namespace Greaseweazle
         Private ReadOnly _TrackStatus As Dictionary(Of String, TrackStatusInfoWrite)
         Private _AllowNoVerify As Boolean = True
         Private _AllowRetries As Boolean = True
-        Private _CancelButtonClicked As Boolean = False
         Private _ContinueAfterWrite As Boolean = False
         Private _CurrentFilePath As String = ""
         Private _CurrentStatusInfo As TrackStatusInfoWrite = Nothing
@@ -40,10 +38,6 @@ Namespace Greaseweazle
             _DiskParams = Disk.DiskParams
 
             _TrackStatus = New Dictionary(Of String, TrackStatusInfoWrite)
-
-            Process = New ConsoleProcessRunner With {
-                .EventContext = Threading.SynchronizationContext.Current
-            }
 
             Me.Text = My.Resources.Label_WriteDisk & " - " & FileName
 
@@ -174,19 +168,24 @@ Namespace Greaseweazle
 
             Dim ButtonContainer = New FlowLayoutPanel With {
                 .FlowDirection = FlowDirection.TopDown,
-                .AutoSize = True
+                .AutoSize = True,
+                .Margin = New Padding(12, 24, 3, 3)
             }
 
             ButtonProcess = New Button With {
-                .Width = 75,
-                .Margin = New Padding(12, 24, 3, 3),
-                .Text = My.Resources.Label_Write
+                .Margin = New Padding(3, 0, 3, 3),
+                .Text = My.Resources.Label_Write,
+                .MinimumSize = New Size(75, 0),
+                .AutoSize = True,
+                .Anchor = AnchorStyles.Left Or AnchorStyles.Right
             }
 
             ButtonReset = New Button With {
-                .Width = 75,
-                .Margin = New Padding(12, 12, 3, 3),
-                .Text = My.Resources.Label_Reset
+                .Margin = New Padding(3, 12, 3, 3),
+                .Text = My.Resources.Label_Reset,
+                .MinimumSize = New Size(75, 0),
+                .AutoSize = True,
+                .Anchor = AnchorStyles.Left Or AnchorStyles.Right
             }
 
             ButtonContainer.Controls.Add(ButtonProcess)
@@ -579,16 +578,8 @@ Namespace Greaseweazle
             Process.StartAsync(GreaseweazleSettings.AppPath, Arguments)
         End Sub
 #Region "Events"
-        Private Sub ButtonCancel_Click(sender As Object, e As EventArgs) Handles ButtonCancel.Click
-            _CancelButtonClicked = True
-        End Sub
-
         Private Sub ButtonProcess_Click(sender As Object, e As EventArgs) Handles ButtonProcess.Click
-            If Process.IsRunning Then
-                If Not ConfirmCancel() Then
-                    Exit Sub
-                End If
-                Process.Cancel()
+            If CancelProcessIfRunning() Then
                 Exit Sub
             End If
 
@@ -636,8 +627,8 @@ Namespace Greaseweazle
             LabelWarning.Visible = Not CheckCompatibility()
         End Sub
 
-        Private Sub Process_ErrorLineReceived(line As String) Handles Process.ErrorLineReceived
-            ProcessOutputLine(line)
+        Private Sub Process_ErrorDataReceived(data As String) Handles Process.ErrorDataReceived
+            ProcessOutputLine(data)
         End Sub
 
         Private Sub Process_ProcessExited(exitCode As Integer) Handles Process.ProcessExited
@@ -651,22 +642,6 @@ Namespace Greaseweazle
 
         Private Sub WriteDiskForm_CheckChanged(sender As Object, Checked As Boolean, Side As Byte) Handles Me.CheckChanged
             RefreshProcessButtonState()
-        End Sub
-
-        Private Sub WriteDiskForm_FormClosing(sender As Object, e As FormClosingEventArgs) Handles Me.FormClosing
-            If Process.IsRunning Then
-                If e.CloseReason = CloseReason.UserClosing OrElse _CancelButtonClicked Then
-                    _CancelButtonClicked = False
-                    If Not ConfirmCancel() Then
-                        e.Cancel = True
-                        Exit Sub
-                    End If
-                End If
-                Try
-                    Process.Cancel()
-                Catch ex As Exception
-                End Try
-            End If
         End Sub
 
         Private Sub WriteDiskForm_SelectionChanged(sender As Object, Track As UShort, Side As Byte, Enabled As Boolean) Handles Me.SelectionChanged
