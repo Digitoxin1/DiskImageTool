@@ -1,11 +1,12 @@
 ﻿Namespace Greaseweazle
     Public Class BaseForm
+        Private WithEvents TS0 As FloppyTrackGrid
+        Private WithEvents TS1 As FloppyTrackGrid
         Private Const TOTAL_TRACKS As UShort = 84
         Private ReadOnly _Parser As ConsoleOutputParser
-        Private _TableSide0 As TableLayoutPanel
-        Private _TableSide0Outer As TableLayoutPanel
-        Private _TableSide1 As TableLayoutPanel
-        Private _TableSide1Outer As TableLayoutPanel
+        Private _Sides As Byte
+        Private _Tracks As UShort
+
         Public Enum TrackStatus
             Erasing
             Writing
@@ -16,16 +17,19 @@
             [Error]
         End Enum
 
+        Public Event CheckChanged(sender As Object, Checked As Boolean, Side As Byte)
+        Public Event SelectionChanged(sender As Object, Track As UShort, Side As Byte, Enabled As Boolean)
+
         Public Sub New()
             ' This call is required by the designer.
             InitializeComponent()
 
             ' Add any initialization after the InitializeComponent() call.
             _Parser = New ConsoleOutputParser
-            _TableSide0Outer = New TableLayoutPanel With {
+            TS0 = New FloppyTrackGrid(TOTAL_TRACKS, My.Resources.Label_Side & " 0") With {
                 .Anchor = AnchorStyles.Top Or AnchorStyles.Right
             }
-            _TableSide1Outer = New TableLayoutPanel With {
+            TS1 = New FloppyTrackGrid(TOTAL_TRACKS, My.Resources.Label_Side & " 1") With {
                 .Anchor = AnchorStyles.Top Or AnchorStyles.Right,
                 .Margin = New Padding(32, 3, 3, 3)
             }
@@ -37,49 +41,17 @@
             End Get
         End Property
 
-        Public ReadOnly Property TableSide0 As TableLayoutPanel
+        Public ReadOnly Property TableSide0 As FloppyTrackGrid
             Get
-                Return _TableSide0
+                Return TS0
             End Get
         End Property
 
-        Public ReadOnly Property TableSide0Outer As TableLayoutPanel
+        Public ReadOnly Property TableSide1 As FloppyTrackGrid
             Get
-                Return _TableSide0Outer
+                Return TS1
             End Get
         End Property
-
-        Public ReadOnly Property TableSide1 As TableLayoutPanel
-            Get
-                Return _TableSide1
-            End Get
-        End Property
-
-        Public ReadOnly Property TableSide1Outer As TableLayoutPanel
-            Get
-                Return _TableSide1Outer
-            End Get
-        End Property
-
-        Public Sub MarkTrack(Track As Integer, Side As Integer, Status As TrackStatus, Label As String, DoubleStep As Boolean)
-            Dim Table As TableLayoutPanel
-
-            If Side = 0 Then
-                Table = TableSide0
-            ElseIf Side = 1 Then
-                Table = TableSide1
-            Else
-                Table = Nothing
-            End If
-
-            If Table IsNot Nothing Then
-                Dim BackColor = GetTrackStatusColor(Status)
-                If DoubleStep Then
-                    Track *= 2
-                End If
-                FloppyGridSetLabel(Table, Track, Label, BackColor)
-            End If
-        End Sub
 
         Public Function GetTrackStatusColor(Status As TrackStatus) As Color
             Select Case Status
@@ -119,29 +91,85 @@
             End Select
         End Function
 
-        Public Sub TrackGridInit(Tracks As UShort, Sides As Byte)
-            If _TableSide0 IsNot Nothing Then
-                TrackGridReset(Tracks, Sides)
-                Exit Sub
+        Public Function GridGetTable(Side As Byte) As FloppyTrackGrid
+            If Side = 0 Then
+                Return TS0
+            ElseIf Side = 1 Then
+                Return TS1
+            Else
+                Return Nothing
             End If
+        End Function
 
-            _TableSide0 = FloppyGridInit(_TableSide0Outer, My.Resources.Label_Side & " 0", Tracks, Math.Max(Tracks, TOTAL_TRACKS))
+        Public Sub GridMarkTrack(Track As Integer, Side As Integer, Status As TrackStatus, Label As String, DoubleStep As Boolean)
+            Dim Table = GridGetTable(Side)
 
-            Dim TrackCount As UShort = 0
-            If Sides > 1 Then
-                TrackCount = Tracks
+            If Table IsNot Nothing Then
+                Dim BackColor = GetTrackStatusColor(Status)
+                If DoubleStep Then
+                    Track *= 2
+                End If
+                Table.SetCell(Track, Text:=Label, BackColor:=BackColor)
             End If
-            _TableSide1 = FloppyGridInit(_TableSide1Outer, My.Resources.Label_Side & " 1", TrackCount, Math.Max(Tracks, TOTAL_TRACKS))
         End Sub
 
-        Public Sub TrackGridReset(Tracks As UShort, Sides As Byte)
-            FloppyGridReset(_TableSide0, Tracks, Math.Max(Tracks, TOTAL_TRACKS))
-
-            Dim TrackCount As UShort = 0
-            If Sides > 1 Then
-                TrackCount = Tracks
-            End If
-            FloppyGridReset(_TableSide1, TrackCount, Math.Max(Tracks, TOTAL_TRACKS))
+        Public Sub GridReset()
+            GridReset(_Tracks, _Sides)
         End Sub
+
+        Public Sub GridReset(Tracks As UShort, Sides As Byte, Optional ResetSelected As Boolean = True)
+            _Tracks = Tracks
+            _Sides = Sides
+
+            GridResetTracks(TS0, Tracks, False, ResetSelected)
+            GridResetTracks(TS1, Tracks, Sides < 2, ResetSelected)
+        End Sub
+
+        Private Sub GridResetTracks(Grid As FloppyTrackGrid, Tracks As UShort, Disabled As Boolean, Optional ResetSelected As Boolean = True)
+            Grid.ActiveTrackCount = Tracks
+            Grid.ResetAll()
+
+            If ResetSelected Then
+                Grid.IsChecked = False
+            End If
+            Grid.Disabled = Disabled
+        End Sub
+#Region "Events"
+        Private Sub TS0_CheckChanged(sender As Object, Checked As Boolean) Handles TS0.CheckChanged
+            If Checked Then
+                TS0.SetCellsSelected(TS1.SelectedTracks, Checked)
+            End If
+
+            RaiseEvent CheckChanged(Me, Checked, 0)
+        End Sub
+
+        Private Sub TS0_SelectionChanged(sender As Object, Track As Integer, Selected As Boolean) Handles TS0.SelectionChanged
+            If TS1.SelectEnabled Then
+                If TS1.IsChecked Then
+                    TS1.SetCellSelected(Track, Selected, True)
+                End If
+            End If
+
+            RaiseEvent SelectionChanged(Me, Track, 0, Selected)
+        End Sub
+
+        Private Sub TS1_CheckChanged(sender As Object, Checked As Boolean) Handles TS1.CheckChanged
+            If Checked Then
+                TS1.SetCellsSelected(TS0.SelectedTracks, Checked)
+            End If
+
+            RaiseEvent CheckChanged(Me, Checked, 1)
+        End Sub
+
+        Private Sub TS1_SelectionChanged(sender As Object, Track As Integer, Selected As Boolean) Handles TS1.SelectionChanged
+            If TS0.SelectEnabled Then
+                If TS0.IsChecked Then
+                    TS0.SetCellSelected(Track, Selected, True)
+                End If
+            End If
+
+            RaiseEvent SelectionChanged(Me, Track, 1, Selected)
+        End Sub
+#End Region
     End Class
 End Namespace

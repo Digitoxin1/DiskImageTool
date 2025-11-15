@@ -18,8 +18,6 @@ Public Class FloppyAccessForm
     Private _SectorData As SectorData = Nothing
     Private _SectorError As Boolean = False
     Private _TotalBadSectors As UInteger = 0
-    Private _TS0 As TableLayoutPanel
-    Private _TS1 As TableLayoutPanel
 
     Public Enum FloppyAccessType
         Read
@@ -438,14 +436,22 @@ Public Class FloppyAccessForm
     Private Sub InitTables()
         Dim Tracks = _BPB.SectorToTrack(_BPB.SectorCount)
 
-        _TS0 = FloppyGridInit(TableSide0, My.Resources.Label_Side & " 0", Tracks, 80)
+        TableSide0.Label = My.Resources.Label_Side & " 0"
+        TableSide0.TrackCount = 80
+        TableSide0.ActiveTrackCount = Tracks
+        For Counter = 0 To TableSide0.TrackCount - 1
+            TableSide0.ResetCell(Counter)
+        Next
 
-        Dim TrackCount As UShort = 0
-        If _BPB.NumberOfHeads > 1 Then
-            TrackCount = Tracks
-        End If
-        _TS1 = FloppyGridInit(TableSide1, My.Resources.Label_Side & " 1", TrackCount, 80)
+        TableSide1.Label = My.Resources.Label_Side & " 1"
+        TableSide1.TrackCount = 80
+        TableSide1.ActiveTrackCount = Tracks
+        For Counter = 0 To TableSide1.TrackCount - 1
+            TableSide1.ResetCell(Counter)
+        Next
+        TableSide1.Disabled = _BPB.NumberOfHeads < 2
     End Sub
+
     Private Sub ReadSectorsBySector(DiskBuffer() As Byte, SectorData As SectorData)
         Dim BufferSize = BYTES_PER_SECTOR
         Dim Buffer(BufferSize - 1) As Byte
@@ -534,12 +540,12 @@ Public Class FloppyAccessForm
         Dim TrackInfo As TrackInfo = e.UserState
         Dim Track = _BPB.SectorToTrack(TrackInfo.Sector)
         Dim Side = _BPB.SectorToSide(TrackInfo.Sector)
-        Dim Table As TableLayoutPanel
+        Dim Table As FloppyTrackGrid
 
         If Side = 0 Then
-            Table = _TS0
+            Table = TableSide0
         ElseIf Side = 1 Then
-            Table = _TS1
+            Table = TableSide1
         Else
             Table = Nothing
         End If
@@ -556,7 +562,7 @@ Public Class FloppyAccessForm
                 Text = TrackInfo.BadSectors
             End If
 
-            FloppyGridSetLabel(Table, Track, Text, BackColor)
+            Table.SetCell(Track, Text:=Text, BackColor:=BackColor)
         End If
 
         StatusTrack.Text = My.Resources.Label_Track & " " & Track

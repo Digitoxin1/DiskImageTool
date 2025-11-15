@@ -1637,4 +1637,10 @@ Nota: Este valor debe ser {1} para todos los disquetes</value>
   <data name="Label_Format" xml:space="preserve">
     <value>Formato</value>
   </data>
+  <data name="Dialog_GreaseweazleReset" xml:space="preserve">
+    <value>Comando de reinicio enviado al dispositivo Greaseweazle.</value>
+  </data>
+  <data name="Label_Reset" xml:space="preserve">
+    <value>Reiniciar</value>
+  </data>
 </root>

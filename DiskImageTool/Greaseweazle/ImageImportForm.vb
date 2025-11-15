@@ -15,6 +15,7 @@ Namespace Greaseweazle
         Private ReadOnly _SideCount As Integer
         Private ReadOnly _TrackCount As Integer
         Private ReadOnly _TrackStatus As Dictionary(Of String, TrackStatusInfo)
+        Private _CachedOutputTypeValue As GreaseweazleOutputType = GreaseweazleOutputType.IMA
         Private _DoubleStep As Boolean = False
         Private _OutputFilePath As String = ""
         Private _ProcessRunning As Boolean = False
@@ -22,18 +23,15 @@ Namespace Greaseweazle
         Private _StatusUnexpected As ToolStripStatusLabel
         Private _TotalBadSectors As UInteger = 0
         Private _TotalUnexpectedSectors As UInteger = 0
-        Private _CachedOutputTypeValue As GreaseweazleOutputType = GreaseweazleOutputType.IMA
-
         Public Sub New(FilePath As String, TrackCount As Integer, SideCount As Integer)
             MyBase.New()
-
-            InitializeControls()
 
             _InputFilePath = FilePath
             _TrackStatus = New Dictionary(Of String, TrackStatusInfo)
             _TrackCount = TrackCount
             _SideCount = SideCount
-            TrackGridInit(_TrackCount, _SideCount)
+            GridReset(_TrackCount, _SideCount)
+            InitializeControls()
             Dim ImageFormat = DetectImageFormat()
             PopulateOutputTypes()
             PopulateImageFormats(ImageFormat)
@@ -220,11 +218,11 @@ Namespace Greaseweazle
                 .Controls.Add(CheckBoxDoublestep, 4, Row)
 
                 Row = 2
-                .Controls.Add(TableSide0Outer, 0, Row)
-                .SetColumnSpan(TableSide0Outer, 2)
+                .Controls.Add(TableSide0, 0, Row)
+                .SetColumnSpan(TableSide0, 2)
 
-                .Controls.Add(TableSide1Outer, 2, Row)
-                .SetColumnSpan(TableSide1Outer, 2)
+                .Controls.Add(TableSide1, 2, Row)
+                .SetColumnSpan(TableSide1, 2)
 
                 .Controls.Add(ButtonProcess, 4, Row)
 
@@ -290,7 +288,7 @@ Namespace Greaseweazle
             _OutputFilePath = GenerateUniqueFileName(TempPath, FileName)
 
             _TrackStatus.Clear()
-            TrackGridReset(_TrackCount, _SideCount)
+            GridReset(_TrackCount, _SideCount)
 
             Dim DoubleStep As Boolean = DiskParams.IsStandard AndAlso CheckBoxDoublestep.Enabled AndAlso CheckBoxDoublestep.Checked
             _DoubleStep = DoubleStep
@@ -323,15 +321,7 @@ Namespace Greaseweazle
         End Sub
 
         Private Sub ProcessTrackStatus(StatusInfo As TrackStatusInfo)
-            Dim Table As TableLayoutPanel
-
-            If StatusInfo.Side = 0 Then
-                Table = TableSide0
-            ElseIf StatusInfo.Side = 1 Then
-                Table = TableSide1
-            Else
-                Table = Nothing
-            End If
+            Dim Table = GridGetTable(StatusInfo.Side)
 
             If Table IsNot Nothing Then
                 Dim Track = StatusInfo.Track
@@ -350,7 +340,8 @@ Namespace Greaseweazle
                 Else
                     BackColor = Color.LightGreen
                 End If
-                FloppyGridSetLabel(Table, Track, Text, BackColor)
+                Table.SetCell(Track, Text:=Text, BackColor:=BackColor)
+                'FloppyGridSetLabel(Table, Track, Text, BackColor)
 
                 StatusTrack.Text = My.Resources.Label_Track & " " & Track
                 StatusSide.Text = My.Resources.Label_Side & " " & StatusInfo.Side

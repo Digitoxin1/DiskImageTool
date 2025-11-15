@@ -23,8 +23,8 @@ Partial Class FloppyAccessForm
     <System.Diagnostics.DebuggerStepThrough()>
     Private Sub InitializeComponent()
         Me.BackgroundWorker1 = New System.ComponentModel.BackgroundWorker()
-        Me.TableSide0 = New System.Windows.Forms.TableLayoutPanel()
-        Me.TableSide1 = New System.Windows.Forms.TableLayoutPanel()
+        Me.TableSide0 = New DiskImageTool.FloppyTrackGrid()
+        Me.TableSide1 = New DiskImageTool.FloppyTrackGrid()
         Me.StatusStrip1 = New System.Windows.Forms.StatusStrip()
         Me.StatusType = New System.Windows.Forms.ToolStripStatusLabel()
         Me.StatusTrack = New System.Windows.Forms.ToolStripStatusLabel()
@@ -41,25 +41,23 @@ Partial Class FloppyAccessForm
         '
         'TableSide0
         '
-        Me.TableSide0.ColumnCount = 1
-        Me.TableSide0.ColumnStyles.Add(New System.Windows.Forms.ColumnStyle())
+        Me.TableSide0.Label = Nothing
         Me.TableSide0.Location = New System.Drawing.Point(24, 24)
         Me.TableSide0.Name = "TableSide0"
-        Me.TableSide0.RowCount = 1
-        Me.TableSide0.RowStyles.Add(New System.Windows.Forms.RowStyle())
-        Me.TableSide0.Size = New System.Drawing.Size(219, 197)
+        Me.TableSide0.SelectEnabled = False
+        Me.TableSide0.Size = New System.Drawing.Size(224, 197)
         Me.TableSide0.TabIndex = 3
+        Me.TableSide0.TrackCount = 80
         '
         'TableSide1
         '
-        Me.TableSide1.ColumnCount = 1
-        Me.TableSide1.ColumnStyles.Add(New System.Windows.Forms.ColumnStyle())
+        Me.TableSide1.Label = Nothing
         Me.TableSide1.Location = New System.Drawing.Point(266, 24)
         Me.TableSide1.Name = "TableSide1"
-        Me.TableSide1.RowCount = 1
-        Me.TableSide1.RowStyles.Add(New System.Windows.Forms.RowStyle())
-        Me.TableSide1.Size = New System.Drawing.Size(219, 197)
+        Me.TableSide1.SelectEnabled = False
+        Me.TableSide1.Size = New System.Drawing.Size(221, 211)
         Me.TableSide1.TabIndex = 4
+        Me.TableSide1.TrackCount = 80
         '
         'StatusStrip1
         '
@@ -89,7 +87,7 @@ Partial Class FloppyAccessForm
         'StatusSide
         '
         Me.StatusSide.Name = "StatusSide"
-        Me.StatusSide.Size = New System.Drawing.Size(206, 17)
+        Me.StatusSide.Size = New System.Drawing.Size(314, 17)
         Me.StatusSide.Spring = True
         Me.StatusSide.Text = "{Side}"
         Me.StatusSide.TextAlign = System.Drawing.ContentAlignment.MiddleLeft
@@ -136,8 +134,8 @@ Partial Class FloppyAccessForm
 
     End Sub
     Friend WithEvents BackgroundWorker1 As System.ComponentModel.BackgroundWorker
-    Friend WithEvents TableSide0 As TableLayoutPanel
-    Friend WithEvents TableSide1 As TableLayoutPanel
+    Friend WithEvents TableSide0 As FloppyTrackGrid
+    Friend WithEvents TableSide1 As FloppyTrackGrid
     Friend WithEvents StatusStrip1 As StatusStrip
     Friend WithEvents StatusType As ToolStripStatusLabel
     Friend WithEvents StatusTrack As ToolStripStatusLabel

@@ -32,6 +32,40 @@ Namespace Greaseweazle
             frmTextView.ShowDialog(ParentForm)
         End Sub
 
+        Public Function BuildRanges(values As HashSet(Of UShort)) As List(Of (StartTrack As UShort, EndTrack As UShort))
+            Dim result As New List(Of (UShort, UShort))()
+
+            If values Is Nothing OrElse values.Count = 0 Then
+                Return result
+            End If
+
+            ' Sort the values first
+            Dim sorted = values.OrderBy(Function(v) v).ToList()
+
+            Dim rangeStart As UShort = sorted(0)
+            Dim rangeEnd As UShort = sorted(0)
+
+            For i As Integer = 1 To sorted.Count - 1
+                Dim v = sorted(i)
+
+                If v = rangeEnd + 1US Then
+                    ' extend range
+                    rangeEnd = v
+                Else
+                    ' push previous range
+                    result.Add((rangeStart, rangeEnd))
+                    ' start new range
+                    rangeStart = v
+                    rangeEnd = v
+                End If
+            Next
+
+            ' add final range
+            result.Add((rangeStart, rangeEnd))
+
+            Return result
+        End Function
+
         Public Function ConvertFirstTrack(FilePath As String) As (Result As Boolean, FileName As String)
             Dim TempPath = InitTempImagePath()
 
@@ -259,6 +293,17 @@ Namespace Greaseweazle
             Return Nothing
         End Function
 
+        Public Sub Reset(TextBox As TextBox)
+            Dim Builder = New CommandLineBuilder(CommandLineBuilder.CommandAction.reset) With {
+                .Device = GreaseweazleSettings.COMPort
+            }
+
+            Dim Arguments = Builder.Arguments
+            Dim Result = ConsoleProcessRunner.RunProcess(GreaseweazleSettings.AppPath, Arguments)
+            TextBox.Text = Result.CombinedOutput
+
+            MsgBox(My.Resources.Dialog_GreaseweazleReset, MsgBoxStyle.Information)
+        End Sub
         Public Sub WriteImageToDisk(ParentForm As Form, Image As DiskImageContainer)
             Dim Form As New WriteDiskForm(Image.Disk, Image.ImageData.FileName)
             Form.ShowDialog(ParentForm)

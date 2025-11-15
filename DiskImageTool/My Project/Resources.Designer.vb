@@ -1567,6 +1567,15 @@ Namespace My.Resources
         End Property
         
         '''<summary>
+        '''  Looks up a localized string similar to Reset command sent to Greaseweazle device..
+        '''</summary>
+        Friend ReadOnly Property Dialog_GreaseweazleReset() As String
+            Get
+                Return ResourceManager.GetString("Dialog_GreaseweazleReset", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
         '''  Looks up a localized string similar to This image has one or more tracks that are not compatible with this image type..
         '''</summary>
         Friend ReadOnly Property Dialog_Image_NonCompatibleSectors() As String
@@ -3695,6 +3704,15 @@ Namespace My.Resources
         Friend ReadOnly Property Label_ReadOnly() As String
             Get
                 Return ResourceManager.GetString("Label_ReadOnly", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  Looks up a localized string similar to Reset.
+        '''</summary>
+        Friend ReadOnly Property Label_Reset() As String
+            Get
+                Return ResourceManager.GetString("Label_Reset", resourceCulture)
             End Get
         End Property
         

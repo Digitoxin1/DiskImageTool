@@ -128,6 +128,9 @@
     <Compile Include="ApplicationEvents.vb" />
     <Compile Include="Bitstream\Bitstream.vb" />
     <Compile Include="Bitstream\BitstreamRegionData.vb" />
+    <Compile Include="Controls\FloppyTrackGrid.vb">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="Controls\ListViewEx.vb">
       <SubType>Component</SubType>
     </Compile>
@@ -233,7 +236,6 @@
     <Compile Include="Forms\ImportFileForm.vb">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Modules\FloppyGrid.vb" />
     <Compile Include="Modules\Github.vb" />
     <Compile Include="HexBox\BuiltInContextMenu.vb">
       <SubType>Component</SubType>

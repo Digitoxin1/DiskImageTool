@@ -4,7 +4,9 @@ Namespace Greaseweazle
     Public Class WriteDiskForm
         Inherits BaseForm
         Private WithEvents ButtonProcess As Button
+        Private WithEvents ButtonReset As Button
         Private WithEvents CheckboxNoVerify As CheckBox
+        Private WithEvents CheckBoxSelect As CheckBox
         Private WithEvents ComboImageDrives As ComboBox
         Private WithEvents Process As ConsoleProcessRunner
         Private ReadOnly _Disk As DiskImage.Disk
@@ -13,21 +15,22 @@ Namespace Greaseweazle
         Private ReadOnly _SideCount As Byte
         Private ReadOnly _TrackCount As UShort
         Private ReadOnly _TrackStatus As Dictionary(Of String, TrackStatusInfo)
+        Private _AllowNoVerify As Boolean = True
+        Private _AllowRetries As Boolean = True
         Private _CancelButtonClicked As Boolean = False
         Private _ContinueAfterWrite As Boolean = False
         Private _CurrentFilePath As String = ""
         Private _CurrentStatusInfo As TrackStatusInfo = Nothing
+        Private _DoubleStep As Boolean = False
+        Private _LastSelected As (Track As UShort, Side As Byte, Selected As Boolean)? = Nothing
         Private _ProcessRunning As Boolean = False
         Private _TrackRange As ConsoleOutputParser.TrackRange = Nothing
         Private CheckBoxContinue As CheckBox
         Private CheckBoxEraseEmpty As CheckBox
         Private CheckBoxPreErase As CheckBox
-        Private LabelWarning As Label
         Private LabelImageFormat As Label
+        Private LabelWarning As Label
         Private NumericRetries As NumericUpDown
-        Private _AllowRetries As Boolean = True
-        Private _AllowNoVerify As Boolean = True
-        Private _DoubleStep As Boolean = False
 
         Public Sub New(Disk As DiskImage.Disk, FileName As String)
             MyBase.New()
@@ -67,6 +70,7 @@ Namespace Greaseweazle
 
             PopulateDrives(_DiskParams)
             ResetState()
+            ResetCheckBoxSelect()
             RefreshButtonState()
         End Sub
 
@@ -99,10 +103,44 @@ Namespace Greaseweazle
             Dim Msg = String.Format(My.Resources.Dialog_ImageFormatWarning, vbNewLine)
             Return MsgBox(Msg, MsgBoxStyle.YesNo + MsgBoxStyle.DefaultButton2) = MsgBoxResult.Yes
         End Function
+
         Private Function ConfirmWrite(DriveName As String) As Boolean
             Dim Msg = String.Format(My.Resources.Dialog_ConfirmWrite, vbNewLine, DriveName)
             Return MsgBox(Msg, MsgBoxStyle.YesNo + MsgBoxStyle.DefaultButton2) = MsgBoxResult.Yes
         End Function
+
+        Private Function GetEndTrackFromDriveOption(Opt As DriveOption) As UShort
+            Dim TrackCount As Integer = Opt.Tracks
+
+            If _DiskParams.MediaType = FloppyMediaType.Media525DoubleDensity Then
+                If Opt.Type <> FloppyMediaType.Media525DoubleDensity AndAlso Opt.Type <> FloppyMediaType.Media525HighDensity Then
+                    TrackCount = Settings.MAX_TRACKS_525DD
+                End If
+            ElseIf Opt.Type = FloppyMediaType.Media525DoubleDensity AndAlso _TrackCount > Settings.MAX_TRACKS_525DD Then
+                TrackCount = Settings.MIN_TRACKS_525DD
+            End If
+
+            If _DoubleStep Then
+                TrackCount = Math.Ceiling(TrackCount / 2)
+            End If
+
+            Return TrackCount - 1
+        End Function
+
+        Private Function GetTrackHeads(StartHead As Integer, Optional EndHead As Integer = -1) As CommandLineBuilder.TrackHeads
+            If EndHead = -1 Then
+                EndHead = StartHead
+            End If
+
+            If StartHead = 0 And EndHead = 0 Then
+                Return CommandLineBuilder.TrackHeads.head0
+            ElseIf StartHead = 1 And EndHead = 1 Then
+                Return CommandLineBuilder.TrackHeads.head1
+            Else
+                Return CommandLineBuilder.TrackHeads.both
+            End If
+        End Function
+
         Private Sub InitializeControls()
             Dim DriveLabel = New Label With {
                 .Text = My.Resources.Label_Drive,
@@ -156,11 +194,32 @@ Namespace Greaseweazle
                 .Margin = New Padding(3, 3, 3, 3)
             }
 
+            CheckBoxSelect = New CheckBox With {
+                .Text = "Select Tracks",
+                .Anchor = AnchorStyles.Left,
+                .AutoSize = True,
+                .Margin = New Padding(3, 3, 3, 3)
+            }
+
+            Dim ButtonContainer = New FlowLayoutPanel With {
+                .FlowDirection = FlowDirection.TopDown,
+                .AutoSize = True
+            }
+
             ButtonProcess = New Button With {
                 .Width = 75,
                 .Margin = New Padding(12, 24, 3, 3),
                 .Text = My.Resources.Label_Write
             }
+
+            ButtonReset = New Button With {
+                .Width = 75,
+                .Margin = New Padding(12, 12, 3, 3),
+                .Text = My.Resources.Label_Reset
+            }
+
+            ButtonContainer.Controls.Add(ButtonProcess)
+            ButtonContainer.Controls.Add(ButtonReset)
 
             LabelWarning = New Label With {
                 .Text = My.Resources.Message_ImageFormatWarning,
@@ -229,20 +288,23 @@ Namespace Greaseweazle
                 .Controls.Add(CheckBoxContinue, 5, Row)
 
                 Row = 2
-                .RowStyles(Row).SizeType = SizeType.Absolute
-                .RowStyles(Row).Height = 20
+                ' .RowStyles(Row).SizeType = SizeType.Absolute
+                ' .RowStyles(Row).Height = 20
                 .Controls.Add(LabelWarning, 0, Row)
                 .SetColumnSpan(LabelWarning, 2)
 
+                .Controls.Add(CheckBoxSelect, 4, Row)
+                .SetColumnSpan(CheckBoxSelect, 2)
+
                 Row = 3
-                .Controls.Add(TableSide0Outer, 0, Row)
-                .SetColumnSpan(TableSide0Outer, 2)
+                .Controls.Add(TableSide0, 0, Row)
+                .SetColumnSpan(TableSide0, 2)
 
-                .Controls.Add(TableSide1Outer, 2, Row)
-                .SetColumnSpan(TableSide1Outer, 4)
+                .Controls.Add(TableSide1, 2, Row)
+                .SetColumnSpan(TableSide1, 4)
 
-                .Controls.Add(ButtonProcess, 6, Row)
-                .SetColumnSpan(ButtonProcess, 2)
+                .Controls.Add(ButtonContainer, 6, Row)
+                .SetColumnSpan(ButtonContainer, 2)
 
                 .ResumeLayout()
                 .Left = (.Parent.ClientSize.Width - .Width) \ 2
@@ -258,21 +320,27 @@ Namespace Greaseweazle
                 Return False
             End If
 
-            If Not _ContinueAfterWrite AndAlso Not (_AllowRetries And CheckBoxContinue.Checked And _CurrentStatusInfo.Failed) Then
+            If Not _ContinueAfterWrite AndAlso Not (_AllowRetries And CheckBoxContinue.Checked And CheckBoxSelect.Checked And _CurrentStatusInfo.Failed) Then
                 Return False
             End If
-
 
             If Not (_CurrentStatusInfo.Track < _TrackRange.TrackEnd Or _CurrentStatusInfo.Side < _TrackRange.HeadEnd) Then
                 Return False
             End If
 
+            Dim Heads As CommandLineBuilder.TrackHeads
+            Dim TrackRanges As New List(Of (StartTrack As UShort, EndTrack As UShort))
+
             If _CurrentStatusInfo.Side < _TrackRange.HeadEnd Then
                 _ContinueAfterWrite = True
-                WriteDisk(_CurrentFilePath, _CurrentStatusInfo.Track, _CurrentStatusInfo.Track, _CurrentStatusInfo.Side + 1)
+                Heads = GetTrackHeads(_CurrentStatusInfo.Side + 1)
+                TrackRanges.Add((_CurrentStatusInfo.Track, _CurrentStatusInfo.Track))
             Else
-                WriteDisk(_CurrentFilePath, _CurrentStatusInfo.Track + 1, _TrackRange.TrackEnd)
+                Heads = CommandLineBuilder.TrackHeads.both
+                TrackRanges.Add((_CurrentStatusInfo.Track + 1, _TrackRange.TrackEnd))
             End If
+
+            WriteDisk(_CurrentFilePath, TrackRanges, Heads)
 
             Return True
         End Function
@@ -335,11 +403,12 @@ Namespace Greaseweazle
             If Response.Result Then
                 _CurrentFilePath = Response.FilePath
 
-                ResetState()
+                ResetState(False)
 
                 WriteDisk(_CurrentFilePath)
             End If
         End Sub
+
         Private Sub ProcessDiskCleanup(exitCode As Integer)
             If exitCode = -1 Then
                 StatusType.Text = GetTrackStatusText(TrackStatus.Aborted)
@@ -421,7 +490,7 @@ Namespace Greaseweazle
                 Label = "W"
             End If
 
-            MarkTrack(Statusinfo.Track, Statusinfo.Side, Status, Label, _DoubleStep)
+            GridMarkTrack(Statusinfo.Track, Statusinfo.Side, Status, Label, _DoubleStep)
 
             Return Status
         End Function
@@ -432,7 +501,7 @@ Namespace Greaseweazle
             CheckBoxPreErase.Enabled = Not _ProcessRunning
             CheckBoxEraseEmpty.Enabled = Not _ProcessRunning
             CheckboxNoVerify.Enabled = Not _ProcessRunning AndAlso _AllowNoVerify
-
+            CheckBoxSelect.Enabled = Not _ProcessRunning
 
             If _ProcessRunning Then
                 ButtonProcess.Text = My.Resources.Label_Abort
@@ -440,23 +509,29 @@ Namespace Greaseweazle
                 ButtonProcess.Text = My.Resources.Label_Write
             End If
 
+            ButtonReset.Enabled = Not _ProcessRunning
+
             RefreshProcessButtonState()
             RefreshVerifyButtonState()
         End Sub
 
         Private Sub RefreshProcessButtonState()
             Dim Opt As DriveOption = ComboImageDrives.SelectedValue
-            ButtonProcess.Enabled = Opt.Id <> ""
+            ButtonProcess.Enabled = Opt.Id <> "" AndAlso Not CheckBoxSelect.Checked OrElse TableSide0.SelectedTracks.Count > 0 OrElse TableSide1.SelectedTracks.Count > 0
         End Sub
 
         Private Sub RefreshVerifyButtonState()
-            _AllowRetries = Not CheckboxNoVerify.Checked AndAlso Not _IsBitstreamImage
+            _AllowRetries = Not CheckboxNoVerify.Checked AndAlso Not _IsBitstreamImage AndAlso Not CheckBoxSelect.Checked
             CheckBoxContinue.Enabled = Not _ProcessRunning AndAlso _AllowRetries
             NumericRetries.Enabled = Not _ProcessRunning AndAlso _AllowRetries
         End Sub
 
-        Private Sub ResetState()
-            ResetTrackGrid()
+        Private Sub ResetCheckBoxSelect()
+            CheckBoxSelect.Checked = False
+        End Sub
+
+        Private Sub ResetState(Optional ResetSelected As Boolean = True)
+            ResetTrackGrid(ResetSelected)
             StatusType.Text = ""
             StatusTrack.Text = ""
             StatusSide.Text = ""
@@ -468,7 +543,7 @@ Namespace Greaseweazle
             TextBoxConsole.Clear()
         End Sub
 
-        Private Sub ResetTrackGrid()
+        Private Sub ResetTrackGrid(Optional ResetSelected As Boolean = True)
             Dim Opt As DriveOption = ComboImageDrives.SelectedValue
 
             Dim TrackCount As UShort
@@ -484,7 +559,7 @@ Namespace Greaseweazle
 
             TrackCount = Math.Max(TrackCount, _TrackCount)
 
-            TrackGridInit(TrackCount, _SideCount)
+            GridReset(TrackCount, _SideCount, ResetSelected)
         End Sub
 
         Private Function SaveTempImage() As (Result As Boolean, FilePath As String)
@@ -518,6 +593,10 @@ Namespace Greaseweazle
                 DeleteFileIfExists(_CurrentFilePath)
             End If
 
+            If Not Value Then
+                CheckBoxSelect.Checked = False
+            End If
+
             RefreshButtonState()
         End Sub
 
@@ -543,7 +622,33 @@ Namespace Greaseweazle
             Return StatusInfo
         End Function
 
-        Private Sub WriteDisk(FilePath As String, Optional StartTrack As Integer = -1, Optional EndTrack As Integer = -1, Optional StartHead As Integer = -1, Optional EndHead As Integer = -1)
+        Private Sub WriteDisk(FilePath As String)
+            Dim TrackRanges As List(Of (StartTrack As UShort, EndTrack As UShort)) = Nothing
+            Dim Heads As CommandLineBuilder.TrackHeads = CommandLineBuilder.TrackHeads.both
+
+            If CheckBoxSelect.Checked Then
+                Dim SelectedTracks As New HashSet(Of UShort)(TableSide0.SelectedTracks)
+                SelectedTracks.UnionWith(TableSide1.SelectedTracks)
+
+                TrackRanges = BuildRanges(SelectedTracks)
+
+                If TableSide0.IsChecked AndAlso TableSide1.IsChecked Then
+                    Heads = CommandLineBuilder.TrackHeads.both
+                ElseIf TableSide0.IsChecked Then
+                    Heads = CommandLineBuilder.TrackHeads.head0
+                Else
+                    Heads = CommandLineBuilder.TrackHeads.head1
+                End If
+
+                If TrackRanges.Count = 0 Then
+                    Exit Sub
+                End If
+            End If
+
+            WriteDisk(FilePath, TrackRanges, Heads)
+        End Sub
+
+        Private Sub WriteDisk(FilePath As String, TrackRanges As List(Of (StartTrack As UShort, EndTrack As UShort)), Heads As CommandLineBuilder.TrackHeads)
             Dim Opt As DriveOption = ComboImageDrives.SelectedValue
 
             If Opt.Id = "" Then
@@ -579,43 +684,18 @@ Namespace Greaseweazle
                 Builder.Format = GreaseweazleImageFormatCommandLine(ImageFormat)
             End If
 
-            If StartTrack = -1 And StartHead = -1 Then
-                Dim TrackCount As Integer = Opt.Tracks
-
-                If _DiskParams.MediaType = FloppyMediaType.Media525DoubleDensity Then
-                    If Opt.Type <> FloppyMediaType.Media525DoubleDensity AndAlso Opt.Type <> FloppyMediaType.Media525HighDensity Then
-                        TrackCount = Settings.MAX_TRACKS_525DD
-                    End If
-                ElseIf Opt.Type = FloppyMediaType.Media525DoubleDensity AndAlso _TrackCount > Settings.MAX_TRACKS_525DD Then
-                    TrackCount = Settings.MIN_TRACKS_525DD
-                End If
-
-                If _DoubleStep Then
-                    TrackCount = Math.Ceiling(TrackCount / 2)
-                End If
-
-                StartTrack = 0
-                EndTrack = TrackCount - 1
+            If TrackRanges Is Nothing Then
+                TrackRanges = New List(Of (StartTrack As UShort, EndTrack As UShort)) From {
+                    (0, GetEndTrackFromDriveOption(Opt))
+                }
             End If
 
-            If StartTrack > -1 Then
-                If EndTrack = -1 Then
-                    EndTrack = StartTrack
-                End If
-                Builder.AddCylinder(StartTrack, EndTrack)
-            End If
+            For Each Range In TrackRanges
+                Builder.AddCylinder(Range.StartTrack, Range.EndTrack)
+            Next
 
-            If StartHead > -1 Then
-                If EndHead = -1 Then
-                    EndHead = StartHead
-                End If
-                If StartHead = 0 And EndHead = 0 Then
-                    Builder.Heads = CommandLineBuilder.TrackHeads.head0
-                ElseIf StartHead = 1 And EndHead = 1 Then
-                    Builder.Heads = CommandLineBuilder.TrackHeads.head1
-                Else
-                    Builder.Heads = CommandLineBuilder.TrackHeads.both
-                End If
+            If Heads <> CommandLineBuilder.TrackHeads.both Then
+                Builder.Heads = Heads
             End If
 
             Dim Arguments = Builder.Arguments
@@ -628,7 +708,6 @@ Namespace Greaseweazle
             ToggleProcessRunning(True)
             Process.StartAsync(GreaseweazleSettings.AppPath, Arguments)
         End Sub
-
 #Region "Events"
         Private Sub ButtonCancel_Click(sender As Object, e As EventArgs) Handles ButtonCancel.Click
             _CancelButtonClicked = True
@@ -662,11 +741,26 @@ Namespace Greaseweazle
             ProcessDisk()
         End Sub
 
+        Private Sub ButtonReset_Click(sender As Object, e As EventArgs) Handles ButtonReset.Click
+            Reset(TextBoxConsole)
+        End Sub
+
         Private Sub CheckboxNoVerify_CheckStateChanged(sender As Object, e As EventArgs) Handles CheckboxNoVerify.CheckStateChanged
             RefreshVerifyButtonState()
         End Sub
 
+        Private Sub CheckBoxSelect_CheckStateChanged(sender As Object, e As EventArgs) Handles CheckBoxSelect.CheckStateChanged
+            If CheckBoxSelect.Checked Then
+                GridReset()
+            End If
+
+            TableSide0.SelectEnabled = CheckBoxSelect.Checked
+            TableSide1.SelectEnabled = CheckBoxSelect.Checked
+            RefreshButtonState()
+        End Sub
+
         Private Sub ComboImageDrives_SelectedIndexChanged(sender As Object, e As EventArgs) Handles ComboImageDrives.SelectedIndexChanged
+            ResetCheckBoxSelect()
             ResetTrackGrid()
             RefreshProcessButtonState()
             LabelWarning.Visible = Not CheckCompatibility()
@@ -685,6 +779,10 @@ Namespace Greaseweazle
             ToggleProcessRunning(False)
         End Sub
 
+        Private Sub WriteDiskForm_CheckChanged(sender As Object, Checked As Boolean, Side As Byte) Handles Me.CheckChanged
+            RefreshProcessButtonState()
+        End Sub
+
         Private Sub WriteDiskForm_FormClosing(sender As Object, e As FormClosingEventArgs) Handles Me.FormClosing
             If Process.IsRunning Then
                 If e.CloseReason = CloseReason.UserClosing OrElse _CancelButtonClicked Then
@@ -699,6 +797,10 @@ Namespace Greaseweazle
                 Catch ex As Exception
                 End Try
             End If
+        End Sub
+
+        Private Sub WriteDiskForm_SelectionChanged(sender As Object, Track As UShort, Side As Byte, Enabled As Boolean) Handles Me.SelectionChanged
+            RefreshProcessButtonState()
         End Sub
 #End Region
 

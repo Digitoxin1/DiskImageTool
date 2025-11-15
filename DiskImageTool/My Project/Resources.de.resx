@@ -1637,4 +1637,10 @@ Hinweis: Diese ID wird normalerweise erzeugt, indem das aktuelle Datum und die a
   <data name="Label_Format" xml:space="preserve">
     <value>Format</value>
   </data>
+  <data name="Dialog_GreaseweazleReset" xml:space="preserve">
+    <value>Reset-Befehl an das Greaseweazle-Gerät gesendet.</value>
+  </data>
+  <data name="Label_Reset" xml:space="preserve">
+    <value>Zurücksetzen</value>
+  </data>
 </root>
