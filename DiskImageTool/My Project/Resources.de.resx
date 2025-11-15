@@ -1643,4 +1643,19 @@ Hinweis: Diese ID wird normalerweise erzeugt, indem das aktuelle Datum und die a
   <data name="Label_Reset" xml:space="preserve">
     <value>Zurücksetzen</value>
   </data>
+  <data name="Label_Erase" xml:space="preserve">
+    <value>Löschen</value>
+  </data>
+  <data name="Label_EraseDisk" xml:space="preserve">
+    <value>Diskette löschen</value>
+  </data>
+  <data name="Label_Hfreq" xml:space="preserve">
+    <value>Hochfrequenzsignal</value>
+  </data>
+  <data name="Label_Revs" xml:space="preserve">
+    <value>Umdrehungen</value>
+  </data>
+  <data name="Label_SelectTracks" xml:space="preserve">
+    <value>Spuren auswählen</value>
+  </data>
 </root>

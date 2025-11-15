@@ -427,7 +427,7 @@
     <value>False</value>
   </data>
   <data name="StatusType.Size" type="System.Drawing.Size, System.Drawing">
-    <value>660, 19</value>
+    <value>629, 19</value>
   </data>
   <data name="StatusType.Text" xml:space="preserve">
     <value>{Status}</value>

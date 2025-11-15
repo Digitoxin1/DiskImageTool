@@ -1,4 +1,5 @@
 ﻿Imports System.Text.RegularExpressions
+Imports DiskImageTool.DiskImage.FloppyDiskFunctions
 
 Namespace Greaseweazle
     Module GreaseweazleLib
@@ -66,6 +67,15 @@ Namespace Greaseweazle
             Return result
         End Function
 
+        Public Function ConfirmCancel() As Boolean
+            Return MsgBox(My.Resources.Dialog_ConfirmWriteCancel, MsgBoxStyle.YesNo + MsgBoxStyle.DefaultButton2) = MsgBoxResult.Yes
+        End Function
+
+        Public Function ConfirmWrite(DriveName As String) As Boolean
+            Dim Msg = String.Format(My.Resources.Dialog_ConfirmWrite, vbNewLine, DriveName)
+            Return MsgBox(Msg, MsgBoxStyle.YesNo + MsgBoxStyle.DefaultButton2) = MsgBoxResult.Yes
+        End Function
+
         Public Function ConvertFirstTrack(FilePath As String) As (Result As Boolean, FileName As String)
             Dim TempPath = InitTempImagePath()
 
@@ -90,6 +100,11 @@ Namespace Greaseweazle
 
         Public Sub DisplayInvalidApplicationPathMsg()
             MessageBox.Show(My.Resources.Dialog_InvalidApplicationPath, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error)
+        End Sub
+
+        Public Sub EraseDisk(ParentForm As Form)
+            Dim Form As New EraseDiskForm()
+            Form.ShowDialog(ParentForm)
         End Sub
 
         Public Function GetFirstRawFile(FilePath As String) As String
@@ -293,6 +308,57 @@ Namespace Greaseweazle
             Return Nothing
         End Function
 
+        Public Sub PopulateDrives(Combo As ComboBox, Format As FloppyMediaType)
+            Dim DriveList As New List(Of DriveOption)
+
+            Dim placeholder As New DriveOption With {
+                .Id = "",
+                .Type = FloppyMediaType.MediaUnknown,
+                .Tracks = 0,
+                .Label = My.Resources.Label_PleaseSelect
+            }
+            DriveList.Add(placeholder)
+
+            Dim SelectedOption As DriveOption = Nothing
+
+            Dim AddItem As Action(Of String, String, Byte) =
+                Sub(labelPrefix As String, id As String, index As Byte)
+                    Dim t = GreaseweazleSettings.DriveType(index)
+                    If t = FloppyMediaType.MediaUnknown Then
+                        Exit Sub
+                    End If
+
+                    Dim opt = New DriveOption With {
+                        .Id = id,
+                        .Type = t,
+                        .Tracks = GreaseweazleSettings.TrackCount(index),
+                        .Label = $"{labelPrefix}:   {GreaseweazleFloppyTypeDescription(t)}"
+                    }
+                    DriveList.Add(opt)
+
+                    If SelectedOption Is Nothing AndAlso t = Format Then
+                        SelectedOption = opt
+                    End If
+                End Sub
+
+            If GreaseweazleSettings.Interface = Settings.GreaseweazleInterface.Shugart Then
+                AddItem("DS0", "0", 0)
+                AddItem("DS1", "1", 1)
+                AddItem("DS2", "2", 2)
+            Else
+                AddItem("A", "A", 0)
+                AddItem("B", "B", 1)
+            End If
+
+            With Combo
+                .DropDownStyle = ComboBoxStyle.DropDownList
+                .DataSource = DriveList
+                .DisplayMember = NameOf(DriveOption.Label)
+                .ValueMember = ""
+                .SelectedItem = If(SelectedOption, placeholder)
+            End With
+        End Sub
+
         Public Sub Reset(TextBox As TextBox)
             Dim Builder = New CommandLineBuilder(CommandLineBuilder.CommandAction.reset) With {
                 .Device = GreaseweazleSettings.COMPort
@@ -308,5 +374,15 @@ Namespace Greaseweazle
             Dim Form As New WriteDiskForm(Image.Disk, Image.ImageData.FileName)
             Form.ShowDialog(ParentForm)
         End Sub
+
+        Public Class DriveOption
+            Public Property Id As String
+            Public Property Label As String
+            Public Property Tracks As Byte
+            Public Property Type As FloppyMediaType
+            Public Overrides Function ToString() As String
+                Return Label
+            End Function
+        End Class
     End Module
 End Namespace

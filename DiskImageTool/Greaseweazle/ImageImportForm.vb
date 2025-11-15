@@ -407,10 +407,7 @@ Namespace Greaseweazle
         End Sub
 
         Private Sub ResetStatusBar()
-            StatusType.Text = ""
-            StatusTrack.Text = ""
-            StatusSide.Text = ""
-            StatusSide.Visible = False
+            ClearStatusBar()
             _StatusBadSectors.Text = ""
             _StatusUnexpected.Text = ""
             _TotalBadSectors = 0

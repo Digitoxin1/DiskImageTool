@@ -3177,6 +3177,24 @@ Namespace My.Resources
         End Property
         
         '''<summary>
+        '''  Looks up a localized string similar to Erase.
+        '''</summary>
+        Friend ReadOnly Property Label_Erase() As String
+            Get
+                Return ResourceManager.GetString("Label_Erase", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  Looks up a localized string similar to Erase Disk.
+        '''</summary>
+        Friend ReadOnly Property Label_EraseDisk() As String
+            Get
+                Return ResourceManager.GetString("Label_EraseDisk", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
         '''  Looks up a localized string similar to Erase Empty.
         '''</summary>
         Friend ReadOnly Property Label_EraseEmpty() As String
@@ -3425,6 +3443,15 @@ Namespace My.Resources
         Friend ReadOnly Property Label_Gap() As String
             Get
                 Return ResourceManager.GetString("Label_Gap", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  Looks up a localized string similar to High-Freq Signal.
+        '''</summary>
+        Friend ReadOnly Property Label_Hfreq() As String
+            Get
+                Return ResourceManager.GetString("Label_Hfreq", resourceCulture)
             End Get
         End Property
         
@@ -3735,6 +3762,15 @@ Namespace My.Resources
         End Property
         
         '''<summary>
+        '''  Looks up a localized string similar to Revs.
+        '''</summary>
+        Friend ReadOnly Property Label_Revs() As String
+            Get
+                Return ResourceManager.GetString("Label_Revs", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
         '''  Looks up a localized string similar to Root.
         '''</summary>
         Friend ReadOnly Property Label_Root() As String
@@ -3812,6 +3848,15 @@ Namespace My.Resources
         Friend ReadOnly Property Label_SelectTrack() As String
             Get
                 Return ResourceManager.GetString("Label_SelectTrack", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  Looks up a localized string similar to Select Tracks.
+        '''</summary>
+        Friend ReadOnly Property Label_SelectTracks() As String
+            Get
+                Return ResourceManager.GetString("Label_SelectTracks", resourceCulture)
             End Get
         End Property
         

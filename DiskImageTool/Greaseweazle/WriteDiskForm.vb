@@ -14,13 +14,13 @@ Namespace Greaseweazle
         Private ReadOnly _IsBitstreamImage As Boolean
         Private ReadOnly _SideCount As Byte
         Private ReadOnly _TrackCount As UShort
-        Private ReadOnly _TrackStatus As Dictionary(Of String, TrackStatusInfo)
+        Private ReadOnly _TrackStatus As Dictionary(Of String, TrackStatusInfoWrite)
         Private _AllowNoVerify As Boolean = True
         Private _AllowRetries As Boolean = True
         Private _CancelButtonClicked As Boolean = False
         Private _ContinueAfterWrite As Boolean = False
         Private _CurrentFilePath As String = ""
-        Private _CurrentStatusInfo As TrackStatusInfo = Nothing
+        Private _CurrentStatusInfo As TrackStatusInfoWrite = Nothing
         Private _DoubleStep As Boolean = False
         Private _LastSelected As (Track As UShort, Side As Byte, Selected As Boolean)? = Nothing
         Private _ProcessRunning As Boolean = False
@@ -39,7 +39,7 @@ Namespace Greaseweazle
             _Disk = Disk
             _DiskParams = Disk.DiskParams
 
-            _TrackStatus = New Dictionary(Of String, TrackStatusInfo)
+            _TrackStatus = New Dictionary(Of String, TrackStatusInfoWrite)
 
             Process = New ConsoleProcessRunner With {
                 .EventContext = Threading.SynchronizationContext.Current
@@ -68,20 +68,14 @@ Namespace Greaseweazle
             Dim Mode As String = IIf(_IsBitstreamImage, My.Resources.FileType_BitstreamImage, My.Resources.FileType_SectorImage)
             StatusStripBottom.Items.Add(New ToolStripStatusLabel(Mode))
 
-            PopulateDrives(_DiskParams)
+            Dim AvailableTypes = GreaseweazleSettings.AvailableDriveTypes
+            Dim SelectedFormat = GreaseweazleFindCompatibleFloppyType(_DiskParams, AvailableTypes)
+
+            PopulateDrives(ComboImageDrives, SelectedFormat)
             ResetState()
             ResetCheckBoxSelect()
             RefreshButtonState()
         End Sub
-
-        Public Function GetDriveName(Drive As String) As String
-            Select Case Drive
-                Case "A", "B"
-                    Return Drive & ":"
-                Case Else
-                    Return "DS" & Drive & ":"
-            End Select
-        End Function
 
         Private Function CheckCompatibility() As Boolean
             Dim Opt As DriveOption = ComboImageDrives.SelectedValue
@@ -95,17 +89,8 @@ Namespace Greaseweazle
             Return FloppyType = Opt.Type
         End Function
 
-        Private Function ConfirmCancel() As Boolean
-            Return MsgBox(My.Resources.Dialog_ConfirmWriteCancel, MsgBoxStyle.YesNo + MsgBoxStyle.DefaultButton2) = MsgBoxResult.Yes
-        End Function
-
         Private Function ConfirmIncompatibleImage() As Boolean
             Dim Msg = String.Format(My.Resources.Dialog_ImageFormatWarning, vbNewLine)
-            Return MsgBox(Msg, MsgBoxStyle.YesNo + MsgBoxStyle.DefaultButton2) = MsgBoxResult.Yes
-        End Function
-
-        Private Function ConfirmWrite(DriveName As String) As Boolean
-            Dim Msg = String.Format(My.Resources.Dialog_ConfirmWrite, vbNewLine, DriveName)
             Return MsgBox(Msg, MsgBoxStyle.YesNo + MsgBoxStyle.DefaultButton2) = MsgBoxResult.Yes
         End Function
 
@@ -125,20 +110,6 @@ Namespace Greaseweazle
             End If
 
             Return TrackCount - 1
-        End Function
-
-        Private Function GetTrackHeads(StartHead As Integer, Optional EndHead As Integer = -1) As CommandLineBuilder.TrackHeads
-            If EndHead = -1 Then
-                EndHead = StartHead
-            End If
-
-            If StartHead = 0 And EndHead = 0 Then
-                Return CommandLineBuilder.TrackHeads.head0
-            ElseIf StartHead = 1 And EndHead = 1 Then
-                Return CommandLineBuilder.TrackHeads.head1
-            Else
-                Return CommandLineBuilder.TrackHeads.both
-            End If
         End Function
 
         Private Sub InitializeControls()
@@ -195,7 +166,7 @@ Namespace Greaseweazle
             }
 
             CheckBoxSelect = New CheckBox With {
-                .Text = "Select Tracks",
+                .Text = My.Resources.Label_SelectTracks,
                 .Anchor = AnchorStyles.Left,
                 .AutoSize = True,
                 .Margin = New Padding(3, 3, 3, 3)
@@ -345,59 +316,6 @@ Namespace Greaseweazle
             Return True
         End Function
 
-        Private Sub PopulateDrives(DiskParams As FloppyDiskParams)
-            Dim AvailableTypes = GreaseweazleSettings.AvailableDriveTypes
-
-            Dim SelectedFormat = GreaseweazleFindCompatibleFloppyType(DiskParams, AvailableTypes)
-
-            Dim DriveList As New List(Of DriveOption)
-
-            Dim placeholder As New DriveOption With {
-                .Id = "",
-                .Type = FloppyMediaType.MediaUnknown,
-                .Tracks = 0,
-                .Label = My.Resources.Label_PleaseSelect
-            }
-            DriveList.Add(placeholder)
-
-            Dim SelectedOption As DriveOption = Nothing
-
-            Dim AddItem As Action(Of String, String, Byte) =
-                Sub(labelPrefix As String, id As String, index As Byte)
-                    Dim t = GreaseweazleSettings.DriveType(index)
-                    If t = FloppyMediaType.MediaUnknown Then
-                        Exit Sub
-                    End If
-
-                    Dim opt = New DriveOption With {
-                        .Id = id,
-                        .Type = t,
-                        .Tracks = GreaseweazleSettings.TrackCount(index),
-                        .Label = $"{labelPrefix}:   {GreaseweazleFloppyTypeDescription(t)}"
-                    }
-                    DriveList.Add(opt)
-
-                    If SelectedOption Is Nothing AndAlso t = SelectedFormat Then
-                        SelectedOption = opt
-                    End If
-                End Sub
-
-            If GreaseweazleSettings.Interface = Settings.GreaseweazleInterface.Shugart Then
-                AddItem("DS0", "0", 0)
-                AddItem("DS1", "1", 1)
-                AddItem("DS2", "2", 2)
-            Else
-                AddItem("A", "A", 0)
-                AddItem("B", "B", 1)
-            End If
-
-            ComboImageDrives.DropDownStyle = ComboBoxStyle.DropDownList
-            ComboImageDrives.DataSource = DriveList
-            ComboImageDrives.DisplayMember = NameOf(DriveOption.Label)
-            ComboImageDrives.ValueMember = ""
-            ComboImageDrives.SelectedItem = If(SelectedOption, placeholder)
-        End Sub
-
         Private Sub ProcessDisk()
             Dim Response = SaveTempImage()
             If Response.Result Then
@@ -443,13 +361,13 @@ Namespace Greaseweazle
 
             Dim TrackInfo = Parser.ParseWriteTrackInfo(line)
             If TrackInfo IsNot Nothing Then
-                Dim Statusinfo = UpdateStatusInfo(TrackInfo)
+                Dim Statusinfo = UpdateStatusInfoWrite(_TrackStatus, TrackInfo)
                 ProcessTrack(Statusinfo, TrackInfo.Action)
                 Return
             End If
         End Sub
 
-        Private Sub ProcessTrack(Statusinfo As TrackStatusInfo, Action As String)
+        Private Sub ProcessTrack(Statusinfo As TrackStatusInfoWrite, Action As String)
             If _CurrentStatusInfo IsNot Nothing Then
                 ProcessTrackStatus(_CurrentStatusInfo, "Complete")
             End If
@@ -464,35 +382,12 @@ Namespace Greaseweazle
             StatusSide.Visible = True
         End Sub
 
-        Private Function ProcessTrackStatus(Statusinfo As TrackStatusInfo, Action As String) As TrackStatus
-            Dim Status As TrackStatus
-            Dim Label As String
+        Private Function ProcessTrackStatus(Statusinfo As TrackStatusInfoWrite, Action As String) As TrackStatus
+            Dim StatusData = ProcessTrackStatusWrite(Statusinfo, Action)
 
-            If Action = "Erasing" Then
-                Status = TrackStatus.Erasing
-                Label = "E"
-            ElseIf Statusinfo.Failed Then
-                Status = TrackStatus.Failed
-                Label = Statusinfo.Retries
-            ElseIf Statusinfo.Retries > 0 Then
-                Status = TrackStatus.Retry
-                Label = Statusinfo.Retries
-            ElseIf Action = "Complete" Then
-                If Statusinfo.Retries > 0 Then
-                    Status = TrackStatus.Retry
-                    Label = Statusinfo.Retries
-                Else
-                    Status = TrackStatus.Success
-                    Label = ""
-                End If
-            Else
-                Status = TrackStatus.Writing
-                Label = "W"
-            End If
+            GridMarkTrack(Statusinfo.Track, Statusinfo.Side, StatusData.Status, StatusData.Label, _DoubleStep)
 
-            GridMarkTrack(Statusinfo.Track, Statusinfo.Side, Status, Label, _DoubleStep)
-
-            Return Status
+            Return StatusData.Status
         End Function
 
         Private Sub RefreshButtonState()
@@ -532,10 +427,7 @@ Namespace Greaseweazle
 
         Private Sub ResetState(Optional ResetSelected As Boolean = True)
             ResetTrackGrid(ResetSelected)
-            StatusType.Text = ""
-            StatusTrack.Text = ""
-            StatusSide.Text = ""
-            StatusSide.Visible = False
+            ClearStatusBar()
             _TrackStatus.Clear()
             _CurrentStatusInfo = Nothing
             _TrackRange = Nothing
@@ -599,28 +491,6 @@ Namespace Greaseweazle
 
             RefreshButtonState()
         End Sub
-
-        Private Function UpdateStatusInfo(TrackInfo As ConsoleOutputParser.WriteTrackInfo) As TrackStatusInfo
-            Dim Key = TrackInfo.SourceTrack & "." & TrackInfo.SourceSide
-            Dim StatusInfo As TrackStatusInfo
-
-            If _TrackStatus.ContainsKey(Key) Then
-                StatusInfo = _TrackStatus.Item(Key)
-            Else
-                StatusInfo = New TrackStatusInfo With {
-                    .Track = TrackInfo.SourceTrack,
-                    .Side = TrackInfo.SourceSide
-                }
-                _TrackStatus.Add(Key, StatusInfo)
-            End If
-
-            StatusInfo.Retries = Math.Max(StatusInfo.Retries, TrackInfo.Retry)
-            If TrackInfo.Failed Then
-                StatusInfo.Failed = TrackInfo.Failed
-            End If
-
-            Return StatusInfo
-        End Function
 
         Private Sub WriteDisk(FilePath As String)
             Dim TrackRanges As List(Of (StartTrack As UShort, EndTrack As UShort)) = Nothing
@@ -803,22 +673,5 @@ Namespace Greaseweazle
             RefreshProcessButtonState()
         End Sub
 #End Region
-
-        Private Class DriveOption
-            Public Property Id As String
-            Public Property Label As String
-            Public Property Tracks As Byte
-            Public Property Type As FloppyMediaType
-            Public Overrides Function ToString() As String
-                Return Label
-            End Function
-        End Class
-
-        Private Class TrackStatusInfo
-            Public Property Failed As Boolean
-            Public Property Retries As UShort = 0
-            Public Property Side As Integer
-            Public Property Track As Integer
-        End Class
     End Class
 End Namespace

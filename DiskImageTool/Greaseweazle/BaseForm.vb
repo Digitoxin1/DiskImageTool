@@ -53,6 +53,22 @@
             End Get
         End Property
 
+        Public Sub ClearStatusBar()
+            StatusType.Text = ""
+            StatusTrack.Text = ""
+            StatusSide.Text = ""
+            StatusSide.Visible = False
+        End Sub
+
+        Public Function GetDriveName(Drive As String) As String
+            Select Case Drive
+                Case "A", "B"
+                    Return Drive & ":"
+                Case Else
+                    Return "DS" & Drive & ":"
+            End Select
+        End Function
+
         Public Function GetTrackStatusColor(Status As TrackStatus) As Color
             Select Case Status
                 Case TrackStatus.Erasing
@@ -69,7 +85,6 @@
                     Return Color.Gray
             End Select
         End Function
-
         Public Function GetTrackStatusText(Status As TrackStatus, Optional Retries As UShort = 0) As String
             Select Case Status
                 Case TrackStatus.Erasing
@@ -125,6 +140,69 @@
             GridResetTracks(TS1, Tracks, Sides < 2, ResetSelected)
         End Sub
 
+        Public Function ProcessTrackStatusWrite(Statusinfo As TrackStatusInfoWrite, Action As String) As (Status As TrackStatus, Label As String)
+            Dim Status As TrackStatus
+            Dim Label As String
+
+            If Action = "Erasing" Then
+                Status = TrackStatus.Erasing
+                Label = "E"
+            ElseIf Statusinfo.Failed Then
+                Status = TrackStatus.Failed
+                Label = Statusinfo.Retries
+            ElseIf Statusinfo.Retries > 0 Then
+                Status = TrackStatus.Retry
+                Label = Statusinfo.Retries
+            ElseIf Action = "Complete" Then
+                If Statusinfo.Retries > 0 Then
+                    Status = TrackStatus.Retry
+                    Label = Statusinfo.Retries
+                Else
+                    Status = TrackStatus.Success
+                    Label = ""
+                End If
+            Else
+                Status = TrackStatus.Writing
+                Label = "W"
+            End If
+
+            Return (Status, Label)
+        End Function
+
+        Public Function UpdateStatusInfoWrite(TrackStatus As Dictionary(Of String, TrackStatusInfoWrite), TrackInfo As ConsoleOutputParser.WriteTrackInfo) As TrackStatusInfoWrite
+            Dim Key = TrackInfo.SourceTrack & "." & TrackInfo.SourceSide
+            Dim StatusInfo As TrackStatusInfoWrite
+
+            If TrackStatus.ContainsKey(Key) Then
+                StatusInfo = TrackStatus.Item(Key)
+            Else
+                StatusInfo = New TrackStatusInfoWrite With {
+                    .Track = TrackInfo.SourceTrack,
+                    .Side = TrackInfo.SourceSide
+                }
+                TrackStatus.Add(Key, StatusInfo)
+            End If
+
+            StatusInfo.Retries = Math.Max(StatusInfo.Retries, TrackInfo.Retry)
+            If TrackInfo.Failed Then
+                StatusInfo.Failed = TrackInfo.Failed
+            End If
+
+            Return StatusInfo
+        End Function
+        Friend Function GetTrackHeads(StartHead As Integer, Optional EndHead As Integer = -1) As CommandLineBuilder.TrackHeads
+            If EndHead = -1 Then
+                EndHead = StartHead
+            End If
+
+            If StartHead = 0 And EndHead = 0 Then
+                Return CommandLineBuilder.TrackHeads.head0
+            ElseIf StartHead = 1 And EndHead = 1 Then
+                Return CommandLineBuilder.TrackHeads.head1
+            Else
+                Return CommandLineBuilder.TrackHeads.both
+            End If
+        End Function
         Private Sub GridResetTracks(Grid As FloppyTrackGrid, Tracks As UShort, Disabled As Boolean, Optional ResetSelected As Boolean = True)
             Grid.ActiveTrackCount = Tracks
             Grid.ResetAll()
@@ -171,5 +249,11 @@
             RaiseEvent SelectionChanged(Me, Track, 1, Selected)
         End Sub
 #End Region
+        Public Class TrackStatusInfoWrite
+            Public Property Failed As Boolean
+            Public Property Retries As UShort = 0
+            Public Property Side As Integer
+            Public Property Track As Integer
+        End Class
     End Class
 End Namespace

@@ -1846,12 +1846,22 @@ Public Class MainForm
         Greaseweazle.BandwidthDisplay(Me)
     End Sub
 
+    Private Sub MenuGreaseweazleErase_Click(sender As Object, e As EventArgs) Handles MenuGreaseweazleErase.Click
+        Greaseweazle.EraseDisk(Me)
+    End Sub
+
     Private Sub MenuGreaseweazleImport_Click(sender As Object, e As EventArgs) Handles MenuGreaseweazleImport.Click
         GreaseweazleImportImage()
     End Sub
 
     Private Sub MenuGreaseweazleInfo_Click(sender As Object, e As EventArgs) Handles MenuGreaseweazleInfo.Click
         Greaseweazle.InfoDisplay(Me)
+    End Sub
+
+    Private Sub MenuGreaseweazleWrite_Click(sender As Object, e As EventArgs) Handles MenuGreaseweazleWrite.Click
+        If FilePanelMain.CurrentImage IsNot Nothing AndAlso FilePanelMain.CurrentImage.Disk IsNot Nothing Then
+            Greaseweazle.WriteImageToDisk(Me, FilePanelMain.CurrentImage)
+        End If
     End Sub
 
     Private Sub MenuHelpAbout_Click(sender As Object, e As EventArgs) Handles MenuHelpAbout.Click
@@ -2001,12 +2011,6 @@ Public Class MainForm
 
     Private Sub ToolStripViewFileText_Click(sender As Object, e As EventArgs) Handles ToolStripViewFileText.Click
         FilePanelProcessEvent(FilePanelMain, FilePanel.FilePanelMenuItem.ViewFileText)
-    End Sub
-
-    Private Sub MenuGreaseweazleWrite_Click(sender As Object, e As EventArgs) Handles MenuGreaseweazleWrite.Click
-        If FilePanelMain.CurrentImage IsNot Nothing AndAlso FilePanelMain.CurrentImage.Disk IsNot Nothing Then
-            Greaseweazle.WriteImageToDisk(Me, FilePanelMain.CurrentImage)
-        End If
     End Sub
 #End Region
 End Class

@@ -1643,4 +1643,19 @@ Nota: Este valor debe ser {1} para todos los disquetes</value>
   <data name="Label_Reset" xml:space="preserve">
     <value>Reiniciar</value>
   </data>
+  <data name="Label_Erase" xml:space="preserve">
+    <value>Borrar</value>
+  </data>
+  <data name="Label_EraseDisk" xml:space="preserve">
+    <value>Borrar el disco</value>
+  </data>
+  <data name="Label_Hfreq" xml:space="preserve">
+    <value>Señal de alta frecuencia</value>
+  </data>
+  <data name="Label_Revs" xml:space="preserve">
+    <value>Revoluciones</value>
+  </data>
+  <data name="Label_SelectTracks" xml:space="preserve">
+    <value>Seleccionar las pistas</value>
+  </data>
 </root>

@@ -1,11 +1,12 @@
 ﻿Namespace Greaseweazle
     Class CommandLineBuilder
+        Public Const DEFAULT_RETRIES As UInteger = 3
+        Public Const DEFAULT_REVS As UInteger = 1
         Private Const DEFAULT_BITRATE As UInteger = 0
         Private Const DEFAULT_DRIVE As String = "A"
         Private Const DEFAULT_HEADS As TrackHeads = TrackHeads.both
         Private Const DEFAULT_NR As UInteger = 1
         Private Const DEFAULT_STEP As Byte = 1
-        Public Const DEFAULT_RETRIES As UInteger = 3
         Private ReadOnly _Action As CommandAction
         Private ReadOnly _Cylinders As List(Of (UShort, UShort))
 
@@ -40,18 +41,19 @@
         Public Property BitRate As UInteger = DEFAULT_BITRATE
         Public Property Device As String
         Public Property Drive As String = DEFAULT_DRIVE
+        Public Property EraseEmpty As Boolean = False
         Public Property Format As String
         Public Property Heads As TrackHeads = DEFAULT_HEADS
         Public Property HeadStep As Byte = DEFAULT_STEP
+        Public Property Hfreq As Boolean = False
         Public Property InFile As String
+        Public Property NoVerify As Boolean = False
         Public Property NR As UInteger = DEFAULT_NR
         Public Property OutFile As String
-        Public Property Time As Boolean = False
-        Public Property Retries As UInteger = DEFAULT_RETRIES
         Public Property PreErase As Boolean = False
-        Public Property EraseEmpty As Boolean = False
-        Public Property NoVerify As Boolean = False
-
+        Public Property Retries As UInteger = DEFAULT_RETRIES
+        Public Property Revs As UInteger = DEFAULT_REVS
+        Public Property Time As Boolean = False
 
         Public Sub AddCylinder(Cylinder As UShort)
             _Cylinders.Add((Cylinder, Cylinder))
@@ -89,6 +91,10 @@
                 args.Add("--retries " & _Retries)
             End If
 
+            If CheckOptionRevs() AndAlso _Revs <> DEFAULT_REVS Then
+                args.Add("--revs " & _Revs)
+            End If
+
             If CheckOptionTracks() Then
                 Dim TrackString = GetTrackString()
                 If Not String.IsNullOrEmpty(TrackString) Then
@@ -110,6 +116,10 @@
 
             If CheckOptionAdjustSpeed() AndAlso Not String.IsNullOrEmpty(_AdjustSpeed) Then
                 args.Add("--adjust-speed " & _AdjustSpeed)
+            End If
+
+            If CheckOptionHfreq() AndAlso _Hfreq Then
+                args.Add("--hfreq")
             End If
 
             If CheckOptionInFile() AndAlso Not String.IsNullOrEmpty(_InFile) Then
@@ -153,6 +163,16 @@
                     Return False
             End Select
         End Function
+
+        Private Function CheckOptionEraseEmpty() As Boolean
+            Select Case _Action
+                Case CommandAction.write
+                    Return True
+                Case Else
+                    Return False
+            End Select
+        End Function
+
         Private Function CheckOptionFormat() As Boolean
             Select Case _Action
                 Case CommandAction.read, CommandAction.write, CommandAction.convert
@@ -162,9 +182,27 @@
             End Select
         End Function
 
+        Private Function CheckOptionHfreq() As Boolean
+            Select Case _Action
+                Case CommandAction.erase
+                    Return True
+                Case Else
+                    Return False
+            End Select
+        End Function
+
         Private Function CheckOptionInFile() As Boolean
             Select Case _Action
                 Case CommandAction.read, CommandAction.write, CommandAction.convert
+                    Return True
+                Case Else
+                    Return False
+            End Select
+        End Function
+
+        Private Function CheckOptionNoVerify() As Boolean
+            Select Case _Action
+                Case CommandAction.write
                     Return True
                 Case Else
                     Return False
@@ -189,15 +227,6 @@
             End Select
         End Function
 
-        Private Function CheckOptionRetries() As Boolean
-            Select Case _Action
-                Case CommandAction.read, CommandAction.write
-                    Return True
-                Case Else
-                    Return False
-            End Select
-        End Function
-
         Private Function CheckOptionPreErase() As Boolean
             Select Case _Action
                 Case CommandAction.write
@@ -207,27 +236,26 @@
             End Select
         End Function
 
-        Private Function CheckOptionEraseEmpty() As Boolean
+        Private Function CheckOptionRetries() As Boolean
             Select Case _Action
-                Case CommandAction.write
+                Case CommandAction.read, CommandAction.write
                     Return True
                 Case Else
                     Return False
             End Select
         End Function
 
-        Private Function CheckOptionNoVerify() As Boolean
+        Private Function CheckOptionRevs() As Boolean
             Select Case _Action
-                Case CommandAction.write
+                Case CommandAction.erase
                     Return True
                 Case Else
                     Return False
             End Select
         End Function
-
         Private Function CheckOptionTracks() As Boolean
             Select Case _Action
-                Case CommandAction.read, CommandAction.write, CommandAction.convert
+                Case CommandAction.read, CommandAction.write, CommandAction.convert, CommandAction.erase
                     Return True
                 Case Else
                     Return False
