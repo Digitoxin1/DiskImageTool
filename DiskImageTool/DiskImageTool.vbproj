@@ -195,6 +195,9 @@
     <Compile Include="Greaseweazle\BaseForm.vb">
       <SubType>Form</SubType>
     </Compile>
+    <Compile Include="Greaseweazle\ReadDiskForm.vb">
+      <SubType>Form</SubType>
+    </Compile>
     <Compile Include="Greaseweazle\Settings.vb" />
     <Compile Include="Greaseweazle\ImageImportForm.vb">
       <SubType>Form</SubType>
@@ -895,6 +898,8 @@
     <EmbeddedResource Include="Assets\License.txt" />
     <EmbeddedResource Include="Assets\bootstrap.xml" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Folder Include="Greaseweazle\Forms\" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.VisualBasic.targets" />
 </Project>
