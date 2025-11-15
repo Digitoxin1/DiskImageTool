@@ -1846,6 +1846,10 @@ Public Class MainForm
         Greaseweazle.BandwidthDisplay(Me)
     End Sub
 
+    Private Sub MenuGreaseweazleClean_Click(sender As Object, e As EventArgs) Handles MenuGreaseweazleClean.Click
+        Greaseweazle.CleanDisk(Me)
+    End Sub
+
     Private Sub MenuGreaseweazleErase_Click(sender As Object, e As EventArgs) Handles MenuGreaseweazleErase.Click
         Greaseweazle.EraseDisk(Me)
     End Sub

@@ -1658,4 +1658,7 @@ Hinweis: Diese ID wird normalerweise erzeugt, indem das aktuelle Datum und die a
   <data name="Label_SelectTracks" xml:space="preserve">
     <value>Spuren auswählen</value>
   </data>
+  <data name="Label_CleanDisk" xml:space="preserve">
+    <value>Diskette reinigen</value>
+  </data>
 </root>

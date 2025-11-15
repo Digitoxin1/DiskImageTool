@@ -1658,4 +1658,7 @@ Nota: Este valor debe ser {1} para todos los disquetes</value>
   <data name="Label_SelectTracks" xml:space="preserve">
     <value>Seleccionar las pistas</value>
   </data>
+  <data name="Label_CleanDisk" xml:space="preserve">
+    <value>Limpiar el disco</value>
+  </data>
 </root>

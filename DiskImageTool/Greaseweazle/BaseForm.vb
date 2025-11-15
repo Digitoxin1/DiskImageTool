@@ -20,19 +20,22 @@
         Public Event CheckChanged(sender As Object, Checked As Boolean, Side As Byte)
         Public Event SelectionChanged(sender As Object, Track As UShort, Side As Byte, Enabled As Boolean)
 
-        Public Sub New()
+        Public Sub New(Optional UseGrid As Boolean = True)
             ' This call is required by the designer.
             InitializeComponent()
 
             ' Add any initialization after the InitializeComponent() call.
             _Parser = New ConsoleOutputParser
-            TS0 = New FloppyTrackGrid(TOTAL_TRACKS, My.Resources.Label_Side & " 0") With {
+
+            If UseGrid Then
+                TS0 = New FloppyTrackGrid(TOTAL_TRACKS, My.Resources.Label_Side & " 0") With {
                 .Anchor = AnchorStyles.Top Or AnchorStyles.Right
             }
-            TS1 = New FloppyTrackGrid(TOTAL_TRACKS, My.Resources.Label_Side & " 1") With {
-                .Anchor = AnchorStyles.Top Or AnchorStyles.Right,
-                .Margin = New Padding(32, 3, 3, 3)
-            }
+                TS1 = New FloppyTrackGrid(TOTAL_TRACKS, My.Resources.Label_Side & " 1") With {
+                    .Anchor = AnchorStyles.Top Or AnchorStyles.Right,
+                    .Margin = New Padding(32, 3, 3, 3)
+                }
+            End If
         End Sub
 
         Public ReadOnly Property Parser As ConsoleOutputParser

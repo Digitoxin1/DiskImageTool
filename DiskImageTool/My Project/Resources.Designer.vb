@@ -3042,6 +3042,15 @@ Namespace My.Resources
         End Property
         
         '''<summary>
+        '''  Looks up a localized string similar to Clean Disk.
+        '''</summary>
+        Friend ReadOnly Property Label_CleanDisk() As String
+            Get
+                Return ResourceManager.GetString("Label_CleanDisk", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
         '''  Looks up a localized string similar to Close.
         '''</summary>
         Friend ReadOnly Property Label_Close() As String

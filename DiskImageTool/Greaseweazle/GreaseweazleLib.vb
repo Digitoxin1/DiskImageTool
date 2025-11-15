@@ -107,6 +107,11 @@ Namespace Greaseweazle
             Form.ShowDialog(ParentForm)
         End Sub
 
+        Public Sub CleanDisk(ParentForm As Form)
+            Dim Form As New CleanDiskForm()
+            Form.ShowDialog(ParentForm)
+        End Sub
+
         Public Function GetFirstRawFile(FilePath As String) As String
             Dim RawFileName As String = ""
 

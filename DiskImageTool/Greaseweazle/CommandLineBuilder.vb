@@ -1,5 +1,8 @@
 ﻿Namespace Greaseweazle
     Class CommandLineBuilder
+        Public Const DEFAULT_CYLS As UInteger = 80
+        Public Const DEFAULT_LINGER As UInteger = 100
+        Public Const DEFAULT_PASSES As UInteger = 3
         Public Const DEFAULT_RETRIES As UInteger = 3
         Public Const DEFAULT_REVS As UInteger = 1
         Private Const DEFAULT_BITRATE As UInteger = 0
@@ -39,6 +42,7 @@
 
         Public Property AdjustSpeed As String
         Public Property BitRate As UInteger = DEFAULT_BITRATE
+        Public Property Cyls As UInteger = DEFAULT_CYLS
         Public Property Device As String
         Public Property Drive As String = DEFAULT_DRIVE
         Public Property EraseEmpty As Boolean = False
@@ -47,14 +51,15 @@
         Public Property HeadStep As Byte = DEFAULT_STEP
         Public Property Hfreq As Boolean = False
         Public Property InFile As String
+        Public Property Linger As UInteger = DEFAULT_LINGER
         Public Property NoVerify As Boolean = False
         Public Property NR As UInteger = DEFAULT_NR
         Public Property OutFile As String
+        Public Property Passes As UInteger = DEFAULT_PASSES
         Public Property PreErase As Boolean = False
         Public Property Retries As UInteger = DEFAULT_RETRIES
         Public Property Revs As UInteger = DEFAULT_REVS
         Public Property Time As Boolean = False
-
         Public Sub AddCylinder(Cylinder As UShort)
             _Cylinders.Add((Cylinder, Cylinder))
         End Sub
@@ -122,6 +127,18 @@
                 args.Add("--hfreq")
             End If
 
+            If CheckOptionCyls() AndAlso _Cyls <> DEFAULT_CYLS Then
+                args.Add("--cyls " & _Cyls)
+            End If
+
+            If CheckOptionPasses() AndAlso _Passes <> DEFAULT_PASSES Then
+                args.Add("--passes " & _Passes)
+            End If
+
+            If CheckOptionLinger() AndAlso _Linger <> DEFAULT_LINGER Then
+                args.Add("--linger " & _Linger)
+            End If
+
             If CheckOptionInFile() AndAlso Not String.IsNullOrEmpty(_InFile) Then
                 args.Add(Quoted(_InFile))
 
@@ -140,6 +157,15 @@
         Private Function CheckOptionAdjustSpeed() As Boolean
             Select Case _Action
                 Case CommandAction.read, CommandAction.write, CommandAction.convert
+                    Return True
+                Case Else
+                    Return False
+            End Select
+        End Function
+
+        Private Function CheckOptionCyls() As Boolean
+            Select Case _Action
+                Case CommandAction.clean
                     Return True
                 Case Else
                     Return False
@@ -200,6 +226,15 @@
             End Select
         End Function
 
+        Private Function CheckOptionLinger() As Boolean
+            Select Case _Action
+                Case CommandAction.clean
+                    Return True
+                Case Else
+                    Return False
+            End Select
+        End Function
+
         Private Function CheckOptionNoVerify() As Boolean
             Select Case _Action
                 Case CommandAction.write
@@ -227,6 +262,14 @@
             End Select
         End Function
 
+        Private Function CheckOptionPasses() As Boolean
+            Select Case _Action
+                Case CommandAction.clean
+                    Return True
+                Case Else
+                    Return False
+            End Select
+        End Function
         Private Function CheckOptionPreErase() As Boolean
             Select Case _Action
                 Case CommandAction.write

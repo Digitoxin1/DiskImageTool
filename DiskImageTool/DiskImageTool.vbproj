@@ -173,6 +173,9 @@
     <Compile Include="Filters\ImageFiltersBase.vb" />
     <Compile Include="DiskImageLib.vb" />
     <Compile Include="Globals.vb" />
+    <Compile Include="Greaseweazle\CleanDiskForm.vb">
+      <SubType>Form</SubType>
+    </Compile>
     <Compile Include="Greaseweazle\CommandLineBuilder.vb" />
     <Compile Include="Greaseweazle\ConsoleOutputParser.vb" />
     <Compile Include="Greaseweazle\Enums.vb" />
