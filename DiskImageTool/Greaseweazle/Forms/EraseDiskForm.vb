@@ -7,8 +7,7 @@ Namespace Greaseweazle
         Private WithEvents ButtonReset As Button
         Private WithEvents CheckBoxSelect As CheckBox
         Private WithEvents ComboImageDrives As ComboBox
-        Private ReadOnly _TrackStatus As Dictionary(Of String, TrackStatusInfoWrite)
-        Private _CurrentStatusInfo As TrackStatusInfoWrite = Nothing
+        Private ReadOnly _Initialized As Boolean = False
         Private _ProcessRunning As Boolean = False
         Private _TrackRange As ConsoleOutputParser.TrackRange = Nothing
         Private CheckBoxHFreq As CheckBox
@@ -18,8 +17,6 @@ Namespace Greaseweazle
             MyBase.New()
             InitializeControls()
 
-            _TrackStatus = New Dictionary(Of String, TrackStatusInfoWrite)
-
             Me.Text = My.Resources.Label_EraseDisk
 
             NumericRevs.Value = CommandLineBuilder.DEFAULT_REVS
@@ -28,6 +25,8 @@ Namespace Greaseweazle
             ResetState()
             ResetCheckBoxSelect()
             RefreshButtonState()
+
+            _Initialized = True
         End Sub
 
         Private Sub EraseDisk()
@@ -203,24 +202,6 @@ Namespace Greaseweazle
             End With
         End Sub
 
-        Private Sub ProcessDiskCleanup(exitCode As Integer)
-            If exitCode = -1 Then
-                StatusType.Text = GetTrackStatusText(TrackStatus.Aborted)
-            Else
-                If _CurrentStatusInfo IsNot Nothing Then
-                    ProcessTrackStatus(_CurrentStatusInfo, "Complete")
-                End If
-
-                If _CurrentStatusInfo IsNot Nothing AndAlso _CurrentStatusInfo.Failed Then
-                    StatusType.Text = GetTrackStatusText(TrackStatus.Failed)
-                Else
-                    StatusType.Text = GetTrackStatusText(TrackStatus.Success)
-                End If
-            End If
-
-            ToggleProcessRunning(False)
-        End Sub
-
         Private Sub ProcessOutputLine(line As String)
             If TextBoxConsole.Text.Length > 0 Then
                 TextBoxConsole.AppendText(Environment.NewLine)
@@ -231,36 +212,13 @@ Namespace Greaseweazle
                 _TrackRange = Parser.ParseTrackRange(line)
             End If
 
-            Dim TrackInfo = Parser.ParseWriteTrackInfo(line)
+            Dim TrackInfo = Parser.ParseTrackInfoWrite(line)
             If TrackInfo IsNot Nothing Then
-                Dim Statusinfo = UpdateStatusInfoWrite(_TrackStatus, TrackInfo)
-                ProcessTrack(Statusinfo, TrackInfo.Action)
+                Dim Statusinfo = UpdateStatusInfo(TrackInfo, ActionTypeEnum.Erase)
+                UpdateTrackStatus(Statusinfo, TrackInfo.Action, False)
                 Return
             End If
         End Sub
-
-        Private Sub ProcessTrack(Statusinfo As TrackStatusInfoWrite, Action As String)
-            If _CurrentStatusInfo IsNot Nothing Then
-                ProcessTrackStatus(_CurrentStatusInfo, "Complete")
-            End If
-
-            _CurrentStatusInfo = Statusinfo
-
-            Dim Status = ProcessTrackStatus(Statusinfo, Action)
-
-            StatusType.Text = GetTrackStatusText(Status, _CurrentStatusInfo.Retries)
-            StatusTrack.Text = My.Resources.Label_Track & " " & Statusinfo.Track
-            StatusSide.Text = My.Resources.Label_Side & " " & Statusinfo.Side
-            StatusSide.Visible = True
-        End Sub
-
-        Private Function ProcessTrackStatus(Statusinfo As TrackStatusInfoWrite, Action As String) As TrackStatus
-            Dim StatusData = ProcessTrackStatusWrite(Statusinfo, Action)
-
-            GridMarkTrack(Statusinfo.Track, Statusinfo.Side, StatusData.Status, StatusData.Label, False)
-
-            Return StatusData.Status
-        End Function
 
         Private Sub RefreshButtonState()
             Dim Opt As DriveOption = ComboImageDrives.SelectedValue
@@ -288,8 +246,7 @@ Namespace Greaseweazle
         Private Sub ResetState(Optional ResetSelected As Boolean = True)
             ResetTrackGrid(ResetSelected)
             ClearStatusBar()
-            _TrackStatus.Clear()
-            _CurrentStatusInfo = Nothing
+            ClearTrackStatus()
             _TrackRange = Nothing
 
             TextBoxConsole.Clear()
@@ -329,7 +286,10 @@ Namespace Greaseweazle
                 Exit Sub
             End If
 
-            If Not ConfirmWrite(GetDriveName(Opt.Id)) Then
+            Dim DriveName = GetDriveName(Opt.Id)
+            Dim Title = My.Resources.Label_EraseDisk & " - " & DriveName
+
+            If Not ConfirmWrite(Title, DriveName) Then
                 Exit Sub
             End If
 
@@ -341,6 +301,10 @@ Namespace Greaseweazle
         End Sub
 
         Private Sub CheckBoxSelect_CheckStateChanged(sender As Object, e As EventArgs) Handles CheckBoxSelect.CheckStateChanged
+            If Not _Initialized Then
+                Exit Sub
+            End If
+
             If CheckBoxSelect.Checked Then
                 GridReset()
             End If
@@ -351,6 +315,10 @@ Namespace Greaseweazle
         End Sub
 
         Private Sub ComboImageDrives_SelectedIndexChanged(sender As Object, e As EventArgs) Handles ComboImageDrives.SelectedIndexChanged
+            If Not _Initialized Then
+                Exit Sub
+            End If
+
             ResetCheckBoxSelect()
             ResetTrackGrid()
             RefreshButtonState()
@@ -369,11 +337,14 @@ Namespace Greaseweazle
         End Sub
 
         Private Sub Process_ProcessExited(exitCode As Integer) Handles Process.ProcessExited
-            ProcessDiskCleanup(exitCode)
+            Dim Aborted = (exitCode = -1)
+
+            UpdateTrackStatusComplete(Aborted, False)
+            ToggleProcessRunning(False)
         End Sub
 
         Private Sub Process_ProcessFailed(message As String, ex As Exception) Handles Process.ProcessFailed
-            StatusType.Text = GetTrackStatusText(TrackStatus.Error)
+            UpdateTrackStatusError()
             ToggleProcessRunning(False)
         End Sub
 #End Region

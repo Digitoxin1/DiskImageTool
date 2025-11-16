@@ -3132,6 +3132,15 @@ Namespace My.Resources
         End Property
         
         '''<summary>
+        '''  Looks up a localized string similar to Detect.
+        '''</summary>
+        Friend ReadOnly Property Label_Detect() As String
+            Get
+                Return ResourceManager.GetString("Label_Detect", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
         '''  Looks up a localized string similar to Detected.
         '''</summary>
         Friend ReadOnly Property Label_Detected() As String
@@ -3654,6 +3663,15 @@ Namespace My.Resources
         End Property
         
         '''<summary>
+        '''  Looks up a localized string similar to No Drives Found.
+        '''</summary>
+        Friend ReadOnly Property Label_NoDrivesFound() As String
+            Get
+                Return ResourceManager.GetString("Label_NoDrivesFound", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
         '''  Looks up a localized string similar to No Files.
         '''</summary>
         Friend ReadOnly Property Label_NoFiles() As String
@@ -3758,6 +3776,24 @@ Namespace My.Resources
         Friend ReadOnly Property Label_Processing() As String
             Get
                 Return ResourceManager.GetString("Label_Processing", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  Looks up a localized string similar to Read.
+        '''</summary>
+        Friend ReadOnly Property Label_Read() As String
+            Get
+                Return ResourceManager.GetString("Label_Read", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  Looks up a localized string similar to Read Disk.
+        '''</summary>
+        Friend ReadOnly Property Label_ReadDisk() As String
+            Get
+                Return ResourceManager.GetString("Label_ReadDisk", resourceCulture)
             End Get
         End Property
         

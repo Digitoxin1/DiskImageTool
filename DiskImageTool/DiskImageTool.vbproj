@@ -173,7 +173,7 @@
     <Compile Include="Filters\ImageFiltersBase.vb" />
     <Compile Include="DiskImageLib.vb" />
     <Compile Include="Globals.vb" />
-    <Compile Include="Greaseweazle\CleanDiskForm.vb">
+    <Compile Include="Greaseweazle\Forms\CleanDiskForm.vb">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="Greaseweazle\CommandLineBuilder.vb" />
@@ -185,24 +185,24 @@
     <Compile Include="Greaseweazle\ConfigurationForm.vb">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Greaseweazle\EraseDiskForm.vb">
+    <Compile Include="Greaseweazle\Forms\EraseDiskForm.vb">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="Greaseweazle\GreaseweazleLib.vb" />
-    <Compile Include="Greaseweazle\BaseForm.Designer.vb">
+    <Compile Include="Greaseweazle\Forms\BaseForm.Designer.vb">
       <DependentUpon>BaseForm.vb</DependentUpon>
     </Compile>
-    <Compile Include="Greaseweazle\BaseForm.vb">
+    <Compile Include="Greaseweazle\Forms\BaseForm.vb">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Greaseweazle\ReadDiskForm.vb">
+    <Compile Include="Greaseweazle\Forms\ReadDiskForm.vb">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="Greaseweazle\Settings.vb" />
-    <Compile Include="Greaseweazle\ImageImportForm.vb">
+    <Compile Include="Greaseweazle\Forms\ImageImportForm.vb">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Greaseweazle\WriteDiskForm.vb">
+    <Compile Include="Greaseweazle\Forms\WriteDiskForm.vb">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="Lib\ConsoleProcessRunner.vb" />
@@ -768,16 +768,16 @@
     <EmbeddedResource Include="Greaseweazle\ConfigurationForm.resx">
       <DependentUpon>ConfigurationForm.vb</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Greaseweazle\BaseForm.de.resx">
+    <EmbeddedResource Include="Greaseweazle\Forms\BaseForm.de.resx">
       <DependentUpon>BaseForm.vb</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Greaseweazle\BaseForm.es.resx">
+    <EmbeddedResource Include="Greaseweazle\Forms\BaseForm.es.resx">
       <DependentUpon>BaseForm.vb</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Greaseweazle\BaseForm.fr.resx">
+    <EmbeddedResource Include="Greaseweazle\Forms\BaseForm.fr.resx">
       <DependentUpon>BaseForm.vb</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Greaseweazle\BaseForm.resx">
+    <EmbeddedResource Include="Greaseweazle\Forms\BaseForm.resx">
       <DependentUpon>BaseForm.vb</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="MainForm.de.resx">
@@ -898,8 +898,6 @@
     <EmbeddedResource Include="Assets\License.txt" />
     <EmbeddedResource Include="Assets\bootstrap.xml" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Greaseweazle\Forms\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.VisualBasic.targets" />
 </Project>

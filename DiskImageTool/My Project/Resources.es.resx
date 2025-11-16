@@ -802,9 +802,6 @@ Valores típicos:
   <data name="Filter_Image_Verified" xml:space="preserve">
     <value>Imagen - Verificada</value>
   </data>
-  <data name="Caption_ImageComparison" xml:space="preserve">
-    <value>Comparación de imágenes</value>
-  </data>
   <data name="Dialog_ChangesDiscarded" xml:space="preserve">
     <value>La imagen ha sido modificada por otra aplicación.{0}{0}Los cambios han sido descartados.</value>
   </data>
@@ -1454,17 +1451,11 @@ Nota: Este valor debe ser {1} para todos los disquetes</value>
   <data name="DataInspector_Label_DataArea" xml:space="preserve">
     <value>Área de datos</value>
   </data>
-  <data name="SummaryPanel_Comment" xml:space="preserve">
-    <value>Comentario</value>
-  </data>
   <data name="SummaryPanel_DiskFormat" xml:space="preserve">
     <value>Formato del disco</value>
   </data>
   <data name="SummaryPanel_TrackStep" xml:space="preserve">
     <value>Incremente de pista</value>
-  </data>
-  <data name="SummaryPanel_Comments" xml:space="preserve">
-    <value>Comentarios</value>
   </data>
   <data name="Label_WriteSplices" xml:space="preserve">
     <value>Empalmes de escritura</value>
@@ -1672,5 +1663,17 @@ Nota: Este valor debe ser {1} para todos los disquetes</value>
   </data>
   <data name="Label_Cylinders" xml:space="preserve">
     <value>Cilindros</value>
+  </data>
+  <data name="Label_Detect" xml:space="preserve">
+    <value>Detectar</value>
+  </data>
+  <data name="Label_NoDrivesFound" xml:space="preserve">
+    <value>No se encontraron unidades</value>
+  </data>
+  <data name="Label_ReadDisk" xml:space="preserve">
+    <value>Leer el disco</value>
+  </data>
+  <data name="Label_Read" xml:space="preserve">
+    <value>Leer</value>
   </data>
 </root>

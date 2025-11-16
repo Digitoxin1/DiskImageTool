@@ -886,9 +886,6 @@ Valeurs typiques:
   <data name="Filter_Image_Verified" xml:space="preserve">
     <value>Image – Vérifiée</value>
   </data>
-  <data name="Caption_ImageComparison" xml:space="preserve">
-    <value>Comparaison d’images</value>
-  </data>
   <data name="Dialog_ChangesDiscarded" xml:space="preserve">
     <value>L’image a été modifiée par une autre application.{0}{0}Les modifications ont été ignorées.</value>
   </data>
@@ -1454,17 +1451,11 @@ Remarque : cette valeur doit être {1} pour toutes les disquettes</value>
   <data name="DataInspector_Label_DataArea" xml:space="preserve">
     <value>Zone de données</value>
   </data>
-  <data name="SummaryPanel_Comment" xml:space="preserve">
-    <value>Commentaire</value>
-  </data>
   <data name="SummaryPanel_DiskFormat" xml:space="preserve">
     <value>Format de disquette</value>
   </data>
   <data name="SummaryPanel_TrackStep" xml:space="preserve">
     <value>Incrément de piste</value>
-  </data>
-  <data name="SummaryPanel_Comments" xml:space="preserve">
-    <value>Commentaires</value>
   </data>
   <data name="Label_WriteSplices" xml:space="preserve">
     <value>Coupures d’écriture</value>
@@ -1672,5 +1663,17 @@ Remarque : cette valeur doit être {1} pour toutes les disquettes</value>
   </data>
   <data name="Label_Cylinders" xml:space="preserve">
     <value>Cylindres</value>
+  </data>
+  <data name="Label_Detect" xml:space="preserve">
+    <value>Détecter</value>
+  </data>
+  <data name="Label_NoDrivesFound" xml:space="preserve">
+    <value>Aucun lecteur trouvé</value>
+  </data>
+  <data name="Label_ReadDisk" xml:space="preserve">
+    <value>Lire le disque</value>
+  </data>
+  <data name="Label_Read" xml:space="preserve">
+    <value>Lire</value>
   </data>
 </root>

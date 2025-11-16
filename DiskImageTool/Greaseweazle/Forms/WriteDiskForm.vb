@@ -10,15 +10,14 @@ Namespace Greaseweazle
         Private WithEvents ComboImageDrives As ComboBox
         Private ReadOnly _Disk As DiskImage.Disk
         Private ReadOnly _DiskParams As FloppyDiskParams
+        Private ReadOnly _Initialized As Boolean = False
         Private ReadOnly _IsBitstreamImage As Boolean
         Private ReadOnly _SideCount As Byte
         Private ReadOnly _TrackCount As UShort
-        Private ReadOnly _TrackStatus As Dictionary(Of String, TrackStatusInfoWrite)
         Private _AllowNoVerify As Boolean = True
         Private _AllowRetries As Boolean = True
         Private _ContinueAfterWrite As Boolean = False
         Private _CurrentFilePath As String = ""
-        Private _CurrentStatusInfo As TrackStatusInfoWrite = Nothing
         Private _DoubleStep As Boolean = False
         Private _LastSelected As (Track As UShort, Side As Byte, Selected As Boolean)? = Nothing
         Private _ProcessRunning As Boolean = False
@@ -36,8 +35,6 @@ Namespace Greaseweazle
 
             _Disk = Disk
             _DiskParams = Disk.DiskParams
-
-            _TrackStatus = New Dictionary(Of String, TrackStatusInfoWrite)
 
             Me.Text = My.Resources.Label_WriteDisk & " - " & FileName
 
@@ -69,6 +66,9 @@ Namespace Greaseweazle
             ResetState()
             ResetCheckBoxSelect()
             RefreshButtonState()
+            LabelWarning.Visible = Not CheckCompatibility()
+
+            _Initialized = True
         End Sub
 
         Private Function CheckCompatibility() As Boolean
@@ -81,6 +81,26 @@ Namespace Greaseweazle
             Dim FloppyType = GreaseweazleFindCompatibleFloppyType(_DiskParams, Opt.Type)
 
             Return FloppyType = Opt.Type
+        End Function
+
+        Private Function CheckKeepProcessing() As Boolean
+            If CurrentStatusInfo Is Nothing Then
+                Return False
+            End If
+
+            If _TrackRange Is Nothing Then
+                Return False
+            End If
+
+            If Not _ContinueAfterWrite AndAlso Not (_AllowRetries And CheckBoxContinue.Checked And CheckBoxSelect.Checked And CurrentStatusInfo.Failed) Then
+                Return False
+            End If
+
+            If Not (CurrentStatusInfo.Track < _TrackRange.TrackEnd Or CurrentStatusInfo.Side < _TrackRange.HeadEnd) Then
+                Return False
+            End If
+
+            Return True
         End Function
 
         Private Function ConfirmIncompatibleImage() As Boolean
@@ -281,39 +301,21 @@ Namespace Greaseweazle
             End With
         End Sub
 
-        Private Function KeepProcessing() As Boolean
-            If _CurrentStatusInfo Is Nothing Then
-                Return False
-            End If
-
-            If _TrackRange Is Nothing Then
-                Return False
-            End If
-
-            If Not _ContinueAfterWrite AndAlso Not (_AllowRetries And CheckBoxContinue.Checked And CheckBoxSelect.Checked And _CurrentStatusInfo.Failed) Then
-                Return False
-            End If
-
-            If Not (_CurrentStatusInfo.Track < _TrackRange.TrackEnd Or _CurrentStatusInfo.Side < _TrackRange.HeadEnd) Then
-                Return False
-            End If
-
+        Private Sub KeepProcessing()
             Dim Heads As CommandLineBuilder.TrackHeads
             Dim TrackRanges As New List(Of (StartTrack As UShort, EndTrack As UShort))
 
-            If _CurrentStatusInfo.Side < _TrackRange.HeadEnd Then
+            If CurrentStatusInfo.Side < _TrackRange.HeadEnd Then
                 _ContinueAfterWrite = True
-                Heads = GetTrackHeads(_CurrentStatusInfo.Side + 1)
-                TrackRanges.Add((_CurrentStatusInfo.Track, _CurrentStatusInfo.Track))
+                Heads = GetTrackHeads(CurrentStatusInfo.Side + 1)
+                TrackRanges.Add((CurrentStatusInfo.Track, CurrentStatusInfo.Track))
             Else
                 Heads = CommandLineBuilder.TrackHeads.both
-                TrackRanges.Add((_CurrentStatusInfo.Track + 1, _TrackRange.TrackEnd))
+                TrackRanges.Add((CurrentStatusInfo.Track + 1, _TrackRange.TrackEnd))
             End If
 
             WriteDisk(_CurrentFilePath, TrackRanges, Heads)
-
-            Return True
-        End Function
+        End Sub
 
         Private Sub ProcessDisk()
             Dim Response = SaveTempImage()
@@ -326,28 +328,6 @@ Namespace Greaseweazle
             End If
         End Sub
 
-        Private Sub ProcessDiskCleanup(exitCode As Integer)
-            If exitCode = -1 Then
-                StatusType.Text = GetTrackStatusText(TrackStatus.Aborted)
-            Else
-                If _CurrentStatusInfo IsNot Nothing Then
-                    ProcessTrackStatus(_CurrentStatusInfo, "Complete")
-                End If
-
-                If KeepProcessing() Then
-                    Exit Sub
-                End If
-
-                If _CurrentStatusInfo IsNot Nothing AndAlso _CurrentStatusInfo.Failed Then
-                    StatusType.Text = GetTrackStatusText(TrackStatus.Failed)
-                Else
-                    StatusType.Text = GetTrackStatusText(TrackStatus.Success)
-                End If
-            End If
-
-            ToggleProcessRunning(False)
-        End Sub
-
         Private Sub ProcessOutputLine(line As String)
             If TextBoxConsole.Text.Length > 0 Then
                 TextBoxConsole.AppendText(Environment.NewLine)
@@ -358,36 +338,14 @@ Namespace Greaseweazle
                 _TrackRange = Parser.ParseTrackRange(line)
             End If
 
-            Dim TrackInfo = Parser.ParseWriteTrackInfo(line)
+            Dim TrackInfo = Parser.ParseTrackInfoWrite(line)
+
             If TrackInfo IsNot Nothing Then
-                Dim Statusinfo = UpdateStatusInfoWrite(_TrackStatus, TrackInfo)
-                ProcessTrack(Statusinfo, TrackInfo.Action)
+                Dim Statusinfo = UpdateStatusInfo(TrackInfo, ActionTypeEnum.Write)
+                UpdateTrackStatus(Statusinfo, TrackInfo.Action, _DoubleStep)
                 Return
             End If
         End Sub
-
-        Private Sub ProcessTrack(Statusinfo As TrackStatusInfoWrite, Action As String)
-            If _CurrentStatusInfo IsNot Nothing Then
-                ProcessTrackStatus(_CurrentStatusInfo, "Complete")
-            End If
-
-            _CurrentStatusInfo = Statusinfo
-
-            Dim Status = ProcessTrackStatus(Statusinfo, Action)
-
-            StatusType.Text = GetTrackStatusText(Status, _CurrentStatusInfo.Retries)
-            StatusTrack.Text = My.Resources.Label_Track & " " & Statusinfo.Track
-            StatusSide.Text = My.Resources.Label_Side & " " & Statusinfo.Side
-            StatusSide.Visible = True
-        End Sub
-
-        Private Function ProcessTrackStatus(Statusinfo As TrackStatusInfoWrite, Action As String) As TrackStatus
-            Dim StatusData = ProcessTrackStatusWrite(Statusinfo, Action)
-
-            GridMarkTrack(Statusinfo.Track, Statusinfo.Side, StatusData.Status, StatusData.Label, _DoubleStep)
-
-            Return StatusData.Status
-        End Function
 
         Private Sub RefreshButtonState()
             _AllowNoVerify = Not _IsBitstreamImage
@@ -427,8 +385,7 @@ Namespace Greaseweazle
         Private Sub ResetState(Optional ResetSelected As Boolean = True)
             ResetTrackGrid(ResetSelected)
             ClearStatusBar()
-            _TrackStatus.Clear()
-            _CurrentStatusInfo = Nothing
+            ClearTrackStatus()
             _TrackRange = Nothing
 
             TextBoxConsole.Clear()
@@ -595,7 +552,10 @@ Namespace Greaseweazle
                 End If
             End If
 
-            If Not ConfirmWrite(GetDriveName(Opt.Id)) Then
+            Dim DriveName = GetDriveName(Opt.Id)
+            Dim Title = My.Resources.Label_WriteDisk & " - " & DriveName
+
+            If Not ConfirmWrite(Title, DriveName) Then
                 Exit Sub
             End If
 
@@ -607,20 +567,33 @@ Namespace Greaseweazle
         End Sub
 
         Private Sub CheckboxNoVerify_CheckStateChanged(sender As Object, e As EventArgs) Handles CheckboxNoVerify.CheckStateChanged
+            If Not _Initialized Then
+                Exit Sub
+            End If
+
             RefreshVerifyButtonState()
         End Sub
 
         Private Sub CheckBoxSelect_CheckStateChanged(sender As Object, e As EventArgs) Handles CheckBoxSelect.CheckStateChanged
+            If Not _Initialized Then
+                Exit Sub
+            End If
+
             If CheckBoxSelect.Checked Then
                 GridReset()
             End If
 
             TableSide0.SelectEnabled = CheckBoxSelect.Checked
             TableSide1.SelectEnabled = CheckBoxSelect.Checked
+
             RefreshButtonState()
         End Sub
 
         Private Sub ComboImageDrives_SelectedIndexChanged(sender As Object, e As EventArgs) Handles ComboImageDrives.SelectedIndexChanged
+            If Not _Initialized Then
+                Exit Sub
+            End If
+
             ResetCheckBoxSelect()
             ResetTrackGrid()
             RefreshProcessButtonState()
@@ -632,11 +605,20 @@ Namespace Greaseweazle
         End Sub
 
         Private Sub Process_ProcessExited(exitCode As Integer) Handles Process.ProcessExited
-            ProcessDiskCleanup(exitCode)
+            Dim Aborted = (exitCode = -1)
+            Dim DoKeepProcessing As Boolean = CheckKeepProcessing()
+
+            UpdateTrackStatusComplete(Aborted, _DoubleStep, DoKeepProcessing)
+
+            If DoKeepProcessing Then
+                KeepProcessing()
+            Else
+                ToggleProcessRunning(False)
+            End If
         End Sub
 
         Private Sub Process_ProcessFailed(message As String, ex As Exception) Handles Process.ProcessFailed
-            StatusType.Text = GetTrackStatusText(TrackStatus.Error)
+            UpdateTrackStatusError()
             ToggleProcessRunning(False)
         End Sub
 

@@ -36,6 +36,8 @@
             Me.StatusTrack = New System.Windows.Forms.ToolStripStatusLabel()
             Me.StatusSide = New System.Windows.Forms.ToolStripStatusLabel()
             Me.StatusType = New System.Windows.Forms.ToolStripStatusLabel()
+            Me.StatusBadSectors = New System.Windows.Forms.ToolStripStatusLabel()
+            Me.StatusUnexpected = New System.Windows.Forms.ToolStripStatusLabel()
             Label3 = New System.Windows.Forms.Label()
             PanelBottom = New System.Windows.Forms.FlowLayoutPanel()
             PanelMain = New System.Windows.Forms.Panel()
@@ -102,7 +104,7 @@
             '
             'StatusStripBottom
             '
-            Me.StatusStripBottom.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.StatusTrack, Me.StatusSide, Me.StatusType})
+            Me.StatusStripBottom.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.StatusTrack, Me.StatusSide, Me.StatusType, Me.StatusBadSectors, Me.StatusUnexpected})
             resources.ApplyResources(Me.StatusStripBottom, "StatusStripBottom")
             Me.StatusStripBottom.Name = "StatusStripBottom"
             Me.StatusStripBottom.SizingGrip = False
@@ -126,6 +128,18 @@
             Me.StatusType.Margin = New System.Windows.Forms.Padding(2, 3, 2, 2)
             Me.StatusType.Name = "StatusType"
             Me.StatusType.Spring = True
+            '
+            'StatusBadSectors
+            '
+            Me.StatusBadSectors.Margin = New System.Windows.Forms.Padding(6, 3, 0, 2)
+            Me.StatusBadSectors.Name = "StatusBadSectors"
+            resources.ApplyResources(Me.StatusBadSectors, "StatusBadSectors")
+            '
+            'StatusUnexpected
+            '
+            Me.StatusUnexpected.Margin = New System.Windows.Forms.Padding(6, 3, 0, 2)
+            Me.StatusUnexpected.Name = "StatusUnexpected"
+            resources.ApplyResources(Me.StatusUnexpected, "StatusUnexpected")
             '
             'BaseForm
             '
@@ -158,5 +172,7 @@
         Friend WithEvents StatusType As ToolStripStatusLabel
         Friend WithEvents StatusTrack As ToolStripStatusLabel
         Friend WithEvents StatusSide As ToolStripStatusLabel
+        Friend WithEvents StatusBadSectors As ToolStripStatusLabel
+        Friend WithEvents StatusUnexpected As ToolStripStatusLabel
     End Class
 End Namespace

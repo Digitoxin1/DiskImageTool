@@ -6,10 +6,12 @@ Namespace Greaseweazle
         Private WithEvents ButtonProcess As Button
         Private WithEvents ButtonReset As Button
         Private WithEvents ComboImageDrives As ComboBox
+        Private _Initialized As Boolean = False
         Private _ProcessRunning As Boolean = False
         Private NumericCyls As NumericUpDown
         Private NumericLinger As NumericUpDown
         Private NumericPasses As NumericUpDown
+
         Public Sub New()
             MyBase.New(False)
             InitializeControls()
@@ -23,6 +25,9 @@ Namespace Greaseweazle
             PopulateDrives(ComboImageDrives, FloppyMediaType.MediaUnknown)
             ResetState()
             RefreshButtonState()
+            RefreshCylinderCount()
+
+            _Initialized = True
         End Sub
 
         Private Sub CleanDisk()
@@ -239,6 +244,10 @@ Namespace Greaseweazle
         End Sub
 
         Private Sub ComboImageDrives_SelectedIndexChanged(sender As Object, e As EventArgs) Handles ComboImageDrives.SelectedIndexChanged
+            If Not _Initialized Then
+                Exit Sub
+            End If
+
             RefreshButtonState()
             RefreshCylinderCount()
         End Sub

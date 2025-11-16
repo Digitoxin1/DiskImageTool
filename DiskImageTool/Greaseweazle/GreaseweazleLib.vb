@@ -67,10 +67,10 @@ Namespace Greaseweazle
             Return result
         End Function
 
-        Public Function ConfirmWrite(DriveName As String) As Boolean
-            Dim Msg = String.Format(My.Resources.Dialog_ConfirmWrite, vbNewLine, DriveName)
-            Return MsgBox(Msg, MsgBoxStyle.YesNo + MsgBoxStyle.DefaultButton2) = MsgBoxResult.Yes
-        End Function
+        Public Sub CleanDisk(ParentForm As Form)
+            Dim Form As New CleanDiskForm()
+            Form.ShowDialog(ParentForm)
+        End Sub
 
         Public Function ConvertFirstTrack(FilePath As String) As (Result As Boolean, FileName As String)
             Dim TempPath = InitTempImagePath()
@@ -100,11 +100,6 @@ Namespace Greaseweazle
 
         Public Sub EraseDisk(ParentForm As Form)
             Dim Form As New EraseDiskForm()
-            Form.ShowDialog(ParentForm)
-        End Sub
-
-        Public Sub CleanDisk(ParentForm As Form)
-            Dim Form As New CleanDiskForm()
             Form.ShowDialog(ParentForm)
         End Sub
 
@@ -312,14 +307,6 @@ Namespace Greaseweazle
         Public Sub PopulateDrives(Combo As ComboBox, Format As FloppyMediaType)
             Dim DriveList As New List(Of DriveOption)
 
-            Dim placeholder As New DriveOption With {
-                .Id = "",
-                .Type = FloppyMediaType.MediaUnknown,
-                .Tracks = 0,
-                .Label = My.Resources.Label_PleaseSelect
-            }
-            DriveList.Add(placeholder)
-
             Dim SelectedOption As DriveOption = Nothing
 
             Dim AddItem As Action(Of String, String, Byte) =
@@ -351,15 +338,97 @@ Namespace Greaseweazle
                 AddItem("B", "B", 1)
             End If
 
+            Dim placeholder As DriveOption = Nothing
+            If DriveList.Count <> 1 Then
+                placeholder = New DriveOption With {
+                    .Id = "",
+                    .Type = FloppyMediaType.MediaUnknown,
+                    .Tracks = 0,
+                    .Label = IIf(DriveList.Count = 0, My.Resources.Label_NoDrivesFound, My.Resources.Label_PleaseSelect)
+                }
+                DriveList.Insert(0, placeholder)
+            End If
+
             With Combo
                 .DropDownStyle = ComboBoxStyle.DropDownList
                 .DataSource = DriveList
                 .DisplayMember = NameOf(DriveOption.Label)
                 .ValueMember = ""
                 .SelectedItem = If(SelectedOption, placeholder)
+                If .SelectedIndex = -1 Then
+                    .SelectedIndex = 0
+                End If
             End With
         End Sub
 
+        Public Sub PopulateImageFormats(Combo As ComboBox, Opt As DriveOption)
+            If Opt.Id = "" Then
+                ClearImageFormats(Combo)
+            Else
+                PopulateImageFormats(Combo, Opt.SelectedFormat, Opt.DetectedFormat)
+            End If
+        End Sub
+
+        Public Sub PopulateImageFormats(Combo As ComboBox, SelectedFormat As FloppyDiskFormat?, DetectedFormat As FloppyDiskFormat?)
+            Dim list = FloppyDiskFormatGetComboList()
+
+            For i As Integer = 0 To list.Count - 1
+                Dim item = list(i)
+                If DetectedFormat.HasValue AndAlso item.Format = DetectedFormat.Value Then
+                    item.Detected = True
+                Else
+                    item.Detected = False
+                End If
+                list(i) = item
+            Next
+
+            With Combo
+                .DisplayMember = "Description"
+                .ValueMember = Nothing
+                .DataSource = list
+                .DropDownStyle = ComboBoxStyle.DropDownList
+            End With
+
+            If SelectedFormat.HasValue Then
+                Dim idx = list.FindIndex(Function(p) p.Format = SelectedFormat.Value)
+                If idx >= 0 Then
+                    Combo.SelectedIndex = idx
+                End If
+            End If
+        End Sub
+
+        Public Function ReadFirstTrack(DriveId As String) As (Result As Boolean, FileName As String, Output As String)
+            Dim TempPath = InitTempImagePath()
+
+            If TempPath = "" Then
+                Return (False, "", "")
+            End If
+
+            Dim FileName = GenerateUniqueFileName(TempPath, "temp.ima")
+
+            Dim Builder = New CommandLineBuilder(CommandLineBuilder.CommandAction.read) With {
+                .Device = GreaseweazleSettings.COMPort,
+                .Drive = DriveId,
+                .File = FileName,
+                .Format = "ibm.scan",
+                .Heads = CommandLineBuilder.TrackHeads.head0
+            }
+            Builder.AddCylinder(0)
+
+            Dim Result = ConsoleProcessRunner.RunProcess(GreaseweazleSettings.AppPath, Builder.Arguments, captureOutput:=True, captureError:=True)
+
+            Return (IO.File.Exists(FileName), FileName, Result.CombinedOutput)
+        End Function
+        Public Function ReadFluxImage(ParentForm As Form) As (Result As Boolean, OutputFile As String, NewFileName As String)
+            Dim Form As New ReadDiskForm()
+            If Form.ShowDialog(ParentForm) = DialogResult.OK Then
+                If Not String.IsNullOrEmpty(Form.OutputFilePath) Then
+                    Return (True, Form.OutputFilePath, Form.GetNewFileName)
+                End If
+            End If
+
+            Return (False, "", "")
+        End Function
         Public Sub Reset(TextBox As TextBox)
             Dim Builder = New CommandLineBuilder(CommandLineBuilder.CommandAction.reset) With {
                 .Device = GreaseweazleSettings.COMPort
@@ -371,16 +440,31 @@ Namespace Greaseweazle
 
             MsgBox(My.Resources.Dialog_GreaseweazleReset, MsgBoxStyle.Information)
         End Sub
+
         Public Sub WriteImageToDisk(ParentForm As Form, Image As DiskImageContainer)
             Dim Form As New WriteDiskForm(Image.Disk, Image.ImageData.FileName)
             Form.ShowDialog(ParentForm)
         End Sub
 
+        Private Sub ClearImageFormats(Combo As ComboBox)
+            Dim list As New List(Of FloppyDiskParams) From {
+                CreatePlaceholderParams(My.Resources.Label_PleaseSelect)
+            }
+
+            With Combo
+                .DisplayMember = "Description"
+                .ValueMember = Nothing
+                .DataSource = list
+                .DropDownStyle = ComboBoxStyle.DropDownList
+            End With
+        End Sub
         Public Class DriveOption
+            Public Property DetectedFormat As FloppyDiskFormat = FloppyDiskFormat.FloppyUnknown
             Public Property Id As String
             Public Property Label As String
+            Public Property SelectedFormat As FloppyDiskFormat = FloppyDiskFormat.FloppyUnknown
             Public Property Tracks As Byte
-            Public Property Type As FloppyMediaType
+            Public Property Type As FloppyMediaType = FloppyMediaType.MediaUnknown
             Public Overrides Function ToString() As String
                 Return Label
             End Function

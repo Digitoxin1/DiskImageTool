@@ -550,6 +550,14 @@ Public Class MainForm
         GreaseweazleImportImage(FileName)
     End Sub
 
+    Private Sub GreaseweazleReadImage()
+        Dim Response = Greaseweazle.ReadFluxImage(Me)
+        If Response.Result Then
+            ProcessFileDrop(Response.OutputFile, True, Response.NewFileName)
+            RefreshModifiedCount()
+        End If
+    End Sub
+
     Private Sub GreaseweazleImportImage(FileName As String)
         If FileName <> "" Then
             Dim Response = Greaseweazle.ImportFluxImage(FileName, Me)
@@ -2015,6 +2023,10 @@ Public Class MainForm
 
     Private Sub ToolStripViewFileText_Click(sender As Object, e As EventArgs) Handles ToolStripViewFileText.Click
         FilePanelProcessEvent(FilePanelMain, FilePanel.FilePanelMenuItem.ViewFileText)
+    End Sub
+
+    Private Sub MenuGreaseweazleRead_Click(sender As Object, e As EventArgs) Handles MenuGreaseweazleRead.Click
+        GreaseweazleReadImage()
     End Sub
 #End Region
 End Class

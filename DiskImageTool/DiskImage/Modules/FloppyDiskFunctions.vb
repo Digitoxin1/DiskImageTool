@@ -346,7 +346,7 @@
             End Select
         End Function
 
-        Private Function CreatePlaceholderParams(Description As String) As FloppyDiskParams
+        Public Function CreatePlaceholderParams(Description As String) As FloppyDiskParams
             Return New FloppyDiskParams(
                 FloppyDiskFormat.FloppyUnknown,
                 New FloppyDiskBPBParams(0, 0, 0, 0, 0, 0, 0, 0, 0, 0),
@@ -658,7 +658,7 @@
             End Sub
         End Structure
 
-        Public Class FloppyDiskParams
+        Public Structure FloppyDiskParams
             Public ReadOnly Property BPBParams As FloppyDiskBPBParams
             Public ReadOnly Property FileExtension As String
             Public ReadOnly Property Format As FloppyDiskFormat
@@ -833,6 +833,6 @@
                     End Select
                 End Get
             End Property
-        End Class
+        End Structure
     End Module
 End Namespace

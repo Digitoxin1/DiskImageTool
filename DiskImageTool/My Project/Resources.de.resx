@@ -183,9 +183,6 @@
   <data name="Caption_File" xml:space="preserve">
     <value>Datei</value>
   </data>
-  <data name="Caption_ImageComparison" xml:space="preserve">
-    <value>Abbildvergleich</value>
-  </data>
   <data name="Caption_RemoveFile" xml:space="preserve">
     <value>Datei entfernen</value>
   </data>
@@ -1454,17 +1451,11 @@ Hinweis: Diese ID wird normalerweise erzeugt, indem das aktuelle Datum und die a
   <data name="DataInspector_Label_DataArea" xml:space="preserve">
     <value>Datenbereich</value>
   </data>
-  <data name="SummaryPanel_Comment" xml:space="preserve">
-    <value>Kommentar</value>
-  </data>
   <data name="SummaryPanel_DiskFormat" xml:space="preserve">
     <value>Diskettenformat</value>
   </data>
   <data name="SummaryPanel_TrackStep" xml:space="preserve">
     <value>Spurschrittweite</value>
-  </data>
-  <data name="SummaryPanel_Comments" xml:space="preserve">
-    <value>Kommentare</value>
   </data>
   <data name="Label_WriteSplices" xml:space="preserve">
     <value>Schreibübergänge</value>
@@ -1672,5 +1663,17 @@ Hinweis: Diese ID wird normalerweise erzeugt, indem das aktuelle Datum und die a
   </data>
   <data name="Label_Cylinders" xml:space="preserve">
     <value>Zylinder</value>
+  </data>
+  <data name="Label_Detect" xml:space="preserve">
+    <value>Erkennen</value>
+  </data>
+  <data name="Label_NoDrivesFound" xml:space="preserve">
+    <value>Keine Laufwerke gefunden</value>
+  </data>
+  <data name="Label_ReadDisk" xml:space="preserve">
+    <value>Diskette lesen</value>
+  </data>
+  <data name="Label_Read" xml:space="preserve">
+    <value>Lesen</value>
   </data>
 </root>

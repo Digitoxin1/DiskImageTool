@@ -427,7 +427,7 @@
     <value>False</value>
   </data>
   <data name="StatusType.Size" type="System.Drawing.Size, System.Drawing">
-    <value>629, 19</value>
+    <value>454, 19</value>
   </data>
   <data name="StatusType.Text" xml:space="preserve">
     <value>{Status}</value>
@@ -435,6 +435,23 @@
   </data>
   <data name="StatusType.TextAlign" type="System.Drawing.ContentAlignment, System.Drawing">
     <value>MiddleLeft</value>
+  </data>
+  <data name="StatusBadSectors.Size" type="System.Drawing.Size, System.Drawing">
+    <value>76, 19</value>
+  </data>
+  <data name="StatusBadSectors.Text" xml:space="preserve">
+    <value>{Bad Sectors}</value>
+    <comment>@Invariant</comment>
+  </data>
+  <data name="StatusBadSectors.TextAlign" type="System.Drawing.ContentAlignment, System.Drawing">
+    <value>MiddleRight</value>
+  </data>
+  <data name="StatusUnexpected.Size" type="System.Drawing.Size, System.Drawing">
+    <value>118, 19</value>
+  </data>
+  <data name="StatusUnexpected.Text" xml:space="preserve">
+    <value>{Unexpected Sectors}</value>
+    <comment>@Invariant</comment>
   </data>
   <data name="StatusStripBottom.Location" type="System.Drawing.Point, System.Drawing">
     <value>0, 462</value>
@@ -494,6 +511,18 @@
     <value>StatusType</value>
   </data>
   <data name="&gt;&gt;StatusType.Type" xml:space="preserve">
+    <value>System.Windows.Forms.ToolStripStatusLabel, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;StatusBadSectors.Name" xml:space="preserve">
+    <value>StatusBadSectors</value>
+  </data>
+  <data name="&gt;&gt;StatusBadSectors.Type" xml:space="preserve">
+    <value>System.Windows.Forms.ToolStripStatusLabel, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;StatusUnexpected.Name" xml:space="preserve">
+    <value>StatusUnexpected</value>
+  </data>
+  <data name="&gt;&gt;StatusUnexpected.Type" xml:space="preserve">
     <value>System.Windows.Forms.ToolStripStatusLabel, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
   <data name="&gt;&gt;$this.Name" xml:space="preserve">

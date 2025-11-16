@@ -1,4 +1,6 @@
-﻿Namespace Greaseweazle
+﻿Imports System.Runtime.Remoting.Messaging
+
+Namespace Greaseweazle
     Class CommandLineBuilder
         Public Const DEFAULT_CYLS As UInteger = 80
         Public Const DEFAULT_LINGER As UInteger = 100
@@ -46,6 +48,7 @@
         Public Property Device As String
         Public Property Drive As String = DEFAULT_DRIVE
         Public Property EraseEmpty As Boolean = False
+        Public Property File As String
         Public Property Format As String
         Public Property Heads As TrackHeads = DEFAULT_HEADS
         Public Property HeadStep As Byte = DEFAULT_STEP
@@ -57,6 +60,7 @@
         Public Property OutFile As String
         Public Property Passes As UInteger = DEFAULT_PASSES
         Public Property PreErase As Boolean = False
+        Public Property Raw As Boolean
         Public Property Retries As UInteger = DEFAULT_RETRIES
         Public Property Revs As UInteger = DEFAULT_REVS
         Public Property Time As Boolean = False
@@ -139,6 +143,10 @@
                 args.Add("--linger " & _Linger)
             End If
 
+            If CheckOptionRaw() AndAlso _Raw Then
+                args.Add("--raw")
+            End If
+
             If CheckOptionInFile() AndAlso Not String.IsNullOrEmpty(_InFile) Then
                 args.Add(Quoted(_InFile))
 
@@ -151,8 +159,26 @@
                 End If
             End If
 
+            If CheckOptionFile() AndAlso Not String.IsNullOrEmpty(_File) Then
+                Dim FilePath = Quoted(_File)
+                If _BitRate <> DEFAULT_BITRATE Then
+                    FilePath &= "::bitrate=" & _BitRate
+                End If
+                args.Add(FilePath)
+            End If
+
             Return String.Join(" ", args)
         End Function
+
+        Private Function CheckOptionRaw() As Boolean
+            Select Case _Action
+                Case CommandAction.read
+                    Return True
+                Case Else
+                    Return False
+            End Select
+        End Function
+
 
         Private Function CheckOptionAdjustSpeed() As Boolean
             Select Case _Action
@@ -193,6 +219,15 @@
         Private Function CheckOptionEraseEmpty() As Boolean
             Select Case _Action
                 Case CommandAction.write
+                    Return True
+                Case Else
+                    Return False
+            End Select
+        End Function
+
+        Private Function CheckOptionFile() As Boolean
+            Select Case _Action
+                Case CommandAction.read
                     Return True
                 Case Else
                     Return False
@@ -252,7 +287,6 @@
                     Return False
             End Select
         End Function
-
         Private Function CheckOptionOutFile() As Boolean
             Select Case _Action
                 Case CommandAction.convert
