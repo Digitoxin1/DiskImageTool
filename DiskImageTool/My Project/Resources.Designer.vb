@@ -815,15 +815,6 @@ Namespace My.Resources
         End Property
         
         '''<summary>
-        '''  Looks up a localized string similar to Image Comparison.
-        '''</summary>
-        Friend ReadOnly Property Caption_ImageComparison() As String
-            Get
-                Return ResourceManager.GetString("Caption_ImageComparison", resourceCulture)
-            End Get
-        End Property
-        
-        '''<summary>
         '''  Looks up a localized string similar to Import Flux Image.
         '''</summary>
         Friend ReadOnly Property Caption_ImportFluxImage() As String
@@ -3897,6 +3888,15 @@ Namespace My.Resources
         End Property
         
         '''<summary>
+        '''  Looks up a localized string similar to Seek Retries.
+        '''</summary>
+        Friend ReadOnly Property Label_SeekRetries() As String
+            Get
+                Return ResourceManager.GetString("Label_SeekRetries", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
         '''  Looks up a localized string similar to {0} of {1} Files Selected.
         '''</summary>
         Friend ReadOnly Property Label_SelectedFileCountPlural() As String
@@ -4789,24 +4789,6 @@ Namespace My.Resources
         Friend ReadOnly Property SummaryPanel_Bootstrap() As String
             Get
                 Return ResourceManager.GetString("SummaryPanel_Bootstrap", resourceCulture)
-            End Get
-        End Property
-        
-        '''<summary>
-        '''  Looks up a localized string similar to Comment.
-        '''</summary>
-        Friend ReadOnly Property SummaryPanel_Comment() As String
-            Get
-                Return ResourceManager.GetString("SummaryPanel_Comment", resourceCulture)
-            End Get
-        End Property
-        
-        '''<summary>
-        '''  Looks up a localized string similar to Comments.
-        '''</summary>
-        Friend ReadOnly Property SummaryPanel_Comments() As String
-            Get
-                Return ResourceManager.GetString("SummaryPanel_Comments", resourceCulture)
             End Get
         End Property
         

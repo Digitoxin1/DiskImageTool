@@ -153,4 +153,7 @@
   <data name="LabelPort.Text" xml:space="preserve">
     <value>Puerto</value>
   </data>
+  <data name="LabelDefaultRevs.Text" xml:space="preserve">
+    <value>Revoluciones predeterminadas</value>
+  </data>
 </root>

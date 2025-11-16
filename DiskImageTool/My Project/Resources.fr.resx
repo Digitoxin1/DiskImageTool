@@ -1602,10 +1602,10 @@ Remarque : cette valeur doit être {1} pour toutes les disquettes</value>
     <value>Sans vérification</value>
   </data>
   <data name="Label_EraseEmpty" xml:space="preserve">
-    <value>Effacer les pistes vides</value>
+    <value>Effacer vides</value>
   </data>
   <data name="Label_Retries" xml:space="preserve">
-    <value>Réessais</value>
+    <value>Essais</value>
   </data>
   <data name="Label_PreErase" xml:space="preserve">
     <value>Pré-effacement</value>
@@ -1638,7 +1638,7 @@ Remarque : cette valeur doit être {1} pour toutes les disquettes</value>
     <value>Effacer le disque</value>
   </data>
   <data name="Label_Hfreq" xml:space="preserve">
-    <value>Signal haute fréquence</value>
+    <value>Signal HF</value>
   </data>
   <data name="Label_Revs" xml:space="preserve">
     <value>Tours</value>
@@ -1675,5 +1675,8 @@ Remarque : cette valeur doit être {1} pour toutes les disquettes</value>
   </data>
   <data name="Label_Read" xml:space="preserve">
     <value>Lire</value>
+  </data>
+  <data name="Label_SeekRetries" xml:space="preserve">
+    <value>Rech. essais</value>
   </data>
 </root>

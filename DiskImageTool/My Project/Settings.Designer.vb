@@ -281,6 +281,18 @@ Namespace My
                 Me("GW_COMPort") = value
             End Set
         End Property
+        
+        <Global.System.Configuration.UserScopedSettingAttribute(),  _
+         Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
+         Global.System.Configuration.DefaultSettingValueAttribute("3")>  _
+        Public Property GW_DefaultRevs() As Byte
+            Get
+                Return CType(Me("GW_DefaultRevs"),Byte)
+            End Get
+            Set
+                Me("GW_DefaultRevs") = value
+            End Set
+        End Property
     End Class
 End Namespace
 

@@ -1,12 +1,21 @@
-﻿Imports System.Runtime.Remoting.Messaging
-
-Namespace Greaseweazle
+﻿Namespace Greaseweazle
     Class CommandLineBuilder
         Public Const DEFAULT_CYLS As UInteger = 80
         Public Const DEFAULT_LINGER As UInteger = 100
         Public Const DEFAULT_PASSES As UInteger = 3
         Public Const DEFAULT_RETRIES As UInteger = 3
         Public Const DEFAULT_REVS As UInteger = 1
+        Public Const DEFAULT_SEEK_RETRIES As UInteger = 0
+        Public Const MAX_CYLS As UInteger = 80
+        Public Const MAX_LINGER As UInteger = 1000
+        Public Const MAX_PASSES As UInteger = 9
+        Public Const MAX_RETRIES As UInteger = 99
+        Public Const MAX_REVS As Byte = 20
+        Public Const MIN_CYLS As UInteger = 1
+        Public Const MIN_LINGER As UInteger = 1
+        Public Const MIN_PASSES As UInteger = 1
+        Public Const MIN_RETRIES As UInteger = 0
+        Public Const MIN_REVS As Byte = 1
         Private Const DEFAULT_BITRATE As UInteger = 0
         Private Const DEFAULT_DRIVE As String = "A"
         Private Const DEFAULT_HEADS As TrackHeads = TrackHeads.both
@@ -63,7 +72,9 @@ Namespace Greaseweazle
         Public Property Raw As Boolean
         Public Property Retries As UInteger = DEFAULT_RETRIES
         Public Property Revs As UInteger = DEFAULT_REVS
+        Public Property SeekRetries As UInteger = DEFAULT_SEEK_RETRIES
         Public Property Time As Boolean = False
+
         Public Sub AddCylinder(Cylinder As UShort)
             _Cylinders.Add((Cylinder, Cylinder))
         End Sub
@@ -100,7 +111,11 @@ Namespace Greaseweazle
                 args.Add("--retries " & _Retries)
             End If
 
-            If CheckOptionRevs() AndAlso _Revs <> DEFAULT_REVS Then
+            If CheckOptionSeekRetries() AndAlso _SeekRetries <> DEFAULT_SEEK_RETRIES Then
+                args.Add("--seek-retries " & _SeekRetries)
+            End If
+
+            If CheckOptionRevs() Then
                 args.Add("--revs " & _Revs)
             End If
 
@@ -169,16 +184,6 @@ Namespace Greaseweazle
 
             Return String.Join(" ", args)
         End Function
-
-        Private Function CheckOptionRaw() As Boolean
-            Select Case _Action
-                Case CommandAction.read
-                    Return True
-                Case Else
-                    Return False
-            End Select
-        End Function
-
 
         Private Function CheckOptionAdjustSpeed() As Boolean
             Select Case _Action
@@ -287,6 +292,7 @@ Namespace Greaseweazle
                     Return False
             End Select
         End Function
+
         Private Function CheckOptionOutFile() As Boolean
             Select Case _Action
                 Case CommandAction.convert
@@ -304,9 +310,19 @@ Namespace Greaseweazle
                     Return False
             End Select
         End Function
+
         Private Function CheckOptionPreErase() As Boolean
             Select Case _Action
                 Case CommandAction.write
+                    Return True
+                Case Else
+                    Return False
+            End Select
+        End Function
+
+        Private Function CheckOptionRaw() As Boolean
+            Select Case _Action
+                Case CommandAction.read
                     Return True
                 Case Else
                     Return False
@@ -324,7 +340,16 @@ Namespace Greaseweazle
 
         Private Function CheckOptionRevs() As Boolean
             Select Case _Action
-                Case CommandAction.erase
+                Case CommandAction.erase, CommandAction.read
+                    Return True
+                Case Else
+                    Return False
+            End Select
+        End Function
+
+        Private Function CheckOptionSeekRetries() As Boolean
+            Select Case _Action
+                Case CommandAction.read
                     Return True
                 Case Else
                     Return False

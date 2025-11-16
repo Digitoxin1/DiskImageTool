@@ -50,6 +50,10 @@ Namespace Greaseweazle
                 InitializeDriveType(i)
                 InitializeTracks(i)
             Next
+
+            NumericDefaultRevs.Minimum = CommandLineBuilder.MIN_REVS
+            NumericDefaultRevs.Maximum = CommandLineBuilder.MAX_REVS
+            NumericDefaultRevs.Value = GreaseweazleSettings.DefaultRevs
         End Sub
 
         Private Sub InitializeInput(index As Byte, Type As FloppyMediaType, Tracks As Byte)
@@ -218,6 +222,7 @@ Namespace Greaseweazle
             Else
                 GreaseweazleSettings.SetDrive(2, FloppyMediaType.MediaUnknown, 0)
             End If
+            GreaseweazleSettings.DefaultRevs = NumericDefaultRevs.Value
         End Sub
 
         Private Sub ButtonBrowse_Click(sender As Object, e As EventArgs) Handles ButtonBrowse.Click

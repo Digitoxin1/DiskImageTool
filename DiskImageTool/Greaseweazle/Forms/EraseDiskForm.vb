@@ -109,8 +109,8 @@ Namespace Greaseweazle
             NumericRevs = New NumericUpDown With {
                 .Anchor = AnchorStyles.Left,
                 .Width = 45,
-                .Minimum = 1,
-                .Maximum = 99
+                .Minimum = CommandLineBuilder.MIN_REVS,
+                .Maximum = CommandLineBuilder.MAX_REVS
             }
 
             CheckBoxSelect = New CheckBox With {
@@ -160,8 +160,10 @@ Namespace Greaseweazle
             With TableLayoutPanelMain
                 .SuspendLayout()
 
+                .Left = 0
                 .RowCount = 2
                 .ColumnCount = 6
+                .Dock = DockStyle.Fill
 
                 While .RowStyles.Count < .RowCount
                     .RowStyles.Add(New RowStyle())
@@ -176,6 +178,9 @@ Namespace Greaseweazle
                 For j As Integer = 0 To .ColumnCount - 1
                     .ColumnStyles(j).SizeType = SizeType.AutoSize
                 Next
+
+                .ColumnStyles(0).SizeType = SizeType.Percent
+                .ColumnStyles(0).Width = 100
 
                 Row = 0
                 .Controls.Add(DriveLabel, 0, Row)
@@ -198,7 +203,7 @@ Namespace Greaseweazle
                 .Controls.Add(ButtonContainer, 5, Row)
 
                 .ResumeLayout()
-                .Left = (.Parent.ClientSize.Width - .Width) \ 2
+                '.Left = (.Parent.ClientSize.Width - .Width) \ 2
             End With
         End Sub
 

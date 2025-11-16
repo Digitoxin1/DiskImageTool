@@ -1602,7 +1602,7 @@ Nota: Este valor debe ser {1} para todos los disquetes</value>
     <value>Sin verificación</value>
   </data>
   <data name="Label_EraseEmpty" xml:space="preserve">
-    <value>Borrar las pistas vacías</value>
+    <value>Borrar vacíos</value>
   </data>
   <data name="Label_Retries" xml:space="preserve">
     <value>Reintentos</value>
@@ -1638,10 +1638,10 @@ Nota: Este valor debe ser {1} para todos los disquetes</value>
     <value>Borrar el disco</value>
   </data>
   <data name="Label_Hfreq" xml:space="preserve">
-    <value>Señal de alta frecuencia</value>
+    <value>Señal HF</value>
   </data>
   <data name="Label_Revs" xml:space="preserve">
-    <value>Revoluciones</value>
+    <value>Revs</value>
   </data>
   <data name="Label_SelectTracks" xml:space="preserve">
     <value>Seleccionar las pistas</value>
@@ -1675,5 +1675,8 @@ Nota: Este valor debe ser {1} para todos los disquetes</value>
   </data>
   <data name="Label_Read" xml:space="preserve">
     <value>Leer</value>
+  </data>
+  <data name="Label_SeekRetries" xml:space="preserve">
+    <value>Reint. búsqueda</value>
   </data>
 </root>

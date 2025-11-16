@@ -22,6 +22,10 @@ Namespace Greaseweazle
         Private _ProcessRunning As Boolean = False
         Private _TrackRange As ConsoleOutputParser.TrackRange = Nothing
         Private LabelWarning As Label
+        Private _NumericRevs As NumericUpDown
+        Private _NumericRetries As NumericUpDown
+        Private _NumericSeekRetries As NumericUpDown
+
         Public Sub New()
             MyBase.New()
             InitializeControls()
@@ -34,6 +38,10 @@ Namespace Greaseweazle
             ResetTrackGrid()
             ClearStatusBar()
             RefreshButtonState(True)
+
+            _NumericRevs.Value = GreaseweazleSettings.DefaultRevs
+            _NumericRetries.Value = CommandLineBuilder.DEFAULT_RETRIES
+            _NumericSeekRetries.Value = CommandLineBuilder.DEFAULT_SEEK_RETRIES
 
             _Initialized = True
         End Sub
@@ -120,7 +128,7 @@ Namespace Greaseweazle
             }
 
             Dim ImageFormatLabel = New Label With {
-                .Text = My.Resources.Label_ImageFormat,
+                .Text = My.Resources.Label_Format,
                 .Anchor = AnchorStyles.Right,
                 .AutoSize = True
             }
@@ -138,7 +146,7 @@ Namespace Greaseweazle
             }
 
             ComboOutputType = New ComboBox With {
-                .Anchor = AnchorStyles.Left,
+                .Anchor = AnchorStyles.Left Or AnchorStyles.Right,
                 .Width = 175
             }
 
@@ -147,6 +155,46 @@ Namespace Greaseweazle
                 .Anchor = AnchorStyles.Left,
                 .AutoSize = True,
                 .Margin = New Padding(12, 3, 3, 3)
+            }
+
+            Dim SeekRetriesLabel = New Label With {
+                .Text = My.Resources.Label_SeekRetries,
+                .Anchor = AnchorStyles.Right,
+                .AutoSize = True
+            }
+
+            _NumericSeekRetries = New NumericUpDown With {
+                .Minimum = CommandLineBuilder.MIN_RETRIES,
+                .Maximum = CommandLineBuilder.MAX_RETRIES,
+                .Width = 45,
+                .Anchor = AnchorStyles.Left
+            }
+
+            Dim RetriesLabel = New Label With {
+                .Text = My.Resources.Label_Retries,
+                .Anchor = AnchorStyles.Right,
+                .AutoSize = True
+            }
+
+            _NumericRetries = New NumericUpDown With {
+                .Minimum = CommandLineBuilder.MIN_RETRIES,
+                .Maximum = CommandLineBuilder.MAX_RETRIES,
+                .Width = 45,
+                .Anchor = AnchorStyles.Left
+            }
+
+            Dim RevsLabel = New Label With {
+                .Text = My.Resources.Label_Revs,
+                .Anchor = AnchorStyles.Right,
+                .AutoSize = True,
+                 .Margin = New Padding(12, 3, 3, 3)
+            }
+
+            _NumericRevs = New NumericUpDown With {
+                .Minimum = CommandLineBuilder.MIN_REVS,
+                .Maximum = CommandLineBuilder.MAX_REVS,
+                .Width = 40,
+                .Anchor = AnchorStyles.Left
             }
 
             Dim ButtonContainer = New FlowLayoutPanel With {
@@ -197,8 +245,10 @@ Namespace Greaseweazle
             With TableLayoutPanelMain
                 .SuspendLayout()
 
+                .Left = 0
                 .RowCount = 5
-                .ColumnCount = 5
+                .ColumnCount = 8
+                .Dock = DockStyle.Fill
 
                 While .RowStyles.Count < .RowCount
                     .RowStyles.Add(New RowStyle())
@@ -214,10 +264,13 @@ Namespace Greaseweazle
                     .ColumnStyles(j).SizeType = SizeType.AutoSize
                 Next
 
+                .ColumnStyles(0).SizeType = SizeType.Percent
+                .ColumnStyles(0).Width = 100
+
                 Row = 0
                 .Controls.Add(FileNameLabel, 0, Row)
                 .Controls.Add(TextBoxFileName, 1, Row)
-                .SetColumnSpan(TextBoxFileName, 3)
+                .SetColumnSpan(TextBoxFileName, 6)
 
                 Row = 1
                 .Controls.Add(DriveLabel, 0, Row)
@@ -225,31 +278,40 @@ Namespace Greaseweazle
 
                 .Controls.Add(OutputTypeLabel, 2, Row)
                 .Controls.Add(ComboOutputType, 3, Row)
+                .SetColumnSpan(ComboOutputType, 4)
 
-                .Controls.Add(CheckBoxDoublestep, 4, Row)
+                .Controls.Add(CheckBoxDoublestep, 7, Row)
 
                 Row = 2
                 .Controls.Add(ImageFormatLabel, 0, Row)
                 .Controls.Add(ComboImageFormat, 1, Row)
                 .Controls.Add(ButtonDetect, 2, Row)
 
+                .Controls.Add(RevsLabel, 3, Row)
+                .Controls.Add(_NumericRevs, 4, Row)
+
+                .Controls.Add(RetriesLabel, 5, Row)
+                .Controls.Add(_NumericRetries, 6, Row)
+
                 Row = 3
-                .RowStyles(Row).SizeType = SizeType.Absolute
-                .RowStyles(Row).Height = 20
                 .Controls.Add(LabelWarning, 0, Row)
                 .SetColumnSpan(LabelWarning, 2)
+
+                .Controls.Add(SeekRetriesLabel, 4, Row)
+                .SetColumnSpan(SeekRetriesLabel, 2)
+                .Controls.Add(_NumericSeekRetries, 6, Row)
 
                 Row = 4
                 .Controls.Add(TableSide0, 0, Row)
                 .SetColumnSpan(TableSide0, 2)
 
                 .Controls.Add(TableSide1, 2, Row)
-                .SetColumnSpan(TableSide1, 2)
+                .SetColumnSpan(TableSide1, 5)
 
                 .Controls.Add(ButtonContainer, 4, Row)
 
                 .ResumeLayout()
-                .Left = (.Parent.ClientSize.Width - .Width) \ 2
+                '.Left = (.Parent.ClientSize.Width - .Width) \ 2
             End With
         End Sub
 
@@ -300,7 +362,10 @@ Namespace Greaseweazle
 
             Dim Builder = New CommandLineBuilder(CommandLineBuilder.CommandAction.read) With {
                 .Drive = Opt.Id,
-                .File = _OutputFilePath
+                .File = _OutputFilePath,
+                .Retries = _NumericRetries.Value,
+                .SeekRetries = _NumericSeekRetries.Value,
+                .Revs = _NumericRevs.Value
             }
 
             If Not DiskParams.IsStandard Then
@@ -399,6 +464,10 @@ Namespace Greaseweazle
             ComboImageFormat.Enabled = Not _ProcessRunning AndAlso Opt.Id <> ""
             ComboImageDrives.Enabled = Not _ProcessRunning
             ComboOutputType.Enabled = Not _ProcessRunning And Not OutputTypeDisabled
+
+            _NumericRevs.Enabled = Not _ProcessRunning
+            _NumericRetries.Enabled = Not _ProcessRunning
+            _NumericSeekRetries.Enabled = Not _ProcessRunning
 
             ButtonProcess.Enabled = ImageParams.Format <> FloppyDiskFormat.FloppyUnknown
             If _ProcessRunning Then

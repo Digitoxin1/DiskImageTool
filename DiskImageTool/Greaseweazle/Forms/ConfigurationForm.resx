@@ -649,7 +649,7 @@
     <value>322, 157</value>
   </data>
   <data name="TextBoxInfo.TabIndex" type="System.Int32, mscorlib">
-    <value>21</value>
+    <value>23</value>
   </data>
   <data name="&gt;&gt;TextBoxInfo.Name" xml:space="preserve">
     <value>TextBoxInfo</value>
@@ -862,7 +862,7 @@
     <value>75, 23</value>
   </data>
   <data name="ButtonInfo.TabIndex" type="System.Int32, mscorlib">
-    <value>20</value>
+    <value>22</value>
   </data>
   <data name="ButtonInfo.Text" xml:space="preserve">
     <value>Info</value>
@@ -942,6 +942,63 @@
   <data name="&gt;&gt;ComboPorts.ZOrder" xml:space="preserve">
     <value>21</value>
   </data>
+  <metadata name="LabelDefaultRevs.GenerateMember" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
+    <value>False</value>
+  </metadata>
+  <data name="LabelDefaultRevs.Anchor" type="System.Windows.Forms.AnchorStyles, System.Windows.Forms">
+    <value>Left</value>
+  </data>
+  <data name="LabelDefaultRevs.AutoSize" type="System.Boolean, mscorlib">
+    <value>True</value>
+  </data>
+  <data name="LabelDefaultRevs.Location" type="System.Drawing.Point, System.Drawing">
+    <value>3, 145</value>
+  </data>
+  <data name="LabelDefaultRevs.Size" type="System.Drawing.Size, System.Drawing">
+    <value>69, 13</value>
+  </data>
+  <data name="LabelDefaultRevs.TabIndex" type="System.Int32, mscorlib">
+    <value>20</value>
+  </data>
+  <data name="LabelDefaultRevs.Text" xml:space="preserve">
+    <value>Default Revs</value>
+  </data>
+  <data name="&gt;&gt;LabelDefaultRevs.Name" xml:space="preserve">
+    <value>LabelDefaultRevs</value>
+  </data>
+  <data name="&gt;&gt;LabelDefaultRevs.Type" xml:space="preserve">
+    <value>System.Windows.Forms.Label, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;LabelDefaultRevs.Parent" xml:space="preserve">
+    <value>TableLayoutPanel1</value>
+  </data>
+  <data name="&gt;&gt;LabelDefaultRevs.ZOrder" xml:space="preserve">
+    <value>22</value>
+  </data>
+  <data name="NumericDefaultRevs.Anchor" type="System.Windows.Forms.AnchorStyles, System.Windows.Forms">
+    <value>Left</value>
+  </data>
+  <data name="NumericDefaultRevs.Location" type="System.Drawing.Point, System.Drawing">
+    <value>93, 142</value>
+  </data>
+  <data name="NumericDefaultRevs.Size" type="System.Drawing.Size, System.Drawing">
+    <value>46, 20</value>
+  </data>
+  <data name="NumericDefaultRevs.TabIndex" type="System.Int32, mscorlib">
+    <value>21</value>
+  </data>
+  <data name="&gt;&gt;NumericDefaultRevs.Name" xml:space="preserve">
+    <value>NumericDefaultRevs</value>
+  </data>
+  <data name="&gt;&gt;NumericDefaultRevs.Type" xml:space="preserve">
+    <value>System.Windows.Forms.NumericUpDown, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;NumericDefaultRevs.Parent" xml:space="preserve">
+    <value>TableLayoutPanel1</value>
+  </data>
+  <data name="&gt;&gt;NumericDefaultRevs.ZOrder" xml:space="preserve">
+    <value>23</value>
+  </data>
   <data name="TableLayoutPanel1.Dock" type="System.Windows.Forms.DockStyle, System.Windows.Forms">
     <value>Fill</value>
   </data>
@@ -952,7 +1009,7 @@
     <value>0, 0, 0, 0</value>
   </data>
   <data name="TableLayoutPanel1.RowCount" type="System.Int32, mscorlib">
-    <value>6</value>
+    <value>7</value>
   </data>
   <data name="TableLayoutPanel1.Size" type="System.Drawing.Size, System.Drawing">
     <value>669, 221</value>
@@ -973,7 +1030,7 @@
     <value>0</value>
   </data>
   <data name="TableLayoutPanel1.LayoutSettings" type="System.Windows.Forms.TableLayoutSettings, System.Windows.Forms">
-    <value>&lt;?xml version="1.0" encoding="utf-16"?&gt;&lt;TableLayoutSettings&gt;&lt;Controls&gt;&lt;Control Name="LabelApplicationPath" Row="0" RowSpan="1" Column="0" ColumnSpan="1" /&gt;&lt;Control Name="LabelDriveInterface" Row="1" RowSpan="1" Column="0" ColumnSpan="1" /&gt;&lt;Control Name="LabelDriveType0" Row="2" RowSpan="1" Column="0" ColumnSpan="1" /&gt;&lt;Control Name="LabelDriveType1" Row="3" RowSpan="1" Column="0" ColumnSpan="1" /&gt;&lt;Control Name="LabelDriveType2" Row="4" RowSpan="1" Column="0" ColumnSpan="1" /&gt;&lt;Control Name="ComboDriveType2" Row="4" RowSpan="1" Column="1" ColumnSpan="1" /&gt;&lt;Control Name="ComboDriveType1" Row="3" RowSpan="1" Column="1" ColumnSpan="1" /&gt;&lt;Control Name="ComboDriveType0" Row="2" RowSpan="1" Column="1" ColumnSpan="1" /&gt;&lt;Control Name="ComboInterface" Row="1" RowSpan="1" Column="1" ColumnSpan="1" /&gt;&lt;Control Name="TextBoxPath" Row="0" RowSpan="1" Column="1" ColumnSpan="4" /&gt;&lt;Control Name="ButtonBrowse" Row="0" RowSpan="1" Column="5" ColumnSpan="1" /&gt;&lt;Control Name="ButtonClear" Row="0" RowSpan="1" Column="6" ColumnSpan="1" /&gt;&lt;Control Name="TextBoxInfo" Row="2" RowSpan="4" Column="4" ColumnSpan="3" /&gt;&lt;Control Name="LabelTracks0" Row="2" RowSpan="1" Column="2" ColumnSpan="1" /&gt;&lt;Control Name="LabelTracks1" Row="3" RowSpan="1" Column="2" ColumnSpan="1" /&gt;&lt;Control Name="LabelTracks2" Row="4" RowSpan="1" Column="2" ColumnSpan="1" /&gt;&lt;Control Name="NumericTracks1" Row="3" RowSpan="1" Column="3" ColumnSpan="1" /&gt;&lt;Control Name="NumericTracks2" Row="4" RowSpan="1" Column="3" ColumnSpan="1" /&gt;&lt;Control Name="NumericTracks0" Row="2" RowSpan="1" Column="3" ColumnSpan="1" /&gt;&lt;Control Name="ButtonInfo" Row="1" RowSpan="1" Column="4" ColumnSpan="1" /&gt;&lt;Control Name="LabelPort" Row="1" RowSpan="1" Column="2" ColumnSpan="1" /&gt;&lt;Control Name="ComboPorts" Row="1" RowSpan="1" Column="3" ColumnSpan="1" /&gt;&lt;/Controls&gt;&lt;Columns Styles="AutoSize,0,AutoSize,0,AutoSize,0,AutoSize,0,Percent,100,AutoSize,0,AutoSize,0" /&gt;&lt;Rows Styles="AutoSize,0,AutoSize,0,AutoSize,0,AutoSize,0,AutoSize,0,AutoSize,0" /&gt;&lt;/TableLayoutSettings&gt;</value>
+    <value>&lt;?xml version="1.0" encoding="utf-16"?&gt;&lt;TableLayoutSettings&gt;&lt;Controls&gt;&lt;Control Name="LabelApplicationPath" Row="0" RowSpan="1" Column="0" ColumnSpan="1" /&gt;&lt;Control Name="LabelDriveInterface" Row="1" RowSpan="1" Column="0" ColumnSpan="1" /&gt;&lt;Control Name="LabelDriveType0" Row="2" RowSpan="1" Column="0" ColumnSpan="1" /&gt;&lt;Control Name="LabelDriveType1" Row="3" RowSpan="1" Column="0" ColumnSpan="1" /&gt;&lt;Control Name="LabelDriveType2" Row="4" RowSpan="1" Column="0" ColumnSpan="1" /&gt;&lt;Control Name="ComboDriveType2" Row="4" RowSpan="1" Column="1" ColumnSpan="1" /&gt;&lt;Control Name="ComboDriveType1" Row="3" RowSpan="1" Column="1" ColumnSpan="1" /&gt;&lt;Control Name="ComboDriveType0" Row="2" RowSpan="1" Column="1" ColumnSpan="1" /&gt;&lt;Control Name="ComboInterface" Row="1" RowSpan="1" Column="1" ColumnSpan="1" /&gt;&lt;Control Name="TextBoxPath" Row="0" RowSpan="1" Column="1" ColumnSpan="4" /&gt;&lt;Control Name="ButtonBrowse" Row="0" RowSpan="1" Column="5" ColumnSpan="1" /&gt;&lt;Control Name="ButtonClear" Row="0" RowSpan="1" Column="6" ColumnSpan="1" /&gt;&lt;Control Name="TextBoxInfo" Row="2" RowSpan="5" Column="4" ColumnSpan="3" /&gt;&lt;Control Name="LabelTracks0" Row="2" RowSpan="1" Column="2" ColumnSpan="1" /&gt;&lt;Control Name="LabelTracks1" Row="3" RowSpan="1" Column="2" ColumnSpan="1" /&gt;&lt;Control Name="LabelTracks2" Row="4" RowSpan="1" Column="2" ColumnSpan="1" /&gt;&lt;Control Name="NumericTracks1" Row="3" RowSpan="1" Column="3" ColumnSpan="1" /&gt;&lt;Control Name="NumericTracks2" Row="4" RowSpan="1" Column="3" ColumnSpan="1" /&gt;&lt;Control Name="NumericTracks0" Row="2" RowSpan="1" Column="3" ColumnSpan="1" /&gt;&lt;Control Name="ButtonInfo" Row="1" RowSpan="1" Column="4" ColumnSpan="1" /&gt;&lt;Control Name="LabelPort" Row="1" RowSpan="1" Column="2" ColumnSpan="1" /&gt;&lt;Control Name="ComboPorts" Row="1" RowSpan="1" Column="3" ColumnSpan="1" /&gt;&lt;Control Name="LabelDefaultRevs" Row="5" RowSpan="1" Column="0" ColumnSpan="1" /&gt;&lt;Control Name="NumericDefaultRevs" Row="5" RowSpan="1" Column="1" ColumnSpan="1" /&gt;&lt;/Controls&gt;&lt;Columns Styles="AutoSize,0,AutoSize,0,AutoSize,0,AutoSize,0,Percent,100,AutoSize,0,AutoSize,0" /&gt;&lt;Rows Styles="AutoSize,0,AutoSize,0,AutoSize,0,AutoSize,0,AutoSize,0,AutoSize,0,AutoSize,0" /&gt;&lt;/TableLayoutSettings&gt;</value>
   </data>
   <data name="PanelMain.Dock" type="System.Windows.Forms.DockStyle, System.Windows.Forms">
     <value>Fill</value>

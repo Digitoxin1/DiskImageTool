@@ -31,6 +31,7 @@
             Dim LabelTracks0 As System.Windows.Forms.Label
             Dim LabelTracks1 As System.Windows.Forms.Label
             Dim LabelPort As System.Windows.Forms.Label
+            Dim LabelDefaultRevs As System.Windows.Forms.Label
             Me.BtnCancel = New System.Windows.Forms.Button()
             Me.BtnUpdate = New System.Windows.Forms.Button()
             Me.TableLayoutPanel1 = New System.Windows.Forms.TableLayoutPanel()
@@ -51,6 +52,7 @@
             Me.NumericTracks0 = New System.Windows.Forms.NumericUpDown()
             Me.ButtonInfo = New System.Windows.Forms.Button()
             Me.ComboPorts = New System.Windows.Forms.ComboBox()
+            Me.NumericDefaultRevs = New System.Windows.Forms.NumericUpDown()
             LabelApplicationPath = New System.Windows.Forms.Label()
             LabelDriveInterface = New System.Windows.Forms.Label()
             PanelBottom = New System.Windows.Forms.FlowLayoutPanel()
@@ -58,12 +60,14 @@
             LabelTracks0 = New System.Windows.Forms.Label()
             LabelTracks1 = New System.Windows.Forms.Label()
             LabelPort = New System.Windows.Forms.Label()
+            LabelDefaultRevs = New System.Windows.Forms.Label()
             PanelBottom.SuspendLayout()
             PanelMain.SuspendLayout()
             Me.TableLayoutPanel1.SuspendLayout()
             CType(Me.NumericTracks1, System.ComponentModel.ISupportInitialize).BeginInit()
             CType(Me.NumericTracks2, System.ComponentModel.ISupportInitialize).BeginInit()
             CType(Me.NumericTracks0, System.ComponentModel.ISupportInitialize).BeginInit()
+            CType(Me.NumericDefaultRevs, System.ComponentModel.ISupportInitialize).BeginInit()
             Me.SuspendLayout()
             '
             'LabelApplicationPath
@@ -128,6 +132,8 @@
             Me.TableLayoutPanel1.Controls.Add(Me.ButtonInfo, 4, 1)
             Me.TableLayoutPanel1.Controls.Add(LabelPort, 2, 1)
             Me.TableLayoutPanel1.Controls.Add(Me.ComboPorts, 3, 1)
+            Me.TableLayoutPanel1.Controls.Add(LabelDefaultRevs, 0, 5)
+            Me.TableLayoutPanel1.Controls.Add(Me.NumericDefaultRevs, 1, 5)
             Me.TableLayoutPanel1.Name = "TableLayoutPanel1"
             '
             'LabelDriveType0
@@ -201,7 +207,7 @@
             Me.TableLayoutPanel1.SetColumnSpan(Me.TextBoxInfo, 3)
             Me.TextBoxInfo.Name = "TextBoxInfo"
             Me.TextBoxInfo.ReadOnly = True
-            Me.TableLayoutPanel1.SetRowSpan(Me.TextBoxInfo, 4)
+            Me.TableLayoutPanel1.SetRowSpan(Me.TextBoxInfo, 5)
             Me.TextBoxInfo.ShortcutsEnabled = False
             '
             'LabelTracks0
@@ -252,6 +258,16 @@
             Me.ComboPorts.FormattingEnabled = True
             Me.ComboPorts.Name = "ComboPorts"
             '
+            'LabelDefaultRevs
+            '
+            resources.ApplyResources(LabelDefaultRevs, "LabelDefaultRevs")
+            LabelDefaultRevs.Name = "LabelDefaultRevs"
+            '
+            'NumericDefaultRevs
+            '
+            resources.ApplyResources(Me.NumericDefaultRevs, "NumericDefaultRevs")
+            Me.NumericDefaultRevs.Name = "NumericDefaultRevs"
+            '
             'ConfigurationForm
             '
             resources.ApplyResources(Me, "$this")
@@ -271,6 +287,7 @@
             CType(Me.NumericTracks1, System.ComponentModel.ISupportInitialize).EndInit()
             CType(Me.NumericTracks2, System.ComponentModel.ISupportInitialize).EndInit()
             CType(Me.NumericTracks0, System.ComponentModel.ISupportInitialize).EndInit()
+            CType(Me.NumericDefaultRevs, System.ComponentModel.ISupportInitialize).EndInit()
             Me.ResumeLayout(False)
             Me.PerformLayout()
 
@@ -295,5 +312,6 @@
         Friend WithEvents NumericTracks0 As NumericUpDown
         Friend WithEvents LabelTracks2 As Label
         Friend WithEvents ComboPorts As ComboBox
+        Friend WithEvents NumericDefaultRevs As NumericUpDown
     End Class
 End Namespace

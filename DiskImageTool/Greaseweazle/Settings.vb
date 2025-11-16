@@ -40,6 +40,26 @@ Namespace Greaseweazle
             End Set
         End Property
 
+        Public Property DefaultRevs As Byte
+            Get
+                Dim value As Byte = My.Settings.GW_DefaultRevs
+                If value < CommandLineBuilder.MIN_REVS Then
+                    value = CommandLineBuilder.MIN_REVS
+                ElseIf value > CommandLineBuilder.MAX_REVS Then
+                    value = CommandLineBuilder.MAX_REVS
+                End If
+                Return value
+            End Get
+            Set(value As Byte)
+                If value < CommandLineBuilder.MIN_REVS Then
+                    value = CommandLineBuilder.MIN_REVS
+                ElseIf value > CommandLineBuilder.MAX_REVS Then
+                    value = CommandLineBuilder.MAX_REVS
+                End If
+                My.Settings.GW_DefaultRevs = value
+            End Set
+        End Property
+
         Public ReadOnly Property AvailableDriveTypes As FloppyMediaType
             Get
                 Dim AvailableTypes As FloppyMediaType = GetDriveType(0) Or GetDriveType(1)

@@ -147,8 +147,8 @@ Namespace Greaseweazle
             NumericRetries = New NumericUpDown With {
                 .Anchor = AnchorStyles.Left,
                 .Width = 45,
-                .Minimum = 0,
-                .Maximum = 99
+                .Minimum = CommandLineBuilder.MIN_RETRIES,
+                .Maximum = CommandLineBuilder.MAX_RETRIES
             }
 
             CheckBoxPreErase = New CheckBox With {
@@ -241,8 +241,10 @@ Namespace Greaseweazle
             With TableLayoutPanelMain
                 .SuspendLayout()
 
+                Left = 0
                 .RowCount = 4
                 .ColumnCount = 8
+                .Dock = DockStyle.Fill
 
                 While .RowStyles.Count < .RowCount
                     .RowStyles.Add(New RowStyle())
@@ -257,6 +259,9 @@ Namespace Greaseweazle
                 For j As Integer = 0 To .ColumnCount - 1
                     .ColumnStyles(j).SizeType = SizeType.AutoSize
                 Next
+
+                .ColumnStyles(0).SizeType = SizeType.Percent
+                .ColumnStyles(0).Width = 100
 
                 Row = 0
                 .Controls.Add(DriveLabel, 0, Row)
@@ -297,7 +302,7 @@ Namespace Greaseweazle
                 .SetColumnSpan(ButtonContainer, 2)
 
                 .ResumeLayout()
-                .Left = (.Parent.ClientSize.Width - .Width) \ 2
+                '.Left = (.Parent.ClientSize.Width - .Width) \ 2
             End With
         End Sub
 

@@ -179,10 +179,10 @@
     <Compile Include="Greaseweazle\CommandLineBuilder.vb" />
     <Compile Include="Greaseweazle\ConsoleOutputParser.vb" />
     <Compile Include="Greaseweazle\Enums.vb" />
-    <Compile Include="Greaseweazle\ConfigurationForm.Designer.vb">
+    <Compile Include="Greaseweazle\Forms\ConfigurationForm.Designer.vb">
       <DependentUpon>ConfigurationForm.vb</DependentUpon>
     </Compile>
-    <Compile Include="Greaseweazle\ConfigurationForm.vb">
+    <Compile Include="Greaseweazle\Forms\ConfigurationForm.vb">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="Greaseweazle\Forms\EraseDiskForm.vb">
@@ -756,16 +756,16 @@
     <EmbeddedResource Include="Forms\VolumeSerialNumberForm.resx">
       <DependentUpon>VolumeSerialNumberForm.vb</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Greaseweazle\ConfigurationForm.de.resx">
+    <EmbeddedResource Include="Greaseweazle\Forms\ConfigurationForm.de.resx">
       <DependentUpon>ConfigurationForm.vb</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Greaseweazle\ConfigurationForm.es.resx">
+    <EmbeddedResource Include="Greaseweazle\Forms\ConfigurationForm.es.resx">
       <DependentUpon>ConfigurationForm.vb</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Greaseweazle\ConfigurationForm.fr.resx">
+    <EmbeddedResource Include="Greaseweazle\Forms\ConfigurationForm.fr.resx">
       <DependentUpon>ConfigurationForm.vb</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Greaseweazle\ConfigurationForm.resx">
+    <EmbeddedResource Include="Greaseweazle\Forms\ConfigurationForm.resx">
       <DependentUpon>ConfigurationForm.vb</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Greaseweazle\Forms\BaseForm.de.resx">

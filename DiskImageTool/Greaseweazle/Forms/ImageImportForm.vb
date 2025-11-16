@@ -144,8 +144,10 @@ Namespace Greaseweazle
             With TableLayoutPanelMain
                 .SuspendLayout()
 
+                .Left = 0
                 .RowCount = 3
                 .ColumnCount = 5
+                .Dock = DockStyle.Fill
 
                 While .RowStyles.Count < .RowCount
                     .RowStyles.Add(New RowStyle())
@@ -160,6 +162,9 @@ Namespace Greaseweazle
                 For j As Integer = 0 To .ColumnCount - 1
                     .ColumnStyles(j).SizeType = SizeType.AutoSize
                 Next
+
+                .ColumnStyles(0).SizeType = SizeType.Percent
+                .ColumnStyles(0).Width = 100
 
                 Row = 0
                 .Controls.Add(FileNameLabel, 0, Row)
@@ -185,7 +190,7 @@ Namespace Greaseweazle
                 .Controls.Add(ButtonProcess, 4, Row)
 
                 .ResumeLayout()
-                .Left = (.Parent.ClientSize.Width - .Width) \ 2
+                '.Left = (.Parent.ClientSize.Width - .Width) \ 2
             End With
         End Sub
 

@@ -6,7 +6,7 @@ Namespace Greaseweazle
         Private WithEvents ButtonProcess As Button
         Private WithEvents ButtonReset As Button
         Private WithEvents ComboImageDrives As ComboBox
-        Private _Initialized As Boolean = False
+        Private ReadOnly _Initialized As Boolean = False
         Private _ProcessRunning As Boolean = False
         Private NumericCyls As NumericUpDown
         Private NumericLinger As NumericUpDown
@@ -75,8 +75,8 @@ Namespace Greaseweazle
             NumericCyls = New NumericUpDown With {
                 .Anchor = AnchorStyles.Left,
                 .Width = 45,
-                .Minimum = 1,
-                .Maximum = 80
+                .Minimum = CommandLineBuilder.MIN_CYLS,
+                .Maximum = CommandLineBuilder.MAX_CYLS
             }
 
             Dim PassesLabel = New Label With {
@@ -89,8 +89,8 @@ Namespace Greaseweazle
             NumericPasses = New NumericUpDown With {
                 .Anchor = AnchorStyles.Left,
                 .Width = 45,
-                .Minimum = 1,
-                .Maximum = 9
+                .Minimum = CommandLineBuilder.MIN_PASSES,
+                .Maximum = CommandLineBuilder.MAX_PASSES
             }
 
             Dim LingerLabel = New Label With {
@@ -103,8 +103,8 @@ Namespace Greaseweazle
             NumericLinger = New NumericUpDown With {
                 .Anchor = AnchorStyles.Left,
                 .Width = 60,
-                .Minimum = 1,
-                .Maximum = 1000
+                .Minimum = CommandLineBuilder.MIN_LINGER,
+                .Maximum = CommandLineBuilder.MAX_LINGER
             }
 
             Dim ButtonContainer = New FlowLayoutPanel With {
