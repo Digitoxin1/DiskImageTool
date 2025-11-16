@@ -65,5 +65,11 @@
     <Setting Name="GW_LogFileName" Type="System.String" Scope="User">
       <Value Profile="(Default)">log.txt</Value>
     </Setting>
+    <Setting Name="DTC_Path" Type="System.String" Scope="User">
+      <Value Profile="(Default)" />
+    </Setting>
+    <Setting Name="DTC_LogFileName" Type="System.String" Scope="User">
+      <Value Profile="(Default)">log.txt</Value>
+    </Setting>
   </Settings>
 </SettingsFile>

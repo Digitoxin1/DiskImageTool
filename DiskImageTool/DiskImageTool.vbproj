@@ -205,6 +205,7 @@
     <Compile Include="Greaseweazle\Forms\WriteDiskForm.vb">
       <SubType>Form</SubType>
     </Compile>
+    <Compile Include="Kryoflux\Settings.vb" />
     <Compile Include="Lib\ConsoleProcessRunner.vb" />
     <Compile Include="MenuHelp.vb" />
     <Compile Include="MenuTools.vb" />

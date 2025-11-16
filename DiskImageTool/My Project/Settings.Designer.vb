@@ -305,6 +305,30 @@ Namespace My
                 Me("GW_LogFileName") = value
             End Set
         End Property
+        
+        <Global.System.Configuration.UserScopedSettingAttribute(),  _
+         Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
+         Global.System.Configuration.DefaultSettingValueAttribute("")>  _
+        Public Property DTC_Path() As String
+            Get
+                Return CType(Me("DTC_Path"),String)
+            End Get
+            Set
+                Me("DTC_Path") = value
+            End Set
+        End Property
+        
+        <Global.System.Configuration.UserScopedSettingAttribute(),  _
+         Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
+         Global.System.Configuration.DefaultSettingValueAttribute("log.txt")>  _
+        Public Property DTC_LogFileName() As String
+            Get
+                Return CType(Me("DTC_LogFileName"),String)
+            End Get
+            Set
+                Me("DTC_LogFileName") = value
+            End Set
+        End Property
     End Class
 End Namespace
 
