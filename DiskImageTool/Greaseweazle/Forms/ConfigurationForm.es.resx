@@ -156,4 +156,7 @@
   <data name="LabelDefaultRevs.Text" xml:space="preserve">
     <value>Revoluciones predeterminadas</value>
   </data>
+  <data name="LabelLogFile.Text" xml:space="preserve">
+    <value>Nombre log</value>
+  </data>
 </root>

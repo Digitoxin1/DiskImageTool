@@ -32,6 +32,7 @@
             Dim LabelTracks1 As System.Windows.Forms.Label
             Dim LabelPort As System.Windows.Forms.Label
             Dim LabelDefaultRevs As System.Windows.Forms.Label
+            Dim LabelLogFile As System.Windows.Forms.Label
             Me.BtnCancel = New System.Windows.Forms.Button()
             Me.BtnUpdate = New System.Windows.Forms.Button()
             Me.TableLayoutPanel1 = New System.Windows.Forms.TableLayoutPanel()
@@ -53,6 +54,7 @@
             Me.ButtonInfo = New System.Windows.Forms.Button()
             Me.ComboPorts = New System.Windows.Forms.ComboBox()
             Me.NumericDefaultRevs = New System.Windows.Forms.NumericUpDown()
+            Me.TextBoxLogFile = New System.Windows.Forms.TextBox()
             LabelApplicationPath = New System.Windows.Forms.Label()
             LabelDriveInterface = New System.Windows.Forms.Label()
             PanelBottom = New System.Windows.Forms.FlowLayoutPanel()
@@ -61,6 +63,7 @@
             LabelTracks1 = New System.Windows.Forms.Label()
             LabelPort = New System.Windows.Forms.Label()
             LabelDefaultRevs = New System.Windows.Forms.Label()
+            LabelLogFile = New System.Windows.Forms.Label()
             PanelBottom.SuspendLayout()
             PanelMain.SuspendLayout()
             Me.TableLayoutPanel1.SuspendLayout()
@@ -134,6 +137,8 @@
             Me.TableLayoutPanel1.Controls.Add(Me.ComboPorts, 3, 1)
             Me.TableLayoutPanel1.Controls.Add(LabelDefaultRevs, 0, 5)
             Me.TableLayoutPanel1.Controls.Add(Me.NumericDefaultRevs, 1, 5)
+            Me.TableLayoutPanel1.Controls.Add(LabelLogFile, 0, 6)
+            Me.TableLayoutPanel1.Controls.Add(Me.TextBoxLogFile, 1, 6)
             Me.TableLayoutPanel1.Name = "TableLayoutPanel1"
             '
             'LabelDriveType0
@@ -207,7 +212,7 @@
             Me.TableLayoutPanel1.SetColumnSpan(Me.TextBoxInfo, 3)
             Me.TextBoxInfo.Name = "TextBoxInfo"
             Me.TextBoxInfo.ReadOnly = True
-            Me.TableLayoutPanel1.SetRowSpan(Me.TextBoxInfo, 5)
+            Me.TableLayoutPanel1.SetRowSpan(Me.TextBoxInfo, 6)
             Me.TextBoxInfo.ShortcutsEnabled = False
             '
             'LabelTracks0
@@ -268,6 +273,16 @@
             resources.ApplyResources(Me.NumericDefaultRevs, "NumericDefaultRevs")
             Me.NumericDefaultRevs.Name = "NumericDefaultRevs"
             '
+            'LabelLogFile
+            '
+            resources.ApplyResources(LabelLogFile, "LabelLogFile")
+            LabelLogFile.Name = "LabelLogFile"
+            '
+            'TextBoxLogFile
+            '
+            resources.ApplyResources(Me.TextBoxLogFile, "TextBoxLogFile")
+            Me.TextBoxLogFile.Name = "TextBoxLogFile"
+            '
             'ConfigurationForm
             '
             resources.ApplyResources(Me, "$this")
@@ -313,5 +328,6 @@
         Friend WithEvents LabelTracks2 As Label
         Friend WithEvents ComboPorts As ComboBox
         Friend WithEvents NumericDefaultRevs As NumericUpDown
+        Friend WithEvents TextBoxLogFile As TextBox
     End Class
 End Namespace

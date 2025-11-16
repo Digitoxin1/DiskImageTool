@@ -1679,4 +1679,10 @@ Nota: Este valor debe ser {1} para todos los disquetes</value>
   <data name="Label_SeekRetries" xml:space="preserve">
     <value>Reint. búsqueda</value>
   </data>
+  <data name="Dialog_InvalidFilename" xml:space="preserve">
+    <value>Por favor, introduzca un nombre de archivo válido (sin ruta y sin caracteres no permitidos).</value>
+  </data>
+  <data name="Label_InvalidFilename" xml:space="preserve">
+    <value>Nombre de archivo no válido</value>
+  </data>
 </root>

@@ -1639,6 +1639,15 @@ Namespace My.Resources
         End Property
         
         '''<summary>
+        '''  Looks up a localized string similar to Please enter a valid filename (no path, no invalid characters)..
+        '''</summary>
+        Friend ReadOnly Property Dialog_InvalidFilename() As String
+            Get
+                Return ResourceManager.GetString("Dialog_InvalidFilename", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
         '''  Looks up a localized string similar to Invalid File Type.
         '''</summary>
         Friend ReadOnly Property Dialog_InvalidFileType() As String
@@ -3560,6 +3569,15 @@ Namespace My.Resources
         Friend ReadOnly Property Label_InvalidCluster() As String
             Get
                 Return ResourceManager.GetString("Label_InvalidCluster", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  Looks up a localized string similar to Invalid Filename.
+        '''</summary>
+        Friend ReadOnly Property Label_InvalidFilename() As String
+            Get
+                Return ResourceManager.GetString("Label_InvalidFilename", resourceCulture)
             End Get
         End Property
         

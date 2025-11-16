@@ -301,6 +301,8 @@ Namespace Greaseweazle
                 ButtonProcess.Text = My.Resources.Label_Process
             End If
 
+            ButtonSaveLog.Enabled = Not _ProcessRunning AndAlso TextBoxConsole.Text.Length > 0
+
             If ImageParams.IsStandard AndAlso ImageParams.MediaType = FloppyMediaType.Media525DoubleDensity Then
                 CheckBoxDoublestep.Enabled = Not _ProcessRunning AndAlso _TrackCount > 42
                 CheckBoxDoublestep.Checked = _TrackCount > 79

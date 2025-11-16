@@ -238,6 +238,8 @@ Namespace Greaseweazle
                 ButtonProcess.Text = My.Resources.Label_Erase
             End If
 
+            ButtonSaveLog.Enabled = Not _ProcessRunning AndAlso TextBoxConsole.Text.Length > 0
+
             ButtonProcess.Enabled = Opt.Id <> "" AndAlso Not CheckBoxSelect.Checked OrElse TableSide0.SelectedTracks.Count > 0 OrElse TableSide1.SelectedTracks.Count > 0
 
             ButtonReset.Enabled = Not _ProcessRunning

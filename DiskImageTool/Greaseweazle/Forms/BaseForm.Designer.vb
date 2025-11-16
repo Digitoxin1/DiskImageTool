@@ -25,11 +25,15 @@
         Private Sub InitializeComponent()
             Dim Label3 As System.Windows.Forms.Label
             Dim resources As System.ComponentModel.ComponentResourceManager = New System.ComponentModel.ComponentResourceManager(GetType(BaseForm))
-            Dim PanelBottom As System.Windows.Forms.FlowLayoutPanel
+            Dim PanelButtonsRight As System.Windows.Forms.FlowLayoutPanel
+            Dim PanelBottom As System.Windows.Forms.Panel
+            Dim PanelBottomInner As System.Windows.Forms.TableLayoutPanel
+            Dim PanelButtonsLeft As System.Windows.Forms.FlowLayoutPanel
             Dim PanelMain As System.Windows.Forms.Panel
             Dim PanelInner As System.Windows.Forms.Panel
             Me.ButtonCancel = New System.Windows.Forms.Button()
             Me.ButtonOk = New System.Windows.Forms.Button()
+            Me.ButtonSaveLog = New System.Windows.Forms.Button()
             Me.TableLayoutPanelMain = New System.Windows.Forms.TableLayoutPanel()
             Me.TextBoxConsole = New System.Windows.Forms.TextBox()
             Me.StatusStripBottom = New System.Windows.Forms.StatusStrip()
@@ -39,10 +43,16 @@
             Me.StatusBadSectors = New System.Windows.Forms.ToolStripStatusLabel()
             Me.StatusUnexpected = New System.Windows.Forms.ToolStripStatusLabel()
             Label3 = New System.Windows.Forms.Label()
-            PanelBottom = New System.Windows.Forms.FlowLayoutPanel()
+            PanelButtonsRight = New System.Windows.Forms.FlowLayoutPanel()
+            PanelBottom = New System.Windows.Forms.Panel()
+            PanelBottomInner = New System.Windows.Forms.TableLayoutPanel()
+            PanelButtonsLeft = New System.Windows.Forms.FlowLayoutPanel()
             PanelMain = New System.Windows.Forms.Panel()
             PanelInner = New System.Windows.Forms.Panel()
+            PanelButtonsRight.SuspendLayout()
             PanelBottom.SuspendLayout()
+            PanelBottomInner.SuspendLayout()
+            PanelButtonsLeft.SuspendLayout()
             PanelMain.SuspendLayout()
             PanelInner.SuspendLayout()
             Me.StatusStripBottom.SuspendLayout()
@@ -53,12 +63,12 @@
             resources.ApplyResources(Label3, "Label3")
             Label3.Name = "Label3"
             '
-            'PanelBottom
+            'PanelButtonsRight
             '
-            PanelBottom.Controls.Add(Me.ButtonCancel)
-            PanelBottom.Controls.Add(Me.ButtonOk)
-            resources.ApplyResources(PanelBottom, "PanelBottom")
-            PanelBottom.Name = "PanelBottom"
+            resources.ApplyResources(PanelButtonsRight, "PanelButtonsRight")
+            PanelButtonsRight.Controls.Add(Me.ButtonCancel)
+            PanelButtonsRight.Controls.Add(Me.ButtonOk)
+            PanelButtonsRight.Name = "PanelButtonsRight"
             '
             'ButtonCancel
             '
@@ -73,6 +83,31 @@
             resources.ApplyResources(Me.ButtonOk, "ButtonOk")
             Me.ButtonOk.Name = "ButtonOk"
             Me.ButtonOk.UseVisualStyleBackColor = True
+            '
+            'PanelBottom
+            '
+            resources.ApplyResources(PanelBottom, "PanelBottom")
+            PanelBottom.Controls.Add(PanelBottomInner)
+            PanelBottom.Name = "PanelBottom"
+            '
+            'PanelBottomInner
+            '
+            resources.ApplyResources(PanelBottomInner, "PanelBottomInner")
+            PanelBottomInner.Controls.Add(PanelButtonsRight, 2, 0)
+            PanelBottomInner.Controls.Add(PanelButtonsLeft, 1, 0)
+            PanelBottomInner.Name = "PanelBottomInner"
+            '
+            'PanelButtonsLeft
+            '
+            resources.ApplyResources(PanelButtonsLeft, "PanelButtonsLeft")
+            PanelButtonsLeft.Controls.Add(Me.ButtonSaveLog)
+            PanelButtonsLeft.Name = "PanelButtonsLeft"
+            '
+            'ButtonSaveLog
+            '
+            resources.ApplyResources(Me.ButtonSaveLog, "ButtonSaveLog")
+            Me.ButtonSaveLog.Name = "ButtonSaveLog"
+            Me.ButtonSaveLog.UseVisualStyleBackColor = True
             '
             'PanelMain
             '
@@ -153,7 +188,13 @@
             Me.MinimizeBox = False
             Me.Name = "BaseForm"
             Me.ShowInTaskbar = False
+            PanelButtonsRight.ResumeLayout(False)
             PanelBottom.ResumeLayout(False)
+            PanelBottom.PerformLayout()
+            PanelBottomInner.ResumeLayout(False)
+            PanelBottomInner.PerformLayout()
+            PanelButtonsLeft.ResumeLayout(False)
+            PanelButtonsLeft.PerformLayout()
             PanelMain.ResumeLayout(False)
             PanelMain.PerformLayout()
             PanelInner.ResumeLayout(False)
@@ -174,5 +215,6 @@
         Friend WithEvents StatusSide As ToolStripStatusLabel
         Friend WithEvents StatusBadSectors As ToolStripStatusLabel
         Friend WithEvents StatusUnexpected As ToolStripStatusLabel
+        Friend WithEvents ButtonSaveLog As Button
     End Class
 End Namespace

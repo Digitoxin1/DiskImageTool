@@ -31,6 +31,17 @@ Namespace Greaseweazle
             End Set
         End Property
 
+        Public ReadOnly Property AvailableDriveTypes As FloppyMediaType
+            Get
+                Dim AvailableTypes As FloppyMediaType = GetDriveType(0) Or GetDriveType(1)
+                If [Interface] = GreaseweazleInterface.Shugart Then
+                    AvailableTypes = AvailableTypes Or GetDriveType(2)
+                End If
+
+                Return AvailableTypes
+            End Get
+        End Property
+
         Public Property COMPort As String
             Get
                 Return My.Settings.GW_COMPort
@@ -60,18 +71,14 @@ Namespace Greaseweazle
             End Set
         End Property
 
-        Public ReadOnly Property AvailableDriveTypes As FloppyMediaType
+        Public Property LogFileName As String
             Get
-                Dim AvailableTypes As FloppyMediaType = GetDriveType(0) Or GetDriveType(1)
-                If [Interface] = GreaseweazleInterface.Shugart Then
-                    AvailableTypes = AvailableTypes Or GetDriveType(2)
-                End If
-
-                Return AvailableTypes
+                Return My.Settings.GW_LogFileName
             End Get
+            Set(value As String)
+                My.Settings.GW_LogFileName = value
+            End Set
         End Property
-
-
         Public ReadOnly Property DriveType(index As Byte) As FloppyMediaType
             Get
                 Return GetDriveType(index)

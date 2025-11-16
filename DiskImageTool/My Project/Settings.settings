@@ -62,5 +62,8 @@
     <Setting Name="GW_DefaultRevs" Type="System.Byte" Scope="User">
       <Value Profile="(Default)">3</Value>
     </Setting>
+    <Setting Name="GW_LogFileName" Type="System.String" Scope="User">
+      <Value Profile="(Default)">log.txt</Value>
+    </Setting>
   </Settings>
 </SettingsFile>

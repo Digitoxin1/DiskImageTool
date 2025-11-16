@@ -293,6 +293,18 @@ Namespace My
                 Me("GW_DefaultRevs") = value
             End Set
         End Property
+        
+        <Global.System.Configuration.UserScopedSettingAttribute(),  _
+         Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
+         Global.System.Configuration.DefaultSettingValueAttribute("log.txt")>  _
+        Public Property GW_LogFileName() As String
+            Get
+                Return CType(Me("GW_LogFileName"),String)
+            End Get
+            Set
+                Me("GW_LogFileName") = value
+            End Set
+        End Property
     End Class
 End Namespace
 

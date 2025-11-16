@@ -193,6 +193,8 @@ Namespace Greaseweazle
                 ButtonProcess.Text = My.Resources.Label_Clean
             End If
 
+            ButtonSaveLog.Enabled = Not _ProcessRunning AndAlso TextBoxConsole.Text.Length > 0
+
             ButtonProcess.Enabled = Opt.Id <> ""
 
             ButtonReset.Enabled = Not _ProcessRunning

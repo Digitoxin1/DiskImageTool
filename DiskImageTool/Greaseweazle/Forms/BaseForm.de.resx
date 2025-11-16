@@ -123,4 +123,7 @@
   <data name="Label3.Text" xml:space="preserve">
     <value>Konsolenausgabe</value>
   </data>
+  <data name="ButtonSaveLog.Text" xml:space="preserve">
+    <value>Log speichern</value>
+  </data>
 </root>

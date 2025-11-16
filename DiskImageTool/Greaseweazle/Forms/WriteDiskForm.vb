@@ -368,6 +368,8 @@ Namespace Greaseweazle
 
             ButtonReset.Enabled = Not _ProcessRunning
 
+            ButtonSaveLog.Enabled = Not _ProcessRunning AndAlso TextBoxConsole.Text.Length > 0
+
             RefreshProcessButtonState()
             RefreshVerifyButtonState()
         End Sub

@@ -1679,4 +1679,10 @@ Remarque : cette valeur doit être {1} pour toutes les disquettes</value>
   <data name="Label_SeekRetries" xml:space="preserve">
     <value>Rech. essais</value>
   </data>
+  <data name="Dialog_InvalidFilename" xml:space="preserve">
+    <value>Veuillez entrer un nom de fichier valide (sans chemin, sans caractères invalides).</value>
+  </data>
+  <data name="Label_InvalidFilename" xml:space="preserve">
+    <value>Nom de fichier invalide</value>
+  </data>
 </root>

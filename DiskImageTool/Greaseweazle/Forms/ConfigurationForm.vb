@@ -1,8 +1,14 @@
-﻿Imports DiskImageTool.DiskImage.FloppyDiskFunctions
+﻿Imports System.ComponentModel
+Imports DiskImageTool.DiskImage.FloppyDiskFunctions
 
 Namespace Greaseweazle
     Public Class ConfigurationForm
         Private ReadOnly ToolTip1 As New ToolTip()
+        Private ReadOnly reservedNames As String() = {
+            "CON", "PRN", "AUX", "NUL",
+            "COM1", "COM2", "COM3", "COM4", "COM5", "COM6", "COM7", "COM8", "COM9",
+            "LPT1", "LPT2", "LPT3", "LPT4", "LPT5", "LPT6", "LPT7", "LPT8", "LPT9"
+        }
 
         Private Function GetComboDriveType(index As Byte) As ComboBox
             Select Case index
@@ -54,6 +60,8 @@ Namespace Greaseweazle
             NumericDefaultRevs.Minimum = CommandLineBuilder.MIN_REVS
             NumericDefaultRevs.Maximum = CommandLineBuilder.MAX_REVS
             NumericDefaultRevs.Value = GreaseweazleSettings.DefaultRevs
+
+            TextBoxLogFile.Text = GreaseweazleSettings.LogFileName
         End Sub
 
         Private Sub InitializeInput(index As Byte, Type As FloppyMediaType, Tracks As Byte)
@@ -111,6 +119,22 @@ Namespace Greaseweazle
 
             InitializeCombo(ComboPorts, PortList, CurrentValue)
         End Sub
+
+        Private Function IsValidFileName(name As String) As Boolean
+            If String.IsNullOrWhiteSpace(name) Then Return False
+
+            ' Check Windows filename invalid characters
+            If name.IndexOfAny(IO.Path.GetInvalidFileNameChars()) >= 0 Then
+                Return False
+            End If
+
+            ' Check reserved device names
+            If reservedNames.Contains(name.Trim().ToUpper()) Then
+                Return False
+            End If
+
+            Return True
+        End Function
         Private Sub InitializeTracks(index As Byte)
             Dim Type = GreaseweazleSettings.DriveType(index)
             Dim Tracks = GreaseweazleSettings.TrackCount(index)
@@ -223,6 +247,7 @@ Namespace Greaseweazle
                 GreaseweazleSettings.SetDrive(2, FloppyMediaType.MediaUnknown, 0)
             End If
             GreaseweazleSettings.DefaultRevs = NumericDefaultRevs.Value
+            GreaseweazleSettings.LogFileName = TextBoxLogFile.Text.Trim
         End Sub
 
         Private Sub ButtonBrowse_Click(sender As Object, e As EventArgs) Handles ButtonBrowse.Click
@@ -310,6 +335,22 @@ Namespace Greaseweazle
                 End If
             End If
             e.Effect = DragDropEffects.None
+        End Sub
+
+        Private Sub TextBoxLogFile_Validating(sender As Object, e As CancelEventArgs) Handles TextBoxLogFile.Validating
+            Dim name = TextBoxLogFile.Text.Trim()
+
+            If Not IsValidFileName(name) Then
+                e.Cancel = True   ' Prevent leaving the field
+                MessageBox.Show(
+                    My.Resources.Dialog_InvalidFilename,
+                    My.Resources.Label_InvalidFilename,
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Warning
+                )
+                ' Optionally select all text so user can fix it immediately:
+                TextBoxLogFile.SelectAll()
+            End If
         End Sub
 #End Region
     End Class

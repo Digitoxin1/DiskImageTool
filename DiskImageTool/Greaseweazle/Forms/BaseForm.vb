@@ -119,6 +119,11 @@ Namespace Greaseweazle
             _CurrentStatusInfo = Nothing
         End Sub
 
+        Public Function ConfirmWrite(Title As String, DriveName As String) As Boolean
+            Dim Msg = String.Format(My.Resources.Dialog_ConfirmWrite, vbNewLine, DriveName, Title)
+            Return MsgBox(Msg, MsgBoxStyle.YesNo + MsgBoxStyle.DefaultButton2 + MsgBoxStyle.Exclamation, Title) = MsgBoxResult.Yes
+        End Function
+
         Public Function DetectImageFormat(FileName As String, DeleteWhenDone As Boolean) As DiskImage.FloppyDiskFormat
             Dim Buffer As Byte()
             Dim SecondOffset As Long = 4096
@@ -165,6 +170,27 @@ Namespace Greaseweazle
 
             GridResetTracks(TS0, Tracks, False, ResetSelected)
             GridResetTracks(TS1, Tracks, Sides < 2, ResetSelected)
+        End Sub
+
+        Public Sub SaveLog()
+            Dim FileName As String = GreaseweazleSettings.LogFileName
+            Dim Extension = IO.Path.GetExtension(FileName).ToLower
+            Dim FilterIndex As Integer = 1
+            If Extension <> ".txt" Then
+                FilterIndex = 2
+            End If
+
+            Using Dialog As New SaveFileDialog With {
+                   .FileName = FileName,
+                   .DefaultExt = "txt",
+                   .Filter = My.Resources.FileType_Text & " (*.txt)|*.txt|" & My.Resources.FileType_All & " (*.*)|*.*",
+                   .FilterIndex = FilterIndex
+                }
+
+                If Dialog.ShowDialog = DialogResult.OK Then
+                    IO.File.WriteAllText(Dialog.FileName, TextBoxConsole.Text & vbNewLine)
+                End If
+            End Using
         End Sub
 
         Public Function UpdateStatusInfo(TrackInfo As ConsoleOutputParser.TrackInfoWrite, Action As ActionTypeEnum) As TrackStatusInfo
@@ -223,7 +249,6 @@ Namespace Greaseweazle
 
             Return StatusInfo
         End Function
-
         Public Sub UpdateTrackStatus(Statusinfo As TrackStatusInfo, Action As String, DoubleStep As Boolean)
             If _CurrentStatusInfo IsNot Nothing Then
                 ProcessTrackStatusInfo(_CurrentStatusInfo, "Complete", DoubleStep)
@@ -335,12 +360,6 @@ Namespace Greaseweazle
         Private Function ConfirmCancel() As Boolean
             Return MsgBox(My.Resources.Dialog_ConfirmCancel, MsgBoxStyle.YesNo + MsgBoxStyle.DefaultButton2 + MsgBoxStyle.Exclamation) = MsgBoxResult.Yes
         End Function
-
-        Public Function ConfirmWrite(Title As String, DriveName As String) As Boolean
-            Dim Msg = String.Format(My.Resources.Dialog_ConfirmWrite, vbNewLine, DriveName, Title)
-            Return MsgBox(Msg, MsgBoxStyle.YesNo + MsgBoxStyle.DefaultButton2 + MsgBoxStyle.Exclamation, Title) = MsgBoxResult.Yes
-        End Function
-
         Private Function GetStatusInfo(Track As Integer, Side As Integer) As TrackStatusInfo
             Dim Key = Track & "." & Side
             Dim StatusInfo As TrackStatusInfo
@@ -480,6 +499,10 @@ Namespace Greaseweazle
             _CancelButtonClicked = True
         End Sub
 
+
+        Private Sub ButtonSaveLog_Click(sender As Object, e As EventArgs) Handles ButtonSaveLog.Click
+            SaveLog()
+        End Sub
 
         Private Sub TS0_CheckChanged(sender As Object, Checked As Boolean) Handles TS0.CheckChanged
             If Checked Then

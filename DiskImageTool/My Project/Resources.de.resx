@@ -1679,4 +1679,10 @@ Hinweis: Diese ID wird normalerweise erzeugt, indem das aktuelle Datum und die a
   <data name="Label_SeekRetries" xml:space="preserve">
     <value>Such-Wdh.</value>
   </data>
+  <data name="Dialog_InvalidFilename" xml:space="preserve">
+    <value>Bitte geben Sie einen gültigen Dateinamen ein (kein Pfad, keine ungültigen Zeichen).</value>
+  </data>
+  <data name="Label_InvalidFilename" xml:space="preserve">
+    <value>Ungültiger Dateiname</value>
+  </data>
 </root>
