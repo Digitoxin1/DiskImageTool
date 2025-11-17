@@ -41,7 +41,6 @@ Partial Class FloppyAccessForm
         '
         'TableSide0
         '
-        Me.TableSide0.Label = Nothing
         Me.TableSide0.Location = New System.Drawing.Point(24, 24)
         Me.TableSide0.Name = "TableSide0"
         Me.TableSide0.SelectEnabled = False
@@ -51,7 +50,6 @@ Partial Class FloppyAccessForm
         '
         'TableSide1
         '
-        Me.TableSide1.Label = Nothing
         Me.TableSide1.Location = New System.Drawing.Point(266, 24)
         Me.TableSide1.Name = "TableSide1"
         Me.TableSide1.SelectEnabled = False

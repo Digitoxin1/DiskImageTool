@@ -2907,6 +2907,114 @@ Namespace My.Resources
         End Property
         
         '''<summary>
+        '''  Looks up a localized string similar to Sector out of range.
+        '''</summary>
+        Friend ReadOnly Property Kryoflux_Flag_B() As String
+            Get
+                Return ResourceManager.GetString("Kryoflux_Flag_B", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  Looks up a localized string similar to Data checksum could not be verified.
+        '''</summary>
+        Friend ReadOnly Property Kryoflux_Flag_C() As String
+            Get
+                Return ResourceManager.GetString("Kryoflux_Flag_C", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  Looks up a localized string similar to Non-standard slip marks found.
+        '''</summary>
+        Friend ReadOnly Property Kryoflux_Flag_E() As String
+            Get
+                Return ResourceManager.GetString("Kryoflux_Flag_E", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  Looks up a localized string similar to Extra header data found.
+        '''</summary>
+        Friend ReadOnly Property Kryoflux_Flag_H() As String
+            Get
+                Return ResourceManager.GetString("Kryoflux_Flag_H", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  Looks up a localized string similar to Non-standard Format type/block ID.
+        '''</summary>
+        Friend ReadOnly Property Kryoflux_Flag_I() As String
+            Get
+                Return ResourceManager.GetString("Kryoflux_Flag_I", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  Looks up a localized string similar to Non-standard Sector length.
+        '''</summary>
+        Friend ReadOnly Property Kryoflux_Flag_L() As String
+            Get
+                Return ResourceManager.GetString("Kryoflux_Flag_L", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  Looks up a localized string similar to Sector ignored.
+        '''</summary>
+        Friend ReadOnly Property Kryoflux_Flag_N() As String
+            Get
+                Return ResourceManager.GetString("Kryoflux_Flag_N", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  Looks up a localized string similar to Special protection detected.
+        '''</summary>
+        Friend ReadOnly Property Kryoflux_Flag_P() As String
+            Get
+                Return ResourceManager.GetString("Kryoflux_Flag_P", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  Looks up a localized string similar to Side number mismatch.
+        '''</summary>
+        Friend ReadOnly Property Kryoflux_Flag_S() As String
+            Get
+                Return ResourceManager.GetString("Kryoflux_Flag_S", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  Looks up a localized string similar to Track number mismatch.
+        '''</summary>
+        Friend ReadOnly Property Kryoflux_Flag_T() As String
+            Get
+                Return ResourceManager.GetString("Kryoflux_Flag_T", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  Looks up a localized string similar to Sector truncated.
+        '''</summary>
+        Friend ReadOnly Property Kryoflux_Flag_X() As String
+            Get
+                Return ResourceManager.GetString("Kryoflux_Flag_X", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  Looks up a localized string similar to Illegal sector offset.
+        '''</summary>
+        Friend ReadOnly Property Kryoflux_Flag_Z() As String
+            Get
+                Return ResourceManager.GetString("Kryoflux_Flag_Z", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
         '''  Looks up a localized string similar to Abort.
         '''</summary>
         Friend ReadOnly Property Label_Abort() As String
@@ -3447,6 +3555,15 @@ Namespace My.Resources
         End Property
         
         '''<summary>
+        '''  Looks up a localized string similar to Flags.
+        '''</summary>
+        Friend ReadOnly Property Label_Flags() As String
+            Get
+                Return ResourceManager.GetString("Label_Flags", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
         '''  Looks up a localized string similar to {0} Floppy.
         '''</summary>
         Friend ReadOnly Property Label_Floppy() As String
@@ -3623,6 +3740,15 @@ Namespace My.Resources
         Friend ReadOnly Property Label_Missing() As String
             Get
                 Return ResourceManager.GetString("Label_Missing", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  Looks up a localized string similar to Modified.
+        '''</summary>
+        Friend ReadOnly Property Label_Modified() As String
+            Get
+                Return ResourceManager.GetString("Label_Modified", resourceCulture)
             End Get
         End Property
         
@@ -3906,6 +4032,15 @@ Namespace My.Resources
         End Property
         
         '''<summary>
+        '''  Looks up a localized string similar to Sectors.
+        '''</summary>
+        Friend ReadOnly Property Label_Sectors() As String
+            Get
+                Return ResourceManager.GetString("Label_Sectors", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
         '''  Looks up a localized string similar to Seek Retries.
         '''</summary>
         Friend ReadOnly Property Label_SeekRetries() As String
@@ -3983,6 +4118,15 @@ Namespace My.Resources
         Friend ReadOnly Property Label_SizeId() As String
             Get
                 Return ResourceManager.GetString("Label_SizeId", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  Looks up a localized string similar to Status.
+        '''</summary>
+        Friend ReadOnly Property Label_Staus() As String
+            Get
+                Return ResourceManager.GetString("Label_Staus", resourceCulture)
             End Get
         End Property
         

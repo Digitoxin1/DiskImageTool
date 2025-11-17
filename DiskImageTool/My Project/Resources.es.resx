@@ -1685,4 +1685,52 @@ Nota: Este valor debe ser {1} para todos los disquetes</value>
   <data name="Label_InvalidFilename" xml:space="preserve">
     <value>Nombre de archivo no válido</value>
   </data>
+  <data name="Kryoflux_Flag_B" xml:space="preserve">
+    <value>Sector fuera de rango</value>
+  </data>
+  <data name="Kryoflux_Flag_C" xml:space="preserve">
+    <value>No se pudo verificar la suma de comprobación de datos</value>
+  </data>
+  <data name="Kryoflux_Flag_E" xml:space="preserve">
+    <value>Marcas de deslizamiento no estándar detectadas</value>
+  </data>
+  <data name="Kryoflux_Flag_H" xml:space="preserve">
+    <value>Datos de encabezado adicionales detectados</value>
+  </data>
+  <data name="Kryoflux_Flag_I" xml:space="preserve">
+    <value>Tipo de formato/ID de bloque no estándar</value>
+  </data>
+  <data name="Kryoflux_Flag_L" xml:space="preserve">
+    <value>Longitud de sector no estándar</value>
+  </data>
+  <data name="Kryoflux_Flag_N" xml:space="preserve">
+    <value>Sector ignorado</value>
+  </data>
+  <data name="Kryoflux_Flag_P" xml:space="preserve">
+    <value>Protección especial detectada</value>
+  </data>
+  <data name="Kryoflux_Flag_S" xml:space="preserve">
+    <value>Desajuste en el número de cara</value>
+  </data>
+  <data name="Kryoflux_Flag_T" xml:space="preserve">
+    <value>Desajuste en el número de pista</value>
+  </data>
+  <data name="Kryoflux_Flag_X" xml:space="preserve">
+    <value>Sector truncado</value>
+  </data>
+  <data name="Kryoflux_Flag_Z" xml:space="preserve">
+    <value>Desplazamiento de sector no válido</value>
+  </data>
+  <data name="Label_Flags" xml:space="preserve">
+    <value>Indicadores</value>
+  </data>
+  <data name="Label_Modified" xml:space="preserve">
+    <value>Modificado</value>
+  </data>
+  <data name="Label_Sectors" xml:space="preserve">
+    <value>Sectores</value>
+  </data>
+  <data name="Label_Staus" xml:space="preserve">
+    <value>Estado</value>
+  </data>
 </root>

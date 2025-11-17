@@ -18,6 +18,7 @@ Public Class FloppyTrackGrid
     Private Shared ReadOnly HEADER_FONT As New Font("Microsoft Sans Serif", 8.25F, FontStyle.Regular)
     Private Shared ReadOnly SELECTED_BACKCOLOR As Color = Color.LightSkyBlue
     Private ReadOnly _SelectedTracks As HashSet(Of UShort)
+    Private ReadOnly _ToolTip As ToolTip
     Private _ActiveTrackCount As Integer
     Private _Cells As List(Of CellInfo)
 
@@ -31,6 +32,7 @@ Public Class FloppyTrackGrid
     Private _LastSelected As (Track As Integer, Selected As Boolean) = (-1, False)
     Private _NoEventSelectionChanged As Boolean = False
     Private _SelectEnabled As Boolean = False
+    Private _Side As Byte
     Private _TrackCount As Integer
     Public Event CellClicked(sender As Object, Track As Integer, Row As Integer, Col As Integer, Shift As Boolean)
     Public Event CheckChanged(sender As Object, Checked As Boolean)
@@ -48,16 +50,17 @@ Public Class FloppyTrackGrid
         DoubleBuffered = True
         TabStop = False
 
+        _ToolTip = New ToolTip()
         _SelectedTracks = New HashSet(Of UShort)
         _Cells = New List(Of CellInfo)
     End Sub
 
-    Public Sub New(TrackCount As Integer, Label As String)
+    Public Sub New(TrackCount As Integer, Side As Byte)
         Me.New()
 
         _ActiveTrackCount = TrackCount
         Me.TrackCount = TrackCount
-        Me.Label = Label
+        Me.Side = Side
     End Sub
 
     <Browsable(True)>
@@ -118,16 +121,15 @@ Public Class FloppyTrackGrid
 
     ' Footer label text (what you pass in the New overload)
     <Browsable(True)>
-    <DefaultValue("")>
-    Public Property Label As String
+    <DefaultValue(0)>
+    Public Property Side As Byte
         Get
-            Return _Label
+            Return _Side
         End Get
-        Set(value As String)
-            If _Label <> value Then
-                _Label = value
-                InvalidateFooter()
-            End If
+        Set(value As Byte)
+            _Side = value
+            _Label = My.Resources.Label_Side & " " & _Side
+            InvalidateFooter()
         End Set
     End Property
 
@@ -233,7 +235,8 @@ Public Class FloppyTrackGrid
                        Optional Text As String = Nothing,
                        Optional BackColor As Color? = Nothing,
                        Optional ForeColor As Color? = Nothing,
-                       Optional Selected As Boolean? = Nothing)
+                       Optional Selected As Boolean? = Nothing,
+                       Optional Tooltip As String = Nothing)
 
         If TrackIndex < 0 OrElse TrackIndex >= _TrackCount Then
             Throw New ArgumentOutOfRangeException(NameOf(TrackIndex))
@@ -246,6 +249,12 @@ Public Class FloppyTrackGrid
             If Cell.Text <> Text Then
                 Cell.Text = Text
                 Changed = True
+            End If
+        End If
+
+        If Tooltip IsNot Nothing Then
+            If Cell.Tooltip <> Tooltip Then
+                Cell.Tooltip = Tooltip
             End If
         End If
 
@@ -313,6 +322,10 @@ Public Class FloppyTrackGrid
 
     Public Sub SetCellText(TrackIndex As Integer, Text As String)
         SetCell(TrackIndex, Text:=Text)
+    End Sub
+
+    Public Sub SetCellTooltip(TrackIndex As Integer, Text As String)
+        SetCell(TrackIndex, Tooltip:=Text)
     End Sub
 
     Public Sub SetCheckStateSilent(Checked As Boolean)
@@ -813,6 +826,23 @@ Public Class FloppyTrackGrid
         RaiseEvent SelectionChanged(Me, Track, Selected)
     End Sub
 
+    Private Sub FloppyTrackGrid_MouseMove(sender As Object, e As MouseEventArgs) Handles Me.MouseMove
+        Dim TooltipText As String = ""
+
+        Dim Response = HitTestCell(e.Location)
+        If Response.Result Then
+            TooltipText = _Cells(Response.TrackIndex).Tooltip
+            If TooltipText = "" Then
+                TooltipText = My.Resources.Label_Track & ": " & Response.TrackIndex.ToString & "." & _Side.ToString
+            End If
+
+        End If
+
+            If TooltipText <> _ToolTip.GetToolTip(Me) Then
+            _ToolTip.SetToolTip(Me, TooltipText)
+        End If
+    End Sub
+
     ' Map track index -> cell rectangle (including header offsets)
     Private Function GetCellRectangle(trackIndex As Integer) As Rectangle
         Dim row As Integer = trackIndex \ COLUMNS
@@ -841,7 +871,7 @@ Public Class FloppyTrackGrid
         Response.Col = (p.X \ CELL_WIDTH) - 1   ' -1 for left header column
         Response.Row = (p.Y \ CELL_HEIGHT) - 1  ' -1 for top header row
 
-        If Response.Row < 0 OrElse Response.Col < 0 Then
+        If Response.Row < 0 OrElse Response.Col < 0 OrElse Response.Col >= COLUMNS Then
             Return Response
         End If
 
@@ -928,5 +958,6 @@ Public Class FloppyTrackGrid
         Public ForeColor As Color
         Public Selected As Boolean
         Public Text As String
+        Public Tooltip As String
     End Structure
 End Class

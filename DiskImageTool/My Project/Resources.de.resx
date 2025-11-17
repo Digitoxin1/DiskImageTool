@@ -1685,4 +1685,52 @@ Hinweis: Diese ID wird normalerweise erzeugt, indem das aktuelle Datum und die a
   <data name="Label_InvalidFilename" xml:space="preserve">
     <value>Ungültiger Dateiname</value>
   </data>
+  <data name="Kryoflux_Flag_B" xml:space="preserve">
+    <value>Sektor außerhalb des Bereichs</value>
+  </data>
+  <data name="Kryoflux_Flag_C" xml:space="preserve">
+    <value>Daten-Prüfsumme konnte nicht verifiziert werden</value>
+  </data>
+  <data name="Kryoflux_Flag_E" xml:space="preserve">
+    <value>Nicht-standardmäßige Slip-Markierungen gefunden</value>
+  </data>
+  <data name="Kryoflux_Flag_H" xml:space="preserve">
+    <value>Zusätzliche Header-Daten gefunden</value>
+  </data>
+  <data name="Kryoflux_Flag_I" xml:space="preserve">
+    <value>Nicht-standardmäßiger Formattyp/Block-ID</value>
+  </data>
+  <data name="Kryoflux_Flag_L" xml:space="preserve">
+    <value>Nicht-standardmäßige Sektorgröße</value>
+  </data>
+  <data name="Kryoflux_Flag_N" xml:space="preserve">
+    <value>Sektor ignoriert</value>
+  </data>
+  <data name="Kryoflux_Flag_P" xml:space="preserve">
+    <value>Spezieller Kopierschutz erkannt</value>
+  </data>
+  <data name="Kryoflux_Flag_S" xml:space="preserve">
+    <value>Seitennummer stimmt nicht überein</value>
+  </data>
+  <data name="Kryoflux_Flag_T" xml:space="preserve">
+    <value>Spurnummer stimmt nicht überein</value>
+  </data>
+  <data name="Kryoflux_Flag_X" xml:space="preserve">
+    <value>Sektor verkürzt</value>
+  </data>
+  <data name="Kryoflux_Flag_Z" xml:space="preserve">
+    <value>Ungültiger Sektor-Offset</value>
+  </data>
+  <data name="Label_Flags" xml:space="preserve">
+    <value>Flags</value>
+  </data>
+  <data name="Label_Modified" xml:space="preserve">
+    <value>Geändert</value>
+  </data>
+  <data name="Label_Sectors" xml:space="preserve">
+    <value>Sektoren</value>
+  </data>
+  <data name="Label_Staus" xml:space="preserve">
+    <value>Status</value>
+  </data>
 </root>

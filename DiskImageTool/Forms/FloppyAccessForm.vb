@@ -436,14 +436,14 @@ Public Class FloppyAccessForm
     Private Sub InitTables()
         Dim Tracks = _BPB.SectorToTrack(_BPB.SectorCount)
 
-        TableSide0.Label = My.Resources.Label_Side & " 0"
+        TableSide0.Side = 0
         TableSide0.TrackCount = 80
         TableSide0.ActiveTrackCount = Tracks
         For Counter = 0 To TableSide0.TrackCount - 1
             TableSide0.ResetCell(Counter)
         Next
 
-        TableSide1.Label = My.Resources.Label_Side & " 1"
+        TableSide1.Side = 1
         TableSide1.TrackCount = 80
         TableSide1.ActiveTrackCount = Tracks
         For Counter = 0 To TableSide1.TrackCount - 1

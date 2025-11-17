@@ -7,31 +7,10 @@
         Private ReadOnly _LogFileName As String
         Private _CancelButtonClicked As Boolean = False
         Private _Sides As Byte
-        Private _TotalBadSectors As UInteger = 0
-        Private _TotalUnexpectedSectors As UInteger = 0
         Private _Tracks As UShort
-
-        Public Enum ActionTypeEnum
-            Read
-            Write
-            [Erase]
-            Import
-        End Enum
-
-        Public Enum TrackStatusEnum
-            Reading
-            Erasing
-            Writing
-            Retry
-            Failed
-            Success
-            Aborted
-            [Error]
-        End Enum
 
         Public Event CheckChanged(sender As Object, Checked As Boolean, Side As Byte)
         Public Event SelectionChanged(sender As Object, Track As UShort, Side As Byte, Enabled As Boolean)
-
         Public Sub New(LogFileName As String, Optional UseGrid As Boolean = True)
             ' This call is required by the designer.
             InitializeComponent()
@@ -44,10 +23,10 @@
             }
 
             If UseGrid Then
-                TS0 = New FloppyTrackGrid(TOTAL_TRACKS, My.Resources.Label_Side & " 0") With {
+                TS0 = New FloppyTrackGrid(TOTAL_TRACKS, 0) With {
                 .Anchor = AnchorStyles.Top Or AnchorStyles.Right
             }
-                TS1 = New FloppyTrackGrid(TOTAL_TRACKS, My.Resources.Label_Side & " 1") With {
+                TS1 = New FloppyTrackGrid(TOTAL_TRACKS, 1) With {
                     .Anchor = AnchorStyles.Top Or AnchorStyles.Right,
                     .Margin = New Padding(32, 3, 3, 3)
                 }
@@ -72,24 +51,6 @@
             End Get
         End Property
 
-        Public Property TotalBadSectors As UInteger
-            Get
-                Return _TotalBadSectors
-            End Get
-            Set(value As UInteger)
-                _TotalBadSectors = value
-            End Set
-        End Property
-
-        Public Property TotalUnexpectedSectors As UInteger
-            Get
-                Return _TotalUnexpectedSectors
-            End Get
-            Set(value As UInteger)
-                _TotalUnexpectedSectors = value
-            End Set
-        End Property
-
         Public Function CancelProcessIfRunning() As Boolean
             If Process.IsRunning Then
                 If Not ConfirmCancel() Then
@@ -111,8 +72,6 @@
             StatusBadSectors.Visible = False
             StatusUnexpected.Text = ""
             StatusUnexpected.Visible = False
-            _TotalBadSectors = 0
-            _TotalUnexpectedSectors = 0
         End Sub
 
         Public Function ConfirmWrite(Title As String, DriveName As String) As Boolean
@@ -129,38 +88,12 @@
             End Select
         End Function
 
-        Public Function GetTrackStatusText(Status As TrackStatusEnum, Optional Retries As UShort = 0) As String
-            Select Case Status
-                Case TrackStatusEnum.Reading
-                    Return My.Resources.Label_Reading
-                Case TrackStatusEnum.Erasing
-                    Return My.Resources.Label_Erasing
-                Case TrackStatusEnum.Writing
-                    Return My.Resources.Label_Writing
-                Case TrackStatusEnum.Retry
-                    Return My.Resources.Label_Retrying & IIf(Retries > 0, " " & Retries, "")
-                Case TrackStatusEnum.Failed
-                    Return My.Resources.Label_Failed
-                Case TrackStatusEnum.Success
-                    Return My.Resources.Label_Complete
-                Case TrackStatusEnum.Aborted
-                    Return My.Resources.Label_Aborted
-                Case TrackStatusEnum.Error
-                    Return My.Resources.Label_Error
-                Case Else
-                    Return ""
-            End Select
-        End Function
-
-        Public Sub GridMarkTrack(Track As Integer, Side As Integer, Status As TrackStatusEnum, Label As String, DoubleStep As Boolean)
-            Dim Table = GridGetTable(Side)
+        Public Sub GridMarkTrack(StatusData As TrackStatusData)
+            Dim Table = GridGetTable(StatusData.Side)
+            Dim Track = StatusData.Track
 
             If Table IsNot Nothing Then
-                Dim Colors = GetTrackStatusColor(Status)
-                If DoubleStep Then
-                    Track *= 2
-                End If
-                Table.SetCell(Track, Text:=Label, BackColor:=Colors.BackColor, ForeColor:=Colors.ForeColor)
+                Table.SetCell(Track, Text:=StatusData.CellText, BackColor:=StatusData.BackColor, ForeColor:=StatusData.ForeColor, Tooltip:=StatusData.Tooltip)
             End If
         End Sub
 
@@ -197,10 +130,38 @@
             End Using
         End Sub
 
-        Public Sub UpdateTrackStatusError()
-            StatusType.Text = GetTrackStatusText(TrackStatusEnum.Error)
+        Public Sub UpdateStatus(StatusData As TrackStatusData)
+            GridMarkTrack(StatusData)
+
+            StatusType.Text = StatusData.StatusText
+            StatusTrack.Text = My.Resources.Label_Track & " " & StatusData.Track
+            StatusSide.Text = My.Resources.Label_Side & " " & StatusData.Side
+            StatusSide.Visible = StatusData.SideVisible
+
+            If StatusData.TotalBadSectors = 1 Then
+                StatusBadSectors.Text = StatusData.TotalBadSectors & " " & My.Resources.Label_BadSector
+                StatusBadSectors.Visible = True
+            ElseIf StatusData.TotalBadSectors > 1 Then
+                StatusBadSectors.Text = StatusData.TotalBadSectors & " " & My.Resources.Label_BadSectors
+                StatusBadSectors.Visible = True
+            Else
+                StatusBadSectors.Visible = False
+            End If
+
+            If StatusData.TotalUnexpectedSectors = 1 Then
+                StatusUnexpected.Text = StatusData.TotalUnexpectedSectors & " " & My.Resources.Label_UnexpectedSector
+                StatusUnexpected.Visible = True
+            ElseIf StatusData.TotalUnexpectedSectors > 1 Then
+                StatusUnexpected.Text = StatusData.TotalUnexpectedSectors & " " & My.Resources.Label_UnexpectedSectors
+                StatusUnexpected.Visible = True
+            Else
+                StatusUnexpected.Visible = False
+            End If
         End Sub
 
+        Public Sub UpdateTrackStatusType(Text As String)
+            StatusType.Text = Text
+        End Sub
         Protected Overridable Sub OnAfterBaseFormClosing(e As FormClosingEventArgs)
             ' Default: do nothing
         End Sub
@@ -240,24 +201,6 @@
             Return MsgBox(My.Resources.Dialog_ConfirmCancel, MsgBoxStyle.YesNo + MsgBoxStyle.DefaultButton2 + MsgBoxStyle.Exclamation) = MsgBoxResult.Yes
         End Function
 
-        Private Function GetTrackStatusColor(Status As TrackStatusEnum) As (ForeColor As Color, BackColor As Color)
-            Select Case Status
-                Case TrackStatusEnum.Reading
-                    Return (Color.Black, Color.LightBlue)
-                Case TrackStatusEnum.Erasing
-                    Return (Color.Black, Color.MediumPurple)
-                Case TrackStatusEnum.Writing
-                    Return (Color.Black, Color.Orange)
-                Case TrackStatusEnum.Retry
-                    Return (Color.Black, Color.Yellow)
-                Case TrackStatusEnum.Failed
-                    Return (Color.Black, Color.Red)
-                Case TrackStatusEnum.Success
-                    Return (Color.Black, Color.LightGreen)
-                Case Else
-                    Return (Color.Black, Color.Gray)
-            End Select
-        End Function
         Private Function GridGetTable(Side As Byte) As FloppyTrackGrid
             If Side = 0 Then
                 Return TS0
@@ -267,6 +210,7 @@
                 Return Nothing
             End If
         End Function
+
         Private Sub GridResetTracks(Grid As FloppyTrackGrid, Tracks As UShort, Disabled As Boolean, Optional ResetSelected As Boolean = True)
             Grid.ActiveTrackCount = Tracks
             Grid.ResetAll()
@@ -278,7 +222,6 @@
         End Sub
 
 #Region "Events"
-
         Private Sub ButtonCancel_Click(sender As Object, e As EventArgs) Handles ButtonCancel.Click
             _CancelButtonClicked = True
         End Sub
@@ -324,6 +267,18 @@
             RaiseEvent SelectionChanged(Me, Track, 1, Selected)
         End Sub
 #End Region
+        Public Structure TrackStatusData
+            Public BackColor As Color
+            Public CellText As String
+            Public ForeColor As Color
+            Public Side As Integer
+            Public SideVisible As Boolean
+            Public StatusText As String
+            Public TotalBadSectors As UInteger
+            Public TotalUnexpectedSectors As UInteger
+            Public Track As Integer
+            Public Tooltip As String
+        End Structure
     End Class
 
 End Namespace

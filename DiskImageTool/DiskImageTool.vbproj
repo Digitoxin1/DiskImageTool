@@ -30,8 +30,8 @@
     <TargetCulture>en-US</TargetCulture>
     <ProductName>DiskImageTool</ProductName>
     <PublisherName>Digitoxin</PublisherName>
-    <ApplicationRevision>1</ApplicationRevision>
-    <ApplicationVersion>2.21.0.%2a</ApplicationVersion>
+    <ApplicationRevision>0</ApplicationRevision>
+    <ApplicationVersion>2.22.0.%2a</ApplicationVersion>
     <UseApplicationTrust>false</UseApplicationTrust>
     <PublishWizardCompleted>true</PublishWizardCompleted>
     <BootstrapperEnabled>true</BootstrapperEnabled>
@@ -172,14 +172,9 @@
     <Compile Include="Filters\ImageFilters.vb" />
     <Compile Include="Filters\ImageFiltersBase.vb" />
     <Compile Include="DiskImageLib.vb" />
-    <Compile Include="Flux\Greaseweazle\Forms\BaseForm.vb">
-      <SubType>Form</SubType>
-    </Compile>
+    <Compile Include="Flux\Greaseweazle\TrackStatus.vb" />
     <Compile Include="Flux\Kryoflux\CommandLineBuilder.vb" />
-    <Compile Include="Flux\Kryoflux\ConsoleOutputParser.vb" />
-    <Compile Include="Flux\Kryoflux\Forms\BaseForm.vb">
-      <SubType>Form</SubType>
-    </Compile>
+    <Compile Include="Flux\Kryoflux\ConsoleParser.vb" />
     <Compile Include="Flux\Kryoflux\Forms\ConfigurationForm.Designer.vb">
       <DependentUpon>ConfigurationForm.vb</DependentUpon>
     </Compile>
@@ -190,13 +185,14 @@
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="Flux\Kryoflux\KryofluxLib.vb" />
+    <Compile Include="Flux\Kryoflux\TrackStatus.vb" />
     <Compile Include="Flux\SharedLib.vb" />
     <Compile Include="Globals.vb" />
     <Compile Include="Flux\Greaseweazle\Forms\CleanDiskForm.vb">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="Flux\Greaseweazle\CommandLineBuilder.vb" />
-    <Compile Include="Flux\Greaseweazle\ConsoleOutputParser.vb" />
+    <Compile Include="Flux\Greaseweazle\ConsoleParser.vb" />
     <Compile Include="Flux\Greaseweazle\Enums.vb" />
     <Compile Include="Flux\Greaseweazle\Forms\ConfigurationForm.Designer.vb">
       <DependentUpon>ConfigurationForm.vb</DependentUpon>
