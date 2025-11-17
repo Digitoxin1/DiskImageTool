@@ -1,4 +1,4 @@
-﻿Namespace Greaseweazle
+﻿Namespace Flux
     <Global.Microsoft.VisualBasic.CompilerServices.DesignerGenerated()>
     Partial Class BaseForm
         Inherits System.Windows.Forms.Form

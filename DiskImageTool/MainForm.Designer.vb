@@ -101,7 +101,7 @@ Partial Class MainForm
         Me.MenuFiltersScanNew = New System.Windows.Forms.ToolStripMenuItem()
         Me.MenuFiltersScan = New System.Windows.Forms.ToolStripMenuItem()
         Me.MenuFiltersClear = New System.Windows.Forms.ToolStripMenuItem()
-        Me.MenuGreaseweazleFormat = New System.Windows.Forms.ToolStripMenuItem()
+        Me.MainMenuGreaseweazle = New System.Windows.Forms.ToolStripMenuItem()
         Me.MenuGreaseweazleRead = New System.Windows.Forms.ToolStripMenuItem()
         Me.MenuGreaseweazleWrite = New System.Windows.Forms.ToolStripMenuItem()
         Me.MenuGreaseweazleErase = New System.Windows.Forms.ToolStripMenuItem()
@@ -110,6 +110,7 @@ Partial Class MainForm
         Me.MenuGreaseweazleClean = New System.Windows.Forms.ToolStripMenuItem()
         Me.MenuGreaseweazleInfo = New System.Windows.Forms.ToolStripMenuItem()
         Me.MenuGreaseweazleBandwidth = New System.Windows.Forms.ToolStripMenuItem()
+        Me.MainMenuKryoflux = New System.Windows.Forms.ToolStripMenuItem()
         Me.MainMenuReports = New System.Windows.Forms.ToolStripMenuItem()
         Me.MenuReportsWriteSplices = New System.Windows.Forms.ToolStripMenuItem()
         Me.MainMenuOptions = New System.Windows.Forms.ToolStripMenuItem()
@@ -120,6 +121,7 @@ Partial Class MainForm
         Me.MenuOptionsDisplayLanguage = New System.Windows.Forms.ToolStripMenuItem()
         Me.ToolStripSeparator2 = New System.Windows.Forms.ToolStripSeparator()
         Me.MenuOptionsGreaseweazle = New System.Windows.Forms.ToolStripMenuItem()
+        Me.MenuOptionsKryoflux = New System.Windows.Forms.ToolStripMenuItem()
         Me.MainMenuUpdateAvailable = New System.Windows.Forms.ToolStripMenuItem()
         Me.MainMenuNewInstance = New System.Windows.Forms.ToolStripMenuItem()
         Me.LabelCRC32Caption = New System.Windows.Forms.Label()
@@ -161,6 +163,7 @@ Partial Class MainForm
         Me.LabelMD5 = New System.Windows.Forms.Label()
         Me.LabelSHA1 = New System.Windows.Forms.Label()
         Me.ListViewFiles = New DiskImageTool.ListViewEx()
+        Me.MenuKryofluxImport = New System.Windows.Forms.ToolStripMenuItem()
         HashName = CType(New System.Windows.Forms.ColumnHeader(), System.Windows.Forms.ColumnHeader)
         HashValue = CType(New System.Windows.Forms.ColumnHeader(), System.Windows.Forms.ColumnHeader)
         MainMenuFile = New System.Windows.Forms.ToolStripMenuItem()
@@ -571,7 +574,7 @@ Partial Class MainForm
         '
         'MenuStripTop
         '
-        MenuStripTop.Items.AddRange(New System.Windows.Forms.ToolStripItem() {MainMenuFile, MainMenuEdit, Me.MainMenuFilters, MainMenuView, MainMenuTools, MainMenuDisk, Me.MenuGreaseweazleFormat, Me.MainMenuReports, Me.MainMenuOptions, MainMenuHelp, Me.MainMenuUpdateAvailable, Me.MainMenuNewInstance})
+        MenuStripTop.Items.AddRange(New System.Windows.Forms.ToolStripItem() {MainMenuFile, MainMenuEdit, Me.MainMenuFilters, MainMenuView, MainMenuTools, MainMenuDisk, Me.MainMenuGreaseweazle, Me.MainMenuKryoflux, Me.MainMenuReports, Me.MainMenuOptions, MainMenuHelp, Me.MainMenuUpdateAvailable, Me.MainMenuNewInstance})
         resources.ApplyResources(MenuStripTop, "MenuStripTop")
         MenuStripTop.Name = "MenuStripTop"
         MenuStripTop.ShowItemToolTips = True
@@ -605,11 +608,11 @@ Partial Class MainForm
         Me.MenuFiltersClear.Name = "MenuFiltersClear"
         resources.ApplyResources(Me.MenuFiltersClear, "MenuFiltersClear")
         '
-        'MenuGreaseweazleFormat
+        'MainMenuGreaseweazle
         '
-        Me.MenuGreaseweazleFormat.DropDownItems.AddRange(New System.Windows.Forms.ToolStripItem() {Me.MenuGreaseweazleRead, Me.MenuGreaseweazleWrite, Me.MenuGreaseweazleErase, Me.ToolStripSeparator5, Me.MenuGreaseweazleImport, ToolStripSeparator4, Me.MenuGreaseweazleClean, ToolStripSeparator3, Me.MenuGreaseweazleInfo, Me.MenuGreaseweazleBandwidth})
-        Me.MenuGreaseweazleFormat.Name = "MenuGreaseweazleFormat"
-        resources.ApplyResources(Me.MenuGreaseweazleFormat, "MenuGreaseweazleFormat")
+        Me.MainMenuGreaseweazle.DropDownItems.AddRange(New System.Windows.Forms.ToolStripItem() {Me.MenuGreaseweazleRead, Me.MenuGreaseweazleWrite, Me.MenuGreaseweazleErase, Me.ToolStripSeparator5, Me.MenuGreaseweazleImport, ToolStripSeparator4, Me.MenuGreaseweazleClean, ToolStripSeparator3, Me.MenuGreaseweazleInfo, Me.MenuGreaseweazleBandwidth})
+        Me.MainMenuGreaseweazle.Name = "MainMenuGreaseweazle"
+        resources.ApplyResources(Me.MainMenuGreaseweazle, "MainMenuGreaseweazle")
         '
         'MenuGreaseweazleRead
         '
@@ -661,6 +664,12 @@ Partial Class MainForm
         Me.MenuGreaseweazleBandwidth.Name = "MenuGreaseweazleBandwidth"
         resources.ApplyResources(Me.MenuGreaseweazleBandwidth, "MenuGreaseweazleBandwidth")
         '
+        'MainMenuKryoflux
+        '
+        Me.MainMenuKryoflux.DropDownItems.AddRange(New System.Windows.Forms.ToolStripItem() {Me.MenuKryofluxImport})
+        Me.MainMenuKryoflux.Name = "MainMenuKryoflux"
+        resources.ApplyResources(Me.MainMenuKryoflux, "MainMenuKryoflux")
+        '
         'MainMenuReports
         '
         Me.MainMenuReports.DropDownItems.AddRange(New System.Windows.Forms.ToolStripItem() {Me.MenuReportsWriteSplices})
@@ -674,7 +683,7 @@ Partial Class MainForm
         '
         'MainMenuOptions
         '
-        Me.MainMenuOptions.DropDownItems.AddRange(New System.Windows.Forms.ToolStripItem() {Me.MenuOptionsCreateBackup, Me.MenuOptionsCheckUpdate, Me.MenuOptionsDragDrop, Me.MenuOptionsDisplayTitles, Me.MenuOptionsDisplayLanguage, Me.ToolStripSeparator2, Me.MenuOptionsGreaseweazle})
+        Me.MainMenuOptions.DropDownItems.AddRange(New System.Windows.Forms.ToolStripItem() {Me.MenuOptionsCreateBackup, Me.MenuOptionsCheckUpdate, Me.MenuOptionsDragDrop, Me.MenuOptionsDisplayTitles, Me.MenuOptionsDisplayLanguage, Me.ToolStripSeparator2, Me.MenuOptionsGreaseweazle, Me.MenuOptionsKryoflux})
         Me.MainMenuOptions.Name = "MainMenuOptions"
         resources.ApplyResources(Me.MainMenuOptions, "MainMenuOptions")
         '
@@ -716,6 +725,11 @@ Partial Class MainForm
         '
         Me.MenuOptionsGreaseweazle.Name = "MenuOptionsGreaseweazle"
         resources.ApplyResources(Me.MenuOptionsGreaseweazle, "MenuOptionsGreaseweazle")
+        '
+        'MenuOptionsKryoflux
+        '
+        Me.MenuOptionsKryoflux.Name = "MenuOptionsKryoflux"
+        resources.ApplyResources(Me.MenuOptionsKryoflux, "MenuOptionsKryoflux")
         '
         'MainMenuUpdateAvailable
         '
@@ -1037,6 +1051,11 @@ Partial Class MainForm
         Me.ListViewFiles.Name = "ListViewFiles"
         Me.ListViewFiles.UseCompatibleStateImageBehavior = False
         '
+        'MenuKryofluxImport
+        '
+        Me.MenuKryofluxImport.Name = "MenuKryofluxImport"
+        resources.ApplyResources(Me.MenuKryofluxImport, "MenuKryofluxImport")
+        '
         'MainForm
         '
         resources.ApplyResources(Me, "$this")
@@ -1169,7 +1188,7 @@ Partial Class MainForm
     Friend WithEvents MainMenuNewInstance As ToolStripMenuItem
     Friend WithEvents ToolStripSeparator2 As ToolStripSeparator
     Friend WithEvents MenuOptionsGreaseweazle As ToolStripMenuItem
-    Friend WithEvents MenuGreaseweazleFormat As ToolStripMenuItem
+    Friend WithEvents MainMenuGreaseweazle As ToolStripMenuItem
     Friend WithEvents MenuGreaseweazleInfo As ToolStripMenuItem
     Friend WithEvents MenuGreaseweazleRead As ToolStripMenuItem
     Friend WithEvents MenuGreaseweazleWrite As ToolStripMenuItem
@@ -1178,4 +1197,7 @@ Partial Class MainForm
     Friend WithEvents MenuGreaseweazleBandwidth As ToolStripMenuItem
     Friend WithEvents ToolStripSeparator5 As ToolStripSeparator
     Friend WithEvents MenuGreaseweazleImport As ToolStripMenuItem
+    Friend WithEvents MainMenuKryoflux As ToolStripMenuItem
+    Friend WithEvents MenuOptionsKryoflux As ToolStripMenuItem
+    Friend WithEvents MenuKryofluxImport As ToolStripMenuItem
 End Class

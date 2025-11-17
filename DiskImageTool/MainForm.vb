@@ -545,22 +545,14 @@ Public Class MainForm
     End Function
 
     Private Sub GreaseweazleImportImage()
-        Dim FileName As String = Greaseweazle.OpenFluxImage(Me)
+        Dim FileName As String = Flux.Greaseweazle.OpenFluxImage(Me)
 
         GreaseweazleImportImage(FileName)
     End Sub
 
-    Private Sub GreaseweazleReadImage()
-        Dim Response = Greaseweazle.ReadFluxImage(Me)
-        If Response.Result Then
-            ProcessFileDrop(Response.OutputFile, True, Response.NewFileName)
-            RefreshModifiedCount()
-        End If
-    End Sub
-
     Private Sub GreaseweazleImportImage(FileName As String)
         If FileName <> "" Then
-            Dim Response = Greaseweazle.ImportFluxImage(FileName, Me)
+            Dim Response = Flux.Greaseweazle.ImportFluxImage(FileName, Me)
             If Response.Result Then
                 ProcessFileDrop(Response.OutputFile, True, Response.NewFileName)
                 RefreshModifiedCount()
@@ -568,9 +560,17 @@ Public Class MainForm
         End If
     End Sub
 
+    Private Sub GreaseweazleReadImage()
+        Dim Response = Flux.Greaseweazle.ReadFluxImage(Me)
+        If Response.Result Then
+            ProcessFileDrop(Response.OutputFile, True, Response.NewFileName)
+            RefreshModifiedCount()
+        End If
+    End Sub
+
     Private Sub HandleDragDrop(Files() As String)
         If Files.Length = 1 Then
-            Dim CanProcessFlux = Greaseweazle.GreaseweazleSettings.IsPathValid
+            Dim CanProcessFlux = Flux.Greaseweazle.GreaseweazleSettings.IsPathValid
             If CanProcessFlux Then
                 Dim Result = ProcessFileDropFlux(Files(0))
                 If Result Then
@@ -812,6 +812,21 @@ Public Class MainForm
         End If
     End Sub
 
+    Private Sub KryofluxImportImage()
+        Dim FileName As String = Flux.Kryoflux.OpenFluxImage(Me)
+
+        KryofluxImportImage(FileName)
+    End Sub
+
+    Private Sub KryofluxImportImage(FileName As String)
+        If FileName <> "" Then
+            Dim Response = Flux.Kryoflux.ImportFluxImage(FileName, Me)
+            If Response.Result Then
+                ProcessFileDrop(Response.OutputFile, True, Response.NewFileName)
+                RefreshModifiedCount()
+            End If
+        End If
+    End Sub
     Private Sub LaunchNewInstance(FilePath As String)
         Process.Start(Application.ExecutablePath, """" & FilePath & """")
     End Sub
@@ -1004,13 +1019,13 @@ Public Class MainForm
             If IO.Path.GetExtension(FilePath).ToLower = ".scp" Then
                 IsFluxIamge = True
             ElseIf IO.Path.GetExtension(FilePath).ToLower = ".raw" Then
-                Dim Response = Greaseweazle.GetTrackCountRaw(FilePath)
+                Dim Response = Flux.GetTrackCountRaw(FilePath)
                 If Response.Result Then
                     IsFluxIamge = True
                 End If
             End If
         ElseIf IO.Directory.Exists(FilePath) Then
-            Dim RawFile = Greaseweazle.GetFirstRawFile(FilePath)
+            Dim RawFile = Flux.Greaseweazle.GetFirstRawFile(FilePath)
             If Not String.IsNullOrEmpty(RawFile) Then
                 FilePath = RawFile
                 IsFluxIamge = True
@@ -1077,9 +1092,9 @@ Public Class MainForm
     End Sub
 
     Private Sub RefreshGreaseweazleMenu()
-        Dim Visible As Boolean = Greaseweazle.GreaseweazleSettings.IsPathValid
+        Dim Visible As Boolean = Flux.Greaseweazle.GreaseweazleSettings.IsPathValid
 
-        MenuGreaseweazleFormat.Visible = Visible
+        MainMenuGreaseweazle.Visible = Visible
     End Sub
 
     Private Sub RefreshHexMenu(Disk As Disk, IsValidImage As Boolean, Compare As Integer)
@@ -1110,6 +1125,11 @@ Public Class MainForm
         End If
     End Sub
 
+    Private Sub RefreshKryofluxMenu()
+        Dim Visible As Boolean = Flux.Kryoflux.KryofluxSettings.IsPathValid
+
+        MainMenuKryoflux.Visible = Visible
+    End Sub
     Private Sub RefreshModifiedCount()
         Dim Count = StatusBarModifiedCountUpdate()
         SetButtonStateSaveAll(Count > 0)
@@ -1194,7 +1214,7 @@ Public Class MainForm
                     CanRestructureImage = True
                 ElseIf Format = FloppyDiskFormat.Floppy160 And DiskFormatBySize = FloppyDiskFormat.Floppy360 Then
                     CanRestructureImage = True
-                ElseIf format = FloppyDiskFormat.Floppy180 And DiskFormatBySize = FloppyDiskFormat.Floppy360 Then
+                ElseIf Format = FloppyDiskFormat.Floppy180 And DiskFormatBySize = FloppyDiskFormat.Floppy360 Then
                     CanRestructureImage = True
                 ElseIf Format = FloppyDiskFormat.Floppy320 And DiskFormatBySize = FloppyDiskFormat.Floppy360 Then
                     CanRestructureImage = True
@@ -1702,6 +1722,7 @@ Public Class MainForm
         InitOptionsMenu()
         InitDebugFeatures(My.Settings.Debug)
         RefreshGreaseweazleMenu()
+        RefreshKryofluxMenu()
         ResetAll()
 
         Dim Args = Environment.GetCommandLineArgs.Skip(1).ToArray
@@ -1851,15 +1872,15 @@ Public Class MainForm
     End Sub
 
     Private Sub MenuGreaseweazleBandwidth_Click(sender As Object, e As EventArgs) Handles MenuGreaseweazleBandwidth.Click
-        Greaseweazle.BandwidthDisplay(Me)
+        Flux.Greaseweazle.BandwidthDisplay(Me)
     End Sub
 
     Private Sub MenuGreaseweazleClean_Click(sender As Object, e As EventArgs) Handles MenuGreaseweazleClean.Click
-        Greaseweazle.CleanDisk(Me)
+        Flux.Greaseweazle.CleanDisk(Me)
     End Sub
 
     Private Sub MenuGreaseweazleErase_Click(sender As Object, e As EventArgs) Handles MenuGreaseweazleErase.Click
-        Greaseweazle.EraseDisk(Me)
+        Flux.Greaseweazle.EraseDisk(Me)
     End Sub
 
     Private Sub MenuGreaseweazleImport_Click(sender As Object, e As EventArgs) Handles MenuGreaseweazleImport.Click
@@ -1867,12 +1888,16 @@ Public Class MainForm
     End Sub
 
     Private Sub MenuGreaseweazleInfo_Click(sender As Object, e As EventArgs) Handles MenuGreaseweazleInfo.Click
-        Greaseweazle.InfoDisplay(Me)
+        Flux.Greaseweazle.InfoDisplay(Me)
+    End Sub
+
+    Private Sub MenuGreaseweazleRead_Click(sender As Object, e As EventArgs) Handles MenuGreaseweazleRead.Click
+        GreaseweazleReadImage()
     End Sub
 
     Private Sub MenuGreaseweazleWrite_Click(sender As Object, e As EventArgs) Handles MenuGreaseweazleWrite.Click
         If FilePanelMain.CurrentImage IsNot Nothing AndAlso FilePanelMain.CurrentImage.Disk IsNot Nothing Then
-            Greaseweazle.WriteImageToDisk(Me, FilePanelMain.CurrentImage)
+            Flux.Greaseweazle.WriteImageToDisk(Me, FilePanelMain.CurrentImage)
         End If
     End Sub
 
@@ -1930,6 +1955,10 @@ Public Class MainForm
         End If
     End Sub
 
+    Private Sub MenuKryofluxImport_Click(sender As Object, e As EventArgs) Handles MenuKryofluxImport.Click
+        KryofluxImportImage()
+    End Sub
+
     Private Sub MenuOptionsCheckUpdate_CheckStateChanged(sender As Object, e As EventArgs) Handles MenuOptionsCheckUpdate.CheckStateChanged
         My.Settings.CheckUpdateOnStartup = MenuOptionsCheckUpdate.Checked
     End Sub
@@ -1962,10 +1991,19 @@ Public Class MainForm
     Private Sub MenuOptionsGreaseweazle_Click(sender As Object, e As EventArgs) Handles MenuOptionsGreaseweazle.Click
         MainMenuOptions.DropDown.Close()
 
-        Dim Form As New Greaseweazle.ConfigurationForm
+        Dim Form As New Flux.Greaseweazle.ConfigurationForm
         Form.ShowDialog(Me)
 
         RefreshGreaseweazleMenu()
+    End Sub
+
+    Private Sub MenuOptionsKryoflux_Click(sender As Object, e As EventArgs) Handles MenuOptionsKryoflux.Click
+        MainMenuOptions.DropDown.Close()
+
+        Dim Form As New Flux.Kryoflux.ConfigurationForm
+        Form.ShowDialog(Me)
+
+        RefreshKryofluxMenu()
     End Sub
 
     Private Sub MenuReportsWriteSplices_Click(sender As Object, e As EventArgs) Handles MenuReportsWriteSplices.Click
@@ -2023,10 +2061,6 @@ Public Class MainForm
 
     Private Sub ToolStripViewFileText_Click(sender As Object, e As EventArgs) Handles ToolStripViewFileText.Click
         FilePanelProcessEvent(FilePanelMain, FilePanel.FilePanelMenuItem.ViewFileText)
-    End Sub
-
-    Private Sub MenuGreaseweazleRead_Click(sender As Object, e As EventArgs) Handles MenuGreaseweazleRead.Click
-        GreaseweazleReadImage()
     End Sub
 #End Region
 End Class

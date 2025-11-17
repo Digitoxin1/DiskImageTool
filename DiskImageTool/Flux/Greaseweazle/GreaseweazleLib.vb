@@ -1,291 +1,221 @@
 ﻿Imports System.Text.RegularExpressions
 Imports DiskImageTool.DiskImage.FloppyDiskFunctions
 
-Namespace Greaseweazle
-    Module GreaseweazleLib
-        Public GreaseweazleSettings As New Settings
-        Private Const REGEX_RAW_FILE As String = "^(?<diskId>.+?)\.?(?<track>\d{2})\.(?<side>\d)\.(?<ext>raw|stream)$"
+Namespace Flux
+    Namespace Greaseweazle
+        Module GreaseweazleLib
+            Public GreaseweazleSettings As New Settings
 
-        Public Sub BandwidthDisplay(ParentForm As Form)
-            If Not GreaseweazleSettings.IsPathValid Then
-                DisplayInvalidApplicationPathMsg()
-                Exit Sub
-            End If
+            Public Function GetTrackHeads(StartHead As Integer, Optional EndHead As Integer = -1) As CommandLineBuilder.TrackHeads
+                If EndHead = -1 Then
+                    EndHead = StartHead
+                End If
 
-            ParentForm.Cursor = Cursors.WaitCursor
-            Application.DoEvents()
+                If StartHead = 0 And EndHead = 0 Then
+                    Return CommandLineBuilder.TrackHeads.head0
+                ElseIf StartHead = 1 And EndHead = 1 Then
+                    Return CommandLineBuilder.TrackHeads.head1
+                Else
+                    Return CommandLineBuilder.TrackHeads.both
+                End If
+            End Function
 
-            Dim Builder = New CommandLineBuilder(CommandLineBuilder.CommandAction.bandwidth) With {
+            Public Sub BandwidthDisplay(ParentForm As Form)
+                If Not GreaseweazleSettings.IsPathValid Then
+                    DisplayInvalidApplicationPathMsg()
+                    Exit Sub
+                End If
+
+                ParentForm.Cursor = Cursors.WaitCursor
+                Application.DoEvents()
+
+                Dim Builder = New CommandLineBuilder(CommandLineBuilder.CommandAction.bandwidth) With {
                 .Device = GreaseweazleSettings.COMPort
             }
 
-            Dim Arguments = Builder.Arguments
+                Dim Arguments = Builder.Arguments
 
-            Dim Content As String = ""
-            Try
-                Dim Result = ConsoleProcessRunner.RunProcess(GreaseweazleSettings.AppPath, Arguments)
-                Content = Result.CombinedOutput
-            Finally
-                ParentForm.Cursor = Cursors.Default
-            End Try
+                Dim Content As String = ""
+                Try
+                    Dim Result = ConsoleProcessRunner.RunProcess(GreaseweazleSettings.AppPath, Arguments)
+                    Content = Result.CombinedOutput
+                Finally
+                    ParentForm.Cursor = Cursors.Default
+                End Try
 
-            Dim frmTextView = New TextViewForm("Greaseweazle - " & My.Resources.Label_Bandwidth, Content, False, True, "GreaseweazleBandwidth.txt")
-            frmTextView.ShowDialog(ParentForm)
-        End Sub
+                Dim frmTextView = New TextViewForm("Greaseweazle - " & My.Resources.Label_Bandwidth, Content, False, True, "GreaseweazleBandwidth.txt")
+                frmTextView.ShowDialog(ParentForm)
+            End Sub
 
-        Public Function BuildRanges(values As HashSet(Of UShort)) As List(Of (StartTrack As UShort, EndTrack As UShort))
-            Dim result As New List(Of (UShort, UShort))()
+            Public Function BuildRanges(values As HashSet(Of UShort)) As List(Of (StartTrack As UShort, EndTrack As UShort))
+                Dim result As New List(Of (UShort, UShort))()
 
-            If values Is Nothing OrElse values.Count = 0 Then
-                Return result
-            End If
-
-            ' Sort the values first
-            Dim sorted = values.OrderBy(Function(v) v).ToList()
-
-            Dim rangeStart As UShort = sorted(0)
-            Dim rangeEnd As UShort = sorted(0)
-
-            For i As Integer = 1 To sorted.Count - 1
-                Dim v = sorted(i)
-
-                If v = rangeEnd + 1US Then
-                    ' extend range
-                    rangeEnd = v
-                Else
-                    ' push previous range
-                    result.Add((rangeStart, rangeEnd))
-                    ' start new range
-                    rangeStart = v
-                    rangeEnd = v
+                If values Is Nothing OrElse values.Count = 0 Then
+                    Return result
                 End If
-            Next
 
-            ' add final range
-            result.Add((rangeStart, rangeEnd))
+                ' Sort the values first
+                Dim sorted = values.OrderBy(Function(v) v).ToList()
 
-            Return result
-        End Function
+                Dim rangeStart As UShort = sorted(0)
+                Dim rangeEnd As UShort = sorted(0)
 
-        Public Sub CleanDisk(ParentForm As Form)
-            Dim Form As New CleanDiskForm()
-            Form.ShowDialog(ParentForm)
-        End Sub
+                For i As Integer = 1 To sorted.Count - 1
+                    Dim v = sorted(i)
 
-        Public Function ConvertFirstTrack(FilePath As String) As (Result As Boolean, FileName As String)
-            Dim TempPath = InitTempImagePath()
+                    If v = rangeEnd + 1US Then
+                        ' extend range
+                        rangeEnd = v
+                    Else
+                        ' push previous range
+                        result.Add((rangeStart, rangeEnd))
+                        ' start new range
+                        rangeStart = v
+                        rangeEnd = v
+                    End If
+                Next
 
-            If TempPath = "" Then
-                Return (False, "")
-            End If
+                ' add final range
+                result.Add((rangeStart, rangeEnd))
 
-            Dim FileName = GenerateUniqueFileName(TempPath, "temp.ima")
+                Return result
+            End Function
 
-            Dim Builder = New CommandLineBuilder(CommandLineBuilder.CommandAction.convert) With {
+            Public Sub CleanDisk(ParentForm As Form)
+                Dim Form As New CleanDiskForm()
+                Form.ShowDialog(ParentForm)
+            End Sub
+
+            Public Function ConvertFirstTrack(FilePath As String) As (Result As Boolean, FileName As String)
+                Dim TempPath = InitTempImagePath()
+
+                If TempPath = "" Then
+                    Return (False, "")
+                End If
+
+                Dim FileName = GenerateUniqueFileName(TempPath, "temp.ima")
+
+                Dim Builder = New CommandLineBuilder(CommandLineBuilder.CommandAction.convert) With {
                 .InFile = FilePath,
                 .OutFile = FileName,
                 .Format = "ibm.scan",
                 .Heads = CommandLineBuilder.TrackHeads.head0
             }
-            Builder.AddCylinder(0)
+                Builder.AddCylinder(0)
 
-            ConsoleProcessRunner.RunProcess(GreaseweazleSettings.AppPath, Builder.Arguments, captureOutput:=False, captureError:=False)
+                ConsoleProcessRunner.RunProcess(GreaseweazleSettings.AppPath, Builder.Arguments, captureOutput:=False, captureError:=False)
 
-            Return (IO.File.Exists(FileName), FileName)
-        End Function
+                Return (IO.File.Exists(FileName), FileName)
+            End Function
 
-        Public Sub DisplayInvalidApplicationPathMsg()
-            MessageBox.Show(My.Resources.Dialog_InvalidApplicationPath, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error)
-        End Sub
+            Public Sub DisplayInvalidApplicationPathMsg()
+                MessageBox.Show(My.Resources.Dialog_InvalidApplicationPath, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error)
+            End Sub
 
-        Public Sub EraseDisk(ParentForm As Form)
-            Dim Form As New EraseDiskForm()
-            Form.ShowDialog(ParentForm)
-        End Sub
+            Public Sub EraseDisk(ParentForm As Form)
+                Dim Form As New EraseDiskForm()
+                Form.ShowDialog(ParentForm)
+            End Sub
 
-        Public Function GetFirstRawFile(FilePath As String) As String
-            Dim RawFileName As String = ""
+            Public Function GetFirstRawFile(FilePath As String) As String
+                Dim RawFileName As String = ""
 
-            For Each file In IO.Directory.EnumerateFiles(FilePath, "*.raw", IO.SearchOption.TopDirectoryOnly)
-                Dim name = IO.Path.GetFileName(file)
-                Dim PrefixMatch = Regex.Match(name, REGEX_RAW_FILE, RegexOptions.IgnoreCase)
-                If PrefixMatch.Success Then
-                    RawFileName = file
-                    Exit For
-                End If
-            Next
-
-            Return RawFileName
-        End Function
-
-        Public Function GetTrackCountRaw(FilePath As String) As (Result As Boolean, Tracks As Integer, Sides As Integer)
-            Dim TrackCount As Integer = 0
-            Dim SideCount As Integer = 0
-
-            If String.IsNullOrWhiteSpace(FilePath) OrElse Not IO.File.Exists(FilePath) Then
-                Return (False, TrackCount, SideCount)
-            End If
-
-            If Not FilePath.EndsWith(".raw", StringComparison.OrdinalIgnoreCase) Then
-                Return (False, TrackCount, SideCount)
-            End If
-
-            Dim ParentDir = IO.Path.GetDirectoryName(FilePath)
-            If String.IsNullOrEmpty(ParentDir) OrElse Not IO.Directory.Exists(ParentDir) Then
-                Return (False, TrackCount, SideCount)
-            End If
-
-            Dim BaseName = IO.Path.GetFileName(FilePath)
-            Dim PrefixMatch = Regex.Match(BaseName, REGEX_RAW_FILE, RegexOptions.IgnoreCase)
-            If Not PrefixMatch.Success Then
-                Return (False, TrackCount, SideCount)
-            End If
-
-            Dim Prefix As String = PrefixMatch.Groups("diskId").Value
-            Dim rx As New Regex(REGEX_RAW_FILE, RegexOptions.IgnoreCase)
-
-            For Each file In IO.Directory.EnumerateFiles(ParentDir, Prefix & "*.raw", IO.SearchOption.TopDirectoryOnly)
-                Dim name = IO.Path.GetFileName(file)
-                Dim m = rx.Match(name)
-                If m.Success Then
-                    Dim diskId As String = m.Groups("diskId").Value
-                    If String.Equals(diskId, Prefix, StringComparison.OrdinalIgnoreCase) Then
-                        Dim trk As Integer = Integer.Parse(m.Groups("track").Value)
-                        Dim side As Integer = Integer.Parse(m.Groups("side").Value)
-
-                        If trk >= TrackCount Then
-                            TrackCount = trk + 1
-                        End If
-
-                        If side >= SideCount Then
-                            SideCount = side + 1
-                        End If
+                For Each file In IO.Directory.EnumerateFiles(FilePath, "*.raw", IO.SearchOption.TopDirectoryOnly)
+                    Dim name = IO.Path.GetFileName(file)
+                    Dim PrefixMatch = Regex.Match(name, REGEX_RAW_FILE, RegexOptions.IgnoreCase)
+                    If PrefixMatch.Success Then
+                        RawFileName = file
+                        Exit For
                     End If
-                End If
-            Next
+                Next
 
-            Return (True, TrackCount, SideCount)
-        End Function
+                Return RawFileName
+            End Function
 
-        Public Function GetTrackCountSCP(FilePath As String) As (Result As Boolean, Tracks As Integer, Sides As Integer)
-            If String.IsNullOrWhiteSpace(FilePath) OrElse Not IO.File.Exists(FilePath) Then
-                Return (False, 0, 0)
-            End If
+            Public Function ImportFluxImage(FilePath As String, ParentForm As Form) As (Result As Boolean, OutputFile As String, NewFileName As String)
+                Dim FileExt = IO.Path.GetExtension(FilePath).ToLower
+                Dim TrackCount As Integer = 0
+                Dim SideCount As Integer = 0
 
-            If Not FilePath.EndsWith(".scp", StringComparison.OrdinalIgnoreCase) Then
-                Return (False, 0, 0)
-            End If
-
-            Using fs As New IO.FileStream(FilePath, IO.FileMode.Open, IO.FileAccess.Read, IO.FileShare.Read)
-                Using br As New IO.BinaryReader(fs, System.Text.Encoding.ASCII, leaveOpen:=False)
-                    Dim sig = br.ReadBytes(3) ' "SCP"
-                    If sig.Length <> 3 OrElse sig(0) <> AscW("S"c) OrElse sig(1) <> AscW("C"c) OrElse sig(2) <> AscW("P"c) Then
-                        Return (False, 0, 0)
+                If FileExt = ".raw" Then
+                    Dim Response = GetTrackCountRaw(FilePath)
+                    If Not Response.Result Then
+                        MsgBox(My.Resources.Dialog_InvalidKryofluxFile, MsgBoxStyle.Exclamation)
+                        Return (False, "", "")
+                    Else
+                        TrackCount = Response.Tracks
+                        SideCount = Response.Sides
                     End If
-
-                    ' Seek to relevant header bytes
-                    fs.Position = &H6
-                    Dim startTrack As Integer = br.ReadByte()  ' byte 0x06
-                    Dim endTrack As Integer = br.ReadByte()    ' byte 0x07
-                    Dim flags As Integer = br.ReadByte()       ' byte 0x08
-                    Dim heads As Integer = br.ReadByte()       ' byte 0x0A
-
-                    Dim sideCount As Integer
-                    Select Case heads
-                        Case 0 : sideCount = 2
-                        Case 1, 2 : sideCount = 1
-                        Case Else : sideCount = 2
-                    End Select
-
-                    Return (True, endTrack \ sideCount + 1, sideCount)
-                End Using
-            End Using
-        End Function
-
-        Public Function ImportFluxImage(FilePath As String, ParentForm As Form) As (Result As Boolean, OutputFile As String, NewFileName As String)
-            Dim FileExt = IO.Path.GetExtension(FilePath).ToLower
-            Dim TrackCount As Integer = 0
-            Dim SideCount As Integer = 0
-
-            If FileExt = ".raw" Then
-                Dim Response = GetTrackCountRaw(FilePath)
-                If Not Response.Result Then
-                    MsgBox(My.Resources.Dialog_InvalidKryofluxFile, MsgBoxStyle.Exclamation)
+                ElseIf FileExt = ".scp" Then
+                    Dim Response = GetTrackCountSCP(FilePath)
+                    If Not Response.Result Then
+                        MsgBox(My.Resources.Dialog_InvalidSCPFile, MsgBoxStyle.Exclamation)
+                    Else
+                        TrackCount = Response.Tracks
+                        SideCount = Response.Sides
+                    End If
+                Else
+                    MsgBox(My.Resources.Dialog_InvalidFileType, MsgBoxStyle.Exclamation)
                     Return (False, "", "")
-                Else
-                    TrackCount = Response.Tracks
-                    SideCount = Response.Sides
                 End If
-            ElseIf FileExt = ".scp" Then
-                Dim Response = GetTrackCountSCP(FilePath)
-                If Not Response.Result Then
-                    MsgBox(My.Resources.Dialog_InvalidSCPFile, MsgBoxStyle.Exclamation)
-                Else
-                    TrackCount = Response.Tracks
-                    SideCount = Response.Sides
+
+                If SideCount > 2 Then
+                    SideCount = 2
                 End If
-            Else
-                MsgBox(My.Resources.Dialog_InvalidFileType, MsgBoxStyle.Exclamation)
+
+                If TrackCount > 42 And TrackCount < 80 Then
+                    TrackCount = 80
+                End If
+
+                Dim Form As New ImageImportForm(FilePath, TrackCount, SideCount)
+                If Form.ShowDialog(ParentForm) = DialogResult.OK Then
+                    If Not String.IsNullOrEmpty(Form.OutputFilePath) Then
+                        Return (True, Form.OutputFilePath, Form.GetNewFileName)
+                    End If
+                End If
+
                 Return (False, "", "")
-            End If
+            End Function
 
-            If SideCount > 2 Then
-                SideCount = 2
-            End If
-
-            If TrackCount > 42 And TrackCount < 80 Then
-                TrackCount = 80
-            End If
-
-            Dim Form As New ImageImportForm(FilePath, TrackCount, SideCount)
-            If Form.ShowDialog(ParentForm) = DialogResult.OK Then
-                If Not String.IsNullOrEmpty(Form.OutputFilePath) Then
-                    Return (True, Form.OutputFilePath, Form.GetNewFileName)
+            Public Sub InfoDisplay(ParentForm As Form)
+                If Not GreaseweazleSettings.IsPathValid Then
+                    DisplayInvalidApplicationPathMsg()
+                    Exit Sub
                 End If
-            End If
 
-            Return (False, "", "")
-        End Function
+                ParentForm.Cursor = Cursors.WaitCursor
+                Application.DoEvents()
 
-        Public Sub InfoDisplay(ParentForm As Form)
-            If Not GreaseweazleSettings.IsPathValid Then
-                DisplayInvalidApplicationPathMsg()
-                Exit Sub
-            End If
-
-            ParentForm.Cursor = Cursors.WaitCursor
-            Application.DoEvents()
-
-            Dim Builder = New CommandLineBuilder(CommandLineBuilder.CommandAction.info) With {
+                Dim Builder = New CommandLineBuilder(CommandLineBuilder.CommandAction.info) With {
                 .Device = GreaseweazleSettings.COMPort
             }
-            Dim Arguments = Builder.Arguments
+                Dim Arguments = Builder.Arguments
 
-            Dim Content As String = ""
-            Try
-                Dim Result = ConsoleProcessRunner.RunProcess(GreaseweazleSettings.AppPath, Arguments)
-                Content = Result.CombinedOutput
-            Finally
-                ParentForm.Cursor = Cursors.Default
-            End Try
+                Dim Content As String = ""
+                Try
+                    Dim Result = ConsoleProcessRunner.RunProcess(GreaseweazleSettings.AppPath, Arguments)
+                    Content = Result.CombinedOutput
+                Finally
+                    ParentForm.Cursor = Cursors.Default
+                End Try
 
-            Dim frmTextView = New TextViewForm("Greaseweazle - " & My.Resources.Label_Info, Content, False, True, "GreaseweazleInfo.txt")
-            frmTextView.ShowDialog(ParentForm)
-        End Sub
+                Dim frmTextView = New TextViewForm("Greaseweazle - " & My.Resources.Label_Info, Content, False, True, "GreaseweazleInfo.txt")
+                frmTextView.ShowDialog(ParentForm)
+            End Sub
 
-        Public Sub InitializeCombo(Combo As ComboBox, DataSource As Object, CurrentValue As Object)
-            Combo.DisplayMember = "Key"
-            Combo.ValueMember = "Value"
-            Combo.DataSource = DataSource
-            Combo.DropDownStyle = ComboBoxStyle.DropDownList
+            Public Sub InitializeCombo(Combo As ComboBox, DataSource As Object, CurrentValue As Object)
+                Combo.DisplayMember = "Key"
+                Combo.ValueMember = "Value"
+                Combo.DataSource = DataSource
+                Combo.DropDownStyle = ComboBoxStyle.DropDownList
 
-            If CurrentValue IsNot Nothing Then
-                Combo.SelectedValue = CurrentValue
-            End If
-        End Sub
+                If CurrentValue IsNot Nothing Then
+                    Combo.SelectedValue = CurrentValue
+                End If
+            End Sub
 
-        Public Function OpenFluxImage(ParentForm As Form) As String
-            Using Dialog As New OpenFileDialog With {
+            Public Function OpenFluxImage(ParentForm As Form) As String
+                Using Dialog As New OpenFileDialog With {
                 .Title = "Open Flux Image",
                 .Filter = "Flux dumps (*.raw;*.scp)|*.raw;*.scp|" &
                     "KryoFlux RAW (*.raw)|*.raw|" &
@@ -296,20 +226,20 @@ Namespace Greaseweazle
                 .Multiselect = False
             }
 
-                If Dialog.ShowDialog(ParentForm) = DialogResult.OK Then
-                    Return Dialog.FileName
-                End If
-            End Using
+                    If Dialog.ShowDialog(ParentForm) = DialogResult.OK Then
+                        Return Dialog.FileName
+                    End If
+                End Using
 
-            Return Nothing
-        End Function
+                Return Nothing
+            End Function
 
-        Public Sub PopulateDrives(Combo As ComboBox, Format As FloppyMediaType)
-            Dim DriveList As New List(Of DriveOption)
+            Public Sub PopulateDrives(Combo As ComboBox, Format As FloppyMediaType)
+                Dim DriveList As New List(Of DriveOption)
 
-            Dim SelectedOption As DriveOption = Nothing
+                Dim SelectedOption As DriveOption = Nothing
 
-            Dim AddItem As Action(Of String, String, Byte) =
+                Dim AddItem As Action(Of String, String, Byte) =
                 Sub(labelPrefix As String, id As String, index As Byte)
                     Dim t = GreaseweazleSettings.DriveType(index)
                     If t = FloppyMediaType.MediaUnknown Then
@@ -329,145 +259,87 @@ Namespace Greaseweazle
                     End If
                 End Sub
 
-            If GreaseweazleSettings.Interface = Settings.GreaseweazleInterface.Shugart Then
-                AddItem("DS0", "0", 0)
-                AddItem("DS1", "1", 1)
-                AddItem("DS2", "2", 2)
-            Else
-                AddItem("A", "A", 0)
-                AddItem("B", "B", 1)
-            End If
+                If GreaseweazleSettings.Interface = Settings.GreaseweazleInterface.Shugart Then
+                    AddItem("DS0", "0", 0)
+                    AddItem("DS1", "1", 1)
+                    AddItem("DS2", "2", 2)
+                Else
+                    AddItem("A", "A", 0)
+                    AddItem("B", "B", 1)
+                End If
 
-            Dim placeholder As DriveOption = Nothing
-            If DriveList.Count <> 1 Then
-                placeholder = New DriveOption With {
+                Dim placeholder As DriveOption = Nothing
+                If DriveList.Count <> 1 Then
+                    placeholder = New DriveOption With {
                     .Id = "",
                     .Type = FloppyMediaType.MediaUnknown,
                     .Tracks = 0,
                     .Label = IIf(DriveList.Count = 0, My.Resources.Label_NoDrivesFound, My.Resources.Label_PleaseSelect)
                 }
-                DriveList.Insert(0, placeholder)
-            End If
-
-            With Combo
-                .DropDownStyle = ComboBoxStyle.DropDownList
-                .DataSource = DriveList
-                .DisplayMember = NameOf(DriveOption.Label)
-                .ValueMember = ""
-                .SelectedItem = If(SelectedOption, placeholder)
-                If .SelectedIndex = -1 Then
-                    .SelectedIndex = 0
+                    DriveList.Insert(0, placeholder)
                 End If
-            End With
-        End Sub
 
-        Public Sub PopulateImageFormats(Combo As ComboBox, Opt As DriveOption)
-            If Opt.Id = "" Then
-                ClearImageFormats(Combo)
-            Else
-                PopulateImageFormats(Combo, Opt.SelectedFormat, Opt.DetectedFormat)
-            End If
-        End Sub
+                With Combo
+                    .DropDownStyle = ComboBoxStyle.DropDownList
+                    .DataSource = DriveList
+                    .DisplayMember = NameOf(DriveOption.Label)
+                    .ValueMember = ""
+                    .SelectedItem = If(SelectedOption, placeholder)
+                    If .SelectedIndex = -1 Then
+                        .SelectedIndex = 0
+                    End If
+                End With
+            End Sub
 
-        Public Sub PopulateImageFormats(Combo As ComboBox, SelectedFormat As FloppyDiskFormat?, DetectedFormat As FloppyDiskFormat?)
-            Dim list = FloppyDiskFormatGetComboList()
+            Public Function ReadFirstTrack(DriveId As String) As (Result As Boolean, FileName As String, Output As String)
+                Dim TempPath = InitTempImagePath()
 
-            For i As Integer = 0 To list.Count - 1
-                Dim item = list(i)
-                If DetectedFormat.HasValue AndAlso item.Format = DetectedFormat.Value Then
-                    item.Detected = True
-                Else
-                    item.Detected = False
+                If TempPath = "" Then
+                    Return (False, "", "")
                 End If
-                list(i) = item
-            Next
 
-            With Combo
-                .DisplayMember = "Description"
-                .ValueMember = Nothing
-                .DataSource = list
-                .DropDownStyle = ComboBoxStyle.DropDownList
-            End With
+                Dim FileName = GenerateUniqueFileName(TempPath, "temp.ima")
 
-            If SelectedFormat.HasValue Then
-                Dim idx = list.FindIndex(Function(p) p.Format = SelectedFormat.Value)
-                If idx >= 0 Then
-                    Combo.SelectedIndex = idx
-                End If
-            End If
-        End Sub
-
-        Public Function ReadFirstTrack(DriveId As String) As (Result As Boolean, FileName As String, Output As String)
-            Dim TempPath = InitTempImagePath()
-
-            If TempPath = "" Then
-                Return (False, "", "")
-            End If
-
-            Dim FileName = GenerateUniqueFileName(TempPath, "temp.ima")
-
-            Dim Builder = New CommandLineBuilder(CommandLineBuilder.CommandAction.read) With {
+                Dim Builder = New CommandLineBuilder(CommandLineBuilder.CommandAction.read) With {
                 .Device = GreaseweazleSettings.COMPort,
                 .Drive = DriveId,
                 .File = FileName,
                 .Format = "ibm.scan",
                 .Heads = CommandLineBuilder.TrackHeads.head0
             }
-            Builder.AddCylinder(0)
+                Builder.AddCylinder(0)
 
-            Dim Result = ConsoleProcessRunner.RunProcess(GreaseweazleSettings.AppPath, Builder.Arguments, captureOutput:=True, captureError:=True)
+                Dim Result = ConsoleProcessRunner.RunProcess(GreaseweazleSettings.AppPath, Builder.Arguments, captureOutput:=True, captureError:=True)
 
-            Return (IO.File.Exists(FileName), FileName, Result.CombinedOutput)
-        End Function
-        Public Function ReadFluxImage(ParentForm As Form) As (Result As Boolean, OutputFile As String, NewFileName As String)
-            Dim Form As New ReadDiskForm()
-            If Form.ShowDialog(ParentForm) = DialogResult.OK Then
-                If Not String.IsNullOrEmpty(Form.OutputFilePath) Then
-                    Return (True, Form.OutputFilePath, Form.GetNewFileName)
+                Return (IO.File.Exists(FileName), FileName, Result.CombinedOutput)
+            End Function
+            Public Function ReadFluxImage(ParentForm As Form) As (Result As Boolean, OutputFile As String, NewFileName As String)
+                Dim Form As New ReadDiskForm()
+                If Form.ShowDialog(ParentForm) = DialogResult.OK Then
+                    If Not String.IsNullOrEmpty(Form.OutputFilePath) Then
+                        Return (True, Form.OutputFilePath, Form.GetNewFileName)
+                    End If
                 End If
-            End If
 
-            Return (False, "", "")
-        End Function
-        Public Sub Reset(TextBox As TextBox)
-            Dim Builder = New CommandLineBuilder(CommandLineBuilder.CommandAction.reset) With {
+                Return (False, "", "")
+            End Function
+            Public Sub Reset(TextBox As TextBox)
+                Dim Builder = New CommandLineBuilder(CommandLineBuilder.CommandAction.reset) With {
                 .Device = GreaseweazleSettings.COMPort
             }
 
-            Dim Arguments = Builder.Arguments
-            Dim Result = ConsoleProcessRunner.RunProcess(GreaseweazleSettings.AppPath, Arguments)
-            TextBox.Text = Result.CombinedOutput
+                Dim Arguments = Builder.Arguments
+                Dim Result = ConsoleProcessRunner.RunProcess(GreaseweazleSettings.AppPath, Arguments)
+                TextBox.Text = Result.CombinedOutput
 
-            MsgBox(My.Resources.Dialog_GreaseweazleReset, MsgBoxStyle.Information)
-        End Sub
+                MsgBox(My.Resources.Dialog_GreaseweazleReset, MsgBoxStyle.Information)
+            End Sub
 
-        Public Sub WriteImageToDisk(ParentForm As Form, Image As DiskImageContainer)
-            Dim Form As New WriteDiskForm(Image.Disk, Image.ImageData.FileName)
-            Form.ShowDialog(ParentForm)
-        End Sub
+            Public Sub WriteImageToDisk(ParentForm As Form, Image As DiskImageContainer)
+                Dim Form As New WriteDiskForm(Image.Disk, Image.ImageData.FileName)
+                Form.ShowDialog(ParentForm)
+            End Sub
 
-        Private Sub ClearImageFormats(Combo As ComboBox)
-            Dim list As New List(Of FloppyDiskParams) From {
-                CreatePlaceholderParams(My.Resources.Label_PleaseSelect)
-            }
-
-            With Combo
-                .DisplayMember = "Description"
-                .ValueMember = Nothing
-                .DataSource = list
-                .DropDownStyle = ComboBoxStyle.DropDownList
-            End With
-        End Sub
-        Public Class DriveOption
-            Public Property DetectedFormat As FloppyDiskFormat = FloppyDiskFormat.FloppyUnknown
-            Public Property Id As String
-            Public Property Label As String
-            Public Property SelectedFormat As FloppyDiskFormat = FloppyDiskFormat.FloppyUnknown
-            Public Property Tracks As Byte
-            Public Property Type As FloppyMediaType = FloppyMediaType.MediaUnknown
-            Public Overrides Function ToString() As String
-                Return Label
-            End Function
-        End Class
-    End Module
+        End Module
+    End Namespace
 End Namespace

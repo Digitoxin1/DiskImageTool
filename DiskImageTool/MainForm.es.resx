@@ -340,7 +340,7 @@
     <value>Abrir en una nueva instancia</value>
   </data>
   <data name="MenuOptionsGreaseweazle.Text" xml:space="preserve">
-    <value>Greaseweazle Configuración</value>
+    <value>&amp;Greaseweazle Configuración</value>
   </data>
   <data name="MenuGreaseweazleBandwidth.Text" xml:space="preserve">
     <value>Informar del &amp;ancho de banda</value>
@@ -362,5 +362,11 @@
   </data>
   <data name="MenuGreaseweazleRead.Text" xml:space="preserve">
     <value>&amp;Leer disco</value>
+  </data>
+  <data name="MenuKryofluxImport.Text" xml:space="preserve">
+    <value>&amp;Importar imagen de flujo</value>
+  </data>
+  <data name="MenuOptionsKryoflux.Text" xml:space="preserve">
+    <value>&amp;Kryoflux Configuración</value>
   </data>
 </root>

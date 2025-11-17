@@ -172,40 +172,59 @@
     <Compile Include="Filters\ImageFilters.vb" />
     <Compile Include="Filters\ImageFiltersBase.vb" />
     <Compile Include="DiskImageLib.vb" />
-    <Compile Include="Globals.vb" />
-    <Compile Include="Greaseweazle\Forms\CleanDiskForm.vb">
+    <Compile Include="Flux\Greaseweazle\Forms\BaseForm.vb">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Greaseweazle\CommandLineBuilder.vb" />
-    <Compile Include="Greaseweazle\ConsoleOutputParser.vb" />
-    <Compile Include="Greaseweazle\Enums.vb" />
-    <Compile Include="Greaseweazle\Forms\ConfigurationForm.Designer.vb">
+    <Compile Include="Flux\Kryoflux\CommandLineBuilder.vb" />
+    <Compile Include="Flux\Kryoflux\ConsoleOutputParser.vb" />
+    <Compile Include="Flux\Kryoflux\Forms\BaseForm.vb">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Flux\Kryoflux\Forms\ConfigurationForm.Designer.vb">
       <DependentUpon>ConfigurationForm.vb</DependentUpon>
     </Compile>
-    <Compile Include="Greaseweazle\Forms\ConfigurationForm.vb">
+    <Compile Include="Flux\Kryoflux\Forms\ConfigurationForm.vb">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Greaseweazle\Forms\EraseDiskForm.vb">
+    <Compile Include="Flux\Kryoflux\Forms\ImageImportForm.vb">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Greaseweazle\GreaseweazleLib.vb" />
-    <Compile Include="Greaseweazle\Forms\BaseForm.Designer.vb">
+    <Compile Include="Flux\Kryoflux\KryofluxLib.vb" />
+    <Compile Include="Flux\SharedLib.vb" />
+    <Compile Include="Globals.vb" />
+    <Compile Include="Flux\Greaseweazle\Forms\CleanDiskForm.vb">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Flux\Greaseweazle\CommandLineBuilder.vb" />
+    <Compile Include="Flux\Greaseweazle\ConsoleOutputParser.vb" />
+    <Compile Include="Flux\Greaseweazle\Enums.vb" />
+    <Compile Include="Flux\Greaseweazle\Forms\ConfigurationForm.Designer.vb">
+      <DependentUpon>ConfigurationForm.vb</DependentUpon>
+    </Compile>
+    <Compile Include="Flux\Greaseweazle\Forms\ConfigurationForm.vb">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Flux\Greaseweazle\Forms\EraseDiskForm.vb">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Flux\Greaseweazle\GreaseweazleLib.vb" />
+    <Compile Include="Flux\BaseForm.Designer.vb">
       <DependentUpon>BaseForm.vb</DependentUpon>
     </Compile>
-    <Compile Include="Greaseweazle\Forms\BaseForm.vb">
+    <Compile Include="Flux\BaseForm.vb">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Greaseweazle\Forms\ReadDiskForm.vb">
+    <Compile Include="Flux\Greaseweazle\Forms\ReadDiskForm.vb">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Greaseweazle\Settings.vb" />
-    <Compile Include="Greaseweazle\Forms\ImageImportForm.vb">
+    <Compile Include="Flux\Greaseweazle\Settings.vb" />
+    <Compile Include="Flux\Greaseweazle\Forms\ImageImportForm.vb">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Greaseweazle\Forms\WriteDiskForm.vb">
+    <Compile Include="Flux\Greaseweazle\Forms\WriteDiskForm.vb">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Kryoflux\Settings.vb" />
+    <Compile Include="Flux\Kryoflux\Settings.vb" />
     <Compile Include="Lib\ConsoleProcessRunner.vb" />
     <Compile Include="MenuHelp.vb" />
     <Compile Include="MenuTools.vb" />
@@ -513,6 +532,18 @@
     <Compile Include="Lib\WindowsAPI.vb" />
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="Flux\Kryoflux\Forms\ConfigurationForm.de.resx">
+      <DependentUpon>ConfigurationForm.vb</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Flux\Kryoflux\Forms\ConfigurationForm.es.resx">
+      <DependentUpon>ConfigurationForm.vb</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Flux\Kryoflux\Forms\ConfigurationForm.fr.resx">
+      <DependentUpon>ConfigurationForm.vb</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Flux\Kryoflux\Forms\ConfigurationForm.resx">
+      <DependentUpon>ConfigurationForm.vb</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Forms\AboutBox.resx">
       <DependentUpon>AboutBox.vb</DependentUpon>
       <SubType>Designer</SubType>
@@ -757,28 +788,28 @@
     <EmbeddedResource Include="Forms\VolumeSerialNumberForm.resx">
       <DependentUpon>VolumeSerialNumberForm.vb</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Greaseweazle\Forms\ConfigurationForm.de.resx">
+    <EmbeddedResource Include="Flux\Greaseweazle\Forms\ConfigurationForm.de.resx">
       <DependentUpon>ConfigurationForm.vb</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Greaseweazle\Forms\ConfigurationForm.es.resx">
+    <EmbeddedResource Include="Flux\Greaseweazle\Forms\ConfigurationForm.es.resx">
       <DependentUpon>ConfigurationForm.vb</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Greaseweazle\Forms\ConfigurationForm.fr.resx">
+    <EmbeddedResource Include="Flux\Greaseweazle\Forms\ConfigurationForm.fr.resx">
       <DependentUpon>ConfigurationForm.vb</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Greaseweazle\Forms\ConfigurationForm.resx">
+    <EmbeddedResource Include="Flux\Greaseweazle\Forms\ConfigurationForm.resx">
       <DependentUpon>ConfigurationForm.vb</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Greaseweazle\Forms\BaseForm.de.resx">
+    <EmbeddedResource Include="Flux\BaseForm.de.resx">
       <DependentUpon>BaseForm.vb</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Greaseweazle\Forms\BaseForm.es.resx">
+    <EmbeddedResource Include="Flux\BaseForm.es.resx">
       <DependentUpon>BaseForm.vb</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Greaseweazle\Forms\BaseForm.fr.resx">
+    <EmbeddedResource Include="Flux\BaseForm.fr.resx">
       <DependentUpon>BaseForm.vb</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Greaseweazle\Forms\BaseForm.resx">
+    <EmbeddedResource Include="Flux\BaseForm.resx">
       <DependentUpon>BaseForm.vb</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="MainForm.de.resx">

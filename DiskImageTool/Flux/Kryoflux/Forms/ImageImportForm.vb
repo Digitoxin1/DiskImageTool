@@ -2,20 +2,18 @@
 Imports DiskImageTool.DiskImage.FloppyDiskFunctions
 
 Namespace Flux
-    Namespace Greaseweazle
+    Namespace Kryoflux
         Public Class ImageImportForm
             Inherits BaseForm
 
             Private WithEvents ButtonProcess As Button
             Private WithEvents CheckBoxDoublestep As CheckBox
             Private WithEvents ComboImageFormat As ComboBox
-            Private WithEvents ComboOutputType As ComboBox
             Private WithEvents TextBoxFileName As TextBox
             Private ReadOnly _Initialized As Boolean = False
             Private ReadOnly _InputFilePath As String
             Private ReadOnly _SideCount As Integer
             Private ReadOnly _TrackCount As Integer
-            Private _CachedOutputTypeValue As GreaseweazleOutputType = GreaseweazleOutputType.IMA
             Private _DoubleStep As Boolean = False
             Private _OutputFilePath As String = ""
             Private _ProcessRunning As Boolean = False
@@ -29,7 +27,6 @@ Namespace Flux
                 GridReset(_TrackCount, _SideCount)
                 InitializeControls()
                 Dim ImageFormat = ReadImageFormat()
-                PopulateOutputTypes()
                 PopulateImageFormats(ComboImageFormat, ImageFormat, ImageFormat)
 
                 SetNewFileName()
@@ -47,9 +44,7 @@ Namespace Flux
             End Property
 
             Public Function GetNewFileName() As String
-                Dim OutputType As GreaseweazleOutputType = ComboOutputType.SelectedValue
-
-                Return TextBoxFileName.Text & GreaseweazleOutputTypeFileExt(OutputType)
+                Return TextBoxFileName.Text & ".ima"
             End Function
 
             Protected Overrides Sub OnAfterBaseFormClosing(e As FormClosingEventArgs)
@@ -65,29 +60,20 @@ Namespace Flux
                 _OutputFilePath = ""
             End Sub
 
-            Private Function GenerateCommandLine(DiskParams As FloppyDiskParams, OutputType As GreaseweazleOutputType, DoubleStep As Boolean) As String
-                Dim Builder = New CommandLineBuilder(CommandLineBuilder.CommandAction.convert) With {
-                    .InFile = _InputFilePath,
-                    .OutFile = _OutputFilePath
-                }
+            Private Function GenerateCommandLine(DiskParams As FloppyDiskParams, DoubleStep As Boolean) As String
+                'Dim Builder = New CommandLineBuilder(CommandLineBuilder.CommandAction.convert) With {
+                '    .InFile = _InputFilePath,
+                '    .OutFile = _OutputFilePath
+                '}
 
-                If Not DiskParams.IsStandard Then
-                    OutputType = GreaseweazleOutputType.HFE
-                End If
+                'Dim ImageFormat = GreaseweazleImageFormatFromFloppyDiskFormat(DiskParams.Format)
+                'Builder.Format = GreaseweazleImageFormatCommandLine(ImageFormat)
 
-                If OutputType <> GreaseweazleOutputType.HFE Then
-                    Dim ImageFormat = GreaseweazleImageFormatFromFloppyDiskFormat(DiskParams.Format)
-                    Builder.Format = GreaseweazleImageFormatCommandLine(ImageFormat)
-                Else
-                    Builder.BitRate = DiskParams.BitRateKbps
-                    Builder.AdjustSpeed = DiskParams.RPM & "rpm"
-                End If
+                'If DoubleStep Then
+                '    Builder.HeadStep = 2
+                'End If
 
-                If DoubleStep Then
-                    Builder.HeadStep = 2
-                End If
-
-                Return Builder.Arguments
+                'Return Builder.Arguments
             End Function
 
             Private Sub InitializeControls()
@@ -111,18 +97,6 @@ Namespace Flux
                 ComboImageFormat = New ComboBox With {
                     .Anchor = AnchorStyles.Left,
                     .Width = 200
-                }
-
-                Dim OutputTypeLabel = New Label With {
-                    .Text = My.Resources.Label_OutputType,
-                    .Anchor = AnchorStyles.Left,
-                    .AutoSize = True,
-                    .Margin = New Padding(12, 3, 3, 3)
-                }
-
-                ComboOutputType = New ComboBox With {
-                    .Anchor = AnchorStyles.Left,
-                    .Width = 175
                 }
 
                 CheckBoxDoublestep = New CheckBox With {
@@ -176,9 +150,6 @@ Namespace Flux
                     .Controls.Add(ImageFormatLabel, 0, Row)
                     .Controls.Add(ComboImageFormat, 1, Row)
 
-                    .Controls.Add(OutputTypeLabel, 2, Row)
-                    .Controls.Add(ComboOutputType, 3, Row)
-
                     .Controls.Add(CheckBoxDoublestep, 4, Row)
 
                     Row = 2
@@ -195,17 +166,6 @@ Namespace Flux
                 End With
             End Sub
 
-            Private Sub PopulateOutputTypes()
-                Dim DriveList As New List(Of KeyValuePair(Of String, GreaseweazleOutputType))
-                For Each OutputType As GreaseweazleOutputType In [Enum].GetValues(GetType(GreaseweazleOutputType))
-                    DriveList.Add(New KeyValuePair(Of String, GreaseweazleOutputType)(
-                        GreaseweazleOutputTypeDescription(OutputType), OutputType)
-                    )
-                Next
-
-                InitializeCombo(ComboOutputType, DriveList, Nothing)
-            End Sub
-
             Private Sub ProcessImage()
                 Dim DiskParams As FloppyDiskParams = ComboImageFormat.SelectedValue
 
@@ -216,10 +176,8 @@ Namespace Flux
                 ClearOutputFile()
                 ClearStatusBar()
 
-                Dim OutputType As GreaseweazleOutputType = ComboOutputType.SelectedValue
-
                 Dim TempPath = InitTempImagePath()
-                Dim FileName = "New Image" & GreaseweazleOutputTypeFileExt(OutputType)
+                Dim FileName = "New Image.ima"
 
                 If TempPath = "" Then
                     MsgBox(My.Resources.Dialog_TempPathError, MsgBoxStyle.Exclamation)
@@ -237,29 +195,29 @@ Namespace Flux
 
                 ToggleProcessRunning(True)
 
-                Dim Arguments = GenerateCommandLine(DiskParams, OutputType, DoubleStep)
-                Process.StartAsync(GreaseweazleSettings.AppPath, Arguments)
+                Dim Arguments = GenerateCommandLine(DiskParams, DoubleStep)
+                Process.StartAsync(KryofluxSettings.AppPath, Arguments)
             End Sub
 
             Private Sub ProcessOutputLine(line As String)
-                If TextBoxConsole.Text.Length > 0 Then
-                    TextBoxConsole.AppendText(Environment.NewLine)
-                End If
-                TextBoxConsole.AppendText(line)
+                'If TextBoxConsole.Text.Length > 0 Then
+                '    TextBoxConsole.AppendText(Environment.NewLine)
+                'End If
+                'TextBoxConsole.AppendText(line)
 
-                Dim TrackInfo = Parser.ParseTrackInfoRead(line)
-                If TrackInfo IsNot Nothing Then
-                    Dim Statusinfo = UpdateStatusInfo(TrackInfo, True, ActionTypeEnum.Import)
-                    UpdateTrackStatus(Statusinfo, "Reading", _DoubleStep)
-                    Return
-                End If
+                'Dim TrackInfo = Parser.ParseTrackInfoRead(line)
+                'If TrackInfo IsNot Nothing Then
+                '    Dim Statusinfo = UpdateStatusInfo(TrackInfo, True, ActionTypeEnum.Import)
+                '    UpdateTrackStatus(Statusinfo, "Reading", _DoubleStep)
+                '    Return
+                'End If
 
-                Dim TrackInfoUnexpected = Parser.ParseUnexpectedSector(line)
-                If TrackInfoUnexpected IsNot Nothing Then
-                    Dim StatusInfo = UpdateStatusInfo(TrackInfoUnexpected, ActionTypeEnum.Import)
-                    UpdateTrackStatus(StatusInfo, "Reading", _DoubleStep)
-                    Return
-                End If
+                'Dim TrackInfoUnexpected = Parser.ParseUnexpectedSector(line)
+                'If TrackInfoUnexpected IsNot Nothing Then
+                '    Dim StatusInfo = UpdateStatusInfo(TrackInfoUnexpected, ActionTypeEnum.Import)
+                '    UpdateTrackStatus(StatusInfo, "Reading", _DoubleStep)
+                '    Return
+                'End If
             End Sub
 
             Private Function ReadImageFormat() As DiskImage.FloppyDiskFormat
@@ -278,22 +236,12 @@ Namespace Flux
 
                 If CheckImageFormat Then
                     If ImageParams.IsNonImage Then
-                        OutputTypeDisabled = False
                     Else
-                        Dim ImageFormat = GreaseweazleImageFormatFromFloppyDiskFormat(ImageParams.Format)
-                        OutputTypeDisabled = (ImageFormat = GreaseweazleImageFormat.None)
-                    End If
-
-                    If ComboOutputType.Enabled AndAlso OutputTypeDisabled Then
-                        _CachedOutputTypeValue = ComboOutputType.SelectedValue
-                        ComboOutputType.SelectedValue = GreaseweazleOutputType.HFE
-                    ElseIf Not ComboOutputType.Enabled And Not OutputTypeDisabled Then
-                        ComboOutputType.SelectedValue = _CachedOutputTypeValue
+                        'Dim ImageFormat = GreaseweazleImageFormatFromFloppyDiskFormat(ImageParams.Format)
                     End If
                 End If
 
                 ComboImageFormat.Enabled = Not _ProcessRunning
-                ComboOutputType.Enabled = Not _ProcessRunning And Not OutputTypeDisabled
 
                 ButtonProcess.Enabled = ImageParams.Format <> FloppyDiskFormat.FloppyUnknown
                 If _ProcessRunning Then
@@ -372,7 +320,7 @@ Namespace Flux
                     ClearOutputFile()
                 End If
 
-                UpdateTrackStatusComplete(Aborted, _DoubleStep)
+                'UpdateTrackStatusComplete(Aborted, _DoubleStep)
                 ToggleProcessRunning(False)
             End Sub
 
