@@ -128,6 +128,9 @@
   <data name="FlowLayoutPanel1.AutoSize" type="System.Boolean, mscorlib">
     <value>True</value>
   </data>
+  <data name="BtnYes.AutoSize" type="System.Boolean, mscorlib">
+    <value>True</value>
+  </data>
   <assembly alias="System.Drawing" name="System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
   <data name="BtnYes.Location" type="System.Drawing.Point, System.Drawing">
     <value>4, 10</value>
@@ -156,6 +159,9 @@
   <data name="&gt;&gt;BtnYes.ZOrder" xml:space="preserve">
     <value>0</value>
   </data>
+  <data name="BtnNo.AutoSize" type="System.Boolean, mscorlib">
+    <value>True</value>
+  </data>
   <data name="BtnNo.Location" type="System.Drawing.Point, System.Drawing">
     <value>87, 10</value>
   </data>
@@ -182,6 +188,9 @@
   </data>
   <data name="&gt;&gt;BtnNo.ZOrder" xml:space="preserve">
     <value>1</value>
+  </data>
+  <data name="BtnCancel.AutoSize" type="System.Boolean, mscorlib">
+    <value>True</value>
   </data>
   <data name="BtnCancel.Location" type="System.Drawing.Point, System.Drawing">
     <value>170, 10</value>
@@ -210,6 +219,9 @@
   <data name="&gt;&gt;BtnCancel.ZOrder" xml:space="preserve">
     <value>2</value>
   </data>
+  <data name="BtnYesToAll.AutoSize" type="System.Boolean, mscorlib">
+    <value>True</value>
+  </data>
   <data name="BtnYesToAll.Location" type="System.Drawing.Point, System.Drawing">
     <value>253, 10</value>
   </data>
@@ -236,6 +248,9 @@
   </data>
   <data name="&gt;&gt;BtnYesToAll.ZOrder" xml:space="preserve">
     <value>3</value>
+  </data>
+  <data name="BtnNoToall.AutoSize" type="System.Boolean, mscorlib">
+    <value>True</value>
   </data>
   <data name="BtnNoToall.Location" type="System.Drawing.Point, System.Drawing">
     <value>336, 10</value>
@@ -325,7 +340,7 @@
     <value>378, 0</value>
   </data>
   <data name="LblCaption.Size" type="System.Drawing.Size, System.Drawing">
-    <value>62, 13</value>
+    <value>51, 13</value>
   </data>
   <data name="LblCaption.TabIndex" type="System.Int32, mscorlib">
     <value>0</value>

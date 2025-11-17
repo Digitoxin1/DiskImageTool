@@ -3,17 +3,18 @@ Imports System.Text.RegularExpressions
 
 Namespace Flux.Kryoflux
     Public Class ConsoleParser
-        Public Const REGEX_TRACK_INFO As String = "^(?<encoding>[^:]+): <?(?<status>\w+)\*?>?(, trk: (?<MFMTrack>\d+))?(\[(?<physicalTrack>\d+)\])?(, sec: (?<sectors>\d+))?(, bad: (?<bad>\d+))?(, mis: (?<mis>\d+))?(, \*(?<flags>\w+)( \+(?<modifiedSectors>\d+))?)?$"
-        Public Const REGEX_TRACK_STATUS As String = "^(?<track>\d+)\.(?<side>\d+)\s+:\s+(?<encoding>[^:]+): <?(?<status>\w+)\*?>?"
-        Public Const REGEX_TRACK_SUMMARY As String = "^(?<track>\d+)\.(?<side>\d+)\s+:\s+(?<details>.+)$"
-        Private ReadOnly RegExTrackInfo As New Regex(REGEX_TRACK_INFO, RegexOptions.IgnoreCase Or RegexOptions.CultureInvariant Or RegexOptions.Compiled)
+        Public Const REGEX_TRACK As String = "^(?<track>\d+)\.(?<side>\d+)\s*:\s?(?<encoding>[^:]+):\s?<?(?<status>\w+)\*?>?(,\s?trk:\s?(?<MFMTrack>\d+))?(\[(?<physicalTrack>\d+)\])?(,\s?sec:\s?(?<sectors>\d+))?(,\s?bad:\s?(?<bad>\d+))?(,\s?mis:\s?(?<mis>\d+))?(, \*(?<flags>\w+)( \+(?<modifiedSectors>\d+))?)?"
+        Public Const REGEX_TRACK_SUMMARY As String = "^(?<track>\d+)\.(?<side>\d+)\s*:\s?(?<details>.+)"
+        Public Const REGEX_TRACK_DETAILS As String = "^(?<encoding>[^:]+):\s?<?(?<status>\w+)\*?>?(,\s?trk:\s?(?<MFMTrack>\d+))?(\[(?<physicalTrack>\d+)\])?(,\s?sec:\s?(?<sectors>\d+))?(,\s?bad:\s?(?<bad>\d+))?(,\s?mis:\s?(?<mis>\d+))?(, \*(?<flags>\w+)( \+(?<modifiedSectors>\d+))?)?"
+
+        Private ReadOnly RegExTrackDetails As New Regex(REGEX_TRACK_DETAILS, RegexOptions.IgnoreCase Or RegexOptions.CultureInvariant Or RegexOptions.Compiled)
         Private ReadOnly RegExTrackSummary As New Regex(REGEX_TRACK_SUMMARY, RegexOptions.IgnoreCase Or RegexOptions.CultureInvariant Or RegexOptions.Compiled)
         Public Function ParseTrackInfo(line As String) As TrackInfo
             If String.IsNullOrWhiteSpace(line) Then
                 Return Nothing
             End If
 
-            Dim Match = RegExTrackInfo.Match(line)
+            Dim Match = RegExTrackDetails.Match(line)
             If Not Match.Success Then
                 Return Nothing
             End If

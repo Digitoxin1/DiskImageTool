@@ -404,27 +404,29 @@ Namespace Flux.Greaseweazle
             TextBoxConsole.AppendText(line)
 
             If _TrackRange Is Nothing Then
-                _TrackRange = _TrackStatus.ParseTrackRange(line)
+                _TrackRange = _TrackStatus.ParseDiskRange(line)
             End If
 
-            Dim TrackInfo = _TrackStatus.ParseTrackInfoRead(line)
+            Dim Summary = _TrackStatus.ParseTrackReadSummary(line)
+            If Summary IsNot Nothing Then
+                Dim Details = _TrackStatus.ParseTrackReadDetails(Summary.Details)
+                If Details IsNot Nothing Then
+                    Dim Statusinfo = _TrackStatus.UpdateStatusInfo(Summary, Details, False, TrackStatus.ActionTypeEnum.Read)
+                    _TrackStatus.UpdateTrackStatus(Statusinfo, TrackStatus.ActionTypeEnum.Read, _DoubleStep)
+                    Return
+                End If
 
-            If TrackInfo IsNot Nothing Then
-                Dim Statusinfo = _TrackStatus.UpdateStatusInfo(TrackInfo, False, TrackStatus.ActionTypeEnum.Read)
-                _TrackStatus.UpdateTrackStatus(Statusinfo, TrackStatus.ActionTypeEnum.Read, _DoubleStep)
-                Return
+                Dim FailedSectors = _TrackStatus.ParseTrackReadFailed(Summary.Details)
+                If FailedSectors.HasValue Then
+                    Dim Statusinfo = _TrackStatus.UpdateStatusInfo(Summary, FailedSectors.Value, TrackStatus.ActionTypeEnum.Read)
+                    _TrackStatus.UpdateTrackStatus(Statusinfo, TrackStatus.ActionTypeEnum.Read, _DoubleStep)
+                    Return
+                End If
             End If
 
-            Dim TrackInfoUnexpected = _TrackStatus.ParseUnexpectedSector(line)
+            Dim TrackInfoUnexpected = _TrackStatus.ParseTrackUnexpected(line)
             If TrackInfoUnexpected IsNot Nothing Then
                 Dim StatusInfo = _TrackStatus.UpdateStatusInfo(TrackInfoUnexpected, TrackStatus.ActionTypeEnum.Read)
-                _TrackStatus.UpdateTrackStatus(StatusInfo, TrackStatus.ActionTypeEnum.Read, _DoubleStep)
-                Return
-            End If
-
-            Dim TrackInfoReadFailed = _TrackStatus.ParseTrackInfoReadFailed(line)
-            If TrackInfoReadFailed IsNot Nothing Then
-                Dim StatusInfo = _TrackStatus.UpdateStatusInfo(TrackInfoReadFailed, TrackStatus.ActionTypeEnum.Read)
                 _TrackStatus.UpdateTrackStatus(StatusInfo, TrackStatus.ActionTypeEnum.Read, _DoubleStep)
                 Return
             End If

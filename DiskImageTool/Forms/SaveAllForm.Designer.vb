@@ -60,8 +60,8 @@ Partial Class SaveAllForm
         '
         'BtnCancel
         '
-        Me.BtnCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel
         resources.ApplyResources(Me.BtnCancel, "BtnCancel")
+        Me.BtnCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel
         Me.BtnCancel.Name = "BtnCancel"
         Me.BtnCancel.UseVisualStyleBackColor = True
         '
@@ -104,6 +104,7 @@ Partial Class SaveAllForm
         Me.Name = "SaveAllForm"
         Me.ShowIcon = False
         Me.FlowLayoutPanel1.ResumeLayout(False)
+        Me.FlowLayoutPanel1.PerformLayout()
         Me.Panel1.ResumeLayout(False)
         Me.Panel1.PerformLayout()
         Me.ResumeLayout(False)

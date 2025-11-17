@@ -109,7 +109,7 @@
 
         Private Function BuildTooltip(StatusInfo As TrackStatusInfo) As String
             Dim Tooltip = New List(Of String) From {
-                My.Resources.Label_Track & ": " & StatusInfo.Track & "." & StatusInfo.Side
+                My.Resources.Label_Track & ":  " & StatusInfo.Track & "." & StatusInfo.Side
             }
 
             If StatusInfo.TrackInfo Is Nothing Then

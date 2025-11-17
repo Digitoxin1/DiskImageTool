@@ -127,10 +127,10 @@
     <value>&amp;Abbrechen</value>
   </data>
   <data name="BtnYesToAll.Text" xml:space="preserve">
-    <value>Alle &amp;Ja</value>
+    <value>Ja zu &amp;allen</value>
   </data>
   <data name="BtnNoToall.Text" xml:space="preserve">
-    <value>Alle &amp;Nein</value>
+    <value>N&amp;ein zu allen</value>
   </data>
   <data name="$this.Text" xml:space="preserve">
     <value>Speichern</value>

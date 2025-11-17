@@ -833,7 +833,7 @@ Public Class FloppyTrackGrid
         If Response.Result Then
             TooltipText = _Cells(Response.TrackIndex).Tooltip
             If TooltipText = "" Then
-                TooltipText = My.Resources.Label_Track & ": " & Response.TrackIndex.ToString & "." & _Side.ToString
+                TooltipText = My.Resources.Label_Track & ":  " & Response.TrackIndex.ToString & "." & _Side.ToString
             End If
 
         End If

@@ -124,10 +124,10 @@
     <value>&amp;Non</value>
   </data>
   <data name="BtnYes.Text" xml:space="preserve">
-    <value>&amp;OUI</value>
+    <value>&amp;Oui</value>
   </data>
   <data name="BtnNoToall.Text" xml:space="preserve">
-    <value>N&amp;o à tout</value>
+    <value>N&amp;on à tout</value>
   </data>
   <data name="$this.Text" xml:space="preserve">
     <value>Enregistrer</value>

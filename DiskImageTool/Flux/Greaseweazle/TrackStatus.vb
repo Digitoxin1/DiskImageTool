@@ -51,7 +51,7 @@
             _TotalUnexpectedSectors = 0
         End Sub
 
-        Public Function UpdateStatusInfo(TrackInfo As TrackInfoWrite, Action As ActionTypeEnum) As TrackStatusInfo
+        Public Function UpdateStatusInfo(TrackInfo As TrackWrite, Action As ActionTypeEnum) As TrackStatusInfo
             Dim StatusInfo = GetStatusInfo(TrackInfo.SrcTrack, TrackInfo.SrcSide)
 
             StatusInfo.Action = Action
@@ -63,25 +63,26 @@
             Return StatusInfo
         End Function
 
-        Public Function UpdateStatusInfo(TrackInfo As ConsoleParser.TrackInfoRead, ProcessBadSectors As Boolean, Action As ActionTypeEnum) As TrackStatusInfo
-            Dim StatusInfo = GetStatusInfo(TrackInfo.DestTrack, TrackInfo.DestSide)
+        Public Function UpdateStatusInfo(Summary As TrackReadSummary, Details As TrackReadDetails, ProcessBadSectors As Boolean, Action As ActionTypeEnum) As TrackStatusInfo
+            Dim StatusInfo = GetStatusInfo(Summary.DestTrack, Summary.DestSide)
 
             StatusInfo.Action = Action
 
-            If TrackInfo.Seek > 0 And TrackInfo.Retry > 0 Then
+            If Details.Seek > 0 And Details.Retry > 0 Then
                 StatusInfo.Retries += 1
             End If
 
             If ProcessBadSectors Then
-                StatusInfo.BadSectors += TrackInfo.BadSectors
-                _TotalBadSectors += TrackInfo.BadSectors
-                If TrackInfo.BadSectors > 0 Then
+                StatusInfo.BadSectors += Details.BadSectors
+                _TotalBadSectors += Details.BadSectors
+                If Details.BadSectors > 0 Then
                     StatusInfo.Failed = True
                 End If
             End If
 
             Return StatusInfo
         End Function
+
 
         Public Function UpdateStatusInfo(TrackInfo As ConsoleParser.UnexpectedSector, Action As ActionTypeEnum) As TrackStatusInfo
             Dim StatusInfo = GetStatusInfo(TrackInfo.Track, TrackInfo.Side)
@@ -96,14 +97,14 @@
             Return StatusInfo
         End Function
 
-        Public Function UpdateStatusInfo(TrackInfo As ConsoleParser.TrackInfoReadFailed, Action As ActionTypeEnum) As TrackStatusInfo
-            Dim StatusInfo = GetStatusInfo(TrackInfo.DestTrack, TrackInfo.DestSide)
+        Public Function UpdateStatusInfo(Summary As TrackReadSummary, FailedSectors As Integer, Action As ActionTypeEnum) As TrackStatusInfo
+            Dim StatusInfo = GetStatusInfo(Summary.DestTrack, Summary.DestSide)
 
             StatusInfo.Action = Action
 
             StatusInfo.Failed = True
-            StatusInfo.BadSectors = TrackInfo.Sectors
-            _TotalBadSectors += TrackInfo.Sectors
+            StatusInfo.BadSectors = FailedSectors
+            _TotalBadSectors += FailedSectors
 
             Return StatusInfo
         End Function

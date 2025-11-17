@@ -30,7 +30,7 @@ Namespace Flux.Kryoflux
 
             Dim result = ConsoleProcessRunner.RunProcess(KryofluxSettings.AppPath, Builder.Arguments, captureOutput:=True, captureError:=False)
 
-            Dim RegExTrackInfo = New Regex(ConsoleParser.REGEX_TRACK_STATUS, RegexOptions.IgnoreCase Or RegexOptions.CultureInvariant Or RegexOptions.Multiline)
+            Dim RegExTrackInfo = New Regex(ConsoleParser.REGEX_TRACK, RegexOptions.IgnoreCase Or RegexOptions.CultureInvariant Or RegexOptions.Multiline)
 
             Dim Match = RegExTrackInfo.Match(result.StdOut)
 

@@ -249,14 +249,17 @@ Namespace Flux.Greaseweazle
             End If
             TextBoxConsole.AppendText(line)
 
-            Dim TrackInfo = _TrackStatus.ParseTrackInfoRead(line)
-            If TrackInfo IsNot Nothing Then
-                Dim Statusinfo = _TrackStatus.UpdateStatusInfo(TrackInfo, True, TrackStatus.ActionTypeEnum.Import)
-                _TrackStatus.UpdateTrackStatus(Statusinfo, TrackStatus.ActionTypeEnum.Read, _DoubleStep)
-                Return
+            Dim Summary = _TrackStatus.ParseTrackReadSummary(line)
+            If Summary IsNot Nothing Then
+                Dim Details = _TrackStatus.ParseTrackReadDetails(Summary.Details)
+                If Details IsNot Nothing Then
+                    Dim Statusinfo = _TrackStatus.UpdateStatusInfo(Summary, Details, True, TrackStatus.ActionTypeEnum.Import)
+                    _TrackStatus.UpdateTrackStatus(Statusinfo, TrackStatus.ActionTypeEnum.Read, _DoubleStep)
+                    Return
+                End If
             End If
 
-            Dim TrackInfoUnexpected = _TrackStatus.ParseUnexpectedSector(line)
+            Dim TrackInfoUnexpected = _TrackStatus.ParseTrackUnexpected(line)
             If TrackInfoUnexpected IsNot Nothing Then
                 Dim StatusInfo = _TrackStatus.UpdateStatusInfo(TrackInfoUnexpected, TrackStatus.ActionTypeEnum.Import)
                 _TrackStatus.UpdateTrackStatus(StatusInfo, TrackStatus.ActionTypeEnum.Read, _DoubleStep)

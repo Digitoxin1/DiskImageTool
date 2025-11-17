@@ -127,7 +127,7 @@
     <value>&amp;Sí</value>
   </data>
   <data name="BtnNoToall.Text" xml:space="preserve">
-    <value>N&amp;o a todos</value>
+    <value>N&amp;o a todo</value>
   </data>
   <data name="$this.Text" xml:space="preserve">
     <value>Guardar</value>

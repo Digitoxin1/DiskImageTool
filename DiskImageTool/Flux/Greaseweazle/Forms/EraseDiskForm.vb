@@ -217,10 +217,10 @@ Namespace Flux.Greaseweazle
             TextBoxConsole.AppendText(line)
 
             If _TrackRange Is Nothing Then
-                _TrackRange = _TrackStatus.ParseTrackRange(line)
+                _TrackRange = _TrackStatus.ParseDiskRange(line)
             End If
 
-            Dim TrackInfo = _TrackStatus.ParseTrackInfoWrite(line)
+            Dim TrackInfo = _TrackStatus.ParseTrackWrite(line)
             If TrackInfo IsNot Nothing Then
                 Dim Action As TrackStatus.ActionTypeEnum
                 If TrackInfo.Action = "Erasing" Then
