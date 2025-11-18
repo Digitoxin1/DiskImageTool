@@ -1733,4 +1733,16 @@ Nota: Este valor debe ser {1} para todos los disquetes</value>
   <data name="Label_Staus" xml:space="preserve">
     <value>Estado</value>
   </data>
+  <data name="Label_Clear" xml:space="preserve">
+    <value>Borrar</value>
+  </data>
+  <data name="Label_Cancel" xml:space="preserve">
+    <value>Cancelar</value>
+  </data>
+  <data name="Label_Open" xml:space="preserve">
+    <value>Abrir</value>
+  </data>
+  <data name="Label_ImportClose" xml:space="preserve">
+    <value>Importar y cerrar</value>
+  </data>
 </root>

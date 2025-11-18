@@ -25,11 +25,11 @@
         Private Sub InitializeComponent()
             Dim Label3 As System.Windows.Forms.Label
             Dim resources As System.ComponentModel.ComponentResourceManager = New System.ComponentModel.ComponentResourceManager(GetType(BaseForm))
-            Dim PanelButtonsRight As System.Windows.Forms.FlowLayoutPanel
             Dim PanelBottom As System.Windows.Forms.Panel
             Dim PanelBottomInner As System.Windows.Forms.TableLayoutPanel
             Dim PanelMain As System.Windows.Forms.Panel
             Dim PanelInner As System.Windows.Forms.Panel
+            Me.PanelButtonsRight = New System.Windows.Forms.FlowLayoutPanel()
             Me.ButtonCancel = New System.Windows.Forms.Button()
             Me.ButtonOk = New System.Windows.Forms.Button()
             Me.PanelButtonsLeft = New System.Windows.Forms.FlowLayoutPanel()
@@ -43,14 +43,13 @@
             Me.StatusBadSectors = New System.Windows.Forms.ToolStripStatusLabel()
             Me.StatusUnexpected = New System.Windows.Forms.ToolStripStatusLabel()
             Label3 = New System.Windows.Forms.Label()
-            PanelButtonsRight = New System.Windows.Forms.FlowLayoutPanel()
             PanelBottom = New System.Windows.Forms.Panel()
             PanelBottomInner = New System.Windows.Forms.TableLayoutPanel()
             PanelMain = New System.Windows.Forms.Panel()
             PanelInner = New System.Windows.Forms.Panel()
-            PanelButtonsRight.SuspendLayout()
             PanelBottom.SuspendLayout()
             PanelBottomInner.SuspendLayout()
+            Me.PanelButtonsRight.SuspendLayout()
             Me.PanelButtonsLeft.SuspendLayout()
             PanelMain.SuspendLayout()
             PanelInner.SuspendLayout()
@@ -62,27 +61,6 @@
             resources.ApplyResources(Label3, "Label3")
             Label3.Name = "Label3"
             '
-            'PanelButtonsRight
-            '
-            resources.ApplyResources(PanelButtonsRight, "PanelButtonsRight")
-            PanelButtonsRight.Controls.Add(Me.ButtonCancel)
-            PanelButtonsRight.Controls.Add(Me.ButtonOk)
-            PanelButtonsRight.Name = "PanelButtonsRight"
-            '
-            'ButtonCancel
-            '
-            Me.ButtonCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel
-            resources.ApplyResources(Me.ButtonCancel, "ButtonCancel")
-            Me.ButtonCancel.Name = "ButtonCancel"
-            Me.ButtonCancel.UseVisualStyleBackColor = True
-            '
-            'ButtonOk
-            '
-            Me.ButtonOk.DialogResult = System.Windows.Forms.DialogResult.OK
-            resources.ApplyResources(Me.ButtonOk, "ButtonOk")
-            Me.ButtonOk.Name = "ButtonOk"
-            Me.ButtonOk.UseVisualStyleBackColor = True
-            '
             'PanelBottom
             '
             resources.ApplyResources(PanelBottom, "PanelBottom")
@@ -92,9 +70,30 @@
             'PanelBottomInner
             '
             resources.ApplyResources(PanelBottomInner, "PanelBottomInner")
-            PanelBottomInner.Controls.Add(PanelButtonsRight, 2, 0)
+            PanelBottomInner.Controls.Add(Me.PanelButtonsRight, 2, 0)
             PanelBottomInner.Controls.Add(Me.PanelButtonsLeft, 1, 0)
             PanelBottomInner.Name = "PanelBottomInner"
+            '
+            'PanelButtonsRight
+            '
+            resources.ApplyResources(Me.PanelButtonsRight, "PanelButtonsRight")
+            Me.PanelButtonsRight.Controls.Add(Me.ButtonCancel)
+            Me.PanelButtonsRight.Controls.Add(Me.ButtonOk)
+            Me.PanelButtonsRight.Name = "PanelButtonsRight"
+            '
+            'ButtonCancel
+            '
+            resources.ApplyResources(Me.ButtonCancel, "ButtonCancel")
+            Me.ButtonCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel
+            Me.ButtonCancel.Name = "ButtonCancel"
+            Me.ButtonCancel.UseVisualStyleBackColor = True
+            '
+            'ButtonOk
+            '
+            resources.ApplyResources(Me.ButtonOk, "ButtonOk")
+            Me.ButtonOk.DialogResult = System.Windows.Forms.DialogResult.OK
+            Me.ButtonOk.Name = "ButtonOk"
+            Me.ButtonOk.UseVisualStyleBackColor = True
             '
             'PanelButtonsLeft
             '
@@ -187,11 +186,12 @@
             Me.MinimizeBox = False
             Me.Name = "BaseForm"
             Me.ShowInTaskbar = False
-            PanelButtonsRight.ResumeLayout(False)
             PanelBottom.ResumeLayout(False)
             PanelBottom.PerformLayout()
             PanelBottomInner.ResumeLayout(False)
             PanelBottomInner.PerformLayout()
+            Me.PanelButtonsRight.ResumeLayout(False)
+            Me.PanelButtonsRight.PerformLayout()
             Me.PanelButtonsLeft.ResumeLayout(False)
             Me.PanelButtonsLeft.PerformLayout()
             PanelMain.ResumeLayout(False)
@@ -216,5 +216,6 @@
         Friend WithEvents StatusUnexpected As ToolStripStatusLabel
         Friend WithEvents ButtonSaveLog As Button
         Friend WithEvents PanelButtonsLeft As FlowLayoutPanel
+        Friend WithEvents PanelButtonsRight As FlowLayoutPanel
     End Class
 End Namespace

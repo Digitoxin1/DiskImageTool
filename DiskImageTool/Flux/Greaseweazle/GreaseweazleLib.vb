@@ -134,49 +134,37 @@ Namespace Flux.Greaseweazle
             Return RawFileName
         End Function
 
-        Public Function ImportFluxImage(FilePath As String, ParentForm As Form) As (Result As Boolean, OutputFile As String, NewFileName As String)
-            Dim FileExt = IO.Path.GetExtension(FilePath).ToLower
-            Dim TrackCount As Integer = 0
-            Dim SideCount As Integer = 0
+        Public Function ImportFluxImage(FilePath As String, ParentForm As MainForm) As (Result As Boolean, OutputFile As String, NewFileName As String)
+            Dim AnalyzeResponse = AnalyzeFluxImage(FilePath, True)
 
-            If FileExt = ".raw" Then
-                Dim Response = GetTrackCountRaw(FilePath)
-                If Not Response.Result Then
-                    MsgBox(My.Resources.Dialog_InvalidKryofluxFile, MsgBoxStyle.Exclamation)
-                    Return (False, "", "")
-                Else
-                    TrackCount = Response.Tracks
-                    SideCount = Response.Sides
-                End If
-            ElseIf FileExt = ".scp" Then
-                Dim Response = GetTrackCountSCP(FilePath)
-                If Not Response.Result Then
-                    MsgBox(My.Resources.Dialog_InvalidSCPFile, MsgBoxStyle.Exclamation)
-                Else
-                    TrackCount = Response.Tracks
-                    SideCount = Response.Sides
-                End If
-            Else
-                MsgBox(My.Resources.Dialog_InvalidFileType, MsgBoxStyle.Exclamation)
+            If Not AnalyzeResponse.Result Then
                 Return (False, "", "")
             End If
 
-            If SideCount > 2 Then
-                SideCount = 2
-            End If
+            Using form As New ImageImportForm(FilePath, AnalyzeResponse.TrackCount, AnalyzeResponse.SideCount)
 
-            If TrackCount > 42 And TrackCount < 80 Then
-                TrackCount = 80
-            End If
+                Dim handler As ImageImportForm.ImportRequestedEventHandler =
+                    Sub(File, NewName)
+                        ParentForm.ProcessImportedImage(File, NewName)
+                    End Sub
 
-            Dim Form As New ImageImportForm(FilePath, TrackCount, SideCount)
-            If Form.ShowDialog(ParentForm) = DialogResult.OK Then
-                If Not String.IsNullOrEmpty(Form.OutputFilePath) Then
-                    Return (True, Form.OutputFilePath, Form.GetNewFileName)
+                AddHandler form.ImportRequested, handler
+
+                Dim result As DialogResult = DialogResult.Cancel
+                Try
+                    result = form.ShowDialog(ParentForm)
+                Finally
+                    RemoveHandler form.ImportRequested, handler
+                End Try
+
+                If result Then
+                    If Not String.IsNullOrEmpty(form.OutputFilePath) Then
+                        Return (True, form.OutputFilePath, form.GetNewFileName)
+                    End If
                 End If
-            End If
 
-            Return (False, "", "")
+                Return (False, "", "")
+            End Using
         End Function
 
         Public Sub InfoDisplay(ParentForm As Form)
@@ -325,16 +313,34 @@ Namespace Flux.Greaseweazle
 
             Return (IO.File.Exists(FileName), FileName, Result.CombinedOutput)
         End Function
-        Public Function ReadFluxImage(ParentForm As Form) As (Result As Boolean, OutputFile As String, NewFileName As String)
-            Dim Form As New ReadDiskForm()
-            If Form.ShowDialog(ParentForm) = DialogResult.OK Then
-                If Not String.IsNullOrEmpty(Form.OutputFilePath) Then
-                    Return (True, Form.OutputFilePath, Form.GetNewFileName)
-                End If
-            End If
 
-            Return (False, "", "")
+        Public Function ReadFluxImage(ParentForm As MainForm) As (Result As Boolean, OutputFile As String, NewFileName As String)
+            Using Form As New ReadDiskForm()
+
+                Dim handler As ReadDiskForm.ImportRequestedEventHandler =
+                    Sub(File, NewName)
+                        ParentForm.ProcessImportedImage(File, NewName)
+                    End Sub
+
+                AddHandler Form.ImportRequested, handler
+
+                Dim result As DialogResult = DialogResult.Cancel
+                Try
+                    result = Form.ShowDialog(ParentForm)
+                Finally
+                    RemoveHandler Form.ImportRequested, handler
+                End Try
+
+                If result = DialogResult.OK Then
+                    If Not String.IsNullOrEmpty(Form.OutputFilePath) Then
+                        Return (True, Form.OutputFilePath, Form.GetNewFileName)
+                    End If
+                End If
+
+                Return (False, "", "")
+            End Using
         End Function
+
         Public Sub Reset(TextBox As TextBox)
             Dim Builder As New CommandLineBuilder(CommandLineBuilder.CommandAction.reset) With {
             .Device = Settings.ComPort

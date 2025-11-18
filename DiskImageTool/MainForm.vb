@@ -44,6 +44,11 @@ Public Class MainForm
         End If
     End Sub
 
+    Public Sub ProcessImportedImage(File As String, NewFileName As String)
+        ProcessFileDrop(File, True, NewFileName)
+        RefreshModifiedCount()
+    End Sub
+
     Private Async Sub CheckForUpdatesStartup()
         Dim Result = Await Task.Run(Function()
                                         Return CheckIfUpdatesExist()
@@ -554,17 +559,14 @@ Public Class MainForm
         If FileName <> "" Then
             Dim Response = Flux.Greaseweazle.ImportFluxImage(FileName, Me)
             If Response.Result Then
-                ProcessFileDrop(Response.OutputFile, True, Response.NewFileName)
-                RefreshModifiedCount()
+                ProcessImportedImage(Response.OutputFile, Response.NewFileName)
             End If
         End If
     End Sub
-
     Private Sub GreaseweazleReadImage()
         Dim Response = Flux.Greaseweazle.ReadFluxImage(Me)
         If Response.Result Then
-            ProcessFileDrop(Response.OutputFile, True, Response.NewFileName)
-            RefreshModifiedCount()
+            ProcessImportedImage(Response.OutputFile, Response.NewFileName)
         End If
     End Sub
 

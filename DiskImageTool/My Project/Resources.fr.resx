@@ -1733,4 +1733,16 @@ Remarque : cette valeur doit être {1} pour toutes les disquettes</value>
   <data name="Label_Staus" xml:space="preserve">
     <value>Statut</value>
   </data>
+  <data name="Label_Clear" xml:space="preserve">
+    <value>Effacer</value>
+  </data>
+  <data name="Label_Cancel" xml:space="preserve">
+    <value>Annuler</value>
+  </data>
+  <data name="Label_Open" xml:space="preserve">
+    <value>Ouvrir</value>
+  </data>
+  <data name="Label_ImportClose" xml:space="preserve">
+    <value>Importer et fermer</value>
+  </data>
 </root>

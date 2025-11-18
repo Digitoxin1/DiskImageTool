@@ -3141,6 +3141,15 @@ Namespace My.Resources
         End Property
         
         '''<summary>
+        '''  Looks up a localized string similar to Cancel.
+        '''</summary>
+        Friend ReadOnly Property Label_Cancel() As String
+            Get
+                Return ResourceManager.GetString("Label_Cancel", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
         '''  Looks up a localized string similar to Circular Chain.
         '''</summary>
         Friend ReadOnly Property Label_CircularChain() As String
@@ -3663,6 +3672,15 @@ Namespace My.Resources
         End Property
         
         '''<summary>
+        '''  Looks up a localized string similar to Import and Close.
+        '''</summary>
+        Friend ReadOnly Property Label_ImportClose() As String
+            Get
+                Return ResourceManager.GetString("Label_ImportClose", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
         '''  Looks up a localized string similar to Info.
         '''</summary>
         Friend ReadOnly Property Label_Info() As String
@@ -3857,6 +3875,15 @@ Namespace My.Resources
         Friend ReadOnly Property Label_OffsetHex() As String
             Get
                 Return ResourceManager.GetString("Label_OffsetHex", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  Looks up a localized string similar to Open.
+        '''</summary>
+        Friend ReadOnly Property Label_Open() As String
+            Get
+                Return ResourceManager.GetString("Label_Open", resourceCulture)
             End Get
         End Property
         

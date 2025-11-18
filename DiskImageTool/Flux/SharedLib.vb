@@ -10,6 +10,55 @@ Namespace Flux
                 "LPT1", "LPT2", "LPT3", "LPT4", "LPT5", "LPT6", "LPT7", "LPT8", "LPT9"
             }
 
+        Public Function AnalyzeFluxImage(FilePath As String, AllowSCP As Boolean) As (Result As Boolean, TrackCount As Integer, SideCount As Integer)
+            Dim AnalyzeResponse As (Result As Boolean, TrackCount As Integer, SideCount As Integer)
+
+            Dim FileExt = IO.Path.GetExtension(FilePath).ToLower
+            AnalyzeResponse.Result = False
+            AnalyzeResponse.TrackCount = 0
+            AnalyzeResponse.SideCount = 0
+
+            If FileExt = ".raw" Then
+                Dim Response = GetTrackCountRaw(FilePath)
+                If Not Response.Result Then
+                    MsgBox(My.Resources.Dialog_InvalidKryofluxFile, MsgBoxStyle.Exclamation)
+                    Return AnalyzeResponse
+                Else
+                    AnalyzeResponse.TrackCount = Response.Tracks
+                    AnalyzeResponse.SideCount = Response.Sides
+                End If
+            ElseIf AllowSCP AndAlso FileExt = ".scp" Then
+                Dim Response = GetTrackCountSCP(FilePath)
+                If Not Response.Result Then
+                    MsgBox(My.Resources.Dialog_InvalidSCPFile, MsgBoxStyle.Exclamation)
+                    Return AnalyzeResponse
+                Else
+                    AnalyzeResponse.TrackCount = Response.Tracks
+                    AnalyzeResponse.SideCount = Response.Sides
+                End If
+            Else
+                MsgBox(My.Resources.Dialog_InvalidFileType, MsgBoxStyle.Exclamation)
+                Return AnalyzeResponse
+            End If
+
+            If AnalyzeResponse.SideCount > 2 Then
+                AnalyzeResponse.SideCount = 2
+            End If
+
+            If AnalyzeResponse.TrackCount > 42 And AnalyzeResponse.TrackCount < 80 Then
+                AnalyzeResponse.TrackCount = 80
+            End If
+
+            AnalyzeResponse.Result = True
+
+            Return AnalyzeResponse
+        End Function
+
+        Public Sub BumpTabIndexes(panel As FlowLayoutPanel)
+            For Each ctrl As Control In panel.Controls
+                ctrl.TabIndex += 1
+            Next
+        End Sub
         Public Function DetectImageFormat(FileName As String, DeleteWhenDone As Boolean) As DiskImage.FloppyDiskFormat
             Dim Buffer As Byte()
             Dim SecondOffset As Long = 4096
@@ -157,41 +206,23 @@ Namespace Flux
             Return True
         End Function
 
-        Public Sub PopulateImageFormats(Combo As ComboBox, Opt As DriveOption)
-            If Opt.Id = "" Then
-                ClearImageFormats(Combo)
-            Else
-                PopulateImageFormats(Combo, Opt.SelectedFormat, Opt.DetectedFormat)
-            End If
-        End Sub
-
-        Public Sub PopulateImageFormats(Combo As ComboBox, SelectedFormat As FloppyDiskFormat?, DetectedFormat As FloppyDiskFormat?)
-            Dim list = FloppyDiskFormatGetComboList()
-
-            For i As Integer = 0 To list.Count - 1
-                Dim item = list(i)
-                If DetectedFormat.HasValue AndAlso item.Format = DetectedFormat.Value Then
-                    item.Detected = True
-                Else
-                    item.Detected = False
+        Public Function IsValidFluxImport(path As String, allowSCP As Boolean) As (Result As Boolean, File As String)
+            If IO.File.Exists(path) Then
+                ' Direct file: only .raw or .scp
+                Dim ext = IO.Path.GetExtension(path).ToLowerInvariant()
+                If ext = ".raw" OrElse (ext = ".scp" AndAlso allowSCP) Then
+                    Return (True, path)
                 End If
-                list(i) = item
-            Next
 
-            With Combo
-                .DisplayMember = "Description"
-                .ValueMember = Nothing
-                .DataSource = list
-                .DropDownStyle = ComboBoxStyle.DropDownList
-            End With
-
-            If SelectedFormat.HasValue Then
-                Dim idx = list.FindIndex(Function(p) p.Format = SelectedFormat.Value)
-                If idx >= 0 Then
-                    Combo.SelectedIndex = idx
+            ElseIf IO.Directory.Exists(path) Then
+                Dim rawFile = GetFirstRawInFolder(path)
+                If rawFile IsNot Nothing Then
+                    Return (True, rawFile)
                 End If
             End If
-        End Sub
+
+            Return (False, "")
+        End Function
 
         Public Sub PopulateFileExtensions(Combo As ComboBox, SelectedFormat As FloppyDiskFormat)
             Dim FileExtensions = BASIC_SECTOR_FILE_EXTENSIONS.Split(","c).ToList()
@@ -234,6 +265,42 @@ Namespace Flux
             End With
         End Sub
 
+        Public Sub PopulateImageFormats(Combo As ComboBox, Opt As DriveOption)
+            If Opt.Id = "" Then
+                ClearImageFormats(Combo)
+            Else
+                PopulateImageFormats(Combo, Opt.SelectedFormat, Opt.DetectedFormat)
+            End If
+        End Sub
+
+        Public Sub PopulateImageFormats(Combo As ComboBox, SelectedFormat As FloppyDiskFormat?, DetectedFormat As FloppyDiskFormat?)
+            Dim list = FloppyDiskFormatGetComboList()
+
+            For i As Integer = 0 To list.Count - 1
+                Dim item = list(i)
+                If DetectedFormat.HasValue AndAlso item.Format = DetectedFormat.Value Then
+                    item.Detected = True
+                Else
+                    item.Detected = False
+                End If
+                list(i) = item
+            Next
+
+            With Combo
+                .DisplayMember = "Description"
+                .ValueMember = Nothing
+                .DataSource = list
+                .DropDownStyle = ComboBoxStyle.DropDownList
+            End With
+
+            If SelectedFormat.HasValue Then
+                Dim idx = list.FindIndex(Function(p) p.Format = SelectedFormat.Value)
+                If idx >= 0 Then
+                    Combo.SelectedIndex = idx
+                End If
+            End If
+        End Sub
+
         Public Function ResolveShortcutTarget(lnkPath As String) As String
             Try
                 If Not IO.Path.GetExtension(lnkPath).Equals(".lnk", StringComparison.OrdinalIgnoreCase) Then
@@ -265,6 +332,42 @@ Namespace Flux
             End With
         End Sub
 
+        Private Function ContainsRawFileInFolder(folderPath As String) As Boolean
+            Try
+                ' Recursive search; stop on first match
+                For Each f In IO.Directory.EnumerateFiles(folderPath, "*.raw", IO.SearchOption.TopDirectoryOnly)
+                    Return True
+                Next
+            Catch ex As UnauthorizedAccessException
+                ' Ignore folders we can't read
+            Catch ex As IO.IOException
+                ' Ignore IO issues
+            End Try
+
+            Return False
+        End Function
+
+        Private Function GetFirstRawInFolder(folderPath As String) As String
+            Try
+                Return IO.Directory.EnumerateFiles(folderPath, "*.raw", IO.SearchOption.TopDirectoryOnly).FirstOrDefault()
+            Catch
+                ' If unreadable, treat as no .raw files
+                Return Nothing
+            End Try
+        End Function
+        Public Structure FileExtensionItem
+            Public Sub New(ext As String, fmt As FloppyDiskFormat?)
+                Extension = ext
+                Format = fmt
+            End Sub
+
+            Public Property Extension As String
+            Public Property Format As FloppyDiskFormat?
+            Public Overrides Function ToString() As String
+                Return Extension
+            End Function
+        End Structure
+
         Public Class DriveOption
             Public Property DetectedFormat As FloppyDiskFormat = FloppyDiskFormat.FloppyUnknown
             Public Property Id As String
@@ -276,19 +379,5 @@ Namespace Flux
                 Return Label
             End Function
         End Class
-
-        Public Structure FileExtensionItem
-            Public Property Extension As String
-            Public Property Format As FloppyDiskFormat?
-
-            Public Sub New(ext As String, fmt As FloppyDiskFormat?)
-                Extension = ext
-                Format = fmt
-            End Sub
-
-            Public Overrides Function ToString() As String
-                Return Extension
-            End Function
-        End Structure
     End Module
 End Namespace

@@ -7,6 +7,7 @@ Namespace Flux.Greaseweazle
 
         Private WithEvents ButtonClear As Button
         Private WithEvents ButtonDetect As Button
+        Private WithEvents ButtonImport As Button
         Private WithEvents ButtonProcess As Button
         Private WithEvents ButtonReset As Button
         Private WithEvents CheckBoxDoublestep As CheckBox
@@ -30,6 +31,9 @@ Namespace Flux.Greaseweazle
         Private _ProcessRunning As Boolean = False
         Private _TrackRange As ConsoleParser.TrackRange = Nothing
         Private LabelWarning As Label
+
+        Public Event ImportRequested(File As String, NewFilename As String)
+
         Public Sub New()
             MyBase.New(Settings.LogFileName)
             InitializeControls()
@@ -111,6 +115,18 @@ Namespace Flux.Greaseweazle
                 DeleteFileIfExists(_OutputFilePath)
             End If
             _OutputFilePath = ""
+        End Sub
+
+        Private Sub ClearProcessedImage(KeepOutputFile As Boolean)
+            TextBoxConsole.Clear()
+            If KeepOutputFile Then
+                _OutputFilePath = ""
+            Else
+                ClearOutputFile()
+            End If
+            ClearStatusBar()
+            _TrackStatus.Clear()
+            ResetTrackGrid()
         End Sub
 
         Private Sub DoFormatDetection()
@@ -244,7 +260,7 @@ Namespace Flux.Greaseweazle
 
             ButtonClear = New Button With {
                 .Margin = New Padding(3, 12, 3, 3),
-                .Text = My.Resources.label_clear,
+                .Text = My.Resources.Label_Clear,
                 .MinimumSize = New Size(75, 0),
                 .AutoSize = True,
                 .Anchor = AnchorStyles.Left Or AnchorStyles.Right
@@ -258,8 +274,19 @@ Namespace Flux.Greaseweazle
                 .TabIndex = 0
             }
 
+            ButtonImport = New Button With {
+                .Margin = New Padding(6, 0, 6, 0),
+                .Text = My.Resources.Label_Import,
+                .MinimumSize = New Size(75, 0),
+                .AutoSize = True,
+                .TabIndex = 0
+            }
+
             PanelButtonsLeft.Controls.Add(ButtonReset)
             ButtonReset.BringToFront()
+
+            BumpTabIndexes(PanelButtonsRight)
+            PanelButtonsRight.Controls.Add(ButtonImport)
 
             ButtonDetect = New Button With {
                 .Width = 75,
@@ -271,7 +298,7 @@ Namespace Flux.Greaseweazle
             ButtonContainer.Controls.Add(ButtonClear)
 
 
-            ButtonOk.Text = My.Resources.Label_Import
+            ButtonOk.Text = "Import and Close"
             ButtonOk.Visible = True
 
             LabelWarning = New Label With {
@@ -391,15 +418,6 @@ Namespace Flux.Greaseweazle
 
             InitializeCombo(ComboOutputType, DriveList, Nothing)
         End Sub
-
-        Private Sub ClearProcessedImage()
-            TextBoxConsole.Clear()
-            ClearOutputFile()
-            ClearStatusBar()
-            _TrackStatus.Clear()
-            ResetTrackGrid()
-        End Sub
-
         Private Sub ProcessImage()
             Dim DiskParams As FloppyDiskParams = ComboImageFormat.SelectedValue
             Dim Opt As DriveOption = ComboImageDrives.SelectedValue
@@ -422,7 +440,7 @@ Namespace Flux.Greaseweazle
                 Exit Sub
             End If
 
-            ClearProcessedImage()
+            ClearProcessedImage(False)
 
             _OutputFilePath = GenerateUniqueFileName(TempPath, FileName)
 
@@ -461,6 +479,14 @@ Namespace Flux.Greaseweazle
 
             ToggleProcessRunning(True)
             Process.StartAsync(Settings.AppPath, Arguments)
+        End Sub
+
+        Private Sub ProcessImport()
+            RaiseEvent ImportRequested(_OutputFilePath, GetNewFileName())
+            CashFilenameTemplate()
+            ClearProcessedImage(True)
+            RefreshButtonState(True)
+            TextBoxFileName.Text = _CachedFileNameTemplate
         End Sub
 
         Private Sub ProcessOutputLine(line As String)
@@ -534,7 +560,7 @@ Namespace Flux.Greaseweazle
             _NumericRetries.Enabled = Not _ProcessRunning AndAlso Not HasOutputfile
             _NumericSeekRetries.Enabled = Not _ProcessRunning AndAlso Not HasOutputfile
 
-            ButtonProcess.Enabled = ImageParams.Format <> FloppyDiskFormat.FloppyUnknown AndAlso Not HasOutputfile
+            ButtonProcess.Enabled = ImageParams.Format <> FloppyDiskFormat.FloppyUnknown AndAlso (_ProcessRunning Or Not HasOutputfile)
             If _ProcessRunning Then
                 ButtonProcess.Text = My.Resources.Label_Abort
             Else
@@ -555,11 +581,19 @@ Namespace Flux.Greaseweazle
 
             ButtonDetect.Enabled = Not _ProcessRunning AndAlso Not HasOutputfile AndAlso Opt.Id <> ""
 
+            If _ProcessRunning Or HasOutputfile Then
+                ButtonCancel.Text = My.Resources.Label_Cancel
+            Else
+                ButtonCancel.Text = My.Resources.Label_Close
+            End If
+
             RefreshImportButtonState()
         End Sub
-
         Private Sub RefreshImportButtonState()
-            ButtonOk.Enabled = Not _ProcessRunning AndAlso Not String.IsNullOrEmpty(_OutputFilePath) AndAlso Not String.IsNullOrEmpty(TextBoxFileName.Text)
+            Dim EnableImport As Boolean = Not _ProcessRunning AndAlso Not String.IsNullOrEmpty(_OutputFilePath) AndAlso Not String.IsNullOrEmpty(TextBoxFileName.Text)
+
+            ButtonOk.Enabled = EnableImport
+            ButtonImport.Enabled = EnableImport
         End Sub
 
         Private Sub RefreshPreferredExensions()
@@ -615,8 +649,19 @@ Namespace Flux.Greaseweazle
         End Sub
 
 #Region "Events"
+        Private Sub ButtonClear_Click(sender As Object, e As EventArgs) Handles ButtonClear.Click
+            ClearProcessedImage(False)
+            RefreshButtonState(True)
+        End Sub
+
         Private Sub ButtonDetect_Click(sender As Object, e As EventArgs) Handles ButtonDetect.Click
             DoFormatDetection()
+        End Sub
+
+        Private Sub ButtonImport_Click(sender As Object, e As EventArgs) Handles ButtonImport.Click
+            If _OutputFilePath <> "" Then
+                ProcessImport()
+            End If
         End Sub
 
         Private Sub ButtonOk_Click(sender As Object, e As EventArgs) Handles ButtonOk.Click
@@ -728,11 +773,6 @@ Namespace Flux.Greaseweazle
             Dim tb As TextBox = DirectCast(sender, TextBox)
             tb.Text = SanitizeFileNamePreservePlaceholders(tb.Text)
             RefreshImportButtonState()
-        End Sub
-
-        Private Sub ButtonClear_Click(sender As Object, e As EventArgs) Handles ButtonClear.Click
-            ClearProcessedImage()
-            RefreshButtonState(True)
         End Sub
 #End Region
     End Class
