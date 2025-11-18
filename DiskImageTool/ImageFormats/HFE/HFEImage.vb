@@ -417,7 +417,7 @@ Namespace ImageFormats
                                 End If
                             Next
 
-                            Dim HFETrack = New HFETrack(i, 0) With {
+                            Dim HFETrack As New HFETrack(i, 0) With {
                                 .Bitstream = IBM_MFM.BytesToBits(DataSide0, 0, DataSide0.Length * 8, False),
                                 .BitRate = BitRate,
                                 .RPM = RPM

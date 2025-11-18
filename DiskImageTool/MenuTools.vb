@@ -81,7 +81,7 @@ Module MenuTools
         Next
         TrackLayout.AppendLine(FirstTrack & "-" & Track - 1 & ":" & PrevTrackString)
 
-        Dim frmTextView = New TextViewForm(My.Resources.Caption_TrackLayout, TrackLayout.ToString, True, True, "tracklayout.txt")
+        Dim frmTextView As New TextViewForm(My.Resources.Caption_TrackLayout, TrackLayout.ToString, True, True, "tracklayout.txt")
         frmTextView.ShowDialog()
     End Sub
 

@@ -275,7 +275,7 @@
         End Sub
 
         Private Sub Initialize()
-            Dim Separator = New ToolStripSeparator With {
+            Dim Separator As New ToolStripSeparator With {
                 .Name = "FilterSeparator",
                 .Visible = False,
                 .Tag = 0
@@ -285,7 +285,7 @@
             Dim FilterCount As Integer = FilterGetCount()
             ReDim _FilterCounts(FilterCount - 1)
             For Counter = 0 To FilterCount - 1
-                Dim Item = New ToolStripMenuItem With {
+                Dim Item As New ToolStripMenuItem With {
                     .Text = "",
                     .CheckOnClick = True,
                     .Name = "key_" & Counter,

@@ -13,6 +13,8 @@ Namespace Settings
         Private _displayTitles As Boolean = True
         Private _dragAndDrop As Boolean = True
         Private _language As String = ""
+        Private _preferredFileExtensions As New Dictionary(Of DiskImage.FloppyDiskFormat, String)
+        Private _preferredFileExtensionsOriginal As Dictionary(Of DiskImage.FloppyDiskFormat, String)
         Private _windowHeight As Integer = 0
         Private _windowWidth As Integer = 0
 
@@ -23,18 +25,6 @@ Namespace Settings
             Greaseweazle = New Flux.Greaseweazle.GreaseweazleSettings()
             Kryoflux = New Flux.Kryoflux.KryofluxSettings()
         End Sub
-
-        Public Property DragAndDrop As Boolean
-            Get
-                Return _dragAndDrop
-            End Get
-            Set(value As Boolean)
-                If _dragAndDrop <> value Then
-                    _dragAndDrop = value
-                    IsDirty = True
-                End If
-            End Set
-        End Property
 
         Public Property CheckUpdateOnStartup As Boolean
             Get
@@ -83,6 +73,19 @@ Namespace Settings
                 End If
             End Set
         End Property
+
+        Public Property DragAndDrop As Boolean
+            Get
+                Return _dragAndDrop
+            End Get
+            Set(value As Boolean)
+                If _dragAndDrop <> value Then
+                    _dragAndDrop = value
+                    IsDirty = True
+                End If
+            End Set
+        End Property
+
         Public Property ETags As ETagSettings
 
         Public Property Greaseweazle As Flux.Greaseweazle.GreaseweazleSettings
@@ -102,6 +105,7 @@ Namespace Settings
                 End If
             End Set
         End Property
+
         Public Property WindowHeight As Integer
             Get
                 Return _windowHeight
@@ -163,6 +167,9 @@ Namespace Settings
                 Dim kfDict = ReadSection(root, "kryoflux")
                 settings.Kryoflux.LoadFromDictionary(kfDict)
 
+                settings._preferredFileExtensions = LoadPreferredExtensions(root)
+                settings._preferredFileExtensionsOriginal = CloneDictionary(settings._preferredFileExtensions)
+
                 settings.IsDirty = False
 
             Catch
@@ -172,13 +179,56 @@ Namespace Settings
             Return settings
         End Function
 
+        Private Shared Function LoadPreferredExtensions(root As Dictionary(Of String, JsonValue)) As Dictionary(Of DiskImage.FloppyDiskFormat, String)
+            Dim peValue As JsonValue = Nothing
+
+            Dim newDict As New Dictionary(Of DiskImage.FloppyDiskFormat, String)
+
+            If root.TryGetValue("preferredFileExtensions", peValue) AndAlso peValue IsNot Nothing Then
+                Try
+                    Dim raw = peValue.ToString()
+                    Dim arr = Serializer.Parse(Of List(Of Dictionary(Of String, JsonValue)))(raw)
+
+                    For Each item In arr
+                        Try
+                            Dim fmtStr = ReadValue(item, "format", "")
+                            Dim ext = ReadValue(item, "extension", "")
+
+                            If fmtStr <> "" Then
+                                Dim fmt As DiskImage.FloppyDiskFormat
+                                If [Enum].TryParse(fmtStr, fmt) Then
+                                    newDict(fmt) = ext
+                                End If
+                            End If
+
+                        Catch
+                            ' ignore malformed entries (per-item fallback)
+                        End Try
+                    Next
+                Catch
+                    ' bad array → keep defaults
+                End Try
+            End If
+
+            Return newDict
+        End Function
+
         Public Sub Dispose() Implements IDisposable.Dispose
             Save()
             GC.SuppressFinalize(Me)
         End Sub
 
+        Public Function GetPreferredExtension(Format As DiskImage.FloppyDiskFormat) As String
+            Dim Extension As String = ""
+            _preferredFileExtensions.TryGetValue(Format, Extension)
+
+            Return Extension
+        End Function
+
         Public Sub Save(Optional Force As Boolean = False)
-            If Not (IsDirty OrElse ETags.IsDirty OrElse Greaseweazle.IsDirty OrElse Kryoflux.IsDirty OrElse Force) Then
+            Dim prefsDirty As Boolean = Not DictionariesEqual(_preferredFileExtensions, _preferredFileExtensionsOriginal)
+
+            If Not (IsDirty OrElse ETags.IsDirty OrElse Greaseweazle.IsDirty OrElse Kryoflux.IsDirty OrElse prefsDirty OrElse Force) Then
                 Return
             End If
 
@@ -197,6 +247,17 @@ Namespace Settings
             root("greaseweazle") = Greaseweazle.ToJsonObject()
             root("kryoflux") = Kryoflux.ToJsonObject()
 
+            Dim prefArr As New List(Of Object)
+
+            For Each kvp In _preferredFileExtensions
+                prefArr.Add(New Dictionary(Of String, Object) From {
+                    {"format", kvp.Key.ToString()},
+                    {"extension", kvp.Value}
+                })
+            Next
+
+            root("preferredFileExtensions") = prefArr
+
             Try
                 Dim json = Serializer.ToString(root, True)
                 Directory.CreateDirectory(Path.GetDirectoryName(_filePath))
@@ -211,6 +272,20 @@ Namespace Settings
             End Try
         End Sub
 
+        Public Sub RemovePreferredExtension(Format As DiskImage.FloppyDiskFormat)
+            If _preferredFileExtensions.ContainsKey(Format) Then
+                _preferredFileExtensions.Remove(Format)
+                IsDirty = True
+            End If
+        End Sub
+
+        Public Sub SetPreferredExtension(Format As DiskImage.FloppyDiskFormat, Extension As String)
+            If _preferredFileExtensions.ContainsKey(Format) Then
+                _preferredFileExtensions.Item(Format) = Extension
+            Else
+                _preferredFileExtensions.Add(Format, Extension)
+            End If
+        End Sub
         Private Shared Function GetDefaultConfigPath() As String
             Dim baseFolder = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData)
             Dim appName = My.Application.Info.AssemblyName

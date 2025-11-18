@@ -147,7 +147,7 @@ Module Utility
 
         Dim Result As String = ""
         Dim ppszPath As IntPtr
-        Dim rfid = New Guid("{374DE290-123F-4565-9164-39C4925E467B}")
+        Dim rfid As New Guid("{374DE290-123F-4565-9164-39C4925E467B}")
 
         If SHGetKnownFolderPath(rfid, 0, 0, ppszPath) = 0 Then
             Result = Marshal.PtrToStringUni(ppszPath)

@@ -11,7 +11,7 @@ Module MenuHelp
         Dim PublishedAt As String
         Dim Body As String
         Dim BodyArray() As String
-        Dim Changelog = New StringBuilder()
+        Dim Changelog As New StringBuilder()
         Dim ChangeLogString As String
         Dim ErrMsg As String = My.Resources.Dialog_ChangeLogDownloadError
 
@@ -66,7 +66,7 @@ Module MenuHelp
             Exit Sub
         End Try
 
-        Dim frmTextView = New TextViewForm(My.Resources.Caption_ChangeLog, ChangeLogString, False, True, "ChangeLog.txt")
+        Dim frmTextView As New TextViewForm(My.Resources.Caption_ChangeLog, ChangeLogString, False, True, "ChangeLog.txt")
         frmTextView.ShowDialog()
     End Sub
 

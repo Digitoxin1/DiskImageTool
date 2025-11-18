@@ -193,6 +193,47 @@ Namespace Flux
             End If
         End Sub
 
+        Public Sub PopulateFileExtensions(Combo As ComboBox, SelectedFormat As FloppyDiskFormat)
+            Dim FileExtensions = BASIC_SECTOR_FILE_EXTENSIONS.Split(","c).ToList()
+
+            Dim SelectedExtension As String = App.AppSettings.GetPreferredExtension(SelectedFormat)
+            If SelectedExtension = "" Then
+                SelectedExtension = App.AppSettings.GetPreferredExtension(FloppyDiskFormat.FloppyUnknown)
+            End If
+
+            Dim items As New List(Of FileExtensionItem)
+
+            For Each ext In FileExtensions
+                items.Add(New FileExtensionItem(ext, FloppyDiskFormat.FloppyUnknown))
+            Next
+
+            If SelectedFormat <> FloppyDiskFormat.FloppyUnknown Then
+                Dim Params = FloppyDiskFormatGetParams(SelectedFormat)
+                If Not String.IsNullOrWhiteSpace(Params.FileExtension) Then
+                    Dim idx = items.FindIndex(Function(i) i.Extension.Equals(Params.FileExtension, StringComparison.OrdinalIgnoreCase))
+                    If idx = -1 Then
+                        items.Add(New FileExtensionItem(Params.FileExtension, SelectedFormat))
+                    End If
+                End If
+            End If
+
+            With Combo
+                .DataSource = Nothing
+                .Items.Clear()
+                .DisplayMember = "Extension"
+                .DataSource = items
+
+                Dim selIdx = items.FindIndex(Function(i) i.Extension.Equals(SelectedExtension, StringComparison.OrdinalIgnoreCase))
+                If selIdx >= 0 Then
+                    .SelectedIndex = selIdx
+                ElseIf items.Count > 0 Then
+                    .SelectedIndex = 0
+                End If
+
+                .DropDownStyle = ComboBoxStyle.DropDownList
+            End With
+        End Sub
+
         Public Function ResolveShortcutTarget(lnkPath As String) As String
             Try
                 If Not IO.Path.GetExtension(lnkPath).Equals(".lnk", StringComparison.OrdinalIgnoreCase) Then
@@ -235,5 +276,19 @@ Namespace Flux
                 Return Label
             End Function
         End Class
+
+        Public Structure FileExtensionItem
+            Public Property Extension As String
+            Public Property Format As FloppyDiskFormat?
+
+            Public Sub New(ext As String, fmt As FloppyDiskFormat?)
+                Extension = ext
+                Format = fmt
+            End Sub
+
+            Public Overrides Function ToString() As String
+                Return Extension
+            End Function
+        End Structure
     End Module
 End Namespace

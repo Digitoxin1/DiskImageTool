@@ -3,6 +3,7 @@ Imports DiskImageTool.DiskImage.FloppyDiskFunctions
 
 Namespace Flux.Greaseweazle
     Module GreaseweazleLib
+
         Public Function Settings() As GreaseweazleSettings
             Return App.Globals.AppSettings.Greaseweazle
         End Function
@@ -30,7 +31,7 @@ Namespace Flux.Greaseweazle
             ParentForm.Cursor = Cursors.WaitCursor
             Application.DoEvents()
 
-            Dim Builder = New CommandLineBuilder(CommandLineBuilder.CommandAction.bandwidth) With {
+            Dim Builder As New CommandLineBuilder(CommandLineBuilder.CommandAction.bandwidth) With {
             .Device = Settings.ComPort
         }
 
@@ -44,7 +45,7 @@ Namespace Flux.Greaseweazle
                 ParentForm.Cursor = Cursors.Default
             End Try
 
-            Dim frmTextView = New TextViewForm("Greaseweazle - " & My.Resources.Label_Bandwidth, Content, False, True, "GreaseweazleBandwidth.txt")
+            Dim frmTextView As New TextViewForm("Greaseweazle - " & My.Resources.Label_Bandwidth, Content, False, True, "GreaseweazleBandwidth.txt")
             frmTextView.ShowDialog(ParentForm)
         End Sub
 
@@ -96,7 +97,7 @@ Namespace Flux.Greaseweazle
 
             Dim FileName = GenerateUniqueFileName(TempPath, "temp.ima")
 
-            Dim Builder = New CommandLineBuilder(CommandLineBuilder.CommandAction.convert) With {
+            Dim Builder As New CommandLineBuilder(CommandLineBuilder.CommandAction.convert) With {
             .InFile = FilePath,
             .OutFile = FileName,
             .Format = "ibm.scan",
@@ -187,7 +188,7 @@ Namespace Flux.Greaseweazle
             ParentForm.Cursor = Cursors.WaitCursor
             Application.DoEvents()
 
-            Dim Builder = New CommandLineBuilder(CommandLineBuilder.CommandAction.info) With {
+            Dim Builder As New CommandLineBuilder(CommandLineBuilder.CommandAction.info) With {
             .Device = Settings.ComPort
         }
             Dim Arguments = Builder.Arguments
@@ -200,7 +201,7 @@ Namespace Flux.Greaseweazle
                 ParentForm.Cursor = Cursors.Default
             End Try
 
-            Dim frmTextView = New TextViewForm("Greaseweazle - " & My.Resources.Label_Info, Content, False, True, "GreaseweazleInfo.txt")
+            Dim frmTextView As New TextViewForm("Greaseweazle - " & My.Resources.Label_Info, Content, False, True, "GreaseweazleInfo.txt")
             frmTextView.ShowDialog(ParentForm)
         End Sub
 
@@ -235,10 +236,11 @@ Namespace Flux.Greaseweazle
             Return Nothing
         End Function
 
-        Public Sub PopulateDrives(Combo As ComboBox, Format As FloppyMediaType)
+        Public Sub PopulateDrives(Combo As ComboBox, Format As FloppyMediaType, Optional LastUsedDrive As String = "")
             Dim DriveList As New List(Of DriveOption)
 
             Dim SelectedOption As DriveOption = Nothing
+            Dim CachedOption As DriveOption = Nothing
 
             Dim AddItem As Action(Of String, String, Byte) =
             Sub(labelPrefix As String, id As String, index As Byte)
@@ -247,7 +249,7 @@ Namespace Flux.Greaseweazle
                     Exit Sub
                 End If
 
-                Dim opt = New DriveOption With {
+                Dim opt As New DriveOption With {
                     .Id = id,
                     .Type = t,
                     .Tracks = Settings.Drives(index).Tracks,
@@ -257,6 +259,9 @@ Namespace Flux.Greaseweazle
 
                 If SelectedOption Is Nothing AndAlso t = Format Then
                     SelectedOption = opt
+                End If
+                If CachedOption Is Nothing AndAlso Not String.IsNullOrEmpty(LastUsedDrive) AndAlso id = LastUsedDrive Then
+                    CachedOption = opt
                 End If
             End Sub
 
@@ -285,7 +290,13 @@ Namespace Flux.Greaseweazle
                 .DataSource = DriveList
                 .DisplayMember = NameOf(DriveOption.Label)
                 .ValueMember = ""
-                .SelectedItem = If(SelectedOption, placeholder)
+                If SelectedOption IsNot Nothing Then
+                    .SelectedItem = SelectedOption
+                ElseIf CachedOption IsNot Nothing Then
+                    .SelectedItem = CachedOption
+                Else
+                    .SelectedItem = placeholder
+                End If
                 If .SelectedIndex = -1 Then
                     .SelectedIndex = 0
                 End If
@@ -301,7 +312,7 @@ Namespace Flux.Greaseweazle
 
             Dim FileName = GenerateUniqueFileName(TempPath, "temp.ima")
 
-            Dim Builder = New CommandLineBuilder(CommandLineBuilder.CommandAction.read) With {
+            Dim Builder As New CommandLineBuilder(CommandLineBuilder.CommandAction.read) With {
             .Device = Settings.ComPort,
             .Drive = DriveId,
             .File = FileName,
@@ -325,7 +336,7 @@ Namespace Flux.Greaseweazle
             Return (False, "", "")
         End Function
         Public Sub Reset(TextBox As TextBox)
-            Dim Builder = New CommandLineBuilder(CommandLineBuilder.CommandAction.reset) With {
+            Dim Builder As New CommandLineBuilder(CommandLineBuilder.CommandAction.reset) With {
             .Device = Settings.ComPort
         }
 

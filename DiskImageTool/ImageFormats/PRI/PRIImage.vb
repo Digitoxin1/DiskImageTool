@@ -207,7 +207,7 @@ Namespace ImageFormats
                     _Comment &= Text.Encoding.UTF8.GetString(Chunk.ChunkData)
 
                 ElseIf Chunk.ChunkID = "TRAK" Then
-                    Dim Track = New PRITrack(Chunk.ChunkData)
+                    Dim Track As New PRITrack(Chunk.ChunkData)
                     AddTrack(Track)
                     _CurrentTrack = Track
                     If Track.Track > _TrackCount - 1 Then

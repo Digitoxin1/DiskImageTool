@@ -37,7 +37,7 @@
         End Property
         Public Overrides ReadOnly Property SectorChain As List(Of UInteger) Implements IDirectory.SectorChain
             Get
-                Dim Chain = New List(Of UInteger)
+                Dim Chain As New List(Of UInteger)
 
                 For Sector = Disk.BPB.RootDirectoryRegionStart To Disk.BPB.DataRegionStart - 1
                     Chain.Add(Sector)

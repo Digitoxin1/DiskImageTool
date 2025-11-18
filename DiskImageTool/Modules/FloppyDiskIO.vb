@@ -4,10 +4,10 @@ Imports DiskImageTool.DiskImage
 Module FloppyDiskIO
     Private Const BYTES_PER_SECTOR As UShort = 512
     Public Function FloppyDiskRead(Owner As IWin32Window, Drive As FloppyDriveEnum, LoadedFileNames As Dictionary(Of String, ImageData)) As String
-        Dim FloppyDrive = New FloppyInterface
+        Dim FloppyDrive As New FloppyInterface
         Dim DriveLetter = FloppyInterface.GetDriveLetter(Drive)
         Dim DriveName = DriveLetter & ":\"
-        Dim DriveInfo = New IO.DriveInfo(DriveName)
+        Dim DriveInfo As New IO.DriveInfo(DriveName)
         Dim Result = DriveInfo.IsReady
         Dim FileName As String = ""
 
@@ -46,8 +46,8 @@ Module FloppyDiskIO
 
         Dim Success As Boolean
         Try
-            Dim FloppyImage = New BasicSectorImage(Buffer)
-            Dim Disk = New DiskImage.Disk(FloppyImage, 0)
+            Dim FloppyImage As New BasicSectorImage(Buffer)
+            Dim Disk As New DiskImage.Disk(FloppyImage, 0)
             Dim Response = SaveDiskImageToFile(Disk, NewImage, False)
             Success = (Response = SaveImageResponse.Success)
 
@@ -86,8 +86,8 @@ Module FloppyDiskIO
             If Dialog.ShowDialog = DialogResult.OK Then
                 Dim Success As Boolean
                 Try
-                    Dim FloppyImage = New BasicSectorImage(Buffer)
-                    Dim Disk = New DiskImage.Disk(FloppyImage, 0)
+                    Dim FloppyImage As New BasicSectorImage(Buffer)
+                    Dim Disk As New DiskImage.Disk(FloppyImage, 0)
                     Dim Response = SaveDiskImageToFile(Disk, Dialog.FileName, False)
                     Success = (Response = SaveImageResponse.Success)
                 Catch ex As Exception
@@ -112,10 +112,10 @@ Module FloppyDiskIO
             Exit Sub
         End If
 
-        Dim FloppyDrive = New FloppyInterface
+        Dim FloppyDrive As New FloppyInterface
         Dim DriveLetter = FloppyInterface.GetDriveLetter(Drive)
         Dim DriveName = DriveLetter & ":\"
-        Dim DriveInfo = New IO.DriveInfo(DriveName)
+        Dim DriveInfo As New IO.DriveInfo(DriveName)
         Dim IsReady = DriveInfo.IsReady
         Dim NewDiskFormat = FloppyDiskFormatGet(Disk.BPB)
         Dim NewFormatName = String.Format(My.Resources.Label_Floppy, FloppyDiskFormatGetName(NewDiskFormat))

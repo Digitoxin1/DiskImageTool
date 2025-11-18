@@ -138,7 +138,7 @@
                     End If
                 Next
 
-                Dim bitArray = New BitArray(buffer) With {
+                Dim bitArray As New BitArray(buffer) With {
                     .Length = BitLength
                 }
 

@@ -70,7 +70,7 @@
                         If BootSector.ValidJumpInstructuon.Contains(Buffer(0)) Then
                             If OffsetEnd - Offset >= BootSector.BOOT_SECTOR_SIZE Then
                                 Dim BootSectorData = RootDirectory.Disk.Image.GetBytes(Offset, DiskImage.BootSector.BOOT_SECTOR_SIZE)
-                                Dim BootSector = New BootSector(BootSectorData)
+                                Dim BootSector As New BootSector(BootSectorData)
                                 If BootSector.BPB.IsValid Then
                                     ParentDirectory.Data.HasBootSector = True
                                     ParentDirectory.Data.BootSectorOffset = Offset
@@ -107,7 +107,7 @@
                         End If
                     End If
 
-                    Dim NewDirectoryEntry = New DirectoryEntry(RootDirectory, ParentDirectory, Offset, ParentDirectory.DirectoryEntries.Count, ParentDirectory.Data.EndOfDirectory)
+                    Dim NewDirectoryEntry As New DirectoryEntry(RootDirectory, ParentDirectory, Offset, ParentDirectory.DirectoryEntries.Count, ParentDirectory.Data.EndOfDirectory)
 
                     ParentDirectory.DirectoryEntries.Add(NewDirectoryEntry)
                 Next
@@ -330,7 +330,7 @@
                 Next
 
                 For Counter = TempIndex To TempOffsets.Count - 1
-                    Dim NewDirectoryEntry = New DirectoryEntry(_Disk.RootDirectory, Me, TempOffsets.Item(Counter), StartIndex, True) With {
+                    Dim NewDirectoryEntry As New DirectoryEntry(_Disk.RootDirectory, Me, TempOffsets.Item(Counter), StartIndex, True) With {
                       .Data = New Byte(31) {}
                     }
                     _DirectoryEntries.Insert(StartIndex, NewDirectoryEntry)
@@ -350,7 +350,7 @@
 
                 Dim EntryIndex = EntryCount
                 For Counter = TempIndex To TempOffsets.Count - 1
-                    Dim NewDirectoryEntry = New DirectoryEntry(_Disk.RootDirectory, Me, TempOffsets.Item(Counter), EntryIndex, True) With {
+                    Dim NewDirectoryEntry As New DirectoryEntry(_Disk.RootDirectory, Me, TempOffsets.Item(Counter), EntryIndex, True) With {
                       .Data = New Byte(31) {}
                     }
                     _DirectoryEntries.Insert(EntryIndex, NewDirectoryEntry)

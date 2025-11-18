@@ -114,7 +114,7 @@ Namespace ImageFormats
                 If _TrackInfo.ContainsKey(Key) Then
                     Return _TrackInfo.Item(Key)
                 Else
-                    Dim TrackInfo = New PSITrackInfo
+                    Dim TrackInfo As New PSITrackInfo
                     _TrackInfo.Add(Key, TrackInfo)
                     Return TrackInfo
                 End If
@@ -177,7 +177,7 @@ Namespace ImageFormats
                     _Comment &= Text.Encoding.UTF8.GetString(Chunk.ChunkData)
 
                 ElseIf Chunk.ChunkID = "SECT" Then
-                    Dim Sector = New PSISector(Chunk.ChunkData)
+                    Dim Sector As New PSISector(Chunk.ChunkData)
                     _Sectors.Add(Sector)
                     _CurrentSector = Sector
                     If Sector.Track > _TrackCount - 1 Then

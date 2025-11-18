@@ -564,7 +564,7 @@ Public Class HexViewForm
             .Size = New Drawing.Size(55, 23)
         }
 
-        Dim LabelCluster = New ToolStripLabel(My.Resources.Label_Cluster) With {
+        Dim LabelCluster As New ToolStripLabel(My.Resources.Label_Cluster) With {
             .Alignment = ToolStripItemAlignment.Right,
             .Padding = New Padding(12, 0, 0, 0)
         }
@@ -579,7 +579,7 @@ Public Class HexViewForm
             .Size = New Drawing.Size(55, 23)
         }
 
-        Dim LabelSector = New ToolStripLabel(My.Resources.Label_Sector) With {
+        Dim LabelSector As New ToolStripLabel(My.Resources.Label_Sector) With {
             .Alignment = ToolStripItemAlignment.Right,
             .Padding = New Padding(12, 0, 0, 0)
         }
@@ -605,7 +605,7 @@ Public Class HexViewForm
     Private Sub InitializeTrackNavigator()
         ComboTrack = New ComboTrack()
 
-        Dim LabelTrack = New ToolStripLabel(My.Resources.Label_Track) With {
+        Dim LabelTrack As New ToolStripLabel(My.Resources.Label_Track) With {
             .Alignment = ToolStripItemAlignment.Right,
             .Padding = New Padding(12, 0, 0, 0)
         }
@@ -679,7 +679,7 @@ Public Class HexViewForm
     Private Sub PopChange(Source As Stack(Of List(Of HexChange)), Destination As Stack(Of List(Of HexChange)))
         If Source.Count > 0 Then
             Dim HexChangelist = Source.Pop()
-            Dim DestinationChangeList = New List(Of HexChange)
+            Dim DestinationChangeList As New List(Of HexChange)
 
             For Each HexChange In HexChangelist
                 Dim Data As HexViewData = CmbGroups.Items(HexChange.BlockIndex)
@@ -707,11 +707,11 @@ Public Class HexViewForm
     Private Sub PopulateFillValues()
         BtnFill.DropDownItems.Clear()
         For Counter = 0 To 15
-            Dim Item = New ToolStripMenuItem(Counter.ToString("X"))
+            Dim Item As New ToolStripMenuItem(Counter.ToString("X"))
             BtnFill.DropDownItems.Add(Item)
             For Counter2 = 0 To 15
                 Dim Value = Counter * 16 + Counter2
-                Dim Item2 = New ToolStripMenuItem("0x" & Value.ToString("X2"), Nothing, AddressOf BtnFill_Click) With {
+                Dim Item2 As New ToolStripMenuItem("0x" & Value.ToString("X2"), Nothing, AddressOf BtnFill_Click) With {
                     .Tag = Value
                 }
                 Item.DropDownItems.Add(Item2)

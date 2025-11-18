@@ -7,6 +7,7 @@ Namespace Flux.Greaseweazle
 
         Private WithEvents ButtonProcess As Button
         Private WithEvents CheckBoxDoublestep As CheckBox
+        Private WithEvents ComboExtensions As ComboBox
         Private WithEvents ComboImageFormat As ComboBox
         Private WithEvents ComboOutputType As ComboBox
         Private WithEvents TextBoxFileName As TextBox
@@ -15,7 +16,7 @@ Namespace Flux.Greaseweazle
         Private ReadOnly _SideCount As Integer
         Private ReadOnly _TrackCount As Integer
         Private ReadOnly _TrackStatus As TrackStatus
-        Private _CachedOutputTypeValue As GreaseweazleOutputType = GreaseweazleOutputType.IMA
+        Private _ComboExtensionsNoEvent As Boolean = False
         Private _DoubleStep As Boolean = False
         Private _OutputFilePath As String = ""
         Private _ProcessRunning As Boolean = False
@@ -33,7 +34,7 @@ Namespace Flux.Greaseweazle
             Dim ImageFormat = ReadImageFormat()
             PopulateOutputTypes()
             PopulateImageFormats(ComboImageFormat, ImageFormat, ImageFormat)
-
+            PopulateFileExtensions()
             SetNewFileName()
             SetTiltebarText()
             ClearStatusBar()
@@ -49,9 +50,9 @@ Namespace Flux.Greaseweazle
         End Property
 
         Public Function GetNewFileName() As String
-            Dim OutputType As GreaseweazleOutputType = ComboOutputType.SelectedValue
+            Dim Item As FileExtensionItem = ComboExtensions.SelectedItem
 
-            Return TextBoxFileName.Text & GreaseweazleOutputTypeFileExt(OutputType)
+            Return TextBoxFileName.Text & Item.Extension
         End Function
 
         Protected Overrides Sub OnAfterBaseFormClosing(e As FormClosingEventArgs)
@@ -68,7 +69,7 @@ Namespace Flux.Greaseweazle
         End Sub
 
         Private Function GenerateCommandLine(DiskParams As FloppyDiskParams, OutputType As GreaseweazleOutputType, DoubleStep As Boolean) As String
-            Dim Builder = New CommandLineBuilder(CommandLineBuilder.CommandAction.convert) With {
+            Dim Builder As New CommandLineBuilder(CommandLineBuilder.CommandAction.convert) With {
                 .InFile = _InputFilePath,
                 .OutFile = _OutputFilePath
             }
@@ -93,7 +94,7 @@ Namespace Flux.Greaseweazle
         End Function
 
         Private Sub InitializeControls()
-            Dim FileNameLabel = New Label With {
+            Dim FileNameLabel As New Label With {
                 .Text = My.Resources.Label_FileName,
                 .Anchor = AnchorStyles.Right,
                 .AutoSize = True
@@ -104,7 +105,13 @@ Namespace Flux.Greaseweazle
                 .MaxLength = 255
             }
 
-            Dim ImageFormatLabel = New Label With {
+            ComboExtensions = New ComboBox With {
+                .Anchor = AnchorStyles.Left,
+                .Width = 50,
+                .DropDownStyle = ComboBoxStyle.DropDownList
+            }
+
+            Dim ImageFormatLabel As New Label With {
                 .Text = My.Resources.Label_ImageFormat,
                 .Anchor = AnchorStyles.Right,
                 .AutoSize = True
@@ -115,7 +122,7 @@ Namespace Flux.Greaseweazle
                 .Width = 200
             }
 
-            Dim OutputTypeLabel = New Label With {
+            Dim OutputTypeLabel As New Label With {
                 .Text = My.Resources.Label_OutputType,
                 .Anchor = AnchorStyles.Left,
                 .AutoSize = True,
@@ -149,7 +156,7 @@ Namespace Flux.Greaseweazle
 
                 .Left = 0
                 .RowCount = 3
-                .ColumnCount = 5
+                .ColumnCount = 6
                 .Dock = DockStyle.Fill
 
                 While .RowStyles.Count < .RowCount
@@ -173,6 +180,7 @@ Namespace Flux.Greaseweazle
                 .Controls.Add(FileNameLabel, 0, Row)
                 .Controls.Add(TextBoxFileName, 1, Row)
                 .SetColumnSpan(TextBoxFileName, 3)
+                .Controls.Add(ComboExtensions, 3, Row)
 
                 Row = 1
                 .Controls.Add(ImageFormatLabel, 0, Row)
@@ -180,23 +188,46 @@ Namespace Flux.Greaseweazle
 
                 .Controls.Add(OutputTypeLabel, 2, Row)
                 .Controls.Add(ComboOutputType, 3, Row)
+                .SetColumnSpan(ComboOutputType, 2)
 
-                .Controls.Add(CheckBoxDoublestep, 4, Row)
+                .Controls.Add(CheckBoxDoublestep, 5, Row)
 
                 Row = 2
                 .Controls.Add(TableSide0, 0, Row)
                 .SetColumnSpan(TableSide0, 2)
 
                 .Controls.Add(TableSide1, 2, Row)
-                .SetColumnSpan(TableSide1, 2)
+                .SetColumnSpan(TableSide1, 3)
 
-                .Controls.Add(ButtonProcess, 4, Row)
+                .Controls.Add(ButtonProcess, 5, Row)
 
                 .ResumeLayout()
                 '.Left = (.Parent.ClientSize.Width - .Width) \ 2
             End With
         End Sub
 
+        Private Sub PopulateFileExtensions()
+            Dim OutputType As GreaseweazleOutputType = ComboOutputType.SelectedValue
+
+            If OutputType = GreaseweazleOutputType.HFE Then
+                Dim items As New List(Of FileExtensionItem) From {
+                    New FileExtensionItem(".hfe", Nothing)
+                }
+                With ComboExtensions
+                    .DataSource = Nothing
+                    .Items.Clear()
+                    .DisplayMember = "Extension"
+                    .DataSource = items
+                    .SelectedIndex = 0
+                    .DropDownStyle = ComboBoxStyle.DropDownList
+                    .Enabled = False
+                End With
+            Else
+                Dim ImageParams As FloppyDiskParams = ComboImageFormat.SelectedValue
+                ComboExtensions.Enabled = True
+                SharedLib.PopulateFileExtensions(ComboExtensions, ImageParams.Format)
+            End If
+        End Sub
         Private Sub PopulateOutputTypes()
             Dim DriveList As New List(Of KeyValuePair(Of String, GreaseweazleOutputType))
             For Each OutputType As GreaseweazleOutputType In [Enum].GetValues(GetType(GreaseweazleOutputType))
@@ -288,13 +319,6 @@ Namespace Flux.Greaseweazle
                     Dim ImageFormat = GreaseweazleImageFormatFromFloppyDiskFormat(ImageParams.Format)
                     OutputTypeDisabled = (ImageFormat = GreaseweazleImageFormat.None)
                 End If
-
-                If ComboOutputType.Enabled AndAlso OutputTypeDisabled Then
-                    _CachedOutputTypeValue = ComboOutputType.SelectedValue
-                    ComboOutputType.SelectedValue = GreaseweazleOutputType.HFE
-                ElseIf Not ComboOutputType.Enabled And Not OutputTypeDisabled Then
-                    ComboOutputType.SelectedValue = _CachedOutputTypeValue
-                End If
             End If
 
             ComboImageFormat.Enabled = Not _ProcessRunning
@@ -322,6 +346,22 @@ Namespace Flux.Greaseweazle
 
         Private Sub RefreshImportButtonState()
             ButtonOk.Enabled = Not _ProcessRunning AndAlso Not String.IsNullOrEmpty(_OutputFilePath) AndAlso Not String.IsNullOrEmpty(TextBoxFileName.Text)
+        End Sub
+
+        Private Sub RefreshPreferredExensions()
+            Dim Item As FileExtensionItem = ComboExtensions.SelectedValue
+
+            If Not Item.Format.HasValue Then
+                Exit Sub
+            End If
+
+            Dim ImageParams As FloppyDiskParams = ComboImageFormat.SelectedValue
+
+            If Item.Format.Value <> ImageParams.Format Then
+                App.AppSettings.RemovePreferredExtension(ImageParams.Format)
+            End If
+
+            App.AppSettings.SetPreferredExtension(Item.Format.Value, Item.Extension)
         End Sub
 
         Private Sub SetNewFileName()
@@ -358,12 +398,38 @@ Namespace Flux.Greaseweazle
             ProcessImage()
         End Sub
 
+        Private Sub ComboExtensions_SelectedIndexChanged(sender As Object, e As EventArgs) Handles ComboExtensions.SelectedIndexChanged
+            If Not _Initialized Then
+                Exit Sub
+            End If
+
+            If _ComboExtensionsNoEvent Then
+                Exit Sub
+            End If
+
+            RefreshPreferredExensions()
+        End Sub
+
         Private Sub ComboImageFormat_SelectedIndexChanged(sender As Object, e As EventArgs) Handles ComboImageFormat.SelectedIndexChanged
             If Not _Initialized Then
                 Exit Sub
             End If
 
+            _ComboExtensionsNoEvent = True
+            PopulateFileExtensions()
+            _ComboExtensionsNoEvent = False
+
             RefreshButtonState(True)
+        End Sub
+
+        Private Sub ComboOutputType_SelectedIndexChanged(sender As Object, e As EventArgs) Handles ComboOutputType.SelectedIndexChanged
+            If Not _Initialized Then
+                Exit Sub
+            End If
+
+            _ComboExtensionsNoEvent = True
+            PopulateFileExtensions()
+            _ComboExtensionsNoEvent = False
         End Sub
 
         Private Sub Process_ErrorDataReceived(data As String) Handles Process.ErrorDataReceived

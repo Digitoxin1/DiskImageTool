@@ -138,7 +138,7 @@ Public Class FilePanel
     End Property
 
     Public Function AddEmptyItem(Group As ListViewGroup, ItemIndex As Integer) As ListViewItem
-        Dim Item = New ListViewItem("", Group) With {
+        Dim Item As New ListViewItem("", Group) With {
             .UseItemStyleForSubItems = False,
             .Tag = Nothing
         }
@@ -178,7 +178,7 @@ Public Class FilePanel
 
         GroupName &= ")"
 
-        Dim Group = New ListViewGroup(GroupName) With {
+        Dim Group As New ListViewGroup(GroupName) With {
             .Tag = Directory
         }
         ListViewFiles.Groups.Add(Group)
@@ -344,7 +344,7 @@ Public Class FilePanel
 
         Dim ModifiedString As String = IIf(FileData.DirectoryEntry.IsModified, "#", "")
 
-        Dim Item = New ListViewItem(ModifiedString, Group) With {
+        Dim Item As New ListViewItem(ModifiedString, Group) With {
             .UseItemStyleForSubItems = False,
             .Tag = FileData
         }
@@ -531,7 +531,7 @@ Public Class FilePanel
     End Function
 
     Private Function AddMenuItem(MenuStrip As ContextMenuStrip, name As FilePanelMenuItem, text As String) As ToolStripMenuItem
-        Dim Item = New ToolStripMenuItem(text) With {
+        Dim Item As New ToolStripMenuItem(text) With {
             .Name = name
         }
         MenuStrip.Items.Add(Item)
@@ -540,7 +540,7 @@ Public Class FilePanel
     End Function
 
     Private Function AddMenuItem(MenuStrip As ContextMenuStrip, name As FilePanelMenuItem, text As String, image As Image) As ToolStripMenuItem
-        Dim Item = New ToolStripMenuItem(text, image) With {
+        Dim Item As New ToolStripMenuItem(text, image) With {
             .Name = name
         }
         MenuStrip.Items.Add(Item)
@@ -549,14 +549,14 @@ Public Class FilePanel
     End Function
 
     Private Function AddMenuSeparator(MenuStrip As ContextMenuStrip) As ToolStripItem
-        Dim Item = New ToolStripSeparator()
+        Dim Item As New ToolStripSeparator()
         MenuStrip.Items.Add(Item)
 
         Return Item
     End Function
 
     Private Function AddMenuSeparator(MenuStrip As ContextMenuStrip, name As FilePanelMenuItem) As ToolStripItem
-        Dim Item = New ToolStripSeparator() With {
+        Dim Item As New ToolStripSeparator() With {
             .Name = name
         }
         MenuStrip.Items.Add(Item)

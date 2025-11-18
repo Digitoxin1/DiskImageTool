@@ -39,7 +39,7 @@ Namespace Flux.Greaseweazle
 
             ResetState()
 
-            Dim Builder = New CommandLineBuilder(CommandLineBuilder.CommandAction.clean) With {
+            Dim Builder As New CommandLineBuilder(CommandLineBuilder.CommandAction.clean) With {
                    .Device = Settings.ComPort,
                    .Drive = Opt.Id,
                    .Cyls = NumericCyls.Value,
@@ -54,7 +54,7 @@ Namespace Flux.Greaseweazle
         End Sub
 
         Private Sub InitializeControls()
-            Dim DriveLabel = New Label With {
+            Dim DriveLabel As New Label With {
                 .Text = My.Resources.Label_Drive,
                 .Anchor = AnchorStyles.Right,
                 .AutoSize = True
@@ -65,7 +65,7 @@ Namespace Flux.Greaseweazle
                 .Width = 180
             }
 
-            Dim CylsLabel = New Label With {
+            Dim CylsLabel As New Label With {
                 .Text = My.Resources.Label_Cylinders,
                 .Anchor = AnchorStyles.Left,
                 .AutoSize = True,
@@ -79,7 +79,7 @@ Namespace Flux.Greaseweazle
                 .Maximum = CommandLineBuilder.MAX_CYLS
             }
 
-            Dim PassesLabel = New Label With {
+            Dim PassesLabel As New Label With {
                 .Text = My.Resources.Label_Passes,
                 .Anchor = AnchorStyles.Left,
                 .AutoSize = True,
@@ -93,7 +93,7 @@ Namespace Flux.Greaseweazle
                 .Maximum = CommandLineBuilder.MAX_PASSES
             }
 
-            Dim LingerLabel = New Label With {
+            Dim LingerLabel As New Label With {
                 .Text = My.Resources.Label_Linger,
                 .Anchor = AnchorStyles.Left,
                 .AutoSize = True,
@@ -107,7 +107,7 @@ Namespace Flux.Greaseweazle
                 .Maximum = CommandLineBuilder.MAX_LINGER
             }
 
-            Dim ButtonContainer = New FlowLayoutPanel With {
+            Dim ButtonContainer As New FlowLayoutPanel With {
                 .FlowDirection = FlowDirection.RightToLeft,
                 .AutoSize = True,
                 .Anchor = AnchorStyles.Right,

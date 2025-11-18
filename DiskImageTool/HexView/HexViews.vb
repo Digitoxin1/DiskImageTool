@@ -71,7 +71,7 @@ Module HexViews
     End Function
 
     Public Function HexDisplayDisk(Disk As Disk) As Boolean
-        Dim HexViewSectorData = New HexViewSectorData(Disk, 0, Disk.Image.Length) With {
+        Dim HexViewSectorData As New HexViewSectorData(Disk, 0, Disk.Image.Length) With {
             .Description = "Disk"
         }
 
@@ -87,7 +87,7 @@ Module HexViews
     End Function
 
     Public Function HexDisplayFreeClusters(Disk As Disk) As Boolean
-        Dim HexViewSectorData = New HexViewSectorData(Disk, Disk.FAT.GetFreeClusters(FAT12.FreeClusterEmum.WithData).ToList) With {
+        Dim HexViewSectorData As New HexViewSectorData(Disk, Disk.FAT.GetFreeClusters(FAT12.FreeClusterEmum.WithData).ToList) With {
             .Description = "Free Clusters"
         }
 
@@ -103,7 +103,7 @@ Module HexViews
     Public Function HexDisplayOverdumpData(Disk As Disk) As Boolean
         Dim Offset = Disk.BPB.ReportedImageSize() + 1
 
-        Dim HexViewSectorData = New HexViewSectorData(Disk, Offset, Disk.Image.Length - Offset) With {
+        Dim HexViewSectorData As New HexViewSectorData(Disk, Offset, Disk.Image.Length - Offset) With {
             .Description = "Disk"
         }
 
@@ -294,7 +294,7 @@ Module HexViews
     End Function
 
     Public Function HexViewFAT(Disk As Disk) As HexViewSectorData
-        Dim HexViewSectorData = New HexViewSectorData(Disk) With {
+        Dim HexViewSectorData As New HexViewSectorData(Disk) With {
             .Description = My.Resources.HexView_FAT
         }
 
@@ -371,7 +371,7 @@ Module HexViews
         Return HexViewSectorData
     End Function
     Public Function HexViewRootDirectory(Disk As Disk) As HexViewSectorData
-        Dim HexViewSectorData = New HexViewSectorData(Disk, Disk.RootDirectory.SectorChain)
+        Dim HexViewSectorData As New HexViewSectorData(Disk, Disk.RootDirectory.SectorChain)
         HighlightDirectoryData(Disk, HexViewSectorData, True)
 
         HexViewSectorData.Description = My.Resources.HexView_RootDirectory
@@ -398,7 +398,7 @@ Module HexViews
                     If BootSector.ValidJumpInstructuon.Contains(FirstByte) Then
                         If OffsetEnd - Offset + 1 >= BootSector.BOOT_SECTOR_SIZE Then
                             Dim BootSectorData = Disk.Image.GetBytes(Offset, DiskImage.BootSector.BOOT_SECTOR_SIZE)
-                            Dim BootSector = New BootSector(BootSectorData)
+                            Dim BootSector As New BootSector(BootSectorData)
                             If BootSector.BPB.IsValid Then
                                 HasBootSector = True
                                 BootSectorOffset = Offset

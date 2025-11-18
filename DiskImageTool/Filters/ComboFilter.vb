@@ -33,7 +33,7 @@
                 _Combo.Items.Item(Index) = Item
             End If
         Else
-            Dim Item = New ComboFilterItem With {
+            Dim Item As New ComboFilterItem With {
                 .Name = Name,
                 .Count = 1
             }

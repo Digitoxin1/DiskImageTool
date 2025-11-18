@@ -15,7 +15,7 @@ Module Reports
         Dim Rows As New List(Of String)
 
         If CurrentImage.Disk.Image.IsBitstreamImage Then
-            Dim SectorList = New List(Of WriteSpliceSector)
+            Dim SectorList As New List(Of WriteSpliceSector)
             Dim HasFile As Boolean = False
             Dim RowLength As Integer
 
@@ -58,7 +58,7 @@ Module Reports
                                     End If
                                 End If
 
-                                Dim WriteSpliceSector = New WriteSpliceSector With {
+                                Dim WriteSpliceSector As New WriteSpliceSector With {
                                     .Track = MappedTrack,
                                     .Side = Side,
                                     .SectorIndex = RegionSector.SectorIndex,
@@ -174,7 +174,7 @@ Module Reports
 
         Dim Content = String.Join(vbCrLf, Rows) & If(Rows.Count > 0, vbCrLf, String.Empty)
 
-        Dim frmTextView = New TextViewForm(My.Resources.Label_WriteSplices & " - " & CurrentImage.ImageData.FileName, Content, True, True, "WriteSplices.txt")
+        Dim frmTextView As New TextViewForm(My.Resources.Label_WriteSplices & " - " & CurrentImage.ImageData.FileName, Content, True, True, "WriteSplices.txt")
         frmTextView.ShowDialog()
     End Sub
 

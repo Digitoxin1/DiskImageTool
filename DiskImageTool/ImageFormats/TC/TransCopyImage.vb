@@ -326,7 +326,7 @@ Namespace ImageFormats
 
                         For Track = 0 To _TrackEnd
                             For Side = 0 To _Sides - 1
-                                Dim TransCopyTrack = New TransCopyTrack(Track, Side)
+                                Dim TransCopyTrack As New TransCopyTrack(Track, Side)
 
                                 Dim Offset = 4 * Track + 2 * Side
 

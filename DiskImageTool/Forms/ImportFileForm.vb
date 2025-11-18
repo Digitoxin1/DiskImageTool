@@ -106,7 +106,7 @@ Public Class ImportFileForm
             RowForeColor = SystemColors.WindowText
         End If
 
-        Dim Item = New ListViewItem(Group) With {
+        Dim Item As New ListViewItem(Group) With {
             .Text = File.Name,
             .Tag = ImportFile,
             .Checked = ImportFile.IsSelected,
@@ -155,7 +155,7 @@ Public Class ImportFileForm
         'Dim ShortName = GetAvailableFileName(ImportDirectory.FileName, False, Parent.FileNames)
         'Parent.FileNames.Add(ShortName)
 
-        Dim Group = New ListViewGroup(GroupPath) With {
+        Dim Group As New ListViewGroup(GroupPath) With {
             .Tag = ImportDirectory
         }
         ListViewFiles.Groups.Add(Group)
@@ -195,7 +195,7 @@ Public Class ImportFileForm
 
         'PopulateExistingFileNames(Directory, _FileList)
 
-        Dim Group = New ListViewGroup(If(GroupPath = "", InParens(My.Resources.Label_Root), GroupPath)) With {
+        Dim Group As New ListViewGroup(If(GroupPath = "", InParens(My.Resources.Label_Root), GroupPath)) With {
             .Tag = _FileList
         }
 
@@ -502,14 +502,14 @@ Public Class ImportDirectory
     End Property
 
     Public Function AddDirectory(FilePath As String, FileName As String) As ImportDirectory
-        Dim NewDirectory = New ImportDirectory(FilePath, FileName, Root, Me)
+        Dim NewDirectory As New ImportDirectory(FilePath, FileName, Root, Me)
         _DirectoryList.Add(NewDirectory)
 
         Return NewDirectory
     End Function
 
     Public Function AddFile(FilePath As String, FileName As String, SizeOnDisk As Long) As ImportFile
-        Dim NewFile = New ImportFile(FilePath, FileName, SizeOnDisk, Root, Me)
+        Dim NewFile As New ImportFile(FilePath, FileName, SizeOnDisk, Root, Me)
         _FileList.Add(NewFile)
 
         Return NewFile

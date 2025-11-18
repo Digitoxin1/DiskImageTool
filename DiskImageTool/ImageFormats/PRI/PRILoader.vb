@@ -6,7 +6,7 @@ Namespace ImageFormats
             Public Function ImageLoad(Data() As Byte) As PRIFloppyImage
                 Dim Image As PRIFloppyImage = Nothing
 
-                Dim PRI = New PRIImage()
+                Dim PRI As New PRIImage()
                 Dim Result = PRI.Load(Data)
                 If Result Then
                     Dim BytesPerSector As UInteger = Bitstream.GetBytesPerSector(PRI)

@@ -80,7 +80,7 @@ Public Class ImageCreationForm
                 Buffer = GetBootSector(BootSectorType.Id)
             End If
             If Buffer IsNot Nothing Then
-                Dim BootSector = New BootSector(Buffer)
+                Dim BootSector As New BootSector(Buffer)
                 Dim FATMediaDescriptor As Byte
 
                 If BootSectorType.OEMName <> "" Then
@@ -148,7 +148,7 @@ Public Class ImageCreationForm
         If Stream Is Nothing Then
             Throw New Exception("Unable to load resource " & Name)
         Else
-            Dim TextStreamReader = New IO.StreamReader(Stream)
+            Dim TextStreamReader As New IO.StreamReader(Stream)
             Value = TextStreamReader.ReadToEnd()
             TextStreamReader.Close()
         End If
@@ -175,7 +175,7 @@ Public Class ImageCreationForm
 
         For Each FormatNode As XmlElement In XMLDoc.SelectNodes("/root/formats/format")
             Dim DiskFormat As FloppyDiskFormat = FormatNode.GetAttribute("id")
-            Dim BootSectorList = New List(Of BootSectorType)
+            Dim BootSectorList As New List(Of BootSectorType)
             For Each BootSectorNode As XmlElement In FormatNode.SelectNodes("bootsector")
                 Dim BootSectorId = BootSectorNode.GetAttribute("id")
                 Dim OEMName = ""
@@ -188,7 +188,7 @@ Public Class ImageCreationForm
                 End If
                 Dim BootSectorData As XmlElement = XMLDoc.SelectSingleNode("/root/bootsectors/bootsector[@id='" & BootSectorId & "']")
                 If BootSectorData IsNot Nothing Then
-                    Dim BootSectorType = New BootSectorType With {
+                    Dim BootSectorType As New BootSectorType With {
                         .Id = BootSectorId,
                         .Name = BootSectorData.GetAttribute("name"),
                         .VolumeSerialNumber = (BootSectorData.HasAttribute("volumeSerialNumber") AndAlso BootSectorData.GetAttribute("volumeSerialNumber") = "1"),

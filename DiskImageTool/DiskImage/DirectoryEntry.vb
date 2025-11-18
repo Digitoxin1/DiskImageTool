@@ -334,7 +334,7 @@
         End Function
 
         Public Function UpdateFile(FilePath As String, FileSize As UInteger, FillChar As Byte, ClusterList As SortedSet(Of UShort))
-            Dim FileInfo = New IO.FileInfo(FilePath)
+            Dim FileInfo As New IO.FileInfo(FilePath)
             Dim ClusterSize = Disk.BPB.BytesPerCluster
 
             Dim FileLength As Long

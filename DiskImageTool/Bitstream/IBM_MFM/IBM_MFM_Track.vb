@@ -123,7 +123,7 @@
                 For Each SectorOffset In SectorList
                     AddAddressMarkIndex(SectorOffset + MFM_SYNC_MARK_BITS)
 
-                    Dim Sector = New IBM_MFM_Sector(BitStream, SectorOffset)
+                    Dim Sector As New IBM_MFM_Sector(BitStream, SectorOffset)
                     Dim SectorSize = Sector.GetSizeBytes
 
                     If SectorIndex < SectorList.Count - 1 Then

@@ -93,7 +93,7 @@
         Public Property TrackEnd As Short = -1
         Public Property TrackStart As Short = -1
         Public Function Arguments() As String
-            Dim args = New List(Of String)
+            Dim args As New List(Of String)
 
             If DeviceMode <> DEFAULT_DEVICE_MODE Then
                 args.Add("-m" & CByte(DeviceMode).ToString)

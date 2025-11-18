@@ -6,7 +6,7 @@ Namespace ImageFormats
             Public Function ImageLoad(Data() As Byte) As MFMFloppyImage
                 Dim Image As MFMFloppyImage = Nothing
 
-                Dim MFMImage = New MFMImage
+                Dim MFMImage As New MFMImage
                 Dim Result = MFMImage.Load(Data)
                 If Result Then
                     Dim BytesPerSector As UInteger = Bitstream.GetBytesPerSector(MFMImage)

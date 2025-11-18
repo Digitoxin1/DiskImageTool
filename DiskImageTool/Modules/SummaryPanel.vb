@@ -301,7 +301,7 @@ Public Class SummaryPanel
                 Msg = My.Resources.SummaryPanel_Error
             End If
 
-            Dim Item = New ListViewItem("  " & Msg, DiskGroup) With {
+            Dim Item As New ListViewItem("  " & Msg, DiskGroup) With {
                 .ForeColor = Color.Red
             }
             .Items.Add(Item)

@@ -29,7 +29,7 @@
         If Stream Is Nothing Then
             Throw New Exception("Unable to load resource " & Name)
         Else
-            Dim TextStreamReader = New IO.StreamReader(Stream)
+            Dim TextStreamReader As New IO.StreamReader(Stream)
             Value = TextStreamReader.ReadToEnd()
             TextStreamReader.Close()
         End If

@@ -137,7 +137,7 @@
 
             For Index As UInteger = 0 To EntryCount - 1
                 Dim Offset = ClusterOffset + (Index * DirectoryEntry.DIRECTORY_ENTRY_SIZE)
-                Dim NewDirectoryEntry = New DirectoryEntry(_RootDirectory, Me, Offset, DirectoryEntries.Count, True)
+                Dim NewDirectoryEntry As New DirectoryEntry(_RootDirectory, Me, Offset, DirectoryEntries.Count, True)
                 DirectoryEntries.Add(NewDirectoryEntry)
             Next
 

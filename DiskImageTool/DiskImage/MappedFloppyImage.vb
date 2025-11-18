@@ -483,7 +483,7 @@ Namespace DiskImage
             _EmptySector = New Byte(_BPB.BytesPerSector - 1) {}
 
             Dim Data = GetSectorData(0, 0, 1)
-            Dim BPB = New BiosParameterBlock(Data)
+            Dim BPB As New BiosParameterBlock(Data)
 
             If BPB.IsValid Then
                 _BPB = BPB

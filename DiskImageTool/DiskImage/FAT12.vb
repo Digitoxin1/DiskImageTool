@@ -153,7 +153,7 @@
         End Function
 
         Public Function GetFreeClusters(FreeClusterType As FreeClusterEmum) As SortedSet(Of UShort)
-            Dim ClusterList = New SortedSet(Of UShort)
+            Dim ClusterList As New SortedSet(Of UShort)
             For Each Cluster In _FreeClusters
                 Dim ProtectedCluster As Boolean = False
 

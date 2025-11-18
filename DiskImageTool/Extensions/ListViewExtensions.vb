@@ -94,7 +94,7 @@ Module ListViewExtensions
             Else
                 ItemText = ""
             End If
-            Dim NewItem = New ListViewItem(ItemText, Group) With {
+            Dim NewItem As New ListViewItem(ItemText, Group) With {
                 .UseItemStyleForSubItems = False
             }
             If Name.Length > 0 Then
@@ -146,7 +146,7 @@ Module ListViewExtensions
             Else
                 ItemText = ""
             End If
-            Dim NewItem = New ListViewItem(ItemText, Group) With {
+            Dim NewItem As New ListViewItem(ItemText, Group) With {
                     .UseItemStyleForSubItems = False
                 }
             If AddTags Then
@@ -225,7 +225,7 @@ Module ListViewExtensions
     Public Function GetGroupAtPoint(ListViewControl As ListView, pt As Point) As ListViewGroup
         Dim Response As ListViewGroup = Nothing
 
-        Dim ht = New LVHITTESTINFO() With {
+        Dim ht As New LVHITTESTINFO() With {
             .pt_x = pt.X,
             .pt_y = pt.Y
         }

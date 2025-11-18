@@ -6,7 +6,7 @@ Namespace ImageFormats
             Public Function ImageLoad(Data() As Byte) As HFEFloppyImage
                 Dim Image As HFEFloppyImage = Nothing
 
-                Dim HFEImage = New HFEImage
+                Dim HFEImage As New HFEImage
                 Dim Result = HFEImage.Load(Data)
                 If Result Then
                     Dim BytesPerSector As UInteger = Bitstream.GetBytesPerSector(HFEImage)

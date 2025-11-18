@@ -130,7 +130,7 @@ Namespace Flux.Greaseweazle
         End Function
 
         Private Sub InitializeControls()
-            Dim DriveLabel = New Label With {
+            Dim DriveLabel As New Label With {
                 .Text = My.Resources.Label_Drive,
                 .Anchor = AnchorStyles.Right,
                 .AutoSize = True
@@ -141,7 +141,7 @@ Namespace Flux.Greaseweazle
                 .Width = 180
             }
 
-            Dim RetriesLabel = New Label With {
+            Dim RetriesLabel As New Label With {
                 .Text = My.Resources.Label_Retries,
                 .Anchor = AnchorStyles.Left,
                 .AutoSize = True
@@ -189,7 +189,7 @@ Namespace Flux.Greaseweazle
                 .Margin = New Padding(3, 3, 3, 3)
             }
 
-            Dim ButtonContainer = New FlowLayoutPanel With {
+            Dim ButtonContainer As New FlowLayoutPanel With {
                 .FlowDirection = FlowDirection.TopDown,
                 .AutoSize = True,
                 .Margin = New Padding(12, 24, 3, 3)
@@ -222,7 +222,7 @@ Namespace Flux.Greaseweazle
                 .Visible = False
             }
 
-            Dim ImageFormatCaption = New Label With {
+            Dim ImageFormatCaption As New Label With {
                 .Text = My.Resources.Label_Format,
                 .Anchor = AnchorStyles.Right,
                 .AutoSize = True
@@ -500,7 +500,7 @@ Namespace Flux.Greaseweazle
                 Exit Sub
             End If
 
-            Dim Builder = New CommandLineBuilder(CommandLineBuilder.CommandAction.write) With {
+            Dim Builder As New CommandLineBuilder(CommandLineBuilder.CommandAction.write) With {
                    .Device = Settings.ComPort,
                    .InFile = FilePath,
                    .Drive = Opt.Id,

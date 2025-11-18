@@ -31,7 +31,7 @@ Namespace HexView
             Hex = Hex.Replace(Chr(10), "")
             Hex = Hex.Replace(Chr(9), "")
 
-            Dim regex = New Regex("^[0-9A-F]*$", RegexOptions.IgnoreCase)
+            Dim regex As New Regex("^[0-9A-F]*$", RegexOptions.IgnoreCase)
 
             Dim HexArray As String()
             If regex.IsMatch(Hex) Then
@@ -66,7 +66,7 @@ Namespace HexView
             If Formatted Then
                 Capacity += HexBox.SelectionLength \ 16
             End If
-            Dim SB = New System.Text.StringBuilder(Capacity)
+            Dim SB As New System.Text.StringBuilder(Capacity)
             For Counter = 0 To HexBox.SelectionLength - 1
                 Dim B = HexBox.ByteProvider.ReadByte(HexBox.SelectionStart + Counter)
                 SB.Append(B.ToString("X2"))

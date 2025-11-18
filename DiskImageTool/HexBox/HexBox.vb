@@ -2434,7 +2434,7 @@ Namespace Hb.Windows.Forms
             Dim col = GroupSize
 
             While col < _iHexMaxHBytes
-                Dim pen = New Pen(New SolidBrush(InfoTextColor), 1)
+                Dim pen As New Pen(New SolidBrush(InfoTextColor), 1)
                 Dim headerPointF = GetColumnInfoPointF(col)
                 headerPointF.X -= _charSize.Width / 2
                 g.DrawLine(pen, headerPointF, New PointF(headerPointF.X, headerPointF.Y + _recColumnInfo.Height + _recHex.Height))
@@ -3996,8 +3996,8 @@ Namespace Hb.Windows.Forms
 
             hex = hex.Trim()
 
-            Dim regex = New Regex("^[0-9A-F]*$", RegexOptions.IgnoreCase)
-            Dim regexSpaces = New Regex("^([0-9A-F]{1,2} )*([0-9A-F]{1,2})?$", RegexOptions.IgnoreCase)
+            Dim regex As New Regex("^[0-9A-F]*$", RegexOptions.IgnoreCase)
+            Dim regexSpaces As New Regex("^([0-9A-F]{1,2} )*([0-9A-F]{1,2})?$", RegexOptions.IgnoreCase)
 
             Dim hexArray As String() 'hex.Split(' ');
             'added parse hexstring no whitespaces version 2.0.1

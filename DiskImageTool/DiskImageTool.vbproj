@@ -224,6 +224,7 @@
     <Compile Include="MenuHelp.vb" />
     <Compile Include="MenuTools.vb" />
     <Compile Include="Modules\FileExport.vb" />
+    <Compile Include="Modules\FilenameTemplateHelper.vb" />
     <Compile Include="Modules\FloppyDiskIO.vb" />
     <Compile Include="Bitstream\Interfaces\IBitstreamImage.vb" />
     <Compile Include="Bitstream\Interfaces\IBitstreamTrack.vb" />

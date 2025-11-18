@@ -78,7 +78,7 @@
             If Not _Enabled Then Exit Sub
             If _IgnoreChange Then Exit Sub
 
-            Dim DataChange = New DataChange(DataChangeType.Data, Offset, OriginalValue, NewValue)
+            Dim DataChange As New DataChange(DataChangeType.Data, Offset, OriginalValue, NewValue)
 
             If _BatchEditMode Then
                 _PendingChanges.Add(DataChange)
@@ -94,7 +94,7 @@
             If Not _Enabled Then Exit Sub
             If _IgnoreChange Then Exit Sub
 
-            Dim DataChange = New DataChange(DataChangeType.Size, 0, OriginalLength, NewLength)
+            Dim DataChange As New DataChange(DataChangeType.Size, 0, OriginalLength, NewLength)
 
             If _BatchEditMode Then
                 _PendingChanges.Add(DataChange)

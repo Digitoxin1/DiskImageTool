@@ -175,7 +175,7 @@ Public Class HexViewRawForm
             Capacity += Length \ 16
         End If
 
-        Dim SB = New System.Text.StringBuilder(Capacity)
+        Dim SB As New System.Text.StringBuilder(Capacity)
         For Counter = 0 To Length - 1
             Dim B = Data(StartIndex + Counter)
             SB.Append(B.ToString("X2"))
@@ -341,7 +341,7 @@ Public Class HexViewRawForm
         Dim SectorHeight = SECTOR_HEIGHT + PADDING_ROWS
         Dim ColIndex = MousePos.X \ SectorWidth
         Dim RowIndex = MousePos.Y \ SectorHeight
-        Dim SectorRect = New Rectangle(ColIndex * SectorWidth, RowIndex * SectorHeight, SECTOR_WIDTH, SECTOR_HEIGHT)
+        Dim SectorRect As New Rectangle(ColIndex * SectorWidth, RowIndex * SectorHeight, SECTOR_WIDTH, SECTOR_HEIGHT)
         If SectorRect.Contains(MousePos) Then
             Return RowIndex * PanelSectorsPerRow() + ColIndex
         End If
@@ -556,7 +556,7 @@ Public Class HexViewRawForm
     Private Sub InitializeTrackNavigator()
         ComboTrack = New ComboTrack()
 
-        Dim LabelTrack = New ToolStripLabel(My.Resources.Label_Track) With {
+        Dim LabelTrack As New ToolStripLabel(My.Resources.Label_Track) With {
             .Alignment = ToolStripItemAlignment.Right,
             .Padding = New Padding(6, 0, 0, 0)
         }
@@ -1337,13 +1337,13 @@ Public Class HexViewRawForm
         End If
     End Sub
     Private Sub PanelSectors_Paint(sender As Object, e As PaintEventArgs) Handles PanelSectors.Paint
-        Dim SectorFont = New Font("Microsoft Sans Serif", 7)
+        Dim SectorFont As New Font("Microsoft Sans Serif", 7)
 
         Dim LeftPos As Integer
         Dim TopPos As Integer
         Dim Value As String
         Dim TextSize As SizeF
-        Dim SelectedPen = New Pen(Color.Blue, 2)
+        Dim SelectedPen As New Pen(Color.Blue, 2)
         Dim SectorBrush As Brush
 
         e.Graphics.Clear(SystemColors.Control)

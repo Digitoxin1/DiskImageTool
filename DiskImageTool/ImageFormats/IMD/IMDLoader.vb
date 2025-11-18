@@ -6,7 +6,7 @@ Namespace ImageFormats
             Public Function ImageLoad(Data() As Byte) As IMDFloppyImage
                 Dim Image As IMDFloppyImage = Nothing
 
-                Dim IMD = New IMDImage()
+                Dim IMD As New IMDImage()
                 Dim Result = IMD.Load(Data)
                 If Result Then
                     Dim BytesPerSector As UInteger = Bitstream.GetBytesPerSector(IMD)

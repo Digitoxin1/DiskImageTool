@@ -8,6 +8,7 @@ Namespace Flux.Kryoflux
 
         Private WithEvents ButtonProcess As Button
         Private WithEvents CheckBoxDoublestep As CheckBox
+        Private WithEvents ComboExtensions As ComboBox
         Private WithEvents ComboImageFormat As ComboBox
         Private WithEvents TextBoxFileName As TextBox
         Private ReadOnly _Initialized As Boolean = False
@@ -15,6 +16,7 @@ Namespace Flux.Kryoflux
         Private ReadOnly _SideCount As Integer
         Private ReadOnly _TrackCount As Integer
         Private ReadOnly _TrackStatus As TrackStatus
+        Private _ComboExtensionsNoEvent As Boolean = False
         Private _DoubleStep As Boolean = False
         Private _OutputFilePath As String = ""
         Private _ProcessRunning As Boolean = False
@@ -31,6 +33,7 @@ Namespace Flux.Kryoflux
             InitializeControls()
             Dim ImageFormat = ReadImageFormat()
             PopulateImageFormats(ComboImageFormat, ImageFormat, ImageFormat)
+            PopulateFileExtensions(ComboExtensions, ImageFormat)
 
             SetNewFileName()
             SetTiltebarText()
@@ -47,7 +50,8 @@ Namespace Flux.Kryoflux
         End Property
 
         Public Function GetNewFileName() As String
-            Return TextBoxFileName.Text & ".ima"
+            Dim Value As FileExtensionItem = ComboExtensions.SelectedItem
+            Return TextBoxFileName.Text & Value.Extension
         End Function
 
         Protected Overrides Sub OnAfterBaseFormClosing(e As FormClosingEventArgs)
@@ -77,7 +81,7 @@ Namespace Flux.Kryoflux
                 TrackDistance = TrackDistanceEnum.Tracks40
             End If
 
-            Dim Builder = New CommandLineBuilder() With {
+            Dim Builder As New CommandLineBuilder() With {
                 .InFile = _InputFilePath,
                 .OutFile = _OutputFilePath,
                 .DeviceMode = DeviceModeEnum.ImageFile,
@@ -103,7 +107,7 @@ Namespace Flux.Kryoflux
         End Function
 
         Private Sub InitializeControls()
-            Dim FileNameLabel = New Label With {
+            Dim FileNameLabel As New Label With {
                 .Text = My.Resources.Label_FileName,
                 .Anchor = AnchorStyles.Right,
                 .AutoSize = True
@@ -114,7 +118,13 @@ Namespace Flux.Kryoflux
                 .MaxLength = 255
             }
 
-            Dim ImageFormatLabel = New Label With {
+            ComboExtensions = New ComboBox With {
+                .Anchor = AnchorStyles.Left,
+                .Width = 50,
+                .DropDownStyle = ComboBoxStyle.DropDownList
+            }
+
+            Dim ImageFormatLabel As New Label With {
                 .Text = My.Resources.Label_ImageFormat,
                 .Anchor = AnchorStyles.Right,
                 .AutoSize = True
@@ -170,7 +180,8 @@ Namespace Flux.Kryoflux
                 Row = 0
                 .Controls.Add(FileNameLabel, 0, Row)
                 .Controls.Add(TextBoxFileName, 1, Row)
-                .SetColumnSpan(TextBoxFileName, 3)
+                .SetColumnSpan(TextBoxFileName, 2)
+                .Controls.Add(ComboExtensions, 3, Row)
 
                 Row = 1
                 .Controls.Add(ImageFormatLabel, 0, Row)
@@ -285,6 +296,22 @@ Namespace Flux.Kryoflux
             ButtonOk.Enabled = Not _ProcessRunning AndAlso Not String.IsNullOrEmpty(_OutputFilePath) AndAlso Not String.IsNullOrEmpty(TextBoxFileName.Text)
         End Sub
 
+        Private Sub RefreshPreferredExensions()
+            Dim Item As FileExtensionItem = ComboExtensions.SelectedValue
+
+
+            If Not Item.Format.HasValue Then
+                Exit Sub
+            End If
+
+            Dim ImageParams As FloppyDiskParams = ComboImageFormat.SelectedValue
+
+            If Item.Format.Value <> ImageParams.Format Then
+                App.AppSettings.RemovePreferredExtension(ImageParams.Format)
+            End If
+
+            App.AppSettings.SetPreferredExtension(Item.Format.Value, Item.Extension)
+        End Sub
         Private Sub SetNewFileName()
             Dim FileExt = IO.Path.GetExtension(_InputFilePath).ToLower
             If FileExt = ".raw" Then
@@ -319,11 +346,30 @@ Namespace Flux.Kryoflux
             ProcessImage()
         End Sub
 
+        Private Sub ComboExtensions_SelectedIndexChanged(sender As Object, e As EventArgs) Handles ComboExtensions.SelectedIndexChanged
+            If Not _Initialized Then
+                Exit Sub
+            End If
+
+            If _ComboExtensionsNoEvent Then
+                Exit Sub
+            End If
+
+            RefreshPreferredExensions()
+        End Sub
+
         Private Sub ComboImageFormat_SelectedIndexChanged(sender As Object, e As EventArgs) Handles ComboImageFormat.SelectedIndexChanged
             If Not _Initialized Then
                 Exit Sub
             End If
 
+            Dim ImageParams As FloppyDiskParams = ComboImageFormat.SelectedValue
+
+            _ComboExtensionsNoEvent = True
+            PopulateFileExtensions(ComboExtensions, ImageParams.Format)
+            _ComboExtensionsNoEvent = False
+
+            RefreshPreferredExensions()
             RefreshButtonState()
         End Sub
 

@@ -6,7 +6,7 @@ Namespace ImageFormats
             Public Function ImageLoad(Data() As Byte) As PSIFloppyImage
                 Dim Image As PSIFloppyImage = Nothing
 
-                Dim PSI = New PSISectorImage()
+                Dim PSI As New PSISectorImage()
                 Dim Result = PSI.Load(Data)
                 If Result Then
                     If PSI.Header.DefaultSectorFormat = DefaultSectorFormat.IBM_MFM_DD _

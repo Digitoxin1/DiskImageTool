@@ -3,6 +3,7 @@ Imports DiskImageTool.Bitstream
 Imports DiskImageTool.DiskImage
 
 Module ImageIO
+    Public Const BASIC_SECTOR_FILE_EXTENSIONS As String = ".ima,.img,.vfd,.flp"
     Public ReadOnly AllFileExtensions As New List(Of String)
     Public ReadOnly BasicSectorFileExtensions As New List(Of String) From {".ima", ".img", ".imz", ".vfd", ".flp"}
     Public ReadOnly ArchiveFileExtensions As New List(Of String) From {".zip"}
@@ -65,7 +66,7 @@ Module ImageIO
         Try
             IO.File.WriteAllBytes(FilePath, DirectoryEntry.GetContent)
 
-            Dim FileInfo = New IO.FileInfo(FilePath)
+            Dim FileInfo As New IO.FileInfo(FilePath)
             DirectoryEntrySetFileDates(FileInfo, DirectoryEntry)
         Catch ex As Exception
             DebugException(ex)
@@ -210,7 +211,7 @@ Module ImageIO
                 ImageData.Loaded = True
             End If
 
-            Dim Disk = New DiskImage.Disk(FloppyImage, ImageData.FATIndex, ImageData.Modifications)
+            Dim Disk As New DiskImage.Disk(FloppyImage, ImageData.FATIndex, ImageData.Modifications)
             ImageData.Modifications = Disk.Image.History.Changes
 
             Return Disk

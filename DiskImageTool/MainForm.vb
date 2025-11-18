@@ -291,7 +291,7 @@ Public Class MainForm
     End Sub
 
     Private Function FATComboAdd() As ToolStripComboBox
-        Dim Combo = New ToolStripComboBox With {
+        Dim Combo As New ToolStripComboBox With {
             .DropDownStyle = ComboBoxStyle.DropDownList,
             .FlatStyle = FlatStyle.System,
             .AutoSize = False,
@@ -379,7 +379,7 @@ Public Class MainForm
     End Sub
 
     Private Function FilterComboAdd(Width As Integer, Sorted As Boolean) As ToolStripComboBox
-        Dim Combo = New ToolStripComboBox With {
+        Dim Combo As New ToolStripComboBox With {
             .DropDownStyle = ComboBoxStyle.DropDownList,
             .FlatStyle = FlatStyle.System,
             .AutoSize = False,
@@ -395,7 +395,7 @@ Public Class MainForm
     End Function
 
     Private Function FilterLabelAdd(Text As String) As ToolStripLabel
-        Dim Label = New ToolStripLabel With {
+        Dim Label As New ToolStripLabel With {
             .Text = Text,
             .Alignment = ToolStripItemAlignment.Right,
             .Overflow = ToolStripItemOverflow.Never,
@@ -524,7 +524,7 @@ Public Class MainForm
     End Sub
 
     Private Function FilterTextBoxAdd() As ToolStripSpringTextBox
-        Dim TextBox = New ToolStripSpringTextBox With {
+        Dim TextBox As New ToolStripSpringTextBox With {
             .Alignment = ToolStripItemAlignment.Right,
             .BorderStyle = BorderStyle.FixedSingle,
             .Font = New Font("Segoe UI", 9),
@@ -758,7 +758,7 @@ Public Class MainForm
         If Enabled Then
             MainMenuOptions.DropDownItems.Add(New ToolStripSeparator)
 
-            Dim Item = New ToolStripMenuItem With {
+            Dim Item As New ToolStripMenuItem With {
                 .Name = "MenuOptionsExportUnknown",
                 .Text = My.Resources.Menu_ExportUnknown,
                 .CheckOnClick = True,
@@ -827,6 +827,7 @@ Public Class MainForm
             End If
         End If
     End Sub
+
     Private Sub LaunchNewInstance(FilePath As String)
         Process.Start(Application.ExecutablePath, """" & FilePath & """")
     End Sub

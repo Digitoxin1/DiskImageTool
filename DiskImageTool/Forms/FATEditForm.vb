@@ -118,7 +118,7 @@ Public Class FATEditForm
     End Sub
 
     Private Function GetDataTable(FAT As FAT12) As DataTable
-        Dim FATTable = New DataTable("FATTable")
+        Dim FATTable As New DataTable("FATTable")
         Dim Column As DataColumn
 
         Column = New DataColumn(GRID_COLUMN_CLUSTER, Type.GetType("System.UInt16")) With {
@@ -319,7 +319,7 @@ Public Class FATEditForm
         Dim Value As UShort = Row.Cells(GRID_COLUMN_VALUE).Value
         Dim ErrorString As String = Row.Cells(GRID_COLUMN_ERROR).Value
 
-        Dim Style = New DataGridViewCellStyle
+        Dim Style As New DataGridViewCellStyle
 
         Dim TypeName = GetTypeNameFromValue(Value)
         If ErrorString <> "" Then
@@ -376,7 +376,7 @@ Public Class FATEditForm
     Private Sub HexDisplayDiskImage(Cluster As UShort)
         Dim Offset = _Disk.BPB.ClusterToOffset(2)
 
-        Dim HexViewSectorData = New HexViewSectorData(_Disk, Offset, _Disk.Image.Length - Offset) With {
+        Dim HexViewSectorData As New HexViewSectorData(_Disk, Offset, _Disk.Image.Length - Offset) With {
             .Description = My.Resources.Caption_Disk
         }
 
@@ -465,7 +465,7 @@ Public Class FATEditForm
         Dim Item As ToolStripMenuItem
         Dim SubItem As ToolStripMenuItem
 
-        Dim Label = New ToolStripLabel(FormatLabelPair(My.Resources.Label_Cluster, 0)) With {
+        Dim Label As New ToolStripLabel(FormatLabelPair(My.Resources.Label_Cluster, 0)) With {
             .Name = LABEL_CLUSTER
         }
         ContextMenuGrid.Items.Add(Label)

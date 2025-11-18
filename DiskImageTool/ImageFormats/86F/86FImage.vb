@@ -363,7 +363,7 @@ Namespace ImageFormats
                         For i = 0 To 255
                             For j = 0 To SideCount - 1
                                 Offset = BitConverter.ToUInt32(Buffer, Pos)
-                                Dim D86FTrack = New D86FTrack(i, j, Offset)
+                                Dim D86FTrack As New D86FTrack(i, j, Offset)
                                 If Offset > 0 Then
                                     D86FTrack.Flags = BitConverter.ToUInt16(Buffer, Offset)
                                     If BitcellMode Then

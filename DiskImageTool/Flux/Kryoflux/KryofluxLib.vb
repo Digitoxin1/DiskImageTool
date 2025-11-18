@@ -16,7 +16,7 @@ Namespace Flux.Kryoflux
 
             Dim FileName = GenerateUniqueFileName(TempPath, "temp.ima")
 
-            Dim Builder = New CommandLineBuilder() With {
+            Dim Builder As New CommandLineBuilder() With {
                 .InFile = FilePath,
                 .OutFile = FileName,
                 .DeviceMode = DeviceModeEnum.ImageFile,
@@ -32,7 +32,7 @@ Namespace Flux.Kryoflux
 
             Dim result = ConsoleProcessRunner.RunProcess(Settings.AppPath, Builder.Arguments, captureOutput:=True, captureError:=False)
 
-            Dim RegExTrackInfo = New Regex(ConsoleParser.REGEX_TRACK, RegexOptions.IgnoreCase Or RegexOptions.CultureInvariant Or RegexOptions.Multiline)
+            Dim RegExTrackInfo As New Regex(ConsoleParser.REGEX_TRACK, RegexOptions.IgnoreCase Or RegexOptions.CultureInvariant Or RegexOptions.Multiline)
 
             Dim Match = RegExTrackInfo.Match(result.StdOut)
 

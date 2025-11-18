@@ -108,7 +108,7 @@
         End Function
 
         Private Function BuildTooltip(StatusInfo As TrackStatusInfo) As String
-            Dim Tooltip = New List(Of String) From {
+            Dim Tooltip As New List(Of String) From {
                 My.Resources.Label_Track & ":  " & StatusInfo.Track & "." & StatusInfo.Side
             }
 
@@ -120,7 +120,7 @@
                 Tooltip.Add(My.Resources.Label_Staus & ":  " & UppercaseFirst(StatusInfo.TrackInfo.Status))
             End If
 
-            Dim Sectors = New List(Of String)
+            Dim Sectors As New List(Of String)
 
             If StatusInfo.TrackInfo.BadSectorCount > 0 Then
                 Sectors.Add(StatusInfo.TrackInfo.BadSectorCount & " " & My.Resources.Label_FATType_Bad)

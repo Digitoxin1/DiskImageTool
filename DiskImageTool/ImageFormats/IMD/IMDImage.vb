@@ -193,7 +193,7 @@ Namespace ImageFormats
                             For i = 0 To SectorCount - 1
                                 Dim SectorSize = Track.GetSizeBytes
                                 Dim Format As DataFormat = Buffer(Offset)
-                                Dim Sector = New IMDSector(SectorSize, Format) With {
+                                Dim Sector As New IMDSector(SectorSize, Format) With {
                                     .SectorId = SectorMap(i),
                                     .Track = CylinderMap(i),
                                     .Side = HeadMap(i)

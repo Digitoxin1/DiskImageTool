@@ -206,7 +206,7 @@ Namespace ImageFormats
                             For j = 0 To _SideCount - 1
                                 Dim Track = BitConverter.ToUInt16(Buffer, TrackListOffset + MFMTrackListOffsets.Track)
                                 Dim Side = Buffer(TrackListOffset + MFMTrackListOffsets.Side)
-                                Dim MFMTrack = New MFMTrack(Track, Side)
+                                Dim MFMTrack As New MFMTrack(Track, Side)
                                 Dim Size As UInteger
                                 If _IFType And &H80 Then
                                     MFMTrack.RPM = BitConverter.ToUInt16(Buffer, TrackListOffset + MFMTrackListOffsets.Advanced_RPM)

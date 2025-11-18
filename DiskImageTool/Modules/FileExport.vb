@@ -14,7 +14,7 @@
                 FileList = FileList.Append(FilePath)
             Next
             If FileList.Count > 0 Then
-                Dim Data = New DataObject(DataFormats.FileDrop, FileList.ToArray)
+                Dim Data As New DataObject(DataFormats.FileDrop, FileList.ToArray)
                 FilePanel.DoDragDrop(Data, DragDropEffects.Move)
             End If
             IO.Directory.Delete(TempPath, True)
@@ -33,7 +33,7 @@
     End Sub
 
     Private Sub ImageFileExportSelected(SelectedItems As ListView.SelectedListViewItemCollection)
-        Dim Dialog = New FolderBrowserDialog
+        Dim Dialog As New FolderBrowserDialog
 
         If Dialog.ShowDialog <> DialogResult.OK Then
             Exit Sub

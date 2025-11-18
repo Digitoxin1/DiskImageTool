@@ -151,9 +151,9 @@ Namespace Flux.Greaseweazle
         Public Function GreaseweazleOutputTypeDescription(Value As GreaseweazleOutputType) As String
             Select Case Value
                 Case GreaseweazleOutputType.HFE
-                    Return "HxC HFE Image (.hfe)"
+                    Return "HxC HFE Image"
                 Case GreaseweazleOutputType.IMA
-                    Return "Basic Sector Image (.ima)"
+                    Return "Basic Sector Image"
                 Case Else
                     Return ""
             End Select

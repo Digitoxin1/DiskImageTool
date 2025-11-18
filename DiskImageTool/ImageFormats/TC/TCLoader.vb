@@ -6,7 +6,7 @@ Namespace ImageFormats
             Public Function ImageLoad(Data() As Byte) As TranscopyFloppyImage
                 Dim Image As TranscopyFloppyImage = Nothing
 
-                Dim tc = New TransCopyImage()
+                Dim tc As New TransCopyImage()
                 Dim Result = tc.Load(Data)
                 If Result Then
                     Dim BytesPerSector As UInteger = Bitstream.GetBytesPerSector(tc)

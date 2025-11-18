@@ -122,7 +122,7 @@ Module DiskImageLib
 
         Dim Disk = DiskImageLoadFromImageData(ImageData, True)
 
-        Dim Image = New DiskImageContainer(Disk, ImageData)
+        Dim Image As New DiskImageContainer(Disk, ImageData)
 
         If Image IsNot Nothing Then
             If Image.ImageData.ExternalModified Then
@@ -501,7 +501,7 @@ Module DiskImageLib
             Content = Encoding.UTF7.GetString(Stream.GetBuffer)
         End Using
 
-        Dim frmTextView = New TextViewForm(Caption, Content, False, True, DirectoryEntry.GetFullFileName)
+        Dim frmTextView As New TextViewForm(Caption, Content, False, True, DirectoryEntry.GetFullFileName)
         frmTextView.ShowDialog()
     End Sub
 
@@ -754,7 +754,7 @@ Module DiskImageLib
             If Folder.SelectedFiles > 0 Then
                 Dim DirectoryInfo As New IO.DirectoryInfo(Folder.FilePath)
 
-                Dim DirectoryEntry = New DirectoryEntryBase
+                Dim DirectoryEntry As New DirectoryEntryBase
                 DirectoryEntry.SetFileInfo(DirectoryInfo, Options.UseCreatedDate, Options.UseLastAccessedDate)
 
                 Dim AddDirectoryResponse = ParentDirectory.AddDirectory(DirectoryEntry.Data, Options, DirectoryInfo.Name, Index)

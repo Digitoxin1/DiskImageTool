@@ -6,7 +6,7 @@ Namespace ImageFormats
             Public Function ImageLoad(Data() As Byte) As D86FFloppyImage
                 Dim Image As D86FFloppyImage = Nothing
 
-                Dim D86FImage = New D86FImage()
+                Dim D86FImage As New D86FImage()
                 Dim Result = D86FImage.Load(Data)
                 If Result Then
                     Dim BytesPerSector As UInteger = Bitstream.GetBytesPerSector(D86FImage)

@@ -174,7 +174,7 @@ Namespace DiskImage
         End Function
 
         Public Function GetLFNDirectoryEntries(FileName As String, ShortName As String) As List(Of Byte())
-            Dim Entries = New List(Of Byte())
+            Dim Entries As New List(Of Byte())
 
             If FileName = ShortName Then
                 Return Entries
@@ -414,7 +414,7 @@ Namespace DiskImage
             Dim Cluster = DirectoryEntry.Disk.FAT.GetNextFreeCluster(DirectoryData.ClusterList, True)
             DirectoryEntry.Disk.FATTables.UpdateTableEntry(Cluster, FAT12.FAT_LAST_CLUSTER_END)
 
-            Dim NewEntry = New DirectoryEntryBase(EntryData) With {
+            Dim NewEntry As New DirectoryEntryBase(EntryData) With {
                 .StartingCluster = Cluster,
                 .HasNTLowerCaseExtension = DirectoryData.HasNTLowerCaseExtension,
                 .HasNTLowerCaseFileName = DirectoryData.HasNTLowerCaseFileName
@@ -473,7 +473,7 @@ Namespace DiskImage
                 End If
             End If
 
-            Dim NewEntry = New DirectoryEntryBase With {
+            Dim NewEntry As New DirectoryEntryBase With {
                 .StartingCluster = FirstCluster,
                 .HasNTLowerCaseExtension = FileData.HasNTLowerCaseExtension,
                 .HasNTLowerCaseFileName = FileData.HasNTLowerCaseFileName
@@ -560,7 +560,7 @@ Namespace DiskImage
 
         Private Function RemoveDiacritics(value As String) As String
             Dim NormalizedString = value.Normalize(NormalizationForm.FormD)
-            Dim SB = New StringBuilder(NormalizedString.Length)
+            Dim SB As New StringBuilder(NormalizedString.Length)
 
             For i = 0 To NormalizedString.Length - 1
                 Dim c = NormalizedString(i)

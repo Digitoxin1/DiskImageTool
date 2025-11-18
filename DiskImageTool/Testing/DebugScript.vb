@@ -44,8 +44,8 @@ Module DebugScript
         Dim DriveAFile As String = Path.Combine(DataPath, "DRIVE0.TXT")
         Dim DriveBFile As String = Path.Combine(DataPath, "DRIVE1.TXT")
 
-        Dim SB_A = New StringBuilder()
-        Dim SB_B = New StringBuilder()
+        Dim SB_A As New StringBuilder()
+        Dim SB_B As New StringBuilder()
 
         For Each Offset As UInteger In Modifications.Keys
             ScriptModifications.Item(Offset) = Modifications.Item(Offset)
@@ -108,7 +108,7 @@ Module DebugScript
 
         For Index = 0 To 1
             FileName = Path.Combine(DataPath, "DIRDUMP" & Index & ".TXT")
-            Dim SB = New StringBuilder()
+            Dim SB As New StringBuilder()
 
             SB.AppendLine("N ROOTDIR.TMP")
             SB.AppendLine(DebugLoad(Offset, Index, SectorStart, SectorEnd - SectorStart))

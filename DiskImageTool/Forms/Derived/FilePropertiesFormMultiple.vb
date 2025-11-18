@@ -50,7 +50,7 @@ Public Class FilePropertiesFormMultiple
 
     Private Sub PopulateForm()
         Dim DT As DiskImage.ExpandedDate
-        Dim LastWritten = New Date(1980, 1, 1, 0, 0, 0)
+        Dim LastWritten As New Date(1980, 1, 1, 0, 0, 0)
         Dim Created As Date? = Nothing
         Dim LastAccessed As Date? = Nothing
         Dim SetArchived As Boolean = True

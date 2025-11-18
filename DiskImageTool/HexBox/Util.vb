@@ -10,7 +10,7 @@
         ''' </summary>
         Sub New()
             ' design mode is true if host process is: Visual Studio, Visual Studio Express Versions (C#, VB, C++) or SharpDevelop
-            Dim designerHosts = New List(Of String)() From {
+            Dim designerHosts As New List(Of String)() From {
                 "devenv",
                 "vcsexpress",
                 "vbexpress",

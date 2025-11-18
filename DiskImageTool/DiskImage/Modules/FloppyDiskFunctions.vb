@@ -232,7 +232,7 @@
 
         Public Function FloppyDiskFormatGet(Buffer() As Byte) As FloppyDiskFormat
             If Buffer.Length >= 512 Then
-                Dim BootSector = New BootSector(Buffer)
+                Dim BootSector As New BootSector(Buffer)
                 Dim MediaDescriptor As Byte = 0
                 If Buffer.Length = 513 Then
                     MediaDescriptor = Buffer(512)
@@ -627,7 +627,7 @@
             End Function
 
             Public Function GetBPB() As BiosParameterBlock
-                Dim BPB = New BiosParameterBlock With {
+                Dim BPB As New BiosParameterBlock With {
                     .BytesPerSector = BytesPerSector,
                     .MediaDescriptor = MediaDescriptor,
                     .NumberOfFATs = NumberOfFATs,

@@ -479,7 +479,7 @@ Public Class BootSectorForm
     End Sub
 
     Private Function GetBPB() As BiosParameterBlock
-        Dim BPB = New BiosParameterBlock()
+        Dim BPB As New BiosParameterBlock()
 
         UpdateBPB(BPB)
 

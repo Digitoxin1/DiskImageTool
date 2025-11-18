@@ -243,7 +243,7 @@ Namespace Flux.Greaseweazle
         End Sub
 
         Private Sub ButtonInfo_Click(sender As Object, e As EventArgs) Handles ButtonInfo.Click
-            Dim Builder = New CommandLineBuilder(CommandLineBuilder.CommandAction.info) With {
+            Dim Builder As New CommandLineBuilder(CommandLineBuilder.CommandAction.info) With {
                 .Device = ComboPorts.SelectedValue
             }
 

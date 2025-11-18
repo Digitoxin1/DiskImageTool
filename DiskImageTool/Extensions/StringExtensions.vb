@@ -3,7 +3,7 @@
 Module StringExtensions
     <Extension()>
     Public Function WordWrap(Text As String, Width As Integer, Font As Font) As List(Of String)
-        Dim StringList = New List(Of String)
+        Dim StringList As New List(Of String)
         Dim Size = TextRenderer.MeasureText(Text, Font)
 
         If String.IsNullOrEmpty(Text) OrElse Width = 0 OrElse Width >= Size.Width Then

@@ -84,7 +84,7 @@
         End Sub
 
         Public Function Arguments() As String
-            Dim args = New List(Of String)
+            Dim args As New List(Of String)
             If _Time Then
                 args.Add("--time")
             End If
@@ -398,8 +398,8 @@
         End Function
 
         Private Function GetTrackString() As String
-            Dim Tracks = New List(Of String)
-            Dim CylinderList = New List(Of String)
+            Dim Tracks As New List(Of String)
+            Dim CylinderList As New List(Of String)
 
             For Each Value In _Cylinders
                 Dim Range As String = Value.Item1
