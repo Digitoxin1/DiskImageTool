@@ -5,6 +5,7 @@ Namespace Flux.Greaseweazle
     Public Class ReadDiskForm
         Inherits BaseForm
 
+        Private WithEvents ButtonClear As Button
         Private WithEvents ButtonDetect As Button
         Private WithEvents ButtonProcess As Button
         Private WithEvents ButtonReset As Button
@@ -241,13 +242,24 @@ Namespace Flux.Greaseweazle
                 .Anchor = AnchorStyles.Left Or AnchorStyles.Right
             }
 
-            ButtonReset = New Button With {
+            ButtonClear = New Button With {
                 .Margin = New Padding(3, 12, 3, 3),
-                .Text = My.Resources.Label_Reset,
+                .Text = My.Resources.label_clear,
                 .MinimumSize = New Size(75, 0),
                 .AutoSize = True,
                 .Anchor = AnchorStyles.Left Or AnchorStyles.Right
             }
+
+            ButtonReset = New Button With {
+                .Margin = New Padding(6, 0, 6, 0),
+                .Text = My.Resources.Label_Reset,
+                .MinimumSize = New Size(75, 0),
+                .AutoSize = True,
+                .TabIndex = 0
+            }
+
+            PanelButtonsLeft.Controls.Add(ButtonReset)
+            ButtonReset.BringToFront()
 
             ButtonDetect = New Button With {
                 .Width = 75,
@@ -256,7 +268,7 @@ Namespace Flux.Greaseweazle
             }
 
             ButtonContainer.Controls.Add(ButtonProcess)
-            ButtonContainer.Controls.Add(ButtonReset)
+            ButtonContainer.Controls.Add(ButtonClear)
 
 
             ButtonOk.Text = My.Resources.Label_Import
@@ -379,6 +391,15 @@ Namespace Flux.Greaseweazle
 
             InitializeCombo(ComboOutputType, DriveList, Nothing)
         End Sub
+
+        Private Sub ClearProcessedImage()
+            TextBoxConsole.Clear()
+            ClearOutputFile()
+            ClearStatusBar()
+            _TrackStatus.Clear()
+            ResetTrackGrid()
+        End Sub
+
         Private Sub ProcessImage()
             Dim DiskParams As FloppyDiskParams = ComboImageFormat.SelectedValue
             Dim Opt As DriveOption = ComboImageDrives.SelectedValue
@@ -391,9 +412,6 @@ Namespace Flux.Greaseweazle
                 Exit Sub
             End If
 
-            ClearOutputFile()
-            ClearStatusBar()
-
             Dim OutputType As GreaseweazleOutputType = ComboOutputType.SelectedValue
 
             Dim TempPath = InitTempImagePath()
@@ -404,11 +422,9 @@ Namespace Flux.Greaseweazle
                 Exit Sub
             End If
 
-            TextBoxConsole.Clear()
-            _OutputFilePath = GenerateUniqueFileName(TempPath, FileName)
+            ClearProcessedImage()
 
-            _TrackStatus.Clear()
-            ResetTrackGrid()
+            _OutputFilePath = GenerateUniqueFileName(TempPath, FileName)
 
             Dim DoubleStep As Boolean = DiskParams.IsStandard AndAlso CheckBoxDoublestep.Enabled AndAlso CheckBoxDoublestep.Checked
             _DoubleStep = DoubleStep
@@ -497,6 +513,7 @@ Namespace Flux.Greaseweazle
         Private Sub RefreshButtonState(CheckImageFormat As Boolean)
             Dim ImageParams As FloppyDiskParams = ComboImageFormat.SelectedValue
             Dim Opt As DriveOption = ComboImageDrives.SelectedValue
+            Dim HasOutputfile As Boolean = Not String.IsNullOrEmpty(_OutputFilePath)
 
             Dim OutputTypeDisabled As Boolean = False
 
@@ -509,15 +526,15 @@ Namespace Flux.Greaseweazle
                 End If
             End If
 
-            ComboImageFormat.Enabled = Not _ProcessRunning AndAlso Opt.Id <> ""
-            ComboImageDrives.Enabled = Not _ProcessRunning
-            ComboOutputType.Enabled = Not _ProcessRunning And Not OutputTypeDisabled
+            ComboImageFormat.Enabled = Not _ProcessRunning AndAlso Not HasOutputfile AndAlso Opt.Id <> ""
+            ComboImageDrives.Enabled = Not _ProcessRunning AndAlso Not HasOutputfile
+            ComboOutputType.Enabled = Not _ProcessRunning AndAlso Not HasOutputfile And Not OutputTypeDisabled
 
-            _NumericRevs.Enabled = Not _ProcessRunning
-            _NumericRetries.Enabled = Not _ProcessRunning
-            _NumericSeekRetries.Enabled = Not _ProcessRunning
+            _NumericRevs.Enabled = Not _ProcessRunning AndAlso Not HasOutputfile
+            _NumericRetries.Enabled = Not _ProcessRunning AndAlso Not HasOutputfile
+            _NumericSeekRetries.Enabled = Not _ProcessRunning AndAlso Not HasOutputfile
 
-            ButtonProcess.Enabled = ImageParams.Format <> FloppyDiskFormat.FloppyUnknown
+            ButtonProcess.Enabled = ImageParams.Format <> FloppyDiskFormat.FloppyUnknown AndAlso Not HasOutputfile
             If _ProcessRunning Then
                 ButtonProcess.Text = My.Resources.Label_Abort
             Else
@@ -525,16 +542,18 @@ Namespace Flux.Greaseweazle
             End If
 
             ButtonSaveLog.Enabled = Not _ProcessRunning AndAlso TextBoxConsole.Text.Length > 0
+            ButtonReset.Enabled = Not _ProcessRunning
+            ButtonClear.Enabled = Not _ProcessRunning AndAlso HasOutputfile
 
             If ImageParams.IsStandard AndAlso ImageParams.MediaType = FloppyMediaType.Media525DoubleDensity Then
-                CheckBoxDoublestep.Enabled = Not _ProcessRunning AndAlso Opt.Tracks > 42
+                CheckBoxDoublestep.Enabled = Not _ProcessRunning AndAlso Not HasOutputfile AndAlso Opt.Tracks > 42
                 CheckBoxDoublestep.Checked = Opt.Tracks > 79
             Else
                 CheckBoxDoublestep.Enabled = False
                 CheckBoxDoublestep.Checked = False
             End If
 
-            ButtonDetect.Enabled = Not _ProcessRunning AndAlso Opt.Id <> ""
+            ButtonDetect.Enabled = Not _ProcessRunning AndAlso Not HasOutputfile AndAlso Opt.Id <> ""
 
             RefreshImportButtonState()
         End Sub
@@ -709,6 +728,11 @@ Namespace Flux.Greaseweazle
             Dim tb As TextBox = DirectCast(sender, TextBox)
             tb.Text = SanitizeFileNamePreservePlaceholders(tb.Text)
             RefreshImportButtonState()
+        End Sub
+
+        Private Sub ButtonClear_Click(sender As Object, e As EventArgs) Handles ButtonClear.Click
+            ClearProcessedImage()
+            RefreshButtonState(True)
         End Sub
 #End Region
     End Class

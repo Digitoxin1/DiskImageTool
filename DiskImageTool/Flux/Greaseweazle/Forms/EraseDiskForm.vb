@@ -145,15 +145,17 @@ Namespace Flux.Greaseweazle
             }
 
             ButtonReset = New Button With {
-                .Margin = New Padding(3, 12, 3, 3),
+                .Margin = New Padding(6, 0, 6, 0),
                 .Text = My.Resources.Label_Reset,
                 .MinimumSize = New Size(75, 0),
                 .AutoSize = True,
-                .Anchor = AnchorStyles.Left Or AnchorStyles.Right
+                .TabIndex = 0
             }
 
+            PanelButtonsLeft.Controls.Add(ButtonReset)
+            ButtonReset.BringToFront()
+
             ButtonContainer.Controls.Add(ButtonProcess)
-            ButtonContainer.Controls.Add(ButtonReset)
 
             ButtonOk.Visible = False
             ButtonCancel.Text = My.Resources.Label_Close

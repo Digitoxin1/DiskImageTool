@@ -3168,6 +3168,15 @@ Namespace My.Resources
         End Property
         
         '''<summary>
+        '''  Looks up a localized string similar to Clear.
+        '''</summary>
+        Friend ReadOnly Property Label_Clear() As String
+            Get
+                Return ResourceManager.GetString("Label_Clear", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
         '''  Looks up a localized string similar to Close.
         '''</summary>
         Friend ReadOnly Property Label_Close() As String

@@ -28,11 +28,11 @@
             Dim PanelButtonsRight As System.Windows.Forms.FlowLayoutPanel
             Dim PanelBottom As System.Windows.Forms.Panel
             Dim PanelBottomInner As System.Windows.Forms.TableLayoutPanel
-            Dim PanelButtonsLeft As System.Windows.Forms.FlowLayoutPanel
             Dim PanelMain As System.Windows.Forms.Panel
             Dim PanelInner As System.Windows.Forms.Panel
             Me.ButtonCancel = New System.Windows.Forms.Button()
             Me.ButtonOk = New System.Windows.Forms.Button()
+            Me.PanelButtonsLeft = New System.Windows.Forms.FlowLayoutPanel()
             Me.ButtonSaveLog = New System.Windows.Forms.Button()
             Me.TableLayoutPanelMain = New System.Windows.Forms.TableLayoutPanel()
             Me.TextBoxConsole = New System.Windows.Forms.TextBox()
@@ -46,13 +46,12 @@
             PanelButtonsRight = New System.Windows.Forms.FlowLayoutPanel()
             PanelBottom = New System.Windows.Forms.Panel()
             PanelBottomInner = New System.Windows.Forms.TableLayoutPanel()
-            PanelButtonsLeft = New System.Windows.Forms.FlowLayoutPanel()
             PanelMain = New System.Windows.Forms.Panel()
             PanelInner = New System.Windows.Forms.Panel()
             PanelButtonsRight.SuspendLayout()
             PanelBottom.SuspendLayout()
             PanelBottomInner.SuspendLayout()
-            PanelButtonsLeft.SuspendLayout()
+            Me.PanelButtonsLeft.SuspendLayout()
             PanelMain.SuspendLayout()
             PanelInner.SuspendLayout()
             Me.StatusStripBottom.SuspendLayout()
@@ -94,14 +93,14 @@
             '
             resources.ApplyResources(PanelBottomInner, "PanelBottomInner")
             PanelBottomInner.Controls.Add(PanelButtonsRight, 2, 0)
-            PanelBottomInner.Controls.Add(PanelButtonsLeft, 1, 0)
+            PanelBottomInner.Controls.Add(Me.PanelButtonsLeft, 1, 0)
             PanelBottomInner.Name = "PanelBottomInner"
             '
             'PanelButtonsLeft
             '
-            resources.ApplyResources(PanelButtonsLeft, "PanelButtonsLeft")
-            PanelButtonsLeft.Controls.Add(Me.ButtonSaveLog)
-            PanelButtonsLeft.Name = "PanelButtonsLeft"
+            resources.ApplyResources(Me.PanelButtonsLeft, "PanelButtonsLeft")
+            Me.PanelButtonsLeft.Controls.Add(Me.ButtonSaveLog)
+            Me.PanelButtonsLeft.Name = "PanelButtonsLeft"
             '
             'ButtonSaveLog
             '
@@ -193,8 +192,8 @@
             PanelBottom.PerformLayout()
             PanelBottomInner.ResumeLayout(False)
             PanelBottomInner.PerformLayout()
-            PanelButtonsLeft.ResumeLayout(False)
-            PanelButtonsLeft.PerformLayout()
+            Me.PanelButtonsLeft.ResumeLayout(False)
+            Me.PanelButtonsLeft.PerformLayout()
             PanelMain.ResumeLayout(False)
             PanelMain.PerformLayout()
             PanelInner.ResumeLayout(False)
@@ -216,5 +215,6 @@
         Friend WithEvents StatusBadSectors As ToolStripStatusLabel
         Friend WithEvents StatusUnexpected As ToolStripStatusLabel
         Friend WithEvents ButtonSaveLog As Button
+        Friend WithEvents PanelButtonsLeft As FlowLayoutPanel
     End Class
 End Namespace

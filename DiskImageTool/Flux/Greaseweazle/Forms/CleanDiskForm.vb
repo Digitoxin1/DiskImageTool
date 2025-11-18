@@ -121,13 +121,16 @@ Namespace Flux.Greaseweazle
             }
 
             ButtonReset = New Button With {
-                .Margin = New Padding(3, 3, 0, 3),
+                .Margin = New Padding(6, 0, 6, 0),
                 .Text = My.Resources.Label_Reset,
                 .MinimumSize = New Size(75, 0),
-                .AutoSize = True
+                .AutoSize = True,
+                .TabIndex = 0
             }
 
-            ButtonContainer.Controls.Add(ButtonReset)
+            PanelButtonsLeft.Controls.Add(ButtonReset)
+            ButtonReset.BringToFront()
+
             ButtonContainer.Controls.Add(ButtonProcess)
 
             ButtonOk.Visible = False
