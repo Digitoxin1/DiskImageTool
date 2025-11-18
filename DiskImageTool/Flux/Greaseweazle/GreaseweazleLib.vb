@@ -3,7 +3,9 @@ Imports DiskImageTool.DiskImage.FloppyDiskFunctions
 
 Namespace Flux.Greaseweazle
     Module GreaseweazleLib
-        Public GreaseweazleSettings As New Settings
+        Public Function Settings() As GreaseweazleSettings
+            Return App.Globals.AppSettings.Greaseweazle
+        End Function
 
         Public Function GetTrackHeads(StartHead As Integer, Optional EndHead As Integer = -1) As CommandLineBuilder.TrackHeads
             If EndHead = -1 Then
@@ -20,7 +22,7 @@ Namespace Flux.Greaseweazle
         End Function
 
         Public Sub BandwidthDisplay(ParentForm As Form)
-            If Not GreaseweazleSettings.IsPathValid Then
+            If Not Settings.IsPathValid Then
                 DisplayInvalidApplicationPathMsg()
                 Exit Sub
             End If
@@ -29,14 +31,14 @@ Namespace Flux.Greaseweazle
             Application.DoEvents()
 
             Dim Builder = New CommandLineBuilder(CommandLineBuilder.CommandAction.bandwidth) With {
-            .Device = GreaseweazleSettings.COMPort
+            .Device = Settings.ComPort
         }
 
             Dim Arguments = Builder.Arguments
 
             Dim Content As String = ""
             Try
-                Dim Result = ConsoleProcessRunner.RunProcess(GreaseweazleSettings.AppPath, Arguments)
+                Dim Result = ConsoleProcessRunner.RunProcess(Settings.AppPath, Arguments)
                 Content = Result.CombinedOutput
             Finally
                 ParentForm.Cursor = Cursors.Default
@@ -102,7 +104,7 @@ Namespace Flux.Greaseweazle
         }
             Builder.AddCylinder(0)
 
-            ConsoleProcessRunner.RunProcess(GreaseweazleSettings.AppPath, Builder.Arguments, captureOutput:=False, captureError:=False)
+            ConsoleProcessRunner.RunProcess(Settings.AppPath, Builder.Arguments, captureOutput:=False, captureError:=False)
 
             Return (IO.File.Exists(FileName), FileName)
         End Function
@@ -177,7 +179,7 @@ Namespace Flux.Greaseweazle
         End Function
 
         Public Sub InfoDisplay(ParentForm As Form)
-            If Not GreaseweazleSettings.IsPathValid Then
+            If Not Settings.IsPathValid Then
                 DisplayInvalidApplicationPathMsg()
                 Exit Sub
             End If
@@ -186,13 +188,13 @@ Namespace Flux.Greaseweazle
             Application.DoEvents()
 
             Dim Builder = New CommandLineBuilder(CommandLineBuilder.CommandAction.info) With {
-            .Device = GreaseweazleSettings.COMPort
+            .Device = Settings.ComPort
         }
             Dim Arguments = Builder.Arguments
 
             Dim Content As String = ""
             Try
-                Dim Result = ConsoleProcessRunner.RunProcess(GreaseweazleSettings.AppPath, Arguments)
+                Dim Result = ConsoleProcessRunner.RunProcess(Settings.AppPath, Arguments)
                 Content = Result.CombinedOutput
             Finally
                 ParentForm.Cursor = Cursors.Default
@@ -240,7 +242,7 @@ Namespace Flux.Greaseweazle
 
             Dim AddItem As Action(Of String, String, Byte) =
             Sub(labelPrefix As String, id As String, index As Byte)
-                Dim t = GreaseweazleSettings.DriveType(index)
+                Dim t = Settings.Drives(index).Type
                 If t = FloppyMediaType.MediaUnknown Then
                     Exit Sub
                 End If
@@ -248,7 +250,7 @@ Namespace Flux.Greaseweazle
                 Dim opt = New DriveOption With {
                     .Id = id,
                     .Type = t,
-                    .Tracks = GreaseweazleSettings.TrackCount(index),
+                    .Tracks = Settings.Drives(index).Tracks,
                     .Label = $"{labelPrefix}:   {GreaseweazleFloppyTypeDescription(t)}"
                 }
                 DriveList.Add(opt)
@@ -258,7 +260,7 @@ Namespace Flux.Greaseweazle
                 End If
             End Sub
 
-            If GreaseweazleSettings.Interface = Settings.GreaseweazleInterface.Shugart Then
+            If Settings.Interface = GreaseweazleSettings.GreaseweazleInterface.Shugart Then
                 AddItem("DS0", "0", 0)
                 AddItem("DS1", "1", 1)
                 AddItem("DS2", "2", 2)
@@ -300,7 +302,7 @@ Namespace Flux.Greaseweazle
             Dim FileName = GenerateUniqueFileName(TempPath, "temp.ima")
 
             Dim Builder = New CommandLineBuilder(CommandLineBuilder.CommandAction.read) With {
-            .Device = GreaseweazleSettings.COMPort,
+            .Device = Settings.ComPort,
             .Drive = DriveId,
             .File = FileName,
             .Format = "ibm.scan",
@@ -308,7 +310,7 @@ Namespace Flux.Greaseweazle
         }
             Builder.AddCylinder(0)
 
-            Dim Result = ConsoleProcessRunner.RunProcess(GreaseweazleSettings.AppPath, Builder.Arguments, captureOutput:=True, captureError:=True)
+            Dim Result = ConsoleProcessRunner.RunProcess(Settings.AppPath, Builder.Arguments, captureOutput:=True, captureError:=True)
 
             Return (IO.File.Exists(FileName), FileName, Result.CombinedOutput)
         End Function
@@ -324,11 +326,11 @@ Namespace Flux.Greaseweazle
         End Function
         Public Sub Reset(TextBox As TextBox)
             Dim Builder = New CommandLineBuilder(CommandLineBuilder.CommandAction.reset) With {
-            .Device = GreaseweazleSettings.COMPort
+            .Device = Settings.ComPort
         }
 
             Dim Arguments = Builder.Arguments
-            Dim Result = ConsoleProcessRunner.RunProcess(GreaseweazleSettings.AppPath, Arguments)
+            Dim Result = ConsoleProcessRunner.RunProcess(Settings.AppPath, Arguments)
             TextBox.Text = Result.CombinedOutput
 
             MsgBox(My.Resources.Dialog_GreaseweazleReset, MsgBoxStyle.Information)

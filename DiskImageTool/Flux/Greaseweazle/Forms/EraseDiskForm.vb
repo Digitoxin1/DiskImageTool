@@ -15,7 +15,7 @@ Namespace Flux.Greaseweazle
         Private NumericRevs As NumericUpDown
 
         Public Sub New()
-            MyBase.New(GreaseweazleSettings.LogFileName)
+            MyBase.New(Settings.LogFileName)
             InitializeControls()
 
             _TrackStatus = New TrackStatus(Me)
@@ -64,7 +64,7 @@ Namespace Flux.Greaseweazle
             End If
 
             Dim Builder = New CommandLineBuilder(CommandLineBuilder.CommandAction.erase) With {
-                   .Device = GreaseweazleSettings.COMPort,
+                   .Device = Settings.ComPort,
                    .Drive = Opt.Id,
                    .Revs = NumericRevs.Value,
                    .Hfreq = CheckBoxHFreq.Checked
@@ -87,7 +87,7 @@ Namespace Flux.Greaseweazle
             Dim Arguments = Builder.Arguments
 
             ToggleProcessRunning(True)
-            Process.StartAsync(GreaseweazleSettings.AppPath, Arguments)
+            Process.StartAsync(Settings.AppPath, Arguments)
         End Sub
 
         Private Sub InitializeControls()
@@ -276,7 +276,7 @@ Namespace Flux.Greaseweazle
 
             Dim TrackCount As UShort
             If Opt.Type = FloppyMediaType.MediaUnknown Then
-                TrackCount = Settings.MAX_TRACKS
+                TrackCount = GreaseweazleSettings.MAX_TRACKS
             Else
                 TrackCount = Opt.Tracks
             End If

@@ -31,7 +31,7 @@ Namespace Flux.Greaseweazle
         Private NumericRetries As NumericUpDown
 
         Public Sub New(Disk As DiskImage.Disk, FileName As String)
-            MyBase.New(GreaseweazleSettings.LogFileName)
+            MyBase.New(Settings.LogFileName)
             InitializeControls()
 
             _TrackStatus = New TrackStatus(Me)
@@ -62,7 +62,7 @@ Namespace Flux.Greaseweazle
             Dim Mode As String = IIf(_IsBitstreamImage, My.Resources.FileType_BitstreamImage, My.Resources.FileType_SectorImage)
             StatusStripBottom.Items.Add(New ToolStripStatusLabel(Mode))
 
-            Dim AvailableTypes = GreaseweazleSettings.AvailableDriveTypes
+            Dim AvailableTypes = Settings.AvailableDriveTypes
             Dim SelectedFormat = GreaseweazleFindCompatibleFloppyType(_DiskParams, AvailableTypes)
 
             PopulateDrives(ComboImageDrives, SelectedFormat)
@@ -116,10 +116,10 @@ Namespace Flux.Greaseweazle
 
             If _DiskParams.MediaType = FloppyMediaType.Media525DoubleDensity Then
                 If Opt.Type <> FloppyMediaType.Media525DoubleDensity AndAlso Opt.Type <> FloppyMediaType.Media525HighDensity Then
-                    TrackCount = Settings.MAX_TRACKS_525DD
+                    TrackCount = GreaseweazleSettings.MAX_TRACKS_525DD
                 End If
-            ElseIf Opt.Type = FloppyMediaType.Media525DoubleDensity AndAlso _TrackCount > Settings.MAX_TRACKS_525DD Then
-                TrackCount = Settings.MIN_TRACKS_525DD
+            ElseIf Opt.Type = FloppyMediaType.Media525DoubleDensity AndAlso _TrackCount > GreaseweazleSettings.MAX_TRACKS_525DD Then
+                TrackCount = GreaseweazleSettings.MIN_TRACKS_525DD
             End If
 
             If _DoubleStep Then
@@ -416,9 +416,9 @@ Namespace Flux.Greaseweazle
             Dim TrackCount As UShort
             If Opt.Type = FloppyMediaType.MediaUnknown Then
                 If _DiskParams.MediaType = FloppyMediaType.Media525DoubleDensity Then
-                    TrackCount = Settings.MAX_TRACKS_525DD
+                    TrackCount = GreaseweazleSettings.MAX_TRACKS_525DD
                 Else
-                    TrackCount = Settings.MAX_TRACKS
+                    TrackCount = GreaseweazleSettings.MAX_TRACKS
                 End If
             Else
                 TrackCount = Opt.Tracks
@@ -501,7 +501,7 @@ Namespace Flux.Greaseweazle
             End If
 
             Dim Builder = New CommandLineBuilder(CommandLineBuilder.CommandAction.write) With {
-                   .Device = GreaseweazleSettings.COMPort,
+                   .Device = Settings.ComPort,
                    .InFile = FilePath,
                    .Drive = Opt.Id,
                    .PreErase = CheckBoxPreErase.Checked,
@@ -551,7 +551,7 @@ Namespace Flux.Greaseweazle
             'TextBoxConsole.AppendText(Arguments)
 
             ToggleProcessRunning(True)
-            Process.StartAsync(GreaseweazleSettings.AppPath, Arguments)
+            Process.StartAsync(Settings.AppPath, Arguments)
         End Sub
 #Region "Events"
         Private Sub ButtonProcess_Click(sender As Object, e As EventArgs) Handles ButtonProcess.Click

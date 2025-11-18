@@ -5,9 +5,9 @@ Namespace Flux.Kryoflux
         Private ReadOnly ToolTip1 As New ToolTip()
 
         Private Sub InitializeFields()
-            SetExePath(KryofluxSettings.AppPath)
+            SetExePath(Settings.AppPath)
 
-            TextBoxLogFile.Text = KryofluxSettings.LogFileName
+            TextBoxLogFile.Text = Settings.LogFileName
         End Sub
 
         Private Sub SetExePath(path As String)
@@ -17,10 +17,10 @@ Namespace Flux.Kryoflux
 #Region "Events"
         Private Sub BtnUpdate_Click(sender As Object, e As EventArgs) Handles BtnUpdate.Click
             If TextBoxPath.Text = "" OrElse IO.File.Exists(TextBoxPath.Text) Then
-                KryofluxSettings.AppPath = TextBoxPath.Text
+                Settings.AppPath = TextBoxPath.Text
             End If
 
-            KryofluxSettings.LogFileName = TextBoxLogFile.Text.Trim
+            Settings.LogFileName = TextBoxLogFile.Text.Trim
         End Sub
 
         Private Sub ButtonBrowse_Click(sender As Object, e As EventArgs) Handles ButtonBrowse.Click

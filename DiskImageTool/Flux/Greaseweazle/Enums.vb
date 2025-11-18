@@ -139,9 +139,9 @@ Namespace Flux.Greaseweazle
             End Select
         End Function
 
-        Public Function GreaseweazleInterfaceName(Value As Settings.GreaseweazleInterface) As String
+        Public Function GreaseweazleInterfaceName(Value As GreaseweazleSettings.GreaseweazleInterface) As String
             Select Case Value
-                Case Settings.GreaseweazleInterface.Shugart
+                Case GreaseweazleSettings.GreaseweazleInterface.Shugart
                     Return "Shugart"
                 Case Else
                     Return "IBM"

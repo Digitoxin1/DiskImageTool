@@ -213,14 +213,13 @@
     <Compile Include="Flux\Greaseweazle\Forms\ReadDiskForm.vb">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Flux\Greaseweazle\Settings.vb" />
     <Compile Include="Flux\Greaseweazle\Forms\ImageImportForm.vb">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="Flux\Greaseweazle\Forms\WriteDiskForm.vb">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Flux\Kryoflux\Settings.vb" />
+    <Compile Include="Flux\Kryoflux\KryofluxSettings.vb" />
     <Compile Include="Lib\ConsoleProcessRunner.vb" />
     <Compile Include="MenuHelp.vb" />
     <Compile Include="MenuTools.vb" />
@@ -370,6 +369,12 @@
     <Compile Include="Modules\LoadedImageList.vb" />
     <Compile Include="Modules\Reports.vb" />
     <Compile Include="Modules\SummaryPanel.vb" />
+    <Compile Include="Settings\AppSettings.vb" />
+    <Compile Include="Flux\Greaseweazle\DriveSettings.vb" />
+    <Compile Include="Settings\ETagSettings.vb" />
+    <Compile Include="Flux\Greaseweazle\GreaseweazleSettings.vb" />
+    <Compile Include="Settings\ISettingsGroup.vb" />
+    <Compile Include="Settings\Shared.vb" />
     <Compile Include="Testing\DebugScript.vb" />
     <Compile Include="DiskImage\SectorData.vb" />
     <Compile Include="DiskImage\BasicSectorImage.vb" />

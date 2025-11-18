@@ -497,7 +497,7 @@ Public Class SummaryPanel
                 .AddItem(BootRecordGroup, BootSectorDescription(BootSectorOffsets.BootStrapSignature), Disk.BootSector.BootStrapSignature.ToString("X4"))
             End If
 
-            If My.Settings.Debug Then
+            If App.Globals.AppSettings.Debug Then
                 If Not Disk.BootSector.CheckJumpInstruction(True, True) Then
                     ForeColor = Color.Red
                 Else
@@ -771,7 +771,7 @@ Public Class SummaryPanel
     Private Sub PopulateMain(Disk As Disk, TitleDB As FloppyDB, BootStrapDB As BootstrapDB, MD5 As String)
         Dim TitleFound As Boolean = False
 
-        If My.Settings.DisplayTitles AndAlso TitleDB.TitleCount > 0 Then
+        If App.Globals.AppSettings.DisplayTitles AndAlso TitleDB.TitleCount > 0 Then
             Dim TitleFindResult = TitleDB.TitleFind(MD5)
             If TitleFindResult.TitleData IsNot Nothing Then
                 TitleFound = True

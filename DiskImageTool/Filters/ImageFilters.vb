@@ -214,7 +214,7 @@ Namespace Filters
                         Else
                             Image_Unverified = True
                         End If
-                        If My.Settings.Debug Then
+                        If App.Globals.AppSettings.Debug Then
                             FileData = New FloppyDB.FileNameData(ImageData.FileName)
                             If TitleFindResult.TitleData.GetStatus <> FileData.Status Then
                                 Database_MismatchedStatus = True
@@ -251,7 +251,7 @@ Namespace Filters
                 FilterUpdate(ImageData, UpdateFilters, Filters.FilterTypes.Disk_HasWriteSplices, Disk_HasWriteSplices)
             End If
 
-            If My.Settings.Debug And Disk IsNot Nothing Then
+            If App.Globals.AppSettings.Debug And Disk IsNot Nothing Then
                 FilterUpdate(ImageData, UpdateFilters, Filters.FilterTypes.Database_MismatchedStatus, Database_MismatchedStatus)
 
                 If _ExportUnknownImages Then
@@ -306,7 +306,7 @@ Namespace Filters
                 End If
             End If
 
-            If My.Settings.Debug Then
+            If App.Globals.AppSettings.Debug Then
                 FilterUpdate(ImageData, UpdateFilters, Filters.FilterTypes.Bootstrap_Unknown, Bootstrap_Unknown)
             End If
             FilterUpdate(ImageData, UpdateFilters, Filters.FilterTypes.OEMName_Windows9x, OEMName_Windows9x)

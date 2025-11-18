@@ -29,7 +29,7 @@ Namespace Flux.Greaseweazle
 
         Private Sub InitializeDriveType(index As Byte)
             Dim Combo = GetComboDriveType(index)
-            Dim CurrentValue = GreaseweazleSettings.DriveType(index)
+            Dim CurrentValue = Settings.Drives(index).Type
 
             Dim DriveList As New List(Of KeyValuePair(Of String, FloppyMediaType))
 
@@ -43,10 +43,10 @@ Namespace Flux.Greaseweazle
         End Sub
 
         Private Sub InitializeFields()
-            SetExePath(GreaseweazleSettings.AppPath)
+            SetExePath(Settings.AppPath)
 
-            InitializeInterfaceName(ComboInterface, GreaseweazleSettings.Interface)
-            InitializePorts(GreaseweazleSettings.COMPort)
+            InitializeInterfaceName(ComboInterface, Settings.Interface)
+            InitializePorts(Settings.ComPort)
             For i = 0 To 2
                 InitializeDriveType(i)
                 InitializeTracks(i)
@@ -54,15 +54,15 @@ Namespace Flux.Greaseweazle
 
             NumericDefaultRevs.Minimum = CommandLineBuilder.MIN_REVS
             NumericDefaultRevs.Maximum = CommandLineBuilder.MAX_REVS
-            NumericDefaultRevs.Value = GreaseweazleSettings.DefaultRevs
+            NumericDefaultRevs.Value = Settings.DefaultRevs
 
-            TextBoxLogFile.Text = GreaseweazleSettings.LogFileName
+            TextBoxLogFile.Text = Settings.LogFileName
         End Sub
 
         Private Sub InitializeInput(index As Byte, Type As FloppyMediaType, Tracks As Byte)
             Dim Input = GetNumericTracks(index)
 
-            Dim MinMax = Settings.GetMinMax(Type)
+            Dim MinMax = DriveSettings.GetMinMax(Type)
 
             Input.Minimum = MinMax.Min
             Input.Maximum = MinMax.Max
@@ -73,11 +73,11 @@ Namespace Flux.Greaseweazle
             End If
         End Sub
 
-        Private Sub InitializeInterfaceName(Combo As ComboBox, CurrentValue As Settings.GreaseweazleInterface)
-            Dim DriveList As New List(Of KeyValuePair(Of String, Settings.GreaseweazleInterface))
+        Private Sub InitializeInterfaceName(Combo As ComboBox, CurrentValue As GreaseweazleSettings.GreaseweazleInterface)
+            Dim DriveList As New List(Of KeyValuePair(Of String, GreaseweazleSettings.GreaseweazleInterface))
 
-            For Each InterfaceType As Settings.GreaseweazleInterface In [Enum].GetValues(GetType(Settings.GreaseweazleInterface))
-                DriveList.Add(New KeyValuePair(Of String, Settings.GreaseweazleInterface)(
+            For Each InterfaceType As GreaseweazleSettings.GreaseweazleInterface In [Enum].GetValues(GetType(GreaseweazleSettings.GreaseweazleInterface))
+                DriveList.Add(New KeyValuePair(Of String, GreaseweazleSettings.GreaseweazleInterface)(
                     GreaseweazleInterfaceName(InterfaceType), InterfaceType)
                 )
             Next
@@ -116,14 +116,14 @@ Namespace Flux.Greaseweazle
         End Sub
 
         Private Sub InitializeTracks(index As Byte)
-            Dim Type = GreaseweazleSettings.DriveType(index)
-            Dim Tracks = GreaseweazleSettings.TrackCount(index)
+            Dim Type = Settings.Drives(index).Type
+            Dim Tracks = Settings.Drives(index).Tracks
 
             InitializeInput(index, Type, Tracks)
         End Sub
 
-        Private Sub RefreshDriveTypes(DriveInterface As Settings.GreaseweazleInterface)
-            If DriveInterface = Settings.GreaseweazleInterface.Shugart Then
+        Private Sub RefreshDriveTypes(DriveInterface As GreaseweazleSettings.GreaseweazleInterface)
+            If DriveInterface = GreaseweazleSettings.GreaseweazleInterface.Shugart Then
                 LabelDriveType0.Text = String.Format(My.Resources.Label_DriveType, "0")
                 LabelDriveType1.Text = String.Format(My.Resources.Label_DriveType, "1")
                 LabelDriveType2.Text = String.Format(My.Resources.Label_DriveType, "2")
@@ -157,8 +157,8 @@ Namespace Flux.Greaseweazle
 
             Dim Tracks As Byte = 0
 
-            If CurrentType = GreaseweazleSettings.DriveType(index) Then
-                Tracks = GreaseweazleSettings.TrackCount(index)
+            If CurrentType = Settings.Drives(index).Type Then
+                Tracks = Settings.Drives(index).Tracks
             End If
 
             InitializeInput(index, CurrentType, Tracks)
@@ -195,21 +195,21 @@ Namespace Flux.Greaseweazle
 #Region "Events"
         Private Sub BtnUpdate_Click(sender As Object, e As EventArgs) Handles BtnUpdate.Click
             If TextBoxPath.Text = "" OrElse IO.File.Exists(TextBoxPath.Text) Then
-                GreaseweazleSettings.AppPath = TextBoxPath.Text
+                Settings.AppPath = TextBoxPath.Text
             End If
 
-            GreaseweazleSettings.Interface = ComboInterface.SelectedValue
-            GreaseweazleSettings.COMPort = ComboPorts.SelectedValue
-            GreaseweazleSettings.SetDrive(0, ComboDriveType0.SelectedValue, NumericTracks0.Value)
-            GreaseweazleSettings.SetDrive(1, ComboDriveType1.SelectedValue, NumericTracks1.Value)
+            Settings.Interface = ComboInterface.SelectedValue
+            Settings.ComPort = ComboPorts.SelectedValue
+            Settings.Drives(0).SetDrive(ComboDriveType0.SelectedValue, NumericTracks0.Value)
+            Settings.Drives(1).SetDrive(ComboDriveType1.SelectedValue, NumericTracks1.Value)
 
-            If DirectCast(ComboInterface.SelectedValue, Settings.GreaseweazleInterface) = Settings.GreaseweazleInterface.Shugart Then
-                GreaseweazleSettings.SetDrive(2, ComboDriveType2.SelectedValue, NumericTracks2.Value)
+            If DirectCast(ComboInterface.SelectedValue, GreaseweazleSettings.GreaseweazleInterface) = GreaseweazleSettings.GreaseweazleInterface.Shugart Then
+                Settings.Drives(2).SetDrive(ComboDriveType2.SelectedValue, NumericTracks2.Value)
             Else
-                GreaseweazleSettings.SetDrive(2, FloppyMediaType.MediaUnknown, 0)
+                Settings.Drives(2).SetDrive(FloppyMediaType.MediaUnknown, 0)
             End If
-            GreaseweazleSettings.DefaultRevs = NumericDefaultRevs.Value
-            GreaseweazleSettings.LogFileName = TextBoxLogFile.Text.Trim
+            Settings.DefaultRevs = NumericDefaultRevs.Value
+            Settings.LogFileName = TextBoxLogFile.Text.Trim
         End Sub
 
         Private Sub ButtonBrowse_Click(sender As Object, e As EventArgs) Handles ButtonBrowse.Click
@@ -264,7 +264,7 @@ Namespace Flux.Greaseweazle
         End Sub
 
         Private Sub ComboInterface_SelectedIndexChanged(sender As Object, e As EventArgs) Handles ComboInterface.SelectedIndexChanged
-            RefreshDriveTypes(DirectCast(ComboInterface.SelectedValue, Settings.GreaseweazleInterface))
+            RefreshDriveTypes(DirectCast(ComboInterface.SelectedValue, GreaseweazleSettings.GreaseweazleInterface))
         End Sub
 
         Private Sub ConfigurationForm_Load(sender As Object, e As EventArgs) Handles Me.Load

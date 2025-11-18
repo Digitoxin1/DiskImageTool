@@ -245,7 +245,7 @@ Module DiskImageLib
                 NewFilePath = Image.ImageData.GetSaveFile
             End If
 
-            Dim SaveImageResponse = SaveDiskImageToFile(Image.Disk, NewFilePath, My.Settings.CreateBackups)
+            Dim SaveImageResponse = SaveDiskImageToFile(Image.Disk, NewFilePath, App.Globals.AppSettings.CreateBackups)
             Result = (SaveImageResponse = SaveImageResponse.Success)
 
             If SaveImageResponse = SaveImageResponse.Unsupported Then
@@ -681,7 +681,7 @@ Module DiskImageLib
     Private Function ImageImport(ParentDirectory As IDirectory, Multiselect As Boolean, Optional Index As Integer = -1) As Boolean
         Dim FileNames() As String = New String(-1) {}
 
-        If My.Settings.DragAndDrop Then
+        If App.Globals.AppSettings.DragAndDrop Then
             Dim frmFileDrop As New FileDropForm()
 
             If frmFileDrop.ShowDialog() <> DialogResult.OK Then

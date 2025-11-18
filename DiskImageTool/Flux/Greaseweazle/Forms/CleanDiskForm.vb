@@ -13,7 +13,7 @@ Namespace Flux.Greaseweazle
         Private NumericPasses As NumericUpDown
 
         Public Sub New()
-            MyBase.New(GreaseweazleSettings.LogFileName, False)
+            MyBase.New(Settings.LogFileName, False)
             InitializeControls()
 
             Me.Text = My.Resources.Label_CleanDisk
@@ -40,7 +40,7 @@ Namespace Flux.Greaseweazle
             ResetState()
 
             Dim Builder = New CommandLineBuilder(CommandLineBuilder.CommandAction.clean) With {
-                   .Device = GreaseweazleSettings.COMPort,
+                   .Device = Settings.ComPort,
                    .Drive = Opt.Id,
                    .Cyls = NumericCyls.Value,
                    .Linger = NumericLinger.Value,
@@ -50,7 +50,7 @@ Namespace Flux.Greaseweazle
             Dim Arguments = Builder.Arguments
 
             ToggleProcessRunning(True)
-            Process.StartAsyncRaw(GreaseweazleSettings.AppPath, Arguments)
+            Process.StartAsyncRaw(Settings.AppPath, Arguments)
         End Sub
 
         Private Sub InitializeControls()

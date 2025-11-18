@@ -21,7 +21,7 @@ Namespace Flux.Greaseweazle
         Private _ProcessRunning As Boolean = False
 
         Public Sub New(FilePath As String, TrackCount As Integer, SideCount As Integer)
-            MyBase.New(GreaseweazleSettings.LogFileName)
+            MyBase.New(Settings.LogFileName)
 
             _TrackStatus = New TrackStatus(Me)
 
@@ -240,7 +240,7 @@ Namespace Flux.Greaseweazle
             ToggleProcessRunning(True)
 
             Dim Arguments = GenerateCommandLine(DiskParams, OutputType, DoubleStep)
-            Process.StartAsync(GreaseweazleSettings.AppPath, Arguments)
+            Process.StartAsync(Settings.AppPath, Arguments)
         End Sub
 
         Private Sub ProcessOutputLine(line As String)

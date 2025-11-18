@@ -3,7 +3,9 @@ Imports DiskImageTool.Flux.Kryoflux.CommandLineBuilder
 
 Namespace Flux.Kryoflux
     Module KryofluxLib
-        Public KryofluxSettings As New Settings
+        Public Function Settings() As KryofluxSettings
+            Return App.Globals.AppSettings.Kryoflux
+        End Function
 
         Public Function ConvertFirstTrack(FilePath As String) As (Result As Boolean, FileName As String)
             Dim TempPath = InitTempImagePath()
@@ -28,7 +30,7 @@ Namespace Flux.Kryoflux
                 .SingleSidedMode = SingleSidedModeEnum.side0
             }
 
-            Dim result = ConsoleProcessRunner.RunProcess(KryofluxSettings.AppPath, Builder.Arguments, captureOutput:=True, captureError:=False)
+            Dim result = ConsoleProcessRunner.RunProcess(Settings.AppPath, Builder.Arguments, captureOutput:=True, captureError:=False)
 
             Dim RegExTrackInfo = New Regex(ConsoleParser.REGEX_TRACK, RegexOptions.IgnoreCase Or RegexOptions.CultureInvariant Or RegexOptions.Multiline)
 
@@ -38,7 +40,7 @@ Namespace Flux.Kryoflux
                 Dim Status = Match.Groups("status").Value.Trim
                 If Status = "unformatted" Then
                     Builder.RPM = 360
-                    ConsoleProcessRunner.RunProcess(KryofluxSettings.AppPath, Builder.Arguments, captureOutput:=False, captureError:=False)
+                    ConsoleProcessRunner.RunProcess(Settings.AppPath, Builder.Arguments, captureOutput:=False, captureError:=False)
                 End If
             End If
 

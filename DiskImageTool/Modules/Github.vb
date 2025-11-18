@@ -9,7 +9,7 @@
         Dim ResponseText As String = ""
         Dim TempPath = InitTempPath()
         Dim CachePath = IO.Path.Combine(TempPath, "AppUpdateResponse.cache")
-        Dim ETag = My.Settings.AppUpdateETag
+        Dim ETag = App.Globals.AppSettings.ETags.AppUpdate
         Dim NotModified As Boolean = False
 
         If Not IO.File.Exists(CachePath) Then
@@ -28,7 +28,7 @@
             ResponseText = Reader.ReadToEnd
 
             IO.File.WriteAllText(CachePath, ResponseText)
-            My.Settings.AppUpdateETag = Response.Headers.Item("etag")
+            App.Globals.AppSettings.ETags.AppUpdate = Response.Headers.Item("etag")
 
         Catch ex As Net.WebException
             If ex.Response IsNot Nothing Then
@@ -57,7 +57,7 @@
         Dim ResponseText As String = ""
         Dim TempPath = InitTempPath()
         Dim CachePath = IO.Path.Combine(TempPath, "ChangeLogResponse.cache")
-        Dim ETag = My.Settings.ChangeLogETag
+        Dim ETag = App.Globals.AppSettings.ETags.ChangeLog
         Dim NotModified As Boolean = False
 
         If Not IO.File.Exists(CachePath) Then
@@ -76,7 +76,7 @@
             ResponseText = Reader.ReadToEnd
 
             IO.File.WriteAllText(CachePath, ResponseText)
-            My.Settings.ChangeLogETag = Response.Headers.Item("etag")
+            App.Globals.AppSettings.ETags.ChangeLog = Response.Headers.Item("etag")
 
         Catch ex As Net.WebException
             If ex.Response IsNot Nothing Then

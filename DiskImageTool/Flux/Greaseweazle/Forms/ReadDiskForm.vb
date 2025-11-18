@@ -28,7 +28,7 @@ Namespace Flux.Greaseweazle
         Private _NumericSeekRetries As NumericUpDown
 
         Public Sub New()
-            MyBase.New(GreaseweazleSettings.LogFileName)
+            MyBase.New(Settings.LogFileName)
             InitializeControls()
 
             _TrackStatus = New TrackStatus(Me)
@@ -42,7 +42,7 @@ Namespace Flux.Greaseweazle
             ClearStatusBar()
             RefreshButtonState(True)
 
-            _NumericRevs.Value = GreaseweazleSettings.DefaultRevs
+            _NumericRevs.Value = Settings.DefaultRevs
             _NumericRetries.Value = CommandLineBuilder.DEFAULT_RETRIES
             _NumericSeekRetries.Value = CommandLineBuilder.DEFAULT_SEEK_RETRIES
 
@@ -394,7 +394,7 @@ Namespace Flux.Greaseweazle
             Dim Arguments = Builder.Arguments
 
             ToggleProcessRunning(True)
-            Process.StartAsync(GreaseweazleSettings.AppPath, Arguments)
+            Process.StartAsync(Settings.AppPath, Arguments)
         End Sub
 
         Private Sub ProcessOutputLine(line As String)
@@ -518,9 +518,9 @@ Namespace Flux.Greaseweazle
             Dim TrackCount As UShort
             If Opt.Type = FloppyMediaType.MediaUnknown Then
                 If FormatMediaType = FloppyMediaType.Media525DoubleDensity Then
-                    TrackCount = Settings.MAX_TRACKS_525DD
+                    TrackCount = GreaseweazleSettings.MAX_TRACKS_525DD
                 Else
-                    TrackCount = Settings.MAX_TRACKS
+                    TrackCount = GreaseweazleSettings.MAX_TRACKS
                 End If
             Else
                 TrackCount = Opt.Tracks

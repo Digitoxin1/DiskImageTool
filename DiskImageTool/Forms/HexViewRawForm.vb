@@ -62,7 +62,7 @@ Public Class HexViewRawForm
         HexBox1.ReadOnly = True
         HexBox1.LineInfoOffset = 0
 
-        BtnCopyEncoded.Visible = My.Settings.Debug
+        BtnCopyEncoded.Visible = App.Globals.AppSettings.Debug
 
         EnableDoubleBuffering(PanelSectors)
 

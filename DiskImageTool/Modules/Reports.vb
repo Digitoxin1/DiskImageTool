@@ -94,7 +94,7 @@ Module Reports
 
             Rows.Add(CurrentImage.ImageData.FileName)
             Rows.Add("")
-            If My.Settings.Debug Then
+            If App.Globals.AppSettings.Debug Then
                 Rows.Add("Modifications")
             Else
                 Rows.Add(My.Resources.Label_WriteSplices)
@@ -165,7 +165,7 @@ Module Reports
                 Rows.Add(GetRowString(ContentRow))
             End If
 
-            If My.Settings.Debug Then
+            If App.Globals.AppSettings.Debug Then
                 Rows.Add("")
                 Rows.Add("Details")
                 Rows.Add(StrDup(7, H_SEPARATOR))

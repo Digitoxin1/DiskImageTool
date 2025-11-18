@@ -20,7 +20,7 @@ Namespace Flux.Kryoflux
         Private _ProcessRunning As Boolean = False
 
         Public Sub New(FilePath As String, TrackCount As Integer, SideCount As Integer)
-            MyBase.New(KryofluxSettings.LogFileName)
+            MyBase.New(Settings.LogFileName)
 
             _TrackStatus = New TrackStatus(Me)
 
@@ -222,7 +222,7 @@ Namespace Flux.Kryoflux
             ToggleProcessRunning(True)
 
             Dim Arguments = GenerateCommandLine(DiskParams, DoubleStep)
-            Process.StartAsync(KryofluxSettings.AppPath, Arguments)
+            Process.StartAsync(Settings.AppPath, Arguments)
         End Sub
 
         Private Sub ProcessOutputLine(line As String)

@@ -570,7 +570,7 @@ Public Class MainForm
 
     Private Sub HandleDragDrop(Files() As String)
         If Files.Length = 1 Then
-            Dim CanProcessFlux = Flux.Greaseweazle.GreaseweazleSettings.IsPathValid
+            Dim CanProcessFlux = Flux.Greaseweazle.Settings.IsPathValid
             If CanProcessFlux Then
                 Dim Result = ProcessFileDropFlux(Files(0))
                 If Result Then
@@ -783,10 +783,10 @@ Public Class MainForm
     End Sub
 
     Private Sub InitOptionsMenu()
-        MenuOptionsCreateBackup.Checked = My.Settings.CreateBackups
-        MenuOptionsCheckUpdate.Checked = My.Settings.CheckUpdateOnStartup
-        MenuOptionsDragDrop.Checked = My.Settings.DragAndDrop
-        MenuOptionsDisplayTitles.Checked = My.Settings.DisplayTitles
+        MenuOptionsCreateBackup.Checked = App.Globals.AppSettings.CreateBackups
+        MenuOptionsCheckUpdate.Checked = App.Globals.AppSettings.CheckUpdateOnStartup
+        MenuOptionsDragDrop.Checked = App.Globals.AppSettings.DragAndDrop
+        MenuOptionsDisplayTitles.Checked = App.Globals.AppSettings.DisplayTitles
 
         PopulateLanguages()
     End Sub
@@ -807,7 +807,7 @@ Public Class MainForm
     Private Sub InitUpdateCheck()
         MainMenuUpdateAvailable.Visible = False
 
-        If My.Settings.CheckUpdateOnStartup Then
+        If App.Globals.AppSettings.CheckUpdateOnStartup Then
             CheckForUpdatesStartup()
         End If
     End Sub
@@ -872,7 +872,7 @@ Public Class MainForm
             .Tag = Tag
         }
 
-        If My.Settings.Language = Item.Tag Then
+        If App.Globals.AppSettings.Language = Item.Tag Then
             Item.Checked = True
         End If
 
@@ -944,11 +944,11 @@ Public Class MainForm
         Dim Width As Integer = Me.Width
         Dim Height As Integer = Me.Height
 
-        If My.Settings.WindowWidth > 0 Then
-            Width = My.Settings.WindowWidth
+        If App.Globals.AppSettings.WindowWidth > 0 Then
+            Width = App.Globals.AppSettings.WindowWidth
         End If
-        If My.Settings.WindowHeight > 0 Then
-            Height = My.Settings.WindowHeight
+        If App.Globals.AppSettings.WindowHeight > 0 Then
+            Height = App.Globals.AppSettings.WindowHeight
         End If
 
         Width = Math.Min(Width, WorkingArea.Width)
@@ -1092,7 +1092,7 @@ Public Class MainForm
     End Sub
 
     Private Sub RefreshGreaseweazleMenu()
-        Dim Visible As Boolean = Flux.Greaseweazle.GreaseweazleSettings.IsPathValid
+        Dim Visible As Boolean = Flux.Greaseweazle.Settings.IsPathValid
 
         MainMenuGreaseweazle.Visible = Visible
     End Sub
@@ -1126,7 +1126,7 @@ Public Class MainForm
     End Sub
 
     Private Sub RefreshKryofluxMenu()
-        Dim Visible As Boolean = Flux.Kryoflux.KryofluxSettings.IsPathValid
+        Dim Visible As Boolean = Flux.Kryoflux.Settings.IsPathValid()
 
         MainMenuKryoflux.Visible = Visible
     End Sub
@@ -1200,7 +1200,7 @@ Public Class MainForm
         Dim FixImageSizeText As String = My.Resources.Menu_TruncateImage
 
         If Disk IsNot Nothing AndAlso IsValidImage Then
-            TrackLayoutVisible = My.Settings.Debug AndAlso Disk.Image.IsBitstreamImage
+            TrackLayoutVisible = App.Globals.AppSettings.Debug AndAlso Disk.Image.IsBitstreamImage
 
             CanResize = Disk.Image.CanResize
 
@@ -1543,7 +1543,7 @@ Public Class MainForm
 
         ClickedItem.Checked = True
 
-        My.Settings.Language = ClickedItem.Tag.ToString()
+        App.Globals.AppSettings.Language = ClickedItem.Tag.ToString()
 
         MsgBox(My.Resources.Dialog_LanguageSettings, MsgBoxStyle.Information)
     End Sub
@@ -1684,6 +1684,7 @@ Public Class MainForm
 
     Private Sub MainForm_Closed(sender As Object, e As EventArgs) Handles Me.Closed
         EmptyTempImagePath()
+        App.Globals.AppSettings.Save()
     End Sub
 
     Private Sub MainForm_Closing(sender As Object, e As CancelEventArgs) Handles Me.Closing
@@ -1720,7 +1721,7 @@ Public Class MainForm
 
         DetectFloppyDrives()
         InitOptionsMenu()
-        InitDebugFeatures(My.Settings.Debug)
+        InitDebugFeatures(App.Globals.AppSettings.Debug)
         RefreshGreaseweazleMenu()
         RefreshKryofluxMenu()
         ResetAll()
@@ -1734,8 +1735,8 @@ Public Class MainForm
         InitUpdateCheck()
     End Sub
     Private Sub MainForm_ResizeEnd(sender As Object, e As EventArgs) Handles Me.ResizeEnd
-        My.Settings.WindowWidth = Me.Width
-        My.Settings.WindowHeight = Me.Height
+        App.Globals.AppSettings.WindowWidth = Me.Width
+        App.Globals.AppSettings.WindowHeight = Me.Height
     End Sub
 
     Private Sub MainMenuNewInstance_Click(sender As Object, e As EventArgs) Handles MainMenuNewInstance.Click
@@ -1960,15 +1961,15 @@ Public Class MainForm
     End Sub
 
     Private Sub MenuOptionsCheckUpdate_CheckStateChanged(sender As Object, e As EventArgs) Handles MenuOptionsCheckUpdate.CheckStateChanged
-        My.Settings.CheckUpdateOnStartup = MenuOptionsCheckUpdate.Checked
+        App.Globals.AppSettings.CheckUpdateOnStartup = MenuOptionsCheckUpdate.Checked
     End Sub
 
     Private Sub MenuOptionsCreateBackup_CheckStateChanged(sender As Object, e As EventArgs) Handles MenuOptionsCreateBackup.CheckStateChanged
-        My.Settings.CreateBackups = MenuOptionsCreateBackup.Checked
+        App.Globals.AppSettings.CreateBackups = MenuOptionsCreateBackup.Checked
     End Sub
 
     Private Sub MenuOptionsDisplayTitles_CheckStateChanged(sender As Object, e As EventArgs) Handles MenuOptionsDisplayTitles.CheckStateChanged
-        My.Settings.DisplayTitles = MenuOptionsDisplayTitles.Checked
+        App.Globals.AppSettings.DisplayTitles = MenuOptionsDisplayTitles.Checked
 
         If FilePanelMain.CurrentImage IsNot Nothing Then
             SummaryPopulate(FilePanelMain.CurrentImage)
@@ -1977,7 +1978,7 @@ Public Class MainForm
     End Sub
 
     Private Sub MenuOptionsDragDrop_CheckStateChanged(sender As Object, e As EventArgs) Handles MenuOptionsDragDrop.CheckStateChanged
-        My.Settings.DragAndDrop = MenuOptionsDragDrop.Checked
+        App.Globals.AppSettings.DragAndDrop = MenuOptionsDragDrop.Checked
     End Sub
 
     Private Sub MenuOptionsEnableWriteSpliceFilter_CheckStateChanged(sender As Object, e As EventArgs)
