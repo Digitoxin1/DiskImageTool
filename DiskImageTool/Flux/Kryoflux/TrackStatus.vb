@@ -16,7 +16,7 @@
             Complete
         End Enum
 
-        Public Enum TrackStatusEnum
+        Private Enum TrackStatusEnum
             Reading
             Erasing
             Writing
@@ -40,46 +40,27 @@
             _TotalUnexpectedSectors = 0
         End Sub
 
-        Public Function UpdateStatusInfo(TrackInfo As TrackInfo, Track As Integer, Side As Integer, Action As ActionTypeEnum) As TrackStatusInfo
-            Dim StatusInfo = GetStatusInfo(Track, Side)
-
-            StatusInfo.Action = Action
-            StatusInfo.Track = Track
-            StatusInfo.Side = Side
-            StatusInfo.TrackInfo = TrackInfo
-            _TotalBadSectors += TrackInfo.BadSectorCount
-
-            Return StatusInfo
-        End Function
-
-        Public Function UpdateStatusInfo(TrackInfo As TrackSummary, Action As ActionTypeEnum) As TrackStatusInfo
-            Dim StatusInfo = GetStatusInfo(TrackInfo.Track, TrackInfo.Side)
-
-            StatusInfo.Action = Action
-            StatusInfo.Track = TrackInfo.Track
-            StatusInfo.Side = TrackInfo.Side
-            StatusInfo.ErrorMessage = TrackInfo.Details
-
-            Return StatusInfo
-        End Function
-
-        Public Sub UpdateTrackStatus(Statusinfo As TrackStatusInfo, Action As ActionTypeEnum)
-            SetCurrentTrackStatusComplete()
-
-            _CurrentStatusInfo = Statusinfo
-
-            Dim StatusData = GetCurrentTrackStatusData(Action)
-            _ParentForm.UpdateStatus(StatusData)
+        Public Sub ProcessOutputLineRead(line As String)
+            Dim TrackSummary = ParseTrackSummary(line)
+            If TrackSummary IsNot Nothing Then
+                Dim TrackInfo = ParseTrackInfo(TrackSummary.Details)
+                If TrackInfo IsNot Nothing Then
+                    Dim StatusInfo = UpdateStatusInfo(TrackInfo, TrackSummary.Track, TrackSummary.Side, ActionTypeEnum.Import)
+                    UpdateTrackStatus(StatusInfo, ActionTypeEnum.Read)
+                Else
+                    Dim StatusInfo = UpdateStatusInfo(TrackSummary, TrackStatus.ActionTypeEnum.Import)
+                    UpdateTrackStatus(StatusInfo, ActionTypeEnum.Read)
+                End If
+            End If
         End Sub
 
-        Public Sub UpdateTrackStatusComplete(Aborted As Boolean)
-            If Aborted Then
-                UpdateTrackStatusType(TrackStatusEnum.Aborted)
-            Else
-                SetCurrentTrackStatusComplete()
+        Public Sub UpdateTrackStatusAborted()
+            UpdateTrackStatusType(TrackStatusEnum.Aborted)
+        End Sub
 
-                UpdateTrackStatusType(TrackStatusEnum.Success)
-            End If
+        Public Sub UpdateTrackStatusComplete()
+            SetCurrentTrackStatusComplete()
+            UpdateTrackStatusType(TrackStatusEnum.Success)
         End Sub
 
         Public Sub UpdateTrackStatusError()
@@ -255,7 +236,7 @@
                     Details = ""
             End Select
 
-            Return Flag & IIf(Details.Length > 0, ":  " & Details, "")
+            Return Flag & If(Details.Length > 0, ":  " & Details, "")
         End Function
 
         Private Function GetStatusInfo(Track As Integer, Side As Integer) As TrackStatusInfo
@@ -283,6 +264,38 @@
             End If
         End Sub
 
+        Private Function UpdateStatusInfo(TrackInfo As TrackInfo, Track As Integer, Side As Integer, Action As ActionTypeEnum) As TrackStatusInfo
+            Dim StatusInfo = GetStatusInfo(Track, Side)
+
+            StatusInfo.Action = Action
+            StatusInfo.Track = Track
+            StatusInfo.Side = Side
+            StatusInfo.TrackInfo = TrackInfo
+            _TotalBadSectors += TrackInfo.BadSectorCount
+
+            Return StatusInfo
+        End Function
+
+        Private Function UpdateStatusInfo(TrackInfo As TrackSummary, Action As ActionTypeEnum) As TrackStatusInfo
+            Dim StatusInfo = GetStatusInfo(TrackInfo.Track, TrackInfo.Side)
+
+            StatusInfo.Action = Action
+            StatusInfo.Track = TrackInfo.Track
+            StatusInfo.Side = TrackInfo.Side
+            StatusInfo.ErrorMessage = TrackInfo.Details
+
+            Return StatusInfo
+        End Function
+
+        Private Sub UpdateTrackStatus(Statusinfo As TrackStatusInfo, Action As ActionTypeEnum)
+            SetCurrentTrackStatusComplete()
+
+            _CurrentStatusInfo = Statusinfo
+
+            Dim StatusData = GetCurrentTrackStatusData(Action)
+            _ParentForm.UpdateStatus(StatusData)
+        End Sub
+
         Private Sub UpdateTrackStatusType(Status As TrackStatusEnum)
             _ParentForm.UpdateTrackStatusType(GetTrackStatusText(Status))
         End Sub
@@ -293,7 +306,8 @@
 
             Return Char.ToUpper(value(0)) & value.Substring(1)
         End Function
-        Public Class TrackStatusInfo
+
+        Private Class TrackStatusInfo
             Public Property Action As ActionTypeEnum
             Public Property ErrorMessage As String
             Public ReadOnly Property Failed

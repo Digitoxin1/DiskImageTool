@@ -104,7 +104,7 @@
             args.Add("-i" & GetImageTypeString(InImageType))
 
             If MissingSectorsAsBad <> DEFAULT_MISSING_SECTORS_AS_BAD Then
-                args.Add("-tm" & IIf(MissingSectorsAsBad, "1", "0"))
+                args.Add("-tm" & If(MissingSectorsAsBad, "1", "0"))
             End If
 
             If TrackStart > -1 Then

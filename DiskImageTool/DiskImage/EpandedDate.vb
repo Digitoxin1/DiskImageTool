@@ -79,7 +79,7 @@
         Public Overloads Function ToString(IncludeTime As Boolean, IncludeSeconds As Boolean, IncludeMilliseconds As Boolean, Use24Hour As Boolean) As String
             Dim Response As String = Format(_Year, "0000") & "-" & Format(_Month, "00") & "-" & Format(_Day, "00")
             If IncludeTime Then
-                Response &= "  " & Format(IIf(Use24Hour, _Hour, _Hour12), "00") _
+                Response &= "  " & Format(If(Use24Hour, _Hour, _Hour12), "00") _
                     & ":" & Format(_Minute, "00")
 
                 If IncludeSeconds Then
@@ -91,7 +91,7 @@
                 End If
 
                 If Not Use24Hour Then
-                    Response &= IIf(_IsPM, " PM", " AM")
+                    Response &= If(_IsPM, " PM", " AM")
                 End If
             End If
 

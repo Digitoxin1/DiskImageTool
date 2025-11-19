@@ -21,10 +21,10 @@ Namespace Flux.Greaseweazle
                         New DriveSettings()
                     }
 
+        Private _fluxRootPath As String = ""
         Private _interface As GreaseweazleInterface = GreaseweazleInterface.IBM
         Private _isDirty As Boolean
         Private _logFileName As String = "log.txt"
-
         Public Enum GreaseweazleInterface
             IBM
             Shugart
@@ -111,6 +111,17 @@ Namespace Flux.Greaseweazle
             End Set
         End Property
 
+        Public Property FluxRootPath As String
+            Get
+                Return _fluxRootPath
+            End Get
+            Set(value As String)
+                If _fluxRootPath <> value Then
+                    _fluxRootPath = value
+                    _isDirty = True
+                End If
+            End Set
+        End Property
         Public Property IsDirty As Boolean Implements DiskImageTool.Settings.ISettingsGroup.IsDirty
             Get
                 If _isDirty Then Return True
@@ -163,6 +174,7 @@ Namespace Flux.Greaseweazle
             _comPort = ReadValue(dict, "comPort", _comPort)
             _defaultRevs = ReadValue(dict, "defaultRevs", _defaultRevs)
             _logFileName = ReadValue(dict, "logFileName", _logFileName)
+            _fluxRootPath = ReadValue(dict, "fluxRootPath", _fluxRootPath)
 
             LoadDriveList(dict)
 
@@ -187,7 +199,8 @@ Namespace Flux.Greaseweazle
                 {"drives", driveArray},
                 {"comPort", _comPort},
                 {"defaultRevs", _defaultRevs},
-                {"logFileName", _logFileName}
+                {"logFileName", _logFileName},
+                {"fluxRootPath", _fluxRootPath}
             }
         End Function
 

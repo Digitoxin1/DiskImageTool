@@ -42,7 +42,7 @@ Public Class FloppyAccessForm
         _FloppyDrive = FloppyDrive
         _BPB = BPB
         ReDim _DiskBuffer(_BPB.ImageSize - 1)
-        Dim StatusTypeString = IIf(AccessType = FloppyAccessType.Read, My.Resources.Label_Reading, My.Resources.Label_Writing)
+        Dim StatusTypeString = If(AccessType = FloppyAccessType.Read, My.Resources.Label_Reading, My.Resources.Label_Writing)
 
         Me.Text = StatusTypeString & " " & String.Format(My.Resources.Label_Floppy, FloppyDiskFormatGetName(_BPB, False))
         StatusType.Text = StatusTypeString

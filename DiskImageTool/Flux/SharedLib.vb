@@ -54,11 +54,66 @@ Namespace Flux
             Return AnalyzeResponse
         End Function
 
+        Public Sub DeleteFilesAndFolderIfEmpty(folderPath As String, ParamArray patterns As String())
+            If String.IsNullOrWhiteSpace(folderPath) Then
+                Exit Sub
+            End If
+
+            If Not IO.Directory.Exists(folderPath) Then
+                Exit Sub
+            End If
+
+            ' Normalize patterns
+            Dim validPatterns = patterns.Where(Function(p) Not String.IsNullOrWhiteSpace(p)).Distinct(StringComparer.OrdinalIgnoreCase).ToList()
+
+            If validPatterns.Count = 0 Then
+                Exit Sub
+            End If
+
+            ' Delete all matching files
+            For Each pattern In validPatterns
+                For Each filePath In IO.Directory.GetFiles(folderPath, pattern, IO.SearchOption.TopDirectoryOnly)
+                    Try
+                        IO.File.Delete(filePath)
+                    Catch ex As io.IOException
+                        ' optional: log or ignore
+                    Catch ex As UnauthorizedAccessException
+                        ' optional: log or ignore
+                    End Try
+                Next
+            Next
+
+            ' Remove directory if empty
+            Try
+                If Not IO.Directory.EnumerateFileSystemEntries(folderPath).Any() Then
+                    IO.Directory.Delete(folderPath)
+                End If
+            Catch ex As io.IOException
+                ' Optional: swallow errors
+            Catch ex As UnauthorizedAccessException
+                ' Optional: swallow errors
+            End Try
+        End Sub
+
+        Public Function BrowseFolder(CurrentPath As String) As String
+            Using ofd As New FolderBrowserDialog()
+                ofd.Description = "Flux Set Root Folder"
+                ofd.SelectedPath = CurrentPath
+                ofd.ShowNewFolderButton = True
+                If ofd.ShowDialog() = DialogResult.OK Then
+                    Return ofd.SelectedPath
+                End If
+            End Using
+
+            Return ""
+        End Function
+
         Public Sub BumpTabIndexes(panel As FlowLayoutPanel)
             For Each ctrl As Control In panel.Controls
                 ctrl.TabIndex += 1
             Next
         End Sub
+
         Public Function DetectImageFormat(FileName As String, DeleteWhenDone As Boolean) As DiskImage.FloppyDiskFormat
             Dim Buffer As Byte()
             Dim SecondOffset As Long = 4096
@@ -86,6 +141,17 @@ Namespace Flux
             Return DetectedFormat
         End Function
 
+        Public Function GenerateOutputFile(Extension As String) As String
+            Dim TempPath = InitTempImagePath()
+
+            If TempPath = "" Then
+                MsgBox(My.Resources.Dialog_TempPathError, MsgBoxStyle.Exclamation)
+                Return ""
+            End If
+
+            Dim FileName = "New Image" & Extension
+            Return GenerateUniqueFileName(TempPath, FileName)
+        End Function
         Public Function GetTrackCountRaw(FilePath As String) As (Result As Boolean, Tracks As Integer, Sides As Integer)
             Dim TrackCount As Integer = 0
             Dim SideCount As Integer = 0
@@ -222,6 +288,28 @@ Namespace Flux
             End If
 
             Return (False, "")
+        End Function
+
+        Public Function OpenFluxImage(ParentForm As Form, AllowSCP As Boolean) As String
+            Using Dialog As New OpenFileDialog With {
+                .Title = "Open Flux Image",
+                .FilterIndex = 1,
+                .CheckFileExists = True,
+                .AddExtension = True,
+                .Multiselect = False
+            }
+                If AllowSCP Then
+                    Dialog.Filter = "Flux dumps (*.raw;*.scp)|*.raw;*.scp|KryoFlux RAW (*.raw)|*.raw|SuperCard Pro (*.scp)|*.scp"
+                Else
+                    Dialog.Filter = "KryoFlux RAW (*.raw)|*.raw"
+                End If
+
+                If Dialog.ShowDialog(ParentForm) = DialogResult.OK Then
+                    Return Dialog.FileName
+                End If
+            End Using
+
+            Return Nothing
         End Function
 
         Public Sub PopulateFileExtensions(Combo As ComboBox, SelectedFormat As FloppyDiskFormat)

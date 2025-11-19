@@ -295,7 +295,7 @@ Public Class FilePropertiesForm
     Private Sub ToggleButton(Button As Button, Enabled As Boolean, Optional Visible As Boolean = True)
         Button.Visible = Visible
         Button.Tag = Enabled
-        Button.BackColor = IIf(Enabled, Color.LightGreen, SystemColors.Control)
+        Button.BackColor = If(Enabled, Color.LightGreen, SystemColors.Control)
         Button.UseVisualStyleBackColor = Not Enabled
         ToggleRelatedControls(Button)
     End Sub

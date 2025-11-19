@@ -165,7 +165,7 @@
                 ItemTag.Visible = Visible
 
                 With _ContextMenuFilters.Items.Item("FilterSeparator")
-                    .Tag = .Tag + IIf(Visible, 1, -1)
+                    .Tag = .Tag + If(Visible, 1, -1)
                     .Visible = (.Tag > 0)
                 End With
             End If

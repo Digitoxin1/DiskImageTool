@@ -9,8 +9,6 @@ Namespace Flux.Greaseweazle
         Private WithEvents ComboImageDrives As ComboBox
         Private ReadOnly _Initialized As Boolean = False
         Private ReadOnly _TrackStatus As TrackStatus
-        Private _ProcessRunning As Boolean = False
-        Private _TrackRange As ConsoleParser.TrackRange = Nothing
         Private CheckBoxHFreq As CheckBox
         Private NumericRevs As NumericUpDown
 
@@ -86,7 +84,6 @@ Namespace Flux.Greaseweazle
 
             Dim Arguments = Builder.Arguments
 
-            ToggleProcessRunning(True)
             Process.StartAsync(Settings.AppPath, Arguments)
         End Sub
 
@@ -218,46 +215,25 @@ Namespace Flux.Greaseweazle
             End If
             TextBoxConsole.AppendText(line)
 
-            If _TrackRange Is Nothing Then
-                _TrackRange = _TrackStatus.ParseDiskRange(line)
-            End If
-
-            Dim TrackInfo = _TrackStatus.ParseTrackWrite(line)
-            If TrackInfo IsNot Nothing Then
-                Dim Action As TrackStatus.ActionTypeEnum
-                If TrackInfo.Action = "Erasing" Then
-                    Action = TrackStatus.ActionTypeEnum.Erase
-                ElseIf TrackInfo.Action = "Writing" Then
-                    Action = TrackStatus.ActionTypeEnum.Write
-                Else
-                    Action = TrackStatus.ActionTypeEnum.Unknown
-                End If
-
-                Dim Statusinfo = _TrackStatus.UpdateStatusInfo(TrackInfo, TrackStatus.ActionTypeEnum.Erase)
-                _TrackStatus.UpdateTrackStatus(Statusinfo, Action, False)
-                Return
-            End If
+            _TrackStatus.ProcessOutputLineWrite(line, TrackStatus.ActionTypeEnum.Erase, False)
         End Sub
 
         Private Sub RefreshButtonState()
             Dim Opt As DriveOption = ComboImageDrives.SelectedValue
+            Dim IsRunning As Boolean = Process.IsRunning
+            Dim IsIdle As Boolean = Not IsRunning
 
-            ComboImageDrives.Enabled = Not _ProcessRunning
-            CheckBoxSelect.Enabled = Not _ProcessRunning AndAlso Opt.Id <> ""
-            CheckBoxHFreq.Enabled = Not _ProcessRunning
+            ComboImageDrives.Enabled = IsIdle
+            CheckBoxSelect.Enabled = IsIdle AndAlso Opt.Id <> ""
+            CheckBoxHFreq.Enabled = IsIdle
 
-            If _ProcessRunning Then
-                ButtonProcess.Text = My.Resources.Label_Abort
-            Else
-                ButtonProcess.Text = My.Resources.Label_Erase
-            End If
-
-            ButtonSaveLog.Enabled = Not _ProcessRunning AndAlso TextBoxConsole.Text.Length > 0
-
+            ButtonProcess.Text = If(IsRunning, My.Resources.Label_Abort, My.Resources.Label_Erase)
             ButtonProcess.Enabled = Opt.Id <> "" AndAlso Not CheckBoxSelect.Checked OrElse TableSide0.SelectedTracks.Count > 0 OrElse TableSide1.SelectedTracks.Count > 0
 
-            ButtonReset.Enabled = Not _ProcessRunning
-            NumericRevs.Enabled = Not _ProcessRunning
+            ButtonSaveLog.Enabled = IsIdle AndAlso TextBoxConsole.Text.Length > 0
+
+            ButtonReset.Enabled = IsIdle
+            NumericRevs.Enabled = IsIdle
         End Sub
 
         Private Sub ResetCheckBoxSelect()
@@ -268,7 +244,6 @@ Namespace Flux.Greaseweazle
             ResetTrackGrid(ResetSelected)
             ClearStatusBar()
             _TrackStatus.Clear()
-            _TrackRange = Nothing
 
             TextBoxConsole.Clear()
         End Sub
@@ -276,25 +251,11 @@ Namespace Flux.Greaseweazle
         Private Sub ResetTrackGrid(Optional ResetSelected As Boolean = True)
             Dim Opt As DriveOption = ComboImageDrives.SelectedValue
 
-            Dim TrackCount As UShort
-            If Opt.Type = FloppyMediaType.MediaUnknown Then
-                TrackCount = GreaseweazleSettings.MAX_TRACKS
-            Else
-                TrackCount = Opt.Tracks
-            End If
+            Dim TrackCount As UShort = If(Opt.Type = FloppyMediaType.MediaUnknown, GreaseweazleSettings.MAX_TRACKS, Opt.Tracks)
 
             GridReset(TrackCount, 2, ResetSelected)
         End Sub
 
-        Private Sub ToggleProcessRunning(Value As Boolean)
-            _ProcessRunning = Value
-
-            If Not Value Then
-                CheckBoxSelect.Checked = False
-            End If
-
-            RefreshButtonState()
-        End Sub
 #Region "Events"
         Private Sub ButtonProcess_Click(sender As Object, e As EventArgs) Handles ButtonProcess.Click
             If CancelProcessIfRunning() Then
@@ -353,20 +314,27 @@ Namespace Flux.Greaseweazle
             RefreshButtonState()
         End Sub
 
-        Private Sub Process_ErrorDataReceived(data As String) Handles Process.ErrorDataReceived
+        Private Sub Process_DataReceived(data As String) Handles Process.ErrorDataReceived, Process.OutputDataReceived
             ProcessOutputLine(data)
         End Sub
 
-        Private Sub Process_ProcessExited(exitCode As Integer) Handles Process.ProcessExited
-            Dim Aborted = (exitCode = -1)
+        Private Sub Process_ProcessStateChanged(State As ConsoleProcessRunner.ProcessStateEnum) Handles Process.ProcessStateChanged
+            Select Case State
+                Case ConsoleProcessRunner.ProcessStateEnum.Aborted
+                    _TrackStatus.UpdateTrackStatusAborted()
 
-            _TrackStatus.UpdateTrackStatusComplete(Aborted, False)
-            ToggleProcessRunning(False)
-        End Sub
+                Case ConsoleProcessRunner.ProcessStateEnum.Completed
+                    _TrackStatus.UpdateTrackStatusComplete(False)
 
-        Private Sub Process_ProcessFailed(message As String, ex As Exception) Handles Process.ProcessFailed
-            _TrackStatus.UpdateTrackStatusError()
-            ToggleProcessRunning(False)
+                Case ConsoleProcessRunner.ProcessStateEnum.Error
+                    _TrackStatus.UpdateTrackStatusError()
+            End Select
+
+            If State <> ConsoleProcessRunner.ProcessStateEnum.Running Then
+                ResetCheckBoxSelect()
+            End If
+
+            RefreshButtonState()
         End Sub
 #End Region
     End Class

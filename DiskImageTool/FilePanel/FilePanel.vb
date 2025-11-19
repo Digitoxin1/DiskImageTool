@@ -160,7 +160,7 @@ Public Class FilePanel
     Public Function AddGroup(Directory As IDirectory, Path As String, GroupIndex As Integer) As ListViewGroup
         Dim FileCount As UInteger = Directory.Data.FileCount
 
-        Dim GroupName As String = IIf(Path = "", InParens(My.Resources.Label_Root), Path) & "  ("
+        Dim GroupName As String = If(Path = "", InParens(My.Resources.Label_Root), Path) & "  ("
 
         If FileCount = 1 Then
             GroupName &= String.Format(My.Resources.Label_Entry, FileCount)
@@ -327,12 +327,12 @@ Public Class FilePanel
         Dim HasInvalidFileSize As Boolean = FileData.DirectoryEntry.HasInvalidFileSize
         Dim IsBlank As Boolean = FileData.DirectoryEntry.IsBlank
 
-        Dim Attrib As String = IIf(FileData.DirectoryEntry.IsArchive, "A ", "- ") _
-            & IIf(FileData.DirectoryEntry.IsReadOnly, "R ", "- ") _
-            & IIf(FileData.DirectoryEntry.IsSystem, "S ", "- ") _
-            & IIf(FileData.DirectoryEntry.IsHidden, "H ", "- ") _
-            & IIf(FileData.DirectoryEntry.IsDirectory, "D ", "- ") _
-            & IIf(FileData.DirectoryEntry.IsVolumeName, "V ", "- ")
+        Dim Attrib As String = If(FileData.DirectoryEntry.IsArchive, "A ", "- ") _
+            & If(FileData.DirectoryEntry.IsReadOnly, "R ", "- ") _
+            & If(FileData.DirectoryEntry.IsSystem, "S ", "- ") _
+            & If(FileData.DirectoryEntry.IsHidden, "H ", "- ") _
+            & If(FileData.DirectoryEntry.IsDirectory, "D ", "- ") _
+            & If(FileData.DirectoryEntry.IsVolumeName, "V ", "- ")
 
         If IsDeleted Then
             ForeColor = Color.Gray
@@ -342,7 +342,7 @@ Public Class FilePanel
             ForeColor = Color.Blue
         End If
 
-        Dim ModifiedString As String = IIf(FileData.DirectoryEntry.IsModified, "#", "")
+        Dim ModifiedString As String = If(FileData.DirectoryEntry.IsModified, "#", "")
 
         Dim Item As New ListViewItem(ModifiedString, Group) With {
             .UseItemStyleForSubItems = False,
@@ -842,7 +842,7 @@ Public Class FilePanel
             ' Else
             '    Offset = 0
             'End If
-            Dim State = IIf(_CheckAll, VisualStyles.CheckBoxState.CheckedNormal, VisualStyles.CheckBoxState.UncheckedNormal)
+            Dim State = If(_CheckAll, VisualStyles.CheckBoxState.CheckedNormal, VisualStyles.CheckBoxState.UncheckedNormal)
             Dim Size = CheckBoxRenderer.GetGlyphSize(e.Graphics, State)
             CheckBoxRenderer.DrawCheckBox(e.Graphics, New Point(4, (e.Bounds.Height - Size.Height) \ 2), State)
             'e.Graphics.DrawString(e.Header.Text, e.Font, New SolidBrush(Color.Black), New Point(20 + Offset, (e.Bounds.Height - Size.Height) \ 2 + Offset))

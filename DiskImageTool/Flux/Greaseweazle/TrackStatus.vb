@@ -5,9 +5,9 @@
         Private ReadOnly _ParentForm As BaseForm
         Private ReadOnly _StatusCollection As Dictionary(Of String, TrackStatusInfo)
         Private _CurrentStatusInfo As TrackStatusInfo = Nothing
+        Private _Range As TrackRange = Nothing
         Private _TotalBadSectors As UInteger = 0
         Private _TotalUnexpectedSectors As UInteger = 0
-
         Public Enum ActionTypeEnum
             Unknown
             Read
@@ -17,7 +17,7 @@
             Complete
         End Enum
 
-        Public Enum TrackStatusEnum
+        Private Enum TrackStatusEnum
             Reading
             Erasing
             Writing
@@ -35,107 +35,132 @@
             _StatusCollection = New Dictionary(Of String, TrackStatusInfo)
         End Sub
 
-        Public Property CurrentStatusInfo As TrackStatusInfo
-            Get
-                Return _CurrentStatusInfo
-            End Get
-            Set(value As TrackStatusInfo)
-                _CurrentStatusInfo = value
-            End Set
-        End Property
+        Public Function CanKeepProcessing() As Boolean
+            If _CurrentStatusInfo Is Nothing Then
+                Return False
+            End If
+
+            If _Range Is Nothing Then
+                Return False
+            End If
+
+            If Not _CurrentStatusInfo.Failed Then
+                Return False
+            End If
+
+            If Not (_CurrentStatusInfo.Track < _Range.TrackEnd Or _CurrentStatusInfo.Side < _Range.HeadEnd) Then
+                Return False
+            End If
+
+            Return True
+        End Function
 
         Public Sub Clear()
             _StatusCollection.Clear()
             _CurrentStatusInfo = Nothing
             _TotalBadSectors = 0
             _TotalUnexpectedSectors = 0
+            _Range = Nothing
         End Sub
 
-        Public Function UpdateStatusInfo(TrackInfo As TrackWrite, Action As ActionTypeEnum) As TrackStatusInfo
-            Dim StatusInfo = GetStatusInfo(TrackInfo.SrcTrack, TrackInfo.SrcSide)
-
-            StatusInfo.Action = Action
-            StatusInfo.Retries = Math.Max(StatusInfo.Retries, TrackInfo.Retry)
-            If TrackInfo.Failed Then
-                StatusInfo.Failed = TrackInfo.Failed
+        Public Sub ProcessOutputLineRead(line As String, InfoAction As ActionTypeEnum, DoubleStep As Boolean)
+            If _Range Is Nothing Then
+                _Range = ParseDiskRange(line)
             End If
 
-            Return StatusInfo
-        End Function
+            Dim Summary = ParseTrackReadSummary(line)
+            If Summary IsNot Nothing Then
+                Dim Details = ParseTrackReadDetails(Summary.Details)
+                If Details IsNot Nothing Then
+                    Dim ProcessBadSectors = (InfoAction = ActionTypeEnum.Import)
+                    Dim Statusinfo = UpdateStatusInfo(Summary, Details, ProcessBadSectors, InfoAction)
+                    UpdateTrackStatus(Statusinfo, ActionTypeEnum.Read, DoubleStep)
+                    Return
+                End If
 
-        Public Function UpdateStatusInfo(Summary As TrackReadSummary, Details As TrackReadDetails, ProcessBadSectors As Boolean, Action As ActionTypeEnum) As TrackStatusInfo
-            Dim StatusInfo = GetStatusInfo(Summary.DestTrack, Summary.DestSide)
+                If InfoAction = ActionTypeEnum.Read Then
+                    Dim FailedSectors = ParseTrackReadFailed(Summary.Details)
+                    If FailedSectors.HasValue Then
+                        Dim Statusinfo = UpdateStatusInfo(Summary, FailedSectors.Value, InfoAction)
+                        UpdateTrackStatus(Statusinfo, ActionTypeEnum.Read, DoubleStep)
+                        Return
+                    End If
 
-            StatusInfo.Action = Action
-
-            If Details.Seek > 0 And Details.Retry > 0 Then
-                StatusInfo.Retries += 1
-            End If
-
-            If ProcessBadSectors Then
-                StatusInfo.BadSectors += Details.BadSectors
-                _TotalBadSectors += Details.BadSectors
-                If Details.BadSectors > 0 Then
-                    StatusInfo.Failed = True
+                    Dim OutOfRange = ParseTrackReadOutOfRange(Summary.Details)
+                    If OutOfRange IsNot Nothing Then
+                        Dim Statusinfo = UpdateStatusInfo(Summary, OutOfRange, InfoAction)
+                        UpdateTrackStatus(Statusinfo, ActionTypeEnum.Read, DoubleStep)
+                        Return
+                    End If
                 End If
             End If
 
-            Return StatusInfo
-        End Function
+            Dim TrackInfoUnexpected = ParseTrackUnexpected(line)
+            If TrackInfoUnexpected IsNot Nothing Then
+                Dim StatusInfo = UpdateStatusInfo(TrackInfoUnexpected, InfoAction)
+                UpdateTrackStatus(StatusInfo, ActionTypeEnum.Read, DoubleStep)
+                Return
+            End If
+        End Sub
 
-
-        Public Function UpdateStatusInfo(TrackInfo As ConsoleParser.UnexpectedSector, Action As ActionTypeEnum) As TrackStatusInfo
-            Dim StatusInfo = GetStatusInfo(TrackInfo.Track, TrackInfo.Side)
-
-            StatusInfo.Action = Action
-
-            If Not StatusInfo.UnexpectedSectors.ContainsKey(TrackInfo.Key) Then
-                StatusInfo.UnexpectedSectors.Add(TrackInfo.Key, TrackInfo)
-                _TotalUnexpectedSectors += 1
+        Public Sub ProcessOutputLineWrite(line As String, InfoAction As ActionTypeEnum, DoubleStep As Boolean)
+            If _Range Is Nothing Then
+                _Range = ParseDiskRange(line)
             End If
 
-            Return StatusInfo
-        End Function
+            Dim TrackInfo = ParseTrackWrite(line)
 
-        Public Function UpdateStatusInfo(Summary As TrackReadSummary, FailedSectors As Integer, Action As ActionTypeEnum) As TrackStatusInfo
-            Dim StatusInfo = GetStatusInfo(Summary.DestTrack, Summary.DestSide)
+            If TrackInfo IsNot Nothing Then
+                Dim Action As ActionTypeEnum
+                If TrackInfo.Action = "Erasing" Then
+                    Action = ActionTypeEnum.Erase
+                ElseIf TrackInfo.Action = "Writing" Then
+                    Action = ActionTypeEnum.Write
+                Else
+                    Action = ActionTypeEnum.Unknown
+                End If
 
-            StatusInfo.Action = Action
+                Dim Statusinfo = UpdateStatusInfo(TrackInfo, InfoAction)
+                UpdateTrackStatus(Statusinfo, Action, DoubleStep)
+                Return
+            End If
+        End Sub
 
-            StatusInfo.Failed = True
-            StatusInfo.BadSectors = FailedSectors
-            _TotalBadSectors += FailedSectors
+        Public Sub UpdateTrackStatusAborted()
+            UpdateTrackStatusType(TrackStatusEnum.Aborted)
+        End Sub
 
-            Return StatusInfo
-        End Function
-
-        Public Sub UpdateTrackStatus(Statusinfo As TrackStatusInfo, Action As ActionTypeEnum, DoubleStep As Boolean)
+        Public Sub UpdateTrackStatusComplete(DoubleStep As Boolean, Optional KeepProcessing As Boolean = False)
             SetCurrentTrackStatusComplete(DoubleStep)
 
-            _CurrentStatusInfo = Statusinfo
-
-            Dim StatusData = GetCurrentTrackStatusData(Action, DoubleStep)
-            _ParentForm.UpdateStatus(StatusData)
-        End Sub
-
-        Public Sub UpdateTrackStatusComplete(Aborted As Boolean, DoubleStep As Boolean, Optional KeepProcessing As Boolean = False)
-            If Aborted Then
-                UpdateTrackStatusType(TrackStatusEnum.Aborted)
-            Else
-                SetCurrentTrackStatusComplete(DoubleStep)
-
-                If KeepProcessing Then
-                    Exit Sub
-                End If
-
-                UpdateTrackStatusType(TrackStatusEnum.Success)
+            If KeepProcessing Then
+                Exit Sub
             End If
+
+            UpdateTrackStatusType(TrackStatusEnum.Success)
         End Sub
 
         Public Sub UpdateTrackStatusError()
             UpdateTrackStatusType(TrackStatusEnum.Error)
         End Sub
 
+        Friend Function GetNextTrackRange() As (Ranges As List(Of (StartTrack As UShort, EndTrack As UShort)), Heads As CommandLineBuilder.TrackHeads, [Continue] As Boolean)
+            Dim Response As (Ranges As List(Of (StartTrack As UShort, EndTrack As UShort)), Heads As CommandLineBuilder.TrackHeads, [Continue] As Boolean)
+
+            Response.Ranges = New List(Of (StartTrack As UShort, EndTrack As UShort))
+
+            If _CurrentStatusInfo.Side < _Range.HeadEnd Then
+                Response.Continue = True
+                Response.Heads = GetTrackHeads(_CurrentStatusInfo.Side + 1)
+                Response.Ranges.Add((_CurrentStatusInfo.Track, _CurrentStatusInfo.Track))
+            Else
+                Response.Continue = False
+                Response.Heads = CommandLineBuilder.TrackHeads.both
+                Response.Ranges.Add((_CurrentStatusInfo.Track + 1, _Range.TrackEnd))
+            End If
+
+            Return Response
+        End Function
         Private Shared Function GetTrackStatus(Statusinfo As TrackStatusInfo, Action As ActionTypeEnum) As (Status As TrackStatusEnum, Label As String)
             Dim Status As TrackStatusEnum
             Dim Label As String = ""
@@ -172,7 +197,7 @@
             Return (Status, Label)
         End Function
 
-        Private Shared Function GetTrackStatusColor(Status As TrackStatusEnum) As (ForeColor As Color, BackColor As Color)
+        Private Shared Function GetTrackStatusColor(Status As TrackStatusEnum, StatusInfo As TrackStatusInfo) As (ForeColor As Color, BackColor As Color)
             Select Case Status
                 Case TrackStatusEnum.Reading
                     Return (Color.Black, Color.LightBlue)
@@ -185,7 +210,11 @@
                 Case TrackStatusEnum.Failed
                     Return (Color.Black, Color.Red)
                 Case TrackStatusEnum.Success
-                    Return (Color.Black, Color.LightGreen)
+                    If StatusInfo.OutOfRange Then
+                        Return (Color.Black, Color.FromArgb(240, 240, 240))
+                    Else
+                        Return (Color.Black, Color.LightGreen)
+                    End If
                 Case Else
                     Return (Color.Black, Color.Gray)
             End Select
@@ -200,7 +229,7 @@
                 Case TrackStatusEnum.Writing
                     Return My.Resources.Label_Writing
                 Case TrackStatusEnum.Retry
-                    Return My.Resources.Label_Retrying & IIf(Retries > 0, " " & Retries, "")
+                    Return My.Resources.Label_Retrying & If(Retries > 0, " " & Retries, "")
                 Case TrackStatusEnum.Failed
                     Return My.Resources.Label_Failed
                 Case TrackStatusEnum.Success
@@ -216,7 +245,7 @@
 
         Private Function GetCurrentTrackStatusData(Action As ActionTypeEnum, DoubleStep As Boolean) As BaseForm.TrackStatusData
             Dim Data = GetTrackStatus(_CurrentStatusInfo, Action)
-            Dim Colors = GetTrackStatusColor(Data.Status)
+            Dim Colors = GetTrackStatusColor(Data.Status, _CurrentStatusInfo)
 
             Dim StatusData As BaseForm.TrackStatusData
             With StatusData
@@ -264,10 +293,88 @@
             End If
         End Sub
 
+        Private Function UpdateStatusInfo(TrackInfo As TrackWrite, Action As ActionTypeEnum) As TrackStatusInfo
+            Dim StatusInfo = GetStatusInfo(TrackInfo.SrcTrack, TrackInfo.SrcSide)
+
+            StatusInfo.Action = Action
+            StatusInfo.Retries = Math.Max(StatusInfo.Retries, TrackInfo.Retry)
+            If TrackInfo.Failed Then
+                StatusInfo.Failed = TrackInfo.Failed
+            End If
+
+            Return StatusInfo
+        End Function
+
+        Private Function UpdateStatusInfo(Summary As TrackReadSummary, Details As TrackReadDetails, ProcessBadSectors As Boolean, Action As ActionTypeEnum) As TrackStatusInfo
+            Dim StatusInfo = GetStatusInfo(Summary.DestTrack, Summary.DestSide)
+
+            StatusInfo.Action = Action
+
+            If Details.Seek > 0 And Details.Retry > 0 Then
+                StatusInfo.Retries += 1
+            End If
+
+            If ProcessBadSectors Then
+                StatusInfo.BadSectors += Details.BadSectors
+                _TotalBadSectors += Details.BadSectors
+                If Details.BadSectors > 0 Then
+                    StatusInfo.Failed = True
+                End If
+            End If
+
+            Return StatusInfo
+        End Function
+
+        Private Function UpdateStatusInfo(TrackInfo As ConsoleParser.UnexpectedSector, Action As ActionTypeEnum) As TrackStatusInfo
+            Dim StatusInfo = GetStatusInfo(TrackInfo.Track, TrackInfo.Side)
+
+            StatusInfo.Action = Action
+
+            If Not StatusInfo.UnexpectedSectors.ContainsKey(TrackInfo.Key) Then
+                StatusInfo.UnexpectedSectors.Add(TrackInfo.Key, TrackInfo)
+                _TotalUnexpectedSectors += 1
+            End If
+
+            Return StatusInfo
+        End Function
+
+        Private Function UpdateStatusInfo(Summary As TrackReadSummary, FailedSectors As Integer, Action As ActionTypeEnum) As TrackStatusInfo
+            Dim StatusInfo = GetStatusInfo(Summary.DestTrack, Summary.DestSide)
+
+            StatusInfo.Action = Action
+
+            StatusInfo.Failed = True
+            StatusInfo.BadSectors = FailedSectors
+            _TotalBadSectors += FailedSectors
+
+            Return StatusInfo
+        End Function
+
+        Private Function UpdateStatusInfo(Summary As TrackReadSummary, OutOfRage As TrackReadOutOfRange, Action As ActionTypeEnum) As TrackStatusInfo
+            Dim StatusInfo = GetStatusInfo(Summary.DestTrack, Summary.DestSide)
+
+            StatusInfo.Action = Action
+
+            StatusInfo.OutOfRange = True
+            StatusInfo.OutOfRangeFormat = OutOfRage.Format
+
+            Return StatusInfo
+        End Function
+
+        Private Sub UpdateTrackStatus(Statusinfo As TrackStatusInfo, Action As ActionTypeEnum, DoubleStep As Boolean)
+            SetCurrentTrackStatusComplete(DoubleStep)
+
+            _CurrentStatusInfo = Statusinfo
+
+            Dim StatusData = GetCurrentTrackStatusData(Action, DoubleStep)
+            _ParentForm.UpdateStatus(StatusData)
+        End Sub
+
         Private Sub UpdateTrackStatusType(Status As TrackStatusEnum)
             _ParentForm.UpdateTrackStatusType(GetTrackStatusText(Status))
         End Sub
-        Public Class TrackStatusInfo
+
+        Private Class TrackStatusInfo
             Public Sub New()
                 _UnexpectedSectors = New Dictionary(Of String, ConsoleParser.UnexpectedSector)
             End Sub
@@ -275,6 +382,8 @@
             Public Property Action As ActionTypeEnum
             Public Property BadSectors As UShort = 0
             Public Property Failed As Boolean
+            Public Property OutOfRange As Boolean = False
+            Public Property OutOfRangeFormat As String = ""
             Public Property Retries As UShort = 0
             Public Property Side As Integer
             Public Property Track As Integer

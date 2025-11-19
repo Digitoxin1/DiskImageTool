@@ -70,7 +70,7 @@ Public Class HexViewForm
             Me.Text = HexViewSectorData.Description
         End If
 
-        CmbGroups.Size = New Drawing.Size(IIf(_SyncBlocks, 130, 218), CmbGroups.Size.Height)
+        CmbGroups.Size = New Drawing.Size(If(_SyncBlocks, 130, 218), CmbGroups.Size.Height)
         CmbGroups.DropDownWidth = CmbGroups.Width
 
         LblGroups.Visible = Not _SectorNavigator And Not _ClusterNavigator
@@ -926,7 +926,7 @@ Public Class HexViewForm
                     ToolStripStatusTrackSector.Text = FormatLabelPair(My.Resources.Label_SectorId, _BPB.SectorToTrackSector(Sector) + 1)
 
                     Dim IsTranslated = _HexViewSectorData.Disk.Image.IsTranslatedSector(Sector)
-                    ToolStripStatusTranslated.Text = IIf(IsTranslated, "  T", "")
+                    ToolStripStatusTranslated.Text = If(IsTranslated, "  T", "")
                 Else
                     ToolStripStatusTrack.Visible = False
                     ToolStripStatusTrack.Text = ""

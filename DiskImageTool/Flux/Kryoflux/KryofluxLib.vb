@@ -90,23 +90,5 @@ Namespace Flux.Kryoflux
                 Return (False, "", "")
             End Using
         End Function
-
-        Public Function OpenFluxImage(ParentForm As Form) As String
-            Using Dialog As New OpenFileDialog With {
-                .Title = "Open Flux Image",
-                .Filter = "KryoFlux RAW (*.raw)|*.raw",
-                .FilterIndex = 1,
-                .CheckFileExists = True,
-                .AddExtension = True,
-                .Multiselect = False
-            }
-
-                If Dialog.ShowDialog(ParentForm) = DialogResult.OK Then
-                    Return Dialog.FileName
-                End If
-            End Using
-
-            Return Nothing
-        End Function
     End Module
 End Namespace

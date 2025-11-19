@@ -173,6 +173,9 @@
     <Compile Include="Filters\ImageFiltersBase.vb" />
     <Compile Include="DiskImageLib.vb" />
     <Compile Include="Flux\Greaseweazle\TrackStatus.vb" />
+    <Compile Include="Flux\ImportImageFormBase.vb">
+      <SubType>Form</SubType>
+    </Compile>
     <Compile Include="Flux\Kryoflux\CommandLineBuilder.vb" />
     <Compile Include="Flux\Kryoflux\ConsoleParser.vb" />
     <Compile Include="Flux\Kryoflux\Forms\ConfigurationForm.Designer.vb">

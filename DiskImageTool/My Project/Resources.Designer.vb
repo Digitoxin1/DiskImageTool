@@ -3123,6 +3123,15 @@ Namespace My.Resources
         End Property
         
         '''<summary>
+        '''  Looks up a localized string similar to Browse.
+        '''</summary>
+        Friend ReadOnly Property Label_Browse() As String
+            Get
+                Return ResourceManager.GetString("Label_Browse", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
         '''  Looks up a localized string similar to Byte-Aligned.
         '''</summary>
         Friend ReadOnly Property Label_ByteAligned() As String
@@ -3281,6 +3290,15 @@ Namespace My.Resources
         Friend ReadOnly Property Label_DirectoryName() As String
             Get
                 Return ResourceManager.GetString("Label_DirectoryName", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  Looks up a localized string similar to Discard.
+        '''</summary>
+        Friend ReadOnly Property Label_Discard() As String
+            Get
+                Return ResourceManager.GetString("Label_Discard", resourceCulture)
             End Get
         End Property
         
@@ -3591,6 +3609,15 @@ Namespace My.Resources
         End Property
         
         '''<summary>
+        '''  Looks up a localized string similar to Folder Name.
+        '''</summary>
+        Friend ReadOnly Property Label_FolderName() As String
+            Get
+                Return ResourceManager.GetString("Label_FolderName", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
         '''  Looks up a localized string similar to Format.
         '''</summary>
         Friend ReadOnly Property Label_Format() As String
@@ -3722,6 +3749,15 @@ Namespace My.Resources
         Friend ReadOnly Property Label_InvalidFilename() As String
             Get
                 Return ResourceManager.GetString("Label_InvalidFilename", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  Looks up a localized string similar to Keep.
+        '''</summary>
+        Friend ReadOnly Property Label_Keep() As String
+            Get
+                Return ResourceManager.GetString("Label_Keep", resourceCulture)
             End Get
         End Property
         
@@ -4028,6 +4064,15 @@ Namespace My.Resources
         Friend ReadOnly Property Label_Root() As String
             Get
                 Return ResourceManager.GetString("Label_Root", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  Looks up a localized string similar to Root Folder.
+        '''</summary>
+        Friend ReadOnly Property Label_RootFolder() As String
+            Get
+                Return ResourceManager.GetString("Label_RootFolder", resourceCulture)
             End Get
         End Property
         

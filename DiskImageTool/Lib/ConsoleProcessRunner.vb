@@ -8,21 +8,29 @@ Public Class ConsoleProcessRunner
 
     Private _disposed As Boolean
     Private _exitCode As Integer?
-
     Private _proc As Process
     Private _rawErrTask As Task
     Private _rawOutTask As Task
+    Private _state As ProcessStateEnum = ProcessStateEnum.Idle
     Private _tcs As TaskCompletionSource(Of Integer)
 
     Private _useRawCapture As Boolean
+    Public Enum ProcessStateEnum As Byte
+        Idle = 0
+        Running = 1
+        Completed = 2
+        [Error] = 3
+        Aborted = 4
+    End Enum
+
     Public Event ErrorDataReceived(data As String)
     Public Event OutputDataReceived(data As String)
     Public Event ProcessExited(exitCode As Integer)
     Public Event ProcessFailed(message As String, ex As Exception)
     Public Event ProcessStarted(exePath As String, arguments As String)
+    Public Event ProcessStateChanged(state As ProcessStateEnum)
 
     Public Property EventContext As SynchronizationContext
-
     Public ReadOnly Property ExitCode As Integer?
         Get
             Return _exitCode
@@ -36,7 +44,14 @@ Public Class ConsoleProcessRunner
     End Property
 
     Public Property StandardErrorEncoding As Encoding = Encoding.UTF8
+
     Public Property StandardOutputEncoding As Encoding = Encoding.UTF8
+
+    Public ReadOnly Property State As ProcessStateEnum
+        Get
+            Return _state
+        End Get
+    End Property
     Public Property WorkingDirectory As String
 
     Public Shared Function RunProcess(fileName As String,
@@ -129,7 +144,7 @@ Public Class ConsoleProcessRunner
                 _proc.Kill()
             Catch ex As Exception
                 ' If kill fails, surface as a failure event but keep going
-                RaiseOnContext(Sub() RaiseEvent ProcessFailed("Failed to kill process.", ex))
+                SetProcessStateFailed("Failed to kill process.", ex)
             End Try
         End If
     End Sub
@@ -138,10 +153,6 @@ Public Class ConsoleProcessRunner
         Dispose(True)
         GC.SuppressFinalize(Me)
     End Sub
-
-    Public Function StartAsyncRaw(exePath As String, arguments As String, Optional ct As CancellationToken = Nothing) As Task(Of Integer)
-        Return StartAsync(exePath, arguments, ct, True)
-    End Function
 
     Public Function StartAsync(exePath As String, arguments As String, Optional ct As CancellationToken = Nothing, Optional useRawCapture As Boolean = False) As Task(Of Integer)
         If _proc IsNot Nothing Then
@@ -190,11 +201,12 @@ Public Class ConsoleProcessRunner
                 Throw New InvalidOperationException("Failed to start process.")
             End If
         Catch ex As Exception
-            RaiseOnContext(Sub() RaiseEvent ProcessFailed("Failed to start process.", ex))
+            SetProcessStateFailed("Failed to start process.", ex)
             Cleanup()
             Throw
         End Try
 
+        SetProcessState(ProcessStateEnum.Running)
         RaiseOnContext(Sub() RaiseEvent ProcessStarted(exePath, arguments))
 
         ' Begin async reads, depending on mode
@@ -211,6 +223,10 @@ Public Class ConsoleProcessRunner
         Return _tcs.Task
     End Function
 
+    Public Function StartAsyncRaw(exePath As String, arguments As String, Optional ct As CancellationToken = Nothing) As Task(Of Integer)
+        Return StartAsync(exePath, arguments, ct, True)
+    End Function
+
     Public Sub WriteInput(text As String)
         If _proc Is Nothing OrElse _proc.HasExited Then
             Return
@@ -223,7 +239,7 @@ Public Class ConsoleProcessRunner
         Try
             _proc.StandardInput.WriteLine(text)
         Catch ex As Exception
-            RaiseOnContext(Sub() RaiseEvent ProcessFailed("Failed to write to StandardInput.", ex))
+            SetProcessStateFailed("Failed to write to StandardInput.", ex)
         End Try
     End Sub
 
@@ -264,6 +280,7 @@ Public Class ConsoleProcessRunner
         Catch
         End Try
     End Sub
+
     Private Sub Cleanup()
         Try
             ' Wait for raw readers to finish if in raw mode
@@ -299,7 +316,9 @@ Public Class ConsoleProcessRunner
         If e.Data Is Nothing Then
             Return
         End If
-        RaiseOnContext(Sub() RaiseEvent ErrorDataReceived(e.Data))
+        RaiseOnContext(Sub()
+                           RaiseEvent ErrorDataReceived(e.Data)
+                       End Sub)
     End Sub
 
     Private Sub OnExited(sender As Object, e As EventArgs)
@@ -311,6 +330,11 @@ Public Class ConsoleProcessRunner
         _exitCode = code
 
         RaiseOnContext(Sub() RaiseEvent ProcessExited(code))
+        If code = -1 Then
+            SetProcessState(ProcessStateEnum.Aborted)
+        Else
+            SetProcessState(ProcessStateEnum.Completed)
+        End If
         _tcs.TrySetResult(code)
 
         Cleanup()
@@ -318,16 +342,25 @@ Public Class ConsoleProcessRunner
 
     Private Sub OnOutputData(sender As Object, e As DataReceivedEventArgs)
         If e.Data Is Nothing Then Return
-        RaiseOnContext(Sub() RaiseEvent OutputDataReceived(e.Data))
+        RaiseOnContext(Sub()
+                           RaiseEvent OutputDataReceived(e.Data)
+                       End Sub)
     End Sub
 
     Private Sub RaiseOnContext(action As Action)
         Dim ctx = EventContext
-        If ctx IsNot Nothing Then
-            ctx.Post(Sub(state) action(), Nothing)
-        Else
-            ' No context captured: invoke inline on current thread
+
+        If ctx Is Nothing Then
             action()
+            Return
+        End If
+
+        If ctx Is SynchronizationContext.Current Then
+            ' Already on UI thread — run inline
+            action()
+        Else
+            ' Background thread — marshal to UI thread
+            ctx.Post(Sub(state) action(), Nothing)
         End If
     End Sub
 
@@ -344,10 +377,12 @@ Public Class ConsoleProcessRunner
 
                 Dim chunk = StandardErrorEncoding.GetString(buffer, 0, read)
 
-                RaiseOnContext(Sub() RaiseEvent ErrorDataReceived(chunk))
+                RaiseOnContext(Sub()
+                                   RaiseEvent ErrorDataReceived(chunk)
+                               End Sub)
             Loop
         Catch ex As Exception
-            RaiseOnContext(Sub() RaiseEvent ProcessFailed("Error reading standard error.", ex))
+            SetProcessStateFailed("Error reading standard error.", ex)
         End Try
     End Sub
 
@@ -364,11 +399,25 @@ Public Class ConsoleProcessRunner
 
                 Dim chunk = StandardOutputEncoding.GetString(buffer, 0, read)
 
-                RaiseOnContext(Sub() RaiseEvent OutputDataReceived(chunk))
+                RaiseOnContext(Sub()
+                                   RaiseEvent OutputDataReceived(chunk)
+                               End Sub)
             Loop
         Catch ex As Exception
-            RaiseOnContext(Sub() RaiseEvent ProcessFailed("Error reading standard output.", ex))
+            SetProcessStateFailed("Error reading standard output.", ex)
         End Try
+    End Sub
+
+    Private Sub SetProcessState(newState As ProcessStateEnum)
+        If _state <> newState Then
+            _state = newState
+            RaiseOnContext(Sub() RaiseEvent ProcessStateChanged(_state))
+        End If
+    End Sub
+
+    Private Sub SetProcessStateFailed(message As String, ex As Exception)
+        RaiseOnContext(Sub() RaiseEvent ProcessFailed(message, ex))
+        SetProcessState(ProcessStateEnum.Error)
     End Sub
     Public Structure ProcessResult
         Public ReadOnly CombinedOutput As String

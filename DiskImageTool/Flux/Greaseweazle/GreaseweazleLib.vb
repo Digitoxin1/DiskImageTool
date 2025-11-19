@@ -8,6 +8,63 @@ Namespace Flux.Greaseweazle
             Return App.Globals.AppSettings.Greaseweazle
         End Function
 
+        Public Function GenerateCommandLineImport(InputFilePath As String, OutputFilePath As String, DiskParams As FloppyDiskParams, OutputType As ImageImportOutputTypes, DoubleStep As Boolean) As String
+            Dim Builder As New CommandLineBuilder(CommandLineBuilder.CommandAction.convert) With {
+                .InFile = InputFilePath,
+                .OutFile = OutputFilePath
+            }
+
+            If Not DiskParams.IsStandard Then
+                OutputType = ImageImportOutputTypes.HFE
+            End If
+
+            If OutputType <> ImageImportOutputTypes.HFE Then
+                Dim ImageFormat = GreaseweazleImageFormatFromFloppyDiskFormat(DiskParams.Format)
+                Builder.Format = GreaseweazleImageFormatCommandLine(ImageFormat)
+            Else
+                Builder.BitRate = DiskParams.BitRateKbps
+                Builder.AdjustSpeed = DiskParams.RPM & "rpm"
+            End If
+
+            If DoubleStep Then
+                Builder.HeadStep = 2
+            End If
+
+            Return Builder.Arguments
+        End Function
+
+        Public Function GenerateCommandLineRead(FilePath As String, Opt As DriveOption, DiskParams As FloppyDiskParams, OutputType As ReadDiskOutputTypes, DoubleStep As Boolean, Retries As UInteger, SeekRetries As UInteger, Revs As UInteger) As String
+            Dim Builder As New CommandLineBuilder(CommandLineBuilder.CommandAction.read) With {
+                .Drive = Opt.Id,
+                .File = FilePath,
+                .Retries = Retries,
+                .SeekRetries = SeekRetries,
+                .Revs = Revs
+            }
+
+            Dim ImageFormat = GreaseweazleImageFormatFromFloppyDiskFormat(DiskParams.Format)
+
+            If OutputType <> ReadDiskOutputTypes.HFE OrElse ImageFormat <> GreaseweazleImageFormat.None Then
+                Builder.Format = GreaseweazleImageFormatCommandLine(ImageFormat)
+            End If
+
+            If OutputType = ReadDiskOutputTypes.HFE Then
+                Builder.BitRate = DiskParams.BitRateKbps
+                Builder.AdjustSpeed = DiskParams.RPM & "rpm"
+                Builder.Raw = True
+            ElseIf OutputType = ReadDiskOutputTypes.RAW Then
+                Builder.AdjustSpeed = DiskParams.RPM & "rpm"
+                Builder.Raw = True
+                Builder.AddCylinder(0, Opt.Tracks - 1)
+            End If
+
+            If DoubleStep Then
+                Builder.HeadStep = 2
+            End If
+
+            Return Builder.Arguments
+        End Function
+
         Public Function GetTrackHeads(StartHead As Integer, Optional EndHead As Integer = -1) As CommandLineBuilder.TrackHeads
             If EndHead = -1 Then
                 EndHead = StartHead
@@ -204,26 +261,6 @@ Namespace Flux.Greaseweazle
             End If
         End Sub
 
-        Public Function OpenFluxImage(ParentForm As Form) As String
-            Using Dialog As New OpenFileDialog With {
-            .Title = "Open Flux Image",
-            .Filter = "Flux dumps (*.raw;*.scp)|*.raw;*.scp|" &
-                "KryoFlux RAW (*.raw)|*.raw|" &
-                "SuperCard Pro (*.scp)|*.scp",
-            .FilterIndex = 1,
-            .CheckFileExists = True,
-            .AddExtension = True,
-            .Multiselect = False
-        }
-
-                If Dialog.ShowDialog(ParentForm) = DialogResult.OK Then
-                    Return Dialog.FileName
-                End If
-            End Using
-
-            Return Nothing
-        End Function
-
         Public Sub PopulateDrives(Combo As ComboBox, Format As FloppyMediaType, Optional LastUsedDrive As String = "")
             Dim DriveList As New List(Of DriveOption)
 
@@ -268,7 +305,7 @@ Namespace Flux.Greaseweazle
                 .Id = "",
                 .Type = FloppyMediaType.MediaUnknown,
                 .Tracks = 0,
-                .Label = IIf(DriveList.Count = 0, My.Resources.Label_NoDrivesFound, My.Resources.Label_PleaseSelect)
+                .Label = If(DriveList.Count = 0, My.Resources.Label_NoDrivesFound, My.Resources.Label_PleaseSelect)
             }
                 DriveList.Insert(0, placeholder)
             End If

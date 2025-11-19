@@ -550,7 +550,7 @@ Public Class MainForm
     End Function
 
     Private Sub GreaseweazleImportImage()
-        Dim FileName As String = Flux.Greaseweazle.OpenFluxImage(Me)
+        Dim FileName As String = Flux.OpenFluxImage(Me, True)
 
         GreaseweazleImportImage(FileName)
     End Sub
@@ -815,7 +815,7 @@ Public Class MainForm
     End Sub
 
     Private Sub KryofluxImportImage()
-        Dim FileName As String = Flux.Kryoflux.OpenFluxImage(Me)
+        Dim FileName As String = Flux.OpenFluxImage(Me, False)
 
         KryofluxImportImage(FileName)
     End Sub
@@ -1225,7 +1225,7 @@ Public Class MainForm
                     CanRestructureImage = True
                 End If
 
-                FixImageSizeText = IIf(Compare < 0, My.Resources.Menu_PadImageSize, My.Resources.Menu_TruncateImage)
+                FixImageSizeText = If(Compare < 0, My.Resources.Menu_PadImageSize, My.Resources.Menu_TruncateImage)
             End If
 
             HasBootSector = Disk.RootDirectory.Data.HasBootSector

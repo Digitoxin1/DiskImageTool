@@ -7,6 +7,7 @@ Namespace Flux.Greaseweazle
         Public Const REGEX_TRACK_CONVERTING As String = "^\s*Converting\s+c=(?<cs>\d+)(?:-(?<ce>\d+))?\s*:\s*h=(?<hs>\d+)(?:-(?<he>\d+))?\s*->\s*c=(?<ds>\d+)(?:-(?<de>\d+))?\s*:\s*h=(?<dhs>\d+)(?:-(?<dhe>\d+))?\s*$"
         Public Const REGEX_TRACK_READ_DETAILS As String = "^(?<system>\w+) (?<encoding>\w+)( \((?<sectorsFound>\d+)\/(?<sectorsTotal>\d+) sectors\))?(?: from (?<srcFormat>[^()]+))? \((?<fluxCount>\d+) flux in (?<fluxTimeMS>\d+(?:\.?\d+)?)ms\)( \(Retry #(?<seek>\d+)\.(?<retry>\d+)\))?"
         Public Const REGEX_TRACK_READ_FAILED As String = "^Giving up: (?<sectors>\d+) sectors missing"
+        Public Const REGEX_TRACK_READ_OUTOFRANGE As String = "^WARNING: Out of range for format '(?<format>(\w|\.)+)': No format conversion applied: Raw Flux \((?<fluxCount>\d+) flux in (?<fluxTimeMS>\d+(?:\.?\d+)?)ms\)"
         Public Const REGEX_TRACK_READ_SUMMARY As String = "^T(?<destTrack>\d+)\.(?<destSide>\d+)( <- (?<srcType>\w+) (?<srcTrack>\d+)\.(?<srcSide>\d+))?: (?<details>.+)"
         Public Const REGEX_TRACK_UNEXPECTED As String = "^T(?<track>\d+)\.(?<side>\d+): Ignoring unexpected sector C:(?<cylinder>\d+) H:(?<head>\d+) R:(?<sectorId>\d+) N:(?<sizeId>\d+)"
         Public Const REGEX_TRACK_WRITE As String = "^T(?<srcTrack>\d+)\.(?<srcSide>\d+)( -> Drive (?<destTrack>\d+).(?<destHead>\d+))?: (?<action>Writing|Erasing) Track\b( \((?<details>.+)\))?"
@@ -17,6 +18,7 @@ Namespace Flux.Greaseweazle
         Private ReadOnly RegExTrackConverting As New Regex(REGEX_TRACK_CONVERTING, RegexOptions.IgnoreCase Or RegexOptions.CultureInvariant Or RegexOptions.Compiled)
         Private ReadOnly RegExTrackReadDetails As New Regex(REGEX_TRACK_READ_DETAILS, RegexOptions.IgnoreCase Or RegexOptions.CultureInvariant Or RegexOptions.Compiled)
         Private ReadOnly RegExTrackReadFailed As New Regex(REGEX_TRACK_READ_FAILED, RegexOptions.IgnoreCase Or RegexOptions.CultureInvariant Or RegexOptions.Compiled)
+        Private ReadOnly RegExTrackReadOutOfRange As New Regex(REGEX_TRACK_READ_OUTOFRANGE, RegexOptions.IgnoreCase Or RegexOptions.CultureInvariant Or RegexOptions.Compiled)
         Private ReadOnly RegExTrackReadSummary As New Regex(REGEX_TRACK_READ_SUMMARY, RegexOptions.IgnoreCase Or RegexOptions.CultureInvariant Or RegexOptions.Compiled)
         Private ReadOnly RegExTrackUnexpected As New Regex(REGEX_TRACK_UNEXPECTED, RegexOptions.IgnoreCase Or RegexOptions.CultureInvariant Or RegexOptions.Compiled)
         Private ReadOnly RegExTrackWrite As New Regex(REGEX_TRACK_WRITE, RegexOptions.IgnoreCase Or RegexOptions.CultureInvariant Or RegexOptions.Compiled)
@@ -34,12 +36,12 @@ Namespace Flux.Greaseweazle
             End If
 
             Dim info As New TrackRange With {
-            .Action = Match.Groups("action").Value,
-            .TrackStart = GetInt(Match, "trkStart"),
-            .TrackEnd = GetIntOrDefault(Match, "trkEnd", .TrackStart),
-            .HeadStart = GetInt(Match, "headStart"),
-            .HeadEnd = GetIntOrDefault(Match, "headEnd", .HeadStart)
-        }
+                .Action = Match.Groups("action").Value,
+                .TrackStart = GetInt(Match, "trkStart"),
+                .TrackEnd = GetIntOrDefault(Match, "trkEnd", .TrackStart),
+                .HeadStart = GetInt(Match, "headStart"),
+                .HeadEnd = GetIntOrDefault(Match, "headEnd", .HeadStart)
+            }
 
             Return info
         End Function
@@ -125,6 +127,24 @@ Namespace Flux.Greaseweazle
                 .Details = Match.Groups("details").Value.Trim()
             }
 
+            Return info
+        End Function
+
+        Public Function ParseTrackReadOutOfRange(line As String) As TrackReadOutOfRange
+            If String.IsNullOrWhiteSpace(line) Then
+                Return Nothing
+            End If
+
+            Dim Match = RegExTrackReadOutOfRange.Match(line)
+            If Not Match.Success Then
+                Return Nothing
+            End If
+
+            Dim info As New TrackReadOutOfRange With {
+                .Format = Match.Groups("format").Value,
+                .FluxCount = GetInt(Match, "fluxCount"),
+                .FluxTimeMs = GetDouble(Match, "fluxTimeMS")
+            }
             Return info
         End Function
 
@@ -225,6 +245,13 @@ Namespace Flux.Greaseweazle
             Public Property HeadStart As Integer = 0
             Public Property TrackEnd As Integer = 0
             Public Property TrackStart As Integer = 0
+        End Class
+
+        Public Class TrackReadOutOfRange
+            Public Property FluxCount As Integer
+            Public Property FluxTimeMs As Double
+            Public Property Format As String
+
         End Class
 
         Public Class TrackReadDetails

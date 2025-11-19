@@ -15,14 +15,10 @@ Namespace Flux.Greaseweazle
         Private ReadOnly _SideCount As Byte
         Private ReadOnly _TrackCount As UShort
         Private ReadOnly _TrackStatus As TrackStatus
-        Private _AllowNoVerify As Boolean = True
-        Private _AllowRetries As Boolean = True
         Private _ContinueAfterWrite As Boolean = False
         Private _CurrentFilePath As String = ""
         Private _DoubleStep As Boolean = False
         Private _LastSelected As (Track As UShort, Side As Byte, Selected As Boolean)? = Nothing
-        Private _ProcessRunning As Boolean = False
-        Private _TrackRange As ConsoleParser.TrackRange = Nothing
         Private CheckBoxContinue As CheckBox
         Private CheckBoxEraseEmpty As CheckBox
         Private CheckBoxPreErase As CheckBox
@@ -59,7 +55,7 @@ Namespace Flux.Greaseweazle
 
             LabelImageFormat.Text = _DiskParams.Description
 
-            Dim Mode As String = IIf(_IsBitstreamImage, My.Resources.FileType_BitstreamImage, My.Resources.FileType_SectorImage)
+            Dim Mode As String = If(_IsBitstreamImage, My.Resources.FileType_BitstreamImage, My.Resources.FileType_SectorImage)
             StatusStripBottom.Items.Add(New ToolStripStatusLabel(Mode))
 
             Dim AvailableTypes = Settings.AvailableDriveTypes
@@ -87,23 +83,13 @@ Namespace Flux.Greaseweazle
         End Function
 
         Private Function CheckKeepProcessing() As Boolean
-            If _TrackStatus.CurrentStatusInfo Is Nothing Then
-                Return False
+            Dim KeepProcessing As Boolean = _ContinueAfterWrite OrElse (RetriesAllowed() AndAlso CheckBoxContinue.Checked AndAlso CheckBoxSelect.Checked)
+
+            If KeepProcessing Then
+                KeepProcessing = _TrackStatus.CanKeepProcessing
             End If
 
-            If _TrackRange Is Nothing Then
-                Return False
-            End If
-
-            If Not _ContinueAfterWrite AndAlso Not (_AllowRetries And CheckBoxContinue.Checked And CheckBoxSelect.Checked And _TrackStatus.CurrentStatusInfo.Failed) Then
-                Return False
-            End If
-
-            If Not (_TrackStatus.CurrentStatusInfo.Track < _TrackRange.TrackEnd Or _TrackStatus.CurrentStatusInfo.Side < _TrackRange.HeadEnd) Then
-                Return False
-            End If
-
-            Return True
+            Return KeepProcessing
         End Function
 
         Private Function ConfirmIncompatibleImage() As Boolean
@@ -312,23 +298,18 @@ Namespace Flux.Greaseweazle
         End Sub
 
         Private Sub KeepProcessing()
-            Dim Heads As CommandLineBuilder.TrackHeads
-            Dim TrackRanges As New List(Of (StartTrack As UShort, EndTrack As UShort))
+            Dim Response = _TrackStatus.GetNextTrackRange
 
-            If _TrackStatus.CurrentStatusInfo.Side < _TrackRange.HeadEnd Then
+            If Response.Continue Then
                 _ContinueAfterWrite = True
-                Heads = GetTrackHeads(_TrackStatus.CurrentStatusInfo.Side + 1)
-                TrackRanges.Add((_TrackStatus.CurrentStatusInfo.Track, _TrackStatus.CurrentStatusInfo.Track))
-            Else
-                Heads = CommandLineBuilder.TrackHeads.both
-                TrackRanges.Add((_TrackStatus.CurrentStatusInfo.Track + 1, _TrackRange.TrackEnd))
             End If
 
-            WriteDisk(_CurrentFilePath, TrackRanges, Heads)
+            WriteDisk(_CurrentFilePath, Response.Ranges, Response.Heads)
         End Sub
 
         Private Sub ProcessDisk()
             Dim Response = SaveTempImage()
+
             If Response.Result Then
                 _CurrentFilePath = Response.FilePath
 
@@ -344,45 +325,24 @@ Namespace Flux.Greaseweazle
             End If
             TextBoxConsole.AppendText(line)
 
-            If _TrackRange Is Nothing Then
-                _TrackRange = _TrackStatus.ParseDiskRange(line)
-            End If
-
-            Dim TrackInfo = _TrackStatus.ParseTrackWrite(line)
-
-            If TrackInfo IsNot Nothing Then
-                Dim Action As TrackStatus.ActionTypeEnum
-                If TrackInfo.Action = "Erasing" Then
-                    Action = TrackStatus.ActionTypeEnum.Erase
-                ElseIf TrackInfo.Action = "Writing" Then
-                    Action = TrackStatus.ActionTypeEnum.Write
-                Else
-                    Action = TrackStatus.ActionTypeEnum.Unknown
-                End If
-
-                Dim Statusinfo = _TrackStatus.UpdateStatusInfo(TrackInfo, TrackStatus.ActionTypeEnum.Write)
-                _TrackStatus.UpdateTrackStatus(Statusinfo, Action, _DoubleStep)
-                Return
-            End If
+            _TrackStatus.ProcessOutputLineWrite(line, TrackStatus.ActionTypeEnum.Write, _DoubleStep)
         End Sub
 
         Private Sub RefreshButtonState()
-            _AllowNoVerify = Not _IsBitstreamImage
-            ComboImageDrives.Enabled = Not _ProcessRunning
-            CheckBoxPreErase.Enabled = Not _ProcessRunning
-            CheckBoxEraseEmpty.Enabled = Not _ProcessRunning
-            CheckboxNoVerify.Enabled = Not _ProcessRunning AndAlso _AllowNoVerify
-            CheckBoxSelect.Enabled = Not _ProcessRunning
+            Dim IsRunning As Boolean = Process.IsRunning
+            Dim IsIdle As Boolean = Not IsRunning
 
-            If _ProcessRunning Then
-                ButtonProcess.Text = My.Resources.Label_Abort
-            Else
-                ButtonProcess.Text = My.Resources.Label_Write
-            End If
+            ComboImageDrives.Enabled = IsIdle
+            CheckBoxPreErase.Enabled = IsIdle
+            CheckBoxEraseEmpty.Enabled = IsIdle
+            CheckboxNoVerify.Enabled = IsIdle AndAlso VerifyAllowed()
+            CheckBoxSelect.Enabled = IsIdle
 
-            ButtonReset.Enabled = Not _ProcessRunning
+            ButtonProcess.Text = If(IsRunning, My.Resources.Label_Abort, My.Resources.Label_Write)
 
-            ButtonSaveLog.Enabled = Not _ProcessRunning AndAlso TextBoxConsole.Text.Length > 0
+            ButtonReset.Enabled = IsIdle
+
+            ButtonSaveLog.Enabled = IsIdle AndAlso TextBoxConsole.Text.Length > 0
 
             RefreshProcessButtonState()
             RefreshVerifyButtonState()
@@ -394,9 +354,11 @@ Namespace Flux.Greaseweazle
         End Sub
 
         Private Sub RefreshVerifyButtonState()
-            _AllowRetries = Not CheckboxNoVerify.Checked AndAlso Not _IsBitstreamImage AndAlso Not CheckBoxSelect.Checked
-            CheckBoxContinue.Enabled = Not _ProcessRunning AndAlso _AllowRetries
-            NumericRetries.Enabled = Not _ProcessRunning AndAlso _AllowRetries
+            Dim IsIdle As Boolean = Not Process.IsRunning
+            Dim AllowRetries = RetriesAllowed()
+
+            CheckBoxContinue.Enabled = IsIdle AndAlso AllowRetries
+            NumericRetries.Enabled = IsIdle AndAlso AllowRetries
         End Sub
 
         Private Sub ResetCheckBoxSelect()
@@ -407,8 +369,6 @@ Namespace Flux.Greaseweazle
             ResetTrackGrid(ResetSelected)
             ClearStatusBar()
             _TrackStatus.Clear()
-            _TrackRange = Nothing
-
             TextBoxConsole.Clear()
         End Sub
 
@@ -431,13 +391,12 @@ Namespace Flux.Greaseweazle
             GridReset(TrackCount, _SideCount, ResetSelected)
         End Sub
 
+        Private Function RetriesAllowed() As Boolean
+            Return Not CheckboxNoVerify.Checked AndAlso Not _IsBitstreamImage AndAlso Not CheckBoxSelect.Checked
+        End Function
+
         Private Function SaveTempImage() As (Result As Boolean, FilePath As String)
-            Dim FileExt As String
-            If _IsBitstreamImage Then
-                FileExt = ".hfe"
-            Else
-                FileExt = ".ima"
-            End If
+            Dim FileExt As String = If(_IsBitstreamImage, ".hfe", ".ima")
 
             Dim TempPath = InitTempImagePath()
             Dim FileName = Guid.NewGuid.ToString & FileExt
@@ -455,20 +414,9 @@ Namespace Flux.Greaseweazle
             Return (Result, FilePath)
         End Function
 
-        Private Sub ToggleProcessRunning(Value As Boolean)
-            _ProcessRunning = Value
-
-            If Not Value AndAlso _CurrentFilePath <> "" Then
-                DeleteFileIfExists(_CurrentFilePath)
-            End If
-
-            If Not Value Then
-                CheckBoxSelect.Checked = False
-            End If
-
-            RefreshButtonState()
-        End Sub
-
+        Private Function VerifyAllowed() As Boolean
+            Return Not _IsBitstreamImage
+        End Function
         Private Sub WriteDisk(FilePath As String)
             Dim TrackRanges As List(Of (StartTrack As UShort, EndTrack As UShort)) = Nothing
             Dim Heads As CommandLineBuilder.TrackHeads = CommandLineBuilder.TrackHeads.both
@@ -510,11 +458,11 @@ Namespace Flux.Greaseweazle
                    .EraseEmpty = CheckBoxEraseEmpty.Checked
                }
 
-            If _AllowNoVerify Then
+            If VerifyAllowed() Then
                 Builder.NoVerify = CheckboxNoVerify.Checked
             End If
 
-            If _AllowRetries Then
+            If RetriesAllowed() Then
                 Builder.Retries = NumericRetries.Value
             End If
 
@@ -552,7 +500,6 @@ Namespace Flux.Greaseweazle
             'End If
             'TextBoxConsole.AppendText(Arguments)
 
-            ToggleProcessRunning(True)
             Process.StartAsync(Settings.AppPath, Arguments)
         End Sub
 #Region "Events"
@@ -621,26 +568,36 @@ Namespace Flux.Greaseweazle
             LabelWarning.Visible = Not CheckCompatibility()
         End Sub
 
-        Private Sub Process_ErrorDataReceived(data As String) Handles Process.ErrorDataReceived
+        Private Sub Process_DataReceived(data As String) Handles Process.ErrorDataReceived, Process.OutputDataReceived
             ProcessOutputLine(data)
         End Sub
 
-        Private Sub Process_ProcessExited(exitCode As Integer) Handles Process.ProcessExited
-            Dim Aborted = (exitCode = -1)
-            Dim DoKeepProcessing As Boolean = CheckKeepProcessing()
+        Private Sub Process_ProcessStateChanged(State As ConsoleProcessRunner.ProcessStateEnum) Handles Process.ProcessStateChanged
+            Select Case State
+                Case ConsoleProcessRunner.ProcessStateEnum.Aborted
+                    _TrackStatus.UpdateTrackStatusAborted()
 
-            _TrackStatus.UpdateTrackStatusComplete(Aborted, _DoubleStep, DoKeepProcessing)
+                Case ConsoleProcessRunner.ProcessStateEnum.Completed
+                    Dim DoKeepProcessing As Boolean = CheckKeepProcessing()
+                    _TrackStatus.UpdateTrackStatusComplete(_DoubleStep, DoKeepProcessing)
 
-            If DoKeepProcessing Then
-                KeepProcessing()
-            Else
-                ToggleProcessRunning(False)
+                    If DoKeepProcessing Then
+                        KeepProcessing()
+                        Exit Sub
+                    End If
+
+                Case ConsoleProcessRunner.ProcessStateEnum.Error
+                    _TrackStatus.UpdateTrackStatusError()
+            End Select
+
+            If State <> ConsoleProcessRunner.ProcessStateEnum.Running Then
+                If _CurrentFilePath <> "" Then
+                    DeleteFileIfExists(_CurrentFilePath)
+                End If
+                ResetCheckBoxSelect()
             End If
-        End Sub
 
-        Private Sub Process_ProcessFailed(message As String, ex As Exception) Handles Process.ProcessFailed
-            _TrackStatus.UpdateTrackStatusError()
-            ToggleProcessRunning(False)
+            RefreshButtonState()
         End Sub
 
         Private Sub WriteDiskForm_CheckChanged(sender As Object, Checked As Boolean, Side As Byte) Handles Me.CheckChanged

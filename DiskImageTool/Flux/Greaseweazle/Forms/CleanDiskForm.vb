@@ -7,7 +7,6 @@ Namespace Flux.Greaseweazle
         Private WithEvents ButtonReset As Button
         Private WithEvents ComboImageDrives As ComboBox
         Private ReadOnly _Initialized As Boolean = False
-        Private _ProcessRunning As Boolean = False
         Private NumericCyls As NumericUpDown
         Private NumericLinger As NumericUpDown
         Private NumericPasses As NumericUpDown
@@ -49,7 +48,6 @@ Namespace Flux.Greaseweazle
 
             Dim Arguments = Builder.Arguments
 
-            ToggleProcessRunning(True)
             Process.StartAsyncRaw(Settings.AppPath, Arguments)
         End Sub
 
@@ -184,51 +182,38 @@ Namespace Flux.Greaseweazle
 
         Private Sub RefreshButtonState()
             Dim Opt As DriveOption = ComboImageDrives.SelectedValue
+            Dim IsRunning As Boolean = Process.IsRunning
+            Dim IsIdle As Boolean = Not IsRunning
 
-            ComboImageDrives.Enabled = Not _ProcessRunning
-            NumericPasses.Enabled = Not _ProcessRunning
-            NumericLinger.Enabled = Not _ProcessRunning
-            NumericCyls.Enabled = Not _ProcessRunning
+            ComboImageDrives.Enabled = IsIdle
+            NumericPasses.Enabled = IsIdle
+            NumericLinger.Enabled = IsIdle
+            NumericCyls.Enabled = IsIdle
 
-            If _ProcessRunning Then
-                ButtonProcess.Text = My.Resources.Label_Abort
-            Else
-                ButtonProcess.Text = My.Resources.Label_Clean
-            End If
-
-            ButtonSaveLog.Enabled = Not _ProcessRunning AndAlso TextBoxConsole.Text.Length > 0
-
+            ButtonProcess.Text = If(IsRunning, My.Resources.Label_Abort, My.Resources.Label_Clean)
             ButtonProcess.Enabled = Opt.Id <> ""
 
-            ButtonReset.Enabled = Not _ProcessRunning
+            ButtonSaveLog.Enabled = IsIdle AndAlso TextBoxConsole.Text.Length > 0
+
+            ButtonReset.Enabled = IsIdle
         End Sub
 
         Private Sub RefreshCylinderCount()
             Dim Opt As DriveOption = ComboImageDrives.SelectedValue
 
-            Dim MaxTrackCount As UShort
-
-            Select Case Opt.Type
-                Case FloppyMediaType.Media525DoubleDensity
-                    MaxTrackCount = 40
-                Case Else
-                    MaxTrackCount = 80
-            End Select
+            Dim MaxTrackCount As UShort = IIf(Opt.Type = FloppyMediaType.Media525DoubleDensity, 40, 80)
 
             If NumericCyls.Maximum <> MaxTrackCount Then
                 NumericCyls.Maximum = MaxTrackCount
                 NumericCyls.Value = MaxTrackCount
             End If
         End Sub
+
         Private Sub ResetState()
             ClearStatusBar()
             TextBoxConsole.Clear()
         End Sub
-        Private Sub ToggleProcessRunning(Value As Boolean)
-            _ProcessRunning = Value
 
-            RefreshButtonState()
-        End Sub
 #Region "Events"
         Private Sub ButtonProcess_Click(sender As Object, e As EventArgs) Handles ButtonProcess.Click
             If CancelProcessIfRunning() Then
@@ -257,16 +242,12 @@ Namespace Flux.Greaseweazle
             RefreshCylinderCount()
         End Sub
 
-        Private Sub Process_ErrorDataReceived(data As String) Handles Process.ErrorDataReceived
+        Private Sub Process_DataReceived(data As String) Handles Process.ErrorDataReceived, Process.OutputDataReceived
             TextBoxConsole.AppendText(data)
         End Sub
 
-        Private Sub Process_ProcessExited(exitCode As Integer) Handles Process.ProcessExited
-            ToggleProcessRunning(False)
-        End Sub
-
-        Private Sub Process_ProcessFailed(message As String, ex As Exception) Handles Process.ProcessFailed
-            ToggleProcessRunning(False)
+        Private Sub Process_ProcessStateChanged(State As ConsoleProcessRunner.ProcessStateEnum) Handles Process.ProcessStateChanged
+            RefreshButtonState()
         End Sub
 #End Region
     End Class

@@ -119,7 +119,7 @@
     End Function
 
     Public Overrides Function ToString() As String
-        Return Right(DisplayPath, Len(DisplayPath) - _StringOffset).Replace("\", "  >  ") '& IIf(_Modified, " *", "")
+        Return Right(DisplayPath, Len(DisplayPath) - _StringOffset).Replace("\", "  >  ") '& If(_Modified, " *", "")
     End Function
 
 End Class

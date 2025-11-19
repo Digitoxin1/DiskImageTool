@@ -16,9 +16,15 @@ Namespace Flux.Greaseweazle
             IBM_2880
         End Enum
 
-        Public Enum GreaseweazleOutputType
+        Public Enum ImageImportOutputTypes
             IMA
             HFE
+        End Enum
+
+        Public Enum ReadDiskOutputTypes
+            IMA
+            HFE
+            RAW
         End Enum
 
         Public Function GreaseweazleFindCompatibleFloppyType(DiskParams As FloppyDiskParams, AvailableTypes As FloppyMediaType) As FloppyMediaType
@@ -148,25 +154,51 @@ Namespace Flux.Greaseweazle
             End Select
         End Function
 
-        Public Function GreaseweazleOutputTypeDescription(Value As GreaseweazleOutputType) As String
+        Public Function ImageImportOutputTypeFileExt(Value As ImageImportOutputTypes) As String
             Select Case Value
-                Case GreaseweazleOutputType.HFE
+                Case ImageImportOutputTypes.HFE
+                    Return ".hfe"
+                Case ImageImportOutputTypes.IMA
+                    Return ".ima"
+                Case Else
+                    Return ".ima"
+            End Select
+        End Function
+
+        Public Function ReadDisktOutputTypeFileExt(Value As ReadDiskOutputTypes) As String
+            Select Case Value
+                Case ImageImportOutputTypes.HFE
+                    Return ".hfe"
+                Case ImageImportOutputTypes.IMA
+                    Return ".ima"
+                Case ReadDiskOutputTypes.RAW
+                    Return ".raw"
+                Case Else
+                    Return ".ima"
+            End Select
+        End Function
+
+        Public Function ImageImportOutputTypeDescription(Value As ImageImportOutputTypes) As String
+            Select Case Value
+                Case ImageImportOutputTypes.HFE
                     Return "HxC HFE Image"
-                Case GreaseweazleOutputType.IMA
+                Case ImageImportOutputTypes.IMA
                     Return "Basic Sector Image"
                 Case Else
                     Return ""
             End Select
         End Function
 
-        Public Function GreaseweazleOutputTypeFileExt(Value As GreaseweazleOutputType) As String
+        Public Function ReadDiskOutputTypeDescription(Value As ReadDiskOutputTypes) As String
             Select Case Value
-                Case GreaseweazleOutputType.HFE
-                    Return ".hfe"
-                Case GreaseweazleOutputType.IMA
-                    Return ".ima"
+                Case ReadDiskOutputTypes.HFE
+                    Return "HxC HFE Image"
+                Case ReadDiskOutputTypes.IMA
+                    Return "Basic Sector Image"
+                Case ReadDiskOutputTypes.RAW
+                    Return "Raw Flux Set"
                 Case Else
-                    Return ".ima"
+                    Return ""
             End Select
         End Function
     End Module

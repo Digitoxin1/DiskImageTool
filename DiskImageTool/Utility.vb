@@ -60,11 +60,11 @@ Module Utility
     End Function
 
     Public Function FileDialogAppendFilter(FileFilter As String, Description As String, Extension As String) As String
-        Return FileFilter & IIf(FileFilter = "", "", "|") & FileDialogGetFilter(Description, Extension)
+        Return FileFilter & If(FileFilter = "", "", "|") & FileDialogGetFilter(Description, Extension)
     End Function
 
     Public Function FileDialogAppendFilter(FileFilter As String, Description As String, ExtensionList As List(Of String)) As String
-        Return FileFilter & IIf(FileFilter = "", "", "|") & FileDialogGetFilter(Description, ExtensionList)
+        Return FileFilter & If(FileFilter = "", "", "|") & FileDialogGetFilter(Description, ExtensionList)
     End Function
 
     Public Function FileDialogGetFilter(Description As String, Extension As String) As String

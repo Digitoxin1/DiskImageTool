@@ -136,7 +136,7 @@
     End Sub
 
     Public Sub RemoveImage(Value As ImageData)
-        Dim ActiveComboBox As ComboBox = IIf(_Filtered, ComboFiltered, Combo)
+        Dim ActiveComboBox As ComboBox = If(_Filtered, ComboFiltered, Combo)
 
         Dim SelectedIndex = ActiveComboBox.SelectedIndex
 
