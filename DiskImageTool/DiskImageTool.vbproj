@@ -173,18 +173,16 @@
     <Compile Include="Filters\ImageFiltersBase.vb" />
     <Compile Include="DiskImageLib.vb" />
     <Compile Include="Flux\Greaseweazle\TrackStatus.vb" />
-    <Compile Include="Flux\ImportImageFormBase.vb">
+    <Compile Include="Flux\ImportImageForm.vb">
       <SubType>Form</SubType>
     </Compile>
+    <Compile Include="Flux\ITrackStatus.vb" />
     <Compile Include="Flux\Kryoflux\CommandLineBuilder.vb" />
     <Compile Include="Flux\Kryoflux\ConsoleParser.vb" />
     <Compile Include="Flux\Kryoflux\Forms\ConfigurationForm.Designer.vb">
       <DependentUpon>ConfigurationForm.vb</DependentUpon>
     </Compile>
     <Compile Include="Flux\Kryoflux\Forms\ConfigurationForm.vb">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Flux\Kryoflux\Forms\ImageImportForm.vb">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="Flux\Kryoflux\KryofluxLib.vb" />
@@ -214,9 +212,6 @@
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="Flux\Greaseweazle\Forms\ReadDiskForm.vb">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Flux\Greaseweazle\Forms\ImageImportForm.vb">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="Flux\Greaseweazle\Forms\WriteDiskForm.vb">

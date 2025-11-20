@@ -37,7 +37,7 @@ Namespace Flux.Greaseweazle
         Private _NumericRevs As NumericUpDown
         Private _NumericSeekRetries As NumericUpDown
         Private _OutputFilePath As String = ""
-        Private _ProcessingAction As TrackStatus.ActionTypeEnum = TrackStatus.ActionTypeEnum.Read
+        Private _ProcessingAction As ITrackStatus.ActionTypeEnum = ITrackStatus.ActionTypeEnum.Read
         Private _ProcessingFilePath As String = ""
         Private _ProcessingOutputType As ReadDiskOutputTypes? = Nothing
         Private _ProcessingPostAction As PostActionEnum = PostActionEnum.None
@@ -729,7 +729,7 @@ Namespace Flux.Greaseweazle
             Dim OutputType As ReadDiskOutputTypes = ComboOutputType.SelectedValue
 
             _ProcessingFilePath = Response.FilePath
-            _ProcessingAction = TrackStatus.ActionTypeEnum.Read
+            _ProcessingAction = ITrackStatus.ActionTypeEnum.Read
             _ProcessingPostAction = PostActionEnum.None
             _ProcessingOutputType = OutputType
             _FileOverwriteMode = OverwriteMode
@@ -769,7 +769,7 @@ Namespace Flux.Greaseweazle
             ResetInterface()
 
             _ProcessingFilePath = FilePath
-            _ProcessingAction = TrackStatus.ActionTypeEnum.Import
+            _ProcessingAction = ITrackStatus.ActionTypeEnum.Import
             _ProcessingPostAction = PostAction
             _ProcessingOutputType = OutputType
 
@@ -805,7 +805,7 @@ Namespace Flux.Greaseweazle
             ProcessImageRaw(PostAction)
         End Sub
 
-        Private Sub ProcessOutputLine(line As String, Action As TrackStatus.ActionTypeEnum)
+        Private Sub ProcessOutputLine(line As String, Action As ITrackStatus.ActionTypeEnum)
             If TextBoxConsole.Text.Length > 0 Then
                 TextBoxConsole.AppendText(Environment.NewLine)
             End If
@@ -945,7 +945,7 @@ Namespace Flux.Greaseweazle
             End If
 
             _ProcessingFilePath = _StagingFilePath
-            _ProcessingAction = TrackStatus.ActionTypeEnum.Read
+            _ProcessingAction = ITrackStatus.ActionTypeEnum.Read
             _ProcessingPostAction = PostActionEnum.None
             _ProcessingOutputType = ReadDiskOutputTypes.RAW
             _FileOverwriteMode = True

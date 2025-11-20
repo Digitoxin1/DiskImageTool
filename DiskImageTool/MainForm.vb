@@ -548,15 +548,15 @@ Public Class MainForm
         Return My.Application.Info.ProductName & " v" & _FileVersion
     End Function
 
-    Private Sub GreaseweazleImportImage()
+    Private Sub FluxImportImage()
         Dim FileName As String = Flux.OpenFluxImage(Me, True)
 
-        GreaseweazleImportImage(FileName)
+        FluxImportImage(FileName)
     End Sub
 
-    Private Sub GreaseweazleImportImage(FileName As String)
+    Private Sub FluxImportImage(FileName As String)
         If FileName <> "" Then
-            Dim Response = Flux.Greaseweazle.ImportFluxImage(FileName, Me)
+            Dim Response = Flux.ImportFluxImage(FileName, Me)
             If Response.Result Then
                 ProcessImportedImage(Response.OutputFile, Response.NewFileName)
             End If
@@ -729,7 +729,7 @@ Public Class MainForm
             MenuDiskWriteFloppyB.Enabled = CheckSize AndAlso _DriveBEnabled
             MenuReportsWriteSplices.Enabled = Disk.Image.IsBitstreamImage
             SetButtonStateSaveAs(True)
-            MenuGreaseweazleWrite.Enabled = CheckSize
+            MenuGreaseweazleWrite.Enabled = CheckSize AndAlso App.AppSettings.Greaseweazle.IsPathValid
         Else
             MenuHexBootSector.Enabled = False
             MenuHexDisk.Enabled = False
@@ -810,22 +810,6 @@ Public Class MainForm
 
         If App.Globals.AppSettings.CheckUpdateOnStartup Then
             CheckForUpdatesStartup()
-        End If
-    End Sub
-
-    Private Sub KryofluxImportImage()
-        Dim FileName As String = Flux.OpenFluxImage(Me, False)
-
-        KryofluxImportImage(FileName)
-    End Sub
-
-    Private Sub KryofluxImportImage(FileName As String)
-        If FileName <> "" Then
-            Dim Response = Flux.Kryoflux.ImportFluxImage(FileName, Me)
-            If Response.Result Then
-                ProcessFileDrop(Response.OutputFile, True, Response.NewFileName)
-                RefreshModifiedCount()
-            End If
         End If
     End Sub
 
@@ -1035,7 +1019,7 @@ Public Class MainForm
         End If
 
         If IsFluxIamge Then
-            GreaseweazleImportImage(FilePath)
+            FluxImportImage(FilePath)
         End If
 
         Return IsFluxIamge
@@ -1093,10 +1077,15 @@ Public Class MainForm
         End If
     End Sub
 
-    Private Sub RefreshGreaseweazleMenu()
-        Dim Visible As Boolean = Flux.Greaseweazle.Settings.IsPathValid
+    Private Sub RefreshFluxMenu()
+        Dim GreaseweazleEnabled As Boolean = Flux.Greaseweazle.Settings.IsPathValid
+        Dim KryofluxEnabled As Boolean = Flux.Kryoflux.Settings.IsPathValid()
+        Dim Visible As Boolean = GreaseweazleEnabled Or KryofluxEnabled
 
-        MainMenuGreaseweazle.Visible = Visible
+        MainMenuFlux.Visible = Visible
+        MenuGreaseweazleRead.Enabled = GreaseweazleEnabled
+        ToolStripSeparatorGreaseweazle.Visible = GreaseweazleEnabled
+        MenuGreaseweazle.Visible = GreaseweazleEnabled
     End Sub
 
     Private Sub RefreshHexMenu(Disk As Disk, IsValidImage As Boolean, Compare As Integer)
@@ -1127,11 +1116,6 @@ Public Class MainForm
         End If
     End Sub
 
-    Private Sub RefreshKryofluxMenu()
-        Dim Visible As Boolean = Flux.Kryoflux.Settings.IsPathValid()
-
-        MainMenuKryoflux.Visible = Visible
-    End Sub
     Private Sub RefreshModifiedCount()
         Dim Count = StatusBarModifiedCountUpdate()
         SetButtonStateSaveAll(Count > 0)
@@ -1728,8 +1712,7 @@ Public Class MainForm
         DetectFloppyDrives()
         InitOptionsMenu()
         InitDebugFeatures(App.Globals.AppSettings.Debug)
-        RefreshGreaseweazleMenu()
-        RefreshKryofluxMenu()
+        RefreshFluxMenu()
         ResetAll()
 
         Dim Args = Environment.GetCommandLineArgs.Skip(1).ToArray
@@ -1891,7 +1874,7 @@ Public Class MainForm
     End Sub
 
     Private Sub MenuGreaseweazleImport_Click(sender As Object, e As EventArgs) Handles MenuGreaseweazleImport.Click
-        GreaseweazleImportImage()
+        FluxImportImage()
     End Sub
 
     Private Sub MenuGreaseweazleInfo_Click(sender As Object, e As EventArgs) Handles MenuGreaseweazleInfo.Click
@@ -1962,10 +1945,6 @@ Public Class MainForm
         End If
     End Sub
 
-    Private Sub MenuKryofluxImport_Click(sender As Object, e As EventArgs) Handles MenuKryofluxImport.Click
-        KryofluxImportImage()
-    End Sub
-
     Private Sub MenuOptionsCheckUpdate_CheckStateChanged(sender As Object, e As EventArgs) Handles MenuOptionsCheckUpdate.CheckStateChanged
         App.Globals.AppSettings.CheckUpdateOnStartup = MenuOptionsCheckUpdate.Checked
     End Sub
@@ -2001,7 +1980,7 @@ Public Class MainForm
         Dim Form As New Flux.Greaseweazle.ConfigurationForm
         Form.ShowDialog(Me)
 
-        RefreshGreaseweazleMenu()
+        RefreshFluxMenu()
     End Sub
 
     Private Sub MenuOptionsKryoflux_Click(sender As Object, e As EventArgs) Handles MenuOptionsKryoflux.Click
@@ -2010,7 +1989,7 @@ Public Class MainForm
         Dim Form As New Flux.Kryoflux.ConfigurationForm
         Form.ShowDialog(Me)
 
-        RefreshKryofluxMenu()
+        RefreshFluxMenu()
     End Sub
 
     Private Sub MenuReportsWriteSplices_Click(sender As Object, e As EventArgs) Handles MenuReportsWriteSplices.Click

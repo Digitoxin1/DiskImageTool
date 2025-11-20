@@ -4,7 +4,7 @@
         Private WithEvents TS0 As FloppyTrackGrid
         Private WithEvents TS1 As FloppyTrackGrid
         Private Const TOTAL_TRACKS As UShort = 84
-        Private ReadOnly _LogFileName As String
+        Private _LogFileName As String
         Private _CancelButtonClicked As Boolean = False
         Private _Sides As Byte
         Private _Tracks As UShort
@@ -32,6 +32,15 @@
                 }
             End If
         End Sub
+
+        Public Property LogFileName As String
+            Get
+                Return _LogFileName
+            End Get
+            Set(value As String)
+                _LogFileName = value
+            End Set
+        End Property
 
         Public ReadOnly Property CancelButtonClicked As Boolean
             Get
@@ -92,9 +101,7 @@
             Dim Table = GridGetTable(StatusData.Side)
             Dim Track = StatusData.Track
 
-            If Table IsNot Nothing Then
-                Table.SetCell(Track, Text:=StatusData.CellText, BackColor:=StatusData.BackColor, ForeColor:=StatusData.ForeColor, Tooltip:=StatusData.Tooltip)
-            End If
+            Table?.SetCell(Track, Text:=StatusData.CellText, BackColor:=StatusData.BackColor, ForeColor:=StatusData.ForeColor, Tooltip:=StatusData.Tooltip)
         End Sub
 
         Public Sub GridReset()

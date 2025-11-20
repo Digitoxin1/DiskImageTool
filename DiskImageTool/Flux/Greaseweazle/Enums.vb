@@ -16,10 +16,6 @@ Namespace Flux.Greaseweazle
             IBM_2880
         End Enum
 
-        Public Enum ImageImportOutputTypes
-            IMA
-            HFE
-        End Enum
 
         Public Enum ReadDiskOutputTypes
             IMA
@@ -154,16 +150,6 @@ Namespace Flux.Greaseweazle
             End Select
         End Function
 
-        Public Function ImageImportOutputTypeFileExt(Value As ImageImportOutputTypes) As String
-            Select Case Value
-                Case ImageImportOutputTypes.HFE
-                    Return ".hfe"
-                Case ImageImportOutputTypes.IMA
-                    Return ".ima"
-                Case Else
-                    Return ".ima"
-            End Select
-        End Function
 
         Public Function ReadDisktOutputTypeFileExt(Value As ReadDiskOutputTypes) As String
             Select Case Value

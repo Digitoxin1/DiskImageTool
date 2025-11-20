@@ -651,12 +651,6 @@
   <data name="MenuGreaseweazleWrite.Text" xml:space="preserve">
     <value>&amp;Write Disk</value>
   </data>
-  <data name="MenuGreaseweazleErase.Size" type="System.Drawing.Size, System.Drawing">
-    <value>180, 22</value>
-  </data>
-  <data name="MenuGreaseweazleErase.Text" xml:space="preserve">
-    <value>&amp;Erase Disk</value>
-  </data>
   <data name="ToolStripSeparator5.Size" type="System.Drawing.Size, System.Drawing">
     <value>177, 6</value>
   </data>
@@ -666,11 +660,14 @@
   <data name="MenuGreaseweazleImport.Text" xml:space="preserve">
     <value>&amp;Import Flux Image</value>
   </data>
-  <metadata name="ToolStripSeparator4.GenerateMember" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
-    <value>False</value>
-  </metadata>
-  <data name="ToolStripSeparator4.Size" type="System.Drawing.Size, System.Drawing">
+  <data name="ToolStripSeparatorGreaseweazle.Size" type="System.Drawing.Size, System.Drawing">
     <value>177, 6</value>
+  </data>
+  <data name="MenuGreaseweazleErase.Size" type="System.Drawing.Size, System.Drawing">
+    <value>180, 22</value>
+  </data>
+  <data name="MenuGreaseweazleErase.Text" xml:space="preserve">
+    <value>&amp;Erase Disk</value>
   </data>
   <data name="MenuGreaseweazleClean.Size" type="System.Drawing.Size, System.Drawing">
     <value>180, 22</value>
@@ -678,10 +675,7 @@
   <data name="MenuGreaseweazleClean.Text" xml:space="preserve">
     <value>&amp;Clean Drive</value>
   </data>
-  <metadata name="ToolStripSeparator3.GenerateMember" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
-    <value>False</value>
-  </metadata>
-  <data name="ToolStripSeparator3.Size" type="System.Drawing.Size, System.Drawing">
+  <data name="ToolStripSeparator12.Size" type="System.Drawing.Size, System.Drawing">
     <value>177, 6</value>
   </data>
   <data name="MenuGreaseweazleInfo.Size" type="System.Drawing.Size, System.Drawing">
@@ -696,25 +690,17 @@
   <data name="MenuGreaseweazleBandwidth.Text" xml:space="preserve">
     <value>Report &amp;Bandwidth</value>
   </data>
-  <data name="MainMenuGreaseweazle.Size" type="System.Drawing.Size, System.Drawing">
-    <value>89, 20</value>
-  </data>
-  <data name="MainMenuGreaseweazle.Text" xml:space="preserve">
-    <value>&amp;Greaseweazle</value>
-    <comment>@Invariant</comment>
-  </data>
-  <data name="MenuKryofluxImport.Size" type="System.Drawing.Size, System.Drawing">
+  <data name="MenuGreaseweazle.Size" type="System.Drawing.Size, System.Drawing">
     <value>180, 22</value>
   </data>
-  <data name="MenuKryofluxImport.Text" xml:space="preserve">
-    <value>&amp;Import Flux Image</value>
+  <data name="MenuGreaseweazle.Text" xml:space="preserve">
+    <value>&amp;Greaseweazle</value>
   </data>
-  <data name="MainMenuKryoflux.Size" type="System.Drawing.Size, System.Drawing">
-    <value>62, 20</value>
+  <data name="MainMenuFlux.Size" type="System.Drawing.Size, System.Drawing">
+    <value>40, 20</value>
   </data>
-  <data name="MainMenuKryoflux.Text" xml:space="preserve">
-    <value>&amp;Kryoflux</value>
-    <comment>@Invariant</comment>
+  <data name="MainMenuFlux.Text" xml:space="preserve">
+    <value>Flu&amp;x</value>
   </data>
   <data name="MenuReportsWriteSplices.Size" type="System.Drawing.Size, System.Drawing">
     <value>141, 22</value>
@@ -1208,7 +1194,7 @@
     <value>0, 0</value>
   </data>
   <data name="ComboImages.Size" type="System.Drawing.Size, System.Drawing">
-    <value>489, 21</value>
+    <value>485, 21</value>
   </data>
   <data name="ComboImages.TabIndex" type="System.Int32, mscorlib">
     <value>4</value>
@@ -1244,7 +1230,7 @@
     <value>NoControl</value>
   </data>
   <data name="LabelDropMessage.Location" type="System.Drawing.Point, System.Drawing">
-    <value>130, 253</value>
+    <value>128, 253</value>
   </data>
   <data name="LabelDropMessage.Size" type="System.Drawing.Size, System.Drawing">
     <value>273, 16</value>
@@ -1280,7 +1266,7 @@
     <value>0, 0</value>
   </data>
   <data name="ComboImagesFiltered.Size" type="System.Drawing.Size, System.Drawing">
-    <value>489, 21</value>
+    <value>485, 21</value>
   </data>
   <data name="ComboImagesFiltered.TabIndex" type="System.Int32, mscorlib">
     <value>3</value>
@@ -1310,7 +1296,7 @@
     <value>NoControl</value>
   </data>
   <data name="BtnResetSort.Location" type="System.Drawing.Point, System.Drawing">
-    <value>491, -1</value>
+    <value>487, -1</value>
   </data>
   <data name="BtnResetSort.Size" type="System.Drawing.Size, System.Drawing">
     <value>67, 23</value>
@@ -1541,7 +1527,7 @@
     <value>0, 27</value>
   </data>
   <data name="ListViewFiles.Size" type="System.Drawing.Size, System.Drawing">
-    <value>612, 467</value>
+    <value>608, 467</value>
   </data>
   <data name="ListViewFiles.TabIndex" type="System.Int32, mscorlib">
     <value>6</value>
@@ -2741,6 +2727,9 @@
         //////////////////////////////////8=
 </value>
   </data>
+  <data name="$this.ImeMode" type="System.Windows.Forms.ImeMode, System.Windows.Forms">
+    <value>NoControl</value>
+  </data>
   <data name="$this.MinimumSize" type="System.Drawing.Size, System.Drawing">
     <value>960, 600</value>
   </data>
@@ -3189,10 +3178,10 @@
   <data name="&gt;&gt;MenuFiltersClear.Type" xml:space="preserve">
     <value>System.Windows.Forms.ToolStripMenuItem, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
-  <data name="&gt;&gt;MainMenuGreaseweazle.Name" xml:space="preserve">
-    <value>MainMenuGreaseweazle</value>
+  <data name="&gt;&gt;MainMenuFlux.Name" xml:space="preserve">
+    <value>MainMenuFlux</value>
   </data>
-  <data name="&gt;&gt;MainMenuGreaseweazle.Type" xml:space="preserve">
+  <data name="&gt;&gt;MainMenuFlux.Type" xml:space="preserve">
     <value>System.Windows.Forms.ToolStripMenuItem, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
   <data name="&gt;&gt;MenuGreaseweazleRead.Name" xml:space="preserve">
@@ -3207,12 +3196,6 @@
   <data name="&gt;&gt;MenuGreaseweazleWrite.Type" xml:space="preserve">
     <value>System.Windows.Forms.ToolStripMenuItem, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
-  <data name="&gt;&gt;MenuGreaseweazleErase.Name" xml:space="preserve">
-    <value>MenuGreaseweazleErase</value>
-  </data>
-  <data name="&gt;&gt;MenuGreaseweazleErase.Type" xml:space="preserve">
-    <value>System.Windows.Forms.ToolStripMenuItem, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
   <data name="&gt;&gt;ToolStripSeparator5.Name" xml:space="preserve">
     <value>ToolStripSeparator5</value>
   </data>
@@ -3225,11 +3208,23 @@
   <data name="&gt;&gt;MenuGreaseweazleImport.Type" xml:space="preserve">
     <value>System.Windows.Forms.ToolStripMenuItem, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
-  <data name="&gt;&gt;ToolStripSeparator4.Name" xml:space="preserve">
-    <value>ToolStripSeparator4</value>
+  <data name="&gt;&gt;ToolStripSeparatorGreaseweazle.Name" xml:space="preserve">
+    <value>ToolStripSeparatorGreaseweazle</value>
   </data>
-  <data name="&gt;&gt;ToolStripSeparator4.Type" xml:space="preserve">
+  <data name="&gt;&gt;ToolStripSeparatorGreaseweazle.Type" xml:space="preserve">
     <value>System.Windows.Forms.ToolStripSeparator, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;MenuGreaseweazle.Name" xml:space="preserve">
+    <value>MenuGreaseweazle</value>
+  </data>
+  <data name="&gt;&gt;MenuGreaseweazle.Type" xml:space="preserve">
+    <value>System.Windows.Forms.ToolStripMenuItem, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;MenuGreaseweazleErase.Name" xml:space="preserve">
+    <value>MenuGreaseweazleErase</value>
+  </data>
+  <data name="&gt;&gt;MenuGreaseweazleErase.Type" xml:space="preserve">
+    <value>System.Windows.Forms.ToolStripMenuItem, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
   <data name="&gt;&gt;MenuGreaseweazleClean.Name" xml:space="preserve">
     <value>MenuGreaseweazleClean</value>
@@ -3237,10 +3232,10 @@
   <data name="&gt;&gt;MenuGreaseweazleClean.Type" xml:space="preserve">
     <value>System.Windows.Forms.ToolStripMenuItem, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
-  <data name="&gt;&gt;ToolStripSeparator3.Name" xml:space="preserve">
-    <value>ToolStripSeparator3</value>
+  <data name="&gt;&gt;ToolStripSeparator12.Name" xml:space="preserve">
+    <value>ToolStripSeparator12</value>
   </data>
-  <data name="&gt;&gt;ToolStripSeparator3.Type" xml:space="preserve">
+  <data name="&gt;&gt;ToolStripSeparator12.Type" xml:space="preserve">
     <value>System.Windows.Forms.ToolStripSeparator, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
   <data name="&gt;&gt;MenuGreaseweazleInfo.Name" xml:space="preserve">
@@ -3253,12 +3248,6 @@
     <value>MenuGreaseweazleBandwidth</value>
   </data>
   <data name="&gt;&gt;MenuGreaseweazleBandwidth.Type" xml:space="preserve">
-    <value>System.Windows.Forms.ToolStripMenuItem, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="&gt;&gt;MainMenuKryoflux.Name" xml:space="preserve">
-    <value>MainMenuKryoflux</value>
-  </data>
-  <data name="&gt;&gt;MainMenuKryoflux.Type" xml:space="preserve">
     <value>System.Windows.Forms.ToolStripMenuItem, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
   <data name="&gt;&gt;MainMenuReports.Name" xml:space="preserve">
@@ -3470,12 +3459,6 @@
   </data>
   <data name="&gt;&gt;StatusBarImagesModified.Type" xml:space="preserve">
     <value>System.Windows.Forms.ToolStripStatusLabel, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="&gt;&gt;MenuKryofluxImport.Name" xml:space="preserve">
-    <value>MenuKryofluxImport</value>
-  </data>
-  <data name="&gt;&gt;MenuKryofluxImport.Type" xml:space="preserve">
-    <value>System.Windows.Forms.ToolStripMenuItem, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
   <data name="&gt;&gt;$this.Name" xml:space="preserve">
     <value>MainForm</value>

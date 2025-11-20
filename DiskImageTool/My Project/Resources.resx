@@ -1876,4 +1876,7 @@
 
 Do you wish to overwrite?</value>
   </data>
+  <data name="Label_Device" xml:space="preserve">
+    <value>Device</value>
+  </data>
 </root>

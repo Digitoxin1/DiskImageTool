@@ -215,7 +215,7 @@ Namespace Flux.Greaseweazle
             End If
             TextBoxConsole.AppendText(line)
 
-            _TrackStatus.ProcessOutputLineWrite(line, TrackStatus.ActionTypeEnum.Erase, False)
+            _TrackStatus.ProcessOutputLineWrite(line, ITrackStatus.ActionTypeEnum.Erase, False)
 
             If _TrackStatus.Failed Then
                 Process.Cancel()

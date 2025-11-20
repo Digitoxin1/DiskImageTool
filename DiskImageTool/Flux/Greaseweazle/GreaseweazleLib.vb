@@ -215,39 +215,6 @@ Namespace Flux.Greaseweazle
             Return RawFileName
         End Function
 
-        Public Function ImportFluxImage(FilePath As String, ParentForm As MainForm) As (Result As Boolean, OutputFile As String, NewFileName As String)
-            Dim AnalyzeResponse = AnalyzeFluxImage(FilePath, True)
-
-            If Not AnalyzeResponse.Result Then
-                Return (False, "", "")
-            End If
-
-            Using form As New ImageImportForm(FilePath, AnalyzeResponse.TrackCount, AnalyzeResponse.SideCount)
-
-                Dim handler As ImageImportForm.ImportRequestedEventHandler =
-                    Sub(File, NewName)
-                        ParentForm.ProcessImportedImage(File, NewName)
-                    End Sub
-
-                AddHandler form.ImportRequested, handler
-
-                Dim result As DialogResult = DialogResult.Cancel
-                Try
-                    result = form.ShowDialog(ParentForm)
-                Finally
-                    RemoveHandler form.ImportRequested, handler
-                End Try
-
-                If result Then
-                    If Not String.IsNullOrEmpty(form.OutputFilePath) Then
-                        Return (True, form.OutputFilePath, form.GetNewFileName)
-                    End If
-                End If
-
-                Return (False, "", "")
-            End Using
-        End Function
-
         Public Sub InfoDisplay(ParentForm As Form)
             If Not Settings.IsPathValid Then
                 DisplayInvalidApplicationPathMsg()
@@ -272,17 +239,6 @@ Namespace Flux.Greaseweazle
 
             Dim frmTextView As New TextViewForm("Greaseweazle - " & My.Resources.Label_Info, Content, False, True, "GreaseweazleInfo.txt")
             frmTextView.ShowDialog(ParentForm)
-        End Sub
-
-        Public Sub InitializeCombo(Combo As ComboBox, DataSource As Object, CurrentValue As Object)
-            Combo.DisplayMember = "Key"
-            Combo.ValueMember = "Value"
-            Combo.DataSource = DataSource
-            Combo.DropDownStyle = ComboBoxStyle.DropDownList
-
-            If CurrentValue IsNot Nothing Then
-                Combo.SelectedValue = CurrentValue
-            End If
         End Sub
 
         Public Sub PopulateDrives(Combo As ComboBox, Format As FloppyMediaType, Optional LastUsedDrive As String = "")

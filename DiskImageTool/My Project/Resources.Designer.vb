@@ -3026,6 +3026,15 @@ Namespace My.Resources
         End Property
         
         '''<summary>
+        '''  Looks up a localized string similar to Device.
+        '''</summary>
+        Friend ReadOnly Property Label_Device() As String
+            Get
+                Return ResourceManager.GetString("Label_Device", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
         '''  Looks up a localized string similar to Directory Name.
         '''</summary>
         Friend ReadOnly Property Label_DirectoryName() As String

@@ -10,6 +10,11 @@ Namespace Flux
                 "LPT1", "LPT2", "LPT3", "LPT4", "LPT5", "LPT6", "LPT7", "LPT8", "LPT9"
             }
 
+        Public Enum ImageImportOutputTypes
+            IMA
+            HFE
+        End Enum
+
         Public Function AnalyzeFluxImage(FilePath As String, AllowSCP As Boolean) As (Result As Boolean, TrackCount As Integer, SideCount As Integer)
             Dim AnalyzeResponse As (Result As Boolean, TrackCount As Integer, SideCount As Integer)
 
@@ -54,6 +59,25 @@ Namespace Flux
             Return AnalyzeResponse
         End Function
 
+        Public Function BrowseFolder(CurrentPath As String) As String
+            Using ofd As New FolderBrowserDialog()
+                ofd.Description = "Flux Set Root Folder"
+                ofd.SelectedPath = CurrentPath
+                ofd.ShowNewFolderButton = True
+                If ofd.ShowDialog() = DialogResult.OK Then
+                    Return ofd.SelectedPath
+                End If
+            End Using
+
+            Return ""
+        End Function
+
+        Public Sub BumpTabIndexes(panel As FlowLayoutPanel)
+            For Each ctrl As Control In panel.Controls
+                ctrl.TabIndex += 1
+            Next
+        End Sub
+
         Public Sub DeleteFilesAndFolderIfEmpty(folderPath As String, ParamArray patterns As String())
             If String.IsNullOrWhiteSpace(folderPath) Then
                 Exit Sub
@@ -75,7 +99,7 @@ Namespace Flux
                 For Each filePath In IO.Directory.GetFiles(folderPath, pattern, IO.SearchOption.TopDirectoryOnly)
                     Try
                         IO.File.Delete(filePath)
-                    Catch ex As io.IOException
+                    Catch ex As IO.IOException
                         Debug.WriteLine($"Failed to delete {filePath}: {ex.Message}")
                     Catch ex As UnauthorizedAccessException
                         Debug.WriteLine($"Access denied deleting {filePath}: {ex.Message}")
@@ -88,30 +112,11 @@ Namespace Flux
                 If Not IO.Directory.EnumerateFileSystemEntries(folderPath).Any() Then
                     IO.Directory.Delete(folderPath)
                 End If
-            Catch ex As io.IOException
+            Catch ex As IO.IOException
                 ' Optional: swallow errors
             Catch ex As UnauthorizedAccessException
                 ' Optional: swallow errors
             End Try
-        End Sub
-
-        Public Function BrowseFolder(CurrentPath As String) As String
-            Using ofd As New FolderBrowserDialog()
-                ofd.Description = "Flux Set Root Folder"
-                ofd.SelectedPath = CurrentPath
-                ofd.ShowNewFolderButton = True
-                If ofd.ShowDialog() = DialogResult.OK Then
-                    Return ofd.SelectedPath
-                End If
-            End Using
-
-            Return ""
-        End Function
-
-        Public Sub BumpTabIndexes(panel As FlowLayoutPanel)
-            For Each ctrl As Control In panel.Controls
-                ctrl.TabIndex += 1
-            Next
         End Sub
 
         Public Function DetectImageFormat(FileName As String, DeleteWhenDone As Boolean) As DiskImage.FloppyDiskFormat
@@ -141,6 +146,48 @@ Namespace Flux
             Return DetectedFormat
         End Function
 
+        Public Function FluxDeviceGetInfo(Device As ITrackStatus.FluxDevice) As FluxDeviceInfo?
+            Select Case Device
+                Case ITrackStatus.FluxDevice.Greaseweazle
+                    Return New FluxDeviceInfo(Device, "Greaseweazle", True, True, App.Globals.AppSettings.Greaseweazle.LogFileName, App.Globals.AppSettings.Greaseweazle.AppPath)
+                Case ITrackStatus.FluxDevice.Kryoflux
+                    Return New FluxDeviceInfo(Device, "KryoFlux", False, False, App.Globals.AppSettings.Kryoflux.LogFileName, App.Globals.AppSettings.Kryoflux.AppPath)
+                Case Else
+                    Return Nothing
+            End Select
+        End Function
+
+        Public Function FluxDeviceGetList() As List(Of FluxDeviceInfo)
+            Dim list As New List(Of FluxDeviceInfo)
+
+            For Each dev As ITrackStatus.FluxDevice In [Enum].GetValues(GetType(ITrackStatus.FluxDevice))
+
+                ' Skip if not available
+                If Not FluxDeviceIsAvailable(dev) Then
+                    Continue For
+                End If
+
+                ' Get FluxDeviceInfo
+                Dim info = FluxDeviceGetInfo(dev)
+                If info.HasValue Then
+                    list.Add(info.Value)
+                End If
+            Next
+
+            Return list
+        End Function
+
+        Public Function FluxDeviceIsAvailable(Device As ITrackStatus.FluxDevice) As Boolean
+            Select Case Device
+                Case ITrackStatus.FluxDevice.Greaseweazle
+                    Return App.AppSettings.Greaseweazle.IsPathValid
+                Case ITrackStatus.FluxDevice.Kryoflux
+                    Return App.AppSettings.Kryoflux.IsPathValid
+                Case Else
+                    Return False
+            End Select
+        End Function
+
         Public Function GenerateOutputFile(Extension As String) As String
             Dim TempPath = InitTempImagePath()
 
@@ -152,6 +199,16 @@ Namespace Flux
             Dim FileName = "New Image" & Extension
             Return GenerateUniqueFileName(TempPath, FileName)
         End Function
+
+        Public Function GetFirstRawInFolder(folderPath As String) As String
+            Try
+                Return IO.Directory.EnumerateFiles(folderPath, "*.raw", IO.SearchOption.TopDirectoryOnly).FirstOrDefault()
+            Catch
+                ' If unreadable, treat as no .raw files
+                Return Nothing
+            End Try
+        End Function
+
         Public Function GetTrackCountRaw(FilePath As String) As (Result As Boolean, Tracks As Integer, Sides As Integer)
             Dim TrackCount As Integer = 0
             Dim SideCount As Integer = 0
@@ -236,6 +293,70 @@ Namespace Flux
             End Using
         End Function
 
+        Public Function ImageImportOutputTypeDescription(Value As ImageImportOutputTypes) As String
+            Select Case Value
+                Case ImageImportOutputTypes.HFE
+                    Return "HxC HFE Image"
+                Case ImageImportOutputTypes.IMA
+                    Return "Basic Sector Image"
+                Case Else
+                    Return ""
+            End Select
+        End Function
+
+        Public Function ImageImportOutputTypeFileExt(Value As ImageImportOutputTypes) As String
+            Select Case Value
+                Case ImageImportOutputTypes.HFE
+                    Return ".hfe"
+                Case ImageImportOutputTypes.IMA
+                    Return ".ima"
+                Case Else
+                    Return ".ima"
+            End Select
+        End Function
+
+        Public Function ImportFluxImage(FilePath As String, ParentForm As MainForm) As (Result As Boolean, OutputFile As String, NewFileName As String)
+            Dim AnalyzeResponse = AnalyzeFluxImage(FilePath, True)
+
+            If Not AnalyzeResponse.Result Then
+                Return (False, "", "")
+            End If
+
+            Using form As New ImportImageForm(FilePath, AnalyzeResponse.TrackCount, AnalyzeResponse.SideCount)
+
+                Dim handler As ImportImageForm.ImportRequestedEventHandler =
+                    Sub(File, NewName)
+                        ParentForm.ProcessImportedImage(File, NewName)
+                    End Sub
+
+                AddHandler form.ImportRequested, handler
+
+                Dim result As DialogResult = DialogResult.Cancel
+                Try
+                    result = form.ShowDialog(ParentForm)
+                Finally
+                    RemoveHandler form.ImportRequested, handler
+                End Try
+
+                If result Then
+                    If Not String.IsNullOrEmpty(form.OutputFilePath) Then
+                        Return (True, form.OutputFilePath, form.GetNewFileName)
+                    End If
+                End If
+
+                Return (False, "", "")
+            End Using
+        End Function
+        Public Sub InitializeCombo(Combo As ComboBox, DataSource As Object, CurrentValue As Object)
+            Combo.DisplayMember = "Key"
+            Combo.ValueMember = "Value"
+            Combo.DataSource = DataSource
+            Combo.DropDownStyle = ComboBoxStyle.DropDownList
+
+            If CurrentValue IsNot Nothing Then
+                Combo.SelectedValue = CurrentValue
+            End If
+        End Sub
         Public Function IsExecutable(path As String) As Boolean
             Return Not String.IsNullOrWhiteSpace(path) AndAlso
             IO.File.Exists(path) AndAlso
@@ -435,14 +556,6 @@ Namespace Flux
             Return False
         End Function
 
-        Public Function GetFirstRawInFolder(folderPath As String) As String
-            Try
-                Return IO.Directory.EnumerateFiles(folderPath, "*.raw", IO.SearchOption.TopDirectoryOnly).FirstOrDefault()
-            Catch
-                ' If unreadable, treat as no .raw files
-                Return Nothing
-            End Try
-        End Function
         Public Structure FileExtensionItem
             Public Sub New(ext As String, fmt As FloppyDiskFormat?)
                 Extension = ext
@@ -456,6 +569,23 @@ Namespace Flux
             End Function
         End Structure
 
+        Public Structure FluxDeviceInfo
+            Public Sub New(Device As ITrackStatus.FluxDevice, Name As String, AllowSCP As Boolean, AllowHFE As Boolean, LogFileName As String, AppPath As String)
+                Me.Device = Device
+                Me.Name = Name
+                Me.AllowSCP = AllowSCP
+                Me.AllowHFE = AllowHFE
+                Me.LogFileName = LogFileName
+                Me.AppPath = AppPath
+            End Sub
+
+            ReadOnly Property AllowHFE As Boolean
+            ReadOnly Property AllowSCP As Boolean
+            ReadOnly Property AppPath As String
+            ReadOnly Property Device As ITrackStatus.FluxDevice
+            ReadOnly Property LogFileName As String
+            ReadOnly Property Name As String
+        End Structure
         Public Class DriveOption
             Public Property DetectedFormat As FloppyDiskFormat = FloppyDiskFormat.FloppyUnknown
             Public Property Id As String
