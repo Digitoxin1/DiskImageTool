@@ -1654,4 +1654,7 @@
 
 ¿Desea sobrescribirlo?</value>
   </data>
+  <data name="Label_Device" xml:space="preserve">
+    <value>Dispositivo</value>
+  </data>
 </root>

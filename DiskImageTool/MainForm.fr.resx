@@ -363,9 +363,6 @@
   <data name="MenuGreaseweazleRead.Text" xml:space="preserve">
     <value>&amp;Lire le disque</value>
   </data>
-  <data name="MenuKryofluxImport.Text" xml:space="preserve">
-    <value>&amp;Importer l’image de flux</value>
-  </data>
   <data name="MenuOptionsKryoflux.Text" xml:space="preserve">
     <value>&amp;Kryoflux Configuration</value>
   </data>

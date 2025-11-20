@@ -3,7 +3,7 @@ Imports DiskImageTool.DiskImage.FloppyDiskFunctions
 
 Namespace Flux.Greaseweazle
     Public Class DriveSettings
-        Implements DiskImageTool.Settings.ISettingsGroup
+        Implements Settings.ISettingsGroup
 
         Public Const MAX_TRACKS As Byte = 84
         Public Const MAX_TRACKS_525DD As Byte = 42

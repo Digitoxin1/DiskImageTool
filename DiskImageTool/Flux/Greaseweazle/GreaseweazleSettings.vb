@@ -3,16 +3,16 @@ Imports DiskImageTool.DiskImage.FloppyDiskFunctions
 
 Namespace Flux.Greaseweazle
     Public Class GreaseweazleSettings
-        Implements DiskImageTool.Settings.ISettingsGroup
+        Implements Settings.ISettingsGroup
+        Implements ISettings
 
         Public Const MAX_TRACKS As Byte = 84
         Public Const MAX_TRACKS_525DD As Byte = 42
         Public Const MIN_TRACKS As Byte = 80
         Public Const MIN_TRACKS_525DD As Byte = 40
 
-        Private Const MaxDrives As Integer = 3
         Private Const DEFAULT_LOG_FILE_NAME As String = "log.txt"
-
+        Private Const MaxDrives As Integer = 3
         Private _appPath As String = ""
         Private _comPort As String = ""
         Private _defaultRevs As Integer = 3
@@ -43,7 +43,7 @@ Namespace Flux.Greaseweazle
             End Set
         End Property
 
-        Public Property AppPath As String
+        Public Property AppPath As String Implements Flux.ISettings.AppPath
             Get
                 Return _appPath
             End Get
@@ -148,7 +148,7 @@ Namespace Flux.Greaseweazle
             End Set
         End Property
 
-        Public Property LogFileName As String
+        Public Property LogFileName As String Implements Flux.ISettings.LogFileName
             Get
                 Return If(String.IsNullOrEmpty(_logFileName), DEFAULT_LOG_FILE_NAME, _logFileName)
             End Get

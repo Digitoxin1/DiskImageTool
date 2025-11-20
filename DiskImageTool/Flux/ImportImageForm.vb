@@ -316,7 +316,7 @@ Namespace Flux
         Private Sub InitializeDevice()
             _SelectedDevice = CType(ComboDevices.SelectedItem, FluxDeviceInfo)
 
-            LogFileName = _SelectedDevice.LogFileName
+            LogFileName = _SelectedDevice.Settings.LogFileName
 
             Select Case _SelectedDevice.Device
                 Case ITrackStatus.FluxDevice.Greaseweazle
@@ -470,7 +470,7 @@ Namespace Flux
             _DoubleStep = CheckBoxDoublestep.Enabled AndAlso CheckBoxDoublestep.Checked
 
             Dim Arguments = GenerateCommandLine(FilePath)
-            Process.StartAsync(_SelectedDevice.AppPath, Arguments)
+            Process.StartAsync(_SelectedDevice.Settings.AppPath, Arguments)
         End Sub
 
         Private Sub ProcessImport()

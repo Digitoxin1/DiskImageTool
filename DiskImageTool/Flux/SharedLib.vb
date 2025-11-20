@@ -10,11 +10,6 @@ Namespace Flux
                 "LPT1", "LPT2", "LPT3", "LPT4", "LPT5", "LPT6", "LPT7", "LPT8", "LPT9"
             }
 
-        Public Enum ImageImportOutputTypes
-            IMA
-            HFE
-        End Enum
-
         Public Function AnalyzeFluxImage(FilePath As String, AllowSCP As Boolean) As (Result As Boolean, TrackCount As Integer, SideCount As Integer)
             Dim AnalyzeResponse As (Result As Boolean, TrackCount As Integer, SideCount As Integer)
 
@@ -149,9 +144,9 @@ Namespace Flux
         Public Function FluxDeviceGetInfo(Device As ITrackStatus.FluxDevice) As FluxDeviceInfo?
             Select Case Device
                 Case ITrackStatus.FluxDevice.Greaseweazle
-                    Return New FluxDeviceInfo(Device, "Greaseweazle", True, True, App.Globals.AppSettings.Greaseweazle.LogFileName, App.Globals.AppSettings.Greaseweazle.AppPath)
+                    Return New FluxDeviceInfo(Device, "Greaseweazle", True, True, App.Globals.AppSettings.Greaseweazle)
                 Case ITrackStatus.FluxDevice.Kryoflux
-                    Return New FluxDeviceInfo(Device, "KryoFlux", False, False, App.Globals.AppSettings.Kryoflux.LogFileName, App.Globals.AppSettings.Kryoflux.AppPath)
+                    Return New FluxDeviceInfo(Device, "KryoFlux", False, False, App.Globals.AppSettings.Kryoflux)
                 Case Else
                     Return Nothing
             End Select
@@ -291,28 +286,6 @@ Namespace Flux
                     Return (True, endTrack \ sideCount + 1, sideCount)
                 End Using
             End Using
-        End Function
-
-        Public Function ImageImportOutputTypeDescription(Value As ImageImportOutputTypes) As String
-            Select Case Value
-                Case ImageImportOutputTypes.HFE
-                    Return "HxC HFE Image"
-                Case ImageImportOutputTypes.IMA
-                    Return "Basic Sector Image"
-                Case Else
-                    Return ""
-            End Select
-        End Function
-
-        Public Function ImageImportOutputTypeFileExt(Value As ImageImportOutputTypes) As String
-            Select Case Value
-                Case ImageImportOutputTypes.HFE
-                    Return ".hfe"
-                Case ImageImportOutputTypes.IMA
-                    Return ".ima"
-                Case Else
-                    Return ".ima"
-            End Select
         End Function
 
         Public Function ImportFluxImage(FilePath As String, ParentForm As MainForm) As (Result As Boolean, OutputFile As String, NewFileName As String)
@@ -570,22 +543,21 @@ Namespace Flux
         End Structure
 
         Public Structure FluxDeviceInfo
-            Public Sub New(Device As ITrackStatus.FluxDevice, Name As String, AllowSCP As Boolean, AllowHFE As Boolean, LogFileName As String, AppPath As String)
+            Public Sub New(Device As ITrackStatus.FluxDevice, Name As String, AllowSCP As Boolean, AllowHFE As Boolean, Settings As ISettings)
                 Me.Device = Device
                 Me.Name = Name
                 Me.AllowSCP = AllowSCP
                 Me.AllowHFE = AllowHFE
-                Me.LogFileName = LogFileName
-                Me.AppPath = AppPath
+                Me.Settings = Settings
             End Sub
 
             ReadOnly Property AllowHFE As Boolean
             ReadOnly Property AllowSCP As Boolean
-            ReadOnly Property AppPath As String
             ReadOnly Property Device As ITrackStatus.FluxDevice
-            ReadOnly Property LogFileName As String
             ReadOnly Property Name As String
+            ReadOnly Property Settings As ISettings
         End Structure
+
         Public Class DriveOption
             Public Property DetectedFormat As FloppyDiskFormat = FloppyDiskFormat.FloppyUnknown
             Public Property Id As String

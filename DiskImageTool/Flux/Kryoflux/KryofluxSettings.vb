@@ -3,33 +3,12 @@
 Namespace Flux.Kryoflux
     Public Class KryofluxSettings
         Implements Settings.ISettingsGroup
+        Implements ISettings
 
+        Private _appPath As String = ""
         Private _isDirty As Boolean
         Private _logFileName As String = "log.txt"
-        Private _appPath As String = ""
-
-        Public Property IsDirty As Boolean Implements Settings.ISettingsGroup.IsDirty
-            Get
-                Return _isDirty
-            End Get
-            Set(value As Boolean)
-                _isDirty = value
-            End Set
-        End Property
-
-        Public Property LogFileName As String
-            Get
-                Return _logFileName
-            End Get
-            Set(value As String)
-                If _logFileName <> value Then
-                    _logFileName = value
-                    _isDirty = True
-                End If
-            End Set
-        End Property
-
-        Public Property AppPath As String
+        Public Property AppPath As String Implements Flux.ISettings.AppPath
             Get
                 Return _appPath
             End Get
@@ -41,6 +20,26 @@ Namespace Flux.Kryoflux
             End Set
         End Property
 
+        Public Property IsDirty As Boolean Implements Settings.ISettingsGroup.IsDirty
+            Get
+                Return _isDirty
+            End Get
+            Set(value As Boolean)
+                _isDirty = value
+            End Set
+        End Property
+
+        Public Property LogFileName As String Implements Flux.ISettings.LogFileName
+            Get
+                Return _logFileName
+            End Get
+            Set(value As String)
+                If _logFileName <> value Then
+                    _logFileName = value
+                    _isDirty = True
+                End If
+            End Set
+        End Property
         Public Function IsPathValid() As Boolean
             Return Flux.IsPathValid(_appPath)
         End Function

@@ -695,12 +695,14 @@
   </data>
   <data name="MenuGreaseweazle.Text" xml:space="preserve">
     <value>&amp;Greaseweazle</value>
+    <comment>@Invariant</comment>
   </data>
   <data name="MainMenuFlux.Size" type="System.Drawing.Size, System.Drawing">
     <value>40, 20</value>
   </data>
   <data name="MainMenuFlux.Text" xml:space="preserve">
     <value>Flu&amp;x</value>
+    <comment>@Invariant</comment>
   </data>
   <data name="MenuReportsWriteSplices.Size" type="System.Drawing.Size, System.Drawing">
     <value>141, 22</value>
