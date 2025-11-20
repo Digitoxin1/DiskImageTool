@@ -148,7 +148,12 @@ Namespace Flux.Kryoflux
                     _TrackStatus.UpdateTrackStatusAborted()
 
                 Case ConsoleProcessRunner.ProcessStateEnum.Completed
-                    _TrackStatus.UpdateTrackStatusComplete()
+                    If _TrackStatus.TrackFound Then
+                        _TrackStatus.UpdateTrackStatusComplete()
+                    Else
+                        ClearOutputFile(True)
+                        _TrackStatus.UpdateTrackStatusError()
+                    End If
 
                 Case ConsoleProcessRunner.ProcessStateEnum.Error
                     ClearOutputFile(True)

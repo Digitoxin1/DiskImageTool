@@ -169,13 +169,17 @@ Public Class MainForm
 
             If Not ImageData.IsModified Then Continue For
 
-            If ImageData.ReadOnly OrElse ImageData.FileType = ImageData.FileTypeEnum.NewImage Then
+            If ImageData.ReadOnly Then
                 If MsgBoxNewFileName(ImageData.FileName) = MsgBoxResult.Ok Then
                     NewFilePath = GetNewFilePath(FilePanel.CurrentImage, ImageData, _LoadedFiles)
                     DoSave = (NewFilePath <> "")
                 Else
                     DoSave = False
                 End If
+
+            ElseIf ImageData.FileType = ImageData.FileTypeEnum.NewImage Then
+                NewFilePath = GetNewFilePath(FilePanel.CurrentImage, ImageData, _LoadedFiles)
+                DoSave = (NewFilePath <> "")
             End If
 
             If DoSave Then
@@ -186,9 +190,7 @@ Public Class MainForm
                 If DiskImageSave(Image, NewFilePath) Then
                     ImageFilters.ScanModified(Image.Disk, Image.ImageData)
 
-                    If ImageData.ReadOnly Or ImageData.FileType = ImageData.FileTypeEnum.NewImage Then
-                        SetNewFilePath(ImageData, NewFilePath)
-                    End If
+                    RefreshDisplayPath(ImageData, False)
 
                     If ImageData Is ImageCombo.SelectedImage Then
                         SetCurrentFileName(ImageData)
@@ -222,10 +224,7 @@ Public Class MainForm
             ImageFilters.UpdateMenuItem(Filters.FilterTypes.ModifiedFiles)
             RefreshModifiedCount()
 
-            If NewFileName Then
-                SetNewFilePath(FilePanel.CurrentImage.ImageData, NewFilePath)
-                SetCurrentFileName(FilePanel.CurrentImage.ImageData)
-            End If
+            RefreshDisplayPath(FilePanel.CurrentImage.ImageData, True)
 
             FilePanel.ClearModifiedFlag()
             RefreshCurrentState(FilePanel)
@@ -1328,23 +1327,27 @@ Public Class MainForm
         MenuToolsWin9xCleanBatch.Enabled = Value
     End Sub
 
-    Private Sub SetNewFilePath(ImageData As ImageData, NewFilePath As String)
-        If ImageData.SourceFile <> NewFilePath Then
-            _LoadedFiles.FileNames.Remove(ImageData.DisplayPath)
-
-            ImageData.SourceFile = NewFilePath
-            ImageData.FileType = ImageData.FileTypeEnum.Standard
-            ImageData.CompressedFile = ""
-            ImageData.ReadOnly = IsFileReadOnly(NewFilePath)
-
-            If _LoadedFiles.FileNames.ContainsKey(ImageData.DisplayPath) Then
-                FileClose(_LoadedFiles.FileNames.Item(ImageData.DisplayPath))
-            End If
-
-            _LoadedFiles.FileNames.Add(ImageData.DisplayPath, ImageData)
-
-            ImageCombo.RefreshPaths()
+    Private Sub RefreshDisplayPath(ImageData As ImageData, UpdateCurrent As Boolean)
+        If Not ImageData.FileNameChanged Then
+            Exit Sub
         End If
+
+        _LoadedFiles.FileNames.Remove(ImageData.OldDisplayPath)
+
+        If _LoadedFiles.FileNames.ContainsKey(ImageData.DisplayPath) Then
+            FileClose(_LoadedFiles.FileNames.Item(ImageData.DisplayPath))
+        End If
+
+        _LoadedFiles.FileNames.Add(ImageData.DisplayPath, ImageData)
+
+        ImageCombo.RefreshPaths()
+
+        If UpdateCurrent Then
+            SetCurrentFileName(ImageData)
+        End If
+
+        ImageData.OldDisplayPath = ""
+        ImageData.FileNameChanged = False
     End Sub
 
     Private Sub StatusBarFileInfoClear()
@@ -1595,11 +1598,11 @@ Public Class MainForm
     Private Sub FilePanel_CurrentImageChangeEnd(sender As Object, e As Boolean) Handles FilePanelMain.CurrentImageChangeEnd
         RefreshDirectoryMenu(FilePanelMain.CurrentImage, FilePanelMain.DirectoryScan)
         SummaryPopulate(FilePanelMain.CurrentImage)
-        RefreshDiskState(FilePanelMain.CurrentImage)
         StatusStripBottom.Refresh()
         If e Then
             ImageFiltersUpdate(FilePanelMain.CurrentImage)
         End If
+        RefreshDiskState(FilePanelMain.CurrentImage)
     End Sub
 
     Private Sub FilePanel_CurrentImageChangeStart(sender As Object, e As Boolean) Handles FilePanelMain.CurrentImageChangeStart

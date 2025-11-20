@@ -237,6 +237,7 @@
                 If Buffer.Length = 513 Then
                     MediaDescriptor = Buffer(512)
                 End If
+
                 If BootSector.BPB.IsValid Then
                     Return FloppyDiskFormatGet(BootSector.BPB, False, True)
                 Else

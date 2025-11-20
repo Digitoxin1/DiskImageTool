@@ -5,9 +5,11 @@
         Private ReadOnly _ParentForm As BaseForm
         Private ReadOnly _StatusCollection As Dictionary(Of String, TrackStatusInfo)
         Private _CurrentStatusInfo As TrackStatusInfo = Nothing
+        Private _Failed As Boolean = False
         Private _Range As TrackRange = Nothing
         Private _TotalBadSectors As UInteger = 0
         Private _TotalUnexpectedSectors As UInteger = 0
+
         Public Enum ActionTypeEnum
             Unknown
             Read
@@ -35,6 +37,12 @@
             _StatusCollection = New Dictionary(Of String, TrackStatusInfo)
         End Sub
 
+        Public ReadOnly Property Failed As Boolean
+            Get
+                Return _Failed
+            End Get
+        End Property
+
         Public Function CanKeepProcessing() As Boolean
             If _CurrentStatusInfo Is Nothing Then
                 Return False
@@ -61,9 +69,17 @@
             _TotalBadSectors = 0
             _TotalUnexpectedSectors = 0
             _Range = Nothing
+            _Failed = False
         End Sub
 
         Public Sub ProcessOutputLineRead(line As String, InfoAction As ActionTypeEnum, DoubleStep As Boolean)
+            Dim Response = ParseCommandFailed(line)
+            If Response IsNot Nothing Then
+                _Failed = True
+                UpdateTrackStatusError()
+                Return
+            End If
+
             If _Range Is Nothing Then
                 _Range = ParseDiskRange(line)
             End If
@@ -104,6 +120,13 @@
         End Sub
 
         Public Sub ProcessOutputLineWrite(line As String, InfoAction As ActionTypeEnum, DoubleStep As Boolean)
+            Dim Response = ParseCommandFailed(line)
+            If Response IsNot Nothing Then
+                _Failed = True
+                UpdateTrackStatusError()
+                Return
+            End If
+
             If _Range Is Nothing Then
                 _Range = ParseDiskRange(line)
             End If
@@ -211,7 +234,7 @@
                     Return (Color.Black, Color.Red)
                 Case TrackStatusEnum.Success
                     If StatusInfo.OutOfRange Then
-                        Return (Color.Black, Color.FromArgb(240, 240, 240))
+                        Return (Color.Black, Color.FromArgb(225, 225, 225))
                     Else
                         Return (Color.Black, Color.LightGreen)
                     End If

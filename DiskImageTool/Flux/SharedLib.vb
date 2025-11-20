@@ -76,9 +76,9 @@ Namespace Flux
                     Try
                         IO.File.Delete(filePath)
                     Catch ex As io.IOException
-                        ' optional: log or ignore
+                        Debug.WriteLine($"Failed to delete {filePath}: {ex.Message}")
                     Catch ex As UnauthorizedAccessException
-                        ' optional: log or ignore
+                        Debug.WriteLine($"Access denied deleting {filePath}: {ex.Message}")
                     End Try
                 Next
             Next
@@ -145,7 +145,7 @@ Namespace Flux
             Dim TempPath = InitTempImagePath()
 
             If TempPath = "" Then
-                MsgBox(My.Resources.Dialog_TempPathError, MsgBoxStyle.Exclamation)
+                MsgBox(My.Resources.Dialog_TempPathError, MsgBoxStyle.Critical)
                 Return ""
             End If
 
@@ -435,7 +435,7 @@ Namespace Flux
             Return False
         End Function
 
-        Private Function GetFirstRawInFolder(folderPath As String) As String
+        Public Function GetFirstRawInFolder(folderPath As String) As String
             Try
                 Return IO.Directory.EnumerateFiles(folderPath, "*.raw", IO.SearchOption.TopDirectoryOnly).FirstOrDefault()
             Catch

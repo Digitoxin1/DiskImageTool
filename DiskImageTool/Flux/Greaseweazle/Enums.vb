@@ -196,7 +196,7 @@ Namespace Flux.Greaseweazle
                 Case ReadDiskOutputTypes.IMA
                     Return "Basic Sector Image"
                 Case ReadDiskOutputTypes.RAW
-                    Return "Raw Flux Set"
+                    Return "Flux Image Set"
                 Case Else
                     Return ""
             End Select

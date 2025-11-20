@@ -11,6 +11,7 @@ Namespace Flux.Greaseweazle
         Public Const MIN_TRACKS_525DD As Byte = 40
 
         Private Const MaxDrives As Integer = 3
+        Private Const DEFAULT_LOG_FILE_NAME As String = "log.txt"
 
         Private _appPath As String = ""
         Private _comPort As String = ""
@@ -24,7 +25,7 @@ Namespace Flux.Greaseweazle
         Private _fluxRootPath As String = ""
         Private _interface As GreaseweazleInterface = GreaseweazleInterface.IBM
         Private _isDirty As Boolean
-        Private _logFileName As String = "log.txt"
+        Private _logFileName As String = DEFAULT_LOG_FILE_NAME
         Public Enum GreaseweazleInterface
             IBM
             Shugart
@@ -149,7 +150,7 @@ Namespace Flux.Greaseweazle
 
         Public Property LogFileName As String
             Get
-                Return _logFileName
+                Return If(String.IsNullOrEmpty(_logFileName), DEFAULT_LOG_FILE_NAME, _logFileName)
             End Get
             Set(value As String)
                 If _logFileName <> value Then

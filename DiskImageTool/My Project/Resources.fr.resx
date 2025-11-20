@@ -741,13 +741,6 @@
   <data name="Menu_Ok" xml:space="preserve">
     <value>&amp;OK</value>
   </data>
-  <data name="BootSectorForm_Help_ExtendedBootSignature" xml:space="preserve">
-    <value>Signature de démarrage étendue
-
-Valeurs typiques:
-28h\tLe numéro de série du volume est présent
-29h\tNuméro de série du volume, étiquette du volume et ID du système de fichiers sont présents</value>
-  </data>
   <data name="DirectorytEntry_Extension" xml:space="preserve">
     <value>Extension</value>
   </data>
@@ -841,9 +834,6 @@ Valeurs typiques:
   <data name="Bitstream_Gap" xml:space="preserve">
     <value>GAP</value>
   </data>
-  <data name="BootSectorForm_Help_VolumeSerialNumberButton" xml:space="preserve">
-    <value>Générer un nouveau numéro de série de volume à partir d’une date et d’une heure fournies</value>
-  </data>
   <data name="SummaryPanel_SurfaceData" xml:space="preserve">
     <value>Données surface</value>
   </data>
@@ -906,14 +896,6 @@ Valeurs typiques:
   </data>
   <data name="Bitstream_IAMSync" xml:space="preserve">
     <value>Synchronisation du champ d’index</value>
-  </data>
-  <data name="BootSectorForm_Help_BootSectorSignature" xml:space="preserve">
-    <value>Indique au BIOS que le secteur est exécutable.</value>
-  </data>
-  <data name="BootSectorForm_Help_DriveNumber" xml:space="preserve">
-    <value>Numéro de lecteur pour l’interruption 13h
-
-Valeurs autorisées: {0}</value>
   </data>
   <data name="DataInspector_Label_Invalid" xml:space="preserve">
     <value>Invalide</value>
@@ -978,9 +960,6 @@ Valeurs autorisées: {0}</value>
   <data name="HexView_LostClusters" xml:space="preserve">
     <value>Clusters perdus</value>
   </data>
-  <data name="BootSectorForm_Help_MediaDescriptor" xml:space="preserve">
-    <value>Descripteur de média</value>
-  </data>
   <data name="Label_Mismatched" xml:space="preserve">
     <value>Non concordant</value>
   </data>
@@ -1023,56 +1002,11 @@ Valeurs autorisées: {0}</value>
   <data name="SummaryPanel_Note" xml:space="preserve">
     <value>Remarque</value>
   </data>
-  <data name="BootSectorForm_Help_BytesPerSector" xml:space="preserve">
-    <value>Nombre d’octets par secteur physique
-
-Valeurs autorisées: {0}
-
-Remarque: doit être {1} pour toutes les disquettes.</value>
-  </data>
-  <data name="BootSectorForm_Help_RootDirectoryEntries" xml:space="preserve">
-    <value>Nombre d’entrées dans le répertoire racine
-
-Valeurs autorisées: la valeur × {0} doit être un multiple pair du nombre d’octets par secteur</value>
-  </data>
   <data name="BPB_NumberOfFATs" xml:space="preserve">
     <value>Nombre de FAT</value>
   </data>
-  <data name="BootSectorForm_Help_NumberOfFATs" xml:space="preserve">
-    <value>Nombre de copies de la table FAT sur le volume
-
-Valeurs autorisées: toute valeur non nulle
-
-Remarque: normalement, cette valeur est fixée à {0}.</value>
-  </data>
   <data name="BPB_NumberOfHeads" xml:space="preserve">
     <value>Nombre de têtes</value>
-  </data>
-  <data name="BootSectorForm_Help_NumberOfHeads" xml:space="preserve">
-    <value>Nombre de têtes physiques (faces) sur la disquette</value>
-  </data>
-  <data name="BootSectorForm_Help_ReservedSectors" xml:space="preserve">
-    <value>Nombre de secteurs réservés au début du volume
-
-Valeurs autorisées: toute valeur non nulle
-
-Remarque: normalement, cette valeur est fixée à {0}.</value>
-  </data>
-  <data name="BootSectorForm_Help_SectorsPerFAT" xml:space="preserve">
-    <value>Nombre de secteurs alloués à chaque copie de la FAT</value>
-  </data>
-  <data name="BootSectorForm_Help_SectorsPerCluster" xml:space="preserve">
-    <value>Nombre de secteurs par cluster
-
-Valeurs autorisées: {0}</value>
-  </data>
-  <data name="BootSectorForm_Help_SectorsPerTrack" xml:space="preserve">
-    <value>Nombre de secteurs par piste</value>
-  </data>
-  <data name="BootSectorForm_Help_HiddenSectors" xml:space="preserve">
-    <value>Nombre de secteurs précédant le premier secteur du volume
-
-Remarque: cette valeur doit être {0} pour toutes les disquettes</value>
   </data>
   <data name="BootSector_OEMName" xml:space="preserve">
     <value>Nom OEM</value>
@@ -1091,13 +1025,6 @@ Remarque: cette valeur doit être {0} pour toutes les disquettes</value>
   </data>
   <data name="Filter_OEMName_Windows9x" xml:space="preserve">
     <value>Nom OEM – Windows 9x</value>
-  </data>
-  <data name="BootSectorForm_Help_OEMName" xml:space="preserve">
-    <value>Identifiant du nom OEM
-
-Peut être défini par une implémentation FAT à toute valeur souhaitée
-
-Souvent une indication du système ayant formaté le volume.</value>
   </data>
   <data name="Label_OffsetHex" xml:space="preserve">
     <value>Décalage(h)</value>
@@ -1210,27 +1137,11 @@ Souvent une indication du système ayant formaté le volume.</value>
   <data name="FileType_Text" xml:space="preserve">
     <value>Fichiers texte</value>
   </data>
-  <data name="BootSectorForm_Help_DiskType" xml:space="preserve">
-    <value>Le type de disquette a été détecté à partir des valeurs actuelles du secteur de démarrage. Changer ce type modifiera les valeurs du secteur selon le type sélectionné.</value>
-  </data>
-  <data name="BootSectorForm_Help_FileSystemType" xml:space="preserve">
-    <value>L’identifiant du système de fichiers est uniquement informatif
-
-Valeurs typiques: {0}</value>
-  </data>
   <data name="Dialog_IncreaseImageSize" xml:space="preserve">
     <value>La taille de l’image est inférieure à la taille détectée.{0}{0}Souhaitez-vous l’agrandir ?</value>
   </data>
-  <data name="BootSectorForm_Help_VolumeSerialNumber" xml:space="preserve">
-    <value>Le numéro de série du volume est un nombre aléatoire de 32 bits utilisé avec l’étiquette du volume pour le suivi des supports amovibles
-
-Remarque: généralement dérivé de la date et de l’heure actuelles</value>
-  </data>
   <data name="Dialog_TruncateImage" xml:space="preserve">
     <value>Des données existent dans la zone overdumpée de l’image.{0}{0}Souhaitez-vous tronquer cette image ?</value>
-  </data>
-  <data name="BootSectorForm_Help_VolumeLabel" xml:space="preserve">
-    <value>Ce champ correspond généralement à l’étiquette de volume de 11 octets dans le répertoire racine ou vaut "{0}" si l’étiquette n’existe pas.</value>
   </data>
   <data name="Dialog_Image_SurfaceData" xml:space="preserve">
     <value>Cette image contient des données de surface supplémentaires qui peuvent être requises pour la protection contre la copie.{0}{0}Ces données seront perdues lors de l’enregistrement dans ce format.{0}{0}Souhaitez-vous continuer ?</value>
@@ -1240,11 +1151,6 @@ Remarque: généralement dérivé de la date et de l’heure actuelles</value>
   </data>
   <data name="Dialog_Image_NonStandardTracks" xml:space="preserve">
     <value>Cette image contient une ou plusieurs pistes avec une disposition de secteurs non standard.{0}{0}Une perte de données peut survenir.{0}{0}Souhaitez-vous continuer ?</value>
-  </data>
-  <data name="BootSectorForm_Help_JumpInstruction" xml:space="preserve">
-    <value>Cette instruction indique où commence le code du chargeur.
-
-Valeurs autorisées: {0}</value>
   </data>
   <data name="Dialog_AdjustImageSize" xml:space="preserve">
     <value>Il s’agit d’une image vérifiée. Souhaitez-vous ajuster la taille de cette image ?</value>
@@ -1258,24 +1164,11 @@ Valeurs autorisées: {0}</value>
   <data name="Dialog_RestructureImage" xml:space="preserve">
     <value>Il s’agit d’une image vérifiée. Souhaitez-vous restructurer cette image ?</value>
   </data>
-  <data name="BootSectorForm_Help_AdditionalData" xml:space="preserve">
-    <value>Ce sont des données supplémentaires trouvées dans le secteur de démarrage.
-
-Remarque : les données surlignées en vert sont le code du chargeur.</value>
-  </data>
   <data name="Dialog_Win9xCleanBatch" xml:space="preserve">
     <value>Cela restaurera le nom OEM et supprimera les dates de création et de dernier accès de toutes les images non vérifiées chargées.{0}{0}Souhaitez-vous continuer ?</value>
   </data>
   <data name="SummaryPanel_Title" xml:space="preserve">
     <value>Titre</value>
-  </data>
-  <data name="BootSectorForm_Help_SectorCountLarge" xml:space="preserve">
-    <value>Nombre total de secteurs dans un volume FAT16 supérieur à {0} secteurs
-
-Remarque : cette valeur doit être {1} pour toutes les disquettes</value>
-  </data>
-  <data name="BootSectorForm_Help_SectorCountSmall" xml:space="preserve">
-    <value>Nombre total de secteurs dans le volume</value>
   </data>
   <data name="BPB_SectorCountSmall" xml:space="preserve">
     <value>Secteurs totaux</value>
@@ -1423,18 +1316,6 @@ Remarque : cette valeur doit être {1} pour toutes les disquettes</value>
   </data>
   <data name="Menu_SystemDefault" xml:space="preserve">
     <value>Langue système</value>
-  </data>
-  <data name="BootSectorForm_Help_TypicalValues" xml:space="preserve">
-    <value>Valeurs typiques:</value>
-  </data>
-  <data name="BootSectorForm_Help_AllowedValues" xml:space="preserve">
-    <value>Valeurs autorisées:</value>
-  </data>
-  <data name="BootSectorForm_Help_FixedDisk" xml:space="preserve">
-    <value>Disque fixe</value>
-  </data>
-  <data name="BootSectorForm_Help_Unused" xml:space="preserve">
-    <value>Non utilisé</value>
   </data>
   <data name="Menu_ExportUnknown" xml:space="preserve">
     <value>Exporter les images inconnues lors de l’analyse</value>
@@ -1744,5 +1625,33 @@ Remarque : cette valeur doit être {1} pour toutes les disquettes</value>
   </data>
   <data name="Label_ImportClose" xml:space="preserve">
     <value>Importer et fermer</value>
+  </data>
+  <data name="Label_Browse" xml:space="preserve">
+    <value>Parcourir</value>
+  </data>
+  <data name="Label_Discard" xml:space="preserve">
+    <value>Ignorer</value>
+  </data>
+  <data name="Dialog_ParentFolderCreationError" xml:space="preserve">
+    <value>Erreur : Impossible de créer le dossier parent.</value>
+  </data>
+  <data name="Label_FolderName" xml:space="preserve">
+    <value>Dossier</value>
+  </data>
+  <data name="Label_Keep" xml:space="preserve">
+    <value>Conserver</value>
+  </data>
+  <data name="Label_RootFolder" xml:space="preserve">
+    <value>Dossier racine</value>
+  </data>
+  <data name="Label_SaveLog" xml:space="preserve">
+    <value>Sauver log</value>
+  </data>
+  <data name="Dialog_ImageSetExists" xml:space="preserve">
+    <value>Un ensemble d’images flux existe déjà dans :
+
+« {0} »
+
+Voulez-vous écraser ?</value>
   </data>
 </root>

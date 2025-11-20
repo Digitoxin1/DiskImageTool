@@ -85,6 +85,10 @@ Namespace Flux.Greaseweazle
             TextBoxConsole.AppendText(line)
 
             _TrackStatus.ProcessOutputLineRead(line, TrackStatus.ActionTypeEnum.Import, DoubleStep)
+
+            If _TrackStatus.Failed Then
+                Process.Cancel()
+            End If
         End Sub
 
         Private Function ReadImageFormat() As DiskImage.FloppyDiskFormat
@@ -140,7 +144,9 @@ Namespace Flux.Greaseweazle
             Select Case State
                 Case ConsoleProcessRunner.ProcessStateEnum.Aborted
                     ClearOutputFile(True)
-                    _TrackStatus.UpdateTrackStatusAborted()
+                    If Not _TrackStatus.Failed Then
+                        _TrackStatus.UpdateTrackStatusAborted()
+                    End If
 
                 Case ConsoleProcessRunner.ProcessStateEnum.Completed
                     _TrackStatus.UpdateTrackStatusComplete(DoubleStep)

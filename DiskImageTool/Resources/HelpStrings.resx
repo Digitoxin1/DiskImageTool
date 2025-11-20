@@ -1,0 +1,312 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <!-- 
+    Microsoft ResX Schema 
+    
+    Version 2.0
+    
+    The primary goals of this format is to allow a simple XML format 
+    that is mostly human readable. The generation and parsing of the 
+    various data types are done through the TypeConverter classes 
+    associated with the data types.
+    
+    Example:
+    
+    ... ado.net/XML headers & schema ...
+    <resheader name="resmimetype">text/microsoft-resx</resheader>
+    <resheader name="version">2.0</resheader>
+    <resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+    <resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+    <data name="Name1"><value>this is my long string</value><comment>this is a comment</comment></data>
+    <data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+    <data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+        <value>[base64 mime encoded serialized .NET Framework object]</value>
+    </data>
+    <data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+        <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
+        <comment>This is a comment</comment>
+    </data>
+                
+    There are any number of "resheader" rows that contain simple 
+    name/value pairs.
+    
+    Each data row contains a name, and value. The row also contains a 
+    type or mimetype. Type corresponds to a .NET class that support 
+    text/value conversion through the TypeConverter architecture. 
+    Classes that don't support this are serialized and stored with the 
+    mimetype set.
+    
+    The mimetype is used for serialized objects, and tells the 
+    ResXResourceReader how to depersist the object. This is currently not 
+    extensible. For a given mimetype the value must be set accordingly:
+    
+    Note - application/x-microsoft.net.object.binary.base64 is the format 
+    that the ResXResourceWriter will generate, however the reader can 
+    read any of the formats listed below.
+    
+    mimetype: application/x-microsoft.net.object.binary.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
+            : and then encoded with base64 encoding.
+    
+    mimetype: application/x-microsoft.net.object.soap.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+            : and then encoded with base64 encoding.
+
+    mimetype: application/x-microsoft.net.object.bytearray.base64
+    value   : The object must be serialized into a byte array 
+            : using a System.ComponentModel.TypeConverter
+            : and then encoded with base64 encoding.
+    -->
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="BootSectorForm_Help_AdditionalData" xml:space="preserve">
+    <value>This Is additional data found in the Boot Sector.
+
+Note: Data highlighted in green is the bootstrap code.</value>
+  </data>
+  <data name="BootSectorForm_Help_AllowedValues" xml:space="preserve">
+    <value>Allowed Values:</value>
+  </data>
+  <data name="BootSectorForm_Help_BootSectorSignature" xml:space="preserve">
+    <value>Indicated to the BIOS that the sector is executable.</value>
+  </data>
+  <data name="BootSectorForm_Help_BytesPerSector" xml:space="preserve">
+    <value>Number of bytes in each physical sector
+
+Allowed Values: {0}
+
+Note: This value should be {1} for all floppy disks.</value>
+  </data>
+  <data name="BootSectorForm_Help_DiskType" xml:space="preserve">
+    <value>The disk type detected based on the current values in the Boot Record.  Changing this will set the values in the boot record to those of the selected disk type.</value>
+  </data>
+  <data name="BootSectorForm_Help_DriveNumber" xml:space="preserve">
+    <value>Interrupt 13h drive number
+
+Allowed Values: {0}</value>
+  </data>
+  <data name="BootSectorForm_Help_ExtendedBootSignature" xml:space="preserve">
+    <value>Extended Boot Signature
+
+Typical Values:
+28h\tVolume Serial Number is present
+29h\tVolume Serial Number, Volume Label, and File System ID are present</value>
+  </data>
+  <data name="BootSectorForm_Help_FileSystemType" xml:space="preserve">
+    <value>The File System ID is informational only
+
+Typical Values: {0}</value>
+  </data>
+  <data name="BootSectorForm_Help_FixedDisk" xml:space="preserve">
+    <value>Fixed Disk</value>
+  </data>
+  <data name="BootSectorForm_Help_HiddenSectors" xml:space="preserve">
+    <value>Number of sectors preceeding the first sector of a partitioned volume
+
+Note: This value should be {0} for all floppy disks</value>
+  </data>
+  <data name="BootSectorForm_Help_JumpInstruction" xml:space="preserve">
+    <value>This instruction indicates where the bootstrap code starts.
+
+Allowed Values: {0}</value>
+  </data>
+  <data name="BootSectorForm_Help_MediaDescriptor" xml:space="preserve">
+    <value>Media Descriptor</value>
+  </data>
+  <data name="BootSectorForm_Help_NumberOfFATs" xml:space="preserve">
+    <value>Number of File Allocation Table (FAT) copies on the volume
+
+Allowed Values: Any non-zero value
+
+Note: This value should typically be set to {0}.</value>
+  </data>
+  <data name="BootSectorForm_Help_NumberOfHeads" xml:space="preserve">
+    <value>Number of physical heads (sides) on the disk</value>
+  </data>
+  <data name="BootSectorForm_Help_OEMName" xml:space="preserve">
+    <value>OEM Name Identifier
+
+Can be set by a FAT implementation to any desired value
+
+Typically this is some indication of what system formatted the volume.</value>
+  </data>
+  <data name="BootSectorForm_Help_ReservedSectors" xml:space="preserve">
+    <value>Number of reserved sectors in the reserved region of the volume starting at the first sector of the volume
+
+Allowed Values: Any non-zero value
+
+Note: This value should typically be set to {0}.</value>
+  </data>
+  <data name="BootSectorForm_Help_RootDirectoryEntries" xml:space="preserve">
+    <value>Number of entries in the root directory
+
+Allowed Values: Value multiplied by {0} should be an even multiple of Bytes Per Sector</value>
+  </data>
+  <data name="BootSectorForm_Help_SectorCountLarge" xml:space="preserve">
+    <value>Total number of sectors in a FAT16 volume larger than {0} sectors
+
+Note: This value should be {1} for all floppy disks</value>
+  </data>
+  <data name="BootSectorForm_Help_SectorCountSmall" xml:space="preserve">
+    <value>Total number of sectors in the volume</value>
+  </data>
+  <data name="BootSectorForm_Help_SectorsPerCluster" xml:space="preserve">
+    <value>Number of sectors per cluster
+
+Allowed Values: {0}</value>
+  </data>
+  <data name="BootSectorForm_Help_SectorsPerFAT" xml:space="preserve">
+    <value>Number of sectors allocated to each copy of the File Allocation Table (FAT)</value>
+  </data>
+  <data name="BootSectorForm_Help_SectorsPerTrack" xml:space="preserve">
+    <value>Number of sectors per track on the disk</value>
+  </data>
+  <data name="BootSectorForm_Help_TypicalValues" xml:space="preserve">
+    <value>Typical Values:</value>
+  </data>
+  <data name="BootSectorForm_Help_Unused" xml:space="preserve">
+    <value>Unused</value>
+  </data>
+  <data name="BootSectorForm_Help_VolumeLabel" xml:space="preserve">
+    <value>This field typically matches the 11-byte volume label in the root directory of the disk or has the value "{0}" if the volume label does not exist.</value>
+  </data>
+  <data name="BootSectorForm_Help_VolumeSerialNumber" xml:space="preserve">
+    <value>The Volume Serial Number is a 32-bit random number used in conjunction with the Volume Label for removable media tracking
+
+Note: This id is typically generated by converting the current date and time into a 32-bit value</value>
+  </data>
+  <data name="BootSectorForm_Help_VolumeSerialNumberButton" xml:space="preserve">
+    <value>Generate a new volume serial number based on a user supplied date and time</value>
+  </data>
+  <data name="Greaseweazle_Revs" xml:space="preserve">
+    <value>Number of revolutions to read per track</value>
+  </data>
+  <data name="Greaseweazle_Retries" xml:space="preserve">
+    <value>Number of retries per seek-retry</value>
+  </data>
+  <data name="Greaseweazle_SeekRetries" xml:space="preserve">
+    <value>Number of seek retries</value>
+  </data>
+  <data name="Greaseweazle_DeviceReset" xml:space="preserve">
+    <value>Reset the Greaseweazle device to power-on default state.</value>
+  </data>
+  <data name="Flux_SaveLog" xml:space="preserve">
+    <value>Save the Console Output to a log file.</value>
+  </data>
+  <data name="Flux_Detect" xml:space="preserve">
+    <value>Attempt to detect the format of the disk in the selected drive by analyzing the boot sector.</value>
+  </data>
+  <data name="Greaseweazle_Drives" xml:space="preserve">
+    <value>Available Floppy Drives.
+
+This list can be configured under 
+Greaseweazle Configuration in the Options menu.</value>
+  </data>
+  <data name="Flux_Format" xml:space="preserve">
+    <value>The format of the floppy disk in the selected drive.</value>
+  </data>
+  <data name="Flux_ImageType" xml:space="preserve">
+    <value>Output Image Type</value>
+  </data>
+  <data name="Greaseweazle_ReadFilename" xml:space="preserve">
+    <value>The imported file’s name, or the parent folder’s name 
+if the Output Type is set to Flux Image Set.
+
+You can create a filename template by enclosing any
+number in angle brackets (&lt; &gt;). For example: Disk &lt;1&gt; of 3.
+
+The number inside the brackets will automatically
+increment for each subsequent read.</value>
+  </data>
+  <data name="Greaseweazle_FileExt" xml:space="preserve">
+    <value>The imported file's extension.</value>
+  </data>
+  <data name="Greaseweazle_SaveLog" xml:space="preserve">
+    <value>Save a log file in the parent folder alongside the image set.
+
+The log file name can be configured under 
+Greaseweazle Configuration in the Options menu.</value>
+  </data>
+  <data name="Flux_Discard" xml:space="preserve">
+    <value>Discard the currently loaded image or image set.</value>
+  </data>
+  <data name="Flux_Read" xml:space="preserve">
+    <value>Read a floppy disk from the selected drive to the selected output type.</value>
+  </data>
+  <data name="Flux_Keep" xml:space="preserve">
+    <value>Keep the currently loaded image set without importing.</value>
+  </data>
+  <data name="Greaseweazle_RootFolder" xml:space="preserve">
+    <value>The root folder for your flux image sets.
+
+The default root folder can be configured under 
+Greaseweazle Configuration in the Options menu.</value>
+  </data>
+  <data name="Flux_DoubleStep" xml:space="preserve">
+    <value>Skip every other track when reading a 360 KB disk in a 1.2 MB drive.</value>
+  </data>
+  <data name="Flux_Import" xml:space="preserve">
+    <value>Import the currently loaded image or image set.</value>
+  </data>
+  <data name="Flux_ImportClose" xml:space="preserve">
+    <value>Import the currently loaded image or image set and close this dialog.</value>
+  </data>
+</root>

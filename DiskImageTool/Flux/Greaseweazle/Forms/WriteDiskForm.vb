@@ -326,6 +326,10 @@ Namespace Flux.Greaseweazle
             TextBoxConsole.AppendText(line)
 
             _TrackStatus.ProcessOutputLineWrite(line, TrackStatus.ActionTypeEnum.Write, _DoubleStep)
+
+            If _TrackStatus.Failed Then
+                Process.Cancel()
+            End If
         End Sub
 
         Private Sub RefreshButtonState()
@@ -575,7 +579,9 @@ Namespace Flux.Greaseweazle
         Private Sub Process_ProcessStateChanged(State As ConsoleProcessRunner.ProcessStateEnum) Handles Process.ProcessStateChanged
             Select Case State
                 Case ConsoleProcessRunner.ProcessStateEnum.Aborted
-                    _TrackStatus.UpdateTrackStatusAborted()
+                    If Not _TrackStatus.Failed Then
+                        _TrackStatus.UpdateTrackStatusAborted()
+                    End If
 
                 Case ConsoleProcessRunner.ProcessStateEnum.Completed
                     Dim DoKeepProcessing As Boolean = CheckKeepProcessing()

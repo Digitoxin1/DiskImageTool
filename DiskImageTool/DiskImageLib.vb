@@ -269,9 +269,21 @@ Module DiskImageLib
 
         If Result Then
             Image.Disk.ClearChanges()
-            If Image.ImageData.FileType = ImageData.FileTypeEnum.NewImage Then
+
+            If Image.ImageData.SourceFile <> NewFilePath Then
+                Image.ImageData.OldDisplayPath = Image.ImageData.DisplayPath
+                Image.ImageData.FileNameChanged = True
+
+                If Image.ImageData.FileType = ImageData.FileTypeEnum.NewImage Then
+                    DeleteFileIfExists(Image.ImageData.SourceFile)
+                End If
+
+                Image.ImageData.SourceFile = NewFilePath
                 Image.ImageData.FileType = ImageData.FileTypeEnum.Standard
+                Image.ImageData.CompressedFile = ""
+                Image.ImageData.ReadOnly = IsFileReadOnly(NewFilePath)
             End If
+
             Image.ImageData.Checksum = CRC32.ComputeChecksum(Image.Disk.Image.GetBytes)
             Image.ImageData.ExternalModified = False
         End If

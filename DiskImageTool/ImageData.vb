@@ -17,7 +17,9 @@
         _FileType = FileTypeEnum.Standard
         _SourceFile = SourceFile
         _Modifications = Nothing
+        _OldDisplayPath = ""
         _NewFileName = ""
+        _FileNameChanged = False
         _OEMName = ""
         _ReadOnly = False
         _Scanned = False
@@ -59,6 +61,8 @@
     Public Property XDFLength As UInteger
     Public Property XDFMiniDisk As Boolean
     Public Property XDFOffset As UInteger
+    Public Property OldDisplayPath As String
+    Public Property FileNameChanged As Boolean
 
     Public Property Filter(FilterType As Filters.FilterTypes) As Boolean
         Get

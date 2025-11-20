@@ -32,6 +32,7 @@ Public Class FloppyTrackGrid
     Private _LastSelected As (Track As Integer, Selected As Boolean) = (-1, False)
     Private _NoEventSelectionChanged As Boolean = False
     Private _SelectEnabled As Boolean = False
+    Private _HideSelection As Boolean = False
     Private _Side As Byte
     Private _TrackCount As Integer
     Public Event CellClicked(sender As Object, Track As Integer, Row As Integer, Col As Integer, Shift As Boolean)
@@ -97,6 +98,8 @@ Public Class FloppyTrackGrid
         Set(value As Boolean)
             If _Disabled <> value Then
                 _Disabled = value
+                Me.TabStop = Not value And _SelectEnabled
+
                 Invalidate()
             End If
         End Set
@@ -112,6 +115,7 @@ Public Class FloppyTrackGrid
         Set(value As Boolean)
             If _IsChecked <> value Then
                 _IsChecked = value
+
                 InvalidateFooter()
 
                 EventCheckChanged(value)
@@ -139,6 +143,18 @@ Public Class FloppyTrackGrid
         End Get
     End Property
 
+    Public Property HideSelection As Boolean
+        Get
+            Return _HideSelection
+        End Get
+        Set(value As Boolean)
+            If _HideSelection <> value Then
+                _HideSelection = value
+                Invalidate()
+            End If
+        End Set
+    End Property
+
     <Browsable(True)>
     <DefaultValue(False)>
     Public Property SelectEnabled As Boolean
@@ -150,7 +166,7 @@ Public Class FloppyTrackGrid
                 _SelectEnabled = value
 
                 ' make the control focusable only when selection is allowed
-                Me.TabStop = value
+                Me.TabStop = value And Not _Disabled
 
                 If Not value Then
                     _IsChecked = False
@@ -218,6 +234,13 @@ Public Class FloppyTrackGrid
             ResetCellInternal(TrackIndex)
         Next
     End Sub
+
+    Public Sub ResetSelectedSells()
+        For Each TrackIndex In _SelectedTracks.ToList()
+            ResetCellInternal(TrackIndex)
+        Next
+    End Sub
+
 
     Public Sub ResetCell(TrackIndex As Integer)
         If TrackIndex < 0 OrElse TrackIndex >= _TrackCount Then
@@ -616,13 +639,19 @@ Public Class FloppyTrackGrid
                         Dim BackColor = cell.BackColor
                         If _Disabled Then
                             BackColor = DISABLED_COLOR
-                        ElseIf cell.Selected AndAlso cell.BackColor = DEFAULT_BACKCOLOR Then
+                        ElseIf Not _HideSelection AndAlso cell.Selected AndAlso cell.BackColor = DEFAULT_BACKCOLOR Then
                             BackColor = SELECTED_BACKCOLOR
                         End If
 
                         Using b As New SolidBrush(BackColor)
                             g.FillRectangle(b, rect)
                         End Using
+
+                        If Not _HideSelection AndAlso cell.Selected AndAlso Not _Disabled AndAlso cell.BackColor <> DEFAULT_BACKCOLOR Then
+                            Using b As New SolidBrush(Color.FromArgb(70, Color.Black))
+                                g.FillRectangle(b, rect)
+                            End Using
+                        End If
 
                         ' Draw border (full size so borders are shared)
                         g.DrawRectangle(BORDER_PEN, rect)

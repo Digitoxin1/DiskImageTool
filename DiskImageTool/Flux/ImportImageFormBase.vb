@@ -98,7 +98,7 @@ Namespace Flux
 
         Friend Sub ClearProcessedImage(DeleteOutputFile As Boolean)
             TextBoxConsole.Clear()
-            ClearOutputFile(Not DeleteOutputFile)
+            ClearOutputFile(DeleteOutputFile)
             ClearStatusBar()
             GridReset(_TrackCount, _SideCount)
 

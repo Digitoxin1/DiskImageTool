@@ -1,4 +1,5 @@
-﻿Imports System.Text
+﻿Imports System.IO
+Imports System.Text
 Imports System.Threading
 
 Public Class ConsoleProcessRunner
@@ -13,6 +14,9 @@ Public Class ConsoleProcessRunner
     Private _rawOutTask As Task
     Private _state As ProcessStateEnum = ProcessStateEnum.Idle
     Private _tcs As TaskCompletionSource(Of Integer)
+    Private _logFilePath As String
+    Private _logWriter As StreamWriter
+    Private ReadOnly _logLock As New Object()
 
     Private _useRawCapture As Boolean
     Public Enum ProcessStateEnum As Byte
@@ -42,6 +46,36 @@ Public Class ConsoleProcessRunner
             Return _proc IsNot Nothing AndAlso Not _proc.HasExited
         End Get
     End Property
+
+    Private Sub LogLine(line As String)
+        If _logWriter Is Nothing Then Exit Sub
+        Try
+            SyncLock _logLock
+                _logWriter.WriteLine(line)
+                _logWriter.Flush()
+            End SyncLock
+        Catch
+            SyncLock _logLock
+                Try : _logWriter.Dispose() : Catch : End Try
+                _logWriter = Nothing
+            End SyncLock
+        End Try
+    End Sub
+
+    Private Sub LogChunk(chunk As String)
+        If _logWriter Is Nothing Then Exit Sub
+        Try
+            SyncLock _logLock
+                _logWriter.Write(chunk)
+                _logWriter.Flush()
+            End SyncLock
+        Catch
+            SyncLock _logLock
+                Try : _logWriter.Dispose() : Catch : End Try
+                _logWriter = Nothing
+            End SyncLock
+        End Try
+    End Sub
 
     Public Property StandardErrorEncoding As Encoding = Encoding.UTF8
 
@@ -154,9 +188,24 @@ Public Class ConsoleProcessRunner
         GC.SuppressFinalize(Me)
     End Sub
 
-    Public Function StartAsync(exePath As String, arguments As String, Optional ct As CancellationToken = Nothing, Optional useRawCapture As Boolean = False) As Task(Of Integer)
+    Public Function StartAsync(exePath As String, arguments As String, Optional ct As CancellationToken = Nothing, Optional useRawCapture As Boolean = False, Optional logFile As String = Nothing) As Task(Of Integer)
         If _proc IsNot Nothing Then
             Throw New InvalidOperationException("Process is already started on this instance.")
+        End If
+
+        _logFilePath = logFile
+
+        If _logWriter IsNot Nothing Then
+            _logWriter.Dispose()
+            _logWriter = Nothing
+        End If
+
+        If Not String.IsNullOrWhiteSpace(_logFilePath) Then
+            Try
+                _logWriter = New StreamWriter(_logFilePath, append:=True, encoding:=Encoding.UTF8)
+            Catch
+                _logWriter = Nothing
+            End Try
         End If
 
         _useRawCapture = useRawCapture
@@ -316,9 +365,8 @@ Public Class ConsoleProcessRunner
         If e.Data Is Nothing Then
             Return
         End If
-        RaiseOnContext(Sub()
-                           RaiseEvent ErrorDataReceived(e.Data)
-                       End Sub)
+        LogLine(e.Data)
+        RaiseOnContext(Sub() RaiseEvent ErrorDataReceived(e.Data))
     End Sub
 
     Private Sub OnExited(sender As Object, e As EventArgs)
@@ -328,6 +376,12 @@ Public Class ConsoleProcessRunner
         Catch
         End Try
         _exitCode = code
+
+        If _logWriter IsNot Nothing Then
+            _logWriter.Flush()
+            _logWriter.Dispose()
+            _logWriter = Nothing
+        End If
 
         RaiseOnContext(Sub() RaiseEvent ProcessExited(code))
         If code = -1 Then
@@ -342,9 +396,8 @@ Public Class ConsoleProcessRunner
 
     Private Sub OnOutputData(sender As Object, e As DataReceivedEventArgs)
         If e.Data Is Nothing Then Return
-        RaiseOnContext(Sub()
-                           RaiseEvent OutputDataReceived(e.Data)
-                       End Sub)
+        LogLine(e.Data)
+        RaiseOnContext(Sub() RaiseEvent OutputDataReceived(e.Data))
     End Sub
 
     Private Sub RaiseOnContext(action As Action)
@@ -376,6 +429,7 @@ Public Class ConsoleProcessRunner
                 End If
 
                 Dim chunk = StandardErrorEncoding.GetString(buffer, 0, read)
+                LogChunk(chunk)
 
                 RaiseOnContext(Sub()
                                    RaiseEvent ErrorDataReceived(chunk)
@@ -398,6 +452,7 @@ Public Class ConsoleProcessRunner
                 End If
 
                 Dim chunk = StandardOutputEncoding.GetString(buffer, 0, read)
+                LogChunk(chunk)
 
                 RaiseOnContext(Sub()
                                    RaiseEvent OutputDataReceived(chunk)

@@ -1,0 +1,352 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <!-- 
+    Microsoft ResX Schema 
+    
+    Version 2.0
+    
+    The primary goals of this format is to allow a simple XML format 
+    that is mostly human readable. The generation and parsing of the 
+    various data types are done through the TypeConverter classes 
+    associated with the data types.
+    
+    Example:
+    
+    ... ado.net/XML headers & schema ...
+    <resheader name="resmimetype">text/microsoft-resx</resheader>
+    <resheader name="version">2.0</resheader>
+    <resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+    <resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+    <data name="Name1"><value>this is my long string</value><comment>this is a comment</comment></data>
+    <data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+    <data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+        <value>[base64 mime encoded serialized .NET Framework object]</value>
+    </data>
+    <data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+        <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
+        <comment>This is a comment</comment>
+    </data>
+                
+    There are any number of "resheader" rows that contain simple 
+    name/value pairs.
+    
+    Each data row contains a name, and value. The row also contains a 
+    type or mimetype. Type corresponds to a .NET class that support 
+    text/value conversion through the TypeConverter architecture. 
+    Classes that don't support this are serialized and stored with the 
+    mimetype set.
+    
+    The mimetype is used for serialized objects, and tells the 
+    ResXResourceReader how to depersist the object. This is currently not 
+    extensible. For a given mimetype the value must be set accordingly:
+    
+    Note - application/x-microsoft.net.object.binary.base64 is the format 
+    that the ResXResourceWriter will generate, however the reader can 
+    read any of the formats listed below.
+    
+    mimetype: application/x-microsoft.net.object.binary.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
+            : and then encoded with base64 encoding.
+    
+    mimetype: application/x-microsoft.net.object.soap.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+            : and then encoded with base64 encoding.
+
+    mimetype: application/x-microsoft.net.object.bytearray.base64
+    value   : The object must be serialized into a byte array 
+            : using a System.ComponentModel.TypeConverter
+            : and then encoded with base64 encoding.
+    -->
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="BootSectorForm_Help_AdditionalData" xml:space="preserve">
+    <value>Ce sont des données supplémentaires trouvées dans le secteur de démarrage.
+
+Remarque : les données surlignées en vert sont le code du chargeur.</value>
+  </data>
+  <data name="BootSectorForm_Help_AllowedValues" xml:space="preserve">
+    <value>Valeurs autorisées:</value>
+  </data>
+  <data name="BootSectorForm_Help_BootSectorSignature" xml:space="preserve">
+    <value>Indique au BIOS que le secteur est exécutable.</value>
+  </data>
+  <data name="BootSectorForm_Help_BytesPerSector" xml:space="preserve">
+    <value>Nombre d’octets par secteur physique
+
+Valeurs autorisées: {0}
+
+Remarque: doit être {1} pour toutes les disquettes.</value>
+  </data>
+  <data name="BootSectorForm_Help_DiskType" xml:space="preserve">
+    <value>Le type de disquette a été détecté à partir des valeurs actuelles du secteur de démarrage. Changer ce type modifiera les valeurs du secteur selon le type sélectionné.</value>
+  </data>
+  <data name="BootSectorForm_Help_DriveNumber" xml:space="preserve">
+    <value>Numéro de lecteur pour l’interruption 13h
+
+Valeurs autorisées: {0}</value>
+  </data>
+  <data name="BootSectorForm_Help_ExtendedBootSignature" xml:space="preserve">
+    <value>Signature de démarrage étendue
+
+Valeurs typiques :
+28h\tLe numéro de série du volume est présent
+29h\tNuméro de série du volume, étiquette du volume et identifiant du système de fichiers présents</value>
+  </data>
+  <data name="BootSectorForm_Help_FileSystemType" xml:space="preserve">
+    <value>L’identifiant du système de fichiers est uniquement informatif
+
+Valeurs typiques: {0}</value>
+  </data>
+  <data name="BootSectorForm_Help_FixedDisk" xml:space="preserve">
+    <value>Disque fixe</value>
+  </data>
+  <data name="BootSectorForm_Help_HiddenSectors" xml:space="preserve">
+    <value>Nombre de secteurs précédant le premier secteur du volume
+
+Remarque: cette valeur doit être {0} pour toutes les disquettes</value>
+  </data>
+  <data name="BootSectorForm_Help_JumpInstruction" xml:space="preserve">
+    <value>Cette instruction indique où commence le code du chargeur.
+
+Valeurs autorisées: {0}</value>
+  </data>
+  <data name="BootSectorForm_Help_MediaDescriptor" xml:space="preserve">
+    <value>Descripteur de média</value>
+  </data>
+  <data name="BootSectorForm_Help_NumberOfFATs" xml:space="preserve">
+    <value>Nombre de copies de la table FAT sur le volume
+
+Valeurs autorisées: toute valeur non nulle
+
+Remarque: normalement, cette valeur est fixée à {0}.</value>
+  </data>
+  <data name="BootSectorForm_Help_NumberOfHeads" xml:space="preserve">
+    <value>Nombre de têtes physiques (faces) sur la disquette</value>
+  </data>
+  <data name="BootSectorForm_Help_OEMName" xml:space="preserve">
+    <value>Identifiant du nom OEM
+
+Peut être défini par une implémentation FAT à toute valeur souhaitée
+
+Souvent une indication du système ayant formaté le volume.</value>
+  </data>
+  <data name="BootSectorForm_Help_ReservedSectors" xml:space="preserve">
+    <value>Nombre de secteurs réservés au début du volume
+
+Valeurs autorisées: toute valeur non nulle
+
+Remarque: normalement, cette valeur est fixée à {0}.</value>
+  </data>
+  <data name="BootSectorForm_Help_RootDirectoryEntries" xml:space="preserve">
+    <value>Nombre d’entrées dans le répertoire racine
+
+Valeurs autorisées: la valeur × {0} doit être un multiple pair du nombre d’octets par secteur</value>
+  </data>
+  <data name="BootSectorForm_Help_SectorCountLarge" xml:space="preserve">
+    <value>Nombre total de secteurs dans un volume FAT16 supérieur à {0} secteurs
+
+Remarque : cette valeur doit être {1} pour toutes les disquettes</value>
+  </data>
+  <data name="BootSectorForm_Help_SectorCountSmall" xml:space="preserve">
+    <value>Nombre total de secteurs dans le volume</value>
+  </data>
+  <data name="BootSectorForm_Help_SectorsPerCluster" xml:space="preserve">
+    <value>Nombre de secteurs par cluster
+
+Valeurs autorisées: {0}</value>
+  </data>
+  <data name="BootSectorForm_Help_SectorsPerFAT" xml:space="preserve">
+    <value>Nombre de secteurs alloués à chaque copie de la FAT</value>
+  </data>
+  <data name="BootSectorForm_Help_SectorsPerTrack" xml:space="preserve">
+    <value>Nombre de secteurs par piste</value>
+  </data>
+  <data name="BootSectorForm_Help_TypicalValues" xml:space="preserve">
+    <value>Valeurs typiques:</value>
+  </data>
+  <data name="BootSectorForm_Help_Unused" xml:space="preserve">
+    <value>Non utilisé</value>
+  </data>
+  <data name="BootSectorForm_Help_VolumeLabel" xml:space="preserve">
+    <value>Ce champ correspond généralement à l’étiquette de volume de 11 octets dans le répertoire racine ou vaut "{0}" si l’étiquette n’existe pas.</value>
+  </data>
+  <data name="BootSectorForm_Help_VolumeSerialNumber" xml:space="preserve">
+    <value>Le numéro de série du volume est un nombre aléatoire de 32 bits utilisé avec l’étiquette du volume pour le suivi des supports amovibles
+
+Remarque: généralement dérivé de la date et de l’heure actuelles</value>
+  </data>
+  <data name="BootSectorForm_Help_VolumeSerialNumberButton" xml:space="preserve">
+    <value>Générer un nouveau numéro de série de volume à partir d’une date et d’une heure fournies</value>
+  </data>
+  <assembly alias="System.Windows.Forms" name="System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
+  <data name="Greaseweazle_Drives" type="System.Resources.ResXNullRef, System.Windows.Forms">
+    <value />
+  </data>
+  <data name="Flux_Format" type="System.Resources.ResXNullRef, System.Windows.Forms">
+    <value />
+  </data>
+  <data name="Flux_ImageType" type="System.Resources.ResXNullRef, System.Windows.Forms">
+    <value />
+  </data>
+  <data name="Greaseweazle_ReadFilename" type="System.Resources.ResXNullRef, System.Windows.Forms">
+    <value />
+  </data>
+  <data name="Greaseweazle_FileExt" type="System.Resources.ResXNullRef, System.Windows.Forms">
+    <value />
+  </data>
+  <data name="Greaseweazle_SaveLog" type="System.Resources.ResXNullRef, System.Windows.Forms">
+    <value />
+  </data>
+  <data name="Flux_Discard" type="System.Resources.ResXNullRef, System.Windows.Forms">
+    <value />
+  </data>
+  <data name="Flux_Read" type="System.Resources.ResXNullRef, System.Windows.Forms">
+    <value />
+  </data>
+  <data name="Flux_Keep" type="System.Resources.ResXNullRef, System.Windows.Forms">
+    <value />
+  </data>
+  <data name="Greaseweazle_RootFolder" type="System.Resources.ResXNullRef, System.Windows.Forms">
+    <value />
+  </data>
+  <data name="Flux_DoubleStep" type="System.Resources.ResXNullRef, System.Windows.Forms">
+    <value />
+  </data>
+  <data name="Flux_Import" type="System.Resources.ResXNullRef, System.Windows.Forms">
+    <value />
+  </data>
+  <data name="Flux_ImportClose" type="System.Resources.ResXNullRef, System.Windows.Forms">
+    <value />
+  </data>
+  <data name="Flux_ImportClose" xml:space="preserve">
+    <value>Importer l’image ou l’ensemble d’images chargé et fermer cette boîte de dialogue.</value>
+  </data>
+  <data name="Greaseweazle_Revs" xml:space="preserve">
+    <value>Nombre de révolutions à lire par piste</value>
+  </data>
+  <data name="Flux_Detect" xml:space="preserve">
+    <value>Tenter de détecter le format du disque dans le lecteur sélectionné en analysant le secteur de démarrage.</value>
+  </data>
+  <data name="Greaseweazle_Drives" xml:space="preserve">
+    <value>Lecteurs de disquettes disponibles.
+
+Cette liste peut être configurée dans
+Configuration Greaseweazle du menu Options.</value>
+  </data>
+  <data name="Flux_Discard" xml:space="preserve">
+    <value>Ignorer l’image ou l’ensemble d’images chargé.</value>
+  </data>
+  <data name="Flux_Import" xml:space="preserve">
+    <value>Importer l’image ou l’ensemble d’images chargé.</value>
+  </data>
+  <data name="Flux_Keep" xml:space="preserve">
+    <value>Conserver l’ensemble d’images chargé sans l’importer.</value>
+  </data>
+  <data name="Greaseweazle_Retries" xml:space="preserve">
+    <value>Nombre de tentatives par reprise de recherche</value>
+  </data>
+  <data name="Greaseweazle_SeekRetries" xml:space="preserve">
+    <value>Nombre de reprises de recherche</value>
+  </data>
+  <data name="Flux_ImageType" xml:space="preserve">
+    <value>Type d’image de sortie</value>
+  </data>
+  <data name="Flux_Read" xml:space="preserve">
+    <value>Lire une disquette depuis le lecteur sélectionné vers le type de sortie choisi.</value>
+  </data>
+  <data name="Greaseweazle_DeviceReset" xml:space="preserve">
+    <value>Réinitialiser le périphérique Greaseweazle à son état par défaut au démarrage.</value>
+  </data>
+  <data name="Greaseweazle_SaveLog" xml:space="preserve">
+    <value>Enregistrer un fichier journal dans le dossier parent, à côté de l’ensemble d’images.
+
+Le nom du fichier journal peut être configuré dans
+Configuration Greaseweazle du menu Options.</value>
+  </data>
+  <data name="Flux_SaveLog" xml:space="preserve">
+    <value>Enregistrer la sortie console dans un fichier journal.</value>
+  </data>
+  <data name="Flux_DoubleStep" xml:space="preserve">
+    <value>Sauter une piste sur deux lors de la lecture d’une disquette de 360 Ko dans un lecteur 1,2 Mo.</value>
+  </data>
+  <data name="Flux_Format" xml:space="preserve">
+    <value>Le format de la disquette dans le lecteur sélectionné.</value>
+  </data>
+  <data name="Greaseweazle_ReadFilename" xml:space="preserve">
+    <value>Le nom du fichier importé, ou le nom du dossier parent
+si le type de sortie est défini sur Ensemble d’images Flux.
+
+Vous pouvez créer un modèle de nom de fichier en entourant
+un nombre par des chevrons (&lt; &gt;). Par exemple : Disque &lt;1&gt; sur 3.
+
+Le nombre entre crochets sera automatiquement incrémenté
+pour chaque lecture suivante.</value>
+  </data>
+  <data name="Greaseweazle_FileExt" xml:space="preserve">
+    <value>L’extension du fichier importé.</value>
+  </data>
+  <data name="Greaseweazle_RootFolder" xml:space="preserve">
+    <value>Le dossier racine pour vos ensembles d’images flux.
+
+Le dossier racine par défaut peut être configuré dans
+Configuration Greaseweazle du menu Options.</value>
+  </data>
+</root>

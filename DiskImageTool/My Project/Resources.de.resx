@@ -1317,125 +1317,6 @@
   <data name="Menu_SystemDefault" xml:space="preserve">
     <value>Systemstandard</value>
   </data>
-  <data name="BootSectorForm_Help_TypicalValues" xml:space="preserve">
-    <value>Typische Werte:</value>
-  </data>
-  <data name="BootSectorForm_Help_AllowedValues" xml:space="preserve">
-    <value>Zulässige Werte:</value>
-  </data>
-  <data name="BootSectorForm_Help_FixedDisk" xml:space="preserve">
-    <value>Feste Festplatte</value>
-  </data>
-  <data name="BootSectorForm_Help_Unused" xml:space="preserve">
-    <value>Nicht verwendet</value>
-  </data>
-  <data name="BootSectorForm_Help_AdditionalData" xml:space="preserve">
-    <value>Dies sind zusätzliche Daten, die im Bootsektor gefunden wurden.
-
-Hinweis: Grün hervorgehobene Daten sind der Bootstrap-Code.</value>
-  </data>
-  <data name="BootSectorForm_Help_BootSectorSignature" xml:space="preserve">
-    <value>Zeigt dem BIOS an, dass der Sektor ausführbar ist.</value>
-  </data>
-  <data name="BootSectorForm_Help_BytesPerSector" xml:space="preserve">
-    <value>Anzahl der Bytes in jedem physischen Sektor
-
-Zulässige Werte: {0}
-
-Hinweis: Für alle Disketten sollte dieser Wert {1} sein.</value>
-  </data>
-  <data name="BootSectorForm_Help_DiskType" xml:space="preserve">
-    <value>Der auf Basis der aktuellen Werte im Bootsektor erkannte Diskettentyp. Wenn Sie diesen ändern, werden die Werte im Bootsektor an den ausgewählten Diskettentyp angepasst.</value>
-  </data>
-  <data name="BootSectorForm_Help_DriveNumber" xml:space="preserve">
-    <value>Interrupt 13h Laufwerksnummer
-
-Zulässige Werte: {0}</value>
-  </data>
-  <data name="BootSectorForm_Help_ExtendedBootSignature" xml:space="preserve">
-    <value>Erweiterte Boot-Signatur
-
-Typische Werte:
-28h\tVolumeseriennummer ist vorhanden
-29h\tVolumeseriennummer, Volume-Label und Dateisystem-ID sind vorhanden</value>
-  </data>
-  <data name="BootSectorForm_Help_FileSystemType" xml:space="preserve">
-    <value>Die Dateisystem-ID dient nur zu Informationszwecken
-
-Typische Werte: {0}</value>
-  </data>
-  <data name="BootSectorForm_Help_HiddenSectors" xml:space="preserve">
-    <value>Anzahl der Sektoren vor dem ersten Sektor eines partitionierten Volumes
-
-Hinweis: Für alle Disketten sollte dieser Wert {0} sein</value>
-  </data>
-  <data name="BootSectorForm_Help_JumpInstruction" xml:space="preserve">
-    <value>Diese Anweisung gibt an, wo der Bootstrap-Code beginnt.
-
-Zulässige Werte: {0}</value>
-  </data>
-  <data name="BootSectorForm_Help_MediaDescriptor" xml:space="preserve">
-    <value>Medienkennung</value>
-  </data>
-  <data name="BootSectorForm_Help_NumberOfFATs" xml:space="preserve">
-    <value>Anzahl der File Allocation Table (FAT)-Kopien auf dem Volume
-
-Zulässige Werte: Jeder von null verschiedene Wert
-
-Hinweis: Dieser Wert sollte typischerweise auf {0} gesetzt werden.</value>
-  </data>
-  <data name="BootSectorForm_Help_NumberOfHeads" xml:space="preserve">
-    <value>Anzahl der physischen Köpfe (Seiten) auf der Diskette</value>
-  </data>
-  <data name="BootSectorForm_Help_OEMName" xml:space="preserve">
-    <value>OEM-Name-Kennung
-
-Kann von einer FAT-Implementierung auf einen beliebigen Wert gesetzt werden.
-
-Typischerweise gibt dieser Wert an, welches System das Volume formatiert hat.</value>
-  </data>
-  <data name="BootSectorForm_Help_ReservedSectors" xml:space="preserve">
-    <value>Anzahl reservierter Sektoren im reservierten Bereich des Volumes, beginnend mit dem ersten Sektor des Volumes
-
-Zulässige Werte: Jeder von Null verschiedene Wert
-
-Hinweis: Dieser Wert sollte typischerweise auf {0} gesetzt werden.</value>
-  </data>
-  <data name="BootSectorForm_Help_RootDirectoryEntries" xml:space="preserve">
-    <value>Anzahl der Einträge im Stammverzeichnis
-
-Zulässige Werte: Der Wert multipliziert mit {0} sollte ein geradzahliges Vielfaches der Bytes pro Sektor sein</value>
-  </data>
-  <data name="BootSectorForm_Help_SectorCountLarge" xml:space="preserve">
-    <value>Gesamtanzahl der Sektoren in einem FAT16-Volume mit mehr als {0} Sektoren
-
-Hinweis: Für alle Disketten sollte dieser Wert {1} sein</value>
-  </data>
-  <data name="BootSectorForm_Help_SectorCountSmall" xml:space="preserve">
-    <value>Gesamtanzahl der Sektoren im Volume</value>
-  </data>
-  <data name="BootSectorForm_Help_SectorsPerCluster" xml:space="preserve">
-    <value>Anzahl der Sektoren pro Cluster
-
-Zulässige Werte: {0}</value>
-  </data>
-  <data name="BootSectorForm_Help_SectorsPerFAT" xml:space="preserve">
-    <value>Anzahl der Sektoren, die jeder Kopie der Dateizuordnungstabelle (FAT) zugewiesen sind</value>
-  </data>
-  <data name="BootSectorForm_Help_SectorsPerTrack" xml:space="preserve">
-    <value>Anzahl der Sektoren pro Spur auf der Diskette</value>
-  </data>
-  <data name="BootSectorForm_Help_VolumeLabel" xml:space="preserve">
-    <value>Dieses Feld entspricht typischerweise dem 11-Byte-Volume-Label im Root-Verzeichnis der Diskette oder hat den Wert „{0}“, wenn kein Volume-Label vorhanden ist.</value>
-  </data>
-  <data name="BootSectorForm_Help_VolumeSerialNumber" xml:space="preserve">
-    <value>Die Volume-Seriennummer ist eine 32-Bit-Zufallszahl, die zusammen mit dem Volume-Label zur Nachverfolgung von Wechseldatenträgern verwendet wird.
-
-Hinweis: Diese ID wird normalerweise erzeugt, indem das aktuelle Datum und die aktuelle Uhrzeit in einen 32-Bit-Wert umgewandelt werden</value>
-  </data>
-  <data name="BootSectorForm_Help_VolumeSerialNumberButton" xml:space="preserve">
-    <value>Neue Volume-Seriennummer basierend auf einem vom Benutzer angegebenen Datum und Uhrzeit generieren</value>
-  </data>
   <data name="Menu_ExportUnknown" xml:space="preserve">
     <value>Unbekannte Abbilder beim Scannen exportieren</value>
   </data>
@@ -1744,5 +1625,33 @@ Hinweis: Diese ID wird normalerweise erzeugt, indem das aktuelle Datum und die a
   </data>
   <data name="Label_ImportClose" xml:space="preserve">
     <value>Importieren und schließen</value>
+  </data>
+  <data name="Label_Browse" xml:space="preserve">
+    <value>Durchsuchen</value>
+  </data>
+  <data name="Label_Discard" xml:space="preserve">
+    <value>Verwerfen</value>
+  </data>
+  <data name="Dialog_ParentFolderCreationError" xml:space="preserve">
+    <value>Fehler: Übergeordneten Ordner kann nicht erstellt werden.</value>
+  </data>
+  <data name="Label_FolderName" xml:space="preserve">
+    <value>Ordnername</value>
+  </data>
+  <data name="Label_Keep" xml:space="preserve">
+    <value>Behalten</value>
+  </data>
+  <data name="Label_RootFolder" xml:space="preserve">
+    <value>Stammordner</value>
+  </data>
+  <data name="Label_SaveLog" xml:space="preserve">
+    <value>Log speichern</value>
+  </data>
+  <data name="Dialog_ImageSetExists" xml:space="preserve">
+    <value>Ein Flux-Image-Satz existiert bereits in:
+
+„{0}“
+
+Möchten Sie ihn überschreiben?</value>
   </data>
 </root>

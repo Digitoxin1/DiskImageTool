@@ -3,6 +3,7 @@ Imports System.Text.RegularExpressions
 
 Namespace Flux.Greaseweazle
     Public Class ConsoleParser
+        Public Const REGEX_COMMAND_FAILED As String = "^Command Failed:\s*(?<message>[^:]+):\s*(?<details>.+)$"
         Public Const REGEX_DISK_RANGE As String = "^(?<action>Reading|Writing)\b c=(?<trkStart>\d+)(-(?<trkEnd>\d+))?:h=(?<headStart>\d+)(-(?<headEnd>\d+))?"
         Public Const REGEX_TRACK_CONVERTING As String = "^\s*Converting\s+c=(?<cs>\d+)(?:-(?<ce>\d+))?\s*:\s*h=(?<hs>\d+)(?:-(?<he>\d+))?\s*->\s*c=(?<ds>\d+)(?:-(?<de>\d+))?\s*:\s*h=(?<dhs>\d+)(?:-(?<dhe>\d+))?\s*$"
         Public Const REGEX_TRACK_READ_DETAILS As String = "^(?<system>\w+) (?<encoding>\w+)( \((?<sectorsFound>\d+)\/(?<sectorsTotal>\d+) sectors\))?(?: from (?<srcFormat>[^()]+))? \((?<fluxCount>\d+) flux in (?<fluxTimeMS>\d+(?:\.?\d+)?)ms\)( \(Retry #(?<seek>\d+)\.(?<retry>\d+)\))?"
@@ -14,6 +15,7 @@ Namespace Flux.Greaseweazle
         Public Const REGEX_TRACK_WRITE_FAILED As String = "^Failed to verify Track (?<srcTrack>\d+)\.(?<srcSide>\d+)"
         Public Const REGEX_TRACK_WRITE_RETRY As String = "Retry #(?<retry>\d+)"
 
+        Private ReadOnly RegExCommandFailed As New Regex(REGEX_COMMAND_FAILED, RegexOptions.IgnoreCase Or RegexOptions.CultureInvariant Or RegexOptions.Compiled)
         Private ReadOnly RegExDiskRange As New Regex(REGEX_DISK_RANGE, RegexOptions.IgnoreCase Or RegexOptions.CultureInvariant Or RegexOptions.Compiled)
         Private ReadOnly RegExTrackConverting As New Regex(REGEX_TRACK_CONVERTING, RegexOptions.IgnoreCase Or RegexOptions.CultureInvariant Or RegexOptions.Compiled)
         Private ReadOnly RegExTrackReadDetails As New Regex(REGEX_TRACK_READ_DETAILS, RegexOptions.IgnoreCase Or RegexOptions.CultureInvariant Or RegexOptions.Compiled)
@@ -24,6 +26,22 @@ Namespace Flux.Greaseweazle
         Private ReadOnly RegExTrackWrite As New Regex(REGEX_TRACK_WRITE, RegexOptions.IgnoreCase Or RegexOptions.CultureInvariant Or RegexOptions.Compiled)
         Private ReadOnly RegExTrackWriteFailed As New Regex(REGEX_TRACK_WRITE_FAILED, RegexOptions.IgnoreCase Or RegexOptions.CultureInvariant Or RegexOptions.Compiled)
         Private ReadOnly RegExTrackWriteRetry As New Regex(REGEX_TRACK_WRITE_RETRY, RegexOptions.IgnoreCase Or RegexOptions.CultureInvariant Or RegexOptions.Compiled)
+
+        Public Function ParseCommandFailed(line As String) As (Message As String, Details As String)?
+            If String.IsNullOrWhiteSpace(line) Then
+                Return Nothing
+            End If
+
+            Dim Match = RegExCommandFailed.Match(line)
+            If Not Match.Success Then
+                Return Nothing
+            End If
+
+            Dim message As String = Match.Groups("message").Value.Trim()
+            Dim details As String = Match.Groups("details").Value.Trim()
+
+            Return (message, details)
+        End Function
 
         Public Function ParseDiskRange(line As String) As TrackRange
             If String.IsNullOrWhiteSpace(line) Then
@@ -108,6 +126,24 @@ Namespace Flux.Greaseweazle
             Return GetInt(Match, "sectors")
         End Function
 
+        Public Function ParseTrackReadOutOfRange(line As String) As TrackReadOutOfRange
+            If String.IsNullOrWhiteSpace(line) Then
+                Return Nothing
+            End If
+
+            Dim Match = RegExTrackReadOutOfRange.Match(line)
+            If Not Match.Success Then
+                Return Nothing
+            End If
+
+            Dim info As New TrackReadOutOfRange With {
+                .Format = Match.Groups("format").Value,
+                .FluxCount = GetInt(Match, "fluxCount"),
+                .FluxTimeMs = GetDouble(Match, "fluxTimeMS")
+            }
+            Return info
+        End Function
+
         Public Function ParseTrackReadSummary(line As String) As TrackReadSummary
             If String.IsNullOrWhiteSpace(line) Then
                 Return Nothing
@@ -129,25 +165,6 @@ Namespace Flux.Greaseweazle
 
             Return info
         End Function
-
-        Public Function ParseTrackReadOutOfRange(line As String) As TrackReadOutOfRange
-            If String.IsNullOrWhiteSpace(line) Then
-                Return Nothing
-            End If
-
-            Dim Match = RegExTrackReadOutOfRange.Match(line)
-            If Not Match.Success Then
-                Return Nothing
-            End If
-
-            Dim info As New TrackReadOutOfRange With {
-                .Format = Match.Groups("format").Value,
-                .FluxCount = GetInt(Match, "fluxCount"),
-                .FluxTimeMs = GetDouble(Match, "fluxTimeMS")
-            }
-            Return info
-        End Function
-
         Public Function ParseTrackUnexpected(line As String) As UnexpectedSector
             If String.IsNullOrWhiteSpace(line) Then
                 Return Nothing
@@ -247,13 +264,6 @@ Namespace Flux.Greaseweazle
             Public Property TrackStart As Integer = 0
         End Class
 
-        Public Class TrackReadOutOfRange
-            Public Property FluxCount As Integer
-            Public Property FluxTimeMs As Double
-            Public Property Format As String
-
-        End Class
-
         Public Class TrackReadDetails
             Public ReadOnly Property BadSectors As Integer
                 Get
@@ -272,6 +282,12 @@ Namespace Flux.Greaseweazle
             Public Property System As String
         End Class
 
+        Public Class TrackReadOutOfRange
+            Public Property FluxCount As Integer
+            Public Property FluxTimeMs As Double
+            Public Property Format As String
+
+        End Class
         Public Class TrackReadSummary
             Public Property DestSide As Integer
             Public Property DestTrack As Integer

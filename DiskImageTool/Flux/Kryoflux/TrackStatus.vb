@@ -7,6 +7,7 @@
         Private _CurrentStatusInfo As TrackStatusInfo = Nothing
         Private _TotalBadSectors As UInteger = 0
         Private _TotalUnexpectedSectors As UInteger = 0
+        Private _TrackFound As Boolean = False
 
         Public Enum ActionTypeEnum
             Read
@@ -33,16 +34,24 @@
             _StatusCollection = New Dictionary(Of String, TrackStatusInfo)
         End Sub
 
+        Public ReadOnly Property TrackFound As Boolean
+            Get
+                Return _TrackFound
+            End Get
+        End Property
+
         Public Sub Clear()
             _StatusCollection.Clear()
             _CurrentStatusInfo = Nothing
             _TotalBadSectors = 0
             _TotalUnexpectedSectors = 0
+            _TrackFound = False
         End Sub
 
         Public Sub ProcessOutputLineRead(line As String)
             Dim TrackSummary = ParseTrackSummary(line)
             If TrackSummary IsNot Nothing Then
+                _TrackFound = True
                 Dim TrackInfo = ParseTrackInfo(TrackSummary.Details)
                 If TrackInfo IsNot Nothing Then
                     Dim StatusInfo = UpdateStatusInfo(TrackInfo, TrackSummary.Track, TrackSummary.Side, ActionTypeEnum.Import)

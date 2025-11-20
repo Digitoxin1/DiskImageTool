@@ -115,70 +115,70 @@ Public Class BootSectorForm
     Private Sub IntitializeHelp()
         Dim HelpString As String
 
-        SetHelpString(My.Resources.BootSectorForm_Help_OEMName, LblOEMName, CboOEMName, HexOEMName)
+        SetHelpString(My.Resources.HelpStrings.BootSectorForm_Help_OEMName, LblOEMName, CboOEMName, HexOEMName)
 
-        HelpString = String.Format(My.Resources.BootSectorForm_Help_BytesPerSector, String.Join(", ", BiosParameterBlock.ValidBytesPerSector), TYPICAL_BYTES_PER_SECTOR)
+        HelpString = String.Format(My.Resources.HelpStrings.BootSectorForm_Help_BytesPerSector, String.Join(", ", BiosParameterBlock.ValidBytesPerSector), TYPICAL_BYTES_PER_SECTOR)
         SetHelpString(HelpString, LblBytesPerSector, CboBytesPerSector)
 
-        HelpString = String.Format(My.Resources.BootSectorForm_Help_SectorsPerCluster, String.Join(", ", BiosParameterBlock.ValidSectorsPerCluster)) _
+        HelpString = String.Format(My.Resources.HelpStrings.BootSectorForm_Help_SectorsPerCluster, String.Join(", ", BiosParameterBlock.ValidSectorsPerCluster)) _
             & Environment.NewLine & Environment.NewLine & GetHelpValueList(Function(x) x.SectorsPerCluster)
         SetHelpString(HelpString, LblSectorsPerCluster, CboSectorsPerCluster)
 
-        HelpString = String.Format(My.Resources.BootSectorForm_Help_ReservedSectors, TYPICAL_RESERVED_SECTORS)
+        HelpString = String.Format(My.Resources.HelpStrings.BootSectorForm_Help_ReservedSectors, TYPICAL_RESERVED_SECTORS)
         SetHelpString(HelpString, LblReservedSectors, TxtReservedSectors)
 
-        HelpString = String.Format(My.Resources.BootSectorForm_Help_NumberOfFATs, TYPICAL_NUMBER_OF_FATS)
+        HelpString = String.Format(My.Resources.HelpStrings.BootSectorForm_Help_NumberOfFATs, TYPICAL_NUMBER_OF_FATS)
         SetHelpString(HelpString, LblNumberOfFATS, TxtNumberOfFATs)
 
-        HelpString = String.Format(My.Resources.BootSectorForm_Help_RootDirectoryEntries, ROOT_DIRECTORY_ENTRIES_MULTIPLE) _
+        HelpString = String.Format(My.Resources.HelpStrings.BootSectorForm_Help_RootDirectoryEntries, ROOT_DIRECTORY_ENTRIES_MULTIPLE) _
             & Environment.NewLine & Environment.NewLine & GetHelpValueList(Function(x) x.RootDirectoryEntries)
         SetHelpString(HelpString, LblRootDirectoryEntries, TxtRootDirectoryEntries)
 
-        HelpString = My.Resources.BootSectorForm_Help_SectorCountSmall & Environment.NewLine & Environment.NewLine & GetHelpValueList(Function(x) x.SectorCountSmall)
+        HelpString = My.Resources.HelpStrings.BootSectorForm_Help_SectorCountSmall & Environment.NewLine & Environment.NewLine & GetHelpValueList(Function(x) x.SectorCountSmall)
         SetHelpString(HelpString, LblSectorCountSmall, TxtSectorCountSmall)
 
-        HelpString = My.Resources.BootSectorForm_Help_MediaDescriptor & Environment.NewLine & Environment.NewLine & GetMediaDescriptorValueList()
+        HelpString = My.Resources.HelpStrings.BootSectorForm_Help_MediaDescriptor & Environment.NewLine & Environment.NewLine & GetMediaDescriptorValueList()
         SetHelpString(HelpString, TxtMediaDescriptor, CboMediaDescriptor)
 
-        HelpString = My.Resources.BootSectorForm_Help_SectorsPerFAT & Environment.NewLine & Environment.NewLine & GetHelpValueList(Function(x) x.SectorsPerFAT)
+        HelpString = My.Resources.HelpStrings.BootSectorForm_Help_SectorsPerFAT & Environment.NewLine & Environment.NewLine & GetHelpValueList(Function(x) x.SectorsPerFAT)
         SetHelpString(HelpString, LblSectorsPerFAT, TxtSectorsPerFAT)
 
-        HelpString = My.Resources.BootSectorForm_Help_SectorsPerTrack & Environment.NewLine & Environment.NewLine & GetHelpValueList(Function(x) x.SectorsPerTrack)
+        HelpString = My.Resources.HelpStrings.BootSectorForm_Help_SectorsPerTrack & Environment.NewLine & Environment.NewLine & GetHelpValueList(Function(x) x.SectorsPerTrack)
         SetHelpString(HelpString, LblSectorsPerTrack, TxtSectorsPerTrack)
 
-        HelpString = My.Resources.BootSectorForm_Help_NumberOfHeads & Environment.NewLine & Environment.NewLine & GetHelpValueList(Function(x) x.NumberOfHeads)
+        HelpString = My.Resources.HelpStrings.BootSectorForm_Help_NumberOfHeads & Environment.NewLine & Environment.NewLine & GetHelpValueList(Function(x) x.NumberOfHeads)
         SetHelpString(HelpString, LblNumberOfHeads, TxtNumberOfHeads)
 
-        HelpString = String.Format(My.Resources.BootSectorForm_Help_HiddenSectors, ALLOWED_HIDDEN_SECTORS)
+        HelpString = String.Format(My.Resources.HelpStrings.BootSectorForm_Help_HiddenSectors, ALLOWED_HIDDEN_SECTORS)
         SetHelpString(HelpString, LblHiddenSectors, TxtHiddenSectors)
 
-        HelpString = String.Format(My.Resources.BootSectorForm_Help_SectorCountLarge, FormatThousands(MAX_SECTOR_COUNT_SMALL), ALLOWED_SECTOR_COUNT_LARGE)
+        HelpString = String.Format(My.Resources.HelpStrings.BootSectorForm_Help_SectorCountLarge, FormatThousands(MAX_SECTOR_COUNT_SMALL), ALLOWED_SECTOR_COUNT_LARGE)
         SetHelpString(HelpString, LblSectorCountLarge, TxtSectorCountLarge)
 
-        HelpString = String.Format(My.Resources.BootSectorForm_Help_DriveNumber, ALLOWED_DRIVE_NUMBER)
+        HelpString = String.Format(My.Resources.HelpStrings.BootSectorForm_Help_DriveNumber, ALLOWED_DRIVE_NUMBER)
         SetHelpString(HelpString, LblDriveNumber, TxtDriveNumber)
 
-        SetHelpString(My.Resources.BootSectorForm_Help_ExtendedBootSignature, lblExtendedBootSignature, HexExtendedBootSignature)
+        SetHelpString(My.Resources.HelpStrings.BootSectorForm_Help_ExtendedBootSignature, lblExtendedBootSignature, HexExtendedBootSignature)
 
-        SetHelpString(My.Resources.BootSectorForm_Help_VolumeSerialNumber, LblVolumeSerialNumber, HexVolumeSerialNumber)
+        SetHelpString(My.Resources.HelpStrings.BootSectorForm_Help_VolumeSerialNumber, LblVolumeSerialNumber, HexVolumeSerialNumber)
 
-        HelpString = String.Format(My.Resources.BootSectorForm_Help_VolumeLabel, VOLUME_LABEL_NO_NAME)
+        HelpString = String.Format(My.Resources.HelpStrings.BootSectorForm_Help_VolumeLabel, VOLUME_LABEL_NO_NAME)
         SetHelpString(HelpString, LblVolumeLabel, TxtVolumeLabel, HexVolumeLabel)
 
-        HelpString = String.Format(My.Resources.BootSectorForm_Help_FileSystemType, TYPICAL_FILE_SYSTEM_TYPE)
+        HelpString = String.Format(My.Resources.HelpStrings.BootSectorForm_Help_FileSystemType, TYPICAL_FILE_SYSTEM_TYPE)
         SetHelpString(HelpString, LblFileSystemType, TxtFileSystemType, HexFileSystemType)
 
-        SetHelpString(My.Resources.BootSectorForm_Help_DiskType, LblDiskType, CboDiskType)
+        SetHelpString(My.Resources.HelpStrings.BootSectorForm_Help_DiskType, LblDiskType, CboDiskType)
 
-        SetHelpString(My.Resources.BootSectorForm_Help_VolumeSerialNumberButton, BtnVolumeSerialNumber)
+        SetHelpString(My.Resources.HelpStrings.BootSectorForm_Help_VolumeSerialNumberButton, BtnVolumeSerialNumber)
 
-        HelpString = String.Format(My.Resources.BootSectorForm_Help_JumpInstruction, ALLOWED_JMP_INSTRUCTION)
+        HelpString = String.Format(My.Resources.HelpStrings.BootSectorForm_Help_JumpInstruction, ALLOWED_JMP_INSTRUCTION)
         SetHelpString(HelpString, LblJumpInstruction, HexJumpInstruction)
 
-        HelpString = My.Resources.BootSectorForm_Help_BootSectorSignature & Environment.NewLine & Environment.NewLine & GetBootSectorSignatureValueList()
+        HelpString = My.Resources.HelpStrings.BootSectorForm_Help_BootSectorSignature & Environment.NewLine & Environment.NewLine & GetBootSectorSignatureValueList()
         SetHelpString(HelpString, LblBootSectorSignature, HexBootSectorSignature)
 
-        SetHelpString(My.Resources.BootSectorForm_Help_AdditionalData, HexBox1)
+        SetHelpString(My.Resources.HelpStrings.BootSectorForm_Help_AdditionalData, HexBox1)
     End Sub
 
     Private Function IsByteArrayNull(b() As Byte) As Boolean
@@ -470,13 +470,13 @@ Public Class BootSectorForm
         RefreshVolumeLabel()
         RefreshFileSystemType()
     End Sub
-
     Private Sub SetHelpString(HelpString As String, ParamArray ControlArray() As Control)
         For Each Control In ControlArray
             _HelpProvider1.SetHelpString(Control, HelpString.Replace("\t", vbTab))
             _HelpProvider1.SetShowHelp(Control, True)
         Next
     End Sub
+
 
     Private Function GetBPB() As BiosParameterBlock
         Dim BPB As New BiosParameterBlock()
@@ -633,7 +633,7 @@ Public Class BootSectorForm
     End Function
 
     Private Shared Function GetBootSectorSignatureValueList() As String
-        Dim Result As String = My.Resources.BootSectorForm_Help_AllowedValues
+        Dim Result As String = My.Resources.HelpStrings.BootSectorForm_Help_AllowedValues
 
         For Each item In _BootSectorSignatureAllowedValues
             Result &= Environment.NewLine & item.Key
@@ -648,18 +648,18 @@ Public Class BootSectorForm
     Private Shared Function GetMediaDescriptorValueList() As String
         Dim FormatList As String
 
-        Dim Result As String = My.Resources.BootSectorForm_Help_AllowedValues
+        Dim Result As String = My.Resources.HelpStrings.BootSectorForm_Help_AllowedValues
 
         FormatList = GetFloppyNameList(FloppyDiskFormat.Floppy1440, FloppyDiskFormat.Floppy2880, FloppyDiskFormat.FloppyDMF1024, FloppyDiskFormat.FloppyXDF35)
         Result &= GetHelpValueString("F0", FormatList, 1)
 
-        Result &= GetHelpValueString("F8", My.Resources.BootSectorForm_Help_FixedDisk, 1)
+        Result &= GetHelpValueString("F8", My.Resources.HelpStrings.BootSectorForm_Help_FixedDisk, 1)
 
         FormatList = GetFloppyNameList(FloppyDiskFormat.Floppy720, FloppyDiskFormat.Floppy1200, FloppyDiskFormat.FloppyXDF525)
         Result &= GetHelpValueString("F9", FormatList, 1)
 
-        Result &= GetHelpValueString("FA", My.Resources.BootSectorForm_Help_Unused, 1)
-        Result &= GetHelpValueString("FB", My.Resources.BootSectorForm_Help_Unused, 1)
+        Result &= GetHelpValueString("FA", My.Resources.HelpStrings.BootSectorForm_Help_Unused, 1)
+        Result &= GetHelpValueString("FB", My.Resources.HelpStrings.BootSectorForm_Help_Unused, 1)
         Result &= GetHelpValueString("FC", FloppyDiskFormatGetName(FloppyDiskFormat.Floppy180), 1)
         Result &= GetHelpValueString("FD", FloppyDiskFormatGetName(FloppyDiskFormat.Floppy360), 1)
         Result &= GetHelpValueString("FE", FloppyDiskFormatGetName(FloppyDiskFormat.Floppy160), 1)
@@ -670,7 +670,7 @@ Public Class BootSectorForm
     End Function
 
     Private Shared Function GetHelpValueList(Of T)(Selector As Func(Of FormatParams, T)) As String
-        Dim Result As String = My.Resources.BootSectorForm_Help_TypicalValues
+        Dim Result As String = My.Resources.HelpStrings.BootSectorForm_Help_TypicalValues
         For Each item In _FormatList
             If item.ToolTip Then
                 Result &= GetHelpValueString(FloppyDiskFormatGetName(item.Format, item.Extended), Selector(item).ToString, item.Tabs + 1)

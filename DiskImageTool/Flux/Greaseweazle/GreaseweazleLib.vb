@@ -33,7 +33,17 @@ Namespace Flux.Greaseweazle
             Return Builder.Arguments
         End Function
 
-        Public Function GenerateCommandLineRead(FilePath As String, Opt As DriveOption, DiskParams As FloppyDiskParams, OutputType As ReadDiskOutputTypes, DoubleStep As Boolean, Retries As UInteger, SeekRetries As UInteger, Revs As UInteger) As String
+        Public Function GenerateCommandLineRead(FilePath As String,
+                                                Opt As DriveOption,
+                                                DiskParams As FloppyDiskParams,
+                                                OutputType As ReadDiskOutputTypes,
+                                                DoubleStep As Boolean,
+                                                Retries As UInteger,
+                                                SeekRetries As UInteger,
+                                                Revs As UInteger,
+                                                Optional TrackRanges As List(Of (StartTrack As UShort, EndTrack As UShort)) = Nothing,
+                                                Optional Heads As CommandLineBuilder.TrackHeads? = Nothing) As String
+
             Dim Builder As New CommandLineBuilder(CommandLineBuilder.CommandAction.read) With {
                 .Drive = Opt.Id,
                 .File = FilePath,
@@ -52,13 +62,27 @@ Namespace Flux.Greaseweazle
                 Builder.BitRate = DiskParams.BitRateKbps
                 Builder.AdjustSpeed = DiskParams.RPM & "rpm"
                 Builder.Raw = True
+
             ElseIf OutputType = ReadDiskOutputTypes.RAW Then
                 Builder.AdjustSpeed = DiskParams.RPM & "rpm"
                 Builder.Raw = True
-                Builder.AddCylinder(0, Opt.Tracks - 1)
-            End If
 
-            If DoubleStep Then
+                If TrackRanges Is Nothing Then
+                    Builder.AddCylinder(0, Opt.Tracks - 1)
+                Else
+                    For Each Range In TrackRanges
+                        Builder.AddCylinder(Range.StartTrack, Range.EndTrack)
+                    Next
+                End If
+
+                If Heads.HasValue Then
+                        Builder.Heads = Heads.Value
+                    Else
+                        Builder.Heads = If(DiskParams.BPBParams.NumberOfHeads > 1, CommandLineBuilder.TrackHeads.both, CommandLineBuilder.TrackHeads.head0)
+                    End If
+                End If
+
+                If DoubleStep Then
                 Builder.HeadStep = 2
             End If
 

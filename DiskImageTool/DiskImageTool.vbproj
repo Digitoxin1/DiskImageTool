@@ -31,7 +31,7 @@
     <ProductName>DiskImageTool</ProductName>
     <PublisherName>Digitoxin</PublisherName>
     <ApplicationRevision>0</ApplicationRevision>
-    <ApplicationVersion>2.24.0.%2a</ApplicationVersion>
+    <ApplicationVersion>2.25.0.%2a</ApplicationVersion>
     <UseApplicationTrust>false</UseApplicationTrust>
     <PublishWizardCompleted>true</PublishWizardCompleted>
     <BootstrapperEnabled>true</BootstrapperEnabled>
@@ -223,6 +223,11 @@
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="Flux\Kryoflux\KryofluxSettings.vb" />
+    <Compile Include="Resources\HelpStrings.Designer.vb">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>HelpStrings.resx</DependentUpon>
+    </Compile>
     <Compile Include="Lib\ConsoleProcessRunner.vb" />
     <Compile Include="MenuHelp.vb" />
     <Compile Include="MenuTools.vb" />
@@ -817,6 +822,14 @@
     <EmbeddedResource Include="Flux\BaseForm.resx">
       <DependentUpon>BaseForm.vb</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="Resources\HelpStrings.de.resx" />
+    <EmbeddedResource Include="Resources\HelpStrings.es.resx" />
+    <EmbeddedResource Include="Resources\HelpStrings.fr.resx" />
+    <EmbeddedResource Include="Resources\HelpStrings.resx">
+      <CustomToolNamespace>My.Resources</CustomToolNamespace>
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>HelpStrings.Designer.vb</LastGenOutput>
+    </EmbeddedResource>
     <EmbeddedResource Include="MainForm.de.resx">
       <DependentUpon>MainForm.vb</DependentUpon>
     </EmbeddedResource>
@@ -857,8 +870,6 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
-    <None Include="ClassDiagram1.cd" />
-    <None Include="DiskImageTool_TemporaryKey.pfx" />
     <None Include="My Project\app.manifest" />
     <None Include="My Project\Application.myapp">
       <Generator>MyApplicationCodeGenerator</Generator>
@@ -885,48 +896,48 @@
     </BootstrapperPackage>
   </ItemGroup>
   <ItemGroup>
-    <None Include="Resources\FolderHex.png" />
-    <None Include="Resources\BinaryFile.png" />
-    <None Include="Resources\HexFile.png" />
-    <None Include="Resources\NewFolder.png" />
-    <None Include="Resources\DeleteDocument.png" />
-    <None Include="Resources\Delete.png" />
-    <None Include="Resources\SwitchFolders.png" />
-    <None Include="Resources\History.png" />
-    <None Include="Resources\Web.png" />
-    <None Include="Resources\AboutBox.png" />
-    <None Include="Resources\NewDocument.png" />
-    <None Include="Resources\Refresh.png" />
-    <None Include="Resources\Instance.png" />
-    <None Include="Resources\AdjustOffset.png" />
-    <None Include="Resources\AppIconLarge.png" />
-    <None Include="Resources\VolumeSerialNumber.png" />
-    <None Include="Resources\Fill00.png" />
-    <None Include="Resources\SelectAll.png" />
-    <None Include="Resources\CopyHexFormatted.png" />
-    <None Include="Resources\SelectSector.png" />
-    <None Include="Resources\SelectTrack.png" />
-    <None Include="Resources\FillF6.png" />
-    <None Include="Resources\FindNext.png" />
-    <None Include="Resources\PasteReplace.png" />
-    <None Include="Resources\Search.png" />
-    <None Include="Resources\Copy.png" />
-    <None Include="Resources\TextBlock.png" />
-    <None Include="Resources\Exit.png" />
-    <None Include="Resources\TextArea.png" />
-    <None Include="Resources\TextFile.png" />
-    <None Include="Resources\OpenfileDialog.png" />
-    <None Include="Resources\PropertiesFolderClosed.png" />
-    <None Include="Resources\Export.png" />
-    <None Include="Resources\Redo.png" />
-    <None Include="Resources\Undo.png" />
-    <None Include="Resources\CloseAll.png" />
-    <None Include="Resources\Close.png" />
-    <None Include="Resources\SaveAll.png" />
-    <None Include="Resources\SaveAs.png" />
-    <None Include="Resources\Save.png" />
-    <None Include="Resources\Import.png" />
-    <None Include="Resources\ImportFiles.png" />
+    <None Include="Resources\images\FolderHex.png" />
+    <None Include="Resources\images\BinaryFile.png" />
+    <None Include="Resources\images\HexFile.png" />
+    <None Include="Resources\images\NewFolder.png" />
+    <None Include="Resources\images\DeleteDocument.png" />
+    <None Include="Resources\images\Delete.png" />
+    <None Include="Resources\images\SwitchFolders.png" />
+    <None Include="Resources\images\History.png" />
+    <None Include="Resources\images\Web.png" />
+    <None Include="Resources\images\AboutBox.png" />
+    <None Include="Resources\images\NewDocument.png" />
+    <None Include="Resources\images\Refresh.png" />
+    <None Include="Resources\images\Instance.png" />
+    <None Include="Resources\images\AdjustOffset.png" />
+    <None Include="Resources\images\AppIconLarge.png" />
+    <None Include="Resources\images\VolumeSerialNumber.png" />
+    <None Include="Resources\images\Fill00.png" />
+    <None Include="Resources\images\SelectAll.png" />
+    <None Include="Resources\images\CopyHexFormatted.png" />
+    <None Include="Resources\images\SelectSector.png" />
+    <None Include="Resources\images\SelectTrack.png" />
+    <None Include="Resources\images\FillF6.png" />
+    <None Include="Resources\images\FindNext.png" />
+    <None Include="Resources\images\PasteReplace.png" />
+    <None Include="Resources\images\Search.png" />
+    <None Include="Resources\images\Copy.png" />
+    <None Include="Resources\images\TextBlock.png" />
+    <None Include="Resources\images\Exit.png" />
+    <None Include="Resources\images\TextArea.png" />
+    <None Include="Resources\images\TextFile.png" />
+    <None Include="Resources\images\OpenfileDialog.png" />
+    <None Include="Resources\images\PropertiesFolderClosed.png" />
+    <None Include="Resources\images\Export.png" />
+    <None Include="Resources\images\Redo.png" />
+    <None Include="Resources\images\Undo.png" />
+    <None Include="Resources\images\CloseAll.png" />
+    <None Include="Resources\images\Close.png" />
+    <None Include="Resources\images\SaveAll.png" />
+    <None Include="Resources\images\SaveAs.png" />
+    <None Include="Resources\images\Save.png" />
+    <None Include="Resources\images\Import.png" />
+    <None Include="Resources\images\ImportFiles.png" />
     <EmbeddedResource Include="Assets\bootsector.xml" />
     <Content Include="Assets\floppyDisk.ico" />
     <None Include="FloppyDB.xml">
