@@ -1,16 +1,17 @@
 ﻿Namespace Flux
     Public Class BaseForm
         Friend WithEvents Process As ConsoleProcessRunner
+        Private WithEvents TS As ITrackStatus = Nothing
         Private WithEvents TS0 As FloppyTrackGrid
         Private WithEvents TS1 As FloppyTrackGrid
         Private Const TOTAL_TRACKS As UShort = 84
-        Private _LogFileName As String
         Private _CancelButtonClicked As Boolean = False
+        Private _LogFileName As String
         Private _Sides As Byte
         Private _Tracks As UShort
-
         Public Event CheckChanged(sender As Object, Checked As Boolean, Side As Byte)
         Public Event SelectionChanged(sender As Object, Track As UShort, Side As Byte, Enabled As Boolean)
+
         Public Sub New(LogFileName As String, Optional UseGrid As Boolean = True)
             ' This call is required by the designer.
             InitializeComponent()
@@ -33,6 +34,12 @@
             End If
         End Sub
 
+        Public ReadOnly Property CancelButtonClicked As Boolean
+            Get
+                Return _CancelButtonClicked
+            End Get
+        End Property
+
         Public Property LogFileName As String
             Get
                 Return _LogFileName
@@ -41,13 +48,6 @@
                 _LogFileName = value
             End Set
         End Property
-
-        Public ReadOnly Property CancelButtonClicked As Boolean
-            Get
-                Return _CancelButtonClicked
-            End Get
-        End Property
-
         Public ReadOnly Property TableSide0 As FloppyTrackGrid
             Get
                 Return TS0
@@ -58,6 +58,15 @@
             Get
                 Return TS1
             End Get
+        End Property
+
+        Friend Property TrackStatus As ITrackStatus
+            Get
+                Return TS
+            End Get
+            Set(value As ITrackStatus)
+                TS = value
+            End Set
         End Property
 
         Public Function CancelProcessIfRunning() As Boolean
@@ -233,9 +242,20 @@
             _CancelButtonClicked = True
         End Sub
 
-
         Private Sub ButtonSaveLog_Click(sender As Object, e As EventArgs) Handles ButtonSaveLog.Click
             SaveLog()
+        End Sub
+
+        Private Sub TS_UpdateGridTrack(StatusData As TrackStatusData) Handles TS.UpdateGridTrack
+            GridMarkTrack(StatusData)
+        End Sub
+
+        Private Sub TS_UpdateStatus(StatusData As TrackStatusData) Handles TS.UpdateStatus
+            UpdateStatus(StatusData)
+        End Sub
+
+        Private Sub TS_UpdateStatusType(StatusText As String) Handles TS.UpdateStatusType
+            UpdateTrackStatusType(StatusText)
         End Sub
 
         Private Sub TS0_CheckChanged(sender As Object, Checked As Boolean) Handles TS0.CheckChanged
@@ -281,10 +301,10 @@
             Public Side As Integer
             Public SideVisible As Boolean
             Public StatusText As String
+            Public Tooltip As String
             Public TotalBadSectors As UInteger
             Public TotalUnexpectedSectors As UInteger
             Public Track As Integer
-            Public Tooltip As String
         End Structure
     End Class
 

@@ -8,7 +8,6 @@ Namespace Flux.Greaseweazle
         Private WithEvents CheckBoxSelect As CheckBox
         Private WithEvents ComboImageDrives As ComboBox
         Private ReadOnly _Initialized As Boolean = False
-        Private ReadOnly _TrackStatus As TrackStatus
         Private CheckBoxHFreq As CheckBox
         Private NumericRevs As NumericUpDown
 
@@ -16,7 +15,7 @@ Namespace Flux.Greaseweazle
             MyBase.New(Settings.LogFileName)
             InitializeControls()
 
-            _TrackStatus = New TrackStatus(Me)
+            TrackStatus = New TrackStatus()
 
             Me.Text = My.Resources.Label_EraseDisk
 
@@ -40,7 +39,7 @@ Namespace Flux.Greaseweazle
             ResetState(False)
 
             Dim TrackRanges As List(Of (StartTrack As UShort, EndTrack As UShort)) = Nothing
-            Dim Heads As CommandLineBuilder.TrackHeads = CommandLineBuilder.TrackHeads.both
+            Dim Heads As TrackHeads = TrackHeads.both
 
             If CheckBoxSelect.Checked Then
                 Dim SelectedTracks As New HashSet(Of UShort)(TableSide0.SelectedTracks)
@@ -49,11 +48,11 @@ Namespace Flux.Greaseweazle
                 TrackRanges = BuildRanges(SelectedTracks)
 
                 If TableSide0.IsChecked AndAlso TableSide1.IsChecked Then
-                    Heads = CommandLineBuilder.TrackHeads.both
+                    Heads = TrackHeads.both
                 ElseIf TableSide0.IsChecked Then
-                    Heads = CommandLineBuilder.TrackHeads.head0
+                    Heads = TrackHeads.head0
                 Else
-                    Heads = CommandLineBuilder.TrackHeads.head1
+                    Heads = TrackHeads.head1
                 End If
 
                 If TrackRanges.Count = 0 Then
@@ -78,7 +77,7 @@ Namespace Flux.Greaseweazle
                 Builder.AddCylinder(Range.StartTrack, Range.EndTrack)
             Next
 
-            If Heads <> CommandLineBuilder.TrackHeads.both Then
+            If Heads <> TrackHeads.both Then
                 Builder.Heads = Heads
             End If
 
@@ -215,9 +214,9 @@ Namespace Flux.Greaseweazle
             End If
             TextBoxConsole.AppendText(line)
 
-            _TrackStatus.ProcessOutputLineWrite(line, ITrackStatus.ActionTypeEnum.Erase, False)
+            TrackStatus.ProcessOutputLineWrite(line, ActionTypeEnum.Erase, False)
 
-            If _TrackStatus.Failed Then
+            If TrackStatus.Failed Then
                 Process.Cancel()
             End If
         End Sub
@@ -247,7 +246,7 @@ Namespace Flux.Greaseweazle
         Private Sub ResetState(Optional ResetSelected As Boolean = True)
             ResetTrackGrid(ResetSelected)
             ClearStatusBar()
-            _TrackStatus.Clear()
+            TrackStatus.Clear()
 
             TextBoxConsole.Clear()
         End Sub
@@ -325,15 +324,15 @@ Namespace Flux.Greaseweazle
         Private Sub Process_ProcessStateChanged(State As ConsoleProcessRunner.ProcessStateEnum) Handles Process.ProcessStateChanged
             Select Case State
                 Case ConsoleProcessRunner.ProcessStateEnum.Aborted
-                    If Not _TrackStatus.Failed Then
-                        _TrackStatus.UpdateTrackStatusAborted()
+                    If Not TrackStatus.Failed Then
+                        TrackStatus.UpdateTrackStatusAborted()
                     End If
 
                 Case ConsoleProcessRunner.ProcessStateEnum.Completed
-                    _TrackStatus.UpdateTrackStatusComplete(False)
+                    TrackStatus.UpdateTrackStatusComplete(False)
 
                 Case ConsoleProcessRunner.ProcessStateEnum.Error
-                    _TrackStatus.UpdateTrackStatusError()
+                    TrackStatus.UpdateTrackStatusError()
             End Select
 
             If State <> ConsoleProcessRunner.ProcessStateEnum.Running Then

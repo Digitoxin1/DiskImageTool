@@ -39,13 +39,6 @@
             bandwidth
             rpm
         End Enum
-
-        Public Enum TrackHeads
-            head0
-            head1
-            both
-        End Enum
-
         Public Sub New(Action As CommandAction)
             _Action = Action
             _Cylinders = New List(Of (UShort, UShort))

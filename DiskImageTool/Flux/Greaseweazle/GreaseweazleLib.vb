@@ -42,7 +42,7 @@ Namespace Flux.Greaseweazle
                                                 SeekRetries As UInteger,
                                                 Revs As UInteger,
                                                 Optional TrackRanges As List(Of (StartTrack As UShort, EndTrack As UShort)) = Nothing,
-                                                Optional Heads As CommandLineBuilder.TrackHeads? = Nothing) As String
+                                                Optional Heads As TrackHeads? = Nothing) As String
 
             Dim Builder As New CommandLineBuilder(CommandLineBuilder.CommandAction.read) With {
                 .Drive = Opt.Id,
@@ -76,30 +76,30 @@ Namespace Flux.Greaseweazle
                 End If
 
                 If Heads.HasValue Then
-                        Builder.Heads = Heads.Value
-                    Else
-                        Builder.Heads = If(DiskParams.BPBParams.NumberOfHeads > 1, CommandLineBuilder.TrackHeads.both, CommandLineBuilder.TrackHeads.head0)
-                    End If
+                    Builder.Heads = Heads.Value
+                Else
+                    Builder.Heads = If(DiskParams.BPBParams.NumberOfHeads > 1, TrackHeads.both, TrackHeads.head0)
                 End If
+            End If
 
-                If DoubleStep Then
+            If DoubleStep Then
                 Builder.HeadStep = 2
             End If
 
             Return Builder.Arguments
         End Function
 
-        Public Function GetTrackHeads(StartHead As Integer, Optional EndHead As Integer = -1) As CommandLineBuilder.TrackHeads
+        Public Function GetTrackHeads(StartHead As Integer, Optional EndHead As Integer = -1) As TrackHeads
             If EndHead = -1 Then
                 EndHead = StartHead
             End If
 
             If StartHead = 0 And EndHead = 0 Then
-                Return CommandLineBuilder.TrackHeads.head0
+                Return TrackHeads.head0
             ElseIf StartHead = 1 And EndHead = 1 Then
-                Return CommandLineBuilder.TrackHeads.head1
+                Return TrackHeads.head1
             Else
-                Return CommandLineBuilder.TrackHeads.both
+                Return TrackHeads.both
             End If
         End Function
 
@@ -182,7 +182,7 @@ Namespace Flux.Greaseweazle
             .InFile = FilePath,
             .OutFile = FileName,
             .Format = "ibm.scan",
-            .Heads = CommandLineBuilder.TrackHeads.head0
+            .Heads = TrackHeads.head0
         }
             Builder.AddCylinder(0)
 
@@ -322,7 +322,7 @@ Namespace Flux.Greaseweazle
             .Drive = DriveId,
             .File = FileName,
             .Format = "ibm.scan",
-            .Heads = CommandLineBuilder.TrackHeads.head0
+            .Heads = TrackHeads.head0
         }
             Builder.AddCylinder(0)
 

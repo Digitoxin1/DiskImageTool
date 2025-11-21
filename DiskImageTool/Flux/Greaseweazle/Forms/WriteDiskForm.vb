@@ -14,7 +14,6 @@ Namespace Flux.Greaseweazle
         Private ReadOnly _IsBitstreamImage As Boolean
         Private ReadOnly _SideCount As Byte
         Private ReadOnly _TrackCount As UShort
-        Private ReadOnly _TrackStatus As TrackStatus
         Private _ContinueAfterWrite As Boolean = False
         Private _CurrentFilePath As String = ""
         Private _DoubleStep As Boolean = False
@@ -30,7 +29,7 @@ Namespace Flux.Greaseweazle
             MyBase.New(Settings.LogFileName)
             InitializeControls()
 
-            _TrackStatus = New TrackStatus(Me)
+            TrackStatus = New TrackStatus()
 
             _Disk = Disk
             _DiskParams = Disk.DiskParams
@@ -86,7 +85,7 @@ Namespace Flux.Greaseweazle
             Dim KeepProcessing As Boolean = _ContinueAfterWrite OrElse (RetriesAllowed() AndAlso CheckBoxContinue.Checked AndAlso CheckBoxSelect.Checked)
 
             If KeepProcessing Then
-                KeepProcessing = _TrackStatus.CanKeepProcessing
+                KeepProcessing = TrackStatus.CanKeepProcessing
             End If
 
             Return KeepProcessing
@@ -298,7 +297,7 @@ Namespace Flux.Greaseweazle
         End Sub
 
         Private Sub KeepProcessing()
-            Dim Response = _TrackStatus.GetNextTrackRange
+            Dim Response = TrackStatus.GetNextTrackRange
 
             If Response.Continue Then
                 _ContinueAfterWrite = True
@@ -325,9 +324,9 @@ Namespace Flux.Greaseweazle
             End If
             TextBoxConsole.AppendText(line)
 
-            _TrackStatus.ProcessOutputLineWrite(line, ITrackStatus.ActionTypeEnum.Write, _DoubleStep)
+            TrackStatus.ProcessOutputLineWrite(line, ActionTypeEnum.Write, _DoubleStep)
 
-            If _TrackStatus.Failed Then
+            If TrackStatus.Failed Then
                 Process.Cancel()
             End If
         End Sub
@@ -372,7 +371,7 @@ Namespace Flux.Greaseweazle
         Private Sub ResetState(Optional ResetSelected As Boolean = True)
             ResetTrackGrid(ResetSelected)
             ClearStatusBar()
-            _TrackStatus.Clear()
+            TrackStatus.Clear()
             TextBoxConsole.Clear()
         End Sub
 
@@ -423,7 +422,7 @@ Namespace Flux.Greaseweazle
         End Function
         Private Sub WriteDisk(FilePath As String)
             Dim TrackRanges As List(Of (StartTrack As UShort, EndTrack As UShort)) = Nothing
-            Dim Heads As CommandLineBuilder.TrackHeads = CommandLineBuilder.TrackHeads.both
+            Dim Heads As TrackHeads = TrackHeads.both
 
             If CheckBoxSelect.Checked Then
                 Dim SelectedTracks As New HashSet(Of UShort)(TableSide0.SelectedTracks)
@@ -432,11 +431,11 @@ Namespace Flux.Greaseweazle
                 TrackRanges = BuildRanges(SelectedTracks)
 
                 If TableSide0.IsChecked AndAlso TableSide1.IsChecked Then
-                    Heads = CommandLineBuilder.TrackHeads.both
+                    Heads = TrackHeads.both
                 ElseIf TableSide0.IsChecked Then
-                    Heads = CommandLineBuilder.TrackHeads.head0
+                    Heads = TrackHeads.head0
                 Else
-                    Heads = CommandLineBuilder.TrackHeads.head1
+                    Heads = TrackHeads.head1
                 End If
 
                 If TrackRanges.Count = 0 Then
@@ -447,7 +446,7 @@ Namespace Flux.Greaseweazle
             WriteDisk(FilePath, TrackRanges, Heads)
         End Sub
 
-        Private Sub WriteDisk(FilePath As String, TrackRanges As List(Of (StartTrack As UShort, EndTrack As UShort)), Heads As CommandLineBuilder.TrackHeads)
+        Private Sub WriteDisk(FilePath As String, TrackRanges As List(Of (StartTrack As UShort, EndTrack As UShort)), Heads As TrackHeads)
             Dim Opt As DriveOption = ComboImageDrives.SelectedValue
 
             If Opt.Id = "" Then
@@ -493,7 +492,7 @@ Namespace Flux.Greaseweazle
                 Builder.AddCylinder(Range.StartTrack, Range.EndTrack)
             Next
 
-            If Heads <> CommandLineBuilder.TrackHeads.both Then
+            If Heads <> TrackHeads.both Then
                 Builder.Heads = Heads
             End If
 
@@ -579,13 +578,13 @@ Namespace Flux.Greaseweazle
         Private Sub Process_ProcessStateChanged(State As ConsoleProcessRunner.ProcessStateEnum) Handles Process.ProcessStateChanged
             Select Case State
                 Case ConsoleProcessRunner.ProcessStateEnum.Aborted
-                    If Not _TrackStatus.Failed Then
-                        _TrackStatus.UpdateTrackStatusAborted()
+                    If Not TrackStatus.Failed Then
+                        TrackStatus.UpdateTrackStatusAborted()
                     End If
 
                 Case ConsoleProcessRunner.ProcessStateEnum.Completed
                     Dim DoKeepProcessing As Boolean = CheckKeepProcessing()
-                    _TrackStatus.UpdateTrackStatusComplete(_DoubleStep, DoKeepProcessing)
+                    TrackStatus.UpdateTrackStatusComplete(_DoubleStep, DoKeepProcessing)
 
                     If DoKeepProcessing Then
                         KeepProcessing()
@@ -593,7 +592,7 @@ Namespace Flux.Greaseweazle
                     End If
 
                 Case ConsoleProcessRunner.ProcessStateEnum.Error
-                    _TrackStatus.UpdateTrackStatusError()
+                    TrackStatus.UpdateTrackStatusError()
             End Select
 
             If State <> ConsoleProcessRunner.ProcessStateEnum.Running Then

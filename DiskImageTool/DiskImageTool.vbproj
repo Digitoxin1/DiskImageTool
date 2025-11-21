@@ -31,7 +31,7 @@
     <ProductName>DiskImageTool</ProductName>
     <PublisherName>Digitoxin</PublisherName>
     <ApplicationRevision>0</ApplicationRevision>
-    <ApplicationVersion>2.25.0.%2a</ApplicationVersion>
+    <ApplicationVersion>2.26.0.%2a</ApplicationVersion>
     <UseApplicationTrust>false</UseApplicationTrust>
     <PublishWizardCompleted>true</PublishWizardCompleted>
     <BootstrapperEnabled>true</BootstrapperEnabled>
@@ -174,7 +174,7 @@
     <Compile Include="DiskImageLib.vb" />
     <Compile Include="Flux\Enums.vb" />
     <Compile Include="Flux\Greaseweazle\TrackStatus.vb" />
-    <Compile Include="Flux\ImportImageForm.vb">
+    <Compile Include="Flux\Forms\ImportImageForm.vb">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="Flux\ISettings.vb" />
@@ -207,10 +207,10 @@
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="Flux\Greaseweazle\GreaseweazleLib.vb" />
-    <Compile Include="Flux\BaseForm.Designer.vb">
+    <Compile Include="Flux\Forms\BaseForm.Designer.vb">
       <DependentUpon>BaseForm.vb</DependentUpon>
     </Compile>
-    <Compile Include="Flux\BaseForm.vb">
+    <Compile Include="Flux\Forms\BaseForm.vb">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="Flux\Greaseweazle\Forms\ReadDiskForm.vb">
@@ -807,16 +807,16 @@
     <EmbeddedResource Include="Flux\Greaseweazle\Forms\ConfigurationForm.resx">
       <DependentUpon>ConfigurationForm.vb</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Flux\BaseForm.de.resx">
+    <EmbeddedResource Include="Flux\Forms\BaseForm.de.resx">
       <DependentUpon>BaseForm.vb</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Flux\BaseForm.es.resx">
+    <EmbeddedResource Include="Flux\Forms\BaseForm.es.resx">
       <DependentUpon>BaseForm.vb</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Flux\BaseForm.fr.resx">
+    <EmbeddedResource Include="Flux\Forms\BaseForm.fr.resx">
       <DependentUpon>BaseForm.vb</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Flux\BaseForm.resx">
+    <EmbeddedResource Include="Flux\Forms\BaseForm.resx">
       <DependentUpon>BaseForm.vb</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Resources\HelpStrings.de.resx" />

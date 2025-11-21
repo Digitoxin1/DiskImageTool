@@ -141,11 +141,11 @@ Namespace Flux
             Return DetectedFormat
         End Function
 
-        Public Function FluxDeviceGetInfo(Device As ITrackStatus.FluxDevice) As FluxDeviceInfo?
+        Public Function FluxDeviceGetInfo(Device As FluxDevice) As FluxDeviceInfo?
             Select Case Device
-                Case ITrackStatus.FluxDevice.Greaseweazle
+                Case FluxDevice.Greaseweazle
                     Return New FluxDeviceInfo(Device, "Greaseweazle", True, True, App.Globals.AppSettings.Greaseweazle)
-                Case ITrackStatus.FluxDevice.Kryoflux
+                Case FluxDevice.Kryoflux
                     Return New FluxDeviceInfo(Device, "KryoFlux", False, False, App.Globals.AppSettings.Kryoflux)
                 Case Else
                     Return Nothing
@@ -155,7 +155,7 @@ Namespace Flux
         Public Function FluxDeviceGetList() As List(Of FluxDeviceInfo)
             Dim list As New List(Of FluxDeviceInfo)
 
-            For Each dev As ITrackStatus.FluxDevice In [Enum].GetValues(GetType(ITrackStatus.FluxDevice))
+            For Each dev As FluxDevice In [Enum].GetValues(GetType(FluxDevice))
 
                 ' Skip if not available
                 If Not FluxDeviceIsAvailable(dev) Then
@@ -172,11 +172,11 @@ Namespace Flux
             Return list
         End Function
 
-        Public Function FluxDeviceIsAvailable(Device As ITrackStatus.FluxDevice) As Boolean
+        Public Function FluxDeviceIsAvailable(Device As FluxDevice) As Boolean
             Select Case Device
-                Case ITrackStatus.FluxDevice.Greaseweazle
+                Case FluxDevice.Greaseweazle
                     Return App.AppSettings.Greaseweazle.IsPathValid
-                Case ITrackStatus.FluxDevice.Kryoflux
+                Case FluxDevice.Kryoflux
                     Return App.AppSettings.Kryoflux.IsPathValid
                 Case Else
                     Return False
@@ -543,7 +543,7 @@ Namespace Flux
         End Structure
 
         Public Structure FluxDeviceInfo
-            Public Sub New(Device As ITrackStatus.FluxDevice, Name As String, AllowSCP As Boolean, AllowHFE As Boolean, Settings As ISettings)
+            Public Sub New(Device As FluxDevice, Name As String, AllowSCP As Boolean, AllowHFE As Boolean, Settings As ISettings)
                 Me.Device = Device
                 Me.Name = Name
                 Me.AllowSCP = AllowSCP
@@ -553,7 +553,7 @@ Namespace Flux
 
             ReadOnly Property AllowHFE As Boolean
             ReadOnly Property AllowSCP As Boolean
-            ReadOnly Property Device As ITrackStatus.FluxDevice
+            ReadOnly Property Device As FluxDevice
             ReadOnly Property Name As String
             ReadOnly Property Settings As ISettings
         End Structure

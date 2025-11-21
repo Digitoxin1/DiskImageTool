@@ -4,12 +4,12 @@
         Implements ITrackStatus
 
         Private ReadOnly _Failed As Boolean = False
-        Private ReadOnly _ParentForm As BaseForm
         Private ReadOnly _StatusCollection As Dictionary(Of String, TrackStatusInfo)
         Private _CurrentStatusInfo As TrackStatusInfo = Nothing
         Private _TotalBadSectors As UInteger = 0
         Private _TotalUnexpectedSectors As UInteger = 0
         Private _TrackFound As Boolean = False
+
         Private Enum TrackStatusEnum
             Reading
             Erasing
@@ -20,10 +20,13 @@
             [Error]
         End Enum
 
-        Public Sub New(ParentForm As BaseForm)
+        Friend Event UpdateGridTrack(StatusData As BaseForm.TrackStatusData) Implements ITrackStatus.UpdateGridTrack
+        Friend Event UpdateStatus(StatusData As BaseForm.TrackStatusData) Implements ITrackStatus.UpdateStatus
+        Friend Event UpdateStatusType(StatusText As String) Implements ITrackStatus.UpdateStatusType
+
+        Public Sub New()
             MyBase.New
 
-            _ParentForm = ParentForm
             _StatusCollection = New Dictionary(Of String, TrackStatusInfo)
         End Sub
 
@@ -38,6 +41,11 @@
                 Return _TrackFound
             End Get
         End Property
+
+        Public Function CanKeepProcessing() As Boolean Implements ITrackStatus.CanKeepProcessing
+            Return False
+        End Function
+
         Public Sub Clear() Implements ITrackStatus.Clear
             _StatusCollection.Clear()
             _CurrentStatusInfo = Nothing
@@ -46,7 +54,30 @@
             _TrackFound = False
         End Sub
 
-        Public Sub ProcessOutputLineRead(line As String, InfoAction As ITrackStatus.ActionTypeEnum, DoubleStep As Boolean) Implements ITrackStatus.ProcessOutputLineRead
+        Public Sub UpdateTrackStatusAborted() Implements ITrackStatus.UpdateTrackStatusAborted
+            UpdateTrackStatusType(TrackStatusEnum.Aborted)
+        End Sub
+
+        Public Sub UpdateTrackStatusComplete(DoubleStep As Boolean, Optional KeepProcessing As Boolean = False) Implements ITrackStatus.UpdateTrackStatusComplete
+            SetCurrentTrackStatusComplete()
+            UpdateTrackStatusType(TrackStatusEnum.Success)
+        End Sub
+
+        Public Sub UpdateTrackStatusError() Implements ITrackStatus.UpdateTrackStatusError
+            UpdateTrackStatusType(TrackStatusEnum.Error)
+        End Sub
+
+        Friend Function GetNextTrackRange() As (Ranges As List(Of (StartTrack As UShort, EndTrack As UShort)), Heads As TrackHeads, [Continue] As Boolean) Implements ITrackStatus.GetNextTrackRange
+            Dim Response As (Ranges As List(Of (StartTrack As UShort, EndTrack As UShort)), Heads As TrackHeads, [Continue] As Boolean)
+
+            Response.Ranges = New List(Of (StartTrack As UShort, EndTrack As UShort))
+            Response.Heads = TrackHeads.both
+            Response.[Continue] = False
+
+            Return Response
+        End Function
+
+        Friend Sub ProcessOutputLineRead(line As String, InfoAction As ActionTypeEnum, DoubleStep As Boolean) Implements ITrackStatus.ProcessOutputLineRead
             Dim TrackSummary = ParseTrackSummary(line)
 
             If TrackSummary IsNot Nothing Then
@@ -54,25 +85,15 @@
                 Dim TrackInfo = ParseTrackInfo(TrackSummary.Details)
                 If TrackInfo IsNot Nothing Then
                     Dim StatusInfo = UpdateStatusInfo(TrackInfo, TrackSummary.Track, TrackSummary.Side, InfoAction)
-                    UpdateTrackStatus(StatusInfo, ITrackStatus.ActionTypeEnum.Read)
+                    UpdateTrackStatus(StatusInfo, ActionTypeEnum.Read)
                 Else
-                    Dim StatusInfo = UpdateStatusInfo(TrackSummary, ITrackStatus.ActionTypeEnum.Import)
-                    UpdateTrackStatus(StatusInfo, ITrackStatus.ActionTypeEnum.Read)
+                    Dim StatusInfo = UpdateStatusInfo(TrackSummary, ActionTypeEnum.Import)
+                    UpdateTrackStatus(StatusInfo, ActionTypeEnum.Read)
                 End If
             End If
         End Sub
-
-        Public Sub UpdateTrackStatusAborted() Implements ITrackStatus.UpdateTrackStatusAborted
-            UpdateTrackStatusType(TrackStatusEnum.Aborted)
-        End Sub
-
-        Public Sub UpdateTrackStatusComplete(DoubleStep As Boolean) Implements ITrackStatus.UpdateTrackStatusComplete
-            SetCurrentTrackStatusComplete()
-            UpdateTrackStatusType(TrackStatusEnum.Success)
-        End Sub
-
-        Public Sub UpdateTrackStatusError() Implements ITrackStatus.UpdateTrackStatusError
-            UpdateTrackStatusType(TrackStatusEnum.Error)
+        Friend Sub ProcessOutputLineWrite(line As String, InfoAction As ActionTypeEnum, DoubleStep As Boolean) Implements ITrackStatus.ProcessOutputLineWrite
+            Exit Sub
         End Sub
 
         Private Shared Function GetTrackStatusText(Status As TrackStatusEnum) As String
@@ -159,7 +180,7 @@
             End Select
         End Function
 
-        Private Function GetCurrentTrackStatusData(Action As ITrackStatus.ActionTypeEnum) As BaseForm.TrackStatusData
+        Private Function GetCurrentTrackStatusData(Action As ActionTypeEnum) As BaseForm.TrackStatusData
             Dim StatusText As String = ""
             Dim BackColor As Color = Color.Empty
             Dim CellText As String = ""
@@ -175,11 +196,11 @@
             End If
 
 
-            If Action = ITrackStatus.ActionTypeEnum.Read Then
+            If Action = ActionTypeEnum.Read Then
                 StatusText = GetTrackStatusText(TrackStatusEnum.Reading)
                 CellText = "R"
                 BackColor = Color.LightBlue
-            ElseIf Action = ITrackStatus.ActionTypeEnum.Complete Then
+            ElseIf Action = ActionTypeEnum.Complete Then
                 StatusText = GetTrackStatusText(TrackStatusEnum.Success)
                 BackColor = GetBackgroundColor(Status, Flags)
                 If BadSectorCount > 0 Then
@@ -263,16 +284,15 @@
 
             Return StatusInfo
         End Function
-
         Private Sub SetCurrentTrackStatusComplete()
             If _CurrentStatusInfo IsNot Nothing Then
-                Dim StatusData = GetCurrentTrackStatusData(ITrackStatus.ActionTypeEnum.Complete)
+                Dim StatusData = GetCurrentTrackStatusData(ActionTypeEnum.Complete)
 
-                _ParentForm.GridMarkTrack(StatusData)
+                RaiseEvent UpdateGridTrack(StatusData)
             End If
         End Sub
 
-        Private Function UpdateStatusInfo(TrackInfo As TrackInfo, Track As Integer, Side As Integer, Action As ITrackStatus.ActionTypeEnum) As TrackStatusInfo
+        Private Function UpdateStatusInfo(TrackInfo As TrackInfo, Track As Integer, Side As Integer, Action As ActionTypeEnum) As TrackStatusInfo
             Dim StatusInfo = GetStatusInfo(Track, Side)
 
             StatusInfo.Action = Action
@@ -284,7 +304,7 @@
             Return StatusInfo
         End Function
 
-        Private Function UpdateStatusInfo(TrackInfo As TrackSummary, Action As ITrackStatus.ActionTypeEnum) As TrackStatusInfo
+        Private Function UpdateStatusInfo(TrackInfo As TrackSummary, Action As ActionTypeEnum) As TrackStatusInfo
             Dim StatusInfo = GetStatusInfo(TrackInfo.Track, TrackInfo.Side)
 
             StatusInfo.Action = Action
@@ -295,17 +315,18 @@
             Return StatusInfo
         End Function
 
-        Private Sub UpdateTrackStatus(Statusinfo As TrackStatusInfo, Action As ITrackStatus.ActionTypeEnum)
+        Private Sub UpdateTrackStatus(Statusinfo As TrackStatusInfo, Action As ActionTypeEnum)
             SetCurrentTrackStatusComplete()
 
             _CurrentStatusInfo = Statusinfo
 
             Dim StatusData = GetCurrentTrackStatusData(Action)
-            _ParentForm.UpdateStatus(StatusData)
+
+            RaiseEvent UpdateStatus(StatusData)
         End Sub
 
         Private Sub UpdateTrackStatusType(Status As TrackStatusEnum)
-            _ParentForm.UpdateTrackStatusType(GetTrackStatusText(Status))
+            RaiseEvent UpdateStatusType(GetTrackStatusText(Status))
         End Sub
 
         Private Function UppercaseFirst(value As String) As String
@@ -316,7 +337,7 @@
         End Function
 
         Private Class TrackStatusInfo
-            Public Property Action As ITrackStatus.ActionTypeEnum
+            Public Property Action As ActionTypeEnum
             Public Property ErrorMessage As String
             Public ReadOnly Property Failed
                 Get

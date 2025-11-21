@@ -1,25 +1,17 @@
 ﻿Namespace Flux
-    Public Interface ITrackStatus
-        Enum FluxDevice
-            Greaseweazle
-            Kryoflux
-        End Enum
-
-        Enum ActionTypeEnum
-            Unknown
-            Read
-            Write
-            [Erase]
-            Import
-            Complete
-        End Enum
-
+    Friend Interface ITrackStatus
+        Event UpdateGridTrack(StatusData As BaseForm.TrackStatusData)
+        Event UpdateStatus(StatusData As BaseForm.TrackStatusData)
+        Event UpdateStatusType(StatusText As String)
         ReadOnly Property Failed As Boolean
         ReadOnly Property TrackFound As Boolean
+        Function CanKeepProcessing() As Boolean
         Sub Clear()
+        Function GetNextTrackRange() As (Ranges As List(Of (StartTrack As UShort, EndTrack As UShort)), Heads As TrackHeads, [Continue] As Boolean)
         Sub ProcessOutputLineRead(line As String, InfoAction As ActionTypeEnum, DoubleStep As Boolean)
+        Sub ProcessOutputLineWrite(line As String, InfoAction As ActionTypeEnum, DoubleStep As Boolean)
         Sub UpdateTrackStatusAborted()
-        Sub UpdateTrackStatusComplete(DoubleStep As Boolean)
+        Sub UpdateTrackStatusComplete(DoubleStep As Boolean, Optional KeepProcessing As Boolean = False)
         Sub UpdateTrackStatusError()
     End Interface
 End Namespace

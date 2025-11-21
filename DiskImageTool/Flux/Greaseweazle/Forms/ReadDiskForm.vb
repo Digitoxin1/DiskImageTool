@@ -26,7 +26,6 @@ Namespace Flux.Greaseweazle
         Private Shared _CachedFileNameTemplate As String = ""
         Private ReadOnly _HelpProvider1 As HelpProvider
         Private ReadOnly _Initialized As Boolean = False
-        Private ReadOnly _TrackStatus As TrackStatus
         Private _ComboExtensionsNoEvent As Boolean = False
         Private _ComboImageFormatNoEvent As Boolean = False
         Private _ComboOutputTypeNoEvent As Boolean = False
@@ -37,7 +36,7 @@ Namespace Flux.Greaseweazle
         Private _NumericRevs As NumericUpDown
         Private _NumericSeekRetries As NumericUpDown
         Private _OutputFilePath As String = ""
-        Private _ProcessingAction As ITrackStatus.ActionTypeEnum = ITrackStatus.ActionTypeEnum.Read
+        Private _ProcessingAction As ActionTypeEnum = ActionTypeEnum.Read
         Private _ProcessingFilePath As String = ""
         Private _ProcessingOutputType As ReadDiskOutputTypes? = Nothing
         Private _ProcessingPostAction As PostActionEnum = PostActionEnum.None
@@ -65,7 +64,7 @@ Namespace Flux.Greaseweazle
             InitializeControls()
 
             _HelpProvider1 = New HelpProvider
-            _TrackStatus = New TrackStatus(Me)
+            TrackStatus = New TrackStatus()
 
             Me.HelpButton = True
             Me.Text = My.Resources.Label_ReadDisk
@@ -109,7 +108,7 @@ Namespace Flux.Greaseweazle
         Public Sub ResetInterface()
             TextBoxConsole.Clear()
             ClearStatusBar()
-            _TrackStatus.Clear()
+            TrackStatus.Clear()
             ResetTrackGrid()
             SetTiltebarText()
             CheckBoxSelect.Checked = False
@@ -660,7 +659,6 @@ Namespace Flux.Greaseweazle
                 End With
             Else
                 Dim ImageParams As FloppyDiskParams = ComboImageFormat.SelectedValue
-                ComboExtensions.Enabled = True
                 SharedLib.PopulateFileExtensions(ComboExtensions, ImageParams.Format)
             End If
 
@@ -729,7 +727,7 @@ Namespace Flux.Greaseweazle
             Dim OutputType As ReadDiskOutputTypes = ComboOutputType.SelectedValue
 
             _ProcessingFilePath = Response.FilePath
-            _ProcessingAction = ITrackStatus.ActionTypeEnum.Read
+            _ProcessingAction = ActionTypeEnum.Read
             _ProcessingPostAction = PostActionEnum.None
             _ProcessingOutputType = OutputType
             _FileOverwriteMode = OverwriteMode
@@ -769,7 +767,7 @@ Namespace Flux.Greaseweazle
             ResetInterface()
 
             _ProcessingFilePath = FilePath
-            _ProcessingAction = ITrackStatus.ActionTypeEnum.Import
+            _ProcessingAction = ActionTypeEnum.Import
             _ProcessingPostAction = PostAction
             _ProcessingOutputType = OutputType
 
@@ -805,15 +803,15 @@ Namespace Flux.Greaseweazle
             ProcessImageRaw(PostAction)
         End Sub
 
-        Private Sub ProcessOutputLine(line As String, Action As ITrackStatus.ActionTypeEnum)
+        Private Sub ProcessOutputLine(line As String, Action As ActionTypeEnum)
             If TextBoxConsole.Text.Length > 0 Then
                 TextBoxConsole.AppendText(Environment.NewLine)
             End If
             TextBoxConsole.AppendText(line)
 
-            _TrackStatus.ProcessOutputLineRead(line, Action, _DoubleStep)
+            TrackStatus.ProcessOutputLineRead(line, Action, _DoubleStep)
 
-            If _TrackStatus.Failed Then
+            If TrackStatus.Failed Then
                 Process.Cancel()
             End If
         End Sub
@@ -945,7 +943,7 @@ Namespace Flux.Greaseweazle
             End If
 
             _ProcessingFilePath = _StagingFilePath
-            _ProcessingAction = ITrackStatus.ActionTypeEnum.Read
+            _ProcessingAction = ActionTypeEnum.Read
             _ProcessingPostAction = PostActionEnum.None
             _ProcessingOutputType = ReadDiskOutputTypes.RAW
             _FileOverwriteMode = True
@@ -953,7 +951,7 @@ Namespace Flux.Greaseweazle
             _DoubleStep = DiskParams.IsStandard AndAlso CheckBoxDoublestep.Enabled AndAlso CheckBoxDoublestep.Checked
 
             Dim TrackRanges As List(Of (StartTrack As UShort, EndTrack As UShort)) = Nothing
-            Dim Heads As CommandLineBuilder.TrackHeads? = Nothing
+            Dim Heads As TrackHeads? = Nothing
 
             If CheckBoxSelect.Checked Then
                 Dim SelectedTracks As New HashSet(Of UShort)(TableSide0.SelectedTracks)
@@ -962,11 +960,11 @@ Namespace Flux.Greaseweazle
                 TrackRanges = BuildRanges(SelectedTracks)
 
                 If TableSide0.IsChecked AndAlso TableSide1.IsChecked Then
-                    Heads = CommandLineBuilder.TrackHeads.both
+                    Heads = TrackHeads.both
                 ElseIf TableSide0.IsChecked Then
-                    Heads = CommandLineBuilder.TrackHeads.head0
+                    Heads = TrackHeads.head0
                 Else
-                    Heads = CommandLineBuilder.TrackHeads.head1
+                    Heads = TrackHeads.head1
                 End If
 
                 TableSide0.ResetSelectedSells()
@@ -1233,17 +1231,17 @@ Namespace Flux.Greaseweazle
             Select Case State
                 Case ConsoleProcessRunner.ProcessStateEnum.Aborted
                     ClearProcessedFile()
-                    If Not _TrackStatus.Failed Then
-                        _TrackStatus.UpdateTrackStatusAborted()
+                    If Not TrackStatus.Failed Then
+                        TrackStatus.UpdateTrackStatusAborted()
                     End If
 
                 Case ConsoleProcessRunner.ProcessStateEnum.Completed
                     StageProcessedFile()
-                    _TrackStatus.UpdateTrackStatusComplete(_DoubleStep)
+                    TrackStatus.UpdateTrackStatusComplete(_DoubleStep)
 
                 Case ConsoleProcessRunner.ProcessStateEnum.Error
                     ClearProcessedFile()
-                    _TrackStatus.UpdateTrackStatusError()
+                    TrackStatus.UpdateTrackStatusError()
             End Select
 
             RefreshButtonState()

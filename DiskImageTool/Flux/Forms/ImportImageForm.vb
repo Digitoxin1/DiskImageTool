@@ -16,6 +16,7 @@ Namespace Flux
         Private WithEvents ComboOutputType As ComboBox
         Private WithEvents TextBoxFileName As TextBox
 
+        Private Shared _CachedDevice? As FluxDeviceInfo = Nothing
         Private ReadOnly _Initialized As Boolean = False
         Private _ComboDevicesNoEvent As Boolean = False
         Private _ComboExtensionsNoEvent As Boolean = False
@@ -26,9 +27,7 @@ Namespace Flux
         Private _SelectedDevice As FluxDeviceInfo = Nothing
         Private _SideCount As Integer
         Private _TrackCount As Integer
-        Private _TrackStatus As ITrackStatus = Nothing
         Private LabelOutputType As Label
-
         Public Event ImportRequested(File As String, NewFilename As String)
 
         Public Sub New(FilePath As String, TrackCount As Integer, SideCount As Integer)
@@ -70,9 +69,10 @@ Namespace Flux
             Dim ImageParams As FloppyDiskParams = ComboImageFormat.SelectedValue
 
             Select Case SelectedDevice.Device
-                Case ITrackStatus.FluxDevice.Greaseweazle
+                Case FluxDevice.Greaseweazle
                     Dim imageFormat = Greaseweazle.GreaseweazleImageFormatFromFloppyDiskFormat(ImageParams.Format)
                     Return (imageFormat <> Greaseweazle.GreaseweazleImageFormat.None)
+
                 Case Else
                     Return True
             End Select
@@ -113,16 +113,17 @@ Namespace Flux
             ClearStatusBar()
             GridReset(_TrackCount, _SideCount)
 
-            _TrackStatus.Clear()
+            TrackStatus.Clear()
         End Sub
 
         Private Function ConvertFirstTrack() As (Result As Boolean, Filename As String)
             Dim SelectedDevice As FluxDeviceInfo = CType(ComboDevices.SelectedItem, FluxDeviceInfo)
 
             Select Case SelectedDevice.Device
-                Case ITrackStatus.FluxDevice.Greaseweazle
+                Case FluxDevice.Greaseweazle
                     Return Greaseweazle.ConvertFirstTrack(_InputFilePath)
-                Case ITrackStatus.FluxDevice.Kryoflux
+
+                Case FluxDevice.Kryoflux
                     Return Kryoflux.ConvertFirstTrack(_InputFilePath)
             End Select
 
@@ -133,11 +134,11 @@ Namespace Flux
             Dim OutputType As ImageImportOutputTypes = ComboOutputType.SelectedValue
 
             Select Case _SelectedDevice.Device
-                Case ITrackStatus.FluxDevice.Greaseweazle
+                Case FluxDevice.Greaseweazle
                     _OutputFilePath = FilePath
                     Return Greaseweazle.GenerateCommandLineImport(_InputFilePath, FilePath, ComboImageFormat.SelectedValue, OutputType, _DoubleStep)
 
-                Case ITrackStatus.FluxDevice.Kryoflux
+                Case FluxDevice.Kryoflux
                     Dim Response = Kryoflux.GenerateCommandLineImport(_InputFilePath, FilePath, ComboImageFormat.SelectedValue, _DoubleStep)
                     _OutputFilePath = Response.OutputFilePath
                     Return Response.Arguments
@@ -309,20 +310,21 @@ Namespace Flux
                 .Controls.Add(ButtonContainer, 5, Row)
 
                 .ResumeLayout()
-                '.Left = (.Parent.ClientSize.Width - .Width) \ 2
             End With
         End Sub
 
         Private Sub InitializeDevice()
             _SelectedDevice = CType(ComboDevices.SelectedItem, FluxDeviceInfo)
+            _CachedDevice = _SelectedDevice
 
             LogFileName = _SelectedDevice.Settings.LogFileName
 
             Select Case _SelectedDevice.Device
-                Case ITrackStatus.FluxDevice.Greaseweazle
-                    _TrackStatus = New Greaseweazle.TrackStatus(Me)
-                Case ITrackStatus.FluxDevice.Kryoflux
-                    _TrackStatus = New Kryoflux.TrackStatus(Me)
+                Case FluxDevice.Greaseweazle
+                    TrackStatus = New Greaseweazle.TrackStatus()
+
+                Case FluxDevice.Kryoflux
+                    TrackStatus = New Kryoflux.TrackStatus()
             End Select
 
             InitializeImage()
@@ -338,10 +340,12 @@ Namespace Flux
             SetTiltebarText()
             ClearStatusBar()
             RefreshButtonState()
+            Me.Refresh()
         End Sub
 
         Private Function OpenFluxImage(Filename As String) As Boolean
             Dim SelectedDevice As FluxDeviceInfo = CType(ComboDevices.SelectedItem, FluxDeviceInfo)
+
             Dim response = AnalyzeFluxImage(Filename, SelectedDevice.AllowSCP)
             If response.Result Then
                 _TrackCount = response.TrackCount
@@ -378,9 +382,18 @@ Namespace Flux
                 .DropDownStyle = ComboBoxStyle.DropDownList
             End With
 
-            If ComboDevices.Items.Count > 0 Then
+            If _CachedDevice.HasValue Then
+                Dim Device As FluxDevice = _CachedDevice.Value.Device
+                ComboDevices.SelectedValue = Device
+            End If
+
+            If ComboDevices.Items.Count > 0 And ComboDevices.SelectedIndex < 0 Then
                 ComboDevices.SelectedIndex = 0
+            End If
+
+            If ComboDevices.SelectedItem IsNot Nothing Then
                 _SelectedDevice = CType(ComboDevices.SelectedItem, FluxDeviceInfo)
+                _CachedDevice = _SelectedDevice
             End If
 
             ComboDevices.Enabled = (ComboDevices.Items.Count > 1)
@@ -394,7 +407,6 @@ Namespace Flux
             Dim OutputType As ImageImportOutputTypes = ComboOutputType.SelectedValue
             Dim hfeOnly = OutputType = ImageImportOutputTypes.HFE AndAlso _SelectedDevice.AllowHFE
 
-
             If hfeOnly Then
                 Dim items As New List(Of FileExtensionItem) From {
                     New FileExtensionItem(".hfe", Nothing)
@@ -405,7 +417,7 @@ Namespace Flux
                     .Items.Clear()
                     .DisplayMember = "Extension"
                     .DataSource = items
-                    .SelectedIndex = If(items.Count > 0, 0, -1)
+                    .SelectedIndex = 0
                     .DropDownStyle = ComboBoxStyle.DropDownList
                 End With
             Else
@@ -413,7 +425,7 @@ Namespace Flux
                 SharedLib.PopulateFileExtensions(ComboExtensions, ImageParams.Format)
             End If
 
-            If ComboExtensions.Items.Count > 0 Then
+            If ComboExtensions.SelectedIndex = -1 AndAlso ComboExtensions.Items.Count > 0 Then
                 ComboExtensions.SelectedIndex = 0
             End If
 
@@ -432,9 +444,11 @@ Namespace Flux
                 If OutputType = ImageImportOutputTypes.IMA AndAlso Not UseSectorImage AndAlso _SelectedDevice.AllowHFE Then
                     Continue For
                 End If
+
                 If OutputType = ImageImportOutputTypes.HFE AndAlso Not _SelectedDevice.AllowHFE Then
                     Continue For
                 End If
+
                 DriveList.Add(New KeyValuePair(Of String, ImageImportOutputTypes)(
                     ImageImportOutputTypeDescription(OutputType), OutputType)
                 )
@@ -442,7 +456,7 @@ Namespace Flux
 
             InitializeCombo(ComboOutputType, DriveList, Nothing)
 
-            If ComboOutputType.Items.Count > 0 Then
+            If ComboOutputType.SelectedIndex = -1 AndAlso ComboOutputType.Items.Count > 0 Then
                 ComboOutputType.SelectedIndex = 0
             End If
 
@@ -486,9 +500,9 @@ Namespace Flux
             End If
             TextBoxConsole.AppendText(line)
 
-            _TrackStatus.ProcessOutputLineRead(line, ITrackStatus.ActionTypeEnum.Import, _DoubleStep)
+            TrackStatus.ProcessOutputLineRead(line, ActionTypeEnum.Import, _DoubleStep)
 
-            If _TrackStatus.Failed Then
+            If TrackStatus.Failed Then
                 Process.Cancel()
             End If
         End Sub
@@ -546,6 +560,7 @@ Namespace Flux
 
             RefreshImportButtonState()
         End Sub
+
         Private Sub RefreshImportButtonState()
             Dim HasOutputfile As Boolean = Not String.IsNullOrEmpty(_OutputFilePath)
             Dim HasInputFile As Boolean = Not String.IsNullOrEmpty(_InputFilePath)
@@ -571,6 +586,7 @@ Namespace Flux
 
             App.AppSettings.SetPreferredExtension(Item.Format.Value, Item.Extension)
         End Sub
+
         Private Sub SetNewFileName()
             Dim FileExt = IO.Path.GetExtension(_InputFilePath).ToLower
 
@@ -726,21 +742,21 @@ Namespace Flux
             Select Case State
                 Case ConsoleProcessRunner.ProcessStateEnum.Aborted
                     ClearOutputFile(True)
-                    If Not _TrackStatus.Failed Then
-                        _TrackStatus.UpdateTrackStatusAborted()
+                    If Not TrackStatus.Failed Then
+                        TrackStatus.UpdateTrackStatusAborted()
                     End If
 
                 Case ConsoleProcessRunner.ProcessStateEnum.Completed
-                    If _TrackStatus.TrackFound Then
-                        _TrackStatus.UpdateTrackStatusComplete(_DoubleStep)
+                    If TrackStatus.TrackFound Then
+                        TrackStatus.UpdateTrackStatusComplete(_DoubleStep)
                     Else
                         ClearOutputFile(True)
-                        _TrackStatus.UpdateTrackStatusError()
+                        TrackStatus.UpdateTrackStatusError()
                     End If
 
                 Case ConsoleProcessRunner.ProcessStateEnum.Error
                     ClearOutputFile(True)
-                    _TrackStatus.UpdateTrackStatusError()
+                    TrackStatus.UpdateTrackStatusError()
             End Select
 
             RefreshButtonState()

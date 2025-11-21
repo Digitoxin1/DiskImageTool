@@ -5,6 +5,26 @@
             HFE
         End Enum
 
+        Friend Enum TrackHeads
+            head0
+            head1
+            both
+        End Enum
+
+        Enum FluxDevice
+            Greaseweazle
+            Kryoflux
+        End Enum
+
+        Enum ActionTypeEnum
+            Unknown
+            Read
+            Write
+            [Erase]
+            Import
+            Complete
+        End Enum
+
         Public Function ImageImportOutputTypeDescription(Value As ImageImportOutputTypes) As String
             Select Case Value
                 Case ImageImportOutputTypes.HFE
