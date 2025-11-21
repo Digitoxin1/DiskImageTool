@@ -299,9 +299,9 @@ Namespace Flux
                 Return (False, "", "")
             End If
 
-            Using form As New ImportImageForm(FilePath, AnalyzeResponse.TrackCount, AnalyzeResponse.SideCount, LaunchedFromDialog)
+            Using form As New ConvertImageForm(FilePath, AnalyzeResponse.TrackCount, AnalyzeResponse.SideCount, LaunchedFromDialog)
 
-                Dim handler As ImportImageForm.ImportRequestedEventHandler =
+                Dim handler As ConvertImageForm.ImportRequestedEventHandler =
                     Sub(File, NewName)
                         ParentForm.ProcessImportedImage(File, NewName)
                     End Sub
