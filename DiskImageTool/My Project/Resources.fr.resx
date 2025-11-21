@@ -1657,4 +1657,10 @@ Voulez-vous écraser ?</value>
   <data name="Label_Device" xml:space="preserve">
     <value>Périphérique</value>
   </data>
+  <data name="Label_Unexpected" xml:space="preserve">
+    <value>Inattendu</value>
+  </data>
+  <data name="Label_BadSectorIds" xml:space="preserve">
+    <value>Secteurs défectueux</value>
+  </data>
 </root>

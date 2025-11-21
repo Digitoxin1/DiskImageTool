@@ -1,4 +1,5 @@
 ﻿Imports System.ComponentModel
+Imports System.Drawing.Drawing2D
 Imports DiskImageTool.DiskImage
 
 Public Class MainForm
@@ -571,7 +572,7 @@ Public Class MainForm
 
     Private Sub HandleDragDrop(Files() As String)
         If Files.Length = 1 Then
-            Dim CanProcessFlux = Flux.Greaseweazle.Settings.IsPathValid
+            Dim CanProcessFlux = Flux.Greaseweazle.Settings.IsPathValid Or Flux.Kryoflux.Settings.IsPathValid
             If CanProcessFlux Then
                 Dim Result = ProcessFileDropFlux(Files(0))
                 If Result Then
@@ -1003,9 +1004,11 @@ Public Class MainForm
 
         If IO.File.Exists(FilePath) Then
             If IO.Path.GetExtension(FilePath).ToLower = ".scp" Then
-                IsFluxIamge = True
+                If App.AppSettings.Greaseweazle.IsPathValid Then
+                    IsFluxIamge = True
+                End If
             ElseIf IO.Path.GetExtension(FilePath).ToLower = ".raw" Then
-                Dim Response = Flux.GetTrackCountRaw(FilePath)
+                    Dim Response = Flux.GetTrackCountRaw(FilePath)
                 If Response.Result Then
                     IsFluxIamge = True
                 End If
@@ -1024,6 +1027,7 @@ Public Class MainForm
 
         Return IsFluxIamge
     End Function
+
     Private Sub RefreshCurrentState(FilePanel As FilePanel)
         ImageCombo.RefreshCurrentItemText()
         RefreshDiskState(FilePanel.CurrentImage)

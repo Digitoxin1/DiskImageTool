@@ -210,7 +210,9 @@
     <Compile Include="Flux\Forms\BaseFluxForm.Designer.vb">
       <DependentUpon>BaseFluxForm.vb</DependentUpon>
     </Compile>
-    <Compile Include="Flux\Forms\BaseFluxForm.vb" />
+    <Compile Include="Flux\Forms\BaseFluxForm.vb">
+      <SubType>Form</SubType>
+    </Compile>
     <Compile Include="Flux\Greaseweazle\Forms\ReadDiskForm.vb">
       <SubType>Form</SubType>
     </Compile>

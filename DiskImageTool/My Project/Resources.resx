@@ -1879,4 +1879,10 @@ Do you wish to overwrite?</value>
   <data name="Label_Device" xml:space="preserve">
     <value>Device</value>
   </data>
+  <data name="Label_Unexpected" xml:space="preserve">
+    <value>Unexpected</value>
+  </data>
+  <data name="Label_BadSectorIds" xml:space="preserve">
+    <value>Bad Sector Ids</value>
+  </data>
 </root>

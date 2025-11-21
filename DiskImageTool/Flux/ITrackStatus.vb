@@ -1,5 +1,6 @@
 ﻿Namespace Flux
     Friend Interface ITrackStatus
+        Event UpdateGridTooltip(Track As Integer, Side As Integer, Tooltip As String)
         Event UpdateGridTrack(StatusData As BaseFluxForm.TrackStatusData)
         Event UpdateStatus(StatusData As BaseFluxForm.TrackStatusData)
         Event UpdateStatusType(StatusText As String)

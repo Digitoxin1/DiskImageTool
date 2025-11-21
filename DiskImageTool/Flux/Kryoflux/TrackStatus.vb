@@ -20,6 +20,7 @@
             [Error]
         End Enum
 
+        Friend Event UpdateGridTooltip(Track As Integer, Side As Integer, Tooltip As String) Implements ITrackStatus.UpdateGridTooltip
         Friend Event UpdateGridTrack(StatusData As BaseFluxForm.TrackStatusData) Implements ITrackStatus.UpdateGridTrack
         Friend Event UpdateStatus(StatusData As BaseFluxForm.TrackStatusData) Implements ITrackStatus.UpdateStatus
         Friend Event UpdateStatusType(StatusText As String) Implements ITrackStatus.UpdateStatusType

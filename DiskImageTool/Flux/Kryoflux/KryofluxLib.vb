@@ -27,7 +27,7 @@ Namespace Flux.Kryoflux
                 .SingleSidedMode = SingleSidedModeEnum.side0
             }
 
-            Dim result = ConsoleProcessRunner.RunProcess(Settings.AppPath, Builder.Arguments, captureOutput:=True, captureError:=False)
+            Dim result = ConsoleProcessRunner.RunProcess(Settings.AppPath, Builder.Arguments)
 
             Dim RegExTrackInfo As New Regex(ConsoleParser.REGEX_TRACK, RegexOptions.IgnoreCase Or RegexOptions.CultureInvariant Or RegexOptions.Multiline)
 
@@ -37,7 +37,7 @@ Namespace Flux.Kryoflux
                 Dim Status = Match.Groups("status").Value.Trim
                 If Status = "unformatted" Then
                     Builder.RPM = 360
-                    ConsoleProcessRunner.RunProcess(Settings.AppPath, Builder.Arguments, captureOutput:=False, captureError:=False)
+                    ConsoleProcessRunner.RunProcess(Settings.AppPath, Builder.Arguments)
                 End If
             End If
 

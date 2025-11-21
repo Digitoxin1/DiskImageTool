@@ -48,6 +48,7 @@
                 _LogFileName = value
             End Set
         End Property
+
         Public ReadOnly Property TableSide0 As FloppyTrackGrid
             Get
                 Return TS0
@@ -106,13 +107,6 @@
             End Select
         End Function
 
-        Public Sub GridMarkTrack(StatusData As TrackStatusData)
-            Dim Table = GridGetTable(StatusData.Side)
-            Dim Track = StatusData.Track
-
-            Table?.SetCell(Track, Text:=StatusData.CellText, BackColor:=StatusData.BackColor, ForeColor:=StatusData.ForeColor, Tooltip:=StatusData.Tooltip)
-        End Sub
-
         Public Sub GridReset()
             GridReset(_Tracks, _Sides)
         End Sub
@@ -146,38 +140,6 @@
             End Using
         End Sub
 
-        Public Sub UpdateStatus(StatusData As TrackStatusData)
-            GridMarkTrack(StatusData)
-
-            StatusType.Text = StatusData.StatusText
-            StatusTrack.Text = My.Resources.Label_Track & " " & StatusData.Track
-            StatusSide.Text = My.Resources.Label_Side & " " & StatusData.Side
-            StatusSide.Visible = StatusData.SideVisible
-
-            If StatusData.TotalBadSectors = 1 Then
-                StatusBadSectors.Text = StatusData.TotalBadSectors & " " & My.Resources.Label_BadSector
-                StatusBadSectors.Visible = True
-            ElseIf StatusData.TotalBadSectors > 1 Then
-                StatusBadSectors.Text = StatusData.TotalBadSectors & " " & My.Resources.Label_BadSectors
-                StatusBadSectors.Visible = True
-            Else
-                StatusBadSectors.Visible = False
-            End If
-
-            If StatusData.TotalUnexpectedSectors = 1 Then
-                StatusUnexpected.Text = StatusData.TotalUnexpectedSectors & " " & My.Resources.Label_UnexpectedSector
-                StatusUnexpected.Visible = True
-            ElseIf StatusData.TotalUnexpectedSectors > 1 Then
-                StatusUnexpected.Text = StatusData.TotalUnexpectedSectors & " " & My.Resources.Label_UnexpectedSectors
-                StatusUnexpected.Visible = True
-            Else
-                StatusUnexpected.Visible = False
-            End If
-        End Sub
-
-        Public Sub UpdateTrackStatusType(Text As String)
-            StatusType.Text = Text
-        End Sub
         Protected Overridable Sub OnAfterBaseFormClosing(e As FormClosingEventArgs)
             ' Default: do nothing
         End Sub
@@ -227,6 +189,18 @@
             End If
         End Function
 
+        Private Sub GridUpdateTooltip(Track As Integer, Side As Integer, Tooltip As String)
+            Dim Table = GridGetTable(Side)
+
+            Table?.SetCellTooltip(Track, Tooltip)
+        End Sub
+
+        Private Sub GridMarkTrack(StatusData As TrackStatusData)
+            Dim Table = GridGetTable(StatusData.Side)
+            Dim Track = StatusData.Track
+
+            Table?.SetCell(Track, Text:=StatusData.CellText, BackColor:=StatusData.BackColor, ForeColor:=StatusData.ForeColor, Tooltip:=StatusData.Tooltip)
+        End Sub
         Private Sub GridResetTracks(Grid As FloppyTrackGrid, Tracks As UShort, Disabled As Boolean, Optional ResetSelected As Boolean = True)
             Grid.ActiveTrackCount = Tracks
             Grid.ResetAll()
@@ -237,6 +211,38 @@
             Grid.Disabled = Disabled
         End Sub
 
+        Private Sub UpdateStatus(StatusData As TrackStatusData)
+            GridMarkTrack(StatusData)
+
+            StatusType.Text = StatusData.StatusText
+            StatusTrack.Text = My.Resources.Label_Track & " " & StatusData.Track
+            StatusSide.Text = My.Resources.Label_Side & " " & StatusData.Side
+            StatusSide.Visible = StatusData.SideVisible
+
+            If StatusData.TotalBadSectors = 1 Then
+                StatusBadSectors.Text = StatusData.TotalBadSectors & " " & My.Resources.Label_BadSector
+                StatusBadSectors.Visible = True
+            ElseIf StatusData.TotalBadSectors > 1 Then
+                StatusBadSectors.Text = StatusData.TotalBadSectors & " " & My.Resources.Label_BadSectors
+                StatusBadSectors.Visible = True
+            Else
+                StatusBadSectors.Visible = False
+            End If
+
+            If StatusData.TotalUnexpectedSectors = 1 Then
+                StatusUnexpected.Text = StatusData.TotalUnexpectedSectors & " " & My.Resources.Label_UnexpectedSector
+                StatusUnexpected.Visible = True
+            ElseIf StatusData.TotalUnexpectedSectors > 1 Then
+                StatusUnexpected.Text = StatusData.TotalUnexpectedSectors & " " & My.Resources.Label_UnexpectedSectors
+                StatusUnexpected.Visible = True
+            Else
+                StatusUnexpected.Visible = False
+            End If
+        End Sub
+
+        Private Sub UpdateTrackStatusType(Text As String)
+            StatusType.Text = Text
+        End Sub
 #Region "Events"
         Private Sub ButtonCancel_Click(sender As Object, e As EventArgs) Handles ButtonCancel.Click
             _CancelButtonClicked = True
@@ -244,6 +250,10 @@
 
         Private Sub ButtonSaveLog_Click(sender As Object, e As EventArgs) Handles ButtonSaveLog.Click
             SaveLog()
+        End Sub
+
+        Private Sub TS_UpdateGridTooltip(Track As Integer, Side As Integer, Tooltip As String) Handles TS.UpdateGridTooltip
+            GridUpdateTooltip(Track, Side, Tooltip)
         End Sub
 
         Private Sub TS_UpdateGridTrack(StatusData As TrackStatusData) Handles TS.UpdateGridTrack
@@ -293,6 +303,7 @@
 
             RaiseEvent SelectionChanged(Me, Track, 1, Selected)
         End Sub
+
 #End Region
         Public Structure TrackStatusData
             Public BackColor As Color

@@ -152,7 +152,7 @@ Namespace Flux
             End Select
         End Function
 
-        Public Function FluxDeviceGetList() As List(Of FluxDeviceInfo)
+        Public Function FluxDeviceGetList(FileType As InputFileTypeEnum) As List(Of FluxDeviceInfo)
             Dim list As New List(Of FluxDeviceInfo)
 
             For Each dev As FluxDevice In [Enum].GetValues(GetType(FluxDevice))
@@ -165,6 +165,9 @@ Namespace Flux
                 ' Get FluxDeviceInfo
                 Dim info = FluxDeviceGetInfo(dev)
                 If info.HasValue Then
+                    If Not info.Value.AllowSCP And FileType = InputFileTypeEnum.scp Then
+                        Continue For
+                    End If
                     list.Add(info.Value)
                 End If
             Next
@@ -320,6 +323,7 @@ Namespace Flux
                 Return (False, "", "")
             End Using
         End Function
+
         Public Sub InitializeCombo(Combo As ComboBox, DataSource As Object, CurrentValue As Object)
             Combo.DisplayMember = "Key"
             Combo.ValueMember = "Value"
@@ -330,6 +334,7 @@ Namespace Flux
                 Combo.SelectedValue = CurrentValue
             End If
         End Sub
+
         Public Function IsExecutable(path As String) As Boolean
             Return Not String.IsNullOrWhiteSpace(path) AndAlso
             IO.File.Exists(path) AndAlso
@@ -499,6 +504,46 @@ Namespace Flux
             End Try
 
             Return lnkPath
+        End Function
+
+        Public Function UShortListToRanges(values As List(Of UShort)) As String
+            If values Is Nothing OrElse values.Count = 0 Then Return ""
+
+            ' Sort and de-duplicate
+            Dim nums = values.Distinct().OrderBy(Function(n) n).ToList()
+
+            Dim ranges As New List(Of String)()
+            Dim rangeStart As UShort = nums(0)
+            Dim prev As UShort = nums(0)
+
+            For i As Integer = 1 To nums.Count - 1
+                Dim current = nums(i)
+
+                If current = prev + 1 Then
+                    ' still in a run
+                    prev = current
+                Else
+                    ' range ended
+                    If rangeStart = prev Then
+                        ranges.Add(rangeStart.ToString())
+                    Else
+                        ranges.Add($"{rangeStart}-{prev}")
+                    End If
+
+                    ' start new range
+                    rangeStart = current
+                    prev = current
+                End If
+            Next
+
+            ' close final range
+            If rangeStart = prev Then
+                ranges.Add(rangeStart.ToString())
+            Else
+                ranges.Add($"{rangeStart}-{prev}")
+            End If
+
+            Return String.Join(", ", ranges)
         End Function
 
         Private Sub ClearImageFormats(Combo As ComboBox)

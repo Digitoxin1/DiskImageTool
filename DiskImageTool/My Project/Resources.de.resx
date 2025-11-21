@@ -1657,4 +1657,10 @@ Möchten Sie ihn überschreiben?</value>
   <data name="Label_Device" xml:space="preserve">
     <value>Gerät</value>
   </data>
+  <data name="Label_Unexpected" xml:space="preserve">
+    <value>Unerwartet</value>
+  </data>
+  <data name="Label_BadSectorIds" xml:space="preserve">
+    <value>Defekte Sektoren</value>
+  </data>
 </root>

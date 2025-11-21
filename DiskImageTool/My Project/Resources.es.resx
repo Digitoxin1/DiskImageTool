@@ -1657,4 +1657,10 @@
   <data name="Label_Device" xml:space="preserve">
     <value>Dispositivo</value>
   </data>
+  <data name="Label_Unexpected" xml:space="preserve">
+    <value>Inesperado</value>
+  </data>
+  <data name="Label_BadSectorIds" xml:space="preserve">
+    <value>Sectores defectuosos</value>
+  </data>
 </root>

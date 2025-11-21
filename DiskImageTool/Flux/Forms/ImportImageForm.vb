@@ -28,6 +28,7 @@ Namespace Flux
         Private _SideCount As Integer
         Private _TrackCount As Integer
         Private LabelOutputType As Label
+
         Public Event ImportRequested(File As String, NewFilename As String)
 
         Public Sub New(FilePath As String, TrackCount As Integer, SideCount As Integer)
@@ -40,8 +41,7 @@ Namespace Flux
             _SideCount = SideCount
 
             InitializeControls()
-            PopulateDeviceCombo()
-            InitializeDevice()
+            InitializeDevice(True)
 
             _Initialized = True
         End Sub
@@ -147,6 +147,22 @@ Namespace Flux
             Return ""
         End Function
 
+        Private Function GetInputFileType() As InputFileTypeEnum
+            If String.IsNullOrEmpty(_InputFilePath) Then
+                Return InputFileTypeEnum.none
+            End If
+
+            Dim Ext = IO.Path.GetExtension(_InputFilePath).ToLower()
+
+            Select Case Ext
+                Case ".scp"
+                    Return InputFileTypeEnum.scp
+                Case ".raw"
+                    Return InputFileTypeEnum.raw
+                Case Else
+                    Return InputFileTypeEnum.sectorImage
+            End Select
+        End Function
         Private Sub InitializeControls()
             Dim LabelDevice As New Label With {
                 .Text = My.Resources.Label_Device,
@@ -313,7 +329,11 @@ Namespace Flux
             End With
         End Sub
 
-        Private Sub InitializeDevice()
+        Private Sub InitializeDevice(Repopulate As Boolean)
+            If Repopulate Then
+                PopulateDeviceCombo()
+            End If
+
             _SelectedDevice = CType(ComboDevices.SelectedItem, FluxDeviceInfo)
             _CachedDevice = _SelectedDevice
 
@@ -372,7 +392,8 @@ Namespace Flux
         Private Sub PopulateDeviceCombo()
             _ComboDevicesNoEvent = True
 
-            Dim Items = FluxDeviceGetList()
+            Dim FileType = GetInputFileType()
+            Dim Items = FluxDeviceGetList(FileType)
 
             With ComboDevices
                 .DataSource = Items
@@ -631,7 +652,7 @@ Namespace Flux
 
         Private Sub ButtonOpen_Click(sender As Object, e As EventArgs) Handles ButtonOpen.Click
             If OpenFluxImage() Then
-                InitializeImage()
+                InitializeDevice(True)
             End If
         End Sub
 
@@ -652,7 +673,7 @@ Namespace Flux
                 Exit Sub
             End If
 
-            InitializeDevice()
+            InitializeDevice(False)
         End Sub
 
         Private Sub ComboExtensions_SelectedIndexChanged(sender As Object, e As EventArgs) Handles ComboExtensions.SelectedIndexChanged
@@ -710,7 +731,7 @@ Namespace Flux
             Dim Response = IsValidFluxImport(firstPath, SelectedDevice.AllowSCP)
             If Response.Result Then
                 If OpenFluxImage(Response.File) Then
-                    InitializeImage()
+                    InitializeDevice(True)
                 End If
             End If
         End Sub
@@ -765,7 +786,7 @@ Namespace Flux
         Private Sub TextBoxFileName_Click(sender As Object, e As EventArgs) Handles TextBoxFileName.Click
             If TextBoxFileName.ReadOnly Then
                 If OpenFluxImage() Then
-                    InitializeImage()
+                    InitializeDevice(True)
                 End If
             End If
         End Sub

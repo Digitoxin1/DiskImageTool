@@ -5,6 +5,8 @@ Namespace Flux.Greaseweazle
     Public Class ConsoleParser
         Public Const REGEX_COMMAND_FAILED As String = "^Command Failed:\s*(?<message>[^:]+):\s*(?<details>.+)$"
         Public Const REGEX_DISK_RANGE As String = "^(?<action>Reading|Writing)\b c=(?<trkStart>\d+)(-(?<trkEnd>\d+))?:h=(?<headStart>\d+)(-(?<headEnd>\d+))?"
+        Public Const REGEX_SECTOR_GRID_END As String = "^Found (?<foundSectors>\d+) sectors of (?<totalSectors>\d+) \((?<percentage>\d+)%\)"
+        Public Const REGEX_SECTOR_GRID_LINE As String = "^(?<side>\d+)\.\s?(?<sector>\d+):\s?(?<tracks>[\.X]+)"
         Public Const REGEX_TRACK_CONVERTING As String = "^\s*Converting\s+c=(?<cs>\d+)(?:-(?<ce>\d+))?\s*:\s*h=(?<hs>\d+)(?:-(?<he>\d+))?\s*->\s*c=(?<ds>\d+)(?:-(?<de>\d+))?\s*:\s*h=(?<dhs>\d+)(?:-(?<dhe>\d+))?\s*$"
         Public Const REGEX_TRACK_READ_DETAILS As String = "^(?<system>\w+) (?<encoding>\w+)( \((?<sectorsFound>\d+)\/(?<sectorsTotal>\d+) sectors\))?(?: from (?<srcFormat>[^()]+))? \((?<fluxCount>\d+) flux in (?<fluxTimeMS>\d+(?:\.?\d+)?)ms\)( \(Retry #(?<seek>\d+)\.(?<retry>\d+)\))?"
         Public Const REGEX_TRACK_READ_FAILED As String = "^Giving up: (?<sectors>\d+) sectors missing"
@@ -17,6 +19,8 @@ Namespace Flux.Greaseweazle
 
         Private ReadOnly RegExCommandFailed As New Regex(REGEX_COMMAND_FAILED, RegexOptions.IgnoreCase Or RegexOptions.CultureInvariant Or RegexOptions.Compiled)
         Private ReadOnly RegExDiskRange As New Regex(REGEX_DISK_RANGE, RegexOptions.IgnoreCase Or RegexOptions.CultureInvariant Or RegexOptions.Compiled)
+        Private ReadOnly RegExSectorGridEnd As New Regex(REGEX_SECTOR_GRID_END, RegexOptions.IgnoreCase Or RegexOptions.CultureInvariant Or RegexOptions.Compiled)
+        Private ReadOnly RegExSectorGridLine As New Regex(REGEX_SECTOR_GRID_LINE, RegexOptions.IgnoreCase Or RegexOptions.CultureInvariant Or RegexOptions.Compiled)
         Private ReadOnly RegExTrackConverting As New Regex(REGEX_TRACK_CONVERTING, RegexOptions.IgnoreCase Or RegexOptions.CultureInvariant Or RegexOptions.Compiled)
         Private ReadOnly RegExTrackReadDetails As New Regex(REGEX_TRACK_READ_DETAILS, RegexOptions.IgnoreCase Or RegexOptions.CultureInvariant Or RegexOptions.Compiled)
         Private ReadOnly RegExTrackReadFailed As New Regex(REGEX_TRACK_READ_FAILED, RegexOptions.IgnoreCase Or RegexOptions.CultureInvariant Or RegexOptions.Compiled)
@@ -26,7 +30,6 @@ Namespace Flux.Greaseweazle
         Private ReadOnly RegExTrackWrite As New Regex(REGEX_TRACK_WRITE, RegexOptions.IgnoreCase Or RegexOptions.CultureInvariant Or RegexOptions.Compiled)
         Private ReadOnly RegExTrackWriteFailed As New Regex(REGEX_TRACK_WRITE_FAILED, RegexOptions.IgnoreCase Or RegexOptions.CultureInvariant Or RegexOptions.Compiled)
         Private ReadOnly RegExTrackWriteRetry As New Regex(REGEX_TRACK_WRITE_RETRY, RegexOptions.IgnoreCase Or RegexOptions.CultureInvariant Or RegexOptions.Compiled)
-
         Public Function ParseCommandFailed(line As String) As (Message As String, Details As String)?
             If String.IsNullOrWhiteSpace(line) Then
                 Return Nothing
@@ -43,7 +46,7 @@ Namespace Flux.Greaseweazle
             Return (message, details)
         End Function
 
-        Public Function ParseDiskRange(line As String) As TrackRange
+        Public Function ParseDiskRange(line As String) As TrackRange?
             If String.IsNullOrWhiteSpace(line) Then
                 Return Nothing
             End If
@@ -53,18 +56,58 @@ Namespace Flux.Greaseweazle
                 Return Nothing
             End If
 
-            Dim info As New TrackRange With {
+            Return New TrackRange With {
                 .Action = Match.Groups("action").Value,
                 .TrackStart = GetInt(Match, "trkStart"),
                 .TrackEnd = GetIntOrDefault(Match, "trkEnd", .TrackStart),
                 .HeadStart = GetInt(Match, "headStart"),
                 .HeadEnd = GetIntOrDefault(Match, "headEnd", .HeadStart)
             }
-
-            Return info
         End Function
 
-        Public Function ParseTrackConverting(line As String) As ConvertingRange
+        Public Function ParseSectorGridEnd(line As String) As (FoundSectors As Integer, TotalSectors As Integer, Percentage As Integer)?
+            If String.IsNullOrWhiteSpace(line) Then
+                Return Nothing
+            End If
+
+            Dim Match = RegExSectorGridEnd.Match(line)
+
+            If Not Match.Success Then
+                Return Nothing
+            End If
+
+            Dim foundSectors As Integer = GetInt(Match, "foundSectors")
+            Dim totalSectors As Integer = GetInt(Match, "totalSectors")
+            Dim percentage As Integer = GetInt(Match, "percentage")
+
+            Return (foundSectors, totalSectors, percentage)
+        End Function
+
+        Public Function ParseSectorGridLine(line As String) As (Side As Integer, Sector As Integer, Tracks As List(Of Boolean))?
+            If String.IsNullOrWhiteSpace(line) Then
+                Return Nothing
+            End If
+
+            Dim Match = RegExSectorGridLine.Match(line)
+
+            If Not Match.Success Then
+                Return Nothing
+            End If
+
+            Dim side As Integer = GetInt(Match, "side")
+            Dim sector As Integer = GetInt(Match, "sector")
+            Dim trackList As String = Match.Groups("tracks").Value.Trim()
+
+            Dim tracks As New List(Of Boolean)
+            For i = 0 To trackList.Length - 1
+                Dim IsBad = (trackList.Substring(i, 1) = "X")
+                tracks.Add(IsBad)
+            Next
+
+            Return (side, sector, tracks)
+        End Function
+
+        Public Function ParseTrackConverting(line As String) As ConvertingRange?
             If String.IsNullOrWhiteSpace(line) Then
                 Return Nothing
             End If
@@ -74,7 +117,7 @@ Namespace Flux.Greaseweazle
                 Return Nothing
             End If
 
-            Dim r As New ConvertingRange With {
+            Return New ConvertingRange With {
                 .SrcCylStart = GetInt(m, "cs"),
                 .SrcCylEnd = GetIntOrDefault(m, "ce", GetInt(m, "cs")),
                 .SrcHeadStart = GetInt(m, "hs"),
@@ -84,11 +127,9 @@ Namespace Flux.Greaseweazle
                 .DstHeadStart = GetInt(m, "dhs"),
                 .DstHeadEnd = GetIntOrDefault(m, "dhe", GetInt(m, "dhs"))
             }
-
-            Return r
         End Function
 
-        Public Function ParseTrackReadDetails(line As String) As TrackReadDetails
+        Public Function ParseTrackReadDetails(line As String) As TrackReadDetails?
             If String.IsNullOrWhiteSpace(line) Then
                 Return Nothing
             End If
@@ -98,7 +139,7 @@ Namespace Flux.Greaseweazle
                 Return Nothing
             End If
 
-            Dim info As New TrackReadDetails With {
+            Return New TrackReadDetails With {
                 .System = Match.Groups("syatem").Value.Trim(),
                 .Encoding = Match.Groups("encoding").Value.Trim(),
                 .SectorsFound = GetInt(Match, "sectorsFound"),
@@ -109,8 +150,6 @@ Namespace Flux.Greaseweazle
                 .Seek = GetInt(Match, "seek"),
                 .Retry = GetInt(Match, "retry")
             }
-
-            Return info
         End Function
 
         Public Function ParseTrackReadFailed(line As String) As Integer?
@@ -126,7 +165,7 @@ Namespace Flux.Greaseweazle
             Return GetInt(Match, "sectors")
         End Function
 
-        Public Function ParseTrackReadOutOfRange(line As String) As TrackReadOutOfRange
+        Public Function ParseTrackReadOutOfRange(line As String) As TrackReadOutOfRange?
             If String.IsNullOrWhiteSpace(line) Then
                 Return Nothing
             End If
@@ -136,15 +175,14 @@ Namespace Flux.Greaseweazle
                 Return Nothing
             End If
 
-            Dim info As New TrackReadOutOfRange With {
+            Return New TrackReadOutOfRange With {
                 .Format = Match.Groups("format").Value,
                 .FluxCount = GetInt(Match, "fluxCount"),
                 .FluxTimeMs = GetDouble(Match, "fluxTimeMS")
             }
-            Return info
         End Function
 
-        Public Function ParseTrackReadSummary(line As String) As TrackReadSummary
+        Public Function ParseTrackReadSummary(line As String) As TrackReadSummary?
             If String.IsNullOrWhiteSpace(line) Then
                 Return Nothing
             End If
@@ -154,7 +192,7 @@ Namespace Flux.Greaseweazle
                 Return Nothing
             End If
 
-            Dim info As New TrackReadSummary With {
+            Return New TrackReadSummary With {
                 .DestTrack = GetInt(Match, "destTrack"),
                 .DestSide = GetInt(Match, "destSide"),
                 .SrcType = Match.Groups("srcType").Value.Trim(),
@@ -162,10 +200,8 @@ Namespace Flux.Greaseweazle
                 .SrcSide = GetIntOrDefault(Match, "srcSide", .DestSide),
                 .Details = Match.Groups("details").Value.Trim()
             }
-
-            Return info
         End Function
-        Public Function ParseTrackUnexpected(line As String) As UnexpectedSector
+        Public Function ParseTrackUnexpected(line As String) As UnexpectedSector?
             If String.IsNullOrWhiteSpace(line) Then
                 Return Nothing
             End If
@@ -175,57 +211,53 @@ Namespace Flux.Greaseweazle
                 Return Nothing
             End If
 
-            Dim info As New UnexpectedSector With {
-            .Track = GetInt(Match, "track"),
-            .Side = GetInt(Match, "side"),
-            .Cylinder = GetInt(Match, "cylinder"),
-            .Head = GetInt(Match, "head"),
-            .SectorId = GetInt(Match, "sectorId"),
-            .SizeId = GetInt(Match, "sizeId")
-        }
-
-            Return info
+            Return New UnexpectedSector With {
+                .Track = GetInt(Match, "track"),
+                .Side = GetInt(Match, "side"),
+                .Cylinder = GetInt(Match, "cylinder"),
+                .Head = GetInt(Match, "head"),
+                .SectorId = GetInt(Match, "sectorId"),
+                .SizeId = GetInt(Match, "sizeId")
+            }
         End Function
 
-        Public Function ParseTrackWrite(line As String) As TrackWrite
+        Public Function ParseTrackWrite(line As String) As TrackWrite?
             If String.IsNullOrWhiteSpace(line) Then
                 Return Nothing
             End If
 
-            Dim MatchFound As Boolean = False
-            Dim info As New TrackWrite
-
             Dim Match = RegExTrackWrite.Match(line)
             If Match.Success Then
-                MatchFound = True
+                Dim info As New TrackWrite With {
+                    .Action = Match.Groups("action").Value,
+                    .SrcTrack = GetInt(Match, "srcTrack"),
+                    .SrcSide = GetInt(Match, "srcSide")
+                }
 
-                info.Action = Match.Groups("action").Value
-                Dim Details = Match.Groups("details").Value
-                Dim RetryMatch = RegExTrackWriteRetry.Match(Details)
+                info.DestTrack = GetIntOrDefault(Match, "destTrack", info.SrcTrack)
+                info.DestSide = GetIntOrDefault(Match, "destSide", info.SrcSide)
+
+                Dim details = Match.Groups("details").Value
+                Dim RetryMatch = RegExTrackWriteRetry.Match(details)
                 If RetryMatch.Success Then
                     info.Retry = GetInt(RetryMatch, "retry")
                 End If
-                info.SrcTrack = GetInt(Match, "srcTrack")
-                info.SrcSide = GetInt(Match, "srcSide")
-                info.DestTrack = GetIntOrDefault(Match, "destTrack", info.SrcTrack)
-                info.DestSide = GetIntOrDefault(Match, "destSide", info.SrcSide)
-            End If
 
-            If Not MatchFound Then
-                Match = RegExTrackWriteFailed.Match(line)
-                If Match.Success Then
-                    MatchFound = True
-                    info.SrcTrack = GetInt(Match, "srcTrack")
-                    info.SrcSide = GetInt(Match, "srcSide")
-                    info.Failed = True
-                End If
-            End If
-
-            If MatchFound Then
                 Return info
-            Else
-                Return Nothing
             End If
+
+            Dim MatchFailed = RegExTrackWriteFailed.Match(line)
+            If MatchFailed.Success Then
+                Dim info As New TrackWrite With {
+                    .SrcTrack = GetInt(MatchFailed, "srcTrack"),
+                    .SrcSide = GetInt(MatchFailed, "srcSide"),
+                    .Failed = True
+                }
+
+                Return info
+            End If
+
+            Return Nothing
         End Function
 
         Private Shared Function GetDouble(m As Match, name As String) As Double
@@ -245,7 +277,7 @@ Namespace Flux.Greaseweazle
             Return GetInt(m, name)
         End Function
 
-        Public Class ConvertingRange
+        Public Structure ConvertingRange
             Public Property DstCylEnd As Integer
             Public Property DstCylStart As Integer
             Public Property DstHeadEnd As Integer
@@ -254,17 +286,17 @@ Namespace Flux.Greaseweazle
             Public Property SrcCylStart As Integer
             Public Property SrcHeadEnd As Integer
             Public Property SrcHeadStart As Integer
-        End Class
+        End Structure
 
-        Public Class TrackRange
-            Public Property Action As String = ""
-            Public Property HeadEnd As Integer = 0
-            Public Property HeadStart As Integer = 0
-            Public Property TrackEnd As Integer = 0
-            Public Property TrackStart As Integer = 0
-        End Class
+        Public Structure TrackRange
+            Public Property Action As String
+            Public Property HeadEnd As Integer
+            Public Property HeadStart As Integer
+            Public Property TrackEnd As Integer
+            Public Property TrackStart As Integer
+        End Structure
 
-        Public Class TrackReadDetails
+        Public Structure TrackReadDetails
             Public ReadOnly Property BadSectors As Integer
                 Get
                     Return _SectorsTotal - _SectorsFound
@@ -280,15 +312,15 @@ Namespace Flux.Greaseweazle
             Public Property Seek As Integer
             Public Property SrcFormat As String
             Public Property System As String
-        End Class
+        End Structure
 
-        Public Class TrackReadOutOfRange
+        Public Structure TrackReadOutOfRange
             Public Property FluxCount As Integer
             Public Property FluxTimeMs As Double
             Public Property Format As String
+        End Structure
 
-        End Class
-        Public Class TrackReadSummary
+        Public Structure TrackReadSummary
             Public Property DestSide As Integer
             Public Property DestTrack As Integer
             Public Property Details As String
@@ -301,19 +333,19 @@ Namespace Flux.Greaseweazle
             Public Property SrcSide As Integer
             Public Property SrcTrack As Integer
             Public Property SrcType As String
-        End Class
+        End Structure
 
-        Public Class TrackWrite
-            Public Property Action As String = ""
-            Public Property DestSide As Integer = 0
-            Public Property DestTrack As Integer = 0
-            Public Property Failed As Boolean = False
-            Public Property Retry As Integer = 0
-            Public Property SrcSide As Integer = 0
-            Public Property SrcTrack As Integer = 0
-        End Class
+        Public Structure TrackWrite
+            Public Property Action As String
+            Public Property DestSide As Integer
+            Public Property DestTrack As Integer
+            Public Property Failed As Boolean
+            Public Property Retry As Integer
+            Public Property SrcSide As Integer
+            Public Property SrcTrack As Integer
+        End Structure
 
-        Public Class UnexpectedSector
+        Public Structure UnexpectedSector
             Public Property Cylinder As Integer
             Public Property Head As Integer
             Public ReadOnly Property Key As String
@@ -326,6 +358,6 @@ Namespace Flux.Greaseweazle
             Public Property Side As Integer
             Public Property SizeId As Integer
             Public Property Track As Integer
-        End Class
+        End Structure
     End Class
 End Namespace

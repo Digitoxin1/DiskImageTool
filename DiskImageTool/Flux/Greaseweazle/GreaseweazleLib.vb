@@ -186,7 +186,7 @@ Namespace Flux.Greaseweazle
         }
             Builder.AddCylinder(0)
 
-            ConsoleProcessRunner.RunProcess(Settings.AppPath, Builder.Arguments, captureOutput:=False, captureError:=False)
+            ConsoleProcessRunner.RunProcess(Settings.AppPath, Builder.Arguments)
 
             Return (IO.File.Exists(FileName), FileName)
         End Function
@@ -326,7 +326,7 @@ Namespace Flux.Greaseweazle
         }
             Builder.AddCylinder(0)
 
-            Dim Result = ConsoleProcessRunner.RunProcess(Settings.AppPath, Builder.Arguments, captureOutput:=True, captureError:=True)
+            Dim Result = ConsoleProcessRunner.RunProcess(Settings.AppPath, Builder.Arguments)
 
             Return (IO.File.Exists(FileName), FileName, Result.CombinedOutput)
         End Function

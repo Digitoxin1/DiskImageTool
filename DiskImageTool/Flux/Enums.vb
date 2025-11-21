@@ -1,21 +1,5 @@
 ﻿Namespace Flux
     Module Enums
-        Public Enum ImageImportOutputTypes
-            IMA
-            HFE
-        End Enum
-
-        Friend Enum TrackHeads
-            head0
-            head1
-            both
-        End Enum
-
-        Enum FluxDevice
-            Greaseweazle
-            Kryoflux
-        End Enum
-
         Enum ActionTypeEnum
             Unknown
             Read
@@ -25,6 +9,28 @@
             Complete
         End Enum
 
+        Enum FluxDevice
+            Greaseweazle
+            Kryoflux
+        End Enum
+
+        Public Enum ImageImportOutputTypes
+            IMA
+            HFE
+        End Enum
+
+        Public Enum InputFileTypeEnum
+            none
+            scp
+            raw
+            sectorImage
+        End Enum
+
+        Friend Enum TrackHeads
+            head0
+            head1
+            both
+        End Enum
         Public Function ImageImportOutputTypeDescription(Value As ImageImportOutputTypes) As String
             Select Case Value
                 Case ImageImportOutputTypes.HFE

@@ -348,7 +348,16 @@ Public Class FloppyTrackGrid
     End Sub
 
     Public Sub SetCellTooltip(TrackIndex As Integer, Text As String)
-        SetCell(TrackIndex, Tooltip:=Text)
+        If TrackIndex < 0 OrElse TrackIndex >= _TrackCount Then
+            Throw New ArgumentOutOfRangeException(NameOf(TrackIndex))
+        End If
+
+        Dim Cell = _Cells(TrackIndex)
+
+        If Cell.Tooltip <> Text Then
+            Cell.Tooltip = Text
+            _Cells(TrackIndex) = Cell
+        End If
     End Sub
 
     Public Sub SetCheckStateSilent(Checked As Boolean)
