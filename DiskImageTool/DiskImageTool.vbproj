@@ -207,12 +207,10 @@
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="Flux\Greaseweazle\GreaseweazleLib.vb" />
-    <Compile Include="Flux\Forms\BaseForm.Designer.vb">
-      <DependentUpon>BaseForm.vb</DependentUpon>
+    <Compile Include="Flux\Forms\BaseFluxForm.Designer.vb">
+      <DependentUpon>BaseFluxForm.vb</DependentUpon>
     </Compile>
-    <Compile Include="Flux\Forms\BaseForm.vb">
-      <SubType>Form</SubType>
-    </Compile>
+    <Compile Include="Flux\Forms\BaseFluxForm.vb" />
     <Compile Include="Flux\Greaseweazle\Forms\ReadDiskForm.vb">
       <SubType>Form</SubType>
     </Compile>
@@ -807,17 +805,17 @@
     <EmbeddedResource Include="Flux\Greaseweazle\Forms\ConfigurationForm.resx">
       <DependentUpon>ConfigurationForm.vb</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Flux\Forms\BaseForm.de.resx">
-      <DependentUpon>BaseForm.vb</DependentUpon>
+    <EmbeddedResource Include="Flux\Forms\BaseFluxForm.de.resx">
+      <DependentUpon>BaseFluxForm.vb</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Flux\Forms\BaseForm.es.resx">
-      <DependentUpon>BaseForm.vb</DependentUpon>
+    <EmbeddedResource Include="Flux\Forms\BaseFluxForm.es.resx">
+      <DependentUpon>BaseFluxForm.vb</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Flux\Forms\BaseForm.fr.resx">
-      <DependentUpon>BaseForm.vb</DependentUpon>
+    <EmbeddedResource Include="Flux\Forms\BaseFluxForm.fr.resx">
+      <DependentUpon>BaseFluxForm.vb</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Flux\Forms\BaseForm.resx">
-      <DependentUpon>BaseForm.vb</DependentUpon>
+    <EmbeddedResource Include="Flux\Forms\BaseFluxForm.resx">
+      <DependentUpon>BaseFluxForm.vb</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Resources\HelpStrings.de.resx" />
     <EmbeddedResource Include="Resources\HelpStrings.es.resx" />

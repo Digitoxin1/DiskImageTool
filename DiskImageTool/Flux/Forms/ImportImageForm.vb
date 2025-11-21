@@ -3,7 +3,7 @@ Imports DiskImageTool.DiskImage.FloppyDiskFunctions
 
 Namespace Flux
     Public Class ImportImageForm
-        Inherits BaseForm
+        Inherits BaseFluxForm
 
         Private WithEvents ButtonClear As Button
         Private WithEvents ButtonImport As Button

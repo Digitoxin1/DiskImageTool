@@ -1,7 +1,7 @@
 ﻿Namespace Flux
     Friend Interface ITrackStatus
-        Event UpdateGridTrack(StatusData As BaseForm.TrackStatusData)
-        Event UpdateStatus(StatusData As BaseForm.TrackStatusData)
+        Event UpdateGridTrack(StatusData As BaseFluxForm.TrackStatusData)
+        Event UpdateStatus(StatusData As BaseFluxForm.TrackStatusData)
         Event UpdateStatusType(StatusText As String)
         ReadOnly Property Failed As Boolean
         ReadOnly Property TrackFound As Boolean

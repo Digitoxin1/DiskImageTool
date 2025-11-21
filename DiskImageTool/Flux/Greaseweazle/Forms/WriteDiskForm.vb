@@ -2,7 +2,7 @@
 
 Namespace Flux.Greaseweazle
     Public Class WriteDiskForm
-        Inherits BaseForm
+        Inherits BaseFluxForm
         Private WithEvents ButtonProcess As Button
         Private WithEvents ButtonReset As Button
         Private WithEvents CheckboxNoVerify As CheckBox

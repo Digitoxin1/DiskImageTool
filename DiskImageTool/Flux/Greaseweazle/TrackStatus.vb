@@ -23,8 +23,8 @@
             Unexpected
         End Enum
 
-        Friend Event UpdateGridTrack(StatusData As BaseForm.TrackStatusData) Implements ITrackStatus.UpdateGridTrack
-        Friend Event UpdateStatus(StatusData As BaseForm.TrackStatusData) Implements ITrackStatus.UpdateStatus
+        Friend Event UpdateGridTrack(StatusData As BaseFluxForm.TrackStatusData) Implements ITrackStatus.UpdateGridTrack
+        Friend Event UpdateStatus(StatusData As BaseFluxForm.TrackStatusData) Implements ITrackStatus.UpdateStatus
         Friend Event UpdateStatusType(StatusText As String) Implements ITrackStatus.UpdateStatusType
 
         Public Sub New()
@@ -285,10 +285,10 @@
             End Select
         End Function
 
-        Private Function GetCurrentTrackStatusData(Action As ActionTypeEnum, DoubleStep As Boolean) As BaseForm.TrackStatusData
+        Private Function GetCurrentTrackStatusData(Action As ActionTypeEnum, DoubleStep As Boolean) As BaseFluxForm.TrackStatusData
             Dim Data = GetTrackStatus(_CurrentStatusInfo, Action)
 
-            Dim StatusData As BaseForm.TrackStatusData
+            Dim StatusData As BaseFluxForm.TrackStatusData
             With StatusData
                 .StatusText = GetTrackStatusText(Data.Status, _CurrentStatusInfo.Retries)
                 .CellText = Data.Label

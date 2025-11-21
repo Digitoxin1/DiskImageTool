@@ -3,7 +3,7 @@ Imports DiskImageTool.DiskImage.FloppyDiskFunctions
 
 Namespace Flux.Greaseweazle
     Public Class ReadDiskForm
-        Inherits BaseForm
+        Inherits BaseFluxForm
 
         Private WithEvents ButtonBrowse As Button
         Private WithEvents ButtonDetect As Button

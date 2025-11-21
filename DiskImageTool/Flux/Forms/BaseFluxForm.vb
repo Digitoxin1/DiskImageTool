@@ -1,5 +1,5 @@
 ﻿Namespace Flux
-    Public Class BaseForm
+    Public Class BaseFluxForm
         Friend WithEvents Process As ConsoleProcessRunner
         Private WithEvents TS As ITrackStatus = Nothing
         Private WithEvents TS0 As FloppyTrackGrid

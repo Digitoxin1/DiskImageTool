@@ -20,8 +20,8 @@
             [Error]
         End Enum
 
-        Friend Event UpdateGridTrack(StatusData As BaseForm.TrackStatusData) Implements ITrackStatus.UpdateGridTrack
-        Friend Event UpdateStatus(StatusData As BaseForm.TrackStatusData) Implements ITrackStatus.UpdateStatus
+        Friend Event UpdateGridTrack(StatusData As BaseFluxForm.TrackStatusData) Implements ITrackStatus.UpdateGridTrack
+        Friend Event UpdateStatus(StatusData As BaseFluxForm.TrackStatusData) Implements ITrackStatus.UpdateStatus
         Friend Event UpdateStatusType(StatusText As String) Implements ITrackStatus.UpdateStatusType
 
         Public Sub New()
@@ -180,7 +180,7 @@
             End Select
         End Function
 
-        Private Function GetCurrentTrackStatusData(Action As ActionTypeEnum) As BaseForm.TrackStatusData
+        Private Function GetCurrentTrackStatusData(Action As ActionTypeEnum) As BaseFluxForm.TrackStatusData
             Dim StatusText As String = ""
             Dim BackColor As Color = Color.Empty
             Dim CellText As String = ""
@@ -216,7 +216,7 @@
                 End If
             End If
 
-            Dim StatusData As BaseForm.TrackStatusData
+            Dim StatusData As BaseFluxForm.TrackStatusData
             With StatusData
                 .CellText = CellText
                 .Track = _CurrentStatusInfo.Track

@@ -1,6 +1,6 @@
 ﻿Namespace Flux
     <Global.Microsoft.VisualBasic.CompilerServices.DesignerGenerated()>
-    Partial Class BaseForm
+    Partial Class BaseFluxForm
         Inherits System.Windows.Forms.Form
 
         'Form overrides dispose to clean up the component list.
@@ -24,7 +24,7 @@
         <System.Diagnostics.DebuggerStepThrough()>
         Private Sub InitializeComponent()
             Dim Label3 As System.Windows.Forms.Label
-            Dim resources As System.ComponentModel.ComponentResourceManager = New System.ComponentModel.ComponentResourceManager(GetType(BaseForm))
+            Dim resources As System.ComponentModel.ComponentResourceManager = New System.ComponentModel.ComponentResourceManager(GetType(BaseFluxForm))
             Dim PanelBottom As System.Windows.Forms.Panel
             Dim PanelBottomInner As System.Windows.Forms.TableLayoutPanel
             Dim PanelMain As System.Windows.Forms.Panel
