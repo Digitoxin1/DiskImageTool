@@ -8,6 +8,8 @@ Namespace Flux.Kryoflux
         Private _appPath As String = ""
         Private _isDirty As Boolean
         Private _logFileName As String = "log.txt"
+        Private _logStripPath As Boolean = False
+
         Public Property AppPath As String Implements Flux.ISettings.AppPath
             Get
                 Return _appPath
@@ -29,7 +31,7 @@ Namespace Flux.Kryoflux
             End Set
         End Property
 
-        Public Property LogFileName As String Implements Flux.ISettings.LogFileName
+        Public Property LogFileName As String Implements ISettings.LogFileName
             Get
                 Return _logFileName
             End Get
@@ -40,6 +42,19 @@ Namespace Flux.Kryoflux
                 End If
             End Set
         End Property
+
+        Public Property LogStripPath As Boolean Implements ISettings.LogStripPath
+            Get
+                Return _logStripPath
+            End Get
+            Set(value As Boolean)
+                If _logStripPath <> value Then
+                    _logStripPath = value
+                    _isDirty = True
+                End If
+            End Set
+        End Property
+
         Public Function IsPathValid() As Boolean
             Return Flux.IsPathValid(_appPath)
         End Function
@@ -52,6 +67,7 @@ Namespace Flux.Kryoflux
 
             _appPath = ReadValue(dict, "appPath", _appPath)
             _logFileName = ReadValue(dict, "logFileName", _logFileName)
+            _logStripPath = ReadValue(dict, "logStripPath", _logStripPath)
 
             MarkClean()
         End Sub
@@ -63,7 +79,8 @@ Namespace Flux.Kryoflux
         Public Function ToJsonObject() As Dictionary(Of String, Object)
             Return New Dictionary(Of String, Object) From {
             {"appPath", _appPath},
-            {"logFileName", _logFileName}
+            {"logFileName", _logFileName},
+            {"logStripPath", _logStripPath}
         }
         End Function
 

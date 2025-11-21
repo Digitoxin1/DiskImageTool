@@ -6,6 +6,7 @@ Namespace Flux.Kryoflux
         Public Const REGEX_TRACK As String = "^(?<track>\d+)\.(?<side>\d+)\s*:\s?(?<encoding>[^:]+):\s?<?(?<status>\w+)\*?>?(,\s?trk:\s?(?<MFMTrack>\d+))?(\[(?<physicalTrack>\d+)\])?(,\s?sec:\s?(?<sectors>\d+))?(,\s?bad:\s?(?<bad>\d+))?(,\s?mis:\s?(?<mis>\d+))?(, \*(?<flags>\w+)( \+(?<modifiedSectors>\d+))?)?"
         Public Const REGEX_TRACK_SUMMARY As String = "^(?<track>\d+)\.(?<side>\d+)\s*:\s?(?<details>.+)"
         Public Const REGEX_TRACK_DETAILS As String = "^(?<encoding>[^:]+):\s?<?(?<status>\w+)\*?>?(,\s?trk:\s?(?<MFMTrack>\d+))?(\[(?<physicalTrack>\d+)\])?(,\s?sec:\s?(?<sectors>\d+))?(,\s?bad:\s?(?<bad>\d+))?(,\s?mis:\s?(?<mis>\d+))?(, \*(?<flags>\w+)( \+(?<modifiedSectors>\d+))?)?"
+        Public Const REGEX_STREAM_FILE As String = "^Stream file:\s?(?<filePath>.+)$"
 
         Private ReadOnly RegExTrackDetails As New Regex(REGEX_TRACK_DETAILS, RegexOptions.IgnoreCase Or RegexOptions.CultureInvariant Or RegexOptions.Compiled)
         Private ReadOnly RegExTrackSummary As New Regex(REGEX_TRACK_SUMMARY, RegexOptions.IgnoreCase Or RegexOptions.CultureInvariant Or RegexOptions.Compiled)

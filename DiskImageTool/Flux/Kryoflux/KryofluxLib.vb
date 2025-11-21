@@ -47,7 +47,7 @@ Namespace Flux.Kryoflux
             Return (IO.File.Exists(FileName), FileName)
         End Function
 
-        Public Function GenerateCommandLineImport(InputFilePath As String, OutputFilePath As String, DiskParams As FloppyDiskParams, DoubleStep As Boolean) As (Arguments As String, OutputFilePath As String)
+        Public Function GenerateCommandLineImport(InputFilePath As String, OutputFilePath As String, DiskParams As FloppyDiskParams, DoubleStep As Boolean, LogLevel As Kryoflux.CommandLineBuilder.LogMask) As (Arguments As String, OutputFilePath As String)
             Dim SingleSidedMode As SingleSidedModeEnum = SingleSidedModeEnum.off
 
             If DiskParams.Format = FloppyDiskFormat.Floppy160 Or DiskParams.Format = FloppyDiskFormat.Floppy180 Then
@@ -67,7 +67,7 @@ Namespace Flux.Kryoflux
                 .DeviceMode = DeviceModeEnum.ImageFile,
                 .InImageType = ImageTypeEnum.KryoFlux_Stream,
                 .OutImageType = ImageTypeEnum.MFM_SectorImage,
-                .LogLevel = LogMask.Format,
+                .LogLevel = LogMask.Format Or LogLevel,
                 .TrackStart = 0,
                 .TrackEnd = TrackCount - 1,
                 .OutputTrackStart = 0,

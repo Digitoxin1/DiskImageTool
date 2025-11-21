@@ -138,4 +138,7 @@
   <data name="LabelApplicationPath.Text" xml:space="preserve">
     <value>Ruta de la aplicación</value>
   </data>
+  <data name="CheckBoxStripPath.Text" xml:space="preserve">
+    <value>Quitar la ruta de los registros</value>
+  </data>
 </root>

@@ -10,6 +10,7 @@ Namespace Flux
         Private WithEvents ButtonOpen As Button
         Private WithEvents ButtonProcess As Button
         Private WithEvents CheckBoxDoublestep As CheckBox
+        Private WithEvents CheckBoxExtendedLogging As CheckBox
         Private WithEvents ComboDevices As ComboBox
         Private WithEvents ComboExtensions As ComboBox
         Private WithEvents ComboImageFormat As ComboBox
@@ -17,6 +18,7 @@ Namespace Flux
         Private WithEvents TextBoxFileName As TextBox
 
         Private Shared _CachedDevice? As FluxDeviceInfo = Nothing
+        Private Shared _CachedExtendedLogging As Boolean = False
         Private ReadOnly _Initialized As Boolean = False
         Private _ComboDevicesNoEvent As Boolean = False
         Private _ComboExtensionsNoEvent As Boolean = False
@@ -41,6 +43,9 @@ Namespace Flux
             _SideCount = SideCount
 
             InitializeControls()
+
+            CheckBoxExtendedLogging.Checked = _CachedExtendedLogging
+
             InitializeDevice(True)
 
             _Initialized = True
@@ -139,7 +144,13 @@ Namespace Flux
                     Return Greaseweazle.GenerateCommandLineImport(_InputFilePath, FilePath, ComboImageFormat.SelectedValue, OutputType, _DoubleStep)
 
                 Case FluxDevice.Kryoflux
-                    Dim Response = Kryoflux.GenerateCommandLineImport(_InputFilePath, FilePath, ComboImageFormat.SelectedValue, _DoubleStep)
+                    Dim LogLevel As Kryoflux.CommandLineBuilder.LogMask = 0
+
+                    If CheckBoxExtendedLogging.Checked Then
+                        LogLevel = Kryoflux.CommandLineBuilder.LogMask.Read Or Kryoflux.CommandLineBuilder.LogMask.Cell
+                    End If
+
+                    Dim Response = Kryoflux.GenerateCommandLineImport(_InputFilePath, FilePath, ComboImageFormat.SelectedValue, _DoubleStep, LogLevel)
                     _OutputFilePath = Response.OutputFilePath
                     Return Response.Arguments
             End Select
@@ -173,6 +184,13 @@ Namespace Flux
             ComboDevices = New ComboBox With {
                 .Anchor = AnchorStyles.Left,
                 .Width = 100
+            }
+
+            CheckBoxExtendedLogging = New CheckBox With {
+                .Text = "Extended Log Output",
+                .Anchor = AnchorStyles.Left,
+                .AutoSize = True,
+                .Margin = New Padding(12, 3, 3, 3)
             }
 
             Dim LabelFileName As New Label With {
@@ -275,7 +293,7 @@ Namespace Flux
 
                 .Left = 0
                 .RowCount = 4
-                .ColumnCount = 6
+                .ColumnCount = 7
                 .Dock = DockStyle.Fill
 
                 While .RowStyles.Count < .RowCount
@@ -299,31 +317,35 @@ Namespace Flux
                 .Controls.Add(LabelDevice, 0, Row)
                 .Controls.Add(ComboDevices, 1, Row)
 
+                .Controls.Add(CheckBoxExtendedLogging, 2, Row)
+                .SetColumnSpan(CheckBoxExtendedLogging, 2)
+
                 Row = 1
                 .Controls.Add(LabelFileName, 0, Row)
                 .Controls.Add(TextBoxFileName, 1, Row)
-                .SetColumnSpan(TextBoxFileName, 3)
-                .Controls.Add(ComboExtensions, 3, Row)
-                .Controls.Add(ButtonOpen, 5, Row)
+                .SetColumnSpan(TextBoxFileName, 4)
+                .Controls.Add(ComboExtensions, 4, Row)
+                .Controls.Add(ButtonOpen, 6, Row)
 
                 Row = 2
                 .Controls.Add(LabelImageFormat, 0, Row)
                 .Controls.Add(ComboImageFormat, 1, Row)
+                .SetColumnSpan(ComboImageFormat, 2)
 
-                .Controls.Add(LabelOutputType, 2, Row)
-                .Controls.Add(ComboOutputType, 3, Row)
+                .Controls.Add(LabelOutputType, 3, Row)
+                .Controls.Add(ComboOutputType, 4, Row)
                 .SetColumnSpan(ComboOutputType, 2)
 
-                .Controls.Add(CheckBoxDoublestep, 5, Row)
+                .Controls.Add(CheckBoxDoublestep, 6, Row)
 
                 Row = 3
                 .Controls.Add(TableSide0, 0, Row)
-                .SetColumnSpan(TableSide0, 2)
+                .SetColumnSpan(TableSide0, 3)
 
-                .Controls.Add(TableSide1, 2, Row)
+                .Controls.Add(TableSide1, 3, Row)
                 .SetColumnSpan(TableSide1, 3)
 
-                .Controls.Add(ButtonContainer, 5, Row)
+                .Controls.Add(ButtonContainer, 6, Row)
 
                 .ResumeLayout()
             End With
@@ -338,6 +360,7 @@ Namespace Flux
             _CachedDevice = _SelectedDevice
 
             LogFileName = _SelectedDevice.Settings.LogFileName
+            LogStripPath = _SelectedDevice.Settings.LogStripPath
 
             Select Case _SelectedDevice.Device
                 Case FluxDevice.Greaseweazle
@@ -351,14 +374,15 @@ Namespace Flux
         End Sub
 
         Private Sub InitializeImage()
-            Dim ImageFormat = ReadImageFormat()
-            PopulateImageFormats(ComboImageFormat, ImageFormat, ImageFormat)
-            PopulateOutputTypes()
-            PopulateFileExtensions()
+            RefreshDeviceState()
             GridReset(_TrackCount, _SideCount)
             SetNewFileName()
             SetTiltebarText()
             ClearStatusBar()
+            Dim ImageFormat = ReadImageFormat()
+            PopulateImageFormats(ComboImageFormat, ImageFormat, ImageFormat)
+            PopulateOutputTypes()
+            PopulateFileExtensions()
             RefreshButtonState()
             Me.Refresh()
         End Sub
@@ -579,9 +603,14 @@ Namespace Flux
                 CheckBoxDoublestep.Checked = False
             End If
 
+            CheckBoxExtendedLogging.Enabled = IsIdle AndAlso Not HasOutputfile
+
             RefreshImportButtonState()
         End Sub
 
+        Private Sub RefreshDeviceState()
+            CheckBoxExtendedLogging.Visible = _SelectedDevice.Device = FluxDevice.Kryoflux
+        End Sub
         Private Sub RefreshImportButtonState()
             Dim HasOutputfile As Boolean = Not String.IsNullOrEmpty(_OutputFilePath)
             Dim HasInputFile As Boolean = Not String.IsNullOrEmpty(_InputFilePath)
@@ -662,6 +691,14 @@ Namespace Flux
             End If
 
             ProcessImage()
+        End Sub
+
+        Private Sub CheckBoxExtendedLogging_CheckStateChanged(sender As Object, e As EventArgs) Handles CheckBoxExtendedLogging.CheckStateChanged
+            If Not _Initialized Then
+                Exit Sub
+            End If
+
+            _CachedExtendedLogging = CheckBoxExtendedLogging.Checked
         End Sub
 
         Private Sub ComboDevices_SelectedIndexChanged(sender As Object, e As EventArgs) Handles ComboDevices.SelectedIndexChanged

@@ -138,4 +138,7 @@
   <data name="LabelApplicationPath.Text" xml:space="preserve">
     <value>Chemin de l’application</value>
   </data>
+  <data name="CheckBoxStripPath.Text" xml:space="preserve">
+    <value>Retirer le chemin des journaux</value>
+  </data>
 </root>

@@ -35,6 +35,7 @@
             Me.TextBoxLogFile = New System.Windows.Forms.TextBox()
             Me.BtnCancel = New System.Windows.Forms.Button()
             Me.BtnUpdate = New System.Windows.Forms.Button()
+            Me.CheckBoxStripPath = New System.Windows.Forms.CheckBox()
             PanelMain = New System.Windows.Forms.Panel()
             LabelApplicationPath = New System.Windows.Forms.Label()
             LabelLogFile = New System.Windows.Forms.Label()
@@ -59,6 +60,7 @@
             Me.TableLayoutPanel1.Controls.Add(Me.ButtonClear, 6, 0)
             Me.TableLayoutPanel1.Controls.Add(LabelLogFile, 0, 6)
             Me.TableLayoutPanel1.Controls.Add(Me.TextBoxLogFile, 1, 6)
+            Me.TableLayoutPanel1.Controls.Add(Me.CheckBoxStripPath, 2, 6)
             Me.TableLayoutPanel1.Name = "TableLayoutPanel1"
             '
             'LabelApplicationPath
@@ -118,6 +120,13 @@
             Me.BtnUpdate.Name = "BtnUpdate"
             Me.BtnUpdate.UseVisualStyleBackColor = True
             '
+            'CheckBoxStripPath
+            '
+            resources.ApplyResources(Me.CheckBoxStripPath, "CheckBoxStripPath")
+            Me.TableLayoutPanel1.SetColumnSpan(Me.CheckBoxStripPath, 3)
+            Me.CheckBoxStripPath.Name = "CheckBoxStripPath"
+            Me.CheckBoxStripPath.UseVisualStyleBackColor = True
+            '
             'ConfigurationForm
             '
             resources.ApplyResources(Me, "$this")
@@ -146,5 +155,6 @@
         Friend WithEvents TextBoxLogFile As TextBox
         Friend WithEvents BtnCancel As Button
         Friend WithEvents BtnUpdate As Button
+        Friend WithEvents CheckBoxStripPath As CheckBox
     End Class
 End Namespace

@@ -8,6 +8,7 @@ Namespace Flux.Kryoflux
             SetExePath(Settings.AppPath)
 
             TextBoxLogFile.Text = Settings.LogFileName
+            CheckBoxStripPath.Checked = Settings.LogStripPath
         End Sub
 
         Private Sub SetExePath(path As String)
@@ -21,6 +22,7 @@ Namespace Flux.Kryoflux
             End If
 
             Settings.LogFileName = TextBoxLogFile.Text.Trim
+            Settings.LogStripPath = CheckBoxStripPath.Checked
         End Sub
 
         Private Sub ButtonBrowse_Click(sender As Object, e As EventArgs) Handles ButtonBrowse.Click

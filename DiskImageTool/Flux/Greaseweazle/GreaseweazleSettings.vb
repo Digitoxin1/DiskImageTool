@@ -123,6 +123,7 @@ Namespace Flux.Greaseweazle
                 End If
             End Set
         End Property
+
         Public Property IsDirty As Boolean Implements DiskImageTool.Settings.ISettingsGroup.IsDirty
             Get
                 If _isDirty Then Return True
@@ -160,6 +161,14 @@ Namespace Flux.Greaseweazle
             End Set
         End Property
 
+        Public Property LogStripPath As Boolean Implements ISettings.LogStripPath
+            Get
+                Return False
+            End Get
+            Set(value As Boolean)
+                ' Not supported
+            End Set
+        End Property
         Public Function IsPathValid() As Boolean
             Return Flux.IsPathValid(_appPath)
         End Function

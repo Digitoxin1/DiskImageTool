@@ -138,4 +138,7 @@
   <data name="LabelApplicationPath.Text" xml:space="preserve">
     <value>Anwendungspfad</value>
   </data>
+  <data name="CheckBoxStripPath.Text" xml:space="preserve">
+    <value>Pfad aus Protokollen entfernen</value>
+  </data>
 </root>

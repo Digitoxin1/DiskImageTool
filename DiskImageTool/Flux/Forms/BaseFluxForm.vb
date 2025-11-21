@@ -6,7 +6,8 @@
         Private WithEvents TS1 As FloppyTrackGrid
         Private Const TOTAL_TRACKS As UShort = 84
         Private _CancelButtonClicked As Boolean = False
-        Private _LogFileName As String
+        Private _LogFileName As String = ""
+        Private _LogStripPath As Boolean = False
         Private _Sides As Byte
         Private _Tracks As UShort
         Public Event CheckChanged(sender As Object, Checked As Boolean, Side As Byte)
@@ -46,6 +47,15 @@
             End Get
             Set(value As String)
                 _LogFileName = value
+            End Set
+        End Property
+
+        Public Property LogStripPath As Boolean
+            Get
+                Return _LogStripPath
+            End Get
+            Set
+                _LogStripPath = Value
             End Set
         End Property
 
@@ -119,7 +129,7 @@
             GridResetTracks(TS1, Tracks, Sides < 2, ResetSelected)
         End Sub
 
-        Public Sub SaveLog()
+        Public Sub SaveLog(RemovePath As Boolean)
             Dim FileName As String = _LogFileName
             Dim Extension = IO.Path.GetExtension(FileName).ToLower
             Dim FilterIndex As Integer = 1
@@ -135,7 +145,13 @@
                 }
 
                 If Dialog.ShowDialog = DialogResult.OK Then
-                    IO.File.WriteAllText(Dialog.FileName, TextBoxConsole.Text & vbNewLine)
+                    Dim LogText As String = TextBoxConsole.Text
+
+                    If RemovePath Then
+                        LogText = RemovePathFromLog(LogText)
+                    End If
+
+                    IO.File.WriteAllText(Dialog.FileName, LogText & vbNewLine)
                 End If
             End Using
         End Sub
@@ -189,18 +205,13 @@
             End If
         End Function
 
-        Private Sub GridUpdateTooltip(Track As Integer, Side As Integer, Tooltip As String)
-            Dim Table = GridGetTable(Side)
-
-            Table?.SetCellTooltip(Track, Tooltip)
-        End Sub
-
         Private Sub GridMarkTrack(StatusData As TrackStatusData)
             Dim Table = GridGetTable(StatusData.Side)
             Dim Track = StatusData.Track
 
             Table?.SetCell(Track, Text:=StatusData.CellText, BackColor:=StatusData.BackColor, ForeColor:=StatusData.ForeColor, Tooltip:=StatusData.Tooltip)
         End Sub
+
         Private Sub GridResetTracks(Grid As FloppyTrackGrid, Tracks As UShort, Disabled As Boolean, Optional ResetSelected As Boolean = True)
             Grid.ActiveTrackCount = Tracks
             Grid.ResetAll()
@@ -211,6 +222,11 @@
             Grid.Disabled = Disabled
         End Sub
 
+        Private Sub GridUpdateTooltip(Track As Integer, Side As Integer, Tooltip As String)
+            Dim Table = GridGetTable(Side)
+
+            Table?.SetCellTooltip(Track, Tooltip)
+        End Sub
         Private Sub UpdateStatus(StatusData As TrackStatusData)
             GridMarkTrack(StatusData)
 
@@ -249,7 +265,7 @@
         End Sub
 
         Private Sub ButtonSaveLog_Click(sender As Object, e As EventArgs) Handles ButtonSaveLog.Click
-            SaveLog()
+            SaveLog(_LogStripPath)
         End Sub
 
         Private Sub TS_UpdateGridTooltip(Track As Integer, Side As Integer, Tooltip As String) Handles TS.UpdateGridTooltip
