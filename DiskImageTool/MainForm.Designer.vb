@@ -103,7 +103,7 @@ Partial Class MainForm
         Me.MenuGreaseweazleRead = New System.Windows.Forms.ToolStripMenuItem()
         Me.MenuGreaseweazleWrite = New System.Windows.Forms.ToolStripMenuItem()
         Me.ToolStripSeparator5 = New System.Windows.Forms.ToolStripSeparator()
-        Me.MenuGreaseweazleImport = New System.Windows.Forms.ToolStripMenuItem()
+        Me.MenuFluxConvert = New System.Windows.Forms.ToolStripMenuItem()
         Me.ToolStripSeparatorGreaseweazle = New System.Windows.Forms.ToolStripSeparator()
         Me.MenuGreaseweazle = New System.Windows.Forms.ToolStripMenuItem()
         Me.MenuGreaseweazleErase = New System.Windows.Forms.ToolStripMenuItem()
@@ -607,7 +607,7 @@ Partial Class MainForm
         '
         'MainMenuFlux
         '
-        Me.MainMenuFlux.DropDownItems.AddRange(New System.Windows.Forms.ToolStripItem() {Me.MenuGreaseweazleRead, Me.MenuGreaseweazleWrite, Me.ToolStripSeparator5, Me.MenuGreaseweazleImport, Me.ToolStripSeparatorGreaseweazle, Me.MenuGreaseweazle})
+        Me.MainMenuFlux.DropDownItems.AddRange(New System.Windows.Forms.ToolStripItem() {Me.MenuGreaseweazleRead, Me.MenuGreaseweazleWrite, Me.ToolStripSeparator5, Me.MenuFluxConvert, Me.ToolStripSeparatorGreaseweazle, Me.MenuGreaseweazle})
         Me.MainMenuFlux.Name = "MainMenuFlux"
         resources.ApplyResources(Me.MainMenuFlux, "MainMenuFlux")
         '
@@ -626,10 +626,10 @@ Partial Class MainForm
         Me.ToolStripSeparator5.Name = "ToolStripSeparator5"
         resources.ApplyResources(Me.ToolStripSeparator5, "ToolStripSeparator5")
         '
-        'MenuGreaseweazleImport
+        'MenuFluxConvert
         '
-        Me.MenuGreaseweazleImport.Name = "MenuGreaseweazleImport"
-        resources.ApplyResources(Me.MenuGreaseweazleImport, "MenuGreaseweazleImport")
+        Me.MenuFluxConvert.Name = "MenuFluxConvert"
+        resources.ApplyResources(Me.MenuFluxConvert, "MenuFluxConvert")
         '
         'ToolStripSeparatorGreaseweazle
         '
@@ -1184,7 +1184,7 @@ Partial Class MainForm
     Friend WithEvents MenuGreaseweazleRead As ToolStripMenuItem
     Friend WithEvents MenuGreaseweazleWrite As ToolStripMenuItem
     Friend WithEvents ToolStripSeparator5 As ToolStripSeparator
-    Friend WithEvents MenuGreaseweazleImport As ToolStripMenuItem
+    Friend WithEvents MenuFluxConvert As ToolStripMenuItem
     Friend WithEvents MenuOptionsKryoflux As ToolStripMenuItem
     Friend WithEvents MenuGreaseweazle As ToolStripMenuItem
     Friend WithEvents MenuGreaseweazleErase As ToolStripMenuItem

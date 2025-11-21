@@ -292,14 +292,14 @@ Namespace Flux
             End Using
         End Function
 
-        Public Function ImportFluxImage(FilePath As String, ParentForm As MainForm) As (Result As Boolean, OutputFile As String, NewFileName As String)
-            Dim AnalyzeResponse = AnalyzeFluxImage(FilePath, True)
+        Public Function ImportFluxImage(FilePath As String, AllowSCP As Boolean, ParentForm As MainForm, LaunchedFromDialog As Boolean) As (Result As Boolean, OutputFile As String, NewFileName As String)
+            Dim AnalyzeResponse = AnalyzeFluxImage(FilePath, AllowSCP)
 
             If Not AnalyzeResponse.Result Then
                 Return (False, "", "")
             End If
 
-            Using form As New ImportImageForm(FilePath, AnalyzeResponse.TrackCount, AnalyzeResponse.SideCount)
+            Using form As New ImportImageForm(FilePath, AnalyzeResponse.TrackCount, AnalyzeResponse.SideCount, LaunchedFromDialog)
 
                 Dim handler As ImportImageForm.ImportRequestedEventHandler =
                     Sub(File, NewName)
@@ -315,7 +315,7 @@ Namespace Flux
                     RemoveHandler form.ImportRequested, handler
                 End Try
 
-                If result Then
+                If result = DialogResult.OK Or result = DialogResult.Retry Then
                     If Not String.IsNullOrEmpty(form.OutputFilePath) Then
                         Return (True, form.OutputFilePath, form.GetNewFileName)
                     End If

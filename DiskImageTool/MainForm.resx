@@ -654,38 +654,38 @@
   <data name="ToolStripSeparator5.Size" type="System.Drawing.Size, System.Drawing">
     <value>177, 6</value>
   </data>
-  <data name="MenuGreaseweazleImport.Size" type="System.Drawing.Size, System.Drawing">
+  <data name="MenuFluxConvert.Size" type="System.Drawing.Size, System.Drawing">
     <value>180, 22</value>
   </data>
-  <data name="MenuGreaseweazleImport.Text" xml:space="preserve">
-    <value>&amp;Import Flux Image</value>
+  <data name="MenuFluxConvert.Text" xml:space="preserve">
+    <value>&amp;Convert Flux Image</value>
   </data>
   <data name="ToolStripSeparatorGreaseweazle.Size" type="System.Drawing.Size, System.Drawing">
     <value>177, 6</value>
   </data>
   <data name="MenuGreaseweazleErase.Size" type="System.Drawing.Size, System.Drawing">
-    <value>180, 22</value>
+    <value>169, 22</value>
   </data>
   <data name="MenuGreaseweazleErase.Text" xml:space="preserve">
     <value>&amp;Erase Disk</value>
   </data>
   <data name="MenuGreaseweazleClean.Size" type="System.Drawing.Size, System.Drawing">
-    <value>180, 22</value>
+    <value>169, 22</value>
   </data>
   <data name="MenuGreaseweazleClean.Text" xml:space="preserve">
     <value>&amp;Clean Drive</value>
   </data>
   <data name="ToolStripSeparator12.Size" type="System.Drawing.Size, System.Drawing">
-    <value>177, 6</value>
+    <value>166, 6</value>
   </data>
   <data name="MenuGreaseweazleInfo.Size" type="System.Drawing.Size, System.Drawing">
-    <value>180, 22</value>
+    <value>169, 22</value>
   </data>
   <data name="MenuGreaseweazleInfo.Text" xml:space="preserve">
     <value>&amp;Device Info</value>
   </data>
   <data name="MenuGreaseweazleBandwidth.Size" type="System.Drawing.Size, System.Drawing">
-    <value>180, 22</value>
+    <value>169, 22</value>
   </data>
   <data name="MenuGreaseweazleBandwidth.Text" xml:space="preserve">
     <value>Report &amp;Bandwidth</value>
@@ -1196,7 +1196,7 @@
     <value>0, 0</value>
   </data>
   <data name="ComboImages.Size" type="System.Drawing.Size, System.Drawing">
-    <value>485, 21</value>
+    <value>483, 21</value>
   </data>
   <data name="ComboImages.TabIndex" type="System.Int32, mscorlib">
     <value>4</value>
@@ -1232,7 +1232,7 @@
     <value>NoControl</value>
   </data>
   <data name="LabelDropMessage.Location" type="System.Drawing.Point, System.Drawing">
-    <value>128, 253</value>
+    <value>127, 253</value>
   </data>
   <data name="LabelDropMessage.Size" type="System.Drawing.Size, System.Drawing">
     <value>273, 16</value>
@@ -1268,7 +1268,7 @@
     <value>0, 0</value>
   </data>
   <data name="ComboImagesFiltered.Size" type="System.Drawing.Size, System.Drawing">
-    <value>485, 21</value>
+    <value>483, 21</value>
   </data>
   <data name="ComboImagesFiltered.TabIndex" type="System.Int32, mscorlib">
     <value>3</value>
@@ -1298,7 +1298,7 @@
     <value>NoControl</value>
   </data>
   <data name="BtnResetSort.Location" type="System.Drawing.Point, System.Drawing">
-    <value>487, -1</value>
+    <value>485, -1</value>
   </data>
   <data name="BtnResetSort.Size" type="System.Drawing.Size, System.Drawing">
     <value>67, 23</value>
@@ -1529,7 +1529,7 @@
     <value>0, 27</value>
   </data>
   <data name="ListViewFiles.Size" type="System.Drawing.Size, System.Drawing">
-    <value>608, 467</value>
+    <value>606, 467</value>
   </data>
   <data name="ListViewFiles.TabIndex" type="System.Int32, mscorlib">
     <value>6</value>
@@ -2729,9 +2729,6 @@
         //////////////////////////////////8=
 </value>
   </data>
-  <data name="$this.ImeMode" type="System.Windows.Forms.ImeMode, System.Windows.Forms">
-    <value>NoControl</value>
-  </data>
   <data name="$this.MinimumSize" type="System.Drawing.Size, System.Drawing">
     <value>960, 600</value>
   </data>
@@ -3204,10 +3201,10 @@
   <data name="&gt;&gt;ToolStripSeparator5.Type" xml:space="preserve">
     <value>System.Windows.Forms.ToolStripSeparator, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
-  <data name="&gt;&gt;MenuGreaseweazleImport.Name" xml:space="preserve">
-    <value>MenuGreaseweazleImport</value>
+  <data name="&gt;&gt;MenuFluxConvert.Name" xml:space="preserve">
+    <value>MenuFluxConvert</value>
   </data>
-  <data name="&gt;&gt;MenuGreaseweazleImport.Type" xml:space="preserve">
+  <data name="&gt;&gt;MenuFluxConvert.Type" xml:space="preserve">
     <value>System.Windows.Forms.ToolStripMenuItem, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
   <data name="&gt;&gt;ToolStripSeparatorGreaseweazle.Name" xml:space="preserve">

@@ -20,6 +20,7 @@ Namespace Flux
         Private Shared _CachedDevice? As FluxDeviceInfo = Nothing
         Private Shared _CachedExtendedLogging As Boolean = False
         Private ReadOnly _Initialized As Boolean = False
+        Private ReadOnly _LaunchedFromDialog As Boolean = False
         Private _ComboDevicesNoEvent As Boolean = False
         Private _ComboExtensionsNoEvent As Boolean = False
         Private _ComboOutputTypeNoEvent As Boolean = False
@@ -33,11 +34,12 @@ Namespace Flux
 
         Public Event ImportRequested(File As String, NewFilename As String)
 
-        Public Sub New(FilePath As String, TrackCount As Integer, SideCount As Integer)
+        Public Sub New(FilePath As String, TrackCount As Integer, SideCount As Integer, LaunchedFromDialog As Boolean)
             MyBase.New("")
 
             Me.AllowDrop = True
 
+            _LaunchedFromDialog = LaunchedFromDialog
             _InputFilePath = FilePath
             _TrackCount = TrackCount
             _SideCount = SideCount
@@ -675,7 +677,12 @@ Namespace Flux
 
         Private Sub ButtonImport_Click(sender As Object, e As EventArgs) Handles ButtonImport.Click
             If _OutputFilePath <> "" Then
-                ProcessImport()
+                If _LaunchedFromDialog Then
+                    Me.DialogResult = DialogResult.Retry
+                    Me.Close()
+                Else
+                    ProcessImport()
+                End If
             End If
         End Sub
 

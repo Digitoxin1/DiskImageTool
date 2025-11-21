@@ -557,7 +557,7 @@ Public Class MainForm
 
     Private Sub FluxImportImage(FileName As String)
         If FileName <> "" Then
-            Dim Response = Flux.ImportFluxImage(FileName, Me)
+            Dim Response = Flux.ImportFluxImage(FileName, True, Me, False)
             If Response.Result Then
                 ProcessImportedImage(Response.OutputFile, Response.NewFileName)
             End If
@@ -1877,7 +1877,7 @@ Public Class MainForm
         Flux.Greaseweazle.EraseDisk(Me)
     End Sub
 
-    Private Sub MenuGreaseweazleImport_Click(sender As Object, e As EventArgs) Handles MenuGreaseweazleImport.Click
+    Private Sub MenuGreaseweazleImport_Click(sender As Object, e As EventArgs) Handles MenuFluxConvert.Click
         FluxImportImage()
     End Sub
 
