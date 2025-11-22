@@ -149,12 +149,39 @@ Namespace Flux
             Return DetectedFormat
         End Function
 
-        Public Function FluxDeviceGetInfo(Device As FluxDevice) As FluxDeviceInfo?
+        Private Function FluxDeviceGetFeatures(Device As FluxDevice) As FlucDeviceFeatures
+
+            Dim features As New FlucDeviceFeatures With {
+                .ImportValidInputTypes = New List(Of InputFileTypeEnum),
+                .ImportValidOutputTypes = New List(Of ImageImportOutputTypes)
+            }
+
             Select Case Device
                 Case FluxDevice.Greaseweazle
-                    Return New FluxDeviceInfo(Device, "Greaseweazle", True, True, App.Globals.AppSettings.Greaseweazle)
+                    features.ImportValidInputTypes.Add(InputFileTypeEnum.scp)
+                    features.ImportValidInputTypes.Add(InputFileTypeEnum.raw)
+
+                    features.ImportValidOutputTypes.Add(ImageImportOutputTypes.IMA)
+                    features.ImportValidOutputTypes.Add(ImageImportOutputTypes.HFE)
+
                 Case FluxDevice.Kryoflux
-                    Return New FluxDeviceInfo(Device, "KryoFlux", False, False, App.Globals.AppSettings.Kryoflux)
+                    features.ImportValidInputTypes.Add(InputFileTypeEnum.raw)
+
+                    features.ImportValidOutputTypes.Add(ImageImportOutputTypes.IMA)
+            End Select
+
+            Return features
+        End Function
+
+        Public Function FluxDeviceGetInfo(Device As FluxDevice) As FluxDeviceInfo?
+            Dim Features = FluxDeviceGetFeatures(Device)
+
+            Select Case Device
+                Case FluxDevice.Greaseweazle
+                    Return New FluxDeviceInfo(Device, "Greaseweazle", Features, App.Globals.AppSettings.Greaseweazle)
+
+                Case FluxDevice.Kryoflux
+                    Return New FluxDeviceInfo(Device, "KryoFlux", Features, App.Globals.AppSettings.Kryoflux)
                 Case Else
                     Return Nothing
             End Select
@@ -173,7 +200,7 @@ Namespace Flux
                 ' Get FluxDeviceInfo
                 Dim info = FluxDeviceGetInfo(dev)
                 If info.HasValue Then
-                    If Not info.Value.AllowSCP And FileType = InputFileTypeEnum.scp Then
+                    If Not info.Value.Features.ImportValidInputTypes.Contains(FileType) Then
                         Continue For
                     End If
                     list.Add(info.Value)
@@ -615,19 +642,22 @@ Namespace Flux
             End Function
         End Structure
 
+        Public Structure FlucDeviceFeatures
+            Public Property ImportValidInputTypes As List(Of InputFileTypeEnum)
+            Public Property ImportValidOutputTypes As List(Of ImageImportOutputTypes)
+        End Structure
+
         Public Structure FluxDeviceInfo
-            Public Sub New(Device As FluxDevice, Name As String, AllowSCP As Boolean, AllowHFE As Boolean, Settings As ISettings)
+            Public Sub New(Device As FluxDevice, Name As String, Features As FlucDeviceFeatures, Settings As ISettings)
                 Me.Device = Device
                 Me.Name = Name
-                Me.AllowSCP = AllowSCP
-                Me.AllowHFE = AllowHFE
+                Me.Features = Features
                 Me.Settings = Settings
             End Sub
 
-            ReadOnly Property AllowHFE As Boolean
-            ReadOnly Property AllowSCP As Boolean
             ReadOnly Property Device As FluxDevice
             ReadOnly Property Name As String
+            ReadOnly Property Features As FlucDeviceFeatures
             ReadOnly Property Settings As ISettings
         End Structure
 

@@ -31,6 +31,7 @@
             head1
             both
         End Enum
+
         Public Function ImageImportOutputTypeDescription(Value As ImageImportOutputTypes) As String
             Select Case Value
                 Case ImageImportOutputTypes.HFE

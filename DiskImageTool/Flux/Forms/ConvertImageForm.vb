@@ -105,9 +105,10 @@ Namespace Flux
 
         Private Function CanAcceptDrop(paths As IEnumerable(Of String)) As Boolean
             Dim SelectedDevice As FluxDeviceInfo = CType(ComboDevices.SelectedItem, FluxDeviceInfo)
+            Dim AllowSCP As Boolean = SelectedDevice.Features.ImportValidInputTypes.Contains(InputFileTypeEnum.scp)
 
             For Each path In paths
-                If IsValidFluxImport(path, SelectedDevice.AllowSCP).Result Then
+                If IsValidFluxImport(path, AllowSCP).Result Then
                     Return True
                 End If
 
@@ -418,8 +419,9 @@ Namespace Flux
 
         Private Function OpenFluxImage(Filename As String) As Boolean
             Dim SelectedDevice As FluxDeviceInfo = CType(ComboDevices.SelectedItem, FluxDeviceInfo)
+            Dim AllowSCP As Boolean = SelectedDevice.Features.ImportValidInputTypes.Contains(InputFileTypeEnum.scp)
 
-            Dim response = AnalyzeFluxImage(Filename, SelectedDevice.AllowSCP)
+            Dim response = AnalyzeFluxImage(Filename, AllowSCP)
             If response.Result Then
                 _TrackCount = response.TrackCount
                 _SideCount = response.SideCount
@@ -433,7 +435,9 @@ Namespace Flux
 
         Private Function OpenFluxImage() As Boolean
             Dim SelectedDevice As FluxDeviceInfo = CType(ComboDevices.SelectedItem, FluxDeviceInfo)
-            Dim FileName As String = SharedLib.OpenFluxImage(Me, SelectedDevice.AllowSCP)
+            Dim AllowSCP As Boolean = SelectedDevice.Features.ImportValidInputTypes.Contains(InputFileTypeEnum.scp)
+
+            Dim FileName As String = SharedLib.OpenFluxImage(Me, AllowSCP)
 
             If FileName <> "" Then
                 Return OpenFluxImage(FileName)
@@ -479,11 +483,12 @@ Namespace Flux
             _ComboExtensionsNoEvent = True
 
             Dim OutputType As ImageImportOutputTypes = ComboOutputType.SelectedValue
-            Dim hfeOnly = OutputType = ImageImportOutputTypes.HFE AndAlso _SelectedDevice.AllowHFE
 
-            If hfeOnly Then
+            If OutputType <> ImageImportOutputTypes.IMA Then
+                Dim Extension = ImageImportOutputTypeFileExt(OutputType)
+
                 Dim items As New List(Of FileExtensionItem) From {
-                    New FileExtensionItem(".hfe", Nothing)
+                    New FileExtensionItem(Extension, Nothing)
                 }
 
                 With ComboExtensions
@@ -515,11 +520,7 @@ Namespace Flux
             Dim UseSectorImage As Boolean = AllowSectorImage()
 
             For Each OutputType As ImageImportOutputTypes In [Enum].GetValues(GetType(ImageImportOutputTypes))
-                If OutputType = ImageImportOutputTypes.IMA AndAlso Not UseSectorImage AndAlso _SelectedDevice.AllowHFE Then
-                    Continue For
-                End If
-
-                If OutputType = ImageImportOutputTypes.HFE AndAlso Not _SelectedDevice.AllowHFE Then
+                If Not _SelectedDevice.Features.ImportValidOutputTypes.Contains(OutputType) Then
                     Continue For
                 End If
 
@@ -783,7 +784,9 @@ Namespace Flux
 
         Private Sub ImageImportForm_DragDrop(sender As Object, e As DragEventArgs) Handles Me.DragDrop
             Dim SelectedDevice As FluxDeviceInfo = CType(ComboDevices.SelectedItem, FluxDeviceInfo)
+            Dim AllowSCP As Boolean = SelectedDevice.Features.ImportValidInputTypes.Contains(InputFileTypeEnum.scp)
             Dim HasOutputfile As Boolean = Not String.IsNullOrEmpty(_OutputFilePath)
+
             If Process.IsRunning Or HasOutputfile Then
                 Return
             End If
@@ -799,7 +802,7 @@ Namespace Flux
 
             Dim firstPath = paths(0)
 
-            Dim Response = IsValidFluxImport(firstPath, SelectedDevice.AllowSCP)
+            Dim Response = IsValidFluxImport(firstPath, AllowSCP)
             If Response.Result Then
                 If OpenFluxImage(Response.File) Then
                     InitializeDevice(True)
