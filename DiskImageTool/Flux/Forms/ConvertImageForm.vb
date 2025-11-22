@@ -46,6 +46,10 @@ Namespace Flux
 
             InitializeControls()
 
+            If LaunchedFromDialog Then
+                ButtonImport.DialogResult = DialogResult.Retry
+            End If
+
             CheckBoxExtendedLogging.Checked = _CachedExtendedLogging
 
             InitializeDevice(True)
@@ -66,7 +70,7 @@ Namespace Flux
         End Function
 
         Protected Overrides Sub OnAfterBaseFormClosing(e As FormClosingEventArgs)
-            If e.CloseReason = CloseReason.UserClosing OrElse CancelButtonClicked Then
+            If Me.DialogResult = DialogResult.Cancel OrElse Me.DialogResult = DialogResult.None Then
                 ClearOutputFile(True)
             End If
         End Sub
@@ -651,7 +655,7 @@ Namespace Flux
         End Sub
 
         Private Sub SetTiltebarText()
-            Dim Text = My.Resources.Caption_ImportFluxImage
+            Dim Text = My.Resources.Caption_ConvertFluxImage
 
             If String.IsNullOrEmpty(_InputFilePath) Then
                 Me.Text = Text
@@ -676,13 +680,12 @@ Namespace Flux
         End Sub
 
         Private Sub ButtonImport_Click(sender As Object, e As EventArgs) Handles ButtonImport.Click
+            If _LaunchedFromDialog Then
+                Exit Sub
+            End If
+
             If _OutputFilePath <> "" Then
-                If _LaunchedFromDialog Then
-                    Me.DialogResult = DialogResult.Retry
-                    Me.Close()
-                Else
-                    ProcessImport()
-                End If
+                ProcessImport()
             End If
         End Sub
 

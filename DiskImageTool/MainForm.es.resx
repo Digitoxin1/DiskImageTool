@@ -351,9 +351,6 @@
   <data name="MenuGreaseweazleErase.Text" xml:space="preserve">
     <value>&amp;Borrar disco</value>
   </data>
-  <data name="MenuGreaseweazleImport.Text" xml:space="preserve">
-    <value>&amp;Importar imagen de flujo</value>
-  </data>
   <data name="MenuGreaseweazleClean.Text" xml:space="preserve">
     <value>&amp;Limpiar unidad</value>
   </data>
@@ -365,5 +362,8 @@
   </data>
   <data name="MenuOptionsKryoflux.Text" xml:space="preserve">
     <value>&amp;Kryoflux Configuración</value>
+  </data>
+  <data name="MenuFluxConvert.Text" xml:space="preserve">
+    <value>&amp;Convertir imagen de flujo</value>
   </data>
 </root>

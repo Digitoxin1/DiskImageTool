@@ -1419,9 +1419,6 @@
   <data name="Label_Process" xml:space="preserve">
     <value>Verarbeiten</value>
   </data>
-  <data name="Caption_ImportFluxImage" xml:space="preserve">
-    <value>Flux-Image importieren</value>
-  </data>
   <data name="Label_Info" xml:space="preserve">
     <value>Info</value>
   </data>
@@ -1614,9 +1611,6 @@
   <data name="Label_Staus" xml:space="preserve">
     <value>Status</value>
   </data>
-  <data name="Label_Clear" xml:space="preserve">
-    <value>Löschen</value>
-  </data>
   <data name="Label_Cancel" xml:space="preserve">
     <value>Abbrechen</value>
   </data>
@@ -1638,9 +1632,6 @@
   <data name="Label_FolderName" xml:space="preserve">
     <value>Ordnername</value>
   </data>
-  <data name="Label_Keep" xml:space="preserve">
-    <value>Behalten</value>
-  </data>
   <data name="Label_RootFolder" xml:space="preserve">
     <value>Stammordner</value>
   </data>
@@ -1657,10 +1648,28 @@ Möchten Sie ihn überschreiben?</value>
   <data name="Label_Device" xml:space="preserve">
     <value>Gerät</value>
   </data>
-  <data name="Label_Unexpected" xml:space="preserve">
-    <value>Unerwartet</value>
-  </data>
   <data name="Label_BadSectorIds" xml:space="preserve">
     <value>Defekte Sektoren</value>
+  </data>
+  <data name="Caption_ConvertFluxImage" xml:space="preserve">
+    <value>Flux-Image konvertieren</value>
+  </data>
+  <data name="Label_Convert" xml:space="preserve">
+    <value>Konvertieren</value>
+  </data>
+  <data name="Dialog_EnterFileName" xml:space="preserve">
+    <value>Bitte geben Sie einen Dateinamen ein.</value>
+  </data>
+  <data name="Dialog_EnterFolderName" xml:space="preserve">
+    <value>Bitte geben Sie einen Ordnernamen ein.</value>
+  </data>
+  <data name="Dialog_SelectRootFolder" xml:space="preserve">
+    <value>Bitte wählen Sie einen Stammordner aus.</value>
+  </data>
+  <data name="Label_Save" xml:space="preserve">
+    <value>Speichern</value>
+  </data>
+  <data name="Label_SaveAndClose" xml:space="preserve">
+    <value>Sichern &amp; Schließen</value>
   </data>
 </root>

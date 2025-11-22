@@ -346,6 +346,15 @@ Namespace My.Resources
         End Property
         
         '''<summary>
+        '''  Looks up a localized string similar to Convert the currently loaded image set..
+        '''</summary>
+        Friend Shared ReadOnly Property Flux_Convert() As String
+            Get
+                Return ResourceManager.GetString("Flux_Convert", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
         '''  Looks up a localized string similar to Attempt to detect the format of the disk in the selected drive by analyzing the boot sector..
         '''</summary>
         Friend Shared ReadOnly Property Flux_Detect() As String
@@ -391,7 +400,7 @@ Namespace My.Resources
         End Property
         
         '''<summary>
-        '''  Looks up a localized string similar to Import the currently loaded image or image set..
+        '''  Looks up a localized string similar to Import the currently loaded image..
         '''</summary>
         Friend Shared ReadOnly Property Flux_Import() As String
             Get
@@ -400,20 +409,11 @@ Namespace My.Resources
         End Property
         
         '''<summary>
-        '''  Looks up a localized string similar to Import the currently loaded image or image set and close this dialog..
+        '''  Looks up a localized string similar to Import the currently loaded image and close this dialog..
         '''</summary>
         Friend Shared ReadOnly Property Flux_ImportClose() As String
             Get
                 Return ResourceManager.GetString("Flux_ImportClose", resourceCulture)
-            End Get
-        End Property
-        
-        '''<summary>
-        '''  Looks up a localized string similar to Keep the currently loaded image set without importing..
-        '''</summary>
-        Friend Shared ReadOnly Property Flux_Keep() As String
-            Get
-                Return ResourceManager.GetString("Flux_Keep", resourceCulture)
             End Get
         End Property
         
@@ -423,6 +423,24 @@ Namespace My.Resources
         Friend Shared ReadOnly Property Flux_Read() As String
             Get
                 Return ResourceManager.GetString("Flux_Read", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  Looks up a localized string similar to Save the currently loaded image set..
+        '''</summary>
+        Friend Shared ReadOnly Property Flux_Save() As String
+            Get
+                Return ResourceManager.GetString("Flux_Save", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  Looks up a localized string similar to Save the currently loaded image set and close this dialog..
+        '''</summary>
+        Friend Shared ReadOnly Property Flux_SaveClose() As String
+            Get
+                Return ResourceManager.GetString("Flux_SaveClose", resourceCulture)
             End Get
         End Property
         

@@ -291,9 +291,6 @@ Greaseweazle Configuration in the Options menu.</value>
   <data name="Flux_Read" xml:space="preserve">
     <value>Read a floppy disk from the selected drive to the selected output type.</value>
   </data>
-  <data name="Flux_Keep" xml:space="preserve">
-    <value>Keep the currently loaded image set without importing.</value>
-  </data>
   <data name="Greaseweazle_RootFolder" xml:space="preserve">
     <value>The root folder for your flux image sets.
 
@@ -304,9 +301,18 @@ Greaseweazle Configuration in the Options menu.</value>
     <value>Skip every other track when reading a 360 KB disk in a 1.2 MB drive.</value>
   </data>
   <data name="Flux_Import" xml:space="preserve">
-    <value>Import the currently loaded image or image set.</value>
+    <value>Import the currently loaded image.</value>
   </data>
   <data name="Flux_ImportClose" xml:space="preserve">
-    <value>Import the currently loaded image or image set and close this dialog.</value>
+    <value>Import the currently loaded image and close this dialog.</value>
+  </data>
+  <data name="Flux_Save" xml:space="preserve">
+    <value>Save the currently loaded image set.</value>
+  </data>
+  <data name="Flux_SaveClose" xml:space="preserve">
+    <value>Save the currently loaded image set and close this dialog.</value>
+  </data>
+  <data name="Flux_Convert" xml:space="preserve">
+    <value>Convert the currently loaded image set.</value>
   </data>
 </root>

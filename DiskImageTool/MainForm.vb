@@ -1,5 +1,4 @@
 ﻿Imports System.ComponentModel
-Imports System.Drawing.Drawing2D
 Imports DiskImageTool.DiskImage
 
 Public Class MainForm
@@ -549,16 +548,16 @@ Public Class MainForm
         Return My.Application.Info.ProductName & " v" & _FileVersion
     End Function
 
-    Private Sub FluxImportImage()
+    Private Sub FluxConvertImage()
         Dim FileName As String = Flux.OpenFluxImage(Me, True)
 
-        FluxImportImage(FileName)
+        FluxConvertImage(FileName)
     End Sub
 
-    Private Sub FluxImportImage(FileName As String)
+    Private Sub FluxConvertImage(FileName As String)
         If FileName <> "" Then
-            Dim Response = Flux.ImportFluxImage(FileName, True, Me, False)
-            If Response.Result Then
+            Dim Response = Flux.ConvertFluxImage(FileName, True, AddressOf ProcessImportedImage, False)
+            If Response.Result = DialogResult.OK Then
                 ProcessImportedImage(Response.OutputFile, Response.NewFileName)
             End If
         End If
@@ -1008,7 +1007,7 @@ Public Class MainForm
                     IsFluxIamge = True
                 End If
             ElseIf IO.Path.GetExtension(FilePath).ToLower = ".raw" Then
-                    Dim Response = Flux.GetTrackCountRaw(FilePath)
+                Dim Response = Flux.GetTrackCountRaw(FilePath)
                 If Response.Result Then
                     IsFluxIamge = True
                 End If
@@ -1022,7 +1021,7 @@ Public Class MainForm
         End If
 
         If IsFluxIamge Then
-            FluxImportImage(FilePath)
+            FluxConvertImage(FilePath)
         End If
 
         Return IsFluxIamge
@@ -1877,8 +1876,8 @@ Public Class MainForm
         Flux.Greaseweazle.EraseDisk(Me)
     End Sub
 
-    Private Sub MenuGreaseweazleImport_Click(sender As Object, e As EventArgs) Handles MenuFluxConvert.Click
-        FluxImportImage()
+    Private Sub MenuFluxConvert_Click(sender As Object, e As EventArgs) Handles MenuFluxConvert.Click
+        FluxConvertImage()
     End Sub
 
     Private Sub MenuGreaseweazleInfo_Click(sender As Object, e As EventArgs) Handles MenuGreaseweazleInfo.Click

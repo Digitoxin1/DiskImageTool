@@ -1,5 +1,4 @@
-﻿Imports System.Drawing.Text
-Imports System.Text.RegularExpressions
+﻿Imports System.Text.RegularExpressions
 Imports DiskImageTool.DiskImage.FloppyDiskFunctions
 
 Namespace Flux
@@ -195,7 +194,7 @@ Namespace Flux
                 Return ""
             End If
 
-            Dim FileName = "New Image" & Extension
+            Dim FileName = Guid.NewGuid.ToString & Extension
             Return GenerateUniqueFileName(TempPath, FileName)
         End Function
 
@@ -292,36 +291,35 @@ Namespace Flux
             End Using
         End Function
 
-        Public Function ImportFluxImage(FilePath As String, AllowSCP As Boolean, ParentForm As MainForm, LaunchedFromDialog As Boolean) As (Result As Boolean, OutputFile As String, NewFileName As String)
+        Public Function ConvertFluxImage(FilePath As String, AllowSCP As Boolean, importHandler As ConvertImageForm.ImportRequestedEventHandler, LaunchedFromDialog As Boolean) As (Result As DialogResult, OutputFile As String, NewFileName As String)
             Dim AnalyzeResponse = AnalyzeFluxImage(FilePath, AllowSCP)
 
             If Not AnalyzeResponse.Result Then
-                Return (False, "", "")
+                Return (DialogResult.Abort, "", "")
             End If
 
             Using form As New ConvertImageForm(FilePath, AnalyzeResponse.TrackCount, AnalyzeResponse.SideCount, LaunchedFromDialog)
 
-                Dim handler As ConvertImageForm.ImportRequestedEventHandler =
-                    Sub(File, NewName)
-                        ParentForm.ProcessImportedImage(File, NewName)
-                    End Sub
-
-                AddHandler form.ImportRequested, handler
+                If importHandler IsNot Nothing Then
+                    AddHandler form.ImportRequested, importHandler
+                End If
 
                 Dim result As DialogResult = DialogResult.Cancel
                 Try
-                    result = form.ShowDialog(ParentForm)
+                    result = form.ShowDialog()
                 Finally
-                    RemoveHandler form.ImportRequested, handler
+                    If importHandler IsNot Nothing Then
+                        RemoveHandler form.ImportRequested, importHandler
+                    End If
                 End Try
 
                 If result = DialogResult.OK Or result = DialogResult.Retry Then
                     If Not String.IsNullOrEmpty(form.OutputFilePath) Then
-                        Return (True, form.OutputFilePath, form.GetNewFileName)
+                        Return (result, form.OutputFilePath, form.GetNewFileName)
                     End If
                 End If
 
-                Return (False, "", "")
+                Return (result, "", "")
             End Using
         End Function
 

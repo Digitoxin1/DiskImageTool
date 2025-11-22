@@ -5,7 +5,6 @@
         Private WithEvents TS0 As FloppyTrackGrid
         Private WithEvents TS1 As FloppyTrackGrid
         Private Const TOTAL_TRACKS As UShort = 84
-        Private _CancelButtonClicked As Boolean = False
         Private _LogFileName As String = ""
         Private _LogStripPath As Boolean = False
         Private _Sides As Byte
@@ -34,12 +33,6 @@
                 }
             End If
         End Sub
-
-        Public ReadOnly Property CancelButtonClicked As Boolean
-            Get
-                Return _CancelButtonClicked
-            End Get
-        End Property
 
         Public Property LogFileName As String
             Get
@@ -162,10 +155,9 @@
 
         Protected Overrides Sub OnFormClosing(e As FormClosingEventArgs)
             If Process.IsRunning Then
-                If e.CloseReason = CloseReason.UserClosing OrElse _CancelButtonClicked Then
+                If (e.CloseReason = CloseReason.UserClosing OrElse e.CloseReason = CloseReason.None) AndAlso (DialogResult = DialogResult.Cancel OrElse DialogResult = DialogResult.None) Then
                     If Not ConfirmCancel() Then
                         e.Cancel = True
-                        _CancelButtonClicked = False
                         Exit Sub
                     End If
                 End If
@@ -176,16 +168,13 @@
             End If
 
             If e.Cancel Then
-                _CancelButtonClicked = False
-                Return
+                Exit Sub
             End If
 
             OnAfterBaseFormClosing(e)
 
-            _CancelButtonClicked = False
-
             If e.Cancel Then
-                Return
+                Exit Sub
             End If
 
             MyBase.OnFormClosing(e)
@@ -260,10 +249,6 @@
             StatusType.Text = Text
         End Sub
 #Region "Events"
-        Private Sub ButtonCancel_Click(sender As Object, e As EventArgs) Handles ButtonCancel.Click
-            _CancelButtonClicked = True
-        End Sub
-
         Private Sub ButtonSaveLog_Click(sender As Object, e As EventArgs) Handles ButtonSaveLog.Click
             SaveLog(_LogStripPath)
         End Sub

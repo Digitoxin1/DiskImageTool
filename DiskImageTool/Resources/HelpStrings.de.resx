@@ -236,51 +236,20 @@ Hinweis: Diese ID wird normalerweise erzeugt, indem das aktuelle Datum und die a
   <data name="BootSectorForm_Help_VolumeSerialNumberButton" xml:space="preserve">
     <value>Neue Volume-Seriennummer basierend auf einem vom Benutzer angegebenen Datum und Uhrzeit generieren</value>
   </data>
-  <assembly alias="System.Windows.Forms" name="System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
-  <data name="Greaseweazle_Drives" type="System.Resources.ResXNullRef, System.Windows.Forms">
-    <value />
-  </data>
-  <data name="Flux_Format" type="System.Resources.ResXNullRef, System.Windows.Forms">
-    <value />
-  </data>
-  <data name="Flux_ImageType" type="System.Resources.ResXNullRef, System.Windows.Forms">
-    <value />
-  </data>
-  <data name="Greaseweazle_ReadFilename" type="System.Resources.ResXNullRef, System.Windows.Forms">
-    <value />
-  </data>
-  <data name="Greaseweazle_FileExt" type="System.Resources.ResXNullRef, System.Windows.Forms">
-    <value />
-  </data>
-  <data name="Greaseweazle_SaveLog" type="System.Resources.ResXNullRef, System.Windows.Forms">
-    <value />
-  </data>
-  <data name="Flux_Discard" type="System.Resources.ResXNullRef, System.Windows.Forms">
-    <value />
-  </data>
-  <data name="Flux_Read" type="System.Resources.ResXNullRef, System.Windows.Forms">
-    <value />
-  </data>
-  <data name="Flux_Keep" type="System.Resources.ResXNullRef, System.Windows.Forms">
-    <value />
-  </data>
-  <data name="Greaseweazle_RootFolder" type="System.Resources.ResXNullRef, System.Windows.Forms">
-    <value />
-  </data>
-  <data name="Flux_DoubleStep" type="System.Resources.ResXNullRef, System.Windows.Forms">
-    <value />
-  </data>
-  <data name="Flux_Import" type="System.Resources.ResXNullRef, System.Windows.Forms">
-    <value />
-  </data>
-  <data name="Flux_ImportClose" type="System.Resources.ResXNullRef, System.Windows.Forms">
-    <value />
-  </data>
-  <data name="Flux_ImportClose" xml:space="preserve">
-    <value>Das geladene Image oder Image-Set importieren und diesen Dialog schließen.</value>
-  </data>
   <data name="Greaseweazle_Revs" xml:space="preserve">
     <value>Anzahl der Umdrehungen pro Spur zum Lesen</value>
+  </data>
+  <data name="Greaseweazle_Retries" xml:space="preserve">
+    <value>Anzahl der Wiederholungen pro Such-Wiederholung</value>
+  </data>
+  <data name="Greaseweazle_SeekRetries" xml:space="preserve">
+    <value>Anzahl der Such-Wiederholungen</value>
+  </data>
+  <data name="Greaseweazle_DeviceReset" xml:space="preserve">
+    <value>Das Greaseweazle-Gerät auf den Einschalt-Standardzustand zurücksetzen.</value>
+  </data>
+  <data name="Flux_SaveLog" xml:space="preserve">
+    <value>Die Konsolenausgabe in einer Protokolldatei speichern.</value>
   </data>
   <data name="Flux_Detect" xml:space="preserve">
     <value>Versuchen, das Format der Diskette im ausgewählten Laufwerk durch Analyse des Bootsektors zu erkennen.</value>
@@ -291,44 +260,11 @@ Hinweis: Diese ID wird normalerweise erzeugt, indem das aktuelle Datum und die a
 Diese Liste kann unter
 Greaseweazle-Konfiguration im Optionsmenü angepasst werden.</value>
   </data>
-  <data name="Flux_Discard" xml:space="preserve">
-    <value>Das geladene Image oder Image-Set verwerfen.</value>
-  </data>
-  <data name="Flux_Import" xml:space="preserve">
-    <value>Das geladene Image oder Image-Set importieren.</value>
-  </data>
-  <data name="Flux_Keep" xml:space="preserve">
-    <value>Das geladene Image-Set behalten, ohne es zu importieren.</value>
-  </data>
-  <data name="Greaseweazle_Retries" xml:space="preserve">
-    <value>Anzahl der Wiederholungen pro Such-Wiederholung</value>
-  </data>
-  <data name="Greaseweazle_SeekRetries" xml:space="preserve">
-    <value>Anzahl der Such-Wiederholungen</value>
+  <data name="Flux_Format" xml:space="preserve">
+    <value>Das Format der Diskette im ausgewählten Laufwerk.</value>
   </data>
   <data name="Flux_ImageType" xml:space="preserve">
     <value>Ausgabe-Image-Typ</value>
-  </data>
-  <data name="Flux_Read" xml:space="preserve">
-    <value>Eine Diskette vom ausgewählten Laufwerk in den gewählten Ausgabetyp einlesen.</value>
-  </data>
-  <data name="Greaseweazle_DeviceReset" xml:space="preserve">
-    <value>Das Greaseweazle-Gerät auf den Einschalt-Standardzustand zurücksetzen.</value>
-  </data>
-  <data name="Greaseweazle_SaveLog" xml:space="preserve">
-    <value>Eine Protokolldatei im übergeordneten Ordner neben dem Image-Set speichern.
-
-Der Name der Protokolldatei kann unter
-Greaseweazle-Konfiguration im Optionsmenü eingestellt werden.</value>
-  </data>
-  <data name="Flux_SaveLog" xml:space="preserve">
-    <value>Die Konsolenausgabe in einer Protokolldatei speichern.</value>
-  </data>
-  <data name="Flux_DoubleStep" xml:space="preserve">
-    <value>Jede zweite Spur überspringen beim Lesen einer 360-KB-Diskette in einem 1,2-MB-Laufwerk.</value>
-  </data>
-  <data name="Flux_Format" xml:space="preserve">
-    <value>Das Format der Diskette im ausgewählten Laufwerk.</value>
   </data>
   <data name="Greaseweazle_ReadFilename" xml:space="preserve">
     <value>Der Name der importierten Datei oder der Name des übergeordneten Ordners,
@@ -343,10 +279,56 @@ automatisch erhöht.</value>
   <data name="Greaseweazle_FileExt" xml:space="preserve">
     <value>Die Erweiterung der importierten Datei.</value>
   </data>
+  <data name="Greaseweazle_SaveLog" xml:space="preserve">
+    <value>Eine Protokolldatei im übergeordneten Ordner neben dem Image-Set speichern.
+
+Der Name der Protokolldatei kann unter
+Greaseweazle-Konfiguration im Optionsmenü eingestellt werden.</value>
+  </data>
+  <data name="Flux_Discard" xml:space="preserve">
+    <value>Das geladene Image oder Image-Set verwerfen.</value>
+  </data>
+  <data name="Flux_Read" xml:space="preserve">
+    <value>Eine Diskette vom ausgewählten Laufwerk in den gewählten Ausgabetyp einlesen.</value>
+  </data>
   <data name="Greaseweazle_RootFolder" xml:space="preserve">
     <value>Der Stammordner für Ihre Flux-Image-Sets.
 
 Der standardmäßige Stammordner kann unter
 Greaseweazle-Konfiguration im Optionsmenü eingestellt werden.</value>
+  </data>
+  <data name="Flux_DoubleStep" xml:space="preserve">
+    <value>Jede zweite Spur überspringen beim Lesen einer 360-KB-Diskette in einem 1,2-MB-Laufwerk.</value>
+  </data>
+  <assembly alias="System.Windows.Forms" name="System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
+  <data name="Flux_Import" type="System.Resources.ResXNullRef, System.Windows.Forms">
+    <value />
+  </data>
+  <data name="Flux_ImportClose" type="System.Resources.ResXNullRef, System.Windows.Forms">
+    <value />
+  </data>
+  <data name="Flux_Save" type="System.Resources.ResXNullRef, System.Windows.Forms">
+    <value />
+  </data>
+  <data name="Flux_SaveClose" type="System.Resources.ResXNullRef, System.Windows.Forms">
+    <value />
+  </data>
+  <data name="Flux_Convert" type="System.Resources.ResXNullRef, System.Windows.Forms">
+    <value />
+  </data>
+  <data name="Flux_Convert" xml:space="preserve">
+    <value>Das geladene Image-Set konvertieren.</value>
+  </data>
+  <data name="Flux_ImportClose" xml:space="preserve">
+    <value>Das geladene Image importieren und diesen Dialog schließen.</value>
+  </data>
+  <data name="Flux_Import" xml:space="preserve">
+    <value>Das geladene Image importieren.</value>
+  </data>
+  <data name="Flux_SaveClose" xml:space="preserve">
+    <value>Das geladene Image-Set speichern und diesen Dialog schließen.</value>
+  </data>
+  <data name="Flux_Save" xml:space="preserve">
+    <value>Das geladene Image-Set speichern.</value>
   </data>
 </root>

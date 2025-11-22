@@ -1419,9 +1419,6 @@
   <data name="Label_Process" xml:space="preserve">
     <value>Traiter</value>
   </data>
-  <data name="Caption_ImportFluxImage" xml:space="preserve">
-    <value>Importer l’image de flux</value>
-  </data>
   <data name="Label_Info" xml:space="preserve">
     <value>Infos</value>
   </data>
@@ -1614,9 +1611,6 @@
   <data name="Label_Staus" xml:space="preserve">
     <value>Statut</value>
   </data>
-  <data name="Label_Clear" xml:space="preserve">
-    <value>Effacer</value>
-  </data>
   <data name="Label_Cancel" xml:space="preserve">
     <value>Annuler</value>
   </data>
@@ -1638,9 +1632,6 @@
   <data name="Label_FolderName" xml:space="preserve">
     <value>Dossier</value>
   </data>
-  <data name="Label_Keep" xml:space="preserve">
-    <value>Conserver</value>
-  </data>
   <data name="Label_RootFolder" xml:space="preserve">
     <value>Dossier racine</value>
   </data>
@@ -1657,10 +1648,28 @@ Voulez-vous écraser ?</value>
   <data name="Label_Device" xml:space="preserve">
     <value>Périphérique</value>
   </data>
-  <data name="Label_Unexpected" xml:space="preserve">
-    <value>Inattendu</value>
-  </data>
   <data name="Label_BadSectorIds" xml:space="preserve">
     <value>Secteurs défectueux</value>
+  </data>
+  <data name="Caption_ConvertFluxImage" xml:space="preserve">
+    <value>Convertir l’image flux</value>
+  </data>
+  <data name="Label_Convert" xml:space="preserve">
+    <value>Convertir</value>
+  </data>
+  <data name="Dialog_EnterFileName" xml:space="preserve">
+    <value>Veuillez entrer un nom de fichier.</value>
+  </data>
+  <data name="Dialog_EnterFolderName" xml:space="preserve">
+    <value>Veuillez entrer un nom de dossier.</value>
+  </data>
+  <data name="Dialog_SelectRootFolder" xml:space="preserve">
+    <value>Veuillez sélectionner un dossier racine.</value>
+  </data>
+  <data name="Label_Save" xml:space="preserve">
+    <value>Enregistrer</value>
+  </data>
+  <data name="Label_SaveAndClose" xml:space="preserve">
+    <value>Sauver &amp; Fermer</value>
   </data>
 </root>

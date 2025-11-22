@@ -1623,9 +1623,6 @@
   <data name="Label_DriveType" xml:space="preserve">
     <value>Drive {0} Type</value>
   </data>
-  <data name="Caption_ImportFluxImage" xml:space="preserve">
-    <value>Import Flux Image</value>
-  </data>
   <data name="Dialog_InvalidSelection" xml:space="preserve">
     <value>Invalid selection</value>
   </data>
@@ -1836,9 +1833,6 @@
   <data name="Kryoflux_Flag_Z" xml:space="preserve">
     <value>Illegal sector offset</value>
   </data>
-  <data name="Label_Clear" xml:space="preserve">
-    <value>Clear</value>
-  </data>
   <data name="Label_Cancel" xml:space="preserve">
     <value>Cancel</value>
   </data>
@@ -1860,9 +1854,6 @@
   <data name="Label_Discard" xml:space="preserve">
     <value>Discard</value>
   </data>
-  <data name="Label_Keep" xml:space="preserve">
-    <value>Keep</value>
-  </data>
   <data name="Label_SaveLog" xml:space="preserve">
     <value>Save Log</value>
   </data>
@@ -1879,10 +1870,28 @@ Do you wish to overwrite?</value>
   <data name="Label_Device" xml:space="preserve">
     <value>Device</value>
   </data>
-  <data name="Label_Unexpected" xml:space="preserve">
-    <value>Unexpected</value>
-  </data>
   <data name="Label_BadSectorIds" xml:space="preserve">
     <value>Bad Sector Ids</value>
+  </data>
+  <data name="Caption_ConvertFluxImage" xml:space="preserve">
+    <value>Convert Flux Image</value>
+  </data>
+  <data name="Label_Convert" xml:space="preserve">
+    <value>Convert</value>
+  </data>
+  <data name="Label_Save" xml:space="preserve">
+    <value>Save</value>
+  </data>
+  <data name="Label_SaveAndClose" xml:space="preserve">
+    <value>Save and Close</value>
+  </data>
+  <data name="Dialog_EnterFileName" xml:space="preserve">
+    <value>Please enter a file name.</value>
+  </data>
+  <data name="Dialog_EnterFolderName" xml:space="preserve">
+    <value>Please enter a folder name.</value>
+  </data>
+  <data name="Dialog_SelectRootFolder" xml:space="preserve">
+    <value>Please select a root folder.</value>
   </data>
 </root>

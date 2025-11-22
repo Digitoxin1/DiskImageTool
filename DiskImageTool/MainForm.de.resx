@@ -351,9 +351,6 @@
   <data name="MenuGreaseweazleErase.Text" xml:space="preserve">
     <value>Diskette &amp;löschen</value>
   </data>
-  <data name="MenuGreaseweazleImport.Text" xml:space="preserve">
-    <value>Flux-Image &amp;importieren</value>
-  </data>
   <data name="MenuGreaseweazleClean.Text" xml:space="preserve">
     <value>Laufwerk &amp;reinigen</value>
   </data>
@@ -365,5 +362,8 @@
   </data>
   <data name="MenuOptionsKryoflux.Text" xml:space="preserve">
     <value>&amp;Kryoflux Konfiguration</value>
+  </data>
+  <data name="MenuFluxConvert.Text" xml:space="preserve">
+    <value>&amp;Flux-Image konvertieren</value>
   </data>
 </root>

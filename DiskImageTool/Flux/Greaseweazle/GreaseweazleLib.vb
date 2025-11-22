@@ -349,8 +349,8 @@ Namespace Flux.Greaseweazle
                 End Try
 
                 If result = DialogResult.OK Then
-                    If Not String.IsNullOrEmpty(Form.OutputFilePath) Then
-                        Return (True, Form.OutputFilePath, Form.GetNewFileName)
+                    If Not String.IsNullOrEmpty(Form.NewFilePath) Then
+                        Return (True, Form.NewFilePath, Form.NewFileName)
                     End If
                 End If
 

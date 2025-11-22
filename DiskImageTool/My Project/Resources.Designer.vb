@@ -471,6 +471,15 @@ Namespace My.Resources
         End Property
         
         '''<summary>
+        '''  Looks up a localized string similar to Convert Flux Image.
+        '''</summary>
+        Friend ReadOnly Property Caption_ConvertFluxImage() As String
+            Get
+                Return ResourceManager.GetString("Caption_ConvertFluxImage", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
         '''  Looks up a localized string similar to Delete File.
         '''</summary>
         Friend ReadOnly Property Caption_DeleteFile() As String
@@ -530,15 +539,6 @@ Namespace My.Resources
         Friend ReadOnly Property Caption_HexEditor() As String
             Get
                 Return ResourceManager.GetString("Caption_HexEditor", resourceCulture)
-            End Get
-        End Property
-        
-        '''<summary>
-        '''  Looks up a localized string similar to Import Flux Image.
-        '''</summary>
-        Friend ReadOnly Property Caption_ImportFluxImage() As String
-            Get
-                Return ResourceManager.GetString("Caption_ImportFluxImage", resourceCulture)
             End Get
         End Property
         
@@ -1178,6 +1178,24 @@ Namespace My.Resources
         End Property
         
         '''<summary>
+        '''  Looks up a localized string similar to Please enter a file name..
+        '''</summary>
+        Friend ReadOnly Property Dialog_EnterFileName() As String
+            Get
+                Return ResourceManager.GetString("Dialog_EnterFileName", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  Looks up a localized string similar to Please enter a folder name..
+        '''</summary>
+        Friend ReadOnly Property Dialog_EnterFolderName() As String
+            Get
+                Return ResourceManager.GetString("Dialog_EnterFolderName", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
         '''  Looks up a localized string similar to Filename cannot be blank..
         '''</summary>
         Friend ReadOnly Property Dialog_FileBlankWarning() As String
@@ -1565,6 +1583,15 @@ Namespace My.Resources
         Friend ReadOnly Property Dialog_SearchNotFound() As String
             Get
                 Return ResourceManager.GetString("Dialog_SearchNotFound", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  Looks up a localized string similar to Please select a root folder..
+        '''</summary>
+        Friend ReadOnly Property Dialog_SelectRootFolder() As String
+            Get
+                Return ResourceManager.GetString("Dialog_SelectRootFolder", resourceCulture)
             End Get
         End Property
         
@@ -2936,15 +2963,6 @@ Namespace My.Resources
         End Property
         
         '''<summary>
-        '''  Looks up a localized string similar to Clear.
-        '''</summary>
-        Friend ReadOnly Property Label_Clear() As String
-            Get
-                Return ResourceManager.GetString("Label_Clear", resourceCulture)
-            End Get
-        End Property
-        
-        '''<summary>
         '''  Looks up a localized string similar to Close.
         '''</summary>
         Friend ReadOnly Property Label_Close() As String
@@ -2986,6 +3004,15 @@ Namespace My.Resources
         Friend ReadOnly Property Label_ContinueAfterFailure() As String
             Get
                 Return ResourceManager.GetString("Label_ContinueAfterFailure", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  Looks up a localized string similar to Convert.
+        '''</summary>
+        Friend ReadOnly Property Label_Convert() As String
+            Get
+                Return ResourceManager.GetString("Label_Convert", resourceCulture)
             End Get
         End Property
         
@@ -3512,15 +3539,6 @@ Namespace My.Resources
         End Property
         
         '''<summary>
-        '''  Looks up a localized string similar to Keep.
-        '''</summary>
-        Friend ReadOnly Property Label_Keep() As String
-            Get
-                Return ResourceManager.GetString("Label_Keep", resourceCulture)
-            End Get
-        End Property
-        
-        '''<summary>
         '''  Looks up a localized string similar to Length(h).
         '''</summary>
         Friend ReadOnly Property Label_LengthHex() As String
@@ -3836,6 +3854,24 @@ Namespace My.Resources
         End Property
         
         '''<summary>
+        '''  Looks up a localized string similar to Save.
+        '''</summary>
+        Friend ReadOnly Property Label_Save() As String
+            Get
+                Return ResourceManager.GetString("Label_Save", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  Looks up a localized string similar to Save and Close.
+        '''</summary>
+        Friend ReadOnly Property Label_SaveAndClose() As String
+            Get
+                Return ResourceManager.GetString("Label_SaveAndClose", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
         '''  Looks up a localized string similar to Save Log.
         '''</summary>
         Friend ReadOnly Property Label_SaveLog() As String
@@ -4003,15 +4039,6 @@ Namespace My.Resources
         Friend ReadOnly Property Label_Type() As String
             Get
                 Return ResourceManager.GetString("Label_Type", resourceCulture)
-            End Get
-        End Property
-        
-        '''<summary>
-        '''  Looks up a localized string similar to Unexpected.
-        '''</summary>
-        Friend ReadOnly Property Label_Unexpected() As String
-            Get
-                Return ResourceManager.GetString("Label_Unexpected", resourceCulture)
             End Get
         End Property
         

@@ -1419,9 +1419,6 @@
   <data name="Label_Process" xml:space="preserve">
     <value>Procesar</value>
   </data>
-  <data name="Caption_ImportFluxImage" xml:space="preserve">
-    <value>Importar imagen de flujo</value>
-  </data>
   <data name="Label_Info" xml:space="preserve">
     <value>Información</value>
   </data>
@@ -1614,9 +1611,6 @@
   <data name="Label_Staus" xml:space="preserve">
     <value>Estado</value>
   </data>
-  <data name="Label_Clear" xml:space="preserve">
-    <value>Borrar</value>
-  </data>
   <data name="Label_Cancel" xml:space="preserve">
     <value>Cancelar</value>
   </data>
@@ -1638,9 +1632,6 @@
   <data name="Label_FolderName" xml:space="preserve">
     <value>Carpeta</value>
   </data>
-  <data name="Label_Keep" xml:space="preserve">
-    <value>Conservar</value>
-  </data>
   <data name="Label_RootFolder" xml:space="preserve">
     <value>Carpeta raíz</value>
   </data>
@@ -1657,10 +1648,28 @@
   <data name="Label_Device" xml:space="preserve">
     <value>Dispositivo</value>
   </data>
-  <data name="Label_Unexpected" xml:space="preserve">
-    <value>Inesperado</value>
-  </data>
   <data name="Label_BadSectorIds" xml:space="preserve">
     <value>Sectores defectuosos</value>
+  </data>
+  <data name="Caption_ConvertFluxImage" xml:space="preserve">
+    <value>Convertir imagen de flujo</value>
+  </data>
+  <data name="Label_Convert" xml:space="preserve">
+    <value>Convertir</value>
+  </data>
+  <data name="Dialog_EnterFileName" xml:space="preserve">
+    <value>Por favor, introduzca un nombre de archivo.</value>
+  </data>
+  <data name="Dialog_EnterFolderName" xml:space="preserve">
+    <value>Por favor, introduzca un nombre de carpeta.</value>
+  </data>
+  <data name="Dialog_SelectRootFolder" xml:space="preserve">
+    <value>Por favor, seleccione una carpeta raíz.</value>
+  </data>
+  <data name="Label_Save" xml:space="preserve">
+    <value>Guardar</value>
+  </data>
+  <data name="Label_SaveAndClose" xml:space="preserve">
+    <value>Guardar &amp; Cerrar</value>
   </data>
 </root>
