@@ -117,46 +117,13 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="LabelDriveInterface.Text" xml:space="preserve">
-    <value>Interface du lecteur</value>
-  </data>
   <data name="BtnCancel.Text" xml:space="preserve">
     <value>&amp;Annuler</value>
   </data>
   <data name="BtnUpdate.Text" xml:space="preserve">
     <value>&amp;Mettre à jour</value>
   </data>
-  <data name="LabelApplicationPath.Text" xml:space="preserve">
-    <value>Chemin de l’application</value>
-  </data>
-  <data name="ButtonBrowse.Text" xml:space="preserve">
-    <value>Parcourir</value>
-  </data>
   <data name="$this.Text" xml:space="preserve">
     <value>Greaseweazle Configuration</value>
-  </data>
-  <data name="ButtonClear.Text" xml:space="preserve">
-    <value>Effacer</value>
-  </data>
-  <data name="ButtonInfo.Text" xml:space="preserve">
-    <value>Infos</value>
-  </data>
-  <data name="LabelTracks2.Text" xml:space="preserve">
-    <value>Pistes</value>
-  </data>
-  <data name="LabelTracks1.Text" xml:space="preserve">
-    <value>Pistes</value>
-  </data>
-  <data name="LabelTracks0.Text" xml:space="preserve">
-    <value>Pistes</value>
-  </data>
-  <data name="LabelPort.Text" xml:space="preserve">
-    <value>Port</value>
-  </data>
-  <data name="LabelDefaultRevs.Text" xml:space="preserve">
-    <value>Tours par défaut</value>
-  </data>
-  <data name="LabelLogFile.Text" xml:space="preserve">
-    <value>Nom journal</value>
   </data>
 </root>

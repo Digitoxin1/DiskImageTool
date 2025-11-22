@@ -117,28 +117,19 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="BtnUpdate.Text" xml:space="preserve">
-    <value>&amp;Mettre à jour</value>
-  </data>
   <data name="ButtonBrowse.Text" xml:space="preserve">
     <value>Parcourir</value>
-  </data>
-  <data name="$this.Text" xml:space="preserve">
-    <value>Kryoflux Configuration</value>
-  </data>
-  <data name="BtnCancel.Text" xml:space="preserve">
-    <value>&amp;Annuler</value>
   </data>
   <data name="ButtonClear.Text" xml:space="preserve">
     <value>Effacer</value>
   </data>
-  <data name="LabelLogFile.Text" xml:space="preserve">
-    <value>Nom journal</value>
+  <data name="CheckBoxStripPath.Text" xml:space="preserve">
+    <value>Retirer le chemin des journaux</value>
   </data>
   <data name="LabelApplicationPath.Text" xml:space="preserve">
     <value>Chemin de l’application</value>
   </data>
-  <data name="CheckBoxStripPath.Text" xml:space="preserve">
-    <value>Retirer le chemin des journaux</value>
+  <data name="LabelLogFile.Text" xml:space="preserve">
+    <value>Nom journal</value>
   </data>
 </root>

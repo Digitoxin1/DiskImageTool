@@ -1977,19 +1977,10 @@ Public Class MainForm
         ImageFilters.ExportUnknownImages = DirectCast(sender, ToolStripMenuItem).Checked
     End Sub
 
-    Private Sub MenuOptionsGreaseweazle_Click(sender As Object, e As EventArgs) Handles MenuOptionsGreaseweazle.Click
+    Private Sub MenuOptionsGreaseweazle_Click(sender As Object, e As EventArgs) Handles MenuOptionsFlux.Click
         MainMenuOptions.DropDown.Close()
 
         Dim Form As New Flux.Greaseweazle.ConfigurationForm
-        Form.ShowDialog(Me)
-
-        RefreshFluxMenu()
-    End Sub
-
-    Private Sub MenuOptionsKryoflux_Click(sender As Object, e As EventArgs) Handles MenuOptionsKryoflux.Click
-        MainMenuOptions.DropDown.Close()
-
-        Dim Form As New Flux.Kryoflux.ConfigurationForm
         Form.ShowDialog(Me)
 
         RefreshFluxMenu()

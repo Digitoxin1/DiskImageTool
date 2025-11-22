@@ -1,9 +1,9 @@
 ﻿Namespace Flux.Kryoflux
     <Global.Microsoft.VisualBasic.CompilerServices.DesignerGenerated()>
-    Partial Class ConfigurationForm
-        Inherits System.Windows.Forms.Form
+    Partial Class SettingsPanel
+        Inherits System.Windows.Forms.UserControl
 
-        'Form overrides dispose to clean up the component list.
+        'UserControl overrides dispose to clean up the component list.
         <System.Diagnostics.DebuggerNonUserCode()>
         Protected Overrides Sub Dispose(ByVal disposing As Boolean)
             Try
@@ -23,33 +23,29 @@
         'Do not modify it using the code editor.
         <System.Diagnostics.DebuggerStepThrough()>
         Private Sub InitializeComponent()
-            Dim PanelMain As System.Windows.Forms.Panel
-            Dim resources As System.ComponentModel.ComponentResourceManager = New System.ComponentModel.ComponentResourceManager(GetType(ConfigurationForm))
             Dim LabelApplicationPath As System.Windows.Forms.Label
+            Dim resources As System.ComponentModel.ComponentResourceManager = New System.ComponentModel.ComponentResourceManager(GetType(SettingsPanel))
             Dim LabelLogFile As System.Windows.Forms.Label
-            Dim PanelBottom As System.Windows.Forms.FlowLayoutPanel
             Me.TableLayoutPanel1 = New System.Windows.Forms.TableLayoutPanel()
             Me.TextBoxPath = New System.Windows.Forms.TextBox()
             Me.ButtonBrowse = New System.Windows.Forms.Button()
             Me.ButtonClear = New System.Windows.Forms.Button()
             Me.TextBoxLogFile = New System.Windows.Forms.TextBox()
-            Me.BtnCancel = New System.Windows.Forms.Button()
-            Me.BtnUpdate = New System.Windows.Forms.Button()
             Me.CheckBoxStripPath = New System.Windows.Forms.CheckBox()
-            PanelMain = New System.Windows.Forms.Panel()
             LabelApplicationPath = New System.Windows.Forms.Label()
             LabelLogFile = New System.Windows.Forms.Label()
-            PanelBottom = New System.Windows.Forms.FlowLayoutPanel()
-            PanelMain.SuspendLayout()
             Me.TableLayoutPanel1.SuspendLayout()
-            PanelBottom.SuspendLayout()
             Me.SuspendLayout()
             '
-            'PanelMain
+            'LabelApplicationPath
             '
-            resources.ApplyResources(PanelMain, "PanelMain")
-            PanelMain.Controls.Add(Me.TableLayoutPanel1)
-            PanelMain.Name = "PanelMain"
+            resources.ApplyResources(LabelApplicationPath, "LabelApplicationPath")
+            LabelApplicationPath.Name = "LabelApplicationPath"
+            '
+            'LabelLogFile
+            '
+            resources.ApplyResources(LabelLogFile, "LabelLogFile")
+            LabelLogFile.Name = "LabelLogFile"
             '
             'TableLayoutPanel1
             '
@@ -62,11 +58,6 @@
             Me.TableLayoutPanel1.Controls.Add(Me.TextBoxLogFile, 1, 6)
             Me.TableLayoutPanel1.Controls.Add(Me.CheckBoxStripPath, 2, 6)
             Me.TableLayoutPanel1.Name = "TableLayoutPanel1"
-            '
-            'LabelApplicationPath
-            '
-            resources.ApplyResources(LabelApplicationPath, "LabelApplicationPath")
-            LabelApplicationPath.Name = "LabelApplicationPath"
             '
             'TextBoxPath
             '
@@ -89,36 +80,10 @@
             Me.ButtonClear.Name = "ButtonClear"
             Me.ButtonClear.UseVisualStyleBackColor = True
             '
-            'LabelLogFile
-            '
-            resources.ApplyResources(LabelLogFile, "LabelLogFile")
-            LabelLogFile.Name = "LabelLogFile"
-            '
             'TextBoxLogFile
             '
             resources.ApplyResources(Me.TextBoxLogFile, "TextBoxLogFile")
             Me.TextBoxLogFile.Name = "TextBoxLogFile"
-            '
-            'PanelBottom
-            '
-            PanelBottom.Controls.Add(Me.BtnCancel)
-            PanelBottom.Controls.Add(Me.BtnUpdate)
-            resources.ApplyResources(PanelBottom, "PanelBottom")
-            PanelBottom.Name = "PanelBottom"
-            '
-            'BtnCancel
-            '
-            Me.BtnCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel
-            resources.ApplyResources(Me.BtnCancel, "BtnCancel")
-            Me.BtnCancel.Name = "BtnCancel"
-            Me.BtnCancel.UseVisualStyleBackColor = True
-            '
-            'BtnUpdate
-            '
-            Me.BtnUpdate.DialogResult = System.Windows.Forms.DialogResult.OK
-            resources.ApplyResources(Me.BtnUpdate, "BtnUpdate")
-            Me.BtnUpdate.Name = "BtnUpdate"
-            Me.BtnUpdate.UseVisualStyleBackColor = True
             '
             'CheckBoxStripPath
             '
@@ -127,22 +92,14 @@
             Me.CheckBoxStripPath.Name = "CheckBoxStripPath"
             Me.CheckBoxStripPath.UseVisualStyleBackColor = True
             '
-            'ConfigurationForm
+            'SettingsPanel
             '
             resources.ApplyResources(Me, "$this")
             Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
-            Me.Controls.Add(PanelMain)
-            Me.Controls.Add(PanelBottom)
-            Me.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog
-            Me.MaximizeBox = False
-            Me.MinimizeBox = False
-            Me.Name = "ConfigurationForm"
-            Me.ShowInTaskbar = False
-            PanelMain.ResumeLayout(False)
-            PanelMain.PerformLayout()
+            Me.Controls.Add(Me.TableLayoutPanel1)
+            Me.Name = "SettingsPanel"
             Me.TableLayoutPanel1.ResumeLayout(False)
             Me.TableLayoutPanel1.PerformLayout()
-            PanelBottom.ResumeLayout(False)
             Me.ResumeLayout(False)
             Me.PerformLayout()
 
@@ -153,8 +110,6 @@
         Friend WithEvents ButtonBrowse As Button
         Friend WithEvents ButtonClear As Button
         Friend WithEvents TextBoxLogFile As TextBox
-        Friend WithEvents BtnCancel As Button
-        Friend WithEvents BtnUpdate As Button
         Friend WithEvents CheckBoxStripPath As CheckBox
     End Class
 End Namespace

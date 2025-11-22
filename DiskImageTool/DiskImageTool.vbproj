@@ -173,6 +173,12 @@
     <Compile Include="Filters\ImageFiltersBase.vb" />
     <Compile Include="DiskImageLib.vb" />
     <Compile Include="Flux\Enums.vb" />
+    <Compile Include="Flux\Greaseweazle\SettingsPanel.Designer.vb">
+      <DependentUpon>SettingsPanel.vb</DependentUpon>
+    </Compile>
+    <Compile Include="Flux\Greaseweazle\SettingsPanel.vb">
+      <SubType>UserControl</SubType>
+    </Compile>
     <Compile Include="Flux\Greaseweazle\TrackStatus.vb" />
     <Compile Include="Flux\Forms\ConvertImageForm.vb">
       <SubType>Form</SubType>
@@ -181,13 +187,13 @@
     <Compile Include="Flux\ITrackStatus.vb" />
     <Compile Include="Flux\Kryoflux\CommandLineBuilder.vb" />
     <Compile Include="Flux\Kryoflux\ConsoleParser.vb" />
-    <Compile Include="Flux\Kryoflux\Forms\ConfigurationForm.Designer.vb">
-      <DependentUpon>ConfigurationForm.vb</DependentUpon>
-    </Compile>
-    <Compile Include="Flux\Kryoflux\Forms\ConfigurationForm.vb">
-      <SubType>Form</SubType>
-    </Compile>
     <Compile Include="Flux\Kryoflux\KryofluxLib.vb" />
+    <Compile Include="Flux\Kryoflux\SettingsPanel.Designer.vb">
+      <DependentUpon>SettingsPanel.vb</DependentUpon>
+    </Compile>
+    <Compile Include="Flux\Kryoflux\SettingsPanel.vb">
+      <SubType>UserControl</SubType>
+    </Compile>
     <Compile Include="Flux\Kryoflux\TrackStatus.vb" />
     <Compile Include="Flux\SharedLib.vb" />
     <Compile Include="Globals.vb" />
@@ -539,17 +545,29 @@
     <Compile Include="Lib\WindowsAPI.vb" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Flux\Kryoflux\Forms\ConfigurationForm.de.resx">
-      <DependentUpon>ConfigurationForm.vb</DependentUpon>
+    <EmbeddedResource Include="Flux\Greaseweazle\SettingsPanel.de.resx">
+      <DependentUpon>SettingsPanel.vb</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Flux\Kryoflux\Forms\ConfigurationForm.es.resx">
-      <DependentUpon>ConfigurationForm.vb</DependentUpon>
+    <EmbeddedResource Include="Flux\Greaseweazle\SettingsPanel.es.resx">
+      <DependentUpon>SettingsPanel.vb</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Flux\Kryoflux\Forms\ConfigurationForm.fr.resx">
-      <DependentUpon>ConfigurationForm.vb</DependentUpon>
+    <EmbeddedResource Include="Flux\Greaseweazle\SettingsPanel.fr.resx">
+      <DependentUpon>SettingsPanel.vb</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Flux\Kryoflux\Forms\ConfigurationForm.resx">
-      <DependentUpon>ConfigurationForm.vb</DependentUpon>
+    <EmbeddedResource Include="Flux\Greaseweazle\SettingsPanel.resx">
+      <DependentUpon>SettingsPanel.vb</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Flux\Kryoflux\SettingsPanel.de.resx">
+      <DependentUpon>SettingsPanel.vb</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Flux\Kryoflux\SettingsPanel.es.resx">
+      <DependentUpon>SettingsPanel.vb</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Flux\Kryoflux\SettingsPanel.fr.resx">
+      <DependentUpon>SettingsPanel.vb</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Flux\Kryoflux\SettingsPanel.resx">
+      <DependentUpon>SettingsPanel.vb</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\AboutBox.resx">
       <DependentUpon>AboutBox.vb</DependentUpon>
@@ -943,6 +961,8 @@
     <EmbeddedResource Include="Assets\License.txt" />
     <EmbeddedResource Include="Assets\bootstrap.xml" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Folder Include="Flux\Kryoflux\Forms\" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.VisualBasic.targets" />
 </Project>

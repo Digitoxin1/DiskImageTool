@@ -339,9 +339,6 @@
   <data name="MainMenuNewInstance.Text" xml:space="preserve">
     <value>In neuer Instanz öffnen</value>
   </data>
-  <data name="MenuOptionsGreaseweazle.Text" xml:space="preserve">
-    <value>&amp;Greaseweazle Konfiguration</value>
-  </data>
   <data name="MenuGreaseweazleBandwidth.Text" xml:space="preserve">
     <value>&amp;Bandbreite melden</value>
   </data>
@@ -360,10 +357,10 @@
   <data name="MenuGreaseweazleRead.Text" xml:space="preserve">
     <value>Diskette &amp;lesen</value>
   </data>
-  <data name="MenuOptionsKryoflux.Text" xml:space="preserve">
-    <value>&amp;Kryoflux Konfiguration</value>
-  </data>
   <data name="MenuFluxConvert.Text" xml:space="preserve">
     <value>&amp;Flux-Image konvertieren</value>
+  </data>
+  <data name="MenuOptionsFlux.Text" xml:space="preserve">
+    <value>&amp;Flux Konfiguration</value>
   </data>
 </root>

@@ -1,8 +1,21 @@
 ﻿Imports System.ComponentModel
 
 Namespace Flux.Kryoflux
-    Public Class ConfigurationForm
+    Public Class SettingsPanel
         Private ReadOnly ToolTip1 As New ToolTip()
+
+        Public Sub Initialize()
+            InitializeFields()
+        End Sub
+
+        Public Sub UpdateSettings()
+            If TextBoxPath.Text = "" OrElse IO.File.Exists(TextBoxPath.Text) Then
+                Settings.AppPath = TextBoxPath.Text
+            End If
+
+            Settings.LogFileName = TextBoxLogFile.Text.Trim
+            Settings.LogStripPath = CheckBoxStripPath.Checked
+        End Sub
 
         Private Sub InitializeFields()
             SetExePath(Settings.AppPath)
@@ -16,14 +29,6 @@ Namespace Flux.Kryoflux
             ToolTip1.SetToolTip(TextBoxPath, path)
         End Sub
 #Region "Events"
-        Private Sub BtnUpdate_Click(sender As Object, e As EventArgs) Handles BtnUpdate.Click
-            If TextBoxPath.Text = "" OrElse IO.File.Exists(TextBoxPath.Text) Then
-                Settings.AppPath = TextBoxPath.Text
-            End If
-
-            Settings.LogFileName = TextBoxLogFile.Text.Trim
-            Settings.LogStripPath = CheckBoxStripPath.Checked
-        End Sub
 
         Private Sub ButtonBrowse_Click(sender As Object, e As EventArgs) Handles ButtonBrowse.Click
             Using ofd As New OpenFileDialog()
@@ -52,10 +57,6 @@ Namespace Flux.Kryoflux
 
         Private Sub ButtonClear_Click(sender As Object, e As EventArgs) Handles ButtonClear.Click
             SetExePath("")
-        End Sub
-
-        Private Sub ConfigurationForm_Load(sender As Object, e As EventArgs) Handles Me.Load
-            InitializeFields()
         End Sub
         Private Sub TextBoxLogFile_Validating(sender As Object, e As CancelEventArgs) Handles TextBoxLogFile.Validating
             Dim name = TextBoxLogFile.Text.Trim()

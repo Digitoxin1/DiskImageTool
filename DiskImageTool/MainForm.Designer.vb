@@ -120,8 +120,7 @@ Partial Class MainForm
         Me.MenuOptionsDisplayTitles = New System.Windows.Forms.ToolStripMenuItem()
         Me.MenuOptionsDisplayLanguage = New System.Windows.Forms.ToolStripMenuItem()
         Me.ToolStripSeparator2 = New System.Windows.Forms.ToolStripSeparator()
-        Me.MenuOptionsGreaseweazle = New System.Windows.Forms.ToolStripMenuItem()
-        Me.MenuOptionsKryoflux = New System.Windows.Forms.ToolStripMenuItem()
+        Me.MenuOptionsFlux = New System.Windows.Forms.ToolStripMenuItem()
         Me.MainMenuUpdateAvailable = New System.Windows.Forms.ToolStripMenuItem()
         Me.MainMenuNewInstance = New System.Windows.Forms.ToolStripMenuItem()
         Me.LabelCRC32Caption = New System.Windows.Forms.Label()
@@ -680,7 +679,7 @@ Partial Class MainForm
         '
         'MainMenuOptions
         '
-        Me.MainMenuOptions.DropDownItems.AddRange(New System.Windows.Forms.ToolStripItem() {Me.MenuOptionsCreateBackup, Me.MenuOptionsCheckUpdate, Me.MenuOptionsDragDrop, Me.MenuOptionsDisplayTitles, Me.MenuOptionsDisplayLanguage, Me.ToolStripSeparator2, Me.MenuOptionsGreaseweazle, Me.MenuOptionsKryoflux})
+        Me.MainMenuOptions.DropDownItems.AddRange(New System.Windows.Forms.ToolStripItem() {Me.MenuOptionsCreateBackup, Me.MenuOptionsCheckUpdate, Me.MenuOptionsDragDrop, Me.MenuOptionsDisplayTitles, Me.MenuOptionsDisplayLanguage, Me.ToolStripSeparator2, Me.MenuOptionsFlux})
         Me.MainMenuOptions.Name = "MainMenuOptions"
         resources.ApplyResources(Me.MainMenuOptions, "MainMenuOptions")
         '
@@ -718,15 +717,10 @@ Partial Class MainForm
         Me.ToolStripSeparator2.Name = "ToolStripSeparator2"
         resources.ApplyResources(Me.ToolStripSeparator2, "ToolStripSeparator2")
         '
-        'MenuOptionsGreaseweazle
+        'MenuOptionsFlux
         '
-        Me.MenuOptionsGreaseweazle.Name = "MenuOptionsGreaseweazle"
-        resources.ApplyResources(Me.MenuOptionsGreaseweazle, "MenuOptionsGreaseweazle")
-        '
-        'MenuOptionsKryoflux
-        '
-        Me.MenuOptionsKryoflux.Name = "MenuOptionsKryoflux"
-        resources.ApplyResources(Me.MenuOptionsKryoflux, "MenuOptionsKryoflux")
+        Me.MenuOptionsFlux.Name = "MenuOptionsFlux"
+        resources.ApplyResources(Me.MenuOptionsFlux, "MenuOptionsFlux")
         '
         'MainMenuUpdateAvailable
         '
@@ -1179,13 +1173,12 @@ Partial Class MainForm
     Friend WithEvents MenuReportsWriteSplices As ToolStripMenuItem
     Friend WithEvents MainMenuNewInstance As ToolStripMenuItem
     Friend WithEvents ToolStripSeparator2 As ToolStripSeparator
-    Friend WithEvents MenuOptionsGreaseweazle As ToolStripMenuItem
+    Friend WithEvents MenuOptionsFlux As ToolStripMenuItem
     Friend WithEvents MainMenuFlux As ToolStripMenuItem
     Friend WithEvents MenuGreaseweazleRead As ToolStripMenuItem
     Friend WithEvents MenuGreaseweazleWrite As ToolStripMenuItem
     Friend WithEvents ToolStripSeparator5 As ToolStripSeparator
     Friend WithEvents MenuFluxConvert As ToolStripMenuItem
-    Friend WithEvents MenuOptionsKryoflux As ToolStripMenuItem
     Friend WithEvents MenuGreaseweazle As ToolStripMenuItem
     Friend WithEvents MenuGreaseweazleErase As ToolStripMenuItem
     Friend WithEvents MenuGreaseweazleClean As ToolStripMenuItem
