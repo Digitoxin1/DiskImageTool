@@ -113,7 +113,7 @@ Namespace Flux
 
         Private Sub ClearOutputFile(Delete As Boolean)
             If Delete AndAlso Not String.IsNullOrEmpty(_OutputFilePath) Then
-                DeleteFileIfExists(_OutputFilePath)
+                DeleteTempFileIfExists(_OutputFilePath)
             End If
             _OutputFilePath = ""
         End Sub

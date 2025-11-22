@@ -597,7 +597,7 @@ Namespace Flux.Greaseweazle
 
             If State <> ConsoleProcessRunner.ProcessStateEnum.Running Then
                 If _CurrentFilePath <> "" Then
-                    DeleteFileIfExists(_CurrentFilePath)
+                    DeleteTempFileIfExists(_CurrentFilePath)
                 End If
                 ResetCheckBoxSelect()
             End If

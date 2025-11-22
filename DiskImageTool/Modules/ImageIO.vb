@@ -4,18 +4,12 @@ Imports DiskImageTool.DiskImage
 
 Module ImageIO
     Public Const BASIC_SECTOR_FILE_EXTENSIONS As String = ".ima,.img,.vfd,.flp"
-    Public ReadOnly AllFileExtensions As New List(Of String)
-    Public ReadOnly BasicSectorFileExtensions As New List(Of String) From {".ima", ".img", ".imz", ".vfd", ".flp"}
-    Public ReadOnly ArchiveFileExtensions As New List(Of String) From {".zip"}
-    Public ReadOnly BitstreamFileExtensions As New List(Of String) From {".86f", ".hfe", ".mfm", ".pri", ".tc"}
     Public ReadOnly AdvancedSectorFileExtensions As New List(Of String) From {".imd", ".psi"}
-
-    Private Enum FloppyImageGroup
-        BasicSectorImage
-        AdvancedSectorImage
-        BitstreamImage
-    End Enum
-
+    Public ReadOnly AllFileExtensions As New List(Of String)
+    Public ReadOnly ArchiveFileExtensions As New List(Of String) From {".zip"}
+    Public ReadOnly BasicSectorFileExtensions As New List(Of String) From {".ima", ".img", ".imz", ".vfd", ".flp"}
+    Public ReadOnly BitstreamFileExtensions As New List(Of String) From {".86f", ".hfe", ".mfm", ".pri", ".tc"}
+    Private Const TEMP_FOLDER_NAME As String = "DiskImageTool"
     Public Enum SaveImageResponse
         Success
         Failed
@@ -24,6 +18,11 @@ Module ImageIO
         Cancelled
     End Enum
 
+    Private Enum FloppyImageGroup
+        BasicSectorImage
+        AdvancedSectorImage
+        BitstreamImage
+    End Enum
     Public Function CreateBackupIfExists(FilePath As String) As Boolean
         If Not IO.File.Exists(FilePath) Then
             Return True
@@ -38,6 +37,38 @@ Module ImageIO
         End Try
 
         Return True
+    End Function
+
+    Public Function DeleteTempFileIfExists(FilePath As String) As Boolean
+        If String.IsNullOrWhiteSpace(FilePath) Then
+            Return False
+        End If
+
+        Dim TempRoot As String = GetTempPath()
+
+        If String.IsNullOrWhiteSpace(TempRoot) Then
+            Return False
+        End If
+
+        Try
+            Dim FullFilePath As String = IO.Path.GetFullPath(FilePath)
+            Dim FullTempRoot As String = IO.Path.GetFullPath(TempRoot)
+
+            If Not FullTempRoot.EndsWith(IO.Path.DirectorySeparatorChar) AndAlso Not FullTempRoot.EndsWith(IO.Path.AltDirectorySeparatorChar) Then
+                FullTempRoot &= IO.Path.DirectorySeparatorChar
+            End If
+
+            If Not FullFilePath.StartsWith(FullTempRoot, StringComparison.OrdinalIgnoreCase) Then
+                Return True
+            End If
+
+            If IO.File.Exists(FilePath) Then
+                IO.File.Delete(FilePath)
+            End If
+            Return True
+        Catch ex As Exception
+            Return False
+        End Try
     End Function
 
     Public Sub DirectoryEntryExport(FileData As FileData)
@@ -218,34 +249,8 @@ Module ImageIO
         End If
     End Function
 
-    Public Function InitTempPath() As String
-        Dim TempPath = IO.Path.Combine(IO.Path.GetTempPath(), "DiskImageTool")
-        If Not IO.Directory.Exists(TempPath) Then
-            Try
-                IO.Directory.CreateDirectory(TempPath)
-            Catch ex As Exception
-                DebugException(ex)
-            End Try
-        End If
-
-        Return TempPath
-    End Function
-
-    Public Function InitTempImagePath() As String
-        Dim TempPath = IO.Path.Combine(IO.Path.GetTempPath(), "DiskImageTool", App.Globals.GlobalIdentifier.ToString)
-        If Not IO.Directory.Exists(TempPath) Then
-            Try
-                IO.Directory.CreateDirectory(TempPath)
-            Catch ex As Exception
-                DebugException(ex)
-            End Try
-        End If
-
-        Return TempPath
-    End Function
-
     Public Sub EmptyTempImagePath()
-        Dim TempPath = IO.Path.Combine(IO.Path.GetTempPath(), "DiskImageTool", App.Globals.GlobalIdentifier.ToString)
+        Dim TempPath = IO.Path.Combine(GetTempPath, App.Globals.GlobalIdentifier.ToString)
 
         If IO.Directory.Exists(TempPath) Then
             Try
@@ -445,7 +450,7 @@ Module ImageIO
     End Function
 
     Public Function ImageSaveToTemp(Data() As Byte, DisplayPath As String) As String
-        Dim TempPath = IO.Path.Combine(IO.Path.GetTempPath(), "DiskImageTool")
+        Dim TempPath = GetTempPath()
         Dim TempFileName = HashFunctions.SHA1Hash(System.Text.Encoding.Unicode.GetBytes(DisplayPath)) & ".tmp"
 
         Try
@@ -492,6 +497,33 @@ Module ImageIO
             End If
         Next
     End Sub
+
+    Public Function InitTempImagePath() As String
+        Dim TempPath = IO.Path.Combine(GetTempPath, App.Globals.GlobalIdentifier.ToString)
+        If Not IO.Directory.Exists(TempPath) Then
+            Try
+                IO.Directory.CreateDirectory(TempPath)
+            Catch ex As Exception
+                DebugException(ex)
+            End Try
+        End If
+
+        Return TempPath
+    End Function
+
+    Public Function InitTempPath() As String
+        Dim TempPath = GetTempPath()
+
+        If Not IO.Directory.Exists(TempPath) Then
+            Try
+                IO.Directory.CreateDirectory(TempPath)
+            Catch ex As Exception
+                DebugException(ex)
+            End Try
+        End If
+
+        Return TempPath
+    End Function
 
     Public Function OpenFileFromZIP(ZipFileName As String, FileName As String) As Byte()
         Dim Data As New IO.MemoryStream()
@@ -697,6 +729,9 @@ Module ImageIO
         End Select
     End Function
 
+    Private Function GetTempPath() As String
+        Return IO.Path.Combine(IO.Path.GetTempPath(), TEMP_FOLDER_NAME)
+    End Function
     Private Function HasWeakBitsSupport(ImageType As FloppyImageType) As Boolean
         Return (ImageType = FloppyImageType.PSIImage Or ImageType = FloppyImageType.PRIImage Or ImageType = FloppyImageType.D86FImage)
     End Function

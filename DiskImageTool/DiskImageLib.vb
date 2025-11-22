@@ -63,6 +63,12 @@ Module DiskImageLib
             End If
         End If
 
+        If Result <> MsgBoxResult.Cancel Then
+            If CurrentImage.ImageData.FileType = ImageData.FileTypeEnum.NewImage Then
+                DeleteTempFileIfExists(CurrentImage.ImageData.SourceFile)
+            End If
+        End If
+
         Return Result <> MsgBoxResult.Cancel
     End Function
 
@@ -275,7 +281,7 @@ Module DiskImageLib
                 Image.ImageData.FileNameChanged = True
 
                 If Image.ImageData.FileType = ImageData.FileTypeEnum.NewImage Then
-                    DeleteFileIfExists(Image.ImageData.SourceFile)
+                    DeleteTempFileIfExists(Image.ImageData.SourceFile)
                 End If
 
                 Image.ImageData.SourceFile = NewFilePath

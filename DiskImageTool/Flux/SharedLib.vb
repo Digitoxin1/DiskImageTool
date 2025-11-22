@@ -135,7 +135,7 @@ Namespace Flux
             End Using
 
             If DeleteWhenDone Then
-                DeleteFileIfExists(FileName)
+                DeleteTempFileIfExists(FileName)
             End If
 
             Return DetectedFormat

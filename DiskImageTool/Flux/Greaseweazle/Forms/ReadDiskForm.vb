@@ -188,7 +188,7 @@ Namespace Flux.Greaseweazle
                     Dim PathName = IO.Path.GetDirectoryName(_OutputFilePath)
                     DeleteFilesAndFolderIfEmpty(PathName, "*.raw", Settings.LogFileName)
                 Else
-                    DeleteFileIfExists(_OutputFilePath)
+                    DeleteTempFileIfExists(_OutputFilePath)
                 End If
             End If
 
