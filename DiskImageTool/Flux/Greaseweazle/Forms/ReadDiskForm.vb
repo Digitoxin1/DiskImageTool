@@ -820,20 +820,22 @@ Namespace Flux.Greaseweazle
             Dim IsIdle As Boolean = Not IsRunning
 
             Dim CanChangeSettings As Boolean = IsIdle AndAlso Not HasOutputfile
+            Dim CanConvert As Boolean = IsIdle AndAlso HasOutputfile AndAlso IsFluxOutput
             Dim DriveSelected As Boolean = Not String.IsNullOrEmpty(Opt.Id)
+            Dim SelectMode As Boolean = CanConvert AndAlso CheckBoxSelect.Checked
 
             ComboImageFormat.Enabled = CanChangeSettings AndAlso DriveSelected
             ComboImageDrives.Enabled = CanChangeSettings
             ComboOutputType.Enabled = CanChangeSettings AndAlso ComboOutputType.Items.Count > 1
 
-            _NumericRevs.Enabled = CanChangeSettings
-            _NumericRetries.Enabled = CanChangeSettings
-            _NumericSeekRetries.Enabled = CanChangeSettings
+            _NumericRevs.Enabled = CanChangeSettings OrElse SelectMode
+            _NumericRetries.Enabled = CanChangeSettings OrElse SelectMode
+            _NumericSeekRetries.Enabled = CanChangeSettings OrElse SelectMode
 
             ButtonSaveLog.Enabled = IsIdle AndAlso TextBoxConsole.TextLength > 0
             ButtonReset.Enabled = IsIdle
 
-            ButtonConvert.Enabled = IsIdle AndAlso HasOutputfile AndAlso IsFluxOutput
+            ButtonConvert.Enabled = CanConvert
             ButtonConvert.Visible = IsFluxOutput
 
             ButtonDiscard.Enabled = IsIdle AndAlso HasOutputfile
@@ -848,7 +850,7 @@ Namespace Flux.Greaseweazle
                 CheckBoxDoublestep.Checked = False
             End If
 
-            CheckBoxSelect.Enabled = IsIdle AndAlso HasOutputfile AndAlso IsFluxOutput
+            CheckBoxSelect.Enabled = CanConvert
 
             ButtonDetect.Enabled = CanChangeSettings AndAlso DriveSelected
 
@@ -925,6 +927,7 @@ Namespace Flux.Greaseweazle
 
             Dim OutputType As ReadDiskOutputTypes = ComboOutputType.SelectedValue
 
+            TrackStatus.Clear()
             _FileOverwriteMode = True
 
             _DoubleStep = DiskParams.IsStandard AndAlso CheckBoxDoublestep.Enabled AndAlso CheckBoxDoublestep.Checked
