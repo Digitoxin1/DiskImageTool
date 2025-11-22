@@ -1,4 +1,4 @@
-﻿Namespace Flux.Greaseweazle
+﻿Namespace Flux
     Public Class ConfigurationForm
         Private Sub BtnUpdate_Click(sender As Object, e As EventArgs) Handles BtnUpdate.Click
             SettingsPanelGreaseweazle.UpdateSettings()

@@ -1,4 +1,4 @@
-﻿Namespace Flux.Greaseweazle
+﻿Namespace Flux
     <Global.Microsoft.VisualBasic.CompilerServices.DesignerGenerated()>
     Partial Class ConfigurationForm
         Inherits System.Windows.Forms.Form
@@ -132,7 +132,7 @@
         Friend WithEvents BtnUpdate As Button
         Friend WithEvents BtnCancel As Button
         Friend WithEvents TwoColumnToolTip1 As TwoColumnToolTip
-        Friend WithEvents SettingsPanelGreaseweazle As SettingsPanel
+        Friend WithEvents SettingsPanelGreaseweazle As Greaseweazle.SettingsPanel
         Friend WithEvents SettingsPanelKryoflux As Kryoflux.SettingsPanel
     End Class
 End Namespace

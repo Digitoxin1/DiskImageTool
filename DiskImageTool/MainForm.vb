@@ -1980,7 +1980,7 @@ Public Class MainForm
     Private Sub MenuOptionsGreaseweazle_Click(sender As Object, e As EventArgs) Handles MenuOptionsFlux.Click
         MainMenuOptions.DropDown.Close()
 
-        Dim Form As New Flux.Greaseweazle.ConfigurationForm
+        Dim Form As New Flux.ConfigurationForm
         Form.ShowDialog(Me)
 
         RefreshFluxMenu()
