@@ -54,6 +54,14 @@ Namespace Flux
             Return AnalyzeResponse
         End Function
 
+        Public Sub SaveLogFile(LogFilePath As String, LogText As String, RemovePath As Boolean)
+            If RemovePath Then
+                LogText = RemovePathFromLog(LogText)
+            End If
+
+            IO.File.WriteAllText(LogFilePath, LogText & vbNewLine)
+        End Sub
+
         Public Function BrowseFolder(CurrentPath As String) As String
             Using ofd As New FolderBrowserDialog()
                 ofd.Description = "Flux Set Root Folder"
@@ -291,7 +299,7 @@ Namespace Flux
             End Using
         End Function
 
-        Public Function ConvertFluxImage(FilePath As String, AllowSCP As Boolean, importHandler As ConvertImageForm.ImportRequestedEventHandler, LaunchedFromDialog As Boolean) As (Result As DialogResult, OutputFile As String, NewFileName As String)
+        Public Function ConvertFluxImage(ParentForm As Form, FilePath As String, AllowSCP As Boolean, importHandler As ConvertImageForm.ImportRequestedEventHandler, LaunchedFromDialog As Boolean) As (Result As DialogResult, OutputFile As String, NewFileName As String)
             Dim AnalyzeResponse = AnalyzeFluxImage(FilePath, AllowSCP)
 
             If Not AnalyzeResponse.Result Then
@@ -306,7 +314,7 @@ Namespace Flux
 
                 Dim result As DialogResult = DialogResult.Cancel
                 Try
-                    result = form.ShowDialog()
+                    result = form.ShowDialog(ParentForm)
                 Finally
                     If importHandler IsNot Nothing Then
                         RemoveHandler form.ImportRequested, importHandler

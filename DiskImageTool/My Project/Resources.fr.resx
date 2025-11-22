@@ -1672,4 +1672,7 @@ Voulez-vous écraser ?</value>
   <data name="Label_SaveAndClose" xml:space="preserve">
     <value>Sauver &amp; Fermer</value>
   </data>
+  <data name="Label_AutoSaveLog" xml:space="preserve">
+    <value>Journal auto</value>
+  </data>
 </root>

@@ -16,7 +16,6 @@ Namespace Flux
         Private WithEvents ComboImageFormat As ComboBox
         Private WithEvents ComboOutputType As ComboBox
         Private WithEvents TextBoxFileName As TextBox
-
         Private Shared _CachedDevice? As FluxDeviceInfo = Nothing
         Private Shared _CachedExtendedLogging As Boolean = False
         Private ReadOnly _Initialized As Boolean = False
@@ -30,6 +29,7 @@ Namespace Flux
         Private _SelectedDevice As FluxDeviceInfo = Nothing
         Private _SideCount As Integer
         Private _TrackCount As Integer
+        Private CheckBoxSaveLog As CheckBox
         Private LabelOutputType As Label
 
         Public Event ImportRequested(File As String, NewFilename As String)
@@ -51,6 +51,7 @@ Namespace Flux
             End If
 
             CheckBoxExtendedLogging.Checked = _CachedExtendedLogging
+            CheckBoxSaveLog.Checked = True
 
             InitializeDevice(True)
 
@@ -89,6 +90,19 @@ Namespace Flux
             End Select
         End Function
 
+        Private Sub AutoSaveLogFile()
+            If String.IsNullOrEmpty(_InputFilePath) Then
+                Exit Sub
+            End If
+
+            If String.IsNullOrEmpty(LogFileName) Then
+                Exit Sub
+            End If
+
+            Dim PathName As String = IO.Path.Combine(IO.Path.GetDirectoryName(_InputFilePath), LogFileName)
+            SaveLogFile(PathName, TextBoxConsole.Text, LogStripPath)
+        End Sub
+
         Private Function CanAcceptDrop(paths As IEnumerable(Of String)) As Boolean
             Dim SelectedDevice As FluxDeviceInfo = CType(ComboDevices.SelectedItem, FluxDeviceInfo)
 
@@ -126,7 +140,6 @@ Namespace Flux
 
             TrackStatus.Clear()
         End Sub
-
         Private Function ConvertFirstTrack() As (Result As Boolean, Filename As String)
             Dim SelectedDevice As FluxDeviceInfo = CType(ComboDevices.SelectedItem, FluxDeviceInfo)
 
@@ -190,6 +203,13 @@ Namespace Flux
             ComboDevices = New ComboBox With {
                 .Anchor = AnchorStyles.Left,
                 .Width = 100
+            }
+
+            CheckBoxSaveLog = New CheckBox With {
+                .Text = My.Resources.Label_AutoSaveLog,
+                .Anchor = AnchorStyles.Right,
+                .AutoSize = True,
+                .Margin = New Padding(12, 3, 3, 3)
             }
 
             CheckBoxExtendedLogging = New CheckBox With {
@@ -325,6 +345,9 @@ Namespace Flux
 
                 .Controls.Add(CheckBoxExtendedLogging, 2, Row)
                 .SetColumnSpan(CheckBoxExtendedLogging, 2)
+
+                .Controls.Add(CheckBoxSaveLog, 5, Row)
+                .SetColumnSpan(CheckBoxSaveLog, 2)
 
                 Row = 1
                 .Controls.Add(LabelFileName, 0, Row)
@@ -588,7 +611,7 @@ Namespace Flux
                 ComboOutputType.Enabled = CanConfigure And ComboOutputType.Items.Count > 1
             End If
 
-            ComboDevices.Enabled = IsIdle AndAlso Not HasOutputfile AndAlso ComboDevices.Items.Count > 1
+            ComboDevices.Enabled = SettingsEnabled AndAlso ComboDevices.Items.Count > 1
 
             ButtonCancel.Text = If(IsRunning Or HasOutputfile, My.Resources.Label_Cancel, My.Resources.Label_Close)
             ButtonClear.Enabled = IsIdle AndAlso HasOutputfile
@@ -609,7 +632,8 @@ Namespace Flux
                 CheckBoxDoublestep.Checked = False
             End If
 
-            CheckBoxExtendedLogging.Enabled = IsIdle AndAlso Not HasOutputfile
+            CheckBoxExtendedLogging.Enabled = SettingsEnabled
+            CheckBoxSaveLog.Enabled = SettingsEnabled
 
             RefreshImportButtonState()
         End Sub
@@ -817,6 +841,9 @@ Namespace Flux
                 Case ConsoleProcessRunner.ProcessStateEnum.Completed
                     If TrackStatus.TrackFound Then
                         TrackStatus.UpdateTrackStatusComplete(_DoubleStep)
+                        If CheckBoxSaveLog.Checked Then
+                            AutoSaveLogFile()
+                        End If
                     Else
                         ClearOutputFile(True)
                         TrackStatus.UpdateTrackStatusError()

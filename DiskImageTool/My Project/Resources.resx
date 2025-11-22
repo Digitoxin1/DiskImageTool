@@ -1894,4 +1894,7 @@ Do you wish to overwrite?</value>
   <data name="Dialog_SelectRootFolder" xml:space="preserve">
     <value>Please select a root folder.</value>
   </data>
+  <data name="Label_AutoSaveLog" xml:space="preserve">
+    <value>Auto Save Log</value>
+  </data>
 </root>

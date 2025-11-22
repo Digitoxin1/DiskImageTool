@@ -1672,4 +1672,7 @@ Möchten Sie ihn überschreiben?</value>
   <data name="Label_SaveAndClose" xml:space="preserve">
     <value>Sichern &amp; Schließen</value>
   </data>
+  <data name="Label_AutoSaveLog" xml:space="preserve">
+    <value>Auto-Protokoll</value>
+  </data>
 </root>

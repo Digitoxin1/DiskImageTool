@@ -2828,6 +2828,15 @@ Namespace My.Resources
         End Property
         
         '''<summary>
+        '''  Looks up a localized string similar to Auto Save Log.
+        '''</summary>
+        Friend ReadOnly Property Label_AutoSaveLog() As String
+            Get
+                Return ResourceManager.GetString("Label_AutoSaveLog", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
         '''  Looks up a localized string similar to Bad Sector.
         '''</summary>
         Friend ReadOnly Property Label_BadSector() As String

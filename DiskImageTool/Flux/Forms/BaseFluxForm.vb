@@ -138,13 +138,7 @@
                 }
 
                 If Dialog.ShowDialog = DialogResult.OK Then
-                    Dim LogText As String = TextBoxConsole.Text
-
-                    If RemovePath Then
-                        LogText = RemovePathFromLog(LogText)
-                    End If
-
-                    IO.File.WriteAllText(Dialog.FileName, LogText & vbNewLine)
+                    SaveLogFile(Dialog.FileName, TextBoxConsole.Text, RemovePath)
                 End If
             End Using
         End Sub

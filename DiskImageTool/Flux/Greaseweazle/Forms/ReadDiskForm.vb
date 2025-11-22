@@ -228,7 +228,7 @@ Namespace Flux.Greaseweazle
         End Sub
 
         Private Sub ConvertImage()
-            Dim Response = ConvertFluxImage(_OutputFilePath, True, Nothing, True)
+            Dim Response = ConvertFluxImage(Me, _OutputFilePath, True, Nothing, True)
 
             If Response.Result = DialogResult.OK Then
                 CloseForm(Response.OutputFile, Response.NewFileName)

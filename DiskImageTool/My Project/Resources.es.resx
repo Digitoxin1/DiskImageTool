@@ -1672,4 +1672,7 @@
   <data name="Label_SaveAndClose" xml:space="preserve">
     <value>Guardar &amp; Cerrar</value>
   </data>
+  <data name="Label_AutoSaveLog" xml:space="preserve">
+    <value>Registro auto</value>
+  </data>
 </root>

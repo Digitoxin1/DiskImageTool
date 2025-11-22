@@ -69,7 +69,6 @@
             'TableLayoutPanel1
             '
             resources.ApplyResources(TableLayoutPanel1, "TableLayoutPanel1")
-            TableLayoutPanel1.BackColor = System.Drawing.SystemColors.Control
             TableLayoutPanel1.Controls.Add(LabelApplicationPath, 0, 0)
             TableLayoutPanel1.Controls.Add(LabelDriveInterface, 0, 1)
             TableLayoutPanel1.Controls.Add(Me.LabelDriveType0, 0, 2)
