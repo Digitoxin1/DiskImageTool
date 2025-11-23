@@ -278,86 +278,86 @@ Namespace Flux.Greaseweazle
         End Function
 
         Public Structure ConvertingRange
-            Public Property DstCylEnd As Integer
-            Public Property DstCylStart As Integer
-            Public Property DstHeadEnd As Integer
-            Public Property DstHeadStart As Integer
-            Public Property SrcCylEnd As Integer
-            Public Property SrcCylStart As Integer
-            Public Property SrcHeadEnd As Integer
-            Public Property SrcHeadStart As Integer
+            Public DstCylEnd As Integer
+            Public DstCylStart As Integer
+            Public DstHeadEnd As Integer
+            Public DstHeadStart As Integer
+            Public SrcCylEnd As Integer
+            Public SrcCylStart As Integer
+            Public SrcHeadEnd As Integer
+            Public SrcHeadStart As Integer
         End Structure
 
         Public Structure TrackRange
-            Public Property Action As String
-            Public Property HeadEnd As Integer
-            Public Property HeadStart As Integer
-            Public Property TrackEnd As Integer
-            Public Property TrackStart As Integer
+            Public Action As String
+            Public HeadEnd As Integer
+            Public HeadStart As Integer
+            Public TrackEnd As Integer
+            Public TrackStart As Integer
         End Structure
 
         Public Structure TrackReadDetails
             Public ReadOnly Property BadSectors As Integer
                 Get
-                    Return _SectorsTotal - _SectorsFound
+                    Return SectorsTotal - SectorsFound
                 End Get
             End Property
 
-            Public Property Encoding As String
-            Public Property FluxCount As Integer
-            Public Property FluxTimeMs As Double
-            Public Property Retry As Integer
-            Public Property SectorsFound As Integer
-            Public Property SectorsTotal As Integer
-            Public Property Seek As Integer
-            Public Property SrcFormat As String
-            Public Property System As String
+            Public Encoding As String
+            Public FluxCount As Integer
+            Public FluxTimeMs As Double
+            Public Retry As Integer
+            Public SectorsFound As Integer
+            Public SectorsTotal As Integer
+            Public Seek As Integer
+            Public SrcFormat As String
+            Public System As String
         End Structure
 
         Public Structure TrackReadOutOfRange
-            Public Property FluxCount As Integer
-            Public Property FluxTimeMs As Double
-            Public Property Format As String
+            Public FluxCount As Integer
+            Public FluxTimeMs As Double
+            Public Format As String
         End Structure
 
         Public Structure TrackReadSummary
-            Public Property DestSide As Integer
-            Public Property DestTrack As Integer
-            Public Property Details As String
+            Public DestSide As Integer
+            Public DestTrack As Integer
+            Public Details As String
+            Public SrcSide As Integer
+            Public SrcTrack As Integer
+            Public SrcType As String
+
             Public ReadOnly Property IsRemapped As Boolean
                 Get
-                    Return _SrcTrack <> _DestTrack OrElse _SrcSide <> _DestSide
+                    Return SrcTrack <> DestTrack OrElse SrcSide <> DestSide
                 End Get
             End Property
-
-            Public Property SrcSide As Integer
-            Public Property SrcTrack As Integer
-            Public Property SrcType As String
         End Structure
 
         Public Structure TrackWrite
-            Public Property Action As String
-            Public Property DestSide As Integer
-            Public Property DestTrack As Integer
-            Public Property Failed As Boolean
-            Public Property Retry As Integer
-            Public Property SrcSide As Integer
-            Public Property SrcTrack As Integer
+            Public Action As String
+            Public DestSide As Integer
+            Public DestTrack As Integer
+            Public Failed As Boolean
+            Public Retry As Integer
+            Public SrcSide As Integer
+            Public SrcTrack As Integer
         End Structure
 
         Public Structure UnexpectedSector
-            Public Property Cylinder As Integer
-            Public Property Head As Integer
+            Public Cylinder As Integer
+            Public Head As Integer
+            Public SectorId As Integer
+            Public Side As Integer
+            Public SizeId As Integer
+            Public Track As Integer
+
             Public ReadOnly Property Key As String
                 Get
-                    Return String.Format("{0},{1},{2},{3}", _Cylinder, _Head, SectorId, _SizeId)
+                    Return String.Format("{0},{1},{2},{3}", Cylinder, Head, SectorId, SizeId)
                 End Get
             End Property
-
-            Public Property SectorId As Integer
-            Public Property Side As Integer
-            Public Property SizeId As Integer
-            Public Property Track As Integer
         End Structure
     End Class
 End Namespace

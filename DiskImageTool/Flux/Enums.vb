@@ -9,14 +9,12 @@
             Complete
         End Enum
 
-        Enum FluxDevice
-            Greaseweazle
-            Kryoflux
-        End Enum
-
         Public Enum ImageImportOutputTypes
             IMA
             HFE
+            MFM
+            F86
+            TC
         End Enum
 
         Public Enum InputFileTypeEnum
@@ -36,6 +34,12 @@
             Select Case Value
                 Case ImageImportOutputTypes.HFE
                     Return "HxC HFE Image"
+                Case ImageImportOutputTypes.MFM
+                    Return "HxC MFM Image"
+                Case ImageImportOutputTypes.F86
+                    Return "86Box 86F Image"
+                Case ImageImportOutputTypes.TC
+                    Return "TransCopy Image"
                 Case ImageImportOutputTypes.IMA
                     Return "Basic Sector Image"
                 Case Else
@@ -47,6 +51,12 @@
             Select Case Value
                 Case ImageImportOutputTypes.HFE
                     Return ".hfe"
+                Case ImageImportOutputTypes.MFM
+                    Return ".mfm"
+                Case ImageImportOutputTypes.F86
+                    Return ".86f"
+                Case ImageImportOutputTypes.TC
+                    Return ".tc"
                 Case ImageImportOutputTypes.IMA
                     Return ".ima"
                 Case Else

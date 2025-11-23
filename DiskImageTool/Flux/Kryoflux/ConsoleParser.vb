@@ -71,21 +71,21 @@ Namespace Flux.Kryoflux
         End Function
 
         Public Class TrackInfo
-            Public Property BadSectorCount As Integer
-            Public Property Encoding As String
-            Public Property Flags As String
-            Public Property MissingSectorCount As Integer
-            Public Property ModifiedSectorCount As Integer
-            Public Property SectorCount As Integer
-            Public Property Status As String
-            Public Property MFMTrack As Integer
-            Public Property PhysicalTrack As Integer
+            Public BadSectorCount As Integer
+            Public Encoding As String
+            Public Flags As String
+            Public MissingSectorCount As Integer
+            Public ModifiedSectorCount As Integer
+            Public SectorCount As Integer
+            Public Status As String
+            Public MFMTrack As Integer
+            Public PhysicalTrack As Integer
         End Class
 
         Public Class TrackSummary
-            Public Property Details As String
-            Public Property Side As Integer
-            Public Property Track As Integer
+            Public Details As String
+            Public Side As Integer
+            Public Track As Integer
         End Class
     End Class
 End Namespace

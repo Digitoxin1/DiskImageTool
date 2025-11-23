@@ -15,7 +15,7 @@
         m_SaveFileName = SaveFileName
 
         If Not EnableSave Then
-            Panel1.Visible = False
+            PanelBottom.Visible = False
             TextBox1.Height = Me.ClientSize.Height - TextBox1.Top * 2
         End If
     End Sub

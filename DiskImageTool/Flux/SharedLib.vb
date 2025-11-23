@@ -149,78 +149,6 @@ Namespace Flux
             Return DetectedFormat
         End Function
 
-        Private Function FluxDeviceGetFeatures(Device As FluxDevice) As FlucDeviceFeatures
-
-            Dim features As New FlucDeviceFeatures With {
-                .ImportValidInputTypes = New List(Of InputFileTypeEnum),
-                .ImportValidOutputTypes = New List(Of ImageImportOutputTypes)
-            }
-
-            Select Case Device
-                Case FluxDevice.Greaseweazle
-                    features.ImportValidInputTypes.Add(InputFileTypeEnum.scp)
-                    features.ImportValidInputTypes.Add(InputFileTypeEnum.raw)
-
-                    features.ImportValidOutputTypes.Add(ImageImportOutputTypes.IMA)
-                    features.ImportValidOutputTypes.Add(ImageImportOutputTypes.HFE)
-
-                Case FluxDevice.Kryoflux
-                    features.ImportValidInputTypes.Add(InputFileTypeEnum.raw)
-
-                    features.ImportValidOutputTypes.Add(ImageImportOutputTypes.IMA)
-            End Select
-
-            Return features
-        End Function
-
-        Public Function FluxDeviceGetInfo(Device As FluxDevice) As FluxDeviceInfo?
-            Dim Features = FluxDeviceGetFeatures(Device)
-
-            Select Case Device
-                Case FluxDevice.Greaseweazle
-                    Return New FluxDeviceInfo(Device, "Greaseweazle", Features, App.Globals.AppSettings.Greaseweazle)
-
-                Case FluxDevice.Kryoflux
-                    Return New FluxDeviceInfo(Device, "KryoFlux", Features, App.Globals.AppSettings.Kryoflux)
-                Case Else
-                    Return Nothing
-            End Select
-        End Function
-
-        Public Function FluxDeviceGetList(FileType As InputFileTypeEnum) As List(Of FluxDeviceInfo)
-            Dim list As New List(Of FluxDeviceInfo)
-
-            For Each dev As FluxDevice In [Enum].GetValues(GetType(FluxDevice))
-
-                ' Skip if not available
-                If Not FluxDeviceIsAvailable(dev) Then
-                    Continue For
-                End If
-
-                ' Get FluxDeviceInfo
-                Dim info = FluxDeviceGetInfo(dev)
-                If info.HasValue Then
-                    If Not info.Value.Features.ImportValidInputTypes.Contains(FileType) Then
-                        Continue For
-                    End If
-                    list.Add(info.Value)
-                End If
-            Next
-
-            Return list
-        End Function
-
-        Public Function FluxDeviceIsAvailable(Device As FluxDevice) As Boolean
-            Select Case Device
-                Case FluxDevice.Greaseweazle
-                    Return App.AppSettings.Greaseweazle.IsPathValid
-                Case FluxDevice.Kryoflux
-                    Return App.AppSettings.Kryoflux.IsPathValid
-                Case Else
-                    Return False
-            End Select
-        End Function
-
         Public Function GenerateOutputFile(Extension As String) As String
             Dim TempPath = InitTempImagePath()
 
@@ -640,25 +568,6 @@ Namespace Flux
             Public Overrides Function ToString() As String
                 Return Extension
             End Function
-        End Structure
-
-        Public Structure FlucDeviceFeatures
-            Public Property ImportValidInputTypes As List(Of InputFileTypeEnum)
-            Public Property ImportValidOutputTypes As List(Of ImageImportOutputTypes)
-        End Structure
-
-        Public Structure FluxDeviceInfo
-            Public Sub New(Device As FluxDevice, Name As String, Features As FlucDeviceFeatures, Settings As ISettings)
-                Me.Device = Device
-                Me.Name = Name
-                Me.Features = Features
-                Me.Settings = Settings
-            End Sub
-
-            ReadOnly Property Device As FluxDevice
-            ReadOnly Property Name As String
-            ReadOnly Property Features As FlucDeviceFeatures
-            ReadOnly Property Settings As ISettings
         End Structure
 
         Public Class DriveOption

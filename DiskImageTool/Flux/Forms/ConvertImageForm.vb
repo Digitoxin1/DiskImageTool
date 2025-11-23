@@ -1,4 +1,5 @@
-﻿Imports System.ComponentModel
+﻿Imports System.Collections.Concurrent
+Imports System.ComponentModel
 Imports DiskImageTool.DiskImage.FloppyDiskFunctions
 
 Namespace Flux
@@ -15,9 +16,11 @@ Namespace Flux
         Private WithEvents ComboExtensions As ComboBox
         Private WithEvents ComboImageFormat As ComboBox
         Private WithEvents ComboOutputType As ComboBox
+        Private WithEvents ConsoleTimer As Timer
         Private WithEvents TextBoxFileName As TextBox
-        Private Shared _CachedDevice? As FluxDeviceInfo = Nothing
+        Private Shared _CachedDevice As IDevice = Nothing
         Private Shared _CachedExtendedLogging As Boolean = False
+        Private ReadOnly _ConsoleQueue As New ConcurrentQueue(Of String)
         Private ReadOnly _Initialized As Boolean = False
         Private ReadOnly _LaunchedFromDialog As Boolean = False
         Private _ComboDevicesNoEvent As Boolean = False
@@ -26,18 +29,22 @@ Namespace Flux
         Private _DoubleStep As Boolean = False
         Private _InputFilePath As String = ""
         Private _OutputFilePath As String = ""
-        Private _SelectedDevice As FluxDeviceInfo = Nothing
+        Private _SelectedDevice As IDevice = Nothing
         Private _SideCount As Integer
+        Private _TextBoxEmpty As Boolean = False
         Private _TrackCount As Integer
         Private CheckBoxSaveLog As CheckBox
         Private LabelOutputType As Label
-
         Public Event ImportRequested(File As String, NewFilename As String)
 
         Public Sub New(FilePath As String, TrackCount As Integer, SideCount As Integer, LaunchedFromDialog As Boolean)
             MyBase.New("")
 
             Me.AllowDrop = True
+
+            ConsoleTimer = New Timer With {
+                .Interval = 10
+            }
 
             _LaunchedFromDialog = LaunchedFromDialog
             _InputFilePath = FilePath
@@ -77,11 +84,11 @@ Namespace Flux
         End Sub
 
         Private Function AllowSectorImage() As Boolean
-            Dim SelectedDevice As FluxDeviceInfo = CType(ComboDevices.SelectedItem, FluxDeviceInfo)
+            Dim SelectedDevice As IDevice = CType(ComboDevices.SelectedItem, IDevice)
             Dim ImageParams As FloppyDiskParams = ComboImageFormat.SelectedValue
 
             Select Case SelectedDevice.Device
-                Case FluxDevice.Greaseweazle
+                Case IDevice.FluxDevice.Greaseweazle
                     Dim imageFormat = Greaseweazle.GreaseweazleImageFormatFromFloppyDiskFormat(ImageParams.Format)
                     Return (imageFormat <> Greaseweazle.GreaseweazleImageFormat.None)
 
@@ -104,8 +111,8 @@ Namespace Flux
         End Sub
 
         Private Function CanAcceptDrop(paths As IEnumerable(Of String)) As Boolean
-            Dim SelectedDevice As FluxDeviceInfo = CType(ComboDevices.SelectedItem, FluxDeviceInfo)
-            Dim AllowSCP As Boolean = SelectedDevice.Features.ImportValidInputTypes.Contains(InputFileTypeEnum.scp)
+            Dim SelectedDevice As IDevice = CType(ComboDevices.SelectedItem, IDevice)
+            Dim AllowSCP As Boolean = SelectedDevice.InputTypeSupported(InputFileTypeEnum.scp)
 
             For Each path In paths
                 If IsValidFluxImport(path, AllowSCP).Result Then
@@ -135,35 +142,23 @@ Namespace Flux
 
         Private Sub ClearProcessedImage(DeleteOutputFile As Boolean)
             TextBoxConsole.Clear()
+            _TextBoxEmpty = True
             ClearOutputFile(DeleteOutputFile)
             ClearStatusBar()
             GridReset(_TrackCount, _SideCount)
 
             TrackStatus.Clear()
         End Sub
-        Private Function ConvertFirstTrack() As (Result As Boolean, Filename As String)
-            Dim SelectedDevice As FluxDeviceInfo = CType(ComboDevices.SelectedItem, FluxDeviceInfo)
-
-            Select Case SelectedDevice.Device
-                Case FluxDevice.Greaseweazle
-                    Return Greaseweazle.ConvertFirstTrack(_InputFilePath)
-
-                Case FluxDevice.Kryoflux
-                    Return Kryoflux.ConvertFirstTrack(_InputFilePath)
-            End Select
-
-            Return (False, "")
-        End Function
 
         Private Function GenerateCommandLine(FilePath As String)
             Dim OutputType As ImageImportOutputTypes = ComboOutputType.SelectedValue
 
             Select Case _SelectedDevice.Device
-                Case FluxDevice.Greaseweazle
+                Case IDevice.FluxDevice.Greaseweazle
                     _OutputFilePath = FilePath
                     Return Greaseweazle.GenerateCommandLineImport(_InputFilePath, FilePath, ComboImageFormat.SelectedValue, OutputType, _DoubleStep)
 
-                Case FluxDevice.Kryoflux
+                Case IDevice.FluxDevice.Kryoflux
                     Dim LogLevel As Kryoflux.CommandLineBuilder.LogMask = 0
 
                     If CheckBoxExtendedLogging.Checked Then
@@ -173,6 +168,10 @@ Namespace Flux
                     Dim Response = Kryoflux.GenerateCommandLineImport(_InputFilePath, FilePath, ComboImageFormat.SelectedValue, _DoubleStep, LogLevel)
                     _OutputFilePath = Response.OutputFilePath
                     Return Response.Arguments
+
+                Case IDevice.FluxDevice.PcImgCnv
+                    _OutputFilePath = FilePath
+                    Return PcImgCnv.GenerateCommandLineImport(_InputFilePath, FilePath)
             End Select
 
             Return ""
@@ -386,19 +385,13 @@ Namespace Flux
                 PopulateDeviceCombo()
             End If
 
-            _SelectedDevice = CType(ComboDevices.SelectedItem, FluxDeviceInfo)
+            _SelectedDevice = CType(ComboDevices.SelectedItem, IDevice)
             _CachedDevice = _SelectedDevice
 
             LogFileName = _SelectedDevice.Settings.LogFileName
             LogStripPath = _SelectedDevice.Settings.LogStripPath
 
-            Select Case _SelectedDevice.Device
-                Case FluxDevice.Greaseweazle
-                    TrackStatus = New Greaseweazle.TrackStatus()
-
-                Case FluxDevice.Kryoflux
-                    TrackStatus = New Kryoflux.TrackStatus()
-            End Select
+            TrackStatus = _SelectedDevice.TrackStatus
 
             InitializeImage()
         End Sub
@@ -418,8 +411,8 @@ Namespace Flux
         End Sub
 
         Private Function OpenFluxImage(Filename As String) As Boolean
-            Dim SelectedDevice As FluxDeviceInfo = CType(ComboDevices.SelectedItem, FluxDeviceInfo)
-            Dim AllowSCP As Boolean = SelectedDevice.Features.ImportValidInputTypes.Contains(InputFileTypeEnum.scp)
+            Dim SelectedDevice As IDevice = CType(ComboDevices.SelectedItem, IDevice)
+            Dim AllowSCP As Boolean = SelectedDevice.InputTypeSupported(InputFileTypeEnum.scp)
 
             Dim response = AnalyzeFluxImage(Filename, AllowSCP)
             If response.Result Then
@@ -434,8 +427,8 @@ Namespace Flux
         End Function
 
         Private Function OpenFluxImage() As Boolean
-            Dim SelectedDevice As FluxDeviceInfo = CType(ComboDevices.SelectedItem, FluxDeviceInfo)
-            Dim AllowSCP As Boolean = SelectedDevice.Features.ImportValidInputTypes.Contains(InputFileTypeEnum.scp)
+            Dim SelectedDevice As IDevice = CType(ComboDevices.SelectedItem, IDevice)
+            Dim AllowSCP As Boolean = SelectedDevice.InputTypeSupported(InputFileTypeEnum.scp)
 
             Dim FileName As String = SharedLib.OpenFluxImage(Me, AllowSCP)
 
@@ -450,18 +443,18 @@ Namespace Flux
             _ComboDevicesNoEvent = True
 
             Dim FileType = GetInputFileType()
-            Dim Items = FluxDeviceGetList(FileType)
+            Dim Devices = FluxDeviceGetList(FileType)
 
             With ComboDevices
-                .DataSource = Items
+                .DataSource = Devices
                 .DisplayMember = "Name"
                 .ValueMember = "Device"
 
                 .DropDownStyle = ComboBoxStyle.DropDownList
             End With
 
-            If _CachedDevice.HasValue Then
-                Dim Device As FluxDevice = _CachedDevice.Value.Device
+            If _CachedDevice IsNot Nothing Then
+                Dim Device As IDevice.FluxDevice = _CachedDevice.Device
                 ComboDevices.SelectedValue = Device
             End If
 
@@ -470,7 +463,7 @@ Namespace Flux
             End If
 
             If ComboDevices.SelectedItem IsNot Nothing Then
-                _SelectedDevice = CType(ComboDevices.SelectedItem, FluxDeviceInfo)
+                _SelectedDevice = CType(ComboDevices.SelectedItem, IDevice)
                 _CachedDevice = _SelectedDevice
             End If
 
@@ -520,7 +513,7 @@ Namespace Flux
             Dim UseSectorImage As Boolean = AllowSectorImage()
 
             For Each OutputType As ImageImportOutputTypes In [Enum].GetValues(GetType(ImageImportOutputTypes))
-                If Not _SelectedDevice.Features.ImportValidOutputTypes.Contains(OutputType) Then
+                If Not _SelectedDevice.OutputTypeSupported(OutputType) Then
                     Continue For
                 End If
 
@@ -542,8 +535,9 @@ Namespace Flux
 
         Private Sub ProcessImage()
             Dim DiskParams As FloppyDiskParams = ComboImageFormat.SelectedValue
+            Dim UseImageFormat As Boolean = _SelectedDevice.RequiresImageFormat
 
-            If DiskParams.IsNonImage Then
+            If DiskParams.IsNonImage And UseImageFormat Then
                 Exit Sub
             End If
 
@@ -557,7 +551,7 @@ Namespace Flux
             ClearProcessedImage(True)
 
             _DoubleStep = CheckBoxDoublestep.Enabled AndAlso CheckBoxDoublestep.Checked
-
+            Process.OutputLinesPerBatch = 36
             Dim Arguments = GenerateCommandLine(FilePath)
             Process.StartAsync(_SelectedDevice.Settings.AppPath, Arguments)
         End Sub
@@ -570,10 +564,7 @@ Namespace Flux
         End Sub
 
         Private Sub ProcessOutputLine(line As String)
-            If TextBoxConsole.Text.Length > 0 Then
-                TextBoxConsole.AppendText(Environment.NewLine)
-            End If
-            TextBoxConsole.AppendText(line)
+            _ConsoleQueue.Enqueue(line)
 
             TrackStatus.ProcessOutputLineRead(line, ActionTypeEnum.Import, _DoubleStep)
 
@@ -583,7 +574,9 @@ Namespace Flux
         End Sub
 
         Private Function ReadImageFormat() As DiskImage.FloppyDiskFormat
-            Dim Response = ConvertFirstTrack()
+            Dim SelectedDevice As IDevice = CType(ComboDevices.SelectedItem, IDevice)
+
+            Dim Response = SelectedDevice.ConvertFirstTrack(_InputFilePath)
 
             If Not Response.Result Then
                 Return FloppyDiskFormat.FloppyUnknown
@@ -603,10 +596,11 @@ Namespace Flux
 
             Dim SettingsEnabled As Boolean = IsIdle AndAlso Not HasOutputfile
             Dim CanConfigure As Boolean = SettingsEnabled AndAlso HasInputFile
+            Dim UseImageFormat As Boolean = _SelectedDevice.RequiresImageFormat
 
 
             ComboExtensions.Enabled = HasInputFile And ComboExtensions.Items.Count > 1
-            ComboImageFormat.Enabled = CanConfigure
+            ComboImageFormat.Enabled = CanConfigure AndAlso UseImageFormat
 
             If ComboOutputType IsNot Nothing Then
                 ComboOutputType.Enabled = CanConfigure And ComboOutputType.Items.Count > 1
@@ -618,7 +612,7 @@ Namespace Flux
             ButtonClear.Enabled = IsIdle AndAlso HasOutputfile
             ButtonOpen.Enabled = SettingsEnabled
 
-            ButtonProcess.Enabled = Not ImageParams.IsNonImage AndAlso HasInputFile AndAlso (IsRunning Or Not HasOutputfile)
+            ButtonProcess.Enabled = (Not ImageParams.IsNonImage Or Not UseImageFormat) AndAlso HasInputFile AndAlso (IsRunning Or Not HasOutputfile)
             ButtonProcess.Text = If(IsRunning, My.Resources.Label_Abort, My.Resources.Label_Process)
 
             ButtonSaveLog.Enabled = IsIdle AndAlso Not String.IsNullOrEmpty(TextBoxConsole.Text)
@@ -640,7 +634,7 @@ Namespace Flux
         End Sub
 
         Private Sub RefreshDeviceState()
-            CheckBoxExtendedLogging.Visible = _SelectedDevice.Device = FluxDevice.Kryoflux
+            CheckBoxExtendedLogging.Visible = _SelectedDevice.Device = IDevice.FluxDevice.Kryoflux
         End Sub
         Private Sub RefreshImportButtonState()
             Dim HasOutputfile As Boolean = Not String.IsNullOrEmpty(_OutputFilePath)
@@ -782,9 +776,39 @@ Namespace Flux
             PopulateFileExtensions()
         End Sub
 
+        Private Sub ConsoleTimer_Tick(sender As Object, e As EventArgs) Handles ConsoleTimer.Tick
+            ' This runs on the UI thread
+            If TextBoxConsole.IsDisposed Then
+                ConsoleTimer.Stop()
+                Return
+            End If
+
+            Dim sb As New Text.StringBuilder()
+            Dim line As String = ""
+            Dim hadAny As Boolean = Not _TextBoxEmpty
+
+            ' Dequeue everything currently pending
+            While _ConsoleQueue.TryDequeue(line)
+                If hadAny Then
+                    sb.AppendLine()
+                End If
+                sb.Append(line)
+                hadAny = True
+            End While
+
+            If hadAny Then
+                TextBoxConsole.AppendText(sb.ToString())
+                _TextBoxEmpty = False
+            End If
+
+            If _ConsoleQueue.IsEmpty AndAlso Not Process.IsRunning Then
+                ConsoleTimer.Stop()
+            End If
+        End Sub
+
         Private Sub ImageImportForm_DragDrop(sender As Object, e As DragEventArgs) Handles Me.DragDrop
-            Dim SelectedDevice As FluxDeviceInfo = CType(ComboDevices.SelectedItem, FluxDeviceInfo)
-            Dim AllowSCP As Boolean = SelectedDevice.Features.ImportValidInputTypes.Contains(InputFileTypeEnum.scp)
+            Dim SelectedDevice As IDevice = CType(ComboDevices.SelectedItem, IDevice)
+            Dim AllowSCP As Boolean = SelectedDevice.InputTypeSupported(InputFileTypeEnum.scp)
             Dim HasOutputfile As Boolean = Not String.IsNullOrEmpty(_OutputFilePath)
 
             If Process.IsRunning Or HasOutputfile Then
@@ -828,9 +852,12 @@ Namespace Flux
 
             e.Effect = DragDropEffects.None
         End Sub
-
         Private Sub Process_DataReceived(Data As String) Handles Process.ErrorDataReceived, Process.OutputDataReceived
             ProcessOutputLine(Data)
+
+            If Not ConsoleTimer.Enabled Then
+                ConsoleTimer.Start()
+            End If
         End Sub
 
         Private Sub Process_ProcessStateChanged(State As ConsoleProcessRunner.ProcessStateEnum) Handles Process.ProcessStateChanged

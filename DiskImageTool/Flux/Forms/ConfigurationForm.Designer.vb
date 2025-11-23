@@ -33,6 +33,8 @@
             Me.BtnUpdate = New System.Windows.Forms.Button()
             Me.SettingsPanelGreaseweazle = New DiskImageTool.Flux.Greaseweazle.SettingsPanel()
             Me.SettingsPanelKryoflux = New DiskImageTool.Flux.Kryoflux.SettingsPanel()
+            Me.TabPagePcImgCnv = New System.Windows.Forms.TabPage()
+            Me.SettingsPanelPcImgCnv = New DiskImageTool.Flux.PcImgCnv.SettingsPanel()
             Me.TwoColumnToolTip1 = New DiskImageTool.TwoColumnToolTip()
             PanelBottom = New System.Windows.Forms.FlowLayoutPanel()
             PanelMain = New System.Windows.Forms.Panel()
@@ -44,6 +46,7 @@
             TabControl1.SuspendLayout()
             TabPageGreaseweazle.SuspendLayout()
             TabPageKryoflux.SuspendLayout()
+            Me.TabPagePcImgCnv.SuspendLayout()
             Me.SuspendLayout()
             '
             'PanelBottom
@@ -77,6 +80,7 @@
             '
             TabControl1.Controls.Add(TabPageGreaseweazle)
             TabControl1.Controls.Add(TabPageKryoflux)
+            TabControl1.Controls.Add(Me.TabPagePcImgCnv)
             resources.ApplyResources(TabControl1, "TabControl1")
             TabControl1.Name = "TabControl1"
             TabControl1.SelectedIndex = 0
@@ -105,6 +109,18 @@
             resources.ApplyResources(Me.SettingsPanelKryoflux, "SettingsPanelKryoflux")
             Me.SettingsPanelKryoflux.Name = "SettingsPanelKryoflux"
             '
+            'TabPagePcImgCnv
+            '
+            Me.TabPagePcImgCnv.Controls.Add(Me.SettingsPanelPcImgCnv)
+            resources.ApplyResources(Me.TabPagePcImgCnv, "TabPagePcImgCnv")
+            Me.TabPagePcImgCnv.Name = "TabPagePcImgCnv"
+            Me.TabPagePcImgCnv.UseVisualStyleBackColor = True
+            '
+            'SettingsPanelPcImgCnv
+            '
+            resources.ApplyResources(Me.SettingsPanelPcImgCnv, "SettingsPanelPcImgCnv")
+            Me.SettingsPanelPcImgCnv.Name = "SettingsPanelPcImgCnv"
+            '
             'TwoColumnToolTip1
             '
             Me.TwoColumnToolTip1.OwnerDraw = True
@@ -125,6 +141,7 @@
             TabControl1.ResumeLayout(False)
             TabPageGreaseweazle.ResumeLayout(False)
             TabPageKryoflux.ResumeLayout(False)
+            Me.TabPagePcImgCnv.ResumeLayout(False)
             Me.ResumeLayout(False)
             Me.PerformLayout()
 
@@ -134,5 +151,7 @@
         Friend WithEvents TwoColumnToolTip1 As TwoColumnToolTip
         Friend WithEvents SettingsPanelGreaseweazle As Greaseweazle.SettingsPanel
         Friend WithEvents SettingsPanelKryoflux As Kryoflux.SettingsPanel
+        Friend WithEvents TabPagePcImgCnv As TabPage
+        Friend WithEvents SettingsPanelPcImgCnv As PcImgCnv.SettingsPanel
     End Class
 End Namespace

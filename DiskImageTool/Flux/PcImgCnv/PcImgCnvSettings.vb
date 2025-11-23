@@ -1,16 +1,15 @@
 ﻿Imports CompactJson
 
-Namespace Flux.Kryoflux
-    Public Class KryofluxSettings
+Namespace Flux.PcImgCnv
+    Public Class PcImgCnvSettings
         Implements Settings.ISettingsGroup
         Implements ISettings
 
         Private _appPath As String = ""
         Private _isDirty As Boolean
         Private _logFileName As String = "log.txt"
-        Private _logStripPath As Boolean = False
 
-        Public Property AppPath As String Implements ISettings.AppPath
+        Public Property AppPath As String Implements Flux.ISettings.AppPath
             Get
                 Return _appPath
             End Get
@@ -45,17 +44,14 @@ Namespace Flux.Kryoflux
 
         Public Property LogStripPath As Boolean Implements ISettings.LogStripPath
             Get
-                Return _logStripPath
+                Return False
             End Get
             Set(value As Boolean)
-                If _logStripPath <> value Then
-                    _logStripPath = value
-                    _isDirty = True
-                End If
+                ' Not supported
             End Set
         End Property
 
-        Public Function IsPathValid() As Boolean Implements ISettings.IsPathValid
+        Public Function IsPathValid() As Boolean Implements Flux.ISettings.IsPathValid
             Return Flux.IsPathValid(_appPath)
         End Function
 
@@ -67,7 +63,6 @@ Namespace Flux.Kryoflux
 
             _appPath = ReadValue(dict, "appPath", _appPath)
             _logFileName = ReadValue(dict, "logFileName", _logFileName)
-            _logStripPath = ReadValue(dict, "logStripPath", _logStripPath)
 
             MarkClean()
         End Sub
@@ -79,8 +74,7 @@ Namespace Flux.Kryoflux
         Public Function ToJsonObject() As Dictionary(Of String, Object)
             Return New Dictionary(Of String, Object) From {
             {"appPath", _appPath},
-            {"logFileName", _logFileName},
-            {"logStripPath", _logStripPath}
+            {"logFileName", _logFileName}
         }
         End Function
 
@@ -101,6 +95,5 @@ Namespace Flux.Kryoflux
                 Return defaultValue
             End Try
         End Function
-
     End Class
 End Namespace

@@ -172,7 +172,9 @@
     <Compile Include="Filters\ImageFilters.vb" />
     <Compile Include="Filters\ImageFiltersBase.vb" />
     <Compile Include="DiskImageLib.vb" />
+    <Compile Include="Flux\DeviceLib.vb" />
     <Compile Include="Flux\Enums.vb" />
+    <Compile Include="Flux\Greaseweazle\GreaseweazleDevice.vb" />
     <Compile Include="Flux\Greaseweazle\SettingsPanel.Designer.vb">
       <DependentUpon>SettingsPanel.vb</DependentUpon>
     </Compile>
@@ -183,10 +185,12 @@
     <Compile Include="Flux\Forms\ConvertImageForm.vb">
       <SubType>Form</SubType>
     </Compile>
+    <Compile Include="Flux\IDevice.vb" />
     <Compile Include="Flux\ISettings.vb" />
     <Compile Include="Flux\ITrackStatus.vb" />
     <Compile Include="Flux\Kryoflux\CommandLineBuilder.vb" />
     <Compile Include="Flux\Kryoflux\ConsoleParser.vb" />
+    <Compile Include="Flux\Kryoflux\KryofluxDevice.vb" />
     <Compile Include="Flux\Kryoflux\KryofluxLib.vb" />
     <Compile Include="Flux\Kryoflux\SettingsPanel.Designer.vb">
       <DependentUpon>SettingsPanel.vb</DependentUpon>
@@ -195,6 +199,18 @@
       <SubType>UserControl</SubType>
     </Compile>
     <Compile Include="Flux\Kryoflux\TrackStatus.vb" />
+    <Compile Include="Flux\PcImgCnv\CommandLineBuilder.vb" />
+    <Compile Include="Flux\PcImgCnv\ConsoleParser.vb" />
+    <Compile Include="Flux\PcImgCnv\PcImgCnvDevice.vb" />
+    <Compile Include="Flux\PcImgCnv\PcImgCnvLib.vb" />
+    <Compile Include="Flux\PcImgCnv\PcImgCnvSettings.vb" />
+    <Compile Include="Flux\PcImgCnv\SettingsPanel.Designer.vb">
+      <DependentUpon>SettingsPanel.vb</DependentUpon>
+    </Compile>
+    <Compile Include="Flux\PcImgCnv\SettingsPanel.vb">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Flux\PcImgCnv\TrackStatus.vb" />
     <Compile Include="Flux\SharedLib.vb" />
     <Compile Include="Globals.vb" />
     <Compile Include="Flux\Greaseweazle\Forms\CleanDiskForm.vb">
@@ -567,6 +583,18 @@
       <DependentUpon>SettingsPanel.vb</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Flux\Kryoflux\SettingsPanel.resx">
+      <DependentUpon>SettingsPanel.vb</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Flux\PcImgCnv\SettingsPanel.de.resx">
+      <DependentUpon>SettingsPanel.vb</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Flux\PcImgCnv\SettingsPanel.es.resx">
+      <DependentUpon>SettingsPanel.vb</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Flux\PcImgCnv\SettingsPanel.fr.resx">
+      <DependentUpon>SettingsPanel.vb</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Flux\PcImgCnv\SettingsPanel.resx">
       <DependentUpon>SettingsPanel.vb</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\AboutBox.resx">

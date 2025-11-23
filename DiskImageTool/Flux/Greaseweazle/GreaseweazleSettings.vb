@@ -13,6 +13,7 @@ Namespace Flux.Greaseweazle
 
         Private Const DEFAULT_LOG_FILE_NAME As String = "log.txt"
         Private Const MaxDrives As Integer = 3
+
         Private _appPath As String = ""
         Private _comPort As String = ""
         Private _defaultRevs As Integer = 3
@@ -26,6 +27,7 @@ Namespace Flux.Greaseweazle
         Private _interface As GreaseweazleInterface = GreaseweazleInterface.IBM
         Private _isDirty As Boolean
         Private _logFileName As String = DEFAULT_LOG_FILE_NAME
+
         Public Enum GreaseweazleInterface
             IBM
             Shugart
@@ -169,7 +171,8 @@ Namespace Flux.Greaseweazle
                 ' Not supported
             End Set
         End Property
-        Public Function IsPathValid() As Boolean
+
+        Public Function IsPathValid() As Boolean Implements Flux.ISettings.IsPathValid
             Return Flux.IsPathValid(_appPath)
         End Function
 

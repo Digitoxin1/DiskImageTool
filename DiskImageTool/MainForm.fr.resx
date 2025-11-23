@@ -267,9 +267,6 @@
   <data name="MenuHexFreeClusters.Text" xml:space="preserve">
     <value>&amp;Clusters libres contenant des données</value>
   </data>
-  <data name="MenuToolsTrackLayout.Text" xml:space="preserve">
-    <value>Générer tracklayout.txt</value>
-  </data>
   <data name="MenuOptionsDragDrop.Text" xml:space="preserve">
     <value>Importer par glisser-déposer</value>
   </data>
@@ -362,5 +359,8 @@
   </data>
   <data name="MenuOptionsFlux.Text" xml:space="preserve">
     <value>&amp;Flux Configuration</value>
+  </data>
+  <data name="MenuPcImgCnvTrackLayout.Text" xml:space="preserve">
+    <value>Générer tracklayout.txt</value>
   </data>
 </root>

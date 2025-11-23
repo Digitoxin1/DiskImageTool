@@ -24,6 +24,7 @@ Namespace Settings
             ETags = New ETagSettings()
             Greaseweazle = New Flux.Greaseweazle.GreaseweazleSettings()
             Kryoflux = New Flux.Kryoflux.KryofluxSettings()
+            PcImgCnv = New Flux.PcImgCnv.PcImgCnvSettings()
         End Sub
 
         Public Property CheckUpdateOnStartup As Boolean
@@ -93,6 +94,8 @@ Namespace Settings
         Public Property IsDirty As Boolean
 
         Public Property Kryoflux As Flux.Kryoflux.KryofluxSettings
+
+        Public Property PcImgCnv As Flux.PcImgCnv.PcImgCnvSettings
 
         Public Property Language As String
             Get
@@ -167,6 +170,9 @@ Namespace Settings
                 Dim kfDict = ReadSection(root, "kryoflux")
                 settings.Kryoflux.LoadFromDictionary(kfDict)
 
+                Dim pciDict = ReadSection(root, "pcImgCnv")
+                settings.PcImgCnv.LoadFromDictionary(pciDict)
+
                 settings._preferredFileExtensions = LoadPreferredExtensions(root)
                 settings._preferredFileExtensionsOriginal = CloneDictionary(settings._preferredFileExtensions)
 
@@ -228,7 +234,7 @@ Namespace Settings
         Public Sub Save(Optional Force As Boolean = False)
             Dim prefsDirty As Boolean = Not DictionariesEqual(_preferredFileExtensions, _preferredFileExtensionsOriginal)
 
-            If Not (IsDirty OrElse ETags.IsDirty OrElse Greaseweazle.IsDirty OrElse Kryoflux.IsDirty OrElse prefsDirty OrElse Force) Then
+            If Not (IsDirty OrElse ETags.IsDirty OrElse Greaseweazle.IsDirty OrElse Kryoflux.IsDirty OrElse PcImgCnv.IsDirty OrElse prefsDirty OrElse Force) Then
                 Return
             End If
 
@@ -246,6 +252,7 @@ Namespace Settings
             root("eTags") = ETags.ToJsonObject()
             root("greaseweazle") = Greaseweazle.ToJsonObject()
             root("kryoflux") = Kryoflux.ToJsonObject()
+            root("pcImgCnv") = PcImgCnv.ToJsonObject()
 
             Dim prefArr As New List(Of Object)
 
@@ -267,6 +274,7 @@ Namespace Settings
                 ETags.MarkClean()
                 Greaseweazle.MarkClean()
                 Kryoflux.MarkClean()
+                PcImgCnv.MarkClean()
             Catch ex As Exception
                 Diagnostics.Debug.Print("Error: Unable to save AppSettings")
             End Try

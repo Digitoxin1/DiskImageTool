@@ -23,11 +23,14 @@ Partial Class TextViewForm
     <System.Diagnostics.DebuggerStepThrough()> _
     Private Sub InitializeComponent()
         Dim resources As System.ComponentModel.ComponentResourceManager = New System.ComponentModel.ComponentResourceManager(GetType(TextViewForm))
+        Dim PanelMain As System.Windows.Forms.Panel
         Me.TextBox1 = New System.Windows.Forms.TextBox()
-        Me.Panel1 = New System.Windows.Forms.FlowLayoutPanel()
+        Me.PanelBottom = New System.Windows.Forms.FlowLayoutPanel()
         Me.BtnClose = New System.Windows.Forms.Button()
         Me.BtnSave = New System.Windows.Forms.Button()
-        Me.Panel1.SuspendLayout()
+        PanelMain = New System.Windows.Forms.Panel()
+        Me.PanelBottom.SuspendLayout()
+        PanelMain.SuspendLayout()
         Me.SuspendLayout()
         '
         'TextBox1
@@ -39,13 +42,13 @@ Partial Class TextViewForm
         Me.TextBox1.Name = "TextBox1"
         Me.TextBox1.ReadOnly = True
         '
-        'Panel1
+        'PanelBottom
         '
-        Me.Panel1.BackColor = System.Drawing.SystemColors.Control
-        Me.Panel1.Controls.Add(Me.BtnClose)
-        Me.Panel1.Controls.Add(Me.BtnSave)
-        resources.ApplyResources(Me.Panel1, "Panel1")
-        Me.Panel1.Name = "Panel1"
+        Me.PanelBottom.BackColor = System.Drawing.SystemColors.Control
+        Me.PanelBottom.Controls.Add(Me.BtnClose)
+        Me.PanelBottom.Controls.Add(Me.BtnSave)
+        resources.ApplyResources(Me.PanelBottom, "PanelBottom")
+        Me.PanelBottom.Name = "PanelBottom"
         '
         'BtnClose
         '
@@ -60,25 +63,32 @@ Partial Class TextViewForm
         Me.BtnSave.Name = "BtnSave"
         Me.BtnSave.UseVisualStyleBackColor = True
         '
+        'PanelMain
+        '
+        PanelMain.Controls.Add(Me.TextBox1)
+        resources.ApplyResources(PanelMain, "PanelMain")
+        PanelMain.Name = "PanelMain"
+        '
         'TextViewForm
         '
         resources.ApplyResources(Me, "$this")
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
         Me.BackColor = System.Drawing.SystemColors.Control
-        Me.Controls.Add(Me.Panel1)
-        Me.Controls.Add(Me.TextBox1)
+        Me.Controls.Add(PanelMain)
+        Me.Controls.Add(Me.PanelBottom)
         Me.KeyPreview = True
         Me.Name = "TextViewForm"
         Me.ShowIcon = False
         Me.ShowInTaskbar = False
-        Me.Panel1.ResumeLayout(False)
+        Me.PanelBottom.ResumeLayout(False)
+        PanelMain.ResumeLayout(False)
+        PanelMain.PerformLayout()
         Me.ResumeLayout(False)
-        Me.PerformLayout()
 
     End Sub
 
     Friend WithEvents TextBox1 As TextBox
-    Friend WithEvents Panel1 As FlowLayoutPanel
     Friend WithEvents BtnClose As Button
     Friend WithEvents BtnSave As Button
+    Friend WithEvents PanelBottom As FlowLayoutPanel
 End Class

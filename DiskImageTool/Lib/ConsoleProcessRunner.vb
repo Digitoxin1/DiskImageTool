@@ -35,6 +35,7 @@ Public Class ConsoleProcessRunner
     Public Event ProcessStateChanged(state As ProcessStateEnum)
 
     Public Property EventContext As SynchronizationContext
+
     Public ReadOnly Property ExitCode As Integer?
         Get
             Return _exitCode
@@ -346,8 +347,8 @@ Public Class ConsoleProcessRunner
             End If
 
             If _proc IsNot Nothing Then
-                Try : _proc.CancelOutputRead() : Catch : End Try
-                Try : _proc.CancelErrorRead() : Catch : End Try
+                'Try : _proc.CancelOutputRead() : Catch : End Try
+                'Try : _proc.CancelErrorRead() : Catch : End Try
 
                 RemoveHandler _proc.OutputDataReceived, AddressOf OnOutputData
                 RemoveHandler _proc.ErrorDataReceived, AddressOf OnErrorData
@@ -371,6 +372,13 @@ Public Class ConsoleProcessRunner
 
     Private Sub OnExited(sender As Object, e As EventArgs)
         Dim code As Integer = 0
+
+        Try
+            _proc.WaitForExit() ' This flushes any pending OutputDataReceived/ErrorDataReceived events
+        Catch
+            ' ignore
+        End Try
+
         Try
             code = _proc.ExitCode
         Catch

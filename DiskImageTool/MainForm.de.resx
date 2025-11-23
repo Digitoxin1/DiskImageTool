@@ -222,9 +222,6 @@
   <data name="MenuToolsWin9xCleanBatch.Text" xml:space="preserve">
     <value>Windows-Änderungen im Stapel entfernen</value>
   </data>
-  <data name="MenuToolsTrackLayout.Text" xml:space="preserve">
-    <value>tracklayout.txt generieren</value>
-  </data>
   <data name="MainMenuTools.Text" xml:space="preserve">
     <value>&amp;Extras</value>
   </data>
@@ -362,5 +359,8 @@
   </data>
   <data name="MenuOptionsFlux.Text" xml:space="preserve">
     <value>&amp;Flux Konfiguration</value>
+  </data>
+  <data name="MenuPcImgCnvTrackLayout.Text" xml:space="preserve">
+    <value>tracklayout.txt erstellen</value>
   </data>
 </root>

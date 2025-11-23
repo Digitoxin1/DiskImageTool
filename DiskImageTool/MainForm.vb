@@ -1082,13 +1082,15 @@ Public Class MainForm
 
     Private Sub RefreshFluxMenu()
         Dim GreaseweazleEnabled As Boolean = Flux.Greaseweazle.Settings.IsPathValid
+        Dim PcImgCnvEnabled As Boolean = Flux.PcImgCnv.Settings.IsPathValid()
         Dim KryofluxEnabled As Boolean = Flux.Kryoflux.Settings.IsPathValid()
         Dim Visible As Boolean = GreaseweazleEnabled Or KryofluxEnabled
 
         MainMenuFlux.Visible = Visible
         MenuGreaseweazleRead.Enabled = GreaseweazleEnabled
-        ToolStripSeparatorGreaseweazle.Visible = GreaseweazleEnabled
+        ToolStripSeparatorDevices.Visible = GreaseweazleEnabled Or PcImgCnvEnabled
         MenuGreaseweazle.Visible = GreaseweazleEnabled
+        MenuPcImgCnv.Visible = PcImgCnvEnabled
     End Sub
 
     Private Sub RefreshHexMenu(Disk As Disk, IsValidImage As Boolean, Compare As Integer)
@@ -1185,11 +1187,11 @@ Public Class MainForm
         Dim CanResize As Boolean = False
         Dim CanRestoreBootSector As Boolean = False
         Dim HasBootSector As Boolean = False
-        Dim TrackLayoutVisible As Boolean
+        Dim TrackLayoutEnabled As Boolean
         Dim FixImageSizeText As String = My.Resources.Menu_TruncateImage
 
         If Disk IsNot Nothing AndAlso IsValidImage Then
-            TrackLayoutVisible = App.Globals.AppSettings.Debug AndAlso Disk.Image.IsBitstreamImage
+            TrackLayoutEnabled = Disk.Image.IsBitstreamImage
 
             CanResize = Disk.Image.CanResize
 
@@ -1237,7 +1239,7 @@ Public Class MainForm
         MenuToolsRemoveBootSector.Enabled = HasBootSector
         MenuToolsRestoreBootSector.Enabled = CanRestoreBootSector
 
-        MenuToolsTrackLayout.Visible = TrackLayoutVisible
+        MenuPcImgCnvTrackLayout.Enabled = TrackLayoutEnabled
     End Sub
 
     Private Sub ResetAll()
@@ -2010,7 +2012,7 @@ Public Class MainForm
         DiskImageProcessEvent(FilePanelMain, DiskImageMenuItem.ImageRestructure)
     End Sub
 
-    Private Sub MenuToolsTrackLayout_Click(sender As Object, e As EventArgs) Handles MenuToolsTrackLayout.Click
+    Private Sub MenuPcImgCnvTrackLayout_Click(sender As Object, e As EventArgs) Handles MenuPcImgCnvTrackLayout.Click
         GenerateTrackLayout(FilePanelMain.CurrentImage)
     End Sub
 

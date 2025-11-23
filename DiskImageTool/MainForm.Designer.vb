@@ -85,7 +85,6 @@ Partial Class MainForm
         Me.MenuToolsRestoreBootSector = New System.Windows.Forms.ToolStripMenuItem()
         Me.MenuToolsRemoveBootSector = New System.Windows.Forms.ToolStripMenuItem()
         Me.MenuToolsWin9xCleanBatch = New System.Windows.Forms.ToolStripMenuItem()
-        Me.MenuToolsTrackLayout = New System.Windows.Forms.ToolStripMenuItem()
         Me.MenuHelpProjectPage = New System.Windows.Forms.ToolStripMenuItem()
         Me.MenuHelpUpdateCheck = New System.Windows.Forms.ToolStripMenuItem()
         Me.MenuHelpChangeLog = New System.Windows.Forms.ToolStripMenuItem()
@@ -104,13 +103,15 @@ Partial Class MainForm
         Me.MenuGreaseweazleWrite = New System.Windows.Forms.ToolStripMenuItem()
         Me.ToolStripSeparator5 = New System.Windows.Forms.ToolStripSeparator()
         Me.MenuFluxConvert = New System.Windows.Forms.ToolStripMenuItem()
-        Me.ToolStripSeparatorGreaseweazle = New System.Windows.Forms.ToolStripSeparator()
+        Me.ToolStripSeparatorDevices = New System.Windows.Forms.ToolStripSeparator()
         Me.MenuGreaseweazle = New System.Windows.Forms.ToolStripMenuItem()
         Me.MenuGreaseweazleErase = New System.Windows.Forms.ToolStripMenuItem()
         Me.MenuGreaseweazleClean = New System.Windows.Forms.ToolStripMenuItem()
         Me.ToolStripSeparator12 = New System.Windows.Forms.ToolStripSeparator()
         Me.MenuGreaseweazleInfo = New System.Windows.Forms.ToolStripMenuItem()
         Me.MenuGreaseweazleBandwidth = New System.Windows.Forms.ToolStripMenuItem()
+        Me.MenuPcImgCnv = New System.Windows.Forms.ToolStripMenuItem()
+        Me.MenuPcImgCnvTrackLayout = New System.Windows.Forms.ToolStripMenuItem()
         Me.MainMenuReports = New System.Windows.Forms.ToolStripMenuItem()
         Me.MenuReportsWriteSplices = New System.Windows.Forms.ToolStripMenuItem()
         Me.MainMenuOptions = New System.Windows.Forms.ToolStripMenuItem()
@@ -413,7 +414,7 @@ Partial Class MainForm
         '
         'MainMenuTools
         '
-        MainMenuTools.DropDownItems.AddRange(New System.Windows.Forms.ToolStripItem() {Me.MenuToolsWin9xClean, Me.MenuToolsClearReservedBytes, Me.MenuToolsFixImageSize, Me.MenuToolsFixImageSizeSubMenu, Me.MenuToolsRestoreBootSector, Me.MenuToolsRemoveBootSector, MenuToolsSeparator, Me.MenuToolsWin9xCleanBatch, Me.MenuToolsTrackLayout})
+        MainMenuTools.DropDownItems.AddRange(New System.Windows.Forms.ToolStripItem() {Me.MenuToolsWin9xClean, Me.MenuToolsClearReservedBytes, Me.MenuToolsFixImageSize, Me.MenuToolsFixImageSizeSubMenu, Me.MenuToolsRestoreBootSector, Me.MenuToolsRemoveBootSector, MenuToolsSeparator, Me.MenuToolsWin9xCleanBatch})
         MainMenuTools.Name = "MainMenuTools"
         resources.ApplyResources(MainMenuTools, "MainMenuTools")
         '
@@ -467,11 +468,6 @@ Partial Class MainForm
         '
         Me.MenuToolsWin9xCleanBatch.Name = "MenuToolsWin9xCleanBatch"
         resources.ApplyResources(Me.MenuToolsWin9xCleanBatch, "MenuToolsWin9xCleanBatch")
-        '
-        'MenuToolsTrackLayout
-        '
-        Me.MenuToolsTrackLayout.Name = "MenuToolsTrackLayout"
-        resources.ApplyResources(Me.MenuToolsTrackLayout, "MenuToolsTrackLayout")
         '
         'MainMenuHelp
         '
@@ -606,7 +602,7 @@ Partial Class MainForm
         '
         'MainMenuFlux
         '
-        Me.MainMenuFlux.DropDownItems.AddRange(New System.Windows.Forms.ToolStripItem() {Me.MenuGreaseweazleRead, Me.MenuGreaseweazleWrite, Me.ToolStripSeparator5, Me.MenuFluxConvert, Me.ToolStripSeparatorGreaseweazle, Me.MenuGreaseweazle})
+        Me.MainMenuFlux.DropDownItems.AddRange(New System.Windows.Forms.ToolStripItem() {Me.MenuGreaseweazleRead, Me.MenuGreaseweazleWrite, Me.ToolStripSeparator5, Me.MenuFluxConvert, Me.ToolStripSeparatorDevices, Me.MenuGreaseweazle, Me.MenuPcImgCnv})
         Me.MainMenuFlux.Name = "MainMenuFlux"
         resources.ApplyResources(Me.MainMenuFlux, "MainMenuFlux")
         '
@@ -630,10 +626,10 @@ Partial Class MainForm
         Me.MenuFluxConvert.Name = "MenuFluxConvert"
         resources.ApplyResources(Me.MenuFluxConvert, "MenuFluxConvert")
         '
-        'ToolStripSeparatorGreaseweazle
+        'ToolStripSeparatorDevices
         '
-        Me.ToolStripSeparatorGreaseweazle.Name = "ToolStripSeparatorGreaseweazle"
-        resources.ApplyResources(Me.ToolStripSeparatorGreaseweazle, "ToolStripSeparatorGreaseweazle")
+        Me.ToolStripSeparatorDevices.Name = "ToolStripSeparatorDevices"
+        resources.ApplyResources(Me.ToolStripSeparatorDevices, "ToolStripSeparatorDevices")
         '
         'MenuGreaseweazle
         '
@@ -665,6 +661,17 @@ Partial Class MainForm
         '
         Me.MenuGreaseweazleBandwidth.Name = "MenuGreaseweazleBandwidth"
         resources.ApplyResources(Me.MenuGreaseweazleBandwidth, "MenuGreaseweazleBandwidth")
+        '
+        'MenuPcImgCnv
+        '
+        Me.MenuPcImgCnv.DropDownItems.AddRange(New System.Windows.Forms.ToolStripItem() {Me.MenuPcImgCnvTrackLayout})
+        Me.MenuPcImgCnv.Name = "MenuPcImgCnv"
+        resources.ApplyResources(Me.MenuPcImgCnv, "MenuPcImgCnv")
+        '
+        'MenuPcImgCnvTrackLayout
+        '
+        Me.MenuPcImgCnvTrackLayout.Name = "MenuPcImgCnvTrackLayout"
+        resources.ApplyResources(Me.MenuPcImgCnvTrackLayout, "MenuPcImgCnvTrackLayout")
         '
         'MainMenuReports
         '
@@ -1153,7 +1160,6 @@ Partial Class MainForm
     Friend WithEvents StatusStripBottom As StatusStrip
     Friend WithEvents ToolStripTop As ToolStrip
     Friend WithEvents MenuOptionsDragDrop As ToolStripMenuItem
-    Friend WithEvents MenuToolsTrackLayout As ToolStripMenuItem
     Friend WithEvents MenuOptionsCheckUpdate As ToolStripMenuItem
     Friend WithEvents MainMenuUpdateAvailable As ToolStripMenuItem
     Friend WithEvents MenuOptionsDisplayTitles As ToolStripMenuItem
@@ -1185,5 +1191,7 @@ Partial Class MainForm
     Friend WithEvents ToolStripSeparator12 As ToolStripSeparator
     Friend WithEvents MenuGreaseweazleInfo As ToolStripMenuItem
     Friend WithEvents MenuGreaseweazleBandwidth As ToolStripMenuItem
-    Friend WithEvents ToolStripSeparatorGreaseweazle As ToolStripSeparator
+    Friend WithEvents ToolStripSeparatorDevices As ToolStripSeparator
+    Friend WithEvents MenuPcImgCnv As ToolStripMenuItem
+    Friend WithEvents MenuPcImgCnvTrackLayout As ToolStripMenuItem
 End Class
