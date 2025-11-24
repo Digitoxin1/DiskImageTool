@@ -2,11 +2,10 @@
 
 Namespace Settings
     Public Class ETagSettings
-        Implements ISettingsGroup
+        Inherits SettingsGroup
 
         Private _appUpdate As String = ""
         Private _changeLog As String = ""
-        Private _isDirty As Boolean
 
         Public Property AppUpdate As String
             Get
@@ -15,7 +14,7 @@ Namespace Settings
             Set(value As String)
                 If _appUpdate <> value Then
                     _appUpdate = value
-                    _isDirty = True
+                    MarkDirty()
                 End If
             End Set
         End Property
@@ -27,17 +26,8 @@ Namespace Settings
             Set(value As String)
                 If _changeLog <> value Then
                     _changeLog = value
-                    _isDirty = True
+                    MarkDirty()
                 End If
-            End Set
-        End Property
-
-        Public Property IsDirty As Boolean Implements ISettingsGroup.IsDirty
-            Get
-                Return _isDirty
-            End Get
-            Set(value As Boolean)
-                _isDirty = value
             End Set
         End Property
 
@@ -51,10 +41,6 @@ Namespace Settings
             _appUpdate = ReadValue(dict, "appUpdate", _appUpdate)
 
             MarkClean()
-        End Sub
-
-        Public Sub MarkClean() Implements ISettingsGroup.MarkClean
-            _isDirty = False
         End Sub
 
         Public Function ToJsonObject() As Dictionary(Of String, Object)

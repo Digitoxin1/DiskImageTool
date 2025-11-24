@@ -5,7 +5,7 @@
             Kryoflux
             PcImgCnv
         End Enum
-
+        ReadOnly Property Capabilities As DeviceCapabilities
         ReadOnly Property Device As FluxDevice
         ReadOnly Property Name As String
         ReadOnly Property RequiresImageFormat As Boolean

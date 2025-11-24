@@ -3,26 +3,16 @@ Imports DiskImageTool.DiskImage.FloppyDiskFunctions
 
 Namespace Flux.Greaseweazle
     Public Class DriveSettings
-        Implements Settings.ISettingsGroup
+        Inherits Settings.SettingsGroup
 
         Public Const MAX_TRACKS As Byte = 84
         Public Const MAX_TRACKS_525DD As Byte = 42
         Public Const MIN_TRACKS As Byte = 80
         Public Const MIN_TRACKS_525DD As Byte = 40
 
-        Private _isDirty As Boolean
         Private _tracks As Byte = 0
 
         Private _Type As FloppyMediaType = FloppyMediaType.MediaUnknown
-
-        Public Property IsDirty As Boolean Implements DiskImageTool.Settings.ISettingsGroup.IsDirty
-            Get
-                Return _isDirty
-            End Get
-            Set(value As Boolean)
-                _isDirty = value
-            End Set
-        End Property
 
         Public ReadOnly Property Tracks As Byte
             Get
@@ -63,21 +53,17 @@ Namespace Flux.Greaseweazle
             MarkClean()
         End Sub
 
-        Public Sub MarkClean() Implements DiskImageTool.Settings.ISettingsGroup.MarkClean
-            _isDirty = False
-        End Sub
-
         Public Sub SetDrive(Type As FloppyMediaType, Optional TrackCount As Byte = 0)
             Dim Tracks = AdjustedTrackCount(TrackCount, Type)
 
             If _Type <> Type Then
                 _Type = Type
-                _isDirty = True
+                MarkDirty()
             End If
 
             If _tracks <> Tracks Then
                 _tracks = Tracks
-                _isDirty = True
+                MarkDirty()
             End If
         End Sub
 
@@ -134,24 +120,6 @@ Namespace Flux.Greaseweazle
                 Case Else
                     Return ""
             End Select
-        End Function
-
-        Private Shared Function ReadValue(Of T)(
-                                    dict As Dictionary(Of String, JsonValue),
-            key As String,
-            defaultValue As T) As T
-
-            Dim jv As JsonValue = Nothing
-            If dict Is Nothing OrElse Not dict.TryGetValue(key, jv) OrElse jv Is Nothing Then
-                Return defaultValue
-            End If
-
-            Try
-                Dim raw = jv.ToString()
-                Return Serializer.Parse(Of T)(raw)
-            Catch
-                Return defaultValue
-            End Try
         End Function
     End Class
 End Namespace

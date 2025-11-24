@@ -3,7 +3,7 @@ Imports DiskImageTool.DiskImage.FloppyDiskFunctions
 
 Namespace Flux.Greaseweazle
     Public Class GreaseweazleSettings
-        Implements Settings.ISettingsGroup
+        Inherits Settings.SettingsGroup
         Implements ISettings
 
         Public Const MAX_TRACKS As Byte = 84
@@ -25,7 +25,6 @@ Namespace Flux.Greaseweazle
 
         Private _fluxRootPath As String = ""
         Private _interface As GreaseweazleInterface = GreaseweazleInterface.IBM
-        Private _isDirty As Boolean
         Private _logFileName As String = DEFAULT_LOG_FILE_NAME
 
         Public Enum GreaseweazleInterface
@@ -40,7 +39,7 @@ Namespace Flux.Greaseweazle
             Set(value As GreaseweazleInterface)
                 If _interface <> value Then
                     _interface = value
-                    _isDirty = True
+                    MarkDirty()
                 End If
             End Set
         End Property
@@ -52,7 +51,7 @@ Namespace Flux.Greaseweazle
             Set(value As String)
                 If _appPath <> value Then
                     _appPath = value
-                    _isDirty = True
+                    MarkDirty()
                 End If
             End Set
         End Property
@@ -75,7 +74,7 @@ Namespace Flux.Greaseweazle
             Set(value As String)
                 If _comPort <> value Then
                     _comPort = value
-                    _isDirty = True
+                    MarkDirty()
                 End If
             End Set
         End Property
@@ -100,7 +99,7 @@ Namespace Flux.Greaseweazle
 
                 If _defaultRevs <> value Then
                     _defaultRevs = value
-                    _isDirty = True
+                    MarkDirty()
                 End If
             End Set
         End Property
@@ -121,14 +120,14 @@ Namespace Flux.Greaseweazle
             Set(value As String)
                 If _fluxRootPath <> value Then
                     _fluxRootPath = value
-                    _isDirty = True
+                    MarkDirty()
                 End If
             End Set
         End Property
 
-        Public Property IsDirty As Boolean Implements DiskImageTool.Settings.ISettingsGroup.IsDirty
+        Public Overrides ReadOnly Property IsDirty As Boolean
             Get
-                If _isDirty Then Return True
+                If MyBase.IsDirty Then Return True
 
                 If Drives IsNot Nothing Then
                     For Each d In Drives
@@ -140,15 +139,6 @@ Namespace Flux.Greaseweazle
 
                 Return False
             End Get
-            Set(value As Boolean)
-                _isDirty = value
-
-                If Not value AndAlso Drives IsNot Nothing Then
-                    For Each d In Drives
-                        d?.MarkClean()
-                    Next
-                End If
-            End Set
         End Property
 
         Public Property LogFileName As String Implements Flux.ISettings.LogFileName
@@ -158,7 +148,7 @@ Namespace Flux.Greaseweazle
             Set(value As String)
                 If _logFileName <> value Then
                     _logFileName = value
-                    _isDirty = True
+                    MarkDirty()
                 End If
             End Set
         End Property
@@ -194,10 +184,15 @@ Namespace Flux.Greaseweazle
             MarkClean()
         End Sub
 
-        Public Sub MarkClean() Implements DiskImageTool.Settings.ISettingsGroup.MarkClean
-            IsDirty = False
-        End Sub
+        Public Overrides Sub MarkClean()
+            MyBase.MarkClean()
 
+            If Drives IsNot Nothing Then
+                For Each d In Drives
+                    d?.MarkClean()
+                Next
+            End If
+        End Sub
         Public Function ToJsonObject() As Dictionary(Of String, Object)
             Dim driveArray As New List(Of Object)
             If Drives IsNot Nothing Then
@@ -233,24 +228,6 @@ Namespace Flux.Greaseweazle
                 Case Else
                     Return "IBM"
             End Select
-        End Function
-
-        Private Shared Function ReadValue(Of T)(
-                            dict As Dictionary(Of String, JsonValue),
-            key As String,
-            defaultValue As T) As T
-
-            Dim jv As JsonValue = Nothing
-            If dict Is Nothing OrElse Not dict.TryGetValue(key, jv) OrElse jv Is Nothing Then
-                Return defaultValue
-            End If
-
-            Try
-                Dim raw = jv.ToString()
-                Return Serializer.Parse(Of T)(raw)
-            Catch
-                Return defaultValue
-            End Try
         End Function
 
         Private Sub LoadDriveList(parent As Dictionary(Of String, JsonValue))

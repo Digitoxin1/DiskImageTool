@@ -31,7 +31,7 @@
     <ProductName>DiskImageTool</ProductName>
     <PublisherName>Digitoxin</PublisherName>
     <ApplicationRevision>0</ApplicationRevision>
-    <ApplicationVersion>2.27.0.%2a</ApplicationVersion>
+    <ApplicationVersion>2.28.0.%2a</ApplicationVersion>
     <UseApplicationTrust>false</UseApplicationTrust>
     <PublishWizardCompleted>true</PublishWizardCompleted>
     <BootstrapperEnabled>true</BootstrapperEnabled>
@@ -399,10 +399,15 @@
     <Compile Include="Modules\SummaryPanel.vb" />
     <Compile Include="Settings\AppSettings.vb" />
     <Compile Include="Flux\Greaseweazle\DriveSettings.vb" />
+    <Compile Include="Settings\UserStateFluxConvertDevice.vb" />
+    <Compile Include="Settings\UserStateFluxConvert.vb" />
     <Compile Include="Settings\ETagSettings.vb" />
     <Compile Include="Flux\Greaseweazle\GreaseweazleSettings.vb" />
-    <Compile Include="Settings\ISettingsGroup.vb" />
-    <Compile Include="Settings\Shared.vb" />
+    <Compile Include="Settings\UserStateFlux.vb" />
+    <Compile Include="Settings\SettingsGroup.vb" />
+    <Compile Include="Settings\UserState.vb" />
+    <Compile Include="Settings\UserStateFluxRead.vb" />
+    <Compile Include="Settings\UserStateFluxReadDevice.vb" />
     <Compile Include="Testing\DebugScript.vb" />
     <Compile Include="DiskImage\SectorData.vb" />
     <Compile Include="DiskImage\BasicSectorImage.vb" />

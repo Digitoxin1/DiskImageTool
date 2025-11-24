@@ -22,16 +22,15 @@ Namespace Flux.Greaseweazle
         Private WithEvents TextBoxFileName As TextBox
         Private WithEvents TextBoxFluxFolder As TextBox
         Private Const DEFAULT_RAW_FILE_NAME As String = "track"
-        Private Shared _CachedDriveId As String = ""
         Private Shared _CachedFileNameTemplate As String = ""
         Private ReadOnly _HelpProvider1 As HelpProvider
         Private ReadOnly _Initialized As Boolean = False
+        Private ReadOnly _UserState As Settings.UserStateFlux
         Private _ComboExtensionsNoEvent As Boolean = False
         Private _ComboImageFormatNoEvent As Boolean = False
         Private _ComboOutputTypeNoEvent As Boolean = False
         Private _DoubleStep As Boolean = False
         Private _FileOverwriteMode As Boolean = False
-        Private _LastSelectedOutputType As ReadDiskOutputTypes? = Nothing
         Private _NewFileName As String = ""
         Private _NewFilePath As String = ""
         Private _NumericRetries As NumericUpDown
@@ -47,13 +46,13 @@ Namespace Flux.Greaseweazle
         Private LabelRevs As Label
         Private LabelSeekRetries As Label
         Private LabelWarning As Label
-
         Public Event ImportRequested(File As String, NewFilename As String)
 
         Public Sub New()
             MyBase.New(Settings.LogFileName)
             InitializeControls()
 
+            _UserState = App.UserState.Flux
             _HelpProvider1 = New HelpProvider
             TrackStatus = New TrackStatus()
 
@@ -63,7 +62,7 @@ Namespace Flux.Greaseweazle
 
             IntitializeHelp()
 
-            PopulateDrives(ComboImageDrives, FloppyMediaType.MediaUnknown, _CachedDriveId)
+            PopulateDrives(ComboImageDrives, FloppyMediaType.MediaUnknown, GetSelectedDeviceState.DriveId)
             PopulateImageFormats(ComboImageFormat, ComboImageDrives.SelectedValue)
             InitializeImage()
 
@@ -74,7 +73,7 @@ Namespace Flux.Greaseweazle
             _NumericRetries.Value = CommandLineBuilder.DEFAULT_RETRIES
             _NumericSeekRetries.Value = CommandLineBuilder.DEFAULT_SEEK_RETRIES
 
-            CheckBoxSaveLog.Checked = True
+            CheckBoxSaveLog.Checked = GetSelectedDeviceState.SaveLog
 
             _Initialized = True
         End Sub
@@ -90,6 +89,7 @@ Namespace Flux.Greaseweazle
                 Return _NewFilePath
             End Get
         End Property
+
         Public Sub SetFluxFolder(Path As String)
             If Path <> "" AndAlso Not IO.Directory.Exists(Path) Then
                 Path = ""
@@ -218,7 +218,6 @@ Namespace Flux.Greaseweazle
         Private Sub CloseForm(NewFilePath As String, NewFileName As String)
             Dim Opt As DriveOption = ComboImageDrives.SelectedValue
 
-            _CachedDriveId = Opt.Id
             CashFilenameTemplate()
 
             _NewFilePath = NewFilePath
@@ -278,6 +277,7 @@ Namespace Flux.Greaseweazle
 
             Return FileName & Item.Extension
         End Function
+
         Private Function GetOutputFilePaths() As (FilePath As String, LogFilePath As String, IsFlux As Boolean)
             Dim Response As (FilePath As String, LogFilePath As String, IsFlux As Boolean)
             Response.LogFilePath = ""
@@ -318,6 +318,9 @@ Namespace Flux.Greaseweazle
             Return Response
         End Function
 
+        Private Function GetSelectedDeviceState() As Settings.UserStateFluxReadDevice
+            Return _UserState.Read.Device(IDevice.FluxDevice.Greaseweazle)
+        End Function
         Private Sub HideSelection(Value As Boolean)
             TableSide0.HideSelection = Value
             TableSide1.HideSelection = Value
@@ -629,7 +632,7 @@ Namespace Flux.Greaseweazle
         End Sub
 
         Private Sub InitializeImage()
-            PopulateOutputTypes()
+            PopulateOutputTypes(GetSelectedDeviceState.OutputType)
             PopulateFileExtensions()
             ResetTrackGrid()
             ClearStatusBar()
@@ -885,10 +888,10 @@ Namespace Flux.Greaseweazle
             Dim ImageParams As FloppyDiskParams = ComboImageFormat.SelectedValue
 
             If Item.Format.Value <> ImageParams.Format Then
-                App.AppSettings.RemovePreferredExtension(ImageParams.Format)
+                App.UserState.RemovePreferredExtension(ImageParams.Format)
             End If
 
-            App.AppSettings.SetPreferredExtension(Item.Format.Value, Item.Extension)
+            App.UserState.SetPreferredExtension(Item.Format.Value, Item.Extension)
         End Sub
 
         Private Sub RefreshProcessButtonState()
@@ -1108,6 +1111,14 @@ Namespace Flux.Greaseweazle
             Reset(TextBoxConsole)
         End Sub
 
+        Private Sub CheckBoxSaveLog_CheckStateChanged(sender As Object, e As EventArgs) Handles CheckBoxSaveLog.CheckStateChanged
+            If Not _Initialized Then
+                Exit Sub
+            End If
+
+            GetSelectedDeviceState.SaveLog = CheckBoxSaveLog.Checked
+        End Sub
+
         Private Sub CheckBoxSelect_CheckStateChanged(sender As Object, e As EventArgs) Handles CheckBoxSelect.CheckStateChanged
             If Not _Initialized Then
                 Exit Sub
@@ -1146,6 +1157,8 @@ Namespace Flux.Greaseweazle
             ResetTrackGrid()
             RefreshFormState()
             LabelWarning.Visible = Not CheckCompatibility()
+
+            GetSelectedDeviceState.DriveId = Opt.Id
         End Sub
 
         Private Sub ComboImageFormat_SelectedIndexChanged(sender As Object, e As EventArgs) Handles ComboImageFormat.SelectedIndexChanged
@@ -1164,7 +1177,7 @@ Namespace Flux.Greaseweazle
                 Opt.SelectedFormat = DiskParams.Format
             End If
 
-            PopulateOutputTypes(_LastSelectedOutputType)
+            PopulateOutputTypes(GetSelectedDeviceState.OutputType)
             PopulateFileExtensions()
             ResetTrackGrid()
             RefreshFormState()
@@ -1183,7 +1196,7 @@ Namespace Flux.Greaseweazle
             PopulateFileExtensions()
             RefreshFormState()
 
-            _LastSelectedOutputType = ComboOutputType.SelectedValue
+            GetSelectedDeviceState.OutputType = ComboOutputType.SelectedValue
         End Sub
 
         Private Sub Process_DataReceived(data As String) Handles Process.ErrorDataReceived, Process.OutputDataReceived

@@ -30,6 +30,13 @@
             both
         End Enum
 
+        Friend Enum DeviceCapabilities
+            None = 0
+            Read = 1
+            Write = 2
+            Convert = 4
+        End Enum
+
         Public Function ImageImportOutputTypeDescription(Value As ImageImportOutputTypes) As String
             Select Case Value
                 Case ImageImportOutputTypes.HFE

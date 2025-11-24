@@ -1,7 +1,6 @@
 ﻿Imports System.Collections.Concurrent
 Imports System.ComponentModel
 Imports DiskImageTool.DiskImage.FloppyDiskFunctions
-
 Namespace Flux
     Public Class ConvertImageForm
         Inherits BaseFluxForm
@@ -13,17 +12,17 @@ Namespace Flux
         Private WithEvents ButtonTrackLayout As Button
         Private WithEvents CheckBoxDoublestep As CheckBox
         Private WithEvents CheckBoxExtendedLogging As CheckBox
+        Private WithEvents CheckBoxSaveLog As CheckBox
         Private WithEvents ComboDevices As ComboBox
         Private WithEvents ComboExtensions As ComboBox
         Private WithEvents ComboImageFormat As ComboBox
         Private WithEvents ComboOutputType As ComboBox
         Private WithEvents ConsoleTimer As Timer
         Private WithEvents TextBoxFileName As TextBox
-        Private Shared _CachedDevice As IDevice = Nothing
-        Private Shared _CachedExtendedLogging As Boolean = False
         Private ReadOnly _ConsoleQueue As New ConcurrentQueue(Of String)
         Private ReadOnly _Initialized As Boolean = False
         Private ReadOnly _LaunchedFromDialog As Boolean = False
+        Private ReadOnly _UserState As Settings.UserStateFlux
         Private _ComboDevicesNoEvent As Boolean = False
         Private _ComboExtensionsNoEvent As Boolean = False
         Private _ComboOutputTypeNoEvent As Boolean = False
@@ -35,7 +34,6 @@ Namespace Flux
         Private _TrackCount As Integer
         Private CheckBox86FSurfaceData As CheckBox
         Private CheckBoxRemaster As CheckBox
-        Private CheckBoxSaveLog As CheckBox
         Private LabelOutputType As Label
         Public Event ImportRequested(File As String, NewFilename As String)
 
@@ -48,6 +46,7 @@ Namespace Flux
                 .Interval = 10
             }
 
+            _UserState = App.UserState.Flux
             _LaunchedFromDialog = LaunchedFromDialog
             _InputFilePath = FilePath
             _TrackCount = TrackCount
@@ -58,9 +57,6 @@ Namespace Flux
             If LaunchedFromDialog Then
                 ButtonImport.DialogResult = DialogResult.Retry
             End If
-
-            CheckBoxExtendedLogging.Checked = _CachedExtendedLogging
-            CheckBoxSaveLog.Checked = True
 
             InitializeDevice(True)
 
@@ -74,6 +70,10 @@ Namespace Flux
         End Property
 
         Public Function GetNewFileName() As String
+            If ComboExtensions.SelectedIndex = -1 Then
+                Return TextBoxFileName.Text
+            End If
+
             Dim Item As FileExtensionItem = ComboExtensions.SelectedItem
 
             Return TextBoxFileName.Text & Item.Extension
@@ -86,6 +86,14 @@ Namespace Flux
         End Sub
 
         Private Function AllowSectorImage() As Boolean
+            If ComboDevices.SelectedIndex = -1 Then
+                Return False
+            End If
+
+            If ComboImageFormat.SelectedIndex = -1 Then
+                Return False
+            End If
+
             Dim SelectedDevice As IDevice = CType(ComboDevices.SelectedItem, IDevice)
             Dim ImageParams As FloppyDiskParams = ComboImageFormat.SelectedValue
 
@@ -151,7 +159,19 @@ Namespace Flux
             TrackStatus.Clear()
         End Sub
 
-        Private Function GenerateCommandLine(FilePath As String)
+        Private Function GenerateCommandLine(FilePath As String) As String
+            If _SelectedDevice Is Nothing Then
+                Return ""
+            End If
+
+            If ComboOutputType.SelectedIndex = -1 Then
+                Return ""
+            End If
+
+            If ComboImageFormat.SelectedIndex = -1 Then
+                Return ""
+            End If
+
             Dim OutputType As ImageImportOutputTypes = ComboOutputType.SelectedValue
 
             Select Case _SelectedDevice.Device
@@ -217,6 +237,14 @@ Namespace Flux
                 Case Else
                     Return InputFileTypeEnum.sectorImage
             End Select
+        End Function
+
+        Private Function GetSelectedDeviceState() As Settings.UserStateFluxConvertDevice
+            If _SelectedDevice Is Nothing Then
+                Return Nothing
+            End If
+
+            Return _UserState.Convert.Device(_SelectedDevice.Device)
         End Function
         Private Sub InitializeControls()
             Dim LabelDevice As New Label With {
@@ -443,12 +471,14 @@ Namespace Flux
             End If
 
             _SelectedDevice = CType(ComboDevices.SelectedItem, IDevice)
-            _CachedDevice = _SelectedDevice
 
             LogFileName = _SelectedDevice.Settings.LogFileName
             LogStripPath = _SelectedDevice.Settings.LogStripPath
 
             TrackStatus = _SelectedDevice.TrackStatus
+
+            CheckBoxSaveLog.Checked = GetSelectedDeviceState.SaveLog
+            CheckBoxExtendedLogging.Checked = GetSelectedDeviceState.ExtendedLogs.GetValueOrDefault(False)
 
             InitializeImage()
         End Sub
@@ -468,6 +498,10 @@ Namespace Flux
         End Sub
 
         Private Function OpenFluxImage(Filename As String) As Boolean
+            If ComboDevices.SelectedIndex = -1 Then
+                Return False
+            End If
+
             Dim SelectedDevice As IDevice = CType(ComboDevices.SelectedItem, IDevice)
             Dim AllowSCP As Boolean = SelectedDevice.InputTypeSupported(InputFileTypeEnum.scp)
 
@@ -484,6 +518,10 @@ Namespace Flux
         End Function
 
         Private Function OpenFluxImage() As Boolean
+            If ComboDevices.SelectedIndex = -1 Then
+                Return False
+            End If
+
             Dim SelectedDevice As IDevice = CType(ComboDevices.SelectedItem, IDevice)
             Dim AllowSCP As Boolean = SelectedDevice.InputTypeSupported(InputFileTypeEnum.scp)
 
@@ -510,9 +548,8 @@ Namespace Flux
                 .DropDownStyle = ComboBoxStyle.DropDownList
             End With
 
-            If _CachedDevice IsNot Nothing Then
-                Dim Device As IDevice.FluxDevice = _CachedDevice.Device
-                ComboDevices.SelectedValue = Device
+            If _UserState.Convert.LastDevice.HasValue Then
+                ComboDevices.SelectedValue = _UserState.Convert.LastDevice.Value
             End If
 
             If ComboDevices.Items.Count > 0 And ComboDevices.SelectedIndex < 0 Then
@@ -521,7 +558,6 @@ Namespace Flux
 
             If ComboDevices.SelectedItem IsNot Nothing Then
                 _SelectedDevice = CType(ComboDevices.SelectedItem, IDevice)
-                _CachedDevice = _SelectedDevice
             End If
 
             ComboDevices.Enabled = (ComboDevices.Items.Count > 1)
@@ -565,20 +601,26 @@ Namespace Flux
         Private Sub PopulateOutputTypes()
             _ComboOutputTypeNoEvent = True
 
-            Dim DriveList As New List(Of KeyValuePair(Of String, ImageImportOutputTypes))
-            Dim UseSectorImage As Boolean = AllowSectorImage()
+            Dim OutputTypes As New List(Of KeyValuePair(Of String, ImageImportOutputTypes))
 
             For Each OutputType As ImageImportOutputTypes In [Enum].GetValues(GetType(ImageImportOutputTypes))
-                If Not _SelectedDevice.OutputTypeSupported(OutputType) Then
+                If _SelectedDevice IsNot Nothing AndAlso Not _SelectedDevice.OutputTypeSupported(OutputType) Then
                     Continue For
                 End If
 
-                DriveList.Add(New KeyValuePair(Of String, ImageImportOutputTypes)(
+                OutputTypes.Add(New KeyValuePair(Of String, ImageImportOutputTypes)(
                     ImageImportOutputTypeDescription(OutputType), OutputType)
                 )
             Next
 
-            InitializeCombo(ComboOutputType, DriveList, Nothing)
+            InitializeCombo(ComboOutputType, OutputTypes, Nothing)
+
+            If _SelectedDevice IsNot Nothing Then
+                Dim CachedOutputType = GetSelectedDeviceState.OutputType
+                If CachedOutputType.HasValue Then
+                    ComboOutputType.SelectedValue = CachedOutputType.Value
+                End If
+            End If
 
             If ComboOutputType.SelectedIndex = -1 AndAlso ComboOutputType.Items.Count > 0 Then
                 ComboOutputType.SelectedIndex = 0
@@ -590,6 +632,18 @@ Namespace Flux
         End Sub
 
         Private Sub ProcessImage()
+            If _SelectedDevice Is Nothing Then
+                Exit Sub
+            End If
+
+            If ComboImageFormat.SelectedIndex = -1 Then
+                Exit Sub
+            End If
+
+            If ComboOutputType.SelectedIndex = -1 Then
+                Exit Sub
+            End If
+
             Dim DiskParams As FloppyDiskParams = ComboImageFormat.SelectedValue
             Dim UseImageFormat As Boolean = _SelectedDevice.RequiresImageFormat
 
@@ -630,6 +684,10 @@ Namespace Flux
         End Sub
 
         Private Function ReadImageFormat() As DiskImage.FloppyDiskFormat
+            If ComboDevices.SelectedIndex = -1 Then
+                Return FloppyDiskFormat.FloppyUnknown
+            End If
+
             Dim SelectedDevice As IDevice = CType(ComboDevices.SelectedItem, IDevice)
 
             Dim Response = SelectedDevice.ConvertFirstTrack(_InputFilePath)
@@ -642,9 +700,16 @@ Namespace Flux
         End Function
 
         Private Sub RefreshButtonState()
-            Dim ImageParams As FloppyDiskParams = ComboImageFormat.SelectedValue
             Dim OutputType As ImageImportOutputTypes? = Nothing
-            Dim Is525DDStandard As Boolean = ImageParams.IsStandard AndAlso ImageParams.MediaType = FloppyMediaType.Media525DoubleDensity
+
+            Dim Is525DDStandard As Boolean = False
+            Dim IsNonImage As Boolean = True
+
+            If ComboImageFormat.SelectedIndex > -1 Then
+                Dim ImageParams As FloppyDiskParams = ComboImageFormat.SelectedValue
+                Is525DDStandard = ImageParams.IsStandard AndAlso ImageParams.MediaType = FloppyMediaType.Media525DoubleDensity
+                IsNonImage = ImageParams.IsNonImage
+            End If
 
             Dim HasOutputfile As Boolean = Not String.IsNullOrEmpty(_OutputFilePath)
             Dim HasInputFile As Boolean = Not String.IsNullOrEmpty(_InputFilePath)
@@ -653,7 +718,7 @@ Namespace Flux
 
             Dim SettingsEnabled As Boolean = IsIdle AndAlso Not HasOutputfile
             Dim CanConfigure As Boolean = SettingsEnabled AndAlso HasInputFile
-            Dim UseImageFormat As Boolean = _SelectedDevice.RequiresImageFormat
+            Dim UseImageFormat As Boolean = _SelectedDevice IsNot Nothing AndAlso _SelectedDevice.RequiresImageFormat
 
             Dim HasTrackLayout As Boolean = TrackLayoutExists()
 
@@ -661,7 +726,9 @@ Namespace Flux
             ComboImageFormat.Enabled = CanConfigure AndAlso UseImageFormat
 
             If ComboOutputType IsNot Nothing Then
-                OutputType = ComboOutputType.SelectedValue
+                If ComboOutputType.SelectedIndex > -1 Then
+                    OutputType = ComboOutputType.SelectedValue
+                End If
                 ComboOutputType.Enabled = CanConfigure And ComboOutputType.Items.Count > 1
             End If
 
@@ -671,7 +738,7 @@ Namespace Flux
             ButtonClear.Enabled = IsIdle AndAlso HasOutputfile
             ButtonOpen.Enabled = SettingsEnabled
 
-            ButtonProcess.Enabled = (Not ImageParams.IsNonImage Or Not UseImageFormat) AndAlso HasInputFile AndAlso (IsRunning Or Not HasOutputfile)
+            ButtonProcess.Enabled = (Not IsNonImage Or Not UseImageFormat) AndAlso HasInputFile AndAlso (IsRunning Or Not HasOutputfile)
             ButtonProcess.Text = If(IsRunning, My.Resources.Label_Abort, My.Resources.Label_Process)
 
             ButtonSaveLog.Enabled = IsIdle AndAlso Not String.IsNullOrEmpty(TextBoxConsole.Text)
@@ -699,6 +766,10 @@ Namespace Flux
         End Sub
 
         Private Sub RefreshDeviceState()
+            If _SelectedDevice Is Nothing Then
+                Exit Sub
+            End If
+
             Select Case _SelectedDevice.Device
                 Case IDevice.FluxDevice.Kryoflux
                     CheckBox86FSurfaceData.Visible = False
@@ -728,6 +799,14 @@ Namespace Flux
         End Sub
 
         Private Sub RefreshPreferredExensions()
+            If ComboExtensions.SelectedIndex = -1 Then
+                Exit Sub
+            End If
+
+            If ComboImageFormat.SelectedIndex = -1 Then
+                Exit Sub
+            End If
+
             Dim Item As FileExtensionItem = ComboExtensions.SelectedValue
 
             If Not Item.Format.HasValue Then
@@ -737,10 +816,10 @@ Namespace Flux
             Dim ImageParams As FloppyDiskParams = ComboImageFormat.SelectedValue
 
             If Item.Format.Value <> ImageParams.Format Then
-                App.AppSettings.RemovePreferredExtension(ImageParams.Format)
+                App.UserState.RemovePreferredExtension(ImageParams.Format)
             End If
 
-            App.AppSettings.SetPreferredExtension(Item.Format.Value, Item.Extension)
+            App.UserState.SetPreferredExtension(Item.Format.Value, Item.Extension)
         End Sub
 
         Private Sub SetNewFileName()
@@ -774,6 +853,10 @@ Namespace Flux
         End Sub
 
         Private Function TrackLayoutExists() As Boolean
+            If _SelectedDevice Is Nothing Then
+                Return False
+            End If
+
             If _SelectedDevice.Device <> IDevice.FluxDevice.PcImgCnv Then
                 Return False
             End If
@@ -830,7 +913,23 @@ Namespace Flux
                 Exit Sub
             End If
 
-            _CachedExtendedLogging = CheckBoxExtendedLogging.Checked
+            If _SelectedDevice Is Nothing Then
+                Exit Sub
+            End If
+
+            GetSelectedDeviceState.ExtendedLogs = CheckBoxExtendedLogging.Checked
+        End Sub
+
+        Private Sub CheckBoxSaveLog_CheckStateChanged(sender As Object, e As EventArgs) Handles CheckBoxSaveLog.CheckStateChanged
+            If Not _Initialized Then
+                Exit Sub
+            End If
+
+            If _SelectedDevice Is Nothing Then
+                Exit Sub
+            End If
+
+            GetSelectedDeviceState.SaveLog = CheckBoxSaveLog.Checked
         End Sub
 
         Private Sub ComboDevices_SelectedIndexChanged(sender As Object, e As EventArgs) Handles ComboDevices.SelectedIndexChanged
@@ -840,6 +939,10 @@ Namespace Flux
 
             If _ComboDevicesNoEvent Then
                 Exit Sub
+            End If
+
+            If ComboDevices.SelectedIndex > -1 Then
+                _UserState.Convert.LastDevice = CType(ComboDevices.SelectedItem, IDevice).Device
             End If
 
             InitializeDevice(False)
@@ -874,6 +977,11 @@ Namespace Flux
 
             If _ComboOutputTypeNoEvent Then
                 Exit Sub
+            End If
+
+            If ComboOutputType.SelectedIndex > -1 Then
+                Dim OutputType As ImageImportOutputTypes = ComboOutputType.SelectedValue
+                GetSelectedDeviceState.OutputType = OutputType
             End If
 
             PopulateFileExtensions()
@@ -911,6 +1019,10 @@ Namespace Flux
         End Sub
 
         Private Sub ImageImportForm_DragDrop(sender As Object, e As DragEventArgs) Handles Me.DragDrop
+            If ComboDevices.SelectedIndex = -1 Then
+                Return
+            End If
+
             Dim SelectedDevice As IDevice = CType(ComboDevices.SelectedItem, IDevice)
             Dim AllowSCP As Boolean = SelectedDevice.InputTypeSupported(InputFileTypeEnum.scp)
             Dim HasOutputfile As Boolean = Not String.IsNullOrEmpty(_OutputFilePath)
@@ -925,7 +1037,7 @@ Namespace Flux
 
             Dim paths = DirectCast(e.Data.GetData(DataFormats.FileDrop), String())
             If paths Is Nothing OrElse paths.Length = 0 Then
-                Exit Sub
+                Return
             End If
 
             Dim firstPath = paths(0)

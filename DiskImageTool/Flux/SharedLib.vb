@@ -376,9 +376,9 @@ Namespace Flux
         Public Sub PopulateFileExtensions(Combo As ComboBox, SelectedFormat As FloppyDiskFormat)
             Dim FileExtensions = BASIC_SECTOR_FILE_EXTENSIONS.Split(","c).ToList()
 
-            Dim SelectedExtension As String = App.AppSettings.GetPreferredExtension(SelectedFormat)
+            Dim SelectedExtension As String = App.UserState.GetPreferredExtension(SelectedFormat)
             If SelectedExtension = "" Then
-                SelectedExtension = App.AppSettings.GetPreferredExtension(FloppyDiskFormat.FloppyUnknown)
+                SelectedExtension = App.UserState.GetPreferredExtension(FloppyDiskFormat.FloppyUnknown)
             End If
 
             Dim items As New List(Of FileExtensionItem)

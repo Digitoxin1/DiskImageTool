@@ -2,11 +2,10 @@
 
 Namespace Flux.Kryoflux
     Public Class KryofluxSettings
-        Implements Settings.ISettingsGroup
+        Inherits Settings.SettingsGroup
         Implements ISettings
 
         Private _appPath As String = ""
-        Private _isDirty As Boolean
         Private _logFileName As String = "log.txt"
         Private _logStripPath As Boolean = False
 
@@ -17,17 +16,8 @@ Namespace Flux.Kryoflux
             Set(value As String)
                 If _appPath <> value Then
                     _appPath = value
-                    _isDirty = True
+                    MarkDirty()
                 End If
-            End Set
-        End Property
-
-        Public Property IsDirty As Boolean Implements Settings.ISettingsGroup.IsDirty
-            Get
-                Return _isDirty
-            End Get
-            Set(value As Boolean)
-                _isDirty = value
             End Set
         End Property
 
@@ -38,7 +28,7 @@ Namespace Flux.Kryoflux
             Set(value As String)
                 If _logFileName <> value Then
                     _logFileName = value
-                    _isDirty = True
+                    MarkDirty()
                 End If
             End Set
         End Property
@@ -50,7 +40,7 @@ Namespace Flux.Kryoflux
             Set(value As Boolean)
                 If _logStripPath <> value Then
                     _logStripPath = value
-                    _isDirty = True
+                    MarkDirty()
                 End If
             End Set
         End Property
@@ -72,35 +62,12 @@ Namespace Flux.Kryoflux
             MarkClean()
         End Sub
 
-        Public Sub MarkClean() Implements Settings.ISettingsGroup.MarkClean
-            _isDirty = False
-        End Sub
-
         Public Function ToJsonObject() As Dictionary(Of String, Object)
             Return New Dictionary(Of String, Object) From {
-            {"appPath", _appPath},
-            {"logFileName", _logFileName},
-            {"logStripPath", _logStripPath}
-        }
+                {"appPath", _appPath},
+                {"logFileName", _logFileName},
+                {"logStripPath", _logStripPath}
+            }
         End Function
-
-        Private Shared Function ReadValue(Of T)(
-            dict As Dictionary(Of String, JsonValue),
-            key As String,
-            defaultValue As T) As T
-
-            Dim jv As JsonValue = Nothing
-            If dict Is Nothing OrElse Not dict.TryGetValue(key, jv) OrElse jv Is Nothing Then
-                Return defaultValue
-            End If
-
-            Try
-                Dim raw = jv.ToString()
-                Return Serializer.Parse(Of T)(raw)
-            Catch
-                Return defaultValue
-            End Try
-        End Function
-
     End Class
 End Namespace

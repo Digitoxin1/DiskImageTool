@@ -1680,6 +1680,7 @@ Public Class MainForm
     Private Sub MainForm_Closed(sender As Object, e As EventArgs) Handles Me.Closed
         EmptyTempImagePath()
         App.Globals.AppSettings.Save()
+        App.Globals.UserState.Save()
     End Sub
 
     Private Sub MainForm_Closing(sender As Object, e As CancelEventArgs) Handles Me.Closing

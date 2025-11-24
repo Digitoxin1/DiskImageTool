@@ -25,6 +25,7 @@
             End Get
         End Property
 
+        Friend Shared ReadOnly Property Capabilities As DeviceCapabilities = DeviceCapabilities.Convert
         Friend ReadOnly Property Device As IDevice.FluxDevice Implements IDevice.Device
             Get
                 Return IDevice.FluxDevice.PcImgCnv
@@ -48,12 +49,17 @@
                 Return _TrackStatus
             End Get
         End Property
+        Private ReadOnly Property IDevice_Capabilities As DeviceCapabilities Implements IDevice.Capabilities
+            Get
+                Return Capabilities
+            End Get
+        End Property
+
         Private ReadOnly Property IDevice_Settings As ISettings Implements IDevice.Settings
             Get
                 Return Settings
             End Get
         End Property
-
         Friend Function ConvertFirstTrack(InputFilePath As String) As (Result As Boolean, Filename As String) Implements IDevice.ConvertFirstTrack
             Return (False, "")
         End Function

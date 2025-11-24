@@ -1,10 +1,25 @@
 ﻿Namespace Flux
     Module DeviceLib
+        Public Function FluxDeviceGetCapabilities(Device As IDevice.FluxDevice) As DeviceCapabilities
+            Select Case Device
+                Case IDevice.FluxDevice.Greaseweazle
+                    Return Greaseweazle.GreaseweazleDevice.Capabilities
+
+                Case IDevice.FluxDevice.Kryoflux
+                    Return Kryoflux.KryofluxDevice.Capabilities
+
+                Case IDevice.FluxDevice.PcImgCnv
+                    Return PcImgCnv.PcImgCnvDevice.Capabilities
+
+                Case Else
+                    Return DeviceCapabilities.None
+            End Select
+        End Function
+
         Public Function FluxDeviceGetList(FileType As InputFileTypeEnum) As List(Of IDevice)
             Dim list As New List(Of IDevice)
 
             For Each dev As IDevice.FluxDevice In [Enum].GetValues(GetType(IDevice.FluxDevice))
-
                 ' Skip if not available
                 If Not FluxDeviceIsAvailable(dev) Then
                     Continue For
@@ -12,12 +27,20 @@
 
                 ' Get FluxDeviceInfo
                 Dim Device = FluxDeviceGet(dev)
-                If Device IsNot Nothing Then
-                    If Not Device.InputTypeSupported(FileType) Then
-                        Continue For
-                    End If
-                    list.Add(Device)
+
+                If Device Is Nothing Then
+                    Continue For
                 End If
+
+                If (Device.Capabilities And DeviceCapabilities.Convert) = 0 Then
+                    Continue For
+                End If
+
+                If Not Device.InputTypeSupported(FileType) Then
+                    Continue For
+                End If
+
+                list.Add(Device)
             Next
 
             Return list
@@ -38,7 +61,6 @@
                     Return Nothing
             End Select
         End Function
-
         Private Function FluxDeviceIsAvailable(Device As IDevice.FluxDevice) As Boolean
             Select Case Device
                 Case IDevice.FluxDevice.Greaseweazle
