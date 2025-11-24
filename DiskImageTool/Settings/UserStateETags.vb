@@ -1,7 +1,7 @@
 ﻿Imports CompactJson
 
 Namespace Settings
-    Public Class ETagSettings
+    Public Class UserStateETags
         Inherits SettingsGroup
 
         Private _appUpdate As String = ""

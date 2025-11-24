@@ -401,7 +401,7 @@
     <Compile Include="Flux\Greaseweazle\DriveSettings.vb" />
     <Compile Include="Settings\UserStateFluxConvertDevice.vb" />
     <Compile Include="Settings\UserStateFluxConvert.vb" />
-    <Compile Include="Settings\ETagSettings.vb" />
+    <Compile Include="Settings\UserStateETags.vb" />
     <Compile Include="Flux\Greaseweazle\GreaseweazleSettings.vb" />
     <Compile Include="Settings\UserStateFlux.vb" />
     <Compile Include="Settings\SettingsGroup.vb" />

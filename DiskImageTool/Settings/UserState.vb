@@ -15,9 +15,11 @@ Namespace Settings
         Private Sub New(filePath As String)
             _filePath = filePath
 
+            ETags = New UserStateETags()
             Flux = New UserStateFlux
         End Sub
 
+        Public Property ETags As UserStateETags
         Public Property Flux As UserStateFlux
         Public Property IsDirty As Boolean
 
@@ -41,6 +43,7 @@ Namespace Settings
                 Dim root = Serializer.Parse(Of Dictionary(Of String, JsonValue))(json)
 
                 ' top-level simple values (use backing fields to avoid IsDirty during load)
+                userState._ETags.LoadFromDictionary(ReadSection(root, "eTags"))
                 userState._Flux.LoadFromDictionary(ReadSection(root, "flux"))
 
                 userState._preferredFileExtensions = LoadPreferredExtensions(root)
@@ -77,7 +80,7 @@ Namespace Settings
 
         Public Sub Save(Optional Force As Boolean = False)
             Dim prefsDirty As Boolean = Not DictionariesEqual(_preferredFileExtensions, _preferredFileExtensionsOriginal)
-            Dim sectionsDirty As Boolean = Flux.IsDirty
+            Dim sectionsDirty As Boolean = ETags.IsDirty OrElse Flux.IsDirty
 
             If Not (IsDirty OrElse sectionsDirty OrElse prefsDirty OrElse Force) Then
                 Return
@@ -85,6 +88,7 @@ Namespace Settings
 
             Dim root As New Dictionary(Of String, Object)
 
+            root("eTags") = ETags.ToJsonObject()
             root("flux") = Flux.ToJsonObject()
 
             Dim prefArr As New List(Of Object)
@@ -104,6 +108,7 @@ Namespace Settings
                 File.WriteAllText(_filePath, json)
 
                 IsDirty = False
+                ETags.MarkClean()
                 Flux.MarkClean()
             Catch ex As Exception
                 Diagnostics.Debug.Print("Error: Unable to save AppSettings")

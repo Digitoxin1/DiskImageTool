@@ -21,7 +21,6 @@ Namespace Settings
         Private Sub New(filePath As String)
             _filePath = filePath
 
-            ETags = New ETagSettings()
             Greaseweazle = New Flux.Greaseweazle.GreaseweazleSettings()
             Kryoflux = New Flux.Kryoflux.KryofluxSettings()
             PcImgCnv = New Flux.PcImgCnv.PcImgCnvSettings()
@@ -86,8 +85,6 @@ Namespace Settings
                 End If
             End Set
         End Property
-
-        Public Property ETags As ETagSettings
 
         Public Property Greaseweazle As Flux.Greaseweazle.GreaseweazleSettings
 
@@ -162,7 +159,6 @@ Namespace Settings
                 settings._displayTitles = ReadValue(root, "displayTitles", settings._displayTitles)
                 settings._language = ReadValue(root, "language", settings._language)
 
-                settings._ETags.LoadFromDictionary(ReadSection(root, "eTags"))
                 settings._Greaseweazle.LoadFromDictionary(ReadSection(root, "greaseweazle"))
                 settings._Kryoflux.LoadFromDictionary(ReadSection(root, "kryoflux"))
                 settings._PcImgCnv.LoadFromDictionary(ReadSection(root, "pcImgCnv"))
@@ -182,7 +178,7 @@ Namespace Settings
         End Sub
 
         Public Sub Save(Optional Force As Boolean = False)
-            Dim sectionsDirty As Boolean = ETags.IsDirty OrElse Greaseweazle.IsDirty OrElse Kryoflux.IsDirty OrElse PcImgCnv.IsDirty
+            Dim sectionsDirty As Boolean = Greaseweazle.IsDirty OrElse Kryoflux.IsDirty OrElse PcImgCnv.IsDirty
 
             If Not (IsDirty OrElse sectionsDirty OrElse Force) Then
                 Return
@@ -199,7 +195,6 @@ Namespace Settings
                 {"language", _language}
             }
 
-            root("eTags") = ETags.ToJsonObject()
             root("greaseweazle") = Greaseweazle.ToJsonObject()
             root("kryoflux") = Kryoflux.ToJsonObject()
             root("pcImgCnv") = PcImgCnv.ToJsonObject()
@@ -212,7 +207,6 @@ Namespace Settings
                 File.WriteAllText(_filePath, json)
 
                 IsDirty = False
-                ETags.MarkClean()
                 Greaseweazle.MarkClean()
                 Kryoflux.MarkClean()
                 PcImgCnv.MarkClean()

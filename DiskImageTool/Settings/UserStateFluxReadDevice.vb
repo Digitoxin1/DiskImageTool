@@ -5,7 +5,7 @@ Namespace Settings
     Public Class UserStateFluxReadDevice
         Inherits SettingsGroup
 
-        Private _DriveId As String
+        Private _DriveId As String = ""
         Private _OutputType As ReadDiskOutputTypes?
         Private _SaveLog As Boolean = True
 
