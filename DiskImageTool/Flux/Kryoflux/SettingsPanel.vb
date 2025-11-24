@@ -3,12 +3,24 @@
 Namespace Flux.Kryoflux
     Public Class SettingsPanel
         Private ReadOnly ToolTip1 As New ToolTip()
+        Private _Initialized As Boolean = False
+
+        Public ReadOnly Property Initialized As Boolean
+            Get
+                Return _Initialized
+            End Get
+        End Property
 
         Public Sub Initialize()
             InitializeFields()
+            _Initialized = True
         End Sub
 
         Public Sub UpdateSettings()
+            If Not _Initialized Then
+                Exit Sub
+            End If
+
             If TextBoxPath.Text = "" OrElse IO.File.Exists(TextBoxPath.Text) Then
                 Settings.AppPath = TextBoxPath.Text
             End If

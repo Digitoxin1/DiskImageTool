@@ -26,11 +26,11 @@
             Dim PanelBottom As System.Windows.Forms.FlowLayoutPanel
             Dim resources As System.ComponentModel.ComponentResourceManager = New System.ComponentModel.ComponentResourceManager(GetType(ConfigurationForm))
             Dim PanelMain As System.Windows.Forms.Panel
-            Dim TabControl1 As System.Windows.Forms.TabControl
             Dim TabPageGreaseweazle As System.Windows.Forms.TabPage
             Dim TabPageKryoflux As System.Windows.Forms.TabPage
             Me.BtnCancel = New System.Windows.Forms.Button()
             Me.BtnUpdate = New System.Windows.Forms.Button()
+            Me.TabControl1 = New System.Windows.Forms.TabControl()
             Me.SettingsPanelGreaseweazle = New DiskImageTool.Flux.Greaseweazle.SettingsPanel()
             Me.SettingsPanelKryoflux = New DiskImageTool.Flux.Kryoflux.SettingsPanel()
             Me.TabPagePcImgCnv = New System.Windows.Forms.TabPage()
@@ -38,12 +38,11 @@
             Me.TwoColumnToolTip1 = New DiskImageTool.TwoColumnToolTip()
             PanelBottom = New System.Windows.Forms.FlowLayoutPanel()
             PanelMain = New System.Windows.Forms.Panel()
-            TabControl1 = New System.Windows.Forms.TabControl()
             TabPageGreaseweazle = New System.Windows.Forms.TabPage()
             TabPageKryoflux = New System.Windows.Forms.TabPage()
             PanelBottom.SuspendLayout()
             PanelMain.SuspendLayout()
-            TabControl1.SuspendLayout()
+            Me.TabControl1.SuspendLayout()
             TabPageGreaseweazle.SuspendLayout()
             TabPageKryoflux.SuspendLayout()
             Me.TabPagePcImgCnv.SuspendLayout()
@@ -73,17 +72,17 @@
             'PanelMain
             '
             resources.ApplyResources(PanelMain, "PanelMain")
-            PanelMain.Controls.Add(TabControl1)
+            PanelMain.Controls.Add(Me.TabControl1)
             PanelMain.Name = "PanelMain"
             '
             'TabControl1
             '
-            TabControl1.Controls.Add(TabPageGreaseweazle)
-            TabControl1.Controls.Add(TabPageKryoflux)
-            TabControl1.Controls.Add(Me.TabPagePcImgCnv)
-            resources.ApplyResources(TabControl1, "TabControl1")
-            TabControl1.Name = "TabControl1"
-            TabControl1.SelectedIndex = 0
+            Me.TabControl1.Controls.Add(TabPageGreaseweazle)
+            Me.TabControl1.Controls.Add(TabPageKryoflux)
+            Me.TabControl1.Controls.Add(Me.TabPagePcImgCnv)
+            resources.ApplyResources(Me.TabControl1, "TabControl1")
+            Me.TabControl1.Name = "TabControl1"
+            Me.TabControl1.SelectedIndex = 0
             '
             'TabPageGreaseweazle
             '
@@ -138,7 +137,7 @@
             Me.ShowInTaskbar = False
             PanelBottom.ResumeLayout(False)
             PanelMain.ResumeLayout(False)
-            TabControl1.ResumeLayout(False)
+            Me.TabControl1.ResumeLayout(False)
             TabPageGreaseweazle.ResumeLayout(False)
             TabPageKryoflux.ResumeLayout(False)
             Me.TabPagePcImgCnv.ResumeLayout(False)
@@ -153,5 +152,6 @@
         Friend WithEvents SettingsPanelKryoflux As Kryoflux.SettingsPanel
         Friend WithEvents TabPagePcImgCnv As TabPage
         Friend WithEvents SettingsPanelPcImgCnv As PcImgCnv.SettingsPanel
+        Friend WithEvents TabControl1 As TabControl
     End Class
 End Namespace
