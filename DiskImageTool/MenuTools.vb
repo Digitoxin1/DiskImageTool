@@ -2,14 +2,16 @@
 Imports DiskImageTool.DiskImage
 
 Module MenuTools
-    Public Sub GenerateTrackLayout(CurrentImage As DiskImageContainer)
-        If CurrentImage Is Nothing Then Exit Sub
+    Public Sub GenerateTrackLayout(Disk As Disk, Optional FilePath As String = Nothing)
+        Const FileName As String = "tracklayout.txt"
 
-        If Not CurrentImage.Disk.Image.IsBitstreamImage Then
+        If Disk Is Nothing Then Exit Sub
+
+        If Not Disk.Image.IsBitstreamImage Then
             Exit Sub
         End If
 
-        Dim BitstreamImage = CurrentImage.Disk.Image.BitstreamImage
+        Dim BitstreamImage = Disk.Image.BitstreamImage
         Dim Gap4A As UShort
         Dim Gap1 As UShort
         Dim Gap3List() As UShort
@@ -81,7 +83,12 @@ Module MenuTools
         Next
         TrackLayout.AppendLine(FirstTrack & "-" & Track - 1 & ":" & PrevTrackString)
 
-        Dim frmTextView As New TextViewForm(My.Resources.Caption_TrackLayout, TrackLayout.ToString, True, True, "tracklayout.txt")
+        Dim SaveFileName = FileName
+        If Not String.IsNullOrEmpty(FilePath) Then
+            SaveFileName = IO.Path.Combine(FilePath, FileName)
+        End If
+
+        Dim frmTextView As New TextViewForm(My.Resources.Caption_TrackLayout, TrackLayout.ToString, True, True, SaveFileName)
         frmTextView.ShowDialog()
     End Sub
 

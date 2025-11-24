@@ -10,6 +10,7 @@ Namespace Flux
         Private WithEvents ButtonImport As Button
         Private WithEvents ButtonOpen As Button
         Private WithEvents ButtonProcess As Button
+        Private WithEvents ButtonTrackLayout As Button
         Private WithEvents CheckBoxDoublestep As CheckBox
         Private WithEvents CheckBoxExtendedLogging As CheckBox
         Private WithEvents ComboDevices As ComboBox
@@ -31,8 +32,9 @@ Namespace Flux
         Private _OutputFilePath As String = ""
         Private _SelectedDevice As IDevice = Nothing
         Private _SideCount As Integer
-        Private _TextBoxEmpty As Boolean = False
         Private _TrackCount As Integer
+        Private CheckBox86FSurfaceData As CheckBox
+        Private CheckBoxRemaster As CheckBox
         Private CheckBoxSaveLog As CheckBox
         Private LabelOutputType As Label
         Public Event ImportRequested(File As String, NewFilename As String)
@@ -142,7 +144,6 @@ Namespace Flux
 
         Private Sub ClearProcessedImage(DeleteOutputFile As Boolean)
             TextBoxConsole.Clear()
-            _TextBoxEmpty = True
             ClearOutputFile(DeleteOutputFile)
             ClearStatusBar()
             GridReset(_TrackCount, _SideCount)
@@ -171,11 +172,35 @@ Namespace Flux
 
                 Case IDevice.FluxDevice.PcImgCnv
                     _OutputFilePath = FilePath
-                    Return PcImgCnv.GenerateCommandLineImport(_InputFilePath, FilePath)
+                    Return PcImgCnv.GenerateCommandLineImport(_InputFilePath, FilePath, CheckBox86FSurfaceData.Checked, CheckBoxRemaster.Checked)
             End Select
 
             Return ""
         End Function
+
+        Private Sub GenerateTrackData()
+            If String.IsNullOrEmpty(_InputFilePath) Then
+                Exit Sub
+            End If
+
+            If String.IsNullOrEmpty(_OutputFilePath) Then
+                Exit Sub
+            End If
+
+            Dim ImageData = New ImageData(_OutputFilePath)
+            Dim Disk = DiskImageLoadFromImageData(ImageData)
+            If ImageData.InvalidImage Then
+                Exit Sub
+            End If
+
+            If Not Disk.Image.IsBitstreamImage Then
+                Exit Sub
+            End If
+
+            Dim FilePath = IO.Path.GetDirectoryName(_InputFilePath)
+
+            GenerateTrackLayout(Disk, FilePath)
+        End Sub
 
         Private Function GetInputFileType() As InputFileTypeEnum
             If String.IsNullOrEmpty(_InputFilePath) Then
@@ -212,11 +237,28 @@ Namespace Flux
                 .Margin = New Padding(12, 3, 3, 3)
             }
 
+            CheckBox86FSurfaceData = New CheckBox With {
+                .Text = My.Resources.Label_86FSurfaceData,
+                .Anchor = AnchorStyles.Left,
+                .AutoSize = True,
+                .Margin = New Padding(12, 3, 3, 3),
+                .Visible = False
+            }
+
+            CheckBoxRemaster = New CheckBox With {
+                .Text = "Remaster",
+                .Anchor = AnchorStyles.Left,
+                .AutoSize = True,
+                .Margin = New Padding(12, 3, 3, 3),
+                .Visible = False
+            }
+
             CheckBoxExtendedLogging = New CheckBox With {
                 .Text = "Extended Log Output",
                 .Anchor = AnchorStyles.Left,
                 .AutoSize = True,
-                .Margin = New Padding(12, 3, 3, 3)
+                .Margin = New Padding(12, 3, 3, 3),
+                .Visible = False
             }
 
             Dim LabelFileName As New Label With {
@@ -303,11 +345,21 @@ Namespace Flux
                 .AutoSize = True
             }
 
+            ButtonTrackLayout = New Button With {
+                .Margin = New Padding(3, 12, 3, 3),
+                .Text = My.Resources.Label_Tracklayout,
+                .MinimumSize = New Size(75, 0),
+                .AutoSize = True,
+                .Anchor = AnchorStyles.Left Or AnchorStyles.Right,
+                .Visible = False
+            }
+
             BumpTabIndexes(PanelButtonsRight)
             PanelButtonsRight.Controls.Add(ButtonImport)
 
             ButtonContainer.Controls.Add(ButtonProcess)
             ButtonContainer.Controls.Add(ButtonClear)
+            ButtonContainer.Controls.Add(ButtonTrackLayout)
 
             ButtonOk.Text = My.Resources.Label_ImportClose
             ButtonOk.Visible = True
@@ -345,6 +397,11 @@ Namespace Flux
 
                 .Controls.Add(CheckBoxExtendedLogging, 2, Row)
                 .SetColumnSpan(CheckBoxExtendedLogging, 2)
+
+                .Controls.Add(CheckBoxRemaster, 2, Row)
+
+                .Controls.Add(CheckBox86FSurfaceData, 3, Row)
+                .SetColumnSpan(CheckBox86FSurfaceData, 2)
 
                 .Controls.Add(CheckBoxSaveLog, 5, Row)
                 .SetColumnSpan(CheckBoxSaveLog, 2)
@@ -471,7 +528,6 @@ Namespace Flux
 
             _ComboDevicesNoEvent = False
         End Sub
-
         Private Sub PopulateFileExtensions()
             _ComboExtensionsNoEvent = True
 
@@ -551,7 +607,7 @@ Namespace Flux
             ClearProcessedImage(True)
 
             _DoubleStep = CheckBoxDoublestep.Enabled AndAlso CheckBoxDoublestep.Checked
-            Process.OutputLinesPerBatch = 36
+
             Dim Arguments = GenerateCommandLine(FilePath)
             Process.StartAsync(_SelectedDevice.Settings.AppPath, Arguments)
         End Sub
@@ -587,6 +643,7 @@ Namespace Flux
 
         Private Sub RefreshButtonState()
             Dim ImageParams As FloppyDiskParams = ComboImageFormat.SelectedValue
+            Dim OutputType As ImageImportOutputTypes? = Nothing
             Dim Is525DDStandard As Boolean = ImageParams.IsStandard AndAlso ImageParams.MediaType = FloppyMediaType.Media525DoubleDensity
 
             Dim HasOutputfile As Boolean = Not String.IsNullOrEmpty(_OutputFilePath)
@@ -598,11 +655,13 @@ Namespace Flux
             Dim CanConfigure As Boolean = SettingsEnabled AndAlso HasInputFile
             Dim UseImageFormat As Boolean = _SelectedDevice.RequiresImageFormat
 
+            Dim HasTrackLayout As Boolean = TrackLayoutExists()
 
             ComboExtensions.Enabled = HasInputFile And ComboExtensions.Items.Count > 1
             ComboImageFormat.Enabled = CanConfigure AndAlso UseImageFormat
 
             If ComboOutputType IsNot Nothing Then
+                OutputType = ComboOutputType.SelectedValue
                 ComboOutputType.Enabled = CanConfigure And ComboOutputType.Items.Count > 1
             End If
 
@@ -617,6 +676,8 @@ Namespace Flux
 
             ButtonSaveLog.Enabled = IsIdle AndAlso Not String.IsNullOrEmpty(TextBoxConsole.Text)
 
+            ButtonTrackLayout.Enabled = IsIdle AndAlso HasOutputfile
+
             TextBoxFileName.ReadOnly = Not HasInputFile
 
             If Is525DDStandard Then
@@ -628,14 +689,34 @@ Namespace Flux
             End If
 
             CheckBoxExtendedLogging.Enabled = SettingsEnabled
+            CheckBox86FSurfaceData.Enabled = SettingsEnabled AndAlso OutputType.HasValue AndAlso OutputType.Value = ImageImportOutputTypes.F86
+            CheckBoxRemaster.Enabled = SettingsEnabled AndAlso HasTrackLayout
+            CheckBoxRemaster.Checked = HasTrackLayout
+
             CheckBoxSaveLog.Enabled = SettingsEnabled
 
             RefreshImportButtonState()
         End Sub
 
         Private Sub RefreshDeviceState()
-            CheckBoxExtendedLogging.Visible = _SelectedDevice.Device = IDevice.FluxDevice.Kryoflux
+            Select Case _SelectedDevice.Device
+                Case IDevice.FluxDevice.Kryoflux
+                    CheckBox86FSurfaceData.Visible = False
+                    CheckBoxExtendedLogging.Visible = True
+
+                Case IDevice.FluxDevice.PcImgCnv
+                    CheckBoxExtendedLogging.Visible = False
+                    CheckBox86FSurfaceData.Visible = True
+
+                Case Else
+                    CheckBox86FSurfaceData.Visible = False
+                    CheckBoxExtendedLogging.Visible = False
+            End Select
+
+            CheckBoxRemaster.Visible = _SelectedDevice.Device = IDevice.FluxDevice.PcImgCnv
+            ButtonTrackLayout.Visible = _SelectedDevice.Device = IDevice.FluxDevice.PcImgCnv
         End Sub
+
         Private Sub RefreshImportButtonState()
             Dim HasOutputfile As Boolean = Not String.IsNullOrEmpty(_OutputFilePath)
             Dim HasInputFile As Boolean = Not String.IsNullOrEmpty(_InputFilePath)
@@ -692,6 +773,24 @@ Namespace Flux
             Me.Text = Text & " - " & DisplayFileName
         End Sub
 
+        Private Function TrackLayoutExists() As Boolean
+            If _SelectedDevice.Device <> IDevice.FluxDevice.PcImgCnv Then
+                Return False
+            End If
+
+            If String.IsNullOrEmpty(_InputFilePath) Then
+                Return False
+            End If
+
+            Dim FileExt = IO.Path.GetExtension(_InputFilePath).ToLower
+            If FileExt <> ".raw" Then
+                Return False
+            End If
+
+            Dim ParentFolder As String = IO.Path.GetDirectoryName(_InputFilePath)
+
+            Return IO.File.Exists(IO.Path.Combine(ParentFolder, "tracklayout.txt"))
+        End Function
 #Region "Events"
         Private Sub ButtonClear_Click(sender As Object, e As EventArgs) Handles ButtonClear.Click
             ClearProcessedImage(True)
@@ -720,6 +819,10 @@ Namespace Flux
             End If
 
             ProcessImage()
+        End Sub
+
+        Private Sub ButtonTrackData_Click(sender As Object, e As EventArgs) Handles ButtonTrackLayout.Click
+            GenerateTrackData()
         End Sub
 
         Private Sub CheckBoxExtendedLogging_CheckStateChanged(sender As Object, e As EventArgs) Handles CheckBoxExtendedLogging.CheckStateChanged
@@ -774,31 +877,32 @@ Namespace Flux
             End If
 
             PopulateFileExtensions()
+            RefreshButtonState()
         End Sub
 
         Private Sub ConsoleTimer_Tick(sender As Object, e As EventArgs) Handles ConsoleTimer.Tick
-            ' This runs on the UI thread
             If TextBoxConsole.IsDisposed Then
                 ConsoleTimer.Stop()
                 Return
             End If
 
+            If _ConsoleQueue.IsEmpty Then
+                If Not Process.IsRunning Then
+                    ConsoleTimer.Stop()
+                End If
+                Return
+            End If
+
             Dim sb As New Text.StringBuilder()
             Dim line As String = ""
-            Dim hadAny As Boolean = Not _TextBoxEmpty
 
-            ' Dequeue everything currently pending
             While _ConsoleQueue.TryDequeue(line)
-                If hadAny Then
-                    sb.AppendLine()
-                End If
-                sb.Append(line)
-                hadAny = True
+                sb.AppendLine(line)
             End While
 
-            If hadAny Then
+            If sb.Length > 0 Then
                 TextBoxConsole.AppendText(sb.ToString())
-                _TextBoxEmpty = False
+                TextBoxConsole.Refresh()
             End If
 
             If _ConsoleQueue.IsEmpty AndAlso Not Process.IsRunning Then

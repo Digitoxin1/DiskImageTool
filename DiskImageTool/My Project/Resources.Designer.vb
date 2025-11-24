@@ -2783,6 +2783,15 @@ Namespace My.Resources
         End Property
         
         '''<summary>
+        '''  Looks up a localized string similar to 86F Surface Data.
+        '''</summary>
+        Friend ReadOnly Property Label_86FSurfaceData() As String
+            Get
+                Return ResourceManager.GetString("Label_86FSurfaceData", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
         '''  Looks up a localized string similar to Abort.
         '''</summary>
         Friend ReadOnly Property Label_Abort() As String
@@ -4039,6 +4048,15 @@ Namespace My.Resources
         Friend ReadOnly Property Label_Track() As String
             Get
                 Return ResourceManager.GetString("Label_Track", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  Looks up a localized string similar to Tracklayout.
+        '''</summary>
+        Friend ReadOnly Property Label_Tracklayout() As String
+            Get
+                Return ResourceManager.GetString("Label_Tracklayout", resourceCulture)
             End Get
         End Property
         

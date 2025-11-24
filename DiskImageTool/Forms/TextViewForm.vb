@@ -40,6 +40,16 @@
                .FilterIndex = FilterIndex
             }
 
+            If Not String.IsNullOrEmpty(m_SaveFileName) Then
+                Dim Path = IO.Path.GetDirectoryName(m_SaveFileName)
+
+                Dialog.FileName = IO.Path.GetFileName(m_SaveFileName)
+
+                If Not String.IsNullOrEmpty(Path) AndAlso IO.Directory.Exists(Path) Then
+                    Dialog.InitialDirectory = Path
+                End If
+            End If
+
             If Dialog.ShowDialog = DialogResult.OK Then
                 IO.File.WriteAllText(Dialog.FileName, TextBox1.Text)
             End If

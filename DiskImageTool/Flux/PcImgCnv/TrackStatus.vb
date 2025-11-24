@@ -77,19 +77,35 @@
         End Function
 
         Friend Sub ProcessOutputLineRead(line As String, InfoAction As ActionTypeEnum, DoubleStep As Boolean) Implements ITrackStatus.ProcessOutputLineRead
-            Dim Sector = ParseSector(line)
+            Dim RawSector = ParseRawSector(line)
 
-            If Sector.HasValue Then
-                If Sector.Value.Mark = "FE" Then
-                    Dim SectorData = ParseSectorData(Sector.Value.Message)
+            If RawSector.HasValue Then
+                If RawSector.Value.Mark = "FE" Then
+                    Dim SectorData = ParseRawSectorData(RawSector.Value.Message)
                     If SectorData.HasValue Then
                         _TrackFound = True
-                        Dim StatusInfo = UpdateStatusInfo(Sector.Value, SectorData)
+                        Dim StatusInfo = UpdateStatusInfo(RawSector.Value, SectorData)
                         UpdateTrackStatus(StatusInfo, ActionTypeEnum.Read)
                     End If
+
+                ElseIf RawSector.Value.Mark = "FB" AndAlso _CurrentStatusInfo IsNot Nothing Then
+                    Dim Message = ParseRawMessage(RawSector.Value.Message)
+                    If String.IsNullOrEmpty(Message) Then
+                        'Do Nothing
+                    ElseIf Message.ToLower = "crc bad" Then
+                        _CurrentStatusInfo.BadSectorList.Add(_CurrentStatusInfo.SectorId)
+                    End If
                 End If
+
+                Exit Sub
             End If
 
+            Dim RemasteredSector = ParseRemasteredSector(line)
+            If RemasteredSector.HasValue Then
+                _TrackFound = True
+                Dim StatusInfo = UpdateStatusInfo(RemasteredSector.Value)
+                UpdateTrackStatus(StatusInfo, ActionTypeEnum.Read)
+            End If
         End Sub
 
         Friend Sub ProcessOutputLineWrite(line As String, InfoAction As ActionTypeEnum, DoubleStep As Boolean) Implements ITrackStatus.ProcessOutputLineWrite
@@ -113,23 +129,42 @@
             End Select
         End Function
 
-        Private Function GetBackgroundColor(Status As String, Flags As String) As Color
-            Select Case Status.ToLower
-                Case "ok"
-                    If Flags <> "" Then
-                        Return Color.Yellow
-                    Else
-                        Return Color.LightGreen
-                    End If
-                Case "error"
-                    Return Color.Red
-                Case "mismatch"
-                    Return Color.FromArgb(255, 190, 100)
-                Case "unformatted"
-                    Return Color.FromArgb(240, 240, 240)
-                Case Else
-                    Return Color.Yellow
-            End Select
+        Private Function BuildTooltip(StatusInfo As TrackStatusInfo) As String
+            Dim Tooltip As New List(Of String) From {
+                My.Resources.Label_Track & ":  " & StatusInfo.Track & "." & StatusInfo.Side
+            }
+
+            Dim Sectors As New List(Of String)
+
+            If StatusInfo.BadSectorList.Count > 0 Then
+                Sectors.Add(StatusInfo.BadSectorList.Count & " " & My.Resources.Label_FATType_Bad)
+            End If
+
+            If Sectors.Count > 0 Then
+                Tooltip.Add(My.Resources.Label_Sectors & ":  " & String.Join(", ", Sectors))
+            End If
+
+            If StatusInfo.BadSectorList.Count > 0 Then
+                Dim RangeList = UShortListToRanges(StatusInfo.BadSectorList)
+                Tooltip.Add(My.Resources.Label_BadSectorIds & ":  " & RangeList)
+            End If
+
+            If Not String.IsNullOrEmpty(StatusInfo.Format) Then
+                Tooltip.Add(My.Resources.Label_Format & ":  " & StatusInfo.Format)
+            End If
+
+            If StatusInfo.Modified Then
+                Tooltip.Add(My.Resources.Label_Modified)
+            End If
+
+            If StatusInfo.Messages IsNot Nothing AndAlso StatusInfo.Messages.Count > 0 Then
+                Tooltip.Add("")
+                For Each Message As String In StatusInfo.Messages
+                    Tooltip.Add(Message)
+                Next
+            End If
+
+            Return String.Join(vbNewLine, Tooltip)
         End Function
 
         Private Function GetCurrentTrackStatusData(Action As ActionTypeEnum) As BaseFluxForm.TrackStatusData
@@ -137,38 +172,54 @@
             Dim BackColor As Color = Color.Empty
             Dim CellText As String = ""
             Dim Tooltip As String = ""
-            Dim BadSectorCount = 0
 
-            BadSectorCount = _CurrentStatusInfo.BadSectorList.Count
+            Dim BadSectorCount = _CurrentStatusInfo.BadSectorList.Count
+            Dim Format = _CurrentStatusInfo.Format
+            Dim Modified = _CurrentStatusInfo.Modified
+            Dim HasMessages = _CurrentStatusInfo.Messages IsNot Nothing AndAlso _CurrentStatusInfo.Messages.Count > 0
 
             If Action = ActionTypeEnum.Read Then
                 StatusText = GetTrackStatusText(TrackStatusEnum.Reading)
                 CellText = "R"
                 BackColor = Color.LightBlue
+
             ElseIf Action = ActionTypeEnum.Complete Then
                 StatusText = GetTrackStatusText(TrackStatusEnum.Success)
-                BackColor = GetBackgroundColor("ok", "")
+
                 If BadSectorCount > 0 Then
                     CellText = BadSectorCount.ToString
+                ElseIf Modified Then
+                    CellText = "M"
                 Else
                     CellText = ""
                 End If
+
+                If BadSectorCount > 0 Then
+                    BackColor = Color.Red
+                ElseIf Not String.IsNullOrEmpty(Format) AndAlso Format <> "IBM MFM" Then
+                    BackColor = Color.FromArgb(255, 190, 100)
+                ElseIf Modified Then
+                    BackColor = Color.Yellow
+                ElseIf HasMessages Then
+                    BackColor = Color.MediumSeaGreen
+                Else
+                    BackColor = Color.LightGreen
+                End If
+
+                Tooltip = BuildTooltip(_CurrentStatusInfo)
             End If
 
-            Dim StatusData As BaseFluxForm.TrackStatusData
-            With StatusData
-                .CellText = CellText
-                .Track = _CurrentStatusInfo.Track
-                .Side = _CurrentStatusInfo.Side
-                .SideVisible = True
-                .TotalBadSectors = _TotalBadSectors
-                .StatusText = StatusText
-                .ForeColor = Color.Black
-                .BackColor = BackColor
+            Return New BaseFluxForm.TrackStatusData With {
+                .CellText = CellText,
+                .Track = _CurrentStatusInfo.Track,
+                .Side = _CurrentStatusInfo.Side,
+                .SideVisible = True,
+                .TotalBadSectors = _TotalBadSectors,
+                .StatusText = StatusText,
+                .ForeColor = Color.Black,
+                .BackColor = BackColor,
                 .Tooltip = Tooltip
-            End With
-
-            Return StatusData
+            }
         End Function
 
         Private Function GetStatusInfo(Track As Byte, Side As Byte) As TrackStatusInfo
@@ -196,8 +247,20 @@
             End If
         End Sub
 
-        Private Function UpdateStatusInfo(SectorInfo As SectorInfo, SectorData As SectorData) As TrackStatusInfo
+        Private Function UpdateStatusInfo(SectorInfo As RawSectorInfo, SectorData As RawSectorData) As TrackStatusInfo
             Dim StatusInfo = GetStatusInfo(SectorData.Cylinder, SectorData.Head)
+
+            StatusInfo.SectorId = SectorData.SectorId
+
+            Return StatusInfo
+        End Function
+
+        Private Function UpdateStatusInfo(SectorInfo As RemasteredSectorInfo) As TrackStatusInfo
+            Dim StatusInfo = GetStatusInfo(SectorInfo.Track, SectorInfo.Side)
+
+            StatusInfo.Format = SectorInfo.Format
+            StatusInfo.Modified = SectorInfo.Modified
+            StatusInfo.Messages = SectorInfo.Messages
 
             Return StatusInfo
         End Function
@@ -219,10 +282,10 @@
 
         Private Class TrackStatusInfo
             Public Sub New()
-                _BadSectorList = New List(Of Byte)
+                _BadSectorList = New List(Of UShort)
             End Sub
 
-            Public Property BadSectorList As List(Of Byte)
+            Public Property BadSectorList As List(Of UShort)
 
             Public ReadOnly Property Failed
                 Get
@@ -230,6 +293,10 @@
                 End Get
             End Property
 
+            Public Property Format As String = ""
+            Public Property Messages As List(Of String)
+            Public Property Modified As Boolean
+            Public Property SectorId As Byte
             Public Property Side As Byte
             Public Property Track As Byte
         End Class

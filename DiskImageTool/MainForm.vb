@@ -2013,7 +2013,11 @@ Public Class MainForm
     End Sub
 
     Private Sub MenuPcImgCnvTrackLayout_Click(sender As Object, e As EventArgs) Handles MenuPcImgCnvTrackLayout.Click
-        GenerateTrackLayout(FilePanelMain.CurrentImage)
+        If FilePanelMain.CurrentImage Is Nothing Then
+            Exit Sub
+        End If
+
+        GenerateTrackLayout(FilePanelMain.CurrentImage.Disk)
     End Sub
 
     Private Sub MenuToolsWin9xClean_Click(sender As Object, e As EventArgs) Handles MenuToolsWin9xClean.Click

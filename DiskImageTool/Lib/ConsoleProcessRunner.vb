@@ -35,6 +35,7 @@ Public Class ConsoleProcessRunner
     Public Event ProcessStateChanged(state As ProcessStateEnum)
 
     Public Property EventContext As SynchronizationContext
+    Public Property UseContextForDataEvents As Boolean = True
 
     Public ReadOnly Property ExitCode As Integer?
         Get
@@ -367,7 +368,13 @@ Public Class ConsoleProcessRunner
             Return
         End If
         LogLine(e.Data)
-        RaiseOnContext(Sub() RaiseEvent ErrorDataReceived(e.Data))
+
+        If UseContextForDataEvents Then
+            RaiseOnContext(Sub() RaiseEvent ErrorDataReceived(e.Data))
+        Else
+            ' Fire on background thread!!
+            RaiseEvent ErrorDataReceived(e.Data)
+        End If
     End Sub
 
     Private Sub OnExited(sender As Object, e As EventArgs)
@@ -405,7 +412,13 @@ Public Class ConsoleProcessRunner
     Private Sub OnOutputData(sender As Object, e As DataReceivedEventArgs)
         If e.Data Is Nothing Then Return
         LogLine(e.Data)
-        RaiseOnContext(Sub() RaiseEvent OutputDataReceived(e.Data))
+
+        If UseContextForDataEvents Then
+            RaiseOnContext(Sub() RaiseEvent OutputDataReceived(e.Data))
+        Else
+            ' Fire on background thread!!
+            RaiseEvent OutputDataReceived(e.Data)
+        End If
     End Sub
 
     Private Sub RaiseOnContext(action As Action)

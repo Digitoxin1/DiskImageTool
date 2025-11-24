@@ -1897,4 +1897,12 @@ Do you wish to overwrite?</value>
   <data name="Label_AutoSaveLog" xml:space="preserve">
     <value>Auto Save Log</value>
   </data>
+  <data name="Label_86FSurfaceData" xml:space="preserve">
+    <value>86F Surface Data</value>
+    <comment>@Invariant</comment>
+  </data>
+  <data name="Label_Tracklayout" xml:space="preserve">
+    <value>Tracklayout</value>
+    <comment>@Invariant</comment>
+  </data>
 </root>

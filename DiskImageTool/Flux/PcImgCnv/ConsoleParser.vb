@@ -3,27 +3,39 @@ Imports System.Text.RegularExpressions
 
 Namespace Flux.PcImgCnv
     Public Class ConsoleParser
-        Public Const REGEX_SECTOR As String = "^(?<mark>FB|FE):\s?(?<offset>\d+)\s?\((?<bits>\d+) bits\s?=\s?(?<bytes>\d+(\.\d+)?) bytes\)(\s?(?<message>.+))?$"
+        Public Const REGEX_SECTOR_RAW As String = "^(?<mark>FB|FE):\s?(?<offset>\d+)\s?\((?<bits>\d+) bits\s?=\s?(?<bytes>\d+(\.\d+)?) bytes\)(\s?(?<message>.+))?$"
+        Public Const REGEX_SECTOR_REMASTER As String = "^(?<track>\d+)\.(?<side>\d):\s?(?<modified>\*)?(?<format>.+?)(?:,\s?(?<sectors>\d+)\s+sectors)?\s*(?<messages>\(.+?\))?$"
+        Public Const REGEX_SECTOR_TEXT As String = "\((?<text>[^()]*)\)"
 
-        Private ReadOnly RegExSector As New Regex(REGEX_SECTOR, RegexOptions.IgnoreCase Or RegexOptions.CultureInvariant Or RegexOptions.Compiled)
+        Private ReadOnly RegExSectorRaw As New Regex(REGEX_SECTOR_RAW, RegexOptions.IgnoreCase Or RegexOptions.CultureInvariant Or RegexOptions.Compiled)
+        Private ReadOnly RegExSectorRemaster As New Regex(REGEX_SECTOR_REMASTER, RegexOptions.IgnoreCase Or RegexOptions.CultureInvariant Or RegexOptions.Compiled)
+        Private ReadOnly RegExSectorText As New Regex(REGEX_SECTOR_TEXT, RegexOptions.IgnoreCase Or RegexOptions.CultureInvariant Or RegexOptions.Compiled)
 
-        Public Function ParseSector(line As String) As SectorInfo?
+        Public Function ParseRawMessage(Input As String) As String
+            If String.IsNullOrWhiteSpace(Input) Then
+                Return Nothing
+            End If
+
+            Input = Input.Trim()
+
+            If Input.StartsWith("(") AndAlso Input.EndsWith(")") Then
+                Return Input.Substring(1, Input.Length - 2)
+            End If
+
+            Return Nothing
+        End Function
+
+        Public Function ParseRawSector(line As String) As RawSectorInfo?
             If String.IsNullOrWhiteSpace(line) Then
                 Return Nothing
             End If
 
-            Dim Mark As String = line.Substring(0, 2)
-
-            If Mark <> "FE" AndAlso Mark <> "FB" Then
-                Return Nothing
-            End If
-
-            Dim Match = RegExSector.Match(line)
+            Dim Match = RegExSectorRaw.Match(line)
             If Not Match.Success Then
                 Return Nothing
             End If
 
-            Return New SectorInfo With {
+            Return New RawSectorInfo With {
                 .Mark = Match.Groups("mark").Value,
                 .Offset = GetInt(Match, "offset"),
                 .Bits = GetInt(Match, "bits"),
@@ -32,7 +44,7 @@ Namespace Flux.PcImgCnv
             }
         End Function
 
-        Public Function ParseSectorData(input As String) As SectorData?
+        Public Function ParseRawSectorData(input As String) As RawSectorData?
             If String.IsNullOrWhiteSpace(input) Then
                 Return Nothing
             End If
@@ -58,7 +70,7 @@ Namespace Flux.PcImgCnv
                 Return Nothing
             End If
 
-            Return New SectorData With {
+            Return New RawSectorData With {
                 .Cylinder = v1,
                 .Head = v2,
                 .SectorId = v3,
@@ -66,20 +78,33 @@ Namespace Flux.PcImgCnv
             }
         End Function
 
-        Public Function ParseMessage(Input As String) As String
-            If String.IsNullOrWhiteSpace(Input) Then
+        Public Function ParseRemasteredSector(line As String) As RemasteredSectorInfo?
+            If String.IsNullOrWhiteSpace(line) Then
                 Return Nothing
             End If
 
-            Input = Input.Trim()
-
-            If Input.StartsWith("(") AndAlso Input.EndsWith(")") Then
-                Return Input.Substring(1, Input.Length - 2)
+            Dim Match = RegExSectorRemaster.Match(line)
+            If Not Match.Success Then
+                Return Nothing
             End If
 
-            Return Nothing
-        End Function
+            Dim Messages = New List(Of String)
 
+            Dim MessageList = Match.Groups("messages").Value.Trim()
+            For Each MsgMatch As Match In RegExSectorText.Matches(MessageList)
+                Messages.Add(MsgMatch.Groups("text").Value.Trim())
+            Next
+
+
+            Return New RemasteredSectorInfo With {
+                .Track = GetInt(Match, "track"),
+                .Side = GetInt(Match, "side"),
+                .Format = Match.Groups("format").Value.Trim(),
+                .Sectors = GetInt(Match, "sectors"),
+                .Modified = (Match.Groups("modified").Value.Trim() = "*"),
+                .Messages = Messages
+            }
+        End Function
         Private Shared Function GetDouble(m As Match, name As String) As Double
             Dim v As Double = 0
             Double.TryParse(m.Groups(name).Value, NumberStyles.Float, CultureInfo.InvariantCulture, v)
@@ -97,19 +122,28 @@ Namespace Flux.PcImgCnv
             Return GetInt(m, name)
         End Function
 
-        Public Structure SectorData
+        Public Structure RawSectorData
             Public Cylinder As Byte
             Public Head As Byte
             Public SectorId As Byte
             Public SizeId As Byte
         End Structure
 
-        Public Structure SectorInfo
-            Public Mark As String
-            Public Offset As Integer
+        Public Structure RawSectorInfo
             Public Bits As Integer
             Public Bytes As Double
+            Public Mark As String
             Public Message As String
+            Public Offset As Integer
+        End Structure
+
+        Public Structure RemasteredSectorInfo
+            Public Format As String
+            Public Messages As List(Of String)
+            Public Modified As Boolean
+            Public Sectors As Integer
+            Public Side As Integer
+            Public Track As Integer
         End Structure
     End Class
 End Namespace
