@@ -138,15 +138,6 @@ Namespace My.Resources
         End Property
         
         '''<summary>
-        '''  Looks up a localized string similar to Data Area.
-        '''</summary>
-        Friend ReadOnly Property Bitstream_DataArea() As String
-            Get
-                Return ResourceManager.GetString("Bitstream_DataArea", resourceCulture)
-            End Get
-        End Property
-        
-        '''<summary>
         '''  Looks up a localized string similar to Data Checksum.
         '''</summary>
         Friend ReadOnly Property Bitstream_DataChecksum() As String
@@ -237,15 +228,6 @@ Namespace My.Resources
         End Property
         
         '''<summary>
-        '''  Looks up a localized string similar to Weak Bits.
-        '''</summary>
-        Friend ReadOnly Property Bitstream_WeakBits() As String
-            Get
-                Return ResourceManager.GetString("Bitstream_WeakBits", resourceCulture)
-            End Get
-        End Property
-        
-        '''<summary>
         '''  Looks up a localized string similar to Write Splice.
         '''</summary>
         Friend ReadOnly Property Bitstream_WriteSplice() As String
@@ -300,33 +282,6 @@ Namespace My.Resources
         End Property
         
         '''<summary>
-        '''  Looks up a localized string similar to OEM Name.
-        '''</summary>
-        Friend ReadOnly Property BootSector_OEMName() As String
-            Get
-                Return ResourceManager.GetString("BootSector_OEMName", resourceCulture)
-            End Get
-        End Property
-        
-        '''<summary>
-        '''  Looks up a localized string similar to Reserved.
-        '''</summary>
-        Friend ReadOnly Property BootSector_Reserved() As String
-            Get
-                Return ResourceManager.GetString("BootSector_Reserved", resourceCulture)
-            End Get
-        End Property
-        
-        '''<summary>
-        '''  Looks up a localized string similar to Volume Label.
-        '''</summary>
-        Friend ReadOnly Property BootSector_VolumeLabel() As String
-            Get
-                Return ResourceManager.GetString("BootSector_VolumeLabel", resourceCulture)
-            End Get
-        End Property
-        
-        '''<summary>
         '''  Looks up a localized string similar to Volume Serial Number.
         '''</summary>
         Friend ReadOnly Property BootSector_VolumeSerialNumber() As String
@@ -350,15 +305,6 @@ Namespace My.Resources
         Friend ReadOnly Property BPB_HiddenSectors() As String
             Get
                 Return ResourceManager.GetString("BPB_HiddenSectors", resourceCulture)
-            End Get
-        End Property
-        
-        '''<summary>
-        '''  Looks up a localized string similar to Media Descriptor.
-        '''</summary>
-        Friend ReadOnly Property BPB_MediaDescriptor() As String
-            Get
-                Return ResourceManager.GetString("BPB_MediaDescriptor", resourceCulture)
             End Get
         End Property
         
@@ -498,33 +444,6 @@ Namespace My.Resources
         End Property
         
         '''<summary>
-        '''  Looks up a localized string similar to Disk.
-        '''</summary>
-        Friend ReadOnly Property Caption_Disk() As String
-            Get
-                Return ResourceManager.GetString("Caption_Disk", resourceCulture)
-            End Get
-        End Property
-        
-        '''<summary>
-        '''  Looks up a localized string similar to File Allocation Table.
-        '''</summary>
-        Friend ReadOnly Property Caption_FAT() As String
-            Get
-                Return ResourceManager.GetString("Caption_FAT", resourceCulture)
-            End Get
-        End Property
-        
-        '''<summary>
-        '''  Looks up a localized string similar to File.
-        '''</summary>
-        Friend ReadOnly Property Caption_File() As String
-            Get
-                Return ResourceManager.GetString("Caption_File", resourceCulture)
-            End Get
-        End Property
-        
-        '''<summary>
         '''  Looks up a localized string similar to File Properties.
         '''</summary>
         Friend ReadOnly Property Caption_FileProperties() As String
@@ -620,15 +539,6 @@ Namespace My.Resources
         Friend ReadOnly Property Caption_TrackLayout() As String
             Get
                 Return ResourceManager.GetString("Caption_TrackLayout", resourceCulture)
-            End Get
-        End Property
-        
-        '''<summary>
-        '''  Looks up a localized string similar to Unknown.
-        '''</summary>
-        Friend ReadOnly Property Caption_Unknown() As String
-            Get
-                Return ResourceManager.GetString("Caption_Unknown", resourceCulture)
             End Get
         End Property
         
@@ -790,24 +700,6 @@ Namespace My.Resources
         End Property
         
         '''<summary>
-        '''  Looks up a localized string similar to CRC32.
-        '''</summary>
-        Friend ReadOnly Property DataInspector_Label_CRC32() As String
-            Get
-                Return ResourceManager.GetString("DataInspector_Label_CRC32", resourceCulture)
-            End Get
-        End Property
-        
-        '''<summary>
-        '''  Looks up a localized string similar to Data Area.
-        '''</summary>
-        Friend ReadOnly Property DataInspector_Label_DataArea() As String
-            Get
-                Return ResourceManager.GetString("DataInspector_Label_DataArea", resourceCulture)
-            End Get
-        End Property
-        
-        '''<summary>
         '''  Looks up a localized string similar to DOS Date.
         '''</summary>
         Friend ReadOnly Property DataInspector_Label_DOSDate() As String
@@ -831,15 +723,6 @@ Namespace My.Resources
         Friend ReadOnly Property DataInspector_Label_DOSTime() As String
             Get
                 Return ResourceManager.GetString("DataInspector_Label_DOSTime", resourceCulture)
-            End Get
-        End Property
-        
-        '''<summary>
-        '''  Looks up a localized string similar to File.
-        '''</summary>
-        Friend ReadOnly Property DataInspector_Label_File() As String
-            Get
-                Return ResourceManager.GetString("DataInspector_Label_File", resourceCulture)
             End Get
         End Property
         
@@ -889,24 +772,6 @@ Namespace My.Resources
         End Property
         
         '''<summary>
-        '''  Looks up a localized string similar to Invalid.
-        '''</summary>
-        Friend ReadOnly Property DataInspector_Label_Invalid() As String
-            Get
-                Return ResourceManager.GetString("DataInspector_Label_Invalid", resourceCulture)
-            End Get
-        End Property
-        
-        '''<summary>
-        '''  Looks up a localized string similar to Region.
-        '''</summary>
-        Friend ReadOnly Property DataInspector_Label_Region() As String
-            Get
-                Return ResourceManager.GetString("DataInspector_Label_Region", resourceCulture)
-            End Get
-        End Property
-        
-        '''<summary>
         '''  Looks up a localized string similar to UInt16.
         '''</summary>
         Friend ReadOnly Property DataInspector_Label_UInt16() As String
@@ -948,15 +813,6 @@ Namespace My.Resources
         Friend ReadOnly Property DataInspector_Label_UInt8() As String
             Get
                 Return ResourceManager.GetString("DataInspector_Label_UInt8", resourceCulture)
-            End Get
-        End Property
-        
-        '''<summary>
-        '''  Looks up a localized string similar to Weak Bits.
-        '''</summary>
-        Friend ReadOnly Property DataInspector_Label_WeakBits() As String
-            Get
-                Return ResourceManager.GetString("DataInspector_Label_WeakBits", resourceCulture)
             End Get
         End Property
         
@@ -1767,15 +1623,6 @@ Namespace My.Resources
         End Property
         
         '''<summary>
-        '''  Looks up a localized string similar to Size.
-        '''</summary>
-        Friend ReadOnly Property DirectorytEntry_FileSize() As String
-            Get
-                Return ResourceManager.GetString("DirectorytEntry_FileSize", resourceCulture)
-            End Get
-        End Property
-        
-        '''<summary>
         '''  Looks up a localized string similar to Last Access Date.
         '''</summary>
         Friend ReadOnly Property DirectorytEntry_LastAccessDate() As String
@@ -1848,29 +1695,11 @@ Namespace My.Resources
         End Property
         
         '''<summary>
-        '''  Looks up a localized string similar to LFN Name 1.
+        '''  Looks up a localized string similar to LFN Name {0}.
         '''</summary>
-        Friend ReadOnly Property DirectorytEntryLFN_FilePart1() As String
+        Friend ReadOnly Property DirectorytEntryLFN_FilePart() As String
             Get
-                Return ResourceManager.GetString("DirectorytEntryLFN_FilePart1", resourceCulture)
-            End Get
-        End Property
-        
-        '''<summary>
-        '''  Looks up a localized string similar to LFN Name 2.
-        '''</summary>
-        Friend ReadOnly Property DirectorytEntryLFN_FilePart2() As String
-            Get
-                Return ResourceManager.GetString("DirectorytEntryLFN_FilePart2", resourceCulture)
-            End Get
-        End Property
-        
-        '''<summary>
-        '''  Looks up a localized string similar to LFN Name 3.
-        '''</summary>
-        Friend ReadOnly Property DirectorytEntryLFN_FilePart3() As String
-            Get
-                Return ResourceManager.GetString("DirectorytEntryLFN_FilePart3", resourceCulture)
+                Return ResourceManager.GetString("DirectorytEntryLFN_FilePart", resourceCulture)
             End Get
         End Property
         
@@ -1921,29 +1750,11 @@ Namespace My.Resources
         End Property
         
         '''<summary>
-        '''  Looks up a localized string similar to Cluster.
-        '''</summary>
-        Friend ReadOnly Property FilePanel_Cluster() As String
-            Get
-                Return ResourceManager.GetString("FilePanel_Cluster", resourceCulture)
-            End Get
-        End Property
-        
-        '''<summary>
         '''  Looks up a localized string similar to Err.
         '''</summary>
         Friend ReadOnly Property FilePanel_ClusterError() As String
             Get
                 Return ResourceManager.GetString("FilePanel_ClusterError", resourceCulture)
-            End Get
-        End Property
-        
-        '''<summary>
-        '''  Looks up a localized string similar to CRC32.
-        '''</summary>
-        Friend ReadOnly Property FilePanel_CRC32() As String
-            Get
-                Return ResourceManager.GetString("FilePanel_CRC32", resourceCulture)
             End Get
         End Property
         
@@ -2016,15 +1827,6 @@ Namespace My.Resources
         Friend ReadOnly Property FilePanel_NTReserved() As String
             Get
                 Return ResourceManager.GetString("FilePanel_NTReserved", resourceCulture)
-            End Get
-        End Property
-        
-        '''<summary>
-        '''  Looks up a localized string similar to Size.
-        '''</summary>
-        Friend ReadOnly Property FilePanel_Size() As String
-            Get
-                Return ResourceManager.GetString("FilePanel_Size", resourceCulture)
             End Get
         End Property
         
@@ -2166,7 +1968,7 @@ Namespace My.Resources
         End Property
         
         '''<summary>
-        '''  Looks up a localized string similar to Disk - Custom Boot Loader.
+        '''  Looks up a localized string similar to Custom Boot Loader.
         '''</summary>
         Friend ReadOnly Property Filter_Disk_CustomBootLoader() As String
             Get
@@ -2175,7 +1977,7 @@ Namespace My.Resources
         End Property
         
         '''<summary>
-        '''  Looks up a localized string similar to Disk - Custom Format.
+        '''  Looks up a localized string similar to Custom Format.
         '''</summary>
         Friend ReadOnly Property Filter_Disk_CustomFormat() As String
             Get
@@ -2184,7 +1986,7 @@ Namespace My.Resources
         End Property
         
         '''<summary>
-        '''  Looks up a localized string similar to Disk - Free Clusters with Data.
+        '''  Looks up a localized string similar to Free Clusters with Data.
         '''</summary>
         Friend ReadOnly Property Filter_Disk_FreeClustersWithData() As String
             Get
@@ -2193,7 +1995,7 @@ Namespace My.Resources
         End Property
         
         '''<summary>
-        '''  Looks up a localized string similar to Disk - Has Write Splices.
+        '''  Looks up a localized string similar to Has Write Splices.
         '''</summary>
         Friend ReadOnly Property Filter_Disk_HasWriteSplices() As String
             Get
@@ -2202,7 +2004,7 @@ Namespace My.Resources
         End Property
         
         '''<summary>
-        '''  Looks up a localized string similar to Disk - Mismatched Image Size.
+        '''  Looks up a localized string similar to Mismatched Image Size.
         '''</summary>
         Friend ReadOnly Property Filter_Disk_MismatchedImageSize() As String
             Get
@@ -2211,7 +2013,7 @@ Namespace My.Resources
         End Property
         
         '''<summary>
-        '''  Looks up a localized string similar to Disk - Mismatched Media Descriptor.
+        '''  Looks up a localized string similar to Mismatched Media Descriptor.
         '''</summary>
         Friend ReadOnly Property Filter_Disk_MismatchedMediaDescriptor() As String
             Get
@@ -2220,7 +2022,7 @@ Namespace My.Resources
         End Property
         
         '''<summary>
-        '''  Looks up a localized string similar to Disk - No Boot Loader.
+        '''  Looks up a localized string similar to No Boot Loader.
         '''</summary>
         Friend ReadOnly Property Filter_Disk_NoBootLoader() As String
             Get
@@ -2229,7 +2031,7 @@ Namespace My.Resources
         End Property
         
         '''<summary>
-        '''  Looks up a localized string similar to Disk - No BPB.
+        '''  Looks up a localized string similar to No BPB.
         '''</summary>
         Friend ReadOnly Property Filter_Disk_NOBPB() As String
             Get
@@ -2238,7 +2040,7 @@ Namespace My.Resources
         End Property
         
         '''<summary>
-        '''  Looks up a localized string similar to Disk - Unknown Format.
+        '''  Looks up a localized string similar to Unknown Format.
         '''</summary>
         Friend ReadOnly Property Filter_Disk_UnknownFormat() As String
             Get
@@ -2518,15 +2320,6 @@ Namespace My.Resources
         End Property
         
         '''<summary>
-        '''  Looks up a localized string similar to Unknown.
-        '''</summary>
-        Friend ReadOnly Property FloppyImageType_Unknown() As String
-            Get
-                Return ResourceManager.GetString("FloppyImageType_Unknown", resourceCulture)
-            End Get
-        End Property
-        
-        '''<summary>
         '''  Looks up a localized resource of type System.Drawing.Bitmap.
         '''</summary>
         Friend ReadOnly Property FolderHex() As System.Drawing.Bitmap
@@ -2546,24 +2339,6 @@ Namespace My.Resources
         End Property
         
         '''<summary>
-        '''  Looks up a localized string similar to Bad Sectors.
-        '''</summary>
-        Friend ReadOnly Property HexView_BadSectors() As String
-            Get
-                Return ResourceManager.GetString("HexView_BadSectors", resourceCulture)
-            End Get
-        End Property
-        
-        '''<summary>
-        '''  Looks up a localized string similar to Boot Sector.
-        '''</summary>
-        Friend ReadOnly Property HexView_BootSector() As String
-            Get
-                Return ResourceManager.GetString("HexView_BootSector", resourceCulture)
-            End Get
-        End Property
-        
-        '''<summary>
         '''  Looks up a localized string similar to Deleted Directory.
         '''</summary>
         Friend ReadOnly Property HexView_DeletedDirectory() As String
@@ -2578,42 +2353,6 @@ Namespace My.Resources
         Friend ReadOnly Property HexView_DeletedFile() As String
             Get
                 Return ResourceManager.GetString("HexView_DeletedFile", resourceCulture)
-            End Get
-        End Property
-        
-        '''<summary>
-        '''  Looks up a localized string similar to Directory.
-        '''</summary>
-        Friend ReadOnly Property HexView_Directory() As String
-            Get
-                Return ResourceManager.GetString("HexView_Directory", resourceCulture)
-            End Get
-        End Property
-        
-        '''<summary>
-        '''  Looks up a localized string similar to File Allocation Table.
-        '''</summary>
-        Friend ReadOnly Property HexView_FAT() As String
-            Get
-                Return ResourceManager.GetString("HexView_FAT", resourceCulture)
-            End Get
-        End Property
-        
-        '''<summary>
-        '''  Looks up a localized string similar to File.
-        '''</summary>
-        Friend ReadOnly Property HexView_File() As String
-            Get
-                Return ResourceManager.GetString("HexView_File", resourceCulture)
-            End Get
-        End Property
-        
-        '''<summary>
-        '''  Looks up a localized string similar to Lost Clusters.
-        '''</summary>
-        Friend ReadOnly Property HexView_LostClusters() As String
-            Get
-                Return ResourceManager.GetString("HexView_LostClusters", resourceCulture)
             End Get
         End Property
         
@@ -3035,6 +2774,15 @@ Namespace My.Resources
         End Property
         
         '''<summary>
+        '''  Looks up a localized string similar to CRC32.
+        '''</summary>
+        Friend ReadOnly Property Label_CRC32() As String
+            Get
+                Return ResourceManager.GetString("Label_CRC32", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
         '''  Looks up a localized string similar to Cross-Linked.
         '''</summary>
         Friend ReadOnly Property Label_CrossLinked() As String
@@ -3049,6 +2797,15 @@ Namespace My.Resources
         Friend ReadOnly Property Label_Cylinders() As String
             Get
                 Return ResourceManager.GetString("Label_Cylinders", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  Looks up a localized string similar to Data Area.
+        '''</summary>
+        Friend ReadOnly Property Label_DataArea() As String
+            Get
+                Return ResourceManager.GetString("Label_DataArea", resourceCulture)
             End Get
         End Property
         
@@ -3089,6 +2846,15 @@ Namespace My.Resources
         End Property
         
         '''<summary>
+        '''  Looks up a localized string similar to Directory.
+        '''</summary>
+        Friend ReadOnly Property Label_Directory() As String
+            Get
+                Return ResourceManager.GetString("Label_Directory", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
         '''  Looks up a localized string similar to Directory Name.
         '''</summary>
         Friend ReadOnly Property Label_DirectoryName() As String
@@ -3103,6 +2869,15 @@ Namespace My.Resources
         Friend ReadOnly Property Label_Discard() As String
             Get
                 Return ResourceManager.GetString("Label_Discard", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  Looks up a localized string similar to Disk.
+        '''</summary>
+        Friend ReadOnly Property Label_Disk() As String
+            Get
+                Return ResourceManager.GetString("Label_Disk", resourceCulture)
             End Get
         End Property
         
@@ -3206,11 +2981,29 @@ Namespace My.Resources
         End Property
         
         '''<summary>
+        '''  Looks up a localized string similar to Extended Log Output.
+        '''</summary>
+        Friend ReadOnly Property Label_ExtendedLogOutput() As String
+            Get
+                Return ResourceManager.GetString("Label_ExtendedLogOutput", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
         '''  Looks up a localized string similar to Failed.
         '''</summary>
         Friend ReadOnly Property Label_Failed() As String
             Get
                 Return ResourceManager.GetString("Label_Failed", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  Looks up a localized string similar to File Allocation Table.
+        '''</summary>
+        Friend ReadOnly Property Label_FAT() As String
+            Get
+                Return ResourceManager.GetString("Label_FAT", resourceCulture)
             End Get
         End Property
         
@@ -3247,15 +3040,6 @@ Namespace My.Resources
         Friend ReadOnly Property Label_FATType_Next() As String
             Get
                 Return ResourceManager.GetString("Label_FATType_Next", resourceCulture)
-            End Get
-        End Property
-        
-        '''<summary>
-        '''  Looks up a localized string similar to Reserved.
-        '''</summary>
-        Friend ReadOnly Property Label_FATType_Reserved() As String
-            Get
-                Return ResourceManager.GetString("Label_FATType_Reserved", resourceCulture)
             End Get
         End Property
         
@@ -3584,6 +3368,24 @@ Namespace My.Resources
         End Property
         
         '''<summary>
+        '''  Looks up a localized string similar to Lost Clusters.
+        '''</summary>
+        Friend ReadOnly Property Label_LostClusters() As String
+            Get
+                Return ResourceManager.GetString("Label_LostClusters", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  Looks up a localized string similar to Media Descriptor.
+        '''</summary>
+        Friend ReadOnly Property Label_MediaDescriptor() As String
+            Get
+                Return ResourceManager.GetString("Label_MediaDescriptor", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
         '''  Looks up a localized string similar to Mismatched.
         '''</summary>
         Friend ReadOnly Property Label_Mismatched() As String
@@ -3701,6 +3503,15 @@ Namespace My.Resources
         End Property
         
         '''<summary>
+        '''  Looks up a localized string similar to OEM Name.
+        '''</summary>
+        Friend ReadOnly Property Label_OEMName() As String
+            Get
+                Return ResourceManager.GetString("Label_OEMName", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
         '''  Looks up a localized string similar to Offset(h).
         '''</summary>
         Friend ReadOnly Property Label_OffsetHex() As String
@@ -3814,6 +3625,42 @@ Namespace My.Resources
         Friend ReadOnly Property Label_ReadOnly() As String
             Get
                 Return ResourceManager.GetString("Label_ReadOnly", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  Looks up a localized string similar to Region.
+        '''</summary>
+        Friend ReadOnly Property Label_Region() As String
+            Get
+                Return ResourceManager.GetString("Label_Region", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  Looks up a localized string similar to Remaster.
+        '''</summary>
+        Friend ReadOnly Property Label_Remaster() As String
+            Get
+                Return ResourceManager.GetString("Label_Remaster", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  Looks up a localized string similar to Reprocess.
+        '''</summary>
+        Friend ReadOnly Property Label_ReProcess() As String
+            Get
+                Return ResourceManager.GetString("Label_ReProcess", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  Looks up a localized string similar to Reserved.
+        '''</summary>
+        Friend ReadOnly Property Label_Reserved() As String
+            Get
+                Return ResourceManager.GetString("Label_Reserved", resourceCulture)
             End Get
         End Property
         
@@ -4160,6 +4007,15 @@ Namespace My.Resources
         End Property
         
         '''<summary>
+        '''  Looks up a localized string similar to Weak Bits.
+        '''</summary>
+        Friend ReadOnly Property Label_WeakBits() As String
+            Get
+                Return ResourceManager.GetString("Label_WeakBits", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
         '''  Looks up a localized string similar to Write.
         '''</summary>
         Friend ReadOnly Property Label_Write() As String
@@ -4201,15 +4057,6 @@ Namespace My.Resources
         Friend ReadOnly Property Label_Yes() As String
             Get
                 Return ResourceManager.GetString("Label_Yes", resourceCulture)
-            End Get
-        End Property
-        
-        '''<summary>
-        '''  Looks up a localized string similar to All Tracks.
-        '''</summary>
-        Friend ReadOnly Property Menu_AllTracks() As String
-            Get
-                Return ResourceManager.GetString("Menu_AllTracks", resourceCulture)
             End Get
         End Property
         
@@ -4273,15 +4120,6 @@ Namespace My.Resources
         Friend ReadOnly Property Menu_DeleteSelected() As String
             Get
                 Return ResourceManager.GetString("Menu_DeleteSelected", resourceCulture)
-            End Get
-        End Property
-        
-        '''<summary>
-        '''  Looks up a localized string similar to Directory.
-        '''</summary>
-        Friend ReadOnly Property Menu_Directory() As String
-            Get
-                Return ResourceManager.GetString("Menu_Directory", resourceCulture)
             End Get
         End Property
         
@@ -4831,15 +4669,6 @@ Namespace My.Resources
         End Property
         
         '''<summary>
-        '''  Looks up a localized string similar to Bad Sectors.
-        '''</summary>
-        Friend ReadOnly Property SummaryPanel_BadSectors() As String
-            Get
-                Return ResourceManager.GetString("SummaryPanel_BadSectors", resourceCulture)
-            End Get
-        End Property
-        
-        '''<summary>
         '''  Looks up a localized string similar to Bitrate.
         '''</summary>
         Friend ReadOnly Property SummaryPanel_Bitrate() As String
@@ -4926,15 +4755,6 @@ Namespace My.Resources
         Friend ReadOnly Property SummaryPanel_Description() As String
             Get
                 Return ResourceManager.GetString("SummaryPanel_Description", resourceCulture)
-            End Get
-        End Property
-        
-        '''<summary>
-        '''  Looks up a localized string similar to Disk.
-        '''</summary>
-        Friend ReadOnly Property SummaryPanel_Disk() As String
-            Get
-                Return ResourceManager.GetString("SummaryPanel_Disk", resourceCulture)
             End Get
         End Property
         
@@ -5038,24 +4858,6 @@ Namespace My.Resources
         End Property
         
         '''<summary>
-        '''  Looks up a localized string similar to Lost Clusters.
-        '''</summary>
-        Friend ReadOnly Property SummaryPanel_LostClusters() As String
-            Get
-                Return ResourceManager.GetString("SummaryPanel_LostClusters", resourceCulture)
-            End Get
-        End Property
-        
-        '''<summary>
-        '''  Looks up a localized string similar to Media Descriptor.
-        '''</summary>
-        Friend ReadOnly Property SummaryPanel_MediaDescriptor() As String
-            Get
-                Return ResourceManager.GetString("SummaryPanel_MediaDescriptor", resourceCulture)
-            End Get
-        End Property
-        
-        '''<summary>
         '''  Looks up a localized string similar to Newest Date.
         '''</summary>
         Friend ReadOnly Property SummaryPanel_NewestDate() As String
@@ -5124,15 +4926,6 @@ Namespace My.Resources
         Friend ReadOnly Property SummaryPanel_Publisher() As String
             Get
                 Return ResourceManager.GetString("SummaryPanel_Publisher", resourceCulture)
-            End Get
-        End Property
-        
-        '''<summary>
-        '''  Looks up a localized string similar to Region.
-        '''</summary>
-        Friend ReadOnly Property SummaryPanel_Region() As String
-            Get
-                Return ResourceManager.GetString("SummaryPanel_Region", resourceCulture)
             End Get
         End Property
         
@@ -5236,29 +5029,11 @@ Namespace My.Resources
         End Property
         
         '''<summary>
-        '''  Looks up a localized string similar to Version.
-        '''</summary>
-        Friend ReadOnly Property SummaryPanel_Version() As String
-            Get
-                Return ResourceManager.GetString("SummaryPanel_Version", resourceCulture)
-            End Get
-        End Property
-        
-        '''<summary>
         '''  Looks up a localized string similar to Volume Date.
         '''</summary>
         Friend ReadOnly Property SummaryPanel_VolumeDate() As String
             Get
                 Return ResourceManager.GetString("SummaryPanel_VolumeDate", resourceCulture)
-            End Get
-        End Property
-        
-        '''<summary>
-        '''  Looks up a localized string similar to Volume Label.
-        '''</summary>
-        Friend ReadOnly Property SummaryPanel_VolumeLabel() As String
-            Get
-                Return ResourceManager.GetString("SummaryPanel_VolumeLabel", resourceCulture)
             End Get
         End Property
         

@@ -833,7 +833,7 @@ Public Class HexViewForm
             Exit Sub
         End If
 
-        Dim FileCaption As String = My.Resources.DataInspector_Label_File
+        Dim FileCaption As String = My.Resources.Label_File
         Dim SelectionStart = HexBox1.SelectionStart
         Dim SelectionLength = HexBox1.SelectionLength
         Dim SelectionEnd = SelectionStart + SelectionLength - 1
@@ -911,7 +911,7 @@ Public Class HexViewForm
                         If DirectoryEntry IsNot Nothing Then
                             FileName = DirectoryEntry.GetShortFileName(True)
                             If DirectoryEntry.IsDirectory Then
-                                FileCaption = My.Resources.HexView_Directory
+                                FileCaption = My.Resources.Label_Directory
                             End If
                         End If
                     End If

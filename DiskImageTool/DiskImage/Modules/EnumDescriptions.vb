@@ -5,17 +5,17 @@
                 Case BootSector.BootSectorOffsets.JmpBoot
                     Return My.Resources.BootSector_JmpBoot
                 Case BootSector.BootSectorOffsets.OEMName
-                    Return My.Resources.BootSector_OEMName
+                    Return My.Resources.Label_OEMName
                 Case BootSector.BootSectorOffsets.DriveNumber
                     Return My.Resources.BootSector_DriveNumber
                 Case BootSector.BootSectorOffsets.Reserved
-                    Return My.Resources.BootSector_Reserved
+                    Return My.Resources.Label_Reserved
                 Case BootSector.BootSectorOffsets.ExtendedBootSignature
                     Return My.Resources.BootSector_ExtendedBootSignature
                 Case BootSector.BootSectorOffsets.VolumeSerialNumber
                     Return My.Resources.BootSector_VolumeSerialNumber
                 Case BootSector.BootSectorOffsets.VolumeLabel
-                    Return My.Resources.BootSector_VolumeLabel
+                    Return My.Resources.Label_VolumeLabel
                 Case BootSector.BootSectorOffsets.FileSystemType
                     Return My.Resources.BootSector_FileSystemType
                 Case BootSector.BootSectorOffsets.BootStrapSignature
@@ -40,7 +40,7 @@
                 Case BiosParameterBlock.BPBOoffsets.SectorCountSmall
                     Return My.Resources.BPB_SectorCountSmall
                 Case BiosParameterBlock.BPBOoffsets.MediaDescriptor
-                    Return My.Resources.BPB_MediaDescriptor
+                    Return My.Resources.Label_MediaDescriptor
                 Case BiosParameterBlock.BPBOoffsets.SectorsPerFAT
                     Return My.Resources.BPB_SectorsPerFAT
                 Case BiosParameterBlock.BPBOoffsets.SectorsPerTrack
@@ -81,7 +81,7 @@
                 Case DirectoryEntry.DirectoryEntryOffsets.StartingCluster
                     Return My.Resources.DirectorytEntry_StartingCluster
                 Case DirectoryEntry.DirectoryEntryOffsets.FileSize
-                    Return My.Resources.DirectorytEntry_FileSize
+                    Return My.Resources.Label_Size
                 Case Else
                     Return Offset.ToString
             End Select
@@ -92,7 +92,7 @@
                 Case DirectoryEntry.LFNOffsets.Sequence
                     Return My.Resources.DirectorytEntryLFN_Sequence
                 Case DirectoryEntry.LFNOffsets.FilePart1
-                    Return My.Resources.DirectorytEntryLFN_FilePart1
+                    Return String.Format(My.Resources.DirectorytEntryLFN_FilePart, "1")
                 Case DirectoryEntry.LFNOffsets.Attributes
                     Return My.Resources.DirectorytEntryLFN_Attributes
                 Case DirectoryEntry.LFNOffsets.Type
@@ -100,11 +100,11 @@
                 Case DirectoryEntry.LFNOffsets.Checksum
                     Return My.Resources.DirectorytEntryLFN_Checksum
                 Case DirectoryEntry.LFNOffsets.FilePart2
-                    Return My.Resources.DirectorytEntryLFN_FilePart2
+                    Return String.Format(My.Resources.DirectorytEntryLFN_FilePart, "2")
                 Case DirectoryEntry.LFNOffsets.StartingCluster
                     Return My.Resources.DirectorytEntryLFN_StartingCluster
                 Case DirectoryEntry.LFNOffsets.FilePart3
-                    Return My.Resources.DirectorytEntryLFN_FilePart3
+                    Return String.Format(My.Resources.DirectorytEntryLFN_FilePart, "3")
                 Case Else
                     Return Offset.ToString
             End Select
@@ -129,7 +129,7 @@
                 Case FloppyImageType.IMDImage
                     Return My.Resources.FloppyImageType_IMDImage
                 Case Else
-                    Return My.Resources.FloppyImageType_Unknown
+                    Return My.Resources.Label_Unknown
             End Select
         End Function
     End Module

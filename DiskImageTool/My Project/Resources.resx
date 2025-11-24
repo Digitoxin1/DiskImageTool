@@ -180,9 +180,6 @@
   <data name="Caption_DeleteFiles" xml:space="preserve">
     <value>Delete {0} Files</value>
   </data>
-  <data name="Caption_File" xml:space="preserve">
-    <value>File</value>
-  </data>
   <data name="Caption_RemoveFile" xml:space="preserve">
     <value>Remove File</value>
   </data>
@@ -330,9 +327,6 @@
   <data name="Label_Track" xml:space="preserve">
     <value>Track</value>
   </data>
-  <data name="Menu_AllTracks" xml:space="preserve">
-    <value>All Tracks</value>
-  </data>
   <data name="Menu_CopyValueByName" xml:space="preserve">
     <value>&amp;Copy {0}</value>
   </data>
@@ -351,7 +345,7 @@
   <data name="Menu_DeleteSelected" xml:space="preserve">
     <value>&amp;Delete Selected Files</value>
   </data>
-  <data name="Menu_Directory" xml:space="preserve">
+  <data name="Label_Directory" xml:space="preserve">
     <value>Directory</value>
   </data>
   <data name="Menu_Directory2" xml:space="preserve">
@@ -453,7 +447,7 @@
   <data name="Dialog_SearchNotFound" xml:space="preserve">
     <value>Can't Find '{0}'</value>
   </data>
-  <data name="Caption_FAT" xml:space="preserve">
+  <data name="Label_FAT" xml:space="preserve">
     <value>File Allocation Table</value>
   </data>
   <data name="Caption_HexEditor" xml:space="preserve">
@@ -516,14 +510,8 @@
   <data name="BootSector_JmpBoot" xml:space="preserve">
     <value>Bootstrap Jump</value>
   </data>
-  <data name="BootSector_OEMName" xml:space="preserve">
+  <data name="Label_OEMName" xml:space="preserve">
     <value>OEM Name</value>
-  </data>
-  <data name="BootSector_Reserved" xml:space="preserve">
-    <value>Reserved</value>
-  </data>
-  <data name="BootSector_VolumeLabel" xml:space="preserve">
-    <value>Volume Label</value>
   </data>
   <data name="BootSector_VolumeSerialNumber" xml:space="preserve">
     <value>Volume Serial Number</value>
@@ -536,9 +524,6 @@
   </data>
   <data name="BPB_HiddenSectors" xml:space="preserve">
     <value>Hidden Sectors</value>
-  </data>
-  <data name="BPB_MediaDescriptor" xml:space="preserve">
-    <value>Media Descriptor</value>
   </data>
   <data name="BPB_NumberOfFATs" xml:space="preserve">
     <value>Number of FATs</value>
@@ -560,9 +545,6 @@
   </data>
   <data name="BPB_SectorsPerTrack" xml:space="preserve">
     <value>Sectors per Track</value>
-  </data>
-  <data name="Caption_Unknown" xml:space="preserve">
-    <value>Unknown</value>
   </data>
   <data name="DataInspector_Error_Binary" xml:space="preserve">
     <value>Please enter a valid 8-bit binary value</value>
@@ -601,7 +583,7 @@
     <value>CRC16</value>
     <comment>@Invariant</comment>
   </data>
-  <data name="DataInspector_Label_CRC32" xml:space="preserve">
+  <data name="Label_CRC32" xml:space="preserve">
     <value>CRC32</value>
     <comment>@Invariant</comment>
   </data>
@@ -613,9 +595,6 @@
   </data>
   <data name="DataInspector_Label_DOSTime" xml:space="preserve">
     <value>DOS Time</value>
-  </data>
-  <data name="DataInspector_Label_File" xml:space="preserve">
-    <value>File</value>
   </data>
   <data name="DataInspector_Label_Int16" xml:space="preserve">
     <value>Int16</value>
@@ -637,12 +616,6 @@
     <value>Int8</value>
     <comment>@Invariant</comment>
   </data>
-  <data name="DataInspector_Label_Invalid" xml:space="preserve">
-    <value>Invalid</value>
-  </data>
-  <data name="DataInspector_Label_Region" xml:space="preserve">
-    <value>Region</value>
-  </data>
   <data name="DataInspector_Label_UInt16" xml:space="preserve">
     <value>UInt16</value>
     <comment>@Invariant</comment>
@@ -663,7 +636,7 @@
     <value>UInt8</value>
     <comment>@Invariant</comment>
   </data>
-  <data name="DataInspector_Label_WeakBits" xml:space="preserve">
+  <data name="Label_WeakBits" xml:space="preserve">
     <value>Weak Bits</value>
   </data>
   <data name="Dialog_CheckImageSize" xml:space="preserve">
@@ -684,14 +657,8 @@
   <data name="DirectorytEntryLFN_Checksum" xml:space="preserve">
     <value>LFN Checksum</value>
   </data>
-  <data name="DirectorytEntryLFN_FilePart1" xml:space="preserve">
-    <value>LFN Name 1</value>
-  </data>
-  <data name="DirectorytEntryLFN_FilePart2" xml:space="preserve">
-    <value>LFN Name 2</value>
-  </data>
-  <data name="DirectorytEntryLFN_FilePart3" xml:space="preserve">
-    <value>LFN Name 3</value>
+  <data name="DirectorytEntryLFN_FilePart" xml:space="preserve">
+    <value>LFN Name {0}</value>
   </data>
   <data name="DirectorytEntryLFN_Sequence" xml:space="preserve">
     <value>LFN Sequence</value>
@@ -719,9 +686,6 @@
   </data>
   <data name="DirectorytEntry_FileName" xml:space="preserve">
     <value>Name</value>
-  </data>
-  <data name="DirectorytEntry_FileSize" xml:space="preserve">
-    <value>Size</value>
   </data>
   <data name="DirectorytEntry_LastAccessDate" xml:space="preserve">
     <value>Last Access Date</value>
@@ -769,28 +733,28 @@
     <value>Database - Mismatched Status</value>
   </data>
   <data name="Filter_Disk_CustomBootLoader" xml:space="preserve">
-    <value>Disk - Custom Boot Loader</value>
+    <value>Custom Boot Loader</value>
   </data>
   <data name="Filter_Disk_CustomFormat" xml:space="preserve">
-    <value>Disk - Custom Format</value>
+    <value>Custom Format</value>
   </data>
   <data name="Filter_Disk_FreeClustersWithData" xml:space="preserve">
-    <value>Disk - Free Clusters with Data</value>
+    <value>Free Clusters with Data</value>
   </data>
   <data name="Filter_Disk_MismatchedImageSize" xml:space="preserve">
-    <value>Disk - Mismatched Image Size</value>
+    <value>Mismatched Image Size</value>
   </data>
   <data name="Filter_Disk_MismatchedMediaDescriptor" xml:space="preserve">
-    <value>Disk - Mismatched Media Descriptor</value>
+    <value>Mismatched Media Descriptor</value>
   </data>
   <data name="Filter_Disk_NoBootLoader" xml:space="preserve">
-    <value>Disk - No Boot Loader</value>
+    <value>No Boot Loader</value>
   </data>
   <data name="Filter_Disk_NOBPB" xml:space="preserve">
-    <value>Disk - No BPB</value>
+    <value>No BPB</value>
   </data>
   <data name="Filter_Disk_UnknownFormat" xml:space="preserve">
-    <value>Disk - Unknown Format</value>
+    <value>Unknown Format</value>
   </data>
   <data name="Filter_FAT_BadSectors" xml:space="preserve">
     <value>FAT - Bad Sectors</value>
@@ -841,19 +805,19 @@
     <value>Modified Files</value>
   </data>
   <data name="Filter_OEMName_Mismatched" xml:space="preserve">
-    <value>OEM Name - Mismatched</value>
+    <value>Mismatched</value>
   </data>
   <data name="Filter_OEMName_Unknown" xml:space="preserve">
-    <value>OEM Name - Unknown</value>
+    <value>Unknown</value>
   </data>
   <data name="Filter_OEMName_Unverified" xml:space="preserve">
-    <value>OEM Name - Unverified</value>
+    <value>Unverified</value>
   </data>
   <data name="Filter_OEMName_Verified" xml:space="preserve">
-    <value>OEM Name - Verified</value>
+    <value>Verified</value>
   </data>
   <data name="Filter_OEMName_Windows9x" xml:space="preserve">
-    <value>OEM Name - Windows 9x</value>
+    <value>Windows 9x</value>
   </data>
   <data name="FloppyImageType_BasicSectorImage" xml:space="preserve">
     <value>Basic Sector Image</value>
@@ -879,31 +843,13 @@
   <data name="FloppyImageType_TranscopyImage" xml:space="preserve">
     <value>Transcopy Image</value>
   </data>
-  <data name="FloppyImageType_Unknown" xml:space="preserve">
-    <value>Unknown</value>
-  </data>
-  <data name="HexView_BadSectors" xml:space="preserve">
-    <value>Bad Sectors</value>
-  </data>
-  <data name="HexView_BootSector" xml:space="preserve">
-    <value>Boot Sector</value>
-  </data>
   <data name="HexView_DeletedDirectory" xml:space="preserve">
     <value>Deleted Directory</value>
   </data>
   <data name="HexView_DeletedFile" xml:space="preserve">
     <value>Deleted File</value>
   </data>
-  <data name="HexView_Directory" xml:space="preserve">
-    <value>Directory</value>
-  </data>
-  <data name="HexView_FAT" xml:space="preserve">
-    <value>File Allocation Table</value>
-  </data>
-  <data name="HexView_File" xml:space="preserve">
-    <value>File</value>
-  </data>
-  <data name="HexView_LostClusters" xml:space="preserve">
+  <data name="Label_LostClusters" xml:space="preserve">
     <value>Lost Clusters</value>
   </data>
   <data name="HexView_RootDirectory" xml:space="preserve">
@@ -942,9 +888,6 @@
   <data name="SummaryPanel_AltOEMName" xml:space="preserve">
     <value>Alternative OEM Name</value>
   </data>
-  <data name="SummaryPanel_BadSectors" xml:space="preserve">
-    <value>Bad Sectors</value>
-  </data>
   <data name="SummaryPanel_Bitrate" xml:space="preserve">
     <value>Bitrate</value>
   </data>
@@ -974,9 +917,6 @@
   </data>
   <data name="SummaryPanel_Description" xml:space="preserve">
     <value>Description</value>
-  </data>
-  <data name="SummaryPanel_Disk" xml:space="preserve">
-    <value>Disk</value>
   </data>
   <data name="SummaryPanel_DiskType" xml:space="preserve">
     <value>Disk Type</value>
@@ -1008,10 +948,7 @@
   <data name="SummaryPanel_Language" xml:space="preserve">
     <value>Language</value>
   </data>
-  <data name="SummaryPanel_LostClusters" xml:space="preserve">
-    <value>Lost Clusters</value>
-  </data>
-  <data name="SummaryPanel_MediaDescriptor" xml:space="preserve">
+  <data name="Label_MediaDescriptor" xml:space="preserve">
     <value>Media Descriptor</value>
   </data>
   <data name="SummaryPanel_NewestDate" xml:space="preserve">
@@ -1038,7 +975,7 @@
   <data name="SummaryPanel_Publisher" xml:space="preserve">
     <value>Publisher</value>
   </data>
-  <data name="SummaryPanel_Region" xml:space="preserve">
+  <data name="Label_Region" xml:space="preserve">
     <value>Region</value>
   </data>
   <data name="SummaryPanel_ReservedClusters" xml:space="preserve">
@@ -1071,14 +1008,8 @@
   <data name="SummaryPanel_Variant" xml:space="preserve">
     <value>Variant</value>
   </data>
-  <data name="SummaryPanel_Version" xml:space="preserve">
-    <value>Version</value>
-  </data>
   <data name="SummaryPanel_VolumeDate" xml:space="preserve">
     <value>Volume Date</value>
-  </data>
-  <data name="SummaryPanel_VolumeLabel" xml:space="preserve">
-    <value>Volume Label</value>
   </data>
   <data name="SummaryPanel_WeakBits" xml:space="preserve">
     <value>Has Weak Bits</value>
@@ -1137,9 +1068,6 @@
   <data name="Bitstream_DAMSync" xml:space="preserve">
     <value>Data Field Sync</value>
   </data>
-  <data name="Bitstream_DataArea" xml:space="preserve">
-    <value>Data Area</value>
-  </data>
   <data name="Bitstream_DataChecksum" xml:space="preserve">
     <value>Data Checksum</value>
   </data>
@@ -1169,9 +1097,6 @@
   </data>
   <data name="Bitstream_Overlaps" xml:space="preserve">
     <value>Overlaps</value>
-  </data>
-  <data name="Bitstream_WeakBits" xml:space="preserve">
-    <value>Weak Bits</value>
   </data>
   <data name="Bitstream_WriteSplice" xml:space="preserve">
     <value>Write Splice</value>
@@ -1251,7 +1176,7 @@
   <data name="Menu_SelectTrack" xml:space="preserve">
     <value>Select T&amp;rack</value>
   </data>
-  <data name="Caption_Disk" xml:space="preserve">
+  <data name="Label_Disk" xml:space="preserve">
     <value>Disk</value>
   </data>
   <data name="Dialog_FloppyError_Formatting" xml:space="preserve">
@@ -1305,7 +1230,7 @@
   <data name="Label_FATType_Next" xml:space="preserve">
     <value>Next</value>
   </data>
-  <data name="Label_FATType_Reserved" xml:space="preserve">
+  <data name="Label_Reserved" xml:space="preserve">
     <value>Reserved</value>
   </data>
   <data name="Label_File" xml:space="preserve">
@@ -1490,7 +1415,7 @@
   <data name="DataInspector_Label_Area" xml:space="preserve">
     <value>Area</value>
   </data>
-  <data name="DataInspector_Label_DataArea" xml:space="preserve">
+  <data name="Label_DataArea" xml:space="preserve">
     <value>Data Area</value>
   </data>
   <data name="SummaryPanel_DiskFormat" xml:space="preserve">
@@ -1503,7 +1428,7 @@
     <value>Write Splices</value>
   </data>
   <data name="Filter_Disk_HasWriteSplices" xml:space="preserve">
-    <value>Disk - Has Write Splices</value>
+    <value>Has Write Splices</value>
   </data>
   <data name="Menu_EnableWriteSpliceFilter" xml:space="preserve">
     <value>Enable Write-splice Filter</value>
@@ -1515,16 +1440,8 @@
   <data name="FilePanel_Attributes" xml:space="preserve">
     <value>Attrib</value>
   </data>
-  <data name="FilePanel_Cluster" xml:space="preserve">
-    <value>Cluster</value>
-    <comment>@Invariant</comment>
-  </data>
   <data name="FilePanel_ClusterError" xml:space="preserve">
     <value>Err</value>
-    <comment>@Invariant</comment>
-  </data>
-  <data name="FilePanel_CRC32" xml:space="preserve">
-    <value>CRC32</value>
     <comment>@Invariant</comment>
   </data>
   <data name="FilePanel_Created" xml:space="preserve">
@@ -1552,9 +1469,6 @@
   <data name="FilePanel_NTReserved" xml:space="preserve">
     <value>NT</value>
     <comment>@Invariant</comment>
-  </data>
-  <data name="FilePanel_Size" xml:space="preserve">
-    <value>Size</value>
   </data>
   <data name="Menu_EditFileProperties" xml:space="preserve">
     <value>Edit File &amp;Properties</value>
@@ -1904,5 +1818,14 @@ Do you wish to overwrite?</value>
   <data name="Label_Tracklayout" xml:space="preserve">
     <value>Tracklayout</value>
     <comment>@Invariant</comment>
+  </data>
+  <data name="Label_ReProcess" xml:space="preserve">
+    <value>Reprocess</value>
+  </data>
+  <data name="Label_ExtendedLogOutput" xml:space="preserve">
+    <value>Extended Log Output</value>
+  </data>
+  <data name="Label_Remaster" xml:space="preserve">
+    <value>Remaster</value>
   </data>
 </root>

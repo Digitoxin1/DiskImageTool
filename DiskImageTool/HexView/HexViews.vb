@@ -145,7 +145,7 @@ Module HexViews
 
     Public Function HexViewBadSectors(Disk As Disk) As HexViewSectorData
         Dim HexViewSectorData As New HexViewSectorData(Disk) With {
-            .Description = My.Resources.HexView_BadSectors
+            .Description = My.Resources.Label_BadSectors
         }
 
         Dim Offset As UInteger = 0
@@ -173,7 +173,7 @@ Module HexViews
 
     Public Function HexViewBootSector(Disk As Disk) As HexViewSectorData
         Dim HexViewSectorData As New HexViewSectorData(Disk) With {
-            .Description = My.Resources.HexView_BootSector
+            .Description = My.Resources.Label_BootSector
         }
 
         Dim HighlightedRegions As New HighlightedRegions
@@ -253,13 +253,13 @@ Module HexViews
             If DirectoryEntry.IsDeleted Then
                 Caption = My.Resources.HexView_DeletedDirectory
             Else
-                Caption = My.Resources.HexView_Directory
+                Caption = My.Resources.Label_Directory
             End If
         Else
             If DirectoryEntry.IsDeleted Then
                 Caption = My.Resources.HexView_DeletedFile
             Else
-                Caption = My.Resources.HexView_File
+                Caption = My.Resources.Label_File
             End If
         End If
 
@@ -295,7 +295,7 @@ Module HexViews
 
     Public Function HexViewFAT(Disk As Disk) As HexViewSectorData
         Dim HexViewSectorData As New HexViewSectorData(Disk) With {
-            .Description = My.Resources.HexView_FAT
+            .Description = My.Resources.Label_FAT
         }
 
         Dim HighlightedRegions As New HighlightedRegions
@@ -345,7 +345,7 @@ Module HexViews
 
     Public Function HexViewLostClusters(Disk As Disk) As HexViewSectorData
         Dim HexViewSectorData As New HexViewSectorData(Disk) With {
-            .Description = My.Resources.HexView_LostClusters
+            .Description = My.Resources.Label_LostClusters
         }
 
         Dim Offset As UInteger = 0

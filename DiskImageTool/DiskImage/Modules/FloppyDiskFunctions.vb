@@ -531,7 +531,7 @@
                     Dim FATIndex = GetFATIndex(Disk, Sector)
                     Return My.Resources.SummaryPanel_FAT & " " & (FATIndex + 1).ToString
                 ElseIf Cluster > 1 Then
-                    Return My.Resources.DataInspector_Label_DataArea
+                    Return My.Resources.Label_DataArea
                 End If
             End If
 

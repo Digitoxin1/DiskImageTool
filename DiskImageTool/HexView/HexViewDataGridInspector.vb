@@ -114,10 +114,10 @@ Namespace HexView
             })
 
             AddRow(My.Resources.DataInspector_Label_Area, 0, DataRowEnum.Area, False)
-            AddRow(My.Resources.DataInspector_Label_File, 0, DataRowEnum.File, False)
-            AddRow(My.Resources.DataInspector_Label_Region, 0, DataRowEnum.Description, False)
+            AddRow(My.Resources.Label_File, 0, DataRowEnum.File, False)
+            AddRow(My.Resources.Label_Region, 0, DataRowEnum.Description, False)
             AddRow(My.Resources.DataInspector_Label_CRC16, 0, DataRowEnum.CRC16, False)
-            AddRow(My.Resources.DataInspector_Label_CRC32, 0, DataRowEnum.CRC32, False)
+            AddRow(My.Resources.Label_CRC32, 0, DataRowEnum.CRC32, False)
             AddRow(My.Resources.DataInspector_Label_Binary, 1, DataRowEnum.Binary,, 8)
             AddRow(My.Resources.DataInspector_Label_Int8, 1, DataRowEnum.Int8,, 4)
             AddRow(My.Resources.DataInspector_Label_UInt8, 1, DataRowEnum.UInt8,, 3)
@@ -133,7 +133,7 @@ Namespace HexView
             AddRow(My.Resources.DataInspector_Label_DOSTime, 2, DataRowEnum.DOSTime,, 8)
             AddRow(My.Resources.DataInspector_Label_DOSDateTime, 4, DataRowEnum.DOSTimeDate,, 19)
             AddRow(My.Resources.DataInspector_Label_Bitstream, 0, DataRowEnum.Bitstream, False)
-            AddRow(My.Resources.DataInspector_Label_WeakBits, 0, DataRowEnum.WeakBits, False)
+            AddRow(My.Resources.Label_WeakBits, 0, DataRowEnum.WeakBits, False)
 
             SetDataRow(DataRowEnum.Bitstream, Nothing, True, True)
             SetDataRow(DataRowEnum.WeakBits, Nothing, True, True)
@@ -222,7 +222,7 @@ Namespace HexView
             Dim Invalid As Boolean
 
             If Value Is Nothing Then
-                RowValue = My.Resources.DataInspector_Label_Invalid
+                RowValue = My.Resources.Label_Invalid
                 ForeColor = SystemColors.GrayText
                 Visible = Not HideIfEmpty
                 Invalid = True
@@ -264,7 +264,7 @@ Namespace HexView
             Dim Result As Boolean
             Dim ErrorMsg As String = ""
 
-            If e.FormattedValue = My.Resources.DataInspector_Label_Invalid And Invalid Then
+            If e.FormattedValue = My.Resources.Label_Invalid And Invalid Then
                 Exit Sub
             End If
 

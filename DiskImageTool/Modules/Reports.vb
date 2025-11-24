@@ -45,7 +45,7 @@ Module Reports
                                         Dim Cluster = BPB.SectorToCluster(Sector)
                                         Region = GetFloppyDiskRegionName(CurrentImage.Disk, Sector, Cluster)
                                         If Region.Length = 0 Then
-                                            Region = My.Resources.DataInspector_Label_DataArea
+                                            Region = My.Resources.Label_DataArea
                                         End If
 
                                         RegionLength = Math.Max(RegionLength, Region.Length)
@@ -105,7 +105,7 @@ Module Reports
                 My.Resources.Label_Track.PadRight(TrackLength),
                 My.Resources.Label_Side.PadRight(SideLength),
                 My.Resources.Label_SectorId.PadRight(SectorIdLength),
-                My.Resources.DataInspector_Label_Region.PadRight(RegionLength)
+                My.Resources.Label_Region.PadRight(RegionLength)
             }
             If HasFile Then
                 ContentRow.Add(My.Resources.Label_File.PadRight(FileLength))

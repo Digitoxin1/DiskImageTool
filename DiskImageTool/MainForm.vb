@@ -799,7 +799,7 @@ Public Class MainForm
         FilterLabelAdd(My.Resources.Label_Search)
 
         _ToolStripOEMNameCombo = FilterComboAdd(125, True)
-        _ToolStripOEMNameLabel = FilterLabelAdd(My.Resources.BootSector_OEMName)
+        _ToolStripOEMNameLabel = FilterLabelAdd(My.Resources.Label_OEMName)
 
         _ToolStripDiskTypeCombo = FilterComboAdd(95, False)
         _ToolStripDiskTypeLabel = FilterLabelAdd(My.Resources.SummaryPanel_DiskFormat)
@@ -840,7 +840,7 @@ Public Class MainForm
         MenuHexDirectorySubMenuClear()
 
         If Response.DirectoryList.Count > 0 Then
-            MenuHexDirectory.Text = My.Resources.Menu_Directory
+            MenuHexDirectory.Text = My.Resources.Label_Directory
             MenuHexDirectorySubMenuItemAdd(InParens(My.Resources.Label_Root), Disk.RootDirectory)
             MenuHexDirectory.Tag = Nothing
         Else
@@ -1151,7 +1151,7 @@ Public Class MainForm
                 If TrackList.Length <= 30 Then
                     Array.Sort(TrackList)
 
-                    MenuRawTrackDataSubMenuItemAdd(-1, My.Resources.Menu_AllTracks)
+                    MenuRawTrackDataSubMenuItemAdd(-1, My.Resources.Label_AllTracks)
 
                     For i = 0 To TrackList.Length - 1
                         Dim Track = TrackList(i)

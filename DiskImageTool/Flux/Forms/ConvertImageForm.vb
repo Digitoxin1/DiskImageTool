@@ -5,7 +5,7 @@ Namespace Flux
     Public Class ConvertImageForm
         Inherits BaseFluxForm
 
-        Private WithEvents ButtonClear As Button
+        Private WithEvents ButtonDiscard As Button
         Private WithEvents ButtonImport As Button
         Private WithEvents ButtonOpen As Button
         Private WithEvents ButtonProcess As Button
@@ -23,12 +23,14 @@ Namespace Flux
         Private ReadOnly _Initialized As Boolean = False
         Private ReadOnly _LaunchedFromDialog As Boolean = False
         Private ReadOnly _UserState As Settings.UserStateFlux
+        Private ReadOnly _TempPath As String
         Private _ComboDevicesNoEvent As Boolean = False
         Private _ComboExtensionsNoEvent As Boolean = False
         Private _ComboOutputTypeNoEvent As Boolean = False
         Private _DoubleStep As Boolean = False
         Private _InputFilePath As String = ""
         Private _OutputFilePath As String = ""
+        Private _OutputFilePrefix As String = ""
         Private _SelectedDevice As IDevice = Nothing
         Private _SideCount As Integer
         Private _TrackCount As Integer
@@ -37,7 +39,7 @@ Namespace Flux
         Private LabelOutputType As Label
         Public Event ImportRequested(File As String, NewFilename As String)
 
-        Public Sub New(FilePath As String, TrackCount As Integer, SideCount As Integer, LaunchedFromDialog As Boolean)
+        Public Sub New(TempPath As String, FilePath As String, TrackCount As Integer, SideCount As Integer, LaunchedFromDialog As Boolean)
             MyBase.New("")
 
             Me.AllowDrop = True
@@ -46,9 +48,11 @@ Namespace Flux
                 .Interval = 10
             }
 
+            _TempPath = TempPath
             _UserState = App.UserState.Flux
             _LaunchedFromDialog = LaunchedFromDialog
             _InputFilePath = FilePath
+            _OutputFilePrefix = Guid.NewGuid.ToString
             _TrackCount = TrackCount
             _SideCount = SideCount
 
@@ -82,6 +86,8 @@ Namespace Flux
         Protected Overrides Sub OnAfterBaseFormClosing(e As FormClosingEventArgs)
             If Me.DialogResult = DialogResult.Cancel OrElse Me.DialogResult = DialogResult.None Then
                 ClearOutputFile(True)
+            Else
+                MoveLogs()
             End If
         End Sub
 
@@ -108,7 +114,7 @@ Namespace Flux
         End Function
 
         Private Sub AutoSaveLogFile()
-            If String.IsNullOrEmpty(_InputFilePath) Then
+            If String.IsNullOrEmpty(_InputFilePath) OrElse String.IsNullOrEmpty(_OutputFilePrefix) Then
                 Exit Sub
             End If
 
@@ -116,7 +122,9 @@ Namespace Flux
                 Exit Sub
             End If
 
-            Dim PathName As String = IO.Path.Combine(IO.Path.GetDirectoryName(_InputFilePath), LogFileName)
+            Dim FileName As String = _OutputFilePrefix & "_log_" & LogFileName
+            Dim PathName As String = IO.Path.Combine(_TempPath, FileName)
+
             SaveLogFile(PathName, TextBoxConsole.Text, LogStripPath)
         End Sub
 
@@ -135,18 +143,52 @@ Namespace Flux
             Return False
         End Function
 
-        Private Sub ClearLoadedImage()
+        Private Sub ClearLoadedImage(DeleteFiles As Boolean)
+            If DeleteFiles Then
+                DeleteTempFiles()
+            End If
             TextBoxFileName.Text = ""
             _InputFilePath = ""
+            _OutputFilePrefix = ""
             ComboImageFormat.SelectedIndex = 0
             SetTiltebarText()
             RefreshButtonState()
+        End Sub
+
+        Private Sub MoveLogs()
+            If Not String.IsNullOrEmpty(_InputFilePath) AndAlso Not String.IsNullOrEmpty(_OutputFilePrefix) Then
+                Dim LogFilePath As String = IO.Path.GetDirectoryName(_InputFilePath)
+
+                Dim Prefix As String = _OutputFilePrefix & "_log_"
+
+                For Each File In IO.Directory.EnumerateFiles(_TempPath, Prefix & "*.*")
+                    Dim NewFileName As String = IO.Path.GetFileName(File).Substring(Prefix.Length)
+                    Dim NewFilePath As String = IO.Path.Combine(LogFilePath, NewFileName)
+                    Try
+                        IO.File.Delete(NewFilePath)
+                        IO.File.Move(File, NewFilePath)
+                    Catch ex As Exception
+                        ' Ignore errors
+                    End Try
+                Next
+            End If
+        End Sub
+
+        Private Sub DeleteTempFiles()
+            If String.IsNullOrEmpty(_OutputFilePrefix) Then
+                Exit Sub
+            End If
+
+            For Each File In IO.Directory.EnumerateFiles(_TempPath, _OutputFilePrefix & "*.*")
+                DeleteTempFileIfExists(File)
+            Next
         End Sub
 
         Private Sub ClearOutputFile(Delete As Boolean)
             If Delete AndAlso Not String.IsNullOrEmpty(_OutputFilePath) Then
                 DeleteTempFileIfExists(_OutputFilePath)
             End If
+
             _OutputFilePath = ""
         End Sub
 
@@ -274,7 +316,7 @@ Namespace Flux
             }
 
             CheckBoxRemaster = New CheckBox With {
-                .Text = "Remaster",
+                .Text = My.Resources.Label_Remaster,
                 .Anchor = AnchorStyles.Left,
                 .AutoSize = True,
                 .Margin = New Padding(12, 3, 3, 3),
@@ -282,7 +324,7 @@ Namespace Flux
             }
 
             CheckBoxExtendedLogging = New CheckBox With {
-                .Text = "Extended Log Output",
+                .Text = My.Resources.Label_ExtendedLogOutput,
                 .Anchor = AnchorStyles.Left,
                 .AutoSize = True,
                 .Margin = New Padding(12, 3, 3, 3),
@@ -344,13 +386,13 @@ Namespace Flux
 
             ButtonProcess = New Button With {
                 .Margin = New Padding(3, 0, 3, 3),
-                .Text = My.Resources.Label_Write,
+                .Text = My.Resources.Label_ReProcess,
                 .MinimumSize = New Size(75, 0),
                 .AutoSize = True,
                 .Anchor = AnchorStyles.Left Or AnchorStyles.Right
             }
 
-            ButtonClear = New Button With {
+            ButtonDiscard = New Button With {
                 .Margin = New Padding(3, 12, 3, 3),
                 .Text = My.Resources.Label_Discard,
                 .MinimumSize = New Size(75, 0),
@@ -386,7 +428,7 @@ Namespace Flux
             PanelButtonsRight.Controls.Add(ButtonImport)
 
             ButtonContainer.Controls.Add(ButtonProcess)
-            ButtonContainer.Controls.Add(ButtonClear)
+            ButtonContainer.Controls.Add(ButtonDiscard)
             ButtonContainer.Controls.Add(ButtonTrackLayout)
 
             ButtonOk.Text = My.Resources.Label_ImportClose
@@ -480,15 +522,17 @@ Namespace Flux
             CheckBoxSaveLog.Checked = GetSelectedDeviceState.SaveLog
             CheckBoxExtendedLogging.Checked = GetSelectedDeviceState.ExtendedLogs.GetValueOrDefault(False)
 
-            InitializeImage()
+            InitializeImage(Repopulate)
         End Sub
 
-        Private Sub InitializeImage()
+        Private Sub InitializeImage(Clear As Boolean)
             RefreshDeviceState()
-            GridReset(_TrackCount, _SideCount)
-            SetNewFileName()
-            SetTiltebarText()
-            ClearStatusBar()
+            If Clear Then
+                SetNewFileName()
+                SetTiltebarText()
+                GridReset(_TrackCount, _SideCount)
+                ClearStatusBar()
+            End If
             Dim ImageFormat = ReadImageFormat()
             PopulateImageFormats(ComboImageFormat, ImageFormat, ImageFormat)
             PopulateOutputTypes()
@@ -510,6 +554,7 @@ Namespace Flux
                 _TrackCount = response.TrackCount
                 _SideCount = response.SideCount
                 _InputFilePath = Filename
+                _OutputFilePrefix = Guid.NewGuid.ToString
 
                 Return True
             End If
@@ -653,7 +698,9 @@ Namespace Flux
 
             Dim OutputType As ImageImportOutputTypes = ComboOutputType.SelectedValue
 
-            Dim FilePath = GenerateOutputFile(ImageImportOutputTypeFileExt(OutputType))
+            Dim FileExt = ImageImportOutputTypeFileExt(OutputType)
+            Dim FilePath = IO.Path.Combine(_TempPath, _OutputFilePrefix & FileExt)
+
             If FilePath = "" Then
                 Exit Sub
             End If
@@ -669,8 +716,9 @@ Namespace Flux
         Private Sub ProcessImport()
             RaiseEvent ImportRequested(_OutputFilePath, GetNewFileName())
 
+            MoveLogs()
             ClearProcessedImage(False)
-            ClearLoadedImage()
+            ClearLoadedImage(False)
         End Sub
 
         Private Sub ProcessOutputLine(line As String)
@@ -716,7 +764,7 @@ Namespace Flux
             Dim IsRunning As Boolean = Process.IsRunning
             Dim IsIdle As Boolean = Not IsRunning
 
-            Dim SettingsEnabled As Boolean = IsIdle AndAlso Not HasOutputfile
+            Dim SettingsEnabled As Boolean = IsIdle
             Dim CanConfigure As Boolean = SettingsEnabled AndAlso HasInputFile
             Dim UseImageFormat As Boolean = _SelectedDevice IsNot Nothing AndAlso _SelectedDevice.RequiresImageFormat
 
@@ -735,11 +783,18 @@ Namespace Flux
             ComboDevices.Enabled = SettingsEnabled AndAlso ComboDevices.Items.Count > 1
 
             ButtonCancel.Text = If(IsRunning Or HasOutputfile, My.Resources.Label_Cancel, My.Resources.Label_Close)
-            ButtonClear.Enabled = IsIdle AndAlso HasOutputfile
-            ButtonOpen.Enabled = SettingsEnabled
+            ButtonDiscard.Enabled = IsIdle AndAlso HasOutputfile
+            ButtonOpen.Enabled = SettingsEnabled AndAlso Not HasOutputfile
 
-            ButtonProcess.Enabled = (Not IsNonImage Or Not UseImageFormat) AndAlso HasInputFile AndAlso (IsRunning Or Not HasOutputfile)
-            ButtonProcess.Text = If(IsRunning, My.Resources.Label_Abort, My.Resources.Label_Process)
+            ButtonProcess.Enabled = HasInputFile AndAlso (Not IsNonImage OrElse Not UseImageFormat OrElse IsRunning)
+
+            If IsRunning Then
+                ButtonProcess.Text = My.Resources.Label_Abort
+            ElseIf HasOutputfile Then
+                ButtonProcess.Text = My.Resources.Label_ReProcess
+            Else
+                ButtonProcess.Text = My.Resources.Label_Process
+            End If
 
             ButtonSaveLog.Enabled = IsIdle AndAlso Not String.IsNullOrEmpty(TextBoxConsole.Text)
 
@@ -875,9 +930,9 @@ Namespace Flux
             Return IO.File.Exists(IO.Path.Combine(ParentFolder, "tracklayout.txt"))
         End Function
 #Region "Events"
-        Private Sub ButtonClear_Click(sender As Object, e As EventArgs) Handles ButtonClear.Click
+        Private Sub ButtonDiscard_Click(sender As Object, e As EventArgs) Handles ButtonDiscard.Click
             ClearProcessedImage(True)
-            RefreshButtonState()
+            ClearLoadedImage(True)
         End Sub
 
         Private Sub ButtonImport_Click(sender As Object, e As EventArgs) Handles ButtonImport.Click

@@ -196,35 +196,35 @@
                 Case FilterTypes.ModifiedFiles
                     Caption = My.Resources.Filter_ModifiedFiles
                 Case FilterTypes.Disk_UnknownFormat
-                    Caption = My.Resources.Filter_Disk_UnknownFormat
+                    Caption = My.Resources.Label_Disk & " - " & My.Resources.Filter_Disk_UnknownFormat
                 Case FilterTypes.Disk_CustomFormat
-                    Caption = My.Resources.Filter_Disk_CustomFormat
+                    Caption = My.Resources.Label_Disk & " - " & My.Resources.Filter_Disk_CustomFormat
                 Case FilterTypes.Disk_NOBPB
-                    Caption = My.Resources.Filter_Disk_NOBPB
+                    Caption = My.Resources.Label_Disk & " - " & My.Resources.Filter_Disk_NOBPB
                 Case FilterTypes.Disk_NoBootLoader
-                    Caption = My.Resources.Filter_Disk_NoBootLoader
+                    Caption = My.Resources.Label_Disk & " - " & My.Resources.Filter_Disk_NoBootLoader
                 Case FilterTypes.Disk_CustomBootLoader
-                    Caption = My.Resources.Filter_Disk_CustomBootLoader
+                    Caption = My.Resources.Label_Disk & " - " & My.Resources.Filter_Disk_CustomBootLoader
                 Case FilterTypes.Disk_MismatchedImageSize
-                    Caption = My.Resources.Filter_Disk_MismatchedImageSize
+                    Caption = My.Resources.Label_Disk & " - " & My.Resources.Filter_Disk_MismatchedImageSize
                 Case FilterTypes.Disk_MismatchedMediaDescriptor
-                    Caption = My.Resources.Filter_Disk_MismatchedMediaDescriptor
+                    Caption = My.Resources.Label_Disk & " - " & My.Resources.Filter_Disk_MismatchedMediaDescriptor
                 Case FilterTypes.Disk_FreeClustersWithData
-                    Caption = My.Resources.Filter_Disk_FreeClustersWithData
+                    Caption = My.Resources.Label_Disk & " - " & My.Resources.Filter_Disk_FreeClustersWithData
                 Case FilterTypes.Disk_HasWriteSplices
-                    Caption = My.Resources.Filter_Disk_HasWriteSplices
+                    Caption = My.Resources.Label_Disk & " - " & My.Resources.Filter_Disk_HasWriteSplices
                 Case FilterTypes.Bootstrap_Unknown
                     Caption = My.Resources.Filter_Bootstrap_Unknown
                 Case FilterTypes.OEMName_Unknown
-                    Caption = My.Resources.Filter_OEMName_Unknown
+                    Caption = My.Resources.Label_OEMName & " - " & My.Resources.Filter_OEMName_Unknown
                 Case FilterTypes.OEMName_Mismatched
-                    Caption = My.Resources.Filter_OEMName_Mismatched
+                    Caption = My.Resources.Label_OEMName & " - " & My.Resources.Filter_OEMName_Mismatched
                 Case FilterTypes.OEMName_Windows9x
-                    Caption = My.Resources.Filter_OEMName_Windows9x
+                    Caption = My.Resources.Label_OEMName & " - " & My.Resources.Filter_OEMName_Windows9x
                 Case FilterTypes.OEMName_Verified
-                    Caption = My.Resources.Filter_OEMName_Verified
+                    Caption = My.Resources.Label_OEMName & " - " & My.Resources.Filter_OEMName_Verified
                 Case FilterTypes.OEMName_Unverified
-                    Caption = My.Resources.Filter_OEMName_Unverified
+                    Caption = My.Resources.Label_OEMName & " - " & My.Resources.Filter_OEMName_Unverified
                 Case FilterTypes.FileSystem_HasCreationDate
                     Caption = My.Resources.Filter_FileSystem_HasCreationDate
                 Case FilterTypes.FileSystem_HasLastAccessDate

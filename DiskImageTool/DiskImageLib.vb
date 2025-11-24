@@ -496,7 +496,7 @@ Module DiskImageLib
         If DirectoryEntry.IsDeleted Then
             Caption = My.Resources.Caption_DeleteFile & " - " & DirectoryEntry.GetShortFileName(True)
         Else
-            Caption = My.Resources.Caption_File & " - " & DirectoryEntry.GetShortFileName(True)
+            Caption = My.Resources.Label_File & " - " & DirectoryEntry.GetShortFileName(True)
         End If
 
         Dim Bytes = DirectoryEntry.GetContent

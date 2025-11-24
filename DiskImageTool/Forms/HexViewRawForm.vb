@@ -321,7 +321,7 @@ Public Class HexViewRawForm
             Case MFMRegionType.DAM
                 Return My.Resources.Bitstream_DAM
             Case MFMRegionType.DataArea
-                Return My.Resources.Bitstream_DataArea & "  " & InParens(Region.Length)
+                Return My.Resources.Label_DataArea & "  " & InParens(Region.Length)
             Case MFMRegionType.DataChecksumValid, MFMRegionType.DataChecksumInvalid
                 Return My.Resources.Bitstream_DataChecksum
             Case MFMRegionType.Overflow
@@ -1452,7 +1452,7 @@ Public Class HexViewRawForm
             End If
 
             If Sector.HasWeakBits Then
-                TooltipText &= Environment.NewLine & My.Resources.Bitstream_WeakBits
+                TooltipText &= Environment.NewLine & My.Resources.Label_WeakBits
             End If
 
             If Sector.WriteSplice Then

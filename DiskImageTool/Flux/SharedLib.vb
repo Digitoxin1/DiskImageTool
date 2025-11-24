@@ -255,13 +255,20 @@ Namespace Flux
         End Function
 
         Public Function ConvertFluxImage(ParentForm As Form, FilePath As String, AllowSCP As Boolean, importHandler As ConvertImageForm.ImportRequestedEventHandler, LaunchedFromDialog As Boolean) As (Result As DialogResult, OutputFile As String, NewFileName As String)
+            Dim TempPath = InitTempImagePath()
+
+            If TempPath = "" Then
+                MsgBox(My.Resources.Dialog_TempPathError, MsgBoxStyle.Critical)
+                Return (DialogResult.Abort, "", "")
+            End If
+
             Dim AnalyzeResponse = AnalyzeFluxImage(FilePath, AllowSCP)
 
             If Not AnalyzeResponse.Result Then
                 Return (DialogResult.Abort, "", "")
             End If
 
-            Using form As New ConvertImageForm(FilePath, AnalyzeResponse.TrackCount, AnalyzeResponse.SideCount, LaunchedFromDialog)
+            Using form As New ConvertImageForm(TempPath, FilePath, AnalyzeResponse.TrackCount, AnalyzeResponse.SideCount, LaunchedFromDialog)
 
                 If importHandler IsNot Nothing Then
                     AddHandler form.ImportRequested, importHandler

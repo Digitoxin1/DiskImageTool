@@ -318,9 +318,6 @@
   <data name="FileType_AllDiskImages" xml:space="preserve">
     <value>Todas las Imágenes de Disquete</value>
   </data>
-  <data name="Menu_AllTracks" xml:space="preserve">
-    <value>Todas las Pistas</value>
-  </data>
   <data name="Label_AllTracks" xml:space="preserve">
     <value>Todas las Pistas</value>
   </data>
@@ -372,12 +369,6 @@
   <data name="Label_BadSectors" xml:space="preserve">
     <value>Sectores defectuosos</value>
   </data>
-  <data name="HexView_BadSectors" xml:space="preserve">
-    <value>Sectores defectuosos</value>
-  </data>
-  <data name="SummaryPanel_BadSectors" xml:space="preserve">
-    <value>Sectores defectuosos</value>
-  </data>
   <data name="FloppyImageType_BasicSectorImage" xml:space="preserve">
     <value>Imagen de sector básica</value>
   </data>
@@ -409,9 +400,6 @@
     <value>Registro de arranque</value>
   </data>
   <data name="Label_BootSector" xml:space="preserve">
-    <value>Sector de arranque</value>
-  </data>
-  <data name="HexView_BootSector" xml:space="preserve">
     <value>Sector de arranque</value>
   </data>
   <data name="BootSector_BootStrapSignature" xml:space="preserve">
@@ -492,9 +480,6 @@
   <data name="Bitstream_DAM" xml:space="preserve">
     <value>Marca de dirección de datos</value>
   </data>
-  <data name="Bitstream_DataArea" xml:space="preserve">
-    <value>Área de datos</value>
-  </data>
   <data name="Bitstream_DataChecksum" xml:space="preserve">
     <value>Suma de comprobación de datos</value>
   </data>
@@ -531,44 +516,32 @@
   <data name="Label_Detected" xml:space="preserve">
     <value>Detectado</value>
   </data>
-  <data name="HexView_Directory" xml:space="preserve">
-    <value>Directorio</value>
-  </data>
-  <data name="Menu_Directory" xml:space="preserve">
-    <value>Directorio</value>
-  </data>
   <data name="Label_DirectoryName" xml:space="preserve">
     <value>Nombre del directorio</value>
   </data>
-  <data name="SummaryPanel_Disk" xml:space="preserve">
-    <value>Disco</value>
-  </data>
-  <data name="Caption_Disk" xml:space="preserve">
-    <value>Disco</value>
-  </data>
   <data name="Filter_Disk_CustomBootLoader" xml:space="preserve">
-    <value>Disco - Cargador de arranque personalizado</value>
+    <value>Cargador de arranque personalizado</value>
   </data>
   <data name="Filter_Disk_CustomFormat" xml:space="preserve">
-    <value>Disco - Formato personalizado</value>
+    <value>Formato personalizado</value>
   </data>
   <data name="Filter_Disk_FreeClustersWithData" xml:space="preserve">
-    <value>Disco - Clusters libres con datos</value>
+    <value>Clusters libres con datos</value>
   </data>
   <data name="Filter_Disk_MismatchedImageSize" xml:space="preserve">
-    <value>Disco - Tamaño de imagen no coincide</value>
+    <value>Tamaño de imagen no coincide</value>
   </data>
   <data name="Filter_Disk_MismatchedMediaDescriptor" xml:space="preserve">
-    <value>Disco - Descriptor de medio no coincide</value>
+    <value>Descriptor de medio no coincide</value>
   </data>
   <data name="Filter_Disk_NoBootLoader" xml:space="preserve">
-    <value>Disco - Sin cargador de arranque</value>
+    <value>Sin cargador de arranque</value>
   </data>
   <data name="Filter_Disk_NOBPB" xml:space="preserve">
-    <value>Disco - Sin BPB</value>
+    <value>Sin BPB</value>
   </data>
   <data name="Filter_Disk_UnknownFormat" xml:space="preserve">
-    <value>Disco - Formato desconocido</value>
+    <value>Formato desconocido</value>
   </data>
   <data name="SummaryPanel_DiskType" xml:space="preserve">
     <value>Tipo de disco</value>
@@ -644,21 +617,6 @@
   </data>
   <data name="Label_File" xml:space="preserve">
     <value>Archivo</value>
-  </data>
-  <data name="DataInspector_Label_File" xml:space="preserve">
-    <value>Archivo</value>
-  </data>
-  <data name="HexView_File" xml:space="preserve">
-    <value>Archivo</value>
-  </data>
-  <data name="Caption_File" xml:space="preserve">
-    <value>Archivo</value>
-  </data>
-  <data name="HexView_FAT" xml:space="preserve">
-    <value>Tabla de asignación de archivos</value>
-  </data>
-  <data name="Caption_FAT" xml:space="preserve">
-    <value>Tabla de asignación de archivos</value>
   </data>
   <data name="Label_FileName" xml:space="preserve">
     <value>Nombre del archivo</value>
@@ -810,9 +768,6 @@
   <data name="Bitstream_IAMSync" xml:space="preserve">
     <value>Sincronización del campo de índice</value>
   </data>
-  <data name="DataInspector_Label_Invalid" xml:space="preserve">
-    <value>Inválido</value>
-  </data>
   <data name="Label_Invalid" xml:space="preserve">
     <value>Inválido</value>
   </data>
@@ -855,15 +810,6 @@
   <data name="DirectorytEntryLFN_Checksum" xml:space="preserve">
     <value>Checksum LFN</value>
   </data>
-  <data name="DirectorytEntryLFN_FilePart1" xml:space="preserve">
-    <value>Nombre LFN 1</value>
-  </data>
-  <data name="DirectorytEntryLFN_FilePart2" xml:space="preserve">
-    <value>Nombre LFN 2</value>
-  </data>
-  <data name="DirectorytEntryLFN_FilePart3" xml:space="preserve">
-    <value>Nombre LFN 3</value>
-  </data>
   <data name="DirectorytEntryLFN_Sequence" xml:space="preserve">
     <value>Secuencia LFN</value>
   </data>
@@ -875,18 +821,6 @@
   </data>
   <data name="Label_LostCluster" xml:space="preserve">
     <value>Clúster perdido</value>
-  </data>
-  <data name="HexView_LostClusters" xml:space="preserve">
-    <value>Clústeres perdidos</value>
-  </data>
-  <data name="SummaryPanel_LostClusters" xml:space="preserve">
-    <value>Clústeres perdidos</value>
-  </data>
-  <data name="BPB_MediaDescriptor" xml:space="preserve">
-    <value>Descriptor de medio</value>
-  </data>
-  <data name="SummaryPanel_MediaDescriptor" xml:space="preserve">
-    <value>Descriptor de medio</value>
   </data>
   <data name="Label_Mismatched" xml:space="preserve">
     <value>No coinciden</value>
@@ -945,23 +879,23 @@
   <data name="BPB_NumberOfHeads" xml:space="preserve">
     <value>Número de cabezas</value>
   </data>
-  <data name="BootSector_OEMName" xml:space="preserve">
+  <data name="Label_OEMName" xml:space="preserve">
     <value>Nombre OEM</value>
   </data>
   <data name="Filter_OEMName_Mismatched" xml:space="preserve">
-    <value>Nombre OEM - No coincide</value>
+    <value>No coincide</value>
   </data>
   <data name="Filter_OEMName_Unknown" xml:space="preserve">
-    <value>Nombre OEM - Desconocido</value>
+    <value>Desconocido</value>
   </data>
   <data name="Filter_OEMName_Unverified" xml:space="preserve">
-    <value>Nombre OEM - No verificado</value>
+    <value>No verificado</value>
   </data>
   <data name="Filter_OEMName_Verified" xml:space="preserve">
-    <value>Nombre OEM - Verificado</value>
+    <value>Verificado</value>
   </data>
   <data name="Filter_OEMName_Windows9x" xml:space="preserve">
-    <value>Nombre OEM - Windows 9x</value>
+    <value>Windows 9x</value>
   </data>
   <data name="Label_OffsetHex" xml:space="preserve">
     <value>Desplazamiento(h)</value>
@@ -1017,12 +951,6 @@
   <data name="Label_Reading" xml:space="preserve">
     <value>Leyendo</value>
   </data>
-  <data name="SummaryPanel_Region" xml:space="preserve">
-    <value>Región</value>
-  </data>
-  <data name="DataInspector_Label_Region" xml:space="preserve">
-    <value>Región</value>
-  </data>
   <data name="Caption_RemoveFiles" xml:space="preserve">
     <value>Eliminar {0} archivos</value>
   </data>
@@ -1031,12 +959,6 @@
   </data>
   <data name="Caption_RescanImages" xml:space="preserve">
     <value>Volver a escanear imágenes</value>
-  </data>
-  <data name="Label_FATType_Reserved" xml:space="preserve">
-    <value>Reservado</value>
-  </data>
-  <data name="BootSector_Reserved" xml:space="preserve">
-    <value>Reservado</value>
   </data>
   <data name="SummaryPanel_ReservedClusters" xml:space="preserve">
     <value>Clústeres reservados</value>
@@ -1116,9 +1038,6 @@
   <data name="Label_Side" xml:space="preserve">
     <value>Cara</value>
   </data>
-  <data name="DirectorytEntry_FileSize" xml:space="preserve">
-    <value>Tamaño</value>
-  </data>
   <data name="Label_Size" xml:space="preserve">
     <value>Tamaño</value>
   </data>
@@ -1197,12 +1116,6 @@
   <data name="Label_Unformatted" xml:space="preserve">
     <value>Sin formato</value>
   </data>
-  <data name="FloppyImageType_Unknown" xml:space="preserve">
-    <value>Desconocido</value>
-  </data>
-  <data name="Caption_Unknown" xml:space="preserve">
-    <value>Desconocido</value>
-  </data>
   <data name="Label_Unknown" xml:space="preserve">
     <value>Desconocido</value>
   </data>
@@ -1230,9 +1143,6 @@
   <data name="Label_Version" xml:space="preserve">
     <value>Versión</value>
   </data>
-  <data name="SummaryPanel_Version" xml:space="preserve">
-    <value>Versión</value>
-  </data>
   <data name="Menu_ViewFileAsText" xml:space="preserve">
     <value>Ver &amp;archivo como texto</value>
   </data>
@@ -1254,13 +1164,7 @@
   <data name="SummaryPanel_VolumeDate" xml:space="preserve">
     <value>Fecha del volumen</value>
   </data>
-  <data name="BootSector_VolumeLabel" xml:space="preserve">
-    <value>Etiqueta del volumen</value>
-  </data>
   <data name="Label_VolumeLabel" xml:space="preserve">
-    <value>Etiqueta del volumen</value>
-  </data>
-  <data name="SummaryPanel_VolumeLabel" xml:space="preserve">
     <value>Etiqueta del volumen</value>
   </data>
   <data name="BootSector_VolumeSerialNumber" xml:space="preserve">
@@ -1283,12 +1187,6 @@
   </data>
   <data name="Dialog_DiskTypeWarning" xml:space="preserve">
     <value>Advertencia: no se pudo determinar el tipo de disquete.</value>
-  </data>
-  <data name="Bitstream_WeakBits" xml:space="preserve">
-    <value>Bits débiles</value>
-  </data>
-  <data name="DataInspector_Label_WeakBits" xml:space="preserve">
-    <value>Bits débiles</value>
   </data>
   <data name="FileType_IMZ" xml:space="preserve">
     <value>Imagen de disco comprimido WinImage</value>
@@ -1329,9 +1227,6 @@
   <data name="DataInspector_Label_Area" xml:space="preserve">
     <value>Área</value>
   </data>
-  <data name="DataInspector_Label_DataArea" xml:space="preserve">
-    <value>Área de datos</value>
-  </data>
   <data name="SummaryPanel_DiskFormat" xml:space="preserve">
     <value>Formato del disco</value>
   </data>
@@ -1342,13 +1237,10 @@
     <value>Empalmes de escritura</value>
   </data>
   <data name="Filter_Disk_HasWriteSplices" xml:space="preserve">
-    <value>Disco - Con empalmes de escritura</value>
+    <value>Con empalmes de escritura</value>
   </data>
   <data name="Label_SizeId" xml:space="preserve">
     <value>Tamaño ID</value>
-  </data>
-  <data name="FilePanel_Size" xml:space="preserve">
-    <value>Tamaño</value>
   </data>
   <data name="FilePanel_Attributes" xml:space="preserve">
     <value>Atributo</value>
@@ -1674,5 +1566,44 @@
   </data>
   <data name="Label_AutoSaveLog" xml:space="preserve">
     <value>Registro auto</value>
+  </data>
+  <data name="Label_ReProcess" xml:space="preserve">
+    <value>Reprocesar</value>
+  </data>
+  <data name="Label_Remaster" xml:space="preserve">
+    <value>Remasterizar</value>
+  </data>
+  <data name="Label_ExtendedLogOutput" xml:space="preserve">
+    <value>Salida de registro extendida</value>
+  </data>
+  <data name="Label_Region" xml:space="preserve">
+    <value>Región</value>
+  </data>
+  <data name="Label_MediaDescriptor" xml:space="preserve">
+    <value>Descriptor de medio</value>
+  </data>
+  <data name="Label_DataArea" xml:space="preserve">
+    <value>Área de datos</value>
+  </data>
+  <data name="Label_Directory" xml:space="preserve">
+    <value>Directorio</value>
+  </data>
+  <data name="Label_Disk" xml:space="preserve">
+    <value>Disco</value>
+  </data>
+  <data name="Label_FAT" xml:space="preserve">
+    <value>Tabla de asignación de archivos</value>
+  </data>
+  <data name="DirectorytEntryLFN_FilePart" xml:space="preserve">
+    <value>Nombre LFN {0}</value>
+  </data>
+  <data name="Label_LostClusters" xml:space="preserve">
+    <value>Clústeres perdidos</value>
+  </data>
+  <data name="Label_Reserved" xml:space="preserve">
+    <value>Reservado</value>
+  </data>
+  <data name="Label_WeakBits" xml:space="preserve">
+    <value>Bits débiles</value>
   </data>
 </root>

@@ -283,16 +283,16 @@ Public Class SummaryPanel
         TitleRows.Add("Publisher", New SummaryRow(ListViewSummary.Font, My.Resources.SummaryPanel_Publisher, True))
         TitleRows.Add("Year", New SummaryRow(ListViewSummary.Font, My.Resources.SummaryPanel_Year, False))
         TitleRows.Add("OperatingSystem", New SummaryRow(ListViewSummary.Font, My.Resources.SummaryPanel_OperatingSystem, False))
-        TitleRows.Add("Region", New SummaryRow(ListViewSummary.Font, My.Resources.SummaryPanel_Region, False))
+        TitleRows.Add("Region", New SummaryRow(ListViewSummary.Font, My.Resources.Label_Region, False))
         TitleRows.Add("Language", New SummaryRow(ListViewSummary.Font, My.Resources.SummaryPanel_Language, False))
-        TitleRows.Add("Version", New SummaryRow(ListViewSummary.Font, My.Resources.SummaryPanel_Version, True))
-        TitleRows.Add("Disk", New SummaryRow(ListViewSummary.Font, My.Resources.SummaryPanel_Disk, False))
+        TitleRows.Add("Version", New SummaryRow(ListViewSummary.Font, My.Resources.Label_Version, True))
+        TitleRows.Add("Disk", New SummaryRow(ListViewSummary.Font, My.Resources.Label_Disk, False))
         TitleRows.Add("CopyProtection", New SummaryRow(ListViewSummary.Font, My.Resources.SummaryPanel_CopyProtection, True))
     End Sub
 
     Private Sub PopulateError(InvalidImage As Boolean)
         With ListViewSummary
-            Dim DiskGroup = .Groups.Add(GROUP_DISK, My.Resources.SummaryPanel_Disk)
+            Dim DiskGroup = .Groups.Add(GROUP_DISK, My.Resources.Label_Disk)
             Dim Msg As String
 
             If InvalidImage Then
@@ -566,7 +566,7 @@ Public Class SummaryPanel
         Dim ForeColor As Color
 
         With ListViewSummary
-            DiskGroup = .Groups.Add(GROUP_DISK, My.Resources.SummaryPanel_Disk)
+            DiskGroup = .Groups.Add(GROUP_DISK, My.Resources.Label_Disk)
 
             .AddItem(DiskGroup, My.Resources.SummaryPanel_ImageType, GetImageTypeName(Disk.Image.ImageType))
 
@@ -689,14 +689,14 @@ Public Class SummaryPanel
                 End If
 
                 If Visible Then
-                    .AddItem(FileSystemGroup, My.Resources.SummaryPanel_MediaDescriptor, Value, ForeColor)
+                    .AddItem(FileSystemGroup, My.Resources.Label_MediaDescriptor, Value, ForeColor)
                 End If
             End If
 
             Dim fsi = GetFileSystemInfo(Disk)
 
             If fsi.VolumeLabel IsNot Nothing Then
-                .AddItem(FileSystemGroup, My.Resources.SummaryPanel_VolumeLabel, fsi.VolumeLabel.GetVolumeName.TrimEnd(NULL_CHAR))
+                .AddItem(FileSystemGroup, My.Resources.Label_VolumeLabel, fsi.VolumeLabel.GetVolumeName.TrimEnd(NULL_CHAR))
                 Dim VolumeDate = fsi.VolumeLabel.GetLastWriteDate
                 .AddItem(FileSystemGroup, My.Resources.SummaryPanel_VolumeDate, VolumeDate.ToString(True, True, False, True))
             End If
@@ -707,13 +707,13 @@ Public Class SummaryPanel
             If Disk.FAT.BadClusters.Count > 0 Then
                 Dim SectorCount = Disk.FAT.BadClusters.Count * Disk.BPB.SectorsPerCluster
                 Value = FormatThousands(Disk.FAT.BadClusters.Count * Disk.BPB.BytesPerCluster) & " " & My.Resources.Label_Bytes & "  " & InParens(SectorCount)
-                .AddItem(FileSystemGroup, My.Resources.SummaryPanel_BadSectors, Value, Color.Red)
+                .AddItem(FileSystemGroup, My.Resources.Label_BadSectors, Value, Color.Red)
             End If
 
             Dim LostClusters = Disk.RootDirectory.FATAllocation.LostClusters.Count
             If LostClusters > 0 Then
                 Value = FormatThousands(LostClusters * Disk.BPB.BytesPerCluster) & " " & My.Resources.Label_Bytes & "  " & InParens(LostClusters)
-                .AddItem(FileSystemGroup, My.Resources.SummaryPanel_LostClusters, Value, Color.Red)
+                .AddItem(FileSystemGroup, My.Resources.Label_LostClusters, Value, Color.Red)
             End If
 
             Dim ReservedClusters = Disk.FAT.ReservedClusters.Count
@@ -783,7 +783,7 @@ Public Class SummaryPanel
 
         With ListViewSummary
             If Not Disk.IsValidImage Then
-                .AddItem(DiskGroup, My.Resources.SummaryPanel_FileSystem, My.Resources.Caption_Unknown, Color.Red)
+                .AddItem(DiskGroup, My.Resources.SummaryPanel_FileSystem, My.Resources.Label_Unknown, Color.Red)
             Else
                 Dim OEMNameResponse = BootStrapDB.CheckOEMName(Disk.BootSector)
 

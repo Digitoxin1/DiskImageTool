@@ -54,7 +54,7 @@ Public Class FATEditForm
         _FATTables = New FATTables(_Disk.BPB, _Disk.Image, Index)
         _Directory = New RootDirectory(_Disk, _FATTables.FAT)
 
-        Me.Text = My.Resources.Caption_FAT & " " & Index + 1
+        Me.Text = My.Resources.Label_FAT & " " & Index + 1
 
         Dim SyncFATS = Not _Disk.DiskParams.IsXDF AndAlso Disk.FATTables.FATsMatch
         Dim DisplaySync = Not _Disk.DiskParams.IsXDF AndAlso Not Disk.FATTables.FATsMatch
@@ -308,7 +308,7 @@ Public Class FATEditForm
         ElseIf Value >= FAT12.FAT_LAST_CLUSTER_START And Value <= FAT12.FAT_LAST_CLUSTER_END Then
             Return My.Resources.Label_FATType_Last
         ElseIf Value = 1 Or (Value >= FAT12.FAT_RESERVED_START And Value <= FAT12.FAT_RESERVED_END) Then
-            Return My.Resources.Label_FATType_Reserved
+            Return My.Resources.Label_Reserved
         Else
             Return My.Resources.Label_FATType_Next
         End If
@@ -330,7 +330,7 @@ Public Class FATEditForm
             Return Color.Red
         ElseIf TypeName = My.Resources.Label_FATType_Last Then
             Return Color.Black
-        ElseIf TypeName = My.Resources.Label_FATType_Reserved Then
+        ElseIf TypeName = My.Resources.Label_Reserved Then
             Return Color.Orange
         ElseIf Value > _FATTables.FAT.TableLength Then
             Return Color.Red
@@ -377,7 +377,7 @@ Public Class FATEditForm
         Dim Offset = _Disk.BPB.ClusterToOffset(2)
 
         Dim HexViewSectorData As New HexViewSectorData(_Disk, Offset, _Disk.Image.Length - Offset) With {
-            .Description = My.Resources.Caption_Disk
+            .Description = My.Resources.Label_Disk
         }
 
         If DisplayHexViewForm(HexViewSectorData, True, True, False, Cluster) Then
