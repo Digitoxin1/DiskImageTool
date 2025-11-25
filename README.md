@@ -37,6 +37,8 @@ DiskImageTool suports the following image formats:
 
 DiskImageTool can also open the above image types from within Zip files.
 
+Greaseweazle Tools and KryoFlux Host Software can be used for importing without requiring a hardware device.
+
 Suggestions for new features are welcome.
 
 I have a discord channel set up for the discussion of DiskImageTool at [#diskimagetool](https://discord.gg/7BNMJuf4CR)
