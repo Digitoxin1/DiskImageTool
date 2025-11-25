@@ -18,6 +18,9 @@ What does DiskImageTool do?
 - Easily repair a modified boot sector OEM Name using a built in database of suggestions.
 - Clean up modifications made by Windows to the boot sector and directory entries with one click.
 - Open hundreds of images at one time and use powerful filters to narrow down your search to the ones that need your attention.
+- Read and Write floppy disks using a Greaseweazle (https://decromancer.ca/greaseweazle/)
+- Import raw Flux Sets using either Greaseweazle Tools (https://github.com/keirf/greaseweazle) or KryoFlux Host Software (https://kryoflux.com/)
+- Built in Database to identify known disk images (Mostly games at this time)
 
 DiskImageTool suports the following image formats:
 - Basic Sector Images (.ima, .img, .vfd, .flp, .160, .180, .320, .360, .720, .120, .144, .288, .dmf, .xdf)
@@ -29,6 +32,8 @@ DiskImageTool suports the following image formats:
 - HxC HFE v1 Image (.hfe)
 - HxC MFM Image (.mfm)
 - Transcopy Image (.tc)
+- Raw Flux Set (.raw) * Import Only; Requires Greaseweazle Tools or KryoFlux Host Software
+- Supercard Pro image (.scp) * Import Only; Requires Greaseweazle Tools
 
 DiskImageTool can also open the above image types from within Zip files.
 
@@ -46,4 +51,5 @@ I have a discord channel set up for the discussion of DiskImageTool at [#diskima
 <br><br>
 <img src="https://github.com/user-attachments/assets/17b94e20-a136-476f-bbb7-95558a433aa7" height="193">&nbsp;&nbsp;
 <img src="https://github.com/user-attachments/assets/4bee7e29-0faf-4418-8488-031c3814becc" height="193">
-
+<br><br>
+<img height="204" src="https://github.com/user-attachments/assets/4b0c466d-d884-461e-ac55-ef920ac222b4" />
