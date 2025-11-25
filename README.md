@@ -5,7 +5,7 @@ This is a personal project of mine.  I decided to make the source code available
 
 What does DiskImageTool do?
 
-- It allows you to view and perform simple repairs on IBM PC formatted floppy disk images.
+- It allows you to view and edit IBM PC formatted floppy disk images.
 - You can easily copy files and folders in and out of images by dragging and dropping.
 - Convert between multiple image formats
 - Create new disk images
