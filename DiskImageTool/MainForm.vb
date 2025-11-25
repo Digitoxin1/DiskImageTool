@@ -25,6 +25,7 @@ Public Class MainForm
         InitializeComponent()
 
         ' Add any initialization after the InitializeComponent() call.
+        LocalizeForm()
         InitToolStripTop()
     End Sub
 
@@ -544,10 +545,6 @@ Public Class MainForm
         Return TextBox
     End Function
 
-    Private Function GetWindowCaption() As String
-        Return My.Application.Info.ProductName & " v" & _FileVersion
-    End Function
-
     Private Sub FluxConvertImage()
         Dim FileName As String = Flux.OpenFluxImage(Me, True)
 
@@ -562,6 +559,11 @@ Public Class MainForm
             End If
         End If
     End Sub
+
+    Private Function GetWindowCaption() As String
+        Return My.Application.Info.ProductName & " v" & _FileVersion
+    End Function
+
     Private Sub GreaseweazleReadImage()
         Dim Response = Flux.Greaseweazle.ReadFluxImage(Me)
         If Response.Result Then
@@ -817,6 +819,30 @@ Public Class MainForm
         Process.Start(Application.ExecutablePath, """" & FilePath & """")
     End Sub
 
+    Private Sub LocalizeForm()
+        MainMenuFile.Text = My.Resources.Menu_File
+        MenuDiskWriteFloppyA.Text = String.Format(My.Resources.Menu_WriteDiskInDrive, "A")
+        MenuDiskWriteFloppyB.Text = String.Format(My.Resources.Menu_WriteDiskInDrive, "B")
+        MenuEditBootSector.Text = My.Resources.Menu_BootSector
+        MenuEditFAT.Text = My.Resources.Menu_FAT
+        MenuEditImportFiles.Text = My.Resources.Menu_ImportFiles
+        MenuEditReplaceFile.Text = My.Resources.Menu_ReplaceFile
+        MenuFileCloseAll.Text = My.Resources.Label_CloseAll
+        MenuFileSaveAll.Text = My.Resources.Menu_SaveAll
+        MenuHexBootSector.Text = My.Resources.Menu_BootSector
+        MenuHexFAT.Text = My.Resources.Menu_FAT
+        MenuOptionsDisplayLanguage.Text = My.Resources.Label_Language
+        MenuReportsWriteSplices.Text = My.Resources.Label_WriteSplices
+        MenuToolsTruncateImage.Text = My.Resources.Menu_TruncateImage
+        StatusBarModified.Text = My.Resources.Label_Modified
+        ToolStripClose.Text = My.Resources.Label_Close
+        ToolStripCloseAll.Text = My.Resources.Label_CloseAll
+        ToolStripFileProperties.Text = My.Resources.Label_FileProperties
+        ToolStripOpen.Text = My.Resources.Label_Open
+        ToolStripSave.Text = My.Resources.Label_Save
+        ToolStripSaveAll.Text = My.Resources.Menu_SaveAll
+        ToolStripSaveAs.Text = My.Resources.Caption_SaveAs
+    End Sub
     Private Sub MenuHexDirectorySubMenuClear()
         For Each Item As ToolStripMenuItem In MenuHexDirectory.DropDownItems
             RemoveHandler Item.Click, AddressOf MenuHexDirectory_Click
@@ -1071,6 +1097,29 @@ Public Class MainForm
         MainMenuNewInstance.Visible = NewInstanceVisible
     End Sub
 
+    Private Sub RefreshDisplayPath(ImageData As ImageData, UpdateCurrent As Boolean)
+        If Not ImageData.FileNameChanged Then
+            Exit Sub
+        End If
+
+        _LoadedFiles.FileNames.Remove(ImageData.OldDisplayPath)
+
+        If _LoadedFiles.FileNames.ContainsKey(ImageData.DisplayPath) Then
+            FileClose(_LoadedFiles.FileNames.Item(ImageData.DisplayPath))
+        End If
+
+        _LoadedFiles.FileNames.Add(ImageData.DisplayPath, ImageData)
+
+        ImageCombo.RefreshPaths()
+
+        If UpdateCurrent Then
+            SetCurrentFileName(ImageData)
+        End If
+
+        ImageData.OldDisplayPath = ""
+        ImageData.FileNameChanged = False
+    End Sub
+
     Private Sub RefreshFilterButtons(Enabled As Boolean)
         MenuFiltersClear.Enabled = Enabled
         If Enabled Then
@@ -1315,30 +1364,6 @@ Public Class MainForm
         _ToolStripSearchText.Enabled = Value
         MenuToolsWin9xCleanBatch.Enabled = Value
     End Sub
-
-    Private Sub RefreshDisplayPath(ImageData As ImageData, UpdateCurrent As Boolean)
-        If Not ImageData.FileNameChanged Then
-            Exit Sub
-        End If
-
-        _LoadedFiles.FileNames.Remove(ImageData.OldDisplayPath)
-
-        If _LoadedFiles.FileNames.ContainsKey(ImageData.DisplayPath) Then
-            FileClose(_LoadedFiles.FileNames.Item(ImageData.DisplayPath))
-        End If
-
-        _LoadedFiles.FileNames.Add(ImageData.DisplayPath, ImageData)
-
-        ImageCombo.RefreshPaths()
-
-        If UpdateCurrent Then
-            SetCurrentFileName(ImageData)
-        End If
-
-        ImageData.OldDisplayPath = ""
-        ImageData.FileNameChanged = False
-    End Sub
-
     Private Sub StatusBarFileInfoClear()
         StatusBarFileCount.Visible = False
         StatusBarFileSector.Visible = False
@@ -1867,6 +1892,10 @@ Public Class MainForm
         DiskImagesScan(FilePanelMain.CurrentImage, True)
     End Sub
 
+    Private Sub MenuFluxConvert_Click(sender As Object, e As EventArgs) Handles MenuFluxConvert.Click
+        FluxConvertImage()
+    End Sub
+
     Private Sub MenuGreaseweazleBandwidth_Click(sender As Object, e As EventArgs) Handles MenuGreaseweazleBandwidth.Click
         Flux.Greaseweazle.BandwidthDisplay(Me)
     End Sub
@@ -1878,11 +1907,6 @@ Public Class MainForm
     Private Sub MenuGreaseweazleErase_Click(sender As Object, e As EventArgs) Handles MenuGreaseweazleErase.Click
         Flux.Greaseweazle.EraseDisk(Me)
     End Sub
-
-    Private Sub MenuFluxConvert_Click(sender As Object, e As EventArgs) Handles MenuFluxConvert.Click
-        FluxConvertImage()
-    End Sub
-
     Private Sub MenuGreaseweazleInfo_Click(sender As Object, e As EventArgs) Handles MenuGreaseweazleInfo.Click
         Flux.Greaseweazle.InfoDisplay(Me)
     End Sub
@@ -1989,8 +2013,16 @@ Public Class MainForm
         RefreshFluxMenu()
     End Sub
 
+    Private Sub MenuPcImgCnvTrackLayout_Click(sender As Object, e As EventArgs) Handles MenuPcImgCnvTrackLayout.Click
+        If FilePanelMain.CurrentImage Is Nothing Then
+            Exit Sub
+        End If
+
+        GenerateTrackLayout(FilePanelMain.CurrentImage.Disk)
+    End Sub
+
     Private Sub MenuReportsWriteSplices_Click(sender As Object, e As EventArgs) Handles MenuReportsWriteSplices.Click
-        DisplayReportWriteSplices(FilePanelMain.CurrentImage)
+        DisplayReportWriteSplices(FilePanelMain.CurrentImage.Disk, FilePanelMain.CurrentImage.ImageData.FileName)
     End Sub
 
     Private Sub MenuToolsClearReservedBytes_Click(sender As Object, e As EventArgs) Handles MenuToolsClearReservedBytes.Click
@@ -2012,15 +2044,6 @@ Public Class MainForm
     Private Sub MenuToolsRestructureImage_Click(sender As Object, e As EventArgs) Handles MenuToolsRestructureImage.Click
         DiskImageProcessEvent(FilePanelMain, DiskImageMenuItem.ImageRestructure)
     End Sub
-
-    Private Sub MenuPcImgCnvTrackLayout_Click(sender As Object, e As EventArgs) Handles MenuPcImgCnvTrackLayout.Click
-        If FilePanelMain.CurrentImage Is Nothing Then
-            Exit Sub
-        End If
-
-        GenerateTrackLayout(FilePanelMain.CurrentImage.Disk)
-    End Sub
-
     Private Sub MenuToolsWin9xClean_Click(sender As Object, e As EventArgs) Handles MenuToolsWin9xClean.Click
         DiskImageProcessEvent(FilePanelMain, DiskImageMenuItem.RemoveWindowsModifications)
     End Sub

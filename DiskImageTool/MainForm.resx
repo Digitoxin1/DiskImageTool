@@ -130,9 +130,6 @@
   <data name="HashValue.Width" type="System.Int32, mscorlib">
     <value>-1</value>
   </data>
-  <metadata name="MainMenuFile.GenerateMember" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
-    <value>False</value>
-  </metadata>
   <assembly alias="System.Drawing" name="System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
   <data name="MenuFileOpen.ImageTransparentColor" type="System.Drawing.Color, System.Drawing">
     <value>Magenta</value>
@@ -197,6 +194,7 @@
   </data>
   <data name="MenuFileSaveAll.Text" xml:space="preserve">
     <value>Save All</value>
+    <comment>@Invariant</comment>
   </data>
   <metadata name="MenuFileSeparator2.GenerateMember" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
     <value>False</value>
@@ -221,6 +219,7 @@
   </data>
   <data name="MenuFileCloseAll.Text" xml:space="preserve">
     <value>Close All</value>
+    <comment>@Invariant</comment>
   </data>
   <metadata name="MenuFileSeparator3.GenerateMember" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
     <value>False</value>
@@ -242,6 +241,7 @@
   </data>
   <data name="MainMenuFile.Text" xml:space="preserve">
     <value>&amp;File</value>
+    <comment>@Invariant</comment>
   </data>
   <metadata name="MainMenuEdit.GenerateMember" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
     <value>False</value>
@@ -251,12 +251,14 @@
   </data>
   <data name="MenuEditBootSector.Text" xml:space="preserve">
     <value>&amp;Boot Sector</value>
+    <comment>@Invariant</comment>
   </data>
   <data name="MenuEditFAT.Size" type="System.Drawing.Size, System.Drawing">
     <value>180, 22</value>
   </data>
   <data name="MenuEditFAT.Text" xml:space="preserve">
     <value>File &amp;Allocation Table</value>
+    <comment>@Invariant</comment>
   </data>
   <metadata name="MenuEditSeparator1.GenerateMember" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
     <value>False</value>
@@ -282,6 +284,7 @@
   </data>
   <data name="MenuEditReplaceFile.Text" xml:space="preserve">
     <value>&amp;Replace File</value>
+    <comment>@Invariant</comment>
   </data>
   <metadata name="MenuEditSeparator2.GenerateMember" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
     <value>False</value>
@@ -294,6 +297,7 @@
   </data>
   <data name="MenuEditImportFiles.Text" xml:space="preserve">
     <value>&amp;Import Files</value>
+    <comment>@Invariant</comment>
   </data>
   <data name="ToolStripSeparator1.Size" type="System.Drawing.Size, System.Drawing">
     <value>177, 6</value>
@@ -339,12 +343,14 @@
   </data>
   <data name="MenuHexBootSector.Text" xml:space="preserve">
     <value>&amp;Boot Sector</value>
+    <comment>@Invariant</comment>
   </data>
   <data name="MenuHexFAT.Size" type="System.Drawing.Size, System.Drawing">
     <value>194, 22</value>
   </data>
   <data name="MenuHexFAT.Text" xml:space="preserve">
     <value>File &amp;Allocation Table</value>
+    <comment>@Invariant</comment>
   </data>
   <data name="MenuHexDirectory.Size" type="System.Drawing.Size, System.Drawing">
     <value>194, 22</value>
@@ -432,6 +438,7 @@
   </data>
   <data name="MenuToolsTruncateImage.Text" xml:space="preserve">
     <value>&amp;Truncate Image</value>
+    <comment>@Invariant</comment>
   </data>
   <data name="MenuToolsRestructureImage.Size" type="System.Drawing.Size, System.Drawing">
     <value>170, 22</value>
@@ -574,12 +581,14 @@
   </data>
   <data name="MenuDiskWriteFloppyA.Text" xml:space="preserve">
     <value>&amp;Write Disk in Drive A</value>
+    <comment>@Invariant</comment>
   </data>
   <data name="MenuDiskWriteFloppyB.Size" type="System.Drawing.Size, System.Drawing">
     <value>181, 22</value>
   </data>
   <data name="MenuDiskWriteFloppyB.Text" xml:space="preserve">
     <value>&amp;Write Disk in Drive B</value>
+    <comment>@Invariant</comment>
   </data>
   <data name="MainMenuDisk.Size" type="System.Drawing.Size, System.Drawing">
     <value>41, 20</value>
@@ -634,28 +643,28 @@
     <value>F&amp;ilters</value>
   </data>
   <data name="MenuGreaseweazleRead.Size" type="System.Drawing.Size, System.Drawing">
-    <value>180, 22</value>
+    <value>176, 22</value>
   </data>
   <data name="MenuGreaseweazleRead.Text" xml:space="preserve">
     <value>&amp;Read Disk</value>
   </data>
   <data name="MenuGreaseweazleWrite.Size" type="System.Drawing.Size, System.Drawing">
-    <value>180, 22</value>
+    <value>176, 22</value>
   </data>
   <data name="MenuGreaseweazleWrite.Text" xml:space="preserve">
     <value>&amp;Write Disk</value>
   </data>
   <data name="ToolStripSeparator5.Size" type="System.Drawing.Size, System.Drawing">
-    <value>177, 6</value>
+    <value>173, 6</value>
   </data>
   <data name="MenuFluxConvert.Size" type="System.Drawing.Size, System.Drawing">
-    <value>180, 22</value>
+    <value>176, 22</value>
   </data>
   <data name="MenuFluxConvert.Text" xml:space="preserve">
     <value>&amp;Convert Flux Image</value>
   </data>
   <data name="ToolStripSeparatorDevices.Size" type="System.Drawing.Size, System.Drawing">
-    <value>177, 6</value>
+    <value>173, 6</value>
   </data>
   <data name="MenuGreaseweazleErase.Size" type="System.Drawing.Size, System.Drawing">
     <value>169, 22</value>
@@ -685,7 +694,7 @@
     <value>Report &amp;Bandwidth</value>
   </data>
   <data name="MenuGreaseweazle.Size" type="System.Drawing.Size, System.Drawing">
-    <value>180, 22</value>
+    <value>176, 22</value>
   </data>
   <data name="MenuGreaseweazle.Text" xml:space="preserve">
     <value>&amp;Greaseweazle</value>
@@ -698,7 +707,7 @@
     <value>Generate tracklayout.txt</value>
   </data>
   <data name="MenuPcImgCnv.Size" type="System.Drawing.Size, System.Drawing">
-    <value>180, 22</value>
+    <value>176, 22</value>
   </data>
   <data name="MenuPcImgCnv.Text" xml:space="preserve">
     <value>PcImgCnv</value>
@@ -712,10 +721,11 @@
     <comment>@Invariant</comment>
   </data>
   <data name="MenuReportsWriteSplices.Size" type="System.Drawing.Size, System.Drawing">
-    <value>180, 22</value>
+    <value>141, 22</value>
   </data>
   <data name="MenuReportsWriteSplices.Text" xml:space="preserve">
     <value>Write Splices</value>
+    <comment>@Invariant</comment>
   </data>
   <data name="MainMenuReports.Size" type="System.Drawing.Size, System.Drawing">
     <value>59, 20</value>
@@ -752,6 +762,7 @@
   </data>
   <data name="MenuOptionsDisplayLanguage.Text" xml:space="preserve">
     <value>Language</value>
+    <comment>@Invariant</comment>
   </data>
   <data name="ToolStripSeparator2.Size" type="System.Drawing.Size, System.Drawing">
     <value>221, 6</value>
@@ -926,6 +937,7 @@
   </data>
   <data name="ToolStripOpen.Text" xml:space="preserve">
     <value>Open</value>
+    <comment>@Invariant</comment>
   </data>
   <data name="ToolStripSave.ImageTransparentColor" type="System.Drawing.Color, System.Drawing">
     <value>Magenta</value>
@@ -935,6 +947,7 @@
   </data>
   <data name="ToolStripSave.Text" xml:space="preserve">
     <value>Save</value>
+    <comment>@Invariant</comment>
   </data>
   <data name="ToolStripSaveAs.ImageTransparentColor" type="System.Drawing.Color, System.Drawing">
     <value>Magenta</value>
@@ -944,6 +957,7 @@
   </data>
   <data name="ToolStripSaveAs.Text" xml:space="preserve">
     <value>Save As</value>
+    <comment>@Invariant</comment>
   </data>
   <data name="ToolStripSaveAll.ImageTransparentColor" type="System.Drawing.Color, System.Drawing">
     <value>Magenta</value>
@@ -953,6 +967,7 @@
   </data>
   <data name="ToolStripSaveAll.Text" xml:space="preserve">
     <value>Save All</value>
+    <comment>@Invariant</comment>
   </data>
   <data name="ToolStripClose.ImageTransparentColor" type="System.Drawing.Color, System.Drawing">
     <value>Magenta</value>
@@ -962,6 +977,7 @@
   </data>
   <data name="ToolStripClose.Text" xml:space="preserve">
     <value>Close</value>
+    <comment>@Invariant</comment>
   </data>
   <data name="ToolStripCloseAll.ImageTransparentColor" type="System.Drawing.Color, System.Drawing">
     <value>Magenta</value>
@@ -971,15 +987,13 @@
   </data>
   <data name="ToolStripCloseAll.Text" xml:space="preserve">
     <value>Close All</value>
+    <comment>@Invariant</comment>
   </data>
   <data name="ToolStripFileProperties.ImageTransparentColor" type="System.Drawing.Color, System.Drawing">
     <value>Magenta</value>
   </data>
   <data name="ToolStripFileProperties.Size" type="System.Drawing.Size, System.Drawing">
     <value>23, 22</value>
-  </data>
-  <data name="ToolStripFileProperties.Text" xml:space="preserve">
-    <value>File Properties</value>
   </data>
   <data name="ToolStripExportFile.ImageTransparentColor" type="System.Drawing.Color, System.Drawing">
     <value>Magenta</value>
@@ -1090,6 +1104,7 @@
   </data>
   <data name="StatusBarModified.Text" xml:space="preserve">
     <value>Modified</value>
+    <comment>@Invariant</comment>
   </data>
   <data name="StatusBarFileName.Size" type="System.Drawing.Size, System.Drawing">
     <value>557, 19</value>
@@ -1197,7 +1212,7 @@
     <value>0, 0</value>
   </data>
   <data name="ComboImages.Size" type="System.Drawing.Size, System.Drawing">
-    <value>477, 21</value>
+    <value>473, 21</value>
   </data>
   <data name="ComboImages.TabIndex" type="System.Int32, mscorlib">
     <value>4</value>
@@ -1233,7 +1248,7 @@
     <value>NoControl</value>
   </data>
   <data name="LabelDropMessage.Location" type="System.Drawing.Point, System.Drawing">
-    <value>124, 253</value>
+    <value>122, 253</value>
   </data>
   <data name="LabelDropMessage.Size" type="System.Drawing.Size, System.Drawing">
     <value>273, 16</value>
@@ -1269,7 +1284,7 @@
     <value>0, 0</value>
   </data>
   <data name="ComboImagesFiltered.Size" type="System.Drawing.Size, System.Drawing">
-    <value>477, 21</value>
+    <value>473, 21</value>
   </data>
   <data name="ComboImagesFiltered.TabIndex" type="System.Int32, mscorlib">
     <value>3</value>
@@ -1299,7 +1314,7 @@
     <value>NoControl</value>
   </data>
   <data name="BtnResetSort.Location" type="System.Drawing.Point, System.Drawing">
-    <value>479, -1</value>
+    <value>475, -1</value>
   </data>
   <data name="BtnResetSort.Size" type="System.Drawing.Size, System.Drawing">
     <value>67, 23</value>
@@ -1530,7 +1545,7 @@
     <value>0, 27</value>
   </data>
   <data name="ListViewFiles.Size" type="System.Drawing.Size, System.Drawing">
-    <value>600, 467</value>
+    <value>596, 467</value>
   </data>
   <data name="ListViewFiles.TabIndex" type="System.Int32, mscorlib">
     <value>6</value>

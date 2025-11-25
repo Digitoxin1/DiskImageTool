@@ -198,13 +198,13 @@
                 Case FilterTypes.Disk_UnknownFormat
                     Caption = My.Resources.Label_Disk & " - " & My.Resources.Filter_Disk_UnknownFormat
                 Case FilterTypes.Disk_CustomFormat
-                    Caption = My.Resources.Label_Disk & " - " & My.Resources.Filter_Disk_CustomFormat
+                    Caption = My.Resources.Label_Disk & " - " & My.Resources.Label_CustomFormat
                 Case FilterTypes.Disk_NOBPB
-                    Caption = My.Resources.Label_Disk & " - " & My.Resources.Filter_Disk_NOBPB
+                    Caption = My.Resources.Label_Disk & " - " & My.Resources.Label_NoBPB
                 Case FilterTypes.Disk_NoBootLoader
-                    Caption = My.Resources.Label_Disk & " - " & My.Resources.Filter_Disk_NoBootLoader
+                    Caption = My.Resources.Label_Disk & " - " & My.Resources.Label_NoBootLoader
                 Case FilterTypes.Disk_CustomBootLoader
-                    Caption = My.Resources.Label_Disk & " - " & My.Resources.Filter_Disk_CustomBootLoader
+                    Caption = My.Resources.Label_Disk & " - " & My.Resources.Label_CustomBootLoader
                 Case FilterTypes.Disk_MismatchedImageSize
                     Caption = My.Resources.Label_Disk & " - " & My.Resources.Filter_Disk_MismatchedImageSize
                 Case FilterTypes.Disk_MismatchedMediaDescriptor
@@ -214,47 +214,47 @@
                 Case FilterTypes.Disk_HasWriteSplices
                     Caption = My.Resources.Label_Disk & " - " & My.Resources.Filter_Disk_HasWriteSplices
                 Case FilterTypes.Bootstrap_Unknown
-                    Caption = My.Resources.Filter_Bootstrap_Unknown
+                    Caption = My.Resources.Label_Bootstrap & " - " & My.Resources.Label_Unknown
                 Case FilterTypes.OEMName_Unknown
-                    Caption = My.Resources.Label_OEMName & " - " & My.Resources.Filter_OEMName_Unknown
+                    Caption = My.Resources.Label_OEMName & " - " & My.Resources.Label_Unknown
                 Case FilterTypes.OEMName_Mismatched
-                    Caption = My.Resources.Label_OEMName & " - " & My.Resources.Filter_OEMName_Mismatched
+                    Caption = My.Resources.Label_OEMName & " - " & My.Resources.Label_Mismatched
                 Case FilterTypes.OEMName_Windows9x
                     Caption = My.Resources.Label_OEMName & " - " & My.Resources.Filter_OEMName_Windows9x
                 Case FilterTypes.OEMName_Verified
-                    Caption = My.Resources.Label_OEMName & " - " & My.Resources.Filter_OEMName_Verified
+                    Caption = My.Resources.Label_OEMName & " - " & My.Resources.Label_Verified
                 Case FilterTypes.OEMName_Unverified
-                    Caption = My.Resources.Label_OEMName & " - " & My.Resources.Filter_OEMName_Unverified
+                    Caption = My.Resources.Label_OEMName & " - " & My.Resources.Label_Unverified
                 Case FilterTypes.FileSystem_HasCreationDate
-                    Caption = My.Resources.Filter_FileSystem_HasCreationDate
+                    Caption = My.Resources.Label_FileSystem & " - " & My.Resources.Filter_FileSystem_HasCreationDate
                 Case FilterTypes.FileSystem_HasLastAccessDate
-                    Caption = My.Resources.Filter_FileSystem_HasLastAccessDate
+                    Caption = My.Resources.Label_FileSystem & " - " & My.Resources.Filter_FileSystem_HasLastAccessDate
                 Case FilterTypes.FileSystem_HasReservedBytesSet
-                    Caption = My.Resources.Filter_FileSystem_HasReservedBytesSet
+                    Caption = My.Resources.Label_FileSystem & " - " & My.Resources.Filter_FileSystem_HasReservedBytesSet
                 Case FilterTypes.FileSystem_HasLongFileNames
-                    Caption = My.Resources.Filter_FileSystem_HasLongFileNames
+                    Caption = My.Resources.Label_FileSystem & " - " & My.Resources.Filter_FileSystem_HasLongFileNames
                 Case FilterTypes.FileSystem_InvalidDirectoryEntries
-                    Caption = My.Resources.Filter_FileSystem_InvalidDirectoryEntries
+                    Caption = My.Resources.Label_FileSystem & " - " & My.Resources.Filter_FileSystem_InvalidDirectoryEntries
                 Case FilterTypes.FileSystem_DirectoryHasAdditionalData
-                    Caption = My.Resources.Filter_FileSystem_DirectoryHasAdditionalData
+                    Caption = My.Resources.Label_FileSystem & " - " & My.Resources.Filter_FileSystem_DirectoryHasAdditionalData
                 Case FilterTypes.FileSystem_DirectoryHasBootSector
-                    Caption = My.Resources.Filter_FileSystem_DirectoryHasBootSector
+                    Caption = My.Resources.Label_FileSystem & " - " & My.Resources.Filter_FileSystem_DirectoryHasBootSector
                 Case FilterTypes.FAT_BadSectors
-                    Caption = My.Resources.Filter_FAT_BadSectors
+                    Caption = My.Resources.Label_FATShort & " - " & My.Resources.Label_BadSectors
                 Case FilterTypes.FAT_LostClusters
-                    Caption = My.Resources.Filter_FAT_LostClusters
+                    Caption = My.Resources.Label_FATShort & " - " & My.Resources.Label_LostClusters
                 Case FilterTypes.FAT_MismatchedFATs
-                    Caption = My.Resources.Filter_FAT_MismatchedFATs
+                    Caption = My.Resources.Label_FATShort & " - " & My.Resources.Filter_FAT_MismatchedFATs
                 Case FilterTypes.FAT_ChainingErrors
-                    Caption = My.Resources.Filter_FAT_ChainingErrors
+                    Caption = My.Resources.Label_FATShort & " - " & My.Resources.Filter_FAT_ChainingErrors
                 Case FilterTypes.Image_InDatabase
-                    Caption = My.Resources.Filter_Image_InDatabase
+                    Caption = My.Resources.Label_Image & " - " & My.Resources.Filter_Image_InDatabase
                 Case FilterTypes.Image_NotInDatabase
-                    Caption = My.Resources.Filter_Image_NotInDatabase
+                    Caption = My.Resources.Label_Image & " - " & My.Resources.Filter_Image_NotInDatabase
                 Case FilterTypes.Image_Verified
-                    Caption = My.Resources.Filter_Image_Verified
+                    Caption = My.Resources.Label_Image & " - " & My.Resources.Label_Verified
                 Case FilterTypes.Image_Unverified
-                    Caption = My.Resources.Filter_Image_Unverified
+                    Caption = My.Resources.Label_Image & " - " & My.Resources.Label_Unverified
                 Case FilterTypes.Database_MismatchedStatus
                     Caption = My.Resources.Filter_Database_MismatchedStatus
                 Case Else

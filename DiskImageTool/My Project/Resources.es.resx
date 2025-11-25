@@ -405,11 +405,8 @@
   <data name="BootSector_BootStrapSignature" xml:space="preserve">
     <value>Firma del sector de arranque</value>
   </data>
-  <data name="SummaryPanel_Bootstrap" xml:space="preserve">
+  <data name="Label_Bootstrap" xml:space="preserve">
     <value>Arranque</value>
-  </data>
-  <data name="Filter_Bootstrap_Unknown" xml:space="preserve">
-    <value>Arranque - Desconocido</value>
   </data>
   <data name="BootSector_JmpBoot" xml:space="preserve">
     <value>Salto de arranque</value>
@@ -471,10 +468,10 @@
   <data name="Label_CrossLinked" xml:space="preserve">
     <value>Encadenado</value>
   </data>
-  <data name="SummaryPanel_CustomBootLoader" xml:space="preserve">
+  <data name="Label_CustomBootLoader" xml:space="preserve">
     <value>Cargador de arranque personalizado</value>
   </data>
-  <data name="SummaryPanel_CustomFormat" xml:space="preserve">
+  <data name="Label_CustomFormat" xml:space="preserve">
     <value>Formato personalizado</value>
   </data>
   <data name="Bitstream_DAM" xml:space="preserve">
@@ -519,12 +516,6 @@
   <data name="Label_DirectoryName" xml:space="preserve">
     <value>Nombre del directorio</value>
   </data>
-  <data name="Filter_Disk_CustomBootLoader" xml:space="preserve">
-    <value>Cargador de arranque personalizado</value>
-  </data>
-  <data name="Filter_Disk_CustomFormat" xml:space="preserve">
-    <value>Formato personalizado</value>
-  </data>
   <data name="Filter_Disk_FreeClustersWithData" xml:space="preserve">
     <value>Clusters libres con datos</value>
   </data>
@@ -533,12 +524,6 @@
   </data>
   <data name="Filter_Disk_MismatchedMediaDescriptor" xml:space="preserve">
     <value>Descriptor de medio no coincide</value>
-  </data>
-  <data name="Filter_Disk_NoBootLoader" xml:space="preserve">
-    <value>Sin cargador de arranque</value>
-  </data>
-  <data name="Filter_Disk_NOBPB" xml:space="preserve">
-    <value>Sin BPB</value>
   </data>
   <data name="Filter_Disk_UnknownFormat" xml:space="preserve">
     <value>Formato desconocido</value>
@@ -600,20 +585,14 @@
   <data name="DirectorytEntry_Extension" xml:space="preserve">
     <value>Extensión</value>
   </data>
-  <data name="SummaryPanel_FAT" xml:space="preserve">
+  <data name="Label_FATShort" xml:space="preserve">
     <value>FAT</value>
   </data>
-  <data name="Filter_FAT_BadSectors" xml:space="preserve">
-    <value>FAT - Sectores defectuosos</value>
-  </data>
   <data name="Filter_FAT_ChainingErrors" xml:space="preserve">
-    <value>FAT - Errores de encadenamiento</value>
-  </data>
-  <data name="Filter_FAT_LostClusters" xml:space="preserve">
-    <value>FAT - Clústeres perdidos</value>
+    <value>Errores de encadenamiento</value>
   </data>
   <data name="Filter_FAT_MismatchedFATs" xml:space="preserve">
-    <value>FAT - FATs no coincidentes</value>
+    <value>FATs no coincidentes</value>
   </data>
   <data name="Label_File" xml:space="preserve">
     <value>Archivo</value>
@@ -621,7 +600,7 @@
   <data name="Label_FileName" xml:space="preserve">
     <value>Nombre del archivo</value>
   </data>
-  <data name="Caption_FileProperties" xml:space="preserve">
+  <data name="Label_FileProperties" xml:space="preserve">
     <value>Propiedades del archivo</value>
   </data>
   <data name="Label_FileSizeExpanded" xml:space="preserve">
@@ -639,29 +618,29 @@
   <data name="Label_FileSizeTruncated" xml:space="preserve">
     <value>El tamaño del archivo se truncará a</value>
   </data>
-  <data name="SummaryPanel_FileSystem" xml:space="preserve">
+  <data name="Label_FileSystem" xml:space="preserve">
     <value>Sistema de archivos</value>
   </data>
   <data name="Filter_FileSystem_DirectoryHasAdditionalData" xml:space="preserve">
-    <value>Sistema de archivos - El directorio tiene datos adicionales</value>
+    <value>El directorio tiene datos adicionales</value>
   </data>
   <data name="Filter_FileSystem_DirectoryHasBootSector" xml:space="preserve">
-    <value>Sistema de archivos - El directorio contiene un sector de arranque</value>
+    <value>El directorio contiene un sector de arranque</value>
   </data>
   <data name="Filter_FileSystem_HasCreationDate" xml:space="preserve">
-    <value>Sistema de archivos - Tiene fecha de creación</value>
+    <value>Tiene fecha de creación</value>
   </data>
   <data name="Filter_FileSystem_HasLastAccessDate" xml:space="preserve">
-    <value>Sistema de archivos - Tiene fecha de último acceso</value>
+    <value>Tiene fecha de último acceso</value>
   </data>
   <data name="Filter_FileSystem_HasLongFileNames" xml:space="preserve">
-    <value>Sistema de archivos - Tiene nombres de archivo largos</value>
+    <value>Tiene nombres de archivo largos</value>
   </data>
   <data name="Filter_FileSystem_HasReservedBytesSet" xml:space="preserve">
-    <value>Sistema de archivos - Tiene bytes reservados establecidos</value>
+    <value>Tiene bytes reservados establecidos</value>
   </data>
   <data name="Filter_FileSystem_InvalidDirectoryEntries" xml:space="preserve">
-    <value>Sistema de archivos - Entradas de directorio no válidas</value>
+    <value>Entradas de directorio no válidas</value>
   </data>
   <data name="BootSector_FileSystemType" xml:space="preserve">
     <value>ID del sistema de archivos</value>
@@ -733,16 +712,16 @@
     <value>Sincronización del campo ID</value>
   </data>
   <data name="Filter_Image_InDatabase" xml:space="preserve">
-    <value>Imagen - En base de datos</value>
+    <value>En base de datos</value>
   </data>
   <data name="Filter_Image_NotInDatabase" xml:space="preserve">
-    <value>Imagen - No está en base de datos</value>
+    <value>No está en base de datos</value>
   </data>
-  <data name="Filter_Image_Unverified" xml:space="preserve">
-    <value>Imagen - No verificada</value>
+  <data name="Label_Unverified" xml:space="preserve">
+    <value>No verificada</value>
   </data>
-  <data name="Filter_Image_Verified" xml:space="preserve">
-    <value>Imagen - Verificada</value>
+  <data name="Label_Verified" xml:space="preserve">
+    <value>Verificada</value>
   </data>
   <data name="Dialog_ChangesDiscarded" xml:space="preserve">
     <value>La imagen ha sido modificada por otra aplicación.{0}{0}Los cambios han sido descartados.</value>
@@ -783,7 +762,7 @@
   <data name="Dialog_InvalidSearchString" xml:space="preserve">
     <value>Cadena de búsqueda no válida</value>
   </data>
-  <data name="SummaryPanel_Language" xml:space="preserve">
+  <data name="Label_Language" xml:space="preserve">
     <value>Idioma</value>
   </data>
   <data name="Dialog_LanguageSettings" xml:space="preserve">
@@ -834,9 +813,6 @@
   <data name="Label_MultipleFiles" xml:space="preserve">
     <value>Varios archivos</value>
   </data>
-  <data name="DirectorytEntry_FileName" xml:space="preserve">
-    <value>Nombre</value>
-  </data>
   <data name="Caption_NewDirectory" xml:space="preserve">
     <value>Nuevo directorio</value>
   </data>
@@ -849,10 +825,10 @@
   <data name="Label_No" xml:space="preserve">
     <value>No</value>
   </data>
-  <data name="SummaryPanel_NoBootLoader" xml:space="preserve">
+  <data name="Label_NoBootLoader" xml:space="preserve">
     <value>Sin cargador de arranque</value>
   </data>
-  <data name="SummaryPanel_NoBPB" xml:space="preserve">
+  <data name="Label_NoBPB" xml:space="preserve">
     <value>Sin BPB</value>
   </data>
   <data name="Dialog_CheckImageSize" xml:space="preserve">
@@ -881,18 +857,6 @@
   </data>
   <data name="Label_OEMName" xml:space="preserve">
     <value>Nombre OEM</value>
-  </data>
-  <data name="Filter_OEMName_Mismatched" xml:space="preserve">
-    <value>No coincide</value>
-  </data>
-  <data name="Filter_OEMName_Unknown" xml:space="preserve">
-    <value>Desconocido</value>
-  </data>
-  <data name="Filter_OEMName_Unverified" xml:space="preserve">
-    <value>No verificado</value>
-  </data>
-  <data name="Filter_OEMName_Verified" xml:space="preserve">
-    <value>Verificado</value>
   </data>
   <data name="Filter_OEMName_Windows9x" xml:space="preserve">
     <value>Windows 9x</value>
@@ -1257,7 +1221,7 @@
   <data name="FilePanel_LastWritten" xml:space="preserve">
     <value>Última escritura</value>
   </data>
-  <data name="FilePanel_Name" xml:space="preserve">
+  <data name="Label_Name" xml:space="preserve">
     <value>Nombre</value>
   </data>
   <data name="FilePanel_LFN" xml:space="preserve">
@@ -1605,5 +1569,23 @@
   </data>
   <data name="Label_WeakBits" xml:space="preserve">
     <value>Bits débiles</value>
+  </data>
+  <data name="Menu_BootSector" xml:space="preserve">
+    <value>&amp;Sector de Arranque</value>
+  </data>
+  <data name="Menu_SaveAll" xml:space="preserve">
+    <value>Guardar todo</value>
+  </data>
+  <data name="Menu_WriteDiskInDrive" xml:space="preserve">
+    <value>&amp;Escribir Disco en la Unidad {0}</value>
+  </data>
+  <data name="Label_CloseAll" xml:space="preserve">
+    <value>Cerrar todo</value>
+  </data>
+  <data name="Menu_FAT" xml:space="preserve">
+    <value>Tabla de &amp;asignación de archivos</value>
+  </data>
+  <data name="Label_Image" xml:space="preserve">
+    <value>Imagen</value>
   </data>
 </root>

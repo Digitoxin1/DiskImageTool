@@ -5,12 +5,16 @@
         InitializeComponent()
 
         ' Add any initialization after the InitializeComponent() call.
-
+        LocalizeForm()
     End Sub
 
     Public Function GetValue() As Date
         Return New Date(DTDate.Value.Year, DTDate.Value.Month, DTDate.Value.Day, DTTime.Value.Hour, DTTime.Value.Minute, DTTime.Value.Second, CInt(NumMS.Value))
     End Function
+
+    Private Sub LocalizeForm()
+        BtnOK.Text = My.Resources.Menu_Ok
+    End Sub
 
     Private Sub VolumeSerialNumberForm_Load(sender As Object, e As EventArgs) Handles Me.Load
         DTDate.Value = Date.Today

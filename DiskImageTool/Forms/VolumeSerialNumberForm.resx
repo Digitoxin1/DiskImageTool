@@ -401,6 +401,7 @@
   </data>
   <data name="BtnOK.Text" xml:space="preserve">
     <value>&amp;Ok</value>
+    <comment>@Invariant</comment>
   </data>
   <data name="&gt;&gt;BtnOK.Name" xml:space="preserve">
     <value>BtnOK</value>

@@ -429,9 +429,6 @@
   <data name="DirectorytEntry_CreationTime" xml:space="preserve">
     <value>Heure de création</value>
   </data>
-  <data name="DirectorytEntry_FileName" xml:space="preserve">
-    <value>Nom</value>
-  </data>
   <data name="FileType_AdvancedSectorImage" xml:space="preserve">
     <value>Image de secteur avancée</value>
   </data>
@@ -444,17 +441,8 @@
   <data name="Filter_AllItems" xml:space="preserve">
     <value>Tous</value>
   </data>
-  <data name="Filter_Bootstrap_Unknown" xml:space="preserve">
-    <value>Amorçage - Inconnu</value>
-  </data>
   <data name="Filter_Database_MismatchedStatus" xml:space="preserve">
     <value>Base de données - État incohérent</value>
-  </data>
-  <data name="Filter_Disk_CustomBootLoader" xml:space="preserve">
-    <value>Chargeur de démarrage personnalisé</value>
-  </data>
-  <data name="Filter_Disk_CustomFormat" xml:space="preserve">
-    <value>Format personnalisé</value>
   </data>
   <data name="Filter_Disk_FreeClustersWithData" xml:space="preserve">
     <value>Clusters libres contenant des données</value>
@@ -464,12 +452,6 @@
   </data>
   <data name="Filter_Disk_MismatchedMediaDescriptor" xml:space="preserve">
     <value>Descripteur de média incohérent</value>
-  </data>
-  <data name="Filter_Disk_NoBootLoader" xml:space="preserve">
-    <value>Aucun chargeur de démarrage</value>
-  </data>
-  <data name="Filter_Disk_NOBPB" xml:space="preserve">
-    <value>Aucun BPB</value>
   </data>
   <data name="Filter_Disk_UnknownFormat" xml:space="preserve">
     <value>Format inconnu</value>
@@ -504,7 +486,7 @@
   <data name="SummaryPanel_BootRecord" xml:space="preserve">
     <value>Enregistrement de démarrage</value>
   </data>
-  <data name="SummaryPanel_Bootstrap" xml:space="preserve">
+  <data name="Label_Bootstrap" xml:space="preserve">
     <value>Amorçage</value>
   </data>
   <data name="SummaryPanel_Company" xml:space="preserve">
@@ -519,10 +501,10 @@
   <data name="SummaryPanel_CopyProtection" xml:space="preserve">
     <value>Protection copie</value>
   </data>
-  <data name="SummaryPanel_CustomBootLoader" xml:space="preserve">
+  <data name="Label_CustomBootLoader" xml:space="preserve">
     <value>Chargeur de démarrage personnalisé</value>
   </data>
-  <data name="SummaryPanel_CustomFormat" xml:space="preserve">
+  <data name="Label_CustomFormat" xml:space="preserve">
     <value>Format personnalisé</value>
   </data>
   <data name="SummaryPanel_Description" xml:space="preserve">
@@ -634,7 +616,7 @@
     <value>Annulé</value>
   </data>
   <data name="Label_BadSectors" xml:space="preserve">
-    <value>Mauvais secteurs</value>
+    <value>Secteurs défectueux</value>
   </data>
   <data name="Label_Close" xml:space="preserve">
     <value>Fermer</value>
@@ -684,20 +666,14 @@
   <data name="DirectorytEntry_Extension" xml:space="preserve">
     <value>Extension</value>
   </data>
-  <data name="SummaryPanel_FAT" xml:space="preserve">
+  <data name="Label_FATShort" xml:space="preserve">
     <value>FAT</value>
   </data>
-  <data name="Filter_FAT_BadSectors" xml:space="preserve">
-    <value>FAT – Secteurs défectueux</value>
-  </data>
   <data name="Filter_FAT_ChainingErrors" xml:space="preserve">
-    <value>FAT – Erreurs de chaînage</value>
-  </data>
-  <data name="Filter_FAT_LostClusters" xml:space="preserve">
-    <value>FAT – Clusters perdus</value>
+    <value>Erreurs de chaînage</value>
   </data>
   <data name="Filter_FAT_MismatchedFATs" xml:space="preserve">
-    <value>FAT – FAT incohérentes</value>
+    <value>FAT incohérentes</value>
   </data>
   <data name="Label_File" xml:space="preserve">
     <value>Fichier</value>
@@ -714,29 +690,29 @@
   <data name="Label_FileSizeTruncated" xml:space="preserve">
     <value>La taille du fichier sera tronquée à</value>
   </data>
-  <data name="SummaryPanel_FileSystem" xml:space="preserve">
+  <data name="Label_FileSystem" xml:space="preserve">
     <value>Système de fichiers</value>
   </data>
   <data name="Filter_FileSystem_DirectoryHasAdditionalData" xml:space="preserve">
-    <value>Système de fichiers – Le répertoire contient des données supplémentaires</value>
+    <value>Le répertoire contient des données supplémentaires</value>
   </data>
   <data name="Filter_FileSystem_DirectoryHasBootSector" xml:space="preserve">
-    <value>Système de fichiers – Le répertoire contient un secteur de démarrage</value>
+    <value>Le répertoire contient un secteur de démarrage</value>
   </data>
   <data name="Filter_FileSystem_HasCreationDate" xml:space="preserve">
-    <value>Système de fichiers – Contient une date de création</value>
+    <value>Contient une date de création</value>
   </data>
   <data name="Filter_FileSystem_HasLastAccessDate" xml:space="preserve">
-    <value>Système de fichiers – Contient une date de dernier accès</value>
+    <value>Contient une date de dernier accès</value>
   </data>
   <data name="Filter_FileSystem_HasLongFileNames" xml:space="preserve">
-    <value>Système de fichiers – Contient des noms de fichiers longs</value>
+    <value>Contient des noms de fichiers longs</value>
   </data>
   <data name="Filter_FileSystem_HasReservedBytesSet" xml:space="preserve">
-    <value>Système de fichiers – Contient des octets réservés</value>
+    <value>Contient des octets réservés</value>
   </data>
   <data name="Filter_FileSystem_InvalidDirectoryEntries" xml:space="preserve">
-    <value>Système de fichiers – Entrées de répertoire invalides</value>
+    <value>Entrées de répertoire invalides</value>
   </data>
   <data name="Dialog_FileBlankWarning" xml:space="preserve">
     <value>Le nom de fichier ne peut pas être vide.</value>
@@ -796,16 +772,16 @@
     <value>Synchronisation du champ ID</value>
   </data>
   <data name="Filter_Image_InDatabase" xml:space="preserve">
-    <value>Image – Dans la base de données</value>
+    <value>Dans la base de données</value>
   </data>
   <data name="Filter_Image_NotInDatabase" xml:space="preserve">
-    <value>Image – Non présente dans la base de données</value>
+    <value>Non présente dans la base de données</value>
   </data>
-  <data name="Filter_Image_Unverified" xml:space="preserve">
-    <value>Image – Non vérifiée</value>
+  <data name="Label_Unverified" xml:space="preserve">
+    <value>Non vérifié</value>
   </data>
-  <data name="Filter_Image_Verified" xml:space="preserve">
-    <value>Image – Vérifiée</value>
+  <data name="Label_Verified" xml:space="preserve">
+    <value>Vérifié</value>
   </data>
   <data name="Dialog_ChangesDiscarded" xml:space="preserve">
     <value>L’image a été modifiée par une autre application.{0}{0}Les modifications ont été ignorées.</value>
@@ -843,7 +819,7 @@
   <data name="Dialog_InvalidSearchString" xml:space="preserve">
     <value>Chaîne de recherche invalide</value>
   </data>
-  <data name="SummaryPanel_Language" xml:space="preserve">
+  <data name="Label_Language" xml:space="preserve">
     <value>Langue</value>
   </data>
   <data name="DirectorytEntry_LastAccessDate" xml:space="preserve">
@@ -891,10 +867,10 @@
   <data name="Label_No" xml:space="preserve">
     <value>Non</value>
   </data>
-  <data name="SummaryPanel_NoBootLoader" xml:space="preserve">
+  <data name="Label_NoBootLoader" xml:space="preserve">
     <value>Aucun chargeur de démarrage</value>
   </data>
-  <data name="SummaryPanel_NoBPB" xml:space="preserve">
+  <data name="Label_NoBPB" xml:space="preserve">
     <value>Aucun BPB</value>
   </data>
   <data name="Dialog_CheckImageSize" xml:space="preserve">
@@ -923,18 +899,6 @@
   </data>
   <data name="Label_OEMName" xml:space="preserve">
     <value>Nom OEM</value>
-  </data>
-  <data name="Filter_OEMName_Mismatched" xml:space="preserve">
-    <value>Non concordant</value>
-  </data>
-  <data name="Filter_OEMName_Unknown" xml:space="preserve">
-    <value>Inconnu</value>
-  </data>
-  <data name="Filter_OEMName_Unverified" xml:space="preserve">
-    <value>Non vérifié</value>
-  </data>
-  <data name="Filter_OEMName_Verified" xml:space="preserve">
-    <value>Vérifié</value>
   </data>
   <data name="Filter_OEMName_Windows9x" xml:space="preserve">
     <value>Windows 9x</value>
@@ -1197,7 +1161,7 @@
   <data name="Caption_NewDirectory" xml:space="preserve">
     <value>Nouveau dossier</value>
   </data>
-  <data name="Caption_FileProperties" xml:space="preserve">
+  <data name="Label_FileProperties" xml:space="preserve">
     <value>Propriétés du fichier</value>
   </data>
   <data name="Button_Update" xml:space="preserve">
@@ -1257,7 +1221,7 @@
   <data name="FilePanel_LastWritten" xml:space="preserve">
     <value>Dernière modification</value>
   </data>
-  <data name="FilePanel_Name" xml:space="preserve">
+  <data name="Label_Name" xml:space="preserve">
     <value>Nom</value>
   </data>
   <data name="FilePanel_LFN" xml:space="preserve">
@@ -1605,5 +1569,23 @@ Voulez-vous écraser ?</value>
   </data>
   <data name="Label_WeakBits" xml:space="preserve">
     <value>Bits faibles</value>
+  </data>
+  <data name="Menu_BootSector" xml:space="preserve">
+    <value>&amp;Secteur de démarrage</value>
+  </data>
+  <data name="Menu_SaveAll" xml:space="preserve">
+    <value>Tout enregistrer</value>
+  </data>
+  <data name="Menu_WriteDiskInDrive" xml:space="preserve">
+    <value>&amp;Écrire la disquette dans le lecteur {0}</value>
+  </data>
+  <data name="Label_CloseAll" xml:space="preserve">
+    <value>Tout fermer</value>
+  </data>
+  <data name="Menu_FAT" xml:space="preserve">
+    <value>Table d’&amp;allocation de fichiers</value>
+  </data>
+  <data name="Label_Image" xml:space="preserve">
+    <value>Image</value>
   </data>
 </root>

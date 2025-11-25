@@ -399,6 +399,7 @@
     <Compile Include="Modules\SummaryPanel.vb" />
     <Compile Include="Settings\AppSettings.vb" />
     <Compile Include="Flux\Greaseweazle\DriveSettings.vb" />
+    <Compile Include="Settings\SettingsExpert.vb" />
     <Compile Include="Settings\UserStateFluxConvertDevice.vb" />
     <Compile Include="Settings\UserStateFluxConvert.vb" />
     <Compile Include="Settings\UserStateETags.vb" />
@@ -886,6 +887,7 @@
     </EmbeddedResource>
     <EmbeddedResource Include="MainForm.fr.resx">
       <DependentUpon>MainForm.vb</DependentUpon>
+      <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="MainForm.resx">
       <DependentUpon>MainForm.vb</DependentUpon>

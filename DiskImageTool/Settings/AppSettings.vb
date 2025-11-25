@@ -24,6 +24,7 @@ Namespace Settings
             Greaseweazle = New Flux.Greaseweazle.GreaseweazleSettings()
             Kryoflux = New Flux.Kryoflux.KryofluxSettings()
             PcImgCnv = New Flux.PcImgCnv.PcImgCnvSettings()
+            Expert = New SettingsExpert()
         End Sub
 
         Public Property CheckUpdateOnStartup As Boolean
@@ -89,6 +90,8 @@ Namespace Settings
         Public Property Greaseweazle As Flux.Greaseweazle.GreaseweazleSettings
 
         Public Property IsDirty As Boolean
+
+        Public Property Expert As SettingsExpert
 
         Public Property Kryoflux As Flux.Kryoflux.KryofluxSettings
 
@@ -162,6 +165,7 @@ Namespace Settings
                 settings._Greaseweazle.LoadFromDictionary(ReadSection(root, "greaseweazle"))
                 settings._Kryoflux.LoadFromDictionary(ReadSection(root, "kryoflux"))
                 settings._PcImgCnv.LoadFromDictionary(ReadSection(root, "pcImgCnv"))
+                settings._Expert.LoadFromDictionary(ReadSection(root, "expert"))
 
                 settings.IsDirty = False
 
@@ -178,7 +182,7 @@ Namespace Settings
         End Sub
 
         Public Sub Save(Optional Force As Boolean = False)
-            Dim sectionsDirty As Boolean = Greaseweazle.IsDirty OrElse Kryoflux.IsDirty OrElse PcImgCnv.IsDirty
+            Dim sectionsDirty As Boolean = Greaseweazle.IsDirty OrElse Kryoflux.IsDirty OrElse PcImgCnv.IsDirty OrElse Expert.IsDirty
 
             If Not (IsDirty OrElse sectionsDirty OrElse Force) Then
                 Return
@@ -198,6 +202,7 @@ Namespace Settings
             root("greaseweazle") = Greaseweazle.ToJsonObject()
             root("kryoflux") = Kryoflux.ToJsonObject()
             root("pcImgCnv") = PcImgCnv.ToJsonObject()
+            root("expert") = Expert.ToJsonObject()
 
             Dim prefArr As New List(Of Object)
 

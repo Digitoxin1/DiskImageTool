@@ -284,7 +284,7 @@ Public Class SummaryPanel
         TitleRows.Add("Year", New SummaryRow(ListViewSummary.Font, My.Resources.SummaryPanel_Year, False))
         TitleRows.Add("OperatingSystem", New SummaryRow(ListViewSummary.Font, My.Resources.SummaryPanel_OperatingSystem, False))
         TitleRows.Add("Region", New SummaryRow(ListViewSummary.Font, My.Resources.Label_Region, False))
-        TitleRows.Add("Language", New SummaryRow(ListViewSummary.Font, My.Resources.SummaryPanel_Language, False))
+        TitleRows.Add("Language", New SummaryRow(ListViewSummary.Font, My.Resources.Label_Language, False))
         TitleRows.Add("Version", New SummaryRow(ListViewSummary.Font, My.Resources.Label_Version, True))
         TitleRows.Add("Disk", New SummaryRow(ListViewSummary.Font, My.Resources.Label_Disk, False))
         TitleRows.Add("CopyProtection", New SummaryRow(ListViewSummary.Font, My.Resources.SummaryPanel_CopyProtection, True))
@@ -512,16 +512,16 @@ Public Class SummaryPanel
         Dim ForeColor As Color
 
         With ListViewSummary
-            Dim BootStrapGroup = .Groups.Add(GROUP_BOOTSTRAP, My.Resources.SummaryPanel_Bootstrap)
+            Dim BootStrapGroup = .Groups.Add(GROUP_BOOTSTRAP, My.Resources.Label_Bootstrap)
 
             If Not OEMNameResponse.NoBootLoader Then
                 Dim BootStrapCRC32 = CRC32.ComputeChecksum(Disk.BootSector.BootStrapCode)
-                .AddItem(BootStrapGroup, My.Resources.SummaryPanel_Bootstrap & " CRC32", BootStrapCRC32.ToString("X8"))
+                .AddItem(BootStrapGroup, My.Resources.Label_Bootstrap & " CRC32", BootStrapCRC32.ToString("X8"))
             End If
 
             If OEMNameResponse.Found Then
                 If OEMNameResponse.Data.Language.Length > 0 Then
-                    .AddItem(BootStrapGroup, My.Resources.SummaryPanel_Language, OEMNameResponse.Data.Language)
+                    .AddItem(BootStrapGroup, My.Resources.Label_Language, OEMNameResponse.Data.Language)
                 End If
 
                 Dim OEMName = OEMNameResponse.MatchedOEMName
@@ -587,7 +587,7 @@ Public Class SummaryPanel
                     Value = String.Format(My.Resources.Label_Floppy, DiskFormatString)
                 Else
                     Dim DiskFormatStringBySize = FloppyDiskFormatGetName(DiskFormatBySize)
-                    Value = String.Format(My.Resources.Label_Floppy, DiskFormatStringBySize) & " " & InParens(My.Resources.SummaryPanel_CustomFormat)
+                    Value = String.Format(My.Resources.Label_Floppy, DiskFormatStringBySize) & " " & InParens(My.Resources.Label_CustomFormat)
                 End If
                 .AddItem(DiskGroup, My.Resources.SummaryPanel_DiskFormat, Value)
 
@@ -665,7 +665,7 @@ Public Class SummaryPanel
         Dim ForeColor As Color
 
         With ListViewSummary
-            Dim FileSystemGroup = .Groups.Add(GROUP_FILE_SYSTEM, My.Resources.SummaryPanel_FileSystem)
+            Dim FileSystemGroup = .Groups.Add(GROUP_FILE_SYSTEM, My.Resources.Label_FileSystem)
 
             If Disk.FAT.HasMediaDescriptor Then
                 Value = Disk.FAT.MediaDescriptor.ToString("X2") & " Hex"
@@ -783,23 +783,23 @@ Public Class SummaryPanel
 
         With ListViewSummary
             If Not Disk.IsValidImage Then
-                .AddItem(DiskGroup, My.Resources.SummaryPanel_FileSystem, My.Resources.Label_Unknown, Color.Red)
+                .AddItem(DiskGroup, My.Resources.Label_FileSystem, My.Resources.Label_Unknown, Color.Red)
             Else
                 Dim OEMNameResponse = BootStrapDB.CheckOEMName(Disk.BootSector)
 
                 If OEMNameResponse.NoBootLoader Then
                     If Disk.BootSector.CheckJumpInstruction(False, True) Then
-                        .AddItem(DiskGroup, My.Resources.SummaryPanel_Bootstrap, My.Resources.SummaryPanel_NoBootLoader, Color.Red)
+                        .AddItem(DiskGroup, My.Resources.Label_Bootstrap, My.Resources.Label_NoBootLoader, Color.Red)
                     Else
-                        .AddItem(DiskGroup, My.Resources.SummaryPanel_Bootstrap, My.Resources.SummaryPanel_CustomBootLoader, Color.Red)
+                        .AddItem(DiskGroup, My.Resources.Label_Bootstrap, My.Resources.Label_CustomBootLoader, Color.Red)
                     End If
                 ElseIf Not Disk.BootSector.BPB.IsValid Then
-                    .AddItem(DiskGroup, My.Resources.SummaryPanel_BootRecord, My.Resources.SummaryPanel_NoBPB, Color.Red)
+                    .AddItem(DiskGroup, My.Resources.SummaryPanel_BootRecord, My.Resources.Label_NoBPB, Color.Red)
                 End If
 
                 If Not Disk.BootSector.BPB.IsValid Then
                     If Not Disk.FATTables.FATsMatch Then
-                        .AddItem(DiskGroup, My.Resources.SummaryPanel_FAT, My.Resources.Label_Mismatched, Color.Red)
+                        .AddItem(DiskGroup, My.Resources.Label_FATShort, My.Resources.Label_Mismatched, Color.Red)
                     End If
                 End If
 

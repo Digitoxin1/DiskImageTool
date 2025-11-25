@@ -28,28 +28,24 @@ Module Utility
         Return CleanString(FileName, IO.Path.GetInvalidPathChars(), "_")
     End Function
 
-    Public Function FormatLabelPair(Label As String, Value As String, Optional Separator As String = ": ") As String
-        If Label.Length > 0 Then
-            Return Label & Separator & Value
-        Else
-            Return Value
-        End If
-    End Function
-
-    Public Function FormatThousands(Value As Object) As String
-        Return Format(Value, "N0")
-    End Function
-
-    Public Function FormatTrackSide(Caption As String, Track As String, Side As String) As String
-        Return Caption & " " & Track & "." & Side
-    End Function
-
     Public Sub DebugException(ex As Exception)
         Debug.Write("Caught Exception: ")
         Debug.Write("0x" & ex.HResult.ToString("X8"))
         Debug.WriteLine(" - " & ex.Message)
         Debug.WriteLine(ex.StackTrace)
     End Sub
+
+    Public Function DeleteFileIfExists(FilePath As String) As Boolean
+        Try
+            If IO.File.Exists(FilePath) Then
+                IO.File.Delete(FilePath)
+            End If
+            Return True
+        Catch ex As Exception
+            Return False
+        End Try
+    End Function
+
     Public Function DuplicateHashTable(Table As Hashtable) As Hashtable
         Dim NewTable As New Hashtable
         For Each Key In Table.Keys
@@ -96,16 +92,21 @@ Module Utility
         Next
     End Sub
 
-    Public Function Quoted(Value As String) As String
-        Const q As Char = ControlChars.Quote
-
-        If Value Is Nothing Then
-            Return New String({q, q})
+    Public Function FormatLabelPair(Label As String, Value As String, Optional Separator As String = ": ") As String
+        If Label.Length > 0 Then
+            Return Label & Separator & Value
+        Else
+            Return Value
         End If
-
-        Return q & Value.Replace(q, q & q) & q
     End Function
 
+    Public Function FormatThousands(Value As Object) As String
+        Return Format(Value, "N0")
+    End Function
+
+    Public Function FormatTrackSide(Caption As String, Track As String, Side As String) As String
+        Return Caption & " " & Track & "." & Side
+    End Function
     Public Function GenerateUniqueFileName(FilePath As String, FileName As String) As String
         Dim NewFileName As String
         Dim Suffix As Integer = 1
@@ -157,28 +158,6 @@ Module Utility
         Return Result
     End Function
 
-    Public Function GetImageTypeFromHeader(Data() As Byte) As FloppyImageType
-        If Encoding.UTF8.GetString(Data, 0, 8) = "HXCPICFE" Then
-            Return FloppyImageType.HFEImage
-        ElseIf Encoding.UTF8.GetString(Data, 0, 8) = "HXCHFEV3" Then
-            Return FloppyImageType.HFEImage
-        ElseIf Encoding.UTF8.GetString(Data, 0, 4) = "86BF" Then
-            Return FloppyImageType.D86FImage
-        ElseIf Encoding.UTF8.GetString(Data, 0, 6) = "HXCMFM" Then
-            Return FloppyImageType.MFMImage
-        ElseIf Encoding.UTF8.GetString(Data, 0, 4) = "PSI " Then
-            Return FloppyImageType.PSIImage
-        ElseIf Encoding.UTF8.GetString(Data, 0, 4) = "PRI " Then
-            Return FloppyImageType.PRIImage
-        ElseIf Encoding.UTF8.GetString(Data, 0, 4) = "IMD " Then
-            Return FloppyImageType.IMDImage
-        ElseIf BitConverter.ToUInt16(Data, 0) = &HA55A Then
-            Return FloppyImageType.TranscopyImage
-        Else
-            Return FloppyImageType.BasicSectorImage
-        End If
-    End Function
-
     Public Function GetImageTypeFromFileName(FileName As String) As FloppyImageType
         Dim FileExt = IO.Path.GetExtension(FileName).ToLower
 
@@ -196,6 +175,28 @@ Module Utility
             Return FloppyImageType.D86FImage
         ElseIf FileExt = ".imd" Then
             Return FloppyImageType.IMDImage
+        Else
+            Return FloppyImageType.BasicSectorImage
+        End If
+    End Function
+
+    Public Function GetImageTypeFromHeader(Data() As Byte) As FloppyImageType
+        If Encoding.UTF8.GetString(Data, 0, 8) = "HXCPICFE" Then
+            Return FloppyImageType.HFEImage
+        ElseIf Encoding.UTF8.GetString(Data, 0, 8) = "HXCHFEV3" Then
+            Return FloppyImageType.HFEImage
+        ElseIf Encoding.UTF8.GetString(Data, 0, 4) = "86BF" Then
+            Return FloppyImageType.D86FImage
+        ElseIf Encoding.UTF8.GetString(Data, 0, 6) = "HXCMFM" Then
+            Return FloppyImageType.MFMImage
+        ElseIf Encoding.UTF8.GetString(Data, 0, 4) = "PSI " Then
+            Return FloppyImageType.PSIImage
+        ElseIf Encoding.UTF8.GetString(Data, 0, 4) = "PRI " Then
+            Return FloppyImageType.PRIImage
+        ElseIf Encoding.UTF8.GetString(Data, 0, 4) = "IMD " Then
+            Return FloppyImageType.IMDImage
+        ElseIf BitConverter.ToUInt16(Data, 0) = &HA55A Then
+            Return FloppyImageType.TranscopyImage
         Else
             Return FloppyImageType.BasicSectorImage
         End If
@@ -235,17 +236,6 @@ Module Utility
         Return False
     End Function
 
-    Public Function DeleteFileIfExists(FilePath As String) As Boolean
-        Try
-            If IO.File.Exists(FilePath) Then
-                IO.File.Delete(FilePath)
-            End If
-            Return True
-        Catch ex As Exception
-            Return False
-        End Try
-    End Function
-
     Public Function IsFileReadOnly(fileName As String) As Boolean
         Dim fInfo As New IO.FileInfo(fileName)
         Return fInfo.IsReadOnly
@@ -283,6 +273,15 @@ Module Utility
         Return Path
     End Function
 
+    Public Function Quoted(Value As String) As String
+        Const q As Char = ControlChars.Quote
+
+        If Value Is Nothing Then
+            Return New String({q, q})
+        End If
+
+        Return q & Value.Replace(q, q & q) & q
+    End Function
     Public Function ReadFileIntoBuffer(FileInfo As IO.FileInfo, FileSize As UInteger, FillChar As Byte) As Byte()
         Dim FileBuffer(FileSize - 1) As Byte
         Dim n As Integer
@@ -334,6 +333,10 @@ Module Utility
 
         Return True
     End Function
+
+    Public Sub SetText(control As Control, value As String)
+        control.Text = value
+    End Sub
 
     Public Function SplitFilename(FileName As String) As (Name As String, Extension As String)
         Dim FileParts As (Name As String, Extension As String)

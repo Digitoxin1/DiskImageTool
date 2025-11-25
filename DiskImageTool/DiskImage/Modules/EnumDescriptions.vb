@@ -57,7 +57,7 @@
         Public Function DirectorytEntryDescription(Offset As DirectoryEntry.DirectoryEntryOffsets) As String
             Select Case Offset
                 Case DirectoryEntry.DirectoryEntryOffsets.FileName
-                    Return My.Resources.DirectorytEntry_FileName
+                    Return My.Resources.Label_Name
                 Case DirectoryEntry.DirectoryEntryOffsets.Extension
                     Return My.Resources.DirectorytEntry_Extension
                 Case DirectoryEntry.DirectoryEntryOffsets.Attributes

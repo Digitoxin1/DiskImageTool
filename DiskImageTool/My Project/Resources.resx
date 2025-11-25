@@ -684,9 +684,6 @@
   <data name="DirectorytEntry_Extension" xml:space="preserve">
     <value>Extension</value>
   </data>
-  <data name="DirectorytEntry_FileName" xml:space="preserve">
-    <value>Name</value>
-  </data>
   <data name="DirectorytEntry_LastAccessDate" xml:space="preserve">
     <value>Last Access Date</value>
   </data>
@@ -726,17 +723,8 @@
   <data name="Filter_AllItems" xml:space="preserve">
     <value>All</value>
   </data>
-  <data name="Filter_Bootstrap_Unknown" xml:space="preserve">
-    <value>Bootstrap - Unknown</value>
-  </data>
   <data name="Filter_Database_MismatchedStatus" xml:space="preserve">
     <value>Database - Mismatched Status</value>
-  </data>
-  <data name="Filter_Disk_CustomBootLoader" xml:space="preserve">
-    <value>Custom Boot Loader</value>
-  </data>
-  <data name="Filter_Disk_CustomFormat" xml:space="preserve">
-    <value>Custom Format</value>
   </data>
   <data name="Filter_Disk_FreeClustersWithData" xml:space="preserve">
     <value>Free Clusters with Data</value>
@@ -747,74 +735,50 @@
   <data name="Filter_Disk_MismatchedMediaDescriptor" xml:space="preserve">
     <value>Mismatched Media Descriptor</value>
   </data>
-  <data name="Filter_Disk_NoBootLoader" xml:space="preserve">
-    <value>No Boot Loader</value>
-  </data>
-  <data name="Filter_Disk_NOBPB" xml:space="preserve">
-    <value>No BPB</value>
-  </data>
   <data name="Filter_Disk_UnknownFormat" xml:space="preserve">
     <value>Unknown Format</value>
   </data>
-  <data name="Filter_FAT_BadSectors" xml:space="preserve">
-    <value>FAT - Bad Sectors</value>
-  </data>
   <data name="Filter_FAT_ChainingErrors" xml:space="preserve">
-    <value>FAT - Chaining Errors</value>
-  </data>
-  <data name="Filter_FAT_LostClusters" xml:space="preserve">
-    <value>FAT - Lost Clusters</value>
+    <value>Chaining Errors</value>
   </data>
   <data name="Filter_FAT_MismatchedFATs" xml:space="preserve">
-    <value>FAT - Mismatched FATs</value>
+    <value>Mismatched FATs</value>
   </data>
   <data name="Filter_FileSystem_DirectoryHasAdditionalData" xml:space="preserve">
-    <value>File System - Directory has Additional Data</value>
+    <value>Directory has Additional Data</value>
   </data>
   <data name="Filter_FileSystem_DirectoryHasBootSector" xml:space="preserve">
-    <value>File System - Directory has Boot Sector</value>
+    <value>Directory has Boot Sector</value>
   </data>
   <data name="Filter_FileSystem_HasCreationDate" xml:space="preserve">
-    <value>File System - Has Creation Date</value>
+    <value>Has Creation Date</value>
   </data>
   <data name="Filter_FileSystem_HasLastAccessDate" xml:space="preserve">
-    <value>File System - Has Last Access Date</value>
+    <value>Has Last Access Date</value>
   </data>
   <data name="Filter_FileSystem_HasLongFileNames" xml:space="preserve">
-    <value>File System - Has Long File Names</value>
+    <value>Has Long File Names</value>
   </data>
   <data name="Filter_FileSystem_HasReservedBytesSet" xml:space="preserve">
-    <value>File System - Has Reserved Bytes Set</value>
+    <value>Has Reserved Bytes Set</value>
   </data>
   <data name="Filter_FileSystem_InvalidDirectoryEntries" xml:space="preserve">
-    <value>File System - Invalid Directory Entries</value>
+    <value>Invalid Directory Entries</value>
   </data>
   <data name="Filter_Image_InDatabase" xml:space="preserve">
-    <value>Image - In Database</value>
+    <value>In Database</value>
   </data>
   <data name="Filter_Image_NotInDatabase" xml:space="preserve">
-    <value>Image - Not in Database</value>
+    <value>Not in Database</value>
   </data>
-  <data name="Filter_Image_Unverified" xml:space="preserve">
-    <value>Image - Unverified</value>
+  <data name="Label_Unverified" xml:space="preserve">
+    <value>Unverified</value>
   </data>
-  <data name="Filter_Image_Verified" xml:space="preserve">
-    <value>Image - Verified</value>
+  <data name="Label_Verified" xml:space="preserve">
+    <value>Verified</value>
   </data>
   <data name="Filter_ModifiedFiles" xml:space="preserve">
     <value>Modified Files</value>
-  </data>
-  <data name="Filter_OEMName_Mismatched" xml:space="preserve">
-    <value>Mismatched</value>
-  </data>
-  <data name="Filter_OEMName_Unknown" xml:space="preserve">
-    <value>Unknown</value>
-  </data>
-  <data name="Filter_OEMName_Unverified" xml:space="preserve">
-    <value>Unverified</value>
-  </data>
-  <data name="Filter_OEMName_Verified" xml:space="preserve">
-    <value>Verified</value>
   </data>
   <data name="Filter_OEMName_Windows9x" xml:space="preserve">
     <value>Windows 9x</value>
@@ -894,7 +858,7 @@
   <data name="SummaryPanel_BootRecord" xml:space="preserve">
     <value>Boot Record</value>
   </data>
-  <data name="SummaryPanel_Bootstrap" xml:space="preserve">
+  <data name="Label_Bootstrap" xml:space="preserve">
     <value>Bootstrap</value>
   </data>
   <data name="SummaryPanel_Company" xml:space="preserve">
@@ -909,10 +873,10 @@
   <data name="SummaryPanel_CopyProtection" xml:space="preserve">
     <value>Copy Protection</value>
   </data>
-  <data name="SummaryPanel_CustomBootLoader" xml:space="preserve">
+  <data name="Label_CustomBootLoader" xml:space="preserve">
     <value>Custom Boot Loader</value>
   </data>
-  <data name="SummaryPanel_CustomFormat" xml:space="preserve">
+  <data name="Label_CustomFormat" xml:space="preserve">
     <value>Custom Format</value>
   </data>
   <data name="SummaryPanel_Description" xml:space="preserve">
@@ -924,10 +888,10 @@
   <data name="SummaryPanel_Error" xml:space="preserve">
     <value>Error Loading File</value>
   </data>
-  <data name="SummaryPanel_FAT" xml:space="preserve">
+  <data name="Label_FATShort" xml:space="preserve">
     <value>FAT</value>
   </data>
-  <data name="SummaryPanel_FileSystem" xml:space="preserve">
+  <data name="Label_FileSystem" xml:space="preserve">
     <value>File System</value>
   </data>
   <data name="SummaryPanel_FreeSpace" xml:space="preserve">
@@ -945,7 +909,7 @@
   <data name="SummaryPanel_InvalidFormat" xml:space="preserve">
     <value>Invalid Image Format</value>
   </data>
-  <data name="SummaryPanel_Language" xml:space="preserve">
+  <data name="Label_Language" xml:space="preserve">
     <value>Language</value>
   </data>
   <data name="Label_MediaDescriptor" xml:space="preserve">
@@ -954,10 +918,10 @@
   <data name="SummaryPanel_NewestDate" xml:space="preserve">
     <value>Newest Date</value>
   </data>
-  <data name="SummaryPanel_NoBootLoader" xml:space="preserve">
+  <data name="Label_NoBootLoader" xml:space="preserve">
     <value>No Boot Loader</value>
   </data>
-  <data name="SummaryPanel_NoBPB" xml:space="preserve">
+  <data name="Label_NoBPB" xml:space="preserve">
     <value>No BPB</value>
   </data>
   <data name="SummaryPanel_NonStandardTracks" xml:space="preserve">
@@ -1287,7 +1251,7 @@
   <data name="Button_Update" xml:space="preserve">
     <value>&amp;Update</value>
   </data>
-  <data name="Caption_FileProperties" xml:space="preserve">
+  <data name="Label_FileProperties" xml:space="preserve">
     <value>File Properties</value>
   </data>
   <data name="Caption_NewDirectory" xml:space="preserve">
@@ -1463,7 +1427,7 @@
   <data name="FilePanel_LFN" xml:space="preserve">
     <value>Long File Name</value>
   </data>
-  <data name="FilePanel_Name" xml:space="preserve">
+  <data name="Label_Name" xml:space="preserve">
     <value>Name</value>
   </data>
   <data name="FilePanel_NTReserved" xml:space="preserve">
@@ -1827,5 +1791,23 @@ Do you wish to overwrite?</value>
   </data>
   <data name="Label_Remaster" xml:space="preserve">
     <value>Remaster</value>
+  </data>
+  <data name="Menu_BootSector" xml:space="preserve">
+    <value>&amp;Boot Sector</value>
+  </data>
+  <data name="Menu_SaveAll" xml:space="preserve">
+    <value>Save All</value>
+  </data>
+  <data name="Menu_WriteDiskInDrive" xml:space="preserve">
+    <value>&amp;Write Disk in Drive {0}</value>
+  </data>
+  <data name="Label_CloseAll" xml:space="preserve">
+    <value>Close All</value>
+  </data>
+  <data name="Menu_FAT" xml:space="preserve">
+    <value>File &amp;Allocation Table</value>
+  </data>
+  <data name="Label_Image" xml:space="preserve">
+    <value>Image</value>
   </data>
 </root>

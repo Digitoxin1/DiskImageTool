@@ -157,6 +157,15 @@
             Floppy2HD = 17
         End Enum
 
+        Public Enum FloppyDiskRegionEnum
+            None = 0
+            BootSector = 1
+            FAT1 = 2
+            FAT2 = 4
+            RootDirectory = 8
+            DataArea = 16
+        End Enum
+
         Public Enum FloppyMediaType As Byte
             MediaUnknown = 0
             Media525DoubleDensity = 1
@@ -176,6 +185,18 @@
 
         Public Function BuildBPB(MediaDescriptor As Byte) As BiosParameterBlock
             Return FloppyDiskFormatGetParams(FloppyDiskFormatGet(MediaDescriptor)).BPBParams.GetBPB
+        End Function
+
+        Public Function CreatePlaceholderParams(Description As String) As FloppyDiskParams
+            Return New FloppyDiskParams(
+                FloppyDiskFormat.FloppyUnknown,
+                New FloppyDiskBPBParams(0, 0, 0, 0, 0, 0, 0, 0, 0, 0),
+                New FloppyDiskGaps(0, 0, 0, 0),
+                "",
+                FloppyMediaType.MediaUnknown
+            ) With {
+                .CustomDescription = Description
+            }
         End Function
 
         Public Function DiskHasWriteSplices(Disk As Disk) As Boolean
@@ -346,19 +367,6 @@
                     Return FloppyDiskFormat.FloppyUnknown
             End Select
         End Function
-
-        Public Function CreatePlaceholderParams(Description As String) As FloppyDiskParams
-            Return New FloppyDiskParams(
-                FloppyDiskFormat.FloppyUnknown,
-                New FloppyDiskBPBParams(0, 0, 0, 0, 0, 0, 0, 0, 0, 0),
-                New FloppyDiskGaps(0, 0, 0, 0),
-                "",
-                FloppyMediaType.MediaUnknown
-            ) With {
-                .CustomDescription = Description
-            }
-        End Function
-
         Public Function FloppyDiskFormatGetComboList() As List(Of FloppyDiskParams)
             Dim result As New List(Of FloppyDiskParams) From {
                 CreatePlaceholderParams(My.Resources.Label_PleaseSelect), ' Add placeholder
@@ -514,28 +522,29 @@
                 Dim Length As UInteger = Disk.BPB.SectorsPerFAT
                 Dim Start As UInteger = Disk.BPB.FATRegionStart + Length * Index
 
-                If Sector >= Start And Sector <Start + Length Then
+                If Sector >= Start And Sector < Start + Length Then
                     Return Index
                 End If
             Next
 
             Return 0
         End Function
-        Public Function GetFloppyDiskRegionName(Disk As Disk, Sector As UInteger, Cluster As UShort) As String
+        Public Function GetFloppyDiskRegionName(Disk As Disk, Sector As UInteger, Cluster As UShort) As (AreaName As String, Region As FloppyDiskRegionEnum)
             If Sector = 0 Then
-                Return My.Resources.Label_BootSector
+                Return (My.Resources.Label_BootSector, FloppyDiskRegionEnum.BootSector)
             ElseIf Disk.IsValidImage Then
                 If Disk.RootDirectory.SectorChain.Contains(Sector) Then
-                    Return My.Resources.HexView_RootDirectory
+                    Return (My.Resources.HexView_RootDirectory, FloppyDiskRegionEnum.RootDirectory)
                 ElseIf IsFATArea(Disk, Sector) Then
                     Dim FATIndex = GetFATIndex(Disk, Sector)
-                    Return My.Resources.SummaryPanel_FAT & " " & (FATIndex + 1).ToString
+                    Dim Region As FloppyDiskRegionEnum = If(FATIndex = 0, FloppyDiskRegionEnum.FAT1, FloppyDiskRegionEnum.FAT2)
+                    Return (My.Resources.Label_FATShort & " " & (FATIndex + 1).ToString, Region)
                 ElseIf Cluster > 1 Then
-                    Return My.Resources.Label_DataArea
+                    Return (My.Resources.Label_DataArea, FloppyDiskRegionEnum.DataArea)
                 End If
             End If
 
-            Return ""
+            Return ("", FloppyDiskRegionEnum.None)
         End Function
         Public Function IsClusterEmpty(FloppyImage As IFloppyImage, BPB As BiosParameterBlock, Cluster As UShort) As Boolean
             Dim Offset = BPB.ClusterToOffset(Cluster)
@@ -660,14 +669,6 @@
         End Structure
 
         Public Structure FloppyDiskParams
-            Public ReadOnly Property BPBParams As FloppyDiskBPBParams
-            Public ReadOnly Property FileExtension As String
-            Public ReadOnly Property Format As FloppyDiskFormat
-            Public ReadOnly Property Gaps As FloppyDiskGaps
-            Public ReadOnly Property MediaType As FloppyMediaType
-            Public Property CustomDescription As String
-            Public Property Detected As Boolean
-
             Public Sub New(Format As FloppyDiskFormat, BPBParams As FloppyDiskBPBParams, Gaps As FloppyDiskGaps, FileExtension As String, MediaType As FloppyMediaType)
                 Me.Format = Format
                 Me.BPBParams = BPBParams
@@ -701,6 +702,8 @@
                 End Get
             End Property
 
+            Public ReadOnly Property BPBParams As FloppyDiskBPBParams
+            Public Property CustomDescription As String
             Public ReadOnly Property Description As String
                 Get
                     If Not String.IsNullOrEmpty(CustomDescription) Then
@@ -778,6 +781,10 @@
                 End Get
             End Property
 
+            Public Property Detected As Boolean
+            Public ReadOnly Property FileExtension As String
+            Public ReadOnly Property Format As FloppyDiskFormat
+            Public ReadOnly Property Gaps As FloppyDiskGaps
             Public ReadOnly Property Is525 As Boolean
                 Get
                     Select Case MediaType
@@ -786,12 +793,6 @@
                         Case Else
                             Return False
                     End Select
-                End Get
-            End Property
-
-            Public ReadOnly Property IsStandard As Boolean
-                Get
-                    Return FloppyDiskFormatIsStandard(Format)
                 End Get
             End Property
 
@@ -806,12 +807,19 @@
                 End Get
             End Property
 
+            Public ReadOnly Property IsStandard As Boolean
+                Get
+                    Return FloppyDiskFormatIsStandard(Format)
+                End Get
+            End Property
+
             Public ReadOnly Property IsXDF As Boolean
                 Get
                     Return Format = FloppyDiskFormat.FloppyXDF35 Or Format = FloppyDiskFormat.FloppyXDF525
                 End Get
             End Property
 
+            Public ReadOnly Property MediaType As FloppyMediaType
             Public ReadOnly Property RPM As UShort
                 Get
                     Select Case Format

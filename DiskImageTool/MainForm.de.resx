@@ -132,32 +132,14 @@
   <data name="MenuFileSaveAs.Text" xml:space="preserve">
     <value>Speichern &amp;unter</value>
   </data>
-  <data name="MenuFileSaveAll.Text" xml:space="preserve">
-    <value>Alle speichern</value>
-  </data>
   <data name="MenuFileClose.Text" xml:space="preserve">
     <value>&amp;Schließen</value>
-  </data>
-  <data name="MenuFileCloseAll.Text" xml:space="preserve">
-    <value>Alle schließen</value>
   </data>
   <data name="MenuFileExit.Text" xml:space="preserve">
     <value>&amp;Beenden</value>
   </data>
-  <data name="MainMenuFile.Text" xml:space="preserve">
-    <value>&amp;Datei</value>
-  </data>
-  <data name="MenuEditBootSector.Text" xml:space="preserve">
-    <value>&amp;Bootsektor</value>
-  </data>
-  <data name="MenuEditFAT.Text" xml:space="preserve">
-    <value>Dateizu&amp;ordnungstabelle</value>
-  </data>
   <data name="MenuEditFileProperties.Text" xml:space="preserve">
     <value>Datei&amp;eigenschaften</value>
-  </data>
-  <data name="MenuEditReplaceFile.Text" xml:space="preserve">
-    <value>Datei &amp;ersetzen</value>
   </data>
   <data name="MenuEditUndo.Text" xml:space="preserve">
     <value>&amp;Rückgängig</value>
@@ -170,12 +152,6 @@
   </data>
   <data name="MainMenuEdit.Text" xml:space="preserve">
     <value>&amp;Bearbeiten</value>
-  </data>
-  <data name="MenuHexBootSector.Text" xml:space="preserve">
-    <value>&amp;Bootsektor</value>
-  </data>
-  <data name="MenuHexFAT.Text" xml:space="preserve">
-    <value>Dateizu&amp;ordnungstabelle</value>
   </data>
   <data name="MenuHexFreeClusters.Text" xml:space="preserve">
     <value>Freie &amp;Cluster mit Daten</value>
@@ -203,9 +179,6 @@
   </data>
   <data name="MenuToolsClearReservedBytes.Text" xml:space="preserve">
     <value>&amp;Reservierte Bytes löschen</value>
-  </data>
-  <data name="MenuToolsTruncateImage.Text" xml:space="preserve">
-    <value>&amp;Abbild kürzen</value>
   </data>
   <data name="MenuToolsRestructureImage.Text" xml:space="preserve">
     <value>&amp;Abbild restrukturieren</value>
@@ -243,12 +216,6 @@
   <data name="MenuDiskReadFloppyB.Text" xml:space="preserve">
     <value>&amp;Lese Diskette in Laufwerk B</value>
   </data>
-  <data name="MenuDiskWriteFloppyA.Text" xml:space="preserve">
-    <value>&amp;Schreibe Diskette in Laufwerk A</value>
-  </data>
-  <data name="MenuDiskWriteFloppyB.Text" xml:space="preserve">
-    <value>&amp;Schreibe Diskette in Laufwerk B</value>
-  </data>
   <data name="MainMenuDisk.Text" xml:space="preserve">
     <value>&amp;Diskette</value>
   </data>
@@ -273,35 +240,11 @@
   <data name="MenuOptionsDisplayTitles.Text" xml:space="preserve">
     <value>Titel anzeigen</value>
   </data>
-  <data name="MenuOptionsDisplayLanguage.Text" xml:space="preserve">
-    <value>Sprache</value>
-  </data>
   <data name="MainMenuOptions.Text" xml:space="preserve">
     <value>&amp;Optionen</value>
   </data>
   <data name="MainMenuUpdateAvailable.Text" xml:space="preserve">
     <value>Update verfügbar</value>
-  </data>
-  <data name="ToolStripOpen.Text" xml:space="preserve">
-    <value>Öffnen</value>
-  </data>
-  <data name="ToolStripSave.Text" xml:space="preserve">
-    <value>Speichern</value>
-  </data>
-  <data name="ToolStripSaveAs.Text" xml:space="preserve">
-    <value>Speichern unter</value>
-  </data>
-  <data name="ToolStripSaveAll.Text" xml:space="preserve">
-    <value>Alle speichern</value>
-  </data>
-  <data name="ToolStripClose.Text" xml:space="preserve">
-    <value>Schließen</value>
-  </data>
-  <data name="ToolStripCloseAll.Text" xml:space="preserve">
-    <value>Alle schließen</value>
-  </data>
-  <data name="ToolStripFileProperties.Text" xml:space="preserve">
-    <value>Dateieigenschaften</value>
   </data>
   <data name="ToolStripUndo.Text" xml:space="preserve">
     <value>Rückgängig</value>
@@ -321,17 +264,8 @@
   <data name="ToolStripImportFiles.ToolTipText" xml:space="preserve">
     <value>Dateien importieren</value>
   </data>
-  <data name="MenuEditImportFiles.Text" xml:space="preserve">
-    <value>Dateien &amp;importieren</value>
-  </data>
   <data name="MainMenuReports.Text" xml:space="preserve">
     <value>&amp;Berichte</value>
-  </data>
-  <data name="MenuReportsWriteSplices.Text" xml:space="preserve">
-    <value>Schreibübergänge</value>
-  </data>
-  <data name="StatusBarModified.Text" xml:space="preserve">
-    <value>Geändert</value>
   </data>
   <data name="MainMenuNewInstance.Text" xml:space="preserve">
     <value>In neuer Instanz öffnen</value>

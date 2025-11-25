@@ -26,7 +26,6 @@ Partial Class MainForm
         Dim HashName As System.Windows.Forms.ColumnHeader
         Dim resources As System.ComponentModel.ComponentResourceManager = New System.ComponentModel.ComponentResourceManager(GetType(MainForm))
         Dim HashValue As System.Windows.Forms.ColumnHeader
-        Dim MainMenuFile As System.Windows.Forms.ToolStripMenuItem
         Dim MenuFileSeparator1 As System.Windows.Forms.ToolStripSeparator
         Dim MenuFileSeparator2 As System.Windows.Forms.ToolStripSeparator
         Dim MenuFileSeparator3 As System.Windows.Forms.ToolStripSeparator
@@ -46,6 +45,7 @@ Partial Class MainForm
         Dim ToolStripSeparator9 As System.Windows.Forms.ToolStripSeparator
         Dim MainMenuDisk As System.Windows.Forms.ToolStripMenuItem
         Dim MenuStripTop As System.Windows.Forms.MenuStrip
+        Me.MainMenuFile = New System.Windows.Forms.ToolStripMenuItem()
         Me.MenuFileOpen = New System.Windows.Forms.ToolStripMenuItem()
         Me.MenuFileReload = New System.Windows.Forms.ToolStripMenuItem()
         Me.MenuFileNewImage = New System.Windows.Forms.ToolStripMenuItem()
@@ -165,7 +165,6 @@ Partial Class MainForm
         Me.ListViewFiles = New DiskImageTool.ListViewEx()
         HashName = CType(New System.Windows.Forms.ColumnHeader(), System.Windows.Forms.ColumnHeader)
         HashValue = CType(New System.Windows.Forms.ColumnHeader(), System.Windows.Forms.ColumnHeader)
-        MainMenuFile = New System.Windows.Forms.ToolStripMenuItem()
         MenuFileSeparator1 = New System.Windows.Forms.ToolStripSeparator()
         MenuFileSeparator2 = New System.Windows.Forms.ToolStripSeparator()
         MenuFileSeparator3 = New System.Windows.Forms.ToolStripSeparator()
@@ -206,9 +205,9 @@ Partial Class MainForm
         '
         'MainMenuFile
         '
-        MainMenuFile.DropDownItems.AddRange(New System.Windows.Forms.ToolStripItem() {Me.MenuFileOpen, Me.MenuFileReload, Me.MenuFileNewImage, MenuFileSeparator1, Me.MenuFileSave, Me.MenuFileSaveAs, Me.MenuFileSaveAll, MenuFileSeparator2, Me.MenuFileClose, Me.MenuFileCloseAll, MenuFileSeparator3, Me.MenuFileExit})
-        MainMenuFile.Name = "MainMenuFile"
-        resources.ApplyResources(MainMenuFile, "MainMenuFile")
+        Me.MainMenuFile.DropDownItems.AddRange(New System.Windows.Forms.ToolStripItem() {Me.MenuFileOpen, Me.MenuFileReload, Me.MenuFileNewImage, MenuFileSeparator1, Me.MenuFileSave, Me.MenuFileSaveAs, Me.MenuFileSaveAll, MenuFileSeparator2, Me.MenuFileClose, Me.MenuFileCloseAll, MenuFileSeparator3, Me.MenuFileExit})
+        Me.MainMenuFile.Name = "MainMenuFile"
+        resources.ApplyResources(Me.MainMenuFile, "MainMenuFile")
         '
         'MenuFileOpen
         '
@@ -566,7 +565,7 @@ Partial Class MainForm
         '
         'MenuStripTop
         '
-        MenuStripTop.Items.AddRange(New System.Windows.Forms.ToolStripItem() {MainMenuFile, MainMenuEdit, Me.MainMenuFilters, MainMenuView, MainMenuTools, MainMenuDisk, Me.MainMenuFlux, Me.MainMenuReports, Me.MainMenuOptions, MainMenuHelp, Me.MainMenuUpdateAvailable, Me.MainMenuNewInstance})
+        MenuStripTop.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.MainMenuFile, MainMenuEdit, Me.MainMenuFilters, MainMenuView, MainMenuTools, MainMenuDisk, Me.MainMenuFlux, Me.MainMenuReports, Me.MainMenuOptions, MainMenuHelp, Me.MainMenuUpdateAvailable, Me.MainMenuNewInstance})
         resources.ApplyResources(MenuStripTop, "MenuStripTop")
         MenuStripTop.Name = "MenuStripTop"
         MenuStripTop.ShowItemToolTips = True
@@ -1194,4 +1193,5 @@ Partial Class MainForm
     Friend WithEvents ToolStripSeparatorDevices As ToolStripSeparator
     Friend WithEvents MenuPcImgCnv As ToolStripMenuItem
     Friend WithEvents MenuPcImgCnvTrackLayout As ToolStripMenuItem
+    Friend WithEvents MainMenuFile As ToolStripMenuItem
 End Class

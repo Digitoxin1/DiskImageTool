@@ -687,7 +687,7 @@ Public Class FilePanel
             .Items.Clear()
             .Columns.Clear()
             .Columns.Add("", COL_MODIFIED_WIDTH, HorizontalAlignment.Left)
-            .Columns.Add(My.Resources.FilePanel_Name, COL_NAME_WIDTH, HorizontalAlignment.Left)
+            .Columns.Add(My.Resources.Label_Name, COL_NAME_WIDTH, HorizontalAlignment.Left)
             .Columns.Add(My.Resources.FilePanel_Extension, COL_EXTENSION_WIDTH, HorizontalAlignment.Left)
             .Columns.Add(My.Resources.Label_Size, COL_SIZE_WIDTH, HorizontalAlignment.Right)
             .Columns.Add(My.Resources.FilePanel_LastWritten, COL_LASTWRITTEN_WIDTH, HorizontalAlignment.Left)

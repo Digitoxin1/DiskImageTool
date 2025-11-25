@@ -117,12 +117,6 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="MenuHexBootSector.Text" xml:space="preserve">
-    <value>&amp;Sector de Arranque</value>
-  </data>
-  <data name="MenuEditBootSector.Text" xml:space="preserve">
-    <value>&amp;Sector de Arranque</value>
-  </data>
   <data name="MenuHelpChangeLog.Text" xml:space="preserve">
     <value>&amp;Registro de Cambios</value>
   </data>
@@ -134,9 +128,6 @@
   </data>
   <data name="MainMenuEdit.Text" xml:space="preserve">
     <value>&amp;Editar</value>
-  </data>
-  <data name="MainMenuFile.Text" xml:space="preserve">
-    <value>&amp;Archivo</value>
   </data>
   <data name="MainMenuView.Text" xml:space="preserve">
     <value>&amp;Hexadecimal</value>
@@ -174,9 +165,6 @@
   <data name="MenuFileReload.Text" xml:space="preserve">
     <value>&amp;Recargar desde el Disco</value>
   </data>
-  <data name="MenuEditReplaceFile.Text" xml:space="preserve">
-    <value>&amp;Reemplazar Archivo</value>
-  </data>
   <data name="MenuToolsRestructureImage.Text" xml:space="preserve">
     <value>&amp;Reestructurar Imagen</value>
   </data>
@@ -189,17 +177,8 @@
   <data name="MainMenuTools.Text" xml:space="preserve">
     <value>&amp;Herramientas</value>
   </data>
-  <data name="MenuToolsTruncateImage.Text" xml:space="preserve">
-    <value>&amp;Truncar Imagen</value>
-  </data>
   <data name="MenuEditUndo.Text" xml:space="preserve">
     <value>&amp;Deshacer</value>
-  </data>
-  <data name="MenuDiskWriteFloppyA.Text" xml:space="preserve">
-    <value>&amp;Escribir Disco en la Unidad A</value>
-  </data>
-  <data name="MenuDiskWriteFloppyB.Text" xml:space="preserve">
-    <value>&amp;Escribir Disco en la Unidad B</value>
   </data>
   <data name="MenuHelpAbout.Text" xml:space="preserve">
     <value>Acerca de DiskImageTool</value>
@@ -222,15 +201,6 @@
   <data name="MenuFiltersClear.Text" xml:space="preserve">
     <value>Borrar filtros</value>
   </data>
-  <data name="ToolStripClose.Text" xml:space="preserve">
-    <value>Cerrar</value>
-  </data>
-  <data name="ToolStripCloseAll.Text" xml:space="preserve">
-    <value>Cerrar todo</value>
-  </data>
-  <data name="MenuFileCloseAll.Text" xml:space="preserve">
-    <value>Cerrar todo</value>
-  </data>
   <data name="MenuOptionsCreateBackup.Text" xml:space="preserve">
     <value>Crear copia de seguridad al guardar</value>
   </data>
@@ -249,17 +219,8 @@
   <data name="MainMenuFilters.Text" xml:space="preserve">
     <value>F&amp;iltros</value>
   </data>
-  <data name="MenuEditFAT.Text" xml:space="preserve">
-    <value>Tabla de &amp;asignación de archivos</value>
-  </data>
-  <data name="MenuHexFAT.Text" xml:space="preserve">
-    <value>Tabla de &amp;asignación de archivos</value>
-  </data>
   <data name="MenuEditFileProperties.Text" xml:space="preserve">
     <value>Propiedades del &amp;archivo</value>
-  </data>
-  <data name="ToolStripFileProperties.Text" xml:space="preserve">
-    <value>Propiedades del archivo</value>
   </data>
   <data name="MenuToolsFixImageSizeSubMenu.Text" xml:space="preserve">
     <value>Corregir &amp;tamaño de la imagen</value>
@@ -269,12 +230,6 @@
   </data>
   <data name="MenuOptionsDragDrop.Text" xml:space="preserve">
     <value>Importar usando arrastrar y soltar</value>
-  </data>
-  <data name="MenuOptionsDisplayLanguage.Text" xml:space="preserve">
-    <value>Idioma</value>
-  </data>
-  <data name="ToolStripOpen.Text" xml:space="preserve">
-    <value>Abrir</value>
   </data>
   <data name="ToolStripRedo.Text" xml:space="preserve">
     <value>&amp;Rehacer</value>
@@ -294,20 +249,8 @@
   <data name="btnRetry.Text" xml:space="preserve">
     <value>Reintentar</value>
   </data>
-  <data name="ToolStripSave.Text" xml:space="preserve">
-    <value>Guardar</value>
-  </data>
   <data name="MenuFileSaveAs.Text" xml:space="preserve">
     <value>Guardar &amp;como</value>
-  </data>
-  <data name="ToolStripSaveAll.Text" xml:space="preserve">
-    <value>Guardar todo</value>
-  </data>
-  <data name="MenuFileSaveAll.Text" xml:space="preserve">
-    <value>Guardar todo</value>
-  </data>
-  <data name="ToolStripSaveAs.Text" xml:space="preserve">
-    <value>Guardar como</value>
   </data>
   <data name="MenuFiltersScanNew.Text" xml:space="preserve">
     <value>E&amp;scanear nuevas imágenes</value>
@@ -321,17 +264,8 @@
   <data name="ToolStripImportFiles.ToolTipText" xml:space="preserve">
     <value>Importar archivos</value>
   </data>
-  <data name="MenuEditImportFiles.Text" xml:space="preserve">
-    <value>&amp;Importar Archivos</value>
-  </data>
   <data name="MainMenuReports.Text" xml:space="preserve">
     <value>&amp;Informes</value>
-  </data>
-  <data name="MenuReportsWriteSplices.Text" xml:space="preserve">
-    <value>Empalmes de escritura</value>
-  </data>
-  <data name="StatusBarModified.Text" xml:space="preserve">
-    <value>Modificado</value>
   </data>
   <data name="MainMenuNewInstance.Text" xml:space="preserve">
     <value>Abrir en una nueva instancia</value>

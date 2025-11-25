@@ -1,30 +1,38 @@
 ﻿Imports DiskImageTool.DiskImage
 Imports DiskImageTool.Bitstream
 Imports DiskImageTool.Bitstream.IBM_MFM
+Imports System.Collections.Specialized
 
 Module Reports
     Private Const H_SEPARATOR As String = "-"
     Private Const V_SEPARATOR As String = " | "
 
-    Public Sub DisplayReportWriteSplices(CurrentImage As DiskImageContainer)
+    Public Sub DisplayReportWriteSplices(Disk As Disk, FileName As String)
         Dim TrackLength As Integer = 6
         Dim SideLength As Integer = 6
         Dim SectorIdLength As Integer = 14
         Dim RegionLength As Integer = 14
         Dim FileLength As Integer = 12
+        Dim RegionFlags As FloppyDiskRegionEnum = FloppyDiskRegionEnum.None
         Dim Rows As New List(Of String)
+        Dim ScanResponse As DirectoryScanResponse = Nothing
+        Dim ModifiedFiles As New OrderedDictionary()
 
-        If CurrentImage.Disk.Image.IsBitstreamImage Then
+        If Disk.Image.IsBitstreamImage Then
             Dim SectorList As New List(Of WriteSpliceSector)
             Dim HasFile As Boolean = False
             Dim RowLength As Integer
 
-            Dim BPB = CurrentImage.Disk.BPB
+            Dim BPB = Disk.BPB
             If Not BPB.IsValid Then
-                BPB = BuildBPB(CInt(CurrentImage.Disk.Image.Length))
+                BPB = BuildBPB(CInt(Disk.Image.Length))
             End If
 
-            Dim Image = CurrentImage.Disk.Image.BitstreamImage
+            If Disk.IsValidImage Then
+                ScanResponse = ProcessDirectoryEntries(Disk.RootDirectory, Nothing)
+            End If
+
+            Dim Image = Disk.Image.BitstreamImage
 
             For Track = 0 To Image.TrackCount - 1 Step Image.TrackStep
                 For Side = 0 To Image.SideCount - 1
@@ -34,7 +42,7 @@ Module Reports
                         Dim RegionData = MFMGetRegionList(BitstreamTrack.Bitstream, BitstreamTrack.TrackType)
                         For Each RegionSector In RegionData.Sectors
                             If RegionSector.WriteSplice Then
-                                Dim Region As String = ""
+                                Dim AreaName As String = ""
                                 Dim DirectoryEntry As DirectoryEntry = Nothing
                                 Dim IsDataArea As Boolean = False
                                 Dim IsEmpty As Boolean = False
@@ -43,17 +51,20 @@ Module Reports
                                     If RegionSector.SectorId >= 1 And RegionSector.SectorId <= BPB.SectorsPerTrack Then
                                         Dim Sector = BPB.TrackToSector(MappedTrack, Side) + (CInt(RegionSector.SectorId) - 1)
                                         Dim Cluster = BPB.SectorToCluster(Sector)
-                                        Region = GetFloppyDiskRegionName(CurrentImage.Disk, Sector, Cluster)
-                                        If Region.Length = 0 Then
-                                            Region = My.Resources.Label_DataArea
+                                        Dim Region = GetFloppyDiskRegionName(Disk, Sector, Cluster)
+                                        AreaName = Region.AreaName
+                                        RegionFlags = RegionFlags Or Region.Region
+
+                                        If AreaName.Length = 0 Then
+                                            AreaName = My.Resources.Label_DataArea
                                         End If
 
-                                        RegionLength = Math.Max(RegionLength, Region.Length)
+                                        RegionLength = Math.Max(RegionLength, AreaName.Length)
 
                                         If Cluster > 1 Then
-                                            DirectoryEntry = GetDirectoryEntryFromCluster(CurrentImage.Disk, Cluster)
+                                            DirectoryEntry = GetDirectoryEntryFromCluster(Disk, Cluster)
                                             IsDataArea = True
-                                            IsEmpty = IsClusterEmpty(CurrentImage.Disk.Image, BPB, Cluster)
+                                            IsEmpty = IsClusterEmpty(Disk.Image, BPB, Cluster)
                                         End If
                                     End If
                                 End If
@@ -63,7 +74,7 @@ Module Reports
                                     .Side = Side,
                                     .SectorIndex = RegionSector.SectorIndex,
                                     .SectorId = RegionSector.SectorId,
-                                    .Region = Region,
+                                    .Region = AreaName,
                                     .DirectoryEntry = DirectoryEntry
                                 }
 
@@ -72,6 +83,10 @@ Module Reports
                                     WriteSpliceSector.FileName = DirectoryEntry.GetFullFileName
                                     WriteSpliceSector.IsDirectory = DirectoryEntry.IsDirectory
                                     FileLength = Math.Max(FileLength, WriteSpliceSector.FileName.Length)
+
+                                    If Not ModifiedFiles.Contains(WriteSpliceSector.FileName) Then
+                                        ModifiedFiles.Add(WriteSpliceSector.FileName, WriteSpliceSector.IsDirectory)
+                                    End If
                                 Else
                                     If IsDataArea And Not IsEmpty Then
                                         HasFile = True
@@ -92,10 +107,13 @@ Module Reports
                 RowLength += V_SEPARATOR.Length + FileLength
             End If
 
-            Rows.Add(CurrentImage.ImageData.FileName)
-            Rows.Add("")
-            If App.Globals.AppSettings.Debug Then
-                Rows.Add("Modifications")
+            If App.AppSettings.Expert.WriteSpliceDisplayFilename Then
+                Rows.Add(FileName)
+                Rows.Add("")
+            End If
+
+            If App.AppSettings.Expert.WriteSpliceHeader <> "" Then
+                Rows.Add(App.AppSettings.Expert.WriteSpliceHeader)
             Else
                 Rows.Add(My.Resources.Label_WriteSplices)
             End If
@@ -165,16 +183,66 @@ Module Reports
                 Rows.Add(GetRowString(ContentRow))
             End If
 
-            If App.Globals.AppSettings.Debug Then
-                Rows.Add("")
-                Rows.Add("Details")
-                Rows.Add(StrDup(7, H_SEPARATOR))
+            If App.AppSettings.Expert.WriteSpliceDisplayDetails AndAlso SectorList.Count > 0 Then
+                Dim Details As New List(Of String)
+                Dim SeparatorLength As Integer = 7
+
+                Dim RootMissing As Boolean = (RegionFlags And FloppyDiskRegionEnum.RootDirectory) = 0
+                Dim DataMissing As Boolean = (RegionFlags And FloppyDiskRegionEnum.DataArea) = 0
+
+                If (RegionFlags And FloppyDiskRegionEnum.BootSector) <> 0 Then
+                    If Disk.BootSector.IsWin9xOEMName Then
+                        Details.Add("OEM Name modified")
+                    Else
+                        Details.Add("Boot Sector Modified")
+                    End If
+                End If
+
+                If RootMissing And DataMissing Then
+                    If (RegionFlags And FloppyDiskRegionEnum.FAT1) <> 0 Then
+                        Details.Add("FAT 1 modified")
+                    End If
+                    If (RegionFlags And FloppyDiskRegionEnum.FAT2) <> 0 Then
+                        Details.Add("FAT 2 modified")
+                    End If
+                End If
+
+                If (RegionFlags And FloppyDiskRegionEnum.RootDirectory) <> 0 Then
+                        If ScanResponse IsNot Nothing Then
+                            If ScanResponse.HasCreated Then
+                                Details.Add("Created Date added to directory entries")
+                            End If
+                            If ScanResponse.HasLastAccessed Then
+                                Details.Add("Last Access Date added to directory entries")
+                            End If
+                            If ScanResponse.HasBootSector Then
+                                Details.Add("A copy of the boot sector is at the end of the root directory")
+                            End If
+                        End If
+                    End If
+
+                    For Each Key As Object In ModifiedFiles.Keys
+                        Dim IsDirectory As Boolean = ModifiedFiles.Item(Key)
+                        If IsDirectory Then
+                            Details.Add($"Directory {Quoted(CStr(Key))} modified")
+                        Else
+                            Details.Add($"File {Quoted(CStr(Key))} modified")
+                        End If
+                    Next
+
+                    If Details.Count > 0 Then
+                        SeparatorLength = Details(0).Length
+                    End If
+                    Rows.Add("")
+                    Rows.Add("Details")
+                    Rows.Add(StrDup(SeparatorLength, H_SEPARATOR))
+                    Rows.Add(String.Join(Environment.NewLine, Details))
+                End If
             End If
-        End If
 
         Dim Content = String.Join(vbCrLf, Rows) & If(Rows.Count > 0, vbCrLf, String.Empty)
 
-        Dim frmTextView As New TextViewForm(My.Resources.Label_WriteSplices & " - " & CurrentImage.ImageData.FileName, Content, True, True, "WriteSplices.txt")
+        Dim frmTextView As New TextViewForm(My.Resources.Label_WriteSplices & " - " & FileName, Content, True, True, App.AppSettings.Expert.WriteSpliceFileName)
         frmTextView.ShowDialog()
     End Sub
 

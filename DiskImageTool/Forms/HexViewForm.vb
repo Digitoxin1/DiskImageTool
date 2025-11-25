@@ -904,7 +904,8 @@ Public Class HexViewForm
                 End If
 
                 If _BPB.IsValid Then
-                    AreaName = GetFloppyDiskRegionName(_CurrentHexViewData.Disk, Sector, Cluster)
+                    Dim Region = GetFloppyDiskRegionName(_CurrentHexViewData.Disk, Sector, Cluster)
+                    AreaName = Region.AreaName
 
                     If Cluster > 1 Then
                         Dim DirectoryEntry = GetDirectoryEntryFromCluster(_CurrentHexViewData.Disk, Cluster)

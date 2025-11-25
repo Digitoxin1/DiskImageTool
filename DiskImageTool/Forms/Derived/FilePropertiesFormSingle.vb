@@ -10,7 +10,7 @@ Public Class FilePropertiesFormSingle
 
         _DirectoryEntry = DirectoryEntry
 
-        MyBase.Text = My.Resources.Caption_FileProperties
+        MyBase.Text = My.Resources.Label_FileProperties
         BtnUpdate.Text = My.Resources.Button_Update
     End Sub
 

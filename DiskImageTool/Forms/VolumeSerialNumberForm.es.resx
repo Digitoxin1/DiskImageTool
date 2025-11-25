@@ -120,9 +120,6 @@
   <data name="BtnCancel.Text" xml:space="preserve">
     <value>&amp;Cancelar</value>
   </data>
-  <data name="BtnOK.Text" xml:space="preserve">
-    <value>&amp;Aceptar</value>
-  </data>
   <data name="LabelDate.Text" xml:space="preserve">
     <value>Fecha</value>
   </data>

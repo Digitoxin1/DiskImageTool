@@ -612,9 +612,6 @@
   <data name="DirectorytEntry_Extension" xml:space="preserve">
     <value>Erweiterung</value>
   </data>
-  <data name="DirectorytEntry_FileName" xml:space="preserve">
-    <value>Name</value>
-  </data>
   <data name="DirectorytEntry_LastAccessDate" xml:space="preserve">
     <value>Letztes Zugriffsdatum</value>
   </data>
@@ -654,17 +651,8 @@
   <data name="Filter_AllItems" xml:space="preserve">
     <value>Alle</value>
   </data>
-  <data name="Filter_Bootstrap_Unknown" xml:space="preserve">
-    <value>Startcode – Unbekannt</value>
-  </data>
   <data name="Filter_Database_MismatchedStatus" xml:space="preserve">
     <value>Datenbank – Status stimmt nicht überein</value>
-  </data>
-  <data name="Filter_Disk_CustomBootLoader" xml:space="preserve">
-    <value>Benutzerdefinierter Bootloader</value>
-  </data>
-  <data name="Filter_Disk_CustomFormat" xml:space="preserve">
-    <value>Benutzerdefiniertes Format</value>
   </data>
   <data name="Filter_Disk_FreeClustersWithData" xml:space="preserve">
     <value>Freie Cluster enthalten Daten</value>
@@ -675,74 +663,50 @@
   <data name="Filter_Disk_MismatchedMediaDescriptor" xml:space="preserve">
     <value>Medienbezeichner stimmt nicht überein</value>
   </data>
-  <data name="Filter_Disk_NoBootLoader" xml:space="preserve">
-    <value>Kein Bootloader</value>
-  </data>
-  <data name="Filter_Disk_NOBPB" xml:space="preserve">
-    <value>Keine BPB</value>
-  </data>
   <data name="Filter_Disk_UnknownFormat" xml:space="preserve">
     <value>Unbekanntes Format</value>
   </data>
-  <data name="Filter_FAT_BadSectors" xml:space="preserve">
-    <value>FAT – Defekte Sektoren</value>
-  </data>
   <data name="Filter_FAT_ChainingErrors" xml:space="preserve">
-    <value>FAT – Verkettungsfehler</value>
-  </data>
-  <data name="Filter_FAT_LostClusters" xml:space="preserve">
-    <value>FAT – Verlorene Cluster</value>
+    <value>Verkettungsfehler</value>
   </data>
   <data name="Filter_FAT_MismatchedFATs" xml:space="preserve">
-    <value>FAT – FATs stimmen nicht überein</value>
+    <value>FATs stimmen nicht überein</value>
   </data>
   <data name="Filter_FileSystem_DirectoryHasAdditionalData" xml:space="preserve">
-    <value>Dateisystem – Verzeichnis enthält zusätzliche Daten</value>
+    <value>Verzeichnis enthält zusätzliche Daten</value>
   </data>
   <data name="Filter_FileSystem_DirectoryHasBootSector" xml:space="preserve">
-    <value>Dateisystem – Verzeichnis enthält Bootsektor</value>
+    <value>Verzeichnis enthält Bootsektor</value>
   </data>
   <data name="Filter_FileSystem_HasCreationDate" xml:space="preserve">
-    <value>Dateisystem – Erstellungsdatum vorhanden</value>
+    <value>Erstellungsdatum vorhanden</value>
   </data>
   <data name="Filter_FileSystem_HasLastAccessDate" xml:space="preserve">
-    <value>Dateisystem – Letztes Zugriffsdatum vorhanden</value>
+    <value>Letztes Zugriffsdatum vorhanden</value>
   </data>
   <data name="Filter_FileSystem_HasLongFileNames" xml:space="preserve">
-    <value>Dateisystem – Lange Dateinamen vorhanden</value>
+    <value>Lange Dateinamen vorhanden</value>
   </data>
   <data name="Filter_FileSystem_HasReservedBytesSet" xml:space="preserve">
-    <value>Dateisystem – Reservierte Bytes gesetzt</value>
+    <value>Reservierte Bytes gesetzt</value>
   </data>
   <data name="Filter_FileSystem_InvalidDirectoryEntries" xml:space="preserve">
-    <value>Dateisystem – Ungültige Verzeichniseinträge</value>
+    <value>Ungültige Verzeichniseinträge</value>
   </data>
   <data name="Filter_Image_InDatabase" xml:space="preserve">
-    <value>Abbild – In Datenbank</value>
+    <value>In Datenbank</value>
   </data>
   <data name="Filter_Image_NotInDatabase" xml:space="preserve">
-    <value>Abbild – Nicht in Datenbank</value>
+    <value>Nicht in Datenbank</value>
   </data>
-  <data name="Filter_Image_Unverified" xml:space="preserve">
-    <value>Abbild – Nicht verifiziert</value>
+  <data name="Label_Unverified" xml:space="preserve">
+    <value>Nicht verifiziert</value>
   </data>
-  <data name="Filter_Image_Verified" xml:space="preserve">
-    <value>Abbild – Verifiziert</value>
+  <data name="Label_Verified" xml:space="preserve">
+    <value>Verifiziert</value>
   </data>
   <data name="Filter_ModifiedFiles" xml:space="preserve">
     <value>Geänderte Dateien</value>
-  </data>
-  <data name="Filter_OEMName_Mismatched" xml:space="preserve">
-    <value>Abweichend</value>
-  </data>
-  <data name="Filter_OEMName_Unknown" xml:space="preserve">
-    <value>Unbekannt</value>
-  </data>
-  <data name="Filter_OEMName_Unverified" xml:space="preserve">
-    <value>Nicht verifiziert</value>
-  </data>
-  <data name="Filter_OEMName_Verified" xml:space="preserve">
-    <value>Verifiziert</value>
   </data>
   <data name="Filter_OEMName_Windows9x" xml:space="preserve">
     <value>Windows 9x</value>
@@ -807,7 +771,7 @@
   <data name="SummaryPanel_BootRecord" xml:space="preserve">
     <value>Boot-Datensatz</value>
   </data>
-  <data name="SummaryPanel_Bootstrap" xml:space="preserve">
+  <data name="Label_Bootstrap" xml:space="preserve">
     <value>Startcode</value>
   </data>
   <data name="SummaryPanel_Company" xml:space="preserve">
@@ -822,10 +786,10 @@
   <data name="SummaryPanel_CopyProtection" xml:space="preserve">
     <value>Kopierschutz</value>
   </data>
-  <data name="SummaryPanel_CustomBootLoader" xml:space="preserve">
+  <data name="Label_CustomBootLoader" xml:space="preserve">
     <value>Benutzerdefinierter Bootloader</value>
   </data>
-  <data name="SummaryPanel_CustomFormat" xml:space="preserve">
+  <data name="Label_CustomFormat" xml:space="preserve">
     <value>Benutzerdefiniertes Format</value>
   </data>
   <data name="SummaryPanel_Description" xml:space="preserve">
@@ -837,10 +801,10 @@
   <data name="SummaryPanel_Error" xml:space="preserve">
     <value>Fehler beim Laden der Datei</value>
   </data>
-  <data name="SummaryPanel_FAT" xml:space="preserve">
+  <data name="Label_FATShort" xml:space="preserve">
     <value>FAT</value>
   </data>
-  <data name="SummaryPanel_FileSystem" xml:space="preserve">
+  <data name="Label_FileSystem" xml:space="preserve">
     <value>Dateisystem</value>
   </data>
   <data name="SummaryPanel_FreeSpace" xml:space="preserve">
@@ -858,16 +822,16 @@
   <data name="SummaryPanel_InvalidFormat" xml:space="preserve">
     <value>Ungültiges Abbildformat</value>
   </data>
-  <data name="SummaryPanel_Language" xml:space="preserve">
+  <data name="Label_Language" xml:space="preserve">
     <value>Sprache</value>
   </data>
   <data name="SummaryPanel_NewestDate" xml:space="preserve">
     <value>Neuestes Datum</value>
   </data>
-  <data name="SummaryPanel_NoBootLoader" xml:space="preserve">
+  <data name="Label_NoBootLoader" xml:space="preserve">
     <value>Kein Bootloader</value>
   </data>
-  <data name="SummaryPanel_NoBPB" xml:space="preserve">
+  <data name="Label_NoBPB" xml:space="preserve">
     <value>Keine BPB</value>
   </data>
   <data name="SummaryPanel_NonStandardTracks" xml:space="preserve">
@@ -1188,7 +1152,7 @@
   <data name="Button_Update" xml:space="preserve">
     <value>&amp;Aktualisieren</value>
   </data>
-  <data name="Caption_FileProperties" xml:space="preserve">
+  <data name="Label_FileProperties" xml:space="preserve">
     <value>Dateieigenschaften</value>
   </data>
   <data name="Caption_NewDirectory" xml:space="preserve">
@@ -1257,7 +1221,7 @@
   <data name="FilePanel_LastWritten" xml:space="preserve">
     <value>Zuletzt geschrieben</value>
   </data>
-  <data name="FilePanel_Name" xml:space="preserve">
+  <data name="Label_Name" xml:space="preserve">
     <value>Name</value>
   </data>
   <data name="FilePanel_LFN" xml:space="preserve">
@@ -1605,5 +1569,23 @@ Möchten Sie ihn überschreiben?</value>
   </data>
   <data name="Label_WeakBits" xml:space="preserve">
     <value>Schwache Bits</value>
+  </data>
+  <data name="Menu_BootSector" xml:space="preserve">
+    <value>&amp;Bootsektor</value>
+  </data>
+  <data name="Menu_SaveAll" xml:space="preserve">
+    <value>Alle speichern</value>
+  </data>
+  <data name="Menu_WriteDiskInDrive" xml:space="preserve">
+    <value>&amp;Schreibe Diskette in Laufwerk {0}</value>
+  </data>
+  <data name="Label_CloseAll" xml:space="preserve">
+    <value>Alle schließen</value>
+  </data>
+  <data name="Menu_FAT" xml:space="preserve">
+    <value>Dateizu&amp;ordnungstabelle</value>
+  </data>
+  <data name="Label_Image" xml:space="preserve">
+    <value>Abbild</value>
   </data>
 </root>
