@@ -23,15 +23,15 @@
         'Do not modify it using the code editor.
         <System.Diagnostics.DebuggerStepThrough()>
         Private Sub InitializeComponent()
-            Dim PanelBottom As System.Windows.Forms.Panel
-            Dim PanelBottomInner As System.Windows.Forms.TableLayoutPanel
-            Dim PanelMain As System.Windows.Forms.Panel
-            Dim PanelInner As System.Windows.Forms.Panel
+            Me.PanelBottom = New System.Windows.Forms.Panel()
+            Me.PanelBottomInner = New System.Windows.Forms.TableLayoutPanel()
             Me.PanelButtonsRight = New System.Windows.Forms.FlowLayoutPanel()
             Me.ButtonCancel = New System.Windows.Forms.Button()
             Me.ButtonOk = New System.Windows.Forms.Button()
             Me.PanelButtonsLeft = New System.Windows.Forms.FlowLayoutPanel()
             Me.ButtonSaveLog = New System.Windows.Forms.Button()
+            Me.PanelMain = New System.Windows.Forms.Panel()
+            Me.PanelInner = New System.Windows.Forms.Panel()
             Me.TableLayoutPanelMain = New System.Windows.Forms.TableLayoutPanel()
             Me.LabelConsoleOutput = New System.Windows.Forms.Label()
             Me.TextBoxConsole = New System.Windows.Forms.TextBox()
@@ -41,47 +41,43 @@
             Me.StatusType = New System.Windows.Forms.ToolStripStatusLabel()
             Me.StatusBadSectors = New System.Windows.Forms.ToolStripStatusLabel()
             Me.StatusUnexpected = New System.Windows.Forms.ToolStripStatusLabel()
-            PanelBottom = New System.Windows.Forms.Panel()
-            PanelBottomInner = New System.Windows.Forms.TableLayoutPanel()
-            PanelMain = New System.Windows.Forms.Panel()
-            PanelInner = New System.Windows.Forms.Panel()
-            PanelBottom.SuspendLayout()
-            PanelBottomInner.SuspendLayout()
+            Me.PanelBottom.SuspendLayout()
+            Me.PanelBottomInner.SuspendLayout()
             Me.PanelButtonsRight.SuspendLayout()
             Me.PanelButtonsLeft.SuspendLayout()
-            PanelMain.SuspendLayout()
-            PanelInner.SuspendLayout()
+            Me.PanelMain.SuspendLayout()
+            Me.PanelInner.SuspendLayout()
             Me.StatusStripBottom.SuspendLayout()
             Me.SuspendLayout()
             '
             'PanelBottom
             '
-            PanelBottom.AutoSize = True
-            PanelBottom.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink
-            PanelBottom.Controls.Add(PanelBottomInner)
-            PanelBottom.Dock = System.Windows.Forms.DockStyle.Bottom
-            PanelBottom.Location = New System.Drawing.Point(0, 419)
-            PanelBottom.Name = "PanelBottom"
-            PanelBottom.Size = New System.Drawing.Size(767, 43)
-            PanelBottom.TabIndex = 1
+            Me.PanelBottom.AutoSize = True
+            Me.PanelBottom.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink
+            Me.PanelBottom.Controls.Add(Me.PanelBottomInner)
+            Me.PanelBottom.Dock = System.Windows.Forms.DockStyle.Bottom
+            Me.PanelBottom.Location = New System.Drawing.Point(0, 419)
+            Me.PanelBottom.Name = "PanelBottom"
+            Me.PanelBottom.Size = New System.Drawing.Size(767, 43)
+            Me.PanelBottom.TabIndex = 1
             '
             'PanelBottomInner
             '
-            PanelBottomInner.AutoSize = True
-            PanelBottomInner.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink
-            PanelBottomInner.ColumnCount = 3
-            PanelBottomInner.ColumnStyles.Add(New System.Windows.Forms.ColumnStyle())
-            PanelBottomInner.ColumnStyles.Add(New System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100.0!))
-            PanelBottomInner.ColumnStyles.Add(New System.Windows.Forms.ColumnStyle())
-            PanelBottomInner.Controls.Add(Me.PanelButtonsRight, 2, 0)
-            PanelBottomInner.Controls.Add(Me.PanelButtonsLeft, 1, 0)
-            PanelBottomInner.Dock = System.Windows.Forms.DockStyle.Fill
-            PanelBottomInner.Location = New System.Drawing.Point(0, 0)
-            PanelBottomInner.Name = "PanelBottomInner"
-            PanelBottomInner.RowCount = 1
-            PanelBottomInner.RowStyles.Add(New System.Windows.Forms.RowStyle())
-            PanelBottomInner.Size = New System.Drawing.Size(767, 43)
-            PanelBottomInner.TabIndex = 0
+            Me.PanelBottomInner.AutoSize = True
+            Me.PanelBottomInner.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink
+            Me.PanelBottomInner.ColumnCount = 3
+            Me.PanelBottomInner.ColumnStyles.Add(New System.Windows.Forms.ColumnStyle())
+            Me.PanelBottomInner.ColumnStyles.Add(New System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100.0!))
+            Me.PanelBottomInner.ColumnStyles.Add(New System.Windows.Forms.ColumnStyle())
+            Me.PanelBottomInner.Controls.Add(Me.PanelButtonsRight, 2, 0)
+            Me.PanelBottomInner.Controls.Add(Me.PanelButtonsLeft, 1, 0)
+            Me.PanelBottomInner.Dock = System.Windows.Forms.DockStyle.Fill
+            Me.PanelBottomInner.Location = New System.Drawing.Point(0, 0)
+            Me.PanelBottomInner.Name = "PanelBottomInner"
+            Me.PanelBottomInner.RowCount = 1
+            Me.PanelBottomInner.RowStyles.Add(New System.Windows.Forms.RowStyle())
+            Me.PanelBottomInner.Size = New System.Drawing.Size(767, 43)
+            Me.PanelBottomInner.TabIndex = 0
             '
             'PanelButtonsRight
             '
@@ -151,28 +147,28 @@
             '
             'PanelMain
             '
-            PanelMain.AutoSize = True
-            PanelMain.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink
-            PanelMain.Controls.Add(PanelInner)
-            PanelMain.Controls.Add(Me.LabelConsoleOutput)
-            PanelMain.Controls.Add(Me.TextBoxConsole)
-            PanelMain.Dock = System.Windows.Forms.DockStyle.Fill
-            PanelMain.Location = New System.Drawing.Point(0, 0)
-            PanelMain.Name = "PanelMain"
-            PanelMain.Padding = New System.Windows.Forms.Padding(18, 18, 18, 6)
-            PanelMain.Size = New System.Drawing.Size(767, 419)
-            PanelMain.TabIndex = 0
+            Me.PanelMain.AutoSize = True
+            Me.PanelMain.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink
+            Me.PanelMain.Controls.Add(Me.PanelInner)
+            Me.PanelMain.Controls.Add(Me.LabelConsoleOutput)
+            Me.PanelMain.Controls.Add(Me.TextBoxConsole)
+            Me.PanelMain.Dock = System.Windows.Forms.DockStyle.Fill
+            Me.PanelMain.Location = New System.Drawing.Point(0, 0)
+            Me.PanelMain.Name = "PanelMain"
+            Me.PanelMain.Padding = New System.Windows.Forms.Padding(18, 18, 18, 6)
+            Me.PanelMain.Size = New System.Drawing.Size(767, 419)
+            Me.PanelMain.TabIndex = 0
             '
             'PanelInner
             '
-            PanelInner.AutoSize = True
-            PanelInner.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink
-            PanelInner.Controls.Add(Me.TableLayoutPanelMain)
-            PanelInner.Dock = System.Windows.Forms.DockStyle.Fill
-            PanelInner.Location = New System.Drawing.Point(18, 18)
-            PanelInner.Name = "PanelInner"
-            PanelInner.Size = New System.Drawing.Size(731, 259)
-            PanelInner.TabIndex = 0
+            Me.PanelInner.AutoSize = True
+            Me.PanelInner.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink
+            Me.PanelInner.Controls.Add(Me.TableLayoutPanelMain)
+            Me.PanelInner.Dock = System.Windows.Forms.DockStyle.Fill
+            Me.PanelInner.Location = New System.Drawing.Point(18, 18)
+            Me.PanelInner.Name = "PanelInner"
+            Me.PanelInner.Size = New System.Drawing.Size(731, 259)
+            Me.PanelInner.TabIndex = 0
             '
             'TableLayoutPanelMain
             '
@@ -276,8 +272,8 @@
             Me.AutoSize = True
             Me.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink
             Me.ClientSize = New System.Drawing.Size(767, 486)
-            Me.Controls.Add(PanelMain)
-            Me.Controls.Add(PanelBottom)
+            Me.Controls.Add(Me.PanelMain)
+            Me.Controls.Add(Me.PanelBottom)
             Me.Controls.Add(Me.StatusStripBottom)
             Me.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog
             Me.MaximizeBox = False
@@ -286,18 +282,18 @@
             Me.Name = "BaseFluxForm"
             Me.ShowInTaskbar = False
             Me.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent
-            PanelBottom.ResumeLayout(False)
-            PanelBottom.PerformLayout()
-            PanelBottomInner.ResumeLayout(False)
-            PanelBottomInner.PerformLayout()
+            Me.PanelBottom.ResumeLayout(False)
+            Me.PanelBottom.PerformLayout()
+            Me.PanelBottomInner.ResumeLayout(False)
+            Me.PanelBottomInner.PerformLayout()
             Me.PanelButtonsRight.ResumeLayout(False)
             Me.PanelButtonsRight.PerformLayout()
             Me.PanelButtonsLeft.ResumeLayout(False)
             Me.PanelButtonsLeft.PerformLayout()
-            PanelMain.ResumeLayout(False)
-            PanelMain.PerformLayout()
-            PanelInner.ResumeLayout(False)
-            PanelInner.PerformLayout()
+            Me.PanelMain.ResumeLayout(False)
+            Me.PanelMain.PerformLayout()
+            Me.PanelInner.ResumeLayout(False)
+            Me.PanelInner.PerformLayout()
             Me.StatusStripBottom.ResumeLayout(False)
             Me.StatusStripBottom.PerformLayout()
             Me.ResumeLayout(False)
@@ -318,5 +314,9 @@
         Friend WithEvents PanelButtonsLeft As FlowLayoutPanel
         Friend WithEvents PanelButtonsRight As FlowLayoutPanel
         Friend WithEvents LabelConsoleOutput As Label
+        Friend WithEvents PanelBottom As Panel
+        Friend WithEvents PanelBottomInner As TableLayoutPanel
+        Friend WithEvents PanelMain As Panel
+        Friend WithEvents PanelInner As Panel
     End Class
 End Namespace

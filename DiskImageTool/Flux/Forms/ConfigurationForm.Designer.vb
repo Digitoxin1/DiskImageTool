@@ -24,7 +24,6 @@
         <System.Diagnostics.DebuggerStepThrough()>
         Private Sub InitializeComponent()
             Dim PanelBottom As System.Windows.Forms.FlowLayoutPanel
-            Dim resources As System.ComponentModel.ComponentResourceManager = New System.ComponentModel.ComponentResourceManager(GetType(ConfigurationForm))
             Dim PanelMain As System.Windows.Forms.Panel
             Dim TabPageGreaseweazle As System.Windows.Forms.TabPage
             Dim TabPageKryoflux As System.Windows.Forms.TabPage
@@ -52,73 +51,123 @@
             '
             PanelBottom.Controls.Add(Me.BtnCancel)
             PanelBottom.Controls.Add(Me.BtnUpdate)
-            resources.ApplyResources(PanelBottom, "PanelBottom")
+            PanelBottom.Dock = System.Windows.Forms.DockStyle.Bottom
+            PanelBottom.FlowDirection = System.Windows.Forms.FlowDirection.RightToLeft
+            PanelBottom.Location = New System.Drawing.Point(0, 263)
             PanelBottom.Name = "PanelBottom"
+            PanelBottom.Padding = New System.Windows.Forms.Padding(6, 10, 6, 10)
+            PanelBottom.Size = New System.Drawing.Size(724, 43)
+            PanelBottom.TabIndex = 1
+            PanelBottom.WrapContents = False
             '
             'BtnCancel
             '
             Me.BtnCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel
-            resources.ApplyResources(Me.BtnCancel, "BtnCancel")
+            Me.BtnCancel.ImeMode = System.Windows.Forms.ImeMode.NoControl
+            Me.BtnCancel.Location = New System.Drawing.Point(631, 10)
+            Me.BtnCancel.Margin = New System.Windows.Forms.Padding(6, 0, 6, 0)
             Me.BtnCancel.Name = "BtnCancel"
+            Me.BtnCancel.Size = New System.Drawing.Size(75, 23)
+            Me.BtnCancel.TabIndex = 1
+            Me.BtnCancel.Text = "{&Cancel}"
             Me.BtnCancel.UseVisualStyleBackColor = True
             '
             'BtnUpdate
             '
             Me.BtnUpdate.DialogResult = System.Windows.Forms.DialogResult.OK
-            resources.ApplyResources(Me.BtnUpdate, "BtnUpdate")
+            Me.BtnUpdate.ImeMode = System.Windows.Forms.ImeMode.NoControl
+            Me.BtnUpdate.Location = New System.Drawing.Point(544, 10)
+            Me.BtnUpdate.Margin = New System.Windows.Forms.Padding(6, 0, 6, 0)
             Me.BtnUpdate.Name = "BtnUpdate"
+            Me.BtnUpdate.Size = New System.Drawing.Size(75, 23)
+            Me.BtnUpdate.TabIndex = 0
+            Me.BtnUpdate.Text = "{&Update}"
             Me.BtnUpdate.UseVisualStyleBackColor = True
             '
             'PanelMain
             '
-            resources.ApplyResources(PanelMain, "PanelMain")
+            PanelMain.AutoSize = True
+            PanelMain.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink
             PanelMain.Controls.Add(Me.TabControl1)
+            PanelMain.Dock = System.Windows.Forms.DockStyle.Fill
+            PanelMain.Location = New System.Drawing.Point(0, 0)
             PanelMain.Name = "PanelMain"
+            PanelMain.Padding = New System.Windows.Forms.Padding(6, 6, 6, 0)
+            PanelMain.Size = New System.Drawing.Size(724, 263)
+            PanelMain.TabIndex = 0
             '
             'TabControl1
             '
             Me.TabControl1.Controls.Add(TabPageGreaseweazle)
             Me.TabControl1.Controls.Add(TabPageKryoflux)
             Me.TabControl1.Controls.Add(Me.TabPagePcImgCnv)
-            resources.ApplyResources(Me.TabControl1, "TabControl1")
+            Me.TabControl1.Dock = System.Windows.Forms.DockStyle.Fill
+            Me.TabControl1.Location = New System.Drawing.Point(6, 6)
             Me.TabControl1.Name = "TabControl1"
+            Me.TabControl1.Padding = New System.Drawing.Point(12, 3)
             Me.TabControl1.SelectedIndex = 0
+            Me.TabControl1.Size = New System.Drawing.Size(712, 257)
+            Me.TabControl1.TabIndex = 1
             '
             'TabPageGreaseweazle
             '
             TabPageGreaseweazle.Controls.Add(Me.SettingsPanelGreaseweazle)
-            resources.ApplyResources(TabPageGreaseweazle, "TabPageGreaseweazle")
+            TabPageGreaseweazle.Location = New System.Drawing.Point(4, 22)
             TabPageGreaseweazle.Name = "TabPageGreaseweazle"
+            TabPageGreaseweazle.Padding = New System.Windows.Forms.Padding(3)
+            TabPageGreaseweazle.Size = New System.Drawing.Size(704, 231)
+            TabPageGreaseweazle.TabIndex = 0
+            TabPageGreaseweazle.Text = "Greaseweazle"
             TabPageGreaseweazle.UseVisualStyleBackColor = True
             '
             'SettingsPanelGreaseweazle
             '
-            resources.ApplyResources(Me.SettingsPanelGreaseweazle, "SettingsPanelGreaseweazle")
+            Me.SettingsPanelGreaseweazle.Dock = System.Windows.Forms.DockStyle.Fill
+            Me.SettingsPanelGreaseweazle.Location = New System.Drawing.Point(3, 3)
             Me.SettingsPanelGreaseweazle.Name = "SettingsPanelGreaseweazle"
+            Me.SettingsPanelGreaseweazle.Padding = New System.Windows.Forms.Padding(6)
+            Me.SettingsPanelGreaseweazle.Size = New System.Drawing.Size(698, 225)
+            Me.SettingsPanelGreaseweazle.TabIndex = 0
             '
             'TabPageKryoflux
             '
             TabPageKryoflux.Controls.Add(Me.SettingsPanelKryoflux)
-            resources.ApplyResources(TabPageKryoflux, "TabPageKryoflux")
+            TabPageKryoflux.Location = New System.Drawing.Point(4, 22)
             TabPageKryoflux.Name = "TabPageKryoflux"
+            TabPageKryoflux.Padding = New System.Windows.Forms.Padding(3)
+            TabPageKryoflux.Size = New System.Drawing.Size(704, 231)
+            TabPageKryoflux.TabIndex = 1
+            TabPageKryoflux.Text = "Kryoflux"
             TabPageKryoflux.UseVisualStyleBackColor = True
             '
             'SettingsPanelKryoflux
             '
-            resources.ApplyResources(Me.SettingsPanelKryoflux, "SettingsPanelKryoflux")
+            Me.SettingsPanelKryoflux.Dock = System.Windows.Forms.DockStyle.Fill
+            Me.SettingsPanelKryoflux.Location = New System.Drawing.Point(3, 3)
             Me.SettingsPanelKryoflux.Name = "SettingsPanelKryoflux"
+            Me.SettingsPanelKryoflux.Padding = New System.Windows.Forms.Padding(6)
+            Me.SettingsPanelKryoflux.Size = New System.Drawing.Size(698, 225)
+            Me.SettingsPanelKryoflux.TabIndex = 0
             '
             'TabPagePcImgCnv
             '
             Me.TabPagePcImgCnv.Controls.Add(Me.SettingsPanelPcImgCnv)
-            resources.ApplyResources(Me.TabPagePcImgCnv, "TabPagePcImgCnv")
+            Me.TabPagePcImgCnv.Location = New System.Drawing.Point(4, 22)
             Me.TabPagePcImgCnv.Name = "TabPagePcImgCnv"
+            Me.TabPagePcImgCnv.Padding = New System.Windows.Forms.Padding(3)
+            Me.TabPagePcImgCnv.Size = New System.Drawing.Size(704, 231)
+            Me.TabPagePcImgCnv.TabIndex = 2
+            Me.TabPagePcImgCnv.Text = "PcImgCnv"
             Me.TabPagePcImgCnv.UseVisualStyleBackColor = True
             '
             'SettingsPanelPcImgCnv
             '
-            resources.ApplyResources(Me.SettingsPanelPcImgCnv, "SettingsPanelPcImgCnv")
+            Me.SettingsPanelPcImgCnv.Dock = System.Windows.Forms.DockStyle.Fill
+            Me.SettingsPanelPcImgCnv.Location = New System.Drawing.Point(3, 3)
             Me.SettingsPanelPcImgCnv.Name = "SettingsPanelPcImgCnv"
+            Me.SettingsPanelPcImgCnv.Padding = New System.Windows.Forms.Padding(6)
+            Me.SettingsPanelPcImgCnv.Size = New System.Drawing.Size(698, 225)
+            Me.SettingsPanelPcImgCnv.TabIndex = 0
             '
             'TwoColumnToolTip1
             '
@@ -126,8 +175,9 @@
             '
             'ConfigurationForm
             '
-            resources.ApplyResources(Me, "$this")
+            Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
             Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
+            Me.ClientSize = New System.Drawing.Size(724, 306)
             Me.Controls.Add(PanelMain)
             Me.Controls.Add(PanelBottom)
             Me.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog
@@ -135,6 +185,7 @@
             Me.MinimizeBox = False
             Me.Name = "ConfigurationForm"
             Me.ShowInTaskbar = False
+            Me.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent
             PanelBottom.ResumeLayout(False)
             PanelMain.ResumeLayout(False)
             Me.TabControl1.ResumeLayout(False)

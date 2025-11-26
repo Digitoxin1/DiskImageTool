@@ -567,37 +567,13 @@
     <Compile Include="Lib\WindowsAPI.vb" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Flux\Greaseweazle\SettingsPanel.de.resx">
-      <DependentUpon>SettingsPanel.vb</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Flux\Greaseweazle\SettingsPanel.es.resx">
-      <DependentUpon>SettingsPanel.vb</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Flux\Greaseweazle\SettingsPanel.fr.resx">
-      <DependentUpon>SettingsPanel.vb</DependentUpon>
+    <EmbeddedResource Include="Flux\Forms\BaseFluxForm.resx">
+      <DependentUpon>BaseFluxForm.vb</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Flux\Greaseweazle\SettingsPanel.resx">
       <DependentUpon>SettingsPanel.vb</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Flux\Kryoflux\SettingsPanel.de.resx">
-      <DependentUpon>SettingsPanel.vb</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Flux\Kryoflux\SettingsPanel.es.resx">
-      <DependentUpon>SettingsPanel.vb</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Flux\Kryoflux\SettingsPanel.fr.resx">
-      <DependentUpon>SettingsPanel.vb</DependentUpon>
-    </EmbeddedResource>
     <EmbeddedResource Include="Flux\Kryoflux\SettingsPanel.resx">
-      <DependentUpon>SettingsPanel.vb</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Flux\PcImgCnv\SettingsPanel.de.resx">
-      <DependentUpon>SettingsPanel.vb</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Flux\PcImgCnv\SettingsPanel.es.resx">
-      <DependentUpon>SettingsPanel.vb</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Flux\PcImgCnv\SettingsPanel.fr.resx">
       <DependentUpon>SettingsPanel.vb</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Flux\PcImgCnv\SettingsPanel.resx">
@@ -607,48 +583,12 @@
       <DependentUpon>AboutBox.vb</DependentUpon>
       <SubType>Designer</SubType>
     </EmbeddedResource>
-    <EmbeddedResource Include="Forms\BootSectorForm.de.resx">
-      <DependentUpon>BootSectorForm.vb</DependentUpon>
-      <SubType>Designer</SubType>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\BootSectorForm.es.resx">
-      <DependentUpon>BootSectorForm.vb</DependentUpon>
-      <SubType>Designer</SubType>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\BootSectorForm.fr.resx">
-      <DependentUpon>BootSectorForm.vb</DependentUpon>
-      <SubType>Designer</SubType>
-    </EmbeddedResource>
     <EmbeddedResource Include="Forms\BootSectorForm.resx">
       <DependentUpon>BootSectorForm.vb</DependentUpon>
       <SubType>Designer</SubType>
     </EmbeddedResource>
-    <EmbeddedResource Include="Forms\DeleteFileform.de.resx">
-      <DependentUpon>DeleteFileform.vb</DependentUpon>
-      <SubType>Designer</SubType>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\DeleteFileform.es.resx">
-      <DependentUpon>DeleteFileform.vb</DependentUpon>
-      <SubType>Designer</SubType>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\DeleteFileform.fr.resx">
-      <DependentUpon>DeleteFileform.vb</DependentUpon>
-      <SubType>Designer</SubType>
-    </EmbeddedResource>
     <EmbeddedResource Include="Forms\DeleteFileform.resx">
       <DependentUpon>DeleteFileform.vb</DependentUpon>
-      <SubType>Designer</SubType>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\FATEditForm.de.resx">
-      <DependentUpon>FATEditForm.vb</DependentUpon>
-      <SubType>Designer</SubType>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\FATEditForm.es.resx">
-      <DependentUpon>FATEditForm.vb</DependentUpon>
-      <SubType>Designer</SubType>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\FATEditForm.fr.resx">
-      <DependentUpon>FATEditForm.vb</DependentUpon>
       <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\FATEditForm.resx">
@@ -683,32 +623,8 @@
       <DependentUpon>FloppyAccessForm.vb</DependentUpon>
       <SubType>Designer</SubType>
     </EmbeddedResource>
-    <EmbeddedResource Include="Forms\FloppyReadOptionsForm.de.resx">
-      <DependentUpon>FloppyReadOptionsForm.vb</DependentUpon>
-      <SubType>Designer</SubType>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\FloppyReadOptionsForm.es.resx">
-      <DependentUpon>FloppyReadOptionsForm.vb</DependentUpon>
-      <SubType>Designer</SubType>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\FloppyReadOptionsForm.fr.resx">
-      <DependentUpon>FloppyReadOptionsForm.vb</DependentUpon>
-      <SubType>Designer</SubType>
-    </EmbeddedResource>
     <EmbeddedResource Include="Forms\FloppyReadOptionsForm.resx">
       <DependentUpon>FloppyReadOptionsForm.vb</DependentUpon>
-      <SubType>Designer</SubType>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\FloppyWriteOptionsForm.de.resx">
-      <DependentUpon>FloppyWriteOptionsForm.vb</DependentUpon>
-      <SubType>Designer</SubType>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\FloppyWriteOptionsForm.es.resx">
-      <DependentUpon>FloppyWriteOptionsForm.vb</DependentUpon>
-      <SubType>Designer</SubType>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\FloppyWriteOptionsForm.fr.resx">
-      <DependentUpon>FloppyWriteOptionsForm.vb</DependentUpon>
       <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\FloppyWriteOptionsForm.resx">
@@ -731,43 +647,9 @@
       <DependentUpon>HexSearchForm.vb</DependentUpon>
       <SubType>Designer</SubType>
     </EmbeddedResource>
-    <EmbeddedResource Include="Forms\HexViewForm.de.resx">
-      <DependentUpon>HexViewForm.vb</DependentUpon>
-      <SubType>Designer</SubType>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\HexViewForm.es.resx">
-      <DependentUpon>HexViewForm.vb</DependentUpon>
-      <SubType>Designer</SubType>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\HexViewForm.fr.resx">
-      <DependentUpon>HexViewForm.vb</DependentUpon>
-      <SubType>Designer</SubType>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\HexViewRawForm.de.resx">
-      <DependentUpon>HexViewRawForm.vb</DependentUpon>
-      <SubType>Designer</SubType>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\HexViewRawForm.es.resx">
-      <DependentUpon>HexViewRawForm.vb</DependentUpon>
-      <SubType>Designer</SubType>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\HexViewRawForm.fr.resx">
-      <DependentUpon>HexViewRawForm.vb</DependentUpon>
-      <SubType>Designer</SubType>
-    </EmbeddedResource>
     <EmbeddedResource Include="Forms\HexViewRawForm.resx">
       <DependentUpon>HexViewRawForm.vb</DependentUpon>
       <SubType>Designer</SubType>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\ImageCreationForm.de.resx">
-      <DependentUpon>ImageCreationForm.vb</DependentUpon>
-      <SubType>Designer</SubType>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\ImageCreationForm.es.resx">
-      <DependentUpon>ImageCreationForm.vb</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\ImageCreationForm.fr.resx">
-      <DependentUpon>ImageCreationForm.vb</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\ImageCreationForm.resx">
       <DependentUpon>ImageCreationForm.vb</DependentUpon>
@@ -805,33 +687,6 @@
     <EmbeddedResource Include="Forms\ReplaceFileForm.resx">
       <DependentUpon>ReplaceFileForm.vb</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Forms\SaveAllForm.de.resx">
-      <DependentUpon>SaveAllForm.vb</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\SaveAllForm.es.resx">
-      <DependentUpon>SaveAllForm.vb</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\SaveAllForm.fr.resx">
-      <DependentUpon>SaveAllForm.vb</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\TextViewForm.de.resx">
-      <DependentUpon>TextViewForm.vb</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\TextViewForm.es.resx">
-      <DependentUpon>TextViewForm.vb</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\TextViewForm.fr.resx">
-      <DependentUpon>TextViewForm.vb</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\UndeleteForm.de.resx">
-      <DependentUpon>UndeleteForm.vb</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\UndeleteForm.es.resx">
-      <DependentUpon>UndeleteForm.vb</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\UndeleteForm.fr.resx">
-      <DependentUpon>UndeleteForm.vb</DependentUpon>
-    </EmbeddedResource>
     <EmbeddedResource Include="Forms\UndeleteForm.resx">
       <DependentUpon>UndeleteForm.vb</DependentUpon>
     </EmbeddedResource>
@@ -847,20 +702,8 @@
     <EmbeddedResource Include="Forms\VolumeSerialNumberForm.resx">
       <DependentUpon>VolumeSerialNumberForm.vb</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Flux\Forms\ConfigurationForm.de.resx">
-      <DependentUpon>ConfigurationForm.vb</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Flux\Forms\ConfigurationForm.es.resx">
-      <DependentUpon>ConfigurationForm.vb</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Flux\Forms\ConfigurationForm.fr.resx">
-      <DependentUpon>ConfigurationForm.vb</DependentUpon>
-    </EmbeddedResource>
     <EmbeddedResource Include="Flux\Forms\ConfigurationForm.resx">
       <DependentUpon>ConfigurationForm.vb</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Flux\Forms\BaseFluxForm.resx">
-      <DependentUpon>BaseFluxForm.vb</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Resources\HelpStrings.de.resx" />
     <EmbeddedResource Include="Resources\HelpStrings.es.resx" />

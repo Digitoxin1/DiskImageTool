@@ -17,6 +17,8 @@ Public Class FloppyReadOptionsForm
     Private Sub LocalizeForm()
         BtnCancel.Text = My.Resources.Menu_Cancel
         BtnOK.Text = My.Resources.Menu_Ok
+        Label1.Text = My.Resources.Label_FloppyDiskType
+        Me.Text = My.Resources.Label_ChooseDiskType
     End Sub
 
     Public ReadOnly Property DiskFormat As FloppyDiskFormat

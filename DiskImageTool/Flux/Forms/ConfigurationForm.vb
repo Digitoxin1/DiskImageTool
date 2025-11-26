@@ -11,6 +11,7 @@
         End Sub
 
         Private Sub LocalizeForm()
+            Me.Text = My.Resources.Caption_FluxConfiguration
             BtnCancel.Text = My.Resources.Menu_Cancel
             BtnUpdate.Text = My.Resources.Menu_Update
         End Sub

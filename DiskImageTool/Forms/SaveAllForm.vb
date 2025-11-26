@@ -29,6 +29,8 @@ Public Class SaveAllForm
         BtnNo.Text = My.Resources.Menu_No
         BtnYes.Text = My.Resources.Menu_Yes
         Me.Text = WithoutHotkey(My.Resources.Menu_Save)
+        BtnNoToall.Text = My.Resources.Menu_NoToAll
+        BtnYesToAll.Text = My.Resources.Menu_YesToAll
     End Sub
 
     Public Property Result As MyMsgBoxResult

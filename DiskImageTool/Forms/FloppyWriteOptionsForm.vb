@@ -39,6 +39,9 @@ Public Class FloppyWriteOptionsForm
         GroupBox1.Text = My.Resources.Label_Options
         Label2.Text = My.Resources.Label_ImageType & ":"
         Label1.Text = My.Resources.Label_DiskFormat & ":"
+        CheckVerify.Text = My.Resources.Label_VerifyWrites
+        CheckFormat.Text = My.Resources.Label_FormatDisk
+        Me.Text = My.Resources.Label_DiskWriteOptions
     End Sub
 
     Public ReadOnly Property WriteOptions As FloppyWriteOptions

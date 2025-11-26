@@ -29,6 +29,10 @@ Public Class ImageCreationForm
         LabelBootSector.Text = My.Resources.Label_BootSector
         BtnCancel.Text = WithoutHotkey(My.Resources.Menu_Cancel)
         CheckImportFiles.Text = My.Resources.Label_ImportFiles
+        BtnOK.Text = WithoutHotkey(My.Resources.Menu_Ok)
+        GroupBoxSpecial.Text = My.Resources.Label_SpecialFormats
+        GroupBoxStandard.Text = My.Resources.Label_StandardFormats
+        Me.Text = My.Resources.Label_NewDiskImage
     End Sub
 
     Public ReadOnly Property DiskFormat As FloppyDiskFormat

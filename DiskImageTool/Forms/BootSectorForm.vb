@@ -97,6 +97,7 @@ Public Class BootSectorForm
         BtnCancel.Text = My.Resources.Menu_Cancel
         BtnUpdate.Text = My.Resources.Menu_Update
         GroupBoxAdditionalData.Text = My.Resources.Label_AdditionalData
+        GroupBoxExtended.Text = My.Resources.Label_ExtendedParameterBlock
         GroupBoxMain.Text = My.Resources.Label_BootRecord
         HexBox1.BuiltInContextMenu.CopyMenuItemText = WithoutHotkey(My.Resources.Menu_CopyText)
         HexBox1.BuiltInContextMenu.SelectAllMenuItemText = My.Resources.Label_SelectAll
@@ -105,10 +106,17 @@ Public Class BootSectorForm
         LblDiskType.Text = My.Resources.Label_DiskFormat
         LblDriveNumber.Text = My.Resources.Label_DriveNumber
         lblExtendedBootSignature.Text = My.Resources.Label_ExtendedBootSignature
+        LblExtendedMsg.Text = My.Resources.Label_ExtendedParameterBlockMsg
         LblFileSystemType.Text = My.Resources.Label_FileSystemType
         LblHiddenSectors.Text = My.Resources.Label_HiddenSectors
+        LblJumpInstruction.Text = My.Resources.Label_JumpInstruction
+        LblNumberOfFATS.Text = My.Resources.Label_NumberOfFATs
+        LblNumberOfHeads.Text = My.Resources.Label_NumberOfHeads
         LblOEMName.Text = My.Resources.Label_OEMName
         LblReservedSectors.Text = My.Resources.Label_ReservedSectorCount
+        LblRootDirectoryEntries.Text = My.Resources.Label_RootDirectoryEntries
+        LblSectorCountLarge.Text = My.Resources.Label_SectorCountLarge
+        LblSectorCountSmall.Text = My.Resources.Label_SectorCountSmall
         LblSectorsPerCluster.Text = My.Resources.Label_SectorsPerCluster
         LblSectorsPerFAT.Text = My.Resources.Label_SectorsPerFAT
         LblSectorsPerTrack.Text = My.Resources.Label_SectorsPerTrack

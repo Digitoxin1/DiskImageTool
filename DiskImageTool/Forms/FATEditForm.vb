@@ -96,6 +96,7 @@ Public Class FATEditForm
         BtnLast.Text = My.Resources.Label_Last
         BtnFree.Text = My.Resources.Label_Free
         BtnBad.Text = My.Resources.Label_Bad
+        ChkSync.Text = My.Resources.Label_SynchronizeFATs
     End Sub
 
     Public ReadOnly Property Updated As Boolean

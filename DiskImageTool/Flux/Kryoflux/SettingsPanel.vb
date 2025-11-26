@@ -19,6 +19,7 @@ Namespace Flux.Kryoflux
             ButtonBrowse.Text = My.Resources.Label_Browse
             ButtonClear.Text = My.Resources.Menu_Clear
             LabelLogFile.Text = My.Resources.Label_LogFilename
+            CheckBoxStripPath.Text = My.Resources.Label_StripLogPath
         End Sub
 
         Public ReadOnly Property Initialized As Boolean

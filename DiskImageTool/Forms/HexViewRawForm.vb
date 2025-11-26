@@ -72,6 +72,8 @@ Public Class HexViewRawForm
     End Sub
 
     Private Sub LocalizeForm()
+        BtnAdjustOffset.Text = My.Resources.Menu_AdjustBitOffset
+        BtnCopyEncoded.Text = My.Resources.Menu_CopyEncoded
         BtnCopyHex.Text = My.Resources.Menu_CopyHex
         BtnCopyHexFormatted.Text = My.Resources.Menu_CopyHexFormatted
         BtnCopyText.Text = My.Resources.Menu_CopyText
@@ -79,17 +81,25 @@ Public Class HexViewRawForm
         BtnFind.Text = My.Resources.Label_Find
         BtnFindNext.Text = My.Resources.Label_FIndNext
         BtnSelectAll.Text = My.Resources.Menu_SelectAll
+        BtnSelectData.Text = My.Resources.Menu_SelectData
+        BtnSelectRegion.Text = My.Resources.Menu_SelectRegion
         BtnSelectSector.Text = My.Resources.Menu_SelectSector
         HexBox1.BuiltInContextMenu.CopyMenuItemText = WithoutHotkey(My.Resources.Menu_CopyText)
         HexBox1.BuiltInContextMenu.SelectAllMenuItemText = My.Resources.Label_SelectAll
+        ToolStripBtnAdjustOffset.Text = WithoutHotkey(My.Resources.Menu_AdjustBitOffset)
         ToolStripBtnCopyHex.Text = WithoutHotkey(My.Resources.Menu_CopyHex)
         ToolStripBtnCopyHexFormatted.Text = WithoutHotkey(My.Resources.Menu_CopyHexFormatted)
         ToolStripBtnCopyText.Text = WithoutHotkey(My.Resources.Menu_CopyText)
         ToolStripBtnFind.Text = My.Resources.Label_Find
         ToolStripBtnFindNext.Text = My.Resources.Label_FIndNext
         ToolStripBtnSelectAll.Text = My.Resources.Label_SelectAll
+        ToolStripBtnSelectData.Text = My.Resources.Label_Data
+        ToolStripBtnSelectData.ToolTipText = WithoutHotkey(My.Resources.Menu_SelectData)
+        ToolStripBtnSelectRegion.Text = My.Resources.Label_Region
+        ToolStripBtnSelectRegion.ToolTipText = WithoutHotkey(My.Resources.Menu_SelectRegion)
         ToolStripBtnSelectSector.Text = My.Resources.Label_Sector
-        ToolStripBtnSelectSector.ToolTipText = My.Resources.Label_SelectSector
+        ToolStripBtnSelectSector.ToolTipText = WithoutHotkey(My.Resources.Menu_SelectSector)
+        ToolStripStatusChecksumText.Text = My.Resources.Label_Checksum & ":"
     End Sub
 
     <DllImport("user32.dll", SetLastError:=True)>

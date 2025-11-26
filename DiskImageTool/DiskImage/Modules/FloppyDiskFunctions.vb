@@ -534,7 +534,7 @@
                 Return (My.Resources.Label_BootSector, FloppyDiskRegionEnum.BootSector)
             ElseIf Disk.IsValidImage Then
                 If Disk.RootDirectory.SectorChain.Contains(Sector) Then
-                    Return (My.Resources.HexView_RootDirectory, FloppyDiskRegionEnum.RootDirectory)
+                    Return (WithoutHotkey(My.Resources.Menu_RootDirectory), FloppyDiskRegionEnum.RootDirectory)
                 ElseIf IsFATArea(Disk, Sector) Then
                     Dim FATIndex = GetFATIndex(Disk, Sector)
                     Dim Region As FloppyDiskRegionEnum = If(FATIndex = 0, FloppyDiskRegionEnum.FAT1, FloppyDiskRegionEnum.FAT2)

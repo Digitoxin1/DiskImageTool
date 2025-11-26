@@ -525,16 +525,16 @@
   <data name="Label_HiddenSectors" xml:space="preserve">
     <value>Hidden Sectors</value>
   </data>
-  <data name="BPB_NumberOfFATs" xml:space="preserve">
+  <data name="Label_NumberOfFATs" xml:space="preserve">
     <value>Number of FATs</value>
   </data>
-  <data name="BPB_NumberOfHeads" xml:space="preserve">
+  <data name="Label_NumberOfHeads" xml:space="preserve">
     <value>Number of Heads</value>
   </data>
   <data name="Label_ReservedSectorCount" xml:space="preserve">
     <value>Reserved Sectors</value>
   </data>
-  <data name="BPB_SectorCountSmall" xml:space="preserve">
+  <data name="Label_SectorCountSmall" xml:space="preserve">
     <value>Total Sector Count</value>
   </data>
   <data name="Label_SectorsPerCluster" xml:space="preserve">
@@ -815,9 +815,6 @@
   </data>
   <data name="Label_LostClusters" xml:space="preserve">
     <value>Lost Clusters</value>
-  </data>
-  <data name="HexView_RootDirectory" xml:space="preserve">
-    <value>Root Directory</value>
   </data>
   <data name="IsoDateFormat" xml:space="preserve">
     <value>yyyy-MM-dd</value>
@@ -1124,9 +1121,6 @@
   </data>
   <data name="Label_Valid" xml:space="preserve">
     <value>Valid</value>
-  </data>
-  <data name="Label_SelectSector" xml:space="preserve">
-    <value>Select Sector</value>
   </data>
   <data name="Label_SyncFATs" xml:space="preserve">
     <value>Sync FATs</value>
@@ -1869,5 +1863,113 @@ Do you wish to overwrite?</value>
   </data>
   <data name="Label_ConsoleOutput" xml:space="preserve">
     <value>Console Output</value>
+  </data>
+  <data name="Caption_FluxConfiguration" xml:space="preserve">
+    <value>Flux Configuration</value>
+  </data>
+  <data name="Label_StripLogPath" xml:space="preserve">
+    <value>Strip Path from Logs</value>
+  </data>
+  <data name="Label_DefaultRevs" xml:space="preserve">
+    <value>Default Revs</value>
+  </data>
+  <data name="Label_DriveInterface" xml:space="preserve">
+    <value>Drive Interface</value>
+  </data>
+  <data name="Label_Port" xml:space="preserve">
+    <value>Port</value>
+  </data>
+  <data name="Label_FillSectorsWith" xml:space="preserve">
+    <value>Fill Sectors With</value>
+  </data>
+  <data name="Label_KeepData" xml:space="preserve">
+    <value>Keep Data</value>
+  </data>
+  <data name="Label_SynchronizeFATs" xml:space="preserve">
+    <value>Synchronize FATs</value>
+  </data>
+  <data name="Menu_SelectData" xml:space="preserve">
+    <value>Select &amp;Data</value>
+  </data>
+  <data name="Menu_SelectRegion" xml:space="preserve">
+    <value>Select &amp;Region</value>
+  </data>
+  <data name="Label_SectorCountLarge" xml:space="preserve">
+    <value>Total Sector Count (Large)</value>
+  </data>
+  <data name="Label_ExtendedParameterBlock" xml:space="preserve">
+    <value>Extended Parameter Block</value>
+  </data>
+  <data name="Label_ExtendedParameterBlockMsg" xml:space="preserve">
+    <value>There appears to be data stored in the Extended Parameter Block of this Boot Sector.   This usually means the Extended Property Block is not defined for this disk.</value>
+  </data>
+  <data name="Label_JumpInstruction" xml:space="preserve">
+    <value>Jump Instruction</value>
+  </data>
+  <data name="Label_RootDirectoryEntries" xml:space="preserve">
+    <value>Root Directory Entries</value>
+  </data>
+  <data name="Label_ChooseDiskType" xml:space="preserve">
+    <value>Choose Disk Type</value>
+  </data>
+  <data name="Label_FloppyDiskType" xml:space="preserve">
+    <value>Floppy Disk Type</value>
+  </data>
+  <data name="Label_DiskWriteOptions" xml:space="preserve">
+    <value>Disk Write Options</value>
+  </data>
+  <data name="Label_FormatDisk" xml:space="preserve">
+    <value>Format Disk</value>
+  </data>
+  <data name="Label_VerifyWrites" xml:space="preserve">
+    <value>Verify Writes</value>
+  </data>
+  <data name="Menu_NoToAll" xml:space="preserve">
+    <value>N&amp;o to all</value>
+  </data>
+  <data name="Menu_YesToAll" xml:space="preserve">
+    <value>Yes to &amp;all</value>
+  </data>
+  <data name="Caption_EnterFirstCharacter" xml:space="preserve">
+    <value>Enter the first character for</value>
+  </data>
+  <data name="Label_UndeleteFile" xml:space="preserve">
+    <value>Undelete File</value>
+  </data>
+  <data name="Label_NewDiskImage" xml:space="preserve">
+    <value>New Disk Image</value>
+  </data>
+  <data name="Label_SpecialFormats" xml:space="preserve">
+    <value>Special Formats</value>
+  </data>
+  <data name="Label_StandardFormats" xml:space="preserve">
+    <value>Standard Formats</value>
+  </data>
+  <data name="Menu_PasteOver" xml:space="preserve">
+    <value>&amp;Paste Over</value>
+  </data>
+  <data name="Label_Commit" xml:space="preserve">
+    <value>Commit</value>
+  </data>
+  <data name="Label_CommitChanges" xml:space="preserve">
+    <value>Commit Changes</value>
+  </data>
+  <data name="Label_Display" xml:space="preserve">
+    <value>Display</value>
+  </data>
+  <data name="Label_FillSelection" xml:space="preserve">
+    <value>Fill Selection</value>
+  </data>
+  <data name="Label_Checksum" xml:space="preserve">
+    <value>Checksum</value>
+  </data>
+  <data name="Label_Data" xml:space="preserve">
+    <value>Data</value>
+  </data>
+  <data name="Menu_AdjustBitOffset" xml:space="preserve">
+    <value>Adjust Bit &amp;Offset</value>
+  </data>
+  <data name="Menu_CopyEncoded" xml:space="preserve">
+    <value>Copy Encoded</value>
   </data>
 </root>

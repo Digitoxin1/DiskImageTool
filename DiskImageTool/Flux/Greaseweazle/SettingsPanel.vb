@@ -23,6 +23,9 @@ Namespace Flux.Greaseweazle
             LabelTracks2.Text = My.Resources.Label_Tracks
             LabelLogFile.Text = My.Resources.Label_LogFilename
             ButtonInfo.Text = My.Resources.Label_Info
+            LabelPort.Text = My.Resources.Label_Port
+            LabelDriveInterface.Text = My.Resources.Label_DriveInterface
+            LabelDefaultRevs.Text = My.Resources.Label_DefaultRevs
         End Sub
 
         Public ReadOnly Property Initialized As Boolean

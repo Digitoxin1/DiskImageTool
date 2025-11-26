@@ -105,14 +105,19 @@ Public Class HexViewForm
         BtnCopyText.Text = My.Resources.Menu_CopyText
         BtnCopyValue.Text = My.Resources.Menu_CopyValue
         BtnDelete.Text = String.Format(My.Resources.Label_FillSelectionWith, "0x00")
+        BtnFill.Text = My.Resources.Label_FillSelection
         BtnFillF6.Text = String.Format(My.Resources.Label_FillSelectionWith, "0xF6")
         BtnFind.Text = My.Resources.Label_Find
         BtnFindNext.Text = My.Resources.Label_FIndNext
+        BtnPaste.Text = My.Resources.Menu_PasteOver
         BtnRedo.Text = My.Resources.Menu_Redo
         BtnSelectAll.Text = My.Resources.Menu_SelectAll
         BtnUndo.Text = My.Resources.Menu_Undo
         HexBox1.BuiltInContextMenu.CopyMenuItemText = WithoutHotkey(My.Resources.Menu_CopyText)
         HexBox1.BuiltInContextMenu.SelectAllMenuItemText = My.Resources.Label_SelectAll
+        LblGroups.Text = My.Resources.Label_Display
+        ToolStripBtnCommit.Text = My.Resources.Label_Commit
+        ToolStripBtnCommit.ToolTipText = My.Resources.Label_CommitChanges
         ToolStripBtnCopyHex.Text = WithoutHotkey(My.Resources.Menu_CopyHex)
         ToolStripBtnCopyHexFormatted.Text = WithoutHotkey(My.Resources.Menu_CopyHexFormatted)
         ToolStripBtnCopyText.Text = WithoutHotkey(My.Resources.Menu_CopyText)
@@ -120,6 +125,7 @@ Public Class HexViewForm
         ToolStripBtnFillF6.Text = String.Format(My.Resources.Label_FillSelectionWith, "0xF6")
         ToolStripBtnFind.Text = My.Resources.Label_Find
         ToolStripBtnFindNext.Text = My.Resources.Label_FIndNext
+        ToolStripBtnPaste.Text = WithoutHotkey(My.Resources.Menu_PasteOver)
         ToolStripBtnRedo.Text = WithoutHotkey(My.Resources.Menu_Redo)
         ToolStripBtnSelectAll.Text = My.Resources.Label_SelectAll
         ToolStripBtnSelectTrack.ToolTipText = My.Resources.Label_Track
@@ -880,7 +886,7 @@ Public Class HexViewForm
             BtnSelectSector.Text = My.Resources.Menu_SelectSector
             BtnSelectSector.Enabled = False
             ToolStripBtnSelectSector.Text = My.Resources.Label_Sector
-            ToolStripBtnSelectSector.ToolTipText = My.Resources.Label_SelectSector
+            ToolStripBtnSelectSector.ToolTipText = WithoutHotkey(My.Resources.Menu_SelectSector)
             ToolStripBtnSelectSector.Enabled = BtnSelectSector.Enabled
             BtnSelectTrack.Text = My.Resources.Menu_SelectTrack
             BtnSelectTrack.Enabled = False
@@ -986,7 +992,7 @@ Public Class HexViewForm
                 BtnSelectSector.Text = My.Resources.Menu_SelectSector & " " & Sector
                 BtnSelectSector.Enabled = Not OutOfRange
                 ToolStripBtnSelectSector.Text = My.Resources.Label_Sector & " " & Sector
-                ToolStripBtnSelectSector.ToolTipText = My.Resources.Label_SelectSector & " " & Sector
+                ToolStripBtnSelectSector.ToolTipText = WithoutHotkey(My.Resources.Menu_SelectSector) & " " & Sector
                 ToolStripBtnSelectSector.Enabled = BtnSelectSector.Enabled
 
                 If _BPB.IsValid Then

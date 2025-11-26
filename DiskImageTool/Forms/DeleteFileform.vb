@@ -26,6 +26,8 @@
     Private Sub LocalizeForm()
         BtnCancel.Text = My.Resources.Menu_No
         BtnOK.Text = My.Resources.Menu_Yes
+        GroupBox1.Text = My.Resources.Label_FillSectorsWith
+        RadioFillKeep.Text = My.Resources.Label_KeepData
     End Sub
 
     Public ReadOnly Property Result As DeleteFileFormResult

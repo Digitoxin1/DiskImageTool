@@ -374,7 +374,7 @@ Module HexViews
         Dim HexViewSectorData As New HexViewSectorData(Disk, Disk.RootDirectory.SectorChain)
         HighlightDirectoryData(Disk, HexViewSectorData, True)
 
-        HexViewSectorData.Description = My.Resources.HexView_RootDirectory
+        HexViewSectorData.Description = WithoutHotkey(My.Resources.Menu_RootDirectory)
 
         Return HexViewSectorData
     End Function

@@ -14,6 +14,8 @@
     Private Sub LocalizeForm()
         BtnCancel.Text = My.Resources.Menu_Cancel
         BtnUpdate.Text = My.Resources.Menu_Update
+        LabelCaption.Text = My.Resources.Caption_EnterFirstCharacter
+        Me.Text = My.Resources.Label_UndeleteFile
     End Sub
 
     Public ReadOnly Property FirstChar As Byte

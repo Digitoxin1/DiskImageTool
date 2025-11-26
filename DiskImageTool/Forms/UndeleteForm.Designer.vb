@@ -23,7 +23,6 @@ Partial Class UndeleteForm
     <System.Diagnostics.DebuggerStepThrough()> _
     Private Sub InitializeComponent()
         Dim PanelBottom As System.Windows.Forms.FlowLayoutPanel
-        Dim resources As System.ComponentModel.ComponentResourceManager = New System.ComponentModel.ComponentResourceManager(GetType(UndeleteForm))
         Dim PanelMain As System.Windows.Forms.Panel
         Me.BtnCancel = New System.Windows.Forms.Button()
         Me.BtnUpdate = New System.Windows.Forms.Button()
@@ -43,64 +42,101 @@ Partial Class UndeleteForm
         PanelBottom.BackColor = System.Drawing.SystemColors.Control
         PanelBottom.Controls.Add(Me.BtnCancel)
         PanelBottom.Controls.Add(Me.BtnUpdate)
-        resources.ApplyResources(PanelBottom, "PanelBottom")
+        PanelBottom.Dock = System.Windows.Forms.DockStyle.Bottom
+        PanelBottom.FlowDirection = System.Windows.Forms.FlowDirection.RightToLeft
+        PanelBottom.Location = New System.Drawing.Point(0, 47)
         PanelBottom.Name = "PanelBottom"
+        PanelBottom.Padding = New System.Windows.Forms.Padding(6, 10, 6, 10)
+        PanelBottom.Size = New System.Drawing.Size(350, 43)
+        PanelBottom.TabIndex = 1
+        PanelBottom.WrapContents = False
         '
         'BtnCancel
         '
         Me.BtnCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel
-        resources.ApplyResources(Me.BtnCancel, "BtnCancel")
+        Me.BtnCancel.Location = New System.Drawing.Point(257, 10)
+        Me.BtnCancel.Margin = New System.Windows.Forms.Padding(6, 0, 6, 0)
         Me.BtnCancel.Name = "BtnCancel"
+        Me.BtnCancel.Size = New System.Drawing.Size(75, 23)
+        Me.BtnCancel.TabIndex = 1
+        Me.BtnCancel.Text = "{&Cancel}"
         Me.BtnCancel.UseVisualStyleBackColor = True
         '
         'BtnUpdate
         '
         Me.BtnUpdate.DialogResult = System.Windows.Forms.DialogResult.OK
-        resources.ApplyResources(Me.BtnUpdate, "BtnUpdate")
+        Me.BtnUpdate.Location = New System.Drawing.Point(170, 10)
+        Me.BtnUpdate.Margin = New System.Windows.Forms.Padding(6, 0, 6, 0)
         Me.BtnUpdate.Name = "BtnUpdate"
+        Me.BtnUpdate.Size = New System.Drawing.Size(75, 23)
+        Me.BtnUpdate.TabIndex = 0
+        Me.BtnUpdate.Text = "{&Update}"
         Me.BtnUpdate.UseVisualStyleBackColor = True
         '
         'PanelMain
         '
-        resources.ApplyResources(PanelMain, "PanelMain")
+        PanelMain.AutoSize = True
+        PanelMain.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink
         PanelMain.BackColor = System.Drawing.SystemColors.Window
         PanelMain.Controls.Add(Me.FlowLayoutPanelMain)
         PanelMain.Controls.Add(Me.TextBoxChar)
+        PanelMain.Dock = System.Windows.Forms.DockStyle.Fill
+        PanelMain.Location = New System.Drawing.Point(0, 0)
         PanelMain.Name = "PanelMain"
+        PanelMain.Padding = New System.Windows.Forms.Padding(18, 18, 18, 6)
+        PanelMain.Size = New System.Drawing.Size(350, 47)
+        PanelMain.TabIndex = 0
         '
         'FlowLayoutPanelMain
         '
         Me.FlowLayoutPanelMain.Controls.Add(Me.LabelCaption)
         Me.FlowLayoutPanelMain.Controls.Add(Me.LabelFileName)
-        resources.ApplyResources(Me.FlowLayoutPanelMain, "FlowLayoutPanelMain")
+        Me.FlowLayoutPanelMain.Location = New System.Drawing.Point(18, 18)
         Me.FlowLayoutPanelMain.Name = "FlowLayoutPanelMain"
+        Me.FlowLayoutPanelMain.Size = New System.Drawing.Size(262, 20)
+        Me.FlowLayoutPanelMain.TabIndex = 0
+        Me.FlowLayoutPanelMain.WrapContents = False
         '
         'LabelCaption
         '
-        resources.ApplyResources(Me.LabelCaption, "LabelCaption")
+        Me.LabelCaption.AutoSize = True
+        Me.LabelCaption.Location = New System.Drawing.Point(0, 3)
+        Me.LabelCaption.Margin = New System.Windows.Forms.Padding(0, 3, 3, 0)
         Me.LabelCaption.Name = "LabelCaption"
+        Me.LabelCaption.Size = New System.Drawing.Size(51, 13)
+        Me.LabelCaption.TabIndex = 0
+        Me.LabelCaption.Text = "{Caption}"
         Me.LabelCaption.UseMnemonic = False
         '
         'LabelFileName
         '
-        resources.ApplyResources(Me.LabelFileName, "LabelFileName")
+        Me.LabelFileName.AutoSize = True
         Me.LabelFileName.ForeColor = System.Drawing.Color.Blue
+        Me.LabelFileName.Location = New System.Drawing.Point(54, 3)
+        Me.LabelFileName.Margin = New System.Windows.Forms.Padding(0, 3, 3, 0)
         Me.LabelFileName.Name = "LabelFileName"
+        Me.LabelFileName.Size = New System.Drawing.Size(59, 13)
+        Me.LabelFileName.TabIndex = 1
+        Me.LabelFileName.Text = "{FileName}"
         Me.LabelFileName.UseMnemonic = False
         '
         'TextBoxChar
         '
         Me.TextBoxChar.CharacterCasing = System.Windows.Forms.CharacterCasing.Upper
-        resources.ApplyResources(Me.TextBoxChar, "TextBoxChar")
+        Me.TextBoxChar.Location = New System.Drawing.Point(286, 18)
+        Me.TextBoxChar.MaxLength = 1
         Me.TextBoxChar.Name = "TextBoxChar"
         Me.TextBoxChar.ShortcutsEnabled = False
+        Me.TextBoxChar.Size = New System.Drawing.Size(43, 20)
+        Me.TextBoxChar.TabIndex = 1
         '
         'UndeleteForm
         '
-        resources.ApplyResources(Me, "$this")
+        Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
         Me.BackColor = System.Drawing.SystemColors.Control
         Me.CancelButton = Me.BtnCancel
+        Me.ClientSize = New System.Drawing.Size(350, 90)
         Me.Controls.Add(PanelMain)
         Me.Controls.Add(PanelBottom)
         Me.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog
@@ -109,6 +145,7 @@ Partial Class UndeleteForm
         Me.Name = "UndeleteForm"
         Me.ShowIcon = False
         Me.ShowInTaskbar = False
+        Me.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent
         PanelBottom.ResumeLayout(False)
         PanelMain.ResumeLayout(False)
         PanelMain.PerformLayout()

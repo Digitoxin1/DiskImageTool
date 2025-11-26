@@ -34,11 +34,11 @@
                 Case BiosParameterBlock.BPBOoffsets.ReservedSectorCount
                     Return My.Resources.Label_ReservedSectorCount
                 Case BiosParameterBlock.BPBOoffsets.NumberOfFATs
-                    Return My.Resources.BPB_NumberOfFATs
+                    Return My.Resources.Label_NumberOfFATs
                 Case BiosParameterBlock.BPBOoffsets.RootEntryCount
                     Return My.Resources.Label_RootEntryCount
                 Case BiosParameterBlock.BPBOoffsets.SectorCountSmall
-                    Return My.Resources.BPB_SectorCountSmall
+                    Return My.Resources.Label_SectorCountSmall
                 Case BiosParameterBlock.BPBOoffsets.MediaDescriptor
                     Return My.Resources.Label_MediaDescriptor
                 Case BiosParameterBlock.BPBOoffsets.SectorsPerFAT
@@ -46,7 +46,7 @@
                 Case BiosParameterBlock.BPBOoffsets.SectorsPerTrack
                     Return My.Resources.Label_SectorsPerTrack
                 Case BiosParameterBlock.BPBOoffsets.NumberOfHeads
-                    Return My.Resources.BPB_NumberOfHeads
+                    Return My.Resources.Label_NumberOfHeads
                 Case BiosParameterBlock.BPBOoffsets.HiddenSectors
                     Return My.Resources.Label_HiddenSectors
                 Case Else

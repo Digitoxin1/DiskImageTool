@@ -519,16 +519,16 @@
   <data name="Label_HiddenSectors" xml:space="preserve">
     <value>Versteckte Sektoren</value>
   </data>
-  <data name="BPB_NumberOfFATs" xml:space="preserve">
+  <data name="Label_NumberOfFATs" xml:space="preserve">
     <value>Anzahl der FATs</value>
   </data>
-  <data name="BPB_NumberOfHeads" xml:space="preserve">
-    <value>Anzahl der Schreibköpfe</value>
+  <data name="Label_NumberOfHeads" xml:space="preserve">
+    <value>Anzahl der Köpfe</value>
   </data>
   <data name="Label_ReservedSectorCount" xml:space="preserve">
     <value>Reservierte Sektoren</value>
   </data>
-  <data name="BPB_SectorCountSmall" xml:space="preserve">
+  <data name="Label_SectorCountSmall" xml:space="preserve">
     <value>Gesamtanzahl Sektoren</value>
   </data>
   <data name="Label_SectorsPerCluster" xml:space="preserve">
@@ -740,9 +740,6 @@
   </data>
   <data name="HexView_DeletedFile" xml:space="preserve">
     <value>Gelöschte Datei</value>
-  </data>
-  <data name="HexView_RootDirectory" xml:space="preserve">
-    <value>Stammverzeichnis</value>
   </data>
   <data name="Label_Bytes" xml:space="preserve">
     <value>Bytes</value>
@@ -1031,9 +1028,6 @@
   </data>
   <data name="Label_Valid" xml:space="preserve">
     <value>Gültig</value>
-  </data>
-  <data name="Label_SelectSector" xml:space="preserve">
-    <value>Sektor auswählen</value>
   </data>
   <data name="Label_SyncFATs" xml:space="preserve">
     <value>FATs synchronisieren</value>
@@ -1647,5 +1641,113 @@ Möchten Sie ihn überschreiben?</value>
   </data>
   <data name="Label_ConsoleOutput" xml:space="preserve">
     <value>Konsolenausgabe</value>
+  </data>
+  <data name="Caption_FluxConfiguration" xml:space="preserve">
+    <value>Greaseweazle Konfiguration</value>
+  </data>
+  <data name="Label_StripLogPath" xml:space="preserve">
+    <value>Pfad aus Protokollen entfernen</value>
+  </data>
+  <data name="Label_DefaultRevs" xml:space="preserve">
+    <value>Standard-Umdrehungen</value>
+  </data>
+  <data name="Label_DriveInterface" xml:space="preserve">
+    <value>Laufwerkschnittstelle</value>
+  </data>
+  <data name="Label_Port" xml:space="preserve">
+    <value>Port</value>
+  </data>
+  <data name="Label_FillSectorsWith" xml:space="preserve">
+    <value>Sektoren füllen mit</value>
+  </data>
+  <data name="Label_KeepData" xml:space="preserve">
+    <value>Daten behalten</value>
+  </data>
+  <data name="Label_SynchronizeFATs" xml:space="preserve">
+    <value>FATs synchronisieren</value>
+  </data>
+  <data name="Menu_SelectData" xml:space="preserve">
+    <value>&amp;Daten auswählen</value>
+  </data>
+  <data name="Menu_SelectRegion" xml:space="preserve">
+    <value>&amp;Region auswählen</value>
+  </data>
+  <data name="Label_SectorCountLarge" xml:space="preserve">
+    <value>Gesamtanzahl Sektoren (groß)</value>
+  </data>
+  <data name="Label_ExtendedParameterBlock" xml:space="preserve">
+    <value>Erweiterter Parameterblock</value>
+  </data>
+  <data name="Label_JumpInstruction" xml:space="preserve">
+    <value>Sprungbefehl</value>
+  </data>
+  <data name="Label_RootDirectoryEntries" xml:space="preserve">
+    <value>Einträge im Stammverzeichnis</value>
+  </data>
+  <data name="Label_ExtendedParameterBlockMsg" xml:space="preserve">
+    <value>Es scheint Daten im erweiterten Parameterblock dieses Bootsektors zu geben. Dies bedeutet normalerweise, dass der erweiterte Parameterblock für diese Diskette nicht definiert ist.</value>
+  </data>
+  <data name="Label_ChooseDiskType" xml:space="preserve">
+    <value>Diskettentyp auswählen</value>
+  </data>
+  <data name="Label_FloppyDiskType" xml:space="preserve">
+    <value>Floppy-Disk-Typ</value>
+  </data>
+  <data name="Label_FormatDisk" xml:space="preserve">
+    <value>Diskette formatieren</value>
+  </data>
+  <data name="Label_VerifyWrites" xml:space="preserve">
+    <value>Schreibvorgänge verifizieren</value>
+  </data>
+  <data name="Label_DiskWriteOptions" xml:space="preserve">
+    <value>Schreiboptionen für Diskette</value>
+  </data>
+  <data name="Menu_NoToAll" xml:space="preserve">
+    <value>N&amp;ein zu allen</value>
+  </data>
+  <data name="Menu_YesToAll" xml:space="preserve">
+    <value>Ja zu &amp;allen</value>
+  </data>
+  <data name="Caption_EnterFirstCharacter" xml:space="preserve">
+    <value>Geben Sie das erste Zeichen ein für</value>
+  </data>
+  <data name="Label_UndeleteFile" xml:space="preserve">
+    <value>Datei wiederherstellen</value>
+  </data>
+  <data name="Label_SpecialFormats" xml:space="preserve">
+    <value>Spezialformate</value>
+  </data>
+  <data name="Label_StandardFormats" xml:space="preserve">
+    <value>Standardformate</value>
+  </data>
+  <data name="Label_NewDiskImage" xml:space="preserve">
+    <value>Neues Diskettenabbild</value>
+  </data>
+  <data name="Menu_PasteOver" xml:space="preserve">
+    <value>&amp;Überschreiben einfügen</value>
+  </data>
+  <data name="Label_Commit" xml:space="preserve">
+    <value>Übernehmen</value>
+  </data>
+  <data name="Label_CommitChanges" xml:space="preserve">
+    <value>Änderungen übernehmen</value>
+  </data>
+  <data name="Label_Display" xml:space="preserve">
+    <value>Anzeige</value>
+  </data>
+  <data name="Label_FillSelection" xml:space="preserve">
+    <value>Auswahl füllen</value>
+  </data>
+  <data name="Menu_AdjustBitOffset" xml:space="preserve">
+    <value>Bit-&amp;Offset anpassen</value>
+  </data>
+  <data name="Label_Checksum" xml:space="preserve">
+    <value>Prüfsumme</value>
+  </data>
+  <data name="Menu_CopyEncoded" xml:space="preserve">
+    <value>Kodiert kopieren</value>
+  </data>
+  <data name="Label_Data" xml:space="preserve">
+    <value>Daten</value>
   </data>
 </root>

@@ -23,7 +23,6 @@ Partial Class ImageCreationForm
     <System.Diagnostics.DebuggerStepThrough()>
     Private Sub InitializeComponent()
         Dim RadioFormat2880 As System.Windows.Forms.RadioButton
-        Dim resources As System.ComponentModel.ComponentResourceManager = New System.ComponentModel.ComponentResourceManager(GetType(ImageCreationForm))
         Dim RadioFormat1440 As System.Windows.Forms.RadioButton
         Dim RadioFormat1200 As System.Windows.Forms.RadioButton
         Dim RadioFormat720 As System.Windows.Forms.RadioButton
@@ -66,88 +65,136 @@ Partial Class ImageCreationForm
         '
         'RadioFormat2880
         '
-        resources.ApplyResources(RadioFormat2880, "RadioFormat2880")
+        RadioFormat2880.AutoSize = True
+        RadioFormat2880.Location = New System.Drawing.Point(91, 88)
         RadioFormat2880.Name = "RadioFormat2880"
+        RadioFormat2880.Size = New System.Drawing.Size(55, 17)
+        RadioFormat2880.TabIndex = 9
         RadioFormat2880.Tag = "8"
+        RadioFormat2880.Text = "2.88M"
         RadioFormat2880.UseVisualStyleBackColor = True
         '
         'RadioFormat1440
         '
-        resources.ApplyResources(RadioFormat1440, "RadioFormat1440")
+        RadioFormat1440.AutoSize = True
         RadioFormat1440.Checked = True
+        RadioFormat1440.Location = New System.Drawing.Point(91, 66)
         RadioFormat1440.Name = "RadioFormat1440"
+        RadioFormat1440.Size = New System.Drawing.Size(55, 17)
+        RadioFormat1440.TabIndex = 8
         RadioFormat1440.TabStop = True
         RadioFormat1440.Tag = "7"
+        RadioFormat1440.Text = "1.44M"
         RadioFormat1440.UseVisualStyleBackColor = True
         '
         'RadioFormat1200
         '
-        resources.ApplyResources(RadioFormat1200, "RadioFormat1200")
+        RadioFormat1200.AutoSize = True
+        RadioFormat1200.Location = New System.Drawing.Point(91, 44)
         RadioFormat1200.Name = "RadioFormat1200"
+        RadioFormat1200.Size = New System.Drawing.Size(49, 17)
+        RadioFormat1200.TabIndex = 7
         RadioFormat1200.Tag = "6"
+        RadioFormat1200.Text = "1.2M"
         RadioFormat1200.UseVisualStyleBackColor = True
         '
         'RadioFormat720
         '
-        resources.ApplyResources(RadioFormat720, "RadioFormat720")
+        RadioFormat720.AutoSize = True
+        RadioFormat720.Location = New System.Drawing.Point(91, 22)
         RadioFormat720.Name = "RadioFormat720"
+        RadioFormat720.Size = New System.Drawing.Size(50, 17)
+        RadioFormat720.TabIndex = 6
         RadioFormat720.Tag = "5"
+        RadioFormat720.Text = "720K"
         RadioFormat720.UseVisualStyleBackColor = True
         '
         'RadioFormat360
         '
-        resources.ApplyResources(RadioFormat360, "RadioFormat360")
+        RadioFormat360.AutoSize = True
+        RadioFormat360.Location = New System.Drawing.Point(8, 88)
         RadioFormat360.Name = "RadioFormat360"
+        RadioFormat360.Size = New System.Drawing.Size(50, 17)
+        RadioFormat360.TabIndex = 5
         RadioFormat360.Tag = "4"
+        RadioFormat360.Text = "360K"
         RadioFormat360.UseVisualStyleBackColor = True
         '
         'RadioFormat320
         '
-        resources.ApplyResources(RadioFormat320, "RadioFormat320")
+        RadioFormat320.AutoSize = True
+        RadioFormat320.Location = New System.Drawing.Point(8, 66)
         RadioFormat320.Name = "RadioFormat320"
+        RadioFormat320.Size = New System.Drawing.Size(50, 17)
+        RadioFormat320.TabIndex = 4
         RadioFormat320.Tag = "3"
+        RadioFormat320.Text = "320K"
         RadioFormat320.UseVisualStyleBackColor = True
         '
         'RadioFormat180
         '
-        resources.ApplyResources(RadioFormat180, "RadioFormat180")
+        RadioFormat180.AutoSize = True
+        RadioFormat180.Location = New System.Drawing.Point(8, 44)
         RadioFormat180.Name = "RadioFormat180"
+        RadioFormat180.Size = New System.Drawing.Size(50, 17)
+        RadioFormat180.TabIndex = 3
         RadioFormat180.Tag = "2"
+        RadioFormat180.Text = "180K"
         RadioFormat180.UseVisualStyleBackColor = True
         '
         'RadioFormat160
         '
-        resources.ApplyResources(RadioFormat160, "RadioFormat160")
+        RadioFormat160.AutoSize = True
+        RadioFormat160.Location = New System.Drawing.Point(8, 22)
         RadioFormat160.Name = "RadioFormat160"
+        RadioFormat160.Size = New System.Drawing.Size(50, 17)
+        RadioFormat160.TabIndex = 2
         RadioFormat160.Tag = "1"
+        RadioFormat160.Text = "160K"
         RadioFormat160.UseVisualStyleBackColor = True
         '
         'RadioFormatTandy2000
         '
-        resources.ApplyResources(RadioFormatTandy2000, "RadioFormatTandy2000")
+        RadioFormatTandy2000.AutoSize = True
+        RadioFormatTandy2000.Location = New System.Drawing.Point(190, 88)
         RadioFormatTandy2000.Name = "RadioFormatTandy2000"
+        RadioFormatTandy2000.Size = New System.Drawing.Size(82, 17)
+        RadioFormatTandy2000.TabIndex = 13
         RadioFormatTandy2000.Tag = "15"
+        RadioFormatTandy2000.Text = "Tandy 2000"
         RadioFormatTandy2000.UseVisualStyleBackColor = True
         '
         'RadioFormatProCopy
         '
-        resources.ApplyResources(RadioFormatProCopy, "RadioFormatProCopy")
+        RadioFormatProCopy.AutoSize = True
+        RadioFormatProCopy.Location = New System.Drawing.Point(190, 66)
         RadioFormatProCopy.Name = "RadioFormatProCopy"
+        RadioFormatProCopy.Size = New System.Drawing.Size(65, 17)
+        RadioFormatProCopy.TabIndex = 12
         RadioFormatProCopy.Tag = "11"
+        RadioFormatProCopy.Text = "ProCopy"
         RadioFormatProCopy.UseVisualStyleBackColor = True
         '
         'RadioFormatDMF2048
         '
-        resources.ApplyResources(RadioFormatDMF2048, "RadioFormatDMF2048")
+        RadioFormatDMF2048.AutoSize = True
+        RadioFormatDMF2048.Location = New System.Drawing.Point(190, 44)
         RadioFormatDMF2048.Name = "RadioFormatDMF2048"
+        RadioFormatDMF2048.Size = New System.Drawing.Size(121, 17)
+        RadioFormatDMF2048.TabIndex = 11
         RadioFormatDMF2048.Tag = "10"
+        RadioFormatDMF2048.Text = "DMF (2048 Clusters)"
         RadioFormatDMF2048.UseVisualStyleBackColor = True
         '
         'RadioFormatDMF1024
         '
-        resources.ApplyResources(RadioFormatDMF1024, "RadioFormatDMF1024")
+        RadioFormatDMF1024.AutoSize = True
+        RadioFormatDMF1024.Location = New System.Drawing.Point(190, 22)
         RadioFormatDMF1024.Name = "RadioFormatDMF1024"
+        RadioFormatDMF1024.Size = New System.Drawing.Size(121, 17)
+        RadioFormatDMF1024.TabIndex = 10
         RadioFormatDMF1024.Tag = "9"
+        RadioFormatDMF1024.Text = "DMF (1024 Clusters)"
         RadioFormatDMF1024.UseVisualStyleBackColor = True
         '
         'PanelBottom
@@ -155,32 +202,54 @@ Partial Class ImageCreationForm
         PanelBottom.BackColor = System.Drawing.SystemColors.Control
         PanelBottom.Controls.Add(Me.BtnCancel)
         PanelBottom.Controls.Add(Me.BtnOK)
-        resources.ApplyResources(PanelBottom, "PanelBottom")
+        PanelBottom.Dock = System.Windows.Forms.DockStyle.Bottom
+        PanelBottom.FlowDirection = System.Windows.Forms.FlowDirection.RightToLeft
+        PanelBottom.Location = New System.Drawing.Point(0, 230)
         PanelBottom.Name = "PanelBottom"
+        PanelBottom.Padding = New System.Windows.Forms.Padding(6, 10, 6, 10)
+        PanelBottom.Size = New System.Drawing.Size(383, 43)
+        PanelBottom.TabIndex = 1
+        PanelBottom.WrapContents = False
         '
         'BtnCancel
         '
-        resources.ApplyResources(Me.BtnCancel, "BtnCancel")
+        Me.BtnCancel.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink
         Me.BtnCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel
+        Me.BtnCancel.Location = New System.Drawing.Point(290, 10)
+        Me.BtnCancel.Margin = New System.Windows.Forms.Padding(6, 0, 6, 0)
         Me.BtnCancel.Name = "BtnCancel"
+        Me.BtnCancel.Size = New System.Drawing.Size(75, 23)
+        Me.BtnCancel.TabIndex = 1
+        Me.BtnCancel.Text = "{Cancel}"
         Me.BtnCancel.UseVisualStyleBackColor = True
         '
         'BtnOK
         '
-        resources.ApplyResources(Me.BtnOK, "BtnOK")
+        Me.BtnOK.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink
         Me.BtnOK.DialogResult = System.Windows.Forms.DialogResult.OK
+        Me.BtnOK.Location = New System.Drawing.Point(203, 10)
+        Me.BtnOK.Margin = New System.Windows.Forms.Padding(6, 0, 6, 0)
         Me.BtnOK.Name = "BtnOK"
+        Me.BtnOK.Size = New System.Drawing.Size(75, 23)
+        Me.BtnOK.TabIndex = 0
+        Me.BtnOK.Text = "{Ok}"
         Me.BtnOK.UseVisualStyleBackColor = True
         '
         'PanelMain
         '
-        resources.ApplyResources(PanelMain, "PanelMain")
+        PanelMain.AutoSize = True
+        PanelMain.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink
         PanelMain.BackColor = System.Drawing.SystemColors.Window
         PanelMain.Controls.Add(Me.PanelFormats)
         PanelMain.Controls.Add(Me.CheckImportFiles)
         PanelMain.Controls.Add(Me.LabelBootSector)
         PanelMain.Controls.Add(Me.ComboBootSector)
+        PanelMain.Dock = System.Windows.Forms.DockStyle.Fill
+        PanelMain.Location = New System.Drawing.Point(0, 0)
         PanelMain.Name = "PanelMain"
+        PanelMain.Padding = New System.Windows.Forms.Padding(18, 18, 18, 6)
+        PanelMain.Size = New System.Drawing.Size(383, 230)
+        PanelMain.TabIndex = 0
         '
         'PanelFormats
         '
@@ -198,44 +267,65 @@ Partial Class ImageCreationForm
         Me.PanelFormats.Controls.Add(RadioFormat180)
         Me.PanelFormats.Controls.Add(RadioFormat160)
         Me.PanelFormats.Controls.Add(Me.GroupBoxStandard)
-        resources.ApplyResources(Me.PanelFormats, "PanelFormats")
+        Me.PanelFormats.Location = New System.Drawing.Point(18, 18)
+        Me.PanelFormats.Margin = New System.Windows.Forms.Padding(0)
         Me.PanelFormats.Name = "PanelFormats"
+        Me.PanelFormats.Size = New System.Drawing.Size(344, 122)
+        Me.PanelFormats.TabIndex = 0
         '
         'GroupBoxSpecial
         '
-        resources.ApplyResources(Me.GroupBoxSpecial, "GroupBoxSpecial")
+        Me.GroupBoxSpecial.Location = New System.Drawing.Point(181, 0)
         Me.GroupBoxSpecial.Name = "GroupBoxSpecial"
+        Me.GroupBoxSpecial.Size = New System.Drawing.Size(161, 16)
+        Me.GroupBoxSpecial.TabIndex = 1
         Me.GroupBoxSpecial.TabStop = False
+        Me.GroupBoxSpecial.Text = "{Special Formats}"
         '
         'GroupBoxStandard
         '
-        resources.ApplyResources(Me.GroupBoxStandard, "GroupBoxStandard")
+        Me.GroupBoxStandard.Location = New System.Drawing.Point(0, 0)
         Me.GroupBoxStandard.Name = "GroupBoxStandard"
+        Me.GroupBoxStandard.Size = New System.Drawing.Size(161, 16)
+        Me.GroupBoxStandard.TabIndex = 0
         Me.GroupBoxStandard.TabStop = False
+        Me.GroupBoxStandard.Text = "{Standard Formats}"
         '
         'CheckImportFiles
         '
-        resources.ApplyResources(Me.CheckImportFiles, "CheckImportFiles")
+        Me.CheckImportFiles.Anchor = CType((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
+        Me.CheckImportFiles.AutoSize = True
+        Me.CheckImportFiles.Location = New System.Drawing.Point(282, 204)
         Me.CheckImportFiles.Name = "CheckImportFiles"
+        Me.CheckImportFiles.Size = New System.Drawing.Size(87, 17)
+        Me.CheckImportFiles.TabIndex = 3
+        Me.CheckImportFiles.Text = "{Import Files}"
         Me.CheckImportFiles.UseVisualStyleBackColor = True
         '
         'LabelBootSector
         '
-        resources.ApplyResources(Me.LabelBootSector, "LabelBootSector")
+        Me.LabelBootSector.AutoSize = True
+        Me.LabelBootSector.Location = New System.Drawing.Point(18, 153)
         Me.LabelBootSector.Name = "LabelBootSector"
+        Me.LabelBootSector.Size = New System.Drawing.Size(71, 13)
+        Me.LabelBootSector.TabIndex = 1
+        Me.LabelBootSector.Text = "{Boot Sector}"
         '
         'ComboBootSector
         '
         Me.ComboBootSector.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList
         Me.ComboBootSector.FormattingEnabled = True
-        resources.ApplyResources(Me.ComboBootSector, "ComboBootSector")
+        Me.ComboBootSector.Location = New System.Drawing.Point(18, 169)
         Me.ComboBootSector.Name = "ComboBootSector"
+        Me.ComboBootSector.Size = New System.Drawing.Size(344, 21)
+        Me.ComboBootSector.TabIndex = 2
         '
         'ImageCreationForm
         '
-        resources.ApplyResources(Me, "$this")
+        Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
         Me.BackColor = System.Drawing.SystemColors.Control
+        Me.ClientSize = New System.Drawing.Size(383, 273)
         Me.Controls.Add(PanelMain)
         Me.Controls.Add(PanelBottom)
         Me.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog
@@ -244,6 +334,7 @@ Partial Class ImageCreationForm
         Me.Name = "ImageCreationForm"
         Me.ShowIcon = False
         Me.ShowInTaskbar = False
+        Me.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent
         PanelBottom.ResumeLayout(False)
         PanelMain.ResumeLayout(False)
         PanelMain.PerformLayout()
