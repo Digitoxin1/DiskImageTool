@@ -84,7 +84,7 @@
     <SignManifests>false</SignManifests>
   </PropertyGroup>
   <PropertyGroup>
-    <ApplicationIcon>Assets\floppyDisk.ico</ApplicationIcon>
+    <ApplicationIcon>Resources\floppyDisk.ico</ApplicationIcon>
   </PropertyGroup>
   <PropertyGroup>
     <ApplicationManifest>My Project\app.manifest</ApplicationManifest>
@@ -771,15 +771,16 @@
     <None Include="Resources\images\Save.png" />
     <None Include="Resources\images\Import.png" />
     <None Include="Resources\images\ImportFiles.png" />
-    <EmbeddedResource Include="Assets\bootsector.xml" />
-    <Content Include="Assets\floppyDisk.ico" />
+    <EmbeddedResource Include="Resources\bootsector.xml" />
+    <Content Include="Resources\floppyDisk.ico" />
     <None Include="FloppyDB.xml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <EmbeddedResource Include="Assets\License.txt" />
-    <EmbeddedResource Include="Assets\bootstrap.xml" />
+    <EmbeddedResource Include="Resources\License.txt" />
+    <EmbeddedResource Include="Resources\bootstrap.xml" />
   </ItemGroup>
   <ItemGroup>
+    <Folder Include="Assets\" />
     <Folder Include="Flux\Kryoflux\Forms\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.VisualBasic.targets" />
