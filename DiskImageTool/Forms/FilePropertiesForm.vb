@@ -21,22 +21,29 @@ Public Class FilePropertiesForm
     End Sub
 
     Private Sub LocalizeForm()
+        BtnArchive.Text = WithoutHotkey(My.Resources.Menu_Edit)
         BtnCancel.Text = My.Resources.Menu_Cancel
-        BtnUpdate.Text = My.Resources.Menu_Update
-        GroupAttributes.Text = My.Resources.Label_Attributes
-        LblCreated.Text = My.Resources.Label_Created
-        ChkReadOnly.Text = My.Resources.Label_ReadOnly
-        ChkNTExtensions.Text = My.Resources.Label_NTExtensions
-        LblLastWritten.Text = My.Resources.Label_LastWritten
-        LblLastAccessed.Text = My.Resources.Label_LastAccessed
-        GroupFileName.Text = My.Resources.Label_FileName
-        BtnReadOnly.Text = WithoutHotkey(My.Resources.Menu_Edit)
-        BtnSystem.Text = WithoutHotkey(My.Resources.Menu_Edit)
+        BtnCreated.Text = WithoutHotkey(My.Resources.Menu_Edit)
         BtnHidden.Text = WithoutHotkey(My.Resources.Menu_Edit)
         BtnLastAccessed.Text = WithoutHotkey(My.Resources.Menu_Edit)
-        BtnArchive.Text = WithoutHotkey(My.Resources.Menu_Edit)
         BtnLastWritten.Text = WithoutHotkey(My.Resources.Menu_Edit)
-        BtnCreated.Text = WithoutHotkey(My.Resources.Menu_Edit)
+        BtnReadOnly.Text = WithoutHotkey(My.Resources.Menu_Edit)
+        BtnSystem.Text = WithoutHotkey(My.Resources.Menu_Edit)
+        BtnUpdate.Text = My.Resources.Menu_Update
+        ChkArchive.Text = My.Resources.Label_Archive
+        ChkHidden.Text = My.Resources.Label_Hidden
+        ChkNTExtensions.Text = My.Resources.Label_NTExtensions
+        ChkReadOnly.Text = My.Resources.Label_ReadOnly
+        ChkSystem.Text = My.Resources.Label_System
+        GroupAttributes.Text = My.Resources.Label_Attributes
+        GroupFileDates.Text = My.Resources.Label_FileDates
+        GroupFileName.Text = My.Resources.Label_FileName
+        LblCreated.Text = My.Resources.Label_Created
+        LblLastAccessed.Text = My.Resources.Label_LastAccessed
+        LblLastWritten.Text = My.Resources.Label_LastWritten
+        LblMultipleFiles.Text = My.Resources.Caption_MultipleFilesSelected
+        Me.Text = My.Resources.Label_FileProperties
+        RadioFileLong.Text = My.Resources.Label_Long
     End Sub
 
     Public Property Deleted As Boolean

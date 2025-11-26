@@ -599,18 +599,6 @@
       <DependentUpon>FileDropForm.vb</DependentUpon>
       <SubType>Designer</SubType>
     </EmbeddedResource>
-    <EmbeddedResource Include="Forms\FilePropertiesForm.de.resx">
-      <DependentUpon>FilePropertiesForm.vb</DependentUpon>
-      <SubType>Designer</SubType>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\FilePropertiesForm.es.resx">
-      <DependentUpon>FilePropertiesForm.vb</DependentUpon>
-      <SubType>Designer</SubType>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\FilePropertiesForm.fr.resx">
-      <DependentUpon>FilePropertiesForm.vb</DependentUpon>
-      <SubType>Designer</SubType>
-    </EmbeddedResource>
     <EmbeddedResource Include="Forms\FilePropertiesForm.resx">
       <DependentUpon>FilePropertiesForm.vb</DependentUpon>
       <SubType>Designer</SubType>
@@ -631,18 +619,6 @@
       <DependentUpon>FloppyWriteOptionsForm.vb</DependentUpon>
       <SubType>Designer</SubType>
     </EmbeddedResource>
-    <EmbeddedResource Include="Forms\HexSearchForm.de.resx">
-      <DependentUpon>HexSearchForm.vb</DependentUpon>
-      <SubType>Designer</SubType>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\HexSearchForm.es.resx">
-      <DependentUpon>HexSearchForm.vb</DependentUpon>
-      <SubType>Designer</SubType>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\HexSearchForm.fr.resx">
-      <DependentUpon>HexSearchForm.vb</DependentUpon>
-      <SubType>Designer</SubType>
-    </EmbeddedResource>
     <EmbeddedResource Include="Forms\HexSearchForm.resx">
       <DependentUpon>HexSearchForm.vb</DependentUpon>
       <SubType>Designer</SubType>
@@ -658,15 +634,6 @@
       <DependentUpon>ImageLoadForm.vb</DependentUpon>
       <SubType>Designer</SubType>
     </EmbeddedResource>
-    <EmbeddedResource Include="Forms\ImportFileForm.de.resx">
-      <DependentUpon>ImportFileForm.vb</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\ImportFileForm.es.resx">
-      <DependentUpon>ImportFileForm.vb</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\ImportFileForm.fr.resx">
-      <DependentUpon>ImportFileForm.vb</DependentUpon>
-    </EmbeddedResource>
     <EmbeddedResource Include="Forms\ImportFileForm.resx">
       <DependentUpon>ImportFileForm.vb</DependentUpon>
       <SubType>Designer</SubType>
@@ -675,29 +642,11 @@
       <DependentUpon>ItemScanForm.vb</DependentUpon>
       <SubType>Designer</SubType>
     </EmbeddedResource>
-    <EmbeddedResource Include="Forms\ReplaceFileForm.de.resx">
-      <DependentUpon>ReplaceFileForm.vb</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\ReplaceFileForm.es.resx">
-      <DependentUpon>ReplaceFileForm.vb</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\ReplaceFileForm.fr.resx">
-      <DependentUpon>ReplaceFileForm.vb</DependentUpon>
-    </EmbeddedResource>
     <EmbeddedResource Include="Forms\ReplaceFileForm.resx">
       <DependentUpon>ReplaceFileForm.vb</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\UndeleteForm.resx">
       <DependentUpon>UndeleteForm.vb</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\VolumeSerialNumberForm.de.resx">
-      <DependentUpon>VolumeSerialNumberForm.vb</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\VolumeSerialNumberForm.es.resx">
-      <DependentUpon>VolumeSerialNumberForm.vb</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\VolumeSerialNumberForm.fr.resx">
-      <DependentUpon>VolumeSerialNumberForm.vb</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\VolumeSerialNumberForm.resx">
       <DependentUpon>VolumeSerialNumberForm.vb</DependentUpon>

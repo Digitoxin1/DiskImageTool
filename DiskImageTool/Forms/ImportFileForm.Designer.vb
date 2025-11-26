@@ -22,18 +22,17 @@ Partial Class ImportFileForm
     'Do not modify it using the code editor.
     <System.Diagnostics.DebuggerStepThrough()>
     Private Sub InitializeComponent()
-        Dim FileName As System.Windows.Forms.ColumnHeader
-        Dim resources As System.ComponentModel.ComponentResourceManager = New System.ComponentModel.ComponentResourceManager(GetType(ImportFileForm))
-        Dim FileSizeOnDisk As System.Windows.Forms.ColumnHeader
-        Dim Label2 As System.Windows.Forms.Label
-        Dim Label1 As System.Windows.Forms.Label
         Dim PanelTop As System.Windows.Forms.FlowLayoutPanel
-        Dim FileDisabled As System.Windows.Forms.ColumnHeader
-        Me.LabelFilesSelected = New System.Windows.Forms.Label()
         Me.ChkLFN = New System.Windows.Forms.CheckBox()
         Me.ChkNTExtensions = New System.Windows.Forms.CheckBox()
         Me.ChkCreated = New System.Windows.Forms.CheckBox()
         Me.ChkLastAccessed = New System.Windows.Forms.CheckBox()
+        Me.FileName = CType(New System.Windows.Forms.ColumnHeader(), System.Windows.Forms.ColumnHeader)
+        Me.FileSizeOnDisk = CType(New System.Windows.Forms.ColumnHeader(), System.Windows.Forms.ColumnHeader)
+        Me.FileDisabled = CType(New System.Windows.Forms.ColumnHeader(), System.Windows.Forms.ColumnHeader)
+        Me.LabelBytesRequired = New System.Windows.Forms.Label()
+        Me.LabelBytesFree = New System.Windows.Forms.Label()
+        Me.LabelFilesSelected = New System.Windows.Forms.Label()
         Me.FileLastAccessDate = CType(New System.Windows.Forms.ColumnHeader(), System.Windows.Forms.ColumnHeader)
         Me.FileLastWriteDate = CType(New System.Windows.Forms.ColumnHeader(), System.Windows.Forms.ColumnHeader)
         Me.LabelOptions = New System.Windows.Forms.Label()
@@ -47,113 +46,163 @@ Partial Class ImportFileForm
         Me.LblBytesRequired = New System.Windows.Forms.Label()
         Me.BtnOK = New System.Windows.Forms.Button()
         Me.BtnCancel = New System.Windows.Forms.Button()
-        FileName = CType(New System.Windows.Forms.ColumnHeader(), System.Windows.Forms.ColumnHeader)
-        FileSizeOnDisk = CType(New System.Windows.Forms.ColumnHeader(), System.Windows.Forms.ColumnHeader)
-        Label2 = New System.Windows.Forms.Label()
-        Label1 = New System.Windows.Forms.Label()
         PanelTop = New System.Windows.Forms.FlowLayoutPanel()
-        FileDisabled = CType(New System.Windows.Forms.ColumnHeader(), System.Windows.Forms.ColumnHeader)
         PanelTop.SuspendLayout()
         Me.Panel1.SuspendLayout()
         Me.FlowLayoutTotals.SuspendLayout()
         Me.SuspendLayout()
         '
-        'FileName
-        '
-        resources.ApplyResources(FileName, "FileName")
-        '
-        'FileSizeOnDisk
-        '
-        resources.ApplyResources(FileSizeOnDisk, "FileSizeOnDisk")
-        '
-        'LabelFilesSelected
-        '
-        resources.ApplyResources(Me.LabelFilesSelected, "LabelFilesSelected")
-        Me.LabelFilesSelected.Name = "LabelFilesSelected"
-        Me.LabelFilesSelected.UseMnemonic = False
-        '
-        'Label2
-        '
-        resources.ApplyResources(Label2, "Label2")
-        Label2.Name = "Label2"
-        Label2.UseMnemonic = False
-        '
-        'Label1
-        '
-        resources.ApplyResources(Label1, "Label1")
-        Label1.Name = "Label1"
-        Label1.UseMnemonic = False
-        '
         'PanelTop
         '
-        resources.ApplyResources(PanelTop, "PanelTop")
+        PanelTop.Anchor = CType(((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Left) _
+            Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
         PanelTop.BackColor = System.Drawing.SystemColors.Control
         PanelTop.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle
         PanelTop.Controls.Add(Me.ChkLFN)
         PanelTop.Controls.Add(Me.ChkNTExtensions)
         PanelTop.Controls.Add(Me.ChkCreated)
         PanelTop.Controls.Add(Me.ChkLastAccessed)
+        PanelTop.Location = New System.Drawing.Point(12, 12)
         PanelTop.Name = "PanelTop"
+        PanelTop.Padding = New System.Windows.Forms.Padding(6, 12, 0, 0)
+        PanelTop.Size = New System.Drawing.Size(760, 46)
+        PanelTop.TabIndex = 0
         '
         'ChkLFN
         '
-        resources.ApplyResources(Me.ChkLFN, "ChkLFN")
+        Me.ChkLFN.AutoSize = True
+        Me.ChkLFN.Location = New System.Drawing.Point(9, 15)
         Me.ChkLFN.Name = "ChkLFN"
+        Me.ChkLFN.Size = New System.Drawing.Size(113, 17)
+        Me.ChkLFN.TabIndex = 0
+        Me.ChkLFN.Text = "{Long File Names}"
         Me.ChkLFN.UseVisualStyleBackColor = True
         '
         'ChkNTExtensions
         '
-        resources.ApplyResources(Me.ChkNTExtensions, "ChkNTExtensions")
+        Me.ChkNTExtensions.AutoSize = True
+        Me.ChkNTExtensions.Location = New System.Drawing.Point(128, 15)
         Me.ChkNTExtensions.Name = "ChkNTExtensions"
+        Me.ChkNTExtensions.Size = New System.Drawing.Size(103, 17)
+        Me.ChkNTExtensions.TabIndex = 1
+        Me.ChkNTExtensions.Text = "{NT Extensions}"
         Me.ChkNTExtensions.UseVisualStyleBackColor = True
         '
         'ChkCreated
         '
-        resources.ApplyResources(Me.ChkCreated, "ChkCreated")
+        Me.ChkCreated.AutoSize = True
+        Me.ChkCreated.Location = New System.Drawing.Point(237, 15)
         Me.ChkCreated.Name = "ChkCreated"
+        Me.ChkCreated.Size = New System.Drawing.Size(97, 17)
+        Me.ChkCreated.TabIndex = 2
+        Me.ChkCreated.Text = "{Created Date}"
         Me.ChkCreated.UseVisualStyleBackColor = True
         '
         'ChkLastAccessed
         '
-        resources.ApplyResources(Me.ChkLastAccessed, "ChkLastAccessed")
+        Me.ChkLastAccessed.AutoSize = True
+        Me.ChkLastAccessed.Location = New System.Drawing.Point(340, 15)
         Me.ChkLastAccessed.Name = "ChkLastAccessed"
+        Me.ChkLastAccessed.Size = New System.Drawing.Size(130, 17)
+        Me.ChkLastAccessed.TabIndex = 3
+        Me.ChkLastAccessed.Text = "{Last Accessed Date}"
         Me.ChkLastAccessed.UseVisualStyleBackColor = True
+        '
+        'FileName
+        '
+        Me.FileName.Text = "{Filename}"
+        Me.FileName.Width = 120
+        '
+        'FileSizeOnDisk
+        '
+        Me.FileSizeOnDisk.Text = "{Size on Disk}"
+        Me.FileSizeOnDisk.TextAlign = System.Windows.Forms.HorizontalAlignment.Right
+        Me.FileSizeOnDisk.Width = 90
         '
         'FileDisabled
         '
-        resources.ApplyResources(FileDisabled, "FileDisabled")
+        Me.FileDisabled.Text = "{Disabled}"
+        Me.FileDisabled.Width = 0
+        '
+        'LabelBytesRequired
+        '
+        Me.LabelBytesRequired.AutoSize = True
+        Me.LabelBytesRequired.Location = New System.Drawing.Point(334, 0)
+        Me.LabelBytesRequired.Margin = New System.Windows.Forms.Padding(9, 0, 0, 0)
+        Me.LabelBytesRequired.Name = "LabelBytesRequired"
+        Me.LabelBytesRequired.Size = New System.Drawing.Size(90, 13)
+        Me.LabelBytesRequired.TabIndex = 6
+        Me.LabelBytesRequired.Text = "{Bytes Required:}"
+        Me.LabelBytesRequired.UseMnemonic = False
+        '
+        'LabelBytesFree
+        '
+        Me.LabelBytesFree.AutoSize = True
+        Me.LabelBytesFree.Location = New System.Drawing.Point(178, 0)
+        Me.LabelBytesFree.Margin = New System.Windows.Forms.Padding(9, 0, 0, 0)
+        Me.LabelBytesFree.Name = "LabelBytesFree"
+        Me.LabelBytesFree.Size = New System.Drawing.Size(68, 13)
+        Me.LabelBytesFree.TabIndex = 7
+        Me.LabelBytesFree.Text = "{Bytes Free:}"
+        Me.LabelBytesFree.UseMnemonic = False
+        '
+        'LabelFilesSelected
+        '
+        Me.LabelFilesSelected.AutoSize = True
+        Me.LabelFilesSelected.Location = New System.Drawing.Point(3, 0)
+        Me.LabelFilesSelected.Margin = New System.Windows.Forms.Padding(3, 0, 0, 0)
+        Me.LabelFilesSelected.Name = "LabelFilesSelected"
+        Me.LabelFilesSelected.Size = New System.Drawing.Size(84, 13)
+        Me.LabelFilesSelected.TabIndex = 8
+        Me.LabelFilesSelected.Text = "{Files Selected:}"
+        Me.LabelFilesSelected.UseMnemonic = False
         '
         'FileLastAccessDate
         '
-        resources.ApplyResources(Me.FileLastAccessDate, "FileLastAccessDate")
+        Me.FileLastAccessDate.Text = "{Last Accessed}"
+        Me.FileLastAccessDate.Width = 90
         '
         'FileLastWriteDate
         '
-        resources.ApplyResources(Me.FileLastWriteDate, "FileLastWriteDate")
+        Me.FileLastWriteDate.Text = "{Last Written}"
+        Me.FileLastWriteDate.Width = 120
         '
         'LabelOptions
         '
-        resources.ApplyResources(Me.LabelOptions, "LabelOptions")
+        Me.LabelOptions.AutoSize = True
+        Me.LabelOptions.Location = New System.Drawing.Point(18, 5)
         Me.LabelOptions.Name = "LabelOptions"
+        Me.LabelOptions.Size = New System.Drawing.Size(51, 13)
+        Me.LabelOptions.TabIndex = 3
+        Me.LabelOptions.Text = "{Options}"
         Me.LabelOptions.UseMnemonic = False
         '
         'FileSize
         '
-        resources.ApplyResources(Me.FileSize, "FileSize")
+        Me.FileSize.Text = "{Size}"
+        Me.FileSize.TextAlign = System.Windows.Forms.HorizontalAlignment.Right
+        Me.FileSize.Width = 90
         '
         'FileCreationDate
         '
-        resources.ApplyResources(Me.FileCreationDate, "FileCreationDate")
+        Me.FileCreationDate.Text = "{Created}"
+        Me.FileCreationDate.Width = 120
         '
         'ListViewFiles
         '
         Me.ListViewFiles.AllowDrop = True
-        resources.ApplyResources(Me.ListViewFiles, "ListViewFiles")
+        Me.ListViewFiles.Anchor = CType((((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Bottom) _
+            Or System.Windows.Forms.AnchorStyles.Left) _
+            Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
         Me.ListViewFiles.CheckBoxes = True
-        Me.ListViewFiles.Columns.AddRange(New System.Windows.Forms.ColumnHeader() {FileName, Me.FileSize, FileSizeOnDisk, Me.FileLastWriteDate, Me.FileCreationDate, Me.FileLastAccessDate, FileDisabled})
+        Me.ListViewFiles.Columns.AddRange(New System.Windows.Forms.ColumnHeader() {Me.FileName, Me.FileSize, Me.FileSizeOnDisk, Me.FileLastWriteDate, Me.FileCreationDate, Me.FileLastAccessDate, Me.FileDisabled})
+        Me.ListViewFiles.Font = New System.Drawing.Font("Microsoft Sans Serif", 8.25!)
         Me.ListViewFiles.FullRowSelect = True
         Me.ListViewFiles.HideSelection = False
+        Me.ListViewFiles.Location = New System.Drawing.Point(12, 64)
         Me.ListViewFiles.Name = "ListViewFiles"
+        Me.ListViewFiles.Size = New System.Drawing.Size(760, 452)
+        Me.ListViewFiles.TabIndex = 1
         Me.ListViewFiles.UseCompatibleStateImageBehavior = False
         Me.ListViewFiles.View = System.Windows.Forms.View.Details
         '
@@ -163,65 +212,100 @@ Partial Class ImportFileForm
         Me.Panel1.Controls.Add(Me.FlowLayoutTotals)
         Me.Panel1.Controls.Add(Me.BtnOK)
         Me.Panel1.Controls.Add(Me.BtnCancel)
-        resources.ApplyResources(Me.Panel1, "Panel1")
+        Me.Panel1.Dock = System.Windows.Forms.DockStyle.Bottom
+        Me.Panel1.Location = New System.Drawing.Point(0, 519)
+        Me.Panel1.Margin = New System.Windows.Forms.Padding(3, 3, 50, 3)
         Me.Panel1.Name = "Panel1"
+        Me.Panel1.Size = New System.Drawing.Size(784, 42)
+        Me.Panel1.TabIndex = 2
         '
         'FlowLayoutTotals
         '
-        resources.ApplyResources(Me.FlowLayoutTotals, "FlowLayoutTotals")
+        Me.FlowLayoutTotals.Anchor = CType(((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Left) _
+            Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
         Me.FlowLayoutTotals.Controls.Add(Me.LabelFilesSelected)
         Me.FlowLayoutTotals.Controls.Add(Me.LblSelected)
-        Me.FlowLayoutTotals.Controls.Add(Label2)
+        Me.FlowLayoutTotals.Controls.Add(Me.LabelBytesFree)
         Me.FlowLayoutTotals.Controls.Add(Me.LblBytesFree)
-        Me.FlowLayoutTotals.Controls.Add(Label1)
+        Me.FlowLayoutTotals.Controls.Add(Me.LabelBytesRequired)
         Me.FlowLayoutTotals.Controls.Add(Me.LblBytesRequired)
+        Me.FlowLayoutTotals.Location = New System.Drawing.Point(12, 17)
         Me.FlowLayoutTotals.Name = "FlowLayoutTotals"
+        Me.FlowLayoutTotals.Size = New System.Drawing.Size(591, 13)
+        Me.FlowLayoutTotals.TabIndex = 6
         '
         'LblSelected
         '
-        resources.ApplyResources(Me.LblSelected, "LblSelected")
+        Me.LblSelected.Location = New System.Drawing.Point(87, 0)
+        Me.LblSelected.Margin = New System.Windows.Forms.Padding(0)
         Me.LblSelected.Name = "LblSelected"
+        Me.LblSelected.Size = New System.Drawing.Size(82, 13)
+        Me.LblSelected.TabIndex = 3
+        Me.LblSelected.Text = "{FilesSelected}"
         Me.LblSelected.UseMnemonic = False
         '
         'LblBytesFree
         '
-        resources.ApplyResources(Me.LblBytesFree, "LblBytesFree")
+        Me.LblBytesFree.Location = New System.Drawing.Point(246, 0)
+        Me.LblBytesFree.Margin = New System.Windows.Forms.Padding(0, 0, 3, 0)
         Me.LblBytesFree.Name = "LblBytesFree"
+        Me.LblBytesFree.Size = New System.Drawing.Size(76, 13)
+        Me.LblBytesFree.TabIndex = 4
+        Me.LblBytesFree.Text = "{BytesFree}"
         Me.LblBytesFree.UseMnemonic = False
         '
         'LblBytesRequired
         '
-        resources.ApplyResources(Me.LblBytesRequired, "LblBytesRequired")
+        Me.LblBytesRequired.Location = New System.Drawing.Point(424, 0)
+        Me.LblBytesRequired.Margin = New System.Windows.Forms.Padding(0, 0, 3, 0)
         Me.LblBytesRequired.Name = "LblBytesRequired"
+        Me.LblBytesRequired.Size = New System.Drawing.Size(82, 13)
+        Me.LblBytesRequired.TabIndex = 5
+        Me.LblBytesRequired.Text = "{BytesRequired}"
         Me.LblBytesRequired.UseMnemonic = False
         '
         'BtnOK
         '
-        resources.ApplyResources(Me.BtnOK, "BtnOK")
+        Me.BtnOK.Anchor = CType((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
+        Me.BtnOK.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink
         Me.BtnOK.DialogResult = System.Windows.Forms.DialogResult.OK
+        Me.BtnOK.Location = New System.Drawing.Point(610, 10)
+        Me.BtnOK.Margin = New System.Windows.Forms.Padding(4, 10, 4, 9)
         Me.BtnOK.Name = "BtnOK"
+        Me.BtnOK.Size = New System.Drawing.Size(75, 23)
+        Me.BtnOK.TabIndex = 0
+        Me.BtnOK.Text = "{Import}"
         Me.BtnOK.UseVisualStyleBackColor = True
         '
         'BtnCancel
         '
-        resources.ApplyResources(Me.BtnCancel, "BtnCancel")
+        Me.BtnCancel.Anchor = CType((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
+        Me.BtnCancel.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink
         Me.BtnCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel
+        Me.BtnCancel.Location = New System.Drawing.Point(693, 10)
+        Me.BtnCancel.Margin = New System.Windows.Forms.Padding(4, 10, 4, 9)
         Me.BtnCancel.Name = "BtnCancel"
+        Me.BtnCancel.Size = New System.Drawing.Size(75, 23)
+        Me.BtnCancel.TabIndex = 1
+        Me.BtnCancel.Text = "{Cancel}"
         Me.BtnCancel.UseVisualStyleBackColor = True
         '
         'ImportFileForm
         '
-        resources.ApplyResources(Me, "$this")
+        Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
+        Me.ClientSize = New System.Drawing.Size(784, 561)
         Me.Controls.Add(Me.LabelOptions)
         Me.Controls.Add(PanelTop)
         Me.Controls.Add(Me.Panel1)
         Me.Controls.Add(Me.ListViewFiles)
         Me.MaximizeBox = False
         Me.MinimizeBox = False
+        Me.MinimumSize = New System.Drawing.Size(800, 480)
         Me.Name = "ImportFileForm"
         Me.ShowIcon = False
         Me.ShowInTaskbar = False
+        Me.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent
         PanelTop.ResumeLayout(False)
         PanelTop.PerformLayout()
         Me.Panel1.ResumeLayout(False)
@@ -250,4 +334,9 @@ Partial Class ImportFileForm
     Friend WithEvents FileLastWriteDate As ColumnHeader
     Friend WithEvents FileLastAccessDate As ColumnHeader
     Friend WithEvents LabelFilesSelected As Label
+    Friend WithEvents LabelBytesFree As Label
+    Friend WithEvents LabelBytesRequired As Label
+    Friend WithEvents FileDisabled As ColumnHeader
+    Friend WithEvents FileSizeOnDisk As ColumnHeader
+    Friend WithEvents FileName As ColumnHeader
 End Class

@@ -1972,4 +1972,88 @@ Do you wish to overwrite?</value>
   <data name="Menu_CopyEncoded" xml:space="preserve">
     <value>Copy Encoded</value>
   </data>
+  <data name="Label_Archive" xml:space="preserve">
+    <value>Archive</value>
+  </data>
+  <data name="Label_FileDates" xml:space="preserve">
+    <value>File Dates</value>
+  </data>
+  <data name="Label_FileProperties" xml:space="preserve">
+    <value>File Properties</value>
+  </data>
+  <data name="Label_Hidden" xml:space="preserve">
+    <value>Hidden</value>
+  </data>
+  <data name="Label_Long" xml:space="preserve">
+    <value>Long</value>
+  </data>
+  <data name="Label_System" xml:space="preserve">
+    <value>System</value>
+  </data>
+  <data name="Caption_MultipleFilesSelected" xml:space="preserve">
+    <value>(Multiple Files Selected)</value>
+  </data>
+  <data name="Label_CaseSensitive" xml:space="preserve">
+    <value>Case Sensitive</value>
+  </data>
+  <data name="Label_Hex" xml:space="preserve">
+    <value>Hex</value>
+  </data>
+  <data name="Label_SearchFor" xml:space="preserve">
+    <value>Search For</value>
+  </data>
+  <data name="Label_Text" xml:space="preserve">
+    <value>Text</value>
+  </data>
+  <data name="Label_BytesFree" xml:space="preserve">
+    <value>Bytes Free</value>
+  </data>
+  <data name="Label_BytesRequired" xml:space="preserve">
+    <value>Bytes Required</value>
+  </data>
+  <data name="Label_CreatedDate" xml:space="preserve">
+    <value>Created Date</value>
+  </data>
+  <data name="Label_Disabled" xml:space="preserve">
+    <value>Disabled</value>
+  </data>
+  <data name="Label_LastAccessedDate" xml:space="preserve">
+    <value>Last Accessed Date</value>
+  </data>
+  <data name="Label_LongFileNames" xml:space="preserve">
+    <value>Long File Names</value>
+  </data>
+  <data name="Label_SizeOnDisk" xml:space="preserve">
+    <value>Size on Disk</value>
+  </data>
+  <data name="Caption_GenerateVolumeSerialNumber" xml:space="preserve">
+    <value>Generate Volume Serial Number</value>
+  </data>
+  <data name="Label_Date" xml:space="preserve">
+    <value>Date</value>
+  </data>
+  <data name="Label_Milliseconds" xml:space="preserve">
+    <value>Milliseconds</value>
+  </data>
+  <data name="Label_Time" xml:space="preserve">
+    <value>Time</value>
+  </data>
+  <data name="Caption_FileNameSetTo" xml:space="preserve">
+    <value>File name will be set to</value>
+  </data>
+  <data name="Caption_LastWrittenDateSetTo" xml:space="preserve">
+    <value>Last written date will be set to</value>
+  </data>
+  <data name="Label_NewFile" xml:space="preserve">
+    <value>New File</value>
+  </data>
+  <data name="Label_OriginalFile" xml:space="preserve">
+    <value>Original File</value>
+  </data>
+  <data name="Label_Replace" xml:space="preserve">
+    <value>Replace</value>
+  </data>
+  <data name="Label_ReplaceFile" xml:space="preserve">
+    <value>Replace File</value>
+  </data>
 </root>

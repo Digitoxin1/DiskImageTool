@@ -13,8 +13,12 @@
     End Function
 
     Private Sub LocalizeForm()
-        BtnOK.Text = My.Resources.Menu_Ok
         BtnCancel.Text = My.Resources.Menu_Cancel
+        BtnOK.Text = My.Resources.Menu_Ok
+        LabelDate.Text = My.Resources.Label_Date
+        LabelMilliseconds.Text = My.Resources.Label_Milliseconds
+        LabelTime.Text = My.Resources.Label_Time
+        Me.Text = My.Resources.Caption_GenerateVolumeSerialNumber
     End Sub
 
     Private Sub VolumeSerialNumberForm_Load(sender As Object, e As EventArgs) Handles Me.Load

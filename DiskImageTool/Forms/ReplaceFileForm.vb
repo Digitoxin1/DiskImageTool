@@ -3,26 +3,15 @@
 Public Class ReplaceFileForm
     Private ReadOnly _AvailableSpace As UInteger
     Private ReadOnly _Directory As IDirectory
-    Private _FileName As String
-    Private _FileNameOriginal As String
-    Private _FileDateOriginal As Date
-    Private _FileSizeOriginal As UInteger
-    Private _FileNameNew As String
     Private _FileDateNew As Date
+    Private _FileDateOriginal As Date
+    Private _FileName As String
+    Private _FileNameNew As String
+    Private _FileNameOriginal As String
     Private _FileSizeNew As UInteger
+    Private _FileSizeOriginal As UInteger
     Private _IgnoreEvent As Boolean = False
     Private _Result As ReplaceFileFormResult
-
-    Public Structure ReplaceFileFormResult
-        Dim Cancelled As Boolean
-        Dim FileName As String
-        Dim FileNameChanged As Boolean
-        Dim FileDate As Date
-        Dim FileDateChanged As Boolean
-        Dim FileSize As UInteger
-        Dim FileSizeChanged As Boolean
-        Dim FillChar As Byte
-    End Structure
 
     Public Sub New(AvailableSpace As UInteger, Directory As IDirectory)
 
@@ -47,11 +36,6 @@ Public Class ReplaceFileForm
         _IgnoreEvent = False
     End Sub
 
-    Private Sub LocalizeForm()
-        BtnCancel.Text = WithoutHotkey(My.Resources.Menu_Cancel)
-        LblPadCaption.Text = My.Resources.Label_PadFile & ":"
-    End Sub
-
     Public ReadOnly Property Result As ReplaceFileFormResult
         Get
             Return _Result
@@ -63,40 +47,6 @@ Public Class ReplaceFileForm
         If TxtFileExtNew.Text.Length > 0 Then
             _FileNameNew &= "." & TxtFileExtNew.Text
         End If
-    End Sub
-
-    Public Sub SetFileNameForm()
-        _IgnoreEvent = True
-
-        Dim FileParts = SplitFilename(_FileNameNew)
-
-        TxtFilenameNew.Text = FileParts.Name
-        TxtFileExtNew.Text = FileParts.Extension
-
-        _IgnoreEvent = False
-    End Sub
-
-    Public Sub SetOriginalFile(Filename As String, FileDate As Date, FileSize As UInteger)
-        _FileNameOriginal = Filename
-        _FileDateOriginal = FileDate
-        _FileSizeOriginal = FileSize
-
-        ChkFilenameOriginal.Text = Filename
-        ChkFileDateOriginal.Text = FileDate
-        ChkFileSizeOriginal.Text = FormatThousands(FileSize) & " " & My.Resources.Label_Bytes
-    End Sub
-
-    Public Sub SetNewFile(Filename As String, FileDate As Date, FileSize As UInteger)
-        _FileName = Filename
-        _FileNameNew = Filename
-        _FileDateNew = FileDate
-        _FileSizeNew = FileSize
-
-        ChkFileDateNew.Text = FileDate
-        ChkFileSizeNew.Text = FormatThousands(FileSize) & " " & My.Resources.Label_Bytes
-
-        SetFileNameForm()
-        BtnUndo.Visible = False
     End Sub
 
     Public Sub RefreshText()
@@ -150,17 +100,42 @@ Public Class ReplaceFileForm
         LblFileSizeCaption.Text = FileSizeCaption & ":"
     End Sub
 
-    Private Sub ToggleCheckBox(Current As CheckBox, Linked As CheckBox)
+    Public Sub SetFileNameForm()
         _IgnoreEvent = True
 
-        If Not Current.Checked Then
-            Current.Checked = True
-        Else
-            Linked.Checked = False
-            RefreshText()
-        End If
+        Dim FileParts = SplitFilename(_FileNameNew)
+
+        TxtFilenameNew.Text = FileParts.Name
+        TxtFileExtNew.Text = FileParts.Extension
 
         _IgnoreEvent = False
+    End Sub
+
+    Public Sub SetNewFile(Filename As String, FileDate As Date, FileSize As UInteger)
+        _FileName = Filename
+        _FileNameNew = Filename
+        _FileDateNew = FileDate
+        _FileSizeNew = FileSize
+
+        ChkFileDateNew.Text = FileDate
+        ChkFileSizeNew.Text = FormatThousands(FileSize) & " " & My.Resources.Label_Bytes
+
+        SetFileNameForm()
+        BtnUndo.Visible = False
+    End Sub
+
+    Public Sub SetOriginalFile(Filename As String, FileDate As Date, FileSize As UInteger)
+        _FileNameOriginal = Filename
+        _FileDateOriginal = FileDate
+        _FileSizeOriginal = FileSize
+
+        ChkFilenameOriginal.Text = Filename
+        ChkFileDateOriginal.Text = FileDate
+        ChkFileSizeOriginal.Text = FormatThousands(FileSize) & " " & My.Resources.Label_Bytes
+    End Sub
+
+    Private Sub BtnCancel_Click(sender As Object, e As EventArgs) Handles BtnCancel.Click
+        _Result.Cancelled = True
     End Sub
 
     Private Sub BtnOK_Click(sender As Object, e As EventArgs) Handles BtnOK.Click
@@ -212,10 +187,6 @@ Public Class ReplaceFileForm
         Me.DialogResult = DialogResult.OK
     End Sub
 
-    Private Sub BtnCancel_Click(sender As Object, e As EventArgs) Handles BtnCancel.Click
-        _Result.Cancelled = True
-    End Sub
-
     Private Sub BtnUndo_Click(sender As Object, e As EventArgs) Handles BtnUndo.Click
         _FileNameNew = _FileName
         SetFileNameForm()
@@ -225,12 +196,20 @@ Public Class ReplaceFileForm
         End If
     End Sub
 
-    Private Sub ChkFilenameOriginal_CheckedChanged(sender As Object, e As EventArgs) Handles ChkFilenameOriginal.CheckedChanged
+    Private Sub ChkFileDateNew_CheckedChanged(sender As Object, e As EventArgs) Handles ChkFileDateNew.CheckedChanged
         If _IgnoreEvent Then
             Exit Sub
         End If
 
-        ToggleCheckBox(ChkFilenameOriginal, ChkFilenameNew)
+        ToggleCheckBox(ChkFileDateNew, ChkFileDateOriginal)
+    End Sub
+
+    Private Sub ChkFileDateOriginal_CheckedChanged(sender As Object, e As EventArgs) Handles ChkFileDateOriginal.CheckedChanged
+        If _IgnoreEvent Then
+            Exit Sub
+        End If
+
+        ToggleCheckBox(ChkFileDateOriginal, ChkFileDateNew)
     End Sub
 
     Private Sub ChkFilenameNew_CheckedChanged(sender As Object, e As EventArgs) Handles ChkFilenameNew.CheckedChanged
@@ -239,6 +218,14 @@ Public Class ReplaceFileForm
         End If
 
         ToggleCheckBox(ChkFilenameNew, ChkFilenameOriginal)
+    End Sub
+
+    Private Sub ChkFilenameOriginal_CheckedChanged(sender As Object, e As EventArgs) Handles ChkFilenameOriginal.CheckedChanged
+        If _IgnoreEvent Then
+            Exit Sub
+        End If
+
+        ToggleCheckBox(ChkFilenameOriginal, ChkFilenameNew)
     End Sub
 
     Private Sub ChkFileSizeNew_CheckedChanged(sender As Object, e As EventArgs) Handles ChkFileSizeNew.CheckedChanged
@@ -257,20 +244,30 @@ Public Class ReplaceFileForm
         ToggleCheckBox(ChkFileSizeOriginal, ChkFileSizeNew)
     End Sub
 
-    Private Sub ChkFileDateNew_CheckedChanged(sender As Object, e As EventArgs) Handles ChkFileDateNew.CheckedChanged
-        If _IgnoreEvent Then
-            Exit Sub
-        End If
-
-        ToggleCheckBox(ChkFileDateNew, ChkFileDateOriginal)
+    Private Sub LocalizeForm()
+        BtnCancel.Text = WithoutHotkey(My.Resources.Menu_Cancel)
+        BtnOK.Text = My.Resources.Label_Replace
+        GroupBox1.Text = My.Resources.Label_NewFile
+        GroupBoxOriginal.Text = My.Resources.Label_OriginalFile
+        LblFileDateCaption.Text = My.Resources.Caption_LastWrittenDateSetTo & ":"
+        LblFileNameCaption.Text = My.Resources.Caption_FileNameSetTo & ":"
+        LblFileSizeCaption.Text = My.Resources.Label_FileSizeSet & ":"
+        LblFileSizeError.Text = "(" & My.Resources.Label_Error & ")"
+        LblPadCaption.Text = My.Resources.Label_PadFile & ":"
+        Me.Text = My.Resources.Label_ReplaceFile
     End Sub
 
-    Private Sub ChkFileDateOriginal_CheckedChanged(sender As Object, e As EventArgs) Handles ChkFileDateOriginal.CheckedChanged
-        If _IgnoreEvent Then
-            Exit Sub
+    Private Sub ToggleCheckBox(Current As CheckBox, Linked As CheckBox)
+        _IgnoreEvent = True
+
+        If Not Current.Checked Then
+            Current.Checked = True
+        Else
+            Linked.Checked = False
+            RefreshText()
         End If
 
-        ToggleCheckBox(ChkFileDateOriginal, ChkFileDateNew)
+        _IgnoreEvent = False
     End Sub
 
     Private Sub TxtFilenameNew_KeyPress(sender As Object, e As KeyPressEventArgs) Handles TxtFilenameNew.KeyPress, TxtFileExtNew.KeyPress
@@ -298,4 +295,15 @@ Public Class ReplaceFileForm
             LblFileName.Text = _FileNameNew
         End If
     End Sub
+
+    Public Structure ReplaceFileFormResult
+        Dim Cancelled As Boolean
+        Dim FileDate As Date
+        Dim FileDateChanged As Boolean
+        Dim FileName As String
+        Dim FileNameChanged As Boolean
+        Dim FileSize As UInteger
+        Dim FileSizeChanged As Boolean
+        Dim FillChar As Byte
+    End Structure
 End Class

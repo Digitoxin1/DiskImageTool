@@ -1750,4 +1750,88 @@ Möchten Sie ihn überschreiben?</value>
   <data name="Label_Data" xml:space="preserve">
     <value>Daten</value>
   </data>
+  <data name="Label_Archive" xml:space="preserve">
+    <value>Archiv</value>
+  </data>
+  <data name="Label_FileDates" xml:space="preserve">
+    <value>Dateidaten</value>
+  </data>
+  <data name="Label_FileProperties" xml:space="preserve">
+    <value>Dateieigenschaften</value>
+  </data>
+  <data name="Label_Hidden" xml:space="preserve">
+    <value>Ausgeblendet</value>
+  </data>
+  <data name="Label_Long" xml:space="preserve">
+    <value>Lang</value>
+  </data>
+  <data name="Label_System" xml:space="preserve">
+    <value>System</value>
+  </data>
+  <data name="Caption_MultipleFilesSelected" xml:space="preserve">
+    <value>(Mehrere Dateien ausgewählt)</value>
+  </data>
+  <data name="Label_CaseSensitive" xml:space="preserve">
+    <value>Groß-/Kleinschreibung beachten</value>
+  </data>
+  <data name="Label_Hex" xml:space="preserve">
+    <value>Hex</value>
+  </data>
+  <data name="Label_SearchFor" xml:space="preserve">
+    <value>Suchen nach</value>
+  </data>
+  <data name="Label_Text" xml:space="preserve">
+    <value>Text</value>
+  </data>
+  <data name="Label_BytesFree" xml:space="preserve">
+    <value>Freie Bytes</value>
+  </data>
+  <data name="Label_BytesRequired" xml:space="preserve">
+    <value>Benötigte Bytes</value>
+  </data>
+  <data name="Label_CreatedDate" xml:space="preserve">
+    <value>Erstellungsdatum</value>
+  </data>
+  <data name="Label_Disabled" xml:space="preserve">
+    <value>Deaktiviert</value>
+  </data>
+  <data name="Label_LastAccessedDate" xml:space="preserve">
+    <value>Letzter Zugriff</value>
+  </data>
+  <data name="Label_LongFileNames" xml:space="preserve">
+    <value>Lange Dateinamen</value>
+  </data>
+  <data name="Label_SizeOnDisk" xml:space="preserve">
+    <value>Größe auf Datenträger</value>
+  </data>
+  <data name="Label_Date" xml:space="preserve">
+    <value>Datum</value>
+  </data>
+  <data name="Caption_GenerateVolumeSerialNumber" xml:space="preserve">
+    <value>Volumeseriennummer generieren</value>
+  </data>
+  <data name="Label_Milliseconds" xml:space="preserve">
+    <value>Millisekunden</value>
+  </data>
+  <data name="Label_Time" xml:space="preserve">
+    <value>Uhrzeit</value>
+  </data>
+  <data name="Caption_FileNameSetTo" xml:space="preserve">
+    <value>Dateiname wird festgelegt auf</value>
+  </data>
+  <data name="Caption_LastWrittenDateSetTo" xml:space="preserve">
+    <value>Zuletzt geändert wird festgelegt auf</value>
+  </data>
+  <data name="Label_NewFile" xml:space="preserve">
+    <value>Neue Datei</value>
+  </data>
+  <data name="Label_OriginalFile" xml:space="preserve">
+    <value>Originaldatei</value>
+  </data>
+  <data name="Label_Replace" xml:space="preserve">
+    <value>Ersetzen</value>
+  </data>
+  <data name="Label_ReplaceFile" xml:space="preserve">
+    <value>Datei ersetzen</value>
+  </data>
 </root>

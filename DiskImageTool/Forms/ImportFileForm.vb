@@ -30,14 +30,23 @@ Public Class ImportFileForm
 
     Private Sub LocalizeForm()
         BtnCancel.Text = WithoutHotkey(My.Resources.Menu_Cancel)
-        FileCreationDate.Text = My.Resources.Label_Created
-        FileSize.Text = My.Resources.Label_Size
-        LabelOptions.Text = My.Resources.Label_Options
+        BtnOK.Text = WithoutHotkey(My.Resources.Label_Import)
+        ChkCreated.Text = My.Resources.Label_CreatedDate
+        ChkLastAccessed.Text = My.Resources.Label_LastAccessedDate
+        ChkLFN.Text = My.Resources.Label_LongFileNames
         ChkNTExtensions.Text = My.Resources.Label_NTExtensions
-        FileLastWriteDate.Text = My.Resources.Label_LastWritten
+        FileCreationDate.Text = My.Resources.Label_Created
+        FileDisabled.Text = My.Resources.Label_Disabled
         FileLastAccessDate.Text = My.Resources.Label_LastAccessed
-        Me.Text = My.Resources.Label_ImportFiles
+        FileLastWriteDate.Text = My.Resources.Label_LastWritten
+        FileName.Text = My.Resources.Label_FileName
+        FileSize.Text = My.Resources.Label_Size
+        FileSizeOnDisk.Text = My.Resources.Label_SizeOnDisk
+        LabelBytesFree.Text = My.Resources.Label_BytesFree & ":"
+        LabelBytesRequired.Text = My.Resources.Label_BytesRequired & ":"
         LabelFilesSelected.Text = My.Resources.Label_FilesSelected & ":"
+        LabelOptions.Text = My.Resources.Label_Options
+        Me.Text = My.Resources.Label_ImportFiles
     End Sub
 
     Public ReadOnly Property FileList As ImportDirectoryRoot

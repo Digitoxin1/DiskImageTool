@@ -23,9 +23,13 @@ Public Class HexSearchForm
     End Sub
 
     Private Sub LocalizeForm()
-        BtnOK.Text = My.Resources.Menu_Ok
         BtnCancel.Text = My.Resources.Menu_Cancel
+        BtnOK.Text = My.Resources.Menu_Ok
+        ChkCaseSensitive.Text = My.Resources.Label_CaseSensitive
+        Label1.Text = My.Resources.Label_SearchFor
         Me.Text = My.Resources.Label_Find
+        RadBtnHex.Text = My.Resources.Label_Hex
+        RadBtnText.Text = My.Resources.Label_Text
     End Sub
 
     Public Function Search() As HexSearch
