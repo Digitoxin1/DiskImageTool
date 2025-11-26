@@ -183,9 +183,6 @@
   <data name="MenuHelpChangeLog.Text" xml:space="preserve">
     <value>&amp;Änderungsprotokoll</value>
   </data>
-  <data name="MenuHelpAbout.Text" xml:space="preserve">
-    <value>Über DiskImageTool</value>
-  </data>
   <data name="MainMenuDisk.Text" xml:space="preserve">
     <value>&amp;Diskette</value>
   </data>

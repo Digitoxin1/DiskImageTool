@@ -44,17 +44,6 @@ Partial Class MainForm
         Dim ToolStripSeparator9 As System.Windows.Forms.ToolStripSeparator
         Dim MainMenuDisk As System.Windows.Forms.ToolStripMenuItem
         Dim MenuStripTop As System.Windows.Forms.MenuStrip
-        Me.MainMenuEdit = New System.Windows.Forms.ToolStripMenuItem()
-        Me.MenuEditBootSector = New System.Windows.Forms.ToolStripMenuItem()
-        Me.MenuEditFAT = New System.Windows.Forms.ToolStripMenuItem()
-        Me.MenuEditFileProperties = New System.Windows.Forms.ToolStripMenuItem()
-        Me.MenuEditExportFile = New System.Windows.Forms.ToolStripMenuItem()
-        Me.MenuEditReplaceFile = New System.Windows.Forms.ToolStripMenuItem()
-        Me.MenuEditImportFiles = New System.Windows.Forms.ToolStripMenuItem()
-        Me.ToolStripSeparator1 = New System.Windows.Forms.ToolStripSeparator()
-        Me.MenuEditUndo = New System.Windows.Forms.ToolStripMenuItem()
-        Me.MenuEditRedo = New System.Windows.Forms.ToolStripMenuItem()
-        Me.MenuEditRevert = New System.Windows.Forms.ToolStripMenuItem()
         Me.MenuHexBootSector = New System.Windows.Forms.ToolStripMenuItem()
         Me.MenuHexFAT = New System.Windows.Forms.ToolStripMenuItem()
         Me.MenuHexDirectory = New System.Windows.Forms.ToolStripMenuItem()
@@ -93,6 +82,17 @@ Partial Class MainForm
         Me.MenuFileClose = New System.Windows.Forms.ToolStripMenuItem()
         Me.MenuFileCloseAll = New System.Windows.Forms.ToolStripMenuItem()
         Me.MenuFileExit = New System.Windows.Forms.ToolStripMenuItem()
+        Me.MainMenuEdit = New System.Windows.Forms.ToolStripMenuItem()
+        Me.MenuEditBootSector = New System.Windows.Forms.ToolStripMenuItem()
+        Me.MenuEditFAT = New System.Windows.Forms.ToolStripMenuItem()
+        Me.MenuEditFileProperties = New System.Windows.Forms.ToolStripMenuItem()
+        Me.MenuEditExportFile = New System.Windows.Forms.ToolStripMenuItem()
+        Me.MenuEditReplaceFile = New System.Windows.Forms.ToolStripMenuItem()
+        Me.MenuEditImportFiles = New System.Windows.Forms.ToolStripMenuItem()
+        Me.ToolStripSeparator1 = New System.Windows.Forms.ToolStripSeparator()
+        Me.MenuEditUndo = New System.Windows.Forms.ToolStripMenuItem()
+        Me.MenuEditRedo = New System.Windows.Forms.ToolStripMenuItem()
+        Me.MenuEditRevert = New System.Windows.Forms.ToolStripMenuItem()
         Me.MainMenuFilters = New System.Windows.Forms.ToolStripMenuItem()
         Me.ContextMenuFilters = New System.Windows.Forms.ContextMenuStrip(Me.components)
         Me.MenuFiltersScanNew = New System.Windows.Forms.ToolStripMenuItem()
@@ -217,77 +217,15 @@ Partial Class MainForm
         MenuFileSeparator3.Name = "MenuFileSeparator3"
         resources.ApplyResources(MenuFileSeparator3, "MenuFileSeparator3")
         '
-        'MainMenuEdit
-        '
-        Me.MainMenuEdit.DropDownItems.AddRange(New System.Windows.Forms.ToolStripItem() {Me.MenuEditBootSector, Me.MenuEditFAT, MenuEditSeparator1, Me.MenuEditFileProperties, Me.MenuEditExportFile, Me.MenuEditReplaceFile, MenuEditSeparator2, Me.MenuEditImportFiles, Me.ToolStripSeparator1, Me.MenuEditUndo, Me.MenuEditRedo, Me.MenuEditRevert})
-        Me.MainMenuEdit.Name = "MainMenuEdit"
-        resources.ApplyResources(Me.MainMenuEdit, "MainMenuEdit")
-        '
-        'MenuEditBootSector
-        '
-        Me.MenuEditBootSector.Name = "MenuEditBootSector"
-        resources.ApplyResources(Me.MenuEditBootSector, "MenuEditBootSector")
-        '
-        'MenuEditFAT
-        '
-        Me.MenuEditFAT.Name = "MenuEditFAT"
-        resources.ApplyResources(Me.MenuEditFAT, "MenuEditFAT")
-        '
         'MenuEditSeparator1
         '
         MenuEditSeparator1.Name = "MenuEditSeparator1"
         resources.ApplyResources(MenuEditSeparator1, "MenuEditSeparator1")
         '
-        'MenuEditFileProperties
-        '
-        Me.MenuEditFileProperties.Image = Global.DiskImageTool.My.Resources.Resources.PropertiesFolderClosed
-        Me.MenuEditFileProperties.Name = "MenuEditFileProperties"
-        resources.ApplyResources(Me.MenuEditFileProperties, "MenuEditFileProperties")
-        '
-        'MenuEditExportFile
-        '
-        Me.MenuEditExportFile.Image = Global.DiskImageTool.My.Resources.Resources.Export
-        Me.MenuEditExportFile.Name = "MenuEditExportFile"
-        resources.ApplyResources(Me.MenuEditExportFile, "MenuEditExportFile")
-        '
-        'MenuEditReplaceFile
-        '
-        Me.MenuEditReplaceFile.Image = Global.DiskImageTool.My.Resources.Resources.SwitchFolders
-        Me.MenuEditReplaceFile.Name = "MenuEditReplaceFile"
-        resources.ApplyResources(Me.MenuEditReplaceFile, "MenuEditReplaceFile")
-        '
         'MenuEditSeparator2
         '
         MenuEditSeparator2.Name = "MenuEditSeparator2"
         resources.ApplyResources(MenuEditSeparator2, "MenuEditSeparator2")
-        '
-        'MenuEditImportFiles
-        '
-        Me.MenuEditImportFiles.Image = Global.DiskImageTool.My.Resources.Resources.Import
-        Me.MenuEditImportFiles.Name = "MenuEditImportFiles"
-        resources.ApplyResources(Me.MenuEditImportFiles, "MenuEditImportFiles")
-        '
-        'ToolStripSeparator1
-        '
-        Me.ToolStripSeparator1.Name = "ToolStripSeparator1"
-        resources.ApplyResources(Me.ToolStripSeparator1, "ToolStripSeparator1")
-        '
-        'MenuEditUndo
-        '
-        Me.MenuEditUndo.Image = Global.DiskImageTool.My.Resources.Resources.Undo
-        Me.MenuEditUndo.Name = "MenuEditUndo"
-        resources.ApplyResources(Me.MenuEditUndo, "MenuEditUndo")
-        '
-        'MenuEditRedo
-        '
-        Me.MenuEditRedo.Image = Global.DiskImageTool.My.Resources.Resources.Redo
-        Me.MenuEditRedo.Name = "MenuEditRedo"
-        resources.ApplyResources(Me.MenuEditRedo, "MenuEditRedo")
-        '
-        'MenuEditRevert
-        '
-        Me.MenuEditRevert.Name = "MenuEditRevert"
-        resources.ApplyResources(Me.MenuEditRevert, "MenuEditRevert")
         '
         'MainMenuView
         '
@@ -568,6 +506,68 @@ Partial Class MainForm
         Me.MenuFileExit.Image = Global.DiskImageTool.My.Resources.Resources._Exit
         Me.MenuFileExit.Name = "MenuFileExit"
         resources.ApplyResources(Me.MenuFileExit, "MenuFileExit")
+        '
+        'MainMenuEdit
+        '
+        Me.MainMenuEdit.DropDownItems.AddRange(New System.Windows.Forms.ToolStripItem() {Me.MenuEditBootSector, Me.MenuEditFAT, MenuEditSeparator1, Me.MenuEditFileProperties, Me.MenuEditExportFile, Me.MenuEditReplaceFile, MenuEditSeparator2, Me.MenuEditImportFiles, Me.ToolStripSeparator1, Me.MenuEditUndo, Me.MenuEditRedo, Me.MenuEditRevert})
+        Me.MainMenuEdit.Name = "MainMenuEdit"
+        resources.ApplyResources(Me.MainMenuEdit, "MainMenuEdit")
+        '
+        'MenuEditBootSector
+        '
+        Me.MenuEditBootSector.Name = "MenuEditBootSector"
+        resources.ApplyResources(Me.MenuEditBootSector, "MenuEditBootSector")
+        '
+        'MenuEditFAT
+        '
+        Me.MenuEditFAT.Name = "MenuEditFAT"
+        resources.ApplyResources(Me.MenuEditFAT, "MenuEditFAT")
+        '
+        'MenuEditFileProperties
+        '
+        Me.MenuEditFileProperties.Image = Global.DiskImageTool.My.Resources.Resources.PropertiesFolderClosed
+        Me.MenuEditFileProperties.Name = "MenuEditFileProperties"
+        resources.ApplyResources(Me.MenuEditFileProperties, "MenuEditFileProperties")
+        '
+        'MenuEditExportFile
+        '
+        Me.MenuEditExportFile.Image = Global.DiskImageTool.My.Resources.Resources.Export
+        Me.MenuEditExportFile.Name = "MenuEditExportFile"
+        resources.ApplyResources(Me.MenuEditExportFile, "MenuEditExportFile")
+        '
+        'MenuEditReplaceFile
+        '
+        Me.MenuEditReplaceFile.Image = Global.DiskImageTool.My.Resources.Resources.SwitchFolders
+        Me.MenuEditReplaceFile.Name = "MenuEditReplaceFile"
+        resources.ApplyResources(Me.MenuEditReplaceFile, "MenuEditReplaceFile")
+        '
+        'MenuEditImportFiles
+        '
+        Me.MenuEditImportFiles.Image = Global.DiskImageTool.My.Resources.Resources.Import
+        Me.MenuEditImportFiles.Name = "MenuEditImportFiles"
+        resources.ApplyResources(Me.MenuEditImportFiles, "MenuEditImportFiles")
+        '
+        'ToolStripSeparator1
+        '
+        Me.ToolStripSeparator1.Name = "ToolStripSeparator1"
+        resources.ApplyResources(Me.ToolStripSeparator1, "ToolStripSeparator1")
+        '
+        'MenuEditUndo
+        '
+        Me.MenuEditUndo.Image = Global.DiskImageTool.My.Resources.Resources.Undo
+        Me.MenuEditUndo.Name = "MenuEditUndo"
+        resources.ApplyResources(Me.MenuEditUndo, "MenuEditUndo")
+        '
+        'MenuEditRedo
+        '
+        Me.MenuEditRedo.Image = Global.DiskImageTool.My.Resources.Resources.Redo
+        Me.MenuEditRedo.Name = "MenuEditRedo"
+        resources.ApplyResources(Me.MenuEditRedo, "MenuEditRedo")
+        '
+        'MenuEditRevert
+        '
+        Me.MenuEditRevert.Name = "MenuEditRevert"
+        resources.ApplyResources(Me.MenuEditRevert, "MenuEditRevert")
         '
         'MainMenuFilters
         '

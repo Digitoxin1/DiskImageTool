@@ -1,8 +1,8 @@
 ﻿Module Github
-    Private Const REPOSITORY = "https://api.github.com/repos/Digitoxin1/DiskImageTool"
-    Private Const CHANGELOG_URL = REPOSITORY & "/releases?per_page=100"
-    Private Const UPDATE_URL = REPOSITORY & "/releases/latest"
-    Private Const USER_AGENT = "DiskImageTool"
+    Private ReadOnly REPOSITORY = My.Resources.URL_API_EndPoint
+    Private ReadOnly CHANGELOG_URL = REPOSITORY & "/releases?per_page=100"
+    Private ReadOnly UPDATE_URL = REPOSITORY & "/releases/latest"
+    Private ReadOnly USER_AGENT = My.Application.Info.ProductName
 
     Public Function GetAppUpdateResponse() As String
         Dim Response As Net.HttpWebResponse

@@ -1834,4 +1834,7 @@ Möchten Sie ihn überschreiben?</value>
   <data name="Label_ReplaceFile" xml:space="preserve">
     <value>Datei ersetzen</value>
   </data>
+  <data name="Label_AboutApp" xml:space="preserve">
+    <value>Über {0}</value>
+  </data>
 </root>

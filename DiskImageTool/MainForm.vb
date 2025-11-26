@@ -856,6 +856,7 @@ Public Class MainForm
         ToolStripUndo.Text = WithoutHotkey(My.Resources.Menu_Undo)
         ToolStripImportFiles.ToolTipText = My.Resources.Label_ImportFiles
         MainMenuEdit.Text = My.Resources.Menu_Edit
+        MenuHelpAbout.Text = String.Format(My.Resources.Label_AboutApp, My.Application.Info.Title)
     End Sub
 
     Private Sub MenuHexDirectorySubMenuClear()

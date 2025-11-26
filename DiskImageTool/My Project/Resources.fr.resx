@@ -1834,4 +1834,7 @@ Voulez-vous écraser ?</value>
   <data name="Label_ReplaceFile" xml:space="preserve">
     <value>Remplacer le fichier</value>
   </data>
+  <data name="Label_AboutApp" xml:space="preserve">
+    <value>À propos de {0}</value>
+  </data>
 </root>

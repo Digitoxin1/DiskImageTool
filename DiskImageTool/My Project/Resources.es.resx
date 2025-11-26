@@ -1834,4 +1834,7 @@
   <data name="Label_ReplaceFile" xml:space="preserve">
     <value>Reemplazar archivo</value>
   </data>
+  <data name="Label_AboutApp" xml:space="preserve">
+    <value>Acerca de {0}</value>
+  </data>
 </root>

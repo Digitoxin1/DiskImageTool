@@ -2056,4 +2056,11 @@ Do you wish to overwrite?</value>
   <data name="Label_ReplaceFile" xml:space="preserve">
     <value>Replace File</value>
   </data>
+  <data name="Label_AboutApp" xml:space="preserve">
+    <value>About {0}</value>
+  </data>
+  <data name="URL_API_EndPoint" xml:space="preserve">
+    <value>https://api.github.com/repos/Digitoxin1/DiskImageTool</value>
+    <comment>@Invariant</comment>
+  </data>
 </root>

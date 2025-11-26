@@ -2270,6 +2270,15 @@ Namespace My.Resources
         End Property
         
         '''<summary>
+        '''  Looks up a localized string similar to About {0}.
+        '''</summary>
+        Friend ReadOnly Property Label_AboutApp() As String
+            Get
+                Return ResourceManager.GetString("Label_AboutApp", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
         '''  Looks up a localized string similar to Additional Data.
         '''</summary>
         Friend ReadOnly Property Label_AdditionalData() As String
@@ -5795,6 +5804,15 @@ Namespace My.Resources
             Get
                 Dim obj As Object = ResourceManager.GetObject("Undo", resourceCulture)
                 Return CType(obj,System.Drawing.Bitmap)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  Looks up a localized string similar to https://api.github.com/repos/Digitoxin1/DiskImageTool.
+        '''</summary>
+        Friend ReadOnly Property URL_API_EndPoint() As String
+            Get
+                Return ResourceManager.GetString("URL_API_EndPoint", resourceCulture)
             End Get
         End Property
         

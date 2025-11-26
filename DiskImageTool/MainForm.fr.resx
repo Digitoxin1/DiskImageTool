@@ -156,9 +156,6 @@
   <data name="MainMenuTools.Text" xml:space="preserve">
     <value>&amp;Outils</value>
   </data>
-  <data name="MenuHelpAbout.Text" xml:space="preserve">
-    <value>À propos de DiskImageTool</value>
-  </data>
   <data name="MenuHexBadSectors.Text" xml:space="preserve">
     <value>Mauvais &amp;secteurs</value>
   </data>

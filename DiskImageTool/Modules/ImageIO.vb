@@ -9,7 +9,7 @@ Module ImageIO
     Public ReadOnly ArchiveFileExtensions As New List(Of String) From {".zip"}
     Public ReadOnly BasicSectorFileExtensions As New List(Of String) From {".ima", ".img", ".imz", ".vfd", ".flp"}
     Public ReadOnly BitstreamFileExtensions As New List(Of String) From {".86f", ".hfe", ".mfm", ".pri", ".tc"}
-    Private Const TEMP_FOLDER_NAME As String = "DiskImageTool"
+    Private ReadOnly TEMP_FOLDER_NAME As String = My.Application.Info.ProductName
     Public Enum SaveImageResponse
         Success
         Failed
