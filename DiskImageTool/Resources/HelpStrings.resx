@@ -117,118 +117,105 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="BootSectorForm_Help_AdditionalData" xml:space="preserve">
+  <data name="BootSectorForm_AdditionalData" xml:space="preserve">
     <value>This Is additional data found in the Boot Sector.
 
 Note: Data highlighted in green is the bootstrap code.</value>
   </data>
-  <data name="BootSectorForm_Help_AllowedValues" xml:space="preserve">
+  <data name="BootSectorForm_AllowedValues" xml:space="preserve">
     <value>Allowed Values:</value>
   </data>
-  <data name="BootSectorForm_Help_BootSectorSignature" xml:space="preserve">
+  <data name="BootSectorForm_BootSectorSignature" xml:space="preserve">
     <value>Indicated to the BIOS that the sector is executable.</value>
   </data>
-  <data name="BootSectorForm_Help_BytesPerSector" xml:space="preserve">
-    <value>Number of bytes in each physical sector
-
-Allowed Values: {0}
-
-Note: This value should be {1} for all floppy disks.</value>
+  <data name="BootSectorForm_BytesPerSector" xml:space="preserve">
+    <value>Number of bytes in each physical sector</value>
   </data>
-  <data name="BootSectorForm_Help_DiskType" xml:space="preserve">
+  <data name="BootSectorForm_DiskType" xml:space="preserve">
     <value>The disk type detected based on the current values in the Boot Record.  Changing this will set the values in the boot record to those of the selected disk type.</value>
   </data>
-  <data name="BootSectorForm_Help_DriveNumber" xml:space="preserve">
-    <value>Interrupt 13h drive number
-
-Allowed Values: {0}</value>
+  <data name="BootSectorForm_DriveNumber" xml:space="preserve">
+    <value>Interrupt 13h drive number</value>
   </data>
-  <data name="BootSectorForm_Help_ExtendedBootSignature" xml:space="preserve">
-    <value>Typical Values:
-28h\tVolume Serial Number is present
+  <data name="BootSectorForm_ExtendedBootSignature" xml:space="preserve">
+    <value>28h\tVolume Serial Number is present
 29h\tVolume Serial Number, Volume Label, and File System ID are present</value>
   </data>
-  <data name="BootSectorForm_Help_FileSystemType" xml:space="preserve">
-    <value>The File System ID is informational only
-
-Typical Values: {0}</value>
+  <data name="BootSectorForm_FileSystemType" xml:space="preserve">
+    <value>The File System ID is informational only</value>
   </data>
-  <data name="BootSectorForm_Help_FixedDisk" xml:space="preserve">
+  <data name="BootSectorForm_FixedDisk" xml:space="preserve">
     <value>Fixed Disk</value>
   </data>
-  <data name="BootSectorForm_Help_HiddenSectors" xml:space="preserve">
+  <data name="BootSectorForm_HiddenSectors" xml:space="preserve">
     <value>Number of sectors preceeding the first sector of a partitioned volume
 
 Note: This value should be {0} for all floppy disks</value>
   </data>
-  <data name="BootSectorForm_Help_JumpInstruction" xml:space="preserve">
-    <value>This instruction indicates where the bootstrap code starts.
-
-Allowed Values: {0}</value>
+  <data name="BootSectorForm_JumpInstruction" xml:space="preserve">
+    <value>This instruction indicates where the bootstrap code starts.</value>
   </data>
-  <data name="BootSectorForm_Help_NumberOfFATs" xml:space="preserve">
+  <data name="BootSectorForm_NumberOfFATs" xml:space="preserve">
     <value>Number of File Allocation Table (FAT) copies on the volume
 
 Allowed Values: Any non-zero value
 
 Note: This value should typically be set to {0}.</value>
   </data>
-  <data name="BootSectorForm_Help_NumberOfHeads" xml:space="preserve">
+  <data name="BootSectorForm_NumberOfHeads" xml:space="preserve">
     <value>Number of physical heads (sides) on the disk</value>
   </data>
-  <data name="BootSectorForm_Help_OEMName" xml:space="preserve">
+  <data name="BootSectorForm_OEMName" xml:space="preserve">
     <value>OEM Name Identifier
 
 Can be set by a FAT implementation to any desired value
 
 Typically this is some indication of what system formatted the volume.</value>
   </data>
-  <data name="BootSectorForm_Help_ReservedSectors" xml:space="preserve">
+  <data name="BootSectorForm_ReservedSectors" xml:space="preserve">
     <value>Number of reserved sectors in the reserved region of the volume starting at the first sector of the volume
 
 Allowed Values: Any non-zero value
 
 Note: This value should typically be set to {0}.</value>
   </data>
-  <data name="BootSectorForm_Help_RootDirectoryEntries" xml:space="preserve">
+  <data name="BootSectorForm_RootDirectoryEntries" xml:space="preserve">
     <value>Number of entries in the root directory
 
 Allowed Values: Value multiplied by {0} should be an even multiple of Bytes Per Sector</value>
   </data>
-  <data name="BootSectorForm_Help_SectorCountLarge" xml:space="preserve">
+  <data name="BootSectorForm_SectorCountLarge" xml:space="preserve">
     <value>Total number of sectors in a FAT16 volume larger than {0} sectors
 
 Note: This value should be {1} for all floppy disks</value>
   </data>
-  <data name="BootSectorForm_Help_SectorCountSmall" xml:space="preserve">
+  <data name="BootSectorForm_SectorCountSmall" xml:space="preserve">
     <value>Total number of sectors in the volume</value>
   </data>
-  <data name="BootSectorForm_Help_SectorsPerCluster" xml:space="preserve">
-    <value>Number of sectors per cluster
-
-Allowed Values: {0}</value>
+  <data name="BootSectorForm_SectorsPerCluster" xml:space="preserve">
+    <value>Number of sectors per cluster</value>
   </data>
-  <data name="BootSectorForm_Help_SectorsPerFAT" xml:space="preserve">
+  <data name="BootSectorForm_SectorsPerFAT" xml:space="preserve">
     <value>Number of sectors allocated to each copy of the File Allocation Table (FAT)</value>
   </data>
-  <data name="BootSectorForm_Help_SectorsPerTrack" xml:space="preserve">
+  <data name="BootSectorForm_SectorsPerTrack" xml:space="preserve">
     <value>Number of sectors per track on the disk</value>
   </data>
-  <data name="BootSectorForm_Help_TypicalValues" xml:space="preserve">
+  <data name="BootSectorForm_TypicalValues" xml:space="preserve">
     <value>Typical Values:</value>
   </data>
-  <data name="BootSectorForm_Help_Unused" xml:space="preserve">
+  <data name="BootSectorForm_Unused" xml:space="preserve">
     <value>Unused</value>
   </data>
-  <data name="BootSectorForm_Help_VolumeLabel" xml:space="preserve">
+  <data name="BootSectorForm_VolumeLabel" xml:space="preserve">
     <value>This field typically matches the 11-byte volume label in the root directory of the disk or has the value "{0}" if the volume label does not exist.</value>
   </data>
-  <data name="BootSectorForm_Help_VolumeSerialNumber" xml:space="preserve">
+  <data name="BootSectorForm_VolumeSerialNumber" xml:space="preserve">
     <value>The Volume Serial Number is a 32-bit random number used in conjunction with the Volume Label for removable media tracking
 
 Note: This id is typically generated by converting the current date and time into a 32-bit value</value>
   </data>
-  <data name="BootSectorForm_Help_VolumeSerialNumberButton" xml:space="preserve">
+  <data name="BootSectorForm_VolumeSerialNumberButton" xml:space="preserve">
     <value>Generate a new volume serial number based on a user supplied date and time</value>
   </data>
   <data name="Greaseweazle_Revs" xml:space="preserve">
@@ -309,5 +296,14 @@ Greaseweazle Configuration in the Options menu.</value>
   </data>
   <data name="Flux_Convert" xml:space="preserve">
     <value>Convert the currently loaded image set.</value>
+  </data>
+  <data name="BootSectorForm_AllowedValuesInline" xml:space="preserve">
+    <value>Allowed Values: {0}</value>
+  </data>
+  <data name="BootSectorForm_TypicalValuesInline" xml:space="preserve">
+    <value>Typical Values: {0}</value>
+  </data>
+  <data name="BootSectorForm_BytesPerSector_Note" xml:space="preserve">
+    <value>Note: This value should be {0} for all floppy disks.</value>
   </data>
 </root>

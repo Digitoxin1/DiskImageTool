@@ -117,118 +117,105 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="BootSectorForm_Help_AdditionalData" xml:space="preserve">
+  <data name="BootSectorForm_AdditionalData" xml:space="preserve">
     <value>Ce sont des données supplémentaires trouvées dans le secteur de démarrage.
 
 Remarque : les données surlignées en vert sont le code du chargeur.</value>
   </data>
-  <data name="BootSectorForm_Help_AllowedValues" xml:space="preserve">
+  <data name="BootSectorForm_AllowedValues" xml:space="preserve">
     <value>Valeurs autorisées:</value>
   </data>
-  <data name="BootSectorForm_Help_BootSectorSignature" xml:space="preserve">
+  <data name="BootSectorForm_BootSectorSignature" xml:space="preserve">
     <value>Indique au BIOS que le secteur est exécutable.</value>
   </data>
-  <data name="BootSectorForm_Help_BytesPerSector" xml:space="preserve">
-    <value>Nombre d’octets par secteur physique
-
-Valeurs autorisées: {0}
-
-Remarque: doit être {1} pour toutes les disquettes.</value>
+  <data name="BootSectorForm_BytesPerSector" xml:space="preserve">
+    <value>Nombre d’octets par secteur physique</value>
   </data>
-  <data name="BootSectorForm_Help_DiskType" xml:space="preserve">
+  <data name="BootSectorForm_DiskType" xml:space="preserve">
     <value>Le type de disquette a été détecté à partir des valeurs actuelles du secteur de démarrage. Changer ce type modifiera les valeurs du secteur selon le type sélectionné.</value>
   </data>
-  <data name="BootSectorForm_Help_DriveNumber" xml:space="preserve">
-    <value>Numéro de lecteur pour l’interruption 13h
-
-Valeurs autorisées: {0}</value>
+  <data name="BootSectorForm_DriveNumber" xml:space="preserve">
+    <value>Numéro de lecteur pour l’interruption 13h</value>
   </data>
-  <data name="BootSectorForm_Help_ExtendedBootSignature" xml:space="preserve">
-    <value>Valeurs typiques :
-28h\tLe numéro de série du volume est présent
+  <data name="BootSectorForm_ExtendedBootSignature" xml:space="preserve">
+    <value>28h\tLe numéro de série du volume est présent
 29h\tNuméro de série du volume, étiquette du volume et identifiant du système de fichiers présents</value>
   </data>
-  <data name="BootSectorForm_Help_FileSystemType" xml:space="preserve">
-    <value>L’identifiant du système de fichiers est uniquement informatif
-
-Valeurs typiques: {0}</value>
+  <data name="BootSectorForm_FileSystemType" xml:space="preserve">
+    <value>L’identifiant du système de fichiers est uniquement informatif</value>
   </data>
-  <data name="BootSectorForm_Help_FixedDisk" xml:space="preserve">
+  <data name="BootSectorForm_FixedDisk" xml:space="preserve">
     <value>Disque fixe</value>
   </data>
-  <data name="BootSectorForm_Help_HiddenSectors" xml:space="preserve">
+  <data name="BootSectorForm_HiddenSectors" xml:space="preserve">
     <value>Nombre de secteurs précédant le premier secteur du volume
 
 Remarque: cette valeur doit être {0} pour toutes les disquettes</value>
   </data>
-  <data name="BootSectorForm_Help_JumpInstruction" xml:space="preserve">
-    <value>Cette instruction indique où commence le code du chargeur.
-
-Valeurs autorisées: {0}</value>
+  <data name="BootSectorForm_JumpInstruction" xml:space="preserve">
+    <value>Cette instruction indique où commence le code du chargeur.</value>
   </data>
-  <data name="BootSectorForm_Help_NumberOfFATs" xml:space="preserve">
+  <data name="BootSectorForm_NumberOfFATs" xml:space="preserve">
     <value>Nombre de copies de la table FAT sur le volume
 
 Valeurs autorisées: toute valeur non nulle
 
 Remarque: normalement, cette valeur est fixée à {0}.</value>
   </data>
-  <data name="BootSectorForm_Help_NumberOfHeads" xml:space="preserve">
+  <data name="BootSectorForm_NumberOfHeads" xml:space="preserve">
     <value>Nombre de têtes physiques (faces) sur la disquette</value>
   </data>
-  <data name="BootSectorForm_Help_OEMName" xml:space="preserve">
+  <data name="BootSectorForm_OEMName" xml:space="preserve">
     <value>Identifiant du nom OEM
 
 Peut être défini par une implémentation FAT à toute valeur souhaitée
 
 Souvent une indication du système ayant formaté le volume.</value>
   </data>
-  <data name="BootSectorForm_Help_ReservedSectors" xml:space="preserve">
+  <data name="BootSectorForm_ReservedSectors" xml:space="preserve">
     <value>Nombre de secteurs réservés au début du volume
 
 Valeurs autorisées: toute valeur non nulle
 
 Remarque: normalement, cette valeur est fixée à {0}.</value>
   </data>
-  <data name="BootSectorForm_Help_RootDirectoryEntries" xml:space="preserve">
+  <data name="BootSectorForm_RootDirectoryEntries" xml:space="preserve">
     <value>Nombre d’entrées dans le répertoire racine
 
 Valeurs autorisées: la valeur × {0} doit être un multiple pair du nombre d’octets par secteur</value>
   </data>
-  <data name="BootSectorForm_Help_SectorCountLarge" xml:space="preserve">
+  <data name="BootSectorForm_SectorCountLarge" xml:space="preserve">
     <value>Nombre total de secteurs dans un volume FAT16 supérieur à {0} secteurs
 
 Remarque : cette valeur doit être {1} pour toutes les disquettes</value>
   </data>
-  <data name="BootSectorForm_Help_SectorCountSmall" xml:space="preserve">
+  <data name="BootSectorForm_SectorCountSmall" xml:space="preserve">
     <value>Nombre total de secteurs dans le volume</value>
   </data>
-  <data name="BootSectorForm_Help_SectorsPerCluster" xml:space="preserve">
-    <value>Nombre de secteurs par cluster
-
-Valeurs autorisées: {0}</value>
+  <data name="BootSectorForm_SectorsPerCluster" xml:space="preserve">
+    <value>Nombre de secteurs par cluster</value>
   </data>
-  <data name="BootSectorForm_Help_SectorsPerFAT" xml:space="preserve">
+  <data name="BootSectorForm_SectorsPerFAT" xml:space="preserve">
     <value>Nombre de secteurs alloués à chaque copie de la FAT</value>
   </data>
-  <data name="BootSectorForm_Help_SectorsPerTrack" xml:space="preserve">
+  <data name="BootSectorForm_SectorsPerTrack" xml:space="preserve">
     <value>Nombre de secteurs par piste</value>
   </data>
-  <data name="BootSectorForm_Help_TypicalValues" xml:space="preserve">
+  <data name="BootSectorForm_TypicalValues" xml:space="preserve">
     <value>Valeurs typiques:</value>
   </data>
-  <data name="BootSectorForm_Help_Unused" xml:space="preserve">
+  <data name="BootSectorForm_Unused" xml:space="preserve">
     <value>Non utilisé</value>
   </data>
-  <data name="BootSectorForm_Help_VolumeLabel" xml:space="preserve">
+  <data name="BootSectorForm_VolumeLabel" xml:space="preserve">
     <value>Ce champ correspond généralement à l’étiquette de volume de 11 octets dans le répertoire racine ou vaut "{0}" si l’étiquette n’existe pas.</value>
   </data>
-  <data name="BootSectorForm_Help_VolumeSerialNumber" xml:space="preserve">
+  <data name="BootSectorForm_VolumeSerialNumber" xml:space="preserve">
     <value>Le numéro de série du volume est un nombre aléatoire de 32 bits utilisé avec l’étiquette du volume pour le suivi des supports amovibles
 
 Remarque: généralement dérivé de la date et de l’heure actuelles</value>
   </data>
-  <data name="BootSectorForm_Help_VolumeSerialNumberButton" xml:space="preserve">
+  <data name="BootSectorForm_VolumeSerialNumberButton" xml:space="preserve">
     <value>Générer un nouveau numéro de série de volume à partir d’une date et d’une heure fournies</value>
   </data>
   <data name="Greaseweazle_Revs" xml:space="preserve">
@@ -295,35 +282,28 @@ Configuration Greaseweazle du menu Options.</value>
   <data name="Flux_DoubleStep" xml:space="preserve">
     <value>Sauter une piste sur deux lors de la lecture d’une disquette de 360 Ko dans un lecteur 1,2 Mo.</value>
   </data>
-  <assembly alias="System.Windows.Forms" name="System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
-  <data name="Flux_Import" type="System.Resources.ResXNullRef, System.Windows.Forms">
-    <value />
-  </data>
-  <data name="Flux_ImportClose" type="System.Resources.ResXNullRef, System.Windows.Forms">
-    <value />
-  </data>
-  <data name="Flux_Save" type="System.Resources.ResXNullRef, System.Windows.Forms">
-    <value />
-  </data>
-  <data name="Flux_SaveClose" type="System.Resources.ResXNullRef, System.Windows.Forms">
-    <value />
-  </data>
-  <data name="Flux_Convert" type="System.Resources.ResXNullRef, System.Windows.Forms">
-    <value />
-  </data>
-  <data name="Flux_Convert" xml:space="preserve">
-    <value>Convertir l’ensemble d’images chargé.</value>
+  <data name="Flux_Import" xml:space="preserve">
+    <value>Importer l’image chargée.</value>
   </data>
   <data name="Flux_ImportClose" xml:space="preserve">
     <value>Importer l’image chargée et fermer cette boîte de dialogue.</value>
   </data>
-  <data name="Flux_Import" xml:space="preserve">
-    <value>Importer l’image chargée.</value>
+  <data name="Flux_Save" xml:space="preserve">
+    <value>Enregistrer l’ensemble d’images chargé.</value>
   </data>
   <data name="Flux_SaveClose" xml:space="preserve">
     <value>Enregistrer l’ensemble d’images chargé et fermer cette boîte de dialogue.</value>
   </data>
-  <data name="Flux_Save" xml:space="preserve">
-    <value>Enregistrer l’ensemble d’images chargé.</value>
+  <data name="Flux_Convert" xml:space="preserve">
+    <value>Convertir l’ensemble d’images chargé.</value>
+  </data>
+  <data name="BootSectorForm_AllowedValuesInline" xml:space="preserve">
+    <value>Valeurs autorisées: {0}</value>
+  </data>
+  <data name="BootSectorForm_TypicalValuesInline" xml:space="preserve">
+    <value>Valeurs typiques: {0}</value>
+  </data>
+  <data name="BootSectorForm_BytesPerSector_Note" xml:space="preserve">
+    <value>Remarque: doit être {0} pour toutes les disquettes.</value>
   </data>
 </root>

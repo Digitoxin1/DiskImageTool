@@ -69,91 +69,100 @@ Namespace My.Resources
         '''
         '''Note: Data highlighted in green is the bootstrap code..
         '''</summary>
-        Friend Shared ReadOnly Property BootSectorForm_Help_AdditionalData() As String
+        Friend Shared ReadOnly Property BootSectorForm_AdditionalData() As String
             Get
-                Return ResourceManager.GetString("BootSectorForm_Help_AdditionalData", resourceCulture)
+                Return ResourceManager.GetString("BootSectorForm_AdditionalData", resourceCulture)
             End Get
         End Property
         
         '''<summary>
         '''  Looks up a localized string similar to Allowed Values:.
         '''</summary>
-        Friend Shared ReadOnly Property BootSectorForm_Help_AllowedValues() As String
+        Friend Shared ReadOnly Property BootSectorForm_AllowedValues() As String
             Get
-                Return ResourceManager.GetString("BootSectorForm_Help_AllowedValues", resourceCulture)
+                Return ResourceManager.GetString("BootSectorForm_AllowedValues", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  Looks up a localized string similar to Allowed Values: {0}.
+        '''</summary>
+        Friend Shared ReadOnly Property BootSectorForm_AllowedValuesInline() As String
+            Get
+                Return ResourceManager.GetString("BootSectorForm_AllowedValuesInline", resourceCulture)
             End Get
         End Property
         
         '''<summary>
         '''  Looks up a localized string similar to Indicated to the BIOS that the sector is executable..
         '''</summary>
-        Friend Shared ReadOnly Property BootSectorForm_Help_BootSectorSignature() As String
+        Friend Shared ReadOnly Property BootSectorForm_BootSectorSignature() As String
             Get
-                Return ResourceManager.GetString("BootSectorForm_Help_BootSectorSignature", resourceCulture)
+                Return ResourceManager.GetString("BootSectorForm_BootSectorSignature", resourceCulture)
             End Get
         End Property
         
         '''<summary>
-        '''  Looks up a localized string similar to Number of bytes in each physical sector
-        '''
-        '''Allowed Values: {0}
-        '''
-        '''Note: This value should be {1} for all floppy disks..
+        '''  Looks up a localized string similar to Number of bytes in each physical sector.
         '''</summary>
-        Friend Shared ReadOnly Property BootSectorForm_Help_BytesPerSector() As String
+        Friend Shared ReadOnly Property BootSectorForm_BytesPerSector() As String
             Get
-                Return ResourceManager.GetString("BootSectorForm_Help_BytesPerSector", resourceCulture)
+                Return ResourceManager.GetString("BootSectorForm_BytesPerSector", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  Looks up a localized string similar to Note: This value should be {0} for all floppy disks..
+        '''</summary>
+        Friend Shared ReadOnly Property BootSectorForm_BytesPerSector_Note() As String
+            Get
+                Return ResourceManager.GetString("BootSectorForm_BytesPerSector_Note", resourceCulture)
             End Get
         End Property
         
         '''<summary>
         '''  Looks up a localized string similar to The disk type detected based on the current values in the Boot Record.  Changing this will set the values in the boot record to those of the selected disk type..
         '''</summary>
-        Friend Shared ReadOnly Property BootSectorForm_Help_DiskType() As String
+        Friend Shared ReadOnly Property BootSectorForm_DiskType() As String
             Get
-                Return ResourceManager.GetString("BootSectorForm_Help_DiskType", resourceCulture)
+                Return ResourceManager.GetString("BootSectorForm_DiskType", resourceCulture)
             End Get
         End Property
         
         '''<summary>
-        '''  Looks up a localized string similar to Interrupt 13h drive number
-        '''
-        '''Allowed Values: {0}.
+        '''  Looks up a localized string similar to Interrupt 13h drive number.
         '''</summary>
-        Friend Shared ReadOnly Property BootSectorForm_Help_DriveNumber() As String
+        Friend Shared ReadOnly Property BootSectorForm_DriveNumber() As String
             Get
-                Return ResourceManager.GetString("BootSectorForm_Help_DriveNumber", resourceCulture)
+                Return ResourceManager.GetString("BootSectorForm_DriveNumber", resourceCulture)
             End Get
         End Property
         
         '''<summary>
-        '''  Looks up a localized string similar to Typical Values:
-        '''28h\tVolume Serial Number is present
+        '''  Looks up a localized string similar to 28h\tVolume Serial Number is present
         '''29h\tVolume Serial Number, Volume Label, and File System ID are present.
         '''</summary>
-        Friend Shared ReadOnly Property BootSectorForm_Help_ExtendedBootSignature() As String
+        Friend Shared ReadOnly Property BootSectorForm_ExtendedBootSignature() As String
             Get
-                Return ResourceManager.GetString("BootSectorForm_Help_ExtendedBootSignature", resourceCulture)
+                Return ResourceManager.GetString("BootSectorForm_ExtendedBootSignature", resourceCulture)
             End Get
         End Property
         
         '''<summary>
-        '''  Looks up a localized string similar to The File System ID is informational only
-        '''
-        '''Typical Values: {0}.
+        '''  Looks up a localized string similar to The File System ID is informational only.
         '''</summary>
-        Friend Shared ReadOnly Property BootSectorForm_Help_FileSystemType() As String
+        Friend Shared ReadOnly Property BootSectorForm_FileSystemType() As String
             Get
-                Return ResourceManager.GetString("BootSectorForm_Help_FileSystemType", resourceCulture)
+                Return ResourceManager.GetString("BootSectorForm_FileSystemType", resourceCulture)
             End Get
         End Property
         
         '''<summary>
         '''  Looks up a localized string similar to Fixed Disk.
         '''</summary>
-        Friend Shared ReadOnly Property BootSectorForm_Help_FixedDisk() As String
+        Friend Shared ReadOnly Property BootSectorForm_FixedDisk() As String
             Get
-                Return ResourceManager.GetString("BootSectorForm_Help_FixedDisk", resourceCulture)
+                Return ResourceManager.GetString("BootSectorForm_FixedDisk", resourceCulture)
             End Get
         End Property
         
@@ -162,20 +171,18 @@ Namespace My.Resources
         '''
         '''Note: This value should be {0} for all floppy disks.
         '''</summary>
-        Friend Shared ReadOnly Property BootSectorForm_Help_HiddenSectors() As String
+        Friend Shared ReadOnly Property BootSectorForm_HiddenSectors() As String
             Get
-                Return ResourceManager.GetString("BootSectorForm_Help_HiddenSectors", resourceCulture)
+                Return ResourceManager.GetString("BootSectorForm_HiddenSectors", resourceCulture)
             End Get
         End Property
         
         '''<summary>
-        '''  Looks up a localized string similar to This instruction indicates where the bootstrap code starts.
-        '''
-        '''Allowed Values: {0}.
+        '''  Looks up a localized string similar to This instruction indicates where the bootstrap code starts..
         '''</summary>
-        Friend Shared ReadOnly Property BootSectorForm_Help_JumpInstruction() As String
+        Friend Shared ReadOnly Property BootSectorForm_JumpInstruction() As String
             Get
-                Return ResourceManager.GetString("BootSectorForm_Help_JumpInstruction", resourceCulture)
+                Return ResourceManager.GetString("BootSectorForm_JumpInstruction", resourceCulture)
             End Get
         End Property
         
@@ -186,18 +193,18 @@ Namespace My.Resources
         '''
         '''Note: This value should typically be set to {0}..
         '''</summary>
-        Friend Shared ReadOnly Property BootSectorForm_Help_NumberOfFATs() As String
+        Friend Shared ReadOnly Property BootSectorForm_NumberOfFATs() As String
             Get
-                Return ResourceManager.GetString("BootSectorForm_Help_NumberOfFATs", resourceCulture)
+                Return ResourceManager.GetString("BootSectorForm_NumberOfFATs", resourceCulture)
             End Get
         End Property
         
         '''<summary>
         '''  Looks up a localized string similar to Number of physical heads (sides) on the disk.
         '''</summary>
-        Friend Shared ReadOnly Property BootSectorForm_Help_NumberOfHeads() As String
+        Friend Shared ReadOnly Property BootSectorForm_NumberOfHeads() As String
             Get
-                Return ResourceManager.GetString("BootSectorForm_Help_NumberOfHeads", resourceCulture)
+                Return ResourceManager.GetString("BootSectorForm_NumberOfHeads", resourceCulture)
             End Get
         End Property
         
@@ -208,9 +215,9 @@ Namespace My.Resources
         '''
         '''Typically this is some indication of what system formatted the volume..
         '''</summary>
-        Friend Shared ReadOnly Property BootSectorForm_Help_OEMName() As String
+        Friend Shared ReadOnly Property BootSectorForm_OEMName() As String
             Get
-                Return ResourceManager.GetString("BootSectorForm_Help_OEMName", resourceCulture)
+                Return ResourceManager.GetString("BootSectorForm_OEMName", resourceCulture)
             End Get
         End Property
         
@@ -221,9 +228,9 @@ Namespace My.Resources
         '''
         '''Note: This value should typically be set to {0}..
         '''</summary>
-        Friend Shared ReadOnly Property BootSectorForm_Help_ReservedSectors() As String
+        Friend Shared ReadOnly Property BootSectorForm_ReservedSectors() As String
             Get
-                Return ResourceManager.GetString("BootSectorForm_Help_ReservedSectors", resourceCulture)
+                Return ResourceManager.GetString("BootSectorForm_ReservedSectors", resourceCulture)
             End Get
         End Property
         
@@ -232,9 +239,9 @@ Namespace My.Resources
         '''
         '''Allowed Values: Value multiplied by {0} should be an even multiple of Bytes Per Sector.
         '''</summary>
-        Friend Shared ReadOnly Property BootSectorForm_Help_RootDirectoryEntries() As String
+        Friend Shared ReadOnly Property BootSectorForm_RootDirectoryEntries() As String
             Get
-                Return ResourceManager.GetString("BootSectorForm_Help_RootDirectoryEntries", resourceCulture)
+                Return ResourceManager.GetString("BootSectorForm_RootDirectoryEntries", resourceCulture)
             End Get
         End Property
         
@@ -243,74 +250,81 @@ Namespace My.Resources
         '''
         '''Note: This value should be {1} for all floppy disks.
         '''</summary>
-        Friend Shared ReadOnly Property BootSectorForm_Help_SectorCountLarge() As String
+        Friend Shared ReadOnly Property BootSectorForm_SectorCountLarge() As String
             Get
-                Return ResourceManager.GetString("BootSectorForm_Help_SectorCountLarge", resourceCulture)
+                Return ResourceManager.GetString("BootSectorForm_SectorCountLarge", resourceCulture)
             End Get
         End Property
         
         '''<summary>
         '''  Looks up a localized string similar to Total number of sectors in the volume.
         '''</summary>
-        Friend Shared ReadOnly Property BootSectorForm_Help_SectorCountSmall() As String
+        Friend Shared ReadOnly Property BootSectorForm_SectorCountSmall() As String
             Get
-                Return ResourceManager.GetString("BootSectorForm_Help_SectorCountSmall", resourceCulture)
+                Return ResourceManager.GetString("BootSectorForm_SectorCountSmall", resourceCulture)
             End Get
         End Property
         
         '''<summary>
-        '''  Looks up a localized string similar to Number of sectors per cluster
-        '''
-        '''Allowed Values: {0}.
+        '''  Looks up a localized string similar to Number of sectors per cluster.
         '''</summary>
-        Friend Shared ReadOnly Property BootSectorForm_Help_SectorsPerCluster() As String
+        Friend Shared ReadOnly Property BootSectorForm_SectorsPerCluster() As String
             Get
-                Return ResourceManager.GetString("BootSectorForm_Help_SectorsPerCluster", resourceCulture)
+                Return ResourceManager.GetString("BootSectorForm_SectorsPerCluster", resourceCulture)
             End Get
         End Property
         
         '''<summary>
         '''  Looks up a localized string similar to Number of sectors allocated to each copy of the File Allocation Table (FAT).
         '''</summary>
-        Friend Shared ReadOnly Property BootSectorForm_Help_SectorsPerFAT() As String
+        Friend Shared ReadOnly Property BootSectorForm_SectorsPerFAT() As String
             Get
-                Return ResourceManager.GetString("BootSectorForm_Help_SectorsPerFAT", resourceCulture)
+                Return ResourceManager.GetString("BootSectorForm_SectorsPerFAT", resourceCulture)
             End Get
         End Property
         
         '''<summary>
         '''  Looks up a localized string similar to Number of sectors per track on the disk.
         '''</summary>
-        Friend Shared ReadOnly Property BootSectorForm_Help_SectorsPerTrack() As String
+        Friend Shared ReadOnly Property BootSectorForm_SectorsPerTrack() As String
             Get
-                Return ResourceManager.GetString("BootSectorForm_Help_SectorsPerTrack", resourceCulture)
+                Return ResourceManager.GetString("BootSectorForm_SectorsPerTrack", resourceCulture)
             End Get
         End Property
         
         '''<summary>
         '''  Looks up a localized string similar to Typical Values:.
         '''</summary>
-        Friend Shared ReadOnly Property BootSectorForm_Help_TypicalValues() As String
+        Friend Shared ReadOnly Property BootSectorForm_TypicalValues() As String
             Get
-                Return ResourceManager.GetString("BootSectorForm_Help_TypicalValues", resourceCulture)
+                Return ResourceManager.GetString("BootSectorForm_TypicalValues", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  Looks up a localized string similar to Typical Values: {0}.
+        '''</summary>
+        Friend Shared ReadOnly Property BootSectorForm_TypicalValuesInline() As String
+            Get
+                Return ResourceManager.GetString("BootSectorForm_TypicalValuesInline", resourceCulture)
             End Get
         End Property
         
         '''<summary>
         '''  Looks up a localized string similar to Unused.
         '''</summary>
-        Friend Shared ReadOnly Property BootSectorForm_Help_Unused() As String
+        Friend Shared ReadOnly Property BootSectorForm_Unused() As String
             Get
-                Return ResourceManager.GetString("BootSectorForm_Help_Unused", resourceCulture)
+                Return ResourceManager.GetString("BootSectorForm_Unused", resourceCulture)
             End Get
         End Property
         
         '''<summary>
         '''  Looks up a localized string similar to This field typically matches the 11-byte volume label in the root directory of the disk or has the value &quot;{0}&quot; if the volume label does not exist..
         '''</summary>
-        Friend Shared ReadOnly Property BootSectorForm_Help_VolumeLabel() As String
+        Friend Shared ReadOnly Property BootSectorForm_VolumeLabel() As String
             Get
-                Return ResourceManager.GetString("BootSectorForm_Help_VolumeLabel", resourceCulture)
+                Return ResourceManager.GetString("BootSectorForm_VolumeLabel", resourceCulture)
             End Get
         End Property
         
@@ -319,18 +333,18 @@ Namespace My.Resources
         '''
         '''Note: This id is typically generated by converting the current date and time into a 32-bit value.
         '''</summary>
-        Friend Shared ReadOnly Property BootSectorForm_Help_VolumeSerialNumber() As String
+        Friend Shared ReadOnly Property BootSectorForm_VolumeSerialNumber() As String
             Get
-                Return ResourceManager.GetString("BootSectorForm_Help_VolumeSerialNumber", resourceCulture)
+                Return ResourceManager.GetString("BootSectorForm_VolumeSerialNumber", resourceCulture)
             End Get
         End Property
         
         '''<summary>
         '''  Looks up a localized string similar to Generate a new volume serial number based on a user supplied date and time.
         '''</summary>
-        Friend Shared ReadOnly Property BootSectorForm_Help_VolumeSerialNumberButton() As String
+        Friend Shared ReadOnly Property BootSectorForm_VolumeSerialNumberButton() As String
             Get
-                Return ResourceManager.GetString("BootSectorForm_Help_VolumeSerialNumberButton", resourceCulture)
+                Return ResourceManager.GetString("BootSectorForm_VolumeSerialNumberButton", resourceCulture)
             End Get
         End Property
         
