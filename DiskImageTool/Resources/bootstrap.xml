@@ -415,6 +415,7 @@
     <oemname name="MSDOS3.2"/>
     <oemname name="IBM 3.3y" suggestion="false"/>
     <oemname name="KEY DISK" suggestion="false" verified="true"/>
+    <oemname name="COPYLOCF" suggestion="false" verified="true"/>
     <oemname namehex="004D4D4900332E33" suggestion="false" verified="true"/>
     <oemname namehex="4432026E30392E33" suggestion="false" verified="true"/>
   </bootstrap>
@@ -661,6 +662,9 @@
     <oemname name="MSDOS3.2"  verified="true"/>
     <oemname name="MSDOS3.3"/>
   </bootstrap>
+  <bootstrap crc32="0C5F44C1" jmp="EB3490">
+    <oemname name="MSDOS3.2" verified="true"/>
+  </bootstrap>
   <bootstrap crc32="B7BE2F89" jmp="EB3490">
     <oemname name="MSDOS3.2" verified="true"/>
   </bootstrap>
@@ -715,6 +719,7 @@
     <oemname name="MSDOS3.3" company="Microsoft" description="MS-DOS 3.3" verified="true"/>
     <oemname name="INSIGNIA" suggestion="false" verified="true"/>
     <oemname name="I93 1.00" suggestion="false"/>
+    <oemname name="D23e09.3" suggestion="false" verified="true"/>
   </bootstrap>
   <bootstrap crc32="F89FC8CD" jmp="EB3490" language="French">
     <oemname name="MSDOS3.3"/>
@@ -774,6 +779,7 @@
     <oemname namehex="4432A55230392E30" suggestion="false" verified="true"/>
     <oemname namehex="27505E4C5A494843" suggestion="false" verified="true"/>
     <oemname namehex="2750416E72494843" suggestion="false" verified="true"/>
+    <oemname namehex="2742407A4A494843" suggestion="false" verified="true"/>
   </bootstrap>
   <bootstrap crc32="D065ACD8" jmp="EB3C90">
     <oemname name="MSDOS5.0" company="Microsoft" description="Windows NT 3.1"/>
