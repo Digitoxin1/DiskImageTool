@@ -117,12 +117,6 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="BtnCancel.Text" xml:space="preserve">
-    <value>&amp;Annuler</value>
-  </data>
-  <data name="BtnUpdate.Text" xml:space="preserve">
-    <value>&amp;Mettre à jour</value>
-  </data>
   <data name="LabelCaption.Text" xml:space="preserve">
     <value>Saisir le premier caractère pour</value>
   </data>

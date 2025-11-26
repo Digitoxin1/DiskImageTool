@@ -1,5 +1,20 @@
 ﻿Namespace Flux
     Public Class ConfigurationForm
+        Public Sub New()
+
+            ' This call is required by the designer.
+            InitializeComponent()
+
+            ' Add any initialization after the InitializeComponent() call.
+            LocalizeForm()
+
+        End Sub
+
+        Private Sub LocalizeForm()
+            BtnCancel.Text = My.Resources.Menu_Cancel
+            BtnUpdate.Text = My.Resources.Menu_Update
+        End Sub
+
         Private Sub BtnUpdate_Click(sender As Object, e As EventArgs) Handles BtnUpdate.Click
             If SettingsPanelGreaseweazle.Initialized Then
                 SettingsPanelGreaseweazle.UpdateSettings()

@@ -117,47 +117,14 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="BtnCancel.Text" xml:space="preserve">
-    <value>&amp;Annuler</value>
-  </data>
   <data name="LblMultipleFiles.Text" xml:space="preserve">
     <value>(Fichiers multiples sélectionnés)</value>
   </data>
   <data name="ChkArchive.Text" xml:space="preserve">
     <value>Archive</value>
   </data>
-  <data name="GroupAttributes.Text" xml:space="preserve">
-    <value>Attributs</value>
-  </data>
-  <data name="LblCreated.Text" xml:space="preserve">
-    <value>Créé</value>
-  </data>
-  <data name="BtnLastAccessed.Text" xml:space="preserve">
-    <value>Éditer</value>
-  </data>
-  <data name="BtnArchive.Text" xml:space="preserve">
-    <value>Éditer</value>
-  </data>
-  <data name="BtnLastWritten.Text" xml:space="preserve">
-    <value>Éditer</value>
-  </data>
-  <data name="BtnCreated.Text" xml:space="preserve">
-    <value>Éditer</value>
-  </data>
-  <data name="BtnSystem.Text" xml:space="preserve">
-    <value>Éditer</value>
-  </data>
-  <data name="BtnReadOnly.Text" xml:space="preserve">
-    <value>Éditer</value>
-  </data>
-  <data name="BtnHidden.Text" xml:space="preserve">
-    <value>Éditer</value>
-  </data>
   <data name="GroupFileDates.Text" xml:space="preserve">
     <value>Dates des fichiers</value>
-  </data>
-  <data name="GroupFileName.Text" xml:space="preserve">
-    <value>Nom du fichier</value>
   </data>
   <data name="$this.Text" xml:space="preserve">
     <value>Propriétés du fichier</value>
@@ -165,25 +132,10 @@
   <data name="ChkHidden.Text" xml:space="preserve">
     <value>Caché</value>
   </data>
-  <data name="LblLastAccessed.Text" xml:space="preserve">
-    <value>Dernier accès</value>
-  </data>
-  <data name="LblLastWritten.Text" xml:space="preserve">
-    <value>Dernière modification</value>
-  </data>
   <data name="RadioFileLong.Text" xml:space="preserve">
     <value>Long</value>
   </data>
-  <data name="ChkNTExtensions.Text" xml:space="preserve">
-    <value>Extensions NT</value>
-  </data>
-  <data name="ChkReadOnly.Text" xml:space="preserve">
-    <value>Lecture seule</value>
-  </data>
   <data name="ChkSystem.Text" xml:space="preserve">
     <value>Système</value>
-  </data>
-  <data name="BtnUpdate.Text" xml:space="preserve">
-    <value>&amp;Mettre à jour</value>
   </data>
 </root>

@@ -1,4 +1,5 @@
 ﻿Imports System.IO
+Imports System.Runtime.CompilerServices
 Imports DiskImageTool.DiskImage
 
 Public Class ImportFileForm
@@ -18,11 +19,25 @@ Public Class ImportFileForm
         InitializeComponent()
 
         ' Add any initialization after the InitializeComponent() call.
+        LocalizeForm()
+
         _IgnoreEvent = True
         _Directory = Directory
         PopulateFileList(Directory, FileNames)
         RefreshTotals()
         _IgnoreEvent = False
+    End Sub
+
+    Private Sub LocalizeForm()
+        BtnCancel.Text = WithoutHotkey(My.Resources.Menu_Cancel)
+        FileCreationDate.Text = My.Resources.Label_Created
+        FileSize.Text = My.Resources.Label_Size
+        LabelOptions.Text = My.Resources.Label_Options
+        ChkNTExtensions.Text = My.Resources.Label_NTExtensions
+        FileLastWriteDate.Text = My.Resources.Label_LastWritten
+        FileLastAccessDate.Text = My.Resources.Label_LastAccessed
+        Me.Text = My.Resources.Label_ImportFiles
+        LabelFilesSelected.Text = My.Resources.Label_FilesSelected & ":"
     End Sub
 
     Public ReadOnly Property FileList As ImportDirectoryRoot

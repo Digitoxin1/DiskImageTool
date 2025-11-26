@@ -131,9 +131,6 @@
   <data name="TableLayoutPanel1.ColumnCount" type="System.Int32, mscorlib">
     <value>7</value>
   </data>
-  <metadata name="LabelApplicationPath.GenerateMember" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
-    <value>False</value>
-  </metadata>
   <data name="LabelApplicationPath.Anchor" type="System.Windows.Forms.AnchorStyles, System.Windows.Forms">
     <value>Left</value>
   </data>
@@ -148,13 +145,14 @@
     <value>3, 8</value>
   </data>
   <data name="LabelApplicationPath.Size" type="System.Drawing.Size, System.Drawing">
-    <value>84, 13</value>
+    <value>92, 13</value>
   </data>
   <data name="LabelApplicationPath.TabIndex" type="System.Int32, mscorlib">
     <value>0</value>
   </data>
   <data name="LabelApplicationPath.Text" xml:space="preserve">
-    <value>Application Path</value>
+    <value>{Application Path}</value>
+    <comment>@Invariant</comment>
   </data>
   <data name="&gt;&gt;LabelApplicationPath.Name" xml:space="preserve">
     <value>LabelApplicationPath</value>
@@ -310,7 +308,7 @@
     <value>Left</value>
   </data>
   <data name="ComboDriveType2.Location" type="System.Drawing.Point, System.Drawing">
-    <value>93, 115</value>
+    <value>101, 115</value>
   </data>
   <data name="ComboDriveType2.Size" type="System.Drawing.Size, System.Drawing">
     <value>125, 21</value>
@@ -334,7 +332,7 @@
     <value>Left</value>
   </data>
   <data name="ComboDriveType1.Location" type="System.Drawing.Point, System.Drawing">
-    <value>93, 88</value>
+    <value>101, 88</value>
   </data>
   <data name="ComboDriveType1.Size" type="System.Drawing.Size, System.Drawing">
     <value>125, 21</value>
@@ -358,7 +356,7 @@
     <value>Left</value>
   </data>
   <data name="ComboDriveType0.Location" type="System.Drawing.Point, System.Drawing">
-    <value>93, 61</value>
+    <value>101, 61</value>
   </data>
   <data name="ComboDriveType0.Size" type="System.Drawing.Size, System.Drawing">
     <value>125, 21</value>
@@ -382,7 +380,7 @@
     <value>Left</value>
   </data>
   <data name="ComboInterface.Location" type="System.Drawing.Point, System.Drawing">
-    <value>93, 33</value>
+    <value>101, 33</value>
   </data>
   <data name="ComboInterface.Size" type="System.Drawing.Size, System.Drawing">
     <value>100, 21</value>
@@ -406,10 +404,10 @@
     <value>Left, Right</value>
   </data>
   <data name="TextBoxPath.Location" type="System.Drawing.Point, System.Drawing">
-    <value>93, 4</value>
+    <value>101, 4</value>
   </data>
   <data name="TextBoxPath.Size" type="System.Drawing.Size, System.Drawing">
-    <value>422, 20</value>
+    <value>414, 20</value>
   </data>
   <data name="TextBoxPath.TabIndex" type="System.Int32, mscorlib">
     <value>1</value>
@@ -442,7 +440,8 @@
     <value>2</value>
   </data>
   <data name="ButtonBrowse.Text" xml:space="preserve">
-    <value>Browse</value>
+    <value>{Browse}</value>
+    <comment>@Invariant</comment>
   </data>
   <data name="&gt;&gt;ButtonBrowse.Name" xml:space="preserve">
     <value>ButtonBrowse</value>
@@ -472,7 +471,8 @@
     <value>3</value>
   </data>
   <data name="ButtonClear.Text" xml:space="preserve">
-    <value>Clear</value>
+    <value>{Clear}</value>
+    <comment>@Invariant</comment>
   </data>
   <data name="&gt;&gt;ButtonClear.Name" xml:space="preserve">
     <value>ButtonClear</value>
@@ -493,7 +493,7 @@
     <value>Consolas, 9pt</value>
   </data>
   <data name="TextBoxInfo.Location" type="System.Drawing.Point, System.Drawing">
-    <value>344, 61</value>
+    <value>360, 61</value>
   </data>
   <data name="TextBoxInfo.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
     <value>9, 3, 3, 3</value>
@@ -505,7 +505,7 @@
     <value>Vertical</value>
   </data>
   <data name="TextBoxInfo.Size" type="System.Drawing.Size, System.Drawing">
-    <value>333, 152</value>
+    <value>317, 152</value>
   </data>
   <data name="TextBoxInfo.TabIndex" type="System.Int32, mscorlib">
     <value>25</value>
@@ -522,9 +522,6 @@
   <data name="&gt;&gt;TextBoxInfo.ZOrder" xml:space="preserve">
     <value>12</value>
   </data>
-  <metadata name="LabelTracks0.GenerateMember" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
-    <value>False</value>
-  </metadata>
   <data name="LabelTracks0.Anchor" type="System.Windows.Forms.AnchorStyles, System.Windows.Forms">
     <value>Right</value>
   </data>
@@ -535,16 +532,17 @@
     <value>NoControl</value>
   </data>
   <data name="LabelTracks0.Location" type="System.Drawing.Point, System.Drawing">
-    <value>224, 65</value>
+    <value>232, 65</value>
   </data>
   <data name="LabelTracks0.Size" type="System.Drawing.Size, System.Drawing">
-    <value>40, 13</value>
+    <value>48, 13</value>
   </data>
   <data name="LabelTracks0.TabIndex" type="System.Int32, mscorlib">
     <value>10</value>
   </data>
   <data name="LabelTracks0.Text" xml:space="preserve">
-    <value>Tracks</value>
+    <value>{Tracks}</value>
+    <comment>@Invariant</comment>
   </data>
   <data name="&gt;&gt;LabelTracks0.Name" xml:space="preserve">
     <value>LabelTracks0</value>
@@ -558,9 +556,6 @@
   <data name="&gt;&gt;LabelTracks0.ZOrder" xml:space="preserve">
     <value>13</value>
   </data>
-  <metadata name="LabelTracks1.GenerateMember" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
-    <value>False</value>
-  </metadata>
   <data name="LabelTracks1.Anchor" type="System.Windows.Forms.AnchorStyles, System.Windows.Forms">
     <value>Right</value>
   </data>
@@ -571,16 +566,17 @@
     <value>NoControl</value>
   </data>
   <data name="LabelTracks1.Location" type="System.Drawing.Point, System.Drawing">
-    <value>224, 92</value>
+    <value>232, 92</value>
   </data>
   <data name="LabelTracks1.Size" type="System.Drawing.Size, System.Drawing">
-    <value>40, 13</value>
+    <value>48, 13</value>
   </data>
   <data name="LabelTracks1.TabIndex" type="System.Int32, mscorlib">
     <value>14</value>
   </data>
   <data name="LabelTracks1.Text" xml:space="preserve">
-    <value>Tracks</value>
+    <value>{Tracks}</value>
+    <comment>@Invariant</comment>
   </data>
   <data name="&gt;&gt;LabelTracks1.Name" xml:space="preserve">
     <value>LabelTracks1</value>
@@ -604,16 +600,17 @@
     <value>NoControl</value>
   </data>
   <data name="LabelTracks2.Location" type="System.Drawing.Point, System.Drawing">
-    <value>224, 119</value>
+    <value>232, 119</value>
   </data>
   <data name="LabelTracks2.Size" type="System.Drawing.Size, System.Drawing">
-    <value>40, 13</value>
+    <value>48, 13</value>
   </data>
   <data name="LabelTracks2.TabIndex" type="System.Int32, mscorlib">
     <value>18</value>
   </data>
   <data name="LabelTracks2.Text" xml:space="preserve">
-    <value>Tracks</value>
+    <value>{Tracks}</value>
+    <comment>@Invariant</comment>
   </data>
   <data name="&gt;&gt;LabelTracks2.Name" xml:space="preserve">
     <value>LabelTracks2</value>
@@ -631,7 +628,7 @@
     <value>Left, Right</value>
   </data>
   <data name="NumericTracks1.Location" type="System.Drawing.Point, System.Drawing">
-    <value>270, 88</value>
+    <value>286, 88</value>
   </data>
   <data name="NumericTracks1.Size" type="System.Drawing.Size, System.Drawing">
     <value>62, 20</value>
@@ -655,7 +652,7 @@
     <value>Left, Right</value>
   </data>
   <data name="NumericTracks2.Location" type="System.Drawing.Point, System.Drawing">
-    <value>270, 115</value>
+    <value>286, 115</value>
   </data>
   <data name="NumericTracks2.Size" type="System.Drawing.Size, System.Drawing">
     <value>62, 20</value>
@@ -679,7 +676,7 @@
     <value>Left, Right</value>
   </data>
   <data name="NumericTracks0.Location" type="System.Drawing.Point, System.Drawing">
-    <value>270, 61</value>
+    <value>286, 61</value>
   </data>
   <data name="NumericTracks0.Size" type="System.Drawing.Size, System.Drawing">
     <value>62, 20</value>
@@ -703,7 +700,7 @@
     <value>NoControl</value>
   </data>
   <data name="ButtonInfo.Location" type="System.Drawing.Point, System.Drawing">
-    <value>344, 32</value>
+    <value>360, 32</value>
   </data>
   <data name="ButtonInfo.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
     <value>9, 3, 3, 3</value>
@@ -715,7 +712,8 @@
     <value>24</value>
   </data>
   <data name="ButtonInfo.Text" xml:space="preserve">
-    <value>Info</value>
+    <value>{Info}</value>
+    <comment>@Invariant</comment>
   </data>
   <data name="&gt;&gt;ButtonInfo.Name" xml:space="preserve">
     <value>ButtonInfo</value>
@@ -742,7 +740,7 @@
     <value>NoControl</value>
   </data>
   <data name="LabelPort.Location" type="System.Drawing.Point, System.Drawing">
-    <value>224, 37</value>
+    <value>232, 37</value>
   </data>
   <data name="LabelPort.Size" type="System.Drawing.Size, System.Drawing">
     <value>26, 13</value>
@@ -769,7 +767,7 @@
     <value>Left</value>
   </data>
   <data name="ComboPorts.Location" type="System.Drawing.Point, System.Drawing">
-    <value>270, 33</value>
+    <value>286, 33</value>
   </data>
   <data name="ComboPorts.Size" type="System.Drawing.Size, System.Drawing">
     <value>62, 21</value>
@@ -829,7 +827,7 @@
     <value>Left</value>
   </data>
   <data name="NumericDefaultRevs.Location" type="System.Drawing.Point, System.Drawing">
-    <value>93, 142</value>
+    <value>101, 142</value>
   </data>
   <data name="NumericDefaultRevs.Size" type="System.Drawing.Size, System.Drawing">
     <value>46, 20</value>
@@ -849,9 +847,6 @@
   <data name="&gt;&gt;NumericDefaultRevs.ZOrder" xml:space="preserve">
     <value>23</value>
   </data>
-  <metadata name="LabelLogFile.GenerateMember" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
-    <value>False</value>
-  </metadata>
   <data name="LabelLogFile.Anchor" type="System.Windows.Forms.AnchorStyles, System.Windows.Forms">
     <value>Left</value>
   </data>
@@ -871,7 +866,8 @@
     <value>22</value>
   </data>
   <data name="LabelLogFile.Text" xml:space="preserve">
-    <value>Log Filename</value>
+    <value>{Log Filename}</value>
+    <comment>@Invariant</comment>
   </data>
   <data name="&gt;&gt;LabelLogFile.Name" xml:space="preserve">
     <value>LabelLogFile</value>
@@ -889,7 +885,7 @@
     <value>Left, Right</value>
   </data>
   <data name="TextBoxLogFile.Location" type="System.Drawing.Point, System.Drawing">
-    <value>93, 168</value>
+    <value>101, 168</value>
   </data>
   <data name="TextBoxLogFile.MaxLength" type="System.Int32, mscorlib">
     <value>50</value>

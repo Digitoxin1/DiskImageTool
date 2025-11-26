@@ -29,7 +29,6 @@ Partial Class MainForm
         Dim MenuFileSeparator1 As System.Windows.Forms.ToolStripSeparator
         Dim MenuFileSeparator2 As System.Windows.Forms.ToolStripSeparator
         Dim MenuFileSeparator3 As System.Windows.Forms.ToolStripSeparator
-        Dim MainMenuEdit As System.Windows.Forms.ToolStripMenuItem
         Dim MenuEditSeparator1 As System.Windows.Forms.ToolStripSeparator
         Dim MenuEditSeparator2 As System.Windows.Forms.ToolStripSeparator
         Dim MainMenuView As System.Windows.Forms.ToolStripMenuItem
@@ -45,16 +44,7 @@ Partial Class MainForm
         Dim ToolStripSeparator9 As System.Windows.Forms.ToolStripSeparator
         Dim MainMenuDisk As System.Windows.Forms.ToolStripMenuItem
         Dim MenuStripTop As System.Windows.Forms.MenuStrip
-        Me.MainMenuFile = New System.Windows.Forms.ToolStripMenuItem()
-        Me.MenuFileOpen = New System.Windows.Forms.ToolStripMenuItem()
-        Me.MenuFileReload = New System.Windows.Forms.ToolStripMenuItem()
-        Me.MenuFileNewImage = New System.Windows.Forms.ToolStripMenuItem()
-        Me.MenuFileSave = New System.Windows.Forms.ToolStripMenuItem()
-        Me.MenuFileSaveAs = New System.Windows.Forms.ToolStripMenuItem()
-        Me.MenuFileSaveAll = New System.Windows.Forms.ToolStripMenuItem()
-        Me.MenuFileClose = New System.Windows.Forms.ToolStripMenuItem()
-        Me.MenuFileCloseAll = New System.Windows.Forms.ToolStripMenuItem()
-        Me.MenuFileExit = New System.Windows.Forms.ToolStripMenuItem()
+        Me.MainMenuEdit = New System.Windows.Forms.ToolStripMenuItem()
         Me.MenuEditBootSector = New System.Windows.Forms.ToolStripMenuItem()
         Me.MenuEditFAT = New System.Windows.Forms.ToolStripMenuItem()
         Me.MenuEditFileProperties = New System.Windows.Forms.ToolStripMenuItem()
@@ -93,6 +83,16 @@ Partial Class MainForm
         Me.MenuDiskReadFloppyB = New System.Windows.Forms.ToolStripMenuItem()
         Me.MenuDiskWriteFloppyA = New System.Windows.Forms.ToolStripMenuItem()
         Me.MenuDiskWriteFloppyB = New System.Windows.Forms.ToolStripMenuItem()
+        Me.MainMenuFile = New System.Windows.Forms.ToolStripMenuItem()
+        Me.MenuFileOpen = New System.Windows.Forms.ToolStripMenuItem()
+        Me.MenuFileReload = New System.Windows.Forms.ToolStripMenuItem()
+        Me.MenuFileNewImage = New System.Windows.Forms.ToolStripMenuItem()
+        Me.MenuFileSave = New System.Windows.Forms.ToolStripMenuItem()
+        Me.MenuFileSaveAs = New System.Windows.Forms.ToolStripMenuItem()
+        Me.MenuFileSaveAll = New System.Windows.Forms.ToolStripMenuItem()
+        Me.MenuFileClose = New System.Windows.Forms.ToolStripMenuItem()
+        Me.MenuFileCloseAll = New System.Windows.Forms.ToolStripMenuItem()
+        Me.MenuFileExit = New System.Windows.Forms.ToolStripMenuItem()
         Me.MainMenuFilters = New System.Windows.Forms.ToolStripMenuItem()
         Me.ContextMenuFilters = New System.Windows.Forms.ContextMenuStrip(Me.components)
         Me.MenuFiltersScanNew = New System.Windows.Forms.ToolStripMenuItem()
@@ -168,7 +168,6 @@ Partial Class MainForm
         MenuFileSeparator1 = New System.Windows.Forms.ToolStripSeparator()
         MenuFileSeparator2 = New System.Windows.Forms.ToolStripSeparator()
         MenuFileSeparator3 = New System.Windows.Forms.ToolStripSeparator()
-        MainMenuEdit = New System.Windows.Forms.ToolStripMenuItem()
         MenuEditSeparator1 = New System.Windows.Forms.ToolStripSeparator()
         MenuEditSeparator2 = New System.Windows.Forms.ToolStripSeparator()
         MainMenuView = New System.Windows.Forms.ToolStripMenuItem()
@@ -203,86 +202,26 @@ Partial Class MainForm
         '
         resources.ApplyResources(HashValue, "HashValue")
         '
-        'MainMenuFile
-        '
-        Me.MainMenuFile.DropDownItems.AddRange(New System.Windows.Forms.ToolStripItem() {Me.MenuFileOpen, Me.MenuFileReload, Me.MenuFileNewImage, MenuFileSeparator1, Me.MenuFileSave, Me.MenuFileSaveAs, Me.MenuFileSaveAll, MenuFileSeparator2, Me.MenuFileClose, Me.MenuFileCloseAll, MenuFileSeparator3, Me.MenuFileExit})
-        Me.MainMenuFile.Name = "MainMenuFile"
-        resources.ApplyResources(Me.MainMenuFile, "MainMenuFile")
-        '
-        'MenuFileOpen
-        '
-        Me.MenuFileOpen.Image = Global.DiskImageTool.My.Resources.Resources.OpenfileDialog
-        resources.ApplyResources(Me.MenuFileOpen, "MenuFileOpen")
-        Me.MenuFileOpen.Name = "MenuFileOpen"
-        '
-        'MenuFileReload
-        '
-        Me.MenuFileReload.Image = Global.DiskImageTool.My.Resources.Resources.Refresh
-        Me.MenuFileReload.Name = "MenuFileReload"
-        resources.ApplyResources(Me.MenuFileReload, "MenuFileReload")
-        '
-        'MenuFileNewImage
-        '
-        Me.MenuFileNewImage.Image = Global.DiskImageTool.My.Resources.Resources.NewDocument
-        Me.MenuFileNewImage.Name = "MenuFileNewImage"
-        resources.ApplyResources(Me.MenuFileNewImage, "MenuFileNewImage")
-        '
         'MenuFileSeparator1
         '
         MenuFileSeparator1.Name = "MenuFileSeparator1"
         resources.ApplyResources(MenuFileSeparator1, "MenuFileSeparator1")
-        '
-        'MenuFileSave
-        '
-        Me.MenuFileSave.Image = Global.DiskImageTool.My.Resources.Resources.Save
-        resources.ApplyResources(Me.MenuFileSave, "MenuFileSave")
-        Me.MenuFileSave.Name = "MenuFileSave"
-        '
-        'MenuFileSaveAs
-        '
-        Me.MenuFileSaveAs.Image = Global.DiskImageTool.My.Resources.Resources.SaveAs
-        Me.MenuFileSaveAs.Name = "MenuFileSaveAs"
-        resources.ApplyResources(Me.MenuFileSaveAs, "MenuFileSaveAs")
-        '
-        'MenuFileSaveAll
-        '
-        Me.MenuFileSaveAll.Image = Global.DiskImageTool.My.Resources.Resources.SaveAll
-        Me.MenuFileSaveAll.Name = "MenuFileSaveAll"
-        resources.ApplyResources(Me.MenuFileSaveAll, "MenuFileSaveAll")
         '
         'MenuFileSeparator2
         '
         MenuFileSeparator2.Name = "MenuFileSeparator2"
         resources.ApplyResources(MenuFileSeparator2, "MenuFileSeparator2")
         '
-        'MenuFileClose
-        '
-        Me.MenuFileClose.Image = Global.DiskImageTool.My.Resources.Resources.Close
-        Me.MenuFileClose.Name = "MenuFileClose"
-        resources.ApplyResources(Me.MenuFileClose, "MenuFileClose")
-        '
-        'MenuFileCloseAll
-        '
-        Me.MenuFileCloseAll.Image = Global.DiskImageTool.My.Resources.Resources.CloseAll
-        Me.MenuFileCloseAll.Name = "MenuFileCloseAll"
-        resources.ApplyResources(Me.MenuFileCloseAll, "MenuFileCloseAll")
-        '
         'MenuFileSeparator3
         '
         MenuFileSeparator3.Name = "MenuFileSeparator3"
         resources.ApplyResources(MenuFileSeparator3, "MenuFileSeparator3")
         '
-        'MenuFileExit
-        '
-        Me.MenuFileExit.Image = Global.DiskImageTool.My.Resources.Resources._Exit
-        Me.MenuFileExit.Name = "MenuFileExit"
-        resources.ApplyResources(Me.MenuFileExit, "MenuFileExit")
-        '
         'MainMenuEdit
         '
-        MainMenuEdit.DropDownItems.AddRange(New System.Windows.Forms.ToolStripItem() {Me.MenuEditBootSector, Me.MenuEditFAT, MenuEditSeparator1, Me.MenuEditFileProperties, Me.MenuEditExportFile, Me.MenuEditReplaceFile, MenuEditSeparator2, Me.MenuEditImportFiles, Me.ToolStripSeparator1, Me.MenuEditUndo, Me.MenuEditRedo, Me.MenuEditRevert})
-        MainMenuEdit.Name = "MainMenuEdit"
-        resources.ApplyResources(MainMenuEdit, "MainMenuEdit")
+        Me.MainMenuEdit.DropDownItems.AddRange(New System.Windows.Forms.ToolStripItem() {Me.MenuEditBootSector, Me.MenuEditFAT, MenuEditSeparator1, Me.MenuEditFileProperties, Me.MenuEditExportFile, Me.MenuEditReplaceFile, MenuEditSeparator2, Me.MenuEditImportFiles, Me.ToolStripSeparator1, Me.MenuEditUndo, Me.MenuEditRedo, Me.MenuEditRevert})
+        Me.MainMenuEdit.Name = "MainMenuEdit"
+        resources.ApplyResources(Me.MainMenuEdit, "MainMenuEdit")
         '
         'MenuEditBootSector
         '
@@ -565,10 +504,70 @@ Partial Class MainForm
         '
         'MenuStripTop
         '
-        MenuStripTop.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.MainMenuFile, MainMenuEdit, Me.MainMenuFilters, MainMenuView, MainMenuTools, MainMenuDisk, Me.MainMenuFlux, Me.MainMenuReports, Me.MainMenuOptions, MainMenuHelp, Me.MainMenuUpdateAvailable, Me.MainMenuNewInstance})
+        MenuStripTop.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.MainMenuFile, Me.MainMenuEdit, Me.MainMenuFilters, MainMenuView, MainMenuTools, MainMenuDisk, Me.MainMenuFlux, Me.MainMenuReports, Me.MainMenuOptions, MainMenuHelp, Me.MainMenuUpdateAvailable, Me.MainMenuNewInstance})
         resources.ApplyResources(MenuStripTop, "MenuStripTop")
         MenuStripTop.Name = "MenuStripTop"
         MenuStripTop.ShowItemToolTips = True
+        '
+        'MainMenuFile
+        '
+        Me.MainMenuFile.DropDownItems.AddRange(New System.Windows.Forms.ToolStripItem() {Me.MenuFileOpen, Me.MenuFileReload, Me.MenuFileNewImage, MenuFileSeparator1, Me.MenuFileSave, Me.MenuFileSaveAs, Me.MenuFileSaveAll, MenuFileSeparator2, Me.MenuFileClose, Me.MenuFileCloseAll, MenuFileSeparator3, Me.MenuFileExit})
+        Me.MainMenuFile.Name = "MainMenuFile"
+        resources.ApplyResources(Me.MainMenuFile, "MainMenuFile")
+        '
+        'MenuFileOpen
+        '
+        Me.MenuFileOpen.Image = Global.DiskImageTool.My.Resources.Resources.OpenfileDialog
+        resources.ApplyResources(Me.MenuFileOpen, "MenuFileOpen")
+        Me.MenuFileOpen.Name = "MenuFileOpen"
+        '
+        'MenuFileReload
+        '
+        Me.MenuFileReload.Image = Global.DiskImageTool.My.Resources.Resources.Refresh
+        Me.MenuFileReload.Name = "MenuFileReload"
+        resources.ApplyResources(Me.MenuFileReload, "MenuFileReload")
+        '
+        'MenuFileNewImage
+        '
+        Me.MenuFileNewImage.Image = Global.DiskImageTool.My.Resources.Resources.NewDocument
+        Me.MenuFileNewImage.Name = "MenuFileNewImage"
+        resources.ApplyResources(Me.MenuFileNewImage, "MenuFileNewImage")
+        '
+        'MenuFileSave
+        '
+        Me.MenuFileSave.Image = Global.DiskImageTool.My.Resources.Resources.Save
+        resources.ApplyResources(Me.MenuFileSave, "MenuFileSave")
+        Me.MenuFileSave.Name = "MenuFileSave"
+        '
+        'MenuFileSaveAs
+        '
+        Me.MenuFileSaveAs.Image = Global.DiskImageTool.My.Resources.Resources.SaveAs
+        Me.MenuFileSaveAs.Name = "MenuFileSaveAs"
+        resources.ApplyResources(Me.MenuFileSaveAs, "MenuFileSaveAs")
+        '
+        'MenuFileSaveAll
+        '
+        Me.MenuFileSaveAll.Image = Global.DiskImageTool.My.Resources.Resources.SaveAll
+        Me.MenuFileSaveAll.Name = "MenuFileSaveAll"
+        resources.ApplyResources(Me.MenuFileSaveAll, "MenuFileSaveAll")
+        '
+        'MenuFileClose
+        '
+        Me.MenuFileClose.Image = Global.DiskImageTool.My.Resources.Resources.Close
+        Me.MenuFileClose.Name = "MenuFileClose"
+        resources.ApplyResources(Me.MenuFileClose, "MenuFileClose")
+        '
+        'MenuFileCloseAll
+        '
+        Me.MenuFileCloseAll.Image = Global.DiskImageTool.My.Resources.Resources.CloseAll
+        Me.MenuFileCloseAll.Name = "MenuFileCloseAll"
+        resources.ApplyResources(Me.MenuFileCloseAll, "MenuFileCloseAll")
+        '
+        'MenuFileExit
+        '
+        Me.MenuFileExit.Image = Global.DiskImageTool.My.Resources.Resources._Exit
+        Me.MenuFileExit.Name = "MenuFileExit"
+        resources.ApplyResources(Me.MenuFileExit, "MenuFileExit")
         '
         'MainMenuFilters
         '
@@ -1194,4 +1193,5 @@ Partial Class MainForm
     Friend WithEvents MenuPcImgCnv As ToolStripMenuItem
     Friend WithEvents MenuPcImgCnvTrackLayout As ToolStripMenuItem
     Friend WithEvents MainMenuFile As ToolStripMenuItem
+    Friend WithEvents MainMenuEdit As ToolStripMenuItem
 End Class

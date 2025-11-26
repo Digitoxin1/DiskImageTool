@@ -123,12 +123,6 @@
   <data name="Label1.Text" xml:space="preserve">
     <value>Octets requis:</value>
   </data>
-  <data name="BtnCancel.Text" xml:space="preserve">
-    <value>Annuler</value>
-  </data>
-  <data name="FileCreationDate.Text" xml:space="preserve">
-    <value>Créé</value>
-  </data>
   <data name="ChkCreated.Text" xml:space="preserve">
     <value>Date de création</value>
   </data>
@@ -138,35 +132,14 @@
   <data name="FileName.Text" xml:space="preserve">
     <value>Nom du fichier</value>
   </data>
-  <data name="Label3.Text" xml:space="preserve">
-    <value>Fichiers sélectionnés:</value>
-  </data>
   <data name="BtnOK.Text" xml:space="preserve">
     <value>Importer</value>
-  </data>
-  <data name="$this.Text" xml:space="preserve">
-    <value>Importer des fichiers</value>
-  </data>
-  <data name="FileLastAccessDate.Text" xml:space="preserve">
-    <value>Dernier accès</value>
   </data>
   <data name="ChkLastAccessed.Text" xml:space="preserve">
     <value>Date du dernier accès</value>
   </data>
-  <data name="FileLastWriteDate.Text" xml:space="preserve">
-    <value>Dernière modification</value>
-  </data>
   <data name="ChkLFN.Text" xml:space="preserve">
     <value>Noms de fichiers longs</value>
-  </data>
-  <data name="ChkNTExtensions.Text" xml:space="preserve">
-    <value>Extensions NT</value>
-  </data>
-  <data name="Label4.Text" xml:space="preserve">
-    <value>Options</value>
-  </data>
-  <data name="FileSize.Text" xml:space="preserve">
-    <value>Taille</value>
   </data>
   <data name="FileSizeOnDisk.Text" xml:space="preserve">
     <value>Taille sur la disquette</value>

@@ -120,9 +120,6 @@
   <data name="LblFileSizeError.Text" xml:space="preserve">
     <value>(Error)</value>
   </data>
-  <data name="BtnCancel.Text" xml:space="preserve">
-    <value>Cancelar</value>
-  </data>
   <data name="LblFileNameCaption.Text" xml:space="preserve">
     <value>El nombre del archivo se establecerá en:</value>
   </data>
@@ -137,9 +134,6 @@
   </data>
   <data name="GroupBoxOriginal.Text" xml:space="preserve">
     <value>Archivo original</value>
-  </data>
-  <data name="LblPadCaption.Text" xml:space="preserve">
-    <value>Rellenar archivo con:</value>
   </data>
   <data name="BtnOK.Text" xml:space="preserve">
     <value>Reemplazar</value>

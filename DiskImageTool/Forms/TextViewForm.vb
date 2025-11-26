@@ -7,6 +7,8 @@
         InitializeComponent()
 
         ' Add any initialization after the InitializeComponent() call.
+        LocalizeForm()
+
         Me.Text = Caption
         TextBox1.Text = Content
         TextBox1.SelectionStart = 0
@@ -18,6 +20,11 @@
             PanelBottom.Visible = False
             TextBox1.Height = Me.ClientSize.Height - TextBox1.Top * 2
         End If
+    End Sub
+
+    Private Sub LocalizeForm()
+        BtnClose.Text = WithoutHotkey(My.Resources.Menu_Close)
+        BtnSave.Text = WithoutHotkey(My.Resources.Menu_Save)
     End Sub
 
     Private Sub TextViewForm_KeyDown(sender As Object, e As KeyEventArgs) Handles Me.KeyDown

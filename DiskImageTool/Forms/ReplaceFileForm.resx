@@ -145,7 +145,8 @@
     <value>1</value>
   </data>
   <data name="BtnCancel.Text" xml:space="preserve">
-    <value>Cancel</value>
+    <value>{Cancel}</value>
+    <comment>@Invariant</comment>
   </data>
   <data name="&gt;&gt;BtnCancel.Name" xml:space="preserve">
     <value>BtnCancel</value>
@@ -456,7 +457,8 @@
     <value>0</value>
   </data>
   <data name="LblPadCaption.Text" xml:space="preserve">
-    <value>Pad file with:</value>
+    <value>{Pad file with:}</value>
+    <comment>@Invariant</comment>
   </data>
   <data name="&gt;&gt;LblPadCaption.Name" xml:space="preserve">
     <value>LblPadCaption</value>

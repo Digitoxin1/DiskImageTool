@@ -148,7 +148,8 @@
     <value>0</value>
   </data>
   <data name="BtnOK.Text" xml:space="preserve">
-    <value>&amp;Ok</value>
+    <value>{&amp;Ok}</value>
+    <comment>@Invariant</comment>
   </data>
   <data name="&gt;&gt;BtnOK.Name" xml:space="preserve">
     <value>BtnOK</value>
@@ -178,7 +179,8 @@
     <value>1</value>
   </data>
   <data name="BtnCancel.Text" xml:space="preserve">
-    <value>&amp;Cancel</value>
+    <value>{&amp;Cancel}</value>
+    <comment>@Invariant</comment>
   </data>
   <data name="&gt;&gt;BtnCancel.Name" xml:space="preserve">
     <value>BtnCancel</value>
@@ -295,7 +297,8 @@
     <value>4</value>
   </data>
   <data name="Label1.Text" xml:space="preserve">
-    <value>Disk Format:</value>
+    <value>{Disk Format:}</value>
+    <comment>@Invariant</comment>
   </data>
   <data name="Label1.TextAlign" type="System.Drawing.ContentAlignment, System.Drawing">
     <value>MiddleLeft</value>
@@ -331,7 +334,8 @@
     <value>2</value>
   </data>
   <data name="Label2.Text" xml:space="preserve">
-    <value>Image Type:</value>
+    <value>{Image Type:}</value>
+    <comment>@Invariant</comment>
   </data>
   <data name="Label2.TextAlign" type="System.Drawing.ContentAlignment, System.Drawing">
     <value>MiddleLeft</value>
@@ -361,7 +365,8 @@
     <value>6</value>
   </data>
   <data name="GroupBox1.Text" xml:space="preserve">
-    <value>Options</value>
+    <value>{Options}</value>
+    <comment>@Invariant</comment>
   </data>
   <data name="&gt;&gt;GroupBox1.Name" xml:space="preserve">
     <value>GroupBox1</value>

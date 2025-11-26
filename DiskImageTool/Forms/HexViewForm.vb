@@ -38,6 +38,8 @@ Public Class HexViewForm
         ' This call is required by the designer.
         InitializeComponent()
         ' Add any initialization after the InitializeComponent() call.
+        LocalizeForm()
+
         _HexViewSectorData = HexViewSectorData
         _BPB = _HexViewSectorData.Disk.BPB
         _Changes = New Stack(Of List(Of HexChange))
@@ -96,6 +98,34 @@ Public Class HexViewForm
             InitializeSyncCheckBox()
         End If
     End Sub
+
+    Private Sub LocalizeForm()
+        BtnCopyHex.Text = My.Resources.Menu_CopyHex
+        BtnCopyHexFormatted.Text = My.Resources.Menu_CopyHexFormatted
+        BtnCopyText.Text = My.Resources.Menu_CopyText
+        BtnCopyValue.Text = My.Resources.Menu_CopyValue
+        BtnDelete.Text = String.Format(My.Resources.Label_FillSelectionWith, "0x00")
+        BtnFillF6.Text = String.Format(My.Resources.Label_FillSelectionWith, "0xF6")
+        BtnFind.Text = My.Resources.Label_Find
+        BtnFindNext.Text = My.Resources.Label_FIndNext
+        BtnRedo.Text = My.Resources.Menu_Redo
+        BtnSelectAll.Text = My.Resources.Menu_SelectAll
+        BtnUndo.Text = My.Resources.Menu_Undo
+        HexBox1.BuiltInContextMenu.CopyMenuItemText = WithoutHotkey(My.Resources.Menu_CopyText)
+        HexBox1.BuiltInContextMenu.SelectAllMenuItemText = My.Resources.Label_SelectAll
+        ToolStripBtnCopyHex.Text = WithoutHotkey(My.Resources.Menu_CopyHex)
+        ToolStripBtnCopyHexFormatted.Text = WithoutHotkey(My.Resources.Menu_CopyHexFormatted)
+        ToolStripBtnCopyText.Text = WithoutHotkey(My.Resources.Menu_CopyText)
+        ToolStripBtnDelete.Text = String.Format(My.Resources.Label_FillSelectionWith, "0x00")
+        ToolStripBtnFillF6.Text = String.Format(My.Resources.Label_FillSelectionWith, "0xF6")
+        ToolStripBtnFind.Text = My.Resources.Label_Find
+        ToolStripBtnFindNext.Text = My.Resources.Label_FIndNext
+        ToolStripBtnRedo.Text = WithoutHotkey(My.Resources.Menu_Redo)
+        ToolStripBtnSelectAll.Text = My.Resources.Label_SelectAll
+        ToolStripBtnSelectTrack.ToolTipText = My.Resources.Label_Track
+        ToolStripBtnUndo.Text = WithoutHotkey(My.Resources.Menu_Undo)
+    End Sub
+
 
     Public ReadOnly Property Modified As Boolean
         Get
@@ -855,7 +885,7 @@ Public Class HexViewForm
             BtnSelectTrack.Text = My.Resources.Menu_SelectTrack
             BtnSelectTrack.Enabled = False
             ToolStripBtnSelectTrack.Text = My.Resources.Label_Track
-            ToolStripBtnSelectTrack.ToolTipText = My.Resources.Label_SelectTrack
+            ToolStripBtnSelectTrack.ToolTipText = WithoutHotkey(My.Resources.Menu_SelectTrack)
             ToolStripBtnSelectTrack.Enabled = BtnSelectTrack.Enabled
             _DataGridInspector.SetDataRow(DataRowEnum.Area, Nothing, True, True)
             _DataGridInspector.SetDataRow(DataRowEnum.File, Nothing, True, True, FileCaption)
@@ -967,7 +997,7 @@ Public Class HexViewForm
                     BtnSelectTrack.Text = My.Resources.Menu_SelectTrack & " " & Value
                     BtnSelectTrack.Enabled = _ClusterNavigator And Not OutOfRange
                     ToolStripBtnSelectTrack.Text = My.Resources.Label_Track & " " & Value
-                    ToolStripBtnSelectTrack.ToolTipText = My.Resources.Label_SelectTrack & " " & Value
+                    ToolStripBtnSelectTrack.ToolTipText = WithoutHotkey(My.Resources.Menu_SelectTrack) & " " & Value
                     ToolStripBtnSelectTrack.Enabled = BtnSelectTrack.Enabled
                 End If
 

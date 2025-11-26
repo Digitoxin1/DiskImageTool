@@ -14,6 +14,7 @@
 
     Private Sub LocalizeForm()
         BtnOK.Text = My.Resources.Menu_Ok
+        BtnCancel.Text = My.Resources.Menu_Cancel
     End Sub
 
     Private Sub VolumeSerialNumberForm_Load(sender As Object, e As EventArgs) Handles Me.Load

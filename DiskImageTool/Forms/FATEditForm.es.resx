@@ -117,27 +117,6 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="BtnCancel.Text" xml:space="preserve">
-    <value>&amp;Cancelar</value>
-  </data>
-  <data name="BtnUpdate.Text" xml:space="preserve">
-    <value>&amp;Actualizar</value>
-  </data>
-  <data name="BtnBad.Text" xml:space="preserve">
-    <value>Defectuoso</value>
-  </data>
-  <data name="BtnFree.Text" xml:space="preserve">
-    <value>Libre</value>
-  </data>
-  <data name="BtnLast.Text" xml:space="preserve">
-    <value>Último</value>
-  </data>
-  <data name="TxtMediaDescriptor.Text" xml:space="preserve">
-    <value>Descriptor de medio</value>
-  </data>
-  <data name="BtnReserved.Text" xml:space="preserve">
-    <value>Reservado</value>
-  </data>
   <data name="ChkSync.Text" xml:space="preserve">
     <value>Sincronizar FATs</value>
   </data>

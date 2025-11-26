@@ -43,7 +43,7 @@ Partial Class ImageCreationForm
         Me.GroupBoxSpecial = New System.Windows.Forms.GroupBox()
         Me.GroupBoxStandard = New System.Windows.Forms.GroupBox()
         Me.CheckImportFiles = New System.Windows.Forms.CheckBox()
-        Me.Label1 = New System.Windows.Forms.Label()
+        Me.LabelBootSector = New System.Windows.Forms.Label()
         Me.ComboBootSector = New System.Windows.Forms.ComboBox()
         RadioFormat2880 = New System.Windows.Forms.RadioButton()
         RadioFormat1440 = New System.Windows.Forms.RadioButton()
@@ -178,7 +178,7 @@ Partial Class ImageCreationForm
         PanelMain.BackColor = System.Drawing.SystemColors.Window
         PanelMain.Controls.Add(Me.PanelFormats)
         PanelMain.Controls.Add(Me.CheckImportFiles)
-        PanelMain.Controls.Add(Me.Label1)
+        PanelMain.Controls.Add(Me.LabelBootSector)
         PanelMain.Controls.Add(Me.ComboBootSector)
         PanelMain.Name = "PanelMain"
         '
@@ -219,10 +219,10 @@ Partial Class ImageCreationForm
         Me.CheckImportFiles.Name = "CheckImportFiles"
         Me.CheckImportFiles.UseVisualStyleBackColor = True
         '
-        'Label1
+        'LabelBootSector
         '
-        resources.ApplyResources(Me.Label1, "Label1")
-        Me.Label1.Name = "Label1"
+        resources.ApplyResources(Me.LabelBootSector, "LabelBootSector")
+        Me.LabelBootSector.Name = "LabelBootSector"
         '
         'ComboBootSector
         '
@@ -258,7 +258,7 @@ Partial Class ImageCreationForm
     Friend WithEvents PanelFormats As Panel
     Friend WithEvents GroupBoxStandard As GroupBox
     Friend WithEvents GroupBoxSpecial As GroupBox
-    Friend WithEvents Label1 As Label
+    Friend WithEvents LabelBootSector As Label
     Friend WithEvents ComboBootSector As ComboBox
     Friend WithEvents CheckImportFiles As CheckBox
 End Class

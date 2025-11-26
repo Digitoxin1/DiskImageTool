@@ -421,7 +421,7 @@ Namespace Flux
 
             ButtonOpen = New Button With {
                 .Margin = New Padding(15, 3, 3, 3),
-                .Text = My.Resources.Label_Open,
+                .Text = WithoutHotkey(My.Resources.Menu_Open),
                 .MinimumSize = New Size(75, 0),
                 .AutoSize = True
             }
@@ -825,7 +825,7 @@ Namespace Flux
 
             ComboDevices.Enabled = SettingsEnabled AndAlso ComboDevices.Items.Count > 1
 
-            ButtonCancel.Text = If(IsRunning Or HasOutputfile, My.Resources.Label_Cancel, My.Resources.Label_Close)
+            ButtonCancel.Text = If(IsRunning Or HasOutputfile, WithoutHotkey(My.Resources.Menu_Cancel), WithoutHotkey(My.Resources.Menu_Close))
             ButtonDiscard.Enabled = IsIdle AndAlso HasOutputfile
             ButtonOpen.Enabled = SettingsEnabled AndAlso Not HasOutputfile
 

@@ -120,14 +120,8 @@
   <data name="MenuHelpChangeLog.Text" xml:space="preserve">
     <value>&amp;Registro de Cambios</value>
   </data>
-  <data name="MenuFileClose.Text" xml:space="preserve">
-    <value>&amp;Cerrar</value>
-  </data>
   <data name="MainMenuDisk.Text" xml:space="preserve">
     <value>&amp;Disco</value>
-  </data>
-  <data name="MainMenuEdit.Text" xml:space="preserve">
-    <value>&amp;Editar</value>
   </data>
   <data name="MainMenuView.Text" xml:space="preserve">
     <value>&amp;Hexadecimal</value>
@@ -137,9 +131,6 @@
   </data>
   <data name="MenuFileNewImage.Text" xml:space="preserve">
     <value>&amp;Nueva Imagen</value>
-  </data>
-  <data name="MenuFileOpen.Text" xml:space="preserve">
-    <value>&amp;Abrir</value>
   </data>
   <data name="MainMenuOptions.Text" xml:space="preserve">
     <value>&amp;Opciones</value>
@@ -153,15 +144,6 @@
   <data name="MenuHexRawTrackData.Text" xml:space="preserve">
     <value>&amp;Datos de Pista en Bruto</value>
   </data>
-  <data name="MenuDiskReadFloppyA.Text" xml:space="preserve">
-    <value>&amp;Leer Disco en la Unidad A</value>
-  </data>
-  <data name="MenuDiskReadFloppyB.Text" xml:space="preserve">
-    <value>&amp;Leer Disco en la Unidad B</value>
-  </data>
-  <data name="MenuEditRedo.Text" xml:space="preserve">
-    <value>&amp;Rehacer</value>
-  </data>
   <data name="MenuFileReload.Text" xml:space="preserve">
     <value>&amp;Recargar desde el Disco</value>
   </data>
@@ -171,14 +153,8 @@
   <data name="MenuEditRevert.Text" xml:space="preserve">
     <value>&amp;Revertir Cambios</value>
   </data>
-  <data name="MenuFileSave.Text" xml:space="preserve">
-    <value>&amp;Guardar</value>
-  </data>
   <data name="MainMenuTools.Text" xml:space="preserve">
     <value>&amp;Herramientas</value>
-  </data>
-  <data name="MenuEditUndo.Text" xml:space="preserve">
-    <value>&amp;Deshacer</value>
   </data>
   <data name="MenuHelpAbout.Text" xml:space="preserve">
     <value>Acerca de DiskImageTool</value>
@@ -219,9 +195,6 @@
   <data name="MainMenuFilters.Text" xml:space="preserve">
     <value>F&amp;iltros</value>
   </data>
-  <data name="MenuEditFileProperties.Text" xml:space="preserve">
-    <value>Propiedades del &amp;archivo</value>
-  </data>
   <data name="MenuToolsFixImageSizeSubMenu.Text" xml:space="preserve">
     <value>Corregir &amp;tamaño de la imagen</value>
   </data>
@@ -230,9 +203,6 @@
   </data>
   <data name="MenuOptionsDragDrop.Text" xml:space="preserve">
     <value>Importar usando arrastrar y soltar</value>
-  </data>
-  <data name="ToolStripRedo.Text" xml:space="preserve">
-    <value>&amp;Rehacer</value>
   </data>
   <data name="MenuToolsRemoveBootSector.Text" xml:space="preserve">
     <value>Quitar el &amp;sector de arranque del directorio raíz</value>
@@ -249,20 +219,11 @@
   <data name="btnRetry.Text" xml:space="preserve">
     <value>Reintentar</value>
   </data>
-  <data name="MenuFileSaveAs.Text" xml:space="preserve">
-    <value>Guardar &amp;como</value>
-  </data>
   <data name="MenuFiltersScanNew.Text" xml:space="preserve">
     <value>E&amp;scanear nuevas imágenes</value>
   </data>
-  <data name="ToolStripUndo.Text" xml:space="preserve">
-    <value>Deshacer</value>
-  </data>
   <data name="MainMenuUpdateAvailable.Text" xml:space="preserve">
     <value>Actualización disponible</value>
-  </data>
-  <data name="ToolStripImportFiles.ToolTipText" xml:space="preserve">
-    <value>Importar archivos</value>
   </data>
   <data name="MainMenuReports.Text" xml:space="preserve">
     <value>&amp;Informes</value>

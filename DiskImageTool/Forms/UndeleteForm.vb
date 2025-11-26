@@ -5,8 +5,15 @@
         InitializeComponent()
 
         ' Add any initialization after the InitializeComponent() call.
+        LocalizeForm()
+
         Filename = "?" & Filename.Substring(1)
         Me.LabelFileName.Text = Filename
+    End Sub
+
+    Private Sub LocalizeForm()
+        BtnCancel.Text = My.Resources.Menu_Cancel
+        BtnUpdate.Text = My.Resources.Menu_Update
     End Sub
 
     Public ReadOnly Property FirstChar As Byte

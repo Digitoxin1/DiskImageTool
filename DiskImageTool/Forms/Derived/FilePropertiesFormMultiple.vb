@@ -12,8 +12,8 @@ Public Class FilePropertiesFormMultiple
         _Disk = Disk
         _DirectoryEntries = DirectoryEntries
 
-        MyBase.Text = My.Resources.Label_FileProperties
-        BtnUpdate.Text = My.Resources.Button_Update
+        MyBase.Text = WithoutHotkey(My.Resources.Menu_FileProperties)
+        BtnUpdate.Text = My.Resources.Menu_Update
     End Sub
 
     Public ReadOnly Property Updated As Boolean

@@ -126,22 +126,13 @@
   <data name="BtnOK.Text" xml:space="preserve">
     <value>OK</value>
   </data>
-  <data name="BtnCancel.Text" xml:space="preserve">
-    <value>Abbrechen</value>
-  </data>
   <data name="GroupBoxSpecial.Text" xml:space="preserve">
     <value>Spezialformate</value>
   </data>
   <data name="GroupBoxStandard.Text" xml:space="preserve">
     <value>Standardformate</value>
   </data>
-  <data name="Label1.Text" xml:space="preserve">
-    <value>Bootsektor</value>
-  </data>
   <data name="$this.Text" xml:space="preserve">
     <value>Neues Diskettenabbild</value>
-  </data>
-  <data name="CheckImportFiles.Text" xml:space="preserve">
-    <value>Dateien importieren</value>
   </data>
 </root>

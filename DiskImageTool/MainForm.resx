@@ -130,71 +130,12 @@
   <data name="HashValue.Width" type="System.Int32, mscorlib">
     <value>-1</value>
   </data>
-  <assembly alias="System.Drawing" name="System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
-  <data name="MenuFileOpen.ImageTransparentColor" type="System.Drawing.Color, System.Drawing">
-    <value>Magenta</value>
-  </data>
-  <assembly alias="System.Windows.Forms" name="System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
-  <data name="MenuFileOpen.ShortcutKeys" type="System.Windows.Forms.Keys, System.Windows.Forms">
-    <value>Ctrl+O</value>
-  </data>
-  <data name="MenuFileOpen.Size" type="System.Drawing.Size, System.Drawing">
-    <value>205, 22</value>
-  </data>
-  <data name="MenuFileOpen.Text" xml:space="preserve">
-    <value>&amp;Open</value>
-  </data>
-  <data name="MenuFileReload.ShortcutKeys" type="System.Windows.Forms.Keys, System.Windows.Forms">
-    <value>Ctrl+R</value>
-  </data>
-  <data name="MenuFileReload.Size" type="System.Drawing.Size, System.Drawing">
-    <value>205, 22</value>
-  </data>
-  <data name="MenuFileReload.Text" xml:space="preserve">
-    <value>&amp;Reload from Disk</value>
-  </data>
-  <data name="MenuFileNewImage.Size" type="System.Drawing.Size, System.Drawing">
-    <value>205, 22</value>
-  </data>
-  <data name="MenuFileNewImage.Text" xml:space="preserve">
-    <value>&amp;New Image</value>
-  </data>
   <metadata name="MenuFileSeparator1.GenerateMember" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
     <value>False</value>
   </metadata>
+  <assembly alias="System.Drawing" name="System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
   <data name="MenuFileSeparator1.Size" type="System.Drawing.Size, System.Drawing">
     <value>202, 6</value>
-  </data>
-  <data name="MenuFileSave.ImageTransparentColor" type="System.Drawing.Color, System.Drawing">
-    <value>Magenta</value>
-  </data>
-  <data name="MenuFileSave.ShortcutKeys" type="System.Windows.Forms.Keys, System.Windows.Forms">
-    <value>Ctrl+S</value>
-  </data>
-  <data name="MenuFileSave.Size" type="System.Drawing.Size, System.Drawing">
-    <value>205, 22</value>
-  </data>
-  <data name="MenuFileSave.Text" xml:space="preserve">
-    <value>&amp;Save</value>
-  </data>
-  <data name="MenuFileSaveAs.ShortcutKeys" type="System.Windows.Forms.Keys, System.Windows.Forms">
-    <value>Ctrl+Alt+S</value>
-  </data>
-  <data name="MenuFileSaveAs.Size" type="System.Drawing.Size, System.Drawing">
-    <value>205, 22</value>
-  </data>
-  <data name="MenuFileSaveAs.Text" xml:space="preserve">
-    <value>Save &amp;As</value>
-  </data>
-  <data name="MenuFileSaveAll.ShortcutKeys" type="System.Windows.Forms.Keys, System.Windows.Forms">
-    <value>Ctrl+Shift+S</value>
-  </data>
-  <data name="MenuFileSaveAll.Size" type="System.Drawing.Size, System.Drawing">
-    <value>205, 22</value>
-  </data>
-  <data name="MenuFileSaveAll.Text" xml:space="preserve">
-    <value>Save All</value>
-    <comment>@Invariant</comment>
   </data>
   <metadata name="MenuFileSeparator2.GenerateMember" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
     <value>False</value>
@@ -202,126 +143,92 @@
   <data name="MenuFileSeparator2.Size" type="System.Drawing.Size, System.Drawing">
     <value>202, 6</value>
   </data>
-  <data name="MenuFileClose.ShortcutKeys" type="System.Windows.Forms.Keys, System.Windows.Forms">
-    <value>Ctrl+W</value>
-  </data>
-  <data name="MenuFileClose.Size" type="System.Drawing.Size, System.Drawing">
-    <value>205, 22</value>
-  </data>
-  <data name="MenuFileClose.Text" xml:space="preserve">
-    <value>&amp;Close</value>
-  </data>
-  <data name="MenuFileCloseAll.ShortcutKeys" type="System.Windows.Forms.Keys, System.Windows.Forms">
-    <value>Ctrl+Shift+W</value>
-  </data>
-  <data name="MenuFileCloseAll.Size" type="System.Drawing.Size, System.Drawing">
-    <value>205, 22</value>
-  </data>
-  <data name="MenuFileCloseAll.Text" xml:space="preserve">
-    <value>Close All</value>
-    <comment>@Invariant</comment>
-  </data>
   <metadata name="MenuFileSeparator3.GenerateMember" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
     <value>False</value>
   </metadata>
   <data name="MenuFileSeparator3.Size" type="System.Drawing.Size, System.Drawing">
     <value>202, 6</value>
   </data>
-  <data name="MenuFileExit.ShortcutKeys" type="System.Windows.Forms.Keys, System.Windows.Forms">
-    <value>Alt+F4</value>
-  </data>
-  <data name="MenuFileExit.Size" type="System.Drawing.Size, System.Drawing">
-    <value>205, 22</value>
-  </data>
-  <data name="MenuFileExit.Text" xml:space="preserve">
-    <value>E&amp;xit</value>
-  </data>
-  <data name="MainMenuFile.Size" type="System.Drawing.Size, System.Drawing">
-    <value>37, 20</value>
-  </data>
-  <data name="MainMenuFile.Text" xml:space="preserve">
-    <value>&amp;File</value>
-    <comment>@Invariant</comment>
-  </data>
-  <metadata name="MainMenuEdit.GenerateMember" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
-    <value>False</value>
-  </metadata>
   <data name="MenuEditBootSector.Size" type="System.Drawing.Size, System.Drawing">
-    <value>180, 22</value>
+    <value>188, 22</value>
   </data>
   <data name="MenuEditBootSector.Text" xml:space="preserve">
-    <value>&amp;Boot Sector</value>
+    <value>{&amp;Boot Sector}</value>
     <comment>@Invariant</comment>
   </data>
   <data name="MenuEditFAT.Size" type="System.Drawing.Size, System.Drawing">
-    <value>180, 22</value>
+    <value>188, 22</value>
   </data>
   <data name="MenuEditFAT.Text" xml:space="preserve">
-    <value>File &amp;Allocation Table</value>
+    <value>{File &amp;Allocation Table}</value>
     <comment>@Invariant</comment>
   </data>
   <metadata name="MenuEditSeparator1.GenerateMember" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
     <value>False</value>
   </metadata>
   <data name="MenuEditSeparator1.Size" type="System.Drawing.Size, System.Drawing">
-    <value>177, 6</value>
+    <value>185, 6</value>
   </data>
   <data name="MenuEditFileProperties.Size" type="System.Drawing.Size, System.Drawing">
-    <value>180, 22</value>
+    <value>188, 22</value>
   </data>
   <data name="MenuEditFileProperties.Text" xml:space="preserve">
-    <value>File &amp;Properties</value>
+    <value>{File &amp;Properties}</value>
+    <comment>@Invariant</comment>
   </data>
   <data name="MenuEditExportFile.Size" type="System.Drawing.Size, System.Drawing">
-    <value>180, 22</value>
+    <value>188, 22</value>
   </data>
   <data name="MenuEditExportFile.Text" xml:space="preserve">
     <value>{ExportFile}</value>
     <comment>@Invariant</comment>
   </data>
   <data name="MenuEditReplaceFile.Size" type="System.Drawing.Size, System.Drawing">
-    <value>180, 22</value>
+    <value>188, 22</value>
   </data>
   <data name="MenuEditReplaceFile.Text" xml:space="preserve">
-    <value>&amp;Replace File</value>
+    <value>{&amp;Replace File}</value>
     <comment>@Invariant</comment>
   </data>
   <metadata name="MenuEditSeparator2.GenerateMember" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
     <value>False</value>
   </metadata>
   <data name="MenuEditSeparator2.Size" type="System.Drawing.Size, System.Drawing">
-    <value>177, 6</value>
+    <value>185, 6</value>
   </data>
   <data name="MenuEditImportFiles.Size" type="System.Drawing.Size, System.Drawing">
-    <value>180, 22</value>
+    <value>188, 22</value>
   </data>
   <data name="MenuEditImportFiles.Text" xml:space="preserve">
-    <value>&amp;Import Files</value>
+    <value>{&amp;Import Files}</value>
     <comment>@Invariant</comment>
   </data>
   <data name="ToolStripSeparator1.Size" type="System.Drawing.Size, System.Drawing">
-    <value>177, 6</value>
+    <value>185, 6</value>
   </data>
+  <assembly alias="System.Windows.Forms" name="System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
   <data name="MenuEditUndo.ShortcutKeys" type="System.Windows.Forms.Keys, System.Windows.Forms">
     <value>Ctrl+Z</value>
   </data>
   <data name="MenuEditUndo.Size" type="System.Drawing.Size, System.Drawing">
-    <value>180, 22</value>
+    <value>188, 22</value>
   </data>
   <data name="MenuEditUndo.Text" xml:space="preserve">
-    <value>&amp;Undo</value>
+    <value>{&amp;Undo}</value>
+    <comment>@Invariant</comment>
   </data>
   <data name="MenuEditRedo.ShortcutKeys" type="System.Windows.Forms.Keys, System.Windows.Forms">
     <value>Ctrl+Shift+Z</value>
   </data>
   <data name="MenuEditRedo.Size" type="System.Drawing.Size, System.Drawing">
-    <value>180, 22</value>
+    <value>188, 22</value>
   </data>
   <data name="MenuEditRedo.Text" xml:space="preserve">
-    <value>&amp;Redo</value>
+    <value>{&amp;Redo}</value>
+    <comment>@Invariant</comment>
   </data>
   <data name="MenuEditRevert.Size" type="System.Drawing.Size, System.Drawing">
-    <value>180, 22</value>
+    <value>188, 22</value>
   </data>
   <data name="MenuEditRevert.Text" xml:space="preserve">
     <value>&amp;Revert Changes</value>
@@ -333,7 +240,8 @@
     <value>39, 20</value>
   </data>
   <data name="MainMenuEdit.Text" xml:space="preserve">
-    <value>&amp;Edit</value>
+    <value>{&amp;Edit}</value>
+    <comment>@Invariant</comment>
   </data>
   <metadata name="MainMenuView.GenerateMember" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
     <value>False</value>
@@ -342,14 +250,14 @@
     <value>194, 22</value>
   </data>
   <data name="MenuHexBootSector.Text" xml:space="preserve">
-    <value>&amp;Boot Sector</value>
+    <value>{&amp;Boot Sector}</value>
     <comment>@Invariant</comment>
   </data>
   <data name="MenuHexFAT.Size" type="System.Drawing.Size, System.Drawing">
     <value>194, 22</value>
   </data>
   <data name="MenuHexFAT.Text" xml:space="preserve">
-    <value>File &amp;Allocation Table</value>
+    <value>{File &amp;Allocation Table}</value>
     <comment>@Invariant</comment>
   </data>
   <data name="MenuHexDirectory.Size" type="System.Drawing.Size, System.Drawing">
@@ -437,7 +345,7 @@
     <value>170, 22</value>
   </data>
   <data name="MenuToolsTruncateImage.Text" xml:space="preserve">
-    <value>&amp;Truncate Image</value>
+    <value>{&amp;Truncate Image}</value>
     <comment>@Invariant</comment>
   </data>
   <data name="MenuToolsRestructureImage.Size" type="System.Drawing.Size, System.Drawing">
@@ -553,7 +461,7 @@
     <value>False</value>
   </metadata>
   <data name="MenuDiskSeparator.Size" type="System.Drawing.Size, System.Drawing">
-    <value>178, 6</value>
+    <value>186, 6</value>
   </data>
   <metadata name="ToolStripSeparator9.GenerateMember" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
     <value>False</value>
@@ -565,29 +473,31 @@
     <value>False</value>
   </metadata>
   <data name="MenuDiskReadFloppyA.Size" type="System.Drawing.Size, System.Drawing">
-    <value>181, 22</value>
+    <value>189, 22</value>
   </data>
   <data name="MenuDiskReadFloppyA.Text" xml:space="preserve">
-    <value>&amp;Read Disk in Drive A</value>
+    <value>{&amp;Read Disk in Drive A}</value>
+    <comment>@Invariant</comment>
   </data>
   <data name="MenuDiskReadFloppyB.Size" type="System.Drawing.Size, System.Drawing">
-    <value>181, 22</value>
+    <value>189, 22</value>
   </data>
   <data name="MenuDiskReadFloppyB.Text" xml:space="preserve">
-    <value>&amp;Read Disk in Drive B</value>
+    <value>{&amp;Read Disk in Drive B}</value>
+    <comment>@Invariant</comment>
   </data>
   <data name="MenuDiskWriteFloppyA.Size" type="System.Drawing.Size, System.Drawing">
-    <value>181, 22</value>
+    <value>189, 22</value>
   </data>
   <data name="MenuDiskWriteFloppyA.Text" xml:space="preserve">
-    <value>&amp;Write Disk in Drive A</value>
+    <value>{&amp;Write Disk in Drive A}</value>
     <comment>@Invariant</comment>
   </data>
   <data name="MenuDiskWriteFloppyB.Size" type="System.Drawing.Size, System.Drawing">
-    <value>181, 22</value>
+    <value>189, 22</value>
   </data>
   <data name="MenuDiskWriteFloppyB.Text" xml:space="preserve">
-    <value>&amp;Write Disk in Drive B</value>
+    <value>{&amp;Write Disk in Drive B}</value>
     <comment>@Invariant</comment>
   </data>
   <data name="MainMenuDisk.Size" type="System.Drawing.Size, System.Drawing">
@@ -605,6 +515,103 @@
   <metadata name="MenuStripTop.Locked" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
     <value>True</value>
   </metadata>
+  <data name="MenuFileOpen.ImageTransparentColor" type="System.Drawing.Color, System.Drawing">
+    <value>Magenta</value>
+  </data>
+  <data name="MenuFileOpen.ShortcutKeys" type="System.Windows.Forms.Keys, System.Windows.Forms">
+    <value>Ctrl+O</value>
+  </data>
+  <data name="MenuFileOpen.Size" type="System.Drawing.Size, System.Drawing">
+    <value>205, 22</value>
+  </data>
+  <data name="MenuFileOpen.Text" xml:space="preserve">
+    <value>{&amp;Open}</value>
+    <comment>@Invariant</comment>
+  </data>
+  <data name="MenuFileReload.ShortcutKeys" type="System.Windows.Forms.Keys, System.Windows.Forms">
+    <value>Ctrl+R</value>
+  </data>
+  <data name="MenuFileReload.Size" type="System.Drawing.Size, System.Drawing">
+    <value>205, 22</value>
+  </data>
+  <data name="MenuFileReload.Text" xml:space="preserve">
+    <value>&amp;Reload from Disk</value>
+  </data>
+  <data name="MenuFileNewImage.Size" type="System.Drawing.Size, System.Drawing">
+    <value>205, 22</value>
+  </data>
+  <data name="MenuFileNewImage.Text" xml:space="preserve">
+    <value>&amp;New Image</value>
+  </data>
+  <data name="MenuFileSave.ImageTransparentColor" type="System.Drawing.Color, System.Drawing">
+    <value>Magenta</value>
+  </data>
+  <data name="MenuFileSave.ShortcutKeys" type="System.Windows.Forms.Keys, System.Windows.Forms">
+    <value>Ctrl+S</value>
+  </data>
+  <data name="MenuFileSave.Size" type="System.Drawing.Size, System.Drawing">
+    <value>205, 22</value>
+  </data>
+  <data name="MenuFileSave.Text" xml:space="preserve">
+    <value>{&amp;Save}</value>
+    <comment>@Invariant</comment>
+  </data>
+  <data name="MenuFileSaveAs.ShortcutKeys" type="System.Windows.Forms.Keys, System.Windows.Forms">
+    <value>Ctrl+Alt+S</value>
+  </data>
+  <data name="MenuFileSaveAs.Size" type="System.Drawing.Size, System.Drawing">
+    <value>205, 22</value>
+  </data>
+  <data name="MenuFileSaveAs.Text" xml:space="preserve">
+    <value>{Save &amp;As}</value>
+    <comment>@Invariant</comment>
+  </data>
+  <data name="MenuFileSaveAll.ShortcutKeys" type="System.Windows.Forms.Keys, System.Windows.Forms">
+    <value>Ctrl+Shift+S</value>
+  </data>
+  <data name="MenuFileSaveAll.Size" type="System.Drawing.Size, System.Drawing">
+    <value>205, 22</value>
+  </data>
+  <data name="MenuFileSaveAll.Text" xml:space="preserve">
+    <value>{Save All}</value>
+    <comment>@Invariant</comment>
+  </data>
+  <data name="MenuFileClose.ShortcutKeys" type="System.Windows.Forms.Keys, System.Windows.Forms">
+    <value>Ctrl+W</value>
+  </data>
+  <data name="MenuFileClose.Size" type="System.Drawing.Size, System.Drawing">
+    <value>205, 22</value>
+  </data>
+  <data name="MenuFileClose.Text" xml:space="preserve">
+    <value>{&amp;Close}</value>
+    <comment>@Invariant</comment>
+  </data>
+  <data name="MenuFileCloseAll.ShortcutKeys" type="System.Windows.Forms.Keys, System.Windows.Forms">
+    <value>Ctrl+Shift+W</value>
+  </data>
+  <data name="MenuFileCloseAll.Size" type="System.Drawing.Size, System.Drawing">
+    <value>205, 22</value>
+  </data>
+  <data name="MenuFileCloseAll.Text" xml:space="preserve">
+    <value>{Close All}</value>
+    <comment>@Invariant</comment>
+  </data>
+  <data name="MenuFileExit.ShortcutKeys" type="System.Windows.Forms.Keys, System.Windows.Forms">
+    <value>Alt+F4</value>
+  </data>
+  <data name="MenuFileExit.Size" type="System.Drawing.Size, System.Drawing">
+    <value>205, 22</value>
+  </data>
+  <data name="MenuFileExit.Text" xml:space="preserve">
+    <value>E&amp;xit</value>
+  </data>
+  <data name="MainMenuFile.Size" type="System.Drawing.Size, System.Drawing">
+    <value>45, 20</value>
+  </data>
+  <data name="MainMenuFile.Text" xml:space="preserve">
+    <value>{&amp;File}</value>
+    <comment>@Invariant</comment>
+  </data>
   <metadata name="ContextMenuFilters.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
     <value>409, 17</value>
   </metadata>
@@ -721,10 +728,10 @@
     <comment>@Invariant</comment>
   </data>
   <data name="MenuReportsWriteSplices.Size" type="System.Drawing.Size, System.Drawing">
-    <value>141, 22</value>
+    <value>149, 22</value>
   </data>
   <data name="MenuReportsWriteSplices.Text" xml:space="preserve">
-    <value>Write Splices</value>
+    <value>{Write Splices}</value>
     <comment>@Invariant</comment>
   </data>
   <data name="MainMenuReports.Size" type="System.Drawing.Size, System.Drawing">
@@ -761,7 +768,7 @@
     <value>224, 22</value>
   </data>
   <data name="MenuOptionsDisplayLanguage.Text" xml:space="preserve">
-    <value>Language</value>
+    <value>{Language}</value>
     <comment>@Invariant</comment>
   </data>
   <data name="ToolStripSeparator2.Size" type="System.Drawing.Size, System.Drawing">
@@ -935,19 +942,11 @@
   <data name="ToolStripOpen.Size" type="System.Drawing.Size, System.Drawing">
     <value>23, 22</value>
   </data>
-  <data name="ToolStripOpen.Text" xml:space="preserve">
-    <value>Open</value>
-    <comment>@Invariant</comment>
-  </data>
   <data name="ToolStripSave.ImageTransparentColor" type="System.Drawing.Color, System.Drawing">
     <value>Magenta</value>
   </data>
   <data name="ToolStripSave.Size" type="System.Drawing.Size, System.Drawing">
     <value>23, 22</value>
-  </data>
-  <data name="ToolStripSave.Text" xml:space="preserve">
-    <value>Save</value>
-    <comment>@Invariant</comment>
   </data>
   <data name="ToolStripSaveAs.ImageTransparentColor" type="System.Drawing.Color, System.Drawing">
     <value>Magenta</value>
@@ -955,19 +954,11 @@
   <data name="ToolStripSaveAs.Size" type="System.Drawing.Size, System.Drawing">
     <value>23, 22</value>
   </data>
-  <data name="ToolStripSaveAs.Text" xml:space="preserve">
-    <value>Save As</value>
-    <comment>@Invariant</comment>
-  </data>
   <data name="ToolStripSaveAll.ImageTransparentColor" type="System.Drawing.Color, System.Drawing">
     <value>Magenta</value>
   </data>
   <data name="ToolStripSaveAll.Size" type="System.Drawing.Size, System.Drawing">
     <value>23, 22</value>
-  </data>
-  <data name="ToolStripSaveAll.Text" xml:space="preserve">
-    <value>Save All</value>
-    <comment>@Invariant</comment>
   </data>
   <data name="ToolStripClose.ImageTransparentColor" type="System.Drawing.Color, System.Drawing">
     <value>Magenta</value>
@@ -975,19 +966,11 @@
   <data name="ToolStripClose.Size" type="System.Drawing.Size, System.Drawing">
     <value>23, 22</value>
   </data>
-  <data name="ToolStripClose.Text" xml:space="preserve">
-    <value>Close</value>
-    <comment>@Invariant</comment>
-  </data>
   <data name="ToolStripCloseAll.ImageTransparentColor" type="System.Drawing.Color, System.Drawing">
     <value>Magenta</value>
   </data>
   <data name="ToolStripCloseAll.Size" type="System.Drawing.Size, System.Drawing">
     <value>23, 22</value>
-  </data>
-  <data name="ToolStripCloseAll.Text" xml:space="preserve">
-    <value>Close All</value>
-    <comment>@Invariant</comment>
   </data>
   <data name="ToolStripFileProperties.ImageTransparentColor" type="System.Drawing.Color, System.Drawing">
     <value>Magenta</value>
@@ -1001,22 +984,15 @@
   <data name="ToolStripExportFile.Size" type="System.Drawing.Size, System.Drawing">
     <value>23, 22</value>
   </data>
-  <data name="ToolStripExportFile.Text" xml:space="preserve">
-    <value>{ExportFile}</value>
-    <comment>@Invariant</comment>
-  </data>
   <data name="ToolStripImportFiles.ImageTransparentColor" type="System.Drawing.Color, System.Drawing">
     <value>Magenta</value>
   </data>
   <data name="ToolStripImportFiles.Size" type="System.Drawing.Size, System.Drawing">
     <value>23, 22</value>
   </data>
-  <data name="ToolStripImportFiles.Text" xml:space="preserve">
-    <value>{ImportFiles}</value>
-    <comment>@Invariant</comment>
-  </data>
   <data name="ToolStripImportFiles.ToolTipText" xml:space="preserve">
-    <value>Import Files</value>
+    <value>{Import Files}</value>
+    <comment>@Invariant</comment>
   </data>
   <data name="ToolStripUndo.ImageTransparentColor" type="System.Drawing.Color, System.Drawing">
     <value>Magenta</value>
@@ -1025,7 +1001,8 @@
     <value>23, 22</value>
   </data>
   <data name="ToolStripUndo.Text" xml:space="preserve">
-    <value>Undo</value>
+    <value>{Undo}</value>
+    <comment>@Invariant</comment>
   </data>
   <data name="ToolStripRedo.ImageTransparentColor" type="System.Drawing.Color, System.Drawing">
     <value>Magenta</value>
@@ -1034,7 +1011,8 @@
     <value>23, 22</value>
   </data>
   <data name="ToolStripRedo.Text" xml:space="preserve">
-    <value>Redo</value>
+    <value>{Redo}</value>
+    <comment>@Invariant</comment>
   </data>
   <data name="ToolStripViewFileText.ImageTransparentColor" type="System.Drawing.Color, System.Drawing">
     <value>Magenta</value>
@@ -1042,19 +1020,11 @@
   <data name="ToolStripViewFileText.Size" type="System.Drawing.Size, System.Drawing">
     <value>23, 22</value>
   </data>
-  <data name="ToolStripViewFileText.Text" xml:space="preserve">
-    <value>{ViewFileText}</value>
-    <comment>@Invariant</comment>
-  </data>
   <data name="ToolStripViewFile.ImageTransparentColor" type="System.Drawing.Color, System.Drawing">
     <value>Magenta</value>
   </data>
   <data name="ToolStripViewFile.Size" type="System.Drawing.Size, System.Drawing">
     <value>23, 22</value>
-  </data>
-  <data name="ToolStripViewFile.Text" xml:space="preserve">
-    <value>{ViewFile}</value>
-    <comment>@Invariant</comment>
   </data>
   <data name="ToolStripSeparatorFAT.Size" type="System.Drawing.Size, System.Drawing">
     <value>6, 25</value>
@@ -1100,14 +1070,14 @@
     <comment>@Invariant</comment>
   </data>
   <data name="StatusBarModified.Size" type="System.Drawing.Size, System.Drawing">
-    <value>55, 19</value>
+    <value>63, 19</value>
   </data>
   <data name="StatusBarModified.Text" xml:space="preserve">
-    <value>Modified</value>
+    <value>{Modified}</value>
     <comment>@Invariant</comment>
   </data>
   <data name="StatusBarFileName.Size" type="System.Drawing.Size, System.Drawing">
-    <value>557, 19</value>
+    <value>549, 19</value>
   </data>
   <data name="StatusBarFileName.Text" xml:space="preserve">
     <value>{FileName}</value>
@@ -1212,7 +1182,7 @@
     <value>0, 0</value>
   </data>
   <data name="ComboImages.Size" type="System.Drawing.Size, System.Drawing">
-    <value>473, 21</value>
+    <value>467, 21</value>
   </data>
   <data name="ComboImages.TabIndex" type="System.Int32, mscorlib">
     <value>4</value>
@@ -1248,7 +1218,7 @@
     <value>NoControl</value>
   </data>
   <data name="LabelDropMessage.Location" type="System.Drawing.Point, System.Drawing">
-    <value>122, 253</value>
+    <value>119, 253</value>
   </data>
   <data name="LabelDropMessage.Size" type="System.Drawing.Size, System.Drawing">
     <value>273, 16</value>
@@ -1284,7 +1254,7 @@
     <value>0, 0</value>
   </data>
   <data name="ComboImagesFiltered.Size" type="System.Drawing.Size, System.Drawing">
-    <value>473, 21</value>
+    <value>467, 21</value>
   </data>
   <data name="ComboImagesFiltered.TabIndex" type="System.Int32, mscorlib">
     <value>3</value>
@@ -1314,7 +1284,7 @@
     <value>NoControl</value>
   </data>
   <data name="BtnResetSort.Location" type="System.Drawing.Point, System.Drawing">
-    <value>475, -1</value>
+    <value>469, -1</value>
   </data>
   <data name="BtnResetSort.Size" type="System.Drawing.Size, System.Drawing">
     <value>67, 23</value>
@@ -1545,7 +1515,7 @@
     <value>0, 27</value>
   </data>
   <data name="ListViewFiles.Size" type="System.Drawing.Size, System.Drawing">
-    <value>596, 467</value>
+    <value>590, 467</value>
   </data>
   <data name="ListViewFiles.TabIndex" type="System.Int32, mscorlib">
     <value>6</value>
@@ -2767,53 +2737,11 @@
   <data name="&gt;&gt;HashValue.Type" xml:space="preserve">
     <value>System.Windows.Forms.ColumnHeader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
-  <data name="&gt;&gt;MainMenuFile.Name" xml:space="preserve">
-    <value>MainMenuFile</value>
-  </data>
-  <data name="&gt;&gt;MainMenuFile.Type" xml:space="preserve">
-    <value>System.Windows.Forms.ToolStripMenuItem, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="&gt;&gt;MenuFileOpen.Name" xml:space="preserve">
-    <value>MenuFileOpen</value>
-  </data>
-  <data name="&gt;&gt;MenuFileOpen.Type" xml:space="preserve">
-    <value>System.Windows.Forms.ToolStripMenuItem, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="&gt;&gt;MenuFileReload.Name" xml:space="preserve">
-    <value>MenuFileReload</value>
-  </data>
-  <data name="&gt;&gt;MenuFileReload.Type" xml:space="preserve">
-    <value>System.Windows.Forms.ToolStripMenuItem, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="&gt;&gt;MenuFileNewImage.Name" xml:space="preserve">
-    <value>MenuFileNewImage</value>
-  </data>
-  <data name="&gt;&gt;MenuFileNewImage.Type" xml:space="preserve">
-    <value>System.Windows.Forms.ToolStripMenuItem, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
   <data name="&gt;&gt;MenuFileSeparator1.Name" xml:space="preserve">
     <value>MenuFileSeparator1</value>
   </data>
   <data name="&gt;&gt;MenuFileSeparator1.Type" xml:space="preserve">
     <value>System.Windows.Forms.ToolStripSeparator, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="&gt;&gt;MenuFileSave.Name" xml:space="preserve">
-    <value>MenuFileSave</value>
-  </data>
-  <data name="&gt;&gt;MenuFileSave.Type" xml:space="preserve">
-    <value>System.Windows.Forms.ToolStripMenuItem, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="&gt;&gt;MenuFileSaveAs.Name" xml:space="preserve">
-    <value>MenuFileSaveAs</value>
-  </data>
-  <data name="&gt;&gt;MenuFileSaveAs.Type" xml:space="preserve">
-    <value>System.Windows.Forms.ToolStripMenuItem, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="&gt;&gt;MenuFileSaveAll.Name" xml:space="preserve">
-    <value>MenuFileSaveAll</value>
-  </data>
-  <data name="&gt;&gt;MenuFileSaveAll.Type" xml:space="preserve">
-    <value>System.Windows.Forms.ToolStripMenuItem, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
   <data name="&gt;&gt;MenuFileSeparator2.Name" xml:space="preserve">
     <value>MenuFileSeparator2</value>
@@ -2821,29 +2749,11 @@
   <data name="&gt;&gt;MenuFileSeparator2.Type" xml:space="preserve">
     <value>System.Windows.Forms.ToolStripSeparator, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
-  <data name="&gt;&gt;MenuFileClose.Name" xml:space="preserve">
-    <value>MenuFileClose</value>
-  </data>
-  <data name="&gt;&gt;MenuFileClose.Type" xml:space="preserve">
-    <value>System.Windows.Forms.ToolStripMenuItem, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="&gt;&gt;MenuFileCloseAll.Name" xml:space="preserve">
-    <value>MenuFileCloseAll</value>
-  </data>
-  <data name="&gt;&gt;MenuFileCloseAll.Type" xml:space="preserve">
-    <value>System.Windows.Forms.ToolStripMenuItem, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
   <data name="&gt;&gt;MenuFileSeparator3.Name" xml:space="preserve">
     <value>MenuFileSeparator3</value>
   </data>
   <data name="&gt;&gt;MenuFileSeparator3.Type" xml:space="preserve">
     <value>System.Windows.Forms.ToolStripSeparator, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="&gt;&gt;MenuFileExit.Name" xml:space="preserve">
-    <value>MenuFileExit</value>
-  </data>
-  <data name="&gt;&gt;MenuFileExit.Type" xml:space="preserve">
-    <value>System.Windows.Forms.ToolStripMenuItem, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
   <data name="&gt;&gt;MainMenuEdit.Name" xml:space="preserve">
     <value>MainMenuEdit</value>
@@ -3161,6 +3071,66 @@
     <value>MenuDiskWriteFloppyB</value>
   </data>
   <data name="&gt;&gt;MenuDiskWriteFloppyB.Type" xml:space="preserve">
+    <value>System.Windows.Forms.ToolStripMenuItem, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;MainMenuFile.Name" xml:space="preserve">
+    <value>MainMenuFile</value>
+  </data>
+  <data name="&gt;&gt;MainMenuFile.Type" xml:space="preserve">
+    <value>System.Windows.Forms.ToolStripMenuItem, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;MenuFileOpen.Name" xml:space="preserve">
+    <value>MenuFileOpen</value>
+  </data>
+  <data name="&gt;&gt;MenuFileOpen.Type" xml:space="preserve">
+    <value>System.Windows.Forms.ToolStripMenuItem, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;MenuFileReload.Name" xml:space="preserve">
+    <value>MenuFileReload</value>
+  </data>
+  <data name="&gt;&gt;MenuFileReload.Type" xml:space="preserve">
+    <value>System.Windows.Forms.ToolStripMenuItem, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;MenuFileNewImage.Name" xml:space="preserve">
+    <value>MenuFileNewImage</value>
+  </data>
+  <data name="&gt;&gt;MenuFileNewImage.Type" xml:space="preserve">
+    <value>System.Windows.Forms.ToolStripMenuItem, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;MenuFileSave.Name" xml:space="preserve">
+    <value>MenuFileSave</value>
+  </data>
+  <data name="&gt;&gt;MenuFileSave.Type" xml:space="preserve">
+    <value>System.Windows.Forms.ToolStripMenuItem, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;MenuFileSaveAs.Name" xml:space="preserve">
+    <value>MenuFileSaveAs</value>
+  </data>
+  <data name="&gt;&gt;MenuFileSaveAs.Type" xml:space="preserve">
+    <value>System.Windows.Forms.ToolStripMenuItem, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;MenuFileSaveAll.Name" xml:space="preserve">
+    <value>MenuFileSaveAll</value>
+  </data>
+  <data name="&gt;&gt;MenuFileSaveAll.Type" xml:space="preserve">
+    <value>System.Windows.Forms.ToolStripMenuItem, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;MenuFileClose.Name" xml:space="preserve">
+    <value>MenuFileClose</value>
+  </data>
+  <data name="&gt;&gt;MenuFileClose.Type" xml:space="preserve">
+    <value>System.Windows.Forms.ToolStripMenuItem, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;MenuFileCloseAll.Name" xml:space="preserve">
+    <value>MenuFileCloseAll</value>
+  </data>
+  <data name="&gt;&gt;MenuFileCloseAll.Type" xml:space="preserve">
+    <value>System.Windows.Forms.ToolStripMenuItem, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;MenuFileExit.Name" xml:space="preserve">
+    <value>MenuFileExit</value>
+  </data>
+  <data name="&gt;&gt;MenuFileExit.Type" xml:space="preserve">
     <value>System.Windows.Forms.ToolStripMenuItem, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
   <data name="&gt;&gt;MainMenuFilters.Name" xml:space="preserve">

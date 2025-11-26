@@ -857,7 +857,7 @@ Namespace Flux.Greaseweazle
 
             ButtonDetect.Enabled = CanChangeSettings AndAlso DriveSelected
 
-            ButtonCancel.Text = If(IsRunning OrElse HasOutputfile, My.Resources.Label_Cancel, My.Resources.Label_Close)
+            ButtonCancel.Text = If(IsRunning OrElse HasOutputfile, WithoutHotkey(My.Resources.Menu_Cancel), WithoutHotkey(My.Resources.Menu_Close))
 
             RefreshProcessButtonState()
             RefreshImportButtonState()
@@ -873,7 +873,7 @@ Namespace Flux.Greaseweazle
             ButtonOk.Text = If(IsFluxOutput, My.Resources.Label_SaveAndClose, My.Resources.Label_ImportClose)
 
             ButtonImport.Enabled = EnableImport
-            ButtonImport.Text = If(IsFluxOutput, My.Resources.Label_Save, My.Resources.Label_Import)
+            ButtonImport.Text = If(IsFluxOutput, WithoutHotkey(My.Resources.Menu_Save), My.Resources.Label_Import)
 
             IntitializeHelpImportButtons(IsFluxOutput)
         End Sub

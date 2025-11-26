@@ -350,7 +350,7 @@ Public Class SummaryPanel
         Dim DoBPBCompare = Disk.DiskParams.Format = FloppyDiskFormat.FloppyUnknown And DiskFormatBySize <> FloppyDiskFormat.FloppyUnknown
 
         With ListViewSummary
-            Dim BootRecordGroup = .Groups.Add(GROUP_BOOTRECORD, My.Resources.SummaryPanel_BootRecord)
+            Dim BootRecordGroup = .Groups.Add(GROUP_BOOTRECORD, My.Resources.Label_BootRecord)
 
             If Not OEMNameResponse.Found Then
                 ForeColor = SystemColors.WindowText
@@ -568,7 +568,7 @@ Public Class SummaryPanel
         With ListViewSummary
             DiskGroup = .Groups.Add(GROUP_DISK, My.Resources.Label_Disk)
 
-            .AddItem(DiskGroup, My.Resources.SummaryPanel_ImageType, GetImageTypeName(Disk.Image.ImageType))
+            .AddItem(DiskGroup, My.Resources.Label_ImageType, GetImageTypeName(Disk.Image.ImageType))
 
             If Disk.Image.ImageType = FloppyImageType.BasicSectorImage Then
                 If Disk.IsValidImage AndAlso Disk.CheckImageSize <> 0 Then
@@ -589,7 +589,7 @@ Public Class SummaryPanel
                     Dim DiskFormatStringBySize = FloppyDiskFormatGetName(DiskFormatBySize)
                     Value = String.Format(My.Resources.Label_Floppy, DiskFormatStringBySize) & " " & InParens(My.Resources.Label_CustomFormat)
                 End If
-                .AddItem(DiskGroup, My.Resources.SummaryPanel_DiskFormat, Value)
+                .AddItem(DiskGroup, My.Resources.Label_DiskFormat, Value)
 
                 If Disk.DiskParams.IsXDF Then
                     Dim XDFChecksum = CalcXDFChecksum(Disk.Image.GetBytes, Disk.BPB.SectorsPerFAT)
@@ -613,7 +613,7 @@ Public Class SummaryPanel
             End If
 
             If Disk.Image.ImageType <> FloppyImageType.BasicSectorImage Then
-                .AddItem(DiskGroup, My.Resources.SummaryPanel_Tracks, Disk.Image.TrackCount)
+                .AddItem(DiskGroup, My.Resources.Label_Tracks, Disk.Image.TrackCount)
                 .AddItem(DiskGroup, My.Resources.SummaryPanel_Heads, Disk.Image.SideCount)
             End If
 
@@ -794,7 +794,7 @@ Public Class SummaryPanel
                         .AddItem(DiskGroup, My.Resources.Label_Bootstrap, My.Resources.Label_CustomBootLoader, Color.Red)
                     End If
                 ElseIf Not Disk.BootSector.BPB.IsValid Then
-                    .AddItem(DiskGroup, My.Resources.SummaryPanel_BootRecord, My.Resources.Label_NoBPB, Color.Red)
+                    .AddItem(DiskGroup, My.Resources.Label_BootRecord, My.Resources.Label_NoBPB, Color.Red)
                 End If
 
                 If Not Disk.BootSector.BPB.IsValid Then

@@ -144,9 +144,7 @@ Nota: Este valor debe ser {1} para todos los disquetes.</value>
 Valores permitidos: {0}</value>
   </data>
   <data name="BootSectorForm_Help_ExtendedBootSignature" xml:space="preserve">
-    <value>Firma de arranque extendida
-
-Valores típicos:  
+    <value>Valores típicos:  
 28h\tNúmero de serie del volumen presente  
 29h\tNúmero de serie del volumen, etiqueta del volumen e ID del sistema de archivos presentes</value>
   </data>
@@ -167,9 +165,6 @@ Nota: Este valor debe ser {0} para todos los disquetes</value>
     <value>Esta instrucción indica dónde comienza el código de arranque.
 
 Valores permitidos: {0}</value>
-  </data>
-  <data name="BootSectorForm_Help_MediaDescriptor" xml:space="preserve">
-    <value>Descriptor de medio</value>
   </data>
   <data name="BootSectorForm_Help_NumberOfFATs" xml:space="preserve">
     <value>Número de copias de la Tabla de Asignación de Archivos (FAT) en el volumen

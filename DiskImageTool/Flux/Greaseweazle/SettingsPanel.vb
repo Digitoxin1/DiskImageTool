@@ -6,6 +6,25 @@ Namespace Flux.Greaseweazle
         Private ReadOnly ToolTip1 As New ToolTip()
         Private _Initialized As Boolean = False
 
+        Public Sub New()
+            ' This call is required by the designer.
+            InitializeComponent()
+
+            ' Add any initialization after the InitializeComponent() call.
+            LocalizeForm()
+        End Sub
+
+        Private Sub LocalizeForm()
+            LabelApplicationPath.Text = My.Resources.Label_ApplicationPath
+            ButtonBrowse.Text = My.Resources.Label_Browse
+            ButtonClear.Text = My.Resources.Menu_Clear
+            LabelTracks0.Text = My.Resources.Label_Tracks
+            LabelTracks1.Text = My.Resources.Label_Tracks
+            LabelTracks2.Text = My.Resources.Label_Tracks
+            LabelLogFile.Text = My.Resources.Label_LogFilename
+            ButtonInfo.Text = My.Resources.Label_Info
+        End Sub
+
         Public ReadOnly Property Initialized As Boolean
             Get
                 Return _Initialized

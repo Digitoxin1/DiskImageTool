@@ -78,7 +78,7 @@ Module FloppyDiskIO
                 Sub(sender As Object, e As CancelEventArgs)
                     If LoadedFileNames.ContainsKey(Dialog.FileName) Then
                         Dim Msg = String.Format(My.Resources.Dialog_FileCurrentlyOpen, IO.Path.GetFileName(Dialog.FileName), Environment.NewLine, Application.ProductName)
-                        MsgBox(Msg, MsgBoxStyle.Exclamation, My.Resources.Caption_SaveAs)
+                        MsgBox(Msg, MsgBoxStyle.Exclamation, WithoutHotkey(My.Resources.Menu_SaveAs))
                         e.Cancel = True
                     End If
                 End Sub

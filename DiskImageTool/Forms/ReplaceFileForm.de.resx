@@ -120,9 +120,6 @@
   <data name="BtnOK.Text" xml:space="preserve">
     <value>Ersetzen</value>
   </data>
-  <data name="BtnCancel.Text" xml:space="preserve">
-    <value>Abbrechen</value>
-  </data>
   <data name="GroupBoxOriginal.Text" xml:space="preserve">
     <value>Originaldatei</value>
   </data>
@@ -140,9 +137,6 @@
   </data>
   <data name="LblFileSizeError.Text" xml:space="preserve">
     <value>(Fehler)</value>
-  </data>
-  <data name="LblPadCaption.Text" xml:space="preserve">
-    <value>Datei auffüllen mit:</value>
   </data>
   <data name="$this.Text" xml:space="preserve">
     <value>Datei ersetzen</value>

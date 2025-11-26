@@ -127,75 +127,52 @@
   <data name="FileName.Width" type="System.Int32, mscorlib">
     <value>120</value>
   </data>
-  <metadata name="FileSize.GenerateMember" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
-    <value>False</value>
-  </metadata>
-  <data name="FileSize.Text" xml:space="preserve">
-    <value>Size</value>
-  </data>
-  <assembly alias="System.Windows.Forms" name="System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
-  <data name="FileSize.TextAlign" type="System.Windows.Forms.HorizontalAlignment, System.Windows.Forms">
-    <value>Right</value>
-  </data>
-  <data name="FileSize.Width" type="System.Int32, mscorlib">
-    <value>90</value>
-  </data>
-  <metadata name="FileLastWriteDate.GenerateMember" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
-    <value>False</value>
-  </metadata>
-  <data name="FileLastWriteDate.Text" xml:space="preserve">
-    <value>Last Written</value>
-  </data>
-  <data name="FileLastWriteDate.Width" type="System.Int32, mscorlib">
-    <value>120</value>
-  </data>
   <metadata name="FileSizeOnDisk.GenerateMember" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
     <value>False</value>
   </metadata>
   <data name="FileSizeOnDisk.Text" xml:space="preserve">
     <value>Size on Disk</value>
   </data>
+  <assembly alias="System.Windows.Forms" name="System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
   <data name="FileSizeOnDisk.TextAlign" type="System.Windows.Forms.HorizontalAlignment, System.Windows.Forms">
     <value>Right</value>
   </data>
   <data name="FileSizeOnDisk.Width" type="System.Int32, mscorlib">
     <value>90</value>
   </data>
-  <metadata name="Label3.GenerateMember" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
-    <value>False</value>
-  </metadata>
-  <metadata name="Label3.Locked" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
+  <metadata name="LabelFilesSelected.Locked" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
     <value>True</value>
   </metadata>
-  <data name="Label3.AutoSize" type="System.Boolean, mscorlib">
+  <data name="LabelFilesSelected.AutoSize" type="System.Boolean, mscorlib">
     <value>True</value>
   </data>
   <assembly alias="System.Drawing" name="System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
-  <data name="Label3.Location" type="System.Drawing.Point, System.Drawing">
+  <data name="LabelFilesSelected.Location" type="System.Drawing.Point, System.Drawing">
     <value>3, 0</value>
   </data>
-  <data name="Label3.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
+  <data name="LabelFilesSelected.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
     <value>3, 0, 0, 0</value>
   </data>
-  <data name="Label3.Size" type="System.Drawing.Size, System.Drawing">
+  <data name="LabelFilesSelected.Size" type="System.Drawing.Size, System.Drawing">
     <value>76, 13</value>
   </data>
-  <data name="Label3.TabIndex" type="System.Int32, mscorlib">
+  <data name="LabelFilesSelected.TabIndex" type="System.Int32, mscorlib">
     <value>8</value>
   </data>
-  <data name="Label3.Text" xml:space="preserve">
-    <value>Files Selected:</value>
+  <data name="LabelFilesSelected.Text" xml:space="preserve">
+    <value>{Files Selected:}</value>
+    <comment>@Invariant</comment>
   </data>
-  <data name="&gt;&gt;Label3.Name" xml:space="preserve">
-    <value>Label3</value>
+  <data name="&gt;&gt;LabelFilesSelected.Name" xml:space="preserve">
+    <value>LabelFilesSelected</value>
   </data>
-  <data name="&gt;&gt;Label3.Type" xml:space="preserve">
+  <data name="&gt;&gt;LabelFilesSelected.Type" xml:space="preserve">
     <value>System.Windows.Forms.Label, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
-  <data name="&gt;&gt;Label3.Parent" xml:space="preserve">
+  <data name="&gt;&gt;LabelFilesSelected.Parent" xml:space="preserve">
     <value>FlowLayoutTotals</value>
   </data>
-  <data name="&gt;&gt;Label3.ZOrder" xml:space="preserve">
+  <data name="&gt;&gt;LabelFilesSelected.ZOrder" xml:space="preserve">
     <value>0</value>
   </data>
   <metadata name="Label2.GenerateMember" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
@@ -319,13 +296,14 @@
     <value>120, 15</value>
   </data>
   <data name="ChkNTExtensions.Size" type="System.Drawing.Size, System.Drawing">
-    <value>95, 17</value>
+    <value>103, 17</value>
   </data>
   <data name="ChkNTExtensions.TabIndex" type="System.Int32, mscorlib">
     <value>1</value>
   </data>
   <data name="ChkNTExtensions.Text" xml:space="preserve">
-    <value>NT Extensions</value>
+    <value>{NT Extensions}</value>
+    <comment>@Invariant</comment>
   </data>
   <data name="&gt;&gt;ChkNTExtensions.Name" xml:space="preserve">
     <value>ChkNTExtensions</value>
@@ -346,7 +324,7 @@
     <value>True</value>
   </data>
   <data name="ChkCreated.Location" type="System.Drawing.Point, System.Drawing">
-    <value>221, 15</value>
+    <value>229, 15</value>
   </data>
   <data name="ChkCreated.Size" type="System.Drawing.Size, System.Drawing">
     <value>89, 17</value>
@@ -376,7 +354,7 @@
     <value>True</value>
   </data>
   <data name="ChkLastAccessed.Location" type="System.Drawing.Point, System.Drawing">
-    <value>316, 15</value>
+    <value>324, 15</value>
   </data>
   <data name="ChkLastAccessed.Size" type="System.Drawing.Size, System.Drawing">
     <value>122, 17</value>
@@ -423,54 +401,6 @@
   <data name="&gt;&gt;PanelTop.ZOrder" xml:space="preserve">
     <value>1</value>
   </data>
-  <metadata name="Label4.GenerateMember" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
-    <value>False</value>
-  </metadata>
-  <data name="Label4.AutoSize" type="System.Boolean, mscorlib">
-    <value>True</value>
-  </data>
-  <data name="Label4.Location" type="System.Drawing.Point, System.Drawing">
-    <value>18, 5</value>
-  </data>
-  <data name="Label4.Size" type="System.Drawing.Size, System.Drawing">
-    <value>43, 13</value>
-  </data>
-  <data name="Label4.TabIndex" type="System.Int32, mscorlib">
-    <value>3</value>
-  </data>
-  <data name="Label4.Text" xml:space="preserve">
-    <value>Options</value>
-  </data>
-  <data name="&gt;&gt;Label4.Name" xml:space="preserve">
-    <value>Label4</value>
-  </data>
-  <data name="&gt;&gt;Label4.Type" xml:space="preserve">
-    <value>System.Windows.Forms.Label, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="&gt;&gt;Label4.Parent" xml:space="preserve">
-    <value>$this</value>
-  </data>
-  <data name="&gt;&gt;Label4.ZOrder" xml:space="preserve">
-    <value>0</value>
-  </data>
-  <metadata name="FileCreationDate.GenerateMember" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
-    <value>False</value>
-  </metadata>
-  <data name="FileCreationDate.Text" xml:space="preserve">
-    <value>Created</value>
-  </data>
-  <data name="FileCreationDate.Width" type="System.Int32, mscorlib">
-    <value>120</value>
-  </data>
-  <metadata name="FileLastAccessDate.GenerateMember" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
-    <value>False</value>
-  </metadata>
-  <data name="FileLastAccessDate.Text" xml:space="preserve">
-    <value>Last Accessed</value>
-  </data>
-  <data name="FileLastAccessDate.Width" type="System.Int32, mscorlib">
-    <value>90</value>
-  </data>
   <metadata name="FileDisabled.GenerateMember" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
     <value>False</value>
   </metadata>
@@ -479,6 +409,65 @@
   </data>
   <data name="FileDisabled.Width" type="System.Int32, mscorlib">
     <value>0</value>
+  </data>
+  <data name="FileLastAccessDate.Text" xml:space="preserve">
+    <value>{Last Accessed}</value>
+    <comment>@Invariant</comment>
+  </data>
+  <data name="FileLastAccessDate.Width" type="System.Int32, mscorlib">
+    <value>90</value>
+  </data>
+  <data name="FileLastWriteDate.Text" xml:space="preserve">
+    <value>{Last Written}</value>
+    <comment>@Invariant</comment>
+  </data>
+  <data name="FileLastWriteDate.Width" type="System.Int32, mscorlib">
+    <value>120</value>
+  </data>
+  <data name="LabelOptions.AutoSize" type="System.Boolean, mscorlib">
+    <value>True</value>
+  </data>
+  <data name="LabelOptions.Location" type="System.Drawing.Point, System.Drawing">
+    <value>18, 5</value>
+  </data>
+  <data name="LabelOptions.Size" type="System.Drawing.Size, System.Drawing">
+    <value>51, 13</value>
+  </data>
+  <data name="LabelOptions.TabIndex" type="System.Int32, mscorlib">
+    <value>3</value>
+  </data>
+  <data name="LabelOptions.Text" xml:space="preserve">
+    <value>{Options}</value>
+    <comment>@Invariant</comment>
+  </data>
+  <data name="&gt;&gt;LabelOptions.Name" xml:space="preserve">
+    <value>LabelOptions</value>
+  </data>
+  <data name="&gt;&gt;LabelOptions.Type" xml:space="preserve">
+    <value>System.Windows.Forms.Label, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;LabelOptions.Parent" xml:space="preserve">
+    <value>$this</value>
+  </data>
+  <data name="&gt;&gt;LabelOptions.ZOrder" xml:space="preserve">
+    <value>0</value>
+  </data>
+  <data name="FileSize.Text" xml:space="preserve">
+    <value>{Size}</value>
+    <comment>@Invariant</comment>
+  </data>
+  <data name="FileSize.TextAlign" type="System.Windows.Forms.HorizontalAlignment, System.Windows.Forms">
+    <value>Right</value>
+  </data>
+  <data name="FileSize.Width" type="System.Int32, mscorlib">
+    <value>90</value>
+  </data>
+  <data name="FileCreationDate.Text" xml:space="preserve">
+    <value>{Created}</value>
+    <comment>@Invariant</comment>
+  </data>
+  <data name="FileCreationDate.Width" type="System.Int32, mscorlib">
+    <value>120</value>
   </data>
   <metadata name="ListViewFiles.Locked" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
     <value>True</value>
@@ -691,7 +680,8 @@
     <value>1</value>
   </data>
   <data name="BtnCancel.Text" xml:space="preserve">
-    <value>Cancel</value>
+    <value>{Cancel}</value>
+    <comment>@Invariant</comment>
   </data>
   <data name="&gt;&gt;BtnCancel.Name" xml:space="preserve">
     <value>BtnCancel</value>
@@ -750,25 +740,10 @@
   <data name="$this.StartPosition" type="System.Windows.Forms.FormStartPosition, System.Windows.Forms">
     <value>CenterParent</value>
   </data>
-  <data name="$this.Text" xml:space="preserve">
-    <value>Import Files</value>
-  </data>
   <data name="&gt;&gt;FileName.Name" xml:space="preserve">
     <value>FileName</value>
   </data>
   <data name="&gt;&gt;FileName.Type" xml:space="preserve">
-    <value>System.Windows.Forms.ColumnHeader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="&gt;&gt;FileSize.Name" xml:space="preserve">
-    <value>FileSize</value>
-  </data>
-  <data name="&gt;&gt;FileSize.Type" xml:space="preserve">
-    <value>System.Windows.Forms.ColumnHeader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="&gt;&gt;FileLastWriteDate.Name" xml:space="preserve">
-    <value>FileLastWriteDate</value>
-  </data>
-  <data name="&gt;&gt;FileLastWriteDate.Type" xml:space="preserve">
     <value>System.Windows.Forms.ColumnHeader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
   <data name="&gt;&gt;FileSizeOnDisk.Name" xml:space="preserve">
@@ -777,10 +752,10 @@
   <data name="&gt;&gt;FileSizeOnDisk.Type" xml:space="preserve">
     <value>System.Windows.Forms.ColumnHeader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
-  <data name="&gt;&gt;FileCreationDate.Name" xml:space="preserve">
-    <value>FileCreationDate</value>
+  <data name="&gt;&gt;FileDisabled.Name" xml:space="preserve">
+    <value>FileDisabled</value>
   </data>
-  <data name="&gt;&gt;FileCreationDate.Type" xml:space="preserve">
+  <data name="&gt;&gt;FileDisabled.Type" xml:space="preserve">
     <value>System.Windows.Forms.ColumnHeader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
   <data name="&gt;&gt;FileLastAccessDate.Name" xml:space="preserve">
@@ -789,10 +764,22 @@
   <data name="&gt;&gt;FileLastAccessDate.Type" xml:space="preserve">
     <value>System.Windows.Forms.ColumnHeader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
-  <data name="&gt;&gt;FileDisabled.Name" xml:space="preserve">
-    <value>FileDisabled</value>
+  <data name="&gt;&gt;FileLastWriteDate.Name" xml:space="preserve">
+    <value>FileLastWriteDate</value>
   </data>
-  <data name="&gt;&gt;FileDisabled.Type" xml:space="preserve">
+  <data name="&gt;&gt;FileLastWriteDate.Type" xml:space="preserve">
+    <value>System.Windows.Forms.ColumnHeader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;FileSize.Name" xml:space="preserve">
+    <value>FileSize</value>
+  </data>
+  <data name="&gt;&gt;FileSize.Type" xml:space="preserve">
+    <value>System.Windows.Forms.ColumnHeader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;FileCreationDate.Name" xml:space="preserve">
+    <value>FileCreationDate</value>
+  </data>
+  <data name="&gt;&gt;FileCreationDate.Type" xml:space="preserve">
     <value>System.Windows.Forms.ColumnHeader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
   <data name="&gt;&gt;$this.Name" xml:space="preserve">

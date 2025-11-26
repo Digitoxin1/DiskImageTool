@@ -7,19 +7,19 @@
                 Case BootSector.BootSectorOffsets.OEMName
                     Return My.Resources.Label_OEMName
                 Case BootSector.BootSectorOffsets.DriveNumber
-                    Return My.Resources.BootSector_DriveNumber
+                    Return My.Resources.Label_DriveNumber
                 Case BootSector.BootSectorOffsets.Reserved
                     Return My.Resources.Label_Reserved
                 Case BootSector.BootSectorOffsets.ExtendedBootSignature
-                    Return My.Resources.BootSector_ExtendedBootSignature
+                    Return My.Resources.Label_ExtendedBootSignature
                 Case BootSector.BootSectorOffsets.VolumeSerialNumber
-                    Return My.Resources.BootSector_VolumeSerialNumber
+                    Return My.Resources.Label_VolumeSerialNumber
                 Case BootSector.BootSectorOffsets.VolumeLabel
                     Return My.Resources.Label_VolumeLabel
                 Case BootSector.BootSectorOffsets.FileSystemType
-                    Return My.Resources.BootSector_FileSystemType
+                    Return My.Resources.Label_FileSystemType
                 Case BootSector.BootSectorOffsets.BootStrapSignature
-                    Return My.Resources.BootSector_BootStrapSignature
+                    Return My.Resources.Label_BootStrapSignature
                 Case Else
                     Return Offset.ToString
             End Select
@@ -28,27 +28,27 @@
         Public Function BPBDescription(Offset As BiosParameterBlock.BPBOoffsets) As String
             Select Case Offset
                 Case BiosParameterBlock.BPBOoffsets.BytesPerSector
-                    Return My.Resources.BPB_BytesPerSector
+                    Return My.Resources.Label_BytesPerSector
                 Case BiosParameterBlock.BPBOoffsets.SectorsPerCluster
-                    Return My.Resources.BPB_SectorsPerCluster
+                    Return My.Resources.Label_SectorsPerCluster
                 Case BiosParameterBlock.BPBOoffsets.ReservedSectorCount
-                    Return My.Resources.BPB_ReservedSectorCount
+                    Return My.Resources.Label_ReservedSectorCount
                 Case BiosParameterBlock.BPBOoffsets.NumberOfFATs
                     Return My.Resources.BPB_NumberOfFATs
                 Case BiosParameterBlock.BPBOoffsets.RootEntryCount
-                    Return My.Resources.BPB_RootEntryCount
+                    Return My.Resources.Label_RootEntryCount
                 Case BiosParameterBlock.BPBOoffsets.SectorCountSmall
                     Return My.Resources.BPB_SectorCountSmall
                 Case BiosParameterBlock.BPBOoffsets.MediaDescriptor
                     Return My.Resources.Label_MediaDescriptor
                 Case BiosParameterBlock.BPBOoffsets.SectorsPerFAT
-                    Return My.Resources.BPB_SectorsPerFAT
+                    Return My.Resources.Label_SectorsPerFAT
                 Case BiosParameterBlock.BPBOoffsets.SectorsPerTrack
-                    Return My.Resources.BPB_SectorsPerTrack
+                    Return My.Resources.Label_SectorsPerTrack
                 Case BiosParameterBlock.BPBOoffsets.NumberOfHeads
                     Return My.Resources.BPB_NumberOfHeads
                 Case BiosParameterBlock.BPBOoffsets.HiddenSectors
-                    Return My.Resources.BPB_HiddenSectors
+                    Return My.Resources.Label_HiddenSectors
                 Case Else
                     Return Offset.ToString
             End Select
@@ -61,7 +61,7 @@
                 Case DirectoryEntry.DirectoryEntryOffsets.Extension
                     Return My.Resources.DirectorytEntry_Extension
                 Case DirectoryEntry.DirectoryEntryOffsets.Attributes
-                    Return My.Resources.DirectorytEntry_Attributes
+                    Return My.Resources.Label_Attributes
                 Case DirectoryEntry.DirectoryEntryOffsets.ReservedForWinNT
                     Return My.Resources.DirectorytEntry_ReservedForWinNT
                 Case DirectoryEntry.DirectoryEntryOffsets.CreationMillisecond

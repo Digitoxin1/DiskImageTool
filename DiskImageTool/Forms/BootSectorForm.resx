@@ -631,7 +631,8 @@
     <value>0</value>
   </data>
   <data name="LblDiskType.Text" xml:space="preserve">
-    <value>Disk Format</value>
+    <value>{Disk Format}</value>
+    <comment>@Invariant</comment>
   </data>
   <data name="&gt;&gt;LblDiskType.Name" xml:space="preserve">
     <value>LblDiskType</value>
@@ -850,7 +851,8 @@
     <value>1</value>
   </data>
   <data name="GroupBoxMain.Text" xml:space="preserve">
-    <value>Boot Record</value>
+    <value>{Boot Record}</value>
+    <comment>@Invariant</comment>
   </data>
   <data name="&gt;&gt;GroupBoxMain.Name" xml:space="preserve">
     <value>GroupBoxMain</value>
@@ -976,7 +978,8 @@
     <value>6</value>
   </data>
   <data name="LblBytesPerSector.Text" xml:space="preserve">
-    <value>Bytes per Sector</value>
+    <value>{Bytes per Sector}</value>
+    <comment>@Invariant</comment>
   </data>
   <data name="&gt;&gt;LblBytesPerSector.Name" xml:space="preserve">
     <value>LblBytesPerSector</value>
@@ -1012,7 +1015,8 @@
     <value>10</value>
   </data>
   <data name="LblReservedSectors.Text" xml:space="preserve">
-    <value>Reserved Sectors</value>
+    <value>{Reserved Sectors}</value>
+    <comment>@Invariant</comment>
   </data>
   <data name="&gt;&gt;LblReservedSectors.Name" xml:space="preserve">
     <value>LblReservedSectors</value>
@@ -1084,7 +1088,8 @@
     <value>3</value>
   </data>
   <data name="LblOEMName.Text" xml:space="preserve">
-    <value>OEM Name</value>
+    <value>{OEM Name}</value>
+    <comment>@Invariant</comment>
   </data>
   <data name="&gt;&gt;LblOEMName.Name" xml:space="preserve">
     <value>LblOEMName</value>
@@ -1204,7 +1209,8 @@
     <value>8</value>
   </data>
   <data name="LblSectorsPerCluster.Text" xml:space="preserve">
-    <value>Sectors per Cluster</value>
+    <value>{Sectors per Cluster}</value>
+    <comment>@Invariant</comment>
   </data>
   <data name="&gt;&gt;LblSectorsPerCluster.Name" xml:space="preserve">
     <value>LblSectorsPerCluster</value>
@@ -1267,7 +1273,8 @@
     <value>26</value>
   </data>
   <data name="LblHiddenSectors.Text" xml:space="preserve">
-    <value>Hidden Sectors</value>
+    <value>{Hidden Sectors}</value>
+    <comment>@Invariant</comment>
   </data>
   <data name="&gt;&gt;LblHiddenSectors.Name" xml:space="preserve">
     <value>LblHiddenSectors</value>
@@ -1303,7 +1310,8 @@
     <value>18</value>
   </data>
   <data name="TxtMediaDescriptor.Text" xml:space="preserve">
-    <value>Media Descriptor</value>
+    <value>{Media Descriptor}</value>
+    <comment>@Invariant</comment>
   </data>
   <data name="&gt;&gt;TxtMediaDescriptor.Name" xml:space="preserve">
     <value>TxtMediaDescriptor</value>
@@ -1519,7 +1527,8 @@
     <value>20</value>
   </data>
   <data name="LblSectorsPerFAT.Text" xml:space="preserve">
-    <value>Sectors per FAT</value>
+    <value>{Sectors per FAT}</value>
+    <comment>@Invariant</comment>
   </data>
   <data name="&gt;&gt;LblSectorsPerFAT.Name" xml:space="preserve">
     <value>LblSectorsPerFAT</value>
@@ -1555,7 +1564,8 @@
     <value>22</value>
   </data>
   <data name="LblSectorsPerTrack.Text" xml:space="preserve">
-    <value>Sectors per Track</value>
+    <value>{Sectors per Track}</value>
+    <comment>@Invariant</comment>
   </data>
   <data name="&gt;&gt;LblSectorsPerTrack.Name" xml:space="preserve">
     <value>LblSectorsPerTrack</value>
@@ -1729,13 +1739,14 @@
     <value>251, 193</value>
   </data>
   <data name="LblBootSectorSignature.Size" type="System.Drawing.Size, System.Drawing">
-    <value>111, 13</value>
+    <value>119, 13</value>
   </data>
   <data name="LblBootSectorSignature.TabIndex" type="System.Int32, mscorlib">
     <value>28</value>
   </data>
   <data name="LblBootSectorSignature.Text" xml:space="preserve">
-    <value>Boot Sector Signature</value>
+    <value>{Boot Sector Signature}</value>
+    <comment>@Invariant</comment>
   </data>
   <data name="&gt;&gt;LblBootSectorSignature.Name" xml:space="preserve">
     <value>LblBootSectorSignature</value>
@@ -2314,7 +2325,8 @@
     <value>2</value>
   </data>
   <data name="LblDriveNumber.Text" xml:space="preserve">
-    <value>Drive Number</value>
+    <value>{Drive Number}</value>
+    <comment>@Invariant</comment>
   </data>
   <data name="&gt;&gt;LblDriveNumber.Name" xml:space="preserve">
     <value>LblDriveNumber</value>
@@ -2413,7 +2425,8 @@
     <value>9</value>
   </data>
   <data name="LblVolumeLabel.Text" xml:space="preserve">
-    <value>Volume Label</value>
+    <value>{Volume Label}</value>
+    <comment>@Invariant</comment>
   </data>
   <data name="&gt;&gt;LblVolumeLabel.Name" xml:space="preserve">
     <value>LblVolumeLabel</value>
@@ -2503,7 +2516,8 @@
     <value>12</value>
   </data>
   <data name="LblFileSystemType.Text" xml:space="preserve">
-    <value>File System ID</value>
+    <value>{File System ID}</value>
+    <comment>@Invariant</comment>
   </data>
   <data name="&gt;&gt;LblFileSystemType.Name" xml:space="preserve">
     <value>LblFileSystemType</value>
@@ -2566,7 +2580,8 @@
     <value>6</value>
   </data>
   <data name="LblVolumeSerialNumber.Text" xml:space="preserve">
-    <value>Volume Serial Number</value>
+    <value>{Volume Serial Number}</value>
+    <comment>@Invariant</comment>
   </data>
   <data name="&gt;&gt;LblVolumeSerialNumber.Name" xml:space="preserve">
     <value>LblVolumeSerialNumber</value>
@@ -2629,7 +2644,8 @@
     <value>4</value>
   </data>
   <data name="lblExtendedBootSignature.Text" xml:space="preserve">
-    <value>Extended Boot Signature</value>
+    <value>{Extended Boot Signature}</value>
+    <comment>@Invariant</comment>
   </data>
   <data name="&gt;&gt;lblExtendedBootSignature.Name" xml:space="preserve">
     <value>lblExtendedBootSignature</value>
@@ -2710,7 +2726,8 @@
     <value>3</value>
   </data>
   <data name="GroupBoxAdditionalData.Text" xml:space="preserve">
-    <value>Additional Data</value>
+    <value>{Additional Data}</value>
+    <comment>@Invariant</comment>
   </data>
   <data name="&gt;&gt;GroupBoxAdditionalData.Name" xml:space="preserve">
     <value>GroupBoxAdditionalData</value>
@@ -2728,7 +2745,8 @@
     <value>True</value>
   </metadata>
   <data name="HexBox1.BuiltInContextMenu.CopyMenuItemText" xml:space="preserve">
-    <value>Copy Text</value>
+    <value>{Copy Text}</value>
+    <comment>@Invariant</comment>
   </data>
   <data name="HexBox1.BuiltInContextMenu.CutMenuItemText" type="System.Resources.ResXNullRef, System.Windows.Forms">
     <value />
@@ -2737,7 +2755,8 @@
     <value />
   </data>
   <data name="HexBox1.BuiltInContextMenu.SelectAllMenuItemText" xml:space="preserve">
-    <value>Select All</value>
+    <value>{Select All}</value>
+    <comment>@Invariant</comment>
   </data>
   <data name="HexBox1.Font" type="System.Drawing.Font, System.Drawing">
     <value>Courier New, 8.25pt</value>
@@ -2887,7 +2906,8 @@
     <value>1</value>
   </data>
   <data name="BtnCancel.Text" xml:space="preserve">
-    <value>&amp;Cancel</value>
+    <value>{&amp;Cancel}</value>
+    <comment>@Invariant</comment>
   </data>
   <data name="&gt;&gt;BtnCancel.Name" xml:space="preserve">
     <value>BtnCancel</value>
@@ -2920,7 +2940,8 @@
     <value>0</value>
   </data>
   <data name="BtnUpdate.Text" xml:space="preserve">
-    <value>&amp;Update</value>
+    <value>{&amp;Update}</value>
+    <comment>@Invariant</comment>
   </data>
   <data name="&gt;&gt;BtnUpdate.Name" xml:space="preserve">
     <value>BtnUpdate</value>
@@ -2993,9 +3014,6 @@
   </data>
   <data name="$this.StartPosition" type="System.Windows.Forms.FormStartPosition, System.Windows.Forms">
     <value>CenterParent</value>
-  </data>
-  <data name="$this.Text" xml:space="preserve">
-    <value>Boot Sector</value>
   </data>
   <data name="&gt;&gt;$this.Name" xml:space="preserve">
     <value>BootSectorForm</value>

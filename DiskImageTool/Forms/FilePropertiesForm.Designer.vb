@@ -25,7 +25,6 @@ Partial Class FilePropertiesForm
         Me.components = New System.ComponentModel.Container()
         Dim GroupFileDates As System.Windows.Forms.GroupBox
         Dim resources As System.ComponentModel.ComponentResourceManager = New System.ComponentModel.ComponentResourceManager(GetType(FilePropertiesForm))
-        Dim GroupAttributes As System.Windows.Forms.GroupBox
         Dim PanelBottom As System.Windows.Forms.FlowLayoutPanel
         Dim PanelMain As System.Windows.Forms.Panel
         Me.TableLayoutPanel1 = New System.Windows.Forms.TableLayoutPanel()
@@ -43,6 +42,7 @@ Partial Class FilePropertiesForm
         Me.DTLastWrittenTime = New System.Windows.Forms.DateTimePicker()
         Me.PanelCreatedTime = New System.Windows.Forms.Panel()
         Me.DTCreatedTime = New System.Windows.Forms.DateTimePicker()
+        Me.GroupAttributes = New System.Windows.Forms.GroupBox()
         Me.TableLayoutPanel2 = New System.Windows.Forms.TableLayoutPanel()
         Me.ChkArchive = New System.Windows.Forms.CheckBox()
         Me.ChkSystem = New System.Windows.Forms.CheckBox()
@@ -63,13 +63,12 @@ Partial Class FilePropertiesForm
         Me.RadioFileLong = New System.Windows.Forms.RadioButton()
         Me.ChkNTExtensions = New System.Windows.Forms.CheckBox()
         Me.TableLayoutPanelFile = New System.Windows.Forms.TableLayoutPanel()
+        Me.MskExtensionHex = New DiskImageTool.HexTextBox()
+        Me.MskFileHex = New DiskImageTool.HexTextBox()
         Me.TxtExtension = New System.Windows.Forms.TextBox()
         Me.TxtFile = New System.Windows.Forms.MaskedTextBox()
         Me.FlowLayoutPanel1 = New System.Windows.Forms.FlowLayoutPanel()
-        Me.MskExtensionHex = New DiskImageTool.HexTextBox()
-        Me.MskFileHex = New DiskImageTool.HexTextBox()
         GroupFileDates = New System.Windows.Forms.GroupBox()
-        GroupAttributes = New System.Windows.Forms.GroupBox()
         PanelBottom = New System.Windows.Forms.FlowLayoutPanel()
         PanelMain = New System.Windows.Forms.Panel()
         GroupFileDates.SuspendLayout()
@@ -77,7 +76,7 @@ Partial Class FilePropertiesForm
         Me.PanelCreatedMS.SuspendLayout()
         CType(Me.NumCreatedMS, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.PanelCreatedTime.SuspendLayout()
-        GroupAttributes.SuspendLayout()
+        Me.GroupAttributes.SuspendLayout()
         Me.TableLayoutPanel2.SuspendLayout()
         PanelBottom.SuspendLayout()
         PanelMain.SuspendLayout()
@@ -210,10 +209,10 @@ Partial Class FilePropertiesForm
         '
         'GroupAttributes
         '
-        resources.ApplyResources(GroupAttributes, "GroupAttributes")
-        GroupAttributes.Controls.Add(Me.TableLayoutPanel2)
-        GroupAttributes.Name = "GroupAttributes"
-        GroupAttributes.TabStop = False
+        resources.ApplyResources(Me.GroupAttributes, "GroupAttributes")
+        Me.GroupAttributes.Controls.Add(Me.TableLayoutPanel2)
+        Me.GroupAttributes.Name = "GroupAttributes"
+        Me.GroupAttributes.TabStop = False
         '
         'TableLayoutPanel2
         '
@@ -309,7 +308,7 @@ Partial Class FilePropertiesForm
         resources.ApplyResources(Me.FlowLayoutPanel2, "FlowLayoutPanel2")
         Me.FlowLayoutPanel2.Controls.Add(Me.GroupFileName)
         Me.FlowLayoutPanel2.Controls.Add(GroupFileDates)
-        Me.FlowLayoutPanel2.Controls.Add(GroupAttributes)
+        Me.FlowLayoutPanel2.Controls.Add(Me.GroupAttributes)
         Me.FlowLayoutPanel2.Controls.Add(Me.FlowLayoutPanel1)
         Me.FlowLayoutPanel2.Name = "FlowLayoutPanel2"
         '
@@ -370,6 +369,18 @@ Partial Class FilePropertiesForm
         Me.TableLayoutPanelFile.Controls.Add(Me.TxtFile, 0, 0)
         Me.TableLayoutPanelFile.Name = "TableLayoutPanelFile"
         '
+        'MskExtensionHex
+        '
+        resources.ApplyResources(Me.MskExtensionHex, "MskExtensionHex")
+        Me.MskExtensionHex.MaskLength = 3
+        Me.MskExtensionHex.Name = "MskExtensionHex"
+        '
+        'MskFileHex
+        '
+        resources.ApplyResources(Me.MskFileHex, "MskFileHex")
+        Me.MskFileHex.MaskLength = 8
+        Me.MskFileHex.Name = "MskFileHex"
+        '
         'TxtExtension
         '
         resources.ApplyResources(Me.TxtExtension, "TxtExtension")
@@ -385,18 +396,6 @@ Partial Class FilePropertiesForm
         resources.ApplyResources(Me.FlowLayoutPanel1, "FlowLayoutPanel1")
         Me.FlowLayoutPanel1.CausesValidation = False
         Me.FlowLayoutPanel1.Name = "FlowLayoutPanel1"
-        '
-        'MskExtensionHex
-        '
-        resources.ApplyResources(Me.MskExtensionHex, "MskExtensionHex")
-        Me.MskExtensionHex.MaskLength = 3
-        Me.MskExtensionHex.Name = "MskExtensionHex"
-        '
-        'MskFileHex
-        '
-        resources.ApplyResources(Me.MskFileHex, "MskFileHex")
-        Me.MskFileHex.MaskLength = 8
-        Me.MskFileHex.Name = "MskFileHex"
         '
         'FilePropertiesForm
         '
@@ -417,8 +416,8 @@ Partial Class FilePropertiesForm
         Me.PanelCreatedMS.ResumeLayout(False)
         CType(Me.NumCreatedMS, System.ComponentModel.ISupportInitialize).EndInit()
         Me.PanelCreatedTime.ResumeLayout(False)
-        GroupAttributes.ResumeLayout(False)
-        GroupAttributes.PerformLayout()
+        Me.GroupAttributes.ResumeLayout(False)
+        Me.GroupAttributes.PerformLayout()
         Me.TableLayoutPanel2.ResumeLayout(False)
         PanelBottom.ResumeLayout(False)
         PanelMain.ResumeLayout(False)
@@ -476,4 +475,5 @@ Partial Class FilePropertiesForm
     Friend WithEvents TxtLFN As TextBox
     Friend WithEvents LblMultipleFiles As Label
     Friend WithEvents ChkNTExtensions As CheckBox
+    Friend WithEvents GroupAttributes As GroupBox
 End Class

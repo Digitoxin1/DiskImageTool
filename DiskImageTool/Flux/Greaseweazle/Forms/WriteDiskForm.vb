@@ -223,7 +223,7 @@ Namespace Flux.Greaseweazle
 
 
             ButtonOk.Visible = False
-            ButtonCancel.Text = My.Resources.Label_Close
+            ButtonCancel.Text = WithoutHotkey(My.Resources.Menu_Close)
 
 
             Dim Row As Integer

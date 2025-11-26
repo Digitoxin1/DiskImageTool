@@ -315,7 +315,7 @@
             Dim Sectors As New List(Of String)
 
             If StatusInfo.BadSectors > 0 Then
-                Sectors.Add(StatusInfo.BadSectors & " " & My.Resources.Label_FATType_Bad)
+                Sectors.Add(StatusInfo.BadSectors & " " & My.Resources.Label_Bad)
             End If
 
             If Sectors.Count > 0 Then

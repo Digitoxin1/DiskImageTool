@@ -144,9 +144,7 @@ Note: This value should be {1} for all floppy disks.</value>
 Allowed Values: {0}</value>
   </data>
   <data name="BootSectorForm_Help_ExtendedBootSignature" xml:space="preserve">
-    <value>Extended Boot Signature
-
-Typical Values:
+    <value>Typical Values:
 28h\tVolume Serial Number is present
 29h\tVolume Serial Number, Volume Label, and File System ID are present</value>
   </data>
@@ -167,9 +165,6 @@ Note: This value should be {0} for all floppy disks</value>
     <value>This instruction indicates where the bootstrap code starts.
 
 Allowed Values: {0}</value>
-  </data>
-  <data name="BootSectorForm_Help_MediaDescriptor" xml:space="preserve">
-    <value>Media Descriptor</value>
   </data>
   <data name="BootSectorForm_Help_NumberOfFATs" xml:space="preserve">
     <value>Number of File Allocation Table (FAT) copies on the volume

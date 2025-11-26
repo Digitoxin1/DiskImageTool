@@ -430,7 +430,8 @@
     <value>0</value>
   </data>
   <data name="BtnOK.Text" xml:space="preserve">
-    <value>&amp;Yes</value>
+    <value>{&amp;Yes}</value>
+    <comment>@Invariant</comment>
   </data>
   <data name="&gt;&gt;BtnOK.Name" xml:space="preserve">
     <value>BtnOK</value>
@@ -460,7 +461,8 @@
     <value>1</value>
   </data>
   <data name="BtnCancel.Text" xml:space="preserve">
-    <value>&amp;No</value>
+    <value>{&amp;No}</value>
+    <comment>@Invariant</comment>
   </data>
   <data name="&gt;&gt;BtnCancel.Name" xml:space="preserve">
     <value>BtnCancel</value>

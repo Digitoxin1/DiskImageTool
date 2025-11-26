@@ -24,21 +24,21 @@ Partial Class ImportFileForm
     Private Sub InitializeComponent()
         Dim FileName As System.Windows.Forms.ColumnHeader
         Dim resources As System.ComponentModel.ComponentResourceManager = New System.ComponentModel.ComponentResourceManager(GetType(ImportFileForm))
-        Dim FileSize As System.Windows.Forms.ColumnHeader
-        Dim FileLastWriteDate As System.Windows.Forms.ColumnHeader
         Dim FileSizeOnDisk As System.Windows.Forms.ColumnHeader
-        Dim Label3 As System.Windows.Forms.Label
         Dim Label2 As System.Windows.Forms.Label
         Dim Label1 As System.Windows.Forms.Label
         Dim PanelTop As System.Windows.Forms.FlowLayoutPanel
-        Dim Label4 As System.Windows.Forms.Label
-        Dim FileCreationDate As System.Windows.Forms.ColumnHeader
-        Dim FileLastAccessDate As System.Windows.Forms.ColumnHeader
         Dim FileDisabled As System.Windows.Forms.ColumnHeader
+        Me.LabelFilesSelected = New System.Windows.Forms.Label()
         Me.ChkLFN = New System.Windows.Forms.CheckBox()
         Me.ChkNTExtensions = New System.Windows.Forms.CheckBox()
         Me.ChkCreated = New System.Windows.Forms.CheckBox()
         Me.ChkLastAccessed = New System.Windows.Forms.CheckBox()
+        Me.FileLastAccessDate = CType(New System.Windows.Forms.ColumnHeader(), System.Windows.Forms.ColumnHeader)
+        Me.FileLastWriteDate = CType(New System.Windows.Forms.ColumnHeader(), System.Windows.Forms.ColumnHeader)
+        Me.LabelOptions = New System.Windows.Forms.Label()
+        Me.FileSize = CType(New System.Windows.Forms.ColumnHeader(), System.Windows.Forms.ColumnHeader)
+        Me.FileCreationDate = CType(New System.Windows.Forms.ColumnHeader(), System.Windows.Forms.ColumnHeader)
         Me.ListViewFiles = New System.Windows.Forms.ListView()
         Me.Panel1 = New System.Windows.Forms.Panel()
         Me.FlowLayoutTotals = New System.Windows.Forms.FlowLayoutPanel()
@@ -48,16 +48,10 @@ Partial Class ImportFileForm
         Me.BtnOK = New System.Windows.Forms.Button()
         Me.BtnCancel = New System.Windows.Forms.Button()
         FileName = CType(New System.Windows.Forms.ColumnHeader(), System.Windows.Forms.ColumnHeader)
-        FileSize = CType(New System.Windows.Forms.ColumnHeader(), System.Windows.Forms.ColumnHeader)
-        FileLastWriteDate = CType(New System.Windows.Forms.ColumnHeader(), System.Windows.Forms.ColumnHeader)
         FileSizeOnDisk = CType(New System.Windows.Forms.ColumnHeader(), System.Windows.Forms.ColumnHeader)
-        Label3 = New System.Windows.Forms.Label()
         Label2 = New System.Windows.Forms.Label()
         Label1 = New System.Windows.Forms.Label()
         PanelTop = New System.Windows.Forms.FlowLayoutPanel()
-        Label4 = New System.Windows.Forms.Label()
-        FileCreationDate = CType(New System.Windows.Forms.ColumnHeader(), System.Windows.Forms.ColumnHeader)
-        FileLastAccessDate = CType(New System.Windows.Forms.ColumnHeader(), System.Windows.Forms.ColumnHeader)
         FileDisabled = CType(New System.Windows.Forms.ColumnHeader(), System.Windows.Forms.ColumnHeader)
         PanelTop.SuspendLayout()
         Me.Panel1.SuspendLayout()
@@ -68,23 +62,15 @@ Partial Class ImportFileForm
         '
         resources.ApplyResources(FileName, "FileName")
         '
-        'FileSize
-        '
-        resources.ApplyResources(FileSize, "FileSize")
-        '
-        'FileLastWriteDate
-        '
-        resources.ApplyResources(FileLastWriteDate, "FileLastWriteDate")
-        '
         'FileSizeOnDisk
         '
         resources.ApplyResources(FileSizeOnDisk, "FileSizeOnDisk")
         '
-        'Label3
+        'LabelFilesSelected
         '
-        resources.ApplyResources(Label3, "Label3")
-        Label3.Name = "Label3"
-        Label3.UseMnemonic = False
+        resources.ApplyResources(Me.LabelFilesSelected, "LabelFilesSelected")
+        Me.LabelFilesSelected.Name = "LabelFilesSelected"
+        Me.LabelFilesSelected.UseMnemonic = False
         '
         'Label2
         '
@@ -133,30 +119,38 @@ Partial Class ImportFileForm
         Me.ChkLastAccessed.Name = "ChkLastAccessed"
         Me.ChkLastAccessed.UseVisualStyleBackColor = True
         '
-        'Label4
-        '
-        resources.ApplyResources(Label4, "Label4")
-        Label4.Name = "Label4"
-        Label4.UseMnemonic = False
-        '
-        'FileCreationDate
-        '
-        resources.ApplyResources(FileCreationDate, "FileCreationDate")
-        '
-        'FileLastAccessDate
-        '
-        resources.ApplyResources(FileLastAccessDate, "FileLastAccessDate")
-        '
         'FileDisabled
         '
         resources.ApplyResources(FileDisabled, "FileDisabled")
+        '
+        'FileLastAccessDate
+        '
+        resources.ApplyResources(Me.FileLastAccessDate, "FileLastAccessDate")
+        '
+        'FileLastWriteDate
+        '
+        resources.ApplyResources(Me.FileLastWriteDate, "FileLastWriteDate")
+        '
+        'LabelOptions
+        '
+        resources.ApplyResources(Me.LabelOptions, "LabelOptions")
+        Me.LabelOptions.Name = "LabelOptions"
+        Me.LabelOptions.UseMnemonic = False
+        '
+        'FileSize
+        '
+        resources.ApplyResources(Me.FileSize, "FileSize")
+        '
+        'FileCreationDate
+        '
+        resources.ApplyResources(Me.FileCreationDate, "FileCreationDate")
         '
         'ListViewFiles
         '
         Me.ListViewFiles.AllowDrop = True
         resources.ApplyResources(Me.ListViewFiles, "ListViewFiles")
         Me.ListViewFiles.CheckBoxes = True
-        Me.ListViewFiles.Columns.AddRange(New System.Windows.Forms.ColumnHeader() {FileName, FileSize, FileSizeOnDisk, FileLastWriteDate, FileCreationDate, FileLastAccessDate, FileDisabled})
+        Me.ListViewFiles.Columns.AddRange(New System.Windows.Forms.ColumnHeader() {FileName, Me.FileSize, FileSizeOnDisk, Me.FileLastWriteDate, Me.FileCreationDate, Me.FileLastAccessDate, FileDisabled})
         Me.ListViewFiles.FullRowSelect = True
         Me.ListViewFiles.HideSelection = False
         Me.ListViewFiles.Name = "ListViewFiles"
@@ -175,7 +169,7 @@ Partial Class ImportFileForm
         'FlowLayoutTotals
         '
         resources.ApplyResources(Me.FlowLayoutTotals, "FlowLayoutTotals")
-        Me.FlowLayoutTotals.Controls.Add(Label3)
+        Me.FlowLayoutTotals.Controls.Add(Me.LabelFilesSelected)
         Me.FlowLayoutTotals.Controls.Add(Me.LblSelected)
         Me.FlowLayoutTotals.Controls.Add(Label2)
         Me.FlowLayoutTotals.Controls.Add(Me.LblBytesFree)
@@ -219,7 +213,7 @@ Partial Class ImportFileForm
         '
         resources.ApplyResources(Me, "$this")
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
-        Me.Controls.Add(Label4)
+        Me.Controls.Add(Me.LabelOptions)
         Me.Controls.Add(PanelTop)
         Me.Controls.Add(Me.Panel1)
         Me.Controls.Add(Me.ListViewFiles)
@@ -250,4 +244,10 @@ Partial Class ImportFileForm
     Friend WithEvents ChkCreated As CheckBox
     Friend WithEvents ChkLFN As CheckBox
     Friend WithEvents ChkNTExtensions As CheckBox
+    Friend WithEvents FileCreationDate As ColumnHeader
+    Friend WithEvents FileSize As ColumnHeader
+    Friend WithEvents LabelOptions As Label
+    Friend WithEvents FileLastWriteDate As ColumnHeader
+    Friend WithEvents FileLastAccessDate As ColumnHeader
+    Friend WithEvents LabelFilesSelected As Label
 End Class

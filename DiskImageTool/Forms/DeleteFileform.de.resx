@@ -123,10 +123,4 @@
   <data name="GroupBox1.Text" xml:space="preserve">
     <value>Sektoren füllen mit</value>
   </data>
-  <data name="BtnOK.Text" xml:space="preserve">
-    <value>&amp;Ja</value>
-  </data>
-  <data name="BtnCancel.Text" xml:space="preserve">
-    <value>&amp;Nein</value>
-  </data>
 </root>

@@ -25,13 +25,10 @@
         Private Sub InitializeComponent()
             Dim TableLayoutPanel1 As System.Windows.Forms.TableLayoutPanel
             Dim resources As System.ComponentModel.ComponentResourceManager = New System.ComponentModel.ComponentResourceManager(GetType(SettingsPanel))
-            Dim LabelApplicationPath As System.Windows.Forms.Label
             Dim LabelDriveInterface As System.Windows.Forms.Label
-            Dim LabelTracks0 As System.Windows.Forms.Label
-            Dim LabelTracks1 As System.Windows.Forms.Label
             Dim LabelPort As System.Windows.Forms.Label
             Dim LabelDefaultRevs As System.Windows.Forms.Label
-            Dim LabelLogFile As System.Windows.Forms.Label
+            Me.LabelApplicationPath = New System.Windows.Forms.Label()
             Me.LabelDriveType0 = New System.Windows.Forms.Label()
             Me.LabelDriveType1 = New System.Windows.Forms.Label()
             Me.LabelDriveType2 = New System.Windows.Forms.Label()
@@ -43,6 +40,8 @@
             Me.ButtonBrowse = New System.Windows.Forms.Button()
             Me.ButtonClear = New System.Windows.Forms.Button()
             Me.TextBoxInfo = New System.Windows.Forms.TextBox()
+            Me.LabelTracks0 = New System.Windows.Forms.Label()
+            Me.LabelTracks1 = New System.Windows.Forms.Label()
             Me.LabelTracks2 = New System.Windows.Forms.Label()
             Me.NumericTracks1 = New System.Windows.Forms.NumericUpDown()
             Me.NumericTracks2 = New System.Windows.Forms.NumericUpDown()
@@ -50,15 +49,12 @@
             Me.ButtonInfo = New System.Windows.Forms.Button()
             Me.ComboPorts = New System.Windows.Forms.ComboBox()
             Me.NumericDefaultRevs = New System.Windows.Forms.NumericUpDown()
+            Me.LabelLogFile = New System.Windows.Forms.Label()
             Me.TextBoxLogFile = New System.Windows.Forms.TextBox()
             TableLayoutPanel1 = New System.Windows.Forms.TableLayoutPanel()
-            LabelApplicationPath = New System.Windows.Forms.Label()
             LabelDriveInterface = New System.Windows.Forms.Label()
-            LabelTracks0 = New System.Windows.Forms.Label()
-            LabelTracks1 = New System.Windows.Forms.Label()
             LabelPort = New System.Windows.Forms.Label()
             LabelDefaultRevs = New System.Windows.Forms.Label()
-            LabelLogFile = New System.Windows.Forms.Label()
             TableLayoutPanel1.SuspendLayout()
             CType(Me.NumericTracks1, System.ComponentModel.ISupportInitialize).BeginInit()
             CType(Me.NumericTracks2, System.ComponentModel.ISupportInitialize).BeginInit()
@@ -69,7 +65,7 @@
             'TableLayoutPanel1
             '
             resources.ApplyResources(TableLayoutPanel1, "TableLayoutPanel1")
-            TableLayoutPanel1.Controls.Add(LabelApplicationPath, 0, 0)
+            TableLayoutPanel1.Controls.Add(Me.LabelApplicationPath, 0, 0)
             TableLayoutPanel1.Controls.Add(LabelDriveInterface, 0, 1)
             TableLayoutPanel1.Controls.Add(Me.LabelDriveType0, 0, 2)
             TableLayoutPanel1.Controls.Add(Me.LabelDriveType1, 0, 3)
@@ -82,8 +78,8 @@
             TableLayoutPanel1.Controls.Add(Me.ButtonBrowse, 5, 0)
             TableLayoutPanel1.Controls.Add(Me.ButtonClear, 6, 0)
             TableLayoutPanel1.Controls.Add(Me.TextBoxInfo, 4, 2)
-            TableLayoutPanel1.Controls.Add(LabelTracks0, 2, 2)
-            TableLayoutPanel1.Controls.Add(LabelTracks1, 2, 3)
+            TableLayoutPanel1.Controls.Add(Me.LabelTracks0, 2, 2)
+            TableLayoutPanel1.Controls.Add(Me.LabelTracks1, 2, 3)
             TableLayoutPanel1.Controls.Add(Me.LabelTracks2, 2, 4)
             TableLayoutPanel1.Controls.Add(Me.NumericTracks1, 3, 3)
             TableLayoutPanel1.Controls.Add(Me.NumericTracks2, 3, 4)
@@ -93,15 +89,15 @@
             TableLayoutPanel1.Controls.Add(Me.ComboPorts, 3, 1)
             TableLayoutPanel1.Controls.Add(LabelDefaultRevs, 0, 5)
             TableLayoutPanel1.Controls.Add(Me.NumericDefaultRevs, 1, 5)
-            TableLayoutPanel1.Controls.Add(LabelLogFile, 0, 6)
+            TableLayoutPanel1.Controls.Add(Me.LabelLogFile, 0, 6)
             TableLayoutPanel1.Controls.Add(Me.TextBoxLogFile, 1, 6)
             TableLayoutPanel1.GrowStyle = System.Windows.Forms.TableLayoutPanelGrowStyle.FixedSize
             TableLayoutPanel1.Name = "TableLayoutPanel1"
             '
             'LabelApplicationPath
             '
-            resources.ApplyResources(LabelApplicationPath, "LabelApplicationPath")
-            LabelApplicationPath.Name = "LabelApplicationPath"
+            resources.ApplyResources(Me.LabelApplicationPath, "LabelApplicationPath")
+            Me.LabelApplicationPath.Name = "LabelApplicationPath"
             '
             'LabelDriveInterface
             '
@@ -184,13 +180,13 @@
             '
             'LabelTracks0
             '
-            resources.ApplyResources(LabelTracks0, "LabelTracks0")
-            LabelTracks0.Name = "LabelTracks0"
+            resources.ApplyResources(Me.LabelTracks0, "LabelTracks0")
+            Me.LabelTracks0.Name = "LabelTracks0"
             '
             'LabelTracks1
             '
-            resources.ApplyResources(LabelTracks1, "LabelTracks1")
-            LabelTracks1.Name = "LabelTracks1"
+            resources.ApplyResources(Me.LabelTracks1, "LabelTracks1")
+            Me.LabelTracks1.Name = "LabelTracks1"
             '
             'LabelTracks2
             '
@@ -242,8 +238,8 @@
             '
             'LabelLogFile
             '
-            resources.ApplyResources(LabelLogFile, "LabelLogFile")
-            LabelLogFile.Name = "LabelLogFile"
+            resources.ApplyResources(Me.LabelLogFile, "LabelLogFile")
+            Me.LabelLogFile.Name = "LabelLogFile"
             '
             'TextBoxLogFile
             '
@@ -286,5 +282,9 @@
         Friend WithEvents ComboPorts As ComboBox
         Friend WithEvents NumericDefaultRevs As NumericUpDown
         Friend WithEvents TextBoxLogFile As TextBox
+        Friend WithEvents LabelApplicationPath As Label
+        Friend WithEvents LabelTracks0 As Label
+        Friend WithEvents LabelTracks1 As Label
+        Friend WithEvents LabelLogFile As Label
     End Class
 End Namespace

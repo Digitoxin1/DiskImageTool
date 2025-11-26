@@ -47,6 +47,7 @@ Public Class FATEditForm
         InitializeComponent()
 
         ' Add any initialization after the InitializeComponent() call.
+        LocalizeForm()
 
         _ToolTip = New ToolTip()
         _Disk = Disk
@@ -85,6 +86,16 @@ Public Class FATEditForm
         If DataGridViewFAT.Rows.Count > 0 Then
             DataGridViewFAT.CurrentCell = DataGridViewFAT.Rows(0).Cells(0)
         End If
+    End Sub
+
+    Private Sub LocalizeForm()
+        BtnCancel.Text = My.Resources.Menu_Cancel
+        BtnUpdate.Text = My.Resources.Menu_Update
+        BtnReserved.Text = My.Resources.Label_Reserved
+        TxtMediaDescriptor.Text = My.Resources.Label_MediaDescriptor
+        BtnLast.Text = My.Resources.Label_Last
+        BtnFree.Text = My.Resources.Label_Free
+        BtnBad.Text = My.Resources.Label_Bad
     End Sub
 
     Public ReadOnly Property Updated As Boolean
@@ -302,11 +313,11 @@ Public Class FATEditForm
 
     Private Function GetTypeNameFromValue(Value As UShort) As String
         If Value = FAT12.FAT_FREE_CLUSTER Then
-            Return My.Resources.Label_FATType_Free
+            Return My.Resources.Label_Free
         ElseIf Value = FAT12.FAT_BAD_CLUSTER Then
-            Return My.Resources.Label_FATType_Bad
+            Return My.Resources.Label_Bad
         ElseIf Value >= FAT12.FAT_LAST_CLUSTER_START And Value <= FAT12.FAT_LAST_CLUSTER_END Then
-            Return My.Resources.Label_FATType_Last
+            Return My.Resources.Label_Last
         ElseIf Value = 1 Or (Value >= FAT12.FAT_RESERVED_START And Value <= FAT12.FAT_RESERVED_END) Then
             Return My.Resources.Label_Reserved
         Else
@@ -324,11 +335,11 @@ Public Class FATEditForm
         Dim TypeName = GetTypeNameFromValue(Value)
         If ErrorString <> "" Then
             Return Color.Red
-        ElseIf TypeName = My.Resources.Label_FATType_Free Then
+        ElseIf TypeName = My.Resources.Label_Free Then
             Return Color.Gray
-        ElseIf TypeName = My.Resources.Label_FATType_Bad Then
+        ElseIf TypeName = My.Resources.Label_Bad Then
             Return Color.Red
-        ElseIf TypeName = My.Resources.Label_FATType_Last Then
+        ElseIf TypeName = My.Resources.Label_Last Then
             Return Color.Black
         ElseIf TypeName = My.Resources.Label_Reserved Then
             Return Color.Orange

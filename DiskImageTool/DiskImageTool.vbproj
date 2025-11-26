@@ -859,15 +859,6 @@
     <EmbeddedResource Include="Flux\Forms\ConfigurationForm.resx">
       <DependentUpon>ConfigurationForm.vb</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Flux\Forms\BaseFluxForm.de.resx">
-      <DependentUpon>BaseFluxForm.vb</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Flux\Forms\BaseFluxForm.es.resx">
-      <DependentUpon>BaseFluxForm.vb</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Flux\Forms\BaseFluxForm.fr.resx">
-      <DependentUpon>BaseFluxForm.vb</DependentUpon>
-    </EmbeddedResource>
     <EmbeddedResource Include="Flux\Forms\BaseFluxForm.resx">
       <DependentUpon>BaseFluxForm.vb</DependentUpon>
     </EmbeddedResource>

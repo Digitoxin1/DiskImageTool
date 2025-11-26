@@ -117,38 +117,14 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="BtnCopyValue.Text" xml:space="preserve">
-    <value>&amp;Wert kopieren</value>
-  </data>
   <data name="ToolStripStatusChecksumText.Text" xml:space="preserve">
     <value>Prüfsumme:</value>
-  </data>
-  <data name="BtnCopyHex.Text" xml:space="preserve">
-    <value>&amp;Hex kopieren</value>
-  </data>
-  <data name="BtnCopyText.Text" xml:space="preserve">
-    <value>&amp;Text kopieren</value>
-  </data>
-  <data name="BtnCopyHexFormatted.Text" xml:space="preserve">
-    <value>Formatiertes Hex &amp;kopieren</value>
   </data>
   <data name="BtnCopyEncoded.Text" xml:space="preserve">
     <value>Kodiert kopieren</value>
   </data>
-  <data name="BtnFind.Text" xml:space="preserve">
-    <value>Suchen</value>
-  </data>
-  <data name="BtnFindNext.Text" xml:space="preserve">
-    <value>Weitersuchen</value>
-  </data>
-  <data name="BtnSelectAll.Text" xml:space="preserve">
-    <value>&amp;Alles auswählen</value>
-  </data>
   <data name="BtnSelectRegion.Text" xml:space="preserve">
     <value>&amp;Region auswählen</value>
-  </data>
-  <data name="BtnSelectSector.Text" xml:space="preserve">
-    <value>&amp;Sektor auswählen</value>
   </data>
   <data name="BtnSelectData.Text" xml:space="preserve">
     <value>&amp;Daten auswählen</value>
@@ -156,35 +132,11 @@
   <data name="BtnAdjustOffset.Text" xml:space="preserve">
     <value>Bit-&amp;Offset anpassen</value>
   </data>
-  <data name="ToolStripBtnCopyText.Text" xml:space="preserve">
-    <value>Text kopieren</value>
-  </data>
-  <data name="ToolStripBtnCopyHex.Text" xml:space="preserve">
-    <value>Hex kopieren</value>
-  </data>
-  <data name="ToolStripBtnCopyHexFormatted.Text" xml:space="preserve">
-    <value>Formatiertes Hex kopieren</value>
-  </data>
-  <data name="ToolStripBtnFind.Text" xml:space="preserve">
-    <value>Suchen</value>
-  </data>
-  <data name="ToolStripBtnFindNext.Text" xml:space="preserve">
-    <value>Weitersuchen</value>
-  </data>
-  <data name="ToolStripBtnSelectAll.Text" xml:space="preserve">
-    <value>Alles auswählen</value>
-  </data>
   <data name="ToolStripBtnSelectRegion.Text" xml:space="preserve">
     <value>Bereich</value>
   </data>
   <data name="ToolStripBtnSelectRegion.ToolTipText" xml:space="preserve">
     <value>Region auswählen</value>
-  </data>
-  <data name="ToolStripBtnSelectSector.Text" xml:space="preserve">
-    <value>Sektor</value>
-  </data>
-  <data name="ToolStripBtnSelectSector.ToolTipText" xml:space="preserve">
-    <value>Sektor auswählen</value>
   </data>
   <data name="ToolStripBtnSelectData.Text" xml:space="preserve">
     <value>Daten</value>
@@ -194,11 +146,5 @@
   </data>
   <data name="ToolStripBtnAdjustOffset.Text" xml:space="preserve">
     <value>Bit-Offset anpassen</value>
-  </data>
-  <data name="HexBox1.BuiltInContextMenu.CopyMenuItemText" xml:space="preserve">
-    <value>Text kopieren</value>
-  </data>
-  <data name="HexBox1.BuiltInContextMenu.SelectAllMenuItemText" xml:space="preserve">
-    <value>Alles auswählen</value>
   </data>
 </root>

@@ -74,6 +74,8 @@ Public Class BootSectorForm
         InitializeComponent()
 
         ' Add any initialization after the InitializeComponent() call.
+        LocalizeForm()
+
         _BootSector = New BootSector(Data)
         _BootStrap = BootStrap
         _HelpProvider1 = New HelpProvider
@@ -89,6 +91,31 @@ Public Class BootSectorForm
         PopulateValues()
 
         _SuppressEvent = False
+    End Sub
+
+    Private Sub LocalizeForm()
+        BtnCancel.Text = My.Resources.Menu_Cancel
+        BtnUpdate.Text = My.Resources.Menu_Update
+        GroupBoxAdditionalData.Text = My.Resources.Label_AdditionalData
+        GroupBoxMain.Text = My.Resources.Label_BootRecord
+        HexBox1.BuiltInContextMenu.CopyMenuItemText = WithoutHotkey(My.Resources.Menu_CopyText)
+        HexBox1.BuiltInContextMenu.SelectAllMenuItemText = My.Resources.Label_SelectAll
+        LblBootSectorSignature.Text = My.Resources.Label_BootStrapSignature
+        LblBytesPerSector.Text = My.Resources.Label_BytesPerSector
+        LblDiskType.Text = My.Resources.Label_DiskFormat
+        LblDriveNumber.Text = My.Resources.Label_DriveNumber
+        lblExtendedBootSignature.Text = My.Resources.Label_ExtendedBootSignature
+        LblFileSystemType.Text = My.Resources.Label_FileSystemType
+        LblHiddenSectors.Text = My.Resources.Label_HiddenSectors
+        LblOEMName.Text = My.Resources.Label_OEMName
+        LblReservedSectors.Text = My.Resources.Label_ReservedSectorCount
+        LblSectorsPerCluster.Text = My.Resources.Label_SectorsPerCluster
+        LblSectorsPerFAT.Text = My.Resources.Label_SectorsPerFAT
+        LblSectorsPerTrack.Text = My.Resources.Label_SectorsPerTrack
+        LblVolumeLabel.Text = My.Resources.Label_VolumeLabel
+        LblVolumeSerialNumber.Text = My.Resources.Label_VolumeSerialNumber
+        Me.Text = My.Resources.Label_BootSector
+        TxtMediaDescriptor.Text = My.Resources.Label_MediaDescriptor
     End Sub
 
     Public ReadOnly Property Data As Byte()
@@ -137,7 +164,7 @@ Public Class BootSectorForm
         HelpString = My.Resources.HelpStrings.BootSectorForm_Help_SectorCountSmall & Environment.NewLine & Environment.NewLine & GetHelpValueList(Function(x) x.SectorCountSmall)
         SetHelpString(HelpString, LblSectorCountSmall, TxtSectorCountSmall)
 
-        HelpString = My.Resources.HelpStrings.BootSectorForm_Help_MediaDescriptor & Environment.NewLine & Environment.NewLine & GetMediaDescriptorValueList()
+        HelpString = My.Resources.Label_MediaDescriptor & Environment.NewLine & Environment.NewLine & GetMediaDescriptorValueList()
         SetHelpString(HelpString, TxtMediaDescriptor, CboMediaDescriptor)
 
         HelpString = My.Resources.HelpStrings.BootSectorForm_Help_SectorsPerFAT & Environment.NewLine & Environment.NewLine & GetHelpValueList(Function(x) x.SectorsPerFAT)
@@ -158,7 +185,8 @@ Public Class BootSectorForm
         HelpString = String.Format(My.Resources.HelpStrings.BootSectorForm_Help_DriveNumber, ALLOWED_DRIVE_NUMBER)
         SetHelpString(HelpString, LblDriveNumber, TxtDriveNumber)
 
-        SetHelpString(My.Resources.HelpStrings.BootSectorForm_Help_ExtendedBootSignature, lblExtendedBootSignature, HexExtendedBootSignature)
+        HelpString = My.Resources.Label_ExtendedBootSignature & Environment.NewLine & Environment.NewLine & My.Resources.HelpStrings.BootSectorForm_Help_ExtendedBootSignature
+        SetHelpString(HelpString, lblExtendedBootSignature, HexExtendedBootSignature)
 
         SetHelpString(My.Resources.HelpStrings.BootSectorForm_Help_VolumeSerialNumber, LblVolumeSerialNumber, HexVolumeSerialNumber)
 

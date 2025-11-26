@@ -372,4 +372,15 @@ Module Utility
         ByRef pszPath As IntPtr) As Int32
     End Function
 
+    Public Function WithoutHotkey(value As String) As String
+        Const Placeholder As String = ChrW(&H1F)
+
+        If value Is Nothing Then
+            Return Nothing
+        End If
+        ' WinForms access key: ampersand indicates mnemonic
+        ' "&&" = literal '&'
+        Return value.Replace("&&", Placeholder).Replace("&", "").Replace(Placeholder, "&")
+    End Function
+
 End Module

@@ -23,37 +23,35 @@
         'Do not modify it using the code editor.
         <System.Diagnostics.DebuggerStepThrough()>
         Private Sub InitializeComponent()
-            Dim LabelApplicationPath As System.Windows.Forms.Label
             Dim resources As System.ComponentModel.ComponentResourceManager = New System.ComponentModel.ComponentResourceManager(GetType(SettingsPanel))
-            Dim LabelLogFile As System.Windows.Forms.Label
+            Me.LabelLogFile = New System.Windows.Forms.Label()
+            Me.LabelApplicationPath = New System.Windows.Forms.Label()
             Me.TableLayoutPanel1 = New System.Windows.Forms.TableLayoutPanel()
             Me.TextBoxPath = New System.Windows.Forms.TextBox()
             Me.ButtonBrowse = New System.Windows.Forms.Button()
             Me.ButtonClear = New System.Windows.Forms.Button()
             Me.TextBoxLogFile = New System.Windows.Forms.TextBox()
-            LabelApplicationPath = New System.Windows.Forms.Label()
-            LabelLogFile = New System.Windows.Forms.Label()
             Me.TableLayoutPanel1.SuspendLayout()
             Me.SuspendLayout()
             '
-            'LabelApplicationPath
-            '
-            resources.ApplyResources(LabelApplicationPath, "LabelApplicationPath")
-            LabelApplicationPath.Name = "LabelApplicationPath"
-            '
             'LabelLogFile
             '
-            resources.ApplyResources(LabelLogFile, "LabelLogFile")
-            LabelLogFile.Name = "LabelLogFile"
+            resources.ApplyResources(Me.LabelLogFile, "LabelLogFile")
+            Me.LabelLogFile.Name = "LabelLogFile"
+            '
+            'LabelApplicationPath
+            '
+            resources.ApplyResources(Me.LabelApplicationPath, "LabelApplicationPath")
+            Me.LabelApplicationPath.Name = "LabelApplicationPath"
             '
             'TableLayoutPanel1
             '
             resources.ApplyResources(Me.TableLayoutPanel1, "TableLayoutPanel1")
-            Me.TableLayoutPanel1.Controls.Add(LabelApplicationPath, 0, 0)
+            Me.TableLayoutPanel1.Controls.Add(Me.LabelApplicationPath, 0, 0)
             Me.TableLayoutPanel1.Controls.Add(Me.TextBoxPath, 1, 0)
             Me.TableLayoutPanel1.Controls.Add(Me.ButtonBrowse, 5, 0)
             Me.TableLayoutPanel1.Controls.Add(Me.ButtonClear, 6, 0)
-            Me.TableLayoutPanel1.Controls.Add(LabelLogFile, 0, 6)
+            Me.TableLayoutPanel1.Controls.Add(Me.LabelLogFile, 0, 6)
             Me.TableLayoutPanel1.Controls.Add(Me.TextBoxLogFile, 1, 6)
             Me.TableLayoutPanel1.Name = "TableLayoutPanel1"
             '
@@ -101,5 +99,7 @@
         Friend WithEvents ButtonBrowse As Button
         Friend WithEvents ButtonClear As Button
         Friend WithEvents TextBoxLogFile As TextBox
+        Friend WithEvents LabelApplicationPath As Label
+        Friend WithEvents LabelLogFile As Label
     End Class
 End Namespace

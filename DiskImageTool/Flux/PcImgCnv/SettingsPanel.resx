@@ -117,63 +117,21 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <metadata name="LabelApplicationPath.GenerateMember" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
-    <value>False</value>
-  </metadata>
-  <metadata name="LabelApplicationPath.Locked" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
-    <value>True</value>
-  </metadata>
-  <assembly alias="System.Windows.Forms" name="System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
-  <data name="LabelApplicationPath.Anchor" type="System.Windows.Forms.AnchorStyles, System.Windows.Forms">
-    <value>Left</value>
-  </data>
-  <assembly alias="mscorlib" name="mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
-  <data name="LabelApplicationPath.AutoSize" type="System.Boolean, mscorlib">
-    <value>True</value>
-  </data>
-  <data name="LabelApplicationPath.ImeMode" type="System.Windows.Forms.ImeMode, System.Windows.Forms">
-    <value>NoControl</value>
-  </data>
-  <assembly alias="System.Drawing" name="System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
-  <data name="LabelApplicationPath.Location" type="System.Drawing.Point, System.Drawing">
-    <value>3, 8</value>
-  </data>
-  <data name="LabelApplicationPath.Size" type="System.Drawing.Size, System.Drawing">
-    <value>84, 13</value>
-  </data>
-  <data name="LabelApplicationPath.TabIndex" type="System.Int32, mscorlib">
-    <value>0</value>
-  </data>
-  <data name="LabelApplicationPath.Text" xml:space="preserve">
-    <value>Application Path</value>
-  </data>
-  <data name="&gt;&gt;LabelApplicationPath.Name" xml:space="preserve">
-    <value>LabelApplicationPath</value>
-  </data>
-  <data name="&gt;&gt;LabelApplicationPath.Type" xml:space="preserve">
-    <value>System.Windows.Forms.Label, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="&gt;&gt;LabelApplicationPath.Parent" xml:space="preserve">
-    <value>TableLayoutPanel1</value>
-  </data>
-  <data name="&gt;&gt;LabelApplicationPath.ZOrder" xml:space="preserve">
-    <value>0</value>
-  </data>
-  <metadata name="LabelLogFile.GenerateMember" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
-    <value>False</value>
-  </metadata>
   <metadata name="LabelLogFile.Locked" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
     <value>True</value>
   </metadata>
+  <assembly alias="System.Windows.Forms" name="System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
   <data name="LabelLogFile.Anchor" type="System.Windows.Forms.AnchorStyles, System.Windows.Forms">
     <value>Left</value>
   </data>
+  <assembly alias="mscorlib" name="mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
   <data name="LabelLogFile.AutoSize" type="System.Boolean, mscorlib">
     <value>True</value>
   </data>
   <data name="LabelLogFile.ImeMode" type="System.Windows.Forms.ImeMode, System.Windows.Forms">
     <value>NoControl</value>
   </data>
+  <assembly alias="System.Drawing" name="System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
   <data name="LabelLogFile.Location" type="System.Drawing.Point, System.Drawing">
     <value>3, 35</value>
   </data>
@@ -184,7 +142,8 @@
     <value>22</value>
   </data>
   <data name="LabelLogFile.Text" xml:space="preserve">
-    <value>Log Filename</value>
+    <value>{Log Filename}</value>
+    <comment>@Invariant</comment>
   </data>
   <data name="&gt;&gt;LabelLogFile.Name" xml:space="preserve">
     <value>LabelLogFile</value>
@@ -197,6 +156,43 @@
   </data>
   <data name="&gt;&gt;LabelLogFile.ZOrder" xml:space="preserve">
     <value>4</value>
+  </data>
+  <metadata name="LabelApplicationPath.Locked" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
+    <value>True</value>
+  </metadata>
+  <data name="LabelApplicationPath.Anchor" type="System.Windows.Forms.AnchorStyles, System.Windows.Forms">
+    <value>Left</value>
+  </data>
+  <data name="LabelApplicationPath.AutoSize" type="System.Boolean, mscorlib">
+    <value>True</value>
+  </data>
+  <data name="LabelApplicationPath.ImeMode" type="System.Windows.Forms.ImeMode, System.Windows.Forms">
+    <value>NoControl</value>
+  </data>
+  <data name="LabelApplicationPath.Location" type="System.Drawing.Point, System.Drawing">
+    <value>3, 8</value>
+  </data>
+  <data name="LabelApplicationPath.Size" type="System.Drawing.Size, System.Drawing">
+    <value>92, 13</value>
+  </data>
+  <data name="LabelApplicationPath.TabIndex" type="System.Int32, mscorlib">
+    <value>0</value>
+  </data>
+  <data name="LabelApplicationPath.Text" xml:space="preserve">
+    <value>{Application Path}</value>
+    <comment>@Invariant</comment>
+  </data>
+  <data name="&gt;&gt;LabelApplicationPath.Name" xml:space="preserve">
+    <value>LabelApplicationPath</value>
+  </data>
+  <data name="&gt;&gt;LabelApplicationPath.Type" xml:space="preserve">
+    <value>System.Windows.Forms.Label, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;LabelApplicationPath.Parent" xml:space="preserve">
+    <value>TableLayoutPanel1</value>
+  </data>
+  <data name="&gt;&gt;LabelApplicationPath.ZOrder" xml:space="preserve">
+    <value>0</value>
   </data>
   <metadata name="TableLayoutPanel1.Locked" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
     <value>True</value>
@@ -217,10 +213,10 @@
     <value>Left, Right</value>
   </data>
   <data name="TextBoxPath.Location" type="System.Drawing.Point, System.Drawing">
-    <value>93, 4</value>
+    <value>101, 4</value>
   </data>
   <data name="TextBoxPath.Size" type="System.Drawing.Size, System.Drawing">
-    <value>326, 20</value>
+    <value>318, 20</value>
   </data>
   <data name="TextBoxPath.TabIndex" type="System.Int32, mscorlib">
     <value>1</value>
@@ -256,7 +252,8 @@
     <value>2</value>
   </data>
   <data name="ButtonBrowse.Text" xml:space="preserve">
-    <value>Browse</value>
+    <value>{Browse}</value>
+    <comment>@Invariant</comment>
   </data>
   <data name="&gt;&gt;ButtonBrowse.Name" xml:space="preserve">
     <value>ButtonBrowse</value>
@@ -289,7 +286,8 @@
     <value>3</value>
   </data>
   <data name="ButtonClear.Text" xml:space="preserve">
-    <value>Clear</value>
+    <value>{Clear}</value>
+    <comment>@Invariant</comment>
   </data>
   <data name="&gt;&gt;ButtonClear.Name" xml:space="preserve">
     <value>ButtonClear</value>
@@ -310,7 +308,7 @@
     <value>Left, Right</value>
   </data>
   <data name="TextBoxLogFile.Location" type="System.Drawing.Point, System.Drawing">
-    <value>93, 32</value>
+    <value>101, 32</value>
   </data>
   <data name="TextBoxLogFile.MaxLength" type="System.Int32, mscorlib">
     <value>50</value>

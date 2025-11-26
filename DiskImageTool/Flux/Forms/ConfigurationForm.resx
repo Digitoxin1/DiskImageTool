@@ -145,7 +145,8 @@
     <value>1</value>
   </data>
   <data name="BtnCancel.Text" xml:space="preserve">
-    <value>&amp;Cancel</value>
+    <value>{&amp;Cancel}</value>
+    <comment>@Invariant</comment>
   </data>
   <data name="&gt;&gt;BtnCancel.Name" xml:space="preserve">
     <value>BtnCancel</value>
@@ -178,7 +179,8 @@
     <value>0</value>
   </data>
   <data name="BtnUpdate.Text" xml:space="preserve">
-    <value>&amp;Update</value>
+    <value>{&amp;Update}</value>
+    <comment>@Invariant</comment>
   </data>
   <data name="&gt;&gt;BtnUpdate.Name" xml:space="preserve">
     <value>BtnUpdate</value>

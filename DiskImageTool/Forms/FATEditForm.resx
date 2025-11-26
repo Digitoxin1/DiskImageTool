@@ -178,7 +178,8 @@
     <value>1</value>
   </data>
   <data name="BtnCancel.Text" xml:space="preserve">
-    <value>&amp;Cancel</value>
+    <value>{&amp;Cancel}</value>
+    <comment>@Invariant</comment>
   </data>
   <data name="&gt;&gt;BtnCancel.Name" xml:space="preserve">
     <value>BtnCancel</value>
@@ -208,7 +209,8 @@
     <value>0</value>
   </data>
   <data name="BtnUpdate.Text" xml:space="preserve">
-    <value>&amp;Update</value>
+    <value>{&amp;Update}</value>
+    <comment>@Invariant</comment>
   </data>
   <data name="&gt;&gt;BtnUpdate.Name" xml:space="preserve">
     <value>BtnUpdate</value>
@@ -388,7 +390,8 @@
     <value>0</value>
   </data>
   <data name="BtnFree.Text" xml:space="preserve">
-    <value>Free</value>
+    <value>{Free}</value>
+    <comment>@Invariant</comment>
   </data>
   <data name="&gt;&gt;BtnFree.Name" xml:space="preserve">
     <value>BtnFree</value>
@@ -415,7 +418,8 @@
     <value>1</value>
   </data>
   <data name="BtnBad.Text" xml:space="preserve">
-    <value>Bad</value>
+    <value>{Bad}</value>
+    <comment>@Invariant</comment>
   </data>
   <data name="&gt;&gt;BtnBad.Name" xml:space="preserve">
     <value>BtnBad</value>
@@ -442,7 +446,8 @@
     <value>2</value>
   </data>
   <data name="BtnLast.Text" xml:space="preserve">
-    <value>Last</value>
+    <value>{Last}</value>
+    <comment>@Invariant</comment>
   </data>
   <data name="&gt;&gt;BtnLast.Name" xml:space="preserve">
     <value>BtnLast</value>
@@ -469,7 +474,8 @@
     <value>3</value>
   </data>
   <data name="BtnReserved.Text" xml:space="preserve">
-    <value>Reserved</value>
+    <value>{Reserved}</value>
+    <comment>@Invariant</comment>
   </data>
   <data name="&gt;&gt;BtnReserved.Name" xml:space="preserve">
     <value>BtnReserved</value>
@@ -635,7 +641,8 @@
     <value>20</value>
   </data>
   <data name="TxtMediaDescriptor.Text" xml:space="preserve">
-    <value>Media Descriptor</value>
+    <value>{Media Descriptor}</value>
+    <comment>@Invariant</comment>
   </data>
   <data name="&gt;&gt;TxtMediaDescriptor.Name" xml:space="preserve">
     <value>TxtMediaDescriptor</value>

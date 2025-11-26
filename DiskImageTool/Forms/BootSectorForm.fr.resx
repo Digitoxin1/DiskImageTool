@@ -117,53 +117,11 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="BtnCancel.Text" xml:space="preserve">
-    <value>&amp;Annuler</value>
-  </data>
-  <data name="BtnUpdate.Text" xml:space="preserve">
-    <value>&amp;Mettre à jour</value>
-  </data>
-  <data name="GroupBoxAdditionalData.Text" xml:space="preserve">
-    <value>Données supplémentaires</value>
-  </data>
-  <data name="$this.Text" xml:space="preserve">
-    <value>Secteur de démarrage</value>
-  </data>
-  <data name="GroupBoxMain.Text" xml:space="preserve">
-    <value>Enregistrement de démarrage</value>
-  </data>
-  <data name="LblBootSectorSignature.Text" xml:space="preserve">
-    <value>Signature du secteur de démarrage</value>
-  </data>
-  <data name="LblBytesPerSector.Text" xml:space="preserve">
-    <value>Octets par secteur</value>
-  </data>
-  <data name="HexBox1.BuiltInContextMenu.CopyMenuItemText" xml:space="preserve">
-    <value>Copier texte</value>
-  </data>
-  <data name="LblDiskType.Text" xml:space="preserve">
-    <value>Format de disquette</value>
-  </data>
-  <data name="LblDriveNumber.Text" xml:space="preserve">
-    <value>Numéro de lecteur</value>
-  </data>
-  <data name="lblExtendedBootSignature.Text" xml:space="preserve">
-    <value>Signature de démarrage étendue</value>
-  </data>
   <data name="GroupBoxExtended.Text" xml:space="preserve">
     <value>Bloc de paramètres étendu</value>
   </data>
-  <data name="LblFileSystemType.Text" xml:space="preserve">
-    <value>ID du système de fichiers</value>
-  </data>
-  <data name="LblHiddenSectors.Text" xml:space="preserve">
-    <value>Secteurs masqués</value>
-  </data>
   <data name="LblJumpInstruction.Text" xml:space="preserve">
     <value>Instruction de saut</value>
-  </data>
-  <data name="TxtMediaDescriptor.Text" xml:space="preserve">
-    <value>Descripteur de média</value>
   </data>
   <data name="LblNumberOfFATS.Text" xml:space="preserve">
     <value>Nombre de FAT</value>
@@ -171,26 +129,8 @@
   <data name="LblNumberOfHeads.Text" xml:space="preserve">
     <value>Nombre de têtes</value>
   </data>
-  <data name="LblOEMName.Text" xml:space="preserve">
-    <value>Nom OEM</value>
-  </data>
-  <data name="LblReservedSectors.Text" xml:space="preserve">
-    <value>Secteurs réservés</value>
-  </data>
   <data name="LblRootDirectoryEntries.Text" xml:space="preserve">
     <value>Entrées du répertoire racine</value>
-  </data>
-  <data name="LblSectorsPerCluster.Text" xml:space="preserve">
-    <value>Secteurs par cluster</value>
-  </data>
-  <data name="LblSectorsPerFAT.Text" xml:space="preserve">
-    <value>Secteurs par FAT</value>
-  </data>
-  <data name="LblSectorsPerTrack.Text" xml:space="preserve">
-    <value>Secteurs par piste</value>
-  </data>
-  <data name="HexBox1.BuiltInContextMenu.SelectAllMenuItemText" xml:space="preserve">
-    <value>Tout sélectionner</value>
   </data>
   <data name="LblExtendedMsg.Text" xml:space="preserve">
     <value>Il semble que des données soient stockées dans le bloc de paramètres étendu de ce secteur de démarrage. Cela signifie généralement que le bloc de paramètres étendu n’est pas défini pour cette disquette.</value>
@@ -200,11 +140,5 @@
   </data>
   <data name="LblSectorCountLarge.Text" xml:space="preserve">
     <value>Nombre total de secteurs (grand format)</value>
-  </data>
-  <data name="LblVolumeLabel.Text" xml:space="preserve">
-    <value>Étiquette du volume</value>
-  </data>
-  <data name="LblVolumeSerialNumber.Text" xml:space="preserve">
-    <value>Numéro de série du volume</value>
   </data>
 </root>

@@ -7,6 +7,8 @@ Public Class HexSearchForm
         InitializeComponent()
 
         ' Add any initialization after the InitializeComponent() call.
+        LocalizeForm()
+
         If HexSearch.SearchHex Then
             RadBtnHex.Checked = True
             ChkCaseSensitive.Enabled = False
@@ -18,6 +20,12 @@ Public Class HexSearchForm
         End If
         TextSearch.Text = HexSearch.SearchString
         BtnOK.Enabled = TextSearch.Text.Length > 0
+    End Sub
+
+    Private Sub LocalizeForm()
+        BtnOK.Text = My.Resources.Menu_Ok
+        BtnCancel.Text = My.Resources.Menu_Cancel
+        Me.Text = My.Resources.Label_Find
     End Sub
 
     Public Function Search() As HexSearch

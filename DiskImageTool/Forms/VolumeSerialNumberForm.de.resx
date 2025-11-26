@@ -126,9 +126,6 @@
   <data name="LabelTime.Text" xml:space="preserve">
     <value>Uhrzeit</value>
   </data>
-  <data name="BtnCancel.Text" xml:space="preserve">
-    <value>&amp;Abbrechen</value>
-  </data>
   <data name="$this.Text" xml:space="preserve">
     <value>Volumeseriennummer generieren</value>
   </data>

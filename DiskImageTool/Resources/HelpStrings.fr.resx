@@ -144,9 +144,7 @@ Remarque: doit être {1} pour toutes les disquettes.</value>
 Valeurs autorisées: {0}</value>
   </data>
   <data name="BootSectorForm_Help_ExtendedBootSignature" xml:space="preserve">
-    <value>Signature de démarrage étendue
-
-Valeurs typiques :
+    <value>Valeurs typiques :
 28h\tLe numéro de série du volume est présent
 29h\tNuméro de série du volume, étiquette du volume et identifiant du système de fichiers présents</value>
   </data>
@@ -167,9 +165,6 @@ Remarque: cette valeur doit être {0} pour toutes les disquettes</value>
     <value>Cette instruction indique où commence le code du chargeur.
 
 Valeurs autorisées: {0}</value>
-  </data>
-  <data name="BootSectorForm_Help_MediaDescriptor" xml:space="preserve">
-    <value>Descripteur de média</value>
   </data>
   <data name="BootSectorForm_Help_NumberOfFATs" xml:space="preserve">
     <value>Nombre de copies de la table FAT sur le volume

@@ -207,7 +207,8 @@
     <value>23, 22</value>
   </data>
   <data name="ToolStripBtnUndo.Text" xml:space="preserve">
-    <value>Undo</value>
+    <value>{Undo}</value>
+    <comment>@Invariant</comment>
   </data>
   <data name="ToolStripBtnRedo.ImageTransparentColor" type="System.Drawing.Color, System.Drawing">
     <value>Magenta</value>
@@ -216,7 +217,8 @@
     <value>23, 22</value>
   </data>
   <data name="ToolStripBtnRedo.Text" xml:space="preserve">
-    <value>Redo</value>
+    <value>{Redo}</value>
+    <comment>@Invariant</comment>
   </data>
   <data name="ToolStripBtnCopyText.ImageTransparentColor" type="System.Drawing.Color, System.Drawing">
     <value>Magenta</value>
@@ -225,7 +227,8 @@
     <value>23, 22</value>
   </data>
   <data name="ToolStripBtnCopyText.Text" xml:space="preserve">
-    <value>Copy Text</value>
+    <value>{Copy Text}</value>
+    <comment>@Invariant</comment>
   </data>
   <data name="ToolStripBtnCopyHex.ImageTransparentColor" type="System.Drawing.Color, System.Drawing">
     <value>Magenta</value>
@@ -234,7 +237,8 @@
     <value>23, 22</value>
   </data>
   <data name="ToolStripBtnCopyHex.Text" xml:space="preserve">
-    <value>Copy Hex</value>
+    <value>{Copy Hex}</value>
+    <comment>@Invariant</comment>
   </data>
   <data name="ToolStripBtnCopyHexFormatted.ImageTransparentColor" type="System.Drawing.Color, System.Drawing">
     <value>Magenta</value>
@@ -243,7 +247,8 @@
     <value>23, 22</value>
   </data>
   <data name="ToolStripBtnCopyHexFormatted.Text" xml:space="preserve">
-    <value>Copy Hex Formatted</value>
+    <value>{Copy Hex Formatted}</value>
+    <comment>@Invariant</comment>
   </data>
   <data name="ToolStripBtnPaste.ImageTransparentColor" type="System.Drawing.Color, System.Drawing">
     <value>Magenta</value>
@@ -261,7 +266,8 @@
     <value>23, 22</value>
   </data>
   <data name="ToolStripBtnFind.Text" xml:space="preserve">
-    <value>Find</value>
+    <value>{Find}</value>
+    <comment>@Invariant</comment>
   </data>
   <data name="ToolStripBtnFindNext.ImageTransparentColor" type="System.Drawing.Color, System.Drawing">
     <value>Magenta</value>
@@ -270,7 +276,8 @@
     <value>23, 22</value>
   </data>
   <data name="ToolStripBtnFindNext.Text" xml:space="preserve">
-    <value>Find Next</value>
+    <value>{Find Next}</value>
+    <comment>@Invariant</comment>
   </data>
   <data name="ToolStripSeparator8.Size" type="System.Drawing.Size, System.Drawing">
     <value>6, 25</value>
@@ -282,7 +289,8 @@
     <value>23, 22</value>
   </data>
   <data name="ToolStripBtnDelete.Text" xml:space="preserve">
-    <value>Fill Selection with 0x00</value>
+    <value>{Fill Selection with 0x00}</value>
+    <comment>@Invariant</comment>
   </data>
   <data name="ToolStripBtnFillF6.ImageTransparentColor" type="System.Drawing.Color, System.Drawing">
     <value>Magenta</value>
@@ -291,7 +299,8 @@
     <value>23, 22</value>
   </data>
   <data name="ToolStripBtnFillF6.Text" xml:space="preserve">
-    <value>Fill Selection with 0xF6</value>
+    <value>{Fill Selection with 0xF6}</value>
+    <comment>@Invariant</comment>
   </data>
   <data name="ToolStripBtnSelectAll.ImageTransparentColor" type="System.Drawing.Color, System.Drawing">
     <value>Magenta</value>
@@ -300,7 +309,8 @@
     <value>23, 22</value>
   </data>
   <data name="ToolStripBtnSelectAll.Text" xml:space="preserve">
-    <value>Select All</value>
+    <value>{Select All}</value>
+    <comment>@Invariant</comment>
   </data>
   <data name="ToolStripBtnSelectSector.ImageTransparentColor" type="System.Drawing.Color, System.Drawing">
     <value>Magenta</value>
@@ -336,7 +346,8 @@
     <comment>@Invariant</comment>
   </data>
   <data name="ToolStripBtnSelectTrack.ToolTipText" xml:space="preserve">
-    <value>Track</value>
+    <value>{Track}</value>
+    <comment>@Invariant</comment>
   </data>
   <data name="ToolStripMain.Location" type="System.Drawing.Point, System.Drawing">
     <value>0, 0</value>
@@ -372,7 +383,8 @@
     <value>257, 22</value>
   </data>
   <data name="BtnUndo.Text" xml:space="preserve">
-    <value>&amp;Undo</value>
+    <value>{&amp;Undo}</value>
+    <comment>@Invariant</comment>
   </data>
   <data name="BtnRedo.ShortcutKeys" type="System.Windows.Forms.Keys, System.Windows.Forms">
     <value>Ctrl+Shift+Z</value>
@@ -381,7 +393,8 @@
     <value>257, 22</value>
   </data>
   <data name="BtnRedo.Text" xml:space="preserve">
-    <value>&amp;Redo</value>
+    <value>{&amp;Redo}</value>
+    <comment>@Invariant</comment>
   </data>
   <data name="BtnCopyText.ShortcutKeys" type="System.Windows.Forms.Keys, System.Windows.Forms">
     <value>Ctrl+T</value>
@@ -390,7 +403,8 @@
     <value>257, 22</value>
   </data>
   <data name="BtnCopyText.Text" xml:space="preserve">
-    <value>Copy &amp;Text</value>
+    <value>{Copy &amp;Text}</value>
+    <comment>@Invariant</comment>
   </data>
   <data name="BtnCopyHex.ShortcutKeys" type="System.Windows.Forms.Keys, System.Windows.Forms">
     <value>Ctrl+C</value>
@@ -399,7 +413,8 @@
     <value>257, 22</value>
   </data>
   <data name="BtnCopyHex.Text" xml:space="preserve">
-    <value>Copy &amp;Hex</value>
+    <value>{Copy &amp;Hex}</value>
+    <comment>@Invariant</comment>
   </data>
   <data name="BtnCopyHexFormatted.ShortcutKeys" type="System.Windows.Forms.Keys, System.Windows.Forms">
     <value>Ctrl+Shift+C</value>
@@ -408,7 +423,8 @@
     <value>257, 22</value>
   </data>
   <data name="BtnCopyHexFormatted.Text" xml:space="preserve">
-    <value>Copy Hex &amp;Formatted</value>
+    <value>{Copy Hex &amp;Formatted}</value>
+    <comment>@Invariant</comment>
   </data>
   <data name="BtnPaste.ShortcutKeys" type="System.Windows.Forms.Keys, System.Windows.Forms">
     <value>Ctrl+V</value>
@@ -426,7 +442,8 @@
     <value>257, 22</value>
   </data>
   <data name="BtnFind.Text" xml:space="preserve">
-    <value>Find</value>
+    <value>{Find}</value>
+    <comment>@Invariant</comment>
   </data>
   <data name="BtnFindNext.ShortcutKeys" type="System.Windows.Forms.Keys, System.Windows.Forms">
     <value>F3</value>
@@ -435,7 +452,8 @@
     <value>257, 22</value>
   </data>
   <data name="BtnFindNext.Text" xml:space="preserve">
-    <value>Find Next</value>
+    <value>{Find Next}</value>
+    <comment>@Invariant</comment>
   </data>
   <data name="ToolStripMenuItem1.Size" type="System.Drawing.Size, System.Drawing">
     <value>254, 6</value>
@@ -447,7 +465,8 @@
     <value>257, 22</value>
   </data>
   <data name="BtnDelete.Text" xml:space="preserve">
-    <value>Fill Selection with 0x00</value>
+    <value>{Fill Selection with 0x00}</value>
+    <comment>@Invariant</comment>
   </data>
   <data name="BtnFillF6.ShortcutKeys" type="System.Windows.Forms.Keys, System.Windows.Forms">
     <value>Shift+Del</value>
@@ -456,7 +475,8 @@
     <value>257, 22</value>
   </data>
   <data name="BtnFillF6.Text" xml:space="preserve">
-    <value>Fill Selection with 0xF6</value>
+    <value>{Fill Selection with 0xF6}</value>
+    <comment>@Invariant</comment>
   </data>
   <data name="BtnFill.Size" type="System.Drawing.Size, System.Drawing">
     <value>257, 22</value>
@@ -491,7 +511,8 @@
     <value>257, 22</value>
   </data>
   <data name="BtnSelectAll.Text" xml:space="preserve">
-    <value>Select &amp;All</value>
+    <value>{Select &amp;All}</value>
+    <comment>@Invariant</comment>
   </data>
   <data name="ContextMenuStrip1.Size" type="System.Drawing.Size, System.Drawing">
     <value>258, 336</value>
@@ -635,7 +656,8 @@
     <value>175, 22</value>
   </data>
   <data name="BtnCopyValue.Text" xml:space="preserve">
-    <value>&amp;Copy Value</value>
+    <value>{&amp;Copy Value}</value>
+    <comment>@Invariant</comment>
   </data>
   <data name="ContextMenuStrip2.Size" type="System.Drawing.Size, System.Drawing">
     <value>176, 26</value>
@@ -677,7 +699,8 @@
     <value>Top, Bottom, Left, Right</value>
   </data>
   <data name="HexBox1.BuiltInContextMenu.CopyMenuItemText" xml:space="preserve">
-    <value>Copy Text</value>
+    <value>{Copy Text}</value>
+    <comment>@Invariant</comment>
   </data>
   <data name="HexBox1.BuiltInContextMenu.CutMenuItemText" type="System.Resources.ResXNullRef, System.Windows.Forms">
     <value />
@@ -686,7 +709,8 @@
     <value />
   </data>
   <data name="HexBox1.BuiltInContextMenu.SelectAllMenuItemText" xml:space="preserve">
-    <value>Select All</value>
+    <value>{Select All}</value>
+    <comment>@Invariant</comment>
   </data>
   <data name="HexBox1.Font" type="System.Drawing.Font, System.Drawing">
     <value>Courier New, 9.75pt</value>

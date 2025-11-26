@@ -30,6 +30,8 @@ Public Class ReplaceFileForm
         InitializeComponent()
 
         ' Add any initialization after the InitializeComponent() call.
+        LocalizeForm()
+
         _Result.Cancelled = True
         _AvailableSpace = AvailableSpace
         _Directory = Directory
@@ -43,6 +45,11 @@ Public Class ReplaceFileForm
         ChkFileDateNew.Checked = True
         ChkFileSizeNew.Checked = True
         _IgnoreEvent = False
+    End Sub
+
+    Private Sub LocalizeForm()
+        BtnCancel.Text = WithoutHotkey(My.Resources.Menu_Cancel)
+        LblPadCaption.Text = My.Resources.Label_PadFile & ":"
     End Sub
 
     Public ReadOnly Property Result As ReplaceFileFormResult

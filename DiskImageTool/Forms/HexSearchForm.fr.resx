@@ -117,17 +117,8 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="BtnCancel.Text" xml:space="preserve">
-    <value>&amp;Annuler</value>
-  </data>
-  <data name="BtnOK.Text" xml:space="preserve">
-    <value>&amp;OK</value>
-  </data>
   <data name="ChkCaseSensitive.Text" xml:space="preserve">
     <value>Sensible à la casse</value>
-  </data>
-  <data name="$this.Text" xml:space="preserve">
-    <value>Rechercher</value>
   </data>
   <data name="RadBtnHex.Text" xml:space="preserve">
     <value>Hex</value>

@@ -144,9 +144,7 @@ Hinweis: Für alle Disketten sollte dieser Wert {1} sein.</value>
 Zulässige Werte: {0}</value>
   </data>
   <data name="BootSectorForm_Help_ExtendedBootSignature" xml:space="preserve">
-    <value>Erweiterte Boot-Signatur
-
-Typische Werte:
+    <value>Typische Werte:
 28h\tVolumeseriennummer ist vorhanden
 29h\tVolumeseriennummer, Volume-Label und Dateisystem-ID sind vorhanden</value>
   </data>
@@ -167,9 +165,6 @@ Hinweis: Für alle Disketten sollte dieser Wert {0} sein</value>
     <value>Diese Anweisung gibt an, wo der Bootstrap-Code beginnt.
 
 Zulässige Werte: {0}</value>
-  </data>
-  <data name="BootSectorForm_Help_MediaDescriptor" xml:space="preserve">
-    <value>Medienkennung</value>
   </data>
   <data name="BootSectorForm_Help_NumberOfFATs" xml:space="preserve">
     <value>Anzahl der File Allocation Table (FAT)-Kopien auf dem Volume

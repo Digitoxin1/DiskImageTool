@@ -13,6 +13,8 @@ Public Class ImageCreationForm
         InitializeComponent()
 
         ' Add any initialization after the InitializeComponent() call.
+        LocalizeForm()
+
         GroupBoxStandard.Height = PanelFormats.Height
         GroupBoxSpecial.Height = PanelFormats.Height
 
@@ -21,6 +23,12 @@ Public Class ImageCreationForm
         ParseXML()
         InitializeEvents()
         RefreshCombo()
+    End Sub
+
+    Private Sub LocalizeForm()
+        LabelBootSector.Text = My.Resources.Label_BootSector
+        BtnCancel.Text = WithoutHotkey(My.Resources.Menu_Cancel)
+        CheckImportFiles.Text = My.Resources.Label_ImportFiles
     End Sub
 
     Public ReadOnly Property DiskFormat As FloppyDiskFormat

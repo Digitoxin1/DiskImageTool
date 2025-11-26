@@ -117,41 +117,17 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="MenuFileOpen.Text" xml:space="preserve">
-    <value>&amp;Öffnen</value>
-  </data>
   <data name="MenuFileReload.Text" xml:space="preserve">
     <value>&amp;Von Datenträger neu laden</value>
   </data>
   <data name="MenuFileNewImage.Text" xml:space="preserve">
     <value>&amp;Neues Abbild</value>
   </data>
-  <data name="MenuFileSave.Text" xml:space="preserve">
-    <value>&amp;Speichern</value>
-  </data>
-  <data name="MenuFileSaveAs.Text" xml:space="preserve">
-    <value>Speichern &amp;unter</value>
-  </data>
-  <data name="MenuFileClose.Text" xml:space="preserve">
-    <value>&amp;Schließen</value>
-  </data>
   <data name="MenuFileExit.Text" xml:space="preserve">
     <value>&amp;Beenden</value>
   </data>
-  <data name="MenuEditFileProperties.Text" xml:space="preserve">
-    <value>Datei&amp;eigenschaften</value>
-  </data>
-  <data name="MenuEditUndo.Text" xml:space="preserve">
-    <value>&amp;Rückgängig</value>
-  </data>
-  <data name="MenuEditRedo.Text" xml:space="preserve">
-    <value>&amp;Wiederholen</value>
-  </data>
   <data name="MenuEditRevert.Text" xml:space="preserve">
     <value>&amp;Änderungen verwerfen</value>
-  </data>
-  <data name="MainMenuEdit.Text" xml:space="preserve">
-    <value>&amp;Bearbeiten</value>
   </data>
   <data name="MenuHexFreeClusters.Text" xml:space="preserve">
     <value>Freie &amp;Cluster mit Daten</value>
@@ -210,12 +186,6 @@
   <data name="MenuHelpAbout.Text" xml:space="preserve">
     <value>Über DiskImageTool</value>
   </data>
-  <data name="MenuDiskReadFloppyA.Text" xml:space="preserve">
-    <value>&amp;Lese Diskette in Laufwerk A</value>
-  </data>
-  <data name="MenuDiskReadFloppyB.Text" xml:space="preserve">
-    <value>&amp;Lese Diskette in Laufwerk B</value>
-  </data>
   <data name="MainMenuDisk.Text" xml:space="preserve">
     <value>&amp;Diskette</value>
   </data>
@@ -246,12 +216,6 @@
   <data name="MainMenuUpdateAvailable.Text" xml:space="preserve">
     <value>Update verfügbar</value>
   </data>
-  <data name="ToolStripUndo.Text" xml:space="preserve">
-    <value>Rückgängig</value>
-  </data>
-  <data name="ToolStripRedo.Text" xml:space="preserve">
-    <value>Wiederholen</value>
-  </data>
   <data name="LabelDropMessage.Text" xml:space="preserve">
     <value>Diskettenabbilder hierher ziehen (Drag &amp;&amp; Drop)</value>
   </data>
@@ -260,9 +224,6 @@
   </data>
   <data name="btnRetry.Text" xml:space="preserve">
     <value>Wiederholen</value>
-  </data>
-  <data name="ToolStripImportFiles.ToolTipText" xml:space="preserve">
-    <value>Dateien importieren</value>
   </data>
   <data name="MainMenuReports.Text" xml:space="preserve">
     <value>&amp;Berichte</value>

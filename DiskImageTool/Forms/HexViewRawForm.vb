@@ -49,6 +49,8 @@ Public Class HexViewRawForm
         InitializeComponent()
 
         ' Add any initialization after the InitializeComponent() call.
+        LocalizeForm()
+
         _ToolTip = New TwoColumnToolTip()
         _FloppyImage = Disk.Image
         _SectorsPerTrack = Disk.DiskParams.BPBParams.SectorsPerTrack
@@ -67,6 +69,27 @@ Public Class HexViewRawForm
         EnableDoubleBuffering(PanelSectors)
 
         Me.Text = My.Resources.Caption_RawTrackData
+    End Sub
+
+    Private Sub LocalizeForm()
+        BtnCopyHex.Text = My.Resources.Menu_CopyHex
+        BtnCopyHexFormatted.Text = My.Resources.Menu_CopyHexFormatted
+        BtnCopyText.Text = My.Resources.Menu_CopyText
+        BtnCopyValue.Text = My.Resources.Menu_CopyValue
+        BtnFind.Text = My.Resources.Label_Find
+        BtnFindNext.Text = My.Resources.Label_FIndNext
+        BtnSelectAll.Text = My.Resources.Menu_SelectAll
+        BtnSelectSector.Text = My.Resources.Menu_SelectSector
+        HexBox1.BuiltInContextMenu.CopyMenuItemText = WithoutHotkey(My.Resources.Menu_CopyText)
+        HexBox1.BuiltInContextMenu.SelectAllMenuItemText = My.Resources.Label_SelectAll
+        ToolStripBtnCopyHex.Text = WithoutHotkey(My.Resources.Menu_CopyHex)
+        ToolStripBtnCopyHexFormatted.Text = WithoutHotkey(My.Resources.Menu_CopyHexFormatted)
+        ToolStripBtnCopyText.Text = WithoutHotkey(My.Resources.Menu_CopyText)
+        ToolStripBtnFind.Text = My.Resources.Label_Find
+        ToolStripBtnFindNext.Text = My.Resources.Label_FIndNext
+        ToolStripBtnSelectAll.Text = My.Resources.Label_SelectAll
+        ToolStripBtnSelectSector.Text = My.Resources.Label_Sector
+        ToolStripBtnSelectSector.ToolTipText = My.Resources.Label_SelectSector
     End Sub
 
     <DllImport("user32.dll", SetLastError:=True)>

@@ -134,7 +134,7 @@
             Dim Sectors As New List(Of String)
 
             If StatusInfo.TrackInfo.BadSectorCount > 0 Then
-                Sectors.Add(StatusInfo.TrackInfo.BadSectorCount & " " & My.Resources.Label_FATType_Bad)
+                Sectors.Add(StatusInfo.TrackInfo.BadSectorCount & " " & My.Resources.Label_Bad)
             End If
 
             If StatusInfo.TrackInfo.MissingSectorCount > 0 Then

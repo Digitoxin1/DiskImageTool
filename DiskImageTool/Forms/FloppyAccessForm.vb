@@ -599,7 +599,7 @@ Public Class FloppyAccessForm
             End If
         End If
 
-        btnAbort.Text = My.Resources.Label_Close
+        btnAbort.Text = WithoutHotkey(My.Resources.Menu_Close)
 
         'Me.Hide()
     End Sub

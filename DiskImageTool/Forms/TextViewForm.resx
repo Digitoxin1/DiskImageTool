@@ -178,7 +178,8 @@
     <value>1</value>
   </data>
   <data name="BtnClose.Text" xml:space="preserve">
-    <value>Close</value>
+    <value>{Close}</value>
+    <comment>@Invariant</comment>
   </data>
   <data name="&gt;&gt;BtnClose.Name" xml:space="preserve">
     <value>BtnClose</value>
@@ -208,7 +209,8 @@
     <value>0</value>
   </data>
   <data name="BtnSave.Text" xml:space="preserve">
-    <value>Save</value>
+    <value>{Save}</value>
+    <comment>@Invariant</comment>
   </data>
   <data name="&gt;&gt;BtnSave.Name" xml:space="preserve">
     <value>BtnSave</value>

@@ -120,26 +120,8 @@
   <data name="LblJumpInstruction.Text" xml:space="preserve">
     <value>Sprungbefehl</value>
   </data>
-  <data name="LblBytesPerSector.Text" xml:space="preserve">
-    <value>Bytes pro Sektor</value>
-  </data>
-  <data name="LblReservedSectors.Text" xml:space="preserve">
-    <value>Reservierte Sektoren</value>
-  </data>
   <data name="LblRootDirectoryEntries.Text" xml:space="preserve">
     <value>Einträge im Stammverzeichnis</value>
-  </data>
-  <data name="LblOEMName.Text" xml:space="preserve">
-    <value>OEM-Name</value>
-  </data>
-  <data name="LblSectorsPerCluster.Text" xml:space="preserve">
-    <value>Sektoren pro Cluster</value>
-  </data>
-  <data name="LblHiddenSectors.Text" xml:space="preserve">
-    <value>Versteckte Sektoren</value>
-  </data>
-  <data name="TxtMediaDescriptor.Text" xml:space="preserve">
-    <value>Medienkennung</value>
   </data>
   <data name="LblNumberOfFATS.Text" xml:space="preserve">
     <value>Anzahl der FATs</value>
@@ -147,64 +129,16 @@
   <data name="LblSectorCountSmall.Text" xml:space="preserve">
     <value>Gesamtanzahl Sektoren</value>
   </data>
-  <data name="LblSectorsPerFAT.Text" xml:space="preserve">
-    <value>Sektoren pro FAT</value>
-  </data>
-  <data name="LblSectorsPerTrack.Text" xml:space="preserve">
-    <value>Sektoren pro Spur</value>
-  </data>
   <data name="LblNumberOfHeads.Text" xml:space="preserve">
     <value>Anzahl der Köpfe</value>
-  </data>
-  <data name="LblBootSectorSignature.Text" xml:space="preserve">
-    <value>Bootsektor-Signatur</value>
-  </data>
-  <data name="LblDiskType.Text" xml:space="preserve">
-    <value>Diskettenformat</value>
-  </data>
-  <data name="GroupBoxMain.Text" xml:space="preserve">
-    <value>Boot-Datensatz</value>
   </data>
   <data name="LblExtendedMsg.Text" xml:space="preserve">
     <value>Es scheint Daten im erweiterten Parameterblock dieses Bootsektors zu geben. Dies bedeutet normalerweise, dass der erweiterte Parameterblock für diese Diskette nicht definiert ist.</value>
   </data>
-  <data name="LblDriveNumber.Text" xml:space="preserve">
-    <value>Laufwerksnummer</value>
-  </data>
   <data name="LblSectorCountLarge.Text" xml:space="preserve">
     <value>Gesamtanzahl Sektoren (groß)</value>
   </data>
-  <data name="LblVolumeLabel.Text" xml:space="preserve">
-    <value>Volume-Bezeichnung</value>
-  </data>
-  <data name="LblFileSystemType.Text" xml:space="preserve">
-    <value>Dateisystem-ID</value>
-  </data>
-  <data name="LblVolumeSerialNumber.Text" xml:space="preserve">
-    <value>Volumeseriennummer</value>
-  </data>
-  <data name="lblExtendedBootSignature.Text" xml:space="preserve">
-    <value>Erweiterte Boot-Signatur</value>
-  </data>
   <data name="GroupBoxExtended.Text" xml:space="preserve">
     <value>Erweiterter Parameterblock</value>
-  </data>
-  <data name="HexBox1.BuiltInContextMenu.CopyMenuItemText" xml:space="preserve">
-    <value>Text kopieren</value>
-  </data>
-  <data name="HexBox1.BuiltInContextMenu.SelectAllMenuItemText" xml:space="preserve">
-    <value>Alles auswählen</value>
-  </data>
-  <data name="GroupBoxAdditionalData.Text" xml:space="preserve">
-    <value>Zusätzliche Daten</value>
-  </data>
-  <data name="BtnUpdate.Text" xml:space="preserve">
-    <value>&amp;Aktualisieren</value>
-  </data>
-  <data name="BtnCancel.Text" xml:space="preserve">
-    <value>&amp;Abbrechen</value>
-  </data>
-  <data name="$this.Text" xml:space="preserve">
-    <value>Bootsektor</value>
   </data>
 </root>

@@ -11,6 +11,7 @@
 
         ' This call is required by the designer.
         InitializeComponent()
+        LocalizeForm()
 
         ' Add any initialization after the InitializeComponent() call.
         LblCaption.Text = Caption
@@ -20,6 +21,11 @@
         _Result.Clear = False
         RadioFillF6.Enabled = CanFill
         RadioFill00.Enabled = CanFill
+    End Sub
+
+    Private Sub LocalizeForm()
+        BtnCancel.Text = My.Resources.Menu_No
+        BtnOK.Text = My.Resources.Menu_Yes
     End Sub
 
     Public ReadOnly Property Result As DeleteFileFormResult

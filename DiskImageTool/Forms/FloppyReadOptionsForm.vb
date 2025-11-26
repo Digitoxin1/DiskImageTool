@@ -9,7 +9,14 @@ Public Class FloppyReadOptionsForm
         InitializeComponent()
 
         ' Add any initialization after the InitializeComponent() call.
+        LocalizeForm()
+
         PopulateCombo(DetectedType)
+    End Sub
+
+    Private Sub LocalizeForm()
+        BtnCancel.Text = My.Resources.Menu_Cancel
+        BtnOK.Text = My.Resources.Menu_Ok
     End Sub
 
     Public ReadOnly Property DiskFormat As FloppyDiskFormat

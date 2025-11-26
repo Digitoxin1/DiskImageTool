@@ -17,6 +17,7 @@
             InitializeComponent()
 
             ' Add any initialization after the InitializeComponent() call.
+            LocalizeForm()
             _LogFileName = LogFileName
 
             Process = New ConsoleProcessRunner With {
@@ -32,6 +33,12 @@
                     .Margin = New Padding(32, 3, 3, 3)
                 }
             End If
+        End Sub
+
+        Private Sub LocalizeForm()
+            ButtonCancel.Text = My.Resources.Menu_Cancel
+            ButtonSaveLog.Text = My.Resources.Label_SaveLog
+            LabelConsoleOutput.Text = My.Resources.Label_ConsoleOutput
         End Sub
 
         Public Property LogFileName As String

@@ -117,16 +117,4 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="ButtonBrowse.Text" xml:space="preserve">
-    <value>Durchsuchen</value>
-  </data>
-  <data name="ButtonClear.Text" xml:space="preserve">
-    <value>Löschen</value>
-  </data>
-  <data name="LabelApplicationPath.Text" xml:space="preserve">
-    <value>Anwendungspfad</value>
-  </data>
-  <data name="LabelLogFile.Text" xml:space="preserve">
-    <value>Log-Datei</value>
-  </data>
 </root>

@@ -15,6 +15,7 @@ Public Class FloppyWriteOptionsForm
         InitializeComponent()
 
         ' Add any initialization after the InitializeComponent() call.
+        LocalizeForm()
         _WriteOptions.Cancelled = True
         Dim ImageFormatName = String.Format(My.Resources.Label_Floppy, FloppyDiskFormatGetName(DiskFormat))
 
@@ -30,6 +31,14 @@ Public Class FloppyWriteOptionsForm
         lblDiskFormat.Text = DetectedFormatName
         CheckFormat.Checked = DoFormat
         CheckVerify.Checked = True
+    End Sub
+
+    Private Sub LocalizeForm()
+        BtnCancel.Text = My.Resources.Menu_Cancel
+        BtnOK.Text = My.Resources.Menu_Ok
+        GroupBox1.Text = My.Resources.Label_Options
+        Label2.Text = My.Resources.Label_ImageType & ":"
+        Label1.Text = My.Resources.Label_DiskFormat & ":"
     End Sub
 
     Public ReadOnly Property WriteOptions As FloppyWriteOptions

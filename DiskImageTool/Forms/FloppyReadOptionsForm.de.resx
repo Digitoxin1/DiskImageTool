@@ -117,12 +117,6 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="BtnOK.Text" xml:space="preserve">
-    <value>&amp;OK</value>
-  </data>
-  <data name="BtnCancel.Text" xml:space="preserve">
-    <value>&amp;Abbrechen</value>
-  </data>
   <data name="Label1.Text" xml:space="preserve">
     <value>Floppy-Disk-Typ</value>
   </data>

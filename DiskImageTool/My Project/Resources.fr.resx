@@ -153,8 +153,8 @@
   <data name="Caption_DeleteFiles" xml:space="preserve">
     <value>Supprimer {0} fichiers</value>
   </data>
-  <data name="Caption_SaveAs" xml:space="preserve">
-    <value>Enregistrer sous</value>
+  <data name="Menu_SaveAs" xml:space="preserve">
+    <value>Enregistrer &amp;sous</value>
   </data>
   <data name="Debug_BatchProcessTimeTaken" xml:space="preserve">
     <value>Durée du traitement par lot: {0}</value>
@@ -366,40 +366,40 @@
   <data name="Label_FileDrop" xml:space="preserve">
     <value>Glissez-déposez ici des fichiers et des dossiers</value>
   </data>
-  <data name="BootSector_BootStrapSignature" xml:space="preserve">
+  <data name="Label_BootStrapSignature" xml:space="preserve">
     <value>Signature du secteur de démarrage</value>
   </data>
-  <data name="BootSector_DriveNumber" xml:space="preserve">
+  <data name="Label_DriveNumber" xml:space="preserve">
     <value>Numéro de lecteur</value>
   </data>
-  <data name="BootSector_ExtendedBootSignature" xml:space="preserve">
+  <data name="Label_ExtendedBootSignature" xml:space="preserve">
     <value>Signature de démarrage étendue</value>
   </data>
-  <data name="BootSector_FileSystemType" xml:space="preserve">
+  <data name="Label_FileSystemType" xml:space="preserve">
     <value>ID du système de fichiers</value>
   </data>
   <data name="BootSector_JmpBoot" xml:space="preserve">
     <value>Saut d’amorçage</value>
   </data>
-  <data name="BootSector_VolumeSerialNumber" xml:space="preserve">
+  <data name="Label_VolumeSerialNumber" xml:space="preserve">
     <value>Numéro de série du volume</value>
   </data>
-  <data name="BPB_RootEntryCount" xml:space="preserve">
+  <data name="Label_RootEntryCount" xml:space="preserve">
     <value>Entrées répertoire racine</value>
   </data>
-  <data name="BPB_BytesPerSector" xml:space="preserve">
+  <data name="Label_BytesPerSector" xml:space="preserve">
     <value>Octets par secteur</value>
   </data>
-  <data name="BPB_HiddenSectors" xml:space="preserve">
+  <data name="Label_HiddenSectors" xml:space="preserve">
     <value>Secteurs masqués</value>
   </data>
-  <data name="BPB_SectorsPerCluster" xml:space="preserve">
+  <data name="Label_SectorsPerCluster" xml:space="preserve">
     <value>Secteurs par cluster</value>
   </data>
-  <data name="BPB_SectorsPerFAT" xml:space="preserve">
+  <data name="Label_SectorsPerFAT" xml:space="preserve">
     <value>Secteurs par FAT</value>
   </data>
-  <data name="BPB_SectorsPerTrack" xml:space="preserve">
+  <data name="Label_SectorsPerTrack" xml:space="preserve">
     <value>Secteurs par piste</value>
   </data>
   <data name="DataInspector_Label_Binary" xml:space="preserve">
@@ -417,7 +417,7 @@
   <data name="DataInspector_Label_DOSTime" xml:space="preserve">
     <value>Heure DOS</value>
   </data>
-  <data name="DirectorytEntry_Attributes" xml:space="preserve">
+  <data name="Label_Attributes" xml:space="preserve">
     <value>Attributs</value>
   </data>
   <data name="DirectorytEntry_CreationDate" xml:space="preserve">
@@ -483,7 +483,7 @@
   <data name="SummaryPanel_Bitrate" xml:space="preserve">
     <value>Débit binaire</value>
   </data>
-  <data name="SummaryPanel_BootRecord" xml:space="preserve">
+  <data name="Label_BootRecord" xml:space="preserve">
     <value>Enregistrement de démarrage</value>
   </data>
   <data name="Label_Bootstrap" xml:space="preserve">
@@ -516,7 +516,7 @@
   <data name="SummaryPanel_Error" xml:space="preserve">
     <value>Erreur lors du chargement du fichier</value>
   </data>
-  <data name="SummaryPanel_ImageType" xml:space="preserve">
+  <data name="Label_ImageType" xml:space="preserve">
     <value>Type d’image</value>
   </data>
   <data name="Caption_CleanImages" xml:space="preserve">
@@ -582,9 +582,6 @@
   <data name="Label_SelectSector" xml:space="preserve">
     <value>Sélectionner le secteur</value>
   </data>
-  <data name="Label_SelectTrack" xml:space="preserve">
-    <value>Sélectionner la piste</value>
-  </data>
   <data name="Menu_SelectSector" xml:space="preserve">
     <value>Sélectionner &amp;secteur</value>
   </data>
@@ -618,8 +615,8 @@
   <data name="Label_BadSectors" xml:space="preserve">
     <value>Secteurs défectueux</value>
   </data>
-  <data name="Label_Close" xml:space="preserve">
-    <value>Fermer</value>
+  <data name="Menu_Close" xml:space="preserve">
+    <value>&amp;Fermer</value>
   </data>
   <data name="Label_Complete" xml:space="preserve">
     <value>Terminé</value>
@@ -630,13 +627,13 @@
   <data name="Label_Error" xml:space="preserve">
     <value>Erreur</value>
   </data>
-  <data name="Label_FATType_Bad" xml:space="preserve">
+  <data name="Label_Bad" xml:space="preserve">
     <value>Défectueux</value>
   </data>
-  <data name="Label_FATType_Free" xml:space="preserve">
+  <data name="Label_Free" xml:space="preserve">
     <value>Libre</value>
   </data>
-  <data name="Label_FATType_Last" xml:space="preserve">
+  <data name="Label_Last" xml:space="preserve">
     <value>Dernier</value>
   </data>
   <data name="Label_Value" xml:space="preserve">
@@ -972,7 +969,7 @@
   <data name="DirectorytEntry_ReservedForWinNT" xml:space="preserve">
     <value>Réservé pour Windows NT</value>
   </data>
-  <data name="BPB_ReservedSectorCount" xml:space="preserve">
+  <data name="Label_ReservedSectorCount" xml:space="preserve">
     <value>Secteurs réservés</value>
   </data>
   <data name="Label_Root" xml:space="preserve">
@@ -1056,7 +1053,7 @@
   <data name="Caption_TrackLayout" xml:space="preserve">
     <value>Disposition des pistes</value>
   </data>
-  <data name="SummaryPanel_Tracks" xml:space="preserve">
+  <data name="Label_Tracks" xml:space="preserve">
     <value>Pistes</value>
   </data>
   <data name="FloppyImageType_TranscopyImage" xml:space="preserve">
@@ -1161,10 +1158,10 @@
   <data name="Caption_NewDirectory" xml:space="preserve">
     <value>Nouveau dossier</value>
   </data>
-  <data name="Label_FileProperties" xml:space="preserve">
-    <value>Propriétés du fichier</value>
+  <data name="Menu_FileProperties" xml:space="preserve">
+    <value>Propriétés du &amp;fichier</value>
   </data>
-  <data name="Button_Update" xml:space="preserve">
+  <data name="Menu_Update" xml:space="preserve">
     <value>&amp;Mettre à jour</value>
   </data>
   <data name="Button_Add" xml:space="preserve">
@@ -1191,7 +1188,7 @@
   <data name="DataInspector_Label_Area" xml:space="preserve">
     <value>Zone</value>
   </data>
-  <data name="SummaryPanel_DiskFormat" xml:space="preserve">
+  <data name="Label_DiskFormat" xml:space="preserve">
     <value>Format de disquette</value>
   </data>
   <data name="SummaryPanel_TrackStep" xml:space="preserve">
@@ -1209,16 +1206,16 @@
   <data name="FilePanel_Attributes" xml:space="preserve">
     <value>Attrib</value>
   </data>
-  <data name="FilePanel_Created" xml:space="preserve">
+  <data name="Label_Created" xml:space="preserve">
     <value>Créé</value>
   </data>
   <data name="FilePanel_Extension" xml:space="preserve">
     <value>Ext</value>
   </data>
-  <data name="FilePanel_LastAccessed" xml:space="preserve">
+  <data name="Label_LastAccessed" xml:space="preserve">
     <value>Dernier accès</value>
   </data>
-  <data name="FilePanel_LastWritten" xml:space="preserve">
+  <data name="Label_LastWritten" xml:space="preserve">
     <value>Dernière modification</value>
   </data>
   <data name="Label_Name" xml:space="preserve">
@@ -1467,11 +1464,11 @@
   <data name="Label_Staus" xml:space="preserve">
     <value>Statut</value>
   </data>
-  <data name="Label_Cancel" xml:space="preserve">
-    <value>Annuler</value>
+  <data name="Menu_Cancel" xml:space="preserve">
+    <value>&amp;Annuler</value>
   </data>
-  <data name="Label_Open" xml:space="preserve">
-    <value>Ouvrir</value>
+  <data name="Menu_Open" xml:space="preserve">
+    <value>&amp;Ouvrir</value>
   </data>
   <data name="Label_ImportClose" xml:space="preserve">
     <value>Importer et fermer</value>
@@ -1522,8 +1519,8 @@ Voulez-vous écraser ?</value>
   <data name="Dialog_SelectRootFolder" xml:space="preserve">
     <value>Veuillez sélectionner un dossier racine.</value>
   </data>
-  <data name="Label_Save" xml:space="preserve">
-    <value>Enregistrer</value>
+  <data name="Menu_Save" xml:space="preserve">
+    <value>&amp;Enregistrer</value>
   </data>
   <data name="Label_SaveAndClose" xml:space="preserve">
     <value>Sauver &amp; Fermer</value>
@@ -1579,7 +1576,7 @@ Voulez-vous écraser ?</value>
   <data name="Menu_WriteDiskInDrive" xml:space="preserve">
     <value>&amp;Écrire la disquette dans le lecteur {0}</value>
   </data>
-  <data name="Label_CloseAll" xml:space="preserve">
+  <data name="Menu_CloseAll" xml:space="preserve">
     <value>Tout fermer</value>
   </data>
   <data name="Menu_FAT" xml:space="preserve">
@@ -1587,5 +1584,68 @@ Voulez-vous écraser ?</value>
   </data>
   <data name="Label_Image" xml:space="preserve">
     <value>Image</value>
+  </data>
+  <data name="Menu_No" xml:space="preserve">
+    <value>&amp;Non</value>
+  </data>
+  <data name="Menu_ReadDiskInDrive" xml:space="preserve">
+    <value>&amp;Lire la disquette dans le lecteur {0}</value>
+  </data>
+  <data name="Menu_Redo" xml:space="preserve">
+    <value>&amp;Rétablir</value>
+  </data>
+  <data name="Menu_Undo" xml:space="preserve">
+    <value>&amp;Annuler</value>
+  </data>
+  <data name="Menu_Yes" xml:space="preserve">
+    <value>&amp;Oui</value>
+  </data>
+  <data name="Label_ApplicationPath" xml:space="preserve">
+    <value>Chemin de l’application</value>
+  </data>
+  <data name="Menu_Clear" xml:space="preserve">
+    <value>Effacer</value>
+  </data>
+  <data name="Menu_CopyHex" xml:space="preserve">
+    <value>Copier &amp;hex</value>
+  </data>
+  <data name="Menu_CopyText" xml:space="preserve">
+    <value>Copier &amp;texte</value>
+  </data>
+  <data name="Menu_CopyHexFormatted" xml:space="preserve">
+    <value>Copier hex &amp;formaté</value>
+  </data>
+  <data name="Label_SelectAll" xml:space="preserve">
+    <value>Tout sélectionner</value>
+  </data>
+  <data name="Menu_SelectAll" xml:space="preserve">
+    <value>Tout &amp;sélectionner</value>
+  </data>
+  <data name="Label_Options" xml:space="preserve">
+    <value>Options</value>
+  </data>
+  <data name="Label_NTExtensions" xml:space="preserve">
+    <value>Extensions NT</value>
+  </data>
+  <data name="Label_LogFilename" xml:space="preserve">
+    <value>Nom journal</value>
+  </data>
+  <data name="Label_ImportFiles" xml:space="preserve">
+    <value>Importer des fichiers</value>
+  </data>
+  <data name="Label_Find" xml:space="preserve">
+    <value>Rechercher</value>
+  </data>
+  <data name="Label_FIndNext" xml:space="preserve">
+    <value>Rechercher suivant</value>
+  </data>
+  <data name="Label_FillSelectionWith" xml:space="preserve">
+    <value>Remplir la sélection avec {0}</value>
+  </data>
+  <data name="Menu_Edit" xml:space="preserve">
+    <value>&amp;Édition</value>
+  </data>
+  <data name="Label_ConsoleOutput" xml:space="preserve">
+    <value>Sortie de console</value>
   </data>
 </root>

@@ -26,6 +26,7 @@ Public Class MainForm
 
         ' Add any initialization after the InitializeComponent() call.
         LocalizeForm()
+
         InitToolStripTop()
     End Sub
 
@@ -804,7 +805,7 @@ Public Class MainForm
         _ToolStripOEMNameLabel = FilterLabelAdd(My.Resources.Label_OEMName)
 
         _ToolStripDiskTypeCombo = FilterComboAdd(95, False)
-        _ToolStripDiskTypeLabel = FilterLabelAdd(My.Resources.SummaryPanel_DiskFormat)
+        _ToolStripDiskTypeLabel = FilterLabelAdd(My.Resources.Label_DiskFormat)
     End Sub
 
     Private Sub InitUpdateCheck()
@@ -821,28 +822,42 @@ Public Class MainForm
 
     Private Sub LocalizeForm()
         MainMenuFile.Text = My.Resources.Menu_File
+        MenuDiskReadFloppyA.Text = String.Format(My.Resources.Menu_ReadDiskInDrive, "A")
+        MenuDiskReadFloppyB.Text = String.Format(My.Resources.Menu_ReadDiskInDrive, "B")
         MenuDiskWriteFloppyA.Text = String.Format(My.Resources.Menu_WriteDiskInDrive, "A")
         MenuDiskWriteFloppyB.Text = String.Format(My.Resources.Menu_WriteDiskInDrive, "B")
         MenuEditBootSector.Text = My.Resources.Menu_BootSector
         MenuEditFAT.Text = My.Resources.Menu_FAT
+        MenuEditFileProperties.Text = My.Resources.Menu_FileProperties
         MenuEditImportFiles.Text = My.Resources.Menu_ImportFiles
+        MenuEditRedo.Text = My.Resources.Menu_Redo
         MenuEditReplaceFile.Text = My.Resources.Menu_ReplaceFile
-        MenuFileCloseAll.Text = My.Resources.Label_CloseAll
+        MenuEditUndo.Text = My.Resources.Menu_Undo
+        MenuFileClose.Text = My.Resources.Menu_Close
+        MenuFileCloseAll.Text = My.Resources.Menu_CloseAll
+        MenuFileOpen.Text = My.Resources.Menu_Open
+        MenuFileSave.Text = My.Resources.Menu_Save
         MenuFileSaveAll.Text = My.Resources.Menu_SaveAll
+        MenuFileSaveAs.Text = My.Resources.Menu_SaveAs
         MenuHexBootSector.Text = My.Resources.Menu_BootSector
         MenuHexFAT.Text = My.Resources.Menu_FAT
         MenuOptionsDisplayLanguage.Text = My.Resources.Label_Language
         MenuReportsWriteSplices.Text = My.Resources.Label_WriteSplices
         MenuToolsTruncateImage.Text = My.Resources.Menu_TruncateImage
         StatusBarModified.Text = My.Resources.Label_Modified
-        ToolStripClose.Text = My.Resources.Label_Close
-        ToolStripCloseAll.Text = My.Resources.Label_CloseAll
-        ToolStripFileProperties.Text = My.Resources.Label_FileProperties
-        ToolStripOpen.Text = My.Resources.Label_Open
-        ToolStripSave.Text = My.Resources.Label_Save
-        ToolStripSaveAll.Text = My.Resources.Menu_SaveAll
-        ToolStripSaveAs.Text = My.Resources.Caption_SaveAs
+        ToolStripClose.Text = WithoutHotkey(My.Resources.Menu_Close)
+        ToolStripCloseAll.Text = WithoutHotkey(My.Resources.Menu_CloseAll)
+        ToolStripFileProperties.Text = WithoutHotkey(My.Resources.Menu_FileProperties)
+        ToolStripOpen.Text = WithoutHotkey(My.Resources.Menu_Open)
+        ToolStripRedo.Text = WithoutHotkey(My.Resources.Menu_Redo)
+        ToolStripSave.Text = WithoutHotkey(My.Resources.Menu_Save)
+        ToolStripSaveAll.Text = WithoutHotkey(My.Resources.Menu_SaveAll)
+        ToolStripSaveAs.Text = WithoutHotkey(My.Resources.Menu_SaveAs)
+        ToolStripUndo.Text = WithoutHotkey(My.Resources.Menu_Undo)
+        ToolStripImportFiles.ToolTipText = My.Resources.Label_ImportFiles
+        MainMenuEdit.Text = My.Resources.Menu_Edit
     End Sub
+
     Private Sub MenuHexDirectorySubMenuClear()
         For Each Item As ToolStripMenuItem In MenuHexDirectory.DropDownItems
             RemoveHandler Item.Click, AddressOf MenuHexDirectory_Click

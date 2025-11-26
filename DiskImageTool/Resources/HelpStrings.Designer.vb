@@ -127,9 +127,7 @@ Namespace My.Resources
         End Property
         
         '''<summary>
-        '''  Looks up a localized string similar to Extended Boot Signature
-        '''
-        '''Typical Values:
+        '''  Looks up a localized string similar to Typical Values:
         '''28h\tVolume Serial Number is present
         '''29h\tVolume Serial Number, Volume Label, and File System ID are present.
         '''</summary>
@@ -178,15 +176,6 @@ Namespace My.Resources
         Friend Shared ReadOnly Property BootSectorForm_Help_JumpInstruction() As String
             Get
                 Return ResourceManager.GetString("BootSectorForm_Help_JumpInstruction", resourceCulture)
-            End Get
-        End Property
-        
-        '''<summary>
-        '''  Looks up a localized string similar to Media Descriptor.
-        '''</summary>
-        Friend Shared ReadOnly Property BootSectorForm_Help_MediaDescriptor() As String
-            Get
-                Return ResourceManager.GetString("BootSectorForm_Help_MediaDescriptor", resourceCulture)
             End Get
         End Property
         

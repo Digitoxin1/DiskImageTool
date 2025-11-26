@@ -17,7 +17,26 @@ Public Class FilePropertiesForm
         InitializeComponent()
 
         ' Add any initialization after the InitializeComponent() call.
+        LocalizeForm()
+    End Sub
 
+    Private Sub LocalizeForm()
+        BtnCancel.Text = My.Resources.Menu_Cancel
+        BtnUpdate.Text = My.Resources.Menu_Update
+        GroupAttributes.Text = My.Resources.Label_Attributes
+        LblCreated.Text = My.Resources.Label_Created
+        ChkReadOnly.Text = My.Resources.Label_ReadOnly
+        ChkNTExtensions.Text = My.Resources.Label_NTExtensions
+        LblLastWritten.Text = My.Resources.Label_LastWritten
+        LblLastAccessed.Text = My.Resources.Label_LastAccessed
+        GroupFileName.Text = My.Resources.Label_FileName
+        BtnReadOnly.Text = WithoutHotkey(My.Resources.Menu_Edit)
+        BtnSystem.Text = WithoutHotkey(My.Resources.Menu_Edit)
+        BtnHidden.Text = WithoutHotkey(My.Resources.Menu_Edit)
+        BtnLastAccessed.Text = WithoutHotkey(My.Resources.Menu_Edit)
+        BtnArchive.Text = WithoutHotkey(My.Resources.Menu_Edit)
+        BtnLastWritten.Text = WithoutHotkey(My.Resources.Menu_Edit)
+        BtnCreated.Text = WithoutHotkey(My.Resources.Menu_Edit)
     End Sub
 
     Public Property Deleted As Boolean

@@ -120,17 +120,8 @@
   <data name="FileName.Text" xml:space="preserve">
     <value>Dateiname</value>
   </data>
-  <data name="FileSize.Text" xml:space="preserve">
-    <value>Größe</value>
-  </data>
-  <data name="FileLastWriteDate.Text" xml:space="preserve">
-    <value>Zuletzt geschrieben</value>
-  </data>
   <data name="FileSizeOnDisk.Text" xml:space="preserve">
     <value>Größe auf Datenträger</value>
-  </data>
-  <data name="Label3.Text" xml:space="preserve">
-    <value>Dateien ausgewählt:</value>
   </data>
   <data name="Label2.Text" xml:space="preserve">
     <value>Freie Bytes:</value>
@@ -141,34 +132,16 @@
   <data name="ChkLFN.Text" xml:space="preserve">
     <value>Lange Dateinamen</value>
   </data>
-  <data name="ChkNTExtensions.Text" xml:space="preserve">
-    <value>NT-Erweiterungen</value>
-  </data>
   <data name="ChkCreated.Text" xml:space="preserve">
     <value>Erstellungsdatum</value>
   </data>
   <data name="ChkLastAccessed.Text" xml:space="preserve">
     <value>Letzter Zugriff</value>
   </data>
-  <data name="Label4.Text" xml:space="preserve">
-    <value>Optionen</value>
-  </data>
-  <data name="FileCreationDate.Text" xml:space="preserve">
-    <value>Erstellt</value>
-  </data>
-  <data name="FileLastAccessDate.Text" xml:space="preserve">
-    <value>Zugriff zuletzt</value>
-  </data>
   <data name="FileDisabled.Text" xml:space="preserve">
     <value>Deaktiviert</value>
   </data>
   <data name="BtnOK.Text" xml:space="preserve">
     <value>Importieren</value>
-  </data>
-  <data name="BtnCancel.Text" xml:space="preserve">
-    <value>Abbrechen</value>
-  </data>
-  <data name="$this.Text" xml:space="preserve">
-    <value>Dateien importieren</value>
   </data>
 </root>

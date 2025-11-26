@@ -117,17 +117,8 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="BtnCopyValue.Text" xml:space="preserve">
-    <value>&amp;Copier la valeur</value>
-  </data>
   <data name="BtnPaste.Text" xml:space="preserve">
     <value>&amp;Coller par-dessus</value>
-  </data>
-  <data name="BtnRedo.Text" xml:space="preserve">
-    <value>&amp;Rétablir</value>
-  </data>
-  <data name="BtnUndo.Text" xml:space="preserve">
-    <value>&amp;Annuler</value>
   </data>
   <data name="ToolStripBtnCommit.Text" xml:space="preserve">
     <value>Valider</value>
@@ -135,76 +126,13 @@
   <data name="ToolStripBtnCommit.ToolTipText" xml:space="preserve">
     <value>Valider les modifications</value>
   </data>
-  <data name="BtnCopyHex.Text" xml:space="preserve">
-    <value>Copier &amp;hex</value>
-  </data>
-  <data name="BtnCopyText.Text" xml:space="preserve">
-    <value>Copier &amp;texte</value>
-  </data>
-  <data name="ToolStripBtnCopyHex.Text" xml:space="preserve">
-    <value>Copier hex</value>
-  </data>
-  <data name="BtnCopyHexFormatted.Text" xml:space="preserve">
-    <value>Copier hex &amp;formaté</value>
-  </data>
-  <data name="ToolStripBtnCopyHexFormatted.Text" xml:space="preserve">
-    <value>Copier hex formaté</value>
-  </data>
-  <data name="HexBox1.BuiltInContextMenu.CopyMenuItemText" xml:space="preserve">
-    <value>Copier texte</value>
-  </data>
-  <data name="ToolStripBtnCopyText.Text" xml:space="preserve">
-    <value>Copier texte</value>
-  </data>
   <data name="LblGroups.Text" xml:space="preserve">
     <value>Affichage</value>
   </data>
   <data name="BtnFill.Text" xml:space="preserve">
     <value>Remplir la sélection</value>
   </data>
-  <data name="BtnDelete.Text" xml:space="preserve">
-    <value>Remplir la sélection avec 0x00</value>
-  </data>
-  <data name="ToolStripBtnDelete.Text" xml:space="preserve">
-    <value>Remplir la sélection avec 0x00</value>
-  </data>
-  <data name="BtnFillF6.Text" xml:space="preserve">
-    <value>Remplir la sélection avec 0xF6</value>
-  </data>
-  <data name="ToolStripBtnFillF6.Text" xml:space="preserve">
-    <value>Remplir la sélection avec 0xF6</value>
-  </data>
-  <data name="ToolStripBtnFind.Text" xml:space="preserve">
-    <value>Rechercher</value>
-  </data>
-  <data name="BtnFind.Text" xml:space="preserve">
-    <value>Rechercher</value>
-  </data>
-  <data name="BtnFindNext.Text" xml:space="preserve">
-    <value>Rechercher suivant</value>
-  </data>
-  <data name="ToolStripBtnFindNext.Text" xml:space="preserve">
-    <value>Rechercher suivant</value>
-  </data>
   <data name="ToolStripBtnPaste.Text" xml:space="preserve">
     <value>Coller par-dessus</value>
-  </data>
-  <data name="ToolStripBtnRedo.Text" xml:space="preserve">
-    <value>Rétablir</value>
-  </data>
-  <data name="BtnSelectAll.Text" xml:space="preserve">
-    <value>Tout &amp;sélectionner</value>
-  </data>
-  <data name="ToolStripBtnSelectAll.Text" xml:space="preserve">
-    <value>Tout sélectionner</value>
-  </data>
-  <data name="HexBox1.BuiltInContextMenu.SelectAllMenuItemText" xml:space="preserve">
-    <value>Tout sélectionner</value>
-  </data>
-  <data name="ToolStripBtnSelectTrack.ToolTipText" xml:space="preserve">
-    <value>Piste</value>
-  </data>
-  <data name="ToolStripBtnUndo.Text" xml:space="preserve">
-    <value>Annuler</value>
   </data>
 </root>

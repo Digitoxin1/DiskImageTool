@@ -117,50 +117,14 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="BtnCancel.Text" xml:space="preserve">
-    <value>&amp;Cancelar</value>
-  </data>
-  <data name="BtnUpdate.Text" xml:space="preserve">
-    <value>&amp;Actualizar</value>
-  </data>
   <data name="LblMultipleFiles.Text" xml:space="preserve">
     <value>(Archivos Múltiples Seleccionados)</value>
   </data>
   <data name="ChkArchive.Text" xml:space="preserve">
     <value>Archivo Archivado</value>
   </data>
-  <data name="GroupAttributes.Text" xml:space="preserve">
-    <value>Atributos</value>
-  </data>
-  <data name="LblCreated.Text" xml:space="preserve">
-    <value>Creado</value>
-  </data>
-  <data name="BtnLastWritten.Text" xml:space="preserve">
-    <value>Editar</value>
-  </data>
-  <data name="BtnArchive.Text" xml:space="preserve">
-    <value>Editar</value>
-  </data>
-  <data name="BtnSystem.Text" xml:space="preserve">
-    <value>Editar</value>
-  </data>
-  <data name="BtnHidden.Text" xml:space="preserve">
-    <value>Editar</value>
-  </data>
-  <data name="BtnReadOnly.Text" xml:space="preserve">
-    <value>Editar</value>
-  </data>
-  <data name="BtnLastAccessed.Text" xml:space="preserve">
-    <value>Editar</value>
-  </data>
-  <data name="BtnCreated.Text" xml:space="preserve">
-    <value>Editar</value>
-  </data>
   <data name="GroupFileDates.Text" xml:space="preserve">
     <value>Fechas del archivo</value>
-  </data>
-  <data name="GroupFileName.Text" xml:space="preserve">
-    <value>Nombre del archivo</value>
   </data>
   <data name="$this.Text" xml:space="preserve">
     <value>Propiedades del archivo</value>
@@ -168,20 +132,8 @@
   <data name="ChkHidden.Text" xml:space="preserve">
     <value>Oculto</value>
   </data>
-  <data name="LblLastAccessed.Text" xml:space="preserve">
-    <value>Último acceso</value>
-  </data>
-  <data name="LblLastWritten.Text" xml:space="preserve">
-    <value>Última escritura</value>
-  </data>
   <data name="RadioFileLong.Text" xml:space="preserve">
     <value>Largo</value>
-  </data>
-  <data name="ChkNTExtensions.Text" xml:space="preserve">
-    <value>Extensiones NT</value>
-  </data>
-  <data name="ChkReadOnly.Text" xml:space="preserve">
-    <value>Solo lectura</value>
   </data>
   <data name="ChkSystem.Text" xml:space="preserve">
     <value>Sistema</value>

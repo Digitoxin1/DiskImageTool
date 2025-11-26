@@ -19,7 +19,16 @@ Public Class SaveAllForm
         InitializeComponent()
 
         ' Add any initialization after the InitializeComponent() call.
+        LocalizeForm()
+
         LblCaption.Text = Caption
+    End Sub
+
+    Private Sub LocalizeForm()
+        BtnCancel.Text = My.Resources.Menu_Cancel
+        BtnNo.Text = My.Resources.Menu_No
+        BtnYes.Text = My.Resources.Menu_Yes
+        Me.Text = WithoutHotkey(My.Resources.Menu_Save)
     End Sub
 
     Public Property Result As MyMsgBoxResult
