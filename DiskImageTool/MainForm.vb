@@ -1765,7 +1765,15 @@ Public Class MainForm
         Dim Args = Environment.GetCommandLineArgs.Skip(1).ToArray
 
         If Args.Length > 0 Then
-            ProcessFileDrop(Args, True)
+            Dim ShowDialog As Boolean = False
+            If Args.Length > 1 Then
+                ShowDialog = True
+            Else
+                If IO.Directory.Exists(Args(0)) Then
+                    ShowDialog = True
+                End If
+            End If
+            ProcessFileDrop(Args, ShowDialog)
         End If
 
         InitUpdateCheck()

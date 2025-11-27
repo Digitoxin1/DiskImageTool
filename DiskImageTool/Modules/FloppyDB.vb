@@ -38,20 +38,25 @@ Public Class FloppyDB
                     rootNode.AppendChild(titleNode)
                 End If
 
-                Dim xPath = "release[@media=""" & Media & """"
-                If FileData.Year <> "" Then
-                    xPath &= " and @year=""" & FileData.Year & """"
-                Else
-                    xPath &= " and not(@year)"
-                End If
-                If FileData.Version <> "" Then
-                    xPath &= " and @version=""" & FileData.Version & """"
-                Else
-                    xPath &= " and not(@version)"
-                End If
-                xPath &= "]"
+                Dim xPathRelease = "release["
 
-                Dim releaseNode = titleNode.SelectSingleNode(xPath)
+                Dim parts As New List(Of String)
+
+                If FileData.Year <> "" Then
+                    parts.Add("@year=""" & FileData.Year & """")
+                Else
+                    parts.Add("not(@year)")
+                End If
+
+                If FileData.Version <> "" Then
+                    parts.Add("@version=""" & FileData.Version & """")
+                Else
+                    parts.Add("not(@version)")
+                End If
+
+                xPathRelease &= String.Join(" and ", parts) & "]"
+
+                Dim releaseNode = titleNode.SelectSingleNode(xPathRelease)
                 If releaseNode Is Nothing Then
                     releaseNode = _NewXMLDoc.CreateElement("release")
                     If FileData.Year <> "" Then
@@ -60,15 +65,22 @@ Public Class FloppyDB
                     If FileData.Version <> "" Then
                         releaseNode.AppendAttribute("version", FileData.Version)
                     End If
-                    releaseNode.AppendAttribute("media", Media)
-                    releaseNode.AppendAttribute("status", FileData.StatusString)
                     titleNode.AppendChild(releaseNode)
                 End If
 
-                Dim ReleaseStatus As String = ""
-                Dim StatusAttribte As Xml.XmlAttribute = releaseNode.Attributes.GetNamedItem("status")
+                Dim xPathMedia = "media[@media=""" & Media & """]"
+                Dim mediaNode = releaseNode.SelectSingleNode(xPathMedia)
+                If mediaNode Is Nothing Then
+                    mediaNode = _NewXMLDoc.CreateElement("media")
+                    mediaNode.AppendAttribute("media", Media)
+                    mediaNode.AppendAttribute("status", FileData.StatusString)
+                    releaseNode.AppendChild(mediaNode)
+                End If
+
+                Dim MediaStatus As String = ""
+                Dim StatusAttribte As Xml.XmlAttribute = mediaNode.Attributes.GetNamedItem("status")
                 If StatusAttribte IsNot Nothing Then
-                    ReleaseStatus = StatusAttribte.Value
+                    MediaStatus = StatusAttribte.Value
                 End If
 
                 Dim diskNode = _NewXMLDoc.CreateElement("disk")
@@ -76,11 +88,11 @@ Public Class FloppyDB
                 If FileData.Disk <> "" Then
                     diskNode.AppendAttribute("disk", FileData.Disk)
                 End If
-                If ReleaseStatus <> FileData.StatusString Then
+                If MediaStatus <> FileData.StatusString Then
                     diskNode.AppendAttribute("status", FileData.StatusString)
                 End If
                 diskNode.AppendAttribute("fileName", FileData.FileName)
-                releaseNode.AppendChild(diskNode)
+                mediaNode.AppendChild(diskNode)
             End If
         End If
 

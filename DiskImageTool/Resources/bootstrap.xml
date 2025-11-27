@@ -1005,7 +1005,7 @@
     <oemname name="SARAKON " company="Virgin Mastertronic Ltd." description="Sarakon Disk A" verified="true"/>
   </bootstrap>
   <bootstrap crc32="2C61D385" jmp="EB1C90">
-    <oemname name="SARAKON " company="Virgin Mastertronic Ltd." description="Sarakon Disk B"/>
+    <oemname name="SARAKON " company="Virgin Mastertronic Ltd." description="Sarakon Disk B" verified="true"/>
   </bootstrap>
   <bootstrap crc32="CFDEA725" jmp="EB1C90">
     <oemname name="SARAKON " company="Virgin Mastertronic Ltd." description="Sarakon Disk B" verified="true"/>
