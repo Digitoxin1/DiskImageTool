@@ -20,6 +20,7 @@ Public Class MainForm
     Private _ToolStripOEMNameCombo As ToolStripComboBox
     Private _ToolStripOEMNameLabel As ToolStripLabel
     Private _ToolStripSearchText As ToolStripSpringTextBox
+
     Public Sub New()
         ' This call is required by the designer.
         InitializeComponent()
@@ -28,27 +29,6 @@ Public Class MainForm
         LocalizeForm()
 
         InitToolStripTop()
-    End Sub
-
-    Public Sub ImageFiltersScanAll(Disk As Disk, ImageData As ImageData)
-        ImageFilters.ScanAll(Disk, ImageData)
-    End Sub
-
-    Public Sub ImageFiltersSetModified(ImageData As ImageData)
-        ImageFilters.FilterUpdate(ImageData, True, Filters.FilterTypes.ModifiedFiles, True, True)
-    End Sub
-
-    Public Sub ImageWin9xCleanBatch(Disk As Disk, ImageData As ImageData)
-        Dim Result = ImageRemoveWindowsModifications(Disk, True)
-        ImageData.BatchUpdated = Result
-        If Result Then
-            ImageFilters.ScanWin9xClean(Disk, ImageData)
-        End If
-    End Sub
-
-    Public Sub ProcessImportedImage(File As String, NewFileName As String)
-        ProcessFileDrop(File, True, NewFileName)
-        RefreshModifiedCount()
     End Sub
 
     Private Async Sub CheckForUpdatesStartup()
@@ -245,10 +225,22 @@ Public Class MainForm
             StatusBarImageCountUpdate()
         End If
 
-        Dim ItemScanForm As New ItemScanForm(Me, ImageCombo.Main.Items, CurrentImage, NewOnly, ScanType.ScanTypeFilters)
-        ItemScanForm.ShowDialog(Me)
+        Dim images As New List(Of ImageData)
+        For Each img As ImageData In ImageCombo.Main.Items
+            images.Add(img)
+        Next
 
-        MenuFiltersScanNew.Visible = ItemScanForm.ItemsRemaining > 0
+        Dim scanner As New FilterScanner(images, CurrentImage, NewOnly, AddressOf Me.ImageFiltersScanAll)
+
+        Dim cts As New Threading.CancellationTokenSource()
+
+        Dim scanTask = Task.Run(Sub() scanner.Scan(cts.Token))
+
+        Using dlg As New ItemScanForm(scanner, My.Resources.Caption_ScanImages, My.Resources.Label_Scanning, cts)
+            dlg.ShowDialog(Me)
+        End Using
+
+        MenuFiltersScanNew.Visible = scanner.ItemsRemaining > 0
 
         If ImageFilters.ExportUnknownImages Then
             App.Globals.TitleDB.SaveNewXML()
@@ -351,7 +343,18 @@ Public Class MainForm
         End If
     End Sub
 
-    Private Sub FileClose(ImageData As ImageData)
+    Private Function FileCloseCurrent(CurrentImage As DiskImageContainer)
+        If DiskImageCloseCurrent(CurrentImage, _LoadedFiles) Then
+            FileRemove(CurrentImage.ImageData)
+            ImageCombo.RefreshPaths()
+
+            Return True
+        End If
+
+        Return False
+    End Function
+
+    Private Sub FileRemove(ImageData As ImageData)
         ImageFilters.ScanRemove(ImageData)
         RefreshModifiedCount()
 
@@ -567,7 +570,7 @@ Public Class MainForm
     End Function
 
     Private Sub GreaseweazleReadImage()
-        Dim Response = Flux.Greaseweazle.ReadFluxImage(Me)
+        Dim Response = Flux.Greaseweazle.ReadFluxImage(Me, AddressOf ProcessImportedImage)
         If Response.Result Then
             ProcessImportedImage(Response.OutputFile, Response.NewFileName)
         End If
@@ -585,6 +588,25 @@ Public Class MainForm
         End If
 
         ProcessFileDrop(Files, True)
+    End Sub
+
+    Private Sub HandleImageDiscovered(Args As ImageDiscoveredEventArgs, ByRef FirstImage As ImageData)
+        Dim img = _LoadedFiles.Add(Args.Key, Args.FileName, Args.FileType, Args.CompressedFile, Args.NewFileName)
+
+        If img Is Nothing Then
+            Return
+        End If
+
+        If FirstImage Is Nothing Then
+            FirstImage = img
+        End If
+
+        ImageCombo.Main.Items.Add(img)
+
+        If img.FileType = ImageData.FileTypeEnum.NewImage Then
+            ImageFilters.FilterUpdate(img, True, Filters.FilterTypes.ModifiedFiles, True, True)
+            ImageFiltersSetModified(img)
+        End If
     End Sub
 
     Private Sub HashPanelInitContextMenu()
@@ -627,6 +649,14 @@ Public Class MainForm
         End If
     End Sub
 
+    Private Sub ImageFiltersScanAll(Disk As Disk, ImageData As ImageData)
+        ImageFilters.ScanAll(Disk, ImageData)
+    End Sub
+
+    Private Sub ImageFiltersSetModified(ImageData As ImageData)
+        ImageFilters.FilterUpdate(ImageData, True, Filters.FilterTypes.ModifiedFiles, True, True)
+    End Sub
+
     Private Sub ImageFiltersUpdate(Image As DiskImageContainer)
         ImageFilters.ScanUpdate(Image)
         RefreshModifiedCount()
@@ -666,8 +696,20 @@ Public Class MainForm
         Me.UseWaitCursor = True
         Dim T = Stopwatch.StartNew
 
-        Dim ItemScanForm As New ItemScanForm(Me, ImageCombo.Main.Items, FilePanel.CurrentImage, False, ScanType.ScanTypeWin9xClean)
-        ItemScanForm.ShowDialog(Me)
+        Dim images As New List(Of ImageData)
+        For Each img As ImageData In ImageCombo.Main.Items
+            images.Add(img)
+        Next
+
+        Dim scanner As New Win9xCleanScanner(images, FilePanel.CurrentImage, AddressOf Me.ImageWin9xCleanBatch)
+
+        Dim cts As New Threading.CancellationTokenSource()
+
+        Dim scanTask = Task.Run(Sub() scanner.Scan(cts.Token))
+
+        Using dlg As New ItemScanForm(scanner, My.Resources.Caption_CleanImages, My.Resources.Label_Processing, cts)
+            dlg.ShowDialog(Me)
+        End Using
 
         ImageFilters.UpdateAllMenuItems()
         If ImageFilters.ScanRun Then
@@ -705,6 +747,13 @@ Public Class MainForm
         End If
     End Sub
 
+    Private Sub ImageWin9xCleanBatch(Disk As Disk, ImageData As ImageData)
+        Dim Result = ImageRemoveWindowsModifications(Disk, True)
+        ImageData.BatchUpdated = Result
+        If Result Then
+            ImageFilters.ScanWin9xClean(Disk, ImageData)
+        End If
+    End Sub
     Private Sub InitButtonState(CurrentImage As DiskImageContainer)
         Dim Disk As Disk = Nothing
         Dim FATTablesMatch As Boolean = True
@@ -926,10 +975,7 @@ Public Class MainForm
     End Sub
 
     Private Sub OpenImageInNewInstance(CurrentImage As DiskImageContainer)
-        If DiskImageCloseCurrent(CurrentImage, _LoadedFiles) Then
-            FileClose(CurrentImage.ImageData)
-            ImageCombo.RefreshPaths()
-
+        If FileCloseCurrent(CurrentImage) Then
             If CurrentImage.ImageData.FileType <> ImageData.FileTypeEnum.NewImage Then
                 Dim LaunchPath = CurrentImage.ImageData.SourceFile
                 If CurrentImage.ImageData.FileType = ImageData.FileTypeEnum.Compressed Then
@@ -1013,19 +1059,36 @@ Public Class MainForm
 
         ImageData.StringOffset = 0
 
-        Dim ImageLoadForm As New ImageLoadForm(Me, Files, _LoadedFiles, NewImage, ImageCombo.Main, NewFileName)
+        Dim scanner As New ImageScanner()
+        Dim firstImage As ImageData = Nothing
+
+        AddHandler scanner.ImageDiscovered, Sub(sender, args)
+                                                ' Ensure we’re on the UI thread (important if Scan runs on a Task)
+                                                If Me.InvokeRequired Then
+                                                    Me.Invoke(Sub() HandleImageDiscovered(args, firstImage))
+                                                Else
+                                                    HandleImageDiscovered(args, firstImage)
+                                                End If
+                                            End Sub
+
         If ShowDialog Then
-            ImageLoadForm.ShowDialog(Me)
+            Dim cts As New Threading.CancellationTokenSource()
+
+            Dim scanTask = Task.Run(Sub() scanner.Scan(Files, NewImage, NewFileName, cts.Token))
+
+            Using dlg As New ImageLoadForm(scanner, cts)
+                dlg.ShowDialog(Me)
+            End Using
         Else
-            ImageLoadForm.ProcessScan(Nothing)
+            scanner.Scan(Files, NewImage, NewFileName)
         End If
 
         ImageData.StringOffset = ImageCombo.GetPathOffset()
 
-        If ImageLoadForm.SelectedImageData IsNot Nothing Then
+        If firstImage IsNot Nothing Then
             LabelDropMessage.Visible = False
 
-            ImageCombo.SetSelectedImage(ImageLoadForm.SelectedImageData)
+            ImageCombo.SetSelectedImage(firstImage)
 
             StatusBarImageCountUpdate()
 
@@ -1033,8 +1096,6 @@ Public Class MainForm
         End If
 
         ImageCombo.Main.EndUpdate()
-
-        ImageLoadForm.Close()
 
         T.Stop()
         Debug.Print(String.Format(My.Resources.Debug_LoadTimeTaken, T.Elapsed))
@@ -1070,6 +1131,10 @@ Public Class MainForm
         Return IsFluxIamge
     End Function
 
+    Private Sub ProcessImportedImage(File As String, NewFileName As String)
+        ProcessFileDrop(File, True, NewFileName)
+        RefreshModifiedCount()
+    End Sub
     Private Sub RefreshCurrentState(FilePanel As FilePanel)
         ImageCombo.RefreshCurrentItemText()
         RefreshDiskState(FilePanel.CurrentImage)
@@ -1122,7 +1187,7 @@ Public Class MainForm
         _LoadedFiles.FileNames.Remove(ImageData.OldDisplayPath)
 
         If _LoadedFiles.FileNames.ContainsKey(ImageData.DisplayPath) Then
-            FileClose(_LoadedFiles.FileNames.Item(ImageData.DisplayPath))
+            FileRemove(_LoadedFiles.FileNames.Item(ImageData.DisplayPath))
         End If
 
         _LoadedFiles.FileNames.Add(ImageData.DisplayPath, ImageData)
@@ -1849,10 +1914,7 @@ Public Class MainForm
     End Sub
 
     Private Sub MenuFileClose_Click(sender As Object, e As EventArgs) Handles MenuFileClose.Click, ToolStripClose.Click
-        If DiskImageCloseCurrent(FilePanelMain.CurrentImage, _LoadedFiles) Then
-            FileClose(FilePanelMain.CurrentImage.ImageData)
-            ImageCombo.RefreshPaths()
-        End If
+        FileCloseCurrent(FilePanelMain.CurrentImage)
     End Sub
 
     Private Sub MenuFileCloseAll_Click(sender As Object, e As EventArgs) Handles MenuFileCloseAll.Click, ToolStripCloseAll.Click

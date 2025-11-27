@@ -1,7 +1,7 @@
 ﻿Imports System.Collections.Concurrent
 Imports System.ComponentModel
 Imports DiskImageTool.DiskImage.FloppyDiskFunctions
-Imports DiskImageTool.Settings
+
 Namespace Flux
     Public Class ConvertImageForm
         Inherits BaseFluxForm
@@ -41,7 +41,8 @@ Namespace Flux
         Private CheckBox86FSurfaceData As CheckBox
         Private CheckBoxRemaster As CheckBox
         Private LabelOutputType As Label
-        Public Event ImportRequested(File As String, NewFilename As String)
+
+        Public Event ImportProcess(File As String, NewFilename As String)
 
         Public Sub New(TempPath As String, FilePath As String, TrackCount As Integer, SideCount As Integer, LaunchedFromDialog As Boolean)
             MyBase.New("")
@@ -757,7 +758,7 @@ Namespace Flux
         End Sub
 
         Private Sub ProcessImport()
-            RaiseEvent ImportRequested(_OutputFilePath, GetNewFileName())
+            RaiseEvent ImportProcess(_OutputFilePath, GetNewFileName())
 
             MoveLogs()
             ClearProcessedImage(False)

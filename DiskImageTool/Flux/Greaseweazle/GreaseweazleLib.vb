@@ -331,21 +331,20 @@ Namespace Flux.Greaseweazle
             Return (IO.File.Exists(FileName), FileName, Result.CombinedOutput)
         End Function
 
-        Public Function ReadFluxImage(ParentForm As MainForm) As (Result As Boolean, OutputFile As String, NewFileName As String)
+        Public Function ReadFluxImage(ParentForm As Form, importHandler As ReadDiskForm.ImportProcessEventHandler) As (Result As Boolean, OutputFile As String, NewFileName As String)
             Using Form As New ReadDiskForm()
 
-                Dim handler As ReadDiskForm.ImportRequestedEventHandler =
-                    Sub(File, NewName)
-                        ParentForm.ProcessImportedImage(File, NewName)
-                    End Sub
-
-                AddHandler Form.ImportRequested, handler
+                If importHandler IsNot Nothing Then
+                    AddHandler Form.ImportProcess, importHandler
+                End If
 
                 Dim result As DialogResult = DialogResult.Cancel
                 Try
                     result = Form.ShowDialog(ParentForm)
                 Finally
-                    RemoveHandler Form.ImportRequested, handler
+                    If importHandler IsNot Nothing Then
+                        RemoveHandler Form.ImportProcess, importHandler
+                    End If
                 End Try
 
                 If result = DialogResult.OK Then

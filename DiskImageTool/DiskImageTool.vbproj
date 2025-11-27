@@ -166,6 +166,7 @@
     <Compile Include="FilePanel\FileData.vb" />
     <Compile Include="FilePanel\FileMenuLib.vb" />
     <Compile Include="FilePanel\FilePanel.vb" />
+    <Compile Include="Scanners\FilterScanner.vb" />
     <Compile Include="Filters\Enums.vb" />
     <Compile Include="Filters\FilterCounts.vb" />
     <Compile Include="Filters\FilterTag.vb" />
@@ -242,6 +243,8 @@
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="Flux\Kryoflux\KryofluxSettings.vb" />
+    <Compile Include="Scanners\IImageScanner.vb" />
+    <Compile Include="Scanners\ImageScanner.vb" />
     <Compile Include="Resources\HelpStrings.Designer.vb">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -565,6 +568,7 @@
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="Lib\WindowsAPI.vb" />
+    <Compile Include="Scanners\Win9xCleanScanner.vb" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Flux\Forms\BaseFluxForm.resx">

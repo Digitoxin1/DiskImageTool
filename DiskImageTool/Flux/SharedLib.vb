@@ -254,7 +254,7 @@ Namespace Flux
             End Using
         End Function
 
-        Public Function ConvertFluxImage(ParentForm As Form, FilePath As String, AllowSCP As Boolean, importHandler As ConvertImageForm.ImportRequestedEventHandler, LaunchedFromDialog As Boolean) As (Result As DialogResult, OutputFile As String, NewFileName As String)
+        Public Function ConvertFluxImage(ParentForm As Form, FilePath As String, AllowSCP As Boolean, importHandler As ConvertImageForm.ImportProcessEventHandler, LaunchedFromDialog As Boolean) As (Result As DialogResult, OutputFile As String, NewFileName As String)
             Dim TempPath = InitTempImagePath()
 
             If TempPath = "" Then
@@ -271,7 +271,7 @@ Namespace Flux
             Using form As New ConvertImageForm(TempPath, FilePath, AnalyzeResponse.TrackCount, AnalyzeResponse.SideCount, LaunchedFromDialog)
 
                 If importHandler IsNot Nothing Then
-                    AddHandler form.ImportRequested, importHandler
+                    AddHandler form.ImportProcess, importHandler
                 End If
 
                 Dim result As DialogResult = DialogResult.Cancel
@@ -279,7 +279,7 @@ Namespace Flux
                     result = form.ShowDialog(ParentForm)
                 Finally
                     If importHandler IsNot Nothing Then
-                        RemoveHandler form.ImportRequested, importHandler
+                        RemoveHandler form.ImportProcess, importHandler
                     End If
                 End Try
 

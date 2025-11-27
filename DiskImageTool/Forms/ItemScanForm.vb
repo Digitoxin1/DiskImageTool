@@ -1,181 +1,56 @@
-﻿Imports System.ComponentModel
-
-Public Enum ScanType
-    ScanTypeFilters
-    ScanTypeWin9xClean
-End Enum
+﻿Imports System.Threading
 
 Public Class ItemScanForm
-    Private ReadOnly _CurrentImage As DiskImageContainer
-    Private ReadOnly _ImageList As ComboBox.ObjectCollection
-    Private ReadOnly _NewOnly As Boolean
-    Private ReadOnly _Parent As MainForm
-    Private ReadOnly _ProgressLabel As String
-    Private ReadOnly _ScanType As ScanType
-    Private _Activated As Boolean = False
-    Private _EndScan As Boolean = False
-    Private _ItemsRemaining As UInteger
-    Private _ScanComplete As Boolean = False
+    Private ReadOnly _ctSource As CancellationTokenSource
+    Private ReadOnly _progressLabel As String
+    Private ReadOnly _scanner As IImageScanner
+    Private _endScan As Boolean = False
 
-    Public Sub New(Parent As MainForm, ImageList As ComboBox.ObjectCollection, CurrentImage As DiskImageContainer, NewOnly As Boolean, ScanType As ScanType)
+    Public Sub New(scanner As IImageScanner, windowTitle As String, progressLabel As String, ctSource As CancellationTokenSource)
 
-        ' This call is required by the designer.
         InitializeComponent()
+        _scanner = scanner
+        _ctSource = ctSource
+        Me.Text = windowTitle
+        _progressLabel = progressLabel
 
-        ' Add any initialization after the InitializeComponent() call.
-        _Parent = Parent
-        _ImageList = ImageList
-        _CurrentImage = CurrentImage
-        _NewOnly = NewOnly
-        _ScanType = ScanType
-        _ItemsRemaining = ImageList.Count
-
-        If ScanType = ScanType.ScanTypeFilters Then
-            Me.Text = My.Resources.Caption_ScanImages
-            _ProgressLabel = My.Resources.Label_Scanning
-        Else
-            Me.Text = My.Resources.Caption_CleanImages
-            _ProgressLabel = My.Resources.Label_Processing
-        End If
-
-        If ScanType = ScanType.ScanTypeFilters And _NewOnly Then
-            For Each ImageData As ImageData In ImageList
-                If ImageData.Scanned Then
-                    _ItemsRemaining -= 1
-                End If
-            Next
-        End If
+        AddHandler _scanner.ProgressChanged, AddressOf Scanner_ProgressChanged
+        AddHandler _scanner.ScanCompleted, AddressOf Scanner_ScanCompleted
     End Sub
 
-    Public ReadOnly Property ItemsRemaining As Boolean
+    Public ReadOnly Property ItemsRemaining As UInteger
         Get
-            Return _ItemsRemaining
+            Return _scanner.ItemsRemaining
         End Get
     End Property
-
-    Public ReadOnly Property ScanComplete As Boolean
-        Get
-            Return _ScanComplete
-        End Get
-    End Property
-
-    Private Function ProcessFilters(ImageData As ImageData) As Boolean
-        Dim Result As Boolean = False
-
-        If Not _NewOnly Or Not ImageData.Scanned Then
-            Dim Disk As DiskImage.Disk
-
-            If ImageData Is _CurrentImage.ImageData Then
-                Disk = _CurrentImage.Disk
-            Else
-                Disk = DiskImageLoadFromImageData(ImageData, True)
-            End If
-
-            If Disk IsNot Nothing Then
-                _Parent.ImageFiltersScanAll(Disk, ImageData)
-
-                ImageData.Scanned = True
-            End If
-
-            Result = True
-        End If
-
-        Return Result
-    End Function
-
-    Private Function ProcessScan(bw As BackgroundWorker) As Boolean
-        Dim ItemCount As Integer = _ItemsRemaining
-
-        If ItemCount = 0 Then
-            Return True
-        End If
-
-        Dim PrevPercentage As Integer = 0
-        Dim Counter As Integer = 0
-        Dim Result As Boolean = True
-
-        For Each ImageData As ImageData In _ImageList
-            If bw.CancellationPending Then
-                Return False
-            End If
-
-            Dim Percentage As Integer = Counter / ItemCount * 100
-            If Percentage <> PrevPercentage Then
-                bw.ReportProgress(Percentage)
-                PrevPercentage = Percentage
-            End If
-
-            If _ScanType = ScanType.ScanTypeFilters Then
-                Result = ProcessFilters(ImageData)
-            ElseIf _ScanType = ScanType.ScanTypeWin9xClean Then
-                Result = ProcessWin9XClean(ImageData)
-            End If
-
-            If Result Then
-                Counter += 1
-                _ItemsRemaining -= 1
-            End If
-        Next
-
-        Return True
-    End Function
-
-    Private Function ProcessWin9XClean(ImageData As ImageData) As Boolean
-        Dim Disk As DiskImage.Disk
-
-        If ImageData Is _CurrentImage.ImageData Then
-            Disk = _CurrentImage.Disk
-        Else
-            Disk = DiskImageLoadFromImageData(ImageData, True)
-        End If
-
-        If Disk IsNot Nothing Then
-            _Parent.ImageWin9xCleanBatch(Disk, ImageData)
-        End If
-
-        Return True
-    End Function
-#Region "Events"
-
-    Private Sub BackgroundWorker1_DoWork(sender As Object, e As DoWorkEventArgs) Handles BackgroundWorker1.DoWork
-        Dim bw As BackgroundWorker = CType(sender, BackgroundWorker)
-
-        If Not ProcessScan(bw) Then
-            e.Cancel = True
-        End If
-    End Sub
-
-    Private Sub BackgroundWorker1_ProgressChanged(sender As Object, e As ProgressChangedEventArgs) Handles BackgroundWorker1.ProgressChanged
-        LblScanning.Text = _ProgressLabel & "... " & e.ProgressPercentage & "%"
-        LblScanning.Refresh()
-    End Sub
-
-    Private Sub BackgroundWorker1_RunWorkerCompleted(sender As Object, e As RunWorkerCompletedEventArgs) Handles BackgroundWorker1.RunWorkerCompleted
-        _EndScan = True
-        If Not e.Cancelled Then
-            _ScanComplete = True
-        End If
-        Me.Close()
-    End Sub
-
-    Private Sub ItemScanForm_Activated(sender As Object, e As EventArgs) Handles Me.Activated
-        If Not _Activated Then
-            _EndScan = False
-            _ScanComplete = False
-            LblScanning.Text = My.Resources.Label_Scanning
-            BackgroundWorker1.RunWorkerAsync()
-        End If
-        _Activated = True
-    End Sub
 
     Private Sub ItemScanForm_FormClosing(sender As Object, e As FormClosingEventArgs) Handles Me.FormClosing
-        If Not _EndScan Then
+        If Not _endScan Then
             e.Cancel = True
-            If Not BackgroundWorker1.CancellationPending Then
-                BackgroundWorker1.CancelAsync()
-            End If
+            _ctSource.Cancel()
         End If
     End Sub
-#End Region
 
+    Private Sub ItemScanForm_Load(sender As Object, e As EventArgs) Handles MyBase.Load
+        LblScanning.Text = _progressLabel & "... 0%"
+    End Sub
+
+    Private Sub Scanner_ProgressChanged(percent As Integer)
+        If InvokeRequired Then
+            Invoke(New Action(Of Integer)(AddressOf Scanner_ProgressChanged), percent)
+            Return
+        End If
+
+        LblScanning.Text = $"{_progressLabel}... {percent}%"
+    End Sub
+
+    Private Sub Scanner_ScanCompleted(cancelled As Boolean, [error] As Exception)
+        If InvokeRequired Then
+            Invoke(New Action(Of Boolean, Exception)(AddressOf Scanner_ScanCompleted), cancelled, [error])
+            Return
+        End If
+
+        _endScan = True
+        Close()
+    End Sub
 End Class

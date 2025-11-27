@@ -46,7 +46,8 @@ Namespace Flux.Greaseweazle
         Private LabelRevs As Label
         Private LabelSeekRetries As Label
         Private LabelWarning As Label
-        Public Event ImportRequested(File As String, NewFilename As String)
+
+        Public Event ImportProcess(File As String, NewFilename As String)
 
         Public Sub New()
             MyBase.New(Settings.LogFileName)
@@ -782,7 +783,7 @@ Namespace Flux.Greaseweazle
                 Exit Sub
             End If
 
-            RaiseEvent ImportRequested(OutputFile, NewFileName)
+            RaiseEvent ImportProcess(OutputFile, NewFileName)
 
             ClearProcessedImage(False)
             RefreshFormState()
