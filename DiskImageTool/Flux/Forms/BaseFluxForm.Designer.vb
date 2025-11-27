@@ -36,6 +36,7 @@
             Me.LabelConsoleOutput = New System.Windows.Forms.Label()
             Me.TextBoxConsole = New System.Windows.Forms.TextBox()
             Me.StatusStripBottom = New System.Windows.Forms.StatusStrip()
+            Me.StatusDevice = New System.Windows.Forms.ToolStripStatusLabel()
             Me.StatusTrack = New System.Windows.Forms.ToolStripStatusLabel()
             Me.StatusSide = New System.Windows.Forms.ToolStripStatusLabel()
             Me.StatusType = New System.Windows.Forms.ToolStripStatusLabel()
@@ -216,12 +217,20 @@
             '
             'StatusStripBottom
             '
-            Me.StatusStripBottom.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.StatusTrack, Me.StatusSide, Me.StatusType, Me.StatusBadSectors, Me.StatusUnexpected})
+            Me.StatusStripBottom.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.StatusDevice, Me.StatusTrack, Me.StatusSide, Me.StatusType, Me.StatusBadSectors, Me.StatusUnexpected})
             Me.StatusStripBottom.Location = New System.Drawing.Point(0, 462)
             Me.StatusStripBottom.Name = "StatusStripBottom"
             Me.StatusStripBottom.Size = New System.Drawing.Size(767, 24)
             Me.StatusStripBottom.SizingGrip = False
             Me.StatusStripBottom.TabIndex = 2
+            '
+            'StatusDevice
+            '
+            Me.StatusDevice.BorderSides = System.Windows.Forms.ToolStripStatusLabelBorderSides.Right
+            Me.StatusDevice.Margin = New System.Windows.Forms.Padding(2, 3, 0, 2)
+            Me.StatusDevice.Name = "StatusDevice"
+            Me.StatusDevice.Size = New System.Drawing.Size(54, 19)
+            Me.StatusDevice.Text = "{Device}"
             '
             'StatusTrack
             '
@@ -245,7 +254,7 @@
             Me.StatusType.AutoSize = False
             Me.StatusType.Margin = New System.Windows.Forms.Padding(2, 3, 2, 2)
             Me.StatusType.Name = "StatusType"
-            Me.StatusType.Size = New System.Drawing.Size(454, 19)
+            Me.StatusType.Size = New System.Drawing.Size(365, 19)
             Me.StatusType.Spring = True
             Me.StatusType.Text = "{Status}"
             Me.StatusType.TextAlign = System.Drawing.ContentAlignment.MiddleLeft
@@ -318,5 +327,6 @@
         Friend WithEvents PanelBottomInner As TableLayoutPanel
         Friend WithEvents PanelMain As Panel
         Friend WithEvents PanelInner As Panel
+        Friend WithEvents StatusDevice As ToolStripStatusLabel
     End Class
 End Namespace

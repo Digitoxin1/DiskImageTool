@@ -7,6 +7,7 @@ Public Class FloppyDB
     Private ReadOnly _NameSpace As String = New StubClass().GetType.Namespace
     Private _TitleDictionary As Dictionary(Of String, FloppyData)
     Private _NewXMLDoc As Xml.XmlDocument
+    'Private _XMLDoc As Xml.XmlDocument
 
     Public Enum FloppyDBStatus As Byte
         Unknown
@@ -109,6 +110,37 @@ Public Class FloppyDB
         Return False
     End Function
 
+    'Public Function MarkDiskAsTdc(doc As Xml.XmlDocument, md5Hash As String) As Boolean
+    '    If doc Is Nothing OrElse String.IsNullOrWhiteSpace(md5Hash) Then
+    '        Return False
+    '    End If
+
+    '    ' XPath: find any <disk> node with matching md5
+    '    Dim xpath As String = $"//disk[@md5='{md5Hash}']"
+    '    Dim node As Xml.XmlNode = doc.SelectSingleNode(xpath)
+
+    '    ' If not found, try case-insensitive search
+    '    If node Is Nothing Then
+    '        Dim nodes = doc.SelectNodes("//disk[@md5]")
+    '        For Each n As Xml.XmlElement In nodes
+    '            If String.Equals(n.GetAttribute("md5"), md5Hash, StringComparison.OrdinalIgnoreCase) Then
+    '                node = n
+    '                Exit For
+    '            End If
+    '        Next
+    '    End If
+
+    '    If node Is Nothing Then
+    '        Return False ' No match found
+    '    End If
+
+    '    ' Add or update attribute tdc="1"
+    '    Dim elem As Xml.XmlElement = CType(node, Xml.XmlElement)
+    '    elem.SetAttribute("tdc", "1")
+
+    '    Return True
+    'End Function
+
     Public Function TitleCount() As Integer
         Return _TitleDictionary.Count
     End Function
@@ -127,6 +159,10 @@ Public Class FloppyDB
             .TitleData = TitleGet(MD5),
             .MD5 = MD5
         }
+
+        'If Response.TitleData IsNot Nothing Then
+        '    MarkDiskAsTdc(_XMLDoc, MD5)
+        'End If
 
         Return Response
     End Function
@@ -151,8 +187,20 @@ Public Class FloppyDB
             XMLDoc.LoadXml("<root />")
         End Try
 
+        '_XMLDoc = XMLDoc
+
         Return XMLDoc
     End Function
+
+    'Public Function SaveXML() As Xml.XmlDocument
+    '    If _XMLDoc IsNot Nothing Then
+    '        Dim FilePath As String = IO.Path.Combine(My.Application.Info.DirectoryPath, "FloppyDBNew.xml")
+    '        Try
+    '            _XMLDoc.Save(FilePath)
+    '        Catch
+    '        End Try
+    '    End If
+    'End Function
 
     Public Sub SaveNewXML()
         If _NewXMLDoc IsNot Nothing Then
@@ -267,6 +315,11 @@ Public Class FloppyDB
         If Node.HasAttribute("os") Then
             TitleData.OperatingSystem = Node.Attributes("os").Value
         End If
+        If Node.HasAttribute("tdc") Then
+            If Node.Attributes("tdc").Value = "1" Then
+                TitleData.IsTDC = True
+            End If
+        End If
 
         Return TitleData
     End Function
@@ -295,17 +348,18 @@ Public Class FloppyDB
         End If
     End Sub
 
-    Private Sub ParseXML(Name As String)
+    Private Function ParseXML(Name As String) As Xml.XmlDocument
         _TitleDictionary = New Dictionary(Of String, FloppyData)
 
         If Not IO.File.Exists(Name) Then
-            Return
+            Return Nothing
         End If
 
         Dim XMLDoc = LoadXML(Name)
 
         For Each TitleNode As Xml.XmlNode In XMLDoc.SelectNodes("/root/title")
             ParseNode(TitleNode, Nothing)
+
 #If DEBUG Then
             CheckTitleNodeForErrors(TitleNode)
 #End If
@@ -318,7 +372,8 @@ Public Class FloppyDB
             End If
         Next
 #End If
-    End Sub
+        Return XMLDoc
+    End Function
 
     Private Sub ParseNode(Node As Xml.XmlNode, ParentData As FloppyData)
         If TypeOf Node Is Xml.XmlElement Then
@@ -421,6 +476,7 @@ Public Class FloppyDB
         Public Property Language As String = ""
         Public Property OperatingSystem As String = ""
         Public Property Parent As FloppyData = Nothing
+        Public Property IsTDC As Boolean = False
 
         Public Function GetName() As String
             If _Name <> "" Then

@@ -31,6 +31,8 @@
         Image_NotInDatabase
         Image_Verified
         Image_Unverified
+        Image_InTDC
+        Image_NotInTDC
         Database_MismatchedStatus
     End Enum
 

@@ -2063,4 +2063,16 @@ Do you wish to overwrite?</value>
     <value>https://api.github.com/repos/Digitoxin1/DiskImageTool</value>
     <comment>@Invariant</comment>
   </data>
+  <data name="Label_TDC" xml:space="preserve">
+    <value>TDC</value>
+    <comment>@Invariant</comment>
+  </data>
+  <data name="Filter_Image_InTDC" xml:space="preserve">
+    <value>In TDC</value>
+    <comment>@Invariant</comment>
+  </data>
+  <data name="Filter_Image_NotInTDC" xml:space="preserve">
+    <value>Not in TDC</value>
+    <comment>@Invariant</comment>
+  </data>
 </root>

@@ -19,6 +19,7 @@
             ' Add any initialization after the InitializeComponent() call.
             LocalizeForm()
             _LogFileName = LogFileName
+            StatusDevice.Visible = False
 
             Process = New ConsoleProcessRunner With {
                 .EventContext = Threading.SynchronizationContext.Current
@@ -93,6 +94,8 @@
         End Function
 
         Public Sub ClearStatusBar()
+            StatusDevice.Text = ""
+            StatusDevice.Visible = False
             StatusType.Text = ""
             StatusTrack.Text = ""
             StatusSide.Text = ""

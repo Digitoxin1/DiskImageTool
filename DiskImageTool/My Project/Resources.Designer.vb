@@ -1932,11 +1932,29 @@ Namespace My.Resources
         End Property
         
         '''<summary>
+        '''  Looks up a localized string similar to In TDC.
+        '''</summary>
+        Friend ReadOnly Property Filter_Image_InTDC() As String
+            Get
+                Return ResourceManager.GetString("Filter_Image_InTDC", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
         '''  Looks up a localized string similar to Not in Database.
         '''</summary>
         Friend ReadOnly Property Filter_Image_NotInDatabase() As String
             Get
                 Return ResourceManager.GetString("Filter_Image_NotInDatabase", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  Looks up a localized string similar to Not in TDC.
+        '''</summary>
+        Friend ReadOnly Property Filter_Image_NotInTDC() As String
+            Get
+                Return ResourceManager.GetString("Filter_Image_NotInTDC", resourceCulture)
             End Get
         End Property
         
@@ -4345,6 +4363,15 @@ Namespace My.Resources
         Friend ReadOnly Property Label_System() As String
             Get
                 Return ResourceManager.GetString("Label_System", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  Looks up a localized string similar to TDC.
+        '''</summary>
+        Friend ReadOnly Property Label_TDC() As String
+            Get
+                Return ResourceManager.GetString("Label_TDC", resourceCulture)
             End Get
         End Property
         

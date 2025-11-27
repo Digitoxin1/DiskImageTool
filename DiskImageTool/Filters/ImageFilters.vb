@@ -167,6 +167,8 @@ Namespace Filters
             Dim Image_NotInDatabase As Boolean = False
             Dim Image_Verified As Boolean = False
             Dim Image_Unverified As Boolean = False
+            Dim Image_InTDC As Boolean = False
+            Dim Image_NotInTDC As Boolean = False
             Dim Disk_NOBPB As Boolean = False
             Dim Disk_NoBootLoader As Boolean = False
             Dim Disk_CustomBootLoader As Boolean = False
@@ -215,6 +217,11 @@ Namespace Filters
                             Image_Unverified = True
                         End If
                         If App.Globals.AppSettings.Debug Then
+                            If TitleFindResult.TitleData.IsTDC Then
+                                Image_InTDC = True
+                            Else
+                                Image_NotInTDC = True
+                            End If
                             FileData = New FloppyDB.FileNameData(ImageData.FileName)
                             If TitleFindResult.TitleData.GetStatus <> FileData.Status Then
                                 Database_MismatchedStatus = True
@@ -235,6 +242,10 @@ Namespace Filters
                 FilterUpdate(ImageData, UpdateFilters, Filters.FilterTypes.Image_NotInDatabase, Image_NotInDatabase)
                 FilterUpdate(ImageData, UpdateFilters, Filters.FilterTypes.Image_Verified, Image_Verified)
                 FilterUpdate(ImageData, UpdateFilters, Filters.FilterTypes.Image_Unverified, Image_Unverified)
+                If App.Globals.AppSettings.Debug Then
+                    FilterUpdate(ImageData, UpdateFilters, Filters.FilterTypes.Image_InTDC, Image_InTDC)
+                    FilterUpdate(ImageData, UpdateFilters, Filters.FilterTypes.Image_NotInTDC, Image_NotInTDC)
+                End If
             End If
 
             FilterUpdate(ImageData, UpdateFilters, Filters.FilterTypes.FAT_BadSectors, FAT_BadSectors)

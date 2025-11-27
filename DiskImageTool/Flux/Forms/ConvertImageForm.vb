@@ -1189,6 +1189,11 @@ Namespace Flux
             End If
         End Sub
 
+        Private Sub Process_ProcessStarted(exePath As String, arguments As String) Handles Process.ProcessStarted
+            StatusDevice.Text = _SelectedDevice.Name
+            StatusDevice.Visible = True
+        End Sub
+
         Private Sub Process_ProcessStateChanged(State As ConsoleProcessRunner.ProcessStateEnum) Handles Process.ProcessStateChanged
             Select Case State
                 Case ConsoleProcessRunner.ProcessStateEnum.Aborted
@@ -1211,6 +1216,7 @@ Namespace Flux
                 Case ConsoleProcessRunner.ProcessStateEnum.Error
                     ClearOutputFile(True)
                     TrackStatus.UpdateTrackStatusError()
+
             End Select
 
             RefreshButtonState()

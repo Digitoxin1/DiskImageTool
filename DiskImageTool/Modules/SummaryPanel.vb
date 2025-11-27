@@ -288,6 +288,7 @@ Public Class SummaryPanel
         TitleRows.Add("Version", New SummaryRow(ListViewSummary.Font, My.Resources.Label_Version, True))
         TitleRows.Add("Disk", New SummaryRow(ListViewSummary.Font, My.Resources.Label_Disk, False))
         TitleRows.Add("CopyProtection", New SummaryRow(ListViewSummary.Font, My.Resources.SummaryPanel_CopyProtection, True))
+        TitleRows.Add("TDC", New SummaryRow(ListViewSummary.Font, My.Resources.Label_TDC, True))
     End Sub
 
     Private Sub PopulateError(InvalidImage As Boolean)
@@ -761,7 +762,14 @@ Public Class SummaryPanel
         Row("Language").Value = TitleData.GetLanguage
         Row("Version").Value = TitleData.GetVersion
         Row("Disk").Value = TitleData.GetDisk
-        Row("CopyProtection").Value = TitleData.CopyProtection
+        Row("CopyProtection").Value = TitleData.GetCopyProtection
+
+        If App.AppSettings.Debug Then
+            With Row("TDC")
+                .Value = If(TitleData.IsTDC, My.Resources.Label_Yes, "")
+                .ForeColor = Color.Green
+            End With
+        End If
 
         Dim Group = ListViewSummary.Groups.Add(GROUP_TITLE, My.Resources.SummaryPanel_Title)
 

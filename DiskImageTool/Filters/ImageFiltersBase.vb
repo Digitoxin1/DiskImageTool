@@ -255,6 +255,10 @@
                     Caption = My.Resources.Label_Image & " - " & My.Resources.Label_Verified
                 Case FilterTypes.Image_Unverified
                     Caption = My.Resources.Label_Image & " - " & My.Resources.Label_Unverified
+                Case FilterTypes.Image_InTDC
+                    Caption = My.Resources.Label_Image & " - " & My.Resources.Filter_Image_InTDC
+                Case FilterTypes.Image_NotInTDC
+                    Caption = My.Resources.Label_Image & " - " & My.Resources.Filter_Image_NotInTDC
                 Case FilterTypes.Database_MismatchedStatus
                     Caption = My.Resources.Filter_Database_MismatchedStatus
                 Case Else

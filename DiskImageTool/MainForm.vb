@@ -253,6 +253,7 @@ Public Class MainForm
         If ImageFilters.ExportUnknownImages Then
             App.Globals.TitleDB.SaveNewXML()
         End If
+        'App.Globals.TitleDB.SaveXML()
 
         ImageFilters.UpdateAllMenuItems()
         ImageFilters.SubFiltersPopulate()
