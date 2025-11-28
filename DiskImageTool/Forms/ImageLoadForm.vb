@@ -6,10 +6,13 @@ Public Class ImageLoadForm
     Private _Counter As Integer = 0
     Private _EndScan As Boolean = False
     Private _ImageCount As Integer = 0
-    Private _Visible As Boolean = False
+    Private WithEvents DelayTimer As Windows.Forms.Timer
+    Private Const DelayMs As Integer = 500
 
     Public Sub New(scanner As ImageScanner, ctSource As CancellationTokenSource)
         InitializeComponent()
+        Me.Opacity = 0.0
+
         Me.Text = My.Resources.Caption_ScanFiles
         _Scanner = scanner
         _CtSource = ctSource
@@ -28,9 +31,13 @@ Public Class ImageLoadForm
     End Sub
 
     Private Sub ImageLoadForm_Load(sender As Object, e As EventArgs) Handles MyBase.Load
-        Me.Opacity = 0.0
         LblScanning.Text = My.Resources.Label_Scanning
         lblScanning2.Text = String.Format(My.Resources.Label_ImagesLoaded, 0)
+
+        DelayTimer = New Windows.Forms.Timer With {
+            .Interval = DelayMs
+        }
+        DelayTimer.Start()
     End Sub
 
     Private Sub Scanner_FileScanned(sender As Object, e As EventArgs)
@@ -40,11 +47,6 @@ Public Class ImageLoadForm
         End If
 
         _Counter += 1
-
-        If Not _Visible AndAlso _Counter > 10 Then
-            _Visible = True
-            Me.Opacity = 1
-        End If
 
         If _Counter Mod 10 = 0 Then
             LblScanning.Text = My.Resources.Label_Scanning & "... " & _Counter & " " & My.Resources.Label_Files
@@ -72,6 +74,23 @@ Public Class ImageLoadForm
         End If
 
         _EndScan = True
+
+        If DelayTimer IsNot Nothing Then
+            DelayTimer.Stop()
+        End If
+
         Me.Close()
+    End Sub
+
+    Private Sub DelayTimer_Tick(sender As Object, e As EventArgs) Handles DelayTimer.Tick
+        DelayTimer.Stop()
+
+        ' If the scan already finished or the form is closing, do nothing
+        If _EndScan OrElse Me.IsDisposed OrElse Me.Disposing Then
+            Return
+        End If
+
+        ' Scan is still running → bring the dialog on-screen and show it
+        Me.Opacity = 1.0
     End Sub
 End Class

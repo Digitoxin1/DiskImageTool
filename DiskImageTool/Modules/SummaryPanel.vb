@@ -766,7 +766,7 @@ Public Class SummaryPanel
 
         If App.AppSettings.Debug Then
             With Row("TDC")
-                .Value = If(TitleData.IsTDC, My.Resources.Label_Yes, "")
+                .Value = If(TitleData.GetIsTDC, My.Resources.Label_Yes, "")
                 .ForeColor = Color.Green
             End With
         End If

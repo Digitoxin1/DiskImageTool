@@ -217,7 +217,7 @@ Namespace Filters
                             Image_Unverified = True
                         End If
                         If App.Globals.AppSettings.Debug Then
-                            If TitleFindResult.TitleData.IsTDC Then
+                            If TitleFindResult.TitleData.GetIsTDC Then
                                 Image_InTDC = True
                             Else
                                 Image_NotInTDC = True

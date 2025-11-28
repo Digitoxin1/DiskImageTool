@@ -7,7 +7,7 @@ Public Class FloppyDB
     Private ReadOnly _NameSpace As String = New StubClass().GetType.Namespace
     Private _TitleDictionary As Dictionary(Of String, FloppyData)
     Private _NewXMLDoc As Xml.XmlDocument
-    'Private _XMLDoc As Xml.XmlDocument
+    'Private ReadOnly _XMLDoc As Xml.XmlDocument
 
     Public Enum FloppyDBStatus As Byte
         Unknown
@@ -187,12 +187,10 @@ Public Class FloppyDB
             XMLDoc.LoadXml("<root />")
         End Try
 
-        '_XMLDoc = XMLDoc
-
         Return XMLDoc
     End Function
 
-    'Public Function SaveXML() As Xml.XmlDocument
+    'Public Sub SaveXML()
     '    If _XMLDoc IsNot Nothing Then
     '        Dim FilePath As String = IO.Path.Combine(My.Application.Info.DirectoryPath, "FloppyDBNew.xml")
     '        Try
@@ -200,7 +198,7 @@ Public Class FloppyDB
     '        Catch
     '        End Try
     '    End If
-    'End Function
+    'End Sub
 
     Public Sub SaveNewXML()
         If _NewXMLDoc IsNot Nothing Then
@@ -476,7 +474,23 @@ Public Class FloppyDB
         Public Property Language As String = ""
         Public Property OperatingSystem As String = ""
         Public Property Parent As FloppyData = Nothing
-        Public Property IsTDC As Boolean = False
+        Public Property IsTDC As Boolean? = Nothing
+
+        Public Function GetIsTDC() As Boolean
+            If _IsTDC.HasValue Then
+                Return _IsTDC.Value
+            Else
+                Dim Parent = _Parent
+                Do While Parent IsNot Nothing
+                    If Parent.IsTDC.HasValue Then
+                        Return Parent.IsTDC.Value
+                    End If
+                    Parent = Parent.Parent
+                Loop
+            End If
+
+            Return False
+        End Function
 
         Public Function GetName() As String
             If _Name <> "" Then
