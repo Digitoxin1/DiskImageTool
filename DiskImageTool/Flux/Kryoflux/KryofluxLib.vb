@@ -47,11 +47,13 @@ Namespace Flux.Kryoflux
             Return (IO.File.Exists(FileName), FileName)
         End Function
 
-        Public Function GenerateCommandLineImport(InputFilePath As String, OutputFilePath As String, DiskParams As FloppyDiskParams, DoubleStep As Boolean, LogLevel As Kryoflux.CommandLineBuilder.LogMask) As (Arguments As String, OutputFilePath As String)
+        Public Function GenerateCommandLineImport(InputFilePath As String, OutputFilePath As String, DiskParams As FloppyDiskParams, DoubleStep As Boolean, LogLevel As Kryoflux.CommandLineBuilder.LogMask) As (Arguments As String, SingleSide As Boolean)
             Dim SingleSidedMode As SingleSidedModeEnum = SingleSidedModeEnum.off
+            Dim SingleSide As Boolean = False
 
             If DiskParams.Format = FloppyDiskFormat.Floppy160 Or DiskParams.Format = FloppyDiskFormat.Floppy180 Then
                 SingleSidedMode = SingleSidedModeEnum.side0
+                SingleSide = True
             End If
 
             Dim TrackCount = DiskParams.BPBParams.TrackCount
@@ -79,11 +81,7 @@ Namespace Flux.Kryoflux
                 .MissingSectorsAsBad = False
             }
 
-            If SingleSidedMode = SingleSidedModeEnum.side0 Then
-                OutputFilePath = GetSide0FileName(OutputFilePath)
-            End If
-
-            Return (Builder.Arguments, OutputFilePath)
+            Return (Builder.Arguments, SingleSide)
         End Function
 
         Public Function GetSide0FileName(Filename As String) As String

@@ -31,9 +31,8 @@ Namespace Flux
         Private _ComboOutputTypeNoEvent As Boolean = False
         Private _DoubleStep As Boolean = False
         Private _InputFilePath As String = ""
-        Private _OutputFilePath As String = ""
+        Private _OutputFile As OutputImageInfo? = Nothing
         Private _OutputFilePrefix As String = ""
-        Private _OutputFileSource As IDevice.FluxDevice? = Nothing
         Private _SelectedDevice As IDevice = Nothing
         Private _SideCount As Integer
         Private _TrackCount As Integer
@@ -75,7 +74,7 @@ Namespace Flux
 
         Public ReadOnly Property OutputFilePath As String
             Get
-                Return _OutputFilePath
+                Return _OutputFile.Value.FilePath
             End Get
         End Property
 
@@ -164,12 +163,11 @@ Namespace Flux
         End Sub
 
         Private Sub ClearOutputFile(Delete As Boolean)
-            If Delete AndAlso Not String.IsNullOrEmpty(_OutputFilePath) Then
-                DeleteTempFileIfExists(_OutputFilePath)
+            If Delete AndAlso _OutputFile.HasValue Then
+                DeleteTempFileIfExists(_OutputFile.Value.FilePath)
             End If
 
-            _OutputFilePath = ""
-            _OutputFileSource = Nothing
+            _OutputFile = Nothing
         End Sub
 
         Private Sub ClearProcessedImage(DeleteOutputFile As Boolean)
@@ -192,11 +190,11 @@ Namespace Flux
         End Sub
 
         Private Sub DisplayWriteSplices()
-            If String.IsNullOrEmpty(_OutputFilePath) Then
+            If Not _OutputFile.HasValue Then
                 Exit Sub
             End If
 
-            Dim ImageData = New ImageData(_OutputFilePath)
+            Dim ImageData = New ImageData(_OutputFile.Value.FilePath)
             Dim Disk = DiskImageLoadFromImageData(ImageData)
             If ImageData.InvalidImage Then
                 Exit Sub
@@ -209,26 +207,19 @@ Namespace Flux
             DisplayReportWriteSplices(Disk, GetNewFileName)
         End Sub
 
-        Private Function GenerateCommandLine(FilePath As String) As String
-            If _SelectedDevice Is Nothing Then
-                Return ""
-            End If
+        Private Function GenerateCommandLine(InputFilePath As String,
+                                             OutputFilePath As String,
+                                             Device As IDevice.FluxDevice,
+                                             OutputType As ImageImportOutputTypes,
+                                             DiskParams As FloppyDiskParams) As (Arguments As String, OutputfilePath As String)
 
-            If ComboOutputType.SelectedIndex = -1 Then
-                Return ""
-            End If
+            Dim Response As (Arguments As String, OutputfilePath As String)
+            Response.Arguments = ""
+            Response.OutputfilePath = OutputFilePath
 
-            If ComboImageFormat.SelectedIndex = -1 Then
-                Return ""
-            End If
-
-            Dim OutputType As ImageImportOutputTypes = ComboOutputType.SelectedValue
-            _OutputFileSource = _SelectedDevice.Device
-
-            Select Case _SelectedDevice.Device
+            Select Case Device
                 Case IDevice.FluxDevice.Greaseweazle
-                    _OutputFilePath = FilePath
-                    Return Greaseweazle.GenerateCommandLineImport(_InputFilePath, FilePath, ComboImageFormat.SelectedValue, OutputType, _DoubleStep)
+                    Response.Arguments = Greaseweazle.GenerateCommandLineImport(InputFilePath, OutputFilePath, DiskParams, OutputType, _DoubleStep)
 
                 Case IDevice.FluxDevice.Kryoflux
                     Dim LogLevel As Kryoflux.CommandLineBuilder.LogMask = 0
@@ -237,16 +228,17 @@ Namespace Flux
                         LogLevel = Kryoflux.CommandLineBuilder.LogMask.Read Or Kryoflux.CommandLineBuilder.LogMask.Cell
                     End If
 
-                    Dim Response = Kryoflux.GenerateCommandLineImport(_InputFilePath, FilePath, ComboImageFormat.SelectedValue, _DoubleStep, LogLevel)
-                    _OutputFilePath = Response.OutputFilePath
-                    Return Response.Arguments
+                    Dim KryofluxResponse = Kryoflux.GenerateCommandLineImport(InputFilePath, OutputFilePath, DiskParams, _DoubleStep, LogLevel)
+                    If KryofluxResponse.SingleSide Then
+                        Response.OutputfilePath = Kryoflux.GetSide0FileName(Response.OutputfilePath)
+                    End If
+                    Response.Arguments = KryofluxResponse.Arguments
 
                 Case IDevice.FluxDevice.PcImgCnv
-                    _OutputFilePath = FilePath
-                    Return PcImgCnv.GenerateCommandLineImport(_InputFilePath, FilePath, CheckBox86FSurfaceData.Checked, CheckBoxRemaster.Enabled AndAlso CheckBoxRemaster.Checked)
+                    Response.Arguments = PcImgCnv.GenerateCommandLineImport(InputFilePath, OutputFilePath, CheckBox86FSurfaceData.Checked, CheckBoxRemaster.Enabled AndAlso CheckBoxRemaster.Checked)
             End Select
 
-            Return ""
+            Return Response
         End Function
 
         Private Sub GenerateTrackData()
@@ -254,11 +246,11 @@ Namespace Flux
                 Exit Sub
             End If
 
-            If String.IsNullOrEmpty(_OutputFilePath) Then
+            If Not _OutputFile.HasValue Then
                 Exit Sub
             End If
 
-            Dim ImageData = New ImageData(_OutputFilePath)
+            Dim ImageData = New ImageData(_OutputFile.Value.FilePath)
             Dim Disk = DiskImageLoadFromImageData(ImageData)
             If ImageData.InvalidImage Then
                 Exit Sub
@@ -753,12 +745,14 @@ Namespace Flux
 
             _DoubleStep = CheckBoxDoublestep.Enabled AndAlso CheckBoxDoublestep.Checked
 
-            Dim Arguments = GenerateCommandLine(FilePath)
-            Process.StartAsync(_SelectedDevice.Settings.AppPath, Arguments)
+            Dim Response = GenerateCommandLine(_InputFilePath, FilePath, _SelectedDevice.Device, ComboOutputType.SelectedValue, ComboImageFormat.SelectedValue)
+            _OutputFile = New OutputImageInfo(Response.OutputfilePath, _SelectedDevice.Device)
+
+            Process.StartAsync(_SelectedDevice.Settings.AppPath, Response.Arguments)
         End Sub
 
         Private Sub ProcessImport()
-            RaiseEvent ImportProcess(_OutputFilePath, GetNewFileName())
+            RaiseEvent ImportProcess(_OutputFile.Value.FilePath, GetNewFileName())
 
             MoveLogs()
             ClearProcessedImage(False)
@@ -803,7 +797,7 @@ Namespace Flux
                 IsNonImage = ImageParams.IsNonImage
             End If
 
-            Dim HasOutputfile As Boolean = Not String.IsNullOrEmpty(_OutputFilePath)
+            Dim HasOutputfile As Boolean = _OutputFile.HasValue
             Dim HasInputFile As Boolean = Not String.IsNullOrEmpty(_InputFilePath)
             Dim IsRunning As Boolean = Process.IsRunning
             Dim IsIdle As Boolean = Not IsRunning
@@ -812,7 +806,7 @@ Namespace Flux
             Dim CanConfigure As Boolean = SettingsEnabled AndAlso HasInputFile
             Dim UseImageFormat As Boolean = _SelectedDevice IsNot Nothing AndAlso _SelectedDevice.RequiresImageFormat
 
-            Dim SourceIsPcImgCnv As Boolean = _OutputFileSource.HasValue AndAlso _OutputFileSource.Value = IDevice.FluxDevice.PcImgCnv
+            Dim SourceIsPcImgCnv As Boolean = HasOutputfile AndAlso _OutputFile.Value.FileSource = IDevice.FluxDevice.PcImgCnv
 
             ComboExtensions.Enabled = HasInputFile And ComboExtensions.Items.Count > 1
             ComboImageFormat.Enabled = CanConfigure AndAlso UseImageFormat
@@ -897,7 +891,7 @@ Namespace Flux
         End Sub
 
         Private Sub RefreshImportButtonState()
-            Dim HasOutputfile As Boolean = Not String.IsNullOrEmpty(_OutputFilePath)
+            Dim HasOutputfile As Boolean = _OutputFile.HasValue
             Dim HasInputFile As Boolean = Not String.IsNullOrEmpty(_InputFilePath)
 
             Dim EnableImport As Boolean = Not Process.IsRunning AndAlso HasOutputfile AndAlso HasInputFile AndAlso Not String.IsNullOrEmpty(TextBoxFileName.Text)
@@ -940,6 +934,7 @@ Namespace Flux
             _TrackLayoutExists = TrackLayoutExists()
             CheckBoxRemaster.Checked = _TrackLayoutExists AndAlso HasInputFile
         End Sub
+
         Private Sub SetNewFileName()
             Dim FileExt = IO.Path.GetExtension(_InputFilePath).ToLower
 
@@ -984,6 +979,16 @@ Namespace Flux
 
             Return IO.File.Exists(IO.Path.Combine(ParentFolder, "tracklayout.txt"))
         End Function
+
+        Private Structure OutputImageInfo
+            Public ReadOnly FilePath As String
+            Public ReadOnly FileSource As IDevice.FluxDevice
+
+            Public Sub New(FilePath As String, FileSource As IDevice.FluxDevice)
+                Me.FilePath = FilePath
+                Me.FileSource = FileSource
+            End Sub
+        End Structure
 #Region "Events"
         Private Sub ButtonDiscard_Click(sender As Object, e As EventArgs) Handles ButtonDiscard.Click
             ClearProcessedImage(True)
@@ -995,7 +1000,7 @@ Namespace Flux
                 Exit Sub
             End If
 
-            If _OutputFilePath <> "" Then
+            If _OutputFile.HasValue Then
                 ProcessImport()
             End If
         End Sub
@@ -1139,7 +1144,7 @@ Namespace Flux
 
             Dim SelectedDevice As IDevice = CType(ComboDevices.SelectedItem, IDevice)
             Dim AllowSCP As Boolean = SelectedDevice.InputTypeSupported(InputFileTypeEnum.scp)
-            Dim HasOutputfile As Boolean = Not String.IsNullOrEmpty(_OutputFilePath)
+            Dim HasOutputfile As Boolean = _OutputFile.HasValue
 
             If Process.IsRunning Or HasOutputfile Then
                 Return
@@ -1165,7 +1170,7 @@ Namespace Flux
         End Sub
 
         Private Sub ImageImportForm_DragEnter(sender As Object, e As DragEventArgs) Handles Me.DragEnter
-            Dim HasOutputfile As Boolean = Not String.IsNullOrEmpty(_OutputFilePath)
+            Dim HasOutputfile As Boolean = _OutputFile.HasValue
 
             If Process.IsRunning Or HasOutputfile Then
                 e.Effect = DragDropEffects.None

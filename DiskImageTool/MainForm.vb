@@ -44,6 +44,17 @@ Public Class MainForm
         StatusBarFileName.Visible = False
     End Sub
 
+    Private Sub ClearFiltersIfApplied(ResetSubFilters As Boolean, UpdateMenuItems As Boolean)
+        If ImageFilters.FiltersApplied Then
+            FiltersClear(ResetSubFilters)
+            If UpdateMenuItems Then
+                ImageFilters.UpdateAllMenuItems()
+                ContextMenuFilters.Invalidate()
+            End If
+            StatusBarImageCountUpdate()
+        End If
+    End Sub
+
     Private Sub DetectFloppyDrives()
         Dim AllDrives() = IO.DriveInfo.GetDrives()
         _DriveAEnabled = False
@@ -220,10 +231,7 @@ Public Class MainForm
         MenuFiltersScanNew.Visible = False
         MenuFiltersScan.Enabled = False
 
-        If ImageFilters.FiltersApplied Then
-            FiltersClear(False)
-            StatusBarImageCountUpdate()
-        End If
+        ClearFiltersIfApplied(False, False)
 
         Dim images As New List(Of ImageData)
         For Each img As ImageData In ImageCombo.Main.Items
@@ -342,6 +350,7 @@ Public Class MainForm
             End If
         End If
     End Sub
+
 
     Private Function FileCloseCurrent(CurrentImage As DiskImageContainer)
         If DiskImageCloseCurrent(CurrentImage, _LoadedFiles) Then
@@ -496,12 +505,10 @@ Public Class MainForm
 
             Cursor.Current = Cursors.Default
 
-        ElseIf ImageFilters.FiltersApplied Then
-            FiltersClear(True)
-            ImageFilters.UpdateAllMenuItems()
+            StatusBarImageCountUpdate()
+        Else
+            ClearFiltersIfApplied(True, True)
         End If
-
-        StatusBarImageCountUpdate()
     End Sub
 
     Private Sub FiltersClear(ResetSubFilters As Boolean)
@@ -590,24 +597,22 @@ Public Class MainForm
         ProcessFileDrop(Files, True)
     End Sub
 
-    Private Sub HandleImageDiscovered(Args As ImageDiscoveredEventArgs, ByRef FirstImage As ImageData)
-        Dim img = _LoadedFiles.Add(Args.Key, Args.FileName, Args.FileType, Args.CompressedFile, Args.NewFileName)
+    Private Function HandleImageDiscovered(Args As ImageDiscoveredEventArgs) As ImageData
+        Dim Image = _LoadedFiles.Add(Args.Key, Args.FileName, Args.FileType, Args.CompressedFile, Args.NewFileName)
 
-        If img Is Nothing Then
-            Return
+        If Image Is Nothing Then
+            Return Nothing
         End If
 
-        If FirstImage Is Nothing Then
-            FirstImage = img
+        ImageCombo.Main.Items.Add(Image)
+
+        If Image.FileType = ImageData.FileTypeEnum.NewImage Then
+            ImageFilters.FilterUpdate(Image, True, Filters.FilterTypes.ModifiedFiles, True, True)
+            ImageFiltersSetModified(Image)
         End If
 
-        ImageCombo.Main.Items.Add(img)
-
-        If img.FileType = ImageData.FileTypeEnum.NewImage Then
-            ImageFilters.FilterUpdate(img, True, Filters.FilterTypes.ModifiedFiles, True, True)
-            ImageFiltersSetModified(img)
-        End If
-    End Sub
+        Return Image
+    End Function
 
     Private Sub HashPanelInitContextMenu()
         HashPanelContextMenu = New ContextMenuStrip With {
@@ -678,8 +683,7 @@ Public Class MainForm
 
         Dim FileName = FloppyDiskNewImage(Data, DiskFormat, _LoadedFiles.FileNames)
         If FileName.Length > 0 Then
-            ProcessFileDrop(FileName, True)
-            RefreshModifiedCount()
+            ProcessFileDropNew(FileName)
             If ImportFiles Then
                 NewImageImport(FilePanelMain, FileName)
             End If
@@ -1033,27 +1037,19 @@ Public Class MainForm
         Me.Location = New Point(WorkingArea.Left + (WorkingArea.Width - Width) / 2, WorkingArea.Top + (WorkingArea.Height - Height) / 2)
     End Sub
 
-    Private Sub ProcessFileDrop(File As String)
-        ProcessFileDrop({File}, False, False)
-    End Sub
+    Private Function ProcessFileDrop(File As String) As ImageData
+        Return ProcessFileDrop({File}, False, False)
+    End Function
 
-    Private Sub ProcessFileDrop(File As String, NewImage As Boolean, Optional NewFileName As String = "")
-        ProcessFileDrop({File}, False, NewImage, NewFileName)
-    End Sub
+    Private Function ProcessFileDrop(Files() As String, ShowDialog As Boolean) As ImageData
+        Return ProcessFileDrop(Files, ShowDialog, False)
+    End Function
 
-    Private Sub ProcessFileDrop(Files() As String, ShowDialog As Boolean)
-        ProcessFileDrop(Files, ShowDialog, False)
-    End Sub
-
-    Private Sub ProcessFileDrop(Files() As String, ShowDialog As Boolean, NewImage As Boolean, Optional NewFileName As String = "")
+    Private Function ProcessFileDrop(Files() As String, ShowDialog As Boolean, NewImage As Boolean, Optional NewFileName As String = "") As ImageData
         Cursor.Current = Cursors.WaitCursor
         Dim T = Stopwatch.StartNew
 
-        If ImageFilters.FiltersApplied Then
-            FiltersClear(False)
-            ImageFilters.UpdateAllMenuItems()
-            StatusBarImageCountUpdate()
-        End If
+        ClearFiltersIfApplied(False, True)
 
         ImageCombo.Main.BeginUpdate()
 
@@ -1062,14 +1058,21 @@ Public Class MainForm
         Dim scanner As New ImageScanner()
         Dim firstImage As ImageData = Nothing
 
-        AddHandler scanner.ImageDiscovered, Sub(sender, args)
-                                                ' Ensure we’re on the UI thread (important if Scan runs on a Task)
-                                                If Me.InvokeRequired Then
-                                                    Me.Invoke(Sub() HandleImageDiscovered(args, firstImage))
-                                                Else
-                                                    HandleImageDiscovered(args, firstImage)
-                                                End If
-                                            End Sub
+        AddHandler scanner.ImageDiscovered,
+            Sub(sender, args)
+                Dim run As Action = Sub()
+                                        Dim img = HandleImageDiscovered(args)
+                                        If firstImage Is Nothing AndAlso img IsNot Nothing Then
+                                            firstImage = img
+                                        End If
+                                    End Sub
+                ' Ensure we’re on the UI thread (important if Scan runs on a Task)
+                If Me.InvokeRequired Then
+                    Me.Invoke(run)
+                Else
+                    run()
+                End If
+            End Sub
 
         If ShowDialog Then
             Dim cts As New Threading.CancellationTokenSource()
@@ -1086,13 +1089,7 @@ Public Class MainForm
         ImageData.StringOffset = ImageCombo.GetPathOffset()
 
         If firstImage IsNot Nothing Then
-            LabelDropMessage.Visible = False
-
-            ImageCombo.SetSelectedImage(firstImage)
-
-            StatusBarImageCountUpdate()
-
-            SetImagesLoaded(True)
+            SetSelectedImage(firstImage)
         End If
 
         ImageCombo.Main.EndUpdate()
@@ -1100,7 +1097,9 @@ Public Class MainForm
         T.Stop()
         Debug.Print(String.Format(My.Resources.Debug_LoadTimeTaken, T.Elapsed))
         Cursor.Current = Cursors.Default
-    End Sub
+
+        Return firstImage
+    End Function
 
     Private Function ProcessFileDropFlux(FilePath As String) As Boolean
         Dim IsFluxIamge As Boolean = False
@@ -1131,10 +1130,18 @@ Public Class MainForm
         Return IsFluxIamge
     End Function
 
-    Private Sub ProcessImportedImage(File As String, NewFileName As String)
-        ProcessFileDrop(File, True, NewFileName)
+    Private Function ProcessFileDropNew(File As String, Optional NewFileName As String = "") As ImageData
+        Dim Img = ProcessFileDrop({File}, False, True, NewFileName)
+
         RefreshModifiedCount()
-    End Sub
+
+        Return Img
+    End Function
+
+    Private Function ProcessImportedImage(File As String, NewFileName As String) As ImageData
+        Return ProcessFileDropNew(File, NewFileName)
+    End Function
+
     Private Sub RefreshCurrentState(FilePanel As FilePanel)
         ImageCombo.RefreshCurrentItemText()
         RefreshDiskState(FilePanel.CurrentImage)
@@ -1374,7 +1381,7 @@ Public Class MainForm
     End Sub
 
     Private Sub ResetAll()
-        EmptyTempImagePath()
+        'EmptyTempImagePath()
         ImageFilters.FiltersApplied = False
         ImageFilters.ScanRun = False
         _LoadedFiles.FileNames.Clear()
@@ -1445,6 +1452,13 @@ Public Class MainForm
         ToolStripCloseAll.Enabled = MenuFileCloseAll.Enabled
         _ToolStripSearchText.Enabled = Value
         MenuToolsWin9xCleanBatch.Enabled = Value
+    End Sub
+
+    Private Sub SetSelectedImage(Image As ImageData)
+        LabelDropMessage.Visible = False
+        ImageCombo.SetSelectedImage(Image)
+        StatusBarImageCountUpdate()
+        SetImagesLoaded(True)
     End Sub
     Private Sub StatusBarFileInfoClear()
         StatusBarFileCount.Visible = False
@@ -1522,7 +1536,6 @@ Public Class MainForm
 
         StatusBarImageCount.Text = Text
     End Sub
-
     Private Sub StatusBarImageInfoUpdate(CurrentImage As DiskImageContainer)
         If CurrentImage IsNot Nothing AndAlso CurrentImage.Disk IsNot Nothing Then
             Dim StatusText = ""
@@ -1828,22 +1841,11 @@ Public Class MainForm
         RefreshFluxMenu()
         ResetAll()
 
-        Dim Args = Environment.GetCommandLineArgs.Skip(1).ToArray
-
-        If Args.Length > 0 Then
-            Dim ShowDialog As Boolean = False
-            If Args.Length > 1 Then
-                ShowDialog = True
-            Else
-                If IO.Directory.Exists(Args(0)) Then
-                    ShowDialog = True
-                End If
-            End If
-            ProcessFileDrop(Args, ShowDialog)
-        End If
+        ProcessCommandLineArgs()
 
         InitUpdateCheck()
     End Sub
+
     Private Sub MainForm_ResizeEnd(sender As Object, e As EventArgs) Handles Me.ResizeEnd
         App.Globals.AppSettings.WindowWidth = Me.Width
         App.Globals.AppSettings.WindowHeight = Me.Height
@@ -1961,12 +1963,7 @@ Public Class MainForm
     End Sub
 
     Private Sub MenuFiltersClear_Click(sender As Object, e As EventArgs) Handles MenuFiltersClear.Click
-        If ImageFilters.FiltersApplied Then
-            FiltersClear(False)
-            ImageFilters.UpdateAllMenuItems()
-            StatusBarImageCountUpdate()
-            ContextMenuFilters.Invalidate()
-        End If
+        ClearFiltersIfApplied(False, True)
     End Sub
 
     Private Sub MenuFiltersScan_Click(sender As Object, e As EventArgs) Handles MenuFiltersScan.Click
@@ -1994,6 +1991,7 @@ Public Class MainForm
     Private Sub MenuGreaseweazleErase_Click(sender As Object, e As EventArgs) Handles MenuGreaseweazleErase.Click
         Flux.Greaseweazle.EraseDisk(Me)
     End Sub
+
     Private Sub MenuGreaseweazleInfo_Click(sender As Object, e As EventArgs) Handles MenuGreaseweazleInfo.Click
         Flux.Greaseweazle.InfoDisplay(Me)
     End Sub
@@ -2131,6 +2129,7 @@ Public Class MainForm
     Private Sub MenuToolsRestructureImage_Click(sender As Object, e As EventArgs) Handles MenuToolsRestructureImage.Click
         DiskImageProcessEvent(FilePanelMain, DiskImageMenuItem.ImageRestructure)
     End Sub
+
     Private Sub MenuToolsWin9xClean_Click(sender As Object, e As EventArgs) Handles MenuToolsWin9xClean.Click
         DiskImageProcessEvent(FilePanelMain, DiskImageMenuItem.RemoveWindowsModifications)
     End Sub
@@ -2139,6 +2138,21 @@ Public Class MainForm
         ImageRemoveWindowsModificationsBatch(FilePanelMain)
     End Sub
 
+    Private Sub ProcessCommandLineArgs()
+        Dim Args = Environment.GetCommandLineArgs.Skip(1).ToArray
+
+        If Args.Length > 0 Then
+            Dim ShowDialog As Boolean = False
+            If Args.Length > 1 Then
+                ShowDialog = True
+            Else
+                If IO.Directory.Exists(Args(0)) Then
+                    ShowDialog = True
+                End If
+            End If
+            ProcessFileDrop(Args, ShowDialog)
+        End If
+    End Sub
     Private Sub ToolStripFATCombo_SelectedIndexChanged(sender As Object, e As EventArgs)
         If _Suppress_ToolStripFATCombo_SelectedIndexChangedEvent Then
             Exit Sub
