@@ -1,130 +1,227 @@
-﻿Module Updater
-    Public Sub CheckForUpdates()
-        Dim DownloadVersion As String = ""
-        Dim DownloadURL As String = ""
-        Dim Body As String = ""
-        Dim UpdateAvailable As Boolean = False
-        Dim ErrMsg As String = My.Resources.Dialog_UpdateError
+﻿Imports System.IO
+Imports System.IO.Compression
+Imports System.Net.Http
+
+Module Updater
+    Public Function CheckForUpdates() As Boolean
+        Dim AppResponse As UpdateResponse
+        Dim DBResponse? As UpdateResponse = Nothing
 
         Cursor.Current = Cursors.WaitCursor
-        Dim ResponseText = GetAppUpdateResponse()
-        Cursor.Current = Cursors.Default
+        AppResponse = ProcessUpdateResponse(GetAppUpdateResponse(), GetVersionString())
 
-        If ResponseText = "" Then
-            MsgBox(ErrMsg, MsgBoxStyle.Exclamation)
-            Exit Sub
+        If AppResponse.HasException Then
+            MsgBox(My.Resources.Dialog_UpdateError, MsgBoxStyle.Exclamation)
+            Cursor.Current = Cursors.Default
+            Return False
         End If
 
-        Try
-            Dim JSON As Dictionary(Of String, Object) = CompactJson.Serializer.Parse(Of Dictionary(Of String, Object))(ResponseText)
+        If Not AppResponse.UpdateAvailable Then
+            DBResponse = ProcessUpdateResponse(GetDatabaseUpdateResponse(), App.TitleDB.Version)
+        End If
 
-            If JSON.ContainsKey("tag_name") Then
-                DownloadVersion = JSON.Item("tag_name").ToString
-                If DownloadVersion.StartsWith("v", StringComparison.OrdinalIgnoreCase) Then
-                    DownloadVersion = DownloadVersion.Remove(0, 1)
-                End If
-            End If
+        Cursor.Current = Cursors.Default
 
-            If JSON.ContainsKey("assets") Then
-                Dim assets() As Dictionary(Of String, Object) = CompactJson.Serializer.Parse(Of Dictionary(Of String, Object)())(JSON.Item("assets").ToString)
-                If assets.Length > 0 Then
-                    If assets(0).ContainsKey("browser_download_url") Then
-                        DownloadURL = assets(0).Item("browser_download_url").ToString
-                    End If
-                End If
-            End If
-
-            If JSON.ContainsKey("body") Then
-                Body = JSON.Item("body").ToString
-            End If
-
-            If DownloadVersion <> "" And DownloadURL <> "" Then
-                Dim CurrentVersion = GetVersionString()
-                UpdateAvailable = Version.Parse(DownloadVersion) > Version.Parse(CurrentVersion)
-            End If
-
-        Catch ex As Exception
-            MsgBox(ErrMsg, MsgBoxStyle.Exclamation)
-            DebugException(ex)
-            Exit Sub
-        End Try
-
-        If UpdateAvailable Then
-            Dim Msg = String.Format(My.Resources.Dialog_UpdateAvailable, My.Application.Info.Title, DownloadVersion)
-            If Body <> "" Then
-                Msg &= String.Format(My.Resources.Dialog_UpdateWhatsNew, Environment.NewLine, New String("—", 6), Body)
-            End If
-            Msg &= String.Format(My.Resources.Dialog_UpdateDownload, Environment.NewLine)
-
-            If MsgBoxQuestion(Msg) Then
-                Dim FileName As String = ""
-
-                Using Dialog As New SaveFileDialog With {
-                        .Filter = FileDialogGetFilter(My.Resources.FileType_ZipArchive, ".zip"),
-                        .FileName = IO.Path.GetFileName(DownloadURL),
-                        .InitialDirectory = GetDownloadsFolder(),
-                        .RestoreDirectory = True
-                    }
-
-                    Dialog.ShowDialog()
-
-                    FileName = Dialog.FileName
-                End Using
-
-                If FileName <> "" Then
-                    Cursor.Current = Cursors.WaitCursor
-                    Try
-                        Dim Client As New Net.WebClient()
-                        Client.DownloadFile(DownloadURL, FileName)
-                    Catch ex As Exception
-                        MsgBox(My.Resources.Dialog_FileDownloadError, MsgBoxStyle.Exclamation)
-                        DebugException(ex)
-                    End Try
-                    Cursor.Current = Cursors.Default
-                End If
-            End If
+        If AppResponse.UpdateAvailable Then
+            Return DisplayAppUpdateDialog(AppResponse)
+        ElseIf DBResponse IsNot Nothing AndAlso DBResponse.Value.UpdateAvailable Then
+            Return DisplayDBUpdateDialog(DBResponse.Value)
         Else
             MsgBox(String.Format(My.Resources.Dialog_LatestVersion, My.Application.Info.Title), MsgBoxStyle.Information)
         End If
-    End Sub
 
-    Public Function CheckIfUpdatesExist() As Boolean
-        Dim DownloadVersion As String = ""
-        Dim DownloadURL As String = ""
-        Dim UpdateAvailable As Boolean = False
+        Return False
+    End Function
 
-        Dim ResponseText = GetAppUpdateResponse()
+    Public Function CheckIfAppUpdateAvailable() As Boolean
+        Dim UpdateAvailable = ProcessUpdateResponse(GetAppUpdateResponse(), GetVersionString()).UpdateAvailable
+
+        If Not UpdateAvailable Then
+            UpdateAvailable = ProcessUpdateResponse(GetDatabaseUpdateResponse(), App.TitleDB.Version).UpdateAvailable
+        End If
+
+        Return UpdateAvailable
+    End Function
+
+    Private Function CompareVersions(v1 As String, v2 As String) As Integer
+        Dim ver1 As Version = Nothing
+        Dim ver2 As Version = Nothing
+
+        ' Try Version.Parse on both
+        Dim ok1 = Version.TryParse(v1, ver1)
+        Dim ok2 = Version.TryParse(v2, ver2)
+
+        If ok1 AndAlso ok2 Then
+            Return ver1.CompareTo(ver2)
+        End If
+
+        ' Fallback: simple string compare
+        Return String.Compare(v1, v2, StringComparison.OrdinalIgnoreCase)
+    End Function
+
+    Private Function DisplayAppUpdateDialog(Response As UpdateResponse) As Boolean
+        Dim Msg = String.Format(My.Resources.Dialog_UpdateAvailable, My.Application.Info.Title, Response.Version)
+        If Response.Body <> "" Then
+            Msg &= String.Format(My.Resources.Dialog_UpdateWhatsNew, Environment.NewLine, New String("—", 6), Response.Body)
+        End If
+        Msg &= String.Format(My.Resources.Dialog_UpdateDownload, Environment.NewLine)
+
+        If Not MsgBoxQuestion(Msg) Then
+            Return False
+        End If
+
+        Dim FileName As String = ""
+
+        Using Dialog As New SaveFileDialog With {
+                .Filter = FileDialogGetFilter(My.Resources.FileType_ZipArchive, ".zip"),
+                .FileName = Path.GetFileName(Response.URL),
+                .InitialDirectory = GetDownloadsFolder(),
+                .RestoreDirectory = True
+            }
+
+            Dialog.ShowDialog()
+
+            FileName = Dialog.FileName
+        End Using
+
+        If String.IsNullOrEmpty(FileName) Then
+            Return False
+        End If
+
+        Cursor.Current = Cursors.WaitCursor
+        Try
+            Using client As New HttpClient()
+                client.Timeout = TimeSpan.FromSeconds(30)
+                client.DefaultRequestHeaders.UserAgent.ParseAdd(My.Application.Info.ProductName)
+
+                Dim data As Byte() = client.GetByteArrayAsync(Response.URL).GetAwaiter().GetResult()
+                File.WriteAllBytes(FileName, data)
+            End Using
+
+            Return True
+
+        Catch ex As Exception
+            MsgBox(My.Resources.Dialog_FileDownloadError, MsgBoxStyle.Exclamation)
+            DebugException(ex)
+
+            Return False
+        Finally
+            Cursor.Current = Cursors.Default
+        End Try
+    End Function
+
+    Private Function DisplayDBUpdateDialog(Response As UpdateResponse) As Boolean
+        Dim Msg = My.Resources.Dialog_DatabaseUpdateAvailable & String.Format(My.Resources.Dialog_UpdateDownload, Environment.NewLine)
+
+        If Not MsgBoxQuestion(Msg) Then
+            Return False
+        End If
+
+
+        Dim TempPath = InitTempPath()
+        Dim DataPath = InitDataPath()
+
+        If String.IsNullOrEmpty(TempPath) OrElse String.IsNullOrEmpty(DataPath) Then
+            MsgBox(My.Resources.Dialog_FileDownloadError, MsgBoxStyle.Exclamation)
+            Return False
+        End If
+
+        Dim ZipFilePath As String = Path.Combine(TempPath, Path.GetFileName(Response.URL))
+        Dim DBFileName As String = FloppyDB.DB_FILE_NAME
+
+        Cursor.Current = Cursors.WaitCursor
+
+        Try
+            Using client As New HttpClient()
+                client.Timeout = TimeSpan.FromSeconds(30)
+                client.DefaultRequestHeaders.UserAgent.ParseAdd(My.Application.Info.ProductName)
+
+                Dim data As Byte() = client.GetByteArrayAsync(Response.URL).GetAwaiter().GetResult()
+                File.WriteAllBytes(ZipFilePath, data)
+            End Using
+
+            Using archive As ZipArchive = ZipFile.OpenRead(ZipFilePath)
+                Dim entry = archive.Entries.FirstOrDefault(Function(e) String.Equals(e.Name, DBFileName, StringComparison.OrdinalIgnoreCase))
+
+                If entry Is Nothing Then
+                    Throw New FileNotFoundException($"Could not find {DBFileName} in the downloaded archive.")
+                End If
+
+                Dim destPath = Path.Combine(DataPath, DBFileName)
+                entry.ExtractToFile(destPath, overwrite:=True)
+            End Using
+
+            DeleteTempFileIfExists(ZipFilePath)
+
+            App.TitleDB.Load()
+
+            MsgBox(My.Resources.Dialog_DatabaseUpdateSuccessful, MsgBoxStyle.Information)
+
+            Return True
+
+        Catch ex As Exception
+            MsgBox(My.Resources.Dialog_FileDownloadError, MsgBoxStyle.Exclamation)
+            DebugException(ex)
+
+            Return False
+        Finally
+            Cursor.Current = Cursors.Default
+        End Try
+    End Function
+
+    Private Function ProcessUpdateResponse(ResponseText As String, CurrentVersion As String) As UpdateResponse
+        Dim Response As New UpdateResponse With {
+            .Version = "",
+            .URL = "",
+            .Body = "",
+            .UpdateAvailable = False,
+            .HasException = False
+        }
 
         If ResponseText <> "" Then
             Try
                 Dim JSON As Dictionary(Of String, Object) = CompactJson.Serializer.Parse(Of Dictionary(Of String, Object))(ResponseText)
 
                 If JSON.ContainsKey("tag_name") Then
-                    DownloadVersion = JSON.Item("tag_name").ToString
-                    If DownloadVersion.StartsWith("v", StringComparison.OrdinalIgnoreCase) Then
-                        DownloadVersion = DownloadVersion.Remove(0, 1)
-                    End If
+                    Response.Version = JSON.Item("tag_name").ToString
                 End If
 
                 If JSON.ContainsKey("assets") Then
                     Dim assets() As Dictionary(Of String, Object) = CompactJson.Serializer.Parse(Of Dictionary(Of String, Object)())(JSON.Item("assets").ToString)
                     If assets.Length > 0 Then
                         If assets(0).ContainsKey("browser_download_url") Then
-                            DownloadURL = assets(0).Item("browser_download_url").ToString
+                            Response.URL = assets(0).Item("browser_download_url").ToString
                         End If
                     End If
                 End If
 
-                If DownloadVersion <> "" And DownloadURL <> "" Then
-                    Dim CurrentVersion = GetVersionString()
-                    UpdateAvailable = Version.Parse(DownloadVersion) > Version.Parse(CurrentVersion)
+                If JSON.ContainsKey("body") Then
+                    Response.Body = JSON.Item("body").ToString
+                End If
+
+                If Response.Version <> "" And Response.URL <> "" Then
+                    Dim CheckVersion = Response.Version
+                    If CheckVersion.StartsWith("v", StringComparison.OrdinalIgnoreCase) Then
+                        CheckVersion = CheckVersion.Remove(0, 1)
+                    End If
+                    Response.UpdateAvailable = CompareVersions(CheckVersion, CurrentVersion) > 0
                 End If
 
             Catch ex As Exception
+                Response.HasException = True
                 DebugException(ex)
             End Try
+        Else
+            Response.HasException = True
         End If
 
-        Return UpdateAvailable
+        Return Response
     End Function
+    Private Structure UpdateResponse
+        Public Body As String
+        Public HasException As Boolean
+        Public UpdateAvailable As Boolean
+        Public URL As String
+        Public Version As String
+    End Structure
 End Module

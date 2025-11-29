@@ -1837,4 +1837,10 @@ Möchten Sie ihn überschreiben?</value>
   <data name="Label_AboutApp" xml:space="preserve">
     <value>Über {0}</value>
   </data>
+  <data name="Dialog_DatabaseUpdateAvailable" xml:space="preserve">
+    <value>Ein Datenbank-Update ist verfügbar.</value>
+  </data>
+  <data name="Dialog_DatabaseUpdateSuccessful" xml:space="preserve">
+    <value>Datenbank erfolgreich aktualisiert.</value>
+  </data>
 </root>

@@ -776,10 +776,11 @@
     <None Include="Resources\images\Import.png" />
     <None Include="Resources\images\ImportFiles.png" />
     <EmbeddedResource Include="Resources\bootsector.xml" />
-    <Content Include="Resources\floppyDisk.ico" />
-    <None Include="FloppyDB.xml">
+    <Content Include="..\..\DiskImageTool_FloppyDB\FloppyDB.xml">
+      <Link>FloppyDB.xml</Link>
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
+    </Content>
+    <Content Include="Resources\floppyDisk.ico" />
     <EmbeddedResource Include="Resources\License.txt" />
     <EmbeddedResource Include="Resources\bootstrap.xml" />
   </ItemGroup>

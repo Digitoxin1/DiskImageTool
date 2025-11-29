@@ -2,11 +2,12 @@
 Imports DiskImageTool.DiskImage
 
 Public Class FloppyDB
-    Private Const DB_FILE_NAME As String = "FloppyDB.xml"
+    Public Const DB_FILE_NAME As String = "FloppyDB.xml"
     Private Const DB_FILE_NAME_NEW As String = "NewFloppyDB.xml"
     Private ReadOnly _NameSpace As String = New StubClass().GetType.Namespace
-    Private _TitleDictionary As Dictionary(Of String, FloppyData)
     Private _NewXMLDoc As Xml.XmlDocument
+    Private _TitleDictionary As Dictionary(Of String, FloppyData)
+    Private _Version As String
     'Private ReadOnly _XMLDoc As Xml.XmlDocument
 
     Public Enum FloppyDBStatus As Byte
@@ -17,14 +18,24 @@ Public Class FloppyDB
     End Enum
 
     Public Sub New()
-        Dim FilePath = IO.Path.Combine(IO.Path.GetDirectoryName(Application.ExecutablePath), DB_FILE_NAME)
-        ParseXML(FilePath)
+        Load()
     End Sub
+
+    Public Sub Load()
+        ParseXML(LoadXMLDoc())
+    End Sub
+
+    Public ReadOnly Property Version As String
+        Get
+            Return _Version
+        End Get
+    End Property
 
     Public Sub AddTile(FileData As FileNameData, Media As String, MD5 As String)
         If Not FileData.Cracked And FileData.StatusString <> "M" Then
             If _NewXMLDoc Is Nothing Then
-                _NewXMLDoc = LoadXML(DB_FILE_NAME_NEW)
+                Dim FilePath As String = IO.Path.Combine(My.Application.Info.DirectoryPath, DB_FILE_NAME_NEW)
+                _NewXMLDoc = LoadXMLFromFile(DB_FILE_NAME_NEW)
             End If
 
             Dim rootNode = _NewXMLDoc.SelectSingleNode("/root")
@@ -141,6 +152,26 @@ Public Class FloppyDB
     '    Return True
     'End Function
 
+    'Public Sub SaveXML()
+    '    If _XMLDoc IsNot Nothing Then
+    '        Dim FilePath As String = IO.Path.Combine(My.Application.Info.DirectoryPath, "FloppyDBNew.xml")
+    '        Try
+    '            _XMLDoc.Save(FilePath)
+    '        Catch
+    '        End Try
+    '    End If
+    'End Sub    
+
+    Public Sub SaveNewXML()
+        If _NewXMLDoc IsNot Nothing Then
+            Dim FilePath As String = IO.Path.Combine(My.Application.Info.DirectoryPath, DB_FILE_NAME_NEW)
+            Try
+                _NewXMLDoc.Save(FilePath)
+            Catch
+            End Try
+        End If
+    End Sub
+
     Public Function TitleCount() As Integer
         Return _TitleDictionary.Count
     End Function
@@ -176,40 +207,6 @@ Public Class FloppyDB
         End If
     End Function
 
-    Private Function LoadXML(Name As String) As Xml.XmlDocument
-        Dim XMLDoc As New Xml.XmlDocument
-
-        Dim FilePath As String = IO.Path.Combine(My.Application.Info.DirectoryPath, Name)
-
-        Try
-            XMLDoc.Load(FilePath)
-        Catch
-            XMLDoc.LoadXml("<root />")
-        End Try
-
-        Return XMLDoc
-    End Function
-
-    'Public Sub SaveXML()
-    '    If _XMLDoc IsNot Nothing Then
-    '        Dim FilePath As String = IO.Path.Combine(My.Application.Info.DirectoryPath, "FloppyDBNew.xml")
-    '        Try
-    '            _XMLDoc.Save(FilePath)
-    '        Catch
-    '        End Try
-    '    End If
-    'End Sub
-
-    Public Sub SaveNewXML()
-        If _NewXMLDoc IsNot Nothing Then
-            Dim FilePath As String = IO.Path.Combine(My.Application.Info.DirectoryPath, DB_FILE_NAME_NEW)
-            Try
-                _NewXMLDoc.Save(FilePath)
-            Catch
-            End Try
-        End If
-    End Sub
-
     Private Shared Function GetFloppyDBStatus(Status As String) As FloppyDBStatus
         Select Case Status
             Case "V"
@@ -222,6 +219,30 @@ Public Class FloppyDB
                 Return FloppyDBStatus.Unknown
         End Select
     End Function
+
+    Private Sub CheckTitleNodeForErrors(TitleNode As Xml.XmlNode)
+        If TitleNode.Name <> "title" Then
+            Debug.Print("FloppyDB: Invalid top level node: " & TitleNode.OuterXml)
+        End If
+        Dim NameFound As Boolean = False
+        Dim PublisherFound As Boolean = False
+        For Each Attribute As Xml.XmlAttribute In TitleNode.Attributes
+            If Attribute.Name = "name" Then
+                NameFound = True
+            ElseIf Attribute.Name = "publisher" Then
+                PublisherFound = True
+            ElseIf Attribute.Name = "os" Then
+            Else
+                Debug.Print("FloppyDB: Check Attribute '" & Attribute.Name & "': " & TitleNode.OuterXml)
+            End If
+        Next
+        If Not NameFound Then
+            Debug.Print("FloppyDB: Name Missing: " & TitleNode.OuterXml)
+        End If
+        If Not PublisherFound Then
+            Debug.Print("FloppyDB: Publisher Missing: " & TitleNode.OuterXml)
+        End If
+    End Sub
 
     Private Function GetNormalizedDataByBadSectors(Disk As Disk) As Byte()
         Dim Data(Disk.Image.Length - 1) As Byte
@@ -236,20 +257,6 @@ Public Class FloppyDB
         Next
         Return Data
     End Function
-
-    'Private Function GetNormalizedDataByProtectedSectors(Disk As Disk) As Byte()
-    '    Dim Data(Disk.Image.Length - 1) As Byte
-    '    Disk.Image.CopyTo(Data, 0)
-    '    Dim Buffer(Disk.BPB.BytesPerSector - 1) As Byte
-    '    For Each Sector In Disk.Image.ProtectedSectors
-    '        Dim Offset = Disk.BPB.SectorToBytes(Sector)
-    '        If Offset + Disk.BPB.BytesPerSector <= Data.Length Then
-    '            Buffer.CopyTo(Data, Offset)
-    '        End If
-    '    Next
-
-    '    Return Data
-    'End Function
 
     Private Function GetNormalizedDataByTrackList(Disk As Disk, TrackList As List(Of FloppyDB.BooterTrack)) As Byte()
         Dim BPB As BiosParameterBlock = BuildBPB(Disk.Image.Length)
@@ -322,54 +329,60 @@ Public Class FloppyDB
         Return TitleData
     End Function
 
-    Private Sub CheckTitleNodeForErrors(TitleNode As Xml.XmlNode)
-        If TitleNode.Name <> "title" Then
-            Debug.Print("FloppyDB: Invalid top level node: " & TitleNode.OuterXml)
+    Private Function GetVersion(XMLDoc As Xml.XmlDocument) As String
+        Return If(XMLDoc.SelectSingleNode("/root/@version")?.Value, "")
+    End Function
+
+    'Private Function GetNormalizedDataByProtectedSectors(Disk As Disk) As Byte()
+    '    Dim Data(Disk.Image.Length - 1) As Byte
+    '    Disk.Image.CopyTo(Data, 0)
+    '    Dim Buffer(Disk.BPB.BytesPerSector - 1) As Byte
+    '    For Each Sector In Disk.Image.ProtectedSectors
+    '        Dim Offset = Disk.BPB.SectorToBytes(Sector)
+    '        If Offset + Disk.BPB.BytesPerSector <= Data.Length Then
+    '            Buffer.CopyTo(Data, Offset)
+    '        End If
+    '    Next
+    '    Return Data
+    'End Function
+
+    Private Function LoadXMLDoc() As Xml.XmlDocument
+        Dim DataPath = GetDataPath()
+        Dim DownloadedPath = IO.Path.Combine(DataPath, DB_FILE_NAME)
+        Dim DistributedPath = IO.Path.Combine(IO.Path.GetDirectoryName(Application.ExecutablePath), DB_FILE_NAME)
+
+        Dim Downloaded = TryLoadXmlWithVersion(DownloadedPath)
+        Dim Distributed = TryLoadXmlWithVersion(DistributedPath)
+
+        Dim xmlDoc As Xml.XmlDocument = Nothing
+
+        If Downloaded.Doc IsNot Nothing AndAlso Distributed.Doc IsNot Nothing Then
+            xmlDoc = If(String.Compare(Distributed.Version, Downloaded.Version, StringComparison.Ordinal) > 0, Distributed.Doc, Downloaded.Doc)
+
+        ElseIf Downloaded.Doc IsNot Nothing Then
+            xmlDoc = Downloaded.Doc
+
+        ElseIf Distributed.Doc IsNot Nothing Then
+            xmlDoc = Distributed.Doc
         End If
-        Dim NameFound As Boolean = False
-        Dim PublisherFound As Boolean = False
-        For Each Attribute As Xml.XmlAttribute In TitleNode.Attributes
-            If Attribute.Name = "name" Then
-                NameFound = True
-            ElseIf Attribute.Name = "publisher" Then
-                PublisherFound = True
-            ElseIf Attribute.Name = "os" Then
-            Else
-                Debug.Print("FloppyDB: Check Attribute '" & Attribute.Name & "': " & TitleNode.OuterXml)
-            End If
-        Next
-        If Not NameFound Then
-            Debug.Print("FloppyDB: Name Missing: " & TitleNode.OuterXml)
-        End If
-        If Not PublisherFound Then
-            Debug.Print("FloppyDB: Publisher Missing: " & TitleNode.OuterXml)
-        End If
-    End Sub
 
-    Private Function ParseXML(Name As String) As Xml.XmlDocument
-        _TitleDictionary = New Dictionary(Of String, FloppyData)
-
-        If Not IO.File.Exists(Name) Then
-            Return Nothing
+        If xmlDoc Is Nothing Then
+            xmlDoc = New Xml.XmlDocument()
+            xmlDoc.LoadXml("<root />")
         End If
 
-        Dim XMLDoc = LoadXML(Name)
+        Return xmlDoc
+    End Function
 
-        For Each TitleNode As Xml.XmlNode In XMLDoc.SelectNodes("/root/title")
-            ParseNode(TitleNode, Nothing)
+    Private Function LoadXMLFromFile(FilePath As String) As Xml.XmlDocument
+        Dim XMLDoc As New Xml.XmlDocument
 
-#If DEBUG Then
-            CheckTitleNodeForErrors(TitleNode)
-#End If
-        Next
+        Try
+            XMLDoc.Load(FilePath)
+        Catch
+            XMLDoc.LoadXml("<root />")
+        End Try
 
-#If DEBUG Then
-        For Each Value In _TitleDictionary.Values
-            If Value.GetYear = "" Then
-                Debug.Print("FloppyDB: Missing Year: " & Value.GetName)
-            End If
-        Next
-#End If
         Return XMLDoc
     End Function
 
@@ -396,7 +409,53 @@ Public Class FloppyDB
         End If
     End Sub
 
+    Private Sub ParseXML(XMLDoc As Xml.XmlDocument)
+        _TitleDictionary = New Dictionary(Of String, FloppyData)
+
+        _Version = GetVersion(XMLDoc)
+
+        For Each TitleNode As Xml.XmlNode In XMLDoc.SelectNodes("/root/title")
+            ParseNode(TitleNode, Nothing)
+
+#If DEBUG Then
+            CheckTitleNodeForErrors(TitleNode)
+#End If
+        Next
+
+#If DEBUG Then
+        For Each Value In _TitleDictionary.Values
+            If Value.GetYear = "" Then
+                Debug.Print("FloppyDB: Missing Year: " & Value.GetName)
+            End If
+        Next
+#End If
+    End Sub
+
+    Private Function TryLoadXmlWithVersion(Path As String) As (Doc As Xml.XmlDocument, Version As String)
+        If Not IO.File.Exists(Path) Then
+            Return (Nothing, "")
+        End If
+
+        Try
+            Dim Doc As New Xml.XmlDocument()
+            Doc.Load(Path)
+            Return (Doc, GetVersion(Doc))
+        Catch
+            Return (Nothing, "")
+        End Try
+    End Function
+
+    Public Class BooterTrack
+        Public Property Side As UShort
+        Public Property Track As UShort
+    End Class
+
     Public Class FileNameData
+        Public Sub New(FileName As String)
+            _FileName = FileName
+            ParseFileName()
+        End Sub
+
         Public Property Cracked As Boolean = False
         Public Property Disk As String = ""
         Public Property FileName As String = ""
@@ -407,11 +466,6 @@ Public Class FloppyDB
         Public Property Verified As Boolean = False
         Public Property Version As String = ""
         Public Property Year As String = ""
-
-        Public Sub New(FileName As String)
-            _FileName = FileName
-            ParseFileName()
-        End Sub
 
         Private Sub ParseFileName()
             _Title = Trim(Regex.Match(FileName, "^[^\\(]+").Value)
@@ -460,69 +514,21 @@ Public Class FloppyDB
     End Class
 
     Public Class FloppyData
-        Public Property Name As String = ""
-        Public Property Variation As String = ""
         Public Property Compilation As String = ""
-        Public Property Year As String = ""
-        Public Property Version As String = ""
-        Public Property Disk As String = ""
-        Public Property Media As FloppyDiskFormat = FloppyDiskFormat.FloppyUnknown
-        Public Property Publisher As String = ""
-        Public Property Status As FloppyDBStatus = FloppyDBStatus.Unknown
         Public Property CopyProtection As String = ""
-        Public Property Region As String = ""
+        Public Property Disk As String = ""
+        Public Property IsTDC As Boolean? = Nothing
         Public Property Language As String = ""
+        Public Property Media As FloppyDiskFormat = FloppyDiskFormat.FloppyUnknown
+        Public Property Name As String = ""
         Public Property OperatingSystem As String = ""
         Public Property Parent As FloppyData = Nothing
-        Public Property IsTDC As Boolean? = Nothing
-
-        Public Function GetIsTDC() As Boolean
-            If _IsTDC.HasValue Then
-                Return _IsTDC.Value
-            Else
-                Dim Parent = _Parent
-                Do While Parent IsNot Nothing
-                    If Parent.IsTDC.HasValue Then
-                        Return Parent.IsTDC.Value
-                    End If
-                    Parent = Parent.Parent
-                Loop
-            End If
-
-            Return False
-        End Function
-
-        Public Function GetName() As String
-            If _Name <> "" Then
-                Return _Name
-            Else
-                Dim Parent = _Parent
-                Do While Parent IsNot Nothing
-                    If Parent.Name <> "" Then
-                        Return Parent.Name
-                    End If
-                    Parent = Parent.Parent
-                Loop
-            End If
-
-            Return ""
-        End Function
-
-        Public Function GetVariation() As String
-            If _Variation <> "" Then
-                Return _Variation
-            Else
-                Dim Parent = _Parent
-                Do While Parent IsNot Nothing
-                    If Parent.Variation <> "" Then
-                        Return Parent.Variation
-                    End If
-                    Parent = Parent.Parent
-                Loop
-            End If
-
-            Return ""
-        End Function
+        Public Property Publisher As String = ""
+        Public Property Region As String = ""
+        Public Property Status As FloppyDBStatus = FloppyDBStatus.Unknown
+        Public Property Variation As String = ""
+        Public Property Version As String = ""
+        Public Property Year As String = ""
 
         Public Function GetCompilation() As String
             If _Compilation <> "" Then
@@ -532,134 +538,6 @@ Public Class FloppyDB
                 Do While Parent IsNot Nothing
                     If Parent.Compilation <> "" Then
                         Return Parent.Compilation
-                    End If
-                    Parent = Parent.Parent
-                Loop
-            End If
-
-            Return ""
-        End Function
-
-        Public Function GetYear() As String
-            If _Year <> "" Then
-                Return _Year
-            Else
-                Dim Parent = _Parent
-                Do While Parent IsNot Nothing
-                    If Parent.Year <> "" Then
-                        Return Parent.Year
-                    End If
-                    Parent = Parent.Parent
-                Loop
-            End If
-
-            Return ""
-        End Function
-
-        Public Function GetVersion() As String
-            If _Version <> "" Then
-                Return _Version
-            Else
-                Dim Parent = _Parent
-                Do While Parent IsNot Nothing
-                    If Parent.Version <> "" Then
-                        Return Parent.Version
-                    End If
-                    Parent = Parent.Parent
-                Loop
-            End If
-
-            Return ""
-        End Function
-
-        Public Function GetDisk() As String
-            If _Disk <> "" Then
-                Return _Disk
-            Else
-                Dim Parent = _Parent
-                Do While Parent IsNot Nothing
-                    If Parent.Disk <> "" Then
-                        Return Parent.Disk
-                    End If
-                    Parent = Parent.Parent
-                Loop
-            End If
-
-            Return ""
-        End Function
-
-        Public Function GetMedia() As FloppyDiskFormat
-            If _Media <> FloppyDiskFormat.FloppyUnknown Then
-                Return _Media
-            Else
-                Dim Parent = _Parent
-                Do While Parent IsNot Nothing
-                    If Parent.Media <> FloppyDiskFormat.FloppyUnknown Then
-                        Return Parent.Media
-                    End If
-                    Parent = Parent.Parent
-                Loop
-            End If
-
-            Return FloppyDiskFormat.FloppyUnknown
-        End Function
-
-        Public Function GetPublisher() As String
-            If _Publisher <> "" Then
-                Return _Publisher
-            Else
-                Dim Parent = _Parent
-                Do While Parent IsNot Nothing
-                    If Parent.Publisher <> "" Then
-                        Return Parent.Publisher
-                    End If
-                    Parent = Parent.Parent
-                Loop
-            End If
-
-            Return ""
-        End Function
-
-        Public Function GetStatus() As FloppyDBStatus
-            If _Status <> FloppyDBStatus.Unknown Then
-                Return _Status
-            Else
-                Dim Parent = _Parent
-                Do While Parent IsNot Nothing
-                    If Parent.Status <> FloppyDBStatus.Unknown Then
-                        Return Parent.Status
-                    End If
-                    Parent = Parent.Parent
-                Loop
-            End If
-
-            Return FloppyDBStatus.Unverified
-        End Function
-
-        Public Function GetRegion() As String
-            If _Region <> "" Then
-                Return _Region
-            Else
-                Dim Parent = _Parent
-                Do While Parent IsNot Nothing
-                    If Parent.Region <> "" Then
-                        Return Parent.Region
-                    End If
-                    Parent = Parent.Parent
-                Loop
-            End If
-
-            Return ""
-        End Function
-
-        Public Function GetLanguage() As String
-            If _Language <> "" Then
-                Return _Language
-            Else
-                Dim Parent = _Parent
-                Do While Parent IsNot Nothing
-                    If Parent.Language <> "" Then
-                        Return Parent.Language
                     End If
                     Parent = Parent.Parent
                 Loop
@@ -684,6 +562,86 @@ Public Class FloppyDB
             Return ""
         End Function
 
+        Public Function GetDisk() As String
+            If _Disk <> "" Then
+                Return _Disk
+            Else
+                Dim Parent = _Parent
+                Do While Parent IsNot Nothing
+                    If Parent.Disk <> "" Then
+                        Return Parent.Disk
+                    End If
+                    Parent = Parent.Parent
+                Loop
+            End If
+
+            Return ""
+        End Function
+
+        Public Function GetIsTDC() As Boolean
+            If _IsTDC.HasValue Then
+                Return _IsTDC.Value
+            Else
+                Dim Parent = _Parent
+                Do While Parent IsNot Nothing
+                    If Parent.IsTDC.HasValue Then
+                        Return Parent.IsTDC.Value
+                    End If
+                    Parent = Parent.Parent
+                Loop
+            End If
+
+            Return False
+        End Function
+
+        Public Function GetLanguage() As String
+            If _Language <> "" Then
+                Return _Language
+            Else
+                Dim Parent = _Parent
+                Do While Parent IsNot Nothing
+                    If Parent.Language <> "" Then
+                        Return Parent.Language
+                    End If
+                    Parent = Parent.Parent
+                Loop
+            End If
+
+            Return ""
+        End Function
+
+        Public Function GetMedia() As FloppyDiskFormat
+            If _Media <> FloppyDiskFormat.FloppyUnknown Then
+                Return _Media
+            Else
+                Dim Parent = _Parent
+                Do While Parent IsNot Nothing
+                    If Parent.Media <> FloppyDiskFormat.FloppyUnknown Then
+                        Return Parent.Media
+                    End If
+                    Parent = Parent.Parent
+                Loop
+            End If
+
+            Return FloppyDiskFormat.FloppyUnknown
+        End Function
+
+        Public Function GetName() As String
+            If _Name <> "" Then
+                Return _Name
+            Else
+                Dim Parent = _Parent
+                Do While Parent IsNot Nothing
+                    If Parent.Name <> "" Then
+                        Return Parent.Name
+                    End If
+                    Parent = Parent.Parent
+                Loop
+            End If
+
+            Return ""
+        End Function
+
         Public Function GetOperatingSystem() As String
             If _OperatingSystem <> "" Then
                 Return _OperatingSystem
@@ -700,16 +658,104 @@ Public Class FloppyDB
             Return "MS-DOS"
         End Function
 
-    End Class
+        Public Function GetPublisher() As String
+            If _Publisher <> "" Then
+                Return _Publisher
+            Else
+                Dim Parent = _Parent
+                Do While Parent IsNot Nothing
+                    If Parent.Publisher <> "" Then
+                        Return Parent.Publisher
+                    End If
+                    Parent = Parent.Parent
+                Loop
+            End If
 
-    Public Class BooterTrack
-        Public Property Track As UShort
-        Public Property Side As UShort
+            Return ""
+        End Function
+
+        Public Function GetRegion() As String
+            If _Region <> "" Then
+                Return _Region
+            Else
+                Dim Parent = _Parent
+                Do While Parent IsNot Nothing
+                    If Parent.Region <> "" Then
+                        Return Parent.Region
+                    End If
+                    Parent = Parent.Parent
+                Loop
+            End If
+
+            Return ""
+        End Function
+
+        Public Function GetStatus() As FloppyDBStatus
+            If _Status <> FloppyDBStatus.Unknown Then
+                Return _Status
+            Else
+                Dim Parent = _Parent
+                Do While Parent IsNot Nothing
+                    If Parent.Status <> FloppyDBStatus.Unknown Then
+                        Return Parent.Status
+                    End If
+                    Parent = Parent.Parent
+                Loop
+            End If
+
+            Return FloppyDBStatus.Unverified
+        End Function
+
+        Public Function GetVariation() As String
+            If _Variation <> "" Then
+                Return _Variation
+            Else
+                Dim Parent = _Parent
+                Do While Parent IsNot Nothing
+                    If Parent.Variation <> "" Then
+                        Return Parent.Variation
+                    End If
+                    Parent = Parent.Parent
+                Loop
+            End If
+
+            Return ""
+        End Function
+        Public Function GetVersion() As String
+            If _Version <> "" Then
+                Return _Version
+            Else
+                Dim Parent = _Parent
+                Do While Parent IsNot Nothing
+                    If Parent.Version <> "" Then
+                        Return Parent.Version
+                    End If
+                    Parent = Parent.Parent
+                Loop
+            End If
+
+            Return ""
+        End Function
+
+        Public Function GetYear() As String
+            If _Year <> "" Then
+                Return _Year
+            Else
+                Dim Parent = _Parent
+                Do While Parent IsNot Nothing
+                    If Parent.Year <> "" Then
+                        Return Parent.Year
+                    End If
+                    Parent = Parent.Parent
+                Loop
+            End If
+
+            Return ""
+        End Function
     End Class
 
     Public Class TitleFindResult
-        Public Property TitleData As FloppyData = Nothing
         Public Property MD5 As String = ""
+        Public Property TitleData As FloppyData = Nothing
     End Class
-
 End Class

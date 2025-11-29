@@ -33,7 +33,7 @@ Public Class MainForm
 
     Private Async Sub CheckForUpdatesStartup()
         Dim Result = Await Task.Run(Function()
-                                        Return CheckIfUpdatesExist()
+                                        Return CheckIfAppUpdateAvailable()
                                     End Function)
 
         MainMenuUpdateAvailable.Visible = Result
@@ -1640,7 +1640,10 @@ Public Class MainForm
     End Sub
 #Region "Events"
     Private Sub BMenuHelpUpdateCheck_Click(sender As Object, e As EventArgs) Handles MenuHelpUpdateCheck.Click, MainMenuUpdateAvailable.Click
-        CheckForUpdates()
+        Dim Result = CheckForUpdates()
+        If Result Then
+            MainMenuUpdateAvailable.Visible = False
+        End If
     End Sub
 
     Private Sub BtnLanguage_Click(sender As Object, e As EventArgs)

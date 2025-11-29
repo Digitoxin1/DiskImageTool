@@ -247,7 +247,7 @@
     <value>{0} of {1} file exported successfully.</value>
   </data>
   <data name="Dialog_UpdateAvailable" xml:space="preserve">
-    <value>{0} v{1} is available.</value>
+    <value>{0} {1} is available.</value>
   </data>
   <data name="Dialog_UpdateDownload" xml:space="preserve">
     <value>{0}{0}Do you wish to download it at this time?</value>
@@ -2059,7 +2059,7 @@ Do you wish to overwrite?</value>
   <data name="Label_AboutApp" xml:space="preserve">
     <value>About {0}</value>
   </data>
-  <data name="URL_API_EndPoint" xml:space="preserve">
+  <data name="URL_AppAPI_EndPoint" xml:space="preserve">
     <value>https://api.github.com/repos/Digitoxin1/DiskImageTool</value>
     <comment>@Invariant</comment>
   </data>
@@ -2074,5 +2074,15 @@ Do you wish to overwrite?</value>
   <data name="Filter_Image_NotInTDC" xml:space="preserve">
     <value>Not in TDC</value>
     <comment>@Invariant</comment>
+  </data>
+  <data name="URL_DBAPI_EndPoint" xml:space="preserve">
+    <value>https://api.github.com/repos/Digitoxin1/FloppyDB</value>
+    <comment>@Invariant</comment>
+  </data>
+  <data name="Dialog_DatabaseUpdateAvailable" xml:space="preserve">
+    <value>A Database update is available.</value>
+  </data>
+  <data name="Dialog_DatabaseUpdateSuccessful" xml:space="preserve">
+    <value>Database updated successfully.</value>
   </data>
 </root>

@@ -9,7 +9,7 @@ Module ImageIO
     Public ReadOnly ArchiveFileExtensions As New List(Of String) From {".zip"}
     Public ReadOnly BasicSectorFileExtensions As New List(Of String) From {".ima", ".img", ".imz", ".vfd", ".flp"}
     Public ReadOnly BitstreamFileExtensions As New List(Of String) From {".86f", ".hfe", ".mfm", ".pri", ".tc"}
-    Private ReadOnly TEMP_FOLDER_NAME As String = My.Application.Info.ProductName
+
     Public Enum SaveImageResponse
         Success
         Failed
@@ -500,15 +500,32 @@ Module ImageIO
 
     Public Function InitTempImagePath() As String
         Dim TempPath = IO.Path.Combine(GetTempPath, App.Globals.GlobalIdentifier.ToString)
+
         If Not IO.Directory.Exists(TempPath) Then
             Try
                 IO.Directory.CreateDirectory(TempPath)
             Catch ex As Exception
                 DebugException(ex)
+                Return ""
             End Try
         End If
 
         Return TempPath
+    End Function
+
+    Public Function InitDataPath() As String
+        Dim DataPath = GetDataPath()
+
+        If Not IO.Directory.Exists(DataPath) Then
+            Try
+                IO.Directory.CreateDirectory(DataPath)
+            Catch ex As Exception
+                DebugException(ex)
+                Return ""
+            End Try
+        End If
+
+        Return DataPath
     End Function
 
     Public Function InitTempPath() As String
@@ -729,9 +746,20 @@ Module ImageIO
         End Select
     End Function
 
-    Private Function GetTempPath() As String
-        Return IO.Path.Combine(IO.Path.GetTempPath(), TEMP_FOLDER_NAME)
+    Public Function GetTempPath() As String
+        Dim BaseFolder = IO.Path.GetTempPath()
+        Dim AppName = My.Application.Info.ProductName
+
+        Return Path.Combine(BaseFolder, AppName)
     End Function
+
+    Public Function GetDataPath() As String
+        Dim BaseFolder = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData)
+        Dim AppName = My.Application.Info.ProductName
+
+        Return Path.Combine(BaseFolder, AppName)
+    End Function
+
     Private Function HasWeakBitsSupport(ImageType As FloppyImageType) As Boolean
         Return (ImageType = FloppyImageType.PSIImage Or ImageType = FloppyImageType.PRIImage Or ImageType = FloppyImageType.D86FImage)
     End Function

@@ -845,6 +845,24 @@ Namespace My.Resources
         End Property
         
         '''<summary>
+        '''  Looks up a localized string similar to A Database update is available..
+        '''</summary>
+        Friend ReadOnly Property Dialog_DatabaseUpdateAvailable() As String
+            Get
+                Return ResourceManager.GetString("Dialog_DatabaseUpdateAvailable", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  Looks up a localized string similar to Database updated successfully..
+        '''</summary>
+        Friend ReadOnly Property Dialog_DatabaseUpdateSuccessful() As String
+            Get
+                Return ResourceManager.GetString("Dialog_DatabaseUpdateSuccessful", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
         '''  Looks up a localized string similar to Are you sure you wish to delete {0}?.
         '''</summary>
         Friend ReadOnly Property Dialog_DeleteFile() As String
@@ -1407,7 +1425,7 @@ Namespace My.Resources
         End Property
         
         '''<summary>
-        '''  Looks up a localized string similar to {0} v{1} is available..
+        '''  Looks up a localized string similar to {0} {1} is available..
         '''</summary>
         Friend ReadOnly Property Dialog_UpdateAvailable() As String
             Get
@@ -5837,9 +5855,18 @@ Namespace My.Resources
         '''<summary>
         '''  Looks up a localized string similar to https://api.github.com/repos/Digitoxin1/DiskImageTool.
         '''</summary>
-        Friend ReadOnly Property URL_API_EndPoint() As String
+        Friend ReadOnly Property URL_AppAPI_EndPoint() As String
             Get
-                Return ResourceManager.GetString("URL_API_EndPoint", resourceCulture)
+                Return ResourceManager.GetString("URL_AppAPI_EndPoint", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  Looks up a localized string similar to https://api.github.com/repos/Digitoxin1/FloppyDB.
+        '''</summary>
+        Friend ReadOnly Property URL_DBAPI_EndPoint() As String
+            Get
+                Return ResourceManager.GetString("URL_DBAPI_EndPoint", resourceCulture)
             End Get
         End Property
         

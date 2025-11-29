@@ -221,11 +221,8 @@ Namespace Settings
         End Sub
 
         Private Shared Function GetDefaultConfigPath() As String
-            Dim baseFolder = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData)
-            Dim appName = My.Application.Info.ProductName
-            Dim appFolder = Path.Combine(baseFolder, appName)
-            Directory.CreateDirectory(appFolder)
-            Return Path.Combine(appFolder, DEFAULT_CONFIG_FILE)
+            Dim DataPath = GetDataPath()
+            Return Path.Combine(DataPath, DEFAULT_CONFIG_FILE)
         End Function
     End Class
 End Namespace

@@ -1837,4 +1837,10 @@
   <data name="Label_AboutApp" xml:space="preserve">
     <value>Acerca de {0}</value>
   </data>
+  <data name="Dialog_DatabaseUpdateAvailable" xml:space="preserve">
+    <value>Hay una actualización de la base de datos disponible.</value>
+  </data>
+  <data name="Dialog_DatabaseUpdateSuccessful" xml:space="preserve">
+    <value>Base de datos actualizada correctamente.</value>
+  </data>
 </root>

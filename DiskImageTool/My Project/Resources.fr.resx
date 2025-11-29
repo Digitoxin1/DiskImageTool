@@ -1837,4 +1837,10 @@ Voulez-vous écraser ?</value>
   <data name="Label_AboutApp" xml:space="preserve">
     <value>À propos de {0}</value>
   </data>
+  <data name="Dialog_DatabaseUpdateAvailable" xml:space="preserve">
+    <value>Une mise à jour de la base de données est disponible.</value>
+  </data>
+  <data name="Dialog_DatabaseUpdateSuccessful" xml:space="preserve">
+    <value>Base de données mise à jour avec succès.</value>
+  </data>
 </root>

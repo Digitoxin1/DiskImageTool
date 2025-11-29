@@ -62,11 +62,7 @@ Namespace Settings
             End Try
         End Function
 
-        Public Shared Function ReadValue(Of T)(
-                    dict As IReadOnlyDictionary(Of String, JsonValue),
-            key As String,
-            defaultValue As T) As T
-
+        Public Shared Function ReadValue(Of T)(dict As IReadOnlyDictionary(Of String, JsonValue), key As String, defaultValue As T) As T
             Dim jv As JsonValue = Nothing
             If dict Is Nothing OrElse Not dict.TryGetValue(key, jv) OrElse jv Is Nothing Then
                 Return defaultValue
