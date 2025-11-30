@@ -667,7 +667,18 @@ Namespace ImageFormats
             Dim DriveSpeed As (BitRate As UShort, RPM As UShort)
 
             DriveSpeed.BitRate = RoundBitRate(BitstreamTrack.BitRate)
-            DriveSpeed.RPM = RoundRPM(BitstreamTrack.RPM)
+
+            If BitstreamTrack.BitRate = 0 Then
+                DriveSpeed.BitRate = InferBitRate(BitstreamTrack.Bitstream.Length)
+            Else
+                DriveSpeed.BitRate = RoundBitRate(BitstreamTrack.BitRate)
+            End If
+
+            If BitstreamTrack.RPM = 0 Then
+                DriveSpeed.RPM = InferRPM(BitstreamTrack.Bitstream.Length)
+            Else
+                DriveSpeed.RPM = RoundRPM(BitstreamTrack.RPM)
+            End If
 
             If TrackStep = 2 Then
                 If DriveSpeed.BitRate = 300 Then
