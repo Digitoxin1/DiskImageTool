@@ -47,7 +47,7 @@ Namespace Flux.Kryoflux
             Return (IO.File.Exists(FileName), FileName)
         End Function
 
-        Public Function GenerateCommandLineImport(InputFilePath As String, OutputFilePath As String, DiskParams As FloppyDiskParams, DoubleStep As Boolean, LogLevel As Kryoflux.CommandLineBuilder.LogMask) As (Arguments As String, SingleSide As Boolean)
+        Public Function GenerateCommandLineImport(InputFilePath As String, OutputFilePath As String, DiskParams As FloppyDiskParams, TrackCount As Integer, DoubleStep As Boolean, LogLevel As Kryoflux.CommandLineBuilder.LogMask) As (Arguments As String, SingleSide As Boolean)
             Dim SingleSidedMode As SingleSidedModeEnum = SingleSidedModeEnum.off
             Dim SingleSide As Boolean = False
 
@@ -56,10 +56,10 @@ Namespace Flux.Kryoflux
                 SingleSide = True
             End If
 
-            Dim TrackCount = DiskParams.BPBParams.TrackCount
+            Dim OutputTrackCount = DiskParams.BPBParams.TrackCount
             Dim TrackDistance As TrackDistanceEnum = TrackDistanceEnum.Tracks80
             If DoubleStep Then
-                TrackCount *= 2
+                OutputTrackCount *= 2
                 TrackDistance = TrackDistanceEnum.Tracks40
             End If
 
@@ -73,7 +73,7 @@ Namespace Flux.Kryoflux
                 .TrackStart = 0,
                 .TrackEnd = TrackCount - 1,
                 .OutputTrackStart = 0,
-                .OutputTrackEnd = TrackCount - 1,
+                .OutputTrackEnd = OutputTrackCount - 1,
                 .SingleSidedMode = SingleSidedMode,
                 .RPM = DiskParams.RPM,
                 .TrackDistance = TrackDistance,

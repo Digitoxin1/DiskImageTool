@@ -142,10 +142,6 @@
                 args.Add("-oe" & OutputTrackEnd)
             End If
 
-
-
-
-
             args.Add("-f" & Quoted(_OutFile))
             args.Add("-i" & GetImageTypeString(OutImageType))
 

@@ -11,6 +11,7 @@ Namespace Settings
 
         Private _checkUpdateOnStartup As Boolean = True
         Private _createBackups As Boolean = True
+        Private _databasePath As String = ""
         Private _debug As Boolean = False
         Private _displayTitles As Boolean = True
         Private _dragAndDrop As Boolean = True
@@ -46,6 +47,18 @@ Namespace Settings
             Set(value As Boolean)
                 If _createBackups <> value Then
                     _createBackups = value
+                    IsDirty = True
+                End If
+            End Set
+        End Property
+
+        Public Property DatabasePath As String
+            Get
+                Return _databasePath
+            End Get
+            Set(value As String)
+                If _databasePath <> value Then
+                    _databasePath = value
                     IsDirty = True
                 End If
             End Set
@@ -161,6 +174,7 @@ Namespace Settings
                 settings._checkUpdateOnStartup = ReadValue(root, "checkUpdateOnStartup", settings._checkUpdateOnStartup)
                 settings._displayTitles = ReadValue(root, "displayTitles", settings._displayTitles)
                 settings._language = ReadValue(root, "language", settings._language)
+                settings._databasePath = ReadValue(root, "databasePath", settings._databasePath)
 
                 settings._Greaseweazle.LoadFromDictionary(ReadSection(root, "greaseweazle"))
                 settings._Kryoflux.LoadFromDictionary(ReadSection(root, "kryoflux"))
@@ -198,6 +212,10 @@ Namespace Settings
                 {"displayTitles", _displayTitles},
                 {"language", _language}
             }
+
+            If Not String.IsNullOrEmpty(_databasePath) Then
+                root("databasePath") = _databasePath
+            End If
 
             root("greaseweazle") = Greaseweazle.ToJsonObject()
             root("kryoflux") = Kryoflux.ToJsonObject()

@@ -228,7 +228,7 @@ Namespace Flux
                         LogLevel = Kryoflux.CommandLineBuilder.LogMask.Read Or Kryoflux.CommandLineBuilder.LogMask.Cell
                     End If
 
-                    Dim KryofluxResponse = Kryoflux.GenerateCommandLineImport(InputFilePath, OutputFilePath, DiskParams, _DoubleStep, LogLevel)
+                    Dim KryofluxResponse = Kryoflux.GenerateCommandLineImport(InputFilePath, OutputFilePath, DiskParams, _TrackCount, _DoubleStep, LogLevel)
                     If KryofluxResponse.SingleSide Then
                         Response.OutputfilePath = Kryoflux.GetSide0FileName(Response.OutputfilePath)
                     End If

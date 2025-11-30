@@ -66,6 +66,18 @@ Public Class FloppyDB
                     parts.Add("not(@version)")
                 End If
 
+                If FileData.Region <> "" Then
+                    parts.Add("@region=""" & FileData.Region & """")
+                Else
+                    parts.Add("not(@region)")
+                End If
+
+                If FileData.Languages <> "" Then
+                    parts.Add("@language=""" & FileData.Languages & """")
+                Else
+                    parts.Add("not(@language)")
+                End If
+
                 xPathRelease &= String.Join(" and ", parts) & "]"
 
                 Dim releaseNode = titleNode.SelectSingleNode(xPathRelease)
@@ -76,6 +88,12 @@ Public Class FloppyDB
                     End If
                     If FileData.Version <> "" Then
                         releaseNode.AppendAttribute("version", FileData.Version)
+                    End If
+                    If FileData.Region <> "" Then
+                        releaseNode.AppendAttribute("region", FileData.Region)
+                    End If
+                    If FileData.Languages <> "" Then
+                        releaseNode.AppendAttribute("language", FileData.Languages)
                     End If
                     titleNode.AppendChild(releaseNode)
                 End If
@@ -99,6 +117,9 @@ Public Class FloppyDB
                 diskNode.AppendAttribute("md5", MD5)
                 If FileData.Disk <> "" Then
                     diskNode.AppendAttribute("disk", FileData.Disk)
+                End If
+                If FileData.CopyProtected Then
+                    diskNode.AppendAttribute("cp", "yes")
                 End If
                 If MediaStatus <> FileData.StatusString Then
                     diskNode.AppendAttribute("status", FileData.StatusString)
@@ -349,7 +370,13 @@ Public Class FloppyDB
     Private Function LoadXMLDoc() As Xml.XmlDocument
         Dim DataPath = GetDataPath()
         Dim DownloadedPath = IO.Path.Combine(DataPath, DB_FILE_NAME)
-        Dim DistributedPath = IO.Path.Combine(IO.Path.GetDirectoryName(Application.ExecutablePath), DB_FILE_NAME)
+        Dim BasePath As String
+        If App.AppSettings.DatabasePath <> "" Then
+            BasePath = App.AppSettings.DatabasePath
+        Else
+            BasePath = IO.Path.GetDirectoryName(Application.ExecutablePath)
+        End If
+        Dim DistributedPath = IO.Path.Combine(BasePath, DB_FILE_NAME)
 
         Dim Downloaded = TryLoadXmlWithVersion(DownloadedPath)
         Dim Distributed = TryLoadXmlWithVersion(DistributedPath)
@@ -456,6 +483,7 @@ Public Class FloppyDB
             ParseFileName()
         End Sub
 
+        Public Property CopyProtected As Boolean = False
         Public Property Cracked As Boolean = False
         Public Property Disk As String = ""
         Public Property FileName As String = ""
@@ -466,6 +494,33 @@ Public Class FloppyDB
         Public Property Verified As Boolean = False
         Public Property Version As String = ""
         Public Property Year As String = ""
+        Public Property Region As String = ""
+        Public Property Languages As String = ""
+
+        Private Function ParseLanguageList(codesList As String) As String
+            If String.IsNullOrWhiteSpace(codesList) Then
+                Return ""
+            End If
+
+            Dim parts = codesList.Split(","c)
+            Dim result As New List(Of String)
+
+            For Each p In parts
+                Dim code = p.Trim().ToLowerInvariant()
+
+                Try
+                    ' Convert ISO-639-1 code into language name
+                    Dim culture = New Globalization.CultureInfo(code)
+                    ' Remove parenthetical extra info like "German (Germany)"
+                    Dim name = culture.EnglishName.Split("("c)(0).Trim()
+                    result.Add(name)
+                Catch
+                    ' Ignore invalid codes
+                End Try
+            Next
+
+            Return String.Join(", ", result)
+        End Function
 
         Private Sub ParseFileName()
             _Title = Trim(Regex.Match(FileName, "^[^\\(]+").Value)
@@ -481,7 +536,7 @@ Public Class FloppyDB
                 _Version = Groups.Item(1).Value
             End If
 
-            Groups = Regex.Match(FileName, "\(Disk (.*?)\)|\((\w*? Disk)\)").Groups
+            Groups = Regex.Match(FileName, "\(.*Disk (.*?)\)|\((\w*? Disk)\)").Groups
             If Groups.Count > 1 Then
                 _Disk = Groups.Item(1).Value
             End If
@@ -491,14 +546,29 @@ Public Class FloppyDB
                 _Verified = True
             End If
 
-            Captures = Regex.Match(FileName, "\[M\]").Captures
+            Captures = Regex.Match(FileName, "\[M.*\]").Captures
             If Captures.Count > 0 Then
                 _Modified = True
+            End If
+
+            Captures = Regex.Match(FileName, "\[cp\]").Captures
+            If Captures.Count > 0 Then
+                _CopyProtected = True
             End If
 
             Captures = Regex.Match(FileName, "\[cr\]").Captures
             If Captures.Count > 0 Then
                 _Cracked = True
+            End If
+
+            Groups = Regex.Match(FileName, "\((Europe|France|Germany|Spain|Italy)\)").Groups
+            If Groups.Count > 1 Then
+                _Region = Groups.Item(1).Value
+            End If
+
+            Groups = Regex.Match(FileName, "\((\s*[A-Za-z]{2}(?:\s*,\s*[A-Za-z]{2})*\s*)\)").Groups
+            If Groups.Count > 1 Then
+                _Languages = ParseLanguageList(Groups.Item(1).Value)
             End If
 
             If Verified Then
