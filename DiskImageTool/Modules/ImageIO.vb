@@ -269,6 +269,17 @@ Module ImageIO
         End If
     End Sub
 
+    Public Function GetAppPath() As String
+        Return IO.Path.GetDirectoryName(Application.ExecutablePath)
+    End Function
+
+    Public Function GetDataPath() As String
+        Dim BaseFolder = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData)
+        Dim AppName = My.Application.Info.ProductName
+
+        Return Path.Combine(BaseFolder, AppName)
+    End Function
+
     Public Function GetLoadDialogFilters() As String
         Dim FileFilter As String
         Dim ExtensionList As List(Of String)
@@ -434,6 +445,13 @@ Module ImageIO
         Return Response
     End Function
 
+    Public Function GetTempPath() As String
+        Dim BaseFolder = IO.Path.GetTempPath()
+        Dim AppName = My.Application.Info.ProductName
+
+        Return Path.Combine(BaseFolder, AppName)
+    End Function
+
     Public Function ImageLoadFromTemp(FilePath As String) As Byte()
         Dim Data() As Byte = Nothing
 
@@ -498,21 +516,6 @@ Module ImageIO
         Next
     End Sub
 
-    Public Function InitTempImagePath() As String
-        Dim TempPath = IO.Path.Combine(GetTempPath, App.Globals.GlobalIdentifier.ToString)
-
-        If Not IO.Directory.Exists(TempPath) Then
-            Try
-                IO.Directory.CreateDirectory(TempPath)
-            Catch ex As Exception
-                DebugException(ex)
-                Return ""
-            End Try
-        End If
-
-        Return TempPath
-    End Function
-
     Public Function InitDataPath() As String
         Dim DataPath = GetDataPath()
 
@@ -528,6 +531,20 @@ Module ImageIO
         Return DataPath
     End Function
 
+    Public Function InitTempImagePath() As String
+        Dim TempPath = IO.Path.Combine(GetTempPath, App.Globals.GlobalIdentifier.ToString)
+
+        If Not IO.Directory.Exists(TempPath) Then
+            Try
+                IO.Directory.CreateDirectory(TempPath)
+            Catch ex As Exception
+                DebugException(ex)
+                Return ""
+            End Try
+        End If
+
+        Return TempPath
+    End Function
     Public Function InitTempPath() As String
         Dim TempPath = GetTempPath()
 
@@ -745,21 +762,6 @@ Module ImageIO
                 Return FloppyImageGroup.BasicSectorImage
         End Select
     End Function
-
-    Public Function GetTempPath() As String
-        Dim BaseFolder = IO.Path.GetTempPath()
-        Dim AppName = My.Application.Info.ProductName
-
-        Return Path.Combine(BaseFolder, AppName)
-    End Function
-
-    Public Function GetDataPath() As String
-        Dim BaseFolder = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData)
-        Dim AppName = My.Application.Info.ProductName
-
-        Return Path.Combine(BaseFolder, AppName)
-    End Function
-
     Private Function HasWeakBitsSupport(ImageType As FloppyImageType) As Boolean
         Return (ImageType = FloppyImageType.PSIImage Or ImageType = FloppyImageType.PRIImage Or ImageType = FloppyImageType.D86FImage)
     End Function

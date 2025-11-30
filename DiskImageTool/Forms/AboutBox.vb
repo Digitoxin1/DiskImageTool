@@ -14,7 +14,14 @@
         ' TODO: Customize the application's assembly information in the "Application" pane of the project 
         '    properties dialog (under the "Project" menu).
         Me.LabelProductName.Text = My.Application.Info.ProductName
-        Me.LabelVersion.Text = My.Resources.Label_Version & " " & GetVersionString()
+        Me.LabelVersionCaption.Text = My.Resources.Label_Version & ":"
+        Me.LabelVersion.Text = GetVersionString()
+        Me.LabelDB.Text = My.Resources.Label_Database & ":"
+        Me.LabelDBVersion.Text = If(String.IsNullOrEmpty(App.TitleDB.Version), "N/A", App.TitleDB.Version)
+        If String.IsNullOrEmpty(App.TitleDB.Path) Then
+            Me.LabelDBVersion.LinkBehavior = LinkBehavior.NeverUnderline
+            Me.LabelDBVersion.Enabled = False
+        End If
         Me.LabelURL.Text = My.Resources.URL_Repository
         Me.TextBoxDescription.Text = GetResource("License.txt")
 
@@ -36,6 +43,22 @@
 
         Return Value
     End Function
+
+    Private Sub LabelDBVersion_LinkClicked(sender As Object, e As LinkLabelLinkClickedEventArgs) Handles LabelDBVersion.LinkClicked
+        If Not String.IsNullOrEmpty(App.TitleDB.Path) Then
+            Dim Folder = IO.Path.GetDirectoryName(App.TitleDB.Path)
+            If IO.Directory.Exists(Folder) Then
+                Try
+                    Dim psi As New ProcessStartInfo() With {
+                        .FileName = Folder,
+                        .UseShellExecute = True
+                    }
+                    Process.Start(psi)
+                Catch ex As Exception
+                End Try
+            End If
+        End If
+    End Sub
 
     Private Sub LabelURL_LinkClicked(sender As Object, e As LinkLabelLinkClickedEventArgs) Handles LabelURL.LinkClicked
         Process.Start(My.Resources.URL_Repository)

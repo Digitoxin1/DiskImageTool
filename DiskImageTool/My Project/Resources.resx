@@ -2088,4 +2088,13 @@ Do you wish to overwrite?</value>
   <data name="Label_Source" xml:space="preserve">
     <value>Source</value>
   </data>
+  <data name="Dialog_DatabaseUpdateError" xml:space="preserve">
+    <value>An error occurred while trying to save the database update.</value>
+  </data>
+  <data name="Dialog_DatabaseUpdateWarning" xml:space="preserve">
+    <value>Unable to save '{0}' to '{1}'.{3}{3}'{0}' was saved to '{2}' instead.</value>
+  </data>
+  <data name="Label_Database" xml:space="preserve">
+    <value>Database</value>
+  </data>
 </root>

@@ -1846,4 +1846,13 @@ Möchten Sie ihn überschreiben?</value>
   <data name="Label_Source" xml:space="preserve">
     <value>Quelle</value>
   </data>
+  <data name="Dialog_DatabaseUpdateError" xml:space="preserve">
+    <value>Beim Speichern des Datenbank-Updates ist ein Fehler aufgetreten.</value>
+  </data>
+  <data name="Dialog_DatabaseUpdateWarning" xml:space="preserve">
+    <value>„{0}“ konnte nicht in „{1}“ gespeichert werden.{3}{3}„{0}“ wurde stattdessen in „{2}“ gespeichert.</value>
+  </data>
+  <data name="Label_Database" xml:space="preserve">
+    <value>DB-Version</value>
+  </data>
 </root>

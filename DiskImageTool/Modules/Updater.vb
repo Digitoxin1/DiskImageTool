@@ -1,6 +1,8 @@
 ﻿Imports System.IO
 Imports System.IO.Compression
 Imports System.Net.Http
+Imports System.Net.Http.Headers
+Imports System.Net.NetworkInformation
 
 Module Updater
     Public Function CheckForUpdates() As Boolean
@@ -117,11 +119,10 @@ Module Updater
             Return False
         End If
 
-
+        Dim SaveSuccessful As Boolean = False
         Dim TempPath = InitTempPath()
-        Dim DataPath = InitDataPath()
 
-        If String.IsNullOrEmpty(TempPath) OrElse String.IsNullOrEmpty(DataPath) Then
+        If String.IsNullOrEmpty(TempPath) Then
             MsgBox(My.Resources.Dialog_FileDownloadError, MsgBoxStyle.Exclamation)
             Return False
         End If
@@ -147,20 +148,46 @@ Module Updater
                     Throw New FileNotFoundException($"Could not find {DBFileName} in the downloaded archive.")
                 End If
 
-                Dim destPath = Path.Combine(DataPath, DBFileName)
-                entry.ExtractToFile(destPath, overwrite:=True)
+                Dim AppPath = GetAppPath()
+                Dim DestPath = Path.Combine(AppPath, DBFileName)
+
+                Try
+                    entry.ExtractToFile(DestPath, overwrite:=True)
+                    SaveSuccessful = True
+                Catch ex As Exception
+                End Try
+
+                If Not SaveSuccessful Then
+                    Dim DataPath = InitDataPath()
+                    If Not String.IsNullOrEmpty(DataPath) Then
+                        DestPath = Path.Combine(DataPath, DBFileName)
+                        Try
+                            entry.ExtractToFile(DestPath, overwrite:=True)
+                            SaveSuccessful = True
+                            Dim WarningMsg = String.Format(My.Resources.Dialog_DatabaseUpdateWarning, DBFileName, AppPath, DataPath, Environment.NewLine)
+                            MsgBox(WarningMsg, vbExclamation)
+                        Catch ex As Exception
+                        End Try
+                    End If
+                End If
             End Using
 
             DeleteTempFileIfExists(ZipFilePath)
 
-            App.TitleDB.Load()
+            If SaveSuccessful Then
+                App.TitleDB.Load()
 
-            MsgBox(My.Resources.Dialog_DatabaseUpdateSuccessful, MsgBoxStyle.Information)
+                MsgBox(My.Resources.Dialog_DatabaseUpdateSuccessful, MsgBoxStyle.Information)
 
-            Return True
+                Return True
+            Else
+                MsgBox(My.Resources.Dialog_DatabaseUpdateError, MsgBoxStyle.Critical)
+
+                Return False
+            End If
 
         Catch ex As Exception
-            MsgBox(My.Resources.Dialog_FileDownloadError, MsgBoxStyle.Exclamation)
+            MsgBox(My.Resources.Dialog_FileDownloadError, MsgBoxStyle.Critical)
             DebugException(ex)
 
             Return False

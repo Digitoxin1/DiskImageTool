@@ -34,7 +34,6 @@ Partial Class MainForm
         Dim MainMenuView As System.Windows.Forms.ToolStripMenuItem
         Dim MainMenuTools As System.Windows.Forms.ToolStripMenuItem
         Dim MenuToolsSeparator As System.Windows.Forms.ToolStripSeparator
-        Dim MainMenuHelp As System.Windows.Forms.ToolStripMenuItem
         Dim MenuHelpSeparator As System.Windows.Forms.ToolStripSeparator
         Dim ToolStripSeparator6 As System.Windows.Forms.ToolStripSeparator
         Dim ToolStripSeparator7 As System.Windows.Forms.ToolStripSeparator
@@ -64,6 +63,7 @@ Partial Class MainForm
         Me.MenuToolsRestoreBootSector = New System.Windows.Forms.ToolStripMenuItem()
         Me.MenuToolsRemoveBootSector = New System.Windows.Forms.ToolStripMenuItem()
         Me.MenuToolsWin9xCleanBatch = New System.Windows.Forms.ToolStripMenuItem()
+        Me.MainMenuHelp = New System.Windows.Forms.ToolStripMenuItem()
         Me.MenuHelpProjectPage = New System.Windows.Forms.ToolStripMenuItem()
         Me.MenuHelpUpdateCheck = New System.Windows.Forms.ToolStripMenuItem()
         Me.MenuHelpChangeLog = New System.Windows.Forms.ToolStripMenuItem()
@@ -173,7 +173,6 @@ Partial Class MainForm
         MainMenuView = New System.Windows.Forms.ToolStripMenuItem()
         MainMenuTools = New System.Windows.Forms.ToolStripMenuItem()
         MenuToolsSeparator = New System.Windows.Forms.ToolStripSeparator()
-        MainMenuHelp = New System.Windows.Forms.ToolStripMenuItem()
         MenuHelpSeparator = New System.Windows.Forms.ToolStripSeparator()
         ToolStripSeparator6 = New System.Windows.Forms.ToolStripSeparator()
         ToolStripSeparator7 = New System.Windows.Forms.ToolStripSeparator()
@@ -347,9 +346,9 @@ Partial Class MainForm
         '
         'MainMenuHelp
         '
-        MainMenuHelp.DropDownItems.AddRange(New System.Windows.Forms.ToolStripItem() {Me.MenuHelpProjectPage, Me.MenuHelpUpdateCheck, Me.MenuHelpChangeLog, MenuHelpSeparator, Me.MenuHelpAbout})
-        MainMenuHelp.Name = "MainMenuHelp"
-        resources.ApplyResources(MainMenuHelp, "MainMenuHelp")
+        Me.MainMenuHelp.DropDownItems.AddRange(New System.Windows.Forms.ToolStripItem() {Me.MenuHelpProjectPage, Me.MenuHelpUpdateCheck, Me.MenuHelpChangeLog, MenuHelpSeparator, Me.MenuHelpAbout})
+        Me.MainMenuHelp.Name = "MainMenuHelp"
+        resources.ApplyResources(Me.MainMenuHelp, "MainMenuHelp")
         '
         'MenuHelpProjectPage
         '
@@ -442,7 +441,7 @@ Partial Class MainForm
         '
         'MenuStripTop
         '
-        MenuStripTop.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.MainMenuFile, Me.MainMenuEdit, Me.MainMenuFilters, MainMenuView, MainMenuTools, MainMenuDisk, Me.MainMenuFlux, Me.MainMenuReports, Me.MainMenuOptions, MainMenuHelp, Me.MainMenuUpdateAvailable, Me.MainMenuNewInstance})
+        MenuStripTop.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.MainMenuFile, Me.MainMenuEdit, Me.MainMenuFilters, MainMenuView, MainMenuTools, MainMenuDisk, Me.MainMenuFlux, Me.MainMenuReports, Me.MainMenuOptions, Me.MainMenuHelp, Me.MainMenuUpdateAvailable, Me.MainMenuNewInstance})
         resources.ApplyResources(MenuStripTop, "MenuStripTop")
         MenuStripTop.Name = "MenuStripTop"
         MenuStripTop.ShowItemToolTips = True
@@ -1194,4 +1193,5 @@ Partial Class MainForm
     Friend WithEvents MenuPcImgCnvTrackLayout As ToolStripMenuItem
     Friend WithEvents MainMenuFile As ToolStripMenuItem
     Friend WithEvents MainMenuEdit As ToolStripMenuItem
+    Friend WithEvents MainMenuHelp As ToolStripMenuItem
 End Class

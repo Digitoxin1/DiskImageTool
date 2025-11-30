@@ -1846,4 +1846,13 @@ Voulez-vous écraser ?</value>
   <data name="Label_Source" xml:space="preserve">
     <value>Source</value>
   </data>
+  <data name="Dialog_DatabaseUpdateError" xml:space="preserve">
+    <value>Une erreur s’est produite lors de l’enregistrement de la mise à jour de la base de données.</value>
+  </data>
+  <data name="Dialog_DatabaseUpdateWarning" xml:space="preserve">
+    <value>Impossible d’enregistrer « {0} » dans « {1} ».{3}{3}« {0} » a été enregistré dans « {2} » à la place.</value>
+  </data>
+  <data name="Label_Database" xml:space="preserve">
+    <value>Version BD</value>
+  </data>
 </root>

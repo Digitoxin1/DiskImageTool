@@ -92,7 +92,7 @@ Namespace Flux.Greaseweazle
         End Function
 
         Private Function ConfirmIncompatibleImage() As Boolean
-            Dim Msg = String.Format(My.Resources.Dialog_ImageFormatWarning, vbNewLine)
+            Dim Msg = String.Format(My.Resources.Dialog_ImageFormatWarning, Environment.NewLine)
             Return MsgBox(Msg, MsgBoxStyle.YesNo + MsgBoxStyle.DefaultButton2) = MsgBoxResult.Yes
         End Function
 

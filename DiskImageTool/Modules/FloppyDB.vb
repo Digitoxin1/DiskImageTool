@@ -7,6 +7,7 @@ Public Class FloppyDB
     Private ReadOnly _NameSpace As String = New StubClass().GetType.Namespace
     Private _NewXMLDoc As Xml.XmlDocument
     Private _TitleDictionary As Dictionary(Of String, FloppyData)
+    Private _Path As String
     Private _Version As String
     'Private ReadOnly _XMLDoc As Xml.XmlDocument
 
@@ -22,8 +23,16 @@ Public Class FloppyDB
     End Sub
 
     Public Sub Load()
-        ParseXML(LoadXMLDoc())
+        Dim Response = LoadXMLDoc()
+        ParseXML(Response.XMLDoc)
+        _Path = Response.Path
     End Sub
+
+    Public ReadOnly Property Path As String
+        Get
+            Return _Path
+        End Get
+    End Property
 
     Public ReadOnly Property Version As String
         Get
@@ -186,8 +195,19 @@ Public Class FloppyDB
     Public Sub SaveNewXML()
         If _NewXMLDoc IsNot Nothing Then
             Dim FilePath As String = IO.Path.Combine(My.Application.Info.DirectoryPath, DB_FILE_NAME_NEW)
+
+            Dim settings As New Xml.XmlWriterSettings With {
+                .Indent = True,
+                .IndentChars = vbTab,
+                .NewLineChars = vbCrLf,
+                .NewLineHandling = Xml.NewLineHandling.Replace,
+                .OmitXmlDeclaration = False
+            }
+
             Try
-                _NewXMLDoc.Save(FilePath)
+                Using writer = Xml.XmlWriter.Create(FilePath, settings)
+                    _NewXMLDoc.Save(writer)
+                End Using
             Catch
             End Try
         End If
@@ -367,15 +387,18 @@ Public Class FloppyDB
     '    Return Data
     'End Function
 
-    Private Function LoadXMLDoc() As Xml.XmlDocument
+    Private Function LoadXMLDoc() As (XMLDoc As Xml.XmlDocument, Path As String)
         Dim DataPath = GetDataPath()
         Dim DownloadedPath = IO.Path.Combine(DataPath, DB_FILE_NAME)
         Dim BasePath As String
+        Dim SourcePath As String = ""
+
         If App.AppSettings.DatabasePath <> "" Then
             BasePath = App.AppSettings.DatabasePath
         Else
-            BasePath = IO.Path.GetDirectoryName(Application.ExecutablePath)
+            BasePath = GetAppPath()
         End If
+
         Dim DistributedPath = IO.Path.Combine(BasePath, DB_FILE_NAME)
 
         Dim Downloaded = TryLoadXmlWithVersion(DownloadedPath)
@@ -384,13 +407,21 @@ Public Class FloppyDB
         Dim xmlDoc As Xml.XmlDocument = Nothing
 
         If Downloaded.Doc IsNot Nothing AndAlso Distributed.Doc IsNot Nothing Then
-            xmlDoc = If(String.Compare(Distributed.Version, Downloaded.Version, StringComparison.Ordinal) > 0, Distributed.Doc, Downloaded.Doc)
+            If String.Compare(Distributed.Version, Downloaded.Version, StringComparison.Ordinal) > 0 Then
+                xmlDoc = Distributed.Doc
+                SourcePath = DistributedPath
+            Else
+                xmlDoc = Downloaded.Doc
+                SourcePath = DownloadedPath
+            End If
 
         ElseIf Downloaded.Doc IsNot Nothing Then
             xmlDoc = Downloaded.Doc
+            SourcePath = DownloadedPath
 
         ElseIf Distributed.Doc IsNot Nothing Then
             xmlDoc = Distributed.Doc
+            SourcePath = DistributedPath
         End If
 
         If xmlDoc Is Nothing Then
@@ -398,7 +429,7 @@ Public Class FloppyDB
             xmlDoc.LoadXml("<root />")
         End If
 
-        Return xmlDoc
+        Return (xmlDoc, SourcePath)
     End Function
 
     Private Function LoadXMLFromFile(FilePath As String) As Xml.XmlDocument

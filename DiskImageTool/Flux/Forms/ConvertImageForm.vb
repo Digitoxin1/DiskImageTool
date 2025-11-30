@@ -81,13 +81,13 @@ Namespace Flux
         End Property
 
         Public Function GetNewFileName() As String
-            If ComboExtensions.SelectedIndex = -1 Then
-                Return TextBoxFileName.Text
+            If String.IsNullOrEmpty(_OutputFilePath) Then
+                Return ""
             End If
 
-            Dim Item As FileExtensionItem = ComboExtensions.SelectedItem
+            Dim Extension = IO.Path.GetExtension(_OutputFilePath)
 
-            Return TextBoxFileName.Text & Item.Extension
+            Return TextBoxFileName.Text & Extension
         End Function
 
         Protected Overrides Sub OnAfterBaseFormClosing(e As FormClosingEventArgs)

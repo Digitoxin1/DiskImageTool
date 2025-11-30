@@ -854,11 +854,29 @@ Namespace My.Resources
         End Property
         
         '''<summary>
+        '''  Looks up a localized string similar to An error occurred while trying to save the database update..
+        '''</summary>
+        Friend ReadOnly Property Dialog_DatabaseUpdateError() As String
+            Get
+                Return ResourceManager.GetString("Dialog_DatabaseUpdateError", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
         '''  Looks up a localized string similar to Database updated successfully..
         '''</summary>
         Friend ReadOnly Property Dialog_DatabaseUpdateSuccessful() As String
             Get
                 Return ResourceManager.GetString("Dialog_DatabaseUpdateSuccessful", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  Looks up a localized string similar to Unable to save &apos;{0}&apos; to &apos;{1}&apos;.{3}{3}&apos;{0}&apos; was saved to &apos;{2}&apos; instead..
+        '''</summary>
+        Friend ReadOnly Property Dialog_DatabaseUpdateWarning() As String
+            Get
+                Return ResourceManager.GetString("Dialog_DatabaseUpdateWarning", resourceCulture)
             End Get
         End Property
         
@@ -2734,6 +2752,15 @@ Namespace My.Resources
         Friend ReadOnly Property Label_DataArea() As String
             Get
                 Return ResourceManager.GetString("Label_DataArea", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  Looks up a localized string similar to Database.
+        '''</summary>
+        Friend ReadOnly Property Label_Database() As String
+            Get
+                Return ResourceManager.GetString("Label_Database", resourceCulture)
             End Get
         End Property
         

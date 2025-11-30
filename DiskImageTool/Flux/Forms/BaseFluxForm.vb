@@ -107,7 +107,7 @@
         End Sub
 
         Public Function ConfirmWrite(Title As String, DriveName As String) As Boolean
-            Dim Msg = String.Format(My.Resources.Dialog_ConfirmWrite, vbNewLine, DriveName, Title)
+            Dim Msg = String.Format(My.Resources.Dialog_ConfirmWrite, Environment.NewLine, DriveName, Title)
             Return MsgBox(Msg, MsgBoxStyle.YesNo + MsgBoxStyle.DefaultButton2 + MsgBoxStyle.Exclamation, Title) = MsgBoxResult.Yes
         End Function
 
