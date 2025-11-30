@@ -510,7 +510,7 @@ Namespace Flux.Greaseweazle
             PanelButtonsLeft.Controls.Add(ButtonReset)
             ButtonReset.BringToFront()
 
-            BumpTabIndexes(PanelButtonsRight)
+            BumpTabIndexes(PanelButtonsRight, 1)
             PanelButtonsRight.Controls.Add(ButtonImport)
 
             ButtonDetect = New Button With {

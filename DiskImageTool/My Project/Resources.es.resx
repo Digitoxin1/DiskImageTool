@@ -1843,4 +1843,7 @@
   <data name="Dialog_DatabaseUpdateSuccessful" xml:space="preserve">
     <value>Base de datos actualizada correctamente.</value>
   </data>
+  <data name="Label_Source" xml:space="preserve">
+    <value>Origen</value>
+  </data>
 </root>

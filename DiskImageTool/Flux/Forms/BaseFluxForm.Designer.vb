@@ -97,6 +97,7 @@
             '
             'ButtonCancel
             '
+            Me.ButtonCancel.Anchor = System.Windows.Forms.AnchorStyles.Left
             Me.ButtonCancel.AutoSize = True
             Me.ButtonCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel
             Me.ButtonCancel.ImeMode = System.Windows.Forms.ImeMode.NoControl
@@ -110,6 +111,7 @@
             '
             'ButtonOk
             '
+            Me.ButtonOk.Anchor = System.Windows.Forms.AnchorStyles.Left
             Me.ButtonOk.AutoSize = True
             Me.ButtonOk.DialogResult = System.Windows.Forms.DialogResult.OK
             Me.ButtonOk.ImeMode = System.Windows.Forms.ImeMode.NoControl
@@ -136,6 +138,7 @@
             '
             'ButtonSaveLog
             '
+            Me.ButtonSaveLog.Anchor = System.Windows.Forms.AnchorStyles.Left
             Me.ButtonSaveLog.AutoSize = True
             Me.ButtonSaveLog.Location = New System.Drawing.Point(12, 10)
             Me.ButtonSaveLog.Margin = New System.Windows.Forms.Padding(6, 0, 6, 0)
@@ -254,7 +257,7 @@
             Me.StatusType.AutoSize = False
             Me.StatusType.Margin = New System.Windows.Forms.Padding(2, 3, 2, 2)
             Me.StatusType.Name = "StatusType"
-            Me.StatusType.Size = New System.Drawing.Size(365, 19)
+            Me.StatusType.Size = New System.Drawing.Size(398, 19)
             Me.StatusType.Spring = True
             Me.StatusType.Text = "{Status}"
             Me.StatusType.TextAlign = System.Drawing.ContentAlignment.MiddleLeft

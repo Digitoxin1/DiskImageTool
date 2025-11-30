@@ -75,9 +75,9 @@ Namespace Flux
             Return ""
         End Function
 
-        Public Sub BumpTabIndexes(panel As FlowLayoutPanel)
+        Public Sub BumpTabIndexes(panel As FlowLayoutPanel, Increment As Integer)
             For Each ctrl As Control In panel.Controls
-                ctrl.TabIndex += 1
+                ctrl.TabIndex += Increment
             Next
         End Sub
 

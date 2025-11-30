@@ -4322,6 +4322,15 @@ Namespace My.Resources
         End Property
         
         '''<summary>
+        '''  Looks up a localized string similar to Source.
+        '''</summary>
+        Friend ReadOnly Property Label_Source() As String
+            Get
+                Return ResourceManager.GetString("Label_Source", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
         '''  Looks up a localized string similar to Special Formats.
         '''</summary>
         Friend ReadOnly Property Label_SpecialFormats() As String

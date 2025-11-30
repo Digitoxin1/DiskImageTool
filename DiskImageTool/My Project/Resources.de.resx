@@ -1843,4 +1843,7 @@ Möchten Sie ihn überschreiben?</value>
   <data name="Dialog_DatabaseUpdateSuccessful" xml:space="preserve">
     <value>Datenbank erfolgreich aktualisiert.</value>
   </data>
+  <data name="Label_Source" xml:space="preserve">
+    <value>Quelle</value>
+  </data>
 </root>

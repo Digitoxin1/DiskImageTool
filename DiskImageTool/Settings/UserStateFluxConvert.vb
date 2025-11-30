@@ -7,6 +7,7 @@ Namespace Settings
 
         Private ReadOnly _Devices As Dictionary(Of IDevice.FluxDevice, UserStateFluxConvertDevice)
         Private _LastDevice As IDevice.FluxDevice?
+        Private _LastSource As IDevice.FluxDevice?
 
         Public Sub New()
             _Devices = New Dictionary(Of IDevice.FluxDevice, UserStateFluxConvertDevice)
@@ -44,6 +45,18 @@ Namespace Settings
             End Set
         End Property
 
+        Friend Property LastSource As IDevice.FluxDevice?
+            Get
+                Return _LastSource
+            End Get
+            Set(value As IDevice.FluxDevice?)
+                If Not Nullable.Equals(_LastSource, value) Then
+                    _LastSource = value
+                    MarkDirty()
+                End If
+            End Set
+        End Property
+
         Friend ReadOnly Property Device(DeviceId As IDevice.FluxDevice) As UserStateFluxConvertDevice
             Get
                 Return _Devices.Item(DeviceId)
@@ -57,6 +70,7 @@ Namespace Settings
             End If
 
             _LastDevice = ReadValue(dict, "lastDevice", _LastDevice)
+            _LastSource = ReadValue(dict, "lastSource", _LastSource)
 
             LoadDevices(dict)
 
@@ -82,6 +96,11 @@ Namespace Settings
             If _LastDevice.HasValue Then
                 result("lastDevice") = _LastDevice.Value.ToString()
             End If
+
+            If _LastSource.HasValue Then
+                result("lastSource") = _LastSource.Value.ToString()
+            End If
+
             result("devices") = DeviceDict
 
             Return result

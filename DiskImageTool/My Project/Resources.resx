@@ -2085,4 +2085,7 @@ Do you wish to overwrite?</value>
   <data name="Dialog_DatabaseUpdateSuccessful" xml:space="preserve">
     <value>Database updated successfully.</value>
   </data>
+  <data name="Label_Source" xml:space="preserve">
+    <value>Source</value>
+  </data>
 </root>

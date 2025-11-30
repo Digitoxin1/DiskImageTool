@@ -1843,4 +1843,7 @@ Voulez-vous écraser ?</value>
   <data name="Dialog_DatabaseUpdateSuccessful" xml:space="preserve">
     <value>Base de données mise à jour avec succès.</value>
   </data>
+  <data name="Label_Source" xml:space="preserve">
+    <value>Source</value>
+  </data>
 </root>
