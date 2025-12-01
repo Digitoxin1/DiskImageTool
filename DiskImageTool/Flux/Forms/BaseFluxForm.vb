@@ -8,6 +8,7 @@
         Private _LogFileName As String = ""
         Private _LogStripPath As Boolean = False
         Private _Sides As Byte
+        Private _StatusData As TrackStatusData? = Nothing
         Private _Tracks As UShort
         Public Event CheckChanged(sender As Object, Checked As Boolean, Side As Byte)
         Public Event SelectionChanged(sender As Object, Track As UShort, Side As Byte, Enabled As Boolean)
@@ -34,12 +35,6 @@
                     .Margin = New Padding(32, 3, 3, 3)
                 }
             End If
-        End Sub
-
-        Private Sub LocalizeForm()
-            ButtonCancel.Text = My.Resources.Menu_Cancel
-            ButtonSaveLog.Text = My.Resources.Label_SaveLog
-            LabelConsoleOutput.Text = My.Resources.Label_ConsoleOutput
         End Sub
 
         Public Property LogFileName As String
@@ -94,6 +89,7 @@
         End Function
 
         Public Sub ClearStatusBar()
+            _StatusData = Nothing
             StatusDevice.Text = ""
             StatusDevice.Visible = False
             StatusType.Text = ""
@@ -118,6 +114,20 @@
                 Case Else
                     Return "DS" & Drive & ":"
             End Select
+        End Function
+
+        Public Function GetState() As FluxFormState
+            Dim State As New FluxFormState With {
+                .LogFileName = _LogFileName,
+                .LogStripPath = _LogStripPath,
+                .Side0State = TS0.GetState(),
+                .Side1State = TS1.GetState(),
+                .StatusData = _StatusData,
+                .Device = StatusDevice.Text,
+                .Log = TextBoxConsole.Text
+            }
+
+            Return State
         End Function
 
         Public Sub GridReset()
@@ -151,6 +161,25 @@
                     SaveLogFile(Dialog.FileName, TextBoxConsole.Text, RemovePath)
                 End If
             End Using
+        End Sub
+
+        Public Sub SetState(State As FluxFormState)
+            _LogFileName = State.LogFileName
+            _LogStripPath = State.LogStripPath
+
+            TS0.SetState(State.Side0State)
+            TS1.SetState(State.Side1State)
+
+            If State.StatusData.HasValue Then
+                UpdateStatus(State.StatusData.Value)
+            Else
+                ClearStatusBar()
+            End If
+
+            StatusDevice.Text = State.Device
+            StatusDevice.Visible = Not String.IsNullOrEmpty(State.Device)
+
+            TextBoxConsole.Text = State.Log
         End Sub
 
         Protected Overridable Sub OnAfterBaseFormClosing(e As FormClosingEventArgs)
@@ -220,8 +249,15 @@
 
             Table?.SetCellTooltip(Track, Tooltip)
         End Sub
+
+        Private Sub LocalizeForm()
+            ButtonCancel.Text = My.Resources.Menu_Cancel
+            ButtonSaveLog.Text = My.Resources.Label_SaveLog
+            LabelConsoleOutput.Text = My.Resources.Label_ConsoleOutput
+        End Sub
+
         Private Sub UpdateStatus(StatusData As TrackStatusData)
-            GridMarkTrack(StatusData)
+            _StatusData = StatusData
 
             StatusType.Text = StatusData.StatusText
             StatusTrack.Text = My.Resources.Label_Track & " " & StatusData.Track
@@ -250,6 +286,12 @@
         End Sub
 
         Private Sub UpdateTrackStatusType(Text As String)
+            If _StatusData.HasValue Then
+                Dim StatusData = _StatusData.Value
+                StatusData.StatusText = Text
+                _StatusData = StatusData
+            End If
+
             StatusType.Text = Text
         End Sub
 #Region "Events"
@@ -266,6 +308,7 @@
         End Sub
 
         Private Sub TS_UpdateStatus(StatusData As TrackStatusData) Handles TS.UpdateStatus
+            GridMarkTrack(StatusData)
             UpdateStatus(StatusData)
         End Sub
 
@@ -310,6 +353,16 @@
         End Sub
 
 #End Region
+        Public Structure FluxFormState
+            Public Property Device As String
+            Public Property Log As String
+            Public Property LogFileName As String
+            Public Property LogStripPath As Boolean
+            Public Property Side0State As FloppyTrackGrid.TrackState
+            Public Property Side1State As FloppyTrackGrid.TrackState
+            Public Property StatusData As TrackStatusData?
+        End Structure
+
         Public Structure TrackStatusData
             Public BackColor As Color
             Public CellText As String

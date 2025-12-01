@@ -257,7 +257,7 @@
             Me.StatusType.AutoSize = False
             Me.StatusType.Margin = New System.Windows.Forms.Padding(2, 3, 2, 2)
             Me.StatusType.Name = "StatusType"
-            Me.StatusType.Size = New System.Drawing.Size(398, 19)
+            Me.StatusType.Size = New System.Drawing.Size(367, 19)
             Me.StatusType.Spring = True
             Me.StatusType.Text = "{Status}"
             Me.StatusType.TextAlign = System.Drawing.ContentAlignment.MiddleLeft

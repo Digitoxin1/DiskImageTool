@@ -8,10 +8,10 @@ Namespace Flux
 
         Private WithEvents ButtonDiscard As Button
         Private WithEvents ButtonImport As Button
+        Private WithEvents ButtonModifications As Button
         Private WithEvents ButtonOpen As Button
         Private WithEvents ButtonProcess As Button
         Private WithEvents ButtonTrackLayout As Button
-        Private WithEvents ButtonModifications As Button
         Private WithEvents CheckBoxDoublestep As CheckBox
         Private WithEvents CheckBoxExtendedLogging As CheckBox
         Private WithEvents CheckBoxSaveLog As CheckBox
@@ -818,6 +818,20 @@ Namespace Flux
             Return DetectImageFormat(Response.Filename, True)
         End Function
 
+        Private Sub RefreshGridState()
+            If _SelectedDevice Is Nothing Then
+                Exit Sub
+            End If
+
+            Dim State = _OutputImages.GetState(_SelectedDevice.Device)
+
+            If State.HasValue Then
+                SetState(State.Value)
+            Else
+                ClearProcessedImage()
+            End If
+        End Sub
+
         Private Sub RefreshButtonState()
             Dim OutputType As ImageImportOutputTypes? = Nothing
 
@@ -1026,6 +1040,14 @@ Namespace Flux
             Return IO.File.Exists(IO.Path.Combine(ParentFolder, "tracklayout.txt"))
         End Function
 
+        Private Sub ImagePostProcessCompleted()
+            If CheckBoxSaveLog.Checked Then
+                AutoSaveLogFile()
+            End If
+            _OutputImages.StorePendingImage(GetState)
+            PopulateOutputSourceCombo()
+        End Sub
+
         Private Class OutputImageInfo
             Private ReadOnly _FileSource As IDevice.FluxDevice
             Private _FilePath As String
@@ -1071,12 +1093,15 @@ Namespace Flux
         Private Class OutputImages
             Private ReadOnly _Images As Dictionary(Of IDevice.FluxDevice, OutputImageInfo)
             Private ReadOnly _LogFiles As Dictionary(Of IDevice.FluxDevice, OutputLogInfo)
+            Private ReadOnly _State As Dictionary(Of IDevice.FluxDevice, FluxFormState)
             Private ReadOnly _TempPath As String
             Private _PendingImage As OutputImageInfo = Nothing
+
             Public Sub New(TempPath As String)
                 _TempPath = TempPath
                 _Images = New Dictionary(Of IDevice.FluxDevice, OutputImageInfo)
                 _LogFiles = New Dictionary(Of IDevice.FluxDevice, OutputLogInfo)
+                _State = New Dictionary(Of IDevice.FluxDevice, FluxFormState)
             End Sub
 
             Public ReadOnly Property Images As Dictionary(Of IDevice.FluxDevice, OutputImageInfo)
@@ -1103,6 +1128,8 @@ Namespace Flux
                     DeleteTempFileIfExists(LogFile.FilePath)
                 Next
                 _LogFiles.Clear()
+
+                _State.Clear()
             End Sub
 
             Public Sub ClearPendingImage()
@@ -1113,6 +1140,13 @@ Namespace Flux
                 DeleteTempFileIfExists(_PendingImage.FilePath)
                 _PendingImage = Nothing
             End Sub
+
+            Public Function GetState(FileSource As IDevice.FluxDevice) As FluxFormState?
+                If _State.ContainsKey(FileSource) Then
+                    Return _State.Item(FileSource)
+                End If
+                Return Nothing
+            End Function
 
             Public Function HasImage() As Boolean
                 Return _Images.Count > 0
@@ -1149,6 +1183,10 @@ Namespace Flux
                 Return FilePath
             End Function
 
+            Public Sub SetState(FileSource As IDevice.FluxDevice, State As FluxFormState)
+                _State.Item(FileSource) = State
+            End Sub
+
             Public Sub StoreLogFile(FileSource As IDevice.FluxDevice, LogFileName As String, Content As String, StripPathFromLog As Boolean)
                 Dim FileName As String = Guid.NewGuid.ToString & ".txt"
 
@@ -1164,7 +1202,7 @@ Namespace Flux
                 _LogFiles.Item(FileSource) = New OutputLogInfo(FilePath, FileSource, LogFileName)
             End Sub
 
-            Public Sub StorePendingImage()
+            Public Sub StorePendingImage(State As FluxFormState)
                 If _PendingImage Is Nothing Then
                     Exit Sub
                 End If
@@ -1175,6 +1213,7 @@ Namespace Flux
                 End If
 
                 _Images.Item(_PendingImage.FileSource) = _PendingImage
+                SetState(_PendingImage.FileSource, State)
                 _PendingImage = Nothing
             End Sub
         End Class
@@ -1285,6 +1324,7 @@ Namespace Flux
             End If
 
             InitializeDevice(False)
+            RefreshGridState()
         End Sub
 
         Private Sub ComboExtensions_SelectedIndexChanged(sender As Object, e As EventArgs) Handles ComboExtensions.SelectedIndexChanged
@@ -1351,6 +1391,9 @@ Namespace Flux
             If _ConsoleQueue.IsEmpty Then
                 If Not Process.IsRunning Then
                     ConsoleTimer.Stop()
+                    If Process.State = ConsoleProcessRunner.ProcessStateEnum.Completed Then
+                        ImagePostProcessCompleted()
+                    End If
                 End If
                 Return
             End If
@@ -1369,6 +1412,9 @@ Namespace Flux
 
             If _ConsoleQueue.IsEmpty AndAlso Not Process.IsRunning Then
                 ConsoleTimer.Stop()
+                If Process.State = ConsoleProcessRunner.ProcessStateEnum.Completed Then
+                    ImagePostProcessCompleted()
+                End If
             End If
         End Sub
 
@@ -1446,11 +1492,7 @@ Namespace Flux
                 Case ConsoleProcessRunner.ProcessStateEnum.Completed
                     If TrackStatus.TrackFound Then
                         TrackStatus.UpdateTrackStatusComplete(_DoubleStep)
-                        If CheckBoxSaveLog.Checked Then
-                            AutoSaveLogFile()
-                        End If
-                        _OutputImages.StorePendingImage()
-                        PopulateOutputSourceCombo()
+                        'ImagePostProcessCompleted()
                     Else
                         _OutputImages.ClearPendingImage()
                         TrackStatus.UpdateTrackStatusError()

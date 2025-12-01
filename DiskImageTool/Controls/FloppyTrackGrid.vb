@@ -27,12 +27,12 @@ Public Class FloppyTrackGrid
     Private _FooterCheckRect As Rectangle
     Private _FooterHasFocus As Boolean = False
     Private _FooterTextRect As Rectangle
+    Private _HideSelection As Boolean = False
     Private _IsChecked As Boolean
     Private _Label As String
     Private _LastSelected As (Track As Integer, Selected As Boolean) = (-1, False)
     Private _NoEventSelectionChanged As Boolean = False
     Private _SelectEnabled As Boolean = False
-    Private _HideSelection As Boolean = False
     Private _Side As Byte
     Private _TrackCount As Integer
     Public Event CellClicked(sender As Object, Track As Integer, Row As Integer, Col As Integer, Shift As Boolean)
@@ -105,6 +105,18 @@ Public Class FloppyTrackGrid
         End Set
     End Property
 
+    Public Property HideSelection As Boolean
+        Get
+            Return _HideSelection
+        End Get
+        Set(value As Boolean)
+            If _HideSelection <> value Then
+                _HideSelection = value
+                Invalidate()
+            End If
+        End Set
+    End Property
+
     ' Checkbox checked state
     <Browsable(True)>
     <DefaultValue(False)>
@@ -123,36 +135,10 @@ Public Class FloppyTrackGrid
         End Set
     End Property
 
-    ' Footer label text (what you pass in the New overload)
-    <Browsable(True)>
-    <DefaultValue(0)>
-    Public Property Side As Byte
-        Get
-            Return _Side
-        End Get
-        Set(value As Byte)
-            _Side = value
-            _Label = My.Resources.Label_Side & " " & _Side
-            InvalidateFooter()
-        End Set
-    End Property
-
     Public ReadOnly Property SelectedTracks As HashSet(Of UShort)
         Get
             Return _SelectedTracks
         End Get
-    End Property
-
-    Public Property HideSelection As Boolean
-        Get
-            Return _HideSelection
-        End Get
-        Set(value As Boolean)
-            If _HideSelection <> value Then
-                _HideSelection = value
-                Invalidate()
-            End If
-        End Set
     End Property
 
     <Browsable(True)>
@@ -178,6 +164,19 @@ Public Class FloppyTrackGrid
         End Set
     End Property
 
+    ' Footer label text (what you pass in the New overload)
+    <Browsable(True)>
+    <DefaultValue(0)>
+    Public Property Side As Byte
+        Get
+            Return _Side
+        End Get
+        Set(value As Byte)
+            _Side = value
+            _Label = My.Resources.Label_Side & " " & _Side
+            InvalidateFooter()
+        End Set
+    End Property
     <Browsable(True)>
     <DefaultValue(0)>
     Public Property TrackCount As Integer
@@ -229,18 +228,21 @@ Public Class FloppyTrackGrid
         Return _Cells(TrackIndex)
     End Function
 
+    Public Function GetState() As TrackState
+        Dim State = New TrackState With {
+            .ActiveTrackCount = _ActiveTrackCount,
+            .Cells = New List(Of CellInfo)(_Cells),
+            .Disabled = _Disabled
+        }
+
+        Return State
+    End Function
+
     Public Sub ResetAll()
         For TrackIndex = 0 To _TrackCount - 1
             ResetCellInternal(TrackIndex)
         Next
     End Sub
-
-    Public Sub ResetSelectedSells()
-        For Each TrackIndex In _SelectedTracks.ToList()
-            ResetCellInternal(TrackIndex)
-        Next
-    End Sub
-
 
     Public Sub ResetCell(TrackIndex As Integer)
         If TrackIndex < 0 OrElse TrackIndex >= _TrackCount Then
@@ -248,6 +250,12 @@ Public Class FloppyTrackGrid
         End If
 
         ResetCellInternal(TrackIndex)
+    End Sub
+
+    Public Sub ResetSelectedSells()
+        For Each TrackIndex In _SelectedTracks.ToList()
+            ResetCellInternal(TrackIndex)
+        Next
     End Sub
 
     ''' <summary>
@@ -368,6 +376,23 @@ Public Class FloppyTrackGrid
         End If
     End Sub
 
+    Public Sub SetState(State As TrackState)
+        If _SelectEnabled Then
+            ClearSelected()
+        End If
+
+        _Disabled = State.Disabled
+        _ActiveTrackCount = State.ActiveTrackCount
+
+        For i = 0 To State.Cells.Count - 1
+            _Cells(i) = State.Cells(i)
+        Next
+
+        EnsureFocusedTrackValid()
+        Me.TabStop = Not _Disabled And _SelectEnabled
+
+        Invalidate()
+    End Sub
     Protected Overrides Function IsInputKey(keyData As Keys) As Boolean
         Dim key = keyData And Keys.KeyCode
 
@@ -997,5 +1022,11 @@ Public Class FloppyTrackGrid
         Public Selected As Boolean
         Public Text As String
         Public Tooltip As String
+    End Structure
+
+    Public Structure TrackState
+        Public Property ActiveTrackCount As Integer
+        Public Property Cells As List(Of CellInfo)
+        Public Property Disabled As Boolean
     End Structure
 End Class
