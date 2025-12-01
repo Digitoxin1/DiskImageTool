@@ -5,19 +5,19 @@ Imports System.Threading
 Public Class ConsoleProcessRunner
     Implements IDisposable
 
+    Private ReadOnly _logLock As New Object()
     Private _ctr As CancellationTokenRegistration
 
     Private _disposed As Boolean
     Private _exitCode As Integer?
+    Private _logFilePath As String
+    Private _logWriter As StreamWriter
     Private _proc As Process
     Private _rawErrTask As Task
     Private _rawOutTask As Task
     Private _state As ProcessStateEnum = ProcessStateEnum.Idle
     Private _tcs As TaskCompletionSource(Of Integer)
-    Private _logFilePath As String
-    Private _logWriter As StreamWriter
-    Private ReadOnly _logLock As New Object()
-
+    Private _useAsyncReadLine As Boolean
     Private _useRawCapture As Boolean
     Public Enum ProcessStateEnum As Byte
         Idle = 0
@@ -35,8 +35,6 @@ Public Class ConsoleProcessRunner
     Public Event ProcessStateChanged(state As ProcessStateEnum)
 
     Public Property EventContext As SynchronizationContext
-    Public Property UseContextForDataEvents As Boolean = True
-
     Public ReadOnly Property ExitCode As Integer?
         Get
             Return _exitCode
@@ -49,45 +47,15 @@ Public Class ConsoleProcessRunner
         End Get
     End Property
 
-    Private Sub LogLine(line As String)
-        If _logWriter Is Nothing Then Exit Sub
-        Try
-            SyncLock _logLock
-                _logWriter.WriteLine(line)
-                _logWriter.Flush()
-            End SyncLock
-        Catch
-            SyncLock _logLock
-                Try : _logWriter.Dispose() : Catch : End Try
-                _logWriter = Nothing
-            End SyncLock
-        End Try
-    End Sub
-
-    Private Sub LogChunk(chunk As String)
-        If _logWriter Is Nothing Then Exit Sub
-        Try
-            SyncLock _logLock
-                _logWriter.Write(chunk)
-                _logWriter.Flush()
-            End SyncLock
-        Catch
-            SyncLock _logLock
-                Try : _logWriter.Dispose() : Catch : End Try
-                _logWriter = Nothing
-            End SyncLock
-        End Try
-    End Sub
-
     Public Property StandardErrorEncoding As Encoding = Encoding.UTF8
-
     Public Property StandardOutputEncoding As Encoding = Encoding.UTF8
-
     Public ReadOnly Property State As ProcessStateEnum
         Get
             Return _state
         End Get
     End Property
+
+    Public Property UseContextForDataEvents As Boolean = True
     Public Property WorkingDirectory As String
 
     Public Shared Function RunProcess(fileName As String,
@@ -190,7 +158,13 @@ Public Class ConsoleProcessRunner
         GC.SuppressFinalize(Me)
     End Sub
 
-    Public Function StartAsync(exePath As String, arguments As String, Optional ct As CancellationToken = Nothing, Optional useRawCapture As Boolean = False, Optional logFile As String = Nothing) As Task(Of Integer)
+    Public Function StartAsync(
+                              exePath As String,
+                              arguments As String,
+                              Optional ct As CancellationToken = Nothing,
+                              Optional useRawCapture As Boolean = False,
+                              Optional useAsyncReadLine As Boolean = False,
+                              Optional logFile As String = Nothing) As Task(Of Integer)
         If _proc IsNot Nothing Then
             Throw New InvalidOperationException("Process is already started on this instance.")
         End If
@@ -211,6 +185,11 @@ Public Class ConsoleProcessRunner
         End If
 
         _useRawCapture = useRawCapture
+        _useAsyncReadLine = useAsyncReadLine
+
+        If _useRawCapture AndAlso _useAsyncReadLine Then
+            Throw New ArgumentException("useRawCapture and useAsyncReadLine cannot both be True.")
+        End If
 
         _tcs = New TaskCompletionSource(Of Integer)(TaskCreationOptions.RunContinuationsAsynchronously)
         _exitCode = Nothing
@@ -242,7 +221,7 @@ Public Class ConsoleProcessRunner
         ' Subscribe to events BEFORE Start()
         AddHandler _proc.Exited, AddressOf OnExited
 
-        If Not _useRawCapture Then
+        If Not _useRawCapture AndAlso Not _useAsyncReadLine Then
             AddHandler _proc.OutputDataReceived, AddressOf OnOutputData
             AddHandler _proc.ErrorDataReceived, AddressOf OnErrorData
         End If
@@ -264,6 +243,12 @@ Public Class ConsoleProcessRunner
         If _useRawCapture Then
             _rawOutTask = Task.Run(AddressOf ReadRawOutput)
             _rawErrTask = Task.Run(AddressOf ReadRawError)
+
+        ElseIf _useAsyncReadLine Then
+            ' Our manual ReadLineAsync loops
+            _rawOutTask = ReadLineOutputLoopAsync()
+            _rawErrTask = ReadLineErrorLoopAsync()
+
         Else
             ' line-buffered behavior
             _proc.BeginOutputReadLine()
@@ -335,7 +320,7 @@ Public Class ConsoleProcessRunner
     Private Sub Cleanup()
         Try
             ' Wait for raw readers to finish if in raw mode
-            If _useRawCapture Then
+            If _useRawCapture OrElse _useAsyncReadLine Then
                 Try
                     _rawOutTask?.Wait()
                 Catch
@@ -355,11 +340,47 @@ Public Class ConsoleProcessRunner
                 RemoveHandler _proc.ErrorDataReceived, AddressOf OnErrorData
                 RemoveHandler _proc.Exited, AddressOf OnExited
 
-                _proc.Dispose()
+                Try
+                    _proc.Dispose()
+                Catch
+                End Try
             End If
         Finally
             _proc = Nothing
-            _ctr.Dispose()
+            Try
+                _ctr.Dispose()
+            Catch
+            End Try
+        End Try
+    End Sub
+
+    Private Sub LogChunk(chunk As String)
+        If _logWriter Is Nothing Then Exit Sub
+        Try
+            SyncLock _logLock
+                _logWriter.Write(chunk)
+                _logWriter.Flush()
+            End SyncLock
+        Catch
+            SyncLock _logLock
+                Try : _logWriter.Dispose() : Catch : End Try
+                _logWriter = Nothing
+            End SyncLock
+        End Try
+    End Sub
+
+    Private Sub LogLine(line As String)
+        If _logWriter Is Nothing Then Exit Sub
+        Try
+            SyncLock _logLock
+                _logWriter.WriteLine(line)
+                _logWriter.Flush()
+            End SyncLock
+        Catch
+            SyncLock _logLock
+                Try : _logWriter.Dispose() : Catch : End Try
+                _logWriter = Nothing
+            End SyncLock
         End Try
     End Sub
 
@@ -438,6 +459,67 @@ Public Class ConsoleProcessRunner
         End If
     End Sub
 
+    Private Async Function ReadLineErrorLoopAsync() As Task
+        Try
+            Dim reader = _proc.StandardError
+
+            While True
+                Dim line As String
+
+                Try
+                    line = Await reader.ReadLineAsync().ConfigureAwait(False)
+                Catch ex As ObjectDisposedException
+                    Exit While
+                End Try
+
+                If line Is Nothing Then
+                    Exit While
+                End If
+
+                LogLine(line)
+
+                Dim captured = line
+                RaiseOnContext(
+                Sub()
+                    RaiseEvent ErrorDataReceived(captured)
+                End Sub)
+            End While
+        Catch ex As Exception
+            SetProcessStateFailed("Error reading standard error.", ex)
+        End Try
+    End Function
+
+    Private Async Function ReadLineOutputLoopAsync() As Task
+        Try
+            Dim reader = _proc.StandardOutput
+
+            While True
+                Dim line As String
+
+                Try
+                    line = Await reader.ReadLineAsync().ConfigureAwait(False)
+                Catch ex As ObjectDisposedException
+                    Exit While
+                End Try
+
+                If line Is Nothing Then
+                    Exit While
+                End If
+
+                LogLine(line)
+
+                ' Capture copy for closure
+                Dim captured = line
+                RaiseOnContext(
+                Sub()
+                    RaiseEvent OutputDataReceived(captured)
+                End Sub)
+            End While
+        Catch ex As Exception
+            SetProcessStateFailed("Error reading standard output.", ex)
+        End Try
+    End Function
+
     Private Sub ReadRawError()
         Try
             Dim buffer(4095) As Byte
@@ -483,7 +565,6 @@ Public Class ConsoleProcessRunner
             SetProcessStateFailed("Error reading standard output.", ex)
         End Try
     End Sub
-
     Private Sub SetProcessState(newState As ProcessStateEnum)
         If _state <> newState Then
             _state = newState

@@ -100,6 +100,7 @@
             StatusBadSectors.Visible = False
             StatusUnexpected.Text = ""
             StatusUnexpected.Visible = False
+            ToolStripProgress.Visible = False
         End Sub
 
         Public Function ConfirmWrite(Title As String, DriveName As String) As Boolean
@@ -259,6 +260,7 @@
         Private Sub UpdateStatus(StatusData As TrackStatusData)
             _StatusData = StatusData
 
+            ToolStripProgress.Visible = False
             StatusType.Text = StatusData.StatusText
             StatusTrack.Text = My.Resources.Label_Track & " " & StatusData.Track
             StatusSide.Text = My.Resources.Label_Side & " " & StatusData.Side

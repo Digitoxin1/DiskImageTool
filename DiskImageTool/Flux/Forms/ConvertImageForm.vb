@@ -537,6 +537,8 @@ Namespace Flux
                 PopulateDeviceCombo()
             End If
 
+            ButtonProcess.Enabled = False
+
             _SelectedDevice = CType(ComboDevices.SelectedItem, IDevice)
 
             LogFileName = _SelectedDevice.Settings.LogFileName
@@ -819,17 +821,20 @@ Namespace Flux
         End Function
 
         Private Sub RefreshGridState()
-            If _SelectedDevice Is Nothing Then
+            If ComboDevices.SelectedIndex = -1 Then
                 Exit Sub
             End If
 
-            Dim State = _OutputImages.GetState(_SelectedDevice.Device)
+            Dim SelectedDevice As IDevice = CType(ComboDevices.SelectedItem, IDevice)
+
+            Dim State = _OutputImages.GetState(SelectedDevice.Device)
 
             If State.HasValue Then
                 SetState(State.Value)
             Else
                 ClearProcessedImage()
             End If
+            MyBase.Refresh()
         End Sub
 
         Private Sub RefreshButtonState()
@@ -1041,11 +1046,18 @@ Namespace Flux
         End Function
 
         Private Sub ImagePostProcessCompleted()
+            If Not TrackStatus.TrackFound Then
+                Exit Sub
+            End If
+
+            TrackStatus.UpdateTrackStatusComplete(_DoubleStep)
+
             If CheckBoxSaveLog.Checked Then
                 AutoSaveLogFile()
             End If
             _OutputImages.StorePendingImage(GetState)
             PopulateOutputSourceCombo()
+            RefreshButtonState()
         End Sub
 
         Private Class OutputImageInfo
@@ -1323,8 +1335,8 @@ Namespace Flux
                 _UserState.Convert.LastDevice = CType(ComboDevices.SelectedItem, IDevice).Device
             End If
 
-            InitializeDevice(False)
             RefreshGridState()
+            InitializeDevice(False)
         End Sub
 
         Private Sub ComboExtensions_SelectedIndexChanged(sender As Object, e As EventArgs) Handles ComboExtensions.SelectedIndexChanged
@@ -1479,6 +1491,9 @@ Namespace Flux
         Private Sub Process_ProcessStarted(exePath As String, arguments As String) Handles Process.ProcessStarted
             StatusDevice.Text = _SelectedDevice.Name
             StatusDevice.Visible = True
+            If _SelectedDevice.Device = IDevice.FluxDevice.PcImgCnv AndAlso CheckBoxRemaster.Checked Then
+                ToolStripProgress.Visible = True
+            End If
         End Sub
 
         Private Sub Process_ProcessStateChanged(State As ConsoleProcessRunner.ProcessStateEnum) Handles Process.ProcessStateChanged
@@ -1488,19 +1503,22 @@ Namespace Flux
                     If Not TrackStatus.Failed Then
                         TrackStatus.UpdateTrackStatusAborted()
                     End If
+                    ToolStripProgress.Visible = False
 
                 Case ConsoleProcessRunner.ProcessStateEnum.Completed
                     If TrackStatus.TrackFound Then
-                        TrackStatus.UpdateTrackStatusComplete(_DoubleStep)
                         'ImagePostProcessCompleted()
+                        Exit Sub
                     Else
                         _OutputImages.ClearPendingImage()
                         TrackStatus.UpdateTrackStatusError()
+                        ToolStripProgress.Visible = False
                     End If
 
                 Case ConsoleProcessRunner.ProcessStateEnum.Error
                     _OutputImages.ClearPendingImage()
                     TrackStatus.UpdateTrackStatusError()
+                    ToolStripProgress.Visible = False
 
             End Select
 

@@ -42,6 +42,7 @@
             Me.StatusType = New System.Windows.Forms.ToolStripStatusLabel()
             Me.StatusBadSectors = New System.Windows.Forms.ToolStripStatusLabel()
             Me.StatusUnexpected = New System.Windows.Forms.ToolStripStatusLabel()
+            Me.ToolStripProgress = New System.Windows.Forms.ToolStripProgressBar()
             Me.PanelBottom.SuspendLayout()
             Me.PanelBottomInner.SuspendLayout()
             Me.PanelButtonsRight.SuspendLayout()
@@ -220,7 +221,7 @@
             '
             'StatusStripBottom
             '
-            Me.StatusStripBottom.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.StatusDevice, Me.StatusTrack, Me.StatusSide, Me.StatusType, Me.StatusBadSectors, Me.StatusUnexpected})
+            Me.StatusStripBottom.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.StatusDevice, Me.StatusTrack, Me.StatusSide, Me.ToolStripProgress, Me.StatusType, Me.StatusBadSectors, Me.StatusUnexpected})
             Me.StatusStripBottom.Location = New System.Drawing.Point(0, 462)
             Me.StatusStripBottom.Name = "StatusStripBottom"
             Me.StatusStripBottom.Size = New System.Drawing.Size(767, 24)
@@ -257,7 +258,7 @@
             Me.StatusType.AutoSize = False
             Me.StatusType.Margin = New System.Windows.Forms.Padding(2, 3, 2, 2)
             Me.StatusType.Name = "StatusType"
-            Me.StatusType.Size = New System.Drawing.Size(367, 19)
+            Me.StatusType.Size = New System.Drawing.Size(296, 19)
             Me.StatusType.Spring = True
             Me.StatusType.Text = "{Status}"
             Me.StatusType.TextAlign = System.Drawing.ContentAlignment.MiddleLeft
@@ -276,6 +277,13 @@
             Me.StatusUnexpected.Name = "StatusUnexpected"
             Me.StatusUnexpected.Size = New System.Drawing.Size(118, 19)
             Me.StatusUnexpected.Text = "{Unexpected Sectors}"
+            '
+            'ToolStripProgress
+            '
+            Me.ToolStripProgress.MarqueeAnimationSpeed = 30
+            Me.ToolStripProgress.Name = "ToolStripProgress"
+            Me.ToolStripProgress.Size = New System.Drawing.Size(100, 18)
+            Me.ToolStripProgress.Style = System.Windows.Forms.ProgressBarStyle.Marquee
             '
             'BaseFluxForm
             '
@@ -331,5 +339,6 @@
         Friend WithEvents PanelMain As Panel
         Friend WithEvents PanelInner As Panel
         Friend WithEvents StatusDevice As ToolStripStatusLabel
+        Friend WithEvents ToolStripProgress As ToolStripProgressBar
     End Class
 End Namespace
