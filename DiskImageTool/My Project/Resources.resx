@@ -2097,4 +2097,28 @@ Do you wish to overwrite?</value>
   <data name="Label_Database" xml:space="preserve">
     <value>Database</value>
   </data>
+  <data name="Label_Modifications" xml:space="preserve">
+    <value>Modifications</value>
+  </data>
+  <data name="Label_Details" xml:space="preserve">
+    <value>Details</value>
+  </data>
+  <data name="Modifcations_LastAccessDateAdded" xml:space="preserve">
+    <value>Last Access Date added to directory entries</value>
+  </data>
+  <data name="Modifications_BootSector" xml:space="preserve">
+    <value>Boot Sector modified</value>
+  </data>
+  <data name="Modifications_BootSectorCopy" xml:space="preserve">
+    <value>A copy of the boot sector is at the end of the root directory</value>
+  </data>
+  <data name="Modifications_CreatedDateAdded" xml:space="preserve">
+    <value>Created Date added to directory entries</value>
+  </data>
+  <data name="Modifications_FAT" xml:space="preserve">
+    <value>FAT {0} modified</value>
+  </data>
+  <data name="Modifications_OEMName" xml:space="preserve">
+    <value>OEM Name modified</value>
+  </data>
 </root>

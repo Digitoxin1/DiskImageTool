@@ -63,11 +63,6 @@ Partial Class MainForm
         Me.MenuToolsRestoreBootSector = New System.Windows.Forms.ToolStripMenuItem()
         Me.MenuToolsRemoveBootSector = New System.Windows.Forms.ToolStripMenuItem()
         Me.MenuToolsWin9xCleanBatch = New System.Windows.Forms.ToolStripMenuItem()
-        Me.MainMenuHelp = New System.Windows.Forms.ToolStripMenuItem()
-        Me.MenuHelpProjectPage = New System.Windows.Forms.ToolStripMenuItem()
-        Me.MenuHelpUpdateCheck = New System.Windows.Forms.ToolStripMenuItem()
-        Me.MenuHelpChangeLog = New System.Windows.Forms.ToolStripMenuItem()
-        Me.MenuHelpAbout = New System.Windows.Forms.ToolStripMenuItem()
         Me.MenuDiskReadFloppyA = New System.Windows.Forms.ToolStripMenuItem()
         Me.MenuDiskReadFloppyB = New System.Windows.Forms.ToolStripMenuItem()
         Me.MenuDiskWriteFloppyA = New System.Windows.Forms.ToolStripMenuItem()
@@ -113,7 +108,7 @@ Partial Class MainForm
         Me.MenuPcImgCnv = New System.Windows.Forms.ToolStripMenuItem()
         Me.MenuPcImgCnvTrackLayout = New System.Windows.Forms.ToolStripMenuItem()
         Me.MainMenuReports = New System.Windows.Forms.ToolStripMenuItem()
-        Me.MenuReportsWriteSplices = New System.Windows.Forms.ToolStripMenuItem()
+        Me.MenuReportsModifications = New System.Windows.Forms.ToolStripMenuItem()
         Me.MainMenuOptions = New System.Windows.Forms.ToolStripMenuItem()
         Me.MenuOptionsCreateBackup = New System.Windows.Forms.ToolStripMenuItem()
         Me.MenuOptionsCheckUpdate = New System.Windows.Forms.ToolStripMenuItem()
@@ -122,6 +117,11 @@ Partial Class MainForm
         Me.MenuOptionsDisplayLanguage = New System.Windows.Forms.ToolStripMenuItem()
         Me.ToolStripSeparator2 = New System.Windows.Forms.ToolStripSeparator()
         Me.MenuOptionsFlux = New System.Windows.Forms.ToolStripMenuItem()
+        Me.MainMenuHelp = New System.Windows.Forms.ToolStripMenuItem()
+        Me.MenuHelpProjectPage = New System.Windows.Forms.ToolStripMenuItem()
+        Me.MenuHelpUpdateCheck = New System.Windows.Forms.ToolStripMenuItem()
+        Me.MenuHelpChangeLog = New System.Windows.Forms.ToolStripMenuItem()
+        Me.MenuHelpAbout = New System.Windows.Forms.ToolStripMenuItem()
         Me.MainMenuUpdateAvailable = New System.Windows.Forms.ToolStripMenuItem()
         Me.MainMenuNewInstance = New System.Windows.Forms.ToolStripMenuItem()
         Me.LabelCRC32Caption = New System.Windows.Forms.Label()
@@ -344,40 +344,10 @@ Partial Class MainForm
         Me.MenuToolsWin9xCleanBatch.Name = "MenuToolsWin9xCleanBatch"
         resources.ApplyResources(Me.MenuToolsWin9xCleanBatch, "MenuToolsWin9xCleanBatch")
         '
-        'MainMenuHelp
-        '
-        Me.MainMenuHelp.DropDownItems.AddRange(New System.Windows.Forms.ToolStripItem() {Me.MenuHelpProjectPage, Me.MenuHelpUpdateCheck, Me.MenuHelpChangeLog, MenuHelpSeparator, Me.MenuHelpAbout})
-        Me.MainMenuHelp.Name = "MainMenuHelp"
-        resources.ApplyResources(Me.MainMenuHelp, "MainMenuHelp")
-        '
-        'MenuHelpProjectPage
-        '
-        Me.MenuHelpProjectPage.Image = Global.DiskImageTool.My.Resources.Resources.Web
-        Me.MenuHelpProjectPage.Name = "MenuHelpProjectPage"
-        resources.ApplyResources(Me.MenuHelpProjectPage, "MenuHelpProjectPage")
-        '
-        'MenuHelpUpdateCheck
-        '
-        Me.MenuHelpUpdateCheck.Image = Global.DiskImageTool.My.Resources.Resources.Refresh
-        Me.MenuHelpUpdateCheck.Name = "MenuHelpUpdateCheck"
-        resources.ApplyResources(Me.MenuHelpUpdateCheck, "MenuHelpUpdateCheck")
-        '
-        'MenuHelpChangeLog
-        '
-        Me.MenuHelpChangeLog.Image = Global.DiskImageTool.My.Resources.Resources.History
-        Me.MenuHelpChangeLog.Name = "MenuHelpChangeLog"
-        resources.ApplyResources(Me.MenuHelpChangeLog, "MenuHelpChangeLog")
-        '
         'MenuHelpSeparator
         '
         MenuHelpSeparator.Name = "MenuHelpSeparator"
         resources.ApplyResources(MenuHelpSeparator, "MenuHelpSeparator")
-        '
-        'MenuHelpAbout
-        '
-        Me.MenuHelpAbout.Image = Global.DiskImageTool.My.Resources.Resources.AboutBox
-        Me.MenuHelpAbout.Name = "MenuHelpAbout"
-        resources.ApplyResources(Me.MenuHelpAbout, "MenuHelpAbout")
         '
         'ToolStripSeparator6
         '
@@ -672,14 +642,14 @@ Partial Class MainForm
         '
         'MainMenuReports
         '
-        Me.MainMenuReports.DropDownItems.AddRange(New System.Windows.Forms.ToolStripItem() {Me.MenuReportsWriteSplices})
+        Me.MainMenuReports.DropDownItems.AddRange(New System.Windows.Forms.ToolStripItem() {Me.MenuReportsModifications})
         Me.MainMenuReports.Name = "MainMenuReports"
         resources.ApplyResources(Me.MainMenuReports, "MainMenuReports")
         '
-        'MenuReportsWriteSplices
+        'MenuReportsModifications
         '
-        Me.MenuReportsWriteSplices.Name = "MenuReportsWriteSplices"
-        resources.ApplyResources(Me.MenuReportsWriteSplices, "MenuReportsWriteSplices")
+        Me.MenuReportsModifications.Name = "MenuReportsModifications"
+        resources.ApplyResources(Me.MenuReportsModifications, "MenuReportsModifications")
         '
         'MainMenuOptions
         '
@@ -725,6 +695,36 @@ Partial Class MainForm
         '
         Me.MenuOptionsFlux.Name = "MenuOptionsFlux"
         resources.ApplyResources(Me.MenuOptionsFlux, "MenuOptionsFlux")
+        '
+        'MainMenuHelp
+        '
+        Me.MainMenuHelp.DropDownItems.AddRange(New System.Windows.Forms.ToolStripItem() {Me.MenuHelpProjectPage, Me.MenuHelpUpdateCheck, Me.MenuHelpChangeLog, MenuHelpSeparator, Me.MenuHelpAbout})
+        Me.MainMenuHelp.Name = "MainMenuHelp"
+        resources.ApplyResources(Me.MainMenuHelp, "MainMenuHelp")
+        '
+        'MenuHelpProjectPage
+        '
+        Me.MenuHelpProjectPage.Image = Global.DiskImageTool.My.Resources.Resources.Web
+        Me.MenuHelpProjectPage.Name = "MenuHelpProjectPage"
+        resources.ApplyResources(Me.MenuHelpProjectPage, "MenuHelpProjectPage")
+        '
+        'MenuHelpUpdateCheck
+        '
+        Me.MenuHelpUpdateCheck.Image = Global.DiskImageTool.My.Resources.Resources.Refresh
+        Me.MenuHelpUpdateCheck.Name = "MenuHelpUpdateCheck"
+        resources.ApplyResources(Me.MenuHelpUpdateCheck, "MenuHelpUpdateCheck")
+        '
+        'MenuHelpChangeLog
+        '
+        Me.MenuHelpChangeLog.Image = Global.DiskImageTool.My.Resources.Resources.History
+        Me.MenuHelpChangeLog.Name = "MenuHelpChangeLog"
+        resources.ApplyResources(Me.MenuHelpChangeLog, "MenuHelpChangeLog")
+        '
+        'MenuHelpAbout
+        '
+        Me.MenuHelpAbout.Image = Global.DiskImageTool.My.Resources.Resources.AboutBox
+        Me.MenuHelpAbout.Name = "MenuHelpAbout"
+        resources.ApplyResources(Me.MenuHelpAbout, "MenuHelpAbout")
         '
         'MainMenuUpdateAvailable
         '
@@ -1173,7 +1173,7 @@ Partial Class MainForm
     Friend WithEvents MenuEditImportFiles As ToolStripMenuItem
     Friend WithEvents ToolStripSeparator1 As ToolStripSeparator
     Friend WithEvents MainMenuReports As ToolStripMenuItem
-    Friend WithEvents MenuReportsWriteSplices As ToolStripMenuItem
+    Friend WithEvents MenuReportsModifications As ToolStripMenuItem
     Friend WithEvents MainMenuNewInstance As ToolStripMenuItem
     Friend WithEvents ToolStripSeparator2 As ToolStripSeparator
     Friend WithEvents MenuOptionsFlux As ToolStripMenuItem

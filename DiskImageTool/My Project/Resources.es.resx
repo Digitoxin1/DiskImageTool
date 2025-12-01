@@ -1855,4 +1855,28 @@
   <data name="Label_Database" xml:space="preserve">
     <value>Versión BD</value>
   </data>
+  <data name="Label_Modifications" xml:space="preserve">
+    <value>Modificaciones</value>
+  </data>
+  <data name="Label_Details" xml:space="preserve">
+    <value>Detalles</value>
+  </data>
+  <data name="Modifications_BootSector" xml:space="preserve">
+    <value>Sector de arranque modificado</value>
+  </data>
+  <data name="Modifications_OEMName" xml:space="preserve">
+    <value>Nombre OEM modificado</value>
+  </data>
+  <data name="Modifications_FAT" xml:space="preserve">
+    <value>FAT {0} modificado</value>
+  </data>
+  <data name="Modifications_CreatedDateAdded" xml:space="preserve">
+    <value>Fecha de creación añadida a las entradas del directorio</value>
+  </data>
+  <data name="Modifcations_LastAccessDateAdded" xml:space="preserve">
+    <value>Fecha del último acceso añadida a las entradas del directorio</value>
+  </data>
+  <data name="Modifications_BootSectorCopy" xml:space="preserve">
+    <value>Una copia del sector de arranque se encuentra al final del directorio raíz.</value>
+  </data>
 </root>

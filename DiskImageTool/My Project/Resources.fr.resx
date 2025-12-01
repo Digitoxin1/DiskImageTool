@@ -1855,4 +1855,28 @@ Voulez-vous écraser ?</value>
   <data name="Label_Database" xml:space="preserve">
     <value>Version BD</value>
   </data>
+  <data name="Label_Modifications" xml:space="preserve">
+    <value>Modifications</value>
+  </data>
+  <data name="Label_Details" xml:space="preserve">
+    <value>Détails</value>
+  </data>
+  <data name="Modifications_BootSector" xml:space="preserve">
+    <value>Secteur de démarrage modifié</value>
+  </data>
+  <data name="Modifications_OEMName" xml:space="preserve">
+    <value>Nom OEM modifié</value>
+  </data>
+  <data name="Modifications_FAT" xml:space="preserve">
+    <value>FAT {0} modifié</value>
+  </data>
+  <data name="Modifications_CreatedDateAdded" xml:space="preserve">
+    <value>Date de création ajoutée aux entrées de répertoire</value>
+  </data>
+  <data name="Modifcations_LastAccessDateAdded" xml:space="preserve">
+    <value>Date du dernier accès ajoutée aux entrées de répertoire</value>
+  </data>
+  <data name="Modifications_BootSectorCopy" xml:space="preserve">
+    <value>Une copie du secteur de démarrage se trouve à la fin du répertoire racine.</value>
+  </data>
 </root>

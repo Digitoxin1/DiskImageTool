@@ -11,7 +11,7 @@ Namespace Flux
         Private WithEvents ButtonOpen As Button
         Private WithEvents ButtonProcess As Button
         Private WithEvents ButtonTrackLayout As Button
-        Private WithEvents ButtonWriteSplices As Button
+        Private WithEvents ButtonModifications As Button
         Private WithEvents CheckBoxDoublestep As CheckBox
         Private WithEvents CheckBoxExtendedLogging As CheckBox
         Private WithEvents CheckBoxSaveLog As CheckBox
@@ -169,12 +169,17 @@ Namespace Flux
             TrackStatus.Clear()
         End Sub
 
-        Private Sub DisplayWriteSplices()
+        Private Sub DisplayModifications()
+            If String.IsNullOrEmpty(_InputFilePath) Then
+                Exit Sub
+            End If
+
             If Not _OutputImages.HasPcImgCnvImage Then
                 Exit Sub
             End If
 
-            Dim ImageData = New ImageData(_OutputImages.Images(IDevice.FluxDevice.PcImgCnv).FilePath)
+            Dim ImageInfo = _OutputImages.Images(IDevice.FluxDevice.PcImgCnv)
+            Dim ImageData = New ImageData(ImageInfo.FilePath)
             Dim Disk = DiskImageLoadFromImageData(ImageData)
             If ImageData.InvalidImage Then
                 Exit Sub
@@ -184,7 +189,12 @@ Namespace Flux
                 Exit Sub
             End If
 
-            DisplayReportWriteSplices(Disk, GetNewFileName)
+            Dim FilePath = IO.Path.GetDirectoryName(_InputFilePath)
+            Dim FileExt = IO.Path.GetExtension(ImageInfo.FilePath)
+
+            Dim FileName As String = TextBoxFileName.Text & FileExt
+
+            DisplayReportModifications(Disk, FileName, FilePath)
         End Sub
 
         Private Function GenerateCommandLine(InputFilePath As String,
@@ -230,7 +240,8 @@ Namespace Flux
                 Exit Sub
             End If
 
-            Dim ImageData = New ImageData(_OutputImages.Images(IDevice.FluxDevice.PcImgCnv).FilePath)
+            Dim ImageInfo = _OutputImages.Images(IDevice.FluxDevice.PcImgCnv)
+            Dim ImageData = New ImageData(ImageInfo.FilePath)
             Dim Disk = DiskImageLoadFromImageData(ImageData)
             If ImageData.InvalidImage Then
                 Exit Sub
@@ -241,8 +252,11 @@ Namespace Flux
             End If
 
             Dim FilePath = IO.Path.GetDirectoryName(_InputFilePath)
+            Dim FileExt = IO.Path.GetExtension(ImageInfo.FilePath)
 
-            GenerateTrackLayout(Disk, FilePath)
+            Dim FileName As String = TextBoxFileName.Text & FileExt
+
+            GenerateTrackLayout(Disk, FileName, FilePath)
             RefreshRemasterState()
             RefreshButtonState()
         End Sub
@@ -409,9 +423,9 @@ Namespace Flux
                 .Visible = False
             }
 
-            ButtonWriteSplices = New Button With {
+            ButtonModifications = New Button With {
                 .Margin = New Padding(3, 12, 3, 3),
-                .Text = My.Resources.Label_WriteSplices,
+                .Text = My.Resources.Label_Modifications,
                 .MinimumSize = New Size(75, 0),
                 .AutoSize = True,
                 .Anchor = AnchorStyles.Left Or AnchorStyles.Right,
@@ -440,7 +454,7 @@ Namespace Flux
             ButtonContainer.Controls.Add(ButtonProcess)
             ButtonContainer.Controls.Add(ButtonDiscard)
             ButtonContainer.Controls.Add(ButtonTrackLayout)
-            ButtonContainer.Controls.Add(ButtonWriteSplices)
+            ButtonContainer.Controls.Add(ButtonModifications)
 
             ButtonOk.Text = My.Resources.Label_ImportClose
             ButtonOk.Visible = True
@@ -856,7 +870,7 @@ Namespace Flux
             ButtonSaveLog.Enabled = IsIdle AndAlso Not String.IsNullOrEmpty(TextBoxConsole.Text)
 
             ButtonTrackLayout.Enabled = IsIdle AndAlso HasOutputfile AndAlso SourceIsPcImgCnv
-            ButtonWriteSplices.Enabled = IsIdle AndAlso HasOutputfile AndAlso SourceIsPcImgCnv
+            ButtonModifications.Enabled = IsIdle AndAlso HasOutputfile AndAlso SourceIsPcImgCnv
 
             TextBoxFileName.ReadOnly = Not HasInputFile
 
@@ -909,7 +923,7 @@ Namespace Flux
 
             CheckBoxRemaster.Visible = IsPcImgCnv
             ButtonTrackLayout.Visible = IsPcImgCnv OrElse _OutputImages.HasPcImgCnvImage
-            ButtonWriteSplices.Visible = IsPcImgCnv OrElse _OutputImages.HasPcImgCnvImage
+            ButtonModifications.Visible = IsPcImgCnv OrElse _OutputImages.HasPcImgCnvImage
         End Sub
 
         Private Sub RefreshImportButtonState()
@@ -1229,8 +1243,8 @@ Namespace Flux
             GenerateTrackData()
         End Sub
 
-        Private Sub ButtonWriteSplices_Click(sender As Object, e As EventArgs) Handles ButtonWriteSplices.Click
-            DisplayWriteSplices()
+        Private Sub ButtonWriteSplices_Click(sender As Object, e As EventArgs) Handles ButtonModifications.Click
+            DisplayModifications()
         End Sub
 
         Private Sub CheckBoxExtendedLogging_CheckStateChanged(sender As Object, e As EventArgs) Handles CheckBoxExtendedLogging.CheckStateChanged

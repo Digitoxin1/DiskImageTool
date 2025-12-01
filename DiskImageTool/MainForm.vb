@@ -784,7 +784,7 @@ Public Class MainForm
             _ToolStripFatCombo.Width = 60
             MenuDiskWriteFloppyA.Enabled = CheckSize AndAlso _DriveAEnabled
             MenuDiskWriteFloppyB.Enabled = CheckSize AndAlso _DriveBEnabled
-            MenuReportsWriteSplices.Enabled = Disk.Image.IsBitstreamImage
+            MenuReportsModifications.Enabled = Disk.Image.IsBitstreamImage
             SetButtonStateSaveAs(True)
             MenuGreaseweazleWrite.Enabled = CheckSize AndAlso App.AppSettings.Greaseweazle.IsPathValid
         Else
@@ -798,7 +798,7 @@ Public Class MainForm
             _ToolStripFatCombo.Visible = False
             MenuDiskWriteFloppyA.Enabled = False
             MenuDiskWriteFloppyB.Enabled = False
-            MenuReportsWriteSplices.Enabled = False
+            MenuReportsModifications.Enabled = False
             SetButtonStateSaveAs(False)
             MenuGreaseweazleWrite.Enabled = False
         End If
@@ -896,7 +896,7 @@ Public Class MainForm
         MenuHexBootSector.Text = My.Resources.Menu_BootSector
         MenuHexFAT.Text = My.Resources.Menu_FAT
         MenuOptionsDisplayLanguage.Text = My.Resources.Label_Language
-        MenuReportsWriteSplices.Text = My.Resources.Label_WriteSplices
+        MenuReportsModifications.Text = My.Resources.Label_Modifications
         MenuToolsTruncateImage.Text = My.Resources.Menu_TruncateImage
         StatusBarModified.Text = My.Resources.Label_Modified
         ToolStripClose.Text = WithoutHotkey(My.Resources.Menu_Close)
@@ -2106,11 +2106,11 @@ Public Class MainForm
             Exit Sub
         End If
 
-        GenerateTrackLayout(FilePanelMain.CurrentImage.Disk)
+        GenerateTrackLayout(FilePanelMain.CurrentImage.Disk, FilePanelMain.CurrentImage.ImageData.FileName)
     End Sub
 
-    Private Sub MenuReportsWriteSplices_Click(sender As Object, e As EventArgs) Handles MenuReportsWriteSplices.Click
-        DisplayReportWriteSplices(FilePanelMain.CurrentImage.Disk, FilePanelMain.CurrentImage.ImageData.FileName)
+    Private Sub MenuReportsModifications_Click(sender As Object, e As EventArgs) Handles MenuReportsModifications.Click
+        DisplayReportModifications(FilePanelMain.CurrentImage.Disk, FilePanelMain.CurrentImage.ImageData.FileName)
     End Sub
 
     Private Sub MenuToolsClearReservedBytes_Click(sender As Object, e As EventArgs) Handles MenuToolsClearReservedBytes.Click

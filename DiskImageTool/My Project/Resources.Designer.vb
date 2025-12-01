@@ -2792,6 +2792,15 @@ Namespace My.Resources
         End Property
         
         '''<summary>
+        '''  Looks up a localized string similar to Details.
+        '''</summary>
+        Friend ReadOnly Property Label_Details() As String
+            Get
+                Return ResourceManager.GetString("Label_Details", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
         '''  Looks up a localized string similar to Detect.
         '''</summary>
         Friend ReadOnly Property Label_Detect() As String
@@ -3697,6 +3706,15 @@ Namespace My.Resources
         Friend ReadOnly Property Label_Missing() As String
             Get
                 Return ResourceManager.GetString("Label_Missing", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  Looks up a localized string similar to Modifications.
+        '''</summary>
+        Friend ReadOnly Property Label_Modifications() As String
+            Get
+                Return ResourceManager.GetString("Label_Modifications", resourceCulture)
             End Get
         End Property
         
@@ -5398,6 +5416,60 @@ Namespace My.Resources
         Friend ReadOnly Property Message_ImageFormatWarning() As String
             Get
                 Return ResourceManager.GetString("Message_ImageFormatWarning", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  Looks up a localized string similar to Last Access Date added to directory entries.
+        '''</summary>
+        Friend ReadOnly Property Modifcations_LastAccessDateAdded() As String
+            Get
+                Return ResourceManager.GetString("Modifcations_LastAccessDateAdded", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  Looks up a localized string similar to Boot Sector modified.
+        '''</summary>
+        Friend ReadOnly Property Modifications_BootSector() As String
+            Get
+                Return ResourceManager.GetString("Modifications_BootSector", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  Looks up a localized string similar to A copy of the boot sector is at the end of the root directory.
+        '''</summary>
+        Friend ReadOnly Property Modifications_BootSectorCopy() As String
+            Get
+                Return ResourceManager.GetString("Modifications_BootSectorCopy", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  Looks up a localized string similar to Created Date added to directory entries.
+        '''</summary>
+        Friend ReadOnly Property Modifications_CreatedDateAdded() As String
+            Get
+                Return ResourceManager.GetString("Modifications_CreatedDateAdded", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  Looks up a localized string similar to FAT {0} modified.
+        '''</summary>
+        Friend ReadOnly Property Modifications_FAT() As String
+            Get
+                Return ResourceManager.GetString("Modifications_FAT", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  Looks up a localized string similar to OEM Name modified.
+        '''</summary>
+        Friend ReadOnly Property Modifications_OEMName() As String
+            Get
+                Return ResourceManager.GetString("Modifications_OEMName", resourceCulture)
             End Get
         End Property
         

@@ -7,7 +7,8 @@ Module Reports
     Private Const H_SEPARATOR As String = "-"
     Private Const V_SEPARATOR As String = " | "
 
-    Public Sub DisplayReportWriteSplices(Disk As Disk, FileName As String)
+    Public Sub DisplayReportModifications(Disk As Disk, FileName As String, Optional FilePath As String = Nothing)
+        Const OUTPUT_FILENAME As String = "modifications.txt"
         Dim TrackLength As Integer = 6
         Dim SideLength As Integer = 6
         Dim SectorIdLength As Integer = 14
@@ -112,11 +113,8 @@ Module Reports
                 Rows.Add("")
             End If
 
-            If App.AppSettings.Expert.WriteSpliceHeader <> "" Then
-                Rows.Add(App.AppSettings.Expert.WriteSpliceHeader)
-            Else
-                Rows.Add(My.Resources.Label_WriteSplices)
-            End If
+
+            Rows.Add(My.Resources.Label_Modifications)
             Rows.Add(StrDup(RowLength, H_SEPARATOR))
 
             Dim ContentRow As New List(Of String) From {
@@ -192,57 +190,67 @@ Module Reports
 
                 If (RegionFlags And FloppyDiskRegionEnum.BootSector) <> 0 Then
                     If Disk.BootSector.IsWin9xOEMName Then
-                        Details.Add("OEM Name modified")
+                        Details.Add(My.Resources.Modifications_OEMName)
                     Else
-                        Details.Add("Boot Sector Modified")
+                        Details.Add(My.Resources.Modifications_BootSector)
                     End If
                 End If
 
                 If RootMissing And DataMissing Then
                     If (RegionFlags And FloppyDiskRegionEnum.FAT1) <> 0 Then
-                        Details.Add("FAT 1 modified")
+                        Details.Add(String.Format(My.Resources.Modifications_FAT, "1"))
                     End If
                     If (RegionFlags And FloppyDiskRegionEnum.FAT2) <> 0 Then
-                        Details.Add("FAT 2 modified")
+                        Details.Add(String.Format(My.Resources.Modifications_FAT, "2"))
                     End If
                 End If
 
                 If (RegionFlags And FloppyDiskRegionEnum.RootDirectory) <> 0 Then
-                        If ScanResponse IsNot Nothing Then
-                            If ScanResponse.HasCreated Then
-                                Details.Add("Created Date added to directory entries")
-                            End If
-                            If ScanResponse.HasLastAccessed Then
-                                Details.Add("Last Access Date added to directory entries")
-                            End If
-                            If ScanResponse.HasBootSector Then
-                                Details.Add("A copy of the boot sector is at the end of the root directory")
-                            End If
+                    If ScanResponse IsNot Nothing Then
+                        If ScanResponse.HasCreated Then
+                            Details.Add(My.Resources.Modifications_CreatedDateAdded)
+                        End If
+                        If ScanResponse.HasLastAccessed Then
+                            Details.Add(My.Resources.Modifcations_LastAccessDateAdded)
+                        End If
+                        If ScanResponse.HasBootSector Then
+                            Details.Add(My.Resources.Modifications_BootSectorCopy)
                         End If
                     End If
-
-                    For Each Key As Object In ModifiedFiles.Keys
-                        Dim IsDirectory As Boolean = ModifiedFiles.Item(Key)
-                        If IsDirectory Then
-                            Details.Add($"Directory {Quoted(CStr(Key))} modified")
-                        Else
-                            Details.Add($"File {Quoted(CStr(Key))} modified")
-                        End If
-                    Next
-
-                    If Details.Count > 0 Then
-                        SeparatorLength = Details(0).Length
-                    End If
-                    Rows.Add("")
-                    Rows.Add("Details")
-                    Rows.Add(StrDup(SeparatorLength, H_SEPARATOR))
-                    Rows.Add(String.Join(Environment.NewLine, Details))
                 End If
+
+                For Each Key As Object In ModifiedFiles.Keys
+                    Dim IsDirectory As Boolean = ModifiedFiles.Item(Key)
+                    If IsDirectory Then
+                        Details.Add($"Directory {Quoted(CStr(Key))} modified")
+                    Else
+                        Details.Add($"File {Quoted(CStr(Key))} modified")
+                    End If
+                Next
+
+                If Details.Count > 0 Then
+                    SeparatorLength = Details(0).Length
+                End If
+                Rows.Add("")
+                Rows.Add(My.Resources.Label_Details)
+                Rows.Add(StrDup(SeparatorLength, H_SEPARATOR))
+                Rows.Add(String.Join(Environment.NewLine, Details))
             End If
+        End If
 
         Dim Content = String.Join(vbCrLf, Rows) & If(Rows.Count > 0, vbCrLf, String.Empty)
 
-        Dim frmTextView As New TextViewForm(My.Resources.Label_WriteSplices & " - " & FileName, Content, True, True, App.AppSettings.Expert.WriteSpliceFileName)
+        Dim SaveFileName = OUTPUT_FILENAME
+        If Not String.IsNullOrEmpty(FilePath) Then
+            SaveFileName = IO.Path.Combine(FilePath, SaveFileName)
+        End If
+
+        Dim Caption = My.Resources.Label_Modifications
+        If Not String.IsNullOrEmpty(FileName) Then
+            Caption &= " - " & FileName
+        End If
+
+        Dim frmTextView As New TextViewForm(Caption, Content, True, True, SaveFileName)
         frmTextView.ShowDialog()
     End Sub
 

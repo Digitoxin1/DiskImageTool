@@ -1855,4 +1855,28 @@ Möchten Sie ihn überschreiben?</value>
   <data name="Label_Database" xml:space="preserve">
     <value>DB-Version</value>
   </data>
+  <data name="Label_Modifications" xml:space="preserve">
+    <value>Änderungen</value>
+  </data>
+  <data name="Label_Details" xml:space="preserve">
+    <value>Details</value>
+  </data>
+  <data name="Modifications_BootSector" xml:space="preserve">
+    <value>Bootsektor geändert</value>
+  </data>
+  <data name="Modifications_OEMName" xml:space="preserve">
+    <value>OEM-Name geändert</value>
+  </data>
+  <data name="Modifications_FAT" xml:space="preserve">
+    <value>FAT {0} geändert</value>
+  </data>
+  <data name="Modifications_CreatedDateAdded" xml:space="preserve">
+    <value>Erstellungsdatum zu Verzeichniseinträgen hinzugefügt</value>
+  </data>
+  <data name="Modifcations_LastAccessDateAdded" xml:space="preserve">
+    <value>Letztes Zugriffsdatum zu Verzeichniseinträgen hinzugefügt</value>
+  </data>
+  <data name="Modifications_BootSectorCopy" xml:space="preserve">
+    <value>Eine Kopie des Bootsektors befindet sich am Ende des Root-Verzeichnisses.</value>
+  </data>
 </root>

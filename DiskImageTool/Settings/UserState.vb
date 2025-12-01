@@ -9,6 +9,7 @@ Namespace Settings
 
         Private ReadOnly _filePath As String
 
+        Private _lastNewImagePath As String = ""
         Private _preferredFileExtensions As New Dictionary(Of DiskImage.FloppyDiskFormat, String)
         Private _preferredFileExtensionsOriginal As Dictionary(Of DiskImage.FloppyDiskFormat, String)
 
@@ -22,6 +23,18 @@ Namespace Settings
         Public Property ETags As UserStateETags
         Public Property Flux As UserStateFlux
         Public Property IsDirty As Boolean
+
+        Public Property LastNewImagePath As String
+            Get
+                Return _lastNewImagePath
+            End Get
+            Set(value As String)
+                If _lastNewImagePath <> value Then
+                    _lastNewImagePath = value
+                    IsDirty = True
+                End If
+            End Set
+        End Property
 
         Public Shared Function Load(Optional configPath As String = Nothing) As UserState
             Dim path = If(configPath, GetDefaultConfigPath())
@@ -43,6 +56,7 @@ Namespace Settings
                 Dim root = Serializer.Parse(Of Dictionary(Of String, JsonValue))(json)
 
                 ' top-level simple values (use backing fields to avoid IsDirty during load)
+                userState._lastNewImagePath = ReadValue(root, "lastNewImagePath", userState._lastNewImagePath)
                 userState._ETags.LoadFromDictionary(ReadSection(root, "eTags"))
                 userState._Flux.LoadFromDictionary(ReadSection(root, "flux"))
 
@@ -86,7 +100,9 @@ Namespace Settings
                 Return
             End If
 
-            Dim root As New Dictionary(Of String, Object)
+            Dim root As New Dictionary(Of String, Object) From {
+                 {"lastNewImagePath", _lastNewImagePath}
+            }
 
             root("eTags") = ETags.ToJsonObject()
             root("flux") = Flux.ToJsonObject()

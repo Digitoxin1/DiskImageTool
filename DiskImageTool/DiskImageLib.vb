@@ -400,6 +400,8 @@ Module DiskImageLib
 
         If ImageData.FileType <> ImageData.FileTypeEnum.NewImage Then
             InitialDirectory = IO.Path.GetDirectoryName(FilePath)
+        Else
+            InitialDirectory = App.UserState.LastNewImagePath
         End If
 
         Using Dialog As New SaveFileDialog With {
@@ -421,6 +423,9 @@ Module DiskImageLib
 
             If Dialog.ShowDialog = DialogResult.OK Then
                 NewFilePath = Dialog.FileName
+                If ImageData.FileType = ImageData.FileTypeEnum.NewImage Then
+                    App.UserState.LastNewImagePath = IO.Path.GetDirectoryName(NewFilePath)
+                End If
             End If
         End Using
 

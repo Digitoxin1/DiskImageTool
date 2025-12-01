@@ -2,8 +2,8 @@
 Imports DiskImageTool.DiskImage
 
 Module MenuTools
-    Public Sub GenerateTrackLayout(Disk As Disk, Optional FilePath As String = Nothing)
-        Const FileName As String = "tracklayout.txt"
+    Public Sub GenerateTrackLayout(Disk As Disk, FileName As String, Optional FilePath As String = Nothing)
+        Const OUTPUT_FILENAME As String = "tracklayout.txt"
 
         If Disk Is Nothing Then Exit Sub
 
@@ -83,12 +83,17 @@ Module MenuTools
         Next
         TrackLayout.AppendLine(FirstTrack & "-" & Track - 1 & ":" & PrevTrackString)
 
-        Dim SaveFileName = FileName
+        Dim SaveFileName = OUTPUT_FILENAME
         If Not String.IsNullOrEmpty(FilePath) Then
-            SaveFileName = IO.Path.Combine(FilePath, FileName)
+            SaveFileName = IO.Path.Combine(FilePath, OUTPUT_FILENAME)
         End If
 
-        Dim frmTextView As New TextViewForm(My.Resources.Caption_TrackLayout, TrackLayout.ToString, True, True, SaveFileName)
+        Dim Caption = My.Resources.Label_Tracklayout
+        If Not String.IsNullOrEmpty(FileName) Then
+            Caption &= " - " & FileName
+        End If
+
+        Dim frmTextView As New TextViewForm(Caption, TrackLayout.ToString, True, True, SaveFileName)
         frmTextView.ShowDialog()
     End Sub
 
