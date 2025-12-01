@@ -61,6 +61,10 @@ Namespace ImageFormats
                 End Using
             End Function
 
+            Public Overrides Function SaveToFile(FilePath As String) As Boolean Implements IFloppyImage.SaveToFile
+                Return _Image.Export(FilePath)
+            End Function
+
             Private Sub BuildSectorMap()
                 Dim TrackInfo As PSITrackInfo
                 Dim TrackData As TrackData

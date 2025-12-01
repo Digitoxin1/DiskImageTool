@@ -220,7 +220,7 @@ Namespace DiskImage
             Return False
         End Function
 
-        Public Function SaveToFile(FilePath As String) As Boolean Implements IFloppyImage.SaveToFile
+        Public Overridable Function SaveToFile(FilePath As String) As Boolean Implements IFloppyImage.SaveToFile
             Return _Image.Export(FilePath)
         End Function
 

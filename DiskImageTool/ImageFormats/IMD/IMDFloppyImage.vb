@@ -70,6 +70,10 @@ Namespace ImageFormats
                 Next
             End Sub
 
+            Public Overrides Function SaveToFile(FilePath As String) As Boolean Implements IFloppyImage.SaveToFile
+                Return _Image.Export(FilePath)
+            End Function
+
             Private Function CalculateHash(HashAlgorithm As HashAlgorithm) As String
                 For Each Track In _Image.Tracks
                     If Track.IsMFM Then
