@@ -16,11 +16,12 @@
         Me.LabelProductName.Text = My.Application.Info.ProductName
         Me.LabelVersionCaption.Text = My.Resources.Label_Version & ":"
         Me.LabelVersion.Text = GetVersionString()
-        Me.LabelDB.Text = My.Resources.Label_Database & ":"
-        Me.LabelDBVersion.Text = If(String.IsNullOrEmpty(App.TitleDB.Version), "N/A", App.TitleDB.Version)
-        If String.IsNullOrEmpty(App.TitleDB.Path) Then
-            Me.LabelDBVersion.LinkBehavior = LinkBehavior.NeverUnderline
-            Me.LabelDBVersion.Enabled = False
+        Me.LabelDBMain.Text = My.Resources.Label_Database & ":"
+        Me.LabelDBVersionMain.Text = If(String.IsNullOrEmpty(App.TitleDB.Version), "N/A", App.TitleDB.Version)
+        Me.LabelDBCountMain.Text = InParens(String.Format(My.Resources.Label_Entries, App.TitleDB.MainCount))
+        If String.IsNullOrEmpty(App.TitleDB.MainPath) Then
+            Me.LabelDBVersionMain.LinkBehavior = LinkBehavior.NeverUnderline
+            Me.LabelDBVersionMain.Enabled = False
         End If
         Me.LabelURL.Text = My.Resources.URL_Repository
         Me.TextBoxDescription.Text = GetResource("License.txt")
@@ -44,9 +45,9 @@
         Return Value
     End Function
 
-    Private Sub LabelDBVersion_LinkClicked(sender As Object, e As LinkLabelLinkClickedEventArgs) Handles LabelDBVersion.LinkClicked
-        If Not String.IsNullOrEmpty(App.TitleDB.Path) Then
-            Dim Folder = IO.Path.GetDirectoryName(App.TitleDB.Path)
+    Private Sub LabelDBVersion_LinkClicked(sender As Object, e As LinkLabelLinkClickedEventArgs) Handles LabelDBVersionMain.LinkClicked
+        If Not String.IsNullOrEmpty(App.TitleDB.MainPath) Then
+            Dim Folder = IO.Path.GetDirectoryName(App.TitleDB.MainPath)
             If IO.Directory.Exists(Folder) Then
                 Try
                     Dim psi As New ProcessStartInfo() With {

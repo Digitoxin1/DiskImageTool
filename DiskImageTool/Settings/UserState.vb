@@ -140,7 +140,7 @@ Namespace Settings
         End Sub
 
         Private Shared Function GetDefaultConfigPath() As String
-            Dim DataPath = GetDataPath()
+            Dim DataPath = GetAppDataPath()
             Return Path.Combine(DataPath, DEFAULT_CONFIG_FILE)
         End Function
 

@@ -273,7 +273,7 @@ Module ImageIO
         Return IO.Path.GetDirectoryName(Application.ExecutablePath)
     End Function
 
-    Public Function GetDataPath() As String
+    Public Function GetAppDataPath() As String
         Dim BaseFolder = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData)
         Dim AppName = My.Application.Info.ProductName
 
@@ -517,7 +517,7 @@ Module ImageIO
     End Sub
 
     Public Function InitDataPath() As String
-        Dim DataPath = GetDataPath()
+        Dim DataPath = GetAppDataPath()
 
         If Not IO.Directory.Exists(DataPath) Then
             Try

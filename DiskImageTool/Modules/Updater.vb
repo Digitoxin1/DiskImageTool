@@ -128,7 +128,7 @@ Module Updater
         End If
 
         Dim ZipFilePath As String = Path.Combine(TempPath, Path.GetFileName(Response.URL))
-        Dim DBFileName As String = FloppyDB.DB_FILE_NAME
+        Dim DBFileName As String = FloppyDB.MAIN_DB_FILE_NAME
 
         Cursor.Current = Cursors.WaitCursor
 

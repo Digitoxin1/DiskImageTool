@@ -2,12 +2,16 @@
 Imports DiskImageTool.DiskImage
 
 Public Class FloppyDB
-    Public Const DB_FILE_NAME As String = "FloppyDB.xml"
+    Public Const MAIN_DB_FILE_NAME As String = "FloppyDB.xml"
+    Public Const USER_DB_FILE_NAME As String = "UserDB.xml"
     Private Const DB_FILE_NAME_NEW As String = "NewFloppyDB.xml"
     Private ReadOnly _NameSpace As String = New StubClass().GetType.Namespace
+    Private _MainCount As Integer = 0
+    Private _MainPath As String
     Private _NewXMLDoc As Xml.XmlDocument
     Private _TitleDictionary As Dictionary(Of String, FloppyData)
-    Private _Path As String
+    Private _userCount As Integer = 0
+    Private _UserPath As String
     Private _Version As String
     'Private ReadOnly _XMLDoc As Xml.XmlDocument
 
@@ -22,15 +26,27 @@ Public Class FloppyDB
         Load()
     End Sub
 
-    Public Sub Load()
-        Dim Response = LoadXMLDoc()
-        ParseXML(Response.XMLDoc)
-        _Path = Response.Path
-    End Sub
-
-    Public ReadOnly Property Path As String
+    Public ReadOnly Property MainCount As Integer
         Get
-            Return _Path
+            Return _MainCount
+        End Get
+    End Property
+
+    Public ReadOnly Property MainPath As String
+        Get
+            Return _MainPath
+        End Get
+    End Property
+
+    Public ReadOnly Property UserCount As Integer
+        Get
+            Return _userCount
+        End Get
+    End Property
+
+    Public ReadOnly Property UserPath As String
+        Get
+            Return _UserPath
         End Get
     End Property
 
@@ -137,7 +153,6 @@ Public Class FloppyDB
                 mediaNode.AppendChild(diskNode)
             End If
         End If
-
     End Sub
 
     Public Function IsVerifiedImage(Disk As Disk) As Boolean
@@ -150,6 +165,19 @@ Public Class FloppyDB
 
         Return False
     End Function
+
+    Public Sub Load()
+        _TitleDictionary = New Dictionary(Of String, FloppyData)
+
+        Dim UserResponse = LoadXMLDoc(USER_DB_FILE_NAME)
+        _UserPath = UserResponse.Path
+        _userCount = ParseXML(UserResponse.XMLDoc)
+
+        Dim MainResponse = LoadXMLDoc(MAIN_DB_FILE_NAME, App.AppSettings.DatabasePath)
+        _MainPath = MainResponse.Path
+        _Version = MainResponse.Version
+        _MainCount = ParseXML(MainResponse.XMLDoc)
+    End Sub
 
     'Public Function MarkDiskAsTdc(doc As Xml.XmlDocument, md5Hash As String) As Boolean
     '    If doc Is Nothing OrElse String.IsNullOrWhiteSpace(md5Hash) Then
@@ -387,49 +415,67 @@ Public Class FloppyDB
     '    Return Data
     'End Function
 
-    Private Function LoadXMLDoc() As (XMLDoc As Xml.XmlDocument, Path As String)
-        Dim DataPath = GetDataPath()
-        Dim DownloadedPath = IO.Path.Combine(DataPath, DB_FILE_NAME)
+    Private Function LoadXMLDoc(FileName As String, Optional OverridePath As String = "") As (XMLDoc As Xml.XmlDocument, Path As String, Version As String)
         Dim BasePath As String
         Dim SourcePath As String = ""
+        Dim Version As String = ""
 
-        If App.AppSettings.DatabasePath <> "" Then
+        If OverridePath <> "" Then
             BasePath = App.AppSettings.DatabasePath
         Else
             BasePath = GetAppPath()
         End If
 
-        Dim DistributedPath = IO.Path.Combine(BasePath, DB_FILE_NAME)
+        Dim MainFile = IO.Path.Combine(BasePath, FileName)
+        Dim AppDataFile = IO.Path.Combine(GetAppDataPath(), FileName)
 
-        Dim Downloaded = TryLoadXmlWithVersion(DownloadedPath)
-        Dim Distributed = TryLoadXmlWithVersion(DistributedPath)
+        Dim MainXML = TryLoadXmlWithVersion(MainFile)
+        Dim AppDataXML = TryLoadXmlWithVersion(AppDataFile)
 
         Dim xmlDoc As Xml.XmlDocument = Nothing
 
-        If Downloaded.Doc IsNot Nothing AndAlso Distributed.Doc IsNot Nothing Then
-            If String.Compare(Distributed.Version, Downloaded.Version, StringComparison.Ordinal) > 0 Then
-                xmlDoc = Distributed.Doc
-                SourcePath = DistributedPath
+        If AppDataXML.Doc IsNot Nothing AndAlso MainXML.Doc IsNot Nothing Then
+            If String.Compare(MainXML.Version, AppDataXML.Version, StringComparison.Ordinal) >= 0 Then
+                xmlDoc = MainXML.Doc
+                SourcePath = MainFile
+                Version = MainXML.Version
             Else
-                xmlDoc = Downloaded.Doc
-                SourcePath = DownloadedPath
+                xmlDoc = AppDataXML.Doc
+                SourcePath = AppDataFile
+                Version = AppDataXML.Version
             End If
 
-        ElseIf Downloaded.Doc IsNot Nothing Then
-            xmlDoc = Downloaded.Doc
-            SourcePath = DownloadedPath
+        ElseIf AppDataXML.Doc IsNot Nothing Then
+            xmlDoc = AppDataXML.Doc
+            SourcePath = AppDataFile
+            Version = AppDataXML.Version
 
-        ElseIf Distributed.Doc IsNot Nothing Then
-            xmlDoc = Distributed.Doc
-            SourcePath = DistributedPath
+        ElseIf MainXML.Doc IsNot Nothing Then
+            xmlDoc = MainXML.Doc
+            SourcePath = MainFile
+            Version = MainXML.Version
         End If
 
         If xmlDoc Is Nothing Then
             xmlDoc = New Xml.XmlDocument()
             xmlDoc.LoadXml("<root />")
+
+            Dim Saved As Boolean = False
+            If MainXML.NotFound Then
+                If TrySave(xmlDoc, MainFile) Then
+                    SourcePath = MainFile
+                    Saved = True
+                End If
+            End If
+
+            If Not Saved AndAlso AppDataXML.NotFound Then
+                If TrySave(xmlDoc, AppDataFile) Then
+                    SourcePath = AppDataFile
+                End If
+            End If
         End If
 
-        Return (xmlDoc, SourcePath)
+        Return (xmlDoc, SourcePath, Version)
     End Function
 
     Private Function LoadXMLFromFile(FilePath As String) As Xml.XmlDocument
@@ -444,16 +490,19 @@ Public Class FloppyDB
         Return XMLDoc
     End Function
 
-    Private Sub ParseNode(Node As Xml.XmlNode, ParentData As FloppyData)
+    Private Function ParseNode(Node As Xml.XmlNode, ParentData As FloppyData) As Integer
+        Dim Count As Integer = 0
+
         If TypeOf Node Is Xml.XmlElement Then
             Dim FloppyData = GetTitleData(Node, ParentData)
-            If DirectCast(Node, Xml.XmlElement).HasAttribute("md5") Then
+            If Node.Name = "disk" AndAlso DirectCast(Node, Xml.XmlElement).HasAttribute("md5") Then
                 Dim md5 As String = Node.Attributes("md5").Value
                 If Not _TitleDictionary.ContainsKey(md5) Then
                     _TitleDictionary.Add(md5, FloppyData)
                 End If
+                Count += 1
             End If
-            If DirectCast(Node, Xml.XmlElement).HasAttribute("md5_alt") Then
+            If Node.Name = "disk" AndAlso DirectCast(Node, Xml.XmlElement).HasAttribute("md5_alt") Then
                 Dim md5 As String = Node.Attributes("md5_alt").Value
                 If Not _TitleDictionary.ContainsKey(md5) Then
                     _TitleDictionary.Add(md5, FloppyData)
@@ -461,19 +510,18 @@ Public Class FloppyDB
             End If
             If Node.HasChildNodes Then
                 For Each ChildNode As Xml.XmlNode In Node.ChildNodes
-                    ParseNode(ChildNode, FloppyData)
+                    Count += ParseNode(ChildNode, FloppyData)
                 Next
             End If
         End If
-    End Sub
 
-    Private Sub ParseXML(XMLDoc As Xml.XmlDocument)
-        _TitleDictionary = New Dictionary(Of String, FloppyData)
+        Return Count
+    End Function
 
-        _Version = GetVersion(XMLDoc)
-
+    Private Function ParseXML(XMLDoc As Xml.XmlDocument) As Integer
+        Dim Count As Integer = 0
         For Each TitleNode As Xml.XmlNode In XMLDoc.SelectNodes("/root/title")
-            ParseNode(TitleNode, Nothing)
+            Count += ParseNode(TitleNode, Nothing)
 
 #If DEBUG Then
             CheckTitleNodeForErrors(TitleNode)
@@ -487,20 +535,32 @@ Public Class FloppyDB
             End If
         Next
 #End If
-    End Sub
 
-    Private Function TryLoadXmlWithVersion(Path As String) As (Doc As Xml.XmlDocument, Version As String)
+        Return Count
+    End Function
+
+    Private Function TryLoadXmlWithVersion(Path As String) As (Doc As Xml.XmlDocument, Version As String, NotFound As Boolean)
         If Not IO.File.Exists(Path) Then
-            Return (Nothing, "")
+            Return (Nothing, "", True)
         End If
 
         Try
             Dim Doc As New Xml.XmlDocument()
             Doc.Load(Path)
-            Return (Doc, GetVersion(Doc))
+            Return (Doc, GetVersion(Doc), False)
         Catch
-            Return (Nothing, "")
+            Return (Nothing, "", False)
         End Try
+    End Function
+
+    Private Function TrySave(XMLDoc As Xml.XmlDocument, Path As String) As Boolean
+        Try
+            XMLDoc.Save(Path)
+            Return True
+        Catch ex As Exception
+        End Try
+
+        Return False
     End Function
 
     Public Class BooterTrack
@@ -518,41 +578,15 @@ Public Class FloppyDB
         Public Property Cracked As Boolean = False
         Public Property Disk As String = ""
         Public Property FileName As String = ""
+        Public Property Languages As String = ""
         Public Property Modified As Boolean = False
+        Public Property Region As String = ""
         Public Property Status As FloppyDBStatus = FloppyDBStatus.Unknown
         Public Property StatusString As String = ""
         Public Property Title As String = ""
         Public Property Verified As Boolean = False
         Public Property Version As String = ""
         Public Property Year As String = ""
-        Public Property Region As String = ""
-        Public Property Languages As String = ""
-
-        Private Function ParseLanguageList(codesList As String) As String
-            If String.IsNullOrWhiteSpace(codesList) Then
-                Return ""
-            End If
-
-            Dim parts = codesList.Split(","c)
-            Dim result As New List(Of String)
-
-            For Each p In parts
-                Dim code = p.Trim().ToLowerInvariant()
-
-                Try
-                    ' Convert ISO-639-1 code into language name
-                    Dim culture = New Globalization.CultureInfo(code)
-                    ' Remove parenthetical extra info like "German (Germany)"
-                    Dim name = culture.EnglishName.Split("("c)(0).Trim()
-                    result.Add(name)
-                Catch
-                    ' Ignore invalid codes
-                End Try
-            Next
-
-            Return String.Join(", ", result)
-        End Function
-
         Private Sub ParseFileName()
             _Title = Trim(Regex.Match(FileName, "^[^\\(]+").Value)
             _Title = Replace(_Title, " - ", ": ")
@@ -612,6 +646,30 @@ Public Class FloppyDB
             _Status = GetFloppyDBStatus(_StatusString)
         End Sub
 
+        Private Function ParseLanguageList(codesList As String) As String
+            If String.IsNullOrWhiteSpace(codesList) Then
+                Return ""
+            End If
+
+            Dim parts = codesList.Split(","c)
+            Dim result As New List(Of String)
+
+            For Each p In parts
+                Dim code = p.Trim().ToLowerInvariant()
+
+                Try
+                    ' Convert ISO-639-1 code into language name
+                    Dim culture = New Globalization.CultureInfo(code)
+                    ' Remove parenthetical extra info like "German (Germany)"
+                    Dim name = culture.EnglishName.Split("("c)(0).Trim()
+                    result.Add(name)
+                Catch
+                    ' Ignore invalid codes
+                End Try
+            Next
+
+            Return String.Join(", ", result)
+        End Function
     End Class
 
     Public Class FloppyData

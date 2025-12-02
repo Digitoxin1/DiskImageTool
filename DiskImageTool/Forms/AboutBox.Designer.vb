@@ -34,11 +34,12 @@ Partial Class AboutBox
         Me.OKButton = New System.Windows.Forms.Button()
         Me.TextBoxDescription = New System.Windows.Forms.TextBox()
         Me.LabelProductName = New System.Windows.Forms.Label()
-        Me.LabelVersion = New System.Windows.Forms.Label()
         Me.LabelURL = New System.Windows.Forms.LinkLabel()
-        Me.LabelDB = New System.Windows.Forms.Label()
+        Me.LabelDBMain = New System.Windows.Forms.Label()
+        Me.LabelDBVersionMain = New System.Windows.Forms.LinkLabel()
         Me.LabelVersionCaption = New System.Windows.Forms.Label()
-        Me.LabelDBVersion = New System.Windows.Forms.LinkLabel()
+        Me.LabelVersion = New System.Windows.Forms.Label()
+        Me.LabelDBCountMain = New System.Windows.Forms.Label()
         PanelBottom = New System.Windows.Forms.FlowLayoutPanel()
         PanelMain = New System.Windows.Forms.Panel()
         TableLayoutPanel = New System.Windows.Forms.TableLayoutPanel()
@@ -147,17 +148,6 @@ Partial Class AboutBox
         Me.LabelProductName.Text = "{ProductName}"
         Me.LabelProductName.TextAlign = System.Drawing.ContentAlignment.MiddleLeft
         '
-        'LabelVersion
-        '
-        Me.LabelVersion.AutoSize = True
-        Me.LabelVersion.Location = New System.Drawing.Point(60, 0)
-        Me.LabelVersion.Margin = New System.Windows.Forms.Padding(0, 0, 3, 0)
-        Me.LabelVersion.Name = "LabelVersion"
-        Me.LabelVersion.Size = New System.Drawing.Size(50, 13)
-        Me.LabelVersion.TabIndex = 1
-        Me.LabelVersion.Text = "{Version}"
-        Me.LabelVersion.TextAlign = System.Drawing.ContentAlignment.MiddleLeft
-        '
         'LabelURL
         '
         Me.LabelURL.AutoSize = True
@@ -172,25 +162,39 @@ Partial Class AboutBox
         '
         'FlowLayoutPanel1
         '
-        FlowLayoutPanel1.Controls.Add(Me.LabelDB)
-        FlowLayoutPanel1.Controls.Add(Me.LabelDBVersion)
+        FlowLayoutPanel1.AutoSize = True
+        FlowLayoutPanel1.Controls.Add(Me.LabelDBMain)
+        FlowLayoutPanel1.Controls.Add(Me.LabelDBVersionMain)
+        FlowLayoutPanel1.Controls.Add(Me.LabelDBCountMain)
         FlowLayoutPanel1.Location = New System.Drawing.Point(79, 48)
         FlowLayoutPanel1.Margin = New System.Windows.Forms.Padding(0)
         FlowLayoutPanel1.Name = "FlowLayoutPanel1"
-        FlowLayoutPanel1.Size = New System.Drawing.Size(128, 13)
+        FlowLayoutPanel1.Size = New System.Drawing.Size(167, 13)
         FlowLayoutPanel1.TabIndex = 2
         FlowLayoutPanel1.WrapContents = False
         '
-        'LabelDB
+        'LabelDBMain
         '
-        Me.LabelDB.AutoSize = True
-        Me.LabelDB.Location = New System.Drawing.Point(6, 0)
-        Me.LabelDB.Margin = New System.Windows.Forms.Padding(6, 0, 0, 0)
-        Me.LabelDB.Name = "LabelDB"
-        Me.LabelDB.Size = New System.Drawing.Size(54, 13)
-        Me.LabelDB.TabIndex = 0
-        Me.LabelDB.Text = "{Caption:}"
-        Me.LabelDB.UseMnemonic = False
+        Me.LabelDBMain.AutoSize = True
+        Me.LabelDBMain.Location = New System.Drawing.Point(6, 0)
+        Me.LabelDBMain.Margin = New System.Windows.Forms.Padding(6, 0, 0, 0)
+        Me.LabelDBMain.Name = "LabelDBMain"
+        Me.LabelDBMain.Size = New System.Drawing.Size(54, 13)
+        Me.LabelDBMain.TabIndex = 0
+        Me.LabelDBMain.Text = "{Caption:}"
+        Me.LabelDBMain.UseMnemonic = False
+        '
+        'LabelDBVersionMain
+        '
+        Me.LabelDBVersionMain.AutoSize = True
+        Me.LabelDBVersionMain.Location = New System.Drawing.Point(60, 0)
+        Me.LabelDBVersionMain.Margin = New System.Windows.Forms.Padding(0)
+        Me.LabelDBVersionMain.Name = "LabelDBVersionMain"
+        Me.LabelDBVersionMain.Size = New System.Drawing.Size(61, 13)
+        Me.LabelDBVersionMain.TabIndex = 1
+        Me.LabelDBVersionMain.TabStop = True
+        Me.LabelDBVersionMain.Text = "{Database}"
+        Me.LabelDBVersionMain.UseMnemonic = False
         '
         'FlowLayoutPanel2
         '
@@ -214,17 +218,27 @@ Partial Class AboutBox
         Me.LabelVersionCaption.TabIndex = 0
         Me.LabelVersionCaption.Text = "{Caption:}"
         '
-        'LabelDBVersion
+        'LabelVersion
         '
-        Me.LabelDBVersion.AutoSize = True
-        Me.LabelDBVersion.Location = New System.Drawing.Point(60, 0)
-        Me.LabelDBVersion.Margin = New System.Windows.Forms.Padding(0, 0, 3, 0)
-        Me.LabelDBVersion.Name = "LabelDBVersion"
-        Me.LabelDBVersion.Size = New System.Drawing.Size(61, 13)
-        Me.LabelDBVersion.TabIndex = 1
-        Me.LabelDBVersion.TabStop = True
-        Me.LabelDBVersion.Text = "{Database}"
-        Me.LabelDBVersion.UseMnemonic = False
+        Me.LabelVersion.AutoSize = True
+        Me.LabelVersion.Location = New System.Drawing.Point(60, 0)
+        Me.LabelVersion.Margin = New System.Windows.Forms.Padding(0, 0, 3, 0)
+        Me.LabelVersion.Name = "LabelVersion"
+        Me.LabelVersion.Size = New System.Drawing.Size(50, 13)
+        Me.LabelVersion.TabIndex = 1
+        Me.LabelVersion.Text = "{Version}"
+        Me.LabelVersion.TextAlign = System.Drawing.ContentAlignment.MiddleLeft
+        '
+        'LabelDBCountMain
+        '
+        Me.LabelDBCountMain.AutoSize = True
+        Me.LabelDBCountMain.Location = New System.Drawing.Point(121, 0)
+        Me.LabelDBCountMain.Margin = New System.Windows.Forms.Padding(0, 0, 3, 0)
+        Me.LabelDBCountMain.Name = "LabelDBCountMain"
+        Me.LabelDBCountMain.Size = New System.Drawing.Size(43, 13)
+        Me.LabelDBCountMain.TabIndex = 2
+        Me.LabelDBCountMain.Text = "{Count}"
+        Me.LabelDBCountMain.UseMnemonic = False
         '
         'AboutBox
         '
@@ -255,7 +269,8 @@ Partial Class AboutBox
 
     Friend WithEvents LabelVersion As Label
     Friend WithEvents LabelURL As LinkLabel
-    Friend WithEvents LabelDB As Label
+    Friend WithEvents LabelDBMain As Label
     Friend WithEvents LabelVersionCaption As Label
-    Friend WithEvents LabelDBVersion As LinkLabel
+    Friend WithEvents LabelDBVersionMain As LinkLabel
+    Friend WithEvents LabelDBCountMain As Label
 End Class
