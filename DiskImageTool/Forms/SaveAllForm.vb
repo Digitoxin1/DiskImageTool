@@ -24,15 +24,6 @@ Public Class SaveAllForm
         LblCaption.Text = Caption
     End Sub
 
-    Private Sub LocalizeForm()
-        BtnCancel.Text = My.Resources.Menu_Cancel
-        BtnNo.Text = My.Resources.Menu_No
-        BtnYes.Text = My.Resources.Menu_Yes
-        Me.Text = WithoutHotkey(My.Resources.Menu_Save)
-        BtnNoToall.Text = My.Resources.Menu_NoToAll
-        BtnYesToAll.Text = My.Resources.Menu_YesToAll
-    End Sub
-
     Public Property Result As MyMsgBoxResult
         Get
             Return _Result
@@ -42,6 +33,22 @@ Public Class SaveAllForm
         End Set
     End Property
 
+    Public Shared Function Display(Caption As String) As MyMsgBoxResult
+        Using Form As New SaveAllForm(Caption)
+            Form.ShowDialog()
+
+            Return Form.Result
+        End Using
+    End Function
+
+    Private Sub LocalizeForm()
+        BtnCancel.Text = My.Resources.Menu_Cancel
+        BtnNo.Text = My.Resources.Menu_No
+        BtnYes.Text = My.Resources.Menu_Yes
+        Me.Text = WithoutHotkey(My.Resources.Menu_Save)
+        BtnNoToall.Text = My.Resources.Menu_NoToAll
+        BtnYesToAll.Text = My.Resources.Menu_YesToAll
+    End Sub
 #Region "Events"
 
     Private Sub Button_Click(sender As Object, e As EventArgs) Handles BtnYes.Click, BtnNo.Click, BtnCancel.Click, BtnYesToAll.Click, BtnNoToall.Click

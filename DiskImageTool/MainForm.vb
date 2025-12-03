@@ -244,9 +244,7 @@ Public Class MainForm
 
         Dim scanTask = Task.Run(Sub() scanner.Scan(cts.Token))
 
-        Using dlg As New ItemScanForm(scanner, My.Resources.Caption_ScanImages, My.Resources.Label_Scanning, cts)
-            dlg.ShowDialog(Me)
-        End Using
+        ItemScanForm.Display(scanner, My.Resources.Caption_ScanImages, My.Resources.Label_Scanning, cts, Me)
 
         MenuFiltersScanNew.Visible = scanner.ItemsRemaining > 0
 
@@ -669,22 +667,16 @@ Public Class MainForm
     End Sub
 
     Private Sub ImageNew()
-        Dim frmImageCreationForm As New ImageCreationForm()
-        frmImageCreationForm.ShowDialog(Me)
+        Dim Response = ImageCreationForm.Display(Me)
 
-        Dim Data = frmImageCreationForm.Data
-
-        If Data Is Nothing Then
+        If Response.Data Is Nothing Then
             Exit Sub
         End If
 
-        Dim DiskFormat = frmImageCreationForm.DiskFormat
-        Dim ImportFiles = frmImageCreationForm.ImportFiles
-
-        Dim FileName = FloppyDiskNewImage(Data, DiskFormat, _LoadedFiles.FileNames)
+        Dim FileName = FloppyDiskNewImage(Response.Data, Response.DiskFormat, _LoadedFiles.FileNames)
         If FileName.Length > 0 Then
             ProcessFileDropNew(FileName)
-            If ImportFiles Then
+            If Response.ImportFiles Then
                 NewImageImport(FilePanelMain, FileName)
             End If
         End If
@@ -711,9 +703,7 @@ Public Class MainForm
 
         Dim scanTask = Task.Run(Sub() scanner.Scan(cts.Token))
 
-        Using dlg As New ItemScanForm(scanner, My.Resources.Caption_CleanImages, My.Resources.Label_Processing, cts)
-            dlg.ShowDialog(Me)
-        End Using
+        ItemScanForm.Display(scanner, My.Resources.Caption_CleanImages, My.Resources.Label_Processing, cts, Me)
 
         ImageFilters.UpdateAllMenuItems()
         If ImageFilters.ScanRun Then
@@ -1079,9 +1069,7 @@ Public Class MainForm
 
             Dim scanTask = Task.Run(Sub() scanner.Scan(Files, NewImage, NewFileName, cts.Token))
 
-            Using dlg As New ImageLoadForm(scanner, cts)
-                dlg.ShowDialog(Me)
-            End Using
+            ImageLoadForm.Display(scanner, cts, Me)
         Else
             scanner.Scan(Files, NewImage, NewFileName)
         End If
@@ -1607,7 +1595,7 @@ Public Class MainForm
                 btnRetry.Visible = Not CurrentImage.ImageData.InvalidImage
             End If
             SetCurrentFileName(CurrentImage.ImageData)
-            _SummaryPanel.Populate(CurrentImage, MD5)
+            _SummaryPanel.Populate(CurrentImage, App.Globals.BootstrapDB, App.Globals.TitleDB, MD5)
             HashPanelPopulate(CurrentImage.Disk, MD5)
         Else
             SummaryClear()
@@ -1834,9 +1822,9 @@ Public Class MainForm
         HashPanelInitContextMenu()
 
         ImageFilters = New Filters.ImageFilters(ContextMenuFilters, _ToolStripOEMNameCombo, _ToolStripDiskTypeCombo, _ToolStripSearchText, App.Globals.BootstrapDB, App.Globals.TitleDB)
-        _SummaryPanel = New SummaryPanel(ListViewSummary, App.Globals.TitleDB, App.Globals.BootstrapDB)
+        _SummaryPanel = New SummaryPanel(ListViewSummary)
         ImageCombo = New LoadedImageList(ComboImages, ComboImagesFiltered)
-        FilePanelMain = New FilePanel(ListViewFiles)
+        FilePanelMain = New FilePanel(ListViewFiles, False)
 
         DetectFloppyDrives()
         InitOptionsMenu()
@@ -1988,11 +1976,11 @@ Public Class MainForm
     End Sub
 
     Private Sub MenuGreaseweazleClean_Click(sender As Object, e As EventArgs) Handles MenuGreaseweazleClean.Click
-        Flux.Greaseweazle.CleanDisk(Me)
+        Flux.Greaseweazle.CleanDiskForm.Display(Me)
     End Sub
 
     Private Sub MenuGreaseweazleErase_Click(sender As Object, e As EventArgs) Handles MenuGreaseweazleErase.Click
-        Flux.Greaseweazle.EraseDisk(Me)
+        Flux.Greaseweazle.EraseDiskForm.Display(Me)
     End Sub
 
     Private Sub MenuGreaseweazleInfo_Click(sender As Object, e As EventArgs) Handles MenuGreaseweazleInfo.Click
@@ -2005,12 +1993,12 @@ Public Class MainForm
 
     Private Sub MenuGreaseweazleWrite_Click(sender As Object, e As EventArgs) Handles MenuGreaseweazleWrite.Click
         If FilePanelMain.CurrentImage IsNot Nothing AndAlso FilePanelMain.CurrentImage.Disk IsNot Nothing Then
-            Flux.Greaseweazle.WriteImageToDisk(Me, FilePanelMain.CurrentImage)
+            Flux.Greaseweazle.WriteDiskForm.Display(FilePanelMain.CurrentImage.Disk, FilePanelMain.CurrentImage.ImageData.FileName, Me)
         End If
     End Sub
 
     Private Sub MenuHelpAbout_Click(sender As Object, e As EventArgs) Handles MenuHelpAbout.Click
-        AboutBoxDisplay()
+        AboutBox.Display()
     End Sub
 
     Private Sub MenuHelpChangeLog_Click(sender As Object, e As EventArgs) Handles MenuHelpChangeLog.Click
@@ -2095,8 +2083,7 @@ Public Class MainForm
     Private Sub MenuOptionsGreaseweazle_Click(sender As Object, e As EventArgs) Handles MenuOptionsFlux.Click
         MainMenuOptions.DropDown.Close()
 
-        Dim Form As New Flux.ConfigurationForm
-        Form.ShowDialog(Me)
+        Flux.ConfigurationForm.Display(Me)
 
         RefreshFluxMenu()
     End Sub

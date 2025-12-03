@@ -16,15 +16,11 @@ Public Class SummaryPanel
     Private Const GROUP_IMAGE As String = "Image"
     Private Const GROUP_TITLE As String = "Title"
     Private Const NULL_CHAR As Char = "�"
-    Private ReadOnly _BootStrapDB As BootstrapDB
-    Private ReadOnly _TitleDB As FloppyDB
     Private Column_Width_Value As Integer = 0
     Private TitleRows As OrderedDictionary = Nothing
 
-    Public Sub New(ListViewSummary As ListView, TitleDB As FloppyDB, BootStrapDB As BootstrapDB)
+    Public Sub New(ListViewSummary As ListView)
         Me.ListViewSummary = ListViewSummary
-        _TitleDB = TitleDB
-        _BootStrapDB = BootStrapDB
 
         Initialize()
 
@@ -46,7 +42,7 @@ Public Class SummaryPanel
         ListViewSummary.Items.Clear()
     End Sub
 
-    Public Sub Populate(CurrentImage As DiskImageContainer, MD5 As String)
+    Public Sub Populate(CurrentImage As DiskImageContainer, BootStrapDB As BootstrapDB, Optional TitleDB As FloppyDB = Nothing, Optional MD5 As String = Nothing)
         With ListViewSummary
             .BeginUpdate()
             .Items.Clear()
@@ -56,7 +52,7 @@ Public Class SummaryPanel
             .Columns.Item(1).Width = Column_Width_Value
 
             If CurrentImage.Disk IsNot Nothing Then
-                PopulateMain(CurrentImage.Disk, _TitleDB, _BootStrapDB, MD5)
+                PopulateMain(CurrentImage.Disk, BootStrapDB, TitleDB, MD5)
 
                 .HideSelection = False
                 .TabStop = True
@@ -776,10 +772,10 @@ Public Class SummaryPanel
         PopulateGroup(Group, TitleRows)
     End Sub
 
-    Private Sub PopulateMain(Disk As Disk, TitleDB As FloppyDB, BootStrapDB As BootstrapDB, MD5 As String)
+    Private Sub PopulateMain(Disk As Disk, BootStrapDB As BootstrapDB, Optional TitleDB As FloppyDB = Nothing, Optional MD5 As String = Nothing)
         Dim TitleFound As Boolean = False
 
-        If App.Globals.AppSettings.DisplayTitles AndAlso TitleDB.TitleCount > 0 Then
+        If TitleDB IsNot Nothing AndAlso App.Globals.AppSettings.DisplayTitles AndAlso TitleDB.TitleCount > 0 Then
             Dim TitleFindResult = TitleDB.TitleFind(MD5)
             If TitleFindResult.TitleData IsNot Nothing Then
                 TitleFound = True

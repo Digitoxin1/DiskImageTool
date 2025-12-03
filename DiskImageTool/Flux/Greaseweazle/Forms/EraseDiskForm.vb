@@ -29,6 +29,12 @@ Namespace Flux.Greaseweazle
             _Initialized = True
         End Sub
 
+        Public Shared Sub Display(owner As IWin32Window)
+            Using Form As New EraseDiskForm()
+                Form.ShowDialog(owner)
+            End Using
+        End Sub
+
         Private Sub EraseDisk()
             Dim Opt As DriveOption = ComboImageDrives.SelectedValue
 

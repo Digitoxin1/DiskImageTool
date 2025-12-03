@@ -31,6 +31,14 @@ Public Class NewDirectoryForm
         End Get
     End Property
 
+    Public Shared Function Display() As (Updated As Boolean, HasLFN As Boolean, UseNTExtensions As Boolean, NewDirectoryData As Byte(), NewFilename As String)
+        Using Form As New NewDirectoryForm()
+            Form.ShowDialog()
+
+            Return (Form.DialogResult = DialogResult.OK AndAlso Form.Updated, Form.HasLFN, Form.UseNTExtensions, Form.NewDirectoryData, Form.NewFilename)
+        End Using
+    End Function
+
     Private Sub ApplyUpdate()
         _Updated = True
 

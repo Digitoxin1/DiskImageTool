@@ -126,8 +126,7 @@ Namespace Flux.Greaseweazle
                 ParentForm.Cursor = Cursors.Default
             End Try
 
-            Dim frmTextView As New TextViewForm("Greaseweazle - " & My.Resources.Label_Bandwidth, Content, False, True, "GreaseweazleBandwidth.txt")
-            frmTextView.ShowDialog(ParentForm)
+            TextViewForm.Display("Greaseweazle - " & My.Resources.Label_Bandwidth, Content, False, True, "GreaseweazleBandwidth.txt", ParentForm)
         End Sub
 
         Public Function BuildRanges(values As HashSet(Of UShort)) As List(Of (StartTrack As UShort, EndTrack As UShort))
@@ -164,11 +163,6 @@ Namespace Flux.Greaseweazle
             Return result
         End Function
 
-        Public Sub CleanDisk(ParentForm As Form)
-            Dim Form As New CleanDiskForm()
-            Form.ShowDialog(ParentForm)
-        End Sub
-
         Public Function ConvertFirstTrack(FilePath As String) As (Result As Boolean, FileName As String)
             Dim TempPath = InitTempImagePath()
 
@@ -193,11 +187,6 @@ Namespace Flux.Greaseweazle
 
         Public Sub DisplayInvalidApplicationPathMsg()
             MessageBox.Show(My.Resources.Dialog_InvalidApplicationPath, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error)
-        End Sub
-
-        Public Sub EraseDisk(ParentForm As Form)
-            Dim Form As New EraseDiskForm()
-            Form.ShowDialog(ParentForm)
         End Sub
 
         Public Function GetFirstRawFile(FilePath As String) As String
@@ -237,8 +226,7 @@ Namespace Flux.Greaseweazle
                 ParentForm.Cursor = Cursors.Default
             End Try
 
-            Dim frmTextView As New TextViewForm("Greaseweazle - " & My.Resources.Label_Info, Content, False, True, "GreaseweazleInfo.txt")
-            frmTextView.ShowDialog(ParentForm)
+            TextViewForm.Display("Greaseweazle - " & My.Resources.Label_Info, Content, False, True, "GreaseweazleInfo.txt", ParentForm)
         End Sub
 
         Public Sub PopulateDrives(Combo As ComboBox, Format As FloppyMediaType, Optional LastUsedDrive As String = "")
@@ -368,11 +356,5 @@ Namespace Flux.Greaseweazle
 
             MsgBox(My.Resources.Dialog_GreaseweazleReset, MsgBoxStyle.Information)
         End Sub
-
-        Public Sub WriteImageToDisk(ParentForm As Form, Image As DiskImageContainer)
-            Dim Form As New WriteDiskForm(Image.Disk, Image.ImageData.FileName)
-            Form.ShowDialog(ParentForm)
-        End Sub
-
     End Module
 End Namespace

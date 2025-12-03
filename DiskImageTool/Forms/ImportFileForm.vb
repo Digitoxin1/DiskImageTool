@@ -1,6 +1,7 @@
 ﻿Imports System.IO
 Imports System.Runtime.CompilerServices
 Imports DiskImageTool.DiskImage
+Imports Microsoft.VisualBasic.Logging
 
 Public Class ImportFileForm
     Private Const COLUMN_CREATION_TIME As String = "CreationTime"
@@ -27,6 +28,13 @@ Public Class ImportFileForm
         RefreshTotals()
         _IgnoreEvent = False
     End Sub
+
+    Public Shared Function Display(Directory As IDirectory, FileNames() As String) As (Result As Boolean, FileList As ImportDirectoryRoot)
+        Using Form As New ImportFileForm(Directory, FileNames)
+            Dim Result = Form.ShowDialog()
+            Return (Result = DialogResult.OK, Form.FileList)
+        End Using
+    End Function
 
     Private Sub LocalizeForm()
         BtnCancel.Text = WithoutHotkey(My.Resources.Menu_Cancel)

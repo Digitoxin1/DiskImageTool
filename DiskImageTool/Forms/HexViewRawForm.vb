@@ -4,6 +4,7 @@ Imports DiskImageTool.Hb.Windows.Forms
 Imports DiskImageTool.Bitstream.IBM_MFM
 Imports DiskImageTool.DiskImage
 Imports DiskImageTool.Bitstream
+Imports System.Text.RegularExpressions
 
 Public Class HexViewRawForm
     Private WithEvents CheckBoxAllTracks As ToolStripCheckBox
@@ -69,7 +70,38 @@ Public Class HexViewRawForm
         EnableDoubleBuffering(PanelSectors)
 
         Me.Text = My.Resources.Caption_RawTrackData
+
+        If App.AppSettings.Debug Then
+            AddContextMenuBitEditItems()
+        End If
     End Sub
+
+    Public Shared Sub Display(Disk As Disk, Track As UShort, Side As Byte, AllTracks As Boolean)
+        Using Form As New HexViewRawForm(Disk, Track, Side, AllTracks)
+            Form.ShowDialog()
+        End Using
+    End Sub
+
+    Private Function RemoveBits(source As BitArray, index As Integer, count As Integer) As BitArray
+        Dim newLength = source.Length - count
+        Dim result As New BitArray(newLength)
+
+        Dim destPos As Integer = 0
+
+        ' Copy before the removed slice
+        For i = 0 To index - 1
+            result(destPos) = source(i)
+            destPos += 1
+        Next
+
+        ' Skip the removed bits and copy the rest
+        For i = index + count To source.Length - 1
+            result(destPos) = source(i)
+            destPos += 1
+        Next
+
+        Return result
+    End Function
 
     Private Sub LocalizeForm()
         BtnAdjustOffset.Text = My.Resources.Menu_AdjustBitOffset
@@ -1036,11 +1068,9 @@ Public Class HexViewRawForm
         If FindNext And _LastSearch.SearchString <> "" Then
             Result = SearchNext(_LastSearch)
         Else
-            Dim frmHexSearchForm As New HexSearchForm(_LastSearch)
-            frmHexSearchForm.ShowDialog()
-
-            If frmHexSearchForm.DialogResult = DialogResult.OK Then
-                _LastSearch = frmHexSearchForm.Search
+            Dim Response = HexSearchForm.Display(_LastSearch)
+            If Response.Result Then
+                _LastSearch = Response.Search
                 Result = SearchNext(_LastSearch)
             End If
         End If
@@ -1499,6 +1529,7 @@ Public Class HexViewRawForm
     End Sub
 #End Region
 
+#Region "Helpers"
     Private Class HighlightRange
         Public Sub New(StartIndex As UInteger)
             _StartIndex = StartIndex
@@ -1517,4 +1548,65 @@ Public Class HexViewRawForm
             Return Track & "." & Side
         End Function
     End Class
+#End Region
+
+#Region "Testing"
+    Private Sub AddContextMenuBitEditItems()
+        ContextMenuStrip1.Items.Add(New ToolStripSeparator())
+
+        Dim Item As New ToolStripMenuItem("Remove Bits")
+        AddHandler Item.Click, AddressOf ContextMenuRemoveBits_Click
+        ContextMenuStrip1.Items.Add(Item)
+
+        Item = New ToolStripMenuItem("Edit Bits")
+        AddHandler Item.Click, AddressOf ContextMenuEditBits_Click
+        ContextMenuStrip1.Items.Add(Item)
+    End Sub
+
+    Private Sub ContextMenuEditBits_Click()
+        Dim SelectionStart = HexBox1.SelectionStart
+
+        Dim Bits = GetBits(_Bitstream, SelectionStart, False)
+
+        Dim Value = InputBox("Edit bits: ", "Edit Bits", Bits)
+        Value = Value.Replace(" ", "")
+        If Not Regex.IsMatch(Value, "^(0|1){16}$") Then
+            Exit Sub
+        End If
+
+        Dim BitIndex = SelectionStart * 16 + _CurrentTrackData.Offset
+        BitIndex = AdjustBitIndex(BitIndex, _Bitstream.Length)
+
+        For counter = 0 To Value.Length - 1
+            _Bitstream.Set(BitIndex + counter, Value.Substring(counter, 1) = 1)
+        Next
+
+        Dim MFMTrack = _FloppyImage.BitstreamImage.GetTrack(_CurrentTrackData.Track * _FloppyImage.BitstreamImage.TrackStep, _CurrentTrackData.Side)
+        MFMTrack.Bitstream = _Bitstream
+
+        LoadTrack(_CurrentTrackData, True, True)
+    End Sub
+
+    Private Sub ContextMenuRemoveBits_Click()
+        Dim SelectionStart = HexBox1.SelectionStart
+
+        Dim BitIndex = SelectionStart * 16 + _CurrentTrackData.Offset
+        BitIndex = AdjustBitIndex(BitIndex, _Bitstream.Length)
+
+        Dim RegionStart = _RegionMap(SelectionStart)
+
+        Dim Value = InputBox("Number of bits to remove: ", "Remove Bits", RegionStart.BitOffset.ToString)
+        Dim Offset As UInteger
+        If Not UInteger.TryParse(Value, Offset) Then
+            Exit Sub
+        End If
+
+        _Bitstream = RemoveBits(_Bitstream, BitIndex, Offset)
+
+        Dim MFMTrack = _FloppyImage.BitstreamImage.GetTrack(_CurrentTrackData.Track * _FloppyImage.BitstreamImage.TrackStep, _CurrentTrackData.Side)
+        MFMTrack.Bitstream = _Bitstream
+
+        LoadTrack(_CurrentTrackData, True, True)
+    End Sub
+#End Region
 End Class

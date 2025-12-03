@@ -36,6 +36,13 @@
         End Get
     End Property
 
+    Public Shared Function Display(Caption As String, Title As String, CanFill As Boolean) As DeleteFileFormResult
+        Using Form As New DeleteFileForm(Caption, Title, CanFill)
+            Form.ShowDialog()
+            Return Form.Result
+        End Using
+    End Function
+
     Private Sub SetResult(Cancelled As Boolean)
         If RadioFillKeep.Checked Then
             _Result.Clear = False

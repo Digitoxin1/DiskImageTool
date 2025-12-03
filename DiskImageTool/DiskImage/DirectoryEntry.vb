@@ -333,7 +333,7 @@
             Return UpdateFile(FilePath, FileSize, FillChar, Disk.FAT.FreeClusters)
         End Function
 
-        Public Function UpdateFile(FilePath As String, FileSize As UInteger, FillChar As Byte, ClusterList As SortedSet(Of UShort))
+        Public Function UpdateFile(FilePath As String, FileSize As UInteger, FillChar As Byte, ClusterList As SortedSet(Of UShort)) As Boolean
             Dim FileInfo As New IO.FileInfo(FilePath)
             Dim ClusterSize = Disk.BPB.BytesPerCluster
 

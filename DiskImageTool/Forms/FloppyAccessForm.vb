@@ -107,6 +107,27 @@ Public Class FloppyAccessForm
         End Get
     End Property
 
+    Public Shared Function ReadDisk(FloppyDrive As FloppyInterface, BPB As BiosParameterBlock, LoadedFileNames As Dictionary(Of String, ImageData), owner As IWin32Window) As String
+        Using Form As New FloppyAccessForm(FloppyDrive, BPB, FloppyAccessType.Read) With {
+                .LoadedFileNames = LoadedFileNames
+            }
+
+            Form.ShowDialog(owner)
+
+            Return Form.FileName
+        End Using
+    End Function
+
+    Public Shared Sub WriteDisk(FloppyDrive As FloppyInterface, BPB As BiosParameterBlock, DiskBuffer As Byte(), DoFormat As Boolean, DoVerify As Boolean, owner As IWin32Window)
+        Using Form As New FloppyAccessForm(FloppyDrive, BPB, FloppyAccessType.Write) With {
+                .DiskBuffer = DiskBuffer,
+                .DoFormat = DoFormat,
+                .DoVerify = DoVerify
+            }
+            Form.ShowDialog(owner)
+        End Using
+    End Sub
+
     Public Function SectorToBytes(Sector As UInteger) As UInteger
         Return Sector * BYTES_PER_SECTOR
     End Function

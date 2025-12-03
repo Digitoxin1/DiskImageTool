@@ -143,6 +143,17 @@ Public Class HexViewForm
         _StartingCluster = Cluster
     End Sub
 
+    Public Shared Function Display(HexViewSectorData As HexViewSectorData, SectorNavigator As Boolean, ClusterNavigator As Boolean, SyncBlocks As Boolean, Optional Cluster? As UShort = Nothing) As Boolean
+        Using Form As New HexViewForm(HexViewSectorData, SectorNavigator, ClusterNavigator, SyncBlocks)
+            If Cluster.HasValue Then
+                Form.SetStartingCluster(Cluster.Value)
+            End If
+            Form.ShowDialog()
+
+            Return Form.Modified
+        End Using
+    End Function
+
     Protected Overrides Sub WndProc(ByRef m As Message)
         If m.Msg = WM_CLIPBOARDUPDATE Then
             RefreshPasteButton()
@@ -1164,11 +1175,9 @@ Public Class HexViewForm
         If FindNext And _LastSearch.SearchString <> "" Then
             Result = SearchNext(_LastSearch)
         Else
-            Dim frmHexSearchForm As New HexSearchForm(_LastSearch)
-            frmHexSearchForm.ShowDialog()
-
-            If frmHexSearchForm.DialogResult = DialogResult.OK Then
-                _LastSearch = frmHexSearchForm.Search
+            Dim Response = HexSearchForm.Display(_LastSearch)
+            If Response.Result Then
+                _LastSearch = Response.Search
                 Result = SearchNext(_LastSearch)
             End If
         End If

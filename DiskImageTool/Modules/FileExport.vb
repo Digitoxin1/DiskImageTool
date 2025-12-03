@@ -140,10 +140,8 @@
     End Sub
 
     Private Function MsgBoxOverwrite(FilePath As String) As MyMsgBoxResult
-        Dim msg As String = String.Format(My.Resources.Dialog_ReplaceFile, IO.Path.GetFileName(FilePath), Environment.NewLine)
+        Dim Caption As String = String.Format(My.Resources.Dialog_ReplaceFile, IO.Path.GetFileName(FilePath), Environment.NewLine)
 
-        Dim SaveAllForm As New SaveAllForm(msg)
-        SaveAllForm.ShowDialog()
-        Return SaveAllForm.Result
+        Return SaveAllForm.Display(Caption)
     End Function
 End Module

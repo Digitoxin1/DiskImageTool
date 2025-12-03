@@ -18,12 +18,7 @@ Module FloppyDiskIO
         If Result Then
             Dim BPB = FloppyDiskGetReadOptions(Owner, FloppyDrive)
             If BPB IsNot Nothing Then
-                Dim FloppyAccessForm As New FloppyAccessForm(FloppyDrive, BPB, FloppyAccessForm.FloppyAccessType.Read) With {
-                    .LoadedFileNames = LoadedFileNames
-                }
-                FloppyAccessForm.ShowDialog(Owner)
-                FileName = FloppyAccessForm.FileName
-                FloppyAccessForm.Close()
+                FileName = FloppyAccessForm.ReadDisk(FloppyDrive, BPB, LoadedFileNames, Owner)
             End If
             FloppyDrive.Close()
         Else
@@ -156,15 +151,9 @@ Module FloppyDiskIO
         If MsgBoxResult = MsgBoxResult.Ok Then
             Dim Result = FloppyDrive.OpenWrite(Drive)
             If Result Then
-                Dim WriteOptions = FloppyDiskWriteOptions(Owner, DoFormat, DetectedFormat, NewDiskFormat)
+                Dim WriteOptions = FloppyWriteOptionsForm.Display(Owner, DoFormat, DetectedFormat, NewDiskFormat)
                 If Not WriteOptions.Cancelled Then
-                    Dim FloppyAccessForm As New FloppyAccessForm(FloppyDrive, Disk.BPB, FloppyAccessForm.FloppyAccessType.Write) With {
-                        .DiskBuffer = Disk.Image.GetBytes,
-                        .DoFormat = WriteOptions.Format,
-                        .DoVerify = WriteOptions.Verify
-                    }
-                    FloppyAccessForm.ShowDialog(Owner)
-                    FloppyAccessForm.Close()
+                    FloppyAccessForm.WriteDisk(FloppyDrive, Disk.BPB, Disk.Image.GetBytes, WriteOptions.Format, WriteOptions.Verify, Owner)
                 End If
                 FloppyDrive.Close()
             Else
@@ -175,7 +164,6 @@ Module FloppyDiskIO
 
     Private Function FloppyDiskGetReadOptions(Owner As IWin32Window, FloppyDrive As FloppyInterface) As BiosParameterBlock
         Dim DetectedFormat As FloppyDiskFormat
-        Dim ReturnedFormat As FloppyDiskFormat
         Dim BootSector As BootSector = Nothing
 
         Dim Buffer(BYTES_PER_SECTOR - 1) As Byte
@@ -187,30 +175,16 @@ Module FloppyDiskIO
             DetectedFormat = FloppyDiskFormat.FloppyUnknown
         End If
 
-        Dim FloppyReadOptionsForm As New FloppyReadOptionsForm(DetectedFormat)
-        FloppyReadOptionsForm.ShowDialog(Owner)
-        ReturnedFormat = FloppyReadOptionsForm.DiskFormat
-        FloppyReadOptionsForm.Close()
+        Dim Response = FloppyReadOptionsForm.Display(DetectedFormat, Owner)
 
-        If FloppyReadOptionsForm.DialogResult = DialogResult.Cancel Then
+        If Not Response.Result Then
             Return Nothing
-        ElseIf ReturnedFormat = -1 Then
+        ElseIf Response.Format = -1 Then
             Return Nothing
-        ElseIf BootSector IsNot Nothing AndAlso DetectedFormat = ReturnedFormat Then
+        ElseIf BootSector IsNot Nothing AndAlso DetectedFormat = Response.Format Then
             Return BootSector.BPB
         Else
-            Return BuildBPB(ReturnedFormat)
+            Return BuildBPB(Response.Format)
         End If
     End Function
-    Private Function FloppyDiskWriteOptions(Owner As IWin32Window, DoFormat As Boolean, DetectedFormat As FloppyDiskFormat, DiskFormat As FloppyDiskFormat) As FloppyWriteOptionsForm.FloppyWriteOptions
-        Dim WriteOptions As FloppyWriteOptionsForm.FloppyWriteOptions
-
-        Dim FloppyWriteOptioonsForm As New FloppyWriteOptionsForm(DoFormat, DetectedFormat, DiskFormat)
-        FloppyWriteOptioonsForm.ShowDialog(Owner)
-        WriteOptions = FloppyWriteOptioonsForm.WriteOptions
-        FloppyWriteOptioonsForm.Close()
-
-        Return WriteOptions
-    End Function
-
 End Module

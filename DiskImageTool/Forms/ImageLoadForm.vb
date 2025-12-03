@@ -22,6 +22,12 @@ Public Class ImageLoadForm
         AddHandler _Scanner.ScanCompleted, AddressOf Scanner_ScanCompleted
     End Sub
 
+    Public Shared Sub Display(scanner As ImageScanner, ctSource As CancellationTokenSource, owner As IWin32Window)
+        Using dlg As New ImageLoadForm(scanner, ctSource)
+            dlg.ShowDialog(owner)
+        End Using
+    End Sub
+
     Private Sub ImageLoadForm_FormClosing(sender As Object, e As FormClosingEventArgs) Handles Me.FormClosing
         If Not _EndScan Then
             ' Treat user close as cancel

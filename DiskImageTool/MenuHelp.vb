@@ -1,11 +1,6 @@
 ﻿Imports System.Text
 
 Module MenuHelp
-    Public Sub AboutBoxDisplay()
-        Dim AboutBox As New AboutBox()
-        AboutBox.ShowDialog()
-    End Sub
-
     Public Sub ChangeLogDisplay()
         Dim VersionLine As String
         Dim PublishedAt As String
@@ -66,8 +61,7 @@ Module MenuHelp
             Exit Sub
         End Try
 
-        Dim frmTextView As New TextViewForm(My.Resources.Caption_ChangeLog, ChangeLogString, False, True, "ChangeLog.txt")
-        frmTextView.ShowDialog()
+        TextViewForm.Display(My.Resources.Caption_ChangeLog, ChangeLogString, False, True, "ChangeLog.txt")
     End Sub
 
     Public Sub ProjectPageDisplay()

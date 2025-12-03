@@ -13,10 +13,7 @@ Module HexViews
 
     Public Function DisplayHexViewForm(HexViewSectorData As HexViewSectorData, SectorNavigator As Boolean, ClusterNavigator As Boolean, SyncBlocks As Boolean) As Boolean
         If HexViewSectorData.SectorData.BlockCount > 0 Then
-            Dim frmHexView As New HexViewForm(HexViewSectorData, SectorNavigator, ClusterNavigator, SyncBlocks)
-            frmHexView.ShowDialog()
-
-            Return frmHexView.Modified
+            Return HexViewForm.Display(HexViewSectorData, SectorNavigator, ClusterNavigator, SyncBlocks)
         Else
             MsgBox(My.Resources.Dialog_CheckImageSize, MsgBoxStyle.Exclamation)
             Return False
@@ -25,11 +22,7 @@ Module HexViews
 
     Public Function DisplayHexViewForm(HexViewSectorData As HexViewSectorData, SectorNavigator As Boolean, ClusterNavigator As Boolean, SyncBlocks As Boolean, Cluster As UShort) As Boolean
         If HexViewSectorData.SectorData.BlockCount > 0 Then
-            Dim frmHexView As New HexViewForm(HexViewSectorData, SectorNavigator, ClusterNavigator, SyncBlocks)
-            frmHexView.SetStartingCluster(Cluster)
-            frmHexView.ShowDialog()
-
-            Return frmHexView.Modified
+            Return HexViewForm.Display(HexViewSectorData, SectorNavigator, ClusterNavigator, SyncBlocks, Cluster)
         Else
             MsgBox(My.Resources.Dialog_CheckImageSize, MsgBoxStyle.Exclamation)
             Return False
@@ -128,8 +121,7 @@ Module HexViews
         Dim Image = Disk.Image.BitstreamImage
 
         If Image IsNot Nothing Then
-            Dim frmHexView As New HexViewRawForm(Disk, Track, Side, AllTracks)
-            frmHexView.ShowDialog()
+            HexViewRawForm.Display(Disk, Track, Side, AllTracks)
         End If
     End Sub
 

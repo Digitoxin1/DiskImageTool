@@ -42,6 +42,28 @@ Public Class ReplaceFileForm
         End Get
     End Property
 
+    Public Shared Function Display(
+                                  AvailableSpace As UInteger,
+                                  Directory As IDirectory,
+                                  OriginalFilename As String,
+                                  OriginalFileDate As Date,
+                                  OriginalFileSize As UInteger,
+                                  NewFilename As String,
+                                  NewFileDate As Date,
+                                  NewFileSize As UInteger
+                                  ) As ReplaceFileFormResult
+
+        Using Form As New ReplaceFileForm(AvailableSpace, Directory)
+            With Form
+                .SetOriginalFile(OriginalFilename, OriginalFileDate, OriginalFileSize)
+                .SetNewFile(NewFilename, NewFileDate, NewFileSize)
+                .RefreshText()
+                .ShowDialog()
+                Return .Result
+            End With
+        End Using
+    End Function
+
     Public Sub GetFileNameForm()
         _FileNameNew = TxtFilenameNew.Text
         If TxtFileExtNew.Text.Length > 0 Then

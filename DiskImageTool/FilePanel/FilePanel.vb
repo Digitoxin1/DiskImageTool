@@ -34,6 +34,7 @@ Public Class FilePanel
     Private _DirectoryScan As DirectoryScanResponse = Nothing
     Private _MenuState As FileMenuState
     Private _SuppressEvent As Boolean = False
+    Private _ViewOnly As Boolean = False
 
     Public Enum FilePanelMenuItem
         FileProperties
@@ -62,19 +63,24 @@ Public Class FilePanel
     Public Event MenuItemClicked As EventHandler(Of MenuItemClickedEventArgs)
     Public Event SortChanged As EventHandler(Of Boolean)
 
-    Public Sub New(ListViewFiles As ListViewEx)
+    Public Sub New(ListViewFiles As ListViewEx, ViewOnly As Boolean)
         Me.ListViewFiles = ListViewFiles
-        ContextMenuFiles = New ContextMenuStrip
-        ContextMenuDirectory = New ContextMenuStrip
-        Me.ListViewFiles.ContextMenuStrip = ContextMenuFiles
 
         _lvwColumnSorter = New FilePanelColumnSorter
         _ListViewHeader = New ListViewHeader(Me.ListViewFiles.Handle)
+        _ViewOnly = ViewOnly
 
-        Initialize()
+        Initialize(ViewOnly)
         InitColumns()
-        InitContextMenuDirectory()
-        InitContextMenuFiles()
+
+        If Not ViewOnly Then
+            ContextMenuFiles = New ContextMenuStrip
+            ContextMenuDirectory = New ContextMenuStrip
+            Me.ListViewFiles.ContextMenuStrip = ContextMenuFiles
+            InitContextMenuDirectory()
+            InitContextMenuFiles()
+        End If
+
 
         _MenuState = GetFileMenuState(Me)
     End Sub
@@ -677,16 +683,17 @@ Public Class FilePanel
         Item.Visible = False
     End Sub
 
-    Private Sub Initialize()
+    Private Sub Initialize(ViewOnly As Boolean)
         With ListViewFiles
             .FullRowSelect = True
+            .MultiSelect = Not ViewOnly
             .View = View.Details
             .HideSelection = False
             .OwnerDraw = True
             .DoubleBuffer
             .Items.Clear()
             .Columns.Clear()
-            .Columns.Add("", COL_MODIFIED_WIDTH, HorizontalAlignment.Left)
+            .Columns.Add("", If(ViewOnly, 0, COL_MODIFIED_WIDTH), HorizontalAlignment.Left)
             .Columns.Add(My.Resources.Label_Name, COL_NAME_WIDTH, HorizontalAlignment.Left)
             .Columns.Add(My.Resources.FilePanel_Extension, COL_EXTENSION_WIDTH, HorizontalAlignment.Left)
             .Columns.Add(My.Resources.Label_Size, COL_SIZE_WIDTH, HorizontalAlignment.Right)
@@ -810,6 +817,10 @@ Public Class FilePanel
         End If
 
         If e.Column = 0 Then
+            If _ViewOnly Then
+                Exit Sub
+            End If
+
             _CheckAll = Not _CheckAll
             _SuppressEvent = True
             For Each Item As ListViewItem In ListViewFiles.Items
@@ -835,18 +846,10 @@ Public Class FilePanel
     End Sub
 
     Private Sub ListView_DrawColumnHeader(sender As Object, e As DrawListViewColumnHeaderEventArgs) Handles ListViewFiles.DrawColumnHeader
-        If e.ColumnIndex = 0 Then
-            'Dim Offset As Integer
-            'If (e.State And ListViewItemStates.Selected) > 0 Then
-            ' Offset = 1
-            ' Else
-            '    Offset = 0
-            'End If
+        If e.ColumnIndex = 0 AndAlso Not _ViewOnly Then
             Dim State = If(_CheckAll, VisualStyles.CheckBoxState.CheckedNormal, VisualStyles.CheckBoxState.UncheckedNormal)
             Dim Size = CheckBoxRenderer.GetGlyphSize(e.Graphics, State)
             CheckBoxRenderer.DrawCheckBox(e.Graphics, New Point(4, (e.Bounds.Height - Size.Height) \ 2), State)
-            'e.Graphics.DrawString(e.Header.Text, e.Font, New SolidBrush(Color.Black), New Point(20 + Offset, (e.Bounds.Height - Size.Height) \ 2 + Offset))
-            'e.Graphics.DrawLine(New Pen(Color.FromArgb(229, 229, 229), 1), New Point(e.Bounds.Width - 1, 0), New Point(e.Bounds.Width - 1, e.Bounds.Height))
         Else
             e.DrawDefault = True
         End If
@@ -899,6 +902,10 @@ Public Class FilePanel
     End Sub
 
     Private Sub ListView_MouseUp(sender As Object, e As MouseEventArgs) Handles ListViewFiles.MouseUp
+        If ContextMenuDirectory Is Nothing Then
+            Exit Sub
+        End If
+
         If _ClickedGroup IsNot Nothing Then
             Dim Directory = TryCast(_ClickedGroup.Tag, IDirectory)
             If Directory IsNot Nothing Then

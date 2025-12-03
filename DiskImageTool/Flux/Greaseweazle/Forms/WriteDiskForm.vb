@@ -69,6 +69,12 @@ Namespace Flux.Greaseweazle
             _Initialized = True
         End Sub
 
+        Public Shared Sub Display(Disk As DiskImage.Disk, FileName As String, owner As IWin32Window)
+            Using Form As New WriteDiskForm(Disk, FileName)
+                Form.ShowDialog(owner)
+            End Using
+        End Sub
+
         Private Function CheckCompatibility() As Boolean
             Dim Opt As DriveOption = ComboImageDrives.SelectedValue
 

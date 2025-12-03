@@ -8,6 +8,14 @@
         End Get
     End Property
 
+    Public Shared Function Display() As (Result As Boolean, FileNames As String())
+        Using Form As New FileDropForm()
+            Dim Response = Form.ShowDialog()
+
+            Return (Response = DialogResult.OK, Form.FileNames)
+        End Using
+    End Function
+
     Private Sub FileDropForm_KeyDown(sender As Object, e As KeyEventArgs) Handles Me.KeyDown
         If e.KeyCode = Keys.Escape Then
             Me.DialogResult = DialogResult.Cancel

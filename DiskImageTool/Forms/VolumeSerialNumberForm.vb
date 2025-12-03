@@ -8,6 +8,14 @@
         LocalizeForm()
     End Sub
 
+    Public Shared Function Display(owner As IWin32Window) As (Result As Boolean, Value As Date)
+        Using Form As New VolumeSerialNumberForm()
+            Form.ShowDialog(owner)
+
+            Return (Form.DialogResult = DialogResult.OK, Form.GetValue())
+        End Using
+    End Function
+
     Public Function GetValue() As Date
         Return New Date(DTDate.Value.Year, DTDate.Value.Month, DTDate.Value.Day, DTTime.Value.Hour, DTTime.Value.Minute, DTTime.Value.Second, CInt(NumMS.Value))
     End Function

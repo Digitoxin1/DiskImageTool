@@ -176,6 +176,12 @@
     <Compile Include="FilePanel\FileData.vb" />
     <Compile Include="FilePanel\FileMenuLib.vb" />
     <Compile Include="FilePanel\FilePanel.vb" />
+    <Compile Include="Forms\ImagePreview.Designer.vb">
+      <DependentUpon>ImagePreview.vb</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\ImagePreview.vb">
+      <SubType>Form</SubType>
+    </Compile>
     <Compile Include="Scanners\FilterScanner.vb" />
     <Compile Include="Filters\Enums.vb" />
     <Compile Include="Filters\FilterCounts.vb" />
@@ -647,6 +653,9 @@
     <EmbeddedResource Include="Forms\ImageLoadForm.resx">
       <DependentUpon>ImageLoadForm.vb</DependentUpon>
       <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\ImagePreview.resx">
+      <DependentUpon>ImagePreview.vb</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\ImportFileForm.resx">
       <DependentUpon>ImportFileForm.vb</DependentUpon>

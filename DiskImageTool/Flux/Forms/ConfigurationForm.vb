@@ -10,6 +10,12 @@
 
         End Sub
 
+        Public Shared Sub Display(owner As IWin32Window)
+            Using Form As New Flux.ConfigurationForm
+                Form.ShowDialog(owner)
+            End Using
+        End Sub
+
         Private Sub LocalizeForm()
             Me.Text = My.Resources.Caption_FluxConfiguration
             BtnCancel.Text = My.Resources.Menu_Cancel

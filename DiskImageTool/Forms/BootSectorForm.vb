@@ -132,17 +132,19 @@ Public Class BootSectorForm
         End Get
     End Property
 
+    Public Shared Function Display(Data() As Byte, BootStrap As BootstrapDB) As (Result As Boolean, Data As Byte())
+        Using Form As New BootSectorForm(Data, BootStrap)
+            Form.ShowDialog()
+            Return (Form.DialogResult = DialogResult.OK, Form.Data)
+        End Using
+    End Function
+
     Private Sub ChangeVolumeSerialNumber()
-        Dim VolumeSerialNumberForm As New VolumeSerialNumberForm()
+        Dim Response = VolumeSerialNumberForm.Display(Me)
 
-        VolumeSerialNumberForm.ShowDialog(Me)
-
-        Dim Result As Boolean = VolumeSerialNumberForm.DialogResult = DialogResult.OK
-
-        If Result Then
+        If Response.Result Then
             _SuppressEvent = True
-            Dim Value = VolumeSerialNumberForm.GetValue()
-            ControlSetValue(HexVolumeSerialNumber, BootSector.GenerateVolumeSerialNumber(Value).ToString("X8"), False)
+            ControlSetValue(HexVolumeSerialNumber, BootSector.GenerateVolumeSerialNumber(Response.Value).ToString("X8"), False)
             _SuppressEvent = False
         End If
     End Sub

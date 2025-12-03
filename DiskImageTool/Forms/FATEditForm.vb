@@ -105,6 +105,14 @@ Public Class FATEditForm
         End Get
     End Property
 
+    Public Shared Function Display(Disk As DiskImage.Disk, Index As UShort) As Boolean
+        Using Form As New FATEditForm(Disk, Index)
+            Form.ShowDialog()
+
+            Return Form.Updated
+        End Using
+    End Function
+
     Private Sub ApplyUpdates()
         Dim SyncFATs = ChkSync.Checked
         Dim Result As Boolean

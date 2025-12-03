@@ -50,6 +50,14 @@ Public Class FloppyWriteOptionsForm
         End Get
     End Property
 
+    Public Shared Function Display(Owner As IWin32Window, DoFormat As Boolean, DetectedFormat As FloppyDiskFormat, DiskFormat As FloppyDiskFormat) As FloppyWriteOptions
+        Using Form As New FloppyWriteOptionsForm(DoFormat, DetectedFormat, DiskFormat)
+            Form.ShowDialog(Owner)
+
+            Return Form.WriteOptions
+        End Using
+    End Function
+
     Private Sub BtnOK_Click(sender As Object, e As EventArgs) Handles BtnOK.Click
         _WriteOptions.Format = CheckFormat.Checked
         _WriteOptions.Verify = CheckVerify.Checked

@@ -11,13 +11,6 @@
         Me.LabelFileName.Text = Filename
     End Sub
 
-    Private Sub LocalizeForm()
-        BtnCancel.Text = My.Resources.Menu_Cancel
-        BtnUpdate.Text = My.Resources.Menu_Update
-        LabelCaption.Text = My.Resources.Caption_EnterFirstCharacter
-        Me.Text = My.Resources.Label_UndeleteFile
-    End Sub
-
     Public ReadOnly Property FirstChar As Byte
         Get
             If TextBoxChar.Text = "" Then
@@ -28,6 +21,20 @@
         End Get
     End Property
 
+    Public Shared Function Display(Filename As String) As (Result As Boolean, FirstChar As Byte)
+        Using Form As New UndeleteForm(Filename)
+            Form.ShowDialog()
+
+            Return (Form.DialogResult = DialogResult.OK, Form.FirstChar)
+        End Using
+    End Function
+
+    Private Sub LocalizeForm()
+        BtnCancel.Text = My.Resources.Menu_Cancel
+        BtnUpdate.Text = My.Resources.Menu_Update
+        LabelCaption.Text = My.Resources.Caption_EnterFirstCharacter
+        Me.Text = My.Resources.Label_UndeleteFile
+    End Sub
     Private Sub TextBoxChar_KeyPress(sender As Object, e As KeyPressEventArgs) Handles TextBoxChar.KeyPress
         Dim Value = Asc(e.KeyChar)
 

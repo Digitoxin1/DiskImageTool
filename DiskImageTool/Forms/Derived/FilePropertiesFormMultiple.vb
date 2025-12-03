@@ -22,6 +22,18 @@ Public Class FilePropertiesFormMultiple
         End Get
     End Property
 
+    Public Shared Function Display(Disk As Disk, DirectoryEntries As List(Of DirectoryEntry)) As Boolean
+        Using Form As New FilePropertiesFormMultiple(Disk, DirectoryEntries)
+            Form.ShowDialog()
+
+            If Form.DialogResult = DialogResult.OK Then
+                Return Form.Updated
+            Else
+                Return False
+            End If
+        End Using
+    End Function
+
     Private Sub ApplyUpdate()
         _Updated = False
 

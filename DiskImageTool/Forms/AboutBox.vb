@@ -1,6 +1,12 @@
 ﻿Public NotInheritable Class AboutBox
     Private ReadOnly _NameSpace As String = New StubClass().GetType.Namespace
 
+    Public Shared Sub Display()
+        Using Form As New AboutBox()
+            Form.ShowDialog()
+        End Using
+    End Sub
+
     Private Sub AboutBox1_Load(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles MyBase.Load
         ' Set the title of the form.
         Dim ApplicationTitle As String

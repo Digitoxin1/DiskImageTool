@@ -93,8 +93,7 @@ Module MenuTools
             Caption &= " - " & FileName
         End If
 
-        Dim frmTextView As New TextViewForm(Caption, TrackLayout.ToString, True, True, SaveFileName)
-        frmTextView.ShowDialog()
+        TextViewForm.Display(Caption, TrackLayout.ToString, True, True, SaveFileName)
     End Sub
 
     Public Function ImageClearReservedBytes(CurrentImage As DiskImageContainer) As Boolean

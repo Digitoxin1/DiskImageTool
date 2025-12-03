@@ -250,8 +250,7 @@ Module Reports
             Caption &= " - " & FileName
         End If
 
-        Dim frmTextView As New TextViewForm(Caption, Content, True, True, SaveFileName)
-        frmTextView.ShowDialog()
+        TextViewForm.Display(Caption, Content, True, True, SaveFileName)
     End Sub
 
     Private Function CompressIntegerList(values As List(Of Integer)) As String

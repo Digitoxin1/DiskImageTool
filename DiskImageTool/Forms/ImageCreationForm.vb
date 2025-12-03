@@ -53,6 +53,13 @@ Public Class ImageCreationForm
         End Get
     End Property
 
+    Public Shared Function Display(owner As IWin32Window) As (Data As Byte(), DiskFormat As FloppyDiskFormat, ImportFiles As Boolean)
+        Using Form As New ImageCreationForm()
+            Form.ShowDialog(owner)
+            Return (Form.Data, Form.DiskFormat, Form.ImportFiles)
+        End Using
+    End Function
+
     Private Sub AddTandy2000RootEntries(Data() As Byte, Params As FloppyDiskBPBParams)
         Dim Buffer = FillArray(32, &HF6)
         Buffer(0) = &H0

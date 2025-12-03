@@ -20,6 +20,18 @@ Public Class FilePropertiesFormSingle
         End Get
     End Property
 
+    Public Shared Function Display(DirectoryEntry As DirectoryEntry) As Boolean
+        Using Form As New FilePropertiesFormSingle(DirectoryEntry)
+            Form.ShowDialog()
+
+            If Form.DialogResult = DialogResult.OK Then
+                Return Form.Updated
+            Else
+                Return False
+            End If
+        End Using
+    End Function
+
     Private Sub ApplyUpdate()
         _Updated = False
 

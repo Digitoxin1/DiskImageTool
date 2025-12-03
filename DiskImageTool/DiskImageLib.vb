@@ -161,7 +161,7 @@ Module DiskImageLib
 
             Case DiskImageMenuItem.EditFAT
                 If Data IsNot Nothing Then
-                    DoRefresh = FATEdit(FilePanel.CurrentImage.Disk, CUShort(Data))
+                    DoRefresh = FATEditForm.Display(FilePanel.CurrentImage.Disk, CUShort(Data))
                 End If
 
             Case DiskImageMenuItem.HexDisplayBadSectors
@@ -444,11 +444,9 @@ Module DiskImageLib
     End Function
 
     Public Function MsgBoxSaveAll(FileName As String) As MyMsgBoxResult
-        Dim Msg As String = String.Format(My.Resources.Dialog_SaveFile, FileName)
+        Dim Caption As String = String.Format(My.Resources.Dialog_SaveFile, FileName)
 
-        Dim SaveAllForm As New SaveAllForm(Msg)
-        SaveAllForm.ShowDialog()
-        Return SaveAllForm.Result
+        Return SaveAllForm.Display(Caption)
     End Function
     Public Sub NewImageImport(FilePanel As FilePanel, FileName As String)
         If FilePanel.CurrentImage Is Nothing Then
@@ -463,15 +461,13 @@ Module DiskImageLib
     End Sub
 
     Private Function BootSectorEdit(Disk As Disk) As Boolean
-        Dim BootSectorForm As New BootSectorForm(Disk.BootSector.Data, App.Globals.BootstrapDB)
+        Dim Response = BootSectorForm.Display(Disk.BootSector.Data, App.Globals.BootstrapDB)
 
-        BootSectorForm.ShowDialog()
-
-        Dim Result As Boolean = BootSectorForm.DialogResult = DialogResult.OK
+        Dim Result As Boolean = Response.Result
 
         If Result Then
-            If Not Disk.BootSector.Data.CompareTo(BootSectorForm.Data) Then
-                Disk.BootSector.Data = BootSectorForm.Data
+            If Not Disk.BootSector.Data.CompareTo(Response.Data) Then
+                Disk.BootSector.Data = Response.Data
             Else
                 Result = False
             End If
@@ -524,17 +520,8 @@ Module DiskImageLib
             Content = Encoding.UTF7.GetString(Stream.GetBuffer)
         End Using
 
-        Dim frmTextView As New TextViewForm(Caption, Content, False, True, DirectoryEntry.GetFullFileName)
-        frmTextView.ShowDialog()
+        TextViewForm.Display(Caption, Content, False, True, DirectoryEntry.GetFullFileName)
     End Sub
-
-    Private Function FATEdit(Disk As Disk, Index As UShort) As Boolean
-        Dim frmFATEdit As New FATEditForm(Disk, Index)
-
-        frmFATEdit.ShowDialog()
-
-        Return frmFATEdit.Updated
-    End Function
 
     Private Function FilePropertiesEdit(FilePanel As FilePanel) As Boolean
         Dim Result As Boolean = False
@@ -544,11 +531,7 @@ Module DiskImageLib
             Dim FileData As FileData = TryCast(Item.Tag, FileData)
 
             If FileData IsNot Nothing Then
-                Dim frmFilePropertiesEdit As New FilePropertiesFormSingle(FileData.DirectoryEntry)
-                frmFilePropertiesEdit.ShowDialog()
-                If frmFilePropertiesEdit.DialogResult = DialogResult.OK Then
-                    Result = frmFilePropertiesEdit.Updated
-                End If
+                Result = FilePropertiesFormSingle.Display(FileData.DirectoryEntry)
             End If
         Else
             Dim Entries As New List(Of DirectoryEntry)
@@ -560,11 +543,7 @@ Module DiskImageLib
             Next
 
             If Entries.Count > 0 Then
-                Dim frmFilePropertiesEdit As New FilePropertiesFormMultiple(FilePanel.CurrentImage.Disk, Entries)
-                frmFilePropertiesEdit.ShowDialog()
-                If frmFilePropertiesEdit.DialogResult = DialogResult.OK Then
-                    Result = frmFilePropertiesEdit.Updated
-                End If
+                Result = FilePropertiesFormMultiple.Display(FilePanel.CurrentImage.Disk, Entries)
             End If
         End If
 
@@ -572,25 +551,19 @@ Module DiskImageLib
     End Function
 
     Private Function ImageAddDirectory(ParentDirectory As IDirectory, Optional Index As Integer = -1) As Boolean
-        Dim Updated As Boolean = False
+        Dim Response = NewDirectoryForm.Display()
 
-        Dim frmNewDirectory As New NewDirectoryForm()
-        frmNewDirectory.ShowDialog()
+        Dim Updated = Response.Updated
+        If Updated Then
+            Dim Options As New AddFileOptions With {
+                .UseLFN = Response.HasLFN,
+                .UseNTExtensions = Response.UseNTExtensions
+            }
+            Dim AddDirectoryResponse = ParentDirectory.AddDirectory(Response.NewDirectoryData, Options, Response.NewFilename, Index)
 
-        If frmNewDirectory.DialogResult = DialogResult.OK Then
-            Updated = frmNewDirectory.Updated
-
-            If Updated Then
-                Dim Options As New AddFileOptions With {
-                    .UseLFN = frmNewDirectory.HasLFN,
-                    .UseNTExtensions = frmNewDirectory.UseNTExtensions
-                }
-                Dim AddDirectoryResponse = ParentDirectory.AddDirectory(frmNewDirectory.NewDirectoryData, Options, frmNewDirectory.NewFilename, Index)
-
-                If AddDirectoryResponse.Entry Is Nothing Then
-                    MsgBox(My.Resources.Dialog_DiskSpaceWarning, MsgBoxStyle.Exclamation)
-                    Updated = False
-                End If
+            If AddDirectoryResponse.Entry Is Nothing Then
+                MsgBox(My.Resources.Dialog_DiskSpaceWarning, MsgBoxStyle.Exclamation)
+                Updated = False
             End If
         End If
 
@@ -646,11 +619,7 @@ Module DiskImageLib
                 CanFill = True
             End If
 
-
-            Dim DeleteFileForm As New DeleteFileForm(Msg, Title, CanFill)
-            DeleteFileForm.ShowDialog()
-            DialogResult = DeleteFileForm.Result
-            DeleteFileForm.Close()
+            DialogResult = DeleteFileForm.Display(Msg, Title, CanFill)
 
             If DialogResult.Cancelled Then
                 Return False
@@ -705,13 +674,13 @@ Module DiskImageLib
         Dim FileNames() As String = New String(-1) {}
 
         If App.Globals.AppSettings.DragAndDrop Then
-            Dim frmFileDrop As New FileDropForm()
+            Dim FormResponse = FileDropForm.Display()
 
-            If frmFileDrop.ShowDialog() <> DialogResult.OK Then
+            If Not FormResponse.Result Then
                 Return False
             End If
 
-            FileNames = frmFileDrop.FileNames
+            FileNames = FormResponse.FileNames
         Else
             Using Dialog As New OpenFileDialog With {
                    .Multiselect = Multiselect
@@ -725,26 +694,23 @@ Module DiskImageLib
             End Using
         End If
 
-        Dim ImportFilesForm As New ImportFileForm(ParentDirectory, FileNames)
-        Dim Result = ImportFilesForm.ShowDialog()
+        Dim Response = ImportFileForm.Display(ParentDirectory, FileNames)
 
-        If Result = DialogResult.Cancel Then
+        If Not Response.Result Then
             Return False
         End If
 
-        Dim FileList = ImportFilesForm.FileList
-
-        If FileList.SelectedFiles < 1 Then
+        If Response.FileList.SelectedFiles < 1 Then
             Return False
         End If
 
         Dim UseTransaction = ParentDirectory.Disk.BeginTransaction
 
         Dim FilesAdded As UInteger = 0
-        Dim FileCount As UInteger = FileList.SelectedFiles
+        Dim FileCount As UInteger = Response.FileList.SelectedFiles
 
-        ImageImportFolders(FileList.DirectoryList, ParentDirectory, Index, FileList.Options, FilesAdded)
-        ImageImportFiles(FileList.FileList, ParentDirectory, Index, FileList.Options, FilesAdded)
+        ImageImportFolders(Response.FileList.DirectoryList, ParentDirectory, Index, Response.FileList.Options, FilesAdded)
+        ImageImportFiles(Response.FileList.FileList, ParentDirectory, Index, Response.FileList.Options, FilesAdded)
 
         If FilesAdded < FileCount Then
             MsgBox(String.Format(My.Resources.Dialog_InsufficientDiskSpaceWarning, Environment.NewLine, FilesAdded, FileCount), MsgBoxStyle.Exclamation)
@@ -805,20 +771,18 @@ Module DiskImageLib
             FileName = Dialog.FileName
         End Using
 
-        Dim FormResult As ReplaceFileForm.ReplaceFileFormResult
         Dim FileInfo As New IO.FileInfo(FileName)
 
         Dim AvailableSpace = DirectoryEntry.Disk.FAT.GetFreeSpace() + DirectoryEntry.GetSizeOnDisk
 
-        Dim ReplaceFileForm As New ReplaceFileForm(AvailableSpace, DirectoryEntry.ParentDirectory)
-        With ReplaceFileForm
-            .SetOriginalFile(DirectoryEntry.GetShortFileName, DirectoryEntry.GetLastWriteDate.DateObject, DirectoryEntry.FileSize)
-            .SetNewFile(DirectoryEntry.ParentDirectory.GetAvailableShortFileName(FileInfo.Name, False, DirectoryEntry.Index), FileInfo.LastWriteTime, FileInfo.Length)
-            .RefreshText()
-            .ShowDialog()
-            FormResult = .Result
-            .Close()
-        End With
+        Dim FormResult = ReplaceFileForm.Display(
+            AvailableSpace,
+            DirectoryEntry.ParentDirectory,
+            DirectoryEntry.GetShortFileName,
+            DirectoryEntry.GetLastWriteDate.DateObject,
+            DirectoryEntry.FileSize, DirectoryEntry.ParentDirectory.GetAvailableShortFileName(FileInfo.Name, False, DirectoryEntry.Index),
+            FileInfo.LastWriteTime,
+            FileInfo.Length)
 
         If FormResult.Cancelled Then
             Return False
@@ -826,10 +790,9 @@ Module DiskImageLib
 
         Dim UseTransaction As Boolean = DirectoryEntry.Disk.BeginTransaction
 
-        Dim Result As Boolean = False
         Dim FreeClusters = DirectoryEntry.Disk.FAT.GetFreeClusters(FAT12.FreeClusterEmum.WithoutData)
 
-        Result = DirectoryEntry.UpdateFile(FileName, FormResult.FileSize, FormResult.FillChar, FreeClusters)
+        Dim Result = DirectoryEntry.UpdateFile(FileName, FormResult.FileSize, FormResult.FillChar, FreeClusters)
         If Not Result Then
             Result = DirectoryEntry.UpdateFile(FileName, FormResult.FileSize, FormResult.FillChar)
         End If
@@ -856,15 +819,11 @@ Module DiskImageLib
             Return False
         End If
 
-        Dim UndeleteForm As New UndeleteForm(DirectoryEntry.GetShortFileName)
+        Dim Response = UndeleteForm.Display(DirectoryEntry.GetShortFileName)
 
-        UndeleteForm.ShowDialog()
-
-        If UndeleteForm.DialogResult = DialogResult.OK Then
-            Dim FirstChar = UndeleteForm.FirstChar
-            If FirstChar > 0 Then
-                DirectoryEntry.UnDelete(FirstChar)
-
+        If Response.Result Then
+            If Response.FirstChar > 0 Then
+                DirectoryEntry.UnDelete(Response.FirstChar)
                 Return True
             End If
         End If

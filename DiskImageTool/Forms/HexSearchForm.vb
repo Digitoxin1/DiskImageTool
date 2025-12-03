@@ -40,6 +40,14 @@ Public Class HexSearchForm
         }
     End Function
 
+    Public Shared Function Display(HexSearch As HexSearch) As (Result As Boolean, Search As HexSearch)
+        Using Form As New HexSearchForm(HexSearch)
+            Form.ShowDialog()
+
+            Return (Form.DialogResult = DialogResult.OK, Form.Search)
+        End Using
+    End Function
+
     Private Function CheckHex() As Boolean
         Dim Result As Boolean = True
 

@@ -22,15 +22,14 @@
         End If
     End Sub
 
-    Private Sub LocalizeForm()
-        BtnClose.Text = WithoutHotkey(My.Resources.Menu_Close)
-        BtnSave.Text = WithoutHotkey(My.Resources.Menu_Save)
-    End Sub
-
-    Private Sub TextViewForm_KeyDown(sender As Object, e As KeyEventArgs) Handles Me.KeyDown
-        If e.KeyCode = Keys.Escape Then
-            Me.Close()
-        End If
+    Public Shared Sub Display(Caption As String, Content As String, Editable As Boolean, EnableSave As Boolean, Optional SaveFileName As String = "", Optional owner As IWin32Window = Nothing)
+        Using frmTextView As New TextViewForm(Caption, Content, Editable, EnableSave, SaveFileName)
+            If owner Is Nothing Then
+                frmTextView.ShowDialog()
+            Else
+                frmTextView.ShowDialog(owner)
+            End If
+        End Using
     End Sub
 
     Private Sub BtnSave_Click(sender As Object, e As EventArgs) Handles BtnSave.Click
@@ -61,5 +60,16 @@
                 IO.File.WriteAllText(Dialog.FileName, TextBox1.Text)
             End If
         End Using
+    End Sub
+
+    Private Sub LocalizeForm()
+        BtnClose.Text = WithoutHotkey(My.Resources.Menu_Close)
+        BtnSave.Text = WithoutHotkey(My.Resources.Menu_Save)
+    End Sub
+
+    Private Sub TextViewForm_KeyDown(sender As Object, e As KeyEventArgs) Handles Me.KeyDown
+        If e.KeyCode = Keys.Escape Then
+            Me.Close()
+        End If
     End Sub
 End Class

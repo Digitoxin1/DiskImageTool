@@ -24,6 +24,12 @@ Public Class ItemScanForm
         End Get
     End Property
 
+    Public Shared Sub Display(scanner As IImageScanner, windowTitle As String, progessLabel As String, ctSource As CancellationTokenSource, owner As IWin32Window)
+        Using dlg As New ItemScanForm(scanner, windowTitle, progessLabel, ctSource)
+            dlg.ShowDialog(owner)
+        End Using
+    End Sub
+
     Private Sub ItemScanForm_FormClosing(sender As Object, e As FormClosingEventArgs) Handles Me.FormClosing
         If Not _endScan Then
             e.Cancel = True
