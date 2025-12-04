@@ -993,12 +993,7 @@ Public Class MainForm
     End Sub
 
     Private Sub PositionControls()
-        ListViewSummary.Width = ListViewSummary.Parent.Width
-        FlowLayoutPanelHashes.Width = FlowLayoutPanelHashes.Parent.Width
         btnRetry.Left = btnRetry.Parent.Width - btnRetry.Width - 20
-        ListViewFiles.Width = ListViewFiles.Parent.Width
-        BtnResetSort.Left = BtnResetSort.Parent.Width - BtnResetSort.Width
-        ComboImages.Width = BtnResetSort.Left - 6
 
         LabelDropMessage.Left = ListViewFiles.Left + (ListViewFiles.Width - LabelDropMessage.Width) \ 2
         LabelDropMessage.Top = ListViewFiles.Top + (ListViewFiles.Height - LabelDropMessage.Height) \ 2

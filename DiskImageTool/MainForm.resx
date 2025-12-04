@@ -164,6 +164,12 @@
   <metadata name="MainMenuView.GenerateMember" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
     <value>False</value>
   </metadata>
+  <data name="MainMenuView.Size" type="System.Drawing.Size, System.Drawing">
+    <value>39, 20</value>
+  </data>
+  <data name="MainMenuView.Text" xml:space="preserve">
+    <value>&amp;Hex</value>
+  </data>
   <data name="MenuHexBootSector.Size" type="System.Drawing.Size, System.Drawing">
     <value>194, 22</value>
   </data>
@@ -231,15 +237,18 @@
     <value>{File}</value>
     <comment>@Invariant</comment>
   </data>
-  <data name="MainMenuView.Size" type="System.Drawing.Size, System.Drawing">
-    <value>39, 20</value>
-  </data>
-  <data name="MainMenuView.Text" xml:space="preserve">
-    <value>&amp;Hex</value>
-  </data>
   <metadata name="MainMenuTools.GenerateMember" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
     <value>False</value>
   </metadata>
+  <metadata name="MenuToolsSeparator.GenerateMember" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
+    <value>False</value>
+  </metadata>
+  <data name="MainMenuTools.Size" type="System.Drawing.Size, System.Drawing">
+    <value>47, 20</value>
+  </data>
+  <data name="MainMenuTools.Text" xml:space="preserve">
+    <value>&amp;Tools</value>
+  </data>
   <data name="MenuToolsWin9xClean.Size" type="System.Drawing.Size, System.Drawing">
     <value>289, 22</value>
   </data>
@@ -259,6 +268,12 @@
     <value>{TruncateImage}</value>
     <comment>@Invariant</comment>
   </data>
+  <data name="MenuToolsFixImageSizeSubMenu.Size" type="System.Drawing.Size, System.Drawing">
+    <value>289, 22</value>
+  </data>
+  <data name="MenuToolsFixImageSizeSubMenu.Text" xml:space="preserve">
+    <value>Fix Image &amp;Size</value>
+  </data>
   <data name="MenuToolsTruncateImage.Size" type="System.Drawing.Size, System.Drawing">
     <value>170, 22</value>
   </data>
@@ -271,12 +286,6 @@
   </data>
   <data name="MenuToolsRestructureImage.Text" xml:space="preserve">
     <value>&amp;Restructure Image</value>
-  </data>
-  <data name="MenuToolsFixImageSizeSubMenu.Size" type="System.Drawing.Size, System.Drawing">
-    <value>289, 22</value>
-  </data>
-  <data name="MenuToolsFixImageSizeSubMenu.Text" xml:space="preserve">
-    <value>Fix Image &amp;Size</value>
   </data>
   <data name="MenuToolsRestoreBootSector.Size" type="System.Drawing.Size, System.Drawing">
     <value>289, 22</value>
@@ -301,12 +310,6 @@
   </data>
   <data name="MenuToolsWin9xCleanBatch.Text" xml:space="preserve">
     <value>Batch Remove Windows Modifications</value>
-  </data>
-  <data name="MainMenuTools.Size" type="System.Drawing.Size, System.Drawing">
-    <value>47, 20</value>
-  </data>
-  <data name="MainMenuTools.Text" xml:space="preserve">
-    <value>&amp;Tools</value>
   </data>
   <metadata name="MenuHelpSeparator.GenerateMember" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
     <value>False</value>
@@ -353,6 +356,12 @@
   <metadata name="MainMenuDisk.GenerateMember" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
     <value>False</value>
   </metadata>
+  <data name="MainMenuDisk.Size" type="System.Drawing.Size, System.Drawing">
+    <value>41, 20</value>
+  </data>
+  <data name="MainMenuDisk.Text" xml:space="preserve">
+    <value>&amp;Disk</value>
+  </data>
   <data name="MenuDiskReadFloppyA.Size" type="System.Drawing.Size, System.Drawing">
     <value>189, 22</value>
   </data>
@@ -381,12 +390,6 @@
     <value>{&amp;Write Disk in Drive B}</value>
     <comment>@Invariant</comment>
   </data>
-  <data name="MainMenuDisk.Size" type="System.Drawing.Size, System.Drawing">
-    <value>41, 20</value>
-  </data>
-  <data name="MainMenuDisk.Text" xml:space="preserve">
-    <value>&amp;Disk</value>
-  </data>
   <metadata name="MenuStripTop.GenerateMember" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
     <value>False</value>
   </metadata>
@@ -396,10 +399,41 @@
   <metadata name="MenuStripTop.Locked" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
     <value>True</value>
   </metadata>
+  <data name="MenuStripTop.Location" type="System.Drawing.Point, System.Drawing">
+    <value>0, 0</value>
+  </data>
+  <assembly alias="System.Windows.Forms" name="System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
+  <data name="MenuStripTop.Padding" type="System.Windows.Forms.Padding, System.Windows.Forms">
+    <value>6, 2, 12, 2</value>
+  </data>
+  <data name="MenuStripTop.Size" type="System.Drawing.Size, System.Drawing">
+    <value>1004, 24</value>
+  </data>
+  <data name="MenuStripTop.TabIndex" type="System.Int32, mscorlib">
+    <value>0</value>
+  </data>
+  <data name="&gt;&gt;MenuStripTop.Name" xml:space="preserve">
+    <value>MenuStripTop</value>
+  </data>
+  <data name="&gt;&gt;MenuStripTop.Type" xml:space="preserve">
+    <value>System.Windows.Forms.MenuStrip, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;MenuStripTop.Parent" xml:space="preserve">
+    <value>$this</value>
+  </data>
+  <data name="&gt;&gt;MenuStripTop.ZOrder" xml:space="preserve">
+    <value>4</value>
+  </data>
+  <data name="MainMenuFile.Size" type="System.Drawing.Size, System.Drawing">
+    <value>45, 20</value>
+  </data>
+  <data name="MainMenuFile.Text" xml:space="preserve">
+    <value>{&amp;File}</value>
+    <comment>@Invariant</comment>
+  </data>
   <data name="MenuFileOpen.ImageTransparentColor" type="System.Drawing.Color, System.Drawing">
     <value>Magenta</value>
   </data>
-  <assembly alias="System.Windows.Forms" name="System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
   <data name="MenuFileOpen.ShortcutKeys" type="System.Windows.Forms.Keys, System.Windows.Forms">
     <value>Ctrl+O</value>
   </data>
@@ -487,11 +521,11 @@
   <data name="MenuFileExit.Text" xml:space="preserve">
     <value>E&amp;xit</value>
   </data>
-  <data name="MainMenuFile.Size" type="System.Drawing.Size, System.Drawing">
-    <value>45, 20</value>
+  <data name="MainMenuEdit.Size" type="System.Drawing.Size, System.Drawing">
+    <value>47, 20</value>
   </data>
-  <data name="MainMenuFile.Text" xml:space="preserve">
-    <value>{&amp;File}</value>
+  <data name="MainMenuEdit.Text" xml:space="preserve">
+    <value>{&amp;Edit}</value>
     <comment>@Invariant</comment>
   </data>
   <data name="MenuEditBootSector.Size" type="System.Drawing.Size, System.Drawing">
@@ -568,16 +602,24 @@
   <data name="MenuEditRevert.TextAlign" type="System.Drawing.ContentAlignment, System.Drawing">
     <value>MiddleLeft</value>
   </data>
-  <data name="MainMenuEdit.Size" type="System.Drawing.Size, System.Drawing">
-    <value>47, 20</value>
-  </data>
-  <data name="MainMenuEdit.Text" xml:space="preserve">
-    <value>{&amp;Edit}</value>
-    <comment>@Invariant</comment>
-  </data>
   <metadata name="ContextMenuFilters.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
     <value>409, 17</value>
   </metadata>
+  <data name="ContextMenuFilters.Size" type="System.Drawing.Size, System.Drawing">
+    <value>168, 70</value>
+  </data>
+  <data name="&gt;&gt;ContextMenuFilters.Name" xml:space="preserve">
+    <value>ContextMenuFilters</value>
+  </data>
+  <data name="&gt;&gt;ContextMenuFilters.Type" xml:space="preserve">
+    <value>System.Windows.Forms.ContextMenuStrip, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="MainMenuFilters.Size" type="System.Drawing.Size, System.Drawing">
+    <value>50, 20</value>
+  </data>
+  <data name="MainMenuFilters.Text" xml:space="preserve">
+    <value>F&amp;ilters</value>
+  </data>
   <data name="MenuFiltersScanNew.Size" type="System.Drawing.Size, System.Drawing">
     <value>167, 22</value>
   </data>
@@ -597,20 +639,12 @@
   <data name="MenuFiltersClear.Text" xml:space="preserve">
     <value>Clear Filters</value>
   </data>
-  <data name="ContextMenuFilters.Size" type="System.Drawing.Size, System.Drawing">
-    <value>168, 70</value>
+  <data name="MainMenuFlux.Size" type="System.Drawing.Size, System.Drawing">
+    <value>40, 20</value>
   </data>
-  <data name="&gt;&gt;ContextMenuFilters.Name" xml:space="preserve">
-    <value>ContextMenuFilters</value>
-  </data>
-  <data name="&gt;&gt;ContextMenuFilters.Type" xml:space="preserve">
-    <value>System.Windows.Forms.ContextMenuStrip, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="MainMenuFilters.Size" type="System.Drawing.Size, System.Drawing">
-    <value>50, 20</value>
-  </data>
-  <data name="MainMenuFilters.Text" xml:space="preserve">
-    <value>F&amp;ilters</value>
+  <data name="MainMenuFlux.Text" xml:space="preserve">
+    <value>Flu&amp;x</value>
+    <comment>@Invariant</comment>
   </data>
   <data name="MenuGreaseweazleRead.Size" type="System.Drawing.Size, System.Drawing">
     <value>176, 22</value>
@@ -635,6 +669,13 @@
   </data>
   <data name="ToolStripSeparatorDevices.Size" type="System.Drawing.Size, System.Drawing">
     <value>173, 6</value>
+  </data>
+  <data name="MenuGreaseweazle.Size" type="System.Drawing.Size, System.Drawing">
+    <value>176, 22</value>
+  </data>
+  <data name="MenuGreaseweazle.Text" xml:space="preserve">
+    <value>&amp;Greaseweazle</value>
+    <comment>@Invariant</comment>
   </data>
   <data name="MenuGreaseweazleErase.Size" type="System.Drawing.Size, System.Drawing">
     <value>169, 22</value>
@@ -663,11 +704,11 @@
   <data name="MenuGreaseweazleBandwidth.Text" xml:space="preserve">
     <value>Report &amp;Bandwidth</value>
   </data>
-  <data name="MenuGreaseweazle.Size" type="System.Drawing.Size, System.Drawing">
+  <data name="MenuPcImgCnv.Size" type="System.Drawing.Size, System.Drawing">
     <value>176, 22</value>
   </data>
-  <data name="MenuGreaseweazle.Text" xml:space="preserve">
-    <value>&amp;Greaseweazle</value>
+  <data name="MenuPcImgCnv.Text" xml:space="preserve">
+    <value>PcImgCnv</value>
     <comment>@Invariant</comment>
   </data>
   <data name="MenuPcImgCnvTrackLayout.Size" type="System.Drawing.Size, System.Drawing">
@@ -676,19 +717,11 @@
   <data name="MenuPcImgCnvTrackLayout.Text" xml:space="preserve">
     <value>Generate tracklayout.txt</value>
   </data>
-  <data name="MenuPcImgCnv.Size" type="System.Drawing.Size, System.Drawing">
-    <value>176, 22</value>
+  <data name="MainMenuReports.Size" type="System.Drawing.Size, System.Drawing">
+    <value>59, 20</value>
   </data>
-  <data name="MenuPcImgCnv.Text" xml:space="preserve">
-    <value>PcImgCnv</value>
-    <comment>@Invariant</comment>
-  </data>
-  <data name="MainMenuFlux.Size" type="System.Drawing.Size, System.Drawing">
-    <value>40, 20</value>
-  </data>
-  <data name="MainMenuFlux.Text" xml:space="preserve">
-    <value>Flu&amp;x</value>
-    <comment>@Invariant</comment>
+  <data name="MainMenuReports.Text" xml:space="preserve">
+    <value>&amp;Reports</value>
   </data>
   <data name="MenuReportsModifications.Size" type="System.Drawing.Size, System.Drawing">
     <value>155, 22</value>
@@ -697,11 +730,11 @@
     <value>{Modifications}</value>
     <comment>@Invariant</comment>
   </data>
-  <data name="MainMenuReports.Size" type="System.Drawing.Size, System.Drawing">
-    <value>59, 20</value>
+  <data name="MainMenuOptions.Size" type="System.Drawing.Size, System.Drawing">
+    <value>61, 20</value>
   </data>
-  <data name="MainMenuReports.Text" xml:space="preserve">
-    <value>&amp;Reports</value>
+  <data name="MainMenuOptions.Text" xml:space="preserve">
+    <value>&amp;Options</value>
   </data>
   <data name="MenuOptionsCreateBackup.Size" type="System.Drawing.Size, System.Drawing">
     <value>224, 22</value>
@@ -743,11 +776,12 @@
   <data name="MenuOptionsFlux.Text" xml:space="preserve">
     <value>&amp;Flux Configuration</value>
   </data>
-  <data name="MainMenuOptions.Size" type="System.Drawing.Size, System.Drawing">
-    <value>61, 20</value>
+  <data name="MainMenuHelp.Size" type="System.Drawing.Size, System.Drawing">
+    <value>24, 20</value>
   </data>
-  <data name="MainMenuOptions.Text" xml:space="preserve">
-    <value>&amp;Options</value>
+  <data name="MainMenuHelp.Text" xml:space="preserve">
+    <value>?</value>
+    <comment>@Invariant</comment>
   </data>
   <data name="MenuHelpProjectPage.Size" type="System.Drawing.Size, System.Drawing">
     <value>166, 22</value>
@@ -777,13 +811,6 @@
     <value>{About}</value>
     <comment>@Invariant</comment>
   </data>
-  <data name="MainMenuHelp.Size" type="System.Drawing.Size, System.Drawing">
-    <value>24, 20</value>
-  </data>
-  <data name="MainMenuHelp.Text" xml:space="preserve">
-    <value>?</value>
-    <comment>@Invariant</comment>
-  </data>
   <data name="MainMenuUpdateAvailable.Size" type="System.Drawing.Size, System.Drawing">
     <value>108, 20</value>
   </data>
@@ -796,29 +823,134 @@
   <data name="MainMenuNewInstance.Text" xml:space="preserve">
     <value>Open In New Instance</value>
   </data>
-  <data name="MenuStripTop.Location" type="System.Drawing.Point, System.Drawing">
+  <metadata name="PanelCombo.GenerateMember" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
+    <value>False</value>
+  </metadata>
+  <metadata name="PanelCombo.Locked" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
+    <value>True</value>
+  </metadata>
+  <metadata name="ComboImages.Locked" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
+    <value>True</value>
+  </metadata>
+  <data name="ComboImages.Dock" type="System.Windows.Forms.DockStyle, System.Windows.Forms">
+    <value>Fill</value>
+  </data>
+  <data name="ComboImages.Location" type="System.Drawing.Point, System.Drawing">
     <value>0, 0</value>
   </data>
-  <data name="MenuStripTop.Padding" type="System.Windows.Forms.Padding, System.Windows.Forms">
-    <value>6, 2, 12, 2</value>
+  <data name="ComboImages.Size" type="System.Drawing.Size, System.Drawing">
+    <value>615, 21</value>
   </data>
-  <data name="MenuStripTop.Size" type="System.Drawing.Size, System.Drawing">
-    <value>1004, 24</value>
-  </data>
-  <data name="MenuStripTop.TabIndex" type="System.Int32, mscorlib">
+  <data name="ComboImages.TabIndex" type="System.Int32, mscorlib">
     <value>0</value>
   </data>
-  <data name="&gt;&gt;MenuStripTop.Name" xml:space="preserve">
-    <value>MenuStripTop</value>
+  <data name="ComboImages.Visible" type="System.Boolean, mscorlib">
+    <value>False</value>
   </data>
-  <data name="&gt;&gt;MenuStripTop.Type" xml:space="preserve">
-    <value>System.Windows.Forms.MenuStrip, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  <data name="&gt;&gt;ComboImages.Name" xml:space="preserve">
+    <value>ComboImages</value>
   </data>
-  <data name="&gt;&gt;MenuStripTop.Parent" xml:space="preserve">
-    <value>$this</value>
+  <data name="&gt;&gt;ComboImages.Type" xml:space="preserve">
+    <value>System.Windows.Forms.ComboBox, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
-  <data name="&gt;&gt;MenuStripTop.ZOrder" xml:space="preserve">
-    <value>4</value>
+  <data name="&gt;&gt;ComboImages.Parent" xml:space="preserve">
+    <value>PanelCombo</value>
+  </data>
+  <data name="&gt;&gt;ComboImages.ZOrder" xml:space="preserve">
+    <value>0</value>
+  </data>
+  <metadata name="PanelSpacer1.GenerateMember" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
+    <value>False</value>
+  </metadata>
+  <metadata name="PanelSpacer1.Locked" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
+    <value>True</value>
+  </metadata>
+  <data name="PanelSpacer1.Dock" type="System.Windows.Forms.DockStyle, System.Windows.Forms">
+    <value>Right</value>
+  </data>
+  <data name="PanelSpacer1.Location" type="System.Drawing.Point, System.Drawing">
+    <value>615, 0</value>
+  </data>
+  <data name="PanelSpacer1.Size" type="System.Drawing.Size, System.Drawing">
+    <value>6, 21</value>
+  </data>
+  <data name="PanelSpacer1.TabIndex" type="System.Int32, mscorlib">
+    <value>1</value>
+  </data>
+  <data name="&gt;&gt;PanelSpacer1.Name" xml:space="preserve">
+    <value>PanelSpacer1</value>
+  </data>
+  <data name="&gt;&gt;PanelSpacer1.Type" xml:space="preserve">
+    <value>System.Windows.Forms.Panel, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;PanelSpacer1.Parent" xml:space="preserve">
+    <value>PanelCombo</value>
+  </data>
+  <data name="&gt;&gt;PanelSpacer1.ZOrder" xml:space="preserve">
+    <value>1</value>
+  </data>
+  <metadata name="BtnResetSort.Locked" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
+    <value>True</value>
+  </metadata>
+  <data name="BtnResetSort.AutoSize" type="System.Boolean, mscorlib">
+    <value>True</value>
+  </data>
+  <data name="BtnResetSort.Dock" type="System.Windows.Forms.DockStyle, System.Windows.Forms">
+    <value>Right</value>
+  </data>
+  <data name="BtnResetSort.ImeMode" type="System.Windows.Forms.ImeMode, System.Windows.Forms">
+    <value>NoControl</value>
+  </data>
+  <data name="BtnResetSort.Location" type="System.Drawing.Point, System.Drawing">
+    <value>621, 0</value>
+  </data>
+  <data name="BtnResetSort.MaximumSize" type="System.Drawing.Size, System.Drawing">
+    <value>0, 21</value>
+  </data>
+  <data name="BtnResetSort.Size" type="System.Drawing.Size, System.Drawing">
+    <value>67, 21</value>
+  </data>
+  <data name="BtnResetSort.TabIndex" type="System.Int32, mscorlib">
+    <value>2</value>
+  </data>
+  <data name="BtnResetSort.Text" xml:space="preserve">
+    <value>Reset Sort</value>
+  </data>
+  <data name="&gt;&gt;BtnResetSort.Name" xml:space="preserve">
+    <value>BtnResetSort</value>
+  </data>
+  <data name="&gt;&gt;BtnResetSort.Type" xml:space="preserve">
+    <value>System.Windows.Forms.Button, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;BtnResetSort.Parent" xml:space="preserve">
+    <value>PanelCombo</value>
+  </data>
+  <data name="&gt;&gt;BtnResetSort.ZOrder" xml:space="preserve">
+    <value>2</value>
+  </data>
+  <data name="PanelCombo.Dock" type="System.Windows.Forms.DockStyle, System.Windows.Forms">
+    <value>Top</value>
+  </data>
+  <data name="PanelCombo.Location" type="System.Drawing.Point, System.Drawing">
+    <value>0, 6</value>
+  </data>
+  <data name="PanelCombo.Size" type="System.Drawing.Size, System.Drawing">
+    <value>688, 21</value>
+  </data>
+  <data name="PanelCombo.TabIndex" type="System.Int32, mscorlib">
+    <value>1</value>
+  </data>
+  <data name="&gt;&gt;PanelCombo.Name" xml:space="preserve">
+    <value>PanelCombo</value>
+  </data>
+  <data name="&gt;&gt;PanelCombo.Type" xml:space="preserve">
+    <value>System.Windows.Forms.Panel, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;PanelCombo.Parent" xml:space="preserve">
+    <value>SplitContainer1.Panel2</value>
+  </data>
+  <data name="&gt;&gt;PanelCombo.ZOrder" xml:space="preserve">
+    <value>3</value>
   </data>
   <metadata name="LabelCRC32Caption.Locked" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
     <value>True</value>
@@ -934,6 +1066,30 @@
   <metadata name="ToolStripTop.Locked" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
     <value>True</value>
   </metadata>
+  <data name="ToolStripTop.Location" type="System.Drawing.Point, System.Drawing">
+    <value>0, 24</value>
+  </data>
+  <data name="ToolStripTop.Padding" type="System.Windows.Forms.Padding, System.Windows.Forms">
+    <value>12, 0, 12, 0</value>
+  </data>
+  <data name="ToolStripTop.Size" type="System.Drawing.Size, System.Drawing">
+    <value>1004, 25</value>
+  </data>
+  <data name="ToolStripTop.TabIndex" type="System.Int32, mscorlib">
+    <value>1</value>
+  </data>
+  <data name="&gt;&gt;ToolStripTop.Name" xml:space="preserve">
+    <value>ToolStripTop</value>
+  </data>
+  <data name="&gt;&gt;ToolStripTop.Type" xml:space="preserve">
+    <value>System.Windows.Forms.ToolStrip, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;ToolStripTop.Parent" xml:space="preserve">
+    <value>$this</value>
+  </data>
+  <data name="&gt;&gt;ToolStripTop.ZOrder" xml:space="preserve">
+    <value>2</value>
+  </data>
   <data name="ToolStripOpen.ImageTransparentColor" type="System.Drawing.Color, System.Drawing">
     <value>Magenta</value>
   </data>
@@ -1027,36 +1183,33 @@
   <data name="ToolStripSeparatorFAT.Size" type="System.Drawing.Size, System.Drawing">
     <value>6, 25</value>
   </data>
-  <data name="ToolStripTop.Location" type="System.Drawing.Point, System.Drawing">
-    <value>0, 24</value>
-  </data>
-  <data name="ToolStripTop.Padding" type="System.Windows.Forms.Padding, System.Windows.Forms">
-    <value>12, 0, 12, 0</value>
-  </data>
-  <data name="ToolStripTop.Size" type="System.Drawing.Size, System.Drawing">
-    <value>1004, 25</value>
-  </data>
-  <data name="ToolStripTop.TabIndex" type="System.Int32, mscorlib">
-    <value>1</value>
-  </data>
-  <data name="&gt;&gt;ToolStripTop.Name" xml:space="preserve">
-    <value>ToolStripTop</value>
-  </data>
-  <data name="&gt;&gt;ToolStripTop.Type" xml:space="preserve">
-    <value>System.Windows.Forms.ToolStrip, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="&gt;&gt;ToolStripTop.Parent" xml:space="preserve">
-    <value>$this</value>
-  </data>
-  <data name="&gt;&gt;ToolStripTop.ZOrder" xml:space="preserve">
-    <value>2</value>
-  </data>
   <metadata name="StatusStripBottom.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
     <value>264, 17</value>
   </metadata>
   <metadata name="StatusStripBottom.Locked" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
     <value>True</value>
   </metadata>
+  <data name="StatusStripBottom.Location" type="System.Drawing.Point, System.Drawing">
+    <value>0, 552</value>
+  </data>
+  <data name="StatusStripBottom.Size" type="System.Drawing.Size, System.Drawing">
+    <value>1004, 24</value>
+  </data>
+  <data name="StatusStripBottom.TabIndex" type="System.Int32, mscorlib">
+    <value>3</value>
+  </data>
+  <data name="&gt;&gt;StatusStripBottom.Name" xml:space="preserve">
+    <value>StatusStripBottom</value>
+  </data>
+  <data name="&gt;&gt;StatusStripBottom.Type" xml:space="preserve">
+    <value>System.Windows.Forms.StatusStrip, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;StatusStripBottom.Parent" xml:space="preserve">
+    <value>$this</value>
+  </data>
+  <data name="&gt;&gt;StatusStripBottom.ZOrder" xml:space="preserve">
+    <value>3</value>
+  </data>
   <data name="StatusBarStatus.Font" type="System.Drawing.Font, System.Drawing">
     <value>Segoe UI, 9pt</value>
   </data>
@@ -1122,38 +1275,17 @@
     <value>{Images Modified}</value>
     <comment>@Invariant</comment>
   </data>
-  <data name="StatusStripBottom.Location" type="System.Drawing.Point, System.Drawing">
-    <value>0, 552</value>
-  </data>
-  <data name="StatusStripBottom.Size" type="System.Drawing.Size, System.Drawing">
-    <value>1004, 24</value>
-  </data>
-  <data name="StatusStripBottom.TabIndex" type="System.Int32, mscorlib">
-    <value>9</value>
-  </data>
-  <data name="&gt;&gt;StatusStripBottom.Name" xml:space="preserve">
-    <value>StatusStripBottom</value>
-  </data>
-  <data name="&gt;&gt;StatusStripBottom.Type" xml:space="preserve">
-    <value>System.Windows.Forms.StatusStrip, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="&gt;&gt;StatusStripBottom.Parent" xml:space="preserve">
-    <value>$this</value>
-  </data>
-  <data name="&gt;&gt;StatusStripBottom.ZOrder" xml:space="preserve">
-    <value>3</value>
-  </data>
   <metadata name="ListViewSummary.Locked" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
     <value>True</value>
   </metadata>
-  <data name="ListViewSummary.Anchor" type="System.Windows.Forms.AnchorStyles, System.Windows.Forms">
-    <value>Top, Bottom, Left, Right</value>
+  <data name="ListViewSummary.Dock" type="System.Windows.Forms.DockStyle, System.Windows.Forms">
+    <value>Fill</value>
   </data>
   <data name="ListViewSummary.Location" type="System.Drawing.Point, System.Drawing">
-    <value>0, 0</value>
+    <value>12, 6</value>
   </data>
   <data name="ListViewSummary.Size" type="System.Drawing.Size, System.Drawing">
-    <value>298, 387</value>
+    <value>286, 384</value>
   </data>
   <data name="ListViewSummary.TabIndex" type="System.Int32, mscorlib">
     <value>1</value>
@@ -1168,37 +1300,7 @@
     <value>SplitContainer1.Panel1</value>
   </data>
   <data name="&gt;&gt;ListViewSummary.ZOrder" xml:space="preserve">
-    <value>2</value>
-  </data>
-  <metadata name="ComboImages.Locked" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
-    <value>True</value>
-  </metadata>
-  <data name="ComboImages.Anchor" type="System.Windows.Forms.AnchorStyles, System.Windows.Forms">
-    <value>Top, Left, Right</value>
-  </data>
-  <data name="ComboImages.Location" type="System.Drawing.Point, System.Drawing">
-    <value>0, 0</value>
-  </data>
-  <data name="ComboImages.Size" type="System.Drawing.Size, System.Drawing">
-    <value>459, 21</value>
-  </data>
-  <data name="ComboImages.TabIndex" type="System.Int32, mscorlib">
-    <value>4</value>
-  </data>
-  <data name="ComboImages.Visible" type="System.Boolean, mscorlib">
-    <value>False</value>
-  </data>
-  <data name="&gt;&gt;ComboImages.Name" xml:space="preserve">
-    <value>ComboImages</value>
-  </data>
-  <data name="&gt;&gt;ComboImages.Type" xml:space="preserve">
-    <value>System.Windows.Forms.ComboBox, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="&gt;&gt;ComboImages.Parent" xml:space="preserve">
-    <value>SplitContainer1.Panel2</value>
-  </data>
-  <data name="&gt;&gt;ComboImages.ZOrder" xml:space="preserve">
-    <value>2</value>
+    <value>1</value>
   </data>
   <metadata name="LabelDropMessage.Locked" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
     <value>True</value>
@@ -1216,13 +1318,13 @@
     <value>NoControl</value>
   </data>
   <data name="LabelDropMessage.Location" type="System.Drawing.Point, System.Drawing">
-    <value>115, 253</value>
+    <value>119, 257</value>
   </data>
   <data name="LabelDropMessage.Size" type="System.Drawing.Size, System.Drawing">
     <value>273, 16</value>
   </data>
   <data name="LabelDropMessage.TabIndex" type="System.Int32, mscorlib">
-    <value>8</value>
+    <value>0</value>
   </data>
   <data name="LabelDropMessage.Text" xml:space="preserve">
     <value>Drag &amp;&amp; Drop Floppy Disk Images Here</value>
@@ -1240,42 +1342,6 @@
     <value>SplitContainer1.Panel2</value>
   </data>
   <data name="&gt;&gt;LabelDropMessage.ZOrder" xml:space="preserve">
-    <value>1</value>
-  </data>
-  <metadata name="BtnResetSort.Locked" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
-    <value>True</value>
-  </metadata>
-  <data name="BtnResetSort.Anchor" type="System.Windows.Forms.AnchorStyles, System.Windows.Forms">
-    <value>Top, Right</value>
-  </data>
-  <data name="BtnResetSort.AutoSize" type="System.Boolean, mscorlib">
-    <value>True</value>
-  </data>
-  <data name="BtnResetSort.ImeMode" type="System.Windows.Forms.ImeMode, System.Windows.Forms">
-    <value>NoControl</value>
-  </data>
-  <data name="BtnResetSort.Location" type="System.Drawing.Point, System.Drawing">
-    <value>461, -1</value>
-  </data>
-  <data name="BtnResetSort.Size" type="System.Drawing.Size, System.Drawing">
-    <value>67, 23</value>
-  </data>
-  <data name="BtnResetSort.TabIndex" type="System.Int32, mscorlib">
-    <value>5</value>
-  </data>
-  <data name="BtnResetSort.Text" xml:space="preserve">
-    <value>Reset Sort</value>
-  </data>
-  <data name="&gt;&gt;BtnResetSort.Name" xml:space="preserve">
-    <value>BtnResetSort</value>
-  </data>
-  <data name="&gt;&gt;BtnResetSort.Type" xml:space="preserve">
-    <value>System.Windows.Forms.Button, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="&gt;&gt;BtnResetSort.Parent" xml:space="preserve">
-    <value>SplitContainer1.Panel2</value>
-  </data>
-  <data name="&gt;&gt;BtnResetSort.ZOrder" xml:space="preserve">
     <value>0</value>
   </data>
   <metadata name="btnRetry.Locked" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
@@ -1288,10 +1354,10 @@
     <value>NoControl</value>
   </data>
   <data name="btnRetry.Location" type="System.Drawing.Point, System.Drawing">
-    <value>204, 20</value>
+    <value>216, 26</value>
   </data>
   <data name="btnRetry.Size" type="System.Drawing.Size, System.Drawing">
-    <value>75, 23</value>
+    <value>63, 23</value>
   </data>
   <data name="btnRetry.TabIndex" type="System.Int32, mscorlib">
     <value>0</value>
@@ -1311,24 +1377,54 @@
   <data name="&gt;&gt;btnRetry.ZOrder" xml:space="preserve">
     <value>0</value>
   </data>
+  <metadata name="SplitContainer1.GenerateMember" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
+    <value>False</value>
+  </metadata>
   <metadata name="SplitContainer1.Locked" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
     <value>True</value>
   </metadata>
-  <data name="SplitContainer1.Anchor" type="System.Windows.Forms.AnchorStyles, System.Windows.Forms">
-    <value>Top, Bottom, Left, Right</value>
+  <data name="SplitContainer1.Dock" type="System.Windows.Forms.DockStyle, System.Windows.Forms">
+    <value>Fill</value>
   </data>
   <data name="SplitContainer1.IsSplitterFixed" type="System.Boolean, mscorlib">
     <value>True</value>
   </data>
   <data name="SplitContainer1.Location" type="System.Drawing.Point, System.Drawing">
-    <value>12, 55</value>
+    <value>0, 49</value>
+  </data>
+  <metadata name="PanelSpacer3.GenerateMember" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
+    <value>False</value>
+  </metadata>
+  <metadata name="PanelSpacer3.Locked" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
+    <value>True</value>
+  </metadata>
+  <data name="PanelSpacer3.Dock" type="System.Windows.Forms.DockStyle, System.Windows.Forms">
+    <value>Bottom</value>
+  </data>
+  <data name="PanelSpacer3.Location" type="System.Drawing.Point, System.Drawing">
+    <value>12, 390</value>
+  </data>
+  <data name="PanelSpacer3.Size" type="System.Drawing.Size, System.Drawing">
+    <value>286, 6</value>
+  </data>
+  <data name="PanelSpacer3.TabIndex" type="System.Int32, mscorlib">
+    <value>2</value>
+  </data>
+  <data name="&gt;&gt;PanelSpacer3.Name" xml:space="preserve">
+    <value>PanelSpacer3</value>
+  </data>
+  <data name="&gt;&gt;PanelSpacer3.Type" xml:space="preserve">
+    <value>System.Windows.Forms.Panel, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;PanelSpacer3.Parent" xml:space="preserve">
+    <value>SplitContainer1.Panel1</value>
+  </data>
+  <data name="&gt;&gt;PanelSpacer3.ZOrder" xml:space="preserve">
+    <value>2</value>
   </data>
   <metadata name="FlowLayoutPanelHashes.Locked" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
     <value>True</value>
   </metadata>
-  <data name="FlowLayoutPanelHashes.Anchor" type="System.Windows.Forms.AnchorStyles, System.Windows.Forms">
-    <value>Bottom, Left, Right</value>
-  </data>
   <metadata name="LabelCRC32.Locked" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
     <value>True</value>
   </metadata>
@@ -1431,20 +1527,23 @@
   <data name="&gt;&gt;LabelSHA1.ZOrder" xml:space="preserve">
     <value>5</value>
   </data>
+  <data name="FlowLayoutPanelHashes.Dock" type="System.Windows.Forms.DockStyle, System.Windows.Forms">
+    <value>Bottom</value>
+  </data>
   <data name="FlowLayoutPanelHashes.FlowDirection" type="System.Windows.Forms.FlowDirection, System.Windows.Forms">
     <value>TopDown</value>
   </data>
   <data name="FlowLayoutPanelHashes.Location" type="System.Drawing.Point, System.Drawing">
-    <value>0, 393</value>
+    <value>12, 396</value>
   </data>
   <data name="FlowLayoutPanelHashes.Padding" type="System.Windows.Forms.Padding, System.Windows.Forms">
     <value>3, 3, 3, 3</value>
   </data>
   <data name="FlowLayoutPanelHashes.Size" type="System.Drawing.Size, System.Drawing">
-    <value>296, 101</value>
+    <value>286, 101</value>
   </data>
   <data name="FlowLayoutPanelHashes.TabIndex" type="System.Int32, mscorlib">
-    <value>2</value>
+    <value>3</value>
   </data>
   <data name="FlowLayoutPanelHashes.WrapContents" type="System.Boolean, mscorlib">
     <value>False</value>
@@ -1459,7 +1558,10 @@
     <value>SplitContainer1.Panel1</value>
   </data>
   <data name="&gt;&gt;FlowLayoutPanelHashes.ZOrder" xml:space="preserve">
-    <value>1</value>
+    <value>3</value>
+  </data>
+  <data name="SplitContainer1.Panel1.Padding" type="System.Windows.Forms.Padding, System.Windows.Forms">
+    <value>12, 6, 0, 6</value>
   </data>
   <data name="&gt;&gt;SplitContainer1.Panel1.Name" xml:space="preserve">
     <value>SplitContainer1.Panel1</value>
@@ -1476,20 +1578,20 @@
   <metadata name="ListViewFiles.Locked" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
     <value>True</value>
   </metadata>
-  <data name="ListViewFiles.Anchor" type="System.Windows.Forms.AnchorStyles, System.Windows.Forms">
-    <value>Top, Bottom, Left, Right</value>
+  <data name="ListViewFiles.Dock" type="System.Windows.Forms.DockStyle, System.Windows.Forms">
+    <value>Fill</value>
   </data>
   <data name="ListViewFiles.Font" type="System.Drawing.Font, System.Drawing">
     <value>Microsoft Sans Serif, 8.25pt</value>
   </data>
   <data name="ListViewFiles.Location" type="System.Drawing.Point, System.Drawing">
-    <value>0, 27</value>
+    <value>0, 33</value>
   </data>
   <data name="ListViewFiles.Size" type="System.Drawing.Size, System.Drawing">
-    <value>582, 467</value>
+    <value>688, 464</value>
   </data>
   <data name="ListViewFiles.TabIndex" type="System.Int32, mscorlib">
-    <value>6</value>
+    <value>3</value>
   </data>
   <data name="&gt;&gt;ListViewFiles.Name" xml:space="preserve">
     <value>ListViewFiles</value>
@@ -1501,7 +1603,40 @@
     <value>SplitContainer1.Panel2</value>
   </data>
   <data name="&gt;&gt;ListViewFiles.ZOrder" xml:space="preserve">
-    <value>3</value>
+    <value>1</value>
+  </data>
+  <metadata name="PanelSpacer2.GenerateMember" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
+    <value>False</value>
+  </metadata>
+  <metadata name="PanelSpacer2.Locked" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
+    <value>True</value>
+  </metadata>
+  <data name="PanelSpacer2.Dock" type="System.Windows.Forms.DockStyle, System.Windows.Forms">
+    <value>Top</value>
+  </data>
+  <data name="PanelSpacer2.Location" type="System.Drawing.Point, System.Drawing">
+    <value>0, 27</value>
+  </data>
+  <data name="PanelSpacer2.Size" type="System.Drawing.Size, System.Drawing">
+    <value>688, 6</value>
+  </data>
+  <data name="PanelSpacer2.TabIndex" type="System.Int32, mscorlib">
+    <value>2</value>
+  </data>
+  <data name="&gt;&gt;PanelSpacer2.Name" xml:space="preserve">
+    <value>PanelSpacer2</value>
+  </data>
+  <data name="&gt;&gt;PanelSpacer2.Type" xml:space="preserve">
+    <value>System.Windows.Forms.Panel, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;PanelSpacer2.Parent" xml:space="preserve">
+    <value>SplitContainer1.Panel2</value>
+  </data>
+  <data name="&gt;&gt;PanelSpacer2.ZOrder" xml:space="preserve">
+    <value>2</value>
+  </data>
+  <data name="SplitContainer1.Panel2.Padding" type="System.Windows.Forms.Padding, System.Windows.Forms">
+    <value>0, 6, 12, 6</value>
   </data>
   <data name="&gt;&gt;SplitContainer1.Panel2.Name" xml:space="preserve">
     <value>SplitContainer1.Panel2</value>
@@ -1516,7 +1651,7 @@
     <value>1</value>
   </data>
   <data name="SplitContainer1.Size" type="System.Drawing.Size, System.Drawing">
-    <value>981, 494</value>
+    <value>1004, 503</value>
   </data>
   <data name="SplitContainer1.SplitterDistance" type="System.Int32, mscorlib">
     <value>298</value>
@@ -2685,6 +2820,9 @@
         AAAAB////wAAAAAAAAAAAAAAAA/////gAAAAAAAAAAAAAAD/////////////////////////////////
         //////////////////////////////////8=
 </value>
+  </data>
+  <data name="$this.ImeMode" type="System.Windows.Forms.ImeMode, System.Windows.Forms">
+    <value>NoControl</value>
   </data>
   <data name="$this.MinimumSize" type="System.Drawing.Size, System.Drawing">
     <value>960, 600</value>

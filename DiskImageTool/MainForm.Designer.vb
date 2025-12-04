@@ -43,6 +43,11 @@ Partial Class MainForm
         Dim ToolStripSeparator9 As System.Windows.Forms.ToolStripSeparator
         Dim MainMenuDisk As System.Windows.Forms.ToolStripMenuItem
         Dim MenuStripTop As System.Windows.Forms.MenuStrip
+        Dim PanelCombo As System.Windows.Forms.Panel
+        Dim SplitContainer1 As System.Windows.Forms.SplitContainer
+        Dim PanelSpacer1 As System.Windows.Forms.Panel
+        Dim PanelSpacer2 As System.Windows.Forms.Panel
+        Dim PanelSpacer3 As System.Windows.Forms.Panel
         Me.MenuHexBootSector = New System.Windows.Forms.ToolStripMenuItem()
         Me.MenuHexFAT = New System.Windows.Forms.ToolStripMenuItem()
         Me.MenuHexDirectory = New System.Windows.Forms.ToolStripMenuItem()
@@ -124,6 +129,8 @@ Partial Class MainForm
         Me.MenuHelpAbout = New System.Windows.Forms.ToolStripMenuItem()
         Me.MainMenuUpdateAvailable = New System.Windows.Forms.ToolStripMenuItem()
         Me.MainMenuNewInstance = New System.Windows.Forms.ToolStripMenuItem()
+        Me.ComboImages = New System.Windows.Forms.ComboBox()
+        Me.BtnResetSort = New System.Windows.Forms.Button()
         Me.LabelCRC32Caption = New System.Windows.Forms.Label()
         Me.LabelMD5Caption = New System.Windows.Forms.Label()
         Me.LabelSHA1Caption = New System.Windows.Forms.Label()
@@ -152,11 +159,8 @@ Partial Class MainForm
         Me.StatusBarImageCount = New System.Windows.Forms.ToolStripStatusLabel()
         Me.StatusBarImagesModified = New System.Windows.Forms.ToolStripStatusLabel()
         Me.ListViewSummary = New System.Windows.Forms.ListView()
-        Me.ComboImages = New System.Windows.Forms.ComboBox()
         Me.LabelDropMessage = New System.Windows.Forms.Label()
-        Me.BtnResetSort = New System.Windows.Forms.Button()
         Me.btnRetry = New System.Windows.Forms.Button()
-        Me.SplitContainer1 = New System.Windows.Forms.SplitContainer()
         Me.FlowLayoutPanelHashes = New System.Windows.Forms.FlowLayoutPanel()
         Me.LabelCRC32 = New System.Windows.Forms.Label()
         Me.LabelMD5 = New System.Windows.Forms.Label()
@@ -181,14 +185,20 @@ Partial Class MainForm
         ToolStripSeparator9 = New System.Windows.Forms.ToolStripSeparator()
         MainMenuDisk = New System.Windows.Forms.ToolStripMenuItem()
         MenuStripTop = New System.Windows.Forms.MenuStrip()
+        PanelCombo = New System.Windows.Forms.Panel()
+        SplitContainer1 = New System.Windows.Forms.SplitContainer()
+        PanelSpacer1 = New System.Windows.Forms.Panel()
+        PanelSpacer2 = New System.Windows.Forms.Panel()
+        PanelSpacer3 = New System.Windows.Forms.Panel()
         MenuStripTop.SuspendLayout()
         Me.ContextMenuFilters.SuspendLayout()
+        PanelCombo.SuspendLayout()
         Me.ToolStripTop.SuspendLayout()
         Me.StatusStripBottom.SuspendLayout()
-        CType(Me.SplitContainer1, System.ComponentModel.ISupportInitialize).BeginInit()
-        Me.SplitContainer1.Panel1.SuspendLayout()
-        Me.SplitContainer1.Panel2.SuspendLayout()
-        Me.SplitContainer1.SuspendLayout()
+        CType(SplitContainer1, System.ComponentModel.ISupportInitialize).BeginInit()
+        SplitContainer1.Panel1.SuspendLayout()
+        SplitContainer1.Panel2.SuspendLayout()
+        SplitContainer1.SuspendLayout()
         Me.FlowLayoutPanelHashes.SuspendLayout()
         Me.SuspendLayout()
         '
@@ -548,7 +558,6 @@ Partial Class MainForm
         '
         Me.ContextMenuFilters.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.MenuFiltersScanNew, Me.MenuFiltersScan, Me.MenuFiltersClear})
         Me.ContextMenuFilters.Name = "ContextMenuStrip1"
-        Me.ContextMenuFilters.OwnerItem = Me.MainMenuFilters
         resources.ApplyResources(Me.ContextMenuFilters, "ContextMenuFilters")
         '
         'MenuFiltersScanNew
@@ -739,6 +748,29 @@ Partial Class MainForm
         Me.MainMenuNewInstance.Image = Global.DiskImageTool.My.Resources.Resources.Instance
         Me.MainMenuNewInstance.Name = "MainMenuNewInstance"
         resources.ApplyResources(Me.MainMenuNewInstance, "MainMenuNewInstance")
+        '
+        'PanelCombo
+        '
+        PanelCombo.Controls.Add(Me.ComboImages)
+        PanelCombo.Controls.Add(PanelSpacer1)
+        PanelCombo.Controls.Add(Me.BtnResetSort)
+        resources.ApplyResources(PanelCombo, "PanelCombo")
+        PanelCombo.Name = "PanelCombo"
+        '
+        'ComboImages
+        '
+        Me.ComboImages.AllowDrop = True
+        resources.ApplyResources(Me.ComboImages, "ComboImages")
+        Me.ComboImages.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList
+        Me.ComboImages.DropDownWidth = 523
+        Me.ComboImages.Name = "ComboImages"
+        Me.ComboImages.Sorted = True
+        '
+        'BtnResetSort
+        '
+        resources.ApplyResources(Me.BtnResetSort, "BtnResetSort")
+        Me.BtnResetSort.Name = "BtnResetSort"
+        Me.BtnResetSort.UseVisualStyleBackColor = True
         '
         'LabelCRC32Caption
         '
@@ -947,27 +979,12 @@ Partial Class MainForm
         Me.ListViewSummary.Name = "ListViewSummary"
         Me.ListViewSummary.UseCompatibleStateImageBehavior = False
         '
-        'ComboImages
-        '
-        Me.ComboImages.AllowDrop = True
-        resources.ApplyResources(Me.ComboImages, "ComboImages")
-        Me.ComboImages.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList
-        Me.ComboImages.DropDownWidth = 523
-        Me.ComboImages.Name = "ComboImages"
-        Me.ComboImages.Sorted = True
-        '
         'LabelDropMessage
         '
         Me.LabelDropMessage.AllowDrop = True
         resources.ApplyResources(Me.LabelDropMessage, "LabelDropMessage")
         Me.LabelDropMessage.BackColor = System.Drawing.SystemColors.Window
         Me.LabelDropMessage.Name = "LabelDropMessage"
-        '
-        'BtnResetSort
-        '
-        resources.ApplyResources(Me.BtnResetSort, "BtnResetSort")
-        Me.BtnResetSort.Name = "BtnResetSort"
-        Me.BtnResetSort.UseVisualStyleBackColor = True
         '
         'btnRetry
         '
@@ -977,27 +994,29 @@ Partial Class MainForm
         '
         'SplitContainer1
         '
-        resources.ApplyResources(Me.SplitContainer1, "SplitContainer1")
-        Me.SplitContainer1.FixedPanel = System.Windows.Forms.FixedPanel.Panel1
-        Me.SplitContainer1.Name = "SplitContainer1"
+        resources.ApplyResources(SplitContainer1, "SplitContainer1")
+        SplitContainer1.FixedPanel = System.Windows.Forms.FixedPanel.Panel1
+        SplitContainer1.Name = "SplitContainer1"
         '
         'SplitContainer1.Panel1
         '
-        Me.SplitContainer1.Panel1.Controls.Add(Me.btnRetry)
-        Me.SplitContainer1.Panel1.Controls.Add(Me.FlowLayoutPanelHashes)
-        Me.SplitContainer1.Panel1.Controls.Add(Me.ListViewSummary)
+        SplitContainer1.Panel1.Controls.Add(Me.btnRetry)
+        SplitContainer1.Panel1.Controls.Add(Me.ListViewSummary)
+        SplitContainer1.Panel1.Controls.Add(PanelSpacer3)
+        SplitContainer1.Panel1.Controls.Add(Me.FlowLayoutPanelHashes)
+        resources.ApplyResources(SplitContainer1.Panel1, "SplitContainer1.Panel1")
         '
         'SplitContainer1.Panel2
         '
-        Me.SplitContainer1.Panel2.Controls.Add(Me.BtnResetSort)
-        Me.SplitContainer1.Panel2.Controls.Add(Me.LabelDropMessage)
-        Me.SplitContainer1.Panel2.Controls.Add(Me.ComboImages)
-        Me.SplitContainer1.Panel2.Controls.Add(Me.ListViewFiles)
+        SplitContainer1.Panel2.Controls.Add(Me.LabelDropMessage)
+        SplitContainer1.Panel2.Controls.Add(Me.ListViewFiles)
+        SplitContainer1.Panel2.Controls.Add(PanelSpacer2)
+        SplitContainer1.Panel2.Controls.Add(PanelCombo)
+        resources.ApplyResources(SplitContainer1.Panel2, "SplitContainer1.Panel2")
         '
         'FlowLayoutPanelHashes
         '
         Me.FlowLayoutPanelHashes.AllowDrop = True
-        resources.ApplyResources(Me.FlowLayoutPanelHashes, "FlowLayoutPanelHashes")
         Me.FlowLayoutPanelHashes.BackColor = System.Drawing.SystemColors.Window
         Me.FlowLayoutPanelHashes.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle
         Me.FlowLayoutPanelHashes.Controls.Add(Me.LabelCRC32Caption)
@@ -1006,6 +1025,7 @@ Partial Class MainForm
         Me.FlowLayoutPanelHashes.Controls.Add(Me.LabelMD5)
         Me.FlowLayoutPanelHashes.Controls.Add(Me.LabelSHA1Caption)
         Me.FlowLayoutPanelHashes.Controls.Add(Me.LabelSHA1)
+        resources.ApplyResources(Me.FlowLayoutPanelHashes, "FlowLayoutPanelHashes")
         Me.FlowLayoutPanelHashes.Name = "FlowLayoutPanelHashes"
         '
         'LabelCRC32
@@ -1026,6 +1046,21 @@ Partial Class MainForm
         Me.LabelSHA1.Name = "LabelSHA1"
         Me.LabelSHA1.UseMnemonic = False
         '
+        'PanelSpacer1
+        '
+        resources.ApplyResources(PanelSpacer1, "PanelSpacer1")
+        PanelSpacer1.Name = "PanelSpacer1"
+        '
+        'PanelSpacer2
+        '
+        resources.ApplyResources(PanelSpacer2, "PanelSpacer2")
+        PanelSpacer2.Name = "PanelSpacer2"
+        '
+        'PanelSpacer3
+        '
+        resources.ApplyResources(PanelSpacer3, "PanelSpacer3")
+        PanelSpacer3.Name = "PanelSpacer3"
+        '
         'ListViewFiles
         '
         Me.ListViewFiles.AllowDrop = True
@@ -1038,7 +1073,7 @@ Partial Class MainForm
         '
         resources.ApplyResources(Me, "$this")
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
-        Me.Controls.Add(Me.SplitContainer1)
+        Me.Controls.Add(SplitContainer1)
         Me.Controls.Add(Me.ToolStripTop)
         Me.Controls.Add(Me.StatusStripBottom)
         Me.Controls.Add(MenuStripTop)
@@ -1047,15 +1082,17 @@ Partial Class MainForm
         MenuStripTop.ResumeLayout(False)
         MenuStripTop.PerformLayout()
         Me.ContextMenuFilters.ResumeLayout(False)
+        PanelCombo.ResumeLayout(False)
+        PanelCombo.PerformLayout()
         Me.ToolStripTop.ResumeLayout(False)
         Me.ToolStripTop.PerformLayout()
         Me.StatusStripBottom.ResumeLayout(False)
         Me.StatusStripBottom.PerformLayout()
-        Me.SplitContainer1.Panel1.ResumeLayout(False)
-        Me.SplitContainer1.Panel2.ResumeLayout(False)
-        Me.SplitContainer1.Panel2.PerformLayout()
-        CType(Me.SplitContainer1, System.ComponentModel.ISupportInitialize).EndInit()
-        Me.SplitContainer1.ResumeLayout(False)
+        SplitContainer1.Panel1.ResumeLayout(False)
+        SplitContainer1.Panel2.ResumeLayout(False)
+        SplitContainer1.Panel2.PerformLayout()
+        CType(SplitContainer1, System.ComponentModel.ISupportInitialize).EndInit()
+        SplitContainer1.ResumeLayout(False)
         Me.FlowLayoutPanelHashes.ResumeLayout(False)
         Me.FlowLayoutPanelHashes.PerformLayout()
         Me.ResumeLayout(False)
@@ -1148,7 +1185,6 @@ Partial Class MainForm
     Friend WithEvents MainMenuUpdateAvailable As ToolStripMenuItem
     Friend WithEvents MenuOptionsDisplayTitles As ToolStripMenuItem
     Friend WithEvents MenuOptionsDisplayLanguage As ToolStripMenuItem
-    Friend WithEvents SplitContainer1 As SplitContainer
     Friend WithEvents FlowLayoutPanelHashes As FlowLayoutPanel
     Friend WithEvents LabelCRC32 As Label
     Friend WithEvents LabelMD5 As Label
