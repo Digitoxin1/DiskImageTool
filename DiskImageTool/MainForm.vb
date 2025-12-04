@@ -80,7 +80,7 @@ Public Class MainForm
     End Sub
 
     Private Function DiskImageCloseAll(CurrentImage As DiskImageContainer) As Boolean
-        Dim ModifyImageList = ImageCombo.GetModifiedImageList()
+        Dim ModifyImageList = GetModifiedImageList()
 
         If ModifyImageList.Count = 0 Then
             ResetAll()
@@ -155,10 +155,10 @@ Public Class MainForm
     Private Sub DiskImageSaveAll(FilePanel As FilePanel)
         Dim RefreshCurrent As Boolean = False
 
-        For Index = 0 To ImageCombo.Main.Count - 1
+        For Index = 0 To ImageCombo.AllItems.Count - 1
             Dim NewFilePath As String = ""
             Dim DoSave As Boolean = True
-            Dim ImageData As ImageData = ImageCombo.Main(Index)
+            Dim ImageData As ImageData = ImageCombo.AllItems(Index)
 
             If Not ImageData.IsModified Then Continue For
 
@@ -185,7 +185,7 @@ Public Class MainForm
 
                     RefreshDisplayPath(ImageData, False)
 
-                    If ImageData Is ImageCombo.SelectedImage Then
+                    If ImageData Is ImageCombo.SelectedItem Then
                         SetCurrentFileName(ImageData)
                         FilePanel.ClearModifiedFlag()
                         RefreshCurrent = True
@@ -234,7 +234,7 @@ Public Class MainForm
         ClearFiltersIfApplied(False, False)
 
         Dim images As New List(Of ImageData)
-        For Each img As ImageData In ImageCombo.Main
+        For Each img As ImageData In ImageCombo.AllItems
             images.Add(img)
         Next
 
@@ -349,7 +349,6 @@ Public Class MainForm
         End If
     End Sub
 
-
     Private Function FileCloseCurrent(CurrentImage As DiskImageContainer)
         If DiskImageCloseCurrent(CurrentImage, _LoadedFiles) Then
             FileRemove(CurrentImage.ImageData)
@@ -361,8 +360,9 @@ Public Class MainForm
         Return False
     End Function
 
-    Private Sub FileDropPostProcess()
+    Private Sub FileDropPostProcess(Image As ImageData)
         LabelDropMessage.Visible = False
+        ImageCombo.SetSelectedItem(Image)
         StatusBarImageCountUpdate()
         SetImagesLoaded(True)
     End Sub
@@ -370,9 +370,9 @@ Public Class MainForm
     Private Sub FileRemove(ImageData As ImageData)
         _LoadedFiles.FileNames.Remove(ImageData.DisplayPath)
 
-        ImageCombo.RemoveImage(ImageData)
+        ImageCombo.RemoveItem(ImageData)
 
-        If ImageCombo.Main.Count = 0 Then
+        If ImageCombo.AllItems.Count = 0 Then
             ResetAll()
         Else
             ImageFilters.ScanRemove(ImageData)
@@ -461,9 +461,9 @@ Public Class MainForm
                 ImageFilters.SubFiltersClear(False)
             End If
 
-            ImageCombo.Filtered.Clear()
+            ImageCombo.BeginUpdateFiltered()
 
-            For Each ImageData As ImageData In ImageCombo.Main
+            For Each ImageData As ImageData In ImageCombo.AllItems
                 Dim ShowItem As Boolean = True
 
                 If ShowItem AndAlso FiltersChecked Then
@@ -488,7 +488,7 @@ Public Class MainForm
                 End If
 
                 If ShowItem Then
-                    ImageCombo.Filtered.Add(ImageData)
+                    ImageCombo.AddFilteredItem(ImageData)
                 End If
             Next
 
@@ -499,7 +499,7 @@ Public Class MainForm
                 ImageFilters.SubFiltersPopulate()
             End If
 
-            ImageCombo.Refresh(True)
+            ImageCombo.EndUpdateFiltered()
 
             RefreshFilterButtons(True)
 
@@ -520,10 +520,10 @@ Public Class MainForm
         SubFiltersClearFilter()
 
         If FiltersApplied Or ResetSubFilters Then
-            ImageFilters.SubFiltersPopulateUnfiltered(ImageCombo.Main)
+            ImageFilters.SubFiltersPopulateUnfiltered(ImageCombo.AllItems)
         End If
 
-        ImageCombo.Refresh(False)
+        ImageCombo.HideFiltered()
 
         RefreshFilterButtons(False)
 
@@ -572,6 +572,17 @@ Public Class MainForm
         End If
     End Sub
 
+    Private Function GetModifiedImageList() As List(Of ImageData)
+        Dim ModifyImageList As New List(Of ImageData)
+
+        For Each ImageData In ImageCombo.AllItems
+            If ImageData.IsModified Then
+                ModifyImageList.Add(ImageData)
+            End If
+        Next
+
+        Return ModifyImageList
+    End Function
     Private Function GetWindowCaption() As String
         Return My.Application.Info.ProductName & " v" & _FileVersion
     End Function
@@ -604,7 +615,7 @@ Public Class MainForm
             Return Nothing
         End If
 
-        ImageCombo.Main.Add(Image)
+        ImageCombo.AddItem(Image)
 
         If Image.FileType = ImageData.FileTypeEnum.NewImage Then
             ImageFilters.FilterUpdate(Image, True, Filters.FilterTypes.ModifiedFiles, True, True)
@@ -665,7 +676,7 @@ Public Class MainForm
     Private Sub ImageFiltersUpdate(Image As DiskImageContainer)
         ImageFilters.ScanUpdate(Image)
         RefreshModifiedCount()
-        ImageCombo.RefreshCurrentItemText()
+        ImageCombo.RefreshItemText()
     End Sub
 
     Private Sub ImageNew()
@@ -695,7 +706,7 @@ Public Class MainForm
         Dim T = Stopwatch.StartNew
 
         Dim images As New List(Of ImageData)
-        For Each img As ImageData In ImageCombo.Main
+        For Each img As ImageData In ImageCombo.AllItems
             images.Add(img)
         Next
 
@@ -715,8 +726,8 @@ Public Class MainForm
         RefreshModifiedCount()
 
         Dim UpdateCount As Integer = 0
-        For Index = 0 To ImageCombo.Main.Count - 1
-            Dim ImageData As ImageData = ImageCombo.Main(Index)
+        For Index = 0 To ImageCombo.AllItems.Count - 1
+            Dim ImageData As ImageData = ImageCombo.AllItems(Index)
             If ImageData.BatchUpdated Then
                 If ImageData Is FilePanel.CurrentImage.ImageData Then
                     DiskImageRefresh(FilePanel)
@@ -1037,6 +1048,8 @@ Public Class MainForm
 
         ClearFiltersIfApplied(False, True)
 
+        ImageCombo.BeginUpdate()
+
         ImageData.StringOffset = 0
 
         Dim scanner As New ImageScanner()
@@ -1070,10 +1083,10 @@ Public Class MainForm
 
         ImageData.StringOffset = ImageCombo.GetPathOffset()
 
-        ImageCombo.Refresh(False, firstImage)
+        ImageCombo.EndUpdate()
 
         If firstImage IsNot Nothing Then
-            FileDropPostProcess()
+            FileDropPostProcess(firstImage)
         End If
 
         T.Stop()
@@ -1125,7 +1138,7 @@ Public Class MainForm
     End Function
 
     Private Sub RefreshCurrentState(FilePanel As FilePanel)
-        ImageCombo.RefreshCurrentItemText()
+        ImageCombo.RefreshItemText()
         RefreshDiskState(FilePanel.CurrentImage)
         DiskImageReloadCurrent(FilePanel, False)
     End Sub
@@ -1156,7 +1169,7 @@ Public Class MainForm
                 IsValidImage = CurrentImage.Disk.IsValidImage
                 Compare = CurrentImage.Disk.CheckImageSize
             End If
-            NewInstanceVisible = CurrentImage.ImageData.FileType <> ImageData.FileTypeEnum.NewImage AndAlso ImageCombo.Main.Count > 1
+            NewInstanceVisible = CurrentImage.ImageData.FileType <> ImageData.FileTypeEnum.NewImage AndAlso ImageCombo.AllItems.Count > 1
         End If
 
         RefreshHexMenu(Disk, IsValidImage, Compare)
@@ -1491,10 +1504,10 @@ Public Class MainForm
 
     Private Sub StatusBarImageCountUpdate()
         Dim Text As String
-        Dim Total As Integer = ImageCombo.Main.Count
+        Dim Total As Integer = ImageCombo.AllItems.Count
 
         If ImageFilters.FiltersApplied Then
-            Dim Filtered As Integer = ImageCombo.Filtered.Count
+            Dim Filtered As Integer = ImageCombo.FilteredItemCount
 
             If Total = 1 Then
                 Text = String.Format(My.Resources.Label_FilteredImageCountSingular, Filtered, Total)
@@ -1661,7 +1674,7 @@ Public Class MainForm
         End If
     End Sub
 
-    Private Sub File_DragDrop(sender As Object, e As DragEventArgs) Handles ComboImages.DragDrop, LabelDropMessage.DragDrop, ListViewFiles.DragDrop, ListViewSummary.DragDrop, FlowLayoutPanelHashes.DragDrop
+    Private Sub File_DragDrop(sender As Object, e As DragEventArgs) Handles ImageCombo.DragDrop, LabelDropMessage.DragDrop, ListViewFiles.DragDrop, ListViewSummary.DragDrop, FlowLayoutPanelHashes.DragDrop
         Dim Files As String() = e.Data.GetData(DataFormats.FileDrop)
 
         Me.BeginInvoke(Sub()
@@ -1670,7 +1683,7 @@ Public Class MainForm
                        End Sub)
     End Sub
 
-    Private Sub File_DragEnter(sender As Object, e As DragEventArgs) Handles ComboImages.DragEnter, LabelDropMessage.DragEnter, ListViewFiles.DragEnter, ListViewSummary.DragEnter, FlowLayoutPanelHashes.DragEnter
+    Private Sub File_DragEnter(sender As Object, e As DragEventArgs) Handles ImageCombo.DragEnter, LabelDropMessage.DragEnter, ListViewFiles.DragEnter, ListViewSummary.DragEnter, FlowLayoutPanelHashes.DragEnter
         If _Suppress_File_DragEnterEvent Then
             Exit Sub
         End If
@@ -1771,8 +1784,8 @@ Public Class MainForm
         FiltersApply(ResetSubFilters)
     End Sub
 
-    Private Sub ImageList_SelectedImageChanged() Handles ImageCombo.SelectedImageChanged
-        DiskImageLoadIntoFilePanel(FilePanelMain, ImageCombo.SelectedImage, False)
+    Private Sub ImageList_SelectedIndexChanged() Handles ImageCombo.SelectedIndexChanged
+        DiskImageLoadIntoFilePanel(FilePanelMain, ImageCombo.SelectedItem, False)
     End Sub
 
     Private Sub MainForm_Closed(sender As Object, e As EventArgs) Handles Me.Closed
@@ -2150,5 +2163,6 @@ Public Class MainForm
     Private Sub ToolStripViewFileText_Click(sender As Object, e As EventArgs) Handles ToolStripViewFileText.Click
         FilePanelProcessEvent(FilePanelMain, FilePanel.FilePanelMenuItem.ViewFileText)
     End Sub
+
 #End Region
 End Class

@@ -508,7 +508,7 @@
     <value>NoControl</value>
   </data>
   <data name="LabelDropMessage.Location" type="System.Drawing.Point, System.Drawing">
-    <value>118, 257</value>
+    <value>117, 257</value>
   </data>
   <data name="LabelDropMessage.Size" type="System.Drawing.Size, System.Drawing">
     <value>273, 16</value>
@@ -801,12 +801,6 @@
   <metadata name="MainMenuView.GenerateMember" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
     <value>False</value>
   </metadata>
-  <data name="MainMenuView.Size" type="System.Drawing.Size, System.Drawing">
-    <value>39, 20</value>
-  </data>
-  <data name="MainMenuView.Text" xml:space="preserve">
-    <value>&amp;Hex</value>
-  </data>
   <data name="MenuHexBootSector.Size" type="System.Drawing.Size, System.Drawing">
     <value>194, 22</value>
   </data>
@@ -874,18 +868,15 @@
     <value>{File}</value>
     <comment>@Invariant</comment>
   </data>
+  <data name="MainMenuView.Size" type="System.Drawing.Size, System.Drawing">
+    <value>39, 20</value>
+  </data>
+  <data name="MainMenuView.Text" xml:space="preserve">
+    <value>&amp;Hex</value>
+  </data>
   <metadata name="MainMenuTools.GenerateMember" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
     <value>False</value>
   </metadata>
-  <metadata name="MenuToolsSeparator.GenerateMember" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
-    <value>False</value>
-  </metadata>
-  <data name="MainMenuTools.Size" type="System.Drawing.Size, System.Drawing">
-    <value>47, 20</value>
-  </data>
-  <data name="MainMenuTools.Text" xml:space="preserve">
-    <value>&amp;Tools</value>
-  </data>
   <data name="MenuToolsWin9xClean.Size" type="System.Drawing.Size, System.Drawing">
     <value>289, 22</value>
   </data>
@@ -905,12 +896,6 @@
     <value>{TruncateImage}</value>
     <comment>@Invariant</comment>
   </data>
-  <data name="MenuToolsFixImageSizeSubMenu.Size" type="System.Drawing.Size, System.Drawing">
-    <value>289, 22</value>
-  </data>
-  <data name="MenuToolsFixImageSizeSubMenu.Text" xml:space="preserve">
-    <value>Fix Image &amp;Size</value>
-  </data>
   <data name="MenuToolsTruncateImage.Size" type="System.Drawing.Size, System.Drawing">
     <value>170, 22</value>
   </data>
@@ -923,6 +908,12 @@
   </data>
   <data name="MenuToolsRestructureImage.Text" xml:space="preserve">
     <value>&amp;Restructure Image</value>
+  </data>
+  <data name="MenuToolsFixImageSizeSubMenu.Size" type="System.Drawing.Size, System.Drawing">
+    <value>289, 22</value>
+  </data>
+  <data name="MenuToolsFixImageSizeSubMenu.Text" xml:space="preserve">
+    <value>Fix Image &amp;Size</value>
   </data>
   <data name="MenuToolsRestoreBootSector.Size" type="System.Drawing.Size, System.Drawing">
     <value>289, 22</value>
@@ -947,6 +938,12 @@
   </data>
   <data name="MenuToolsWin9xCleanBatch.Text" xml:space="preserve">
     <value>Batch Remove Windows Modifications</value>
+  </data>
+  <data name="MainMenuTools.Size" type="System.Drawing.Size, System.Drawing">
+    <value>47, 20</value>
+  </data>
+  <data name="MainMenuTools.Text" xml:space="preserve">
+    <value>&amp;Tools</value>
   </data>
   <metadata name="MenuHelpSeparator.GenerateMember" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
     <value>False</value>
@@ -993,12 +990,6 @@
   <metadata name="MainMenuDisk.GenerateMember" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
     <value>False</value>
   </metadata>
-  <data name="MainMenuDisk.Size" type="System.Drawing.Size, System.Drawing">
-    <value>41, 20</value>
-  </data>
-  <data name="MainMenuDisk.Text" xml:space="preserve">
-    <value>&amp;Disk</value>
-  </data>
   <data name="MenuDiskReadFloppyA.Size" type="System.Drawing.Size, System.Drawing">
     <value>189, 22</value>
   </data>
@@ -1027,6 +1018,12 @@
     <value>{&amp;Write Disk in Drive B}</value>
     <comment>@Invariant</comment>
   </data>
+  <data name="MainMenuDisk.Size" type="System.Drawing.Size, System.Drawing">
+    <value>41, 20</value>
+  </data>
+  <data name="MainMenuDisk.Text" xml:space="preserve">
+    <value>&amp;Disk</value>
+  </data>
   <metadata name="MenuStripTop.GenerateMember" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
     <value>False</value>
   </metadata>
@@ -1036,119 +1033,6 @@
   <metadata name="MenuStripTop.Locked" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
     <value>True</value>
   </metadata>
-  <data name="MainMenuFile.Size" type="System.Drawing.Size, System.Drawing">
-    <value>45, 20</value>
-  </data>
-  <data name="MainMenuFile.Text" xml:space="preserve">
-    <value>{&amp;File}</value>
-    <comment>@Invariant</comment>
-  </data>
-  <data name="MainMenuEdit.Size" type="System.Drawing.Size, System.Drawing">
-    <value>47, 20</value>
-  </data>
-  <data name="MainMenuEdit.Text" xml:space="preserve">
-    <value>{&amp;Edit}</value>
-    <comment>@Invariant</comment>
-  </data>
-  <metadata name="ContextMenuFilters.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
-    <value>409, 17</value>
-  </metadata>
-  <data name="MenuFiltersScanNew.Size" type="System.Drawing.Size, System.Drawing">
-    <value>167, 22</value>
-  </data>
-  <data name="MenuFiltersScanNew.Text" xml:space="preserve">
-    <value>Scan &amp;New Images</value>
-  </data>
-  <data name="MenuFiltersScan.Size" type="System.Drawing.Size, System.Drawing">
-    <value>167, 22</value>
-  </data>
-  <data name="MenuFiltersScan.Text" xml:space="preserve">
-    <value>{ScanImages}</value>
-    <comment>@Invariant</comment>
-  </data>
-  <data name="MenuFiltersClear.Size" type="System.Drawing.Size, System.Drawing">
-    <value>167, 22</value>
-  </data>
-  <data name="MenuFiltersClear.Text" xml:space="preserve">
-    <value>Clear Filters</value>
-  </data>
-  <data name="ContextMenuFilters.Size" type="System.Drawing.Size, System.Drawing">
-    <value>168, 70</value>
-  </data>
-  <data name="&gt;&gt;ContextMenuFilters.Name" xml:space="preserve">
-    <value>ContextMenuFilters</value>
-  </data>
-  <data name="&gt;&gt;ContextMenuFilters.Type" xml:space="preserve">
-    <value>System.Windows.Forms.ContextMenuStrip, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="MainMenuFilters.Size" type="System.Drawing.Size, System.Drawing">
-    <value>50, 20</value>
-  </data>
-  <data name="MainMenuFilters.Text" xml:space="preserve">
-    <value>F&amp;ilters</value>
-  </data>
-  <data name="MainMenuFlux.Size" type="System.Drawing.Size, System.Drawing">
-    <value>40, 20</value>
-  </data>
-  <data name="MainMenuFlux.Text" xml:space="preserve">
-    <value>Flu&amp;x</value>
-    <comment>@Invariant</comment>
-  </data>
-  <data name="MainMenuReports.Size" type="System.Drawing.Size, System.Drawing">
-    <value>59, 20</value>
-  </data>
-  <data name="MainMenuReports.Text" xml:space="preserve">
-    <value>&amp;Reports</value>
-  </data>
-  <data name="MainMenuOptions.Size" type="System.Drawing.Size, System.Drawing">
-    <value>61, 20</value>
-  </data>
-  <data name="MainMenuOptions.Text" xml:space="preserve">
-    <value>&amp;Options</value>
-  </data>
-  <data name="MainMenuHelp.Size" type="System.Drawing.Size, System.Drawing">
-    <value>24, 20</value>
-  </data>
-  <data name="MainMenuHelp.Text" xml:space="preserve">
-    <value>?</value>
-    <comment>@Invariant</comment>
-  </data>
-  <data name="MainMenuUpdateAvailable.Size" type="System.Drawing.Size, System.Drawing">
-    <value>108, 20</value>
-  </data>
-  <data name="MainMenuUpdateAvailable.Text" xml:space="preserve">
-    <value>Update Available</value>
-  </data>
-  <data name="MainMenuNewInstance.Size" type="System.Drawing.Size, System.Drawing">
-    <value>28, 20</value>
-  </data>
-  <data name="MainMenuNewInstance.Text" xml:space="preserve">
-    <value>Open In New Instance</value>
-  </data>
-  <data name="MenuStripTop.Location" type="System.Drawing.Point, System.Drawing">
-    <value>0, 0</value>
-  </data>
-  <data name="MenuStripTop.Padding" type="System.Windows.Forms.Padding, System.Windows.Forms">
-    <value>6, 2, 12, 2</value>
-  </data>
-  <data name="MenuStripTop.Size" type="System.Drawing.Size, System.Drawing">
-    <value>1004, 24</value>
-  </data>
-  <data name="MenuStripTop.TabIndex" type="System.Int32, mscorlib">
-    <value>0</value>
-  </data>
-  <data name="&gt;&gt;MenuStripTop.Name" xml:space="preserve">
-    <value>MenuStripTop</value>
-  </data>
-  <data name="&gt;&gt;MenuStripTop.Type" xml:space="preserve">
-    <value>System.Windows.Forms.MenuStrip, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="&gt;&gt;MenuStripTop.Parent" xml:space="preserve">
-    <value>$this</value>
-  </data>
-  <data name="&gt;&gt;MenuStripTop.ZOrder" xml:space="preserve">
-    <value>4</value>
-  </data>
   <data name="MenuFileOpen.ImageTransparentColor" type="System.Drawing.Color, System.Drawing">
     <value>Magenta</value>
   </data>
@@ -1239,6 +1123,13 @@
   <data name="MenuFileExit.Text" xml:space="preserve">
     <value>E&amp;xit</value>
   </data>
+  <data name="MainMenuFile.Size" type="System.Drawing.Size, System.Drawing">
+    <value>45, 20</value>
+  </data>
+  <data name="MainMenuFile.Text" xml:space="preserve">
+    <value>{&amp;File}</value>
+    <comment>@Invariant</comment>
+  </data>
   <data name="MenuEditBootSector.Size" type="System.Drawing.Size, System.Drawing">
     <value>188, 22</value>
   </data>
@@ -1313,6 +1204,50 @@
   <data name="MenuEditRevert.TextAlign" type="System.Drawing.ContentAlignment, System.Drawing">
     <value>MiddleLeft</value>
   </data>
+  <data name="MainMenuEdit.Size" type="System.Drawing.Size, System.Drawing">
+    <value>47, 20</value>
+  </data>
+  <data name="MainMenuEdit.Text" xml:space="preserve">
+    <value>{&amp;Edit}</value>
+    <comment>@Invariant</comment>
+  </data>
+  <metadata name="ContextMenuFilters.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
+    <value>409, 17</value>
+  </metadata>
+  <data name="MenuFiltersScanNew.Size" type="System.Drawing.Size, System.Drawing">
+    <value>167, 22</value>
+  </data>
+  <data name="MenuFiltersScanNew.Text" xml:space="preserve">
+    <value>Scan &amp;New Images</value>
+  </data>
+  <data name="MenuFiltersScan.Size" type="System.Drawing.Size, System.Drawing">
+    <value>167, 22</value>
+  </data>
+  <data name="MenuFiltersScan.Text" xml:space="preserve">
+    <value>{ScanImages}</value>
+    <comment>@Invariant</comment>
+  </data>
+  <data name="MenuFiltersClear.Size" type="System.Drawing.Size, System.Drawing">
+    <value>167, 22</value>
+  </data>
+  <data name="MenuFiltersClear.Text" xml:space="preserve">
+    <value>Clear Filters</value>
+  </data>
+  <data name="ContextMenuFilters.Size" type="System.Drawing.Size, System.Drawing">
+    <value>168, 70</value>
+  </data>
+  <data name="&gt;&gt;ContextMenuFilters.Name" xml:space="preserve">
+    <value>ContextMenuFilters</value>
+  </data>
+  <data name="&gt;&gt;ContextMenuFilters.Type" xml:space="preserve">
+    <value>System.Windows.Forms.ContextMenuStrip, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="MainMenuFilters.Size" type="System.Drawing.Size, System.Drawing">
+    <value>50, 20</value>
+  </data>
+  <data name="MainMenuFilters.Text" xml:space="preserve">
+    <value>F&amp;ilters</value>
+  </data>
   <data name="MenuGreaseweazleRead.Size" type="System.Drawing.Size, System.Drawing">
     <value>176, 22</value>
   </data>
@@ -1336,13 +1271,6 @@
   </data>
   <data name="ToolStripSeparatorDevices.Size" type="System.Drawing.Size, System.Drawing">
     <value>173, 6</value>
-  </data>
-  <data name="MenuGreaseweazle.Size" type="System.Drawing.Size, System.Drawing">
-    <value>176, 22</value>
-  </data>
-  <data name="MenuGreaseweazle.Text" xml:space="preserve">
-    <value>&amp;Greaseweazle</value>
-    <comment>@Invariant</comment>
   </data>
   <data name="MenuGreaseweazleErase.Size" type="System.Drawing.Size, System.Drawing">
     <value>169, 22</value>
@@ -1371,11 +1299,11 @@
   <data name="MenuGreaseweazleBandwidth.Text" xml:space="preserve">
     <value>Report &amp;Bandwidth</value>
   </data>
-  <data name="MenuPcImgCnv.Size" type="System.Drawing.Size, System.Drawing">
+  <data name="MenuGreaseweazle.Size" type="System.Drawing.Size, System.Drawing">
     <value>176, 22</value>
   </data>
-  <data name="MenuPcImgCnv.Text" xml:space="preserve">
-    <value>PcImgCnv</value>
+  <data name="MenuGreaseweazle.Text" xml:space="preserve">
+    <value>&amp;Greaseweazle</value>
     <comment>@Invariant</comment>
   </data>
   <data name="MenuPcImgCnvTrackLayout.Size" type="System.Drawing.Size, System.Drawing">
@@ -1384,12 +1312,32 @@
   <data name="MenuPcImgCnvTrackLayout.Text" xml:space="preserve">
     <value>Generate tracklayout.txt</value>
   </data>
+  <data name="MenuPcImgCnv.Size" type="System.Drawing.Size, System.Drawing">
+    <value>176, 22</value>
+  </data>
+  <data name="MenuPcImgCnv.Text" xml:space="preserve">
+    <value>PcImgCnv</value>
+    <comment>@Invariant</comment>
+  </data>
+  <data name="MainMenuFlux.Size" type="System.Drawing.Size, System.Drawing">
+    <value>40, 20</value>
+  </data>
+  <data name="MainMenuFlux.Text" xml:space="preserve">
+    <value>Flu&amp;x</value>
+    <comment>@Invariant</comment>
+  </data>
   <data name="MenuReportsModifications.Size" type="System.Drawing.Size, System.Drawing">
     <value>155, 22</value>
   </data>
   <data name="MenuReportsModifications.Text" xml:space="preserve">
     <value>{Modifications}</value>
     <comment>@Invariant</comment>
+  </data>
+  <data name="MainMenuReports.Size" type="System.Drawing.Size, System.Drawing">
+    <value>59, 20</value>
+  </data>
+  <data name="MainMenuReports.Text" xml:space="preserve">
+    <value>&amp;Reports</value>
   </data>
   <data name="MenuOptionsCreateBackup.Size" type="System.Drawing.Size, System.Drawing">
     <value>224, 22</value>
@@ -1431,6 +1379,12 @@
   <data name="MenuOptionsFlux.Text" xml:space="preserve">
     <value>&amp;Flux Configuration</value>
   </data>
+  <data name="MainMenuOptions.Size" type="System.Drawing.Size, System.Drawing">
+    <value>61, 20</value>
+  </data>
+  <data name="MainMenuOptions.Text" xml:space="preserve">
+    <value>&amp;Options</value>
+  </data>
   <data name="MenuHelpProjectPage.Size" type="System.Drawing.Size, System.Drawing">
     <value>166, 22</value>
   </data>
@@ -1458,6 +1412,49 @@
   <data name="MenuHelpAbout.Text" xml:space="preserve">
     <value>{About}</value>
     <comment>@Invariant</comment>
+  </data>
+  <data name="MainMenuHelp.Size" type="System.Drawing.Size, System.Drawing">
+    <value>24, 20</value>
+  </data>
+  <data name="MainMenuHelp.Text" xml:space="preserve">
+    <value>?</value>
+    <comment>@Invariant</comment>
+  </data>
+  <data name="MainMenuUpdateAvailable.Size" type="System.Drawing.Size, System.Drawing">
+    <value>108, 20</value>
+  </data>
+  <data name="MainMenuUpdateAvailable.Text" xml:space="preserve">
+    <value>Update Available</value>
+  </data>
+  <data name="MainMenuNewInstance.Size" type="System.Drawing.Size, System.Drawing">
+    <value>28, 20</value>
+  </data>
+  <data name="MainMenuNewInstance.Text" xml:space="preserve">
+    <value>Open In New Instance</value>
+  </data>
+  <data name="MenuStripTop.Location" type="System.Drawing.Point, System.Drawing">
+    <value>0, 0</value>
+  </data>
+  <data name="MenuStripTop.Padding" type="System.Windows.Forms.Padding, System.Windows.Forms">
+    <value>6, 2, 12, 2</value>
+  </data>
+  <data name="MenuStripTop.Size" type="System.Drawing.Size, System.Drawing">
+    <value>1004, 24</value>
+  </data>
+  <data name="MenuStripTop.TabIndex" type="System.Int32, mscorlib">
+    <value>0</value>
+  </data>
+  <data name="&gt;&gt;MenuStripTop.Name" xml:space="preserve">
+    <value>MenuStripTop</value>
+  </data>
+  <data name="&gt;&gt;MenuStripTop.Type" xml:space="preserve">
+    <value>System.Windows.Forms.MenuStrip, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;MenuStripTop.Parent" xml:space="preserve">
+    <value>$this</value>
+  </data>
+  <data name="&gt;&gt;MenuStripTop.ZOrder" xml:space="preserve">
+    <value>4</value>
   </data>
   <metadata name="ToolStripTop.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
     <value>145, 17</value>

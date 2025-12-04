@@ -379,7 +379,7 @@ Namespace Filters
             _SuppressEvent = False
         End Sub
 
-        Public Sub SubFiltersPopulateUnfiltered(Images As List(Of ImageData))
+        Public Sub SubFiltersPopulateUnfiltered(Images As ComboBox.ObjectCollection)
             _SuppressEvent = True
 
             OEMNamePopulateUnfiltered(Images)
@@ -405,7 +405,7 @@ Namespace Filters
             MyBase.OnFilterChanged(False)
         End Sub
 
-        Private Sub DiskTypePopulateUnfiltered(Images As List(Of ImageData))
+        Private Sub DiskTypePopulateUnfiltered(Images As ComboBox.ObjectCollection)
             _SubFilterDiskType.Clear()
             For Each ImageData As ImageData In Images
                 _SubFilterDiskType.Add(ImageData.DiskType, False)
@@ -421,7 +421,7 @@ Namespace Filters
             _SubFilterOEMName.Add(OEMName, UpdateFilters)
         End Sub
 
-        Private Sub OEMNamePopulateUnfiltered(Images As List(Of ImageData))
+        Private Sub OEMNamePopulateUnfiltered(Images As ComboBox.ObjectCollection)
             _SubFilterOEMName.Clear()
             For Each ImageData As ImageData In Images
                 OEMNameAdd(ImageData.OEMName, False)

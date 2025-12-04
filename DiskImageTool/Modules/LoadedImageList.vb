@@ -1,205 +1,266 @@
 ﻿Public Class LoadedImageList
-    Private WithEvents Combo As ComboBox
-    Private ReadOnly _Filtered As List(Of ImageData)
-    Private ReadOnly _Main As List(Of ImageData)
+    Private WithEvents ComboAll As ComboBox
+    Private WithEvents ComboFiltered As ComboBox
+    Private _Filtered As Boolean = False
+    Private _LastSelected As ImageData = Nothing
 
-    Private _CurrentSelected As ImageData = Nothing
-    Private _IsFiltered As Boolean = False
-    Private _SuppressEvent As Boolean = False
-
-    Public Event SelectedImageChanged()
+    Public Event DragDrop(sender As Object, e As DragEventArgs)
+    Public Event DragEnter(sender As Object, e As DragEventArgs)
+    Public Event SelectedIndexChanged()
 
     Public Sub New(Combo As ComboBox)
-        Me.Combo = Combo
-
-        _Main = New List(Of ImageData)
-        _Filtered = New List(Of ImageData)
+        Me.ComboAll = Combo
 
         Initialize()
     End Sub
 
-    Public ReadOnly Property Filtered As List(Of ImageData)
+    Public ReadOnly Property AllItems As ComboBox.ObjectCollection
         Get
-            Return _Filtered
+            Return ComboAll.Items
         End Get
     End Property
 
-    Public ReadOnly Property Main As List(Of ImageData)
+    Public ReadOnly Property FilteredItemCount As Integer
         Get
-            Return _Main
+            Return ComboFiltered.Items.Count
         End Get
     End Property
 
-    Public ReadOnly Property SelectedImage As ImageData
+    Public ReadOnly Property SelectedItem As ImageData
         Get
-            Return _CurrentSelected
+            Return ComboAll.SelectedItem
         End Get
     End Property
+
+    Public Sub AddFilteredItem(ImageData As ImageData)
+        Dim Index = ComboFiltered.Items.Add(ImageData)
+        If ImageData Is ComboAll.SelectedItem Then
+            ComboFiltered.SelectedIndex = Index
+        End If
+    End Sub
+
+    Public Sub AddItem(Image As ImageData)
+        ComboAll.Items.Add(Image)
+    End Sub
+
+    Public Sub BeginUpdate()
+        ComboAll.BeginUpdate()
+    End Sub
+
+    Public Sub BeginUpdateFiltered()
+        ComboFiltered.BeginUpdate()
+        ComboFiltered.Items.Clear()
+    End Sub
 
     Public Sub ClearAll()
-        _Main.Clear()
-        _Filtered.Clear()
-        _IsFiltered = False
-
-        Combo.Items.Clear()
-        RefreshComboEnabled(False)
-        SetCurrentSelected(Nothing)
+        ComboImagesClear(ComboAll)
+        HideFiltered()
+        _LastSelected = Nothing
     End Sub
 
-    Public Function GetModifiedImageList() As List(Of ImageData)
-        Dim ModifyImageList As New List(Of ImageData)
+    Public Sub EndUpdate()
+        ComboAll.EndUpdate()
+    End Sub
 
-        For Each ImageData In _Main
-            If ImageData.IsModified Then
-                ModifyImageList.Add(ImageData)
-            End If
-        Next
-
-        Return ModifyImageList
-    End Function
+    Public Sub EndUpdateFiltered()
+        EnsureItemSelected(ComboFiltered)
+        ComboFiltered.EndUpdate()
+        DisplayFiltered()
+    End Sub
 
     Public Function GetPathOffset() As Integer
-        Dim PathName As String = ""
-        Dim CheckPath As Boolean = False
-
-        For Each ImageData In _Main
-            Dim CurrentPathName As String = IO.Path.GetDirectoryName(ImageData.DisplayPath)
-            If CheckPath Then
-                Do While CurrentPathName.Split("\").Count > PathName.Split("\").Count
-                    If CurrentPathName <> "" Then
-                        CurrentPathName = IO.Path.GetDirectoryName(CurrentPathName)
-                    End If
-                Loop
-                Do While PathName <> CurrentPathName
-                    PathName = IO.Path.GetDirectoryName(PathName)
-                    If CurrentPathName <> "" Then
-                        CurrentPathName = IO.Path.GetDirectoryName(CurrentPathName)
-                    End If
-                Loop
-            Else
-                PathName = CurrentPathName
-            End If
-            If PathName = "" Then
-                Exit For
-            End If
-            CheckPath = True
-        Next
-        PathName = PathAddBackslash(PathName)
-
-        Return Len(PathName)
-    End Function
-
-    Public Sub Refresh(IsFiltered As Boolean, Optional SelectedImage As ImageData = Nothing)
-        _IsFiltered = IsFiltered
-
-        Dim Source As List(Of ImageData) = If(_IsFiltered, _Filtered, _Main)
-
-        RefreshComboEnabled(Source.Count > 0)
-        PopulateCombo(Source)
-
-        If SelectedImage Is Nothing Then
-            SelectedImage = _CurrentSelected
+        ' No images → no common path.
+        If ComboAll.Items.Count = 0 Then
+            Return 0
         End If
 
-        SetSelectedImage(SelectedImage)
+        Dim First As Boolean = True
+        Dim CommonParts() As String = Nothing
+
+        For Each img As ImageData In ComboAll.Items
+            Dim dir = IO.Path.GetDirectoryName(img.DisplayPath)
+
+            If String.IsNullOrEmpty(dir) Then
+                ' Any image without a directory kills the common prefix
+                Return 0
+            End If
+
+            Dim parts = dir.Split("\")
+
+            If First Then
+                CommonParts = parts
+                First = False
+            Else
+                Dim maxLen = Math.Min(CommonParts.Length, parts.Length)
+                Dim j As Integer = 0
+
+                While j < maxLen AndAlso String.Equals(CommonParts(j), parts(j), StringComparison.OrdinalIgnoreCase)
+                    j += 1
+                End While
+
+                If j = 0 Then
+                    ' No common prefix at all
+                    Return 0
+                End If
+
+                If j < CommonParts.Length Then
+                    Dim newCommon(j - 1) As String
+                    Array.Copy(CommonParts, newCommon, j)
+                    CommonParts = newCommon
+                End If
+            End If
+        Next
+
+        If CommonParts Is Nothing OrElse CommonParts.Length = 0 Then
+            Return 0
+        End If
+
+        Dim BasePath = String.Join("\", CommonParts)
+        BasePath = PathAddBackslash(BasePath)
+
+        Return BasePath.Length
+    End Function
+
+    Public Sub HideFiltered()
+        _Filtered = False
+
+        ComboFiltered.Visible = False
+        ComboAll.Visible = True
+
+        ComboImagesClear(ComboFiltered)
+        EnsureItemSelected(ComboAll)
     End Sub
 
-    Public Sub RefreshCurrentItemText()
-        Combo.Invalidate()
+    Public Sub RefreshItemText()
+        ComboAll.Invalidate()
+        ComboFiltered.Invalidate()
     End Sub
 
     Public Sub RefreshPaths()
+        ComboAll.BeginUpdate()
         ImageData.StringOffset = GetPathOffset()
-
-        Combo.BeginUpdate()
-        _SuppressEvent = True
-
-        For Index = 0 To Combo.Items.Count - 1
-            Combo.Items(Index) = Combo.Items(Index)
-        Next
-
-        _SuppressEvent = False
-        Combo.EndUpdate()
+        RefreshItemText()
+        ComboAll.EndUpdate()
     End Sub
 
-    Public Sub RemoveImage(Image As ImageData)
-        Dim SelectedIndex = Combo.SelectedIndex
+    Public Sub RemoveItem(Value As ImageData)
+        Dim ActiveComboBox As ComboBox = If(_Filtered, ComboFiltered, ComboAll)
 
-        _Main.Remove(Image)
-        _Filtered.Remove(Image)
-        Combo.Items.Remove(Image)
+        Dim SelectedIndex = ActiveComboBox.SelectedIndex
 
-        If Combo.Items.Count > 0 Then
-            If Combo.SelectedIndex = -1 Then
-                If SelectedIndex > Combo.Items.Count - 1 Then
-                    SelectedIndex = Combo.Items.Count - 1
-                End If
+        ComboAll.Items.Remove(Value)
+        ComboFiltered.Items.Remove(Value)
 
-                If SelectedIndex >= 0 Then
-                    Combo.SelectedIndex = SelectedIndex
-                End If
+        If ActiveComboBox.SelectedIndex = -1 Then
+            If SelectedIndex > ActiveComboBox.Items.Count - 1 Then
+                SelectedIndex = ActiveComboBox.Items.Count - 1
             End If
-        Else
-            RefreshComboEnabled(False)
-            SetCurrentSelected(Nothing)
+            ActiveComboBox.SelectedIndex = SelectedIndex
+        End If
+
+        CheckComboCount(ActiveComboBox)
+    End Sub
+
+    Public Sub SetSelectedItem(ImageData As ImageData)
+        RefreshComboEnabled(ComboAll)
+        RefreshItemText()
+        ComboAll.SelectedItem = ImageData
+        EnsureItemSelected(ComboAll)
+    End Sub
+
+    Private Sub CheckComboCount(Combo As ComboBox)
+        If Combo.Items.Count = 0 Then
+            RefreshComboEnabled(Combo)
+            DoSelectedIndexChanged()
         End If
     End Sub
 
-    Public Sub SetSelectedImage(ImageData As ImageData)
-        If ImageData IsNot Nothing AndAlso Combo.Items.Contains(ImageData) Then
-            Combo.SelectedItem = ImageData
+    Private Sub ComboImagesClear(Combo As ComboBox)
+        Combo.Items.Clear()
+        RefreshComboEnabled(Combo)
+    End Sub
 
-        ElseIf Combo.Items.Count > 0 AndAlso Combo.SelectedIndex = -1 Then
+    Private Sub DisplayFiltered()
+        _Filtered = True
+
+        ComboAll.Visible = False
+        ComboFiltered.Visible = True
+
+        RefreshComboEnabled(ComboFiltered)
+        If ComboFiltered.Items.Count = 0 Then
+            ComboAll.SelectedIndex = -1
+            DoSelectedIndexChanged()
+        End If
+    End Sub
+
+    Private Sub DoSelectedIndexChanged()
+        If _LastSelected Is ComboAll.SelectedItem Then
+            Exit Sub
+        End If
+
+        _LastSelected = ComboAll.SelectedItem
+
+        Debug.Print("Selected item changed: " & If(_LastSelected?.DisplayPath, "(none)"))
+
+        RaiseEvent SelectedIndexChanged()
+    End Sub
+
+    Private Sub EnsureItemSelected(Combo As ComboBox)
+        If Combo.SelectedIndex = -1 AndAlso Combo.Items.Count > 0 Then
             Combo.SelectedIndex = 0
-
-        Else
-            SetCurrentSelected(Nothing)
         End If
     End Sub
 
     Private Sub Initialize()
-        With Combo
+        With ComboAll
             .DropDownStyle = ComboBoxStyle.DropDownList
             .Sorted = True
             .Visible = True
+            .AllowDrop = True
         End With
+
+        Dim Parent = ComboAll.Parent
+        If Parent Is Nothing Then
+            Throw New InvalidOperationException("Main ComboBox must have a parent before LoadedImageList is created.")
+        End If
+
+        Parent.SuspendLayout()
+
+        ComboFiltered = New ComboBox() With {
+            .DropDownStyle = ComboBoxStyle.DropDownList,
+            .Dock = DockStyle.Fill,
+            .Visible = False,
+            .Sorted = ComboAll.Sorted,
+            .Font = ComboAll.Font,
+            .IntegralHeight = ComboAll.IntegralHeight,
+            .MaxDropDownItems = ComboAll.MaxDropDownItems,
+            .DrawMode = ComboAll.DrawMode,
+            .AllowDrop = ComboAll.AllowDrop
+        }
+
+        Parent.Controls.Add(ComboFiltered)
+
+        Dim MainIndex = Parent.Controls.GetChildIndex(ComboAll)
+        Parent.Controls.SetChildIndex(ComboFiltered, MainIndex)
+
+        Parent.ResumeLayout()
     End Sub
 
-    Private Sub PopulateCombo(list As List(Of ImageData))
-        _SuppressEvent = True
-
-        Combo.BeginUpdate()
-        Combo.Items.Clear()
-        For Each img In list
-            Combo.Items.Add(img)
-        Next
-        Combo.EndUpdate()
-
-        _SuppressEvent = False
-    End Sub
-
-    Private Sub RefreshComboEnabled(Enabled As Boolean)
+    Private Sub RefreshComboEnabled(Combo As ComboBox)
+        Dim Enabled As Boolean = Combo.Items.Count > 0
         Combo.Enabled = Enabled
         Combo.DrawMode = If(Enabled, DrawMode.OwnerDrawFixed, DrawMode.Normal)
     End Sub
-
-    Private Sub SetCurrentSelected(Image As ImageData)
-        If _CurrentSelected IsNot Image Then
-            _CurrentSelected = Image
-            RaiseEvent SelectedImageChanged()
-        End If
-    End Sub
 #Region "Events"
-    Private Sub Combo_SelectedIndexChanged(sender As Object, e As EventArgs) Handles Combo.SelectedIndexChanged
-        If _SuppressEvent Then
-            Exit Sub
-        End If
-
-        Debug.Print("LoadedImageList.Combo_SelectedIndexChanged fired")
-        SetCurrentSelected(TryCast(Combo.SelectedItem, ImageData))
+    Public Sub Combo_DragDrop(sender As Object, e As DragEventArgs) Handles ComboAll.DragDrop, ComboFiltered.DragDrop
+        RaiseEvent DragDrop(sender, e)
     End Sub
 
-    Private Sub ComboImages_DrawItem(sender As Object, e As DrawItemEventArgs) Handles Combo.DrawItem
+    Private Sub Combo_DragEnter(sender As Object, e As DragEventArgs) Handles ComboAll.DragEnter, ComboFiltered.DragEnter
+        RaiseEvent DragEnter(sender, e)
+    End Sub
+
+    Private Sub Combo_DrawItem(sender As Object, e As DrawItemEventArgs) Handles ComboAll.DrawItem, ComboFiltered.DrawItem
         If e.Index >= -1 Then
             e.DrawBackground()
 
@@ -227,6 +288,14 @@
         End If
 
         e.DrawFocusRectangle()
+    End Sub
+
+    Private Sub Combo_SelectedIndexChanged(sender As Object, e As EventArgs) Handles ComboAll.SelectedIndexChanged
+        DoSelectedIndexChanged()
+    End Sub
+
+    Private Sub ComboFiltered_SelectedIndexChanged(sender As Object, e As EventArgs) Handles ComboFiltered.SelectedIndexChanged
+        ComboAll.SelectedItem = ComboFiltered.SelectedItem
     End Sub
 #End Region
 End Class
