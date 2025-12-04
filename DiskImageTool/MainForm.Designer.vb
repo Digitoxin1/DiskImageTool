@@ -154,7 +154,6 @@ Partial Class MainForm
         Me.ListViewSummary = New System.Windows.Forms.ListView()
         Me.ComboImages = New System.Windows.Forms.ComboBox()
         Me.LabelDropMessage = New System.Windows.Forms.Label()
-        Me.ComboImagesFiltered = New System.Windows.Forms.ComboBox()
         Me.BtnResetSort = New System.Windows.Forms.Button()
         Me.btnRetry = New System.Windows.Forms.Button()
         Me.SplitContainer1 = New System.Windows.Forms.SplitContainer()
@@ -964,16 +963,6 @@ Partial Class MainForm
         Me.LabelDropMessage.BackColor = System.Drawing.SystemColors.Window
         Me.LabelDropMessage.Name = "LabelDropMessage"
         '
-        'ComboImagesFiltered
-        '
-        Me.ComboImagesFiltered.AllowDrop = True
-        resources.ApplyResources(Me.ComboImagesFiltered, "ComboImagesFiltered")
-        Me.ComboImagesFiltered.BackColor = System.Drawing.SystemColors.Window
-        Me.ComboImagesFiltered.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList
-        Me.ComboImagesFiltered.DropDownWidth = 523
-        Me.ComboImagesFiltered.Name = "ComboImagesFiltered"
-        Me.ComboImagesFiltered.Sorted = True
-        '
         'BtnResetSort
         '
         resources.ApplyResources(Me.BtnResetSort, "BtnResetSort")
@@ -1001,7 +990,6 @@ Partial Class MainForm
         'SplitContainer1.Panel2
         '
         Me.SplitContainer1.Panel2.Controls.Add(Me.BtnResetSort)
-        Me.SplitContainer1.Panel2.Controls.Add(Me.ComboImagesFiltered)
         Me.SplitContainer1.Panel2.Controls.Add(Me.LabelDropMessage)
         Me.SplitContainer1.Panel2.Controls.Add(Me.ComboImages)
         Me.SplitContainer1.Panel2.Controls.Add(Me.ListViewFiles)
@@ -1100,7 +1088,6 @@ Partial Class MainForm
     Friend WithEvents MainMenuFilters As ToolStripMenuItem
     Friend WithEvents MenuHexFAT As ToolStripMenuItem
     Friend WithEvents MenuEditExportFile As ToolStripMenuItem
-    Friend WithEvents ComboImagesFiltered As ComboBox
     Friend WithEvents MenuFiltersClear As ToolStripMenuItem
     Friend WithEvents StatusBarModified As ToolStripStatusLabel
     Friend WithEvents MenuHexBadSectors As ToolStripMenuItem

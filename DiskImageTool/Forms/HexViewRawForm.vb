@@ -82,27 +82,6 @@ Public Class HexViewRawForm
         End Using
     End Sub
 
-    Private Function RemoveBits(source As BitArray, index As Integer, count As Integer) As BitArray
-        Dim newLength = source.Length - count
-        Dim result As New BitArray(newLength)
-
-        Dim destPos As Integer = 0
-
-        ' Copy before the removed slice
-        For i = 0 To index - 1
-            result(destPos) = source(i)
-            destPos += 1
-        Next
-
-        ' Skip the removed bits and copy the rest
-        For i = index + count To source.Length - 1
-            result(destPos) = source(i)
-            destPos += 1
-        Next
-
-        Return result
-    End Function
-
     Private Sub LocalizeForm()
         BtnAdjustOffset.Text = My.Resources.Menu_AdjustBitOffset
         BtnCopyEncoded.Text = My.Resources.Menu_CopyEncoded
@@ -1554,7 +1533,11 @@ Public Class HexViewRawForm
     Private Sub AddContextMenuBitEditItems()
         ContextMenuStrip1.Items.Add(New ToolStripSeparator())
 
-        Dim Item As New ToolStripMenuItem("Remove Bits")
+        Dim Item As New ToolStripMenuItem("Insert Bits")
+        AddHandler Item.Click, AddressOf ContextMenuInsertBits_Click
+        ContextMenuStrip1.Items.Add(Item)
+
+        Item = New ToolStripMenuItem("Remove Bits")
         AddHandler Item.Click, AddressOf ContextMenuRemoveBits_Click
         ContextMenuStrip1.Items.Add(Item)
 
@@ -1562,6 +1545,58 @@ Public Class HexViewRawForm
         AddHandler Item.Click, AddressOf ContextMenuEditBits_Click
         ContextMenuStrip1.Items.Add(Item)
     End Sub
+
+    Private Function InsertBits(source As BitArray, index As Integer, bitsToInsert As BitArray) As BitArray
+        If index < 0 OrElse index > source.Length Then
+            Throw New ArgumentOutOfRangeException(NameOf(index))
+        End If
+
+        Dim insertCount = bitsToInsert.Length
+        Dim result As New BitArray(source.Length + insertCount)
+
+        Dim destPos As Integer = 0
+
+        ' Copy bits before insertion point
+        For i = 0 To index - 1
+            result(destPos) = source(i)
+            destPos += 1
+        Next
+
+        ' Copy inserted bits
+        For i = 0 To insertCount - 1
+            result(destPos) = bitsToInsert(i)
+            destPos += 1
+        Next
+
+        ' Copy bits after insertion point
+        For i = index To source.Length - 1
+            result(destPos) = source(i)
+            destPos += 1
+        Next
+
+        Return result
+    End Function
+
+    Private Function RemoveBits(source As BitArray, index As Integer, count As Integer) As BitArray
+        Dim newLength = source.Length - count
+        Dim result As New BitArray(newLength)
+
+        Dim destPos As Integer = 0
+
+        ' Copy before the removed slice
+        For i = 0 To index - 1
+            result(destPos) = source(i)
+            destPos += 1
+        Next
+
+        ' Skip the removed bits and copy the rest
+        For i = index + count To source.Length - 1
+            result(destPos) = source(i)
+            destPos += 1
+        Next
+
+        Return result
+    End Function
 
     Private Sub ContextMenuEditBits_Click()
         Dim SelectionStart = HexBox1.SelectionStart
@@ -1581,6 +1616,38 @@ Public Class HexViewRawForm
             _Bitstream.Set(BitIndex + counter, Value.Substring(counter, 1) = 1)
         Next
 
+        Dim MFMTrack = _FloppyImage.BitstreamImage.GetTrack(_CurrentTrackData.Track * _FloppyImage.BitstreamImage.TrackStep, _CurrentTrackData.Side)
+        MFMTrack.Bitstream = _Bitstream
+
+        LoadTrack(_CurrentTrackData, True, True)
+    End Sub
+
+    Private Sub ContextMenuInsertBits_Click()
+        Dim selectionStart = HexBox1.SelectionStart
+
+        ' Empty default text
+        Dim value = InputBox("Insert bits: ", "Insert Bits", "")
+        value = value.Replace(" ", "")
+
+        ' Must be at least 1 bit, only 0 or 1
+        If String.IsNullOrEmpty(value) OrElse Not Regex.IsMatch(value, "^[01]+$") Then
+            Exit Sub
+        End If
+
+        ' Bit index where we insert
+        Dim bitIndex = selectionStart * 16 + _CurrentTrackData.Offset
+        bitIndex = AdjustBitIndex(bitIndex, _Bitstream.Length)
+
+        ' Build a BitArray from the entered bits
+        Dim bitsToInsert As New BitArray(value.Length)
+        For i = 0 To value.Length - 1
+            bitsToInsert(i) = (value(i) = "1")
+        Next
+
+        ' Insert into the bitstream
+        _Bitstream = InsertBits(_Bitstream, bitIndex, bitsToInsert)
+
+        ' Push updated bitstream back into the track and refresh UI
         Dim MFMTrack = _FloppyImage.BitstreamImage.GetTrack(_CurrentTrackData.Track * _FloppyImage.BitstreamImage.TrackStep, _CurrentTrackData.Side)
         MFMTrack.Bitstream = _Bitstream
 
