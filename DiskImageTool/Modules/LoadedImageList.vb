@@ -89,7 +89,7 @@
         Return Len(PathName)
     End Function
 
-    Public Sub Refresh(IsFiltered As Boolean)
+    Public Sub Refresh(IsFiltered As Boolean, Optional SelectedImage As ImageData = Nothing)
         _IsFiltered = IsFiltered
 
         Dim Source As List(Of ImageData) = If(_IsFiltered, _Filtered, _Main)
@@ -97,7 +97,11 @@
         RefreshComboEnabled(Source.Count > 0)
         PopulateCombo(Source)
 
-        SetSelectedImage(_CurrentSelected)
+        If SelectedImage Is Nothing Then
+            SelectedImage = _CurrentSelected
+        End If
+
+        SetSelectedImage(SelectedImage)
     End Sub
 
     Public Sub RefreshCurrentItemText()

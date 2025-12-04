@@ -104,26 +104,24 @@ Namespace Filters
         End Sub
 
         Public Sub OEMNameUpdate(Disk As DiskImage.Disk, ImageData As ImageData, Optional UpdateFilters As Boolean = False, Optional Remove As Boolean = False)
-            If Disk IsNot Nothing AndAlso Disk.IsValidImage Then
-                Dim OEMNameString As String = ""
+            Dim OEMNameString As String = ""
 
-                If Not Remove Then
-                    If Disk.BootSector.BPB.IsValid Then
-                        OEMNameString = Disk.BootSector.GetOEMNameString.TrimEnd(NULL_CHAR)
-                        'OEMNameString = Crc32.ComputeChecksum(Disk.BootSector.BootStrapCode).ToString("X8") & " (" & OEMNameString & ")"
-                    End If
+            If Not Remove Then
+                If Disk IsNot Nothing AndAlso Disk.IsValidImage AndAlso Disk.BootSector.BPB.IsValid Then
+                    OEMNameString = Disk.BootSector.GetOEMNameString.TrimEnd(NULL_CHAR)
+                    'OEMNameString = Crc32.ComputeChecksum(Disk.BootSector.BootStrapCode).ToString("X8") & " (" & OEMNameString & ")"
+                End If
+            End If
+
+            If Not ImageData.Scanned Or OEMNameString <> ImageData.OEMName Then
+                If ImageData.Scanned Then
+                    _SubFilterOEMName.Remove(ImageData.OEMName, UpdateFilters)
                 End If
 
-                If Not ImageData.Scanned Or OEMNameString <> ImageData.OEMName Then
-                    If ImageData.Scanned Then
-                        _SubFilterOEMName.Remove(ImageData.OEMName, UpdateFilters)
-                    End If
+                ImageData.OEMName = OEMNameString
 
-                    ImageData.OEMName = OEMNameString
-
-                    If Not Remove Then
-                        OEMNameAdd(ImageData.OEMName, UpdateFilters)
-                    End If
+                If Not Remove Then
+                    OEMNameAdd(ImageData.OEMName, UpdateFilters)
                 End If
             End If
         End Sub
@@ -262,10 +260,10 @@ Namespace Filters
                 FilterUpdate(ImageData, UpdateFilters, Filters.FilterTypes.Disk_HasWriteSplices, Disk_HasWriteSplices)
             End If
 
-            If App.Globals.AppSettings.Debug And Disk IsNot Nothing Then
+            If App.Globals.AppSettings.Debug Then
                 FilterUpdate(ImageData, UpdateFilters, Filters.FilterTypes.Database_MismatchedStatus, Database_MismatchedStatus)
 
-                If _ExportUnknownImages Then
+                If Disk IsNot Nothing AndAlso _ExportUnknownImages Then
                     If Image_NotInDatabase Then
                         If TitleFindResult Is Nothing Then
                             TitleFindResult = _TitleDB.TitleFind(Disk)

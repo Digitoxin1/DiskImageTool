@@ -361,10 +361,13 @@ Public Class MainForm
         Return False
     End Function
 
-    Private Sub FileRemove(ImageData As ImageData)
-        ImageFilters.ScanRemove(ImageData)
-        RefreshModifiedCount()
+    Private Sub FileDropPostProcess()
+        LabelDropMessage.Visible = False
+        StatusBarImageCountUpdate()
+        SetImagesLoaded(True)
+    End Sub
 
+    Private Sub FileRemove(ImageData As ImageData)
         _LoadedFiles.FileNames.Remove(ImageData.DisplayPath)
 
         ImageCombo.RemoveImage(ImageData)
@@ -372,6 +375,8 @@ Public Class MainForm
         If ImageCombo.Main.Count = 0 Then
             ResetAll()
         Else
+            ImageFilters.ScanRemove(ImageData)
+            RefreshModifiedCount()
             StatusBarImageCountUpdate()
         End If
     End Sub
@@ -1065,10 +1070,10 @@ Public Class MainForm
 
         ImageData.StringOffset = ImageCombo.GetPathOffset()
 
-        ImageCombo.Refresh(False)
+        ImageCombo.Refresh(False, firstImage)
 
         If firstImage IsNot Nothing Then
-            SetSelectedImage(firstImage)
+            FileDropPostProcess()
         End If
 
         T.Stop()
@@ -1429,13 +1434,6 @@ Public Class MainForm
         ToolStripCloseAll.Enabled = MenuFileCloseAll.Enabled
         _ToolStripSearchText.Enabled = Value
         MenuToolsWin9xCleanBatch.Enabled = Value
-    End Sub
-
-    Private Sub SetSelectedImage(Image As ImageData)
-        LabelDropMessage.Visible = False
-        ImageCombo.SetSelectedImage(Image)
-        StatusBarImageCountUpdate()
-        SetImagesLoaded(True)
     End Sub
     Private Sub StatusBarFileInfoClear()
         StatusBarFileCount.Visible = False
