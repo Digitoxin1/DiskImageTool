@@ -81,7 +81,7 @@ Partial Class ImagePreview
         '
         SplitContainer1.Panel2.Controls.Add(Me.ListViewFiles)
         SplitContainer1.Size = New System.Drawing.Size(892, 452)
-        SplitContainer1.SplitterDistance = 310
+        SplitContainer1.SplitterDistance = 308
         SplitContainer1.SplitterWidth = 6
         SplitContainer1.TabIndex = 0
         '
@@ -91,7 +91,7 @@ Partial Class ImagePreview
         Me.ListViewSummary.HideSelection = False
         Me.ListViewSummary.Location = New System.Drawing.Point(0, 0)
         Me.ListViewSummary.Name = "ListViewSummary"
-        Me.ListViewSummary.Size = New System.Drawing.Size(310, 345)
+        Me.ListViewSummary.Size = New System.Drawing.Size(308, 345)
         Me.ListViewSummary.TabIndex = 0
         Me.ListViewSummary.UseCompatibleStateImageBehavior = False
         '
@@ -100,8 +100,30 @@ Partial Class ImagePreview
         Me.PanelSpacer.Dock = System.Windows.Forms.DockStyle.Bottom
         Me.PanelSpacer.Location = New System.Drawing.Point(0, 345)
         Me.PanelSpacer.Name = "PanelSpacer"
-        Me.PanelSpacer.Size = New System.Drawing.Size(310, 6)
+        Me.PanelSpacer.Size = New System.Drawing.Size(308, 6)
         Me.PanelSpacer.TabIndex = 1
+        '
+        'HashPanel1
+        '
+        Me.HashPanel1.BackColor = System.Drawing.SystemColors.Window
+        Me.HashPanel1.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle
+        Me.HashPanel1.Dock = System.Windows.Forms.DockStyle.Bottom
+        Me.HashPanel1.Location = New System.Drawing.Point(0, 351)
+        Me.HashPanel1.Name = "HashPanel1"
+        Me.HashPanel1.Padding = New System.Windows.Forms.Padding(3)
+        Me.HashPanel1.Size = New System.Drawing.Size(308, 101)
+        Me.HashPanel1.TabIndex = 2
+        '
+        'ListViewFiles
+        '
+        Me.ListViewFiles.Dock = System.Windows.Forms.DockStyle.Fill
+        Me.ListViewFiles.Font = New System.Drawing.Font("Microsoft Sans Serif", 8.25!)
+        Me.ListViewFiles.HideSelection = False
+        Me.ListViewFiles.Location = New System.Drawing.Point(0, 0)
+        Me.ListViewFiles.Name = "ListViewFiles"
+        Me.ListViewFiles.Size = New System.Drawing.Size(578, 452)
+        Me.ListViewFiles.TabIndex = 0
+        Me.ListViewFiles.UseCompatibleStateImageBehavior = False
         '
         'PanelMain
         '
@@ -112,28 +134,6 @@ Partial Class ImagePreview
         PanelMain.Padding = New System.Windows.Forms.Padding(16, 16, 16, 0)
         PanelMain.Size = New System.Drawing.Size(924, 468)
         PanelMain.TabIndex = 0
-        '
-        'HashPanel1
-        '
-        Me.HashPanel1.BackColor = System.Drawing.SystemColors.Window
-        Me.HashPanel1.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle
-        Me.HashPanel1.Dock = System.Windows.Forms.DockStyle.Bottom
-        Me.HashPanel1.Location = New System.Drawing.Point(0, 351)
-        Me.HashPanel1.Name = "HashPanel1"
-        Me.HashPanel1.Padding = New System.Windows.Forms.Padding(3)
-        Me.HashPanel1.Size = New System.Drawing.Size(310, 101)
-        Me.HashPanel1.TabIndex = 2
-        '
-        'ListViewFiles
-        '
-        Me.ListViewFiles.Dock = System.Windows.Forms.DockStyle.Fill
-        Me.ListViewFiles.Font = New System.Drawing.Font("Microsoft Sans Serif", 8.25!)
-        Me.ListViewFiles.HideSelection = False
-        Me.ListViewFiles.Location = New System.Drawing.Point(0, 0)
-        Me.ListViewFiles.Name = "ListViewFiles"
-        Me.ListViewFiles.Size = New System.Drawing.Size(576, 452)
-        Me.ListViewFiles.TabIndex = 0
-        Me.ListViewFiles.UseCompatibleStateImageBehavior = False
         '
         'ImagePreview
         '

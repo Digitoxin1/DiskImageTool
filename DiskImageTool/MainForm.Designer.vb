@@ -50,9 +50,7 @@ Partial Class MainForm
         Dim MenuStripTop As System.Windows.Forms.MenuStrip
         Me.btnRetry = New System.Windows.Forms.Button()
         Me.ListViewSummary = New System.Windows.Forms.ListView()
-        Me.HashPanel1 = New DiskImageTool.HashPanel()
         Me.LabelDropMessage = New System.Windows.Forms.Label()
-        Me.ListViewFiles = New DiskImageTool.ListViewEx()
         Me.ComboImages = New System.Windows.Forms.ComboBox()
         Me.BtnResetSort = New System.Windows.Forms.Button()
         Me.MenuHexBootSector = New System.Windows.Forms.ToolStripMenuItem()
@@ -160,6 +158,8 @@ Partial Class MainForm
         Me.StatusBarFileTrack = New System.Windows.Forms.ToolStripStatusLabel()
         Me.StatusBarImageCount = New System.Windows.Forms.ToolStripStatusLabel()
         Me.StatusBarImagesModified = New System.Windows.Forms.ToolStripStatusLabel()
+        Me.HashPanel1 = New DiskImageTool.HashPanel()
+        Me.ListViewFiles = New DiskImageTool.ListViewEx()
         HashName = CType(New System.Windows.Forms.ColumnHeader(), System.Windows.Forms.ColumnHeader)
         SplitContainer1 = New System.Windows.Forms.SplitContainer()
         PanelSpacer3 = New System.Windows.Forms.Panel()
@@ -240,28 +240,12 @@ Partial Class MainForm
         resources.ApplyResources(PanelSpacer3, "PanelSpacer3")
         PanelSpacer3.Name = "PanelSpacer3"
         '
-        'HashPanel1
-        '
-        Me.HashPanel1.AllowDrop = True
-        Me.HashPanel1.BackColor = System.Drawing.SystemColors.Window
-        Me.HashPanel1.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle
-        resources.ApplyResources(Me.HashPanel1, "HashPanel1")
-        Me.HashPanel1.Name = "HashPanel1"
-        '
         'LabelDropMessage
         '
         Me.LabelDropMessage.AllowDrop = True
         resources.ApplyResources(Me.LabelDropMessage, "LabelDropMessage")
         Me.LabelDropMessage.BackColor = System.Drawing.SystemColors.Window
         Me.LabelDropMessage.Name = "LabelDropMessage"
-        '
-        'ListViewFiles
-        '
-        Me.ListViewFiles.AllowDrop = True
-        resources.ApplyResources(Me.ListViewFiles, "ListViewFiles")
-        Me.ListViewFiles.HideSelection = False
-        Me.ListViewFiles.Name = "ListViewFiles"
-        Me.ListViewFiles.UseCompatibleStateImageBehavior = False
         '
         'PanelSpacer2
         '
@@ -1020,6 +1004,22 @@ Partial Class MainForm
         Me.StatusBarImagesModified.Margin = New System.Windows.Forms.Padding(2, 3, 2, 2)
         Me.StatusBarImagesModified.Name = "StatusBarImagesModified"
         resources.ApplyResources(Me.StatusBarImagesModified, "StatusBarImagesModified")
+        '
+        'HashPanel1
+        '
+        Me.HashPanel1.AllowDrop = True
+        Me.HashPanel1.BackColor = System.Drawing.SystemColors.Window
+        Me.HashPanel1.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle
+        resources.ApplyResources(Me.HashPanel1, "HashPanel1")
+        Me.HashPanel1.Name = "HashPanel1"
+        '
+        'ListViewFiles
+        '
+        Me.ListViewFiles.AllowDrop = True
+        resources.ApplyResources(Me.ListViewFiles, "ListViewFiles")
+        Me.ListViewFiles.HideSelection = False
+        Me.ListViewFiles.Name = "ListViewFiles"
+        Me.ListViewFiles.UseCompatibleStateImageBehavior = False
         '
         'MainForm
         '
