@@ -10,6 +10,7 @@ Namespace Flux
         Private WithEvents ButtonImport As Button
         Private WithEvents ButtonModifications As Button
         Private WithEvents ButtonOpen As Button
+        Private WithEvents ButtonPreview As Button
         Private WithEvents ButtonProcess As Button
         Private WithEvents ButtonTrackLayout As Button
         Private WithEvents CheckBoxDoublestep As CheckBox
@@ -89,6 +90,49 @@ Namespace Flux
 
             Return TextBoxFileName.Text & Extension
         End Function
+
+        Public Sub PreviewImage()
+            If _SelectedDevice Is Nothing Then
+                Exit Sub
+            End If
+
+            Dim HasSelectedOutputFile As Boolean = _OutputImages.Images.ContainsKey(_SelectedDevice.Device)
+
+            If HasSelectedOutputFile Then
+                Dim ImageInfo = _OutputImages.Images(_SelectedDevice.Device)
+                Dim ImageData = New ImageData(ImageInfo.FilePath)
+
+                Dim Caption As String = TextBoxFileName.Text
+
+                If Not ImagePreview.Display(ImageData, Caption, Me) Then
+                    MsgBox(My.Resources.Dialog_ImagePreviewFail, MsgBoxStyle.Exclamation)
+                End If
+            Else
+                If ComboImageFormat.SelectedIndex = -1 Then
+                    Exit Sub
+                End If
+
+                If Not _SelectedDevice.SupportsPreview Then
+                    Exit Sub
+                End If
+
+                Dim ImageParams As FloppyDiskParams = ComboImageFormat.SelectedValue
+
+                Dim Response = _SelectedDevice.ConvertFirstTrack(_InputFilePath, True, ImageParams)
+
+                If Not Response.Result Then
+                    MsgBox(My.Resources.Dialog_ImagePreviewFail, MsgBoxStyle.Exclamation)
+                End If
+
+                Dim Caption As String = TextBoxFileName.Text
+
+                If Not ImagePreview.Display(Response.Filename, ImageParams, Caption, Me) Then
+                    MsgBox(My.Resources.Dialog_ImagePreviewFail, MsgBoxStyle.Exclamation)
+                End If
+
+                DeleteTempFileIfExists(Response.Filename)
+            End If
+        End Sub
 
         Protected Overrides Sub OnAfterBaseFormClosing(e As FormClosingEventArgs)
             If Me.DialogResult = DialogResult.OK OrElse Me.DialogResult = DialogResult.Retry Then
@@ -180,10 +224,12 @@ Namespace Flux
 
             Dim ImageInfo = _OutputImages.Images(IDevice.FluxDevice.PcImgCnv)
             Dim ImageData = New ImageData(ImageInfo.FilePath)
-            Dim Disk = DiskImageLoadFromImageData(ImageData)
+
             If ImageData.InvalidImage Then
                 Exit Sub
             End If
+
+            Dim Disk = DiskImageLoadFromImageData(ImageData)
 
             If Not Disk.Image.IsBitstreamImage Then
                 Exit Sub
@@ -242,10 +288,12 @@ Namespace Flux
 
             Dim ImageInfo = _OutputImages.Images(IDevice.FluxDevice.PcImgCnv)
             Dim ImageData = New ImageData(ImageInfo.FilePath)
-            Dim Disk = DiskImageLoadFromImageData(ImageData)
+
             If ImageData.InvalidImage Then
                 Exit Sub
             End If
+
+            Dim Disk = DiskImageLoadFromImageData(ImageData)
 
             If Not Disk.Image.IsBitstreamImage Then
                 Exit Sub
@@ -285,6 +333,21 @@ Namespace Flux
 
             Return _UserState.Convert.Device(_SelectedDevice.Device)
         End Function
+
+        Private Sub ImagePostProcessCompleted()
+            If Not TrackStatus.TrackFound Then
+                Exit Sub
+            End If
+
+            TrackStatus.UpdateTrackStatusComplete(_DoubleStep)
+
+            If CheckBoxSaveLog.Checked Then
+                AutoSaveLogFile()
+            End If
+            _OutputImages.StorePendingImage(GetState)
+            PopulateOutputSourceCombo()
+            RefreshButtonState()
+        End Sub
 
         Private Sub InitializeControls()
             Dim LabelDevice As New Label With {
@@ -382,8 +445,16 @@ Namespace Flux
                 .Margin = New Padding(12, 24, 3, 3)
             }
 
-            ButtonProcess = New Button With {
+            ButtonPreview = New Button With {
                 .Margin = New Padding(3, 0, 3, 3),
+                .Text = My.Resources.Label_Preview,
+                .MinimumSize = New Size(75, 0),
+                .AutoSize = True,
+                .Anchor = AnchorStyles.Left Or AnchorStyles.Right
+            }
+
+            ButtonProcess = New Button With {
+                .Margin = New Padding(3, 12, 3, 3),
                 .Text = My.Resources.Label_ReProcess,
                 .MinimumSize = New Size(75, 0),
                 .AutoSize = True,
@@ -451,6 +522,7 @@ Namespace Flux
             PanelButtonsRight.Controls.Add(ComboOutputSource)
             PanelButtonsRight.Controls.Add(LabelOutputSource)
 
+            ButtonContainer.Controls.Add(ButtonPreview)
             ButtonContainer.Controls.Add(ButtonProcess)
             ButtonContainer.Controls.Add(ButtonDiscard)
             ButtonContainer.Controls.Add(ButtonTrackLayout)
@@ -742,7 +814,6 @@ Namespace Flux
 
             _ComboOutputTypeNoEvent = False
         End Sub
-
         Private Sub ProcessImage()
             If _SelectedDevice Is Nothing Then
                 Exit Sub
@@ -811,7 +882,7 @@ Namespace Flux
 
             Dim SelectedDevice As IDevice = CType(ComboDevices.SelectedItem, IDevice)
 
-            Dim Response = SelectedDevice.ConvertFirstTrack(_InputFilePath)
+            Dim Response = SelectedDevice.ConvertFirstTrack(_InputFilePath, False)
 
             If Not Response.Result Then
                 Return FloppyDiskFormat.FloppyUnknown
@@ -819,23 +890,6 @@ Namespace Flux
 
             Return DetectImageFormat(Response.Filename, True)
         End Function
-
-        Private Sub RefreshGridState()
-            If ComboDevices.SelectedIndex = -1 Then
-                Exit Sub
-            End If
-
-            Dim SelectedDevice As IDevice = CType(ComboDevices.SelectedItem, IDevice)
-
-            Dim State = _OutputImages.GetState(SelectedDevice.Device)
-
-            If State.HasValue Then
-                SetState(State.Value)
-            Else
-                ClearProcessedImage()
-            End If
-            MyBase.Refresh()
-        End Sub
 
         Private Sub RefreshButtonState()
             Dim OutputType As ImageImportOutputTypes? = Nothing
@@ -850,6 +904,7 @@ Namespace Flux
             End If
 
             Dim HasOutputfile As Boolean = _OutputImages.HasImage
+            Dim HasSelectedOutputFile As Boolean = _OutputImages.Images.ContainsKey(_SelectedDevice.Device)
             Dim HasInputFile As Boolean = Not String.IsNullOrEmpty(_InputFilePath)
             Dim IsRunning As Boolean = Process.IsRunning
             Dim IsIdle As Boolean = Not IsRunning
@@ -857,6 +912,7 @@ Namespace Flux
             Dim SettingsEnabled As Boolean = IsIdle
             Dim CanConfigure As Boolean = SettingsEnabled AndAlso HasInputFile
             Dim UseImageFormat As Boolean = _SelectedDevice IsNot Nothing AndAlso _SelectedDevice.RequiresImageFormat
+            Dim SupportsPreview As Boolean = _SelectedDevice IsNot Nothing AndAlso _SelectedDevice.SupportsPreview
 
             Dim SourceIsPcImgCnv As Boolean = HasOutputfile AndAlso _OutputImages.HasPcImgCnvImage
 
@@ -880,7 +936,7 @@ Namespace Flux
 
             If IsRunning Then
                 ButtonProcess.Text = My.Resources.Label_Abort
-            ElseIf _SelectedDevice IsNot Nothing AndAlso _OutputImages.Images.ContainsKey(_SelectedDevice.Device) Then
+            ElseIf _SelectedDevice IsNot Nothing AndAlso HasSelectedOutputFile Then
                 ButtonProcess.Text = My.Resources.Label_ReProcess
             Else
                 ButtonProcess.Text = My.Resources.Label_Process
@@ -890,6 +946,8 @@ Namespace Flux
 
             ButtonTrackLayout.Enabled = IsIdle AndAlso HasOutputfile AndAlso SourceIsPcImgCnv
             ButtonModifications.Enabled = IsIdle AndAlso HasOutputfile AndAlso SourceIsPcImgCnv
+
+            ButtonPreview.Enabled = HasInputFile AndAlso IsIdle AndAlso ((Not IsNonImage AndAlso SupportsPreview) OrElse HasSelectedOutputFile)
 
             TextBoxFileName.ReadOnly = Not HasInputFile
 
@@ -945,6 +1003,22 @@ Namespace Flux
             ButtonModifications.Visible = IsPcImgCnv OrElse _OutputImages.HasPcImgCnvImage
         End Sub
 
+        Private Sub RefreshGridState()
+            If ComboDevices.SelectedIndex = -1 Then
+                Exit Sub
+            End If
+
+            Dim SelectedDevice As IDevice = CType(ComboDevices.SelectedItem, IDevice)
+
+            Dim State = _OutputImages.GetState(SelectedDevice.Device)
+
+            If State.HasValue Then
+                SetState(State.Value)
+            Else
+                ClearProcessedImage()
+            End If
+            MyBase.Refresh()
+        End Sub
         Private Sub RefreshImportButtonState()
             Dim HasOutputfile As Boolean = _OutputImages.HasImage
             Dim HasInputFile As Boolean = Not String.IsNullOrEmpty(_InputFilePath)
@@ -1044,22 +1118,6 @@ Namespace Flux
 
             Return IO.File.Exists(IO.Path.Combine(ParentFolder, "tracklayout.txt"))
         End Function
-
-        Private Sub ImagePostProcessCompleted()
-            If Not TrackStatus.TrackFound Then
-                Exit Sub
-            End If
-
-            TrackStatus.UpdateTrackStatusComplete(_DoubleStep)
-
-            If CheckBoxSaveLog.Checked Then
-                AutoSaveLogFile()
-            End If
-            _OutputImages.StorePendingImage(GetState)
-            PopulateOutputSourceCombo()
-            RefreshButtonState()
-        End Sub
-
         Private Class OutputImageInfo
             Private ReadOnly _FileSource As IDevice.FluxDevice
             Private _FilePath As String
@@ -1280,6 +1338,10 @@ Namespace Flux
             If OpenFluxImage() Then
                 InitializeDevice(True)
             End If
+        End Sub
+
+        Private Sub ButtonPreview_Click(sender As Object, e As EventArgs) Handles ButtonPreview.Click
+            PreviewImage()
         End Sub
 
         Private Sub ButtonProcess_Click(sender As Object, e As EventArgs) Handles ButtonProcess.Click

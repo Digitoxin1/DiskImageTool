@@ -1,14 +1,14 @@
 ﻿Module DirectoryScan
-    Public Function ProcessDirectoryEntries(Directory As DiskImage.IDirectory, FilePanel As FilePanel) As DirectoryScanResponse
+    Public Function ProcessDirectoryEntries(Directory As DiskImage.IDirectory, FilePanel As FilePanel, Optional Recurse As Boolean = True) As DirectoryScanResponse
         Dim ItemIndex As Integer = 0
 
-        Dim Response = ProcessDirectoryEntries(Directory, 0, "", FilePanel, 0, ItemIndex)
+        Dim Response = ProcessDirectoryEntries(Directory, 0, "", FilePanel, 0, ItemIndex, Recurse)
         Response.ItemCount = ItemIndex
 
         Return Response
     End Function
 
-    Public Function ProcessDirectoryEntries(Directory As DiskImage.IDirectory, Offset As UInteger, Path As String, FilePanel As FilePanel, ByRef GroupIndex As Integer, ByRef ItemIndex As Integer) As DirectoryScanResponse
+    Public Function ProcessDirectoryEntries(Directory As DiskImage.IDirectory, Offset As UInteger, Path As String, FilePanel As FilePanel, ByRef GroupIndex As Integer, ByRef ItemIndex As Integer, Optional Recurse As Boolean = True) As DirectoryScanResponse
         Dim Response As New DirectoryScanResponse(Directory)
         Dim Group As ListViewGroup = Nothing
 
@@ -76,7 +76,7 @@
                             ItemIndex += 1
                         End If
 
-                        If DirectoryEntry.IsDirectory And DirectoryEntry.SubDirectory IsNot Nothing Then
+                        If Recurse AndAlso DirectoryEntry.IsDirectory AndAlso DirectoryEntry.SubDirectory IsNot Nothing Then
                             If DirectoryEntry.SubDirectory.Data.EntryCount > 0 Then
                                 Dim NewPath As String
                                 If HasLFN Then
@@ -91,7 +91,7 @@
                                 If FilePanel IsNot Nothing Then
                                     Response.AddDirectory(NewPath, DirectoryEntry.SubDirectory)
                                 End If
-                                Dim SubResponse = ProcessDirectoryEntries(DirectoryEntry.SubDirectory, DirectoryEntry.Offset, NewPath, FilePanel, GroupIndex, ItemIndex)
+                                Dim SubResponse = ProcessDirectoryEntries(DirectoryEntry.SubDirectory, DirectoryEntry.Offset, NewPath, FilePanel, GroupIndex, ItemIndex, Recurse)
                                 Response.Combine(SubResponse)
                             End If
                         End If

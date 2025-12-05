@@ -43,6 +43,12 @@
             End Get
         End Property
 
+        Friend ReadOnly Property SupportsPreview As Boolean Implements IDevice.SupportsPreview
+            Get
+                Return True
+            End Get
+        End Property
+
         Friend ReadOnly Property TrackStatus As ITrackStatus Implements IDevice.TrackStatus
             Get
                 Return _TrackStatus
@@ -60,8 +66,8 @@
                 Return Settings
             End Get
         End Property
-        Friend Function ConvertFirstTrack(InputFilePath As String) As (Result As Boolean, Filename As String) Implements IDevice.ConvertFirstTrack
-            Return Greaseweazle.ConvertFirstTrack(InputFilePath)
+        Friend Function ConvertFirstTrack(InputFilePath As String, BothSides As Boolean, Optional ImageParams As DiskImage.FloppyDiskParams? = Nothing) As (Result As Boolean, Filename As String) Implements IDevice.ConvertFirstTrack
+            Return Greaseweazle.ConvertFirstTrack(InputFilePath, BothSides, ImageParams)
         End Function
 
         Friend Function InputTypeSupported(fileType As InputFileTypeEnum) As Boolean Implements IDevice.InputTypeSupported

@@ -2121,4 +2121,13 @@ Do you wish to overwrite?</value>
   <data name="Modifications_OEMName" xml:space="preserve">
     <value>OEM Name modified</value>
   </data>
+  <data name="Label_Preview" xml:space="preserve">
+    <value>Preview</value>
+  </data>
+  <data name="Label_ImagePreview" xml:space="preserve">
+    <value>Image Preview</value>
+  </data>
+  <data name="Dialog_ImagePreviewFail" xml:space="preserve">
+    <value>Unable to preview image.</value>
+  </data>
 </root>

@@ -3,7 +3,6 @@ Imports DiskImageTool.DiskImage
 
 Public Class MainForm
     Private WithEvents FilePanelMain As FilePanel
-    Private WithEvents HashPanelContextMenu As ContextMenuStrip
     Private WithEvents ImageCombo As LoadedImageList
     Private WithEvents ImageFilters As Filters.ImageFilters
     Private Const CONTEXT_MENU_HASH_KEY As String = "Hashes"
@@ -624,37 +623,6 @@ Public Class MainForm
 
         Return Image
     End Function
-
-    Private Sub HashPanelInitContextMenu()
-        HashPanelContextMenu = New ContextMenuStrip With {
-            .Name = CONTEXT_MENU_HASH_KEY
-        }
-        HashPanelContextMenu.Items.Add(My.Resources.Menu_CopyValue)
-        For Each Control As Control In FlowLayoutPanelHashes.Controls
-            Control.ContextMenuStrip = HashPanelContextMenu
-        Next
-    End Sub
-
-    Private Sub HashPanelPopulate(Disk As Disk, MD5 As String)
-        If Disk IsNot Nothing Then
-            LabelCRC32.Text = Disk.Image.GetCRC32
-            LabelMD5.Text = MD5
-            LabelSHA1.Text = Disk.Image.GetSHA1Hash
-            HashPanelSetVisible(True)
-        Else
-            LabelCRC32.Text = ""
-            LabelMD5.Text = ""
-            LabelSHA1.Text = ""
-            HashPanelSetVisible(False)
-        End If
-        FlowLayoutPanelHashes.Refresh()
-    End Sub
-
-    Private Sub HashPanelSetVisible(Visible As Boolean)
-        For Each Control As Control In FlowLayoutPanelHashes.Controls
-            Control.Visible = Visible
-        Next
-    End Sub
 
     Private Sub ImageFiltersAlertUser()
         Dim Handle = WindowsAPI.GetForegroundWindow()
@@ -1581,7 +1549,7 @@ Public Class MainForm
         btnRetry.Visible = False
         ClearCurentFileName()
         _SummaryPanel.Clear()
-        HashPanelPopulate(Nothing, "")
+        HashPanel1.Populate(Nothing, "")
     End Sub
 
     Private Sub SummaryPopulate(CurrentImage As DiskImageContainer)
@@ -1596,7 +1564,7 @@ Public Class MainForm
             End If
             SetCurrentFileName(CurrentImage.ImageData)
             _SummaryPanel.Populate(CurrentImage, App.Globals.BootstrapDB, App.Globals.TitleDB, MD5)
-            HashPanelPopulate(CurrentImage.Disk, MD5)
+            HashPanel1.Populate(CurrentImage.Disk, MD5)
         Else
             SummaryClear()
         End If
@@ -1674,7 +1642,7 @@ Public Class MainForm
         End If
     End Sub
 
-    Private Sub File_DragDrop(sender As Object, e As DragEventArgs) Handles ImageCombo.DragDrop, LabelDropMessage.DragDrop, ListViewFiles.DragDrop, ListViewSummary.DragDrop, FlowLayoutPanelHashes.DragDrop
+    Private Sub File_DragDrop(sender As Object, e As DragEventArgs) Handles ImageCombo.DragDrop, LabelDropMessage.DragDrop, ListViewFiles.DragDrop, ListViewSummary.DragDrop, HashPanel1.DragDrop
         Dim Files As String() = e.Data.GetData(DataFormats.FileDrop)
 
         Me.BeginInvoke(Sub()
@@ -1683,7 +1651,7 @@ Public Class MainForm
                        End Sub)
     End Sub
 
-    Private Sub File_DragEnter(sender As Object, e As DragEventArgs) Handles ImageCombo.DragEnter, LabelDropMessage.DragEnter, ListViewFiles.DragEnter, ListViewSummary.DragEnter, FlowLayoutPanelHashes.DragEnter
+    Private Sub File_DragEnter(sender As Object, e As DragEventArgs) Handles ImageCombo.DragEnter, LabelDropMessage.DragEnter, ListViewFiles.DragEnter, ListViewSummary.DragEnter, HashPanel1.DragEnter
         If _Suppress_File_DragEnterEvent Then
             Exit Sub
         End If
@@ -1744,42 +1712,6 @@ Public Class MainForm
         BtnResetSort.Enabled = e
     End Sub
 
-    Private Sub HashPanelContextMenu_ItemClicked(sender As Object, e As ToolStripItemClickedEventArgs) Handles HashPanelContextMenu.ItemClicked
-        Dim Label As Label = CType(sender.SourceControl, Label)
-        Dim Value As String
-
-        If Label Is LabelCRC32 Or Label Is LabelCRC32Caption Then
-            Value = LabelCRC32.Text
-        ElseIf Label Is LabelMD5 Or Label Is LabelMD5Caption Then
-            Value = LabelMD5.Text
-        ElseIf Label Is LabelSHA1 Or Label Is LabelSHA1Caption Then
-            Value = LabelSHA1.Text
-        Else
-            Exit Sub
-        End If
-
-        Clipboard.SetText(Value)
-    End Sub
-
-    Private Sub HashPanelContextMenu_Opening(sender As Object, e As CancelEventArgs) Handles HashPanelContextMenu.Opening
-        Dim CM As ContextMenuStrip = sender
-        Dim Label As Label = CType(sender.SourceControl, Label)
-        Dim Text As String
-
-        If Label Is LabelCRC32 Or Label Is LabelCRC32Caption Then
-            Text = LabelCRC32Caption.Text
-        ElseIf Label Is LabelMD5 Or Label Is LabelMD5Caption Then
-            Text = LabelMD5Caption.Text
-        ElseIf Label Is LabelSHA1 Or Label Is LabelSHA1Caption Then
-            Text = LabelSHA1Caption.Text
-        Else
-            e.Cancel = True
-            Exit Sub
-        End If
-
-        CM.Items(0).Text = String.Format(My.Resources.Menu_CopyValueByName, Text)
-    End Sub
-
     Private Sub ImageFilters_FilterChanged(ResetSubFilters As Boolean) Handles ImageFilters.FilterChanged
         FiltersApply(ResetSubFilters)
     End Sub
@@ -1819,12 +1751,10 @@ Public Class MainForm
 
         _LoadedFiles = New LoadedFiles
 
-        HashPanelInitContextMenu()
-
         ImageFilters = New Filters.ImageFilters(ContextMenuFilters, _ToolStripOEMNameCombo, _ToolStripDiskTypeCombo, _ToolStripSearchText, App.Globals.BootstrapDB, App.Globals.TitleDB)
         _SummaryPanel = New SummaryPanel(ListViewSummary)
         ImageCombo = New LoadedImageList(ComboImages)
-        FilePanelMain = New FilePanel(ListViewFiles, False)
+        FilePanelMain = New FilePanel(ListViewFiles, False, True)
 
         DetectFloppyDrives()
         InitOptionsMenu()

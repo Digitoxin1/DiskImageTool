@@ -1124,6 +1124,15 @@ Namespace My.Resources
         End Property
         
         '''<summary>
+        '''  Looks up a localized string similar to Unable to preview image..
+        '''</summary>
+        Friend ReadOnly Property Dialog_ImagePreviewFail() As String
+            Get
+                Return ResourceManager.GetString("Dialog_ImagePreviewFail", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
         '''  Looks up a localized string similar to A flux image set already exists in:
         '''
         '''&apos;{0}&apos;
@@ -3458,6 +3467,15 @@ Namespace My.Resources
         End Property
         
         '''<summary>
+        '''  Looks up a localized string similar to Image Preview.
+        '''</summary>
+        Friend ReadOnly Property Label_ImagePreview() As String
+            Get
+                Return ResourceManager.GetString("Label_ImagePreview", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
         '''  Looks up a localized string similar to {0} images loaded.
         '''</summary>
         Friend ReadOnly Property Label_ImagesLoaded() As String
@@ -3976,6 +3994,15 @@ Namespace My.Resources
         Friend ReadOnly Property Label_PreErase() As String
             Get
                 Return ResourceManager.GetString("Label_PreErase", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  Looks up a localized string similar to Preview.
+        '''</summary>
+        Friend ReadOnly Property Label_Preview() As String
+            Get
+                Return ResourceManager.GetString("Label_Preview", resourceCulture)
             End Get
         End Property
         

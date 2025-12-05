@@ -1879,4 +1879,13 @@ Möchten Sie ihn überschreiben?</value>
   <data name="Modifications_BootSectorCopy" xml:space="preserve">
     <value>Eine Kopie des Bootsektors befindet sich am Ende des Root-Verzeichnisses.</value>
   </data>
+  <data name="Label_ImagePreview" xml:space="preserve">
+    <value>Image-Vorschau</value>
+  </data>
+  <data name="Label_Preview" xml:space="preserve">
+    <value>Vorschau</value>
+  </data>
+  <data name="Dialog_ImagePreviewFail" xml:space="preserve">
+    <value>Vorschau der Image-Datei nicht möglich.</value>
+  </data>
 </root>

@@ -163,7 +163,7 @@ Namespace Flux.Greaseweazle
             Return result
         End Function
 
-        Public Function ConvertFirstTrack(FilePath As String) As (Result As Boolean, FileName As String)
+        Public Function ConvertFirstTrack(FilePath As String, BothSides As Boolean, Optional ImageParams As FloppyDiskParams? = Nothing) As (Result As Boolean, FileName As String)
             Dim TempPath = InitTempImagePath()
 
             If TempPath = "" Then
@@ -172,11 +172,18 @@ Namespace Flux.Greaseweazle
 
             Dim FileName = GenerateUniqueFileName(TempPath, "temp.ima")
 
+            Dim Format As String = "ibm.scan"
+
+            If ImageParams.HasValue Then
+                Dim ImageFormat = GreaseweazleImageFormatFromFloppyDiskFormat(ImageParams.Value.Format)
+                Format = GreaseweazleImageFormatCommandLine(ImageFormat)
+            End If
+
             Dim Builder As New CommandLineBuilder(CommandLineBuilder.CommandAction.convert) With {
             .InFile = FilePath,
             .OutFile = FileName,
-            .Format = "ibm.scan",
-            .Heads = TrackHeads.head0
+            .Format = Format,
+            .Heads = If(BothSides, TrackHeads.both, TrackHeads.head0)
         }
             Builder.AddCylinder(0)
 

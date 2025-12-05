@@ -4,7 +4,7 @@ Imports DiskImageTool.Flux.Kryoflux.CommandLineBuilder
 
 Namespace Flux.Kryoflux
     Module KryofluxLib
-        Public Function ConvertFirstTrack(FilePath As String) As (Result As Boolean, FileName As String)
+        Public Function ConvertFirstTrack(FilePath As String, BothSides As Boolean, Optional ImageParams As FloppyDiskParams? = Nothing) As (Result As Boolean, FileName As String)
             Dim TempPath = InitTempImagePath()
 
             If TempPath = "" Then
@@ -24,8 +24,12 @@ Namespace Flux.Kryoflux
                 .TrackEnd = 0,
                 .OutputTrackStart = 0,
                 .OutputTrackEnd = 0,
-                .SingleSidedMode = SingleSidedModeEnum.side0
+                .SingleSidedMode = If(BothSides, SingleSidedModeEnum.off, SingleSidedModeEnum.side0)
             }
+
+            If ImageParams.HasValue Then
+                Builder.SectorCount = ImageParams.Value.BPBParams.SectorsPerTrack
+            End If
 
             Dim result = ConsoleProcessRunner.RunProcess(Settings.AppPath, Builder.Arguments)
 
@@ -41,8 +45,9 @@ Namespace Flux.Kryoflux
                 End If
             End If
 
-
-            FileName = GetSide0FileName(FileName)
+            If Not BothSides Then
+                FileName = GetSide0FileName(FileName)
+            End If
 
             Return (IO.File.Exists(FileName), FileName)
         End Function

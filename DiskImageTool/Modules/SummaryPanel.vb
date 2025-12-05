@@ -42,7 +42,7 @@ Public Class SummaryPanel
         ListViewSummary.Items.Clear()
     End Sub
 
-    Public Sub Populate(CurrentImage As DiskImageContainer, BootStrapDB As BootstrapDB, Optional TitleDB As FloppyDB = Nothing, Optional MD5 As String = Nothing)
+    Public Sub Populate(CurrentImage As DiskImageContainer, BootStrapDB As BootstrapDB, Optional TitleDB As FloppyDB = Nothing, Optional MD5 As String = Nothing, Optional Preview As Boolean = False)
         With ListViewSummary
             .BeginUpdate()
             .Items.Clear()
@@ -52,7 +52,7 @@ Public Class SummaryPanel
             .Columns.Item(1).Width = Column_Width_Value
 
             If CurrentImage.Disk IsNot Nothing Then
-                PopulateMain(CurrentImage.Disk, BootStrapDB, TitleDB, MD5)
+                PopulateMain(CurrentImage.Disk, BootStrapDB, TitleDB, MD5, Preview)
 
                 .HideSelection = False
                 .TabStop = True
@@ -657,7 +657,7 @@ Public Class SummaryPanel
 
         Return DiskGroup
     End Function
-    Private Sub PopulateGroupFileSystem(Disk As Disk)
+    Private Sub PopulateGroupFileSystem(Disk As Disk, Optional Preview As Boolean = False)
         Dim Value As String
         Dim ForeColor As Color
 
@@ -707,10 +707,12 @@ Public Class SummaryPanel
                 .AddItem(FileSystemGroup, My.Resources.Label_BadSectors, Value, Color.Red)
             End If
 
-            Dim LostClusters = Disk.RootDirectory.FATAllocation.LostClusters.Count
-            If LostClusters > 0 Then
-                Value = FormatThousands(LostClusters * Disk.BPB.BytesPerCluster) & " " & My.Resources.Label_Bytes & "  " & InParens(LostClusters)
-                .AddItem(FileSystemGroup, My.Resources.Label_LostClusters, Value, Color.Red)
+            If Not Preview Then
+                Dim LostClusters = Disk.RootDirectory.FATAllocation.LostClusters.Count
+                If LostClusters > 0 Then
+                    Value = FormatThousands(LostClusters * Disk.BPB.BytesPerCluster) & " " & My.Resources.Label_Bytes & "  " & InParens(LostClusters)
+                    .AddItem(FileSystemGroup, My.Resources.Label_LostClusters, Value, Color.Red)
+                End If
             End If
 
             Dim ReservedClusters = Disk.FAT.ReservedClusters.Count
@@ -772,10 +774,10 @@ Public Class SummaryPanel
         PopulateGroup(Group, TitleRows)
     End Sub
 
-    Private Sub PopulateMain(Disk As Disk, BootStrapDB As BootstrapDB, Optional TitleDB As FloppyDB = Nothing, Optional MD5 As String = Nothing)
+    Private Sub PopulateMain(Disk As Disk, BootStrapDB As BootstrapDB, Optional TitleDB As FloppyDB = Nothing, Optional MD5 As String = Nothing, Optional Preview As Boolean = False)
         Dim TitleFound As Boolean = False
 
-        If TitleDB IsNot Nothing AndAlso App.Globals.AppSettings.DisplayTitles AndAlso TitleDB.TitleCount > 0 Then
+        If Not Preview AndAlso TitleDB IsNot Nothing AndAlso App.Globals.AppSettings.DisplayTitles AndAlso TitleDB.TitleCount > 0 Then
             Dim TitleFindResult = TitleDB.TitleFind(MD5)
             If TitleFindResult.TitleData IsNot Nothing Then
                 TitleFound = True
@@ -811,7 +813,7 @@ Public Class SummaryPanel
                     PopulateGroupBootRecord(Disk, OEMNameResponse)
                 End If
 
-                PopulateGroupFileSystem(Disk)
+                PopulateGroupFileSystem(Disk, Preview)
                 PopulateGroupBootstrap(Disk, OEMNameResponse)
             End If
         End With

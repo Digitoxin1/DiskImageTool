@@ -1879,4 +1879,13 @@
   <data name="Modifications_BootSectorCopy" xml:space="preserve">
     <value>Una copia del sector de arranque se encuentra al final del directorio raíz.</value>
   </data>
+  <data name="Label_ImagePreview" xml:space="preserve">
+    <value>Vista previa de la imagen</value>
+  </data>
+  <data name="Label_Preview" xml:space="preserve">
+    <value>Vista previa</value>
+  </data>
+  <data name="Dialog_ImagePreviewFail" xml:space="preserve">
+    <value>No se puede mostrar la vista previa de la imagen.</value>
+  </data>
 </root>

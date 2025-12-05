@@ -1879,4 +1879,13 @@ Voulez-vous écraser ?</value>
   <data name="Modifications_BootSectorCopy" xml:space="preserve">
     <value>Une copie du secteur de démarrage se trouve à la fin du répertoire racine.</value>
   </data>
+  <data name="Label_ImagePreview" xml:space="preserve">
+    <value>Aperçu de l’image</value>
+  </data>
+  <data name="Label_Preview" xml:space="preserve">
+    <value>Aperçu</value>
+  </data>
+  <data name="Dialog_ImagePreviewFail" xml:space="preserve">
+    <value>Impossible d’afficher l’aperçu de l’image.</value>
+  </data>
 </root>

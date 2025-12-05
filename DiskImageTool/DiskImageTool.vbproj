@@ -141,6 +141,12 @@
     <Compile Include="Controls\FloppyTrackGrid.vb">
       <SubType>Component</SubType>
     </Compile>
+    <Compile Include="Controls\HashPanel.Designer.vb">
+      <DependentUpon>HashPanel.vb</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\HashPanel.vb">
+      <SubType>UserControl</SubType>
+    </Compile>
     <Compile Include="Controls\ListViewEx.vb">
       <SubType>Component</SubType>
     </Compile>
@@ -587,6 +593,9 @@
     <Compile Include="Scanners\Win9xCleanScanner.vb" />
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="Controls\HashPanel.resx">
+      <DependentUpon>HashPanel.vb</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Flux\Forms\BaseFluxForm.resx">
       <DependentUpon>BaseFluxForm.vb</DependentUpon>
     </EmbeddedResource>

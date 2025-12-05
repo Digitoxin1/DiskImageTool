@@ -50,13 +50,7 @@ Partial Class MainForm
         Dim MenuStripTop As System.Windows.Forms.MenuStrip
         Me.btnRetry = New System.Windows.Forms.Button()
         Me.ListViewSummary = New System.Windows.Forms.ListView()
-        Me.FlowLayoutPanelHashes = New System.Windows.Forms.FlowLayoutPanel()
-        Me.LabelCRC32Caption = New System.Windows.Forms.Label()
-        Me.LabelCRC32 = New System.Windows.Forms.Label()
-        Me.LabelMD5Caption = New System.Windows.Forms.Label()
-        Me.LabelMD5 = New System.Windows.Forms.Label()
-        Me.LabelSHA1Caption = New System.Windows.Forms.Label()
-        Me.LabelSHA1 = New System.Windows.Forms.Label()
+        Me.HashPanel1 = New DiskImageTool.HashPanel()
         Me.LabelDropMessage = New System.Windows.Forms.Label()
         Me.ListViewFiles = New DiskImageTool.ListViewEx()
         Me.ComboImages = New System.Windows.Forms.ComboBox()
@@ -194,7 +188,6 @@ Partial Class MainForm
         SplitContainer1.Panel1.SuspendLayout()
         SplitContainer1.Panel2.SuspendLayout()
         SplitContainer1.SuspendLayout()
-        Me.FlowLayoutPanelHashes.SuspendLayout()
         PanelCombo.SuspendLayout()
         MenuStripTop.SuspendLayout()
         Me.ContextMenuFilters.SuspendLayout()
@@ -217,7 +210,7 @@ Partial Class MainForm
         SplitContainer1.Panel1.Controls.Add(Me.btnRetry)
         SplitContainer1.Panel1.Controls.Add(Me.ListViewSummary)
         SplitContainer1.Panel1.Controls.Add(PanelSpacer3)
-        SplitContainer1.Panel1.Controls.Add(Me.FlowLayoutPanelHashes)
+        SplitContainer1.Panel1.Controls.Add(Me.HashPanel1)
         resources.ApplyResources(SplitContainer1.Panel1, "SplitContainer1.Panel1")
         '
         'SplitContainer1.Panel2
@@ -247,55 +240,13 @@ Partial Class MainForm
         resources.ApplyResources(PanelSpacer3, "PanelSpacer3")
         PanelSpacer3.Name = "PanelSpacer3"
         '
-        'FlowLayoutPanelHashes
+        'HashPanel1
         '
-        Me.FlowLayoutPanelHashes.AllowDrop = True
-        Me.FlowLayoutPanelHashes.BackColor = System.Drawing.SystemColors.Window
-        Me.FlowLayoutPanelHashes.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle
-        Me.FlowLayoutPanelHashes.Controls.Add(Me.LabelCRC32Caption)
-        Me.FlowLayoutPanelHashes.Controls.Add(Me.LabelCRC32)
-        Me.FlowLayoutPanelHashes.Controls.Add(Me.LabelMD5Caption)
-        Me.FlowLayoutPanelHashes.Controls.Add(Me.LabelMD5)
-        Me.FlowLayoutPanelHashes.Controls.Add(Me.LabelSHA1Caption)
-        Me.FlowLayoutPanelHashes.Controls.Add(Me.LabelSHA1)
-        resources.ApplyResources(Me.FlowLayoutPanelHashes, "FlowLayoutPanelHashes")
-        Me.FlowLayoutPanelHashes.Name = "FlowLayoutPanelHashes"
-        '
-        'LabelCRC32Caption
-        '
-        resources.ApplyResources(Me.LabelCRC32Caption, "LabelCRC32Caption")
-        Me.LabelCRC32Caption.Name = "LabelCRC32Caption"
-        Me.LabelCRC32Caption.UseMnemonic = False
-        '
-        'LabelCRC32
-        '
-        resources.ApplyResources(Me.LabelCRC32, "LabelCRC32")
-        Me.LabelCRC32.Name = "LabelCRC32"
-        Me.LabelCRC32.UseMnemonic = False
-        '
-        'LabelMD5Caption
-        '
-        resources.ApplyResources(Me.LabelMD5Caption, "LabelMD5Caption")
-        Me.LabelMD5Caption.Name = "LabelMD5Caption"
-        Me.LabelMD5Caption.UseMnemonic = False
-        '
-        'LabelMD5
-        '
-        resources.ApplyResources(Me.LabelMD5, "LabelMD5")
-        Me.LabelMD5.Name = "LabelMD5"
-        Me.LabelMD5.UseMnemonic = False
-        '
-        'LabelSHA1Caption
-        '
-        resources.ApplyResources(Me.LabelSHA1Caption, "LabelSHA1Caption")
-        Me.LabelSHA1Caption.Name = "LabelSHA1Caption"
-        Me.LabelSHA1Caption.UseMnemonic = False
-        '
-        'LabelSHA1
-        '
-        resources.ApplyResources(Me.LabelSHA1, "LabelSHA1")
-        Me.LabelSHA1.Name = "LabelSHA1"
-        Me.LabelSHA1.UseMnemonic = False
+        Me.HashPanel1.AllowDrop = True
+        Me.HashPanel1.BackColor = System.Drawing.SystemColors.Window
+        Me.HashPanel1.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle
+        resources.ApplyResources(Me.HashPanel1, "HashPanel1")
+        Me.HashPanel1.Name = "HashPanel1"
         '
         'LabelDropMessage
         '
@@ -1085,8 +1036,6 @@ Partial Class MainForm
         SplitContainer1.Panel2.PerformLayout()
         CType(SplitContainer1, System.ComponentModel.ISupportInitialize).EndInit()
         SplitContainer1.ResumeLayout(False)
-        Me.FlowLayoutPanelHashes.ResumeLayout(False)
-        Me.FlowLayoutPanelHashes.PerformLayout()
         PanelCombo.ResumeLayout(False)
         PanelCombo.PerformLayout()
         MenuStripTop.ResumeLayout(False)
@@ -1186,13 +1135,7 @@ Partial Class MainForm
     Friend WithEvents MainMenuUpdateAvailable As ToolStripMenuItem
     Friend WithEvents MenuOptionsDisplayTitles As ToolStripMenuItem
     Friend WithEvents MenuOptionsDisplayLanguage As ToolStripMenuItem
-    Friend WithEvents FlowLayoutPanelHashes As FlowLayoutPanel
-    Friend WithEvents LabelCRC32 As Label
-    Friend WithEvents LabelMD5 As Label
-    Friend WithEvents LabelSHA1 As Label
-    Friend WithEvents LabelCRC32Caption As Label
-    Friend WithEvents LabelMD5Caption As Label
-    Friend WithEvents LabelSHA1Caption As Label
+    Friend WithEvents HashPanel1 As HashPanel
     Friend WithEvents ToolStripImportFiles As ToolStripButton
     Friend WithEvents MenuEditImportFiles As ToolStripMenuItem
     Friend WithEvents ToolStripSeparator1 As ToolStripSeparator

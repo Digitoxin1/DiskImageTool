@@ -2,8 +2,8 @@
 Imports DiskImageTool.DiskImage
 
 Public Class FilePanel
-    Private WithEvents ContextMenuFiles As ContextMenuStrip
     Private WithEvents ContextMenuDirectory As ContextMenuStrip
+    Private WithEvents ContextMenuFiles As ContextMenuStrip
     Private WithEvents ListViewFiles As ListViewEx
     Private Const COL_ATTRIBUTES_WIDTH As Integer = 72
     Private Const COL_CLUSTER_ERROR_WIDTH As Integer = 30
@@ -19,8 +19,10 @@ Public Class FilePanel
     Private Const COL_NAME_WIDTH As Integer = 120
     Private Const COL_NT_RESERVED_WIDTH As Integer = 30
     Private Const COL_SIZE_WIDTH As Integer = 80
+    Private ReadOnly _DisplayCRC As Boolean
     Private ReadOnly _ListViewHeader As ListViewHeader
     Private ReadOnly _lvwColumnSorter As FilePanelColumnSorter
+    Private ReadOnly _ViewOnly As Boolean = False
     Private _CheckAll As Boolean = False
     Private _ClickedGroup As ListViewGroup = Nothing
     Private _ColClusterError As ColumnHeader
@@ -34,7 +36,6 @@ Public Class FilePanel
     Private _DirectoryScan As DirectoryScanResponse = Nothing
     Private _MenuState As FileMenuState
     Private _SuppressEvent As Boolean = False
-    Private _ViewOnly As Boolean = False
 
     Public Enum FilePanelMenuItem
         FileProperties
@@ -55,22 +56,23 @@ Public Class FilePanel
         FixSize
     End Enum
 
-    Public Event CurrentImageChangeStart As EventHandler(Of Boolean)
     Public Event CurrentImageChangeEnd As EventHandler(Of Boolean)
+    Public Event CurrentImageChangeStart As EventHandler(Of Boolean)
     Public Event ItemDoubleClick As EventHandler(Of ListViewItem)
     Public Event ItemDrag As EventHandler(Of ItemDragEventArgs)
     Public Event ItemSelectionChanged As EventHandler
     Public Event MenuItemClicked As EventHandler(Of MenuItemClickedEventArgs)
     Public Event SortChanged As EventHandler(Of Boolean)
 
-    Public Sub New(ListViewFiles As ListViewEx, ViewOnly As Boolean)
+    Public Sub New(ListViewFiles As ListViewEx, ViewOnly As Boolean, DisplayCRC As Boolean)
         Me.ListViewFiles = ListViewFiles
 
         _lvwColumnSorter = New FilePanelColumnSorter
         _ListViewHeader = New ListViewHeader(Me.ListViewFiles.Handle)
         _ViewOnly = ViewOnly
+        _DisplayCRC = DisplayCRC
 
-        Initialize(ViewOnly)
+        Initialize(ViewOnly, DisplayCRC)
         InitColumns()
 
         If Not ViewOnly Then
@@ -193,7 +195,7 @@ Public Class FilePanel
     End Function
 
     Public Function AddItem(FileData As FileData, Group As ListViewGroup, ItemIndex As Integer) As ListViewItem
-        Dim Item = GetItem(Group, FileData)
+        Dim Item = GetItem(Group, FileData, _DisplayCRC)
 
         If ListViewFiles.Items.Count <= ItemIndex Then
             ListViewFiles.Items.Add(Item)
@@ -237,13 +239,7 @@ Public Class FilePanel
         Return ListViewFiles.DoDragDrop(data, allowedEffects)
     End Function
 
-    Private Sub UpdateSortHistory()
-        If _CurrentImage IsNot Nothing Then
-            _CurrentImage.ImageData.SortHistory = _lvwColumnSorter.SortHistory
-        End If
-    End Sub
-
-    Public Sub Load(CurrentImage As DiskImageContainer, DoItemScan As Boolean)
+    Public Sub Load(CurrentImage As DiskImageContainer, DoItemScan As Boolean, Optional RecurseDirectories As Boolean = True)
         Dim ClearItems As Boolean = CurrentImage IsNot _CurrentImage
 
         If _CurrentImage IsNot Nothing AndAlso ClearItems Then
@@ -269,9 +265,9 @@ Public Class FilePanel
         End If
 
         If IsValidImage Then
-            ListViewFiles.MultiSelect = True
+            ListViewFiles.MultiSelect = Not _ViewOnly
 
-            Response = ProcessDirectoryEntries(CurrentImage.Disk.RootDirectory, Me)
+            Response = ProcessDirectoryEntries(CurrentImage.Disk.RootDirectory, Me, RecurseDirectories)
 
             If Not ClearItems Then
                 RemoveUnused(Response.ItemCount)
@@ -326,7 +322,7 @@ Public Class FilePanel
         _MenuState = GetFileMenuState(Me)
     End Sub
 
-    Private Shared Function GetItem(Group As ListViewGroup, FileData As FileData) As ListViewItem
+    Private Shared Function GetItem(Group As ListViewGroup, FileData As FileData, DisplayCRC As Boolean) As ListViewItem
         Dim SI As ListViewItem.ListViewSubItem
         Dim ForeColor As Color
         Dim IsDeleted As Boolean = FileData.DirectoryEntry.IsDeleted
@@ -453,7 +449,7 @@ Public Class FilePanel
         If IsBlank Then
             Item.SubItems.Add("")
         Else
-            If FileData.DirectoryEntry.IsValidFile Then
+            If DisplayCRC AndAlso FileData.DirectoryEntry.IsValidFile Then
                 SI = Item.SubItems.Add(FileData.DirectoryEntry.GetChecksum().ToString("X8"))
             Else
                 SI = Item.SubItems.Add("")
@@ -528,12 +524,6 @@ Public Class FilePanel
         End If
 
         Return Item
-    End Function
-
-    Private Function GetMenuItem(MenuStrip As ContextMenuStrip, name As FilePanelMenuItem) As ToolStripItem
-        Dim key As String = name
-
-        Return MenuStrip.Items.Item(key)
     End Function
 
     Private Function AddMenuItem(MenuStrip As ContextMenuStrip, name As FilePanelMenuItem, text As String) As ToolStripMenuItem
@@ -632,6 +622,12 @@ Public Class FilePanel
         End If
     End Sub
 
+    Private Function GetMenuItem(MenuStrip As ContextMenuStrip, name As FilePanelMenuItem) As ToolStripItem
+        Dim key As String = name
+
+        Return MenuStrip.Items.Item(key)
+    End Function
+
     Private Sub InitColumns()
         ReDim _ColumnWidths(ListViewFiles.Columns.Count - 1)
         For Each Column As ColumnHeader In ListViewFiles.Columns
@@ -683,7 +679,7 @@ Public Class FilePanel
         Item.Visible = False
     End Sub
 
-    Private Sub Initialize(ViewOnly As Boolean)
+    Private Sub Initialize(ViewOnly As Boolean, DisplayCRC As Boolean)
         With ListViewFiles
             .FullRowSelect = True
             .MultiSelect = Not ViewOnly
@@ -701,7 +697,7 @@ Public Class FilePanel
             .Columns.Add(My.Resources.Label_Cluster, COL_CLUSTER_WIDTH, HorizontalAlignment.Right)
             _ColClusterError = .Columns.Add(My.Resources.FilePanel_ClusterError, COL_CLUSTER_ERROR_WIDTH, HorizontalAlignment.Left)
             .Columns.Add(My.Resources.FilePanel_Attributes, COL_ATTRIBUTES_WIDTH, HorizontalAlignment.Left)
-            .Columns.Add(My.Resources.Label_CRC32, COL_CRC32_WIDTH, HorizontalAlignment.Left)
+            .Columns.Add(My.Resources.Label_CRC32, If(Not DisplayCRC, 0, COL_CRC32_WIDTH), HorizontalAlignment.Left)
             _ColCreationDate = .Columns.Add(My.Resources.Label_Created, COL_CREATED_WIDTH, HorizontalAlignment.Left)
             _ColLastAccessDate = .Columns.Add(My.Resources.Label_LastAccessed, COL_LAST_ACCESSED_WIDTH, HorizontalAlignment.Left)
             _ColNTReserved = .Columns.Add(My.Resources.FilePanel_NTReserved, COL_NT_RESERVED_WIDTH, HorizontalAlignment.Left)
@@ -741,6 +737,7 @@ Public Class FilePanel
             End If
         Next
     End Sub
+
     Private Sub ScrollToIndex(Index As Integer)
         If Index > -1 AndAlso Index < ListViewFiles.Items.Count Then
             ListViewFiles.EnsureVisible(Index)
@@ -758,6 +755,7 @@ Public Class FilePanel
         ListViewFiles.Sort()
         ListViewFiles.SetSortIcon(_lvwColumnSorter.SortColumn, _lvwColumnSorter.Order)
     End Sub
+
     Private Sub Sort(SortList As List(Of SortEntity))
         If SortList.Count > 0 Then
             For Each Item In SortList
@@ -767,6 +765,11 @@ Public Class FilePanel
         End If
     End Sub
 
+    Private Sub UpdateSortHistory()
+        If _CurrentImage IsNot Nothing Then
+            _CurrentImage.ImageData.SortHistory = _lvwColumnSorter.SortHistory
+        End If
+    End Sub
 #Region "Events"
     Private Sub ContextMenuDirectory_ItemClicked(sender As Object, e As ToolStripItemClickedEventArgs) Handles ContextMenuDirectory.ItemClicked
         ContextMenuDirectory.Close(ToolStripDropDownCloseReason.ItemClicked)

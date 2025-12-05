@@ -154,7 +154,7 @@
     <value>216, 26</value>
   </data>
   <data name="btnRetry.Size" type="System.Drawing.Size, System.Drawing">
-    <value>63, 23</value>
+    <value>75, 23</value>
   </data>
   <data name="btnRetry.TabIndex" type="System.Int32, mscorlib">
     <value>0</value>
@@ -184,7 +184,7 @@
     <value>12, 6</value>
   </data>
   <data name="ListViewSummary.Size" type="System.Drawing.Size, System.Drawing">
-    <value>286, 384</value>
+    <value>298, 384</value>
   </data>
   <data name="ListViewSummary.TabIndex" type="System.Int32, mscorlib">
     <value>1</value>
@@ -214,7 +214,7 @@
     <value>12, 390</value>
   </data>
   <data name="PanelSpacer3.Size" type="System.Drawing.Size, System.Drawing">
-    <value>286, 6</value>
+    <value>298, 6</value>
   </data>
   <data name="PanelSpacer3.TabIndex" type="System.Int32, mscorlib">
     <value>2</value>
@@ -231,250 +231,34 @@
   <data name="&gt;&gt;PanelSpacer3.ZOrder" xml:space="preserve">
     <value>2</value>
   </data>
-  <metadata name="FlowLayoutPanelHashes.Locked" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
+  <metadata name="HashPanel1.Locked" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
     <value>True</value>
   </metadata>
-  <metadata name="LabelCRC32Caption.Locked" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
-    <value>True</value>
-  </metadata>
-  <data name="LabelCRC32Caption.AutoSize" type="System.Boolean, mscorlib">
-    <value>True</value>
-  </data>
-  <data name="LabelCRC32Caption.ImeMode" type="System.Windows.Forms.ImeMode, System.Windows.Forms">
-    <value>NoControl</value>
-  </data>
-  <data name="LabelCRC32Caption.Location" type="System.Drawing.Point, System.Drawing">
-    <value>6, 3</value>
-  </data>
-  <data name="LabelCRC32Caption.Size" type="System.Drawing.Size, System.Drawing">
-    <value>41, 13</value>
-  </data>
-  <data name="LabelCRC32Caption.TabIndex" type="System.Int32, mscorlib">
-    <value>0</value>
-  </data>
-  <data name="LabelCRC32Caption.Text" xml:space="preserve">
-    <value>CRC32</value>
-    <comment>@Invariant</comment>
-  </data>
-  <data name="&gt;&gt;LabelCRC32Caption.Name" xml:space="preserve">
-    <value>LabelCRC32Caption</value>
-  </data>
-  <data name="&gt;&gt;LabelCRC32Caption.Type" xml:space="preserve">
-    <value>System.Windows.Forms.Label, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="&gt;&gt;LabelCRC32Caption.Parent" xml:space="preserve">
-    <value>FlowLayoutPanelHashes</value>
-  </data>
-  <data name="&gt;&gt;LabelCRC32Caption.ZOrder" xml:space="preserve">
-    <value>0</value>
-  </data>
-  <metadata name="LabelCRC32.Locked" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
-    <value>True</value>
-  </metadata>
-  <data name="LabelCRC32.AutoSize" type="System.Boolean, mscorlib">
-    <value>True</value>
-  </data>
-  <data name="LabelCRC32.ImeMode" type="System.Windows.Forms.ImeMode, System.Windows.Forms">
-    <value>NoControl</value>
-  </data>
-  <data name="LabelCRC32.Location" type="System.Drawing.Point, System.Drawing">
-    <value>6, 16</value>
-  </data>
-  <data name="LabelCRC32.Size" type="System.Drawing.Size, System.Drawing">
-    <value>49, 13</value>
-  </data>
-  <data name="LabelCRC32.TabIndex" type="System.Int32, mscorlib">
-    <value>1</value>
-  </data>
-  <data name="LabelCRC32.Text" xml:space="preserve">
-    <value>{CRC32}</value>
-    <comment>@Invariant</comment>
-  </data>
-  <data name="&gt;&gt;LabelCRC32.Name" xml:space="preserve">
-    <value>LabelCRC32</value>
-  </data>
-  <data name="&gt;&gt;LabelCRC32.Type" xml:space="preserve">
-    <value>System.Windows.Forms.Label, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="&gt;&gt;LabelCRC32.Parent" xml:space="preserve">
-    <value>FlowLayoutPanelHashes</value>
-  </data>
-  <data name="&gt;&gt;LabelCRC32.ZOrder" xml:space="preserve">
-    <value>1</value>
-  </data>
-  <metadata name="LabelMD5Caption.Locked" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
-    <value>True</value>
-  </metadata>
-  <data name="LabelMD5Caption.AutoSize" type="System.Boolean, mscorlib">
-    <value>True</value>
-  </data>
-  <data name="LabelMD5Caption.ImeMode" type="System.Windows.Forms.ImeMode, System.Windows.Forms">
-    <value>NoControl</value>
-  </data>
-  <data name="LabelMD5Caption.Location" type="System.Drawing.Point, System.Drawing">
-    <value>6, 29</value>
-  </data>
-  <data name="LabelMD5Caption.Padding" type="System.Windows.Forms.Padding, System.Windows.Forms">
-    <value>0, 4, 0, 0</value>
-  </data>
-  <data name="LabelMD5Caption.Size" type="System.Drawing.Size, System.Drawing">
-    <value>30, 17</value>
-  </data>
-  <data name="LabelMD5Caption.TabIndex" type="System.Int32, mscorlib">
-    <value>2</value>
-  </data>
-  <data name="LabelMD5Caption.Text" xml:space="preserve">
-    <value>MD5</value>
-    <comment>@Invariant</comment>
-  </data>
-  <data name="&gt;&gt;LabelMD5Caption.Name" xml:space="preserve">
-    <value>LabelMD5Caption</value>
-  </data>
-  <data name="&gt;&gt;LabelMD5Caption.Type" xml:space="preserve">
-    <value>System.Windows.Forms.Label, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="&gt;&gt;LabelMD5Caption.Parent" xml:space="preserve">
-    <value>FlowLayoutPanelHashes</value>
-  </data>
-  <data name="&gt;&gt;LabelMD5Caption.ZOrder" xml:space="preserve">
-    <value>2</value>
-  </data>
-  <metadata name="LabelMD5.Locked" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
-    <value>True</value>
-  </metadata>
-  <data name="LabelMD5.AutoSize" type="System.Boolean, mscorlib">
-    <value>True</value>
-  </data>
-  <data name="LabelMD5.ImeMode" type="System.Windows.Forms.ImeMode, System.Windows.Forms">
-    <value>NoControl</value>
-  </data>
-  <data name="LabelMD5.Location" type="System.Drawing.Point, System.Drawing">
-    <value>6, 46</value>
-  </data>
-  <data name="LabelMD5.Size" type="System.Drawing.Size, System.Drawing">
-    <value>38, 13</value>
-  </data>
-  <data name="LabelMD5.TabIndex" type="System.Int32, mscorlib">
-    <value>3</value>
-  </data>
-  <data name="LabelMD5.Text" xml:space="preserve">
-    <value>{MD5}</value>
-    <comment>@Invariant</comment>
-  </data>
-  <data name="&gt;&gt;LabelMD5.Name" xml:space="preserve">
-    <value>LabelMD5</value>
-  </data>
-  <data name="&gt;&gt;LabelMD5.Type" xml:space="preserve">
-    <value>System.Windows.Forms.Label, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="&gt;&gt;LabelMD5.Parent" xml:space="preserve">
-    <value>FlowLayoutPanelHashes</value>
-  </data>
-  <data name="&gt;&gt;LabelMD5.ZOrder" xml:space="preserve">
-    <value>3</value>
-  </data>
-  <metadata name="LabelSHA1Caption.Locked" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
-    <value>True</value>
-  </metadata>
-  <data name="LabelSHA1Caption.AutoSize" type="System.Boolean, mscorlib">
-    <value>True</value>
-  </data>
-  <data name="LabelSHA1Caption.ImeMode" type="System.Windows.Forms.ImeMode, System.Windows.Forms">
-    <value>NoControl</value>
-  </data>
-  <data name="LabelSHA1Caption.Location" type="System.Drawing.Point, System.Drawing">
-    <value>6, 59</value>
-  </data>
-  <data name="LabelSHA1Caption.Padding" type="System.Windows.Forms.Padding, System.Windows.Forms">
-    <value>0, 4, 0, 0</value>
-  </data>
-  <data name="LabelSHA1Caption.Size" type="System.Drawing.Size, System.Drawing">
-    <value>38, 17</value>
-  </data>
-  <data name="LabelSHA1Caption.TabIndex" type="System.Int32, mscorlib">
-    <value>4</value>
-  </data>
-  <data name="LabelSHA1Caption.Text" xml:space="preserve">
-    <value>SHA-1</value>
-    <comment>@Invariant</comment>
-  </data>
-  <data name="&gt;&gt;LabelSHA1Caption.Name" xml:space="preserve">
-    <value>LabelSHA1Caption</value>
-  </data>
-  <data name="&gt;&gt;LabelSHA1Caption.Type" xml:space="preserve">
-    <value>System.Windows.Forms.Label, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="&gt;&gt;LabelSHA1Caption.Parent" xml:space="preserve">
-    <value>FlowLayoutPanelHashes</value>
-  </data>
-  <data name="&gt;&gt;LabelSHA1Caption.ZOrder" xml:space="preserve">
-    <value>4</value>
-  </data>
-  <metadata name="LabelSHA1.Locked" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
-    <value>True</value>
-  </metadata>
-  <data name="LabelSHA1.AutoSize" type="System.Boolean, mscorlib">
-    <value>True</value>
-  </data>
-  <data name="LabelSHA1.ImeMode" type="System.Windows.Forms.ImeMode, System.Windows.Forms">
-    <value>NoControl</value>
-  </data>
-  <data name="LabelSHA1.Location" type="System.Drawing.Point, System.Drawing">
-    <value>6, 76</value>
-  </data>
-  <data name="LabelSHA1.Size" type="System.Drawing.Size, System.Drawing">
-    <value>43, 13</value>
-  </data>
-  <data name="LabelSHA1.TabIndex" type="System.Int32, mscorlib">
-    <value>5</value>
-  </data>
-  <data name="LabelSHA1.Text" xml:space="preserve">
-    <value>{SHA1}</value>
-    <comment>@Invariant</comment>
-  </data>
-  <data name="&gt;&gt;LabelSHA1.Name" xml:space="preserve">
-    <value>LabelSHA1</value>
-  </data>
-  <data name="&gt;&gt;LabelSHA1.Type" xml:space="preserve">
-    <value>System.Windows.Forms.Label, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="&gt;&gt;LabelSHA1.Parent" xml:space="preserve">
-    <value>FlowLayoutPanelHashes</value>
-  </data>
-  <data name="&gt;&gt;LabelSHA1.ZOrder" xml:space="preserve">
-    <value>5</value>
-  </data>
-  <data name="FlowLayoutPanelHashes.Dock" type="System.Windows.Forms.DockStyle, System.Windows.Forms">
+  <data name="HashPanel1.Dock" type="System.Windows.Forms.DockStyle, System.Windows.Forms">
     <value>Bottom</value>
   </data>
-  <data name="FlowLayoutPanelHashes.FlowDirection" type="System.Windows.Forms.FlowDirection, System.Windows.Forms">
-    <value>TopDown</value>
-  </data>
-  <data name="FlowLayoutPanelHashes.Location" type="System.Drawing.Point, System.Drawing">
+  <data name="HashPanel1.Location" type="System.Drawing.Point, System.Drawing">
     <value>12, 396</value>
   </data>
-  <data name="FlowLayoutPanelHashes.Padding" type="System.Windows.Forms.Padding, System.Windows.Forms">
+  <data name="HashPanel1.Padding" type="System.Windows.Forms.Padding, System.Windows.Forms">
     <value>3, 3, 3, 3</value>
   </data>
-  <data name="FlowLayoutPanelHashes.Size" type="System.Drawing.Size, System.Drawing">
-    <value>286, 101</value>
+  <data name="HashPanel1.Size" type="System.Drawing.Size, System.Drawing">
+    <value>298, 101</value>
   </data>
-  <data name="FlowLayoutPanelHashes.TabIndex" type="System.Int32, mscorlib">
+  <data name="HashPanel1.TabIndex" type="System.Int32, mscorlib">
     <value>3</value>
   </data>
-  <data name="FlowLayoutPanelHashes.WrapContents" type="System.Boolean, mscorlib">
-    <value>False</value>
+  <data name="&gt;&gt;HashPanel1.Name" xml:space="preserve">
+    <value>HashPanel1</value>
   </data>
-  <data name="&gt;&gt;FlowLayoutPanelHashes.Name" xml:space="preserve">
-    <value>FlowLayoutPanelHashes</value>
+  <data name="&gt;&gt;HashPanel1.Type" xml:space="preserve">
+    <value>DiskImageTool.HashPanel, DiskImageTool, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null</value>
   </data>
-  <data name="&gt;&gt;FlowLayoutPanelHashes.Type" xml:space="preserve">
-    <value>System.Windows.Forms.FlowLayoutPanel, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="&gt;&gt;FlowLayoutPanelHashes.Parent" xml:space="preserve">
+  <data name="&gt;&gt;HashPanel1.Parent" xml:space="preserve">
     <value>SplitContainer1.Panel1</value>
   </data>
-  <data name="&gt;&gt;FlowLayoutPanelHashes.ZOrder" xml:space="preserve">
+  <data name="&gt;&gt;HashPanel1.ZOrder" xml:space="preserve">
     <value>3</value>
   </data>
   <data name="SplitContainer1.Panel1.Padding" type="System.Windows.Forms.Padding, System.Windows.Forms">
@@ -508,7 +292,7 @@
     <value>NoControl</value>
   </data>
   <data name="LabelDropMessage.Location" type="System.Drawing.Point, System.Drawing">
-    <value>117, 257</value>
+    <value>107, 257</value>
   </data>
   <data name="LabelDropMessage.Size" type="System.Drawing.Size, System.Drawing">
     <value>273, 16</value>
@@ -547,7 +331,7 @@
     <value>0, 33</value>
   </data>
   <data name="ListViewFiles.Size" type="System.Drawing.Size, System.Drawing">
-    <value>688, 464</value>
+    <value>676, 464</value>
   </data>
   <data name="ListViewFiles.TabIndex" type="System.Int32, mscorlib">
     <value>3</value>
@@ -577,7 +361,7 @@
     <value>0, 27</value>
   </data>
   <data name="PanelSpacer2.Size" type="System.Drawing.Size, System.Drawing">
-    <value>688, 6</value>
+    <value>676, 6</value>
   </data>
   <data name="PanelSpacer2.TabIndex" type="System.Int32, mscorlib">
     <value>2</value>
@@ -610,7 +394,7 @@
     <value>0, 0</value>
   </data>
   <data name="ComboImages.Size" type="System.Drawing.Size, System.Drawing">
-    <value>615, 21</value>
+    <value>603, 21</value>
   </data>
   <data name="ComboImages.TabIndex" type="System.Int32, mscorlib">
     <value>0</value>
@@ -640,7 +424,7 @@
     <value>Right</value>
   </data>
   <data name="PanelSpacer1.Location" type="System.Drawing.Point, System.Drawing">
-    <value>615, 0</value>
+    <value>603, 0</value>
   </data>
   <data name="PanelSpacer1.Size" type="System.Drawing.Size, System.Drawing">
     <value>6, 21</value>
@@ -673,7 +457,7 @@
     <value>NoControl</value>
   </data>
   <data name="BtnResetSort.Location" type="System.Drawing.Point, System.Drawing">
-    <value>621, 0</value>
+    <value>609, 0</value>
   </data>
   <data name="BtnResetSort.MaximumSize" type="System.Drawing.Size, System.Drawing">
     <value>0, 21</value>
@@ -706,7 +490,7 @@
     <value>0, 6</value>
   </data>
   <data name="PanelCombo.Size" type="System.Drawing.Size, System.Drawing">
-    <value>688, 21</value>
+    <value>676, 21</value>
   </data>
   <data name="PanelCombo.TabIndex" type="System.Int32, mscorlib">
     <value>1</value>
@@ -742,7 +526,7 @@
     <value>1004, 503</value>
   </data>
   <data name="SplitContainer1.SplitterDistance" type="System.Int32, mscorlib">
-    <value>298</value>
+    <value>310</value>
   </data>
   <data name="SplitContainer1.SplitterWidth" type="System.Int32, mscorlib">
     <value>6</value>
@@ -2819,7 +2603,7 @@
 </value>
   </data>
   <data name="$this.MinimumSize" type="System.Drawing.Size, System.Drawing">
-    <value>960, 600</value>
+    <value>950, 600</value>
   </data>
   <data name="$this.StartPosition" type="System.Windows.Forms.FormStartPosition, System.Windows.Forms">
     <value>Manual</value>
