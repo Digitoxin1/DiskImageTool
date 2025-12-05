@@ -1,4 +1,4 @@
-# DiskImageTool
+# [DiskImageTool](https://github.com/Digitoxin1/DiskImageTool)
 A Powerful Floppy Disk Image Manager & Greaseweazle/KryoFlux Flux Tool
 
 This is a personal project of mine.  I decided to make the source code available in case anyone finds it useful, but at no time should it be considered production quality.
