@@ -1,3 +1,5 @@
+<meta name="google-site-verification" content="uThaS1EAXx8AKHbNh1wVN3eefJsLU2n0QS2-WC3jhd0" />
+
 # DiskImageTool
 A Powerful Floppy Disk Image Manager & Greaseweazle/KryoFlux Flux Tool
 
