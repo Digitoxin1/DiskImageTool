@@ -1,3 +1,5 @@
+<meta name="google-site-verification" content="NDqe46c2qSkdzFUb0gqLQp4OFDBlZTbAsltlzbCsmiE" />
+
 # [DiskImageTool](https://github.com/Digitoxin1/DiskImageTool)
 A Powerful Floppy Disk Image Manager & Greaseweazle/KryoFlux Flux Tool
 
