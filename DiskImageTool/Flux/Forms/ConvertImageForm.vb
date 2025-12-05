@@ -91,7 +91,7 @@ Namespace Flux
             Return TextBoxFileName.Text & Extension
         End Function
 
-        Public Sub PreviewImage()
+        Private Sub PreviewImage()
             If _SelectedDevice Is Nothing Then
                 Exit Sub
             End If

@@ -303,7 +303,7 @@ Namespace Flux.Greaseweazle
             End With
         End Sub
 
-        Public Function ReadFirstTrack(DriveId As String) As (Result As Boolean, FileName As String, Output As String)
+        Public Function ReadFirstTrack(DriveId As String, BothSides As Boolean, Optional ImageParams As FloppyDiskParams? = Nothing) As (Result As Boolean, FileName As String, Output As String)
             Dim TempPath = InitTempImagePath()
 
             If TempPath = "" Then
@@ -312,12 +312,19 @@ Namespace Flux.Greaseweazle
 
             Dim FileName = GenerateUniqueFileName(TempPath, "temp.ima")
 
+            Dim Format As String = "ibm.scan"
+
+            If ImageParams.HasValue Then
+                Dim ImageFormat = GreaseweazleImageFormatFromFloppyDiskFormat(ImageParams.Value.Format)
+                Format = GreaseweazleImageFormatCommandLine(ImageFormat)
+            End If
+
             Dim Builder As New CommandLineBuilder(CommandLineBuilder.CommandAction.read) With {
             .Device = Settings.ComPort,
             .Drive = DriveId,
             .File = FileName,
-            .Format = "ibm.scan",
-            .Heads = TrackHeads.head0
+            .Format = Format,
+            .Heads = If(BothSides, TrackHeads.both, TrackHeads.head0)
         }
             Builder.AddCylinder(0)
 

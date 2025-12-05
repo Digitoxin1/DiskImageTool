@@ -12,7 +12,10 @@
         _SummaryPanel = New SummaryPanel(ListViewSummary)
         FilePanelMain = New FilePanel(ListViewFiles, True, FullDisplay)
 
-        Me.Text = My.Resources.Label_ImagePreview & " - " & Caption
+        Me.Text = My.Resources.Label_ImagePreview
+        If Not String.IsNullOrEmpty(Caption) Then
+            Me.Text &= " - " & Caption
+        End If
 
         Dim CurrentImage = New DiskImageContainer(_Disk, New ImageData(""))
 

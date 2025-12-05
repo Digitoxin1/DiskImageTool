@@ -10,6 +10,7 @@ Namespace Flux.Greaseweazle
         Private WithEvents ButtonDetect As Button
         Private WithEvents ButtonDiscard As Button
         Private WithEvents ButtonImport As Button
+        Private WithEvents ButtonPreview As Button
         Private WithEvents ButtonProcess As Button
         Private WithEvents ButtonReset As Button
         Private WithEvents CheckBoxDoublestep As CheckBox
@@ -279,6 +280,41 @@ Namespace Flux.Greaseweazle
             Return FileName & Item.Extension
         End Function
 
+        Private Sub PreviewImage()
+            Dim ImageParams As FloppyDiskParams = ComboImageFormat.SelectedValue
+            Dim Opt As DriveOption = ComboImageDrives.SelectedValue
+            Dim HasOutputfile As Boolean = Not String.IsNullOrEmpty(_OutputFilePath)
+            Dim IsFluxOutput = CheckIsFluxOutput()
+
+            If HasOutputfile AndAlso Not IsFluxOutput Then
+                Dim ImageData = New ImageData(_OutputFilePath)
+
+                Dim Caption As String = TextBoxFileName.Text
+
+                If Not ImagePreview.Display(ImageData, Caption, Me) Then
+                    MsgBox(My.Resources.Dialog_ImagePreviewFail, MsgBoxStyle.Exclamation)
+                End If
+            Else
+                If ImageParams.IsNonImage OrElse Opt.Id = "" Then
+                    Exit Sub
+                End If
+
+                Dim Response = ReadFirstTrack(Opt.Id, True, ImageParams)
+
+                If Not Response.Result Then
+                    MsgBox(My.Resources.Dialog_ImagePreviewFail, MsgBoxStyle.Exclamation)
+                End If
+
+                Dim Caption As String = TextBoxFileName.Text
+
+                If Not ImagePreview.Display(Response.FileName, ImageParams, Caption, Me) Then
+                    MsgBox(My.Resources.Dialog_ImagePreviewFail, MsgBoxStyle.Exclamation)
+                End If
+
+                DeleteTempFileIfExists(Response.FileName)
+            End If
+        End Sub
+
         Private Function GetOutputFilePaths() As (FilePath As String, LogFilePath As String, IsFlux As Boolean)
             Dim Response As (FilePath As String, LogFilePath As String, IsFlux As Boolean)
             Response.LogFilePath = ""
@@ -466,8 +502,16 @@ Namespace Flux.Greaseweazle
                 .Margin = New Padding(12, 24, 3, 3)
             }
 
-            ButtonProcess = New Button With {
+            ButtonPreview = New Button With {
                 .Margin = New Padding(3, 0, 3, 3),
+                .Text = My.Resources.Label_Preview,
+                .MinimumSize = New Size(75, 0),
+                .AutoSize = True,
+                .Anchor = AnchorStyles.Left Or AnchorStyles.Right
+            }
+
+            ButtonProcess = New Button With {
+                .Margin = New Padding(3, 12, 3, 3),
                 .Text = My.Resources.Label_Write,
                 .MinimumSize = New Size(75, 0),
                 .AutoSize = True,
@@ -519,6 +563,7 @@ Namespace Flux.Greaseweazle
                 .Text = My.Resources.Label_Detect
             }
 
+            ButtonContainer.Controls.Add(ButtonPreview)
             ButtonContainer.Controls.Add(ButtonProcess)
             ButtonContainer.Controls.Add(ButtonConvert)
             ButtonContainer.Controls.Add(ButtonDiscard)
@@ -803,7 +848,7 @@ Namespace Flux.Greaseweazle
         End Sub
 
         Private Function ReadImageFormat(DriveId As String) As DiskImage.FloppyDiskFormat
-            Dim Response = ReadFirstTrack(DriveId)
+            Dim Response = ReadFirstTrack(DriveId, False)
 
             TextBoxConsole.Text = Response.Output
 
@@ -859,6 +904,8 @@ Namespace Flux.Greaseweazle
             ButtonDetect.Enabled = CanChangeSettings AndAlso DriveSelected
 
             ButtonCancel.Text = If(IsRunning OrElse HasOutputfile, WithoutHotkey(My.Resources.Menu_Cancel), WithoutHotkey(My.Resources.Menu_Close))
+
+            ButtonPreview.Enabled = IsIdle AndAlso DriveSelected AndAlso Not ImageParams.IsNonImage
 
             RefreshProcessButtonState()
             RefreshImportButtonState()
@@ -1253,6 +1300,10 @@ Namespace Flux.Greaseweazle
             If TextBoxFluxFolder.Enabled AndAlso String.IsNullOrEmpty(TextBoxFluxFolder.Text) Then
                 FluxFolderBrowse()
             End If
+        End Sub
+
+        Private Sub ButtonPreview_Click(sender As Object, e As EventArgs) Handles ButtonPreview.Click
+            PreviewImage()
         End Sub
 #End Region
     End Class
