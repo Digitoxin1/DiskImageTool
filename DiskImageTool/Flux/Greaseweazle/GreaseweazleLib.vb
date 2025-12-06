@@ -37,7 +37,6 @@ Namespace Flux.Greaseweazle
                                                 Opt As DriveOption,
                                                 DiskParams As FloppyDiskParams,
                                                 OutputType As ReadDiskOutputTypes,
-                                                DoubleStep As Boolean,
                                                 Retries As UInteger,
                                                 SeekRetries As UInteger,
                                                 Revs As UInteger,
@@ -54,7 +53,7 @@ Namespace Flux.Greaseweazle
 
             Dim ImageFormat = GreaseweazleImageFormatFromFloppyDiskFormat(DiskParams.Format)
 
-            If OutputType <> ReadDiskOutputTypes.HFE OrElse ImageFormat <> GreaseweazleImageFormat.None Then
+            If OutputType = ReadDiskOutputTypes.IMA OrElse ImageFormat <> GreaseweazleImageFormat.None Then
                 Builder.Format = GreaseweazleImageFormatCommandLine(ImageFormat)
             End If
 
@@ -64,22 +63,24 @@ Namespace Flux.Greaseweazle
                 Builder.Raw = True
 
             ElseIf OutputType = ReadDiskOutputTypes.RAW Then
-                Builder.AdjustSpeed = DiskParams.RPM & "rpm"
+                If DiskParams.Format <> FloppyDiskFormat.FloppyUnknown Then
+                    Builder.AdjustSpeed = DiskParams.RPM & "rpm"
+                End If
                 Builder.Raw = True
 
                 If TrackRanges Is Nothing Then
                     Dim TrackCount = Opt.Tracks
-                    If DoubleStep Then
-                        TrackCount = Math.Floor(TrackCount / 2)
+                    If Opt.DoubleStep Then
+                        TrackCount \= 2
                     End If
                     Builder.AddCylinder(0, TrackCount - 1)
                 Else
                     For Each Range In TrackRanges
                         Dim StartTrack = Range.StartTrack
                         Dim EndTrack = Range.EndTrack
-                        If DoubleStep Then
-                            StartTrack = CUInt(Math.Floor(StartTrack / 2))
-                            EndTrack = CUInt(Math.Floor(EndTrack / 2))
+                        If Opt.DoubleStep Then
+                            StartTrack \= 2
+                            EndTrack \= 2
                         End If
                         Builder.AddCylinder(StartTrack, EndTrack)
                     Next
@@ -87,12 +88,14 @@ Namespace Flux.Greaseweazle
 
                 If Heads.HasValue Then
                     Builder.Heads = Heads.Value
+                ElseIf DiskParams.Format = FloppyDiskFormat.FloppyUnknown Then
+                    Builder.Heads = TrackHeads.both
                 Else
                     Builder.Heads = If(DiskParams.BPBParams.NumberOfHeads > 1, TrackHeads.both, TrackHeads.head0)
                 End If
             End If
 
-            If DoubleStep Then
+            If Opt.DoubleStep Then
                 Builder.HeadStep = 2
             End If
 
@@ -246,7 +249,7 @@ Namespace Flux.Greaseweazle
             TextViewForm.Display("Greaseweazle - " & My.Resources.Label_Info, Content, False, True, "GreaseweazleInfo.txt", ParentForm)
         End Sub
 
-        Public Sub PopulateDrives(Combo As ComboBox, Format As FloppyMediaType, Optional LastUsedDrive As String = "")
+        Public Function PopulateDrives(Combo As ComboBox, Format As FloppyMediaType, Optional LastUsedDrive As String = "") As DriveOption
             Dim DriveList As New List(Of DriveOption)
 
             Dim SelectedOption As DriveOption = Nothing
@@ -259,10 +262,7 @@ Namespace Flux.Greaseweazle
                     Exit Sub
                 End If
 
-                Dim opt As New DriveOption With {
-                    .Id = id,
-                    .Type = t,
-                    .Tracks = Settings.Drives(index).Tracks,
+                Dim opt As New DriveOption(id, t, Settings.Drives(index).Tracks) With {
                     .Label = $"{labelPrefix}:   {GreaseweazleFloppyTypeDescription(t)}"
                 }
                 DriveList.Add(opt)
@@ -286,10 +286,7 @@ Namespace Flux.Greaseweazle
 
             Dim placeholder As DriveOption = Nothing
             If DriveList.Count <> 1 Then
-                placeholder = New DriveOption With {
-                .Id = "",
-                .Type = FloppyMediaType.MediaUnknown,
-                .Tracks = 0,
+                placeholder = New DriveOption() With {
                 .Label = If(DriveList.Count = 0, My.Resources.Label_NoDrivesFound, My.Resources.Label_PleaseSelect)
             }
                 DriveList.Insert(0, placeholder)
@@ -311,7 +308,9 @@ Namespace Flux.Greaseweazle
                     .SelectedIndex = 0
                 End If
             End With
-        End Sub
+
+            Return Combo.SelectedItem
+        End Function
 
         Public Function ReadFirstTrack(DriveId As String, BothSides As Boolean, Optional ImageParams As FloppyDiskParams? = Nothing) As (Result As Boolean, FileName As String, Output As String)
             Dim TempPath = InitTempImagePath()

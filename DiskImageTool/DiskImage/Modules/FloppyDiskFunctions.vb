@@ -187,18 +187,6 @@
             Return FloppyDiskFormatGetParams(FloppyDiskFormatGet(MediaDescriptor)).BPBParams.GetBPB
         End Function
 
-        Public Function CreatePlaceholderParams(Description As String) As FloppyDiskParams
-            Return New FloppyDiskParams(
-                FloppyDiskFormat.FloppyUnknown,
-                New FloppyDiskBPBParams(0, 0, 0, 0, 0, 0, 0, 0, 0, 0),
-                New FloppyDiskGaps(0, 0, 0, 0),
-                "",
-                FloppyMediaType.MediaUnknown
-            ) With {
-                .CustomDescription = Description
-            }
-        End Function
-
         Public Function DiskHasWriteSplices(Disk As Disk) As Boolean
             Dim Result As Boolean = False
 
@@ -367,44 +355,54 @@
                     Return FloppyDiskFormat.FloppyUnknown
             End Select
         End Function
-        Public Function FloppyDiskFormatGetComboList() As List(Of FloppyDiskParams)
-            Dim result As New List(Of FloppyDiskParams) From {
-                CreatePlaceholderParams(My.Resources.Label_PleaseSelect), ' Add placeholder
-                CreatePlaceholderParams(StrDup(30, ChrW(&H2014)))
+
+        Public Function FloppyDiskFormatGetComboList(IncludeUnknown As Boolean) As List(Of Object)
+            Dim result As New List(Of Object) From {
+                My.Resources.Label_PleaseSelect, ' Add placeholder
+                StrDup(30, ChrW(&H2014))
             }
 
             ' Standard 5.25"
             result.AddRange(
                 DiskParamsArray.
                     Where(Function(p) p.IsStandard AndAlso p.Is525).
-                    OrderBy(Function(p) p.BPBParams.SizeInBytes)
+                    OrderBy(Function(p) p.BPBParams.SizeInBytes).
+                    Cast(Of Object)
             )
 
+            result.Add(StrDup(30, ChrW(&H2014)))
 
-            ' Standard 3.5"
-            result.Add(CreatePlaceholderParams(StrDup(30, ChrW(&H2014))))
-
+            ' Standard 3.5"            
             result.AddRange(
                 DiskParamsArray.
                     Where(Function(p) p.IsStandard AndAlso Not p.Is525).
-                    OrderBy(Function(p) p.BPBParams.SizeInBytes)
+                    OrderBy(Function(p) p.BPBParams.SizeInBytes).
+                    Cast(Of Object)
             )
 
-            result.Add(CreatePlaceholderParams(StrDup(30, ChrW(&H2014))))
+            result.Add(StrDup(30, ChrW(&H2014)))
 
             ' Special 5.25"
             result.AddRange(
                 DiskParamsArray.
                     Where(Function(p) Not p.IsStandard AndAlso Not p.IsNonImage AndAlso p.Is525).
-                    OrderBy(Function(p) p.BPBParams.SizeInBytes)
+                    OrderBy(Function(p) p.BPBParams.SizeInBytes).
+                    Cast(Of Object)
             )
 
             ' Special 3.5"
             result.AddRange(
                 DiskParamsArray.
                     Where(Function(p) Not p.IsStandard AndAlso Not p.IsNonImage AndAlso Not p.Is525).
-                    OrderBy(Function(p) p.BPBParams.SizeInBytes)
+                    OrderBy(Function(p) p.BPBParams.SizeInBytes).
+                    Cast(Of Object)
             )
+
+            If IncludeUnknown Then
+                result.Add(StrDup(30, ChrW(&H2014)))
+
+                result.Add(FloppyDiskFormatGetParams(FloppyDiskFormat.FloppyUnknown))
+            End If
 
             Return result
         End Function
@@ -675,7 +673,6 @@
                 Me.Gaps = Gaps
                 Me.FileExtension = FileExtension
                 Me.MediaType = MediaType
-                Me.CustomDescription = ""
                 Me.Detected = False
             End Sub
 
@@ -703,16 +700,16 @@
             End Property
 
             Public ReadOnly Property BPBParams As FloppyDiskBPBParams
-            Public Property CustomDescription As String
+
+            Public Overrides Function ToString() As String
+                Return Description
+            End Function
+
             Public ReadOnly Property Description As String
                 Get
-                    If Not String.IsNullOrEmpty(CustomDescription) Then
-                        Return CustomDescription
-                    End If
-
                     Select Case Format
                         Case FloppyDiskFormat.FloppyNoBPB, FloppyDiskFormat.FloppyUnknown
-                            Return "Custom"
+                            Return "Custom Format"
                     End Select
 
                     Dim D As String

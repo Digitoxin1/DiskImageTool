@@ -117,12 +117,12 @@
             End Select
         End Function
 
-        Public Function GetState() As FluxFormState
+        Public Function GetState(Optional Doublestep As Boolean = False) As FluxFormState
             Dim State As New FluxFormState With {
                 .LogFileName = _LogFileName,
                 .LogStripPath = _LogStripPath,
-                .Side0State = TS0.GetState(),
-                .Side1State = TS1.GetState(),
+                .Side0State = TS0.GetState(Doublestep),
+                .Side1State = TS1.GetState(Doublestep),
                 .StatusData = _StatusData,
                 .Device = StatusDevice.Text,
                 .Log = TextBoxConsole.Text
@@ -165,12 +165,12 @@
             End Using
         End Sub
 
-        Public Sub SetState(State As FluxFormState)
+        Public Sub SetState(State As FluxFormState, Optional Doublestep As Boolean = False)
             _LogFileName = State.LogFileName
             _LogStripPath = State.LogStripPath
 
-            TS0.SetState(State.Side0State)
-            TS1.SetState(State.Side1State)
+            TS0.SetState(State.Side0State, Doublestep)
+            TS1.SetState(State.Side1State, Doublestep)
 
             If State.StatusData.HasValue Then
                 UpdateStatus(State.StatusData.Value)

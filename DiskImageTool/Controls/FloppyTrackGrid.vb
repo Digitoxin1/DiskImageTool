@@ -228,12 +228,22 @@ Public Class FloppyTrackGrid
         Return _Cells(TrackIndex)
     End Function
 
-    Public Function GetState() As TrackState
+    Public Function GetState(Optional DoubleStep As Boolean = False) As TrackState
         Dim State = New TrackState With {
-            .ActiveTrackCount = _ActiveTrackCount,
-            .Cells = New List(Of CellInfo)(_Cells),
             .Disabled = _Disabled
         }
+
+        Dim Multiplier As Integer = If(DoubleStep, 2, 1)
+
+        Dim NewCells As New List(Of CellInfo)
+
+        For i As Integer = 0 To _ActiveTrackCount - 1 Step Multiplier
+            Dim Cell = _Cells(i)
+            Cell.Selected = False
+            NewCells.Add(Cell)
+        Next
+
+        State.Cells = NewCells
 
         Return State
     End Function
@@ -376,16 +386,31 @@ Public Class FloppyTrackGrid
         End If
     End Sub
 
-    Public Sub SetState(State As TrackState)
+    Public Sub SetState(State As TrackState, Optional DoubleStep As Boolean = False)
         If _SelectEnabled Then
             ClearSelected()
         End If
 
         _Disabled = State.Disabled
-        _ActiveTrackCount = State.ActiveTrackCount
 
-        For i = 0 To State.Cells.Count - 1
-            _Cells(i) = State.Cells(i)
+        Dim Multiplier As Integer = If(DoubleStep, 2, 1)
+
+        Dim TrackCount = Math.Min(State.Cells.Count * Multiplier, _Cells.Count)
+
+        _ActiveTrackCount = TrackCount
+
+        For i = 0 To TrackCount \ Multiplier - 1
+            _Cells(i * Multiplier) = State.Cells(i)
+        Next
+
+        If DoubleStep Then
+            For j = 1 To TrackCount - 1 Step 2
+                ResetCellInternal(j)
+            Next
+        End If
+
+        For k = TrackCount To _Cells.Count - 1
+            ResetCellInternal(k)
         Next
 
         EnsureFocusedTrackValid()
@@ -1025,7 +1050,6 @@ Public Class FloppyTrackGrid
     End Structure
 
     Public Structure TrackState
-        Public Property ActiveTrackCount As Integer
         Public Property Cells As List(Of CellInfo)
         Public Property Disabled As Boolean
     End Structure

@@ -27,10 +27,10 @@ Namespace Flux.Greaseweazle
         Private ReadOnly _HelpProvider1 As HelpProvider
         Private ReadOnly _Initialized As Boolean = False
         Private ReadOnly _UserState As Settings.UserStateFlux
+        Private _CheckBoxDoubleStepNoEvent As Boolean = False
         Private _ComboExtensionsNoEvent As Boolean = False
         Private _ComboImageFormatNoEvent As Boolean = False
         Private _ComboOutputTypeNoEvent As Boolean = False
-        Private _DoubleStep As Boolean = False
         Private _FileOverwriteMode As Boolean = False
         Private _NewFileName As String = ""
         Private _NewFilePath As String = ""
@@ -38,6 +38,8 @@ Namespace Flux.Greaseweazle
         Private _NumericRevs As NumericUpDown
         Private _NumericSeekRetries As NumericUpDown
         Private _OutputFilePath As String = ""
+        Private _OutputParams As FloppyDiskParams? = Nothing
+        Private _SelectedOption As DriveOption
         Private LabelDrive As Label
         Private LabelFileName As Label
         Private LabelFluxFolder As Label
@@ -47,7 +49,6 @@ Namespace Flux.Greaseweazle
         Private LabelRevs As Label
         Private LabelSeekRetries As Label
         Private LabelWarning As Label
-
         Public Event ImportProcess(File As String, NewFilename As String)
 
         Public Sub New()
@@ -64,8 +65,8 @@ Namespace Flux.Greaseweazle
 
             IntitializeHelp()
 
-            PopulateDrives(ComboImageDrives, FloppyMediaType.MediaUnknown, GetSelectedDeviceState.DriveId)
-            PopulateImageFormats(ComboImageFormat, ComboImageDrives.SelectedValue)
+            _SelectedOption = PopulateDrives(ComboImageDrives, FloppyMediaType.MediaUnknown, GetSelectedDeviceState.DriveId)
+            PopulateImageFormats()
             InitializeImage()
 
             TextBoxFileName.Text = _CachedFileNameTemplate
@@ -91,6 +92,16 @@ Namespace Flux.Greaseweazle
                 Return _NewFilePath
             End Get
         End Property
+
+        Public Overrides Sub SaveLog(RemovePath As Boolean, Optional InitialDirectory As String = "")
+            If String.IsNullOrEmpty(InitialDirectory) Then
+                If Not String.IsNullOrEmpty(_OutputFilePath) AndAlso CheckIsFluxOutput() Then
+                    InitialDirectory = IO.Path.GetDirectoryName(_OutputFilePath)
+                End If
+            End If
+
+            MyBase.SaveLog(RemovePath, InitialDirectory)
+        End Sub
 
         Public Sub SetFluxFolder(Path As String)
             If Path <> "" AndAlso Not IO.Directory.Exists(Path) Then
@@ -120,18 +131,19 @@ Namespace Flux.Greaseweazle
         End Sub
 
         Private Function CheckCompatibility() As Boolean
-            Dim Opt As DriveOption = ComboImageDrives.SelectedValue
-            Dim DiskParams As FloppyDiskParams = ComboImageFormat.SelectedValue
+            Dim Opt As DriveOption = _SelectedOption
+            Dim DiskParams = SelectedDiskParams()
 
             If Opt.Type = FloppyMediaType.MediaUnknown Then
                 Return True
             End If
 
-            If DiskParams.IsNonImage Then
+            If Not DiskParams.HasValue OrElse DiskParams.Value.IsNonImage Then
                 Return True
             End If
 
-            Dim FloppyType = GreaseweazleFindCompatibleFloppyType(DiskParams, Opt.Type)
+
+            Dim FloppyType = GreaseweazleFindCompatibleFloppyType(DiskParams.Value, Opt.Type)
 
             Return FloppyType = Opt.Type
         End Function
@@ -195,12 +207,13 @@ Namespace Flux.Greaseweazle
             End If
 
             _OutputFilePath = ""
+            _OutputParams = Nothing
             _FileOverwriteMode = False
 
             HideSelection(False)
         End Sub
 
-        Private Sub ClearProcessedImage(DeleteOutputFile As Boolean)
+        Private Sub ClearProcessedImage(DeleteOutputFile As Boolean, RefreshState As Boolean)
             _FileOverwriteMode = False
 
             TextBoxConsole.Clear()
@@ -214,12 +227,18 @@ Namespace Flux.Greaseweazle
             If Not DeleteOutputFile Then
                 CashFilenameTemplate()
                 TextBoxFileName.Text = _CachedFileNameTemplate
+            ElseIf RefreshState Then
+                TextBoxFileName.Text = ""
+            End If
+
+            If RefreshState Then
+                _SelectedOption.ResetFormats()
+                PopulateImageFormats()
+                RefreshFormState()
             End If
         End Sub
 
         Private Sub CloseForm(NewFilePath As String, NewFileName As String)
-            Dim Opt As DriveOption = ComboImageDrives.SelectedValue
-
             CashFilenameTemplate()
 
             _NewFilePath = NewFilePath
@@ -240,19 +259,19 @@ Namespace Flux.Greaseweazle
         End Sub
 
         Private Sub DoFormatDetection()
-            Dim Opt As DriveOption = ComboImageDrives.SelectedValue
+            Dim Opt As DriveOption = _SelectedOption
 
-            Dim ImageFormat As FloppyDiskFormat
+            Dim ImageFormat As FloppyDiskFormat?
 
             If Opt.Id = "" Then
-                ImageFormat = GreaseweazleImageFormat.None
+                ImageFormat = Nothing
             Else
                 ImageFormat = ReadImageFormat(Opt.Id)
                 Opt.SelectedFormat = ImageFormat
                 Opt.DetectedFormat = ImageFormat
             End If
 
-            PopulateImageFormats(ComboImageFormat, ImageFormat, ImageFormat)
+            SharedLib.PopulateImageFormats(ComboImageFormat, ImageFormat, ImageFormat, True)
         End Sub
 
         Private Sub FileNameChangePostProcess()
@@ -284,7 +303,6 @@ Namespace Flux.Greaseweazle
             Dim Response As (FilePath As String, LogFilePath As String, IsFlux As Boolean)
             Response.LogFilePath = ""
 
-            Dim DiskParams As FloppyDiskParams = ComboImageFormat.SelectedValue
             Dim OutputType As ReadDiskOutputTypes = ComboOutputType.SelectedValue
             Dim IsFluxOutput = (OutputType = ReadDiskOutputTypes.RAW)
 
@@ -309,7 +327,9 @@ Namespace Flux.Greaseweazle
                 End If
 
             Else
-                If Not DiskParams.IsStandard Then
+                Dim DiskParams = SelectedDiskParams()
+
+                If Not DiskParams.HasValue OrElse Not DiskParams.Value.IsStandard Then
                     OutputType = ReadDiskOutputTypes.HFE
                 End If
 
@@ -704,8 +724,7 @@ Namespace Flux.Greaseweazle
                     .DropDownStyle = ComboBoxStyle.DropDownList
                 End With
             Else
-                Dim ImageParams As FloppyDiskParams = ComboImageFormat.SelectedValue
-                SharedLib.PopulateFileExtensions(ComboExtensions, ImageParams.Format)
+                SharedLib.PopulateFileExtensions(ComboExtensions, SelectedDiskFormat())
             End If
 
             ComboExtensions.Enabled = (ComboExtensions.Items.Count > 1)
@@ -713,15 +732,25 @@ Namespace Flux.Greaseweazle
             _ComboExtensionsNoEvent = False
         End Sub
 
+        Private Sub PopulateImageFormats()
+            _ComboImageFormatNoEvent = True
+            SharedLib.PopulateImageFormats(ComboImageFormat, _SelectedOption, True)
+            _ComboImageFormatNoEvent = False
+        End Sub
+
         Private Sub PopulateOutputTypes(Optional CurrentValue As ReadDiskOutputTypes? = Nothing)
             _ComboOutputTypeNoEvent = True
 
-            Dim DiskParams As FloppyDiskParams = ComboImageFormat.SelectedValue
+            Dim DiskParams = SelectedDiskParams()
 
             Dim DriveList As New List(Of KeyValuePair(Of String, ReadDiskOutputTypes))
             For Each OutputType As ReadDiskOutputTypes In [Enum].GetValues(GetType(ReadDiskOutputTypes))
-                If Not DiskParams.IsNonImage AndAlso Not DiskParams.IsStandard AndAlso OutputType = ReadDiskOutputTypes.IMA Then
-                    Continue For
+                If DiskParams.HasValue Then
+                    If DiskParams.Value.IsNonImage AndAlso OutputType <> ReadDiskOutputTypes.RAW Then
+                        Continue For
+                    ElseIf Not DiskParams.Value.IsStandard AndAlso OutputType = ReadDiskOutputTypes.IMA Then
+                        Continue For
+                    End If
                 End If
                 DriveList.Add(New KeyValuePair(Of String, ReadDiskOutputTypes)(
                     ReadDiskOutputTypeDescription(OutputType), OutputType)
@@ -740,8 +769,6 @@ Namespace Flux.Greaseweazle
         End Sub
 
         Private Sub PreviewImage()
-            Dim ImageParams As FloppyDiskParams = ComboImageFormat.SelectedValue
-            Dim Opt As DriveOption = ComboImageDrives.SelectedValue
             Dim HasOutputfile As Boolean = Not String.IsNullOrEmpty(_OutputFilePath)
             Dim IsFluxOutput = CheckIsFluxOutput()
 
@@ -754,11 +781,14 @@ Namespace Flux.Greaseweazle
                     MsgBox(My.Resources.Dialog_ImagePreviewFail, MsgBoxStyle.Exclamation)
                 End If
             Else
-                If ImageParams.IsNonImage OrElse Opt.Id = "" Then
+                Dim DiskParams = SelectedDiskParams()
+                Dim Opt As DriveOption = _SelectedOption
+
+                If Not DiskParams.HasValue OrElse Opt.Id = "" Then
                     Exit Sub
                 End If
 
-                Dim Response = ReadFirstTrack(Opt.Id, True, ImageParams)
+                Dim Response = ReadFirstTrack(Opt.Id, True, DiskParams.Value)
 
                 If Not Response.Result Then
                     MsgBox(My.Resources.Dialog_ImagePreviewFail, MsgBoxStyle.Exclamation)
@@ -766,20 +796,22 @@ Namespace Flux.Greaseweazle
 
                 Dim Caption As String = TextBoxFileName.Text
 
-                If Not ImagePreview.Display(Response.FileName, ImageParams, Caption, Me) Then
+                If Not ImagePreview.Display(Response.FileName, DiskParams.Value, Caption, Me) Then
                     MsgBox(My.Resources.Dialog_ImagePreviewFail, MsgBoxStyle.Exclamation)
                 End If
 
                 DeleteTempFileIfExists(Response.FileName)
             End If
         End Sub
-        Private Sub ProcessImage()
-            Dim DiskParams As FloppyDiskParams = ComboImageFormat.SelectedValue
-            Dim Opt As DriveOption = ComboImageDrives.SelectedValue
 
-            If DiskParams.IsNonImage Then
+        Private Sub ProcessImage()
+            Dim DiskParams = SelectedDiskParams()
+
+            If Not DiskParams.HasValue Then
                 Exit Sub
             End If
+
+            Dim Opt As DriveOption = _SelectedOption
 
             If Opt.Id = "" Then
                 Exit Sub
@@ -800,20 +832,18 @@ Namespace Flux.Greaseweazle
                 End If
             End If
 
-            ClearProcessedImage(True)
+            ClearProcessedImage(True, False)
 
             Dim OutputType As ReadDiskOutputTypes = ComboOutputType.SelectedValue
 
             _OutputFilePath = Response.FilePath
+            _OutputParams = DiskParams.Value
             _FileOverwriteMode = OverwriteMode
-
-            _DoubleStep = DiskParams.IsStandard AndAlso CheckBoxDoublestep.Enabled AndAlso CheckBoxDoublestep.Checked
 
             Dim Arguments = GenerateCommandLineRead(Response.FilePath,
                                                     Opt,
-                                                    DiskParams,
+                                                    DiskParams.Value,
                                                     OutputType,
-                                                    _DoubleStep,
                                                     _NumericRetries.Value,
                                                     _NumericSeekRetries.Value,
                                                     _NumericRevs.Value)
@@ -832,8 +862,7 @@ Namespace Flux.Greaseweazle
 
             RaiseEvent ImportProcess(OutputFile, NewFileName)
 
-            ClearProcessedImage(False)
-            RefreshFormState()
+            ClearProcessedImage(False, True)
         End Sub
 
         Private Sub ProcessOutputLine(line As String)
@@ -842,29 +871,29 @@ Namespace Flux.Greaseweazle
             End If
             TextBoxConsole.AppendText(line)
 
-            TrackStatus.ProcessOutputLineRead(line, ActionTypeEnum.Read, _DoubleStep)
+            TrackStatus.ProcessOutputLineRead(line, ActionTypeEnum.Read, _SelectedOption.DoubleStep)
 
             If TrackStatus.Failed Then
                 Process.Cancel()
             End If
         End Sub
 
-        Private Function ReadImageFormat(DriveId As String) As DiskImage.FloppyDiskFormat
+        Private Function ReadImageFormat(DriveId As String) As DiskImage.FloppyDiskFormat?
             Dim Response = ReadFirstTrack(DriveId, False)
 
             TextBoxConsole.Text = Response.Output
 
             If Not Response.Result Then
-                Return GreaseweazleImageFormat.None
+                Return Nothing
             End If
 
             Return DetectImageFormat(Response.FileName, True)
         End Function
 
         Private Sub RefreshFormState()
-            Dim ImageParams As FloppyDiskParams = ComboImageFormat.SelectedValue
+            Dim DiskParams = SelectedDiskParams()
             Dim IsFluxOutput = CheckIsFluxOutput()
-            Dim Opt As DriveOption = ComboImageDrives.SelectedValue
+            Dim Opt As DriveOption = _SelectedOption
 
             Dim HasOutputfile As Boolean = Not String.IsNullOrEmpty(_OutputFilePath)
             Dim IsRunning As Boolean = Process.IsRunning
@@ -891,13 +920,12 @@ Namespace Flux.Greaseweazle
 
             ButtonDiscard.Enabled = IsIdle AndAlso HasOutputfile
 
-            Dim Is525DDStandard As Boolean = ImageParams.IsStandard AndAlso ImageParams.MediaType = FloppyMediaType.Media525DoubleDensity
 
-            If Is525DDStandard Then
-                CheckBoxDoublestep.Enabled = (CanChangeSettings OrElse SelectMode) AndAlso Opt.Tracks > 42
-            Else
-                CheckBoxDoublestep.Enabled = False
-            End If
+            CheckBoxDoublestep.Enabled = CanChangeSettings AndAlso Opt.DoublestepEnabled
+
+            _CheckBoxDoubleStepNoEvent = True
+            CheckBoxDoublestep.Checked = Opt.DoubleStep
+            _CheckBoxDoubleStepNoEvent = False
 
             CheckBoxSelect.Enabled = CanConvert
 
@@ -905,24 +933,11 @@ Namespace Flux.Greaseweazle
 
             ButtonCancel.Text = If(IsRunning OrElse HasOutputfile, WithoutHotkey(My.Resources.Menu_Cancel), WithoutHotkey(My.Resources.Menu_Close))
 
-            ButtonPreview.Enabled = IsIdle AndAlso DriveSelected AndAlso Not ImageParams.IsNonImage
+            ButtonPreview.Enabled = IsIdle AndAlso DriveSelected AndAlso DiskParams.HasValue AndAlso Not DiskParams.Value.IsNonImage
 
             RefreshProcessButtonState()
             RefreshImportButtonState()
             ToggleRootFolderControls()
-        End Sub
-
-        Private Sub RefreshDoubleStepChecked()
-            Dim ImageParams As FloppyDiskParams = ComboImageFormat.SelectedValue
-            Dim Opt As DriveOption = ComboImageDrives.SelectedValue
-
-            Dim Is525DDStandard As Boolean = ImageParams.IsStandard AndAlso ImageParams.MediaType = FloppyMediaType.Media525DoubleDensity
-
-            If Is525DDStandard Then
-                CheckBoxDoublestep.Checked = Opt.Tracks > 79
-            Else
-                CheckBoxDoublestep.Checked = False
-            End If
         End Sub
 
         Private Sub RefreshImportButtonState()
@@ -946,26 +961,30 @@ Namespace Flux.Greaseweazle
                 Exit Sub
             End If
 
-            Dim ImageParams As FloppyDiskParams = ComboImageFormat.SelectedValue
+            Dim Format = SelectedDiskFormat()
 
-            If Item.Format.Value <> ImageParams.Format Then
-                App.UserState.RemovePreferredExtension(ImageParams.Format)
+            If Not Format.Value Then
+                Exit Sub
+            End If
+
+            If Item.Format.Value <> Format.Value Then
+                App.UserState.RemovePreferredExtension(Format.Value)
             End If
 
             App.UserState.SetPreferredExtension(Item.Format.Value, Item.Extension)
         End Sub
 
         Private Sub RefreshProcessButtonState()
-            Dim ImageParams As FloppyDiskParams = ComboImageFormat.SelectedValue
-            Dim HasOutputFile As Boolean = Not String.IsNullOrEmpty(_OutputFilePath)
-            Dim TracksSelected As Boolean = CheckBoxSelect.Checked AndAlso (TableSide0.SelectedTracks.Count + TableSide1.SelectedTracks.Count > 0)
-
             If Process.IsRunning Then
                 ButtonProcess.Text = My.Resources.Label_Abort
                 ButtonProcess.Enabled = True
             Else
+                Dim DiskParams = SelectedDiskParams()
+                Dim HasOutputFile As Boolean = Not String.IsNullOrEmpty(_OutputFilePath)
+                Dim TracksSelected As Boolean = CheckBoxSelect.Checked AndAlso (TableSide0.SelectedTracks.Count + TableSide1.SelectedTracks.Count > 0)
+
                 ButtonProcess.Text = My.Resources.Label_Read
-                ButtonProcess.Enabled = Not ImageParams.IsNonImage AndAlso (Not HasOutputFile OrElse TracksSelected)
+                ButtonProcess.Enabled = DiskParams.HasValue AndAlso (Not HasOutputFile OrElse TracksSelected)
             End If
         End Sub
 
@@ -978,12 +997,13 @@ Namespace Flux.Greaseweazle
         End Sub
 
         Private Sub ReprocessImage()
-            Dim DiskParams As FloppyDiskParams = ComboImageFormat.SelectedValue
-            Dim Opt As DriveOption = ComboImageDrives.SelectedValue
+            Dim DiskParams = SelectedDiskParams()
 
-            If DiskParams.IsNonImage Then
+            If Not DiskParams.HasValue Then
                 Exit Sub
             End If
+
+            Dim Opt As DriveOption = _SelectedOption
 
             If Opt.Id = "" Then
                 Exit Sub
@@ -993,8 +1013,6 @@ Namespace Flux.Greaseweazle
 
             TrackStatus.Clear()
             _FileOverwriteMode = True
-
-            _DoubleStep = DiskParams.IsStandard AndAlso CheckBoxDoublestep.Enabled AndAlso CheckBoxDoublestep.Checked
 
             Dim TrackRanges As List(Of (StartTrack As UShort, EndTrack As UShort)) = Nothing
             Dim Heads As TrackHeads? = Nothing
@@ -1020,9 +1038,8 @@ Namespace Flux.Greaseweazle
 
             Dim Arguments = GenerateCommandLineRead(_OutputFilePath,
                                                     Opt,
-                                                    DiskParams,
+                                                    DiskParams.Value,
                                                     OutputType,
-                                                    _DoubleStep,
                                                     _NumericRetries.Value,
                                                     _NumericSeekRetries.Value,
                                                     _NumericRevs.Value,
@@ -1035,21 +1052,22 @@ Namespace Flux.Greaseweazle
         End Sub
 
         Private Sub ResetTrackGrid(Optional ResetSelected As Boolean = True)
-            Dim Opt As DriveOption = ComboImageDrives.SelectedValue
-            Dim DiskParams As FloppyDiskParams = ComboImageFormat.SelectedValue
+            Dim DiskParams = SelectedDiskParams()
 
             Dim SideCount As Byte
             Dim FormatMediaType As FloppyMediaType
 
-            If DiskParams.IsNonImage Then
+            If Not DiskParams.HasValue OrElse DiskParams.Value.IsNonImage Then
                 SideCount = 2
                 FormatMediaType = FloppyMediaType.MediaUnknown
             Else
-                SideCount = DiskParams.BPBParams.NumberOfHeads
-                FormatMediaType = DiskParams.MediaType
+                SideCount = DiskParams.Value.BPBParams.NumberOfHeads
+                FormatMediaType = DiskParams.Value.MediaType
             End If
 
+            Dim Opt As DriveOption = _SelectedOption
             Dim TrackCount As UShort
+
             If Opt.Type = FloppyMediaType.MediaUnknown Then
                 TrackCount = If(FormatMediaType = FloppyMediaType.Media525DoubleDensity, GreaseweazleSettings.MAX_TRACKS_525DD, GreaseweazleSettings.MAX_TRACKS)
             Else
@@ -1061,15 +1079,21 @@ Namespace Flux.Greaseweazle
             GridReset(TrackCount, SideCount, ResetSelected)
         End Sub
 
-        Public Overrides Sub SaveLog(RemovePath As Boolean, Optional InitialDirectory As String = "")
-            If String.IsNullOrEmpty(InitialDirectory) Then
-                If Not String.IsNullOrEmpty(_OutputFilePath) AndAlso CheckIsFluxOutput() Then
-                    InitialDirectory = IO.Path.GetDirectoryName(_OutputFilePath)
-                End If
+        Private Function SelectedDiskFormat() As FloppyDiskFormat?
+            If TypeOf ComboImageFormat.SelectedValue IsNot FloppyDiskParams Then
+                Return Nothing
             End If
 
-            MyBase.SaveLog(RemovePath, InitialDirectory)
-        End Sub
+            Return DirectCast(ComboImageFormat.SelectedValue, FloppyDiskParams).Format
+        End Function
+
+        Private Function SelectedDiskParams() As FloppyDiskParams?
+            If TypeOf ComboImageFormat.SelectedValue IsNot FloppyDiskParams Then
+                Return Nothing
+            End If
+
+            Return DirectCast(ComboImageFormat.SelectedValue, FloppyDiskParams)
+        End Function
 
         Private Sub SetHelpString(HelpString As String, ParamArray ControlArray() As Control)
             For Each Control In ControlArray
@@ -1130,8 +1154,7 @@ Namespace Flux.Greaseweazle
         End Sub
 
         Private Sub ButtonDiscard_Click(sender As Object, e As EventArgs) Handles ButtonDiscard.Click
-            ClearProcessedImage(True)
-            RefreshFormState()
+            ClearProcessedImage(True, True)
         End Sub
 
         Private Sub ButtonImport_Click(sender As Object, e As EventArgs) Handles ButtonImport.Click
@@ -1140,8 +1163,7 @@ Namespace Flux.Greaseweazle
             End If
 
             If CheckIsFluxOutput() Then
-                ClearProcessedImage(False)
-                RefreshFormState()
+                ClearProcessedImage(False, True)
             Else
                 ProcessImport(_OutputFilePath, GetNewFileName())
             End If
@@ -1186,6 +1208,21 @@ Namespace Flux.Greaseweazle
             Reset(TextBoxConsole)
         End Sub
 
+        Private Sub CheckBoxDoublestep_CheckedChanged(sender As Object, e As EventArgs) Handles CheckBoxDoublestep.CheckedChanged
+            If Not _Initialized Then
+                Exit Sub
+            End If
+
+            If _CheckBoxDoubleStepNoEvent Then
+                Exit Sub
+            End If
+
+            Dim Opt As DriveOption = _SelectedOption
+            If Opt.Id <> "" Then
+                Opt.SetDoubleStep(CheckBoxDoublestep.Checked)
+            End If
+        End Sub
+
         Private Sub CheckBoxSaveLog_CheckStateChanged(sender As Object, e As EventArgs) Handles CheckBoxSaveLog.CheckStateChanged
             If Not _Initialized Then
                 Exit Sub
@@ -1223,20 +1260,24 @@ Namespace Flux.Greaseweazle
                 Exit Sub
             End If
 
-            Dim Opt As DriveOption = ComboImageDrives.SelectedValue
+            Dim PrevOption = _SelectedOption
+            _SelectedOption = ComboImageDrives.SelectedValue
             Dim HasOutputfile As Boolean = Not String.IsNullOrEmpty(_OutputFilePath)
 
             If Not HasOutputfile Then
-                _ComboImageFormatNoEvent = True
-                PopulateImageFormats(ComboImageFormat, Opt)
-                _ComboImageFormatNoEvent = False
+                PopulateImageFormats()
+                ResetTrackGrid()
+            Else
+                If PrevOption.DoubleStep <> _SelectedOption.DoubleStep Then
+                    Dim State = GetState(PrevOption.DoubleStep)
+                    SetState(State, _SelectedOption.DoubleStep)
+                End If
             End If
 
-            ResetTrackGrid()
             RefreshFormState()
             LabelWarning.Visible = Not CheckCompatibility()
 
-            GetSelectedDeviceState.DriveId = Opt.Id
+            GetSelectedDeviceState.DriveId = _SelectedOption.Id
         End Sub
 
         Private Sub ComboImageFormat_SelectedIndexChanged(sender As Object, e As EventArgs) Handles ComboImageFormat.SelectedIndexChanged
@@ -1248,17 +1289,15 @@ Namespace Flux.Greaseweazle
                 Exit Sub
             End If
 
-            Dim Opt As DriveOption = ComboImageDrives.SelectedValue
-            Dim DiskParams As FloppyDiskParams = ComboImageFormat.SelectedValue
+            Dim Opt As DriveOption = _SelectedOption
 
             If Opt.Id <> "" Then
-                Opt.SelectedFormat = DiskParams.Format
+                Opt.SelectedFormat = SelectedDiskFormat()
             End If
 
             PopulateOutputTypes(GetSelectedDeviceState.OutputType)
             PopulateFileExtensions()
             ResetTrackGrid()
-            RefreshDoubleStepChecked()
             RefreshFormState()
             LabelWarning.Visible = Not CheckCompatibility()
         End Sub
@@ -1292,7 +1331,7 @@ Namespace Flux.Greaseweazle
 
                 Case ConsoleProcessRunner.ProcessStateEnum.Completed
                     If TrackStatus.TrackFound Then
-                        TrackStatus.UpdateTrackStatusComplete(_DoubleStep)
+                        TrackStatus.UpdateTrackStatusComplete(_SelectedOption.DoubleStep)
                         SetTiltebarText()
                         HideSelection(False)
                     Else

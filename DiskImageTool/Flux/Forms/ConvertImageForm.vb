@@ -91,49 +91,6 @@ Namespace Flux
             Return TextBoxFileName.Text & Extension
         End Function
 
-        Private Sub PreviewImage()
-            If _SelectedDevice Is Nothing Then
-                Exit Sub
-            End If
-
-            Dim HasSelectedOutputFile As Boolean = _OutputImages.Images.ContainsKey(_SelectedDevice.Device)
-
-            If HasSelectedOutputFile Then
-                Dim ImageInfo = _OutputImages.Images(_SelectedDevice.Device)
-                Dim ImageData = New ImageData(ImageInfo.FilePath)
-
-                Dim Caption As String = TextBoxFileName.Text
-
-                If Not ImagePreview.Display(ImageData, Caption, Me) Then
-                    MsgBox(My.Resources.Dialog_ImagePreviewFail, MsgBoxStyle.Exclamation)
-                End If
-            Else
-                If ComboImageFormat.SelectedIndex = -1 Then
-                    Exit Sub
-                End If
-
-                If Not _SelectedDevice.SupportsPreview Then
-                    Exit Sub
-                End If
-
-                Dim ImageParams As FloppyDiskParams = ComboImageFormat.SelectedValue
-
-                Dim Response = _SelectedDevice.ConvertFirstTrack(_InputFilePath, True, ImageParams)
-
-                If Not Response.Result Then
-                    MsgBox(My.Resources.Dialog_ImagePreviewFail, MsgBoxStyle.Exclamation)
-                End If
-
-                Dim Caption As String = TextBoxFileName.Text
-
-                If Not ImagePreview.Display(Response.Filename, ImageParams, Caption, Me) Then
-                    MsgBox(My.Resources.Dialog_ImagePreviewFail, MsgBoxStyle.Exclamation)
-                End If
-
-                DeleteTempFileIfExists(Response.Filename)
-            End If
-        End Sub
-
         Protected Overrides Sub OnAfterBaseFormClosing(e As FormClosingEventArgs)
             If Me.DialogResult = DialogResult.OK OrElse Me.DialogResult = DialogResult.Retry Then
                 MoveLogs()
@@ -147,16 +104,17 @@ Namespace Flux
                 Return False
             End If
 
-            If ComboImageFormat.SelectedIndex = -1 Then
+            Dim DiskParams = SelectedDiskParams()
+
+            If Not DiskParams.HasValue Then
                 Return False
             End If
 
             Dim SelectedDevice As IDevice = CType(ComboDevices.SelectedItem, IDevice)
-            Dim ImageParams As FloppyDiskParams = ComboImageFormat.SelectedValue
 
             Select Case SelectedDevice.Device
                 Case IDevice.FluxDevice.Greaseweazle
-                    Dim imageFormat = Greaseweazle.GreaseweazleImageFormatFromFloppyDiskFormat(ImageParams.Format)
+                    Dim imageFormat = Greaseweazle.GreaseweazleImageFormatFromFloppyDiskFormat(DiskParams.Value.Format)
                     Return (imageFormat <> Greaseweazle.GreaseweazleImageFormat.None)
 
                 Case Else
@@ -247,7 +205,7 @@ Namespace Flux
                                              OutputFilePath As String,
                                              Device As IDevice.FluxDevice,
                                              OutputType As ImageImportOutputTypes,
-                                             DiskParams As FloppyDiskParams) As (Arguments As String, Suffix As String)
+                                             DiskParams As FloppyDiskParams?) As (Arguments As String, Suffix As String)
 
             Dim Response As (Arguments As String, Suffix As String)
             Response.Arguments = ""
@@ -255,7 +213,7 @@ Namespace Flux
 
             Select Case Device
                 Case IDevice.FluxDevice.Greaseweazle
-                    Response.Arguments = Greaseweazle.GenerateCommandLineImport(InputFilePath, OutputFilePath, DiskParams, OutputType, _DoubleStep)
+                    Response.Arguments = Greaseweazle.GenerateCommandLineImport(InputFilePath, OutputFilePath, DiskParams.Value, OutputType, _DoubleStep)
 
                 Case IDevice.FluxDevice.Kryoflux
                     Dim LogLevel As Kryoflux.CommandLineBuilder.LogMask = 0
@@ -264,7 +222,7 @@ Namespace Flux
                         LogLevel = Kryoflux.CommandLineBuilder.LogMask.Read Or Kryoflux.CommandLineBuilder.LogMask.Cell
                     End If
 
-                    Dim KryofluxResponse = Kryoflux.GenerateCommandLineImport(InputFilePath, OutputFilePath, DiskParams, _TrackCount, _DoubleStep, LogLevel)
+                    Dim KryofluxResponse = Kryoflux.GenerateCommandLineImport(InputFilePath, OutputFilePath, DiskParams.Value, _TrackCount, _DoubleStep, LogLevel)
                     If KryofluxResponse.SingleSide Then
                         Response.Suffix = "s0"
                     End If
@@ -633,7 +591,7 @@ Namespace Flux
                 ClearStatusBar()
             End If
             Dim ImageFormat = ReadImageFormat()
-            PopulateImageFormats(ComboImageFormat, ImageFormat, ImageFormat)
+            PopulateImageFormats(ComboImageFormat, ImageFormat, ImageFormat, False)
             PopulateOutputTypes()
             PopulateFileExtensions()
             RefreshButtonState()
@@ -738,8 +696,7 @@ Namespace Flux
                     .DropDownStyle = ComboBoxStyle.DropDownList
                 End With
             Else
-                Dim ImageParams As FloppyDiskParams = ComboImageFormat.SelectedValue
-                SharedLib.PopulateFileExtensions(ComboExtensions, ImageParams.Format)
+                SharedLib.PopulateFileExtensions(ComboExtensions, SelectedDiskFormat())
             End If
 
             If ComboExtensions.SelectedIndex = -1 AndAlso ComboExtensions.Items.Count > 0 Then
@@ -814,12 +771,52 @@ Namespace Flux
 
             _ComboOutputTypeNoEvent = False
         End Sub
-        Private Sub ProcessImage()
+
+        Private Sub PreviewImage()
             If _SelectedDevice Is Nothing Then
                 Exit Sub
             End If
 
-            If ComboImageFormat.SelectedIndex = -1 Then
+            Dim HasSelectedOutputFile As Boolean = _OutputImages.Images.ContainsKey(_SelectedDevice.Device)
+
+            If HasSelectedOutputFile Then
+                Dim ImageInfo = _OutputImages.Images(_SelectedDevice.Device)
+                Dim ImageData = New ImageData(ImageInfo.FilePath)
+
+                Dim Caption As String = TextBoxFileName.Text
+
+                If Not ImagePreview.Display(ImageData, Caption, Me) Then
+                    MsgBox(My.Resources.Dialog_ImagePreviewFail, MsgBoxStyle.Exclamation)
+                End If
+            Else
+                If Not _SelectedDevice.SupportsPreview Then
+                    Exit Sub
+                End If
+
+                Dim DiskParams = SelectedDiskParams()
+
+                If Not DiskParams.HasValue Then
+                    Exit Sub
+                End If
+
+                Dim Response = _SelectedDevice.ConvertFirstTrack(_InputFilePath, True, DiskParams.Value)
+
+                If Not Response.Result Then
+                    MsgBox(My.Resources.Dialog_ImagePreviewFail, MsgBoxStyle.Exclamation)
+                End If
+
+                Dim Caption As String = TextBoxFileName.Text
+
+                If Not ImagePreview.Display(Response.Filename, DiskParams.Value, Caption, Me) Then
+                    MsgBox(My.Resources.Dialog_ImagePreviewFail, MsgBoxStyle.Exclamation)
+                End If
+
+                DeleteTempFileIfExists(Response.Filename)
+            End If
+        End Sub
+
+        Private Sub ProcessImage()
+            If _SelectedDevice Is Nothing Then
                 Exit Sub
             End If
 
@@ -827,10 +824,11 @@ Namespace Flux
                 Exit Sub
             End If
 
-            Dim DiskParams As FloppyDiskParams = ComboImageFormat.SelectedValue
             Dim UseImageFormat As Boolean = _SelectedDevice.RequiresImageFormat
 
-            If DiskParams.IsNonImage And UseImageFormat Then
+            Dim DiskParams = SelectedDiskParams()
+
+            If Not DiskParams.HasValue And UseImageFormat Then
                 Exit Sub
             End If
 
@@ -844,7 +842,7 @@ Namespace Flux
 
             _DoubleStep = CheckBoxDoublestep.Enabled AndAlso CheckBoxDoublestep.Checked
 
-            Dim Response = GenerateCommandLine(_InputFilePath, FilePath, _SelectedDevice.Device, ComboOutputType.SelectedValue, ComboImageFormat.SelectedValue)
+            Dim Response = GenerateCommandLine(_InputFilePath, FilePath, _SelectedDevice.Device, ComboOutputType.SelectedValue, DiskParams)
             If Not String.IsNullOrEmpty(Response.Suffix) Then
                 _OutputImages.PendingImage.SetSuffix(Response.Suffix)
             End If
@@ -897,10 +895,11 @@ Namespace Flux
             Dim Is525DDStandard As Boolean = False
             Dim IsNonImage As Boolean = True
 
-            If ComboImageFormat.SelectedIndex > -1 Then
-                Dim ImageParams As FloppyDiskParams = ComboImageFormat.SelectedValue
-                Is525DDStandard = ImageParams.IsStandard AndAlso ImageParams.MediaType = FloppyMediaType.Media525DoubleDensity
-                IsNonImage = ImageParams.IsNonImage
+            Dim DiskParams = SelectedDiskParams()
+
+            If DiskParams.HasValue Then
+                Is525DDStandard = DiskParams.Value.IsStandard AndAlso DiskParams.Value.MediaType = FloppyMediaType.Media525DoubleDensity
+                IsNonImage = DiskParams.Value.IsNonImage
             End If
 
             Dim HasOutputfile As Boolean = _OutputImages.HasImage
@@ -1019,6 +1018,7 @@ Namespace Flux
             End If
             MyBase.Refresh()
         End Sub
+
         Private Sub RefreshImportButtonState()
             Dim HasOutputfile As Boolean = _OutputImages.HasImage
             Dim HasInputFile As Boolean = Not String.IsNullOrEmpty(_InputFilePath)
@@ -1034,20 +1034,20 @@ Namespace Flux
                 Exit Sub
             End If
 
-            If ComboImageFormat.SelectedIndex = -1 Then
-                Exit Sub
-            End If
-
             Dim Item As FileExtensionItem = ComboExtensions.SelectedValue
 
             If Not Item.Format.HasValue Then
                 Exit Sub
             End If
 
-            Dim ImageParams As FloppyDiskParams = ComboImageFormat.SelectedValue
+            Dim DiskParams = SelectedDiskParams()
 
-            If Item.Format.Value <> ImageParams.Format Then
-                App.UserState.RemovePreferredExtension(ImageParams.Format)
+            If Not DiskParams.HasValue Then
+                Exit Sub
+            End If
+
+            If Item.Format.Value <> DiskParams.Value.Format Then
+                App.UserState.RemovePreferredExtension(DiskParams.Value.Format)
             End If
 
             App.UserState.SetPreferredExtension(Item.Format.Value, Item.Extension)
@@ -1064,6 +1064,21 @@ Namespace Flux
             CheckBoxRemaster.Checked = _TrackLayoutExists AndAlso HasInputFile
         End Sub
 
+        Private Function SelectedDiskFormat() As FloppyDiskFormat?
+            If TypeOf ComboImageFormat.SelectedValue IsNot FloppyDiskParams Then
+                Return Nothing
+            End If
+
+            Return DirectCast(ComboImageFormat.SelectedValue, FloppyDiskParams).Format
+        End Function
+
+        Private Function SelectedDiskParams() As FloppyDiskParams?
+            If TypeOf ComboImageFormat.SelectedValue IsNot FloppyDiskParams Then
+                Return Nothing
+            End If
+
+            Return DirectCast(ComboImageFormat.SelectedValue, FloppyDiskParams)
+        End Function
         Private Sub SetNewFileName()
             Dim FileExt = IO.Path.GetExtension(_InputFilePath).ToLower
 

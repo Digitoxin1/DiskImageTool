@@ -54,14 +54,6 @@ Namespace Flux
             Return AnalyzeResponse
         End Function
 
-        Public Sub SaveLogFile(LogFilePath As String, LogText As String, RemovePath As Boolean)
-            If RemovePath Then
-                LogText = RemovePathFromLog(LogText)
-            End If
-
-            IO.File.WriteAllText(LogFilePath, LogText & vbNewLine)
-        End Sub
-
         Public Function BrowseFolder(CurrentPath As String) As String
             Using ofd As New FolderBrowserDialog()
                 ofd.Description = "Flux Set Root Folder"
@@ -80,6 +72,45 @@ Namespace Flux
                 ctrl.TabIndex += Increment
             Next
         End Sub
+
+        Public Function ConvertFluxImage(ParentForm As Form, FilePath As String, AllowSCP As Boolean, importHandler As ConvertImageForm.ImportProcessEventHandler, LaunchedFromDialog As Boolean) As (Result As DialogResult, OutputFile As String, NewFileName As String)
+            Dim TempPath = InitTempImagePath()
+
+            If TempPath = "" Then
+                MsgBox(My.Resources.Dialog_TempPathError, MsgBoxStyle.Critical)
+                Return (DialogResult.Abort, "", "")
+            End If
+
+            Dim AnalyzeResponse = AnalyzeFluxImage(FilePath, AllowSCP)
+
+            If Not AnalyzeResponse.Result Then
+                Return (DialogResult.Abort, "", "")
+            End If
+
+            Using form As New ConvertImageForm(TempPath, FilePath, AnalyzeResponse.TrackCount, AnalyzeResponse.SideCount, LaunchedFromDialog)
+
+                If importHandler IsNot Nothing Then
+                    AddHandler form.ImportProcess, importHandler
+                End If
+
+                Dim result As DialogResult = DialogResult.Cancel
+                Try
+                    result = form.ShowDialog(ParentForm)
+                Finally
+                    If importHandler IsNot Nothing Then
+                        RemoveHandler form.ImportProcess, importHandler
+                    End If
+                End Try
+
+                If result = DialogResult.OK Or result = DialogResult.Retry Then
+                    If Not String.IsNullOrEmpty(form.OutputFilePath) Then
+                        Return (result, form.OutputFilePath, form.GetNewFileName)
+                    End If
+                End If
+
+                Return (result, "", "")
+            End Using
+        End Function
 
         Public Sub DeleteFilesAndFolderIfEmpty(folderPath As String, ParamArray patterns As String())
             If String.IsNullOrWhiteSpace(folderPath) Then
@@ -254,45 +285,6 @@ Namespace Flux
             End Using
         End Function
 
-        Public Function ConvertFluxImage(ParentForm As Form, FilePath As String, AllowSCP As Boolean, importHandler As ConvertImageForm.ImportProcessEventHandler, LaunchedFromDialog As Boolean) As (Result As DialogResult, OutputFile As String, NewFileName As String)
-            Dim TempPath = InitTempImagePath()
-
-            If TempPath = "" Then
-                MsgBox(My.Resources.Dialog_TempPathError, MsgBoxStyle.Critical)
-                Return (DialogResult.Abort, "", "")
-            End If
-
-            Dim AnalyzeResponse = AnalyzeFluxImage(FilePath, AllowSCP)
-
-            If Not AnalyzeResponse.Result Then
-                Return (DialogResult.Abort, "", "")
-            End If
-
-            Using form As New ConvertImageForm(TempPath, FilePath, AnalyzeResponse.TrackCount, AnalyzeResponse.SideCount, LaunchedFromDialog)
-
-                If importHandler IsNot Nothing Then
-                    AddHandler form.ImportProcess, importHandler
-                End If
-
-                Dim result As DialogResult = DialogResult.Cancel
-                Try
-                    result = form.ShowDialog(ParentForm)
-                Finally
-                    If importHandler IsNot Nothing Then
-                        RemoveHandler form.ImportProcess, importHandler
-                    End If
-                End Try
-
-                If result = DialogResult.OK Or result = DialogResult.Retry Then
-                    If Not String.IsNullOrEmpty(form.OutputFilePath) Then
-                        Return (result, form.OutputFilePath, form.GetNewFileName)
-                    End If
-                End If
-
-                Return (result, "", "")
-            End Using
-        End Function
-
         Public Sub InitializeCombo(Combo As ComboBox, DataSource As Object, CurrentValue As Object)
             Combo.DisplayMember = "Key"
             Combo.ValueMember = "Value"
@@ -380,10 +372,15 @@ Namespace Flux
             Return Nothing
         End Function
 
-        Public Sub PopulateFileExtensions(Combo As ComboBox, SelectedFormat As FloppyDiskFormat)
+        Public Sub PopulateFileExtensions(Combo As ComboBox, SelectedFormat As FloppyDiskFormat?)
             Dim FileExtensions = BASIC_SECTOR_FILE_EXTENSIONS.Split(","c).ToList()
 
-            Dim SelectedExtension As String = App.UserState.GetPreferredExtension(SelectedFormat)
+            Dim SelectedExtension As String = ""
+
+            If SelectedFormat.HasValue Then
+                SelectedExtension = App.UserState.GetPreferredExtension(SelectedFormat.Value)
+            End If
+
             If SelectedExtension = "" Then
                 SelectedExtension = App.UserState.GetPreferredExtension(FloppyDiskFormat.FloppyUnknown)
             End If
@@ -394,12 +391,12 @@ Namespace Flux
                 items.Add(New FileExtensionItem(ext, FloppyDiskFormat.FloppyUnknown))
             Next
 
-            If SelectedFormat <> FloppyDiskFormat.FloppyUnknown Then
-                Dim Params = FloppyDiskFormatGetParams(SelectedFormat)
+            If SelectedFormat.HasValue AndAlso Not SelectedFormat.Value <> FloppyDiskFormat.FloppyUnknown Then
+                Dim Params = FloppyDiskFormatGetParams(SelectedFormat.Value)
                 If Not String.IsNullOrWhiteSpace(Params.FileExtension) Then
                     Dim idx = items.FindIndex(Function(i) i.Extension.Equals(Params.FileExtension, StringComparison.OrdinalIgnoreCase))
                     If idx = -1 Then
-                        items.Add(New FileExtensionItem(Params.FileExtension, SelectedFormat))
+                        items.Add(New FileExtensionItem(Params.FileExtension, SelectedFormat.Value))
                     End If
                 End If
             End If
@@ -421,19 +418,22 @@ Namespace Flux
             End With
         End Sub
 
-        Public Sub PopulateImageFormats(Combo As ComboBox, Opt As DriveOption)
+        Public Sub PopulateImageFormats(Combo As ComboBox, Opt As DriveOption, IncludeUnknown As Boolean)
             If Opt.Id = "" Then
                 ClearImageFormats(Combo)
             Else
-                PopulateImageFormats(Combo, Opt.SelectedFormat, Opt.DetectedFormat)
+                PopulateImageFormats(Combo, Opt.SelectedFormat, Opt.DetectedFormat, IncludeUnknown)
             End If
         End Sub
 
-        Public Sub PopulateImageFormats(Combo As ComboBox, SelectedFormat As FloppyDiskFormat?, DetectedFormat As FloppyDiskFormat?)
-            Dim list = FloppyDiskFormatGetComboList()
+        Public Sub PopulateImageFormats(Combo As ComboBox, SelectedFormat As FloppyDiskFormat?, DetectedFormat As FloppyDiskFormat?, IncludeUnknown As Boolean)
+            Dim list = FloppyDiskFormatGetComboList(IncludeUnknown)
 
             For i As Integer = 0 To list.Count - 1
-                Dim item = list(i)
+                If TypeOf list(i) IsNot FloppyDiskParams Then
+                    Continue For
+                End If
+                Dim item = DirectCast(list(i), FloppyDiskParams)
                 If DetectedFormat.HasValue AndAlso item.Format = DetectedFormat.Value Then
                     item.Detected = True
                 Else
@@ -443,14 +443,22 @@ Namespace Flux
             Next
 
             With Combo
-                .DisplayMember = "Description"
+                .DisplayMember = ""
                 .ValueMember = Nothing
                 .DataSource = list
                 .DropDownStyle = ComboBoxStyle.DropDownList
             End With
 
             If SelectedFormat.HasValue Then
-                Dim idx = list.FindIndex(Function(p) p.Format = SelectedFormat.Value)
+                Dim idx = list.FindIndex(Function(p)
+                                             If TypeOf p IsNot FloppyDiskParams Then
+                                                 Return False
+                                             End If
+
+                                             Dim item = DirectCast(p, FloppyDiskParams)
+
+                                             Return p.Format = SelectedFormat.Value
+                                         End Function)
                 If idx >= 0 Then
                     Combo.SelectedIndex = idx
                 End If
@@ -496,6 +504,13 @@ Namespace Flux
             Return lnkPath
         End Function
 
+        Public Sub SaveLogFile(LogFilePath As String, LogText As String, RemovePath As Boolean)
+            If RemovePath Then
+                LogText = RemovePathFromLog(LogText)
+            End If
+
+            IO.File.WriteAllText(LogFilePath, LogText & vbNewLine)
+        End Sub
         Public Function UShortListToRanges(values As List(Of UShort)) As String
             If values Is Nothing OrElse values.Count = 0 Then Return ""
 
@@ -537,12 +552,12 @@ Namespace Flux
         End Function
 
         Private Sub ClearImageFormats(Combo As ComboBox)
-            Dim list As New List(Of FloppyDiskParams) From {
-                CreatePlaceholderParams(My.Resources.Label_PleaseSelect)
+            Dim list As New List(Of Object) From {
+                My.Resources.Label_PleaseSelect
             }
 
             With Combo
-                .DisplayMember = "Description"
+                .DisplayMember = ""
                 .ValueMember = Nothing
                 .DataSource = list
                 .DropDownStyle = ComboBoxStyle.DropDownList
@@ -578,14 +593,125 @@ Namespace Flux
         End Structure
 
         Public Class DriveOption
-            Public Property DetectedFormat As FloppyDiskFormat = FloppyDiskFormat.FloppyUnknown
-            Public Property Id As String
+            Private ReadOnly _Id As String
+            Private ReadOnly _Tracks As Byte
+            Private ReadOnly _Type As FloppyMediaType
+            Private _DetectedFormat As FloppyDiskFormat? = Nothing
+            Private _DoubleStep As Boolean?
+            Private _DoubleStepEnabled As Boolean
+            Private _DoubleStepDefaultChecked As Boolean
+            Private _Label As String
+            Private _SelectedFormat As FloppyDiskFormat? = Nothing
+
+            Public Sub New()
+                _Id = ""
+                _Type = FloppyMediaType.MediaUnknown
+                _Tracks = 0
+                _DoubleStepEnabled = False
+                _DoubleStepDefaultChecked = False
+                _DoubleStep = Nothing
+            End Sub
+
+            Public Sub New(Id As String, Type As FloppyMediaType, Tracks As Byte)
+                _Id = Id
+                _Type = Type
+                _Tracks = Tracks
+                _DoubleStepEnabled = False
+                _DoubleStepDefaultChecked = False
+                _DoubleStep = Nothing
+            End Sub
+
+            Public Property DetectedFormat As FloppyDiskFormat?
+                Get
+                    Return _DetectedFormat
+                End Get
+                Set
+                    _DetectedFormat = Value
+                End Set
+            End Property
+
+            Public ReadOnly Property DoubleStep As Boolean
+                Get
+                    If _DoubleStep.HasValue Then
+                        Return _DoubleStepEnabled AndAlso _DoubleStep.Value
+                    Else
+                        Return _DoubleStepDefaultChecked
+                    End If
+                End Get
+            End Property
+
+            Public ReadOnly Property DoublestepEnabled As Boolean
+                Get
+                    Return _DoubleStepEnabled
+                End Get
+            End Property
+
+            Public ReadOnly Property Id As String
+                Get
+                    Return _Id
+                End Get
+            End Property
+
             Public Property Label As String
-            Public Property SelectedFormat As FloppyDiskFormat = FloppyDiskFormat.FloppyUnknown
-            Public Property Tracks As Byte
-            Public Property Type As FloppyMediaType = FloppyMediaType.MediaUnknown
+                Get
+                    Return _Label
+                End Get
+                Set
+                    _Label = Value
+                End Set
+            End Property
+
+            Public Property SelectedFormat As FloppyDiskFormat?
+                Get
+                    Return _SelectedFormat
+                End Get
+                Set
+                    _SelectedFormat = Value
+                    RefreshDoubleStepEnabled()
+                End Set
+            End Property
+
+            Public ReadOnly Property Tracks As Byte
+                Get
+                    Return _Tracks
+                End Get
+            End Property
+
+            Public ReadOnly Property Type As FloppyMediaType
+                Get
+                    Return _Type
+                End Get
+            End Property
+
+            Public Sub ResetFormats()
+                _SelectedFormat = Nothing
+                _DetectedFormat = Nothing
+                _DoubleStepEnabled = False
+                _DoubleStepDefaultChecked = False
+                _DoubleStep = Nothing
+            End Sub
+
+            Public Sub SetDoubleStep(Value As Boolean)
+                _DoubleStep = Value
+            End Sub
+
             Public Overrides Function ToString() As String
                 Return Label
+            End Function
+
+            Private Sub RefreshDoubleStepEnabled()
+                _DoubleStepEnabled = False
+                _DoubleStepDefaultChecked = SelectedFormatIs525DDStandard() AndAlso _Tracks > 79
+            End Sub
+
+            Private Function SelectedFormatIs525DDStandard() As Boolean
+                If Not _SelectedFormat.HasValue Then
+                    Return False
+                End If
+
+                Dim ImageParams As FloppyDiskParams = FloppyDiskFormatGetParams(_SelectedFormat.Value)
+
+                Return ImageParams.IsStandard AndAlso ImageParams.MediaType = FloppyMediaType.Media525DoubleDensity
             End Function
         End Class
     End Module
