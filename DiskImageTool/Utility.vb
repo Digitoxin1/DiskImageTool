@@ -334,6 +334,16 @@ Module Utility
         Return True
     End Function
 
+    Public Function SetCurrentDirectory(Path As String) As Boolean
+        Try
+            IO.Directory.SetCurrentDirectory(Path)
+            Return True
+        Catch ex As Exception
+            DebugException(ex)
+            Return False
+        End Try
+    End Function
+
     Public Sub SetText(control As Control, value As String)
         control.Text = value
     End Sub

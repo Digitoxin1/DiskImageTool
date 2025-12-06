@@ -68,10 +68,20 @@ Namespace Flux.Greaseweazle
                 Builder.Raw = True
 
                 If TrackRanges Is Nothing Then
-                    Builder.AddCylinder(0, Opt.Tracks - 1)
+                    Dim TrackCount = Opt.Tracks
+                    If DoubleStep Then
+                        TrackCount = Math.Floor(TrackCount / 2)
+                    End If
+                    Builder.AddCylinder(0, TrackCount - 1)
                 Else
                     For Each Range In TrackRanges
-                        Builder.AddCylinder(Range.StartTrack, Range.EndTrack)
+                        Dim StartTrack = Range.StartTrack
+                        Dim EndTrack = Range.EndTrack
+                        If DoubleStep Then
+                            StartTrack = CUInt(Math.Floor(StartTrack / 2))
+                            EndTrack = CUInt(Math.Floor(EndTrack / 2))
+                        End If
+                        Builder.AddCylinder(StartTrack, EndTrack)
                     Next
                 End If
 

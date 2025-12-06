@@ -143,7 +143,7 @@
             GridResetTracks(TS1, Tracks, Sides < 2, ResetSelected)
         End Sub
 
-        Public Sub SaveLog(RemovePath As Boolean)
+        Public Overridable Sub SaveLog(RemovePath As Boolean, Optional InitialDirectory As String = "")
             Dim FileName As String = _LogFileName
             Dim Extension = IO.Path.GetExtension(FileName).ToLower
             Dim FilterIndex As Integer = 1
@@ -155,7 +155,8 @@
                    .FileName = FileName,
                    .DefaultExt = "txt",
                    .Filter = My.Resources.FileType_Text & " (*.txt)|*.txt|" & My.Resources.FileType_All & " (*.*)|*.*",
-                   .FilterIndex = FilterIndex
+                   .FilterIndex = FilterIndex,
+                   .InitialDirectory = InitialDirectory
                 }
 
                 If Dialog.ShowDialog = DialogResult.OK Then
