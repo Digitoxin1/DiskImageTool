@@ -39,10 +39,10 @@
             Me.StatusDevice = New System.Windows.Forms.ToolStripStatusLabel()
             Me.StatusTrack = New System.Windows.Forms.ToolStripStatusLabel()
             Me.StatusSide = New System.Windows.Forms.ToolStripStatusLabel()
+            Me.ToolStripProgress = New System.Windows.Forms.ToolStripProgressBar()
             Me.StatusType = New System.Windows.Forms.ToolStripStatusLabel()
             Me.StatusBadSectors = New System.Windows.Forms.ToolStripStatusLabel()
             Me.StatusUnexpected = New System.Windows.Forms.ToolStripStatusLabel()
-            Me.ToolStripProgress = New System.Windows.Forms.ToolStripProgressBar()
             Me.PanelBottom.SuspendLayout()
             Me.PanelBottomInner.SuspendLayout()
             Me.PanelButtonsRight.SuspendLayout()
@@ -253,6 +253,13 @@
             Me.StatusSide.Text = "{Side}"
             Me.StatusSide.TextAlign = System.Drawing.ContentAlignment.MiddleLeft
             '
+            'ToolStripProgress
+            '
+            Me.ToolStripProgress.MarqueeAnimationSpeed = 30
+            Me.ToolStripProgress.Name = "ToolStripProgress"
+            Me.ToolStripProgress.Size = New System.Drawing.Size(100, 18)
+            Me.ToolStripProgress.Style = System.Windows.Forms.ProgressBarStyle.Marquee
+            '
             'StatusType
             '
             Me.StatusType.AutoSize = False
@@ -277,13 +284,6 @@
             Me.StatusUnexpected.Name = "StatusUnexpected"
             Me.StatusUnexpected.Size = New System.Drawing.Size(118, 19)
             Me.StatusUnexpected.Text = "{Unexpected Sectors}"
-            '
-            'ToolStripProgress
-            '
-            Me.ToolStripProgress.MarqueeAnimationSpeed = 30
-            Me.ToolStripProgress.Name = "ToolStripProgress"
-            Me.ToolStripProgress.Size = New System.Drawing.Size(100, 18)
-            Me.ToolStripProgress.Style = System.Windows.Forms.ProgressBarStyle.Marquee
             '
             'BaseFluxForm
             '

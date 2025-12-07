@@ -31,7 +31,7 @@
     <ProductName>DiskImageTool</ProductName>
     <PublisherName>Digitoxin</PublisherName>
     <ApplicationRevision>0</ApplicationRevision>
-    <ApplicationVersion>2.31.0.%2a</ApplicationVersion>
+    <ApplicationVersion>2.32.0.%2a</ApplicationVersion>
     <UseApplicationTrust>false</UseApplicationTrust>
     <PublishWizardCompleted>true</PublishWizardCompleted>
     <BootstrapperEnabled>true</BootstrapperEnabled>
@@ -148,9 +148,6 @@
       <SubType>UserControl</SubType>
     </Compile>
     <Compile Include="Controls\ListViewEx.vb">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="Controls\ReadOnlyCheckbox.vb">
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="Controls\SelectablePanel.vb">

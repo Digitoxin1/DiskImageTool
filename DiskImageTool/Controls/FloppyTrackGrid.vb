@@ -21,7 +21,6 @@ Public Class FloppyTrackGrid
     Private ReadOnly _ToolTip As ToolTip
     Private _ActiveTrackCount As Integer
     Private _Cells As List(Of CellInfo)
-
     Private _Disabled As Boolean = False
     Private _FocusedTrack As Integer = -1
     Private _FooterCheckRect As Rectangle
@@ -60,8 +59,8 @@ Public Class FloppyTrackGrid
         Me.New()
 
         _ActiveTrackCount = TrackCount
-        Me.TrackCount = TrackCount
         Me.Side = Side
+        Me.TrackCount = TrackCount
     End Sub
 
     <Browsable(True)>
@@ -340,6 +339,18 @@ Public Class FloppyTrackGrid
         SetCell(TrackIndex, BackColor:=BackColor)
     End Sub
 
+    Public Sub SetCellFluxHeader(TrackIndex As Integer, Name As String, Version As String, HostDate As String, HostTime As String)
+        If TrackIndex < 0 OrElse TrackIndex >= _TrackCount Then
+            Throw New ArgumentOutOfRangeException(NameOf(TrackIndex))
+        End If
+
+        Dim Cell = _Cells(TrackIndex)
+
+        Cell.SetFluxHeader(Name, Version, HostDate, HostTime)
+
+        _Cells(TrackIndex) = Cell
+    End Sub
+
     Public Sub SetCellSelected(TrackIndex As Integer, Selected As Boolean, Optional NoEvent As Boolean = False)
         If NoEvent Then
             _NoEventSelectionChanged = True
@@ -418,6 +429,7 @@ Public Class FloppyTrackGrid
 
         Invalidate()
     End Sub
+
     Protected Overrides Function IsInputKey(keyData As Keys) As Boolean
         Dim key = keyData And Keys.KeyCode
 
@@ -688,8 +700,9 @@ Public Class FloppyTrackGrid
                         Dim rect = GetCellRectangle(TrackIndex)
                         Dim cell As CellInfo
                         If TrackIndex >= _ActiveTrackCount Then
-                            cell = CreateDefaultCell()
-                            cell.BackColor = DISABLED_COLOR
+                            cell = New CellInfo(TrackIndex) With {
+                                .BackColor = DISABLED_COLOR
+                            }
                         Else
                             cell = _Cells(TrackIndex)
                         End If
@@ -758,16 +771,6 @@ Public Class FloppyTrackGrid
 
         _LastSelected = (-1, False)
     End Sub
-
-    Private Function CreateDefaultCell() As CellInfo
-        Dim c As New CellInfo With {
-            .BackColor = DEFAULT_BACKCOLOR,
-            .ForeColor = DEFAULT_FORECOLOR,
-            .Text = String.Empty,
-            .Selected = False
-        }
-        Return c
-    End Function
 
     Private Sub DrawFooter(g As Graphics)
         Dim rows = RowCount
@@ -916,17 +919,26 @@ Public Class FloppyTrackGrid
 
     Private Sub FloppyTrackGrid_MouseMove(sender As Object, e As MouseEventArgs) Handles Me.MouseMove
         Dim TooltipText As String = ""
+        Dim TooltipTitle As String = ""
 
-        Dim Response = HitTestCell(e.Location)
-        If Response.Result Then
-            TooltipText = _Cells(Response.TrackIndex).Tooltip
-            If TooltipText = "" Then
-                TooltipText = My.Resources.Label_Track & ":  " & Response.TrackIndex.ToString & "." & _Side.ToString
+        If Not _Disabled Then
+            Dim Response = HitTestCell(e.Location)
+            If Response.Result Then
+                Dim Cell = _Cells(Response.TrackIndex)
+                TooltipTitle = GetToolTipTitle(Response.TrackIndex)
+                TooltipText = Cell.FullTooltip
+                If String.IsNullOrEmpty(TooltipText) Then
+                    TooltipText = TooltipTitle
+                    TooltipTitle = ""
+                End If
             End If
-
         End If
 
-            If TooltipText <> _ToolTip.GetToolTip(Me) Then
+        If TooltipTitle <> _ToolTip.ToolTipTitle Then
+            _ToolTip.ToolTipTitle = TooltipTitle
+        End If
+
+        If TooltipText <> _ToolTip.GetToolTip(Me) Then
             _ToolTip.SetToolTip(Me, TooltipText)
         End If
     End Sub
@@ -942,6 +954,9 @@ Public Class FloppyTrackGrid
         Return New Rectangle(x, y, CELL_WIDTH, CELL_HEIGHT)
     End Function
 
+    Private Function GetToolTipTitle(Track As Integer) As String
+        Return My.Resources.Label_Track & "  " & Track.ToString & "." & _Side.ToString
+    End Function
     Private Function HitTestCell(p As Point) As (Result As Boolean, TrackIndex As Integer, Row As Integer, Col As Integer)
         Dim Response As (Result As Boolean, TrackIndex As Integer, Row As Integer, Col As Integer)
 
@@ -988,7 +1003,7 @@ Public Class FloppyTrackGrid
     End Sub
 
     Private Sub ResetCellInternal(trackIndex As Integer)
-        SetCell(trackIndex, Text:="", BackColor:=DEFAULT_BACKCOLOR, ForeColor:=DEFAULT_FORECOLOR)
+        SetCell(trackIndex, Text:="", BackColor:=DEFAULT_BACKCOLOR, ForeColor:=DEFAULT_FORECOLOR, Tooltip:="")
     End Sub
     Private Sub ResizeCellList(NewCount As Integer)
         If _Cells Is Nothing Then
@@ -998,7 +1013,7 @@ Public Class FloppyTrackGrid
         ' Grow: add default cells
         If NewCount > _Cells.Count Then
             For i = _Cells.Count To NewCount - 1
-                _Cells.Add(CreateDefaultCell())
+                _Cells.Add(New CellInfo(i))
             Next
         ElseIf NewCount < _Cells.Count Then
             ' Shrink: remove extra cells
@@ -1042,11 +1057,119 @@ Public Class FloppyTrackGrid
     End Sub
     '=== Per-cell state ===
     Public Structure CellInfo
+        Public ReadOnly Track As UShort
         Public BackColor As Color
         Public ForeColor As Color
         Public Selected As Boolean
         Public Text As String
-        Public Tooltip As String
+        Private _FluxHostDate As String
+        Private _FluxHostTime As String
+        Private _FluxName As String
+        Private _FluxVersion As String
+        Private _FullTooltip As String
+        Private _Tooltip As String
+
+        Public Sub New(Track As UShort)
+            Me.Track = Track
+            Me.BackColor = DEFAULT_BACKCOLOR
+            Me.ForeColor = DEFAULT_FORECOLOR
+            Me.Text = String.Empty
+            Me.Selected = False
+            _Tooltip = String.Empty
+            _FluxName = String.Empty
+            _FluxVersion = String.Empty
+            _FluxHostDate = String.Empty
+            _FluxHostTime = String.Empty
+            _FullTooltip = GetFullTooltip()
+        End Sub
+
+        Public ReadOnly Property FluxHostDate As String
+            Get
+                Return _FluxHostDate
+            End Get
+        End Property
+
+        Public ReadOnly Property FluxHostTime As String
+            Get
+                Return _FluxHostTime
+            End Get
+        End Property
+
+        Public ReadOnly Property FluxName As String
+            Get
+                Return _FluxName
+            End Get
+        End Property
+
+        Public ReadOnly Property FluxVersion As String
+            Get
+                Return _FluxVersion
+            End Get
+        End Property
+
+        Public ReadOnly Property FullTooltip As String
+            Get
+                Return _FullTooltip
+            End Get
+        End Property
+
+        Public Property Tooltip As String
+            Get
+                Return _Tooltip
+            End Get
+            Set(value As String)
+                If _Tooltip <> value Then
+                    _Tooltip = value
+                    _FullTooltip = GetFullTooltip()
+                End If
+            End Set
+        End Property
+
+        Public Sub SetFluxHeader(Name As String, Version As String, HostDate As String, HostTime As String)
+            _FluxName = Name
+            _FluxVersion = Version
+            _FluxHostDate = HostDate
+            _FluxHostTime = HostTime
+
+            _FullTooltip = GetFullTooltip()
+        End Sub
+
+        Private Function GetFluxInfo() As String
+            Dim FluxInfo As String = ""
+
+            If Not String.IsNullOrEmpty(_FluxName) Then
+                FluxInfo = _FluxName
+                If Not String.IsNullOrEmpty(_FluxVersion) Then
+                    FluxInfo &= "  v" & _FluxVersion
+                End If
+            End If
+
+            If Not String.IsNullOrEmpty(_FluxHostDate) Then
+                If Not String.IsNullOrEmpty(FluxInfo) Then
+                    FluxInfo &= vbNewLine
+                End If
+                FluxInfo &= _FluxHostDate
+                If Not String.IsNullOrEmpty(_FluxHostTime) Then
+                    FluxInfo &= "  " & _FluxHostTime
+                End If
+            End If
+
+            Return FluxInfo
+        End Function
+
+        Private Function GetFullTooltip() As String
+            Dim TooltipText = GetFluxInfo()
+
+            If Not String.IsNullOrWhiteSpace(_Tooltip) Then
+                If Not String.IsNullOrEmpty(TooltipText) Then
+                    TooltipText &= vbNewLine
+                End If
+
+                TooltipText &= _Tooltip
+            End If
+
+            Return TooltipText
+        End Function
     End Structure
 
     Public Structure TrackState

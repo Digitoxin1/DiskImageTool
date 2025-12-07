@@ -10,48 +10,39 @@ Namespace Flux
                 "LPT1", "LPT2", "LPT3", "LPT4", "LPT5", "LPT6", "LPT7", "LPT8", "LPT9"
             }
 
-        Public Function AnalyzeFluxImage(FilePath As String, AllowSCP As Boolean) As (Result As Boolean, TrackCount As Integer, SideCount As Integer)
-            Dim AnalyzeResponse As (Result As Boolean, TrackCount As Integer, SideCount As Integer)
-
+        Public Function AnalyzeFluxImage(FilePath As String, AllowSCP As Boolean, Optional ReadHeaders As Boolean = False) As FluxSetInfo
             Dim FileExt = IO.Path.GetExtension(FilePath).ToLower
-            AnalyzeResponse.Result = False
-            AnalyzeResponse.TrackCount = 0
-            AnalyzeResponse.SideCount = 0
+
+            Dim Response = New FluxSetInfo(False, 0, 0)
 
             If FileExt = ".raw" Then
-                Dim Response = GetTrackCountRaw(FilePath)
+                Response = GetFluxSetInfoRaw(FilePath, ReadHeaders)
                 If Not Response.Result Then
                     MsgBox(My.Resources.Dialog_InvalidKryofluxFile, MsgBoxStyle.Exclamation)
-                    Return AnalyzeResponse
-                Else
-                    AnalyzeResponse.TrackCount = Response.Tracks
-                    AnalyzeResponse.SideCount = Response.Sides
+                    Return Response
                 End If
             ElseIf AllowSCP AndAlso FileExt = ".scp" Then
-                Dim Response = GetTrackCountSCP(FilePath)
+                Response = GetFluxSetInfoSCP(FilePath)
                 If Not Response.Result Then
                     MsgBox(My.Resources.Dialog_InvalidSCPFile, MsgBoxStyle.Exclamation)
-                    Return AnalyzeResponse
-                Else
-                    AnalyzeResponse.TrackCount = Response.Tracks
-                    AnalyzeResponse.SideCount = Response.Sides
+                    Return Response
                 End If
             Else
                 MsgBox(My.Resources.Dialog_InvalidFileType, MsgBoxStyle.Exclamation)
-                Return AnalyzeResponse
+                Return Response
             End If
 
-            If AnalyzeResponse.SideCount > 2 Then
-                AnalyzeResponse.SideCount = 2
+            If Response.SideCount > 2 Then
+                Response.SideCount = 2
             End If
 
-            If AnalyzeResponse.TrackCount > 42 And AnalyzeResponse.TrackCount < 80 Then
-                AnalyzeResponse.TrackCount = 80
+            If Response.TrackCount > 42 And Response.TrackCount < 80 Then
+                Response.TrackCount = 80
             End If
 
-            AnalyzeResponse.Result = True
+            Response.Result = True
 
-            Return AnalyzeResponse
+            Return Response
         End Function
 
         Public Function BrowseFolder(CurrentPath As String) As String
@@ -81,13 +72,13 @@ Namespace Flux
                 Return (DialogResult.Abort, "", "")
             End If
 
-            Dim AnalyzeResponse = AnalyzeFluxImage(FilePath, AllowSCP)
+            Dim AnalyzeResponse = AnalyzeFluxImage(FilePath, AllowSCP, True)
 
             If Not AnalyzeResponse.Result Then
                 Return (DialogResult.Abort, "", "")
             End If
 
-            Using form As New ConvertImageForm(TempPath, FilePath, AnalyzeResponse.TrackCount, AnalyzeResponse.SideCount, LaunchedFromDialog)
+            Using form As New ConvertImageForm(TempPath, FilePath, AnalyzeResponse, LaunchedFromDialog)
 
                 If importHandler IsNot Nothing Then
                     AddHandler form.ImportProcess, importHandler
@@ -201,27 +192,26 @@ Namespace Flux
             End Try
         End Function
 
-        Public Function GetTrackCountRaw(FilePath As String) As (Result As Boolean, Tracks As Integer, Sides As Integer)
-            Dim TrackCount As Integer = 0
-            Dim SideCount As Integer = 0
+        Public Function GetFluxSetInfoRaw(FilePath As String, Optional ReadHeaders As Boolean = False) As FluxSetInfo
+            Dim Response As New FluxSetInfo(False, 0, 0)
 
             If String.IsNullOrWhiteSpace(FilePath) OrElse Not IO.File.Exists(FilePath) Then
-                Return (False, TrackCount, SideCount)
+                Return Response
             End If
 
             If Not FilePath.EndsWith(".raw", StringComparison.OrdinalIgnoreCase) Then
-                Return (False, TrackCount, SideCount)
+                Return Response
             End If
 
             Dim ParentDir = IO.Path.GetDirectoryName(FilePath)
             If String.IsNullOrEmpty(ParentDir) OrElse Not IO.Directory.Exists(ParentDir) Then
-                Return (False, TrackCount, SideCount)
+                Return Response
             End If
 
             Dim BaseName = IO.Path.GetFileName(FilePath)
             Dim PrefixMatch = Regex.Match(BaseName, REGEX_RAW_FILE, RegexOptions.IgnoreCase)
             If Not PrefixMatch.Success Then
-                Return (False, TrackCount, SideCount)
+                Return Response
             End If
 
             Dim Prefix As String = PrefixMatch.Groups("diskId").Value
@@ -236,34 +226,43 @@ Namespace Flux
                         Dim trk As Integer = Integer.Parse(m.Groups("track").Value)
                         Dim side As Integer = Integer.Parse(m.Groups("side").Value)
 
-                        If trk >= TrackCount Then
-                            TrackCount = trk + 1
+                        If trk >= Response.TrackCount Then
+                            Response.TrackCount = trk + 1
                         End If
 
-                        If side >= SideCount Then
-                            SideCount = side + 1
+                        If side >= Response.SideCount Then
+                            Response.SideCount = side + 1
+                        End If
+
+                        If ReadHeaders Then
+                            Dim TrackHeaders = ReadRawHeaderInfo(file)
+                            Response.AddTrackHeaders(trk, side, TrackHeaders)
                         End If
                     End If
                 End If
             Next
 
-            Return (True, TrackCount, SideCount)
+            Response.Result = True
+
+            Return Response
         End Function
 
-        Public Function GetTrackCountSCP(FilePath As String) As (Result As Boolean, Tracks As Integer, Sides As Integer)
+        Public Function GetFluxSetInfoSCP(FilePath As String) As FluxSetInfo
+            Dim Response As New FluxSetInfo(False, 0, 0)
+
             If String.IsNullOrWhiteSpace(FilePath) OrElse Not IO.File.Exists(FilePath) Then
-                Return (False, 0, 0)
+                Return Response
             End If
 
             If Not FilePath.EndsWith(".scp", StringComparison.OrdinalIgnoreCase) Then
-                Return (False, 0, 0)
+                Return Response
             End If
 
             Using fs As New IO.FileStream(FilePath, IO.FileMode.Open, IO.FileAccess.Read, IO.FileShare.Read)
                 Using br As New IO.BinaryReader(fs, System.Text.Encoding.ASCII, leaveOpen:=False)
                     Dim sig = br.ReadBytes(3) ' "SCP"
                     If sig.Length <> 3 OrElse sig(0) <> AscW("S"c) OrElse sig(1) <> AscW("C"c) OrElse sig(2) <> AscW("P"c) Then
-                        Return (False, 0, 0)
+                        Return Response
                     End If
 
                     ' Seek to relevant header bytes
@@ -280,7 +279,11 @@ Namespace Flux
                         Case Else : sideCount = 2
                     End Select
 
-                    Return (True, endTrack \ sideCount + 1, sideCount)
+                    Response.Result = True
+                    Response.TrackCount = endTrack \ sideCount + 1
+                    Response.SideCount = sideCount
+
+                    Return Response
                 End Using
             End Using
         End Function
@@ -465,6 +468,69 @@ Namespace Flux
             End If
         End Sub
 
+        Public Function ReadRawHeaderInfo(path As String) As Dictionary(Of String, String)
+            Dim fields As New Dictionary(Of String, String)(StringComparer.OrdinalIgnoreCase)
+
+            Dim fsOptions = IO.FileOptions.SequentialScan
+            Using fs As New IO.FileStream(path, IO.FileMode.Open, IO.FileAccess.Read, IO.FileShare.Read, 4096, fsOptions)
+                Using br As New IO.BinaryReader(fs, Text.Encoding.ASCII, leaveOpen:=False)
+
+                    Dim sawType4 As Boolean = False
+
+                    While fs.Position < fs.Length
+                        Dim sign As Integer = br.Read()
+                        If sign = -1 Then
+                            Exit While
+                        End If
+
+                        ' We only care about leading OOB blocks; bail once we hit non-0x0D.
+                        If sign <> &HD Then
+                            Exit While
+                        End If
+
+                        Dim oobType As Integer = br.Read()
+                        If oobType = -1 Then
+                            Exit While
+                        End If
+
+                        Dim sizeLo As Integer = br.Read()
+                        Dim sizeHi As Integer = br.Read()
+                        If sizeLo = -1 OrElse sizeHi = -1 Then
+                            Exit While
+                        End If
+
+                        Dim size As Integer = sizeLo Or (sizeHi << 8)
+
+                        If size <= 0 Then
+                            ' malformed; bail
+                            Exit While
+                        End If
+
+                        ' Read payload bytes
+                        Dim payload As Byte() = br.ReadBytes(size)
+                        If payload.Length < size Then
+                            Exit While ' truncated
+                        End If
+
+                        If oobType = &H4 Then
+                            ' KFInfo string: ASCII key=value pairs
+                            sawType4 = True
+                            ParseKfInfoPayload(payload, fields)
+                        Else
+                            ' First non-0x04 OOB after we’ve seen at least one 0x04:
+                            ' assume we’re past the header area and stop.
+                            If sawType4 Then
+                                Exit While
+                            End If
+                            ' otherwise (weird file where 0x04 comes later): just continue
+                        End If
+                    End While
+                End Using
+            End Using
+
+            Return fields
+        End Function
+
         Public Function RemovePathFromLog(logText As String) As String
             Const Prefix As String = "Stream file:"
 
@@ -511,6 +577,7 @@ Namespace Flux
 
             IO.File.WriteAllText(LogFilePath, LogText & vbNewLine)
         End Sub
+
         Public Function UShortListToRanges(values As List(Of UShort)) As String
             If values Is Nothing OrElse values.Count = 0 Then Return ""
 
@@ -579,6 +646,24 @@ Namespace Flux
             Return False
         End Function
 
+        Private Sub ParseKfInfoPayload(payload As Byte(), fields As Dictionary(Of String, String))
+            ' payload is ASCII, often NUL-terminated
+            Dim s As String = Text.Encoding.ASCII.GetString(payload).TrimEnd(ChrW(0))
+
+            ' Split on ", "
+            Dim parts = s.Split(New String() {", "}, StringSplitOptions.RemoveEmptyEntries)
+            For Each part In parts
+                Dim idx = part.IndexOf("="c)
+                If idx > 0 Then
+                    Dim key = part.Substring(0, idx).Trim()
+                    Dim value = part.Substring(idx + 1).Trim()
+                    If key.Length > 0 Then
+                        fields(key) = value   ' last one wins if duplicate
+                    End If
+                End If
+            Next
+        End Sub
+
         Public Structure FileExtensionItem
             Public Sub New(ext As String, fmt As FloppyDiskFormat?)
                 Extension = ext
@@ -590,6 +675,34 @@ Namespace Flux
             Public Overrides Function ToString() As String
                 Return Extension
             End Function
+        End Structure
+
+        Public Structure FluxSetInfo
+            Public ReadOnly Headers As Dictionary(Of TrackSide, Dictionary(Of String, String))
+            Public Sub New(Result As Boolean, TrackCount As Integer, SideCount As Integer)
+                Me.Result = Result
+                Me.TrackCount = TrackCount
+                Me.SideCount = SideCount
+                Me.Headers = New Dictionary(Of TrackSide, Dictionary(Of String, String))
+            End Sub
+
+            Public Property Result As Boolean
+            Public Property SideCount As Integer
+            Public Property TrackCount As Integer
+
+            Public Sub AddTrackHeaders(Track As UShort, Side As Byte, Data As Dictionary(Of String, String))
+                Dim ts As New TrackSide(Track, Side)
+                Me.Headers(ts) = Data
+            End Sub
+        End Structure
+
+        Public Structure TrackSide
+            Public ReadOnly Side As Byte
+            Public ReadOnly Track As UShort
+            Public Sub New(Track As UShort, Side As Byte)
+                Me.Track = Track
+                Me.Side = Side
+            End Sub
         End Structure
 
         Public Class DriveOption

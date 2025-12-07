@@ -49,14 +49,14 @@ Partial Class ImagePreview
         PanelBottom.Location = New System.Drawing.Point(0, 468)
         PanelBottom.Name = "PanelBottom"
         PanelBottom.Padding = New System.Windows.Forms.Padding(6, 10, 6, 10)
-        PanelBottom.Size = New System.Drawing.Size(924, 43)
+        PanelBottom.Size = New System.Drawing.Size(939, 43)
         PanelBottom.TabIndex = 1
         PanelBottom.WrapContents = False
         '
         'OKButton
         '
         Me.OKButton.DialogResult = System.Windows.Forms.DialogResult.OK
-        Me.OKButton.Location = New System.Drawing.Point(831, 10)
+        Me.OKButton.Location = New System.Drawing.Point(846, 10)
         Me.OKButton.Margin = New System.Windows.Forms.Padding(6, 0, 6, 0)
         Me.OKButton.Name = "OKButton"
         Me.OKButton.Size = New System.Drawing.Size(75, 23)
@@ -80,7 +80,7 @@ Partial Class ImagePreview
         'SplitContainer1.Panel2
         '
         SplitContainer1.Panel2.Controls.Add(Me.ListViewFiles)
-        SplitContainer1.Size = New System.Drawing.Size(892, 452)
+        SplitContainer1.Size = New System.Drawing.Size(907, 452)
         SplitContainer1.SplitterDistance = 308
         SplitContainer1.SplitterWidth = 6
         SplitContainer1.TabIndex = 0
@@ -103,6 +103,16 @@ Partial Class ImagePreview
         Me.PanelSpacer.Size = New System.Drawing.Size(308, 6)
         Me.PanelSpacer.TabIndex = 1
         '
+        'PanelMain
+        '
+        PanelMain.Controls.Add(SplitContainer1)
+        PanelMain.Dock = System.Windows.Forms.DockStyle.Fill
+        PanelMain.Location = New System.Drawing.Point(0, 0)
+        PanelMain.Name = "PanelMain"
+        PanelMain.Padding = New System.Windows.Forms.Padding(16, 16, 16, 0)
+        PanelMain.Size = New System.Drawing.Size(939, 468)
+        PanelMain.TabIndex = 0
+        '
         'HashPanel1
         '
         Me.HashPanel1.BackColor = System.Drawing.SystemColors.Window
@@ -121,25 +131,15 @@ Partial Class ImagePreview
         Me.ListViewFiles.HideSelection = False
         Me.ListViewFiles.Location = New System.Drawing.Point(0, 0)
         Me.ListViewFiles.Name = "ListViewFiles"
-        Me.ListViewFiles.Size = New System.Drawing.Size(578, 452)
+        Me.ListViewFiles.Size = New System.Drawing.Size(593, 452)
         Me.ListViewFiles.TabIndex = 0
         Me.ListViewFiles.UseCompatibleStateImageBehavior = False
-        '
-        'PanelMain
-        '
-        PanelMain.Controls.Add(SplitContainer1)
-        PanelMain.Dock = System.Windows.Forms.DockStyle.Fill
-        PanelMain.Location = New System.Drawing.Point(0, 0)
-        PanelMain.Name = "PanelMain"
-        PanelMain.Padding = New System.Windows.Forms.Padding(16, 16, 16, 0)
-        PanelMain.Size = New System.Drawing.Size(924, 468)
-        PanelMain.TabIndex = 0
         '
         'ImagePreview
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
-        Me.ClientSize = New System.Drawing.Size(924, 511)
+        Me.ClientSize = New System.Drawing.Size(939, 511)
         Me.Controls.Add(PanelMain)
         Me.Controls.Add(PanelBottom)
         Me.MaximizeBox = False

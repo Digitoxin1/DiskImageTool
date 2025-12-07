@@ -397,7 +397,7 @@ Namespace Flux.Greaseweazle
 
             TrackCount = Math.Max(TrackCount, _TrackCount)
 
-            GridReset(TrackCount, _SideCount, ResetSelected)
+            GridReset(TrackCount, _SideCount, Nothing, ResetSelected)
         End Sub
 
         Private Function RetriesAllowed() As Boolean

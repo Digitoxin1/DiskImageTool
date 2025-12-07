@@ -262,7 +262,7 @@ Namespace Flux.Greaseweazle
 
             Dim TrackCount As UShort = If(Opt.Type = FloppyDriveType.DriveUnknown, GreaseweazleSettings.MAX_TRACKS, Opt.Tracks)
 
-            GridReset(TrackCount, 2, ResetSelected)
+            GridReset(TrackCount, 2, Nothing, ResetSelected)
         End Sub
 
 #Region "Events"

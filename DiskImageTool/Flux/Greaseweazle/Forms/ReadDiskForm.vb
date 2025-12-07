@@ -1091,7 +1091,7 @@ Namespace Flux.Greaseweazle
 
             TrackCount = Math.Max(TrackCount, Opt.Tracks)
 
-            GridReset(TrackCount, SideCount, ResetSelected)
+            GridReset(TrackCount, SideCount, Nothing, ResetSelected)
         End Sub
 
         Private Function SelectedDiskFormat() As FloppyDiskFormat?

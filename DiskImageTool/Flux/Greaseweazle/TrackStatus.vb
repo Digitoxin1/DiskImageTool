@@ -304,9 +304,7 @@
         End Function
 
         Private Function BuildTooltip(StatusInfo As TrackStatusInfo) As String
-            Dim Tooltip As New List(Of String) From {
-                My.Resources.Label_Track & ":  " & StatusInfo.Track & "." & StatusInfo.Side
-            }
+            Dim Tooltip As New List(Of String)
 
             If StatusInfo.Retries > 0 Then
                 Tooltip.Add(My.Resources.Label_Retries & ":  " & StatusInfo.Retries)

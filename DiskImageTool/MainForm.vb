@@ -1073,7 +1073,7 @@ Public Class MainForm
                     IsFluxIamge = True
                 End If
             ElseIf IO.Path.GetExtension(FilePath).ToLower = ".raw" Then
-                Dim Response = Flux.GetTrackCountRaw(FilePath)
+                Dim Response = Flux.GetFluxSetInfoRaw(FilePath)
                 If Response.Result Then
                     IsFluxIamge = True
                 End If

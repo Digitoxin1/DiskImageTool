@@ -5,6 +5,7 @@
         Private WithEvents TS0 As FloppyTrackGrid
         Private WithEvents TS1 As FloppyTrackGrid
         Private Const TOTAL_TRACKS As UShort = 84
+        Private _FluxHeaders As Dictionary(Of TrackSide, Dictionary(Of String, String))
         Private _LogFileName As String = ""
         Private _LogStripPath As Boolean = False
         Private _Sides As Byte
@@ -132,15 +133,20 @@
         End Function
 
         Public Sub GridReset()
-            GridReset(_Tracks, _Sides)
+            GridReset(_Tracks, _Sides, _FluxHeaders)
         End Sub
 
-        Public Sub GridReset(Tracks As UShort, Sides As Byte, Optional ResetSelected As Boolean = True)
+        Friend Sub GridReset(Tracks As UShort, Sides As Byte, Optional FluxHeaders As Dictionary(Of TrackSide, Dictionary(Of String, String)) = Nothing, Optional ResetSelected As Boolean = True)
             _Tracks = Tracks
             _Sides = Sides
 
             GridResetTracks(TS0, Tracks, False, ResetSelected)
             GridResetTracks(TS1, Tracks, Sides < 2, ResetSelected)
+
+            If _FluxHeaders IsNot FluxHeaders Then
+                _FluxHeaders = FluxHeaders
+                GridUpdateFluxHeaders()
+            End If
         End Sub
 
         Public Overridable Sub SaveLog(RemovePath As Boolean, Optional InitialDirectory As String = "")
@@ -250,6 +256,32 @@
             Dim Table = GridGetTable(Side)
 
             Table?.SetCellTooltip(Track, Tooltip)
+        End Sub
+
+        Private Sub GridUpdateFluxHeaders()
+            For Track = 0 To _Tracks - 1
+                For Side = 0 To _Sides - 1
+                    Dim Table = GridGetTable(Side)
+
+                    If Table IsNot Nothing Then
+                        Dim Name As String = ""
+                        Dim Version As String = ""
+                        Dim HostDate As String = ""
+                        Dim HostTime As String = ""
+                        If _FluxHeaders IsNot Nothing Then
+                            Dim Headers As Dictionary(Of String, String) = Nothing
+                            _FluxHeaders.TryGetValue(New TrackSide(Track, Side), Headers)
+                            If Headers IsNot Nothing Then
+                                Headers.TryGetValue("name", Name)
+                                Headers.TryGetValue("version", Version)
+                                Headers.TryGetValue("host_date", HostDate)
+                                Headers.TryGetValue("host_time", HostTime)
+                            End If
+                        End If
+                        Table.SetCellFluxHeader(Track, Name, Version, HostDate, HostTime)
+                    End If
+                Next
+            Next
         End Sub
 
         Private Sub LocalizeForm()

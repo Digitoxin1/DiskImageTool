@@ -39,6 +39,7 @@ Namespace Flux
         Private _SelectedSource As IDevice = Nothing
         Private _SideCount As Integer
         Private _TrackCount As Integer
+        Private _FluxHeaders As Dictionary(Of TrackSide, Dictionary(Of String, String))
         Private _TrackLayoutExists As Boolean = False
         Private CheckBox86FSurfaceData As CheckBox
         Private CheckBoxRemaster As CheckBox
@@ -47,7 +48,7 @@ Namespace Flux
 
         Public Event ImportProcess(File As String, NewFilename As String)
 
-        Public Sub New(TempPath As String, FilePath As String, TrackCount As Integer, SideCount As Integer, LaunchedFromDialog As Boolean)
+        Friend Sub New(TempPath As String, FilePath As String, FluxSetinfo As FluxSetInfo, LaunchedFromDialog As Boolean)
             MyBase.New("")
 
             Me.AllowDrop = True
@@ -60,8 +61,9 @@ Namespace Flux
             _LaunchedFromDialog = LaunchedFromDialog
             _InputFilePath = FilePath
             _OutputImages = New OutputImages(TempPath)
-            _TrackCount = TrackCount
-            _SideCount = SideCount
+            _TrackCount = FluxSetinfo.TrackCount
+            _SideCount = FluxSetinfo.SideCount
+            _FluxHeaders = FluxSetinfo.Headers
 
             InitializeControls()
 
@@ -156,6 +158,7 @@ Namespace Flux
         Private Sub ClearLoadedImage()
             TextBoxFileName.Text = ""
             _InputFilePath = ""
+            _FluxHeaders = Nothing
             ComboImageFormat.SelectedIndex = 0
             CheckBoxRemaster.Checked = False
             _TrackLayoutExists = False
@@ -166,7 +169,7 @@ Namespace Flux
         Private Sub ClearProcessedImage()
             TextBoxConsole.Clear()
             ClearStatusBar()
-            GridReset(_TrackCount, _SideCount)
+            GridReset(_TrackCount, _SideCount, _FluxHeaders)
 
             TrackStatus.Clear()
         End Sub
@@ -587,7 +590,7 @@ Namespace Flux
             If Clear Then
                 SetNewFileName()
                 SetTiltebarText()
-                GridReset(_TrackCount, _SideCount)
+                GridReset(_TrackCount, _SideCount, _FluxHeaders)
                 ClearStatusBar()
             End If
             Dim ImageFormat = ReadImageFormat()
@@ -613,10 +616,11 @@ Namespace Flux
             Dim SelectedDevice As IDevice = CType(ComboDevices.SelectedItem, IDevice)
             Dim AllowSCP As Boolean = SelectedDevice.InputTypeSupported(InputFileTypeEnum.scp)
 
-            Dim response = AnalyzeFluxImage(Filename, AllowSCP)
-            If response.Result Then
-                _TrackCount = response.TrackCount
-                _SideCount = response.SideCount
+            Dim Response = AnalyzeFluxImage(Filename, AllowSCP, True)
+            If Response.Result Then
+                _TrackCount = Response.TrackCount
+                _SideCount = Response.SideCount
+                _FluxHeaders = Response.Headers
                 _InputFilePath = Filename
 
                 RefreshRemasterState()
@@ -858,9 +862,9 @@ Namespace Flux
                 RaiseEvent ImportProcess(_OutputFilePath, GetNewFileName())
             End If
 
-            ClearProcessedImage()
             _OutputImages.ClearImages()
             ClearLoadedImage()
+            ClearProcessedImage()
         End Sub
 
         Private Sub ProcessOutputLine(line As String)
@@ -1334,9 +1338,9 @@ Namespace Flux
         End Class
 #Region "Events"
         Private Sub ButtonDiscard_Click(sender As Object, e As EventArgs) Handles ButtonDiscard.Click
-            ClearProcessedImage()
             _OutputImages.ClearImages()
             ClearLoadedImage()
+            ClearProcessedImage()
         End Sub
 
         Private Sub ButtonImport_Click(sender As Object, e As EventArgs) Handles ButtonImport.Click
