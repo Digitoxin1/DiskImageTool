@@ -58,7 +58,7 @@ Namespace Flux.Greaseweazle
             StatusStripBottom.Items.Add(New ToolStripStatusLabel(Mode))
 
             Dim AvailableTypes = Settings.AvailableDriveTypes
-            Dim SelectedFormat = GreaseweazleFindCompatibleFloppyType(_DiskParams, AvailableTypes)
+            Dim SelectedFormat = GreaseweazleFindCompatibleDriveType(_DiskParams, AvailableTypes)
 
             PopulateDrives(ComboImageDrives, SelectedFormat)
             ResetState()
@@ -78,11 +78,11 @@ Namespace Flux.Greaseweazle
         Private Function CheckCompatibility() As Boolean
             Dim Opt As DriveOption = ComboImageDrives.SelectedValue
 
-            If Opt.Type = FloppyMediaType.MediaUnknown Then
+            If Opt.Type = FloppyDriveType.DriveUnknown Then
                 Return True
             End If
 
-            Dim FloppyType = GreaseweazleFindCompatibleFloppyType(_DiskParams, Opt.Type)
+            Dim FloppyType = GreaseweazleFindCompatibleDriveType(_DiskParams, Opt.Type)
 
             Return FloppyType = Opt.Type
         End Function
@@ -105,11 +105,11 @@ Namespace Flux.Greaseweazle
         Private Function GetEndTrackFromDriveOption(Opt As DriveOption) As UShort
             Dim TrackCount As Integer = Opt.Tracks
 
-            If _DiskParams.MediaType = FloppyMediaType.Media525DoubleDensity Then
-                If Opt.Type <> FloppyMediaType.Media525DoubleDensity AndAlso Opt.Type <> FloppyMediaType.Media525HighDensity Then
+            If _DiskParams.DriveType = FloppyDriveType.Drive525DoubleDensity Then
+                If Opt.Type <> FloppyDriveType.Drive525DoubleDensity AndAlso Opt.Type <> FloppyDriveType.Drive525HighDensity Then
                     TrackCount = GreaseweazleSettings.MAX_TRACKS_525DD
                 End If
-            ElseIf Opt.Type = FloppyMediaType.Media525DoubleDensity AndAlso _TrackCount > GreaseweazleSettings.MAX_TRACKS_525DD Then
+            ElseIf Opt.Type = FloppyDriveType.Drive525DoubleDensity AndAlso _TrackCount > GreaseweazleSettings.MAX_TRACKS_525DD Then
                 TrackCount = GreaseweazleSettings.MIN_TRACKS_525DD
             End If
 
@@ -385,8 +385,8 @@ Namespace Flux.Greaseweazle
             Dim Opt As DriveOption = ComboImageDrives.SelectedValue
 
             Dim TrackCount As UShort
-            If Opt.Type = FloppyMediaType.MediaUnknown Then
-                If _DiskParams.MediaType = FloppyMediaType.Media525DoubleDensity Then
+            If Opt.Type = FloppyDriveType.DriveUnknown Then
+                If _DiskParams.DriveType = FloppyDriveType.Drive525DoubleDensity Then
                     TrackCount = GreaseweazleSettings.MAX_TRACKS_525DD
                 Else
                     TrackCount = GreaseweazleSettings.MAX_TRACKS
@@ -475,7 +475,7 @@ Namespace Flux.Greaseweazle
                 Builder.Retries = NumericRetries.Value
             End If
 
-            _DoubleStep = (Opt.Type = FloppyMediaType.Media525HighDensity And _DiskParams.MediaType = FloppyMediaType.Media525DoubleDensity)
+            _DoubleStep = (Opt.Type = FloppyDriveType.Drive525HighDensity And _DiskParams.DriveType = FloppyDriveType.Drive525DoubleDensity)
 
             If _DoubleStep Then
                 Builder.HeadStep = 2

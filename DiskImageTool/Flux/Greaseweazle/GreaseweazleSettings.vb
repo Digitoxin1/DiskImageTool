@@ -56,9 +56,9 @@ Namespace Flux.Greaseweazle
             End Set
         End Property
 
-        Public ReadOnly Property AvailableDriveTypes As FloppyMediaType
+        Public ReadOnly Property AvailableDriveTypes As FloppyDriveType
             Get
-                Dim AvailableTypes As FloppyMediaType = Drives(0).Type Or Drives(1).Type
+                Dim AvailableTypes As FloppyDriveType = Drives(0).Type Or Drives(1).Type
                 If [Interface] = GreaseweazleInterface.Shugart Then
                     AvailableTypes = AvailableTypes Or Drives(2).Type
                 End If

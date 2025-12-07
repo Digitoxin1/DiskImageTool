@@ -21,7 +21,7 @@ Namespace Flux.Greaseweazle
             NumericLinger.Value = CommandLineBuilder.DEFAULT_LINGER
             NumericPasses.Value = CommandLineBuilder.DEFAULT_PASSES
 
-            PopulateDrives(ComboImageDrives, FloppyMediaType.MediaUnknown)
+            PopulateDrives(ComboImageDrives, FloppyDriveType.DriveUnknown)
             ResetState()
             RefreshButtonState()
             RefreshCylinderCount()
@@ -207,7 +207,7 @@ Namespace Flux.Greaseweazle
         Private Sub RefreshCylinderCount()
             Dim Opt As DriveOption = ComboImageDrives.SelectedValue
 
-            Dim MaxTrackCount As UShort = IIf(Opt.Type = FloppyMediaType.Media525DoubleDensity, 40, 80)
+            Dim MaxTrackCount As UShort = IIf(Opt.Type = FloppyDriveType.Drive525DoubleDensity, 40, 80)
 
             If NumericCyls.Maximum <> MaxTrackCount Then
                 NumericCyls.Maximum = MaxTrackCount

@@ -13,11 +13,10 @@ Namespace Flux.Greaseweazle
         Private WithEvents ButtonPreview As Button
         Private WithEvents ButtonProcess As Button
         Private WithEvents ButtonReset As Button
-        Private WithEvents CheckBoxDoublestep As CheckBox
         Private WithEvents CheckBoxSaveLog As CheckBox
         Private WithEvents CheckBoxSelect As CheckBox
+        Private WithEvents ComboDrives As ComboBox
         Private WithEvents ComboExtensions As ComboBox
-        Private WithEvents ComboImageDrives As ComboBox
         Private WithEvents ComboImageFormat As ComboBox
         Private WithEvents ComboOutputType As ComboBox
         Private WithEvents TextBoxFileName As TextBox
@@ -27,7 +26,6 @@ Namespace Flux.Greaseweazle
         Private ReadOnly _HelpProvider1 As HelpProvider
         Private ReadOnly _Initialized As Boolean = False
         Private ReadOnly _UserState As Settings.UserStateFlux
-        Private _CheckBoxDoubleStepNoEvent As Boolean = False
         Private _ComboExtensionsNoEvent As Boolean = False
         Private _ComboImageFormatNoEvent As Boolean = False
         Private _ComboOutputTypeNoEvent As Boolean = False
@@ -37,8 +35,8 @@ Namespace Flux.Greaseweazle
         Private _NumericRetries As NumericUpDown
         Private _NumericRevs As NumericUpDown
         Private _NumericSeekRetries As NumericUpDown
+        Private _OutputDoubleStep As Boolean = False
         Private _OutputFilePath As String = ""
-        Private _OutputParams As FloppyDiskParams? = Nothing
         Private _SelectedOption As DriveOption
         Private LabelDrive As Label
         Private LabelFileName As Label
@@ -65,7 +63,7 @@ Namespace Flux.Greaseweazle
 
             IntitializeHelp()
 
-            _SelectedOption = PopulateDrives(ComboImageDrives, FloppyMediaType.MediaUnknown, GetSelectedDeviceState.DriveId)
+            _SelectedOption = PopulateDrives(ComboDrives, FloppyDriveType.DriveUnknown, GetSelectedDeviceState.DriveId)
             PopulateImageFormats()
             InitializeImage()
 
@@ -134,7 +132,7 @@ Namespace Flux.Greaseweazle
             Dim Opt As DriveOption = _SelectedOption
             Dim DiskParams = SelectedDiskParams()
 
-            If Opt.Type = FloppyMediaType.MediaUnknown Then
+            If Opt.Type = FloppyDriveType.DriveUnknown Then
                 Return True
             End If
 
@@ -143,7 +141,7 @@ Namespace Flux.Greaseweazle
             End If
 
 
-            Dim FloppyType = GreaseweazleFindCompatibleFloppyType(DiskParams.Value, Opt.Type)
+            Dim FloppyType = GreaseweazleFindCompatibleDriveType(DiskParams.Value, Opt.Type)
 
             Return FloppyType = Opt.Type
         End Function
@@ -207,7 +205,7 @@ Namespace Flux.Greaseweazle
             End If
 
             _OutputFilePath = ""
-            _OutputParams = Nothing
+            _OutputDoubleStep = False
             _FileOverwriteMode = False
 
             HideSelection(False)
@@ -232,7 +230,9 @@ Namespace Flux.Greaseweazle
             End If
 
             If RefreshState Then
-                _SelectedOption.ResetFormats()
+                For Each Opt As DriveOption In ComboDrives.Items
+                    Opt.ResetFormats()
+                Next
                 PopulateImageFormats()
                 RefreshFormState()
             End If
@@ -375,7 +375,7 @@ Namespace Flux.Greaseweazle
                 .AutoSize = True
             }
 
-            ComboImageDrives = New ComboBox With {
+            ComboDrives = New ComboBox With {
                 .Anchor = AnchorStyles.Left Or AnchorStyles.Right,
                 .Width = 180
             }
@@ -424,13 +424,6 @@ Namespace Flux.Greaseweazle
 
             CheckBoxSaveLog = New CheckBox With {
                 .Text = My.Resources.Label_SaveLog,
-                .Anchor = AnchorStyles.Left,
-                .AutoSize = True,
-                .Margin = New Padding(12, 3, 3, 3)
-            }
-
-            CheckBoxDoublestep = New CheckBox With {
-                .Text = My.Resources.Label_DoubleStep,
                 .Anchor = AnchorStyles.Left,
                 .AutoSize = True,
                 .Margin = New Padding(12, 3, 3, 3)
@@ -565,11 +558,10 @@ Namespace Flux.Greaseweazle
             }
 
             LabelWarning = New Label With {
-                .Text = My.Resources.Message_ImageFormatWarning,
-                .ForeColor = Color.Red,
+                .Text = "",
                 .AutoSize = True,
-                .TextAlign = ContentAlignment.TopRight,
-                .Dock = DockStyle.Right,
+                .TextAlign = ContentAlignment.TopLeft,
+                .Dock = DockStyle.Left,
                 .Visible = False
             }
 
@@ -620,13 +612,13 @@ Namespace Flux.Greaseweazle
 
                 Row = 2
                 .Controls.Add(LabelDrive, 0, Row)
-                .Controls.Add(ComboImageDrives, 1, Row)
+                .Controls.Add(ComboDrives, 1, Row)
 
                 .Controls.Add(LabelOutputType, 2, Row)
                 .Controls.Add(ComboOutputType, 3, Row)
                 .SetColumnSpan(ComboOutputType, 5)
 
-                .Controls.Add(CheckBoxDoublestep, 8, Row)
+                .Controls.Add(CheckBoxSelect, 8, Row)
 
                 Row = 3
                 .Controls.Add(LabelImageFormat, 0, Row)
@@ -640,10 +632,8 @@ Namespace Flux.Greaseweazle
                 .SetColumnSpan(LabelRetries, 2)
                 .Controls.Add(_NumericRetries, 7, Row)
 
-                .Controls.Add(CheckBoxSelect, 8, Row)
-
                 Row = 4
-                .Controls.Add(PanelLabel, 0, Row)
+                .Controls.Add(PanelLabel, 1, Row)
                 .SetColumnSpan(PanelLabel, 2)
 
                 .Controls.Add(LabelSeekRetries, 4, Row)
@@ -680,7 +670,7 @@ Namespace Flux.Greaseweazle
             SetHelpString(My.Resources.HelpStrings.Greaseweazle_DeviceReset, ButtonReset)
             SetHelpString(My.Resources.HelpStrings.Flux_SaveLog, ButtonSaveLog)
             SetHelpString(My.Resources.HelpStrings.Flux_Detect, ButtonDetect)
-            SetHelpString(My.Resources.HelpStrings.Greaseweazle_Drives, LabelDrive, ComboImageDrives)
+            SetHelpString(My.Resources.HelpStrings.Greaseweazle_Drives, LabelDrive, ComboDrives)
             SetHelpString(My.Resources.HelpStrings.Flux_Format, LabelImageFormat, ComboImageFormat)
             SetHelpString(My.Resources.HelpStrings.Flux_ImageType, LabelOutputType, ComboOutputType)
             SetHelpString(My.Resources.HelpStrings.Greaseweazle_ReadFilename, LabelFileName, TextBoxFileName)
@@ -690,7 +680,6 @@ Namespace Flux.Greaseweazle
             SetHelpString(My.Resources.HelpStrings.Flux_Read, ButtonProcess)
             SetHelpString(My.Resources.HelpStrings.Flux_Convert, ButtonConvert)
             SetHelpString(My.Resources.HelpStrings.Greaseweazle_RootFolder, LabelFluxFolder, TextBoxFluxFolder)
-            SetHelpString(My.Resources.HelpStrings.Flux_DoubleStep, CheckBoxDoublestep)
 
             IntitializeHelpImportButtons(False)
         End Sub
@@ -837,13 +826,14 @@ Namespace Flux.Greaseweazle
             Dim OutputType As ReadDiskOutputTypes = ComboOutputType.SelectedValue
 
             _OutputFilePath = Response.FilePath
-            _OutputParams = DiskParams.Value
+            _OutputDoubleStep = UseDoubleStep(Opt.Type, DiskParams.Value.Format)
             _FileOverwriteMode = OverwriteMode
 
             Dim Arguments = GenerateCommandLineRead(Response.FilePath,
                                                     Opt,
                                                     DiskParams.Value,
                                                     OutputType,
+                                                    _OutputDoubleStep,
                                                     _NumericRetries.Value,
                                                     _NumericSeekRetries.Value,
                                                     _NumericRevs.Value)
@@ -871,7 +861,7 @@ Namespace Flux.Greaseweazle
             End If
             TextBoxConsole.AppendText(line)
 
-            TrackStatus.ProcessOutputLineRead(line, ActionTypeEnum.Read, _SelectedOption.DoubleStep)
+            TrackStatus.ProcessOutputLineRead(line, ActionTypeEnum.Read, _OutputDoubleStep)
 
             If TrackStatus.Failed Then
                 Process.Cancel()
@@ -905,7 +895,7 @@ Namespace Flux.Greaseweazle
             Dim SelectMode As Boolean = CanConvert AndAlso CheckBoxSelect.Checked
 
             ComboImageFormat.Enabled = CanChangeSettings AndAlso DriveSelected
-            ComboImageDrives.Enabled = CanChangeSettings OrElse SelectMode
+            ComboDrives.Enabled = CanChangeSettings OrElse SelectMode
             ComboOutputType.Enabled = CanChangeSettings AndAlso ComboOutputType.Items.Count > 1
 
             _NumericRevs.Enabled = CanChangeSettings OrElse SelectMode
@@ -919,13 +909,6 @@ Namespace Flux.Greaseweazle
             ButtonConvert.Visible = IsFluxOutput
 
             ButtonDiscard.Enabled = IsIdle AndAlso HasOutputfile
-
-
-            CheckBoxDoublestep.Enabled = CanChangeSettings AndAlso Opt.DoublestepEnabled
-
-            _CheckBoxDoubleStepNoEvent = True
-            CheckBoxDoublestep.Checked = Opt.DoubleStep
-            _CheckBoxDoubleStepNoEvent = False
 
             CheckBoxSelect.Enabled = CanConvert
 
@@ -996,6 +979,35 @@ Namespace Flux.Greaseweazle
             SetTiltebarText()
         End Sub
 
+        Private Sub RefreshTrackState(PrevOption As DriveOption, CurrentOption As DriveOption)
+            Dim DiskParams = SelectedDiskParams()
+            Dim PrevDoubleStep = UseDoubleStep(PrevOption.Type, DiskParams.Value.Format)
+            Dim Doublestep = UseDoubleStep(CurrentOption.Type, DiskParams.Value.Format)
+            If PrevDoubleStep <> Doublestep Then
+                Dim State = GetState(PrevDoubleStep)
+                SetState(State, Doublestep)
+            End If
+        End Sub
+
+        Private Sub RefreshWarningLabel()
+            Dim Format = SelectedDiskFormat()
+
+            If Not CheckCompatibility() Then
+                LabelWarning.Text = My.Resources.Message_ImageFormatWarning
+                LabelWarning.ForeColor = Color.Red
+                LabelWarning.Visible = True
+
+            ElseIf Format.HasValue AndAlso UseDoubleStep(_SelectedOption.Type, Format.Value) Then
+                LabelWarning.Text = My.Resources.Label_DoubleStep
+                LabelWarning.ForeColor = Color.Blue
+                LabelWarning.Visible = True
+
+            Else
+                LabelWarning.Visible = False
+                LabelWarning.Text = ""
+            End If
+        End Sub
+
         Private Sub ReprocessImage()
             Dim DiskParams = SelectedDiskParams()
 
@@ -1036,10 +1048,13 @@ Namespace Flux.Greaseweazle
                 HideSelection(True)
             End If
 
+            _OutputDoubleStep = UseDoubleStep(Opt.Type, DiskParams.Value.Format)
+
             Dim Arguments = GenerateCommandLineRead(_OutputFilePath,
                                                     Opt,
                                                     DiskParams.Value,
                                                     OutputType,
+                                                    _OutputDoubleStep,
                                                     _NumericRetries.Value,
                                                     _NumericSeekRetries.Value,
                                                     _NumericRevs.Value,
@@ -1055,21 +1070,21 @@ Namespace Flux.Greaseweazle
             Dim DiskParams = SelectedDiskParams()
 
             Dim SideCount As Byte
-            Dim FormatMediaType As FloppyMediaType
+            Dim FormatDriveType As FloppyDriveType
 
             If Not DiskParams.HasValue OrElse DiskParams.Value.IsNonImage Then
                 SideCount = 2
-                FormatMediaType = FloppyMediaType.MediaUnknown
+                FormatDriveType = FloppyDriveType.DriveUnknown
             Else
                 SideCount = DiskParams.Value.BPBParams.NumberOfHeads
-                FormatMediaType = DiskParams.Value.MediaType
+                FormatDriveType = DiskParams.Value.DriveType
             End If
 
             Dim Opt As DriveOption = _SelectedOption
             Dim TrackCount As UShort
 
-            If Opt.Type = FloppyMediaType.MediaUnknown Then
-                TrackCount = If(FormatMediaType = FloppyMediaType.Media525DoubleDensity, GreaseweazleSettings.MAX_TRACKS_525DD, GreaseweazleSettings.MAX_TRACKS)
+            If Opt.Type = FloppyDriveType.DriveUnknown Then
+                TrackCount = If(FormatDriveType = FloppyDriveType.Drive525DoubleDensity, GreaseweazleSettings.MAX_TRACKS_525DD, GreaseweazleSettings.MAX_TRACKS)
             Else
                 TrackCount = Opt.Tracks
             End If
@@ -1140,6 +1155,12 @@ Namespace Flux.Greaseweazle
 
             CheckBoxSaveLog.Enabled = Not IsRunning AndAlso IsFluxOutput AndAlso Not HasOutputFile
         End Sub
+
+        Private Function UseDoubleStep(DriveType As FloppyDriveType, Format As FloppyDiskFormat) As Boolean
+            Dim ImageParams As FloppyDiskParams = FloppyDiskFormatGetParams(Format)
+
+            Return ImageParams.IsStandard AndAlso ImageParams.DriveType = FloppyDriveType.Drive525DoubleDensity AndAlso DriveType = FloppyDriveType.Drive525HighDensity
+        End Function
 #Region "Events"
         Private Sub ButtonBrowse_Click(sender As Object, e As EventArgs) Handles ButtonBrowse.Click
             FluxFolderBrowse()
@@ -1208,21 +1229,6 @@ Namespace Flux.Greaseweazle
             Reset(TextBoxConsole)
         End Sub
 
-        Private Sub CheckBoxDoublestep_CheckedChanged(sender As Object, e As EventArgs) Handles CheckBoxDoublestep.CheckedChanged
-            If Not _Initialized Then
-                Exit Sub
-            End If
-
-            If _CheckBoxDoubleStepNoEvent Then
-                Exit Sub
-            End If
-
-            Dim Opt As DriveOption = _SelectedOption
-            If Opt.Id <> "" Then
-                Opt.SetDoubleStep(CheckBoxDoublestep.Checked)
-            End If
-        End Sub
-
         Private Sub CheckBoxSaveLog_CheckStateChanged(sender As Object, e As EventArgs) Handles CheckBoxSaveLog.CheckStateChanged
             If Not _Initialized Then
                 Exit Sub
@@ -1255,27 +1261,24 @@ Namespace Flux.Greaseweazle
             RefreshTitleBarText()
         End Sub
 
-        Private Sub ComboImageDrives_SelectedIndexChanged(sender As Object, e As EventArgs) Handles ComboImageDrives.SelectedIndexChanged
+        Private Sub ComboImageDrives_SelectedIndexChanged(sender As Object, e As EventArgs) Handles ComboDrives.SelectedIndexChanged
             If Not _Initialized Then
                 Exit Sub
             End If
 
             Dim PrevOption = _SelectedOption
-            _SelectedOption = ComboImageDrives.SelectedValue
+            _SelectedOption = ComboDrives.SelectedValue
             Dim HasOutputfile As Boolean = Not String.IsNullOrEmpty(_OutputFilePath)
 
             If Not HasOutputfile Then
                 PopulateImageFormats()
                 ResetTrackGrid()
             Else
-                If PrevOption.DoubleStep <> _SelectedOption.DoubleStep Then
-                    Dim State = GetState(PrevOption.DoubleStep)
-                    SetState(State, _SelectedOption.DoubleStep)
-                End If
+                RefreshTrackState(PrevOption, _SelectedOption)
             End If
 
             RefreshFormState()
-            LabelWarning.Visible = Not CheckCompatibility()
+            RefreshWarningLabel()
 
             GetSelectedDeviceState.DriveId = _SelectedOption.Id
         End Sub
@@ -1299,7 +1302,7 @@ Namespace Flux.Greaseweazle
             PopulateFileExtensions()
             ResetTrackGrid()
             RefreshFormState()
-            LabelWarning.Visible = Not CheckCompatibility()
+            RefreshWarningLabel()
         End Sub
 
         Private Sub ComboOutputType_SelectedIndexChanged(sender As Object, e As EventArgs) Handles ComboOutputType.SelectedIndexChanged
@@ -1331,7 +1334,7 @@ Namespace Flux.Greaseweazle
 
                 Case ConsoleProcessRunner.ProcessStateEnum.Completed
                     If TrackStatus.TrackFound Then
-                        TrackStatus.UpdateTrackStatusComplete(_SelectedOption.DoubleStep)
+                        TrackStatus.UpdateTrackStatusComplete(_OutputDoubleStep)
                         SetTiltebarText()
                         HideSelection(False)
                     Else

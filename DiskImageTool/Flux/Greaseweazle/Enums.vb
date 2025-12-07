@@ -23,64 +23,64 @@ Namespace Flux.Greaseweazle
             RAW
         End Enum
 
-        Public Function GreaseweazleFindCompatibleFloppyType(DiskParams As FloppyDiskParams, AvailableTypes As FloppyMediaType) As FloppyMediaType
-            Dim Result As FloppyMediaType = FloppyMediaType.MediaUnknown
+        Public Function GreaseweazleFindCompatibleDriveType(DiskParams As FloppyDiskParams, AvailableTypes As FloppyDriveType) As FloppyDriveType
+            Dim Result As FloppyDriveType = FloppyDriveType.DriveUnknown
 
-            Dim MediaType = DiskParams.MediaType
+            Dim DriveType = DiskParams.DriveType
 
             If DiskParams.Format = FloppyDiskFormat.FloppyTandy2000 Then
-                MediaType = FloppyMediaType.Media525HighDensity
+                DriveType = FloppyDriveType.Drive525HighDensity
             End If
 
-            Select Case MediaType
-                Case FloppyMediaType.Media525DoubleDensity
-                    If (AvailableTypes And FloppyMediaType.Media525DoubleDensity) > 0 Then
-                        Result = FloppyMediaType.Media525DoubleDensity
-                    ElseIf (AvailableTypes And FloppyMediaType.Media525HighDensity) > 0 Then
-                        Result = FloppyMediaType.Media525HighDensity
+            Select Case DriveType
+                Case FloppyDriveType.Drive525DoubleDensity
+                    If (AvailableTypes And FloppyDriveType.Drive525DoubleDensity) > 0 Then
+                        Result = FloppyDriveType.Drive525DoubleDensity
+                    ElseIf (AvailableTypes And FloppyDriveType.Drive525HighDensity) > 0 Then
+                        Result = FloppyDriveType.Drive525HighDensity
                     End If
 
-                Case FloppyMediaType.Media35DoubleDensity
-                    If (AvailableTypes And FloppyMediaType.Media35DoubleDensity) > 0 Then
-                        Result = FloppyMediaType.Media35DoubleDensity
-                    ElseIf (AvailableTypes And FloppyMediaType.Media35HighDensity) > 0 Then
-                        Result = FloppyMediaType.Media35HighDensity
-                    ElseIf (AvailableTypes And FloppyMediaType.Media35ExtraHighDensity) > 0 Then
-                        Result = FloppyMediaType.Media35ExtraHighDensity
+                Case FloppyDriveType.Drive35DoubleDensity
+                    If (AvailableTypes And FloppyDriveType.Drive35DoubleDensity) > 0 Then
+                        Result = FloppyDriveType.Drive35DoubleDensity
+                    ElseIf (AvailableTypes And FloppyDriveType.Drive35HighDensity) > 0 Then
+                        Result = FloppyDriveType.Drive35HighDensity
+                    ElseIf (AvailableTypes And FloppyDriveType.Drive35ExtraHighDensity) > 0 Then
+                        Result = FloppyDriveType.Drive35ExtraHighDensity
                     End If
 
-                Case FloppyMediaType.Media525HighDensity
-                    If (AvailableTypes And FloppyMediaType.Media525HighDensity > 0) Then
-                        Result = FloppyMediaType.Media525HighDensity
+                Case FloppyDriveType.Drive525HighDensity
+                    If (AvailableTypes And FloppyDriveType.Drive525HighDensity > 0) Then
+                        Result = FloppyDriveType.Drive525HighDensity
                     End If
 
-                Case FloppyMediaType.Media35HighDensity
-                    If (AvailableTypes And FloppyMediaType.Media35HighDensity > 0) Then
-                        Result = FloppyMediaType.Media35HighDensity
-                    ElseIf (AvailableTypes And FloppyMediaType.Media35ExtraHighDensity > 0) Then
-                        Result = FloppyMediaType.Media35ExtraHighDensity
+                Case FloppyDriveType.Drive35HighDensity
+                    If (AvailableTypes And FloppyDriveType.Drive35HighDensity > 0) Then
+                        Result = FloppyDriveType.Drive35HighDensity
+                    ElseIf (AvailableTypes And FloppyDriveType.Drive35ExtraHighDensity > 0) Then
+                        Result = FloppyDriveType.Drive35ExtraHighDensity
                     End If
 
-                Case FloppyMediaType.Media35ExtraHighDensity
-                    If (AvailableTypes And FloppyMediaType.Media35ExtraHighDensity > 0) Then
-                        Result = FloppyMediaType.Media35ExtraHighDensity
+                Case FloppyDriveType.Drive35ExtraHighDensity
+                    If (AvailableTypes And FloppyDriveType.Drive35ExtraHighDensity > 0) Then
+                        Result = FloppyDriveType.Drive35ExtraHighDensity
                     End If
             End Select
 
             Return Result
         End Function
 
-        Public Function GreaseweazleFloppyTypeDescription(Value As FloppyMediaType) As String
+        Public Function GreaseweazleFloppyTypeDescription(Value As FloppyDriveType) As String
             Select Case Value
-                Case FloppyMediaType.Media525DoubleDensity
+                Case FloppyDriveType.Drive525DoubleDensity
                     Return "5.25"" 360 KB (DD)"
-                Case FloppyMediaType.Media35DoubleDensity
+                Case FloppyDriveType.Drive35DoubleDensity
                     Return "3.5"" 720 KB (DD)"
-                Case FloppyMediaType.Media525HighDensity
+                Case FloppyDriveType.Drive525HighDensity
                     Return "5.25"" 1.2 MB (HD)"
-                Case FloppyMediaType.Media35HighDensity
+                Case FloppyDriveType.Drive35HighDensity
                     Return "3.5"" 1.44 MB (HD)"
-                Case FloppyMediaType.Media35ExtraHighDensity
+                Case FloppyDriveType.Drive35ExtraHighDensity
                     Return "3.5"" 2.88 MB (ED)"
                 Case Else
                     Return "None"

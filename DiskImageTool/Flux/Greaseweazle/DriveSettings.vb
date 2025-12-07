@@ -12,7 +12,7 @@ Namespace Flux.Greaseweazle
 
         Private _tracks As Byte = 0
 
-        Private _Type As FloppyMediaType = FloppyMediaType.MediaUnknown
+        Private _Type As FloppyDriveType = FloppyDriveType.DriveUnknown
 
         Public ReadOnly Property Tracks As Byte
             Get
@@ -20,18 +20,18 @@ Namespace Flux.Greaseweazle
             End Get
         End Property
 
-        Public ReadOnly Property Type As FloppyMediaType
+        Public ReadOnly Property Type As FloppyDriveType
             Get
                 Return _Type
             End Get
         End Property
 
-        Public Shared Function GetMinMax(Type As FloppyMediaType) As (Min As Byte, Max As Byte)
+        Public Shared Function GetMinMax(Type As FloppyDriveType) As (Min As Byte, Max As Byte)
             Dim Result As (Min As Byte, Max As Byte)
 
-            If Type = FloppyMediaType.MediaUnknown Then
+            If Type = FloppyDriveType.DriveUnknown Then
                 Return (0, 0)
-            ElseIf Type = FloppyMediaType.Media525DoubleDensity Then
+            ElseIf Type = FloppyDriveType.Drive525DoubleDensity Then
                 Return (MIN_TRACKS_525DD, MAX_TRACKS_525DD)
             Else
                 Return (MIN_TRACKS, MAX_TRACKS)
@@ -46,14 +46,14 @@ Namespace Flux.Greaseweazle
                 Return
             End If
 
-            _Type = GetFloppyTypeFromName(ReadValue(dict, "typeName", GetFloppyTypeName(_Type)))
+            _Type = GetDriveTypeFromName(ReadValue(dict, "typeName", GetDriveTypeName(_Type)))
             Dim Tracks As Integer = ReadValue(dict, "tracks", _tracks)
             _tracks = AdjustedTrackCount(Tracks, _Type)
 
             MarkClean()
         End Sub
 
-        Public Sub SetDrive(Type As FloppyMediaType, Optional TrackCount As Byte = 0)
+        Public Sub SetDrive(Type As FloppyDriveType, Optional TrackCount As Byte = 0)
             Dim Tracks = AdjustedTrackCount(TrackCount, Type)
 
             If _Type <> Type Then
@@ -69,12 +69,12 @@ Namespace Flux.Greaseweazle
 
         Public Function ToJsonObject() As Dictionary(Of String, Object)
             Return New Dictionary(Of String, Object) From {
-                {"typeName", GetFloppyTypeName(_Type)},
+                {"typeName", GetDriveTypeName(_Type)},
                 {"tracks", CInt(_tracks)}
             }
         End Function
 
-        Private Shared Function AdjustedTrackCount(Value As Integer, DriveType As FloppyMediaType) As Byte
+        Private Shared Function AdjustedTrackCount(Value As Integer, DriveType As FloppyDriveType) As Byte
             Dim MinMax = GetMinMax(DriveType)
 
             If Value = 0 Then
@@ -88,34 +88,34 @@ Namespace Flux.Greaseweazle
             Return Value
         End Function
 
-        Private Shared Function GetFloppyTypeFromName(Value As String) As FloppyMediaType
+        Private Shared Function GetDriveTypeFromName(Value As String) As FloppyDriveType
             Select Case Value
                 Case "360"
-                    Return FloppyMediaType.Media525DoubleDensity
+                    Return FloppyDriveType.Drive525DoubleDensity
                 Case "720"
-                    Return FloppyMediaType.Media35DoubleDensity
+                    Return FloppyDriveType.Drive35DoubleDensity
                 Case "1200"
-                    Return FloppyMediaType.Media525HighDensity
+                    Return FloppyDriveType.Drive525HighDensity
                 Case "1440"
-                    Return FloppyMediaType.Media35HighDensity
+                    Return FloppyDriveType.Drive35HighDensity
                 Case "2880"
-                    Return FloppyMediaType.Media35ExtraHighDensity
+                    Return FloppyDriveType.Drive35ExtraHighDensity
                 Case Else
-                    Return FloppyMediaType.MediaUnknown
+                    Return FloppyDriveType.DriveUnknown
             End Select
         End Function
 
-        Private Shared Function GetFloppyTypeName(Value As FloppyMediaType) As String
+        Private Shared Function GetDriveTypeName(Value As FloppyDriveType) As String
             Select Case Value
-                Case FloppyMediaType.Media525DoubleDensity
+                Case FloppyDriveType.Drive525DoubleDensity
                     Return "360"
-                Case FloppyMediaType.Media35DoubleDensity
+                Case FloppyDriveType.Drive35DoubleDensity
                     Return "720"
-                Case FloppyMediaType.Media525HighDensity
+                Case FloppyDriveType.Drive525HighDensity
                     Return "1200"
-                Case FloppyMediaType.Media35HighDensity
+                Case FloppyDriveType.Drive35HighDensity
                     Return "1440"
-                Case FloppyMediaType.Media35ExtraHighDensity
+                Case FloppyDriveType.Drive35ExtraHighDensity
                     Return "2880"
                 Case Else
                     Return ""

@@ -595,30 +595,21 @@ Namespace Flux
         Public Class DriveOption
             Private ReadOnly _Id As String
             Private ReadOnly _Tracks As Byte
-            Private ReadOnly _Type As FloppyMediaType
+            Private ReadOnly _Type As FloppyDriveType
             Private _DetectedFormat As FloppyDiskFormat? = Nothing
-            Private _DoubleStep As Boolean?
-            Private _DoubleStepEnabled As Boolean
-            Private _DoubleStepDefaultChecked As Boolean
             Private _Label As String
             Private _SelectedFormat As FloppyDiskFormat? = Nothing
 
             Public Sub New()
                 _Id = ""
-                _Type = FloppyMediaType.MediaUnknown
+                _Type = FloppyDriveType.DriveUnknown
                 _Tracks = 0
-                _DoubleStepEnabled = False
-                _DoubleStepDefaultChecked = False
-                _DoubleStep = Nothing
             End Sub
 
-            Public Sub New(Id As String, Type As FloppyMediaType, Tracks As Byte)
+            Public Sub New(Id As String, Type As FloppyDriveType, Tracks As Byte)
                 _Id = Id
                 _Type = Type
                 _Tracks = Tracks
-                _DoubleStepEnabled = False
-                _DoubleStepDefaultChecked = False
-                _DoubleStep = Nothing
             End Sub
 
             Public Property DetectedFormat As FloppyDiskFormat?
@@ -628,22 +619,6 @@ Namespace Flux
                 Set
                     _DetectedFormat = Value
                 End Set
-            End Property
-
-            Public ReadOnly Property DoubleStep As Boolean
-                Get
-                    If _DoubleStep.HasValue Then
-                        Return _DoubleStepEnabled AndAlso _DoubleStep.Value
-                    Else
-                        Return _DoubleStepDefaultChecked
-                    End If
-                End Get
-            End Property
-
-            Public ReadOnly Property DoublestepEnabled As Boolean
-                Get
-                    Return _DoubleStepEnabled
-                End Get
             End Property
 
             Public ReadOnly Property Id As String
@@ -667,7 +642,6 @@ Namespace Flux
                 End Get
                 Set
                     _SelectedFormat = Value
-                    RefreshDoubleStepEnabled()
                 End Set
             End Property
 
@@ -677,7 +651,7 @@ Namespace Flux
                 End Get
             End Property
 
-            Public ReadOnly Property Type As FloppyMediaType
+            Public ReadOnly Property Type As FloppyDriveType
                 Get
                     Return _Type
                 End Get
@@ -686,32 +660,10 @@ Namespace Flux
             Public Sub ResetFormats()
                 _SelectedFormat = Nothing
                 _DetectedFormat = Nothing
-                _DoubleStepEnabled = False
-                _DoubleStepDefaultChecked = False
-                _DoubleStep = Nothing
-            End Sub
-
-            Public Sub SetDoubleStep(Value As Boolean)
-                _DoubleStep = Value
             End Sub
 
             Public Overrides Function ToString() As String
                 Return Label
-            End Function
-
-            Private Sub RefreshDoubleStepEnabled()
-                _DoubleStepEnabled = False
-                _DoubleStepDefaultChecked = SelectedFormatIs525DDStandard() AndAlso _Tracks > 79
-            End Sub
-
-            Private Function SelectedFormatIs525DDStandard() As Boolean
-                If Not _SelectedFormat.HasValue Then
-                    Return False
-                End If
-
-                Dim ImageParams As FloppyDiskParams = FloppyDiskFormatGetParams(_SelectedFormat.Value)
-
-                Return ImageParams.IsStandard AndAlso ImageParams.MediaType = FloppyMediaType.Media525DoubleDensity
             End Function
         End Class
     End Module

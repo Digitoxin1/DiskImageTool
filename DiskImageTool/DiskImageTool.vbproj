@@ -150,6 +150,9 @@
     <Compile Include="Controls\ListViewEx.vb">
       <SubType>Component</SubType>
     </Compile>
+    <Compile Include="Controls\ReadOnlyCheckbox.vb">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="Controls\SelectablePanel.vb">
       <SubType>Component</SubType>
     </Compile>

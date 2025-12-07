@@ -37,6 +37,7 @@ Namespace Flux.Greaseweazle
                                                 Opt As DriveOption,
                                                 DiskParams As FloppyDiskParams,
                                                 OutputType As ReadDiskOutputTypes,
+                                                Doublestep As Boolean,
                                                 Retries As UInteger,
                                                 SeekRetries As UInteger,
                                                 Revs As UInteger,
@@ -70,7 +71,7 @@ Namespace Flux.Greaseweazle
 
                 If TrackRanges Is Nothing Then
                     Dim TrackCount = Opt.Tracks
-                    If Opt.DoubleStep Then
+                    If Doublestep Then
                         TrackCount \= 2
                     End If
                     Builder.AddCylinder(0, TrackCount - 1)
@@ -78,7 +79,7 @@ Namespace Flux.Greaseweazle
                     For Each Range In TrackRanges
                         Dim StartTrack = Range.StartTrack
                         Dim EndTrack = Range.EndTrack
-                        If Opt.DoubleStep Then
+                        If Doublestep Then
                             StartTrack \= 2
                             EndTrack \= 2
                         End If
@@ -95,7 +96,7 @@ Namespace Flux.Greaseweazle
                 End If
             End If
 
-            If Opt.DoubleStep Then
+            If Doublestep Then
                 Builder.HeadStep = 2
             End If
 
@@ -249,7 +250,7 @@ Namespace Flux.Greaseweazle
             TextViewForm.Display("Greaseweazle - " & My.Resources.Label_Info, Content, False, True, "GreaseweazleInfo.txt", ParentForm)
         End Sub
 
-        Public Function PopulateDrives(Combo As ComboBox, Format As FloppyMediaType, Optional LastUsedDrive As String = "") As DriveOption
+        Public Function PopulateDrives(Combo As ComboBox, Format As FloppyDriveType, Optional LastUsedDrive As String = "") As DriveOption
             Dim DriveList As New List(Of DriveOption)
 
             Dim SelectedOption As DriveOption = Nothing
@@ -258,7 +259,7 @@ Namespace Flux.Greaseweazle
             Dim AddItem As Action(Of String, String, Byte) =
             Sub(labelPrefix As String, id As String, index As Byte)
                 Dim t = Settings.Drives(index).Type
-                If t = FloppyMediaType.MediaUnknown Then
+                If t = FloppyDriveType.DriveUnknown Then
                     Exit Sub
                 End If
 

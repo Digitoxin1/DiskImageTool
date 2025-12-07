@@ -56,7 +56,7 @@ Namespace Flux.Greaseweazle
             If DirectCast(ComboInterface.SelectedValue, GreaseweazleSettings.GreaseweazleInterface) = GreaseweazleSettings.GreaseweazleInterface.Shugart Then
                 Settings.Drives(2).SetDrive(ComboDriveType2.SelectedValue, NumericTracks2.Value)
             Else
-                Settings.Drives(2).SetDrive(FloppyMediaType.MediaUnknown, 0)
+                Settings.Drives(2).SetDrive(FloppyDriveType.DriveUnknown, 0)
             End If
             Settings.DefaultRevs = NumericDefaultRevs.Value
             Settings.LogFileName = TextBoxLogFile.Text.Trim
@@ -88,10 +88,10 @@ Namespace Flux.Greaseweazle
             Dim Combo = GetComboDriveType(index)
             Dim CurrentValue = Settings.Drives(index).Type
 
-            Dim DriveList As New List(Of KeyValuePair(Of String, FloppyMediaType))
+            Dim DriveList As New List(Of KeyValuePair(Of String, FloppyDriveType))
 
-            For Each FloppyType As FloppyMediaType In [Enum].GetValues(GetType(FloppyMediaType))
-                DriveList.Add(New KeyValuePair(Of String, FloppyMediaType)(
+            For Each FloppyType As FloppyDriveType In [Enum].GetValues(GetType(FloppyDriveType))
+                DriveList.Add(New KeyValuePair(Of String, FloppyDriveType)(
                     GreaseweazleFloppyTypeDescription(FloppyType), FloppyType)
                 )
             Next
@@ -116,7 +116,7 @@ Namespace Flux.Greaseweazle
             TextBoxLogFile.Text = Settings.LogFileName
         End Sub
 
-        Private Sub InitializeInput(index As Byte, Type As FloppyMediaType, Tracks As Byte)
+        Private Sub InitializeInput(index As Byte, Type As FloppyDriveType, Tracks As Byte)
             Dim Input = GetNumericTracks(index)
 
             Dim MinMax = DriveSettings.GetMinMax(Type)
@@ -210,7 +210,7 @@ Namespace Flux.Greaseweazle
         End Sub
 
         Private Sub RefreshInput(index As Byte)
-            Dim CurrentType As FloppyMediaType = GetComboDriveType(index).SelectedValue
+            Dim CurrentType As FloppyDriveType = GetComboDriveType(index).SelectedValue
 
             Dim Tracks As Byte = 0
 
@@ -220,7 +220,7 @@ Namespace Flux.Greaseweazle
 
             InitializeInput(index, CurrentType, Tracks)
 
-            GetNumericTracks(index).Enabled = (CurrentType <> FloppyMediaType.MediaUnknown)
+            GetNumericTracks(index).Enabled = (CurrentType <> FloppyDriveType.DriveUnknown)
         End Sub
 
         Private Sub RunAppAndCaptureOutput(appPath As String, arguments As String)

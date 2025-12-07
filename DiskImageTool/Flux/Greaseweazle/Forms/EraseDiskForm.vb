@@ -21,7 +21,7 @@ Namespace Flux.Greaseweazle
 
             NumericRevs.Value = CommandLineBuilder.DEFAULT_REVS
 
-            PopulateDrives(ComboImageDrives, FloppyMediaType.MediaUnknown)
+            PopulateDrives(ComboImageDrives, FloppyDriveType.DriveUnknown)
             ResetState()
             ResetCheckBoxSelect()
             RefreshButtonState()
@@ -260,7 +260,7 @@ Namespace Flux.Greaseweazle
         Private Sub ResetTrackGrid(Optional ResetSelected As Boolean = True)
             Dim Opt As DriveOption = ComboImageDrives.SelectedValue
 
-            Dim TrackCount As UShort = If(Opt.Type = FloppyMediaType.MediaUnknown, GreaseweazleSettings.MAX_TRACKS, Opt.Tracks)
+            Dim TrackCount As UShort = If(Opt.Type = FloppyDriveType.DriveUnknown, GreaseweazleSettings.MAX_TRACKS, Opt.Tracks)
 
             GridReset(TrackCount, 2, ResetSelected)
         End Sub
