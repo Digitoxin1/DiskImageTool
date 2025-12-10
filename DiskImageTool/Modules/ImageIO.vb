@@ -269,15 +269,51 @@ Module ImageIO
         End If
     End Sub
 
-    Public Function GetAppPath() As String
-        Return IO.Path.GetDirectoryName(Application.ExecutablePath)
-    End Function
-
     Public Function GetAppDataPath() As String
         Dim BaseFolder = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData)
         Dim AppName = My.Application.Info.ProductName
 
         Return Path.Combine(BaseFolder, AppName)
+    End Function
+
+    Public Function GetAppPath() As String
+        Return IO.Path.GetDirectoryName(Application.ExecutablePath)
+    End Function
+    Public Function GetImageTypeNameFromExtension(Extension As String) As String
+        Extension = Extension.ToLower()
+
+        Select Case Extension
+            Case ".imz"
+                Return My.Resources.FileType_IMZ
+            Case ".vfd", ".flp"
+                Return My.Resources.FileType_VFD
+            Case ".imd"
+                Return GetImageTypeName(FloppyImageType.IMDImage)
+            Case ".pri"
+                Return GetImageTypeName(FloppyImageType.PRIImage)
+            Case ".psi"
+                Return GetImageTypeName(FloppyImageType.PSIImage)
+            Case ".86f"
+                Return GetImageTypeName(FloppyImageType.D86FImage)
+            Case ".hfe"
+                Return GetImageTypeName(FloppyImageType.HFEImage)
+            Case ".mfm"
+                Return GetImageTypeName(FloppyImageType.MFMImage)
+            Case ".tc"
+                Return GetImageTypeName(FloppyImageType.TranscopyImage)
+        End Select
+
+        If BasicSectorFileExtensions.Contains(Extension) Then
+            Return My.Resources.FloppyImageType_BasicSectorImage
+
+        ElseIf AdvancedSectorFileExtensions.Contains(Extension) Then
+            Return My.Resources.FileType_AdvancedSectorImage
+
+        ElseIf BitstreamFileExtensions.Contains(Extension) Then
+            Return My.Resources.FileType_BitstreamImage
+        End If
+
+        Return Extension.ToUpper
     End Function
 
     Public Function GetLoadDialogFilters() As String

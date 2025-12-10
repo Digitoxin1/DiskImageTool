@@ -846,11 +846,9 @@ Namespace Flux.Greaseweazle
         End Sub
 
         Private Sub ProcessImport(OutputFile As String, NewFileName As String)
-            If String.IsNullOrEmpty(OutputFile) Then
-                Exit Sub
+            If Not String.IsNullOrEmpty(OutputFile) Then
+                RaiseEvent ImportProcess(OutputFile, NewFileName)
             End If
-
-            RaiseEvent ImportProcess(OutputFile, NewFileName)
 
             ClearProcessedImage(False, True)
         End Sub
@@ -1186,6 +1184,10 @@ Namespace Flux.Greaseweazle
             If CheckIsFluxOutput() Then
                 ClearProcessedImage(False, True)
             Else
+                If String.IsNullOrEmpty(_OutputFilePath) Then
+                    Exit Sub
+                End If
+
                 ProcessImport(_OutputFilePath, GetNewFileName())
             End If
         End Sub

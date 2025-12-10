@@ -11,7 +11,12 @@
         End Get
     End Property
 
-    Public Function Add(Key As String, FileName As String, FileType As ImageData.FileTypeEnum, Optional CompressedFile As String = "", Optional NewFileName As String = "") As ImageData
+    Public Function Add(Key As String,
+                        FileName As String,
+                        FileType As ImageData.FileTypeEnum,
+                        Optional CompressedFile As String = "",
+                        Optional NewFileName As String = "") As ImageData
+
         If Not _FileNames.ContainsKey(Key) Then
             Dim ImageData As New ImageData(FileName) With {
                 .FileType = FileType

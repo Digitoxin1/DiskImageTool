@@ -656,7 +656,7 @@ Public Class MainForm
 
         Dim FileName = FloppyDiskNewImage(Response.Data, Response.DiskFormat, _LoadedFiles.FileNames)
         If FileName.Length > 0 Then
-            ProcessFileDropNew(FileName)
+            ProcessFileDropNew(FileName, IO.Path.GetFileName(FileName))
             If Response.ImportFiles Then
                 NewImageImport(FilePanelMain, FileName)
             End If
@@ -1093,7 +1093,7 @@ Public Class MainForm
         Return IsFluxIamge
     End Function
 
-    Private Function ProcessFileDropNew(File As String, Optional NewFileName As String = "") As ImageData
+    Private Function ProcessFileDropNew(File As String, NewFileName As String) As ImageData
         Dim Img = ProcessFileDrop({File}, False, True, NewFileName)
 
         RefreshModifiedCount()

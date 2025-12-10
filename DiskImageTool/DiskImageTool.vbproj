@@ -153,6 +153,9 @@
     <Compile Include="Controls\SelectablePanel.vb">
       <SubType>Component</SubType>
     </Compile>
+    <Compile Include="Controls\SplitButton.vb">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="Controls\ToolStripSpringTextBox.vb">
       <SubType>Component</SubType>
     </Compile>
@@ -182,12 +185,19 @@
     <Compile Include="FilePanel\FileData.vb" />
     <Compile Include="FilePanel\FileMenuLib.vb" />
     <Compile Include="FilePanel\FilePanel.vb" />
+    <Compile Include="Flux\GeneralSettingsPanel.Designer.vb">
+      <DependentUpon>GeneralSettingsPanel.vb</DependentUpon>
+    </Compile>
+    <Compile Include="Flux\GeneralSettingsPanel.vb">
+      <SubType>UserControl</SubType>
+    </Compile>
     <Compile Include="Forms\ImagePreview.Designer.vb">
       <DependentUpon>ImagePreview.vb</DependentUpon>
     </Compile>
     <Compile Include="Forms\ImagePreview.vb">
       <SubType>Form</SubType>
     </Compile>
+    <Compile Include="Modules\Dialogs.vb" />
     <Compile Include="Scanners\FilterScanner.vb" />
     <Compile Include="Filters\Enums.vb" />
     <Compile Include="Filters\FilterCounts.vb" />
@@ -598,6 +608,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Flux\Forms\BaseFluxForm.resx">
       <DependentUpon>BaseFluxForm.vb</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Flux\GeneralSettingsPanel.resx">
+      <DependentUpon>GeneralSettingsPanel.vb</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Flux\Greaseweazle\SettingsPanel.resx">
       <DependentUpon>SettingsPanel.vb</DependentUpon>

@@ -23,18 +23,25 @@
         End Sub
 
         Private Sub BtnUpdate_Click(sender As Object, e As EventArgs) Handles BtnUpdate.Click
+            If SettingsPanelGeneral.Initialized Then
+                SettingsPanelGeneral.UpdateSettings()
+            End If
+
             If SettingsPanelGreaseweazle.Initialized Then
                 SettingsPanelGreaseweazle.UpdateSettings()
             End If
+
             If SettingsPanelKryoflux.Initialized Then
                 SettingsPanelKryoflux.UpdateSettings()
             End If
+
             If SettingsPanelPcImgCnv.Initialized Then
                 SettingsPanelPcImgCnv.UpdateSettings()
             End If
         End Sub
 
         Private Sub ConfigurationForm_Load(sender As Object, e As EventArgs) Handles Me.Load
+            SettingsPanelGeneral.Initialize()
             SettingsPanelGreaseweazle.Initialize()
             SettingsPanelKryoflux.Initialize()
 

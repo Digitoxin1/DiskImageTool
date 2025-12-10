@@ -18,6 +18,13 @@ Namespace Settings
         Private _language As String = ""
         Private _windowHeight As Integer = 0
         Private _windowWidth As Integer = 0
+        Private _imageConvertStartPathMode As ImageConvertPathMode = ImageConvertPathMode.LastSavedImage
+
+        Public Enum ImageConvertPathMode
+            SameAsFlux = 0
+            ParentOfFlux = 1
+            LastSavedImage = 2
+        End Enum
 
         Private Sub New(filePath As String)
             _filePath = filePath
@@ -27,6 +34,18 @@ Namespace Settings
             PcImgCnv = New Flux.PcImgCnv.PcImgCnvSettings()
             Expert = New SettingsExpert()
         End Sub
+
+        Public Property ImageConvertStartPathMode As ImageConvertPathMode
+            Get
+                Return _imageConvertStartPathMode
+            End Get
+            Set(value As ImageConvertPathMode)
+                If _imageConvertStartPathMode <> value Then
+                    _imageConvertStartPathMode = value
+                    IsDirty = True
+                End If
+            End Set
+        End Property
 
         Public Property CheckUpdateOnStartup As Boolean
             Get
@@ -175,6 +194,7 @@ Namespace Settings
                 settings._displayTitles = ReadValue(root, "displayTitles", settings._displayTitles)
                 settings._language = ReadValue(root, "language", settings._language)
                 settings._databasePath = ReadValue(root, "databasePath", settings._databasePath)
+                settings._imageConvertStartPathMode = ReadValue(root, "imageConvertStartPathMode", settings._imageConvertStartPathMode)
 
                 settings._Greaseweazle.LoadFromDictionary(ReadSection(root, "greaseweazle"))
                 settings._Kryoflux.LoadFromDictionary(ReadSection(root, "kryoflux"))
@@ -210,7 +230,8 @@ Namespace Settings
                 {"dragAndDrop", _dragAndDrop},
                 {"checkUpdateOnStartup", _checkUpdateOnStartup},
                 {"displayTitles", _displayTitles},
-                {"language", _language}
+                {"language", _language},
+                {"imageConvertStartPathMode", _imageConvertStartPathMode}
             }
 
             If Not String.IsNullOrEmpty(_databasePath) Then

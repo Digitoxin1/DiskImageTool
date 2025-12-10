@@ -1888,4 +1888,19 @@ Möchten Sie ihn überschreiben?</value>
   <data name="Dialog_ImagePreviewFail" xml:space="preserve">
     <value>Vorschau der Image-Datei nicht möglich.</value>
   </data>
+  <data name="Label_Save" xml:space="preserve">
+    <value>Sichern</value>
+  </data>
+  <data name="Caption_Settings_ConvertedImages" xml:space="preserve">
+    <value>Standardspeicherort für konvertierte Images</value>
+  </data>
+  <data name="Radio_Settings_ConvertLastUsed" xml:space="preserve">
+    <value>Zuletzt verwendeter Ausgabordner</value>
+  </data>
+  <data name="Radio_Settings_ConvertParentFolder" xml:space="preserve">
+    <value>Übergeordneter Ordner des Flux-Sets</value>
+  </data>
+  <data name="Radio_Settings_ConvertSameFolder" xml:space="preserve">
+    <value>Gleicher Ordner wie das Flux-Set</value>
+  </data>
 </root>

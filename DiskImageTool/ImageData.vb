@@ -82,7 +82,7 @@
             If _NewFileName = "" Then
                 FullPath = IO.Path.GetFileName(FullPath)
             Else
-                FullPath = _NewFileName
+                FullPath = IO.Path.GetFileName(_NewFileName)
             End If
         End If
             Return FullPath
@@ -91,8 +91,8 @@
     Public Function FileName() As String
         If _FileType = FileTypeEnum.Compressed Then
             Return IO.Path.GetFileName(_CompressedFile)
-        ElseIf _filetype = FileTypeEnum.NewImage AndAlso _newfilename <> "" Then
-            Return _NewFileName
+        ElseIf _filetype = FileTypeEnum.NewImage AndAlso _NewFileName <> "" Then
+            Return IO.Path.GetFileName(_NewFileName)
         Else
             Return IO.Path.GetFileName(_SourceFile)
         End If

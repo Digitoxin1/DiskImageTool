@@ -53,6 +53,7 @@
 
                 If Not String.IsNullOrEmpty(Path) AndAlso IO.Directory.Exists(Path) Then
                     Dialog.InitialDirectory = Path
+                    Dialog.RestoreDirectory = True
                 End If
             End If
 

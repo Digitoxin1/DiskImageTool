@@ -384,6 +384,7 @@ Module DiskImageLib
         Dim NewFilePath As String = ""
         Dim DiskFormat As FloppyDiskFormat = FloppyDiskFormat.FloppyUnknown
         Dim InitialDirectory As String = ""
+        Dim SavePath As Boolean = False
 
         If ImageData Is CurrentImage.ImageData Then
             Disk = CurrentImage.Disk
@@ -395,21 +396,26 @@ Module DiskImageLib
             DiskFormat = Disk.DiskParams.Format
         End If
 
+        Dim FileName = IO.Path.GetFileName(FilePath)
         Dim FileExt = IO.Path.GetExtension(FilePath)
         Dim FileFilter = GetSaveDialogFilters(DiskFormat, Disk.Image.ImageType, FileExt)
 
         If ImageData.FileType <> ImageData.FileTypeEnum.NewImage Then
             InitialDirectory = IO.Path.GetDirectoryName(FilePath)
-        Else
+        ElseIf FilePath = FileName Then
             InitialDirectory = App.UserState.LastNewImagePath
+            SavePath = True
+        Else
+            InitialDirectory = IO.Path.GetDirectoryName(FilePath)
         End If
 
         Using Dialog As New SaveFileDialog With {
                 .InitialDirectory = InitialDirectory,
-                .FileName = IO.Path.GetFileName(FilePath),
+                .FileName = FileName,
                 .Filter = FileFilter.Filter,
                 .FilterIndex = FileFilter.FilterIndex,
-                .DefaultExt = FileExt
+                .DefaultExt = FileExt,
+                .RestoreDirectory = True
             }
 
             AddHandler Dialog.FileOk,
@@ -423,7 +429,7 @@ Module DiskImageLib
 
             If Dialog.ShowDialog = DialogResult.OK Then
                 NewFilePath = Dialog.FileName
-                If ImageData.FileType = ImageData.FileTypeEnum.NewImage Then
+                If SavePath Then
                     App.UserState.LastNewImagePath = IO.Path.GetDirectoryName(NewFilePath)
                 End If
             End If

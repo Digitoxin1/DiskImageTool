@@ -25,23 +25,26 @@
         Private Sub InitializeComponent()
             Dim PanelBottom As System.Windows.Forms.FlowLayoutPanel
             Dim PanelMain As System.Windows.Forms.Panel
+            Dim TabPageGeneral As System.Windows.Forms.TabPage
             Dim TabPageGreaseweazle As System.Windows.Forms.TabPage
             Dim TabPageKryoflux As System.Windows.Forms.TabPage
             Me.BtnCancel = New System.Windows.Forms.Button()
             Me.BtnUpdate = New System.Windows.Forms.Button()
             Me.TabControl1 = New System.Windows.Forms.TabControl()
+            Me.SettingsPanelGeneral = New DiskImageTool.Flux.GeneralSettingsPanel()
             Me.SettingsPanelGreaseweazle = New DiskImageTool.Flux.Greaseweazle.SettingsPanel()
             Me.SettingsPanelKryoflux = New DiskImageTool.Flux.Kryoflux.SettingsPanel()
             Me.TabPagePcImgCnv = New System.Windows.Forms.TabPage()
             Me.SettingsPanelPcImgCnv = New DiskImageTool.Flux.PcImgCnv.SettingsPanel()
-            Me.TwoColumnToolTip1 = New DiskImageTool.TwoColumnToolTip()
             PanelBottom = New System.Windows.Forms.FlowLayoutPanel()
             PanelMain = New System.Windows.Forms.Panel()
+            TabPageGeneral = New System.Windows.Forms.TabPage()
             TabPageGreaseweazle = New System.Windows.Forms.TabPage()
             TabPageKryoflux = New System.Windows.Forms.TabPage()
             PanelBottom.SuspendLayout()
             PanelMain.SuspendLayout()
             Me.TabControl1.SuspendLayout()
+            TabPageGeneral.SuspendLayout()
             TabPageGreaseweazle.SuspendLayout()
             TabPageKryoflux.SuspendLayout()
             Me.TabPagePcImgCnv.SuspendLayout()
@@ -98,6 +101,7 @@
             '
             'TabControl1
             '
+            Me.TabControl1.Controls.Add(TabPageGeneral)
             Me.TabControl1.Controls.Add(TabPageGreaseweazle)
             Me.TabControl1.Controls.Add(TabPageKryoflux)
             Me.TabControl1.Controls.Add(Me.TabPagePcImgCnv)
@@ -108,6 +112,25 @@
             Me.TabControl1.SelectedIndex = 0
             Me.TabControl1.Size = New System.Drawing.Size(712, 257)
             Me.TabControl1.TabIndex = 1
+            '
+            'TabPageGeneral
+            '
+            TabPageGeneral.Controls.Add(Me.SettingsPanelGeneral)
+            TabPageGeneral.Location = New System.Drawing.Point(4, 22)
+            TabPageGeneral.Name = "TabPageGeneral"
+            TabPageGeneral.Size = New System.Drawing.Size(704, 231)
+            TabPageGeneral.TabIndex = 3
+            TabPageGeneral.Text = "General"
+            TabPageGeneral.UseVisualStyleBackColor = True
+            '
+            'SettingsPanelGeneral
+            '
+            Me.SettingsPanelGeneral.Dock = System.Windows.Forms.DockStyle.Fill
+            Me.SettingsPanelGeneral.Location = New System.Drawing.Point(0, 0)
+            Me.SettingsPanelGeneral.Name = "SettingsPanelGeneral"
+            Me.SettingsPanelGeneral.Padding = New System.Windows.Forms.Padding(12)
+            Me.SettingsPanelGeneral.Size = New System.Drawing.Size(704, 231)
+            Me.SettingsPanelGeneral.TabIndex = 0
             '
             'TabPageGreaseweazle
             '
@@ -169,10 +192,6 @@
             Me.SettingsPanelPcImgCnv.Size = New System.Drawing.Size(698, 225)
             Me.SettingsPanelPcImgCnv.TabIndex = 0
             '
-            'TwoColumnToolTip1
-            '
-            Me.TwoColumnToolTip1.OwnerDraw = True
-            '
             'ConfigurationForm
             '
             Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
@@ -189,6 +208,7 @@
             PanelBottom.ResumeLayout(False)
             PanelMain.ResumeLayout(False)
             Me.TabControl1.ResumeLayout(False)
+            TabPageGeneral.ResumeLayout(False)
             TabPageGreaseweazle.ResumeLayout(False)
             TabPageKryoflux.ResumeLayout(False)
             Me.TabPagePcImgCnv.ResumeLayout(False)
@@ -198,11 +218,11 @@
         End Sub
         Friend WithEvents BtnUpdate As Button
         Friend WithEvents BtnCancel As Button
-        Friend WithEvents TwoColumnToolTip1 As TwoColumnToolTip
         Friend WithEvents SettingsPanelGreaseweazle As Greaseweazle.SettingsPanel
         Friend WithEvents SettingsPanelKryoflux As Kryoflux.SettingsPanel
-        Friend WithEvents TabPagePcImgCnv As TabPage
         Friend WithEvents SettingsPanelPcImgCnv As PcImgCnv.SettingsPanel
         Friend WithEvents TabControl1 As TabControl
+        Friend WithEvents TabPagePcImgCnv As TabPage
+        Friend WithEvents SettingsPanelGeneral As DiskImageTool.Flux.GeneralSettingsPanel
     End Class
 End Namespace

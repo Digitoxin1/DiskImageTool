@@ -2130,4 +2130,19 @@ Do you wish to overwrite?</value>
   <data name="Dialog_ImagePreviewFail" xml:space="preserve">
     <value>Unable to preview image.</value>
   </data>
+  <data name="Label_Save" xml:space="preserve">
+    <value>Save</value>
+  </data>
+  <data name="Caption_Settings_ConvertedImages" xml:space="preserve">
+    <value>Default save location for converted images</value>
+  </data>
+  <data name="Radio_Settings_ConvertLastUsed" xml:space="preserve">
+    <value>Last used output folder</value>
+  </data>
+  <data name="Radio_Settings_ConvertParentFolder" xml:space="preserve">
+    <value>Parent folder of flux set</value>
+  </data>
+  <data name="Radio_Settings_ConvertSameFolder" xml:space="preserve">
+    <value>Same folder as flux set</value>
+  </data>
 </root>

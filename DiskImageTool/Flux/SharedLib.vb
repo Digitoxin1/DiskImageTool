@@ -394,7 +394,7 @@ Namespace Flux
                 items.Add(New FileExtensionItem(ext, FloppyDiskFormat.FloppyUnknown))
             Next
 
-            If SelectedFormat.HasValue AndAlso Not SelectedFormat.Value <> FloppyDiskFormat.FloppyUnknown Then
+            If SelectedFormat.HasValue AndAlso SelectedFormat.Value <> FloppyDiskFormat.FloppyUnknown Then
                 Dim Params = FloppyDiskFormatGetParams(SelectedFormat.Value)
                 If Not String.IsNullOrWhiteSpace(Params.FileExtension) Then
                     Dim idx = items.FindIndex(Function(i) i.Extension.Equals(Params.FileExtension, StringComparison.OrdinalIgnoreCase))

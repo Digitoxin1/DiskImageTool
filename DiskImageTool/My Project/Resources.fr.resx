@@ -1888,4 +1888,19 @@ Voulez-vous écraser ?</value>
   <data name="Dialog_ImagePreviewFail" xml:space="preserve">
     <value>Impossible d’afficher l’aperçu de l’image.</value>
   </data>
+  <data name="Label_Save" xml:space="preserve">
+    <value>Sauver</value>
+  </data>
+  <data name="Caption_Settings_ConvertedImages" xml:space="preserve">
+    <value>Emplacement par défaut pour les images converties</value>
+  </data>
+  <data name="Radio_Settings_ConvertLastUsed" xml:space="preserve">
+    <value>Dernier dossier de sortie utilisé</value>
+  </data>
+  <data name="Radio_Settings_ConvertParentFolder" xml:space="preserve">
+    <value>Dossier parent de l’ensemble flux</value>
+  </data>
+  <data name="Radio_Settings_ConvertSameFolder" xml:space="preserve">
+    <value>Même dossier que l’ensemble flux</value>
+  </data>
 </root>

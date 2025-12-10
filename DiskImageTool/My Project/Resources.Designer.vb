@@ -426,6 +426,15 @@ Namespace My.Resources
         End Property
         
         '''<summary>
+        '''  Looks up a localized string similar to Default save location for converted images.
+        '''</summary>
+        Friend ReadOnly Property Caption_Settings_ConvertedImages() As String
+            Get
+                Return ResourceManager.GetString("Caption_Settings_ConvertedImages", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
         '''  Looks up a localized string similar to Tracklayout.
         '''</summary>
         Friend ReadOnly Property Caption_TrackLayout() As String
@@ -4196,6 +4205,15 @@ Namespace My.Resources
         End Property
         
         '''<summary>
+        '''  Looks up a localized string similar to Save.
+        '''</summary>
+        Friend ReadOnly Property Label_Save() As String
+            Get
+                Return ResourceManager.GetString("Label_Save", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
         '''  Looks up a localized string similar to Save and Close.
         '''</summary>
         Friend ReadOnly Property Label_SaveAndClose() As String
@@ -5547,6 +5565,33 @@ Namespace My.Resources
             Get
                 Dim obj As Object = ResourceManager.GetObject("PropertiesFolderClosed", resourceCulture)
                 Return CType(obj,System.Drawing.Bitmap)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  Looks up a localized string similar to Last used output folder.
+        '''</summary>
+        Friend ReadOnly Property Radio_Settings_ConvertLastUsed() As String
+            Get
+                Return ResourceManager.GetString("Radio_Settings_ConvertLastUsed", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  Looks up a localized string similar to Parent folder of flux set.
+        '''</summary>
+        Friend ReadOnly Property Radio_Settings_ConvertParentFolder() As String
+            Get
+                Return ResourceManager.GetString("Radio_Settings_ConvertParentFolder", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  Looks up a localized string similar to Same folder as flux set.
+        '''</summary>
+        Friend ReadOnly Property Radio_Settings_ConvertSameFolder() As String
+            Get
+                Return ResourceManager.GetString("Radio_Settings_ConvertSameFolder", resourceCulture)
             End Get
         End Property
         

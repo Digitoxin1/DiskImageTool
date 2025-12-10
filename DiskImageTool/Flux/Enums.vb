@@ -40,15 +40,15 @@
         Public Function ImageImportOutputTypeDescription(Value As ImageImportOutputTypes) As String
             Select Case Value
                 Case ImageImportOutputTypes.HFE
-                    Return "HxC HFE Image"
+                    Return My.Resources.FloppyImageType_HFEImage
                 Case ImageImportOutputTypes.MFM
-                    Return "HxC MFM Image"
+                    Return My.Resources.FloppyImageType_MFMImage
                 Case ImageImportOutputTypes.F86
-                    Return "86Box 86F Image"
+                    Return My.Resources.FloppyImageType_D86FImage
                 Case ImageImportOutputTypes.TC
-                    Return "TransCopy Image"
+                    Return My.Resources.FloppyImageType_TranscopyImage
                 Case ImageImportOutputTypes.IMA
-                    Return "Basic Sector Image"
+                    Return My.Resources.FloppyImageType_BasicSectorImage
                 Case Else
                     Return ""
             End Select

@@ -7,7 +7,8 @@ Namespace Flux
         Inherits BaseFluxForm
 
         Private WithEvents ButtonDiscard As Button
-        Private WithEvents ButtonImport As Button
+        Private WithEvents ButtonImport As SplitButton
+        Private WithEvents ButtonImportAndClose As SplitButton
         Private WithEvents ButtonModifications As Button
         Private WithEvents ButtonOpen As Button
         Private WithEvents ButtonPreview As Button
@@ -33,21 +34,26 @@ Namespace Flux
         Private _ComboOutputSourceNoEvent As Boolean = False
         Private _ComboOutputTypeNoEvent As Boolean = False
         Private _DoubleStep As Boolean = False
+        Private _FluxHeaders As Dictionary(Of TrackSide, Dictionary(Of String, String))
+        Private _ImportButtonNoEvent As Boolean = False
         Private _InputFilePath As String = ""
         Private _OutputFilePath As String = ""
         Private _SelectedDevice As IDevice = Nothing
         Private _SelectedSource As IDevice = Nothing
         Private _SideCount As Integer
         Private _TrackCount As Integer
-        Private _FluxHeaders As Dictionary(Of TrackSide, Dictionary(Of String, String))
         Private _TrackLayoutExists As Boolean = False
         Private CheckBox86FSurfaceData As CheckBox
         Private CheckBoxRemaster As CheckBox
         Private LabelOutputSource As Label
         Private LabelOutputType As Label
 
-        Public Event ImportProcess(File As String, NewFilename As String)
+        Private Enum ConversionMode
+            Import
+            Save
+        End Enum
 
+        Public Event ImportProcess(File As String, NewFilename As String)
         Friend Sub New(TempPath As String, FilePath As String, FluxSetinfo As FluxSetInfo, LaunchedFromDialog As Boolean)
             MyBase.New("")
 
@@ -67,10 +73,6 @@ Namespace Flux
 
             InitializeControls()
 
-            If LaunchedFromDialog Then
-                ButtonImport.DialogResult = DialogResult.Retry
-            End If
-
             RefreshRemasterState()
             InitializeDevice(True)
 
@@ -84,20 +86,25 @@ Namespace Flux
         End Property
 
         Public Function GetNewFileName() As String
-            If String.IsNullOrEmpty(_OutputFilePath) Then
-                Return ""
-            End If
-
-            Dim Extension = IO.Path.GetExtension(_OutputFilePath)
-
-            Return TextBoxFileName.Text & Extension
+            Return GetNewFileName(_OutputFilePath)
         End Function
 
-        Protected Overrides Sub OnAfterBaseFormClosing(e As FormClosingEventArgs)
-            If Me.DialogResult = DialogResult.OK OrElse Me.DialogResult = DialogResult.Retry Then
-                MoveLogs()
-                SetOutputFilePath()
+        Private Sub SaveAndClose(DialogResult As DialogResult)
+            If ProcessSave() Then
+                Me.DialogResult = DialogResult
+                Me.Close()
             End If
+        End Sub
+
+
+        Private Sub ImportAndClose(DialogResult As DialogResult)
+            Me.DialogResult = DialogResult
+            MoveLogs()
+            SetOutputFilePath()
+            Me.Close()
+        End Sub
+
+        Protected Overrides Sub OnAfterBaseFormClosing(e As FormClosingEventArgs)
             _OutputImages.ClearImages()
         End Sub
 
@@ -172,6 +179,12 @@ Namespace Flux
             GridReset(_TrackCount, _SideCount, _FluxHeaders)
 
             TrackStatus.Clear()
+        End Sub
+
+        Private Sub DiscardLoadedImage()
+            _OutputImages.ClearImages()
+            ClearLoadedImage()
+            ClearProcessedImage()
         End Sub
 
         Private Sub DisplayModifications()
@@ -285,6 +298,53 @@ Namespace Flux
                 Case Else
                     Return InputFileTypeEnum.sectorImage
             End Select
+        End Function
+
+        Private Function GetNewFileName(FilePath As String) As String
+            If String.IsNullOrEmpty(FilePath) Then
+                Return ""
+            End If
+
+            Dim Extension As String
+
+            If ComboExtensions.Enabled AndAlso ComboExtensions.SelectedIndex > -1 Then
+                Dim Item As FileExtensionItem = ComboExtensions.SelectedValue
+                Extension = Item.Extension
+            Else
+                Extension = IO.Path.GetExtension(FilePath)
+            End If
+
+            Dim NewFileName = TextBoxFileName.Text & Extension
+            Dim NewFilePath = GetNewFilePath()
+            If Not String.IsNullOrEmpty(NewFilePath) Then
+                NewFileName = IO.Path.Combine(NewFilePath, NewFileName)
+            End If
+
+            Return NewFileName
+        End Function
+
+        Private Function GetNewFilePath() As String
+            Dim Mode = App.AppSettings.ImageConvertStartPathMode
+
+            If Mode = Settings.AppSettings.ImageConvertPathMode.LastSavedImage Then
+                Return ""
+            End If
+
+            Dim FluxSetPath As String = IO.Path.GetDirectoryName(_InputFilePath)
+            If String.IsNullOrEmpty(FluxSetPath) Then
+                Return ""
+            End If
+
+            Dim FileType = GetInputFileType()
+
+            If FileType = InputFileTypeEnum.raw AndAlso Mode = Settings.AppSettings.ImageConvertPathMode.ParentOfFlux Then
+                Dim Parent = IO.Path.GetDirectoryName(FluxSetPath)
+                If Not String.IsNullOrEmpty(Parent) Then
+                    Return Parent
+                End If
+            End If
+
+            Return FluxSetPath
         End Function
 
         Private Function GetSelectedDeviceState() As Settings.UserStateFluxConvertDevice
@@ -430,14 +490,33 @@ Namespace Flux
                 .Anchor = AnchorStyles.Left Or AnchorStyles.Right
             }
 
-            ButtonImport = New Button With {
+            ButtonImport = New SplitButton With {
                 .Anchor = AnchorStyles.Right,
                 .Margin = New Padding(6, 0, 6, 0),
-                .Text = My.Resources.Label_Import,
                 .MinimumSize = New Size(75, 0),
                 .AutoSize = True,
                 .TabIndex = 2
             }
+
+            ButtonImportAndClose = New SplitButton With {
+                .Anchor = AnchorStyles.Right,
+                .Margin = New Padding(6, 0, 6, 0),
+                .MinimumSize = New Size(75, 0),
+                .AutoSize = True,
+                .TabIndex = 3
+            }
+
+            _ImportButtonNoEvent = True
+
+            ButtonImport.AddItem(WithoutHotkey(My.Resources.Label_Import), ConversionMode.Import)
+            ButtonImport.AddItem(My.Resources.Label_Save, ConversionMode.Save)
+            ButtonImport.SelectedIndex = 0
+
+            ButtonImportAndClose.AddItem(My.Resources.Label_ImportClose, ConversionMode.Import)
+            ButtonImportAndClose.AddItem(My.Resources.Label_SaveAndClose, ConversionMode.Save)
+            ButtonImport.SelectedIndex = 0
+
+            _ImportButtonNoEvent = False
 
             ButtonOpen = New Button With {
                 .Margin = New Padding(15, 3, 3, 3),
@@ -478,7 +557,8 @@ Namespace Flux
                 .TabIndex = 1
             }
 
-            BumpTabIndexes(PanelButtonsRight, 3)
+            BumpTabIndexes(PanelButtonsRight, 4)
+            PanelButtonsRight.Controls.Add(ButtonImportAndClose)
             PanelButtonsRight.Controls.Add(ButtonImport)
             PanelButtonsRight.Controls.Add(ComboOutputSource)
             PanelButtonsRight.Controls.Add(LabelOutputSource)
@@ -489,8 +569,7 @@ Namespace Flux
             ButtonContainer.Controls.Add(ButtonTrackLayout)
             ButtonContainer.Controls.Add(ButtonModifications)
 
-            ButtonOk.Text = My.Resources.Label_ImportClose
-            ButtonOk.Visible = True
+            ButtonOk.Visible = False
 
             Dim Row As Integer
 
@@ -859,12 +938,10 @@ Namespace Flux
             SetOutputFilePath()
 
             If Not String.IsNullOrEmpty(_OutputFilePath) Then
-                RaiseEvent ImportProcess(_OutputFilePath, GetNewFileName())
+                RaiseEvent ImportProcess(_OutputFilePath, GetNewFileName(_OutputFilePath))
             End If
 
-            _OutputImages.ClearImages()
-            ClearLoadedImage()
-            ClearProcessedImage()
+            DiscardLoadedImage()
         End Sub
 
         Private Sub ProcessOutputLine(line As String)
@@ -877,6 +954,47 @@ Namespace Flux
             End If
         End Sub
 
+        Private Function ProcessSave() As Boolean
+            Dim Image = _OutputImages.Images(_SelectedSource.Device)
+            Dim NewFileName = GetNewFileName(Image.FilePath)
+            Dim Extension = IO.Path.GetExtension(NewFileName)
+            Dim ImageTypeName = GetImageTypeNameFromExtension(Extension)
+
+            Dim InitialDirectory As String
+            Dim SavePath As Boolean = False
+            Dim FileName = IO.Path.GetFileName(NewFileName)
+
+            If NewFileName = FileName Then
+                InitialDirectory = App.UserState.LastNewImagePath
+                SavePath = True
+            Else
+                InitialDirectory = IO.Path.GetDirectoryName(NewFileName)
+            End If
+
+            Dim FilePath = ShowSingleExtSaveDialog(Me, FileName, InitialDirectory, ImageTypeName)
+
+            If String.IsNullOrEmpty(FilePath) Then
+                Return False
+            End If
+
+            If SavePath Then
+                App.UserState.LastNewImagePath = IO.Path.GetDirectoryName(FilePath)
+            End If
+
+            Try
+                IO.File.Copy(Image.FilePath, FilePath, True)
+            Catch
+                MsgBox(String.Format(My.Resources.Dialog_SaveFileError, FilePath), MsgBoxStyle.Exclamation)
+                Return False
+            End Try
+
+            MoveLogs()
+            _OutputFilePath = ""
+
+            DiscardLoadedImage()
+
+            Return True
+        End Function
         Private Function ReadImageFormat() As DiskImage.FloppyDiskFormat
             If ComboDevices.SelectedIndex = -1 Then
                 Return FloppyDiskFormat.FloppyUnknown
@@ -1029,7 +1147,7 @@ Namespace Flux
 
             Dim EnableImport As Boolean = Not Process.IsRunning AndAlso HasOutputfile AndAlso HasInputFile AndAlso Not String.IsNullOrEmpty(TextBoxFileName.Text)
 
-            ButtonOk.Enabled = EnableImport
+            ButtonImportAndClose.Enabled = EnableImport
             ButtonImport.Enabled = EnableImport
         End Sub
 
@@ -1067,7 +1185,6 @@ Namespace Flux
             _TrackLayoutExists = TrackLayoutExists()
             CheckBoxRemaster.Checked = _TrackLayoutExists AndAlso HasInputFile
         End Sub
-
         Private Function SelectedDiskFormat() As FloppyDiskFormat?
             If TypeOf ComboImageFormat.SelectedValue IsNot FloppyDiskParams Then
                 Return Nothing
@@ -1336,20 +1453,50 @@ Namespace Flux
                 End Get
             End Property
         End Class
-#Region "Events"
+
         Private Sub ButtonDiscard_Click(sender As Object, e As EventArgs) Handles ButtonDiscard.Click
-            _OutputImages.ClearImages()
-            ClearLoadedImage()
-            ClearProcessedImage()
+            DiscardLoadedImage()
         End Sub
 
         Private Sub ButtonImport_Click(sender As Object, e As EventArgs) Handles ButtonImport.Click
             If _LaunchedFromDialog Then
+                If ButtonImport.SelectedValue = ConversionMode.Import Then
+                    ImportAndClose(DialogResult.Retry)
+                Else
+                    SaveAndClose(DialogResult.Retry)
+                End If
                 Exit Sub
             End If
 
-            If _OutputImages.HasImage Then
-                ProcessImport()
+                If _OutputImages.HasImage Then
+                If ButtonImport.SelectedValue = ConversionMode.Import Then
+                    ProcessImport()
+                Else
+                    ProcessSave()
+                End If
+            End If
+        End Sub
+
+        Private Sub ButtonImport_SelectedIndexChanged(sender As Object, e As EventArgs) Handles ButtonImport.SelectedIndexChanged, ButtonImportAndClose.SelectedIndexChanged
+            If _ImportButtonNoEvent Then
+                Exit Sub
+            End If
+
+            _ImportButtonNoEvent = True
+
+            Dim Mode As ConversionMode = CType(DirectCast(sender, SplitButton).SelectedValue, ConversionMode)
+
+            ButtonImport.SelectedValue = Mode
+            ButtonImportAndClose.SelectedValue = Mode
+
+            _ImportButtonNoEvent = False
+        End Sub
+
+        Private Sub ButtonImportAndClose_Click(sender As Object, e As EventArgs) Handles ButtonImportAndClose.Click
+            If ButtonImportAndClose.SelectedValue = ConversionMode.Import Then
+                ImportAndClose(DialogResult.OK)
+            Else
+                SaveAndClose(DialogResult.OK)
             End If
         End Sub
 
@@ -1623,7 +1770,6 @@ Namespace Flux
             tb.Text = SanitizeFileName(tb.Text)
             RefreshImportButtonState()
         End Sub
-#End Region
 
     End Class
 End Namespace

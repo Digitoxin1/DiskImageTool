@@ -1888,4 +1888,19 @@
   <data name="Dialog_ImagePreviewFail" xml:space="preserve">
     <value>No se puede mostrar la vista previa de la imagen.</value>
   </data>
+  <data name="Label_Save" xml:space="preserve">
+    <value>Guardar</value>
+  </data>
+  <data name="Caption_Settings_ConvertedImages" xml:space="preserve">
+    <value>Ubicación predeterminada para imágenes convertidas</value>
+  </data>
+  <data name="Radio_Settings_ConvertLastUsed" xml:space="preserve">
+    <value>Última carpeta de salida usada</value>
+  </data>
+  <data name="Radio_Settings_ConvertParentFolder" xml:space="preserve">
+    <value>Carpeta principal del conjunto de flujo</value>
+  </data>
+  <data name="Radio_Settings_ConvertSameFolder" xml:space="preserve">
+    <value>Misma carpeta que el conjunto de flujo</value>
+  </data>
 </root>
