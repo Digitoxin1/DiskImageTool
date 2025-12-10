@@ -10,6 +10,7 @@ Public Class MainForm
     Private _DriveBEnabled As Boolean = False
     Private _FileVersion As String = ""
     Private _LoadedFiles As LoadedFiles
+    Private _NewImageSequence As Integer = 1
     Private _SummaryPanel As SummaryPanel
     Private _Suppress_File_DragEnterEvent As Boolean = False
     Private _Suppress_ToolStripFATCombo_SelectedIndexChangedEvent As Boolean = False
@@ -19,7 +20,6 @@ Public Class MainForm
     Private _ToolStripOEMNameCombo As ToolStripComboBox
     Private _ToolStripOEMNameLabel As ToolStripLabel
     Private _ToolStripSearchText As ToolStripSpringTextBox
-
     Public Sub New()
         ' This call is required by the designer.
         InitializeComponent()
@@ -578,6 +578,13 @@ Public Class MainForm
 
         Return ModifyImageList
     End Function
+
+    Private Function GetNewFileName() As String
+        Dim FileName As String = "New Image" & If(_NewImageSequence > 1, " " & _NewImageSequence.ToString(), "") & ".ima"
+        _NewImageSequence += 1
+
+        Return FileName
+    End Function
     Private Function GetWindowCaption() As String
         Return My.Application.Info.ProductName & " v" & _FileVersion
     End Function
@@ -650,9 +657,9 @@ Public Class MainForm
             Exit Sub
         End If
 
-        Dim FileName = FloppyDiskNewImage(Response.Data, Response.DiskFormat, _LoadedFiles.FileNames)
+        Dim FileName = FloppyDiskNewImage(Response.Data, Response.DiskFormat)
         If FileName.Length > 0 Then
-            ProcessFileDropNew(FileName, IO.Path.GetFileName(FileName))
+            ProcessFileDropNew(FileName, GetNewFileName())
             If Response.ImportFiles Then
                 NewImageImport(FilePanelMain, FileName)
             End If
@@ -1765,16 +1772,16 @@ Public Class MainForm
     End Sub
 
     Private Sub MenuDiskReadFloppyA_Click(sender As Object, e As EventArgs) Handles MenuDiskReadFloppyA.Click
-        Dim FileName = FloppyDiskRead(Me, FloppyDriveEnum.FloppyDriveA, _LoadedFiles.FileNames)
+        Dim FileName = FloppyDiskRead(Me, FloppyDriveEnum.FloppyDriveA)
         If FileName.Length > 0 Then
-            ProcessFileDrop(FileName)
+            ProcessFileDropNew(FileName, GetNewFileName())
         End If
     End Sub
 
     Private Sub MenuDiskReadFloppyB_Click(sender As Object, e As EventArgs) Handles MenuDiskReadFloppyB.Click
-        Dim FileName = FloppyDiskRead(Me, FloppyDriveEnum.FloppyDriveB, _LoadedFiles.FileNames)
+        Dim FileName = FloppyDiskRead(Me, FloppyDriveEnum.FloppyDriveB)
         If FileName.Length > 0 Then
-            ProcessFileDrop(FileName)
+            ProcessFileDropNew(FileName, GetNewFileName())
         End If
     End Sub
 

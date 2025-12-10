@@ -171,18 +171,6 @@ Namespace Flux
             Return DetectedFormat
         End Function
 
-        Public Function GenerateOutputFile(Extension As String) As String
-            Dim TempPath = InitTempImagePath()
-
-            If TempPath = "" Then
-                MsgBox(My.Resources.Dialog_TempPathError, MsgBoxStyle.Critical)
-                Return ""
-            End If
-
-            Dim FileName = Guid.NewGuid.ToString & Extension
-            Return GenerateUniqueFileName(TempPath, FileName)
-        End Function
-
         Public Function GetFirstRawInFolder(folderPath As String) As String
             Try
                 Return IO.Directory.EnumerateFiles(folderPath, "*.raw", IO.SearchOption.TopDirectoryOnly).FirstOrDefault()

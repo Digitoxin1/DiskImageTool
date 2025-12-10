@@ -3,7 +3,7 @@ Imports DiskImageTool.DiskImage
 
 Module FloppyDiskIO
     Private Const BYTES_PER_SECTOR As UShort = 512
-    Public Function FloppyDiskRead(Owner As IWin32Window, Drive As FloppyDriveEnum, LoadedFileNames As Dictionary(Of String, ImageData)) As String
+    Public Function FloppyDiskRead(Owner As IWin32Window, Drive As FloppyDriveEnum) As String
         Dim FloppyDrive As New FloppyInterface
         Dim DriveLetter = FloppyInterface.GetDriveLetter(Drive)
         Dim DriveName = DriveLetter & ":\"
@@ -18,7 +18,7 @@ Module FloppyDiskIO
         If Result Then
             Dim BPB = FloppyDiskGetReadOptions(Owner, FloppyDrive)
             If BPB IsNot Nothing Then
-                FileName = FloppyAccessForm.ReadDisk(FloppyDrive, BPB, LoadedFileNames, Owner)
+                FileName = FloppyAccessForm.ReadDisk(FloppyDrive, BPB, Owner)
             End If
             FloppyDrive.Close()
         Else
@@ -28,22 +28,18 @@ Module FloppyDiskIO
         Return FileName
     End Function
 
-    Public Function FloppyDiskNewImage(Buffer() As Byte, DiskFormat As FloppyDiskFormat, LoadedFileNames As Dictionary(Of String, ImageData)) As String
-        Dim TempPath = InitTempImagePath()
-        Dim FileName = "New Image.ima"
+    Public Function FloppyDiskNewImage(Buffer() As Byte, DiskFormat As FloppyDiskFormat) As String
+        Dim FileName = GenerateOutputFile(".ima")
 
-        If TempPath = "" Then
-            MsgBox(My.Resources.Dialog_SaveFileError2, MsgBoxStyle.Exclamation)
+        If FileName = "" Then
             Return ""
         End If
-
-        Dim NewImage = GenerateUniqueFileName(TempPath, FileName)
 
         Dim Success As Boolean
         Try
             Dim FloppyImage As New BasicSectorImage(Buffer)
             Dim Disk As New DiskImage.Disk(FloppyImage, 0)
-            Dim Response = SaveDiskImageToFile(Disk, NewImage, False)
+            Dim Response = SaveDiskImageToFile(Disk, FileName, False)
             Success = (Response = SaveImageResponse.Success)
 
         Catch ex As Exception
@@ -52,7 +48,7 @@ Module FloppyDiskIO
         End Try
 
         If Success Then
-            Return NewImage
+            Return FileName
         Else
             MsgBox(My.Resources.Dialog_SaveFileError2, MsgBoxStyle.Exclamation)
             Return ""

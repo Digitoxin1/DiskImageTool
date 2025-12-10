@@ -14,7 +14,6 @@ Public Class FloppyAccessForm
     Private _EndProcess As Boolean = False
     Private _FileName As String = ""
     Private _LastStatus As TrackStatus
-    Private _LoadedFileNames As New Dictionary(Of String, ImageData)
     Private _SectorData As SectorData = Nothing
     Private _SectorError As Boolean = False
     Private _TotalBadSectors As UInteger = 0
@@ -92,25 +91,14 @@ Public Class FloppyAccessForm
         End Get
     End Property
 
-    Public Property LoadedFileNames As Dictionary(Of String, ImageData)
-        Get
-            Return _LoadedFileNames
-        End Get
-        Set(value As Dictionary(Of String, ImageData))
-            _LoadedFileNames = value
-        End Set
-    End Property
-
     Public ReadOnly Property TotalBadSectors As UInteger
         Get
             Return _TotalBadSectors
         End Get
     End Property
 
-    Public Shared Function ReadDisk(FloppyDrive As FloppyInterface, BPB As BiosParameterBlock, LoadedFileNames As Dictionary(Of String, ImageData), owner As IWin32Window) As String
-        Using Form As New FloppyAccessForm(FloppyDrive, BPB, FloppyAccessType.Read) With {
-                .LoadedFileNames = LoadedFileNames
-            }
+    Public Shared Function ReadDisk(FloppyDrive As FloppyInterface, BPB As BiosParameterBlock, owner As IWin32Window) As String
+        Using Form As New FloppyAccessForm(FloppyDrive, BPB, FloppyAccessType.Read)
 
             Form.ShowDialog(owner)
 
@@ -615,8 +603,17 @@ Public Class FloppyAccessForm
             End If
         Else
             If _Complete Then
-                Dim DiskFormat = FloppyDiskFormatGet(_BPB)
-                _FileName = FloppyDiskSaveFile(_DiskBuffer, DiskFormat, _LoadedFileNames)
+                _FileName = GenerateOutputFile(".ima")
+                Try
+                    IO.File.WriteAllBytes(_FileName, _DiskBuffer)
+                Catch ex As Exception
+                    MsgBox(My.Resources.Dialog_SaveFileError2, MsgBoxStyle.Exclamation)
+                    _FileName = ""
+                End Try
+
+                If Not String.IsNullOrEmpty(_FileName) Then
+                    Me.Hide()
+                End If
             End If
         End If
 

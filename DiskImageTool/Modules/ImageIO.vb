@@ -273,6 +273,18 @@ Module ImageIO
         End If
     End Sub
 
+    Public Function GenerateOutputFile(Extension As String) As String
+        Dim TempPath = InitTempImagePath()
+
+        If TempPath = "" Then
+            MsgBox(My.Resources.Dialog_TempPathError, MsgBoxStyle.Critical)
+            Return ""
+        End If
+
+        Dim FileName = Guid.NewGuid.ToString & Extension
+        Return GenerateUniqueFileName(TempPath, FileName)
+    End Function
+
     Public Function GetAppDataPath() As String
         Dim BaseFolder = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData)
         Dim AppName = My.Application.Info.ProductName
