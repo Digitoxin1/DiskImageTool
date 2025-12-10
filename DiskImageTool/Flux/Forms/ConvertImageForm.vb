@@ -48,11 +48,6 @@ Namespace Flux
         Private LabelOutputSource As Label
         Private LabelOutputType As Label
 
-        Private Enum ConversionMode
-            Import
-            Save
-        End Enum
-
         Public Event ImportProcess(File As String, NewFilename As String)
         Friend Sub New(TempPath As String, FilePath As String, FluxSetinfo As FluxSetInfo, LaunchedFromDialog As Boolean)
             MyBase.New("")
@@ -88,21 +83,6 @@ Namespace Flux
         Public Function GetNewFileName() As String
             Return GetNewFileName(_OutputFilePath)
         End Function
-
-        Private Sub SaveAndClose(DialogResult As DialogResult)
-            If ProcessSave() Then
-                Me.DialogResult = DialogResult
-                Me.Close()
-            End If
-        End Sub
-
-
-        Private Sub ImportAndClose(DialogResult As DialogResult)
-            Me.DialogResult = DialogResult
-            MoveLogs()
-            SetOutputFilePath()
-            Me.Close()
-        End Sub
 
         Protected Overrides Sub OnAfterBaseFormClosing(e As FormClosingEventArgs)
             _OutputImages.ClearImages()
@@ -147,6 +127,79 @@ Namespace Flux
             _OutputImages.StoreLogFile(_SelectedDevice.Device, LogFileName, TextBoxConsole.Text, LogStripPath)
         End Sub
 
+        Private Sub ButtonDiscard_Click(sender As Object, e As EventArgs) Handles ButtonDiscard.Click
+            DiscardLoadedImage()
+        End Sub
+
+        Private Sub ButtonImport_Click(sender As Object, e As EventArgs) Handles ButtonImport.Click
+            If _LaunchedFromDialog Then
+                If ButtonImport.SelectedValue = ConversionMode.Import Then
+                    ImportAndClose(DialogResult.Retry)
+                Else
+                    SaveAndClose(DialogResult.Retry)
+                End If
+                Exit Sub
+            End If
+
+            If _OutputImages.HasImage Then
+                If ButtonImport.SelectedValue = ConversionMode.Import Then
+                    ProcessImport()
+                Else
+                    ProcessSave()
+                End If
+            End If
+        End Sub
+
+        Private Sub ButtonImport_SelectedIndexChanged(sender As Object, e As EventArgs) Handles ButtonImport.SelectedIndexChanged, ButtonImportAndClose.SelectedIndexChanged
+            If _ImportButtonNoEvent Then
+                Exit Sub
+            End If
+
+            _ImportButtonNoEvent = True
+
+            Dim Mode As ConversionMode = CType(DirectCast(sender, SplitButton).SelectedValue, ConversionMode)
+
+            ButtonImport.SelectedValue = Mode
+            ButtonImportAndClose.SelectedValue = Mode
+            App.UserState.Flux.Convert.ConversionMode = Mode
+
+            _ImportButtonNoEvent = False
+        End Sub
+
+        Private Sub ButtonImportAndClose_Click(sender As Object, e As EventArgs) Handles ButtonImportAndClose.Click
+            If ButtonImportAndClose.SelectedValue = ConversionMode.Import Then
+                ImportAndClose(DialogResult.OK)
+            Else
+                SaveAndClose(DialogResult.OK)
+            End If
+        End Sub
+
+        Private Sub ButtonOpen_Click(sender As Object, e As EventArgs) Handles ButtonOpen.Click
+            If OpenFluxImage() Then
+                InitializeDevice(True)
+            End If
+        End Sub
+
+        Private Sub ButtonPreview_Click(sender As Object, e As EventArgs) Handles ButtonPreview.Click
+            PreviewImage()
+        End Sub
+
+        Private Sub ButtonProcess_Click(sender As Object, e As EventArgs) Handles ButtonProcess.Click
+            If CancelProcessIfRunning() Then
+                Exit Sub
+            End If
+
+            ProcessImage()
+        End Sub
+
+        Private Sub ButtonTrackData_Click(sender As Object, e As EventArgs) Handles ButtonTrackLayout.Click
+            GenerateTrackData()
+        End Sub
+
+        Private Sub ButtonWriteSplices_Click(sender As Object, e As EventArgs) Handles ButtonModifications.Click
+            DisplayModifications()
+        End Sub
+
         Private Function CanAcceptDrop(paths As IEnumerable(Of String)) As Boolean
             Dim SelectedDevice As IDevice = CType(ComboDevices.SelectedItem, IDevice)
             Dim AllowSCP As Boolean = SelectedDevice.InputTypeSupported(InputFileTypeEnum.scp)
@@ -161,6 +214,30 @@ Namespace Flux
 
             Return False
         End Function
+
+        Private Sub CheckBoxExtendedLogging_CheckStateChanged(sender As Object, e As EventArgs) Handles CheckBoxExtendedLogging.CheckStateChanged
+            If Not _Initialized Then
+                Exit Sub
+            End If
+
+            If _SelectedDevice Is Nothing Then
+                Exit Sub
+            End If
+
+            GetSelectedDeviceState.ExtendedLogs = CheckBoxExtendedLogging.Checked
+        End Sub
+
+        Private Sub CheckBoxSaveLog_CheckStateChanged(sender As Object, e As EventArgs) Handles CheckBoxSaveLog.CheckStateChanged
+            If Not _Initialized Then
+                Exit Sub
+            End If
+
+            If _SelectedDevice Is Nothing Then
+                Exit Sub
+            End If
+
+            GetSelectedDeviceState.SaveLog = CheckBoxSaveLog.Checked
+        End Sub
 
         Private Sub ClearLoadedImage()
             TextBoxFileName.Text = ""
@@ -179,6 +256,115 @@ Namespace Flux
             GridReset(_TrackCount, _SideCount, _FluxHeaders)
 
             TrackStatus.Clear()
+        End Sub
+
+        Private Sub ComboDevices_SelectedIndexChanged(sender As Object, e As EventArgs) Handles ComboDevices.SelectedIndexChanged
+            If Not _Initialized Then
+                Exit Sub
+            End If
+
+            If _ComboDevicesNoEvent Then
+                Exit Sub
+            End If
+
+            If ComboDevices.SelectedIndex > -1 Then
+                _UserState.Convert.LastDevice = CType(ComboDevices.SelectedItem, IDevice).Device
+            End If
+
+            RefreshGridState()
+            InitializeDevice(False)
+        End Sub
+
+        Private Sub ComboExtensions_SelectedIndexChanged(sender As Object, e As EventArgs) Handles ComboExtensions.SelectedIndexChanged
+            If Not _Initialized Then
+                Exit Sub
+            End If
+
+            If _ComboExtensionsNoEvent Then
+                Exit Sub
+            End If
+
+            RefreshPreferredExensions()
+        End Sub
+
+        Private Sub ComboImageFormat_SelectedIndexChanged(sender As Object, e As EventArgs) Handles ComboImageFormat.SelectedIndexChanged
+            If Not _Initialized Then
+                Exit Sub
+            End If
+
+            PopulateOutputTypes()
+            PopulateFileExtensions()
+            RefreshButtonState()
+        End Sub
+
+        Private Sub ComboOutputSource_SelectedIndexChanged(sender As Object, e As EventArgs) Handles ComboOutputSource.SelectedIndexChanged
+            If Not _Initialized Then
+                Exit Sub
+            End If
+
+            If _ComboOutputSourceNoEvent Then
+                Exit Sub
+            End If
+
+            If ComboOutputSource.SelectedIndex > -1 Then
+                _UserState.Convert.LastSource = CType(ComboOutputSource.SelectedItem, IDevice).Device
+            End If
+
+            _SelectedSource = CType(ComboOutputSource.SelectedItem, IDevice)
+        End Sub
+
+        Private Sub ComboOutputType_SelectedIndexChanged(sender As Object, e As EventArgs) Handles ComboOutputType.SelectedIndexChanged
+            If Not _Initialized Then
+                Exit Sub
+            End If
+
+            If _ComboOutputTypeNoEvent Then
+                Exit Sub
+            End If
+
+            If ComboOutputType.SelectedIndex > -1 Then
+                Dim OutputType As ImageImportOutputTypes = ComboOutputType.SelectedValue
+                GetSelectedDeviceState.OutputType = OutputType
+            End If
+
+            PopulateFileExtensions()
+            RefreshButtonState()
+        End Sub
+
+        Private Sub ConsoleTimer_Tick(sender As Object, e As EventArgs) Handles ConsoleTimer.Tick
+            If TextBoxConsole.IsDisposed Then
+                ConsoleTimer.Stop()
+                Return
+            End If
+
+            If _ConsoleQueue.IsEmpty Then
+                If Not Process.IsRunning Then
+                    ConsoleTimer.Stop()
+                    If Process.State = ConsoleProcessRunner.ProcessStateEnum.Completed Then
+                        ImagePostProcessCompleted()
+                    End If
+                End If
+                Return
+            End If
+
+            Dim sb As New Text.StringBuilder()
+            Dim line As String = ""
+
+            While _ConsoleQueue.TryDequeue(line)
+                sb.AppendLine(line)
+            End While
+
+            If sb.Length > 0 Then
+                TextBoxConsole.AppendText(sb.ToString())
+                TextBoxConsole.Refresh()
+            End If
+
+            If _ConsoleQueue.IsEmpty AndAlso Not Process.IsRunning Then
+                ConsoleTimer.Stop()
+                If Process.State = ConsoleProcessRunner.ProcessStateEnum.Completed Then
+                    ImagePostProcessCompleted()
+                End If
+            End If
         End Sub
 
         Private Sub DiscardLoadedImage()
@@ -355,6 +541,57 @@ Namespace Flux
             Return _UserState.Convert.Device(_SelectedDevice.Device)
         End Function
 
+        Private Sub ImageImportForm_DragDrop(sender As Object, e As DragEventArgs) Handles Me.DragDrop
+            If ComboDevices.SelectedIndex = -1 Then
+                Return
+            End If
+
+            Dim SelectedDevice As IDevice = CType(ComboDevices.SelectedItem, IDevice)
+            Dim AllowSCP As Boolean = SelectedDevice.InputTypeSupported(InputFileTypeEnum.scp)
+            Dim HasOutputfile As Boolean = _OutputImages.HasImage
+
+            If Process.IsRunning Or HasOutputfile Then
+                Return
+            End If
+
+            If Not e.Data.GetDataPresent(DataFormats.FileDrop) Then
+                Return
+            End If
+
+            Dim paths = DirectCast(e.Data.GetData(DataFormats.FileDrop), String())
+            If paths Is Nothing OrElse paths.Length = 0 Then
+                Return
+            End If
+
+            Dim firstPath = paths(0)
+
+            Dim Response = IsValidFluxImport(firstPath, AllowSCP)
+            If Response.Result Then
+                If OpenFluxImage(Response.File) Then
+                    InitializeDevice(True)
+                End If
+            End If
+        End Sub
+
+        Private Sub ImageImportForm_DragEnter(sender As Object, e As DragEventArgs) Handles Me.DragEnter
+            Dim HasOutputfile As Boolean = _OutputImages.HasImage
+
+            If Process.IsRunning Or HasOutputfile Then
+                e.Effect = DragDropEffects.None
+                Return
+            End If
+
+            If e.Data.GetDataPresent(DataFormats.FileDrop) Then
+                Dim paths = DirectCast(e.Data.GetData(DataFormats.FileDrop), String())
+                If paths IsNot Nothing AndAlso CanAcceptDrop(paths) Then
+                    e.Effect = DragDropEffects.Copy
+                    Return
+                End If
+            End If
+
+            e.Effect = DragDropEffects.None
+        End Sub
+
         Private Sub ImagePostProcessCompleted()
             If Not TrackStatus.TrackFound Then
                 Exit Sub
@@ -368,6 +605,13 @@ Namespace Flux
             _OutputImages.StorePendingImage(GetState)
             PopulateOutputSourceCombo()
             RefreshButtonState()
+        End Sub
+
+        Private Sub ImportAndClose(DialogResult As DialogResult)
+            Me.DialogResult = DialogResult
+            MoveLogs()
+            SetOutputFilePath()
+            Me.Close()
         End Sub
 
         Private Sub InitializeControls()
@@ -510,11 +754,11 @@ Namespace Flux
 
             ButtonImport.AddItem(WithoutHotkey(My.Resources.Label_Import), ConversionMode.Import)
             ButtonImport.AddItem(My.Resources.Label_Save, ConversionMode.Save)
-            ButtonImport.SelectedIndex = 0
+            ButtonImport.SelectedValue = App.UserState.Flux.Convert.ConversionMode
 
             ButtonImportAndClose.AddItem(My.Resources.Label_ImportClose, ConversionMode.Import)
             ButtonImportAndClose.AddItem(My.Resources.Label_SaveAndClose, ConversionMode.Save)
-            ButtonImport.SelectedIndex = 0
+            ButtonImportAndClose.SelectedValue = App.UserState.Flux.Convert.ConversionMode
 
             _ImportButtonNoEvent = False
 
@@ -898,6 +1142,51 @@ Namespace Flux
             End If
         End Sub
 
+        Private Sub Process_DataReceived(Data As String) Handles Process.ErrorDataReceived, Process.OutputDataReceived
+            ProcessOutputLine(Data)
+
+            If Not ConsoleTimer.Enabled Then
+                ConsoleTimer.Start()
+            End If
+        End Sub
+
+        Private Sub Process_ProcessStarted(exePath As String, arguments As String) Handles Process.ProcessStarted
+            StatusDevice.Text = _SelectedDevice.Name
+            StatusDevice.Visible = True
+            If _SelectedDevice.Device = IDevice.FluxDevice.PcImgCnv AndAlso CheckBoxRemaster.Checked Then
+                ToolStripProgress.Visible = True
+            End If
+        End Sub
+
+        Private Sub Process_ProcessStateChanged(State As ConsoleProcessRunner.ProcessStateEnum) Handles Process.ProcessStateChanged
+            Select Case State
+                Case ConsoleProcessRunner.ProcessStateEnum.Aborted
+                    _OutputImages.ClearPendingImage()
+                    If Not TrackStatus.Failed Then
+                        TrackStatus.UpdateTrackStatusAborted()
+                    End If
+                    ToolStripProgress.Visible = False
+
+                Case ConsoleProcessRunner.ProcessStateEnum.Completed
+                    If TrackStatus.TrackFound Then
+                        'ImagePostProcessCompleted()
+                        Exit Sub
+                    Else
+                        _OutputImages.ClearPendingImage()
+                        TrackStatus.UpdateTrackStatusError()
+                        ToolStripProgress.Visible = False
+                    End If
+
+                Case ConsoleProcessRunner.ProcessStateEnum.Error
+                    _OutputImages.ClearPendingImage()
+                    TrackStatus.UpdateTrackStatusError()
+                    ToolStripProgress.Visible = False
+
+            End Select
+
+            RefreshButtonState()
+        End Sub
+
         Private Sub ProcessImage()
             If _SelectedDevice Is Nothing Then
                 Exit Sub
@@ -995,6 +1284,7 @@ Namespace Flux
 
             Return True
         End Function
+
         Private Function ReadImageFormat() As DiskImage.FloppyDiskFormat
             If ComboDevices.SelectedIndex = -1 Then
                 Return FloppyDiskFormat.FloppyUnknown
@@ -1185,6 +1475,13 @@ Namespace Flux
             _TrackLayoutExists = TrackLayoutExists()
             CheckBoxRemaster.Checked = _TrackLayoutExists AndAlso HasInputFile
         End Sub
+
+        Private Sub SaveAndClose(DialogResult As DialogResult)
+            If ProcessSave() Then
+                Me.DialogResult = DialogResult
+                Me.Close()
+            End If
+        End Sub
         Private Function SelectedDiskFormat() As FloppyDiskFormat?
             If TypeOf ComboImageFormat.SelectedValue IsNot FloppyDiskParams Then
                 Return Nothing
@@ -1238,6 +1535,24 @@ Namespace Flux
             End If
 
             Me.Text = Text & " - " & DisplayFileName
+        End Sub
+
+        Private Sub TextBoxFileName_Click(sender As Object, e As EventArgs) Handles TextBoxFileName.Click
+            If TextBoxFileName.ReadOnly Then
+                If OpenFluxImage() Then
+                    InitializeDevice(True)
+                End If
+            End If
+        End Sub
+
+        Private Sub TextBoxFileName_TextChanged(sender As Object, e As EventArgs) Handles TextBoxFileName.TextChanged
+            RefreshImportButtonState()
+        End Sub
+
+        Private Sub TextBoxFileName_Validating(sender As Object, e As CancelEventArgs) Handles TextBoxFileName.Validating
+            Dim tb As TextBox = DirectCast(sender, TextBox)
+            tb.Text = SanitizeFileName(tb.Text)
+            RefreshImportButtonState()
         End Sub
 
         Private Function TrackLayoutExists() As Boolean
@@ -1453,323 +1768,5 @@ Namespace Flux
                 End Get
             End Property
         End Class
-
-        Private Sub ButtonDiscard_Click(sender As Object, e As EventArgs) Handles ButtonDiscard.Click
-            DiscardLoadedImage()
-        End Sub
-
-        Private Sub ButtonImport_Click(sender As Object, e As EventArgs) Handles ButtonImport.Click
-            If _LaunchedFromDialog Then
-                If ButtonImport.SelectedValue = ConversionMode.Import Then
-                    ImportAndClose(DialogResult.Retry)
-                Else
-                    SaveAndClose(DialogResult.Retry)
-                End If
-                Exit Sub
-            End If
-
-                If _OutputImages.HasImage Then
-                If ButtonImport.SelectedValue = ConversionMode.Import Then
-                    ProcessImport()
-                Else
-                    ProcessSave()
-                End If
-            End If
-        End Sub
-
-        Private Sub ButtonImport_SelectedIndexChanged(sender As Object, e As EventArgs) Handles ButtonImport.SelectedIndexChanged, ButtonImportAndClose.SelectedIndexChanged
-            If _ImportButtonNoEvent Then
-                Exit Sub
-            End If
-
-            _ImportButtonNoEvent = True
-
-            Dim Mode As ConversionMode = CType(DirectCast(sender, SplitButton).SelectedValue, ConversionMode)
-
-            ButtonImport.SelectedValue = Mode
-            ButtonImportAndClose.SelectedValue = Mode
-
-            _ImportButtonNoEvent = False
-        End Sub
-
-        Private Sub ButtonImportAndClose_Click(sender As Object, e As EventArgs) Handles ButtonImportAndClose.Click
-            If ButtonImportAndClose.SelectedValue = ConversionMode.Import Then
-                ImportAndClose(DialogResult.OK)
-            Else
-                SaveAndClose(DialogResult.OK)
-            End If
-        End Sub
-
-        Private Sub ButtonOpen_Click(sender As Object, e As EventArgs) Handles ButtonOpen.Click
-            If OpenFluxImage() Then
-                InitializeDevice(True)
-            End If
-        End Sub
-
-        Private Sub ButtonPreview_Click(sender As Object, e As EventArgs) Handles ButtonPreview.Click
-            PreviewImage()
-        End Sub
-
-        Private Sub ButtonProcess_Click(sender As Object, e As EventArgs) Handles ButtonProcess.Click
-            If CancelProcessIfRunning() Then
-                Exit Sub
-            End If
-
-            ProcessImage()
-        End Sub
-
-        Private Sub ButtonTrackData_Click(sender As Object, e As EventArgs) Handles ButtonTrackLayout.Click
-            GenerateTrackData()
-        End Sub
-
-        Private Sub ButtonWriteSplices_Click(sender As Object, e As EventArgs) Handles ButtonModifications.Click
-            DisplayModifications()
-        End Sub
-
-        Private Sub CheckBoxExtendedLogging_CheckStateChanged(sender As Object, e As EventArgs) Handles CheckBoxExtendedLogging.CheckStateChanged
-            If Not _Initialized Then
-                Exit Sub
-            End If
-
-            If _SelectedDevice Is Nothing Then
-                Exit Sub
-            End If
-
-            GetSelectedDeviceState.ExtendedLogs = CheckBoxExtendedLogging.Checked
-        End Sub
-
-        Private Sub CheckBoxSaveLog_CheckStateChanged(sender As Object, e As EventArgs) Handles CheckBoxSaveLog.CheckStateChanged
-            If Not _Initialized Then
-                Exit Sub
-            End If
-
-            If _SelectedDevice Is Nothing Then
-                Exit Sub
-            End If
-
-            GetSelectedDeviceState.SaveLog = CheckBoxSaveLog.Checked
-        End Sub
-
-        Private Sub ComboDevices_SelectedIndexChanged(sender As Object, e As EventArgs) Handles ComboDevices.SelectedIndexChanged
-            If Not _Initialized Then
-                Exit Sub
-            End If
-
-            If _ComboDevicesNoEvent Then
-                Exit Sub
-            End If
-
-            If ComboDevices.SelectedIndex > -1 Then
-                _UserState.Convert.LastDevice = CType(ComboDevices.SelectedItem, IDevice).Device
-            End If
-
-            RefreshGridState()
-            InitializeDevice(False)
-        End Sub
-
-        Private Sub ComboExtensions_SelectedIndexChanged(sender As Object, e As EventArgs) Handles ComboExtensions.SelectedIndexChanged
-            If Not _Initialized Then
-                Exit Sub
-            End If
-
-            If _ComboExtensionsNoEvent Then
-                Exit Sub
-            End If
-
-            RefreshPreferredExensions()
-        End Sub
-
-        Private Sub ComboImageFormat_SelectedIndexChanged(sender As Object, e As EventArgs) Handles ComboImageFormat.SelectedIndexChanged
-            If Not _Initialized Then
-                Exit Sub
-            End If
-
-            PopulateOutputTypes()
-            PopulateFileExtensions()
-            RefreshButtonState()
-        End Sub
-
-        Private Sub ComboOutputSource_SelectedIndexChanged(sender As Object, e As EventArgs) Handles ComboOutputSource.SelectedIndexChanged
-            If Not _Initialized Then
-                Exit Sub
-            End If
-
-            If _ComboOutputSourceNoEvent Then
-                Exit Sub
-            End If
-
-            If ComboOutputSource.SelectedIndex > -1 Then
-                _UserState.Convert.LastSource = CType(ComboOutputSource.SelectedItem, IDevice).Device
-            End If
-
-            _SelectedSource = CType(ComboOutputSource.SelectedItem, IDevice)
-        End Sub
-        Private Sub ComboOutputType_SelectedIndexChanged(sender As Object, e As EventArgs) Handles ComboOutputType.SelectedIndexChanged
-            If Not _Initialized Then
-                Exit Sub
-            End If
-
-            If _ComboOutputTypeNoEvent Then
-                Exit Sub
-            End If
-
-            If ComboOutputType.SelectedIndex > -1 Then
-                Dim OutputType As ImageImportOutputTypes = ComboOutputType.SelectedValue
-                GetSelectedDeviceState.OutputType = OutputType
-            End If
-
-            PopulateFileExtensions()
-            RefreshButtonState()
-        End Sub
-
-        Private Sub ConsoleTimer_Tick(sender As Object, e As EventArgs) Handles ConsoleTimer.Tick
-            If TextBoxConsole.IsDisposed Then
-                ConsoleTimer.Stop()
-                Return
-            End If
-
-            If _ConsoleQueue.IsEmpty Then
-                If Not Process.IsRunning Then
-                    ConsoleTimer.Stop()
-                    If Process.State = ConsoleProcessRunner.ProcessStateEnum.Completed Then
-                        ImagePostProcessCompleted()
-                    End If
-                End If
-                Return
-            End If
-
-            Dim sb As New Text.StringBuilder()
-            Dim line As String = ""
-
-            While _ConsoleQueue.TryDequeue(line)
-                sb.AppendLine(line)
-            End While
-
-            If sb.Length > 0 Then
-                TextBoxConsole.AppendText(sb.ToString())
-                TextBoxConsole.Refresh()
-            End If
-
-            If _ConsoleQueue.IsEmpty AndAlso Not Process.IsRunning Then
-                ConsoleTimer.Stop()
-                If Process.State = ConsoleProcessRunner.ProcessStateEnum.Completed Then
-                    ImagePostProcessCompleted()
-                End If
-            End If
-        End Sub
-
-        Private Sub ImageImportForm_DragDrop(sender As Object, e As DragEventArgs) Handles Me.DragDrop
-            If ComboDevices.SelectedIndex = -1 Then
-                Return
-            End If
-
-            Dim SelectedDevice As IDevice = CType(ComboDevices.SelectedItem, IDevice)
-            Dim AllowSCP As Boolean = SelectedDevice.InputTypeSupported(InputFileTypeEnum.scp)
-            Dim HasOutputfile As Boolean = _OutputImages.HasImage
-
-            If Process.IsRunning Or HasOutputfile Then
-                Return
-            End If
-
-            If Not e.Data.GetDataPresent(DataFormats.FileDrop) Then
-                Return
-            End If
-
-            Dim paths = DirectCast(e.Data.GetData(DataFormats.FileDrop), String())
-            If paths Is Nothing OrElse paths.Length = 0 Then
-                Return
-            End If
-
-            Dim firstPath = paths(0)
-
-            Dim Response = IsValidFluxImport(firstPath, AllowSCP)
-            If Response.Result Then
-                If OpenFluxImage(Response.File) Then
-                    InitializeDevice(True)
-                End If
-            End If
-        End Sub
-
-        Private Sub ImageImportForm_DragEnter(sender As Object, e As DragEventArgs) Handles Me.DragEnter
-            Dim HasOutputfile As Boolean = _OutputImages.HasImage
-
-            If Process.IsRunning Or HasOutputfile Then
-                e.Effect = DragDropEffects.None
-                Return
-            End If
-
-            If e.Data.GetDataPresent(DataFormats.FileDrop) Then
-                Dim paths = DirectCast(e.Data.GetData(DataFormats.FileDrop), String())
-                If paths IsNot Nothing AndAlso CanAcceptDrop(paths) Then
-                    e.Effect = DragDropEffects.Copy
-                    Return
-                End If
-            End If
-
-            e.Effect = DragDropEffects.None
-        End Sub
-        Private Sub Process_DataReceived(Data As String) Handles Process.ErrorDataReceived, Process.OutputDataReceived
-            ProcessOutputLine(Data)
-
-            If Not ConsoleTimer.Enabled Then
-                ConsoleTimer.Start()
-            End If
-        End Sub
-
-        Private Sub Process_ProcessStarted(exePath As String, arguments As String) Handles Process.ProcessStarted
-            StatusDevice.Text = _SelectedDevice.Name
-            StatusDevice.Visible = True
-            If _SelectedDevice.Device = IDevice.FluxDevice.PcImgCnv AndAlso CheckBoxRemaster.Checked Then
-                ToolStripProgress.Visible = True
-            End If
-        End Sub
-
-        Private Sub Process_ProcessStateChanged(State As ConsoleProcessRunner.ProcessStateEnum) Handles Process.ProcessStateChanged
-            Select Case State
-                Case ConsoleProcessRunner.ProcessStateEnum.Aborted
-                    _OutputImages.ClearPendingImage()
-                    If Not TrackStatus.Failed Then
-                        TrackStatus.UpdateTrackStatusAborted()
-                    End If
-                    ToolStripProgress.Visible = False
-
-                Case ConsoleProcessRunner.ProcessStateEnum.Completed
-                    If TrackStatus.TrackFound Then
-                        'ImagePostProcessCompleted()
-                        Exit Sub
-                    Else
-                        _OutputImages.ClearPendingImage()
-                        TrackStatus.UpdateTrackStatusError()
-                        ToolStripProgress.Visible = False
-                    End If
-
-                Case ConsoleProcessRunner.ProcessStateEnum.Error
-                    _OutputImages.ClearPendingImage()
-                    TrackStatus.UpdateTrackStatusError()
-                    ToolStripProgress.Visible = False
-
-            End Select
-
-            RefreshButtonState()
-        End Sub
-
-        Private Sub TextBoxFileName_Click(sender As Object, e As EventArgs) Handles TextBoxFileName.Click
-            If TextBoxFileName.ReadOnly Then
-                If OpenFluxImage() Then
-                    InitializeDevice(True)
-                End If
-            End If
-        End Sub
-
-        Private Sub TextBoxFileName_TextChanged(sender As Object, e As EventArgs) Handles TextBoxFileName.TextChanged
-            RefreshImportButtonState()
-        End Sub
-
-        Private Sub TextBoxFileName_Validating(sender As Object, e As CancelEventArgs) Handles TextBoxFileName.Validating
-            Dim tb As TextBox = DirectCast(sender, TextBox)
-            tb.Text = SanitizeFileName(tb.Text)
-            RefreshImportButtonState()
-        End Sub
-
     End Class
 End Namespace

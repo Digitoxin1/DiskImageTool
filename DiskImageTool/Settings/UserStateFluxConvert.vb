@@ -6,6 +6,7 @@ Namespace Settings
         Inherits SettingsGroup
 
         Private ReadOnly _Devices As Dictionary(Of IDevice.FluxDevice, UserStateFluxConvertDevice)
+        Private _ConversionMode As ConversionMode = ConversionMode.Import
         Private _LastDevice As IDevice.FluxDevice?
         Private _LastSource As IDevice.FluxDevice?
 
@@ -31,6 +32,18 @@ Namespace Settings
 
                 Return False
             End Get
+        End Property
+
+        Friend Property ConversionMode As ConversionMode
+            Get
+                Return _ConversionMode
+            End Get
+            Set(value As ConversionMode)
+                If _ConversionMode <> value Then
+                    _ConversionMode = value
+                    MarkDirty()
+                End If
+            End Set
         End Property
 
         Friend Property LastDevice As IDevice.FluxDevice?
@@ -71,6 +84,7 @@ Namespace Settings
 
             _LastDevice = ReadValue(dict, "lastDevice", _LastDevice)
             _LastSource = ReadValue(dict, "lastSource", _LastSource)
+            _ConversionMode = ReadValue(dict, "conversionMode", _ConversionMode)
 
             LoadDevices(dict)
 
@@ -100,6 +114,8 @@ Namespace Settings
             If _LastSource.HasValue Then
                 result("lastSource") = _LastSource.Value.ToString()
             End If
+
+            result("conversionMode") = _ConversionMode
 
             result("devices") = DeviceDict
 

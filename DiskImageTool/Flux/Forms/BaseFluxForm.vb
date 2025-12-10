@@ -162,7 +162,8 @@
                    .DefaultExt = "txt",
                    .Filter = My.Resources.FileType_Text & " (*.txt)|*.txt|" & My.Resources.FileType_All & " (*.*)|*.*",
                    .FilterIndex = FilterIndex,
-                   .InitialDirectory = InitialDirectory
+                   .InitialDirectory = InitialDirectory,
+                   .RestoreDirectory = True
                 }
 
                 If Dialog.ShowDialog = DialogResult.OK Then

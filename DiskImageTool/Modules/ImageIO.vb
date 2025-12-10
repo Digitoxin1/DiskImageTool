@@ -77,12 +77,16 @@ Module ImageIO
         Dim FileName = DirectoryEntry.GetFullFileName
 
         Using Dialog As New SaveFileDialog With {
-                .FileName = CleanFileName(FileName)
+                .FileName = CleanFileName(FileName),
+                .InitialDirectory = App.UserState.LastExportFilePath,
+                .RestoreDirectory = True
             }
 
             If Dialog.ShowDialog <> DialogResult.OK Then
                 Exit Sub
             End If
+
+            App.UserState.LastExportFilePath = IO.Path.GetDirectoryName(Dialog.FileName)
 
             Dim Result = DirectoryEntrySaveToFile(Dialog.FileName, DirectoryEntry)
 

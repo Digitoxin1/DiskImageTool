@@ -9,6 +9,11 @@
             Complete
         End Enum
 
+        Public Enum ConversionMode
+            Import
+            Save
+        End Enum
+
         Public Enum ImageImportOutputTypes
             IMA
             HFE
@@ -24,12 +29,6 @@
             sectorImage
         End Enum
 
-        Friend Enum TrackHeads
-            head0
-            head1
-            both
-        End Enum
-
         Friend Enum DeviceCapabilities
             None = 0
             Read = 1
@@ -37,6 +36,11 @@
             Convert = 4
         End Enum
 
+        Friend Enum TrackHeads
+            head0
+            head1
+            both
+        End Enum
         Public Function ImageImportOutputTypeDescription(Value As ImageImportOutputTypes) As String
             Select Case Value
                 Case ImageImportOutputTypes.HFE

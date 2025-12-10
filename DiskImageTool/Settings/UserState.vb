@@ -9,6 +9,7 @@ Namespace Settings
 
         Private ReadOnly _filePath As String
 
+        Private _lastExportFilePath As String = ""
         Private _lastNewImagePath As String = ""
         Private _preferredFileExtensions As New Dictionary(Of DiskImage.FloppyDiskFormat, String)
         Private _preferredFileExtensionsOriginal As Dictionary(Of DiskImage.FloppyDiskFormat, String)
@@ -23,6 +24,18 @@ Namespace Settings
         Public Property ETags As UserStateETags
         Public Property Flux As UserStateFlux
         Public Property IsDirty As Boolean
+
+        Public Property LastExportFilePath As String
+            Get
+                Return _lastExportFilePath
+            End Get
+            Set(value As String)
+                If _lastExportFilePath <> value Then
+                    _lastExportFilePath = value
+                    IsDirty = True
+                End If
+            End Set
+        End Property
 
         Public Property LastNewImagePath As String
             Get
@@ -57,6 +70,7 @@ Namespace Settings
 
                 ' top-level simple values (use backing fields to avoid IsDirty during load)
                 userState._lastNewImagePath = ReadValue(root, "lastNewImagePath", userState._lastNewImagePath)
+                userState._lastExportFilePath = ReadValue(root, "lastExportFilePath", userState._lastExportFilePath)
                 userState._ETags.LoadFromDictionary(ReadSection(root, "eTags"))
                 userState._Flux.LoadFromDictionary(ReadSection(root, "flux"))
 
@@ -101,7 +115,8 @@ Namespace Settings
             End If
 
             Dim root As New Dictionary(Of String, Object) From {
-                 {"lastNewImagePath", _lastNewImagePath}
+                 {"lastNewImagePath", _lastNewImagePath},
+                 {"lastExportFilePath", _lastExportFilePath}
             }
 
             root("eTags") = ETags.ToJsonObject()

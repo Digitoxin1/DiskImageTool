@@ -6,11 +6,11 @@ Public Class ItemScanForm
     Private ReadOnly _scanner As IImageScanner
     Private _endScan As Boolean = False
 
-    Public Sub New(scanner As IImageScanner, windowTitle As String, progressLabel As String, ctSource As CancellationTokenSource)
+    Public Sub New(scanner As IImageScanner, windowTitle As String, progressLabel As String)
 
         InitializeComponent()
         _scanner = scanner
-        _ctSource = ctSource
+        _ctSource = New Threading.CancellationTokenSource()
         Me.Text = windowTitle
         _progressLabel = progressLabel
 
@@ -24,12 +24,18 @@ Public Class ItemScanForm
         End Get
     End Property
 
-    Public Shared Sub Display(scanner As IImageScanner, windowTitle As String, progessLabel As String, ctSource As CancellationTokenSource, owner As IWin32Window)
-        Using dlg As New ItemScanForm(scanner, windowTitle, progessLabel, ctSource)
+    Public Shared Sub Display(scanner As IImageScanner, windowTitle As String, progessLabel As String, owner As IWin32Window)
+        Using dlg As New ItemScanForm(scanner, windowTitle, progessLabel)
             dlg.ShowDialog(owner)
         End Using
     End Sub
 
+    Protected Overrides Sub OnFormClosed(e As FormClosedEventArgs)
+        MyBase.OnFormClosed(e)
+
+        _ctSource.Cancel()
+        _ctSource.Dispose()
+    End Sub
     Private Sub ItemScanForm_FormClosing(sender As Object, e As FormClosingEventArgs) Handles Me.FormClosing
         If Not _endScan Then
             e.Cancel = True
@@ -39,6 +45,8 @@ Public Class ItemScanForm
 
     Private Sub ItemScanForm_Load(sender As Object, e As EventArgs) Handles MyBase.Load
         LblScanning.Text = _progressLabel & "... 0%"
+
+        Task.Run(Sub() _scanner.Scan(_ctSource.Token))
     End Sub
 
     Private Sub Scanner_ProgressChanged(percent As Integer)

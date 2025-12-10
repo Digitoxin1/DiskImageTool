@@ -1,31 +1,68 @@
 ﻿Imports System.Threading
 
 Public Class ImageLoadForm
+    Private WithEvents DelayTimer As Windows.Forms.Timer
+    Private Const DelayMs As Integer = 500
     Private ReadOnly _CtSource As CancellationTokenSource
+    Private ReadOnly _Files As String()
+    Private ReadOnly _NewFileName As String
+    Private ReadOnly _NewImage As Boolean
     Private ReadOnly _Scanner As ImageScanner
     Private _Counter As Integer = 0
     Private _EndScan As Boolean = False
     Private _ImageCount As Integer = 0
-    Private WithEvents DelayTimer As Windows.Forms.Timer
-    Private Const DelayMs As Integer = 500
 
-    Public Sub New(scanner As ImageScanner, ctSource As CancellationTokenSource)
+    Public Sub New(scanner As ImageScanner, Files() As String, NewImage As Boolean, NewFileName As String)
         InitializeComponent()
         Me.Opacity = 0.0
 
         Me.Text = My.Resources.Caption_ScanFiles
         _Scanner = scanner
-        _CtSource = ctSource
+        _CtSource = New Threading.CancellationTokenSource()
+        _Files = Files
+        _NewImage = NewImage
+        _NewFileName = NewFileName
 
         AddHandler _Scanner.FileScanned, AddressOf Scanner_FileScanned
         AddHandler _Scanner.ImageDiscovered, AddressOf Scanner_ImageDiscovered
         AddHandler _Scanner.ScanCompleted, AddressOf Scanner_ScanCompleted
     End Sub
 
-    Public Shared Sub Display(scanner As ImageScanner, ctSource As CancellationTokenSource, owner As IWin32Window)
-        Using dlg As New ImageLoadForm(scanner, ctSource)
+    Public ReadOnly Property EndScan As Boolean
+        Get
+            Return _EndScan
+        End Get
+    End Property
+
+    Public Shared Sub Display(scanner As ImageScanner, Files() As String, NewImage As Boolean, NewFileName As String, owner As IWin32Window)
+        Using dlg As New ImageLoadForm(scanner, Files, NewImage, NewFileName)
             dlg.ShowDialog(owner)
         End Using
+    End Sub
+
+    Protected Overrides Sub OnFormClosed(e As FormClosedEventArgs)
+        MyBase.OnFormClosed(e)
+
+        If DelayTimer IsNot Nothing Then
+            DelayTimer.Stop()
+            DelayTimer.Dispose()
+            DelayTimer = Nothing
+        End If
+
+        _CtSource.Cancel()
+        _CtSource.Dispose()
+    End Sub
+
+    Private Sub DelayTimer_Tick(sender As Object, e As EventArgs) Handles DelayTimer.Tick
+        DelayTimer.Stop()
+
+        ' If the scan already finished or the form is closing, do nothing
+        If _EndScan OrElse Me.IsDisposed OrElse Me.Disposing Then
+            Return
+        End If
+
+        ' Scan is still running → bring the dialog on-screen and show it
+        Me.Opacity = 1.0
     End Sub
 
     Private Sub ImageLoadForm_FormClosing(sender As Object, e As FormClosingEventArgs) Handles Me.FormClosing
@@ -35,10 +72,11 @@ Public Class ImageLoadForm
             _CtSource.Cancel()
         End If
     End Sub
-
     Private Sub ImageLoadForm_Load(sender As Object, e As EventArgs) Handles MyBase.Load
         LblScanning.Text = My.Resources.Label_Scanning
         lblScanning2.Text = String.Format(My.Resources.Label_ImagesLoaded, 0)
+
+        Task.Run(Sub() _Scanner.Scan(_Files, _NewImage, _NewFileName, _CtSource.Token))
 
         DelayTimer = New Windows.Forms.Timer With {
             .Interval = DelayMs
@@ -81,22 +119,8 @@ Public Class ImageLoadForm
 
         _EndScan = True
 
-        If DelayTimer IsNot Nothing Then
-            DelayTimer.Stop()
-        End If
+        DelayTimer?.Stop()
 
         Me.Close()
-    End Sub
-
-    Private Sub DelayTimer_Tick(sender As Object, e As EventArgs) Handles DelayTimer.Tick
-        DelayTimer.Stop()
-
-        ' If the scan already finished or the form is closing, do nothing
-        If _EndScan OrElse Me.IsDisposed OrElse Me.Disposing Then
-            Return
-        End If
-
-        ' Scan is still running → bring the dialog on-screen and show it
-        Me.Opacity = 1.0
     End Sub
 End Class

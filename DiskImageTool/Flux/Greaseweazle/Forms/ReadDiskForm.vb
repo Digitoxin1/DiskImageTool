@@ -287,16 +287,29 @@ Namespace Flux.Greaseweazle
             End If
         End Sub
 
-        Private Function GetNewFileName() As String
-            Dim Item As FileExtensionItem = ComboExtensions.SelectedItem
-
-            Dim FileName As String = TextBoxFileName.Text
-
-            If ContainsPlaceholder(FileName) Then
-                FileName = StripAngleBrackets(FileName)
+        Private Function GetNewFileName(FilePath As String) As String
+            If String.IsNullOrEmpty(FilePath) Then
+                Return ""
             End If
 
-            Return FileName & Item.Extension
+            Dim Extension As String
+
+            If ComboExtensions.Enabled AndAlso ComboExtensions.SelectedIndex > -1 Then
+                Dim Item As FileExtensionItem = ComboExtensions.SelectedValue
+                Extension = Item.Extension
+            Else
+                Extension = IO.Path.GetExtension(FilePath)
+            End If
+
+            Dim NewFileName As String = TextBoxFileName.Text
+
+            If ContainsPlaceholder(NewFileName) Then
+                NewFileName = StripAngleBrackets(NewFileName)
+            End If
+
+            NewFileName &= Extension
+
+            Return NewFileName
         End Function
 
         Private Function GetOutputFilePaths() As (FilePath As String, LogFilePath As String, IsFlux As Boolean)
@@ -1134,7 +1147,7 @@ Namespace Flux.Greaseweazle
                 Dim ParentFolder As String = IO.Path.GetFileName(IO.Directory.GetParent(_OutputFilePath).FullName)
                 DisplayFileName = IO.Path.Combine(ParentFolder, "*.raw")
             Else
-                DisplayFileName = GetNewFileName()
+                DisplayFileName = GetNewFileName(_OutputFilePath)
             End If
 
             Me.Text = Text & " - " & DisplayFileName
@@ -1188,7 +1201,7 @@ Namespace Flux.Greaseweazle
                     Exit Sub
                 End If
 
-                ProcessImport(_OutputFilePath, GetNewFileName())
+                ProcessImport(_OutputFilePath, GetNewFileName(_OutputFilePath))
             End If
         End Sub
 
@@ -1200,7 +1213,7 @@ Namespace Flux.Greaseweazle
             If CheckIsFluxOutput() Then
                 CloseForm("", "")
             Else
-                CloseForm(_OutputFilePath, GetNewFileName())
+                CloseForm(_OutputFilePath, GetNewFileName(_OutputFilePath))
             End If
         End Sub
         Private Sub ButtonPreview_Click(sender As Object, e As EventArgs) Handles ButtonPreview.Click

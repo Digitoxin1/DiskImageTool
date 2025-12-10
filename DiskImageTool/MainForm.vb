@@ -239,11 +239,7 @@ Public Class MainForm
 
         Dim scanner As New FilterScanner(images, CurrentImage, NewOnly, AddressOf Me.ImageFiltersScanAll)
 
-        Dim cts As New Threading.CancellationTokenSource()
-
-        Dim scanTask = Task.Run(Sub() scanner.Scan(cts.Token))
-
-        ItemScanForm.Display(scanner, My.Resources.Caption_ScanImages, My.Resources.Label_Scanning, cts, Me)
+        ItemScanForm.Display(scanner, My.Resources.Caption_ScanImages, My.Resources.Label_Scanning, Me)
 
         MenuFiltersScanNew.Visible = scanner.ItemsRemaining > 0
 
@@ -680,11 +676,7 @@ Public Class MainForm
 
         Dim scanner As New Win9xCleanScanner(images, FilePanel.CurrentImage, AddressOf Me.ImageWin9xCleanBatch)
 
-        Dim cts As New Threading.CancellationTokenSource()
-
-        Dim scanTask = Task.Run(Sub() scanner.Scan(cts.Token))
-
-        ItemScanForm.Display(scanner, My.Resources.Caption_CleanImages, My.Resources.Label_Processing, cts, Me)
+        ItemScanForm.Display(scanner, My.Resources.Caption_CleanImages, My.Resources.Label_Processing, Me)
 
         ImageFilters.UpdateAllMenuItems()
         If ImageFilters.ScanRun Then
@@ -1040,11 +1032,7 @@ Public Class MainForm
             End Sub
 
         If ShowDialog Then
-            Dim cts As New Threading.CancellationTokenSource()
-
-            Dim scanTask = Task.Run(Sub() scanner.Scan(Files, NewImage, NewFileName, cts.Token))
-
-            ImageLoadForm.Display(scanner, cts, Me)
+            ImageLoadForm.Display(scanner, Files, NewImage, NewFileName, Me)
         Else
             scanner.Scan(Files, NewImage, NewFileName)
         End If
@@ -1574,7 +1562,7 @@ Public Class MainForm
 
         SetMenuItemState(ToolStripExportFile, MenuState.ExportFile)
 
-        SetMenuItemStateEnabled(ToolStripImportFiles, MenuState.AddFileEnabled, MenuState.RootDirectory)
+        SetMenuItemStateEnabled(ToolStripImportFiles, MenuState.TopMenuAddFileEnabled, MenuState.RootDirectory)
 
         ToolStripViewFileText.Enabled = MenuState.ViewFileText.Enabled
         ToolStripViewFileText.Text = MenuState.ViewFileText.Caption
@@ -1589,7 +1577,7 @@ Public Class MainForm
 
         SetMenuItemStateEnabled(MenuEditReplaceFile, MenuState.ReplaceFileEnabled)
 
-        SetMenuItemStateEnabled(MenuEditImportFiles, MenuState.AddFileEnabled, MenuState.RootDirectory)
+        SetMenuItemStateEnabled(MenuEditImportFiles, MenuState.TopMenuAddFileEnabled, MenuState.RootDirectory)
 
         SetMenuItemState(MenuHexFile, MenuState.ViewHexFile, MenuState.DirectoryEntry)
         MenuHexSeparatorFile.Visible = MenuState.ViewHexFile.Visible
