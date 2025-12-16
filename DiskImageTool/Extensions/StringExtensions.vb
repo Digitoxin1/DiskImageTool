@@ -3,35 +3,45 @@
 Module StringExtensions
     <Extension()>
     Public Function WordWrap(Text As String, Width As Integer, Font As Font) As List(Of String)
-        Dim StringList As New List(Of String)
-        Dim Size = TextRenderer.MeasureText(Text, Font)
+        Dim Result As New List(Of String)
 
-        If String.IsNullOrEmpty(Text) OrElse Width = 0 OrElse Width >= Size.Width Then
-            StringList.Add(Text)
-            Return StringList
+        If String.IsNullOrEmpty(Text) OrElse Width <= 0 Then
+            Result.Add(Text)
+            Return Result
         End If
 
-        Dim Words = Text.Split(" ")
-        Dim Line As String = ""
-        For Each Word In Words
-            Dim NewLine = Line
-            If NewLine <> "" Then
-                NewLine &= " "
-            End If
-            NewLine &= Word
-            Size = TextRenderer.MeasureText(NewLine, Font)
+        ' Normalize newlines and split into logical lines
+        Dim Lines = Text.Replace(vbCrLf, vbLf).Replace(vbCr, vbLf).Split(vbLf)
 
-            If Size.Width <= Width Then
-                Line = NewLine
-            Else
-                StringList.Add(Line)
-                Line = Word
+        For Each LogicalLine In Lines
+            ' Preserve blank lines
+            If LogicalLine = "" Then
+                Result.Add("")
+                Continue For
+            End If
+
+            Dim Words = LogicalLine.Split(" ")
+            Dim Line As String = ""
+
+            For Each Word In Words
+                Dim NewLine = If(Line = "", Word, Line & " " & Word)
+                Dim Size = TextRenderer.MeasureText(NewLine, Font)
+
+                If Size.Width <= Width Then
+                    Line = NewLine
+                Else
+                    If Line <> "" Then
+                        Result.Add(Line)
+                    End If
+                    Line = Word
+                End If
+            Next
+
+            If Line <> "" Then
+                Result.Add(Line)
             End If
         Next
-        If Line <> "" Then
-            StringList.Add(Line)
-        End If
 
-        Return StringList
+        Return Result
     End Function
 End Module

@@ -198,6 +198,7 @@
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="Modules\Dialogs.vb" />
+    <Compile Include="Modules\FileIO.vb" />
     <Compile Include="Scanners\FilterScanner.vb" />
     <Compile Include="Filters\Enums.vb" />
     <Compile Include="Filters\FilterCounts.vb" />

@@ -206,22 +206,23 @@ Namespace Filters
 
                 If _TitleDB.TitleCount > 0 Then
                     TitleFindResult = _TitleDB.TitleFind(Disk)
-                    If TitleFindResult.TitleData IsNot Nothing Then
+                    Dim TitleData = TitleFindResult.Primary
+                    If TitleData IsNot Nothing Then
                         Image_NotInDatabase = False
                         Image_InDatabase = True
-                        If TitleFindResult.TitleData.GetStatus = FloppyDB.FloppyDBStatus.Verified Then
+                        If TitleData.GetStatus = FloppyDB.FloppyDBStatus.Verified Then
                             Image_Verified = True
                         Else
                             Image_Unverified = True
                         End If
                         If App.Globals.AppSettings.Debug Then
-                            If TitleFindResult.TitleData.GetIsTDC Then
+                            If TitleData.GetIsTDC Then
                                 Image_InTDC = True
                             Else
                                 Image_NotInTDC = True
                             End If
                             FileData = New FloppyDB.FileNameData(ImageData.FileName)
-                            If TitleFindResult.TitleData.GetStatus <> FileData.Status Then
+                            If TitleData.GetStatus <> FileData.Status Then
                                 Database_MismatchedStatus = True
                             End If
                         End If
@@ -272,7 +273,7 @@ Namespace Filters
                             FileData = New FloppyDB.FileNameData(ImageData.FileName)
                         End If
                         Dim Media = FloppyDiskFormatGetName(Disk.BPB, True)
-                        _TitleDB.AddTile(FileData, Media, TitleFindResult.MD5)
+                        _TitleDB.AddTitle(FileData, Media, TitleFindResult.MD5)
                     End If
                 End If
             End If

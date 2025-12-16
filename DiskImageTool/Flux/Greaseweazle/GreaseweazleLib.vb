@@ -194,11 +194,11 @@ Namespace Flux.Greaseweazle
             End If
 
             Dim Builder As New CommandLineBuilder(CommandLineBuilder.CommandAction.convert) With {
-            .InFile = FilePath,
-            .OutFile = FileName,
-            .Format = Format,
-            .Heads = If(BothSides, TrackHeads.both, TrackHeads.head0)
-        }
+                .InFile = FilePath,
+                .OutFile = FileName,
+                .Format = Format,
+                .Heads = If(BothSides, TrackHeads.both, TrackHeads.head0)
+            }
             Builder.AddCylinder(0)
 
             ConsoleProcessRunner.RunProcess(Settings.AppPath, Builder.Arguments)
@@ -330,12 +330,12 @@ Namespace Flux.Greaseweazle
             End If
 
             Dim Builder As New CommandLineBuilder(CommandLineBuilder.CommandAction.read) With {
-            .Device = Settings.ComPort,
-            .Drive = DriveId,
-            .File = FileName,
-            .Format = Format,
-            .Heads = If(BothSides, TrackHeads.both, TrackHeads.head0)
-        }
+                .Device = Settings.ComPort,
+                .Drive = DriveId,
+                .File = FileName,
+                .Format = Format,
+                .Heads = If(BothSides, TrackHeads.both, TrackHeads.head0)
+            }
             Builder.AddCylinder(0)
 
             Dim Result = ConsoleProcessRunner.RunProcess(Settings.AppPath, Builder.Arguments)

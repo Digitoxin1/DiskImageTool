@@ -771,17 +771,15 @@ Namespace Flux.Greaseweazle
         End Sub
 
         Private Sub PreviewImage()
+            Dim Caption As String = TextBoxFileName.Text
+
             Dim HasOutputfile As Boolean = Not String.IsNullOrEmpty(_OutputFilePath)
             Dim IsFluxOutput = CheckIsFluxOutput()
 
             If HasOutputfile AndAlso Not IsFluxOutput Then
                 Dim ImageData = New ImageData(_OutputFilePath)
 
-                Dim Caption As String = TextBoxFileName.Text
-
-                If Not ImagePreview.Display(ImageData, Caption, Me) Then
-                    MsgBox(My.Resources.Dialog_ImagePreviewFail, MsgBoxStyle.Exclamation)
-                End If
+                ImagePreview.Display(ImageData, Caption, Me)
             Else
                 Dim DiskParams = SelectedDiskParams()
                 Dim Opt As DriveOption = _SelectedOption
@@ -794,12 +792,8 @@ Namespace Flux.Greaseweazle
 
                 If Not Response.Result Then
                     MsgBox(My.Resources.Dialog_ImagePreviewFail, MsgBoxStyle.Exclamation)
-                End If
-
-                Dim Caption As String = TextBoxFileName.Text
-
-                If Not ImagePreview.Display(Response.FileName, DiskParams.Value, Caption, Me) Then
-                    MsgBox(My.Resources.Dialog_ImagePreviewFail, MsgBoxStyle.Exclamation)
+                Else
+                    ImagePreview.Display(Response.FileName, DiskParams.Value, Caption, Me)
                 End If
 
                 DeleteTempFileIfExists(Response.FileName)

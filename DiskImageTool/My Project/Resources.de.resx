@@ -1886,7 +1886,7 @@ Möchten Sie ihn überschreiben?</value>
     <value>Vorschau</value>
   </data>
   <data name="Dialog_ImagePreviewFail" xml:space="preserve">
-    <value>Vorschau der Image-Datei nicht möglich.</value>
+    <value>Fehler: Vorschau der Image-Datei nicht möglich.</value>
   </data>
   <data name="Label_Save" xml:space="preserve">
     <value>Sichern</value>
@@ -1902,5 +1902,8 @@ Möchten Sie ihn überschreiben?</value>
   </data>
   <data name="Radio_Settings_ConvertSameFolder" xml:space="preserve">
     <value>Gleicher Ordner wie das Flux-Set</value>
+  </data>
+  <data name="Dialog_DetectFormatError" xml:space="preserve">
+    <value>Fehler: Bildformat konnte nicht erkannt werden.</value>
   </data>
 </root>

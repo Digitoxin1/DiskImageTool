@@ -1886,7 +1886,7 @@ Voulez-vous écraser ?</value>
     <value>Aperçu</value>
   </data>
   <data name="Dialog_ImagePreviewFail" xml:space="preserve">
-    <value>Impossible d’afficher l’aperçu de l’image.</value>
+    <value>Erreur : Impossible d’afficher l’aperçu de l’image.</value>
   </data>
   <data name="Label_Save" xml:space="preserve">
     <value>Sauver</value>
@@ -1902,5 +1902,8 @@ Voulez-vous écraser ?</value>
   </data>
   <data name="Radio_Settings_ConvertSameFolder" xml:space="preserve">
     <value>Même dossier que l’ensemble flux</value>
+  </data>
+  <data name="Dialog_DetectFormatError" xml:space="preserve">
+    <value>Erreur : Impossible de détecter le format de l’image.</value>
   </data>
 </root>

@@ -9,7 +9,7 @@ Public Class FloppyDB
     Private _MainCount As Integer = 0
     Private _MainPath As String
     Private _NewXMLDoc As Xml.XmlDocument
-    Private _TitleDictionary As Dictionary(Of String, FloppyData)
+    Private _TitleDictionary As Dictionary(Of String, List(Of FloppyData))
     Private _userCount As Integer = 0
     Private _UserPath As String
     Private _Version As String
@@ -56,11 +56,11 @@ Public Class FloppyDB
         End Get
     End Property
 
-    Public Sub AddTile(FileData As FileNameData, Media As String, MD5 As String)
+    Public Sub AddTitle(FileData As FileNameData, Media As String, MD5 As String)
         If Not FileData.Cracked And FileData.StatusString <> "M" Then
             If _NewXMLDoc Is Nothing Then
                 Dim FilePath As String = IO.Path.Combine(My.Application.Info.DirectoryPath, DB_FILE_NAME_NEW)
-                _NewXMLDoc = LoadXMLFromFile(DB_FILE_NAME_NEW)
+                _NewXMLDoc = LoadXMLFromFile(FilePath)
             End If
 
             Dim rootNode = _NewXMLDoc.SelectSingleNode("/root")
@@ -157,8 +157,8 @@ Public Class FloppyDB
 
     Public Function IsVerifiedImage(Disk As Disk) As Boolean
         Dim Result = TitleFind(Disk)
-        If Result.TitleData IsNot Nothing Then
-            If Result.TitleData.GetStatus = FloppyDBStatus.Verified Then
+        If Result.Primary IsNot Nothing Then
+            If Result.Primary.GetStatus = FloppyDBStatus.Verified Then
                 Return True
             End If
         End If
@@ -167,7 +167,7 @@ Public Class FloppyDB
     End Function
 
     Public Sub Load()
-        _TitleDictionary = New Dictionary(Of String, FloppyData)
+        _TitleDictionary = New Dictionary(Of String, List(Of FloppyData))(StringComparer.OrdinalIgnoreCase)
 
         Dim UserResponse = LoadXMLDoc(USER_DB_FILE_NAME)
         _UserPath = UserResponse.Path
@@ -255,25 +255,20 @@ Public Class FloppyDB
     End Function
 
     Public Function TitleFind(MD5 As String) As TitleFindResult
-        Dim Response As New TitleFindResult With {
-            .TitleData = TitleGet(MD5),
-            .MD5 = MD5
+        Return New TitleFindResult With {
+            .MD5 = MD5,
+            .Matches = TitleGet(MD5)
         }
-
-        'If Response.TitleData IsNot Nothing Then
-        '    MarkDiskAsTdc(_XMLDoc, MD5)
-        'End If
-
-        Return Response
     End Function
 
-    Public Function TitleGet(MD5 As String) As FloppyData
+    Public Function TitleGet(MD5 As String) As List(Of FloppyData)
+        Dim List As List(Of FloppyData) = Nothing
 
-        If _TitleDictionary.ContainsKey(MD5) Then
-            Return _TitleDictionary.Item(MD5)
-        Else
-            Return Nothing
+        If _TitleDictionary.TryGetValue(MD5, List) Then
+            Return List
         End If
+
+        Return Nothing
     End Function
 
     Private Shared Function GetFloppyDBStatus(Status As String) As FloppyDBStatus
@@ -288,6 +283,20 @@ Public Class FloppyDB
                 Return FloppyDBStatus.Unknown
         End Select
     End Function
+
+    Private Sub AddMd5Mapping(MD5 As String, Data As FloppyData)
+        If String.IsNullOrWhiteSpace(MD5) Then
+            Return
+        End If
+
+        Dim List As List(Of FloppyData) = Nothing
+        If Not _TitleDictionary.TryGetValue(MD5, List) Then
+            List = New List(Of FloppyData)(2)
+            _TitleDictionary(MD5) = List
+        End If
+
+        List.Add(Data)
+    End Sub
 
     Private Sub CheckTitleNodeForErrors(TitleNode As Xml.XmlNode)
         If TitleNode.Name <> "title" Then
@@ -348,50 +357,94 @@ Public Class FloppyDB
             .Parent = Parent
         }
 
-        If Node.HasAttribute("name") Then
-            TitleData.Name = Node.Attributes("name").Value
+        Dim Value As String
+
+        Value = Node.GetAttribute("name")
+        If Value <> "" Then
+            TitleData.Name = Value
         End If
-        If Node.HasAttribute("variation") Then
-            TitleData.Variation = Node.Attributes("variation").Value
+
+        Value = Node.GetAttribute("variation")
+        If Value <> "" Then
+            TitleData.Variation = Value
         End If
-        If Node.HasAttribute("compilation") Then
-            TitleData.Compilation = Node.Attributes("compilation").Value
+
+        Value = Node.GetAttribute("compilation")
+        If Value <> "" Then
+            TitleData.Compilation = Value
         End If
-        If Node.HasAttribute("year") Then
-            TitleData.Year = Node.Attributes("year").Value
+
+        Value = Node.GetAttribute("year")
+        If Value <> "" Then
+            TitleData.Year = Value
         End If
-        If Node.HasAttribute("version") Then
-            TitleData.Version = Node.Attributes("version").Value
+
+        Value = Node.GetAttribute("version")
+        If Value <> "" Then
+            TitleData.Version = Value
         End If
-        If Node.HasAttribute("disk") Then
-            TitleData.Disk = Node.Attributes("disk").Value
+
+        Value = Node.GetAttribute("int")
+        If Value <> "" Then
+            TitleData.Int = Value
         End If
-        If Node.HasAttribute("media") Then
-            Dim Media As String = Node.Attributes("media").Value
-            TitleData.Media = FloppyDiskFormatGet(Media)
+
+        Value = Node.GetAttribute("serial")
+        If Value <> "" Then
+            TitleData.Serial = Value
         End If
-        If Node.HasAttribute("publisher") Then
-            TitleData.Publisher = Node.Attributes("publisher").Value
+
+        Value = Node.GetAttribute("disk")
+        If Value <> "" Then
+            TitleData.Disk = Value
         End If
-        If Node.HasAttribute("status") Then
-            Dim Status = Node.Attributes("status").Value
-            TitleData.Status = GetFloppyDBStatus(Status)
+
+        Value = Node.GetAttribute("media")
+        If Value <> "" Then
+            TitleData.Media = FloppyDiskFormatGet(Value)
         End If
-        If Node.HasAttribute("region") Then
-            TitleData.Region = Node.Attributes("region").Value
+
+        Value = Node.GetAttribute("publisher")
+        If Value <> "" Then
+            TitleData.Publisher = Value
         End If
-        If Node.HasAttribute("language") Then
-            TitleData.Language = Node.Attributes("language").Value
+
+        Value = Node.GetAttribute("status")
+        If Value <> "" Then
+            TitleData.Status = GetFloppyDBStatus(Value)
         End If
-        If Node.HasAttribute("cp") Then
-            TitleData.CopyProtection = Node.Attributes("cp").Value
+
+        Value = Node.GetAttribute("region")
+        If Value <> "" Then
+            TitleData.Region = Value
         End If
-        If Node.HasAttribute("os") Then
-            TitleData.OperatingSystem = Node.Attributes("os").Value
+
+        Value = Node.GetAttribute("language")
+        If Value <> "" Then
+            TitleData.Language = Value
         End If
-        If Node.HasAttribute("tdc") Then
-            If Node.Attributes("tdc").Value = "1" Then
+
+        Value = Node.GetAttribute("cp")
+        If Value <> "" Then
+            TitleData.CopyProtection = Value
+        End If
+
+        Value = Node.GetAttribute("os")
+        If Value <> "" Then
+            TitleData.OperatingSystem = Value
+        End If
+
+        Value = Node.GetAttribute("tdc")
+        If Value <> "" Then
+            If Value = "1" Then
                 TitleData.IsTDC = True
+            End If
+        End If
+
+        Value = Node.GetAttribute("fixed")
+        If Value <> "" Then
+            If Value = "1" Then
+                TitleData.Fixed = True
             End If
         End If
 
@@ -491,29 +544,31 @@ Public Class FloppyDB
     End Function
 
     Private Function ParseNode(Node As Xml.XmlNode, ParentData As FloppyData) As Integer
-        Dim Count As Integer = 0
+        Dim Elem = TryCast(Node, Xml.XmlElement)
 
-        If TypeOf Node Is Xml.XmlElement Then
-            Dim FloppyData = GetTitleData(Node, ParentData)
-            If Node.Name = "disk" AndAlso DirectCast(Node, Xml.XmlElement).HasAttribute("md5") Then
-                Dim md5 As String = Node.Attributes("md5").Value
-                If Not _TitleDictionary.ContainsKey(md5) Then
-                    _TitleDictionary.Add(md5, FloppyData)
-                End If
+        If Elem Is Nothing Then
+            Return 0
+        End If
+
+        Dim Count As Integer = 0
+        Dim FloppyData = GetTitleData(Elem, ParentData)
+
+        If Elem.Name = "disk" Then
+            Dim md5 = Elem.GetAttribute("md5")
+            If md5 <> "" Then
+                AddMd5Mapping(md5, FloppyData)
                 Count += 1
             End If
-            If Node.Name = "disk" AndAlso DirectCast(Node, Xml.XmlElement).HasAttribute("md5_alt") Then
-                Dim md5 As String = Node.Attributes("md5_alt").Value
-                If Not _TitleDictionary.ContainsKey(md5) Then
-                    _TitleDictionary.Add(md5, FloppyData)
-                End If
-            End If
-            If Node.HasChildNodes Then
-                For Each ChildNode As Xml.XmlNode In Node.ChildNodes
-                    Count += ParseNode(ChildNode, FloppyData)
-                Next
+
+            Dim md5Alt = Elem.GetAttribute("md5_alt")
+            If md5Alt <> "" Then
+                AddMd5Mapping(md5Alt, FloppyData)
             End If
         End If
+
+        For Each ChildNode As Xml.XmlNode In Elem.ChildNodes
+            Count += ParseNode(ChildNode, FloppyData)
+        Next
 
         Return Count
     End Function
@@ -527,14 +582,6 @@ Public Class FloppyDB
             CheckTitleNodeForErrors(TitleNode)
 #End If
         Next
-
-#If DEBUG Then
-        For Each Value In _TitleDictionary.Values
-            If Value.GetYear = "" Then
-                Debug.Print("FloppyDB: Missing Year: " & Value.GetName)
-            End If
-        Next
-#End If
 
         Return Count
     End Function
@@ -587,6 +634,7 @@ Public Class FloppyDB
         Public Property Verified As Boolean = False
         Public Property Version As String = ""
         Public Property Year As String = ""
+
         Private Sub ParseFileName()
             _Title = Trim(Regex.Match(FileName, "^[^\\(]+").Value)
             _Title = Replace(_Title, " - ", ": ")
@@ -676,6 +724,8 @@ Public Class FloppyDB
         Public Property Compilation As String = ""
         Public Property CopyProtection As String = ""
         Public Property Disk As String = ""
+        Public Property Fixed As Boolean? = Nothing
+        Public Property Int As String = ""
         Public Property IsTDC As Boolean? = Nothing
         Public Property Language As String = ""
         Public Property Media As FloppyDiskFormat = FloppyDiskFormat.FloppyUnknown
@@ -684,6 +734,7 @@ Public Class FloppyDB
         Public Property Parent As FloppyData = Nothing
         Public Property Publisher As String = ""
         Public Property Region As String = ""
+        Public Property Serial As String = ""
         Public Property Status As FloppyDBStatus = FloppyDBStatus.Unknown
         Public Property Variation As String = ""
         Public Property Version As String = ""
@@ -729,6 +780,38 @@ Public Class FloppyDB
                 Do While Parent IsNot Nothing
                     If Parent.Disk <> "" Then
                         Return Parent.Disk
+                    End If
+                    Parent = Parent.Parent
+                Loop
+            End If
+
+            Return ""
+        End Function
+
+        Public Function GetFixed() As Boolean
+            If _Fixed.HasValue Then
+                Return _Fixed.Value
+            Else
+                Dim Parent = _Parent
+                Do While Parent IsNot Nothing
+                    If Parent.Fixed.HasValue Then
+                        Return Parent.Fixed.Value
+                    End If
+                    Parent = Parent.Parent
+                Loop
+            End If
+
+            Return False
+        End Function
+
+        Public Function GetInt() As String
+            If _Int <> "" Then
+                Return _Int
+            Else
+                Dim Parent = _Parent
+                Do While Parent IsNot Nothing
+                    If Parent.Int <> "" Then
+                        Return Parent.Int
                     End If
                     Parent = Parent.Parent
                 Loop
@@ -849,6 +932,22 @@ Public Class FloppyDB
             Return ""
         End Function
 
+        Public Function GetSerial() As String
+            If _Serial <> "" Then
+                Return _Serial
+            Else
+                Dim Parent = _Parent
+                Do While Parent IsNot Nothing
+                    If Parent.Serial <> "" Then
+                        Return Parent.Serial
+                    End If
+                    Parent = Parent.Parent
+                Loop
+            End If
+
+            Return ""
+        End Function
+
         Public Function GetStatus() As FloppyDBStatus
             If _Status <> FloppyDBStatus.Unknown Then
                 Return _Status
@@ -880,6 +979,7 @@ Public Class FloppyDB
 
             Return ""
         End Function
+
         Public Function GetVersion() As String
             If _Version <> "" Then
                 Return _Version
@@ -895,7 +995,6 @@ Public Class FloppyDB
 
             Return ""
         End Function
-
         Public Function GetYear() As String
             If _Year <> "" Then
                 Return _Year
@@ -914,7 +1013,156 @@ Public Class FloppyDB
     End Class
 
     Public Class TitleFindResult
+        Public Property Matches As IReadOnlyList(Of FloppyData) = Nothing
         Public Property MD5 As String = ""
-        Public Property TitleData As FloppyData = Nothing
+        Public ReadOnly Property Primary As FloppyData
+            Get
+                Return If(Matches IsNot Nothing AndAlso Matches.Count > 0, Matches(0), Nothing)
+            End Get
+        End Property
+
+        Public Function GetIntList() As String
+            Return JoinDistinct(Function(d) d.GetInt())
+        End Function
+
+        Public Function GetLanguageList() As String
+            Return JoinDistinct(Function(d) d.GetLanguage())
+        End Function
+
+        Public Function GetNameList() As String
+            Return JoinDistinct(Function(d) d.GetName(), vbNewLine)
+        End Function
+
+        Public Function GetPublisherList() As String
+            Return JoinDistinct(Function(d) d.GetPublisher())
+        End Function
+
+        Public Function GetRegionList() As String
+            Return JoinDistinct(Function(d) d.GetRegion())
+        End Function
+
+        Public Function GetSerialList() As String
+            Return JoinDistinct(Function(d) d.GetSerial())
+        End Function
+
+        Public Function GetVersionDisplay() As String
+            If Matches Is Nothing OrElse Matches.Count = 0 Then
+                Return ""
+            End If
+
+            If Matches.Count = 1 Then
+                Return FormatOne(Matches(0))
+            End If
+
+            Dim firstKey = MakeKey(Matches(0))
+            Dim allSame As Boolean = True
+            For i = 1 To Matches.Count - 1
+                If MakeKey(Matches(i)) <> firstKey Then
+                    allSame = False
+                    Exit For
+                End If
+            Next
+
+            If allSame Then
+                Return FormatOne(Matches(0))
+            End If
+
+            Dim rows = Matches.Select(Function(d) New With {
+                .Ver = Normalize(d.GetVersion()),
+                .Ser = Normalize(d.GetSerial()),
+                .Int = Normalize(d.GetInt())
+            }).
+            GroupBy(Function(r) r.Ver & vbNullChar & r.Ser & vbNullChar & r.Int).
+            Select(Function(g) g.First()).
+            ToList
+
+
+            Dim groups = rows.GroupBy(Function(r) (r.Ver, r.Ser)).ToList()
+
+            Dim parts As New List(Of String)
+
+            For Each g In groups
+                Dim seg As New List(Of String)
+
+                If g.Key.Ver <> "" Then
+                    seg.Add(g.Key.Ver)
+                End If
+                If g.Key.Ser <> "" Then
+                    seg.Add("Serial " & g.Key.Ser)
+                End If
+
+                Dim ints = g.Select(Function(x) x.Int).Where(Function(s) s <> "").Distinct(StringComparer.OrdinalIgnoreCase).ToList()
+
+                If ints.Count > 0 Then
+                    seg.Add("Int. " & String.Join(", ", ints))
+                End If
+
+                If seg.Count > 0 Then
+                    parts.Add(String.Join(", ", seg))
+                End If
+            Next
+
+            Return String.Join(", ", parts)
+        End Function
+
+        Public Function GetVersionList() As String
+            Return JoinDistinct(Function(d) d.GetVersion())
+        End Function
+        Public Function GetYearList() As String
+            Return JoinDistinct(Function(d) d.GetYear())
+        End Function
+
+        Private Shared Function Normalize(s As String) As String
+            Return If(s, "").Trim()
+        End Function
+
+        Private Function DistinctStrings(selector As Func(Of FloppyData, String)) As List(Of String)
+            Dim result As New List(Of String)
+            Dim seen As New HashSet(Of String)(StringComparer.OrdinalIgnoreCase)
+
+            For Each d In Matches
+                Dim s = selector(d)
+                If String.IsNullOrWhiteSpace(s) Then
+                    Continue For
+                End If
+                s = s.Trim()
+                If seen.Add(s) Then
+                    result.Add(s)
+                End If
+            Next
+
+            Return result
+        End Function
+
+        Private Function FormatOne(d As FloppyData) As String
+            Dim ver = Normalize(d.GetVersion())
+            Dim ser = Normalize(d.GetSerial())
+            Dim intl = Normalize(d.GetInt())
+
+            Dim seg As New List(Of String)
+            If ver <> "" Then
+                seg.Add(ver)
+            End If
+            If ser <> "" Then
+                seg.Add("Serial " & ser)
+            End If
+            If intl <> "" Then
+                seg.Add("Int. " & intl)
+            End If
+
+            Return String.Join(", ", seg)
+        End Function
+
+        Private Function JoinDistinct(selector As Func(Of FloppyData, String), Optional Separator As String = ", ") As String
+            Return String.Join(Separator, DistinctStrings(selector))
+        End Function
+
+        Private Function MakeKey(d As FloppyData) As String
+            Dim ver = Normalize(d.GetVersion())
+            Dim ser = Normalize(d.GetSerial())
+            Dim intl = Normalize(d.GetInt())
+
+            Return ver & vbNullChar & ser & vbNullChar & intl
+        End Function
     End Class
 End Class

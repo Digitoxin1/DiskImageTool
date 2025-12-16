@@ -908,6 +908,15 @@ Namespace My.Resources
         End Property
         
         '''<summary>
+        '''  Looks up a localized string similar to Error: Unable to detect image format..
+        '''</summary>
+        Friend ReadOnly Property Dialog_DetectFormatError() As String
+            Get
+                Return ResourceManager.GetString("Dialog_DetectFormatError", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
         '''  Looks up a localized string similar to Warning: The disk in drive {0} is not empty.{1}{1}If you continue, the disk will be overwritten.{1}{1}Do you wish to continue?.
         '''</summary>
         Friend ReadOnly Property Dialog_DiskNotEmptyWarning() As String
@@ -1133,7 +1142,7 @@ Namespace My.Resources
         End Property
         
         '''<summary>
-        '''  Looks up a localized string similar to Unable to preview image..
+        '''  Looks up a localized string similar to Error: Unable to preview image..
         '''</summary>
         Friend ReadOnly Property Dialog_ImagePreviewFail() As String
             Get

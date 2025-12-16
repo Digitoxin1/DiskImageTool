@@ -88,10 +88,9 @@ Public Class MainForm
 
         Dim ShowDialog As Boolean = True
         Dim BatchResult As MyMsgBoxResult = MyMsgBoxResult.Yes
-        Dim Result As MyMsgBoxResult
 
         For Each ImageData In ModifyImageList
-            Dim NewFilePath As String = ""
+            Dim Result As MyMsgBoxResult
 
             If ShowDialog Then
                 If ModifyImageList.Count = 1 Then
@@ -105,46 +104,45 @@ Public Class MainForm
 
             If Result = MyMsgBoxResult.YesToAll OrElse Result = MyMsgBoxResult.NoToAll Then
                 ShowDialog = False
-                If Result = MyMsgBoxResult.NoToAll Then
-                    BatchResult = MyMsgBoxResult.No
-                Else
-                    BatchResult = MyMsgBoxResult.Yes
-                End If
+                BatchResult = If(Result = MyMsgBoxResult.NoToAll, MyMsgBoxResult.No, MyMsgBoxResult.Yes)
                 Result = BatchResult
             End If
 
-            Select Case Result
-                Case MyMsgBoxResult.No
-                    Continue For
+            If Result = MyMsgBoxResult.No Then
+                Continue For
+            End If
 
-                Case MyMsgBoxResult.Cancel
+            If Result = MyMsgBoxResult.Cancel Then
+                Return False
+            End If
+
+
+            Dim NewFilePath As String = ""
+            Dim NeedsSaveAs = ImageData.ReadOnly OrElse ImageData.FileType = ImageData.FileTypeEnum.NewImage
+
+            If NeedsSaveAs Then
+                If Not ShowDialog AndAlso ImageData.FileType <> ImageData.FileTypeEnum.NewImage Then
+                    If MsgBoxNewFileName(ImageData.FileName) <> MsgBoxResult.Ok Then
+                        Return False
+                    End If
+                End If
+
+                NewFilePath = GetNewFilePath(CurrentImage, ImageData, _LoadedFiles)
+                If String.IsNullOrEmpty(NewFilePath) Then
                     Return False
+                End If
+            End If
 
-                Case MyMsgBoxResult.Yes
-                    If ImageData.ReadOnly OrElse ImageData.FileType = ImageData.FileTypeEnum.NewImage Then
-                        If Not ShowDialog Then
-                            If MsgBoxNewFileName(ImageData.FileName) <> MsgBoxResult.Ok Then
-                                Return False
-                            End If
-                        End If
+            Dim image = DiskImageLoadIfNeeded(CurrentImage, ImageData)
+            If image Is Nothing Then
+                Return False
+            End If
 
-                        NewFilePath = GetNewFilePath(CurrentImage, ImageData, _LoadedFiles)
-                        If String.IsNullOrEmpty(NewFilePath) Then
-                            Return False
-                        End If
-                    End If
+            If Not DiskImageSave(image, NewFilePath) Then
+                Return False
+            End If
 
-                    Dim image = DiskImageLoadIfNeeded(CurrentImage, ImageData)
-                    If image Is Nothing Then
-                        Return False
-                    End If
-
-                    If Not DiskImageSave(image, NewFilePath) Then
-                        Return False
-                    End If
-
-                    ImageFilters.ScanModified(image.Disk, image.ImageData)
-            End Select
+            ImageFilters.ScanModified(image.Disk, image.ImageData)
         Next
 
         ResetAll()

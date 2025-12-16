@@ -75,7 +75,7 @@ Module ListViewExtensions
             Else
                 CalcWidth = listViewControl.Columns.Item(1).Width - 6
             End If
-            If TextRenderer.MeasureText(Value, listViewControl.Font).Width > CalcWidth Then
+            If TextRenderer.MeasureText(Value, listViewControl.Font).Width > CalcWidth OrElse Value.Contains(vbNewLine) Then
                 StringList = Value.WordWrap(CalcWidth, listViewControl.Font)
                 AddTags = True
             End If

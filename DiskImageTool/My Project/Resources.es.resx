@@ -1886,7 +1886,7 @@
     <value>Vista previa</value>
   </data>
   <data name="Dialog_ImagePreviewFail" xml:space="preserve">
-    <value>No se puede mostrar la vista previa de la imagen.</value>
+    <value>Error: No se puede mostrar la vista previa de la imagen.</value>
   </data>
   <data name="Label_Save" xml:space="preserve">
     <value>Guardar</value>
@@ -1902,5 +1902,8 @@
   </data>
   <data name="Radio_Settings_ConvertSameFolder" xml:space="preserve">
     <value>Misma carpeta que el conjunto de flujo</value>
+  </data>
+  <data name="Dialog_DetectFormatError" xml:space="preserve">
+    <value>Error: No se pudo detectar el formato de la imagen.</value>
   </data>
 </root>

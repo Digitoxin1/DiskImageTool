@@ -150,19 +150,25 @@ Namespace Flux
             Dim Length As Integer = 513
             Dim DetectedFormat As FloppyDiskFormat
 
-            Using fs As New IO.FileStream(FileName, IO.FileMode.Open, IO.FileAccess.Read, IO.FileShare.Read)
-                Using br As New IO.BinaryReader(fs, System.Text.Encoding.ASCII, leaveOpen:=False)
-                    Buffer = br.ReadBytes(Length)
-                    DetectedFormat = FloppyDiskFormatGet(Buffer)
-                    If DetectedFormat = FloppyDiskFormat.FloppyXDFMicro Then
-                        If fs.Length >= SecondOffset + Length Then
-                            fs.Seek(SecondOffset, IO.SeekOrigin.Begin)
-                            Buffer = br.ReadBytes(513)
-                            DetectedFormat = FloppyDiskFormatGet(Buffer)
+            Try
+                Using fs As New IO.FileStream(FileName, IO.FileMode.Open, IO.FileAccess.Read, IO.FileShare.Read)
+                    Using br As New IO.BinaryReader(fs, System.Text.Encoding.ASCII, leaveOpen:=False)
+                        Buffer = br.ReadBytes(Length)
+                        DetectedFormat = FloppyDiskFormatGet(Buffer)
+                        If DetectedFormat = FloppyDiskFormat.FloppyXDFMicro Then
+                            If fs.Length >= SecondOffset + Length Then
+                                fs.Seek(SecondOffset, IO.SeekOrigin.Begin)
+                                Buffer = br.ReadBytes(513)
+                                DetectedFormat = FloppyDiskFormatGet(Buffer)
+                            End If
                         End If
-                    End If
+                    End Using
                 End Using
-            End Using
+            Catch ex As Exception
+                Dim Msg = My.Resources.Dialog_DetectFormatError & vbNewLine & vbNewLine & ex.Message
+                MsgBox(Msg, MsgBoxStyle.Critical)
+                DetectedFormat = FloppyDiskFormat.FloppyUnknown
+            End Try
 
             If DeleteWhenDone Then
                 DeleteTempFileIfExists(FileName)

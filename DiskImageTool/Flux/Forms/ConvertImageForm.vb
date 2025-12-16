@@ -1104,17 +1104,15 @@ Namespace Flux
                 Exit Sub
             End If
 
+            Dim Caption As String = TextBoxFileName.Text
+
             Dim HasSelectedOutputFile As Boolean = _OutputImages.Images.ContainsKey(_SelectedDevice.Device)
 
             If HasSelectedOutputFile Then
                 Dim ImageInfo = _OutputImages.Images(_SelectedDevice.Device)
                 Dim ImageData = New ImageData(ImageInfo.FilePath)
 
-                Dim Caption As String = TextBoxFileName.Text
-
-                If Not ImagePreview.Display(ImageData, Caption, Me) Then
-                    MsgBox(My.Resources.Dialog_ImagePreviewFail, MsgBoxStyle.Exclamation)
-                End If
+                ImagePreview.Display(ImageData, Caption, Me)
             Else
                 If Not _SelectedDevice.SupportsPreview Then
                     Exit Sub
@@ -1130,12 +1128,8 @@ Namespace Flux
 
                 If Not Response.Result Then
                     MsgBox(My.Resources.Dialog_ImagePreviewFail, MsgBoxStyle.Exclamation)
-                End If
-
-                Dim Caption As String = TextBoxFileName.Text
-
-                If Not ImagePreview.Display(Response.Filename, DiskParams.Value, Caption, Me) Then
-                    MsgBox(My.Resources.Dialog_ImagePreviewFail, MsgBoxStyle.Exclamation)
+                Else
+                    ImagePreview.Display(Response.Filename, DiskParams.Value, Caption, Me)
                 End If
 
                 DeleteTempFileIfExists(Response.Filename)

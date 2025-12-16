@@ -504,40 +504,6 @@ Module ImageIO
         Return Path.Combine(BaseFolder, AppName)
     End Function
 
-    Public Function ImageLoadFromTemp(FilePath As String) As Byte()
-        Dim Data() As Byte = Nothing
-
-        If IO.File.Exists(FilePath) Then
-            Try
-                Data = IO.File.ReadAllBytes(FilePath)
-            Catch ex As Exception
-                DebugException(ex)
-                Data = Nothing
-            End Try
-        End If
-
-        Return Data
-    End Function
-
-    Public Function ImageSaveToTemp(Data() As Byte, DisplayPath As String) As String
-        Dim TempPath = GetTempPath()
-        Dim TempFileName = HashFunctions.SHA1Hash(System.Text.Encoding.Unicode.GetBytes(DisplayPath)) & ".tmp"
-
-        Try
-            If Not IO.Directory.Exists(TempPath) Then
-                IO.Directory.CreateDirectory(TempPath)
-            End If
-            TempPath = IO.Path.Combine(TempPath, TempFileName)
-
-            IO.File.WriteAllBytes(TempPath, Data)
-        Catch ex As Exception
-            DebugException(ex)
-            TempPath = ""
-        End Try
-
-        Return TempPath
-    End Function
-
     Public Sub InitAllFileExtensions()
         Dim Items = System.Enum.GetValues(GetType(FloppyDiskFormat))
         For Each Item As Integer In Items

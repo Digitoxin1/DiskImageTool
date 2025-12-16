@@ -280,7 +280,7 @@ Public Class SummaryPanel
         TitleRows.Add("Year", New SummaryRow(ListViewSummary.Font, My.Resources.SummaryPanel_Year, False))
         TitleRows.Add("OperatingSystem", New SummaryRow(ListViewSummary.Font, My.Resources.SummaryPanel_OperatingSystem, False))
         TitleRows.Add("Region", New SummaryRow(ListViewSummary.Font, My.Resources.Label_Region, False))
-        TitleRows.Add("Language", New SummaryRow(ListViewSummary.Font, My.Resources.Label_Language, False))
+        TitleRows.Add("Language", New SummaryRow(ListViewSummary.Font, My.Resources.Label_Language, True))
         TitleRows.Add("Version", New SummaryRow(ListViewSummary.Font, My.Resources.Label_Version, True))
         TitleRows.Add("Disk", New SummaryRow(ListViewSummary.Font, My.Resources.Label_Disk, False))
         TitleRows.Add("CopyProtection", New SummaryRow(ListViewSummary.Font, My.Resources.SummaryPanel_CopyProtection, True))
@@ -306,7 +306,9 @@ Public Class SummaryPanel
     End Sub
 
     Private Sub PopulateGroup(Group As ListViewGroup, Rows As OrderedDictionary)
+        Const PaddingRight As Integer = 15
         Dim MaxColumnWidth As Integer = 55
+
 
         With Group.ListView
             For Each SummaryRow As SummaryRow In Rows.Values
@@ -316,7 +318,7 @@ Public Class SummaryPanel
             Next
 
             Dim Diff = .Columns.Item(0).Width - MaxColumnWidth
-            Dim ColumnWidth As Integer = .Columns.Item(1).Width - 6
+            Dim ColumnWidth As Integer = .Columns.Item(1).Width - PaddingRight
             Dim MaxWidth = ColumnWidth + Diff
 
             For Each SummaryRow As SummaryRow In Rows.Values
@@ -730,7 +732,9 @@ Public Class SummaryPanel
             End If
         End With
     End Sub
-    Private Sub PopulateGroupTitle(TitleData As FloppyDB.FloppyData)
+    Private Sub PopulateGroupTitle(Result As FloppyDB.TitleFindResult)
+        Dim TitleData = Result.Primary
+
         If TitleRows Is Nothing Then
             InitializeTitleRows()
         End If
@@ -743,22 +747,24 @@ Public Class SummaryPanel
             ForeColor = Color.Green
         ElseIf Status = FloppyDB.FloppyDBStatus.Modified Then
             ForeColor = Color.Red
-        Else
+        ElseIf TitleData.GetFixed Then
             ForeColor = Color.Blue
+        Else
+            ForeColor = Color.Black
         End If
 
         With Row("Name")
-            .Value = TitleData.GetName
+            .Value = Result.GetNameList
             .ForeColor = ForeColor
         End With
         Row("Variation").Value = TitleData.GetVariation
         Row("Compilation").Value = TitleData.GetCompilation
-        Row("Publisher").Value = TitleData.GetPublisher
-        Row("Year").Value = TitleData.GetYear
+        Row("Publisher").Value = Result.GetPublisherList
+        Row("Year").Value = Result.GetYearList
         Row("OperatingSystem").Value = TitleData.GetOperatingSystem
-        Row("Region").Value = TitleData.GetRegion
+        Row("Region").Value = Result.GetRegionList
         Row("Language").Value = TitleData.GetLanguage
-        Row("Version").Value = TitleData.GetVersion
+        Row("Version").Value = Result.GetVersionDisplay
         Row("Disk").Value = TitleData.GetDisk
         Row("CopyProtection").Value = TitleData.GetCopyProtection
 
@@ -779,9 +785,9 @@ Public Class SummaryPanel
 
         If Not Preview AndAlso TitleDB IsNot Nothing AndAlso App.Globals.AppSettings.DisplayTitles AndAlso TitleDB.TitleCount > 0 Then
             Dim TitleFindResult = TitleDB.TitleFind(MD5)
-            If TitleFindResult.TitleData IsNot Nothing Then
+            If TitleFindResult.Matches IsNot Nothing Then
                 TitleFound = True
-                PopulateGroupTitle(TitleFindResult.TitleData)
+                PopulateGroupTitle(TitleFindResult)
             End If
         End If
 

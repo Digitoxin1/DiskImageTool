@@ -2128,7 +2128,7 @@ Do you wish to overwrite?</value>
     <value>Image Preview</value>
   </data>
   <data name="Dialog_ImagePreviewFail" xml:space="preserve">
-    <value>Unable to preview image.</value>
+    <value>Error: Unable to preview image.</value>
   </data>
   <data name="Label_Save" xml:space="preserve">
     <value>Save</value>
@@ -2144,5 +2144,8 @@ Do you wish to overwrite?</value>
   </data>
   <data name="Radio_Settings_ConvertSameFolder" xml:space="preserve">
     <value>Same folder as flux set</value>
+  </data>
+  <data name="Dialog_DetectFormatError" xml:space="preserve">
+    <value>Error: Unable to detect image format.</value>
   </data>
 </root>

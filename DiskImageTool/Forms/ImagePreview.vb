@@ -21,7 +21,7 @@
 
         Dim MD5 As String = ""
         If FullDisplay Then
-            MD5 = CurrentImage.Disk.Image.GetMD5Hash
+            MD5 = _Disk.Image.GetMD5Hash
         Else
             Me.Width = Me.MinimumSize.Width
         End If
@@ -33,12 +33,21 @@
 
         _SummaryPanel.Populate(CurrentImage, App.BootstrapDB, App.TitleDB, MD5, Not FullDisplay)
         If FullDisplay Then
-            HashPanel1.Populate(Disk, MD5)
+            HashPanel1.Populate(_Disk, MD5)
         End If
         FilePanelMain.Load(CurrentImage, False, FullDisplay)
     End Sub
 
     Public Shared Function Display(FileName As String, ImageParams As DiskImage.FloppyDiskParams, Caption As String, owner As IWin32Window) As Boolean
+        Dim OpenResponse = FileOpenBinary(FileName)
+
+        If Not OpenResponse.Result Then
+            Dim Msg = My.Resources.Dialog_ImagePreviewFail & vbNewLine & vbNewLine & OpenResponse.ErrorMsg
+            MsgBox(Msg, MsgBoxStyle.Exclamation)
+
+            Return False
+        End If
+
         Try
             Dim Size = ImageParams.BPBParams.SizeInBytes
 
@@ -48,16 +57,16 @@
                 Buffer(i) = &HF6
             Next
 
-            Dim FileBytes = IO.File.ReadAllBytes(FileName)
-
-            Dim ToCopy As Integer = Math.Min(FileBytes.Length, Buffer.Length)
-            Array.Copy(FileBytes, 0, Buffer, 0, ToCopy)
+            Dim ToCopy As Integer = Math.Min(OpenResponse.Data.Length, Buffer.Length)
+            Array.Copy(OpenResponse.Data, 0, Buffer, 0, ToCopy)
 
             Dim FloppyImage As New DiskImage.BasicSectorImage(Buffer)
             Dim Disk As New DiskImage.Disk(FloppyImage, 0)
 
             Display(Disk, False, Caption, owner)
         Catch ex As Exception
+            MsgBox(My.Resources.Dialog_ImagePreviewFail, MsgBoxStyle.Exclamation)
+
             Return False
         End Try
 
@@ -65,20 +74,21 @@
     End Function
 
     Public Shared Function Display(ImageData As ImageData, Caption As String, owner As IWin32Window) As Boolean
-        Try
-            Dim Disk = DiskImageLoadFromImageData(ImageData)
+        Dim Disk = DiskImageLoadFromImageData(ImageData)
 
-            Display(Disk, True, Caption, owner)
-        Catch ex As Exception
+        If Disk Is Nothing Then
+            MsgBox(My.Resources.Dialog_ImagePreviewFail, MsgBoxStyle.Exclamation)
             Return False
-        End Try
+        End If
+
+        Display(Disk, True, Caption, owner)
 
         Return True
     End Function
 
     Public Shared Sub Display(Disk As DiskImage.Disk, FullDisplay As Boolean, Caption As String, owner As IWin32Window)
-        With New ImagePreview(Disk, FullDisplay, Caption)
-            .ShowDialog(owner)
-        End With
+        Using Dialog As New ImagePreview(Disk, FullDisplay, Caption)
+            Dialog.ShowDialog(owner)
+        End Using
     End Sub
 End Class
