@@ -617,7 +617,7 @@ Public Class FloppyDB
 
     Public Class FileNameData
         Public Sub New(FileName As String)
-            _FileName = FileName
+            Me.FileName = FileName
             ParseFileName()
         End Sub
 
@@ -636,62 +636,62 @@ Public Class FloppyDB
         Public Property Year As String = ""
 
         Private Sub ParseFileName()
-            _Title = Trim(Regex.Match(FileName, "^[^\\(]+").Value)
-            _Title = Replace(_Title, " - ", ": ")
+            Me.Title = Trim(Regex.Match(FileName, "^[^\\(]+").Value)
+            Me.Title = Replace(Me.Title, " - ", ": ")
 
             Dim Groups = Regex.Match(FileName, "\((\d{4}-*\d*-*\d*)\)").Groups
             If Groups.Count > 1 Then
-                _Year = Groups.Item(1).Value
+                Me.Year = Groups.Item(1).Value
             End If
 
             Groups = Regex.Match(FileName, "\(v(.*?)\)").Groups
             If Groups.Count > 1 Then
-                _Version = Groups.Item(1).Value
+                Me.Version = Groups.Item(1).Value
             End If
 
             Groups = Regex.Match(FileName, "\(.*Disk (.*?)\)|\((\w*? Disk)\)").Groups
             If Groups.Count > 1 Then
-                _Disk = Groups.Item(1).Value
+                Me.Disk = Groups.Item(1).Value
             End If
 
             Dim Captures = Regex.Match(FileName, "\[!\]").Captures
             If Captures.Count > 0 Then
-                _Verified = True
+                Me.Verified = True
             End If
 
             Captures = Regex.Match(FileName, "\[M.*\]").Captures
             If Captures.Count > 0 Then
-                _Modified = True
+                Me.Modified = True
             End If
 
             Captures = Regex.Match(FileName, "\[cp\]").Captures
             If Captures.Count > 0 Then
-                _CopyProtected = True
+                Me.CopyProtected = True
             End If
 
             Captures = Regex.Match(FileName, "\[cr\]").Captures
             If Captures.Count > 0 Then
-                _Cracked = True
+                Me.Cracked = True
             End If
 
             Groups = Regex.Match(FileName, "\((Europe|France|Germany|Spain|Italy)\)").Groups
             If Groups.Count > 1 Then
-                _Region = Groups.Item(1).Value
+                Me.Region = Groups.Item(1).Value
             End If
 
             Groups = Regex.Match(FileName, "\((\s*[A-Za-z]{2}(?:\s*,\s*[A-Za-z]{2})*\s*)\)").Groups
             If Groups.Count > 1 Then
-                _Languages = ParseLanguageList(Groups.Item(1).Value)
+                Me.Languages = ParseLanguageList(Groups.Item(1).Value)
             End If
 
             If Verified Then
-                _StatusString = "V"
+                Me.StatusString = "V"
             ElseIf Modified Then
-                _StatusString = "M"
+                Me.StatusString = "M"
             Else
-                _StatusString = "U"
+                Me.StatusString = "U"
             End If
-            _Status = GetFloppyDBStatus(_StatusString)
+            Me.Status = GetFloppyDBStatus(Me.StatusString)
         End Sub
 
         Private Function ParseLanguageList(codesList As String) As String
@@ -741,10 +741,10 @@ Public Class FloppyDB
         Public Property Year As String = ""
 
         Public Function GetCompilation() As String
-            If _Compilation <> "" Then
-                Return _Compilation
+            If Me.Compilation <> "" Then
+                Return Me.Compilation
             Else
-                Dim Parent = _Parent
+                Dim Parent = Me.Parent
                 Do While Parent IsNot Nothing
                     If Parent.Compilation <> "" Then
                         Return Parent.Compilation
@@ -757,10 +757,10 @@ Public Class FloppyDB
         End Function
 
         Public Function GetCopyProtection() As String
-            If _CopyProtection <> "" Then
-                Return _CopyProtection
+            If Me.CopyProtection <> "" Then
+                Return Me.CopyProtection
             Else
-                Dim Parent = _Parent
+                Dim Parent = Me.Parent
                 Do While Parent IsNot Nothing
                     If Parent.CopyProtection <> "" Then
                         Return Parent.CopyProtection
@@ -773,10 +773,10 @@ Public Class FloppyDB
         End Function
 
         Public Function GetDisk() As String
-            If _Disk <> "" Then
-                Return _Disk
+            If Me.Disk <> "" Then
+                Return Me.Disk
             Else
-                Dim Parent = _Parent
+                Dim Parent = Me.Parent
                 Do While Parent IsNot Nothing
                     If Parent.Disk <> "" Then
                         Return Parent.Disk
@@ -789,10 +789,10 @@ Public Class FloppyDB
         End Function
 
         Public Function GetFixed() As Boolean
-            If _Fixed.HasValue Then
-                Return _Fixed.Value
+            If Me.Fixed.HasValue Then
+                Return Me.Fixed.Value
             Else
-                Dim Parent = _Parent
+                Dim Parent = Me.Parent
                 Do While Parent IsNot Nothing
                     If Parent.Fixed.HasValue Then
                         Return Parent.Fixed.Value
@@ -805,10 +805,10 @@ Public Class FloppyDB
         End Function
 
         Public Function GetInt() As String
-            If _Int <> "" Then
-                Return _Int
+            If Me.Int <> "" Then
+                Return Me.Int
             Else
-                Dim Parent = _Parent
+                Dim Parent = Me.Parent
                 Do While Parent IsNot Nothing
                     If Parent.Int <> "" Then
                         Return Parent.Int
@@ -821,10 +821,10 @@ Public Class FloppyDB
         End Function
 
         Public Function GetIsTDC() As Boolean
-            If _IsTDC.HasValue Then
-                Return _IsTDC.Value
+            If Me.IsTDC.HasValue Then
+                Return Me.IsTDC.Value
             Else
-                Dim Parent = _Parent
+                Dim Parent = Me.Parent
                 Do While Parent IsNot Nothing
                     If Parent.IsTDC.HasValue Then
                         Return Parent.IsTDC.Value
@@ -837,10 +837,10 @@ Public Class FloppyDB
         End Function
 
         Public Function GetLanguage() As String
-            If _Language <> "" Then
-                Return _Language
+            If Me.Language <> "" Then
+                Return Me.Language
             Else
-                Dim Parent = _Parent
+                Dim Parent = Me.Parent
                 Do While Parent IsNot Nothing
                     If Parent.Language <> "" Then
                         Return Parent.Language
@@ -853,10 +853,10 @@ Public Class FloppyDB
         End Function
 
         Public Function GetMedia() As FloppyDiskFormat
-            If _Media <> FloppyDiskFormat.FloppyUnknown Then
-                Return _Media
+            If Me.Media <> FloppyDiskFormat.FloppyUnknown Then
+                Return Me.Media
             Else
-                Dim Parent = _Parent
+                Dim Parent = Me.Parent
                 Do While Parent IsNot Nothing
                     If Parent.Media <> FloppyDiskFormat.FloppyUnknown Then
                         Return Parent.Media
@@ -869,10 +869,10 @@ Public Class FloppyDB
         End Function
 
         Public Function GetName() As String
-            If _Name <> "" Then
-                Return _Name
+            If Me.Name <> "" Then
+                Return Me.Name
             Else
-                Dim Parent = _Parent
+                Dim Parent = Me.Parent
                 Do While Parent IsNot Nothing
                     If Parent.Name <> "" Then
                         Return Parent.Name
@@ -885,10 +885,10 @@ Public Class FloppyDB
         End Function
 
         Public Function GetOperatingSystem() As String
-            If _OperatingSystem <> "" Then
-                Return _OperatingSystem
+            If Me.OperatingSystem <> "" Then
+                Return Me.OperatingSystem
             Else
-                Dim Parent = _Parent
+                Dim Parent = Me.Parent
                 Do While Parent IsNot Nothing
                     If Parent.OperatingSystem <> "" Then
                         Return Parent.OperatingSystem
@@ -901,10 +901,10 @@ Public Class FloppyDB
         End Function
 
         Public Function GetPublisher() As String
-            If _Publisher <> "" Then
-                Return _Publisher
+            If Me.Publisher <> "" Then
+                Return Me.Publisher
             Else
-                Dim Parent = _Parent
+                Dim Parent = Me.Parent
                 Do While Parent IsNot Nothing
                     If Parent.Publisher <> "" Then
                         Return Parent.Publisher
@@ -917,10 +917,10 @@ Public Class FloppyDB
         End Function
 
         Public Function GetRegion() As String
-            If _Region <> "" Then
-                Return _Region
+            If Me.Region <> "" Then
+                Return Me.Region
             Else
-                Dim Parent = _Parent
+                Dim Parent = Me.Parent
                 Do While Parent IsNot Nothing
                     If Parent.Region <> "" Then
                         Return Parent.Region
@@ -933,10 +933,10 @@ Public Class FloppyDB
         End Function
 
         Public Function GetSerial() As String
-            If _Serial <> "" Then
-                Return _Serial
+            If Me.Serial <> "" Then
+                Return Me.Serial
             Else
-                Dim Parent = _Parent
+                Dim Parent = Me.Parent
                 Do While Parent IsNot Nothing
                     If Parent.Serial <> "" Then
                         Return Parent.Serial
@@ -949,10 +949,10 @@ Public Class FloppyDB
         End Function
 
         Public Function GetStatus() As FloppyDBStatus
-            If _Status <> FloppyDBStatus.Unknown Then
-                Return _Status
+            If Me.Status <> FloppyDBStatus.Unknown Then
+                Return Me.Status
             Else
-                Dim Parent = _Parent
+                Dim Parent = Me.Parent
                 Do While Parent IsNot Nothing
                     If Parent.Status <> FloppyDBStatus.Unknown Then
                         Return Parent.Status
@@ -965,10 +965,10 @@ Public Class FloppyDB
         End Function
 
         Public Function GetVariation() As String
-            If _Variation <> "" Then
-                Return _Variation
+            If Me.Variation <> "" Then
+                Return Me.Variation
             Else
-                Dim Parent = _Parent
+                Dim Parent = Me.Parent
                 Do While Parent IsNot Nothing
                     If Parent.Variation <> "" Then
                         Return Parent.Variation
@@ -981,10 +981,10 @@ Public Class FloppyDB
         End Function
 
         Public Function GetVersion() As String
-            If _Version <> "" Then
-                Return _Version
+            If Me.Version <> "" Then
+                Return Me.Version
             Else
-                Dim Parent = _Parent
+                Dim Parent = Me.Parent
                 Do While Parent IsNot Nothing
                     If Parent.Version <> "" Then
                         Return Parent.Version
@@ -996,10 +996,10 @@ Public Class FloppyDB
             Return ""
         End Function
         Public Function GetYear() As String
-            If _Year <> "" Then
-                Return _Year
+            If Me.Year <> "" Then
+                Return Me.Year
             Else
-                Dim Parent = _Parent
+                Dim Parent = Me.Parent
                 Do While Parent IsNot Nothing
                     If Parent.Year <> "" Then
                         Return Parent.Year

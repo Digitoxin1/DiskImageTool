@@ -264,7 +264,7 @@ Namespace Flux
                     Dim startTrack As Integer = br.ReadByte()  ' byte 0x06
                     Dim endTrack As Integer = br.ReadByte()    ' byte 0x07
                     Dim flags As Integer = br.ReadByte()       ' byte 0x08
-                    Dim heads As Integer = br.ReadByte()       ' byte 0x0A
+                    Dim heads As Integer = br.ReadByte()       ' byte 0x09
 
                     Dim sideCount As Integer
                     Select Case heads
@@ -627,7 +627,7 @@ Namespace Flux
 
         Private Function ContainsRawFileInFolder(folderPath As String) As Boolean
             Try
-                ' Recursive search; stop on first match
+                ' Stop on first match
                 For Each f In IO.Directory.EnumerateFiles(folderPath, "*.raw", IO.SearchOption.TopDirectoryOnly)
                     Return True
                 Next
